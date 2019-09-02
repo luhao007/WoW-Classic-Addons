@@ -1,0 +1,14 @@
+## Title: Auc:Util:Price Level
+## Interface: 80200
+## Dependancies: Auc-Advanced
+##
+## Version: 8.2.6356 (SwimmingSeadragon)
+## Revision: $Id: Auc-Util-PriceLevel.toc 6356 2019-08-29 20:52:32Z none $
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+##
+Embed.xml

@@ -1,0 +1,21 @@
+## Title: BeanCounter
+## Notes: Auction House transaction history to include purchases and sales, failures and successes.
+##
+## Interface: 80200
+## Dependencies: Stubby
+## OptionalDeps: !nLog, Babylonian, DebugLib, SlideBar, Auc-Advanced, Configator, LibExtraTip, TipHelper, LibDataBroker
+## SavedVariables: BeanCounterDB, BeanCounterDBSettings, BeanCounterDBNames, BeanCounterAccountDB, BeanCounterMailPatch
+##
+## Version: 8.2.6381 (SwimmingSeadragon)
+## Revision: $Id: BeanCounter.toc 6381 2019-08-29 20:52:32Z none $
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+##
+
+libs\Load.xml
+Embed.xml
+

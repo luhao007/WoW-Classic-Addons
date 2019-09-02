@@ -1,0 +1,14 @@
+## Title: Auc:Util:Scan Button
+## Interface: 80200
+## Dependancies: Auc-Advanced
+##
+## Version: 8.2.6346 (SwimmingSeadragon)
+## Revision: $Id: Auc-Util-ScanButton.toc 6346 2019-08-29 20:52:32Z none $
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+##
+Embed.xml

@@ -1,0 +1,16 @@
+## Title: Auc:Util:FixAH
+## Notes: Works around a paging issue when viewing items in the Auction House "browse" frame.  Simply forces all new searches to show the results beginning on the first page.
+##
+## Interface: 80200
+## Dependancies: Auc-Advanced
+##
+## Version: 8.2.6371 (SwimmingSeadragon)
+## Revision: $Id: Auc-Util-FixAH.toc 6371 2019-08-29 20:52:32Z none $
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+##
+Load.xml

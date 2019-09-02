@@ -1,0 +1,10 @@
+## Interface: 11302
+## Title: Titan Panel Classic [|cffeda55fGold|r] |cff00aa001.0.5.11302|r
+## Notes: Keeps track of all gold held by a player's toons on a per server/faction basis.
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## SavedVariables: GoldSave
+## OptionalDeps: 
+## Dependencies: TitanClassic
+## Version: 1.0.5.11302
+## X-Child-Of: TitanClassic
+TitanClassicGold.xml
