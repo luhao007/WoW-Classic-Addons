@@ -1,0 +1,18 @@
+## Interface: 11302
+## Author: Lag
+## Version: v1.1.8-beta
+## Dependencies: AtlasLootClassic
+## LoadOnDemand: 1
+
+## Title: AtlasLootClassic |cFF0099FF[Collections]|r
+## Notes: AtlasLoot loot tables from Collections
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r AtlasLoot Classic |cFF22B14C[套装]|r
+## Notes-zhCN: AtlasLoot loot tables from Collections
+
+## X-Category: Map
+## X-License: GPL v2
+## X-AtlasLootClassic-LootModule: 1
+
+Locales\Locales.xml
+
+data.lua

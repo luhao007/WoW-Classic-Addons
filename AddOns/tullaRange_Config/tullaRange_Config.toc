@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Tuller
+## Dependencies: tullaRange
+## LoadOnDemand: 1
+
+## Title: tullaRange Config
+## Notes: GUI based configuration for tullaRange
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF距离检测|r tullaRange |cFF22B14C[选项]|r
+## Notes-zhCN: tullaRange选项模块
+
+
+localization\localization.xml
+widgets\widgets.xml
+colorOptions.lua

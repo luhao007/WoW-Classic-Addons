@@ -1,0 +1,13 @@
+## Interface: 11302
+## Author: yess
+## Version: 1.9
+
+## Title: Blizzmove
+## Notes: Move those blizzard windows
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r BlizzMove
+## Notes-zhCN: 移动内置的各种窗口
+
+## X-WoWI-ID: 23875
+
+Handle.lua
+BlizzMove.lua

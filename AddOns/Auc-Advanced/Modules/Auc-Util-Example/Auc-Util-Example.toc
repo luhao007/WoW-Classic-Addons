@@ -1,0 +1,11 @@
+## Title: Auctioneer:Util:Example
+## Interface: 80200
+## Dependancies: Auc-Advanced
+##
+## Version: <%version%> (<%codename%>)
+## Revision: $Id$
+## URL: http://auctioneeraddon.com/
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+##
+Embed.xml

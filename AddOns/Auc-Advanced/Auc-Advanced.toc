@@ -1,0 +1,45 @@
+## Interface: 11302
+## Author: Norganna's AddOns
+## Version: 8.2.6385 (SwimmingSeadragon)
+## Dependencies: Stubby
+## LoadOnDemand: 0
+## SavedVariables: AucAdvancedConfig, AucAdvancedData, AucAdvancedServers
+## SavedVariablesPerCharacter: AucAdvancedLocal
+
+## Title: Auc-Auctioneer |cff774422(core)
+## Notes: Auctioneer assists players to track item values on the Auction House; whether buying or selling.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r Auctioneer |cFF22B14C[核心]|r
+## Notes-zhCN: 拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品
+
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+
+##
+##
+##
+Libs\Load.xml
+
+CoreManifest.lua
+CoreModule.lua
+CoreStrings.lua
+CoreConst.lua
+DataBonusIDs.lua
+DataPostDeposit.lua
+CoreResources.lua
+CoreServers.lua
+
+CoreMain.lua
+CoreUtil.lua
+CoreConfig.lua
+CorePost.lua
+CoreSettings.lua
+CoreScan.lua
+CoreBuy.lua
+CoreAPI.lua
+
+CoreFinal.lua
+
+Modules\Active.xml

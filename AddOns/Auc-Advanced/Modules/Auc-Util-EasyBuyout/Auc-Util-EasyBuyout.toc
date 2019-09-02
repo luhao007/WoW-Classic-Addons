@@ -1,0 +1,15 @@
+## Title: Auc:Util:EasyBuyout
+## Interface: 80200
+## Notes: Shift+right-click to easily buyout an auction with no confirmation box!
+## Dependancies: Auc-Advanced
+##
+## Version: 8.2.6350 (SwimmingSeadragon)
+## Revision: $Id: Auc-Util-EasyBuyout.toc 6350 2019-08-29 20:52:32Z none $
+## Author: Norganna's AddOns
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+##
+Embed.xml

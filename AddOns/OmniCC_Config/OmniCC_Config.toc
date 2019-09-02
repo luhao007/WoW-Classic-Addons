@@ -1,0 +1,15 @@
+## Interface: 11302
+## Author: Tuller
+## Dependencies: OmniCC
+## LoadOnDemand: 1
+
+## Title: OmniCC Config
+## Notes: OmniCC's configuration menu
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF技能冷却|r OmniCC |cFF22B14C[选项]|r
+## Notes-zhCN: 显示技能冷却时间
+
+
+localization\localization.xml
+widgets\widgets.xml
+mainPanel.lua
+panels\panels.xml

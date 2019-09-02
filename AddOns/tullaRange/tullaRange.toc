@@ -1,0 +1,12 @@
+## Interface: 11302
+## Author: Tuller
+## Version: 8.2.2
+## SavedVariables: TULLARANGE_COLORS
+
+## Title: tullaRange
+## Notes: Out of range coloring based on RedRange
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF距离检测|r tullaRange
+## Notes-zhCN: 目标距离过远时，将技能图标显示为红色
+
+
+tullaRange.lua

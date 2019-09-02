@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script>
+		AucAdvanced.EmbeddedModules = {
+			"Auc-Filter-FlatOutlier",
+			"Auc-Filter-Outlier",
+			"Auc-Match-Undercut",
+			"Auc-Stat-Example2",
+			"Auc-Stat-Sales",
+			"Auc-Util-AHWindowControl",
+			"Auc-Util-Appraiser",
+			"Auc-Util-AskPrice",
+			"Auc-Util-AutoMagic",
+			"Auc-Util-CompactUI",
+			"Auc-Util-EasyBuyout",
+			"Auc-Util-Example",
+			"Auc-Util-ItemSuggest",
+			"Auc-Util-PriceLevel",
+			"Auc-Util-ScanButton",
+			"Auc-Util-ScanFinish",
+			"Auc-Util-ScanProgress",
+			"Auc-Util-ScanStart",
+			"Auc-Util-SearchUI",
+			"Auc-Util-SimpleAuction",
+			"Auc-Util-VendMarkup",
+		}
+		AucAdvanced.RegisterRevision("$URL: Active.xml $", "$Rev: 6395 $")
+	</Script>
+
+	<Include file="Auc-Filter-FlatOutlier\Embed.xml"/>
+	<Include file="Auc-Filter-Outlier\Embed.xml"/>
+	<Include file="Auc-Match-Undercut\Embed.xml"/>
+	<Include file="Auc-Stat-Example2\Embed.xml"/>
+	<Include file="Auc-Stat-Sales\Embed.xml"/>
+	<Include file="Auc-Util-AHWindowControl\Embed.xml"/>
+	<Include file="Auc-Util-Appraiser\Embed.xml"/>
+	<Include file="Auc-Util-AskPrice\Embed.xml"/>
+	<Include file="Auc-Util-AutoMagic\Embed.xml"/>
+	<Include file="Auc-Util-CompactUI\Embed.xml"/>
+	<Include file="Auc-Util-EasyBuyout\Embed.xml"/>
+	<Include file="Auc-Util-Example\Embed.xml"/>
+	<Include file="Auc-Util-ItemSuggest\Embed.xml"/>
+	<Include file="Auc-Util-PriceLevel\Embed.xml"/>
+	<Include file="Auc-Util-ScanButton\Embed.xml"/>
+	<Include file="Auc-Util-ScanFinish\Embed.xml"/>
+	<Include file="Auc-Util-ScanProgress\Embed.xml"/>
+	<Include file="Auc-Util-ScanStart\Embed.xml"/>
+	<Include file="Auc-Util-SearchUI\Embed.xml"/>
+	<Include file="Auc-Util-SimpleAuction\Embed.xml"/>
+	<Include file="Auc-Util-VendMarkup\Embed.xml"/>
+</Ui>

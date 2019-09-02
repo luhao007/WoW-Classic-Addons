@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Kirkburn
+## Version: v4.01a
+## LoadOnDemand: 0
+## DefaultState: Enabled
+
+## Title: ClearFont
+## Notes: Modify Game Fonts and Size, Color, Shadow Of Them.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF游戏字体|r ClearFont
+## Notes-zhCN: 更改游戏字体及其大小、颜色、阴影等特效
+
+## X-Repple: 界面
+
+ClearFont.lua

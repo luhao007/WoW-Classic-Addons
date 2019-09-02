@@ -1,0 +1,33 @@
+## Interface: 11302
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMAQ40_AllSavedVars
+## SavedVariablesPerCharacter: DBMAQ40_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Temple of Ahn'Qiraj|r
+
+## X-Min-Interface: 11302
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: Classic
+## X-DBM-Mod-Has-Single-Format: 1
+## X-DBM-Mod-MapID: 531
+## X-DBM-Mod-Sort: 9
+## X-DBM-Mod-MinCoreRevision: 12473
+
+localization.en.lua
+localization.de.lua
+localization.es.lua
+localization.ru.lua
+localization.kr.lua
+localization.tw.lua
+localization.cn.lua
+Skeram.lua
+ThreeBugs.lua
+Sartura.lua
+Fankriss.lua
+Viscidus.lua
+Huhuran.lua
+TwinEmps.lua
+CThun.lua
+Ouro.lua

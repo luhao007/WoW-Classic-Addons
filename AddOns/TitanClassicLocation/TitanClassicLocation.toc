@@ -1,0 +1,15 @@
+## Interface: 11302
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## Version: 1.0.5.11302
+## Dependencies: TitanClassic
+## OptionalDeps: 
+## SavedVariables: 
+
+## Title: Titan Panel Classic [|cffeda55fLocation|r] |cff00aa001.0.5.11302|r
+## Notes: Adds coordinates and location information to Titan Panel
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r Titan Panel Classic |cFF22B14C[位置]|r
+## Notes-zhCN: 泰坦面板的位置模块
+
+## X-Child-Of: TitanClassic
+
+TitanClassicLocation.xml

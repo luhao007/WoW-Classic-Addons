@@ -1,0 +1,13 @@
+## Interface: 11302
+## Author: Trentin, Jim-Bim
+## Version: v3.3.15c
+## OptionalDeps: LibDataBroker-1.1
+## SavedVariables: MonkeySpeedVars
+
+## Title: MonkeySpeed
+## Notes: Adds a simple movable speedometer displaying speed as a percentage of run speed.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey移动速度|r MonkeySpeed
+## Notes-zhCN: 显示当前移动速度
+
+
+MonkeySpeed.xml

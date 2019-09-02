@@ -1,0 +1,26 @@
+## Interface: 11302
+## Author: Nevcairiel
+## Version: 1.8.4
+## OptionalDeps: Ace3, LibWindow-1.1
+## SavedVariables: MapsterDB
+
+## Title: Mapster
+## Notes: Simple Map Mod
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF地图增强|r Mapster
+## Notes-zhCN: 简单实用的地图模块
+
+## X-Category: Map
+## X-License: All rights reserved.
+## X-Curse-Project-ID: 14376
+## X-WoWI-ID: 8306
+
+Locale\locale.xml
+
+Mapster.lua
+Config.lua
+
+Coords.lua
+# GroupIcons.lua
+# BattleMap.lua
+FogClear.lua
+Scaling.lua

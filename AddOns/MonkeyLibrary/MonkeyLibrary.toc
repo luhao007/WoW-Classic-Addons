@@ -1,0 +1,10 @@
+## Interface: 11302
+## Author: Trentin, Jim-Bim
+
+## Title: MonkeyLibrary v2.9.39c
+## Notes: Common files and functions for MonkeyMods.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey运行库|r MonkeyLibrary
+## Notes-zhCN: Monkey模块的通用库
+
+
+MonkeyLibrary.xml

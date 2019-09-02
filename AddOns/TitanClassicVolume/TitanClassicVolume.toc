@@ -1,0 +1,15 @@
+## Interface: 11302
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## Version: 1.0.5.11302
+## Dependencies: TitanClassic
+## OptionalDeps: 
+## SavedVariables: 
+
+## Title: Titan Panel Classic [|cffeda55fVolume|r] |cff00aa001.0.5.11302|r
+## Notes: Adds a volume control icon on your Titan Bar
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r Titan Panel Classic |cFF22B14C[音量]|r
+## Notes-zhCN: 泰坦面板的音量模块
+
+## X-Child-Of: TitanClassic
+
+TitanClassicVolume.xml

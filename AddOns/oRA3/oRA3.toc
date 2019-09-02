@@ -1,0 +1,48 @@
+## Interface: 11302
+## Author: Funkydude, Nebula
+## Version: v1-classic
+## OptionalDeps: Ace3, LibCandyBar-3.0, LibSharedMedia-3.0, LibDDI-1.0, LibGroupInSpecT-1.1, LibDualSpec-1.0, LibChatAnims, LibLatency, LibDurability, LibDialog-1.0, Masque
+## SavedVariables: oRA3DB
+
+## Title: oRA3
+## Notes: Raid and Party Assist
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r oRA3
+## Notes-zhCN: 提供团队和小队的一些辅助功能
+
+## X-Credits: Cladhaire, Ammo, Rabbit
+## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+## X-Website: https://github.com/BigWigsMods/oRA3
+## X-Curse-Project-ID: 15655
+
+# X-WoWI-ID: 14635
+
+
+locales\enUS.lua
+locales\itIT.lua
+locales\ptBR.lua
+locales\ruRU.lua
+locales\koKR.lua
+locales\zhCN.lua
+locales\zhTW.lua
+locales\frFR.lua
+locales\deDE.lua
+locales\esES.lua
+
+oRA3.lua
+modulePrototype.lua
+
+# module order in options
+modules\Alerts.lua
+modules\BattleRes.lua
+modules\Consumables.lua
+modules\Cooldowns\module.xml
+modules\ReadyCheck.lua
+# modules with no settings
+modules\Durability.lua
+modules\Gear.lua
+modules\Invite.lua
+modules\Latency.lua
+modules\Promote.lua
+modules\RoleIcons.lua
+modules\Tanks.lua
+modules\Zone.lua

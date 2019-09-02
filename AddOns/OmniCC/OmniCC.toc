@@ -1,0 +1,17 @@
+## Interface: 11302
+## Author: Tuller
+## Version: 8.2.4
+## SavedVariables: OmniCC4Config
+
+## Title: OmniCC
+## Notes: Cooldown count for everything
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF技能冷却|r OmniCC
+## Notes-zhCN: 显示技能冷却时间
+
+
+libs\libs.xml
+localization\localization.xml
+main.lua
+core\core.xml
+settings\settings.xml
+effects\effects.xml

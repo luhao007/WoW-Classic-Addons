@@ -1,0 +1,35 @@
+## Interface: 11302
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMMC_AllSavedVars
+## SavedVariablesPerCharacter: DBMMC_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Molten Core|r
+## Title-zhCN: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0熔火之心|r
+
+## X-Min-Interface: 11302
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: Classic
+## X-DBM-Mod-Has-Single-Format: 1
+## X-DBM-Mod-MapID: 409
+## X-DBM-Mod-Sort: 13
+## X-DBM-Mod-MinCoreRevision: 14565
+
+localization.en.lua
+localization.es.lua
+localization.ru.lua
+localization.de.lua
+localization.kr.lua
+localization.tw.lua
+localization.cn.lua
+Lucifron.lua
+Magmadar.lua
+Gehennas.lua
+Garr.lua
+Geddon.lua
+Shazzrah.lua
+Sulfuron.lua
+Golemagg.lua
+Majordomo.lua
+Ragnaros.lua

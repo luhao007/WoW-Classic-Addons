@@ -1,0 +1,24 @@
+## Interface: 11302
+## Author: Norganna's AddOns
+## Version: 8.2.6364 (SwimmingSeadragon)
+## Dependencies: Auc-Advanced
+## LoadOnDemand: 0
+## SavedVariables: AucAdvancedFilterBasic_IgnoreList
+
+## Title: Auc:Filter:Basic
+## Notes: Allows filtering of Auctioneer data by some basic items, such as minimum quality, minimum item level, and ignored seller.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r Auctioneer |cFF22B14C[基础过滤条件]|r
+## Notes-zhCN: 提供基础过滤条件，比如最低装等，最低价格等等
+
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+
+##
+##
+##
+
+BasicFilter.xml
+BasicFilter.lua

@@ -1,0 +1,23 @@
+## Interface: 11302
+## Author: Stanzilla, Semlar
+## Version: 1.3.2
+## LoadOnDemand: 0
+## SavedVariables: AdvancedInterfaceOptionsSaved
+## DefaultState: Enabled
+
+## Title: Advanced Interface Options
+## Notes: Restores access to removed interface options in Legion
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF高级界面选项|r Advanced Interface Options
+## Notes-zhCN: 可以修改各种隐藏参数，包括隐藏的内部CVar参数
+
+## X-Category: Interface Enhancements
+## X-Website: https://www.curseforge.com/wow/addons/advancedinterfaceoptions
+## X-Curse-Project-ID: 99982
+## X-WoWI-ID: 25002
+
+semlib\semlib.xml
+cvars.lua
+basicOptions.lua
+browser.lua
+
+tempfix.lua

@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Jaliborc (JoÃ£o Cardoso)
+## Version: 8.2.5
+## RequiredDeps: Bagnon
+## LoadOnDemand: 1
+
+## Title: Bagnon Void Storage
+## Notes: Single window display for your void storage
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r Bagnon |cFF22B14C[虚空仓库]|r
+## Notes-zhCN: Bagnon虚空仓库模块
+
+
+main.lua
+components\components.xml

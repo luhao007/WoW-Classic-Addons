@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<Script file="ScanFinish.lua"/>
+	<Script>
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-ScanFinish/Embed.xml $", "$Rev: 6345 $")
+	</Script>
+</Ui>

@@ -1,0 +1,28 @@
+## Interface: 11302
+## Author: M
+## Version: 8.2.1
+## SavedVariables: BigTipDB
+## SavedVariablesPerCharacter: TinyTooltipCharacterDB
+
+## Title: TinyTooltip
+## Notes: TinyTooltip
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF鼠标提示增强|r TinyTooltip
+## Notes-zhCN: 在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置
+
+
+libs\lib.xml
+Core.lua
+Config.lua
+General.lua
+Anchor.lua
+Unit.lua
+Target.lua
+Model.lua
+Item.lua
+Spell.lua
+Quest.lua
+LinkID.lua
+SkinFrames.lua
+
+locales\locales.xml
+Options.lua

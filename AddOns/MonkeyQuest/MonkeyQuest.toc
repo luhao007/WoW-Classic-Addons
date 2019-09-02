@@ -1,0 +1,13 @@
+## Interface: 11302
+## Author: Trentin, Jim-Bim
+## Dependencies: MonkeyLibrary
+## OptionalDeps: aftt_extreme
+## SavedVariables: MonkeyQuestConfig
+
+## Title: MonkeyQuest v2.9.39c
+## Notes: Displays your quests for quick viewing.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey任务追踪窗口|r MonkeyQuest
+## Notes-zhCN: 独立任务追踪窗口
+
+
+MonkeyQuest.xml

@@ -1,0 +1,34 @@
+## Interface: 11302
+## Author: Cladhaire
+## Version: v11302-1.0.7
+## OptionalDeps: HereBeDragons-2.0
+## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
+
+## Title: TomTom
+## Notes: Acts as your portable navigation assistant
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF导航助手|r TomTom
+## Notes-zhCN: 一个简单的导航助手。
+
+## X-Localizations: enUS, enGB, deDE, frFR, zhCN, ruRU, zhTW
+## X-CompatibleLocales: enUS, enGB, deDE, frFR, esES, esMX, zhCN, zhTW, koKR, ruRU
+
+#retail ## Interface: 80200
+
+
+AddonCore.lua
+
+Localization.enUS.lua
+Localization.deDE.lua
+Localization.frFR.lua
+Localization.zhCN.lua
+Localization.ruRU.lua
+Localization.zhTW.lua
+Localization.koKR.lua
+
+TomTom.lua
+TomTom_Waypoints.lua
+TomTom_CrazyArrow.lua
+TomTom_Corpse.lua
+TomTom_POIIntegration.lua
+
+TomTom_Config.lua

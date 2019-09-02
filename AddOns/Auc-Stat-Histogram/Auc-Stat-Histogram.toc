@@ -1,0 +1,23 @@
+## Interface: 11302
+## Author: Norganna's AddOns
+## Version: 8.2.6366 (SwimmingSeadragon)
+## Dependencies: Auc-Advanced
+## LoadOnDemand: 0
+## SavedVariables: AucAdvancedStatHistogramData
+
+## Title: Auc:Stat:Histogram
+## Notes: Statistics extension for Auctioneer that uses a histogram data collection method.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r Auctioneer |cFF22B14C[统计：直方图]|r
+## Notes-zhCN: 让拍卖助手可以用直方图的形式展示统计数据
+
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+
+##
+##
+##
+
+StatHistogram.lua

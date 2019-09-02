@@ -1,0 +1,16 @@
+## Interface: 11302
+## Author: Jaliborc (JoÃ£o Cardoso)
+## OptionalDeps: LibStub, WoWUnit
+## SavedVariables: BrotherBags
+
+## Title: BagBrother
+## Notes: Stores data about your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF背包助手|r BagBrother
+## Notes-zhCN: 记录背包和银行中的物品
+
+
+LibStub.lua
+Startup.lua
+Events.lua
+API.lua
+Interface.lua

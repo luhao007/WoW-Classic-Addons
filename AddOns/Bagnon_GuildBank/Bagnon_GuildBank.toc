@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
+## Version: 8.2.5
+## RequiredDeps: Bagnon
+## LoadOnDemand: 1
+
+## Title: Bagnon Guild Bank
+## Notes: Single window display for your guild bank
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r Bagnon |cFF22B14C[公会银行]|r
+## Notes-zhCN: Bagnon公会银行模块
+
+
+main.lua
+components\components.xml

@@ -1,0 +1,27 @@
+## Interface: 11302
+## Author: Nitram and Tandanu
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## DefaultState: enabled
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff0055FFOptions GUI|r
+## Notes: GUI for Deadly Boss Mods
+## Title-zhCN: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff0055FF设置界面|r
+## Notes-zhCN: Deadly Boss Mods的设置界面
+
+## X-Min-Interface: 11302
+
+localization.en.lua
+localization.de.lua
+localization.cn.lua
+localization.ru.lua
+localization.fr.lua
+localization.it.lua
+localization.tw.lua
+localization.kr.lua
+localization.es.lua
+localization.br.lua
+DBM-GUI_DropDown.xml
+DBM-GUI_Templates.xml
+DBM-GUI.lua
+DBM-GUI_DropDown.lua

@@ -1,0 +1,89 @@
+## Interface: 11302
+## Author: luhao007
+
+## Title: Ace Libs
+## Notes: Ace libs.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A基础库|r|cFFFFE00A>|r |cFFFFFFFF|cff7fff7fAce Libs|R|r
+## Notes-zhCN: 插件基础函数库|N|CFFFF0000必须加载|R
+
+
+# Common Handler Libs
+Ace3\LibStub\LibStub.lua
+Ace3\CallbackHandler-1.0\CallbackHandler-1.0.xml
+LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+# Ace3 Libs
+Ace3\AceAddon-3.0\AceAddon-3.0.xml
+Ace3\AceEvent-3.0\AceEvent-3.0.xml
+Ace3\AceTimer-3.0\AceTimer-3.0.xml
+Ace3\AceBucket-3.0\AceBucket-3.0.xml
+Ace3\AceHook-3.0\AceHook-3.0.xml
+Ace3\AceDB-3.0\AceDB-3.0.xml
+Ace3\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Ace3\AceLocale-3.0\AceLocale-3.0.xml
+Ace3\AceGUI-3.0\AceGUI-3.0.xml
+Ace3\AceConsole-3.0\AceConsole-3.0.xml
+Ace3\AceConfig-3.0\AceConfig-3.0.xml
+Ace3\AceComm-3.0\AceComm-3.0.xml
+Ace3\AceTab-3.0\AceTab-3.0.xml
+Ace3\AceSerializer-3.0\AceSerializer-3.0.xml
+
+# Ace3 Additional Libs
+LibSharedMedia-3.0\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+AceGUI-3.0-SharedMediaWidgets\widget.xml
+
+# Libs Needs to be Imported before Other Libs
+LibCompress\LibCompress.lua
+UTF8\utf8data.lua
+UTF8\utf8.lua
+
+# HereBeDragons
+HereBeDragons\HereBeDragons-2.0.lua
+HereBeDragons\HereBeDragons-Pins-2.0.lua
+HereBeDragons\HereBeDragons-Migrate.lua
+
+# LibBabbles
+LibBabble\LibBabble-3.0.lua
+# LibBabble\LibBabble-Boss-3.0\LibBabble-Boss-3.0.lua
+LibBabble\LibBabble-CreatureType-3.0\LibBabble-CreatureType-3.0.lua
+# LibBabble\LibBabble-Faction-3.0\LibBabble-Faction-3.0.lua
+# LibBabble\LibBabble-Inventory-3.0\LibBabble-Inventory-3.0.lua
+# LibBabble\LibBabble-ItemSet-3.0\LibBabble-ItemSet-3.0.lua
+LibBabble\LibBabble-Race-3.0\LibBabble-Race-3.0.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_deDE.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_esES.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_esMX.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_frFR.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_itIT.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_koKR.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_ptBR.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_ruRU.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_zhCN.lua
+# LibBabble\LibBabble-SubZone-3.0\LibBabble-SubZone-3.0_zhTW.lua
+# LibBabble\LibBabble-TalentTree-3.0\LibBabble-TalentTree-3.0.lua
+# LibBabble\LibBabble-Zone-3.0\LibBabble-Zone-3.0.lua
+
+# Other Ace Libs
+LibAlts-1.0\lib.xml
+LibBossIDs-1.0\lib.xml
+LibCandyBar-3.0\lib.xml
+LibChatAnims\LibChatAnims.xml
+LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
+LibDBIcon-1.0\lib.xml
+LibDDI-1.0\lib.xml
+LibDialog-1.0\lib.xml
+LibDogTag-3.0\lib.xml
+LibDogTag-Stats-3.0\lib.xml
+LibDogTag-Unit-3.0\lib.xml
+LibDropDown-1.0\LibDropDown-1.0.lua
+LibDurability\LibDurability.xml
+LibGraph-2.0\LibGraph-2.0.lua
+LibLatency\LibLatency.xml
+LibOO-1.0\lib.xml
+LibQTip-1.0\lib.xml
+LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+LibSink-2.0\lib.xml
+LibSpellRange-1.0\lib.xml
+LibUIDropDownMenu\LibUIDropDownMenu.xml
+LibWindow-1.1\LibWindow-1.1.lua

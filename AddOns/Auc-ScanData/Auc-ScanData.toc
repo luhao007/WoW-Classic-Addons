@@ -1,0 +1,24 @@
+## Interface: 11302
+## Author: Norganna's AddOns
+## Version: 8.2.6365 (SwimmingSeadragon)
+## Dependencies: Auc-Advanced
+## OptionalDeps: Auc-Util-PriceLevel
+## LoadOnDemand: 1
+## SavedVariables: AucScanData
+
+## Title: Auc:ScanData
+## Notes: Allows Auctioneer to delay loading the, probably, large auction scan dataset until it is needed.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r Auctioneer |cFF22B14C[数据扫描]|r
+## Notes-zhCN: 让拍卖助手支持延时扫描功能，用来分页扫描拍卖行的大量数据
+
+## X-Part-Of: Auctioneer
+## X-Category: Auction House
+## X-Max-Interface: 80100
+## X-URL: http://auctioneeraddon.com/
+## X-Feedback: http://forums.norganna.org
+
+##
+##
+##
+StringRope.lua
+ScanData.lua

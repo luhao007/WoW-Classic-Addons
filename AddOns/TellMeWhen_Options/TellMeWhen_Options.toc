@@ -1,0 +1,19 @@
+## Interface: 11302
+## Author: Cybeloras of Aerie Peak
+## RequiredDeps: TellMeWhen
+## OptionalDeps: LibBabble-CreatureType-3.0, LibBabble-Race-3.0
+## LoadOnDemand: 1
+## SavedVariables: TMWOptDB
+
+## Title: TellMeWhen Options
+## Notes: Options and configuration for TellMeWhen
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF技能状态提示|r TellMeWhen |cFF22B14C[选项]|r
+
+## X-Category: Combat
+## X-Embeds: LibBabble-CreatureType-3.0, LibBabble-Race-3.0
+
+# All files for TellMeWhen_Options are now stored in the main addon.
+# However, they still are not loaded until TellMeWhen_Options, so there is no difference in performance or anything.
+# This makes the structure for modules and components that need their own config files much neater and nicer.
+
+..\TellMeWhen\Options\includes.xml

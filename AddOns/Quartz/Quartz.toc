@@ -1,0 +1,40 @@
+## Interface: 11302
+## Author: Nevcairiel, Nymbia
+## Version: 3.5.1
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, SharedMedia, FlightMap
+## SavedVariables: Quartz3DB
+
+## Title: Quartz
+## Notes: Modular casting bar.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF施法条|r Quartz
+## Notes-zhCN: 模块化施法条。
+
+## X-License: GPL v2
+## X-Credits: Ammo (some code based on PitBull_CastBar), kergoth (Tradeskill Merge module idea), Roartindon (Lag Embed mode for Latency module)
+## X-Curse-Project-ID: 4558
+## X-WoWI-ID: 7158
+
+locale\locale.xml
+
+Quartz.lua
+Config.lua
+
+QuartzStatusBar.lua
+
+CastBarTemplate.lua
+
+modules\Player.lua
+modules\Target.lua
+modules\Focus.lua
+modules\Pet.lua
+modules\Latency.lua
+modules\Tradeskill.lua
+modules\GCD.lua
+modules\Buff.lua
+modules\Mirror.lua
+modules\Timer.lua
+modules\Swing.lua
+modules\Interrupt.lua
+modules\Range.lua
+modules\Flight.lua
+modules\EnemyCasts.lua

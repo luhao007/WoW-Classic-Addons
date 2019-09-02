@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Scott M Harrison
+## Version: 002
+## Dependencies: Grail
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: GrailWhenPlayer
+
+## Title: Grail |r|cff69ccf0When|r
+## Notes: Provides completion date information to Grail
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A库|r|cFFFFE00A>|r |cFFFFFFFF数据库|r Grail |cff69ccf0完成时间
+## Notes-zhCN: 帮助Grail记录各项任务，声望和成就的完成时间
+
+
+Grail-When.lua
