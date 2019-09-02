@@ -1,9 +1,0 @@
-## Interface: 11302
-## Title: tullaRange Config
-## Notes: GUI based configuration for tullaRange
-## Author: Tuller
-## Dependencies: tullaRange
-## LoadOnDemand: 1
-localization\localization.xml
-widgets\widgets.xml
-colorOptions.lua

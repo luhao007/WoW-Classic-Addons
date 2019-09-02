@@ -1,9 +1,0 @@
-﻿## Interface: 11302
-## Title: MonkeyQuest v2.9.39c
-## Notes: Displays your quests for quick viewing.
-## Notes-deDE: Stellt Quests in einer kompakten Uebersicht dar.
-## Author: Trentin, Jim-Bim
-## SavedVariables: MonkeyQuestConfig
-## Dependencies: MonkeyLibrary
-## OptionalDeps: aftt_extreme
-MonkeyQuest.xml
