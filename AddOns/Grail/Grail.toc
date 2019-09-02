@@ -6,7 +6,7 @@
 
 ## Title: Grail
 ## Notes: Knows about quests
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A库|r|cFFFFE00A>|r |cFFFFFFFF数据库|r Grail
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A基础库|r|cFFFFE00A>|r |cFFFFFFFF数据库|r Grail
 ## Notes-zhCN: 本地数据库，包含任务，成就，NPC等数据
 
 

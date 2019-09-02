@@ -201,7 +201,12 @@ MAPPING = {
     'DBM-AQ40': {},
     'DBM-Azeroth': {},
     'DBM-BWL': {},
-    'DBM-Core': {},
+    'DBM-Core': {
+        'Title-cn': '副本助手',
+        'Title-en': 'Deadly Boss Mods',
+        'Title-sub': '核心',
+        'Category': 'DBM'
+    },
     'DBM-DefaultSkin': {},
     'DBM-GUI': {},
     'DBM-MC': {},
@@ -226,61 +231,61 @@ MAPPING = {
         'Title-cn': '数据库',
         'Title-en': 'Grail',
         'Notes': '本地数据库，包含任务，成就，NPC等数据',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-NPCs-_classic_': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0NPC |r|cffeda55f怀旧服|r',
         'Notes': '怀旧服NPC数据库',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-NPCs-_classic_-enUS': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0NPC |r|cffeda55f怀旧服|r|cff69ccf0 英文|r',
         'Notes': '怀旧服NPC数据库的英文本地化模块',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-NPCs-_classic_-zhCN': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0NPC |r|cffeda55f怀旧服|r|cff69ccf0 中文|r',
         'Notes': '怀旧服NPC数据库的中文本地化模块',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-Quests-_classic_': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0任务 |r|cffeda55f怀旧服|r',
         'Notes': '怀旧服任务数据库',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-Quests-_classic_-enUS': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0任务 |r|cffeda55f怀旧服|r|cff69ccf0 英文|r',
         'Notes': '怀旧服任务数据库的英文本地化模块',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-Quests-_classic_-zhCN': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0任务 |r|cffeda55f怀旧服|r|cff69ccf0 英文|r',
         'Notes': '怀旧服任务数据库的中文本地化模块',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-Reputations-_classic_': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0声望 |r|cffeda55f怀旧服|r',
         'Notes': '怀旧服声望数据库',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-Rewards': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0奖励',
         'Notes': '非声望奖励数据库',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Grail-When': {
         'Title-cn': '数据库',
         'Title-en': 'Grail |cff69ccf0完成时间',
         'Notes': '帮助Grail记录各项任务，声望和成就的完成时间',
-        'Category': '库'
+        'Category': '基础库'
     },
     'Informant': {
         'Title-cn': '物品信息',
@@ -406,7 +411,7 @@ MAPPING = {
     'Stubby': {
         'Title-en': 'SlideBar',
         'Notes': '让插件可以自动启动',
-        'Category': '库'
+        'Category': '基础库'
     },
     'TellMeWhen': {
         'Title-cn': '技能状态提示',
