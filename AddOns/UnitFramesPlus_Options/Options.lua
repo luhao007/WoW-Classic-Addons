@@ -772,18 +772,41 @@ do
     end)
 
     --全局使用内置Cooldown
-    local UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown:ClearAllPoints();
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalColorHP, "TOPLEFT", 0, -30);
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown:SetHitRectInsets(0, -100, 0, 0);
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldownText:SetText(UFP_OP_BuiltinCooldown);
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldownText:SetTextColor(1, 0.75, 0);
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown:SetScript("OnClick", function(self)
+    local UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalColorHP, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldownText:SetText(UFP_OP_BuiltinCooldown);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldownText:SetTextColor(1, 0.75, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetScript("OnClick", function(self)
         UnitFramesPlusDB["global"]["builtincd"] = 1 - UnitFramesPlusDB["global"]["builtincd"];
+        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+            BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext);
+            UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntextText:SetTextColor(1, 1, 1);
+        else
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext);
+        end
         UnitFramesPlus_OptionsFrame_TargetTargetDebuffCooldownDisplayUpdate();
         UnitFramesPlus_OptionsFrame_PartyBuffCooldownDisplayUpdate();
         UnitFramesPlus_OptionsFrame_PartyTargetDebuffCooldownDisplayUpdate();
+        UFP_TargetFrame_UpdateAuras(TargetFrame);
+        UnitFramesPlus_TargetCooldownText();
+        UnitFramesPlus_TargetCooldownTextDisplayUpdate();
         self:SetChecked(UnitFramesPlusDB["global"]["builtincd"]==1);
+    end)
+
+    --全局使用内置CooldownText
+    local UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntextText:SetText(UFP_OP_BuiltinCooldowntext);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntextText:SetTextColor(1, 1, 1);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["global"]["cdtext"] = 1 - UnitFramesPlusDB["global"]["cdtext"];
+        UnitFramesPlus_TargetCooldownText();
+        UnitFramesPlus_TargetCooldownTextDisplayUpdate();
+        self:SetChecked(UnitFramesPlusDB["global"]["cdtext"]==1);
     end)
 
     --玩家设定
@@ -3600,7 +3623,7 @@ do
     -- --BOSS生命值百分比
     -- local UnitFramesPlus_OptionsFrame_ExtraBossHPPct = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_ExtraBossHPPct", UnitFramesPlus_Extra_Options, "InterfaceOptionsCheckButtonTemplate");
     -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:ClearAllPoints();
-    -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_ArenaEnemyHPPct, "TOPLEFT", 0, -30);
+    -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:SetPoint("TOPLEFT", otherconfig, "TOPLEFT", 0, -40);
     -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:SetHitRectInsets(0, -100, 0, 0);
     -- UnitFramesPlus_OptionsFrame_ExtraBossHPPctText:SetText(UFP_OP_Ext_BossHPPct);
     -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:SetScript("OnClick", function(self)
@@ -3616,7 +3639,7 @@ do
     if UnitFramesPlusVar["rangecheck"]["enable"] == 1 then
         local UnitFramesPlus_OptionsFrame_ExtraRangeCheck = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_ExtraRangeCheck", UnitFramesPlus_Extra_Options, "InterfaceOptionsCheckButtonTemplate");
         UnitFramesPlus_OptionsFrame_ExtraRangeCheck:ClearAllPoints();
-        UnitFramesPlus_OptionsFrame_ExtraRangeCheck:SetPoint("TOPLEFT", otherconfig, "TOPLEFT", 0, -40);
+        UnitFramesPlus_OptionsFrame_ExtraRangeCheck:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_ExtraBossHPPct, "TOPLEFT", 0, -30);
         UnitFramesPlus_OptionsFrame_ExtraRangeCheck:SetHitRectInsets(0, -100, 0, 0);
         UnitFramesPlus_OptionsFrame_ExtraRangeCheckText:SetText(UFP_OP_RangeCheck);
         UnitFramesPlus_OptionsFrame_ExtraRangeCheck:SetScript("OnClick", function(self)
@@ -3719,7 +3742,11 @@ function UnitFramesPlus_OptionPanel_OnShow()
     if UnitFramesPlusDB["global"]["colorhp"] ~= 1 then
         BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_GlobalColorHPSlider);
     end
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinColldown:SetChecked(UnitFramesPlusDB["global"]["builtincd"]==1);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetChecked(UnitFramesPlusDB["global"]["builtincd"]==1);
+    if UnitFramesPlusDB["global"]["builtincd"] ~= 1 then
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext);
+    end
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetChecked(UnitFramesPlusDB["global"]["cdtext"]==1);
     UnitFramesPlus_OptionsFrame_PlayerMouseShow:SetChecked(UnitFramesPlusDB["player"]["mouseshow"]==1);
     UnitFramesPlus_OptionsFrame_PlayerFrameScaleSlider:SetValue(UnitFramesPlusDB["player"]["scale"]*100);
     UnitFramesPlus_OptionsFrame_PlayerDragonBorder:SetChecked(UnitFramesPlusDB["player"]["dragonborder"]==1);

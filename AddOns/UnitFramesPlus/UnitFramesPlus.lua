@@ -12,6 +12,7 @@ UnitFramesPlusDefaultDB = {
         colortype = 2,    --生命条染色类型：1职业，2生命值百分比
         -- textunit = 1,    --状态条数值显示为万亿
         builtincd = 1,      --内置冷却计时
+        cdtext = 1,      --内置冷却计时数字
     },
 
     player = {

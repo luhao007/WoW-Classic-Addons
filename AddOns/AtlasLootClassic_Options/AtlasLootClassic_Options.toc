@@ -1,13 +1,13 @@
 ## Interface: 11302
 ## Author: Lag
-## Version: v1.1.8-beta
+## Version: v1.1.9-beta
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
 ## Title: AtlasLoot Classic |cFF22B14C[Options]|r
 ## Notes: AtlasLoot options module
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r AtlasLoot Classic |cFF22B14C[选项]|r
-## Notes-zhCN: AtlasLoot选项模块
+## Notes-zhCN: AtlasLoo t选项模块
 
 ## X-Category: Map
 ## X-License: GPL v2

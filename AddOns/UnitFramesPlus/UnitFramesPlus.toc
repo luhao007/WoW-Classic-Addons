@@ -1,6 +1,6 @@
 ## Interface: 11302
-## Author: Isler, luhao007
-## Version: 1.27
+## Author: Isler
+## Version: 1.27.1
 ## SavedVariables: UnitFramesPlusDB
 ## SavedVariablesPerCharacter: UnitFramesPlusVar
 

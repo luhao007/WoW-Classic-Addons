@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.5
+## Version: 8.2.7
 ## OptionalDeps: BagBrother, WoWUnit
 ## SavedVariables: Bagnon_Sets
 
@@ -12,5 +12,6 @@
 
 main.lua
 
-external\external.xml
+external\Wildpants\Wildpants.xml
+external\LibDataBroker-1-1\LibDataBroker-1.1.lua
 components\components.xml

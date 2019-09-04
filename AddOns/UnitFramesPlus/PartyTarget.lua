@@ -418,13 +418,13 @@ function UnitFramesPlus_PartyTargetDebuff()
                 for id = 1, 4, 1 do
                     if UnitExists("party"..id.."target") then
                         for j = 1, UFP_MAX_PARTYTARGET_DEBUFFS, 1 do
-                            -- local _, icon, count, _, duration, expires = UnitDebuff("party"..id.."target", j);
-                            local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("party"..id.."target", j);
+                            -- local _, icon, count, _, duration, expirationTime = UnitDebuff("party"..id.."target", j);
+                            local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("party"..id.."target", j);
                             if icon then
                                 local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id.."target", spellId, caster)
                                 if duration == 0 and durationNew then
                                     duration = durationNew
-                                    expires = expirationTimeNew
+                                    expirationTime = expirationTimeNew
                                 end
                                 local counttext = "";
                                 local timetext = "";
@@ -433,13 +433,15 @@ function UnitFramesPlus_PartyTargetDebuff()
                                 end
                                 _G["UFP_PartyTarget"..id.."Debuff"..j].Icon:SetTexture(icon);
                                 _G["UFP_PartyTarget"..id.."Debuff"..j]:SetAlpha(1);
-                                if UnitFramesPlusDB["partytarget"]["cooldown"] == 1 then
-                                    -- CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                                if UnitFramesPlusDB["partytarget"]["cooldown"] == 1 and expirationTime and expirationTime ~= 0 then
+                                    -- CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
                                     if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                        CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                                        CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    else
+                                        CooldownFrame_Clear(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown);
                                     end
-                                    if duration > 0 then
-                                        local timeleft = expires - GetTime();
+                                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                                        local timeleft = expirationTime - GetTime();
                                         -- local r, g, b = 0, 1, 0;
                                         local alpha = 0.7;
                                         if timeleft >= 0 and timeleft <= 60 then
@@ -480,27 +482,27 @@ function UnitFramesPlus_OptionsFrame_PartyTargetDebuffCooldownDisplayUpdate()
             if UnitExists("party"..id.."target") then
                 for j = 1, UFP_MAX_PARTYTARGET_DEBUFFS, 1 do
                     _G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown:Show();
-                    -- local _, icon, count, _, duration, expires = UnitDebuff("party"..id.."target", j);
-                    local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("party"..id.."target", j);
+                    -- local _, icon, count, _, duration, expirationTime = UnitDebuff("party"..id.."target", j);
+                    local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("party"..id.."target", j);
                     local counttext = "";
                     local timetext = "";
                     if icon then
                         local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id.."target", spellId, caster)
                         if duration == 0 and durationNew then
                             duration = durationNew
-                            expires = expirationTimeNew
+                            expirationTime = expirationTimeNew
                         end
                         if count and count > 1 then
                             counttext = count;
                         end
-                        -- CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                            CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                        -- CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                            CooldownFrame_Set(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
                         else
                             CooldownFrame_Clear(_G["UFP_PartyTarget"..id.."Debuff"..j].Cooldown);
                         end
-                        if duration > 0 then
-                            local timeleft = expires - GetTime();
+                        if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                            local timeleft = expirationTime - GetTime();
                             -- local r, g, b = 0, 1, 0;
                             local alpha = 0.7;
                             if timeleft >= 0 and timeleft <= 60 then

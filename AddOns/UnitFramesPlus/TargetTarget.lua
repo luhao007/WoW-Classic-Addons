@@ -338,14 +338,12 @@ function UnitFramesPlus_TargetTargetDebuff()
             if self.timer >= 0.1 then
                 if UnitExists("targettarget") then
                     for id = 1, UFP_MAX_TOT_DEBUFFS do
-                        local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("targettarget", id);
-                        -- local _, _, _, _, duration, expires, _, _, _, spellId = LCD:UnitAura(unit, i, "HELPFUL")
-                        -- local _, _, _, _, duration, expires = LCD:UnitDebuff("targettarget", id);
+                        local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("targettarget", id);
                         if icon then
                             local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
                             if duration == 0 and durationNew then
                                 duration = durationNew
-                                expires = expirationTimeNew
+                                expirationTime = expirationTimeNew
                             end
                             local counttext = "";
                             local timetext = "";
@@ -354,13 +352,15 @@ function UnitFramesPlus_TargetTargetDebuff()
                             end
                             _G["UFP_ToTFrameDebuff"..id].Icon:SetTexture(icon);
                             _G["UFP_ToTFrameDebuff"..id]:SetAlpha(1);
-                            if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 then
-                                -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expires - duration, duration, true);
+                            if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 and expirationTime and expirationTime ~= 0 then
+                                -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
                                 if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                    CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expires - duration, duration, true);
+                                    CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
+                                else
+                                    CooldownFrame_Clear(_G["UFP_ToTFrameDebuff"..id].Cooldown);
                                 end
-                                if duration > 0 then
-                                    local timeleft = expires - GetTime();
+                                if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                                    local timeleft = expirationTime - GetTime();
                                     -- local r, g, b = 0, 1, 0;
                                     local alpha = 0.7;
                                     if timeleft >= 0 and timeleft <= 60 then
@@ -397,27 +397,27 @@ function UnitFramesPlus_OptionsFrame_TargetTargetDebuffCooldownDisplayUpdate()
         if UnitExists("targettarget") then
             for id = 1, UFP_MAX_TOT_DEBUFFS do
                 _G["UFP_ToTFrameDebuff"..id].Cooldown:Show();
-                -- local _, icon, count, _, duration, expires = UnitDebuff("targettarget", id);
-                local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("targettarget", id);
+                -- local _, icon, count, _, duration, expirationTime = UnitDebuff("targettarget", id);
+                local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("targettarget", id);
                 local counttext = "";
                 local timetext = "";
                 if icon then
                     local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
                     if duration == 0 and durationNew then
                         duration = durationNew
-                        expires = expirationTimeNew
+                        expirationTime = expirationTimeNew
                     end
                     if count and count > 1 then
                         counttext = count;
                     end
-                    -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expires - duration, duration, true);
-                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                        CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expires - duration, duration, true);
+                    -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
+                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                        CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
                     else
                         CooldownFrame_Clear(_G["UFP_ToTFrameDebuff"..id].Cooldown);
                     end
-                    if duration > 0 then
-                        local timeleft = expires - GetTime();
+                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                        local timeleft = expirationTime - GetTime();
                         -- local r, g, b = 0, 1, 0;
                         local alpha = 0.7;
                         if timeleft >= 0 and timeleft <= 60 then

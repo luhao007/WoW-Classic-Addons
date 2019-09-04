@@ -366,7 +366,7 @@ function UnitFramesPlus_FocusTargetDebuff()
                             _G["UFP_ToFFrameDebuff"..id]:SetAlpha(1);
                             if UnitFramesPlusDB["focustarget"]["cooldown"] == 1 then
                                 CooldownFrame_Set(_G["UFP_ToFFrameDebuff"..id].Cooldown, expires - duration, duration, true);
-                                if duration > 0 then
+                                if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
                                     local timeleft = expires - GetTime();
                                     -- local r, g, b = 0, 1, 0;
                                     local alpha = 0.7;

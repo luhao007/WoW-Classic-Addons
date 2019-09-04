@@ -14,10 +14,3 @@
 ## X-DBM-Voice-ShortName: Yike
 ## X-DBM-Voice-Version: 9
 ## X-DBM-Voice-HasCount: 1
-
-
-
-
-
-
-

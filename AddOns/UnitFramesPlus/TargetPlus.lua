@@ -2,9 +2,9 @@
 function UnitFramesPlus_TargetPositionSet()
     TargetFrame:ClearAllPoints();
     if UnitFramesPlusDB["target"]["extrabar"] == 1 or UnitFramesPlusDB["target"]["hpmpparttwo"] ~= 5 then
-        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 358+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 108+96*UnitFramesPlusDB["player"]["scale"], 0);
     else
-        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 295+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 45+96*UnitFramesPlusDB["player"]["scale"], 0);
     end
     UnitFramesPlusVar["target"]["moved"] = 0;
 end
@@ -141,7 +141,7 @@ function UnitFramesPlus_TargetHPValueDisplayUpdate()
         PctText = math.floor(100*CurHP/MaxHP).."%";
     end
 
-    if UnitFramesPlusDB["target"]["bartext"] == 1 then
+    if UnitFramesPlusDB["target"]["bartext"] == 1 and not UnitIsDead("target") then
         BarText = CurHPfix.."/"..MaxHPfix
     end
     TargetFrameTextureFrameHealthBarText:SetText(BarText);
@@ -197,7 +197,7 @@ function UnitFramesPlus_TargetMPValueDisplayUpdate()
         -- PctText == 0 then PctText = "" end
     end
 
-    if UnitFramesPlusDB["target"]["bartext"] == 1 then
+    if UnitFramesPlusDB["target"]["bartext"] == 1 and not UnitIsDead("target") then
         BarText = CurMPfix.."/"..MaxMPfix
     end
     TargetFrameTextureFrameManaBarText:SetText(BarText);
@@ -272,7 +272,7 @@ function UnitFramesPlus_TargetExtrabarSet()
         TargetExtraBar:SetWidth(102);
         TargetExtraBar:SetHeight(18);
         TargetExtraBar:SetTexCoord(0, 0.796875, 0, 1);
-        TargetExtraBar:SetVertexColor(1, 1, 1, 1)
+        TargetExtraBar:SetVertexColor(1, 1, 1, 1) 
         TargetExtraBar:ClearAllPoints();
         TargetExtraBar:SetPoint("RIGHT", TargetFrameHealthBar, "LEFT", 0, 0);
 
@@ -590,6 +590,206 @@ function UnitFramesPlus_TargetPortraitIndicator()
     end
 end
 
+--Target buff/debuff
+local UFP_MAX_TARGET_BUFFS = 32;
+local UFP_MAX_TARGET_DEBUFFS = 16;
+function UFP_TargetFrame_UpdateAuras(self)
+    local frame, frameName;
+    local selfName = self:GetName();
+
+    for i = 1, UFP_MAX_TARGET_BUFFS do
+        local buffName, icon, _, _, duration, expirationTime, caster, _, _, spellId, _, _, casterIsPlayer = UnitBuff(self.unit, i, nil);
+        if (buffName) then
+            frameName = selfName.."Buff"..(i);
+            frame = _G[frameName];
+            if ( not frame ) then
+                if ( not icon ) then
+                    break;
+                end
+            end
+            if ( icon and ( not self.maxBuffs or i <= self.maxBuffs ) ) then
+                -- Handle cooldowns
+                --frameCooldown = _G[frameName.."Cooldown"];
+                --CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+
+                local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
+                if duration == 0 and durationNew then
+                    duration = durationNew
+                    expirationTime = expirationTimeNew
+                end
+                if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                    CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, true);
+                else
+                    CooldownFrame_Clear(_G[frameName.."Cooldown"]);
+                end
+            end
+        else
+            break;
+        end
+    end
+
+    local numDebuffs = 0;
+    local frameNum = 1;
+    local index = 1;
+
+    local maxDebuffs = self.maxDebuffs or UFP_MAX_TARGET_DEBUFFS;
+    while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
+        local debuffName, icon, _, _, duration, expirationTime, caster, _, _, spellId, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff(self.unit, index, "INCLUDE_NAME_PLATE_ONLY");
+        if ( debuffName ) then
+            if ( TargetFrame_ShouldShowDebuffs(self.unit, caster, nameplateShowAll, casterIsPlayer) ) then
+                frameName = selfName.."Debuff"..frameNum;
+                frame = _G[frameName];
+                if ( icon ) then
+                    -- Handle cooldowns
+                    --frameCooldown = _G[frameName.."Cooldown"];
+                    --CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
+
+                    local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
+                    if duration == 0 and durationNew then
+                        duration = durationNew
+                        expirationTime = expirationTimeNew
+                    end
+                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                        CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, true);
+                    else
+                        CooldownFrame_Clear(_G[frameName.."Cooldown"]);
+                    end
+
+                    frameNum = frameNum + 1;
+                end
+            end
+        else
+            break;
+        end
+        index = index + 1;
+    end
+end
+
+function UnitFramesPlus_TargetBuffCooldown()
+    hooksecurefunc("TargetFrame_UpdateAuras", UFP_TargetFrame_UpdateAuras);
+end
+
+--Target buff/debuff cooldowntext
+local tcd = CreateFrame("Frame");
+function UnitFramesPlus_TargetCooldownText()
+    if UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+        tcd:SetScript("OnUpdate", function(self, elapsed)
+            self.timer = (self.timer or 0) + elapsed;
+            if self.timer >= 0.1 then
+                UnitFramesPlus_TargetCooldownTextDisplayUpdate();
+                self.timer = 0;
+            end
+        end);
+    else
+        tcd:SetScript("OnUpdate", nil);
+    end
+end
+
+function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
+    for i = 1, UFP_MAX_TARGET_BUFFS do
+        local buffName, icon, _, _, duration, expirationTime, caster, _, _, spellId, _, _, casterIsPlayer = UnitBuff("target", i, nil);
+        if (buffName) then
+            frameName = "TargetFrameBuff"..(i);
+            frame = _G[frameName];
+            if icon then
+                if not _G[frameName.."CooldownText"] then
+                    BuffCooldownText = _G[frameName.."Cooldown"]:CreateFontString(frameName.."CooldownText", "OVERLAY");
+                    BuffCooldownText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
+                    BuffCooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
+                    BuffCooldownText:ClearAllPoints();
+                    -- BuffCooldownText:SetPoint("BOTTOM", buffIcon, "TOP", 0, 1);
+                    BuffCooldownText:SetPoint("TOPLEFT", _G[frameName], "TOPLEFT", 0, 0);
+                end
+
+                local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("target", spellId, caster)
+                if duration == 0 and durationNew then
+                    duration = durationNew
+                    expirationTime = expirationTimeNew
+                end
+
+                local timetext = "";
+                -- local alpha = 0.7;
+                -- local r, g, b = 1, 1, 1;
+                if UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 then
+                    local timeleft = expirationTime - GetTime();
+                    if timeleft >= 0 and timeleft <= 1800 then
+                        if timeleft < 60 then
+                            timetext = math.floor(timeleft);
+                            -- alpha = 1 - timeleft/200;
+                            -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
+                        else
+                            timetext = math.floor(timeleft/60+1).."m";
+                        end
+                    end
+                end
+                _G[frameName.."CooldownText"]:SetText(timetext);
+                -- _G[frameName.."CooldownText"]:SetAlpha(alpha);
+                -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+            else
+                break;
+            end
+        else
+            break;
+        end
+    end
+
+    local numDebuffs = 0;
+    local frameNum = 1;
+    local index = 1;
+
+    local maxDebuffs = UFP_MAX_TARGET_DEBUFFS;
+    while ( frameNum <= maxDebuffs and index <= maxDebuffs ) do
+        local debuffName, icon, _, _, duration, expirationTime, caster, _, _, spellId, _, _, casterIsPlayer, nameplateShowAll = UnitDebuff("target", index, "INCLUDE_NAME_PLATE_ONLY");
+        if ( debuffName ) then
+            if ( TargetFrame_ShouldShowDebuffs("target", caster, nameplateShowAll, casterIsPlayer) ) then
+                frameName = "TargetFrameDebuff"..frameNum;
+                frame = _G[frameName];
+                if ( icon ) then
+                    if not _G[frameName.."CooldownText"] then
+                        DebuffCooldownText = _G[frameName.."Cooldown"]:CreateFontString(frameName.."CooldownText", "OVERLAY");
+                        DebuffCooldownText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
+                        DebuffCooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
+                        DebuffCooldownText:ClearAllPoints();
+                        -- DebuffCooldownText:SetPoint("BOTTOM", buffIcon, "TOP", 0, 1);
+                        DebuffCooldownText:SetPoint("TOPLEFT", _G[frameName], "TOPLEFT", 0, 0);
+                    end
+
+                    local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("target", spellId, caster)
+                    if duration == 0 and durationNew then
+                        duration = durationNew
+                        expirationTime = expirationTimeNew
+                    end
+                    local timetext = "";
+                    -- local alpha = 0.7;
+                    -- local r, g, b = 0, 1, 0;
+                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                        local timeleft = expirationTime - GetTime();
+                        if timeleft >= 0 and timeleft <= 60 then
+                            timetext = math.floor(timeleft);
+                            -- if timeleft < 15 then
+                            --     -- alpha = 1 - timeleft/50;
+                            --     -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 15);
+                            -- end
+                        end
+                    else
+                        CooldownFrame_Clear(_G[frameName.."Cooldown"]);
+                    end
+                    _G[frameName.."CooldownText"]:SetText(timetext);
+                    -- _G[frameName.."CooldownText"]:SetAlpha(alpha);
+                    -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+
+                    frameNum = frameNum + 1;
+                else
+                    break;
+                end
+            end
+        else
+            break;
+        end
+        index = index + 1;
+    end
+end
+
 --改变目标buff/debuff图标大小
 local function TargetBuffSize(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
     local UFP_AURA_OFFSET_Y = 3;
@@ -733,6 +933,12 @@ end
 --刷新目标头像显示
 function UnitFramesPlus_TargetPortraitDisplayUpdate()
     if UnitFramesPlusDB["target"]["portraittype"] == 1 then
+        if TargetFramePortrait:IsShown() then
+            TargetFramePortrait:Hide();
+        end
+        if TargetClassPortrait:IsShown() then
+            TargetClassPortrait:Hide();
+        end
         if (not UnitIsConnected("target")) or (not UnitIsVisible("target")) then
             Target3DPortrait:SetPortraitZoom(0);
             Target3DPortrait:SetCamDistanceScale(0.25);
@@ -775,7 +981,7 @@ end
 
 --刷新目标3D头像背景显示
 function UnitFramesPlus_TargetPortrait3DBGDisplayUpdate()
-    if UnitFramesPlusDB["target"]["portrait"] == 1
+    if UnitFramesPlusDB["target"]["portrait"] == 1 
     and UnitFramesPlusDB["target"]["portraittype"] == 1
     and UnitFramesPlusDB["target"]["portrait3dbg"] == 1 then
         Target3DPortrait.Background:Show();
@@ -847,6 +1053,8 @@ function UnitFramesPlus_TargetInit()
     UnitFramesPlus_TargetBarTextMouseShow();
     UnitFramesPlus_TargetExtrabar();
     UnitFramesPlus_TargetHPMPPct();
+    UnitFramesPlus_TargetBuffCooldown();
+    UnitFramesPlus_TargetCooldownText()
 end
 
 function UnitFramesPlus_TargetLayout()

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Tuller and Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.5
+## Version: 8.2.7
 ## Dependencies: Bagnon
 ## LoadOnDemand: 1
 
@@ -10,5 +10,5 @@
 ## Notes-zhCN: Bagnon选项模块
 
 
-main.lua
-common\Wildpants_Config.xml
+..\Bagnon\config.lua
+..\Bagnon\external\Wildpants\Wildpants_Config.xml

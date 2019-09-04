@@ -43,6 +43,7 @@
     UFP_OP_Debuff = "显示Debuff";
     UFP_OP_Cooldown = "显示冷却计时";
     UFP_OP_BuiltinCooldown = "使用内置冷却计时(LibClassicDurations)";
+    UFP_OP_BuiltinCooldowntext = "显示冷却计时数值";
     UFP_OP_ColorName = "名字职业染色";
     UFP_OP_Portrait_Indicator = "显示头像内战斗信息";
     UFP_OP_Portrait_3DBG = "显示3D头像背景";
@@ -137,6 +138,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Debuff = "顯示Debuff";
     UFP_OP_Cooldown = "顯示冷卻計時";
     UFP_OP_BuiltinCooldown = "使用內置冷卻計時(LibClassicDurations)";
+    UFP_OP_BuiltinCooldowntext = "顯示冷卻計時數值";
     UFP_OP_ColorName = "名字職業染色";
     UFP_OP_Portrait_Indicator = "顯示頭像內戰鬥資訊";
     UFP_OP_Portrait_3DBG = "顯示3D頭像背景";
@@ -230,7 +232,8 @@ else
     UFP_OP_EnemyCheck = "Enemy check";
     UFP_OP_Debuff = "Debuff";
     UFP_OP_Cooldown = "Cooldown";
-    UFP_OP_BuiltinCooldown = "Built-in Cooldwon (LibClassicDurations)";
+    UFP_OP_BuiltinCooldown = "Built-in Cooldown (LibClassicDurations)";
+    UFP_OP_BuiltinCooldowntext = "Cooldown text";
     UFP_OP_ColorName = "Class colored name";
     UFP_OP_Portrait_Indicator = "Portrait combat indicator";
     UFP_OP_Portrait_3DBG = "Portrait background";

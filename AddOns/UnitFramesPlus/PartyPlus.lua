@@ -527,7 +527,7 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
     if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
         local CurHP = UnitHealth("party"..id);
 
-        if UnitFramesPlusDB["party"]["bartext"] == 1 then
+        if UnitFramesPlusDB["party"]["bartext"] == 1 and not UnitIsDead("party"..id) then
             local CurHPfix, MaxHPfix = UnitFramesPlus_GetValueFix(UnitHealth("party"..id), UnitHealthMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
             local CurManafix, MaxManafix = UnitFramesPlus_GetValueFix(UnitPower("party"..id), UnitPowerMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
             HPText = CurHPfix.."/"..MaxHPfix
@@ -930,23 +930,25 @@ function UnitFramesPlus_PartyBuff()
                             if UnitFramesPlusDB["party"]["filter"] == 1 then
                                 filter = UnitFramesPlusBuffFilter[UnitFramesPlusDB["party"]["filtertype"]];
                             end
-                            local _, icon, _, _, duration, expires, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
+                            local _, icon, _, _, duration, expirationTime, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
                             if icon then
                                 local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                                 if duration == 0 and durationNew then
                                     duration = durationNew
-                                    expires = expirationTimeNew
+                                    expirationTime = expirationTimeNew
                                 end
                                 local timetext = "";
                                 _G["UFP_PartyMemberFrame"..id.."Buff"..j].Icon:SetTexture(icon);
                                 _G["UFP_PartyMemberFrame"..id.."Buff"..j]:SetAlpha(1);
                                 if UnitFramesPlusDB["party"]["cooldown"] == 1 then
-                                    -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expires - duration, duration, true);
-                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                        CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expires - duration, duration, true);
+                                    -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                                        CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    else
+                                        CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown);
                                     end
-                                    if duration > 0 then
-                                        local timeleft = expires - GetTime();
+                                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                                        local timeleft = expirationTime - GetTime();
                                         -- local r, g, b = 0, 1, 0;
                                         local alpha = 0.5;
                                         if timeleft >= 0 and timeleft <= 60 then
@@ -967,12 +969,12 @@ function UnitFramesPlus_PartyBuff()
                             end
                         end
                         for j = 1, UFP_MAX_PARTY_DEBUFFS, 1 do
-                            local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("party"..id, j);
+                            local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("party"..id, j);
                             if icon then
                                 local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                                 if duration == 0 and durationNew then
                                     duration = durationNew
-                                    expires = expirationTimeNew
+                                    expirationTime = expirationTimeNew
                                 end
                                 local counttext = "";
                                 local timetext = "";
@@ -982,12 +984,14 @@ function UnitFramesPlus_PartyBuff()
                                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Icon:SetTexture(icon);
                                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j]:SetAlpha(1);
                                 if UnitFramesPlusDB["party"]["cooldown"] == 1 then
-                                    -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
-                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                        CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                                    -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                                        CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    else
+                                        CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown);
                                     end
-                                    if duration > 0 then
-                                        local timeleft = expires - GetTime();
+                                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                                        local timeleft = expirationTime - GetTime();
                                         -- local r, g, b = 0, 1, 0;
                                         local alpha = 0.7;
                                         if timeleft >= 0 and timeleft <= 60 then
@@ -1009,12 +1013,12 @@ function UnitFramesPlus_PartyBuff()
                             end
                         end
                         for j = 1, UFP_MAX_PARTY_PET_DEBUFFS, 1 do
-                            local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("partypet"..id, j);
+                            local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("partypet"..id, j);
                             if icon then
                                 local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
                                 if duration == 0 and durationNew then
                                     duration = durationNew
-                                    expires = expirationTimeNew
+                                    expirationTime = expirationTimeNew
                                 end
                                 local counttext = "";
                                 local timetext = "";
@@ -1024,12 +1028,14 @@ function UnitFramesPlus_PartyBuff()
                                 _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Icon:SetTexture(icon);
                                 _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j]:SetAlpha(1);
                                 if UnitFramesPlusDB["party"]["cooldown"] == 1 then
-                                    -- CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
-                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                        CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                                    -- CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                                        CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                                    else
+                                        CooldownFrame_Clear(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown);
                                     end
-                                    if duration > 0 then
-                                        local timeleft = expires - GetTime();
+                                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                                        local timeleft = expirationTime - GetTime();
                                         -- local r, g, b = 0, 1, 0;
                                         local alpha = 0.7;
                                         if timeleft >= 0 and timeleft <= 60 then
@@ -1081,23 +1087,23 @@ function UnitFramesPlus_OptionsFrame_PartyBuffCooldownDisplayUpdate()
                     if UnitFramesPlusDB["party"]["filter"] == 1 then
                         filter = UnitFramesPlusBuffFilter[UnitFramesPlusDB["party"]["filtertype"]];
                     end
-                    local _, icon, _, _, duration, expires, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
+                    local _, icon, _, _, duration, expirationTime, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
                     local counttext = "";
                     local timetext = "";
                     if icon then
                         local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                         if duration == 0 and durationNew then
                             duration = durationNew
-                            expires = expirationTimeNew
+                            expirationTime = expirationTimeNew
                         end
-                        -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expires - duration, duration, true);
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                            CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expires - duration, duration, true);
+                        -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                            CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
                         else
                             CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown);
                         end
-                        if duration > 0 then
-                            local timeleft = expires - GetTime();
+                        if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                            local timeleft = expirationTime - GetTime();
                             -- local r, g, b = 0, 1, 0;
                             local alpha = 0.5;
                             if timeleft >= 0 and timeleft <= 60 then
@@ -1117,26 +1123,26 @@ function UnitFramesPlus_OptionsFrame_PartyBuffCooldownDisplayUpdate()
                 end
                 for j = 1, UFP_MAX_PARTY_DEBUFFS, 1 do
                     _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown:Show();
-                    local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("party"..id, j);
+                    local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("party"..id, j);
                     local counttext = "";
                     local timetext = "";
                     if icon then
                         local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
                         if duration == 0 and durationNew then
                             duration = durationNew
-                            expires = expirationTimeNew
+                            expirationTime = expirationTimeNew
                         end
                         if count > 1 then
                             counttext = count;
                         end
-                        -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                            CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                        -- CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                            CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
                         else
                             CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown);
                         end
-                        if duration > 0 then
-                            local timeleft = expires - GetTime();
+                        if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                            local timeleft = expirationTime - GetTime();
                             -- local r, g, b = 0, 1, 0;
                             local alpha = 0.7;
                             if timeleft >= 0 and timeleft <= 60 then
@@ -1157,26 +1163,26 @@ function UnitFramesPlus_OptionsFrame_PartyBuffCooldownDisplayUpdate()
                 end
                 for j = 1, UFP_MAX_PARTY_PET_DEBUFFS, 1 do
                     _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown:Show();
-                    local _, icon, count, _, duration, expires, caster, _, _, spellId = UnitDebuff("partypet"..id, j);
+                    local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("partypet"..id, j);
                     local counttext = "";
                     local timetext = "";
                     if icon then
                         local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
                         if duration == 0 and durationNew then
                             duration = durationNew
-                            expires = expirationTimeNew
+                            expirationTime = expirationTimeNew
                         end
                         if count > 1 then
                             counttext = count;
                         end
-                        -- CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                            CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expires - duration, duration, true);
+                        -- CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+                            CooldownFrame_Set(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown, expirationTime - duration, duration, true);
                         else
                             CooldownFrame_Clear(_G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown);
                         end
-                        if duration > 0 then
-                            local timeleft = expires - GetTime();
+                        if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
+                            local timeleft = expirationTime - GetTime();
                             -- local r, g, b = 0, 1, 0;
                             local alpha = 0.7;
                             if timeleft >= 0 and timeleft <= 60 then

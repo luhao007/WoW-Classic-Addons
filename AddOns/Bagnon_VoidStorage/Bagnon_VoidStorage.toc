@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.5
+## Version: 8.2.7
 ## RequiredDeps: Bagnon
 ## LoadOnDemand: 1
 
