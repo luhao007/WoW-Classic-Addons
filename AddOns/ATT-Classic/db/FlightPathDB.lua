@@ -2,7 +2,6 @@ select(2, ...).FlightPathDB = {
 	[1] = {
 		name="Northshire Abbey",
 		faction=2,
-		--mapID=1429,
 		u=1,
 	},
 	[2] = {
@@ -44,6 +43,7 @@ select(2, ...).FlightPathDB = {
 		name="Booty Bay, Stranglethorn",
 		faction=0,
 		mapID=1434,
+		coord={ 27.5, 77.8, 1434 },
 	},
 	[10] = {
 		name="The Sepulcher, Silverpine Forest",
@@ -89,11 +89,13 @@ select(2, ...).FlightPathDB = {
 		name="Booty Bay, Stranglethorn",
 		faction=0,
 		mapID=1434,
+		coord={ 27.5, 77.8, 1434 },
 	},
 	[19] = {
 		name="Booty Bay, Stranglethorn",
 		faction=0,
 		mapID=1434,
+		coord={ 27.5, 77.8, 1434 },
 	},
 	[20] = {
 		name="Grom'gol, Stranglethorn",
@@ -229,6 +231,7 @@ select(2, ...).FlightPathDB = {
 		name="Southshore Ferry, Hillsbrad",
 		faction=2,
 		mapID=1424,
+		u=1,
 	},
 	[47] = {
 		name="Transport, Grom'gol - Orgrimmar",

@@ -1207,7 +1207,174 @@ app.L = {
 		[189989] = "Dark Iron Mole Machine Wreckage",
 		[189990] = "Dark Iron Mole Machine Wreckage",
 	};
-
+	
+	["TRADESKILL_CATEGORY_ICONS"] = {
+		-- Engineering
+		[1] = "Interface\\Icons\\INV_Ammo_Bullet_01",	-- Bullets
+		[2] = "Interface\\Icons\\INV_Crate_06",	-- Devices
+		[3] = "Interface\\Icons\\INV_Misc_Bomb_03",	-- Explosives
+		[4] = "Interface\\Icons\\Spell_Fire_Flare",	-- Fireworks
+		[5] = "Interface\\Icons\\INV_Helmet_47",	-- Goggles
+		[6] = "Interface\\Icons\\INV_Weapon_Rifle_03",	-- Guns
+		[7] = "Interface\\Icons\\INV_Gizmo_BronzeFramework_01",	-- Parts
+		[8] = "Interface\\Icons\\INV_Misc_Spyglass_03",	-- Scopes
+		[9] = "Interface\\Icons\\INV_Misc_Wrench_01",	-- Tools
+		[10] = "Interface\\Icons\\INV_Misc_Food_12",	-- Everyday Cooking
+		[11] = "Interface\\Icons\\INV_Misc_Food_62",	-- Holiday Cooking
+		[12] = "Interface\\Icons\\INV_Helmet_66",	-- Unusual Delights
+		
+		-- Alchemy
+		[13] = "Interface\\Icons\\INV_Cask_02",	-- Materials
+		[14] = "Interface\\Icons\\INV_Potion_51",	-- Potions
+		[15] = "Interface\\Icons\\INV_Potion_56",	-- Elixirs
+		[16] = "Interface\\Icons\\INV_Potion_41",	-- Flasks
+		[17] = "Interface\\Icons\\Spell_Fire_Volcano",	-- Transmutes
+		[18] = "Interface\\Icons\\INV_Misc_Orb_01",	-- Trinkets
+		[19] = "Interface\\Icons\\INV_Drink_12",	-- Oils
+		
+		-- Blacksmithing
+		[20] = "Interface\\Icons\\inv_stone_grindingstone_05",	-- Materials
+		[21] = "Interface\\Icons\\inv_stone_sharpeningstone_03",	-- Weapon Mods
+		[22] = "Interface\\Icons\\Inv_misc_armorkit_02",	-- Armor Mods
+		[23] = "Interface\\Icons\\INV_Helmet_25",	-- Helms
+		[24] = "Interface\\Icons\\INV_Shoulder_22",	-- Shoulders
+		[25] = "Interface\\Icons\\INV_Chest_Chain",	-- Chest
+		[26] = "Interface\\Icons\\INV_Gauntlets_04",	-- Gauntlets
+		[27] = "Interface\\Icons\\INV_Bracer_17",	-- Bracers
+		[28] = "Interface\\Icons\\INV_Belt_27",	-- Belts
+		[29] = "Interface\\Icons\\INV_Pants_04",	-- Legs
+		[30] = "Interface\\Icons\\INV_Boots_01",	-- Boots
+		[31] = "Interface\\Icons\\INV_Shield_06",	-- Shields
+		[32] = "Interface\\Icons\\INV_Weapon_Halberd_10",	-- Weapons
+		[33] = "Interface\\Icons\\INV_Misc_Key_11",	-- Skeleton Keys
+		
+		-- Enchanting
+		[34] = "Interface\\Icons\\INV_Staff_01",	-- Rods
+		[35] = "Interface\\Icons\\Inv_ingot_eternium",	-- Reagents
+		[36] = "Interface\\Icons\\INV_Boots_01",	-- Boot Enchantments
+		[37] = "Interface\\Icons\\INV_Bracer_17",	-- Bracer Enchantments
+		[38] = "Interface\\Icons\\INV_Chest_Chain",	-- Chest Enchantments
+		[39] = "Interface\\Icons\\INV_Misc_Cape_18",	-- Cloak Enchantments
+		[40] = "Interface\\Icons\\INV_Gauntlets_04",	-- Glove Enchantments
+		[41] = "Interface\\Icons\\Spell_Fire_EnchantWeapon",	-- Weapon Enchantments
+		[42] = "Interface\\Icons\\INV_Shield_05",	-- Shield Enchantments
+		[43] = "Interface\\Icons\\INV_Wand_06",	-- Wands
+		[44] = "Interface\\Icons\\Inv_poison_mindnumbing",	-- Oils
+		[45] = "Interface\\Icons\\inv_misc_gem_bloodstone_01",	-- Trinket
+		
+		-- Leatherworking
+		[46] = "Interface\\Icons\\INV_Misc_LeatherScrap_03",	-- Materials
+		[47] = "Interface\\Icons\\INV_Misc_ArmorKit_17",	-- Armor Kits
+		[48] = "Interface\\Icons\\INV_Misc_Bag_07",	-- Bags
+		[49] = "Interface\\Icons\\INV_Helmet_08",	-- Helms
+		[50] = "Interface\\Icons\\INV_Shoulder_01",	-- Shoulders
+		[51] = "Interface\\Icons\\INV_Chest_Chain_13",	-- Chest
+		[52] = "Interface\\Icons\\INV_Bracer_08",	-- Bracers
+		[53] = "Interface\\Icons\\INV_Gauntlets_05",	-- Gloves
+		[54] = "Interface\\Icons\\INV_Belt_24",	-- Belts
+		[55] = "Interface\\Icons\\INV_Pants_12",	-- Pants
+		[56] = "Interface\\Icons\\INV_Boots_Chain_01",	-- Boots
+		[57] = "Interface\\Icons\\INV_Misc_Cape_03",	-- Cloaks
+		
+		-- Tailoring
+		[58] = "Interface\\Icons\\inv_fabric_silk_03",	-- Materials
+		[59] = "Interface\\Icons\\inv_misc_bag_19",	-- Bags
+		[60] = "Interface\\Icons\\inv_helmet_31",	-- Hats & Hoods
+		[61] = "Interface\\Icons\\inv_shoulder_02",	-- Shoulders
+		[62] = "Interface\\Icons\\inv_chest_cloth_18",	-- Robes & Tunics
+		[63] = "Interface\\Icons\\inv_bracer_07",	-- Bracers
+		[64] = "Interface\\Icons\\inv_belt_14",	-- Belts
+		[65] = "Interface\\Icons\\inv_gauntlets_06",	-- Gloves
+		[66] = "Interface\\Icons\\inv_pants_06",	-- Pants
+		[67] = "Interface\\Icons\\inv_boots_05",	-- Boots
+		[68] = "Interface\\Icons\\inv_misc_cape_16",	-- Cloaks
+		[69] = "Interface\\Icons\\inv_shirt_red_01",	-- Shirts
+	},
+	["TRADESKILL_CATEGORY_NAMES"] = {
+		-- Engineering
+		[1] = "Bullets",	-- Bullets
+		[2] = "Devices",	-- Devices
+		[3] = "Explosives",	-- Explosives
+		[4] = "Fireworks",	-- Fireworks
+		[5] = "Goggles",	-- Goggles
+		[6] = "Guns",	-- Guns
+		[7] = "Parts",	-- Parts
+		[8] = "Scopes",	-- Scopes
+		[9] = "Tools",	-- Tools
+		
+		-- Cooking
+		[10] = "Everyday Cooking",	-- Everyday Cooking
+		[11] = "Holiday Cooking",	-- Holiday Cooking
+		[12] = "Unusual Delights",	-- Unusual Delights
+		
+		-- Alchemy
+		[13] = "Materials",	-- Materials
+		[14] = "Potions",	-- Potions
+		[15] = "Elixirs",	-- Elixirs
+		[16] = "Flasks",	-- Flasks
+		[17] = "Transmutes",	-- Transmutes
+		[18] = "Trinkets",	-- Trinkets
+		[19] = "Oils",	-- Oils
+		
+		-- Blacksmithing
+		[20] = "Materials",	-- Materials
+		[21] = "Weapon Mods",	-- Weapon Mods
+		[22] = "Armor Mods",	-- Armor Mods
+		[23] = "Helms",	-- Helms
+		[24] = "Shoulders",	-- Shoulders
+		[25] = "Chest",	-- Chest
+		[26] = "Gauntlets",	-- Gauntlets
+		[27] = "Bracers",	-- Bracers
+		[28] = "Belts",	-- Belts
+		[29] = "Legs",	-- Legs
+		[30] = "Boots",	-- Boots
+		[31] = "Shields",	-- Shields
+		[32] = "Weapons",	-- Weapons
+		[33] = "Skeleton Keys",	-- Skeleton Keys
+		
+		-- Enchanting
+		[34] = "Rods",	-- Rods
+		[35] = "Reagents",	-- Reagents
+		[36] = "Boot Enchantments",	-- Boot Enchantments
+		[37] = "Bracer Enchantments",	-- Bracer Enchantments
+		[38] = "Chest Enchantments",	-- Chest Enchantments
+		[39] = "Cloak Enchantments",	-- Cloak Enchantments
+		[40] = "Glove Enchantments",	-- Glove Enchantments
+		[41] = "Weapon Enchantments",	-- Weapon Enchantments
+		[42] = "Shield Enchantments",	-- Shield Enchantments
+		[43] = "Wands",	-- Wands
+		[44] = "Oils",	-- Oils
+		[45] = "Trinket",	-- Trinket
+		
+		-- Leatherworking
+		[46] = "Materials",	-- Materials
+		[47] = "Armor Kits",	-- Armor Kits
+		[48] = "Bags",	-- Bags
+		[49] = "Helms",	-- Helms
+		[50] = "Shoulders",	-- Shoulders
+		[51] = "Chest",	-- Chest
+		[52] = "Bracers",	-- Bracers
+		[53] = "Gloves",	-- Gloves
+		[54] = "Belts",	-- Belts
+		[55] = "Pants",	-- Pants
+		[56] = "Boots",	-- Boots
+		[57] = "Cloaks",	-- Cloaks
+		
+		-- Tailoring
+		[58] = "Materials",	-- Materials
+		[59] = "Bags",	-- Bags
+		[60] = "Hats & Hoods",	-- Hats & Hoods
+		[61] = "Shoulders",	-- Shoulders
+		[62] = "Robes & Tunics",	-- Robes & Tunics
+		[63] = "Bracers",	-- Bracers
+		[64] = "Belts",	-- Belts
+		[65] = "Gloves",	-- Gloves
+		[66] = "Pants",	-- Pants
+		[67] = "Boots",	-- Boots
+		[68] = "Cloaks",	-- Cloaks
+		[69] = "Shirts",	-- Shirts
+	},
+	
 	-- Saved Instance Name => Dungeon Journal Instance Name Converter
 	-- If your saves aren't lining up, it's probably because Blizzard
 	-- didn't use the same localization for the instance. Sorry.
@@ -1249,8 +1416,8 @@ app.L = {
 		"Interface\\FriendsFrame\\StatusIcon-Online",	-- There is Hope
 	};
 	["UNOBTAINABLE_ITEM_REASONS"] = {
-		{1, "|CFFFF0000The source of this item was never available to players.|r", "Never Available (1)"}, -- No Hope -- 1
-		{1, "|CFFFF0000The source of this item has been removed and the item is Bind on Pickup or Bind on Account.|r", "BoP / BoA Item (2)"}, -- No Hope -- 2
+		{1, "|CFFFF0000This was never available to players.|r", "Never Available (1)"}, -- No Hope -- 1
+		{1, "|CFFFF0000This has been removed from the game.|r", "BoP / BoA Item (2)"}, -- No Hope -- 2
 	};
 
 };

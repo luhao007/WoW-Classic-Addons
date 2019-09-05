@@ -6,6 +6,7 @@
 ## Title: Bagnon Guild Bank
 ## Notes: Single window display for your guild bank
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF22B14C[公会银行]|r
+## Notes-zhCN: Bagnon公会银行模块
 
 
 ..\Bagnon\modules\guild.xml

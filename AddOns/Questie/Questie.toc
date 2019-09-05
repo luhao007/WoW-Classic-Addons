@@ -1,7 +1,7 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
 ## Version: 4.0.16 BETA
-## RequiredDeps:
+## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
@@ -9,6 +9,7 @@
 ## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.0.16|r|cFFFF0000 Beta|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
+## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
 
 embeds.xml

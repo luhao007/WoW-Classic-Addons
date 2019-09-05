@@ -4,6 +4,7 @@
 ## Title: ClassicCastbars_Options
 ## Notes: Configuration for ClassicCastbars. Type /castbars for options.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFF22B14C[设置]|r
+## Notes-zhCN: ClassicCastbars设置模块
 
 
 Libs\LibStub\LibStub.lua

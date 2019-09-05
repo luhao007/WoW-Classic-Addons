@@ -6,6 +6,7 @@
 ## Title: Bagnon Config
 ## Notes: An options menu for Bagnon
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF22B14C[设置]|r
+## Notes-zhCN: Bagnon设置模块
 
 
 ..\Bagnon\modules\config.xml

@@ -7,6 +7,7 @@
 ## Title: Scrap Merchant
 ## Notes: Load on demand merchant button.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[商人]|r
+## Notes-zhCN: 在商人出售界面添加出售垃圾的按钮
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory

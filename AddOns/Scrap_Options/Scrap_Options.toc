@@ -8,6 +8,7 @@
 ## Title: Scrap Options
 ## Notes: Load on demand options and tutorials.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[设置]|r
+## Notes-zhCN: Scrap设置模块
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory

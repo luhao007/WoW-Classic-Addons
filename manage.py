@@ -494,7 +494,7 @@ def get_cn_title(addon):
 
 def get_notes(addon):
     m = MAPPING[addon]
-    return m.get(addon)
+    return m.get('Notes')
 
 def main():
     for addon in os.listdir('Addons'):

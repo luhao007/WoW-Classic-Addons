@@ -18,6 +18,7 @@ L.ZONE_TEXT_TO_MAP_ID["Пещеры Стенаний"] = 279;	-- WC
 
 -- Cities
 L.ZONE_TEXT_TO_MAP_ID["Громовой Утес"] = 88;	-- Thunder Bluff
+L.ZONE_TEXT_TO_MAP_ID["Громовой Утес"] = 88;	-- Thunder Bluff
 
 local a = L.NPC_ID_NAMES;
 for key,value in pairs({
