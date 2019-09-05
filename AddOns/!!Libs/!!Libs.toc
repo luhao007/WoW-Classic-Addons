@@ -64,6 +64,9 @@ LibBabble\LibBabble-Race-3.0\LibBabble-Race-3.0.lua
 # LibBabble\LibBabble-TalentTree-3.0\LibBabble-TalentTree-3.0.lua
 # LibBabble\LibBabble-Zone-3.0\LibBabble-Zone-3.0.lua
 
+# DRData
+DRData-1.0\DRData-1.0.xml
+
 # Other Ace Libs
 LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
@@ -88,3 +91,4 @@ LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibWindow-1.1\LibWindow-1.1.lua
+ThreatClassic-1.0\lib.xml
