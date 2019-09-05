@@ -69,6 +69,7 @@ LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
+LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibDBIcon-1.0\lib.xml
 LibDDI-1.0\lib.xml

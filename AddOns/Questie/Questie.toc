@@ -1,7 +1,7 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
 ## Version: 4.0.16 BETA
-## RequiredDeps: 
+## RequiredDeps:
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
@@ -35,14 +35,7 @@ Database\itemDB.lua
 #Localization
 Locale\QuestieLocale.lua
 Locale\enUS\locale.xml
-Locale\esES\locale.xml
-Locale\deDE\locale.xml
 Locale\zhCN\locale.xml
-Locale\zhTW\locale.xml
-Locale\frFR\locale.xml
-Locale\koKR\locale.xml
-Locale\ptBR\locale.xml
-Locale\ruRU\locale.xml
 
 #Modules
 Modules\QuestieTooltips.lua

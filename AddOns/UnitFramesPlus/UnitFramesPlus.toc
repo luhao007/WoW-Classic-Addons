@@ -11,11 +11,6 @@
 
 ## X-Repple: 界面
 
-#Cooldown
-LibClassicDurations\LibStub\LibStub.lua
-LibClassicDurations\CallbackHandler-1.0\CallbackHandler-1.0.lua
-LibClassicDurations\LibClassicDurations.xml
-
 Localization.lua
 MinimapButton.lua
 UnitFramesPlus.lua
