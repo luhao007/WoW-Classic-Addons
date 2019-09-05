@@ -287,7 +287,7 @@ end
 function Scrap:Repair()
 	local cost = GetRepairAllCost()
 	if cost > 0 then
-		local guildMoney = GetGuildBankWithdrawMoney()
+		local guildMoney = GetGuildBankWithdrawMoney and GetGuildBankWithdrawMoney() or -1
 		local useGuild = self:CanGuildRepair() and (guildMoney == -1 or guildMoney >= cost)
 
 		if useGuild or GetMoney() >= cost then

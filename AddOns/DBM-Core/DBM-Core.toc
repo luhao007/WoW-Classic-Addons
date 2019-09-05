@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Tandanu and Nitram and MysticalOS
-## Version: 1.13.5
+## Version: 1.13.6
 ## Dependencies: DBM-StatusBarTimers, DBM-DefaultSkin
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
@@ -9,7 +9,7 @@
 
 ## Title: |cffffd200Deadly Boss Mods|r |cff69ccf0Core|r
 ## Notes: Deadly Boss Mods
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0ADBM|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r Deadly Boss Mods |cFF22B14C[核心]|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0ADBM|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADeadly Boss Mods|r
 
 ## X-Min-Interface: 11302
 ## X-Website: http://www.deadlybossmods.com

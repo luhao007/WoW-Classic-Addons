@@ -3,9 +3,9 @@
 ## SavedVariables: ClassicAuraDurationsDB
 
 ## Title: ClassicAuraDurations
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF状态检测|r ClassicAuraDurations
-## Notes-zhCN: 检测目标增益和减益效果的剩余时间
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF状态检测|r |cFFFFE00AClassicAuraDurations|r
 
+## X-WoWI-ID: 25006
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua

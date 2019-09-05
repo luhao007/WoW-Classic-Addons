@@ -9,7 +9,7 @@
 
 ## Title: Enchantrix
 ## Notes: Display information in item tooltips pertaining to disenchanting, prospecting, and milling results.  [8.2.6392] This AddOn is licensed under the GNU GPL, see GPL.txt for details.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF附魔助手|r Enchantrix
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF附魔助手|r |cFFFFE00AEnchantrix|r
 ## Notes-zhCN: 提示物品分解后可能得到的材料
 
 ## X-Part-Of: Auctioneer

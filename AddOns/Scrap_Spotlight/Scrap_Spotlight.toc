@@ -1,12 +1,11 @@
 ## Interface: 11302
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 13.18
+## Version: 13.19
 ## Dependencies: Scrap
 
 ## Title: Scrap Spotlight
 ## Notes: Makes your Scrap to glow in the darkness of your bags
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r Scrap |cFF22B14C[高亮]|r
-## Notes-zhCN: 将背包中的灰色物品颜色变灰
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[高亮]|r
 
 ## X-Category: Inventory
 ## X-License: GNU General Public License Version 3

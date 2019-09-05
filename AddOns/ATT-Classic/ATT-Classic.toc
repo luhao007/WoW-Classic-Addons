@@ -6,7 +6,7 @@
 
 ## Title: ATT-Classic
 ## Notes: Addon for Tracking Collections & Account Completion
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF账号完成度管理|r ALL THE THINGS
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF账号完成度管理|r |cFFFFE00AALL THE THINGS|r
 ## Notes-zhCN: 追踪账号完成度，如各个区域的任务和飞行点等
 
 ## X-Curse-Project-ID: 267285

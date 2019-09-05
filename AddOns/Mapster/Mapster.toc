@@ -6,7 +6,7 @@
 
 ## Title: Mapster
 ## Notes: Simple Map Mod
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF地图增强|r Mapster
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF地图增强|r |cFFFFE00AMapster|r
 ## Notes-zhCN: 简单实用的地图模块
 
 ## X-Category: Map

@@ -6,7 +6,7 @@
 
 ## Title: MonkeyBuddy v2.9.29c
 ## Notes: Helps you configure your MonkeyMods.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey伴侣|r MonkeyBuddy
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey伴侣|r |cFFFFE00AMonkeyBuddy|r
 ## Notes-zhCN: 在小地图旁提供一个猴子图标，可修改Monkey模块的选项
 
 

@@ -1,14 +1,13 @@
 ## Interface: 11302
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 13.18
+## Version: 13.19
 ## OptionalDeps: LibStub, Unfit-1.0, WoWTest
 ## SavedVariables: Scrap_SharedJunk, Scrap_AutoSell, Scrap_AutoRepair, Scrap_GuildRepair, Scrap_Safe, Scrap_Learn, Scrap_Glow, Scrap_Icons, Scrap_Tut, Scrap_Version
 ## SavedVariablesPerCharacter: Scrap_Junk, Scrap_AI, Scrap_LowEquip, Scrap_LowConsume, Scrap_Unusable, Scrap_ShareList
 
 ## Title: Scrap
 ## Notes: Sells all your junk at the merchant.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r Scrap
-## Notes-zhCN: 自动出售灰色物品
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory

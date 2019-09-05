@@ -1,14 +1,13 @@
 ## Interface: 11302
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 13.18
+## Version: 13.19
 ## Dependencies: Scrap
 ## OptionalDeps: Poncho-1.0, Sushi-3.0, CustomTutorials-2.1
 ## LoadOnDemand: 1
 
 ## Title: Scrap Options
 ## Notes: Load on demand options and tutorials.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r Scrap |cFF22B14C[选项]|r
-## Notes-zhCN: Scrap选项模块
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[设置]|r
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory

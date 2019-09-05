@@ -6,7 +6,7 @@
 
 ## Title: Fizzle
 ## Notes: Show item durability and quality in the character frame.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF装备着色|r Fizzle
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF装备着色|r |cFFFFE00AFizzle|r
 ## Notes-zhCN: 在人物装备栏中显示物品品质与耐久度。
 
 ## X-Category: Inventory

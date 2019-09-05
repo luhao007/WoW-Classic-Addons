@@ -6,7 +6,7 @@
 
 ## Title: Grail |cff69ccf0NPCs |r|cffeda55fClassic|r|cff69ccf0 enUS|r
 ## Notes: Provides localized enUS NPCs to Grail for Classic
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A基础库|r|cFFFFE00A>|r |cFFFFFFFF数据库|r Grail |cff69ccf0NPC |r|cffeda55f怀旧服|r|cff69ccf0 英文|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A基础库|r|cFFFFE00A>|r |cFFFFFFFF本地数据库 |cFF69CCF0NPC|r|r |cFF22B14C[英文]|r
 ## Notes-zhCN: 怀旧服NPC数据库的英文本地化模块
 
 

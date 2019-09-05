@@ -5,7 +5,7 @@
 
 ## Title: MonkeyQuestLog v0.9.39c
 ## Notes: Replacement Quest Log.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey任务窗口|r MonkeyQuestLog
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey任务窗口|r |cFFFFE00AMonkeyQuestLog|r
 ## Notes-zhCN: 独立任务窗口
 
 

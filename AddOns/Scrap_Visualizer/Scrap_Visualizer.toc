@@ -1,13 +1,12 @@
 ## Interface: 11302
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 13.18
+## Version: 13.19
 ## Dependencies: Scrap_Merchant
 ## LoadOnDemand: 1
 
 ## Title: Scrap Visualizer
 ## Notes: Load on demand panel for browsing trough junk lists.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r Scrap |cFF22B14C[可视化列表]|r
-## Notes-zhCN: 提供一个可视化列表来查看灰色物品
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[可视化列表]|r
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory

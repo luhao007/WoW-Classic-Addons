@@ -1,14 +1,11 @@
 ## Interface: 11302
 ## Author: Tuller and Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.7
 ## Dependencies: Bagnon
 ## LoadOnDemand: 1
 
 ## Title: Bagnon Config
 ## Notes: An options menu for Bagnon
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r Bagnon |cFF22B14C[选项]|r
-## Notes-zhCN: Bagnon选项模块
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF22B14C[设置]|r
 
 
-..\Bagnon\config.lua
-..\Bagnon\external\Wildpants\Wildpants_Config.xml
+..\Bagnon\modules\config.xml

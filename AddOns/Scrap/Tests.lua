@@ -25,3 +25,5 @@ end
 function Tests:VanityUsable()
 	NotJunk(50471)
 end
+
+LoadAddOn('Scrap_Options')
