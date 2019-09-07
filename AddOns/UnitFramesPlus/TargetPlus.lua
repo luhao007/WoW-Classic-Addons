@@ -2,9 +2,9 @@
 function UnitFramesPlus_TargetPositionSet()
     TargetFrame:ClearAllPoints();
     if UnitFramesPlusDB["target"]["extrabar"] == 1 or UnitFramesPlusDB["target"]["hpmpparttwo"] ~= 5 then
-        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 108+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 358+96*UnitFramesPlusDB["player"]["scale"], 0);
     else
-        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 45+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 295+96*UnitFramesPlusDB["player"]["scale"], 0);
     end
     UnitFramesPlusVar["target"]["moved"] = 0;
 end
@@ -277,7 +277,7 @@ function UnitFramesPlus_TargetExtrabarSet()
         TargetExtraBar:SetWidth(102);
         TargetExtraBar:SetHeight(18);
         TargetExtraBar:SetTexCoord(0, 0.796875, 0, 1);
-        TargetExtraBar:SetVertexColor(1, 1, 1, 1) 
+        TargetExtraBar:SetVertexColor(1, 1, 1, 1)
         TargetExtraBar:ClearAllPoints();
         TargetExtraBar:SetPoint("RIGHT", TargetFrameHealthBar, "LEFT", 0, 0);
 
@@ -1036,7 +1036,7 @@ end
 
 --刷新目标3D头像背景显示
 function UnitFramesPlus_TargetPortrait3DBGDisplayUpdate()
-    if UnitFramesPlusDB["target"]["portrait"] == 1 
+    if UnitFramesPlusDB["target"]["portrait"] == 1
     and UnitFramesPlusDB["target"]["portraittype"] == 1
     and UnitFramesPlusDB["target"]["portrait3dbg"] == 1 then
         Target3DPortrait.Background:Show();
