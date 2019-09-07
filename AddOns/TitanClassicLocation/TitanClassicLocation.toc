@@ -7,7 +7,7 @@
 
 ## Title: Titan Panel Classic [|cffeda55fLocation|r] |cff00aa001.0.5.11302|r
 ## Notes: Adds coordinates and location information to Titan Panel
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF22B14C[位置]|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF22B14C[位置]|r
 ## Notes-zhCN: 泰坦面板的位置模块
 
 ## X-Child-Of: TitanClassic

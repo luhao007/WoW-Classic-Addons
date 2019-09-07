@@ -6,7 +6,7 @@
 
 ## Title: oRA3
 ## Notes: Raid and Party Assist
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A辅助|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r |cFFFFE00AoRA3|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493辅助|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r |cFFFFE00AoRA3|r
 ## Notes-zhCN: 提供团队和小队的一些辅助功能
 
 ## X-Credits: Cladhaire, Ammo, Rabbit

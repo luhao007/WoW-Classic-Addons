@@ -33,133 +33,128 @@ MAPPING = {
     'AtlasLootClassic': {
         'Title-cn': '副本掉落',
         'Title-en': 'AtlasLoot Classic',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_Collections': {
         'Title-cn': '副本掉落',
         'Title-sub': '套装',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_Crafting': {
         'Title-cn': '副本掉落',
         'Title-sub': '专业制造',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_DungeonsAndRaids': {
         'Title-cn': '副本掉落',
         'Title-sub': '地下城和团队',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_Factions': {
         'Title-cn': '副本掉落',
         'Title-sub': '声望物品',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_Options': {
         'Title-cn': '副本掉落',
         'Title-sub': '设置',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'AtlasLootClassic_PvP': {
         'Title-cn': '副本掉落',
         'Title-sub': 'PVP',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Advanced': {
         'Title-cn': '拍卖助手',
         'Title-en': 'Auctioneer',
         'Notes': '拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Filter-Basic': {
         'Title-cn': '拍卖助手',
         'Title-sub': '基础过滤条件',
         'Notes': '提供基础过滤条件，比如最低装等，最低价格等等',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-ScanData': {
         'Title-cn': '拍卖助手',
         'Title-sub': '数据扫描',
         'Notes': '让拍卖助手支持延时扫描功能，用来分页扫描拍卖行的大量数据',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Stat-Histogram': {
         'Title-cn': '拍卖助手',
         'Title-sub': '统计：直方图',
         'Notes': '让拍卖助手可以用直方图的形式展示统计数据',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Stat-Purchased': {
         'Title-cn': '拍卖助手',
         'Title-sub': '统计：已售物品',
         'Notes': '让拍卖助手用来推测已售商品（还未到原定拍卖时间就已下架）',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Stat-Simple': {
         'Title-cn': '拍卖助手',
         'Title-sub': '统计：简单统计',
         'Notes': '提供1/3/7/14天指数移动平均的统计数据',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Stat-StdDev': {
         'Title-cn': '拍卖助手',
         'Title-sub': '统计：标准差',
         'Notes': '让拍卖助手通过标准差来提供参考拍卖价格',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Stat-iLevel': {
         'Title-cn': '拍卖助手',
         'Title-sub': '统计：装备等级',
         'Notes': '让拍卖助手通过装备类型，装备等级等一系列参数来合并统计数据',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Auc-Util-FixAH': {
         'Title-cn': '拍卖助手',
         'Title-sub': '功能：固定搜索页面',
         'Notes': '让拍卖行每次搜索时都固定显示新物品，来避免物品重复出现的问题',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'BagBrother': {
         'Title-cn': '背包助手',
         'Notes': '记录背包和银行中的物品',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Bagnon': {
         'Title-cn': '背包整合',
         'Notes': '将背包整合成一个窗口',
-        'Category': '界面'
+        'Category': '物品'
     },
     'Bagnon_Config': {
         'Title-cn': '背包整合',
         'Title-sub': '设置',
         'Notes': 'Bagnon设置模块',
-        'Category': '界面'
+        'Category': '物品'
     },
     'Bagnon_GuildBank': {
         'Title-cn': '背包整合',
         'Title-sub': '公会银行',
         'Notes': 'Bagnon公会银行模块',
-        'Category': '界面'
+        'Category': '物品'
     },
     'Bagnon_VoidStorage': {
         'Title-cn': '背包整合',
         'Title-sub': '虚空仓库',
         'Notes': 'Bagnon虚空仓库模块',
-        'Category': '界面'
+        'Category': '物品'
     },
     'BeanCounter': {
         'Title-cn': '物品会计师',
         'Notes': '存储物品购买销售记录',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'BlizzMove': {
         'Title-cn': '窗口移动',
         'Notes': '移动内置的各种窗口',
-        'Category': '界面'
-    },
-    'ClassicAuraDurations': {
-        'Title-cn': '状态检测',
-        'Notes': '检测目标增益和减益效果的剩余时间',
         'Category': '界面'
     },
     'ClassicCastbars': {
@@ -203,70 +198,70 @@ MAPPING = {
     'Enchantrix': {
         'Title-cn': '附魔助手',
         'Notes': '提示物品分解后可能得到的材料',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Fizzle': {
         'Title-cn': '装备着色',
-        'Category': '界面'
+        'Category': '物品'
     },
     'Grail': {
         'Title-cn': '本地数据库',
         'Notes': '本地数据库，包含任务，成就，NPC等数据',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-NPCs-_classic_': {
         'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
         'Notes': '怀旧服NPC数据库',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-NPCs-_classic_-enUS': {
         'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
         'Title-sub': '英文',
         'Notes': '怀旧服NPC数据库的英文本地化模块',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-NPCs-_classic_-zhCN': {
         'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
         'Title-sub': '中文',
         'Notes': '怀旧服NPC数据库的中文本地化模块',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-Quests-_classic_': {
         'Title-cn': '本地数据库 |cFF69CCF0任务|r',
         'Notes': '怀旧服本地数据库',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-Quests-_classic_-enUS': {
         'Title-cn': '本地数据库 |cFF69CCF0任务|r',
         'Title-sub': '英文',
         'Notes': '怀旧服本地数据库的英文本地化模块',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-Quests-_classic_-zhCN': {
         'Title-cn': '本地数据库 |cFF69CCF0任务|r',
         'Title-sub': '中文',
         'Notes': '怀旧服本地数据库的中文本地化模块',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-Reputations-_classic_': {
         'Title-cn': '本地数据库 |cFF69CCF0声望|r',
         'Notes': '怀旧服声望数据库',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-Rewards': {
         'Title-cn': '本地数据库 |cFF69CCF0奖励|r',
         'Notes': '非声望奖励数据库',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Grail-When': {
         'Title-cn': '本地数据库 |cFF69CCF0完成时间|r',
         'Notes': '帮助Grail记录各项任务，声望和成就的完成时间',
-        'Category': '基础库'
+        'Category': '任务'
     },
     'Informant': {
         'Title-cn': '物品信息',
         'Notes': '在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等',
-        'Category': '界面'
+        'Category': '物品'
     },
     'Mapster': {
         'Title-cn': '地图增强',
@@ -325,7 +320,7 @@ MAPPING = {
     'Questie': {
         'Title-cn': '任务助手',
         'Notes': '在地图和小地图上提供任务指引，在怪物身上提示任务进度',
-        'Category': '辅助'
+        'Category': '任务'
     },
     'Recount': {
         'Title-cn': '伤害统计',
@@ -334,31 +329,31 @@ MAPPING = {
     'Scrap': {
         'Title-cn': '垃圾管理',
         'Notes': '自动出售灰色物品',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Scrap_Merchant': {
         'Title-cn': '垃圾管理',
         'Title-sub': '商人',
         'Notes': '在商人出售界面添加出售垃圾的按钮',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Scrap_Options': {
         'Title-cn': '垃圾管理',
         'Title-sub': '设置',
         'Notes': 'Scrap设置模块',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Scrap_Spotlight': {
         'Title-cn': '垃圾管理',
         'Title-sub': '高亮',
         'Notes': '将背包中的灰色物品颜色变灰',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'Scrap_Visualizer': {
         'Title-cn': '垃圾管理',
         'Title-sub': '可视化列表',
         'Notes': '提供一个可视化列表来查看灰色物品',
-        'Category': '辅助'
+        'Category': '物品'
     },
     'SlideBar': {
         'Title-cn': '侧边滑动栏',
@@ -482,7 +477,20 @@ def get_cn_title(addon):
     title = ''
 
     if 'Category' in m:
-        title += '|cFFFFE00A<|r|cFFFF7D0A{}|r|cFFFFE00A>|r '.format(m['Category'])
+        cat = m['Category']
+        if cat == '任务':
+            color = '00FF7F'  # Spring green
+        elif cat == '基础库':
+            color = 'FF0000'  # Red
+        elif cat == '物品':
+            color = '1E90FF'  # Doget blue
+        elif cat == '界面':
+            color = 'BA55D3'  # Medium orchid
+        elif cat == '辅助':
+            color = 'FF1493'  # Deep pink
+        else:
+            color = 'FF7D0A'
+        title += '|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r '.format(color, cat)
     if 'Title-cn' in m:
         title += '|cFFFFFFFF{}|r '.format(m['Title-cn'])
     if 'Title-sub' in m:

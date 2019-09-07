@@ -3,7 +3,7 @@
 
 ## Title: Ace Libs
 ## Notes: Ace libs.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF0000基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r|r
 ## Notes-zhCN: 插件基础函数库|N|CFFFF0000必须加载|R
 
 

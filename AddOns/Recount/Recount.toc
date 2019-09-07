@@ -7,7 +7,7 @@
 
 ## Title: Recount
 ## Notes: Records Damage and Healing for Graph Based Display.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A界面|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFFFFE00ARecount|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFFFFE00ARecount|r
 ## Notes-zhCN: 图形化显示的伤害/治疗统计插件.
 
 
