@@ -241,6 +241,9 @@ function _QuestieFramePool:QuestieCreateFrame()
                 TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
             end
             Questie.db.char._tom_waypoint = TomTom:AddWaypoint(self.data.UiMapID, self.x/100, self.y/100,  {title = self.data.Name, crazy = true})
+        elseif self.miniMapIcon then
+            local _, _, _, x, y = self:GetPoint()
+            Minimap:PingLocation(x, y)
         end
     end);
     f.glowUpdate = function(self)--f:HookScript("OnUpdate", function(self)
@@ -299,7 +302,8 @@ function _QuestieFramePool:QuestieCreateFrame()
         end
         self.miniMapIcon = nil;
         self:SetScript("OnUpdate", nil)
-        self:Hide();
+        self:Hide()
+        self.glow:Hide()
         --self.glow:Hide()
         self.data = nil; -- Just to be safe
         self.loaded = nil;
@@ -311,6 +315,35 @@ function _QuestieFramePool:QuestieCreateFrame()
     end
     f.data = {}
     f:Hide()
+    
+    -- functions for fake hide/unhide
+    function f:FakeHide()
+        if not self.hidden then
+            self.shouldBeShowing = self:IsShown();
+            self._show = self.Show;
+            self.Show = function()
+                self.shouldBeShowing = true;
+            end
+            self:Hide();
+            self._hide = self.Hide;
+            self.Hide = function()
+                self.shouldBeShowing = false;
+            end
+            self.hidden = true
+        end
+    end
+    function f:FakeUnhide()
+        if self.hidden then
+            self.hidden = false
+            self.Show = self._show;
+            self.Hide = self._hide;
+            self._show = nil
+            self._hide = nil
+            if self.shouldBeShowing then
+                self:Show();
+            end
+        end
+    end
     --f.glow:Hide()
     table.insert(allframes, f)
     return f
@@ -440,6 +473,8 @@ function _QuestieFramePool:Questie_Tooltip(self)
                             end
                             --table.insert(questOrder[key], text);--questOrder[key][icon.data.ObjectiveData.Description] = tostring(icon.data.ObjectiveData.Collected) .. "/" .. tostring(icon.data.ObjectiveData.Needed) .. " " .. icon.data.ObjectiveData.Description--table.insert(questOrder[key], tostring(icon.data.ObjectiveData.Collected) .. "/" .. tostring(icon.data.ObjectiveData.Needed) .. " " .. icon.data.ObjectiveData.Description);
                         end
+                    elseif icon.data.CustomTooltipData then
+                        questOrder[icon.data.CustomTooltipData.Title] = icon.data.CustomTooltipData.Body
                     end
                 end
             end
@@ -459,8 +494,13 @@ function _QuestieFramePool:Questie_Tooltip(self)
                     self:AddDoubleLine("   " .. v2.title, v2.type);
                 end
                 if v2.subData and shift then
-                    for _,line in pairs(v2.subData) do
-                        self:AddLine("      |cFFDDDDDD" .. line);
+                    local dataType = type(v2.subData)
+                    if dataType == "table" then
+                        for _,line in pairs(v2.subData) do
+                            self:AddLine("      |cFFDDDDDD" .. line);
+                        end
+                    elseif dataType == "string" then
+                        self:AddLine("      |cFFDDDDDD" .. v2.subData);
                     end
                 end
             end
@@ -475,10 +515,13 @@ function _QuestieFramePool:Questie_Tooltip(self)
             end
             if shift then
                 for k2, v2 in pairs(v) do
-                    if type(v2) == "table" then
+                    local dataType = type(v2)
+                    if dataType == "table" then
                         for k3 in pairs(v2) do
                             self:AddLine("   |cFFDDDDDD" .. k3);
                         end
+                    elseif dataType == "string" then
+                        self:AddLine("   |cFFDDDDDD" .. v2);
                     end
                     self:AddLine("      |cFF33FF33" .. k2);
                 end

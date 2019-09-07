@@ -120,7 +120,7 @@ function UnitFramesPlus_PetTargetAttribute()
         local func = {};
         func.name = "UnitFramesPlus_PetTargetAttributeSet";
         func.callback = function()
-            UnitFramesPlus_PetTargetAttributeSet();            
+            UnitFramesPlus_PetTargetAttributeSet();
         end;
         UnitFramesPlus_WaitforCall(func);
     end
@@ -146,7 +146,7 @@ function UnitFramesPlus_PetTargetScale(newscale)
         local func = {};
         func.name = "UnitFramesPlus_PetTargetScaleSet";
         func.callback = function()
-            UnitFramesPlus_PetTargetScaleSet(newscale);            
+            UnitFramesPlus_PetTargetScaleSet(newscale);
         end;
         UnitFramesPlus_WaitforCall(func);
     end

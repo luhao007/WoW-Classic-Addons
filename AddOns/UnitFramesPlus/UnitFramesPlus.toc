@@ -1,7 +1,7 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.27.1
-## SavedVariables: UnitFramesPlusDB
+## Version: 1.28
+## SavedVariables: UnitFramesPlusDB, LibClassicMobHealth10DB, LibClassicMobHealth10Opt
 ## SavedVariablesPerCharacter: UnitFramesPlusVar
 
 ## Title: UnitFramesPlus
@@ -24,10 +24,6 @@ PetTarget.lua
 TargetPlus.lua
 
 TargetTarget.lua
-
-#FocusPlus.lua
-
-#FocusTarget.lua
 
 PartyPlus.lua
 

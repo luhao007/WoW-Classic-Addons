@@ -197,7 +197,7 @@ function UnitFramesPlus_ToTAttribute()
         local func = {};
         func.name = "UnitFramesPlus_ToTAttributeSet";
         func.callback = function()
-            UnitFramesPlus_ToTAttributeSet();            
+            UnitFramesPlus_ToTAttributeSet();
         end;
         UnitFramesPlus_WaitforCall(func);
     end
@@ -221,7 +221,7 @@ function UnitFramesPlus_TargetTargetPosition()
         local func = {};
         func.name = "UnitFramesPlus_TargetTargetPositionSet";
         func.callback = function()
-            UnitFramesPlus_TargetTargetPositionSet();        
+            UnitFramesPlus_TargetTargetPositionSet();
         end;
         UnitFramesPlus_WaitforCall(func);
     end
@@ -300,8 +300,8 @@ for id = 1, UFP_MAX_TOT_DEBUFFS, 1 do
     debuff.CooldownText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
     debuff.CooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
     debuff.CooldownText:ClearAllPoints();
-    -- debuff.CooldownText:SetPoint("BOTTOM", debuff.Icon, "TOP", 0, 1);
-    debuff.CooldownText:SetPoint("TOPLEFT", debuff.Icon, "TOPLEFT", 0, 0);
+    debuff.CooldownText:SetPoint("CENTER", debuff.Icon, "CENTER", 0, 0);
+    -- debuff.CooldownText:SetPoint("TOPLEFT", debuff.Icon, "TOPLEFT", 0, 0);
 
     debuff.CountText = debuff.Cooldown:CreateFontString("UFP_ToTFrameDebuff"..id.."CountText", "OVERLAY");
     debuff.CountText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
@@ -336,113 +336,69 @@ function UnitFramesPlus_TargetTargetDebuff()
         totdb:SetScript("OnUpdate", function(self, elapsed)
             self.timer = (self.timer or 0) + elapsed;
             if self.timer >= 0.1 then
-                if UnitExists("targettarget") then
-                    for id = 1, UFP_MAX_TOT_DEBUFFS do
-                        local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("targettarget", id);
-                        if icon then
-                            local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
-                            if duration == 0 and durationNew then
-                                duration = durationNew
-                                expirationTime = expirationTimeNew
-                            end
-                            local counttext = "";
-                            local timetext = "";
-                            if count and count > 1 then
-                                counttext = count;
-                            end
-                            _G["UFP_ToTFrameDebuff"..id].Icon:SetTexture(icon);
-                            _G["UFP_ToTFrameDebuff"..id]:SetAlpha(1);
-                            if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 and expirationTime and expirationTime ~= 0 then
-                                -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
-                                if UnitFramesPlusDB["global"]["builtincd"] == 1 then
-                                    CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
-                                else
-                                    CooldownFrame_Clear(_G["UFP_ToTFrameDebuff"..id].Cooldown);
-                                end
-                                if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
-                                    local timeleft = expirationTime - GetTime();
-                                    -- local r, g, b = 0, 1, 0;
-                                    local alpha = 0.7;
-                                    if timeleft >= 0 and timeleft <= 60 then
-                                        timetext = math.floor(timeleft);
-                                        if timeleft < 15 then
-                                            -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 15);
-                                            alpha = 1 - timeleft/50;
-                                        end
-                                    end
-                                    -- _G["UFP_ToTFrameDebuff"..id].CooldownText:SetTextColor(r, g, b);
-                                    _G["UFP_ToTFrameDebuff"..id].CooldownText:SetAlpha(alpha);
-                                end
-                            end
-                            _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText(timetext);
-                            _G["UFP_ToTFrameDebuff"..id].CountText:SetText(counttext);
-                        else
-                            _G["UFP_ToTFrameDebuff"..id]:SetAlpha(0);
-                        end
-                    end
-                end
+                UnitFramesPlus_OptionsFrame_TargetTargetDebuffDisplayUpdate();
                 self.timer = 0;
             end
         end)
     else
         for id = 1, UFP_MAX_TOT_DEBUFFS, 1 do
             _G["UFP_ToTFrameDebuff"..id]:SetAlpha(0);
+            _G["UFP_ToTFrameDebuff"..id].Cooldown:SetAlpha(0);
+            _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText("");
+            _G["UFP_ToTFrameDebuff"..id].CountText:SetText("");
         end
         totdb:SetScript("OnUpdate", nil);
     end
 end
 
-function UnitFramesPlus_OptionsFrame_TargetTargetDebuffCooldownDisplayUpdate()
-    if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 then
-        if UnitExists("targettarget") then
-            for id = 1, UFP_MAX_TOT_DEBUFFS do
-                _G["UFP_ToTFrameDebuff"..id].Cooldown:Show();
-                -- local _, icon, count, _, duration, expirationTime = UnitDebuff("targettarget", id);
-                local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("targettarget", id);
-                local counttext = "";
-                local timetext = "";
-                if icon then
-                    local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
-                    if duration == 0 and durationNew then
-                        duration = durationNew
-                        expirationTime = expirationTimeNew
-                    end
-                    if count and count > 1 then
-                        counttext = count;
-                    end
-                    -- CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
-                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 then
+function UnitFramesPlus_OptionsFrame_TargetTargetDebuffDisplayUpdate()
+    if UnitExists("targettarget") then
+        for id = 1, UFP_MAX_TOT_DEBUFFS do
+            local alpha = 0;
+            local cdalpha = 0;
+            local timetext = "";
+            local counttext = "";
+            -- local textalpha = 0.7;
+            -- local r, g, b = 0, 1, 0;
+            local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("targettarget", id);
+            if icon then
+                _G["UFP_ToTFrameDebuff"..id].Icon:SetTexture(icon);
+                alpha = 1;
+                if count and count > 1 then
+                    counttext = count;
+                end
+                if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 then
+                    cdalpha = 1;
+                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                        local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
+                        if duration == 0 and durationNew then
+                            duration = durationNew
+                            expirationTime = expirationTimeNew
+                        end
+                        if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
+                            local timeleft = expirationTime - GetTime();
+                            if timeleft >= 0 and timeleft <= 1800 then
+                                if timeleft < 60 then
+                                    timetext = math.floor(timeleft+1);
+                                    -- textalpha = 1 - timeleft/600;
+                                    -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
+                                else
+                                    timetext = math.floor(timeleft/60+1).."m";
+                                end
+                            end
+                        end
                         CooldownFrame_Set(_G["UFP_ToTFrameDebuff"..id].Cooldown, expirationTime - duration, duration, true);
                     else
                         CooldownFrame_Clear(_G["UFP_ToTFrameDebuff"..id].Cooldown);
                     end
-                    if duration > 0 and UnitFramesPlusDB["global"]["builtincd"] == 1 and UnitFramesPlusDB["global"]["cdtext"] == 1 then
-                        local timeleft = expirationTime - GetTime();
-                        -- local r, g, b = 0, 1, 0;
-                        local alpha = 0.7;
-                        if timeleft >= 0 and timeleft <= 60 then
-                            timetext = math.floor(timeleft);
-                            if timeleft < 15 then
-                                -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 15);
-                                alpha = 1 - timeleft/50;
-                            end
-                        end
-                        -- _G["UFP_ToTFrameDebuff"..id].CooldownText:SetTextColor(r, g, b);
-                        _G["UFP_ToTFrameDebuff"..id].CooldownText:SetAlpha(alpha);
-                    end
-                -- else
-                --     _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText("");
                 end
-                _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText(timetext);
-                _G["UFP_ToTFrameDebuff"..id].CountText:SetText(counttext);
             end
-        end
-    else
-        if UnitExists("targettarget") then
-            for id = 1, UFP_MAX_TOT_DEBUFFS do
-                _G["UFP_ToTFrameDebuff"..id].Cooldown:Hide();
-                _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText("");
-            end
+            _G["UFP_ToTFrameDebuff"..id]:SetAlpha(alpha);
+            _G["UFP_ToTFrameDebuff"..id].Cooldown:SetAlpha(cdalpha);
+            -- _G["UFP_ToTFrameDebuff"..id].CooldownText:SetTextColor(r, g, b);
+            -- _G["UFP_ToTFrameDebuff"..id].CooldownText:SetAlpha(textalpha);
+            _G["UFP_ToTFrameDebuff"..id].CooldownText:SetText(timetext);
+            _G["UFP_ToTFrameDebuff"..id].CountText:SetText(counttext);
         end
     end
 end
@@ -466,7 +422,7 @@ function UnitFramesPlus_ToTDebuff()
         local func = {};
         func.name = "UnitFramesPlus_ToTDebuffSet";
         func.callback = function()
-            UnitFramesPlus_ToTDebuffSet();            
+            UnitFramesPlus_ToTDebuffSet();
         end;
         UnitFramesPlus_WaitforCall(func);
     end
@@ -482,7 +438,7 @@ ToToTFrame:SetPoint("TOP", ToTFrame, "BOTTOM", 26, 16);
 
 ToToTFrame:SetAttribute("unit", "targettargettarget");
 RegisterUnitWatch(ToToTFrame);
-ToToTFrame:SetAttribute("*type1", "targettarget");
+ToToTFrame:SetAttribute("*type1", "target");
 ToToTFrame:RegisterForClicks("AnyUp");
 
 ToToTFrame.Portrait = ToToTFrame:CreateTexture("UFP_ToToTPortrait", "BORDER");

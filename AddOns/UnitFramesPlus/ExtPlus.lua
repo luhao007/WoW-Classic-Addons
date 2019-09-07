@@ -157,6 +157,18 @@ end
      
 --             local valueDisplay = value;
 --             local valueMaxDisplay = valueMax;
+
+--             -- Modern WoW always breaks up large numbers, whereas Classic never did.
+--             -- We'll remove breaking-up by default for Classic, but add a flag to reenable it.
+--             -- if ( statusFrame.breakUpLargeNumbers ) then
+--             --     if ( statusFrame.capNumericDisplay ) then
+--             --         valueDisplay = UnitFramesPlus_AbbreviateLargeNumbers(value);
+--             --         valueMaxDisplay = UnitFramesPlus_AbbreviateLargeNumbers(valueMax);
+--             --     else
+--             --         valueDisplay = BreakUpLargeNumbers(value);
+--             --         valueMaxDisplay = BreakUpLargeNumbers(valueMax);
+--             --     end
+--             -- end
 --             if ( statusFrame.capNumericDisplay ) then
 --                 valueDisplay = UnitFramesPlus_AbbreviateLargeNumbers(value);
 --                 valueMaxDisplay = UnitFramesPlus_AbbreviateLargeNumbers(valueMax);
@@ -164,9 +176,9 @@ end
 --                 valueDisplay = BreakUpLargeNumbers(value);
 --                 valueMaxDisplay = BreakUpLargeNumbers(valueMax);
 --             end
-     
+
 --             local textDisplay = GetCVar("statusTextDisplay");
---             if ( value and valueMax > 0 and ( textDisplay ~= "NUMERIC" or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
+--             if ( value and valueMax > 0 and ( (textDisplay ~= "NUMERIC" and textDisplay ~= "NONE") or statusFrame.showPercentage ) and not statusFrame.showNumeric) then
 --                 if ( value == 0 and statusFrame.zeroText ) then
 --                     textString:SetText(statusFrame.zeroText);
 --                     statusFrame.isZero = 1;

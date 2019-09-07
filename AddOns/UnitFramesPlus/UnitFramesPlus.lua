@@ -13,6 +13,7 @@ UnitFramesPlusDefaultDB = {
         -- textunit = 1,    --状态条数值显示为万亿
         builtincd = 1,      --内置冷却计时
         cdtext = 1,      --内置冷却计时数字
+        exacthp = 1,        --内置敌人精确生命值
     },
 
     player = {
@@ -39,6 +40,7 @@ UnitFramesPlusDefaultDB = {
     },
 
     pet = {
+        movable = 0,    --Shift拖动头像
         indicator = 1,    --头像内战斗信息
         target = 0,        --宠物目标
         scale = 0.8,    --宠物目标缩放比例
@@ -88,45 +90,6 @@ UnitFramesPlusDefaultDB = {
         portraitnpcno = 1,        --NPC不显示职业图标
         enemycheck = 1,    --敌友检测
     },
-
-    -- focus = {
-    --     scale = 1,        --焦点头像缩放比例
-    --     quick = 1,        --快速设置焦点
-    --     button = 1,        --快速设置焦点快捷键，1alt，2shift，3ctrl
-    --     classicon = 1,    --职业图标
-    --     moreaction = 1,    --职业图标左键观察，右键交易，中键密语，4键跟随
-    --     race = 1,        --种族和类型
-    --     colorhp = 1,    --生命条染色
-    --     colortype = 2,    --生命条染色类型：1职业，2生命值百分比
-    --     indicator = 1,    --头像内战斗信息
-    --     movable = 1,    --Shift拖动头像
-    --     portrait = 1,    --更改头像显示
-    --     portraittype = 1,        --头像类型：1为3D，2为职业图标
-    --     portrait3dbg = 1,        --3D头像背景
-    --     portraitnpcno = 1,        --NPC不显示职业图标
-    --     mouseshow = 0,    --鼠标滑过时才显示数值
-    --     extrabar = 0,        --扩展框
-    --     hpmp = 1,        --不显示扩展框时增加生命值和法力值(百分比)显示
-    --     hpmppartone = 4,--生命值和法力值第一部分：1当前值，2最大值，3損失值，4百分比
-    --     hpmpparttwo = 5,--生命值和法力值第二部分：1当前值，2最大值，3損失值，4百分比，4不显示
-    --     hpmpunit = 1,        --生命值和法力值进位
-    --     unittype = 2,    --1为千进制(k/m)，2为万进位(万/亿)
-    -- },
-
-    -- focustarget = {
-    --     show = 1,        --焦点目标
-    --     scale = 0.9,    --焦点目标缩放比例
-    --     hppct = 1,    --焦点目标生命值百分比
-    --     colorname = 1,    --焦点目标职业名字染色
-    --     colornamenpcno = 1,        --NPC不显示职业图标
-    --     shortname = 1,    --焦点目标名字服务器显示为(*)
-    --     debuff = 1,    --焦点目标debuff
-    --     cooldown = 1,        --焦点目标debuff冷却
-    --     movable = 1,    --Shift拖动ToF头像
-    --     portrait = 0,    --更改头像显示
-    --     portraitnpcno = 1,        --NPC不显示职业图标
-    --     enemycheck = 1,    --敌友检测
-    -- },
 
     party = {
         origin = 1,        --关闭团队风格小队界面
@@ -193,6 +156,13 @@ UnitFramesPlusDefaultVar = {
         moved = 0,        --玩家已被拖动
     },
 
+    pet = {
+        moving = 0,        --玩家宠物拖动状态
+        moved = 0,        --玩家宠物已被拖动
+        x = 0,        --玩家宠物位置
+        y = 0,        --玩家宠物位置
+    },
+
     target = {
         moving = 0,        --目标拖动状态
         moved = 0,        --目标已被拖动
@@ -203,17 +173,6 @@ UnitFramesPlusDefaultVar = {
         moved = 0,        --ToT已被拖动
         x = 0,        --ToT位置
         y = 0,        --ToT位置
-    },
-
-    -- focus = {
-    --     moving = 0,        --焦点拖动状态
-    -- },
-
-    focustarget = {
-        moving = 0,    --焦点目标拖动状态
-        moved = 0,        --焦点目标已被拖动
-        x = 0,        --焦点目标位置
-        y = 0,        --焦点目标位置
     },
 
     party = {
@@ -288,12 +247,6 @@ local function UnitFramesPlus_Init()
     if UnitFramesPlus_TargetTargetInit then
         UnitFramesPlus_TargetTargetInit();
     end
-    -- if UnitFramesPlus_FocusInit then
-    --     UnitFramesPlus_FocusInit();
-    -- end
-    -- if UnitFramesPlus_FocusTargetInit then
-    --     UnitFramesPlus_FocusTargetInit();
-    -- end
     if UnitFramesPlus_PartyInit then
         UnitFramesPlus_PartyInit();
     end
@@ -333,9 +286,6 @@ local function UnitFramesPlus_Layout()
     if UnitFramesPlus_TargetTargetLayout then
         UnitFramesPlus_TargetTargetLayout();
     end
-    -- if UnitFramesPlus_FocusTargetLayout then
-    --     UnitFramesPlus_FocusTargetLayout();
-    -- end
     if UnitFramesPlus_PartyTargetLayout then
         UnitFramesPlus_PartyTargetLayout();
     end

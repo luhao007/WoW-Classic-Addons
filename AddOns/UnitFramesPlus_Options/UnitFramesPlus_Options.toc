@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.27.1
+## Version: 1.28
 ## RequiredDeps: UnitFramesPlus
 ## LoadOnDemand: 1
 

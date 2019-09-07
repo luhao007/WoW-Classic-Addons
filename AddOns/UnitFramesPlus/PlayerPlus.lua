@@ -714,6 +714,69 @@ function UnitFramesPlus_PlayerBarTextMouseShow()
     end
 end
 
+--非战斗状态中允许shift+左键拖动宠物头像
+function UnitFramesPlus_PlayerPetPositionSet()
+    if UnitFramesPlusVar["pet"]["moved"] == 1 then
+        PetFrame:ClearAllPoints();
+        PetFrame:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMLEFT", UnitFramesPlusVar["pet"]["x"], UnitFramesPlusVar["pet"]["y"]);
+    else
+        PetFrame:ClearAllPoints();
+        PetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 80, -60);
+    end
+end
+
+function UnitFramesPlus_PlayerPetPosition()
+    if not InCombatLockdown() then
+        UnitFramesPlus_PlayerPetPositionSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_PlayerPetPositionSet";
+        func.callback = function()
+            UnitFramesPlus_PlayerPetPositionSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
+local function UnitFramesPlus_PlayerPetShiftDrag()
+    PetFrame:SetMovable(1);
+
+    PetFrame:SetScript("OnMouseDown", function(self, elapsed)
+        if UnitFramesPlusDB["pet"]["movable"] == 1 then
+            if IsShiftKeyDown() and (not InCombatLockdown()) then
+                PetFrame:StartMoving();
+                UnitFramesPlusVar["pet"]["moving"] = 1;
+            end
+        end
+    end)
+
+    PetFrame:SetScript("OnMouseUp", function(self, elapsed)
+        if UnitFramesPlusVar["pet"]["moving"] == 1 then
+            PetFrame:StopMovingOrSizing();
+            UnitFramesPlusVar["pet"]["moving"] = 0;
+            UnitFramesPlusVar["pet"]["moved"] = 1;
+            local bottom = PetFrame:GetBottom();
+            local left = PetFrame:GetLeft();
+            local scale = PetFrame:GetScale()*PlayerFrame:GetScale();
+            local bottomX = PlayerFrame:GetBottom();
+            local leftX = PlayerFrame:GetLeft();
+            local scaleX = PlayerFrame:GetScale();
+            UnitFramesPlusVar["pet"]["x"] = (left*scale-leftX*scaleX)/scale;
+            UnitFramesPlusVar["pet"]["y"] = (bottom*scale-bottomX*scaleX)/scale;
+            PetFrame:ClearAllPoints();
+            PetFrame:SetPoint("BOTTOMLEFT", PlayerFrame, "BOTTOMLEFT", UnitFramesPlusVar["pet"]["x"], UnitFramesPlusVar["pet"]["y"]);
+        end
+    end)
+
+    PetFrame:SetClampedToScreen(1);
+
+    --重置目标位置时同时重置宠物位置
+    hooksecurefunc("PlayerFrame_ResetUserPlacedPosition", function()
+        UnitFramesPlusVar["pet"]["moved"] = 0;
+        UnitFramesPlus_PlayerPetPosition();
+    end)
+end
+
 --模块初始化
 function UnitFramesPlus_PlayerInit()
     UnitFramesPlus_PlayerShiftDrag();
@@ -726,8 +789,10 @@ function UnitFramesPlus_PlayerInit()
     UnitFramesPlus_PlayerFrameScale();
     UnitFramesPlus_PlayerFrameAutohide();
     UnitFramesPlus_PlayerBarTextMouseShow();
+    UnitFramesPlus_PlayerPetShiftDrag();
 end
 
 function UnitFramesPlus_PlayerLayout()
     UnitFramesPlus_PlayerPosition();
+    UnitFramesPlus_PlayerPetPosition();
 end

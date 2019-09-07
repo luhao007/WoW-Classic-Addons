@@ -80,9 +80,13 @@ local function splitJourneyByDate()
                     else
                         state = "ERROR!!";
                     end
-
-                    local qName = QuestieDB:GetQuest(entry.Quest).Name;
-                    entryText = QuestieLocale:GetUIString('JOURNEY_TABLE_QUEST', state, qName);
+                    local quest = QuestieDB:GetQuest(entry.Quest)
+                    if quest then
+                        local qName = quest.Name;
+                        entryText = QuestieLocale:GetUIString('JOURNEY_TABLE_QUEST', state, qName);
+                    else
+                        entryText = QuestieLocale:GetUIString('JOURNEY_MISSING_QUEST');
+                    end
                 end
 
 
@@ -458,7 +462,7 @@ local zoneTable = {
         [51] = "Searing Gorge",
         [130] = "Silverpine Forest",
         [1519] = "Stormwind City",
-        [33] = "Strangelthorn Vale",
+        [33] = "Stranglethorn Vale",
         [8] = "Swamp of Sorrows",
         [47] = "The Hinterlands",
         [85] = "Tirisfal Glade",
@@ -555,8 +559,12 @@ function createObjectiveText(desc)
     local objText = "";
 
     if desc then
-        for i, v in ipairs(desc) do
-            objText = objText .. v .. "\n";
+        if type(desc) == "table" then
+            for i, v in ipairs(desc) do
+                objText = objText .. v .. "\n";
+            end
+        else
+            objText = objText .. tostring(desc) .. "\n"
         end
     else
         objText = Questie:Colorize(QuestieLocale:GetUIString('JOURNEY_AUTO_QUEST'), 'yellow');
@@ -1152,10 +1160,10 @@ function CollectZoneQuests(container, zoneid)
         if not Questie.db.char.complete[qid] and not q.Hidden then
 
             -- see if it's supposed to be a hidden quest
-            if qHide and not qHide[qid] then
+            if QuestieCorrections.hiddenQuests and not QuestieCorrections.hiddenQuests[qid] then
 
                 -- remove any breadcrumb quests too
-                if questExclusiveGroupFixes and not questExclusiveGroupFixes[qid] then
+                if QuestieCorrections.questExclusiveGroupFixes and not QuestieCorrections.questExclusiveGroupFixes[qid] then
                     temp.value = qid;
                     temp.text = q:GetColoredQuestName();
                     table.insert(zoneTree[1].children, temp);
