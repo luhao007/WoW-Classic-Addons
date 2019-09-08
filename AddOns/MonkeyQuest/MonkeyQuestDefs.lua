@@ -1,3 +1,12 @@
+-- make default var config-able, based on client locale
+local locale = GetLocale()
+local l
+if (locale == "zhTW" or locale == "zhCN" or locale == "koKR") then 
+	l = 2
+else
+	l = 0
+end
+
 -- default "constants" like #define in C :)
 MONKEYQUEST_DELAY							= 0.3;
 MONKEYQUEST_PADDING							= 25;
@@ -38,7 +47,7 @@ MONKEYQUEST_DEFAULT_HIDETITLE				= false;
 MONKEYQUEST_DEFAULT_WORKCOMPLETE			= true;
 MONKEYQUEST_DEFAULT_COLOURTITLE				= false;
 MONKEYQUEST_DEFAULT_FONTHEIGHT				= 12;
-MONKEYQUEST_DEFAULT_FONT					= 2;
+MONKEYQUEST_DEFAULT_FONT					= l;
 MONKEYQUEST_DEFAULT_CRASHBORDER				= false;
 MONKEYQUEST_DEFAULT_QUESTTITLECOLOUR		= "|cFFFFFFFF";
 MONKEYQUEST_DEFAULT_HEADEROPENCOLOUR		= "|cFFBFBFFF";

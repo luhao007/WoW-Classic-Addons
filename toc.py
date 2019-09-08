@@ -7,6 +7,8 @@ class TOC(object):
             if e != '\n':
                 self.contents = self.contents[i:]
                 break
+        else:
+            self.contents = []
 
     def tags_to_line(self, tags):
         return ['## {}: {}\n'.format(tag, self.tags[tag].strip())

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Trentin, Jim-Bim
-## Version: v3.3.15c
+## Version: v3.4.0
 ## OptionalDeps: LibDataBroker-1.1
 ## SavedVariables: MonkeySpeedVars
 

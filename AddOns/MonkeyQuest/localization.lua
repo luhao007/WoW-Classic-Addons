@@ -1,6 +1,6 @@
 ﻿-- Not translations
 MONKEYQUEST_TITLE						= "MonkeyQuest"
-MONKEYQUEST_VERSION						= "2.9.39c"
+MONKEYQUEST_VERSION						= "2.10.0"
 MONKEYQUEST_TITLE_VERSION				= MONKEYQUEST_TITLE .. " v" .. MONKEYQUEST_VERSION
 MONKEYQUEST_INFO_COLOUR					= "|cffffff00"
 MONKEYQUEST_CHAT_COLOUR					= "|cff00ff00"
@@ -490,5 +490,261 @@ BINDING_NAME_MONKEYQUEST_CLOSE			= "Cerrar/Abrir"
 BINDING_NAME_MONKEYQUEST_MINIMIZE		= "Minimizar/Restaurar"
 BINDING_NAME_MONKEYQUEST_HIDDEN			= "Ocultar/Mostrar todos los objetos ocultos"
 BINDING_NAME_MONKEYQUEST_NOHEADERS		= "Toggle No Headers"
+
+elseif (GetLocale() == "zhTW") then
+
+-- English, the default
+MONKEYQUEST_DESCRIPTION					= "顯示一個便於瀏覽的任務視窗。"
+MONKEYQUEST_LOADED_MSG					= MONKEYQUEST_INFO_COLOUR .. MONKEYQUEST_TITLE .. " v" .. MONKEYQUEST_VERSION .. " loaded"
+MONKEYQUEST_OPTIONS1					= "請安裝MonkeyBuddy來幫助你調整MonkeyQuest的設定"
+MONKEYQUEST_OPTIONS2					= "\124TInterface\\Icons\\Trade_Engineering:0\124t尚未安裝MonkeyBuddy"
+
+MONKEYQUEST_NO_HEADER					= "無標題"
+MONKEYQUEST_QUEST_DONE					= "完成"
+MONKEYQUEST_QUEST_FAILED				= "失敗"
+MONKEYQUEST_CONFIRM_RESET				= "確定要把" .. MONKEYQUEST_TITLE .. "的設定還原為預設值嗎？"
+MONKEYQUEST_CONFIRM_RESET_TO_BLIZZARD_STYLE				= "要把" .. MONKEYQUEST_TITLE .. "調整成與暴雪的任務追蹤相似的風格嗎？"
+
+MONKEYQUEST_SET_WIDTH_MSG				= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：你必需'/reloadui'，才能使寬度變更生效"
+MONKEYQUEST_RESET_MSG					= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：設定已還原。"
+MONKEYQUEST_RESET_TO_BLIZZARD_STYLE_MSG	= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：已將任務追蹤框的外觀調整為暴雪風格"
+
+MONKEYQUEST_HELP_MSG					= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest help <command>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "<command>可以是下面這幾種：\n" ..
+										  "reset, open, close, showhidden, hidehidden, useoverviews, nooverviews, " ..
+										  "tipanchor, alpha, width, hideheaders, showheaders, hideborder, showborder, " ..
+										  "growup, growdown, hidenumquests, shownumquests, lock, unlock, colourtitleon, " ..
+										  "colourtitleoff, hidecompletedquests, showcompletedquests, hidecompletedobjectives, " ..
+										  "showcompletedobjectives, fontheight, showtooltipobjectives, hidetootipobjectives, " ..
+										  "allowrightclick, disallowrightclick, hidetitlebuttons, showtitlebuttons, allowworkcomplete, disallowworkcomplete, " ..
+										  "colourobjectiveson, colourobjectivesoff, showitems, hideitems, itemsonleft, itemsonright, hideviaclick, nohideviaclick."
+MONKEYQUEST_HELP_RESET_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest reset\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "Displays the reset config variables dialog.\n"
+MONKEYQUEST_HELP_OPEN_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest open\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "顯示" .. MONKEYQUEST_TITLE .. "視窗\n"
+MONKEYQUEST_HELP_CLOSE_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest close\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隱藏" .. MONKEYQUEST_TITLE .. "視窗\n"
+MONKEYQUEST_HELP_SHOWHIDDEN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showhidden\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "顯示折疊的區域與隱藏的任務\n"
+MONKEYQUEST_HELP_HIDEHIDDEN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidehidden\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隱藏折疊的區域與隱藏的任務\n"
+MONKEYQUEST_HELP_USEOVERVIEWS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest useoverviews\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "沒有具體的任務目標時，顯示任務概述\n"
+MONKEYQUEST_HELP_NOOVERVIEWS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest nooverviews\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "沒有具體目標的任務，同樣不顯示任務概述\n"
+MONKEYQUEST_HELP_TIPANCHOR_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest tipanchor=<anchor position>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "設定滑鼠提示錨點於主視窗的位置：<anchor position>" .. 
+										  "可以是：\nANCHOR_TOPLEFT, ANCHOR_TOPRIGHT, ANCHOR_TOP, ANCHOR_LEFT, " ..
+										  "ANCHOR_RIGHT, ANCHOR_BOTTOMLEFT, ANCHOR_BOTTOMRIGHT, ANCHOR_BOTTOM, ANCHOR_CURSOR, " .. 
+										  "DEFAULT, NONE"
+MONKEYQUEST_HELP_ALPHA_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest alpha=<0 - 255>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "設定透明度的值\n"
+MONKEYQUEST_HELP_WIDTH_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest width=<positive integer>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "設定寬度的值，預設255\n"
+MONKEYQUEST_HELP_HIDEHEADERS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hideheaders\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不顯示區域標題。\n"
+MONKEYQUEST_HELP_SHOWHEADERS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showheaders\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "顯示區域標題。\n"
+MONKEYQUEST_HELP_HIDEBORDER_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hideborder\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隱藏" .. MONKEYQUEST_TITLE .. "主視窗的邊框\n"
+MONKEYQUEST_HELP_SHOWBORDER_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showborder\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "顯示" .. MONKEYQUEST_TITLE .. "主視窗的邊框\n"
+MONKEYQUEST_HELP_GROWUP_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest growup\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使" .. MONKEYQUEST_TITLE .. "主視窗向上展開\n"
+MONKEYQUEST_HELP_GROWDOWN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest growdown\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使" .. MONKEYQUEST_TITLE .. "主視窗向下展開\n"
+MONKEYQUEST_HELP_HIDENUMQUESTS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidenumquests\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不要在主標題上顯示任務數量\n"
+MONKEYQUEST_HELP_SHOWNUMQUESTS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest shownumquests\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "在主標題上顯示任務數量\n"
+MONKEYQUEST_HELP_LOCK_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest lock\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "鎖定" .. MONKEYQUEST_TITLE .. "的位置。\n"
+MONKEYQUEST_HELP_UNLOCK_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest unlock\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "解鎖" .. MONKEYQUEST_TITLE .. "視窗，使其可移動。\n"
+MONKEYQUEST_HELP_COLOURTITLEON_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest colourtitleon\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "根據難度著色任務標題。\n"
+MONKEYQUEST_HELP_COLOURTITLEOFF_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest colourtitleoff\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不以難度著色任務標題。\n"
+MONKEYQUEST_HELP_HIDECOMPLETEDQUESTS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidecompletedquests\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "隱藏已完成任務。\n"
+MONKEYQUEST_HELP_SHOWCOMPLETEDQUESTS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showcompletedquests\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "顯示已完成任務。\n"
+MONKEYQUEST_HELP_HIDECOMPLETEDOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidecompletedobjectives\n" ..
+												  MONKEYQUEST_CHAT_COLOUR .. "隱藏已完成目標\n"
+MONKEYQUEST_HELP_SHOWCOMPLETEDOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showcompletedobjectives\n" ..
+												  MONKEYQUEST_CHAT_COLOUR .. "顯示已完成目標\n"
+MONKEYQUEST_HELP_FONTHEIGHT_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest fontheight=<positive integer>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "設定字型大小，預設12\n"
+MONKEYQUEST_HELP_SHOWTOOLTIPOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showtooltipobjectives\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "在任物目標的滑鼠提示上顯示進度\n"
+MONKEYQUEST_HELP_HIDETOOLTIPOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidetooltipobjectives\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "不在任務目標的滑鼠提示上顯示進度\n"
+MONKEYQUEST_HELP_ALLOWRIGHTCLICK_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest allowrightclick\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "右鍵點擊視窗開啟MonkeyBuddy。\n"
+MONKEYQUEST_HELP_DISALLOWRIGHTCLICK_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest disallowrightclick\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使你不能用右鍵點擊視窗開啟MonkeyBuddy。\n"
+MONKEYQUEST_HELP_HIDETITLEBUTTONS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidetitlebuttons\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隱藏主標題按鈕。\n"
+MONKEYQUEST_HELP_SHOWTITLEBUTTONS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showtitlebuttons\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "顯示主標題按鈕。\n"
+MONKEYQUEST_HELP_ALLOWWORKCOMPLETE_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest allowworkcomplete\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "啟用「任務完成」的音效"
+MONKEYQUEST_HELP_DISALLOWWORKCOMPLETE_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest disallowworkcomplete\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "停用「任務完成」的音效"
+
+-- tooltip strings
+MONKEYQUEST_TOOLTIP_QUESTITEM			= "任務物品"					-- as it appears in the tooltip of unique quest items
+MONKEYQUEST_TOOLTIP_QUEST				= "任務"
+MONKEYQUEST_TOOLTIP_SLAIN				= "擊殺"						-- as it appears in the objective text
+
+-- misc quest strings
+MONKEYQUEST_DUNGEON						= "地城"
+MONKEYQUEST_PVP							= "PvP"
+
+-- noob tips
+MONKEYQUEST_NOOBTIP_HEADER				= "新手提示"
+
+MONKEYQUEST_NOOBTIP_CLOSE				= "點擊這裡關閉主視窗。重新打開請用："
+MONKEYQUEST_NOOBTIP_MINIMIZE			= "點擊這裡將主視窗最小化"
+MONKEYQUEST_NOOBTIP_RESTORE				= "點擊這裡還原主視窗"
+MONKEYQUEST_NOOBTIP_SHOWALLHIDDEN		= "點擊這裡顯示所有隱藏的項目"
+MONKEYQUEST_NOOBTIP_HIDEALLHIDDEN		= "點擊這裡隱藏所有未勾選的項目"
+MONKEYQUEST_NOOBTIP_HIDEBUTTON			= "點擊這裡，取消勾選來隱藏這個任務。要重新顯示，啟用「顯示所有隱藏的項目」"
+MONKEYQUEST_NOOBTIP_TITLE				= "右鍵點擊此處開啟MonkeyBuddy，調整" .. MONKEYQUEST_TITLE .. "的設定"
+MONKEYQUEST_NOOBTIP_QUESTHEADER			= "點擊這裡隱藏或顯示這個區域內的所有任務。要重新顯示，啟用「顯示所有隱藏的項目」"
+
+-- bindings
+BINDING_NAME_MONKEYQUEST_CLOSE			= "開啟或關閉"
+BINDING_NAME_MONKEYQUEST_MINIMIZE		= "縮小或還原"
+BINDING_NAME_MONKEYQUEST_HIDDEN			= "顯示已隱藏的項目"
+BINDING_NAME_MONKEYQUEST_NOHEADERS		= "顯示或隱藏區域標題"
+
+elseif (GetLocale() == "zhCN") then
+
+-- English, the default
+MONKEYQUEST_DESCRIPTION					= "显示一个便于浏览的任务窗口。"
+MONKEYQUEST_LOADED_MSG					= MONKEYQUEST_INFO_COLOUR .. MONKEYQUEST_TITLE .. " v" .. MONKEYQUEST_VERSION .. " loaded"
+MONKEYQUEST_OPTIONS1					= "请安装MonkeyBuddy来帮助你调整MonkeyQuest的设置"
+MONKEYQUEST_OPTIONS2					= "\124TInterface\\Icons\\Trade_Engineering:0\124t尚未安装MonkeyBuddy"
+
+MONKEYQUEST_NO_HEADER					= "无标题"
+MONKEYQUEST_QUEST_DONE					= "完成"
+MONKEYQUEST_QUEST_FAILED				= "失败"
+MONKEYQUEST_CONFIRM_RESET				= "确定要把" .. MONKEYQUEST_TITLE .. "的设置还原为默认值吗？"
+MONKEYQUEST_CONFIRM_RESET_TO_BLIZZARD_STYLE				= "要把" .. MONKEYQUEST_TITLE .. "调整成与暴雪的任务追踪相似的风格吗？"
+
+MONKEYQUEST_SET_WIDTH_MSG				= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：你必需'/reloadui'，才能使宽度变更生效"
+MONKEYQUEST_RESET_MSG					= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：设置已还原。"
+MONKEYQUEST_RESET_TO_BLIZZARD_STYLE_MSG	= MONKEYQUEST_CHAT_COLOUR .. MONKEYQUEST_TITLE .. "：已将任务追踪框的外观调整为暴雪风格"
+
+MONKEYQUEST_HELP_MSG					= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest help <command>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "<command>可以是下面这几种：\n" ..
+										  "reset, open, close, showhidden, hidehidden, useoverviews, nooverviews, " ..
+										  "tipanchor, alpha, width, hideheaders, showheaders, hideborder, showborder, " ..
+										  "growup, growdown, hidenumquests, shownumquests, lock, unlock, colourtitleon, " ..
+										  "colourtitleoff, hidecompletedquests, showcompletedquests, hidecompletedobjectives, " ..
+										  "showcompletedobjectives, fontheight, showtooltipobjectives, hidetootipobjectives, " ..
+										  "allowrightclick, disallowrightclick, hidetitlebuttons, showtitlebuttons, allowworkcomplete, disallowworkcomplete, " ..
+										  "colourobjectiveson, colourobjectivesoff, showitems, hideitems, itemsonleft, itemsonright, hideviaclick, nohideviaclick."
+MONKEYQUEST_HELP_RESET_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest reset\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "Displays the reset config variables dialog.\n"
+MONKEYQUEST_HELP_OPEN_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest open\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "显示" .. MONKEYQUEST_TITLE .. "窗口\n"
+MONKEYQUEST_HELP_CLOSE_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest close\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隐藏" .. MONKEYQUEST_TITLE .. "窗口\n"
+MONKEYQUEST_HELP_SHOWHIDDEN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showhidden\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "显示折叠的区域与隐藏的任务\n"
+MONKEYQUEST_HELP_HIDEHIDDEN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidehidden\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隐藏折叠的区域与隐藏的任务\n"
+MONKEYQUEST_HELP_USEOVERVIEWS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest useoverviews\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "没有具体的任务目标时，显示任务概述\n"
+MONKEYQUEST_HELP_NOOVERVIEWS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest nooverviews\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "没有具体目标的任务时，同样不显示任务概述\n"
+MONKEYQUEST_HELP_TIPANCHOR_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest tipanchor=<anchor position>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "设置鼠标提示锚点于主窗口的位置：<anchor position>" .. 
+										  "可以是：\nANCHOR_TOPLEFT, ANCHOR_TOPRIGHT, ANCHOR_TOP, ANCHOR_LEFT, " ..
+										  "ANCHOR_RIGHT, ANCHOR_BOTTOMLEFT, ANCHOR_BOTTOMRIGHT, ANCHOR_BOTTOM, ANCHOR_CURSOR, " .. 
+										  "DEFAULT, NONE"
+MONKEYQUEST_HELP_ALPHA_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest alpha=<0 - 255>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "设置透明度的值\n"
+MONKEYQUEST_HELP_WIDTH_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest width=<positive integer>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "设置宽度的值，默认255\n"
+MONKEYQUEST_HELP_HIDEHEADERS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hideheaders\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不显示区域标题。\n"
+MONKEYQUEST_HELP_SHOWHEADERS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showheaders\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "显示区域标题。\n"
+MONKEYQUEST_HELP_HIDEBORDER_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hideborder\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隐藏" .. MONKEYQUEST_TITLE .. "边框\n"
+MONKEYQUEST_HELP_SHOWBORDER_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showborder\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "显示" .. MONKEYQUEST_TITLE .. "边框\n"
+MONKEYQUEST_HELP_GROWUP_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest growup\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使" .. MONKEYQUEST_TITLE .. "向上展开\n"
+MONKEYQUEST_HELP_GROWDOWN_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest growdown\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使" .. MONKEYQUEST_TITLE .. "向下展开\n"
+MONKEYQUEST_HELP_HIDENUMQUESTS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidenumquests\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不要在主标题上显示任务数量\n"
+MONKEYQUEST_HELP_SHOWNUMQUESTS_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest shownumquests\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "在主标题上显示任务数量\n"
+MONKEYQUEST_HELP_LOCK_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest lock\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "锁定" .. MONKEYQUEST_TITLE .. "的位置。\n"
+MONKEYQUEST_HELP_UNLOCK_MSG				= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest unlock\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "解锁" .. MONKEYQUEST_TITLE .. "，使其可移动。\n"
+MONKEYQUEST_HELP_COLOURTITLEON_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest colourtitleon\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "根据难度着色任务标题。\n"
+MONKEYQUEST_HELP_COLOURTITLEOFF_MSG		= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest colourtitleoff\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "不以难度着色任务标题。\n"
+MONKEYQUEST_HELP_HIDECOMPLETEDQUESTS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidecompletedquests\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "隐藏已完成任务。\n"
+MONKEYQUEST_HELP_SHOWCOMPLETEDQUESTS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showcompletedquests\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "显示已完成任务。\n"
+MONKEYQUEST_HELP_HIDECOMPLETEDOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidecompletedobjectives\n" ..
+												  MONKEYQUEST_CHAT_COLOUR .. "隐藏已完成目标\n"
+MONKEYQUEST_HELP_SHOWCOMPLETEDOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showcompletedobjectives\n" ..
+												  MONKEYQUEST_CHAT_COLOUR .. "显示已完成目标\n"
+MONKEYQUEST_HELP_FONTHEIGHT_MSG			= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest fontheight=<positive integer>\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "设置字号，默认12\n"
+MONKEYQUEST_HELP_SHOWTOOLTIPOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showtooltipobjectives\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "在任物目标的鼠标提示上显示进度\n"
+MONKEYQUEST_HELP_HIDETOOLTIPOBJECTIVES_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidetooltipobjectives\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "不在任务目标的鼠标提示上显示进度\n"
+MONKEYQUEST_HELP_ALLOWRIGHTCLICK_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest allowrightclick\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "右键点击窗口开启MonkeyBuddy。\n"
+MONKEYQUEST_HELP_DISALLOWRIGHTCLICK_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest disallowrightclick\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "使你不能用右键点击窗口开启MonkeyBuddy。\n"
+MONKEYQUEST_HELP_HIDETITLEBUTTONS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest hidetitlebuttons\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "隐藏主标题按钮。\n"
+MONKEYQUEST_HELP_SHOWTITLEBUTTONS_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest showtitlebuttons\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "显示主标题按钮。\n"
+MONKEYQUEST_HELP_ALLOWWORKCOMPLETE_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest allowworkcomplete\n" ..
+										  MONKEYQUEST_CHAT_COLOUR .. "启用“任务完成”的音效"
+MONKEYQUEST_HELP_DISALLOWWORKCOMPLETE_MSG	= MONKEYQUEST_INFO_COLOUR .. "指令：/mquest disallowworkcomplete\n" ..
+											  MONKEYQUEST_CHAT_COLOUR .. "停用“任务完成”的音效"
+
+-- tooltip strings
+MONKEYQUEST_TOOLTIP_QUESTITEM			= "任务物品"					-- as it appears in the tooltip of unique quest items
+MONKEYQUEST_TOOLTIP_QUEST				= "任务"
+MONKEYQUEST_TOOLTIP_SLAIN				= "击杀"						-- as it appears in the objective text
+
+-- misc quest strings
+MONKEYQUEST_DUNGEON						= "地城"
+MONKEYQUEST_PVP							= "PvP"
+
+-- noob tips
+MONKEYQUEST_NOOBTIP_HEADER				= "新手提示"
+
+MONKEYQUEST_NOOBTIP_CLOSE				= "点击这里关闭主视窗。重新打开请用："
+MONKEYQUEST_NOOBTIP_MINIMIZE			= "点击这里将主视窗最小化"
+MONKEYQUEST_NOOBTIP_RESTORE				= "点击这里还原主视窗"
+MONKEYQUEST_NOOBTIP_SHOWALLHIDDEN		= "点击这里显示所有隐藏的项目"
+MONKEYQUEST_NOOBTIP_HIDEALLHIDDEN		= "点击这里隐藏所有未勾选的项目"
+MONKEYQUEST_NOOBTIP_HIDEBUTTON			= "点击这里，取消勾选来隐藏这个任务。要重新显示，启用“显示所有隐藏的项目”"
+MONKEYQUEST_NOOBTIP_TITLE				= "右键点击此处开启MonkeyBuddy，调整" .. MONKEYQUEST_TITLE .. "的设置"
+MONKEYQUEST_NOOBTIP_QUESTHEADER			= "点击这里隐藏或显示这个区域内的所有任务。要重新显示，启用“显示所有隐藏的项目”"
+
+-- bindings
+BINDING_NAME_MONKEYQUEST_CLOSE			= "开启或关闭"
+BINDING_NAME_MONKEYQUEST_MINIMIZE		= "缩小或还原"
+BINDING_NAME_MONKEYQUEST_HIDDEN			= "显示已隐藏的项目"
+BINDING_NAME_MONKEYQUEST_NOHEADERS		= "显示或隐藏区域标题"
 
 end
