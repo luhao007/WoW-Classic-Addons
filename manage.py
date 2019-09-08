@@ -19,10 +19,10 @@ MAPPING = {
         'Category': '基础库'
     },
     'ATT-Classic': {
-        'Title-cn': '账号完成度管理',
+        'Title-cn': '收集控助手',
         'Title-en': 'ALL THE THINGS',
-        'Notes': '追踪账号完成度，如各个区域的任务和飞行点等',
-        'Category': '辅助'
+        'Notes': '追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况',
+        'Category': '账号'
     },
     'AdvancedInterfaceOptions': {
         'Title-cn': '高级界面设置',
@@ -30,40 +30,78 @@ MAPPING = {
         'Notes': '可以修改各种隐藏参数，包括隐藏的内部CVar参数',
         'Category': '界面'
     },
+    'Atlas': {
+        'Title-cn': '副本地图',
+        'Title-en': 'Atlas',
+        'Category': '副本'
+    },
+    'Atlas_Battlegrounds': {
+        'Title-cn': '副本地图',
+        'Title-sub': '战场',
+        'Category': '副本'
+    },
+    'Atlas_ClassicWoW': {
+        'Title-cn': '副本地图',
+        'Title-sub': '经典旧世',
+        'Category': '副本'
+    },
+    'Atlas_DungeonLocs': {
+        'Title-cn': '副本地图',
+        'Title-sub': '副本位置',
+        'Category': '副本'
+    },
+    'Atlas_Transportation': {
+        'Title-cn': '副本地图',
+        'Title-sub': '交通',
+        'Category': '副本'
+    },
     'AtlasLootClassic': {
         'Title-cn': '副本掉落',
         'Title-en': 'AtlasLoot Classic',
-        'Category': '物品'
+        'Notes': '显示首领可能掉落的物品',
+        'Category': '副本'
     },
     'AtlasLootClassic_Collections': {
         'Title-cn': '副本掉落',
         'Title-sub': '套装',
-        'Category': '物品'
+        'Notes': 'AtlasLoot 套装列表',
+        'Category': '副本'
     },
     'AtlasLootClassic_Crafting': {
         'Title-cn': '副本掉落',
-        'Title-sub': '专业制造',
-        'Category': '物品'
+        'Title-sub': '专业制作',
+        'Notes': 'AtlasLoot 专业制作物品列表',
+        'Category': '副本'
     },
     'AtlasLootClassic_DungeonsAndRaids': {
         'Title-cn': '副本掉落',
         'Title-sub': '地下城和团队',
-        'Category': '物品'
+        'Notes': 'AtlasLoot 地下城和团队副本掉落列表',
+        'Category': '副本'
     },
     'AtlasLootClassic_Factions': {
         'Title-cn': '副本掉落',
-        'Title-sub': '声望物品',
-        'Category': '物品'
+        'Title-sub': '阵营',
+        'Notes': 'AtlasLoot 阵营物品列表',
+        'Category': '副本'
+    },
+    'AtlasLootClassic_Maps': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '地图',
+        'Notes': 'AtlasLoot 地图模块',
+        'Category': '副本'
     },
     'AtlasLootClassic_Options': {
         'Title-cn': '副本掉落',
         'Title-sub': '设置',
-        'Category': '物品'
+        'Notes': 'AtlasLoot 选项模块',
+        'Category': '副本'
     },
     'AtlasLootClassic_PvP': {
         'Title-cn': '副本掉落',
         'Title-sub': 'PVP',
-        'Category': '物品'
+        'Notes': 'AtlasLoot PVP物品列表',
+        'Category': '副本'
     },
     'Auc-Advanced': {
         'Title-cn': '拍卖助手',
@@ -177,24 +215,77 @@ MAPPING = {
         'Title-cn': '游戏字体',
         'Category': '界面'
     },
-    'DBM-AQ20': {},
-    'DBM-AQ40': {},
-    'DBM-Azeroth': {},
-    'DBM-BWL': {},
+    'DBM-AQ20': {
+        'Title-cn': '副本助手',
+        'Title-sub': '安其拉废墟',
+        'Category': '副本'
+    },
+    'DBM-AQ40': {
+        'Title-cn': '副本助手',
+        'Title-sub': '安其拉神殿',
+        'Category': '副本'
+    },
+    'DBM-Azeroth': {
+        'Title-cn': '副本助手',
+        'Title-sub': '世界首领',
+        'Category': '副本'
+    },
+    'DBM-BWL': {
+        'Title-cn': '副本助手',
+        'Title-sub': '黑翼之巢',
+        'Category': '副本'
+    },
     'DBM-Core': {
         'Title-cn': '副本助手',
         'Title-en': 'Deadly Boss Mods',
-        'Category': 'DBM'
+        'Notes': '功能强大的副本助手，支持所有Boss。',
+        'Category': '副本'
     },
-    'DBM-DefaultSkin': {},
-    'DBM-GUI': {},
-    'DBM-MC': {},
-    'DBM-Naxx': {},
-    'DBM-Onyxia': {},
-    'DBM-Party-Classic': {},
-    'DBM-StatusBarTimers': {},
-    'DBM-VPYike': {},
-    'DBM-ZG': {},
+    'DBM-DefaultSkin': {
+        'Title-cn': '副本助手',
+        'Title-sub': '皮肤：经典计时条',
+        'Category': '副本'
+    },
+    'DBM-GUI': {
+        'Title-cn': '副本助手',
+        'Title-sub': '设置',
+        'Category': '副本'
+    },
+    'DBM-MC': {
+        'Title-cn': '副本助手',
+        'Title-sub': '熔火之心',
+        'Category': '副本'
+    },
+    'DBM-Naxx': {
+        'Title-cn': '副本助手',
+        'Title-sub': '纳克萨玛斯',
+        'Category': '副本'
+    },
+    'DBM-Onyxia': {
+        'Title-cn': '副本助手',
+        'Title-sub': '奥妮克西娅的巢穴',
+        'Category': '副本'
+    },
+    'DBM-Party-Classic': {
+        'Title-cn': '副本助手',
+        'Title-sub': '队伍首领',
+        'Category': '副本'
+    },
+    'DBM-StatusBarTimers': {
+        'Title-cn': '副本助手',
+        'Title-sub': '状态条计时器',
+        'Category': '副本'
+    },
+    'DBM-VPYike': {
+        'Title-cn': '副本助手',
+        'Title-sub': '夏一可语音包',
+        'Category': '副本'
+    },
+    'DBM-ZG': {
+        'Title-cn': '副本助手',
+        'Title-sub': '祖尔格拉布',
+        'Category': '副本'
+    },
     'Enchantrix': {
         'Title-cn': '附魔助手',
         'Notes': '提示物品分解后可能得到的材料',
@@ -306,7 +397,7 @@ MAPPING = {
     'oRA3': {
         'Title-cn': '团队助手',
         'Notes': '提供团队和小队的一些辅助功能',
-        'Category': '辅助'
+        'Category': '副本'
     },
     'Prat-3.0': {
         'Title-cn': '聊天增强',
@@ -486,15 +577,22 @@ def get_cn_title(addon):
             color = '1E90FF'  # Doget blue
         elif cat == '界面':
             color = 'BA55D3'  # Medium orchid
-        elif cat == '辅助':
-            color = 'FF1493'  # Deep pink
+        elif cat == '副本':
+            color = 'FF7D0A'  # Orange - DBM
         else:
-            color = 'FF7D0A'
+            color = 'FF1493'  # Deep pink
         title += '|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r '.format(color, cat)
     if 'Title-cn' in m:
         title += '|cFFFFFFFF{}|r '.format(m['Title-cn'])
     if 'Title-sub' in m:
-        title += '|cFF22B14C[{}]|r'.format(m['Title-sub'])
+        sub = m['Title-sub']
+        if sub == '设置':
+            color = 'FF0055FF'
+        elif '文' in sub:
+            color = 'FF22B14C'
+        else:
+            color = 'FF69CCF0'
+        title += '|c{}{}|r'.format(color, sub)
     elif ('DBM' not in addon or addon == 'DBM-Core') and 'Grail-' not in addon and addon != '!!Libs':
         title += '|cFFFFE00A{}|r'.format(m.get('Title-en', addon))
 

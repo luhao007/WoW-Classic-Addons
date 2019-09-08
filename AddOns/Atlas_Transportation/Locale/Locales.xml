@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Atlas_Transportation-enUS.lua"/>
+	<Script file="Atlas_Transportation-ruRU.lua"/>
+	<Script file="Atlas_Transportation-deDE.lua"/>
+	<Script file="Atlas_Transportation-frFR.lua"/>
+	<Script file="Atlas_Transportation-zhCN.lua"/>
+	<Script file="Atlas_Transportation-esES.lua"/>
+	<Script file="Atlas_Transportation-esMX.lua"/>
+	<Script file="Atlas_Transportation-zhTW.lua"/>
+	<Script file="Atlas_Transportation-ptBR.lua"/>
+	<Script file="Atlas_Transportation-itIT.lua"/>
+	<Script file="Atlas_Transportation-koKR.lua"/>
+</Ui>

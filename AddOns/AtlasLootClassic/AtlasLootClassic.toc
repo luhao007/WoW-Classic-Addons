@@ -8,8 +8,8 @@
 
 ## Title: AtlasLootClassic |cFF22B14C[Core]|r
 ## Notes: Shows the possible loot from the bosses
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFFFFE00AAtlasLoot Classic|r
-## Notes-zhCN: 显示首领可能的掉落物品
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFFFFE00AAtlasLoot Classic|r
+## Notes-zhCN: 显示首领可能掉落的物品
 
 ## X-Credits: Daviesh, Lag, Arith, Cellelach, Asurn, Pernicus, Dynaletik and many others
 ## X-Category: Map

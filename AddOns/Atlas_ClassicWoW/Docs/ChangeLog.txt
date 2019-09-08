@@ -1,0 +1,154 @@
+$Id: ChangeLog.txt 42 2019-09-07 16:37:35Z arith $
+Atlas, a World of Warcraft instance map browser
+Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
+Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
+Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+
+==============
+= Change Log =
+==============
+
+v1.45.00.11302.03 (Sep. 07, 2019)
+------------------------
+- Fixed issue that The Deadmins' map can't be displayed properly
+
+v1.45.00.11302.02 (Sep. 07, 2019)
+------------------------
+- Re-package since curseforge's auto-packaging won't work
+
+v1.45.00.11302.01 (Sep. 07, 2019)
+------------------------
+- Map data revert to Atlas_v1.10.0 (WoW 2.1)
+
+v1.45.00.11302.00 (Sep. 05, 2019)
+------------------------
+- Classic WoW support
+
+v1.45.00 (Sep. 04, 2019)
+------------------------
+- ToC update to support WoW 8.2.0
+
+v1.44.01 (Dec. 18, 2018)
+------------------------
+- ToC update to support WoW 8.1.0
+
+v1.44.00 (Aug. 09, 2018)
+------------------------
+- ToC update to support WoW 8.0.1
+- MapID convert to uiMapID
+
+v1.43.00 (Aug. 30, 2017)
+------------------------
+- ToC update to support WoW 7.3.0
+
+v1.42.01 (Jul. 06, 2017)
+------------------------
+- Change Atlas_GetBossName() to Atlas:GetBossName()
+- Enhanced sub-boss' presentation by calling Atlas:GetBossName()
+
+v1.42.00 (Jun. 29, 2017)
+------------------------
+- Updated to support Atlas 1.42.00
+
+v1.39.00 (Mar. 27, 2017)
+------------------------
+- Toc update to support WoW 7.2
+
+v1.38.00 (Mar. 16, 2017)
+------------------------
+- Translation update:
+  - Korean (netaras)
+
+v1.36.00 (Jan. 16, 2017)
+------------------------
+- Added to support quick map switching by clicking the Next or 
+  Previous map button
+- Added dungeon level info
+
+v1.35.00 (Oct. 27, 2016)
+------------------------
+- Toc update to support WoW 7.1.0
+- Translation update: 
+  - Korean (wooyekim)
+
+v1.34.00 (Sep. 09, 2016)
+------------------------
+- Move main map data from core Atlas into individual module's DB
+
+v1.33.01 (Aug. 06, 2016)
+------------------------
+- Update node info:
+  - The Sunken Temple Entrance map - Jammal'an the Prophet
+  - The Sunken Temple map - Dreamscythe
+  
+v1.33.00 (Jul. 19, 2016)
+------------------------
+- Toc updated to support WoW Legion pre-patch (7.0.3)
+- Updated boss info for the following ones:
+  - Ruins of Ahn'Qiraj, Temple of Ahn'Qiraj, Blackwing Lair, The Molten Core
+
+v1.32.01 (May 11, 2016)
+-----------------------
+- Moved map db info from core Atlas to this module for better maintenance
+- Added maps' additional tooltips
+
+v1.32.00 (Jul. 13, 2015)
+------------------------
+- TOC update to support WoW 6.2
+
+v1.31.01 (Mar. 01, 2015)
+------------------------
+- TOC update to support WoW 6.1
+
+v1.31.00 (Nov. 10, 2014)
+-----------------------
+- Maps updated:
+    - Blackfathom Deeps
+    - Lower Blackrock Spire
+    - Razorfen Downs
+    - Razorfen Kraul
+- Split entrance maps from Atlas core addon
+
+v1.30.00 (Oct. 15, 2014)
+-----------------------
+- TOC update to support WoW 6.0
+
+v1.26.00 (Sep. 09, 2013)
+-----------------------
+- TOC update to support WoW 5.4
+
+v1.25.00 (May 21, 2013)
+-----------------------
+- TOC update to support WoW 5.3
+
+v1.24.00 (Mar. 05, 2013)
+-----------------------
+- TOC update to support WoW 5.2
+
+v1.23.0 (Dec. 07, 2012)
+-----------------------
+- TOC update to support WoW 5.1
+
+v1.22.1 (Oct. 10, 2012)
+-----------------------
+- Map update
+    - Stratholme - Crusaders' Square
+    - Stratholme - The Gauntlet
+    
+v1.22.0 (Sep. 25, 2012)
+-----------------------
+- Update TOC to support WoW 5.0
+- Entrance map now moved to core addon
+- Removed Scarlet Monastery Entrance, SM Armory, SM Cathedral, SM Graveyard, SM Libraray, Scholomance maps
+- Maps updated:
+    - Ragefire Chasm
+    - Maraudon
+    - Razorfen Kraul
+    - Shadowfang Keep
+    - The Deadmines
+    
+v1.21.0 (Nov. 29, 2011)
+-----------------------
+- Splitted from Atlas core addon
+- Maps updated: 
+    - The Sunken Temple Instance/Entrance (dubca7, Dynaletik, Celellach)

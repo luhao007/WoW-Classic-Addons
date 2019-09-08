@@ -6,7 +6,7 @@
 ## SavedVariablesPerCharacter: DBMOnyxia_SavedStats
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Onyxia|r
-## Title-zhCN: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0奥妮克希亚|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0奥妮克西娅的巢穴|r
 
 ## X-Min-Interface: 11302
 ## X-DBM-Mod: 1

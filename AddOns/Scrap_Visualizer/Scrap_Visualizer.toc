@@ -6,7 +6,7 @@
 
 ## Title: Scrap Visualizer
 ## Notes: Load on demand panel for browsing trough junk lists.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF22B14C[可视化列表]|r
+## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF69CCF0可视化列表|r
 ## Notes-zhCN: 提供一个可视化列表来查看灰色物品
 
 ## X-License: GNU General Public License Version 3

@@ -1,0 +1,184 @@
+$Id: ChangeLog.txt 1561 2019-09-07 08:51:31Z arith $
+Atlas, a World of Warcraft instance map browser
+Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
+Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
+Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon@gmail.com>
+
+==============
+= Change Log =
+==============
+
+v1.45.00.11302.00 (Sep. 06, 2019)
+------------------------
+- Classic WoW support
+
+v1.45.00 (Sep. 04, 2019)
+------------------------
+- ToC update to support WoW 8.2.0
+
+v1.44.01 (Dec. 18, 2018)
+------------------------
+- ToC update to support WoW 8.1.0
+
+v1.44.00 (Aug. 09, 2018)
+------------------------
+- ToC update to support WoW 8.0.1
+- MapID convert to uiMapID
+
+v1.43.00 (Aug. 30, 2017)
+------------------------
+- ToC update to support WoW 7.3.0
+
+v1.42.00 (Jun. 29, 2017)
+------------------------
+- Updated to support Atlas 1.42.00
+
+v1.39.00 (Mar. 27, 2017)
+------------------------
+- Toc update to support WoW 7.2
+
+v1.35.01 (Nov. 15, 2016)
+------------------------
+- Player and location info update
+
+v1.35.00 (Oct. 27, 2016)
+------------------------
+- Toc update to support WoW 7.1.0
+
+v1.34.00 (Aug. 31, 2016)
+------------------------
+- Added faction ID to Alterac Valley maps
+- Added large map of Wintergrasp
+
+v1.33.01 (Aug. 08, 2016)
+------------------------
+- Added WorldMap ID to each map
+
+v1.33.00 (Jul. 19, 2016)
+------------------------
+- Toc updated to support WoW Legion pre-patch (7.0.3)
+- Added LibBabble-Faction lib to replace the faction looking-up with AtlasIngameLocales's GetFactionInfoByID
+- Replace punctuations by using Atlas' localization
+
+v1.32.02 (Jul. 06, 2016)
+------------------------
+- Translation now being managed on curseforge: http://wow.curseforge.com/addons/atlas-battlegrounds/localization/
+- Added itIT, ptBR, and koKR translation files (placeholder until we get any translation added)
+
+v1.32.01 (May 18, 2016)
+------------------------
+- Added maps' additional tooltips
+
+v1.32.00 (Jul. 13, 2015)
+------------------------
+- TOC update to support WoW 6.2
+
+v1.31.01 (Mar. 01, 2015)
+------------------------
+- TOC update to support WoW 6.1
+- Translation Update:
+    - ruRU (StingerSoft)
+    - zhTW (Arith)
+
+v1.31.00 (Nov. 10, 2014)
+-----------------------
+- Maps added:
+    - Ashran
+    
+v1.30.00 (Oct. 15, 2014)
+-----------------------
+- TOC update to support WoW 6.0
+
+v1.26.00 (Sep. 09, 2013)
+-----------------------
+- TOC update to support WoW 5.4
+
+v1.25.01 (May 24, 2013)
+-----------------------
+- Maps update:
+    - Silvershard Mines: map revamp
+    - Temple of Kotmogu: map revamp
+    
+v1.25.00 (May 21, 2013)
+-----------------------
+- TOC update to support WoW 5.3
+- Maps added:
+    - Deepwind Gorge
+    
+v1.24.00 (Mar. 05, 2013)
+-----------------------
+- TOC update to support WoW 5.2
+
+v1.23.0 (Dec. 07, 2012)
+-----------------------
+- TOC update to support WoW 5.1
+
+v1.22.1 (Oct. 10, 2012)
+-----------------------
+- Battleground information update
+    - Temple of Kotmogu
+    - Silvershard Mines
+    
+v1.22.0 (Sep. 25, 2012)
+-----------------------
+- Update TOC to support WoW 5.0
+- Maps added:
+    - Temple of Kotmogu
+    - Silvershard Mines
+    
+v1.21.1 (Dec. 05, 2011)
+-----------------------
+- zhCN translation update (dh0000)
+
+v1.21.0 (Nov. 29, 2011)
+-----------------------
+- Update TOC to support WoW 4.3
+- Splitted from core Atlas addon to be a separated plugin addon
+
+v1.20.1 (Sep. 09, 2011)
+-----------------------
+
+v1.20.0 (Jun. 28, 2011)
+-----------------------
+- Map updated:
+    - Eye of the Storm (dubca7)
+    
+v1.19.2 (May 30, 2011)
+-----------------------
+
+v1.19.1 (May 06, 2011)
+-----------------------
+
+v1.19.0 (Apr. 28, 2011)
+-----------------------
+
+v1.18.3 (Apr. 13, 2011)
+-----------------------
+- TolBarad 3 cell blocks added
+
+v1.18.2 (Jan. 28, 2011)
+-----------------------
+
+v1.18.1 (Jan. 06, 2011)
+-----------------------
+
+v1.18.0 (Dec. 07, 2010)
+-----------------------
+- Prepared Atlas for the Cataclysm Maps
+- Added Battleground maps
+  - The Battle For Gilneas
+  - Tol Barad
+  - Twin Peaks
+- Revamped and updated all old maps
+- Battleground Level info updated
+
+v1.17.2 (Oct. 18, 2010)
+-----------------------
+
+v1.17.1 (Oct. 13, 2010)
+-----------------------
+
+v1.17.0 (Aug. 15, 2010)
+-----------------------
+- new maps: Halaa PvP, Hellfire Peninsula PvP, Zangarmarsh PvP, 
+            Terokkar Forest PvP, Wintergrasp PvP, Game of Tower, Silithyst Must Flow (arith)

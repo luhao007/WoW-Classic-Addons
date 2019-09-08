@@ -1,0 +1,19 @@
+## Interface: 11302
+## Author: arith, Dynaletik, dubcat
+## Version: v1.45.00.11302.03
+## RequiredDeps: Atlas
+
+## Title: Atlas |r|cFF0099FF[Classic WoW]|r
+## Notes: Classic WoW Instances' Maps
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0经典旧世|r
+## Notes-zhCN: 经典旧世副本地图
+
+## X-Date: 2019-09-04T7:42:05Z
+## X-Credits: Dan Gilbert, Lothaer
+## X-Email: atlas.addon at gmail dot com
+## X-Website: http://www.atlasmod.com
+## X-Category: Map
+
+Locale\Locales.xml
+Core.lua
+Data.lua

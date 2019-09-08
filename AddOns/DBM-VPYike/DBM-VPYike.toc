@@ -6,7 +6,7 @@
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Voicepack Yike|r
 ## Notes: https://github.com/Mini-Dragon/DBM-VoicePack-Yike
-## Title-zhCN: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0夏一可语音包|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0夏一可语音包|r
 
 ## X-Min-Interface: 80200
 ## X-DBM-Voice: 1
@@ -14,6 +14,33 @@
 ## X-DBM-Voice-ShortName: Yike
 ## X-DBM-Voice-Version: 9
 ## X-DBM-Voice-HasCount: 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
