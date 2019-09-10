@@ -1,4 +1,4 @@
--- $Id: Data.lua 40 2019-09-07 06:55:50Z arith $
+-- $Id: Data.lua 42 2019-09-07 16:37:35Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -511,14 +511,13 @@ db.AtlasMaps = {
 	TheDeadminesEnt = {
 		ZoneName = { BZ["The Deadmines"]..ALC["L-Parenthesis"]..ALC["Entrance"]..ALC["R-Parenthesis"] },
 		Location = { BZ["Westfall"] },
-		LevelRange = "15-16 / 85",
-		MinLevel = "15",
+		LevelRange = "15-25",
+		MinLevel = "10",
 		PlayerLimit = { 5 },
-		Acronym = L["VC"],
 		WorldMapID = 291,
 		JournalInstanceID = 63,
 		Module = "Atlas_ClassicWoW",
-		NextMap = "TheDeadminesA",
+		NextMap = "TheDeadmines",
 		{ BLUE.." A) "..ALC["Entrance"], 10001 },
 		{ GREN..INDENT..ALC["Meeting Stone"] },
 		{ BLUE.." B) "..BZ["The Deadmines"], 10002 },
@@ -532,7 +531,8 @@ db.AtlasMaps = {
 		LevelRange = "15-25",
 		MinLevel = "10",
 		PlayerLimit = { 5 },
-		Acronym = L["VC"],
+		WorldMapID = 291,
+		Module = "Atlas_ClassicWoW",
 		{ BLUE.." A) "..ALC["Entrance"] },
 		{ BLUE.." B) "..L["Exit"] },
 		{ WHIT.." 1) "..Atlas:GetBossName("Rhahk'Zor") },
@@ -1164,8 +1164,6 @@ db.OutdoorZoneToAtlas = {
 	[BZ["Westfall"]] = 			"TheDeadminesEnt",
 	[BZ["Stormwind City"]] = 		"TheStockade",
 	[BZ["Swamp of Sorrows"]] = 		"TheSunkenTempleEnt",
-	[BZ["Ahn'Qiraj: The Fallen Kingdom"]] = "TheTempleofAhnQiraj",
-	[BZ["Silithus"]] = 			"TheTempleofAhnQiraj",
 	[BZ["Badlands"]] = 			"UldamanEnt",
 	[BZ["Northern Barrens"]] = 		"WailingCavernsEnt",
 	[BZ["Tanaris"]] = 			"ZulFarrak",
@@ -1214,7 +1212,6 @@ db.SubZoneAssoc = {
 	["DireMaulEast"] =			BZ["Dire Maul"],
 	["DireMaulWest"] =			BZ["Dire Maul"],
 	["DireMaulEnt"] =			BZ["Dire Maul"],
-	["TheDeadmines"] = 			BZ["The Deadmines"],
 }
 
 db.DropDownLayouts_Order = {
@@ -1238,7 +1235,7 @@ db.DropDownLayouts = {
 			"BlackrockMountainEnt",		-- Classic WoW, Catalysm, Draenor
 			"BlackrockDepths",		-- Classic WoW
 			"BlackwingLair",		-- Classic WoW
-			"TheDeadmines",		-- Classic WoW, Catalysm
+			"TheDeadmines",			-- Classic WoW, Catalysm
 			"TheDeadminesEnt",		-- Classic WoW, Catalysm
 			"Gnomeregan",			-- Classic WoW
 			"GnomereganEnt",		-- Classic WoW
@@ -1246,7 +1243,7 @@ db.DropDownLayouts = {
 			"BlackrockSpireUpper",		-- Classic WoW
 			"MoltenCore",			-- Classic WoW
 			"ShadowfangKeep",		-- Classic WoW, Catalysm
-			"Stratholme",		-- Classic WoW
+			"Stratholme",			-- Classic WoW
 			"TheStockade",			-- Classic WoW
 			"TheSunkenTemple",		-- Classic WoW
 			"TheSunkenTempleEnt",		-- Classic WoW
@@ -1257,7 +1254,7 @@ db.DropDownLayouts = {
 			"SMArmory",			-- Classic WoW
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
-			"SMLibrary",		-- Classic WoW
+			"SMLibrary",			-- Classic WoW
 		},
 		[ATLAS_DDL_CONTINENT_KALIMDOR] = {
 			"BlackfathomDeeps",		-- Classic WoW
@@ -1294,7 +1291,7 @@ db.DropDownLayouts = {
 			"Maraudon",
 			"MaraudonEnt",
 			"MoltenCore",
-			"TheDeadmines",		-- Classic WoW, Catalysm
+			"TheDeadmines",			-- Classic WoW, Catalysm
 			"TheDeadminesEnt",
 			"RagefireChasm",
 			"RazorfenDowns",
@@ -1305,8 +1302,8 @@ db.DropDownLayouts = {
 			"SMArmory",			-- Classic WoW
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
-			"SMLibrary",		-- Classic WoW
-			"Stratholme",		-- Classic WoW
+			"SMLibrary",			-- Classic WoW
+			"Stratholme",			-- Classic WoW
 			"TheStockade",
 			"TheSunkenTemple",
 			"TheSunkenTempleEnt",
@@ -1331,9 +1328,9 @@ db.DropDownLayouts = {
 			"SMArmory",			-- Classic WoW
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
-			"SMLibrary",		-- Classic WoW
+			"SMLibrary",			-- Classic WoW
 			"Scholomance",			-- Classic WoW
-			"TheDeadmines",		-- Classic WoW, Catalysm
+			"TheDeadmines",			-- Classic WoW, Catalysm
 			"TheDeadminesEnt",		-- Classic WoW
 			"TheStockade",			-- Classic WoW
 			"Uldaman",			-- Classic WoW
@@ -1352,7 +1349,7 @@ db.DropDownLayouts = {
 			"BlackrockSpireUpper",		-- Classic WoW
 			"Maraudon",			-- Classic WoW
 			"MaraudonEnt",			-- Classic WoW
-			"Stratholme",		-- Classic WoW
+			"Stratholme",			-- Classic WoW
 			"TheSunkenTemple",		-- Classic WoW
 			"TheSunkenTempleEnt",		-- Classic WoW
 			"ZulFarrak",			-- Classic WoW
@@ -1371,7 +1368,7 @@ db.DropDownLayouts = {
 			"BlackrockDepths",		-- Classic WoW
 			"BlackrockSpireLower",		-- Classic WoW
 			"BlackrockSpireUpper",		-- Classic WoW
-			"TheDeadmines",		-- Classic WoW
+			"TheDeadmines",			-- Classic WoW
 			"TheDeadminesEnt",		-- Classic WoW
 			"DireMaulEast",			-- Classic WoW
 			"DireMaulEnt",			-- Classic WoW
@@ -1387,12 +1384,12 @@ db.DropDownLayouts = {
 			"SMArmory",			-- Classic WoW
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
-			"SMLibrary",		-- Classic WoW
+			"SMLibrary",			-- Classic WoW
 			"ScarletMonasteryEnt",		-- Classic WoW
 			"Scholomance",			-- Classic WoW
 			"ShadowfangKeep",		-- Classic WoW
 			"TheStockade",			-- Classic WoW
-			"Stratholme",		-- Classic WoW
+			"Stratholme",			-- Classic WoW
 			"TheSunkenTemple",		-- Classic WoW
 			"TheSunkenTempleEnt",		-- Classic WoW
 			"Uldaman",			-- Classic WoW
@@ -1416,8 +1413,7 @@ db.DropDownLayouts = {
 			"BlackwingLair",		-- Classic WoW
 			"BlackrockSpireLower",		-- Classic WoW
 			"BlackrockSpireUpper",		-- Classic WoW
-			"TheDeadminesA",		-- Classic WoW
-			"TheDeadminesB",		-- Classic WoW
+			"TheDeadmines",			-- Classic WoW
 			"DireMaulEast",			-- Classic WoW
 			"DireMaulNorth",		-- Classic WoW
 			"DireMaulWest",			-- Classic WoW
@@ -1430,10 +1426,10 @@ db.DropDownLayouts = {
 			"SMArmory",			-- Classic WoW
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
-			"SMLibrary",		-- Classic WoW
+			"SMLibrary",			-- Classic WoW
 			"Scholomance",			-- Classic WoW
 			"ShadowfangKeep",		-- Classic WoW
-			"Stratholme",		-- Classic WoW
+			"Stratholme",			-- Classic WoW
 			"TheStockade",			-- Classic WoW
 			"TheSunkenTemple",		-- Classic WoW
 			"Uldaman",			-- Classic WoW

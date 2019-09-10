@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.45.00.11302.03
+## Version: v1.45.00.11302.04
 ## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Classic WoW]|r
