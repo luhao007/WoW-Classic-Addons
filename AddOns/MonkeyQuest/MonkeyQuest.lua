@@ -52,8 +52,10 @@ function MonkeyQuest_OnLoad(self)
 	MonkeyQuest_OLD_aftt_setName = aftt_setName;
 	aftt_setName = MonkeyQuest_NEW_aftt_setName;
     
-    -- this will catch mobs needed for quests (not needed anymore)
-	-- self:RegisterEvent('UPDATE_MOUSEOVER_UNIT');
+	if (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC) then
+		-- this will catch mobs needed for quests (not needed on retail)
+		self:RegisterEvent('UPDATE_MOUSEOVER_UNIT');
+	end
 end
 
 function MonkeyQuest_OnUpdate(self, elapsed)
@@ -198,11 +200,11 @@ function MonkeyQuest_OnEvent(self, event, ...)
         end
     end -- TOOLTIP_ANCHOR_DEFAULT
 
-	--not needed anymore
-    --if (event == 'UPDATE_MOUSEOVER_UNIT') then
-    --    -- check if this is a quest item
-    --    MonkeyQuest_SearchTooltip();
-    --end -- UPDATE_MOUSEOVER_UNIT
+	--not used on retail
+    if (event == 'UPDATE_MOUSEOVER_UNIT') then
+        -- check if this is a quest item
+        MonkeyQuest_SearchTooltip();
+    end -- UPDATE_MOUSEOVER_UNIT
 end
 
 -- this function is called when the frame should be dragged around
@@ -429,9 +431,7 @@ end
 
 function MonkeyQuest_SetHighlightAlpha(iAlpha)
 
-	if (MonkeyQuestConfig[MonkeyQuest.m_global].m_bShowZoneHighlight) then
-		MonkeyQuest_Refresh();
-	end
+	MonkeyQuest_Refresh();
 
 	-- check for MonkeyBuddy
 	if (MonkeyBuddyQuestFrame_Refresh ~= nil) then
@@ -811,7 +811,7 @@ function MonkeyQuest_Refresh(MBDaily)
 
 									if (objectiveType == "item" or objectiveType == "monster" or objectiveType == "object") then
 
-										if(GetLocale() == "enUS") then
+										if(GetLocale() == "enUS" and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
 											j, k, objectiveNumItems, objectiveNumNeeded, objectiveName = string.find(objectiveDesc, "([-%d]+)/([-%d]+)%s*(.*)$");
 										else
 											j, k, objectiveName, objectiveNumItems, objectiveNumNeeded = string.find(objectiveDesc, "(.*):%s*([-%d]+)%s*/%s*([-%d]+)%s*$");
@@ -827,9 +827,9 @@ function MonkeyQuest_Refresh(MBDaily)
 
 											if (objectiveComplete == true and MonkeyQuestObjectiveTable[currentObjectiveName] == false and MonkeyQuestAllowSounds == true) then
 												if (isComplete and isComplete > 0) then
-													PlaySoundFile("558132");
+													PlaySound(6199);
 												else
-													PlaySoundFile("558127");
+													PlaySound(6288);
 												end
 											end
 
@@ -846,9 +846,9 @@ function MonkeyQuest_Refresh(MBDaily)
 
 											if (objectiveComplete == true and MonkeyQuestObjectiveTable[currentObjectiveDesc] == false and MonkeyQuestAllowSounds == true) then
 												if (isComplete and isComplete > 0) then
-													PlaySoundFile("558132");
+													PlaySound(6199);
 												else
-													PlaySoundFile("558127");
+													PlaySound(6288);
 												end
 											end
 
@@ -967,7 +967,7 @@ function MonkeyQuest_AddQuestItemToList(strLeaderBoardText)
 	
 	local i, j, iNumItems, iNumNeeded, strItemName;
 	
-	if(GetLocale() == "enUS") then
+	if(GetLocale() == "enUS" and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
 		i, j, iNumItems, iNumNeeded, strItemName = string.find(strLeaderBoardText, "([-%d]+)/([-%d]+)%s*(.*)$");
 	else
 		i, j, strItemName, iNumItems, iNumNeeded = string.find(strLeaderBoardText, "(.*):%s*([-%d]+)%s*/%s*([-%d]+)%s*$");
@@ -1086,7 +1086,7 @@ end
 function MonkeyQuest_GetLeaderboardColorStr(strText)
 	local i, j, iNumItems, iNumNeeded, strItemName;
 
-	if(GetLocale() == "enUS") then
+	if(GetLocale() == "enUS" and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
 		i, j, iNumItems, iNumNeeded, strItemName = string.find(strText, "([-%d]+)/([-%d]+)%s*(.*)$");
 	else
 		i, j, strItemName, iNumItems, iNumNeeded = string.find(strText, "(.*):%s*([-%d]+)%s*/%s*([-%d]+)%s*$");
@@ -1103,7 +1103,7 @@ function MonkeyQuest_GetLeaderboardColorStr(strText)
 		-- it's a quest with no numerical objectives
 		local i, j, strItems, strNeeded, strItemName;
 		
-		if(GetLocale() == "enUS") then
+		if(GetLocale() == "enUS" and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
 			i, j, strItems, strNeeded, strItemName = string.find(strText, "([-%a]+)/([-%a]+)%s*(.*)$");
 		else
 			i, j, strItemName, strItems, strNeeded = string.find(strText, "(.*):%s*([-%a]+)%s*/%s*([-%a]+)%s*$");
