@@ -195,6 +195,11 @@ MAPPING = {
         'Notes': '移动内置的各种窗口',
         'Category': '界面'
     },
+    'CensusPlusClassic': {
+        'Title-cn': '人口普查',
+        'Notes': '统计服务器中的人口数量',
+        'Category': '账号'
+    },
     'ClassicCastbars': {
         'Title-cn': '敌对施法条',
         'Notes': '显示一个预估的敌对施法条',

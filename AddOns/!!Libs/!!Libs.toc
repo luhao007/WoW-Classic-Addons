@@ -62,6 +62,7 @@ LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
+LibChecksum-1.0\LibChecksum-1.0.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicMobHealth-1.0\lib.xml
@@ -78,8 +79,10 @@ LibLatency\LibLatency.xml
 LibOO-1.0\lib.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+LibRealmID\LibRealmID.lua
 LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 LibUIDropDownMenu\LibUIDropDownMenu.xml
+LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1.lua
 ThreatClassic-1.0\lib.xml
