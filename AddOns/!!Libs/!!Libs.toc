@@ -62,7 +62,7 @@ LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
-LibChecksum-1.0\LibChecksum-1.0.lua
+LibChecksum-1.0\LibChecksum.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicMobHealth-1.0\lib.xml
