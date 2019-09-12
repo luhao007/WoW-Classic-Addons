@@ -295,7 +295,7 @@ TITAN_ALL_SAVED_VARIABLES = {
 	-- Silent Load
 	Silenced = false,
 	-- OrderHallCommandBar Status
-	OrderHall = true,
+	--OrderHall = true,
 };
 
 -- The skins released with Titan

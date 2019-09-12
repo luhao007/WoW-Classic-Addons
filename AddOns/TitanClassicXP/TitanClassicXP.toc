@@ -1,11 +1,11 @@
 ## Interface: 11302
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.0.5.11302
+## Version: 1.0.6.11302
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel Classic [|cffeda55fXP|r] |cff00aa001.0.5.11302|r
+## Title: Titan Panel Classic [|cffeda55fXP|r] |cff00aa001.0.6.11302|r
 ## Notes: Adds information to Titan Panel about XP earned and time to level
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0经验|r
 ## Notes-zhCN: 泰坦面板的经验模块

@@ -101,7 +101,7 @@ function TitanMovable_MenuBar_Disable()
 	if DoAdjust(TITAN_PANEL_PLACE_BOTTOM, false) then
 --TitanPrint("TitanMovable_MenuBar_Disable - DoAdjust", "warning")
 		MainMenuBar:SetMovable(true);
-		MainMenuBar:SetUserPlaced(false);
+--		MainMenuBar:SetUserPlaced(false);
 	end
 end
 
@@ -125,7 +125,7 @@ function TitanMovable_MenuBar_Enable()
 	else
 		if DoAdjust(TITAN_PANEL_PLACE_BOTTOM, false) then
 			MainMenuBar:SetMovable(true);
-			MainMenuBar:SetUserPlaced(true);
+--			MainMenuBar:SetUserPlaced(true);
 			MainMenuBar:SetMovable(false);
 		end
 	end
@@ -249,7 +249,7 @@ local function SetPosition(frame, ...)
         if name then
             UIPARENT_MANAGED_FRAME_POSITIONS[name] = nil
         end
-        frame:SetMovable(true)          -- allow frame to move
+--        frame:SetMovable(true)          -- allow frame to move; Classic does not have vehicles so this retail fix is not needed
 -- Titan honors a user placed frame so we don't need this
 --        frame:SetUserPlaced(true)       -- tell Blizzard to back off
         frame:SetDontSavePosition(true) 
@@ -259,7 +259,7 @@ local function SetPosition(frame, ...)
             frame:ClearAllPoints()
             frame:SetPoint(...)
         end
-        frame:SetMovable(false)         -- lock frame from moving
+--        frame:SetMovable(false)         -- lock frame from moving
     end
 end
 

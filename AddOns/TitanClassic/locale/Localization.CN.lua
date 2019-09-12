@@ -71,12 +71,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<名字>
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<服务器>: |cffffffff可以是服务器名也可以是 Titan配置模板名."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffToggles "..TITAN_PANEL.." to load silently.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {orderhall}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."orderhall: |cffffffffToggles "..TITAN_PANEL.." to hide Order Hall Command Bar.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."使用命令: |cffffffff/titan {help | help <主题>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<主题>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<主题>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."使用命令: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<主题>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<主题>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE..TITAN_PANEL.."Titan Panel 提示文字缩放已重置.";
@@ -491,11 +489,6 @@ L["REPAIR_LOCALE"] = {
 };
 
 L["TITAN_REPAIR"] = "Titan 修理"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "公会银行总资金 :"
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "公会银行允许的费用 :"
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "使用公会银行资金"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "公会银行余额不足或者你超过了允许的使用量."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "你没有公会或你没有权限使用公会资金来修理."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "现在，至少，你没钱来修理."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "报告修理费到聊天频道"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "修理花费 "

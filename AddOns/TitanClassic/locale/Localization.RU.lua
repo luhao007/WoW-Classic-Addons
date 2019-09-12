@@ -71,12 +71,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<имя>
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<сервер>: |cffffffffможет быть задано название сервера или 'TitanCustomProfile'."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffToggles "..TITAN_PANEL.." to load silently.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {orderhall}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."orderhall: |cffffffffToggles "..TITAN_PANEL.." to hide Order Hall Command Bar.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Используйте: |cffffffff/titan {help | help <topic>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Используйте: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE.."Масштаб шрифта подсказки Titan Panel сброшен.";
@@ -491,11 +489,6 @@ L["REPAIR_LOCALE"] = {
 };
 
 L["TITAN_REPAIR"] = "Titan - ремонт"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "Средства гильд банка :"
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "Доступная сумма из гильд банка :"
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "Использовать средства гильд банка"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "Гильд Банк не в состоянии заплотить за ремонт, или вы не можете воспользоваться такой суммой."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "Вы не состоите в гильдии либо у вас нет полномочий использовать средства с гильд банка для ремонта ваших предметов."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "В данный момент вы не в состоянии отремонтироваться."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "Сообщить цену ремонта в чат"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "Ремонт обошелся в "

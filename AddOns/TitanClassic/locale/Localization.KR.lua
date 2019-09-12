@@ -71,12 +71,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<name>: 
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<server>: |cffffffff현재 서버이름 또는 'TitanCustomProfile'로 프로필을 변경할 수 있습니다."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffToggles "..TITAN_PANEL.." to load silently.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {orderhall}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."orderhall: |cffffffffToggles "..TITAN_PANEL.." to hide Order Hall Command Bar.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."사용법: |cffffffff/titan {help | 도움말 <topic>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."사용법: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE..TITAN_PANEL.." 툴팁 글꼴 크기가 초기화 되었습니다.";
@@ -490,11 +488,6 @@ L["REPAIR_LOCALE"] = {
 };
 
 L["TITAN_REPAIR"] = "타이탄 수리"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "길드 은행 금액 :"
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "길드 은행 취소 수락 :"
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "길드 은행 사용"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "길드 은행의 잔액이 부족하여 수리가 불가능합니다."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "길드가 없거나 길드 은행의 비용으로 수리할 권한이 없습니다."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "길드 은행의 잔액이 부족하여 현재는 수리할 수 없습니다."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "대화창에 수리비용 표시"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "수리비용: "

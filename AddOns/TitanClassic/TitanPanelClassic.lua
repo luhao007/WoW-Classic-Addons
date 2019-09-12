@@ -370,7 +370,7 @@ function TitanPanel_PlayerEnteringWorld()
 		elseif TitanGetVar(TITAN_CLOCK_ID, "Format") then
 			ServerHourFormat[realmName] = TitanGetVar(TITAN_CLOCK_ID, "Format")
 		end
-
+--[[
 		-- Check to see if we should kill off the OrderHallCommandBar
 		if not TitanAllGetVar("OrderHall") then
 			local TitanPanelAce = LibStub("AceAddon-3.0"):NewAddon("TitanPanelOHCB", "AceHook-3.0")
@@ -387,7 +387,7 @@ function TitanPanel_PlayerEnteringWorld()
 			local TitanPanelAce = LibStub("AceAddon-3.0"):NewAddon("TitanPanelOHCB", "AceHook-3.0")
 			TitanPanelAce:Unhook("OrderHall_CheckCommandBar")
 		end
-
+--]]
 	end
 	local _ = nil
 	TitanSettings.Player,_,_ = TitanUtils_GetPlayer()
@@ -650,10 +650,12 @@ local function handle_slash_help(cmd)
 		TitanPrint(L["TITAN_PANEL_SLASH_SILENT_0"], "plain")
 		TitanPrint(L["TITAN_PANEL_SLASH_SILENT_1"], "plain")
 	end
+--[[
 	if cmd == "orderhall" then
 		TitanPrint(L["TITAN_PANEL_SLASH_ORDERHALL_0"], "plain")
 		TitanPrint(L["TITAN_PANEL_SLASH_ORDERHALL_1"], "plain")
 	end
+--]]
 	if cmd == "help" then
 		TitanPrint(L["TITAN_PANEL_SLASH_HELP_0"], "plain")
 		TitanPrint(L["TITAN_PANEL_SLASH_HELP_1"], "plain")
@@ -879,8 +881,8 @@ local function TitanPanel_RegisterSlashCmd(cmd_str)
 		handle_profile_cmds(cmd_list)
 	elseif (cmd == "silent") then
 		handle_silent_cmds(p1)
-	elseif (cmd == "orderhall") then
-		handle_orderhall_cmds(p1)
+--	elseif (cmd == "orderhall") then
+--		handle_orderhall_cmds(p1)
 	elseif (cmd == "help") then
 		handle_slash_help(p1)
 	else

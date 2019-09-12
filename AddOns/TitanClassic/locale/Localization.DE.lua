@@ -71,12 +71,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<name>: 
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<server>: |cffffffffkann entweder ser Servername oder 'TitanCustomProfile' sein."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Benutzen: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffSchaltet "..TITAN_PANEL.." so um, dass es still geladen wird.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Benutzen: |cffffffff/titan {Ordenshalle}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."Ordenshalle: |cffffffffSchaltet die "..TITAN_PANEL.." Ordenshalle Befehlsleiste um.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Benutzen: |cffffffff/titan {help | help <topic>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<Punkt>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<Punkt>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Benutzen: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<Punkt>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<Punkt>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE.."Titan Panel Tooltip-Schriftgr\195\182sse wurde zur\195\188ckgesetzt.";
@@ -490,11 +488,6 @@ L["REPAIR_LOCALE"] = {
 	TooltipOptions = "Tooltip",
 };
 L["TITAN_REPAIR"] = "Titan Repair"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "Gildenbank-Guthaben:"
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "Gildenbank-Guthabenbezug erlaubt :"
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "Benutze Gildenbank-Guthaben"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "Es ist nicht gen\195\188gend Guthaben auf der Gildenbank verf\195\188gbar oder du darfst nicht soviel beziehen."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "Du bist entweder nicht in einer Gilde oder hast keine Berechtigung, die Gildenbank für Reparaturkosten zu nutzen."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "Du kannst es Dir momentan nicht leisten, deine Gegenst\195\164nde zu reparieren."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "Schreibe Reparaturkosten in den Chat"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "Die Reparaturkosten betrugen "

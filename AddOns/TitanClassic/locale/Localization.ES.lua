@@ -76,12 +76,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<nombre>
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<servidor>: |cffffffffpuede ser el nombre del servidor o 'TitanCustomProfile'."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffOrdena a "..TITAN_PANEL.." que cargue silenciosamente.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan {orderhall}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."orderhall: |cffffffffOrdena a "..TITAN_PANEL.." que oculte la barra de comandos de la Sala de Orden.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan {help | help <topic>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE.."La escala de la fuente en los tooltips de Titan Panel ha sido reseteada.";
@@ -507,11 +505,6 @@ L["REPAIR_LOCALE"] = {
 };
 
 L["TITAN_REPAIR"] = "Titan Repair"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "Efectivo en el banco de la Hermandad: "
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "Retirada de efectivo de la Hermandad permitida: "
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "Usar efectivo del banco de la Hermandad"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "El banco de la Hermandad no puede permitirse el coste de la reparación, o no puedes retirar tanto dinero."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "O no perteneces a una Hermandad, o no tienes permiso para usar el banco de la Hermandad para reparar tus objetos."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "No puedes permitirte reparar, en este momento."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "Informar en el chat del coste de la reparación"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "El coste de la reparación ha sido "

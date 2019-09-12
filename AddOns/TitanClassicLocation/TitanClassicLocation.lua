@@ -52,6 +52,7 @@ function TitanPanelLocationButton_OnLoad(self)
 			CoordsFormat2 = false,
 			CoordsFormat3 = false,
 			UpdateWorldmap = false,
+			MapLocation = false,
 		}
 	};
 
@@ -278,6 +279,10 @@ function TitanPanelLocationButton_UpdateZoneInfo(self)
 	self.pvpType, _, self.factionName = GetZonePVPInfo();
 end
 
+local function CoordLoc(loc)
+	local res = (TitanGetVar(TITAN_LOCATION_ID, "MapLocation") == loc)
+	return res
+end
 -- **************************************************************************
 -- NAME : TitanPanelRightClickMenu_PrepareLocationMenu()
 -- DESC : Display rightclick menu options
@@ -316,6 +321,46 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap");
 			info.disabled = InCombatLockdown()
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			
+			TitanPanelRightClickMenu_AddSpacer(_G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_MENU_MAP_COORDS_TITLE"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_1"]
+			info.func = function()
+				TitanSetVar(TITAN_LOCATION_ID, "MapLocation", "TOPLEFT")
+			end
+			info.checked = CoordLoc("TOPLEFT")
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_2"]
+			info.func = function()
+				TitanSetVar(TITAN_LOCATION_ID, "MapLocation", "TOPRIGHT")
+			end
+			info.checked = CoordLoc("TOPRIGHT")
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_3"]
+			info.func = function()
+				TitanSetVar(TITAN_LOCATION_ID, "MapLocation", "BOTTOMLEFT")
+			end
+			info.checked = CoordLoc("BOTTOMLEFT")
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_4"]
+			info.func = function()
+				TitanSetVar(TITAN_LOCATION_ID, "MapLocation", "BOTTOM")
+			end
+			info.checked = CoordLoc("BOTTOM")
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			info = {};
+			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_5"]
+			info.func = function()
+				TitanSetVar(TITAN_LOCATION_ID, "MapLocation", "BOTTOMRIGHT")
+			end
+			info.checked = CoordLoc("BOTTOMRIGHT")
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			
 		end
 		if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == "CoordFormat" then
 			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_FORMAT_COORD_LABEL"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
@@ -516,8 +561,26 @@ function TitanMapFrame_OnUpdate(self, elapsed)
 	TitanMapPlayerLocation:ClearAllPoints()
 	TitanMapCursorLocation:ClearAllPoints()
 
-	TitanMapPlayerLocation:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", -10, -28)
-	TitanMapCursorLocation:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", -10, -43)
+	local xbuff = 10 -- to get away from the frame border
+	local buff  = 5  -- between the player and cursor frames
+	local mloc = TitanGetVar(TITAN_LOCATION_ID, "MapLocation") or "TOPRIGHT"
+	
+	if (mloc == "TOPRIGHT") then
+		TitanMapPlayerLocation:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", -10, -28)
+		TitanMapCursorLocation:SetPoint("TOPLEFT", TitanMapPlayerLocation, "BOTTOMLEFT", 0, 0)
+	elseif (mloc == "TOPLEFT") then
+		TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 10, -28)
+		TitanMapCursorLocation:SetPoint("TOPLEFT", TitanMapPlayerLocation, "BOTTOMLEFT", 0, 0)
+	elseif (mloc == "BOTTOMLEFT") then
+		TitanMapPlayerLocation:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOMLEFT", 10, 10)
+		TitanMapCursorLocation:SetPoint("BOTTOMLEFT", TitanMapPlayerLocation, "BOTTOMRIGHT", buff, 0)
+	elseif (mloc == "BOTTOMRIGHT") then
+		TitanMapPlayerLocation:SetPoint("BOTTOMRIGHT", TitanMapCursorLocation, "BOTTOMLEFT", -buff, 0)
+		TitanMapCursorLocation:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOMRIGHT", -xbuff, 10)
+	elseif (mloc == "BOTTOM") then
+		TitanMapPlayerLocation:SetPoint("BOTTOMRIGHT", WorldMapFrame, "BOTTOM", -buff, 10)
+		TitanMapCursorLocation:SetPoint("BOTTOMLEFT", WorldMapFrame, "BOTTOM", 0, 10)
+	end
 end
 
 -- **************************************************************************

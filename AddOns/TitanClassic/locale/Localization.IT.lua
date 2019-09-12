@@ -71,12 +71,10 @@ L["TITAN_PANEL_SLASH_PROFILE_2"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<name>: 
 L["TITAN_PANEL_SLASH_PROFILE_3"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<server>: |cffffffffpuò essere il nome del server o 'TitanCustomProfile'."
 L["TITAN_PANEL_SLASH_SILENT_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {silent}";
 L["TITAN_PANEL_SLASH_SILENT_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."silent: |cffffffffToggles "..TITAN_PANEL.." to load silently.";
-L["TITAN_PANEL_SLASH_ORDERHALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Usage: |cffffffff/titan {orderhall}";
-L["TITAN_PANEL_SLASH_ORDERHALL_1"] = LIGHTYELLOW_FONT_COLOR_CODE.."orderhall: |cffffffffToggles "..TITAN_PANEL.." to hide Order Hall Command Bar.";
 L["TITAN_PANEL_SLASH_HELP_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan {help | help <topic>}";
-L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_HELP_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: reset/gui/profile/silent/help ";
 L["TITAN_PANEL_SLASH_ALL_0"] = LIGHTYELLOW_FONT_COLOR_CODE.."Uso: |cffffffff/titan <topic>";
-L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/orderhall/help ";
+L["TITAN_PANEL_SLASH_ALL_1"] = " - "..LIGHTYELLOW_FONT_COLOR_CODE.."<topic>: |cffffffffreset/gui/profile/silent/help ";
 
 -- slash command responses
 L["TITAN_PANEL_SLASH_RESP1"] = LIGHTYELLOW_FONT_COLOR_CODE..TITAN_PANEL.." la scala del font dei tooltip è stata reimpostata.";
@@ -491,11 +489,6 @@ L["REPAIR_LOCALE"] = {
 };
 
 L["TITAN_REPAIR"] = "Riparazione di Titan"
-L["TITAN_REPAIR_GBANK_TOTAL"] = "Fondi della banca della gilda:"
-L["TITAN_REPAIR_GBANK_WITHDRAW"] = "Fondi disponibili della banca della gilda:"
-L["TITAN_REPAIR_GBANK_USEFUNDS"] = "Usa fondi della banca della gilda"
-L["TITAN_REPAIR_GBANK_NOMONEY"] = "La banca della gilda non può permettersi così tanto oppure non hai i permessi per prendere così tanti soldi."
-L["TITAN_REPAIR_GBANK_NORIGHTS"] = "Non sei in una gilda o non hai il permesso per utilizzare la banca della gilda per riparare i tuoi oggettix."
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "Non puoi permetterti la riparazione."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "Scrivi il costo di riparazione nella chat"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "Il costo di riparazione è "
