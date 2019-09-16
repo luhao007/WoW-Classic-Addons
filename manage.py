@@ -103,6 +103,11 @@ MAPPING = {
         'Notes': 'AtlasLoot PVP物品列表',
         'Category': '副本'
     },
+    'AtlasQuest': {
+        'Title-cn': '副本任务',
+        'Notes': '副本任务列表',
+        'Category': '副本'
+    },
     'Auc-Advanced': {
         'Title-cn': '拍卖助手',
         'Title-en': 'Auctioneer',
@@ -544,6 +549,10 @@ MAPPING = {
     'TomTom': {
         'Title-cn': '导航助手',
         'Category': '界面'
+    },
+    'TradeSkillMaster': {
+        'Title-cn': '专业助手',
+        'Category': '物品'
     },
     'tullaRange': {
         'Title-cn': '距离检测',

@@ -80,6 +80,7 @@ LibOO-1.0\lib.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmID\LibRealmID.lua
+LibRealmInfo\LibRealmInfo.lua
 LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 LibUIDropDownMenu\LibUIDropDownMenu.xml

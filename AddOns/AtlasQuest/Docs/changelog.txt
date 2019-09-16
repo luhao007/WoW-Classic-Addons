@@ -1,0 +1,17 @@
+=========
+Changelog
+=========
+
+Version 4.11.50  (for WoW Classic)  (September 13, 2019)
+
+- Initial release.   This should be considered Beta quality.  Initially I was calling it 1.0.0, but Atlas kept trying to disable it, so I had to give it a similar version number to Retail WoW AtlasQuest.  Ugh.
+
+- This version was created by copying over code from AtlasQuest 4.11.01 (most recent version as of writing) and quest data from AtlasQuest 4.4.3 (last release before Cataclysm).
+
+- I've already pruned a bunch of quests that were added later such as Holiday quests or quests for new classes.  No doubt I have more to do.
+
+- Some of the location numbers don't quite match up to Atlas yet.  I'll be fixing that.
+
+- I had to disabled the "Blue Colored quest name" option for now until I can fix it.  It was causing goblin-like explosions.
+
+- No German translation yet.  Or any translations.  I'll probably try to copy in the 4.4.3 German translation, though I'm not sure how complete that was. 

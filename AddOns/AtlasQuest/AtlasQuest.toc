@@ -1,0 +1,28 @@
+## Interface: 11302
+## Author: Thandrenn
+## Version: 4.11.50
+## RequiredDeps: Atlas
+## Dependencies: 
+## OptionalDeps: 
+## LoadOnDemand: 0
+## SavedVariables: AtlasQuest_Options,
+## SavedVariablesPerCharacter: 
+
+## Title: AtlasQuest
+## Notes: Shows the Quests for dungeons and battlegrounds.
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本任务|r |cFFFFE00AAtlasQuest|r
+## Notes-zhCN: 副本任务列表
+
+## X-Author-Faction: Alliance
+## X-Author-Server: Atiesh US
+## X-eMail: mystery8@gmail.com
+## X-Website: https://github.com/thandrenn/AtlasQuest
+## X-Category: Quests
+## X-License: GPLv2
+## X-Credits: AtlasQuest Team
+## X-Localizations: enUS, deDE
+## X-Date: September 13, 2019
+## X-Help: AtlasQuestHelp
+
+AtlasQuest_InsideFrame.xml
+AtlasQuest.xml
