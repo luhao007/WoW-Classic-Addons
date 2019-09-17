@@ -324,6 +324,21 @@ GameTooltipModel.TrySetModel = function(self, reference)
 					return true;
 				end
 			end
+		elseif reference.providers then
+			displayInfos = {}
+			local markedKeys = {}
+			for k,v in pairs(reference.providers) do
+				if v[1] == "n" and v[2] > 0 then
+					local displayID = app.NPCDisplayIDFromID[v[2]];
+					if displayID and not markedKeys[displayID] then
+						tinsert(displayInfos, displayID);
+						markedKeys[displayID] = 1;
+					end
+				end
+			end
+			if GameTooltipModel.TrySetDisplayInfos(self, reference, displayInfos) then
+				return true;
+			end
 		end
 		
 		if reference.displayID then
@@ -674,6 +689,15 @@ local function GetDisplayID(data)
 		local displayID = app.NPCDisplayIDFromID[data.creatureID];
 		if displayID then
 			return displayID;
+		end
+	end
+	
+	if data.providers and #data.providers > 0 then
+		for k,v in pairs(data.providers) do
+			-- if one of the providers is an NPC, we should show its texture regardless of other providers
+			if v[1] == "n" then
+				return app.NPCDisplayIDFromID[v[2]];
+			end
 		end
 	end
 	
@@ -1798,11 +1822,11 @@ end
 
 -- Lua Constructor Lib
 local fieldCache = {};
-local CacheFields;
+local CacheField, CacheFields;
 local _cache;
 (function()
 local fieldCache_g,fieldCache_f, fieldConverters;
-local function CacheField(group, field, value)
+CacheField = function(group, field, value)
 	fieldCache_g = rawget(fieldCache, field);
 	fieldCache_f = rawget(fieldCache_g, value);
 	if fieldCache_f then
@@ -1883,6 +1907,18 @@ fieldConverters = {
 			_cache(group, questGiverID);
 		end
 	end,
+	["providers"] = function(group, value)
+		for k,v in pairs(value) do
+			if v[1] == "n" and v[2] > 0 then
+				_cache = rawget(fieldConverters, "creatureID");
+				_cache(group, v[2]);
+			elseif v[1] == "i" and v[2] > 0 then
+				CacheField(group, "itemID", v[2]);
+			elseif v[1] == "o" and v[2] > 0 then
+				CacheField(group, "objectID", v[2]);
+			end
+		end
+	end,
 	["altQuests"] = function(group, value)
 		_cache = rawget(fieldConverters, "questID");
 		for i,questID in ipairs(value) do
@@ -1911,6 +1947,19 @@ fieldConverters = {
 		end
 	end,
 	]]--
+	["cost"] = function(group, value)
+		if type(value) == "number" then
+			return;
+		else
+			for k,v in pairs(value) do
+				if v[1] == "i" and v[2] > 0 then
+					CacheField(group, "itemID", v[2]);
+				elseif v[1] == "o" and v[2] > 0 then
+					CacheField(group, "objectID", v[2]);
+				end
+			end
+		end
+	end,
 	["c"] = function(group, value)
 		if not containsValue(value, app.ClassIndex) then
 			rawset(group, "nmc", true); -- "Not My Class"
@@ -1937,10 +1986,6 @@ CacheFields = function(group)
 	for i=1,n,1 do
 		_cache = rawget(fieldConverters, rawget(clone, i));
 		if _cache then _cache(group, rawget(group, rawget(clone, i))); end
-	end
-	if group.mapID then
-		_cache = fieldConverters.mapID;
-		if _cache then _cache(group, group.mapID); end
 	end
 end
 end)();
@@ -2105,18 +2150,6 @@ app.SearchForLink = SearchForLink;
 local function AddTomTomWaypoint(group, auto)
 	if TomTom and group.visible then
 		if group.coords or group.coord then
-			if auto then
-				if C_Map.GetMapInfo(app.GetCurrentMapID()).mapType ~= 3 then return end -- only set waypoints if the current map is a zone
-				local waypointFilters = GetDataMember("WaypointFilters")
-				for headerID, enabled in pairs(waypointFilters) do
-					if (UnitOnTaxi("player") and not GetDataMember("EnableTomTomWaypointsOnTaxi"))
-					   or (app.RecursiveIsDescendantOfParentWithValue(group, "npcID", headerID) and not enabled)
-					   or (GetDataMember("TomTomIgnoreCompletedObjects") and app.IsComplete(group))
-					then
-						return
-					end
-				end
-			end
 			local opt = {
 				title = group.text or group.link,
 				persistent = nil,
@@ -2378,10 +2411,10 @@ local function AttachTooltip(self)
 					-- Yes.
 					target = UnitGUID(target);
 					if target then
-						local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-",target);
-						-- print(target, type, npc_id);
+						local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",target);
+						-- print(target, type, npcID);
 						if type == "Player" then
-							if target == "Player-76-0895E23B" then
+							if target == "Player-4372-0000390A" then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
 								if leftSide then
 									leftSide:SetText("|cffff8000" .. leftSide:GetText() .. "|r");
@@ -2398,8 +2431,8 @@ local function AttachTooltip(self)
 								end
 							end
 						elseif type == "Creature" or type == "Vehicle" then
-							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npc_id)); end
-							AttachTooltipSearchResults(self, "creatureID:" .. npc_id, SearchForField, "creatureID", tonumber(npc_id));
+							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npcID)); end
+							AttachTooltipSearchResults(self, "creatureID:" .. npcID, SearchForField, "creatureID", tonumber(npcID));
 						end
 						return true;
 					end
@@ -3019,18 +3052,20 @@ app.CacheFlightPathData = function()
 		end
 	end
 end
-app.events.TAXIMAP_OPENED = function()
-	local flightMaps, knownNodeIDs = {}, {};
-	for nodeID,node in ipairs(app.FlightPathDB) do
-		if node.mapID == app.CurrentMapID and not node.u then
+app.CacheFlightPathDataForMap = function(mapID, nodes)
+	local count = 0;
+	local temp = {};
+	for nodeID,node in pairs(app.FlightPathDB) do
+		if node.mapID == mapID and not node.u then
 			if not node.faction or node.faction < 1 or node.faction == app.FactionID then
-				tinsert(flightMaps, nodeID);
+				temp[nodeID] = true;
+				count = count + 1;
 			end
 		end
 	end
-	local count = #flightMaps;
 	if count > 0 then
 		if count > 1 then
+			count = 0;
 			local pos = C_Map.GetPlayerMapPosition(app.CurrentMapID, "player");
 			if pos then
 				local px, py = pos:GetXY();
@@ -3038,30 +3073,89 @@ app.events.TAXIMAP_OPENED = function()
 				py = py * 100;
 				
 				-- Select the best flight path node.
-				for i,id in ipairs(flightMaps) do
-					local node = app.FlightPathDB[id];
-					if node and node.coord then
+				for nodeID,_ in pairs(temp) do
+					local node = app.FlightPathDB[nodeID];
+					if node.coord then
 						-- Allow for a little bit of leeway.
-						if math.sqrt((node.coord[1] - px)^2 + (node.coord[2] - py)^2) < 0.05 then
-							tinsert(knownNodeIDs, id);
+						if math.sqrt((node.coord[1] - px)^2 + (node.coord[2] - py)^2) < 0.6 then
+							nodes[nodeID] = true;
 						end
 					end
 				end
 			end
 		else
-			tinsert(knownNodeIDs, flightMaps[1]);
+			for nodeID,_ in pairs(temp) do
+				nodes[nodeID] = true;
+			end
 		end
 	end
-	
-	if #knownNodeIDs == 0 then
-		print("Failed to find nearest Flight Path. Please report this to the ATT Discord! MapID: ", app.CurrentMapID);
+	return count;
+end
+app.CacheFlightPathDataForTarget = function(nodes)
+	local guid = UnitGUID("npc") or UnitGUID("target");
+	if guid then
+		local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid);
+		if type == "Creature" and npcID then
+			npcID = tonumber(npcID);
+			local count = 0;
+			local searchResults = SearchForField("creatureID", npcID);
+			if searchResults and #searchResults > 0 then
+				for i,group in ipairs(searchResults) do
+					if group.flightPathID and not group.nmr and not group.nmc and not group.u then
+						nodes[group.flightPathID] = true;
+						count = count + 1;
+					end
+				end
+			end
+			return count;
+		end
+	end
+	return 0;
+end
+app.events.GOSSIP_SHOW = function()
+	local nodes = {};
+	if app.CacheFlightPathDataForTarget(nodes) > 0 then
+		if app.AccountWideFlightPaths then
+			for nodeID,_ in pairs(nodes) do
+				SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
+				if not GetDataSubMember("CollectedFlightPaths", nodeID) then
+					SetDataSubMember("CollectedFlightPaths", nodeID, 1);
+					UpdateSearchResults(SearchForField("flightPathID", nodeID));
+				end
+			end
+		else
+			for nodeID,_ in pairs(nodes) do
+				SetDataSubMember("CollectedFlightPaths", nodeID, 1);
+				if not GetTempDataSubMember("CollectedFlightPaths", nodeID) then
+					SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
+					UpdateSearchResults(SearchForField("flightPathID", nodeID));
+				end
+			end
+		end
+	end
+end
+app.events.TAXIMAP_OPENED = function()
+	local nodes = {};
+	if app.CacheFlightPathDataForTarget(nodes) == 0 then
+		-- Refresh the current location.
+		app.CurrentMapID = app.GetCurrentMapID();
+		if app.CacheFlightPathDataForMap(app.CurrentMapID, nodes) == 0 then
+			print("Failed to find nearest Flight Path. Please report this to the ATT Discord!");
+			local pos = C_Map.GetPlayerMapPosition(app.CurrentMapID, "player");
+			if pos then
+				local px, py = pos:GetXY();
+				print(" Location: " .. (math.floor(px * 10000) * 0.01) .. ", " ..(math.floor(py * 10000) * 0.01) .. ", " .. app.CurrentMapID);
+				local target = UnitGUID("target");
+				if target then print(" Master: ", target); end
+			end
+		end
 	end
 	
 	local allNodeData = C_TaxiMap.GetAllTaxiNodes(GetTaxiMapID());
 	if allNodeData then
 		for j,nodeData in ipairs(allNodeData) do
 			if nodeData.state and nodeData.state < 2 then
-				tinsert(knownNodeIDs, nodeData.nodeID);
+				nodes[nodeData.nodeID] = true;
 			end
 			if nodeData.name then 
 				local node = app.FlightPathDB[nodeData.nodeID];
@@ -3076,7 +3170,7 @@ app.events.TAXIMAP_OPENED = function()
 	end
 	
 	if app.AccountWideFlightPaths then
-		for i,nodeID in ipairs(knownNodeIDs) do
+		for nodeID,_ in pairs(nodes) do
 			SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
 			if not GetDataSubMember("CollectedFlightPaths", nodeID) then
 				SetDataSubMember("CollectedFlightPaths", nodeID, 1);
@@ -3084,7 +3178,7 @@ app.events.TAXIMAP_OPENED = function()
 			end
 		end
 	else
-		for i,nodeID in ipairs(knownNodeIDs) do
+		for nodeID,_ in pairs(nodes) do
 			SetDataSubMember("CollectedFlightPaths", nodeID, 1);
 			if not GetTempDataSubMember("CollectedFlightPaths", nodeID) then
 				SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
@@ -3115,21 +3209,45 @@ app.BaseFlightPath = {
 			return t.info.u;
 		elseif key == "coord" then
 			return t.info.coord;
+		elseif key == "crs" then
+			local qg = t.info.qg;
+			if qg then return { qg }; end
 		elseif key == "mapID" then
 			return t.info.mapID;
+		elseif key == "races" then
+			local faction = t.info.faction;
+			if faction and faction > 0 then
+				if faction == Enum.FlightPathFaction.Horde then
+					return {2,5,6,8};
+				else
+					return {1,3,4,7};
+				end
+			end
 		elseif key == "nmr" then
-			local info = t.info;
-			if info and info.faction and info.faction > 0 then
-				return info.faction ~= app.FactionID;
+			local faction = t.info.faction;
+			if faction and faction > 0 then
+				return faction ~= app.FactionID;
 			end
 		elseif key == "info" then
-			return app.FlightPathDB[t.flightPathID];
+			local info = app.FlightPathDB[t.flightPathID];
+			if info then
+				rawset(t, key, info);
+				if info.mapID then CacheField(t, "mapID", info.mapID); end
+				if info.qg then CacheField(t, "creatureID", info.qg); end
+				return info;
+			end
 		elseif key == "description" then
-			return "Flight paths are cached when you look at the flight master at each location.\n  - Crieve";
+			local description = t.info.description;
+			if description then
+				description = description .."\n\n";
+			else
+				description = "";
+			end
+			return description .. "Flight paths are cached when you look at the flight master at each location.\n  - Crieve";
 		elseif key == "icon" then
-			local info = t.info;
-			if info and info.faction and info.faction > 0 then
-				if info.faction == Enum.FlightPathFaction.Horde then
+			local faction = t.info.faction;
+			if faction and faction > 0 then
+				if faction == Enum.FlightPathFaction.Horde then
 					return "Interface\\Addons\\ATT-Classic\\assets\\fp_horde";
 				else
 					return "Interface\\Addons\\ATT-Classic\\assets\\fp_alliance";
@@ -3138,7 +3256,7 @@ app.BaseFlightPath = {
 			return "Interface\\Addons\\ATT-Classic\\assets\\fp_neutral";
 		else
 			-- Something that isn't dynamic.
-			return table[key];
+			return rawget(t.info, key);
 		end
 	end
 };
@@ -3364,6 +3482,20 @@ app.BaseQuest = {
 			local questID = t.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and t.altQuestID or t.questID;
 			return QuestTitleFromID[questID];
 		elseif key == "icon" then
+			if t.providers then
+				for k,v in pairs(t.providers) do
+					if v[2] > 0 then
+						if v[1] == "o" then
+							return L["OBJECT_ID_ICONS"][v[2]] or "Interface\\Icons\\INV_Misc_Bag_10"
+						elseif v[1] == "i" then
+							local _,_,_,_,icon = GetItemInfoInstant(v[2]);
+							if icon then
+								return icon
+							end
+						end
+					end
+				end
+			end
 			if t.isDaily or t.isWeekly then
 				return "Interface\\GossipFrame\\DailyQuestIcon";
 			elseif t.repeatable then
@@ -4583,7 +4715,9 @@ local function RowOnClick(self, button)
 		
 		-- All non-Shift Right Clicks open a mini list or the settings.
 		if button == "RightButton" then
-			if self.index > 0 then
+			if IsAltKeyDown() then
+				AddTomTomWaypoint(reference, false);
+			elseif self.index > 0 then
 				CreateMiniListForGroup(self.ref);
 			else
 				app.Settings:Open();
@@ -4739,6 +4873,24 @@ local function RowOnEnter(self)
 			GameTooltip:AddDoubleLine("Coordinate",
 				GetNumberWithZeros(math.floor(reference.coord[1] * 10) * 0.1, 1) .. ", " .. 
 				GetNumberWithZeros(math.floor(reference.coord[2] * 10) * 0.1, 1), 1, 1, 1, 1, 1, 1);
+		end
+		if reference.providers then
+			local counter = 0;
+			for i,provider in pairs(reference.providers) do
+				local providerType = provider[1]
+				local providerID = provider[2] or 0
+				local providerString = "UNKNOWN"
+				if providerType == "o" then
+					providerString = L["OBJECT_ID_NAMES"][providerID] or 'Object #'..providerID
+				elseif providerType == "n" then
+					providerString = (providerID > 0 and NPCNameFromID[providerID]) or "Creature #"..providerID
+				elseif providerType == "i" then
+					local name = GetItemInfo(providerID)
+					providerString = name or 'Item #'..providerID
+				end
+				GameTooltip:AddDoubleLine(counter == 0 and "Provider(s)" or " ", providerString .. ' (' .. providerID .. ')');
+				counter = counter + 1;
+			end
 		end
 		if reference.dr then GameTooltip:AddDoubleLine(L["DROP_RATE"], "|c" .. GetProgressColor(reference.dr * 0.01) .. tostring(reference.dr) .. "%|r"); end
 		if not reference.itemID then
@@ -5258,6 +5410,13 @@ function app:GetDataCache()
 			table.insert(g, db);
 		end
 		
+		-- Holidays
+		if app.Categories.Holidays then
+			db = app.CreateNPC(-3, app.Categories.Holidays);
+			db.expanded = false;
+			table.insert(g, db);
+		end
+		
 		-- NPCs (Dynamic)
 		--[[
 		db = {};
@@ -5671,18 +5830,18 @@ app:GetWindow("Debugger", UIParent, function(self)
 			elseif e == "MERCHANT_SHOW" or e == "MERCHANT_UPDATE" then
 				C_Timer.After(0.6, function()
 					local guid = UnitGUID("npc");
-					local ty, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid;
-					if guid then ty, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-",guid); end
-					if npc_id then
-						npc_id = tonumber(npc_id);
+					local ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
+					if guid then ty, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
+					if npcID then
+						npcID = tonumber(npcID);
 						
 						-- Ignore vendor mount...
-						if npc_id == 62822 then
+						if npcID == 62822 then
 							return true;
 						end
 						
 						local numItems = GetMerchantNumItems();
-						--print("MERCHANT DETAILS", ty, npc_id, numItems);
+						--print("MERCHANT DETAILS", ty, npcID, numItems);
 						
 						local rawGroups = {};
 						for i=1,numItems,1 do
@@ -5713,7 +5872,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 							end
 						end
 						
-						local info = { [(ty == "GameObject") and "objectID" or "npcID"] = npc_id };
+						local info = { [(ty == "GameObject") and "objectID" or "npcID"] = npcID };
 						info.faction = UnitFactionGroup("npc");
 						info.text = UnitName("npc");
 						info.g = rawGroups;
@@ -5723,14 +5882,14 @@ app:GetWindow("Debugger", UIParent, function(self)
 			elseif e == "GOSSIP_SHOW" then
 				local guid = UnitGUID("npc");
 				if guid then
-					local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-",guid);
-					if npc_id then
-						npc_id = tonumber(npc_id);
-						--print("GOSSIP_SHOW", type, npc_id);
+					local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid);
+					if npcID then
+						npcID = tonumber(npcID);
+						--print("GOSSIP_SHOW", type, npcID);
 						if type == "GameObject" then
-							info = { ["objectID"] = npc_id, ["text"] = UnitName("npc") };
+							info = { ["objectID"] = npcID, ["text"] = UnitName("npc") };
 						else
-							info = { ["npcID"] = npc_id };
+							info = { ["npcID"] = npcID };
 							info.name = UnitName("npc");
 						end
 						info.faction = UnitFactionGroup("npc");
@@ -5747,9 +5906,9 @@ app:GetWindow("Debugger", UIParent, function(self)
 					npc = "npc";
 					guid = UnitGUID(npc);
 				end
-				local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid;
-				if guid then type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-",guid); end
-				-- print("QUEST_DETAIL", questStartItemID, " => Quest #", questID, type, npc_id);
+				local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid;
+				if guid then type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid); end
+				-- print("QUEST_DETAIL", questStartItemID, " => Quest #", questID, type, npcID);
 				
 				local rawGroups = {};
 				for i=1,GetNumQuestRewards(),1 do
@@ -5773,12 +5932,12 @@ app:GetWindow("Debugger", UIParent, function(self)
 				
 				local info = { ["questID"] = questID, ["description"] = GetQuestText(), ["objectives"] = GetObjectiveText(), ["g"] = rawGroups };
 				if questStartItemID and questStartItemID > 0 then info.itemID = questStartItemID; end
-				if npc_id then
-					npc_id = tonumber(npc_id);
+				if npcID then
+					npcID = tonumber(npcID);
 					if type == "GameObject" then
-						info = { ["objectID"] = npc_id, ["text"] = UnitName(npc), ["g"] = { info } };
+						info = { ["objectID"] = npcID, ["text"] = UnitName(npc), ["g"] = { info } };
 					else
-						info.qgs = {npc_id};
+						info.qgs = {npcID};
 						info.name = UnitName(npc);
 					end
 					info.faction = UnitFactionGroup(npc);
@@ -6082,7 +6241,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 			end
 			
 			-- If we don't have any map data on this area, report it to the chat window.
-			if not results or not results.g or #results.g < 1 then
+			if not results then
 				local mapID = self.mapID;
 				print("No map found for this location ", app.GetMapName(mapID), " [", mapID, "]");
 				
@@ -6601,12 +6760,17 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 		self:SetMovable(false);
 		self:SetUserPlaced(false);
 		self:SetClampedToScreen(false);
+		self:RegisterEvent("CRAFT_SHOW");
+		self:RegisterEvent("CRAFT_UPDATE");
+		self:RegisterEvent("CRAFT_CLOSE");
 		self:RegisterEvent("TRADE_SKILL_SHOW");
 		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
 		self:RegisterEvent("TRADE_SKILL_CLOSE");
+		self:RegisterEvent("LEARNED_SPELL_IN_TAB");
 		self:RegisterEvent("NEW_RECIPE_LEARNED");
 		self.wait = 5;
-		self.data = {
+		self.cache = {};
+		self.header = {
 			['text'] = "Profession List",
 			['icon'] = "Interface\\Icons\\INV_Scroll_04", 
 			["description"] = "Open your professions to cache them.",
@@ -6616,27 +6780,77 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			['back'] = 1,
 			['g'] = { },
 		};
+		self.data = self.header;
 		self.CacheRecipes = function(self)
 			-- Cache Learned Spells
 			local skillCache = fieldCache["spellID"];
 			if skillCache then
-				local tradeSkillID = app.SpellNameToSpellID[GetTradeSkillLine()];
-				if not tradeSkillID then
-					app.print("Could not find spellID for", GetTradeSkillLine(), GetLocale(), "! Please report this to the ATT Discord!");
-					return;
-				elseif tradeSkillID == 2656 then	-- Smelting, point this to Mining.
-					tradeSkillID = 2575;
+				-- Cache learned recipes and reagents
+				local reagentCache = app.GetDataMember("Reagents", {});
+				local learned = 0;
+				
+				-- Crafting Skills (Enchanting Only?)
+				local craftSkillName, craftSkillID, tradeSkillID, tradeSkillName = GetCraftName(), 0, 0, GetTradeSkillLine();
+				if craftSkillName ~= UNKNOWN and craftSkillName ~= "UNKNOWN" and craftSkillName ~= tradeSkillName and CraftFrame and CraftFrame:IsVisible() then	-- For some reason, "Craft" and "Tradeskill" is the same sometimes. But that's not correct!
+					craftSkillID = app.SpellNameToSpellID[craftSkillName] or 0;
+					if craftSkillID == 0 then
+						app.print("Could not find spellID for", craftSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+					end
+					
+					local numberOfCrafts = GetNumCrafts();
+					for craftIndex = 1,numberOfCrafts do
+						local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
+						if craftType ~= "header" then
+							local spellID = app.SpellNameToSpellID[craftName];
+							if spellID then
+								SetTempDataSubMember("CollectedSpells", spellID, 1);
+								if not GetDataSubMember("CollectedSpells", spellID) then
+									SetDataSubMember("CollectedSpells", spellID, 1);
+									learned = learned + 1;
+								end
+								if not skillCache[spellID] then
+									app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									skillCache[spellID] = { {} };
+								end
+							else
+								app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
+							end
+							--local itemLink, craftedItemID = GetTradeSkillItemLink(craftIndex);
+							--if itemLink then craftedItemID = GetItemInfoInstant(itemLink); end
+							
+							-- Cache the Reagents used to make this item.
+							for i=1,GetCraftNumReagents(craftIndex) do
+								local name, texturePath, reagentCount = GetCraftReagentInfo(craftIndex, i);
+								local itemID = GetItemInfoInstant(GetCraftReagentItemLink(craftIndex, i));
+								
+								-- Make sure a cache table exists for this item.
+								-- Index 1: The Recipe Skill IDs
+								-- Index 2: The Crafted Item IDs
+								if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+								if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+								if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+							end
+						end
+					end
+				else
+					craftSkillID = 0;
 				end
 				
-				-- Cache learned recipes
-				local learned = 0;
-				local numTradeSkills = GetNumTradeSkills();
-				local reagentCache = app.GetDataMember("Reagents", {});
-				for skillIndex = 1,numTradeSkills do
-					local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank = GetTradeSkillInfo(skillIndex);
-					if skillType ~= "header" then
-						local itemLink = GetTradeSkillItemLink(skillIndex);
-						if itemLink then
+				-- Trade Skills (Non-Enchanting)
+				if tradeSkillName ~= UNKNOWN and tradeSkillName ~= "UNKNOWN" then
+					tradeSkillID = app.SpellNameToSpellID[tradeSkillName] or 0;
+					if tradeSkillID == 0 then
+						app.print("Could not find spellID for", tradeSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+					elseif tradeSkillID == 2656 then	-- Smelting, point this to Mining.
+						tradeSkillID = 2575;
+					end
+					
+					local numTradeSkills = GetNumTradeSkills();
+					for skillIndex = 1,numTradeSkills do
+						local skillName, skillType, numAvailable, isExpanded, altVerb, numSkillUps, indentLevel, showProgressBar, currentRank, maxRank, startingRank = GetTradeSkillInfo(skillIndex);
+						if skillType ~= "header" then
+							local itemLink, craftedItemID = GetTradeSkillItemLink(skillIndex);
+							if itemLink then craftedItemID = GetItemInfoInstant(itemLink); end
 							local spellID = app.SpellNameToSpellID[skillName];
 							if spellID then
 								SetTempDataSubMember("CollectedSpells", spellID, 1);
@@ -6645,15 +6859,14 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 									learned = learned + 1;
 								end
 								if not skillCache[spellID] then
-									app.print("Missing " .. (itemLink or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
 									skillCache[spellID] = { {} };
 								end
 							else
-								app.print("Missing " .. (itemLink or "[??]") .. " spellID in ATT Database. Please report it!");
+								app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
 							end
 							
 							-- Cache the Reagents used to make this item.
-							local craftedItemID = GetItemInfoInstant(itemLink);
 							for i=1,GetTradeSkillNumReagents(skillIndex) do
 								local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
 								local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
@@ -6667,27 +6880,42 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 							end
 						end
 					end
+				else
+					tradeSkillID = 0;
 				end
 				
 				-- Open the Tradeskill list for this Profession
-				if self.tradeSkillID ~= tradeSkillID and app.Categories.Professions then
-					self.tradeSkillID = tradeSkillID;
+				if app.Categories.Professions then
+					local g = {};
 					for i,group in ipairs(app.Categories.Professions) do
-						if group.spellID == tradeSkillID then
-							self.data = CloneData(group);
-							self.data.indent = 0;
-							self.data.visible = true;
-							BuildGroups(self.data, self.data.g);
-							app.UpdateGroups(self.data, self.data.g);
-							if not self.data.expanded then
-								self.data.expanded = true;
-								ExpandGroupsRecursively(self.data, true);
+						if group.spellID == craftSkillID or group.spellID == tradeSkillID then
+							local cache = self.cache[group.spellID];
+							if not cache then
+								cache = CloneData(group);
+								self.cache[group.spellID] = cache;
 							end
-							if app.Settings:GetTooltipSetting("Auto:ProfessionList") then
-								self:SetVisible(true);
-							end
-							break;
+							table.insert(g, cache);
 						end
+					end
+					if #g > 0 then
+						if #g == 1 then
+							self.data = g[1];
+						else
+							self.data = self.header;
+							self.data.g = g;
+							for i,entry in ipairs(g) do
+								entry.indent = nil;
+							end
+						end
+						self.data.indent = 0;
+						self.data.visible = true;
+						BuildGroups(self.data, self.data.g);
+						app.UpdateGroups(self.data, self.data.g);
+						if not self.data.expanded then
+							self.data.expanded = true;
+							ExpandGroupsRecursively(self.data, true);
+						end
+						self:Update();
 					end
 				end
 			
@@ -6720,9 +6948,34 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 				return;
 			end
 			self.TSMCraftingVisible = visible;
+			self:UpdateFrameVisibility();
+			StartCoroutine("UpdateTradeSkills", function()
+				while InCombatLockdown() do coroutine.yield(); end
+				coroutine.yield();
+				self:Update();
+			end);
+		end
+		self.UpdateDefaultFrameVisibility = function(self)
+			if CraftFrame and CraftFrame:IsVisible() then
+				-- Default Alignment on the Craft UI.
+				self:ClearAllPoints();
+				self:SetPoint("TOPLEFT", CraftFrame, "TOPRIGHT", -37, -11);
+				self:SetPoint("BOTTOMLEFT", CraftFrame, "BOTTOMRIGHT", -37, 72);
+				self:SetMovable(false);
+				return true;
+			elseif TradeSkillFrame and TradeSkillFrame:IsVisible() then
+				-- Default Alignment on the TradeSkill UI.
+				self:ClearAllPoints();
+				self:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -37, -11);
+				self:SetPoint("BOTTOMLEFT", TradeSkillFrame, "BOTTOMRIGHT", -37, 72);
+				self:SetMovable(false);
+				return true;
+			end
+		end
+		self.UpdateFrameVisibility = function(self)
 			self:SetMovable(true);
 			self:ClearAllPoints();
-			if visible and self.cachedTSMFrame then
+			if self.TSMCraftingVisible and self.cachedTSMFrame then
 				if self.cachedTSMFrame.queue and self.cachedTSMFrame.queue:IsShown() then
 					self:SetPoint("TOPLEFT", self.cachedTSMFrame.queue, "TOPRIGHT", 0, 0);
 					self:SetPoint("BOTTOMLEFT", self.cachedTSMFrame.queue, "BOTTOMRIGHT", 0, 0);
@@ -6731,11 +6984,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					self:SetPoint("BOTTOMLEFT", self.cachedTSMFrame, "BOTTOMRIGHT", 0, 0);
 				end
 				self:SetMovable(false);
-			elseif TradeSkillFrame then
-				-- Default Alignment on the WoW UI.
-				self:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -37, -11);
-				self:SetPoint("BOTTOMLEFT", TradeSkillFrame, "BOTTOMRIGHT", -37, 72);
-				self:SetMovable(false);
+				return true;
+			elseif self:UpdateDefaultFrameVisibility() then
+				return true;
 			else
 				self:SetMovable(false);
 				StartCoroutine("TSMWHY", function()
@@ -6746,28 +6997,23 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						self:SetTSMCraftingVisible(thing);
 					end);
 				end);
-				return;
 			end
-			StartCoroutine("UpdateTradeSkills", function()
-				while InCombatLockdown() do coroutine.yield(); end
-				coroutine.yield();
-				self:Update();
-			end);
 		end
 		-- Setup Event Handlers and register for events
 		self:SetScript("OnEvent", function(self, e, ...)
 			if e == "TRADE_SKILL_LIST_UPDATE" then
 				self:RefreshRecipes();
 				self:Update();
-			elseif e == "TRADE_SKILL_SHOW" then
+			elseif e == "TRADE_SKILL_SHOW" or e == "CRAFT_SHOW" then
 				if self.TSMCraftingVisible == nil then
 					self:SetTSMCraftingVisible(false);
 				end
+				self:UpdateFrameVisibility();
 				if app.Settings:GetTooltipSetting("Auto:ProfessionList") then
 					self:SetVisible(true);
 				end
 				self:RefreshRecipes();
-			elseif e == "NEW_RECIPE_LEARNED" then
+			elseif e == "NEW_RECIPE_LEARNED" or e == "LEARNED_SPELL_IN_TAB" then
 				local spellID = ...;
 				if spellID then
 					local previousState = GetDataSubMember("CollectedSpells", spellID);
@@ -6781,8 +7027,12 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						wipe(searchCache);
 					end
 				end
-			elseif e == "TRADE_SKILL_CLOSE" then
-				self:SetVisible(false);
+			elseif e == "TRADE_SKILL_CLOSE" or e == "CRAFT_CLOSE" then
+				self:RefreshRecipes();
+				self:Update();
+				if not self:UpdateFrameVisibility() then
+					self:SetVisible(false);
+				end
 			end
 		end);
 		return;

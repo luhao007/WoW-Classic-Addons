@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Norganna's AddOns
-## Version: 8.2.6381 (SwimmingSeadragon)
+## Version: 8.2.6422 (SwimmingSeadragon)
 ## Dependencies: Stubby
 ## OptionalDeps: !nLog, Babylonian, DebugLib, SlideBar, Auc-Advanced, Configator, LibExtraTip, TipHelper, LibDataBroker
 ## SavedVariables: BeanCounterDB, BeanCounterDBSettings, BeanCounterDBNames, BeanCounterAccountDB, BeanCounterMailPatch

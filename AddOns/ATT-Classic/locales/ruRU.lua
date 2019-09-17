@@ -7,18 +7,19 @@ local L = app.L;
 
 -- Dungeons
 L.ZONE_TEXT_TO_MAP_ID["Непроглядная Пучина"] = 221;	-- BFD
+L.ZONE_TEXT_TO_MAP_ID["Глубины Черной горы"] = 242;	-- BRD
 L.ZONE_TEXT_TO_MAP_ID["Мертвые копи"] = 291;	-- DM/VC
 L.ZONE_TEXT_TO_MAP_ID["Гномреган"] = 226;	-- Gnomer
+L.ZONE_TEXT_TO_MAP_ID["Мародон"] = 280;	-- Maraudon
 L.ZONE_TEXT_TO_MAP_ID["Огненная пропасть"] = 213;	-- RFC
 L.ZONE_TEXT_TO_MAP_ID["Курганы Иглошкурых"] = 300;	-- RFD
 L.ZONE_TEXT_TO_MAP_ID["Лабиринты Иглошкурых"] = 301;	-- RFK
 L.ZONE_TEXT_TO_MAP_ID["Крепость Темного Клыка"] = 310;	-- SFK
+L.ZONE_TEXT_TO_MAP_ID["Монастырь Алого ордена"] = 435;	-- SM
+L.ZONE_TEXT_TO_MAP_ID["Храм Атал'Хаккара"] = 220;	-- ST
 L.ZONE_TEXT_TO_MAP_ID["Ульдаман"] = 230;	-- ULDA
 L.ZONE_TEXT_TO_MAP_ID["Пещеры Стенаний"] = 279;	-- WC
-
--- Cities
-L.ZONE_TEXT_TO_MAP_ID["Громовой Утес"] = 88;	-- Thunder Bluff
-L.ZONE_TEXT_TO_MAP_ID["Громовой Утес"] = 88;	-- Thunder Bluff
+L.ZONE_TEXT_TO_MAP_ID["Зул'Фаррак"] = 219;	-- ZF
 
 local a = L.NPC_ID_NAMES;
 for key,value in pairs({

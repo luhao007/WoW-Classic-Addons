@@ -4,6 +4,6 @@
 	<Script file="AprSettings.lua"/>
 	<Script file="AprFrame.lua"/>
 	<Script>
-		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/Embed.xml $", "$Rev: 6387 $")
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/Embed.xml $", "$Rev: 6417 $")
 	</Script>
 </Ui>

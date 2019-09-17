@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Funkydude, Nebula
-## Version: v1-classic
+## Version: v2-classic
 ## OptionalDeps: Ace3, LibCandyBar-3.0, LibSharedMedia-3.0, LibDDI-1.0, LibGroupInSpecT-1.1, LibDualSpec-1.0, LibChatAnims, LibLatency, LibDurability, LibDialog-1.0, Masque
 ## SavedVariables: oRA3DB
 
@@ -16,6 +16,8 @@
 
 # X-WoWI-ID: 14635
 
+
+libs.xml
 
 locales\enUS.lua
 locales\itIT.lua

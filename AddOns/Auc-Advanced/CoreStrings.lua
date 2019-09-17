@@ -4,8 +4,8 @@
 	http://localizer.norganna.org/
 
 	AddOn: Auctioneer
-	Revision: $Id: CoreStrings.lua 6385 2019-08-29 20:52:32Z none $
-	Version: 8.2.6385 (SwimmingSeadragon)
+	Revision: $Id: CoreStrings.lua 6420 2019-09-13 05:07:31Z none $
+	Version: 8.2.6420 (SwimmingSeadragon)
 
 	License:
 		This program is free software; you can redistribute it and/or
@@ -135,6 +135,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Vlastnosti veľkosti okien";
 		["AMU_Interface_AutoStop12"]	= "Prestaň predávať po 12 veciach.";
 		["APPR_Interface_12Hours"]	= "12 hodin";
+		["APPR_Interface_8Hours"]	= "8 hodin";
+		["APPR_Interface_2Hours"]	= "2 hodin";
 		["APPR_Interface_24Hours"]	= "24 hodin";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 hodin";
@@ -380,6 +382,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowProtectionOptions"]	= "beskyttelses muligheder for vindue";
 		["AHWC_Interface_WindowSizeOptions"]	= "Størrelse muligheder for vindue";
 		["APPR_Interface_12Hours"]	= "12 timer";
+		["APPR_Interface_8Hours"]	= "8 timer";
+		["APPR_Interface_2Hours"]	= "2 timer";
 		["APPR_Interface_24Hours"]	= "24 timer";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 timer";
@@ -1162,6 +1166,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Fenstergrößenoptionen";
 		["AMU_Interface_AutoStop12"]	= "Nur 12 Gegenstände an den Händler verkaufen bis der Verkauf gestoppt wird.";
 		["APPR_Interface_12Hours"]	= "12 Stunden";
+		["APPR_Interface_8Hours"]	= "8 Stunden";
+		["APPR_Interface_2Hours"]	= "2 Stunden";
 		["APPR_Interface_24Hours"]	= "24 Stunden";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 Stunden";
@@ -1571,7 +1577,7 @@ AuctioneerLocalizations = {
 
 	enUS = {
 
-		-- Section: 
+		-- Section:
 		["PSS_TailScan"]	= "Auctioneer finished scanning final pages containing {{%d}} auctions over {{%s}}";
 
 		-- Section: Help
@@ -2087,6 +2093,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Window Size Options";
 		["AMU_Interface_AutoStop12"]	= "Only sell 12 items to vendor before stopping.";
 		["APPR_Interface_12Hours"]	= "12 hours";
+		["APPR_Interface_8Hours"]	= "8 hours";
+		["APPR_Interface_2Hours"]	= "2 hours";
 		["APPR_Interface_24Hours"]	= "24 hours";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 hours";
@@ -2748,6 +2756,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Opciones de tamaño de ventana";
 		["AMU_Interface_AutoStop12"]	= "Vender solo 12 objetos al vendedor antes de parar.";
 		["APPR_Interface_12Hours"]	= "12 horas";
+		["APPR_Interface_8Hours"]	= "8 horas";
+		["APPR_Interface_2Hours"]	= "2 horas";
 		["APPR_Interface_24Hours"]	= "24 horas";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 horas";
@@ -3136,6 +3146,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_AuctionHouseScale"]	= "Escala de Casa de Subastas";
 		["AHWC_Interface_Never"]	= "Nunca";
 		["APPR_Interface_12Hours"]	= "12 horas";
+		["APPR_Interface_8Hours"]	= "18 horas";
+		["APPR_Interface_2Hours"]	= "2 horas";
 		["APPR_Interface_24Hours"]	= "24 horas";
 		["APPR_Interface_48Hours"]	= "48 horas";
 		["APPR_Interface_All"]	= "Todo";
@@ -3697,6 +3709,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Options des dimensions de la fenêtre";
 		["AMU_Interface_AutoStop12"]	= "Vendre seulement 12 objets au vendeur avant de stopper";
 		["APPR_Interface_12Hours"]	= "12 heures";
+		["APPR_Interface_8Hours"]	= "8 heures";
+		["APPR_Interface_2Hours"]	= "2 heures";
 		["APPR_Interface_24Hours"]	= "24 heures";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 heures";
@@ -4220,6 +4234,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Opzioni di dimensionamento della finestra";
 		["AMU_Interface_AutoStop12"]	= "Vendi fino a 12 oggetti per acquirente prima di fermarsi.";
 		["APPR_Interface_12Hours"]	= "12 ore";
+		["APPR_Interface_8Hours"]	= "8 ore";
+		["APPR_Interface_2Hours"]	= "2 ore";
 		["APPR_Interface_24Hours"]	= "24 ore";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 ore";
@@ -4685,6 +4701,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowProtectionOptions"]	= "창 보호 선택사항";
 		["AHWC_Interface_WindowSizeOptions"]	= "창 크기 선택사항";
 		["APPR_Interface_12Hours"]	= "12 시간";
+		["APPR_Interface_8Hours"]	= "8 시간";
+		["APPR_Interface_2Hours"]	= "2 시간";
 		["APPR_Interface_24Hours"]	= "24 시간";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 시간";
@@ -5178,6 +5196,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Venster grootte opties";
 		["AMU_Interface_AutoStop12"]	= "Verkoop alleen 12 voorwerpen aan een verkoper vooraleer te stoppen";
 		["APPR_Interface_12Hours"]	= "12 uur";
+		["APPR_Interface_8Hours"]	= "8 uur";
+		["APPR_Interface_2Hours"]	= "2 uur";
 		["APPR_Interface_24Hours"]	= "24 uur";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 uur";
@@ -5710,6 +5730,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowProtectionOptions"]	= "Opcje zabezpieczeń okna";
 		["AHWC_Interface_WindowSizeOptions"]	= "Opcje rozmiaru okna";
 		["APPR_Interface_12Hours"]	= "12 godzin";
+		["APPR_Interface_8Hours"]	= "8 godzin";
+		["APPR_Interface_2Hours"]	= "2 godzin";
 		["APPR_Interface_24Hours"]	= "24 godziny";
 		["APPR_Interface_25x"]	= "25 razy";
 		["APPR_Interface_48Hours"]	= "48 godzin";
@@ -6006,6 +6028,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Opções de Tamanho de Janela";
 		["AMU_Interface_AutoStop12"]	= "Vender somente 12 items ao vendedor antes de parar.";
 		["APPR_Interface_12Hours"]	= "12 horas";
+		["APPR_Interface_8Hours"]	= "8 horas";
+		["APPR_Interface_2Hours"]	= "2 horas";
 		["APPR_Interface_24Hours"]	= "24 horas";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 horas";
@@ -6461,6 +6485,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowProtectionOptions"]	= "Opções de Proteção da Janela";
 		["AHWC_Interface_WindowSizeOptions"]	= "Opções de Tamanho da Janela";
 		["APPR_Interface_12Hours"]	= "12 horas";
+		["APPR_Interface_8Hours"]	= "8 horas";
+		["APPR_Interface_2Hours"]	= "2 horas";
 		["APPR_Interface_24Hours"]	= "24 horas";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 horas";
@@ -7145,6 +7171,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "Настройки размера окна Аукционера";
 		["AMU_Interface_AutoStop12"]	= "Останавливаться после продажи 12 предметов Торговцу";
 		["APPR_Interface_12Hours"]	= "12 часов";
+		["APPR_Interface_8Hours"]	= "8 часов";
+		["APPR_Interface_2Hours"]	= "2 часов";
 		["APPR_Interface_24Hours"]	= "24 часа";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 часов";
@@ -7575,6 +7603,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowProtectionOptions"]	= "Pencere Koruma Seçenekleri";
 		["AHWC_Interface_WindowSizeOptions"]	= "Pencere Boyut Seçenekleri";
 		["APPR_Interface_12Hours"]	= "12 saat";
+		["APPR_Interface_8Hours"]	= "8 saat";
+		["APPR_Interface_2Hours"]	= "2 saat";
 		["APPR_Interface_24Hours"]	= "24 saat";
 		["APPR_Interface_25x"]	= "x25";
 		["APPR_Interface_48Hours"]	= "48 saat";
@@ -8292,6 +8322,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "窗口大小选项";
 		["AMU_Interface_AutoStop12"]	= "卖出12种物品后停止";
 		["APPR_Interface_12Hours"]	= "12 小时";
+		["APPR_Interface_8Hours"]	= "8 小时";
+		["APPR_Interface_2Hours"]	= "2 小时";
 		["APPR_Interface_24Hours"]	= "24 小时";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48 小时";
@@ -9163,6 +9195,8 @@ AuctioneerLocalizations = {
 		["AHWC_Interface_WindowSizeOptions"]	= "視窗大小選項";
 		["AMU_Interface_AutoStop12"]	= "只賣出12樣物品後就停止。";
 		["APPR_Interface_12Hours"]	= "12小時";
+		["APPR_Interface_8Hours"]	= "8小時";
+		["APPR_Interface_2Hours"]	= "2小時";
 		["APPR_Interface_24Hours"]	= "24小時";
 		["APPR_Interface_25x"]	= "25x";
 		["APPR_Interface_48Hours"]	= "48小時";

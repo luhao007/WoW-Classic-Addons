@@ -15,6 +15,7 @@
 ## X-DBM-Mod-Has-Single-Format: 1
 ## X-DBM-Mod-Name: Azeroth (Classic)
 ## X-DBM-Mod-Name-deDE: Azeroth (Classic)
+## X-DBM-Mod-Name-koKR: 아제로스 (클래식)
 ## X-DBM-Mod-Name-zhTW: 艾澤拉斯 (經典)
 ## X-DBM-Mod-Sort: 1107
 ## X-DBM-Mod-MapID: 0, 1
@@ -23,6 +24,7 @@
 
 localization.en.lua
 localization.de.lua
+localization.kr.lua
 localization.tw.lua
 localization.cn.lua
 KazzakClassic.lua

@@ -1,7 +1,7 @@
 ﻿--[[
 	Enchantrix Addon for World of Warcraft(tm).
-	Version: 8.2.6392 (SwimmingSeadragon)
-	Revision: $Id: EnxStorage.lua 6392 2019-08-29 20:52:32Z none $
+	Version: 8.2.6411 (SwimmingSeadragon)
+	Revision: $Id: EnxStorage.lua 6411 2019-09-13 05:07:31Z none $
 	URL: http://enchantrix.org/
 
 	Database functions and saved variables.
@@ -28,7 +28,7 @@
 		since that is its designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-Enchantrix_RegisterRevision("$URL: Enchantrix/EnxStorage.lua $", "$Rev: 6392 $")
+Enchantrix_RegisterRevision("$URL: Enchantrix/EnxStorage.lua $", "$Rev: 6411 $")
 
 --[[
 Usages:
@@ -55,6 +55,7 @@ local saveMilling					-- Enchantrix.Storage.SaveMilling
 local getItemMilling				-- Enchantrix.Storage.GetItemMilling()
 local getItemMillingTotals			-- Enchantrix.Storage.GetItemMillingTotals()
 
+local constants = Enchantrix.Constants
 
 -- Local functions
 local unserialize
@@ -170,7 +171,7 @@ function saveDisenchant(sig, reagentID, count, itemLink)
 	if itype then
 		EnchantedItemTypes[itype] = mergeDisenchant(EnchantedItemTypes[itype], disenchant)
 	end
-	
+
 	-- if we disenchanted successfully, then make sure it isn't on the non-disenchantable list
 	removeFromNonDisenchantable(sig)
 end
@@ -199,6 +200,8 @@ end
 
 -- this will return nil for anything that is not prospectable
 function getItemProspects(link)
+    if (constants.Classic) then return end
+
 	local itemType, itemID = tooltip:DecodeLink(link)
 	if (itemType ~= "item") then return end
 
@@ -233,6 +236,8 @@ end
 -- similar code in EnxTooltip.lua / millingTooltip
 
 function getItemMilling(link)
+    if (constants.Classic) then return end
+
 	local itemType, itemID = tooltip:DecodeLink(link)
 	if (itemType ~= "item") then return end
 
@@ -247,7 +252,7 @@ end
 function getItemDisenchants(link)
 	local sig
 	local iType = Enchantrix.Util.GetIType(link)
-	
+
 	if (not iType) then
 		-- NOTE - ccox - GetIType can return nil for items that are not disenchantable
 		-- a nil result does not mean that we could not find the IType
@@ -492,7 +497,7 @@ local function getBaseTableDisenchants(level, quality, type, item)
 		if (not baseTable) then
 			baseTable = Enchantrix.Constants.baseDisenchantTable[quality][Enchantrix.Constants.ARMOR];
 		end
-		
+
 		if baseTable then
 			-- find level bracket
 			local rLevel = roundupLevel(level, baseTable.bounds);
@@ -501,7 +506,7 @@ local function getBaseTableDisenchants(level, quality, type, item)
 			end
 		end
 	end
-	
+
 	-- no matching entry found, this is bad!!
 	Enchantrix.Util.DebugPrint("disenchantTable", ENX_INFO, "No data", "No match found in base disenchant table for", quality, type, level, item )
 	return nil
@@ -559,7 +564,7 @@ local function index(self, key)
 		iQual = tonumber(iQual) or 0
 		iType = tonumber(iType) or 0
 
-		if (iLevel > 0 and iQual >= 2 
+		if (iLevel > 0 and iQual >= 2
 --		and (iType == 2 or iType == 4)
 		) then
 

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Appraisals and Auction Posting
-	Version: 8.2.6387 (SwimmingSeadragon)
-	Revision: $Id: Appraiser.lua 6387 2019-08-29 20:52:32Z none $
+	Version: 8.2.6417 (SwimmingSeadragon)
+	Revision: $Id: Appraiser.lua 6417 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds an appraisals tab to the AH for
@@ -263,12 +263,16 @@ end
 
 function lib.OnLoad()
 	-- Configure our defaults
+
+    local maxDuration = 2880;
+    if AucAdvanced.Classic then maxDuration = 1440 end
+
 	default("util.appraiser.enable", false)
 	default("util.appraiser.bidtooltip", true)
 	default("util.appraiser.model", "market")
 	default("util.appraiser.ownauctions", false)
 	default("util.appraiser.altModel", "market")
-	default("util.appraiser.duration", 2880)
+	default("util.appraiser.duration", maxDuration)
 	default("util.appraiser.round.bid", false)
 	default("util.appraiser.round.buy", false)
 	default("util.appraiser.round.method", "unit")
@@ -479,4 +483,4 @@ Stubby.RegisterEventHook("AUCTION_OWNED_LIST_UPDATE", "Auc-Util-Appraiser", lib.
 lib.Private_AprFrame = private
 lib.Private_AprSettings = private
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/Appraiser.lua $", "$Rev: 6387 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/Appraiser.lua $", "$Rev: 6417 $")

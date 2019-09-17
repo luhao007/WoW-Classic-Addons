@@ -3,6 +3,40 @@ if not TMW then return end
 TMW.CHANGELOG_LASTVER="7.4.0"
 
 TMW.CHANGELOG = [==[
+## v8.7.0
+* Classic: Updated the Cast condition and icon type to use LibClassicCasterino for approximations of others' spell casts.
+* Classic: Aura durations might now be correct for abilities whose durations are variable by combopoints.
+* The Missing Buffs/Debuffs icon type now sorts by lowest duration first.
+* Switched to DRList-1.0 (from DRData-1.0) for DR category data.
+* Added events to the Combat Event icon type for swing & spell dodges/blocks/parries.
+* Classic: Added support for Real Mob Health and LibClassicMobHealth. Real Mob Health is the better approach, and must be installed standalone.
+* Classic: Added instructions to the Swing Timer icon type on how to get Wand "swing" timers.
+* Added an option to Spell Cooldown icons and Cooldown conditions to prevent the GCD from being ignored.
+* Classic: Added a Spell Autocasting condition.
+
+### Bug Fixes
+* Fixed an uncommon issue that could cause some event-driven icons to not update correctly after one of the units being tracked by an icon stops existing.
+* Classic: Fixed the Unit Class condition's options.
+* Classic: Fixed the Weapon Imbue icon type & Condition for offhands.
+* Classic: Fixed talented aura duration tracking.
+* Classic: Fixed combopoint tracking.
+
+## v8.6.9
+* Classic: Aura durations now account for learned talents.
+* Classic: Swing Timer now accounts for next-swing abilities.
+* Classic: Added Spell Queued condition (for Heroic Strike & other next-attack abilities)
+
+### Bug Fixes
+* Fixed an issue with Unit Conditions where the initial state of the conditions sometimes wouldn't be taken into account.
+* Changed the Slowed equivalency to track Crippling Poison by ID to prevent it from picking up the Rogue buff by the same name.
+* When scrolling with the mousewheel, sliders that happen to land under your mouse will no longer be adjusted as long as your cursor does not move.
+* Fixed an issue where the Artificial Maximum setting for Bar groups was not properly saving its value as a number.
+* Classic: Fixed the Tracking Active condition.
+* Classic: Fixed errors with the Spell Cast icon type.
+
+## v8.6.8
+* Classic: Fixed the logic for checking if the client is Classic or Retail.
+
 ## v8.6.7
 * Added an Inset option to the border for both Bar and Icon views.
 

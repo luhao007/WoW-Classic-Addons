@@ -37,6 +37,11 @@
 <Script file="Locale/classic-deDE.lua" />
 -->
 
+<!--  Simplified Chinese LOCALIZATION -->
+<Script file="Locale/global-zhCN.lua" />
+<Script file="Locale/classic-zhCN.lua" />
+
+
 <Script file="AtlasQuest_Items.lua" />
 <Script file="AtlasQuest_QuestIDs.lua" />
 <Script file="AtlasQuest.lua" />

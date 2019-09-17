@@ -1,7 +1,7 @@
 ﻿--[[
 	Auctioneer - Price Level Utility module
-	Version: 8.2.6391 (SwimmingSeadragon)
-	Revision: $Id: CompactUI.lua 6391 2019-08-29 20:52:32Z none $
+	Version: 8.2.6410 (SwimmingSeadragon)
+	Revision: $Id: CompactUI.lua 6410 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds a price level indicator
@@ -606,6 +606,11 @@ local function BrowseSortFunction(a, b)
 end
 
 local lookupTimeLeft = {"30m", "2h", "12h", "48h"}
+
+if AucAdvanced.Classic then
+    lookupTimeLeft = {"30m", "2h", "8h", "24h"}
+end
+
 function private.RetrievePage()
 	wipe(private.pageContents)
 
@@ -934,4 +939,4 @@ function lib.GetButtons()
 end
 
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-CompactUI/CompactUI.lua $", "$Rev: 6391 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-CompactUI/CompactUI.lua $", "$Rev: 6410 $")

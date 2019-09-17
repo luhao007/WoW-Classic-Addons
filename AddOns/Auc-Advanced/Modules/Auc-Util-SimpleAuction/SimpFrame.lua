@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Simplified Auction Posting
-	Version: 8.2.6388 (SwimmingSeadragon)
-	Revision: $Id: SimpFrame.lua 6388 2019-08-29 20:52:32Z none $
+	Version: 8.2.6409 (SwimmingSeadragon)
+	Revision: $Id: SimpFrame.lua 6409 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds a simple dialog for
@@ -360,6 +360,22 @@ function private.UpdateDisplay()
 	end
 end
 
+local timeLeftStrings = {
+                [1] = "30m",
+                [2] = "2h",
+                [3] = "12h",
+                [4] = "48h",
+}
+
+if AucAdvanced.Classic then
+    local timeLeftStrings = {
+                    [1] = "30m",
+                    [2] = "2h",
+                    [3] = "8h",
+                    [4] = "24h",
+    }
+end
+
 function private.UpdateCompetition(image)
 	local data = {}
 	local style = {}
@@ -367,11 +383,8 @@ function private.UpdateCompetition(image)
 		for i = 1, #image do
 			local result = image[i]
 			local tLeft = result[Const.TLEFT]
-			if (tLeft == 1) then tLeft = "30m"
-			elseif (tLeft == 2) then tLeft = "2h"
-			elseif (tLeft == 3) then tLeft = "12h"
-			elseif (tLeft == 4) then tLeft = "48h"
-			end
+            tLeft = timeLeftStrings[ tLeft ]
+            if not tLeft then tLeft = timeLeftStrings[4] end
 			local count = result[Const.COUNT]
 			if count < 1 then count = 1 end -- in case a 0 slips through
 			data[i] = {
@@ -854,10 +867,18 @@ function private.ClearSetting()
 	frame.CurItem.undercut = under
 	frame.options.remember:SetChecked(false)
 	frame.CurItem.remember = false
-	frame.duration.time.selected = dur
+
+if AucAdvanced.Classic then
+    if dur > 24 then dur = 24 end
+	frame.duration.time[1]:SetChecked(dur == 2)
+	frame.duration.time[2]:SetChecked(dur == 8)
+	frame.duration.time[3]:SetChecked(dur == 24)
+else
 	frame.duration.time[1]:SetChecked(dur == 12)
 	frame.duration.time[2]:SetChecked(dur == 24)
 	frame.duration.time[3]:SetChecked(dur == 48)
+end
+	frame.duration.time.selected = dur
 	frame.CurItem.duration = dur
 	private.UpdatePricing()
 end
@@ -1013,8 +1034,8 @@ function private.CreateFrames()
 	frame.duration.label:SetText("Duration:");
 
 	frame.duration.time = {
-		intervals = {12, 24, 48},
-		selected = 48,
+        intervals = {12, 24, 48},
+        selected = 48,
 		OnClick = function (obj, ...)
 			frame.CurItem.valuechanged = true
 			local self = frame.duration.time
@@ -1028,6 +1049,12 @@ function private.CreateFrames()
 			end
 		end,
 	}
+
+    if AucAdvanced.Classic then
+        frame.duration.time.intervals = {2, 8, 24}
+        frame.duration.time.selected = 24
+    end
+
 	local t = frame.duration.time
 	for pos, dur in ipairs(t.intervals) do
 		t[pos] = CreateFrame("CheckButton", "AucAdvSimpFrameDuration"..dur, frame.duration, "OptionsCheckButtonTemplate")
@@ -1359,4 +1386,4 @@ function private.CreateFrames()
 	frame:RegisterEvent("BAG_UPDATE")
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/SimpFrame.lua $", "$Rev: 6388 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/SimpFrame.lua $", "$Rev: 6409 $")

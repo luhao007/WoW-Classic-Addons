@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI - Searcher Snatch
-	Version: 8.2.6389 (SwimmingSeadragon)
-	Revision: $Id: SearcherSnatch.lua 6389 2019-08-29 20:52:32Z none $
+	Version: 8.2.6415 (SwimmingSeadragon)
+	Revision: $Id: SearcherSnatch.lua 6415 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is a plugin module for the SearchUI that assists in searching by refined paramaters
@@ -628,4 +628,4 @@ function private.refreshDisplay()
 	frame.pctBox.help:SetText(format("Buy as percent of %s value", get("snatch.price.model") or "market") )
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherSnatch.lua $", "$Rev: 6389 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherSnatch.lua $", "$Rev: 6415 $")

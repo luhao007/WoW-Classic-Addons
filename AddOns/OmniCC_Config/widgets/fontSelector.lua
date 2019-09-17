@@ -13,6 +13,10 @@ local FONT_HEIGHT = 24
 local BUTTON_HEIGHT = 54
 local SCROLL_STEP = BUTTON_HEIGHT + PADDING
 
+local function getFontIDs()
+	return LSM:List(LSM_FONT)
+end
+
 local function fetchFont(fontId)
 	if fontId and LSM:IsValid(LSM_FONT, fontId) then
 		return LSM:Fetch(LSM_FONT, fontId)
@@ -21,25 +25,11 @@ local function fetchFont(fontId)
 end
 
 local fontTester = nil
-local function isFontUsable(font)
+local function isValidFont(font)
 	if not fontTester then
 		fontTester = CreateFont('OmniCCOptionsConfig_FontTester')
 	end
 	return fontTester:SetFont(font, FONT_HEIGHT, 'OUTLINE')
-end
-
-local function nextUsableFont(fonts, index)
-	for i = index + 1, #fonts do
-		local fontID = fonts[i]
-		local font = fetchFont(fontID)
-		if isFontUsable(font) then
-			return i, fontID, font
-		end
-	end
-end
-
-local function getUsableFonts()
-	return nextUsableFont, LSM:List(LSM_FONT), 0
 end
 
 --[[
@@ -85,7 +75,7 @@ end
 function FontButton:SetFontFace(font)
 	self.fontText:SetFont(font, FONT_HEIGHT, 'OUTLINE')
 	self.fontText:SetText('1234567890')
-
+	
 	return self
 end
 
@@ -138,13 +128,13 @@ do
 	local function scrollFrame_OnSizeChanged(self)
 		local scrollChild = self:GetParent().scrollChild
 		scrollChild:SetWidth(self:GetWidth())
-
+	
 		local scrollBar  = self:GetParent().scrollBar
 		local scrollMax = max(scrollChild:GetHeight() - self:GetHeight(), 0)
 		scrollBar:SetMinMaxValues(0, scrollMax)
 		scrollBar:SetValue(0)
 	end
-
+	
 	local function scrollFrame_OnMouseWheel(self, delta)
 		local scrollBar = self:GetParent().scrollBar
 		local min, max = scrollBar:GetMinMaxValues()
@@ -200,25 +190,27 @@ function FontSelector:CreateScrollChild()
 	local buttons = {}
 
 	local i = 0
-	for _, fontID, font in getUsableFonts() do
-		i = i + 1
+	for _, fontId in ipairs(getFontIDs()) do
+		local font = fetchFont(fontId)
+		if isValidFont(font) then
+			i = i + 1
+			local f = FontButton:New(scrollChild, i % 4 == 0 or (i + 1) % 4 == 0)
+			f:SetFontFace(font):SetText(fontId)
+			f:SetScript('OnClick', f_OnClick)
 
-		local f = FontButton:New(scrollChild, i % 4 == 0 or (i + 1) % 4 == 0)
-		f:SetFontFace(font):SetText(fontID)
-		f:SetScript('OnClick', f_OnClick)
+			if i == 1 then
+				f:SetPoint('TOPLEFT')
+				f:SetPoint('TOPRIGHT', scrollChild, 'TOP', -PADDING/2, 0)
+			elseif i == 2 then
+				f:SetPoint('TOPLEFT', scrollChild, 'TOP', PADDING/2, 0)
+				f:SetPoint('TOPRIGHT')
+			else
+				f:SetPoint('TOPLEFT', buttons[i-2], 'BOTTOMLEFT', 0, -PADDING)
+				f:SetPoint('TOPRIGHT', buttons[i-2], 'BOTTOMRIGHT', 0, -PADDING)
+			end
 
-		if i == 1 then
-			f:SetPoint('TOPLEFT')
-			f:SetPoint('TOPRIGHT', scrollChild, 'TOP', -PADDING/2, 0)
-		elseif i == 2 then
-			f:SetPoint('TOPLEFT', scrollChild, 'TOP', PADDING/2, 0)
-			f:SetPoint('TOPRIGHT')
-		else
-			f:SetPoint('TOPLEFT', buttons[i-2], 'BOTTOMLEFT', 0, -PADDING)
-			f:SetPoint('TOPRIGHT', buttons[i-2], 'BOTTOMRIGHT', 0, -PADDING)
+			tinsert(buttons, f)
 		end
-
-		tinsert(buttons, f)
 	end
 
 	scrollChild:SetWidth(self.scrollFrame:GetWidth())

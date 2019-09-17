@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI
-	Version: 8.2.6389 (SwimmingSeadragon)
-	Revision: $Id: SearchMain.lua 6389 2019-08-29 20:52:32Z none $
+	Version: 8.2.6415 (SwimmingSeadragon)
+	Revision: $Id: SearchMain.lua 6415 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This Addon provides a Search tab on the AH interface, which allows
@@ -69,6 +69,15 @@ private.tleft = {
 	"|cff000003|cffe5e5e512h", --12h
 	"|cff000004|cffe5e5e548h"  --48h
 }
+
+if AucAdvanced.Classic then
+    private.tleft = {
+        "|cff000001|cffe5e5e530m", --30m
+        "|cff000002|cffe5e5e52h",  --2h
+        "|cff000003|cffe5e5e58h",  --8h
+        "|cff000004|cffe5e5e524h"  --24h
+    }
+end
 
 lib.CleanTable = wipe -- for compatibility
 
@@ -200,6 +209,8 @@ else
 		end)
 	end
 end
+
+
 --The rescan method is a button that is displayed only if the searcher implements a rescan function. The searcher then passes any itemlinks it wants refreshed data on
 --Will accept either full search details or a hyperlink (item or battlepet)
 function lib.RescanAuctionHouse(searchName, minUseLevel, maxUseLevel, isUsable, searchQuality, exactMatch, filterData) -- ### Legion : may need refining
@@ -252,6 +263,7 @@ function lib.RescanAuctionHouse(searchName, minUseLevel, maxUseLevel, isUsable, 
 		end
 	end
 end
+
 function lib.OnLoad(addon)
 	-- Notify that SearchUI is fully loaded
 	resources.isSearchUILoaded = true
@@ -756,6 +768,7 @@ function private.purchase()
 	end
 	private.removeline()
 end
+
 --Will buy/bid ALL auctions based on "reason" column
 function private.purchaseall()
 	local enableres = lib.GetSetting("reserve.enable")
@@ -795,6 +808,7 @@ function private.purchaseall()
 	end
 	private.removeall()
 end
+
 function private.ignore()
 	local sig = AucAdvanced.API.GetSigFromLink(private.data.link)
 	local price
@@ -902,6 +916,7 @@ local function isEqual(a, b, l)
 	end
 	return true
 end
+
 lib.IsEqual = isEqual
 
 function lib.LoadCurrent()
@@ -1124,6 +1139,7 @@ end
 function lib.MakeGuiConfig()
 	if private.MakeGuiConfig then private.MakeGuiConfig() end
 end
+
 function private.MakeGuiConfig()
 	private.MakeGuiConfig = nil
 
@@ -1530,9 +1546,9 @@ function private.MakeGuiConfig()
 
 	gui:AddControl(id, "Subhead", 0, "Experimental settings")
 	gui:AddControl(id, "Checkbox", 0, 1, "global.memorycleanup", "Additional memory cleanup while searching")
-		
+
 	gui:AddControl(id, "Checkbox", 0, 1, "global.fast_remove_mode", "Do not remove items from list after bid/buy (to speed up operations for very large lists)")
-	
+
 	gui:AddControl(id, "Subhead",          0,    "Tooltip")
 	gui:AddControl(id, "Checkbox",          0, 1, "tooltiphelp.show", "Show tooltip help over buttons")
 	gui:AddControl(id, "Checkbox",         0, 1, "debug.show", "Show debug line in tooltip for auctions")
@@ -2241,4 +2257,4 @@ end
 private.updater = CreateFrame("Frame", nil, UIParent)
 private.updater:SetScript("OnUpdate", OnUpdate)
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearchMain.lua $", "$Rev: 6389 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearchMain.lua $", "$Rev: 6415 $")

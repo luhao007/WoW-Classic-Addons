@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Norganna's AddOns
-## Version: 8.2.6385 (SwimmingSeadragon)
+## Version: 8.2.6420 (SwimmingSeadragon)
 ## Dependencies: Stubby
 ## LoadOnDemand: 0
 ## SavedVariables: AucAdvancedConfig, AucAdvancedData, AucAdvancedServers

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Appraisals and Auction Posting
-	Version: 8.2.6387 (SwimmingSeadragon)
-	Revision: $Id: AprFrame.lua 6387 2019-08-29 20:52:32Z none $
+	Version: 8.2.6417 (SwimmingSeadragon)
+	Revision: $Id: AprFrame.lua 6417 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds an appraisals tab to the AH for
@@ -426,6 +426,16 @@ function private.CreateFrames()
 		"|cff000003|cffe5e5e512h", --12h
 		"|cff000004|cffe5e5e548h"  --48h
 	}
+
+    if AucAdvanced.Classic then
+        tleftlookup = {
+            "|cff000001|cffe5e5e530m", --30m
+            "|cff000002|cffe5e5e52h",  --2h
+            "|cff000003|cffe5e5e58h",  --8h
+            "|cff000004|cffe5e5e524h"  --24h
+        }
+    end
+
 	function private.DelayedImageUpdate()
 		local sig = frame.salebox.sig
 		if not sig then -- sanity check
@@ -563,8 +573,11 @@ function private.CreateFrames()
 	function frame.InitControls()
 		frame.valuecache = {}
 
+        local maxDuration = 2880;
+        if AucAdvanced.Classic then maxDuration = 1440 end
+
 		local curDuration = get('util.appraiser.item.'..frame.salebox.sig..".duration") or
-			get('util.appraiser.duration') or 2880
+			get('util.appraiser.duration') or maxDuration
 
 		for i=1, #private.durations do
 			if (curDuration == private.durations[i][1]) then
@@ -1521,6 +1534,14 @@ function private.CreateFrames()
 		end
 	end
 
+    local function isValidDuration(duration)
+        if AucAdvanced.Classic then
+            return (duration == 120 or duration == 480 or duration == 1440)
+        else
+            return (duration == 720 or duration == 1440 or duration == 2880)
+        end
+    end
+
 	function frame.PostBySig(sig, dryRun, singleclick)
 		local link, itemName = AucAdvanced.Modules.Util.Appraiser.GetLinkFromSig(sig)
 		local total, _, unpostable = AucAdvanced.Post.CountAvailableItems(sig)
@@ -1547,7 +1568,7 @@ function private.CreateFrames()
 		elseif not (itemBuy and (itemBuy == 0 or itemBuy >= itemBid)) then
 			aucPrint(_TRANS('APPR_Help_SkippingInvalidBuyoutValue'):format(link) )--Skipping %s: invalid buyout value
 			return
-		elseif not (duration and (duration == 720 or duration == 1440 or duration == 2880)) then
+		elseif not (duration and isValidDuration(duration) ) then
 			aucPrint(_TRANS('APPR_Help_SkippingInvalidDuration'):format(link).." "..tostring(duration) )--Skipping %s: invalid duration:
 			return
 		elseif total == 0 then
@@ -2981,4 +3002,4 @@ function private.CreateFrames()
 
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/AprFrame.lua $", "$Rev: 6387 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-Appraiser/AprFrame.lua $", "$Rev: 6417 $")

@@ -7,17 +7,19 @@ local L = app.L;
 
 -- Dungeons
 L.ZONE_TEXT_TO_MAP_ID["Profundezas Negras"] = 221;	-- BFD
+L.ZONE_TEXT_TO_MAP_ID["Abismo Rocha Negra"] = 242;	-- BRD
 L.ZONE_TEXT_TO_MAP_ID["Minas Mortas"] = 291;	-- DM/VC
 L.ZONE_TEXT_TO_MAP_ID["Gnomeregan"] = 226;	-- Gnomer
+L.ZONE_TEXT_TO_MAP_ID["Maraudon"] = 280;	-- Maraudon
 L.ZONE_TEXT_TO_MAP_ID["Cavernas Ígneas"] = 213;	-- RFC
 L.ZONE_TEXT_TO_MAP_ID["Urzal dos Mortos"] = 300;	-- RFD
 L.ZONE_TEXT_TO_MAP_ID["Urzal dos Tuscos"] = 301;	-- RFK
 L.ZONE_TEXT_TO_MAP_ID["Bastilha da Presa Negra"] = 310;	-- SFK
+L.ZONE_TEXT_TO_MAP_ID["Monastério Escarlate"] = 435;	-- SM
+L.ZONE_TEXT_TO_MAP_ID["Templo de Atal'Hakkar"] = 220;	-- ST
 L.ZONE_TEXT_TO_MAP_ID["Uldaman"] = 230;	-- ULDA
 L.ZONE_TEXT_TO_MAP_ID["Caverna Ululante"] = 279;	-- WC
-
--- Cities
-L.ZONE_TEXT_TO_MAP_ID["Penhasco do Trovão"] = 88;	-- Thunder Bluff
+L.ZONE_TEXT_TO_MAP_ID["Zul'Farrak"] = 219;	-- ZF
 
 local a = L.NPC_ID_NAMES;
 for key,value in pairs({

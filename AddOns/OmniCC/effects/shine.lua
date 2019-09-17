@@ -100,7 +100,6 @@ function Shine:Run(cooldown)
 		local shine = ShinePool:Acquire()
 
 		shine:SetParent(owner)
-		shine:ClearAllPoints()
 		shine:SetAllPoints(cooldown)
 		shine:Show()
 

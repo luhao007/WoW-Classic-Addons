@@ -1,7 +1,7 @@
 --[[
 	Enchantrix Addon for World of Warcraft(tm).
-	Version: 8.2.6392 (SwimmingSeadragon)
-	Revision: $Id: EnxSettings.lua 6392 2019-08-29 20:52:32Z none $
+	Version: 8.2.6411 (SwimmingSeadragon)
+	Revision: $Id: EnxSettings.lua 6411 2019-09-13 05:07:31Z none $
 	URL: http://enchantrix.org/
 
 	Settings GUI
@@ -63,12 +63,16 @@ Usage:
 
 ]]
 
-Enchantrix_RegisterRevision("$URL: Enchantrix/EnxSettings.lua $", "$Rev: 6392 $")
+Enchantrix_RegisterRevision("$URL: Enchantrix/EnxSettings.lua $", "$Rev: 6411 $")
 
 local lib = {}
 Enchantrix.Settings = lib
 local private = {}
 local gui
+
+local constants = Enchantrix.Constants
+
+
 
 local function getUserSig()
 	local userSig = string.format("users.%s.%s", GetRealmName(), UnitName("player"))
@@ -172,7 +176,7 @@ local function getDefault(setting)
 
 	-- reagent prices
 	if (a == "value") then
-		return Enchantrix.Constants.StaticPrices[tonumber(b) or 0]
+		return constants.StaticPrices[tonumber(b) or 0]
 	end
 
 	-- Weights default to 100%
@@ -181,7 +185,7 @@ local function getDefault(setting)
 		if (c == "value") then
 			local reagId = tonumber(b)
 			if (reagId) then
-				return Enchantrix.Constants.StaticPrices[reagId]
+				return constants.StaticPrices[reagId]
 			end
 		else
 			return false
@@ -582,6 +586,8 @@ function lib.MakeGuiConfig()
 	gui:AddControl(id, "Button",     0, 1, "autode.deleteItem", "remove item")
 	gui:AddControl(id, "Button",     0, 1, "autode.reset", "reset all items")
 
+
+if (not constants.Classic) then
 	id = gui:AddTab(_ENCH("GuiTabProspecting"))
 	gui:AddControl(id, "Header",     0,    _ENCH("GuiProspectingOptions"))
 	gui:AddControl(id, "Checkbox",   0, 1, "TooltipShowProspecting", _ENCH("GuiShowProspecting") )
@@ -619,15 +625,17 @@ function lib.MakeGuiConfig()
 		end
 	end
 	gui:AddControl(id, "Checkbox",   0, 2, "TooltipMillingShowBaselineValue", _ENCH("GuiValueShowBaseline"))
+end
+
 
 	id = gui:AddTab(_ENCH("GuiTabWeights"))
 	gui:MakeScrollable(id)
 	gui:AddControl(id, "Header",     0,    _ENCH("GuiWeightSettings"))
 	gui:AddControl(id, "Note",     0, 1, 600, 60, _ENCH("GuiWeighSettingsNote"))
-	local numReag = #Enchantrix.Constants.DisenchantReagentList
+	local numReag = #constants.DisenchantReagentList
 	local colPos = 0
 	for i=1, numReag do
-		local reagId = Enchantrix.Constants.DisenchantReagentList[i]
+		local reagId = constants.DisenchantReagentList[i]
 		local reagName = Enchantrix.Util.GetReagentInfo(reagId)
 		if (not reagName) then reagName = "item:"..reagId end
 		gui:AddControl(id, "WideSlider", 0, 1, "weight."..reagId, 0, 250, 5, reagName..": %s%%")
@@ -638,10 +646,10 @@ function lib.MakeGuiConfig()
 	gui:MakeScrollable(id)
 	gui:AddControl(id, "Header",     0,  _ENCH("GuiFixedSettings"))
 	gui:AddControl(id, "Note",     0, 1, 600, 90, _ENCH("GuiFixedSettingsNote"))
-	local numReag = #Enchantrix.Constants.DisenchantReagentList
+	local numReag = #constants.DisenchantReagentList
 	local colPos = 0
 	for i=1, numReag do
-		local reagId = Enchantrix.Constants.DisenchantReagentList[i]
+		local reagId = constants.DisenchantReagentList[i]
 		local reagName = Enchantrix.Util.GetReagentInfo(reagId)
 		if (not reagName) then reagName = "item:"..reagId end
 		last = gui:GetLast(id)

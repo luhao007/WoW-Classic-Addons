@@ -346,6 +346,12 @@ L["TITAN_LOCATION_MAP_PLAYER_COORDS_TEXT"] = "Jugador(X,Y): %s";
 L["TITAN_LOCATION_NO_COORDS"] = "Sin Coordenadas";
 L["TITAN_LOCATION_MENU_SHOW_LOC_ON_MINIMAP_TEXT"] = "Mostrar el nombre de la ubicación sobre el minimapa";
 L["TITAN_LOCATION_MENU_UPDATE_WORLD_MAP"] = "Actualizar mapamundi cuando cambia la zona";
+L["TITAN_LOCATION_MENU_MAP_COORDS_TITLE"] = "Coordinates Location on Map";
+L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_1"] = "Top Left";
+L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_2"] = "Top Right";
+L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_3"] = "Bottom Left";
+L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_4"] = "Bottom";
+L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_5"] = "Bottom Right";
 
 L["TITAN_FPS_FORMAT"] = "%.1f";
 L["TITAN_FPS_BUTTON_LABEL"] = "FPS: ";

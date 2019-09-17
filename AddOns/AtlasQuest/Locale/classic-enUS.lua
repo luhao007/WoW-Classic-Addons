@@ -97,11 +97,9 @@ Inst1QAH = "18 Quests"
 
 --Quest 1 Alliance
 Inst1Quest1 = "1. Dark Iron Legacy"
-Inst1Quest1_Level = "52"
-Inst1Quest1_Attain = "48"
 Inst1Quest1_Aim = "Slay Fineous Darkvire and recover the great hammer, Ironfel. Take Ironfel to the Shrine of Thaurissan and place it on the statue of Franclorn Forgewright."
-Inst1Quest1_Location = "Franclorn Forgewright (Blackrock Mountain; "..YELLOW.."[3] on Entrance map"..WHITE..")"
-Inst1Quest1_Note = "Franclorn Forgewright is in the middle of the floating island in Blackrock Mountain, outside the instance near the Summoning Stone. You have to be dead to see him. He also gives you the prequest which just requires you listen to his story.\nFineous Darkvire is at "..YELLOW.."[9]"..WHITE..". The Shrine next to the arena at "..YELLOW.."[7]"..WHITE.."."
+Inst1Quest1_Location = "Franclorn Forgewright (Blackrock Mountain; "..GREEN.."[1'] on Entrance map"..WHITE..")"
+Inst1Quest1_Note = "Franclorn Forgewright is in the middle of the floating island in Blackrock Mountain, outside the instance near the Meeting Stone.  You have to be dead to see him.  He also gives you the prequest which just requires you listen to his story.\nFineous Darkvire is at "..YELLOW.."[9]"..WHITE..". The Shrine next to the arena at "..YELLOW.."[7]"..WHITE.."."
 Inst1Quest1_Prequest = "Dark Iron Legacy"
 Inst1Quest1_Folgequest = "None"
 --
@@ -109,14 +107,11 @@ Inst1Quest1name1 = "Shadowforge Key"
 
 --Quest 2 Alliance
 Inst1Quest2 = "2. Ribbly Screwspigot"
-Inst1Quest2_Level = "53"
-Inst1Quest2_Attain = "48"
 Inst1Quest2_Aim = "Bring Ribbly's Head to Yuka Screwspigot in the Burning Steppes."
-Inst1Quest2_Location = "Yuka Screwspigot (Burning Steppes - Flame Crest; "..YELLOW.."65,22"..WHITE..")"
+Inst1Quest2_Location = "Yuka Screwspigot (Burning Steppes - Flame Crest; "..YELLOW.."66, 22"..WHITE..")"
 Inst1Quest2_Note = "You get the prequest from Yorba Screwspigot (Tanaris - Steamwheedle Port; "..YELLOW.."67,23"..WHITE..").\nRibbly is at "..YELLOW.."[15]"..WHITE.."."
 Inst1Quest2_Prequest = "Yuka Screwspigot"
 Inst1Quest2_Folgequest = "None"
-Inst1Quest2PreQuest = "true"
 --
 Inst1Quest2name1 = "Rancor Boots"
 Inst1Quest2name2 = "Penance Spaulders"
@@ -277,8 +272,6 @@ Inst1Quest14_Folgequest = "None"
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst1Quest1_HORDE = Inst1Quest1
-Inst1Quest1_HORDE_Level = Inst1Quest1_Level
-Inst1Quest1_HORDE_Attain = Inst1Quest1_Attain
 Inst1Quest1_HORDE_Aim = Inst1Quest1_Aim
 Inst1Quest1_HORDE_Location = Inst1Quest1_Location
 Inst1Quest1_HORDE_Note = Inst1Quest1_Note
@@ -289,14 +282,11 @@ Inst1Quest1name1_HORDE = Inst1Quest1name1
 
 --Quest 2 Horde  (same as Quest 2 Alliance)
 Inst1Quest2_HORDE = Inst1Quest2
-Inst1Quest2_HORDE_Level = Inst1Quest2_Level
-Inst1Quest2_HORDE_Attain = Inst1Quest2_Attain
 Inst1Quest2_HORDE_Aim = Inst1Quest2_Aim
 Inst1Quest2_HORDE_Location = Inst1Quest2_Location
 Inst1Quest2_HORDE_Note = Inst1Quest2_Note
 Inst1Quest2_HORDE_Prequest = Inst1Quest2_Prequest
 Inst1Quest2_HORDE_Folgequest = Inst1Quest2_Folgequest
-Inst1Quest2PreQuest_HORDE = Inst1Quest2PreQuest
 --
 Inst1Quest2name1_HORDE = Inst1Quest2name1
 Inst1Quest2name2_HORDE = Inst1Quest2name2

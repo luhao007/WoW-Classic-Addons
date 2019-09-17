@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Item Suggest module
-	Version: 8.2.6352 (SwimmingSeadragon)
-	Revision: $Id: Auc-Util-ItemSuggest.lua 6352 2019-08-29 20:52:32Z none $
+	Version: 8.2.6418 (SwimmingSeadragon)
+	Revision: $Id: Auc-Util-ItemSuggest.lua 6418 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer module that allows the added tooltip for suggesting
@@ -481,6 +481,7 @@ end
 
 local function GetProspectValue(hyperlink, quantity, serverKey, additional)
 	if not isEnchantrixLoaded then return end
+    if AucAdvanced.Classic then return end
 	local jcSkillRequired = EnchantrixUtil.JewelCraftSkillRequiredForItem(hyperlink)
 	if not jcSkillRequired or jcSkillRequired > get("util.itemsuggest.jewelcraftskill")  then
 		return
@@ -516,6 +517,7 @@ end
 
 local function GetMillingValue(hyperlink, quantity, serverKey, additional)
 	if not isEnchantrixLoaded then return end
+    if AucAdvanced.Classic then return end
 	local insSkillRequired = EnchantrixUtil.InscriptionSkillRequiredForItem(hyperlink)
 	if not insSkillRequired or insSkillRequired > get("util.itemsuggest.inscriptionskill")  then
 		return
@@ -948,6 +950,11 @@ lib.NewSuggest("Vendor", GetVendorValue, "util.itemsuggest.vendorweight")
 local function OnLoadRunOnce()
 	OnLoadRunOnce = nil
 
+    local defaultLength = 48
+    if AucAdvanced.Classic then
+        defaultLength = 24
+    end
+
 	default("util.itemsuggest.enablett", 1) --Enables Item Suggest from Item AI to be displayed in tooltip
 	default("util.itemsuggest.enchantskill", Const.MAXSKILLLEVEL) -- Used for item AI
 	default("util.itemsuggest.jewelcraftskill", Const.MAXSKILLLEVEL)-- Used for item AI
@@ -959,11 +966,11 @@ local function OnLoadRunOnce()
 	default("util.itemsuggest.disenchantweight", 100)-- Used for item AI
 	default("util.itemsuggest.convertweight", 100)-- Used for item AI
 	default("util.itemsuggest.smeltweight", 100)-- Used for item AI
-	default("util.itemsuggest.relisttimes", 1)-- Used for item AI
+	default("util.itemsuggest.relisttimes", 2)-- Used for item AI
 	default("util.itemsuggest.usebeancounter", false)
 	default("util.itemsuggest.includebrokerage", 1)-- Used for item AI
 	default("util.itemsuggest.includedeposit", 1)-- Used for item AI
-	default("util.itemsuggest.deplength", 48)
+	default("util.itemsuggest.deplength", defaultLength)
 	default("util.itemsuggest.usecolour", true)
 	default("util.itemsuggest.showequipped", true)
 	default("util.itemsuggest.showunknown", true)
@@ -974,10 +981,12 @@ local function OnLoadRunOnce()
 	lib.SetBiasSlider("Auction", nil, "Weight ItemSuggest recommendations for auction resale higher or lower.")
 	lib.SetSuggestText("Disenchant", "Disenchant", "ffff00") -- yellow
 	lib.SetBiasSlider("Disenchant", nil, "Weight ItemSuggest recommendations for Disenchanting higher or lower.")
-	lib.SetSuggestText("Prospect", "Prospect", "ffff00") -- yellow
-	lib.SetBiasSlider("Prospect", nil, "Weight ItemSuggest recommendations for Prospecting higher or lower.")
-	lib.SetSuggestText("Mill", "Mill", "ffff00") -- yellow
-	lib.SetBiasSlider("Mill", nil, "Weight ItemSuggest recommendations for Milling higher or lower.")
+    if not AucAdvanced.Classic then
+        lib.SetSuggestText("Prospect", "Prospect", "ffff00") -- yellow
+        lib.SetBiasSlider("Prospect", nil, "Weight ItemSuggest recommendations for Prospecting higher or lower.")
+        lib.SetSuggestText("Mill", "Mill", "ffff00") -- yellow
+        lib.SetBiasSlider("Mill", nil, "Weight ItemSuggest recommendations for Milling higher or lower.")
+    end
 	lib.SetSuggestText("Convert", "Convert", "007fee") -- blue
 	lib.SetBiasSlider("Convert", nil, "Weight ItemSuggest recommendations for Conversion higher or lower.")
 	lib.SetSuggestText("Smelt", "Smelt", "007fee") -- blue
@@ -1013,10 +1022,13 @@ local function SetupConfigGui(gui)
     gui:AddControl(id, "Header", 0, "Skill usage Limits")
 	gui:AddControl(id, "WideSlider", 0, 2, "util.itemsuggest.enchantskill", 0, Const.MAXSKILLLEVEL, 25, "Max Enchanting Skill On Realm: %s")
 	gui:AddTip(id, "Set ItemSuggest limits based upon Enchanting skill for your characters on this realm.")
-	gui:AddControl(id, "WideSlider", 0, 2, "util.itemsuggest.jewelcraftskill", 0, Const.MAXSKILLLEVEL, 25, "Max JewelCrafting Skill On Realm: %s")
-	gui:AddTip(id, "Set ItemSuggest limits based upon Jewelcrafting skill for your characters on this realm.")
-	gui:AddControl(id, "WideSlider", 0, 2, "util.itemsuggest.inscriptionskill", 0, Const.MAXSKILLLEVEL, 25, "Max Inscription Skill On Realm: %s")
-	gui:AddTip(id, "Set ItemSuggest limits based upon Inscription skill for your characters on this realm.")
+
+    if not AucAdvanced.Classic then
+        gui:AddControl(id, "WideSlider", 0, 2, "util.itemsuggest.jewelcraftskill", 0, Const.MAXSKILLLEVEL, 25, "Max JewelCrafting Skill On Realm: %s")
+        gui:AddTip(id, "Set ItemSuggest limits based upon Jewelcrafting skill for your characters on this realm.")
+        gui:AddControl(id, "WideSlider", 0, 2, "util.itemsuggest.inscriptionskill", 0, Const.MAXSKILLLEVEL, 25, "Max Inscription Skill On Realm: %s")
+        gui:AddTip(id, "Set ItemSuggest limits based upon Inscription skill for your characters on this realm.")
+    end
 
 	gui:AddControl(id, "Header", 0, "Pricing Models")
 	local last = gui:GetLast(id)
@@ -1099,4 +1111,4 @@ end
 -- Neither Enchantrix nor Informant triggers "load" processor events; instead, use LoadTriggers to detect either loading
 lib.LoadTriggers = {enchantrix = true, informant = true}
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-ItemSuggest/Auc-Util-ItemSuggest.lua $", "$Rev: 6352 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-ItemSuggest/Auc-Util-ItemSuggest.lua $", "$Rev: 6418 $")

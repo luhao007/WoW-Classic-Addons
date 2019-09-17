@@ -54,8 +54,9 @@ LibBabble\LibBabble-SubZone-3.0\lib.xml
 # LibBabble\LibBabble-TalentTree-3.0\LibBabble-TalentTree-3.0.lua
 # LibBabble\LibBabble-Zone-3.0\LibBabble-Zone-3.0.lua
 
-# DRData
+# DR Libs
 DRData-1.0\DRData-1.0.xml
+DRList-1.0\DRList-1.0.xml
 
 # Other Ace Libs
 LibAlts-1.0\lib.xml

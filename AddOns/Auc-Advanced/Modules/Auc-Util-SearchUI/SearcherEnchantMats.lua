@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI - Searcher EnchantMats
-	Version: 8.2.6389 (SwimmingSeadragon)
-	Revision: $Id: SearcherEnchantMats.lua 6389 2019-08-29 20:52:32Z none $
+	Version: 8.2.6415 (SwimmingSeadragon)
+	Revision: $Id: SearcherEnchantMats.lua 6415 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is a plugin module for the SearchUI that assists in searching by refined paramaters
@@ -28,33 +28,61 @@
 		since that is its designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 --]]
--- Create a new instance of our lib with our parent
+
+-- check prerequisites
+if not AucAdvanced then return end
 if not AucSearchUI then return end
+
+
+-- Create a new instance of our lib with our parent
 local lib, parent, private = AucSearchUI.NewSearcher("EnchantMats")
 if not lib then return end
 --local print,decode,_,_,replicate,empty,_,_,_,debugPrint,fill = AucAdvanced.GetModuleLocals()
 local get, set ,default ,Const, resources = parent.GetSearchLocals()
 lib.tabname = "EnchantMats"
 
+
+-- need to know early if we're using Classic or Modern version
+local MINIMUM_CLASSIC = 11300
+local MAXIMUM_CLASSIC = 19999
+-- version, build, date, tocversion = GetBuildInfo()
+local _,_,_,tocVersion = GetBuildInfo()
+local isClassic = (tocVersion > MINIMUM_CLASSIC and tocVersion < MAXIMUM_CLASSIC)
+
+
 -- Enchanting reagents, from Enchantrix EnxConstants.lua
 local VOID = 22450
+local NEXUS = 20725
 local LPRISMATIC = 22449
 local LBRILLIANT = 14344
+local LRADIANT = 11178
+local LGLOWING = 11139
+local LGLIMMERING = 11084
 local SPRISMATIC = 22448
 local SBRILLIANT = 14343
+local SRADIANT = 11177
+local SGLOWING = 11138
+local SGLIMMERING = 10978
 local GPLANAR = 22446
 local GETERNAL = 16203
+local GNETHER = 11175
+local GMYSTIC = 11135
+local GASTRAL = 11082
 local GMAGIC = 10939
 local LPLANAR = 22447
 local LETERNAL = 16202
+local LNETHER = 11174
+local LMYSTIC = 11134
+local LASTRAL = 10998
 local LMAGIC = 10938
 local ARCANE = 22445
 local ILLUSION = 16204
-local RILLUSION = 156930
 local DREAM = 11176
 local VISION = 11137
 local SOUL = 11083
 local STRANGE = 10940
+
+local RILLUSION = 156930
 
 local DREAM_SHARD = 34052
 local SDREAM_SHARD = 34053
@@ -96,19 +124,34 @@ local VEILEDCRYSTAL = 152877
 local validReagents =
 	{
 	[VOID] = true,
+	[NEXUS] = true,
 	[LPRISMATIC] = true,
 	[LBRILLIANT] = true,
+	[LRADIANT] = true,
+	[LGLOWING] = true,
+	[LGLIMMERING] = true,
 	[SPRISMATIC] = true,
 	[SBRILLIANT] = true,
+	[SRADIANT] = true,
+	[SGLOWING] = true,
+	[SGLIMMERING] = true,
 	[GPLANAR] = true,
 	[GETERNAL] = true,
+	[GNETHER] = true,
+	[GMYSTIC] = true,
+	[GASTRAL] = true,
 	[GMAGIC] = true,
 	[LPLANAR] = true,
 	[LETERNAL] = true,
+	[LNETHER] = true,
+	[LMYSTIC] = true,
+	[LASTRAL] = true,
 	[LMAGIC] = true,
 	[ARCANE] = true,
-	[RILLUSION] = true,
 	[ILLUSION] = true,
+	[DREAM] = true,
+	[VISION] = true,
+	[SOUL] = true,
 	[STRANGE] = true,
 	[DREAM_SHARD] = true,
 	[SDREAM_SHARD] = true,
@@ -116,35 +159,37 @@ local validReagents =
 	[GCOSMIC] = true,
 	[LCOSMIC] = true,
 	[ABYSS] = true,
-	
+
+    [RILLUSION] = true,
+
 	[MAELSTROM] = true,
 	[HEAVENLY_SHARD] = true,
 	[SHEAVENLY_SHARD] = true,
 	[GCELESTIAL] = true,
 	[LCELESTIAL] = true,
 	[HYPNOTIC] = true,
-	
+
 	[SHA_CRYSTAL] = true,
 	[SHA_CRYSTAL_FRAGMENT] = true,
 	[ETHERAL] = true,
 	[SETHERAL] = true,
 	[SPIRIT] = true,
 	[MYSTERIOUS] = true,
-	
+
 	[FRACTEMPORAL] = true,
 	[TEMPORAL] = true,
 	[LUMINOUS] = true,
 	[SLUMINOUS] = true,
 	[DRAENIC] = true,
-	
+
 	[ARKHANA] = true,
 	[LEYLIGHT_SHARD] = true,
 	[CHAOS_CRYSTAL] = true,
-	
+
 	[GLOOMDUST] = true,
 	[UMBRASHARD] = true,
 	[VEILEDCRYSTAL] = true,
-	
+
 	}
 
 -- Set our defaults
@@ -158,57 +203,92 @@ default("enchantmats.maxprice.enable", false)
 default("enchantmats.model", "Enchantrix")
 
 --Slider variables
-default("enchantmats.PriceAdjust."..GPLANAR, 100)
-default("enchantmats.PriceAdjust."..GETERNAL, 100)
-default("enchantmats.PriceAdjust."..GMAGIC, 100)
-default("enchantmats.PriceAdjust."..LPLANAR, 100)
-default("enchantmats.PriceAdjust."..LETERNAL, 100)
-default("enchantmats.PriceAdjust."..LMAGIC, 100)
-default("enchantmats.PriceAdjust."..ARCANE, 100)
-default("enchantmats.PriceAdjust."..ILLUSION, 100)
-default("enchantmats.PriceAdjust."..RILLUSION, 100)
-default("enchantmats.PriceAdjust."..STRANGE, 100)
-default("enchantmats.PriceAdjust."..LPRISMATIC, 100)
-default("enchantmats.PriceAdjust."..LBRILLIANT, 100)
-default("enchantmats.PriceAdjust."..SPRISMATIC, 100)
-default("enchantmats.PriceAdjust."..SBRILLIANT, 100)
-default("enchantmats.PriceAdjust."..VOID, 100)
+if (isClassic) then
+    -- Classic materials
+    default("enchantmats.PriceAdjust."..GETERNAL, 100)
+    default("enchantmats.PriceAdjust."..GNETHER, 100)
+    default("enchantmats.PriceAdjust."..GMYSTIC, 100)
+    default("enchantmats.PriceAdjust."..GASTRAL, 100)
+    default("enchantmats.PriceAdjust."..GMAGIC, 100)
 
-default("enchantmats.PriceAdjust."..DREAM_SHARD, 100)
-default("enchantmats.PriceAdjust."..SDREAM_SHARD, 100)
-default("enchantmats.PriceAdjust."..INFINITE, 100)
-default("enchantmats.PriceAdjust."..GCOSMIC, 100)
-default("enchantmats.PriceAdjust."..LCOSMIC, 100)
-default("enchantmats.PriceAdjust."..ABYSS, 100)
+    default("enchantmats.PriceAdjust."..LETERNAL, 100)
+    default("enchantmats.PriceAdjust."..LNETHER, 100)
+    default("enchantmats.PriceAdjust."..LMYSTIC, 100)
+    default("enchantmats.PriceAdjust."..LASTRAL, 100)
+    default("enchantmats.PriceAdjust."..LMAGIC, 100)
 
-default("enchantmats.PriceAdjust."..HEAVENLY_SHARD, 100)
-default("enchantmats.PriceAdjust."..SHEAVENLY_SHARD, 100)
-default("enchantmats.PriceAdjust."..HYPNOTIC, 100)
-default("enchantmats.PriceAdjust."..GCELESTIAL, 100)
-default("enchantmats.PriceAdjust."..LCELESTIAL, 100)
-default("enchantmats.PriceAdjust."..MAELSTROM, 100)
+    default("enchantmats.PriceAdjust."..ILLUSION, 100)
+    default("enchantmats.PriceAdjust."..DREAM, 100)
+    default("enchantmats.PriceAdjust."..VISION, 100)
+    default("enchantmats.PriceAdjust."..SOUL, 100)
+    default("enchantmats.PriceAdjust."..STRANGE, 100)
 
-default("enchantmats.PriceAdjust."..SPIRIT, 100)
-default("enchantmats.PriceAdjust."..MYSTERIOUS, 100)
-default("enchantmats.PriceAdjust."..SETHERAL, 100)
-default("enchantmats.PriceAdjust."..ETHERAL, 100)
-default("enchantmats.PriceAdjust."..SHA_CRYSTAL, 100)
-default("enchantmats.PriceAdjust."..SHA_CRYSTAL_FRAGMENT, 100)
+    default("enchantmats.PriceAdjust."..LBRILLIANT, 100)
+    default("enchantmats.PriceAdjust."..LRADIANT, 100)
+    default("enchantmats.PriceAdjust."..LGLOWING, 100)
+    default("enchantmats.PriceAdjust."..LGLIMMERING, 100)
 
-default("enchantmats.PriceAdjust."..DRAENIC, 100)
-default("enchantmats.PriceAdjust."..SLUMINOUS, 100)
-default("enchantmats.PriceAdjust."..LUMINOUS, 100)
-default("enchantmats.PriceAdjust."..TEMPORAL, 100)
-default("enchantmats.PriceAdjust."..FRACTEMPORAL, 100)
+    default("enchantmats.PriceAdjust."..SBRILLIANT, 100)
+    default("enchantmats.PriceAdjust."..SRADIANT, 100)
+    default("enchantmats.PriceAdjust."..SGLOWING, 100)
+    default("enchantmats.PriceAdjust."..SGLIMMERING, 100)
+    default("enchantmats.PriceAdjust."..NEXUS, 100)
 
-default("enchantmats.PriceAdjust."..ARKHANA, 100)
-default("enchantmats.PriceAdjust."..LEYLIGHT_SHARD, 100)
-default("enchantmats.PriceAdjust."..CHAOS_CRYSTAL, 100)
+else
+    -- current Wow release
+    default("enchantmats.PriceAdjust."..GPLANAR, 100)
+    default("enchantmats.PriceAdjust."..GETERNAL, 100)
+    default("enchantmats.PriceAdjust."..GMAGIC, 100)
+    default("enchantmats.PriceAdjust."..LPLANAR, 100)
+    default("enchantmats.PriceAdjust."..LETERNAL, 100)
+    default("enchantmats.PriceAdjust."..LMAGIC, 100)
 
-default("enchantmats.PriceAdjust."..GLOOMDUST, 100)
-default("enchantmats.PriceAdjust."..UMBRASHARD, 100)
-default("enchantmats.PriceAdjust."..VEILEDCRYSTAL, 100)
+    default("enchantmats.PriceAdjust."..ARCANE, 100)
+    default("enchantmats.PriceAdjust."..ILLUSION, 100)
+    default("enchantmats.PriceAdjust."..RILLUSION, 100)
+    default("enchantmats.PriceAdjust."..STRANGE, 100)
+    default("enchantmats.PriceAdjust."..LPRISMATIC, 100)
+    default("enchantmats.PriceAdjust."..LBRILLIANT, 100)
+    default("enchantmats.PriceAdjust."..SPRISMATIC, 100)
+    default("enchantmats.PriceAdjust."..SBRILLIANT, 100)
+    default("enchantmats.PriceAdjust."..VOID, 100)
+    default("enchantmats.PriceAdjust."..NEXUS, 100)
 
+    default("enchantmats.PriceAdjust."..DREAM_SHARD, 100)
+    default("enchantmats.PriceAdjust."..SDREAM_SHARD, 100)
+    default("enchantmats.PriceAdjust."..INFINITE, 100)
+    default("enchantmats.PriceAdjust."..GCOSMIC, 100)
+    default("enchantmats.PriceAdjust."..LCOSMIC, 100)
+    default("enchantmats.PriceAdjust."..ABYSS, 100)
+
+    default("enchantmats.PriceAdjust."..HEAVENLY_SHARD, 100)
+    default("enchantmats.PriceAdjust."..SHEAVENLY_SHARD, 100)
+    default("enchantmats.PriceAdjust."..HYPNOTIC, 100)
+    default("enchantmats.PriceAdjust."..GCELESTIAL, 100)
+    default("enchantmats.PriceAdjust."..LCELESTIAL, 100)
+    default("enchantmats.PriceAdjust."..MAELSTROM, 100)
+
+    default("enchantmats.PriceAdjust."..SPIRIT, 100)
+    default("enchantmats.PriceAdjust."..MYSTERIOUS, 100)
+    default("enchantmats.PriceAdjust."..SETHERAL, 100)
+    default("enchantmats.PriceAdjust."..ETHERAL, 100)
+    default("enchantmats.PriceAdjust."..SHA_CRYSTAL, 100)
+    default("enchantmats.PriceAdjust."..SHA_CRYSTAL_FRAGMENT, 100)
+
+    default("enchantmats.PriceAdjust."..DRAENIC, 100)
+    default("enchantmats.PriceAdjust."..SLUMINOUS, 100)
+    default("enchantmats.PriceAdjust."..LUMINOUS, 100)
+    default("enchantmats.PriceAdjust."..TEMPORAL, 100)
+    default("enchantmats.PriceAdjust."..FRACTEMPORAL, 100)
+
+    default("enchantmats.PriceAdjust."..ARKHANA, 100)
+    default("enchantmats.PriceAdjust."..LEYLIGHT_SHARD, 100)
+    default("enchantmats.PriceAdjust."..CHAOS_CRYSTAL, 100)
+
+    default("enchantmats.PriceAdjust."..GLOOMDUST, 100)
+    default("enchantmats.PriceAdjust."..UMBRASHARD, 100)
+    default("enchantmats.PriceAdjust."..VEILEDCRYSTAL, 100)
+end
 
 
 function private.doValidation()
@@ -229,6 +309,96 @@ function lib.Processor(event, subevent)
 		end
 	end
 end
+
+
+function AddClassicGuiItems( gui, id )
+    -- Classic materials
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GETERNAL, 0, 200, 1, "Greater Eternal Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GNETHER, 0, 200, 1, "Greater Nether Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GMYSTIC, 0, 200, 1, "Greater Mystic Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GASTRAL, 0, 200, 1, "Greater Astral Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GMAGIC, 0, 200, 1, "Greater Magic Essence %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LETERNAL, 0, 200, 1, "Lesser Eternal Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LNETHER, 0, 200, 1, "Lesser Nether Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LMYSTIC, 0, 200, 1, "Lesser Mystic Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LASTRAL, 0, 200, 1, "Lesser Astral Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LMAGIC, 0, 200, 1, "Lesser Magic Essence %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ILLUSION, 0, 200, 1, "Illusion Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..DREAM, 0, 200, 1, "Dream Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..VISION, 0, 200, 1, "Vision Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SOUL, 0, 200, 1, "Soul Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..STRANGE, 0, 200, 1, "Strange Dust %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LBRILLIANT, 0, 200, 1, "Large Brilliant Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LRADIANT, 0, 200, 1, "Large Radiant Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LGLOWING, 0, 200, 1, "Large Glowing Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LGLIMMERING, 0, 200, 1, "Large Glimmering Shard %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SBRILLIANT, 0, 200, 1, "Small Brilliant Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SRADIANT, 0, 200, 1, "Small Radiant Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SGLOWING, 0, 200, 1, "Small Glowing Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SGLIMMERING, 0, 200, 1, "Small Glimmering Shard %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..NEXUS, 0, 200, 1, "Nexus Crystal %s%%")
+end
+
+
+function AddCurrentGuiItems( gui, id )
+    -- current Wow release
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..MYSTERIOUS, 0, 200, 1, "Mysterious Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GCELESTIAL, 0, 200, 1, "Greater Celestial Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GCOSMIC, 0, 200, 1, "Greater Cosmic Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GPLANAR, 0, 200, 1, "Greater Planar Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GETERNAL, 0, 200, 1, "Greater Eternal Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GMAGIC, 0, 200, 1, "Greater Magic Essence %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LCELESTIAL, 0, 200, 1, "Lesser Celestial Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LCOSMIC, 0, 200, 1, "Lesser Cosmic Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LPLANAR, 0, 200, 1, "Lesser Planar Essence %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LETERNAL, 0, 200, 1, "Lesser Eternal Essence %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LMAGIC, 0, 200, 1, "Lesser Magic Essence %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GLOOMDUST, 0, 200, 1, "Gloom Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ARKHANA, 0, 200, 1, "Arkhana %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..DRAENIC, 0, 200, 1, "Draenic Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SPIRIT, 0, 200, 1, "Spirit Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..HYPNOTIC, 0, 200, 1, "Hypnotic Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..INFINITE, 0, 200, 1, "Infinite Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ARCANE, 0, 200, 1, "Arcane Dust %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..RILLUSION, 0, 200, 1, "Rich Illusion Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ILLUSION, 0, 200, 1, "Light Illusion Dust %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..STRANGE, 0, 200, 1, "Strange Dust %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..UMBRASHARD, 0, 200, 1, "Umbra Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LEYLIGHT_SHARD, 0, 200, 1, "Leylight Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LUMINOUS, 0, 200, 1, "Luminous Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ETHERAL, 0, 200, 1, "Ethereal Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..HEAVENLY_SHARD, 0, 200, 1, "Heavenly Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..DREAM_SHARD, 0, 200, 1, "Dream Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LPRISMATIC, 0, 200, 1, "Large Prismatic Shard %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LBRILLIANT, 0, 200, 1, "Large Brilliant Shard %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SLUMINOUS, 0, 200, 1, "Small Luminous Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SETHERAL, 0, 200, 1, "Small Ethereal Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHEAVENLY_SHARD, 0, 200, 1, "Small Heavenly Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SDREAM_SHARD, 0, 200, 1, "Small Dream Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SPRISMATIC, 0, 200, 1, "Small Prismatic Shard %s%%")
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SBRILLIANT, 0, 200, 1, "Small Brilliant Shard %s%%")
+
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..VEILEDCRYSTAL, 0, 200, 1, "Veiled Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..CHAOS_CRYSTAL, 0, 200, 1, "Chaos Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..TEMPORAL, 0, 200, 1, "Temporal Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..FRACTEMPORAL, 0, 200, 1, "Fractured Temporal Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHA_CRYSTAL, 0, 200, 1, "Sha Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHA_CRYSTAL_FRAGMENT, 0, 200, 1, "Sha Crystal Fragment %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..MAELSTROM, 0, 200, 1, "Maelstrom Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ABYSS, 0, 200, 1, "Abyss Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..VOID, 0, 200, 1, "Void Crystal %s%%" )
+    gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..NEXUS, 0, 200, 1, "Nexus Crystal %s%%" )
+end
+
 
 -- This function is automatically called when we need to create our search parameters
 function lib:MakeGuiConfig(gui)
@@ -268,55 +438,13 @@ function lib:MakeGuiConfig(gui)
 	-- aka "what percentage of estimated value am I willing to pay for this reagent"?
 	gui:AddControl(id, "Subhead",          0,    "Reageant Price Modification")
 
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..MYSTERIOUS, 0, 200, 1, "Mysterious Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GCELESTIAL, 0, 200, 1, "Greater Celestial Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GCOSMIC, 0, 200, 1, "Greater Cosmic Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GPLANAR, 0, 200, 1, "Greater Planar Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GETERNAL, 0, 200, 1, "Greater Eternal Essence %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GMAGIC, 0, 200, 1, "Greater Magic Essence %s%%")
 
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LCELESTIAL, 0, 200, 1, "Lesser Celestial Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LCOSMIC, 0, 200, 1, "Lesser Cosmic Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LPLANAR, 0, 200, 1, "Lesser Planar Essence %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LETERNAL, 0, 200, 1, "Lesser Eternal Essence %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LMAGIC, 0, 200, 1, "Lesser Magic Essence %s%%")
-	
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..GLOOMDUST, 0, 200, 1, "Gloom Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ARKHANA, 0, 200, 1, "Arkhana %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..DRAENIC, 0, 200, 1, "Draenic Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SPIRIT, 0, 200, 1, "Spirit Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..HYPNOTIC, 0, 200, 1, "Hypnotic Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..INFINITE, 0, 200, 1, "Infinite Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ARCANE, 0, 200, 1, "Arcane Dust %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..RILLUSION, 0, 200, 1, "Rich Illusion Dust %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ILLUSION, 0, 200, 1, "Light Illusion Dust %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..STRANGE, 0, 200, 1, "Strange Dust %s%%")
-
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..UMBRASHARD, 0, 200, 1, "Umbra Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LEYLIGHT_SHARD, 0, 200, 1, "Leylight Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LUMINOUS, 0, 200, 1, "Luminous Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ETHERAL, 0, 200, 1, "Ethereal Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..HEAVENLY_SHARD, 0, 200, 1, "Heavenly Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..DREAM_SHARD, 0, 200, 1, "Dream Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LPRISMATIC, 0, 200, 1, "Large Prismatic Shard %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..LBRILLIANT, 0, 200, 1, "Large Brilliant Shard %s%%")
-
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SLUMINOUS, 0, 200, 1, "Small Luminous Shard %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SETHERAL, 0, 200, 1, "Small Ethereal Shard %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHEAVENLY_SHARD, 0, 200, 1, "Small Heavenly Shard %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SDREAM_SHARD, 0, 200, 1, "Small Dream Shard %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SPRISMATIC, 0, 200, 1, "Small Prismatic Shard %s%%")
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SBRILLIANT, 0, 200, 1, "Small Brilliant Shard %s%%")
-
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..VEILEDCRYSTAL, 0, 200, 1, "Veiled Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..CHAOS_CRYSTAL, 0, 200, 1, "Chaos Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..TEMPORAL, 0, 200, 1, "Temporal Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..FRACTEMPORAL, 0, 200, 1, "Fractured Temporal Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHA_CRYSTAL, 0, 200, 1, "Sha Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..SHA_CRYSTAL_FRAGMENT, 0, 200, 1, "Sha Crystal Fragment %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..MAELSTROM, 0, 200, 1, "Maelstrom Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..ABYSS, 0, 200, 1, "Abyss Crystal %s%%" )
-	gui:AddControl(id, "WideSlider", 0, 1, "enchantmats.PriceAdjust."..VOID, 0, 200, 1, "Void Crystal %s%%" )
+    -- work around 60 upvalue per function limits
+    if isClassic then
+        AddClassicGuiItems( gui, id )
+    else
+        AddCurrentGuiItems( gui, id )
+    end
 
 end
 
@@ -411,4 +539,4 @@ function lib.Search(item)
 	return false, "Not enough profit"
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherEnchantMats.lua $", "$Rev: 6389 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherEnchantMats.lua $", "$Rev: 6415 $")

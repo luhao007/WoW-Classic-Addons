@@ -3,6 +3,6 @@
 	<Script file="AucSimple.lua"/>
 	<Script file="SimpFrame.lua"/>
 	<Script>
-		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/Embed.xml $", "$Rev: 6388 $")
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/Embed.xml $", "$Rev: 6409 $")
 	</Script>
 </Ui>

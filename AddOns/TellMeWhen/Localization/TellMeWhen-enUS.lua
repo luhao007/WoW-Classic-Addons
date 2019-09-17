@@ -109,24 +109,16 @@ L["ICONMENU_CTRLGROUP_UNAVAILABLEID_DESC"] = [[Only the first icon in a group (i
 L["ERROR_MISSINGFILE_REQFILE"] = "A required file"
 L["ERROR_MISSINGFILE"] = [[A complete restart of WoW is required to use TellMeWhen %s.
 
-%s was not loaded. 
-
-Would you like to restart WoW now?]]
+%s was not loaded.]]
 L["ERROR_MISSINGFILE_NOREQ"] = [[A complete restart of WoW may be required to fully use TellMeWhen %s:
 
-%s was not loaded.
-
-Would you like to restart WoW now?]]
+%s was not loaded.]]
 L["ERROR_MISSINGFILE_OPT"] = [[A complete restart of WoW is required to configure TellMeWhen %s:
 
-%s was not loaded.
-
-Would you like to restart WoW now?]]
+%s was not loaded.]]
 L["ERROR_MISSINGFILE_OPT_NOREQ"] = [[A complete restart of WoW may be required to fully configure TellMeWhen %s:
 
-%s was not loaded.
-
-Would you like to restart WoW now?]]
+%s was not loaded.]]
 
 
 L["ANCHOR_CURSOR_DUMMY"] = "TellMeWhen Cursor Anchor Dummy"
@@ -669,6 +661,10 @@ L["ICONMENU_MANACHECK"] = "Power check"
 L["ICONMENU_MANACHECK_DESC"] = "Check this to enable changing the color of the icon when you are out of mana/rage/runic power/etc."
 L["ICONMENU_COOLDOWNCHECK"] = "Cooldown check"
 L["ICONMENU_COOLDOWNCHECK_DESC"] = "Check this to cause the icon to be considered unusable if it is on cooldown."
+L["ICONMENU_GCDASUNUSABLE"] = "Don't ignore GCD"
+L["ICONMENU_GCDASUNUSABLE_DESC"] = [[Normally, TellMeWhen classifies cooldowns on GCD as being usable.
+
+Enable this setting to prevent that behavior, making spells on the GCD be treated as unusable.]]
 L["ICONMENU_DONTREFRESH"] = "Don't Refresh"
 L["ICONMENU_DONTREFRESH_DESC"] = "Check to force the cooldown to not reset if the trigger occurs while it is still counting down."
 L["ICONMENU_CLEU_NOREFRESH"] = "Don't Refresh"
@@ -1427,6 +1423,12 @@ L["CONDITIONPANEL_LASTCAST_ISNTSPELL"] = "Doesn't Match"
 L["CONDITIONPANEL_OVERLAYED"] = "Spell activation overlay"
 L["CONDITIONPANEL_OVERLAYED_DESC"] = "Checks if a given spell has the activation overlay effect (the sparkly yellow border on your action bars)."
 
+L["CONDITIONPANEL_CURRENTSPELL"] = "Spell Queued"
+L["CONDITIONPANEL_CURRENTSPELL_DESC"] = "Checks if a given next-swing spell is currently activated."
+
+L["CONDITIONPANEL_AUTOSPELL"] = "Spell Autocasting"
+L["CONDITIONPANEL_AUTOSPELL_DESC"] = "Checks if a given spell or ability is autocasting."
+
 L["CONDITIONPANEL_INTERRUPTIBLE"] = "Interruptible"
 L["CONDITIONPANEL_NAME"] = "Unit Name"
 L["CONDITIONPANEL_NAMETOMATCH"] = "Name to Match"
@@ -1649,7 +1651,7 @@ L["SPELLCHARGES"] = "Spell charges"
 L["SPELLCHARGES_DESC"] = "Tracks the charges of a spell like %s or %s."
 L["SPELLCHARGETIME"] = "Spell charge time"
 L["SPELLCHARGETIME_DESC"] = "Tracks the time remaining until a spell like %s or %s will regenerate one charge."
-L["SPELLREACTIVITY"] = "Spell reactivity"
+L["SPELLREACTIVITY"] = "Spell Reactivity"
 L["MP5"] = "%d MP5"
 L["REACTIVECNDT_DESC"] = "This condition only checks the reactive state of the ability, not the cooldown of it."
 L["BUFFCNDT_DESC"] = "Only the first spell will be checked, all others will be ignored."
@@ -2067,6 +2069,7 @@ You should insert by ID instead.|r]]
 L["SUG_PATTERNMATCH_FISHINGLURE"] = "Fishing Lure %(%+%d+ Fishing Skill%)" -- enUS
 L["SUG_PATTERNMATCH_WEIGHTSTONE"] = "Weighted %(%+%d+ Damage%)"
 L["SUG_PATTERNMATCH_SHARPENINGSTONE"] = "Sharpened %(%+%d+ Damage%)"
+L["SUG_MATCH_WPNENCH_ENCH"] = "(.*) Weapon" -- inconsistent key. oops.
 
 L["SUG_MODULE_FRAME_LIKELYADDON"] = "Guessed source: %s"
 
@@ -2275,7 +2278,9 @@ L["SOUNDERROR2"] = [[Custom WAV files are not supported by WoW 4.0+
 
 (Sounds built into WoW will still work, though)]]
 L["SOUNDERROR3"] = "Only OGG and MP3 files are supported!"
-L["SOUNDERROR4"] = "Since WoW 8.2, Custom files must be under the Interface directory"
+L["SOUNDERROR4"] = [[Since WoW 8.2, custom files must be under the Interface directory. 
+
+Your entered path should start with "Interface/".]]
 
 L["ANN_TAB"] = "Text"
 L["ANN_TAB_DESC"] = [[Outputs text to chat channels, UI frames, or other AddOns.]]
@@ -2526,7 +2531,7 @@ Icon can be filtered by the spell that caused the interrupt. The spell that was 
 Note the difference between the two interrupt events - both will always occur when a spell is interrupted, but each filters the spells involved differently.]]
 L["CLEU_SPELL_LEECH"] = "Resource Leech"
 L["CLEU_SPELL_LEECH_DESC"] = "Occurs when resources (health/mana/rage/energy/etc) are removed from one unit and simultaneously given to another."
-L["CLEU_SPELL_MISSED"] = "Spell Miss"
+L["CLEU_SPELL_MISSED"] = "Spell Miss/Resist"
 L["CLEU_SPELL_CREATE"] = "Spell Create"
 L["CLEU_SPELL_CREATE_DESC"] = "Occurs when an object, such as a hunter trap or a mage portal, is created."
 L["CLEU_SPELL_SUMMON"] = "Spell Summon"
@@ -2552,6 +2557,12 @@ L["CLEU_PARTY_KILL"] = "Party Kill"
 L["CLEU_PARTY_KILL_DESC"] = "Occurs when someone in your party kills something."
 
 
+L["CLEU_SPELL_MISSED_DODGE"] = "Spell/Ability Dodge" -- custom event
+L["CLEU_SPELL_MISSED_PARRY"] = "Spell/Ability Parry" -- custom event
+L["CLEU_SPELL_MISSED_BLOCK"] = "Spell/Ability Block" -- custom event
+L["CLEU_SWING_MISSED_DODGE"] = "Swing Dodge" -- custom event
+L["CLEU_SWING_MISSED_PARRY"] = "Swing Parry" -- custom event
+L["CLEU_SWING_MISSED_BLOCK"] = "Swing Block" -- custom event
 
 L["CLEU_CAT_CAST"] = "Casts"
 L["CLEU_CAT_SWING"] = "Melee/Ranged"

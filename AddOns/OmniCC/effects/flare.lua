@@ -96,7 +96,6 @@ function Flare:Run(cooldown)
 		local shine = FlarePool:Acquire()
 
 		shine:SetParent(owner)
-		shine:ClearAllPoints()
 		shine:SetAllPoints(cooldown)
 		shine:Show()
 

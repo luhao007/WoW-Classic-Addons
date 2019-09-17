@@ -20,24 +20,19 @@
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-This file is for storing quest IDs and Levels.
+This file is for storing quest IDs, levels and maybe other data that does not
+need to be localized.  I plan to rename it to AtlasQuest_QuestData.lua soon.
 
-The Quest IDs are stored in the old/current variable format:
+
+Variables use the following format:
 
 Inst[INST #]Quest[QUEST #]_QuestID
-Inst1Quest1_QuestID
 
-The Quest Levels are stored in the new format:
-AQ_[Quest ID]_Level
-AQ_214_Level
+Examples: 
+Inst1Quest1_QuestID = "quest ID number"
+Inst1Quest1_Attain = "level when quest can be picked up"
+Inst1Quest1_Level = "level of quest"
 
-
-Although the quest levels are already stored in the localization files, I
-cannot be 100% certain they are all up to date. Storing them here as well
-for the purpose of quest links helps with that.
-
-
-- Thandrenn
 
 --]]
 
@@ -50,7 +45,14 @@ for the purpose of quest links helps with that.
 --------------- INST1 - Blackrock Depths ---------------
 
 Inst1Quest1_QuestID = "3802"
+Inst1Quest1_Level = "52"
+Inst1Quest1_Attain = "48"
+
 Inst1Quest2_QuestID = "4136"
+Inst1Quest2_Level = "53"
+Inst1Quest2_Attain = "48"
+Inst1Quest2PreQuest = "true"
+
 Inst1Quest3_QuestID = "4201"
 Inst1Quest4_QuestID = "4126"
 Inst1Quest5_QuestID = "4262"
@@ -65,7 +67,14 @@ Inst1Quest13_QuestID = "9015"
 Inst1Quest14_QuestID = "4083"
 
 Inst1Quest1_HORDE_QuestID = "3802"
+Inst1Quest1_HORDE_Level = Inst1Quest1_Level
+Inst1Quest1_HORDE_Attain = Inst1Quest1_Attain
+
 Inst1Quest2_HORDE_QuestID = "4136"
+Inst1Quest2_HORDE_Level = Inst1Quest2_Level
+Inst1Quest2_HORDE_Attain = Inst1Quest2_Attain
+Inst1Quest2PreQuest_HORDE = Inst1Quest2PreQuest
+
 Inst1Quest3_HORDE_QuestID = "4201"
 Inst1Quest4_HORDE_QuestID = "4134"
 Inst1Quest5_HORDE_QuestID = "4123"

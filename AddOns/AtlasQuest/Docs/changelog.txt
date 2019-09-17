@@ -2,6 +2,15 @@
 Changelog
 =========
 
+Version 4.11.51  (for WoW Classic)  September 15, 2019
+
+- Added Simplified Chinese localization provided by "yoke233"
+
+- Beginning a "Cleanup" project.  Going through dungeon by dungeon, quest by quest, to verify data against WoWhead and moving non-localized varibles to the QuestData file.  This will be an ongoing work in progress. I'll keep track of my progress in here.
+
+
+
+
 Version 4.11.50  (for WoW Classic)  (September 13, 2019)
 
 - Initial release.   This should be considered Beta quality.  Initially I was calling it 1.0.0, but Atlas kept trying to disable it, so I had to give it a similar version number to Retail WoW AtlasQuest.  Ugh.

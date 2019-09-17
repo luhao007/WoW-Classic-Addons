@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6381 (SwimmingSeadragon)
-	Revision: $Id: BeanCounterMail.lua 6381 2019-08-29 20:52:32Z none $
+	Version: 8.2.6422 (SwimmingSeadragon)
+	Revision: $Id: BeanCounterMail.lua 6422 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	BeanCounterMail - Handles recording of all auction house related mail
@@ -28,7 +28,7 @@
 		since that is it's designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterMail.lua $","$Rev: 6381 $","5.1.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterMail.lua $","$Rev: 6422 $","5.1.DEV.", 'auctioneer', 'libs')
 
 local lib = BeanCounter
 local private, print, get, set, _BC = lib.getLocals() --_BC localization function
@@ -42,6 +42,7 @@ local time = time
 local GetTime = GetTime
 local floor = floor
 local bitand = bit.band
+
 
 local function debugPrint(...)
     if get("util.beancounter.debugMail") then
@@ -375,14 +376,14 @@ function private.findStackcompletedAuctions(key, itemID, itemLink, soldDeposit, 
 			for index, text in pairs(v) do
 				if not text:match(".*USED.*") then
 					local postStack, postBid, postBuy, postRunTime, postDeposit, postTime, postReason = strsplit(";", private.playerData[key][itemID][itemString][index])
-					postDeposit, postBuy, postBid, postTime = tonumber(postDeposit), tonumber(postBuy), tonumber(postBid), tonumber(postTime)
+					postDeposit, postBuy, postBid, postTime = tonumber(postDeposit) or 0, tonumber(postBuy) or 0, tonumber(postBid) or 0, tonumber(postTime) or 0
 					--if the deposits and buyouts match, check if time range would make this a possible match
 					if postDeposit == soldDeposit and (not postBuy or postBuy >= soldBuy) and postBid <= soldBuy then --We may have sold it on a bid so we need to loosen this search
 						if (soldTime > postTime) and (oldestPossible < postTime) then
 							tremove(private.playerData[key][itemID][itemString], index) --remove the matched item From postedAuctions DB
 							--private.playerData[key][itemID][itemString][index] = private.playerData[key][itemID][itemString][index]..";USED Sold"
 							--debugPrint("postedAuction removed as sold", itemID, itemLink, itemString)
-							return tonumber(postStack), tonumber(postBid), itemString   --itemString is the "real" itemlink
+							return tonumber(postStack) or 0, postBid, itemString   --itemString is the "real" itemlink
 						end
 					end
 				end
@@ -400,8 +401,10 @@ end
 function private.checkStackFailedAuctions(datalist, returnedStack, expiredTime)
 	for index = #datalist, 1, -1 do -- check entries from oldest to newest
 		local postStack, postBid, postBuy, postRunTime, postDeposit, postTime, postReason = strsplit(";", datalist[index])
-		if returnedStack == tonumber(postStack) then --stacks same see if we can match time
-			local timeAuctionPosted, timeFailedAuctionStarted = tonumber(postTime), expiredTime - tonumber(postRunTime) * 60 --Earliest time we could have posted the auction
+        postStack, postDeposit, postBuy, postBid, postTime = tonumber(postStack) or 0, tonumber(postDeposit) or 0, tonumber(postBuy) or 0, tonumber(postBid) or 0, tonumber(postTime) or 0
+        postRunTime = tonumber(postRunTime) or 0
+		if returnedStack == postStack then --stacks same see if we can match time
+			local timeAuctionPosted, timeFailedAuctionStarted = postTime, expiredTime - postRunTime * 60 --Earliest time we could have posted the auction
 			if (timeAuctionPosted - 21600) <= timeFailedAuctionStarted and timeFailedAuctionStarted <= (timeAuctionPosted + 21600) then
 				tremove(datalist, index) --remove the matched item From postedAuctions DB
 				return postStack, postBid, postBuy, postDeposit
@@ -417,8 +420,10 @@ end
 function private.checkStackCancelledAuctions(datalist, returnedStack, expiredTime)
 	for index = #datalist, 1, -1 do -- check entries from oldest to newest
 		local postStack, postBid, postBuy, postRunTime, postDeposit, postTime, postReason = strsplit(";", datalist[index])
-		if returnedStack == tonumber(postStack) then --stacks same see if we can match time
-			local timeAuctionPosted, timeCancelledAuctionStarted = tonumber(postTime), expiredTime - tonumber(postRunTime) * 60 --Earliest time we could have posted the auction
+        postStack, postDeposit, postBuy, postBid, postTime = tonumber(postStack) or 0, tonumber(postDeposit) or 0, tonumber(postBuy) or 0, tonumber(postBid) or 0, tonumber(postTime) or 0
+        postRunTime = tonumber(postRunTime) or 0
+		if returnedStack == postStack then --stacks same see if we can match time
+			local timeAuctionPosted, timeCancelledAuctionStarted = postTime, expiredTime - postRunTime * 60 --Earliest time we could have posted the auction
 			if (timeAuctionPosted - 21600) > (timeCancelledAuctionStarted) then --cancelled auctions could have just been posted so no way to age check beyond oldest possible
 				tremove(datalist, index) --remove the matched item From postedAuctions DB
 				return postStack, postBid, postBuy, postDeposit
@@ -542,7 +547,7 @@ function private.findCompletedBids(itemID, bid, itemLink)
 	local dataItemBase = private.playerData.postedBids[itemID]
 	if not dataItemBase then return end
 	local mailItemString = lib.API.getItemString(itemLink) -- entries in database are keyed by itemString
-	bid = tonumber(bid)
+	bid = tonumber(bid) or 0
 
 	-- see if there is an exact match
 	local datalist = dataItemBase[mailItemString]
@@ -600,7 +605,8 @@ end
 function private.checkCompletedBidsBuyouts(datalist, bid)
 	for index = #datalist, 1, -1 do -- check entries from oldest to newest
 		local postStack, postBid, postBuy, postRunTime, postDeposit, postTime, postReason = strsplit(";", datalist[index])
-		if tonumber(postBid) == bid then
+        postBid = tonumber(postBid) or 0
+		if postBid == bid then
 			tremove(datalist, index) --remove the matched item From postedBids DB
 			return postReason --return the reason code provided for why we bid/bought item
 		end
@@ -625,7 +631,7 @@ function private.sortFailedBids( i )
 end
 
 function private.findFailedBids(itemName, gold)
-	gold = tonumber(gold)
+	gold = tonumber(gold) or 0
 	local itemID, itemLink, itemKey
 
 	while true do
@@ -649,7 +655,9 @@ function private.findFailedBids(itemName, gold)
 					for index, text in pairs(v) do
 						if not text:match(".*USED.*") then
 							local postStack, postBid, postSeller, isBuyout, postTimeLeft, postTime, reason = private.unpackString(text)
-							if tonumber(postBid) == gold then
+                            postBid = tonumber(postBid) or 0
+                            postStack = tonumber(postStack) or 0
+							if postBid == gold then
 								tremove(private.playerData["postedBids"][itemID][itemString], index) --remove the matched item From postedBids DB
 								--private.playerData["postedBids"][itemID][itemString][index] = private.playerData["postedBids"][itemID][itemString][index] ..";USED FAILED"
 								--debugPrint("posted Bid removed as Failed", itemString, index, itemLink)

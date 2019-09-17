@@ -1,7 +1,7 @@
 ﻿--[[
 	Auctioneer
-	Version: 8.2.6385 (SwimmingSeadragon)
-	Revision: $Id: CoreSettings.lua 6385 2019-08-29 20:52:32Z none $
+	Version: 8.2.6420 (SwimmingSeadragon)
+	Revision: $Id: CoreSettings.lua 6420 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	Settings GUI
@@ -157,6 +157,10 @@ local settingDefaults = {
 	["core.tooltip.depositcost"] = true,
 	["core.tooltip.depositduration"] = 48,
 }
+
+if AucAdvanced.Classic then
+    settingDefaults["core.tooltip.depositduration"] = 24
+end
 
 local function getDefault(setting)
 	-- If setting is a function reference, call it.
@@ -803,5 +807,5 @@ function private.CheckObsolete()
 	end
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreSettings.lua $", "$Rev: 6385 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreSettings.lua $", "$Rev: 6420 $")
 AucAdvanced.CoreFileCheckOut("CoreSettings")

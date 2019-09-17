@@ -83,6 +83,6 @@ function Addon:RemoveGroup(id)
 end
 
 function Addon:UpdateGroups()
-	self.Cooldown:UpdateSettings()
+	self:UpdateCooldownSettings()
 	self.Display:ForActive("UpdateCooldownText")
 end

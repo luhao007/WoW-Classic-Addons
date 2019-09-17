@@ -125,7 +125,7 @@ function TitanMovable_MenuBar_Enable()
 	else
 		if DoAdjust(TITAN_PANEL_PLACE_BOTTOM, false) then
 			MainMenuBar:SetMovable(true);
---			MainMenuBar:SetUserPlaced(true);
+			MainMenuBar:SetUserPlaced(true);
 			MainMenuBar:SetMovable(false);
 		end
 	end

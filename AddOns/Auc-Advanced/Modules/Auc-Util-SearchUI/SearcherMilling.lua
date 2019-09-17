@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI - Searcher Milling
-	Version: 8.2.6389 (SwimmingSeadragon)
-	Revision: $Id: SearcherMilling.lua 6389 2019-08-29 20:52:32Z none $
+	Version: 8.2.6415 (SwimmingSeadragon)
+	Revision: $Id: SearcherMilling.lua 6415 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is a plugin module for the SearchUI that assists in searching by refined paramaters
@@ -28,8 +28,24 @@
 		since that is its designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 --]]
--- Create a new instance of our lib with our parent
+
+-- check prerequisites
+if not AucAdvanced then return end
 if not AucSearchUI then return end
+
+
+-- need to know early if we're using Classic or Modern version
+local MINIMUM_CLASSIC = 11300
+local MAXIMUM_CLASSIC = 19999
+-- version, build, date, tocversion = GetBuildInfo()
+local _,_,_,tocVersion = GetBuildInfo()
+local isClassic = (tocVersion > MINIMUM_CLASSIC and tocVersion < MAXIMUM_CLASSIC)
+
+-- milling does not exist in Classic, but AucAdvanced.Const.Classic isn't initialized yet
+if isClassic then return end
+
+
+-- Create a new instance of our lib with our parent
 local lib, parent, private = AucSearchUI.NewSearcher("Milling")
 if not lib then return end
 --local print,decode,_,_,replicate,empty,_,_,_,debugPrint,fill = AucAdvanced.GetModuleLocals()
@@ -195,4 +211,4 @@ function lib.Search(item)
 	return false, "Not enough profit"
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherMilling.lua $", "$Rev: 6389 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherMilling.lua $", "$Rev: 6415 $")

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer
-	Version: 8.2.6385 (SwimmingSeadragon)
-	Revision: $Id: CoreConst.lua 6385 2019-08-29 20:52:32Z none $
+	Version: 8.2.6420 (SwimmingSeadragon)
+	Revision: $Id: CoreConst.lua 6420 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds statistical history to the auction data that is collected
@@ -145,10 +145,33 @@ local lib = {
 	MAXITEMLEVEL = 1100,
 	MAXBIDPRICE = 99999999999, -- copy from Blizzard_AuctionUI.lua, so it is available before AH loads
 }
+
 if AucAdvanced.Classic then
 	lib.MAXSKILLLEVEL = 300
 	lib.MAXUSERLEVEL = 60
 	lib.MAXITEMLEVEL = 92
+
+    -- times are in seconds
+	lib.AucMinTimes = {
+		0,
+		1800, -- 30 mins
+		7200, -- 2 hours
+		43200, -- 8 hours
+	}
+	lib.AucMaxTimes = {
+		1800,  -- 30 mins
+		7200,  -- 2 hours
+		28800, -- 8 hours
+		86400  -- 24 hours
+	}
+	lib.AucTimes = {
+		0,
+		1800, -- 30 mins
+		7200, -- 2 hours
+		28800, -- 8 hours
+		86400  -- 24 hours
+	}
+
 end
 
 AucAdvanced.Const = lib
@@ -190,6 +213,7 @@ else
 		LE_ITEM_CLASS_MISCELLANEOUS,
 	}
 end
+
 -- Indexed list of class names, indexes will match AC_ClassIDList
 -- names should match the (localized string) return values from GetItemInfo
 -- *not* the same as Category names (i.e. AUCTION_CATEGORY_*)
@@ -266,5 +290,5 @@ end
 -- ### todo: keep checking this conversion is correct, otherwise will have to hard-code lookup table
 lib.AC_PetType2SubClassID = {GetAuctionItemSubClasses(LE_ITEM_CLASS_BATTLEPET)}
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreConst.lua $", "$Rev: 6385 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreConst.lua $", "$Rev: 6420 $")
 AucAdvanced.CoreFileCheckOut("CoreConst")

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - AutoMagic Utility module
 	Version: 8.2.6390 (SwimmingSeadragon)
-	Revision: $Id: Core.lua 6390 2019-08-29 20:52:32Z none $
+	Revision: $Id: Core.lua 6390 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	AutoMagic is an Auctioneer module which automates mundane tasks for you.

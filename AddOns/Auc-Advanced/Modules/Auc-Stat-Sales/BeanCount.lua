@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Stat-Sales module
 	Version: 8.2.6362 (SwimmingSeadragon)
-	Revision: $Id: BeanCount.lua 6362 2019-08-29 20:52:32Z none $
+	Revision: $Id: BeanCount.lua 6362 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This Auctioneer statistic module calculates a price statistics for items

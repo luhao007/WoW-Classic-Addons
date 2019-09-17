@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Basic Auction Posting
-	Version: 8.2.6388 (SwimmingSeadragon)
-	Revision: $Id: AucSimple.lua 6388 2019-08-29 20:52:32Z none $
+	Version: 8.2.6409 (SwimmingSeadragon)
+	Revision: $Id: AucSimple.lua 6409 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds a simple dialog for
@@ -226,6 +226,12 @@ function private.UpdateConfig(setting, value)
 	end
 end
 
+local timeLeftList = { {12, "12 hour"}, {24, "24 hour"}, {48, "48 hour"} }
+
+if AucAdvanced.Classic then
+    timeLeftList = { {2, "2 hour"}, {8, "8 hour"}, {24, "24 hour"} }
+end
+
 function private.SetupConfigGui(gui)
 	local id = gui:AddTab(lib.libName, lib.libType.." Modules")
 	gui:MakeScrollable(id)
@@ -261,7 +267,7 @@ function private.SetupConfigGui(gui)
 	gui:AddControl(id, "Checkbox",     0, 1, "util.simpleauc.auto.undercut", "Automatically undercut the current price if not matching or remembering")
 	gui:AddTip(id, "When items are posted, if there is no remembered price and the item is not automatching, the competition will be undercut")
 	gui:AddControl(id, "Label",        0, 1, nil, "Automatically set the duration for an item unless remembering:")
-	gui:AddControl(id, "Selectbox",    0, 2, {{12, "12 hour"}, {24, "24 hour"}, {48, "48 hour"}}, "util.simpleauc.auto.duration")
+	gui:AddControl(id, "Selectbox",    0, 2, timeLeftList, "util.simpleauc.auto.duration")
 	gui:AddTip(id, "When items are posted, if there is no remembered price, the duration will default to this value")
 
 	gui:AddControl(id, "Subhead",      0,    "Defaults")
@@ -280,4 +286,4 @@ function private.SetupConfigGui(gui)
 	gui:AddTip(id, "Displays the old-style \"Scan\" button at the bottom of the browse window.")
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/AucSimple.lua $", "$Rev: 6388 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SimpleAuction/AucSimple.lua $", "$Rev: 6409 $")

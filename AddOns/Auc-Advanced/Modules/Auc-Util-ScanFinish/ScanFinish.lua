@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Scan Finish module
 	Version: 8.2.6345 (SwimmingSeadragon)
-	Revision: $Id: ScanFinish.lua 6345 2019-08-29 20:52:32Z none $
+	Revision: $Id: ScanFinish.lua 6345 2019-09-13 05:07:31Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer module that adds a few event functionalities
