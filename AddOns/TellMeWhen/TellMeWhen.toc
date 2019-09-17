@@ -19,14 +19,14 @@
 #  --------------------
 #  TellMeWhen
 #  Originally by Nephthys of Hyjal <lieandswell@yahoo.com>
-# 
+#
 #  Other contributions by:
 # 		Sweetmms of Blackrock, Oozebull of Twisting Nether, Oodyboo of Mug'thol,
 # 		Banjankri of Blackrock, Predeter of Proudmoore, Xenyr of Aszune
-# 
+#
 #  Currently maintained by
 #  Cybeloras of Aerie Peak
-#  -------------------- 
+#  --------------------
 
 
 # Also dont forget to bump both of these - X-Interface is used to get the interface version in-game to check that the user is using a current client.
@@ -35,33 +35,6 @@
 
 
 # The per character settings are the old settings, but we still need them to upgrade to the new ones. If they aren't defined, then they will be deleted immediately
-
-Lib\LibStub\LibStub.lua
-Lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
-Lib\LibOO-1.0\lib.xml
-Lib\AceAddon-3.0\AceAddon-3.0.xml
-Lib\AceConsole-3.0\AceConsole-3.0.xml
-Lib\AceEvent-3.0\AceEvent-3.0.xml
-Lib\AceTimer-3.0\AceTimer-3.0.xml
-Lib\AceLocale-3.0\AceLocale-3.0.xml
-Lib\AceDB-3.0\AceDB-3.0.xml
-Lib\AceComm-3.0\AceComm-3.0.xml
-Lib\AceSerializer-3.0\AceSerializer-3.0.xml
-Lib\LibSharedMedia-3.0\lib.xml
-Lib\libdatabroker-1-1\LibDataBroker-1.1.lua
-
-# DRList-1.0 uses an unconventional folder layout, requiring the double nesting.
-Lib\DRList-1.0\DRList-1.0\DRList-1.0.xml
-
-Lib\LibDogTag-3.0\lib.xml
-Lib\LibDogTag-Unit-3.0\lib.xml
-Lib\LibDogTag-Stats-3.0\lib.xml
-Lib\LibSpellRange-1.0\lib.xml
-Lib\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
-Lib\LibBabble-CreatureType-3.0\lib.xml
-Lib\LibBabble-Race-3.0\lib.xml
-Lib\LibClassicCasterino\LibClassicCasterino.lua 
-Lib\LibClassicMobHealth-1.0\lib.xml
 
 Localization\TellMeWhen-enUS.lua
 #Localization\TellMeWhen-deDE.lua

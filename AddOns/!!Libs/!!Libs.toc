@@ -64,6 +64,7 @@ LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
 LibChatAnims\LibChatAnims.xml
 LibChecksum-1.0\LibChecksum.lua
+LibClassicCasterino\LibClassicCasterino.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicMobHealth-1.0\lib.xml
