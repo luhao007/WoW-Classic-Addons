@@ -23,6 +23,7 @@ local BASE_MOVEMENT_SPEED = BASE_MOVEMENT_SPEED or 7
 
 --BLZ function (Fixed for classic WOW)
 local UnitEffectiveLevel = UnitEffectiveLevel or function() end
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned or function() end
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned  or function() end
 local UnitIsQuestBoss = UnitIsQuestBoss or function() end
 local IsFlying = IsFlying or function() end
@@ -786,10 +787,10 @@ LibEvent:attachTrigger("tooltip.style.init", function(self, tip)
         tip.GetBackdropBorderColor = function(self) return self.style:GetBackdropBorderColor() end
         if (not tip.BigFactionIcon) then
             tip.BigFactionIcon = tip:CreateTexture(nil, "OVERLAY")
-            tip.BigFactionIcon:SetPoint("TOPRIGHT", tip, "TOPRIGHT", 18, 12)
+            tip.BigFactionIcon:SetPoint("TOPRIGHT", tip, "TOPRIGHT", 18, 0)
             tip.BigFactionIcon:SetBlendMode("ADD")
-            tip.BigFactionIcon:SetScale(0.24)
-            tip.BigFactionIcon:SetAlpha(0.4)
+            tip.BigFactionIcon:SetScale(0.25)
+            tip.BigFactionIcon:SetAlpha(0.40)
         end
     end
     if (tip.DisableDrawLayer) then

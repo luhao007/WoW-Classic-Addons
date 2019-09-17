@@ -8,6 +8,10 @@ local Pulse = Addon.FX:Create("pulse", L.Pulse, L.PulseTip)
 
 function Pulse:Run(cooldown)
 	local parent = cooldown:GetParent()
+	if parent:IsForbidden() then
+		return
+	end
+
 	local icon = Addon:GetButtonIcon(parent)
 
 	if parent and icon then
@@ -76,12 +80,11 @@ do
 
 	function Pulse:Create(owner)
 		local pulse = Addon:CreateHiddenFrame("Frame", nil, owner)
+
 		pulse:SetAllPoints(owner)
 		pulse:SetToplevel(true)
 		pulse:SetScript("OnHide", pulseFrame_OnHide)
-
 		pulse.icon = pulseFrame_CreateIcon(pulse)
-
 		pulse.animation = pulseFrame_CreateAnimation(pulse)
 
 		local effects = self.effects

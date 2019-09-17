@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: M
-## Version: 1.2.1
+## Version: 8.2.1
 ## SavedVariables: BigTipDB
 ## SavedVariablesPerCharacter: TinyTooltipCharacterDB
 

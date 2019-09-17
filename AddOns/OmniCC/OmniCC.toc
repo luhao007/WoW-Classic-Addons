@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Tuller
-## Version: 8.1.1
+## Version: 8.2.4
 ## SavedVariables: OmniCC4Config
 
 ## Title: OmniCC
