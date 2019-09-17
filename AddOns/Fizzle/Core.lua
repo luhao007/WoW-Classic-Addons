@@ -1,6 +1,6 @@
 -- Create the addon
 Fizzle = LibStub("AceAddon-3.0"):NewAddon("Fizzle", "AceEvent-3.0", "AceBucket-3.0", "AceHook-3.0", "AceConsole-3.0")
-local self, Fizzle = Fizzle, Fizzle
+local Fizzle = Fizzle
 local defaults = {
     profile = {
         Percent = true,
@@ -138,6 +138,22 @@ local function getOptions()
     return options
 end
 
+-- Detect if we're running in the Classic client
+local IsClassic
+do
+    -- List of TOC versions that are valid in the Classic client
+    local classic_versions = {
+        [11302] = true,
+    }
+
+    -- Returns true on a Classic client or nil at other times.
+    IsClassic = function()
+        local _, _, _, version = GetBuildInfo()
+
+        return classic_versions[version]
+    end
+end
+
 function Fizzle:OnInitialize()
     -- Grab our db
     self.db = LibStub("AceDB-3.0"):New("FizzleDB", defaults)
@@ -228,8 +244,12 @@ function Fizzle:MakeTypeTable()
         "Hands",
         "MainHand",
         "SecondaryHand",
-        "Ranged",
     }
+
+    -- Ranged slot exists in Classic.
+    if IsClassic() then
+        items[#items + 1] = "Ranged"
+    end
 
     -- Items without durability but with some quality, needed for border colouring.
     nditems = {

@@ -275,8 +275,7 @@ L["Rage Sources"] = "Источники ярости"
 L["Raid"] = "Рейду"
 L["Raid Instances"] = "Рейдовые подземелья"
 L["Rank Number"] = "Уровень"
---[[Translation missing --]]
---[[ L["RealID"] = "RealID"--]] 
+L["RealID"] = "Настоящее имя"
 L["Realtime"] = "Реальное время"
 L["Record Buffs/Debuffs"] = "Запись положительных/отрицательных эффектов"
 L["Record Data"] = "Запись данных"

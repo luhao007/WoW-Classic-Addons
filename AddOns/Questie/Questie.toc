@@ -1,7 +1,7 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
 ## Version: 4.1.0 BETA
-## RequiredDeps:
+## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter

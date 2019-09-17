@@ -1,4 +1,4 @@
-local mod = Fizzle:NewModule("Inspect", "AceHook-3.0", "AceEvent-3.0")
+﻿local mod = Fizzle:NewModule("Inspect", "AceHook-3.0", "AceEvent-3.0")
 local _G = _G
 local ipairs, smatch, tonumber = ipairs, string.match, tonumber
 local slots = {

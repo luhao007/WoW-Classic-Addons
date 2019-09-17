@@ -1,6 +1,6 @@
 ## Interface: 11302
-## Author: phyber, luhao007
-## Version: 11302
+## Author: phyber
+## Version: 80200-4
 ## OptionalDeps: Ace3, Voyeur
 ## SavedVariablesPerCharacter: FizzleDB
 
@@ -11,9 +11,7 @@
 
 ## X-Category: Inventory
 ## X-Embeds: Ace3
-## X-RelSite-WoWI: 5018
-## X-Website: http://phyber.wowinterface.com/
-## X-WoWIPortal: phyber
+## X-Curse-Project-ID: 6079
 
 Locales\locales.xml
 
