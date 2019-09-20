@@ -296,6 +296,11 @@ MAPPING = {
         'Title-sub': '祖尔格拉布',
         'Category': '副本'
     },
+    'DejaClassicStats': {
+        'Title-cn': '角色属性',
+        'Notes': '在角色面板中显示额外的信息，如法术命中等',
+        'Category': '界面'
+    },
     'Enchantrix': {
         'Title-cn': '附魔助手',
         'Notes': '提示物品分解后可能得到的材料',

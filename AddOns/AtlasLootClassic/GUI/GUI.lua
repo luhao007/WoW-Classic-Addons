@@ -488,7 +488,7 @@ local function SearchBoxOnTextChanged(self, pI)
 end
 
 -- AtlasMaps
-local ATLAS_MAPS_PATH = "Interface\\AddOns\\Atlas_ClassicWoW\\Images\\"
+local ATLAS_MAPS_PATH = "Interface\\AddOns\\AtlasLootClassic_Maps\\"
 local function AtlasMaps_SetMaps(self, map, entranceMap)
 	if map == self.map and self.entranceMap == entranceMap then
 		self:ShowOverlay(true)

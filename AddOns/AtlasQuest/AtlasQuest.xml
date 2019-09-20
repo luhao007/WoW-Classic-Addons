@@ -41,6 +41,9 @@
 <Script file="Locale/global-zhCN.lua" />
 <Script file="Locale/classic-zhCN.lua" />
 
+<!--  RUSSIAN LOCALIZATION -->
+<Script file="Locale/global-ruRU.lua" />
+<Script file="Locale/classic-ruRU.lua" />
 
 <Script file="AtlasQuest_Items.lua" />
 <Script file="AtlasQuest_QuestIDs.lua" />

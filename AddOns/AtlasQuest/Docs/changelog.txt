@@ -2,6 +2,18 @@
 Changelog
 =========
 
+Version 4.11.52  (for WoW Classic)  September 19, 2019
+
+- Updated Simplified Chinese localization.  (thank you "yoke233")
+- Added Russian translation thanks to "GoodDeath".
+
+- Cleanup Progress:
+	- Blackrock Depths complete.
+	- Blackwing Lair complete.
+
+
+
+
 Version 4.11.51  (for WoW Classic)  September 15, 2019
 
 - Added Simplified Chinese localization provided by "yoke233"

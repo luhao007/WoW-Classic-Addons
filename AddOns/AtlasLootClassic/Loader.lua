@@ -106,7 +106,7 @@ function Loader.Init()
 	local playerName = UnitName("player")
 	for i=1,GetNumAddOns() do
 		tmp = {GetAddOnInfo(i)} --5
-		if tmp[1] and (str_find(tmp[1], "AtlasLootClassic_") or str_find(tmp[1], "Atlas_")) then
+		if tmp[1] and str_find(tmp[1], "AtlasLootClassic_") then
 			ModuleList[tmp[1]] = {
 				index = i,
 				enabled = GetAddOnEnableState(playerName, i) ~= 0, --tmp[4], -- 0 = Disabled on char, 1 = Enabled only on some chars (including this), 2 = enabled on all chars
@@ -127,8 +127,8 @@ function Loader.Init()
 		Loader:LoadAllModules(loadCustom)
 	end
 
-	if ModuleList["Atlas_ClassicWoW"] and ModuleList["Atlas_ClassicWoW"].enabled then
-		Loader:LoadModule("Atlas_ClassicWoW", function() AtlasMapsModuleLoaded = true end)
+	if ModuleList["AtlasLootClassic_Maps"] and ModuleList["AtlasLootClassic_Maps"].enabled then
+		Loader:LoadModule("AtlasLootClassic_Maps", function() AtlasMapsModuleLoaded = true end)
 	else
 		AtlasMapsModuleLoaded = false
 	end

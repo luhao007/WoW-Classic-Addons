@@ -1,31 +1,31 @@
 
 
-AtlasQuest
+AtlasQuest CLASSIC
 Maintained by Thandrenn (aka Mystery8)
 Email me at mystery8@gmail.com
 
 Github: https://github.com/thandrenn/AtlasQuest
 
 Report Bugs at the CurseForge page:
-https://wow.curseforge.com/projects/atlas-quest-fan-update
+https://www.curseforge.com/wow/addons/atlas-quest-fan-update
 
 
 About AtlasQuest:
 =================
 
-AtlasQuest is an addon for a World of Warcraft addon called Atlas.
-It contains information and a list of quests for the Dungeons, Raids,
-Battlegrounds and Scenarios.
+AtlasQuest is an addon for another World of Warcraft addon called
+"Atlas".    AtlasQuest adds a panel to the side of Atlas that lists
+most quests for a given Dungeon, Raid or Battleground.
 
-AtlasQuest was originally created by Asurn in 2006.  It was updated
-for the Burning Crusade expansion by Lothaer and Rabidmax.  Since July
-2007 it has been maintained and updated by Thandrenn (aka Mystery8).
+It was originally created by Asurn in 2006.  Since July 2007 it has
+been maintained and updated by Thandrenn (aka Mystery8).
 
-Over the years there have been various contributions by others.  I've
-tried to make note of them in the changelog.txt where possible.
+Over the years there have been many contributions by the community.
+Most are listed either here or in the changelog.txt.
 
 Information for AtlasQuest is gathered either first-hand in the game 
-or from websites such as WoWhead.com or WoWpedia.org.
+or from WoWhead.com.
+
 
 
 
@@ -33,13 +33,30 @@ Translations:
 =============
 
 Currently Maintained:
-EN: Thandrenn  (previously Asurn and Lothaer)
-DE: Guldukat  (previously Asurn, Nihlo, Telchar and Nalumis)
+English:  Thandrenn
+Simplified Chinese:  yoke233
+Russian:  GoodDeath
 
-No longer updated:
-CN: yeachan and Ananhaid (previously DIY)
-TW: Jill
-RU: EvgeshaH (Non-WOTLK by lorientalas)
+
+
+
+Past Contributors:
+==================
+
+Asurn - Original creator of AtlasQuest
+Lothaer - Updated AtlasQuest for The Burning Crusade
+Dazerdude - Added Command Line Interface (which has since been removed)
+Rabidmax - Burning Crusade updates.
+Nihlo - German translation
+Telchar - German translation
+Nalumis - German translation
+yeachan - Simplified Chinese translation
+Ananhaid - Simplified Chinese translation
+DIY - Simplified Chinese translation
+Jill - Traditional Chinese translation
+EvgeshaH - Russian translation
+lorientalas - Russian translation
+
 
 
 

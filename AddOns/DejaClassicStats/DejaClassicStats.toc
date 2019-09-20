@@ -1,0 +1,30 @@
+## Interface: 11302
+## Author: Dejablue, Kakjens, loudsoul
+## Version: 1302r026
+## SavedVariables: DCS_ClassSpecDB
+## SavedVariablesPerCharacter: DejaClassicStatsDBPC
+
+## Title: |cff00c0ffDejaClassicStats|r
+## Notes: Dejablue's improved character stats panel view.
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF角色属性|r |cFFFFE00ADejaClassicStats|r
+## Notes-zhCN: 在角色面板中显示额外的信息，如法术命中等
+
+
+Localization\localization.core.lua
+Localization\localization.deDE.lua
+Localization\localization.enGB.lua
+Localization\localization.enUS.lua
+Localization\localization.esES.lua
+Localization\localization.esMX.lua
+Localization\localization.frFR.lua
+Localization\localization.itIT.lua
+Localization\localization.koKR.lua
+Localization\localization.ptBR.lua
+Localization\localization.ruRU.lua
+Localization\localization.zhCN.lua
+Localization\localization.zhTW.lua
+
+DejaClassicStats.lua
+DCSDuraRepair.lua
+DCSExpand.lua
+DCSAbout.lua
