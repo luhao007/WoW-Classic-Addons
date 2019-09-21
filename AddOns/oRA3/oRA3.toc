@@ -16,9 +16,6 @@
 
 # X-WoWI-ID: 14635
 
-
-libs.xml
-
 locales\enUS.lua
 locales\itIT.lua
 locales\ptBR.lua

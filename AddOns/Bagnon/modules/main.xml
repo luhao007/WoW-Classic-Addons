@@ -2,6 +2,5 @@
 	<Script file="main.lua"/>
 
   <Include file="..\common\Wildpants\Wildpants.xml"/>
-  <Include file="..\common\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
   <Include file="..\components\main\components.xml"/>
 </Ui>

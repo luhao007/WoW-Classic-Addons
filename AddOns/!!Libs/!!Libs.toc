@@ -33,7 +33,7 @@ LibSharedMedia-3.0\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
 AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 # Libs Needs to be Imported before Other Libs
-LibCompress\LibCompress.lua
+LibCompress\lib.xml
 UTF8\utf8data.lua
 UTF8\utf8.lua
 
