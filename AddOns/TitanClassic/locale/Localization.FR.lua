@@ -453,6 +453,21 @@ L["TITAN_XP_XPGAINS_LABEL_SHORT"] = "Est. des gains : ";
 L["TITAN_XP_XPGAINS_LABEL"] = "Gains d'XP pour passer de niveau (à %s XP gagné): ";
 L["TITAN_XP_MENU_SIMPLE_BUTTON_XPGAIN"] = "les estimations de gains d'XP pour monter";
 
+L["TITAN_REGEN_MENU_TEXT"] = "Regen"
+L["TITAN_REGEN_MENU_TOOLTIP_TITLE"] = "Taux de regen"
+L["TITAN_REGEN_MENU_SHOW2"] = "Sant\195\169 (HP)"
+L["TITAN_REGEN_MENU_SHOW3"] = "Mana (MP)"
+L["TITAN_REGEN_MENU_SHOW4"] = "Double d\195\169cimale"
+L["TITAN_REGEN_BUTTON_TEXT_HP"] = "HP: "
+L["TITAN_REGEN_BUTTON_TEXT_MP"] = " MP: "
+L["TITAN_REGEN_TOOLTIP1"] = "Sant\195\169 (HP): \t"..GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..RED_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE..")";
+L["TITAN_REGEN_TOOLTIP2"] = "Mana (MP): \t"..GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..RED_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE..")";
+L["TITAN_REGEN_TOOLTIP3"] = "Meilleur Regen HP: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE;
+L["TITAN_REGEN_TOOLTIP4"] = "Plus mauvais Regen HP: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE;
+L["TITAN_REGEN_TOOLTIP5"] = "Meilleur Regen MP: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE;
+L["TITAN_REGEN_TOOLTIP6"] = "Plus mauvais Regen MP: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE;
+L["TITAN_REGEN_TOOLTIP7"] = "Regen MP du dernier combat: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..GREEN_FONT_COLOR_CODE.."%.2f"..FONT_COLOR_CODE_CLOSE.."%%)";
+
 --Titan Repair
 L["REPAIR_LOCALE"] = {
 	menu = "Réparation",
@@ -495,7 +510,7 @@ L["REPAIR_LOCALE"] = {
 	CostEquip = "Coût de l'équipement",
 	TooltipOptions = "Tooltip",
 };
-L["TITAN_REPAIR"] = "Titan Repair"
+L["TITAN_REPAIR"] = "Titan Classic Repair"
 L["TITAN_REPAIR_CANNOT_AFFORD"] = "Vous n'avez pas assez pour payer les réparations."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "Annoncer les coût de réparation sur le chat"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "Coût des réparations : "

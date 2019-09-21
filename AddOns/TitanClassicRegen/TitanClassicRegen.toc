@@ -1,0 +1,15 @@
+## Interface: 11302
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## Version: 1.1.0.11302
+## Dependencies: TitanClassic
+## OptionalDeps: 
+## SavedVariables: 
+
+## Title: Titan Panel Classic [|cffeda55fRegen|r] |cff00aa001.1.0.11302|r
+## Notes: Adds a regen monitor to Titan panel to show HP/MANA regen
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0恢复|r
+## Notes-zhCN: 泰坦面板的恢复模块
+
+## X-Child-Of: TitanClassic
+
+TitanClassicRegen.xml

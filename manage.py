@@ -533,6 +533,12 @@ MAPPING = {
         'Notes': '泰坦面板的性能模块',
         'Category': '界面'
     },
+    'TitanClassicRegen': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '恢复',
+        'Notes': '泰坦面板的恢复模块',
+        'Category': '界面'
+    },
     'TitanClassicRepair': {
         'Title-cn': '泰坦面板',
         'Title-sub': '修理',
@@ -577,6 +583,10 @@ MAPPING = {
     'UnitFramesPlus_Options': {
         'Title-cn': '头像增强',
         'Title-sub': '设置',
+        'Category': '界面'
+    },
+    'WIM': {
+        'Title-cn': '即时通信',
         'Category': '界面'
     },
 }

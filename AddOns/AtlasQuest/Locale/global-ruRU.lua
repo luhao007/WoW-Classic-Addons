@@ -30,6 +30,11 @@ Raids, etc.
 
 --]]
 
+
+
+
+if ( GetLocale() == "ruRU" ) then
+
 ---------------
 --- COLOURS ---
 ---------------
@@ -174,5 +179,6 @@ Inst66QAA = "No Quests"
 Inst66QAH = "No Quests"
 
 
+end
 
 -- End of File

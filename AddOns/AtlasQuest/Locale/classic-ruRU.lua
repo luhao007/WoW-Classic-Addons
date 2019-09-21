@@ -71,6 +71,10 @@
 
 
 
+
+if ( GetLocale() == "ruRU" ) then
+
+
 ---------------
 --- COLOURS ---
 ---------------
@@ -6455,6 +6459,8 @@ Inst38Caption = "Верховный лорд Круул"
 Inst38QAA = "Нет заданий"
 Inst38QAH = "Нет задание"
 
+
+end
 
 
 -- End of File

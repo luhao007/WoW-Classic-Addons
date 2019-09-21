@@ -2,6 +2,13 @@
 Changelog
 =========
 
+Version 4.11.53  (for WoW Classic)  September 19, 2019
+
+- Fixed Russian language file loading incorrectly.
+
+
+
+
 Version 4.11.52  (for WoW Classic)  September 19, 2019
 
 - Updated Simplified Chinese localization.  (thank you "yoke233")

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Thandrenn
-## Version: 4.11.52
+## Version: 4.11.53
 ## RequiredDeps: Atlas
 ## Dependencies: 
 ## OptionalDeps: 
