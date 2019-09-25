@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Appraisals and Auction Posting
 	Version: 8.2.6417 (SwimmingSeadragon)
-	Revision: $Id: AprSettings.lua 6417 2019-09-13 05:07:31Z none $
+	Revision: $Id: AprSettings.lua 6417 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds an appraisals tab to the AH for

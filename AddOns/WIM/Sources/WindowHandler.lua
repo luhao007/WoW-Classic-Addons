@@ -36,10 +36,6 @@ local UnitRace = UnitRace;
 -- set namespace
 setfenv(1, WIM);
 
---Quick and dirty fix for renames in legion to deal with renamed globals
-local BNet_GetBNetIDAccount = _G.BNet_GetPresenceID or _G.BNet_GetBNetIDAccount
-local BNGetGameAccountInfo = _G.BNGetToonInfo or _G.BNGetGameAccountInfo
-
 
 -- load message window related default settings.
 db_defaults.displayColors = {
@@ -1001,10 +997,10 @@ local function instantiateWindow(obj)
                 });
         elseif(self.isBN) then
                 -- get information of BN user from friends data.
-                local id = self.theUser and BNet_GetBNetIDAccount(self.theUser) or nil;
+                local id = self.theUser and _G.BNet_GetBNetIDAccount(self.theUser) or nil;
                 if(id) then
-                				local _, _, _, _, _, bnetIDGameAccount = _G.BNGetFriendInfoByID(id)
-                                local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText, broadcastText, broadcastTime = BNGetGameAccountInfo(bnetIDGameAccount or 0);
+                				local _, _, _, _, _, bnetIDGameAccount = GetBNGetFriendInfoByID(id)
+                                local hasFocus, toonName, client, realmName, realmID, faction, race, class, guild, zoneName, level, gameText, broadcastText, broadcastTime = GetBNGetGameAccountInfo(bnetIDGameAccount or 0);
                                 self.class = class or "";
                                 self.level = level or "";
                                 self.race = race or "";
@@ -1033,19 +1029,6 @@ local function instantiateWindow(obj)
                                 self:AddMessage(_G.BN_UNABLE_TO_RESOLVE_NAME, db.displayColors.errorMsg.r, db.displayColors.errorMsg.g, db.displayColors.errorMsg.b);
                 end
         else
-        	local whoLib = libs.WhoLib;
-        	if(whoLib) then--With block load in classic, this nil check will safe exit who checks in classic client
-        		local result = whoLib:UserInfo(self.theUser,
-        			{
-        				queue = whoLib.WHOLIB_QUEUE_QUIET,
-        				timeout = 0,
-        				-- flags = whoLib.WHOLIB_FLAG_ALWAYS_CALLBACK,
-        				callback = self.WhoCallback
-        			});
-                         if(result) then
-                                self.WhoCallback(result);
-                         end
-        	else
         		--Check if sending unit is in your party, then check guild
         		if _G.IsInRaid() then
         			for i = 1, _G.GetNumGroupMembers() do
@@ -1100,8 +1083,6 @@ local function instantiateWindow(obj)
                                                 end
                                         end
         		end
-                        dPrint("WhoLib-1.0 not loaded... Skipping who lookup!");
-        	end
         end
     end
 

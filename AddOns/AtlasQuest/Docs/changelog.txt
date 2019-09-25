@@ -2,6 +2,27 @@
 Changelog
 =========
 
+Version 4.11.54  (for WoW Classic)  September 24, 2019
+
+- Moved Quest levels & prequest icons out of localization files and to a quest data file.  This will reduce the overall duplication of data and make things a bit easier for translators.  And me!
+
+- Item Compare option disabled until I can figure out how to fix it.
+
+- Added quests:
+	- BRD: Marshal Windsor
+	- BRD: Abandoned Hope
+	- BRD: A Crumpled Up Note
+	- BRD: A Shred of Hope
+	- BRD: Jail Break!
+	- UBRS: Drakefire Amulet
+	
+- Cleanup Progress:
+	- Lower Blackrock Spire complete.
+	- Upper Blackrock Spire complete.
+	- Deadmines complete.
+
+
+
 Version 4.11.53  (for WoW Classic)  September 19, 2019
 
 - Fixed Russian language file loading incorrectly.

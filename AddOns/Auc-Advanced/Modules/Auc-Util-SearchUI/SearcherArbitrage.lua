@@ -1,7 +1,7 @@
 ﻿--[[
 	Auctioneer - Search UI - Searcher Arbitrage
 	Version: 8.2.6415 (SwimmingSeadragon)
-	Revision: $Id: SearcherArbitrage.lua 6415 2019-09-13 05:07:31Z none $
+	Revision: $Id: SearcherArbitrage.lua 6415 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is a plugin module for the SearchUI that assists in searching by refined paramaters

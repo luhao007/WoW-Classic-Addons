@@ -365,6 +365,7 @@ for id = 1, 4, 1 do
         RegisterUnitWatch(debuff);
 
         debuff.Icon = debuff:CreateTexture("UFP_PartyTarget"..id.."Debuff"..j.."Icon", "ARTWORK");
+        debuff.Icon:ClearAllPoints();
         debuff.Icon:SetAllPoints(debuff);
 
         debuff.Cooldown = CreateFrame("Cooldown", "UFP_PartyTarget"..id.."Debuff"..j.."Cooldown", debuff, "CooldownFrameTemplate");

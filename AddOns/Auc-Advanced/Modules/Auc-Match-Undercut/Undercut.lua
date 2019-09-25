@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Price Level Utility module
 	Version: 8.2.6351 (SwimmingSeadragon)
-	Revision: $Id: Undercut.lua 6351 2019-09-13 05:07:31Z none $
+	Revision: $Id: Undercut.lua 6351 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer Matcher module that returns an undercut price

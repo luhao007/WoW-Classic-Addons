@@ -67,10 +67,10 @@ local AQMAXINSTANCES = "38"
 local AQMAXQUESTS = "23"
 
 -- Set title for AtlasQuest side panel
-ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest 4.11.53";
+ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest 4.11.54";
 
 local AtlasQuest_Defaults = {
-  ["Version"] =  "4.11.53",
+  ["Version"] =  "4.11.54",
   [UnitName("player")] = {
     ["ShownSide"] = "Left",
     ["AtlasAutoShow"] = 1,
@@ -619,24 +619,16 @@ local itemName, itemQuality
      end
 
 
-     if (SHOWNID ~= nil) then
         if(GetItemInfo(SHOWNID) ~= nil) then
               AtlasQuestTooltip:SetOwner(AtlasQuestItemframe1, "ANCHOR_RIGHT", -(AtlasQuestItemframe1:GetWidth() / 2), 24);
               AtlasQuestTooltip:SetHyperlink("item:"..SHOWNID..":0:0:0");
-              if(AQCompareTooltip ~= nil) then
-                if((EquipCompare_Enabled == nil) or (not EquipCompare_Enabled)) then  -- Only show this if EquipCompare isn't present or not enabled.
-                  AtlasQuestItem_ShowCompareItem();  -- Show Comparison Tooltip
-                end
-              end
+
+--              if(AQCompareTooltip ~= nil) then
+--                  AtlasQuestItem_ShowCompareItem();  -- Show Comparison Tooltip
+--              end
+
               AtlasQuestTooltip:Show();
-        else
-              AtlasQuestTooltip:SetOwner(AtlasQuestItemframe1, "ANCHOR_RIGHT", -(AtlasQuestItemframe1:GetWidth() / 2), 24);
-              AtlasQuestTooltip:ClearLines();
-              AtlasQuestTooltip:AddLine(RED..AQERRORNOTSHOWN);
-              AtlasQuestTooltip:AddLine(AQERRORASKSERVER);
-              AtlasQuestTooltip:Show();
-        end
-     end
+		end
 
 
 end

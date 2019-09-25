@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI
 	Version: 8.2.6415 (SwimmingSeadragon)
-	Revision: $Id: SearchMain.lua 6415 2019-09-13 05:07:31Z none $
+	Revision: $Id: SearchMain.lua 6415 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This Addon provides a Search tab on the AH interface, which allows

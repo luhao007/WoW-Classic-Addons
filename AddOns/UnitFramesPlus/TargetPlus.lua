@@ -2,9 +2,9 @@
 function UnitFramesPlus_TargetPositionSet()
     TargetFrame:ClearAllPoints();
     if UnitFramesPlusDB["target"]["extrabar"] == 1 or UnitFramesPlusDB["target"]["hpmpparttwo"] ~= 5 then
-        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 358+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 108+96*UnitFramesPlusDB["player"]["scale"], 0);
     else
-        TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 295+96*UnitFramesPlusDB["player"]["scale"], 0);
+        TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 45+96*UnitFramesPlusDB["player"]["scale"], 0);
     end
     UnitFramesPlusVar["target"]["moved"] = 0;
 end
@@ -42,6 +42,7 @@ local function UnitFramesPlus_TargetShiftDrag()
         end
     end)
 
+    TargetFrame:SetMovable(1);
     TargetFrame:SetClampedToScreen(1);
 
     --更改目标头像默认位置以防止其和玩家扩展框重叠
@@ -277,7 +278,7 @@ function UnitFramesPlus_TargetExtrabarSet()
         TargetExtraBar:SetWidth(102);
         TargetExtraBar:SetHeight(18);
         TargetExtraBar:SetTexCoord(0, 0.796875, 0, 1);
-        TargetExtraBar:SetVertexColor(1, 1, 1, 1)
+        TargetExtraBar:SetVertexColor(1, 1, 1, 1) 
         TargetExtraBar:ClearAllPoints();
         TargetExtraBar:SetPoint("RIGHT", TargetFrameHealthBar, "LEFT", 0, 0);
 
@@ -350,24 +351,31 @@ function UnitFramesPlus_TargetColorHPBar()
     if UnitFramesPlusDB["target"]["colorhp"] == 1 then
         if UnitFramesPlusDB["target"]["colortype"] == 1 then
             TargetFrameHealthBar:SetScript("OnValueChanged", nil);
+            -- if chb:IsEventRegistered("UNIT_HEALTH_FREQUENT") then
+            --     chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
+            -- end
             chb:RegisterEvent("PLAYER_TARGET_CHANGED");
+            chb:RegisterEvent("PLAYER_REGEN_ENABLED");
             chb:SetScript("OnEvent", function(self, event, ...)
                 UnitFramesPlus_TargetColorHPBarDisplayUpdate();
             end)
         elseif UnitFramesPlusDB["target"]["colortype"] == 2 then
-            if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
-                chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
-                chb:SetScript("OnEvent", nil);
-            end
             TargetFrameHealthBar:SetScript("OnValueChanged", function(self, value)
                 UnitFramesPlus_TargetColorHPBarDisplayUpdate();
             end)
+            if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
+                chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
+                chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+            end
+            -- chb:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", "target");
         end
         --TargetFrameHealthBar.lockColor = true;
     else
         TargetFrameHealthBar:SetScript("OnValueChanged", nil);
         if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
             chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
+            chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+            -- chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
             chb:SetScript("OnEvent", nil);
         end
         TargetFrameHealthBar:SetStatusBarColor(0, 1, 0);
@@ -731,9 +739,11 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                     end
                 end
             end
-            _G[frameName.."CooldownText"]:SetText(timetext);
-            -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
-            -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+            if not IsAddOnLoaded("OmniCC") then
+                _G[frameName.."CooldownText"]:SetText(timetext);
+                -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
+                -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+            end
         else
             break;
         end
@@ -782,9 +792,11 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                             end
                         end
                     end
-                    _G[frameName.."CooldownText"]:SetText(timetext);
-                    -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
-                    -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+                    if not IsAddOnLoaded("OmniCC") then
+                        _G[frameName.."CooldownText"]:SetText(timetext);
+                        -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
+                        -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+                    end
 
                     frameNum = frameNum + 1;
                 else
@@ -800,47 +812,52 @@ end
 
 --改变目标buff/debuff图标大小
 local function TargetBuffSize(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
-    local UFP_AURA_OFFSET_Y = 3;
-    local UFP_LARGE_AURA_SIZE, UFP_SMALL_AURA_SIZE;
-    if UnitFramesPlusDB["target"]["buffsize"] == 1 then
+    if UnitFramesPlusDB["target"]["buffsize"] == 1 and self.unit == "target"then
+        local UFP_AURA_OFFSET_Y = 3;
+        local UFP_LARGE_AURA_SIZE, UFP_SMALL_AURA_SIZE;
         UFP_LARGE_AURA_SIZE = UnitFramesPlusDB["target"]["mysize"];
-        UFP_SMALL_AURA_SIZE = UnitFramesPlusDB["target"]["othersize"];
-    else
-        UFP_LARGE_AURA_SIZE = 21;
-        UFP_SMALL_AURA_SIZE = 17;
-    end
-    local UFP_AURA_ROW_WIDTH = 122;
-    local UFP_NUM_TOT_AURA_ROWS = 2;
+        UFP_SMALL_AURA_SIZE = UnitFramesPlusDB["target"]["othersize"]
+        local UFP_AURA_ROW_WIDTH = 122;
+        local UFP_NUM_TOT_AURA_ROWS = 2;
 
-    local UFP_SIZE;
-    local UFP_OFFSETY = UFP_AURA_OFFSET_Y;
-    local UFP_ROWWIDTH = 0;
-    local UFP_FIRSTBUFFONROW = 1;
-    for i=1, numAuras, 1 do
-        if ( largeAuraList[i] ) then
-            UFP_SIZE = UFP_LARGE_AURA_SIZE;
-            UFP_OFFSETY = UFP_AURA_OFFSET_Y + UFP_AURA_OFFSET_Y;
-        else
-            UFP_SIZE = UFP_SMALL_AURA_SIZE;
-        end
-        if ( i == 1 ) then
-            UFP_ROWWIDTH = UFP_SIZE;
-            self.auraRows = self.auraRows + 1;
-        else
-            UFP_ROWWIDTH = UFP_ROWWIDTH + UFP_SIZE + offsetX;
-        end
-        if ( UFP_ROWWIDTH > maxRowWidth ) then
-            updateFunc(self, auraName, i, numOppositeAuras, UFP_FIRSTBUFFONROW, UFP_SIZE, offsetX, UFP_OFFSETY, mirrorAurasVertically);
-            UFP_ROWWIDTH = UFP_SIZE;
-            self.auraRows = self.auraRows + 1;
-            UFP_FIRSTBUFFONROW = i;
-            UFP_OFFSETY = UFP_AURA_OFFSET_Y;
-            --if ( self.auraRows > UFP_NUM_TOT_AURA_ROWS ) or ( self.auraRows > 2 ) then
-            if ( self.auraRows > UFP_NUM_TOT_AURA_ROWS ) then
-                maxRowWidth = UFP_AURA_ROW_WIDTH;
+        local UFP_SIZE;
+        local UFP_OFFSETY = UFP_AURA_OFFSET_Y;
+        local UFP_ROWWIDTH = 0;
+        local UFP_FIRSTBUFFONROW = 1;
+
+        for i = 1, numAuras, 1 do
+            local caster;
+            if auraName == "TargetFrameBuff" then
+                _, _, _, _, _, _, caster = UnitBuff(self.unit, i, nil);
+            elseif auraName == "TargetFrameDebuff" then
+                _, _, _, _, _, _, caster = UnitDebuff(self.unit, i, "INCLUDE_NAME_PLATE_ONLY");
             end
-        else
-            updateFunc(self, auraName, i, numOppositeAuras, i - 1, UFP_SIZE, offsetX, UFP_OFFSETY, mirrorAurasVertically);
+
+            -- if ( largeAuraList[i] ) then
+            if caster == "player" or caster == "pet" then
+                UFP_SIZE = UFP_LARGE_AURA_SIZE;
+                UFP_OFFSETY = UFP_AURA_OFFSET_Y + UFP_AURA_OFFSET_Y;
+            else
+                UFP_SIZE = UFP_SMALL_AURA_SIZE;
+            end
+            if ( i == 1 ) then
+                UFP_ROWWIDTH = UFP_SIZE;
+                self.auraRows = self.auraRows + 1;
+            else
+                UFP_ROWWIDTH = UFP_ROWWIDTH + UFP_SIZE + offsetX;
+            end
+            if ( UFP_ROWWIDTH > maxRowWidth ) then
+                updateFunc(self, auraName, i, numOppositeAuras, UFP_FIRSTBUFFONROW, UFP_SIZE, offsetX, UFP_OFFSETY, mirrorAurasVertically);
+                UFP_ROWWIDTH = UFP_SIZE;
+                self.auraRows = self.auraRows + 1;
+                UFP_FIRSTBUFFONROW = i;
+                UFP_OFFSETY = UFP_AURA_OFFSET_Y;
+                if ( self.auraRows > UFP_NUM_TOT_AURA_ROWS ) then
+                    maxRowWidth = UFP_AURA_ROW_WIDTH;
+                end
+            else
+                updateFunc(self, auraName, i, numOppositeAuras, i - 1, UFP_SIZE, offsetX, UFP_OFFSETY, mirrorAurasVertically);
+            end
         end
     end
 end
@@ -1036,7 +1053,7 @@ end
 
 --刷新目标3D头像背景显示
 function UnitFramesPlus_TargetPortrait3DBGDisplayUpdate()
-    if UnitFramesPlusDB["target"]["portrait"] == 1
+    if UnitFramesPlusDB["target"]["portrait"] == 1 
     and UnitFramesPlusDB["target"]["portraittype"] == 1
     and UnitFramesPlusDB["target"]["portrait3dbg"] == 1 then
         Target3DPortrait.Background:Show();

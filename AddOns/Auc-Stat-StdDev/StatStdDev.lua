@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Standard Deviation Statistics module
 	Version: 8.2.6369 (SwimmingSeadragon)
-	Revision: $Id: StatStdDev.lua 6369 2019-09-13 05:07:31Z none $
+	Revision: $Id: StatStdDev.lua 6369 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds statistical history to the auction data that is collected

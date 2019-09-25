@@ -2,7 +2,7 @@
 	DebugLib - An embedded library which works as a higher layer for nLog,
 	by providing easier usage of debugging features.
 	Version: 8.2.6339 (SwimmingSeadragon)
-	Revision: $Id: DebugLib.lua 6339 2019-09-13 05:07:31Z none $
+	Revision: $Id: DebugLib.lua 6339 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/dl/
 
 	Manual:

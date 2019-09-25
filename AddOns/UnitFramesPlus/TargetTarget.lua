@@ -286,6 +286,7 @@ for id = 1, UFP_MAX_TOT_DEBUFFS, 1 do
     --Frame:SetFrameLevel(level)
 
     debuff.Icon = debuff:CreateTexture("UFP_ToTFrameDebuff"..id.."Icon", "ARTWORK");
+    debuff.Icon:ClearAllPoints();
     debuff.Icon:SetAllPoints(debuff);
 
     debuff.Cooldown = CreateFrame("Cooldown", "UFP_ToTFrameDebuff"..id.."Cooldown", debuff, "CooldownFrameTemplate");

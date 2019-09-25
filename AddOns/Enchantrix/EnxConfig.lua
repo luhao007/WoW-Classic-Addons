@@ -1,7 +1,7 @@
 --[[
 	Enchantrix Addon for World of Warcraft(tm).
-	Version: 8.2.6411 (SwimmingSeadragon)
-	Revision: $Id: EnxConfig.lua 6411 2019-09-13 05:07:31Z none $
+	Version: 8.2.6428 (SwimmingSeadragon)
+	Revision: $Id: EnxConfig.lua 6428 2019-09-22 00:20:05Z none $
 	URL: http://enchantrix.org/
 
 	Configuration functions.
@@ -28,7 +28,7 @@
 		since that is its designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-Enchantrix_RegisterRevision("$URL: Enchantrix/EnxConfig.lua $", "$Rev: 6411 $")
+Enchantrix_RegisterRevision("$URL: Enchantrix/EnxConfig.lua $", "$Rev: 6428 $")
 
 -- Global functions
 local addonLoaded		-- Enchantrix.Config.AddonLoaded()
@@ -166,7 +166,7 @@ function getLocale()
 end
 
 Enchantrix.Config = {
-	Revision			= "$Rev: 6411 $",
+	Revision			= "$Rev: 6428 $",
 	AddonLoaded			= addonLoaded,
 
 	GetFrameNames		= getFrameNames,

@@ -5,7 +5,7 @@
 	<Script file="Mail-GUI.lua"/>
 	<Script file="ConfirmSellUI.lua"/>
 	<Script>
-		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AutoMagic/Embed.xml $", "$Rev: 6390 $")
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AutoMagic/Embed.xml $", "$Rev: 6424 $")
 	</Script>
 </Ui>
  

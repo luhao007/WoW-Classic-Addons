@@ -70,7 +70,7 @@ AQCCON = "AtlasQuest will now recolour quests depending on their levels.";
 AQCCOFF = "AtlasQuest will not recolour quests."
 
 -- QuestLog Colour Check
-AQQLColourChange = ""..WHITE.."Colours all quest, you have in your Questlog "..BLUE.."blue.";
+AQQLColourChange = ""..WHITE.."DISABLED Colours all quest, you have in your Questlog "..BLUE.."blue.";
 
 -- AutoQuery Quest Rewards
 AQOptionsAutoQueryTEXT = ""..WHITE.."Automatically query the server for items you haven't seen.";
@@ -79,7 +79,7 @@ AQOptionsAutoQueryTEXT = ""..WHITE.."Automatically query the server for items yo
 AQOptionsNoQuerySpamTEXT = ""..WHITE.."Suppress Server Query spam.";
 
 -- Use Comparison Tooltips
-AQOptionsCompareTooltipTEXT = ""..WHITE.."Compare rewards to currently equipped items.";
+AQOptionsCompareTooltipTEXT = ""..WHITE.."DISABLED Compare rewards to currently equipped items.";
 
 -- Quest Query text
 AQQuestQueryButtonTEXT = ""..WHITE.."Quest Query";

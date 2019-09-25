@@ -4,8 +4,8 @@
 	http://localizer.norganna.org/
 
 	AddOn: Auctioneer
-	Revision: $Id: CoreStrings.lua 6420 2019-09-13 05:07:31Z none $
-	Version: 8.2.6420 (SwimmingSeadragon)
+	Revision: $Id: CoreStrings.lua 6430 2019-09-22 00:20:05Z none $
+	Version: 8.2.6430 (SwimmingSeadragon)
 
 	License:
 		This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ AuctioneerLocalizations = {
 		["AAMU_Help_WhatMailGUIAnswer"]	= "Zobrazí se okno, kdy je schránka otevřena, který umožňuje auto-nakládání předmětů do okna poslat mail na nákup důvodů od SearchUI. Je možné také použít modul ItemSuggest důvodů namísto stanovených důvodů SearchUI. Velmi šikovný položek hromadnou korespondenci koupil za povolání, který má jiný charakter.";
 		["ADV_Help_CannotDeleteProfile"]	= "Vybraný profil nemůže být odstraněn";
 		["ADV_Help_InvalidProfileName"]	= "Nelze vytvořit nový profil: prosím, zadejte nejdřív jméno nového profilu";
-		["ADV_Help_PostAuctionError"]	= "Tato položka nemůže být vyslán kvůli následující chybě:% s";
+		["ADV_Help_PostAuctionError"]	= "Tato položka nemůže být vyslán kvůli následující chybě: %s";
 		["ADV_Help_WhatAccuracy"]	= "Co je Market Pricing chyba?";
 		["ADV_Help_WhatAccuracyAnswer"]	= "Ceny na trhu Chyba umožňuje nastavit množství chyb, které nebudou tolerovány, zatímco tržní ceny výpočetní techniky. Protože algoritmus je nesmírně složité, může být odhad. Snížení tohoto počtu bude odhad přesnější, ale bude vyžadovat větší výpočetní výkon (a může být pomalejší u starších počítačů).";
 		["ADV_Help_WhatClickHooks"]	= "Co jsou click-hooks?";
@@ -1563,13 +1563,13 @@ AuctioneerLocalizations = {
 
 		-- Section: Tooltip
 		["APPR_Tooltip_AppraiserCurModel"]	= "εκτιμητή";
-		["APPR_Tooltip_PostedCount"]	= "Δημοσιεύτηκε% 2d στο avg / ea% s";
-		["APPR_Tooltip_StartingBid"]	= "Αρχική τιμή x {{% δ}}";
+		["APPR_Tooltip_PostedCount"]	= "Δημοσιεύτηκε %2d στο avg / ea %s";
+		["APPR_Tooltip_StartingBid"]	= "Αρχική τιμή x {{%d}}";
 		["ASAL_Tooltip_ StdDeviation"]	= "Std Απόκλιση";
-		["ASAL_Tooltip_3DaysBought"]	= "3 Ημέρες Αγορά {{% s}} σε κάθε avg";
+		["ASAL_Tooltip_3DaysBought"]	= "3 Ημέρες Αγορά {{%s}} σε κάθε avg";
 		["ASAL_Tooltip_Confidence"]	= "εμπιστοσύνη:";
 		["ASAL_Tooltip_Individually"]	= "(ή ατομικά)";
-		["ILVL_Tooltip_Confidence"]	= "Εμπιστοσύνη:% s";
+		["ILVL_Tooltip_Confidence"]	= "Εμπιστοσύνη: %s";
 		["ILVL_Tooltip_Individually"]	= "(ή ατομικά)";
 		["ILVL_Tooltip_MeanPrice"]	= "Η μέση τιμή";
 
@@ -3209,7 +3209,7 @@ AuctioneerLocalizations = {
 		["AAMU_Help_WhatMailGUIAnswer"]	= "Ceci affiche une fenêtre quand la boite aux lettres est ouverte, qui autorise l'auto-chargement des objets dans la boite d'expédition selon les raisons d'achat de SearchUI. Les réglages du module ItemSuggest  peuvent être utilisées à la place des réglages de SearchUI. Ceci est très pratique pour les envois de masse d'objets achetés pour une profession autre que celle que possède le personnage.";
 		["ADV_Help_CannotDeleteProfile"]	= "Le profil choisi ne peut pas être supprimé";
 		["ADV_Help_InvalidProfileName"]	= "Impossible de créer un nouveau profil : merci d'entrer d'abord le nom du nouveau profil";
-		["ADV_Help_PostAuctionError"]	= "Ce poste ne peut être affichée à cause de l'erreur suivante";
+		["ADV_Help_PostAuctionError"]	= "Ce poste ne peut être affichée à cause de l'erreur suivante: %s";
 		["ADV_Help_UnresolvedAuctionsTolerance"]	= "Auctioneer est parfois incapable de résoudre un certain nombre de ventes aux enchères lors d'une analyse, causant ainsi un balayage incomplet. Unresolved Auctions Tolerance permet à Auctioneer de toujours marquer la numérisation comme complété si le nombre de ces erreurs est très faible. Peut être utile lorsque le serveur est instable, en particulier après les grosses mise à jour.";
 		["ADV_Help_WhatAccuracy"]	= "Qu'est ce que l'erreur sur le Prix du Marché ?";
 		["ADV_Help_WhatAccuracyAnswer"]	= "L'erreur sur de Prix du Marché vous autorise à définir le montant de l'erreur tolérée lorsque les prix du marché sont calculés. L'algorithme étant extrêmement complexe, seule une estimation peut être donnée. Baisser cette valeur donnera une estimation plus fiable, mais demandera plus de puissance de calcul (et peut être lent sur des vieux ordinateurs).";
@@ -3986,7 +3986,7 @@ AuctioneerLocalizations = {
 		["PSS_Expired"]	= "étaient perimées)";
 		["PSS_Filtered"]	= "objets filtrés";
 		["PSS_Filtered_Removed"]	= "objets filtrés enlevés";
-		["PSS_GetError"]	= "Auctioneer a fini le scan {{% d}} {{enchères sur% s}}, mais il n'est pas en mesure de récupérer certaines ventes aux enchères";
+		["PSS_GetError"]	= "Auctioneer a fini le scan {{%d}} {{enchères sur %s}}, mais il n'est pas en mesure de récupérer certaines ventes aux enchères";
 		["PSS_Hours"]	= "Heures";
 		["PSS_Incomplete"]	= "Auctioneer a fini de scanner {{%d}} offres sur {{%s}} avant d'être arrêté";
 		["PSS_Incomplete_Missed_1"]	= "(Le scan incomplet a manqué";
@@ -5643,8 +5643,8 @@ AuctioneerLocalizations = {
 		["SIMP_Help_SimpleStatsAnswer"]	= "Statystyki są proste numery, które są generowane przez moduł proste, średnie modułu Simple wszystkie ceny za przedmioty, które widzi i przewiduje przeniesienie 3, 7 i 14 średnich dzień. Zapewnia również codziennie minimum wykupu wraz z systemem średnia wykupu minimum w 10% wariancji.";
 		["SIMP_Help_SlashHelp1"]	= "Pomoc dla Auctioneer Advanced - Simple";
 		["SIMP_Help_SlashHelp2"]	= "Simple pomoc";
-		["SIMP_Help_SlashHelp3"]	= "jasne obecnej bazy danych% s cena Simple";
-		["SIMP_Help_SlashHelp4"]	= "życie% s Proste codzienne statystyki do archiwum (zacząć nowy dzień)";
+		["SIMP_Help_SlashHelp3"]	= "jasne obecnej bazy danych %s cena Simple";
+		["SIMP_Help_SlashHelp4"]	= "życie %s Proste codzienne statystyki do archiwum (zacząć nowy dzień)";
 		["SIMP_Help_WhyMultiplyStack"]	= "Dlaczego mają możliwość pomnożyć rozmiar stosu?";
 		["SIMP_Help_WhyMultiplyStackAnswer"]	= "Stat-oryginalny Simple pomnożona przez rozmiar stosu element, ale niektórzy lubią transakcji na poszczególnych pozycji.";
 		["SIMP_Help_WhyVariance"]	= "O co chodzi z wariancji w sprawie minimalnych wykupu?";
@@ -6121,7 +6121,7 @@ AuctioneerLocalizations = {
 		["APPR_Interface_PickGradientDirection"]	= "Escolha a direção da inclinação";
 		["APPR_Interface_PostItems"]	= "Postar itens";
 		["APPR_Interface_PricingModelUse"]	= "Utilizar qual modelo de preço:";
-		["APPR_Interface_RefreshingView"]	= "examinar {{% s}}";
+		["APPR_Interface_RefreshingView"]	= "examinar {{%s}}";
 		["APPR_Interface_Right"]	= "Direito";
 		["APPR_Interface_RoundBuyoutValue"]	= "Arredondar valor de arremate";
 		["APPR_Interface_Rounding"]	= "Arredondamento em:";
@@ -6179,7 +6179,7 @@ AuctioneerLocalizations = {
 		["ASKP_Interface_Activated"]	= "Responder a consultas de valores de mercado de itens enviados via chat";
 		["ASKP_Interface_Each"]	= "(%S cada)";
 		["ASKP_Interface_EnableSmartWords"]	= "Habilitar a verificação de Palavras inteligentes";
-		["ASKP_Interface_GetStackPrices"]	= "Obter preços de pilha com sCount% [ItemLink] (Count = tamanho de pilha)";
+		["ASKP_Interface_GetStackPrices"]	= "Obter preços de pilha com %sCount [ItemLink] (Count = tamanho de pilha)";
 		["ASKP_Interface_MarketValue"]	= "%sValor de Mercado:%s%s";
 		["ASKP_Interface_Miscellaneous"]	= "Diversos:";
 		["ASKP_Interface_NeverSeenByAuctioneer"]	= "%s: Nunca visto em %s pelo Leiloeiro avançada";

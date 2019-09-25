@@ -23,7 +23,7 @@
 			"Auc-Util-SimpleAuction",
 			"Auc-Util-VendMarkup",
 		}
-		AucAdvanced.RegisterRevision("$URL: Active.xml $", "$Rev: 6423 $")
+		AucAdvanced.RegisterRevision("$URL: Active.xml $", "$Rev: 6431 $")
 	</Script>
 
 	<Include file="Auc-Filter-FlatOutlier\Embed.xml"/>

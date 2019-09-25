@@ -30,6 +30,7 @@
     UFP_OP_Player_Coordinate = "显示坐标";
     UFP_OP_Pet_Options = "宠物设定";
     UFP_OP_Pet_Target = "显示宠物目标";
+    UFP_OP_Pet_TargetTmp = "临时显示(用于设置)";
     UFP_OP_Target_Options = "目标设定";
     UFP_OP_Target_BuffSize = "调节buff/debuff图标大小";
     UFP_OP_Target_MySize = "自己：";
@@ -128,6 +129,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Player_Coordinate = "顯示座標";
     UFP_OP_Pet_Options = "寵物設定";
     UFP_OP_Pet_Target = "顯示寵物目標";
+    UFP_OP_Pet_TargetTmp = "臨時顯示(用於設置)";
     UFP_OP_Target_Options = "目標設定";
     UFP_OP_Target_BuffSize = "調節buff/debuff圖示大小";
     UFP_OP_Target_MySize = "自己：";
@@ -226,6 +228,7 @@ else
     UFP_OP_Player_Coordinate = "Player coordinate";
     UFP_OP_Pet_Options = "PlayerPet";
     UFP_OP_Pet_Target = "Enable pet target";
+    UFP_OP_Pet_TargetTmp = "Temporary display (for setting)";
     UFP_OP_Target_Options = "Target Options";
     UFP_OP_Target_BuffSize = "Resize buff icon";
     UFP_OP_Target_MySize = "Player: ";

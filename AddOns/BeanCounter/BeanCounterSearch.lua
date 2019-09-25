@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
 	Version: 8.2.6422 (SwimmingSeadragon)
-	Revision: $Id: BeanCounterSearch.lua 6422 2019-09-13 05:07:31Z none $
+	Revision: $Id: BeanCounterSearch.lua 6422 2019-09-22 00:20:05Z none $
 
 	BeanCounterSearch - Search routines for BeanCounter data
 	URL: http://auctioneeraddon.com/

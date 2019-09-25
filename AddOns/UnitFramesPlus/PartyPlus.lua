@@ -64,6 +64,7 @@ local function UnitFramesPlus_PartyShiftDrag()
         end
     end)
 
+    PartyMemberFrame1:SetMovable(1);
     PartyMemberFrame1:SetClampedToScreen(1);
 end
 
@@ -495,10 +496,19 @@ function UnitFramesPlus_PartyHealthPct()
             _G["UFP_PartyHPPct"..id]:RegisterUnitEvent("UNIT_PHASE", "party"..id);
             _G["UFP_PartyHPPct"..id]:RegisterUnitEvent("UNIT_PET", "party"..id);
             _G["UFP_PartyHPPct"..id]:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", "party"..id);
+            _G["UFP_PartyHPPct"..id]:RegisterUnitEvent("UNIT_POWER_FREQUENT", "party"..id);
             _G["UFP_PartyHPPct"..id]:SetScript("OnEvent", function(self, event, ...)
                 -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
-                    UnitFramesPlus_PartyHealthPctDisplayUpdate(id);
+                    -- UnitFramesPlus_PartyHealthPctDisplayUpdate(id);
                 -- end
+                    if event == "UNIT_HEALTH_FREQUENT" then
+                        UnitFramesPlus_PartyHealthPctDisplayUpdate(id);
+                    elseif event == "UNIT_POWER_FREQUENT" then
+                        UnitFramesPlus_PartyPowerDisplayUpdate(id)
+                    else
+                        UnitFramesPlus_PartyHealthPctDisplayUpdate(id);
+                        UnitFramesPlus_PartyPowerDisplayUpdate(id)
+                    end
             end)
         else
             _G["UFP_PartyHPPct"..id].Text:SetText("");
@@ -514,6 +524,7 @@ function UnitFramesPlus_PartyHealthPct()
                 _G["UFP_PartyHPPct"..id]:UnregisterEvent("UNIT_PHASE");
                 _G["UFP_PartyHPPct"..id]:UnregisterEvent("UNIT_PET");
                 _G["UFP_PartyHPPct"..id]:UnregisterEvent("UNIT_HEALTH_FREQUENT");
+                _G["UFP_PartyHPPct"..id]:UnregisterEvent("UNIT_POWER_FREQUENT");
                 _G["UFP_PartyHPPct"..id]:SetScript("OnEvent", nil);
             end
         end
@@ -523,7 +534,7 @@ end
 --设置插件时刷新队友生命值百分比显示
 function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
     local HPText = "";
-    local MPText = "";
+    -- local MPText = "";
     local PctText = "";
     local DeathText = "";
     if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
@@ -531,9 +542,9 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
 
         if UnitFramesPlusDB["party"]["bartext"] == 1 and not UnitIsDead("party"..id) then
             local CurHPfix, MaxHPfix = UnitFramesPlus_GetValueFix(UnitHealth("party"..id), UnitHealthMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
-            local CurManafix, MaxManafix = UnitFramesPlus_GetValueFix(UnitPower("party"..id), UnitPowerMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
+            -- local CurManafix, MaxManafix = UnitFramesPlus_GetValueFix(UnitPower("party"..id), UnitPowerMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
             HPText = CurHPfix.."/"..MaxHPfix
-            MPText = CurManafix.."/"..MaxManafix
+            -- MPText = CurManafix.."/"..MaxManafix
         end
 
         if UnitFramesPlusDB["party"]["hp"] == 1 then
@@ -559,6 +570,17 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
     _G["UFP_PartyDeath"..id].Text:SetText(DeathText);
 
     _G["PartyMemberFrame"..id.."HealthBarText"]:SetText(HPText);
+    -- _G["PartyMemberFrame"..id.."ManaBarText"]:SetText(MPText);
+end
+
+function UnitFramesPlus_PartyPowerDisplayUpdate(id)
+    local MPText = "";
+    if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
+        if UnitFramesPlusDB["party"]["bartext"] == 1 and not UnitIsDead("party"..id) then
+            local CurManafix, MaxManafix = UnitFramesPlus_GetValueFix(UnitPower("party"..id), UnitPowerMax("party"..id), UnitFramesPlusDB["party"]["hpmpunit"], UnitFramesPlusDB["party"]["unittype"]);
+            MPText = CurManafix.."/"..MaxManafix
+        end
+    end
     _G["PartyMemberFrame"..id.."ManaBarText"]:SetText(MPText);
 end
 
@@ -755,6 +777,7 @@ for id = 1, 4, 1 do
         RegisterUnitWatch(buff);
 
         buff.Icon = buff:CreateTexture("UFP_PartyMemberFrame"..id.."Buff"..j.."Icon", "ARTWORK");
+        buff.Icon:ClearAllPoints();
         buff.Icon:SetAllPoints(buff);
 
         buff.Cooldown = CreateFrame("Cooldown", "UFP_PartyMemberFrame"..id.."Buff"..j.."Cooldown", buff, "CooldownFrameTemplate");
@@ -811,6 +834,7 @@ for id = 1, 4, 1 do
         RegisterUnitWatch(debuff);
 
         debuff.Icon = debuff:CreateTexture("UFP_PartyMemberFrame"..id.."Debuff"..j.."Icon", "ARTWORK");
+        debuff.Icon:ClearAllPoints();
         debuff.Icon:SetAllPoints(debuff);
 
         debuff.Cooldown = CreateFrame("Cooldown", "UFP_PartyMemberFrame"..id.."Debuff"..j.."Cooldown", debuff, "CooldownFrameTemplate");
@@ -868,6 +892,7 @@ for id = 1, 4, 1 do
         RegisterUnitWatch(petdebuff);
 
         petdebuff.Icon = petdebuff:CreateTexture("UFP_PartyPetMemberFrame"..id.."Debuff"..j.."Icon", "ARTWORK");
+        petdebuff.Icon:ClearAllPoints();
         petdebuff.Icon:SetAllPoints(petdebuff);
 
         petdebuff.Cooldown = CreateFrame("Cooldown", "UFP_PartyPetMemberFrame"..id.."Debuff"..j.."Cooldown", petdebuff, "CooldownFrameTemplate");

@@ -10,6 +10,7 @@ local _G = _G;
 --     BossHPPct:ClearAllPoints();
 --     BossHPPct:SetPoint("LEFT", _G["Boss"..id.."TargetFrameHealthBar"], "LEFT", -51, 0)
 --     BossHPPct.Text = BossHPPct:CreateFontString("UFP_Boss"..id.."HPPctText", "ARTWORK", "TextStatusBarText")
+--     BossHPPct.Text:ClearAllPoints();
 --     BossHPPct.Text:SetAllPoints(BossHPPct)
 --     BossHPPct.Text:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
 --     BossHPPct.Text:SetTextColor(1, 0.75, 0);
@@ -275,6 +276,7 @@ end
 --             ArenaEnemyHPPct:SetPoint("RIGHT", _G["ArenaEnemyFrame"..id.."HealthBar"], "LEFT", -1, -1);
 --             ArenaEnemyHPPct.Text = ArenaEnemyHPPct:CreateFontString("UFP_ArenaEnemyHPPctText"..id, "OVERLAY", "TextStatusBarText");
 --             ArenaEnemyHPPct.Text:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
+--             ArenaEnemyHPPct.Text:ClearAllPoints();
 --             ArenaEnemyHPPct.Text:SetAllPoints(ArenaEnemyHPPct);
 --             ArenaEnemyHPPct.Text:SetTextColor(1, 0.75, 0);
 --             ArenaEnemyHPPct.Text:SetJustifyH("RIGHT");

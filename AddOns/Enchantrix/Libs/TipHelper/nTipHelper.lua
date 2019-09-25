@@ -1,7 +1,7 @@
 --[[
 	Norganna's Tooltip Helper class
 	Version: 1,4
-	Revision: $Id: nTipHelper.lua 6386 2019-09-13 05:07:31Z none $
+	Revision: $Id: nTipHelper.lua 6386 2019-09-22 00:20:05Z none $
 	URL: http://norganna.org/tthelp
 
 	This is a slide-in helper class for the Norganna's AddOns family of AddOns

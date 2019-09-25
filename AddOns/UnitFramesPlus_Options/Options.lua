@@ -10,6 +10,9 @@ InterfaceOptions_AddCategory(UnitFramesPlus_OptionsFrame);
 UnitFramesPlus_OptionsFrame:SetScript("OnShow", function()
     UnitFramesPlus_OptionPanel_OnShow();
 end)
+UnitFramesPlus_OptionsFrame:SetScript("OnLoad", function()
+    UnitFramesPlus_OptionPanel_OnShow();
+end)
 
 --边框类型下拉菜单
 local PlayerDragonBorderTypeDropDown = {UFP_OP_Player_Elite, UFP_OP_Player_RareElite, UFP_OP_Player_Rare};
@@ -203,6 +206,14 @@ do
     infotext5:SetPoint("TOPLEFT", infotext4, "TOPLEFT", 0, -40);
     infotext5:SetTextColor(1, 1, 1);
     infotext5:SetText(UFP_OP_InfoText5);
+
+    if GetLocale() == "zhCN" then
+        local infotext6 = UnitFramesPlus_OptionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal");
+        infotext6:ClearAllPoints();
+        infotext6:SetPoint("TOPLEFT", infotext5, "TOPLEFT", 0, -40);
+        infotext6:SetTextColor(1, 1, 1);
+        infotext6:SetText("感谢支持：wow.isler.me");
+    end
 
     --全局设置菜单
     local UnitFramesPlus_Global_Options = CreateFrame("Frame", "UnitFramesPlus_Global_Options", UIParent);
@@ -1155,13 +1166,13 @@ do
         self:SetChecked(UnitFramesPlusDB["pet"]["mouseshow"]==1);
     end)
 
-    --玩家Shift拖动头像
-    local UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag", UnitFramesPlus_Pet_Options, "InterfaceOptionsCheckButtonTemplate");
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag:ClearAllPoints();
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetMouseShow, "TOPLEFT", 0, -30);
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag:SetHitRectInsets(0, -100, 0, 0);
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDragText:SetText(UFP_OP_Shift_Movable);
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag:SetScript("OnClick", function(self)
+    --宠物Shift拖动头像
+    local UnitFramesPlus_OptionsFrame_PetShiftDrag = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PetShiftDrag", UnitFramesPlus_Pet_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_PetShiftDrag:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_PetShiftDrag:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetMouseShow, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_PetShiftDrag:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_PetShiftDragText:SetText(UFP_OP_Shift_Movable);
+    UnitFramesPlus_OptionsFrame_PetShiftDrag:SetScript("OnClick", function(self)
         UnitFramesPlusDB["pet"]["movable"] = 1 - UnitFramesPlusDB["pet"]["movable"];
         self:SetChecked(UnitFramesPlusDB["pet"]["movable"]==1);
     end)
@@ -1169,7 +1180,7 @@ do
     --宠物头像内战斗信息
     local UnitFramesPlus_OptionsFrame_PetPortraitIndicator = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PetPortraitIndicator", UnitFramesPlus_Pet_Options, "InterfaceOptionsCheckButtonTemplate");
     UnitFramesPlus_OptionsFrame_PetPortraitIndicator:ClearAllPoints();
-    UnitFramesPlus_OptionsFrame_PetPortraitIndicator:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_PetPortraitIndicator:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetShiftDrag, "TOPLEFT", 0, -30);
     UnitFramesPlus_OptionsFrame_PetPortraitIndicator:SetHitRectInsets(0, -100, 0, 0);
     UnitFramesPlus_OptionsFrame_PetPortraitIndicatorText:SetText(UFP_OP_Portrait_Indicator);
     UnitFramesPlus_OptionsFrame_PetPortraitIndicator:SetScript("OnClick", function(self)
@@ -1198,16 +1209,38 @@ do
     UnitFramesPlus_OptionsFrame_PetTarget:SetScript("OnClick", function(self)
         UnitFramesPlusDB["pet"]["target"] = 1 - UnitFramesPlusDB["pet"]["target"];
         if UnitFramesPlusDB["pet"]["target"] == 1 then
+            BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_PetTargetTmp);
+            UnitFramesPlus_OptionsFrame_PetTargetTmpText:SetTextColor(1, 1, 1);
             BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_PetTargetHPPct);
             UnitFramesPlus_OptionsFrame_PetTargetHPPctText:SetTextColor(1, 1, 1);
+            BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_PetTargetShiftDrag);
+            UnitFramesPlus_OptionsFrame_PetTargetShiftDragText:SetTextColor(1, 1, 1);
             BlizzardOptionsPanel_Slider_Enable(UnitFramesPlus_OptionsFrame_PetTargetScaleSlider);
             UnitFramesPlus_OptionsFrame_PetTargetScaleSliderText:SetTextColor(1, 1, 1);
         else
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetTmp);
             BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetHPPct);
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetShiftDrag);
             BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_PetTargetScaleSlider);
         end
         UnitFramesPlus_PetTarget();
         self:SetChecked(UnitFramesPlusDB["pet"]["target"]==1);
+    end)
+
+    --宠物目标临时显示
+    local UnitFramesPlus_OptionsFrame_PetTargetTmp = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PetTargetTmp", UnitFramesPlus_Pet_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_PetTargetTmp:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_PetTargetTmp:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetTarget, "TOPLEFT", 180, 0);
+    UnitFramesPlus_OptionsFrame_PetTargetTmp:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_PetTargetTmpText:SetText(UFP_OP_Pet_TargetTmp);
+    UnitFramesPlus_OptionsFrame_PetTargetTmp:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["pet"]["targettmp"] = 1 - UnitFramesPlusDB["pet"]["targettmp"];
+        if UnitFramesPlusDB["pet"]["targettmp"] == 1 then
+            UFP_ToPetFrameBase:SetAlpha(1);
+        else
+            UFP_ToPetFrameBase:SetAlpha(0);
+        end
+        self:SetChecked(UnitFramesPlusDB["pet"]["targettmp"]==1);
     end)
 
     --宠物目标生命值百分比
@@ -1221,12 +1254,23 @@ do
         self:SetChecked(UnitFramesPlusDB["pet"]["hppct"]==1);
     end)
 
+    --宠物目标Shift拖动头像
+    local UnitFramesPlus_OptionsFrame_PetTargetShiftDrag = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PetTargetShiftDrag", UnitFramesPlus_Pet_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDrag:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDrag:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetTargetHPPct, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDrag:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDragText:SetText(UFP_OP_Shift_Movable);
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDrag:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["pet"]["targetmovable"] = 1 - UnitFramesPlusDB["pet"]["targetmovable"];
+        self:SetChecked(UnitFramesPlusDB["pet"]["targetmovable"]==1);
+    end)
+
     --宠物目标缩放
     local UnitFramesPlus_OptionsFrame_PetTargetScaleSlider = CreateFrame("Slider", "UnitFramesPlus_OptionsFrame_PetTargetScaleSlider", UnitFramesPlus_Pet_Options, "OptionsSliderTemplate");
     UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:SetWidth(154);
     UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:SetHeight(16);
     UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:ClearAllPoints();
-    UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetTargetHPPct, "TOPLEFT", 30, -45);
+    UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PetTargetShiftDrag, "TOPLEFT", 30, -45);
     UnitFramesPlus_OptionsFrame_PetTargetScaleSliderText:SetText(UFP_OP_Scale..(UnitFramesPlusDB["pet"]["scale"]*100).."%");
     UnitFramesPlus_OptionsFrame_PetTargetScaleSliderLow:SetText("50%");
     UnitFramesPlus_OptionsFrame_PetTargetScaleSliderHigh:SetText("150%");
@@ -3016,13 +3060,17 @@ function UnitFramesPlus_OptionPanel_OnShow()
     UnitFramesPlus_OptionsFrame_PlayerFrameAutohide:SetChecked(UnitFramesPlusDB["player"]["autohide"]==1);
     UnitFramesPlus_OptionsFrame_PlayerCoordinate:SetChecked(UnitFramesPlusDB["player"]["coord"]==1);
     UnitFramesPlus_OptionsFrame_PetMouseShow:SetChecked(UnitFramesPlusDB["pet"]["mouseshow"]==1);
-    UnitFramesPlus_OptionsFrame_PlayerPetShiftDrag:SetChecked(UnitFramesPlusDB["pet"]["movable"]==1);
+    UnitFramesPlus_OptionsFrame_PetShiftDrag:SetChecked(UnitFramesPlusDB["pet"]["movable"]==1);
     UnitFramesPlus_OptionsFrame_PetPortraitIndicator:SetChecked(UnitFramesPlusDB["pet"]["indicator"]==1);
+    UnitFramesPlus_OptionsFrame_PetTargetTmp:SetChecked(UnitFramesPlusDB["pet"]["targettmp"]==1);
     UnitFramesPlus_OptionsFrame_PetTargetHPPct:SetChecked(UnitFramesPlusDB["pet"]["hppct"]==1);
+    UnitFramesPlus_OptionsFrame_PetTargetShiftDrag:SetChecked(UnitFramesPlusDB["pet"]["targetmovable"]==1);
     UnitFramesPlus_OptionsFrame_PetTargetScaleSlider:SetValue(UnitFramesPlusDB["pet"]["scale"]*100);
     UnitFramesPlus_OptionsFrame_PetTarget:SetChecked(UnitFramesPlusDB["pet"]["target"]==1);
     if UnitFramesPlusDB["pet"]["target"] ~= 1 then
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetTmp);
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetHPPct);
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PetTargetShiftDrag);
         BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_PetTargetScaleSlider);
     end
     UnitFramesPlus_OptionsFrame_TargetExtrabar:SetChecked(UnitFramesPlusDB["target"]["extrabar"]==1);

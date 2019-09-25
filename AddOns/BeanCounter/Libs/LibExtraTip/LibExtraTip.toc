@@ -4,8 +4,8 @@
 ## Interface: 80200
 ## LoadOnDemand: 0
 ##
-## Version: 8.2.6340 (SwimmingSeadragon)
-## Revision: $Id: LibExtraTip.toc 6340 2019-09-13 05:07:31Z none $
+## Version: 8.2.6426 (SwimmingSeadragon)
+## Revision: $Id: LibExtraTip.toc 6426 2019-09-22 00:20:05Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Libraries
 ## X-Category: Library

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Norganna's AddOns
-## Version: 8.2.6411 (SwimmingSeadragon)
+## Version: 8.2.6428 (SwimmingSeadragon)
 ## Dependencies: Stubby
 ## OptionalDeps: !nLog, Babylonian, DebugLib, Configator, SlideBar, LibExtraTip, TipHelper, LibDataBroker
 ## LoadOnDemand: 1
@@ -8,7 +8,7 @@
 ## SavedVariablesPerCharacter: AutoDisenchantIgnoreList
 
 ## Title: Enchantrix
-## Notes: Display information in item tooltips pertaining to disenchanting, prospecting, and milling results.  [8.2.6411] This AddOn is licensed under the GNU GPL, see GPL.txt for details.
+## Notes: Display information in item tooltips pertaining to disenchanting, prospecting, and milling results.  [8.2.6428] This AddOn is licensed under the GNU GPL, see GPL.txt for details.
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF附魔助手|r |cFFFFE00AEnchantrix|r
 ## Notes-zhCN: 提示物品分解后可能得到的材料
 

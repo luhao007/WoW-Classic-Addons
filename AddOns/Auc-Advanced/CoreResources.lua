@@ -1,7 +1,7 @@
 --[[
 	Auctioneer
-	Version: 8.2.6420 (SwimmingSeadragon)
-	Revision: $Id: CoreResources.lua 6420 2019-09-13 05:07:31Z none $
+	Version: 8.2.6430 (SwimmingSeadragon)
+	Revision: $Id: CoreResources.lua 6430 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds statistical history to the auction data that is collected
@@ -170,5 +170,5 @@ internalResources.SetResource = function(key, value)
 	lib[key] = value
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreResources.lua $", "$Rev: 6420 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreResources.lua $", "$Rev: 6430 $")
 AucAdvanced.CoreFileCheckOut("CoreResources")

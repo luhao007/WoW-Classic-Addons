@@ -1,10 +1,26 @@
 ﻿--宠物目标
+local ToPetFrameBase = CreateFrame("Button", "UFP_ToPetFrameBase", PetFrame);
+ToPetFrameBase:SetFrameLevel(1);
+ToPetFrameBase:SetWidth(96);
+ToPetFrameBase:SetHeight(48);
+ToPetFrameBase:ClearAllPoints();
+ToPetFrameBase:SetPoint("LEFT", PetFrame, "RIGHT", 0, -10);
+ToPetFrameBase:SetAlpha(0);
+
+ToPetFrameBase.Texture = ToPetFrameBase:CreateTexture("UFP_ToPetFrameBaseTexture", "ARTWORK");
+ToPetFrameBase.Texture:SetTexture("Interface\\TargetingFrame\\UI-PartyFrame");
+ToPetFrameBase.Texture:SetWidth(96);
+ToPetFrameBase.Texture:SetHeight(48);
+ToPetFrameBase.Texture:ClearAllPoints();
+ToPetFrameBase.Texture:SetPoint("TOPLEFT", ToPetFrameBase, "TOPLEFT", 0, -2);
+
 local ToPetFrame = CreateFrame("Button", "UFP_ToPetFrame", PetFrame, "SecureUnitButtonTemplate, SecureHandlerAttributeTemplate");
 ToPetFrame:SetFrameLevel(8);
 ToPetFrame:SetWidth(96);
 ToPetFrame:SetHeight(48);
 ToPetFrame:ClearAllPoints();
-ToPetFrame:SetPoint("LEFT", PetFrame, "RIGHT", 0, -10);
+-- ToPetFrame:SetPoint("LEFT", PetFrame, "RIGHT", 0, -10);
+ToPetFrame:SetPoint("LEFT", ToPetFrameBase, "LEFT", 0, 0);
 
 ToPetFrame:SetAttribute("unit", "pettarget");
 RegisterUnitWatch(ToPetFrame);
@@ -129,14 +145,15 @@ end
 --宠物目标缩放
 function UnitFramesPlus_PetTargetScaleSet(newscale)
     -- local oldscale = oldscale or UnitFramesPlusDB["pet"]["scale"];
-    local oldscale = ToPetFrame:GetScale();
+    local oldscale = ToPetFrameBase:GetScale();
     local newscale = newscale or UnitFramesPlusDB["pet"]["scale"];
-    if UnitFramesPlusDB["pet"]["target"] == 1 then
-        local point, relativeTo, relativePoint, offsetX, offsetY = ToPetFrame:GetPoint();
-        ToPetFrame:SetScale(newscale);
-        ToPetFrame:ClearAllPoints();
-        ToPetFrame:SetPoint(point, relativeTo, relativePoint, offsetX*oldscale/newscale, offsetY*oldscale/newscale);
-    end
+    -- if UnitFramesPlusDB["pet"]["target"] == 1 then
+    local point, relativeTo, relativePoint, offsetX, offsetY = ToPetFrameBase:GetPoint();
+    ToPetFrameBase:SetScale(newscale);
+    ToPetFrame:SetScale(newscale);
+    ToPetFrameBase:ClearAllPoints();
+    ToPetFrameBase:SetPoint(point, relativeTo, relativePoint, offsetX*oldscale/newscale, offsetY*oldscale/newscale);
+    -- end
 end
 
 function UnitFramesPlus_PetTargetScale(newscale)
@@ -152,11 +169,86 @@ function UnitFramesPlus_PetTargetScale(newscale)
     end
 end
 
+--非战斗状态中允许shift+左键拖动宠物目标头像
+function UnitFramesPlus_PetTargetPositionSet()
+    if UnitFramesPlusVar["pet"]["targetmoved"] == 1 then
+        ToPetFrameBase:ClearAllPoints();
+        ToPetFrameBase:SetPoint("BOTTOMLEFT", PetFrame, "BOTTOMLEFT", UnitFramesPlusVar["pet"]["targetx"], UnitFramesPlusVar["pet"]["targety"]);
+    else
+        ToPetFrameBase:ClearAllPoints();
+        if select(2, UnitClass("player")) == "HUNTER" then
+            --Hunter needs PetFrameHappiness
+            ToPetFrameBase:SetPoint("LEFT", PetFrame, "RIGHT", 28, -10);
+        else
+            ToPetFrameBase:SetPoint("LEFT", PetFrame, "RIGHT", 0, -10);
+        end
+    end
+end
+
+function UnitFramesPlus_PetTargetPosition()
+    if not InCombatLockdown() then
+        UnitFramesPlus_PetTargetPositionSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_PetTargetPositionSet";
+        func.callback = function()
+            UnitFramesPlus_PetTargetPositionSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
+local function UnitFramesPlus_PetTargetShiftDrag()
+    ToPetFrameBase:SetMovable(1);
+
+    ToPetFrameBase:SetScript("OnMouseDown", function(self, elapsed)
+        if UnitFramesPlusDB["pet"]["targetmovable"] == 1 then
+            if IsShiftKeyDown() and (not InCombatLockdown()) then
+                ToPetFrameBase:StartMoving();
+                UnitFramesPlusVar["pet"]["targetmoving"] = 1;
+            end
+        end
+    end)
+
+    ToPetFrameBase:SetScript("OnMouseUp", function(self, elapsed)
+        if UnitFramesPlusVar["pet"]["targetmoving"] == 1 then
+            ToPetFrameBase:StopMovingOrSizing();
+            UnitFramesPlusVar["pet"]["targetmoving"] = 0;
+            UnitFramesPlusVar["pet"]["targetmoved"] = 1;
+            local bottom = ToPetFrameBase:GetBottom();
+            local left = ToPetFrameBase:GetLeft();
+            local scale = ToPetFrameBase:GetScale()*PetFrame:GetScale();
+            local bottomX = PetFrame:GetBottom();
+            local leftX = PetFrame:GetLeft();
+            local scaleX = PetFrame:GetScale();
+            UnitFramesPlusVar["pet"]["targetx"] = (left*scale-leftX*scaleX)/scale;
+            UnitFramesPlusVar["pet"]["targety"] = (bottom*scale-bottomX*scaleX)/scale;
+            ToPetFrameBase:ClearAllPoints();
+            ToPetFrameBase:SetPoint("BOTTOMLEFT", PetFrame, "BOTTOMLEFT", UnitFramesPlusVar["pet"]["targetx"], UnitFramesPlusVar["pet"]["targety"]);
+        end
+    end)
+
+    ToPetFrameBase:SetClampedToScreen(1);
+
+    --重置目标位置时同时重置宠物位置
+    hooksecurefunc("PlayerFrame_ResetUserPlacedPosition", function()
+        UnitFramesPlusVar["pet"]["targetmoved"] = 0;
+        UnitFramesPlus_PetTargetPosition();
+    end)
+end
+
 --模块初始化
 function UnitFramesPlus_PetTargetInit()
     UnitFramesPlus_PetTarget();
+    UnitFramesPlus_PetTargetShiftDrag();
 end
 
 function UnitFramesPlus_PetTargetLayout()
     UnitFramesPlus_PetTargetScale();
+    UnitFramesPlus_PetTargetPosition();
+    if UnitFramesPlusDB["pet"]["targettmp"] == 1 then
+        UFP_ToPetFrameBase:SetAlpha(1);
+    else
+        UFP_ToPetFrameBase:SetAlpha(0);
+    end
 end

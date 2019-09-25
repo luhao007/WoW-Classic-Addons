@@ -3,7 +3,7 @@
 ## Dependancies: Auc-Advanced
 ##
 ## Version: 8.2.6345 (SwimmingSeadragon)
-## Revision: $Id: Auc-Util-ScanFinish.toc 6345 2019-09-13 05:07:31Z none $
+## Revision: $Id: Auc-Util-ScanFinish.toc 6345 2019-09-22 00:20:05Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Auctioneer
 ## X-Category: Auction House

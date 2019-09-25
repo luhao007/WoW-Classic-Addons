@@ -15,7 +15,8 @@ for id = 1, 4, 1 do
     RaiseFrameLevel(PartyCastbar);
 
     PartyCastbar.Background = PartyCastbar:CreateTexture("UFP_PartyCastbar"..id.."Background", "BACKGROUND");
-    PartyCastbar.Background:SetAllPoints(true);
+    PartyCastbar.Background:ClearAllPoints();
+    PartyCastbar.Background:SetAllPoints(PartyCastbar);
     PartyCastbar.Background:SetVertexColor(0, 0, 0, 0.5);
 
     PartyCastbar.Border = PartyCastbar:CreateTexture("UFP_PartyCastbar"..id.."Border", "BORDER");

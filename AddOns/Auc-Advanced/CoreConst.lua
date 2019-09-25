@@ -1,7 +1,7 @@
 --[[
 	Auctioneer
-	Version: 8.2.6420 (SwimmingSeadragon)
-	Revision: $Id: CoreConst.lua 6420 2019-09-13 05:07:31Z none $
+	Version: 8.2.6430 (SwimmingSeadragon)
+	Revision: $Id: CoreConst.lua 6430 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an addon for World of Warcraft that adds statistical history to the auction data that is collected
@@ -290,5 +290,5 @@ end
 -- ### todo: keep checking this conversion is correct, otherwise will have to hard-code lookup table
 lib.AC_PetType2SubClassID = {GetAuctionItemSubClasses(LE_ITEM_CLASS_BATTLEPET)}
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreConst.lua $", "$Rev: 6420 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/CoreConst.lua $", "$Rev: 6430 $")
 AucAdvanced.CoreFileCheckOut("CoreConst")

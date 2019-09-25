@@ -1,7 +1,7 @@
 --[[
 Auctioneer - StatSimple
 Version: 8.2.6399 (SwimmingSeadragon)
-Revision: $Id: StatSimple.lua 6399 2019-09-13 05:07:31Z none $
+Revision: $Id: StatSimple.lua 6399 2019-09-22 00:20:05Z none $
 URL: http://auctioneeraddon.com/
 
 This is an addon for World of Warcraft that adds statistical history to the auction data that is collected

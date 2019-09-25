@@ -1,7 +1,7 @@
 --[[
 	PanelScroller
 	Version: 8.2.6341 (SwimmingSeadragon)
-	Revision: $Id: PanelScroller.lua 6341 2019-09-13 05:07:31Z none $
+	Revision: $Id: PanelScroller.lua 6341 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/dl/
 
 	License:

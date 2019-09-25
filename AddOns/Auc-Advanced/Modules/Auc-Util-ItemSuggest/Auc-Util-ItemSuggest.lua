@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Item Suggest module
 	Version: 8.2.6418 (SwimmingSeadragon)
-	Revision: $Id: Auc-Util-ItemSuggest.lua 6418 2019-09-13 05:07:31Z none $
+	Revision: $Id: Auc-Util-ItemSuggest.lua 6418 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer module that allows the added tooltip for suggesting

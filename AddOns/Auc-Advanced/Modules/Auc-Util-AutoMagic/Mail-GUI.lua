@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - AutoMagic Utility module
-	Version: 8.2.6390 (SwimmingSeadragon)
-	Revision: $Id: Mail-GUI.lua 6390 2019-09-13 05:07:31Z none $
+	Version: 8.2.6424 (SwimmingSeadragon)
+	Revision: $Id: Mail-GUI.lua 6424 2019-09-22 00:20:05Z none $
 	URL: http://auctioneeraddon.com/
 
 	AutoMagic is an Auctioneer module which automates mundane tasks for you.
@@ -556,4 +556,4 @@ end
 
 
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AutoMagic/Mail-GUI.lua $", "$Rev: 6390 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AutoMagic/Mail-GUI.lua $", "$Rev: 6424 $")

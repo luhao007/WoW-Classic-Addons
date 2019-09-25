@@ -5,7 +5,7 @@
 ## Dependancies: Auc-Advanced BeanCounter
 ##
 ## Version: 8.2.6362 (SwimmingSeadragon)
-## Revision: $Id: Auc-Stat-Sales.toc 6362 2019-09-13 05:07:31Z none $
+## Revision: $Id: Auc-Stat-Sales.toc 6362 2019-09-22 00:20:05Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Auctioneer
 ## X-Category: Auction House
