@@ -430,7 +430,7 @@ local castSpellIDs = {
     3595, -- Frost Oil
     17460, -- Frost Ram
     25178, -- Frost Weakness
-    10180, -- Frostbolt
+    10181, -- Frostbolt
     8398, -- Frostbolt Volley
     16992, -- Frostguard
     6957, -- Frostmane Strength
@@ -1446,7 +1446,7 @@ namespace.crowdControls = {
 
 -- Addon Savedvariables
 namespace.defaultConfig = {
-    version = "11", -- settings version
+    version = "12", -- settings version
     pushbackDetect = true,
     movementDetect = true,
     locale = GetLocale(),
@@ -1474,6 +1474,7 @@ namespace.defaultConfig = {
         textPositionX = 0,
         textPositionY = 0,
         frameLevel = 10,
+        statusBackgroundColor = { 0, 0, 0, 0.535 },
     },
 
     target = {
@@ -1499,6 +1500,7 @@ namespace.defaultConfig = {
         textPositionX = 0,
         textPositionY = 0,
         frameLevel = 10,
+        statusBackgroundColor = { 0, 0, 0, 0.535 },
     },
 
     party = {
@@ -1514,7 +1516,7 @@ namespace.defaultConfig = {
         castStatusBar = "Interface\\TargetingFrame\\UI-StatusBar",
         castBorder = "Interface\\CastingBar\\UI-CastingBar-Border",
         hideIconBorder = false,
-        position = { "CENTER", -143.5, -5 },
+        position = { "CENTER", 141, 6 },
         iconPositionX = -5,
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
@@ -1524,6 +1526,7 @@ namespace.defaultConfig = {
         textPositionX = 0,
         textPositionY = 0,
         frameLevel = 10,
+        statusBackgroundColor = { 0, 0, 0, 0.535 },
     },
 
     player = {
@@ -1549,5 +1552,6 @@ namespace.defaultConfig = {
         textPositionX = 0,
         textPositionY = 0,
         frameLevel = 10,
+        statusBackgroundColor = { 0, 0, 0, 0.535 },
     },
 }
