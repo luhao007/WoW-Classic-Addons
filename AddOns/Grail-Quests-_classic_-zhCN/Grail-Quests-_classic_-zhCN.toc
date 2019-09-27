@@ -11,3 +11,4 @@
 
 
 Grail-Quests-_classic_-zhCN.lua
+Grail-Quests-_classic_-description-zhCN.lua

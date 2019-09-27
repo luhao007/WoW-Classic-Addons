@@ -360,6 +360,26 @@ MAPPING = {
         'Notes': '帮助Grail记录各项任务，声望和成就的完成时间',
         'Category': '任务'
     },
+    'HandyNotes': {
+        'Title-cn': '地图标记',
+        'Notes': '可以在地图上添加标记',
+        'Category': '界面'
+    },
+    'HandyNotes_DungeonLocations (Classic)': {
+        'Title-cn': '地图标记',
+        'Title-sub': '副本入口',
+        'Category': '界面'
+    },
+    'HandyNotes_NPCs (Classic)': {
+        'Title-cn': '地图标记',
+        'Title-sub': 'NPC',
+        'Category': '界面'
+    },
+    'HandyNotes_TravelGuide (Classic)': {
+        'Title-cn': '地图标记',
+        'Title-sub': '旅行指南',
+        'Category': '界面'
+    },
     'Informant': {
         'Title-cn': '物品信息',
         'Notes': '在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等',

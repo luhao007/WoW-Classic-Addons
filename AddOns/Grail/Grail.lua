@@ -454,6 +454,11 @@
 --			Transforms GrailDatabase to use Grail.environment so _retail_ differs from _ptr_ differs from _classic_.
 --			Augments the mapping system because Blizzard API is a little wonky and does not report zones like Teldrassil in Kalimdor like one would expect.
 --			Adds support for quests to be marked only available during a WoW Anniversay event.
+--		101	Updates some quest/NPC information.
+--			Changes the code that detects group quests as Hogger in Classic returned a string vice a number.
+--			Changes IsPrimed() to no longer need the calendar to be checked in Classic.
+--			Forces Classic to query for completed quests at startup because calendar processing is not done (where it was done as a side effect).
+--			Creates an implementation of ProfessionExceeds() that works in Classic.
 --
 --	Known Issues
 --
@@ -1759,7 +1764,11 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 					local baseValue = 0
 					if isDaily then baseValue = baseValue + 2 end
 					if isWeekly then baseValue = baseValue + 4 end
-					if suggestedGroup and suggestedGroup > 1 then baseValue = baseValue + 512 end
+					if suggestedGroup then
+						if type(suggestedGroup) == "string" or suggestedGroup > 1 then
+							baseValue = baseValue + 512
+						end
+					end
 					if isTask then baseValue = baseValue + 32768 end	-- bonus objective
 					if self.capabilities.usesCampaignInfo then
 						if C_CampaignInfo.IsCampaignQuest(theQuestId) then baseValue = baseValue + 4096 end -- war campaign (recorded as legendary)
@@ -1877,8 +1886,9 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 
 				--	If the questTitle is different from what we have recorded, note that as BadQuestData (even though it could just be a localization issue)
 				if self:DoesQuestExist(questId) and questTitle ~= self:QuestName(questId) then
-					errorString = errorString .. "|Title:" .. questTitle .. "|Locale:" .. self.playerLocale
-					self:_RecordBadQuestData(errorString)
+--					errorString = errorString .. "|Title:" .. questTitle .. "|Locale:" .. self.playerLocale
+--					self:_RecordBadQuestData(errorString)
+					self:_LearnQuestName(questId, questTitle)
 				end
 
 				--	If the level as reported by Blizzard API does not match our internal database we should note that fact
@@ -1958,10 +1968,11 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 				local titleText = GetTitleText()
 				self.completingQuest = self:QuestInQuestLogMatchingTitle(titleText)
 				self.completingQuestTitle = titleText
-				if nil == self.completingQuest then	-- if we still do not have it, mark it in the saved variables for possible future inclusion
-					if nil == GrailDatabase["SpecialQuests"] then GrailDatabase["SpecialQuests"] = { } end
-					if nil == GrailDatabase["SpecialQuests"][titleText] then GrailDatabase["SpecialQuests"][titleText] = self.blizzardRelease end
-				end
+-- Removing special quest processing as it is not working well in Classic
+--				if nil == self.completingQuest then	-- if we still do not have it, mark it in the saved variables for possible future inclusion
+--					if nil == GrailDatabase["SpecialQuests"] then GrailDatabase["SpecialQuests"] = { } end
+--					if nil == GrailDatabase["SpecialQuests"][titleText] then GrailDatabase["SpecialQuests"][titleText] = self.blizzardRelease end
+--				end
 				self:_UpdateQuestResetTime()
 			end,
 
@@ -1982,6 +1993,11 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 					C_Calendar.SetAbsMonth(month, year)
 					C_Calendar.OpenCalendar()
 					self:_AddWorldQuests()
+				end
+				-- In Classic we need to get the completed quests because we have eliminated the
+				-- call as a result of calendar processing being removed from Classic.
+				if self.existsClassic then
+					QueryQuestsCompleted()
 				end
 			end,
 
@@ -2301,6 +2317,12 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 				[600002]=GetMapNameByID(19)..' '..FACTION_HORDE..' '..REQUIREMENTS,
 				},
 
+			-- The localized description of the quest.
+			-- This is dynamically populated in Classic and only used there because Blizzard API does not allow us
+			-- access to the description in game.
+			description = {
+				},
+
 			},
 
 		-- A table whose keys represent situations where quests need to be invalidated, and whose values are
@@ -2433,7 +2455,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 
 		--	The reputation values are the actual faction values used by Blizzard.
 		reputationExpansionMapping = {
-			[1] = { 69, 54, 47, 72, 930, 1134, 530, 76, 81, 68, 911, 1133, 509, 890, 730, 510, 729, 889, 21, 577, 369, 470, 910, 609, 749, 990, 270, 529, 87, 909, 92, 989, 93, 349, 809, 70, 59, 576, 922, 967, 589, 469, 67, },
+			[1] = { 69, 54, 47, 72, 930, 1134, 530, 76, 81, 68, 911, 1133, 509, 890, 730, 510, 729, 889, 21, 577, 369, 470, 910, 609, 749, 990, 270, 529, 87, 909, 92, 989, 93, 349, 809, 70, 59, 576, 922, 967, 589, 469, 67, 471, 893, 550, 551, 549, 83, 86, },
 			[2] = { 942, 946, 978, 941, 1038, 1015, 970, 933, 947, 1011, 1031, 1077, 932, 934, 935, 1156, 1012, 936, },
 			[3] = { 1037, 1106, 1068, 1104, 1126, 1067, 1052, 1073, 1097, 1098, 1105, 1117, 1119, 1064, 1050, 1085, 1091, 1090, 1094, 1124, },
 			[4] = { 1158, 1173, 1135, 1171, 1174, 1178, 1172, 1177, 1204, },
@@ -2496,6 +2518,8 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			["048"] = 'Stormwind',
 			["04C"] = 'Orgrimmar',
 			["051"] = 'Thunder Bluff',
+			["053"] = 'Leatherworking - Elemental',	-- Classic
+			["056"] = 'Leatherworking - Dragonscale',	-- Classic
 			["057"] = 'Bloodsail Buccaneers',
 			["05C"] = 'Gelkis Clan Centaur',
 			["05D"] = 'Magram Clan Centaur',
@@ -2505,10 +2529,14 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			["171"] = 'Gadgetzan',
 			["1D5"] = 'Alliance',
 			["1D6"] = 'Ratchet',
+			["1D7"] = "Wildhammer Clan",	-- Classic
 			["1FD"] = 'The League of Arathor',
 			["1FE"] = 'The Defilers',
 			["211"] = 'Argent Dawn',
 			["212"] = 'Darkspear Trolls',
+			["225"] = 'Leatherworking - Tribal',	-- Classic
+			["226"] = "Engineering - Goblin",	-- Classic
+			["227"] = "Engineering - Gnome",	-- Classic
 			["240"] = 'Timbermaw Hold',
 			["241"] = 'Everlook',
 			["24D"] = 'Wintersaber Trainers',
@@ -2519,6 +2547,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			["329"] = "Shen'dralar",
 			["379"] = 'Warsong Outriders',
 			["37A"] = 'Silverwing Sentinels',
+			["37D"] = "Revantusk Trolls",	-- Classic
 			["38D"] = 'Darkmoon Faire',
 			["38E"] = 'Brood of Nozdormu',
 			["38F"] = 'Silvermoon City',
@@ -4539,13 +4568,15 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 
 			-- Remove quests from SpecialQuests that have been marked as special in our internal database.
 			if nil ~= GrailDatabase["SpecialQuests"] then
-				for questName, _ in pairs(GrailDatabase["SpecialQuests"]) do
-					local questId = self:QuestWithName(questName)
---					if self.quests[questId] and  self.quests[questId]['SP'] then
-					if self.quests[questId] and bitband(self:CodeType(questId), self.bitMaskQuestSpecial) > 0 then
-						GrailDatabase["SpecialQuests"][questName] = nil
-					end
-				end
+-- We are just going to remove all the special quests as they are not working well in Classic.
+				GrailDatabase.SpecialQuests = nil
+--				for questName, _ in pairs(GrailDatabase["SpecialQuests"]) do
+--					local questId = self:QuestWithName(questName)
+----					if self.quests[questId] and  self.quests[questId]['SP'] then
+--					if self.quests[questId] and bitband(self:CodeType(questId), self.bitMaskQuestSpecial) > 0 then
+--						GrailDatabase["SpecialQuests"][questName] = nil
+--					end
+--				end
 			end
 
 			-- Remove quests from NewQuests that have been added to our internal database.
@@ -6894,7 +6925,14 @@ end
 		---
 		--	Returns whether Grail is ready to properly respond to status information about quests.
 		IsPrimed = function(self)
-			return self.receivedCalendarUpdateEventList and self.receivedQuestLogUpdate
+			local retval = true
+			if retval and self.capabilities.usesCalendar then
+				retval = self.receivedCalendarUpdateEventList
+			end
+			if retval then
+				retval = self.receivedQuestLogUpdate
+			end
+			return retval
 		end,
 
 		---
@@ -8527,30 +8565,47 @@ print("end:", strgsub(controlTable.something, "|", "*"))
 		ProfessionExceeds = function(self, professionCode, professionValue)
 			local retval = false
 			local skillLevel, ignore1, ignore2 = self.NO_SKILL, nil, nil
-			local skillName = nil
-			local prof1, prof2, archaeology, fishing, cooking, firstAid = GetProfessions();
-
-			if "X" == professionCode and nil ~= archaeology then
-				ignore1, ignore2, skillLevel = GetProfessionInfo(archaeology)
-			elseif "F" == professionCode and nil ~= fishing then
-				ignore1, ignore2, skillLevel = GetProfessionInfo(fishing)
-			elseif "C" == professionCode and nil ~= cooking then
-				ignore1, ignore2, skillLevel = GetProfessionInfo(cooking)
-			elseif "Z" == professionCode and nil ~= firstAid then
-				ignore1, ignore2, skillLevel = GetProfessionInfo(firstAid)
-			elseif "R" == professionCode then
-				skillLevel = self:_RidingSkillLevel()
-			else
-				local professionName = self.professionMapping[professionCode]
-				if nil ~= prof1 then
-					skillName, ignore1, skillLevel = GetProfessionInfo(prof1)
+			if self.existsClassic then
+				if "R" == professionCode then
+					skillLevel = self:_RidingSkillLevel()
+				else
+					local professionName = self.professionMapping[professionCode]
+					if nil ~= professionName then
+						local numSkills = GetNumSkillLines()
+						for i = 1, numSkills do
+							local skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType, skillDescription = GetSkillLineInfo(i)
+							if skillName == professionName then
+								skillLevel = skillRank
+							end
+						end
+					end
 				end
-				if skillName ~= professionName then
-					if nil ~= prof2 then
-						skillName, ignore1, skillLevel = GetProfessionInfo(prof2)
+			else
+				local skillName = nil
+				local prof1, prof2, archaeology, fishing, cooking, firstAid = GetProfessions()
+
+				if "X" == professionCode and nil ~= archaeology then
+					ignore1, ignore2, skillLevel = GetProfessionInfo(archaeology)
+				elseif "F" == professionCode and nil ~= fishing then
+					ignore1, ignore2, skillLevel = GetProfessionInfo(fishing)
+				elseif "C" == professionCode and nil ~= cooking then
+					ignore1, ignore2, skillLevel = GetProfessionInfo(cooking)
+				elseif "Z" == professionCode and nil ~= firstAid then
+					ignore1, ignore2, skillLevel = GetProfessionInfo(firstAid)
+				elseif "R" == professionCode then
+					skillLevel = self:_RidingSkillLevel()
+				else
+					local professionName = self.professionMapping[professionCode]
+					if nil ~= prof1 then
+						skillName, ignore1, skillLevel = GetProfessionInfo(prof1)
 					end
 					if skillName ~= professionName then
-						skillLevel = self.NO_SKILL
+						if nil ~= prof2 then
+							skillName, ignore1, skillLevel = GetProfessionInfo(prof2)
+						end
+						if skillName ~= professionName then
+							skillLevel = self.NO_SKILL
+						end
 					end
 				end
 			end

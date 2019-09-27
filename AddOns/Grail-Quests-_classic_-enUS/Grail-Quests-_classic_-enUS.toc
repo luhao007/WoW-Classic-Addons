@@ -11,3 +11,4 @@
 
 
 Grail-Quests-_classic_-enUS.lua
+Grail-Quests-_classic_-description-enUS.lua
