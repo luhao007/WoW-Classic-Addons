@@ -1,9 +1,5 @@
-## v4.8.9 Changes
+## v4.8.10 Changes
 
-* Fixed progress messages for full AH scans
-* Further disenchant value updates for Classic
-* Auction durations will show up properly in Classic
-* Enchanting crafts should work directly from the TSM UI
-* Various other crafting and trade skill related fixes for Classic
+* Updated TOC for WoW 8.2.5.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)
