@@ -1,10 +1,13 @@
 ## Interface: 11302
-## Title: |cff00fe00TradeSkillMaster|r
-## Notes: Auction house and gold making addon.
 ## Author: TSM Team
 ## Version: v4.8.11
-## SavedVariables: TradeSkillMasterDB, TSMItemCacheDB, TSMItemInfoDB, TradeSkillMasterModulesDB
 ## OptionalDeps: CostBasis, Auc-Advanced, Auctionator, TheUndermineJournal
+## SavedVariables: TradeSkillMasterDB, TSMItemCacheDB, TSMItemInfoDB, TradeSkillMasterModulesDB
+
+## Title: |cff00fe00TradeSkillMaster|r
+## Notes: Auction house and gold making addon.
+## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
+
 ## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibCompress, LibRealmInfo
 
 # External libraries included by the packager
