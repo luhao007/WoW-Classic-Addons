@@ -306,6 +306,10 @@ MAPPING = {
         'Title-cn': '装备着色',
         'Category': '物品'
     },
+    'GatherMate2': {
+        'Title-cn': '采集助手',
+        'Category': '物品'
+    },
     'Grail': {
         'Title-cn': '本地数据库',
         'Notes': '本地数据库，包含任务，成就，NPC等数据',
