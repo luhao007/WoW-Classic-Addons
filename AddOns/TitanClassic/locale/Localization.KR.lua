@@ -3,6 +3,8 @@ if not L then return end
 
 L["TITAN_PANEL"] = "타이탄 패널 Classic";
 local TITAN_PANEL = "타이탄 패널 Classic";
+L["TITAN_PANEL_ONLY"] = "타이탄 패널";
+local TITAN_PANEL_ONLY = "타이탄 패널";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -92,7 +94,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "설정 초기화";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "공통 프로필로 사용할때 불러오지 못할 수도 있습니다.";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffff8c00"..TITAN_PANEL.." |cffffd700개발팀";
+L["TITAN_PANEL_VERSION_INFO"] = "|cffff8c00"..TITAN_PANEL_ONLY.." |cffffd700개발팀";
 L["TITAN_PANEL_MENU_TITLE"] = "타이판 패널";
 L["TITAN_PANEL_MENU_HIDE"] = "숨김";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(전투중)";
@@ -243,10 +245,13 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Thrown: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Ammo/Thrown: ";
 L["TITAN_AMMO_TOOLTIP"] = "Equipped Ammo/Thrown Count";
 L["TITAN_AMMO_MENU_TEXT"] = "Ammo/Thrown";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "No Ammo";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Refresh Display";
 L["TITAN_AMMO_BULLET_NAME"] = "Show Ammo Name";
-     
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
+
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "가방: ";
 L["TITAN_BAG_TOOLTIP"] = "가방 정보";

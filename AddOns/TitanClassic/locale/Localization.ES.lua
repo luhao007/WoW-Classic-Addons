@@ -1,8 +1,10 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TitanClassic","esES")
 if not L then return end
 
-L["TITAN_DEBUG"] = "<Titan>";
+L["TITAN_PANEL"] = "Titan Panel Classic";
 local TITAN_PANEL = "Titan Panel Classic";
+L["TITAN_PANEL_ONLY"] = "Titan Panel";
+local TITAN_PANEL_ONLY = "Titan Panel";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -98,7 +100,7 @@ L["TITAN_PANEL_GLOBAL_ERR_1"] = "No se puede cargar un perfil cuando el global e
 
 -- general panel locale
 L["TITAN_PANEL"] = "Titan Panel Classic";
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 por el equipo de desarrollo de  |cffff8c00"..TITAN_PANEL.."";     
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 por el equipo de desarrollo de  |cffff8c00"..TITAN_PANEL_ONLY.."";     
 L["TITAN_PANEL_MENU_TITLE"] = TITAN_PANEL;
 L["TITAN_PANEL_MENU_HIDE"] = "Ocultar";
 L["TITAN_PANEL_MENU_CUSTOMIZE"] = "Personalizar";
@@ -261,10 +263,13 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Arrojadiza: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Munición/Arrojadiza: ";
 L["TITAN_AMMO_TOOLTIP"] = "Contador de munición/arrojadiza equipada";
 L["TITAN_AMMO_MENU_TEXT"] = "Munición/Arrojadiza";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "No hay munición";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Actualizar información";
 L["TITAN_AMMO_BULLET_NAME"] = "Mostrar nombre de la munición";
-	
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
+
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "Bolsas: ";
 L["TITAN_BAG_TOOLTIP"] = "Uso de bolsas";

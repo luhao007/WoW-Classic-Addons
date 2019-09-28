@@ -620,11 +620,11 @@ do
         UnitFramesPlusDB["global"]["colorhp"] = 1 - UnitFramesPlusDB["global"]["colorhp"];
         UnitFramesPlusDB["player"]["colorhp"] = UnitFramesPlusDB["global"]["colorhp"];
         BlizzardOptionsPanel_Slider_Enable(UnitFramesPlus_OptionsFrame_PlayerColorHPSlider);
-        UnitFramesPlus_PlayerColorHPBar();
+        -- UnitFramesPlus_PlayerColorHPBar();
         UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
         UnitFramesPlus_OptionsFrame_PlayerColorHP:SetChecked(UnitFramesPlusDB["global"]["colorhp"]==1);
         UnitFramesPlusDB["target"]["colorhp"] = UnitFramesPlusDB["global"]["colorhp"];
-        UnitFramesPlus_TargetColorHPBar();
+        -- UnitFramesPlus_TargetColorHPBar();
         UnitFramesPlus_TargetColorHPBarDisplayUpdate();
         UnitFramesPlus_OptionsFrame_TargetColorHP:SetChecked(UnitFramesPlusDB["global"]["colorhp"]==1);
         UnitFramesPlusDB["party"]["colorhp"] = UnitFramesPlusDB["global"]["colorhp"];
@@ -661,11 +661,11 @@ do
     UnitFramesPlus_OptionsFrame_GlobalColorHPSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["global"]["colortype"] = value;
         UnitFramesPlusDB["player"]["colortype"] = value;
-        UnitFramesPlus_PlayerColorHPBar();
+        -- UnitFramesPlus_PlayerColorHPBar();
         UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
         UnitFramesPlus_OptionsFrame_PlayerColorHPSlider:SetValue(value);
         UnitFramesPlusDB["target"]["colortype"] = value;
-        UnitFramesPlus_TargetColorHPBar();
+        -- UnitFramesPlus_TargetColorHPBar();
         UnitFramesPlus_TargetColorHPBarDisplayUpdate();
         UnitFramesPlus_OptionsFrame_TargetColorHPSlider:SetValue(value);
         UnitFramesPlusDB["party"]["colortype"] = value;
@@ -1097,7 +1097,7 @@ do
         else
             BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_PlayerColorHPSlider);
         end
-        UnitFramesPlus_PlayerColorHPBar();
+        -- UnitFramesPlus_PlayerColorHPBar();
         UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
         if UnitFramesPlusDB["player"]["colorhp"] == 1 then
             if UnitFramesPlusDB["target"]["colorhp"] == 1 
@@ -1127,7 +1127,7 @@ do
     UnitFramesPlus_OptionsFrame_PlayerColorHPSlider:SetObeyStepOnDrag(true);
     UnitFramesPlus_OptionsFrame_PlayerColorHPSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["player"]["colortype"] = value;
-        UnitFramesPlus_PlayerColorHPBar();
+        -- UnitFramesPlus_PlayerColorHPBar();
         UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
     end)
 
@@ -1747,7 +1747,7 @@ do
         else
             BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_TargetColorHPSlider);
         end
-        UnitFramesPlus_TargetColorHPBar();
+        -- UnitFramesPlus_TargetColorHPBar();
         UnitFramesPlus_TargetColorHPBarDisplayUpdate();
         if UnitFramesPlusDB["target"]["colorhp"] == 1 then
             if UnitFramesPlusDB["player"]["colorhp"] == 1 
@@ -1777,7 +1777,7 @@ do
     UnitFramesPlus_OptionsFrame_TargetColorHPSlider:SetObeyStepOnDrag(true);
     UnitFramesPlus_OptionsFrame_TargetColorHPSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["target"]["colortype"] = value;
-        UnitFramesPlus_TargetColorHPBar();
+        -- UnitFramesPlus_TargetColorHPBar();
         UnitFramesPlus_TargetColorHPBarDisplayUpdate();
     end)
 

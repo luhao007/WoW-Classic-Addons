@@ -3,6 +3,8 @@ if not L then return end
 
 L["TITAN_PANEL"] = "Titan Panel Classic";
 local TITAN_PANEL = "Titan Panel Classic";
+L["TITAN_PANEL_ONLY"] = "Titan Panel";
+local TITAN_PANEL_ONLY = "Titan Panel";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -96,7 +98,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "réinitialisation des options";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "Vous ne devriez pas charger un profil lorsqu'un profil global est en cours d'utilisation";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 par le |cffff8c00"..TITAN_PANEL.." Development Team";
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 par le |cffff8c00"..TITAN_PANEL_ONLY.." Development Team";
 L["TITAN_PANEL_MENU_TITLE"] = TITAN_PANEL;
 L["TITAN_PANEL_MENU_HIDE"] = "Cacher";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(En Combat)";
@@ -247,9 +249,12 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Armes de jet : ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Munitions/Jet : ";
 L["TITAN_AMMO_TOOLTIP"] = "Nombre de Munitions/Armes de jet";
 L["TITAN_AMMO_MENU_TEXT"] = "Munitions/Armes de jet";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "Pas de munitions";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Rafra\195\174chir l'affichage";
 L["TITAN_AMMO_BULLET_NAME"] = "Montrer le nom des munitions";
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
 
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "Sacs : ";

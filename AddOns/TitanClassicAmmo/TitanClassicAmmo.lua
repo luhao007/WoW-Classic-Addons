@@ -24,6 +24,10 @@ local LIM_GOOD = 2
 local LIM_OK   = 1.5
 local LIM_BAD  = .5
 
+local BOW = "INVTYPE_RANGED"
+local GUN = "INVTYPE_RANGEDRIGHT"
+local THROWN = "INVTYPE_THROWN"
+
 local TITAN_AMMO_THRESHOLD_TABLE = { -- Use ammo stack and threshold limits above to calc colored text
 	["INVTYPE_RANGEDRIGHT"] = {
 		 Values = { SHOOT_STACK*LIM_BAD, SHOOT_STACK*LIM_OK, SHOOT_STACK*LIM_GOOD }, -- 125,375,500
@@ -53,8 +57,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("TitanClassic", true)
 -- ******************************** Functions *******************************
 local function ClrAmmoInfo()
 	ammo_count = 0;
-	ammo_type  = "";
-	ammo_name  = ""
+	ammo_type  = L["TITAN_AMMO_BUTTON_NOAMMO"];
+	ammo_name  = L["TITAN_AMMO_BUTTON_NOAMMO"]
 	ammo_link  = "";
 	ammo_show  = false
 end
@@ -110,6 +114,7 @@ function TitanPanelAmmoButton_OnLoad(self)
 			menuText = L["TITAN_AMMO_MENU_TEXT"],
 			buttonTextFunction = "TitanPanelAmmoButton_GetButtonText", 
 			tooltipTitle = L["TITAN_AMMO_TOOLTIP"],
+            tooltipTextFunction = "TitanPanelAmmoButton_GetTooltipText",
 			icon = "Interface\\AddOns\\TitanClassicAmmo\\TitanClassicThrown",
 			iconWidth = 16,
 			controlVariables = {
@@ -303,3 +308,16 @@ function TitanPanelRightClickMenu_PrepareAmmoMenu()
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_AMMO_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end
+
+function TitanPanelAmmoButton_GetTooltipText()
+	local txt = ""
+	local atype = {INVTYPE_RANGED = L["TITAN_AMMO_BOW"],
+		INVTYPE_RANGEDRIGHT = L["TITAN_AMMO_GUN"],
+		INVTYPE_THROWN = L["TITAN_AMMO_THROWN"],
+		}
+	txt = txt
+		.."Type: "..(atype[ammo_type] or "--").."\n"
+		.."Name: "..(ammo_name or "--")
+	return txt
+end
+

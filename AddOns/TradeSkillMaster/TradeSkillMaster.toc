@@ -1,14 +1,23 @@
 ## Interface: 11302
-## Author: TSM Team
-## Version: v4.8.10
-## OptionalDeps: CostBasis, Auc-Advanced, Auctionator, TheUndermineJournal
-## SavedVariables: TradeSkillMasterDB, TSMItemCacheDB, TSMItemInfoDB, TradeSkillMasterModulesDB
-
 ## Title: |cff00fe00TradeSkillMaster|r
 ## Notes: Auction house and gold making addon.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
-
+## Author: TSM Team
+## Version: v4.8.11
+## SavedVariables: TradeSkillMasterDB, TSMItemCacheDB, TSMItemInfoDB, TradeSkillMasterModulesDB
+## OptionalDeps: CostBasis, Auc-Advanced, Auctionator, TheUndermineJournal
 ## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibCompress, LibRealmInfo
+
+# External libraries included by the packager
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceHook-3.0\AceHook-3.0.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Libs\AceComm-3.0\AceComm-3.0.xml
+Libs\AceSerializer-3.0\AceSerializer-3.0.xml
+Libs\LibCompress\lib.xml
+Libs\AccurateTime\AccurateTime.lua
+Libs\LibRealmInfo\LibRealmInfo.lua
 
 # Locale file
 Locale\Locale.lua

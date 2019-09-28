@@ -3,6 +3,8 @@ if not L then return end
 
 L["TITAN_PANEL"] = "Titan Panel Classic";
 local TITAN_PANEL = "Titan Panel Classic";
+L["TITAN_PANEL_ONLY"] = "Titan Panel";
+local TITAN_PANEL_ONLY = "Titan Panel";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -92,7 +94,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "Setze Einstellungen zur\195\188ck";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "Du kannst kein individuelles Profil laden, wenn ein globales Profil verwendet wird.";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 vom |cffff8c00"..TITAN_PANEL.." Development Team";
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 vom |cffff8c00"..TITAN_PANEL_ONLY.." Development Team";
 L["TITAN_PANEL_MENU_TITLE"] = TITAN_PANEL;
 L["TITAN_PANEL_MENU_HIDE"] = "Verstecken";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(Im Kampf)";
@@ -243,9 +245,12 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Geworfen: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Munition/Geworfen: ";
 L["TITAN_AMMO_TOOLTIP"] = "Angelegte Munition/Geworfen Z\195\164hler";
 L["TITAN_AMMO_MENU_TEXT"] = "Munition/Geworfen";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "Keine Munition"; --SENSITY
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Aktualisiere Display"; --SENSITY
 L["TITAN_AMMO_BULLET_NAME"] = "Show Ammo Name";
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
 
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "Taschen: ";

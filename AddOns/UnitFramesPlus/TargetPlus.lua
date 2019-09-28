@@ -345,43 +345,43 @@ function UnitFramesPlus_TargetExtrabar()
     UnitFramesPlus_TargetPosition();
 end
 
---目标生命条染色
-local chb = CreateFrame("Frame");
-function UnitFramesPlus_TargetColorHPBar()
-    if UnitFramesPlusDB["target"]["colorhp"] == 1 then
-        if UnitFramesPlusDB["target"]["colortype"] == 1 then
-            TargetFrameHealthBar:SetScript("OnValueChanged", nil);
-            -- if chb:IsEventRegistered("UNIT_HEALTH_FREQUENT") then
-            --     chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
-            -- end
-            chb:RegisterEvent("PLAYER_TARGET_CHANGED");
-            chb:RegisterEvent("PLAYER_REGEN_ENABLED");
-            chb:SetScript("OnEvent", function(self, event, ...)
-                UnitFramesPlus_TargetColorHPBarDisplayUpdate();
-            end)
-        elseif UnitFramesPlusDB["target"]["colortype"] == 2 then
-            TargetFrameHealthBar:SetScript("OnValueChanged", function(self, value)
-                UnitFramesPlus_TargetColorHPBarDisplayUpdate();
-            end)
-            if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
-                chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
-                chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
-            end
-            -- chb:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", "target");
-        end
-        --TargetFrameHealthBar.lockColor = true;
-    else
-        TargetFrameHealthBar:SetScript("OnValueChanged", nil);
-        if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
-            chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
-            chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
-            -- chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
-            chb:SetScript("OnEvent", nil);
-        end
-        TargetFrameHealthBar:SetStatusBarColor(0, 1, 0);
-        --TargetFrameHealthBar.lockColor = nil;
-    end
-end
+-- --目标生命条染色
+-- local chb = CreateFrame("Frame");
+-- function UnitFramesPlus_TargetColorHPBar()
+--     if UnitFramesPlusDB["target"]["colorhp"] == 1 then
+--         if UnitFramesPlusDB["target"]["colortype"] == 1 then
+--             TargetFrameHealthBar:SetScript("OnValueChanged", nil);
+--             -- if chb:IsEventRegistered("UNIT_HEALTH_FREQUENT") then
+--             --     chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
+--             -- end
+--             chb:RegisterEvent("PLAYER_TARGET_CHANGED");
+--             chb:RegisterEvent("PLAYER_REGEN_ENABLED");
+--             chb:SetScript("OnEvent", function(self, event, ...)
+--                 UnitFramesPlus_TargetColorHPBarDisplayUpdate();
+--             end)
+--         elseif UnitFramesPlusDB["target"]["colortype"] == 2 then
+--             TargetFrameHealthBar:SetScript("OnValueChanged", function(self, value)
+--                 UnitFramesPlus_TargetColorHPBarDisplayUpdate();
+--             end)
+--             if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
+--                 chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
+--                 chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+--             end
+--             -- chb:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", "target");
+--         end
+--         --TargetFrameHealthBar.lockColor = true;
+--     else
+--         TargetFrameHealthBar:SetScript("OnValueChanged", nil);
+--         if chb:IsEventRegistered("PLAYER_TARGET_CHANGED") then
+--             chb:UnregisterEvent("PLAYER_TARGET_CHANGED");
+--             chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+--             -- chb:UnregisterEvent("UNIT_HEALTH_FREQUENT");
+--             chb:SetScript("OnEvent", nil);
+--         end
+--         TargetFrameHealthBar:SetStatusBarColor(0, 1, 0);
+--         --TargetFrameHealthBar.lockColor = nil;
+--     end
+-- end
 
 --刷新目标生命条染色显示
 function UnitFramesPlus_TargetColorHPBarDisplayUpdate()
@@ -402,6 +402,18 @@ function UnitFramesPlus_TargetColorHPBarDisplayUpdate()
         end
     end
 end
+
+--嗯？
+hooksecurefunc("UnitFrameHealthBar_Update", function(statusbar, unit)
+    if unit == "target" and statusbar.unit == "target" then
+        UnitFramesPlus_TargetColorHPBarDisplayUpdate();
+    end
+end);
+hooksecurefunc("HealthBar_OnValueChanged", function(self, value, smooth)
+    if self.unit == "target" then
+        UnitFramesPlus_TargetColorHPBarDisplayUpdate();
+    end
+end);
 
 --目标种族或类型
 local TargetRace = TargetFrame:CreateFontString("UFP_TargetRace", "ARTWORK", "TextStatusBarText");
@@ -811,6 +823,11 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
 end
 
 --改变目标buff/debuff图标大小
+local PLAYER_UNITS = {
+    player = true,
+    -- vehicle = true,
+    pet = true,
+};
 local function TargetBuffSize(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
     if UnitFramesPlusDB["target"]["buffsize"] == 1 and self.unit == "target"then
         local UFP_AURA_OFFSET_Y = 3;
@@ -833,8 +850,16 @@ local function TargetBuffSize(self, auraName, numAuras, numOppositeAuras, largeA
                 _, _, _, _, _, _, caster = UnitDebuff(self.unit, i, "INCLUDE_NAME_PLATE_ONLY");
             end
 
+            local isLargeAura = 0;
+            if caster ~= nil then
+                for token, value in pairs(PLAYER_UNITS) do
+                    if UnitIsUnit(caster, token) or UnitIsOwnerOrControllerOfUnit(token, caster) then
+                        isLargeAura = 1;
+                    end
+                end
+            end
             -- if ( largeAuraList[i] ) then
-            if caster == "player" or caster == "pet" then
+            if isLargeAura == 1 then
                 UFP_SIZE = UFP_LARGE_AURA_SIZE;
                 UFP_OFFSETY = UFP_AURA_OFFSET_Y + UFP_AURA_OFFSET_Y;
             else
@@ -1119,7 +1144,7 @@ function UnitFramesPlus_TargetInit()
     UnitFramesPlus_TargetRace();
     UnitFramesPlus_TargetClassIcon();
     UnitFramesPlus_TargetPortraitIndicator();
-    UnitFramesPlus_TargetColorHPBar();
+    -- UnitFramesPlus_TargetColorHPBar();
     UnitFramesPlus_TargetBuffSize();
     UnitFramesPlus_TargetPortrait();
     UnitFramesPlus_TargetBarTextMouseShow();

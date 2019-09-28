@@ -364,45 +364,45 @@ function UnitFramesPlus_PlayerMPValueDisplayUpdate()
     end
 end
 
---玩家生命条染色
-local chb = CreateFrame("Frame");
-function UnitFramesPlus_PlayerColorHPBar()
-    if UnitFramesPlusDB["player"]["colorhp"] == 1 then
-        if UnitFramesPlusDB["player"]["colortype"] == 1 then
-            PlayerFrameHealthBar:SetScript("OnValueChanged", nil);
-            chb:RegisterEvent("PLAYER_ENTERING_WORLD");
-            chb:RegisterEvent("PLAYER_REGEN_ENABLED");
-            -- chb:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");
-            -- chb:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
-            chb:SetScript("OnEvent", function(self, event, ...)
-                UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
-            end)
-        elseif UnitFramesPlusDB["player"]["colortype"] == 2 then
-            if chb:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-                chb:UnregisterEvent("PLAYER_ENTERING_WORLD");
-                chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
-                -- chb:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-                -- chb:UnregisterEvent("UNIT_EXITED_VEHICLE");
-                chb:SetScript("OnEvent", nil);
-            end
-            PlayerFrameHealthBar:SetScript("OnValueChanged", function(self, value)
-                UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
-            end)
-        end
-        --PlayerFrameHealthBar.lockColor = true;
-    else
-        PlayerFrameHealthBar:SetScript("OnValueChanged", nil);
-        if chb:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-            chb:UnregisterEvent("PLAYER_ENTERING_WORLD");
-            chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
-            -- chb:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-            -- chb:UnregisterEvent("UNIT_EXITED_VEHICLE");
-            chb:SetScript("OnEvent", nil);
-        end
-        PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0);
-        --PlayerFrameHealthBar.lockColor = nil;
-    end
-end
+-- --玩家生命条染色
+-- local chb = CreateFrame("Frame");
+-- function UnitFramesPlus_PlayerColorHPBar()
+--     if UnitFramesPlusDB["player"]["colorhp"] == 1 then
+--         if UnitFramesPlusDB["player"]["colortype"] == 1 then
+--             PlayerFrameHealthBar:SetScript("OnValueChanged", nil);
+--             chb:RegisterEvent("PLAYER_ENTERING_WORLD");
+--             chb:RegisterEvent("PLAYER_REGEN_ENABLED");
+--             -- chb:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");
+--             -- chb:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player");
+--             chb:SetScript("OnEvent", function(self, event, ...)
+--                 UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
+--             end)
+--         elseif UnitFramesPlusDB["player"]["colortype"] == 2 then
+--             if chb:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+--                 chb:UnregisterEvent("PLAYER_ENTERING_WORLD");
+--                 chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+--                 -- chb:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+--                 -- chb:UnregisterEvent("UNIT_EXITED_VEHICLE");
+--                 chb:SetScript("OnEvent", nil);
+--             end
+--             PlayerFrameHealthBar:SetScript("OnValueChanged", function(self, value)
+--                 UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
+--             end)
+--         end
+--         --PlayerFrameHealthBar.lockColor = true;
+--     else
+--         PlayerFrameHealthBar:SetScript("OnValueChanged", nil);
+--         if chb:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+--             chb:UnregisterEvent("PLAYER_ENTERING_WORLD");
+--             chb:UnregisterEvent("PLAYER_REGEN_ENABLED");
+--             -- chb:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+--             -- chb:UnregisterEvent("UNIT_EXITED_VEHICLE");
+--             chb:SetScript("OnEvent", nil);
+--         end
+--         PlayerFrameHealthBar:SetStatusBarColor(0, 1, 0);
+--         --PlayerFrameHealthBar.lockColor = nil;
+--     end
+-- end
 
 --刷新玩家生命条染色显示
 function UnitFramesPlus_PlayerColorHPBarDisplayUpdate()
@@ -419,6 +419,18 @@ function UnitFramesPlus_PlayerColorHPBarDisplayUpdate()
         end
     end
 end
+
+--嗯？
+hooksecurefunc("UnitFrameHealthBar_Update", function(statusbar, unit)
+    if unit == "player" and statusbar.unit == "player" then 
+        UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
+    end
+end);
+hooksecurefunc("HealthBar_OnValueChanged", function(self, value, smooth)
+    if self.unit == "player" then 
+        UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
+    end
+end);
 
 --玩家头像内战斗信息
 function UnitFramesPlus_PlayerPortraitIndicator()
@@ -723,7 +735,7 @@ function UnitFramesPlus_PlayerInit()
     UnitFramesPlus_PlayerShiftDrag();
     UnitFramesPlus_PlayerDragon();
     UnitFramesPlus_PlayerExtrabar();
-    UnitFramesPlus_PlayerColorHPBar();
+    -- UnitFramesPlus_PlayerColorHPBar();
     UnitFramesPlus_PlayerPortraitIndicator();
     UnitFramesPlus_PlayerPortrait();
     UnitFramesPlus_PlayerCoordinate();

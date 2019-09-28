@@ -1,8 +1,10 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TitanClassic","ruRU")
 if not L then return end
 
-L["TITAN_PANEL"] = "Титан Панель";
-local TITAN_PANEL = "Титан Панель";
+L["TITAN_PANEL"] = "Титан Панель Classic";
+local TITAN_PANEL = "Титан Панель Classic";
+L["TITAN_PANEL_ONLY"] = "Титан Панель";
+local TITAN_PANEL_ONLY = "Титан Панель";
 L["TITAN_DEBUG"] = "<Титан>";
 L["TITAN_PRINT"] = "Титан";
 
@@ -92,7 +94,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "перенастройка опций";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "Вы не можете загрузить профиль, когда используется основной профиль";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 от |cffff8c00"..TITAN_PANEL.." Development Team";
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 от |cffff8c00"..TITAN_PANEL_ONLY.." Development Team";
 L["TITAN_PANEL_MENU_TITLE"] = "Титан панель";
 L["TITAN_PANEL_MENU_HIDE"] = "Скрыть";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(В Бою)";
@@ -243,10 +245,13 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Бросок: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Боеприпасов/Бросок: ";
 L["TITAN_AMMO_TOOLTIP"] = "Число доступных Боеприпасов/Бросков";
 L["TITAN_AMMO_MENU_TEXT"] = "Боеприпасы/Броски";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "Нет боеприпасов";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Обновление отображения";
 L["TITAN_AMMO_BULLET_NAME"] = "Отображать название боеприпасов";
-	
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
+
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "Сумки: ";
 L["TITAN_BAG_TOOLTIP"] = "Использование сумок";

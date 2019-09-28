@@ -342,7 +342,17 @@ RegisterShortcut("invite", L["Invite to Party"], {
 		OnClick = function(self)
 			local win = self.parentWindow;
 			if win.isBN then
-				_G.FriendsFrame_BattlenetInvite(nil, win.bn.id)
+				if _G.C_BattleNet then
+					--Tested working on Retail
+					local accountInfo = _G.C_BattleNet.GetAccountInfoByID(win.bn.id)
+					local gameAccountID = accountInfo.gameAccountInfo.gameAccountID
+					if gameAccountID then
+						_G.BNInviteFriend(gameAccountID)
+					end
+				else
+					--No idea if this actually works on classic, or if BNInviteFriend shouldb e used instead with gameID
+					_G.FriendsFrame_BattlenetInvite(nil, win.bn.id)
+				end
 			else
 				_G.InviteUnit(win.theUser)
 			end

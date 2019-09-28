@@ -1,15 +1,10 @@
 ## Interface: 11302
-## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.1.0.11302
-## Dependencies: TitanClassic
-## OptionalDeps: 
-## SavedVariables: 
-
-## Title: Titan Panel Classic [|cffeda55fLootType|r] |cff00aa001.1.0.11302|r
+## Title: Titan Panel Classic [|cffeda55fLootType|r] |cff00aa001.1.1.11302|r
 ## Notes: Adds group loot and instance difficulty information to Titan Panel
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0分配方式|r
-## Notes-zhCN: 泰坦面板的分配方式模块
-
+## Author: Titan Panel Development Team (http://www.titanpanel.org)
+## SavedVariables: 
+## OptionalDeps: 
+## Dependencies: TitanClassic
+## Version: 1.1.1.11302
 ## X-Child-Of: TitanClassic
-
 TitanClassicLootType.xml

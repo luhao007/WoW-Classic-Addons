@@ -63,7 +63,6 @@ function TitanPanelRegenButton_OnLoad(self)
 		  },
           savedVariables = {
               ShowLabelText = 1,
-              ShowMPRegen = 1,
               ShowHPRegen = 1,
               ShowPercentage = false,
               ShowColoredText = false
@@ -82,11 +81,8 @@ end
 -- DESC : Parse events registered to addon and act on them
 -- **************************************************************************
 function TitanPanelRegenButton_OnEvent(self, event, a1, a2, ...)
-     if ( event == "PLAYER_ENTERING_WORLD") then
-          if (UnitPowerMax("player", 0) == 0) then
-               TitanSetVar(TITAN_REGEN_ID, "ShowMPRegen", 0);
-          end
-     end
+	if ( event == "PLAYER_ENTERING_WORLD") then
+	end
      
      if ( event == "PLAYER_REGEN_DISABLED") then
           TITAN_RegenMPDuringCombat = 0;
@@ -119,31 +115,32 @@ function TitanPanelRegenButton_OnEvent(self, event, a1, a2, ...)
           end
      end
 
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen") == 1) then
-          if ( event == "UNIT_POWER_UPDATE" and a1 == "player"  and a2 == "MANA") then
-               currMana = UnitPower("player");
-               runUpdate = 1;
-               if ( currMana  > TITAN_RegenCurrMana and TITAN_RegenCurrMana ~= 0 ) then
-                    TITAN_RegenMP = currMana-TITAN_RegenCurrMana;
+	local pval, ptype = UnitPowerType("player")
+	if (pval == 0) then -- Mana
+		if ( event == "UNIT_POWER_UPDATE" and a1 == "player" and a2 == "MANA") then
+			currMana = UnitPower("player");
+			runUpdate = 1;
+			if ( currMana  > TITAN_RegenCurrMana and TITAN_RegenCurrMana ~= 0 ) then
+				TITAN_RegenMP = currMana-TITAN_RegenCurrMana;
 
-                    if (TITAN_RegenMPCombatTrack == 1) then
-                         TITAN_RegenMPDuringCombat = TITAN_RegenMPDuringCombat + TITAN_RegenMP;
-                    end 
+				if (TITAN_RegenMPCombatTrack == 1) then
+					TITAN_RegenMPDuringCombat = TITAN_RegenMPDuringCombat + TITAN_RegenMP;
+				end 
 
-                    if (TITAN_RegenMP > TITAN_RegenMaxMPRate) then 
-                         TITAN_RegenMaxMPRate = TITAN_RegenMP;
-                    end
-                    if (TITAN_RegenMP < TITAN_RegenMinMPRate or TITAN_RegenMinMPRate == 9999) then 
-                         TITAN_RegenMinMPRate = TITAN_RegenMP;
-                    end                                        
-               end
-               TITAN_RegenCurrMana = currMana;
-          end
-     end               
-     
-     if (runUpdate == 1) then
-         TitanPanelPluginHandle_OnUpdate(updateTable)
-     end
+				if (TITAN_RegenMP > TITAN_RegenMaxMPRate) then 
+					TITAN_RegenMaxMPRate = TITAN_RegenMP;
+				end
+				if (TITAN_RegenMP < TITAN_RegenMinMPRate or TITAN_RegenMinMPRate == 9999) then 
+					TITAN_RegenMinMPRate = TITAN_RegenMP;
+				end                                        
+			end
+			TITAN_RegenCurrMana = currMana;
+		end
+	end               
+
+	if (runUpdate == 1) then
+		TitanPanelPluginHandle_OnUpdate(updateTable)
+	end
 end
 
 -- **************************************************************************
@@ -152,54 +149,55 @@ end
 -- VARS : id = button ID
 -- **************************************************************************
 function TitanPanelRegenButton_GetButtonText(id)
-     local labelTextHP = "";
-     local valueTextHP = "";
-     local labelTextMP = "";
-     local valueTextMP = "";
-     local OutputStr = "";
-     
-     if UnitHealth("player") == UnitHealthMax("player") then
-          TITAN_RegenHP = 0;
-     end
-     if UnitPower("player") == UnitPowerMax("player", 0) then
-          TITAN_RegenMP = 0;
-     end     
-               
-     -- safety in case both are off, then cant ever turn em on
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == nil and TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen") == nil) then
-          TitanSetVar(TITAN_REGEN_ID,"ShowHPRegen",1);
-     end
-     
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == 1) then
-          labelTextHP = L["TITAN_REGEN_BUTTON_TEXT_HP"];
-          if (TitanGetVar(TITAN_REGEN_ID,"ShowPercentage") == 1) then
-               valueTextHP = format(TITAN_REGEN_HP_FORMAT_PERCENT, (TITAN_RegenHP/UnitHealthMax("player"))*100);
-          else
-               valueTextHP = format(TITAN_REGEN_HP_FORMAT, TITAN_RegenHP);     
-          end
-          if (TitanGetVar(TITAN_REGEN_ID, "ShowColoredText")) then
-               valueTextHP = TitanUtils_GetGreenText(valueTextHP);
-          else
-               valueTextHP = TitanUtils_GetHighlightText(valueTextHP);
-          end          
-     end
-     
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen") == 1) then
-          labelTextMP = L["TITAN_REGEN_BUTTON_TEXT_MP"];
-          if (TitanGetVar(TITAN_REGEN_ID,"ShowPercentage") == 1) then
-               valueTextMP = format(TITAN_REGEN_MP_FORMAT_PERCENT, (TITAN_RegenMP/UnitPowerMax("player", 0))*100);
-          else
-               valueTextMP = format(TITAN_REGEN_MP_FORMAT, TITAN_RegenMP);               
-          end
-          if (TitanGetVar(TITAN_REGEN_ID, "ShowColoredText")) then
-               valueTextMP = TitanRegenTemp_GetColoredTextRGB(valueTextMP, 0.0, 0.0, 1.0);
-          else
-               valueTextMP = TitanUtils_GetHighlightText(valueTextMP);
-          end               
-     end
+	local labelTextHP = "";
+	local valueTextHP = "";
+	local labelTextMP = "";
+	local valueTextMP = "";
+	local OutputStr = "";
 
-     -- supports turning off labels
-     return labelTextHP, valueTextHP, labelTextMP, valueTextMP;
+	if UnitHealth("player") == UnitHealthMax("player") then
+		TITAN_RegenHP = 0;
+	end
+	if UnitPower("player") == UnitPowerMax("player", 0) then
+		TITAN_RegenMP = 0;
+	end     
+               
+	-- safety in case both are off, then cant ever turn em on
+	if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == nil) then
+		TitanSetVar(TITAN_REGEN_ID,"ShowHPRegen",1);
+	end
+
+	if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == 1) then
+		labelTextHP = L["TITAN_REGEN_BUTTON_TEXT_HP"];
+		if (TitanGetVar(TITAN_REGEN_ID,"ShowPercentage") == 1) then
+			valueTextHP = format(TITAN_REGEN_HP_FORMAT_PERCENT, (TITAN_RegenHP/UnitHealthMax("player"))*100);
+		else
+			valueTextHP = format(TITAN_REGEN_HP_FORMAT, TITAN_RegenHP);     
+		end
+		if (TitanGetVar(TITAN_REGEN_ID, "ShowColoredText")) then
+			valueTextHP = TitanUtils_GetGreenText(valueTextHP);
+		else
+			valueTextHP = TitanUtils_GetHighlightText(valueTextHP);
+		end          
+	end
+     
+	local pval, ptype = UnitPowerType("player")
+	if (pval == 0) then -- Mana only
+		labelTextMP = L["TITAN_REGEN_BUTTON_TEXT_MP"];
+		if (TitanGetVar(TITAN_REGEN_ID,"ShowPercentage") == 1) then
+			valueTextMP = format(TITAN_REGEN_MP_FORMAT_PERCENT, (TITAN_RegenMP/UnitPowerMax("player", 0))*100);
+		else
+			valueTextMP = format(TITAN_REGEN_MP_FORMAT, TITAN_RegenMP);               
+		end
+		if (TitanGetVar(TITAN_REGEN_ID, "ShowColoredText")) then
+			valueTextMP = TitanRegenTemp_GetColoredTextRGB(valueTextMP, 0.0, 0.0, 1.0);
+		else
+			valueTextMP = TitanUtils_GetHighlightText(valueTextMP);
+		end               
+	end
+
+	-- supports turning off labels
+	return labelTextHP, valueTextHP, labelTextMP, valueTextMP;
 end
 
 -- **************************************************************************
@@ -207,33 +205,39 @@ end
 -- DESC : Display tooltip text
 -- **************************************************************************
 function TitanPanelRegenButton_GetTooltipText()
+	local minHP = TITAN_RegenMinHPRate;
+	local minMP = TITAN_RegenMinMPRate;
 
-     local minHP = TITAN_RegenMinHPRate;
-     local minMP = TITAN_RegenMinMPRate;
-     
-     if minHP == 9999 then minHP = 0 end;
-     if minMP == 9999 then minMP = 0 end;     
+	if minHP == 9999 then minHP = 0 end;
+	if minMP == 9999 then minMP = 0 end;
 
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen") == 1) then
-          local regenPercent;          
-          regenPercent = (TITAN_RegenMPDuringCombat/UnitPowerMax("player", 0))*100;
-          
-          return ""..
-               format(L["TITAN_REGEN_TOOLTIP1"], UnitHealth("player"),UnitHealthMax("player"),UnitHealthMax("player")-UnitHealth("player")).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP2"], UnitPower("player"),UnitPowerMax("player", 0),UnitPowerMax("player", 0)-UnitPower("player")).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP3"], TITAN_RegenMaxHPRate).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP4"], minHP).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP5"], TITAN_RegenMaxMPRate).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP6"], minMP).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP7"], TITAN_RegenMPDuringCombat, regenPercent).."\n"               
-               ;                    
-     else
-          return ""..
-               format(L["TITAN_REGEN_TOOLTIP1"], UnitHealth("player"),UnitHealthMax("player"),UnitHealthMax("player")-UnitHealth("player")).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP3"], TITAN_RegenMaxHPRate).."\n"..
-               format(L["TITAN_REGEN_TOOLTIP4"], minHP).."\n"
-               ;                    
-     end
+	local txt = ""
+
+	txt = txt..
+		format(L["TITAN_REGEN_TOOLTIP1"], UnitHealth("player"),UnitHealthMax("player"),UnitHealthMax("player")-UnitHealth("player")).."\n"..
+		format(L["TITAN_REGEN_TOOLTIP3"], TITAN_RegenMaxHPRate).."\n"..
+		format(L["TITAN_REGEN_TOOLTIP4"], minHP).."\n"
+	
+	local pval, ptype = UnitPowerType("player")
+	if (pval == 0) then
+		local regenPercent = 0  
+		regenPercent = (TITAN_RegenMPDuringCombat/UnitPowerMax("player", 0))*100;
+
+		txt = txt.."\n"..
+			format(L["TITAN_REGEN_TOOLTIP2"], UnitPower("player"),UnitPowerMax("player", 0),UnitPowerMax("player", 0)-UnitPower("player")).."\n"..
+			format(L["TITAN_REGEN_TOOLTIP5"], TITAN_RegenMaxMPRate).."\n"..
+			format(L["TITAN_REGEN_TOOLTIP6"], minMP).."\n"..
+			format(L["TITAN_REGEN_TOOLTIP7"], TITAN_RegenMPDuringCombat, regenPercent).."\n"               
+	else
+		-- L["TITAN_REGEN_TOOLTIP2"] = "Mana: \t"..GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..RED_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE..")";
+		POWER = GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE
+		txt = txt.."\n"..
+			ptype.." \t"..
+			format(POWER, UnitPower("player"),UnitPowerMax("player", pval)).."\n"
+			-- Energy : The formula is (energyRegen)*(1+hastePercent)
+	end
+	
+	return txt
 end
 
 -- **************************************************************************
@@ -241,39 +245,33 @@ end
 -- DESC : Display rightclick menu options
 -- **************************************************************************
 function TitanPanelRightClickMenu_PrepareRegenMenu()
-     local id = TITAN_REGEN_ID;
-     local info;
+	local id = TITAN_REGEN_ID;
+	local info;
 
-     TitanPanelRightClickMenu_AddTitle(TitanPlugins[id].menuText);
-               
-     info = {};
-     info.text = L["TITAN_REGEN_MENU_SHOW2"];
-     info.func = TitanRegen_ShowHPRegen;
-     info.checked = TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen");
-     L_UIDropDownMenu_AddButton(info);
-     
-     info = {};
-     info.text = L["TITAN_REGEN_MENU_SHOW3"];
-     info.func = TitanRegen_ShowMPRegen;
-     info.checked = TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen");
-     L_UIDropDownMenu_AddButton(info);
-     
-     info = {};
-     info.text = L["TITAN_REGEN_MENU_SHOW4"];
-     info.func = TitanRegen_ShowPercentage;
-     info.checked = TitanGetVar(TITAN_REGEN_ID,"ShowPercentage");
-     L_UIDropDownMenu_AddButton(info);
-     
-     TitanPanelRightClickMenu_AddSpacer();
-     
-     info = {};
-     info.text = L["TITAN_PANEL_MENU_SHOW_COLORED_TEXT"];
-     info.func = TitanRegen_ShowColoredText;
-     info.checked = TitanGetVar(TITAN_REGEN_ID, "ShowColoredText");
-     L_UIDropDownMenu_AddButton(info);          
-     
-     TitanPanelRightClickMenu_AddToggleLabelText("TitanRegen");
-     TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], id, TITAN_PANEL_MENU_FUNC_HIDE);     
+	TitanPanelRightClickMenu_AddTitle(TitanPlugins[id].menuText);
+		   
+	info = {};
+	info.text = L["TITAN_REGEN_MENU_SHOW2"];
+	info.func = TitanRegen_ShowHPRegen;
+	info.checked = TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen");
+	L_UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = L["TITAN_REGEN_MENU_SHOW4"];
+	info.func = TitanRegen_ShowPercentage;
+	info.checked = TitanGetVar(TITAN_REGEN_ID,"ShowPercentage");
+	L_UIDropDownMenu_AddButton(info);
+
+	TitanPanelRightClickMenu_AddSpacer();
+
+	info = {};
+	info.text = L["TITAN_PANEL_MENU_SHOW_COLORED_TEXT"];
+	info.func = TitanRegen_ShowColoredText;
+	info.checked = TitanGetVar(TITAN_REGEN_ID, "ShowColoredText");
+	L_UIDropDownMenu_AddButton(info);          
+
+	TitanPanelRightClickMenu_AddToggleLabelText("TitanRegen");
+	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], id, TITAN_PANEL_MENU_FUNC_HIDE);     
 end
 
 -- **************************************************************************
@@ -282,7 +280,7 @@ end
 -- **************************************************************************
 function TitanRegen_UpdateSettings()     
      -- safety in case both are off, then cant ever turn em on
-     if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == nil and TitanGetVar(TITAN_REGEN_ID,"ShowMPRegen") == nil) then
+     if (TitanGetVar(TITAN_REGEN_ID,"ShowHPRegen") == nil) then
           TitanSetVar(TITAN_REGEN_ID,"ShowHPRegen",1);
      end
      TitanPanelButton_UpdateButton(TITAN_REGEN_ID);
@@ -294,15 +292,6 @@ end
 -- **************************************************************************
 function TitanRegen_ShowHPRegen()
      TitanToggleVar(TITAN_REGEN_ID, "ShowHPRegen");
-     TitanRegen_UpdateSettings();
-end
-
--- **************************************************************************
--- NAME : TitanRegen_ShowMPRegen()
--- DESC : Show MP regeneration option on button
--- **************************************************************************
-function TitanRegen_ShowMPRegen()
-     TitanToggleVar(TITAN_REGEN_ID, "ShowMPRegen");
      TitanRegen_UpdateSettings();
 end
 

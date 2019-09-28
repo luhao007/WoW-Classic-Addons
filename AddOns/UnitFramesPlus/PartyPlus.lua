@@ -749,10 +749,10 @@ local UnitFramesPlusBuffFilter = {
     "",
     "CANCELABLE",
     "NOT_CANCELABLE",
+    "RAID",
     "PLAYER",
     -- "CANCELABLE|PLAYER",
     -- "NOT_CANCELABLE|PLAYER",
-    "RAID",
     -- "CANCELABLE|RAID",
     -- "NOT_CANCELABLE|RAID",
 }

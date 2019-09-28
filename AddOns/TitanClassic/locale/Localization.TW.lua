@@ -3,6 +3,8 @@ if not L then return end
 
 L["TITAN_PANEL"] = "Titan Panel Classic";
 local TITAN_PANEL = "Titan Panel Classic";
+L["TITAN_PANEL_ONLY"] = "Titan Panel";
+local TITAN_PANEL_ONLY = "Titan Panel";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -92,7 +94,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "resetting options";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "You may not load a profile when a global profile is in use";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 by the |cffff8c00"..TITAN_PANEL.." Development Team";
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 by the |cffff8c00"..TITAN_PANEL_ONLY.." Development Team";
 L["TITAN_PANEL_MENU_TITLE"] = "泰坦面版";
 L["TITAN_PANEL_MENU_HIDE"] = "隱藏";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(戰鬥中)";
@@ -243,9 +245,12 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "投擲: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "彈藥/投擲: ";
 L["TITAN_AMMO_TOOLTIP"] = "已裝備 彈藥/投擲 數量";
 L["TITAN_AMMO_MENU_TEXT"] = "彈藥/投擲";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "沒有彈藥";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "重新整理";
 L["TITAN_AMMO_BULLET_NAME"] = "顯示彈藥名稱";
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
 	
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "背包: ";

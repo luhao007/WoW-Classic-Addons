@@ -1,5 +1,6 @@
-## v4.8.10 Changes
+## v4.8.11 Changes
 
-* Updated TOC for WoW 8.2.5.
+* Fixed scanning issues.
+* Added support for Booty Bay Gazette prices.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

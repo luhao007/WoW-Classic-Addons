@@ -18,7 +18,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.10" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.11" then
 		message("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -551,7 +551,7 @@ function TSM.OnInitialize()
 		TSM.CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
 	end
 
-	-- TheUndermineJournal price sources
+	-- TheUndermineJournal and BootyBayGazette price sources
 	if TSMAPI_FOUR.Util.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
 		local function GetTUJPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
@@ -561,6 +561,15 @@ function TSM.OnInitialize()
 		TSM.CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
 		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
 		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
+	elseif TSMAPI_FOUR.Util.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
+		local function GetBBGPrice(itemLink, arg)
+			local data = TUJMarketInfo(itemLink)
+			return data and data[arg] or nil
+		end
+		TSM.CustomPrice.RegisterSource("External", "BBGRecent", L["BBG 3-Day Price"], GetBBGPrice, true, "recent")
+		TSM.CustomPrice.RegisterSource("External", "BBGMarket", L["BBG 14-Day Price"], GetBBGPrice, true, "market")
+		TSM.CustomPrice.RegisterSource("External", "BBGGlobalMean", L["BBG Global Mean"], GetBBGPrice, true, "globalMean")
+		TSM.CustomPrice.RegisterSource("External", "BBGGlobalMedian", L["BBG Global Median"], GetBBGPrice, true, "globalMedian")
 	end
 
 	-- AHDB price sources

@@ -1,8 +1,10 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("TitanClassic","ptBR")
 if not L then return end
 
-L["TITAN_PANEL"] = "Painel Titan";
-local TITAN_PANEL = "Painel Titan";
+L["TITAN_PANEL"] = "Painel Titan Classic";
+local TITAN_PANEL = "Painel Titan Classic";
+L["TITAN_PANEL_ONLY"] = "Painel Titan";
+local TITAN_PANEL_ONLY = "Painel Titan";
 L["TITAN_DEBUG"] = "<Titan>";
 L["TITAN_PRINT"] = "Titan";
 
@@ -91,7 +93,7 @@ L["TITAN_PANEL_GLOBAL_USE_DESC"] = "Usar um perfil global para todos os personag
 L["TITAN_PANEL_GLOBAL_RESET_PART"] = "resetando opções";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "Você não pode carregar um perfil quando um perfil global está em uso";
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 pelo Time de Desenvolvimento do |cffff8c00"..TITAN_PANEL;
+L["TITAN_PANEL_VERSION_INFO"] = "|cffffd700 pelo Time de Desenvolvimento do |cffff8c00"..TITAN_PANEL_ONLY;
 L["TITAN_PANEL_MENU_TITLE"] = TITAN_PANEL;
 L["TITAN_PANEL_MENU_HIDE"] = "Ocultar ";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(Em Combate)";
@@ -245,10 +247,13 @@ L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "Thrown: ";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"] = "Ammo/Thrown: ";
 L["TITAN_AMMO_TOOLTIP"] = "Equipped Ammo/Thrown Count";
 L["TITAN_AMMO_MENU_TEXT"] = "Ammo/Thrown";
-L["TITAN_AMMO_BUTTON_NOAMMO"] = "No Ammo";
+L["TITAN_AMMO_BUTTON_NOAMMO"] = "--";
 L["TITAN_AMMO_MENU_REFRESH"] = "Refresh Display";
 L["TITAN_AMMO_BULLET_NAME"] = "Show Ammo Name";
-     
+L["TITAN_AMMO_THROWN"] = "Thrown";
+L["TITAN_AMMO_GUN"] = "Bullets";
+L["TITAN_AMMO_BOW"] = "Arrows";
+
 L["TITAN_BAG_FORMAT"] = "%d/%d";
 L["TITAN_BAG_BUTTON_LABEL"] = "Bolsas: ";
 L["TITAN_BAG_TOOLTIP"] = "Informações de Bolsas";
