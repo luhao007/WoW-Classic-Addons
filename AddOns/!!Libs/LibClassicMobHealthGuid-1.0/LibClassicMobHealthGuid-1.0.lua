@@ -1,16 +1,48 @@
 --[[
-Name: LibClassicMobHealth-1.0
+Name: LibClassicMobHealthGuid-1.0
 Current Author: Pneumatus
 Original Author: Cameron Kenneth Knight (ckknight@gmail.com)
 Inspired By: MobHealth3 by Neronix
-Description: Estimate a mob's health
+Description: Estimate a mob's health, Guid version
 License: LGPL v2.1
 ]]
 
 local ADDONNAME = "UnitFramesPlus"
 
-local MAJOR_VERSION = "LibClassicMobHealth-1.0"
+local MAJOR_VERSION = "LibClassicMobHealthGuid-1.0"
 local MINOR_VERSION = 1
+
+--Use guid
+local MobUnitTypes={--	Lookup of mob unit types from GUID
+	Creature=true;--	Mob/NPC
+	Vignette=true;--	Rares
+}
+
+local function GetCreatureIDFromGUID(guid)--	Extracts CreatureID from GUID (Mobs only)
+	if not guid then return; end--	Needs GUID
+	local utype, creatureid = string.match(guid, "^(.-)%-0%-%d+%-%d+%-%d+%-(%d+)%-%x+$");
+	return (utype and MobUnitTypes[utype]) and (creatureid and tonumber(creatureid));--	Return CreatureID if mob
+end
+
+local function GetCreatureIDFromKey(creaturekey)--	Extracts CreatureID from CreatureKey
+	local creatureid = string.match(creaturekey,"^%d+");
+	return creatureid and tonumber(creatureid);
+end
+
+local function GetUnitCreatureKey(unit)--	Generates CreatureKey from CreatureID (from GUID) and level
+	local creatureid = GetCreatureIDFromGUID(UnitGUID(unit));
+	if not creatureid then return; end--	Unit not mob
+
+	if UnitClassification(unit) == "worldboss" then
+		return tostring(creatureid);--	World Bosses have no level, return as raw CreatureID
+	else
+		local level = UnitLevel(unit);--	UnitLevel() returns -1 for units with hidden levels (Skull/??)
+		-- if level and level > 0 then return string.match("%d-%d", creatureid, level); end
+		if level and level > 0 then
+			return creatureid;
+		end
+	end
+end
 
 -- #AUTODOC_NAMESPACE lib
 
@@ -49,7 +81,7 @@ if oldLib then
 	frame:UnregisterAllEvents()
 	frame:SetScript("OnEvent", nil)
 	frame:SetScript("OnUpdate", nil)
-	_G.LibClassicMobHealth10DB = nil
+	_G.LibClassicMobHealthGuid10DB = nil
 end
 frame = oldLib and oldLib.frame or _G.CreateFrame("Frame", MAJOR_VERSION .. "_Frame")
 
@@ -58,33 +90,24 @@ frame:RegisterEvent("PLAYER_TARGET_CHANGED")
 frame:RegisterEvent("UNIT_HEALTH")
 frame:RegisterEvent("ADDON_LOADED")
 
-frame:SetScript("OnEvent", function(this, event, ...)
-	this[event](lib, ...)
+frame:SetScript("OnEvent", function(self, event, ...)
+	self[event](lib, ...)
 end)
-
-local mt = {__index = function(self, key)
-	if key == nil then
-		return nil
-	end
-	local t = {}
-	self[key] = t
-	return t
-end}
 
 local data = oldLib and oldLib.data
 if not data then
 	data = {
-		npc = setmetatable({}, mt),
-		pc = setmetatable({}, mt),
-		pet = setmetatable({}, mt)
+		npc = LibClassicMobHealthGuid_CreatureHealthCache,
+		pc = {},
+		pet = {}
 	}
 end
 lib.data = data -- stores the maximum health of mobs that will actually be shown to the user
 data.revision = MINOR_VERSION
 
-local accumulatedHP = setmetatable({}, mt) -- Keeps Damage-taken data for mobs that we've actually poked during this session
-local accumulatedPercent = setmetatable({}, mt) -- Keeps Percentage-taken data for mobs that we've actually poked during this session
-local calculationUnneeded = setmetatable({}, mt) -- Keeps a list of things that don't need calculation (e.g. Beast Lore'd mobs)
+local accumulatedHP = {} -- Keeps Damage-taken data for mobs that we've actually poked during this session
+local accumulatedPercent = {} -- Keeps Percentage-taken data for mobs that we've actually poked during this session
+local calculationUnneeded = {} -- Keeps a list of things that don't need calculation (e.g. Beast Lore'd mobs)
 
 local currentAccumulatedHP = nil
 local currentAccumulatedPercent = nil
@@ -93,7 +116,6 @@ local currentLevel = nil
 local recentDamage = nil
 local lastPercent = nil
 
-
 _G.hash_SlashCmdList["LIBCLASSICMOBHEALTHONE"] = nil
 _G.SlashCmdList["LIBCLASSICMOBHEALTHONE"] = nil
 
@@ -101,25 +123,22 @@ function frame:ADDON_LOADED(name)
 	if name == ADDONNAME then
 		-- if we're not an embedded library, then use a saved variable
 		frame:RegisterEvent("PLAYER_LOGOUT")
-		if type(_G.LibClassicMobHealth10DB) == "table" then
-			data = _G.LibClassicMobHealth10DB
-			setmetatable(data.npc, mt)
-			setmetatable(data.pc, mt)
-			setmetatable(data.pet, mt)
+		if type(_G.LibClassicMobHealthGuid10DB) == "table" then
+			data = _G.LibClassicMobHealthGuid10DB
 			lib.data = data
 		else
-			_G.LibClassicMobHealth10DB = data
+			_G.LibClassicMobHealthGuid10DB = data
 		end
-		
-		local options = _G.LibClassicMobHealth10Opt
+
+		local options = _G.LibClassicMobHealthGuid10Opt
 		if type(options) ~= "table" then
 			options = {
 				save = true,
-				prune = 1000,
+				prune = 0,
 			}
-			_G.LibClassicMobHealth10Opt = options
+			_G.LibClassicMobHealthGuid10Opt = options
 		end
-		
+
 		_G.hash_SlashCmdList["LIBCLASSICMOBHEALTHONE"] = nil
 		_G.SlashCmdList["LIBCLASSICMOBHEALTHONE"] = function(text)
 			text = text:lower():trim()
@@ -148,7 +167,7 @@ function frame:ADDON_LOADED(name)
 				DEFAULT_CHAT_FRAME:AddMessage(("|cffffff7f%s|r - unknown command %q"):format(MAJOR_VERSION, alpha))
 			end
 		end
-		
+
 		_G.SLASH_LIBCLASSICMOBHEALTHONE1 = "/lcmh1"
 		_G.SLASH_LIBCLASSICMOBHEALTHONE2 = "/lcmh"
 		_G.SLASH_LIBCLASSICMOBHEALTHONE3 = "/libclassicmobhealth1"
@@ -156,7 +175,7 @@ function frame:ADDON_LOADED(name)
 		
 		function frame:PLAYER_LOGOUT()
 			if not options.save then
-				_G.LibClassicMobHealth10DB = nil
+				_G.LibClassicMobHealthGuid10DB = nil
 				return
 			end
 			local count = 0
@@ -181,7 +200,7 @@ function frame:ADDON_LOADED(name)
 			if count <= prune then
 				return
 			end
-			
+
 			-- let's try to only have one mob-level, don't have duplicates for each level, since they can be estimated, and for players/pets, this will get rid of old data
 			local mobs = {}
 			for _, kind in ipairs({ 'npc', 'pc', 'pet' }) do
@@ -229,7 +248,6 @@ function frame:ADDON_LOADED(name)
 	frame.ADDON_LOADED = nil
 end
 
-
 function frame:UNIT_COMBAT(unit, _, _, damage)
 	if unit ~= "target" or not currentAccumulatedHP then
 		return
@@ -237,45 +255,46 @@ function frame:UNIT_COMBAT(unit, _, _, damage)
 	recentDamage = recentDamage + damage
 end
 
-local function PLAYER_unit_CHANGED(unit)
+local function PLAYER_UNIT_CHANGED(unit)
 	if not UnitCanAttack("player", unit) or UnitIsDead(unit) or UnitIsFriend("player", unit) then
 		-- don't store data on friends and dead men tell no tales
 		currentAccumulatedHP = nil
 		currentAccumulatedPercent = nil
 		return
 	end
-	
-	local name, server = UnitName(unit)
-	if server and server ~= "" then
-		name = name .. "-" .. server
-	end
+
+	local guid = GetUnitCreatureKey(unit)
+	-- local name, server = UnitName(unit)
+	-- if server and server ~= "" then
+	-- 	name = name .. "-" .. server
+	-- end
 	local isPlayer = UnitIsPlayer(unit)
 	local isPet = UnitPlayerControlled(unit) and not isPlayer -- some owners name their pets the same name as other people, because they're think they're funny. They're not.
-	currentName = name
+	-- currentName = name
 	local level = UnitLevel(unit)
 	currentLevel = level
 	
 	recentDamage = 0
 	lastPercent = UnitHealth(unit)
 	
-	currentAccumulatedHP = accumulatedHP[level][name]
-	currentAccumulatedPercent = accumulatedPercent[level][name]
+	currentAccumulatedHP = accumulatedHP[guid.."-"..level]
+	currentAccumulatedPercent = accumulatedPercent[guid.."-"..level]
 	
 	if not isPlayer and not isPet then
 		-- Mob
 		if not currentAccumulatedHP then
-			local saved = data.npc	[level][name]
+			local saved = data.npc[guid.."-"..level]
 			if saved then
 				-- We claim that the saved value is worth 100%
-				accumulatedHP[level][name] = saved
-				accumulatedPercent[level][name] = 100
+				accumulatedHP[guid.."-"..level] = saved
+				accumulatedPercent[guid.."-"..level] = 100
 			else
 				-- Nothing previously known. Start fresh.
-				accumulatedHP[level][name] = 0
-				accumulatedPercent[level][name] = 0
+				accumulatedHP[guid.."-"..level] = 0
+				accumulatedPercent[guid.."-"..level] = 0
 			end
-			currentAccumulatedHP = accumulatedHP[level][name]
-			currentAccumulatedPercent = accumulatedPercent[level][name]
+			currentAccumulatedHP = accumulatedHP[guid.."-"..level]
+			currentAccumulatedPercent = accumulatedPercent[guid.."-"..level]
 		end
 		
 		if currentAccumulatedPercent > 200 then
@@ -286,17 +305,17 @@ local function PLAYER_unit_CHANGED(unit)
 	else
 		-- Player health can change a lot. Different gear, buffs, etc.. we only assume that we've seen 10% knocked off players previously
 		if not currentAccumulatedHP then
-			local saved = data[isPet and 'pet' or 'pc'][level][name]
+			local saved = data[isPet and 'pet' or 'pc'][guid.."-"..level]
 			if saved then
 				-- We claim that the saved value is worth 10%
-				accumulatedHP[level][name] = saved/10
-				accumulatedPercent[level][name] = 10
+				accumulatedHP[guid.."-"..level] = saved/10
+				accumulatedPercent[guid.."-"..level] = 10
 			else
-				accumulatedHP[level][name] = 0
-				accumulatedPercent[level][name] = 0
+				accumulatedHP[guid.."-"..level] = 0
+				accumulatedPercent[guid.."-"..level] = 0
 			end
-			currentAccumulatedHP = accumulatedHP[level][name]
-			currentAccumulatedPercent = accumulatedPercent[level][name]
+			currentAccumulatedHP = accumulatedHP[guid.."-"..level]
+			currentAccumulatedPercent = accumulatedPercent[guid.."-"..level]
 		end
 
 		if currentAccumulatedPercent > 10 then
@@ -307,17 +326,18 @@ local function PLAYER_unit_CHANGED(unit)
 end
 
 function frame:PLAYER_TARGET_CHANGED()
-	PLAYER_unit_CHANGED("target")
+	PLAYER_UNIT_CHANGED("target")
 end
 
 function frame:UNIT_HEALTH(unit)
 	if unit ~= "target" or not currentAccumulatedHP then
 		return
 	end
-	
+
+	local guid = GetUnitCreatureKey(unit)
 	local current = UnitHealth(unit)
 	local max = UnitHealthMax(unit)
-	local name = currentName
+	-- local name = currentName
 	local level = currentLevel
 	local kind
 	if UnitIsPlayer(unit) then
@@ -327,19 +347,19 @@ function frame:UNIT_HEALTH(unit)
 	else
 		kind = 'npc'
 	end
-	
-	if calculationUnneeded[level][name] then
+
+	if calculationUnneeded[guid.."-"..level] then
 		return
 	elseif current == 0 then
 		-- possibly targetting a dead person
 	elseif max ~= 100 then
 		-- beast lore, don't need to calculate.
 		if kind == 'npc' then
-			data.npc[level][name] = max
+			data.npc[guid.."-"..level] = max
 		else
-			data[kind][level][name] = max
+			data[kind][guid.."-"..level] = max
 		end
-		calculationUnneeded[level][name] = true
+		calculationUnneeded[guid.."-"..level] = true
 	elseif current > lastPercent or lastPercent > 100 then
 		-- it healed, so let's reset our ephemeral calculations
 		lastPercent = current
@@ -354,42 +374,42 @@ function frame:UNIT_HEALTH(unit)
 			if currentAccumulatedPercent >= 10 then
 				local num = currentAccumulatedHP / currentAccumulatedPercent * 100
 				if kind == 'npc' then
-					data.npc[level][name] = num
+					data.npc[guid.."-"..level] = num
 				else
-					data[kind][level][name] = num
+					data[kind][guid.."-"..level] = num
 				end
 			end
 		end
 	end
 end
 
-local function guessAtMaxHealth(name, level, kind, known)
+local function guessAtMaxHealth(guid, level, kind, known)
 	-- if we have data on a mob of the same name but a different level, check within two levels and guess from there.
 	if not kind then
-		return guessAtMaxHealth(name, level, 'npc') or guessAtMaxHealth(name, level, 'pc') or guessAtMaxHealth(name, level, 'pet')
+		return guessAtMaxHealth(guid, level, 'npc') or guessAtMaxHealth(guid, level, 'pc') or guessAtMaxHealth(guid, level, 'pet')
 	end
-	
-	local value = data[kind][level][name]
+
+	local value = data[kind][guid.."-"..level]
 	if value or level <= 0 or known then
 		return value
 	end
 	if level > 1 then
-		value = data[kind][level - 1][name]
+		value = data[kind][guid.."-"..level-1]
 		if value then
 			return value * level/(level - 1)
 		end
 	end
-	value = data[kind][level + 1][name]
+	value = data[kind][guid.."-"..level+1]
 	if value then
 		return value * level/(level + 1)
 	end
 	if level > 2 then
-		value = data[kind][level - 2][name]
+		value = data[kind][guid.."-"..level-2]
 		if value then
 			return value * level/(level - 2)
 		end
 	end
-	value = data[kind][level + 2][name]
+	value = data[kind][guid.."-"..level+2]
 	if value then
 		return value * level/(level + 2)
 	end
@@ -407,14 +427,14 @@ Returns:
 Example:
 	local hp = LibStub("LibClassicMobHealth-1.0"):GetMaxHP("Young Wolf", 2)
 ]]
-function lib:GetMaxHP(name, level, kind, known)
-	local value = guessAtMaxHealth(name, level, kind, known)
-	if value then
-		return math_floor(value + 0.5)
-	else
-		return nil
-	end
-end
+-- function lib:GetMaxHP(name, level, kind, known)
+-- 	local value = guessAtMaxHealth(name, level, kind, known)
+-- 	if value then
+-- 		return math_floor(value + 0.5)
+-- 	else
+-- 		return nil
+-- 	end
+-- end
 
 --[[
 Arguments:
@@ -429,10 +449,12 @@ function lib:GetUnitMaxHP(unit)
 	if max ~= 100 then
 		return max, true
 	end
-	local name, server = UnitName(unit)
-	if server and server ~= "" then
-		name = name .. "-" .. server
-	end
+
+	local guid = GetUnitCreatureKey(unit)
+	-- local name, server = UnitName(unit)
+	-- if server and server ~= "" then
+	-- 	name = name .. "-" .. server
+	-- end
 	local level = UnitLevel(unit)
 	
 	local kind
@@ -443,10 +465,14 @@ function lib:GetUnitMaxHP(unit)
 	else
 		kind = 'npc'
 	end
-	
-	local value = guessAtMaxHealth(name, level, kind)
-	if value then
-		return math_floor(value + 0.5), true
+
+	if guid then
+		local value = guessAtMaxHealth(guid, level, kind)
+		if value then
+			return math_floor(value + 0.5), true
+		else
+			return max, false
+		end
 	else
 		return max, false
 	end
@@ -465,11 +491,12 @@ function lib:GetUnitCurrentHP(unit)
 	if max ~= 100 then
 		return current, true
 	end
-	
-	local name, server = UnitName(unit)
-	if server and server ~= "" then
-		name = name .. "-" .. server
-	end
+
+	local guid = GetUnitCreatureKey(unit)
+	-- local name, server = UnitName(unit)
+	-- if server and server ~= "" then
+	-- 	name = name .. "-" .. server
+	-- end
 	local level = UnitLevel(unit)
 	
 	local kind
@@ -480,10 +507,13 @@ function lib:GetUnitCurrentHP(unit)
 	else
 		kind = 'npc'
 	end
-	
-	local value = guessAtMaxHealth(name, level, kind)
-	if value then
-		return math_floor(current/max * value + 0.5), true
+	if guid then
+		local value = guessAtMaxHealth(guid, level, kind)
+		if value then
+			return math_floor(current/max * value + 0.5), true
+		else
+			return current, false
+		end
 	else
 		return current, false
 	end
@@ -503,10 +533,11 @@ function lib:GetUnitHealth(unit)
 		return current, max, true
 	end
 
-	local name, server = UnitName(unit)
-	if server and server ~= "" then
-		name = name .. "-" .. server
-	end
+	local guid = GetUnitCreatureKey(unit)
+	-- local name, server = UnitName(unit)
+	-- if server and server ~= "" then
+	-- 	name = name .. "-" .. server
+	-- end
 	local level = UnitLevel(unit)
 	
 	local kind
@@ -517,10 +548,14 @@ function lib:GetUnitHealth(unit)
 	else
 		kind = 'npc'
 	end
-	
-	local value = guessAtMaxHealth(name, level, kind)
-	if value then
-		return math_floor(current/max * value + 0.5), math_floor(value + 0.5), true
+
+	if guid then
+		local value = guessAtMaxHealth(guid, level, kind)
+		if value then
+			return math_floor(current/max * value + 0.5), math_floor(value + 0.5), true
+		else
+			return current, max, false
+		end
 	else
 		return current, max, false
 	end
