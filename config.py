@@ -302,6 +302,10 @@ MAPPING = {
         'Notes': '提示物品分解后可能得到的材料',
         'Category': '物品'
     },
+    'FishingBuddy': {
+        'Title-cn': '钓鱼助手',
+        'Category': '物品'
+    },
     'Fizzle': {
         'Title-cn': '装备着色',
         'Category': '物品'
@@ -387,6 +391,15 @@ MAPPING = {
     'Informant': {
         'Title-cn': '物品信息',
         'Notes': '在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等',
+        'Category': '物品'
+    },
+    'ItemRack': {
+        'Title-cn': '一键换装',
+        'Category': '物品'
+    },
+    'ItemRackOptions': {
+        'Title-cn': '一键换装',
+        'Title-sub': '设置',
         'Category': '物品'
     },
     'Mapster': {

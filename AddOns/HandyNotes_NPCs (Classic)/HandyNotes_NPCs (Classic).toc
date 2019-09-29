@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Revel of Pagle
-## Version: 1.15
+## Version: 1.16
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_NPCsClassicDB
 
@@ -9,14 +9,13 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0NPC|r
 
 
-libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
-libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
-libs\LibQTip-1.0\LibQTip-1.0.lua
 locales\Locales.xml
 data.lua
 vendorData.lua
 itemData.lua
+itemData.lua
 weaponskills.lua
-search.lua
 HandyNotes_NPCs (Classic).lua
+options.lua
+search.lua
+altrecipes.lua

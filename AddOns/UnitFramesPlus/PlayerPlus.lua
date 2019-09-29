@@ -79,7 +79,7 @@ function UnitFramesPlus_PlayerDragon()
     end
 end
 
-local fixforvehicle = CreateFrame("Frame");
+-- local fixforvehicle = CreateFrame("Frame");
 function UnitFramesPlus_PlayerExtrabar()
     PlayerExtraBar:SetTexture(UFP_PlayerTexture);
     PlayerExtraBar:SetWidth(138);
@@ -109,6 +109,8 @@ function UnitFramesPlus_PlayerExtrabar()
         PlayerHPMPPct.Pct:SetPoint("CENTER", PlayerFrameHealthBar, "RIGHT", 55, 14);
         PlayerHPMPPct.Pct:SetJustifyH("CENTER");
         PlayerHPMPPct.Pct:Show();
+
+        PetFrame:SetFrameLevel(5);
 
         -- --上载具后隐藏扩展框及扩展信息
         -- fixforvehicle:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player");

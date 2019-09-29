@@ -1,0 +1,8 @@
+## Interface: 60200
+## Title: LibSideTabFrame-1.0
+## Notes: Handle Player sized frames with tabs on the side
+## Author: Sutorix=AT=hotmail.com
+## Version: 0.1
+## X-Category: Libraries
+
+LibSideTabFrame-1.0.lua

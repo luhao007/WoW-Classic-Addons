@@ -133,7 +133,7 @@ function UnitFramesPlus_TargetHPValueDisplayUpdate()
     if not UnitExists("target") then return end
     local CurHP, MaxHP;
     if UnitFramesPlusDB["global"]["exacthp"] == 1 then
-        CurHP, MaxHP = LibStub("LibClassicMobHealth-1.0"):GetUnitHealth("target");
+        CurHP, MaxHP = LibStub("LibClassicMobHealthGuid-1.0"):GetUnitHealth("target");
     else
         CurHP = UnitHealth("target");
         MaxHP = UnitHealthMax("target");
@@ -724,7 +724,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
             if icon then
                 if not _G[frameName.."CooldownText"] then
                     BuffCooldownText = _G[frameName.."Cooldown"]:CreateFontString(frameName.."CooldownText", "OVERLAY");
-                    BuffCooldownText:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
+                    BuffCooldownText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
                     BuffCooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
                     BuffCooldownText:ClearAllPoints();
                     -- BuffCooldownText:SetPoint("TOPLEFT", _G[frameName], "TOPLEFT", 0, 0);
@@ -751,7 +751,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                     end
                 end
             end
-            if not IsAddOnLoaded("OmniCC") then
+            if not IsAddOnLoaded("OmniCC") or (caster ~= "player" and caster ~= "pet" or string.find(caster, "party") or string.find(caster, "raid")) then
                 _G[frameName.."CooldownText"]:SetText(timetext);
                 -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                 -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
@@ -804,7 +804,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                             end
                         end
                     end
-                    if not IsAddOnLoaded("OmniCC") then
+                    if not IsAddOnLoaded("OmniCC") or (caster ~= "player" and caster ~= "pet" or string.find(caster, "party") or string.find(caster, "raid")) then
                         _G[frameName.."CooldownText"]:SetText(timetext);
                         -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                         -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);

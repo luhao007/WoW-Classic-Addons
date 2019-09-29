@@ -1,7 +1,7 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.28.3
-## SavedVariables: UnitFramesPlusDB, LibClassicMobHealth10DB, LibClassicMobHealth10Opt
+## Version: 1.29
+## SavedVariables: UnitFramesPlusDB, LibClassicMobHealthGuid10DB, LibClassicMobHealthGuid10Opt
 ## SavedVariablesPerCharacter: UnitFramesPlusVar
 
 ## Title: UnitFramesPlus

@@ -1,0 +1,12 @@
+tag bfa4f0f22982d3be8f0f690f608a1af217436ec1 1.0.8
+Author:	Timmeh <http://www.wowace.com/profiles/Timmeh/>
+Date:	Fri Nov 18 10:02:33 2016 +0100
+
+Tagging as 1.0.8.
+
+commit e8e93275a07b4778a49da754fecf13d5bb0ac671
+Author: Timmeh <http://www.wowace.com/profiles/Timmeh/>
+Date:   Fri Nov 18 10:01:56 2016 +0100
+
+    Update TOC for 7.1.
+

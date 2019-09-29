@@ -1,0 +1,16 @@
+Version 0.5
+- Batteries included version, outfit manager and broker
+
+Version 0.4
+- Make sure we know the name of the Fishing skill
+- Don't do fishing stuff if the toon doesn't know Fishing yet
+
+Version 0.3
+- More removal of non-Classic things
+- Lures should now work correctly (at least until you hit skill level 75 :-)
+
+Version 0.2
+- Options are now more in line with Classic
+
+Version 0.1
+- An initial, very rough, Classic version

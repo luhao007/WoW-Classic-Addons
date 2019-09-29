@@ -1,6 +1,7 @@
-## v4.8.11 Changes
+## v4.8.12 Changes
 
-* Fixed scanning issues.
-* Added support for Booty Bay Gazette prices.
+* Fixes issues with profession windows that some people were experiencing.
+* Fixed auction categories for Classic.
+* Smaller enchanting fix.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

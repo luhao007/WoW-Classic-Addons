@@ -1,0 +1,8 @@
+## Interface: 60200
+## Title: LibOptionsFrame-1.0
+## Notes: Layout checkboxes and such in a frame
+## Author: Sutorix=AT=hotmail.com
+## Version: 0.1
+## X-Category: Libraries
+
+LibOptionsFrame-1.0.lua
