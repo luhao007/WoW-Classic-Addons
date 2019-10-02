@@ -263,11 +263,11 @@ function private.OnFullScanDone()
 	TSM.db.factionrealm.internalData.auctionDBScanTime = time()
 	private.marketValueDB:TruncateAndBulkInsertStart()
 	local scanQuery = private.scanDB:NewQuery()
-		:Select("itemString", "stackSize", "itemBuyout")
+		:Select("baseItemString", "stackSize", "itemBuyout")
 		:OrderBy("itemBuyout", true)
-	for _, itemString, stackSize, itemBuyout in scanQuery:Iterator() do
-		private.ProcessScanResultItem(itemString, itemBuyout, stackSize)
-		scannedItems[itemString] = true
+	for _, baseItemString, stackSize, itemBuyout in scanQuery:Iterator() do
+		private.ProcessScanResultItem(baseItemString, itemBuyout, stackSize)
+		scannedItems[baseItemString] = true
 	end
 	local numScannedAuctions = scanQuery:Count()
 	scanQuery:Release()

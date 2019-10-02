@@ -751,7 +751,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                     end
                 end
             end
-            if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet" or string.find(caster, "party") or string.find(caster, "raid")) then
+            if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet" and (caster and not string.find(caster, "party")) and (caster and not string.find(caster, "raid"))) then
                 _G[frameName.."CooldownText"]:SetText(timetext);
                 -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                 -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
@@ -804,7 +804,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                             end
                         end
                     end
-                    if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet" or string.find(caster, "party") or string.find(caster, "raid")) then
+                    if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet" and (caster and not string.find(caster, "party")) and (caster and not string.find(caster, "raid"))) then
                         _G[frameName.."CooldownText"]:SetText(timetext);
                         -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                         -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);

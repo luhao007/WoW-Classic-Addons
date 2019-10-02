@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: TSM Team
-## Version: v4.8.13
+## Version: v4.8.14
 ## OptionalDeps: CostBasis, Auc-Advanced, Auctionator, TheUndermineJournal
 ## SavedVariables: TradeSkillMasterDB, TSMItemCacheDB, TSMItemInfoDB, TradeSkillMasterModulesDB
 
