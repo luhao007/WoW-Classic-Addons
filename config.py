@@ -297,6 +297,11 @@ MAPPING = {
         'Notes': '在角色面板中显示额外的信息，如法术命中等',
         'Category': '界面'
     },
+    'Dismounter': {
+        'Title-cn': '自动下马',
+        'Notes': '施法时自动下马',
+        'Category': '物品'
+    },
     'Enchantrix': {
         'Title-cn': '附魔助手',
         'Notes': '提示物品分解后可能得到的材料',

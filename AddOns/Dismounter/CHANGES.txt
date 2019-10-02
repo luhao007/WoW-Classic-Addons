@@ -1,0 +1,12 @@
+tag 2f1ce96cfdd8013047f7d86c72dbfc77de269a27 v1.2.1
+Author:	Llurovi <llurovi@gmail.com>
+Date:	Tue Sep 24 10:39:03 2019 +0200
+
+v1.2.1
+
+commit 21798a2d9a2fe4d8bb560848b9f94fcc51ad682b
+Author: Llurovi <llurovi@gmail.com>
+Date:   Tue Sep 24 10:38:12 2019 +0200
+
+    Release version
+

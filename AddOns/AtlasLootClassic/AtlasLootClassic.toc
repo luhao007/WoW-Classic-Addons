@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Lag
-## Version: v1.1.12
+## Version: v1.2.1
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1, LibClassicItemSets-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: AtlasLootClassicDB
@@ -17,6 +17,8 @@
 ## X-Localizations: enUS, deDE, frFR, esES, koKR, zhCN, zhTW, esMX, ptBR, ruRU, itIT
 ## X-Curse-Project-ID: 326516
 ## X-WoWI-ID: 25185
+
+embeds.xml
 
 Init.lua
 Constants.lua
@@ -47,6 +49,8 @@ Data\Profession.lua
 Data\Recipe.lua
 Data\Mount.lua
 Data\ContentPhase.lua
+Data\Droprate.lua
+Data\AutoSelect.lua
 
 ItemDB\ItemDB.lua
 ItemDB\SoundData.lua

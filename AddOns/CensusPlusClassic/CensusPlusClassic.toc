@@ -13,6 +13,14 @@
 
 #Ã¤ Modified By: Christophrus - WoWClassicPopulation.com
 
+#@no-lib-strip@
+libs\LibStub\LibStub.lua
+libs\LibChecksum-1.0\LibChecksum.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\LibWho-2.0\LibWho-2.0.lua
+libs\LibRealmID\LibRealmID.lua
+#@end-no-lib-strip@
+
 CensusPlusClassic.xml
 modules\CensusButton.xml
 modules\CensusPlayerList.xml

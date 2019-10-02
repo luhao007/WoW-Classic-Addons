@@ -1,0 +1,13 @@
+## Interface: 11302
+## Author: 8boolbyte
+## Version: 1.2.1
+## DefaultState: enabled
+
+## Title: Dismounter
+## Notes: Automatically dismounts you when performing an action
+## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF自动下马|r |cFFFFE00ADismounter|r
+## Notes-zhCN: 施法时自动下马
+
+
+Dismounter_Utils.lua
+Dismounter_Core.lua

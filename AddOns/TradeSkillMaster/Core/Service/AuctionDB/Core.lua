@@ -64,7 +64,8 @@ function AuctionDB.OnEnable()
 		for _, info in ipairs(appData) do
 			local realm, data = unpack(info)
 			local downloadTime = "?"
-			if realm == private.region then
+			-- try switching around "Classic-[US|EU]" to match the addon's "[US|EU]-Classic" format for classic region data
+			if realm == private.region or gsub(realm, "Classic-%-([A-Z]+)", "%1-Classic") == private.region then
 				local regionData, lastUpdate = private.LoadRegionAppData(data)
 				if regionData then
 					private.regionData = regionData

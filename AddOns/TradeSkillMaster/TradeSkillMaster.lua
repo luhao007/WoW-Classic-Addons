@@ -18,7 +18,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.12" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.13" then
 		message("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -69,11 +69,10 @@ end
 -- [48] added profile.internalData.exportGroupTreeContext
 -- [49] added factionrealm.internalData.{mailDisenchantablesChar,mailExcessGoldChar,mailExcessGoldLimit}
 -- [50] added factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
--- [51] resetting factionrealm.internalData.crafts
--- [52] resetting factionrealm.internalData.crafts
+-- [51-53] resetting factionrealm.internalData.crafts
 
 local SETTINGS_INFO = {
-	version = 52,
+	version = 53,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
@@ -219,7 +218,7 @@ local SETTINGS_INFO = {
 			mailDisenchantablesChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldChar = { type = "string", default = "", lastModifiedVersion = 49 },
 			mailExcessGoldLimit = { type = "number", default = 10000000000, lastModifiedVersion = 49 },
-			crafts = { type = "table", default = {}, lastModifiedVersion = 51 },
+			crafts = { type = "table", default = {}, lastModifiedVersion = 53 },
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
 			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
@@ -510,7 +509,7 @@ function TSM.OnInitialize()
 				end
 			end
 		end
-		if prevVersion < 52 and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if prevVersion < 53 and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
 			for key, value in upgradeObj:RemovedSettingIterator() do
 				local scopeType, factionrealm, namespace, settingKey = upgradeObj:GetKeyInfo(key)
 				if scopeType == "factionrealm" and namespace == "internalData" and settingKey == "crafts" then
