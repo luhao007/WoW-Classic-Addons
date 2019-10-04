@@ -1,4 +1,5 @@
 import os
+import sys
 
 import chardet
 
@@ -45,11 +46,12 @@ def get_notes(addon):
     m = MAPPING[addon]
     return m.get('Notes')
 
-def main():
+def manage(verbose=False):
     for addon in os.listdir('Addons'):
         path = 'Addons/{0}/{0}.toc'.format(addon)
 
-        print('Processing {}...'.format(path), end='')
+        if verbose:
+            print('Processing {}...'.format(path), end='')
 
         with open(path, 'rb') as f:
             detect = chardet.detect(f.read())
@@ -72,7 +74,13 @@ def main():
         with open(path, 'w', encoding='utf-8') as f:
             f.writelines(toc.to_lines())
 
-        print('Finished.')
+        if verbose:
+            print('Finished.')
+
+def main():
+    verbose = bool(set(['--verbose', '-v']) & set(sys.argv))
+    manage(verbose)
+    print('All done.')
 
 if __name__ == '__main__':
     main()
