@@ -992,7 +992,7 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                     if UnitFramesPlusDB["party"]["cooldown"] == 1 then
                         cdalpha = 1;
 
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
                             local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                             if duration == 0 and durationNew then
                                 duration = durationNew
@@ -1045,7 +1045,7 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                     if UnitFramesPlusDB["party"]["cooldown"] == 1 then
                         cdalpha = 1;
 
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
                             local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                             if duration == 0 and durationNew then
                                 duration = durationNew
@@ -1100,7 +1100,7 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                     if UnitFramesPlusDB["party"]["cooldown"] == 1 then
                         cdalpha = 1;
 
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
                             local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
                             if duration == 0 and durationNew then
                                 duration = durationNew

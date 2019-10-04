@@ -618,6 +618,16 @@ MAPPING = {
         'Title-cn': '头像增强',
         'Category': '界面'
     },
+    'UnitFramesPlus_Cooldown': {
+        'Title-cn': '头像增强',
+        'Title-sub': '冷却计时',
+        'Category': '界面'
+    },
+    'UnitFramesPlus_MobHealth': {
+        'Title-cn': '头像增强',
+        'Title-sub': '目标血量',
+        'Category': '界面'
+    },
     'UnitFramesPlus_Options': {
         'Title-cn': '头像增强',
         'Title-sub': '设置',

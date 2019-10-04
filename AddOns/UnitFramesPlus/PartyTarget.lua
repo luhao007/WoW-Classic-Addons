@@ -452,7 +452,7 @@ function UnitFramesPlus_OptionsFrame_PartyTargetDebuffDisplayUpdate()
                     end
                     if UnitFramesPlusDB["partytarget"]["cooldown"] == 1 then
                         cdalpha = 1;
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
                             local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id.."target", spellId, caster)
                             if duration == 0 and durationNew then
                                 duration = durationNew

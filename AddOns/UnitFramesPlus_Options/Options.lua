@@ -723,8 +723,31 @@ do
     UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPText:SetTextColor(1, 0.75, 0);
     UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP:SetScript("OnClick", function(self)
         UnitFramesPlusDB["global"]["exacthp"] = 1 - UnitFramesPlusDB["global"]["exacthp"];
+        if UnitFramesPlusDB["global"]["exacthp"] == 1 then
+            BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune);
+            UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPruneText:SetTextColor(1, 1, 1);
+        else
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune);
+        end
         UnitFramesPlus_TargetHPValueDisplayUpdate();
         self:SetChecked(UnitFramesPlusDB["global"]["exacthp"]==1);
+    end)
+
+    --精简内置敌人精确生命数据
+    local UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP, "TOPLEFT", 180, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPruneText:SetText(UFP_OP_BuiltinExactEnemyHPPrune);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPruneText:SetTextColor(1, 1, 1);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune:SetScript("OnClick", function(self)
+        UnitFramesPlusMobHealthOpt["prune"] = 1 - UnitFramesPlusMobHealthOpt["prune"];
+        if UnitFramesPlusMobHealthOpt["prune"] == 1 then
+            UnitFramesPlus_PruneData();
+        elseif UnitFramesPlusMobHealthOpt["prune"] == 0 and UnitFramesPlus_CreatureHealthCache then
+            UnitFramesPlusMobHealthDB["npc"] = UnitFramesPlus_CreatureHealthCache;
+        end
+        self:SetChecked(UnitFramesPlusMobHealthOpt["prune"]==1);
     end)
 
     --玩家设定
@@ -1570,6 +1593,10 @@ do
     UnitFramesPlus_OptionsFrame_TargetFrameScaleSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["target"]["scale"] = value/100;
         UnitFramesPlus_TargetFrameScale(UnitFramesPlusDB["target"]["scale"]);
+        local left = TargetFrame:GetLeft();
+        local bottom = TargetFrame:GetBottom();
+        UnitFramesPlusVar["target"]["x"] = left;
+        UnitFramesPlusVar["target"]["y"] = bottom;
         UnitFramesPlus_OptionsFrame_TargetFrameScaleSliderText:SetText(UFP_OP_Scale..(UnitFramesPlusDB["target"]["scale"]*100).."%");
     end)
 
@@ -2574,6 +2601,17 @@ do
         end
     end)
 
+    --隐藏团队工具
+    local UnitFramesPlus_OptionsFrame_PartyHidetools = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_PartyHidetools", UnitFramesPlus_Party_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_PartyHidetools:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_PartyHidetools:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_PartyColorHP, "TOPLEFT", 0, -35);
+    UnitFramesPlus_OptionsFrame_PartyHidetools:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_PartyHidetoolsText:SetText(UFP_OP_Party_Hidetools);
+    UnitFramesPlus_OptionsFrame_PartyHidetools:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["party"]["hidetools"] = 1 - UnitFramesPlusDB["party"]["hidetools"];
+        UnitFramesPlus_PartyToolsHide();
+        self:SetChecked(UnitFramesPlusDB["party"]["hidetools"]==1);
+    end)
 
     --队伍目标设定
     local partytargetconfig = UnitFramesPlus_PartyTarget_Options:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
@@ -3005,12 +3043,26 @@ function UnitFramesPlus_OptionPanel_OnShow()
     if UnitFramesPlusDB["global"]["colorhp"] ~= 1 then
         BlizzardOptionsPanel_Slider_Disable(UnitFramesPlus_OptionsFrame_GlobalColorHPSlider);
     end
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetChecked(UnitFramesPlusDB["global"]["builtincd"]==1);
-    if UnitFramesPlusDB["global"]["builtincd"] ~= 1 then
+    if IsAddOnLoaded("UnitFramesPlus_Cooldown") then
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown:SetChecked(UnitFramesPlusDB["global"]["builtincd"]==1);
+        if UnitFramesPlusDB["global"]["builtincd"] ~= 1 then
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext);
+        end
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetChecked(UnitFramesPlusDB["global"]["cdtext"]==1);
+    else
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldown);
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext);
     end
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinCooldowntext:SetChecked(UnitFramesPlusDB["global"]["cdtext"]==1);
-    UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP:SetChecked(UnitFramesPlusDB["global"]["exacthp"]==1);
+    if IsAddOnLoaded("UnitFramesPlus_MobHealth") then
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP:SetChecked(UnitFramesPlusDB["global"]["exacthp"]==1);
+        if UnitFramesPlusDB["global"]["exacthp"] ~= 1 then
+            BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune);
+        end
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune:SetChecked(UnitFramesPlusDB["global"]["prune"]==1);
+    else
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP);
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune);
+    end
     UnitFramesPlus_OptionsFrame_PlayerMouseShow:SetChecked(UnitFramesPlusDB["player"]["mouseshow"]==1);
     UnitFramesPlus_OptionsFrame_PlayerFrameScaleSlider:SetValue(UnitFramesPlusDB["player"]["scale"]*100);
     UnitFramesPlus_OptionsFrame_PlayerDragonBorder:SetChecked(UnitFramesPlusDB["player"]["dragonborder"]==1);
@@ -3304,6 +3356,7 @@ function UnitFramesPlus_OptionPanel_OnShow()
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PartyTargetClassPortrait);
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PartyTargetClassPortraitNPCNo);
     end
+    UnitFramesPlus_OptionsFrame_PartyHidetools:SetChecked(UnitFramesPlusDB["party"]["hidetools"]==1);
     -- UnitFramesPlus_OptionsFrame_ArenaEnemyMouseShow:SetChecked(UnitFramesPlusDB["extra"]["pvpmouseshow"]==1);
     -- UnitFramesPlus_OptionsFrame_ArenaEnemyHPPct:SetChecked(UnitFramesPlusDB["extra"]["pvphppct"]==1);
     -- UnitFramesPlus_OptionsFrame_ExtraBossHPPct:SetChecked(UnitFramesPlusDB["extra"]["bosshppct"]==1);

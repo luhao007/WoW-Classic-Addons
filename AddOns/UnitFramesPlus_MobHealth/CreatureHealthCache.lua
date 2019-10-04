@@ -1,4 +1,4 @@
-﻿LibClassicMobHealthGuid_CreatureHealthCache = {
+﻿UnitFramesPlus_CreatureHealthCache = {
     ["1-63"] = 9999,
     ["100-12"] = 246,
     ["1000-20"] = 919,

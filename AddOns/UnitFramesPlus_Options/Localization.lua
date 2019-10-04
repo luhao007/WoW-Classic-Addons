@@ -45,7 +45,8 @@
     UFP_OP_Cooldown = "显示冷却计时";
     UFP_OP_BuiltinCooldown = "使用内置冷却计时";
     UFP_OP_BuiltinCooldowntext = "显示冷却计时数值";
-    UFP_OP_BuiltinExactEnemyHP = "使用内置敌人精确生命值";
+    UFP_OP_BuiltinExactEnemyHP = "使用内置精确生命值";
+    UFP_OP_BuiltinExactEnemyHPPrune = "精简内置数据";
     UFP_OP_ColorName = "名字职业染色";
     UFP_OP_Portrait_Indicator = "显示头像内战斗信息";
     UFP_OP_Portrait_3DBG = "显示3D头像背景";
@@ -71,6 +72,7 @@
     UFP_OP_Party_Target = "显示队友目标";
     UFP_OP_Party_TargetLite = "简易模式";
     UFP_OP_Party_OnOff = "离线监测";
+    UFP_OP_Party_Hidetools = "隐藏团队工具";
     UFP_OP_Buff = "显示Buff";
     UFP_OP_Filter = "Buff过滤";
     UFP_OP_FilterAll = "所有";
@@ -144,7 +146,8 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Cooldown = "顯示冷卻計時";
     UFP_OP_BuiltinCooldown = "使用內置冷卻計時";
     UFP_OP_BuiltinCooldowntext = "顯示冷卻計時數值";
-    UFP_OP_BuiltinExactEnemyHP = "使用內置敵人精確生命值";
+    UFP_OP_BuiltinExactEnemyHP = "使用內置精確生命值";
+    UFP_OP_BuiltinExactEnemyHPPrune = "精簡內置資料";
     UFP_OP_ColorName = "名字職業染色";
     UFP_OP_Portrait_Indicator = "顯示頭像內戰鬥資訊";
     UFP_OP_Portrait_3DBG = "顯示3D頭像背景";
@@ -170,6 +173,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Party_Target = "顯示隊友目標";
     UFP_OP_Party_TargetLite = "簡易模式";
     UFP_OP_Party_OnOff = "離線監測";
+    UFP_OP_Party_Hidetools = "隱藏團隊工具";
     UFP_OP_Buff = "顯示Buff";
     UFP_OP_Filter = "Buff過濾";
     UFP_OP_FilterAll = "所有";
@@ -243,7 +247,8 @@ else
     UFP_OP_Cooldown = "Cooldown";
     UFP_OP_BuiltinCooldown = "Built-in Cooldown";
     UFP_OP_BuiltinCooldowntext = "Cooldown text";
-    UFP_OP_BuiltinExactEnemyHP = "Exact enemy HP";
+    UFP_OP_BuiltinExactEnemyHP = "Exact target HP";
+    UFP_OP_BuiltinExactEnemyHPPrune = "Prune built-in data";
     UFP_OP_ColorName = "Class colored name";
     UFP_OP_Portrait_Indicator = "Portrait combat indicator";
     UFP_OP_Portrait_3DBG = "Portrait background";
@@ -269,6 +274,7 @@ else
     UFP_OP_Party_Target = "Enable party target";
     UFP_OP_Party_TargetLite = "Lite mode";
     UFP_OP_Party_OnOff = "Offline detection";
+    UFP_OP_Party_Hidetools = "Hide raid tools";
     UFP_OP_Buff = "Party member buff";
     UFP_OP_Filter = "Buff filter";
     UFP_OP_FilterAll = "All";
@@ -287,7 +293,7 @@ else
     UFP_OP_InfoText2 = "Please select one option from the left list for detailed settings.";
     UFP_OP_InfoText3 = "Contact: |cFFFFFF99isler@live.com|R";
     UFP_OP_InfoText4 = "Built-in cooldown effect is powered by LibClassicDurations.";
-    UFP_OP_InfoText5 = "Built-in exact enemy HP numbers is powered by LibClassicMobHealth-1.0.";
+    UFP_OP_InfoText5 = "Built-in exact HP numbers is powered by LibClassicMobHealth-1.0.";
     UFP_OP_Reset = "Restore defaults";
     UFP_OP_Reload_info = "Reload your user interface.";
     UFP_OP_MinimapButton_Show = "Enable minimap button";

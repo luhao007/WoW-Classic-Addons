@@ -370,7 +370,7 @@ function UnitFramesPlus_OptionsFrame_TargetTargetDebuffDisplayUpdate()
                 end
                 if UnitFramesPlusDB["targettarget"]["cooldown"] == 1 then
                     cdalpha = 1;
-                    if UnitFramesPlusDB["global"]["builtincd"] == 1 then
+                    if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
                         local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("targettarget", spellId, caster)
                         if duration == 0 and durationNew then
                             duration = durationNew
