@@ -60,7 +60,7 @@ UnitFramesPlusDefaultDB = {
         indicator = 1,    --头像内战斗信息
         buffsize = 1,    --调节目标buff/debuff图标大小
         mysize = 24,    --自己施放的buff/debuff大小，默认 21
-        othersize = 16,    --其他人施放的buff/debuff大小，默认 17
+        othersize = 18,    --其他人施放的buff/debuff大小，默认 17，OmniCC默认 18
         movable = 1,    --Shift拖动目标头像
         portrait = 1,    --更改头像显示
         portraittype = 1,        --头像类型：1为3D，2为职业图标
@@ -74,6 +74,8 @@ UnitFramesPlusDefaultDB = {
         hpmpparttwo = 5,--生命值和法力值第二部分：1当前值，2最大值，3損失值，4百分比，5不显示
         hpmpunit = 1,        --生命值和法力值进位
         unittype = 2,    --1为千进制(k/m)，2为万进位(万/亿)
+        threat = 1,      --仇恨高亮
+        threattext = 1,      --仇恨百分比
     },
 
     targettarget = {
@@ -360,6 +362,7 @@ function UnitFramesPlus_OpenInterfacePanel(panel)
             end
         end
     InterfaceOptionsFrame_OpenToCategory(panel);
+    InterfaceOptionsFrame_OpenToCategory(panel);
 end
 
 --设置面板载入
@@ -392,7 +395,7 @@ SlashCmdList["UnitFramesPlus"] = UnitFramesPlus_SlashHandler;
 SLASH_UnitFramesPlus1 = "/unitframesplus";
 SLASH_UnitFramesPlus2 = "/ufp";
 
-function UnitFramesPlus_GetRGB(minv, maxv)
+function UnitFramesPlus_GetRGB(minv, maxv, reverse)
     local r, g, b = 0, 1, 0;
     local pct = math.floor(100*minv/maxv)/100;
     if pct > 0.5 then
@@ -406,7 +409,11 @@ function UnitFramesPlus_GetRGB(minv, maxv)
     if g < 0 then g = 0 end
     if r > 1 then r = 1 end
     if g > 1 then g = 1 end
-    return r, g, b;
+    if reverse and reverse == 1 then 
+        return g, r, b;
+    else
+        return r, g, b;
+    end
 end
 
 --格式化数值显示

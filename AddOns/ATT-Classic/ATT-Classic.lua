@@ -3324,6 +3324,7 @@ local skillIDMap = {
 	[-192] = 185, 											-- Cooking
 	[-193] = 129, 											-- First Aid
 	[-194] = 356, 											-- Fishing
+	[-211] = 70,											-- Poisons
 };
 app.BaseNPC = {
 	__index = function(t, key)
@@ -3409,6 +3410,7 @@ app.SkillIDToSpellID = setmetatable({
 	[186] = 2575,	-- Mining
 	[393] = 8613,	-- Skinning
 	[197] = 3908,	-- Tailoring
+	[40] = 2842,	-- Poison
 }, {__index = function(t,k) return k; end})
 app.BaseProfession = {
 	__index = function(t, key)
@@ -3846,7 +3848,7 @@ UpdateGroup = function(parent, group)
 		-- This group doesn't meet requirements.
 		group.visible = false;
 	end
-	
+
 	if group.OnUpdate then group:OnUpdate(); end
 end
 UpdateGroups = function(parent, g)
@@ -4068,7 +4070,7 @@ app.CreateMinimapButton = CreateMinimapButton;
 local CreateRow;
 local function CreateMiniListForGroup(group)
 	-- Pop Out Functionality! :O
-	local suffix = BuildSourceTextForChat(group, 0) .. " -> " .. (group.text or "");
+	local suffix = BuildSourceTextForChat(group, 0) .. " -> " .. (group.text or "") .. (group.key and group[group.key] or "");
 	local popout = app.Windows[suffix];
 	if not popout then
 		popout = app:GetWindow(suffix);
@@ -4981,8 +4983,11 @@ local function RowOnEnter(self)
 				GameTooltip:AddDoubleLine("Races", (reference.r == 2 and ITEM_REQ_ALLIANCE) or (reference.r == 1 and ITEM_REQ_HORDE) or "Unknown");
 			end
 		end
-		if reference.isDaily then GameTooltip:AddLine("This can be completed daily."); end
-		if reference.isWeekly then GameTooltip:AddLine("This can be completed weekly."); end
+		if reference.isDaily then GameTooltip:AddLine("This can be completed daily.");
+		elseif reference.isWeekly then GameTooltip:AddLine("This can be completed weekly.");
+		elseif reference.isMontly then GameTooltip:AddLine("This can be completed monthly.");
+		elseif reference.isYearly then GameTooltip:AddLine("This can be completed yearly.");
+		elseif reference.repeatable then GameTooltip:AddLine("This can be repeated multiple times."); end
 		if not GameTooltipModel:TrySetModel(reference) and reference.icon then
 			GameTooltipIcon:SetSize(72,72);
 			GameTooltipIcon.icon:SetTexture(reference.preview or reference.icon);
@@ -5810,7 +5815,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 					tinsert(self.data.g, 1, self.data.options[i]);
 				end
 				self:Update();
-			elseif e == "ZONE_CHANGED_NEW_AREA" then
+			elseif e == "ZONE_CHANGED" or e == "ZONE_CHANGED_NEW_AREA" then
 				-- Bubble Up the Maps
 				local mapInfo, info;
 				local mapID = app.GetCurrentMapID();
@@ -5956,6 +5961,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 		self:RegisterEvent("QUEST_DETAIL");
 		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+		self:RegisterEvent("ZONE_CHANGED");
 		self:RegisterEvent("MERCHANT_SHOW");
 		self:RegisterEvent("MERCHANT_UPDATE");
 		self:RegisterEvent("CHAT_MSG_LOOT");
@@ -6326,6 +6332,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 			RefreshLocation();
 		end);
 		self:RegisterEvent("PLAYER_LOGIN");
+		self:RegisterEvent("ZONE_CHANGED");
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	end
 	if self:IsVisible() then
@@ -7258,6 +7265,7 @@ app:RegisterEvent("CHAT_MSG_ADDON");
 app:RegisterEvent("PLAYER_DEAD");
 app:RegisterEvent("PLAYER_LOGIN");
 app:RegisterEvent("VARIABLES_LOADED");
+app:RegisterEvent("ZONE_CHANGED");
 app:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 
 -- Define Event Behaviours
@@ -7985,6 +7993,9 @@ app.events.LOOT_CLOSED = function()
 	app:UnregisterEvent("UPDATE_INSTANCE_INFO");
 	app:RegisterEvent("UPDATE_INSTANCE_INFO");
 	RequestRaidInfo();
+end
+app.events.ZONE_CHANGED = function()
+	app.CurrentMapID = app.GetCurrentMapID();
 end
 app.events.ZONE_CHANGED_NEW_AREA = function()
 	app.CurrentMapID = app.GetCurrentMapID();

@@ -1,4 +1,5 @@
 ﻿--Based on LibClassicMobHealth-1.0
+--TODO: realm name support
 
 local ADDONNAME = ...;
 local MAJOR_VERSION = 1;

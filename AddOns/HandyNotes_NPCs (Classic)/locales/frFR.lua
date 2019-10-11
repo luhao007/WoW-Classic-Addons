@@ -275,6 +275,7 @@ L["Brother Joshua"] = "Frère Joshua"
 L["Brother Karman"] = "Frère Karman"
 L["Brother Sammuel"] = "Frère Sammuel"
 L["Brother Wilhelm"] = "Frère Wilhelm"
+L["Brumn Winterhoof"] = true
 L["Bruuk Barleybeard"] = true
 L["Bryan Cross"] = true
 L["Bryllia Ironbrand"] = true
@@ -1163,6 +1164,7 @@ L["Masat T'andr"] = true
 L["Master Alchemist"] = "Alchimiste - Maître"
 L["Master Blacksmith"] = "Maître des forgerons"
 L["Master Dragonscale Leatherworker"] = "Artisan du cuir - Maître écailles de dragon"
+L["Master Elemental Leatherworker"] = "Artisan du cuir - Maître élémentaire"
 L["Master Engineer"] = "Ingénieur - Maître"
 L["Master Gnome Engineer"] = "Maître-ingénieur gnome"
 L["Master Goblin Engineer"] = "Maître-ingénieur gobelin"
@@ -1454,6 +1456,7 @@ L["Sanuye Runetotem"] = true
 L["Sarah Goode"] = true
 L["Sarah Killian"] = true
 L["Sarah Raycroft"] = true
+L["Sarah Tanner"] = true
 L["Sark Ragetotem"] = true
 L["Saru Steelfury"] = true
 L["Savanne"] = true
@@ -1895,6 +1898,8 @@ L["All"] = "All"
 --[[Translation missing --]]
 L["Allow right click to create waypoints with TomTom"] = "Allow right click to create waypoints with TomTom"
 --[[Translation missing --]]
+L["Already learned by"] = "Already learned by"
+--[[Translation missing --]]
 L["Always Show on Continent"] = "Always Show on Continent"
 --[[Translation missing --]]
 L["Ammo Vendors"] = "Ammo Vendors"
@@ -1903,7 +1908,13 @@ L["Catch-all for uncategorized vendors"] = "Catch-all for uncategorized vendors"
 --[[Translation missing --]]
 L["Cost"] = "Cost"
 --[[Translation missing --]]
+L["Could be learned by"] = "Could be learned by"
+--[[Translation missing --]]
 L["Distance"] = "Distance"
+--[[Translation missing --]]
+L["General"] = "General"
+--[[Translation missing --]]
+L["Icon"] = "Icon"
 --[[Translation missing --]]
 L["Item"] = "Item"
 --[[Translation missing --]]
@@ -1919,7 +1930,11 @@ L["Poison Vendors"] = "Poison Vendors"
 --[[Translation missing --]]
 L["Reagent Vendors"] = "Reagent Vendors"
 --[[Translation missing --]]
+L["Recipes"] = "Recipes"
+--[[Translation missing --]]
 L["Search for an item"] = "Search for an item"
+--[[Translation missing --]]
+L["Show Alt Recipes"] = "Show Alt Recipes"
 --[[Translation missing --]]
 L["Show Auctioneers"] = "Show Auctioneers"
 --[[Translation missing --]]
@@ -1963,6 +1978,8 @@ L["Show Vendors"] = "Show Vendors"
 --[[Translation missing --]]
 L["Show Weapon Masters"] = "Show Weapon Masters"
 --[[Translation missing --]]
+L["Show which alts can learn a recipe in the item's tooltip"] = "Show which alts can learn a recipe in the item's tooltip"
+--[[Translation missing --]]
 L["Show/Hide Toggle"] = "Show/Hide Toggle"
 --[[Translation missing --]]
 L["Teaches"] = "Teaches"
@@ -1984,6 +2001,8 @@ L["Vendor Profession Icon"] = "Vendor Profession Icon"
 L["Vendors"] = "Vendors"
 --[[Translation missing --]]
 L["Weapon Masters"] = "Weapon Masters"
+--[[Translation missing --]]
+L["Will be learnable by"] = "Will be learnable by"
 --[[Translation missing --]]
 L["Zone Alpha"] = "Zone Alpha"
 --[[Translation missing --]]
@@ -4618,6 +4637,7 @@ L["Creepthess"] = "Insinueuse"
 L["Cult of the Damned"] = "Culte des damnés"
 L["Cursed Centaur"] = "Centaure maudit"
 L["Cyclok the Mad"] = "Cyclok le Fol"
+L["Dalaran Miner"] = "Mineur de Dalaran"
 L["Dalaran Spellscribe"] = "Copiste de Dalaran"
 L["Darbel Montrose"] = true
 L["Darkmist Widow"] = "Veuve de Sombrebrume"
@@ -4806,6 +4826,7 @@ L["Razortalon"] = "Trancheserre"
 L["Rekk'tilac"] = true
 L["Ressan the Needler"] = "Ressan le Harceleur"
 L["Retherokk the Berserker"] = "Retherokk le Berserker"
+L["Rex Ashil"] = true
 L["Ribchaser"] = "Chassecôtes"
 L["Rippa"] = true
 L["Ripscale"] = "Arrachécaille"
@@ -4823,6 +4844,7 @@ L["Scalebeard"] = "Barbe-d'écailles"
 L["Scargil"] = true
 L["Scarlet Executioner"] = "Bourreau écarlate"
 L["Scarlet High Clerist"] = "Grand prêtre écarlate"
+L["Scarlet Interrogator"] = "Inquisiteur écarlate"
 L["Scarlet Judge"] = "Juge écarlate"
 L["Scarlet Smith"] = "Forgeron écarlate"
 L["Seeker Aqualon"] = "Aqualon le Chercheur"

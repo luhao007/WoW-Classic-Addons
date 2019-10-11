@@ -207,12 +207,18 @@ do
     infotext5:SetTextColor(1, 1, 1);
     infotext5:SetText(UFP_OP_InfoText5);
 
+    local infotext6 = UnitFramesPlus_OptionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal");
+    infotext6:ClearAllPoints();
+    infotext6:SetPoint("TOPLEFT", infotext5, "TOPLEFT", 0, -40);
+    infotext6:SetTextColor(1, 1, 1);
+    infotext6:SetText(UFP_OP_InfoText6);
+
     if GetLocale() == "zhCN" then
-        local infotext6 = UnitFramesPlus_OptionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-        infotext6:ClearAllPoints();
-        infotext6:SetPoint("TOPLEFT", infotext5, "TOPLEFT", 0, -40);
-        infotext6:SetTextColor(1, 1, 1);
-        infotext6:SetText("感谢支持：wow.isler.me");
+        local infotext7 = UnitFramesPlus_OptionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal");
+        infotext7:ClearAllPoints();
+        infotext7:SetPoint("TOPLEFT", infotext6, "TOPLEFT", 0, -40);
+        infotext7:SetTextColor(1, 1, 1);
+        infotext7:SetText("感谢支持：wow.isler.me");
     end
 
     --全局设置菜单
@@ -748,6 +754,50 @@ do
             UnitFramesPlusMobHealthDB["npc"] = UnitFramesPlus_CreatureHealthCache;
         end
         self:SetChecked(UnitFramesPlusMobHealthOpt["prune"]==1);
+    end)
+
+    --全局使用内置仇恨高亮
+    local UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP, "TOPLEFT", 0, -30);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreatText:SetText(UFP_OP_BuiltinThreat);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreatText:SetTextColor(1, 0.75, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["target"]["threat"] = 1 - UnitFramesPlusDB["target"]["threat"];
+        UnitFramesPlus_TargetThreat();
+        UnitFramesPlus_TargetThreatDisplayUpdate();
+        self:SetChecked(UnitFramesPlusDB["target"]["threat"]==1);
+    end)
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+        GameTooltip:AddLine(UFP_OP_BuiltinThreatTooltip);
+        GameTooltip:Show();
+    end)
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetScript("OnLeave", function(self)
+        GameTooltip:Hide();
+    end)
+
+    --全局使用内置仇恨百分比
+    local UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext = CreateFrame("CheckButton", "UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext", UnitFramesPlus_Global_Options, "InterfaceOptionsCheckButtonTemplate");
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:ClearAllPoints();
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetPoint("TOPLEFT", UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat, "TOPLEFT", 180, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetHitRectInsets(0, -100, 0, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattextText:SetText(UFP_OP_BuiltinThreattext);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattextText:SetTextColor(1, 0.75, 0);
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetScript("OnClick", function(self)
+        UnitFramesPlusDB["target"]["threattext"] = 1 - UnitFramesPlusDB["target"]["threattext"];
+        UnitFramesPlus_TargetThreat();
+        UnitFramesPlus_TargetThreatDisplayUpdate();
+        self:SetChecked(UnitFramesPlusDB["target"]["threattext"]==1);
+    end)
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, 'ANCHOR_RIGHT');
+        GameTooltip:AddLine(UFP_OP_BuiltinThreatTooltip);
+        GameTooltip:Show();
+    end)
+    UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetScript("OnLeave", function(self)
+        GameTooltip:Hide();
     end)
 
     --玩家设定
@@ -3062,6 +3112,13 @@ function UnitFramesPlus_OptionPanel_OnShow()
     else
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHP);
         BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinExactEnemyHPPrune);
+    end
+    if IsAddOnLoaded("UnitFramesPlus_Threat") then
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat:SetChecked(UnitFramesPlusDB["target"]["threat"]==1);
+        UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext:SetChecked(UnitFramesPlusDB["target"]["threattext"]==1);
+    else
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinThreat);
+        BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_GlobalBuiltinThreattext);
     end
     UnitFramesPlus_OptionsFrame_PlayerMouseShow:SetChecked(UnitFramesPlusDB["player"]["mouseshow"]==1);
     UnitFramesPlus_OptionsFrame_PlayerFrameScaleSlider:SetValue(UnitFramesPlusDB["player"]["scale"]*100);

@@ -633,6 +633,11 @@ MAPPING = {
         'Title-sub': '设置',
         'Category': '界面'
     },
+    'UnitFramesPlus_Threat': {
+        'Title-cn': '头像增强',
+        'Title-sub': '仇恨',
+        'Category': '界面'
+    },
     'WIM': {
         'Title-cn': '即时通信',
         'Category': '界面'

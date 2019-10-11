@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.30
+## Version: 1.31
 ## SavedVariables: UnitFramesPlusDB
 ## SavedVariablesPerCharacter: UnitFramesPlusVar
 

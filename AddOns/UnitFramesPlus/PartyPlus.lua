@@ -1001,13 +1001,15 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
 
                             if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                                 local timeleft = expirationTime - GetTime();
-                                if timeleft >= 0 and timeleft <= 1800 then
+                                if timeleft >= 0 then
                                     if timeleft < 60 then
                                         timetext = math.floor(timeleft+1);
                                         -- textalpha = 1 - timeleft/200;
                                         -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                    else
+                                    elseif timeleft <= 1800 then
                                         timetext = math.floor(timeleft/60+1).."m";
+                                    else
+                                        timetext = math.floor(timeleft/3600+1).."h";
                                     end
                                 end
                             end
@@ -1054,13 +1056,15 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
 
                             if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                                 local timeleft = expirationTime - GetTime();
-                                if timeleft >= 0 and timeleft <= 1800 then
+                                if timeleft >= 0 then
                                     if timeleft < 60 then
                                         timetext = math.floor(timeleft+1);
                                         -- textalpha = 1 - timeleft/200;
                                         -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                    else
+                                    elseif timeleft <= 1800 then
                                         timetext = math.floor(timeleft/60+1).."m";
+                                    else
+                                        timetext = math.floor(timeleft/3600+1).."h";
                                     end
                                 end
                             end
@@ -1109,13 +1113,15 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
 
                             if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                                 local timeleft = expirationTime - GetTime();
-                                if timeleft >= 0 and timeleft <= 1800 then
+                                if timeleft >= 0 then
                                     if timeleft < 60 then
                                         timetext = math.floor(timeleft+1);
                                         -- textalpha = 1 - timeleft/200;
                                         -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                    else
+                                    elseif timeleft <= 1800 then
                                         timetext = math.floor(timeleft/60+1).."m";
+                                    else
+                                        timetext = math.floor(timeleft/3600+1).."h";
                                     end
                                 end
                             end
@@ -1253,6 +1259,53 @@ local function UnitFramesPlus_OriginPartyFrames()
     end
 end
 
+local ht = CreateFrame("Frame");
+ht:RegisterEvent("PLAYER_ENTERING_WORLD");
+ht:SetScript("OnEvent", function(self, event, ...)
+    UnitFramesPlus_PartyToolsHide();
+    ht:UnregisterEvent("PLAYER_ENTERING_WORLD");
+end)
+
+--头像缩放
+function UnitFramesPlus_PartyToolsHideSet()
+    if UnitFramesPlusDB["party"]["hidetools"] == 1 then
+        CompactRaidFrameManager:UnregisterAllEvents();
+        CompactRaidFrameManager:Hide();
+        CompactRaidFrameContainer:UnregisterAllEvents();
+        CompactRaidFrameContainer:Hide();
+    else
+        CompactRaidFrameManager:Show();
+        -- CompactRaidFrameContainer:Show();
+        if not CompactRaidFrameManager:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+            CompactRaidFrameManager:RegisterEvent("DISPLAY_SIZE_CHANGED");
+            CompactRaidFrameManager:RegisterEvent("UI_SCALE_CHANGED");
+            CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE");
+            CompactRaidFrameManager:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
+            CompactRaidFrameManager:RegisterEvent("UNIT_FLAGS");
+            CompactRaidFrameManager:RegisterEvent("PLAYER_FLAGS_CHANGED");
+            CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD");
+            CompactRaidFrameManager:RegisterEvent("PARTY_LEADER_CHANGED");
+            CompactRaidFrameManager:RegisterEvent("RAID_TARGET_UPDATE");
+            CompactRaidFrameManager:RegisterEvent("PLAYER_TARGET_CHANGED");
+            CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
+            CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
+        end
+    end
+end
+
+function UnitFramesPlus_PartyToolsHide()
+    if not InCombatLockdown() then
+        UnitFramesPlus_PartyToolsHideSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_PartyToolsHideSet";
+        func.callback = function()
+            UnitFramesPlus_PartyToolsHideSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
 --模块初始化
 function UnitFramesPlus_PartyInit()
     UnitFramesPlus_PartyOrigin();
@@ -1266,7 +1319,7 @@ function UnitFramesPlus_PartyInit()
     UnitFramesPlus_PartyName();
     UnitFramesPlus_PartyLevel();
     UnitFramesPlus_PartyHealthPct();
-    UnitFramesPlus_PartyBarTextMouseShow()
+    UnitFramesPlus_PartyBarTextMouseShow();
 end
 
 function UnitFramesPlus_PartyCvar()

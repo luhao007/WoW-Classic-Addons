@@ -1,0 +1,20 @@
+------------------------------------------------------------------------
+r52 | Caliaha | 2019-10-09 04:57:11 +0000 (Wed, 09 Oct 2019) | 2 lines
+Changed paths:
+   M /trunk/HandyNotes_NPCs (Classic).lua
+   M /trunk/data.lua
+   M /trunk/locales/deDE.lua
+   M /trunk/locales/enUS.lua
+   M /trunk/locales/esES.lua
+   M /trunk/locales/frFR.lua
+   M /trunk/locales/koKR.lua
+   M /trunk/locales/ptBR.lua
+   M /trunk/locales/ruRU.lua
+   M /trunk/locales/testlocale.lua
+   M /trunk/locales/zhCN.lua
+   M /trunk/vendorData.lua
+
+NPC and localization update
+
+------------------------------------------------------------------------
+

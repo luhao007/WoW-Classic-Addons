@@ -275,6 +275,7 @@ L["Brother Joshua"] = "Irmão Josué"
 L["Brother Karman"] = "Irmão Karman da Guia"
 L["Brother Sammuel"] = "Irmão Samuel"
 L["Brother Wilhelm"] = "Irmão Guilhermino"
+L["Brumn Winterhoof"] = "Brum Casco Invernal"
 L["Bruuk Barleybeard"] = "Bruuk Cevabarba"
 L["Bryan Cross"] = "Marques Martinho"
 L["Bryllia Ironbrand"] = "Bryllia Marcaferro"
@@ -1163,6 +1164,7 @@ L["Masat T'andr"] = true
 L["Master Alchemist"] = true
 L["Master Blacksmith"] = "Mestre Ferreiro"
 L["Master Dragonscale Leatherworker"] = true
+L["Master Elemental Leatherworker"] = "Mestre Coureira Elemental"
 L["Master Engineer"] = true
 L["Master Gnome Engineer"] = "Mestre Engenheiro Gnomo"
 L["Master Goblin Engineer"] = true
@@ -1454,6 +1456,7 @@ L["Sanuye Runetotem"] = "Sanuye Runa Totem"
 L["Sarah Goode"] = "Sara Goode"
 L["Sarah Killian"] = "Cilene Rocha"
 L["Sarah Raycroft"] = "Sara Croft"
+L["Sarah Tanner"] = "Sara Correia"
 L["Sark Ragetotem"] = "Sark Totem da Fúria"
 L["Saru Steelfury"] = "Saru Furiácero"
 L["Savanne"] = true
@@ -1895,6 +1898,8 @@ L["All"] = "All"
 --[[Translation missing --]]
 L["Allow right click to create waypoints with TomTom"] = "Allow right click to create waypoints with TomTom"
 --[[Translation missing --]]
+L["Already learned by"] = "Already learned by"
+--[[Translation missing --]]
 L["Always Show on Continent"] = "Always Show on Continent"
 --[[Translation missing --]]
 L["Ammo Vendors"] = "Ammo Vendors"
@@ -1903,7 +1908,13 @@ L["Catch-all for uncategorized vendors"] = "Catch-all for uncategorized vendors"
 --[[Translation missing --]]
 L["Cost"] = "Cost"
 --[[Translation missing --]]
+L["Could be learned by"] = "Could be learned by"
+--[[Translation missing --]]
 L["Distance"] = "Distance"
+--[[Translation missing --]]
+L["General"] = "General"
+--[[Translation missing --]]
+L["Icon"] = "Icon"
 --[[Translation missing --]]
 L["Item"] = "Item"
 --[[Translation missing --]]
@@ -1919,7 +1930,11 @@ L["Poison Vendors"] = "Poison Vendors"
 --[[Translation missing --]]
 L["Reagent Vendors"] = "Reagent Vendors"
 --[[Translation missing --]]
+L["Recipes"] = "Recipes"
+--[[Translation missing --]]
 L["Search for an item"] = "Search for an item"
+--[[Translation missing --]]
+L["Show Alt Recipes"] = "Show Alt Recipes"
 --[[Translation missing --]]
 L["Show Auctioneers"] = "Show Auctioneers"
 --[[Translation missing --]]
@@ -1963,6 +1978,8 @@ L["Show Vendors"] = "Show Vendors"
 --[[Translation missing --]]
 L["Show Weapon Masters"] = "Show Weapon Masters"
 --[[Translation missing --]]
+L["Show which alts can learn a recipe in the item's tooltip"] = "Show which alts can learn a recipe in the item's tooltip"
+--[[Translation missing --]]
 L["Show/Hide Toggle"] = "Show/Hide Toggle"
 --[[Translation missing --]]
 L["Teaches"] = "Teaches"
@@ -1984,6 +2001,8 @@ L["Vendor Profession Icon"] = "Vendor Profession Icon"
 L["Vendors"] = "Vendors"
 --[[Translation missing --]]
 L["Weapon Masters"] = "Weapon Masters"
+--[[Translation missing --]]
+L["Will be learnable by"] = "Will be learnable by"
 --[[Translation missing --]]
 L["Zone Alpha"] = "Zone Alpha"
 --[[Translation missing --]]
@@ -4618,6 +4637,7 @@ L["Creepthess"] = "Rastejatriz"
 L["Cult of the Damned"] = "Seita dos Malditos"
 L["Cursed Centaur"] = "Centauro Amaldiçoado"
 L["Cyclok the Mad"] = "Cyclok, o Louco"
+L["Dalaran Miner"] = "Minerador de Dalaran"
 L["Dalaran Spellscribe"] = "Escriba Mágico de Dalaran"
 L["Darbel Montrose"] = true
 L["Darkmist Widow"] = "Viúva Névoa Negra"
@@ -4806,6 +4826,7 @@ L["Razortalon"] = "Garravalha"
 L["Rekk'tilac"] = true
 L["Ressan the Needler"] = "Ressan, o Agulheiro"
 L["Retherokk the Berserker"] = "Retherokk, o Berserker"
+L["Rex Ashil"] = true
 L["Ribchaser"] = "Quebra-costelas"
 L["Rippa"] = "Razga"
 L["Ripscale"] = "Rancascame"
@@ -4823,6 +4844,7 @@ L["Scalebeard"] = "Barbescama"
 L["Scargil"] = "Rasguelra"
 L["Scarlet Executioner"] = "Carrasco Escarlate"
 L["Scarlet High Clerist"] = "Alto-clérigo Escarlate"
+L["Scarlet Interrogator"] = "Interrogador Escarlate"
 L["Scarlet Judge"] = "Juiz Escarlate"
 L["Scarlet Smith"] = "Ferreiro Escarlate"
 L["Seeker Aqualon"] = "Perscrutador Aqualon"

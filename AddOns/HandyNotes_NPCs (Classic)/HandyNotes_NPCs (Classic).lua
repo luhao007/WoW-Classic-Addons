@@ -336,8 +336,12 @@ local waypoints = {}
 local function setWaypoint(mapFile, coord)
 	if not TomTom then return end
 	local x, y = HandyNotes:getXY(coord)
+	title = nodes[mapFile][coord].name
+	if nodes[mapFile][coord].description then
+		title = title .. '\n' .. nodes[mapFile][coord].description
+	end
 	TomTom:AddWaypoint(mapFile, x, y, {
-		title = nodes[mapFile][coord].name,
+		title = title,
 		persistent = nil,
 		minimap = true,
 		world = true

@@ -44,7 +44,7 @@ else
 	standardFont = "Fonts\\FRIZQT__.TTF"
 end
 
-local targetCanvasAlpha
+local targetCanvasAlpha, supressCanvas
 
 local textureLookup = {
 	star		= 137001,--[[Interface\TARGETINGFRAME\UI-RaidTargetingIcon_1.blp]]
@@ -252,7 +252,7 @@ do
 
 			targetZoomScale = computeNewScale()
 			local currentAlpha = mod.canvas:GetAlpha()
-			if targetCanvasAlpha and currentAlpha ~= targetCanvasAlpha then
+			if not supressCanvas and targetCanvasAlpha and currentAlpha ~= targetCanvasAlpha then
 				local newAlpha
 				if targetCanvasAlpha > currentAlpha then
 					newAlpha = min(targetCanvasAlpha, currentAlpha + 1 * elapsed / fadeInDelay)
@@ -293,7 +293,9 @@ function mod:Enable()
 	self.currentMap = select(8, GetInstanceInfo())
 	mainFrame:Show()
 	mainFrame:RegisterEvent("LOADING_SCREEN_DISABLED")
-	self.canvas:Show()
+	if not supressCanvas then
+		self.canvas:Show()
+	end
 	self.canvas:SetAlpha(1)
 	self:UpdateCanvasPosition()
 
@@ -457,7 +459,12 @@ local function DrawRouteLineCustom(T, C, sx, sy, ex, ey, w, extend, relPoint)
 
 	-- Set texture coordinates and anchors
 	T:ClearAllPoints();
-	T:SetTexCoord(TLx, TLy, BLx, BLy, TRx, TRy, BRx, BRy);
+	-- Hack to fix backwards arrow since it's easier to fix here than figure out wtf is going on up above
+	if reverse == 1 then
+		T:SetTexCoord(TLx, TLy, BLx, BLy, TRx, TRy, BRx, BRy);
+	else
+		T:SetTexCoord(BRx, BRy, TRx, TRy, BLx, BLy, TLx, TLy);
+	end
 	T:SetPoint("BOTTOMLEFT", C, relPoint, cx - Bwid, cy - Bhgt);
 	T:SetPoint("TOPRIGHT",   C, relPoint, cx + Bwid, cy + Bhgt);
 end
@@ -1541,6 +1548,20 @@ end
 
 function mod:HideCanvas()
 	targetCanvasAlpha = 0
+end
+
+function mod:SupressCanvas()
+	supressCanvas = true
+	if self.HUDEnabled then
+		self.canvas:Hide()
+	end
+end
+
+function mod:UnSupressCanvas()
+	supressCanvas = nil
+	if self.HUDEnabled then
+		self.canvas:Show()
+	end
 end
 
 function mod:Toggle(flag)

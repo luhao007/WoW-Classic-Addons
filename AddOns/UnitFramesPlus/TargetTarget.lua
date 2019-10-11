@@ -378,13 +378,15 @@ function UnitFramesPlus_OptionsFrame_TargetTargetDebuffDisplayUpdate()
                         end
                         if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                             local timeleft = expirationTime - GetTime();
-                            if timeleft >= 0 and timeleft <= 1800 then
+                            if timeleft >= 0 then
                                 if timeleft < 60 then
                                     timetext = math.floor(timeleft+1);
-                                    -- textalpha = 1 - timeleft/600;
+                                    -- textalpha = 1 - timeleft/200;
                                     -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                else
+                                elseif timeleft <= 1800 then
                                     timetext = math.floor(timeleft/60+1).."m";
+                                else
+                                    timetext = math.floor(timeleft/3600+1).."h";
                                 end
                             end
                         end

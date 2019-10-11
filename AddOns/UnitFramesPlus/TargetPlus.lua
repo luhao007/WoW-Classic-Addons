@@ -94,6 +94,71 @@ function UnitFramesPlus_TargetFrameScale(newscale)
     end
 end
 
+--目标仇恨高亮
+local TargetThreat = TargetFrame:CreateTexture("UFP_TargetThreat", "BACKGROUND");
+TargetThreat:ClearAllPoints();
+TargetThreat:SetPoint("TOPLEFT", TargetFrame, "TOPLEFT", -24, 0);
+TargetThreat:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash");
+TargetThreat:SetTexCoord(0, 0.9453125, 0, 0.181640625);
+TargetThreat:SetWidth(242);
+TargetThreat:SetHeight(93);
+TargetThreat:SetAlpha(0);
+
+--目标仇恨百分比
+local TargetThreatText = TargetFrame:CreateFontString("UFP_TargetThreatText", "OVERLAY", "TextStatusBarText");
+TargetThreatText:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
+-- TargetThreatText:SetTextColor(1, 0.75, 0);
+TargetThreatText:SetText("");
+TargetThreatText:ClearAllPoints();
+TargetThreatText:SetPoint("BOTTOMRIGHT", TargetFrameNameBackground, "TOPRIGHT", -6, 2);
+TargetThreatText:SetJustifyH("RIGHT");
+
+local tt = CreateFrame("Frame");
+function UnitFramesPlus_TargetThreat()
+    if UnitFramesPlusDB["target"]["threat"] == 1 or UnitFramesPlusDB["target"]["threattext"] == 1 then
+        tt:SetScript("OnUpdate", function(self, elapsed)
+            self.timer = (self.timer or 0) + elapsed;
+            if self.timer >= 0.1 then
+                UnitFramesPlus_TargetThreatDisplayUpdate();
+                self.timer = 0;
+            end
+        end)
+    else
+        TargetThreat:SetAlpha(0);
+        TargetThreatText:SetText("");
+        tt:SetScript("OnUpdate", nil);
+    end
+end
+
+function UnitFramesPlus_TargetThreatDisplayUpdate()
+    if UFPThreatLib then
+        local threat = UnitFramesPlus_GetRelativeThreat("target");
+        if threat then
+            local threatfix = threat;
+            if threatfix > 100 then threatfix = 100 end
+            local r, g, b = UnitFramesPlus_GetRGB(threatfix, 100, 1)
+            if UnitFramesPlusDB["target"]["threat"] == 1 then
+                TargetThreat:SetVertexColor(r, g, b);
+                TargetThreat:SetAlpha(1);
+            else
+                TargetThreat:SetAlpha(0);
+            end
+            if UnitFramesPlusDB["target"]["threattext"] == 1 then
+                TargetThreatText:SetText(math.floor(threat).."%");
+                TargetThreatText:SetTextColor(r, g, b);
+            else
+                TargetThreatText:SetText("");
+            end
+        else
+            TargetThreat:SetAlpha(0);
+            TargetThreatText:SetText("");
+        end
+    else
+        TargetThreat:SetAlpha(0);
+        TargetThreatText:SetText("");
+    end
+end
+
 --状态数值
 local TargetHPMPText = CreateFrame("Frame", "UFP_TargetHPMPText", TargetFrame);
 
@@ -333,7 +398,7 @@ function UnitFramesPlus_TargetExtrabar()
         TargetHPMPPct.MP:SetPoint("CENTER", TargetFrameManaBar, "LEFT", -49, -1);
         TargetHPMPPct.MP:SetJustifyH("CENTER");
         TargetHPMPPct.Pct:ClearAllPoints();
-        TargetHPMPPct.Pct:SetPoint("CENTER", TargetFrameHealthBar, "LEFT", -49, 14);
+        TargetHPMPPct.Pct:SetPoint("CENTER", TargetFrameNameBackground, "LEFT", -49, -1);
         TargetHPMPPct.Pct:SetJustifyH("CENTER");
     else
         TargetExtraBar:Hide();
@@ -345,7 +410,7 @@ function UnitFramesPlus_TargetExtrabar()
         TargetHPMPPct.MP:SetPoint("RIGHT", TargetFrameManaBar, "LEFT", -5, -1);
         TargetHPMPPct.MP:SetJustifyH("RIGHT");
         TargetHPMPPct.Pct:ClearAllPoints();
-        TargetHPMPPct.Pct:SetPoint("RIGHT", TargetFrameHealthBar, "LEFT", -5, 14);
+        TargetHPMPPct.Pct:SetPoint("RIGHT", TargetFrameNameBackground, "LEFT", -5, -1);
         TargetHPMPPct.Pct:SetJustifyH("RIGHT");
     end
     UnitFramesPlus_TargetExtrabarSet();
@@ -648,16 +713,18 @@ function UFP_TargetFrame_UpdateAuras(self)
                     --CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
                     if UFPClassicDurations then
-                        local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
+                        local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster);
                         if duration == 0 and durationNew then
-                            duration = durationNew
-                            expirationTime = expirationTimeNew
+                            duration = durationNew;
+                            expirationTime = expirationTimeNew;
                         end
                         if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
-                            CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, true);
+                            CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, duration > 0, true);
                         else
                             CooldownFrame_Clear(_G[frameName.."Cooldown"]);
                         end
+                    else
+                        CooldownFrame_Clear(_G[frameName.."Cooldown"]);
                     end
                 end
             else
@@ -682,16 +749,18 @@ function UFP_TargetFrame_UpdateAuras(self)
                         --CooldownFrame_Set(frameCooldown, expirationTime - duration, duration, duration > 0, true);
 
                         if UFPClassicDurations then
-                            local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster)
+                            local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit(self.unit, spellId, caster);
                             if duration == 0 and durationNew then
-                                duration = durationNew
-                                expirationTime = expirationTimeNew
+                                duration = durationNew;
+                                expirationTime = expirationTimeNew;
                             end
                             if UnitFramesPlusDB["global"]["builtincd"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
-                                CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, true);
+                                CooldownFrame_Set(_G[frameName.."Cooldown"], expirationTime - duration, duration, duration > 0, true);
                             else
                                 CooldownFrame_Clear(_G[frameName.."Cooldown"]);
                             end
+                        else
+                            CooldownFrame_Clear(_G[frameName.."Cooldown"]);
                         end
 
                         frameNum = frameNum + 1;
@@ -735,9 +804,9 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
             frameName = "TargetFrameBuff"..i;
             frame = _G[frameName];
             if icon then
-                if not _G[frameName.."CooldownText"] then
+                if (not _G[frameName.."CooldownText"]) then
                     BuffCooldownText = _G[frameName.."Cooldown"]:CreateFontString(frameName.."CooldownText", "OVERLAY");
-                    BuffCooldownText:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
+                    BuffCooldownText:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
                     BuffCooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
                     BuffCooldownText:ClearAllPoints();
                     -- BuffCooldownText:SetPoint("TOPLEFT", _G[frameName], "TOPLEFT", 0, 0);
@@ -752,22 +821,26 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
 
                     if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                         local timeleft = expirationTime - GetTime();
-                        if timeleft >= 0 and timeleft <= 1800 then
+                        if timeleft >= 0 then
                             if timeleft < 60 then
                                 timetext = math.floor(timeleft+1);
                                 -- textalpha = 1 - timeleft/200;
                                 -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                            else
+                            elseif timeleft <= 1800 then
                                 timetext = math.floor(timeleft/60+1).."m";
+                            else
+                                timetext = math.floor(timeleft/3600+1).."h";
                             end
                         end
                     end
                 end
             end
-            if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet") then
+            if (not IsAddOnLoaded("OmniCC")) then
                 _G[frameName.."CooldownText"]:SetText(timetext);
                 -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                 -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+            else
+                _G[frameName.."CooldownText"]:SetText("");
             end
         else
             break;
@@ -789,7 +862,7 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                 frameName = "TargetFrameDebuff"..frameNum;
                 frame = _G[frameName];
                 if ( icon ) then
-                    if not _G[frameName.."CooldownText"] then
+                    if (not _G[frameName.."CooldownText"]) then
                         DebuffCooldownText = _G[frameName.."Cooldown"]:CreateFontString(frameName.."CooldownText", "OVERLAY");
                         DebuffCooldownText:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
                         DebuffCooldownText:SetTextColor(1, 1, 1);--(1, 0.75, 0);
@@ -806,21 +879,25 @@ function UnitFramesPlus_TargetCooldownTextDisplayUpdate()
                         end
                         if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
                             local timeleft = expirationTime - GetTime();
-                            if timeleft >= 0 and timeleft <= 1800 then
+                            if timeleft >= 0 then
                                 if timeleft < 60 then
                                     timetext = math.floor(timeleft+1);
                                     -- textalpha = 1 - timeleft/200;
                                     -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                else
+                                elseif timeleft <= 1800 then
                                     timetext = math.floor(timeleft/60+1).."m";
+                                else
+                                    timetext = math.floor(timeleft/3600+1).."h";
                                 end
                             end
                         end
                     end
-                    if (not IsAddOnLoaded("OmniCC")) or (caster ~= "player" and caster ~= "pet") then
+                    if (not IsAddOnLoaded("OmniCC")) then
                         _G[frameName.."CooldownText"]:SetText(timetext);
                         -- _G[frameName.."CooldownText"]:SetAlpha(textalpha);
                         -- _G[frameName.."CooldownText"]:SetTextColor(r, g, b);
+                    else
+                        _G[frameName.."CooldownText"]:SetText("");
                     end
 
                     frameNum = frameNum + 1;
@@ -1164,7 +1241,8 @@ function UnitFramesPlus_TargetInit()
     UnitFramesPlus_TargetExtrabar();
     UnitFramesPlus_TargetHPMPPct();
     UnitFramesPlus_TargetBuffCooldown();
-    UnitFramesPlus_TargetCooldownText()
+    UnitFramesPlus_TargetCooldownText();
+    UnitFramesPlus_TargetThreat();
 end
 
 function UnitFramesPlus_TargetLayout()

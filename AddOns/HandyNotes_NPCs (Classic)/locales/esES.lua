@@ -275,6 +275,7 @@ L["Brother Joshua"] = "Hermano Joshua"
 L["Brother Karman"] = "Hermano Karman"
 L["Brother Sammuel"] = "Hermano Sammuel"
 L["Brother Wilhelm"] = "Hermano Fijalontad"
+L["Brumn Winterhoof"] = "Brumm Pezuña Invernal"
 L["Bruuk Barleybeard"] = "Bruuk Barbacebada"
 L["Bryan Cross"] = "Bryan Cruz"
 L["Bryllia Ironbrand"] = "Bryllia Ferracha"
@@ -1163,6 +1164,7 @@ L["Masat T'andr"] = true
 L["Master Alchemist"] = true
 L["Master Blacksmith"] = true
 L["Master Dragonscale Leatherworker"] = true
+L["Master Elemental Leatherworker"] = "Maestro Peletero elemental"
 L["Master Engineer"] = true
 L["Master Gnome Engineer"] = true
 L["Master Goblin Engineer"] = "Ingeniero goblin maestro"
@@ -1454,6 +1456,7 @@ L["Sanuye Runetotem"] = "Sanuye Runatótem"
 L["Sarah Goode"] = true
 L["Sarah Killian"] = true
 L["Sarah Raycroft"] = true
+L["Sarah Tanner"] = "Sarah Peletero"
 L["Sark Ragetotem"] = "Sark Furiatótem"
 L["Saru Steelfury"] = "Saru Furiacerada"
 L["Savanne"] = true
@@ -1895,6 +1898,8 @@ L["All"] = "All"
 --[[Translation missing --]]
 L["Allow right click to create waypoints with TomTom"] = "Allow right click to create waypoints with TomTom"
 --[[Translation missing --]]
+L["Already learned by"] = "Already learned by"
+--[[Translation missing --]]
 L["Always Show on Continent"] = "Always Show on Continent"
 --[[Translation missing --]]
 L["Ammo Vendors"] = "Ammo Vendors"
@@ -1903,7 +1908,13 @@ L["Catch-all for uncategorized vendors"] = "Catch-all for uncategorized vendors"
 --[[Translation missing --]]
 L["Cost"] = "Cost"
 --[[Translation missing --]]
+L["Could be learned by"] = "Could be learned by"
+--[[Translation missing --]]
 L["Distance"] = "Distance"
+--[[Translation missing --]]
+L["General"] = "General"
+--[[Translation missing --]]
+L["Icon"] = "Icon"
 --[[Translation missing --]]
 L["Item"] = "Item"
 --[[Translation missing --]]
@@ -1919,7 +1930,11 @@ L["Poison Vendors"] = "Poison Vendors"
 --[[Translation missing --]]
 L["Reagent Vendors"] = "Reagent Vendors"
 --[[Translation missing --]]
+L["Recipes"] = "Recipes"
+--[[Translation missing --]]
 L["Search for an item"] = "Search for an item"
+--[[Translation missing --]]
+L["Show Alt Recipes"] = "Show Alt Recipes"
 --[[Translation missing --]]
 L["Show Auctioneers"] = "Show Auctioneers"
 --[[Translation missing --]]
@@ -1963,6 +1978,8 @@ L["Show Vendors"] = "Show Vendors"
 --[[Translation missing --]]
 L["Show Weapon Masters"] = "Show Weapon Masters"
 --[[Translation missing --]]
+L["Show which alts can learn a recipe in the item's tooltip"] = "Show which alts can learn a recipe in the item's tooltip"
+--[[Translation missing --]]
 L["Show/Hide Toggle"] = "Show/Hide Toggle"
 --[[Translation missing --]]
 L["Teaches"] = "Teaches"
@@ -1984,6 +2001,8 @@ L["Vendor Profession Icon"] = "Vendor Profession Icon"
 L["Vendors"] = "Vendors"
 --[[Translation missing --]]
 L["Weapon Masters"] = "Weapon Masters"
+--[[Translation missing --]]
+L["Will be learnable by"] = "Will be learnable by"
 --[[Translation missing --]]
 L["Zone Alpha"] = "Zone Alpha"
 --[[Translation missing --]]
@@ -4618,6 +4637,7 @@ L["Creepthess"] = "Trepazoso"
 L["Cult of the Damned"] = "Culto de los Malditos"
 L["Cursed Centaur"] = "Centauro maldito"
 L["Cyclok the Mad"] = "Cyclok el Loco"
+L["Dalaran Miner"] = "Minero Dalaran"
 L["Dalaran Spellscribe"] = "Escribachizo Dalaran"
 L["Darbel Montrose"] = "Darbel Montrosa"
 L["Darkmist Widow"] = "Viuda Niebla Negra"
@@ -4806,6 +4826,7 @@ L["Razortalon"] = "Filogarra"
 L["Rekk'tilac"] = true
 L["Ressan the Needler"] = "Ressan el Agujas"
 L["Retherokk the Berserker"] = "Retherokk el Rabioso"
+L["Rex Ashil"] = true
 L["Ribchaser"] = "Rompecostillas"
 L["Rippa"] = true
 L["Ripscale"] = "Rasgascama"
@@ -4823,6 +4844,7 @@ L["Scalebeard"] = "Barbascamas"
 L["Scargil"] = "Rasgabranquia"
 L["Scarlet Executioner"] = "Verdugo Escarlata"
 L["Scarlet High Clerist"] = "Alto Clérigo Escarlata"
+L["Scarlet Interrogator"] = "Interrogador Escarlata"
 L["Scarlet Judge"] = "Juez Escarlata"
 L["Scarlet Smith"] = "Herrero Escarlata"
 L["Seeker Aqualon"] = "Buscador Aqualon"

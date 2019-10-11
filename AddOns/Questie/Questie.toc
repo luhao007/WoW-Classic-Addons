@@ -1,16 +1,19 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 4.1.1 BETA
+## Version: 4.1.2 BETA 121 dff5a12
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.1.1|r|cFFFF0000 Beta|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.1.2_dff5a12|r|cFFFF0000 BETA|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
+
+#Do not modify the title manually, create a new version by doing "git tag vX.X.X"
+#Do not modify the version manually, create a new version by doing "git tag vX.X.X"
 
 embeds.xml
 Libs\HereBeDragons\HereBeDragons-2.0.lua
@@ -36,9 +39,21 @@ Database\itemDB.lua
 #Localization
 Locale\QuestieLocale.lua
 Locale\enUS\locale.xml
+Locale\esES\locale.xml
+Locale\deDE\locale.xml
 Locale\zhCN\locale.xml
+Locale\zhTW\locale.xml
+Locale\frFR\locale.xml
+Locale\koKR\locale.xml
+Locale\ptBR\locale.xml
+Locale\ruRU\locale.xml
 
-#Modules
+##Libs
+Modules\Libs\QuestieLib.lua
+#Modules\Libs\QuestieCompress.lua
+Modules\Libs\QuestiePlayer.lua
+
+##Modules
 Modules\QuestieTooltips.lua
 Modules\QuestieEventHandler.lua
 Modules\QuestieFramePool.lua
@@ -47,9 +62,10 @@ Modules\QuestieQuest.lua
 Modules\QuestieNameplate.lua
 Modules\QuestieCoordinates.lua
 Modules\QuestieJourney.lua
-Modules\QuestieComms.lua
+#Modules\QuestieComms.lua
 Modules\QuestieSearch.lua
 Modules\QuestieTracker.lua
+Modules\QuestieOptions.lua
 Modules\QuestieProfessions.lua
 
 #Main
