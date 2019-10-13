@@ -4,7 +4,7 @@
 ## RequiredDeps: UnitFramesPlus
 
 ## Title: UnitFramesPlus Threat
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF69CCF0仇恨|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF69CCF0目标仇恨|r
 
 ## X-Repple: 界面
 

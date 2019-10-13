@@ -229,12 +229,12 @@ MAPPING = {
     },
     'CritSound': {
         'Title-cn': '爆击音效',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'CritSound_Options': {
         'Title-cn': '爆击音效',
         'Title-sub': '设置',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'DBM-AQ20': {
         'Title-cn': '副本助手',
@@ -306,6 +306,11 @@ MAPPING = {
         'Title-cn': '副本助手',
         'Title-sub': '祖尔格拉布',
         'Category': '副本'
+    },
+    'Decursive': {
+        'Title-cn': '一键驱散',
+        'Notes': '一键驱散队员的异常状态',
+        'Category': '战斗'
     },
     'DejaClassicStats': {
         'Title-cn': '角色属性',
@@ -650,7 +655,7 @@ MAPPING = {
     },
     'UnitFramesPlus_Threat': {
         'Title-cn': '头像增强',
-        'Title-sub': '仇恨',
+        'Title-sub': '目标仇恨',
         'Category': '界面'
     },
     'WIM': {
