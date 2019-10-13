@@ -9,6 +9,11 @@ MAPPING = {
         'Notes': '增强错误提示，将错误显示在弹出窗口中',
         'Category': '基础库'
     },
+    '+Wowhead_Looter': {
+        'Title-cn': 'Wowhead数据采集',
+        'Notes': '收集各种游戏内数据并上传Wowhead',
+        'Category': '账号'
+    },
     'ACP': {
         'Title-cn': '插件管理',
         'Title-en': 'Addon Control Panel',
