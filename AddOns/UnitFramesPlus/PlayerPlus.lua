@@ -14,6 +14,10 @@ local function UnitFramesPlus_PlayerShiftDrag()
             PlayerFrame:StopMovingOrSizing();
             UnitFramesPlusVar["player"]["moving"] = 0;
             UnitFramesPlusVar["player"]["moved"] = 1;
+            local left = PlayerFrame:GetLeft();
+            local bottom = PlayerFrame:GetBottom();
+            UnitFramesPlusVar["player"]["x"] = left;
+            UnitFramesPlusVar["player"]["y"] = bottom;
         end
     end)
 
@@ -21,14 +25,22 @@ local function UnitFramesPlus_PlayerShiftDrag()
     PlayerFrame:SetClampedToScreen(1);
 
     hooksecurefunc("PlayerFrame_ResetUserPlacedPosition", function()
-        UnitFramesPlus_TargetPosition();
+        UnitFramesPlusVar["player"]["moved"] = 0;
+        -- UnitFramesPlusVar["target"]["moved"] = 0;
+        -- UnitFramesPlus_TargetPosition();
+        if TitanPanel_AdjustFrames then
+            TitanPanel_AdjustFrames();
+        end
     end)
 end
 
-local function UnitFramesPlus_PlayerPosition()
+function UnitFramesPlus_PlayerPosition()
     if UnitFramesPlusVar["player"]["moved"] == 0 then
         PlayerFrame:ClearAllPoints();
         PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
+    else
+        PlayerFrame:ClearAllPoints();
+        PlayerFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["player"]["x"], UnitFramesPlusVar["player"]["y"]);
     end
 end
 

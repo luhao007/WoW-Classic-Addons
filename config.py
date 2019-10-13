@@ -69,6 +69,12 @@ MAPPING = {
         'Notes': 'AtlasLoot 专业制作物品列表',
         'Category': '副本'
     },
+    'AtlasLootClassic_Data': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '数据',
+        'Notes': 'AtlasLoot 物品数据',
+        'Category': '副本'
+    },
     'AtlasLootClassic_DungeonsAndRaids': {
         'Title-cn': '副本掉落',
         'Title-sub': '地下城和团队',
@@ -219,6 +225,15 @@ MAPPING = {
     },
     'ClearFont': {
         'Title-cn': '游戏字体',
+        'Category': '界面'
+    },
+    'CritSound': {
+        'Title-cn': '爆击音效',
+        'Category': '界面'
+    },
+    'CritSound_Options': {
+        'Title-cn': '爆击音效',
+        'Title-sub': '设置',
         'Category': '界面'
     },
     'DBM-AQ20': {

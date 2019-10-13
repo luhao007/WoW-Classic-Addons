@@ -28,8 +28,12 @@ end
 function UnitFramesPlus_PartyOriginSet()
     if UnitFramesPlusDB["party"]["origin"] == 1 then
         SetCVar("useCompactPartyFrames", "0");
+        -- CompactRaidFrameContainer:UnregisterAllEvents();
+        -- CompactRaidFrameContainer:Hide();
     else
         SetCVar("useCompactPartyFrames", "1");
+        -- CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
+        -- CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
     end
 end
 
@@ -61,6 +65,11 @@ local function UnitFramesPlus_PartyShiftDrag()
         if UnitFramesPlusVar["party"]["moving"] == 1 then
             PartyMemberFrame1:StopMovingOrSizing();
             UnitFramesPlusVar["party"]["moving"] = 0;
+            UnitFramesPlusVar["party"]["moved"] = 1;
+            local left = PartyMemberFrame1:GetLeft();
+            local bottom = PartyMemberFrame1:GetBottom();
+            UnitFramesPlusVar["party"]["x"] = left;
+            UnitFramesPlusVar["party"]["y"] = bottom;
         end
     end)
 
@@ -1145,6 +1154,26 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
     end
 end
 
+function UnitFramesPlus_PartyPositionSet()
+    if UnitFramesPlusVar["party"]["moved"] ~= 0 then
+        PartyMemberFrame1:ClearAllPoints();
+        PartyMemberFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["party"]["x"], UnitFramesPlusVar["party"]["y"]);
+    end
+end
+
+function UnitFramesPlus_PartyPosition()
+    if not InCombatLockdown() then
+        UnitFramesPlus_PartyPositionSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_PartyPositionSet";
+        func.callback = function()
+            UnitFramesPlus_PartyPositionSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
 function UnitFramesPlus_PartyMemberPositionSet()
     if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["buff"] == 1 then
         for id = 2, 4, 1 do
@@ -1271,8 +1300,8 @@ function UnitFramesPlus_PartyToolsHideSet()
     if UnitFramesPlusDB["party"]["hidetools"] == 1 then
         CompactRaidFrameManager:UnregisterAllEvents();
         CompactRaidFrameManager:Hide();
-        CompactRaidFrameContainer:UnregisterAllEvents();
-        CompactRaidFrameContainer:Hide();
+        -- CompactRaidFrameContainer:UnregisterAllEvents();
+        -- CompactRaidFrameContainer:Hide();
     else
         CompactRaidFrameManager:Show();
         -- CompactRaidFrameContainer:Show();
@@ -1287,8 +1316,8 @@ function UnitFramesPlus_PartyToolsHideSet()
             CompactRaidFrameManager:RegisterEvent("PARTY_LEADER_CHANGED");
             CompactRaidFrameManager:RegisterEvent("RAID_TARGET_UPDATE");
             CompactRaidFrameManager:RegisterEvent("PLAYER_TARGET_CHANGED");
-            CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
-            CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
+            -- CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
+            -- CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
         end
     end
 end

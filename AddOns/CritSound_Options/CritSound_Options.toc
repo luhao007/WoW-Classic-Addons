@@ -1,0 +1,14 @@
+## Interface: 11302
+## Author: Isler
+## Version: 2.5.4
+## RequiredDeps: CritSound
+## LoadOnDemand: 1
+
+## Title: CritSound Options
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF爆击音效|r |cFF0055FF设置|r
+
+## X-Repple: 辅助
+## X-Website: http://isler-wowui.googlecode.com
+
+Localization.lua
+Options.lua

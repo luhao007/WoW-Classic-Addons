@@ -7,7 +7,6 @@ function UnitFramesPlus_TargetPositionSet()
         else
             TargetFrame:SetPoint("TOPLEFT", PlayerFrame, "TOPRIGHT", 45+96*UnitFramesPlusDB["player"]["scale"], 0);
         end
-        UnitFramesPlusVar["target"]["moved"] = 0;
     else
         TargetFrame:ClearAllPoints();
         TargetFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["target"]["x"], UnitFramesPlusVar["target"]["y"]);
@@ -64,6 +63,9 @@ local function UnitFramesPlus_TargetShiftDrag()
     hooksecurefunc("TargetFrame_ResetUserPlacedPosition", function()
         UnitFramesPlusVar["target"]["moved"] = 0;
         UnitFramesPlus_TargetPosition();
+        if TitanPanel_AdjustFrames then
+            TitanPanel_AdjustFrames();
+        end
     end)
 end
 

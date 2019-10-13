@@ -1,11 +1,16 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.31
+## Version: 1.31.2
 ## RequiredDeps: UnitFramesPlus
 
 ## Title: UnitFramesPlus Cooldown
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF69CCF0冷却计时|r
 
 ## X-Repple: 界面
+
+#Library
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibClassicDurations\LibClassicDurations.xml
 
 UnitFramesPlus_Cooldown.lua

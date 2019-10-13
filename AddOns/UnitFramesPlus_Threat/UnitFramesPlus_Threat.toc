@@ -1,11 +1,22 @@
 ## Interface: 11302
 ## Author: Isler
-## Version: 1.31
+## Version: 1.31.2
 ## RequiredDeps: UnitFramesPlus
 
 ## Title: UnitFramesPlus Threat
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF69CCF0仇恨|r
 
 ## X-Repple: 界面
+
+#Library
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\Ace3\AceAddon-3.0\AceAddon-3.0.xml
+Libs\Ace3\AceBucket-3.0\AceBucket-3.0.xml
+Libs\Ace3\AceComm-3.0\AceComm-3.0.xml
+Libs\Ace3\AceEvent-3.0\AceEvent-3.0.xml
+Libs\Ace3\AceTimer-3.0\AceTimer-3.0.xml
+Libs\Ace3\AceSerializer-3.0\AceSerializer-3.0.xml
+Libs\LibThreatClassic\lib.xml
 
 UnitFramesPlus_Threat.lua

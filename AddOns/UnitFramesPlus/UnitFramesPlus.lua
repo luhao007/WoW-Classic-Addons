@@ -122,7 +122,7 @@ UnitFramesPlusDefaultDB = {
         mouseshow = 0,    --鼠标滑过时才显示数值
         hpmpunit = 1,        --生命值和法力值进位
         unittype = 2,    --1为千进制(k/m)，2为万进位(万/亿)
-        hidetools = 1,      --隐藏团队工具
+        hidetools = 0,      --隐藏团队工具
     },
 
     partytarget = {
@@ -159,6 +159,8 @@ UnitFramesPlusDefaultVar = {
     player = {
         moving = 0,        --玩家拖动状态
         moved = 0,        --玩家已被拖动
+        x = 0,        --玩家位置
+        y = 0,        --玩家位置
     },
 
     pet = {
@@ -188,6 +190,9 @@ UnitFramesPlusDefaultVar = {
 
     party = {
         moving = 0,        --队友拖动状态
+        moved = 0,        --队友已被拖动
+        x = 0,        --队友位置
+        y = 0,        --队友位置
     },
 
     rangecheck = {
@@ -513,6 +518,16 @@ ufp:SetScript("OnEvent", function(self, event, ...)
             UnitFramesPlus_Init();
             ufp:UnregisterEvent("ADDON_LOADED");
             print(UFPLocal_Loaded);
+
+            if TitanPanel_AdjustFrames then
+                hooksecurefunc("TitanPanel_AdjustFrames", function()
+                    if UnitFramesPlusVar["player"]["moved"] ~= 0 then
+                        UnitFramesPlus_PlayerPosition();
+                    end
+                    UnitFramesPlus_TargetPosition();
+                    UnitFramesPlus_PartyPosition();
+                end);
+            end
         end
     elseif event == "VARIABLES_LOADED" then
         UnitFramesPlus_CVar();

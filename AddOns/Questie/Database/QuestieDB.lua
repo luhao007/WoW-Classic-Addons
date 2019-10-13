@@ -179,7 +179,7 @@ function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
     -- 15 DB_QUEST_GROUP
     -- 16 DB_EXCLUSIVE_QUEST_GROUP]]--
     if QuestieCorrections.questFixes[QuestID] then
-        for k,v in pairs(QuestieCorrections.questFixes[QuestID]) do
+        for k, v in pairs(QuestieCorrections.questFixes[QuestID]) do
             QuestieDB.questData[QuestID][k] = v
         end
     end
@@ -261,18 +261,14 @@ function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
             end
         end
 
-        QO.MinLevel = rawdata[4]
         QO.Level = rawdata[5]
-        QO.RequiredRaces = rawdata[6]
-        QO.RequiredClasses = rawdata[7]
-        QO.ObjectiveText = rawdata[8]
         QO.Triggers = rawdata[9] --List of coordinates
         QO.ObjectiveData = {} -- to differentiate from the current quest log info
         --    type
         --String - could be the following things: "item", "object", "monster", "reputation", "log", or "event". (from wow api)
 
         if QO.Triggers ~= nil then
-            for k,v in pairs(QO.Triggers) do
+            for k, v in pairs(QO.Triggers) do
                 local obj = {};
                 obj.Type = "event"
                 obj.Coordinates = v
@@ -324,15 +320,15 @@ function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
         --QO.Objectives["GameObject"] = rawdata[10][2] --{GOID, Different name of NPC or object}
         --QO.Objectives["Item"] = rawdata[10][3]
         --QO.SrcItemId = rawdata[11] --A quest item given by a questgiver of some kind.
-        if(rawdata[12] ~= nil and rawdata[13] ~= nil) then
-            Questie:Debug(DEBUG_CRITICAL, "ERRRRORRRRRRR not mutually exclusive!")
+
+        if(rawdata[12] ~= nil and next(rawdata[12]) ~= nil and rawdata[13] ~= nil and next(rawdata[13]) ~= nil) then
+            Questie:Debug(DEBUG_CRITICAL, "ERRRRORRRRRRR not mutually exclusive for questID:", QuestID)
         end
         if(rawdata[12] ~= nil) then
-            QO.RequiredQuest = rawdata[12]
+            QO.RequiredQuestGroup = rawdata[12]
         else
-            QO.RequiredQuest = rawdata[13]
+            QO.RequiredQuestSingle = rawdata[13]
         end
-        QO.SubQuests = rawdata[14] --Quests that give questitems that are used in later quests (See STV manual)
         QO.QuestGroup = rawdata[15] --Quests that are part of the same group, example complete this group of quests to open the next one.
         QO.ExclusiveQuestGroup = rawdata[16]
         QO.NextQuestInChain = rawdata[22]
@@ -386,16 +382,19 @@ function QuestieDB:_GetSpecialNPC(NPCID)
     if rawdata then
         local NPC = {}
         NPC.id = NPCID
-        QuestieStreamLib:Load(rawdata)
-        NPC.name = QuestieStreamLib:ReadTinyString()
+        if not QuestieDB._stream then -- bad code
+            QuestieDB._stream = QuestieStreamLib:GetStream("b89")
+        end
+        QuestieDB._stream:Load(rawdata)
+        NPC.name = QuestieDB._stream:ReadTinyString()
         NPC.type = "monster"
         NPC.newFormatSpawns = {}; -- spawns should be stored like this: {{x, y, uimapid}, ...} so im creating a 2nd var to aid with moving to the new format
         NPC.spawns = {};
-        local count = QuestieStreamLib:ReadByte()
+        local count = QuestieDB._stream:ReadByte()
         for i=1,count do
-            local x = QuestieStreamLib:ReadShort() / 655.35
-            local y = QuestieStreamLib:ReadShort() / 655.35
-            local m = QuestieStreamLib:ReadByte() + 1400
+            local x = QuestieDB._stream:ReadShort() / 655.35
+            local y = QuestieDB._stream:ReadShort() / 655.35
+            local m = QuestieDB._stream:ReadByte() + 1400
             table.insert(NPC.newFormatSpawns, {x, y, m});
             local om = m;
             m = zoneDataUiMapIDToAreaID[m];

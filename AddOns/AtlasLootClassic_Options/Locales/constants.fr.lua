@@ -33,7 +33,6 @@ AL["Reset position of the |cff33ff99\"%s\"|r window."] = "Réinitialiser l'empla
 AL["Reset position of the |cff33ff99\"Minimap button\"|r."] = "Réinitialiser l'emplacement du |cff33ff99\"bouton de la minicarte\"|r."
 AL["Scale"] = "Échelle"
 AL["Show ID's in tooltip."] = "Afficher l'ID dans l'infobulle"
-AL["Show level range if aviable."] = "Afficher la plage de niveaux si possible."
 AL["Show minimap button."] = "Afficher le bouton de la minicarte"
 AL["Text"] = "Texte"
 AL["Use english WoWHead."] = "Utiliser WoWHead en Anglais."

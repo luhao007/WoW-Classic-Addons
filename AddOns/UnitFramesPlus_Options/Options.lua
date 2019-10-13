@@ -994,6 +994,10 @@ do
     UnitFramesPlus_OptionsFrame_PlayerFrameScaleSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["player"]["scale"] = value/100;
         UnitFramesPlus_PlayerFrameScale(UnitFramesPlusDB["player"]["scale"]);
+        local left = PlayerFrame:GetLeft();
+        local bottom = PlayerFrame:GetBottom();
+        UnitFramesPlusVar["player"]["x"] = left;
+        UnitFramesPlusVar["player"]["y"] = bottom;
         UnitFramesPlus_OptionsFrame_PlayerFrameScaleSliderText:SetText(UFP_OP_Scale..(UnitFramesPlusDB["player"]["scale"]*100).."%");
     end)
 
@@ -2368,6 +2372,10 @@ do
     UnitFramesPlus_OptionsFrame_PartyScaleSlider:SetScript("OnValueChanged", function(self, value)
         UnitFramesPlusDB["party"]["scale"] = value/100;
         UnitFramesPlus_PartyScale(UnitFramesPlusDB["party"]["scale"]);
+        local left = PartyMemberFrame1:GetLeft();
+        local bottom = PartyMemberFrame1:GetBottom();
+        UnitFramesPlusVar["party"]["x"] = left;
+        UnitFramesPlusVar["party"]["y"] = bottom;
         UnitFramesPlus_OptionsFrame_PartyScaleSliderText:SetText(UFP_OP_Scale..(UnitFramesPlusDB["party"]["scale"]*100).."%");
     end)
 

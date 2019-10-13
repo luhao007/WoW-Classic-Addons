@@ -1,12 +1,12 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 4.1.2 BETA 121 dff5a12
+## Version: 4.2.0 0 3bf27b9
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.1.2_dff5a12|r|cFFFF0000 BETA|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.2.0_3bf27b9|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -63,10 +63,13 @@ Modules\QuestieNameplate.lua
 Modules\QuestieCoordinates.lua
 Modules\QuestieJourney.lua
 #Modules\QuestieComms.lua
+Modules\QuestieSearchResults.lua
 Modules\QuestieSearch.lua
 Modules\QuestieTracker.lua
 Modules\QuestieOptions.lua
 Modules\QuestieProfessions.lua
+Modules\QuestieReputation.lua
+Modules\QuestieDBMIntegration.lua
 
 #Main
 Questie.lua

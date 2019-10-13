@@ -1,6 +1,6 @@
-## Interface: 11302
+﻿## Interface: 11302
 ## Author: Lag
-## Version: v1.2.3
+## Version: v1.3.0
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1, LibClassicItemSets-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: AtlasLootClassicDB
@@ -76,5 +76,6 @@ GUI\ModelFrame.lua
 GUI\SoundFrame.lua
 
 Addons\Addons.lua
+Addons\Sources.lua
 Addons\Favourites.lua
 Addons\Favourites_GUI.lua
