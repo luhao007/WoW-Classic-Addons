@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Dathwada
-## Version: v2.1.5
+## Version: v2.1.5b
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_TravelGuideClassicDB
 ## DefaultState: enabled

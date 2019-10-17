@@ -628,6 +628,11 @@ MAPPING = {
         'Title-cn': '专业助手',
         'Category': '物品'
     },
+    'TrinketMenu': {
+        'Title-cn': '饰品助手',
+        'Notes': '小巧独立的饰品管理器',
+        'Category': '物品'
+    },
     'tullaRange': {
         'Title-cn': '距离检测',
         'Notes': '目标距离过远时，将技能图标显示为红色',

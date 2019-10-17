@@ -459,6 +459,15 @@
 --			Changes IsPrimed() to no longer need the calendar to be checked in Classic.
 --			Forces Classic to query for completed quests at startup because calendar processing is not done (where it was done as a side effect).
 --			Creates an implementation of ProfessionExceeds() that works in Classic.
+--		102	Updates some quest/NPC information.
+--			Adds the NPCComment() function to give access to NPC comments.
+--			Fixes a Lua error associated with quests requiring garrison buildings.
+--		103	Updates some quest/NPC information.
+--			Removes reimplementation of GetMapNameByID().
+--			Removes call to load Blizzard_ArtifactUI since ElvUI has problems.
+--			Makes it so holiday codes for quests do not cause Lua errors in Classic, though still do not work as there is no Classic calendar.
+--			Adds support for Mechagnome and Vulpera races.
+--			Adds support for the "/grail eraseAndReloadCompletedQuests" slash command.
 --
 --	Known Issues
 --
@@ -509,7 +518,6 @@ local GetContainerNumSlots				= GetContainerNumSlots
 local GetCurrentMapDungeonLevel			= GetCurrentMapDungeonLevel
 local GetCVar							= GetCVar
 local GetFactionInfoByID				= GetFactionInfoByID
-local GetGuildLevel						= GetGuildLevel
 local GetInstanceInfo					= GetInstanceInfo
 local GetLocale							= GetLocale
 local GetMapContinents					= GetMapContinents
@@ -559,18 +567,6 @@ local _, _, versionValueFromToc = strfind(versionFromToc, "(%d+)")
 local Grail_File_Version = tonumber(versionValueFromToc)
 
 if nil == Grail or Grail.versionNumber < Grail_File_Version then
-
-	-- Blizzard is removing GetMapNameByID in the 8.x release
-	-- so instead of rewriting all the code that makes use of
-	-- it, I am reimplemting it here.  It is done here before
-	-- the setup of Grail because it is used in setting up of
-	-- some faux quest names.
-	if nil == GetMapNameByID then
-		GetMapNameByID = function(mapId)
-			local mapInfo = mapId and C_Map.GetMapInfo(mapId) or nil
-			return mapInfo and mapInfo.name or ""
-		end
-	end
 
 	--	Grail uses self.inCombat to determine whether the player is in combat.  This
 	--	is set true when PLAYER_REGEN_DISABLED is received, and cleared when
@@ -777,8 +773,8 @@ experimental = false,	-- currently this implementation does not reduce memory si
 			bitMaskRaceUnused7			=	0x00000400,
 			bitMaskRaceUnused8			=	0x00000800,
 			bitMaskRaceUnused9			=	0x00001000,
-			bitMaskRaceUnused10			=	0x00002000,
-			bitMaskRaceUnused11			=	0x00004000,
+		bitMaskRaceMechagnome			=	0x00002000,
+		bitMaskRaceVulpera				=	0x00004000,
 		bitMaskRaceHuman				=	0x00008000,
 		bitMaskRaceDwarf				=	0x00010000,
 		bitMaskRaceNightElf				=	0x00020000,
@@ -797,7 +793,7 @@ experimental = false,	-- currently this implementation does not reduce memory si
 		bitMaskRaceLightforgedDraenei	=	0x40000000,
 		bitMaskKulTiran					=	0x80000000,
 		-- Convenience values
-		bitMaskRaceAll			=	0xffff800f,
+		bitMaskRaceAll			=	0xffffe00f,
 
 		-- Enf of bit mask values
 
@@ -953,7 +949,7 @@ experimental = false,	-- currently this implementation does not reduce memory si
 					self.capabilities.usesFriendshipReputation = not self.existsClassic
 					self.capabilities.usesAchievements = not self.existsClassic
 					self.capabilities.usesGarrisons = not self.existsClassic
-					self.capabilities.usesArtifacts = not self.existsClassic
+					self.capabilities.usesArtifacts = false --not self.existsClassic
 					self.capabilities.usesCampaignInfo = not self.existsClassic
 					self.capabilities.usesCalendar = not self.existsClassic
 					self.capabilities.usesAzerothAsCosmicMap = self.existsClassic
@@ -971,6 +967,31 @@ experimental = false,	-- currently this implementation does not reduce memory si
 
 					-- We have loaded GrailDatabase at this point, but we need to ensure the structure is set up for first-time players as we rely on at least an empty structure existing
 					GrailDatabasePlayer = GrailDatabasePlayer or {}
+
+					self.quest.name = {
+						[600000]=Grail:_GetMapNameByID(19)..' '..REQUIREMENTS,
+						[600001]=Grail:_GetMapNameByID(19)..' '..FACTION_ALLIANCE..' '..REQUIREMENTS,
+						[600002]=Grail:_GetMapNameByID(19)..' '..FACTION_HORDE..' '..REQUIREMENTS,
+						}
+
+					if self.existsClassic then	-- redefine races that are available
+						self.races = {
+							-- [1] is Blizzard API return (non-localized)
+							-- [2] is localized male
+							-- [3] is localized female
+							-- [4] is bitmap value
+							['E'] = { 'NightElf', 'Night Elf', 'Night Elf', 0x00020000 },
+							['F'] = { 'Dwarf',    'Dwarf',     'Dwarf',     0x00010000 },
+							['H'] = { 'Human',    'Human',     'Human',     0x00008000 },
+							['L'] = { 'Troll',    'Troll',     'Troll',     0x01000000 },
+							['N'] = { 'Gnome',    'Gnome',     'Gnome',     0x00040000 },
+							['O'] = { 'Orc',      'Orc',       'Orc',       0x00200000 },
+-- Do not ever use P because it will interfere with SP quest code
+							['T'] = { 'Tauren',   'Tauren',    'Tauren',    0x00800000 },
+							['U'] = { 'Scourge',  'Undead',    'Undead',    0x00400000 },
+							}
+						self.bitMaskRaceAll = 0x01e78000
+					end
 
 					if self.battleForAzeroth then
 						self.zonesForLootingTreasure = {
@@ -1015,12 +1036,12 @@ experimental = false,	-- currently this implementation does not reduce memory si
  							[1462] = true, -- Mechagon Island 8.2
 							}
 						self.quest.name = {
-							[51570]=GetMapNameByID(862),	-- Zuldazar
-							[51571]=GetMapNameByID(863),	-- Nazmir
-							[51572]=GetMapNameByID(864),	-- Vol'dun
-							[600000]=GetMapNameByID(17)..' '..REQUIREMENTS,
-							[600001]=GetMapNameByID(17)..' '..FACTION_ALLIANCE..' '..REQUIREMENTS,
-							[600002]=GetMapNameByID(17)..' '..FACTION_HORDE..' '..REQUIREMENTS,
+							[51570]=Grail:_GetMapNameByID(862),	-- Zuldazar
+							[51571]=Grail:_GetMapNameByID(863),	-- Nazmir
+							[51572]=Grail:_GetMapNameByID(864),	-- Vol'dun
+							[600000]=Grail:_GetMapNameByID(17)..' '..REQUIREMENTS,
+							[600001]=Grail:_GetMapNameByID(17)..' '..FACTION_ALLIANCE..' '..REQUIREMENTS,
+							[600002]=Grail:_GetMapNameByID(17)..' '..FACTION_HORDE..' '..REQUIREMENTS,
 							}
 					end
 
@@ -1067,9 +1088,10 @@ experimental = false,	-- currently this implementation does not reduce memory si
 					if self.forceLocalizedQuestNameLoad then
 						self:LoadLocalizedQuestNames()
 					end
-					if self.capabilities.usesArtifacts then
-						self:LoadAddOn("Blizzard_ArtifactUI")
-					end
+-- This was causing problems with ElvUI and is removed since we don't do this.
+--					if self.capabilities.usesArtifacts then
+--						self:LoadAddOn("Blizzard_ArtifactUI")
+--					end
 
 					--
 					--	Create the tooltip that we use for getting information like NPC name
@@ -1213,8 +1235,8 @@ experimental = false,	-- currently this implementation does not reduce memory si
 						-- X is a table whose key is a group number and whose value is a table of quests interested in that group for accepting.
 						-- Y is a table whose key is a spellId that has ever been experienced and whose value is a table of quests associated with it
 						-- Z is a table whose key is a spellId that has ever been cast and whose value is a table of quests associated with it
-						self.questStatusCache = { ["L"] = {}, ["P"] = {}, ["R"] = {}, ["I"] = {}, ["Q"] = {}, ["V"] = {}, ["A"] = {}, ["B"] = {}, ["D"] = {}, ["C"] = {}, ["E"] = {}, ["F"] = {}, ["S"] = {}, ["Y"] = {}, ["Z"] = {}, ["G"] = {}, ["H"] = {}, ["W"] = {}, ["X"] = {}, }
-						self.npcStatusCache = { ["L"] = {}, ["P"] = {}, ["R"] = {}, ["I"] = {}, ["Q"] = {}, ["V"] = {}, ["A"] = {}, ["B"] = {}, ["D"] = {}, ["C"] = {}, ["E"] = {}, ["F"] = {}, ["S"] = {}, ["Y"] = {}, ["Z"] = {}, ["G"] = {}, ["H"] = {}, ["W"] = {}, ["X"] = {}, }
+						self.questStatusCache = { ["A"] = {}, ["B"] = {}, ["C"] = {}, ["D"] = {}, ["E"] = {}, ["F"] = {}, ["G"] = {}, ["H"] = {}, ["I"] = {}, ["L"] = {}, ["M"] = {}, ["P"] = {}, ["Q"] = {}, ["R"] = {}, ["S"] = {}, ["V"] = {}, ["W"] = {}, ["X"] = {}, ["Y"] = {}, ["Z"] = {}, }
+						self.npcStatusCache = { ["A"] = {}, ["B"] = {}, ["C"] = {}, ["D"] = {}, ["E"] = {}, ["F"] = {}, ["G"] = {}, ["H"] = {}, ["I"] = {}, ["L"] = {}, ["M"] = {}, ["P"] = {}, ["Q"] = {}, ["R"] = {}, ["S"] = {}, ["V"] = {}, ["W"] = {}, ["X"] = {}, ["Y"] = {}, ["Z"] = {}, }
 					end
 
 -- TODO: Move this to the place where the rest of the classes are done
@@ -1327,7 +1349,7 @@ experimental = false,	-- currently this implementation does not reduce memory si
 						else
 							mapName = self:_GetMapNameByID(mapId)
 							if "" ~= mapName then
-								nameToUse = mapName
+								local nameToUse = mapName
 								while nil ~= self.zoneNameMapping[nameToUse] do
 									nameToUse = nameToUse .. ' '
 								end
@@ -1442,6 +1464,14 @@ experimental = false,	-- currently this implementation does not reduce memory si
 						end
 					end)
 					self:RegisterSlashOption("clearstatuses", "|cFF00FF00clearstatuses|r => clears the status of all quests allowing them to be recomputed", function()
+						wipe(self.questStatuses)
+						self.questStatuses = {}
+						self:_CoalesceDelayedNotification("Status", 0)
+					end)
+					self:RegisterSlashOption("eraseAndReloadCompletedQuests", "|cFF00FF00eraseAndReloadCompletedQuests|r => reloads the completed quest list from Blizzard erasing the current list", function()
+						GrailDatabasePlayer["completedQuests"] = {}
+						QueryQuestsCompleted()
+						-- And the following code is the same as the clearstatuses command...
 						wipe(self.questStatuses)
 						self.questStatuses = {}
 						self:_CoalesceDelayedNotification("Status", 0)
@@ -1826,7 +1856,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 						end
 						local link
 						for counter = 1, GetNumQuestLogRewards() do
-							itemId = string.match(GetQuestLogItemLink("reward", counter) or '', 'item:(%d+):')
+							local itemId = string.match(GetQuestLogItemLink("reward", counter) or '', 'item:(%d+):')
 							if itemId then
 								local _, _, numberItems = GetQuestLogRewardInfo(counter)
 								rewardString = rewardString .. ":R" .. itemId .. "-" .. numberItems
@@ -1834,13 +1864,13 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 						end
 -- TODO: Figure out how to handle current rewards (like Apexis Crystals)
 --						for counter = 1, GetNumQuestLogRewardCurrencies() do
---							itemId = string.match(GetQuestLogItemLink("reward", counter) or '', 'item:(%d+):')
+--							local itemId = string.match(GetQuestLogItemLink("reward", counter) or '', 'item:(%d+):')
 --							if itemId then
 --								rewardString = rewardString .. ":O" .. itemId
 --							end
 --						end
 						for counter = 1, GetNumQuestLogChoices() do
-							itemId = string.match(GetQuestLogItemLink("choice", counter) or '', 'item:(%d+):')
+							local itemId = string.match(GetQuestLogItemLink("choice", counter) or '', 'item:(%d+):')
 							if itemId then
 								rewardString = rewardString .. ":C" .. itemId
 							end
@@ -2312,9 +2342,6 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			--	[600000]='Blasted Lands Phase Requirements'
 			--	[600001]='Blasted Lands Alliance Phase Requirements'
 			--	[600002]='Blasted Lands Horde Phase Requirements'
-				[600000]=GetMapNameByID(19)..' '..REQUIREMENTS,
-				[600001]=GetMapNameByID(19)..' '..FACTION_ALLIANCE..' '..REQUIREMENTS,
-				[600002]=GetMapNameByID(19)..' '..FACTION_HORDE..' '..REQUIREMENTS,
 				},
 
 			-- The localized description of the quest.
@@ -2431,7 +2458,9 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			['N'] = { 'Gnome',    'Gnome',     'Gnome',     0x00040000 },
 			['O'] = { 'Orc',      'Orc',       'Orc',       0x00200000 },
 -- Do not ever use P because it will interfere with SP quest code
+			['Q'] = { 'Mechagnome', 'Mechagnome', 'Mechagnome', 0x00002000 },
 			['R'] = { 'Nightborne', 'Nightborne', 'Nightborne', 0x00000002 },
+			['S'] = { 'Vulpera', 'Vulpera', 'Vulpera', 0x00004000 },
 			['T'] = { 'Tauren',   'Tauren',    'Tauren',    0x00800000 },
 			['U'] = { 'Scourge',  'Undead',    'Undead',    0x00400000 },
 			['V'] = { 'VoidElf',  'Void Elf',  'Void Elf',	0x20000000 },
@@ -3819,7 +3848,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 				soughtHolidayName = self.holidayMapping['f']
 			end
 			-- sometime between release 23478 and 23578 CalendarGetDayEvent was removed, replaced with C_Calendar.GetDayEvent which returns a table
-			local CalendarGetNumDayEvents = self.battleForAzeroth and C_Calendar.GetNumDayEvents or CalendarGetNumDayEvents
+			local CalendarGetNumDayEvents = (self.existsClassic and function() return 0 end) or (self.battleForAzeroth and C_Calendar.GetNumDayEvents) or CalendarGetNumDayEvents
 			local numEvents = CalendarGetNumDayEvents(0, day)
 			local title, calHour, calMinute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty, inviteType
 			for i = 1, numEvents do
@@ -4192,7 +4221,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 				end
 				if nil ~= self.GDE.learned.QUEST_NAME then
 					for _, questNameLine in pairs(self.GDE.learned.QUEST_NAME) do
-						local locale, release, questId, questName = strsplit('|', questNameLine)
+						local loc, release, questId, questName = strsplit('|', questNameLine)
 						if loc == locale and nil ~= questId and (nil == self.quest.name[questId] or self.quest.name[questId] ~= questName) then
 							self.quest.name[questId] = questName
 						end
@@ -4988,7 +5017,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 							elseif 'X' == code then
 								--	The inherent nature of an X code makes is such that only one has meaning, and C codes should not be combined
 								bitValue = self.classToBitMapping[codeValue]
-								if nil ~= bitValue and not founcCCode then
+								if nil ~= bitValue and not foundCCode then
 --									obtainersValue = bitband(obtainersValue, bitbnot(self.bitMaskClassAll))
 --									obtainersValue = obtainersValue + self.bitMaskClassAll - bitValue
 									foundXCode = true
@@ -6287,7 +6316,19 @@ end
 
 		--	This is just a front for the Blizzard routine except with our special processing for our fake zones
 		_GetMapNameByID = function(self, mapId)
-			return 1 == mapId and ADVENTURE_JOURNAL or GetMapNameByID(mapId)
+			local retval = ""
+			if 1 == mapId then
+				retval = ADVENTURE_JOURNAL
+			elseif GetMapNameByID then
+				retval = GetMapNameByID(mapId)
+			else
+				-- Blizzard is removing GetMapNameByID in the 8.x release
+				-- so its functionality is reproduced here with more modern
+				-- API usage.
+				local mapInfo = mapId and C_Map.GetMapInfo(mapId) or nil
+				retval = mapInfo and mapInfo.name or ""
+			end
+			return retval
 		end,
 
 		---
@@ -7588,7 +7629,28 @@ end
 		--	@return A table of failures if any, nil otherwise.
 		--	@see StatusCode
 		MeetsRequirementFaction = function(self, questId, soughtFaction)
-			return self:_MeetsRequirement(questId, 'F', soughtFaction)
+			local retval = self:_MeetsRequirement(questId, 'F', soughtFaction)
+			if retval then
+				if nil == soughtFaction then
+					soughtFaction = self.playerFaction
+				end
+				local soughtFactionCode = 'A'
+				if 'Horde' == soughtFaction then
+					soughtFactionCode = 'H'
+				end
+				local targetNPCs = self:QuestNPCAccepts(questId)
+				local foundAvailableNPC = (nil == targetNPCs)
+				if not foundAvailableNPC then
+					for _, npcId in pairs(targetNPCs) do
+						local factionCode = self:_NPCFaction(npcId)
+						if nil == factionCode or soughtFactionCode == factionCode then
+							foundAvailableNPC = true
+						end
+					end
+				end
+				retval = foundAvailableNPC
+			end
+			return retval
 		end,
 
 		---
@@ -7789,6 +7851,11 @@ end
 --			if nil ~= failures then failures = {failures} end
 --			return retval, failures
 --		end,
+
+		NPCComment = function(self, npcId)
+			npcId = tonumber(npcId)
+			return nil ~= npcId and self.npc.comment[npcId] or nil
+		end,
 
 		_NPCFaction = function(self, npcId)
 			npcId = tonumber(npcId)
@@ -8298,7 +8365,7 @@ print("end:", strgsub(controlTable.something, "|", "*"))
 		--	contents.  The support routine uses a mapping to take quest codes and assign them to the proper internal table
 		--	entries.
 		_ProcessQuestsForHandlers = function(self, questId, tableOrString, destinationTable)
-			local controlTable = { questId = questId, output1 = desinationTable, func = self._ProcessQuestsForHandlersSupport }
+			local controlTable = { questId = questId, output1 = destinationTable, func = self._ProcessQuestsForHandlersSupport }
 			self._ProcessCodeTable(tableOrString, controlTable)
 		end,
 
@@ -10252,6 +10319,26 @@ if locale == "deDE" then
 		G['G'][3] = 'Goblin'
 		G['A'][2] = 'Pandaren'
 		G['A'][3] = 'Pandaren'
+	G['C'][2] = 'Dunkeleisenzwerg'
+	G['C'][3] = 'Dunkeleisenzwergin'
+	G['I'][2] = 'Lichtgeschmiedeter Draenei'
+	G['I'][3] = 'Lichtgeschmiedete Draenei'
+	G['J'][2] = "Mag'har"
+	G['J'][3] = "Mag'har"
+	G['K'][2] = 'Kul Tiraner'
+	G['K'][3] = 'Kul Tiranerin'
+	G['M'][2] = 'Hochbergtauren'
+	G['M'][3] = 'Hochbergtauren'
+	G['Q'][2] = 'Mechagnom'
+	G['Q'][3] = 'Mechagnom'
+	G['R'][2] = 'Nachtgeborener'
+	G['R'][3] = 'Nachtgeborene'
+		G['S'][2] = 'Vulpera'
+		G['S'][3] = 'Vulpera'
+	G['V'][2] = 'Leerenelf'
+	G['V'][3] = 'Leerenelfe'
+	G['Z'][2] = 'Zandalaritroll'
+	G['Z'][3] = 'Zandalaritroll'
 elseif locale == "esES" then
 	me.bodyGuardLevel = { 'Guardaespaldas', 'Escolta leal', 'Compañero del alma' }
 	me.friendshipLevel = { 'Extraño', 'Conocido', 'Colega', 'Amigo', 'Buen amigo', 'Mejor amigo' }

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Revel of Pagle
-## Version: 1.17
+## Version: 1.18
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_NPCsClassicDB
 
@@ -9,6 +9,11 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0NPC|r
 
 
+libs\AceHook-3.0\AceHook-3.0.lua
+libs\LibUIDropDownMenu\LibUIDropDownMenu.xml
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+libs\LibQTip-1.0\LibQTip-1.0.lua
 locales\Locales.xml
 data.lua
 vendorData.lua
