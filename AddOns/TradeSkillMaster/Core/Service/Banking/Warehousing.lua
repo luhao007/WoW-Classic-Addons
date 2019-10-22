@@ -17,24 +17,24 @@ local private = {}
 -- ============================================================================
 
 function Warehousing.MoveGroupsToBank(callback, groups)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.GetNumToMoveToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Warehousing.MoveGroupsToBags(callback, groups)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveToBags)
 	TSM.Banking.MoveToBag(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Warehousing.RestockBags(callback, groups)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveRestock)
 	TSM.Banking.MoveToBag(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 
@@ -68,7 +68,7 @@ function private.GetNumToMoveToBags(itemString, numToMove)
 	if operationSettings.moveQuantity ~= 0 then
 		numToMove = min(numToMove, operationSettings.moveQuantity)
 	end
-	return TSMAPI_FOUR.Util.Floor(numToMove, operationSettings.stackSize ~= 0 and operationSettings.stackSize or 1)
+	return TSM.Math.Floor(numToMove, operationSettings.stackSize ~= 0 and operationSettings.stackSize or 1)
 end
 
 function private.GetNumToMoveRestock(itemString, numToMove)
@@ -84,5 +84,5 @@ function private.GetNumToMoveRestock(itemString, numToMove)
 		numToMove = max(numToMove - operationSettings.restockKeepBankQuantity, 0)
 	end
 	numToMove = min(numToMove, operationSettings.restockQuantity - numInBags)
-	return TSMAPI_FOUR.Util.Floor(numToMove, operationSettings.restockStackSize ~= 0 and operationSettings.restockStackSize or 1)
+	return TSM.Math.Floor(numToMove, operationSettings.restockStackSize ~= 0 and operationSettings.restockStackSize or 1)
 end

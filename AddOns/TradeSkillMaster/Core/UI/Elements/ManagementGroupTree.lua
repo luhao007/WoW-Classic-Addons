@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ManagementGroupTree = TSMAPI_FOUR.Class.DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
+local ManagementGroupTree = TSM.Lib.Class.DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
 TSM.UI.ManagementGroupTree = ManagementGroupTree
 local private = { rowFrameLookup = {} }
 local SCROLLBAR_WIDTH = 16
@@ -214,7 +214,7 @@ end
 
 function ManagementGroupTree._SetCollapsed(self, data, collapsed)
 	self.__super:_SetCollapsed(data, collapsed)
-	if collapsed and self._selectedGroup ~= data and strmatch(self._selectedGroup, "^"..TSMAPI_FOUR.Util.StrEscape(data)) then
+	if collapsed and self._selectedGroup ~= data and strmatch(self._selectedGroup, "^"..TSM.String.Escape(data)) then
 		-- we collapsed a parent of the selected group, so select the group we just collapsed instead
 		self:SetSelectedGroup(data, true)
 	end

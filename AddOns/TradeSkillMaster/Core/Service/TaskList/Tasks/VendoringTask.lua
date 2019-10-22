@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local VendoringTask = TSMAPI_FOUR.Class.DefineClass("VendoringTask", TSM.TaskList.ItemTask)
+local VendoringTask = TSM.Lib.Class.DefineClass("VendoringTask", TSM.TaskList.ItemTask)
 local L = TSM.L
 TSM.TaskList.VendoringTask = VendoringTask
 local private = {
@@ -47,7 +47,7 @@ end
 -- ============================================================================
 
 function VendoringTask.OnButtonClick(self)
-	local itemsToBuy = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemsToBuy = TSM.TempTable.Acquire()
 	local query = TSM.Vendoring.Buy.CreateMerchantQuery()
 		:Select("itemString")
 	for _, itemString in query:Iterator() do
@@ -61,7 +61,7 @@ function VendoringTask.OnButtonClick(self)
 		self:_RemoveItem(itemString, quantity)
 		didBuy = true
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemsToBuy)
+	TSM.TempTable.Release(itemsToBuy)
 
 	if didBuy then
 		TSM.TaskList.OnTaskUpdated(self)

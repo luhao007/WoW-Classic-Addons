@@ -41,10 +41,10 @@ local SOURCE_TEXT_LIST = {
 	L["AH (Crafting)"],
 }
 if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	TSMAPI_FOUR.Util.TableRemoveByValue(SOURCE_LIST, "guildBank")
-	TSMAPI_FOUR.Util.TableRemoveByValue(SOURCE_LIST, "altGuildBank")
-	TSMAPI_FOUR.Util.TableRemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
-	TSMAPI_FOUR.Util.TableRemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
+	TSM.Table.RemoveByValue(SOURCE_LIST, "guildBank")
+	TSM.Table.RemoveByValue(SOURCE_LIST, "altGuildBank")
+	TSM.Table.RemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
+	TSM.Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
 end
 assert(#SOURCE_LIST == #SOURCE_TEXT_LIST)
 local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
@@ -257,16 +257,16 @@ end
 
 function private.UpdateSourceRows(setupFrame)
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
-		TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
+		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
+		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
 	end
-	local texts = TSMAPI_FOUR.Util.AcquireTempTable()
-	local sources = TSMAPI_FOUR.Util.AcquireTempTable()
+	local texts = TSM.TempTable.Acquire()
+	local sources = TSM.TempTable.Acquire()
 	for i = 1, #SOURCE_LIST do
 		wipe(texts)
 		wipe(sources)
 		for j = 1, #SOURCE_LIST do
-			local index = TSMAPI_FOUR.Util.TableKeyByValue(TSM.db.profile.gatheringOptions.sources, SOURCE_LIST[j])
+			local index = TSM.Table.KeyByValue(TSM.db.profile.gatheringOptions.sources, SOURCE_LIST[j])
 			if not index or index >= i then
 				tinsert(texts, SOURCE_TEXT_LIST[j])
 				tinsert(sources, SOURCE_LIST[j])
@@ -282,8 +282,8 @@ function private.UpdateSourceRows(setupFrame)
 			:SetHintText(L["Select a Source"])
 			:SetSelectedItemByKey(TSM.db.profile.gatheringOptions.sources[i], true)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(texts)
-	TSMAPI_FOUR.Util.ReleaseTempTable(sources)
+	TSM.TempTable.Release(texts)
+	TSM.TempTable.Release(sources)
 end
 
 
@@ -313,14 +313,14 @@ function private.CrafterDropdownOnSelectionChanged(dropdown)
 end
 
 function private.ProfessionDropdownOnSelectionChanged(dropdown)
-	local professions = TSMAPI_FOUR.Util.AcquireTempTable()
+	local professions = TSM.TempTable.Acquire()
 	for _, profession in ipairs(TSM.Crafting.Gathering.GetProfessionList()) do
 		if dropdown:ItemIsSelected(profession) then
 			tinsert(professions, profession)
 		end
 	end
 	TSM.Crafting.Gathering.SetProfessions(professions)
-	TSMAPI_FOUR.Util.ReleaseTempTable(professions)
+	TSM.TempTable.Release(professions)
 end
 
 function private.SourceDropdownOnSelectionChanged(dropdown)
@@ -381,5 +381,5 @@ function private.UpdateButtonState()
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSMAPI_FOUR.Util.SeparatedStrContains(row:GetField("players"), ",", player)
+	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
 end

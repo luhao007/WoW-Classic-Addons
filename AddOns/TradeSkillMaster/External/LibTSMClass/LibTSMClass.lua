@@ -1,25 +1,30 @@
--- ------------------------------------------------------------------------------ --
---                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
--- ------------------------------------------------------------------------------ --
+--- LibTSMClass Library
+-- Allows for OOP in lua through the implementation of classes. Many features of proper classes are supported including
+-- inhertiance, polymorphism, and virtual methods.
+-- @author TradeSkillMaster Team (admin@tradeskillmaster.com)
+-- @license MIT
+-- @module LibTSMClass
 
---- Class TSMAPI_FOUR Functions
--- @module Class
-
-TSMAPI_FOUR.Class = {}
+local Lib = {}
 local private = { classInfo = {}, instInfo = {}, constructTbl = nil }
 -- Set the keys as weak so that instances of classes can be GC'd (classes are never GC'd)
 setmetatable(private.instInfo, { __mode = "k" })
 local SPECIAL_PROPERTIES = {
 	__init = true,
 	__tostring = true,
+	__dump = true,
 	__class = true,
 	__isa = true,
 	__super = true,
 	__name = true,
+	__as = true,
+}
+local RESERVED_KEYS = {
+	__super = true,
+	__isa = true,
+	__class = true,
+	__name = true,
+	__as = true,
 }
 local DEFAULT_INST_FIELDS = {
 	__init = function(self)
@@ -36,23 +41,20 @@ local DEFAULT_INST_FIELDS = {
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Public Library Functions
 -- ============================================================================
 
---- Defines a new class.
--- @tparam string name The name of the class
--- @tparam[opt] class superclass The class to make this class a subclass of
--- @param[opt] ... Modifiers for the class (currently supports: `ABSTRACT`)
--- @treturn class The new class
-function TSMAPI_FOUR.Class.DefineClass(name, superclass, ...)
-	assert(type(name) == "string", "Invalid class name: "..tostring(name), 1)
+function Lib.DefineClass(name, superclass, ...)
+	if type(name) ~= "string" then
+		error("Invalid class name: "..tostring(name), 2)
+	end
 	local abstract = false
 	for i = 1, select('#', ...) do
 		local modifier = select(i, ...)
 		if modifier == "ABSTRACT" then
 			abstract = true
 		else
-			error("Invalid modifier: "..tostring(modifier))
+			error("Invalid modifier: "..tostring(modifier), 2)
 		end
 	end
 
@@ -70,22 +72,16 @@ function TSMAPI_FOUR.Class.DefineClass(name, superclass, ...)
 				private.classInfo[class].superStatic[key] = { class = superclass, value = value }
 			end
 		end
+		private.classInfo[superclass].subclassed = true
 		superclass = superclass.__super
 	end
 	return class
 end
 
-
---- Instantiates a class using an existing table.
--- This can be used to preserve existing fields in the table while upgrading it to an instance of a class.
--- @tparam table tbl The table to use for the instantiated object
--- @tparam class class The class to instantiate
--- @param[opt] ... Parameters to pass to the class construtor
--- @treturn object The new class instance
-function TSMAPI_FOUR.Class.ConstructWithTable(tbl, class, ...)
+function Lib.ConstructWithTable(tbl, class, ...)
 	private.constructTbl = tbl
 	local inst = class(...)
-	assert(not private.constructTbl and inst == tbl)
+	assert(not private.constructTbl and inst == tbl, "Internal error!")
 	return inst
 end
 
@@ -97,7 +93,9 @@ end
 
 private.INST_MT = {
 	__newindex = function(self, key, value)
-		assert(key ~= "__super" and key ~= "__isa" and key ~= "__class", "Can't set reserved key: "..tostring(key))
+		if RESERVED_KEYS[key] then
+			error("Can't set reserved key: "..tostring(key), 2)
+		end
 		if private.classInfo[self.__class].static[key] ~= nil then
 			private.classInfo[self.__class].static[key] = value
 		elseif not private.instInfo[self].hasSuperclass then
@@ -119,20 +117,21 @@ private.INST_MT = {
 			return res
 		end
 
-		-- check if it's the special __super field
+		-- check if it's the special __super field or __as method
 		if key == "__super" then
+			if not instInfo.hasSuperclass then
+				error("The class of this instance has no superclass.", 2)
+			end
 			-- The class of the current class method we are in, or nil if we're not in a class method.
 			local methodClass = instInfo.methodClass
 			-- We can only access the superclass within a class method and will use the class which defined that method
 			-- as the base class to jump to the superclass of, regardless of what class the instance actually is.
 			if not methodClass then
-				error("The superclass can only be referenced within a class method.")
+				error("The superclass can only be referenced within a class method.", 2)
 			end
-			instInfo.currentClass = private.classInfo[instInfo.currentClass or methodClass].superclass
-			if not instInfo.currentClass then
-				error("No super class found.")
-			end
-			return self
+			return private.InstAs(self, private.classInfo[instInfo.currentClass or methodClass].superclass)
+		elseif key == "__as" then
+			return private.InstAs
 		end
 
 		-- reset the current class since we're not continuing the __super chain
@@ -175,14 +174,22 @@ private.INST_MT = {
 
 private.CLASS_MT = {
 	__newindex = function(self, key, value)
-		assert(not private.classInfo[self].static[key], "Can't modify or override static members")
-		assert(key ~= "__super" and key ~= "__isa" and key ~= "__class", "Reserved word: "..key)
+		local classInfo = private.classInfo[self]
+		if classInfo.subclassed then
+			error("Can't modify classes after they are subclassed", 2)
+		end
+		if classInfo.static[key] then
+			error("Can't modify or override static members", 2)
+		end
+		if RESERVED_KEYS[key] then
+			error("Reserved word: "..tostring(key), 2)
+		end
 		if type(value) == "function" then
 			-- We wrap class methods so that within them, the instance appears to be of the defining class
-			private.classInfo[self].static[key] = function(inst, ...)
+			classInfo.static[key] = function(inst, ...)
 				local instInfo = private.instInfo[inst]
 				if not instInfo.isClassLookup[self] then
-					error(format("Attempt to call class method on non-object (%s)!", tostring(inst)))
+					error(format("Attempt to call class method on non-object (%s)!", tostring(inst)), 2)
 				end
 				if not instInfo.hasSuperclass then
 					-- don't need to worry about methodClass so just call the function directly
@@ -194,7 +201,7 @@ private.CLASS_MT = {
 				end
 			end
 		else
-			private.classInfo[self].static[key] = value
+			classInfo.static[key] = value
 		end
 	end,
 	__index = function(self, key)
@@ -206,13 +213,15 @@ private.CLASS_MT = {
 		elseif key == "__super" then
 			return private.classInfo[self].superclass
 		end
-		error("Class type is write-only")
+		error("Class type is write-only", 2)
 	end,
 	__tostring = function(self)
 		return "class:"..private.classInfo[self].name
 	end,
 	__call = function(self, ...)
-		assert(not private.classInfo[self].abstract, "Attempting to instantiate an abstract class!")
+		if private.classInfo[self].abstract then
+			error("Attempting to instantiate an abstract class!", 2)
+		end
 		-- Create a new instance of this class
 		local inst = private.constructTbl or {}
 		local instStr = strmatch(tostring(inst), "table:[^0-9a-fA-F]*([0-9a-fA-F]+)")
@@ -249,7 +258,9 @@ private.CLASS_MT = {
 			end
 			private.constructTbl = nil
 		end
-		assert(select("#", inst:__init(...)) == 0, "__init must not return any values")
+		if select("#", inst:__init(...)) > 0 then
+			error("__init must not return any values", 2)
+		end
 		return inst
 	end,
 	__metatable = false,
@@ -269,6 +280,23 @@ end
 
 function private.InstIsA(inst, targetClass)
 	return private.instInfo[inst].isClassLookup[targetClass]
+end
+
+function private.InstAs(inst, targetClass)
+	local instInfo = private.instInfo[inst]
+	if not targetClass or not instInfo.isClassLookup[targetClass] then
+		error(format("Object (%s) is not an instance of the requested class (%s)!", tostring(inst), tostring(targetClass)), 2)
+	end
+	-- For classes with no superclass, we don't go through the __index metamethod, so can't use __as
+	if not instInfo.hasSuperclass then
+		error("The class of this instance has no superclass.", 2)
+	end
+	-- We can only access the superclass within a class method.
+	if not instInfo.methodClass then
+		error("The superclass can only be referenced within a class method.", 2)
+	end
+	instInfo.currentClass = targetClass
+	return inst
 end
 
 function private.ClassIsA(class, targetClass)
@@ -301,4 +329,29 @@ function private.InstDump(inst)
 		end
 	end
 	print("}")
+end
+
+
+
+-- ============================================================================
+-- Initialization Code
+-- ============================================================================
+
+do
+	-- register with LibStub
+	local LibTSMClass = LibStub:NewLibrary("LibTSMClass", 1)
+	if LibTSMClass then
+		for k, v in pairs(Lib) do
+			LibTSMClass[k] = v
+		end
+	end
+
+	-- register with TSM
+	local addonName, addonTable = ...
+	if addonName == "TradeSkillMaster" then
+		addonTable.Lib.Class = {}
+		for k, v in pairs(Lib) do
+			addonTable.Lib.Class[k] = v
+		end
+	end
 end

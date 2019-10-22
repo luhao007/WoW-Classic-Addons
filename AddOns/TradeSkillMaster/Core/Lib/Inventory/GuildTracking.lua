@@ -40,11 +40,11 @@ function GuildTracking.OnEnable()
 		:AddIndex("autoBaseItemString")
 		:Commit()
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankFrameOpenedHandler)
-		TSMAPI_FOUR.Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankFrameClosedHandler)
-		TSMAPI_FOUR.Event.Register("GUILDBANKBAGSLOTS_CHANGED", private.GuildBankBagSlotsChangedHandler)
+		TSM.Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankFrameOpenedHandler)
+		TSM.Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankFrameClosedHandler)
+		TSM.Event.Register("GUILDBANKBAGSLOTS_CHANGED", private.GuildBankBagSlotsChangedHandler)
 		TSMAPI_FOUR.Delay.AfterFrame(1, private.GetGuildName)
-		TSMAPI_FOUR.Event.Register("PLAYER_GUILD_UPDATE", private.GetGuildName)
+		TSM.Event.Register("PLAYER_GUILD_UPDATE", private.GetGuildName)
 	end
 end
 
@@ -95,14 +95,14 @@ function private.GetGuildName()
 	TSM.db.factionrealm.internalData.characterGuilds[PLAYER_NAME] = PLAYER_GUILD
 
 	-- clean up any guilds with no players in them
-	local validGuilds = TSMAPI_FOUR.Util.AcquireTempTable()
+	local validGuilds = TSM.TempTable.Acquire()
 	for _, character in TSM.db:FactionrealmCharacterByAccountIterator() do
 		local guild = TSM.db.factionrealm.internalData.characterGuilds[character]
 		if guild then
 			validGuilds[guild] = true
 		end
 	end
-	local toRemove = TSMAPI_FOUR.Util.AcquireTempTable()
+	local toRemove = TSM.TempTable.Acquire()
 	for character, guild in pairs(TSM.db.factionrealm.internalData.characterGuilds) do
 		if not validGuilds[guild] then
 			tinsert(toRemove, character)
@@ -120,8 +120,8 @@ function private.GetGuildName()
 	for _, guild in ipairs(toRemove) do
 		TSM.Inventory.WipeGuildQuantity(guild)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(toRemove)
-	TSMAPI_FOUR.Util.ReleaseTempTable(validGuilds)
+	TSM.TempTable.Release(toRemove)
+	TSM.TempTable.Release(validGuilds)
 
 	TSM.db.factionrealm.internalData.guildVaults[PLAYER_GUILD] = TSM.db.factionrealm.internalData.guildVaults[PLAYER_GUILD] or {}
 	TSM.Inventory.OnGuildLoaded()
@@ -169,7 +169,7 @@ function private.ScanGuildBank()
 			for slot = 1, GUILD_BANK_TAB_SLOTS do
 				local itemLink = GetGuildBankItemLink(tab, slot)
 				if itemLink then
-					local slotId = TSMAPI_FOUR.Util.JoinSlotId(tab, slot)
+					local slotId = TSM.SlotId.Join(tab, slot)
 					local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemLink)
 					if baseItemString == TSM.CONST.PET_CAGE_ITEMSTRING then
 						private.pendingPetSlotIds[slotId] = true
@@ -206,10 +206,10 @@ end
 
 function private.ScanPetsDeferred()
 	local numPetSlotIdsScanned = 0
-	local toRemove = TSMAPI_FOUR.Util.AcquireTempTable()
+	local toRemove = TSM.TempTable.Acquire()
 	private.db:BulkInsertStart()
 	for slotId in pairs(private.pendingPetSlotIds) do
-		local tab, slot = TSMAPI_FOUR.Util.SplitSlotId(slotId)
+		local tab, slot = TSM.SlotId.Split(slotId)
 		local speciesId, level, rarity = GameTooltip:SetGuildBankItem(tab, slot)
 		if speciesId and level and rarity then
 			local itemString = "p:"..speciesId..":"..level..":"..rarity
@@ -232,7 +232,7 @@ function private.ScanPetsDeferred()
 	for _, slotId in ipairs(toRemove) do
 		private.pendingPetSlotIds[slotId] = nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(toRemove)
+	TSM.TempTable.Release(toRemove)
 
 	if next(private.pendingPetSlotIds) then
 		-- there are more to scan

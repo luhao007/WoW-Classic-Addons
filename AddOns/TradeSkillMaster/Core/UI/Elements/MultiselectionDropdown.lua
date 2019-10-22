@@ -11,7 +11,7 @@
 -- @classmod MultiselectionDropdown
 
 local _, TSM = ...
-local MultiselectionDropdown = TSMAPI_FOUR.Class.DefineClass("MultiselectionDropdown", TSM.UI.BaseDropdown)
+local MultiselectionDropdown = TSM.Lib.Class.DefineClass("MultiselectionDropdown", TSM.UI.BaseDropdown)
 TSM.UI.MultiselectionDropdown = MultiselectionDropdown
 
 
@@ -59,7 +59,7 @@ end
 -- @tparam boolean selected Whether or not the item should be selected
 -- @treturn MultiselectionDropdown The dropdown object
 function MultiselectionDropdown.SetItemSelectedByKey(self, itemKey, selected)
-	self:SetItemSelected(TSMAPI_FOUR.Util.GetDistinctTableKey(self._itemKeyLookup, itemKey), selected)
+	self:SetItemSelected(TSM.Table.GetDistinctKey(self._itemKeyLookup, itemKey), selected)
 	return self
 end
 
@@ -94,7 +94,7 @@ end
 -- @tparam itemKey string|number The key for the item
 -- @treturn boolean Whether or not the item is selected
 function MultiselectionDropdown.ItemIsSelectedByKey(self, itemKey)
-	return self:ItemIsSelected(TSMAPI_FOUR.Util.GetDistinctTableKey(self._itemKeyLookup, itemKey))
+	return self:ItemIsSelected(TSM.Table.GetDistinctKey(self._itemKeyLookup, itemKey))
 end
 
 --- Sets the setting info.
@@ -125,13 +125,13 @@ function MultiselectionDropdown._CreateDropdownList(self)
 end
 
 function MultiselectionDropdown._GetCurrentSelectionString(self)
-	local tbl = TSMAPI_FOUR.Util.AcquireTempTable()
+	local tbl = TSM.TempTable.Acquire()
 	for item in pairs(self._itemIsSelected) do
 		tinsert(tbl, item)
 	end
 	sort(tbl)
 	local result = #tbl > 0 and table.concat(tbl, ", ") or self._hintText
-	TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+	TSM.TempTable.Release(tbl)
 	return result
 end
 

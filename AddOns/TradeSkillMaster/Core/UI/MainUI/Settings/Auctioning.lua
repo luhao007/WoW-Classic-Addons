@@ -19,7 +19,7 @@ local private = { sounds = {}, soundkeys = {} }
 
 function Auctioning.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage("Auctioning", "middle", private.GetAuctioningSettingsFrame)
-	for key, name in pairs(TSMAPI_FOUR.Sound.GetSounds()) do
+	for key, name in pairs(TSM.Sound.GetSounds()) do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end
@@ -208,12 +208,12 @@ end
 -- ============================================================================
 
 function private.SoundOnSelectionChanged(self)
-	TSMAPI_FOUR.Sound.PlaySound(self:GetSelectedItemKey())
+	TSM.Sound.PlaySound(self:GetSelectedItemKey())
 end
 
 function private.AddWhitelistOnClick(self)
 	local newPlayer = strlower(strtrim(self:GetElement("__parent.nameInput"):GetText()))
-	if newPlayer == "" or strfind(newPlayer, ",") or newPlayer ~= TSMAPI_FOUR.Util.StrEscape(newPlayer) then
+	if newPlayer == "" or strfind(newPlayer, ",") or newPlayer ~= TSM.String.Escape(newPlayer) then
 		TSM:Printf(L["Invalid player name."])
 		return
 	elseif TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer] then

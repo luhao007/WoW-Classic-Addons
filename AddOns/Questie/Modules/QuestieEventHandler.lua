@@ -15,7 +15,7 @@ local playerEntered = false;
 local hasFirstQLU = false;
 local runQLU = false
 
-function QuestieEventHandler:PLAYER_ENTERING_WORLD()
+function QuestieEventHandler:PLAYER_LOGIN()
     C_Timer.After(1, function()
         QuestieDB:Initialize()
     end)
@@ -45,6 +45,16 @@ function QuestieEventHandler:QUEST_ACCEPTED(questLogIndex, questId)
 
     QuestieQuest:AcceptQuest(questId)
     QuestieJourney:AcceptQuest(questId)
+end
+
+--Fires on MAP_EXPLORATION_UPDATED.
+function QuestieEventHandler:MAP_EXPLORATION_UPDATED()
+    Questie:Debug(DEBUG_DEVELOP, "EVENT: MAP_EXPLORATION_UPDATED");
+    _Hack_prime_log()
+
+    if Questie.db.global.hideUnexploredMapIcons then
+        QuestieQuest:Reset();
+    end
 end
 
 -- Needed to distinguish finished quests from abandoned quests

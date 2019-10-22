@@ -309,13 +309,13 @@ function private.ExportCollapseAllBtnOnClick(button)
 end
 
 function private.GroupTreeGetList(groups, headerNameLookup)
-	if strmatch(strlower(L["Base Group"]), TSMAPI_FOUR.Util.StrEscape(private.groupSearch)) then
+	if strmatch(strlower(L["Base Group"]), TSM.String.Escape(private.groupSearch)) then
 		tinsert(groups, TSM.CONST.ROOT_GROUP_PATH)
 		headerNameLookup[TSM.CONST.ROOT_GROUP_PATH] = L["Base Group"]
 	end
 
 	for _, path in TSM.Groups.GroupIterator() do
-		if strmatch(strlower(TSM.Groups.Path.GetName(path)), TSMAPI_FOUR.Util.StrEscape(private.groupSearch)) then
+		if strmatch(strlower(TSM.Groups.Path.GetName(path)), TSM.String.Escape(private.groupSearch)) then
 			tinsert(groups, path)
 		end
 	end
@@ -331,7 +331,7 @@ function private.GetImportEntryFrame()
 			:SetStyle("fontHeight", 14)
 			:SetStyle("fontSpacing", 2)
 			:SetStyle("textColor", "#ffe2e2e2")
-			:SetStyle("margin", { bottom = 44 })
+			:SetStyle("margin.bottom", 44)
 			:SetText(L["Paste your import string in the field below and then press 'IMPORT'. You can import everything from item lists (comma delineated please) to whole group & operation structures."])
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
@@ -539,7 +539,7 @@ end
 function private.CountOperations(operations)
 	local total = 0
 	for _, module in pairs(operations) do
-		total = total + TSMAPI_FOUR.Util.Count(module)
+		total = total + TSM.Table.Count(module)
 	end
 	return total
 end
@@ -566,7 +566,7 @@ end
 
 function private.ImportOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSMAPI_FOUR.Util.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.ConfirmImportOnClick(element)

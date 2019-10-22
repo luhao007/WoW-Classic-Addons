@@ -28,6 +28,80 @@ function Shopping.OnInitialize()
 	TSM.Operations.Register("Shopping", L["Shopping"], OPERATION_INFO, 1, private.GetOperationInfo)
 end
 
+function Shopping.GetMaxPrice(itemString)
+	local operationSettings = private.GetOperationSettings(itemString)
+	if not operationSettings then
+		return
+	end
+	return TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+end
+
+function Shopping.ShouldShowAboveMaxPrice(itemString)
+	local operationSettings = private.GetOperationSettings(itemString)
+	if not operationSettings then
+		return
+	end
+	return operationSettings.showAboveMaxPrice
+end
+
+function Shopping.IsFiltered(itemString, stackSize, itemBuyout)
+	local operationSettings = private.GetOperationSettings(itemString)
+	if not operationSettings then
+		return true, false
+	end
+
+	if operationSettings.evenStacks and stackSize % 5 ~= 0 then
+		return true, false
+	end
+
+	if not operationSettings.showAboveMaxPrice then
+		local maxPrice = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+		if not maxPrice or itemBuyout > maxPrice then
+			return true, true
+		end
+	end
+
+	return false, false
+end
+
+function Shopping.ValidAndGetRestockQuantity(itemString)
+	local operationSettings = private.GetOperationSettings(itemString)
+	if not operationSettings then
+		return false, nil
+	end
+	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(operationSettings.maxPrice)
+	if not isValid then
+		return false, err
+	end
+	local maxQuantity = nil
+	if operationSettings.restockQuantity > 0 then
+		-- include mail and bags
+		local numHave = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString) + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString)
+		if operationSettings.restockSources.bank then
+			numHave = numHave + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
+		end
+		if operationSettings.restockSources.guild then
+			numHave = numHave + TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString)
+		end
+		local _, numAlts, numAuctions = TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString)
+		if operationSettings.restockSources.alts then
+			numHave = numHave + numAlts
+		end
+		if operationSettings.restockSources.auctions then
+			numHave = numHave + numAuctions
+		end
+		if numHave >= operationSettings.restockQuantity then
+			return false, nil
+		end
+		maxQuantity = operationSettings.restockQuantity - numHave
+	end
+	if not operationSettings.showAboveMaxPrice and not TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString) then
+		-- we're not showing auctions above the max price and the max price isn't valid for this item, so skip it
+		return false, nil
+	end
+	return true, maxQuantity
+end
+
 
 
 -- ============================================================================
@@ -44,4 +118,13 @@ function private.GetOperationInfo(operationSettings)
 	else
 		return format(L["Shopping for auctions with a max price set."])
 	end
+end
+
+function private.GetOperationSettings(itemString)
+	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Shopping", itemString)
+	if not operationName then
+		return
+	end
+	return operationSettings
 end

@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ItemTask = TSMAPI_FOUR.Class.DefineClass("ItemTask", TSM.TaskList.Task, "ABSTRACT")
+local ItemTask = TSM.Lib.Class.DefineClass("ItemTask", TSM.TaskList.Task, "ABSTRACT")
 TSM.TaskList.ItemTask = ItemTask
 local private = {}
 
@@ -76,10 +76,10 @@ function ItemTask._RemoveItem(self, itemString, quantity)
 	if not self._itemNum[itemString] then
 		return false
 	end
-	self._itemNum[itemString] = TSMAPI_FOUR.Util.Round(self._itemNum[itemString] - quantity, 0.01)
+	self._itemNum[itemString] = TSM.Math.Round(self._itemNum[itemString] - quantity, 0.01)
 	if self._itemNum[itemString] <= 0.01 then
 		self._itemNum[itemString] = nil
-		assert(TSMAPI_FOUR.Util.TableRemoveByValue(self._itemList, itemString) == 1)
+		assert(TSM.Table.RemoveByValue(self._itemList, itemString) == 1)
 	end
 	if #self._itemList == 0 then
 		self:_doneHandler()

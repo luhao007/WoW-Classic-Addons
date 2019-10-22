@@ -12,7 +12,7 @@
 -- @classmod Database
 
 local _, TSM = ...
-local Database = TSMAPI_FOUR.Class.DefineClass("Database")
+local Database = TSM.Lib.Class.DefineClass("Database")
 TSM.Database.classes.Database = Database
 local private = {
 	indexListSortValues = nil,
@@ -51,7 +51,7 @@ function Database.__init(self, schema)
 	self._smartMapReaderLookup = {}
 
 	-- process all the fields and grab the indexFields for further processing
-	local indexFields = TSMAPI_FOUR.Util.AcquireTempTable()
+	local indexFields = TSM.TempTable.Acquire()
 	for _, fieldName, fieldType, isIndex, isUnique, smartMap, smartMapInput in schema:_FieldIterator() do
 		if smartMap then
 			-- smart map fields aren't actually stored in the DB
@@ -93,15 +93,15 @@ function Database.__init(self, schema)
 	for _, field in ipairs(indexFields) do
 		if strmatch(field, TSM.CONST.DB_INDEX_FIELD_SEP) then
 			tinsert(self._multiFieldIndexFields, field)
-			self._multiFieldIndexFields[field] = { strsplit(TSM.CONST.DB_INDEX_FIELD_SEP, field) }
-			for i, subField in ipairs(self._multiFieldIndexFields[field]) do
-				self._multiFieldIndexFields[field][i] = self._fieldOffsetLookup[subField]
-			end
+			local subField1, subField2, extra = strsplit(TSM.CONST.DB_INDEX_FIELD_SEP, field)
+			-- currently just support multi-field indexes consisting of 2 fields
+			assert(subField1 and subField2 and not extra)
+			self._multiFieldIndexFields[field] = { self._fieldOffsetLookup[subField1], self._fieldOffsetLookup[subField2] }
 		end
 		tinsert(self._indexOrUniqueFields, field)
 	end
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(indexFields)
+	TSM.TempTable.Release(indexFields)
 	schema:_Release()
 end
 
@@ -115,7 +115,7 @@ end
 -- @tparam Database self The database object
 -- @return An iterator which iterates over the database's fields and has the following values: `field`
 function Database.FieldIterator(self)
-	return TSMAPI_FOUR.Util.TableKeyIterator(self._fieldOffsetLookup)
+	return TSM.Table.KeyIterator(self._fieldOffsetLookup)
 end
 
 --- Create a new row.
@@ -356,17 +356,17 @@ end
 -- @tparam Database self The database object
 function Database.BulkInsertStart(self)
 	assert(not self._bulkInsertContext)
-	self._bulkInsertContext = TSMAPI_FOUR.Util.AcquireTempTable()
+	self._bulkInsertContext = TSM.TempTable.Acquire()
 	self._bulkInsertContext.hasNewData = false
-	self._bulkInsertContext.indexValues = TSMAPI_FOUR.Util.AcquireTempTable()
+	self._bulkInsertContext.indexValues = TSM.TempTable.Acquire()
 	for field in pairs(self._indexLists) do
-		self._bulkInsertContext.indexValues[field] = TSMAPI_FOUR.Util.AcquireTempTable()
+		self._bulkInsertContext.indexValues[field] = TSM.TempTable.Acquire()
 		for i = 1, #self._uuids do
 			local uuid = self._uuids[i]
 			self._bulkInsertContext.indexValues[field][uuid] = self:_GetRowIndexValue(uuid, field)
 		end
 	end
-	if not next(self._uniques) and #self._multiFieldIndexFields == 0 and TSMAPI_FOUR.Util.Count(self._indexLists) == 1 and self._indexLists[self._storedFieldList[1]] then
+	if not next(self._uniques) and #self._multiFieldIndexFields == 0 and TSM.Table.Count(self._indexLists) == 1 and self._indexLists[self._storedFieldList[1]] then
 		self._bulkInsertContext.fastNum = self._numStoredFields
 	end
 	self:SetQueryUpdatesPaused(true)
@@ -583,10 +583,10 @@ function Database.BulkInsertEnd(self)
 		self:_UpdateQueries()
 	end
 	for _, tbl in pairs(self._bulkInsertContext.indexValues) do
-		TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+		TSM.TempTable.Release(tbl)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(self._bulkInsertContext.indexValues)
-	TSMAPI_FOUR.Util.ReleaseTempTable(self._bulkInsertContext)
+	TSM.TempTable.Release(self._bulkInsertContext.indexValues)
+	TSM.TempTable.Release(self._bulkInsertContext)
 	self._bulkInsertContext = nil
 	self:SetQueryUpdatesPaused(false)
 end
@@ -603,16 +603,6 @@ end
 -- @treturn number The number of rows
 function Database.GetNumRows(self)
 	return #self._data / self._numStoredFields
-end
-
---- Gets the number of rows in the database with a specific index value.
--- @tparam Database self The database object
--- @tparam string indexField The index field
--- @param indexValue The index value
--- @treturn number The number of rows
-function Database.GetNumRowsByIndex(self, indexField, indexValue)
-	local firstIndex, lastIndex = self:_GetIndexListIndexRange(indexField, indexValue)
-	return firstIndex and (lastIndex - firstIndex + 1) or 0
 end
 
 function Database.GetRawData(self)
@@ -655,6 +645,10 @@ end
 
 function Database._IsSmartMapField(self, field)
 	return self._smartMapReaderLookup[field] and true or false
+end
+
+function Database._ContainsUUID(self, uuid)
+	return self._uuidToDataOffsetLookup[uuid] and true or false
 end
 
 function Database._GetIndexListIndexRange(self, indexField, indexValue)
@@ -718,10 +712,10 @@ function Database._RegisterQuery(self, query)
 end
 
 function Database._RemoveQuery(self, query)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(self._queries, query) == 1)
+	assert(TSM.Table.RemoveByValue(self._queries, query) == 1)
 end
 
-function Database._UpdateQueries(self)
+function Database._UpdateQueries(self, uuid, oldValues)
 	if self._queryUpdatesPaused > 0 then
 		self._queuedQueryUpdate = true
 	else
@@ -729,11 +723,11 @@ function Database._UpdateQueries(self)
 		-- We need to mark all the queries stale first as an update callback may cause another of the queries to run which may not have yet been marked stale
 		for _, query in ipairs(self._queries) do
 			assert(not query._isIterating)
-			query:_MarkResultStale()
+			query:_MarkResultStale(oldValues)
 		end
 		for _, query in ipairs(self._queries) do
 			assert(not query._isIterating)
-			query:_DoUpdateCallback()
+			query:_DoUpdateCallback(uuid)
 		end
 	end
 end
@@ -805,6 +799,7 @@ function Database._UpdateRow(self, row, oldValues)
 	for i = 1, self._numStoredFields do
 		self._data[index + i - 1] = row:GetField(self._storedFieldList[i])
 	end
+	local changedIndexUnique = false
 	for indexField, indexList in pairs(self._indexLists) do
 		local didChange = false
 		for field in gmatch(indexField, "[^"..TSM.CONST.DB_INDEX_FIELD_SEP.."]+") do
@@ -818,8 +813,9 @@ function Database._UpdateRow(self, row, oldValues)
 		end
 		if didChange then
 			-- remove and re-add row to the index list since the index value changed
-			TSMAPI_FOUR.Util.TableRemoveByValue(indexList, uuid)
+			TSM.Table.RemoveByValue(indexList, uuid)
 			self:_IndexListInsert(indexField, uuid)
+			changedIndexUnique = true
 		end
 	end
 	for field, uniqueValues in pairs(self._uniques) do
@@ -828,9 +824,14 @@ function Database._UpdateRow(self, row, oldValues)
 			assert(uniqueValues[oldValue] == uuid)
 			uniqueValues[oldValue] = nil
 			uniqueValues[self:_GetRowData(uuid, field)] = uuid
+			changedIndexUnique = true
 		end
 	end
-	self:_UpdateQueries()
+	if not changedIndexUnique then
+		self:_UpdateQueries(uuid, oldValues)
+	else
+		self:_UpdateQueries()
+	end
 end
 
 function Database._GetRowIndexValue(self, uuid, field)
@@ -902,13 +903,13 @@ function private.SmartMapReaderCallback(reader, changes)
 	if indexList then
 		-- re-build the index
 		wipe(indexList)
-		private.indexListSortValues = TSMAPI_FOUR.Util.AcquireTempTable()
+		private.indexListSortValues = TSM.TempTable.Acquire()
 		for i, uuid in ipairs(self._uuids) do
 			indexList[i] = uuid
 			private.indexListSortValues[uuid] = self:_GetRowIndexValue(uuid, fieldName)
 		end
 		sort(indexList, private.IndexListSortHelper)
-		TSMAPI_FOUR.Util.ReleaseTempTable(private.indexListSortValues)
+		TSM.TempTable.Release(private.indexListSortValues)
 		private.indexListSortValues = nil
 	end
 

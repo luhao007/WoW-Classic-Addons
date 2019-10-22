@@ -29,7 +29,7 @@ local LAYOUT_CONTEXT = {
 		sides = { primary = { "LEFT", "RIGHT" }, secondary = { "TOP", "BOTTOM" } },
 	},
 }
-local Frame = TSMAPI_FOUR.Class.DefineClass("Frame", TSM.UI.Container)
+local Frame = TSM.Lib.Class.DefineClass("Frame", TSM.UI.Container)
 TSM.UI.Frame = Frame
 
 
@@ -173,8 +173,8 @@ function Frame.Draw(self)
 		local primary = self:_GetDimension(context.primaryDimension) - self:_GetPadding(context.sides.primary[1]) - self:_GetPadding(context.sides.primary[2])
 		local secondary = self:_GetDimension(context.secondaryDimension) - self:_GetPadding(context.sides.secondary[1]) - self:_GetPadding(context.sides.secondary[2])
 
-		local expandChildren = TSMAPI_FOUR.Util.AcquireTempTable()
-		local preferredChildren = TSMAPI_FOUR.Util.AcquireTempTable()
+		local expandChildren = TSM.TempTable.Acquire()
+		local preferredChildren = TSM.TempTable.Acquire()
 		for _, child in self:LayoutChildrenIterator() do
 			child:_GetBaseFrame():ClearAllPoints()
 			local childPrimary, childPrimaryCanExpand = child:_GetMinimumDimension(context.primaryDimension)
@@ -202,13 +202,13 @@ function Frame.Draw(self)
 			child:_SetDimension(context.primaryDimension, childPrimary)
 			primary = primary - (childPrimary - child:_GetMinimumDimension(context.primaryDimension))
 		end
-		local numExpandChildren = TSMAPI_FOUR.Util.Count(expandChildren)
+		local numExpandChildren = TSM.Table.Count(expandChildren)
 		for child, childPrimary in pairs(expandChildren) do
 			childPrimary = max(childPrimary, childPrimary + primary / numExpandChildren)
 			child:_SetDimension(context.primaryDimension, childPrimary)
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(expandChildren)
-		TSMAPI_FOUR.Util.ReleaseTempTable(preferredChildren)
+		TSM.TempTable.Release(expandChildren)
+		TSM.TempTable.Release(preferredChildren)
 		if layout == "HORIZONTAL" then
 			local xOffset = self:_GetPadding("LEFT")
 			-- calculate the Y offset to properly position stuff with the padding of this frame taken into account

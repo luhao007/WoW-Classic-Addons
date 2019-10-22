@@ -15,7 +15,7 @@ local UI = TSM:NewPackage("UI")
 local L = TSM.L
 local private = {
 	namedElements = {},
-	elementIdMap = {},
+	frameElementMap = {},
 	propagateScripts = {},
 	objectPools = {},
 	analyticsPath = {
@@ -95,7 +95,7 @@ function private.NewElementHelper(elementType, id, name, ...)
 	element:SetId(id)
 	element:SetTags(...)
 	element:Acquire()
-	private.elementIdMap[element:_GetBaseFrame()] = element._id
+	private.frameElementMap[element:_GetBaseFrame()] = element
 	return element
 end
 
@@ -249,24 +249,92 @@ function UI.ToggleFrameStack()
 			FULLSCREEN_DIALOG = {},
 			TOOLTIP = {},
 		}
+		local ELEMENT_ATTR_KEYS = {
+			"_hScrollbar",
+			"_vScrollbar",
+			"_hScrollFrame",
+			"_hContent",
+			"_vScrollFrame",
+			"_content",
+			"_header",
+			"_frame",
+			"_rows",
+		}
 
 		local function FrameLevelSortFunction(a, b)
 			return a:GetFrameLevel() > b:GetFrameLevel()
 		end
 
-		local function GetFrameName(frame)
-			local name = frame:GetName() or private.elementIdMap[frame]
-			if not name then
-				local parent = frame:GetParent()
-				if parent then
-					for i, v in pairs(parent) do
-						if v == frame then
-							name = tostring(i)
-						end
+		local function TableValueSearch(tbl, searchValue, currentKey, visited)
+			visited = visited or {}
+			for key, value in pairs(tbl) do
+				if value == searchValue then
+					return (currentKey and (currentKey..".") or "")..key
+				elseif type(value) == "table" and (not value.__isa or value:__isa(UI.Element)) and not visited[value] then
+					visited[value] = true
+					local result = TableValueSearch(value, searchValue, (currentKey and (currentKey..".") or "")..key, visited)
+					if result then
+						return result
 					end
 				end
 			end
-			return name or gsub(tostring(frame), ": ?0*", ":")
+			for _, key in ipairs(ELEMENT_ATTR_KEYS) do
+				local value = tbl[key]
+				if value == searchValue then
+					return (currentKey and (currentKey..".") or "")..key
+				elseif type(value) == "table" and (not value.__isa or value:__isa(UI.Element)) and not visited[value] then
+					visited[value] = true
+					local result = TableValueSearch(value, searchValue, (currentKey and (currentKey..".") or "")..key, visited)
+					if result then
+						return result
+					end
+				end
+			end
+		end
+
+		local function GetFrameNodeInfo(frame)
+			local globalName = frame:GetName()
+			if globalName then
+				return globalName, frame:GetParent()
+			end
+
+			local parent = frame:GetParent()
+			local element = private.frameElementMap[frame]
+			if element then
+				return element._id, parent
+			end
+
+			if parent then
+				-- check if this exists as an attribute of the parent table
+				local parentKey = TSM.Table.KeyByValue(parent, frame)
+				if parentKey then
+					return tostring(parentKey), parent
+				end
+
+				-- find the nearest element to which this frame belongs
+				local parentElement = nil
+				local testFrame = parent
+				while testFrame and not parentElement do
+					parentElement = private.frameElementMap[testFrame]
+					testFrame = testFrame:GetParent()
+				end
+				if parentElement then
+					-- check if this exists as an attribute of this element
+					local tableKey = TableValueSearch(parentElement, frame)
+					if tableKey then
+						return tableKey, parentElement._frame
+					end
+				end
+			end
+
+			return nil, parent
+		end
+
+		local function GetFrameName(frame)
+			local name, parent = GetFrameNodeInfo(frame)
+			local parentName = parent and (GetFrameName(parent)..".") or ""
+			name = name or gsub(tostring(frame), ": ?0*", ":")
+			return parentName..name
 		end
 
 		CreateFrame("GameTooltip", "TSMFrameStackTooltip", UIParent, "GameTooltipTemplate")
@@ -303,20 +371,19 @@ function UI.ToggleFrameStack()
 						local width = strataFrame:GetWidth()
 						local height = strataFrame:GetHeight()
 						local mouseEnabled = strataFrame:IsMouseEnabled()
-						local name = ""
-						local childFrame = strataFrame
-						while childFrame and (childFrame ~= UIParent or name == "") do
-							name = GetFrameName(childFrame)..(#name > 0 and "." or "")..name
-							childFrame = childFrame:GetParent()
+						local name = GetFrameName(strataFrame)
+						local text = format("  <%d> %s (%d, %d)", level, name, TSM.Math.Round(width), TSM.Math.Round(height))
+						local isTopFrame = false
+						if not topFrame and not strmatch(name, "innerBorderFrame") then
+							topFrame = strataFrame
+							isTopFrame = true
 						end
-						local text = format("  <%d> %s (%d, %d)", level, name, TSMAPI_FOUR.Util.Round(width), TSMAPI_FOUR.Util.Round(height))
-						if mouseEnabled then
+						if isTopFrame then
+							self:AddLine(text, 0.9, 0.9, 0.5)
+						elseif mouseEnabled then
 							self:AddLine(text, 0.6, 1, 1)
 						else
 							self:AddLine(text, 0.8, 0.8, 0.8)
-						end
-						if not topFrame and GetFrameName(strataFrame) ~= "innerBorderFrame" then
-							topFrame = strataFrame
 						end
 					end
 				end
@@ -350,7 +417,7 @@ function TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, modul
 	end
 
 	-- need to filter out the groups without operations
-	local keep = TSMAPI_FOUR.Util.AcquireTempTable()
+	local keep = TSM.TempTable.Acquire()
 	for i = #groups, 1, -1 do
 		local groupPath = groups[i]
 		local hasOperations = false
@@ -368,7 +435,7 @@ function TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, modul
 			tremove(groups, i)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(keep)
+	TSM.TempTable.Release(keep)
 
 	tinsert(groups, 1, TSM.CONST.ROOT_GROUP_PATH)
 	headerNameLookup[TSM.CONST.ROOT_GROUP_PATH] = L["Base Group"]
@@ -398,9 +465,9 @@ function TSM.UI.ShowTooltip(parent, tooltip)
 			GameTooltip:SetHyperlink("enchant:"..tooltip)
 		end
 	elseif type(tooltip) == "string" and (strfind(tooltip, "\124Hitem:") or strfind(tooltip, "\124Hbattlepet:") or strfind(tooltip, "^i:") or strfind(tooltip, "^p:")) then
-		TSMAPI_FOUR.Util.SafeTooltipLink(tooltip)
+		TSM.Wow.SafeTooltipLink(tooltip)
 	else
-		for _, line in TSMAPI_FOUR.Util.VarargIterator(strsplit("\n", tooltip)) do
+		for _, line in TSM.Vararg.Iterator(strsplit("\n", tooltip)) do
 			local textLeft, textRight = strsplit(TSM.CONST.TOOLTIP_SEP, line)
 			if textRight then
 				GameTooltip:AddDoubleLine(textLeft, textRight, 1, 1, 1, 1, 1, 1)

@@ -11,7 +11,7 @@
 -- @classmod ViewContainer
 
 local _, TSM = ...
-local ViewContainer = TSMAPI_FOUR.Class.DefineClass("ViewContainer", TSM.UI.Container)
+local ViewContainer = TSM.Lib.Class.DefineClass("ViewContainer", TSM.UI.Container)
 TSM.UI.ViewContainer = ViewContainer
 
 
@@ -71,7 +71,7 @@ function ViewContainer.AddPath(self, path, setSelected)
 	tinsert(self._pathsList, path)
 	if self._contextTable then
 		assert(setSelected == nil, "Cannot set selected path when using a context table")
-		local newPathIndex = TSMAPI_FOUR.Util.TableKeyByValue(self._pathsList, path)
+		local newPathIndex = TSM.Table.KeyByValue(self._pathsList, path)
 		if self._contextTable.pathIndex == newPathIndex then
 			self:SetPath(path)
 		end
@@ -113,7 +113,7 @@ function ViewContainer.SetPath(self, path, redraw)
 		self._path = path
 		-- Save the path index of the new selected path to the context table
 		if self._contextTable then
-			self._contextTable.pathIndex = TSMAPI_FOUR.Util.TableKeyByValue(self._pathsList, path)
+			self._contextTable.pathIndex = TSM.Table.KeyByValue(self._pathsList, path)
 		end
 	end
 	if redraw then

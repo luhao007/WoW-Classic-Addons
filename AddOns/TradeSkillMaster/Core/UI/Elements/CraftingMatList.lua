@@ -11,7 +11,7 @@
 -- @classmod CraftingMatList
 
 local _, TSM = ...
-local CraftingMatList = TSMAPI_FOUR.Class.DefineClass("CraftingMatList", TSM.UI.ScrollList)
+local CraftingMatList = TSM.Lib.Class.DefineClass("CraftingMatList", TSM.UI.ScrollList)
 local private = { }
 TSM.UI.CraftingMatList = CraftingMatList
 
@@ -128,5 +128,5 @@ function private.ItemOnClick(button)
 	local spellId = button:GetElement("__parent.__parent"):GetContext()
 	local index = button:GetParentElement():GetContext()
 	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, index)
-	TSMAPI_FOUR.Util.SafeItemRef(itemLink)
+	TSM.Wow.SafeItemRef(itemLink)
 end

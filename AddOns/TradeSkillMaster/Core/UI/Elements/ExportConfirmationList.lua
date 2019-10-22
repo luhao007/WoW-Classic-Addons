@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ExportConfirmationList = TSMAPI_FOUR.Class.DefineClass("ExportConfirmationList", TSM.UI.ScrollList)
+local ExportConfirmationList = TSM.Lib.Class.DefineClass("ExportConfirmationList", TSM.UI.ScrollList)
 local L = TSM.L
 TSM.UI.ExportConfirmationList = ExportConfirmationList
 local private = {}

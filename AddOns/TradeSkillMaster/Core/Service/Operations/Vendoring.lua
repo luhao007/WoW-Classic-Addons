@@ -41,7 +41,7 @@ end
 -- ============================================================================
 
 function private.GetOperationInfo(operationSettings)
-	local parts = TSMAPI_FOUR.Util.AcquireTempTable()
+	local parts = TSM.TempTable.Acquire()
 	if operationSettings.enableBuy and operationSettings.restockQty > 0 then
 		tinsert(parts, format(L["Restocking to %d."], operationSettings.restockQty))
 	end
@@ -56,6 +56,6 @@ function private.GetOperationInfo(operationSettings)
 	end
 
 	local result = table.concat(parts, " ")
-	TSMAPI_FOUR.Util.ReleaseTempTable(parts)
+	TSM.TempTable.Release(parts)
 	return result
 end

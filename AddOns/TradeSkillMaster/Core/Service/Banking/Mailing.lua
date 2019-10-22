@@ -17,24 +17,24 @@ local private = {}
 -- ============================================================================
 
 function Mailing.MoveGroupsToBank(callback, groups)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.GroupsGetNumToMoveToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Mailing.NongroupToBank(callback)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateItemsFromBags(items, private.NongroupGetNumToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Mailing.TargetShortfallToBags(callback, groups)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.TargetShortfallGetNumToBags)
 	TSM.Banking.MoveToBag(items, callback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 

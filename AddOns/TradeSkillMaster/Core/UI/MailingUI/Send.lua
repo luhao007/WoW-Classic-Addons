@@ -724,7 +724,7 @@ end
 
 function private.DesciptionOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSMAPI_FOUR.Util.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.SendOnValueChanged(checkbox)
@@ -748,7 +748,7 @@ function private.CODOnValueChanged(checkbox)
 		private.isCOD = true
 
 		local input = checkbox:GetElement("__parent.moneyInput")
-		local text = gsub(strtrim(input:GetText()), TSMAPI_FOUR.Util.StrEscape(LARGE_NUMBER_SEPERATOR), "")
+		local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
 		local value = tonumber(text) or TSM.Money.FromString(text) or 0
 		private.money = private.isCOD and min(value, 100000000) or value
 		input:SetText(TSM.Money.ToString(private.money))
@@ -763,7 +763,7 @@ function private.MoneyFocusGained(input)
 end
 
 function private.MoneyOnTextChanged(input)
-	local text = gsub(strtrim(input:GetText()), TSMAPI_FOUR.Util.StrEscape(LARGE_NUMBER_SEPERATOR), "")
+	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
 	if text == "" or text == private.money then
 		return
 	end
@@ -778,7 +778,7 @@ function private.MoneyOnTextChanged(input)
 end
 
 function private.MoneyValueConvert(input)
-	local text = gsub(strtrim(input:GetText()), TSMAPI_FOUR.Util.StrEscape(LARGE_NUMBER_SEPERATOR), "")
+	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
 	local value = min(max(tonumber(text) or TSM.Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
 
 	private.money = private.isCOD and min(value, 100000000) or value
@@ -872,7 +872,7 @@ function private.GenerateListElements(category, filterText)
 	if category == L["Alts"] then
 		for factionrealm in TSM.db:GetConnectedRealmIterator("realm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				character = Ambiguate(gsub(strmatch(character, "(.*) "..TSMAPI_FOUR.Util.StrEscape("-")).."-"..gsub(factionrealm, TSMAPI_FOUR.Util.StrEscape("-"), ""), " ", ""), "none")
+				character = Ambiguate(gsub(strmatch(character, "(.*) "..TSM.String.Escape("-")).."-"..gsub(factionrealm, TSM.String.Escape("-"), ""), " ", ""), "none")
 				if character ~= UnitName("player") then
 					if filterText and filterText ~= "" then
 						if strfind(strlower(character), filterText) then
@@ -940,13 +940,13 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	TSMAPI_FOUR.Event.Register("MAIL_CLOSED", function()
+	TSM.Event.Register("MAIL_CLOSED", function()
 		private.fsm:ProcessEvent("EV_MAIL_CLEAR")
 	end)
-	TSMAPI_FOUR.Event.Register("MAIL_SEND_INFO_UPDATE", function()
+	TSM.Event.Register("MAIL_SEND_INFO_UPDATE", function()
 		private.fsm:ProcessEvent("EV_MAIL_INFO_UPDATE")
 	end)
-	TSMAPI_FOUR.Event.Register("MAIL_FAILED", function()
+	TSM.Event.Register("MAIL_FAILED", function()
 		private.fsm:ProcessEvent("EV_SENDING_DONE")
 	end)
 

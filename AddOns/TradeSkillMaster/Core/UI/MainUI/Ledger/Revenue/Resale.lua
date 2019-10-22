@@ -309,7 +309,7 @@ function private.UpdateQuery()
 	TSM.Accounting.Transactions.UpdateSummaryData(private.groupFilter, private.typeFilter, private.characterFilter, private.timeFrameFilter)
 
 	if private.searchFilter ~= "" then
-		private.summaryQuery:Matches("name", TSMAPI_FOUR.Util.StrEscape(private.searchFilter))
+		private.summaryQuery:Matches("name", TSM.String.Escape(private.searchFilter))
 	end
 	if #private.rarityFilter ~= 0 then
 		private.summaryQuery:Custom(private.CompareRarityFilter, private.rarityFilter)
@@ -317,7 +317,7 @@ function private.UpdateQuery()
 end
 
 function private.CompareRarityFilter(row, rarityFilter)
-	return TSMAPI_FOUR.Util.TableKeyByValue(rarityFilter, row:GetField("quality")) and true or false
+	return TSM.Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
 end
 
 function private.TableSelectionChanged(scrollingTable, row)

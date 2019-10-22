@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local DatabaseQueryClause = TSMAPI_FOUR.Class.DefineClass("DatabaseQueryClause")
+local DatabaseQueryClause = TSM.Lib.Class.DefineClass("DatabaseQueryClause")
 TSM.Database.classes.DatabaseQueryClause = DatabaseQueryClause
 
 
@@ -210,6 +210,20 @@ function DatabaseQueryClause._IsStrictIndex(self, indexField, indexValue)
 		end
 	elseif (self._operation == "OR" or self._operation == "AND") and #self._subClauses == 1 then
 		return self._subClauses[1]:_IsStrictIndex(indexField, indexValue)
+	end
+	return false
+end
+
+function DatabaseQueryClause._UsesField(self, field)
+	if field == self._field or self._operation == "CUSTOM" then
+		return true
+	end
+	if self._operation == "OR" or self._operation == "AND" then
+		for i = 1, #self._subClauses do
+			if self._subClauses[i]:_UsesField(field) then
+				return true
+			end
+		end
 	end
 	return false
 end

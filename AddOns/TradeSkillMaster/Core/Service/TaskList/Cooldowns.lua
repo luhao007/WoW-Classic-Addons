@@ -46,7 +46,7 @@ function private.ActiveTaskIterator()
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSMAPI_FOUR.Util.SeparatedStrContains(row:GetField("players"), ",", player)
+	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.PopulateTasks()
@@ -106,7 +106,7 @@ end
 
 function private.RemoveTask(task)
 	local profession = task:GetProfession()
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(private.activeTasks, task) == 1)
+	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
 	assert(private.activeTaskByProfession[profession] == task)
 	private.activeTaskByProfession[profession] = nil
 	task:Release()

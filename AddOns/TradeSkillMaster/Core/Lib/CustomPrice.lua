@@ -11,7 +11,7 @@
 
 TSMAPI_FOUR.CustomPrice = {}
 local _, TSM = ...
-TSM:NewPackage("CustomPrice")
+local CustomPrice = TSM:NewPackage("CustomPrice")
 local L = TSM.L
 local private = { context = {}, priceSourceKeys = {}, priceSourceInfo = {}, customPriceCache = {}, priceCache = {}, priceCacheActive = nil, proxyData = {}, mappedWarning = {} }
 local ITEM_STRING_PATTERN = "[ip]:[0-9:%-]+"
@@ -104,7 +104,7 @@ local COMPARISONS = {
 -- @tparam function callback The price source callback
 -- @tparam[opt=false] boolean fullLink Whether or not the full itemLink is required instead of just the itemString
 -- @param[opt] arg An additional argument which is passed to the callback
-function TSM.CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, arg)
+function CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, arg)
 	tinsert(private.priceSourceKeys, strlower(key))
 	private.priceSourceInfo[strlower(key)] = {
 		moduleName = moduleName,
@@ -119,7 +119,7 @@ end
 --- Create a new custom price source.
 -- @tparam string name The name of the custom price source
 -- @tparam string value The value of the custom price source
-function TSM.CustomPrice.CreateCustomPriceSource(name, value)
+function CustomPrice.CreateCustomPriceSource(name, value)
 	assert(name ~= "")
 	assert(gsub(name, "([a-z]+)", "") == "")
 	assert(not TSM.db.global.userData.customPriceSources[name])
@@ -130,7 +130,7 @@ end
 --- Rename a custom price source.
 -- @tparam string oldName The old name of the custom price source
 -- @tparam string newName The new name of the custom price source
-function TSM.CustomPrice.RenameCustomPriceSource(oldName, newName)
+function CustomPrice.RenameCustomPriceSource(oldName, newName)
 	if oldName == newName then return end
 	assert(TSM.db.global.userData.customPriceSources[oldName])
 	TSM.db.global.userData.customPriceSources[newName] = TSM.db.global.userData.customPriceSources[oldName]
@@ -140,16 +140,16 @@ end
 
 --- Delete a custom price source.
 -- @tparam string name The name of the custom price source
-function TSM.CustomPrice.DeleteCustomPriceSource(name)
+function CustomPrice.DeleteCustomPriceSource(name)
 	assert(TSM.db.global.userData.customPriceSources[name])
 	TSM.db.global.userData.customPriceSources[name] = nil
 	wipe(private.customPriceCache)
 end
 
 --- Print built-in price sources to chat.
-function TSM.CustomPrice.PrintSources()
+function CustomPrice.PrintSources()
 	TSM:Printf(L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."], "|cff99ffff")
-	local moduleList = TSMAPI_FOUR.Util.AcquireTempTable()
+	local moduleList = TSM.TempTable.Acquire()
 
 	for _, info in pairs(private.priceSourceInfo) do
 		if not tContains(moduleList, info.moduleName) then
@@ -160,7 +160,7 @@ function TSM.CustomPrice.PrintSources()
 
 	for _, module in ipairs(moduleList) do
 		TSM:PrintRaw("|cffffff00"..module..":|r")
-		local lines = TSMAPI_FOUR.Util.AcquireTempTable()
+		local lines = TSM.TempTable.Acquire()
 		for _, info in pairs(private.priceSourceInfo) do
 			if info.moduleName == module then
 				tinsert(lines, format("  %s%s|r (%s)", "|cff99ffff", info.key, info.label))
@@ -170,13 +170,13 @@ function TSM.CustomPrice.PrintSources()
 		for _, line in ipairs(lines) do
 			TSM:PrintRaw(line)
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(lines)
+		TSM.TempTable.Release(lines)
 	end
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(moduleList)
+	TSM.TempTable.Release(moduleList)
 end
 
-function TSM.CustomPrice.GetDescription(key)
+function CustomPrice.GetDescription(key)
 	local info = private.priceSourceInfo[key]
 	return info and info.label or nil
 end
@@ -276,15 +276,15 @@ end
 --- Iterate over the price sources.
 -- @return An iterator which provides the following fields: `key, moduleName, label`
 function TSMAPI_FOUR.CustomPrice.Iterator()
-	return TSMAPI_FOUR.Util.TableIterator(private.priceSourceKeys, CustomPriceIteratorHelper)
+	return TSM.Table.Iterator(private.priceSourceKeys, CustomPriceIteratorHelper)
 end
 
 --- Iterate over the custom price sources needed to make this custom price string calculable.
 -- @param string customPriceStr The custom price string
 -- @return An iterator of custom price names
 function TSMAPI_FOUR.CustomPrice.DependentCustomPriceSourceIterator(customPriceStr)
-	local queue = TSMAPI_FOUR.Util.AcquireTempTable()
-	local results = TSMAPI_FOUR.Util.AcquireTempTable()
+	local queue = TSM.TempTable.Acquire()
+	local results = TSM.TempTable.Acquire()
 
 	private.AddToCustomPriceDependencyQueue(queue, customPriceStr)
 	local name, value = next(queue)
@@ -297,8 +297,8 @@ function TSMAPI_FOUR.CustomPrice.DependentCustomPriceSourceIterator(customPriceS
 		end
 		name, value = next(queue)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(queue)
-	return TSMAPI_FOUR.Util.TempTableIterator(results)
+	TSM.TempTable.Release(queue)
+	return TSM.TempTable.Iterator(results)
 end
 
 
@@ -372,15 +372,15 @@ private.customPriceFunctions = {
 	end,
 	_round = function(...)
 		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
-		return TSMAPI_FOUR.Util.Round(...)
+		return TSM.Math.Round(...)
 	end,
 	_roundup = function(...)
 		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
-		return TSMAPI_FOUR.Util.Ceil(...)
+		return TSM.Math.Ceil(...)
 	end,
 	_rounddown = function(...)
 		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
-		return TSMAPI_FOUR.Util.Floor(...)
+		return TSM.Math.Floor(...)
 	end,
 	_priceHelper = function(itemString, key, extraParam)
 		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
@@ -406,7 +406,7 @@ private.customPriceFunctions = {
 							TSM:Printf(L["Created custom price source: |cff99ffff%s|r"], key)
 						end,
 					}
-					TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_PRICE_MAP_"..key)
+					TSM.Wow.ShowStaticPopupDialog("TSM_PRICE_MAP_"..key)
 					private.mappedWarning[key] = true
 				end
 				private.priceCache[cacheKey] = TSMAPI_FOUR.CustomPrice.GetValue(targetKey, itemString) or NAN
@@ -579,7 +579,7 @@ function private.ParsePriceString(str, badPriceSource)
 			-- there's an invalid item link in the str
 			return nil, L["Invalid item link."]
 		end
-		str = gsub(str, TSMAPI_FOUR.Util.StrEscape(itemLink), itemString)
+		str = gsub(str, TSM.String.Escape(itemLink), itemString)
 	end
 
 	-- make sure there's spaces on either side of math operators
@@ -603,7 +603,7 @@ function private.ParsePriceString(str, badPriceSource)
 	end
 
 	-- validate all words in the string
-	local parts = TSMAPI_FOUR.Util.SafeStrSplit(strtrim(str), " ")
+	local parts = TSM.String.SafeSplit(strtrim(str), " ")
 	local i = 1
 	while i <= #parts do
 		local word = parts[i]
@@ -722,7 +722,7 @@ end
 
 function private.ParseCustomPrice(customPriceStr, badPriceSource)
 	customPriceStr = customPriceStr and strlower(strtrim(tostring(customPriceStr)))
-	customPriceStr = TSM.Money.FromString(customPriceStr) and gsub(customPriceStr, TSMAPI_FOUR.Util.StrEscape(LARGE_NUMBER_SEPERATOR), "") or customPriceStr
+	customPriceStr = TSM.Money.FromString(customPriceStr) and gsub(customPriceStr, TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "") or customPriceStr
 	if not customPriceStr or customPriceStr == "" then
 		return nil, L["Empty price string."]
 	end

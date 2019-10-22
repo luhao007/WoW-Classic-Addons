@@ -6,6 +6,8 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
--- This is loaded before anything else and simply sets up our TSMAPI_FOUR global
+-- This is loaded before anything else and simply sets up our globals / addon tables
 
+local _, TSM = ...
+TSM.Lib = {}
 TSMAPI_FOUR = {}

@@ -9,7 +9,7 @@
 local _, TSM = ...
 local Tooltip = TSM:NewPackage("Tooltip")
 local L = TSM.L
-local CachedTooltip = TSMAPI_FOUR.Class.DefineClass("CachedTooltip")
+local CachedTooltip = TSM.Lib.Class.DefineClass("CachedTooltip")
 local TOOLTIP_CACHE_TIME = 5
 local private = {
 	tooltipInfo = {},
@@ -120,7 +120,7 @@ function CachedTooltip.AddSubItemValueLine(self, itemString, value, multiplier, 
 	if not name or not quality then
 		return
 	end
-	multiplier = TSMAPI_FOUR.Util.Round(multiplier * self._quantity, 0.001)
+	multiplier = TSM.Math.Round(multiplier * self._quantity, 0.001)
 	matRate = matRate and matRate * 100
 	matRate = matRate and matRate.."% " or ""
 	local range = (minAmount and maxAmount) and (minAmount ~= maxAmount and "|cffffff00 ["..minAmount.."-"..maxAmount.."]|r" or "|cffffff00 ["..minAmount.."]|r") or ""
@@ -129,7 +129,7 @@ function CachedTooltip.AddSubItemValueLine(self, itemString, value, multiplier, 
 end
 
 function CachedTooltip.StartSection(self)
-	local lines = TSMAPI_FOUR.Util.AcquireTempTable()
+	local lines = TSM.TempTable.Acquire()
 	lines._parent = self._currentLines
 	self._currentLines = lines
 end
@@ -151,7 +151,7 @@ function CachedTooltip.EndSection(self, headingTextLeft, headingTextRight)
 			self:AddLine(line)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(lines)
+	TSM.TempTable.Release(lines)
 end
 
 

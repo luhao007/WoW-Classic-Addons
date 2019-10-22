@@ -50,8 +50,8 @@ function Auctions.OnDisable()
 		return
 	end
 	local cancelSaveTimes, expireSaveTimes = {}, {}
-	local cancelEncodeContext = TSMAPI_FOUR.CSV.EncodeStart(CSV_KEYS)
-	local expireEncodeContext = TSMAPI_FOUR.CSV.EncodeStart(CSV_KEYS)
+	local cancelEncodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
+	local expireEncodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
 	for _, _, recordType, itemString, stackSize, quantity, player, timestamp, saveTime in private.db:RawIterator() do
 		local saveTimes, encodeContext = nil, nil
 		if recordType == "cancel" then
@@ -66,11 +66,11 @@ function Auctions.OnDisable()
 		-- add the save time
 		tinsert(saveTimes, saveTime ~= 0 and saveTime or time())
 		-- add to our list of CSV lines
-		TSMAPI_FOUR.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, player, timestamp)
+		TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, player, timestamp)
 	end
-	TSM.db.realm.internalData.csvCancelled = TSMAPI_FOUR.CSV.EncodeEnd(cancelEncodeContext)
+	TSM.db.realm.internalData.csvCancelled = TSM.CSV.EncodeEnd(cancelEncodeContext)
 	TSM.db.realm.internalData.saveTimeCancels = table.concat(cancelSaveTimes, ",")
-	TSM.db.realm.internalData.csvExpired = TSMAPI_FOUR.CSV.EncodeEnd(expireEncodeContext)
+	TSM.db.realm.internalData.csvExpired = TSM.CSV.EncodeEnd(expireEncodeContext)
 	TSM.db.realm.internalData.saveTimeExpires = table.concat(expireSaveTimes, ",")
 end
 
@@ -144,12 +144,12 @@ end
 -- ============================================================================
 
 function private.LoadData(recordType, csvRecords, csvSaveTimes)
-	local saveTimes = TSMAPI_FOUR.Util.SafeStrSplit(csvSaveTimes, ",")
+	local saveTimes = TSM.String.SafeSplit(csvSaveTimes, ",")
 	if not saveTimes then
 		return
 	end
 
-	local decodeContext = TSMAPI_FOUR.CSV.DecodeStart(csvRecords, CSV_KEYS)
+	local decodeContext = TSM.CSV.DecodeStart(csvRecords, CSV_KEYS)
 	if not decodeContext then
 		TSM:LOG_ERR("Failed to decode %s records", recordType)
 		private.dataChanged = true
@@ -158,7 +158,7 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 
 	local removeTime = time() - REMOVE_OLD_THRESHOLD
 	local index = 1
-	for itemString, stackSize, quantity, player, timestamp in TSMAPI_FOUR.CSV.DecodeIterator(decodeContext) do
+	for itemString, stackSize, quantity, player, timestamp in TSM.CSV.DecodeIterator(decodeContext) do
 		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)
 		local saveTime = tonumber(saveTimes[index])
@@ -179,7 +179,7 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		index = index + 1
 	end
 
-	if not TSMAPI_FOUR.CSV.DecodeEnd(decodeContext) then
+	if not TSM.CSV.DecodeEnd(decodeContext) then
 		TSM:LOG_ERR("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end

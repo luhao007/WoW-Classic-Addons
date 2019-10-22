@@ -205,8 +205,8 @@ function private.GetItemDetail()
 		:Equal("itemString", private.contextItemString)
 		:OrderBy("time", false)
 
-	local topBuyersTemp = TSMAPI_FOUR.Util.AcquireTempTable()
-	local topSellersTemp = TSMAPI_FOUR.Util.AcquireTempTable()
+	local topBuyersTemp = TSM.TempTable.Acquire()
+	local topSellersTemp = TSM.TempTable.Acquire()
 	for _, row in query:Iterator() do
 		local recordType = row:GetField("type")
 		local otherPlayer = row:GetField("otherPlayer")
@@ -227,8 +227,8 @@ function private.GetItemDetail()
 	local topSellers = private.TopSellerBuyerText(topSellersTemp)
 	local topBuyers = private.TopSellerBuyerText(topBuyersTemp)
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(topBuyersTemp)
-	TSMAPI_FOUR.Util.ReleaseTempTable(topSellersTemp)
+	TSM.TempTable.Release(topBuyersTemp)
+	TSM.TempTable.Release(topSellersTemp)
 
 	return TSMAPI_FOUR.UI.NewElement("Frame", "content")
 		:SetStylesheet(BASE_STYLESHEET)
@@ -526,13 +526,13 @@ end
 
 function private.TopSellerBuyerText(topSellerBuyer)
 	local top = ""
-	local players = TSMAPI_FOUR.Util.AcquireTempTable()
+	local players = TSM.TempTable.Acquire()
 
 	for player in pairs(topSellerBuyer) do
 		tinsert(players, player)
 	end
 
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(players, topSellerBuyer)
+	TSM.Table.SortWithValueLookup(players, topSellerBuyer)
 
 	local count = 0
 	for i = #players, 1, -1 do
@@ -543,7 +543,7 @@ function private.TopSellerBuyerText(topSellerBuyer)
 		top = top .. players[i] .. " |cff6fbae6(" .. topSellerBuyer[players[i]] .. ")|r"
 		count = count + 1
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(players)
+	TSM.TempTable.Release(players)
 
 	if count == 0 then
 		return L["None"]

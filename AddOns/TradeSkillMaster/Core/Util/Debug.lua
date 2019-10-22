@@ -6,11 +6,15 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Debug TSMAPI_FOUR Functions
+--- Debug Functions
 -- @module Debug
 
-TSMAPI_FOUR.Debug = {}
+local _, TSM = ...
+TSM.Debug = {}
+local Debug = TSM.Debug
 local private = {
+	startSystemTimeMs = floor(GetTime() * 1000),
+	startTimeMs = time() * 1000 + (floor(GetTime() * 1000) % 1000),
 	functionSymbols = {},
 	userdataSymbols = {},
 	uCache = {},
@@ -25,6 +29,7 @@ local private = {
 		nodeMaxContext = {},
 		nodeMaxTime = {},
 	},
+	localLinesTemp = {},
 }
 
 do
@@ -43,14 +48,14 @@ end
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Module Functions
 -- ============================================================================
 
 --- Dumps the contents of a table.
 -- @tparam string tbl The table to be dumped
 -- @tparam[opt=false] boolean returnResult Return the result as a string rather than printing to chat
 -- @within General
-function TSMAPI_FOUR.Debug.DumpTable(tbl, returnResult)
+function Debug.DumpTable(tbl, returnResult)
 	if returnResult then
 		local result = {}
 		private.Dump(tbl, result)
@@ -60,60 +65,9 @@ function TSMAPI_FOUR.Debug.DumpTable(tbl, returnResult)
 	end
 end
 
-function TSMAPI_FOUR.Debug.GetUIPath(element)
-	local path = {}
-	local e = element
-	while e do
-		tinsert(path, 1, e._id)
-		e = e:GetElement("__parent")
-	end
-	return table.concat(path, ":")
-end
-
-function TSMAPI_FOUR.Debug.TreeTraversal(from, to)
-	local startPaths = TSMAPI_FOUR.Util.SafeStrSplit(from, ":")
-	local destinationPaths = TSMAPI_FOUR.Util.SafeStrSplit(to, ":")
-	while(startPaths[1] == destinationPaths[1]) do
-		table.remove(startPaths, 1)
-		table.remove(destinationPaths, 1)
-	end
-
-	local result = {}
-	for _ = 1, #startPaths do
-		tinsert(result, "__parent")
-	end
-	for i = 1, #destinationPaths do
-		tinsert(result, destinationPaths[i])
-	end
-	return strjoin(":", unpack(result))
-end
-
-function TSMAPI_FOUR.Debug.SearchUIUp(element, pathFragment, limit)
-	print("searching from")
-	print(TSMAPI_FOUR.Debug.GetUIPath(element))
-	print("Trying "..pathFragment)
-	limit = limit or 20
-	limit = limit - 1
-	if limit > 0 then
-		local path = "__parent."..pathFragment
-		local result = pcall(element.GetElement, element, path)
-		if result then
-			print("The path to "..pathFragment)
-			print(path)
-			--local sourcePath = TSMAPI_FOUR.Debug.GetUIPath(element)
-			--local destinationPath = TSMAPI_FOUR.Debug.GetUIPath(element:GetElement(path))
-			--local short_path = TSMAPI_FOUR.Debug.TreeTaversal(sourcePath, destinationPath)
-			--print("Which has a shortest relative path of ")
-			--print(short_path)
-			return path
-		end
-		return TSMAPI_FOUR.Debug.SearchUIUp(element, path, limit)
-	end
-end
-
 --- Starts profiling.
 -- @within Profiling
-function TSMAPI_FOUR.Debug.StartProfiling()
+function Debug.StartProfiling()
 	assert(not private.profilingContext.startTime)
 	private.profilingContext.startTime = debugprofilestop()
 end
@@ -122,7 +76,7 @@ end
 -- Profiling must have been started for this to have any effect.
 -- @tparam string node The name of the profiling node
 -- @within Profiling
-function TSMAPI_FOUR.Debug.StartProfilingNode(node)
+function Debug.StartProfilingNode(node)
 	if not private.profilingContext.startTime then
 		-- profiling is not running
 		return
@@ -142,7 +96,7 @@ end
 -- Profiling of this node must have been started for this to have any effect.
 -- @tparam string node The name of the profiling node
 -- @within Profiling
-function TSMAPI_FOUR.Debug.EndProfilingNode(node, arg)
+function Debug.EndProfilingNode(node, arg)
 	if not private.profilingContext.startTime or not private.profilingContext.nodeStart[node] then
 		-- profiling is not running
 		return
@@ -159,15 +113,15 @@ end
 
 --- Ends profiling and prints the results to chat.
 -- @within Profiling
-function TSMAPI_FOUR.Debug.EndProfiling()
+function Debug.EndProfiling()
 	if not private.profilingContext.startTime then
 		-- profiling is not running
 		return
 	end
 	local totalTime = debugprofilestop() - private.profilingContext.startTime
-	print(format("Total: %.03f", TSMAPI_FOUR.Util.Round(totalTime, 0.001)))
+	print(format("Total: %.03f", TSM.Math.Round(totalTime, 0.001)))
 	for _, node in ipairs(private.profilingContext.nodes) do
-		local nodeTotalTime = TSMAPI_FOUR.Util.Round(private.profilingContext.nodeTotal[node], 0.001)
+		local nodeTotalTime = TSM.Math.Round(private.profilingContext.nodeTotal[node], 0.001)
 		local nodeRuns = private.profilingContext.nodeRuns[node]
 		local nodeMaxContext = private.profilingContext.nodeMaxContext[node]
 		if nodeMaxContext ~= nil then
@@ -189,8 +143,107 @@ end
 --- Checks whether or not we're currently profiling.
 -- @treturn boolean Whether or not we're currently profiling.
 -- @within Profiling
-function TSMAPI_FOUR.Debug.IsProfiling()
+function Debug.IsProfiling()
 	return private.profilingContext.startTime and true or false
+end
+
+--- Gets debug stack info.
+-- @tparam number targetLevel The stack level to get info for
+-- @tparam[opt] thread thread The thread to get info for
+-- @treturn string The stack frame info (file and line number) or `nil`
+-- @within Stack
+function Debug.GetDebugStackInfo(targetLevel, thread)
+	targetLevel = targetLevel + 1
+	assert(targetLevel > 0)
+	for level = 1, 100 do
+		local stackLine = nil
+		if thread then
+			stackLine = debugstack(thread, level, 1, 0)
+		else
+			stackLine = debugstack(level, 1, 0)
+		end
+		if not stackLine then
+			return
+		end
+		stackLine = strmatch(stackLine, "^%.*([^:]+:%d+):")
+		-- ignore the class code's wrapper function
+		if stackLine and not strmatch(stackLine, "LibTSMClass%.lua:") then
+			targetLevel = targetLevel - 1
+			if targetLevel == 0 then
+				stackLine = gsub(stackLine, "/", "\\")
+				stackLine = gsub(stackLine, ".-lMaster\\", "TSM\\")
+				return stackLine
+			end
+		end
+	end
+end
+
+--- Gets debug information about a given stack level.
+-- @tparam number level The stack level to get info for
+-- @tparam[opt] thread thread The thread to get info for
+-- @tparam[opt] string prevStackFunc The previous level's function
+-- @treturn string File path or `nil`
+-- @treturn number Line number or `nil`
+-- @treturn string Function name or `nil`
+-- @treturn string New value of the previous level's function name `nil`
+-- @within Stack
+function Debug.GetStackLevelInfo(level, thread, prevStackFunc)
+	local stackLine = nil
+	if thread then
+		stackLine = debugstack(thread, level, 1, 0)
+	else
+		level = level + 1
+		stackLine = debugstack(level, 1, 0)
+	end
+	local locals = debuglocals(level)
+	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?lM?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	stackLine = gsub(stackLine, "%.%.%.", "")
+	stackLine = gsub(stackLine, "`", "<", 1)
+	stackLine = gsub(stackLine, "'", ">", 1)
+	stackLine = strtrim(stackLine)
+	if stackLine == "" then
+		return
+	end
+
+	-- Parse out the file, line, and function name
+	local locationStr, functionStr = strmatch(stackLine, "^(.-): in function (<[^\n]*>)")
+	if not locationStr then
+		locationStr, functionStr = strmatch(stackLine, "^(.-): in (main chunk)")
+	end
+	if not locationStr then
+		return
+	end
+	locationStr = strsub(locationStr, strfind(locationStr, "TradeSkillMaster") or 1)
+	locationStr = gsub(locationStr, "TradeSkillMaster([^%.])", "TSM%1")
+	functionStr = functionStr and gsub(gsub(functionStr, ".*\\", ""), "[<>]", "") or ""
+	local file, line = strmatch(locationStr, "^(.+):(%d+)$")
+	file = file or locationStr
+	line = tonumber(line) or 0
+
+	local func = strsub(functionStr, strfind(functionStr, "`") and 2 or 1, -1) or "?"
+	func = func ~= "" and func or "?"
+
+	if strfind(locationStr, "LibTSMClass%.lua:") then
+		-- ignore stack frames from the class code's wrapper function
+		if func ~= "?" and prevStackFunc and not strmatch(func, "^.+:[0-9]+$") and strmatch(prevStackFunc, "^.+:[0-9]+$") then
+			-- this stack frame includes the class method we were accessing in the previous one, so go back and fix it up
+			local className = locals and strmatch(locals, "\n +str = \"([A-Za-z_0-9]+):[0-9A-F]+\"\n") or "?"
+			prevStackFunc = className.."."..func
+		end
+		return nil, nil, nil, nil, prevStackFunc
+	end
+
+	-- add locals for addon functions (debuglocals() doesn't always work - or ever for threads)
+	local localsStr = locals and private.ParseLocals(locals, file) or ""
+	return file, line, func, localsStr, nil
+end
+
+--- Gets the current time in milliseconds since epoch
+-- The time returned could be up to a second off absolutely, but relative times are guarenteed to be accurate.
+-- @treturn number The current time in milliseconds since epoch
+function Debug.GetTimeMilliseconds()
+	local systemTimeMs = floor(GetTime() * 1000)
+	return private.startTimeMs + (systemTimeMs - private.startSystemTimeMs)
 end
 
 
@@ -400,4 +453,72 @@ function private.Dump(value, result)
 	end
 
 	private.DumpValue(value, "", "", "")
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.ParseLocals(locals, file)
+	if strmatch(file, "^%[") then
+		return
+	end
+
+	local fileName = strmatch(file, "([A-Za-z]+)%.lua")
+	local isBlizzardFile = strmatch(file, "Interface\\FrameXML\\")
+	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable = false, false, false, false
+	wipe(private.localLinesTemp)
+	locals = gsub(locals, "<([a-z]+)> {[\n\t ]+}", "<%1> {}")
+	locals = gsub(locals, " = <function> defined @", "@")
+	locals = gsub(locals, "<table> {", "{")
+
+	for localLine in gmatch(locals, "[^\n]+") do
+		local shouldIgnoreLine = false
+		if strmatch(localLine, "^ *%(") then
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "LibTSMClass%.lua:") then
+			-- ignore class methods
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "<unnamed> {}$") then
+			-- ignore internal WoW frame members
+			shouldIgnoreLine = true
+		end
+		if not shouldIgnoreLine then
+			local level = #strmatch(localLine, "^ *")
+			localLine = strrep("  ", level)..strtrim(localLine)
+			localLine = gsub(localLine, "Interface\\[aA]dd[Oo]ns\\TradeSkillMaster", "TSM")
+			localLine = gsub(localLine, "\124", "\\124")
+			if level > 0 then
+				if isBlizzardFile then
+					-- for Blizzard stack frames, only include level 0 locals
+					shouldIgnoreLine = true
+				elseif isPrivateTable and strmatch(localLine, "^ *[A-Z].+@TSM") then
+					-- ignore functions within the private table
+					shouldIgnoreLine = true
+				elseif isLocaleTable then
+					-- ignore everything within the locale table
+					shouldIgnoreLine = true
+				elseif isPackageTable then
+					-- ignore the package table completely
+					shouldIgnoreLine = true
+				elseif (isSelfTable or isPrivateTable) and strmatch(localLine, "^ *[_a-zA-Z0-9]+ = {}") then
+					-- ignore empty tables within objects or the private table
+					shouldIgnoreLine = true
+				end
+			end
+			if not shouldIgnoreLine then
+				tinsert(private.localLinesTemp, localLine)
+			end
+			if level == 0 then
+				isPackageTable = strmatch(localLine, "%s*"..fileName.." = {") and true or false
+				isPrivateTable = strmatch(localLine, "%s*private = {") and true or false
+				isLocaleTable = strmatch(localLine, "%s*L = {") and true or false
+				isSelfTable = strmatch(localLine, "%s*self = {") and true or false
+			end
+		end
+	end
+
+	return #private.localLinesTemp > 0 and table.concat(private.localLinesTemp, "\n") or nil
 end

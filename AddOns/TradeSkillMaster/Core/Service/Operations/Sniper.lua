@@ -24,6 +24,15 @@ function Sniper.OnInitialize()
 	TSM.Operations.Register("Sniper", L["Sniper"], OPERATION_INFO, 1, private.GetOperationInfo)
 end
 
+function Sniper.GetBelowPrice(itemString)
+	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)
+	if not operationName then
+		return
+	end
+	return TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.belowPrice, itemString)
+end
+
 
 
 -- ============================================================================

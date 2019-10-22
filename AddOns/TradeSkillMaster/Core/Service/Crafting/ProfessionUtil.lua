@@ -17,6 +17,12 @@ local private = {
 	preparedTime = 0,
 	categoryInfoTemp = {},
 }
+local PROFESSION_LOOKUP = {
+	["Costura"] = "Sastrería",
+	["Marroquinería"] = "Peletería",
+	["Ingénierie"] = "Ingénieur",
+	["Secourisme"] = "Premiers soins",
+}
 
 
 
@@ -25,7 +31,7 @@ local private = {
 -- ============================================================================
 
 function ProfessionUtil.OnInitialize()
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, spellId)
+	TSM.Event.Register("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, spellId)
 		if unit ~= "player" then
 			return
 		end
@@ -71,9 +77,9 @@ function ProfessionUtil.OnInitialize()
 		private.craftName = nil
 		callback(false, true)
 	end
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_INTERRUPTED", SpellcastFailedEventHandler)
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_FAILED", SpellcastFailedEventHandler)
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_FAILED_QUIET", SpellcastFailedEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_INTERRUPTED", SpellcastFailedEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_FAILED", SpellcastFailedEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_FAILED_QUIET", SpellcastFailedEventHandler)
 end
 
 function ProfessionUtil.GetCurrentProfessionName()
@@ -155,10 +161,10 @@ function ProfessionUtil.IsEnchant(spellId)
 	if not strfind(C_TradeSkillUI.GetRecipeItemLink(spellId), "enchant:") then
 		return false
 	end
-	local recipeInfo = TSMAPI_FOUR.Util.AcquireTempTable()
+	local recipeInfo = TSM.TempTable.Acquire()
 	assert(C_TradeSkillUI.GetRecipeInfo(spellId, recipeInfo) == recipeInfo)
 	local altVerb = recipeInfo.alternateVerb
-	TSMAPI_FOUR.Util.ReleaseTempTable(recipeInfo)
+	TSM.TempTable.Release(recipeInfo)
 	return altVerb and true or false
 end
 
@@ -172,6 +178,9 @@ function ProfessionUtil.OpenProfession(profession)
 	elseif profession == GetSpellInfo(TSM.CONST.SKINNING_SPELLID) then
 		-- skinning needs to be opened as skinning skills
 		profession = GetSpellInfo(TSM.CONST.SKINNING_SKILLS_SPELLID)
+	end
+	if PROFESSION_LOOKUP[profession] then
+		profession = PROFESSION_LOOKUP[profession]
 	end
 	CastSpellByName(profession)
 end

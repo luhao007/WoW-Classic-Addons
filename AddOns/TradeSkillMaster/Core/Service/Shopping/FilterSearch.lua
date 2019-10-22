@@ -37,9 +37,9 @@ end
 function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 	assert(mode == "NORMAL" or mode == "CRAFTING" or mode == "DISENCHANT")
 	local isValid = true
-	local filters = TSMAPI_FOUR.Util.AcquireTempTable()
+	local filters = TSM.TempTable.Acquire()
 
-	for filter in TSMAPI_FOUR.Util.StrSplitIterator(filterStr, ";") do
+	for filter in TSM.String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
 		if isValid and filter ~= "" and private.itemFilter:ParseStr(filter) then
 			local str = private.itemFilter:GetStr()
@@ -71,7 +71,7 @@ function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 	end
 
 	local result = table.concat(filters, ";")
-	TSMAPI_FOUR.Util.ReleaseTempTable(filters)
+	TSM.TempTable.Release(filters)
 	if not isValid or result == "" then
 		return
 	end
@@ -88,7 +88,7 @@ end
 
 function private.ScanThread(auctionScan, filterStr)
 	local hasFilter = false
-	for filter in TSMAPI_FOUR.Util.StrSplitIterator(filterStr, ";") do
+	for filter in TSM.String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
 		if filter ~= "" and private.itemFilter:ParseStr(filter) then
 			auctionScan:AddItemFilterThreaded(private.itemFilter)

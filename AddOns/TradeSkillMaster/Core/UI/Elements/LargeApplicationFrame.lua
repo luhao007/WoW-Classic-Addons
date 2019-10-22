@@ -12,7 +12,7 @@
 -- @classmod LargeApplicationFrame
 
 local _, TSM = ...
-local LargeApplicationFrame = TSMAPI_FOUR.Class.DefineClass("LargeApplicationFrame", TSM.UI.ApplicationFrame)
+local LargeApplicationFrame = TSM.Lib.Class.DefineClass("LargeApplicationFrame", TSM.UI.ApplicationFrame)
 TSM.UI.LargeApplicationFrame = LargeApplicationFrame
 local private = {}
 local ICON_SIZE = 22

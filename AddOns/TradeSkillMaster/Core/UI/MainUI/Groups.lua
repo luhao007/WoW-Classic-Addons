@@ -462,7 +462,7 @@ function private.GroupSearchOnTextChanged(input)
 	end
 
 	private.groupSearch = text
-	local searchStr = TSMAPI_FOUR.Util.StrEscape(private.groupSearch)
+	local searchStr = TSM.String.Escape(private.groupSearch)
 	-- Check selection is being filtered out
 	if not strmatch(strlower(private.currentGroupPath), searchStr) then
 		local titleFrame = groupsContentFrame:GetElement("header.title")
@@ -781,7 +781,7 @@ function private.GetUngroupedItemList()
 	wipe(private.ungroupedItemList[2])
 
 	-- items in bags
-	local addedItems = TSMAPI_FOUR.Util.AcquireTempTable()
+	local addedItems = TSM.TempTable.Acquire()
 	for _, _, _, itemString in TSMAPI_FOUR.Inventory.BagIterator(false, false, true) do
 		if TSM.db.profile.userData.groups[private.currentGroupPath].ignoreItemVariations then
 			itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
@@ -792,7 +792,7 @@ function private.GetUngroupedItemList()
 			addedItems[itemString] = true
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(addedItems)
+	TSM.TempTable.Release(addedItems)
 	private.ungroupedItemList[1].header = "|cff79a2ff" .. L["Ungrouped Items"] .. "|r"
 
 	-- items in the parent group
@@ -814,17 +814,17 @@ function private.GetGroupedItemList()
 	wipe(private.groupedItemList)
 
 	-- items in this group or a subgroup
-	local itemNames = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemNames = TSM.TempTable.Acquire()
 	for _, itemString, path in TSM.Groups.ItemIterator() do
-		if path == private.currentGroupPath or strfind(path, "^"..TSMAPI_FOUR.Util.StrEscape(private.currentGroupPath)..TSM.CONST.GROUP_SEP) then
+		if path == private.currentGroupPath or strfind(path, "^"..TSM.String.Escape(private.currentGroupPath)..TSM.CONST.GROUP_SEP) then
 			local link = TSMAPI_FOUR.Item.GetLink(itemString)
 			tinsert(private.groupedItemList, link)
 			itemNames[link] = TSMAPI_FOUR.Item.GetName(itemString) or ""
 		end
 	end
 
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(private.groupedItemList, itemNames)
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemNames)
+	TSM.Table.SortWithValueLookup(private.groupedItemList, itemNames)
+	TSM.TempTable.Release(itemNames)
 	return private.groupedItemList
 end
 

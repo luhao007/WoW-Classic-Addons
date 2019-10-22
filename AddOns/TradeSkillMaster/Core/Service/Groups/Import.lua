@@ -11,7 +11,7 @@ local L = TSM.L
 local Import = TSM.Groups:NewPackage("Import")
 local private = { groupImports = nil, operationsTemp = {} }
 local AceSerializer = LibStub("AceSerializer-3.0")
-local GroupImport = TSMAPI_FOUR.Class.DefineClass("GroupImport")
+local GroupImport = TSM.Lib.Class.DefineClass("GroupImport")
 
 
 
@@ -104,10 +104,10 @@ function GroupImport.ParseString(self, str)
 end
 
 function GroupImport.GetInfo(self)
-	local numItems = TSMAPI_FOUR.Util.Count(self._items)
+	local numItems = TSM.Table.Count(self._items)
 	local numOperations = 0
 	for _, moduleOperations in pairs(self._operations) do
-		numOperations = numOperations + TSMAPI_FOUR.Util.Count(moduleOperations)
+		numOperations = numOperations + TSM.Table.Count(moduleOperations)
 	end
 	return numItems, numOperations
 end
@@ -156,7 +156,7 @@ function GroupImport.Commit(self, rootGroup)
 	end
 
 	-- get the list of valid groups
-	local newGroups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local newGroups = TSM.TempTable.Acquire()
 	for relativeGroupPath in pairs(self._groups) do
 		local groupPath = relativeGroupPath == TSM.CONST.ROOT_GROUP_PATH and rootGroup or TSM.Groups.Path.Join(rootGroup, relativeGroupPath)
 		if not newGroups[groupPath] and groupPath ~= TSM.CONST.ROOT_GROUP_PATH and not TSM.Groups.Exists(groupPath) then
@@ -192,47 +192,47 @@ function GroupImport.Commit(self, rootGroup)
 end
 
 function GroupImport.GroupIterator(self)
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	for groupPath in pairs(self._groups) do
 		tinsert(groups, groupPath)
 	end
 	TSM.Groups.SortGroupList(groups)
-	return TSMAPI_FOUR.Util.TempTableIterator(groups)
+	return TSM.TempTable.Iterator(groups)
 end
 
 function GroupImport.GroupItemIterator(self, groupPath)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
-	local itemNameLookup = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
+	local itemNameLookup = TSM.TempTable.Acquire()
 	for itemString, itemGroupPath in pairs(self._items) do
 		if itemGroupPath == groupPath then
 			tinsert(items, itemString)
 			itemNameLookup[itemString] = TSMAPI_FOUR.Item.GetName(itemString) or itemString
 		end
 	end
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(items, itemNameLookup)
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemNameLookup)
-	return TSMAPI_FOUR.Util.TempTableIterator(items)
+	TSM.Table.SortWithValueLookup(items, itemNameLookup)
+	TSM.TempTable.Release(itemNameLookup)
+	return TSM.TempTable.Iterator(items)
 end
 
 function GroupImport.GroupModuleOperationIterator(self, groupPath, moduleName)
-	local operations = TSMAPI_FOUR.Util.AcquireTempTable()
+	local operations = TSM.TempTable.Acquire()
 	if self._groups[groupPath][moduleName] and self._groups[groupPath][moduleName].override then
 		for _, operationName in ipairs(self._groups[groupPath][moduleName]) do
 			tinsert(operations, operationName)
 		end
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(operations)
+	return TSM.TempTable.Iterator(operations)
 end
 
 function GroupImport.ModuleOperationIterator(self, moduleName)
-	local operations = TSMAPI_FOUR.Util.AcquireTempTable()
+	local operations = TSM.TempTable.Acquire()
 	if self._operations[moduleName] then
 		for operationName in pairs(self._operations[moduleName]) do
 			tinsert(operations, operationName)
 		end
 		sort(operations)
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(operations)
+	return TSM.TempTable.Iterator(operations)
 end
 
 function GroupImport.RemoveOperation(self, moduleName, operationName)
@@ -298,7 +298,7 @@ function GroupImport.RemoveExistingGroupedItems(self)
 end
 
 function GroupImport.RemoveGroupOperation(self, groupPath, moduleName, operationName)
-	TSMAPI_FOUR.Util.TableRemoveByValue(self._groups[groupPath][moduleName], operationName)
+	TSM.Table.RemoveByValue(self._groups[groupPath][moduleName], operationName)
 end
 
 function GroupImport.RemoveGroupOperations(self, groupPath, moduleName)
@@ -355,7 +355,7 @@ function GroupImport._ParseGroupExport(self, str)
 		str = gsub(str, ";", ",")
 	end
 	local relativePath = TSM.CONST.ROOT_GROUP_PATH
-	for part in TSMAPI_FOUR.Util.StrSplitIterator(str, ",") do
+	for part in TSM.String.SplitIterator(str, ",") do
 		part = strtrim(part)
 		local groupPath = strmatch(part, "^group:(.+)$")
 		local itemString = strmatch(part, "^[ip]?:?[0-9%-:]+$")

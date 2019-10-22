@@ -12,7 +12,7 @@
 -- @classmod SimpleTabGroup
 
 local _, TSM = ...
-local SimpleTabGroup = TSMAPI_FOUR.Class.DefineClass("SimpleTabGroup", TSM.UI.ViewContainer)
+local SimpleTabGroup = TSM.Lib.Class.DefineClass("SimpleTabGroup", TSM.UI.ViewContainer)
 TSM.UI.SimpleTabGroup = SimpleTabGroup
 local private = {}
 local BUTTON_PADDING_BOTTOM = 2

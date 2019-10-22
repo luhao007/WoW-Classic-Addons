@@ -74,7 +74,7 @@ function PostScan.OnInitialize()
 end
 
 function private.UpdateOperationDB()
-	local used = TSMAPI_FOUR.Util.AcquireTempTable()
+	local used = TSM.TempTable.Acquire()
 	private.operationDB:TruncateAndBulkInsertStart()
 	for _, _, _, itemString in TSMAPI_FOUR.Inventory.BagIterator(true, false, false, true) do
 		if not used[itemString] then
@@ -86,7 +86,7 @@ function private.UpdateOperationDB()
 		end
 	end
 	private.operationDB:BulkInsertEnd()
-	TSMAPI_FOUR.Util.ReleaseTempTable(used)
+	TSM.TempTable.Release(used)
 end
 
 function PostScan.CreateBagsQuery()
@@ -225,12 +225,11 @@ end
 function private.ScanThread(auctionScan, auctionScanDB, scanContext)
 	wipe(private.debugLog)
 	private.auctionScanDB = auctionScanDB
-	auctionScan:SetScript("OnFilterPartialDone", private.AuctionScanOnFilterPartialDone)
 	auctionScan:SetScript("OnFilterDone", private.AuctionScanOnFilterDone)
 	private.UpdateBagDB()
 
 	-- get the state of the player's bags
-	local bagCounts = TSMAPI_FOUR.Util.AcquireTempTable()
+	local bagCounts = TSM.TempTable.Acquire()
 	local bagQuery = private.bagDB:NewQuery()
 		:Select("itemString", "quantity")
 	for _, itemString, quantity in bagQuery:Iterator() do
@@ -248,7 +247,7 @@ function private.ScanThread(auctionScan, auctionScanDB, scanContext)
 			tinsert(private.itemList, itemString)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(bagCounts)
+	TSM.TempTable.Release(bagCounts)
 	if #private.itemList == 0 then
 		return
 	end
@@ -257,6 +256,9 @@ function private.ScanThread(auctionScan, auctionScanDB, scanContext)
 
 	-- run the scan
 	auctionScan:AddItemListFiltersThreaded(private.itemList)
+	for _, filter in auctionScan:FilterIterator() do
+		filter:SetIsDoneFunction(private.FilterIsDoneFunction)
+	end
 	auctionScan:StartScanThreaded()
 end
 
@@ -270,7 +272,7 @@ function private.UpdateBagDB()
 	private.bagDB:TruncateAndBulkInsertStart()
 	for _, bag, slot, itemString, quantity in TSMAPI_FOUR.Inventory.BagIterator(true, false, false, true) do
 		private.DebugLogInsert(itemString, "Updating bag DB with %d in %d, %d", quantity, bag, slot)
-		private.bagDB:BulkInsertNewRow(itemString, bag, slot, quantity, TSMAPI_FOUR.Util.JoinSlotId(bag, slot))
+		private.bagDB:BulkInsertNewRow(itemString, bag, slot, quantity, TSM.SlotId.Join(bag, slot))
 	end
 	private.bagDB:BulkInsertEnd()
 end
@@ -380,7 +382,7 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 	end
 end
 
-function private.AuctionScanOnFilterPartialDone(auctionScan, filter)
+function private.FilterIsDoneFunction(filter, auctionScan)
 	for _, itemString in ipairs(filter:GetItems()) do
 		if not private.IsFilterDoneForItem(auctionScan, itemString) then
 			return false
@@ -494,9 +496,9 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 		end
 	end
 
-	local lowestAuction = TSMAPI_FOUR.Util.AcquireTempTable()
+	local lowestAuction = TSM.TempTable.Acquire()
 	if not TSM.Auctioning.Util.GetLowestAuction(query, itemString, operationSettings, lowestAuction) then
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		lowestAuction = nil
 	end
 	local minPrice = TSM.Auctioning.Util.GetPrice("minPrice", operationSettings, itemString)
@@ -514,15 +516,15 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	elseif lowestAuction.hasInvalidSeller then
 		-- we didn't get all the necessary seller info
 		TSM:Printf(L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."], TSMAPI_FOUR.Item.GetLink(itemString))
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		return "invalidSeller"
 	elseif lowestAuction.isBlacklist and lowestAuction.isPlayer then
 		TSM:Printf(L["Did not post %s because you or one of your alts (%s) is on the blacklist which is not allowed. Remove this character from your blacklist."], TSMAPI_FOUR.Item.GetLink(itemString), lowestAuction.seller)
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		return "invalidItemGroup"
 	elseif lowestAuction.isBlacklist and lowestAuction.isWhitelist then
 		TSM:Printf(L["Did not post %s because the owner of the lowest auction (%s) is on both the blacklist and whitelist which is not allowed. Adjust your settings to correct this issue."], TSMAPI_FOUR.Item.GetLink(itemString), lowestAuction.seller)
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		return "invalidItemGroup"
 	elseif lowestAuction.buyout <= minPrice then
 		seller = lowestAuction.seller
@@ -539,7 +541,7 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 			buyout = lowestAuction.buyout - undercut
 		else
 			-- don't post this item
-			TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+			TSM.TempTable.Release(lowestAuction)
 			return "postBelowMin", nil, nil, seller
 		end
 	elseif lowestAuction.isPlayer or (lowestAuction.isWhitelist and TSM.db.global.auctioningOptions.matchWhitelist) then
@@ -556,13 +558,13 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	elseif lowestAuction.isWhitelist then
 		-- don't undercut a whitelisted player
 		seller = lowestAuction.seller
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		return "postWhitelistNoPost", nil, nil, seller
 	elseif (lowestAuction.buyout - undercut) > maxPrice then
 		-- we'd be posting above the max price, so resort to the aboveMax setting
 		seller = lowestAuction.seller
 		if operationSettings.aboveMax == "none" then
-			TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+			TSM.TempTable.Release(lowestAuction)
 			return "postAboveMaxNoPost", nil, nil, seller
 		end
 		assert(ABOVE_MAX_REASON_LOOKUP[operationSettings.aboveMax], "Unexpected 'above max price' setting: "..tostring(operationSettings.aboveMax))
@@ -581,7 +583,7 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 		bid = max(bid or buyout * operationSettings.bidPercent, minPrice)
 	end
 	if lowestAuction then
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 	end
 	bid = floor(bid)
 
@@ -658,12 +660,12 @@ function private.GetPostBagSlot(itemString, quantity)
 		TSM:LOG_ERR("Failed to find initial bag / slot (%s, %d)", itemString, quantity)
 		return nil, true
 	end
-	local removeContext = TSMAPI_FOUR.Util.AcquireTempTable()
+	local removeContext = TSM.TempTable.Acquire()
 	bag, slot = private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContext)
 
 	if TSMAPI_FOUR.Item.ToBaseItemString(GetContainerItemLink(bag, slot), true) ~= itemString then
 		-- something changed with the player's bags so we can't post the item right now
-		TSMAPI_FOUR.Util.ReleaseTempTable(removeContext)
+		TSM.TempTable.Release(removeContext)
 		private.DebugLogInsert(itemString, "Bags changed")
 		return nil, nil
 	end
@@ -671,20 +673,20 @@ function private.GetPostBagSlot(itemString, quantity)
 	assert(quality)
 	if quality == -1 then
 		-- the game client doesn't have item info cached for this item, so we can't post it yet
-		TSMAPI_FOUR.Util.ReleaseTempTable(removeContext)
+		TSM.TempTable.Release(removeContext)
 		private.DebugLogInsert(itemString, "No item info")
 		return nil, nil
 	end
 	for slotId, removeQuantity in pairs(removeContext) do
 		private.RemoveBagQuantity(slotId, removeQuantity)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(removeContext)
+	TSM.TempTable.Release(removeContext)
 	private.DebugLogInsert(itemString, "GetPostBagSlot(%d) -> %d, %d", quantity, bag, slot)
 	return bag, slot
 end
 
 function private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContext)
-	local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+	local slotId = TSM.SlotId.Join(bag, slot)
 
 	-- try to post completely from the selected slot
 	local found = private.bagDB:NewQuery()
@@ -722,7 +724,7 @@ function private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContex
 		:OrderBy("slotId", true)
 	local numNeeded = quantity - selectedQuantity
 	local numUsed = 0
-	local usedSlotIds = TSMAPI_FOUR.Util.AcquireTempTable()
+	local usedSlotIds = TSM.TempTable.Acquire()
 	for _, rowSlotId, rowQuantity in query:Iterator() do
 		if numNeeded ~= numUsed then
 			numUsed = min(numUsed + rowQuantity, numNeeded)
@@ -732,7 +734,7 @@ function private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContex
 	query:Release()
 	if numNeeded == numUsed then
 		removeContext[slotId] = selectedQuantity
-		for _, rowSlotId in TSMAPI_FOUR.Util.TempTableIterator(usedSlotIds) do
+		for _, rowSlotId in TSM.TempTable.Iterator(usedSlotIds) do
 			local rowQuantity = private.bagDB:GetUniqueRowField("slotId", rowSlotId, "quantity")
 			local rowNumUsed = min(numUsed, rowQuantity)
 			numUsed = numUsed - rowNumUsed
@@ -740,7 +742,7 @@ function private.ItemBagSlotHelper(itemString, bag, slot, quantity, removeContex
 		end
 		return bag, slot
 	else
-		TSMAPI_FOUR.Util.ReleaseTempTable(usedSlotIds)
+		TSM.TempTable.Release(usedSlotIds)
 	end
 
 	-- try posting from the next highest slot

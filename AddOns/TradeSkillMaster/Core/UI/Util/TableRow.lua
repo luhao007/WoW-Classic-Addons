@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local TableRow = TSMAPI_FOUR.Class.DefineClass("TableRow")
+local TableRow = TSM.Lib.Class.DefineClass("TableRow")
 TSM.UI.Util.TableRow = TableRow
 local private = { rowFrameLookup = {} }
 local ROW_PADDING = 8
@@ -475,7 +475,7 @@ end
 function private.HeaderColOnClick(button, mouseButton)
 	local self = private.rowFrameLookup[button:GetParent()]
 	if mouseButton == "LeftButton" then
-		self._scrollingTable:_ToggleSort(TSMAPI_FOUR.Util.GetDistinctTableKey(self._buttons, button))
+		self._scrollingTable:_ToggleSort(TSM.Table.GetDistinctKey(self._buttons, button))
 	elseif mouseButton == "RightButton" then
 		self._scrollingTable._tableInfo:_UpdateTitleIndex()
 		self._scrollingTable:UpdateData(true)
@@ -547,7 +547,7 @@ function private.TooltipFrameOnClick(frame, ...)
 		local link = tooltip and TSMAPI_FOUR.Item.GetLink(tooltip)
 		if link then
 			if IsShiftKeyDown() then
-				TSMAPI_FOUR.Util.SafeItemRef(link)
+				TSM.Wow.SafeItemRef(link)
 			elseif IsControlKeyDown() then
 				DressUpItemLink(link)
 			end

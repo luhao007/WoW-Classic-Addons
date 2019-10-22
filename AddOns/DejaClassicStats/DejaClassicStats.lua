@@ -666,7 +666,7 @@ local function OHDamage()
 end
 -- Melee Critical Strike Chance
 local function MeleeCrit()
-	local TooltipLine1 = L["Gives a chance to critically stike with melee attacks, increasing the damage dealt by 200%."]
+	local TooltipLine1 = L["Gives a chance to critically stike with melee attacks, increasing the damage dealt by 100%."]
 	return "", format("%.2f%%", GetCritChance()), TooltipLine1, "", "", ""
 end
 -- Ranged Attack(Weapon Skill)
@@ -724,12 +724,32 @@ local function Block()
 end
 -- Defense
 local function Defense()
-	local baseDefense, armorDefense = UnitDefense("player")
+	local baseDefense, bonusDefense, posBuff, negBuff = 0,0,0,0
+	local numSkills = GetNumSkillLines()
+	local skillIndex = 0
+	for i = 1, numSkills do
+		local skillName = select(1, GetSkillLineInfo(i))
+		if (skillName == DEFENSE) then
+			skillIndex = i
+			break
+		end
+	end
+	if (skillIndex > 0) then
+		baseDefense = select(4, GetSkillLineInfo(skillIndex))
+		bonusDefense = select(6, GetSkillLineInfo(skillIndex))
+	else
+		baseDefense, bonusDefense = UnitDefense(unit)
+	end
+	if ( bonusDefense > 0 ) then
+		posBuff = bonusDefense
+	elseif ( bonusDefense < 0 ) then
+		negBuff = bonusDefense
+	end
 	local TooltipLine1 = L["Base Defense including talents such as Warrior's Anticipation is "]..baseDefense.."."
-	local TooltipLine2 = L["Bonus Defense from items and enhancements is "]..armorDefense.."."
-	local TooltipLine3 = L["Total Defense is "]..(baseDefense + armorDefense)..L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."]
-	local total = "("..baseDefense.." |cff00c0ff+ "..armorDefense.."|r)"
-	return "", format("%.0f", (baseDefense + armorDefense)), TooltipLine1, TooltipLine2, TooltipLine3, total
+	local TooltipLine2 = L["Bonus Defense from items and enhancements is "]..bonusDefense.."."
+	local TooltipLine3 = L["Total Defense is "]..(baseDefense + bonusDefense)..L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."]
+	local total = "("..baseDefense.." |cff00c0ff+ "..bonusDefense.."|r)"
+	return "", format("%.0f", (baseDefense + bonusDefense)), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 ------------------
 -- Spellcasting --
@@ -738,21 +758,38 @@ end
 -- local function ManaRegenCurrent() --This appears to be power regen like rage, energy, runes, focus, etc.
 -- return "", format("%.0f", GetPowerRegen()), TooltipLine1, "", "", ""
 -- end
--- Mana Regen while not casting
-local function ManaRegenNotCasting()
-	local base, casting = GetManaRegen()
-	local TooltipLine1 = L["Mana points regenerated per tick while not casting and outside the five second rule."]
-	return "", format("%.0f", (base * 2)), TooltipLine1, "", "", ""
-end
+local MP5Modifier = 0
 -- MP5
 local function MP5()
+	local mp5 = 0
+	for i=1,18 do
+		local itemLink = GetInventoryItemLink("player", i)
+		if itemLink then
+			local stats = GetItemStats(itemLink)
+			if stats then
+				local statMP5 = stats["ITEM_MOD_POWER_REGEN0_SHORT"]
+				if (statMP5) then
+					mp5 = mp5 + statMP5 + 1
+				end
+			end
+		end
+	end
+	MP5Modifier = mp5
+	local TooltipLine1 = mp5.." "..L["Mana points regenerated every five seconds while casting and inside the five second rule."]
+	local TooltipLine2 = format("%.2f", (mp5 * 0.4)).." "..L["Mana points regenerated every tick while casting and inside the five second rule."]
+	return "", format("%.0f", mp5), TooltipLine1, TooltipLine2, "", ""
+end
+-- Mana Regen while not casting
+local function ManaRegenNotCasting()
+	MP5()
 	local base, casting = GetManaRegen()
-	local TooltipLine1 = L["Mana points regenerated per tick while casting and inside the five second rule."]
-	return "", format("%.0f", (casting * 0.4)), TooltipLine1, "", "", ""
+	local effectiveManaRegen = MP5Modifier * 0.4 -- Ticks are every 2 seconds, or 2/5 of MP5 stat per tick.
+	local TooltipLine1 = L["Total Mana points regenerated per tick while not casting and outside the five second rule."]
+	return "", format("%.2f", (base * 2) + effectiveManaRegen), TooltipLine1, "", "", ""
 end
 -- Spell Critical Strike Chance
 local function SpellCrit()
-	local TooltipLine1 = L["Gives a chance to critically stike with spells, increasing the damage dealt by 150%."]
+	local TooltipLine1 = L["Gives a chance to critically stike with spells, increasing the damage dealt by 50%."]
 	return "", format("%.2f%%", GetSpellCritChance()), TooltipLine1, "", "", ""
 end
 -- Bonus Spell Hit Chance Modifier
@@ -838,7 +875,7 @@ DCS_STAT_DATA = {
 		statName = "DCS_Armor",
 		StatValue = 0,
 		isShown = true,
-		Label = L["Armor "],
+		Label = L["Armor: "],
 		statFunction = DCS_Armor,
 		relativeTo = DCSPrimaryStatsHeader,
 	},
@@ -1153,7 +1190,7 @@ local function DCS_SetStatText(StatKey, StatLabel, StatValue1, StatValue2, StatV
 
 	_G["DCS"..StatKey.."StatFrame"]:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(_G["DCS"..StatKey.."StatFrame"], "ANCHOR_RIGHT");
-		GameTooltip:SetText(tooltipheader.."", 1, 1, 1, 1, true)
+		GameTooltip:SetText(tooltipheader.." "..StatValue5, 1, 1, 1, 1, true)
 		GameTooltip:AddLine(StatValue2, 1, 0.8, 0.1, true)
 		GameTooltip:AddLine(StatValue3, 1, 0.8, 0.1, true)
 		GameTooltip:AddLine(StatValue4, 1, 0.8, 0.1, true)

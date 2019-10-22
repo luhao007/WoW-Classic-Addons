@@ -2,6 +2,35 @@
 Changelog
 =========
 
+Version 4.11.55  (for WoW Classic)  October 18, 2019
+
+- Russian language file updated.  Thank you to "GoodDeath".
+- Fixed quest rewards for RFK Quest 4 "A Vengeful Fate".   Thank you reaper666735 for the report.
+- Removed ancient server item query code.  Its been obsolete for quite some time.
+
+- German translation added!  Thanks to "Guldukat".  It is incomplete but being updated.
+
+- Spanish translation added!  Thanks to Woopy!  
+
+- Quests added:
+	- Scholomance: Judgment and Redemption
+
+- Cleanup Progress:
+	- Gnomeregan complete.
+	- Scarlet Monastery: Library complete.
+	- Scarlet Monastery: Armory complete.
+	- Scarlet Monastery: Cathedral complete.
+	- Scarlet Monastery: Graveyard complete.
+	- Ragefire Chasm complete.
+	- Scholomance complete.
+	- Shadowfang Keep complete.
+	- The Stockade complete.
+	- Stratholme complete.
+	
+
+
+
+
 Version 4.11.54  (for WoW Classic)  September 24, 2019
 
 - Moved Quest levels & prequest icons out of localization files and to a quest data file.  This will reduce the overall duplication of data and make things a bit easier for translators.  And me!

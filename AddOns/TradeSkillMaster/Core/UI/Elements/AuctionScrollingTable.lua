@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local AuctionScrollingTable = TSMAPI_FOUR.Class.DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
+local AuctionScrollingTable = TSM.Lib.Class.DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.AuctionScrollingTable = AuctionScrollingTable
 local private = {
 	sortContext = {
@@ -299,7 +299,7 @@ function AuctionScrollingTable._UpdateData(self)
 	wipe(self._numAuctionsByItem)
 	wipe(self._numAuctionsByHash)
 
-	local hashes = TSMAPI_FOUR.Util.AcquireTempTable()
+	local hashes = TSM.TempTable.Acquire()
 	local sortAscending = self._sortAscending
 	local showingAltTitles = self._tableInfo:_GetTitleIndex() ~= 1
 	for _, record in self._query:Iterator() do
@@ -382,7 +382,7 @@ function AuctionScrollingTable._UpdateData(self)
 		end
 	end
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(hashes)
+	TSM.TempTable.Release(hashes)
 	sort(self._data, sortAscending and private.SortByHashAscendingHelper or private.SortByHashDescendingHelper)
 	wipe(private.sortContext.sortValueByHash)
 	wipe(private.sortContext.baseRecordSortValues)
@@ -667,7 +667,7 @@ function private.GetPercentCellText(self, context)
 	local pct, bidPct = self:_GetRecordMarketValuePct(record)
 	local pctColor = "|cffffffff"
 	if pct then
-		pct = TSMAPI_FOUR.Util.Round(100 * pct)
+		pct = TSM.Math.Round(100 * pct)
 		for _, info in ipairs(AUCTION_PCT_COLORS) do
 			if pct < info.value then
 				pctColor = info.color
@@ -676,7 +676,7 @@ function private.GetPercentCellText(self, context)
 		end
 	elseif bidPct then
 		pctColor = "|cffbbbbbb"
-		pct = TSMAPI_FOUR.Util.Round(100 * bidPct)
+		pct = TSM.Math.Round(100 * bidPct)
 	end
 	if pct and pct > 999 then
 		pct = ">999"

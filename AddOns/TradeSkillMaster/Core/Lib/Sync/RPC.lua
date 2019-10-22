@@ -25,7 +25,6 @@ function RPC.OnInitialize()
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.RPC_CALL, private.HandleCall)
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.RPC_RETURN, private.HandleReturn)
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.RPC_PREAMBLE, private.HandlePreamble)
-	TSMAPI_FOUR.Delay.AfterTime(1, private.CheckPending, 1)
 end
 
 function RPC.Register(name, func)
@@ -42,19 +41,20 @@ function RPC.Call(name, targetPlayer, handler, ...)
 	assert(private.rpcFunctions[name], "Cannot call an RPC which is not also registered locally.")
 	private.rpcSeqNum = private.rpcSeqNum + 1
 
-	local requestData = TSMAPI_FOUR.Util.AcquireTempTable()
+	local requestData = TSM.TempTable.Acquire()
 	requestData.name = name
-	requestData.args = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	requestData.args = TSM.TempTable.Acquire(...)
 	requestData.seq = private.rpcSeqNum
 	local numBytes = TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.RPC_CALL, targetPlayer, requestData)
-	TSMAPI_FOUR.Util.ReleaseTempTable(requestData.args)
-	TSMAPI_FOUR.Util.ReleaseTempTable(requestData)
+	TSM.TempTable.Release(requestData.args)
+	TSM.TempTable.Release(requestData)
 
-	local context = TSMAPI_FOUR.Util.AcquireTempTable()
+	local context = TSM.TempTable.Acquire()
 	context.name = name
 	context.handler = handler
 	context.timeoutTime = time() + RPC_EXTRA_TIMEOUT + private.EstimateTransferTime(numBytes)
 	private.pendingRPC[private.rpcSeqNum] = context
+	TSMAPI_FOUR.Delay.AfterTime("SYNC_PENDING_RPC", 1, private.HandlePendingRPC)
 
 	return true, (context.timeoutTime - time()) * 2 / 3
 end
@@ -62,7 +62,7 @@ end
 function RPC.Cancel(name, handler)
 	for seq, info in pairs(private.pendingRPC) do
 		if info.name == name and info.handler == handler then
-			TSMAPI_FOUR.Util.ReleaseTempTable(info)
+			TSM.TempTable.Release(info)
 			private.pendingRPC[seq] = nil
 			return
 		end
@@ -83,21 +83,21 @@ function private.HandleCall(dataType, _, sourcePlayer, data)
 	if not private.rpcFunctions[data.name] then
 		return
 	end
-	local responseData = TSMAPI_FOUR.Util.AcquireTempTable()
-	responseData.result = TSMAPI_FOUR.Util.AcquireTempTable(private.rpcFunctions[data.name](unpack(data.args)))
+	local responseData = TSM.TempTable.Acquire()
+	responseData.result = TSM.TempTable.Acquire(private.rpcFunctions[data.name](unpack(data.args)))
 	responseData.seq = data.seq
 	local numBytes = TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.RPC_RETURN, sourcePlayer, responseData)
-	TSMAPI_FOUR.Util.ReleaseTempTable(responseData.result)
-	TSMAPI_FOUR.Util.ReleaseTempTable(responseData)
+	TSM.TempTable.Release(responseData.result)
+	TSM.TempTable.Release(responseData)
 
 	local transferTime = private.EstimateTransferTime(numBytes)
 	if transferTime > 1 then
 		-- We sent more than 1 second worth of data back, so send a preamble to allow the source to adjust its timeout accordingly.
-		local preambleData = TSMAPI_FOUR.Util.AcquireTempTable()
+		local preambleData = TSM.TempTable.Acquire()
 		preambleData.transferTime = transferTime
 		preambleData.seq = data.seq
 		TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.RPC_PREAMBLE, sourcePlayer, preambleData)
-		TSMAPI_FOUR.Util.ReleaseTempTable(preambleData)
+		TSM.TempTable.Release(preambleData)
 	end
 end
 
@@ -109,7 +109,7 @@ function private.HandleReturn(dataType, _, _, data)
 		return
 	end
 	private.pendingRPC[data.seq].handler(unpack(data.result))
-	TSMAPI_FOUR.Util.ReleaseTempTable(private.pendingRPC[data.seq])
+	TSM.TempTable.Release(private.pendingRPC[data.seq])
 	private.pendingRPC[data.seq] = nil
 end
 
@@ -134,11 +134,11 @@ function private.EstimateTransferTime(numBytes)
 	return ceil(numBytes / (ChatThrottleLib.MAX_CPS / 2))
 end
 
-function private.CheckPending()
+function private.HandlePendingRPC()
 	if not next(private.pendingRPC) then
 		return
 	end
-	local timedOut = TSMAPI_FOUR.Util.AcquireTempTable()
+	local timedOut = TSM.TempTable.Acquire()
 	for seq, info in pairs(private.pendingRPC) do
 		if time() > info.timeoutTime then
 			tinsert(timedOut, seq)
@@ -148,8 +148,8 @@ function private.CheckPending()
 		local info = private.pendingRPC[seq]
 		TSM:LOG_WARN("RPC timed out (%s)", info.name)
 		info.handler()
-		TSMAPI_FOUR.Util.ReleaseTempTable(info)
+		TSM.TempTable.Release(info)
 		private.pendingRPC[seq] = nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(timedOut)
+	TSM.TempTable.Release(timedOut)
 end

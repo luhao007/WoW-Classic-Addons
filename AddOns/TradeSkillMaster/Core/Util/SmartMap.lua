@@ -104,7 +104,7 @@ local READER_MT = {
 
 
 -- ============================================================================
--- Module Methods
+-- Module Functions
 -- ============================================================================
 
 function SmartMap.New(keyType, valueType, func)
@@ -204,5 +204,5 @@ function private.MapGetValueType(self)
 end
 
 function private.MapKeyIterator(self)
-	return TSMAPI_FOUR.Util.TableKeyIterator(private.mapContext[self].data)
+	return TSM.Table.KeyIterator(private.mapContext[self].data)
 end

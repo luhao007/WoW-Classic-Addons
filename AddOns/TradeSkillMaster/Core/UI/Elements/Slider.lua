@@ -11,7 +11,7 @@
 -- @classmod Slider
 
 local _, TSM = ...
-local Slider = TSMAPI_FOUR.Class.DefineClass("Slider", TSM.UI.Element)
+local Slider = TSM.Lib.Class.DefineClass("Slider", TSM.UI.Element)
 TSM.UI.Slider = Slider
 local private = { frameSliderLookup = {} }
 local THUMB_WIDTH = 8
@@ -150,8 +150,8 @@ function Slider.Draw(self)
 
 	local sliderHeight = self:_GetDimension("HEIGHT") / 2 - THUMB_TEXT_PADDING
 	local width = self:_GetDimension("WIDTH") - INPUT_AREA_SPACE
-	local leftPos = TSMAPI_FOUR.Util.Scale(self._leftValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
-	local rightPos = TSMAPI_FOUR.Util.Scale(self._rightValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
+	local leftPos = TSM.Math.Scale(self._leftValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
+	local rightPos = TSM.Math.Scale(self._rightValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
 	frame.inputRight:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight") - 1)
@@ -213,8 +213,8 @@ function Slider._GetCursorPositionValue(self)
 	local left = frame:GetLeft() + THUMB_WIDTH / 2
 	local right = frame:GetRight() - THUMB_WIDTH - INPUT_AREA_SPACE * 2 / 2
 	x = min(max(x, left), right)
-	local value = TSMAPI_FOUR.Util.Scale(x, left, right, self._minValue, self._maxValue)
-	return min(max(TSMAPI_FOUR.Util.Round(value), self._minValue), self._maxValue)
+	local value = TSM.Math.Scale(x, left, right, self._minValue, self._maxValue)
+	return min(max(TSM.Math.Round(value), self._minValue), self._maxValue)
 end
 
 function Slider._UpdateLeftValue(self, value)

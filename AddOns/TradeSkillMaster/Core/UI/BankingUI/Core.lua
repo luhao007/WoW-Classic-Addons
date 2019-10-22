@@ -357,12 +357,12 @@ function private.SimpleBtnOnClick(button)
 end
 
 function private.GroupBtnOnClick(button)
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	for _, groupPath in button:GetElement("__base.content.groupTree"):SelectedGroupsIterator() do
 		groups[groupPath] = true
 	end
 	private.fsm:ProcessEvent("EV_BUTTON_CLICKED", button, button:GetContext(), groups)
-	TSMAPI_FOUR.Util.ReleaseTempTable(groups)
+	TSM.TempTable.Release(groups)
 end
 
 

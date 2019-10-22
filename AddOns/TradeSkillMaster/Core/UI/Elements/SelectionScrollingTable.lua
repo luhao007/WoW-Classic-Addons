@@ -12,7 +12,7 @@
 -- @classmod SelectionScrollingTable
 
 local _, TSM = ...
-local SelectionScrollingTable = TSMAPI_FOUR.Class.DefineClass("SelectionScrollingTable", TSM.UI.QueryScrollingTable)
+local SelectionScrollingTable = TSM.Lib.Class.DefineClass("SelectionScrollingTable", TSM.UI.QueryScrollingTable)
 TSM.UI.SelectionScrollingTable = SelectionScrollingTable
 local private = {}
 local CHECK_LEFT_SPACING = 4

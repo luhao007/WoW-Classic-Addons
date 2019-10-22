@@ -8,7 +8,6 @@
 
 local _, TSM = ...
 local Queue = TSM.Crafting:NewPackage("Queue")
-local L = TSM.L
 local private = { db = nil }
 
 
@@ -43,7 +42,7 @@ function Queue.SetNum(spellId, num)
 		TSM:LOG_ERR("Could not find craft: "..spellId)
 		return
 	end
-	craftInfo.queued = max(TSMAPI_FOUR.Util.Round(num or 0), 0)
+	craftInfo.queued = max(TSM.Math.Round(num or 0), 0)
 	local query = private.db:NewQuery()
 		:Equal("spellId", spellId)
 	local row = query:GetFirstResult()
@@ -114,14 +113,15 @@ end
 function Queue.RestockGroups(groups)
 	private.db:SetQueryUpdatesPaused(true)
 	for _, groupPath in ipairs(groups) do
-		for _, operationName, operationSettings in TSM.Operations.GroupOperationIterator("Crafting", groupPath) do
-			if private.IsOperationValid(operationName, operationSettings) then
-				if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-					-- TODO
-				else
-					for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-						private.RestockItem(itemString, operationSettings)
-					end
+		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
+			-- TODO
+		else
+			for _, itemString in TSM.Groups.ItemIterator(groupPath) do
+				local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
+				if isValid then
+					private.RestockItem(itemString)
+				elseif err then
+					TSM:Print(err)
 				end
 			end
 		end
@@ -135,16 +135,7 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.IsOperationValid(operationName, operationSettings)
-	if operationSettings.minRestock > operationSettings.maxRestock then
-		-- invalid cause min > max restock quantity (shouldn't happen)
-		TSM:Printf(L["'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."], operationName, operationSettings.minRestock, operationSettings.maxRestock)
-		return false
-	end
-	return true
-end
-
-function private.RestockItem(itemString, operationSettings)
+function private.RestockItem(itemString)
 	local cheapestSpellId, cheapestCost = nil, nil
 	for _, spellId in TSM.Crafting.GetSpellIdsByItem(itemString, TSM.db.global.craftingOptions.ignoreCDCraftCost) do
 		local cost = TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId)
@@ -159,8 +150,8 @@ function private.RestockItem(itemString, operationSettings)
 	end
 	local itemValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
 	local profit = itemValue and cheapestCost and (itemValue - cheapestCost) or nil
-	local minProfit = operationSettings.minProfit ~= "" and TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.minProfit, itemString) or nil
-	if operationSettings.minProfit ~= "" and (not minProfit or not profit or profit < minProfit) then
+	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
+	if hasMinProfit and (not minProfit or not profit or profit < minProfit) then
 		-- profit is too low
 		return
 	end
@@ -181,12 +172,8 @@ function private.RestockItem(itemString, operationSettings)
 		end
 	end
 	assert(haveQuantity >= 0)
-	local neededQuantity = operationSettings.maxRestock - haveQuantity
-	if neededQuantity <= 0 then
-		-- don't need to queue any
-		return
-	elseif neededQuantity < operationSettings.minRestock then
-		-- we're below the min restock quantity
+	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, haveQuantity)
+	if neededQuantity == 0 then
 		return
 	end
 	-- queue only if it satisfies all operation criteria

@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local BankingTask = TSMAPI_FOUR.Class.DefineClass("BankingTask", TSM.TaskList.ItemTask)
+local BankingTask = TSM.Lib.Class.DefineClass("BankingTask", TSM.TaskList.ItemTask)
 local L = TSM.L
 TSM.TaskList.BankingTask = BankingTask
 local private = {

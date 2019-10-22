@@ -12,6 +12,7 @@ local L = TSM.L
 local private = { topLevelPages = {}, fsm = nil, craftOpen = nil, tradeSkillOpen = nil, defaultUISwitchBtn = nil, isVisible = false }
 local MIN_FRAME_SIZE = { width = 820, height = 587 }
 local BEAST_TRAINING_DE = "Bestienausbildung"
+local BEAST_TRAINING_ES = "Entrenamiento de bestias"
 local BEAST_TRAINING_RUS = "Воспитание питомца"
 
 
@@ -45,7 +46,7 @@ end
 
 function CraftingUI.IsProfessionIgnored(name)
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_RUS then -- Beast Training
+		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
 			return true
 		elseif name == GetSpellInfo(7620) then -- Fishing
 			return true
@@ -121,13 +122,13 @@ end
 
 function private.FSMCreate()
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("CRAFT_SHOW", function()
+		TSM.Event.Register("CRAFT_SHOW", function()
 			CloseTradeSkill()
 			private.craftOpen = true
 			TSM.Crafting.ProfessionState.SetCraftOpen(true)
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 		end)
-		TSMAPI_FOUR.Event.Register("CRAFT_CLOSE", function()
+		TSM.Event.Register("CRAFT_CLOSE", function()
 			private.craftOpen = false
 			TSM.Crafting.ProfessionState.SetCraftOpen(false)
 			if not private.tradeSkillOpen then
@@ -135,14 +136,14 @@ function private.FSMCreate()
 			end
 		end)
 	end
-	TSMAPI_FOUR.Event.Register("TRADE_SKILL_SHOW", function()
+	TSM.Event.Register("TRADE_SKILL_SHOW", function()
 		if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 			CloseCraft()
 		end
 		private.tradeSkillOpen = true
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 	end)
-	TSMAPI_FOUR.Event.Register("TRADE_SKILL_CLOSE", function()
+	TSM.Event.Register("TRADE_SKILL_CLOSE", function()
 		private.tradeSkillOpen = false
 		if not private.craftOpen then
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSED")

@@ -27,7 +27,7 @@ end
 
 
 function Questie:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("QuestieConfig", QuestieOptions:GetDefaults(), true)
+    self.db = LibStub("AceDB-3.0"):New("QuestieConfig", QuestieOptionsDefaults:Load(), true)
 
     -- Set proper locale. Either default to client Locale or override based on user.
     if Questie.db.global.questieLocaleDiff then
@@ -37,10 +37,13 @@ function Questie:OnInitialize()
     end
 
     Questie:Debug(DEBUG_CRITICAL, "Questie addon loaded")
-    Questie:RegisterEvent("PLAYER_ENTERING_WORLD", QuestieEventHandler.PLAYER_ENTERING_WORLD)
+    QuestieCorrections:Initialize()
+    QuestieLocale:Initialize()
 
+    Questie:RegisterEvent("PLAYER_LOGIN", QuestieEventHandler.PLAYER_LOGIN)
     --Accepted Events
     Questie:RegisterEvent("QUEST_ACCEPTED", QuestieEventHandler.QUEST_ACCEPTED)
+    Questie:RegisterEvent("MAP_EXPLORATION_UPDATED", QuestieEventHandler.MAP_EXPLORATION_UPDATED)
     Questie:RegisterEvent("UNIT_QUEST_LOG_CHANGED", QuestieEventHandler.UNIT_QUEST_LOG_CHANGED);
     Questie:RegisterEvent("QUEST_TURNED_IN", QuestieEventHandler.QUEST_TURNED_IN)
     Questie:RegisterEvent("QUEST_REMOVED", QuestieEventHandler.QUEST_REMOVED)
@@ -61,11 +64,24 @@ function Questie:OnInitialize()
 
     -- Nameplate / Tar5get Frame Objective Events
     Questie:RegisterEvent("NAME_PLATE_UNIT_ADDED", QuestieNameplate.NameplateCreated);
-    Questie:RegisterEvent("NAME_PLATE_UNIT_REMOVED", QuestieNameplate.NameplateDestroyed);
-    Questie:RegisterEvent("PLAYER_TARGET_CHANGED", QuestieNameplate.DrawTargetFrame);
+	Questie:RegisterEvent("NAME_PLATE_UNIT_REMOVED", QuestieNameplate.NameplateDestroyed);
+	Questie:RegisterEvent("PLAYER_TARGET_CHANGED", QuestieNameplate.DrawTargetFrame);
 
-    -- Initialize Coordinates
-    QuestieCoords.Initialize();
+	--When the quest is presented!
+	Questie:RegisterEvent("QUEST_DETAIL", QuestieAuto.QUEST_DETAIL)
+	--???
+	Questie:RegisterEvent("QUEST_PROGRESS", QuestieAuto.QUEST_PROGRESS)
+	--Gossip??
+	Questie:RegisterEvent("GOSSIP_SHOW", QuestieAuto.GOSSIP_SHOW)
+	--The window when multiple quest from a NPC
+	Questie:RegisterEvent("QUEST_GREETING", QuestieAuto.QUEST_GREETING)
+	--If an escort quest is taken by people close by
+	Questie:RegisterEvent("QUEST_ACCEPT_CONFIRM", QuestieAuto.QUEST_ACCEPT_CONFIRM)
+	--When complete window shows
+	Questie:RegisterEvent("QUEST_COMPLETE", QuestieAuto.QUEST_COMPLETE)
+
+	-- Initialize Coordinates
+	QuestieCoords.Initialize();
 
     -- Initialize questiecomms
     --C_ChatInfo.RegisterAddonMessagePrefix("questie")
@@ -96,7 +112,7 @@ function Questie:OnInitialize()
 
     -- Creating the minimap config icon
     Questie.minimapConfigIcon = LibStub("LibDBIcon-1.0");
-    Questie.minimapConfigIcon:Register("MinimapIcon", QuestieOptions:GetMinimapIconLDB(), Questie.db.profile.minimap);
+    Questie.minimapConfigIcon:Register("MinimapIcon", QuestieOptionsMinimapIcon:Get(), Questie.db.profile.minimap);
 
     -- Update the default text on the map show/hide button for localization
     if Questie.db.char.enabled then
@@ -114,15 +130,6 @@ function Questie:OnInitialize()
     end
     if Questie.db.global.dbmHUDEnable then
         QuestieDBMIntegration:EnableHUD()
-    end
-    -- init config frame
-    if not QuestieConfigFrame then
-        QuestieOptions.configFrame = AceGUI:Create("Frame");
-        LibStub("AceConfigDialogQuestie-3.0"):SetDefaultSize("Questie", 625, 700)
-        LibStub("AceConfigDialogQuestie-3.0"):Open("Questie", QuestieOptions.configFrame)
-        QuestieOptions.configFrame:Hide();                
-        _G["QuestieConfigFrame"] = QuestieOptions.configFrame.frame;
-        table.insert(UISpecialFrames, "QuestieConfigFrame");
     end
 end
 

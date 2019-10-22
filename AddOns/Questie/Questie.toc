@@ -1,12 +1,12 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 4.2.1 0 0f28ee6
+## Version: 4.3.0 0 37acad5
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.2.1_0f28ee6|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v4.3.0_37acad5|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -30,8 +30,16 @@ Database\zoneDB.lua
 Database\TEMP_questie4items.lua
 Database\TEMP_repprof.lua
 Database\specialspawns.lua
-Database\corrections.lua
 Database\itemDB.lua
+
+#Corrections
+Database\Corrections\QuestieCorrections.lua
+Database\Corrections\QuestieItemBlacklist.lua
+Database\Corrections\QuestieItemFixes.lua
+Database\Corrections\QuestieNPCFixes.lua
+Database\Corrections\QuestieObjectFixes.lua
+Database\Corrections\QuestieQuestBlacklist.lua
+Database\Corrections\QuestieQuestFixes.lua
 
 #Localization
 Locale\QuestieLocale.lua
@@ -51,6 +59,7 @@ Modules\Libs\QuestieLib.lua
 Modules\Libs\QuestiePlayer.lua
 
 ##Modules
+Modules\QuestieAuto.lua
 Modules\QuestieTooltips.lua
 Modules\QuestieEventHandler.lua
 Modules\QuestieFramePool.lua
@@ -63,10 +72,22 @@ Modules\QuestieJourney.lua
 Modules\QuestieSearchResults.lua
 Modules\QuestieSearch.lua
 Modules\QuestieTracker.lua
-Modules\QuestieOptions.lua
 Modules\QuestieProfessions.lua
 Modules\QuestieReputation.lua
 Modules\QuestieDBMIntegration.lua
+
+#Options
+Modules\Options\QuestieOptionsDefaults.lua
+Modules\Options\QuestieOptionsUtils.lua
+Modules\Options\QuestieOptionsMinimapIcon.lua
+Modules\Options\AdvancedTab\QuestieOptionsAdvanced.lua
+Modules\Options\DBMTab\QuestieOptionsDBM.lua
+Modules\Options\GeneralTab\QuestieOptionsGeneral.lua
+Modules\Options\MapTab\QuestieOptionsMap.lua
+Modules\Options\MinimapTab\QuestieOptionsMinimap.lua
+Modules\Options\NameplateTab\QuestieOptionsNameplate.lua
+Modules\Options\TrackerTab\QuestieOptionsTracker.lua
+Modules\Options\QuestieOptions.lua
 
 #Main
 Questie.lua

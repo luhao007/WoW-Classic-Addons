@@ -145,7 +145,7 @@ function private.ScanThread(auctionScan, auctionScanDB, groupList)
 
 	-- generate the list of items we want to scan for
 	wipe(private.itemList)
-	local processedItems = TSMAPI_FOUR.Util.AcquireTempTable()
+	local processedItems = TSM.TempTable.Acquire()
 	local query = TSM.Inventory.AuctionTracking.CreateQuery()
 		:Select("autoBaseItemString")
 		:Equal("saleStatus", 0)
@@ -159,7 +159,7 @@ function private.ScanThread(auctionScan, auctionScanDB, groupList)
 		processedItems[itemString] = true
 	end
 	query:Release()
-	TSMAPI_FOUR.Util.ReleaseTempTable(processedItems)
+	TSM.TempTable.Release(processedItems)
 
 	if #private.itemList == 0 then
 		return
@@ -289,9 +289,9 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 		return true, "cancelBid", itemBuyout, nil, index
 	end
 
-	local lowestAuction = TSMAPI_FOUR.Util.AcquireTempTable()
+	local lowestAuction = TSM.TempTable.Acquire()
 	if not TSM.Auctioning.Util.GetLowestAuction(query, itemString, operationSettings, lowestAuction) then
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		lowestAuction = nil
 	end
 	local minPrice = TSM.Auctioning.Util.GetPrice("minPrice", operationSettings, itemString)
@@ -312,7 +312,7 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 		end
 	elseif lowestAuction.hasInvalidSeller then
 		TSM:Printf(L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."], TSMAPI_FOUR.Item.GetLink(itemString))
-		TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+		TSM.TempTable.Release(lowestAuction)
 		return false, "invalidSeller", itemBuyout
 	end
 
@@ -380,7 +380,7 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 	end
 
 	local seller = lowestAuction.seller
-	TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+	TSM.TempTable.Release(lowestAuction)
 	if shouldCancel then
 		private.AddToQueue(itemString, operationName, itemBid, itemBuyout, stackSize, index)
 	end

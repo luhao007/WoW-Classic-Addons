@@ -91,7 +91,7 @@ function private.GetGeneralSettingsFrame()
 				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
 				:SetStyle("fontHeight", 12)
 				:SetText(L["Store operations globally"])
-				:SetChecked(TSM.db.global.coreOptions.globalOperations)
+				:SetChecked(TSM.Operations.IsStoredGlobally())
 				:SetScript("OnValueChanged", private.GlobalOperationsOnValueChanged)
 			)
 		)
@@ -312,13 +312,13 @@ function private.AddAccountSyncRows(frame)
 		)
 	end
 	for _, account in TSM.db:SyncAccountIterator() do
-		local characters = TSMAPI_FOUR.Util.AcquireTempTable()
+		local characters = TSM.TempTable.Acquire()
 		for _, character in TSM.db:FactionrealmCharacterByAccountIterator(account) do
 			tinsert(characters, character)
 		end
 		sort(characters)
 		local statusText = TSM.Sync.Connection.GetStatus(account).." | "..table.concat(characters, ", ")
-		TSMAPI_FOUR.Util.ReleaseTempTable(characters)
+		TSM.TempTable.Release(characters)
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "accountSyncRow_"..account)
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 28)
@@ -417,7 +417,6 @@ end
 function private.GlobalOperationsConfirmed(checkbox, newValue)
 	checkbox:SetChecked(newValue, true)
 		:Draw()
-	TSM.db.global.coreOptions.globalOperations = newValue
 	TSM.Operations.SetStoredGlobally(newValue)
 end
 
@@ -432,7 +431,7 @@ function private.ForgetCharacterOnSelectionChanged(self)
 	TSM.db.factionrealm.internalData.pendingMail[character] = nil
 	TSM.db.factionrealm.internalData.characterGuilds[character] = nil
 	TSM:Printf(L["%s removed."], character)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(private.characterList, character) == 1)
+	assert(TSM.Table.RemoveByValue(private.characterList, character) == 1)
 	self:SetSelectedItem(nil)
 		:SetItems(private.characterList)
 		:Draw()
@@ -615,12 +614,12 @@ function private.AccountSyncRowOnEnter(frame)
 	frame:Draw()
 
 	local account = frame:GetContext()
-	local tooltipLines = TSMAPI_FOUR.Util.AcquireTempTable()
+	local tooltipLines = TSM.TempTable.Acquire()
 	tinsert(tooltipLines, "|cffffff00"..L["Sync Status"].."|r")
 	tinsert(tooltipLines, L["Inventory / Gold Graph"]..TSM.CONST.TOOLTIP_SEP..TSM.Sync.Mirror.GetStatus(account))
 	tinsert(tooltipLines, L["Profession Info"]..TSM.CONST.TOOLTIP_SEP..TSM.Crafting.Sync.GetStatus(account))
 	TSM.UI.ShowTooltip(frame:_GetBaseFrame(), table.concat(tooltipLines, "\n"))
-	TSMAPI_FOUR.Util.ReleaseTempTable(tooltipLines)
+	TSM.TempTable.Release(tooltipLines)
 end
 
 function private.AccountSyncRowOnLeave(frame)

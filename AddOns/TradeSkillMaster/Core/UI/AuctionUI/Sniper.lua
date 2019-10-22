@@ -292,9 +292,9 @@ function private.FSMCreate()
 		numActioned = 0,
 		numConfirmed = 0,
 	}
-	TSMAPI_FOUR.Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
-	TSMAPI_FOUR.Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_CLOSED", function()
+	TSM.Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
+	TSM.Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
+	TSM.Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
 	local function UpdateScanFrame(context)
@@ -370,7 +370,7 @@ function private.FSMCreate()
 	end
 	local function ScanOnFilterDone(self, filter, numNewResults)
 		if numNewResults > 0 then
-			TSMAPI_FOUR.Sound.PlaySound(TSM.db.global.sniperOptions.sniperSound)
+			TSM.Sound.PlaySound(TSM.db.global.sniperOptions.sniperSound)
 		end
 	end
 	private.fsm = TSMAPI_FOUR.FSM.New("SNIPER")

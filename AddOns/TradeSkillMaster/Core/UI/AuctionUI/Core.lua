@@ -16,6 +16,7 @@ local private = {
 	isSwitching = false,
 	scanningPage = nil,
 	updateCallbacks = {},
+	defaultFrame = nil,
 }
 local HEADER_LINE_TEXT_MARGIN = { right = 8 }
 local HEADER_LINE_MARGIN = { top = 16, bottom = 16 }
@@ -29,10 +30,14 @@ local MIN_FRAME_SIZE = { width = 830, height = 587 }
 
 function AuctionUI.OnInitialize()
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
-	TSMAPI_FOUR.Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
-	TSMAPI_FOUR.Util.RegisterItemLinkedCallback(private.ItemLinkedCallback)
+	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
+	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
+	if select(4, GetBuildInfo()) < 80300 then
+		TSMAPI_FOUR.Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
+	else
+		TSMAPI_FOUR.Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
+	end
+	TSM.Wow.RegisterItemLinkedCallback(private.ItemLinkedCallback)
 end
 
 function AuctionUI.OnDisable()
@@ -124,18 +129,31 @@ end
 -- ============================================================================
 
 function private.AuctionFrameInit()
+	local tabTemplateName = nil
+	if select(4, GetBuildInfo()) < 80300 then
+		private.defaultFrame = AuctionFrame
+		tabTemplateName = "AuctionTabTemplate"
+	else
+		private.defaultFrame = AuctionHouseFrame
+		tabTemplateName = "AuctionHouseFrameTabTemplate"
+	end
 	if not private.hasShown then
 		private.hasShown = true
-		local tabId = AuctionFrame.numTabs + 1
-		local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, AuctionFrame, "AuctionTabTemplate")
+		local tabId = private.defaultFrame.numTabs + 1
+		local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, private.defaultFrame, tabTemplateName)
 		tab:Hide()
 		tab:SetID(tabId)
 		tab:SetText("|cff99ffffTSM4|r")
 		tab:SetNormalFontObject(GameFontHighlightSmall)
-		tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
+		if select(4, GetBuildInfo()) < 80300 then
+			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
+		else
+			tab:SetPoint("LEFT", AuctionHouseFrame.Tabs[tabId - 1], "RIGHT", -15, 0)
+			tinsert(AuctionHouseFrame.Tabs, tab)
+		end
 		tab:Show()
-		PanelTemplates_SetNumTabs(AuctionFrame, tabId)
-		PanelTemplates_EnableTab(AuctionFrame, tabId)
+		PanelTemplates_SetNumTabs(private.defaultFrame, tabId)
+		PanelTemplates_EnableTab(private.defaultFrame, tabId)
 		tab:SetScript("OnClick", private.TSMTabOnClick)
 	end
 	if TSM.db.global.internalData.auctionUIFrameContext.showDefault then
@@ -226,11 +244,13 @@ function private.TSMTabOnClick()
 	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
 	local origCloseAuctionHouse = CloseAuctionHouse
 	TSM.db.global.internalData.auctionUIFrameContext.showDefault = false
-	ClearCursor()
-	ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+	if select(4, GetBuildInfo()) < 80300 then
+		ClearCursor()
+		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+	end
 	ClearCursor()
 	CloseAuctionHouse = NoOp
-	AuctionFrame_Hide()
+	private.defaultFrame:Hide()
 	CloseAuctionHouse = origCloseAuctionHouse
 	private.ShowAuctionFrame()
 end

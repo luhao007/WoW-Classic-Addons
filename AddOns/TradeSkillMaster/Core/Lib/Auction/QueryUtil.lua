@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local QueryUtil = TSM.Auction:NewPackage("QueryUtil")
-local AuctionCountDatabase = TSMAPI_FOUR.Class.DefineClass("AuctionCountDatabase")
+local AuctionCountDatabase = TSM.Lib.Class.DefineClass("AuctionCountDatabase")
 local private = {
 	db = nil,
 	itemListByClass = {},
@@ -315,18 +315,18 @@ end
 
 function private.GetCommonName(items)
 	-- check if we can also group the query by name
-	local nameTemp = TSMAPI_FOUR.Util.AcquireTempTable()
+	local nameTemp = TSM.TempTable.Acquire()
 	for _, itemString in ipairs(items) do
 		local name = TSMAPI_FOUR.Item.GetName(itemString)
 		if not name then
-			TSMAPI_FOUR.Util.ReleaseTempTable(nameTemp)
+			TSM.TempTable.Release(nameTemp)
 			return
 		end
 		assert(type(name) == "string", "Unexpected item name: "..tostring(name))
 		tinsert(nameTemp, name)
 	end
 	if #nameTemp ~= #items or #nameTemp < 2 then
-		TSMAPI_FOUR.Util.ReleaseTempTable(nameTemp)
+		TSM.TempTable.Release(nameTemp)
 		return
 	end
 	sort(nameTemp)
@@ -348,18 +348,18 @@ function private.GetCommonName(items)
 	end
 	-- make sure the common substring has at least one space and is at least 3 characters log
 	if not hasSpace or endIndex < 3 then
-		TSMAPI_FOUR.Util.ReleaseTempTable(nameTemp)
+		TSM.TempTable.Release(nameTemp)
 		return
 	end
 
 	local commonStr = strsub(str1, 1, endIndex)
 	for _, name in ipairs(nameTemp) do
 		if strsub(name, 1, endIndex) ~= commonStr then
-			TSMAPI_FOUR.Util.ReleaseTempTable(nameTemp)
+			TSM.TempTable.Release(nameTemp)
 			return
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(nameTemp)
+	TSM.TempTable.Release(nameTemp)
 	return commonStr
 end
 

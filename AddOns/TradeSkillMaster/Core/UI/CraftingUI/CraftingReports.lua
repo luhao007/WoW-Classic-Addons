@@ -501,7 +501,7 @@ function private.UpdateCraftsQueryWithFilters(frame)
 	-- apply search filter
 	local filter = strtrim(frame:GetElement("search.input"):GetText())
 	if filter ~= "" then
-		private.craftsQuery:Matches("itemName", TSMAPI_FOUR.Util.StrEscape(filter))
+		private.craftsQuery:Matches("itemName", TSM.String.Escape(filter))
 	end
 	-- apply dropdown filter
 	local professionPlayer = frame:GetElement("profession.dropdown"):GetSelection()
@@ -533,7 +533,7 @@ function private.UpdateMatsQueryWithFilters(frame)
 	-- apply search filter
 	local filter = strtrim(frame:GetElement("search.input"):GetText())
 	if filter ~= "" then
-		private.matsQuery:Custom(private.MatItemNameQueryFilter, strlower(TSMAPI_FOUR.Util.StrEscape(filter)))
+		private.matsQuery:Custom(private.MatItemNameQueryFilter, strlower(TSM.String.Escape(filter)))
 	end
 	-- apply dropdown filters
 	local profession = frame:GetElement("profession.dropdown"):GetSelection()

@@ -48,12 +48,7 @@ function private.ScanFilter(itemString, _, _, itemDisplayedBid)
 		return true
 	end
 
-	local _, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)
-	if not operationSettings then
-		return true
-	end
-
-	local maxPrice = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.belowPrice, itemString)
+	local maxPrice = TSM.Operations.Sniper.GetBelowPrice(itemString)
 	if not maxPrice or itemDisplayedBid > maxPrice then
 		return true
 	end
@@ -62,10 +57,5 @@ function private.ScanFilter(itemString, _, _, itemDisplayedBid)
 end
 
 function private.MarketValueFunction(row)
-	local itemString = row:GetField("itemString")
-	local _, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)
-	if not operationSettings then
-		return nil
-	end
-	return TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.belowPrice, itemString)
+	return TSM.Operations.Sniper.GetBelowPrice(row:GetField("itemString"))
 end

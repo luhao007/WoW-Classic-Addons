@@ -13,7 +13,7 @@
 -- @classmod ApplicationGroupTree
 
 local _, TSM = ...
-local ApplicationGroupTree = TSMAPI_FOUR.Class.DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
+local ApplicationGroupTree = TSM.Lib.Class.DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
 TSM.UI.ApplicationGroupTree = ApplicationGroupTree
 
 
@@ -53,13 +53,13 @@ end
 -- @tparam ApplicationGroupTree self The application group tree object
 -- @return Iterator with the following fields: `index, groupPath`
 function ApplicationGroupTree.SelectedGroupsIterator(self)
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
 		if self._contextTbl.selected[groupPath] then
 			tinsert(groups, groupPath)
 		end
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(groups)
+	return TSM.TempTable.Iterator(groups)
 end
 
 --- Sets the context table.
@@ -125,7 +125,7 @@ end
 function ApplicationGroupTree._UpdateData(self)
 	self.__super:_UpdateData()
 	-- remove data which is no longer present from _contextTbl
-	local selectedGroups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local selectedGroups = TSM.TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
 		if self:_IsSelected(groupPath) then
 			selectedGroups[groupPath] = true
@@ -135,7 +135,7 @@ function ApplicationGroupTree._UpdateData(self)
 	for groupPath in pairs(selectedGroups) do
 		self._contextTbl.selected[groupPath] = true
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(selectedGroups)
+	TSM.TempTable.Release(selectedGroups)
 end
 
 function ApplicationGroupTree._IsSelected(self, data)

@@ -18,8 +18,8 @@ local private = { tradeInfo = nil, popupContext = nil }
 -- ============================================================================
 
 function Trade.OnInitialize()
-	TSMAPI_FOUR.Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
-	TSMAPI_FOUR.Event.Register("UI_INFO_MESSAGE", private.OnChatMsg)
+	TSM.Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
+	TSM.Event.Register("UI_INFO_MESSAGE", private.OnChatMsg)
 end
 
 
@@ -96,7 +96,7 @@ function private.OnChatMsg(_, msg)
 		if not tradeType or not itemString or not count then
 			return
 		end
-		local insertInfo = TSMAPI_FOUR.Util.AcquireTempTable()
+		local insertInfo = TSM.TempTable.Acquire()
 		insertInfo.type = tradeType
 		insertInfo.itemString = itemString
 		insertInfo.price = money / count
@@ -115,11 +115,11 @@ function private.OnChatMsg(_, msg)
 
 		if TSM.db.global.accountingOptions.autoTrackTrades then
 			private.DoInsert(insertInfo)
-			TSMAPI_FOUR.Util.ReleaseTempTable(insertInfo)
+			TSM.TempTable.Release(insertInfo)
 		else
 			if private.popupContext then
 				-- popup already visible so ignore this
-				TSMAPI_FOUR.Util.ReleaseTempTable(insertInfo)
+				TSM.TempTable.Release(insertInfo)
 				return
 			end
 			private.popupContext = insertInfo
@@ -132,17 +132,17 @@ function private.OnChatMsg(_, msg)
 					hideOnEscape = true,
 					OnAccept = function()
 						private.DoInsert(private.popupContext)
-						TSMAPI_FOUR.Util.ReleaseTempTable(private.popupContext)
+						TSM.TempTable.Release(private.popupContext)
 						private.popupContext = nil
 					end,
 					OnCancel = function()
-						TSMAPI_FOUR.Util.ReleaseTempTable(private.popupContext)
+						TSM.TempTable.Release(private.popupContext)
 						private.popupContext = nil
 					end,
 				}
 			end
 			StaticPopupDialogs["TSMAccountingOnTrade"].text = format(L["TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"], insertInfo.name, gaveText, gotText)
-			TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSMAccountingOnTrade")
+			TSM.Wow.ShowStaticPopupDialog("TSMAccountingOnTrade")
 		end
 	end
 end

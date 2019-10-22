@@ -11,7 +11,7 @@
 -- @classmod BorderedFrame
 
 local _, TSM = ...
-local BorderedFrame = TSMAPI_FOUR.Class.DefineClass("BorderedFrame", TSM.UI.Frame)
+local BorderedFrame = TSM.Lib.Class.DefineClass("BorderedFrame", TSM.UI.Frame)
 TSM.UI.BorderedFrame = BorderedFrame
 
 

@@ -4830,7 +4830,7 @@ Inst23Quest2name2_HORDE = "Гвоздомет"
 Inst23Quest2name3_HORDE = "Одеяние фанатика"
 
 --Quest 3 Horde  (same as Quest 2 Alliance)
-Inst23Quest3_HORDE = "3. Extinguishing the Idol"
+Inst23Quest3_HORDE = "3. Уничтожить идола"
 Inst23Quest3_HORDE_Level = Inst23Quest2_Level
 Inst23Quest3_HORDE_Attain = Inst23Quest2_Attain
 Inst23Quest3_HORDE_Aim = Inst23Quest2_Aim
@@ -4944,7 +4944,7 @@ Inst24Quest1_HORDE_Folgequest = Inst24Quest1_Folgequest
 Inst24Quest1name1_HORDE = Inst24Quest1name1
 
 --Quest 2 Horde  (same as Quest 3 Alliance)
-Inst24Quest2_HORDE = "2. Willix the Importer"
+Inst24Quest2_HORDE = "2. Импортер Вилликс"
 Inst24Quest2_HORDE_Level = Inst24Quest3_Level
 Inst24Quest2_HORDE_Attain = Inst24Quest3_Attain
 Inst24Quest2_HORDE_Aim = Inst24Quest3_Aim
@@ -5168,11 +5168,11 @@ Inst26QAH = "7 Quests"
 Inst26Quest1 = "1. Троллье месиво"
 Inst26Quest1_Level = "45"
 Inst26Quest1_Attain = "40"
-Inst26Quest2_Aim = "Принесите 20 фиалов с Тролльим месивом."
-Inst26Quest2_Location = "Трентон Молот Света (Танарис - Прибамбасск; "..YELLOW.."51,28"..WHITE..")"
-Inst26Quest2_Note = "Месиво падет со всех троллей."
-Inst26Quest2_Prequest = "Нет"
-Inst26Quest2_Folgequest = "Нет"
+Inst26Quest1_Aim = "Принесите 20 фиалов с Тролльим месивом."
+Inst26Quest1_Location = "Трентон Молот Света (Танарис - Прибамбасск; "..YELLOW.."51,28"..WHITE..")"
+Inst26Quest1_Note = "Месиво падет со всех троллей."
+Inst26Quest1_Prequest = "Нет"
+Inst26Quest1_Folgequest = "Нет"
 -- No Rewards for this quest
 
 --Quest 2 Alliance

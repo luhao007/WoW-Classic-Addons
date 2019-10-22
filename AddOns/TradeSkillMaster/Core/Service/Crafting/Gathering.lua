@@ -24,8 +24,8 @@ local private = {
 
 function Gathering.OnInitialize()
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
-		TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
+		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
+		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
 	end
 end
 
@@ -62,7 +62,7 @@ function Gathering.SetCrafter(crafter)
 end
 
 function Gathering.SetProfessions(professions)
-	local numProfessions = TSMAPI_FOUR.Util.Count(TSM.db.factionrealm.gatheringContext.professions)
+	local numProfessions = TSM.Table.Count(TSM.db.factionrealm.gatheringContext.professions)
 	local didChange = false
 	if numProfessions ~= #professions then
 		didChange = true
@@ -192,7 +192,7 @@ function private.UpdateDB()
 		return
 	end
 
-	local matsNumNeed = TSMAPI_FOUR.Util.AcquireTempTable()
+	local matsNumNeed = TSM.TempTable.Acquire()
 	local query = TSM.Crafting.CreateQueuedCraftsQuery()
 		:Select("spellId", "num")
 		:Custom(private.QueryPlayerFilter, crafter)
@@ -208,9 +208,9 @@ function private.UpdateDB()
 	end
 	query:Release()
 
-	local matQueue = TSMAPI_FOUR.Util.AcquireTempTable()
-	local matsNumHave = TSMAPI_FOUR.Util.AcquireTempTable()
-	local matsNumHaveExtra = TSMAPI_FOUR.Util.AcquireTempTable()
+	local matQueue = TSM.TempTable.Acquire()
+	local matsNumHave = TSM.TempTable.Acquire()
+	local matsNumHaveExtra = TSM.TempTable.Acquire()
 	for itemString, numNeed in pairs(matsNumNeed) do
 		matsNumHave[itemString] = private.GetCrafterInventoryQuantity(itemString)
 		local numUsed = nil
@@ -226,8 +226,8 @@ function private.UpdateDB()
 		end
 	end
 
-	local sourceList = TSMAPI_FOUR.Util.AcquireTempTable()
-	local matSourceList = TSMAPI_FOUR.Util.AcquireTempTable()
+	local sourceList = TSM.TempTable.Acquire()
+	local matSourceList = TSM.TempTable.Acquire()
 	while #matQueue > 0 do
 		local itemString = tremove(matQueue)
 		wipe(sourceList)
@@ -300,12 +300,12 @@ function private.UpdateDB()
 	end
 	private.db:BulkInsertEnd()
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(sourceList)
-	TSMAPI_FOUR.Util.ReleaseTempTable(matSourceList)
-	TSMAPI_FOUR.Util.ReleaseTempTable(matsNumNeed)
-	TSMAPI_FOUR.Util.ReleaseTempTable(matsNumHave)
-	TSMAPI_FOUR.Util.ReleaseTempTable(matsNumHaveExtra)
-	TSMAPI_FOUR.Util.ReleaseTempTable(matQueue)
+	TSM.TempTable.Release(sourceList)
+	TSM.TempTable.Release(matSourceList)
+	TSM.TempTable.Release(matsNumNeed)
+	TSM.TempTable.Release(matsNumHave)
+	TSM.TempTable.Release(matsNumHaveExtra)
+	TSM.TempTable.Release(matQueue)
 end
 
 function private.ProcessSource(itemString, numNeed, source, sourceList)
@@ -381,7 +381,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 
 		-- check alts
 		local altNum = 0
-		local altCharacters = TSMAPI_FOUR.Util.AcquireTempTable()
+		local altCharacters = TSM.TempTable.Acquire()
 		for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
 				local characterKey = nil
@@ -405,7 +405,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		end
 
 		local altCharactersStr = table.concat(altCharacters, "`")
-		TSMAPI_FOUR.Util.ReleaseTempTable(altCharacters)
+		TSM.TempTable.Release(altCharacters)
 		if altNum > 0 then
 			altNum = min(altNum, numNeed)
 			tinsert(sourceList, "alt/"..altNum.."/"..altCharactersStr)
@@ -428,7 +428,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 
 		-- check alts
 		local totalGuildBankQuantity = 0
-		local altCharacters = TSMAPI_FOUR.Util.AcquireTempTable()
+		local altCharacters = TSM.TempTable.Acquire()
 		for _, character in TSMAPI_FOUR.PlayerInfo.CharacterIterator(true) do
 			local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(character)
 			if guild and guild ~= currentGuild then
@@ -440,7 +440,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			end
 		end
 		local altCharactersStr = table.concat(altCharacters, "`")
-		TSMAPI_FOUR.Util.ReleaseTempTable(altCharacters)
+		TSM.TempTable.Release(altCharacters)
 		if totalGuildBankQuantity > 0 then
 			totalGuildBankQuantity = min(totalGuildBankQuantity, numNeed)
 			tinsert(sourceList, "altGuildBank/"..totalGuildBankQuantity.."/"..altCharactersStr)
@@ -495,7 +495,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSMAPI_FOUR.Util.SeparatedStrContains(row:GetField("players"), ",", player)
+	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.GetCrafterInventoryQuantity(itemString)

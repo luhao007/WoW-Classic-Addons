@@ -11,7 +11,7 @@
 -- @classmod Dropdown
 
 local _, TSM = ...
-local Dropdown = TSMAPI_FOUR.Class.DefineClass("Dropdown", TSM.UI.Element)
+local Dropdown = TSM.Lib.Class.DefineClass("Dropdown", TSM.UI.Element)
 TSM.UI.Dropdown = Dropdown
 local private = { dropdownLookup = {} }
 
@@ -223,22 +223,22 @@ function Dropdown.SetOpen(self, open)
 	if open then
 		local selection = nil
 		if self._multiselect then
-			selection = TSMAPI_FOUR.Util.AcquireTempTable()
+			selection = TSM.TempTable.Acquire()
 			for item, value in pairs(self._selection) do
-				selection[TSMAPI_FOUR.Util.GetDistinctTableKey(self._items, item)] = value
+				selection[TSM.Table.GetDistinctKey(self._items, item)] = value
 			end
 		else
 			selection = next(self._selection)
 		end
-		local itemTable = TSMAPI_FOUR.Util.AcquireTempTable()
-		local itemKeyLookup = TSMAPI_FOUR.Util.AcquireTempTable()
+		local itemTable = TSM.TempTable.Acquire()
+		local itemKeyLookup = TSM.TempTable.Acquire()
 		for key, value in pairs(self._items) do
 			itemKeyLookup[value] = key
 		end
 		for _, key in ipairs(self._order) do
 			tinsert(itemTable, itemKeyLookup[key])
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(itemKeyLookup)
+		TSM.TempTable.Release(itemKeyLookup)
 		local dropdownFrame = TSMAPI_FOUR.UI.NewElement("Frame", "dropdown")
 			:SetLayout("VERTICAL")
 			:SetStyle("anchors", { { "TOPLEFT", self:_GetBaseFrame() }, { "TOPRIGHT", self:_GetBaseFrame() } })
@@ -270,9 +270,9 @@ function Dropdown.SetOpen(self, open)
 			)
 			:SetScript("OnHide", private.DropdownFrameOnHide)
 		if self._multiselect then
-			TSMAPI_FOUR.Util.ReleaseTempTable(selection)
+			TSM.TempTable.Release(selection)
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(itemTable)
+		TSM.TempTable.Release(itemTable)
 		private.dropdownLookup[dropdownFrame] = self
 		self:GetBaseElement():ShowDialogFrame(dropdownFrame)
 	else
@@ -321,11 +321,11 @@ end
 -- ============================================================================
 
 function Dropdown._GetCurrentSelectionString(self)
-	local selectedItems = TSMAPI_FOUR.Util.AcquireTempTable()
+	local selectedItems = TSM.TempTable.Acquire()
 	if self._multiselect then
 		for item, selected in pairs(self._selection) do
 			if selected then
-				tinsert(selectedItems, TSMAPI_FOUR.Util.GetDistinctTableKey(self._items, item))
+				tinsert(selectedItems, TSM.Table.GetDistinctKey(self._items, item))
 			end
 		end
 	else
@@ -335,7 +335,7 @@ function Dropdown._GetCurrentSelectionString(self)
 		end
 	end
 	local selectedText = (#selectedItems > 0) and table.concat(selectedItems, ", ") or self._hintText
-	TSMAPI_FOUR.Util.ReleaseTempTable(selectedItems)
+	TSM.TempTable.Release(selectedItems)
 	return selectedText
 end
 

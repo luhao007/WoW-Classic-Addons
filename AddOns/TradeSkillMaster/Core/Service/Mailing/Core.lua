@@ -20,8 +20,8 @@ local private = {
 -- ============================================================================
 
 function Mailing.OnInitialize()
-	TSMAPI_FOUR.Event.Register("MAIL_SHOW", private.MailShow)
-	TSMAPI_FOUR.Event.Register("MAIL_CLOSED", private.MailClosed)
+	TSM.Event.Register("MAIL_SHOW", private.MailShow)
+	TSM.Event.Register("MAIL_CLOSED", private.MailClosed)
 end
 
 function Mailing.RegisterFrameCallback(callback)

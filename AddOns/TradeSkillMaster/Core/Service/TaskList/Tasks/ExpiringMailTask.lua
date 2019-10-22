@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ExpiringMailTask = TSMAPI_FOUR.Class.DefineClass("ExpiringMailTask", TSM.TaskList.Task)
+local ExpiringMailTask = TSM.Lib.Class.DefineClass("ExpiringMailTask", TSM.TaskList.Task)
 local L = TSM.L
 TSM.TaskList.ExpiringMailTask = ExpiringMailTask
 local private = {}

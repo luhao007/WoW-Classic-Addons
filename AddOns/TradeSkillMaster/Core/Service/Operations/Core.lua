@@ -67,29 +67,6 @@ function Operations.Register(moduleName, localizedName, operationInfo, maxOperat
 	private.ValidateOperations(moduleName)
 end
 
-function Operations.SetStoredGlobally(storeGlobally)
-	-- we shouldn't be running the OnProfileUpdated callback while switching profiles
-	private.ignoreProfileUpdate = true
-	if storeGlobally then
-		-- move current profile to global
-		TSM.db.global.userData.operations = CopyTable(TSM.db.profile.userData.operations)
-		-- clear out old operations
-		for _ in TSM.GetTSMProfileIterator() do
-			TSM.db.profile.userData.operations = nil
-		end
-	else
-		-- move global to all profiles
-		for _ in TSM.GetTSMProfileIterator() do
-			TSM.db.profile.userData.operations = CopyTable(TSM.db.global.userData.operations)
-		end
-		-- clear out old operations
-		TSM.db.global.userData.operations = nil
-	end
-	private.ignoreProfileUpdate = false
-	private.OnProfileUpdated()
-	TSM.Groups.RebuildDatabase()
-end
-
 function Operations.ModuleIterator()
 	return ipairs(private.operationModules)
 end
@@ -112,12 +89,12 @@ function Operations.GetSettingDefault(moduleName, key)
 end
 
 function Operations.OperationIterator(moduleName)
-	local operations = TSMAPI_FOUR.Util.AcquireTempTable()
+	local operations = TSM.TempTable.Acquire()
 	for operationName in pairs(private.operations[moduleName]) do
 		tinsert(operations, operationName)
 	end
 	sort(operations)
-	return TSMAPI_FOUR.Util.TempTableIterator(operations)
+	return TSM.TempTable.Iterator(operations)
 end
 
 function Operations.Exists(moduleName, operationName)
@@ -184,16 +161,16 @@ function Operations.Update(moduleName, operationName)
 end
 
 function Operations.IsCircularRelationship(moduleName, operationName, key)
-	local visited = TSMAPI_FOUR.Util.AcquireTempTable()
+	local visited = TSM.TempTable.Acquire()
 	while operationName do
 		if visited[operationName] then
-			TSMAPI_FOUR.Util.ReleaseTempTable(visited)
+			TSM.TempTable.Release(visited)
 			return true
 		end
 		visited[operationName] = true
 		operationName = private.operations[moduleName][operationName].relationships[key]
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(visited)
+	TSM.TempTable.Release(visited)
 	return false
 end
 
@@ -208,7 +185,7 @@ function Operations.GetFirstOperationByItem(moduleName, itemString)
 end
 
 function Operations.GroupOperationIterator(moduleName, groupPath)
-	local operations = TSMAPI_FOUR.Util.AcquireTempTable()
+	local operations = TSM.TempTable.Acquire()
 	operations.moduleName = moduleName
 	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
 		Operations.Update(moduleName, operationName)
@@ -272,6 +249,40 @@ function Operations.SetRelationship(moduleName, operationName, settingKey, targe
 	private.operations[moduleName][operationName].relationships[settingKey] = targetOperationName
 end
 
+function Operations.IsStoredGlobally()
+	return TSM.db.global.coreOptions.globalOperations
+end
+
+function Operations.SetStoredGlobally(storeGlobally)
+	TSM.db.global.coreOptions.globalOperations = storeGlobally
+	-- we shouldn't be running the OnProfileUpdated callback while switching profiles
+	private.ignoreProfileUpdate = true
+	if storeGlobally then
+		-- move current profile to global
+		TSM.db.global.userData.operations = CopyTable(TSM.db.profile.userData.operations)
+		-- clear out old operations
+		for _ in TSM.GetTSMProfileIterator() do
+			TSM.db.profile.userData.operations = nil
+		end
+	else
+		-- move global to all profiles
+		for _ in TSM.GetTSMProfileIterator() do
+			TSM.db.profile.userData.operations = CopyTable(TSM.db.global.userData.operations)
+		end
+		-- clear out old operations
+		TSM.db.global.userData.operations = nil
+	end
+	private.ignoreProfileUpdate = false
+	private.OnProfileUpdated()
+	TSM.Groups.RebuildDatabase()
+end
+
+function Operations.ReplaceProfileOperations(newOperations)
+	for k, v in pairs(newOperations) do
+		TSM.db.profile.userData.operations[k] = v
+	end
+end
+
 
 
 -- ============================================================================
@@ -325,7 +336,7 @@ end
 function private.GroupOperationIteratorHelper(operations, index)
 	index = index + 1
 	if index > #operations then
-		TSMAPI_FOUR.Util.ReleaseTempTable(operations)
+		TSM.TempTable.Release(operations)
 		return
 	end
 	local operationName = operations[index]

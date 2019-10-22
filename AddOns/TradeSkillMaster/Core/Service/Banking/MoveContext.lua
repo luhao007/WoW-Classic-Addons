@@ -23,7 +23,7 @@ local GUILD_BANK_TAB_SLOTS = 98
 -- BaseMoveContext Class
 -- ============================================================================
 
-local BaseMoveContext = TSMAPI_FOUR.Class.DefineClass("BaseMoveContext", nil, "ABSTRACT")
+local BaseMoveContext = TSM.Lib.Class.DefineClass("BaseMoveContext", nil, "ABSTRACT")
 
 
 
@@ -31,13 +31,13 @@ local BaseMoveContext = TSMAPI_FOUR.Class.DefineClass("BaseMoveContext", nil, "A
 -- BagToBankMoveContext Class
 -- ============================================================================
 
-local BagToBankMoveContext = TSMAPI_FOUR.Class.DefineClass("BagToBankMoveContext", BaseMoveContext)
+local BagToBankMoveContext = TSM.Lib.Class.DefineClass("BagToBankMoveContext", BaseMoveContext)
 
 function BagToBankMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSMAPI_FOUR.Util.SplitSlotId(fromSlotId)
+	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSMAPI_FOUR.Util.SplitSlotId(toSlotId))
+		PickupContainerItem(TSM.SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -59,7 +59,7 @@ function BagToBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 	for bag = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(emptySlotIds, sortValue)
+	TSM.Table.SortWithValueLookup(emptySlotIds, sortValue)
 	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortValue)
 end
 
@@ -73,13 +73,13 @@ end
 -- BankToBagMoveContext Class
 -- ============================================================================
 
-local BankToBagMoveContext = TSMAPI_FOUR.Class.DefineClass("BankToBagMoveContext", BaseMoveContext)
+local BankToBagMoveContext = TSM.Lib.Class.DefineClass("BankToBagMoveContext", BaseMoveContext)
 
 function BankToBagMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSMAPI_FOUR.Util.SplitSlotId(fromSlotId)
+	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSMAPI_FOUR.Util.SplitSlotId(toSlotId))
+		PickupContainerItem(TSM.SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -120,13 +120,13 @@ end
 -- BagToGuildBankMoveContext Class
 -- ============================================================================
 
-local BagToGuildBankMoveContext = TSMAPI_FOUR.Class.DefineClass("BagToGuildBankMoveContext", BaseMoveContext)
+local BagToGuildBankMoveContext = TSM.Lib.Class.DefineClass("BagToGuildBankMoveContext", BaseMoveContext)
 
 function BagToGuildBankMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSMAPI_FOUR.Util.SplitSlotId(fromSlotId)
+	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupGuildBankItem(TSMAPI_FOUR.Util.SplitSlotId(toSlotId))
+		PickupGuildBankItem(TSM.SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -145,7 +145,7 @@ function BagToGuildBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 	if numWithdrawals == -1 or numWithdrawals >= GUILD_BANK_TAB_SLOTS then
 		for slot = 1, GUILD_BANK_TAB_SLOTS do
 			if not GetGuildBankItemInfo(currentTab, slot) then
-				tinsert(emptySlotIds, TSMAPI_FOUR.Util.JoinSlotId(currentTab, slot))
+				tinsert(emptySlotIds, TSM.SlotId.Join(currentTab, slot))
 			end
 		end
 	end
@@ -156,7 +156,7 @@ function BagToGuildBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 			if numWithdrawals == -1 or numWithdrawals >= GUILD_BANK_TAB_SLOTS then
 				for slot = 1, GUILD_BANK_TAB_SLOTS do
 					if not GetGuildBankItemInfo(tab, slot) then
-						tinsert(emptySlotIds, TSMAPI_FOUR.Util.JoinSlotId(tab, slot))
+						tinsert(emptySlotIds, TSM.SlotId.Join(tab, slot))
 					end
 				end
 			end
@@ -174,19 +174,19 @@ end
 -- GuildBankToBagMoveContext Class
 -- ============================================================================
 
-local GuildBankToBagMoveContext = TSMAPI_FOUR.Class.DefineClass("GuildBankToBagMoveContext", BaseMoveContext)
+local GuildBankToBagMoveContext = TSM.Lib.Class.DefineClass("GuildBankToBagMoveContext", BaseMoveContext)
 
 function GuildBankToBagMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromTab, fromSlot = TSMAPI_FOUR.Util.SplitSlotId(fromSlotId)
+	local fromTab, fromSlot = TSM.SlotId.Split(fromSlotId)
 	SplitGuildBankItem(fromTab, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSMAPI_FOUR.Util.SplitSlotId(toSlotId))
+		PickupContainerItem(TSM.SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
 
 function GuildBankToBagMoveContext.GetSlotQuantity(self, slotId)
-	local tab, slot = TSMAPI_FOUR.Util.SplitSlotId(slotId)
+	local tab, slot = TSM.SlotId.Split(slotId)
 	QueryGuildBankTab(tab)
 	local _, quantity = GetGuildBankItemInfo(tab, slot)
 	return quantity or 0
@@ -240,7 +240,7 @@ end
 -- ============================================================================
 
 function private.BagBankGetSlotQuantity(slotId)
-	local _, quantity = GetContainerItemInfo(TSMAPI_FOUR.Util.SplitSlotId(slotId))
+	local _, quantity = GetContainerItemInfo(TSM.SlotId.Split(slotId))
 	return quantity or 0
 end
 
@@ -262,7 +262,7 @@ function private.BagGetEmptySlotsThreaded(emptySlotIds)
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(emptySlotIds, sortValue)
+	TSM.Table.SortWithValueLookup(emptySlotIds, sortValue)
 	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortValue)
 end
 
@@ -277,7 +277,7 @@ function private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
 	for slot = 1, GetContainerNumSlots(bag) do
 		if not GetContainerItemInfo(bag, slot) then
-			local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+			local slotId = TSM.SlotId.Join(bag, slot)
 			tinsert(emptySlotIds, slotId)
 			sortValue[slotId] = slotId + (isSpecial and 0 or 100000)
 		end
@@ -286,7 +286,7 @@ end
 
 function private.BagBankGetTargetSlotId(itemString, emptySlotIds)
 	for i, slotId in ipairs(emptySlotIds) do
-		local bag = TSMAPI_FOUR.Util.SplitSlotId(slotId)
+		local bag = TSM.SlotId.Split(slotId)
 		if TSMAPI_FOUR.Inventory.ItemWillGoInBag(TSMAPI_FOUR.Item.GetLink(itemString), bag) then
 			return tremove(emptySlotIds, i)
 		end

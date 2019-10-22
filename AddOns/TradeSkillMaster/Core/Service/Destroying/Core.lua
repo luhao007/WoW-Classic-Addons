@@ -56,7 +56,7 @@ function Destroying.OnInitialize()
 		:AddBooleanField("ignorePermanent")
 		:Commit()
 	private.ignoreDB:BulkInsertStart()
-	local used = TSMAPI_FOUR.Util.AcquireTempTable()
+	local used = TSM.TempTable.Acquire()
 	for itemString in pairs(TSM.db.global.userData.destroyingIgnore) do
 		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
 		if not used[itemString] then
@@ -64,7 +64,7 @@ function Destroying.OnInitialize()
 			private.ignoreDB:BulkInsertNewRow(itemString, false, true)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(used)
+	TSM.TempTable.Release(used)
 	private.ignoreDB:BulkInsertEnd()
 
 	private.destroyInfoDB = TSMAPI_FOUR.Database.NewSchema("DESTROYING_INFO")
@@ -73,10 +73,10 @@ function Destroying.OnInitialize()
 		:AddNumberField("spellId")
 		:Commit()
 
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
-	TSMAPI_FOUR.Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
+	TSM.Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
 end
 
 function Destroying.SetBagUpdateCallback(callback)
@@ -190,8 +190,8 @@ end
 function private.CombineSlotIdToBagSlot(combineSlotId)
 	local sourceSlotId = combineSlotId % TARGET_SLOT_ID_MULTIPLIER
 	local targetSlotId = floor(combineSlotId / TARGET_SLOT_ID_MULTIPLIER)
-	local sourceBag, sourceSlot = TSMAPI_FOUR.Util.SplitSlotId(sourceSlotId)
-	local targetBag, targetSlot = TSMAPI_FOUR.Util.SplitSlotId(targetSlotId)
+	local sourceBag, sourceSlot = TSM.SlotId.Split(sourceSlotId)
+	local targetBag, targetSlot = TSM.SlotId.Split(targetSlotId)
 	return sourceBag, sourceSlot, targetBag, targetSlot
 end
 
@@ -283,8 +283,8 @@ end
 function private.UpdateBagDB()
 	wipe(private.pendingCombines)
 	private.destroyInfoDB:TruncateAndBulkInsertStart()
-	local itemPrevSlotId = TSMAPI_FOUR.Util.AcquireTempTable()
-	local checkedItem = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemPrevSlotId = TSM.TempTable.Acquire()
+	local checkedItem = TSM.TempTable.Acquire()
 	for _, bag, slot, itemString, quantity in TSMAPI_FOUR.Inventory.BagIterator(nil, TSM.db.global.destroyingOptions.includeSoulbound, TSM.db.global.destroyingOptions.includeSoulbound) do
 		local minQuantity = nil
 		if checkedItem[itemString] then
@@ -298,7 +298,7 @@ function private.UpdateBagDB()
 			end
 		end
 		if minQuantity and quantity % minQuantity ~= 0 then
-			local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+			local slotId = TSM.SlotId.Join(bag, slot)
 			if itemPrevSlotId[itemString] then
 				-- we can combine this with the previous partial stack
 				tinsert(private.pendingCombines, itemPrevSlotId[itemString] * TARGET_SLOT_ID_MULTIPLIER + slotId)
@@ -308,8 +308,8 @@ function private.UpdateBagDB()
 			end
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(checkedItem)
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemPrevSlotId)
+	TSM.TempTable.Release(checkedItem)
+	TSM.TempTable.Release(itemPrevSlotId)
 	private.destroyInfoDB:BulkInsertEnd()
 
 	private.newBagUpdate = true

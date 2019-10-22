@@ -425,7 +425,7 @@ function private.FSMCreate()
 					didChange = true
 				end
 				local keywordFilter = context.frame:GetElement("headerFrame.keywordInput"):GetText()
-				keywordFilter = keywordFilter ~= "" and TSMAPI_FOUR.Util.StrEscape(keywordFilter) or nil
+				keywordFilter = keywordFilter ~= "" and TSM.String.Escape(keywordFilter) or nil
 				if keywordFilter ~= private.keywordFilter then
 					private.keywordFilter = keywordFilter
 					didChange = true

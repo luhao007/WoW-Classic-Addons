@@ -70,7 +70,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 			lowestItemBuyout = lowestItemBuyout or itemBuyout
 			if itemBuyout == lowestItemBuyout then
 				local seller = record:GetField("seller")
-				local temp = TSMAPI_FOUR.Util.AcquireTempTable()
+				local temp = TSM.TempTable.Acquire()
 				temp.buyout = itemBuyout
 				temp.bid = record:GetField("itemDisplayedBid")
 				temp.seller = seller
@@ -84,7 +84,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 					hasInvalidSeller = true
 				end
 				if operationSettings.blacklist then
-					for _, player in TSMAPI_FOUR.Util.VarargIterator(strsplit(",", operationSettings.blacklist)) do
+					for _, player in TSM.Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
 						if strlower(strtrim(player)) == strlower(seller) then
 							temp.isBlacklist = true
 						end
@@ -93,10 +93,10 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 				if not lowestAuction then
 					lowestAuction = temp
 				elseif private.LowestAuctionCompare(temp, lowestAuction) then
-					TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+					TSM.TempTable.Release(lowestAuction)
 					lowestAuction = temp
 				else
-					TSMAPI_FOUR.Util.ReleaseTempTable(temp)
+					TSM.TempTable.Release(temp)
 				end
 			end
 		end
@@ -107,7 +107,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 	for k, v in pairs(lowestAuction) do
 		resultTbl[k] = v
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(lowestAuction)
+	TSM.TempTable.Release(lowestAuction)
 	if resultTbl.isWhitelist and ignoreWhitelist then
 		resultTbl.isWhitelist = false
 	end

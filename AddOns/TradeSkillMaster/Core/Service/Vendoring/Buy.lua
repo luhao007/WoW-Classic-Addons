@@ -27,9 +27,9 @@ function Buy.OnInitialize()
 		:AddNumberField("stackSize")
 		:AddNumberField("numAvailable")
 		:Commit()
-	TSMAPI_FOUR.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
-	TSMAPI_FOUR.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
-	TSMAPI_FOUR.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
+	TSM.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
+	TSM.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
+	TSM.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 end
 
 function Buy.CreateMerchantQuery()
@@ -124,7 +124,7 @@ function private.UpdateMerchantDB()
 			local costItemsStr = ""
 			if extendedCost then
 				assert(numAltCurrencies > 0)
-				local costItems = TSMAPI_FOUR.Util.AcquireTempTable()
+				local costItems = TSM.TempTable.Acquire()
 				for j = 1, numAltCurrencies do
 					local _, costNum, costItemLink = GetMerchantItemCostItem(i, j)
 					local costItemString = TSMAPI_FOUR.Item.ToItemString(costItemLink)
@@ -142,7 +142,7 @@ function private.UpdateMerchantDB()
 					tinsert(costItems, costNum.." |T"..(texture or "")..":12|t")
 				end
 				costItemsStr = table.concat(costItems, " ")
-				TSMAPI_FOUR.Util.ReleaseTempTable(costItems)
+				TSM.TempTable.Release(costItems)
 			end
 			private.merchantDB:BulkInsertNewRow(i, itemString, price, costItemsStr, stackSize, numAvailable)
 		end

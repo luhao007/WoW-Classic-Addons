@@ -281,7 +281,7 @@ function private.MoneyFocusGained(input)
 end
 
 function private.MoneyOnTextChanged(input)
-	local text = gsub(strtrim(input:GetText()), TSMAPI_FOUR.Util.StrEscape(LARGE_NUMBER_SEPERATOR), "")
+	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
 	if text == "" or text == TSM.db.factionrealm.internalData.mailExcessGoldLimit then
 		return
 	end
@@ -359,7 +359,7 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	TSMAPI_FOUR.Event.Register("PLAYER_MONEY", function()
+	TSM.Event.Register("PLAYER_MONEY", function()
 		private.fsm:ProcessEvent("EV_PLAYER_MONEY_UPDATE")
 	end)
 

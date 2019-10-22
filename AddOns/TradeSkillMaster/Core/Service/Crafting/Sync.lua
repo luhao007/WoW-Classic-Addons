@@ -72,9 +72,9 @@ function private.RPCGetHashesResultHandler(player, data)
 		TSMAPI_FOUR.Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
 		return
 	end
-	local currentInfo = TSMAPI_FOUR.Util.AcquireTempTable()
+	local currentInfo = TSM.TempTable.Acquire()
 	private.GetPlayerProfessionHashes(player, currentInfo)
-	local requestProfessions = TSMAPI_FOUR.Util.AcquireTempTable()
+	local requestProfessions = TSM.TempTable.Acquire()
 	for profession, hash in pairs(data) do
 		if hash == currentInfo[profession] then
 			TSM:LOG_INFO("%s data for %s already up to date", profession, player)
@@ -83,14 +83,14 @@ function private.RPCGetHashesResultHandler(player, data)
 			requestProfessions[profession] = true
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(currentInfo)
+	TSM.TempTable.Release(currentInfo)
 	if next(requestProfessions) then
 		private.accountStatus[private.accountLookup[player]] = "UPDATING"
 		TSM.Sync.RPC.Call("CRAFTING_GET_SPELLS", player, private.RPCGetSpellsResultHandler, requestProfessions)
 	else
 		private.accountStatus[private.accountLookup[player]] = "SYNCED"
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(requestProfessions)
+	TSM.TempTable.Release(requestProfessions)
 end
 
 function private.RPCGetSpells(professions)
@@ -193,7 +193,7 @@ function private.QueryProfessionFilter(row, professions)
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSMAPI_FOUR.Util.SeparatedStrContains(row:GetField("players"), ",", player)
+	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.GetPlayerProfessionHashes(player, resultTbl)
@@ -202,6 +202,6 @@ function private.GetPlayerProfessionHashes(player, resultTbl)
 		:Custom(private.QueryPlayerFilter, player)
 		:OrderBy("spellId", true)
 	for _, spellId, profession in query:Iterator() do
-		resultTbl[profession] = TSMAPI_FOUR.Util.CalculateHash(spellId, resultTbl[profession])
+		resultTbl[profession] = TSM.Math.CalculateHash(spellId, resultTbl[profession])
 	end
 end

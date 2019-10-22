@@ -28,11 +28,11 @@ local MOVE_WAIT_TIMEOUT = 2
 function Banking.OnInitialize()
 	private.moveThread = TSMAPI_FOUR.Thread.New("BANKING_MOVE", private.MoveThread)
 
-	TSMAPI_FOUR.Event.Register("BANKFRAME_OPENED", private.BankOpened)
-	TSMAPI_FOUR.Event.Register("BANKFRAME_CLOSED", private.BankClosed)
+	TSM.Event.Register("BANKFRAME_OPENED", private.BankOpened)
+	TSM.Event.Register("BANKFRAME_CLOSED", private.BankClosed)
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankOpened)
-		TSMAPI_FOUR.Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankClosed)
+		TSM.Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankOpened)
+		TSM.Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankClosed)
 	end
 end
 
@@ -62,7 +62,7 @@ end
 
 function Banking.EmptyBags(callback)
 	assert(private.openFrame)
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.BagIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
@@ -71,7 +71,7 @@ function Banking.EmptyBags(callback)
 	private.callback = callback
 	local context = Banking.IsGuildBankOpen() and Banking.MoveContext.GetBagToGuildBank() or Banking.MoveContext.GetBagToBank()
 	private.StartMove(items, context, private.EmptyBagsThreadCallbackWrapper)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Banking.RestoreBags(callback)
@@ -91,9 +91,9 @@ function Banking.PutByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
-	filterStr = TSMAPI_FOUR.Util.StrEscape(strlower(filterStr))
+	filterStr = TSM.String.Escape(strlower(filterStr))
 
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.BagIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
@@ -107,16 +107,16 @@ function Banking.PutByFilter(filterStr)
 	end
 
 	Banking.MoveToBank(items, private.GetPutCallback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function Banking.GetByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
-	filterStr = TSMAPI_FOUR.Util.StrEscape(strlower(filterStr))
+	filterStr = TSM.String.Escape(strlower(filterStr))
 
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.OpenBankIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
@@ -130,7 +130,7 @@ function Banking.GetByFilter(filterStr)
 	end
 
 	Banking.MoveToBag(items, private.GetPutCallback)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 

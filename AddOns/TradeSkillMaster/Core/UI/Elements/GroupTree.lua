@@ -11,7 +11,7 @@
 -- @classmod GroupTree
 
 local _, TSM = ...
-local GroupTree = TSMAPI_FOUR.Class.DefineClass("GroupTree", TSM.UI.FastScrollingList, "ABSTRACT")
+local GroupTree = TSM.Lib.Class.DefineClass("GroupTree", TSM.UI.FastScrollingList, "ABSTRACT")
 TSM.UI.GroupTree = GroupTree
 local private = { rowFrameLookup = {} }
 local COLOR_WIDTH = 6
@@ -95,7 +95,7 @@ end
 -- @tparam string searchStr The search string which filters the displayed groups
 -- @treturn GroupTree The group tree object
 function GroupTree.SetSearchString(self, searchStr)
-	self._searchStr = TSMAPI_FOUR.Util.StrEscape(searchStr)
+	self._searchStr = TSM.String.Escape(searchStr)
 	self:_UpdateData()
 	return self
 end
@@ -163,7 +163,7 @@ function GroupTree._UpdateData(self)
 	wipe(self._hasChildrenLookup)
 	wipe(self._allData)
 	wipe(self._data)
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	self._groupFunc(groups, self._headerNameLookup)
 
 	for i, groupPath in ipairs(groups) do
@@ -178,7 +178,7 @@ function GroupTree._UpdateData(self)
 		local nextGroupPath = groups[i + 1]
 		self._hasChildrenLookup[groupPath] = nextGroupPath and TSM.Groups.Path.IsChild(nextGroupPath, groupPath) or nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(groups)
+	TSM.TempTable.Release(groups)
 end
 
 function GroupTree._GetListRow(self)

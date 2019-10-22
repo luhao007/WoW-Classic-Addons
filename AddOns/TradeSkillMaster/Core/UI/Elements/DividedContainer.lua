@@ -11,7 +11,7 @@
 -- @classmod DividedContainer
 
 local _, TSM = ...
-local DividedContainer = TSMAPI_FOUR.Class.DefineClass("DividedContainer", TSM.UI.Frame)
+local DividedContainer = TSM.Lib.Class.DefineClass("DividedContainer", TSM.UI.Frame)
 TSM.UI.DividedContainer = DividedContainer
 local private = {}
 

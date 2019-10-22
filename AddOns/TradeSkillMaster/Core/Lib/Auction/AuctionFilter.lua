@@ -11,9 +11,8 @@
 -- @classmod AuctionFilter
 
 local _, TSM = ...
-local AuctionFilter = TSMAPI_FOUR.Class.DefineClass("AuctionFilter")
+local AuctionFilter = TSM.Lib.Class.DefineClass("AuctionFilter")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
-local private = {}
 
 
 
@@ -24,6 +23,7 @@ local private = {}
 function AuctionFilter.__init(self)
 	self._scan = nil
 	self._name = nil
+	self._nameMatch = nil
 	self._minLevel = nil
 	self._maxLevel = nil
 	self._quality = nil
@@ -36,6 +36,7 @@ function AuctionFilter.__init(self)
 	self._exact = nil
 	self._sniperLastPage = nil
 	self._page = 0
+	self._numPages = 0
 	-- custom filters applies after the scan
 	self._evenOnly = nil
 	self._minItemLevel = nil
@@ -48,16 +49,19 @@ function AuctionFilter.__init(self)
 	self._items = {}
 	self._itemMaxQuantities = {}
 	self._resultIncludesRow = {}
+	self._isDoneFunction = nil
 end
 
 function AuctionFilter._Acquire(self, scan)
 	self._scan = scan
 	self._page = 0
+	self._numPages = 0
 end
 
 function AuctionFilter._Release(self)
 	self._scan = nil
 	self._name = nil
+	self._nameMatch = nil
 	self._minLevel = nil
 	self._maxLevel = nil
 	self._quality = nil
@@ -80,6 +84,7 @@ function AuctionFilter._Release(self)
 	wipe(self._items)
 	wipe(self._itemMaxQuantities)
 	wipe(self._resultIncludesRow)
+	self._isDoneFunction = nil
 end
 
 
@@ -90,21 +95,22 @@ end
 
 function AuctionFilter.SetName(self, name)
 	self._name = name
+	self._nameMatch = name and TSM.String.Escape(strlower(name)) or nil
 	return self
 end
 
 function AuctionFilter.SetMinLevel(self, minLevel)
-	self._minLevel = minLevel
+	self._minLevel = minLevel ~= 0 and minLevel or nil
 	return self
 end
 
 function AuctionFilter.SetMaxLevel(self, maxLevel)
-	self._maxLevel = maxLevel
+	self._maxLevel = maxLevel ~= 0 and maxLevel or nil
 	return self
 end
 
 function AuctionFilter.SetQuality(self, quality)
-	self._quality = quality
+	self._quality = quality ~= 0 and quality or nil
 	return self
 end
 
@@ -227,6 +233,12 @@ function AuctionFilter.SetGetAll(self)
 	assert(#self._items == 0)
 	assert(next(self._itemMaxQuantities) == nil)
 	self._getAll = true
+	return self
+end
+
+function AuctionFilter.SetIsDoneFunction(self, func)
+	self._isDoneFunction = func
+	return self
 end
 
 function AuctionFilter.GetItems(self)
@@ -259,17 +271,26 @@ function AuctionFilter._SetPage(self, page)
 	self._page = page
 end
 
+function AuctionFilter._SetNumPages(self, numPages)
+	self._numPages = numPages
+end
+
 function AuctionFilter._ResetPage(self)
 	self._page = 0
 end
 
 function AuctionFilter._NextPage(self)
+	if self:_IsSniper() or self:_IsGetAll() then
+		return false
+	elseif self._isDoneFunction and self:_isDoneFunction(self._scan) then
+		return false
+	end
 	self._page = self._page + 1
-	return self._page < private.GetNumPages()
+	return self._page < self._numPages
 end
 
 function AuctionFilter._GetPageProgress(self)
-	return self._page, private.GetNumPages()
+	return self._page, self._numPages
 end
 
 function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyout, stackSize, targetItemRate)
@@ -284,6 +305,30 @@ function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyo
 		if not found then
 			return true
 		end
+	end
+	if self._nameMatch then
+		local name = strlower(TSMAPI_FOUR.Item.GetName(rowItemString))
+		if not strmatch(name, self._nameMatch) or (self._exact and name ~= strlower(self._name)) then
+			return true
+		end
+	end
+	if self._minLevel or self._maxLevel then
+		local minLevel = TSMAPI_FOUR.Item.GetMinLevel(rowItemString)
+		if minLevel < (self._minLevel or -math.huge) or minLevel > (self._maxLevel or math.huge) then
+			return true
+		end
+	end
+	if self._quality and TSMAPI_FOUR.Item.GetQuality(rowItemString) < self._quality then
+		return true
+	end
+	if self._class and TSMAPI_FOUR.Item.GetClassId(rowItemString) ~= self._class then
+		return true
+	end
+	if self._subClass and TSMAPI_FOUR.Item.GetSubClassId(rowItemString) ~= self._subClass then
+		return true
+	end
+	if self._invType and TSMAPI_FOUR.Item.GetInvSlotId(rowItemString) ~= self._invType then
+		return true
 	end
 	if self._evenOnly and stackSize % 5 ~= 0 then
 		return true
@@ -339,7 +384,7 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 	if self:_IsSniper() then
 		if self._sniperLastPage then
 			-- scan the last page
-			local lastPage = max(private.GetNumPages() - 1, 0)
+			local lastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
 			while true do
 				-- wait for the AH to be ready
 				while not CanSendAuctionQuery() do
@@ -353,7 +398,7 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 				QueryAuctionItems(nil, nil, nil, lastPage)
 				-- wait for the update event
 				TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
-				local newLastPage = max(private.GetNumPages() - 1, 0)
+				local newLastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
 				if newLastPage == lastPage then
 					break
 				end
@@ -384,33 +429,33 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		TSMAPI_FOUR.Thread.WaitForFunction(CanSendAuctionQuery)
 		local classFilterInfo = nil
 		if self._class or self._subClass or self._invType then
-			classFilterInfo = TSMAPI_FOUR.Util.AcquireTempTable()
+			classFilterInfo = TSM.TempTable.Acquire()
 			if self._invType == LE_INVENTORY_TYPE_CHEST_TYPE or self._invType == LE_INVENTORY_TYPE_ROBE_TYPE then
 				-- default AH sends in queries for both chest types, we need to mimic this when using a chest filter
-				local info1 = TSMAPI_FOUR.Util.AcquireTempTable()
+				local info1 = TSM.TempTable.Acquire()
 				info1.classID = self._class
 				info1.subClassID = self._subClass
 				info1.inventoryType = LE_INVENTORY_TYPE_CHEST_TYPE
 				tinsert(classFilterInfo, info1)
-				local info2 = TSMAPI_FOUR.Util.AcquireTempTable()
+				local info2 = TSM.TempTable.Acquire()
 				info2.classID = self._class
 				info2.subClassID = self._subClass
 				info2.inventoryType = LE_INVENTORY_TYPE_ROBE_TYPE
 				tinsert(classFilterInfo, info2)
-			elseif self._invType == LE_ITEM_FILTER_TYPE_NECK or self._invType == LE_ITEM_FILTER_TYPE_FINGER or self._invType == LE_ITEM_FILTER_TYPE_TRINKET or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE then
-				local info = TSMAPI_FOUR.Util.AcquireTempTable()
+			elseif self._invType == LE_INVENTORY_TYPE_NECK_TYPE or self._invType == LE_INVENTORY_TYPE_FINGER_TYPE or self._invType == LE_INVENTORY_TYPE_TRINKET_TYPE or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE or self._invType == LE_INVENTORY_TYPE_BODY_TYPE then
+				local info = TSM.TempTable.Acquire()
 				info.classID = self._class
-				info.subClassID = 0
+				info.subClassID = LE_ITEM_ARMOR_GENERIC
 				info.inventoryType = self._invType
 				tinsert(classFilterInfo, info)
-			elseif self._invType == LE_ITEM_FILTER_TYPE_CLOAK then
-				local info = TSMAPI_FOUR.Util.AcquireTempTable()
+			elseif self._invType == LE_INVENTORY_TYPE_CLOAK_TYPE then
+				local info = TSM.TempTable.Acquire()
 				info.classID = self._class
-				info.subClassID = 1
-				info.inventoryType = LE_ITEM_FILTER_TYPE_CLOAK
+				info.subClassID = LE_ITEM_ARMOR_CLOTH
+				info.inventoryType = LE_INVENTORY_TYPE_CLOAK_TYPE
 				tinsert(classFilterInfo, info)
 			else
-				local info = TSMAPI_FOUR.Util.AcquireTempTable()
+				local info = TSM.TempTable.Acquire()
 				info.classID = self._class
 				info.subClassID = self._subClass
 				info.inventoryType = self._invType
@@ -420,10 +465,10 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		QueryAuctionItems(self._name, self._minLevel, self._maxLevel, self._page, self._usable, self._quality, nil, self._exact, classFilterInfo)
 		if classFilterInfo then
 			for i = #classFilterInfo, 1, -1 do
-				TSMAPI_FOUR.Util.ReleaseTempTable(classFilterInfo[i])
+				TSM.TempTable.Release(classFilterInfo[i])
 				classFilterInfo[i] = nil
 			end
-			TSMAPI_FOUR.Util.ReleaseTempTable(classFilterInfo)
+			TSM.TempTable.Release(classFilterInfo)
 		end
 		-- wait for the update event
 		TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
@@ -500,15 +545,4 @@ function AuctionFilter._RemoveResultRows(self, db, row, bought)
 			end
 		end
 	end
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.GetNumPages()
-	local _, total = GetNumAuctionItems("list")
-	return ceil(total / NUM_AUCTION_ITEMS_PER_PAGE)
 end

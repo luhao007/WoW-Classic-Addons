@@ -27,11 +27,6 @@ local ROW_PROTOTYPE = {
 		context.query = nil
 		context.isNewRow = nil
 		context.uuid = nil
-		for i = 1, context.numJoins or 0 do
-			context["joinDB"..i] = nil
-			context["joinField"..i] = nil
-		end
-		context.numJoins = nil
 		assert(not context.pendingChanges)
 		wipe(self)
 	end,
@@ -44,25 +39,19 @@ local ROW_PROTOTYPE = {
 	_SetUUID = function(self, uuid)
 		local context = private.context[self]
 		context.uuid = uuid
-		for i = 1, context.numJoins or 0 do
-			context["joinDB"..i] = nil
-			context["joinField"..i] = nil
-		end
-		context.numJoins = nil
 		wipe(self)
-	end,
-
-	_AddJoinInfo = function(self, joinDB, joinField)
-		local context = private.context[self]
-		context.numJoins = (context.numJoins or 0) + 1
-		context["joinDB"..context.numJoins] = joinDB
-		context["joinField"..context.numJoins] = joinField
 	end,
 
 	GetUUID = function(self)
 		local uuid = private.context[self].uuid
 		assert(uuid)
 		return uuid
+	end,
+
+	GetQuery = function(self)
+		local query = private.context[self].query
+		assert(query)
+		return query
 	end,
 
 	GetField = function(self, field, ...)
@@ -101,7 +90,7 @@ local ROW_PROTOTYPE = {
 	CalculateHash = function(self, fields)
 		local hash = nil
 		for _, field in ipairs(fields) do
-			hash = TSMAPI_FOUR.Util.CalculateHash(self[field], hash)
+			hash = TSM.Math.CalculateHash(self[field], hash)
 		end
 		return hash
 	end,
@@ -126,11 +115,11 @@ local ROW_PROTOTYPE = {
 			-- setting the field to its original value, so clear any pending change
 			context.pendingChanges[field] = nil
 			if not next(context.pendingChanges) then
-				TSMAPI_FOUR.Util.ReleaseTempTable(context.pendingChanges)
+				TSM.TempTable.Release(context.pendingChanges)
 				context.pendingChanges = nil
 			end
 		else
-			context.pendingChanges = context.pendingChanges or TSMAPI_FOUR.Util.AcquireTempTable()
+			context.pendingChanges = context.pendingChanges or TSM.TempTable.Acquire()
 			context.pendingChanges[field] = value
 		end
 		return self
@@ -151,7 +140,7 @@ local ROW_PROTOTYPE = {
 			rawset(self, field, value)
 		end
 
-		TSMAPI_FOUR.Util.ReleaseTempTable(context.pendingChanges)
+		TSM.TempTable.Release(context.pendingChanges)
 		context.pendingChanges = nil
 		context.isNewRow = nil
 	end,
@@ -176,17 +165,17 @@ local ROW_PROTOTYPE = {
 		end
 
 		-- apply all the pending changes
-		local oldValues = TSMAPI_FOUR.Util.AcquireTempTable()
+		local oldValues = TSM.TempTable.Acquire()
 		for field, value in pairs(context.pendingChanges) do
 			oldValues[field] = self[field]
 			-- cache this new value
 			rawset(self, field, value)
 		end
 
-		TSMAPI_FOUR.Util.ReleaseTempTable(context.pendingChanges)
+		TSM.TempTable.Release(context.pendingChanges)
 		context.pendingChanges = nil
 		context.db:_UpdateRow(self, oldValues)
-		TSMAPI_FOUR.Util.ReleaseTempTable(oldValues)
+		TSM.TempTable.Release(oldValues)
 		return self
 	end,
 
@@ -206,9 +195,6 @@ local ROW_PROTOTYPE = {
 		local newRow = TSM.Database.GetDatabaseQueryResultRow()
 		newRow:_Acquire(context.db)
 		newRow:_SetUUID(context.uuid)
-		for i = 1, context.numJoins or 0 do
-			newRow:_AddJoinInfo(context["joinDB"..i], context["joinField"..i])
-		end
 		return newRow
 	end,
 }
@@ -264,7 +250,6 @@ function DatabaseQueryResultRow.New()
 		query = nil,
 		isNewRow = nil,
 		uuid = nil,
-		numJoins = nil,
 	}
 	return row
 end

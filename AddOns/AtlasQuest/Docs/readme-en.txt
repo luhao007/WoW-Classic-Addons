@@ -1,5 +1,4 @@
 
-
 AtlasQuest CLASSIC
 Maintained by Thandrenn (aka Mystery8)
 Email me at mystery8@gmail.com
@@ -32,10 +31,11 @@ or from WoWhead.com.
 Translations:
 =============
 
-Currently Maintained:
 English:  Thandrenn
+German:  Guldukat
 Simplified Chinese:  yoke233
 Russian:  GoodDeath
+Spanish: Woopy
 
 
 

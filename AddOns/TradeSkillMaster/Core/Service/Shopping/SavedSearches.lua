@@ -18,7 +18,7 @@ local private = { db = nil }
 
 function SavedSearches.OnInitialize()
 	-- remove duplicates
-	local keepSearch = TSMAPI_FOUR.Util.AcquireTempTable()
+	local keepSearch = TSM.TempTable.Acquire()
 	for _, data in ipairs(TSM.db.global.userData.savedShoppingSearches) do
 		local filter = strlower(data.filter)
 		if not keepSearch[filter] then
@@ -38,7 +38,7 @@ function SavedSearches.OnInitialize()
 			tremove(TSM.db.global.userData.savedShoppingSearches, i)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(keepSearch)
+	TSM.TempTable.Release(keepSearch)
 
 	private.db = TSMAPI_FOUR.Database.NewSchema("SHOPPING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")

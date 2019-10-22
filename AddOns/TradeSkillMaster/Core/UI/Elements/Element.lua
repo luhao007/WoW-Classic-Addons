@@ -11,7 +11,7 @@
 -- @classmod Element
 
 local _, TSM = ...
-local Element = TSMAPI_FOUR.Class.DefineClass("Element", nil, "ABSTRACT")
+local Element = TSM.Lib.Class.DefineClass("Element", nil, "ABSTRACT")
 TSM.UI.Element = Element
 local private = { elementLookup = {}, scriptWrappers = {} }
 local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20

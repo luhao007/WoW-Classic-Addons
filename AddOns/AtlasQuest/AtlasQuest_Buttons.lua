@@ -294,24 +294,10 @@ local itemName, itemQuality
            REWARDstext:SetText(getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."Rewardtext"))
            if ( getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ID"..b) ~= nil) then
 
-             -----------------------------------------------------------------------------
-             -- Yay for AutoQuery. Boo for odd variable names.
-             -----------------------------------------------------------------------------
-
              SHOWNID = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ID"..b);
 
-             if(AQAutoQuery ~= nil) then
                colour = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ITC"..b);
                nameDATA = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."name"..b);
-
-               if ( GetItemInfo(SHOWNID) == nil) then
-                 GameTooltip:SetHyperlink("item:"..SHOWNID..":0:0:0");
-                 if(AQNoQuerySpam == nil) then
-                   DEFAULT_CHAT_FRAME:AddMessage(AQSERVERASK.."["..colour..nameDATA..WHITE.."]"..AQSERVERASKAuto);
-                 end
-               end
-
-             end
 
              getglobal("AtlasQuestItemframe"..b.."_Icon"):SetTexture(GetItemIcon(SHOWNID));
              getglobal("AtlasQuestItemframe"..b.."_Name"):SetText(AQgetItemInformation(b,"name"));
@@ -336,24 +322,10 @@ local itemName, itemQuality
            REWARDstext:SetText(getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."Rewardtext_HORDE"))
            if ( getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ID"..b.."_HORDE") ~= nil) then
            
-             -----------------------------------------------------------------------------
-             -- Yay for AutoQuery. Boo for odd variable names.
-             -----------------------------------------------------------------------------
-
              SHOWNID = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ID"..b.."_HORDE");
 
-             if(AQAutoQuery ~= nil) then
                colour = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."ITC"..b.."_HORDE");
                nameDATA = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."name"..b.."_HORDE");
-
-               if ( GetItemInfo(SHOWNID) == nil) then
-                 GameTooltip:SetHyperlink("item:"..SHOWNID..":0:0:0");
-                 if(AQNoQuerySpam == nil) then
-                   DEFAULT_CHAT_FRAME:AddMessage(AQSERVERASK.."["..colour..nameDATA..WHITE.."]"..AQSERVERASKAuto);
-                 end
-               end
-
-             end
            
              getglobal("AtlasQuestItemframe"..b.."_Icon"):SetTexture(GetItemIcon(SHOWNID));
              getglobal("AtlasQuestItemframe"..b.."_Name"):SetText(AQgetItemInformation(b,"name"));
@@ -408,7 +380,6 @@ end
     if (what == "name") then
       return itemtext;
     elseif (what == "extra") then
---    itemdiscription = itemdiscription.." "..RED..AQERRORNOTSHOWN;  -- No longer necessary.
       return itemdiscription;
     end
   end

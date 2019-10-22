@@ -183,7 +183,7 @@ function private.SearchInputOnTextChanged(input)
 
 	TSM.Vendoring.Sell.ResetBagsQuery(private.query)
 	if text ~= "" then
-		private.query:Matches("name", TSMAPI_FOUR.Util.StrEscape(text))
+		private.query:Matches("name", TSM.String.Escape(text))
 	end
 	input:GetElement("__parent.__parent.__parent.items"):UpdateData(true)
 end
@@ -210,7 +210,7 @@ end
 
 function private.SellBOEBtnOnClick(button)
 	-- checking if an item is disenchantable might cause our query to change since it depends on the ItemInfo DB, so cache the list of items first
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for _, row in private.query:Iterator() do
 		tinsert(items, row:GetField("itemString"))
 	end
@@ -219,7 +219,7 @@ function private.SellBOEBtnOnClick(button)
 			TSM.Vendoring.Sell.SellItem(itemString)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 function private.SellAllBtnOnClick(button)

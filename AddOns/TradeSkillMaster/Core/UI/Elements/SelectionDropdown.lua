@@ -11,7 +11,7 @@
 -- @classmod SelectionDropdown
 
 local _, TSM = ...
-local SelectionDropdown = TSMAPI_FOUR.Class.DefineClass("SelectionDropdown", TSM.UI.BaseDropdown)
+local SelectionDropdown = TSM.Lib.Class.DefineClass("SelectionDropdown", TSM.UI.BaseDropdown)
 TSM.UI.SelectionDropdown = SelectionDropdown
 
 
@@ -62,7 +62,7 @@ end
 -- @tparam[opt=false] boolean silent Don't call the OnSelectionChanged callback
 -- @treturn SelectionDropdown The dropdown object
 function SelectionDropdown.SetSelectedItemByKey(self, itemKey, silent)
-	local item = itemKey and TSMAPI_FOUR.Util.GetDistinctTableKey(self._itemKeyLookup, itemKey) or nil
+	local item = itemKey and TSM.Table.GetDistinctKey(self._itemKeyLookup, itemKey) or nil
 	self:SetSelectedItem(item, silent)
 	return self
 end

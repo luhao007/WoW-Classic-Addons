@@ -25,8 +25,8 @@ local private = {
 function Open.OnInitialize()
 	private.thread = TSMAPI_FOUR.Thread.New("MAIL_OPENING", private.OpenMailThread)
 
-	TSMAPI_FOUR.Event.Register("MAIL_SHOW", private.ScheduleCheck)
-	TSMAPI_FOUR.Event.Register("MAIL_CLOSED", private.MailClosedHandler)
+	TSM.Event.Register("MAIL_SHOW", private.ScheduleCheck)
+	TSM.Event.Register("MAIL_CLOSED", private.MailClosedHandler)
 end
 
 function Open.KillThread()
@@ -188,7 +188,7 @@ function private.PrintOpenMailMessage(index)
 		end
 		local itemName = TSMAPI_FOUR.Item.GetName(itemLink) or "?"
 		local itemDesc = (quantity > 0 and format("%sx%d", itemLink, quantity)) or (quantity == -1 and "Multiple Items") or "?"
-		if hasItem == 1 and itemLink and strfind(subject, "^" .. TSMAPI_FOUR.Util.StrEscape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
+		if hasItem == 1 and itemLink and strfind(subject, "^" .. TSM.String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
 			TSM:Printf(L["Your auction of %s expired"], itemDesc)
 		elseif hasItem == 1 and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.."x%d", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
 			TSM:Printf(L["Cancelled auction of %sx%d"], itemLink, quantity)

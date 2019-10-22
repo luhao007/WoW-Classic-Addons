@@ -27,20 +27,6 @@ local OPERATION_INFO = {
 -- ============================================================================
 
 function Warehousing.OnInitialize()
-	-- migrate operation settings
-	if TSM.db.global.userData.operations and TSM.db.global.userData.operations.Warehousing then
-		for _, operationSettings in pairs(TSM.db.global.userData.operations.Warehousing) do
-			private.MigrateOperationSettings(operationSettings)
-		end
-	end
-	for _, profileName in TSM.db:ProfileIterator() do
-		local operations = TSM.db:Get("profile", profileName, "userData", "operations")
-		if operations and operations.Warehousing then
-			for _, operationSettings in pairs(operations.Warehousing) do
-				private.MigrateOperationSettings(operationSettings)
-			end
-		end
-	end
 	TSM.Operations.Register("Warehousing", L["Warehousing"], OPERATION_INFO, 12, private.GetOperationInfo)
 end
 
@@ -49,30 +35,6 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
-
-function private.MigrateOperationSettings(operationSettings)
-	if operationSettings.moveQtyEnabled == false then
-		operationSettings.moveQuantity = 0
-	end
-	if operationSettings.keepBagQtyEnabled == false then
-		operationSettings.keepBagQuantity = 0
-	end
-	if operationSettings.keepBankQtyEnabled == false then
-		operationSettings.keepBankQuantity = 0
-	end
-	if operationSettings.restockQtyEnabled == false then
-		operationSettings.restockQuantity = 0
-	end
-	if operationSettings.stackSizeEnabled == false then
-		operationSettings.stackSize = 0
-	end
-	if operationSettings.restockKeepBankQtyEnabled == false then
-		operationSettings.restockKeepBankQuantity = 0
-	end
-	if operationSettings.restockStackSizeEnabled == false then
-		operationSettings.restockStackSize = 0
-	end
-end
 
 function private.GetOperationInfo(operationSettings)
 	if (operationSettings.keepBagQuantity ~= 0 or operationSettings.keepBankQuantity ~= 0) and operationSettings.moveQuantity == 0 then

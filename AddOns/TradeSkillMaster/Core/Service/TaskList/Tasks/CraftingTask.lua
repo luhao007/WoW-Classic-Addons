@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local CraftingTask = TSMAPI_FOUR.Class.DefineClass("CraftingTask", TSM.TaskList.Task)
+local CraftingTask = TSM.Lib.Class.DefineClass("CraftingTask", TSM.TaskList.Task)
 local L = TSM.L
 TSM.TaskList.CraftingTask = CraftingTask
 local private = {
@@ -137,7 +137,7 @@ function CraftingTask._UpdateState(self)
 end
 
 function CraftingTask._RemoveSpellId(self, spellId)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(self._spellIds, spellId) == 1)
+	assert(TSM.Table.RemoveByValue(self._spellIds, spellId) == 1)
 	self._spellQuantity[spellId] = nil
 end
 

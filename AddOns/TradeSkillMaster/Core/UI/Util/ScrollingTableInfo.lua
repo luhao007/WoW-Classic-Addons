@@ -7,17 +7,17 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ScrollingTableInfo = TSMAPI_FOUR.Class.DefineClass("ScrollingTableInfo")
+local ScrollingTableInfo = TSM.Lib.Class.DefineClass("ScrollingTableInfo")
+local ScrollingTableColumnInfo = TSM.Lib.Class.DefineClass("ScrollingTableColumnInfo")
 TSM.UI.Util.ScrollingTableInfo = ScrollingTableInfo
 local private = { recycledColInfo = {} }
+TSM.UI.Util.ScrollingTableColumnInfo = ScrollingTableColumnInfo
 
 
 
 -- ============================================================================
 -- ScrollingTableColumnInfo Class
 -- ============================================================================
-
-local ScrollingTableColumnInfo = TSMAPI_FOUR.Class.DefineClass("ScrollingTableColumnInfo")
 
 function ScrollingTableColumnInfo.__init(self)
 	-- general
@@ -68,7 +68,7 @@ function ScrollingTableColumnInfo._Release(self)
 end
 
 function ScrollingTableColumnInfo.SetTitles(self, ...)
-	TSMAPI_FOUR.Util.VarargIntoTable(self._titles, ...)
+	TSM.Vararg.IntoTable(self._titles, ...)
 	return self
 end
 

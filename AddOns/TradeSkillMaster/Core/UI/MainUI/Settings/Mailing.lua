@@ -21,7 +21,7 @@ local ITEM_QUALITY_KEYS = { 2, 3, 4 }
 
 function Mailing.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage(L["Inventory / Mailing"], "middle", private.GetMailingSettingsFrame)
-	for key, name in pairs(TSMAPI_FOUR.Sound.GetSounds()) do
+	for key, name in pairs(TSM.Sound.GetSounds()) do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end
@@ -185,7 +185,7 @@ end
 -- ============================================================================
 
 function private.SoundOnSelectionChanged(self, selection)
-	TSMAPI_FOUR.Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
+	TSM.Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
 end
 
 function private.RestartDelayOnEscapePressed(self)
@@ -196,7 +196,7 @@ end
 function private.RestartDelayOnEnterPressed(self)
 	local value = tonumber(strtrim(self:GetText()))
 	if value then
-		value = TSMAPI_FOUR.Util.Round(value, 0.5)
+		value = TSM.Math.Round(value, 0.5)
 		TSM.db.global.mailingOptions.resendDelay = value
 	else
 		value = TSM.db.global.mailingOptions.resendDelay

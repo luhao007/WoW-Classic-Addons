@@ -67,17 +67,15 @@ local AQMAXINSTANCES = "38"
 local AQMAXQUESTS = "23"
 
 -- Set title for AtlasQuest side panel
-ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest 4.11.54";
+ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest 4.11.55";
 
 local AtlasQuest_Defaults = {
-  ["Version"] =  "4.11.54",
+  ["Version"] =  "4.11.55",
   [UnitName("player")] = {
     ["ShownSide"] = "Left",
     ["AtlasAutoShow"] = 1,
     ["NOColourCheck"] = nil,
     ["CheckQuestlog"] = nil,
-    ["AutoQuery"] = nil,
-    ["NoQuerySpam"] = "yes",
     ["CompareTooltip"] = nil,
   },
 };
@@ -169,10 +167,6 @@ function AtlasQuest_LoadData()
   end
   --AQCheckQuestlog
   AQCheckQuestlog = AtlasQuest_Options[UnitName("player")]["CheckQuestlog"];
-  -- AutoQuery option
-  AQAutoQuery = AtlasQuest_Options[UnitName("player")]["AutoQuery"];
-  -- Suppress Server Query Text option
-  AQNoQuerySpam = AtlasQuest_Options[UnitName("player")]["NoQuerySpam"];
   -- Comparison Tooltips option
   AQCompareTooltip = AtlasQuest_Options[UnitName("player")]["CompareTooltip"];
 
@@ -187,8 +181,6 @@ function AtlasQuest_SaveData()
   AtlasQuest_Options[UnitName("player")]["AtlasAutoShow"] = AQAtlasAuto;
   AtlasQuest_Options[UnitName("player")]["ColourCheck"] = AQNOColourCheck;
   AtlasQuest_Options[UnitName("player")]["CheckQuestlog"] = AQCheckQuestlog;
-  AtlasQuest_Options[UnitName("player")]["AutoQuery"] = AQAutoQuery;
-  AtlasQuest_Options[UnitName("player")]["NoQuerySpam"] = AQNoQuerySpam;
   AtlasQuest_Options[UnitName("player")]["CompareTooltip"] = AQCompareTooltip;
 end
 
@@ -234,7 +226,6 @@ end
 -- Set the button text
 -----------------------------------------------------------------------------
 function AQSetButtontext()
---      STORYbutton:SetText(AQStoryB);
       OPTIONbutton:SetText(AQOptionB);
       AQOptionCloseButton:SetText(AQ_OK);
 	  AQOptionQuestQueryButton:SetText(AQQuestQueryButtonTEXT);
@@ -249,8 +240,6 @@ function AQSetButtontext()
       AQColourOptionTEXT:SetText(AQOptionsCCTEXT);
       AQFQ_TEXT:SetText(AQFinishedTEXT);
       AQCheckQuestlogTEXT:SetText(AQQLColourChange);
-      AQAutoQueryTEXT:SetText(AQOptionsAutoQueryTEXT);
-      AQNoQuerySpamTEXT:SetText(AQOptionsNoQuerySpamTEXT);
       AQCompareTooltipTEXT:SetText(AQOptionsCompareTooltipTEXT);
 end
 

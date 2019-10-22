@@ -11,7 +11,7 @@
 -- @classmod Stylesheet
 
 local _, TSM = ...
-local Stylesheet = TSMAPI_FOUR.Class.DefineClass("Stylesheet")
+local Stylesheet = TSM.Lib.Class.DefineClass("Stylesheet")
 TSM.UI.Util.Stylesheet = Stylesheet
 local TYPE_TAG_SEP = "."
 

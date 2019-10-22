@@ -13,12 +13,12 @@ local LibRealmInfo = LibStub("LibRealmInfo")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = TSM.L
 local private = { appInfo = nil }
-TSMAPI = {Operations={}, Settings={}}
+TSMAPI = { Operations = {}, Settings = {} }
 local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.14" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.16" then
 		message("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -294,6 +294,12 @@ function TSM.OnInitialize()
 	-- load settings
 	local db, upgradeObj = TSM.Settings.New("TradeSkillMasterDB", SETTINGS_INFO)
 	TSM.db = db
+
+	-- configure the logger
+	TSM._logger:SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
+	TSM._logger:SetCurrentThreadNameFunction(TSMAPI_FOUR.Thread.GetCurrentThreadName)
+
+	-- process DB upgrades
 	if upgradeObj then
 		local prevVersion = upgradeObj:GetPrevVersion()
 		if prevVersion < 10 then
@@ -389,10 +395,10 @@ function TSM.OnInitialize()
 		end
 		if prevVersion < 19 then
 			-- migrate inventory data to the sync scope
-			local oldInventoryData = TSMAPI_FOUR.Util.AcquireTempTable()
-			local oldSyncMetadata = TSMAPI_FOUR.Util.AcquireTempTable()
-			local oldAccountKey = TSMAPI_FOUR.Util.AcquireTempTable()
-			local oldCharacters = TSMAPI_FOUR.Util.AcquireTempTable()
+			local oldInventoryData = TSM.TempTable.Acquire()
+			local oldSyncMetadata = TSM.TempTable.Acquire()
+			local oldAccountKey = TSM.TempTable.Acquire()
+			local oldCharacters = TSM.TempTable.Acquire()
 			for key, value in upgradeObj:RemovedSettingIterator() do
 				local scopeType, scopeKey, _, settingKey = upgradeObj:GetKeyInfo(key)
 				if scopeType == "factionrealm" then
@@ -425,16 +431,16 @@ function TSM.OnInitialize()
 					end
 				end
 			end
-			TSMAPI_FOUR.Util.ReleaseTempTable(oldInventoryData)
-			TSMAPI_FOUR.Util.ReleaseTempTable(oldSyncMetadata)
-			TSMAPI_FOUR.Util.ReleaseTempTable(oldAccountKey)
-			TSMAPI_FOUR.Util.ReleaseTempTable(oldCharacters)
+			TSM.TempTable.Release(oldInventoryData)
+			TSM.TempTable.Release(oldSyncMetadata)
+			TSM.TempTable.Release(oldAccountKey)
+			TSM.TempTable.Release(oldCharacters)
 		end
 		if prevVersion < 25 then
 			-- migrate gold log info
 			local NEW_CSV_COLS = { "minute", "copper" }
 			local function ConvertGoldLogFormat(data)
-				local decodedData = select(2, TSMAPI_FOUR.CSV.Decode(data))
+				local decodedData = select(2, TSM.CSV.Decode(data))
 				if not decodedData then
 					return
 				end
@@ -445,7 +451,7 @@ function TSM.OnInitialize()
 					entry.minute = minute
 					entry.copper = copper
 				end
-				return TSMAPI_FOUR.CSV.Encode(NEW_CSV_COLS, decodedData)
+				return TSM.CSV.Encode(NEW_CSV_COLS, decodedData)
 			end
 			local function ProcessGoldLogData(character, data, scopeKey)
 				if type(data) ~= "string" then
@@ -466,7 +472,7 @@ function TSM.OnInitialize()
 					local found = false
 					for factionrealm in TSM.db:FactionrealmByRealmIterator(scopeKey) do
 						local characterGuilds = TSM.db:Get("factionrealm", factionrealm, "internalData", "characterGuilds")
-						if not found and characterGuilds and TSMAPI_FOUR.Util.TableKeyByValue(characterGuilds, character) then
+						if not found and characterGuilds and TSM.Table.KeyByValue(characterGuilds, character) then
 							local guildGoldLog = TSM.db:Get("factionrealm", factionrealm, "internalData", "guildGoldLog") or {}
 							guildGoldLog[character] = ConvertGoldLogFormat(data)
 							TSM.db:Set("factionrealm", factionrealm, "internalData", "guildGoldLog", guildGoldLog)
@@ -531,7 +537,7 @@ function TSM.OnInitialize()
 	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "RequiredLevel", L["Required Level"], TSMAPI_FOUR.Item.GetMinLevel)
 
 	-- Auctioneer price sources
-	if TSMAPI_FOUR.Util.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
+	if TSM.Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
 		if AucAdvanced.Modules.Util.Appraiser and AucAdvanced.Modules.Util.Appraiser.GetPrice then
 			TSM.CustomPrice.RegisterSource("External", "AucAppraiser", L["Auctioneer - Appraiser"], AucAdvanced.Modules.Util.Appraiser.GetPrice, true)
 		end
@@ -547,12 +553,12 @@ function TSM.OnInitialize()
 	end
 
 	-- Auctionator price sources
-	if TSMAPI_FOUR.Util.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout then
+	if TSM.Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout then
 		TSM.CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
 	end
 
 	-- TheUndermineJournal and BootyBayGazette price sources
-	if TSMAPI_FOUR.Util.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
+	if TSM.Wow.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
 		local function GetTUJPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
@@ -561,7 +567,7 @@ function TSM.OnInitialize()
 		TSM.CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
 		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
 		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
-	elseif TSMAPI_FOUR.Util.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
+	elseif TSM.Wow.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
 		local function GetBBGPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
@@ -573,7 +579,7 @@ function TSM.OnInitialize()
 	end
 
 	-- AHDB price sources
-	if TSMAPI_FOUR.Util.IsAddonEnabled("AuctionDB") and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
+	if TSM.Wow.IsAddonEnabled("AuctionDB") and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
 		local function GetAHDBPrice(itemLink, arg)
 			local info = AuctionDB:AHGetAuctionInfoByLink(itemLink)
 			return info and info[arg] or nil
@@ -653,7 +659,7 @@ function TSM.OnEnable()
 	-- disable old TSM modules
 	local didDisable = false
 	for _, name in ipairs(TSM.CONST.OLD_TSM_MODULES) do
-		if TSMAPI_FOUR.Util.IsAddonEnabled(name) then
+		if TSM.Wow.IsAddonEnabled(name) then
 			didDisable = true
 			DisableAddOn(name, true)
 		end
@@ -666,7 +672,7 @@ function TSM.OnEnable()
 			whileDead = true,
 			OnAccept = ReloadUI,
 		}
-		TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_OLD_MODULE_DISABLE")
+		TSM.Wow.ShowStaticPopupDialog("TSM_OLD_MODULE_DISABLE")
 	else
 		TradeSkillMasterModulesDB = nil
 	end
@@ -691,11 +697,11 @@ function TSM.OnDisable()
 end
 
 function TSM.LoadAppData()
-	if not TSMAPI_FOUR.Util.IsAddonInstalled("TradeSkillMaster_AppHelper") then
+	if not TSM.Wow.IsAddonInstalled("TradeSkillMaster_AppHelper") then
 		return
 	end
 
-	if not TSMAPI_FOUR.Util.IsAddonEnabled("TradeSkillMaster_AppHelper") then
+	if not TSM.Wow.IsAddonEnabled("TradeSkillMaster_AppHelper") then
 		-- TSM_AppHelper is disabled
 		StaticPopupDialogs["TSM_APP_DATA_ERROR"] = {
 			text = L["The TradeSkillMaster_AppHelper addon is installed, but not enabled. TSM has enabled it and requires a reload."],
@@ -707,7 +713,7 @@ function TSM.LoadAppData()
 				ReloadUI()
 			end,
 		}
-		TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 		return
 	end
 
@@ -721,7 +727,7 @@ function TSM.LoadAppData()
 			timeout = 0,
 			whileDead = true,
 		}
-		TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 		return
 	end
 
@@ -740,7 +746,7 @@ function TSM.LoadAppData()
 			button1 = OKAY,
 			timeout = 0,
 		}
-		TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_APP_MESSAGE")
+		TSM.Wow.ShowStaticPopupDialog("TSM_APP_MESSAGE")
 	end
 
 	if time() - private.appInfo.lastSync > 60 * 60 then
@@ -751,7 +757,7 @@ function TSM.LoadAppData()
 			timeout = 0,
 			whileDead = true,
 		}
-		TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 	end
 end
 
@@ -860,15 +866,8 @@ function private.SaveAppData()
 	TSM.SaveErrorReports(appDB)
 
 	local function GetShoppingMaxPrice(itemString)
-		local operation = TSM.Operations.GetFirstOperationByItem("Shopping", itemString)
-		if not operation or type(operation.maxPrice) ~= "string" then
-			return
-		end
-		local value = TSMAPI_FOUR.CustomPrice.GetValue(operation.maxPrice, itemString)
-		if not value or value <= 0 then
-			return
-		end
-		return value
+		local value = TSM.Operations.Shopping.GetMaxPrice(itemString)
+		return value and value > 0 and value or nil
 	end
 
 	-- save TSM_Shopping max prices in the app DB
@@ -900,7 +899,7 @@ function private.SaveAppData()
 	local realmName = GetRealmName()
 	appDB.blackMarket = appDB.blackMarket or {}
 	if TSM.Features.blackMarket then
-		local hash = TSMAPI_FOUR.Util.CalculateHash(TSM.Features.blackMarket..":"..TSM.Features.blackMarketTime)
+		local hash = TSM.Math.CalculateHash(TSM.Features.blackMarket..":"..TSM.Features.blackMarketTime)
 		appDB.blackMarket[realmName] = {data=TSM.Features.blackMarket, key=hash, updateTime=TSM.Features.blackMarketTime}
 	end
 
@@ -931,7 +930,7 @@ function TSM:GetChatFrame()
 end
 
 function TSM:GetVersion()
-	return TSMAPI_FOUR.Util.IsDevVersion("TradeSkillMaster") and "Dev" or GetAddOnMetadata("TradeSkillMaster", "Version")
+	return TSM.Wow.IsTSMDevVersion() and "Dev" or GetAddOnMetadata("TradeSkillMaster", "Version")
 end
 
 
@@ -942,9 +941,18 @@ end
 
 function TSM.GetRegion()
 	local cVar = GetCVar("Portal")
-	local region = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and LibRealmInfo:GetCurrentRegion() or (cVar ~= "public-test" and cVar) or "PTR"
+	local region = nil
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		local currentRealmName = gsub(GetRealmName(), "\226", "'")
+		local info = TSM.CONST.CLASSIC_REALM_INFO[currentRealmName]
+		if info then
+			region = info.region
+		else
+			region = (cVar ~= "public-test" and cVar) or "PTR"
+		end
 		region = region.."-Classic"
+	else
+		region = LibRealmInfo:GetCurrentRegion() or (cVar ~= "public-test" and cVar) or "PTR"
 	end
 	return region
 end

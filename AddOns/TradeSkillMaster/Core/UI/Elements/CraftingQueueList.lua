@@ -11,7 +11,7 @@
 -- @classmod CraftingQueueList
 
 local _, TSM = ...
-local CraftingQueueList = TSMAPI_FOUR.Class.DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
+local CraftingQueueList = TSM.Lib.Class.DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
 TSM.UI.CraftingQueueList = CraftingQueueList
 local private = {
 	queryCraftingQueueListLookup = {},
@@ -105,7 +105,7 @@ function CraftingQueueList._UpdateData(self)
 	if not self._query then
 		return
 	end
-	local categories = TSMAPI_FOUR.Util.AcquireTempTable()
+	local categories = TSM.TempTable.Acquire()
 	for _, row in self._query:Iterator() do
 		local rawCategory = strjoin(CATEGORY_SEP, row:GetFields("profession", "players"))
 		local category = strlower(rawCategory)
@@ -123,7 +123,7 @@ function CraftingQueueList._UpdateData(self)
 		private.categoryOrder[category] = i
 		tinsert(self._data, categories[category])
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(categories)
+	TSM.TempTable.Release(categories)
 	sort(self._data, private.DataSortComparator)
 end
 
@@ -263,7 +263,7 @@ function private.RowOnEnter(frame)
 		local numQueued = data:GetField("num")
 		local itemString = TSM.Crafting.GetItemString(spellId)
 		local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
-		local tooltipLines = TSMAPI_FOUR.Util.AcquireTempTable()
+		local tooltipLines = TSM.TempTable.Acquire()
 		tinsert(tooltipLines, name)
 		for _, matItemString, quantity in TSM.Crafting.MatIterator(spellId) do
 			local numHave = TSMAPI_FOUR.Inventory.GetBagQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(matItemString)
@@ -271,7 +271,7 @@ function private.RowOnEnter(frame)
 			local color = numHave >= numNeed and "|cff2cec0d" or "|cfff21319"
 			tinsert(tooltipLines, format("%s%d/%d|r - %s", color, numHave, numNeed, TSMAPI_FOUR.Item.GetName(matItemString) or "?"))
 		end
-		TSM.UI.ShowTooltip(frame, strjoin("\n", TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(tooltipLines)))
+		TSM.UI.ShowTooltip(frame, strjoin("\n", TSM.TempTable.UnpackAndRelease(tooltipLines)))
 	end
 end
 

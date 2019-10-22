@@ -23,8 +23,8 @@ end
 
 function Sync.SendCurrentProfile(targetPlayer)
 	local profileName = TSM.db:GetCurrentProfile()
-	local data = TSMAPI_FOUR.Util.AcquireTempTable()
-	data.groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local data = TSM.TempTable.Acquire()
+	data.groups = TSM.TempTable.Acquire()
 	for groupPath, moduleOperations in pairs(TSM.db:Get("profile", profileName, "userData", "groups")) do
 		data.groups[groupPath] = {}
 		for _, module in TSM.Operations.ModuleIterator() do
@@ -38,13 +38,13 @@ function Sync.SendCurrentProfile(targetPlayer)
 	data.operations = TSM.db:Get("profile", profileName, "userData", "operations")
 	local result, estimatedTime = TSM.Sync.RPC.Call("CREATE_PROFILE", targetPlayer, private.RPCCreateProfileResultHandler, profileName, UnitName("player"), data)
 	if result then
-		estimatedTime = max(TSMAPI_FOUR.Util.Round(estimatedTime, 60), 60)
+		estimatedTime = max(TSM.Math.Round(estimatedTime, 60), 60)
 		TSM:Printf(L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"], profileName, targetPlayer, SecondsToTime(estimatedTime))
 	else
 		TSM:Print(L["Failed to send profile. Ensure both characters are online and try again."])
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(data.groups)
-	TSMAPI_FOUR.Util.ReleaseTempTable(data)
+	TSM.TempTable.Release(data.groups)
+	TSM.TempTable.Release(data)
 end
 
 
@@ -72,7 +72,7 @@ function private.RPCCreateProfile(profileName, playerName, data)
 	-- copy all the data into this profile
 	private.CopyTable(data.groups, TSM.db.profile.userData.groups)
 	private.CopyTable(data.items, TSM.db.profile.userData.items)
-	private.CopyTable(data.operations, TSM.db.profile.userData.operations)
+	TSM.Operations.ReplaceProfileOperations(data.operations)
 
 	-- switch back to our previous profile
 	TSM.db:SetProfile(currentProfile)

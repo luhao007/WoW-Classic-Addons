@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local DatabaseSchema = TSMAPI_FOUR.Class.DefineClass("DatabaseSchema")
+local DatabaseSchema = TSM.Lib.Class.DefineClass("DatabaseSchema")
 TSM.Database.classes.DatabaseSchema = DatabaseSchema
 local private = {}
 local FIELD_TYPE_IS_VALID = {

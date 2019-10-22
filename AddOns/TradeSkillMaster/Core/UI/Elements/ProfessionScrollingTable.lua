@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ProfessionScrollingTable = TSMAPI_FOUR.Class.DefineClass("ProfessionScrollingTable", TSM.UI.ScrollingTable)
+local ProfessionScrollingTable = TSM.Lib.Class.DefineClass("ProfessionScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.ProfessionScrollingTable = ProfessionScrollingTable
 local private = {
 	rowFrameLookup = {},
@@ -198,7 +198,7 @@ function ProfessionScrollingTable._GetTableRow(self, isHeader)
 end
 
 function ProfessionScrollingTable._UpdateData(self)
-	local currentCategoryPath = TSMAPI_FOUR.Util.AcquireTempTable()
+	local currentCategoryPath = TSM.TempTable.Acquire()
 	local foundSelection = false
 	-- populate the ScrollList data
 	wipe(self._data)
@@ -206,7 +206,7 @@ function ProfessionScrollingTable._UpdateData(self)
 	for _, spellId, categoryId in self._query:Iterator() do
 		if categoryId ~= currentCategoryPath[#currentCategoryPath] then
 			-- this is a new category
-			local newCategoryPath = TSMAPI_FOUR.Util.AcquireTempTable()
+			local newCategoryPath = TSM.TempTable.Acquire()
 			local currentCategoryId = categoryId
 			while currentCategoryId do
 				tinsert(newCategoryPath, 1, currentCategoryId)
@@ -221,7 +221,7 @@ function ProfessionScrollingTable._UpdateData(self)
 					end
 				end
 			end
-			TSMAPI_FOUR.Util.ReleaseTempTable(currentCategoryPath)
+			TSM.TempTable.Release(currentCategoryPath)
 			currentCategoryPath = newCategoryPath
 		end
 		foundSelection = foundSelection or spellId == self:GetSelection()
@@ -230,7 +230,7 @@ function ProfessionScrollingTable._UpdateData(self)
 			self._isSpellId[spellId] = true
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(currentCategoryPath)
+	TSM.TempTable.Release(currentCategoryPath)
 	if not foundSelection then
 		self:SetSelection()
 	end

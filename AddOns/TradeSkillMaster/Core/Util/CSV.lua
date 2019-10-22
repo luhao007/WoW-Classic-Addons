@@ -6,23 +6,27 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- CSV TSMAPI_FOUR Functions
+--- CSV Functions
 -- @module CSV
 
-TSMAPI_FOUR.CSV = {}
+local _, TSM = ...
+TSM.CSV = {}
+local CSV = TSM.CSV
 local private = {}
 
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Module Functions
 -- ============================================================================
 
-function TSMAPI_FOUR.CSV.EncodeStart(keys)
-	return { keys = keys, lines = {}, lineParts = {} }
+function CSV.EncodeStart(keys)
+	local context = { keys = keys, lines = {}, lineParts = {} }
+	tinsert(context.lines, table.concat(keys, ","))
+	return context
 end
 
-function TSMAPI_FOUR.CSV.EncodeAddRowData(context, data)
+function CSV.EncodeAddRowData(context, data)
 	wipe(context.lineParts)
 	for _, key in ipairs(context.keys) do
 		tinsert(context.lineParts, data[key] or "")
@@ -30,31 +34,23 @@ function TSMAPI_FOUR.CSV.EncodeAddRowData(context, data)
 	tinsert(context.lines, table.concat(context.lineParts, ","))
 end
 
-function TSMAPI_FOUR.CSV.EncodeAddRowDataRaw(context, ...)
+function CSV.EncodeAddRowDataRaw(context, ...)
 	tinsert(context.lines, strjoin(",", ...))
 end
 
-function TSMAPI_FOUR.CSV.EncodeSortLines(context)
-	return sort(context.lines)
+function CSV.EncodeEnd(context)
+	return table.concat(context.lines, "\n")
 end
 
-function TSMAPI_FOUR.CSV.EncodeEnd(context)
-	local result = table.concat(context.keys, ",")
-	if #context.lines > 0 then
-		result = result.."\n"..table.concat(context.lines, "\n")
-	end
-	return result
-end
-
-function TSMAPI_FOUR.CSV.Encode(keys, data)
-	local context = TSMAPI_FOUR.CSV.EncodeStart(keys)
+function CSV.Encode(keys, data)
+	local context = CSV.EncodeStart(keys)
 	for _, row in ipairs(data) do
-		TSMAPI_FOUR.CSV.EncodeAddRowData(context, row)
+		CSV.EncodeAddRowData(context, row)
 	end
-	return TSMAPI_FOUR.CSV.EncodeEnd(context)
+	return CSV.EncodeEnd(context)
 end
 
-function TSMAPI_FOUR.CSV.Decode(str)
+function CSV.Decode(str)
 	local keys = nil
 	local result = {}
 	local numResult = 0
@@ -77,25 +73,25 @@ function TSMAPI_FOUR.CSV.Decode(str)
 	return keys, result
 end
 
-function TSMAPI_FOUR.CSV.DecodeStart(str, fields)
+function CSV.DecodeStart(str, fields)
 	local func = gmatch(str, strrep("([^\n,]+),", #fields - 1).."([^\n,]+)(,?[^\n,]*)")
 	if strjoin(",", func()) ~= table.concat(fields, ",").."," then
 		return
 	end
-	local context = TSMAPI_FOUR.Util.AcquireTempTable()
+	local context = TSM.TempTable.Acquire()
 	context.func = func
 	context.extraArgPos = #fields + 1
 	context.result = true
 	return context
 end
 
-function TSMAPI_FOUR.CSV.DecodeIterator(context)
+function CSV.DecodeIterator(context)
 	return private.DecodeIteratorHelper, context
 end
 
-function TSMAPI_FOUR.CSV.DecodeEnd(context)
+function CSV.DecodeEnd(context)
 	local result = context.result
-	TSMAPI_FOUR.Util.ReleaseTempTable(context)
+	TSM.TempTable.Release(context)
 	return result
 end
 

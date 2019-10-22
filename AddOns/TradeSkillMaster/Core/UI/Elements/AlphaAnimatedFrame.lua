@@ -11,7 +11,7 @@
 -- @classmod AlphaAnimatedFrame
 
 local _, TSM = ...
-local AlphaAnimatedFrame = TSMAPI_FOUR.Class.DefineClass("AlphaAnimatedFrame", TSM.UI.Frame)
+local AlphaAnimatedFrame = TSM.Lib.Class.DefineClass("AlphaAnimatedFrame", TSM.UI.Frame)
 TSM.UI.AlphaAnimatedFrame = AlphaAnimatedFrame
 
 

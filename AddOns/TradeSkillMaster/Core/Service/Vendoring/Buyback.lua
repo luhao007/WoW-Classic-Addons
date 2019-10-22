@@ -25,9 +25,9 @@ function Buyback.OnInitialize()
 		:AddNumberField("price")
 		:AddNumberField("quantity")
 		:Commit()
-	TSMAPI_FOUR.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
-	TSMAPI_FOUR.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
-	TSMAPI_FOUR.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
+	TSM.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
+	TSM.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
+	TSM.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 end
 
 function Buyback.CreateQuery()

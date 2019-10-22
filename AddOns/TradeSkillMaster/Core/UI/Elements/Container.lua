@@ -11,7 +11,7 @@
 -- @classmod Container
 
 local _, TSM = ...
-local Container = TSMAPI_FOUR.Class.DefineClass("Container", TSM.UI.Element, "ABSTRACT")
+local Container = TSM.Lib.Class.DefineClass("Container", TSM.UI.Element, "ABSTRACT")
 TSM.UI.Container = Container
 local private = {}
 
@@ -90,9 +90,9 @@ end
 function Container.RemoveChild(self, child)
 	assert(child:__isa(TSM.UI.Element) and child:_GetBaseFrame():GetParent())
 	child:_GetBaseFrame():SetParent(nil)
-	TSMAPI_FOUR.Util.TableRemoveByValue(self._children, child)
-	TSMAPI_FOUR.Util.TableRemoveByValue(self._layoutChildren, child)
-	TSMAPI_FOUR.Util.TableRemoveByValue(self._noLayoutChildren, child)
+	TSM.Table.RemoveByValue(self._children, child)
+	TSM.Table.RemoveByValue(self._layoutChildren, child)
+	TSM.Table.RemoveByValue(self._noLayoutChildren, child)
 	child:_SetParentElement(nil)
 end
 
@@ -111,13 +111,13 @@ end
 -- @tparam Container self The container object
 -- @return An iterator with the following fields: `index, child`
 function Container.LayoutChildrenIterator(self)
-	local children = TSMAPI_FOUR.Util.AcquireTempTable()
+	local children = TSM.TempTable.Acquire()
 	for _, child in ipairs(self._layoutChildren) do
 		if child:IsVisible() then
 			tinsert(children, child)
 		end
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(children)
+	return TSM.TempTable.Iterator(children)
 end
 
 function Container.Draw(self)

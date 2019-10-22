@@ -78,7 +78,7 @@ function private.InsertHit(hitType, ...)
 	TSM:LOG_INFO("%s %s", hitType, strjoin(" ", tostringall(...)))
 	hitType = private.AddQuotes(hitType)
 	local version = private.AddQuotes(TSM:GetVersion() or "???")
-	local timeMs = TSMAPI_FOUR.Util.GetTimeMilliseconds()
+	local timeMs = TSM.Debug.GetTimeMilliseconds()
 	local jsonStr = strjoin(",", hitType, version, timeMs, private.session, private.sequenceNumber, unpack(private.argsTemp))
 	tinsert(private.events, "["..jsonStr.."]")
 	private.sequenceNumber = private.sequenceNumber + 1

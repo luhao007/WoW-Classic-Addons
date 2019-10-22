@@ -295,7 +295,7 @@ function Transactions.GetAverageSalePrice(itemString)
 	if not totalPrice then
 		return
 	end
-	return TSMAPI_FOUR.Util.Round(totalPrice / totalNum), totalNum
+	return TSM.Math.Round(totalPrice / totalNum), totalNum
 end
 
 function Transactions.GetAverageBuyPrice(itemString)
@@ -303,7 +303,7 @@ function Transactions.GetAverageBuyPrice(itemString)
 	if not totalPrice then
 		return
 	end
-	return TSMAPI_FOUR.Util.Round(totalPrice / totalNum), totalNum
+	return TSM.Math.Round(totalPrice / totalNum), totalNum
 end
 
 function Transactions.GetLastSaleTime(itemString)
@@ -406,10 +406,10 @@ function Transactions.CreateSummaryQuery()
 end
 
 function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter, timeFrameFilter)
-	local totalSold = TSMAPI_FOUR.Util.AcquireTempTable()
-	local totalSellPrice = TSMAPI_FOUR.Util.AcquireTempTable()
-	local totalBought = TSMAPI_FOUR.Util.AcquireTempTable()
-	local totalBoughtPrice = TSMAPI_FOUR.Util.AcquireTempTable()
+	local totalSold = TSM.TempTable.Acquire()
+	local totalSellPrice = TSM.TempTable.Acquire()
+	local totalBought = TSM.TempTable.Acquire()
+	local totalBoughtPrice = TSM.TempTable.Acquire()
 
 	local items = private.db:NewQuery()
 		:Select("itemString", "price", "quantity", "type")
@@ -458,10 +458,10 @@ function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter
 	end
 	private.dbSummary:BulkInsertEnd()
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalSold)
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalSellPrice)
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalBought)
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalBoughtPrice)
+	TSM.TempTable.Release(totalSold)
+	TSM.TempTable.Release(totalSellPrice)
+	TSM.TempTable.Release(totalBought)
+	TSM.TempTable.Release(totalBoughtPrice)
 end
 
 function Transactions.GetCharacters(characters)
@@ -483,9 +483,9 @@ end
 -- ============================================================================
 
 function private.LoadData(recordType, csvRecords, csvSaveTimes)
-	local saveTimes = TSMAPI_FOUR.Util.SafeStrSplit(csvSaveTimes, ",")
+	local saveTimes = TSM.String.SafeSplit(csvSaveTimes, ",")
 
-	local decodeContext = TSMAPI_FOUR.CSV.DecodeStart(csvRecords, OLD_CSV_KEYS[recordType]) or TSMAPI_FOUR.CSV.DecodeStart(csvRecords, CSV_KEYS)
+	local decodeContext = TSM.CSV.DecodeStart(csvRecords, OLD_CSV_KEYS[recordType]) or TSM.CSV.DecodeStart(csvRecords, CSV_KEYS)
 	if not decodeContext then
 		TSM:LOG_ERR("Failed to decode %s records", recordType)
 		private.dataChanged = true
@@ -493,7 +493,7 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 	end
 
 	local saveTimeIndex = 1
-	for itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source in TSMAPI_FOUR.CSV.DecodeIterator(decodeContext) do
+	for itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source in TSM.CSV.DecodeIterator(decodeContext) do
 		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)
 		local saveTime = 0
@@ -518,7 +518,7 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		end
 	end
 
-	if not TSMAPI_FOUR.CSV.DecodeEnd(decodeContext) then
+	if not TSM.CSV.DecodeEnd(decodeContext) then
 		TSM:LOG_ERR("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
@@ -536,7 +536,7 @@ function private.SaveData(recordType)
 		local saveTimes = {}
 		local shouldTrim = query:Count() > MAX_CSV_RECORDS
 		local lastTime = nil
-		local encodeContext = TSMAPI_FOUR.CSV.EncodeStart(CSV_KEYS)
+		local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
 		for _, row in query:Iterator() do
 			if not shouldTrim or count <= TRIMMED_CSV_RECORDS then
 				-- add the save time
@@ -550,15 +550,15 @@ function private.SaveData(recordType)
 					lastTime = row:GetField("time")
 				end
 				-- add to our list of CSV lines
-				TSMAPI_FOUR.CSV.EncodeAddRowData(encodeContext, row)
+				TSM.CSV.EncodeAddRowData(encodeContext, row)
 			end
 			count = count + 1
 		end
 		query:Release()
-		return TSMAPI_FOUR.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), lastTime
+		return TSM.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), lastTime
 	else
 		local saveTimes = {}
-		local encodeContext = TSMAPI_FOUR.CSV.EncodeStart(CSV_KEYS)
+		local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
 		for _, _, rowRecordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime in private.db:RawIterator() do
 			if rowRecordType == recordType then
 				-- add the save time
@@ -566,10 +566,10 @@ function private.SaveData(recordType)
 					tinsert(saveTimes, saveTime ~= 0 and saveTime or time())
 				end
 				-- add to our list of CSV lines
-				TSMAPI_FOUR.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source)
+				TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source)
 			end
 		end
-		return TSMAPI_FOUR.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), nil
+		return TSM.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), nil
 	end
 end
 

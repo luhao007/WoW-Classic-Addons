@@ -7,8 +7,10 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Mail = TSM.Accounting:NewPackage("Mail", "AceHook-3.0")
-local private = {}
+local Mail = TSM.Accounting:NewPackage("Mail")
+local private = {
+	hooks = {},
+}
 local SECONDS_PER_DAY = 24 * 60 * 60
 local EXPIRED_MATCH_TEXT = AUCTION_EXPIRED_MAIL_SUBJECT:gsub("%%s", "")
 local CANCELLED_MATCH_TEXT = AUCTION_REMOVED_MAIL_SUBJECT:gsub("%%s", "")
@@ -21,12 +23,23 @@ local OUTBID_MATCH_TEXT = AUCTION_OUTBID_MAIL_SUBJECT:gsub("%%s", "(.+)")
 -- ============================================================================
 
 function Mail.OnInitialize()
-	TSMAPI_FOUR.Event.Register("MAIL_SHOW", function() TSMAPI_FOUR.Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1) end)
-	TSMAPI_FOUR.Event.Register("MAIL_CLOSED", function() TSMAPI_FOUR.Delay.Cancel("ACCOUNTING_GET_SELLERS") end)
-	Mail:RawHook("TakeInboxItem", function(...) Mail:ScanCollectedMail("TakeInboxItem", 1, ...) end, true)
-	Mail:RawHook("TakeInboxMoney", function(...) Mail:ScanCollectedMail("TakeInboxMoney", 1, ...) end, true)
-	Mail:RawHook("AutoLootMailItem", function(...) Mail:ScanCollectedMail("AutoLootMailItem", 1, ...) end, true)
-	Mail:RawHook("SendMail", private.CheckSendMail, true)
+	TSM.Event.Register("MAIL_SHOW", function() TSMAPI_FOUR.Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1) end)
+	TSM.Event.Register("MAIL_CLOSED", function() TSMAPI_FOUR.Delay.Cancel("ACCOUNTING_GET_SELLERS") end)
+	-- hook certain mail functions
+	private.hooks.TakeInboxItem = TakeInboxItem
+	TakeInboxItem = function(...)
+		Mail:ScanCollectedMail("TakeInboxItem", 1, ...)
+	end
+	private.hooks.TakeInboxMoney = TakeInboxMoney
+	TakeInboxMoney = function(...)
+		Mail:ScanCollectedMail("TakeInboxMoney", 1, ...)
+	end
+	private.hooks.AutoLootMailItem = AutoLootMailItem
+	AutoLootMailItem = function(...)
+		Mail:ScanCollectedMail("AutoLootMailItem", 1, ...)
+	end
+	private.hooks.SendMail = SendMail
+	SendMail = private.CheckSendMail
 end
 
 
@@ -205,9 +218,9 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	elseif money > 0 and invoiceType ~= "seller" and not strfind(subject, OUTBID_MATCH_TEXT) then
 		local str = nil
 		if GetLocale() == "deDE" then
-			str = gsub(subject, gsub(COD_PAYMENT, TSMAPI_FOUR.Util.StrEscape("%1$s"), ""), "")
+			str = gsub(subject, gsub(COD_PAYMENT, TSM.String.Escape("%1$s"), ""), "")
 		else
-			str = gsub(subject, gsub(COD_PAYMENT, TSMAPI_FOUR.Util.StrEscape("%s"), ""), "")
+			str = gsub(subject, gsub(COD_PAYMENT, TSM.String.Escape("%s"), ""), "")
 		end
 		local saleTime = (time() + (daysLeft - 31) * SECONDS_PER_DAY)
 		if sender and private:CanLootMailIndex(index, money) then
@@ -258,13 +271,13 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	end
 
 	if success then
-		Mail.hooks[oFunc](index, subIndex)
+		private.hooks[oFunc](index, subIndex)
 	elseif (not stationeryIcon or (invoiceType and (not buyer or buyer == ""))) and attempt <= 5 then
 		TSMAPI_FOUR.Delay.AfterTime("accountingHookDelay", 0.2, function() Mail:ScanCollectedMail(oFunc, attempt + 1, index, subIndex) end)
 	elseif attempt > 5 then
-		Mail.hooks[oFunc](index, subIndex)
+		private.hooks[oFunc](index, subIndex)
 	else
-		Mail.hooks[oFunc](index, subIndex)
+		private.hooks[oFunc](index, subIndex)
 	end
 end
 
@@ -310,9 +323,9 @@ function private.CheckSendMail(destination, currentSubject, ...)
 	TSM.Accounting.Money.InsertPostageExpense(mailCost, destination)
 
 	if not ignore then
-		Mail.hooks.SendMail(destination, subject .. " (" .. total .. ") TSM", ...)
+		private.hooks.SendMail(destination, subject .. " (" .. total .. ") TSM", ...)
 	else
-		Mail.hooks.SendMail(destination, currentSubject, ...)
+		private.hooks.SendMail(destination, currentSubject, ...)
 	end
 end
 

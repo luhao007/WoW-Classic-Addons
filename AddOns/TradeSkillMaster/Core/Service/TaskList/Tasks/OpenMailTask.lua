@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local OpenMailTask = TSMAPI_FOUR.Class.DefineClass("OpenMailTask", TSM.TaskList.ItemTask)
+local OpenMailTask = TSM.Lib.Class.DefineClass("OpenMailTask", TSM.TaskList.ItemTask)
 local L = TSM.L
 TSM.TaskList.OpenMailTask = OpenMailTask
 

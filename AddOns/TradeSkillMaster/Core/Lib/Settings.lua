@@ -120,7 +120,7 @@ function private.Constructor(name, rawSettingsInfo)
 
 	-- flatten and validate rawSettingsInfo and generate hash data
 	local settingsInfo = CopyTable(rawSettingsInfo)
-	local hashDataParts = TSMAPI_FOUR.Util.AcquireTempTable()
+	local hashDataParts = TSM.TempTable.Acquire()
 	for scope, scopeSettingsInfo in pairs(rawSettingsInfo) do
 		if scope ~= "version" then
 			assert(SCOPE_TYPES[scope], "Invalid scope: "..tostring(scope))
@@ -154,8 +154,8 @@ function private.Constructor(name, rawSettingsInfo)
 		end
 	end
 	sort(hashDataParts)
-	local hash = TSMAPI_FOUR.Util.CalculateHash(table.concat(hashDataParts, ";"))
-	TSMAPI_FOUR.Util.ReleaseTempTable(hashDataParts)
+	local hash = TSM.Math.CalculateHash(table.concat(hashDataParts, ";"))
+	TSM.TempTable.Release(hashDataParts)
 
 	-- reset the DB if it's not valid
 	local isValid = true
@@ -164,20 +164,20 @@ function private.Constructor(name, rawSettingsInfo)
 		isValid = false
 	elseif not private.ValidateDB(db) then
 		-- corrupted DB
-		assert(not TSMAPI_FOUR.Util.IsDevVersion("TradeSkillMaster"), "DB is not valid!")
+		assert(not TSM.Wow.IsTSMDevVersion(), "DB is not valid!")
 		isValid = false
 	elseif db._version == version and db._hash ~= hash then
 		-- the hash didn't match
-		assert(not TSMAPI_FOUR.Util.IsDevVersion("TradeSkillMaster"), "Invalid settings hash! Did you forget to increase the version?")
+		assert(not TSM.Wow.IsTSMDevVersion(), "Invalid settings hash! Did you forget to increase the version?")
 		isValid = false
 	elseif db._version > version then
 		-- this is a downgrade
-		assert(not TSMAPI_FOUR.Util.IsDevVersion("TradeSkillMaster"), "Unexpected DB version! If you really want to downgrade, comment out this line (remember to uncomment before committing).")
+		assert(not TSM.Wow.IsTSMDevVersion(), "Unexpected DB version! If you really want to downgrade, comment out this line (remember to uncomment before committing).")
 		isValid = false
 	elseif db._syncOwner and db._syncOwner[SCOPE_KEYS.sync] and db._syncOwner[SCOPE_KEYS.sync] ~= db._syncAccountKey[SCOPE_KEYS.factionrealm] then
 		-- we aren't the owner of this character, so wipe the DB and show a manual error
 		TSM.Sync.ShowSVCopyError()
-		assert(not TSMAPI_FOUR.Util.IsDevVersion("TradeSkillMaster"), "Settings are corrupted due to manual copying of saved variables file")
+		assert(not TSM.Wow.IsTSMDevVersion(), "Settings are corrupted due to manual copying of saved variables file")
 		isValid = false
 	end
 	if not isValid then
@@ -196,7 +196,6 @@ function private.Constructor(name, rawSettingsInfo)
 		db._scopeKeys.sync = {}
 	end
 
-
 	-- make sure we have sync acocunt keys for every factionrealm
 	for _, factionrealm in ipairs(db._scopeKeys.factionrealm) do
 		db._syncAccountKey[factionrealm] = db._syncAccountKey[factionrealm] or strjoin(SCOPE_KEY_SEP, factionrealm, random(time()))
@@ -213,7 +212,7 @@ function private.Constructor(name, rawSettingsInfo)
 	for scopeType, scopeKey in pairs(currentScopeKeys) do
 		if scopeType ~= "global" and not tContains(db._scopeKeys[scopeType], scopeKey) then
 			tinsert(db._scopeKeys[scopeType], scopeKey)
-			private.SetScopeDefaults(db, settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES[scopeType], TSMAPI_FOUR.Util.StrEscape(scopeKey), ".+", ".+"))
+			private.SetScopeDefaults(db, settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES[scopeType], TSM.String.Escape(scopeKey), ".+", ".+"))
 		end
 	end
 
@@ -310,12 +309,12 @@ private.SettingsDBUpgradeObjMT = {
 
 		GetKeyInfo = function(self, key)
 			local scopeType, scopeKey, namespace, settingKey = nil, nil, nil, nil
-			local parts = TSMAPI_FOUR.Util.AcquireTempTable(strsplit(KEY_SEP, key))
+			local parts = TSM.TempTable.Acquire(strsplit(KEY_SEP, key))
 			if #parts == 4 then
-				scopeType, scopeKey, namespace, settingKey = TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(parts)
+				scopeType, scopeKey, namespace, settingKey = TSM.TempTable.UnpackAndRelease(parts)
 				scopeType = private.ScopeReverseLookup(scopeType)
 			elseif #parts == 3 then
-				scopeType, scopeKey, settingKey = TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(parts)
+				scopeType, scopeKey, settingKey = TSM.TempTable.UnpackAndRelease(parts)
 				scopeType = private.ScopeReverseLookup(scopeType)
 			else
 				error("Unknown key: "..tostring(key))
@@ -409,7 +408,7 @@ private.SettingsDBMethods = {
 		if not tContains(context.db._scopeKeys.profile, profileName) then
 			tinsert(context.db._scopeKeys.profile, profileName)
 			-- this is a new profile, so set all the settings to their default values
-			private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.profile, TSMAPI_FOUR.Util.StrEscape(profileName), ".+", ".+"))
+			private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.profile, TSM.String.Escape(profileName), ".+", ".+"))
 			isNew = true
 		end
 
@@ -420,7 +419,7 @@ private.SettingsDBMethods = {
 
 	ResetProfile = function(self)
 		local context = private.context[self]
-		private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.profile, TSMAPI_FOUR.Util.StrEscape(context.currentScopeKeys.profile), ".+", ".+"))
+		private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.profile, TSM.String.Escape(context.currentScopeKeys.profile), ".+", ".+"))
 		if context.callbacks.OnProfileUpdated then
 			context.callbacks.OnProfileUpdated(true)
 		end
@@ -453,7 +452,7 @@ private.SettingsDBMethods = {
 		assert(scopeKey ~= context.currentScopeKeys[scopeType])
 
 		-- remove all settings for the specified profile
-		local searchPattern = strjoin(KEY_SEP, SCOPE_TYPES[scopeType], TSMAPI_FOUR.Util.StrEscape(scopeKey), ".+", ".+")
+		local searchPattern = strjoin(KEY_SEP, SCOPE_TYPES[scopeType], TSM.String.Escape(scopeKey), ".+", ".+")
 		for key in pairs(context.db) do
 			if strmatch(key, searchPattern) then
 				private.SetDBKeyValue(context.db, key, nil)
@@ -461,7 +460,7 @@ private.SettingsDBMethods = {
 		end
 
 		-- remove the scope key from the list
-		TSMAPI_FOUR.Util.TableRemoveByValue(context.db._scopeKeys[scopeType], scopeKey)
+		TSM.Table.RemoveByValue(context.db._scopeKeys[scopeType], scopeKey)
 	end,
 
 	DeleteProfile = function(self, profileName)
@@ -479,34 +478,34 @@ private.SettingsDBMethods = {
 	end,
 
 	SyncAccountIterator = function(self)
-		local result = TSMAPI_FOUR.Util.AcquireTempTable()
-		local used = TSMAPI_FOUR.Util.AcquireTempTable()
+		local result = TSM.TempTable.Acquire()
+		local used = TSM.TempTable.Acquire()
 		for _, syncOwner in pairs(private.context[self].db._syncOwner) do
-			if strmatch(syncOwner, "^"..TSMAPI_FOUR.Util.StrEscape(SCOPE_KEYS.factionrealm..SCOPE_KEY_SEP).."(%d+)$") and not used[syncOwner] and syncOwner ~= self:GetSyncAccountKey() then
+			if strmatch(syncOwner, "^"..TSM.String.Escape(SCOPE_KEYS.factionrealm..SCOPE_KEY_SEP).."(%d+)$") and not used[syncOwner] and syncOwner ~= self:GetSyncAccountKey() then
 				used[syncOwner] = true
 				tinsert(result, syncOwner)
 			end
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(used)
-		return TSMAPI_FOUR.Util.TempTableIterator(result)
+		TSM.TempTable.Release(used)
+		return TSM.TempTable.Iterator(result)
 	end,
 
 	NewSyncCharacter = function(self, character, accountKey, factionrealm)
 		factionrealm = factionrealm or SCOPE_KEYS.factionrealm
-		assert(strmatch(accountKey, "^"..TSMAPI_FOUR.Util.StrEscape(factionrealm..SCOPE_KEY_SEP).."(%d+)$"), "Invalid account key")
+		assert(strmatch(accountKey, "^"..TSM.String.Escape(factionrealm..SCOPE_KEY_SEP).."(%d+)$"), "Invalid account key")
 		local scopeKey = self:GetSyncScopeKeyByCharacter(character, factionrealm)
 		local context = private.context[self]
 		context.db._syncOwner[scopeKey] = accountKey
 		if not tContains(context.db._scopeKeys.sync, scopeKey) then
 			tinsert(context.db._scopeKeys.sync, scopeKey)
 		end
-		private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.sync, TSMAPI_FOUR.Util.StrEscape(scopeKey), ".+", ".+"))
+		private.SetScopeDefaults(context.db, context.settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES.sync, TSM.String.Escape(scopeKey), ".+", ".+"))
 	end,
 
 	RemoveSyncAccount = function(self, accountKey)
 		local settingsDB = private.context[self].db
 		assert(accountKey ~= self:GetSyncAccountKey())
-		local scopeKeysToRemove = TSMAPI_FOUR.Util.AcquireTempTable()
+		local scopeKeysToRemove = TSM.TempTable.Acquire()
 		for scopeKey, ownerAccountKey in pairs(settingsDB._syncOwner) do
 			if ownerAccountKey == accountKey then
 				tinsert(scopeKeysToRemove, scopeKey)
@@ -516,7 +515,7 @@ private.SettingsDBMethods = {
 			self:DeleteScope("sync", scopeKey)
 			settingsDB._syncOwner[scopeKey] = nil
 		end
-		TSMAPI_FOUR.Util.ReleaseTempTable(scopeKeysToRemove)
+		TSM.TempTable.Release(scopeKeysToRemove)
 	end,
 
 	RemoveSyncCharacter = function(self, character)
@@ -532,34 +531,34 @@ private.SettingsDBMethods = {
 
 	FactionrealmCharacterIterator = function(self, factionrealm)
 		factionrealm = factionrealm or SCOPE_KEYS.factionrealm
-		local result = TSMAPI_FOUR.Util.AcquireTempTable()
+		local result = TSM.TempTable.Acquire()
 		for scopeKey in pairs(private.context[self].db._syncOwner) do
-			local character = strmatch(scopeKey, "^(.+)"..TSMAPI_FOUR.Util.StrEscape(SCOPE_KEY_SEP..factionrealm))
+			local character = strmatch(scopeKey, "^(.+)"..TSM.String.Escape(SCOPE_KEY_SEP..factionrealm))
 			if character then
 				tinsert(result, character)
 			end
 		end
-		return TSMAPI_FOUR.Util.TempTableIterator(result)
+		return TSM.TempTable.Iterator(result)
 	end,
 
 	FactionrealmCharacterByAccountIterator = function(self, account, factionrealm)
 		factionrealm = factionrealm or SCOPE_KEYS.factionrealm
 		account = account or self:GetSyncAccountKey(factionrealm)
-		local result = TSMAPI_FOUR.Util.AcquireTempTable()
+		local result = TSM.TempTable.Acquire()
 		for scopeKey, ownerAccount in pairs(private.context[self].db._syncOwner) do
 			if ownerAccount == account then
-				local character = strmatch(scopeKey, "^(.+)"..TSMAPI_FOUR.Util.StrEscape(SCOPE_KEY_SEP..factionrealm))
+				local character = strmatch(scopeKey, "^(.+)"..TSM.String.Escape(SCOPE_KEY_SEP..factionrealm))
 				if character then
 					tinsert(result, character)
 				end
 			end
 		end
-		return TSMAPI_FOUR.Util.TempTableIterator(result)
+		return TSM.TempTable.Iterator(result)
 	end,
 
 	SyncSettingSortedIterator = function(self)
 		local syncSettingsInfo = private.context[self].settingsInfo.sync
-		local result = TSMAPI_FOUR.Util.AcquireTempTable()
+		local result = TSM.TempTable.Acquire()
 		for namespace, settings in pairs(syncSettingsInfo) do
 			for settingKey in pairs(settings) do
 				tinsert(result, namespace..KEY_SEP..settingKey)
@@ -750,7 +749,7 @@ function private.ConnectedRealmIterator(self, prevScopeKey)
 		scope = prevScopeKey
 		prevScopeKey = nil
 	else
-		scope = strmatch(prevScopeKey, TSMAPI_FOUR.Util.StrEscape(FACTION.." - ")) and "factionrealm" or "realm"
+		scope = strmatch(prevScopeKey, TSM.String.Escape(FACTION.." - ")) and "factionrealm" or "realm"
 	end
 	local foundPrev = prevScopeKey == nil
 	local index = 0
@@ -770,7 +769,7 @@ end
 function private.SyncSettingIteratorHelper(tbl, index)
 	index = index + 1
 	if index > #tbl then
-		TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+		TSM.TempTable.Release(tbl)
 		return
 	end
 	return index, strsplit(KEY_SEP, tbl[index])

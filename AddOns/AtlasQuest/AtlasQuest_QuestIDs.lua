@@ -653,38 +653,38 @@ Inst7Quest5_HORDE_Attain = "33"
 --------------- INST8 - SM: Armory ---------------
 
 Inst8Quest1_QuestID = "1053"
-Inst8Quest1_Level = "40"
-Inst8Quest1_Attain = "34"
-Inst8Quest1PreQuest = "true"
+Inst8Quest1_Level = Inst7Quest3_Level
+Inst8Quest1_Attain = Inst7Quest3_Attain
+Inst8Quest1PreQuest = Inst7Quest3PreQuest
 
 
 Inst8Quest1_HORDE_QuestID = "1113"
-Inst8Quest1_HORDE_Level = "33"
-Inst8Quest1_HORDE_Attain = "30"
-Inst8Quest1PreQuest_HORDE = "true"
+Inst8Quest1_HORDE_Level = Inst7Quest1_HORDE_Level
+Inst8Quest1_HORDE_Attain = Inst7Quest1_HORDE_Attain
+Inst8Quest1PreQuest_HORDE = Inst7Quest1Prequest_HORDE
 
 Inst8Quest2_HORDE_QuestID = "1048"
-Inst8Quest2_HORDE_Level = "42"
-Inst8Quest2_HORDE_Attain = "33"
+Inst8Quest2_HORDE_Level = Inst7Quest5_HORDE_Level
+Inst8Quest2_HORDE_Attain = Inst7Quest5_HORDE_Attain
 
 
 
 --------------- INST9 - SM: Cathedral ---------------
 
 Inst9Quest1_QuestID = "1053"
-Inst9Quest1_Level = "40"
-Inst9Quest1_Attain = "34"
-Inst9Quest1PreQuest = "true"
+Inst9Quest1_Level = Inst7Quest3_Level
+Inst9Quest1_Attain = Inst7Quest3_Attain
+Inst9Quest1PreQuest = Inst7Quest3PreQuest
 
 
 Inst9Quest1_HORDE_QuestID = "1113"
-Inst9Quest1_HORDE_Level = "33"
-Inst9Quest1_HORDE_Attain = "30"
-Inst9Quest1PreQuest_HORDE = "true"
+Inst9Quest1_HORDE_Level = Inst7Quest1_HORDE_Level
+Inst9Quest1_HORDE_Attain = Inst7Quest1_HORDE_Attain
+Inst9Quest1PreQuest_HORDE = Inst7Quest1Prequest_HORDE
 
 Inst9Quest2_HORDE_QuestID = "1048"
-Inst9Quest2_HORDE_Level = "42"
-Inst9Quest2_HORDE_Attain = "33"
+Inst9Quest2_HORDE_Level = Inst7Quest5_HORDE_Level
+Inst9Quest2_HORDE_Attain = Inst7Quest5_HORDE_Attain
 
 
 
@@ -695,9 +695,9 @@ Inst10Quest1_HORDE_Level = "33"
 Inst10Quest1_HORDE_Attain = "25"
 
 Inst10Quest2_HORDE_QuestID = "1113"
-Inst10Quest2_HORDE_Level = "33"
-Inst10Quest2_HORDE_Attain = "30"
-Inst10Quest2PreQuest_HORDE = "true"
+Inst10Quest2_HORDE_Level = Inst7Quest1_HORDE_Level
+Inst10Quest2_HORDE_Attain = Inst7Quest1_HORDE_Attain
+Inst10Quest2PreQuest_HORDE = Inst7Quest1Prequest_HORDE
 
 
 
@@ -754,6 +754,11 @@ Inst11Quest11_QuestID = "8992"
 Inst11Quest11_Level = "60"
 Inst11Quest11_Attain = "58"
 Inst11Quest11PreQuest = "true"
+
+Inst11Quest12_QuestID = "7647"
+Inst11Quest12_Level = "60"
+Inst11Quest12_Attain = "60"
+Inst11Quest12PreQuest = "true"
 
 
 Inst11Quest1_HORDE_QuestID = "5529"

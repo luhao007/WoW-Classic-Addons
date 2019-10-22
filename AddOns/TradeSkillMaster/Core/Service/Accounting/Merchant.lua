@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Merchant = TSM.Accounting:NewPackage("Merchant", "AceHook-3.0")
+local Merchant = TSM.Accounting:NewPackage("Merchant")
 local private = {
 	repairMoney = 0,
 	couldRepair = nil,
@@ -28,13 +28,14 @@ local private = {
 -- ============================================================================
 
 function Merchant.OnInitialize()
-	TSMAPI_FOUR.Event.Register("MERCHANT_SHOW", private.SetupRepairCost)
-	TSMAPI_FOUR.Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
-	TSMAPI_FOUR.Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
-	TSMAPI_FOUR.Event.Register("MERCHANT_CLOSED", private.OnMerchantClosed)
-	Merchant:SecureHook("UseContainerItem", private.CheckMerchantSale)
-	Merchant:SecureHook("BuyMerchantItem", private.OnMerchantBuy)
-	Merchant:SecureHook("BuybackItem", private.OnMerchantBuyback)
+	TSM.Event.Register("MERCHANT_SHOW", private.SetupRepairCost)
+	TSM.Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
+	TSM.Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
+	TSM.Event.Register("MERCHANT_CLOSED", private.OnMerchantClosed)
+	hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	hooksecurefunc("BuyMerchantItem", private.OnMerchantBuy)
+	hooksecurefunc("BuybackItem", private.OnMerchantBuyback)
 end
 
 
@@ -119,7 +120,7 @@ function private.OnMerchantBuy(index, quantity)
 		return
 	end
 	quantity = quantity or batchQuantity
-	local copper = TSMAPI_FOUR.Util.Round(price / batchQuantity)
+	local copper = TSM.Math.Round(price / batchQuantity)
 	TSM.Accounting.Transactions.InsertVendorBuy(itemString, quantity, copper)
 end
 
@@ -129,6 +130,6 @@ function private.OnMerchantBuyback(index)
 	if not itemString or not price or price <= 0 then
 		return
 	end
-	local copper = TSMAPI_FOUR.Util.Round(price / quantity)
+	local copper = TSM.Math.Round(price / quantity)
 	TSM.Accounting.Transactions.InsertVendorBuy(itemString, quantity, copper)
 end

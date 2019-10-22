@@ -12,7 +12,7 @@
 -- @classmod ActionButton
 
 local _, TSM = ...
-local ActionButton = TSMAPI_FOUR.Class.DefineClass("ActionButton", TSM.UI.Element)
+local ActionButton = TSM.Lib.Class.DefineClass("ActionButton", TSM.UI.Element)
 TSM.UI.ActionButton = ActionButton
 local private = { frameButtonLookup = {} }
 local ICON_PADDING = 2
@@ -159,7 +159,7 @@ function ActionButton.Draw(self)
 	self:_ApplyTextStyle(frame.text)
 	frame.text:SetText(self._textStr)
 
-	local height = TSMAPI_FOUR.Util.Round(self:_GetDimension("HEIGHT"))
+	local height = TSM.Math.Round(self:_GetDimension("HEIGHT"))
 	local size = nil
 	if height == 15 or height == 16 then
 		size = "Small"

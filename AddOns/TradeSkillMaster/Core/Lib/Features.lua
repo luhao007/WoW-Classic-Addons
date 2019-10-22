@@ -10,7 +10,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local Features = TSM:NewPackage("Features", "AceHook-3.0")
+local Features = TSM:NewPackage("Features")
 Features.blackMarket = nil
 Features.blackMarketTime = nil
 local private = {
@@ -42,14 +42,30 @@ function Features.OnEnable()
 		private.isLoaded.auctionSale = true
 	end
 	if TSM.db.global.coreOptions.auctionBuyEnabled then
-		Features:Hook("PlaceAuctionBid", private.OnAuctionBidPlaced, true)
+		if select(4, GetBuildInfo()) < 80300 then
+			hooksecurefunc("PlaceAuctionBid", function(_, index, amountPaid)
+				local link = GetAuctionItemLink("list", index)
+				local name, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", index)
+				if amountPaid == buyout then
+					wipe(private.lastPurchase)
+					private.lastPurchase.name = name
+					private.lastPurchase.link = link
+					private.lastPurchase.stackSize = stackSize
+					private.lastPurchase.buyout = buyout
+				end
+			end)
+		else
+			hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
+				-- TODO: figure out how to get the info we need
+			end)
+		end
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", private.FilterSystemMsg)
 		private.isLoaded.auctionBuy = true
 	end
 	if SocialPrefillItemText then
 		private.CreateTwitterHooks()
 	else
-		TSMAPI_FOUR.Event.Register("ADDON_LOADED", function()
+		TSM.Event.Register("ADDON_LOADED", function()
 			if SocialPrefillItemText then
 				private.CreateTwitterHooks()
 			end
@@ -57,7 +73,7 @@ function Features.OnEnable()
 	end
 	-- setup BMAH scanning
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("BLACK_MARKET_ITEM_UPDATE", private.ScanBMAH)
+		TSM.Event.Register("BLACK_MARKET_ITEM_UPDATE", private.ScanBMAH)
 	end
 	-- setup auction created / cancelled filtering
 	local ElvUIChat, ElvUIChatIsEnabled = nil, nil
@@ -85,15 +101,15 @@ end
 function private.OnAuctionOwnedListUpdate()
 	local INVALID_STACK_SIZE = -1
 	-- recycle tables from TSM.db.char.internalData.auctionPrices if we can so we're not creating a ton of garbage
-	local freeTables = TSMAPI_FOUR.Util.AcquireTempTable()
+	local freeTables = TSM.TempTable.Acquire()
 	for _, tbl in pairs(TSM.db.char.internalData.auctionPrices) do
 		wipe(tbl)
 		tinsert(freeTables, tbl)
 	end
 	wipe(TSM.db.char.internalData.auctionPrices)
 	wipe(TSM.db.char.internalData.auctionMessages)
-	local auctionPrices = TSMAPI_FOUR.Util.AcquireTempTable()
-	local auctionStackSizes = TSMAPI_FOUR.Util.AcquireTempTable()
+	local auctionPrices = TSM.TempTable.Acquire()
+	local auctionStackSizes = TSM.TempTable.Acquire()
 	local query = TSM.Inventory.AuctionTracking.CreateQuery()
 		:Select("itemLink", "stackSize", "buyout")
 		:Equal("saleStatus", 0)
@@ -114,27 +130,9 @@ function private.OnAuctionOwnedListUpdate()
 			TSM.db.char.internalData.auctionMessages[format(ERR_AUCTION_SOLD_S, name)] = link
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(freeTables)
-	TSMAPI_FOUR.Util.ReleaseTempTable(auctionPrices)
-	TSMAPI_FOUR.Util.ReleaseTempTable(auctionStackSizes)
-end
-
-
-
--- ============================================================================
--- Auction Buy Functions
--- ============================================================================
-
-function private.OnAuctionBidPlaced(_, index, amountPaid)
-	local link = GetAuctionItemLink("list", index)
-	local name, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", index)
-	if amountPaid == buyout then
-		wipe(private.lastPurchase)
-		private.lastPurchase.name = name
-		private.lastPurchase.link = link
-		private.lastPurchase.stackSize = stackSize
-		private.lastPurchase.buyout = buyout
-	end
+	TSM.TempTable.Release(freeTables)
+	TSM.TempTable.Release(auctionPrices)
+	TSM.TempTable.Release(auctionStackSizes)
 end
 
 
@@ -196,7 +194,7 @@ end
 function private.ScanBMAH()
 	local numItems = C_BlackMarket.GetNumItems()
 	if not numItems then return end
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for i = 1, numItems do
 		local _, _, quantity, _, _, _, _, _, minBid, minIncr, currBid, _, numBids, timeLeft, itemLink, bmId = C_BlackMarket.GetItemInfoByIndex(i)
 		local itemID = TSMAPI_FOUR.Item.ToItemID(itemLink)
@@ -209,7 +207,7 @@ function private.ScanBMAH()
 	end
 	TSM.Features.blackMarket = "[" .. table.concat(items, ",") .. "]"
 	TSM.Features.blackMarketTime = time()
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 end
 
 
@@ -247,7 +245,7 @@ function private.FilterSystemMsg(_, _, msg, ...)
 				TSM.db.char.internalData.auctionMessages[msg] = nil
 			end
 			private.prevLineResult = format(L["Your auction of %s has sold for %s!"], link, TSM.Money.ToString(price, "|cffffffff"))
-			TSMAPI_FOUR.Sound.PlaySound(TSM.db.global.coreOptions.auctionSaleSound)
+			TSM.Sound.PlaySound(TSM.db.global.coreOptions.auctionSaleSound)
 			local itemId = TSMAPI_FOUR.Item.ToItemID(link)
 			if C_Social.IsSocialEnabled() and itemId then
 				-- add tweet icon

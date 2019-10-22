@@ -11,7 +11,7 @@
 -- @classmod FSM
 
 local _, TSM = ...
-local FSM = TSMAPI_FOUR.Class.DefineClass("FSM")
+local FSM = TSM.Lib.Class.DefineClass("FSM")
 TSM.FSM.classes.FSM = FSM
 
 
@@ -94,9 +94,9 @@ function FSM.ProcessEvent(self, event, ...)
 	self._handlingEvent = true
 	local currentStateObj = self._stateObjs[self._currentState]
 	if currentStateObj:_HasEventHandler(event) then
-		self:_Transition(TSMAPI_FOUR.Util.AcquireTempTable(currentStateObj:_ProcessEvent(event, self._context, ...)))
+		self:_Transition(TSM.TempTable.Acquire(currentStateObj:_ProcessEvent(event, self._context, ...)))
 	elseif self._defaultEvents[event] then
-		self:_Transition(TSMAPI_FOUR.Util.AcquireTempTable(self._defaultEvents[event](self._context, ...)))
+		self:_Transition(TSM.TempTable.Acquire(self._defaultEvents[event](self._context, ...)))
 	end
 	self._handlingEvent = false
 	return self
@@ -120,8 +120,8 @@ function FSM._Transition(self, eventResult)
 		self._inTransition = true
 		currentStateObj:_Exit(self._context)
 		self._currentState = toState
-		result = TSMAPI_FOUR.Util.AcquireTempTable(toStateObj:_Enter(self._context, TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(result)))
+		result = TSM.TempTable.Acquire(toStateObj:_Enter(self._context, TSM.TempTable.UnpackAndRelease(result)))
 		self._inTransition = false
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(result)
+	TSM.TempTable.Release(result)
 end

@@ -101,7 +101,7 @@ do
 		frame:RegisterEvent("PLAYER_LOGIN")
 		tinsert(private.eventFrames, frame)
 	end
-	TSMAPI_FOUR.Event.Register("PLAYER_LOGOUT", private.PlayerLogoutHandler)
+	TSM.Event.Register("PLAYER_LOGOUT", private.PlayerLogoutHandler)
 end
 
 
@@ -110,14 +110,10 @@ end
 -- AddonPackage Class
 -- ============================================================================
 
-local AddonPackage = TSMAPI_FOUR.Class.DefineClass("AddonPackage")
+local AddonPackage = TSM.Lib.Class.DefineClass("AddonPackage")
 
-function AddonPackage.__init(self, name, ...)
+function AddonPackage.__init(self, name)
 	self.name = name
-	for i = 1, select("#", ...) do
-		local embed = select(i, ...)
-		LibStub(embed):Embed(self)
-	end
 	tinsert(private.initializeQueue, self)
 end
 
@@ -125,8 +121,8 @@ function AddonPackage.__tostring(self)
 	return self.name
 end
 
-function AddonPackage.NewPackage(self, name, ...)
-	local package = AddonPackage(name, ...)
+function AddonPackage.NewPackage(self, name)
+	local package = AddonPackage(name)
 	assert(not self[name])
 	self[name] = package
 	return package
@@ -138,18 +134,11 @@ end
 -- Addon Class
 -- ============================================================================
 
-local Addon = TSMAPI_FOUR.Class.DefineClass("Addon", AddonPackage)
+local Addon = TSM.Lib.Class.DefineClass("Addon", AddonPackage)
 
-function Addon.__init(self, name, ...)
-	self.__super:__init(name, ...)
-
-	self._name = name
-	self._shortName = gsub(name, "TradeSkillMaster_", "")
-	self._logger = TSMAPI_FOUR.Logger.New(self:GetShortName())
-end
-
-function Addon.GetShortName(self)
-	return self._shortName
+function Addon.__init(self, name)
+	self.__super:__init(name)
+	self._logger = TSM.Logger.New()
 end
 
 function Addon.PrintRaw(self, str)
@@ -170,25 +159,25 @@ function Addon.Printf(self, ...)
 end
 
 function Addon.LOG_INFO(self, ...)
-	self._logger:LogMessage("INFO", ...)
+	self._logger:Info(...)
 end
 
 function Addon.LOG_WARN(self, ...)
-	self._logger:LogMessage("WARN", ...)
+	self._logger:Warn(...)
 end
 
 function Addon.LOG_ERR(self, ...)
-	self._logger:LogMessage("ERR", ...)
+	self._logger:Err(...)
 end
 
 function Addon.LOG_STACK_TRACE(self)
-	self._logger:LogMessage("STACK", "Stack Trace:")
+	self._logger:Trace("Stack Trace:")
 	local level = 2
-	local line = TSMAPI_FOUR.Util.GetDebugStackInfo(level)
+	local line = TSM.Debug.GetDebugStackInfo(level)
 	while line do
-		self._logger:LogMessage("STACK", "  " .. line)
+		self._logger:Trace("  " .. line)
 		level = level + 1
-		line = TSMAPI_FOUR.Util.GetDebugStackInfo(level)
+		line = TSM.Debug.GetDebugStackInfo(level)
 	end
 end
 
@@ -202,7 +191,7 @@ function TSMAPI_FOUR.Addon.New(name, tbl)
 	assert(type(name) == "string" and type(tbl) == "table", "Invalid arguments")
 	assert(not private.addonLookup[tbl], "Addon already created")
 
-	local addon = TSMAPI_FOUR.Class.ConstructWithTable(tbl, Addon, name)
+	local addon = TSM.Lib.Class.ConstructWithTable(tbl, Addon, name)
 	private.addonLookup[tbl] = addon
 	return addon
 end

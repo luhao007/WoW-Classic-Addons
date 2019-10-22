@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local private = { frameInputLookup = {} }
-local InputNumeric = TSMAPI_FOUR.Class.DefineClass("InputNumeric", TSM.UI.Input)
+local InputNumeric = TSM.Lib.Class.DefineClass("InputNumeric", TSM.UI.Input)
 TSM.UI.InputNumeric = InputNumeric
 
 

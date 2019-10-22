@@ -196,7 +196,7 @@ function private.SellItemThreaded(itemString, operationSettings)
 
 	local totalValue = 0
 	for _, slotId in ipairs(slotIds) do
-		local bag, slot = TSMAPI_FOUR.Util.SplitSlotId(slotId)
+		local bag, slot = TSM.SlotId.Split(slotId)
 		local quantity = TSM.Inventory.BagTracking.GetQuantityBySlotId(slotId)
 		if quantity <= numToSell then
 			UseContainerItem(bag, slot)
@@ -204,7 +204,7 @@ function private.SellItemThreaded(itemString, operationSettings)
 			numToSell = numToSell - quantity
 		else
 			if #emptySlotIds > 0 then
-				local splitBag, splitSlot = TSMAPI_FOUR.Util.SplitSlotId(tremove(emptySlotIds, 1))
+				local splitBag, splitSlot = TSM.SlotId.Split(tremove(emptySlotIds, 1))
 				SplitContainerItem(bag, slot, numToSell)
 				PickupContainerItem(splitBag, splitSlot)
 				-- wait for the stack to be split
@@ -239,7 +239,7 @@ function private.GetEmptyBagSlotsThreaded(itemFamily)
 		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
 			for slot = 1, GetContainerNumSlots(bag) do
 				if not GetContainerItemInfo(bag, slot) then
-					local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+					local slotId = TSM.SlotId.Join(bag, slot)
 					tinsert(emptySlotIds, slotId)
 					-- use special bags first
 					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
@@ -248,7 +248,7 @@ function private.GetEmptyBagSlotsThreaded(itemFamily)
 		end
 		TSMAPI_FOUR.Thread.Yield()
 	end
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(emptySlotIds, sortvalue)
+	TSM.Table.SortWithValueLookup(emptySlotIds, sortvalue)
 	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortvalue)
 	return emptySlotIds
 end

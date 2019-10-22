@@ -12,7 +12,7 @@
 -- @classmod DatabaseQuery
 
 local _, TSM = ...
-local DatabaseQuery = TSMAPI_FOUR.Class.DefineClass("DatabaseQuery")
+local DatabaseQuery = TSM.Lib.Class.DefineClass("DatabaseQuery")
 TSM.Database.classes.DatabaseQuery = DatabaseQuery
 local private = {}
 local NAN = math.huge * 0
@@ -32,6 +32,7 @@ function DatabaseQuery.__init(self)
 	self._orderByAscending = {}
 	self._distinct = nil
 	self._updateCallback = nil
+	self._updateCallbackContext = nil
 	self._updatesPaused = 0
 	self._queuedUpdate = false
 	self._select = {}
@@ -56,6 +57,7 @@ function DatabaseQuery.__init(self)
 		return private.DatabaseQuerySortSingle(self, a, b)
 	end
 	self._sortValueCache = {}
+	self._resultDependencies = {}
 end
 
 function DatabaseQuery._Acquire(self, db)
@@ -78,6 +80,7 @@ function DatabaseQuery._Release(self)
 	self._rootClause = nil
 	self._currentClause = nil
 	self._updateCallback = nil
+	self._updateCallbackContext = nil
 	self._updatesPaused = 0
 	self._queuedUpdate = false
 	wipe(self._iterDistinctUsed)
@@ -95,6 +98,7 @@ function DatabaseQuery._Release(self)
 	self:ResetJoins()
 	self:ResetVirtualFields()
 	self._resultIsStale = false
+	wipe(self._resultDependencies)
 end
 
 
@@ -417,10 +421,12 @@ end
 --- Set an update callback.
 -- This callback gets called whenever any rows in the underlying database change.
 -- @tparam DatabaseQuery self The database query object
--- @tparam function func The callback function
+-- @tparam function func The callback function which is called with (self, changedUUID, context)
+-- @?param[opt=nil] context A context argument which is passed as the third argument to the callback function
 -- @treturn DatabaseQuery The database query object
-function DatabaseQuery.SetUpdateCallback(self, func)
+function DatabaseQuery.SetUpdateCallback(self, func, context)
 	self._updateCallback = func
+	self._updateCallbackContext = context
 	return self
 end
 
@@ -659,12 +665,12 @@ end
 -- @treturn string The joined string
 function DatabaseQuery.JoinedString(self, field, sep)
 	self:_Execute()
-	local parts = TSMAPI_FOUR.Util.AcquireTempTable()
+	local parts = TSM.TempTable.Acquire()
 	for _, uuid in ipairs(self._result) do
 		tinsert(parts, self:_GetResultRowData(uuid, field))
 	end
 	local result = table.concat(parts, sep)
-	TSMAPI_FOUR.Util.ReleaseTempTable(parts)
+	TSM.TempTable.Release(parts)
 	return result
 end
 
@@ -676,7 +682,7 @@ function DatabaseQuery.Hash(self)
 	self:_Execute()
 	local keyField, valueField, extra = unpack(self._select)
 	assert(keyField and not extra)
-	local hashContext = TSMAPI_FOUR.Util.AcquireTempTable()
+	local hashContext = TSM.TempTable.Acquire()
 	for _, uuid in ipairs(self._result) do
 		tinsert(hashContext, self:_GetResultRowData(uuid, keyField))
 		if valueField then
@@ -686,9 +692,9 @@ function DatabaseQuery.Hash(self)
 	sort(hashContext)
 	local result = nil
 	for _, value in ipairs(hashContext) do
-		result = TSMAPI_FOUR.Util.CalculateHash(value, result)
+		result = TSM.Math.CalculateHash(value, result)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(hashContext)
+	TSM.TempTable.Release(hashContext)
 	return result
 end
 
@@ -700,7 +706,7 @@ function DatabaseQuery.HashAndRelease(self)
 	self:_Execute()
 	local keyField, valueField, extra = unpack(self._select)
 	assert(keyField and not extra)
-	local hashContext = TSMAPI_FOUR.Util.AcquireTempTable()
+	local hashContext = TSM.TempTable.Acquire()
 	for _, uuid in ipairs(self._result) do
 		tinsert(hashContext, self:_GetResultRowData(uuid, keyField))
 		if valueField then
@@ -710,9 +716,9 @@ function DatabaseQuery.HashAndRelease(self)
 	sort(hashContext)
 	local result = nil
 	for _, value in ipairs(hashContext) do
-		result = TSMAPI_FOUR.Util.CalculateHash(value, result)
+		result = TSM.Math.CalculateHash(value, result)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(hashContext)
+	TSM.TempTable.Release(hashContext)
 	self:Release()
 	return result
 end
@@ -842,11 +848,37 @@ function DatabaseQuery._GetFieldType(self, field)
 	end
 end
 
-function DatabaseQuery._MarkResultStale(self)
-	self._resultIsStale = true
+function DatabaseQuery._MarkResultStale(self, changedFields)
+	if self._resultIsStale then
+		-- already marked stale
+		return
+	end
+
+	if self._resultDependencies._all or not changedFields then
+		-- either the result depends on all fields or we weren't given a table of changed fields
+		self._resultIsStale = true
+		return
+	end
+
+	-- check if any of the fields our result is based on changed
+	for field in pairs(changedFields) do
+		if self._resultDependencies[field] then
+			self._resultIsStale = true
+			return
+		end
+	end
+
+	-- clear the cached values for the changed fields
+	for _, row in pairs(self._resultRowLookup) do
+		if row ~= false then
+			for field in pairs(changedFields) do
+				rawset(row, field, nil)
+			end
+		end
+	end
 end
 
-function DatabaseQuery._DoUpdateCallback(self)
+function DatabaseQuery._DoUpdateCallback(self, uuid)
 	if not self._updateCallback then
 		return
 	end
@@ -854,7 +886,37 @@ function DatabaseQuery._DoUpdateCallback(self)
 		self._queuedUpdate = true
 	else
 		self._queuedUpdate = false
-		self:_updateCallback()
+		if self._resultIsStale or not uuid then
+			self:_updateCallback(nil, self._updateCallbackContext)
+		elseif self._db:_ContainsUUID(uuid) then
+			self:_updateCallback(uuid, self._updateCallbackContext)
+		else
+			-- the UUID is from a joined DB, so see if we can easily translate it to a local UUID
+			local localUUID = nil
+			for i = 1, #self._joinDBs do
+				local joinDB = self._joinDBs[i]
+				if joinDB:_ContainsUUID(uuid) then
+					if localUUID then
+						-- found more than once, so bail
+						localUUID = nil
+						break
+					end
+					local joinField = self._joinFields[i]
+					local joinValue = joinDB:_GetRowData(uuid, joinField)
+					if self._db:_IsUnique(joinField) then
+						localUUID = self._db:_GetUniqueRow(joinField, joinValue)
+					elseif self._db:_IsIndex(joinField) then
+						local lowIndex, highIndex = self._db:_GetIndexListIndexRange(joinField, joinValue)
+						if not lowIndex or not highIndex or lowIndex ~= highIndex then
+							-- can't use this index to find a single local UUID
+							break
+						end
+						localUUID = self._db:_GetRowIndexValue(uuid, joinField)
+					end
+				end
+			end
+			self:_updateCallback(localUUID, self._updateCallbackContext)
+		end
 	end
 end
 
@@ -974,6 +1036,29 @@ function DatabaseQuery._Execute(self, force)
 		end
 	end
 
+	-- update the dependencies
+	wipe(self._resultDependencies)
+	if next(self._virtualFieldFunc) then
+		self._resultDependencies._all = true
+	else
+		for i = 1, #self._joinFields do
+			self._resultDependencies[self._joinFields[i]] = true
+		end
+		for i = 1, #self._orderBy do
+			self._resultDependencies[self._orderBy[i]] = true
+		end
+		if self._distinct then
+			self._resultDependencies[self._distinct] = true
+		end
+		for i = 1, #self._select do
+			self._resultDependencies[self._select[i]] = true
+		end
+		for field in self._db:FieldIterator() do
+			if self._rootClause:_UsesField(field) then
+				self._resultDependencies[field] = true
+			end
+		end
+	end
 	self._resultIsStale = false
 end
 
@@ -987,8 +1072,6 @@ function DatabaseQuery._AddResultRow(self, uuid, skipQuery)
 		local joinField = self._joinFields[i]
 		if joinType == "INNER" and not joinDB:_GetUniqueRow(joinField, self._db:_GetRowData(uuid, joinField)) then
 			return
-		elseif not skipQuery then
-			self._tempResultRow:_AddJoinInfo(joinDB, joinField)
 		end
 	end
 	if not skipQuery and not self._rootClause:_IsTrue(self._tempResultRow) then
@@ -1010,9 +1093,6 @@ function DatabaseQuery._CreateResultRow(self, uuid)
 	local row = TSM.Database.GetDatabaseQueryResultRow()
 	row:_Acquire(self._db, self)
 	row:_SetUUID(uuid)
-	for i = 1, #self._joinDBs do
-		row:_AddJoinInfo(self._joinDBs[i], self._joinFields[i])
-	end
 	self._resultRowLookup[uuid] = row
 	return row
 end
@@ -1052,9 +1132,6 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 				self._tempVirtualResultRow:_Acquire(self._db, self)
 			end
 			self._tempVirtualResultRow:_SetUUID(uuid)
-			for i = 1, #self._joinDBs do
-				self._tempVirtualResultRow:_AddJoinInfo(self._joinDBs[i], self._joinFields[i])
-			end
 			argValue = self._tempVirtualResultRow
 		end
 		local value = self._virtualFieldFunc[field](argValue)
@@ -1097,7 +1174,7 @@ function DatabaseQuery._JoinHelper(self, db, field, joinType)
 	assert(foreignFieldType, "Foreign field doesn't exist: "..tostring(field))
 	assert(localFieldType == foreignFieldType, format("Field types don't match (%s, %s)", tostring(localFieldType), tostring(foreignFieldType)))
 	assert(db:_IsUnique(field), "Field must be unique in foreign DB")
-	assert(not TSMAPI_FOUR.Util.TableKeyByValue(self._joinDBs, db), "Already joining with this DB")
+	assert(not TSM.Table.KeyByValue(self._joinDBs, db), "Already joining with this DB")
 	for foreignField in db:FieldIterator() do
 		if foreignField ~= field then
 			assert(not self._db:_GetFieldType(foreignField), "Foreign field conflicts with local DB: "..tostring(foreignField))

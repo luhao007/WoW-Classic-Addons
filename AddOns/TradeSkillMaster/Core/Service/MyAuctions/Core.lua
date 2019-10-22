@@ -35,10 +35,10 @@ function MyAuctions.OnInitialize()
 		end
 	end
 
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowEventHandler)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseHideEventHandler)
-	TSMAPI_FOUR.Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
-	TSMAPI_FOUR.Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
+	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowEventHandler)
+	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseHideEventHandler)
+	TSM.Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
+	TSM.Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
 	TSM.Inventory.AuctionTracking.RegisterCallback(private.OnAuctionsUpdated)
 end
 
@@ -132,8 +132,8 @@ function private.GetNumRowsByHash(hash)
 end
 
 function private.OnAuctionsUpdated()
-	local minPendingIndexByHash = TSMAPI_FOUR.Util.AcquireTempTable()
-	local numByHash = TSMAPI_FOUR.Util.AcquireTempTable()
+	local minPendingIndexByHash = TSM.TempTable.Acquire()
+	local numByHash = TSM.TempTable.Acquire()
 	local query = TSM.Inventory.AuctionTracking.CreateQuery()
 		:OrderBy("index", true)
 	for _, row in query:Iterator() do
@@ -144,7 +144,7 @@ function private.OnAuctionsUpdated()
 			minPendingIndexByHash[hash] = index
 		end
 	end
-	local numUsed = TSMAPI_FOUR.Util.AcquireTempTable()
+	local numUsed = TSM.TempTable.Acquire()
 	private.pendingDB:TruncateAndBulkInsertStart()
 	for _, row in query:Iterator() do
 		local hash = row:CalculateHash(private.dbHashFields)
@@ -170,9 +170,9 @@ function private.OnAuctionsUpdated()
 		private.pendingDB:BulkInsertNewRow(row:GetField("index"), hash, isPending)
 	end
 	private.pendingDB:BulkInsertEnd()
-	TSMAPI_FOUR.Util.ReleaseTempTable(numByHash)
-	TSMAPI_FOUR.Util.ReleaseTempTable(numUsed)
-	TSMAPI_FOUR.Util.ReleaseTempTable(minPendingIndexByHash)
+	TSM.TempTable.Release(numByHash)
+	TSM.TempTable.Release(numUsed)
+	TSM.TempTable.Release(minPendingIndexByHash)
 
 	-- update the player's auction status
 	private.auctionInfo.numPosted = 0

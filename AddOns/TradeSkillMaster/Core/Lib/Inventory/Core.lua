@@ -34,14 +34,14 @@ function Inventory.OnInitialize()
 		:AddNumberField("totalQuantity")
 		:Commit()
 
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
-	local itemQuantities = TSMAPI_FOUR.Util.AcquireTempTable()
-	itemQuantities.bagQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
-	itemQuantities.bankQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
-	itemQuantities.reagentBankQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
-	itemQuantities.auctionQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
-	itemQuantities.mailQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
-	local altItemQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
+	local itemQuantities = TSM.TempTable.Acquire()
+	itemQuantities.bagQuantity = TSM.TempTable.Acquire()
+	itemQuantities.bankQuantity = TSM.TempTable.Acquire()
+	itemQuantities.reagentBankQuantity = TSM.TempTable.Acquire()
+	itemQuantities.auctionQuantity = TSM.TempTable.Acquire()
+	itemQuantities.mailQuantity = TSM.TempTable.Acquire()
+	local altItemQuantity = TSM.TempTable.Acquire()
 
 	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 		local isFactionrealm = factionrealm == (UnitFactionGroup("player").." - "..GetRealmName())
@@ -94,11 +94,11 @@ function Inventory.OnInitialize()
 	private.db:BulkInsertEnd()
 
 	for _, tbl in pairs(itemQuantities) do
-		TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+		TSM.TempTable.Release(tbl)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemQuantities)
-	TSMAPI_FOUR.Util.ReleaseTempTable(altItemQuantity)
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(itemQuantities)
+	TSM.TempTable.Release(altItemQuantity)
+	TSM.TempTable.Release(items)
 end
 
 function Inventory.OnGuildLoaded()

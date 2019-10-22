@@ -148,7 +148,7 @@ end
 
 function private.CreateTaskListElements(frame)
 	-- get all the category counts
-	local categoryCount = TSMAPI_FOUR.Util.AcquireTempTable()
+	local categoryCount = TSM.TempTable.Acquire()
 	for _, task in TSM.TaskList.Iterator() do
 		local category = task:GetCategory()
 		categoryCount[category] = (categoryCount[category] or 0) + 1
@@ -199,7 +199,7 @@ function private.CreateTaskListElements(frame)
 		end
 	end
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(categoryCount)
+	TSM.TempTable.Release(categoryCount)
 end
 
 function private.CreateCategoryLine(frame, category, count)

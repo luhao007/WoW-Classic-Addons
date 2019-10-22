@@ -30,7 +30,7 @@ function Util.OpenBankIterator(autoBaseItems)
 end
 
 function Util.PopulateGroupItemsFromBags(items, groups, getNumFunc, ...)
-	local itemQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemQuantity = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.BagIterator(true) do
 		if private.InGroups(itemString, groups) then
 			itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
@@ -42,11 +42,11 @@ function Util.PopulateGroupItemsFromBags(items, groups, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemQuantity)
+	TSM.TempTable.Release(itemQuantity)
 end
 
 function Util.PopulateGroupItemsFromOpenBank(items, groups, getNumFunc, ...)
-	local itemQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemQuantity = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.OpenBankIterator(true) do
 		if private.InGroups(itemString, groups) then
 			itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
@@ -58,11 +58,11 @@ function Util.PopulateGroupItemsFromOpenBank(items, groups, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemQuantity)
+	TSM.TempTable.Release(itemQuantity)
 end
 
 function Util.PopulateItemsFromBags(items, getNumFunc, ...)
-	local itemQuantity = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemQuantity = TSM.TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.BagIterator(true) do
 		itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
 	end
@@ -72,7 +72,7 @@ function Util.PopulateItemsFromBags(items, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemQuantity)
+	TSM.TempTable.Release(itemQuantity)
 end
 
 

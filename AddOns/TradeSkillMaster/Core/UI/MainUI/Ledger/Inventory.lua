@@ -298,7 +298,7 @@ end
 
 function private.GetTotalValue()
 	-- can't lookup the value of items while the query is iteratoring, so grab the list of items first
-	local itemQuantities = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemQuantities = TSM.TempTable.Acquire()
 	for _, row in private.query:Iterator() do
 		local itemString, total = row:GetFields("itemString", "totalQuantity")
 		itemQuantities[itemString] = total
@@ -310,14 +310,14 @@ function private.GetTotalValue()
 			totalValue = totalValue + price * total
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemQuantities)
+	TSM.TempTable.Release(itemQuantities)
 	return totalValue
 end
 
 function private.UpdateQuery()
 	private.query:ResetFilters()
 	if private.searchFilter ~= "" then
-		private.query:Matches("name", TSMAPI_FOUR.Util.StrEscape(private.searchFilter))
+		private.query:Matches("name", TSM.String.Escape(private.searchFilter))
 	end
 	if private.groupFilter ~= ALL then
 		private.query:IsNotNil("groupPath")

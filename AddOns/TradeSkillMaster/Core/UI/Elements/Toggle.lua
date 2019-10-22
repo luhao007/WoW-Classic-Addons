@@ -11,7 +11,7 @@
 -- @classmod Toggle
 
 local _, TSM = ...
-local Toggle = TSMAPI_FOUR.Class.DefineClass("Toggle", TSM.UI.Container)
+local Toggle = TSM.Lib.Class.DefineClass("Toggle", TSM.UI.Container)
 TSM.UI.Toggle = Toggle
 local private = {}
 

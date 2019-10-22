@@ -30,14 +30,14 @@ function General.LoadTooltip(tooltip, itemString)
 			tooltip:AddLine(leftText, "|cffffffff"..TSM.Groups.Path.Format(groupPath).."|r")
 			for _, moduleName in TSM.Operations.ModuleIterator() do
 				if TSM.db.global.tooltipOptions.operationTooltips[moduleName] then
-					local operations = TSMAPI_FOUR.Util.AcquireTempTable()
+					local operations = TSM.TempTable.Acquire()
 					for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
 						tinsert(operations, operationName)
 					end
 					if #operations > 0 then
 						tooltip:AddLine(format(#operations == 1 and L["%s operation"] or L["%s operations"], TSM.Operations.GetLocalizedName(moduleName)), "|cffffffff"..table.concat(operations, ", ").."|r")
 					end
-					TSMAPI_FOUR.Util.ReleaseTempTable(operations)
+					TSM.TempTable.Release(operations)
 				end
 			end
 		end
@@ -167,7 +167,7 @@ function General.LoadTooltip(tooltip, itemString)
 		local totalNum = 0
 		for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				local realm = strmatch(factionrealm, "^.* "..TSMAPI_FOUR.Util.StrEscape("-").." (.*)")
+				local realm = strmatch(factionrealm, "^.* "..TSM.String.Escape("-").." (.*)")
 				if realm == GetRealmName() then
 					realm = ""
 				else

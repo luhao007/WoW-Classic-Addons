@@ -49,7 +49,7 @@ function Cost.GetCraftingCostBySpellId(spellId)
 	local hasMats = false
 	local mats = nil
 	if private.matsTempInUse then
-		mats = TSMAPI_FOUR.Util.AcquireTempTable()
+		mats = TSM.TempTable.Acquire()
 	else
 		mats = private.matsTemp
 		private.matsTempInUse = true
@@ -68,22 +68,21 @@ function Cost.GetCraftingCostBySpellId(spellId)
 	if mats == private.matsTemp then
 		private.matsTempInUse = false
 	else
-		TSMAPI_FOUR.Util.ReleaseTempTable(mats)
+		TSM.TempTable.Release(mats)
 	end
 	if not cost or not hasMats then
 		return
 	end
-	cost = TSMAPI_FOUR.Util.Round(cost / TSM.Crafting.GetNumResult(spellId))
+	cost = TSM.Math.Round(cost / TSM.Crafting.GetNumResult(spellId))
 	return cost > 0 and cost or nil
 end
 
 function Cost.GetCraftedItemValue(itemString)
-	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Crafting", itemString)
-	if operationSettings then
-		TSM.Operations.Update("Crafting", operationName)
+	local hasCraftPriceMethod, craftPrice = TSM.Operations.Crafting.GetCraftedItemValue(itemString)
+	if hasCraftPriceMethod then
+		return craftPrice
 	end
-	local priceStr = operationSettings and operationSettings.craftPriceMethod ~= "" and operationSettings.craftPriceMethod or TSM.db.global.craftingOptions.defaultCraftPriceMethod
-	return TSMAPI_FOUR.CustomPrice.GetValue(priceStr, itemString)
+	return TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.craftingOptions.defaultCraftPriceMethod, itemString)
 end
 
 function Cost.GetProfitBySpellId(spellId)

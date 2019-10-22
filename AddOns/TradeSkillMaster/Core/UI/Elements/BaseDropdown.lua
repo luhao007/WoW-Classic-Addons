@@ -12,7 +12,7 @@
 -- @classmod BaseDropdown
 
 local _, TSM = ...
-local BaseDropdown = TSMAPI_FOUR.Class.DefineClass("BaseDropdown", TSM.UI.Element, "ABSTRACT")
+local BaseDropdown = TSM.Lib.Class.DefineClass("BaseDropdown", TSM.UI.Element, "ABSTRACT")
 TSM.UI.BaseDropdown = BaseDropdown
 local private = { dropdownLookup = {}, dialogDropdownLookup = {} }
 

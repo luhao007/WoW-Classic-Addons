@@ -260,7 +260,7 @@ function private.FSMCreate()
 			:SetOnEnter(function(context, operation)
 				assert(not context.currentOperation)
 				context.currentOperation = operation
-				local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+				local groups = TSM.TempTable.Acquire()
 				for _, groupPath in context.frame:GetElement("groupTree"):SelectedGroupsIterator() do
 					tinsert(groups, groupPath)
 				end
@@ -271,7 +271,7 @@ function private.FSMCreate()
 				else
 					error("Unexpected operation: "..tostring(operation))
 				end
-				TSMAPI_FOUR.Util.ReleaseTempTable(groups)
+				TSM.TempTable.Release(groups)
 				UpdateFrame(context)
 			end)
 			:SetOnExit(function(context)

@@ -36,6 +36,12 @@ local OPERATION_INFO = {
 	cancelRepost = { type = "boolean", default = true },
 	cancelRepostThreshold = { type = "string", default = "1g" },
 }
+local OPERATION_VALUE_LIMITS = {
+	postCap = { min = 0, max = 200 },
+	stackSize = { min = 1, max = 200 },
+	keepQuantity = { min = 0, max = 5000 },
+	maxExpires = { min = 0, max = 5000 },
+}
 
 
 
@@ -46,6 +52,23 @@ local OPERATION_INFO = {
 function Auctioning.OnInitialize()
 	OPERATION_INFO.duration.customSanitizeFunction = private.SanitizeDuration
 	TSM.Operations.Register("Auctioning", L["Auctioning"], OPERATION_INFO, 20, private.GetOperationInfo)
+end
+
+function Auctioning.GetMinMaxValues(key)
+	local info = OPERATION_VALUE_LIMITS[key]
+	return info and info.min or -math.huge, info and info.max or math.huge
+end
+
+function Auctioning.GetMinPrice(itemString)
+	return private.GetOperationValueHelper(itemString, "minPrice")
+end
+
+function Auctioning.GetMaxPrice(itemString)
+	return private.GetOperationValueHelper(itemString, "maxPrice")
+end
+
+function Auctioning.GetNormalPrice(itemString)
+	return private.GetOperationValueHelper(itemString, "normalPrice")
 end
 
 
@@ -67,8 +90,17 @@ function private.SanitizeDuration(value)
 	end
 end
 
+function private.GetOperationValueHelper(itemString, key)
+	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Auctioning", itemString)
+	if not operationName then
+		return
+	end
+	return TSM.Auctioning.Util.GetPrice(key, operationSettings, itemString)
+end
+
 function private.GetOperationInfo(operationSettings)
-	local parts = TSMAPI_FOUR.Util.AcquireTempTable()
+	local parts = TSM.TempTable.Acquire()
 
 	-- get the post string
 	if operationSettings.postCap == 0 then
@@ -89,6 +121,6 @@ function private.GetOperationInfo(operationSettings)
 	end
 
 	local result = table.concat(parts, " ")
-	TSMAPI_FOUR.Util.ReleaseTempTable(parts)
+	TSM.TempTable.Release(parts)
 	return result
 end

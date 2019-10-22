@@ -29,7 +29,7 @@ function GreatDealsSearch.OnEnable()
 				break
 			end
 			-- populate item info cache
-			for _, item in TSMAPI_FOUR.Util.VarargIterator(strsplit(";", private.filter)) do
+			for _, item in TSM.Vararg.Iterator(strsplit(";", private.filter)) do
 				item = strsplit("/", item)
 				TSMAPI_FOUR.Item.FetchInfo(item)
 			end

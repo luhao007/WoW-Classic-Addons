@@ -102,7 +102,7 @@ function TSM.SaveErrorReports(appDB)
 		end
 	end
 	for _, report in ipairs(private.errorReports) do
-		local line = format("[%s,\"%s\",%d]", TSMAPI_FOUR.JSON.Encode(report.errorInfo), report.details, report.timestamp)
+		local line = format("[%s,\"%s\",%d]", TSM.JSON.Encode(report.errorInfo), report.details, report.timestamp)
 		tinsert(appDB.errorReports.data, line)
 	end
 end
@@ -164,7 +164,7 @@ function private.ErrorHandler(msg, thread)
 
 	private.num = private.num + 1
 	local errorInfo = {
-		msg = #stackInfo > 0 and gsub(msg, TSMAPI_FOUR.Util.StrEscape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
+		msg = #stackInfo > 0 and gsub(msg, TSM.String.Escape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
 		stackInfo = stackInfo,
 		time = time(),
 		debugTime = floor(debugprofilestop()),
@@ -175,7 +175,7 @@ function private.ErrorHandler(msg, thread)
 	}
 
 	-- temp table info
-	local status, tempTableInfo = pcall(TSMAPI_FOUR.Util.GetTempTableDebugInfo)
+	local status, tempTableInfo = pcall(TSM.TempTable.GetDebugInfo)
 	local tempTableLines = {}
 	if status then
 		for _, info in ipairs(tempTableInfo) do
@@ -200,13 +200,24 @@ function private.ErrorHandler(msg, thread)
 
 	-- TSM thread info
 	local threadInfo = nil
-	status, threadInfo = pcall(TSMAPI_FOUR.Thread.GetDebugInfo)
+	if TSMAPI_FOUR and TSMAPI_FOUR.Thread then
+		status, threadInfo = pcall(TSMAPI_FOUR.Thread.GetDebugInfo)
+	else
+		status = false
+	end
 	errorInfo.threadInfoStr = status and table.concat(threadInfo, "\n") or ""
 
 	-- recent debug log entries
-	local logEntries = nil
-	status, logEntries = pcall(function() return TSMAPI_FOUR.Logger.GetRecentLogEntries(200, 150) end)
-	errorInfo.debugLogStr = status and table.concat(logEntries, "\n") or ""
+	if TSM._logger then
+		local entries = {}
+		for i = TSM._logger:Length(), 1, -1 do
+			local severity, location, timeStr, logMsg = TSM._logger:Get(i)
+			tinsert(entries, format("%s [%s] {%s} %s", timeStr, severity, location, logMsg))
+		end
+		errorInfo.debugLogStr = table.concat(entries, "\n")
+	else
+		errorInfo.debugLogStr = ""
+	end
 
 	-- addons
 	local hasAddonSuite = {}
@@ -284,7 +295,7 @@ function private.GetStackInfo(msg, thread)
 	local stackStarted = false
 	for i = 0, MAX_STACK_DEPTH do
 		local prevStackFunc = #stackInfo > 0 and stackInfo[#stackInfo].func or nil
-		local file, line, func, localsStr, newPrevStackFunc = TSMAPI_FOUR.Util.GetStackLevelInfo(i, thread, prevStackFunc)
+		local file, line, func, localsStr, newPrevStackFunc = TSM.Debug.GetStackLevelInfo(i, thread, prevStackFunc)
 		if newPrevStackFunc then
 			stackInfo[#stackInfo].func = newPrevStackFunc
 		end
@@ -313,7 +324,7 @@ function private.IsTSMAddon(str)
 	if strfind(str, "Auc-Adcanced\\CoreScan.lua") then
 		-- ignore auctioneer errors
 		return nil
-	elseif strfind(str, "Master\\Libs\\") then
+	elseif strfind(str, "Master\\External\\") then
 		-- ignore errors from libraries
 		return nil
 	elseif strfind(str, "Master\\Core\\API.lua") then
@@ -347,6 +358,8 @@ function private.SanitizeString(str)
 end
 
 function private.FormatErrorMessageSection(heading, info, isMultiLine)
+	-- replace unprintable characters with "?"
+	info = gsub(info, "[^\t\n -~]", "?")
 	local prefix = nil
 	if isMultiLine then
 		prefix = info ~= "" and "\n  " or ""
@@ -557,7 +570,7 @@ do
 					-- ignore errors from old modules
 					return
 				end
-				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "^%(tail call%):") and not strmatch(stackLine, "^%[string \"") then
+				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "^%(tail call%):") and not strmatch(stackLine, "^%[string \"") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") then
 					if not private.IsTSMAddon(stackLine) then
 						tsmErrMsg = nil
 					end
@@ -571,7 +584,7 @@ do
 				return ret
 			elseif not status and not private.hitInternalError then
 				private.hitInternalError = true
-				TSM:Print("Internal TSM error: "..tostring(ret))
+				print("Internal TSM error: "..tostring(ret))
 			end
 		end
 		local oldModule = strmatch(errMsg, "(lMaster_[A-Za-z]+)")
@@ -581,6 +594,6 @@ do
 		end
 		return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
 	end)
-	TSMAPI_FOUR.Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedEvent)
-	TSMAPI_FOUR.Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedEvent)
+	TSM.Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedEvent)
+	TSM.Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedEvent)
 end

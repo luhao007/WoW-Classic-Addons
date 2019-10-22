@@ -12,7 +12,7 @@
 -- @classmod SecureMacroActionButton
 
 local _, TSM = ...
-local SecureMacroActionButton = TSMAPI_FOUR.Class.DefineClass("SecureMacroActionButton", TSM.UI.ActionButton)
+local SecureMacroActionButton = TSM.Lib.Class.DefineClass("SecureMacroActionButton", TSM.UI.ActionButton)
 TSM.UI.SecureMacroActionButton = SecureMacroActionButton
 
 

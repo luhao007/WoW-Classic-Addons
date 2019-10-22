@@ -112,8 +112,14 @@ function QuestieDB:GetItem(ItemID)
     if QuestieDB._ItemCache[ItemID] ~= nil then
         return QuestieDB._ItemCache[ItemID];
     end
-    local item = {};
+    -- TODO make itemFixes be accessable by field as well
+    -- if QuestieCorrections.itemFixes[ItemID] then
+    --     for k,v in pairs(QuestieCorrections.itemFixes[ItemID]) do
+    --         CHANGEME_Questie4_ItemDB[ItemID][k] = v
+    --     end
+    -- end
     local raw = CHANGEME_Questie4_ItemDB[ItemID]; -- TODO: use the good item db, I need to talk to Muehe about the format, this is a temporary fix
+    local item = {};
     if raw ~= nil then
         item.Id = ItemID;
         item.Name = LangItemLookup[ItemID] or raw[1];
@@ -137,16 +143,13 @@ function QuestieDB:GetItem(ItemID)
 end
 
 local function _GetColoredQuestName(self)
-    local questString = (self.LocalizedName or self.Name)
-    if Questie.db.global.enableTooltipsQuestLevel then
-        questString = "[" .. self.Level .. "]" .. " " .. questString
-    end
-
-    return QuestieLib:PrintDifficultyColor(self.Level, questString)
+    local questName = (self.LocalizedName or self.Name)
+    return QuestieLib:GetColoredQuestName(self.Id, questName, self.Level, Questie.db.global.enableTooltipsQuestLevel, false)
 end
 
 function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
     if QuestID == nil then
+        Questie:Debug(DEBUG_CRITICAL, "[QuestieDB:GetQuest] Expected questID but received nil!")
         return nil
     end
     if QuestieDB._QuestCache[QuestID] ~= nil then
@@ -335,7 +338,7 @@ function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
 
         QO.HiddenObjectiveData = {}
 
-        local hidden = QuestieCorrections.questHiddenFixes[QuestID] or rawdata[21]
+        local hidden = rawdata[21]
 
         if hidden ~= nil then --required source items
             for _,Id in pairs(hidden) do
@@ -368,6 +371,7 @@ function QuestieDB:GetQuest(QuestID) -- /dump QuestieDB:GetQuest(867)
         QuestieDB._QuestCache[QuestID] = QO
         return QO
     else
+        Questie:Debug(DEBUG_CRITICAL, "[QuestieDB:GetQuest] rawdata is nil for questID:", QuestID)
         return nil
     end
 end
@@ -437,6 +441,14 @@ function QuestieDB:GetNPC(NPCID)
         end
         if NPC.spawns == nil and Questie_SpecialNPCs[NPCID] then -- get spawns from script spawns list
             NPC.spawns = QuestieDB:_GetSpecialNPC(NPCID).spawns
+        end
+
+        ---@class Point
+        ---@class Zone
+        if NPC.waypoints == nil and rawdata[QuestieDB.npcKeys.waypoints] then
+            Questie:Debug(DEBUG_DEVELOP, "Got waypoints! NPC", NPC.name, NPC.id)
+            ---@type table<Zone, table<Point, Point>>
+            NPC.waypoints = rawdata[QuestieDB.npcKeys.waypoints];
         end
 
         if rawdata[DB_NPC_FRIENDLY] then

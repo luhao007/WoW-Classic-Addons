@@ -175,7 +175,7 @@ function TSMAPI_FOUR.Conversions.GetValue(sourceItem, customPrice, method)
 		end
 	end
 
-	value = TSMAPI_FOUR.Util.Round(value)
+	value = TSM.Math.Round(value)
 	return value > 0 and value or nil
 end
 

@@ -32,10 +32,15 @@
 <Script file="Locale/global-enUS.lua" />
 <Script file="Locale/classic-enUS.lua" />
 
-<!--  GERMAN LOCALIZATION 
+<!--  GERMAN LOCALIZATION -->
 <Script file="Locale/global-deDE.lua" />
 <Script file="Locale/classic-deDE.lua" />
--->
+
+<!--  SPANISH LOCALIZATION -->
+<Script file="Locale/global-esMX.lua" />
+<Script file="Locale/classic-esMX.lua" />
+<Script file="Locale/global-esES.lua" />
+<Script file="Locale/classic-esES.lua" />
 
 <!--  Simplified Chinese LOCALIZATION -->
 <Script file="Locale/global-zhCN.lua" />
@@ -250,53 +255,6 @@
 	    </OnShow>
 	</Scripts>
    </CheckButton>
-   <CheckButton name="AQAutoQueryOption" inherits="OptionsCheckButtonTemplate" checked="true">
-    <Size>
-      <AbsDimension x="30" y="30"/>
-    </Size>
-	<Anchors>
-		<Anchor point="TOPLEFT">
-			<Offset>
-				<AbsDimension x="10" y="-200"></AbsDimension>
-			</Offset>
-		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
-	</Anchors>
-	<Scripts>
-		<OnClick>
-		  AQAutoQueryOption_OnClick();
-	    </OnClick>
-		<OnShow>
-	    	AtlasQuestOptionFrame:SetFrameLevel( AtlasQuestOptionFrame:GetParent():GetFrameLevel() + 1 );
-	    </OnShow>
-	</Scripts>
-   </CheckButton>
-
-   <CheckButton name="AQNoQuerySpamOption" inherits="OptionsCheckButtonTemplate" checked="true">
-    <Size>
-      <AbsDimension x="30" y="30"/>
-    </Size>
-	<Anchors>
-		<Anchor point="TOPLEFT">
-			<Offset>
-				<AbsDimension x="10" y="-230"></AbsDimension>
-			</Offset>
-		</Anchor>
-		<HitRectInsets>
-          <AbsInset left="0" right="0" top="0" bottom="0"/>
-        </HitRectInsets>
-	</Anchors>
-	<Scripts>
-		<OnClick>
-		  AQNoQuerySpamOption_OnClick();
-	    </OnClick>
-		<OnShow>
-	    	AtlasQuestOptionFrame:SetFrameLevel( AtlasQuestOptionFrame:GetParent():GetFrameLevel() + 1 );
-	    </OnShow>
-	</Scripts>
-   </CheckButton>
 
    <CheckButton name="AQCompareTooltipOption" inherits="OptionsCheckButtonTemplate" checked="true">
     <Size>
@@ -416,30 +374,6 @@
          <Anchor point="TOPLEFT">
            <Offset>
               <AbsDimension x="45" y="-170"/>
-           </Offset>
-         </Anchor>
-       </Anchors>
-     </FontString>
-     <FontString name="AQAutoQueryTEXT" inherits="GameFontNormalSmall" justifyH = "LEFT" >
-       <Size>
-         <AbsDimension x="240" y="35"/>
-       </Size>
-       <Anchors>
-         <Anchor point="TOPLEFT">
-           <Offset>
-              <AbsDimension x="45" y="-200"/>
-           </Offset>
-         </Anchor>
-       </Anchors>
-     </FontString>
-     <FontString name="AQNoQuerySpamTEXT" inherits="GameFontNormalSmall" justifyH = "LEFT" >
-       <Size>
-         <AbsDimension x="240" y="35"/>
-       </Size>
-       <Anchors>
-         <Anchor point="TOPLEFT">
-           <Offset>
-              <AbsDimension x="45" y="-230"/>
            </Offset>
          </Anchor>
        </Anchors>

@@ -9,6 +9,8 @@
 local _, TSM = ...
 local Connection = TSM.Sync:NewPackage("Connection")
 local private = {
+	isActive = false,
+	hasFriendsInfo = false,
 	newPlayer = nil,
 	newAccount = nil,
 	newSyncAcked = nil,
@@ -31,6 +33,9 @@ local HEARTBEAT_TIMEOUT = 10
 -- ============================================================================
 
 function Connection.OnInitialize()
+	for _ in TSM.db:SyncAccountIterator() do
+		private.isActive = true
+	end
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.WHOAMI_ACCOUNT, private.WhoAmIAccountHandler)
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.WHOAMI_ACK, private.WhoAmIAckHandler)
 	TSM.Sync.Comm.RegisterHandler(TSM.Sync.DATA_TYPES.CONNECTION_REQUEST, private.ConnectionHandler)
@@ -65,6 +70,10 @@ function Connection.ConnectedAccountIterator()
 end
 
 function Connection.Establish(targetPlayer)
+	if not private.hasFriendsInfo then
+		TSM:Print(L["TSM is not yet ready to establish a new sync connection. Please try again later."])
+		return false
+	end
 	if strlower(targetPlayer) == strlower(UnitName("player")) then
 		TSM:Print(L["Sync Setup Error: You entered the name of the current character and not the character on the other account."])
 		return false
@@ -81,6 +90,10 @@ function Connection.Establish(targetPlayer)
 	if invalidPlayer then
 		TSM:Print(L["Sync Setup Error: This character is already part of a known account."])
 		return false
+	end
+	if not private.isActive then
+		private.isActive = true
+		TSMAPI_FOUR.Delay.AfterTime("SYNC_CONNECTION_MANAGEMENT", 1, private.ManagementLoop, 1)
 	end
 	private.newPlayer = targetPlayer
 	private.newAccount = nil
@@ -201,8 +214,11 @@ function private.PrepareFriendsInfo()
 		end
 	end
 	if isValid then
-		-- start the management loop
-		TSMAPI_FOUR.Delay.AfterTime(1, private.ManagementLoop, 1)
+		private.hasFriendsInfo = true
+		if private.isActive then
+			-- start the management loop
+			TSMAPI_FOUR.Delay.AfterTime("SYNC_CONNECTION_MANAGEMENT", 1, private.ManagementLoop, 1)
+		end
 	else
 		-- try again
 		TSMAPI_FOUR.Delay.AfterTime(0.5, private.PrepareFriendsInfo)
@@ -211,7 +227,9 @@ end
 
 function private.ManagementLoop()
 	-- continuously spawn connection threads with online players as necessary
+	local hasAccount = false
 	for _, account in TSM.db:SyncAccountIterator() do
+		hasAccount = true
 		local targetPlayer = TSM.Sync.PlayerUtil.GetTargetPlayer(account)
 		if targetPlayer then
 			if not private.threadId[account] then
@@ -222,6 +240,10 @@ function private.ManagementLoop()
 				TSMAPI_FOUR.Thread.Start(private.threadId[account], account, targetPlayer)
 			end
 		end
+	end
+	if not hasAccount then
+		TSM:LOG_INFO("No more sync accounts.")
+		private.isActive = false
 	end
 end
 

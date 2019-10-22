@@ -11,7 +11,7 @@
 -- @classmod FSMState
 
 local _, TSM = ...
-local FSMState = TSMAPI_FOUR.Class.DefineClass("FSMState")
+local FSMState = TSM.Lib.Class.DefineClass("FSMState")
 TSM.FSM.classes.FSMState = FSMState
 
 
@@ -85,11 +85,11 @@ function FSMState._GetName(self)
 end
 
 function FSMState._ToStateIterator(self)
-	local temp = TSMAPI_FOUR.Util.AcquireTempTable()
+	local temp = TSM.TempTable.Acquire()
 	for toState in pairs(self._transitionValid) do
 		tinsert(temp, toState)
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(temp)
+	return TSM.TempTable.Iterator(temp)
 end
 
 function FSMState._IsTransitionValid(self, toState)

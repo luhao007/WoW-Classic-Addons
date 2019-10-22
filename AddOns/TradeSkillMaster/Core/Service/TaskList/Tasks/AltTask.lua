@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local AltTask = TSMAPI_FOUR.Class.DefineClass("AltTask", TSM.TaskList.Task)
+local AltTask = TSM.Lib.Class.DefineClass("AltTask", TSM.TaskList.Task)
 local L = TSM.L
 TSM.TaskList.AltTask = AltTask
 

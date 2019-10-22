@@ -36,10 +36,10 @@ function Accounting.GetSummaryProfitTopItem(timeFilter, characterFilter)
 			:End()
 	end
 
-	local totalSalePrice = TSMAPI_FOUR.Util.AcquireTempTable()
-	local numSales = TSMAPI_FOUR.Util.AcquireTempTable()
-	local totalBuyPrice = TSMAPI_FOUR.Util.AcquireTempTable()
-	local numBuys = TSMAPI_FOUR.Util.AcquireTempTable()
+	local totalSalePrice = TSM.TempTable.Acquire()
+	local numSales = TSM.TempTable.Acquire()
+	local totalBuyPrice = TSM.TempTable.Acquire()
+	local numBuys = TSM.TempTable.Acquire()
 	for _, recordType, itemString, price, quantity in query:Iterator() do
 		if recordType == "sale" then
 			totalSalePrice[itemString] = (totalSalePrice[itemString] or 0) + price * quantity
@@ -63,10 +63,10 @@ function Accounting.GetSummaryProfitTopItem(timeFilter, characterFilter)
 			end
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalSalePrice)
-	TSMAPI_FOUR.Util.ReleaseTempTable(numSales)
-	TSMAPI_FOUR.Util.ReleaseTempTable(totalBuyPrice)
-	TSMAPI_FOUR.Util.ReleaseTempTable(numBuys)
+	TSM.TempTable.Release(totalSalePrice)
+	TSM.TempTable.Release(numSales)
+	TSM.TempTable.Release(totalBuyPrice)
+	TSM.TempTable.Release(numBuys)
 
 	return topItemString
 end
@@ -110,7 +110,7 @@ function private.GetSummaryInfoByType(recordType, timeFilter, characterFilter)
 	end
 
 	local numDays = 1
-	local itemTotals = TSMAPI_FOUR.Util.AcquireTempTable()
+	local itemTotals = TSM.TempTable.Acquire()
 	for _, itemString, price, quantity, timestamp in query:Iterator() do
 		local daysAgo = floor((time() - timestamp) / (24 * 60 * 60))
 		numDays = max(numDays, daysAgo)
@@ -128,7 +128,7 @@ function private.GetSummaryInfoByType(recordType, timeFilter, characterFilter)
 			topItemTotal = itemTotal
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(itemTotals)
+	TSM.TempTable.Release(itemTotals)
 
-	return total, TSMAPI_FOUR.Util.Round(total / numDays), topItemString
+	return total, TSM.Math.Round(total / numDays), topItemString
 end

@@ -47,7 +47,7 @@ function TSMAPI_FOUR.Delay.AfterTime(label, duration, callback, repeatDelay)
 		duration, callback, repeatDelay = label, duration, callback
 		label = nil
 	end
-	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"), format("invalid args '%s', '%s', '%s', '%s'", tostring(label), tostring(duration), tostring(callback), tostring(repeatDelay)))
+	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
 	repeatDelay = repeatDelay and max(repeatDelay, MIN_TIME_DURATION) or nil
 	duration = max(duration, MIN_TIME_DURATION)
 
@@ -59,10 +59,10 @@ function TSMAPI_FOUR.Delay.AfterTime(label, duration, callback, repeatDelay)
 			end
 		end
 	else
-		label = TSMAPI_FOUR.Util.GetDebugStackInfo(2)
+		label = TSM.Debug.GetDebugStackInfo(2)
 	end
 
-	local delayTbl = TSMAPI_FOUR.Util.AcquireTempTable()
+	local delayTbl = TSM.TempTable.Acquire()
 	delayTbl.endTime = GetTime() + duration
 	delayTbl.callback = callback
 	delayTbl.label = label
@@ -83,7 +83,7 @@ function TSMAPI_FOUR.Delay.AfterFrame(label, duration, callback, repeatDelay)
 		duration, callback, repeatDelay = label, duration, callback
 		label = nil
 	end
-	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"), format("invalid args '%s', '%s', '%s', '%s'", tostring(label), tostring(duration), tostring(callback), tostring(repeatDelay)))
+	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
 	repeatDelay = repeatDelay and max(repeatDelay, 1) or nil
 	duration = max(duration, 1)
 
@@ -95,10 +95,10 @@ function TSMAPI_FOUR.Delay.AfterFrame(label, duration, callback, repeatDelay)
 			end
 		end
 	else
-		label = TSMAPI_FOUR.Util.GetDebugStackInfo(2)
+		label = TSM.Debug.GetDebugStackInfo(2)
 	end
 
-	local delayTbl = TSMAPI_FOUR.Util.AcquireTempTable()
+	local delayTbl = TSM.TempTable.Acquire()
 	delayTbl.endFrame = private.frameNumber + duration
 	delayTbl.callback = callback
 	delayTbl.label = label
@@ -112,7 +112,7 @@ end
 function TSMAPI_FOUR.Delay.Cancel(label)
 	for i, delay in ipairs(private.delays) do
 		if delay.label == label then
-			TSMAPI_FOUR.Util.ReleaseTempTable(tremove(private.delays, i))
+			TSM.TempTable.Release(tremove(private.delays, i))
 			return
 		end
 	end
@@ -137,7 +137,7 @@ function private.ProcessDelays()
 				if delay.repeatDelay then
 					delay.endFrame = private.frameNumber + delay.repeatDelay
 				else
-					TSMAPI_FOUR.Util.ReleaseTempTable(tremove(private.delays, i))
+					TSM.TempTable.Release(tremove(private.delays, i))
 				end
 				break
 			elseif delay.endTime and delay.endTime <= GetTime() then
@@ -146,7 +146,7 @@ function private.ProcessDelays()
 				if delay.repeatDelay then
 					delay.endTime = GetTime() + delay.repeatDelay
 				else
-					TSMAPI_FOUR.Util.ReleaseTempTable(tremove(private.delays, i))
+					TSM.TempTable.Release(tremove(private.delays, i))
 				end
 				break
 			end

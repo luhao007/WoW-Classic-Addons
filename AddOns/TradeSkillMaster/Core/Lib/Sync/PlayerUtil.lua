@@ -20,11 +20,11 @@ local private = {
 -- ============================================================================
 
 function PlayerUtil.OnInitialize()
-	TSMAPI_FOUR.Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
+	TSM.Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
 end
 
 function PlayerUtil.GetTargetPlayer(account)
-	local tempTbl = TSMAPI_FOUR.Util.AcquireTempTable()
+	local tempTbl = TSM.TempTable.Acquire()
 	for _, player in TSM.db:FactionrealmCharacterByAccountIterator(account) do
 		tinsert(tempTbl, player)
 	end
@@ -32,18 +32,18 @@ function PlayerUtil.GetTargetPlayer(account)
 	-- find the player to connect to without adding to the friends list
 	for _, player in ipairs(tempTbl) do
 		if PlayerUtil.IsOnline(player, true) then
-			TSMAPI_FOUR.Util.ReleaseTempTable(tempTbl)
+			TSM.TempTable.Release(tempTbl)
 			return player
 		end
 	end
 	-- if we failed, try again with adding to friends list
 	for _, player in ipairs(tempTbl) do
 		if PlayerUtil.IsOnline(player) then
-			TSMAPI_FOUR.Util.ReleaseTempTable(tempTbl)
+			TSM.TempTable.Release(tempTbl)
 			return player
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(tempTbl)
+	TSM.TempTable.Release(tempTbl)
 end
 
 function PlayerUtil.IsOnline(target, noAdd)

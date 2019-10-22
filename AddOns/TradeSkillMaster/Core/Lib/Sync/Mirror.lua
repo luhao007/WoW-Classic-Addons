@@ -82,7 +82,7 @@ function private.SendCharacterHashes()
 	assert(private.numConnected > 0)
 
 	-- calculate the hashes of the sync settings for all characters on this account
-	local hashes = TSMAPI_FOUR.Util.AcquireTempTable()
+	local hashes = TSM.TempTable.Acquire()
 	for _, character in TSM.db:FactionrealmCharacterByAccountIterator() do
 		hashes[character] = private.CalculateCharacterHash(character)
 	end
@@ -91,7 +91,7 @@ function private.SendCharacterHashes()
 	for _, character in TSM.Sync.Connection.ConnectedAccountIterator() do
 		TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.CHARACTER_HASHES_BROADCAST, character, hashes)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(hashes)
+	TSM.TempTable.Release(hashes)
 end
 
 
@@ -149,13 +149,13 @@ function private.CharacterSettingHashesRequestHandler(dataType, sourceAccount, s
 		return
 	end
 	TSM:LOG_INFO("CHARACTER_SETTING_HASHES_REQUEST (%s)", data)
-	local responseData = TSMAPI_FOUR.Util.AcquireTempTable()
+	local responseData = TSM.TempTable.Acquire()
 	responseData._character = data
 	for _, namespace, settingKey in TSM.db:SyncSettingSortedIterator() do
 		responseData[namespace.."."..settingKey] = private.CalculateCharacterSettingHash(data, namespace, settingKey)
 	end
 	TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.CHARACTER_SETTING_HASHES_RESPONSE, sourcePlayer, responseData)
-	TSMAPI_FOUR.Util.ReleaseTempTable(responseData)
+	TSM.TempTable.Release(responseData)
 end
 
 function private.CharacterSettingHashesResponseHandler(dataType, sourceAccount, sourcePlayer, data)
@@ -191,13 +191,13 @@ function private.CharacterSettingDataRequestHandler(dataType, sourceAccount, sou
 		return
 	end
 	TSM:LOG_INFO("CHARACTER_SETTING_DATA_REQUEST (%s,%s,%s)", character, namespace, settingKey)
-	local responseData = TSMAPI_FOUR.Util.AcquireTempTable()
+	local responseData = TSM.TempTable.Acquire()
 	responseData.character = character
 	responseData.namespace = namespace
 	responseData.settingKey = settingKey
 	responseData.data = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), namespace, settingKey)
 	TSM.Sync.Comm.SendData(TSM.Sync.DATA_TYPES.CHARACTER_SETTING_DATA_RESPONSE, sourcePlayer, responseData)
-	TSMAPI_FOUR.Util.ReleaseTempTable(responseData)
+	TSM.TempTable.Release(responseData)
 end
 
 function private.CharacterSettingDataResponseHandler(dataType, sourceAccount, sourcePlayer, data)
@@ -229,13 +229,13 @@ function private.CalculateCharacterHash(character)
 	local hash = nil
 	for _, namespace, settingKey in TSM.db:SyncSettingSortedIterator() do
 		local settingValue = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), namespace, settingKey)
-		hash = TSMAPI_FOUR.Util.CalculateHash(namespace.."."..settingKey, hash)
-		hash = TSMAPI_FOUR.Util.CalculateHash(settingValue, hash)
+		hash = TSM.Math.CalculateHash(namespace.."."..settingKey, hash)
+		hash = TSM.Math.CalculateHash(settingValue, hash)
 	end
 	assert(hash)
 	return hash
 end
 
 function private.CalculateCharacterSettingHash(character, namespace, settingKey)
-	return TSMAPI_FOUR.Util.CalculateHash(TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), namespace, settingKey))
+	return TSM.Math.CalculateHash(TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), namespace, settingKey))
 end

@@ -114,7 +114,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 				if items[itemString] > 0 and info.quantity > 0 then
 					if items[itemString] < info.quantity then
 						if #emptySlotIds > 0 then
-							local splitBag, splitSlot = TSMAPI_FOUR.Util.SplitSlotId(tremove(emptySlotIds, 1))
+							local splitBag, splitSlot = TSM.SlotId.Split(tremove(emptySlotIds, 1))
 							SplitContainerItem(info.bag, info.slot, items[itemString])
 							PickupContainerItem(splitBag, splitSlot)
 							TSMAPI_FOUR.Thread.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
@@ -253,7 +253,7 @@ function private.GetEmptyBagSlotsThreaded(itemFamily)
 		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
 			for slot = 1, GetContainerNumSlots(bag) do
 				if not GetContainerItemInfo(bag, slot) then
-					local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+					local slotId = TSM.SlotId.Join(bag, slot)
 					tinsert(emptySlotIds, slotId)
 					-- use special bags first
 					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
@@ -262,7 +262,7 @@ function private.GetEmptyBagSlotsThreaded(itemFamily)
 		end
 		TSMAPI_FOUR.Thread.Yield()
 	end
-	TSMAPI_FOUR.Util.TableSortWithValueLookup(emptySlotIds, sortvalue)
+	TSM.Table.SortWithValueLookup(emptySlotIds, sortvalue)
 	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortvalue)
 
 	return emptySlotIds

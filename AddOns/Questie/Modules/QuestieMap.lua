@@ -246,6 +246,15 @@ function QuestieMap:ShowObject(objectID)
     end
 end
 
+function QuestieMap:DrawLineIcon(lineFrame, AreaID, x, y)
+    if type(AreaID) ~= "number" or type(x) ~= "number" or type(y) ~= "number" then
+        error(MAJOR..": AddWorldMapIconMap: 'AreaID', 'x' and 'y' must be numbers "..AreaID.." "..x.." "..y)
+    end
+
+    HBDPins:AddWorldMapIconMap(Questie, lineFrame, zoneDataAreaIDToUiMapID[AreaID], x, y, HBD_PINS_WORLDMAP_SHOW_CURRENT)
+end
+
+
 -- Draw manually added NPC/object notes
 -- TODO: item and custom notes
 --@param data table<...> @A table created by the calling function, must contain `id`, `Name`, `GetIconScale()`, and `Type`
@@ -331,6 +340,21 @@ end
 --coordinates need to be 0-1 instead of 0-100
 --showFlag isn't required but may want to be Modified
 function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
+    local worldMapId = zoneDataAreaIDToUiMapID[AreaID]
+    local isExplored = false
+
+    if worldMapId then
+        local exploredAreaIDs = C_MapExplorationInfo.GetExploredAreaIDsAtPosition(worldMapId, CreateVector2D(x / 100, y / 100));
+        if exploredAreaIDs then isExplored = true              -- Explored
+        elseif (worldMapId == 1453) then isExplored = true     -- Stormwind
+        elseif (worldMapId == 1455) then isExplored = true     -- Ironforge
+        elseif (worldMapId == 1457) then isExplored = true     -- Darnassus
+        elseif (worldMapId == 1458) then isExplored = true     -- Undercity
+        elseif (worldMapId == 1454) then isExplored = true     -- Orgrimmar
+        elseif (worldMapId == 1456) then isExplored = true     -- Thunder Bluff
+        end
+    end
+
     if type(data) ~= "table" then
         error(MAJOR..": AddWorldMapIconMap: must have some data")
     end
@@ -495,13 +519,17 @@ function QuestieMap:DrawWorldIcon(data, AreaID, x, y, showFlag)
         end
 
         if Questie.db.global.enableMiniMapIcons then
-            QuestieMap:QueueDraw(QuestieMap.ICON_MINIMAP_TYPE, Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge);
-            --HBDPins:AddMinimapIconMap(Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge)
+            if not ((Questie.db.global.hideUnexploredMapIcons) and (isExplored == false)) then
+                QuestieMap:QueueDraw(QuestieMap.ICON_MINIMAP_TYPE, Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge);
+                --HBDPins:AddMinimapIconMap(Questie, iconMinimap, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, true, floatOnEdge)
+            end
         end
         if Questie.db.global.enableMapIcons then
-            QuestieMap:QueueDraw(QuestieMap.ICON_MAP_TYPE, Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag);
-            QuestieDBMIntegration:RegisterHudQuestIcon(tostring(icon), data.Icon, zoneDataAreaIDToUiMapID[AreaID], x, y, colors[1], colors[2], colors[3])
-            --HBDPins:AddWorldMapIconMap(Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag)
+            if not ((Questie.db.global.hideUnexploredMapIcons) and (isExplored == false)) then
+                QuestieMap:QueueDraw(QuestieMap.ICON_MAP_TYPE, Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag);
+                QuestieDBMIntegration:RegisterHudQuestIcon(tostring(icon), data.Icon, zoneDataAreaIDToUiMapID[AreaID], x, y, colors[1], colors[2], colors[3])
+                --HBDPins:AddWorldMapIconMap(Questie, icon, zoneDataAreaIDToUiMapID[AreaID], x / 100, y / 100, showFlag)
+            end
         end
         if(QuestieMap.questIdFrames[data.Id] == nil) then
             QuestieMap.questIdFrames[data.Id] = {}

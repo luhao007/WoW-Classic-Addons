@@ -39,7 +39,7 @@ end
 function private.GetVirtualItemList(row)
 	private.itemsQuery:BindParams(row:GetField("index"))
 
-	local items = TSMAPI_FOUR.Util.AcquireTempTable()
+	local items = TSM.TempTable.Acquire()
 	for _, itemsRow in private.itemsQuery:Iterator() do
 		local itemName = TSM.UI.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
 		local qty = itemsRow:GetField("quantity")
@@ -48,7 +48,7 @@ function private.GetVirtualItemList(row)
 	end
 
 	local result = table.concat(items, ", ")
-	TSMAPI_FOUR.Util.ReleaseTempTable(items)
+	TSM.TempTable.Release(items)
 
 	return result
 end

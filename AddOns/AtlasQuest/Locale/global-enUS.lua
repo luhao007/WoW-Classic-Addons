@@ -72,12 +72,6 @@ AQCCOFF = "AtlasQuest will not recolour quests."
 -- QuestLog Colour Check
 AQQLColourChange = ""..WHITE.."DISABLED Colours all quest, you have in your Questlog "..BLUE.."blue.";
 
--- AutoQuery Quest Rewards
-AQOptionsAutoQueryTEXT = ""..WHITE.."Automatically query the server for items you haven't seen.";
-
--- Suppress Server Query text
-AQOptionsNoQuerySpamTEXT = ""..WHITE.."Suppress Server Query spam.";
-
 -- Use Comparison Tooltips
 AQOptionsCompareTooltipTEXT = ""..WHITE.."DISABLED Compare rewards to currently equipped items.";
 

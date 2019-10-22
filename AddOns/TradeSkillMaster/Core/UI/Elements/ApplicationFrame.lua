@@ -12,7 +12,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ApplicationFrame = TSMAPI_FOUR.Class.DefineClass("ApplicationFrame", TSM.UI.Frame)
+local ApplicationFrame = TSM.Lib.Class.DefineClass("ApplicationFrame", TSM.UI.Frame)
 TSM.UI.ApplicationFrame = ApplicationFrame
 local private = {}
 local INNER_FRAME_OFFSET = 10
@@ -421,7 +421,7 @@ end
 -- @tparam function callback The callback for when the dialog is closed
 -- @tparam[opt] varag ... Arguments to pass to the callback
 function ApplicationFrame.ShowConfirmationDialog(self, title, subTitle, confirmBtnText, callback, ...)
-	local context = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	local context = TSM.TempTable.Acquire(...)
 	context.callback = callback
 	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
 		:SetLayout("VERTICAL")
@@ -715,7 +715,7 @@ end
 function private.DialogOnHide(dialog)
 	local context = dialog:GetContext()
 	if context then
-		TSMAPI_FOUR.Util.ReleaseTempTable(context)
+		TSM.TempTable.Release(context)
 	end
 end
 
@@ -730,5 +730,5 @@ function private.DialogConfirmBtnOnClick(button)
 	local context = dialog:GetContext()
 	dialog:SetContext(nil)
 	self:HideDialog()
-	context.callback(TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(context))
+	context.callback(TSM.TempTable.UnpackAndRelease(context))
 end

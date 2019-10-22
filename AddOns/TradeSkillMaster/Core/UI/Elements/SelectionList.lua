@@ -12,7 +12,7 @@
 -- @classmod SelectionList
 
 local _, TSM = ...
-local SelectionList = TSMAPI_FOUR.Class.DefineClass("SelectionList", TSM.UI.ScrollList)
+local SelectionList = TSM.Lib.Class.DefineClass("SelectionList", TSM.UI.ScrollList)
 TSM.UI.SelectionList = SelectionList
 local private = {}
 

@@ -20,7 +20,7 @@ local FILTER_SEP = "\001"
 
 function SavedSearches.OnInitialize()
 	-- remove duplicates
-	local keepSearch = TSMAPI_FOUR.Util.AcquireTempTable()
+	local keepSearch = TSM.TempTable.Acquire()
 	for _, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
 		local filter = data.filter
 		if not keepSearch[filter] then
@@ -40,7 +40,7 @@ function SavedSearches.OnInitialize()
 			tremove(TSM.db.global.userData.savedAuctioningSearches, i)
 		end
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(keepSearch)
+	TSM.TempTable.Release(keepSearch)
 
 	private.db = TSMAPI_FOUR.Database.NewSchema("AUCTIONING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")
@@ -137,7 +137,7 @@ end
 -- ============================================================================
 
 function private.GetSearchName(filter, searchType)
-	local filters = TSMAPI_FOUR.Util.AcquireTempTable()
+	local filters = TSM.TempTable.Acquire()
 	local searchTypeStr, numFiltersStr = nil, nil
 	if filter == "" or string.sub(filter, 1, 1) == FILTER_SEP then
 		tinsert(filters, L["Base Group"])
@@ -174,9 +174,9 @@ function private.GetSearchName(filter, searchType)
 	local groupList = nil
 	if #filters > 10 then
 		groupList = table.concat(filters, ", ", 1, 10)..",..."
-		TSMAPI_FOUR.Util.ReleaseTempTable(filters)
+		TSM.TempTable.Release(filters)
 	else
-		groupList = strjoin(", ", TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(filters))
+		groupList = strjoin(", ", TSM.TempTable.UnpackAndRelease(filters))
 	end
 	return format("%s (%s): %s", searchTypeStr, numFiltersStr, groupList)
 end

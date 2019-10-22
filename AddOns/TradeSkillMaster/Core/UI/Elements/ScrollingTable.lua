@@ -12,7 +12,7 @@
 -- @classmod ScrollingTable
 
 local _, TSM = ...
-local ScrollingTable = TSMAPI_FOUR.Class.DefineClass("ScrollingTable", TSM.UI.Element, "ABSTRACT")
+local ScrollingTable = TSM.Lib.Class.DefineClass("ScrollingTable", TSM.UI.Element, "ABSTRACT")
 TSM.UI.ScrollingTable = ScrollingTable
 local private = {
 	rowPool = TSMAPI_FOUR.ObjectPool.New("TABLE_ROWS", TSM.UI.Util.TableRow, 1),
@@ -181,7 +181,7 @@ function ScrollingTable.SetSelection(self, selection)
 	end
 	local index = nil
 	if selection then
-		index = TSMAPI_FOUR.Util.TableKeyByValue(self._data, selection)
+		index = TSM.Table.KeyByValue(self._data, selection)
 		assert(index)
 	end
 	self._selection = selection
@@ -264,7 +264,7 @@ function ScrollingTable.Draw(self)
 		self._header:SetHeight(HEADER_HEIGHT)
 	end
 
-	if TSMAPI_FOUR.Util.Round(scrollOffset + visibleHeight) == totalHeight then
+	if TSM.Math.Round(scrollOffset + visibleHeight) == totalHeight then
 		-- we are at the bottom
 		self._scrollFrame:SetVerticalScroll(numVisibleRows * rowHeight - visibleHeight)
 	else

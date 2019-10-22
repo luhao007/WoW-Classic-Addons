@@ -1,9 +1,14 @@
 # Deadly Boss Mods Core
 
-## [1.13.16](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.16) (2019-10-13)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.15...1.13.16)
+## [1.13.17](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.17) (2019-10-20)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.16...1.13.17)
 
-- Tweak default HUD refresh rate, since testing revealed that 0.035 is a terrible refresh rate for 60fps (it causes jitter since it poorly matches the refresh rate). 0.03 refresh rate is much smoother.  
-    Bumped version to prep tag. I know it's wierd to tag a new release for feature not even used in dungeons/raid, but these api tweaks are important to push out since opening the HUD api wide open for 3rd party usage :)  
-- Support API for 3rd party mods to control refresh rate of HUD  
-- Because in classic it's up to 40 targets,  half the scan count on fireball to reduce target iteration by 50%  
+- prep new release  
+- Merge pull request #16 from wallrik/scholomance  
+    Add basic boss tracking to Scholomance  
+- Add basic boss tracking to Scholomance  
+- Attempt to fix false combat starts in Dire maul by filtering friendly units.  
+- Fixed LoadGUI for Victory sounds, so it will remind why dbm-core is disabled  
+- Also forgot to bump alpha revision  
+- Forgot GUI options  
+- Added World buff Alerts and timers (drycoded, kind of hard to test so give feedback(. Closes #14  

@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local MailTracking = TSM.Inventory:NewPackage("MailTracking", "AceHook-3.0")
+local MailTracking = TSM.Inventory:NewPackage("MailTracking")
 local private = {
 	mailDB = nil,
 	itemDB = nil,
@@ -24,7 +24,7 @@ local PLAYER_NAME = UnitName("player")
 
 function MailTracking.OnInitialize()
 	-- update the structure of TSM.db.factionrealm.internalData.pendingMail
-	local toUpdate = TSMAPI_FOUR.Util.AcquireTempTable()
+	local toUpdate = TSM.TempTable.Acquire()
 	for character, pendingMailData in pairs(TSM.db.factionrealm.internalData.pendingMail) do
 		if pendingMailData.items then
 			TSM:LOG_INFO("Converting pending mail data for %s", character)
@@ -34,10 +34,10 @@ function MailTracking.OnInitialize()
 	for character, items in pairs(toUpdate) do
 		TSM.db.factionrealm.internalData.pendingMail[character] = items
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(toUpdate)
+	TSM.TempTable.Release(toUpdate)
 
 	-- remove data for characters we don't own
-	local toRemove = TSMAPI_FOUR.Util.AcquireTempTable()
+	local toRemove = TSM.TempTable.Acquire()
 	for character in pairs(TSM.db.factionrealm.internalData.pendingMail) do
 		local owner = TSM.db:GetSyncOwnerAccountKey(character)
 		if owner and owner ~= TSM.db:GetSyncAccountKey() then
@@ -48,7 +48,7 @@ function MailTracking.OnInitialize()
 	for _, character in ipairs(toRemove) do
 		TSM.db.factionrealm.internalData.pendingMail[character] = nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(toRemove)
+	TSM.TempTable.Release(toRemove)
 
 	private.mailDB = TSMAPI_FOUR.Database.NewSchema("MAILTRACKING_INBOX_INFO")
 		:AddUniqueNumberField("index")
@@ -69,33 +69,50 @@ function MailTracking.OnInitialize()
 		:Commit()
 
 	TSM.db.factionrealm.internalData.pendingMail[PLAYER_NAME] = TSM.db.factionrealm.internalData.pendingMail[PLAYER_NAME] or {}
-	TSMAPI_FOUR.Event.Register("MAIL_SHOW", private.MailShowHandler)
-	TSMAPI_FOUR.Event.Register("MAIL_CLOSED", private.MailClosedHandler)
-	TSMAPI_FOUR.Event.Register("MAIL_INBOX_UPDATE", private.MailInboxUpdateHandler)
+	TSM.Event.Register("MAIL_SHOW", private.MailShowHandler)
+	TSM.Event.Register("MAIL_CLOSED", private.MailClosedHandler)
+	TSM.Event.Register("MAIL_INBOX_UPDATE", private.MailInboxUpdateHandler)
 
-	-- handle auction buying
-	MailTracking:SecureHook("PlaceAuctionBid", function(listType, index, bidPlaced)
-		local itemString = TSMAPI_FOUR.Item.ToBaseItemString(GetAuctionItemLink(listType, index))
-		local _, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo(listType, index)
-		if not itemString or bidPlaced ~= buyout then
-			return
-		end
-		TSM.Inventory.ChangePendingMailQuantity(itemString, stackSize)
-	end)
+	if select(4, GetBuildInfo()) < 80300 then
+		-- handle auction buying
+		hooksecurefunc("PlaceAuctionBid", function(listType, index, bidPlaced)
+			local itemString = TSMAPI_FOUR.Item.ToBaseItemString(GetAuctionItemLink(listType, index))
+			local _, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo(listType, index)
+			if not itemString or bidPlaced ~= buyout then
+				return
+			end
+			TSM.Inventory.ChangePendingMailQuantity(itemString, stackSize)
+		end)
 
-	-- handle auction canceling
-	MailTracking:SecureHook("CancelAuction", function(index)
-		local itemString = TSMAPI_FOUR.Item.ToBaseItemString(GetAuctionItemLink("owner", index))
-		local _, _, stackSize = GetAuctionItemInfo("owner", index)
-		-- for some reason, these APIs don't always work properly, so check the return values
-		if not itemString or not stackSize or stackSize == 0 then
-			return
-		end
-		TSM.Inventory.ChangePendingMailQuantity(itemString, stackSize)
-	end)
+		-- handle auction canceling
+		hooksecurefunc("CancelAuction", function(index)
+			local itemString = TSMAPI_FOUR.Item.ToBaseItemString(GetAuctionItemLink("owner", index))
+			local _, _, stackSize = GetAuctionItemInfo("owner", index)
+			-- for some reason, these APIs don't always work properly, so check the return values
+			if not itemString or not stackSize or stackSize == 0 then
+				return
+			end
+			TSM.Inventory.ChangePendingMailQuantity(itemString, stackSize)
+		end)
+	else
+		-- handle auction buying
+		hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
+			-- TODO: figure out how to get the info we need
+		end)
+
+		-- handle auction canceling
+		hooksecurefunc(C_AuctionHouse, "CancelAuction", function(auctionId)
+			local itemString = TSM.Inventory.AuctionTracking.GetFieldByIndex(auctionId, "itemString")
+			if not itemString then
+				return
+			end
+			local stackSize = TSM.Inventory.AuctionTracking.GetFieldByIndex(auctionId, "stackSize")
+			TSM.Inventory.ChangePendingMailQuantity(itemString, stackSize)
+		end)
+	end
 
 	-- handle sending mail to alts
-	MailTracking:SecureHook("SendMail", function(target)
+	hooksecurefunc("SendMail", function(target)
 		local character = private.ValidateCharacter(target)
 		if not character then
 			return
@@ -112,7 +129,7 @@ function MailTracking.OnInitialize()
 	end)
 
 	-- handle returning mail to alts
-	MailTracking:SecureHook("ReturnInboxItem", function(index)
+	hooksecurefunc("ReturnInboxItem", function(index)
 		local character = private.ValidateCharacter(select(3, GetInboxHeaderInfo(index)))
 		if not character then
 			return
@@ -289,7 +306,7 @@ function private.GetMailType(index)
 				return "CANCEL"
 			end
 
-			if itemName and strfind(subject, "^"..TSMAPI_FOUR.Util.StrEscape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
+			if itemName and strfind(subject, "^"..TSM.String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
 				return "EXPIRE"
 			end
 		end

@@ -59,20 +59,6 @@ function AtlasQuestOptionFrame_OnShow()
       AQCheckQuestlogButton:SetChecked(false);
     end
 
-    -- AutoQuery
-    if (AQAutoQuery == nil) then
-      AQAutoQueryOption:SetChecked(false);
-    else
-      AQAutoQueryOption:SetChecked(true);
-    end
-
-    -- Suppress Server Query Text
-    if (AQNoQuerySpam == nil) then
-      AQNoQuerySpamOption:SetChecked(false);
-    else
-      AQNoQuerySpamOption:SetChecked(true);
-    end
-
     -- ComparisonTooltips
     if (AQCompareTooltip == nil) then
       AQCompareTooltipOption:SetChecked(false);
@@ -166,35 +152,6 @@ function AQCheckQuestlogButton_OnClick()
           AQUpdateNOW = true;
 end
 
-
------------------------------------------------------------------------------
--- AutoQuery Option
------------------------------------------------------------------------------
-function AQAutoQueryOption_OnClick()
- if (AQAutoQuery == nil) then
-   AQAutoQuery = "yes";
-   AQAutoQueryOption:SetChecked(true);
- else
-   AQAutoQuery = nil;
-   AQAutoQueryOption:SetChecked(false);
- end
- AtlasQuest_SaveData();
-end
-
-
------------------------------------------------------------------------------
--- Suppress AutoQuery Text Option
------------------------------------------------------------------------------
-function AQNoQuerySpamOption_OnClick()
- if (AQNoQuerySpam == nil) then
-   AQNoQuerySpam = "yes";
-   AQNoQuerySpamOption:SetChecked(true);
- else
-   AQNoQuerySpam = nil;
-   AQNoQuerySpamOption:SetChecked(false);
- end
- AtlasQuest_SaveData();
-end
 
 
 -----------------------------------------------------------------------------

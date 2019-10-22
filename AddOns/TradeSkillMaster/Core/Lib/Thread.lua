@@ -25,7 +25,7 @@ local SEND_MSG_SYNC_TIMEOUT_MS = 3000
 local YIELD_VALUE_START = {}
 local YIELD_VALUE = {}
 local SCHEDULER_TIME_WARNING_THRESHOLD_MS = 100
-local Thread = TSMAPI_FOUR.Class.DefineClass("Thread")
+local Thread = TSM.Lib.Class.DefineClass("Thread")
 
 
 
@@ -82,7 +82,7 @@ end
 function TSMAPI_FOUR.Thread.SendMessage(threadId, ...)
 	local thread = private.threads[threadId]
 	assert(thread:_IsAlive())
-	tinsert(thread._messages, TSMAPI_FOUR.Util.AcquireTempTable(...))
+	tinsert(thread._messages, TSM.TempTable.Acquire(...))
 end
 
 --- Send a synchronous message to a thread.
@@ -201,11 +201,11 @@ function TSMAPI_FOUR.Thread.GetDebugInfo()
 		if thread._startCaller then
 			local temp = { backtrace = {} }
 			local level = 2
-			local line = TSMAPI_FOUR.Util.GetDebugStackInfo(level, thread._co)
+			local line = TSM.Debug.GetDebugStackInfo(level, thread._co)
 			while line do
 				tinsert(temp.backtrace, line)
 				level = level + 1
-				line = TSMAPI_FOUR.Util.GetDebugStackInfo(level, thread._co)
+				line = TSM.Debug.GetDebugStackInfo(level, thread._co)
 			end
 			temp.state = thread._state
 			temp.sleepTime = thread._sleepTime
@@ -222,7 +222,7 @@ function TSMAPI_FOUR.Thread.GetDebugInfo()
 			if thread._startTime then
 				temp.realTimeUsed = debugprofilestop() - thread._startTime
 				temp.cpuTimeUsed = thread._cpuTimeUsed
-				temp.cpuPct = format("%.1f%%", TSMAPI_FOUR.Util.Round(thread._cpuTimeUsed / temp.realTimeUsed, 0.001) * 100)
+				temp.cpuPct = format("%.1f%%", TSM.Math.Round(thread._cpuTimeUsed / temp.realTimeUsed, 0.001) * 100)
 			end
 			local key = thread._name
 			while threadInfo[key] do
@@ -231,7 +231,7 @@ function TSMAPI_FOUR.Thread.GetDebugInfo()
 			threadInfo[key] = temp
 		end
 	end
-	return TSMAPI_FOUR.Debug.DumpTable(threadInfo, true)
+	return TSM.Debug.DumpTable(threadInfo, true)
 end
 
 
@@ -265,7 +265,7 @@ function Thread.__init(self, name, func, isImmortal)
 	self._cpuTimeUsed = 0
 	self._realTimeUsed = 0
 	self._name = name
-	self._createCaller = TSMAPI_FOUR.Util.GetDebugStackInfo(4)
+	self._createCaller = TSM.Debug.GetDebugStackInfo(4)
 	self._startCaller = nil
 end
 
@@ -286,7 +286,7 @@ function Thread._Start(self, ...)
 	self._startTime = 0
 	self._cpuTimeUsed = 0
 	self._realTimeUsed = 0
-	self._startCaller = self._startCaller or TSMAPI_FOUR.Util.GetDebugStackInfo(3)
+	self._startCaller = self._startCaller or TSM.Debug.GetDebugStackInfo(3)
 
 	-- run the thread once (will yield right away) to pass in self and the arguments
 	local noErr, retValue = coroutine.resume(self._co, self, ...)
@@ -305,7 +305,7 @@ end
 function Thread._ToLogStr(self)
 	if self._startTime then
 		self._realTimeUsed = debugprofilestop() - self._startTime
-		local pctStr = format("%.1f%%", TSMAPI_FOUR.Util.Round(self._cpuTimeUsed / self._realTimeUsed, 0.001) * 100)
+		local pctStr = format("%.1f%%", TSM.Math.Round(self._cpuTimeUsed / self._realTimeUsed, 0.001) * 100)
 		return format("%s [%s,%s]", self._name, self._state, pctStr)
 	else
 		return format("%s [%s]", self._name, self._state)
@@ -314,19 +314,19 @@ end
 
 function Thread._Cleanup(self)
 	for _, msg in ipairs(self._messages) do
-		TSMAPI_FOUR.Util.ReleaseTempTable(msg)
+		TSM.TempTable.Release(msg)
 	end
 	wipe(self._messages)
 	for tbl in pairs(self._safeTempTables) do
-		TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+		TSM.TempTable.Release(tbl)
 	end
 	wipe(self._safeTempTables)
 	if self._waitFunctionArgs then
-		TSMAPI_FOUR.Util.ReleaseTempTable(self._waitFunctionArgs)
+		TSM.TempTable.Release(self._waitFunctionArgs)
 		self._waitFunctionArgs = nil
 	end
 	if self._syncMessage then
-		TSMAPI_FOUR.Util.ReleaseTempTable(self._syncMessage)
+		TSM.TempTable.Release(self._syncMessage)
 		self._syncMessage = nil
 		self._syncMessageDest = nil
 	end
@@ -360,7 +360,7 @@ function Thread._Run(self, quantum)
 		local msg = self._syncMessage
 		self._syncMessage = nil
 		self._syncMessageDest = nil
-		local errMsg = destThread:_HandleSyncMessage(TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(msg))
+		local errMsg = destThread:_HandleSyncMessage(TSM.TempTable.UnpackAndRelease(msg))
 		if errMsg then
 			noErr = false
 			returnVal = errMsg
@@ -382,10 +382,10 @@ function Thread._Run(self, quantum)
 	if self._state == "DEAD" then
 		self:_Cleanup()
 		if self._callback and self._returnValue then
-			self._callback(TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(self._returnValue))
+			self._callback(TSM.TempTable.UnpackAndRelease(self._returnValue))
 			self._returnValue = nil
 		elseif self._returnValue then
-			TSMAPI_FOUR.Util.ReleaseTempTable(self._returnValue)
+			TSM.TempTable.Release(self._returnValue)
 			self._returnValue = nil
 		end
 	end
@@ -411,12 +411,12 @@ function Thread._UpdateState(self, elapsed)
 		end
 	elseif self._state == "WAITING_FOR_FUNCTION" then
 		assert(self._waitFunction, "Waiting for function without waitFunction set")
-		local result = TSMAPI_FOUR.Util.AcquireTempTable(self._waitFunction(unpack(self._waitFunctionArgs)))
+		local result = TSM.TempTable.Acquire(self._waitFunction(unpack(self._waitFunctionArgs)))
 		if result[1] then
 			self._waitFunctionResult = result
 			self._state = "READY"
 		else
-			TSMAPI_FOUR.Util.ReleaseTempTable(result)
+			TSM.TempTable.Release(result)
 		end
 	elseif self._state == "FORCED_YIELD" then
 		self._state = "READY"
@@ -437,14 +437,14 @@ function Thread._ProcessEvent(self, event, ...)
 		assert(self._eventNames or self._eventArgs)
 		if self._eventNames[event] then
 			wipe(self._eventNames) -- only trigger the event once then clear all
-			self._eventArgs = TSMAPI_FOUR.Util.AcquireTempTable(event, ...)
+			self._eventArgs = TSM.TempTable.Acquire(event, ...)
 		end
 	end
 end
 
 function Thread._HandleSyncMessage(self, ...)
 	assert(not TSMAPI_FOUR.Thread.IsThreadContext())
-	local msg = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	local msg = TSM.TempTable.Acquire(...)
 	tinsert(self._messages, 1, msg) -- this message should be received first
 	-- run the thread for up to 3 seconds to get it to process the sync message
 	local startTime = debugprofilestop()
@@ -470,7 +470,7 @@ end
 function Thread._Main(self, ...)
 	self._startTime = debugprofilestop()
 	coroutine.yield(YIELD_VALUE_START)
-	self._returnValue = TSMAPI_FOUR.Util.AcquireTempTable(self._func(...))
+	self._returnValue = TSM.TempTable.Acquire(self._func(...))
 	self:_Exit()
 end
 
@@ -504,52 +504,52 @@ function Thread._ReceiveMessage(self)
 		self._state = "WAITING_FOR_MSG"
 	end
 	self:_Yield()
-	return TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(tremove(self._messages, 1))
+	return TSM.TempTable.UnpackAndRelease(tremove(self._messages, 1))
 end
 
 function Thread._SendSyncMessage(self, destThread, ...)
 	assert(destThread ~= self)
 	self._state = "SENDING_SYNC_MESSAGE"
 	self._syncMessageDest = destThread
-	self._syncMessage = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	self._syncMessage = TSM.TempTable.Acquire(...)
 	self:_Yield()
 end
 
 function Thread._WaitForEvent(self, ...)
 	self._state = "WAITING_FOR_EVENT"
 	self._eventArgs = nil
-	for _, event in TSMAPI_FOUR.Util.VarargIterator(...) do
+	for _, event in TSM.Vararg.Iterator(...) do
 		self._eventNames[event] = true
 		private.schedulerFrame:RegisterEvent(event)
 	end
 	self:_Yield()
 	local result = self._eventArgs
 	self._eventArgs = nil
-	return TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(result)
+	return TSM.TempTable.UnpackAndRelease(result)
 end
 
 function Thread._WaitForFunction(self, func, ...)
 	-- try the function once before yielding
-	local result = TSMAPI_FOUR.Util.AcquireTempTable(func(...))
+	local result = TSM.TempTable.Acquire(func(...))
 	if result[1] then
-		return TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(result)
+		return TSM.TempTable.UnpackAndRelease(result)
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(result)
+	TSM.TempTable.Release(result)
 	-- do the yield
 	self._state = "WAITING_FOR_FUNCTION"
 	self._waitFunction = func
-	self._waitFunctionArgs = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	self._waitFunctionArgs = TSM.TempTable.Acquire(...)
 	self:_Yield()
 	result = self._waitFunctionResult
 	self.waitFunction = nil
-	TSMAPI_FOUR.Util.ReleaseTempTable(self._waitFunctionArgs)
+	TSM.TempTable.Release(self._waitFunctionArgs)
 	self._waitFunctionArgs = nil
 	self._waitFunctionResult = nil
-	return TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(result)
+	return TSM.TempTable.UnpackAndRelease(result)
 end
 
 function Thread._AcquireSafeTempTable(self, ...)
-	local tbl = TSMAPI_FOUR.Util.AcquireTempTable(...)
+	local tbl = TSM.TempTable.Acquire(...)
 	assert(not self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = true
 	return tbl
@@ -558,13 +558,13 @@ end
 function Thread._ReleaseSafeTempTable(self, tbl)
 	assert(self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = nil
-	return TSMAPI_FOUR.Util.ReleaseTempTable(tbl)
+	return TSM.TempTable.Release(tbl)
 end
 
 function Thread._UnpackAndReleaseSafeTempTable(self, tbl)
 	assert(self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = nil
-	return TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(tbl)
+	return TSM.TempTable.UnpackAndRelease(tbl)
 end
 
 function Thread._Exit(self)
@@ -577,7 +577,7 @@ function Thread._Exit(self)
 		coroutine.yield(YIELD_VALUE)
 		error("Shouldn't get here")
 	elseif self._returnValue then
-		TSMAPI_FOUR.Util.ReleaseTempTable(self._returnValue)
+		TSM.TempTable.Release(self._returnValue)
 		self._returnValue = nil
 	end
 end
@@ -627,7 +627,7 @@ function private.RunScheduler(_, elapsed)
 				-- any thread which ran excessively long should be ignored for future loops
 				if elapsedTime > EXCESSIVE_TIME_USED_RATIO * quantum and elapsedTime > quantum + 1 then
 					if elapsedTime > EXCESSIVE_TIME_LOG_THRESHOLD_MS then
-						local line = TSMAPI_FOUR.Util.GetDebugStackInfo(2, thread._co)
+						local line = TSM.Debug.GetDebugStackInfo(2, thread._co)
 						TSM:LOG_WARN("Thread %s ran too long (%.1f/%.1f): %s", thread._name, elapsedTime, quantum, line or "?")
 					end
 					tremove(private.queue, i)

@@ -131,7 +131,7 @@ function private.CreateCustomPriceRow(name)
 end
 
 function private.AddCustomPriceRows(frame)
-	local names = TSMAPI_FOUR.Util.AcquireTempTable()
+	local names = TSM.TempTable.Acquire()
 	for name in pairs(TSM.db.global.userData.customPriceSources) do
 		tinsert(names, name)
 	end
@@ -139,7 +139,7 @@ function private.AddCustomPriceRows(frame)
 	for _, name in ipairs(names) do
 		frame:AddChild(private.CreateCustomPriceRow(name))
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(names)
+	TSM.TempTable.Release(names)
 end
 
 

@@ -19,7 +19,7 @@ local GOLD_TRAIT_ID = 256 -- traitId for the treasure hunter trait which increas
 
 function Garrison.OnInitialize()
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("GARRISON_MISSION_COMPLETE_RESPONSE", private.MissionComplete)
+		TSM.Event.Register("GARRISON_MISSION_COMPLETE_RESPONSE", private.MissionComplete)
 	end
 end
 

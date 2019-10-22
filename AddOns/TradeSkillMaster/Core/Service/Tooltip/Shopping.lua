@@ -35,15 +35,7 @@ function private.LoadTooltip(tooltip, itemString, options)
 		-- only 1 tooltip option
 		return
 	end
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
-
-	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Shopping", itemString)
-	if not operationName then
-		return
-	end
-	TSM.Operations.Update("Shopping", operationName)
-
-	local maxPrice = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+	local maxPrice = TSM.Operations.Shopping.GetMaxPrice(itemString)
 	if maxPrice then
 		tooltip:AddItemValueLine(L["Max Shopping Price"], maxPrice)
 	end

@@ -124,7 +124,7 @@ function Groups.RebuildDatabase()
 	end
 
 	-- fix up any invalid items
-	local newPaths = TSMAPI_FOUR.Util.AcquireTempTable()
+	local newPaths = TSM.TempTable.Acquire()
 	for itemString, groupPath in pairs(TSM.db.profile.userData.items) do
 		local newItemString = TSMAPI_FOUR.Item.ToItemString(itemString)
 		if not newItemString then
@@ -149,7 +149,7 @@ function Groups.RebuildDatabase()
 	for itemString, groupPath in pairs(newPaths) do
 		TSM.db.profile.userData.items[itemString] = groupPath
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(newPaths)
+	TSM.TempTable.Release(newPaths)
 
 	-- populate our database
 	private.itemDB:TruncateAndBulkInsertStart()
@@ -201,14 +201,14 @@ function Groups.Move(groupPath, newGroupPath)
 	local newParentPath = TSM.Groups.Path.GetParent(newGroupPath)
 	assert(newParentPath and TSM.db.profile.userData.groups[newParentPath], "Parent of target is invalid")
 
-	local changes = TSMAPI_FOUR.Util.AcquireTempTable()
+	local changes = TSM.TempTable.Acquire()
 	private.itemDB:SetQueryUpdatesPaused(true)
 
 	-- get a list of group path changes for this group and all its subgroups
 	local gsubEscapedNewGroupPath = gsub(newGroupPath, "%%", "%%%%")
 	for path in pairs(TSM.db.profile.userData.groups) do
 		if path == groupPath or TSM.Groups.Path.IsChild(path, groupPath) then
-			changes[path] = gsub(path, "^"..TSMAPI_FOUR.Util.StrEscape(groupPath), gsubEscapedNewGroupPath)
+			changes[path] = gsub(path, "^"..TSM.String.Escape(groupPath), gsubEscapedNewGroupPath)
 		end
 	end
 
@@ -239,7 +239,7 @@ function Groups.Move(groupPath, newGroupPath)
 		end
 	end
 
-	TSMAPI_FOUR.Util.ReleaseTempTable(changes)
+	TSM.TempTable.Release(changes)
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -263,9 +263,9 @@ function Groups.Delete(groupPath)
 	local query = private.itemDB:NewQuery()
 		:Or()
 			:Equal("groupPath", groupPath)
-			:Matches("groupPath", "^"..TSMAPI_FOUR.Util.StrEscape(groupPath)..TSM.CONST.GROUP_SEP)
+			:Matches("groupPath", "^"..TSM.String.Escape(groupPath)..TSM.CONST.GROUP_SEP)
 		:End()
-	local updateMapItems = TSMAPI_FOUR.Util.AcquireTempTable()
+	local updateMapItems = TSM.TempTable.Acquire()
 	for _, row in query:Iterator() do
 		local itemString = row:GetField("itemString")
 		assert(TSM.db.profile.userData.items[itemString])
@@ -282,7 +282,7 @@ function Groups.Delete(groupPath)
 		end
 	end
 	private.itemStringMap:SetCallbacksPaused(false)
-	TSMAPI_FOUR.Util.ReleaseTempTable(updateMapItems)
+	TSM.TempTable.Release(updateMapItems)
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -354,14 +354,14 @@ function Groups.ItemIterator(groupPathFilter)
 end
 
 function Groups.GroupIterator()
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	for groupPath in pairs(TSM.db.profile.userData.groups) do
 		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
 			tinsert(groups, groupPath)
 		end
 	end
 	Groups.SortGroupList(groups)
-	return TSMAPI_FOUR.Util.TempTableIterator(groups)
+	return TSM.TempTable.Iterator(groups)
 end
 
 function Groups.SortGroupList(list)
@@ -412,15 +412,15 @@ end
 function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
 	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
 	assert(groupOperations.override)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(groupOperations, operationName) > 0)
+	assert(TSM.Table.RemoveByValue(groupOperations, operationName) > 0)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
 end
 
 function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
 	-- just blindly remove from all groups - no need to check for override
-	TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName], operationName)
+	TSM.Table.RemoveByValue(TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName], operationName)
 	for _, groupPath in Groups.GroupIterator() do
-		TSMAPI_FOUR.Util.TableRemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+		TSM.Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
 	end
 end
 

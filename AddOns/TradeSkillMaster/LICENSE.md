@@ -1,4 +1,4 @@
-All rights are reserved unless explicitly stated below. The "license holder" is the manager of this project, Sapu94 (sapu94@gmail.com).
+All rights are reserved by TradeSkillMaster LLC unless explicitly stated below.
 
 ## Exceptions:
 
@@ -9,4 +9,16 @@ All rights are reserved unless explicitly stated below. The "license holder" is 
 
 1. Permission to use sections of the works in your own work is very likely to be granted upon contacting the license holder.
 2. The right to distribute the works is reserved by the license holder. In no way or form may a person other than the license holder distribute the works.
-3. Please contact the license holder if you have any questions at all regarding this license at the following email address: sapu94@gmail.com
+3. Please contact the license holder if you have any questions at all regarding this license at the following email address: admin@tradeskillmaster.com
+
+## Embedded Libraries
+
+TradeSkillMaster embeds the following third-party libraries in accordance with their respective licenses:
+
+1. LibStub (https://www.wowace.com/projects/libstub)
+2. CallbackHandler (https://www.curseforge.com/wow/addons/callbackhandler)
+3. LibDataBroker (https://www.wowace.com/projects/libdatabroker-1-1)
+4. LibDBIcon (https://www.wowace.com/projects/libdbicon-1-0)
+5. AceComm, AceSerializer (https://www.wowace.com/projects/ace3)
+6. LibCompress (https://www.wowace.com/projects/libcompress)
+7. LibRealmInfo (https://www.curseforge.com/wow/addons/librealminfo)

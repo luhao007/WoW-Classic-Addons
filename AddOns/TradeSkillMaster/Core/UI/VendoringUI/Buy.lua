@@ -194,7 +194,7 @@ function private.SearchInputOnTextChanged(input)
 	private.query:ResetFilters()
 	private.query:NotEqual("numAvailable", 0)
 	if text ~= "" then
-		private.query:Matches("name", TSMAPI_FOUR.Util.StrEscape(text))
+		private.query:Matches("name", TSM.String.Escape(text))
 	end
 	input:GetElement("__parent.__parent.items"):UpdateData(true)
 end

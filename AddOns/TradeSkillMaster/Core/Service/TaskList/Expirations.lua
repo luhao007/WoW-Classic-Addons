@@ -136,14 +136,14 @@ function private.PopulateTasks()
 end
 
 function private.RemoveMailTask(task)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(private.activeTasks, task) == 1)
+	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
 	task:Release()
 	private.mailTaskPool:Recycle(task)
 	TSM.TaskList.OnTaskUpdated()
 end
 
 function private.RemoveAuctionTask(task)
-	assert(TSMAPI_FOUR.Util.TableRemoveByValue(private.activeTasks, task) == 1)
+	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
 	task:Release()
 	private.auctionTaskPool:Recycle(task)
 	TSM.TaskList.OnTaskUpdated()

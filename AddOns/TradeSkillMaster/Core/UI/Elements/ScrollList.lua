@@ -11,7 +11,7 @@
 -- @classmod ScrollList
 
 local _, TSM = ...
-local ScrollList = TSMAPI_FOUR.Class.DefineClass("ScrollList", TSM.UI.ScrollFrame, "ABSTRACT")
+local ScrollList = TSM.Lib.Class.DefineClass("ScrollList", TSM.UI.ScrollFrame, "ABSTRACT")
 TSM.UI.ScrollList = ScrollList
 
 
@@ -54,13 +54,13 @@ end
 -- ============================================================================
 
 function ScrollList._VisibleDataIterator(self)
-	local visibleData = TSMAPI_FOUR.Util.AcquireTempTable()
+	local visibleData = TSM.TempTable.Acquire()
 	for _, data in ipairs(self._data) do
 		if not self:_IsDataHidden(data) then
 			tinsert(visibleData, data)
 		end
 	end
-	return TSMAPI_FOUR.Util.TempTableIterator(visibleData)
+	return TSM.TempTable.Iterator(visibleData)
 end
 
 function ScrollList._GetNumVisibleData(self)

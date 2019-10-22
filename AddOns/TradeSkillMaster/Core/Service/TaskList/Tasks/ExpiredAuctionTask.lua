@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ExpiredAuctionTask = TSMAPI_FOUR.Class.DefineClass("ExpiredAuctionTask", TSM.TaskList.Task)
+local ExpiredAuctionTask = TSM.Lib.Class.DefineClass("ExpiredAuctionTask", TSM.TaskList.Task)
 local L = TSM.L
 TSM.TaskList.ExpiredAuctionTask = ExpiredAuctionTask
 local private = {}

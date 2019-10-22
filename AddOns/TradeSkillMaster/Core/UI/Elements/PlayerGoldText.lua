@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local PlayerGoldText = TSMAPI_FOUR.Class.DefineClass("PlayerGoldText", TSM.UI.Text)
+local PlayerGoldText = TSM.Lib.Class.DefineClass("PlayerGoldText", TSM.UI.Text)
 TSM.UI.PlayerGoldText = PlayerGoldText
 local private = { registered = false, elements = {} }
 
@@ -27,7 +27,7 @@ function PlayerGoldText.__init(self)
 	self.__super:__init()
 
 	if not private.registered then
-		TSMAPI_FOUR.Event.Register("PLAYER_MONEY", private.MoneyOnUpdate)
+		TSM.Event.Register("PLAYER_MONEY", private.MoneyOnUpdate)
 		private.registered = true
 	end
 end
@@ -58,12 +58,12 @@ function private.MoneyOnUpdate()
 end
 
 function private.MoneyTooltipFunc()
-	local tooltipLines = TSMAPI_FOUR.Util.AcquireTempTable()
+	local tooltipLines = TSM.TempTable.Acquire()
 	tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, L["Player Gold"]..":", TSM.Money.ToString(GetMoney())))
 	local numPosted, numSold, postedGold, soldGold = TSM.MyAuctions.GetAuctionInfo()
 	if numPosted then
 		tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Sold Auctions"], numSold)..":", TSM.Money.ToString(soldGold)))
 		tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Posted Auctions"], numPosted)..":", TSM.Money.ToString(postedGold)))
 	end
-	return strjoin("\n", TSMAPI_FOUR.Util.UnpackAndReleaseTempTable(tooltipLines))
+	return strjoin("\n", TSM.TempTable.UnpackAndRelease(tooltipLines))
 end

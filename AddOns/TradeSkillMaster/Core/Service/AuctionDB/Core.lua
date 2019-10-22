@@ -51,8 +51,8 @@ function AuctionDB.OnInitialize()
 		:LessThanOrEqual("itemBuyout", TSM.CONST.BOUND_QUERY_PARAM)
 		:Select("itemBuyout")
 		:OrderBy("index", true)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_SHOW", private.OnAuctionHouseShow)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_CLOSED", private.OnAuctionHouseClosed)
+	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.OnAuctionHouseShow)
+	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.OnAuctionHouseClosed)
 end
 
 function AuctionDB.OnEnable()
@@ -119,13 +119,13 @@ function AuctionDB.OnDisable()
 		return
 	end
 
-	local encodeContext = TSMAPI_FOUR.CSV.EncodeStart(CSV_KEYS)
+	local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
 	for itemString, data in pairs(private.scanRealmData) do
-		TSMAPI_FOUR.CSV.EncodeAddRowDataRaw(encodeContext, itemString, data.minBuyout, data.marketValue, data.numAuctions, data.quantity, data.lastScan)
+		TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, data.minBuyout, data.marketValue, data.numAuctions, data.quantity, data.lastScan)
 	end
-	TSMAPI_FOUR.CSV.EncodeSortLines(encodeContext)
-	TSM.db.factionrealm.internalData.csvAuctionDBScan = TSMAPI_FOUR.CSV.EncodeEnd(encodeContext)
-	TSM.db.factionrealm.internalData.auctionDBScanHash = TSMAPI_FOUR.Util.CalculateHash(TSM.db.factionrealm.internalData.csvAuctionDBScan)
+	TSM.CSV.EncodeSortLines(encodeContext)
+	TSM.db.factionrealm.internalData.csvAuctionDBScan = TSM.CSV.EncodeEnd(encodeContext)
+	TSM.db.factionrealm.internalData.auctionDBScanHash = TSM.Math.CalculateHash(TSM.db.factionrealm.internalData.csvAuctionDBScan)
 end
 
 function AuctionDB.GetLastCompleteScanTime()
@@ -174,7 +174,7 @@ function AuctionDB.LastScanIteratorThreaded()
 	for itemString in pairs(itemNumAuctions) do
 		tinsert(itemList, itemString)
 	end
-	return TSMAPI_FOUR.Util.TableIterator(itemList, private.LastScanIteratorHelper, itemList, private.LastScanIteratorCleanup)
+	return TSM.Table.Iterator(itemList, private.LastScanIteratorHelper, itemList, private.LastScanIteratorCleanup)
 end
 
 function AuctionDB.GetRealmItemData(itemString, key)
@@ -245,7 +245,7 @@ end
 function private.OnProgressUpdate()
 	local _, _, page, totalPages = private.auctionScan:GetProgress()
 	if totalPages > 0 and time() - private.lastProgressUpdateTime > 5 then
-		TSM:Printf(L["Scanning is %d%% complete"], TSMAPI_FOUR.Util.Round(page * 100 / totalPages))
+		TSM:Printf(L["Scanning is %d%% complete"], TSM.Math.Round(page * 100 / totalPages))
 		private.lastProgressUpdateTime = time()
 	end
 end
@@ -348,12 +348,12 @@ end
 -- ============================================================================
 
 function private.LoadSVRealmData()
-	local decodeContext = TSMAPI_FOUR.CSV.DecodeStart(TSM.db.factionrealm.internalData.csvAuctionDBScan, CSV_KEYS)
+	local decodeContext = TSM.CSV.DecodeStart(TSM.db.factionrealm.internalData.csvAuctionDBScan, CSV_KEYS)
 	if not decodeContext then
 		TSM:LOG_ERR("Failed to decode records")
 		return
 	end
-	for itemString, minBuyout, marketValue, numAuctions, quantity, lastScan in TSMAPI_FOUR.CSV.DecodeIterator(decodeContext) do
+	for itemString, minBuyout, marketValue, numAuctions, quantity, lastScan in TSM.CSV.DecodeIterator(decodeContext) do
 		private.scanRealmData[itemString] = {
 			minBuyout = tonumber(minBuyout),
 			marketValue = tonumber(marketValue),
@@ -362,7 +362,7 @@ function private.LoadSVRealmData()
 			lastScan = tonumber(lastScan),
 		}
 	end
-	if not TSMAPI_FOUR.CSV.DecodeEnd(decodeContext) then
+	if not TSM.CSV.DecodeEnd(decodeContext) then
 		TSM:LOG_ERR("Failed to decode records")
 	end
 	private.scanRealmTime = TSM.db.factionrealm.internalData.auctionDBScanTime
@@ -497,7 +497,7 @@ function private.OnAuctionHouseShow()
 		timeout = 0,
 		whileDead = true,
 	}
-	TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSM_AUCTIONDB_SCAN")
+	TSM.Wow.ShowStaticPopupDialog("TSM_AUCTIONDB_SCAN")
 end
 
 function private.OnAuctionHouseClosed()

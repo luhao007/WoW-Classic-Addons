@@ -18,7 +18,7 @@ local private = { sounds = {}, soundkeys = {} }
 
 function Shopping.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage("Shopping / Sniper", "middle", private.GetShoppingSettingsFrame)
-	for key, name in pairs(TSMAPI_FOUR.Sound.GetSounds()) do
+	for key, name in pairs(TSM.Sound.GetSounds()) do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end

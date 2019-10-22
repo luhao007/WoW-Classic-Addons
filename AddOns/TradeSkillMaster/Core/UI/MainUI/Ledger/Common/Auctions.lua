@@ -323,7 +323,7 @@ function private.UpdateQuery()
 	private.query:ResetFilters()
 		:Equal("type", private.type)
 	if private.searchFilter ~= "" then
-		private.query:Matches("name", TSMAPI_FOUR.Util.StrEscape(private.searchFilter))
+		private.query:Matches("name", TSM.String.Escape(private.searchFilter))
 	end
 	if private.typeFilter ~= "All" then
 		private.query:Equal("source", private.typeFilter)
@@ -343,7 +343,7 @@ function private.UpdateQuery()
 end
 
 function private.CompareRarityFilter(row, rarityFilter)
-	return TSMAPI_FOUR.Util.TableKeyByValue(rarityFilter, row:GetField("quality")) and true or false
+	return TSM.Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
 end
 
 function private.TableSelectionChanged(scrollingTable, row)

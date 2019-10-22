@@ -6,11 +6,12 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Sound TSMAPI_FOUR Functions
+--- Sound Functions
 -- @module Sound
 
-TSMAPI_FOUR.Sound = {}
 local _, TSM = ...
+TSM.Sound = {}
+local Sound = TSM.Sound
 local L = TSM.L
 local SOUNDS = {
 	[TSM.CONST.NO_SOUND_KEY] = "|cff99ffff"..L["No Sound"].."|r",
@@ -54,25 +55,25 @@ local SOUNDKITIDS = {
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Module Functions
 -- ============================================================================
 
 --- Gets the key used to represent no sound.
 -- @return The key used to represent no sound
-function TSMAPI_FOUR.Sound.GetNoSoundKey()
+function Sound.GetNoSoundKey()
 	return TSM.CONST.NO_SOUND_KEY
 end
 
 --- Gets the key-value table containing all supported sounds.
--- The key is the what gets passed to @{TSMAPI_FOUR.Sound.PlaySound} and the value is a localized string describing the sound.
+-- The key is the what gets passed to @{Sound.PlaySound} and the value is a localized string describing the sound.
 -- @return The sounds table
-function TSMAPI_FOUR.Sound.GetSounds()
+function Sound.GetSounds()
 	return SOUNDS
 end
 
 --- Plays a sound and flashes the client icon.
--- @param soundKey The key of the sound (from @{TSMAPI_FOUR.Sound.GetSounds}) to play
-function TSMAPI_FOUR.Sound.PlaySound(soundKey)
+-- @param soundKey The key of the sound (from @{Sound.GetSounds}) to play
+function Sound.PlaySound(soundKey)
 	if soundKey == TSM.CONST.NO_SOUND_KEY then
 		-- do nothing
 	elseif soundKey == "TSM_CASH_REGISTER" then

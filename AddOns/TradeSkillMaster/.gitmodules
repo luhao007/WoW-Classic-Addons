@@ -1,0 +1,6 @@
+[submodule "External/LibTSMClass"]
+	path = External/LibTSMClass
+	url = https://bitbucket.org/tradeskillmasteraddon/libtsmclass.git
+[submodule "External/AccurateTime"]
+	path = External/AccurateTime
+	url = https://bitbucket.org/tradeskillmasteraddon/accuratetime.git

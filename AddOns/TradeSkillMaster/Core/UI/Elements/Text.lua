@@ -11,7 +11,7 @@
 -- @classmod Text
 
 local _, TSM = ...
-local Text = TSMAPI_FOUR.Class.DefineClass("Text", TSM.UI.Element)
+local Text = TSM.Lib.Class.DefineClass("Text", TSM.UI.Element)
 TSM.UI.Text = Text
 
 

@@ -11,9 +11,9 @@
 -- @classmod FastScrollingList
 
 local _, TSM = ...
-local FastScrollingList = TSMAPI_FOUR.Class.DefineClass("FastScrollingList", TSM.UI.Element, "ABSTRACT")
+local FastScrollingList = TSM.Lib.Class.DefineClass("FastScrollingList", TSM.UI.Element, "ABSTRACT")
 TSM.UI.FastScrollingList = FastScrollingList
-local ListRow = TSMAPI_FOUR.Class.DefineClass("ListRow")
+local ListRow = TSM.Lib.Class.DefineClass("ListRow")
 local private = {
 	recycledRows = {},
 	frameFastScrollingListLookup = {},
@@ -110,7 +110,7 @@ function FastScrollingList.Draw(self)
 	self._content:SetWidth(self._scrollFrame:GetWidth())
 	self._content:SetHeight(numVisibleRows * rowHeight)
 
-	if TSMAPI_FOUR.Util.Round(scrollOffset + visibleHeight) == totalHeight then
+	if TSM.Math.Round(scrollOffset + visibleHeight) == totalHeight then
 		-- we are at the bottom
 		self._scrollFrame:SetVerticalScroll(numVisibleRows * rowHeight - visibleHeight)
 	else
@@ -175,7 +175,7 @@ function FastScrollingList._ScrollToData(self, data)
 	local rowHeight = self:_GetStyle("rowHeight")
 	local visibleHeight = self._scrollFrame:GetHeight()
 	local currentOffset = self._scrollbar:GetValue()
-	local dataIndex = TSMAPI_FOUR.Util.TableKeyByValue(self._data, data)
+	local dataIndex = TSM.Table.KeyByValue(self._data, data)
 	-- if we are going to scroll up/down, we want to scroll such that the top of the passed row is in the visible area
 	-- by at least 1 row height
 	local scrollUpOffset = max(rowHeight * (dataIndex - 1) - rowHeight, 0)

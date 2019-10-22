@@ -40,16 +40,16 @@ local private = {
 -- ============================================================================
 
 function BagTracking.OnInitialize()
-	TSMAPI_FOUR.Event.Register("BAG_UPDATE", private.BagUpdateHandler)
-	TSMAPI_FOUR.Event.Register("BAG_UPDATE_DELAYED", private.BagUpdateDelayedHandler)
-	TSMAPI_FOUR.Event.Register("BANKFRAME_OPENED", private.BankOpenedHandler)
-	TSMAPI_FOUR.Event.Register("BANKFRAME_CLOSED", private.BankClosedHandler)
-	TSMAPI_FOUR.Event.Register("PLAYERBANKSLOTS_CHANGED", private.BankSlotChangedHandler)
+	TSM.Event.Register("BAG_UPDATE", private.BagUpdateHandler)
+	TSM.Event.Register("BAG_UPDATE_DELAYED", private.BagUpdateDelayedHandler)
+	TSM.Event.Register("BANKFRAME_OPENED", private.BankOpenedHandler)
+	TSM.Event.Register("BANKFRAME_CLOSED", private.BankClosedHandler)
+	TSM.Event.Register("PLAYERBANKSLOTS_CHANGED", private.BankSlotChangedHandler)
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("PLAYERREAGENTBANKSLOTS_CHANGED", private.ReagentBankSlotChangedHandler)
+		TSM.Event.Register("PLAYERREAGENTBANKSLOTS_CHANGED", private.ReagentBankSlotChangedHandler)
 	end
-	TSMAPI_FOUR.Event.Register("ITEM_LOCKED", private.ItemLockedHandler)
-	TSMAPI_FOUR.Event.Register("ITEM_UNLOCKED", private.ItemUnlockedHandler)
+	TSM.Event.Register("ITEM_LOCKED", private.ItemLockedHandler)
+	TSM.Event.Register("ITEM_UNLOCKED", private.ItemUnlockedHandler)
 	private.db = TSMAPI_FOUR.Database.NewSchema("BAG_TRACKING")
 		:AddUniqueNumberField("slotId")
 		:AddNumberField("bag")
@@ -137,8 +137,8 @@ end
 function BagTracking.GetQuantityByAutoBaseItemString(autoBaseItemString, includeBoP, includeBoA)
 	local query = private.db:NewQuery()
 		:Equal("autoBaseItemString", autoBaseItemString)
-		:GreaterThanOrEqual("slotId", TSMAPI_FOUR.Util.JoinSlotId(0, 1))
-		:LessThanOrEqual("slotId", TSMAPI_FOUR.Util.JoinSlotId(NUM_BAG_SLOTS + 1, 0))
+		:GreaterThanOrEqual("slotId", TSM.SlotId.Join(0, 1))
+		:LessThanOrEqual("slotId", TSM.SlotId.Join(NUM_BAG_SLOTS + 1, 0))
 	if not includeBoP then
 		query:Equal("isBoP", false)
 	end
@@ -189,7 +189,7 @@ end
 -- ============================================================================
 
 function TSMAPI_FOUR.Inventory.IsSoulbound(bag, slot)
-	local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+	local slotId = TSM.SlotId.Join(bag, slot)
 	if private.slotIdSoulboundCached[slotId] then
 		return private.slotIdIsBoP[slotId], private.slotIdIsBoA[slotId]
 	end
@@ -279,8 +279,8 @@ end
 
 function TSMAPI_FOUR.Inventory.BagIterator(autoBaseItems, includeBoP, includeBoA, onlyUnused)
 	local query = private.db:NewQuery()
-		:GreaterThanOrEqual("slotId", TSMAPI_FOUR.Util.JoinSlotId(0, 1))
-		:LessThanOrEqual("slotId", TSMAPI_FOUR.Util.JoinSlotId(NUM_BAG_SLOTS + 1, 0))
+		:GreaterThanOrEqual("slotId", TSM.SlotId.Join(0, 1))
+		:LessThanOrEqual("slotId", TSM.SlotId.Join(NUM_BAG_SLOTS + 1, 0))
 		:OrderBy("slotId", true)
 		:Select("bag", "slot", autoBaseItems and "autoBaseItemString" or "itemString", "quantity")
 	if not includeBoP then
@@ -322,7 +322,7 @@ function TSMAPI_FOUR.Inventory.BankIterator(autoBaseItems, includeBoP, includeBo
 end
 
 function TSMAPI_FOUR.Inventory.IsBagSlotLocked(bag, slot)
-	return private.slotIdLocked[TSMAPI_FOUR.Util.JoinSlotId(bag, slot)]
+	return private.slotIdLocked[TSM.SlotId.Join(bag, slot)]
 end
 
 --- Check if an item will go in a bag.
@@ -372,11 +372,11 @@ function private.BankClosedHandler()
 end
 
 local function SlotIdSoulboundCachedFilter(slotId, _, bag)
-	return TSMAPI_FOUR.Util.SplitSlotId(slotId) == bag
+	return TSM.SlotId.Split(slotId) == bag
 end
 function private.BagUpdateHandler(_, bag)
 	-- clear the soulbound cache for everything in this bag
-	TSMAPI_FOUR.Util.TableFilter(private.slotIdSoulboundCached, SlotIdSoulboundCachedFilter, bag)
+	TSM.Table.Filter(private.slotIdSoulboundCached, SlotIdSoulboundCachedFilter, bag)
 	if private.bagUpdates.pending[bag] then
 		return
 	end
@@ -430,7 +430,7 @@ function private.BankSlotChangedHandler(_, slot)
 		return
 	end
 	-- clear the soulbound cache for this slot
-	private.slotIdSoulboundCached[TSMAPI_FOUR.Util.JoinSlotId(BANK_CONTAINER, slot)] = nil
+	private.slotIdSoulboundCached[TSM.SlotId.Join(BANK_CONTAINER, slot)] = nil
 	if private.bankSlotUpdates.pending[slot] then
 		return
 	end
@@ -464,7 +464,7 @@ end
 
 function private.ReagentBankSlotChangedHandler(_, slot)
 	-- clear the soulbound cache for this slot
-	private.slotIdSoulboundCached[TSMAPI_FOUR.Util.JoinSlotId(REAGENTBANK_CONTAINER, slot)] = nil
+	private.slotIdSoulboundCached[TSM.SlotId.Join(REAGENTBANK_CONTAINER, slot)] = nil
 	if private.reagentBankSlotUpdates.pending[slot] then
 		return
 	end
@@ -497,14 +497,14 @@ function private.ItemLockedHandler(_, bag, slot)
 	if not slot then
 		return
 	end
-	private.slotIdLocked[TSMAPI_FOUR.Util.JoinSlotId(bag, slot)] = true
+	private.slotIdLocked[TSM.SlotId.Join(bag, slot)] = true
 end
 
 function private.ItemUnlockedHandler(_, bag, slot)
 	if not slot then
 		return
 	end
-	private.slotIdLocked[TSMAPI_FOUR.Util.JoinSlotId(bag, slot)] = nil
+	private.slotIdLocked[TSM.SlotId.Join(bag, slot)] = nil
 end
 
 
@@ -562,7 +562,7 @@ function private.ScanBagSlot(bag, slot)
 		return false
 	end
 	local baseItemString = link and TSMAPI_FOUR.Item.ToBaseItemString(link)
-	local slotId = TSMAPI_FOUR.Util.JoinSlotId(bag, slot)
+	local slotId = TSM.SlotId.Join(bag, slot)
 	local row = private.db:GetUniqueRow("slotId", slotId)
 	if baseItemString then
 		local isBoP, isBoA = nil, nil

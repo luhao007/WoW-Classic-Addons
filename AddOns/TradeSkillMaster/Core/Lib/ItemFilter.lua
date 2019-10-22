@@ -9,7 +9,7 @@
 local _, TSM = ...
 local L = TSM.L
 TSMAPI_FOUR.ItemFilter = {}
-local ItemFilter = TSMAPI_FOUR.Class.DefineClass("ItemFilter")
+local ItemFilter = TSM.Lib.Class.DefineClass("ItemFilter")
 
 
 
@@ -83,7 +83,7 @@ function ItemFilter.ParseStr(self, str)
 	local numLevelParts, numItemLevelParts, numPriceParts = 0, 0, 0
 	self._isValid = nil
 	local hasNonCraftingPart = false
-	for i, part in TSMAPI_FOUR.Util.VarargIterator(strsplit("/", strtrim(str))) do
+	for i, part in TSM.Vararg.Iterator(strsplit("/", strtrim(str))) do
 		part = strtrim(part)
 		if self._isValid ~= nil then
 			-- already done iterating, but can't break / return out of a VarargIterator
@@ -99,7 +99,7 @@ function ItemFilter.ParseStr(self, str)
 					self._exactOnly = true
 					self._item = part
 					self._str = strlower(name)
-					self._escapedStr = TSMAPI_FOUR.Util.StrEscape(self._str)
+					self._escapedStr = TSM.String.Escape(self._str)
 					self._quality = quality
 					self._minLevel = level
 					self._maxLevel = level
@@ -108,7 +108,7 @@ function ItemFilter.ParseStr(self, str)
 				end
 			else
 				self._str = strlower(part)
-				self._escapedStr = TSMAPI_FOUR.Util.StrEscape(self._str)
+				self._escapedStr = TSM.String.Escape(self._str)
 			end
 		elseif part == "" then
 			-- ignore an empty part

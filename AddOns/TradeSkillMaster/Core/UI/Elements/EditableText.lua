@@ -12,7 +12,7 @@
 
 local _, TSM = ...
 local private = { frameEditableTextLookup = {} }
-local EditableText = TSMAPI_FOUR.Class.DefineClass("EditableText", TSM.UI.Element)
+local EditableText = TSM.Lib.Class.DefineClass("EditableText", TSM.UI.Element)
 TSM.UI.EditableText = EditableText
 local STRING_RIGHT_PADDING = 16
 

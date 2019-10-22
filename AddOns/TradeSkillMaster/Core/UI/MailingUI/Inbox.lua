@@ -1002,5 +1002,5 @@ end
 function private.FSMOpenCallback()
 	private.fsm:ProcessEvent("EV_OPENING_DONE")
 
-	TSMAPI_FOUR.Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
+	TSM.Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
 end

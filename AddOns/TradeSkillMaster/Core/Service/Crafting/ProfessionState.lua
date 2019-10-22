@@ -51,42 +51,42 @@ function private.CreateFSM()
 	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not IsAddOnLoaded("Blizzard_CraftUI") then
 		LoadAddOn("Blizzard_CraftUI")
 	end
-	TSMAPI_FOUR.Event.Register("TRADE_SKILL_SHOW", function()
+	TSM.Event.Register("TRADE_SKILL_SHOW", function()
 		private.tradeSkillOpen = true
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 	end)
-	TSMAPI_FOUR.Event.Register("TRADE_SKILL_CLOSE", function()
+	TSM.Event.Register("TRADE_SKILL_CLOSE", function()
 		private.tradeSkillOpen = false
 		if not private.craftOpen then
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 		end
 	end)
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSMAPI_FOUR.Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
+		TSM.Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 		end)
-		TSMAPI_FOUR.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
+		TSM.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
-		TSMAPI_FOUR.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
+		TSM.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 		end)
 	else
-		TSMAPI_FOUR.Event.Register("CRAFT_SHOW", function()
+		TSM.Event.Register("CRAFT_SHOW", function()
 			private.craftOpen = true
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
-		TSMAPI_FOUR.Event.Register("CRAFT_CLOSE", function()
+		TSM.Event.Register("CRAFT_CLOSE", function()
 			private.craftOpen = false
 			if not private.tradeSkillOpen then
 				private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 			end
 		end)
-		TSMAPI_FOUR.Event.Register("CRAFT_UPDATE", function()
+		TSM.Event.Register("CRAFT_UPDATE", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
 	end

@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Task = TSMAPI_FOUR.Class.DefineClass("TASK", nil, "ABSTRACT")
+local Task = TSM.Lib.Class.DefineClass("TASK", nil, "ABSTRACT")
 TSM.TaskList.Task = Task
 
 

@@ -37,7 +37,7 @@ private.dividedContainerContext = {}
 -- ============================================================================
 
 function Crafting.OnInitialize()
-	TSMAPI_FOUR.Util.RegisterItemLinkedCallback(private.ItemLinkedCallback)
+	TSM.Wow.RegisterItemLinkedCallback(private.ItemLinkedCallback)
 	TSM.UI.CraftingUI.RegisterTopLevelPage("Crafting", "iconPack.24x24/Crafting", private.GetCraftingFrame)
 	private.FSMCreate()
 end
@@ -641,7 +641,7 @@ function private.ProfessionDropdownOnSelectionChanged(_, value)
 	if not value then
 		-- nothing selected
 	else
-		local key = TSMAPI_FOUR.Util.GetDistinctTableKey(private.professions, value)
+		local key = TSM.Table.GetDistinctKey(private.professions, value)
 		local player, profession = strsplit(KEY_SEP, key)
 		if not profession then
 			-- the current linked / guild / NPC profession was re-selected, so just ignore this change
@@ -717,7 +717,7 @@ function private.ItemOnClick(text)
 			end
 		end
 	else
-		TSMAPI_FOUR.Util.SafeItemRef(TSMAPI_FOUR.Item.GetLink(text:GetElement("__parent.name"):GetContext()))
+		TSM.Wow.SafeItemRef(TSMAPI_FOUR.Item.GetLink(text:GetElement("__parent.name"):GetContext()))
 	end
 end
 
@@ -770,12 +770,12 @@ function private.ClearOnClick(button)
 end
 
 function private.QueueAddBtnOnClick(button)
-	local groups = TSMAPI_FOUR.Util.AcquireTempTable()
+	local groups = TSM.TempTable.Acquire()
 	for _, groupPath in button:GetElement("__parent.groupTree"):SelectedGroupsIterator() do
 		tinsert(groups, groupPath)
 	end
 	TSM.Crafting.Queue.RestockGroups(groups)
-	TSMAPI_FOUR.Util.ReleaseTempTable(groups)
+	TSM.TempTable.Release(groups)
 end
 
 function private.HandleOnTitleClick(button)
@@ -830,7 +830,7 @@ function private.FSMCreate()
 		craftingQuantity = nil,
 	}
 
-	TSMAPI_FOUR.Event.Register("BAG_UPDATE_DELAYED", function()
+	TSM.Event.Register("BAG_UPDATE_DELAYED", function()
 		private.fsm:ProcessEvent("EV_BAG_UPDATE_DELAYED")
 	end)
 
@@ -1223,7 +1223,7 @@ function private.FSMCreate()
 					:OrderBy("index", true)
 					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "spellId")
 				if filter ~= "" then
-					filter = TSMAPI_FOUR.Util.StrEscape(filter)
+					filter = TSM.String.Escape(filter)
 					context.recipeQuery
 						:Or()
 							:Matches("name", filter)

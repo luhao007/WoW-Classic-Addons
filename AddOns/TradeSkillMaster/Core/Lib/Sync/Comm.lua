@@ -7,15 +7,16 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Comm = TSM.Sync:NewPackage("Comm", "AceComm-3.0")
+local Comm = TSM.Sync:NewPackage("Comm")
+LibStub("AceComm-3.0"):Embed(Comm)
 local private = {
 	handler = {},
 	queuedPacket = {},
 	queuedSourcePlayer = {},
 }
 -- Load the libraries needed for Compress and Decompress functions
-local LibAceSerializer = LibStub:GetLibrary("AceSerializer-3.0")
-local LibCompress = LibStub:GetLibrary("LibCompress")
+local AceSerializer = LibStub("AceSerializer-3.0")
+local LibCompress = LibStub("LibCompress")
 local LibCompressAddonEncodeTable = LibCompress:GetAddonEncodeTable()
 
 
@@ -45,13 +46,13 @@ function Comm.SendData(dataType, targetPlayer, data)
 	assert(type(dataType) == "string" and #dataType == 1)
 	local serialized = nil
 	if data then
-		local packet = TSMAPI_FOUR.Util.AcquireTempTable()
+		local packet = TSM.TempTable.Acquire()
 		packet.dt = dataType
 		packet.sa = TSM.db:GetSyncAccountKey()
 		packet.v = TSM.Sync.SYNC_VERSION
 		packet.d = data
-		serialized = LibAceSerializer:Serialize(packet)
-		TSMAPI_FOUR.Util.ReleaseTempTable(packet)
+		serialized = AceSerializer:Serialize(packet)
+		TSM.TempTable.Release(packet)
 	else
 		-- send a more compact version if there's no data
 		serialized = "\240"..strjoin(";", dataType, TSM.db:GetSyncAccountKey(), UnitName("player"), TSM.Sync.SYNC_VERSION)
@@ -59,7 +60,7 @@ function Comm.SendData(dataType, targetPlayer, data)
 
 	-- We will compress using Huffman, LZW, and no compression separately, validate each one, and pick the shortest valid one.
 	-- This is to deal with a bug in the compression code.
-	local encodedData = TSMAPI_FOUR.Util.AcquireTempTable()
+	local encodedData = TSM.TempTable.Acquire()
 	local huffmanCompressed = LibCompress:CompressHuffman(serialized)
 	if huffmanCompressed then
 		huffmanCompressed = LibCompressAddonEncodeTable:Encode(huffmanCompressed)
@@ -83,7 +84,7 @@ function Comm.SendData(dataType, targetPlayer, data)
 		end
 	end
 	local minData = encodedData[minIndex]
-	TSMAPI_FOUR.Util.ReleaseTempTable(encodedData)
+	TSM.TempTable.Release(encodedData)
 	assert(minData, "Could not compress packet")
 
 	-- give heartbeats and rpc preambles a higher priority
@@ -139,7 +140,7 @@ function private.ProcessReceivedPacket(packet, sourcePlayer)
 	else
 		-- Deserialize
 		local success
-		success, packet = LibAceSerializer:Deserialize(packet)
+		success, packet = AceSerializer:Deserialize(packet)
 		if not success or not packet then
 			TSM:LOG_ERR("Invalid packet")
 			return

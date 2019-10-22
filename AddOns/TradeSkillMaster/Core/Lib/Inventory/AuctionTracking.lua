@@ -31,9 +31,13 @@ local SALE_HINT_EXPIRE_TIME = 33 * 24 * 60 * 60
 -- ============================================================================
 
 function AuctionTracking.OnInitialize()
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowHandler)
-	TSMAPI_FOUR.Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseClosedHandler)
-	TSMAPI_FOUR.Event.Register("AUCTION_OWNED_LIST_UPDATE", private.AuctionOwnedListUpdateHandler)
+	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowHandler)
+	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseClosedHandler)
+	if select(4, GetBuildInfo()) < 80300 then
+		TSM.Event.Register("AUCTION_OWNED_LIST_UPDATE", private.AuctionOwnedListUpdateHandler)
+	else
+		TSM.Event.Register("OWNED_AUCTIONS_UPDATED", private.AuctionOwnedListUpdateHandler)
+	end
 	private.db = TSMAPI_FOUR.Database.NewSchema("AUCTION_TRACKING")
 		:AddUniqueNumberField("index")
 		:AddStringField("itemString")
@@ -61,24 +65,18 @@ function AuctionTracking.OnInitialize()
 		end
 	end
 
-	hooksecurefunc("PostAuction", function(self, _, runTime)
-		local days = nil
-		if runTime == 1 then
-			days = 0.5
-		elseif runTime == 2 then
-			days = 1
-		elseif runTime == 3 then
-			days = 2
-		end
-
-		local expiration = time() + (days * 24 * 60 * 60)
-		if (TSM.db.factionrealm.internalData.expiringAuction[PLAYER_NAME] or math.huge) < expiration then
-			return
-		end
-
-		TSM.db.factionrealm.internalData.expiringAuction[PLAYER_NAME] = expiration
-		TSM.TaskList.Expirations.Update()
-	end)
+	if select(4, GetBuildInfo()) < 80300 then
+		hooksecurefunc("PostAuction", function(_, _, duration)
+			private.PostAuctionHookHandler(duration)
+		end)
+	else
+		hooksecurefunc(C_AuctionHouse, "PostCommodity", function(_, duration)
+			private.PostAuctionHookHandler(duration)
+		end)
+		hooksecurefunc(C_AuctionHouse, "PostItem", function(_, duration)
+			private.PostAuctionHookHandler(duration)
+		end)
+	end
 end
 
 function AuctionTracking.RegisterCallback(callback)
@@ -91,6 +89,10 @@ end
 
 function AuctionTracking.CreateQuery()
 	return private.db:NewQuery()
+end
+
+function AuctionTracking.GetFieldByIndex(index, field)
+	return private.db:GetUniqueRowField("index", index, field)
 end
 
 function AuctionTracking.GetSaleHintItemString(name, stackSize, buyout)
@@ -110,18 +112,18 @@ end
 
 function private.AuctionHouseShowHandler()
 	private.isAHOpen = true
-	GetOwnerAuctionItems()
+	private.QueryOwnedAuctions()
 	-- We don't always get AUCTION_OWNED_LIST_UPDATE events, so do our own scanning if needed
-	TSMAPI_FOUR.Delay.AfterTime("auctionBackgroundScan", 1, private.DoBackgroundScan, 1)
+	TSMAPI_FOUR.Delay.AfterTime("AUCTION_BACKGROUND_SCAN", 1, private.DoBackgroundScan, 1)
 end
 
 function private.AuctionHouseClosedHandler()
 	private.isAHOpen = false
-	TSMAPI_FOUR.Delay.Cancel("auctionBackgroundScan")
+	TSMAPI_FOUR.Delay.Cancel("AUCTION_BACKGROUND_SCAN")
 end
 
 function private.DoBackgroundScan()
-	if GetNumAuctionItems("owner") ~= private.lastScanNum then
+	if private.GetNumOwnedAuctions() ~= private.lastScanNum then
 		private.AuctionOwnedListUpdateHandler()
 	end
 end
@@ -132,8 +134,8 @@ function private.AuctionOwnedListUpdateHandler()
 	end
 	wipe(private.indexUpdates.pending)
 	wipe(private.indexUpdates.list)
-	GetOwnerAuctionItems()
-	for i = 1, GetNumAuctionItems("owner") do
+	private.QueryOwnedAuctions()
+	for i = 1, private.GetNumOwnedAuctions() do
 		if not private.indexUpdates.pending[i] then
 			private.indexUpdates.pending[i] = true
 			tinsert(private.indexUpdates.list, i)
@@ -142,7 +144,6 @@ function private.AuctionOwnedListUpdateHandler()
 	TSMAPI_FOUR.Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
 end
 
--- this is not a WoW event, but we fake it based on a delay from private.BankSlotChangedHandler
 function private.AuctionOwnedListUpdateDelayed()
 	if not private.isAHOpen then
 		return
@@ -150,26 +151,32 @@ function private.AuctionOwnedListUpdateDelayed()
 		-- default UI auctions tab is visible, so scan later
 		TSMAPI_FOUR.Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
 		return
+	elseif select(4, GetBuildInfo()) >= 80300 and not C_AuctionHouse.HasFullOwnedAuctionResults() then
+		-- don't have all the results yet, so try again in a moment
+		TSMAPI_FOUR.Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 0.1, private.AuctionOwnedListUpdateDelayed)
+		return
 	end
-	-- check if we need to change the sort
-	local needsSort = false
-	local numColumns = #AuctionSort.owner_duration
-	for i, info in ipairs(AuctionSort.owner_duration) do
-		local col, reversed = GetAuctionSort("owner", numColumns - i + 1)
-		-- we want to do the opposite order
-		reversed = not reversed
-		if col ~= info.column or info.reverse ~= reversed then
-			needsSort = true
-			break
+	if select(4, GetBuildInfo()) < 80300 then
+		-- check if we need to change the sort
+		local needsSort = false
+		local numColumns = #AuctionSort.owner_duration
+		for i, info in ipairs(AuctionSort.owner_duration) do
+			local col, reversed = GetAuctionSort("owner", numColumns - i + 1)
+			-- we want to do the opposite order
+			reversed = not reversed
+			if col ~= info.column or info.reverse ~= reversed then
+				needsSort = true
+				break
+			end
 		end
-	end
-	if needsSort then
-		TSM:LOG_INFO("Sorting owner auctions")
-		-- ignore events while changing the sort
-		private.ignoreUpdateEvent = true
-		AuctionFrame_SetSort("owner", "duration", true)
-		SortAuctionApplySort("owner")
-		private.ignoreUpdateEvent = nil
+		if needsSort then
+			TSM:LOG_INFO("Sorting owner auctions")
+			-- ignore events while changing the sort
+			private.ignoreUpdateEvent = true
+			AuctionFrame_SetSort("owner", "duration", true)
+			SortAuctionApplySort("owner")
+			private.ignoreUpdateEvent = nil
+		end
 	end
 
 	-- scan the auctions
@@ -179,11 +186,12 @@ function private.AuctionOwnedListUpdateDelayed()
 	local expire = math.huge
 	for i = #private.indexUpdates.list, 1, -1 do
 		local index = private.indexUpdates.list[i]
-		local name, texture, stackSize, quality, _, _, _, minBid, _, buyout, bid, highBidder, _, _, _, saleStatus = GetAuctionItemInfo("owner", index)
-		local link = name and name ~= "" and GetAuctionItemLink("owner", index)
-		if link then
+		local auctionId, link, name, texture, stackSize, quality, minBid, buyout, bid, highBidder, saleStatus, duration = private.GetOwnedAuctionInfo(index)
+		name = name or TSMAPI_FOUR.Item.GetName(link)
+		texture = texture or TSMAPI_FOUR.Item.GetTexture(link)
+		quality = quality or TSMAPI_FOUR.Item.GetQuality(link)
+		if link and name and texture and quality then
 			assert(saleStatus == 0 or saleStatus == 1)
-			local duration = GetAuctionItemTimeLeft("owner", index)
 			duration = saleStatus == 0 and duration or (time() + duration)
 			if saleStatus == 0 then
 				if duration == 1 then -- 30 min
@@ -195,7 +203,6 @@ function private.AuctionOwnedListUpdateDelayed()
 				end
 			end
 			highBidder = highBidder or ""
-			texture = texture or TSMAPI_FOUR.Item.GetTexture(link)
 			local itemString = TSMAPI_FOUR.Item.ToItemString(link)
 			local currentBid = highBidder ~= "" and bid or minBid
 			if saleStatus == 0 then
@@ -205,7 +212,7 @@ function private.AuctionOwnedListUpdateDelayed()
 			end
 			private.indexUpdates.pending[index] = nil
 			tremove(private.indexUpdates.list, i)
-			private.db:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus)
+			private.db:BulkInsertNewRow(auctionId, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus)
 		end
 	end
 	private.db:BulkInsertEnd()
@@ -222,7 +229,7 @@ function private.AuctionOwnedListUpdateDelayed()
 		-- some failed to scan so try again
 		TSMAPI_FOUR.Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
 	else
-		private.lastScanNum = GetNumAuctionItems("owner")
+		private.lastScanNum = private.GetNumOwnedAuctions()
 	end
 end
 
@@ -232,8 +239,65 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.QueryOwnedAuctions()
+	if select(4, GetBuildInfo()) < 80300 then
+		GetOwnerAuctionItems()
+	else
+		C_AuctionHouse.QueryOwnedAuctions({})
+	end
+end
+
+function private.GetNumOwnedAuctions()
+	if select(4, GetBuildInfo()) < 80300 then
+		return GetNumAuctionItems("owner")
+	else
+		return C_AuctionHouse.GetNumOwnedAuctions()
+	end
+end
+
+function private.GetOwnedAuctionInfo(index)
+	if select(4, GetBuildInfo()) < 80300 then
+		local name, texture, stackSize, quality, _, _, _, minBid, _, buyout, bid, highBidder, _, _, _, saleStatus = GetAuctionItemInfo("owner", index)
+		local link = name and name ~= "" and GetAuctionItemLink("owner", index)
+		if not link then
+			return
+		end
+		local duration = GetAuctionItemTimeLeft("owner", index)
+		return index, link, name, texture, stackSize, quality, minBid, buyout, bid, highBidder, saleStatus, duration
+	else
+		local info = C_AuctionHouse.GetOwnedAuctionInfo(index)
+		local link = info and info.itemLink
+		if not link then
+			return
+		end
+		local bid = info.bidAmount or info.buyoutAmount
+		local minBid = bid
+		local duration = 2 -- FIXME
+		return info.auctionID, link, nil, nil, info.quantity, nil, minBid, info.buyoutAmount, bid, info.bidder or "", info.status, duration
+	end
+end
+
 function private.OnCallbackQueryUpdated()
 	for _, callback in ipairs(private.callbacks) do
 		callback()
 	end
+end
+
+function private.PostAuctionHookHandler(duration)
+	local days = nil
+	if duration == 1 then
+		days = 0.5
+	elseif duration == 2 then
+		days = 1
+	elseif duration == 3 then
+		days = 2
+	end
+
+	local expiration = time() + (days * 24 * 60 * 60)
+	if (TSM.db.factionrealm.internalData.expiringAuction[PLAYER_NAME] or math.huge) < expiration then
+		return
+	end
+
+	TSM.db.factionrealm.internalData.expiringAuction[PLAYER_NAME] = expiration
+	TSM.TaskList.Expirations.Update()
 end

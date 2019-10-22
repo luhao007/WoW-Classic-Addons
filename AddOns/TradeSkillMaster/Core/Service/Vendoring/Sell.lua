@@ -19,7 +19,7 @@ local private = {
 -- ============================================================================
 
 function Sell.OnInitialize()
-	local used = TSMAPI_FOUR.Util.AcquireTempTable()
+	local used = TSM.TempTable.Acquire()
 	private.ignoreDB = TSMAPI_FOUR.Database.NewSchema("VENDORING_IGNORE")
 		:AddUniqueStringField("itemString")
 		:AddBooleanField("ignoreSession")
@@ -34,7 +34,7 @@ function Sell.OnInitialize()
 		end
 	end
 	private.ignoreDB:BulkInsertEnd()
-	TSMAPI_FOUR.Util.ReleaseTempTable(used)
+	TSM.TempTable.Release(used)
 
 	private.potentialValueDB = TSMAPI_FOUR.Database.NewSchema("VENDORING_POTENTIAL_VALUE")
 		:AddUniqueStringField("itemString")
@@ -136,7 +136,7 @@ end
 -- ============================================================================
 
 function private.UpdatePotentialValueDB()
-	local used = TSMAPI_FOUR.Util.AcquireTempTable()
+	local used = TSM.TempTable.Acquire()
 	private.potentialValueDB:TruncateAndBulkInsertStart()
 	for _, _, _, itemString in TSMAPI_FOUR.Inventory.BagIterator() do
 		if not used[itemString] then
@@ -148,5 +148,5 @@ function private.UpdatePotentialValueDB()
 		end
 	end
 	private.potentialValueDB:BulkInsertEnd()
-	TSMAPI_FOUR.Util.ReleaseTempTable(used)
+	TSM.TempTable.Release(used)
 end

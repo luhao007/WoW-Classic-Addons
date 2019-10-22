@@ -136,7 +136,7 @@ function Settings.PromptToReload()
 		timeout = 0,
 		OnAccept = ReloadUI,
 	}
-	TSMAPI_FOUR.Util.ShowStaticPopupDialog("TSMReloadPrompt")
+	TSM.Wow.ShowStaticPopupDialog("TSMReloadPrompt")
 end
 
 

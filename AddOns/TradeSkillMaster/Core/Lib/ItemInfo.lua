@@ -24,7 +24,7 @@ local ITEM_INFO_INTERVAL = 0.05
 local MAX_REQUESTED_ITEM_INFO = 50
 local MAX_REQUESTS_PER_ITEM = 5
 local UNKNOWN_ITEM_NAME = L["Unknown Item"]
-local DB_VERSION = 4
+local DB_VERSION = 5
 local RECORD_DATA_LENGTH = 17
 local FIELD_LENGTH_BITS = {
 	itemLevel = 16,
@@ -60,7 +60,7 @@ end
 -- ============================================================================
 
 function ItemInfo.OnInitialize()
-	TSMAPI_FOUR.Event.Register("GET_ITEM_INFO_RECEIVED", function(_, itemId, success)
+	TSM.Event.Register("GET_ITEM_INFO_RECEIVED", function(_, itemId, success)
 		if not success or itemId <= 0 or itemId > TSM.CONST.ITEM_MAX_ID or private.numRequests[itemId] == math.huge then
 			return
 		end
@@ -85,8 +85,8 @@ function ItemInfo.OnInitialize()
 		TSM.db.global.internalData.vendorItems[itemString] = TSM.db.global.internalData.vendorItems[itemString] or cost
 	end
 
-	local names = TSMItemInfoDB.names and TSMAPI_FOUR.Util.SafeStrSplit(TSMItemInfoDB.names, SEP_CHAR) or {}
-	local itemStrings = TSMItemInfoDB.itemStrings and TSMAPI_FOUR.Util.SafeStrSplit(TSMItemInfoDB.itemStrings, SEP_CHAR) or {}
+	local names = TSMItemInfoDB.names and TSM.String.SafeSplit(TSMItemInfoDB.names, SEP_CHAR) or {}
+	local itemStrings = TSMItemInfoDB.itemStrings and TSM.String.SafeSplit(TSMItemInfoDB.itemStrings, SEP_CHAR) or {}
 	assert(#itemStrings == #names)
 	local numItemsLoaded = #names
 	TSM:LOG_INFO("Imported %d items worth of data", numItemsLoaded)
@@ -138,8 +138,8 @@ function ItemInfo.OnInitialize()
 	-- process pending item info every 0.05 seconds
 	TSMAPI_FOUR.Delay.AfterTime("processItemInfo", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
 	-- scan the merchant when the goods are shown
-	TSMAPI_FOUR.Event.Register("MERCHANT_SHOW", private.ScanMerchant)
-	TSMAPI_FOUR.Event.Register("MERCHANT_UPDATE", private.UpdateMerchant)
+	TSM.Event.Register("MERCHANT_SHOW", private.ScanMerchant)
+	TSM.Event.Register("MERCHANT_UPDATE", private.UpdateMerchant)
 end
 
 function ItemInfo.OnEnable()
@@ -688,7 +688,7 @@ function private.ProcessItemInfo()
 		maxRequests = MAX_REQUESTED_ITEM_INFO
 	end
 
-	local toRemove = TSMAPI_FOUR.Util.AcquireTempTable()
+	local toRemove = TSM.TempTable.Acquire()
 	local numRequested = 0
 	for itemString in pairs(private.pendingItems) do
 		local name = private.GetField(itemString, "name")
@@ -725,7 +725,7 @@ function private.ProcessItemInfo()
 	for _, itemString in ipairs(toRemove) do
 		private.pendingItems[itemString] = nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(toRemove)
+	TSM.TempTable.Release(toRemove)
 
 	if not next(private.pendingItems) then
 		if private.isRebuilding then
@@ -745,7 +745,7 @@ function private.ScanMerchant()
 			local _, _, price, quantity, _, _, _, extendedCost = GetMerchantItemInfo(i)
 			-- bug with big keech vendor returning extendedCost = true for gold only items so need to check GetMerchantItemCostInfo
 			if price > 0 and (not extendedCost or GetMerchantItemCostInfo(i) == 0) then
-				TSM.db.global.internalData.vendorItems[itemString] = TSMAPI_FOUR.Util.Round(price / quantity)
+				TSM.db.global.internalData.vendorItems[itemString] = TSM.Math.Round(price / quantity)
 			else
 				TSM.db.global.internalData.vendorItems[itemString] = nil
 			end
@@ -832,6 +832,7 @@ function private.StoreGetItemInfoInstant(itemString)
 
 	if itemStringType == "i" then
 		local _, classStr, subClassStr, equipSlot, texture, classId, subClassId = GetItemInfoInstant(id)
+		equipSlot = equipSlot and equipSlot ~= "" and _G[equipSlot] or nil
 		if not texture then
 			return
 		end
@@ -841,7 +842,7 @@ function private.StoreGetItemInfoInstant(itemString)
 			assert(subClassStr == "")
 			subClassId = 0
 		end
-		local invSlotId = TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(equipSlot) or 0
+		local invSlotId = equipSlot and TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(equipSlot) or 0
 		private.SetItemInfoInstantFields(itemString, texture, classId, subClassId, invSlotId)
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
 		if baseItemString ~= itemString then
@@ -980,7 +981,7 @@ function private.ProcessAvailableItems()
 	private.db:BulkInsertEnd()
 
 	-- remove the items we process after processing them all because GET_ITEM_INFO_RECEIVED events may fire as we do this
-	local processedItems = TSMAPI_FOUR.Util.AcquireTempTable()
+	local processedItems = TSM.TempTable.Acquire()
 	for itemId in pairs(private.availableItems) do
 		processedItems[itemId] = true
 		local itemString = "i:"..itemId
@@ -991,7 +992,7 @@ function private.ProcessAvailableItems()
 	for itemId in pairs(processedItems) do
 		private.availableItems[itemId] = nil
 	end
-	TSMAPI_FOUR.Util.ReleaseTempTable(processedItems)
+	TSM.TempTable.Release(processedItems)
 
 	private.db:SetQueryUpdatesPaused(false)
 end

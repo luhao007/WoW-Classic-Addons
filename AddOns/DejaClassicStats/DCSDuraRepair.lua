@@ -74,7 +74,7 @@ for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
 	v.ItemFrameOutlineTexture = v:CreateTexture(nil,"OVERLAY",nil)
 	v.ItemFrameOutlineTexture:SetPoint("TOPLEFT", v, "TOPLEFT", -2, 2);
 	v.ItemFrameOutlineTexture:SetPoint("BOTTOMRIGHT", v, "BOTTOMRIGHT", 2, -2);
-	v.ItemFrameOutlineTexture:SetTexture("Interface\\COMMON\\WhiteIconFrame.blp")
+	v.ItemFrameOutlineTexture:SetTexture("Interface\\Addons\\DejaClassicStats\\DCSArt\\WhiteIconFrame.blp")
 
 	v.ItemFramehighlightTexture = v:CreateTexture(nil, "HIGHLIGHT",nil)
 	v.ItemFramehighlightTexture:SetPoint("TOPLEFT", v, "TOPLEFT", -2, 2);
@@ -93,7 +93,7 @@ local function DCS_Set_Item_Quality_Color_Outlines()
 			local qualityBordersChecked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsItemQualityBorders.ItemQualityBordersChecked
 			local qualityBordersAlpha
 			if qualityBordersChecked then 
-				qualityBordersAlpha = 1
+				qualityBordersAlpha = 0.90
 			else
 				qualityBordersAlpha = 0
 			end
@@ -2604,4 +2604,3 @@ DCS_ItemQualityBordersCheck:SetScript("OnClick", function(self)
 	gdbprivate.gdb.gdbdefaults.DejaClassicStatsItemQualityBorders.ItemQualityBordersChecked = qualityBordersChecked
 	DCS_Set_Item_Quality_Color_Outlines()
 end)
-

@@ -11,7 +11,7 @@
 -- @classmod Texture
 
 local _, TSM = ...
-local Texture = TSMAPI_FOUR.Class.DefineClass("Texture", TSM.UI.Element)
+local Texture = TSM.Lib.Class.DefineClass("Texture", TSM.UI.Element)
 TSM.UI.Texture = Texture
 local private = {}
 

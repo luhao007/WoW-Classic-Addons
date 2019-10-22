@@ -6,19 +6,21 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- JSON TSMAPI_FOUR Functions
+--- JSON Functions
 -- @module JSON
 
-TSMAPI_FOUR.JSON = {}
+local _, TSM = ...
+TSM.JSON = {}
+local JSON = TSM.JSON
 local private = {}
 
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Module Functions
 -- ============================================================================
 
-function TSMAPI_FOUR.JSON.Encode(value)
+function JSON.Encode(value)
 	if type(value) == "string" then
 		return "\""..private.SanitizeString(value).."\""
 	elseif type(value) == "number" or type(value) == "boolean" then
@@ -31,12 +33,12 @@ function TSMAPI_FOUR.JSON.Encode(value)
 		local tblParts = {}
 		if #value == absCount then
 			for _, v in ipairs(value) do
-				tinsert(tblParts, TSMAPI_FOUR.JSON.Encode(v))
+				tinsert(tblParts, JSON.Encode(v))
 			end
 			return "["..table.concat(tblParts, ",").."]"
 		else
 			for k, v in pairs(value) do
-				tinsert(tblParts, "\""..private.SanitizeString(k).."\":"..TSMAPI_FOUR.JSON.Encode(v))
+				tinsert(tblParts, "\""..private.SanitizeString(k).."\":"..JSON.Encode(v))
 			end
 			return "{"..table.concat(tblParts, ",").."}"
 		end
