@@ -9,6 +9,7 @@
 	<Script file="HereBeDragons\HereBeDragons-2.0.lua" />
 	<Include file="LibTabbedFrame-1.0\lib.xml" />
 	<Include file="LibSideTabFrame-1.0\lib.xml" />
+	<Script file="LibTouristClassic-1.0/LibTouristClassic-1.0.lua" />
 	<Script file="LibWindow-1.1\LibWindow-1.1.lua" />
 	<Script file="LibPubSub-1.0\LibPubSub-1.0.lua" />
 	<Script file="LibOptionsFrame-1.0\LibOptionsFrame-1.0.lua" />

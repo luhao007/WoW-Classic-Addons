@@ -1,0 +1,24 @@
+------------------------------------------------------------------------
+r227 | Odica | 2019-08-31 22:42:52 +0000 (Sat, 31 Aug 2019) | 17 lines
+Changed paths:
+   M /trunk/LibTourist-3.0.lua
+
+Removed all hard coded battle pet levels. For a while now these are retrieved through C_Map.GetMapLevels, overwriting the hard coded values. For zones without battle pets, GetMapLevels returns no pet levels. Some of these zones however, had hard coded values defined, which would be returned by LibTourist.
+For the following zones LibTourist no longer incorrectly returns battle pet levels:
+- Isle of Quel'Danas (Eastern Kingdoms)
+- Undercity (Eastern Kingdoms)
+- Stranglethorn Vale (Eastern Kingdoms)
+- Kelp'thar Forest (Eastern Kingdoms)
+- Vashj'ir (Eastern Kingdoms)
+- Shimmering Expanse (Eastern Kingdoms)
+- Abyssal Depths (Eastern Kingdoms)
+- Kezan (The Maelstrom)
+- Shattrath City (Outland)
+- Wintergrasp (Northrend)
+- Hrothgar's Landing (Northrend)
+- Dalaran (Broken Isles)
+- Broken Shore (Broken Isles)
+- Isle of Giants (Pandaria)
+
+------------------------------------------------------------------------
+

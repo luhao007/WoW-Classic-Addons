@@ -1,3 +1,6 @@
+Version 0.6
+- Fishing Skill levels should be correct (thank you, LibTourist!)
+
 Version 0.5
 - Batteries included version, outfit manager and broker
 

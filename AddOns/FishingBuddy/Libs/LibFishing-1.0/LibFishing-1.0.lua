@@ -65,7 +65,8 @@ local CBH = LibStub("CallbackHandler-1.0")
 local BSZ = FishLib_GetLocaleLibBabble("LibBabble-SubZone-3.0");
 local BSL = LibStub("LibBabble-SubZone-3.0"):GetBaseLookupTable();
 local BSZR = LibStub("LibBabble-SubZone-3.0"):GetReverseLookupTable();
-local HBD = LibStub("HereBeDragons-2.0")
+local HBD = LibStub("HereBeDragons-2.0");
+local LT = LibStub("LibTouristClassic-1.0");
 
 FishLib.HBD = HBD
 
@@ -96,7 +97,7 @@ local function FindSpellID(thisone)
     end
     return nil;
 end
- 
+
 function FishLib:GetFishingSkillInfo()
     local spell = FindSpellID("Interface\\Icons\\Trade_Fishing");
     if spell then
@@ -1522,12 +1523,15 @@ local subzoneskills = {
 -- this should be something useful for BfA
 function FishLib:GetCurrentFishingLevel()
     local mapID = self:GetCurrentMapId()
-    local continent, _ = self:GetCurrentMapContinent()
-
-    -- Let's just go with continent level skill for now, since
-    -- subzone skill levels are now up in the air.
-    local info = self.continent_fishing[continent] or DEFAULT_SKILL
-    return info.max
+    local current_max = LT:GetFishingLevel(mapID)
+    if current_max == 0 then
+        local continent, _ = self:GetCurrentMapContinent()
+        -- Let's just go with continent level skill for now, since
+        -- subzone skill levels are now up in the air.
+        local info = self.continent_fishing[continent] or DEFAULT_SKILL
+        current_max = info.max
+    end
+    return current_max
     -- local _, subzone = self:GetZoneInfo()
     -- if (continent ~= 7 and subzoneskills[subzone]) then
     -- 	return subzoneskills[subzone];
@@ -1577,33 +1581,12 @@ function FishLib:GetFishingSkillLine(join, withzone, isfishing)
     return part1, part2;
 end
 
--- table taken from El's Anglin' pages
--- More accurate than the previous (skill - 75) / 25 calculation now
-local skilltable = {};
-tinsert(skilltable, { ["level"] = 100, ["inc"] = 1 });
-tinsert(skilltable, { ["level"] = 200, ["inc"] = 2 });
-tinsert(skilltable, { ["level"] = 300, ["inc"] = 2 });
-tinsert(skilltable, { ["level"] = 450, ["inc"] = 4 });
-tinsert(skilltable, { ["level"] = 525, ["inc"] = 6 });
-tinsert(skilltable, { ["level"] = 600, ["inc"] = 10 });
-
-local newskilluptable = {};
-function FishLib:SetSkillupTable(table)
-    newskilluptable = table;
-end
-
-function FishLib:GetSkillupTable()
-    return newskilluptable;
-end
-
--- this would be faster as a binary search, but I'm not sure it matters :-)
 function FishLib:CatchesAtSkill(skill)
-    for _,chk in ipairs(skilltable) do
-        if ( skill < chk.level ) then
-            return chk.inc;
-        end
+    local needed = math.floor((skill - 75) / 25)
+    if ( needed < 1 ) then
+        needed = 1
     end
-    -- return nil;
+    return needed
 end
 
 function FishLib:GetSkillUpInfo()
@@ -2082,7 +2065,7 @@ local function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to
 	if ( location < 0 ) then -- Thanks Seerah!
 		return false, false, false, 0;
 	end
-	
+
 	local player = (bit.band(location, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0);
 	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
 	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
@@ -2098,12 +2081,12 @@ local function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to
 		tab = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
 		voidSlot = location - bit.lshift(tab, ITEM_INVENTORY_BAG_BIT_OFFSET);
 	end
-	
+
 	if ( bags ) then
 		location = location - ITEM_INVENTORY_LOCATION_BAGS;
 		local bag = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
-		local slot = location - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET);	
-		
+		local slot = location - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET);
+
 		if ( bank ) then
 			bag = bag + ITEM_INVENTORY_BANK_BAG_OFFSET;
 		end

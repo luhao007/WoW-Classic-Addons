@@ -9911,31 +9911,22 @@ TSM.L["Auctioning 'POST'/'CANCEL' Button"] = "Auctioning 'POST'/'CANCEL' Button"
 TSM.L["Auctioning Tooltips"] = "Auctioning Tooltips"
 TSM.L["Auctions"] = "경매"
 TSM.L["Auto Quest Complete"] = "자동 퀘스트 완료음"
---[[Translation missing --]]
-TSM.L["Average Earned Per Day:"] = "Average Earned Per Day:"
---[[Translation missing --]]
-TSM.L["Average Prices:"] = "Average Prices:"
---[[Translation missing --]]
-TSM.L["Average Profit Per Day:"] = "Average Profit Per Day:"
---[[Translation missing --]]
-TSM.L["Average Spent Per Day:"] = "Average Spent Per Day:"
---[[Translation missing --]]
-TSM.L["Avg Buy Price"] = "Avg Buy Price"
---[[Translation missing --]]
-TSM.L["Avg Resale Profit"] = "Avg Resale Profit"
---[[Translation missing --]]
-TSM.L["Avg Sell Price"] = "Avg Sell Price"
+TSM.L["Average Earned Per Day:"] = "일일 평균 수입"
+TSM.L["Average Prices:"] = "평균 가격"
+TSM.L["Average Profit Per Day:"] = "일일 평균 이익"
+TSM.L["Average Spent Per Day:"] = "일일 평균 지출"
+TSM.L["Avg Buy Price"] = "평균 구입 가격"
+TSM.L["Avg Resale Profit"] = "평균 재판매 이익"
+TSM.L["Avg Sell Price"] = "평균 판매 가격"
 --[[Translation missing --]]
 TSM.L["BACK"] = "BACK"
 --[[Translation missing --]]
 TSM.L["BACK TO LIST"] = "BACK TO LIST"
 --[[Translation missing --]]
 TSM.L["Back to List"] = "Back to List"
---[[Translation missing --]]
-TSM.L["Bag"] = "Bag"
+TSM.L["Bag"] = "가방"
 TSM.L["Bags"] = "가방"
---[[Translation missing --]]
-TSM.L["Banks"] = "Banks"
+TSM.L["Banks"] = "은행"
 --[[Translation missing --]]
 TSM.L["Base Group"] = "Base Group"
 --[[Translation missing --]]
@@ -9952,8 +9943,7 @@ TSM.L["Below min price. Posting at min price."] = "Below min price. Posting at m
 TSM.L["Below min price. Posting at normal price."] = "Below min price. Posting at normal price."
 --[[Translation missing --]]
 TSM.L["Below, you can manage your profiles which allow you to have entirely different sets of groups."] = "Below, you can manage your profiles which allow you to have entirely different sets of groups."
---[[Translation missing --]]
-TSM.L["BID"] = "BID"
+TSM.L["BID"] = "입찰"
 --[[Translation missing --]]
 TSM.L["Bid %d / %d"] = "Bid %d / %d"
 --[[Translation missing --]]
@@ -9979,8 +9969,7 @@ TSM.L["Bought %sx%d for %s from %s"] = "Bought %sx%d for %s from %s"
 TSM.L["Bound Actions"] = "Bound Actions"
 --[[Translation missing --]]
 TSM.L["BUSY"] = "BUSY"
---[[Translation missing --]]
-TSM.L["BUY"] = "BUY"
+TSM.L["BUY"] = "구입"
 --[[Translation missing --]]
 TSM.L["Buy"] = "Buy"
 --[[Translation missing --]]
@@ -9998,8 +9987,7 @@ TSM.L["Buy Options"] = "Buy Options"
 TSM.L["BUYBACK ALL"] = "BUYBACK ALL"
 --[[Translation missing --]]
 TSM.L["Buyer/Seller"] = "Buyer/Seller"
---[[Translation missing --]]
-TSM.L["BUYOUT"] = "BUYOUT"
+TSM.L["BUYOUT"] = "즉시구매"
 --[[Translation missing --]]
 TSM.L["Buyout (item)"] = "Buyout (item)"
 --[[Translation missing --]]
@@ -10018,8 +10006,7 @@ TSM.L["BUYS"] = "BUYS"
 TSM.L["By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."] = "By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."
 --[[Translation missing --]]
 TSM.L["Cancel auctions with bids"] = "Cancel auctions with bids"
---[[Translation missing --]]
-TSM.L["Cancel Scan"] = "Cancel Scan"
+TSM.L["Cancel Scan"] = "검색 취소"
 --[[Translation missing --]]
 TSM.L["Cancel to repost higher?"] = "Cancel to repost higher?"
 --[[Translation missing --]]
@@ -10092,8 +10079,7 @@ TSM.L["Combine Partial Stacks"] = "Combine Partial Stacks"
 TSM.L["Combining..."] = "Combining..."
 --[[Translation missing --]]
 TSM.L["Configuration Scroll Wheel"] = "Configuration Scroll Wheel"
---[[Translation missing --]]
-TSM.L["Confirm"] = "Confirm"
+TSM.L["Confirm"] = "확인"
 --[[Translation missing --]]
 TSM.L["Confirm Complete Sound"] = "Confirm Complete Sound"
 --[[Translation missing --]]

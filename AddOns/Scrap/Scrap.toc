@@ -13,6 +13,7 @@
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory
 
+Libs\LibStub\LibStub.lua
 Libs\Unfit-1.0\Unfit-1.0.lua
 
 Localization\en.lua

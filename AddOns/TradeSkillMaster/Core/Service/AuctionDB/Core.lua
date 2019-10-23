@@ -123,7 +123,6 @@ function AuctionDB.OnDisable()
 	for itemString, data in pairs(private.scanRealmData) do
 		TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, data.minBuyout, data.marketValue, data.numAuctions, data.quantity, data.lastScan)
 	end
-	TSM.CSV.EncodeSortLines(encodeContext)
 	TSM.db.factionrealm.internalData.csvAuctionDBScan = TSM.CSV.EncodeEnd(encodeContext)
 	TSM.db.factionrealm.internalData.auctionDBScanHash = TSM.Math.CalculateHash(TSM.db.factionrealm.internalData.csvAuctionDBScan)
 end
@@ -234,7 +233,7 @@ function private.ScanThread()
 	-- start the new scan
 	private.auctionScan = TSMAPI_FOUR.Auction.NewAuctionScan(private.scanDB)
 		:SetResolveSellers(false)
-		:SetIgnoreItemLevel(false)
+		:SetIgnoreItemLevel(true)
 		:SetScript("OnProgressUpdate", private.OnProgressUpdate)
 		:SetScript("OnFilterDone", private.OnFullScanDone)
 	private.auctionScan:NewAuctionFilter()
@@ -261,6 +260,7 @@ function private.OnFullScanDone()
 	local scannedItems = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
 	private.scanRealmTime = time()
 	TSM.db.factionrealm.internalData.auctionDBScanTime = time()
+	TSM.db.factionrealm.internalData.csvAuctionDBScan = ""
 	private.marketValueDB:TruncateAndBulkInsertStart()
 	local scanQuery = private.scanDB:NewQuery()
 		:Select("baseItemString", "stackSize", "itemBuyout")

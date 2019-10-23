@@ -1,0 +1,139 @@
+commit 70285e9a361857eee431303875380fef3d571f4d
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 23:40:32 2019 +0000
+
+    Update header for git, author list
+
+commit 36f8bedce6f10eda4f9edd56dade2fb619658fb8
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 23:40:18 2019 +0000
+
+    Fix packaging directive
+
+commit 42d159da05c04cadc12e71ca60b36d4af9900fed
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 20:47:34 2019 +0000
+
+    Fix #4 - Update GetMapNameByIDAlt to take a uiMapID OR instanceID
+
+commit 269ae7dafdf7ef94aea5777b4868de40eef56bf6
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 20:20:26 2019 +0000
+
+    Remove trailing spaces
+
+commit 8e75b4656655b169d6a96f8128278c4924c54858
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 20:20:02 2019 +0000
+
+    Remove trailing tabs
+
+commit 0fb47201bcdbb91b5c401b5bd4c4c99d7d67aa16
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 20:15:38 2019 +0000
+
+    re #4 - Initialize dungeon and raid information for those that are in the game
+
+commit 688016251f40932f82d15588e99593b1ce954a09
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 15:27:04 2019 +0000
+
+    Ok, *really* fix flight points
+
+commit 42a8e7751b5c523cface7367365a5df0ef97817b
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 15:25:12 2019 +0000
+
+    Fix typo in flightnode paths
+
+commit c4b70cb02c5ddfe7711259ca6288b575c411e3a0
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 15:15:21 2019 +0000
+
+    Fix #1 - Adjust min fishing requirements for no escaped fish
+
+commit bc75df1f1f661d64b070b42771ed60f735883c96
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 02:02:44 2019 +0000
+
+    Fix flight points
+
+commit 8678cf635ac35c056b2e92f265567fa07ac78a8e
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 01:02:13 2019 +0000
+
+    Fix location names for flight points
+
+commit b1244e6633cd4bd6a95ad0959e90099202932a40
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 00:51:44 2019 +0000
+
+    The Barrens has items for alliance via Ratchet
+    Thousand needles is technically contested
+
+commit ad86d3911fb666f19bcbfa51d3cb164ded939deb
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 00:43:37 2019 +0000
+
+    Thousand Needles is for the Horde
+
+commit a64e6379de14e3444b32af60aabdae6a870570a2
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 00:23:10 2019 +0000
+
+    Cleanup, unique zone names don't apply to classic
+
+commit 0cfef70eeb599bd6bcbe3bd9c4146c02965ef4ac
+Author: Yunohu <kernighan@gmail.com>
+Date:   Thu Sep 19 00:17:53 2019 +0000
+
+    Comment out instances for the moment
+
+commit 22c44439b73961be5768ef12ae03652899acef3d
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 23:28:23 2019 +0000
+
+    Add instance ID for Deeprun Tram
+
+commit f2cb1c49e0a30ec6d695c7b78a9746244e6158fc
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 23:10:30 2019 +0000
+
+    Fix accidently deleted fishing line
+
+commit 6cf6ff4f8af94b5656582d50958aa4f50175480a
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 22:32:47 2019 +0000
+
+    Drop AddDuplicatesToLocalizedLookup function not needed for Classic
+
+commit 7600c64d38cff430bd363516c1f551ce385ca683
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 22:30:54 2019 +0000
+
+    Fix Naxx entry
+
+commit 7fecb1fbe95ea3121cb7a8904348eb431af0fbbd
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 21:59:40 2019 +0000
+
+    Update to use classic lib
+
+commit e7d6471052a1b5d4acad8f1ca4b6cccbf1fcb351
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 21:59:10 2019 +0000
+
+    Deal with the fact that instances do not have a uiMapID in Classic
+
+commit 4959f87e1184b7b74ddc010622f4f093cfd7a89d
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 21:28:20 2019 +0000
+
+    Update levels for Classic
+
+commit 3e65be2241feb81d23ba5dacddb79cf2a69f35ce
+Author: Yunohu <kernighan@gmail.com>
+Date:   Wed Sep 18 20:34:59 2019 +0000
+
+    Initial checking for classic version
+

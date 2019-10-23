@@ -1,12 +1,19 @@
 ------------------------------------------------------------------------
-r57 | Caliaha | 2019-10-15 03:15:07 +0000 (Tue, 15 Oct 2019) | 2 lines
+r59 | Caliaha | 2019-10-22 19:27:41 +0000 (Tue, 22 Oct 2019) | 2 lines
 Changed paths:
-   M /trunk/HandyNotes_NPCs (Classic).lua
    M /trunk/data.lua
-   M /trunk/options.lua
-   M /trunk/search.lua
+   M /trunk/itemData.lua
+   M /trunk/locales/deDE.lua
+   M /trunk/locales/enUS.lua
+   M /trunk/locales/esES.lua
+   M /trunk/locales/frFR.lua
+   M /trunk/locales/koKR.lua
+   M /trunk/locales/ptBR.lua
+   M /trunk/locales/ruRU.lua
+   M /trunk/locales/zhCN.lua
+   M /trunk/vendorData.lua
 
-Fixed pet trainers not properly hiding for non english clients, Fixed weapon masters not hiding, and added show mount trainer option
+Updated npcs, vendor data, localization
 
 ------------------------------------------------------------------------
 

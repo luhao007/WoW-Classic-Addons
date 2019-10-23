@@ -1,6 +1,6 @@
-## v4.8.16 Changes
+## v4.8.17 Changes
 
-* [All] Fixed issue with crafting cost not working in some situations.
-* [All] Fixed error when renaming custom price source.
+* [Classic] Fixed issue with scan data not saving properly, affecting AuctionDB prices.
+* [Classic] Sped up manual scans.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)
