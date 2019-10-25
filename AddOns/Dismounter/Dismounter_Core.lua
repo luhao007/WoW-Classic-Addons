@@ -19,8 +19,12 @@ local function onEvent(self, event, ...)
         end
 
         if (isShapeshiftErrorMessage) then
-            if (addon.utils.cancelShapeshiftBuffs()) then
-                UIErrorsFrame:Clear();
+            if (InCombatLockdown()) then
+                addon.utils.printMsg("Can't remove shapeshift in combat")
+            else
+                if (addon.utils.cancelShapeshiftBuffs()) then
+                    UIErrorsFrame:Clear();
+                end
             end
         end;
 

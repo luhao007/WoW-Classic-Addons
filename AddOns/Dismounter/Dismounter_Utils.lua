@@ -57,3 +57,7 @@ addon.utils.cancelShapeshiftBuffs = function()
     end
     return removedBuff;
 end
+
+addon.utils.printMsg = function(msg)
+    print("|cff78a1ffDismounter:|r " .. msg);
+end

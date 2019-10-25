@@ -468,6 +468,12 @@
 --			Makes it so holiday codes for quests do not cause Lua errors in Classic, though still do not work as there is no Classic calendar.
 --			Adds support for Mechagnome and Vulpera races.
 --			Adds support for the "/grail eraseAndReloadCompletedQuests" slash command.
+--		104	Updates some quest/NPC information.
+--			Fixes the implementation of CurrentDateTime() because the month and day were reversed.
+--			Corrects CelebratingHoliday() to behave and perform better.
+--			Sets faction obtainers to account for quest giver faction.
+--			Corrects IsNPCAvailable() to properly use holiday markers for NPCs.
+--			Augments QuestsInMap() to allow quests in the log whose turn in is in the map to be included.
 --
 --	Known Issues
 --
@@ -869,6 +875,10 @@ experimental = false,	-- currently this implementation does not reduce memory si
 		--                ['h'] =   0x01000000,
 		--                ['i'] =   0x02000000,
 		bitMaskHolidayAnniversary = 0x04000000,	-- WoW Anniversary event
+		bitMaskHolidayAQ		=	0x08000000,
+		--				  ['j']	=	0x10000000,
+		--				  ['k']	=	0x20000000,
+		--				  ['l']	=	0x40000000,
 		-- End of bit mask values
 
 		bodyGuardLevel = { 'Bodyguard', 'Trusted Bodyguard', 'Personal Wingman' },
@@ -1267,6 +1277,9 @@ experimental = false,	-- currently this implementation does not reduce memory si
 					self.holidayMapping['g'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME1
 					self.holidayMapping['h'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME2
 					self.holidayMapping['i'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME3
+					self.holidayMapping['j'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME4
+					self.holidayMapping['k'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME5
+					self.holidayMapping['l'] = self.holidayMapping['f'] .. ' - ' .. EXPANSION_NAME6
 					self.reverseHolidayMapping = {}
 					for index, holidayName in pairs(self.holidayMapping) do
 						self.reverseHolidayMapping[holidayName] = index
@@ -2021,7 +2034,7 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 					-- OpenCalendar() will do nothing useful.
 					local weekday, month, day, year, hour, minute = self:CurrentDateTime()
 					C_Calendar.SetAbsMonth(month, year)
-					C_Calendar.OpenCalendar()
+					C_Calendar.OpenCalendar()	-- this does nothing during startup...its real usage is when checking holidays
 					self:_AddWorldQuests()
 				end
 				-- In Classic we need to get the completed quests because we have eliminated the
@@ -2233,14 +2246,50 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 		},
 		genderMapping = { ['M'] = 2, ['F'] = 3, },
 		gossipNPCs = {},
-		holidayMapping = { ['A'] = 'Love is in the Air', ['B'] = 'Brewfest', ['C'] = "Children's Week", ['D'] = 'Day of the Dead', ['E'] = 'WoW Anniversary', ['F'] = 'Darkmoon Faire',
-				['H'] = 'Harvest Festival', ['K'] = "Kalu'ak Fishing Derby", ['L'] = 'Lunar Festival', ['M'] = 'Midsummer Fire Festival', ['N'] = 'Noblegarden', ['P'] = "Pirates' Day",
-				['U'] = 'New Year', ['V'] = 'Feast of Winter Veil', ['W'] = "Hallow's End", ['X'] = 'Stranglethorn Fishing Extravaganza', ['Y'] = "Pilgrim's Bounty", ['Z'] = "Christmas Week", ['a'] = 'Apexis Bonus Event', ['b'] ='Arena Skirmish Bonus Event', ['c'] = 'Battleground Bonus Event', ['d'] = 'Draenor Dungeon Event', ['e'] = 'Pet Battle Bonus Event', ['f'] = 'Timewalking Dungeon Event', ['g'] = 'Legion Dungeon Event', },
+		holidayMapping = {	['A'] = 'Love is in the Air',
+							['B'] = 'Brewfest',
+							['C'] = "Children's Week",
+							['D'] = 'Day of the Dead',
+							['E'] = 'WoW Anniversary',
+							['F'] = 'Darkmoon Faire',
+							-- G
+							['H'] = 'Harvest Festival',
+							-- I
+							-- J
+							['K'] = "Kalu'ak Fishing Derby",
+							['L'] = 'Lunar Festival',
+							['M'] = 'Midsummer Fire Festival',
+							['N'] = 'Noblegarden',
+							-- O
+							['P'] = "Pirates' Day",
+							['Q'] = "AQ",
+							-- R
+							-- S
+							-- T
+							['U'] = 'New Year',
+							['V'] = 'Feast of Winter Veil',
+							['W'] = "Hallow's End",
+							['X'] = 'Stranglethorn Fishing Extravaganza',
+							['Y'] = "Pilgrim's Bounty",
+							['Z'] = "Christmas Week",
+							['a'] = 'Apexis Bonus Event',
+							['b'] ='Arena Skirmish Bonus Event',
+							['c'] = 'Battleground Bonus Event',
+							['d'] = 'Draenor Dungeon Event',
+							['e'] = 'Pet Battle Bonus Event',
+							['f'] = 'Timewalking Dungeon Event',
+							-- g automatically assigned Timewalking Dungeon Event - The Burning Crusade
+							-- h automatically assigned Timewalking Dungeon Event - Wrath of the Lich King
+							-- i automatically assigned Timewalking Dungeon Event - Cataclysm
+							-- j automatically assigned Timewalking Dungeon Event - Mists of Pandaria
+							-- k automatically assigned Timewalking Dungeon Event - Warlords of Draenor
+							-- l automatically assigned Timewalking Dungeon Event - Legion
+						},
 		holidayToBitMapping = { ['A'] = 0x00000001, ['B'] = 0x00000002, ['C'] = 0x00000004, ['D'] = 0x00000008, ['E'] = 0x04000000, ['F'] = 0x00000010,
-				['H'] = 0x00000020, ['K'] = 0x00010000, ['L'] = 0x00000040, ['M'] = 0x00000080, ['N'] = 0x00000100, ['P'] = 0x00000200,
-				['U'] = 0x00000400, ['V'] = 0x00000800, ['W'] = 0x00001000, ['X'] = 0x00008000, ['Y'] = 0x00002000, ['Z'] = 0x00004000, ['a'] = 0x00020000, ['b'] = 0x00040000, ['c'] = 0x00080000, ['d'] = 0x00100000, ['e'] = 0x00200000, ['f'] = 0x00400000, ['g'] = 0x00800000, ['h'] = 0x01000000, ['i'] = 0x02000000, },
+				['H'] = 0x00000020, ['K'] = 0x00010000, ['L'] = 0x00000040, ['M'] = 0x00000080, ['N'] = 0x00000100, ['P'] = 0x00000200, ['Q'] = 0x08000000,
+				['U'] = 0x00000400, ['V'] = 0x00000800, ['W'] = 0x00001000, ['X'] = 0x00008000, ['Y'] = 0x00002000, ['Z'] = 0x00004000, ['a'] = 0x00020000, ['b'] = 0x00040000, ['c'] = 0x00080000, ['d'] = 0x00100000, ['e'] = 0x00200000, ['f'] = 0x00400000, ['g'] = 0x00800000, ['h'] = 0x01000000, ['i'] = 0x02000000, ['j'] = 0x10000000, ['k'] = 0x20000000, ['l'] = 0x40000000, },
 		holidayToMapAreaMapping = { ['HA'] = 100001, ['HB'] = 100002, ['HC'] = 100003, ['HD'] = 100004, ['HE'] = 100005, ['HF'] = 100006, ['HH'] = 100008, ['HK'] = 100011, ['HL'] = 100012, ['HM'] = 100013,
-				['HN'] = 100014, ['HP'] = 100016, ['HQ'] = 100017, ['HU'] = 100021, ['HV'] = 100022, ['HW'] = 100023, ['HX'] = 100024, ['HY'] = 100025, ['HZ'] = 100026, ['Ha'] = 100027, ['Hb'] = 100028, ['Hc'] = 100029, ['Hd'] = 100030, ['He'] = 100031, ['Hf'] = 100032, ['Hg'] = 100033, ['Hh'] = 100034, ['Hi'] = 100035, },
+				['HN'] = 100014, ['HP'] = 100016, ['HQ'] = 100017, ['HU'] = 100021, ['HV'] = 100022, ['HW'] = 100023, ['HX'] = 100024, ['HY'] = 100025, ['HZ'] = 100026, ['Ha'] = 100027, ['Hb'] = 100028, ['Hc'] = 100029, ['Hd'] = 100030, ['He'] = 100031, ['Hf'] = 100032, ['Hg'] = 100033, ['Hh'] = 100034, ['Hi'] = 100035, ['Hj'] = 100036, ['Hk'] = 100037, ['Hl'] = 100038, },
 		indexedQuests = {},
 		indexedQuestsExtra = {},
 		levelingLevel = nil,	-- this is set during the PLAYER_LEVEL_UP event because UnitLevel() does not work during it
@@ -3829,66 +3878,38 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 			return (0 == bitband(self:StatusCode(questId), bitValue) and not self:IsQuestObsolete(questId) and not self:IsQuestPending(questId))
 		end,
 
+		-- These are the eventIds associated with Timewalking Dungeons
+		celebratingHolidayEventIdMapping = {	["g"] = 559, -- The Burning Crusade
+												["h"] = 562, -- Wrath of the Lich King
+												["i"] = 9999, -- Cataclysm
+												["j"] = 9999, -- Mists of Pandaria
+												["k"] = 1056, -- Warlords of Draenor
+												["l"] = 9999, -- Legion
+											},
 		---
-		--	Determines whether the soughtHolidayName is currently being celebrated.
-		--	@param soughtHolidayName The localized name of a holiday, like Brewfest or Darkmoon Faire.
-		--	@return true if the holiday is being celebrated currently, or false otherwise
-		CelebratingHoliday = function(self, soughtHolidayName)
+		--	This returns true if the specified holiday is currently being celebrated based on the calendar event.
+		_CelebratingHolidayDayEventProcessor = function(self, soughtHolidayName, event)
 			local retval = false
-			local weekday, month, day, year, hour, minute = self:CurrentDateTime()
-			local elapsedMinutes = hour * 60 + minute
-			local i = 1
-			local needsChristmasOrLater = false
+			local holidayNameToUse = soughtHolidayName
 			local holidayCode = self.reverseHolidayMapping[soughtHolidayName]
-			if holidayCode == 'Z' then
-				needsChristmasOrLater = true
-				soughtHolidayName = self.holidayMapping['V']
+			if nil ~= self.celebratingHolidayEventIdMapping[holidayCode] then
+				holidayNameToUse = self.holidayMapping['f']
 			end
-			if holidayCode == 'g' or holidayCode == 'h' or holidayCode == 'i' then
-				soughtHolidayName = self.holidayMapping['f']
-			end
-			-- sometime between release 23478 and 23578 CalendarGetDayEvent was removed, replaced with C_Calendar.GetDayEvent which returns a table
-			local CalendarGetNumDayEvents = (self.existsClassic and function() return 0 end) or (self.battleForAzeroth and C_Calendar.GetNumDayEvents) or CalendarGetNumDayEvents
-			local numEvents = CalendarGetNumDayEvents(0, day)
-			local title, calHour, calMinute, calendarType, sequenceType, eventType, texture, modStatus, inviteStatus, invitedBy, difficulty, inviteType
-			for i = 1, numEvents do
-                local event = C_Calendar.GetDayEvent(0, day, i)
-				calendarType = event.calendarType
-				eventType = event.eventType
-				title = event.title
-				texture = event.texture
-				sequenceType = event.sequenceType
-				local date = (event.sequenceType == "END") and event.endTime or event.startTime
-				calHour = date.hour
-				calMinute = date.minute
-				--	hour and minute indicate time when event starts for START
-				--	or ONGOING, and ends for END
-				--	sequenceType is START, ONGOING, END
-				--	texture can allow us to know which Timewalking Dungeon Event is
-				--	happening:  calendar_weekendcataclysm,
-				--				calendar_weekendwrathofthelichking,
-				--				calendar_weekendburningcrusade
-				local foundMatch = false
-				if calendarType == 'HOLIDAY' and title == soughtHolidayName then
-					foundMatch = true
+			if event.calendarType == 'HOLIDAY' and event.title == holidayNameToUse then
+				local shouldContinue = true
+				local possibleEventId = self.celebratingHolidayEventIdMapping[holidayCode]
+				if nil ~= possibleEventId and tonumber(event.eventID) ~= possibleEventId then
+					shouldContinue = false
 				end
-				if holidayCode == 'g' or holidayCode == 'h' or holidayCode == 'i' then
-					if holidayCode == 'g' and texture ~= 'calendar_weekendburningcrusade' then
-						foundMatch = false
-					end
-					if holidayCode == 'h' and texture ~= 'calendar_weekendwrathofthelichking' then
-						foundMatch = false
-					end
-					if holidayCode == 'i' and texture ~= 'calendar_weekendcataclysm' then
-						foundMatch = false
-					end
-				end
-				if foundMatch then
+				if shouldContinue then
+					local sequenceType = event.sequenceType
 					if sequenceType == 'ONGOING' then
 						retval = true
 					else
-						-- Need to check time based on START/END
-						local eventMinutes = calHour * 60 + calMinute
+						local weekday, month, day, year, hour, minute = self:CurrentDateTime()
+						local elapsedMinutes = hour * 60 + minute
+						local date = (sequenceType == "END") and event.endTime or event.startTime
+						local eventMinutes = date.hour * 60 + date.minute
 						if sequenceType == 'START' and elapsedMinutes >= eventMinutes then
 							retval = true
 						end
@@ -3897,41 +3918,65 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 						end
 					end
 				end
-				i = i + 1
 			end
-			if retval and needsChristmasOrLater then
-				if 12 == month and 25 > day then
-					retval = false
-				end
-			end
-			if self.holidayMapping['U'] == soughtHolidayName then
-				if (12 == month and 31 == day) then
+			return retval
+		end,
+
+-- Hallows 10/18 10h00 -> 11/01 11h00
+
+		celebratingHolidayCache = {},	-- key is holidayName, value is table with key of date/time and value of 0(false) or 1(true)
+
+		---
+		--	Determines whether the soughtHolidayName is currently being celebrated.
+		--	@param soughtHolidayName The localized name of a holiday, like Brewfest or Darkmoon Faire.
+		--	@return true if the holiday is being celebrated currently, or false otherwise
+		CelebratingHoliday = function(self, soughtHolidayName)
+			local retval = false
+			local weekday, month, day, year, hour, minute = self:CurrentDateTime()
+			local datetimeKey = strformat("%4d-%02d-%02d %02d:%02d", year, month, day, hour, minute)
+			local holidayCode = self.reverseHolidayMapping[soughtHolidayName]
+			if self.celebratingHolidayCache[soughtHolidayName] and self.celebratingHolidayCache[soughtHolidayName][datetimeKey] then
+				retval = (self.celebratingHolidayCache[soughtHolidayName][datetimeKey] == 1)
+			elseif 'Z' == holidayCode then
+				if 12 == month and day >= 25 then
 					retval = true
 				end
-			end
-
-			-- Stranglethorn Fishing Extravaganza quest givers appear on Saturday and Sunday
-			if self.holidayMapping['X'] == soughtHolidayName then
-				if weekday == 1 or weekday == 7 then
+			elseif 'U' == holidayCode then
+				if 12 == month and 31 == day then
 					retval = true
 				end
-			end
-
-			-- Kalu'ak Fishing Derby quest giver appears on Sunday between 14h00 and 16h00 server
-			if self.holidayMapping['K'] == soughtHolidayName then
+			elseif 'X' == holidayCode then
+				-- Stranglethorn Fishing Extravaganza quest givers appear on Saturday and Sunday
+				if 1 == weekday or 7 == weekday then
+					retval = true
+				end
+			elseif 'K' == holidayCode then
+				-- Kalu'ak Fishing Derby quest giver appears on Sunday between 14h00 and 16h00 server
 				if weekday == 7 then
 					if elapsedMinutes >= (14 * 60) and elapsedMinutes <= (16 * 60) then
 						retval = true
 					end
 				end
-			end
-
-			if self.holidayMapping['E'] == soughtHolidayName then
-				if (11 == month and day > 15) then
+			elseif 'E' == holidayCode then
+				-- WoW Anniversary is second half of November
+				if 11 == month and 15 < day then
 					retval = true
 				end
+			else
+				if self.capabilities.usesCalendar then
+					C_Calendar.SetAbsMonth(month, year)
+					C_Calendar.OpenCalendar()
+				end
+				local CalendarGetNumDayEvents = (self.existsClassic and function() return 0 end) or (self.battleForAzeroth and C_Calendar.GetNumDayEvents) or CalendarGetNumDayEvents
+				local numEvents = CalendarGetNumDayEvents(0, day)
+				for i = 1, numEvents do
+					local event = C_Calendar.GetDayEvent(0, day, i)
+					retval = self:_CelebratingHolidayDayEventProcessor(soughtHolidayName, event)
+					if retval then break end
+				end
 			end
-
+			self.celebratingHolidayCache[soughtHolidayName] = {}
+			self.celebratingHolidayCache[soughtHolidayName][datetimeKey] = (retval and 1 or 0)
 			return retval
 		end,
 
@@ -5211,7 +5256,16 @@ if self.GDE.debug then print("GARRISON_BUILDING_UPDATE ", buildingId) end
 						--	Since the assumption is if there is a lack of code present to limit those permitted to
 						--	obtain quests, checks must be done to see whether any limitations are present, and if
 						--	none, the values need to be altered to permit all of those subset.
-						if 0 == bitband(obtainersValue, self.bitMaskFactionAll) then obtainersValue = obtainersValue + self.bitMaskFactionAll end
+						if 0 == bitband(obtainersValue, self.bitMaskFactionAll) then
+							local questGiversFactions = self:_FactionsFromQuestGivers(questId)
+							if 'B' == questGiversFactions then
+								obtainersValue = obtainersValue + self.bitMaskFactionAll
+							elseif 'A' == questGiversFactions then
+								obtainersValue = obtainersValue + self.bitMaskFactionAlliance
+							elseif 'H' == questGiversFactions then
+								obtainersValue = obtainersValue + self.bitMaskFactionHorde
+							end
+						end
 --						if 0 == bitband(obtainersValue, self.bitMaskClassAll) then obtainersValue = obtainersValue + self.bitMaskClassAll end
 						if 0 == bitband(obtainersValue, self.bitMaskGenderAll) then obtainersValue = obtainersValue + self.bitMaskGenderAll end
 						if 0 == bitband(obtainersRaceValue, self.bitMaskRaceAll) then obtainersRaceValue = self.bitMaskRaceAll end
@@ -5713,7 +5767,7 @@ end
 			else
 				date = C_DateAndTime.GetCurrentCalendarTime()
 			end
-			return date.weekday, date.monthDay, date.month, date.year, date.hour, date.minute
+			return date.weekday, date.month, date.monthDay, date.year, date.hour, date.minute
 		end,
 
 		---
@@ -6939,7 +6993,7 @@ end
 			npcId = tonumber(npcId)
 			if nil ~= npcId then
 				retval = true
-				local codes = self.npc.holiday
+				local codes = self.npc.holiday[npcId]
 				if nil ~= codes then
 					retval = false	-- Assume we fail all holidays unless proven otherwise
 					for i = 1, strlen(codes) do
@@ -7622,6 +7676,33 @@ end
 		end,
 
 		---
+		--	Returns the factions associated with quest givers.
+		--	A for Alliance, H for Horde, B for both
+		_FactionsFromQuestGivers = function(self, questId)
+			local retval = 'B'
+			local foundAlliance, foundHorde = false, false
+			local targetNPCs = self:QuestNPCAccepts(questId)
+			if nil ~= targetNPCs then
+				for _, npcId in pairs(targetNPCs) do
+					local factionCode = self:_NPCFaction(npcId)
+					if nil == factionCode then
+						-- ignore this
+					elseif 'A' == factionCode then
+						foundAlliance = true
+					elseif 'H' == factionCode then
+						foundHorde = true
+					end
+				end
+			end
+			if foundAlliance and not foundHorde then
+				retval = 'A'
+			elseif foundHorde and not foundAlliance then
+				retval = 'H'
+			end
+			return retval
+		end,
+
+		---
 		--	Returns whether the character meets faction requirements for the specified quest.
 		--	@param questId The standard numeric questId representing a quest.
 		--	@soughtFaction The desired faction to be matched, or if nil the player's faction will be used
@@ -7638,17 +7719,8 @@ end
 				if 'Horde' == soughtFaction then
 					soughtFactionCode = 'H'
 				end
-				local targetNPCs = self:QuestNPCAccepts(questId)
-				local foundAvailableNPC = (nil == targetNPCs)
-				if not foundAvailableNPC then
-					for _, npcId in pairs(targetNPCs) do
-						local factionCode = self:_NPCFaction(npcId)
-						if nil == factionCode or soughtFactionCode == factionCode then
-							foundAvailableNPC = true
-						end
-					end
-				end
-				retval = foundAvailableNPC
+				local questGiversFactions = self:_FactionsFromQuestGivers(questId)
+				retval = ('B' == questGiversFactions) or (soughtFactionCode == questGiversFactions)
 			end
 			return retval
 		end,
@@ -9141,7 +9213,7 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 		--	@param useDungeonAlso If true, dungeon quests inside the map area will also be included.
 		--	@param useLoremasterOnly If true, only Loremaster quests will be used for the area, ignoring the normal entire quest list and ignoring the useDungeonAlso parameter.
 		--	@return A table of questIds for quests that start in the map area or nil if none.
-		QuestsInMap = function(self, mapId, useDungeonAlso, useLoremasterOnly)
+		QuestsInMap = function(self, mapId, useDungeonAlso, useLoremasterOnly, useQuestsInLogThatEndInMap)
 			local retval = {}
 			local mapIdToUse = mapId or Grail.GetCurrentDisplayedMapAreaID()
 
@@ -9191,6 +9263,15 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 						end
 					end
 				end
+				--	Here we add quests to the return value if there is a turnin NPC in the map.
+				if useQuestsInLogThatEndInMap then
+					local quests = self:_QuestsInLog()
+					for questId, t in pairs(quests) do
+						if nil ~= self:QuestLocationsTurnin(questId, true, false, true, mapId) then
+							if not tContains(retval, questId) then tinsert(retval, questId) end
+						end
+					end
+				end
 			end
 
 			if nil ~= retval and 0 == #retval then retval = nil end
@@ -9199,20 +9280,33 @@ if self.GDE.debug then print("Marking OEC quest complete", oecCodes[i]) end
 
 		---
 		--	Returns the questId for the quest with the specified name.
-		--	@param soughtName The localized name of the quest.  If nil this will raise.
+		--	@param soughtName The localized name of the quest.
 		--	@return The questId of the quest or nil if no quest with that name found.
 		QuestWithName = function(self, soughtName)
-			assert((nil ~= soughtName), "Grail Error: sought name cannot be nil")
-			local retval = nil
+			if not soughtName then return nil end
 -- With the change to have dynamic quest name lookups, this API is only going to give names that
 -- have already been seen (unless a loadable addon of names has been loaded).
 			for questId, questName in pairs(self.quest.name) do
 				if questName == soughtName then
-					retval = questId
--- TODO: Think about breaking out of the loop when retval is set...basically return the first match instead of the last match
+					return questId
 				end
 			end
-			return retval
+            return nil
+		end,
+        
+        ---
+		--	Returns all questIds for quests with the specified name.
+		--	@param soughtName The localized name of the quest.
+		--	@return a table, where the keys are the questIDs or an empty table, if no questID was found
+        QuestsWithName = function(self, soughtName)
+			if not soughtName then return {} end
+            local questIDs = {}
+			for questId, questName in pairs(self.quest.name) do
+				if questName == soughtName then
+					questIDs[questId] = true
+				end
+			end
+            return questIDs
 		end,
 
 		--	Returns a table of NPC records where each record indicates the location

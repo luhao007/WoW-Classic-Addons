@@ -1,10 +1,10 @@
 ## Interface: 11302
 ## Author: Wardz
-## Version: v1.1.1
+## Version: v1.1.2
 ## SavedVariables: ClassicCastbarsDB
 
 ## Title: ClassicCastbars
-## Notes: Adds castbars to the Target frame and Nameplates.
+## Notes: Adds castbars to various unitframes.
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFFFFE00AClassicCastbars|r
 ## Notes-zhCN: 显示一个预估的敌对施法条
 
