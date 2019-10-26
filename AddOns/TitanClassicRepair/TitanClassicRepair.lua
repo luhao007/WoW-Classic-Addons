@@ -1042,10 +1042,10 @@ function TitanPanelRepairButton_GetTooltipText()
 		if (sum > 0) then
 			out = out..TitanUtils_GetGoldText(L["REPAIR_LOCALE"]["Discounts"])..TitanUtils_GetHighlightText("")
 			local costStr = TitanPanelRepair_GetTextGSC(sum);
-			local costfrStr = TitanPanelRepair_GetTextGSC(sum * 0.95);
+			--local costfrStr = TitanPanelRepair_GetTextGSC(sum * 0.95);
 			local costhonStr = TitanPanelRepair_GetTextGSC(sum * 0.90);
-			local costrevStr = TitanPanelRepair_GetTextGSC(sum * 0.85);
-			local costexStr = TitanPanelRepair_GetTextGSC(sum * 0.80);
+			--local costrevStr = TitanPanelRepair_GetTextGSC(sum * 0.85);
+			--local costexStr = TitanPanelRepair_GetTextGSC(sum * 0.80);
 			if (costStr) then
 				if TPR.MerchantisOpen then
 					out = out .. "\n" .. TitanUtils_GetHighlightText(REPAIR_COST) .. " " .. costStr;
@@ -1058,10 +1058,10 @@ function TitanPanelRepairButton_GetTooltipText()
 					out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["normal"]) .. "\t" .. costStr;
 				end
 				if (not TPR.MerchantisOpen) and (not TPR.WholeScanInProgress) then
-					out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["friendly"]) .. "\t" .. costfrStr;
+					--out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["friendly"]) .. "\t" .. costfrStr;
 					out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["honored"]) .. "\t" .. costhonStr;
-					out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["revered"]) .. "\t" .. costrevStr;
-					out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["exalted"]) .. "\t" .. costexStr;
+					--out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["revered"]) .. "\t" .. costrevStr;
+					--out = out .. "\n" .. TitanUtils_GetHighlightText(L["REPAIR_LOCALE"]["exalted"]) .. "\t" .. costexStr;
 				end
 			end
 			out = out.."\n\n"

@@ -100,6 +100,7 @@ end
 
 
 function TitanPanelClockButton_OnClick(self, button)
+--[[ #20 No calendar in Classic
 	if button == "LeftButton" and IsShiftKeyDown() then
 		TitanUtils_CloseAllControlFrames();
 		if (TitanPanelRightClickMenu_IsVisible()) then
@@ -107,8 +108,9 @@ function TitanPanelClockButton_OnClick(self, button)
 		end
 		ToggleCalendar()
 	else
-		TitanPanelButton_OnClick(self, button);
 	end
+--]]
+		TitanPanelButton_OnClick(self, button);
 end
 
 -- **************************************************************************
@@ -223,8 +225,8 @@ function TitanPanelClockButton_GetTooltipText()
 		clockTimeServerAdjustedLabel..
 		L["TITAN_CLOCK_TOOLTIP_VALUE"].."\t"..TitanUtils_GetHighlightText(clockText).."\n"..
 		TitanUtils_GetGreenText(L["TITAN_CLOCK_TOOLTIP_HINT1"]).."\n"..
-		TitanUtils_GetGreenText(L["TITAN_CLOCK_TOOLTIP_HINT2"]).."\n"..
-		TitanUtils_GetGreenText(L["TITAN_CLOCK_TOOLTIP_HINT3"]);
+		TitanUtils_GetGreenText(L["TITAN_CLOCK_TOOLTIP_HINT2"]).."\n"
+--		TitanUtils_GetGreenText(L["TITAN_CLOCK_TOOLTIP_HINT3"]); -- #20 - No calendar in Classic
 end
 
 -- **************************************************************************
