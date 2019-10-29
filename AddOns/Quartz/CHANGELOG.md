@@ -1,7 +1,6 @@
 # Quartz
 
-## [3.5.2](https://github.com/Nevcairiel/Quartz/tree/3.5.2) (2019-09-25)
-[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.5.1...3.5.2)
+## [3.5-classic-5](https://github.com/Nevcairiel/Quartz/tree/3.5-classic-5) (2019-10-29)
+[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.5-classic-4...3.5-classic-5)
 
-- Update TOC for 8.2.5  
-- Disable EnemyCasts module on Classic, due to zero spellID in CLEU  
+- Fix loading LibClassicDurations  
