@@ -11,7 +11,7 @@
 -- @classmod ItemList
 
 local _, TSM = ...
-local ItemList = TSM.Lib.Class.DefineClass("ItemList", TSM.UI.FastScrollingList)
+local ItemList = TSM.Include("LibTSMClass").DefineClass("ItemList", TSM.UI.FastScrollingList)
 TSM.UI.ItemList = ItemList
 local private = { rowFrameLookup = {} }
 local EXPANDER_PADDING_LEFT = 7

@@ -110,7 +110,7 @@ end
 -- AddonPackage Class
 -- ============================================================================
 
-local AddonPackage = TSM.Lib.Class.DefineClass("AddonPackage")
+local AddonPackage = TSM.Include("LibTSMClass").DefineClass("AddonPackage")
 
 function AddonPackage.__init(self, name)
 	self.name = name
@@ -134,11 +134,10 @@ end
 -- Addon Class
 -- ============================================================================
 
-local Addon = TSM.Lib.Class.DefineClass("Addon", AddonPackage)
+local Addon = TSM.Include("LibTSMClass").DefineClass("Addon", AddonPackage)
 
 function Addon.__init(self, name)
 	self.__super:__init(name)
-	self._logger = TSM.Logger.New()
 end
 
 function Addon.PrintRaw(self, str)
@@ -159,26 +158,34 @@ function Addon.Printf(self, ...)
 end
 
 function Addon.LOG_INFO(self, ...)
-	self._logger:Info(...)
+	TSM.Logger.RaiseStackLevel()
+	TSM.Logger.Info(...)
+	TSM.Logger.LowerStackLevel()
 end
 
 function Addon.LOG_WARN(self, ...)
-	self._logger:Warn(...)
+	TSM.Logger.RaiseStackLevel()
+	TSM.Logger.Warn(...)
+	TSM.Logger.LowerStackLevel()
 end
 
 function Addon.LOG_ERR(self, ...)
-	self._logger:Err(...)
+	TSM.Logger.RaiseStackLevel()
+	TSM.Logger.Err(...)
+	TSM.Logger.LowerStackLevel()
 end
 
 function Addon.LOG_STACK_TRACE(self)
-	self._logger:Trace("Stack Trace:")
+	TSM.Logger.RaiseStackLevel()
+	TSM.Logger.Trace("Stack Trace:")
 	local level = 2
-	local line = TSM.Debug.GetDebugStackInfo(level)
+	local line = TSM.Debug.GetStackLevelLocation(level)
 	while line do
-		self._logger:Trace("  " .. line)
+		TSM.Logger.Trace("  " .. line)
 		level = level + 1
-		line = TSM.Debug.GetDebugStackInfo(level)
+		line = TSM.Debug.GetStackLevelLocation(level)
 	end
+	TSM.Logger.LowerStackLevel()
 end
 
 
@@ -191,7 +198,7 @@ function TSMAPI_FOUR.Addon.New(name, tbl)
 	assert(type(name) == "string" and type(tbl) == "table", "Invalid arguments")
 	assert(not private.addonLookup[tbl], "Addon already created")
 
-	local addon = TSM.Lib.Class.ConstructWithTable(tbl, Addon, name)
+	local addon = TSM.Include("LibTSMClass").ConstructWithTable(tbl, Addon, name)
 	private.addonLookup[tbl] = addon
 	return addon
 end

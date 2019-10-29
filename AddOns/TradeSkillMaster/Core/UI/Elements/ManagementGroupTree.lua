@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ManagementGroupTree = TSM.Lib.Class.DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
+local ManagementGroupTree = TSM.Include("LibTSMClass").DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
 TSM.UI.ManagementGroupTree = ManagementGroupTree
 local private = { rowFrameLookup = {} }
 local SCROLLBAR_WIDTH = 16

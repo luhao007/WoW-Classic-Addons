@@ -12,7 +12,7 @@
 -- @classmod SniperScrollingTable
 
 local _, TSM = ...
-local SniperScrollingTable = TSM.Lib.Class.DefineClass("SniperScrollingTable", TSM.UI.ShoppingScrollingTable)
+local SniperScrollingTable = TSM.Include("LibTSMClass").DefineClass("SniperScrollingTable", TSM.UI.ShoppingScrollingTable)
 TSM.UI.SniperScrollingTable = SniperScrollingTable
 local private = { rowFrameLookup = {} }
 

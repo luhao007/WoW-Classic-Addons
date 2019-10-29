@@ -7,12 +7,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
+local ClassicRealms = TSM.Init("Data.ClassicRealms")
+
+
+
+-- ============================================================================
+-- Classic Realm Data
+-- ============================================================================
 
 -- Generated with the following query:
 -- SELECT TRIM(TRAILING '-Alliance' FROM r.localizedName) as localizedName, g.value
 -- FROM RealmsClassic r INNER JOIN RegionsClassic g ON g.id = r.regionId
 -- WHERE r.localizedName LIKE '%-Alliance';
-TSM.CONST.CLASSIC_REALM_INFO = {
+local CLASSIC_REALM_INFO = {
 	["Amnennar"] = { region = "EU" },
 	["Ashbringer"] = { region = "EU" },
 	["Auberdine"] = { region = "EU" },
@@ -97,3 +104,14 @@ TSM.CONST.CLASSIC_REALM_INFO = {
 	["Loatheb"] = { region = "US" },
 	["Sul'thraze"] = { region = "US" },
 }
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function ClassicRealms.GetRegion(realmName)
+	local info = CLASSIC_REALM_INFO[realmName]
+	return info and info.region or nil
+end

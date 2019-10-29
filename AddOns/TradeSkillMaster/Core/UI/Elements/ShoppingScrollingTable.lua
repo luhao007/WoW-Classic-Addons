@@ -11,7 +11,7 @@
 -- @classmod ShoppingScrollingTable
 
 local _, TSM = ...
-local ShoppingScrollingTable = TSM.Lib.Class.DefineClass("ShoppingScrollingTable", TSM.UI.AuctionScrollingTable)
+local ShoppingScrollingTable = TSM.Include("LibTSMClass").DefineClass("ShoppingScrollingTable", TSM.UI.AuctionScrollingTable)
 TSM.UI.ShoppingScrollingTable = ShoppingScrollingTable
 
 

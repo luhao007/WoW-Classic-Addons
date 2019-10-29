@@ -11,7 +11,7 @@
 -- @classmod CraftingQueueList
 
 local _, TSM = ...
-local CraftingQueueList = TSM.Lib.Class.DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
+local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
 TSM.UI.CraftingQueueList = CraftingQueueList
 local private = {
 	queryCraftingQueueListLookup = {},

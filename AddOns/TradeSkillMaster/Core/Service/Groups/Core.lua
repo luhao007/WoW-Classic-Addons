@@ -158,7 +158,7 @@ function Groups.RebuildDatabase()
 	end
 	private.itemDB:BulkInsertEnd()
 	private.itemStringMap:SetCallbacksPaused(true)
-	for key in private.itemStringMap:KeyIterator() do
+	for key in private.itemStringMap:Iterator() do
 		private.itemStringMap:ValueChanged(key)
 	end
 	private.itemStringMap:SetCallbacksPaused(false)
@@ -275,7 +275,7 @@ function Groups.Delete(groupPath)
 	end
 	query:Release()
 	private.itemStringMap:SetCallbacksPaused(true)
-	for itemString in private.itemStringMap:KeyIterator() do
+	for itemString in private.itemStringMap:Iterator() do
 		if updateMapItems[itemString] or updateMapItems[TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)] then
 			-- either this item itself was removed from a group, or the base item was - in either case trigger an update
 			private.itemStringMap:ValueChanged(itemString)
@@ -321,7 +321,7 @@ function Groups.SetItemGroup(itemString, groupPath)
 		private.itemStringMap:ValueChanged(itemString)
 		if itemString == TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString) then
 			-- this is a base item string, so need to also update all other items whose base item is equal to this item
-			for mapItemString in private.itemStringMap:KeyIterator() do
+			for mapItemString in private.itemStringMap:Iterator() do
 				if TSMAPI_FOUR.Item.ToBaseItemStringFast(mapItemString) == itemString then
 					private.itemStringMap:ValueChanged(mapItemString)
 				end

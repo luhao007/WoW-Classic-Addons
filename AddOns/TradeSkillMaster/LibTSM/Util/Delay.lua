@@ -6,13 +6,20 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Delay TSMAPI_FOUR Functions.
+--- Delay Functions
 -- @module Delay
 
-TSMAPI_FOUR.Delay = {}
 local _, TSM = ...
-local Delay = TSM:NewPackage("Delay")
-local private = { delays = {}, frameNumber = 0 }
+local Delay = TSM.Init("Util.Delay")
+local Debug = TSM.Include("Util.Debug")
+local Log = TSM.Include("Util.Log")
+local TempTable = TSM.Include("Util.TempTable")
+TSMAPI_FOUR.Delay = Delay
+local private = {
+	delays = {},
+	frameNumber = 0,
+	frame = nil,
+}
 local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 local MIN_TIME_DURATION = 0.0001
 
@@ -28,19 +35,13 @@ function Delay.OnInitialize()
 	frame:Show()
 end
 
-
-
--- ============================================================================
--- TSMAPI Functions
--- ============================================================================
-
 --- Call a callback after a set amount of time.
 -- Note that the delay may be up to 1 frame time longer than requested.
 -- @tparam[opt] string label A label for the delay (to allow it to be cancelled)
 -- @tparam number duration The amount of time to delay for
 -- @tparam function callback The function called when the delay is finished
 -- @tparam[opt] number repeatDelay The amount of time to set this delay for once it completes
-function TSMAPI_FOUR.Delay.AfterTime(label, duration, callback, repeatDelay)
+function Delay.AfterTime(label, duration, callback, repeatDelay)
 	if type(label) == "number" then
 		-- no label specified
 		assert(not repeatDelay)
@@ -59,10 +60,10 @@ function TSMAPI_FOUR.Delay.AfterTime(label, duration, callback, repeatDelay)
 			end
 		end
 	else
-		label = TSM.Debug.GetDebugStackInfo(2)
+		label = Debug.GetStackLevelLocation(2)
 	end
 
-	local delayTbl = TSM.TempTable.Acquire()
+	local delayTbl = TempTable.Acquire()
 	delayTbl.endTime = GetTime() + duration
 	delayTbl.callback = callback
 	delayTbl.label = label
@@ -76,7 +77,7 @@ end
 -- @tparam number duration The number of frames to delay for
 -- @tparam function callback The function called when the delay is finished
 -- @tparam[opt] number repeatDelay The number of frames to set this delay for once it completes
-function TSMAPI_FOUR.Delay.AfterFrame(label, duration, callback, repeatDelay)
+function Delay.AfterFrame(label, duration, callback, repeatDelay)
 	if type(label) == "number" then
 		-- no label specified
 		assert(not repeatDelay)
@@ -95,10 +96,10 @@ function TSMAPI_FOUR.Delay.AfterFrame(label, duration, callback, repeatDelay)
 			end
 		end
 	else
-		label = TSM.Debug.GetDebugStackInfo(2)
+		label = Debug.GetStackLevelLocation(2)
 	end
 
-	local delayTbl = TSM.TempTable.Acquire()
+	local delayTbl = TempTable.Acquire()
 	delayTbl.endFrame = private.frameNumber + duration
 	delayTbl.callback = callback
 	delayTbl.label = label
@@ -109,10 +110,10 @@ end
 --- Cancel a delay.
 -- This works for both time and frame delays.
 -- @tparam string label The label the delay was created with
-function TSMAPI_FOUR.Delay.Cancel(label)
+function Delay.Cancel(label)
 	for i, delay in ipairs(private.delays) do
 		if delay.label == label then
-			TSM.TempTable.Release(tremove(private.delays, i))
+			TempTable.Release(tremove(private.delays, i))
 			return
 		end
 	end
@@ -137,7 +138,7 @@ function private.ProcessDelays()
 				if delay.repeatDelay then
 					delay.endFrame = private.frameNumber + delay.repeatDelay
 				else
-					TSM.TempTable.Release(tremove(private.delays, i))
+					TempTable.Release(tremove(private.delays, i))
 				end
 				break
 			elseif delay.endTime and delay.endTime <= GetTime() then
@@ -146,7 +147,7 @@ function private.ProcessDelays()
 				if delay.repeatDelay then
 					delay.endTime = GetTime() + delay.repeatDelay
 				else
-					TSM.TempTable.Release(tremove(private.delays, i))
+					TempTable.Release(tremove(private.delays, i))
 				end
 				break
 			end
@@ -160,7 +161,19 @@ function private.ProcessDelays()
 		pendingCallback()
 		local timeTaken = debugprofilestop() - startTime
 		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-			TSM:LOG_WARN("Delay callback (%s) took %0.2fms", pendingLabel, timeTaken)
+			Log.Warn("Delay callback (%s) took %0.2fms", pendingLabel, timeTaken)
 		end
 	end
+end
+
+
+
+-- ============================================================================
+-- Initialization Code
+-- ============================================================================
+
+do
+	private.frame = CreateFrame("Frame")
+	private.frame:SetScript("OnUpdate", private.ProcessDelays)
+	private.frame:Show()
 end

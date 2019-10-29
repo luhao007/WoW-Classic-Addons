@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local MOUSE_WHEEL_SCROLL_AMOUNT = 60
-local ScrollFrame = TSM.Lib.Class.DefineClass("ScrollFrame", TSM.UI.Container)
+local ScrollFrame = TSM.Include("LibTSMClass").DefineClass("ScrollFrame", TSM.UI.Container)
 TSM.UI.ScrollFrame = ScrollFrame
 local private = { frameScrollFrameLookup = {} }
 

@@ -16,7 +16,7 @@ local private = {
 	lastDayTemp = {},
 	playerLogCount = 0,
 }
-local CSV_COLUMNS = { "minute", "copper" }
+local CSV_KEYS = { "minute", "copper" }
 local CHARACTER_KEY_SEP = " - "
 local MAX_COPPER_VALUE = 10 * 1000 * 1000 * COPPER_PER_GOLD - 1
 local ERRONEOUS_ZERO_THRESHOLD = 5 * 1000 * COPPER_PER_GOLD
@@ -41,39 +41,21 @@ function GoldTracker.OnInitialize()
 				local data = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm), "internalData", "goldLog")
 				if data then
 					local characterKey = character..CHARACTER_KEY_SEP..factionrealm
-					assert(not private.characterGoldLog[characterKey])
-					local _, entries = TSM.CSV.Decode(data)
-					-- clean up any erroneous 0 entries, entries which are too high, and duplicate entries
-					local didChange = true
-					while didChange do
-						didChange = false
-						for i = #entries - 1, 2, -1 do
-							local prevValue = entries[i-1].copper
-							local value = entries[i].copper
-							local nextValue = entries[i+1].copper
-							if prevValue > ERRONEOUS_ZERO_THRESHOLD and value == 0 and nextValue > ERRONEOUS_ZERO_THRESHOLD then
-								-- this is likely an erroneous 0 value
-								didChange = true
-								tremove(entries, i)
-							end
-						end
-						for i = #entries, 2, -1 do
-							local prevValue = entries[i-1].copper
-							local value = entries[i].copper
-							if prevValue == value or value > MAX_COPPER_VALUE then
-								-- this is either a duplicate or invalid value
-								didChange = true
-								tremove(entries, i)
-							end
-						end
-					end
-					private.characterGoldLog[characterKey] = entries
+					private.LoadCharacterGoldLog(characterKey, data)
 				end
 			end
 			local guildData = TSM.db:Get("factionrealm", factionrealm, "internalData", "guildGoldLog")
 			if guildData then
 				for guild, data in pairs(guildData) do
-					private.guildGoldLog[guild] = select(2, TSM.CSV.Decode(data))
+					local entries = {}
+					local decodeContext = TSM.CSV.DecodeStart(data, CSV_KEYS)
+					if decodeContext then
+						for minute, copper in TSM.CSV.DecodeIterator(decodeContext) do
+							tinsert(entries, { minute = tonumber(minute), copper = tonumber(copper) })
+						end
+						TSM.CSV.DecodeEnd(decodeContext)
+					end
+					private.guildGoldLog[guild] = entries
 				end
 			end
 		end
@@ -92,10 +74,10 @@ function GoldTracker.OnDisable()
 	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
 		private.GuildLogGold()
 	end
-	TSM.db.sync.internalData.goldLog = TSM.CSV.Encode(CSV_COLUMNS, private.characterGoldLog[private.currentCharacterKey])
+	TSM.db.sync.internalData.goldLog = TSM.CSV.Encode(CSV_KEYS, private.characterGoldLog[private.currentCharacterKey])
 	local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(UnitName("player"))
 	if guild and private.guildGoldLog[guild] then
-		TSM.db.factionrealm.internalData.guildGoldLog[guild] = TSM.CSV.Encode(CSV_COLUMNS, private.guildGoldLog[guild])
+		TSM.db.factionrealm.internalData.guildGoldLog[guild] = TSM.CSV.Encode(CSV_KEYS, private.guildGoldLog[guild])
 	end
 end
 
@@ -169,6 +151,49 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.LoadCharacterGoldLog(characterKey, data)
+	assert(not private.characterGoldLog[characterKey])
+	local decodeContext = TSM.CSV.DecodeStart(data, CSV_KEYS)
+	if not decodeContext then
+		TSM:LOG_ERR("Failed to decode (%s, %d)", characterKey, #data)
+		private.characterGoldLog[characterKey] = {}
+		return
+	end
+
+	local entries = {}
+	for minute, copper in TSM.CSV.DecodeIterator(decodeContext) do
+		tinsert(entries, { minute = tonumber(minute), copper = tonumber(copper) })
+	end
+	TSM.CSV.DecodeEnd(decodeContext)
+
+	-- clean up any erroneous 0 entries, entries which are too high, and duplicate entries
+	local didChange = true
+	while didChange do
+		didChange = false
+		for i = #entries - 1, 2, -1 do
+			local prevValue = entries[i-1].copper
+			local value = entries[i].copper
+			local nextValue = entries[i+1].copper
+			if prevValue > ERRONEOUS_ZERO_THRESHOLD and value == 0 and nextValue > ERRONEOUS_ZERO_THRESHOLD then
+				-- this is likely an erroneous 0 value
+				didChange = true
+				tremove(entries, i)
+			end
+		end
+		for i = #entries, 2, -1 do
+			local prevValue = entries[i-1].copper
+			local value = entries[i].copper
+			if prevValue == value or value > MAX_COPPER_VALUE then
+				-- this is either a duplicate or invalid value
+				didChange = true
+				tremove(entries, i)
+			end
+		end
+	end
+
+	private.characterGoldLog[characterKey] = entries
+end
 
 function private.UpdateGoldLog(goldLog, copper)
 	copper = TSM.Math.Round(copper, COPPER_PER_GOLD * (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 1 or 1000))

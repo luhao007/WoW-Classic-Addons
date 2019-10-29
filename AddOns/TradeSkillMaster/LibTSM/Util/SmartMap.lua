@@ -10,8 +10,8 @@
 -- @module SmartMap
 
 local _, TSM = ...
-TSM.SmartMap = {}
-local SmartMap = TSM.SmartMap
+local SmartMap = TSM.Init("Util.SmartMap")
+TSM.SmartMap = SmartMap
 local private = {
 	mapContext = {},
 	readerContext = {},
@@ -44,8 +44,8 @@ local SMART_MAP_MT = {
 			return private.MapGetKeyType
 		elseif key == "GetValueType" then
 			return private.MapGetValueType
-		elseif key == "KeyIterator" then
-			return private.MapKeyIterator
+		elseif key == "Iterator" then
+			return private.MapIterator
 		else
 			error("Invalid map method: "..tostring(key), 2)
 		end
@@ -203,6 +203,6 @@ function private.MapGetValueType(self)
 	return private.mapContext[self].valueType
 end
 
-function private.MapKeyIterator(self)
-	return TSM.Table.KeyIterator(private.mapContext[self].data)
+function private.MapIterator(self)
+	return pairs(private.mapContext[self].data)
 end

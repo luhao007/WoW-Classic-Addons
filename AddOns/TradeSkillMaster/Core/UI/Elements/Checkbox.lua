@@ -11,7 +11,7 @@
 -- @classmod Checkbox
 
 local _, TSM = ...
-local Checkbox = TSM.Lib.Class.DefineClass("Checkbox", TSM.UI.Element)
+local Checkbox = TSM.Include("LibTSMClass").DefineClass("Checkbox", TSM.UI.Element)
 TSM.UI.Checkbox = Checkbox
 local private = { checkboxLookup = {} }
 

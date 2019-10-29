@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local SendMailTask = TSM.Lib.Class.DefineClass("SendMailTask", TSM.TaskList.ItemTask)
+local SendMailTask = TSM.Include("LibTSMClass").DefineClass("SendMailTask", TSM.TaskList.ItemTask)
 local L = TSM.L
 TSM.TaskList.SendMailTask = SendMailTask
 local private = {

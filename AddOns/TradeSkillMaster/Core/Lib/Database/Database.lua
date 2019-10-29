@@ -12,7 +12,7 @@
 -- @classmod Database
 
 local _, TSM = ...
-local Database = TSM.Lib.Class.DefineClass("Database")
+local Database = TSM.Include("LibTSMClass").DefineClass("Database")
 TSM.Database.classes.Database = Database
 local private = {
 	indexListSortValues = nil,

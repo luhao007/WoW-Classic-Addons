@@ -10,8 +10,9 @@
 -- @module Math
 
 local _, TSM = ...
-TSM.Math = {}
-local Math = TSM.Math
+local Math = TSM.Init("Util.Math")
+local TempTable = TSM.Include("Util.TempTable")
+TSM.Math = Math
 local private = {
 	keysTemp = {},
 }
@@ -105,7 +106,7 @@ function Math.CalculateHash(data, hash)
 	elseif dataType == "table" then
 		local keys = nil
 		if private.keysTemp.inUse then
-			keys = TSM.TempTable.Acquire()
+			keys = TempTable.Acquire()
 		else
 			keys = private.keysTemp
 			private.keysTemp.inUse = true
@@ -115,13 +116,13 @@ function Math.CalculateHash(data, hash)
 		end
 		sort(keys)
 		for _, key in ipairs(keys) do
-			hash = TSM.Math.CalculateHash(key, hash)
-			hash = TSM.Math.CalculateHash(data[key], hash)
+			hash = Math.CalculateHash(key, hash)
+			hash = Math.CalculateHash(data[key], hash)
 		end
 		if keys == private.keysTemp then
 			wipe(private.keysTemp)
 		else
-			TSM.TempTable.Release(keys)
+			TempTable.Release(keys)
 		end
 	elseif dataType == "boolean" then
 		hash = (hash * 33 + (data and 1 or 0)) % maxValue

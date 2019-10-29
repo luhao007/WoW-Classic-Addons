@@ -12,7 +12,7 @@
 -- @classmod DatabaseQuery
 
 local _, TSM = ...
-local DatabaseQuery = TSM.Lib.Class.DefineClass("DatabaseQuery")
+local DatabaseQuery = TSM.Include("LibTSMClass").DefineClass("DatabaseQuery")
 TSM.Database.classes.DatabaseQuery = DatabaseQuery
 local private = {}
 local NAN = math.huge * 0

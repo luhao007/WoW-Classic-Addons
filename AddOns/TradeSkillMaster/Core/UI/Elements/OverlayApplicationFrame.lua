@@ -11,7 +11,7 @@
 -- @classmod OverlayApplicationFrame
 
 local _, TSM = ...
-local OverlayApplicationFrame = TSM.Lib.Class.DefineClass("OverlayApplicationFrame", TSM.UI.Frame)
+local OverlayApplicationFrame = TSM.Include("LibTSMClass").DefineClass("OverlayApplicationFrame", TSM.UI.Frame)
 TSM.UI.OverlayApplicationFrame = OverlayApplicationFrame
 local private = {}
 local TITLE_HEIGHT = 40

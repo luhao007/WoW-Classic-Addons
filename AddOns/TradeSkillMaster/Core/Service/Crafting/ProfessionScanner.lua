@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local ProfessionScanner = TSM.Crafting:NewPackage("ProfessionScanner")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local private = {
 	db = nil,
 	hasScanned = false,
@@ -356,7 +357,7 @@ function private.ScanRecipe(professionName, spellId)
 			return true
 		else
 			-- result of craft is not an item
-			itemString = TSM.CONST.ENCHANT_ITEM_STRINGS[spellId] or TSM.CONST.MASS_MILLING_RECIPES[spellId]
+			itemString = ProfessionInfo.GetIndirectCraftResult(spellId)
 			if not itemString then
 				-- we don't care about this craft
 				return true
@@ -385,7 +386,7 @@ function private.ScanRecipe(professionName, spellId)
 			lNum, hNum = 1, 1
 		end
 		-- workaround for incorrect values returned for new mass milling recipes
-		if TSM.CONST.MASS_MILLING_RECIPES[spellId] then
+		if ProfessionInfo.IsMassMill(spellId) then
 			if spellId == 210116 then -- Yseralline
 				lNum, hNum = 4, 4 -- always four
 			elseif spellId == 209664 then -- Felwort
@@ -424,7 +425,7 @@ function private.ScanRecipe(professionName, spellId)
 	end
 	-- if this is an enchant, add a vellum to the list of mats
 	if isEnchant then
-		local matItemString = TSM.CONST.VELLUM_ITEM_STRING
+		local matItemString = ProfessionInfo.GetVellumItemString()
 		TSM.db.factionrealm.internalData.mats[matItemString] = TSM.db.factionrealm.internalData.mats[matItemString] or {}
 		matQuantities[matItemString] = 1
 	end

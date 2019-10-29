@@ -11,7 +11,7 @@ local L = TSM.L
 local Import = TSM.Groups:NewPackage("Import")
 local private = { groupImports = nil, operationsTemp = {} }
 local AceSerializer = LibStub("AceSerializer-3.0")
-local GroupImport = TSM.Lib.Class.DefineClass("GroupImport")
+local GroupImport = TSM.Include("LibTSMClass").DefineClass("GroupImport")
 
 
 

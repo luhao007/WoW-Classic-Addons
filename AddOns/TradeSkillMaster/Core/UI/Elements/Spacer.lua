@@ -12,7 +12,7 @@
 -- @classmod Spacer
 
 local _, TSM = ...
-local Spacer = TSM.Lib.Class.DefineClass("Spacer", TSM.UI.Element)
+local Spacer = TSM.Include("LibTSMClass").DefineClass("Spacer", TSM.UI.Element)
 TSM.UI.Spacer = Spacer
 
 

@@ -8,10 +8,8 @@
 
 local _, TSM = ...
 local PlayerProfessions = TSM.Crafting:NewPackage("PlayerProfessions")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local private = { playerProfessionsThread = nil, db = nil, query = nil }
-local MINING = GetSpellInfo(TSM.CONST.MINING_SPELLID)
-local SMELTING = GetSpellInfo(TSM.CONST.SMELTING_SPELLID)
-local POISONS = GetSpellInfo(TSM.CONST.POISONS_SPELLID)
 local TAILORING_ES = "Sastrería"
 local TAILORING_SKILL_ES = "Costura"
 local LEATHERWORKING_ES = "Peletería"
@@ -20,8 +18,6 @@ local ENGINEERING_FR = "Ingénieur"
 local ENGINEERING_SKILL_FR = "Ingénierie"
 local FIRST_AID_FR = "Premiers soins"
 local FIRST_AID_SKILL_FR = "Secourisme"
-local ARTISAN_ZHCN = "大师级"
-local ARTISAN_RUS = "Мастеровой"
 
 
 
@@ -94,7 +90,7 @@ function private.PlayerProfessionsSkillUpdate()
 				TSMAPI_FOUR.Delay.AfterTime(0.05, private.PlayerProfessionsSkillUpdate)
 				return
 			end
-			if name and subName and (TSM.Vararg.In(strtrim(subName, " "), APPRENTICE, JOURNEYMAN, EXPERT, ARTISAN, ARTISAN_ZHCN, ARTISAN_RUS) or name == SMELTING or name == POISONS or name == LEATHERWORKING_ES or name == TAILORING_ES or name == ENGINEERING_FR or name == FIRST_AID_FR) and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then
+			if name and subName and (ProfessionInfo.IsSubNameClassic(strtrim(subName, " ")) or name == ProfessionInfo.GetName("Smelting") or name == ProfessionInfo.GetName("Poisons") or name == LEATHERWORKING_ES or name == TAILORING_ES or name == ENGINEERING_FR or name == FIRST_AID_FR) and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then
 				local level, maxLevel = nil, nil
 				for j = 1, GetNumSkillLines() do
 					local skillName, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(j)
@@ -102,8 +98,8 @@ function private.PlayerProfessionsSkillUpdate()
 						level = skillRank
 						maxLevel = skillMaxRank
 						break
-					elseif name == SMELTING and skillName == MINING then
-						name = MINING
+					elseif name == ProfessionInfo.GetName("Smelting") and skillName == ProfessionInfo.GetName("Mining") then
+						name = ProfessionInfo.GetName("Mining")
 						level = skillRank
 						maxLevel = skillMaxRank
 						break
@@ -175,7 +171,7 @@ function private.PlayerProfessionsThread()
 		local _, _, offset, numSpells = GetSpellTabInfo(1)
 		for i = offset + 1, offset + numSpells do
 			local name, subName = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-			if name and subName and (TSM.Vararg.In(strtrim(subName, " "), APPRENTICE, JOURNEYMAN, EXPERT, ARTISAN, ARTISAN_RUS) or name == SMELTING or name == POISONS or name == LEATHERWORKING_ES or name == TAILORING_ES or name == ENGINEERING_FR or name == FIRST_AID_FR) and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then
+			if name and subName and (ProfessionInfo.IsSubNameClassic(strtrim(subName, " ")) or name == ProfessionInfo.GetName("Smelting") or name == ProfessionInfo.GetName("Poisons") or name == LEATHERWORKING_ES or name == TAILORING_ES or name == ENGINEERING_FR or name == FIRST_AID_FR) and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then
 				local level, maxLevel = nil, nil
 				for j = 1, GetNumSkillLines() do
 					local skillName, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(j)
@@ -183,8 +179,8 @@ function private.PlayerProfessionsThread()
 						level = skillRank
 						maxLevel = skillMaxRank
 						break
-					elseif name == SMELTING and skillName == MINING then
-						name = MINING
+					elseif name == ProfessionInfo.GetName("Smelting") and skillName == ProfessionInfo.GetName("Mining") then
+						name = ProfessionInfo.GetName("Mining")
 						level = skillRank
 						maxLevel = skillMaxRank
 						break

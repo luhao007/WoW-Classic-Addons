@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local PlayerGoldText = TSM.Lib.Class.DefineClass("PlayerGoldText", TSM.UI.Text)
+local PlayerGoldText = TSM.Include("LibTSMClass").DefineClass("PlayerGoldText", TSM.UI.Text)
 TSM.UI.PlayerGoldText = PlayerGoldText
 local private = { registered = false, elements = {} }
 

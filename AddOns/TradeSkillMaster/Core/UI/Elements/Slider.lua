@@ -11,7 +11,7 @@
 -- @classmod Slider
 
 local _, TSM = ...
-local Slider = TSM.Lib.Class.DefineClass("Slider", TSM.UI.Element)
+local Slider = TSM.Include("LibTSMClass").DefineClass("Slider", TSM.UI.Element)
 TSM.UI.Slider = Slider
 local private = { frameSliderLookup = {} }
 local THUMB_WIDTH = 8

@@ -9,7 +9,8 @@
 local _, TSM = ...
 local L = TSM.L
 TSMAPI_FOUR.ItemFilter = {}
-local ItemFilter = TSM.Lib.Class.DefineClass("ItemFilter")
+local ItemFilter = TSM.Include("LibTSMClass").DefineClass("ItemFilter")
+local ItemClass = TSM.Include("Data.ItemClass")
 
 
 
@@ -134,14 +135,14 @@ function ItemFilter.ParseStr(self, str)
 			end
 			numItemLevelParts = numItemLevelParts + 1
 			hasNonCraftingPart = true
-		elseif TSMAPI_FOUR.Item.GetClassIdFromClassString(part) then
-			self._class = TSMAPI_FOUR.Item.GetClassIdFromClassString(part)
+		elseif ItemClass.GetClassIdFromClassString(part) then
+			self._class = ItemClass.GetClassIdFromClassString(part)
 			hasNonCraftingPart = true
-		elseif self._class and TSMAPI_FOUR.Item.GetSubClassIdFromSubClassString(part, self._class) then
-			self._subClass = TSMAPI_FOUR.Item.GetSubClassIdFromSubClassString(part, self._class)
+		elseif self._class and ItemClass.GetSubClassIdFromSubClassString(part, self._class) then
+			self._subClass = ItemClass.GetSubClassIdFromSubClassString(part, self._class)
 			hasNonCraftingPart = true
-		elseif TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(part) then
-			self._invSlotId = TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(part)
+		elseif ItemClass.GetInventorySlotIdFromInventorySlotString(part) then
+			self._invSlotId = ItemClass.GetInventorySlotIdFromInventorySlotString(part)
 			hasNonCraftingPart = true
 		elseif self:_ItemQualityToIndex(part) then
 			self._quality = self:_ItemQualityToIndex(part)

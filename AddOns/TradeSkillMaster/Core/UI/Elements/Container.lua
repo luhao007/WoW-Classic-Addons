@@ -11,7 +11,7 @@
 -- @classmod Container
 
 local _, TSM = ...
-local Container = TSM.Lib.Class.DefineClass("Container", TSM.UI.Element, "ABSTRACT")
+local Container = TSM.Include("LibTSMClass").DefineClass("Container", TSM.UI.Element, "ABSTRACT")
 TSM.UI.Container = Container
 local private = {}
 

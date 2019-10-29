@@ -11,7 +11,7 @@
 -- @classmod SearchInput
 
 local _, TSM = ...
-local SearchInput = TSM.Lib.Class.DefineClass("SearchInput", TSM.UI.Input)
+local SearchInput = TSM.Include("LibTSMClass").DefineClass("SearchInput", TSM.UI.Input)
 TSM.UI.SearchInput = SearchInput
 local SEARCH_ICON_SIZE = 14
 local SEARCH_ICON_PADDING = 1

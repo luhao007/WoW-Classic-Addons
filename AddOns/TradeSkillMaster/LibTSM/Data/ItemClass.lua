@@ -6,10 +6,15 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Item Class functions
--- @submodule Item
-
-local STATIC_DATA = { classes = {}, subClasses = {}, classLookup = {}, classIdLookup = {}, inventorySlotIdLookup = {} }
+local _, TSM = ...
+local ItemClass = TSM.Init("Data.ItemClass")
+local STATIC_DATA = {
+	classes = {},
+	subClasses = {},
+	classLookup = {},
+	classIdLookup = {},
+	inventorySlotIdLookup = {},
+}
 
 
 
@@ -88,34 +93,22 @@ end
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Module Functions
 -- ============================================================================
 
---- Get a list of item classes (localized names).
--- This list is read-only and should not be modified.
-function TSMAPI_FOUR.Item.GetItemClasses()
+function ItemClass.GetClasses()
 	return STATIC_DATA.classes
 end
 
---- Get a list of item sub classes (localized names) for the class.
--- This list is read-only and should not be modified.
--- @tparam string class The name of the class to get subclasses for
-function TSMAPI_FOUR.Item.GetItemSubClasses(class)
+function ItemClass.GetSubClasses(class)
 	return STATIC_DATA.subClasses[class]
 end
 
---- Get the id for the class.
--- @tparam string class The name of the class to get the id of
--- @treturn number The id of the class
-function TSMAPI_FOUR.Item.GetClassIdFromClassString(class)
-	return STATIC_DATA.classIdLookup[strlower(class)]
+function ItemClass.GetClassIdFromClassString(classStr)
+	return STATIC_DATA.classIdLookup[strlower(classStr)]
 end
 
---- Get the id for the sub-class.
--- @tparam string subClass The name of the sub-class to get the id of
--- @tparam number classId The id of the class which this sub-class belongs to
--- @treturn number The id of the sub-class
-function TSMAPI_FOUR.Item.GetSubClassIdFromSubClassString(subClass, classId)
+function ItemClass.GetSubClassIdFromSubClassString(subClass, classId)
 	if not classId then return end
 	local class = GetItemClassInfo(classId)
 	if not STATIC_DATA.classLookup[class] then return end
@@ -126,9 +119,6 @@ function TSMAPI_FOUR.Item.GetSubClassIdFromSubClassString(subClass, classId)
 	end
 end
 
---- Get the inventory slot id for the slot.
--- @tparam string slot The name of the slot to get the id of
--- @treturn number The id of the slot
-function TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(slot)
+function ItemClass.GetInventorySlotIdFromInventorySlotString(slot)
 	return STATIC_DATA.inventorySlotIdLookup[strlower(slot)]
 end

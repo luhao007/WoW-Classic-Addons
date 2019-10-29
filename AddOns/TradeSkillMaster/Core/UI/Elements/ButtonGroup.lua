@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ButtonGroup = TSM.Lib.Class.DefineClass("ButtonGroup", TSM.UI.ViewContainer)
+local ButtonGroup = TSM.Include("LibTSMClass").DefineClass("ButtonGroup", TSM.UI.ViewContainer)
 TSM.UI.ButtonGroup = ButtonGroup
 local private = {}
 

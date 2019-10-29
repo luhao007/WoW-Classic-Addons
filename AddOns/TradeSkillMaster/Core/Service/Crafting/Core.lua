@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Crafting = TSM:NewPackage("Crafting")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local L = TSM.L
 local private = {
 	spellDB = nil,
@@ -132,7 +133,7 @@ function Crafting.OnInitialize()
 		:Select("spellId", "itemString", "numResult")
 		:Equal("hasCD", false)
 	for _, spellId, itemString, numResult in query:Iterator() do
-		if not TSM.CONST.MASS_MILLING_RECIPES[spellId] and matSpellCount[spellId] == 1 then
+		if not ProfessionInfo.IsMassMill(spellId) and matSpellCount[spellId] == 1 then
 			TSMAPI_FOUR.Conversions.Add(itemString, matFirstItemString[spellId], numResult / matFirstQuantity[spellId], "craft")
 		end
 	end

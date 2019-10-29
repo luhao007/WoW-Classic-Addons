@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local CraftingTask = TSM.Lib.Class.DefineClass("CraftingTask", TSM.TaskList.Task)
+local CraftingTask = TSM.Include("LibTSMClass").DefineClass("CraftingTask", TSM.TaskList.Task)
 local L = TSM.L
 TSM.TaskList.CraftingTask = CraftingTask
 local private = {

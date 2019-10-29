@@ -6,11 +6,12 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Util TSMAPI_FOUR Functions
--- @module Util
+--- Table Functions
+-- @module Table
 
 local _, TSM = ...
-local Table = {}
+local Table = TSM.Init("Util.Table")
+local TempTable = TSM.Include("Util.TempTable")
 TSM.Table = Table
 local private = {
 	filterTemp = {},
@@ -38,7 +39,7 @@ setmetatable(private.iterContext.cleanupFunc, { __mode = "k" })
 -- @tparam[opt] function cleanupFunc A function to be called (passed `tbl`) to cleanup at the end of iterator
 -- @return An iterator with fields: `index, value` or the return of `helperFunc`
 function Table.Iterator(tbl, helperFunc, arg, cleanupFunc)
-	local iterContext = TSM.TempTable.Acquire()
+	local iterContext = TempTable.Acquire()
 	iterContext.data = tbl
 	iterContext.arg = arg
 	iterContext.index = 0
@@ -134,7 +135,7 @@ end
 -- @tparam table tbl2 The second table to check
 -- @treturn boolean Whether or not the tables are equal
 function Table.Equal(tbl1, tbl2)
-	if TSM.Table.Count(tbl1) ~= TSM.Table.Count(tbl2) then
+	if Table.Count(tbl1) ~= Table.Count(tbl2) then
 		return false
 	end
 	for k, v in pairs(tbl1) do
@@ -192,19 +193,19 @@ function private.TableIterator(iterContext)
 	if iterContext.index > #iterContext.data then
 		local data = iterContext.data
 		local cleanupFunc = iterContext.cleanupFunc
-		TSM.TempTable.Release(iterContext)
+		TempTable.Release(iterContext)
 		if cleanupFunc then
 			cleanupFunc(data)
 		end
 		return
 	end
 	if iterContext.helperFunc then
-		local result = TSM.TempTable.Acquire(iterContext.helperFunc(iterContext.index, iterContext.data[iterContext.index], iterContext.arg))
+		local result = TempTable.Acquire(iterContext.helperFunc(iterContext.index, iterContext.data[iterContext.index], iterContext.arg))
 		if #result == 0 then
-			TSM.TempTable.Release(result)
+			TempTable.Release(result)
 			return private.TableIterator(iterContext)
 		end
-		return TSM.TempTable.UnpackAndRelease(result)
+		return TempTable.UnpackAndRelease(result)
 	else
 		return iterContext.index, iterContext.data[iterContext.index]
 	end

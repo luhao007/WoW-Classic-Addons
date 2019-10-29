@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Shopping = TSM.UI.AuctionUI:NewPackage("Shopping")
+local ItemClass = TSM.Include("Data.ItemClass")
 local L = TSM.L
 local private = {
 	singleItemSearchType = "normal",
@@ -389,14 +390,14 @@ function private.GetAdvancedFrame()
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "classDropdown")
 						:SetStyle("height", 20)
 						:SetStyle("margin.right", 20)
-						:SetItems(TSMAPI_FOUR.Item.GetItemClasses())
+						:SetItems(ItemClass.GetClasses())
 						:SetScript("OnSelectionChanged", private.ClassDropdownOnSelectionChanged)
 						:SetHintText(L["All Item Classes"])
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "subClassDropdown")
 						:SetStyle("height", 20)
 						:SetDisabled(true)
-						:SetItems(TSMAPI_FOUR.Item.GetItemClasses())
+						:SetItems(ItemClass.GetClasses())
 						:SetHintText(L["All Subclasses"])
 					)
 				)
@@ -1363,7 +1364,7 @@ end
 function private.ClassDropdownOnSelectionChanged(dropdown, selection)
 	local subClassDropdown = dropdown:GetElement("__parent.subClassDropdown")
 	if selection then
-		subClassDropdown:SetItems(TSMAPI_FOUR.Item.GetItemSubClasses(selection))
+		subClassDropdown:SetItems(ItemClass.GetSubClasses(selection))
 		subClassDropdown:SetDisabled(false)
 		subClassDropdown:SetSelection(nil)
 			:Draw()

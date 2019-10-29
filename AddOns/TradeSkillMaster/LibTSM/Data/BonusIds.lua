@@ -7,8 +7,20 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
+local BonusIds = TSM.Init("Data.BonusIds")
+local private = {
+	bonusIdCache = {},
+	bonusIdTemp = {},
+}
+local ITEM_UPGRADE_VALUE_SHIFT = 1000000
 
-TSM.CONST.ALL_BONUS_ID_MAP = {
+
+
+-- ============================================================================
+-- BonusId Maps
+-- ============================================================================
+
+local ALL_BONUS_ID_MAP = {
 	[1] = 1,
 	[2] = 2,
 	[3] = 3,
@@ -2740,8 +2752,7 @@ TSM.CONST.ALL_BONUS_ID_MAP = {
 	[5885] = 5885,
 	[5890] = 5890,
 }
-
-TSM.CONST.IMPORTANT_BONUS_ID_MAP = {
+local IMPORTANT_BONUS_ID_MAP = {
 	[40] = 40,
 	[41] = 41,
 	[42] = 42,
@@ -2923,3 +2934,68 @@ TSM.CONST.IMPORTANT_BONUS_ID_MAP = {
 	[5885] = 5885,
 	[5890] = 5890,
 }
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function BonusIds.FilterImportant(itemString)
+	return private.FilterBonusIds(itemString, IMPORTANT_BONUS_ID_MAP)
+end
+
+function BonusIds.FilterAll(itemString)
+	return private.FilterBonusIds(itemString, ALL_BONUS_ID_MAP)
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.FilterBonusIds(itemString, map)
+	local itemStringPrefix, bonusIds = strmatch(itemString, "(i:[0-9]+:[0-9%-]*):[0-9]*:(.+)$")
+	if not bonusIds then
+		return itemString
+	end
+	private.bonusIdCache[map] = private.bonusIdCache[map] or {}
+	private.bonusIdCache[map][bonusIds] = private.bonusIdCache[map][bonusIds] or {}
+	local cache = private.bonusIdCache[map][bonusIds]
+	if not cache.num then
+		wipe(private.bonusIdTemp)
+		local adjust = 0
+		for id in gmatch(bonusIds, "[0-9]+") do
+			id = tonumber(id)
+			if id > ITEM_UPGRADE_VALUE_SHIFT then
+				if not tContains(private.bonusIdTemp, id) then
+					tinsert(private.bonusIdTemp, id)
+					adjust = adjust + 1
+				end
+			else
+				id = map[id]
+				if id and not tContains(private.bonusIdTemp, id) then
+					tinsert(private.bonusIdTemp, id)
+				end
+			end
+		end
+		sort(private.bonusIdTemp)
+		cache.num = #private.bonusIdTemp - adjust
+		cache.bonusIds = table.concat(private.bonusIdTemp, ":")
+		cache.value = strjoin(":", "", cache.num, cache.bonusIds)
+	end
+	if cache.num == 0 then
+		local baseItemString, rand = strmatch(itemString, "(i:[0-9]+)(:[0-9%-]*)")
+		rand = rand and rand ~= "" and rand ~= ":" and tonumber(rand) or 0
+		if rand == 0 then
+			return baseItemString
+		else
+			return baseItemString..rand
+		end
+	elseif cache.bonusIds == bonusIds then
+		return itemString
+	else
+		return itemStringPrefix..cache.value
+	end
+end

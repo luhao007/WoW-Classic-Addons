@@ -12,7 +12,7 @@
 -- @classmod ScrollingTable
 
 local _, TSM = ...
-local ScrollingTable = TSM.Lib.Class.DefineClass("ScrollingTable", TSM.UI.Element, "ABSTRACT")
+local ScrollingTable = TSM.Include("LibTSMClass").DefineClass("ScrollingTable", TSM.UI.Element, "ABSTRACT")
 TSM.UI.ScrollingTable = ScrollingTable
 local private = {
 	rowPool = TSMAPI_FOUR.ObjectPool.New("TABLE_ROWS", TSM.UI.Util.TableRow, 1),

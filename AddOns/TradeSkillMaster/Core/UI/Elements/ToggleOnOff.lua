@@ -12,7 +12,7 @@
 -- @classmod ToggleOnOff
 
 local _, TSM = ...
-local ToggleOnOff = TSM.Lib.Class.DefineClass("ToggleOnOff", TSM.UI.Container)
+local ToggleOnOff = TSM.Include("LibTSMClass").DefineClass("ToggleOnOff", TSM.UI.Container)
 TSM.UI.ToggleOnOff = ToggleOnOff
 local private = { buttonToggleOnOffLookup = {} }
 

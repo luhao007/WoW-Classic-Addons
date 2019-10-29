@@ -29,7 +29,7 @@ local LAYOUT_CONTEXT = {
 		sides = { primary = { "LEFT", "RIGHT" }, secondary = { "TOP", "BOTTOM" } },
 	},
 }
-local Frame = TSM.Lib.Class.DefineClass("Frame", TSM.UI.Container)
+local Frame = TSM.Include("LibTSMClass").DefineClass("Frame", TSM.UI.Container)
 TSM.UI.Frame = Frame
 
 

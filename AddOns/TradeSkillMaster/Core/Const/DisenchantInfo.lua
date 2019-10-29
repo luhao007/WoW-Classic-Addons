@@ -305,18 +305,18 @@ else
 				maxLevel = 70,
 				sourceInfo = {
 					{itemType = ARMOR, rarity = 2, minItemLevel = 59, maxItemLevel = 70, matRate = 0.750, minAmount = 2, maxAmount = 7, amountOfMats = 1.933},
-					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.750, minAmount = 2, maxAmount = 9, amountOfMats = 2.655},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 80, maxItemLevel = 99, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.220, minAmount = 2, maxAmount = 7, amountOfMats = 0.787},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.750, minAmount = 2, maxAmount = 9, amountOfMats = 2.655},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 59, maxItemLevel = 70, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.220, minAmount = 2, maxAmount = 7, amountOfMats = 0.787},
 				},
 			},
 			["i:34054"] = { -- Infinite Dust
 				minLevel = 67,
 				maxLevel = 80,
 				sourceInfo = {
-					{itemType = ARMOR, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.750, minAmount = 2, maxAmount = 7, amountOfMats = 1.933},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.750, minAmount = 2, maxAmount = 7, amountOfMats = 1.933},
 					{itemType = ARMOR, rarity = 2, minItemLevel = 91, maxItemLevel = 100, matRate = 0.750, minAmount = 4, maxAmount = 11, amountOfMats = 4.155},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.562},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.562},
 					{itemType = WEAPON, rarity = 2, minItemLevel = 91, maxItemLevel = 100, matRate = 0.220, minAmount = 4, maxAmount = 9, amountOfMats = 1.200},
 				},
 			},
@@ -431,16 +431,16 @@ else
 				minLevel = 58,
 				maxLevel = 70,
 				sourceInfo = {
-					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.220, minAmount = 1, maxAmount = 5, amountOfMats = 0.346},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.750, minAmount = 1, maxAmount = 5, amountOfMats = 1.170},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.220, minAmount = 1, maxAmount = 5, amountOfMats = 0.346},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.750, minAmount = 1, maxAmount = 5, amountOfMats = 1.170},
 				},
 			},
 			["i:34056"] = { -- Lesser Cosmic Essence
 				minLevel = 67,
 				maxLevel = 80,
 				sourceInfo = {
-					{itemType = ARMOR, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.562},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 1.932},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.562},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.750, minAmount = 2, maxAmount = 5, amountOfMats = 1.932},
 				},
 			},
 			["i:34055"] = { -- Greater Cosmic Essence
@@ -518,20 +518,20 @@ else
 				minLevel = 56,
 				maxLevel = 70,
 				sourceInfo = {
-					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
-					{itemType = ARMOR, rarity = 3, minItemLevel = 71, maxItemLevel = 80, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.03},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 80, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
-					{itemType = WEAPON, rarity = 3, minItemLevel = 71, maxItemLevel = 80, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.03},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
+					{itemType = ARMOR, rarity = 3, minItemLevel = 71, maxItemLevel = 81, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.03},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 71, maxItemLevel = 81, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
+					{itemType = WEAPON, rarity = 3, minItemLevel = 71, maxItemLevel = 81, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.03},
 				},
 			},
 			["i:34053"] = { -- Small Dream Shard
 				minLevel = 68,
 				maxLevel = 80,
 				sourceInfo = {
-					{itemType = ARMOR, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
-					{itemType = ARMOR, rarity = 3, minItemLevel = 80, maxItemLevel = 90, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
-					{itemType = WEAPON, rarity = 2, minItemLevel = 80, maxItemLevel = 90, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
-					{itemType = WEAPON, rarity = 3, minItemLevel = 80, maxItemLevel = 90, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+					{itemType = ARMOR, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
+					{itemType = ARMOR, rarity = 3, minItemLevel = 82, maxItemLevel = 90, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+					{itemType = WEAPON, rarity = 2, minItemLevel = 82, maxItemLevel = 90, matRate = 0.030, minAmount = 1, maxAmount = 2, amountOfMats = 0.033},
+					{itemType = WEAPON, rarity = 3, minItemLevel = 82, maxItemLevel = 90, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 				},
 			},
 			["i:34052"] = { -- Dream Shard

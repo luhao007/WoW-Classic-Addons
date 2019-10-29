@@ -11,7 +11,7 @@
 -- @classmod GroupTree
 
 local _, TSM = ...
-local GroupTree = TSM.Lib.Class.DefineClass("GroupTree", TSM.UI.FastScrollingList, "ABSTRACT")
+local GroupTree = TSM.Include("LibTSMClass").DefineClass("GroupTree", TSM.UI.FastScrollingList, "ABSTRACT")
 TSM.UI.GroupTree = GroupTree
 local private = { rowFrameLookup = {} }
 local COLOR_WIDTH = 6

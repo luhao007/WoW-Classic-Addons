@@ -12,7 +12,7 @@
 -- @classmod OperationTree
 
 local _, TSM = ...
-local OperationTree = TSM.Lib.Class.DefineClass("OperationTree", TSM.UI.ScrollList)
+local OperationTree = TSM.Include("LibTSMClass").DefineClass("OperationTree", TSM.UI.ScrollList)
 TSM.UI.OperationTree = OperationTree
 local private = {}
 local EXPANDER_PADDING_LEFT = 8

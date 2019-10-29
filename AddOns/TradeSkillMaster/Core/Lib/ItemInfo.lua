@@ -12,6 +12,8 @@
 local _, TSM = ...
 local ItemInfo = TSM:NewPackage("ItemInfo")
 local L = TSM.L
+local ItemClass = TSM.Include("Data.ItemClass")
+local VendorSell = TSM.Include("Data.VendorSell")
 local private = {
 	db = nil,
 	pendingItems = {},
@@ -81,7 +83,7 @@ function ItemInfo.OnInitialize()
 	end
 
 	-- load hard-coded vendor costs
-	for itemString, cost in pairs(TSM.CONST.VENDOR_SELL_PRICES) do
+	for itemString, cost in VendorSell.Iterator() do
 		TSM.db.global.internalData.vendorItems[itemString] = TSM.db.global.internalData.vendorItems[itemString] or cost
 	end
 
@@ -408,7 +410,7 @@ function TSMAPI_FOUR.Item.GetMinLevel(item)
 	if not minLevel and private.IsItem(itemString) then
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
 		local classId = TSMAPI_FOUR.Item.GetClassId(itemString)
-		local subClassId = TSMAPI_FOUR.Item.GetClassId(itemString)
+		local subClassId = TSMAPI_FOUR.Item.GetSubClassId(itemString)
 		if itemString ~= baseItemString and classId and subClassId and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR and (classId ~= LE_ITEM_CLASS_GEM or subClassId ~= LE_ITEM_GEM_ARTIFACTRELIC) then
 			-- the bonusId does not affect the minLevel of this item
 			minLevel = TSMAPI_FOUR.Item.GetMinLevel(baseItemString)
@@ -430,7 +432,7 @@ function TSMAPI_FOUR.Item.GetMaxStack(item)
 	if not maxStack and private.IsItem(itemString) then
 		-- we might be able to deduce the maxStack based on the classId and subClassId
 		local classId = TSMAPI_FOUR.Item.GetClassId(item)
-		local subClassId = TSMAPI_FOUR.Item.GetClassId(item)
+		local subClassId = TSMAPI_FOUR.Item.GetSubClassId(item)
 		if classId and subClassId then
 			if classId == 1 then
 				maxStack = 1
@@ -548,15 +550,6 @@ function TSMAPI_FOUR.Item.IsCraftingReagent(item)
 	return isCraftingReagent
 end
 
---- Get whether or not the item is a soulbound material.
--- @tparam string item The item
--- @treturn boolean Whether or not the item is a soulbound material
-function TSMAPI_FOUR.Item.IsSoulboundMat(item)
-	local itemString = TSMAPI_FOUR.Item.ToItemString(item)
-	if not itemString then return end
-	return TSM.CONST.SOULBOUND_CRAFTING_MATS[itemString]
-end
-
 --- Get the vendor buy price.
 -- @tparam string item The item
 -- @treturn ?number The vendor buy price
@@ -643,7 +636,7 @@ function private.GetFieldValueHelper(itemString, field, baseIsSame, storeBaseVal
 			private.SetSingleField(itemString, field, value)
 		end
 	end
-	if value ~= nil and baseIsSame then
+	if value == nil and baseIsSame then
 		-- the value is the same for the base item
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
 		if baseItemString ~= itemString then
@@ -838,11 +831,11 @@ function private.StoreGetItemInfoInstant(itemString)
 		end
 		-- some items (such as i:37445) give a classId of -1 for some reason in which case we can look up the classId
 		if classId < 0 then
-			classId = TSMAPI_FOUR.Item.GetClassIdFromClassString(classStr)
+			classId = ItemClass.GetClassIdFromClassString(classStr)
 			assert(subClassStr == "")
 			subClassId = 0
 		end
-		local invSlotId = equipSlot and TSMAPI_FOUR.Item.GetInventorySlotIdFromInventorySlotString(equipSlot) or 0
+		local invSlotId = equipSlot and ItemClass.GetInventorySlotIdFromInventorySlotString(equipSlot) or 0
 		private.SetItemInfoInstantFields(itemString, texture, classId, subClassId, invSlotId)
 		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
 		if baseItemString ~= itemString then

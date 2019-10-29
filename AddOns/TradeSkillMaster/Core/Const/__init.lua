@@ -13,18 +13,6 @@ TSM.CONST = {}
 TSM.CONST.OPERATION_SEP = "\001"
 TSM.CONST.GROUP_SEP = "`"
 TSM.CONST.ROOT_GROUP_PATH = ""
-TSM.CONST.NO_SOUND_KEY = "TSM_NO_SOUND" -- this can never change
-TSM.CONST.OLD_TSM_MODULES = {
-	"TradeSkillMaster_Accounting",
-	"TradeSkillMaster_AuctionDB",
-	"TradeSkillMaster_Auctioning",
-	"TradeSkillMaster_Crafting",
-	"TradeSkillMaster_Destroying",
-	"TradeSkillMaster_Mailing",
-	"TradeSkillMaster_Shopping",
-	"TradeSkillMaster_Vendoring",
-	"TradeSkillMaster_Warehousing",
-}
 TSM.CONST.TOOLTIP_SEP = "\001"
 TSM.CONST.PET_CAGE_ITEMSTRING = "i:82800"
 TSM.CONST.UNKNOWN_ITEM_ITEMSTRING = "i:0"

@@ -11,7 +11,7 @@
 -- @classmod FSMState
 
 local _, TSM = ...
-local FSMState = TSM.Lib.Class.DefineClass("FSMState")
+local FSMState = TSM.Include("LibTSMClass").DefineClass("FSMState")
 TSM.FSM.classes.FSMState = FSMState
 
 

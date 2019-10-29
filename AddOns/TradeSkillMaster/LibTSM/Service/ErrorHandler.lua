@@ -9,8 +9,15 @@
 -- TSM's error handler
 
 local _, TSM = ...
-local L = TSM.L
+local ErrorHandler = TSM.Init("Service.ErrorHandler")
+local Log = TSM.Include("Util.Log")
+local String = TSM.Include("Util.String")
+local Event = TSM.Include("Util.Event")
+local JSON = TSM.Include("Util.JSON")
+local TempTable = TSM.Include("Util.TempTable")
+local L = TSM.Include("L")
 local private = {
+	origErrorHandler = nil,
 	errorFrame = nil,
 	isSilent = nil,
 	errorSuppressed = nil,
@@ -19,9 +26,6 @@ local private = {
 	localLinesTemp = {},
 	hitInternalError = false,
 }
-local TSM_VERSION = GetAddOnMetadata("TradeSkillMaster", "Version")
--- use strmatch so this string doesn't itself get replaced when we deploy
-local IS_DEV_VERSION = strmatch(TSM_VERSION, "^@tsm%-project%-version@$") and true or false
 local MAX_ERROR_REPORT_AGE = 7 * 24 * 60 * 60 -- 1 week
 local MAX_STACK_DEPTH = 50
 local ADDON_SUITES = {
@@ -61,7 +65,17 @@ local ADDON_SUITES = {
 	"WowPro",
 	"ZOMGBuffs",
 }
-local ERROR_HEADING_COLOR = "|cff99ffff"
+local OLD_TSM_MODULES = {
+	"TradeSkillMaster_Accounting",
+	"TradeSkillMaster_AuctionDB",
+	"TradeSkillMaster_Auctioning",
+	"TradeSkillMaster_Crafting",
+	"TradeSkillMaster_Destroying",
+	"TradeSkillMaster_Mailing",
+	"TradeSkillMaster_Shopping",
+	"TradeSkillMaster_Vendoring",
+	"TradeSkillMaster_Warehousing",
+}
 
 
 
@@ -69,16 +83,17 @@ local ERROR_HEADING_COLOR = "|cff99ffff"
 -- Module Functions
 -- ============================================================================
 
-function TSM.ShowManualError()
+function ErrorHandler.ShowManual()
 	private.isManual = true
 	TSM.ShowError("Manually triggered error")
 end
 
+-- TODO: move to ErrorHandler table
 function TSM.ShowError(err, thread)
 	if thread then
 		local stackLine = debugstack(thread, 0, 1, 0)
 		local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
-		if oldModule and tContains(TSM.CONST.OLD_TSM_MODULES, "TradeSkil"..oldModule) then
+		if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
 			-- ignore errors from old modules
 			return
 		end
@@ -88,7 +103,7 @@ function TSM.ShowError(err, thread)
 	private.ErrorHandler(err, thread)
 end
 
-function TSM.SaveErrorReports(appDB)
+function ErrorHandler.SaveReports(appDB)
 	private.errorFrame:Hide()
 	appDB.errorReports = appDB.errorReports or { updateTime = 0, data = {} }
 	if #private.errorReports > 0 then
@@ -102,7 +117,7 @@ function TSM.SaveErrorReports(appDB)
 		end
 	end
 	for _, report in ipairs(private.errorReports) do
-		local line = format("[%s,\"%s\",%d]", TSM.JSON.Encode(report.errorInfo), report.details, report.timestamp)
+		local line = format("[%s,\"%s\",%d]", JSON.Encode(report.errorInfo), report.details, report.timestamp)
 		tinsert(appDB.errorReports.data, line)
 	end
 end
@@ -150,9 +165,9 @@ function private.ErrorHandler(msg, thread)
 		return false
 	end
 
-	if TSM.LOG_ERR and not IS_DEV_VERSION and not isManual then
-		-- use a format string in case there are '%' characters in the msg
-		TSM:LOG_ERR("%s", msg)
+	if not TSM.IsDevVersion() and not isManual then
+		-- log the error (use a format string in case there are '%' characters in the msg)
+		Log.Err("%s", msg)
 	end
 
 	if private.errorFrame:IsVisible() then
@@ -164,29 +179,25 @@ function private.ErrorHandler(msg, thread)
 
 	private.num = private.num + 1
 	local errorInfo = {
-		msg = #stackInfo > 0 and gsub(msg, TSM.String.Escape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
+		msg = #stackInfo > 0 and gsub(msg, String.Escape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
 		stackInfo = stackInfo,
 		time = time(),
 		debugTime = floor(debugprofilestop()),
 		client = GetBuildInfo(),
 		locale = GetLocale(),
 		inCombat = tostring(InCombatLockdown() and true or false),
-		version = IS_DEV_VERSION and "Dev" or TSM_VERSION,
+		version = TSM.GetVersion(),
 	}
 
 	-- temp table info
-	local status, tempTableInfo = pcall(TSM.TempTable.GetDebugInfo)
 	local tempTableLines = {}
-	if status then
-		for _, info in ipairs(tempTableInfo) do
-			tinsert(tempTableLines, info)
-		end
+	for _, info in ipairs(TempTable.GetDebugInfo()) do
+		tinsert(tempTableLines, info)
 	end
 	errorInfo.tempTableStr = table.concat(tempTableLines, "\n")
 
 	-- object pool info
-	local objectPoolInfo = nil
-	status, objectPoolInfo = pcall(TSMAPI_FOUR.ObjectPool.GetDebugInfo)
+	local status, objectPoolInfo = pcall(function() return TSMAPI_FOUR.ObjectPool.GetDebugInfo() end)
 	local objectPoolLines = {}
 	if status then
 		for name, objectInfo in pairs(objectPoolInfo) do
@@ -199,25 +210,17 @@ function private.ErrorHandler(msg, thread)
 	errorInfo.objectPoolStr = table.concat(objectPoolLines, "\n")
 
 	-- TSM thread info
-	local threadInfo = nil
-	if TSMAPI_FOUR and TSMAPI_FOUR.Thread then
-		status, threadInfo = pcall(TSMAPI_FOUR.Thread.GetDebugInfo)
-	else
-		status = false
-	end
-	errorInfo.threadInfoStr = status and table.concat(threadInfo, "\n") or ""
+	local threadInfoStr = nil
+	status, threadInfoStr = pcall(function() return TSMAPI_FOUR.Thread.GetDebugStr() end)
+	errorInfo.threadInfoStr = status and threadInfoStr or ""
 
 	-- recent debug log entries
-	if TSM._logger then
-		local entries = {}
-		for i = TSM._logger:Length(), 1, -1 do
-			local severity, location, timeStr, logMsg = TSM._logger:Get(i)
-			tinsert(entries, format("%s [%s] {%s} %s", timeStr, severity, location, logMsg))
-		end
-		errorInfo.debugLogStr = table.concat(entries, "\n")
-	else
-		errorInfo.debugLogStr = ""
+	local entries = {}
+	for i = Log.Length(), 1, -1 do
+		local severity, location, timeStr, logMsg = Log.Get(i)
+		tinsert(entries, format("%s [%s] {%s} %s", timeStr, severity, location, logMsg))
 	end
+	errorInfo.debugLogStr = table.concat(entries, "\n")
 
 	-- addons
 	local hasAddonSuite = {}
@@ -267,7 +270,7 @@ function private.ErrorHandler(msg, thread)
 		private.FormatErrorMessageSection("Stack Trace", table.concat(stackInfoLines, "\n"), true),
 		private.FormatErrorMessageSection("Temp Tables", errorInfo.tempTableStr, true),
 		private.FormatErrorMessageSection("Object Pools", errorInfo.objectPoolStr, true),
-		private.FormatErrorMessageSection("Threads", errorInfo.threadInfoStr, true),
+		private.FormatErrorMessageSection("Running Threads", errorInfo.threadInfoStr, true),
 		private.FormatErrorMessageSection("Debug Log", errorInfo.debugLogStr, true),
 		private.FormatErrorMessageSection("Addons", errorInfo.addonsStr, true)
 	)
@@ -289,13 +292,12 @@ end
 -- ============================================================================
 
 function private.GetStackInfo(msg, thread)
-	-- build stack trace with locals and get addon name
 	local errLocation = strmatch(msg, "[A-Za-z]+%.lua:[0-9]+")
 	local stackInfo = {}
 	local stackStarted = false
 	for i = 0, MAX_STACK_DEPTH do
 		local prevStackFunc = #stackInfo > 0 and stackInfo[#stackInfo].func or nil
-		local file, line, func, localsStr, newPrevStackFunc = TSM.Debug.GetStackLevelInfo(i, thread, prevStackFunc)
+		local file, line, func, localsStr, newPrevStackFunc = private.GetStackLevelInfo(i, thread, prevStackFunc)
 		if newPrevStackFunc then
 			stackInfo[#stackInfo].func = newPrevStackFunc
 		end
@@ -320,6 +322,119 @@ function private.GetStackInfo(msg, thread)
 	return stackInfo
 end
 
+function private.GetStackLevelInfo(level, thread, prevStackFunc)
+	local stackLine = nil
+	if thread then
+		stackLine = debugstack(thread, level, 1, 0)
+	else
+		level = level + 1
+		stackLine = debugstack(level, 1, 0)
+	end
+	local locals = debuglocals(level)
+	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?lM?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	stackLine = gsub(stackLine, "%.%.%.", "")
+	stackLine = gsub(stackLine, "`", "<", 1)
+	stackLine = gsub(stackLine, "'", ">", 1)
+	stackLine = strtrim(stackLine)
+	if stackLine == "" then
+		return
+	end
+
+	-- Parse out the file, line, and function name
+	local locationStr, functionStr = strmatch(stackLine, "^(.-): in function (<[^\n]*>)")
+	if not locationStr then
+		locationStr, functionStr = strmatch(stackLine, "^(.-): in (main chunk)")
+	end
+	if not locationStr then
+		return
+	end
+	locationStr = strsub(locationStr, strfind(locationStr, "TradeSkillMaster") or 1)
+	locationStr = gsub(locationStr, "TradeSkillMaster([^%.])", "TSM%1")
+	functionStr = functionStr and gsub(gsub(functionStr, ".*\\", ""), "[<>]", "") or ""
+	local file, line = strmatch(locationStr, "^(.+):(%d+)$")
+	file = file or locationStr
+	line = tonumber(line) or 0
+
+	local func = strsub(functionStr, strfind(functionStr, "`") and 2 or 1, -1) or "?"
+	func = func ~= "" and func or "?"
+
+	if strfind(locationStr, "LibTSMClass%.lua:") then
+		-- ignore stack frames from the class code's wrapper function
+		if func ~= "?" and prevStackFunc and not strmatch(func, "^.+:[0-9]+$") and strmatch(prevStackFunc, "^.+:[0-9]+$") then
+			-- this stack frame includes the class method we were accessing in the previous one, so go back and fix it up
+			local className = locals and strmatch(locals, "\n +str = \"([A-Za-z_0-9]+):[0-9A-F]+\"\n") or "?"
+			prevStackFunc = className.."."..func
+		end
+		return nil, nil, nil, nil, prevStackFunc
+	end
+
+	-- add locals for addon functions (debuglocals() doesn't always work - or ever for threads)
+	local localsStr = locals and private.ParseLocals(locals, file) or ""
+	return file, line, func, localsStr, nil
+end
+
+function private.ParseLocals(locals, file)
+	if strmatch(file, "^%[") then
+		return
+	end
+
+	local fileName = strmatch(file, "([A-Za-z]+)%.lua")
+	local isBlizzardFile = strmatch(file, "Interface\\FrameXML\\")
+	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable = false, false, false, false
+	wipe(private.localLinesTemp)
+	locals = gsub(locals, "<([a-z]+)> {[\n\t ]+}", "<%1> {}")
+	locals = gsub(locals, " = <function> defined @", "@")
+	locals = gsub(locals, "<table> {", "{")
+
+	for localLine in gmatch(locals, "[^\n]+") do
+		local shouldIgnoreLine = false
+		if strmatch(localLine, "^ *%(") then
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "LibTSMClass%.lua:") then
+			-- ignore class methods
+			shouldIgnoreLine = true
+		elseif strmatch(localLine, "<unnamed> {}$") then
+			-- ignore internal WoW frame members
+			shouldIgnoreLine = true
+		end
+		if not shouldIgnoreLine then
+			local level = #strmatch(localLine, "^ *")
+			localLine = strrep("  ", level)..strtrim(localLine)
+			localLine = gsub(localLine, "Interface\\[aA]dd[Oo]ns\\TradeSkillMaster", "TSM")
+			localLine = gsub(localLine, "\124", "\\124")
+			if level > 0 then
+				if isBlizzardFile then
+					-- for Blizzard stack frames, only include level 0 locals
+					shouldIgnoreLine = true
+				elseif isPrivateTable and strmatch(localLine, "^ *[A-Z].+@TSM") then
+					-- ignore functions within the private table
+					shouldIgnoreLine = true
+				elseif isLocaleTable then
+					-- ignore everything within the locale table
+					shouldIgnoreLine = true
+				elseif isPackageTable then
+					-- ignore the package table completely
+					shouldIgnoreLine = true
+				elseif (isSelfTable or isPrivateTable) and strmatch(localLine, "^ *[_a-zA-Z0-9]+ = {}") then
+					-- ignore empty tables within objects or the private table
+					shouldIgnoreLine = true
+				end
+			end
+			if not shouldIgnoreLine then
+				tinsert(private.localLinesTemp, localLine)
+			end
+			if level == 0 then
+				isPackageTable = strmatch(localLine, "%s*"..fileName.." = {") and true or false
+				isPrivateTable = strmatch(localLine, "%s*private = {") and true or false
+				isLocaleTable = strmatch(localLine, "%s*L = {") and true or false
+				isSelfTable = strmatch(localLine, "%s*self = {") and true or false
+			end
+		end
+	end
+
+	return #private.localLinesTemp > 0 and table.concat(private.localLinesTemp, "\n") or nil
+end
+
 function private.IsTSMAddon(str)
 	if strfind(str, "Auc-Adcanced\\CoreScan.lua") then
 		-- ignore auctioneer errors
@@ -342,12 +457,12 @@ function private.IsTSMAddon(str)
 	return nil
 end
 
-function private.AddonBlockedEvent(event, addonName, addonFunc)
-	if not strmatch(addonName, "TradeSkillMaster") then return end
-	-- just log it - it might not be TSM
-	if TSM.LOG_ERR then
-		TSM:LOG_ERR("[%s] AddOn '%s' tried to call the protected function '%s'.", event, addonName or "<name>", addonFunc or "<func>")
+function private.AddonBlockedHandler(event, addonName, addonFunc)
+	if not strmatch(addonName, "TradeSkillMaster") then
+		return
 	end
+	-- just log it - it might not be TSM that cause the taint
+	Log.Err("[%s] AddOn '%s' tried to call the protected function '%s'.", event, addonName or "<name>", addonFunc or "<func>")
 end
 
 function private.SanitizeString(str)
@@ -367,7 +482,7 @@ function private.FormatErrorMessageSection(heading, info, isMultiLine)
 	else
 		prefix = info ~= "" and " " or ""
 	end
-	return ERROR_HEADING_COLOR..heading..":|r"..prefix..info
+	return "|cff99ffff"..heading..":|r"..prefix..info
 end
 
 
@@ -393,7 +508,7 @@ do
 	frame:SetBackdropColor(0, 0, 0, 1)
 	frame:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
 	frame:SetScript("OnShow", function(self)
-		self.showingError = self.isManual or IS_DEV_VERSION
+		self.showingError = self.isManual or TSM.IsDevVersion()
 		self.details = STEPS_TEXT
 		if self.showingError then
 			-- this is a dev version so show the error (only)
@@ -409,7 +524,7 @@ do
 	frame:SetScript("OnHide", function()
 		local details = private.errorFrame.showingError and private.errorFrame.details or private.errorFrame.editBox:GetText()
 		local changedDetails = details ~= STEPS_TEXT
-		if (not IS_DEV_VERSION and not private.errorFrame.isManual and (changedDetails or private.num == 1)) or IsShiftKeyDown() then
+		if (not TSM.IsDevVersion() and not private.errorFrame.isManual and (changedDetails or private.num == 1)) or IsShiftKeyDown() then
 			tinsert(private.errorReports, {
 				errorInfo = private.errorFrame.errorInfo,
 				details = private.SanitizeString(details),
@@ -566,7 +681,7 @@ do
 			for i = 2, MAX_STACK_DEPTH do
 				local stackLine = debugstack(i, 1, 0)
 				local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
-				if oldModule and tContains(TSM.CONST.OLD_TSM_MODULES, "TradeSkil"..oldModule) then
+				if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
 					-- ignore errors from old modules
 					return
 				end
@@ -588,12 +703,12 @@ do
 			end
 		end
 		local oldModule = strmatch(errMsg, "(lMaster_[A-Za-z]+)")
-		if oldModule and tContains(TSM.CONST.OLD_TSM_MODULES, "TradeSkil"..oldModule) then
+		if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
 			-- ignore errors from old modules
 			return
 		end
 		return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
 	end)
-	TSM.Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedEvent)
-	TSM.Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedEvent)
+	Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedHandler)
+	Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedHandler)
 end

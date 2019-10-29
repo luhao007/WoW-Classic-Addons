@@ -10,8 +10,9 @@
 -- @module CSV
 
 local _, TSM = ...
-TSM.CSV = {}
-local CSV = TSM.CSV
+local CSV = TSM.Init("Util.CSV")
+local TempTable = TSM.Include("Util.TempTable")
+TSM.CSV = CSV
 local private = {}
 
 
@@ -21,7 +22,10 @@ local private = {}
 -- ============================================================================
 
 function CSV.EncodeStart(keys)
-	local context = { keys = keys, lines = {}, lineParts = {} }
+	local context = TempTable.Acquire()
+	context.keys = keys
+	context.lines = TempTable.Acquire()
+	context.lineParts = TempTable.Acquire()
 	tinsert(context.lines, table.concat(keys, ","))
 	return context
 end
@@ -39,7 +43,11 @@ function CSV.EncodeAddRowDataRaw(context, ...)
 end
 
 function CSV.EncodeEnd(context)
-	return table.concat(context.lines, "\n")
+	local result = table.concat(context.lines, "\n")
+	TempTable.Release(context.lineParts)
+	TempTable.Release(context.lines)
+	TempTable.Release(context)
+	return result
 end
 
 function CSV.Encode(keys, data)
@@ -50,35 +58,12 @@ function CSV.Encode(keys, data)
 	return CSV.EncodeEnd(context)
 end
 
-function CSV.Decode(str)
-	local keys = nil
-	local result = {}
-	local numResult = 0
-	for line in gmatch(str, "[^\n]+") do
-		if not keys then
-			keys = { strsplit(",", line) }
-		else
-			local entry = {}
-			local lineParts = { strsplit(",", line) }
-			for i, key in ipairs(keys) do
-				local linePart = lineParts[i]
-				if linePart ~= "" then
-					entry[key] = tonumber(linePart) or linePart
-				end
-			end
-			numResult = numResult + 1
-			result[numResult] = entry
-		end
-	end
-	return keys, result
-end
-
 function CSV.DecodeStart(str, fields)
 	local func = gmatch(str, strrep("([^\n,]+),", #fields - 1).."([^\n,]+)(,?[^\n,]*)")
 	if strjoin(",", func()) ~= table.concat(fields, ",").."," then
 		return
 	end
-	local context = TSM.TempTable.Acquire()
+	local context = TempTable.Acquire()
 	context.func = func
 	context.extraArgPos = #fields + 1
 	context.result = true
@@ -91,7 +76,7 @@ end
 
 function CSV.DecodeEnd(context)
 	local result = context.result
-	TSM.TempTable.Release(context)
+	TempTable.Release(context)
 	return result
 end
 

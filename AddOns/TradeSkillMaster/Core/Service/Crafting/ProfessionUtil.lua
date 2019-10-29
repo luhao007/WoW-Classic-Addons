@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local ProfessionUtil = TSM.Crafting:NewPackage("ProfessionUtil")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local private = {
 	craftQuantity = nil,
 	craftSpellId = nil,
@@ -77,9 +78,18 @@ function ProfessionUtil.OnInitialize()
 		private.craftName = nil
 		callback(false, true)
 	end
+	local function ClearCraftCast()
+		private.craftQuantity = nil
+		private.craftSpellId = nil
+		private.craftName = nil
+	end
 	TSM.Event.Register("UNIT_SPELLCAST_INTERRUPTED", SpellcastFailedEventHandler)
 	TSM.Event.Register("UNIT_SPELLCAST_FAILED", SpellcastFailedEventHandler)
 	TSM.Event.Register("UNIT_SPELLCAST_FAILED_QUIET", SpellcastFailedEventHandler)
+	TSM.Event.Register("TRADE_SKILL_CLOSE", ClearCraftCast)
+	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		TSM.Event.Register("CRAFT_CLOSE", ClearCraftCast)
+	end
 end
 
 function ProfessionUtil.GetCurrentProfessionName()
@@ -99,10 +109,10 @@ function ProfessionUtil.GetResultInfo(spellId)
 
 	if strfind(itemLink, "enchant:") then
 		-- result of craft is not an item
-		local itemString = TSM.CONST.ENCHANT_ITEM_STRINGS[spellId] or TSM.CONST.MASS_MILLING_RECIPES[spellId]
+		local itemString = ProfessionInfo.GetIndirectCraftResult(spellId)
 		if itemString and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
 			return TSM.UI.GetColoredItemName(itemString), itemString, TSMAPI_FOUR.Item.GetTexture(itemString)
-		elseif TSM.CONST.ENGINEER_TINKERS[spellId] then
+		elseif ProfessionInfo.IsEngineeringTinker(spellId) then
 			local name, _, icon = GetSpellInfo(spellId)
 			return name, nil, icon
 		else
@@ -169,15 +179,15 @@ function ProfessionUtil.IsEnchant(spellId)
 end
 
 function ProfessionUtil.OpenProfession(profession)
-	if profession == GetSpellInfo(TSM.CONST.MINING_SPELLID) then
+	if profession == ProfessionInfo.GetName("Mining") then
 		-- mining needs to be opened as smelting
-		profession = GetSpellInfo(TSM.CONST.SMELTING_SPELLID)
-	elseif profession == GetSpellInfo(TSM.CONST.HERBALISM_SPELLID) then
+		profession = ProfessionInfo.GetName("Smelting")
+	elseif profession == ProfessionInfo.GetName("Herbalism") then
 		-- herbalism needs to be opened as herbalism skills
-		profession = GetSpellInfo(TSM.CONST.HERBALISM_SKILLS_SPELLID)
-	elseif profession == GetSpellInfo(TSM.CONST.SKINNING_SPELLID) then
+		profession = ProfessionInfo.GetName("HerbalismSkills")
+	elseif profession == ProfessionInfo.GetName("Skinning") then
 		-- skinning needs to be opened as skinning skills
-		profession = GetSpellInfo(TSM.CONST.SKINNING_SKILLS_SPELLID)
+		profession = ProfessionInfo.GetName("SkinningSkills")
 	end
 	if PROFESSION_LOOKUP[profession] then
 		profession = PROFESSION_LOOKUP[profession]
@@ -233,7 +243,7 @@ function ProfessionUtil.Craft(spellId, quantity, useVellum, callback)
 		C_TradeSkillUI.CraftRecipe(spellId, quantity)
 	end
 	if useVellum and isEnchant then
-		UseItemByName(TSMAPI_FOUR.Item.GetName(TSM.CONST.VELLUM_ITEM_STRING))
+		UseItemByName(TSMAPI_FOUR.Item.GetName(ProfessionInfo.GetVellumItemString()))
 	end
 	return quantity
 end

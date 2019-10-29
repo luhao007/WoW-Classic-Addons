@@ -12,7 +12,7 @@
 -- @classmod ProgressBar
 
 local _, TSM = ...
-local ProgressBar = TSM.Lib.Class.DefineClass("ProgressBar", TSM.UI.Element)
+local ProgressBar = TSM.Include("LibTSMClass").DefineClass("ProgressBar", TSM.UI.Element)
 TSM.UI.ProgressBar = ProgressBar
 local PROGRESS_PADDING = 4
 local PROGRESS_ICON_PADDING = 4

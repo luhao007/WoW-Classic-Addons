@@ -48,24 +48,14 @@ end
 
 function PlayerUtil.IsOnline(target, noAdd)
 	C_FriendList.ShowFriends()
-	for i = 1, C_FriendList.GetNumFriends() do
-		local info = C_FriendList.GetFriendInfoByIndex(i)
-		if info.name and strlower(info.name) == strlower(target) then
-			return info.connected
-		end
-	end
-
-	if not noAdd and not private.invalidPlayers[strlower(target)] and C_FriendList.GetNumFriends() ~= 50 then
+	local info = C_FriendList.GetFriendInfo(target)
+	if not info and not noAdd and not private.invalidPlayers[strlower(target)] and C_FriendList.GetNumFriends() ~= 50 then
 		-- add them as a friend
 		C_FriendList.AddFriend(target)
 		tinsert(private.addedFriends, target)
-		for i = 1, C_FriendList.GetNumFriends() do
-			local info = C_FriendList.GetFriendInfoByIndex(i)
-			if info.name and strlower(info.name) == strlower(target) then
-				return info.connected
-			end
-		end
+		info = C_FriendList.GetFriendInfo(target)
 	end
+	return info and info.connected or false
 end
 
 

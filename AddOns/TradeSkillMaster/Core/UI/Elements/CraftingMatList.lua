@@ -11,7 +11,7 @@
 -- @classmod CraftingMatList
 
 local _, TSM = ...
-local CraftingMatList = TSM.Lib.Class.DefineClass("CraftingMatList", TSM.UI.ScrollList)
+local CraftingMatList = TSM.Include("LibTSMClass").DefineClass("CraftingMatList", TSM.UI.ScrollList)
 local private = { }
 TSM.UI.CraftingMatList = CraftingMatList
 

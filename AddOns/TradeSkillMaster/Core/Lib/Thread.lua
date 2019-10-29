@@ -6,10 +6,15 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
---- Thread TSMAPI_FOUR Functions
+--- Thread Functions
 -- @module Thread
 
 local _, TSM = ...
+local Debug = TSM.Include("Util.Debug")
+local Math = TSM.Include("Util.Math")
+local TempTable = TSM.Include("Util.TempTable")
+local Vararg = TSM.Include("Util.Vararg")
+local Thread = TSM.Include("LibTSMClass").DefineClass("Thread")
 TSMAPI_FOUR.Thread = {}
 local private = {
 	threads = {},
@@ -25,7 +30,6 @@ local SEND_MSG_SYNC_TIMEOUT_MS = 3000
 local YIELD_VALUE_START = {}
 local YIELD_VALUE = {}
 local SCHEDULER_TIME_WARNING_THRESHOLD_MS = 100
-local Thread = TSM.Lib.Class.DefineClass("Thread")
 
 
 
@@ -38,19 +42,8 @@ local Thread = TSM.Lib.Class.DefineClass("Thread")
 -- @tparam function func The thread's main function
 -- @treturn string The thread id
 function TSMAPI_FOUR.Thread.New(name, func)
-	local thread = Thread(name, func, false)
-	local threadId = strjoin("-", tostringall(thread, func))
-	private.threads[threadId] = thread
-	return threadId
-end
-
---- Create a new immortal thread.
--- An immortal thread should never return and will be restarted if it does.
--- @tparam string name The name of the thread (for debugging purposes)
--- @tparam function func The thread's main function
--- @treturn string The thread id
-function TSMAPI_FOUR.Thread.NewImmortal(name, func)
-	local thread = Thread(name, func, true)
+	assert(name and func)
+	local thread = Thread(name, func)
 	local threadId = strjoin("-", tostringall(thread, func))
 	private.threads[threadId] = thread
 	return threadId
@@ -82,7 +75,7 @@ end
 function TSMAPI_FOUR.Thread.SendMessage(threadId, ...)
 	local thread = private.threads[threadId]
 	assert(thread:_IsAlive())
-	tinsert(thread._messages, TSM.TempTable.Acquire(...))
+	tinsert(thread._messages, TempTable.Acquire(...))
 end
 
 --- Send a synchronous message to a thread.
@@ -195,43 +188,25 @@ function TSMAPI_FOUR.Thread.UnpackAndReleaseSafeTempTable(tbl)
 	return private.runningThread:_UnpackAndReleaseSafeTempTable(tbl)
 end
 
-function TSMAPI_FOUR.Thread.GetDebugInfo()
-	local threadInfo = {}
+function TSMAPI_FOUR.Thread.GetDebugStr()
+	local lines = {}
 	for _, thread in pairs(private.threads) do
-		if thread._startCaller then
-			local temp = { backtrace = {} }
-			local level = 2
-			local line = TSM.Debug.GetDebugStackInfo(level, thread._co)
-			while line do
-				tinsert(temp.backtrace, line)
-				level = level + 1
-				line = TSM.Debug.GetDebugStackInfo(level, thread._co)
+		if thread:_IsAlive() then
+			local name, stateStr, timeStr, createStr, startStr, backtrace = thread:_GetDebugInfo()
+			tinsert(lines, "  "..name)
+			tinsert(lines, "    "..stateStr)
+			tinsert(lines, "    "..timeStr)
+			tinsert(lines, "    "..createStr)
+			tinsert(lines, "    "..startStr)
+			if #backtrace > 0 then
+				tinsert(lines, "    Backtrace:")
+				for _, line in ipairs(backtrace) do
+					tinsert(lines, "      "..line)
+				end
 			end
-			temp.state = thread._state
-			temp.sleepTime = thread._sleepTime
-			temp.numMessages = (#thread._messages > 0) and #thread._messages or nil
-			temp.eventNames = thread._eventNames
-			temp.eventArgs = thread._eventArgs
-			temp.waitFunction = thread._waitFunction
-			temp.waitFunctionArgs = thread._waitFunctionArgs
-			temp.waitFunctionResult = thread._waitFunctionResult
-			temp.syncMessageDest = thread._syncMessageDest and private.threads[thread._syncMessageDest]._name or nil
-			temp.isImmortal = thread._isImmortal
-			temp.createCaller = thread._createCaller
-			temp.startCaller = thread._startCaller
-			if thread._startTime then
-				temp.realTimeUsed = debugprofilestop() - thread._startTime
-				temp.cpuTimeUsed = thread._cpuTimeUsed
-				temp.cpuPct = format("%.1f%%", TSM.Math.Round(thread._cpuTimeUsed / temp.realTimeUsed, 0.001) * 100)
-			end
-			local key = thread._name
-			while threadInfo[key] do
-				key = key.."#"..random(1, 100000)
-			end
-			threadInfo[key] = temp
 		end
 	end
-	return TSM.Debug.DumpTable(threadInfo, true)
+	return table.concat(lines, "\n")
 end
 
 
@@ -240,9 +215,8 @@ end
 -- Thread Class - General Methods
 -- ============================================================================
 
-function Thread.__init(self, name, func, isImmortal)
+function Thread.__init(self, name, func)
 	-- core fields
-	self._isImmortal = isImmortal
 	self._func = func
 	self._co = nil
 	self._state = "DEAD"
@@ -264,8 +238,8 @@ function Thread.__init(self, name, func, isImmortal)
 	self._startTime = 0
 	self._cpuTimeUsed = 0
 	self._realTimeUsed = 0
-	self._name = name
-	self._createCaller = TSM.Debug.GetDebugStackInfo(4)
+	self._name = name or tostring(self)
+	self._createCaller = Debug.GetStackLevelLocation(3) or "?"
 	self._startCaller = nil
 end
 
@@ -286,7 +260,7 @@ function Thread._Start(self, ...)
 	self._startTime = 0
 	self._cpuTimeUsed = 0
 	self._realTimeUsed = 0
-	self._startCaller = self._startCaller or TSM.Debug.GetDebugStackInfo(3)
+	self._startCaller = self._startCaller or Debug.GetStackLevelLocation(3)
 
 	-- run the thread once (will yield right away) to pass in self and the arguments
 	local noErr, retValue = coroutine.resume(self._co, self, ...)
@@ -294,7 +268,6 @@ function Thread._Start(self, ...)
 end
 
 function Thread._SetCallback(self, callback)
-	assert(not self._isImmortal)
 	self._callback = callback
 end
 
@@ -305,7 +278,7 @@ end
 function Thread._ToLogStr(self)
 	if self._startTime then
 		self._realTimeUsed = debugprofilestop() - self._startTime
-		local pctStr = format("%.1f%%", TSM.Math.Round(self._cpuTimeUsed / self._realTimeUsed, 0.001) * 100)
+		local pctStr = format("%.1f%%", Math.Round(self._cpuTimeUsed / self._realTimeUsed, 0.001) * 100)
 		return format("%s [%s,%s]", self._name, self._state, pctStr)
 	else
 		return format("%s [%s]", self._name, self._state)
@@ -314,22 +287,107 @@ end
 
 function Thread._Cleanup(self)
 	for _, msg in ipairs(self._messages) do
-		TSM.TempTable.Release(msg)
+		TempTable.Release(msg)
 	end
 	wipe(self._messages)
 	for tbl in pairs(self._safeTempTables) do
-		TSM.TempTable.Release(tbl)
+		TempTable.Release(tbl)
 	end
 	wipe(self._safeTempTables)
+	self._waitFunction = nil
 	if self._waitFunctionArgs then
-		TSM.TempTable.Release(self._waitFunctionArgs)
+		TempTable.Release(self._waitFunctionArgs)
 		self._waitFunctionArgs = nil
 	end
+	if self._waitFunctionResult then
+		TempTable.Release(self._waitFunctionResult)
+		self._waitFunctionResult = nil
+	end
 	if self._syncMessage then
-		TSM.TempTable.Release(self._syncMessage)
+		TempTable.Release(self._syncMessage)
 		self._syncMessage = nil
 		self._syncMessageDest = nil
 	end
+end
+
+function Thread._GetDebugInfo(self)
+	local stateStr = nil
+	if self._state == "SLEEPING" then
+		stateStr = format("Sleeping for %d seconds", Math.Round(self._sleepTime, 0.001))
+	elseif self._state == "WAITING_FOR_MSG" then
+		if #self._messages > 0 then
+			stateStr = "Got message"
+		else
+			stateStr = "Waiting for message"
+		end
+	elseif self._state == "WAITING_FOR_EVENT" then
+		if next(self._eventNames) then
+			local eventList = {}
+			for _, event in pairs(self._eventNames) do
+				tinsert(eventList, event)
+			end
+			stateStr = format("Waiting for %s", table.concat(eventList, "|"))
+		else
+			stateStr = format("Got %s", self._eventArgs[1])
+		end
+	elseif self._state == "WAITING_FOR_FUNCTION" then
+		local functionName = nil
+		-- look up to 2 levels deep in the globals table for the name of this function
+		for k, v in pairs(_G) do
+			if type(v) == "table" then
+				for k2, v2 in pairs(v) do
+					if v2 == self._waitFunction then
+						functionName = tostring(k).."."..tostring(k2)
+						break
+					end
+				end
+				if functionName then
+					break
+				end
+			elseif v == self._waitFunction then
+				functionName = tostring(k)
+				break
+			end
+		end
+		stateStr = format("Waiting for %s", functionName or tostring(self._waitFunction))
+	elseif self._state == "FORCED_YIELD" then
+		stateStr = "Forced yield"
+	elseif self._state == "SENDING_SYNC_MESSAGE" then
+		stateStr = format("Sending sync message to %s", self._syncMessageDest and private.threads[self._syncMessageDest]._name or "?")
+	elseif self._state == "RUNNING" then
+		stateStr = "Running"
+	elseif self._state == "DEAD" then
+		stateStr = "Dead"
+	elseif self._state == "READY" then
+		stateStr = "Ready"
+	else
+		error("Invalid thread state: "..tostring(self._state))
+	end
+	if #self._messages > 0 then
+		stateStr = format("%s (%d messages)", stateStr, #self._messages)
+	end
+
+	local timeStr = "<Not Started>"
+	if self._startTime then
+		local wallTime = debugprofilestop() - self._startTime
+		local cpuTime = self._cpuTimeUsed
+		timeStr = format("Running for %.1f seconds (CPU: %dms, %.2f%%)", wallTime, cpuTime, (cpuTime / wallTime) * 100)
+	end
+
+	local createStr = "Created @"..self._createCaller
+	local startStr = "Started @"..(self._startCaller or "<Not Started>")
+
+	local backtrace = {}
+	local level = 2
+	local line = Debug.GetStackLevelLocation(level, self._co)
+	while line do
+		tinsert(backtrace, line)
+		level = level + 1
+		line = Debug.GetStackLevelLocation(level, self._co)
+	end
+
+
+	return self._name, stateStr, timeStr, createStr, startStr, backtrace
 end
 
 
@@ -360,7 +418,7 @@ function Thread._Run(self, quantum)
 		local msg = self._syncMessage
 		self._syncMessage = nil
 		self._syncMessageDest = nil
-		local errMsg = destThread:_HandleSyncMessage(TSM.TempTable.UnpackAndRelease(msg))
+		local errMsg = destThread:_HandleSyncMessage(TempTable.UnpackAndRelease(msg))
 		if errMsg then
 			noErr = false
 			returnVal = errMsg
@@ -371,21 +429,15 @@ function Thread._Run(self, quantum)
 	if not noErr then
 		returnVal = returnVal or "UNKNOWN ERROR"
 		TSM.ShowError(returnVal, self._co)
-		if self._isImmortal then
-			-- restart the immortal thread
-			TSM:LOG_WARN("Restarting immortal thread: %s", self:_ToLogStr())
-			self:_Start()
-		else
-			self._state = "DEAD"
-		end
+		self._state = "DEAD"
 	end
 	if self._state == "DEAD" then
 		self:_Cleanup()
 		if self._callback and self._returnValue then
-			self._callback(TSM.TempTable.UnpackAndRelease(self._returnValue))
+			self._callback(TempTable.UnpackAndRelease(self._returnValue))
 			self._returnValue = nil
 		elseif self._returnValue then
-			TSM.TempTable.Release(self._returnValue)
+			TempTable.Release(self._returnValue)
 			self._returnValue = nil
 		end
 	end
@@ -411,12 +463,12 @@ function Thread._UpdateState(self, elapsed)
 		end
 	elseif self._state == "WAITING_FOR_FUNCTION" then
 		assert(self._waitFunction, "Waiting for function without waitFunction set")
-		local result = TSM.TempTable.Acquire(self._waitFunction(unpack(self._waitFunctionArgs)))
+		local result = TempTable.Acquire(self._waitFunction(unpack(self._waitFunctionArgs)))
 		if result[1] then
 			self._waitFunctionResult = result
 			self._state = "READY"
 		else
-			TSM.TempTable.Release(result)
+			TempTable.Release(result)
 		end
 	elseif self._state == "FORCED_YIELD" then
 		self._state = "READY"
@@ -434,24 +486,24 @@ end
 
 function Thread._ProcessEvent(self, event, ...)
 	if self._state == "WAITING_FOR_EVENT" then
-		assert(self._eventNames or self._eventArgs)
+		assert(next(self._eventNames) or self._eventArgs)
 		if self._eventNames[event] then
 			wipe(self._eventNames) -- only trigger the event once then clear all
-			self._eventArgs = TSM.TempTable.Acquire(event, ...)
+			self._eventArgs = TempTable.Acquire(event, ...)
 		end
 	end
 end
 
 function Thread._HandleSyncMessage(self, ...)
 	assert(not TSMAPI_FOUR.Thread.IsThreadContext())
-	local msg = TSM.TempTable.Acquire(...)
+	local msg = TempTable.Acquire(...)
 	tinsert(self._messages, 1, msg) -- this message should be received first
 	-- run the thread for up to 3 seconds to get it to process the sync message
 	local startTime = debugprofilestop()
 	while self._messages[1] == msg do
 		if debugprofilestop() - startTime > SEND_MSG_SYNC_TIMEOUT_MS or not self:_IsAlive() then
 			-- want to error from the sending context, so just return the error
-			return format("ERROR: A sync message was not able to be delivered! (%s)", tostring(self._name))
+			return format("ERROR: A sync message was not able to be delivered! (%s)", self._name)
 		end
 		assert(self._state ~= "SENDING_SYNC_MESSAGE", "Circular sync message detected")
 		if self._state == "WAITING_FOR_MSG" then
@@ -470,7 +522,7 @@ end
 function Thread._Main(self, ...)
 	self._startTime = debugprofilestop()
 	coroutine.yield(YIELD_VALUE_START)
-	self._returnValue = TSM.TempTable.Acquire(self._func(...))
+	self._returnValue = TempTable.Acquire(self._func(...))
 	self:_Exit()
 end
 
@@ -504,52 +556,52 @@ function Thread._ReceiveMessage(self)
 		self._state = "WAITING_FOR_MSG"
 	end
 	self:_Yield()
-	return TSM.TempTable.UnpackAndRelease(tremove(self._messages, 1))
+	return TempTable.UnpackAndRelease(tremove(self._messages, 1))
 end
 
 function Thread._SendSyncMessage(self, destThread, ...)
 	assert(destThread ~= self)
 	self._state = "SENDING_SYNC_MESSAGE"
 	self._syncMessageDest = destThread
-	self._syncMessage = TSM.TempTable.Acquire(...)
+	self._syncMessage = TempTable.Acquire(...)
 	self:_Yield()
 end
 
 function Thread._WaitForEvent(self, ...)
 	self._state = "WAITING_FOR_EVENT"
 	self._eventArgs = nil
-	for _, event in TSM.Vararg.Iterator(...) do
+	for _, event in Vararg.Iterator(...) do
 		self._eventNames[event] = true
 		private.schedulerFrame:RegisterEvent(event)
 	end
 	self:_Yield()
 	local result = self._eventArgs
 	self._eventArgs = nil
-	return TSM.TempTable.UnpackAndRelease(result)
+	return TempTable.UnpackAndRelease(result)
 end
 
 function Thread._WaitForFunction(self, func, ...)
 	-- try the function once before yielding
-	local result = TSM.TempTable.Acquire(func(...))
+	local result = TempTable.Acquire(func(...))
 	if result[1] then
-		return TSM.TempTable.UnpackAndRelease(result)
+		return TempTable.UnpackAndRelease(result)
 	end
-	TSM.TempTable.Release(result)
+	TempTable.Release(result)
 	-- do the yield
 	self._state = "WAITING_FOR_FUNCTION"
 	self._waitFunction = func
-	self._waitFunctionArgs = TSM.TempTable.Acquire(...)
+	self._waitFunctionArgs = TempTable.Acquire(...)
 	self:_Yield()
 	result = self._waitFunctionResult
-	self.waitFunction = nil
-	TSM.TempTable.Release(self._waitFunctionArgs)
+	self._waitFunction = nil
+	TempTable.Release(self._waitFunctionArgs)
 	self._waitFunctionArgs = nil
 	self._waitFunctionResult = nil
-	return TSM.TempTable.UnpackAndRelease(result)
+	return TempTable.UnpackAndRelease(result)
 end
 
 function Thread._AcquireSafeTempTable(self, ...)
-	local tbl = TSM.TempTable.Acquire(...)
+	local tbl = TempTable.Acquire(...)
 	assert(not self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = true
 	return tbl
@@ -558,17 +610,16 @@ end
 function Thread._ReleaseSafeTempTable(self, tbl)
 	assert(self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = nil
-	return TSM.TempTable.Release(tbl)
+	return TempTable.Release(tbl)
 end
 
 function Thread._UnpackAndReleaseSafeTempTable(self, tbl)
 	assert(self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = nil
-	return TSM.TempTable.UnpackAndRelease(tbl)
+	return TempTable.UnpackAndRelease(tbl)
 end
 
 function Thread._Exit(self)
-	assert(not self._isImmortal) -- immortal threads should never return
 	assert(self:_IsAlive())
 	self._state = "DEAD"
 	self:_Cleanup()
@@ -577,7 +628,7 @@ function Thread._Exit(self)
 		coroutine.yield(YIELD_VALUE)
 		error("Shouldn't get here")
 	elseif self._returnValue then
-		TSM.TempTable.Release(self._returnValue)
+		TempTable.Release(self._returnValue)
 		self._returnValue = nil
 	end
 end
@@ -627,7 +678,7 @@ function private.RunScheduler(_, elapsed)
 				-- any thread which ran excessively long should be ignored for future loops
 				if elapsedTime > EXCESSIVE_TIME_USED_RATIO * quantum and elapsedTime > quantum + 1 then
 					if elapsedTime > EXCESSIVE_TIME_LOG_THRESHOLD_MS then
-						local line = TSM.Debug.GetDebugStackInfo(2, thread._co)
+						local line = Debug.GetStackLevelLocation(2, thread._co)
 						TSM:LOG_WARN("Thread %s ran too long (%.1f/%.1f): %s", thread._name, elapsedTime, quantum, line or "?")
 					end
 					tremove(private.queue, i)

@@ -11,7 +11,7 @@
 -- @classmod Dropdown
 
 local _, TSM = ...
-local Dropdown = TSM.Lib.Class.DefineClass("Dropdown", TSM.UI.Element)
+local Dropdown = TSM.Include("LibTSMClass").DefineClass("Dropdown", TSM.UI.Element)
 TSM.UI.Dropdown = Dropdown
 local private = { dropdownLookup = {} }
 

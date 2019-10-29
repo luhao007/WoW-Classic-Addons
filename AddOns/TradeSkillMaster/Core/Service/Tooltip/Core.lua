@@ -9,7 +9,7 @@
 local _, TSM = ...
 local Tooltip = TSM:NewPackage("Tooltip")
 local L = TSM.L
-local CachedTooltip = TSM.Lib.Class.DefineClass("CachedTooltip")
+local CachedTooltip = TSM.Include("LibTSMClass").DefineClass("CachedTooltip")
 local TOOLTIP_CACHE_TIME = 5
 local private = {
 	tooltipInfo = {},

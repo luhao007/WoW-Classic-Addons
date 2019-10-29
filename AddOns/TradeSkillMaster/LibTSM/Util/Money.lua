@@ -10,9 +10,12 @@
 -- @module Money
 
 local _, TSM = ...
-TSM.Money = {}
-local Money = TSM.Money
-local private =  { textMoneyParts = {} }
+local Money = TSM.Init("Util.Money")
+local String = TSM.Include("Util.String")
+TSM.Money = Money
+local private =  {
+	textMoneyParts = {},
+}
 local GOLD_ICON = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
 local SILVER_ICON = "|TInterface\\MoneyFrame\\UI-SilverIcon:0|t"
 local COPPER_ICON = "|TInterface\\MoneyFrame\\UI-CopperIcon:0|t"
@@ -127,7 +130,7 @@ function Money.FromString(value)
 	-- remove any colors
 	value = gsub(gsub(strtrim(value), "\124c([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])", ""), "\124r", "")
 	-- remove any separators
-	value = gsub(value, TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	value = gsub(value, String.Escape(LARGE_NUMBER_SEPERATOR), "")
 
 	-- extract gold/silver/copper values
 	local gold = tonumber(strmatch(value, "([0-9]+)g"))

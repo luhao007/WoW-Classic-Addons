@@ -11,7 +11,7 @@
 -- @classmod Button
 
 local _, TSM = ...
-local Button = TSM.Lib.Class.DefineClass("Button", TSM.UI.Element)
+local Button = TSM.Include("LibTSMClass").DefineClass("Button", TSM.UI.Element)
 TSM.UI.Button = Button
 local ICON_PADDING = 2
 

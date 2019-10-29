@@ -1,8 +1,8 @@
 ## Interface: 11302
 ## Author: TradeSkillMaster Team
-## Version: v4.8.17
+## Version: v4.8.20
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
-## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB, TradeSkillMasterModulesDB
+## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
 ## Title: |cff00fe00TradeSkillMaster|r
 ## Notes: Auction house and gold making addon.
@@ -21,7 +21,7 @@ External\EmbeddedLibs\LibCompress\lib.xml
 External\EmbeddedLibs\LibRealmInfo\LibRealmInfo.lua
 
 # Our core init file
-Core\__init.lua
+LibTSM\Core.lua
 
 # 1st-party libraries
 External\AccurateTime\AccurateTime.lua
@@ -33,42 +33,47 @@ Locale\Locale.lua
 # Fonts
 Core\UI\Fonts.xml
 
+# LibTSM data files
+LibTSM\Data\BonusIds.lua
+LibTSM\Data\ClassicRealms.lua
+LibTSM\Data\ItemClass.lua
+LibTSM\Data\ProfessionInfo.lua
+LibTSM\Data\VendorSell.lua
+
 # Constant data files (no dependencies)
 Core\Const\__init.lua
-Core\Const\ClassicRealms.lua
-Core\Const\BonusIdMap.lua
 Core\Const\Conversions.lua
 Core\Const\DisenchantInfo.lua
 Core\Const\NotDisenchantable.lua
-Core\Const\ProfessionInfo.lua
-Core\Const\SoulboundMats.lua
-Core\Const\VendorSellPrices.lua
 
-# Utility files (no dependencies)
-Core\API.lua
-Core\Util\Math.lua
-Core\Util\String.lua
-Core\Util\Table.lua
-Core\Util\SlotId.lua
+# LibTSM utility files
+LibTSM\Util\String.lua
+LibTSM\Util\SlotId.lua
+LibTSM\Util\SmartMap.lua
+LibTSM\Util\Sound.lua
+LibTSM\Util\Debug.lua
+LibTSM\Util\TempTable.lua
+LibTSM\Util\Vararg.lua
+LibTSM\Util\Table.lua
+LibTSM\Util\Math.lua
+LibTSM\Util\Money.lua
+LibTSM\Util\CSV.lua
+LibTSM\Util\JSON.lua
+LibTSM\Util\Log.lua
+LibTSM\Util\Event.lua
+LibTSM\Util\Delay.lua
+
+# LibTSM service files
+LibTSM\Service\ErrorHandler.lua
+
+# Utility files
 Core\Util\Wow.lua
-Core\Util\TempTable.lua
-Core\Util\Vararg.lua
-Core\Util\SmartMap.lua
-Core\Util\CSV.lua
-Core\Util\Debug.lua
-Core\Util\Event.lua
-Core\Util\JSON.lua
 Core\Util\Item\__init.lua
-Core\Util\Item\ItemClass.lua
 Core\Util\Item\ItemString.lua
-Core\Util\Money.lua
-Core\Util\Sound.lua
 
 # Lib files which only depend on Util files
 Core\Lib\ObjectPool.lua
 Core\Lib\Addon.lua
-Core\Lib\ErrorHandler.lua
-Core\Lib\Logger.lua
 Core\Lib\Thread.lua
 
 # Main addon file
@@ -104,7 +109,6 @@ Core\Lib\Inventory\MailTracking.lua
 Core\Lib\Inventory\GuildTracking.lua
 Core\Lib\Conversions.lua
 Core\Lib\CustomPrice.lua
-Core\Lib\Delay.lua
 Core\Lib\Exporter.lua
 Core\Lib\Features.lua
 Core\Lib\ItemFilter.lua
@@ -356,3 +360,10 @@ Core\Service\Shopping\GroupSearch.lua
 Core\Service\Shopping\SavedSearches.lua
 Core\Service\Shopping\SearchCommon.lua
 Core\Service\Shopping\VendorSearch.lua
+
+# Public APIs
+Core\API.lua
+
+# Development files
+Core\Development\Core.lua
+Core\Development\Profiling.lua

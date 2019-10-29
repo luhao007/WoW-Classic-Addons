@@ -11,7 +11,7 @@
 -- @classmod FSM
 
 local _, TSM = ...
-local FSM = TSM.Lib.Class.DefineClass("FSM")
+local FSM = TSM.Include("LibTSMClass").DefineClass("FSM")
 TSM.FSM.classes.FSM = FSM
 
 

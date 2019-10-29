@@ -98,62 +98,41 @@ L["Melee Enhancements"] = "Melee Enhancements"
 L["Spell Enhancements"] = "Spell Enhancements"
 
 L["\"Melee Hit: "] = "近战命中: "
---[[Translation missing --]]
-L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."] = ". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."
-L["+ Healing: "] = "治疗效果: "
---[[Translation missing --]]
-L["Alternate Expand"] = "Alternate Expand"
---[[Translation missing --]]
-L["Background Art"] = "Background Art"
---[[Translation missing --]]
-L["Base Defense including talents such as Warrior's Anticipation is "] = "Base Defense including talents such as Warrior's Anticipation is "
---[[Translation missing --]]
-L["Black Item Icons"] = "Black Item Icons"
---[[Translation missing --]]
-L["Black item icons to make text more visible."] = "Black item icons to make text more visible."
+L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."] = "。60级玩家总共需要440点防御等级才能防止被团队副本BOSS暴击，也就是说需要通过装备和附魔等途径额外获得140点防御等级才能达成这一目标。"
+L["+Healing: "] = "治疗效果: "
+L["Alternate Expand"] = "变更扩展按钮位置"
+L["Background Art"] = "背景图片"
+L["Base Defense including talents such as Warrior's Anticipation is "] = "基础防御等级（含天赋加成，如战士的预知）为"
+L["Black Item Icons"] = "装备图标变黑"
+L["Black item icons to make text more visible."] = "将装备图标彻底变黑来让文字更能被看清。"
 L["Block: "] = "格挡: "
---[[Translation missing --]]
-L["Bonus Defense from items and enhancements is "] = "Bonus Defense from items and enhancements is "
---[[Translation missing --]]
-L["Darken Item Icons"] = "Darken Item Icons"
---[[Translation missing --]]
-L["Darken item icons to make text more visible."] = "Darken item icons to make text more visible."
+L["Bonus Defense from items and enhancements is "] = "由装备和附魔提供的额外防御等级为"
+L["Darken Item Icons"] = "装备图标变暗"
+L["Darken item icons to make text more visible."] = "将装备图标变暗来让文字更能被看清。"
 L["Defense: "] = "防御: "
---[[Translation missing --]]
-L["Display Info Beside Items"] = "Display Info Beside Items"
---[[Translation missing --]]
-L["Displays black and white class talents background art."] = "Displays black and white class talents background art."
---[[Translation missing --]]
-L["Displays each equipped item's enchantment."] = "Displays each equipped item's enchantment."
---[[Translation missing --]]
-L["Displays the class talents background art."] = "Displays the class talents background art."
---[[Translation missing --]]
-L["Displays the Expand button above the hands item slot."] = "Displays the Expand button above the hands item slot."
---[[Translation missing --]]
-L["Displays the item's info beside each item's slot."] = "Displays the item's info beside each item's slot."
+L["Display Info Beside Items"] = "物品栏旁边显示信息"
+L["Displays black and white class talents background art."] = "显示黑白的天赋背景图片。"
+L["Displays each equipped item's enchantment."] = "显示各个装备的附魔。"
+L["Displays the class talents background art."] = "显示天赋背景图片。"
+L["Displays the Expand button above the hands item slot."] = "在手部装备栏上方显示扩展按钮。"
+L["Displays the item's info beside each item's slot."] = "在装备栏旁边显示信息。"
 L["Dodge: "] = "躲闪: "
 L["Durability: "] = "耐久: "
---[[Translation missing --]]
-L["Enchants"] = "Enchants"
---[[Translation missing --]]
-L["Mana Regen Current: "] = "Mana Regen Current: "
---[[Translation missing --]]
-L["Mana Regen: "] = "Mana Regen: "
-L["Melee + Damage: "] = "近战攻击强度: "
+L["Enchants"] = "附魔"
+L["Mana Regen Current: "] = "当前回蓝："
+L["Mana Regen: "] = "法力恢复："
+L["Melee +Damage: "] = "近战攻击强度: "
 L["Melee Crit: "] = "近战爆击: "
---[[Translation missing --]]
-L["Monochrome Background Art"] = "Monochrome Background Art"
+L["Monochrome Background Art"] = "黑白背景图片"
 L["Movement Speed: "] = "移动速度: "
 L["MP5: "] = "5秒回蓝: "
 L["Parry: "] = "招架: "
---[[Translation missing --]]
-L["Physical Critical Strike: "] = "Physical Critical Strike: "
+L["Physical Critical Strike: "] = "物理暴击："
 L["Ranged Crit: "] = "远程暴击："
 L["Repair Total: "] = "维修总价："
-L["Spell + Damage: "] = "法术伤害增量："
+L["Spell +Damage: "] = "法术伤害增量："
 L["Spell Crit: "] = "法术爆击: "
 L["Spell Hit: "] = "法术命中："
---[[Translation missing --]]
-L["Total Defense is "] = "Total Defense is "
+L["Total Defense is "] = "总计防御等级为"
 
 return end

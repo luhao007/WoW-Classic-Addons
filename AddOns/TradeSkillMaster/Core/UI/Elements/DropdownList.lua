@@ -10,7 +10,7 @@ local _, TSM = ...
 local ROW_HORIZONTAL_PADDING = 8
 local CHECK_SIZE = 18
 local CHECK_TO_TEXT_SPACING = 4
-local DropdownList = TSM.Lib.Class.DefineClass("DropdownList", TSM.UI.ScrollList)
+local DropdownList = TSM.Include("LibTSMClass").DefineClass("DropdownList", TSM.UI.ScrollList)
 TSM.UI.DropdownList = DropdownList
 local private = {}
 

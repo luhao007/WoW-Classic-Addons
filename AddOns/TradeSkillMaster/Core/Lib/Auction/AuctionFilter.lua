@@ -11,7 +11,8 @@
 -- @classmod AuctionFilter
 
 local _, TSM = ...
-local AuctionFilter = TSM.Lib.Class.DefineClass("AuctionFilter")
+local AuctionFilter = TSM.Include("LibTSMClass").DefineClass("AuctionFilter")
+local ItemClass = TSM.Include("Data.ItemClass")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
 
 
@@ -370,7 +371,7 @@ function AuctionFilter._GetTargetItemRate(self, itemString)
 		local itemLevel = TSMAPI_FOUR.Item.GetItemLevel(itemString)
 		local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
 		for _, info in ipairs(conversionInfo.disenchant.sourceInfo) do
-			if class == TSMAPI_FOUR.Item.GetClassIdFromClassString(info.itemType) and quality == info.rarity and itemLevel >= info.minItemLevel and itemLevel <= info.maxItemLevel then
+			if class == ItemClass.GetClassIdFromClassString(info.itemType) and quality == info.rarity and itemLevel >= info.minItemLevel and itemLevel <= info.maxItemLevel then
 				return info.amountOfMats
 			end
 		end

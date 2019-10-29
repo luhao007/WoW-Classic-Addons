@@ -1,6 +1,6 @@
-## v4.8.17 Changes
+## v4.8.20 Changes
 
-* [Classic] Fixed issue with scan data not saving properly, affecting AuctionDB prices.
-* [Classic] Sped up manual scans.
+* Fixed bug with saving of Accounting data.
+* Fixed bug with AH not properly hiding.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

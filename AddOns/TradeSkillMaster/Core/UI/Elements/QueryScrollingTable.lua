@@ -12,7 +12,7 @@
 -- @classmod QueryScrollingTable
 
 local _, TSM = ...
-local QueryScrollingTable = TSM.Lib.Class.DefineClass("QueryScrollingTable", TSM.UI.ScrollingTable)
+local QueryScrollingTable = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.QueryScrollingTable = QueryScrollingTable
 local private = {
 	queryQueryScrollingTableLookup = {},

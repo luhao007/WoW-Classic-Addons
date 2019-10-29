@@ -10,8 +10,8 @@
 -- @module SlotId
 
 local _, TSM = ...
-TSM.SlotId = {}
-local SlotId = TSM.SlotId
+local SlotId = TSM.Init("Util.SlotId")
+TSM.SlotId = SlotId
 local SLOT_ID_MULTIPLIER = 1000
 
 

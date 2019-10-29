@@ -106,8 +106,9 @@ L["Primary"] = "Primary"
 L["Melee Enhancements"] = "Melee Enhancements"
 L["Spell Enhancements"] = "Spell Enhancements"
 
+
 L["\"Melee Hit: "] = "\"근접 적중: "
-L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."] = ". 공격대 우두머리를 상대할 때 60레벨 플레이어가 치명 적중 면역을 달성하기 위해서는 440의 방어도와 140의 방어 숙련도가 필요합니다."
+L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."] = ". 공격대 우두머리를 상대할 때 60레벨 플레이어가 치명타를 맞지 않기 위해서는 440의 방어숙련도를 달성하여야하기에 140의 방어 숙련도가 추가적으로 필요합니다."
 L["+Healing: "] = "추가 치유: "
 L["Alternate Expand"] = "대체 확장 버튼"
 L["Background Art"] = "배경 삽화"
@@ -143,5 +144,6 @@ L["Spell +Damage: "] = "주문 추가 피해:"
 L["Spell Crit: "] = "주문 극대화: "
 L["Spell Hit: "] = "주문 적중: "
 L["Total Defense is "] = "총 방어 숙련도:"
+
 
 return end

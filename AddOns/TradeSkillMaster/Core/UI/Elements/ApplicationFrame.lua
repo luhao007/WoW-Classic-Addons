@@ -12,7 +12,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ApplicationFrame = TSM.Lib.Class.DefineClass("ApplicationFrame", TSM.UI.Frame)
+local ApplicationFrame = TSM.Include("LibTSMClass").DefineClass("ApplicationFrame", TSM.UI.Frame)
 TSM.UI.ApplicationFrame = ApplicationFrame
 local private = {}
 local INNER_FRAME_OFFSET = 10

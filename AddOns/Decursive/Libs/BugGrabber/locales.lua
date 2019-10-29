@@ -54,6 +54,7 @@ L["DEBUG_REPORT_HEADER"] = [=[|cFF11FF33<%s>로 이 창의 내용을 보고해 �
 또한 당신이 눈치챈 %s의 어떠한 이상 증상도 보고서에 알리십시오.
 ]=]
 L["DECURSIVE_DEBUG_REPORT"] = "**** |cFFFF0000Decursive 디버그 보고서|r ****"
+L["DECURSIVE_DEBUG_REPORT_BUT_NEW_VERSION"] = "|cFF11FF33Decursive가 충돌했지만 두렵지 않어! 새로운 버전의 Decursive가 발견됐거든 (%s). 당신은 업데이트만 하면돼.  curse.com으로 가서 'Decursive'를 검색하거나 Curse의 클라이언트를 사용하면 네가 좋아하는 애드온, 모두 자동적으로 업데이트 할 수 있을거야.|r |cFFFF1133그러니 이 버그는 이미 고쳐졌으니 보고하는 데 시간을 낭비하지 마. 이 문제를 없애기 위해 Decursive를 업데이트하기만 하면 돼!|r |cFF11FF33읽어줘서 고마워!|r"
 L["DECURSIVE_DEBUG_REPORT_NOTIFY"] = [=[디버그 보고서가 유효합니다!
 |cFFFF0000/DCRREPORT|r를 입력해 그것을 확인합니다.]=]
 L["DECURSIVE_DEBUG_REPORT_SHOW"] = "디버그 보고서 유효함!"
@@ -382,6 +383,7 @@ L["STR_QUICK_POP"] = "빠른 추가"
 L["SUCCESSCAST"] = "|cFF22FFFF%s %s|r|1으로;로; %s |cFF00AA00치료 성공!|r"
 L["TARGETUNIT"] = "대상"
 L["TIE_LIVELIST"] = "실시간 목록 표시를 DCR 창과 함께 표시"
+L["TOC_VERSION_EXPIRED"] = "Decursive 버전이 만료되었습니다. 이 버전의 Decursive는 당신이 사용하고 있는 World of Warcraft의 버전보다 먼저 출시되었습니다. 잠재적인 비호환성 및 런타임 오류를 수정하려면 Decursive를 업데이트해야 합니다. curse.com으로 이동하여 'Decursive'를 검색하거나 Curse의 클라이언트를 사용하여 모든 추가 기능을 한 번에 업데이트하세요. 이 안내는 2일 후에 다시 표시될 것입니다."
 L["TOO_MANY_ERRORS_ALERT"] = [=[사용자 인터페이스(%d)에 많은 Lua 오류가 있습니다. 당신의 게임 성능을 현재 저하시킵니다. 오류 애드온의 사용을 중지하여 적절한 프레임 속도를 향상시키도록 업데이트 또는 비활성합니다.
 당신은 식별된 문제있는 애드온의 Lua 오류를 보고하기(/console scriptErrors 1) 위해 설정할 수 있습니다.]=]
 L["TOOFAR"] = "거리 벗어남"

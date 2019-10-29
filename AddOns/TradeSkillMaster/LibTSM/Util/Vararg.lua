@@ -10,8 +10,9 @@
 -- @module Vararg
 
 local _, TSM = ...
-TSM.Vararg = {}
-local Vararg = TSM.Vararg
+local Vararg = TSM.Init("Util.Vararg")
+local TempTable = TSM.Include("Util.TempTable")
+TSM.Vararg = Vararg
 
 
 
@@ -33,7 +34,7 @@ end
 -- @param ... The values to iterate over
 -- @return An iterator with fields: `index, value`
 function Vararg.Iterator(...)
-	return TSM.TempTable.Iterator(TSM.TempTable.Acquire(...))
+	return TempTable.Iterator(TempTable.Acquire(...))
 end
 
 --- Returns whether not the value exists within the vararg.

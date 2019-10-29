@@ -9,7 +9,7 @@
 TSMAPI_FOUR.Exporter = {}
 local _, TSM = ...
 local LibAceSerializer = LibStub("AceSerializer-3.0")
-local Exporter = TSM.Lib.Class.DefineClass("Exporter")
+local Exporter = TSM.Include("LibTSMClass").DefineClass("Exporter")
 local private = {}
 
 

@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ItemTask = TSM.Lib.Class.DefineClass("ItemTask", TSM.TaskList.Task, "ABSTRACT")
+local ItemTask = TSM.Include("LibTSMClass").DefineClass("ItemTask", TSM.TaskList.Task, "ABSTRACT")
 TSM.TaskList.ItemTask = ItemTask
 local private = {}
 

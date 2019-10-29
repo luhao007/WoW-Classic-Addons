@@ -11,7 +11,7 @@
 -- @classmod ViewContainer
 
 local _, TSM = ...
-local ViewContainer = TSM.Lib.Class.DefineClass("ViewContainer", TSM.UI.Container)
+local ViewContainer = TSM.Include("LibTSMClass").DefineClass("ViewContainer", TSM.UI.Container)
 TSM.UI.ViewContainer = ViewContainer
 
 

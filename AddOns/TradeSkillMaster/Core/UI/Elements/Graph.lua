@@ -11,7 +11,7 @@
 -- @classmod Graph
 
 local _, TSM = ...
-local Graph = TSM.Lib.Class.DefineClass("Graph", TSM.UI.Element)
+local Graph = TSM.Include("LibTSMClass").DefineClass("Graph", TSM.UI.Element)
 TSM.UI.Graph = Graph
 local private = { plotFrameGraphLookup = {} }
 local PLOT_PADDING_LEFT = 12

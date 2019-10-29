@@ -240,6 +240,7 @@ end
 local function NoOp()
 	-- do nothing - what did you expect?
 end
+
 function private.TSMTabOnClick()
 	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
 	local origCloseAuctionHouse = CloseAuctionHouse
@@ -250,7 +251,11 @@ function private.TSMTabOnClick()
 	end
 	ClearCursor()
 	CloseAuctionHouse = NoOp
-	private.defaultFrame:Hide()
+	if select(4, GetBuildInfo()) < 80300 then
+		AuctionFrame_Hide()
+	else
+		HideUIPanel(private.defaultFrame)
+	end
 	CloseAuctionHouse = origCloseAuctionHouse
 	private.ShowAuctionFrame()
 end

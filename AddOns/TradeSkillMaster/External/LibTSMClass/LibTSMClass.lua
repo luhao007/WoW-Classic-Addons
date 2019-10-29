@@ -339,19 +339,19 @@ end
 
 do
 	-- register with LibStub
-	local LibTSMClass = LibStub:NewLibrary("LibTSMClass", 1)
-	if LibTSMClass then
+	local libStubTbl = LibStub:NewLibrary("LibTSMClass", 1)
+	if libStubTbl then
 		for k, v in pairs(Lib) do
-			LibTSMClass[k] = v
+			libStubTbl[k] = v
 		end
 	end
 
 	-- register with TSM
 	local addonName, addonTable = ...
 	if addonName == "TradeSkillMaster" then
-		addonTable.Lib.Class = {}
+		local tsmModuleTbl = addonTable.Init("LibTSMClass")
 		for k, v in pairs(Lib) do
-			addonTable.Lib.Class[k] = v
+			tsmModuleTbl[k] = v
 		end
 	end
 end

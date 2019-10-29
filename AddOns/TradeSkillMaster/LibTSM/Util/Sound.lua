@@ -10,11 +10,12 @@
 -- @module Sound
 
 local _, TSM = ...
-TSM.Sound = {}
-local Sound = TSM.Sound
-local L = TSM.L
+local Sound = TSM.Init("Util.Sound")
+local L = TSM.Include("L")
+TSM.Sound = Sound
+local NO_SOUND_KEY = "TSM_NO_SOUND" -- this can never change
 local SOUNDS = {
-	[TSM.CONST.NO_SOUND_KEY] = "|cff99ffff"..L["No Sound"].."|r",
+	[NO_SOUND_KEY] = "|cff99ffff"..L["No Sound"].."|r",
 	["AuctionWindowOpen"] = L["Auction Window Open"],
 	["AuctionWindowClose"] = L["Auction Window Close"],
 	["alarmclockwarning3"] = L["Alarm Clock"],
@@ -61,7 +62,7 @@ local SOUNDKITIDS = {
 --- Gets the key used to represent no sound.
 -- @return The key used to represent no sound
 function Sound.GetNoSoundKey()
-	return TSM.CONST.NO_SOUND_KEY
+	return NO_SOUND_KEY
 end
 
 --- Gets the key-value table containing all supported sounds.
@@ -74,7 +75,7 @@ end
 --- Plays a sound and flashes the client icon.
 -- @param soundKey The key of the sound (from @{Sound.GetSounds}) to play
 function Sound.PlaySound(soundKey)
-	if soundKey == TSM.CONST.NO_SOUND_KEY then
+	if soundKey == NO_SOUND_KEY then
 		-- do nothing
 	elseif soundKey == "TSM_CASH_REGISTER" then
 		PlaySoundFile("Interface\\Addons\\TradeSkillMaster\\Media\\register.mp3", "Master")

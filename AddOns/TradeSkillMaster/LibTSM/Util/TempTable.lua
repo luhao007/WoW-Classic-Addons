@@ -10,8 +10,9 @@
 -- @module TempTable
 
 local _, TSM = ...
-TSM.TempTable = {}
-local TempTable = TSM.TempTable
+local TempTable = TSM.Init("Util.TempTable")
+local Debug = TSM.Include("Util.Debug")
+TSM.TempTable = TempTable
 local private = {
 	freeTempTables = {},
 	tempTableState = {},
@@ -20,15 +21,13 @@ local NUM_TEMP_TABLES = 100
 local RELEASED_TEMP_TABLE_MT = {
 	__newindex = function(self, key, value)
 		error("Attempt to access temp table after release")
-		rawset(self, key, value)
 	end,
 	__index = function(self, key)
 		error("Attempt to access temp table after release")
-		return rawget(self, key)
 	end,
 }
 -- Set this to true to enable better debugging of temp table leaks
-local DEBUG_TEMP_TABLE_LEAKS = false
+local DEBUG_TEMP_TABLE_LEAKS = true
 
 
 
@@ -46,11 +45,13 @@ function TempTable.Acquire(...)
 	assert(tbl, "Could not acquire temp table")
 	setmetatable(tbl, nil)
 	if DEBUG_TEMP_TABLE_LEAKS then
-		private.tempTableState[tbl] = (TSM.Debug.GetDebugStackInfo(2) or "?").." -> "..(TSM.Debug.GetDebugStackInfo(3) or "?")
+		private.tempTableState[tbl] = (Debug.GetStackLevelLocation(2) or "?").." -> "..(Debug.GetStackLevelLocation(3) or "?")
 	else
 		private.tempTableState[tbl] = true
 	end
-	TSM.Vararg.IntoTable(tbl, ...)
+	for i = 1, select("#", ...) do
+		tbl[i] = select(i, ...)
+	end
 	return tbl
 end
 
@@ -66,12 +67,12 @@ end
 --- Releases a temporary table.
 -- The temporary table will be returned to the pool and must not be accessed after being released.
 -- @tparam table tbl The temporary table to release
-function TempTable.Release(tbl) -- TSM.TempTable.Release
+function TempTable.Release(tbl)
 	private.TempTableReleaseHelper(tbl)
 end
 
 --- Releases a temporary table and returns its values.
--- Releases the temporary table (see @{TSM.TempTable.Release}) and returns its unpacked values.
+-- Releases the temporary table (see @{TempTable.Release}) and returns its unpacked values.
 -- @tparam table tbl The temporary table to release and unpack
 -- @return The result of calling `unpack` on the table
 function TempTable.UnpackAndRelease(tbl)
@@ -80,19 +81,12 @@ end
 
 function TempTable.GetDebugInfo()
 	local debugInfo = {}
-	if DEBUG_TEMP_TABLE_LEAKS then
-		local counts = {}
-		for _, info in pairs(private.tempTableState) do
-			counts[info] = (counts[info] or 0) + 1
-		end
-		for info, count in pairs(counts) do
-			tinsert(debugInfo, format("[%d] %s", count, info))
-		end
-	else
-		local num = TSM.Table.Count(private.tempTableState)
-		if num > 0 then
-			tinsert(debugInfo, format("[%d] %s", num, "?"))
-		end
+	local counts = {}
+	for _, info in pairs(private.tempTableState) do
+		counts[info] = (counts[info] or 0) + 1
+	end
+	for info, count in pairs(counts) do
+		tinsert(debugInfo, format("[%d] %s", count, type(info) == "string" and info or "?"))
 	end
 	if #debugInfo == 0 then
 		tinsert(debugInfo, "<none>")

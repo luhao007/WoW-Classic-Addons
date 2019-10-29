@@ -11,9 +11,9 @@
 -- @classmod FastScrollingList
 
 local _, TSM = ...
-local FastScrollingList = TSM.Lib.Class.DefineClass("FastScrollingList", TSM.UI.Element, "ABSTRACT")
+local FastScrollingList = TSM.Include("LibTSMClass").DefineClass("FastScrollingList", TSM.UI.Element, "ABSTRACT")
 TSM.UI.FastScrollingList = FastScrollingList
-local ListRow = TSM.Lib.Class.DefineClass("ListRow")
+local ListRow = TSM.Include("LibTSMClass").DefineClass("ListRow")
 local private = {
 	recycledRows = {},
 	frameFastScrollingListLookup = {},

@@ -10,8 +10,8 @@
 -- @module String
 
 local _, TSM = ...
-TSM.String = {}
-local String = TSM.String
+local String = TSM.Init("Util.String")
+TSM.String = String
 local MAGIC_CHARACTERS = { '[', ']', '(', ')', '.', '+', '-', '*', '?', '^', '$' }
 
 

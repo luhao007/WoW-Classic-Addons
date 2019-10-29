@@ -12,7 +12,7 @@
 -- @classmod ActionButton
 
 local _, TSM = ...
-local ActionButton = TSM.Lib.Class.DefineClass("ActionButton", TSM.UI.Element)
+local ActionButton = TSM.Include("LibTSMClass").DefineClass("ActionButton", TSM.UI.Element)
 TSM.UI.ActionButton = ActionButton
 local private = { frameButtonLookup = {} }
 local ICON_PADDING = 2

@@ -11,7 +11,7 @@
 -- @classmod SelectionGroupTree
 
 local _, TSM = ...
-local SelectionGroupTree = TSM.Lib.Class.DefineClass("SelectionGroupTree", TSM.UI.GroupTree)
+local SelectionGroupTree = TSM.Include("LibTSMClass").DefineClass("SelectionGroupTree", TSM.UI.GroupTree)
 TSM.UI.SelectionGroupTree = SelectionGroupTree
 
 

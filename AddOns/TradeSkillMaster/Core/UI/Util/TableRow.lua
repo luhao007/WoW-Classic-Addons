@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local TableRow = TSM.Lib.Class.DefineClass("TableRow")
+local TableRow = TSM.Include("LibTSMClass").DefineClass("TableRow")
 TSM.UI.Util.TableRow = TableRow
 local private = { rowFrameLookup = {} }
 local ROW_PADDING = 8

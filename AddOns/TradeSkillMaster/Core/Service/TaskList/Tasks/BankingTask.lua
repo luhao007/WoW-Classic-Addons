@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local BankingTask = TSM.Lib.Class.DefineClass("BankingTask", TSM.TaskList.ItemTask)
+local BankingTask = TSM.Include("LibTSMClass").DefineClass("BankingTask", TSM.TaskList.ItemTask)
 local L = TSM.L
 TSM.TaskList.BankingTask = BankingTask
 local private = {

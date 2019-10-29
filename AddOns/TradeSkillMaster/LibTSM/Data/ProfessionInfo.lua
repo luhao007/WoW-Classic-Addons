@@ -7,18 +7,46 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
+local ProfessionInfo = TSM.Init("Data.ProfessionInfo")
 
-TSM.CONST.VELLUM_ITEM_STRING = "i:38682"
 
-TSM.CONST.MINING_SPELLID = 2575
-TSM.CONST.SMELTING_SPELLID = 2656
-TSM.CONST.POISONS_SPELLID = 2842
-TSM.CONST.HERBALISM_SPELLID = 170691
-TSM.CONST.HERBALISM_SKILLS_SPELLID = 193290
-TSM.CONST.SKINNING_SPELLID = 8613
-TSM.CONST.SKINNING_SKILLS_SPELLID = 194174
 
-TSM.CONST.MASS_MILLING_RECIPES = {
+-- ============================================================================
+-- Profession Info Data
+-- ============================================================================
+
+local PROFESSION_NAMES = {
+	Mining = GetSpellInfo(2575),
+	Smelting = GetSpellInfo(2656),
+	Poisons = GetSpellInfo(2842),
+	Herbalism = GetSpellInfo(170691),
+	HerbalismSkills = GetSpellInfo(193290),
+	Skinning = GetSpellInfo(8613),
+	SkinningSkills = GetSpellInfo(194174),
+}
+local CLASSIC_SUB_NAMES = {
+	[APPRENTICE] = true,
+	[JOURNEYMAN] = true,
+	[EXPERT] = true,
+	[ARTISAN] = true,
+	["大师级"] = true, -- zhCN ARTISAN
+	["Мастеровой"] = true, -- ruRU ARTISAN
+}
+local VELLUM_ITEM_STRING = "i:38682"
+local ENGINEERING_TINKERS = {
+	[54736] = true,  -- Engineering: EMP Generator
+	[54793] = true,  -- Engineering: Frag Belt
+	[55002] = true,  -- Engineering: Flexweave Underlay
+	[55016] = true,  -- Engineering: Nitro Boosts
+	[67839] = true,  -- Engineering: Mind Amplification Dish
+	[82200] = true,  -- Engineering: Spinal healing Injector
+	[84424] = true,  -- Engineering: Invisibility Field
+	[84425] = true,  -- Engineering: Cardboard Assasin
+	[84427] = true,  -- Engineering: Grounded Plasma Shield
+	[109099] = true,  -- Engineering: Watergliding Jets
+	[126392] = true,  -- Engineering: Goblin Glider
+}
+local MASS_MILLING_RECIPES = {
 	[190381] = "i:114931",  -- Frostweed
 	[190382] = "i:114931",  -- Fireweed
 	[190383] = "i:114931",  -- Gorgrond Flytrap
@@ -34,31 +62,7 @@ TSM.CONST.MASS_MILLING_RECIPES = {
 	[210116] = "i:129032",  -- Yseralline Seeds
 	[247861] = "i:129034",  -- Astral Glory
 }
-
-TSM.CONST.ENGINEER_TINKERS = {
-	[54736] = true,  -- Engineering: EMP Generator
-	[54793] = true,  -- Engineering: Frag Belt
-	[55002] = true,  -- Engineering: Flexweave Underlay
-	[55016] = true,  -- Engineering: Nitro Boosts
-	[67839] = true,  -- Engineering: Mind Amplification Dish
-	[82200] = true,  -- Engineering: Spinal healing Injector
-	[84424] = true,  -- Engineering: Invisibility Field
-	[84425] = true,  -- Engineering: Cardboard Assasin
-	[84427] = true,  -- Engineering: Grounded Plasma Shield
-	[109099] = true,  -- Engineering: Watergliding Jets
-	[126392] = true,  -- Engineering: Goblin Glider
-}
-
-TSM.CONST.IGNORED_PROFESSIONS = {
-	[53428] = true,  -- Runeforging
-	[158756] = true, -- Skinning Skills
-	[193290] = true  -- Herbalism Skills
-}
-
--- looks up the itemString of the scroll that the enchant makes
--- index = spellID of the enchant
--- value = itemString of scroll
-TSM.CONST.ENCHANT_ITEM_STRINGS = {
+local ENCHANTING_RECIPIES = {
 	-- Scraped from Wowhead (http://www.wowhead.com/items/consumables/item-enhancements-permanent?filter=86;4;0) using the following javascript:
 	-- for (i=0; i<listviewitems.length; i++) console.log("["+listviewitems[i].sourcemore[0].ti+"] = \"i:"+listviewitems[i].id+"\",  -- "+listviewitems[i].name.substr(1));
 	[298009] = "i:168446",  -- Enchant Ring - Accord of Critical Strike Rank 1
@@ -572,3 +576,36 @@ TSM.CONST.ENCHANT_ITEM_STRINGS = {
 	[235704] = "i:144305",  -- Enchant Neck - Mark of the Versatile Rank 2
 	[235700] = "i:144305",  -- Enchant Neck - Mark of the Versatile Rank 3
 }
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function ProfessionInfo.GetName(key)
+	local name = PROFESSION_NAMES[key]
+	assert(name)
+	return name
+end
+
+function ProfessionInfo.IsSubNameClassic(str)
+	assert(WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+	return CLASSIC_SUB_NAMES[str] or false
+end
+
+function ProfessionInfo.GetVellumItemString()
+	return VELLUM_ITEM_STRING
+end
+
+function ProfessionInfo.IsEngineeringTinker(spellId)
+	return ENGINEERING_TINKERS[spellId] or false
+end
+
+function ProfessionInfo.IsMassMill(spellId)
+	return MASS_MILLING_RECIPES[spellId] and true or false
+end
+
+function ProfessionInfo.GetIndirectCraftResult(spellId)
+	return ENCHANTING_RECIPIES[spellId] or MASS_MILLING_RECIPES[spellId] or nil
+end

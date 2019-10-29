@@ -14,6 +14,11 @@ local MIN_FRAME_SIZE = { width = 820, height = 587 }
 local BEAST_TRAINING_DE = "Bestienausbildung"
 local BEAST_TRAINING_ES = "Entrenamiento de bestias"
 local BEAST_TRAINING_RUS = "Воспитание питомца"
+local IGNORED_PROFESSIONS = {
+	[53428] = true,  -- Runeforging
+	[158756] = true, -- Skinning Skills
+	[193290] = true  -- Herbalism Skills
+}
 
 
 
@@ -56,7 +61,7 @@ function CraftingUI.IsProfessionIgnored(name)
 			return true
 		end
 	end
-	for i in pairs(TSM.CONST.IGNORED_PROFESSIONS) do
+	for i in pairs(IGNORED_PROFESSIONS) do
 		local ignoredName = GetSpellInfo(i)
 		if ignoredName == name then
 			return true

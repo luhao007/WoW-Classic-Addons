@@ -11,7 +11,7 @@
 -- @classmod ScrollList
 
 local _, TSM = ...
-local ScrollList = TSM.Lib.Class.DefineClass("ScrollList", TSM.UI.ScrollFrame, "ABSTRACT")
+local ScrollList = TSM.Include("LibTSMClass").DefineClass("ScrollList", TSM.UI.ScrollFrame, "ABSTRACT")
 TSM.UI.ScrollList = ScrollList
 
 

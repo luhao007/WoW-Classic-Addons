@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local ProfessionScrollingTable = TSM.Lib.Class.DefineClass("ProfessionScrollingTable", TSM.UI.ScrollingTable)
+local ProfessionScrollingTable = TSM.Include("LibTSMClass").DefineClass("ProfessionScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.ProfessionScrollingTable = ProfessionScrollingTable
 local private = {
 	rowFrameLookup = {},

@@ -13,7 +13,7 @@
 -- @classmod ApplicationGroupTree
 
 local _, TSM = ...
-local ApplicationGroupTree = TSM.Lib.Class.DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
+local ApplicationGroupTree = TSM.Include("LibTSMClass").DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
 TSM.UI.ApplicationGroupTree = ApplicationGroupTree
 
 

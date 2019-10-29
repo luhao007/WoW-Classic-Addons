@@ -12,7 +12,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local SearchList = TSM.Lib.Class.DefineClass("SearchList", TSM.UI.ScrollList)
+local SearchList = TSM.Include("LibTSMClass").DefineClass("SearchList", TSM.UI.ScrollList)
 TSM.UI.SearchList = SearchList
 local private = { querySearchListLookup = {} }
 

@@ -11,7 +11,7 @@
 -- @classmod MultiselectionDropdown
 
 local _, TSM = ...
-local MultiselectionDropdown = TSM.Lib.Class.DefineClass("MultiselectionDropdown", TSM.UI.BaseDropdown)
+local MultiselectionDropdown = TSM.Include("LibTSMClass").DefineClass("MultiselectionDropdown", TSM.UI.BaseDropdown)
 TSM.UI.MultiselectionDropdown = MultiselectionDropdown
 
 

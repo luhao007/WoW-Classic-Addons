@@ -12,7 +12,7 @@
 
 local _, TSM = ...
 local private = { frameInputLookup = {} }
-local Input = TSM.Lib.Class.DefineClass("Input", TSM.UI.Element)
+local Input = TSM.Include("LibTSMClass").DefineClass("Input", TSM.UI.Element)
 TSM.UI.Input = Input
 local IS_SCRIPT_HOOKED = { OnEscapePressed = true, OnEnterPressed = true, OnEditFocusGained = true, OnEditFocusLost = true }
 

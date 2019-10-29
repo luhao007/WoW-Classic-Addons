@@ -7,8 +7,8 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local QueryScrollingTableInfo = TSM.Lib.Class.DefineClass("QueryScrollingTableInfo", TSM.UI.Util.ScrollingTableInfo)
-local QueryScrollingTableColumnInfo = TSM.Lib.Class.DefineClass("QueryScrollingTableColumnInfo", TSM.UI.Util.ScrollingTableColumnInfo)
+local QueryScrollingTableInfo = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTableInfo", TSM.UI.Util.ScrollingTableInfo)
+local QueryScrollingTableColumnInfo = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTableColumnInfo", TSM.UI.Util.ScrollingTableColumnInfo)
 TSM.UI.Util.QueryScrollingTableInfo = QueryScrollingTableInfo
 local private = { recycledColInfo = {} }
 

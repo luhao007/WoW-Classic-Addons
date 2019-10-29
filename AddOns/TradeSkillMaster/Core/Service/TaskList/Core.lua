@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local TaskList = TSM:NewPackage("TaskList")
-local Task = TSM.Lib.Class.DefineClass("TASK", nil, "ABSTRACT")
+local Task = TSM.Include("LibTSMClass").DefineClass("TASK", nil, "ABSTRACT")
 TaskList.Task = Task
 local private = {
 	updateCallback = nil,

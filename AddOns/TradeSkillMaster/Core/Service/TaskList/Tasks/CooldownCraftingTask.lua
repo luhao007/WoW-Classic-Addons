@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local CooldownCraftingTask = TSM.Lib.Class.DefineClass("CooldownCraftingTask", TSM.TaskList.CraftingTask)
+local CooldownCraftingTask = TSM.Include("LibTSMClass").DefineClass("CooldownCraftingTask", TSM.TaskList.CraftingTask)
 TSM.TaskList.CooldownCraftingTask = CooldownCraftingTask
 local private = {
 	registeredCallbacks = false,

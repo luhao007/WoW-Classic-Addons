@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local DatabaseQueryClause = TSM.Lib.Class.DefineClass("DatabaseQueryClause")
+local DatabaseQueryClause = TSM.Include("LibTSMClass").DefineClass("DatabaseQueryClause")
 TSM.Database.classes.DatabaseQueryClause = DatabaseQueryClause
 
 

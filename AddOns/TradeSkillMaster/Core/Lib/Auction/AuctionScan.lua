@@ -9,6 +9,7 @@
 -- This file contains code for scanning the auction house
 local _, TSM = ...
 local L = TSM.L
+local ItemClass = TSM.Include("Data.ItemClass")
 local private = {
 	recycledScans = {},
 	filterId = 1,
@@ -25,7 +26,7 @@ local MAX_SETTLE_TIME = 0.5
 -- Class Meta Methods
 -- ============================================================================
 
-local AuctionScan = TSM.Lib.Class.DefineClass("AuctionScan")
+local AuctionScan = TSM.Include("LibTSMClass").DefineClass("AuctionScan")
 
 function AuctionScan.__init(self)
 	self._scripts = nil
@@ -169,7 +170,7 @@ function AuctionScan.AddItemFilterThreaded(self, itemFilter)
 				:SetMinLevel(conversionInfo.disenchant.minLevel)
 				:SetMaxLevel(conversionInfo.disenchant.maxLevel)
 				:SetQuality(info.rarity)
-				:SetClass(TSMAPI_FOUR.Item.GetClassIdFromClassString(info.itemType))
+				:SetClass(ItemClass.GetClassIdFromClassString(info.itemType))
 				:SetMinItemLevel(info.minItemLevel)
 				:SetMaxItemLevel(info.maxItemLevel)
 				:SetTargetItem(targetItem)

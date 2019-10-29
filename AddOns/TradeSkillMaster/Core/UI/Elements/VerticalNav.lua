@@ -12,7 +12,7 @@
 -- @classmod VerticalNav
 
 local _, TSM = ...
-local VerticalNav = TSM.Lib.Class.DefineClass("VerticalNav", TSM.UI.ViewContainer)
+local VerticalNav = TSM.Include("LibTSMClass").DefineClass("VerticalNav", TSM.UI.ViewContainer)
 TSM.UI.VerticalNav = VerticalNav
 local private = {}
 local LEFT_NAV_PADDING = 40

@@ -140,6 +140,10 @@ DejaClassicStats.panel = CreateFrame( "Frame", "DejaClassicStatsPanel", UIParent
 DejaClassicStats.panel.name = "DejaClassicStats"
 InterfaceOptions_AddCategory(DejaClassicStats.panel)
 
+	DejaClassicStatsPanel:HookScript("OnShow", function(self)
+		CharacterFrame:Show() 
+	end)
+
 -- DCS, DejaView Child Panel
 -- DejaViewPanel.DejaClassicStatsPanel = CreateFrame( "Frame", "DejaClassicStatsPanel", DejaViewPanel)
 -- DejaViewPanel.DejaClassicStatsPanel.name = "DejaClassicStats"
@@ -228,12 +232,22 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaClassicStatsPa
 	dcsMiscPanelCategoryFS:SetPoint("LEFT", 25, -125)
 	dcsMiscPanelCategoryFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 
+	--Show/Hide Headers
+	local dcsItemsPanelHeadersFS = DejaClassicStatsPanel:CreateFontString("dcsItemsPanelHeadersFS", "OVERLAY", "GameFontNormal")
+	dcsItemsPanelHeadersFS:SetText('|cffffffff' .. L["Categories:"] .. '|r')
+	dcsItemsPanelHeadersFS:SetPoint("TOPLEFT", DejaClassicStatsPanel, "TOP", -25, -40)
+	dcsItemsPanelHeadersFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
+	
 ----------------
 -- Loval Vars --
 ----------------
 local ShowDefaultStats 
 local MoveResistances
 local ShowModelRotation
+local ShowHidePrimary
+local ShowHideMelee
+local ShowHideSpell
+local ShowHideDefense
 
 -------------------
 -- Frame Offsets --
@@ -416,12 +430,56 @@ local t=DCSPrimaryStatsHeader:CreateTexture(nil,"ARTWORK")
 -- 	t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
 -- 	t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
 
+-------------------------------
+-- Melee Enhancements Header --
+-------------------------------
+local DCSMeleeEnhancementsStatsHeader = CreateFrame("Frame", "DCSMeleeEnhancementsStatsHeader", DejaClassicStatsFrame)
+	DCSMeleeEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
+	DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -170)
+	-- DCSMeleeEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
+	-- DCSMeleeEnhancementsStatsHeader:Hide()
+
+local DCSMeleeEnhancementsStatsFS = DCSMeleeEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	DCSMeleeEnhancementsStatsFS:SetText(L["Melee Enhancements"])
+	DCSMeleeEnhancementsStatsFS:SetTextColor(1, 1, 1)
+	DCSMeleeEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
+	-- DCSMeleeEnhancementsStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
+	DCSMeleeEnhancementsStatsFS:SetJustifyH("CENTER")
+
+local t=DCSMeleeEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
+		t:SetAllPoints(DCSMeleeEnhancementsStatsHeader)
+		-- t:SetColorTexture(1, 1, 1, 0)
+		t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
+		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
+
+-------------------------------
+-- Spell Enhancements Header --
+-------------------------------
+local DCSSpellEnhancementsStatsHeader = CreateFrame("Frame", "DCSSpellEnhancementsStatsHeader", DejaClassicStatsFrame)
+	DCSSpellEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
+	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+	-- DCSSpellEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
+	-- DCSSpellEnhancementsStatsHeader:Hide()
+
+local DCSSpellEnhancementsStatsFS = DCSSpellEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	DCSSpellEnhancementsStatsFS:SetText(L["Spell Enhancements"])
+	DCSSpellEnhancementsStatsFS:SetTextColor(1, 1, 1)
+	DCSSpellEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
+	-- DCSSpellEnhancementsStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
+	DCSSpellEnhancementsStatsFS:SetJustifyH("CENTER")
+
+local t=DCSSpellEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
+		t:SetAllPoints(DCSSpellEnhancementsStatsHeader)
+		-- t:SetColorTexture(1, 1, 1, 0)
+		t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
+		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
+
 -----------
 --Defense--
 -----------
 local DCSDefenseStatsHeader = CreateFrame("Frame", "DCSDefenseStatsHeader", DejaClassicStatsFrame)
 	DCSDefenseStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -544)
+	DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
 	-- DCSDefenseStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSDefenseStatsHeader:Hide()
 
@@ -437,50 +495,6 @@ local t=DCSDefenseStatsHeader:CreateTexture(nil,"ARTWORK")
 	t:SetColorTexture(1, 1, 1, 0)
 	t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
 	t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
-
--------------------------------
--- Melee Enhancements Header --
--------------------------------
-local DCSMeleeEnhancementsStatsHeader = CreateFrame("Frame", "DCSMeleeEnhancementsStatsHeader", DejaClassicStatsFrame)
-	DCSMeleeEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -170)
-	-- DCSMeleeEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
-	-- DCSMeleeEnhancementsStatsHeader:Hide()
-
-local DCSPrimaryStatsFS = DCSMeleeEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	DCSPrimaryStatsFS:SetText(L["Melee Enhancements"])
-	DCSPrimaryStatsFS:SetTextColor(1, 1, 1)
-	DCSPrimaryStatsFS:SetPoint("CENTER", 0, 0)
-	-- DCSPrimaryStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
-	DCSPrimaryStatsFS:SetJustifyH("CENTER")
-
-local t=DCSMeleeEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
-		t:SetAllPoints(DCSMeleeEnhancementsStatsHeader)
-		-- t:SetColorTexture(1, 1, 1, 0)
-		t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
-		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
-
--------------------------------
--- Spell Enhancements Header --
--------------------------------
-local DCSSpellEnhancementsStatsHeader = CreateFrame("Frame", "DCSSpellEnhancementsStatsHeader", DejaClassicStatsFrame)
-	DCSSpellEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -357)
-	-- DCSSpellEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
-	-- DCSSpellEnhancementsStatsHeader:Hide()
-
-local DCSPrimaryStatsFS = DCSSpellEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	DCSPrimaryStatsFS:SetText(L["Spell Enhancements"])
-	DCSPrimaryStatsFS:SetTextColor(1, 1, 1)
-	DCSPrimaryStatsFS:SetPoint("CENTER", 0, 0)
-	-- DCSPrimaryStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
-	DCSPrimaryStatsFS:SetJustifyH("CENTER")
-
-local t=DCSSpellEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
-		t:SetAllPoints(DCSSpellEnhancementsStatsHeader)
-		-- t:SetColorTexture(1, 1, 1, 0)
-		t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
-		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
 
 ---------------------
 -- Primary/General --
@@ -617,7 +631,7 @@ end
 local function MeleeAP()
 	local base, posBuff, negBuff = UnitAttackPower("player");
 	local effective = base + posBuff + negBuff;
-	return "Power "..format("%.0f", effective), format("%.0f", effective), format(MELEE_ATTACK_POWER_TOOLTIP, max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
+	return L["Power: "]..format("%.0f", effective), format("%.0f", effective), format(MELEE_ATTACK_POWER_TOOLTIP, max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
 end
 -- Main Hand Damage
 local function MHDamage()
@@ -633,7 +647,7 @@ local function MHDamage()
 	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", speed)
 	local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
 
-	return "Main Hand Damage "..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	return L["Main Hand Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
 end
 -- Off Hand Attack(Weapon Skill)
 local function OHWeaponSkill()
@@ -644,7 +658,7 @@ local function OHWeaponSkill()
 		-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your off hand."]
 		return "", format("%.0f", effective), ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 	else
-		return "Off Hand: N/A", "N/A", "", "", "", ""
+		return L["Off Hand: "].."N/A", "N/A", "", "", "", ""
 	end
 end
 -- Off Hand Damage
@@ -659,14 +673,14 @@ local function OHDamage()
 		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
 		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", offhandSpeed)
 		local TooltipLine2 = L["Damage per Second: "]..format("%.2f", offhandDamagePerSecond)
-		return "Off Hand Damage "..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+		return L["Off Hand Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
 	else
-		return "Off Hand Damage N/A", "N/A", "", "", "", ""
+		return L["Off Hand Damage: "].."N/A", "N/A", "", "", "", ""
 	end
 end
 -- Melee Critical Strike Chance
 local function MeleeCrit()
-	local TooltipLine1 = L["Gives a chance to critically stike with melee attacks, increasing the damage dealt by 100%."]
+	local TooltipLine1 = L["Gives a chance to critically strike with melee attacks, increasing the damage dealt by 100%."]
 	return "", format("%.2f%%", GetCritChance()), TooltipLine1, "", "", ""
 end
 -- Ranged Attack(Weapon Skill)
@@ -680,7 +694,7 @@ end
 local function RangedAP()
 	local base, posBuff, negBuff = UnitRangedAttackPower("player");
 	local effective = base + posBuff + negBuff;
-	return "Power "..format("%.0f", effective), format("%.0f", effective), format(RANGED_ATTACK_POWER_TOOLTIP, base/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
+	return L["Power: "]..format("%.0f", effective), format("%.0f", effective), format(RANGED_ATTACK_POWER_TOOLTIP, base/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
 end
 -- Ranged Damage
 local function RangedDamage()
@@ -692,16 +706,26 @@ local function RangedDamage()
 	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
 	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
 	local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
-	return "Ranged Damage "..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	return L["Ranged Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
 end
 -- Ranged Critical Strike Chance
 local function RangedCrit()
 	return "", format("%.2f%%", GetRangedCritChance()), "", "", "", ""
 end
--- Bonus Hit Chance Modifier
+-- Bonus Melee Hit Chance Modifier
 local function HitModifier()
 	local hit = GetHitModifier()
 	if hit == nil then hit = 0 end
+	return "", format("%.2f%%", hit), "", "", "", ""
+end
+-- Bonus Ranged Hit Chance Modifier
+local function RangedHitModifier()
+	hasBiznicks = addon.hasBiznicks
+	local hit = GetHitModifier()
+	if hit == nil then hit = 0 end
+	if hasBiznicks then 
+		hit = hit + 3
+	end
 	return "", format("%.2f%%", hit), "", "", "", ""
 end
 -------------
@@ -718,9 +742,15 @@ local function Parry()
 	return "", format("%.2f%%", GetParryChance()), TooltipLine1, "", "", ""
 end
 -- Block Chance
-local function Block()
+local function BlockChance()
 	local TooltipLine1 = L["Gives a chance to block enemy melee and ranged attacks."]
 	return "", format("%.2f%%", GetBlockChance()), TooltipLine1, "", "", ""
+end
+-- Block Value
+local function BlockValue()
+	local BlockValue = GetShieldBlock()
+	local TooltipLine1 = L["Your blocks mitigate "]..BlockValue..L[" melee and ranged damage."]
+	return "", format("%.0f", BlockValue), TooltipLine1, "", "", ""
 end
 -- Defense
 local function Defense()
@@ -738,7 +768,7 @@ local function Defense()
 		baseDefense = select(4, GetSkillLineInfo(skillIndex))
 		bonusDefense = select(6, GetSkillLineInfo(skillIndex))
 	else
-		baseDefense, bonusDefense = UnitDefense(unit)
+		baseDefense, bonusDefense = UnitDefense("player")
 	end
 	if ( bonusDefense > 0 ) then
 		posBuff = bonusDefense
@@ -789,7 +819,7 @@ local function ManaRegenNotCasting()
 end
 -- Spell Critical Strike Chance
 local function SpellCrit()
-	local TooltipLine1 = L["Gives a chance to critically stike with spells, increasing the damage dealt by 50%."]
+	local TooltipLine1 = L["Gives a chance to critically strike with spells, increasing the damage dealt by 50%."]
 	return "", format("%.2f%%", GetSpellCritChance()), TooltipLine1, "", "", ""
 end
 -- Bonus Spell Hit Chance Modifier
@@ -918,7 +948,7 @@ DCS_STAT_DATA = {
 		statName = "MHDamage",
 		StatValue = 0,
 		isShown = true,
-		Label = L["    Damage: "], --Indented to show as a sublisting under Main Hand
+		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Main Hand
 		statFunction = MHDamage,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -926,7 +956,7 @@ DCS_STAT_DATA = {
 		statName = "MeleeAP",
 		StatValue = 0,
 		isShown = true,
-		Label = L["    Power: "], --Indented to show as a sublisting under Main Hand
+		Label = "    "..L["Power: "], --Indented to show as a sublisting under Main Hand
 		statFunction = MeleeAP,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -942,7 +972,7 @@ DCS_STAT_DATA = {
 		statName = "OHDamage",
 		StatValue = 0,
 		isShown = true,
-		Label = L["    Damage: "], --Indented to show as a sublisting under Off Hand
+		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Off Hand
 		statFunction = OHDamage,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -974,7 +1004,7 @@ DCS_STAT_DATA = {
 		statName = "RangedAP",
 		StatValue = 0,
 		isShown = true,
-		Label = L["    Power: "], --Indented to show as a sublisting under Ranged
+		Label = "    "..L["Power: "], --Indented to show as a sublisting under Ranged
 		statFunction = RangedAP,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -982,7 +1012,7 @@ DCS_STAT_DATA = {
 		statName = "RangedDamage",
 		StatValue = 0,
 		isShown = true,
-		Label = L["    Damage: "], --Indented to show as a sublisting under Ranged
+		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Ranged
 		statFunction = RangedDamage,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -992,6 +1022,14 @@ DCS_STAT_DATA = {
 		isShown = true,
 		Label = L["Ranged Crit: "],	
 		statFunction = RangedCrit,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	RangedHitChance ={
+		statName = "RangedHitChance",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Ranged Hit: "],
+		statFunction = RangedHitModifier,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
 	DodgeChance = {
@@ -1016,7 +1054,13 @@ DCS_STAT_DATA = {
 	BlockChance = {
 		isShown = true,
 		Label = L["Block: "],	
-		statFunction = Block,
+		statFunction = BlockChance,
+		relativeTo = DCSDefenseStatsHeader,
+	},
+	BlockValue = {
+		isShown = true,
+		Label = L["Block Value: "],	
+		statFunction = BlockValue,
 		relativeTo = DCSDefenseStatsHeader,
 	},
 	-- ManaRegenCurrent = { --This appears to be power regen like rage, energy, runes, focus, etc.
@@ -1117,6 +1161,7 @@ DCS_OFFENSE_STAT_LIST = {
 	"RangedAP",
 	"RangedDamage",
 	"RangedCrit",
+	"RangedHitChance",
 }
 
 DCS_MELEE_STAT_LIST = {
@@ -1126,6 +1171,7 @@ DCS_DEFENSE_STAT_LIST = {
 	"DodgeChance",
 	"ParryChance",
 	"BlockChance",
+	"BlockValue",
 	"Defense",
 }
 
@@ -1144,7 +1190,7 @@ DCS_SPELL_STAT_LIST = {
 	"ShadowPlusDamage",
 }
 
-local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet)
+local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHideStats)
 	DejaClassicStatsFrame.statFrame = CreateFrame("Frame", "DCS"..StatKey.."StatFrame", DejaClassicStatsFrame)
 	DejaClassicStatsFrame.statFrame:SetPoint("TOPLEFT", DCS_STAT_DATA[StatKey].relativeTo, "BOTTOMLEFT", (15 + XoffSet), ( (-14 * (YoffSet - 1)) -2) )
 	DejaClassicStatsFrame.statFrame:SetSize(160, 16)
@@ -1174,10 +1220,21 @@ local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet)
 	DejaClassicStatsFrame.value:SetShadowColor(0, 0, 0)
 	DejaClassicStatsFrame.value:SetTextColor(1,1,1,1)
 	DejaClassicStatsFrame.value:SetText("")
+
+	if ShowHideStats then
+		_G["DCS"..StatKey.."StatFrame"]:Show()
+	else
+		_G["DCS"..StatKey.."StatFrame"]:Hide()
+	end	
 end
 
 local function DCS_SetStatText(StatKey, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, XoffSet, YoffSet)
-	_G[StatKey.."NameFS"]:SetText(DCS_STAT_DATA[StatKey].Label)
+	if (StatValue1 == "") then
+		_G[StatKey.."NameFS"]:SetText("")
+	else
+
+		_G[StatKey.."NameFS"]:SetText(DCS_STAT_DATA[StatKey].Label)
+	end
 	_G[StatKey.."ValueFS"]:SetText(StatValue1)
 	
 	local tooltipheader
@@ -1203,46 +1260,71 @@ local function DCS_SetStatText(StatKey, StatLabel, StatValue1, StatValue2, StatV
 end
 
 local function DCS_CREATE_STATS()
+	-- ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
+	-- ShowHideMelee = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked
+	-- ShowHideSpell = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideSpellChecked.ShowHideSpellSetChecked
+	-- ShowHideDefense = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideDefenseChecked.ShowHideDefenseSetChecked
+	-- print(ShowHidePrimary, ShowHideMelee, ShowHideSpell, ShowHideDefense)
 	for k, v in ipairs(DCS_PRIMARY_STAT_LIST) do
 		local XoffSet = (0) 
-		local YoffSet = (0 + k) 
-		DCS_CreateStatText(v, 0, XoffSet, YoffSet)
+		local YoffSet = (0 + k)
+		DCS_CreateStatText(v, 0, XoffSet, YoffSet, ShowHidePrimary)
 	end
 	for k, v in ipairs(DCS_OFFENSE_STAT_LIST) do
-		DCS_CreateStatText(v, 0, 0, k)
+		DCS_CreateStatText(v, 0, 0, k, ShowHideMelee)
 	end
 	for k, v in ipairs(DCS_MELEE_STAT_LIST) do
-		DCS_CreateStatText(v, 0, 0, k)
+		DCS_CreateStatText(v, 0, 0, k, ShowHideMelee)
+	end
+	for k, v in ipairs(DCS_SPELL_STAT_LIST) do
+		DCS_CreateStatText(v, 0, 0, k, ShowHideSpell)
 	end
 	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
 		local YoffSet = (2.2 + k) 
-		DCS_CreateStatText(v, 0, 0, YoffSet)	
-	end
-	for k, v in ipairs(DCS_SPELL_STAT_LIST) do
-		DCS_CreateStatText(v, 0, 0, k)
+		DCS_CreateStatText(v, 0, 0, YoffSet, ShowHideDefense)	
 	end
 end
 
 local function DCS_SET_STATS_TEXT()
 	for k, v in ipairs(DCS_PRIMARY_STAT_LIST) do
-		local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-		DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		if ShowHidePrimary then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
 	end
 	for k, v in ipairs(DCS_OFFENSE_STAT_LIST) do
-		local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-		DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		if ShowHideMelee then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
 	end
 	for k, v in ipairs(DCS_MELEE_STAT_LIST) do
-		local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-		DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
-	end
-	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
-		local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-		DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		if ShowHideMelee then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
 	end
 	for k, v in ipairs(DCS_SPELL_STAT_LIST) do
-		local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-		DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		if ShowHideSpell then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
+	end
+	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
+		if ShowHideDefense then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
 	end
 end
 
@@ -1604,10 +1686,15 @@ local function DCS_SetResistances()
 			local frame = _G["MagicResFrame"..i]
 			frame:SetParent(DejaClassicStatsFrame)
 			frame:ClearAllPoints()
-			if (i==1) then
-				frame:SetPoint("TOPLEFT", DCSDefenseStatsHeader, "BOTTOMLEFT", 12, 0)
+			frame:Show()
+			if ShowHideDefense then
+				if (i==1) then
+					frame:SetPoint("TOPLEFT", DCSDefenseStatsHeader, "BOTTOMLEFT", 12, 0)
+				else
+					frame:SetPoint("TOPLEFT", _G["MagicResFrame"..(i-1)], "TOPRIGHT", 2,0)
+				end
 			else
-				frame:SetPoint("TOPLEFT", _G["MagicResFrame"..(i-1)], "TOPRIGHT", 2,0)
+				frame:Hide()
 			end
 		end
 	end
@@ -1631,7 +1718,7 @@ local DCS_ShowDefaultStatsCheckedCheck = CreateFrame("CheckButton", "DCS_ShowDef
 	DCS_ShowDefaultStatsCheckedCheck:RegisterEvent("PLAYER_LOGIN")
 	DCS_ShowDefaultStatsCheckedCheck:ClearAllPoints()
 	--DCS_ShowDefaultStatsCheckedCheck:SetPoint("TOPLEFT", 30, -255)
-	DCS_ShowDefaultStatsCheckedCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -215)
+	DCS_ShowDefaultStatsCheckedCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -235)
 	DCS_ShowDefaultStatsCheckedCheck:SetScale(1)
 	_G[DCS_ShowDefaultStatsCheckedCheck:GetName() .. "Text"]:SetText(L["Default Stats"])
 	DCS_ShowDefaultStatsCheckedCheck.tooltipText = L["Displays the default stat frames."] --Creates a tooltip on mouseover.
@@ -1657,7 +1744,7 @@ local DCS_MoveResistancesCheck = CreateFrame("CheckButton", "DCS_MoveResistances
 	DCS_MoveResistancesCheck:RegisterEvent("PLAYER_LOGIN")
 	DCS_MoveResistancesCheck:ClearAllPoints()
 	--DCS_MoveResistancesCheck:SetPoint("TOPLEFT", 30, -255)
-	DCS_MoveResistancesCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -235)
+	DCS_MoveResistancesCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -255)
 	DCS_MoveResistancesCheck:SetScale(1)
 	_G[DCS_MoveResistancesCheck:GetName() .. "Text"]:SetText(L["Default Resistances"])
 	DCS_MoveResistancesCheck.tooltipText = L["Displays the default resistance frames."] --Creates a tooltip on mouseover.
@@ -1681,8 +1768,8 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowModelRotation = {
 local DCS_ShowModelRotationCheck = CreateFrame("CheckButton", "DCS_ShowModelRotationCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowModelRotationCheck:RegisterEvent("PLAYER_LOGIN")
 	DCS_ShowModelRotationCheck:ClearAllPoints()
-	--DCS_ShowModelRotationCheck:SetPoint("TOPLEFT", 30, -255)
-	DCS_ShowModelRotationCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -255)
+	--DCS_ShowModelRotationCheck:SetPoint("TOPLEFT", 30, -295)
+	DCS_ShowModelRotationCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -275)
 	DCS_ShowModelRotationCheck:SetScale(1)
 	_G[DCS_ShowModelRotationCheck:GetName() .. "Text"]:SetText(L["Rotation Buttons"])
 	DCS_ShowModelRotationCheck.tooltipText = L["Displays the Character Model Rotation buttons."] --Creates a tooltip on mouseover.
@@ -1712,7 +1799,200 @@ DejaClassicStatsEventFrame:RegisterEvent("ADDON_LOADED")
 	end)
 
 	hooksecurefunc("PaperDollFrame_UpdateStats", function()
+		DCS_CREATE_STATS()
 		DCS_SET_STATS_TEXT()
 		DCS_RepairTotal()
 	end)
 
+
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked = {
+	ShowHidePrimarySetChecked = true,
+}
+
+local DCS_ShowHidePrimaryCheck = CreateFrame("CheckButton", "DCS_ShowHidePrimaryCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+DCS_ShowHidePrimaryCheck:RegisterEvent("PLAYER_LOGIN")
+
+DCS_ShowHidePrimaryCheck:ClearAllPoints()
+	DCS_ShowHidePrimaryCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -15)
+	DCS_ShowHidePrimaryCheck:SetScale(1)
+	DCS_ShowHidePrimaryCheck.tooltipText = L["Show primary stats."] --Creates a tooltip on mouseover.
+	_G[DCS_ShowHidePrimaryCheck:GetName() .. "Text"]:SetText(L["Primary Stats"])
+	
+DCS_ShowHidePrimaryCheck:SetScript("OnEvent", function(self, event, ...)
+	ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
+	self:SetChecked(ShowHidePrimary)
+	if ShowHidePrimary then
+		DCSPrimaryStatsHeader:Show()
+		DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -170)
+	else
+		DCSPrimaryStatsHeader:Hide()
+		DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSPrimaryStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+end)
+
+DCS_ShowHidePrimaryCheck:SetScript("OnClick", function(self)
+	ShowHidePrimary = not ShowHidePrimary
+	if ShowHidePrimary then
+		DCSPrimaryStatsHeader:Show()
+		DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DejaClassicStatsFrame", "TOPLEFT", DCS_HeaderInsetX, -170)
+	else
+		DCSPrimaryStatsHeader:Hide()
+		DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSPrimaryStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked = ShowHidePrimary
+end)
+
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHideMeleeChecked = {
+	ShowHideMeleeSetChecked = true,
+}
+
+local DCS_ShowHideMeleeCheck = CreateFrame("CheckButton", "DCS_ShowHideMeleeCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+DCS_ShowHideMeleeCheck:RegisterEvent("PLAYER_LOGIN")
+
+DCS_ShowHideMeleeCheck:ClearAllPoints()
+	DCS_ShowHideMeleeCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -35)
+	DCS_ShowHideMeleeCheck:SetScale(1)
+	DCS_ShowHideMeleeCheck.tooltipText = L["Show melee stats."] --Creates a tooltip on mouseover.
+	_G[DCS_ShowHideMeleeCheck:GetName() .. "Text"]:SetText(L["Melee Stats"])
+	
+DCS_ShowHideMeleeCheck:SetScript("OnEvent", function(self, event, ...)
+	-- ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
+	ShowHideMelee = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked
+	self:SetChecked(ShowHideMelee)
+	if ShowHideMelee then
+		DCSMeleeEnhancementsStatsHeader:Show()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+	else
+		DCSMeleeEnhancementsStatsHeader:Hide()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+end)
+
+DCS_ShowHideMeleeCheck:SetScript("OnClick", function(self)
+	ShowHideMelee = not ShowHideMelee
+	if ShowHideMelee then
+		DCSMeleeEnhancementsStatsHeader:Show()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+	else
+		DCSMeleeEnhancementsStatsHeader:Hide()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked = ShowHideMelee
+end)
+
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHideSpellChecked = {
+	ShowHideSpellSetChecked = true,
+}
+
+local DCS_ShowHideSpellCheck = CreateFrame("CheckButton", "DCS_ShowHideSpellCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+DCS_ShowHideSpellCheck:RegisterEvent("PLAYER_LOGIN")
+
+DCS_ShowHideSpellCheck:ClearAllPoints()
+	DCS_ShowHideSpellCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -55)
+	DCS_ShowHideSpellCheck:SetScale(1)
+	DCS_ShowHideSpellCheck.tooltipText = L["Show spell stats."] --Creates a tooltip on mouseover.
+	_G[DCS_ShowHideSpellCheck:GetName() .. "Text"]:SetText(L["Spell Stats"])
+	
+DCS_ShowHideSpellCheck:SetScript("OnEvent", function(self, event, ...)
+	ShowHideSpell = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideSpellChecked.ShowHideSpellSetChecked
+	self:SetChecked(ShowHideSpell)
+	if ShowHideSpell then
+		DCSSpellEnhancementsStatsHeader:Show()
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
+	else
+		DCSSpellEnhancementsStatsHeader:Hide()
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+end)
+
+DCS_ShowHideSpellCheck:SetScript("OnClick", function(self)
+	ShowHideSpell = not ShowHideSpell
+	if ShowHideSpell then
+		DCSSpellEnhancementsStatsHeader:Show()
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
+	else
+		DCSSpellEnhancementsStatsHeader:Hide()
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideSpellChecked.ShowHideSpellSetChecked = ShowHideSpell
+end)
+
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHideDefenseChecked = {
+	ShowHideDefenseSetChecked = true,
+}
+
+local DCS_ShowHideDefenseCheck = CreateFrame("CheckButton", "DCS_ShowHideDefenseCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+DCS_ShowHideDefenseCheck:RegisterEvent("PLAYER_LOGIN")
+
+DCS_ShowHideDefenseCheck:ClearAllPoints()
+	DCS_ShowHideDefenseCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -75)
+	DCS_ShowHideDefenseCheck:SetScale(1)
+	DCS_ShowHideDefenseCheck.tooltipText = L["Show defense stats."] --Creates a tooltip on mouseover.
+	_G[DCS_ShowHideDefenseCheck:GetName() .. "Text"]:SetText(L["Defense Stats"])
+	
+DCS_ShowHideDefenseCheck:SetScript("OnEvent", function(self, event, ...)
+	ShowHideDefense = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideDefenseChecked.ShowHideDefenseSetChecked
+	self:SetChecked(ShowHideDefense)
+	if ShowHideDefense then
+		DCSDefenseStatsHeader:Show()
+	else
+		DCSDefenseStatsHeader:Hide()
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+	DCS_SetResistances()
+end)
+
+DCS_ShowHideDefenseCheck:SetScript("OnClick", function(self)
+	ShowHideDefense = not ShowHideDefense
+	if ShowHideDefense then
+		DCSDefenseStatsHeader:Show()
+	else
+		DCSDefenseStatsHeader:Hide()
+	end
+	DCS_CREATE_STATS()
+	DCS_SET_STATS_TEXT()
+	DCS_SetResistances()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideDefenseChecked.ShowHideDefenseSetChecked = ShowHideDefense
+end)
+
+--------------------------------
+--Show Character Frame Button --
+--------------------------------
+local DCSShowCharacterFrameButton = CreateFrame("Button", "DCSShowCharacterFrameButton", DejaClassicStatsPanel, "UIPanelButtonTemplate")
+DCSShowCharacterFrameButton:RegisterEvent("PLAYER_LOGIN")
+
+DCSShowCharacterFrameButton:ClearAllPoints()
+DCSShowCharacterFrameButton:SetPoint("TOP", 0, -15)
+DCSShowCharacterFrameButton:SetScale(0.80)
+DCSShowCharacterFrameButton:SetWidth(200)
+DCSShowCharacterFrameButton:SetHeight(30)
+_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
+
+CharacterFrame:HookScript("OnShow", function(self)
+	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Hide Character Frame"])
+end)
+
+CharacterFrame:HookScript("OnHide", function(self)
+	_G[DCSShowCharacterFrameButton:GetName() .. "Text"]:SetText(L["Show Character Frame"])
+end)
+
+DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)
+	if CharacterFrame:IsShown() then
+		CharacterFrame:Hide()
+	else
+		CharacterFrame:Show()
+	end
+end)

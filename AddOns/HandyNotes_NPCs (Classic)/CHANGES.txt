@@ -1,19 +1,9 @@
 ------------------------------------------------------------------------
-r59 | Caliaha | 2019-10-22 19:27:41 +0000 (Tue, 22 Oct 2019) | 2 lines
+r63 | Caliaha | 2019-10-28 16:58:27 +0000 (Mon, 28 Oct 2019) | 2 lines
 Changed paths:
-   M /trunk/data.lua
-   M /trunk/itemData.lua
-   M /trunk/locales/deDE.lua
-   M /trunk/locales/enUS.lua
-   M /trunk/locales/esES.lua
-   M /trunk/locales/frFR.lua
-   M /trunk/locales/koKR.lua
-   M /trunk/locales/ptBR.lua
    M /trunk/locales/ruRU.lua
-   M /trunk/locales/zhCN.lua
-   M /trunk/vendorData.lua
 
-Updated npcs, vendor data, localization
+Corrected ruRU locale
 
 ------------------------------------------------------------------------
 

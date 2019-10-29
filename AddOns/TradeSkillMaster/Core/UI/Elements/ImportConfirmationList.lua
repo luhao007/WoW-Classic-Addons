@@ -7,7 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local ImportConfirmationList = TSM.Lib.Class.DefineClass("ImportConfirmationList", TSM.UI.FastScrollingList)
+local ImportConfirmationList = TSM.Include("LibTSMClass").DefineClass("ImportConfirmationList", TSM.UI.FastScrollingList)
 local L = TSM.L
 TSM.UI.ImportConfirmationList = ImportConfirmationList
 local private = { rowFrameLookup = {} }

@@ -13,7 +13,7 @@
 
 local _, TSM = ...
 local L = TSM.L
-local AuctionScrollingTable = TSM.Lib.Class.DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
+local AuctionScrollingTable = TSM.Include("LibTSMClass").DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.AuctionScrollingTable = AuctionScrollingTable
 local private = {
 	sortContext = {

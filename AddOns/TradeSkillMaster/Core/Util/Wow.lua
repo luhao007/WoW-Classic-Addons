@@ -10,8 +10,8 @@
 -- @module Wow
 
 local _, TSM = ...
-TSM.Wow = {}
-local Wow = TSM.Wow
+local Wow = TSM.Init("Util.Wow")
+TSM.Wow = Wow
 local private = {
 	itemLinkedCallbacks = {},
 }

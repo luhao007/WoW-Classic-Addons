@@ -7,8 +7,15 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
+local VendorSell = TSM.Init("Data.VendorSell")
 
-TSM.CONST.VENDOR_SELL_PRICES = {
+
+
+-- ============================================================================
+-- Vendor Sell Data
+-- ============================================================================
+
+local VENDOR_SELL_PRICES = {
 	["i:80433"] = 2000000, -- Blood Spirit
 	["i:83092"] = 200000000, -- Orb of Mystery
 	["i:65893"] = 30000000, -- Sands of Time
@@ -107,3 +114,13 @@ TSM.CONST.VENDOR_SELL_PRICES = {
 	["i:136630"] = 118500, -- Twirling Bottom Repeater
 	["i:136629"] = 173300, -- Felgibber Shotgun
 }
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function VendorSell.Iterator()
+	return pairs(VENDOR_SELL_PRICES)
+end

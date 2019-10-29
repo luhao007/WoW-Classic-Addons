@@ -1281,7 +1281,7 @@ function private.FSMCreate()
 				fsmPrivate.StartCraft(context, spellId, quantity)
 			end)
 			:AddEvent("EV_SPELLCAST_COMPLETE", function(context, success, isDone)
-				if success then
+				if success and context.craftingSpellId then
 					TSM:LOG_INFO("Crafted %d", context.craftingSpellId)
 					TSM.Crafting.Queue.Remove(context.craftingSpellId, 1)
 					context.craftingQuantity = context.craftingQuantity - 1

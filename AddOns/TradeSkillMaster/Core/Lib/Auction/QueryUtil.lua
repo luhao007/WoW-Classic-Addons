@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local QueryUtil = TSM.Auction:NewPackage("QueryUtil")
-local AuctionCountDatabase = TSM.Lib.Class.DefineClass("AuctionCountDatabase")
+local AuctionCountDatabase = TSM.Include("LibTSMClass").DefineClass("AuctionCountDatabase")
 local private = {
 	db = nil,
 	itemListByClass = {},

@@ -10,8 +10,8 @@
 -- @module JSON
 
 local _, TSM = ...
-TSM.JSON = {}
-local JSON = TSM.JSON
+local JSON = TSM.Init("Util.JSON")
+TSM.JSON = JSON
 local private = {}
 
 
