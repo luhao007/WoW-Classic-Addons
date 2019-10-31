@@ -535,6 +535,7 @@ FB_OutfitFrame.OnLoad = function(self)
 	RegisterHandlers(FishingEvents);
 
 	FishingOutfitFrameTab.Outfit.OutfitChanged = OutfitChanged;
+	FishingBuddyFrameCloseButton:SetFrameLevel(self:GetFrameLevel()+4)
 end
 
 FB_OutfitFrame.OnHide = function()

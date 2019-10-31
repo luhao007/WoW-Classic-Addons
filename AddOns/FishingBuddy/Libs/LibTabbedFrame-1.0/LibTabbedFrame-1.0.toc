@@ -1,8 +1,0 @@
-## Interface: 60200
-## Title: LibTabbedFrame-1.0
-## Notes: Handle Player sized frames with tabs
-## Author: Sutorix=AT=hotmail.com
-## Version: 0.3
-## X-Category: Libraries
-
-LibTabbedFrame-1.0.xml

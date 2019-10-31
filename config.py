@@ -31,9 +31,20 @@ MAPPING = {
         'Notes': '可以修改各种隐藏参数，包括隐藏的内部CVar参数',
         'Category': '界面'
     },
+    'AllTheThings': {
+        'Title-cn': '收集控助手',
+        'Title-en': 'All The Things',
+        'Notes': '追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况',
+        'Category': '收藏'
+    },
     'Atlas': {
         'Title-cn': '副本地图',
         'Title-en': 'Atlas',
+        'Category': '副本'
+    },
+    'Atlas_Arena': {
+        'Title-cn': '副本地图',
+        'Title-sub': '竞技场',
         'Category': '副本'
     },
     'Atlas_Battlegrounds': {
@@ -41,9 +52,24 @@ MAPPING = {
         'Title-sub': '战场',
         'Category': '副本'
     },
+    'Atlas_BurningCrusade': {
+        'Title-cn': '副本地图',
+        'Title-sub': '燃烧的远征',
+        'Category': '副本'
+    },
+    'Atlas_Cataclysm': {
+        'Title-cn': '副本地图',
+        'Title-sub': '大地的裂变',
+        'Category': '副本'
+    },
     'Atlas_ClassicWoW': {
         'Title-cn': '副本地图',
         'Title-sub': '经典旧世',
+        'Category': '副本'
+    },
+    'Atlas_ClassOrderHalls': {
+        'Title-cn': '副本地图',
+        'Title-sub': '职业大厅',
         'Category': '副本'
     },
     'Atlas_DungeonLocs': {
@@ -51,9 +77,134 @@ MAPPING = {
         'Title-sub': '副本位置',
         'Category': '副本'
     },
+    'Atlas_Legion': {
+        'Title-cn': '副本地图',
+        'Title-sub': '军团再临',
+        'Category': '副本'
+    },
+    'Atlas_MistsofPandaria': {
+        'Title-cn': '副本地图',
+        'Title-sub': '熊猫人之迷',
+        'Category': '副本'
+    },
+    'Atlas_OutdoorRaids': {
+        'Title-cn': '副本地图',
+        'Title-sub': '户外首领',
+        'Category': '副本'
+    },
+    'Atlas_Scenarios': {
+        'Title-cn': '副本地图',
+        'Title-sub': '场景战役',
+        'Category': '副本'
+    },
     'Atlas_Transportation': {
         'Title-cn': '副本地图',
         'Title-sub': '交通',
+        'Category': '副本'
+    },
+    'Atlas_WarlordsofDraenor': {
+        'Title-cn': '副本地图',
+        'Title-sub': '德拉诺之王',
+        'Category': '副本'
+    },
+    'Atlas_WorldEvents': {
+        'Title-cn': '副本地图',
+        'Title-sub': '世界事件',
+        'Category': '副本'
+    },
+    'Atlas_WrathoftheLichKing': {
+        'Title-cn': '副本地图',
+        'Title-sub': '巫妖王之怒',
+        'Category': '副本'
+    },
+    'AtlasLoot': {
+        'Title-cn': '副本掉落',
+        'Title-en': 'AtlasLoot',
+        'Notes': '显示首领可能掉落的物品',
+        'Category': '副本'
+    },
+    'AtlasLoot_BattleforAzeroth': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '争霸艾泽拉斯',
+        'Notes': 'AtlasLoot 争霸艾泽拉斯副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_BurningCrusade': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '燃烧的远征',
+        'Notes': 'AtlasLoot 燃烧的远征副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Cataclysm': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '大地的裂变',
+        'Notes': 'AtlasLoot 大地的裂变副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Classic': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '经典旧世',
+        'Notes': 'AtlasLoot 经典旧世副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Collections': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '套装',
+        'Notes': 'AtlasLoot 套装列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Crafting': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '专业制作',
+        'Notes': 'AtlasLoot 专业制作物品列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Factions': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '阵营',
+        'Notes': 'AtlasLoot 阵营物品列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Legion': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '军团再临',
+        'Notes': 'AtlasLoot 军团再临副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_MistsofPandaria': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '熊猫人之谜',
+        'Notes': 'AtlasLoot 熊猫人之谜副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_Options': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '设置',
+        'Notes': 'AtlasLoot 选项模块',
+        'Category': '副本'
+    },
+    'AtlasLoot_PvP': {
+        'Title-cn': '副本掉落',
+        'Title-sub': 'PVP',
+        'Notes': 'AtlasLoot PVP物品列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_WarlordsofDraenor': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '德拉诺之王',
+        'Notes': 'AtlasLoot 德拉诺之王副本掉落列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_WorldEvents': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '世界事件',
+        'Notes': 'AtlasLoot 世界事件物品列表',
+        'Category': '副本'
+    },
+    'AtlasLoot_WrathoftheLichKing': {
+        'Title-cn': '副本掉落',
+        'Title-sub': '巫妖王之怒',
+        'Notes': 'AtlasLoot 巫妖王之怒副本掉落列表',
         'Category': '副本'
     },
     'AtlasLootClassic': {
@@ -108,6 +259,11 @@ MAPPING = {
         'Title-cn': '副本掉落',
         'Title-sub': 'PVP',
         'Notes': 'AtlasLoot PVP物品列表',
+        'Category': '副本'
+    },
+    'AtlasMajorCitiesEnhanced': {
+        'Title-cn': '副本地图',
+        'Title-sub': '主城地图',
         'Category': '副本'
     },
     'AtlasQuest': {
@@ -197,6 +353,11 @@ MAPPING = {
         'Notes': 'Bagnon虚空仓库模块',
         'Category': '物品'
     },
+    'BattlePetBreedID': {
+        'Title-cn': '战斗宠物品种',
+        'Notes': '显示战斗宠物的品种（如速度型）',
+        'Category': '收藏'
+    },
     'BeanCounter': {
         'Title-cn': '物品会计师',
         'Notes': '存储物品购买销售记录',
@@ -205,6 +366,50 @@ MAPPING = {
     'BlizzMove': {
         'Title-cn': '窗口移动',
         'Notes': '移动内置的各种窗口',
+        'Category': '界面'
+    },
+    'BtWObjectiveFilter': {
+        'Title-cn': '人口普查',
+        'Notes': '统计服务器中的人口数量',
+        'Category': '账号'
+    },
+    'BtWObjectiveFilter': {
+        'Title-cn': '追踪过滤',
+        'Notes': '在任务和副本目标等追踪界面中添加一个过滤器，来关闭不想看到的追踪',
+        'Category': '界面'
+    },
+    'BtWQuests': {
+        'Title-cn': '任务流程图',
+        'Notes': '将所有任务的前置任务和后续任务用流程图显示出来',
+        'Category': '任务'
+    },
+    'BtWQuestsBattleForAzeroth': {
+        'Title-cn': '任务流程图',
+        'Title-sub': '争霸艾泽拉斯',
+        'Notes': 'BtWQuests 争霸艾泽拉斯模块',
+        'Category': '任务'
+    },
+    'BtWQuestsBattleForAzerothPrologue': {
+        'Title-cn': '任务流程图',
+        'Title-sub': '争霸艾泽拉斯前夕',
+        'Notes': 'BtWQuests 争霸艾泽拉斯前夕模块',
+        'Category': '任务'
+    },
+    'BtWQuestsClassic': {
+        'Title-cn': '任务流程图',
+        'Title-sub': '经典旧世',
+        'Notes': 'BtWQuests 经典旧世模块',
+        'Category': '任务'
+    },
+    'BtWQuestsLegion': {
+        'Title-cn': '任务流程图',
+        'Title-sub': '军团再临',
+        'Notes': 'BtWQuests 军团再临模块',
+        'Category': '任务'
+    },
+    'ButtonForge': {
+        'Title-cn': '额外动作条',
+        'Notes': '自定义的额外动作条',
         'Category': '界面'
     },
     'CensusPlusClassic': {
@@ -241,6 +446,16 @@ MAPPING = {
         'Title-sub': '设置',
         'Category': '战斗'
     },
+    'Cromulent': {
+        'Title-cn': '地图信息',
+        'Notes': '在世界地图中显示额外的地图信息（如适合等级，钓鱼等级等）',
+        'Category': '界面',
+    },
+    'DBM-AntorusBurningThrone': {
+        'Title-cn': '副本助手',
+        'Title-sub': '安托鲁斯，燃烧王座',
+        'Category': '副本'
+    },
     'DBM-AQ20': {
         'Title-cn': '副本助手',
         'Title-sub': '安其拉废墟',
@@ -251,14 +466,74 @@ MAPPING = {
         'Title-sub': '安其拉神殿',
         'Category': '副本'
     },
-    'DBM-Azeroth': {
+    'DBM-Argus': {
         'Title-cn': '副本助手',
-        'Title-sub': '世界首领',
+        'Title-sub': '阿古斯',
+        'Category': '副本'
+    },
+    'DBM-Azeroth-BfA': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '艾泽拉斯（争霸艾泽拉斯）',
+        'Category': '副本'
+    },
+    'DBM-Azeroth': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '艾泽拉斯（经典旧世）',
+        'Category': '副本'
+    },
+    'DBM-BaradinHold': {
+        'Title-cn': '副本助手',
+        'Title-sub': '巴拉丁监狱',
+        'Category': '副本'
+    },
+    'DBM-BastionTwilight': {
+        'Title-cn': '副本助手',
+        'Title-sub': '暮光堡垒',
+        'Category': '副本'
+    },
+    'DBM-BlackrockFoundry': {
+        'Title-cn': '副本助手',
+        'Title-sub': '黑石铸造厂',
+        'Category': '副本'
+    },
+    'DBM-BlackTemple': {
+        'Title-cn': '副本助手',
+        'Title-sub': '黑暗神殿',
+        'Category': '副本'
+    },
+    'DBM-BlackwingDescent': {
+        'Title-cn': '副本助手',
+        'Title-sub': '黑翼血环',
+        'Category': '副本'
+    },
+    'DBM-Brawlers': {
+        'Title-cn': '副本助手',
+        'Title-sub': '搏击俱乐部',
+        'Category': '副本'
+    },
+    'DBM-BrokenIsles': {
+        'Title-cn': '副本助手',
+        'Title-sub': '破碎群岛',
         'Category': '副本'
     },
     'DBM-BWL': {
         'Title-cn': '副本助手',
         'Title-sub': '黑翼之巢',
+        'Category': '副本'
+    },
+    'DBM-Challenges': {
+        'Title-cn': '副本助手',
+        'Title-sub': '白虎试练场',
+        'Category': '副本'
+    },
+    'DBM-ChamberOfAspects': {
+        'Title-cn': '副本助手',
+        'Title-sub': '龙眠神殿',
+        'Category': '副本'
+    },
+    'DBM-Coliseum': {
+        'Title-cn': '副本助手',
+        'Title-sub': '十字军的试炼',
         'Category': '副本'
     },
     'DBM-Core': {
@@ -267,9 +542,54 @@ MAPPING = {
         'Notes': '功能强大的副本助手，支持所有Boss。',
         'Category': '副本'
     },
+    'DBM-CrucibleofStorms': {
+        'Title-cn': '副本助手',
+        'Title-sub': '风暴熔炉',
+        'Category': '副本'
+    },
     'DBM-DefaultSkin': {
         'Title-cn': '副本助手',
         'Title-sub': '皮肤：经典计时条',
+        'Category': '副本'
+    },
+    'DBM-DMF': {
+        'Title-cn': '副本助手',
+        'Title-sub': '暗月马戏团',
+        'Category': '副本'
+    },
+    'DBM-Draenor': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '德拉诺',
+        'Category': '副本'
+    },
+    'DBM-DragonSoul': {
+        'Title-cn': '副本助手',
+        'Title-sub': '巨龙之魂',
+        'Category': '副本'
+    },
+    'DBM-EmeraldNightmare': {
+        'Title-cn': '副本助手',
+        'Title-sub': '翡翠梦魇',
+        'Category': '副本'
+    },
+    'DBM-EternalPalace': {
+        'Title-cn': '副本助手',
+        'Title-sub': '永恒王宫',
+        'Category': '副本'
+    },
+    'DBM-EyeOfEternity': {
+        'Title-cn': '副本助手',
+        'Title-sub': '永恒之眼',
+        'Category': '副本'
+    },
+    'DBM-Firelands': {
+        'Title-cn': '副本助手',
+        'Title-sub': '火焰之地',
+        'Category': '副本'
+    },
+    'DBM-GarrisonInvasions': {
+        'Title-cn': '副本助手',
+        'Title-sub': '要塞入侵',
         'Category': '副本'
     },
     'DBM-GUI': {
@@ -277,9 +597,44 @@ MAPPING = {
         'Title-sub': '设置',
         'Category': '副本'
     },
+    'DBM-HeartofFear': {
+        'Title-cn': '副本助手',
+        'Title-sub': '恐惧之心',
+        'Category': '副本'
+    },
+    'DBM-HellfireCitadel': {
+        'Title-cn': '副本助手',
+        'Title-sub': '地狱火堡垒',
+        'Category': '副本'
+    },
+    'DBM-Highmaul': {
+        'Title-cn': '副本助手',
+        'Title-sub': '悬槌堡',
+        'Category': '副本'
+    },
+    'DBM-Hyjal': {
+        'Title-cn': '副本助手',
+        'Title-sub': '海加尔山之战',
+        'Category': '副本'
+    },
+    'DBM-Icecrown': {
+        'Title-cn': '副本助手',
+        'Title-sub': '冰冠堡垒',
+        'Category': '副本'
+    },
+    'DBM-Karazhan': {
+        'Title-cn': '副本助手',
+        'Title-sub': '卡拉赞',
+        'Category': '副本'
+    },
     'DBM-MC': {
         'Title-cn': '副本助手',
         'Title-sub': '熔火之心',
+        'Category': '副本'
+    },
+    'DBM-MogushanVaults': {
+        'Title-cn': '副本助手',
+        'Title-sub': '魔古山宝库',
         'Category': '副本'
     },
     'DBM-Naxx': {
@@ -287,14 +642,95 @@ MAPPING = {
         'Title-sub': '纳克萨玛斯',
         'Category': '副本'
     },
+    'DBM-Nighthold': {
+        'Title-cn': '副本助手',
+        'Title-sub': '暗夜要塞',
+        'Category': '副本'
+    },
+    'DBM-Nyalotha': {
+        'Title-cn': '副本助手',
+        'Title-sub': '尼奥罗萨',
+        'Category': '副本'
+    },
     'DBM-Onyxia': {
         'Title-cn': '副本助手',
         'Title-sub': '奥妮克西娅的巢穴',
         'Category': '副本'
     },
+    'DBM-Outlands': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '外域',
+        'Category': '副本'
+    },
+    'DBM-Pandaria': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '潘达利亚',
+        'Category': '副本'
+    },
+    'DBM-Party-BC': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '燃烧的远征',
+        'Category': '副本'
+    },
+    'DBM-Party-BfA': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '争霸艾泽拉斯',
+        'Category': '副本'
+    },
+    'DBM-Party-Cataclysm': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '大地的裂变',
+        'Category': '副本'
+    },
     'DBM-Party-Classic': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '经典旧世',
+        'Category': '副本'
+    },
+    'DBM-Party-Legion': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '军团再临',
+        'Category': '副本'
+    },
+    'DBM-Party-MoP': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '熊猫人之谜',
+        'Category': '副本'
+    },
+    'DBM-Party-WoD': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '德拉诺之王',
+        'Category': '副本'
+    },
+    'DBM-Party-WotLK': {
+        'Title-cn': '副本助手 |cFF69CCF0小队|r',
+        'Title-sub': '巫妖王之怒',
+        'Category': '副本'
+    },
+    'DBM-PvP': {
         'Title-cn': '副本助手',
-        'Title-sub': '队伍首领',
+        'Title-sub': 'PvP',
+        'Category': '副本'
+    },
+    'DBM-Scenario-MoP': {
+        'Title-cn': '副本助手',
+        'Title-sub': '场景战役',
+        'Category': '副本'
+    },
+    'DBM-Serpentshrine': {
+        'Title-cn': '副本助手',
+        'Title-sub': '毒蛇神殿',
+        'Category': '副本'
+    },
+    'DBM-SiegeOfOrgrimmarV2': {
+        'Title-cn': '副本助手',
+        'Title-sub': '决战奥格瑞玛',
+        'Category': '副本'
+    },
+    'DBM-SoundEventsPack': {
+        'Title-cn': '副本助手',
+        'Title-sub': '声音特效',
+        'Notes': '为DBM添加声音特效（如战斗胜利等）',
         'Category': '副本'
     },
     'DBM-StatusBarTimers': {
@@ -302,9 +738,74 @@ MAPPING = {
         'Title-sub': '状态条计时器',
         'Category': '副本'
     },
+    'DBM-Sunwell': {
+        'Title-cn': '副本助手',
+        'Title-sub': '太阳之井高地',
+        'Category': '副本'
+    },
+    'DBM-TerraceofEndlessSpring': {
+        'Title-cn': '副本助手',
+        'Title-sub': '永春台',
+        'Category': '副本'
+    },
+    'DBM-TheEye': {
+        'Title-cn': '副本助手',
+        'Title-sub': '风暴要塞',
+        'Category': '副本'
+    },
+    'DBM-ThroneFourWinds': {
+        'Title-cn': '副本助手',
+        'Title-sub': '四风王座',
+        'Category': '副本'
+    },
+    'DBM-ThroneofThunder': {
+        'Title-cn': '副本助手',
+        'Title-sub': '雷电王座',
+        'Category': '副本'
+    },
+    'DBM-TimelessIsle': {
+        'Title-cn': '副本助手 |cFF69CCF0户外|r',
+        'Title-sub': '永恒岛',
+        'Category': '副本'
+    },
+    'DBM-TombofSargeras': {
+        'Title-cn': '副本助手',
+        'Title-sub': '萨格拉斯之墓',
+        'Category': '副本'
+    },
+    'DBM-TrialofValor': {
+        'Title-cn': '副本助手',
+        'Title-sub': '冠军的试炼',
+        'Category': '副本'
+    },
+    'DBM-Uldir': {
+        'Title-cn': '副本助手',
+        'Title-sub': '奥迪尔',
+        'Category': '副本'
+    },
+    'DBM-Ulduar': {
+        'Title-cn': '副本助手',
+        'Title-sub': '奥杜尔',
+        'Category': '副本'
+    },
+    'DBM-VoA': {
+        'Title-cn': '副本助手',
+        'Title-sub': '阿尔卡冯的宝库',
+        'Category': '副本'
+    },
     'DBM-VPYike': {
         'Title-cn': '副本助手',
         'Title-sub': '夏一可语音包',
+        'Category': '副本'
+    },
+    'DBM-WorldEvents': {
+        'Title-cn': '副本助手',
+        'Title-sub': '世界事件',
+        'Category': '副本'
+    },
+    'DBM-ZuldazarRaid': {
+        'Title-cn': '副本助手',
+        'Title-sub': '达萨罗之战',
         'Category': '副本'
     },
     'DBM-ZG': {
@@ -332,6 +833,16 @@ MAPPING = {
         'Notes': '提示物品分解后可能得到的材料',
         'Category': '物品'
     },
+    'FasterCamera': {
+        'Title-cn': '视野调整',
+        'Notes': '提供调整视野上限，快速缩放视野等功能',
+        'Category': '界面'
+    },
+    'FB_TrackingFrame': {
+        'Title-cn': '钓鱼助手',
+        'Title-sub': '追踪框',
+        'Category': '物品'
+    },
     'FishingBuddy': {
         'Title-cn': '钓鱼助手',
         'Category': '物品'
@@ -340,13 +851,46 @@ MAPPING = {
         'Title-cn': '装备着色',
         'Category': '物品'
     },
+    'GarrisonMissionManager': {
+        'Title-cn': '要塞任务管理',
+        'Notes': '协助管理要塞随从任务',
+        'Category': '物品'
+    },
+    'GatherMate2_Data': {
+        'Title-cn': '采集助手',
+        'Title-sub': '数据',
+        'Category': '物品'
+    },
     'GatherMate2': {
         'Title-cn': '采集助手',
+        'Category': '物品'
+    },
+    'GearManagerEx': {
+        'Title-cn': '一键换装',
+        'Category': '物品'
+    },
+    'GladiatorlosSA2': {
+        'Title-cn': '角斗士助手',
+        'Category': '物品'
+    },
+    'GladiatorlosSA_zhCN': {
+        'Title-cn': '角斗士助手',
+        'Title-sub': '夏一可语音包',
+        'Category': '物品'
+    },
+    'Gladius': {
+        'Title-cn': '竞技场助手',
+        'Title-sub': '在竞技场中显示敌人',
         'Category': '物品'
     },
     'Grail': {
         'Title-cn': '本地数据库',
         'Notes': '本地数据库，包含任务，成就，NPC等数据',
+        'Category': '任务'
+    },
+    'Grail-Achievements': {
+        'Title-cn': '本地数据库 |cFF69CCF0声望|r',
+        'Notes': '声望数据库',
         'Category': '任务'
     },
     'Grail-NPCs-_classic_': {
@@ -366,6 +910,23 @@ MAPPING = {
         'Notes': '怀旧服NPC数据库的中文本地化模块',
         'Category': '任务'
     },
+    'Grail-NPCs-_retail_': {
+        'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
+        'Notes': '正式服NPC数据库',
+        'Category': '任务'
+    },
+    'Grail-NPCs-_retail_-enUS': {
+        'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
+        'Title-sub': '英文',
+        'Notes': '正式服NPC数据库的英文本地化模块',
+        'Category': '任务'
+    },
+    'Grail-NPCs-_retail_-zhCN': {
+        'Title-cn': '本地数据库 |cFF69CCF0NPC|r',
+        'Title-sub': '中文',
+        'Notes': '正式服NPC数据库的中文本地化模块',
+        'Category': '任务'
+    },
     'Grail-Quests-_classic_': {
         'Title-cn': '本地数据库 |cFF69CCF0任务|r',
         'Notes': '怀旧服本地数据库',
@@ -383,9 +944,31 @@ MAPPING = {
         'Notes': '怀旧服本地数据库的中文本地化模块',
         'Category': '任务'
     },
+    'Grail-Quests-_retail_': {
+        'Title-cn': '本地数据库 |cFF69CCF0任务|r',
+        'Notes': '正式服本地数据库',
+        'Category': '任务'
+    },
+    'Grail-Quests-_retail_-enUS': {
+        'Title-cn': '本地数据库 |cFF69CCF0任务|r',
+        'Title-sub': '英文',
+        'Notes': '正式服本地数据库的英文本地化模块',
+        'Category': '任务'
+    },
+    'Grail-Quests-_retail_-zhCN': {
+        'Title-cn': '本地数据库 |cFF69CCF0任务|r',
+        'Title-sub': '中文',
+        'Notes': '正式服本地数据库的中文本地化模块',
+        'Category': '任务'
+    },
     'Grail-Reputations-_classic_': {
         'Title-cn': '本地数据库 |cFF69CCF0声望|r',
         'Notes': '怀旧服声望数据库',
+        'Category': '任务'
+    },
+    'Grail-Reputations-_retail_': {
+        'Title-cn': '本地数据库 |cFF69CCF0声望|r',
+        'Notes': '正式服声望数据库',
         'Category': '任务'
     },
     'Grail-Rewards': {
@@ -398,9 +981,58 @@ MAPPING = {
         'Notes': '帮助Grail记录各项任务，声望和成就的完成时间',
         'Category': '任务'
     },
+    'Grid2': {
+        'Title-cn': '团队面板',
+        'Category': '界面'
+    },
+    'Grid2LDB': {
+        'Title-cn': '团队面板',
+        'Title-sub': '库文件',
+        'Category': '界面'
+    },
+    'Grid2Options': {
+        'Title-cn': '团队面板',
+        'Title-sub': '设置',
+        'Category': '界面'
+    },
+    'Grid2RaidDebuffs': {
+        'Title-cn': '团队面板',
+        'Title-sub': '团队首领减益',
+        'Category': '界面'
+    },
+    'Grid2RaidDebuffs': {
+        'Title-cn': '团队面板',
+        'Title-sub': '团队首领减益 设置',
+        'Category': '界面'
+    },
     'HandyNotes': {
         'Title-cn': '地图标记',
         'Notes': '可以在地图上添加标记',
+        'Category': '界面'
+    },
+    'HandyNotes_Argus': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏/稀有 阿古斯',
+        'Category': '界面'
+    },
+    'HandyNotes_AzerothsTopTunes': {
+        'Title-cn': '地图标记',
+        'Title-sub': '成就 艾泽拉斯金曲',
+        'Category': '界面'
+    },
+    'HandyNotes_BattleForAzerothTreasures': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏/稀有 争霸艾泽拉斯',
+        'Category': '界面'
+    },
+    'HandyNotes_BrokenShore': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏/稀有 破碎海滩',
+        'Category': '界面'
+    },
+    'HandyNotes_DraenorTreasures': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏/稀有 德拉诺',
         'Category': '界面'
     },
     'HandyNotes_DungeonLocations (Classic)': {
@@ -408,15 +1040,65 @@ MAPPING = {
         'Title-sub': '副本入口',
         'Category': '界面'
     },
+    'HandyNotes_HallowsEnd': {
+        'Title-cn': '地图标记',
+        'Title-sub': '万圣节',
+        'Category': '界面'
+    },
+    'HandyNotes_LegionRaresTreasures': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏/稀有 军团再临',
+        'Category': '界面'
+    },
+    'HandyNotes_LostAndFound': {
+        'Title-cn': '地图标记',
+        'Title-sub': '失物招领',
+        'Notes': '显示熊猫人之谜“失物招领“成就所需物品的地点',
+        'Category': '界面'
+    },
+    'HandyNotes_LunarFestival': {
+        'Title-cn': '地图标记',
+        'Title-sub': '节日 春节',
+        'Category': '界面'
+    },
     'HandyNotes_NPCs (Classic)': {
         'Title-cn': '地图标记',
         'Title-sub': 'NPC',
+        'Category': '界面'
+    },
+    'HandyNotes_SummerFestival': {
+        'Title-cn': '地图标记',
+        'Title-sub': '节日 仲夏节',
+        'Category': '界面'
+    },
+    'HandyNotes_SuramarShalAranTelemancy': {
+        'Title-cn': '地图标记',
+        'Title-sub': '苏拉玛传送点',
+        'Category': '界面'
+    },
+    'HandyNotes_TimelessIsleChests': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏 永恒岛',
         'Category': '界面'
     },
     'HandyNotes_TravelGuide (Classic)': {
         'Title-cn': '地图标记',
         'Title-sub': '旅行指南',
         'Category': '界面'
+    },
+    'HandyNotes_WarfrontRares': {
+        'Title-cn': '地图标记',
+        'Title-sub': '稀有 战争前线',
+        'Category': '界面'
+    },
+    'HandyNotes_WarfrontRares': {
+        'Title-cn': '地图标记',
+        'Title-sub': '宝藏 战争前线',
+        'Category': '界面'
+    },
+    'HPetBattleAny': {
+        'Title-cn': '宠物对战增强',
+        'Category': '战斗'
     },
     'Informant': {
         'Title-cn': '物品信息',
@@ -626,6 +1308,11 @@ MAPPING = {
     },
     'TradeSkillMaster': {
         'Title-cn': '专业助手',
+        'Category': '物品'
+    },
+    'TradeSkillMaster_AppHelper': {
+        'Title-cn': '专业助手',
+        'Title-sub': '数据助手',
         'Category': '物品'
     },
     'TrinketMenu': {

@@ -5,7 +5,7 @@
 ## SavedVariablesPerCharacter: DBMAzeroth_SavedStats
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Azeroth (Classic)|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0世界首领|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手 |cFF69CCF0户外|r|r |cFF69CCF0艾泽拉斯（经典旧世）|r
 
 ## X-Min-Interface: 11302
 ## X-DBM-Mod: 1

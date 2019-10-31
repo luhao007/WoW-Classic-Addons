@@ -18,8 +18,6 @@
 ## X-License: All rights reserved (See license.txt)
 ## X-WoWI-ID: 24955
 
-embeds.xml
-
 LibDataBroker-1.1.lua
 
 locale\Localization.lua
