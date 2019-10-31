@@ -29,7 +29,7 @@ Ace3\AceTab-3.0\AceTab-3.0.xml
 Ace3\AceSerializer-3.0\AceSerializer-3.0.xml
 
 # Ace3 Additional Libs
-LibSharedMedia-3.0\LibSharedMedia-3.0\LibSharedMedia-3.0.lua
+LibSharedMedia-3.0\lib.xml
 AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 # Libs Needs to be Imported before Other Libs
