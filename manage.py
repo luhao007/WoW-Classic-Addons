@@ -7,7 +7,7 @@ from config import MAPPING
 from toc import TOC
 
 
-def get_cn_title(addon):
+def get_title(addon):
     m = MAPPING[addon]
     title = ''
 
@@ -23,8 +23,10 @@ def get_cn_title(addon):
             color = 'BA55D3'  # Medium orchid
         elif cat == '副本':
             color = 'FF7D0A'  # Orange - DBM
-        else:
+        elif cat == '战斗':
             color = 'FF1493'  # Deep pink
+        else:
+            color = 'FFFFFF'  # White
         title += '|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r '.format(color, cat)
     if 'Title-cn' in m:
         title += '|cFFFFFFFF{}|r '.format(m['Title-cn'])
@@ -61,9 +63,13 @@ def manage(verbose=False):
 
         toc = TOC(lines)
 
-        toc.tags['Interface'] = '11302'
+        toc.tags['Interface'] = '11302' if '_classic_' in os.getcwd() else '80205'
 
-        title = get_cn_title(addon)
+        if addon not in MAPPING:
+            print('{} not found!'.format(addon))
+            continue
+
+        title = get_title(addon)
         if title:
             toc.tags['Title-zhCN'] = title
 

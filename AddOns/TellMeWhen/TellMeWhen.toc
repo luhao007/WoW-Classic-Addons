@@ -7,7 +7,7 @@
 
 ## Title: TellMeWhen
 ## Notes: Provides visual, auditory, and textual notifications about cooldowns, buffs, and pretty much every other element of combat.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF技能状态提示|r |cFFFFE00ATellMeWhen|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF技能状态提示|r |cFFFFE00ATellMeWhen|r
 ## Notes-zhCN: 为冷却、增益\减益及其他各个方面提供视觉、听觉以及文字上的通知。
 
 ## X-Interface: 11302

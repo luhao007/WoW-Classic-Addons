@@ -23,7 +23,13 @@ MAPPING = {
         'Title-cn': '收集控助手',
         'Title-en': 'ALL THE THINGS',
         'Notes': '追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况',
-        'Category': '账号'
+        'Category': '收藏'
+    },
+    'AchievementsReminder': {
+        'Title-cn': '成就提醒',
+        'Title-en': 'Achievements Reminder',
+        'Notes': '提示当前区域可完成的成就以及完成方法',
+        'Category': '收藏'
     },
     'AdvancedInterfaceOptions': {
         'Title-cn': '高级界面设置',
@@ -39,7 +45,6 @@ MAPPING = {
     },
     'Atlas': {
         'Title-cn': '副本地图',
-        'Title-en': 'Atlas',
         'Category': '副本'
     },
     'Atlas_Arena': {
@@ -119,7 +124,6 @@ MAPPING = {
     },
     'AtlasLoot': {
         'Title-cn': '副本掉落',
-        'Title-en': 'AtlasLoot',
         'Notes': '显示首领可能掉落的物品',
         'Category': '副本'
     },
@@ -420,18 +424,18 @@ MAPPING = {
     'ClassicCastbars': {
         'Title-cn': '敌对施法条',
         'Notes': '显示一个预估的敌对施法条',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'ClassicCastbars_Options': {
         'Title-cn': '敌对施法条',
         'Title-sub': '设置',
         'Notes': 'ClassicCastbars设置模块',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'ClassicThreatMeter': {
         'Title-cn': '仇恨统计',
         'Notes': '统计目标仇恨，需队友也开启同样插件才能取得仇恨数据',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'ClearFont': {
         'Title-cn': '游戏字体',
@@ -818,6 +822,11 @@ MAPPING = {
         'Notes': '一键驱散队员的异常状态',
         'Category': '战斗'
     },
+    'DejaCharacterStats': {
+        'Title-cn': '角色属性',
+        'Notes': '在角色面板中显示额外的信息，如法术命中等',
+        'Category': '界面'
+    },
     'DejaClassicStats': {
         'Title-cn': '角色属性',
         'Notes': '在角色面板中显示额外的信息，如法术命中等',
@@ -1000,7 +1009,7 @@ MAPPING = {
         'Title-sub': '团队首领减益',
         'Category': '界面'
     },
-    'Grid2RaidDebuffs': {
+    'Grid2RaidDebuffsOptions': {
         'Title-cn': '团队面板',
         'Title-sub': '团队首领减益 设置',
         'Category': '界面'
@@ -1091,7 +1100,7 @@ MAPPING = {
         'Title-sub': '稀有 战争前线',
         'Category': '界面'
     },
-    'HandyNotes_WarfrontRares': {
+    'HandyNotes_WarfrontTreasures': {
         'Title-cn': '地图标记',
         'Title-sub': '宝藏 战争前线',
         'Category': '界面'
@@ -1118,6 +1127,84 @@ MAPPING = {
         'Title-cn': '地图增强',
         'Category': '界面'
     },
+    'MasterPlan': {
+        'Title-cn': '要塞助手',
+        'Category': '任务'
+    },
+    'MasterPlanA': {
+        'Title-cn': '要塞助手',
+        'Title-sub': '额外功能',
+        'Category': '界面'
+    },
+    'MBB': {
+        'Title-cn': '小地图按钮整合',
+        'Title-sub': 'Minimap Button Bag',
+        'Notes': '将小地图的按钮整合成一个',
+        'Category': '任务'
+    },
+    'MeetingStone': {
+        'Title-cn': '集合石',
+        'Category': '副本'
+    },
+    'MikScrollingBattleText': {
+        'Title-cn': '浮动战斗信息',
+        'Category': '战斗'
+    },
+    'MSBTOptions': {
+        'Title-cn': '浮动战斗信息',
+        'Title-sub': '设置',
+        'Category': '战斗'
+    },
+    'MogIt': {
+        'Title-cn': '幻化助手',
+        'Notes': '提供额外的幻化辅助功能。',
+        'Category': '收藏'
+    },
+    'MogIt_Artifact': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '神器',
+        'Category': '收藏'
+    },
+    'MogIt_Cloth': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '布甲',
+        'Category': '收藏'
+    },
+    'MogIt_Leather': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '皮甲',
+        'Category': '收藏'
+    },
+    'MogIt_Mail': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '锁甲',
+        'Category': '收藏'
+    },
+    'MogIt_OneHanded': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '单手武器',
+        'Category': '收藏'
+    },
+    'MogIt_Other': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '其他',
+        'Category': '收藏'
+    },
+    'MogIt_Plate': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '板甲',
+        'Category': '收藏'
+    },
+    'MogIt_Ranged': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '远程武器',
+        'Category': '收藏'
+    },
+    'MogIt_TwoHanded': {
+        'Title-cn': '幻化助手',
+        'Title-sub': '双手武器',
+        'Category': '收藏'
+    },
     'MonkeyBuddy': {
         'Title-cn': 'Monkey伴侣',
         'Notes': '在小地图旁提供一个猴子图标，可修改Monkey模块的设置',
@@ -1143,21 +1230,89 @@ MAPPING = {
         'Notes': '显示当前移动速度',
         'Category': '界面'
     },
+    'MythicPlusTimer': {
+        'Title-cn': '大秘境计时',
+        'Notes': '在大秘境中显示一个计时器',
+        'Category': '副本'
+    },
+    'NPCScan': {
+        'Title-cn': 'NPC扫描',
+        'Notes': '扫描特定的NPC，如稀有精英',
+        'Category': '收藏'
+    },
+    'Omen': {
+        'Title-cn': '仇恨统计',
+        'Notes': '小巧独立的仇恨统计窗口',
+        'Category': '战斗'
+    },
     'OmniCC': {
         'Title-cn': '技能冷却',
         'Notes': '显示技能冷却时间',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'OmniCC_Config': {
         'Title-cn': '技能冷却',
         'Title-sub': '设置',
         'Notes': '显示技能冷却时间',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'oRA3': {
         'Title-cn': '团队助手',
         'Notes': '提供团队和小队的一些辅助功能',
         'Category': '副本'
+    },
+    'Overachiever': {
+        'Title-cn': '成就助手',
+        'Notes': '提供一些辅助管理成就的功能',
+        'Category': '收藏'
+    },
+    'Overachiever_Cache': {
+        'Title-cn': '成就助手',
+        'Title-sub': '缓存',
+        'Category': '收藏'
+    },
+    'Overachiever_Tabs': {
+        'Title-cn': '成就助手',
+        'Title-sub': '界面',
+        'Category': '收藏'
+    },
+    'Overachiever_Trade': {
+        'Title-cn': '成就助手',
+        'Title-sub': '交易',
+        'Category': '收藏'
+    },
+    'Pawn': {
+        'Title-cn': '装备评分',
+        'Category': '战斗'
+    },
+    'PetTracker': {
+        'Title-cn': '宠物追踪',
+        'Category': '收藏'
+    },
+    'PetTracker_Breeds': {
+        'Title-cn': '宠物追踪',
+        'Title-sub': '品种',
+        'Category': '收藏'
+    },
+    'PetTracker_Config': {
+        'Title-cn': '宠物追踪',
+        'Title-sub': '设置',
+        'Category': '收藏'
+    },
+    'PetTracker_Journal': {
+        'Title-cn': '宠物追踪',
+        'Title-sub': '日志',
+        'Category': '收藏'
+    },
+    'PetTracker_Switcher': {
+        'Title-cn': '宠物追踪',
+        'Title-sub': '切换',
+        'Category': '收藏'
+    },
+    'PetTracker_Upgrades': {
+        'Title-cn': '宠物追踪',
+        'Title-sub': '升级',
+        'Category': '收藏'
     },
     'Prat-3.0': {
         'Title-cn': '聊天增强',
@@ -1166,16 +1321,104 @@ MAPPING = {
     },
     'Quartz': {
         'Title-cn': '施法条',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'Questie': {
         'Title-cn': '任务助手',
         'Notes': '在地图和小地图上提供任务指引，在怪物身上提示任务进度',
         'Category': '任务'
     },
+    'RaidAchievement': {
+        'Title-cn': '团队成就助手',
+        'Notes': '在团队和小队中追踪成就完成情况，并给与相应提示。内置当前版本的副本模块。',
+        'Category': '收藏'
+    },
+    'RaidAchievement_CataHeroics': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '大地的裂变小队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_CataRaids': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '大地的裂变团队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_Icecrown': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '冰冠堡垒',
+        'Category': '收藏'
+    },
+    'RaidAchievement_LegionHeroics': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '军团再临小队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_LegionRaids': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '军团再临团队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_Naxxramas': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '纳克萨玛斯',
+        'Category': '收藏'
+    },
+    'RaidAchievement_OldModules': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '经典模块',
+        'Category': '收藏'
+    },
+    'RaidAchievement_Ulduar': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '奥杜尔',
+        'Category': '收藏'
+    },
+    'RaidAchievement_WoDHeroics': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '德拉诺之王小队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_WoDRaids': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '德拉诺之王团队',
+        'Category': '收藏'
+    },
+    'RaidAchievement_WotlkHeroics': {
+        'Title-cn': '团队成就助手',
+        'Title-sub': '巫妖王之怒小队',
+        'Category': '收藏'
+    },
+    'RangeDisplay': {
+        'Title-cn': '目标距离',
+        'Notes': '显示与目标的距离。',
+        'Category': '战斗'
+    },
+    'RangeDisplay_Options': {
+        'Title-cn': '目标距离',
+        'Title-sub': '设置',
+        'Category': '战斗'
+    },
+    'Rarity': {
+        'Title-cn': '稀有物品追踪',
+        'Notes': '显示与目标的距离。',
+        'Category': '收藏'
+    },
+    'Rarity_Options': {
+        'Title-cn': '稀有物品追踪',
+        'Title-sub': '设置',
+        'Category': '收藏'
+    },
     'Recount': {
         'Title-cn': '伤害统计',
-        'Category': '界面'
+        'Category': '战斗'
+    },
+    'RelicInspector': {
+        'Title-cn': '钥石信息',
+        'Category': '副本'
+    },
+    'Rematch': {
+        'Title-cn': '宠物对战增强',
+        'Category': '战斗'
     },
     'Scrap': {
         'Title-cn': '垃圾管理',
@@ -1206,6 +1449,21 @@ MAPPING = {
         'Notes': '提供一个可视化列表来查看灰色物品',
         'Category': '物品'
     },
+    'SimpleRaidTargetIcons': {
+        'Title-cn': '团队标记助手',
+        'Notes': '双击目标即可添加团队标记',
+        'Category': '界面'
+    },
+    'Simulationcraft': {
+        'Title-cn': '输出模拟器',
+        'Notes': '模拟当前人物的输出，来确认哪个装备属性更好。',
+        'Category': '战斗'
+    },
+    'Skada': {
+        'Title-cn': '伤害统计',
+        'Notes': '伤害统计窗口',
+        'Category': '战斗'
+    },
     'SlideBar': {
         'Title-cn': '侧边滑动栏',
         'Notes': '在屏幕边提供一个可以滑动栏来显示小地图图标',
@@ -1218,16 +1476,39 @@ MAPPING = {
     },
     'TellMeWhen': {
         'Title-cn': '技能状态提示',
-        'Category': '界面'
+        'Category': '战斗'
     },
     'TellMeWhen_Options': {
         'Title-cn': '技能状态提示',
         'Title-sub': '设置',
+        'Category': '战斗'
+    },
+    'TinyInspect': {
+        'Title-cn': '装备观察',
+        'Notes': '独立的装备列表',
         'Category': '界面'
     },
     'TinyTooltip': {
         'Title-cn': '鼠标提示增强',
         'Notes': '在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置',
+        'Category': '界面'
+    },
+    'Titan': {
+        'Title-cn': '泰坦面板',
+        'Title-en': 'Titan Panel',
+        'Notes': '在屏幕顶端/底端增加一个可视化侧边栏',
+        'Category': '界面'
+    },
+    'TitanAmmo': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '弹药',
+        'Notes': '泰坦面板的弹药模块',
+        'Category': '界面'
+    },
+    'TitanBag': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '背包',
+        'Notes': '泰坦面板的背包模块',
         'Category': '界面'
     },
     'TitanClassic': {
@@ -1302,6 +1583,72 @@ MAPPING = {
         'Notes': '泰坦面板的经验模块',
         'Category': '界面'
     },
+    'TitanClock': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '时钟',
+        'Notes': '泰坦面板的时钟模块',
+        'Category': '界面'
+    },
+    'TitanCurrency': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '货币',
+        'Notes': '泰坦面板的货币模块',
+        'Category': '界面'
+    },
+    'TitanGold': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '金币',
+        'Notes': '泰坦面板的金币模块',
+        'Category': '界面'
+    },
+    'TitanLocation': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '位置',
+        'Notes': '泰坦面板的位置模块',
+        'Category': '界面'
+    },
+    'TitanLootType': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '分配方式',
+        'Notes': '泰坦面板的分配方式模块',
+        'Category': '界面'
+    },
+    'TitanPerformance': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '性能',
+        'Notes': '泰坦面板的性能模块',
+        'Category': '界面'
+    },
+    'TitanRepair': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '修理',
+        'Notes': '泰坦面板的修理模块',
+        'Category': '界面'
+    },
+    'TitanReputation': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '声望',
+        'Notes': '泰坦面板的声望模块',
+        'Category': '界面'
+    },
+    'TitanVolume': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '音量',
+        'Notes': '泰坦面板的音量模块',
+        'Category': '界面'
+    },
+    'TitanXP': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '经验',
+        'Notes': '泰坦面板的经验模块',
+        'Category': '界面'
+    },
+    'titan-simulationcraft': {
+        'Title-cn': '泰坦面板',
+        'Title-sub': '模拟',
+        'Notes': '泰坦面板上添加一个SimulationCraft按钮。',
+        'Category': '界面'
+    },
     'TomTom': {
         'Title-cn': '导航助手',
         'Category': '界面'
@@ -1321,12 +1668,12 @@ MAPPING = {
         'Category': '物品'
     },
     'tullaRange': {
-        'Title-cn': '距离检测',
+        'Title-cn': '技能距离检测',
         'Notes': '目标距离过远时，将技能图标显示为红色',
         'Category': '界面'
     },
     'tullaRange_Config': {
-        'Title-cn': '距离检测',
+        'Title-cn': '技能距离检测',
         'Title-sub': '设置',
         'Notes': 'tullaRange设置模块',
         'Category': '界面'
@@ -1358,5 +1705,17 @@ MAPPING = {
     'WIM': {
         'Title-cn': '即时通信',
         'Category': '界面'
+    },
+    'Wholly': {
+        'Title-cn': '任务完成辅助',
+        'Category': '任务'
+    },
+    'WorldQuestsList': {
+        'Title-cn': '世界任务列表',
+        'Category': '任务'
+    },
+    'WorldQuestTracker': {
+        'Title-cn': '世界任务追踪',
+        'Category': '任务'
     },
 }

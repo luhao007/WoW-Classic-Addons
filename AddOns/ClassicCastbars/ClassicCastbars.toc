@@ -5,7 +5,7 @@
 
 ## Title: ClassicCastbars
 ## Notes: Adds castbars to various unitframes.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFFFFE00AClassicCastbars|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFFFFE00AClassicCastbars|r
 ## Notes-zhCN: 显示一个预估的敌对施法条
 
 ## X-Curse-Project-ID: 322865

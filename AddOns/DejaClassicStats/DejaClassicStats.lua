@@ -1789,11 +1789,15 @@ end)
 local DejaClassicStatsEventFrame = CreateFrame("Frame", "DejaClassicStatsEventFrame", UIParent)
 -- DejaClassicStatsEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 DejaClassicStatsEventFrame:RegisterEvent("ADDON_LOADED")
+DejaClassicStatsEventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
 	DejaClassicStatsEventFrame:SetScript("OnEvent", function(self, event, arg1)
 		if event == "ADDON_LOADED" and arg1 == "DejaClassicStats" then
 			DCS_SetAllStatFrames()
 			DCS_CREATE_STATS()
+			DCS_SET_STATS_TEXT()
+			DCS_SetResistances()
+			DCS_RepairTotal()
 			self:UnregisterEvent("ADDON_LOADED")
 		end
 	end)

@@ -6,7 +6,7 @@
 
 ## Title: CensusPlusClassic
 ## Notes: Collects and displays census information.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493账号|r|cFFFFE00A>|r |cFFFFFFFF人口普查|r |cFFFFE00ACensusPlusClassic|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF账号|r|cFFFFE00A>|r |cFFFFFFFF人口普查|r |cFFFFE00ACensusPlusClassic|r
 ## Notes-zhCN: 统计服务器中的人口数量
 
 ## X-Website: http://wowclassicpopulation.com

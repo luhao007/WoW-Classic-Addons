@@ -6,7 +6,7 @@
 
 ## Title: ClassicThreatMeter
 ## Notes: Simple threat meter for WoW Classic.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF仇恨统计|r |cFFFFE00AClassicThreatMeter|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF仇恨统计|r |cFFFFE00AClassicThreatMeter|r
 ## Notes-zhCN: 统计目标仇恨，需队友也开启同样插件才能取得仇恨数据
 
 ## X-Curse-Project-ID: 336512
