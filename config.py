@@ -842,6 +842,12 @@ MAPPING = {
         'Notes': '提示物品分解后可能得到的材料',
         'Category': '物品'
     },
+    'Enchantrix-Barker': {
+        'Title-cn': '附魔助手',
+        'Title-sub': '叫卖',
+        'Notes': '将可以进行的附魔价格发送到交易频道',
+        'Category': '物品'
+    },
     'FasterCamera': {
         'Title-cn': '视野调整',
         'Notes': '提供调整视野上限，快速缩放视野等功能',
