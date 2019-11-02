@@ -3,7 +3,7 @@ ItemRack = {}
 local disable_delayed_swaps = nil -- temporary. change nil to 1 to stop attempting to delay set swaps while casting
 local _
 
-ItemRack.Version = "3.19"
+ItemRack.Version = "3.22"
 
 ItemRackUser = {
 	Sets = {}, -- user's sets
@@ -308,6 +308,42 @@ function ItemRack.UpdateClassSpecificStuff()
 	end
 end
 
+function ItemRack.OnSetBagItem(tooltip, bag, slot)
+	ItemRack.ListSetsHavingItem(tooltip, ItemRack.GetID(bag, slot))
+end
+
+function ItemRack.OnSetInventoryItem(tooltip, unit, inv_slot)
+	ItemRack.ListSetsHavingItem(tooltip, ItemRack.GetID(inv_slot))
+end
+
+function ItemRack.OnSetHyperlink(tooltip, link)
+	ItemRack.ListSetsHavingItem(tooltip, link:match("item:(.+)"))
+end
+
+do
+	local data = {}
+
+	function ItemRack.ListSetsHavingItem(tooltip, id)
+		if ItemRackSettings.ShowSetInTooltip ~= "ON" then
+			return
+		end
+		local same_ids = ItemRack.SameID
+		if not id or id == 0 then return end
+		for name, set in pairs(ItemRackUser.Sets) do
+			for _, item in pairs(set.equip) do
+				if same_ids(item, id) then
+					data[name] = true
+				end
+			end
+		end
+		for name in pairs(data) do
+			tooltip:AddDoubleLine("ItemRack Set: ", name, 0,.6,1, 0,.6,1)
+			data[name] = nil
+		end
+		tooltip:Show()
+	end
+end
+
 function ItemRack.InitCore()
 	ItemRackUser.Sets["~Unequip"] = { equip={} }
 	ItemRackUser.Sets["~CombatQueue"] = { equip={} }
@@ -348,6 +384,9 @@ function ItemRack.InitCore()
 	hooksecurefunc("UseAction",ItemRack.newUseAction)
 	hooksecurefunc("UseItemByName",ItemRack.newUseItemByName)
 	hooksecurefunc("PaperDollFrame_OnShow",ItemRack.newPaperDollFrame_OnShow)
+	hooksecurefunc(GameTooltip, "SetBagItem", ItemRack.OnSetBagItem)
+	hooksecurefunc(GameTooltip, "SetInventoryItem", ItemRack.OnSetInventoryItem)
+	hooksecurefunc(GameTooltip, "SetHyperlink", ItemRack.OnSetHyperlink)
 
 	ItemRackFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 	ItemRackFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -360,14 +399,14 @@ function ItemRack.InitCore()
 	-- ItemRackFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	-- ItemRackFrame:RegisterEvent("PET_BATTLE_OPENING_START")
 	-- ItemRackFrame:RegisterEvent("PET_BATTLE_CLOSE")
-	if not disable_delayed_swaps then
+	--if not disable_delayed_swaps then
 		-- in the event delayed swaps while casting don't work well,
 		-- make disable_delayed_swaps=1 at top of this file to disable it
 		-- ItemRackFrame:RegisterEvent("UNIT_SPELLCAST_START")
 		-- ItemRackFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
 		-- ItemRackFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 		-- ItemRackFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	end
+	--end
 	ItemRack.StartTimer("CooldownUpdate")
 	ItemRack.MoveMinimap()
 	ItemRack.ReflectAlpha()
@@ -447,7 +486,7 @@ end
 -- itemrack itemstring updater.
 -- takes a saved ItemRack-style ID and returns an updated version with the latest player level and spec injected, which helps us update outdated IDs saved when the player was lower level or different spec
 function ItemRack.UpdateIRString(itemRackID)
-	return (string.gsub(itemRackID or "", "^("..strrep("%d+:", 8)..")%d+:%d+", "%1"..UnitLevel("player")..":"..GetInspectSpecialization("player"))) --note: parenthesis to discard 2nd return value (number of substitutions, which will always be 1)
+	return (string.gsub(itemRackID or "", "^("..strrep("%d+:", 8)..")%d+:%d+", "%1"..UnitLevel("player")..":".."0")) --note: parenthesis to discard 2nd return value (number of substitutions, which will always be 1)
 end
 
 -- returns the provided ItemRack-style ID string with "item:" prepended, which turns it into a normal itemstring which we can then use for item lookups, itemlink generation and so on.
@@ -1811,7 +1850,16 @@ function ItemRack.SetSetBindings()
 			buttonName = "ItemRack"..UnitName("player")..GetRealmName()..i
 			button = _G[buttonName] or CreateFrame("Button",buttonName,nil,"SecureActionButtonTemplate")
 			button:SetAttribute("type","macro")
-			button:SetAttribute("macrotext","/script ItemRack.RunSetBinding(\""..i.."\")")
+			local macrotext = "/script ItemRack.RunSetBinding(\""..i.."\")\n"
+			for slot = 16, 18 do
+				if ItemRackUser.Sets[i].equip[slot] then
+					local name,_,_,_,_,_,_,_,_,_ = GetItemInfo("item:"..ItemRackUser.Sets[i].equip[slot])
+					if name then
+						macrotext = macrotext .. "/equipslot [combat]" .. slot .. " " .. name .. "\n";
+					end
+				end
+			end
+			button:SetAttribute("macrotext",macrotext)
 			SetBindingClick(ItemRackUser.Sets[i].key,buttonName)
 		end
 	end
@@ -1979,12 +2027,3 @@ function ItemRack.ProfileFuncs()
 		table.insert(TinyPadPages,info)
 	end
 end
-
-function GetInspectSpecialization()
-	return 0;
-end
-
-function GetSpecialization()
-	return 0;
-end
-

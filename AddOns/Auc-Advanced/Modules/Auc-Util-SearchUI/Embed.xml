@@ -19,6 +19,6 @@
 	<script file="FilterItemPrice.lua"/>
 	<script file="FilterItemAuctionHistory.lua"/>
 	<Script>
-		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/Embed.xml $", "$Rev: 6415 $")
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/Embed.xml $", "$Rev: 6464 $")
 	</Script>
 </Ui>

@@ -37,7 +37,7 @@ local LIBSTRING = LIBNAME.."_"..VERSION_MAJOR.."_"..VERSION_MINOR
 local lib = LibStub:NewLibrary(LIBNAME.."-"..VERSION_MAJOR, VERSION_MINOR)
 if not lib then return end
 
-LibStub("LibRevision"):Set("$URL: Auc-Advanced/Libs/LibExtraTip/LibExtraTip.lua $","$Rev: 6426 $","5.15.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: Auc-Advanced/Libs/LibExtraTip/LibExtraTip.lua $","$Rev: 6449 $","5.15.DEV.", 'auctioneer', 'libs')
 
 -- need to know early if we're using Classic or Modern version
 local MINIMUM_CLASSIC = 11300
@@ -781,21 +781,35 @@ function lib:GetMoneyText(money, concise)
 	local s = floor(money % 10000 / 100)
 	local c = floor(money % 100)
 
+    local colorBlindEnabled = GetCVar("colorblindMode") == "1"
+
 	local moneyText = ""
 
 	local sep, fmt = "", "%d"
 	if g > 0 then
-		moneyText = goldicon:format(g)
+        if colorBlindEnabled then
+		    moneyText = format("%.0f",g) .. GOLD_AMOUNT_SYMBOL
+        else
+		    moneyText = goldicon:format(g)
+        end
 		sep, fmt = " ", "%02d"
 	end
 
 	if s > 0 or (money >= 10000 and (concise and c > 0) or not concise) then
-		moneyText = moneyText..sep..silvericon:format(fmt):format(s)
+        if colorBlindEnabled then
+		    moneyText = moneyText .. sep .. format(fmt,s) .. SILVER_AMOUNT_SYMBOL
+        else
+		    moneyText = moneyText..sep..silvericon:format(fmt):format(s)
+        end
 		sep, fmt = " ", "%02d"
 	end
 
 	if not concise or c > 0 or money < 100 then
-		moneyText = moneyText..sep..coppericon:format(fmt):format(c)
+        if colorBlindEnabled then
+		    moneyText = moneyText .. sep .. format(fmt,c) .. COPPER_AMOUNT_SYMBOL
+        else
+            moneyText = moneyText..sep..coppericon:format(fmt):format(c)
+        end
 	end
 
 	return moneyText

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6422 (SwimmingSeadragon)
-	Revision: $Id: PostMonitor.lua 6422 2019-09-22 00:20:05Z none $
+	Version: 8.2.6434 (SwimmingSeadragon)
+	Revision: $Id: PostMonitor.lua 6434 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	PostMonitor - Records items posted up for auction
@@ -28,7 +28,7 @@
 		since that is it's designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-LibStub("LibRevision"):Set("$URL: BeanCounter/PostMonitor.lua $","$Rev: 6422 $","5.1.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: BeanCounter/PostMonitor.lua $","$Rev: 6434 $","5.1.DEV.", 'auctioneer', 'libs')
 
 --[[Most of this code is from BC classic]]--
 local libName = "BeanCounter"
@@ -41,6 +41,14 @@ local function debugPrint(...)
         private.debugPrint("PostMonitor",...)
     end
 end
+
+-- need to know if we're using Classic or Modern version
+local MINIMUM_CLASSIC = 11300
+local MAXIMUM_CLASSIC = 19999
+-- version, build, date, tocversion = GetBuildInfo()
+local _,_,_,tocVersion = GetBuildInfo()
+lib.isClassic = (tocVersion > MINIMUM_CLASSIC and tocVersion < MAXIMUM_CLASSIC)
+
 
 -------------------------------------------------------------------------------
 -- Called before PostAuction()
@@ -80,9 +88,15 @@ function private.prePostAuctionHook(_, _, minBid, buyoutPrice, runTime, count, s
 		debugPrint(itemLink, "deposit", deposit, "for", count, "x", stackNumber, "duration", runTime)
 
 		--TEMP PATCH to fix run time changes till I can change teh mail lua to work with new system
-		if runTime == 1 then runTime = 720 end
-		if runTime == 2 then runTime = 1440 end
-		if runTime == 3 then runTime = 2880 end
+        if lib.isClassic then
+            if runTime == 1 then runTime = 120 end
+            if runTime == 2 then runTime = 480 end
+            if runTime == 3 then runTime = 1440 end
+        else
+            if runTime == 1 then runTime = 720 end
+            if runTime == 2 then runTime = 1440 end
+            if runTime == 3 then runTime = 2880 end
+        end
 
 		nameMulti, countMulti, minBidMulti, buyoutPriceMulti, runTimeMulti, depositMulti = name, count, minBid, buyoutPrice, runTime, deposit
 		--Multipost is used when more than 1 stack is posted or when the selected stack is too small to post the stacksize

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Price Level Utility module
 	Version: 8.2.6354 (SwimmingSeadragon)
-	Revision: $Id: ScanProgress.lua 6354 2019-09-22 00:20:05Z none $
+	Revision: $Id: ScanProgress.lua 6354 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer module that adds a textual scan progress

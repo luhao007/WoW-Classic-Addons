@@ -1,7 +1,7 @@
 --[[
 	Babylonian - A sub-addon that manages the locales for other addons.
 	Version: 8.2.6342 (SwimmingSeadragon)
-	Revision: $Id: Babylonian.lua 6342 2019-09-22 00:20:05Z none $
+	Revision: $Id: Babylonian.lua 6342 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/dl/
 
 	License:

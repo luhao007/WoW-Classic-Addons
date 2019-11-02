@@ -1,7 +1,7 @@
 --[[
 	Slidebar AddOn for World of Warcraft (tm)
 	Version: 8.2.6375 (SwimmingSeadragon)
-	Revision: $Id: SlideMain.lua 6375 2019-09-22 00:20:05Z none $
+	Revision: $Id: SlideMain.lua 6375 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/dl/
 
 	License:

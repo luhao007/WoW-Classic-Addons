@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6422 (SwimmingSeadragon)
-	Revision: $Id: BidMonitor.lua 6422 2019-09-22 00:20:05Z none $
+	Version: 8.2.6434 (SwimmingSeadragon)
+	Revision: $Id: BidMonitor.lua 6434 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	BidMonitor - Records bids posted in the Auctionhouse
@@ -28,7 +28,7 @@
 		since that is it's designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-LibStub("LibRevision"):Set("$URL: BeanCounter/BidMonitor.lua $","$Rev: 6422 $","5.1.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: BeanCounter/BidMonitor.lua $","$Rev: 6434 $","5.1.DEV.", 'auctioneer', 'libs')
 
 local libName = "BeanCounter"
 local libType = "Util"

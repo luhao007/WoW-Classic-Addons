@@ -4,8 +4,8 @@
 ## Interface: 80200
 ## Dependancies: Auc-Advanced
 ##
-## Version: 8.2.6410 (SwimmingSeadragon)
-## Revision: $Id: Auc-Util-CompactUI.toc 6410 2019-09-22 00:20:05Z none $
+## Version: 8.2.6452 (SwimmingSeadragon)
+## Revision: $Id: Auc-Util-CompactUI.toc 6452 2019-10-20 00:10:07Z none $
 ## Author: Norganna's AddOns
 ## X-Part-Of: Auctioneer
 ## X-Category: Auction House

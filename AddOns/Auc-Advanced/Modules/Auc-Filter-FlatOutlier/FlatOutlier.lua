@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - FlatOutlier Filter
 	Version: 8.2.6394 (SwimmingSeadragon)
-	Revision: $Id: FlatOutlier.lua 6394 2019-09-22 00:20:05Z none $
+	Revision: $Id: FlatOutlier.lua 6394 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is scaning filter plugin for Auctioneer.

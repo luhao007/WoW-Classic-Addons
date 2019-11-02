@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6379 (SwimmingSeadragon)
-	Revision: $Id: AskPrice.lua 6379 2019-09-22 00:20:05Z none $
+	Version: 8.2.6460 (SwimmingSeadragon)
+	Revision: $Id: AskPrice.lua 6460 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	Auctioneer AskPrice created by Mikezter and merged into
@@ -70,10 +70,13 @@ function lib.OnLoad(addon)
 
 	--Do our addon message event registration
 	private.frame:RegisterEvent("CHAT_MSG_ADDON")
-	if (RegisterAddonMessagePrefix and (type(RegisterAddonMessagePrefix) == 'function')) then
-		if (not RegisterAddonMessagePrefix("AucAdvAskPrice")) then
+	if (C_ChatInfo.RegisterAddonMessagePrefix and (type(C_ChatInfo.RegisterAddonMessagePrefix) == 'function')) then
+		if (not C_ChatInfo.RegisterAddonMessagePrefix("AucAdvAskPrice")) then
 			print("Too many addons have registered for an addon communication prefix via RegisterAddonMessagePrefix(), disable some of the others so that {{AskPrice}} can work.")
 		end
+    else
+        -- without this, request will get dozens of responses, so print an error!
+        print("AskPrice: RegisterAddonMessagePrefix was not available!", RegisterAddonMessagePrefix, C_ChatInfo.RegisterAddonMessagePrefix)
 	end
 
 
@@ -498,7 +501,7 @@ end
 
 --This function changed after AskPrice revision 2825 to include AucAdvanced's revision number in adition to AskPrice's
 function private.GetVersion()
-	return tonumber(("$Rev: 6379 $"):match("(%d+)")), (AucAdvanced.GetCurrentRevision()) --We just want the first return from GetCurrentRevision()
+	return tonumber(("$Rev: 6460 $"):match("(%d+)")), (AucAdvanced.GetCurrentRevision()) --We just want the first return from GetCurrentRevision()
 end
 
 --This function is used to check if the received request (which should be lowercased before the function is called) is a valid SmartWords request
@@ -536,7 +539,7 @@ function private.SlashHandler.send(queryString)
 	end
 
 	if parseError then
-		print("The correct syntax is {{/asprice send Player <#>[Item Link]}}, where {{<#>}} is the stack size (optional) and {{Player}} is the person you wish to send to.")
+		print("The correct syntax is {{/askprice send Player <#>[Item Link]}}, where {{<#>}} is the stack size (optional) and {{Player}} is the person you wish to send to.")
 	end
 end
 
@@ -619,4 +622,4 @@ function private.SetupConfigGui(gui)
 	gui:AddTip(id, _TRANS('ASKP_HelpTooltip_Whisper')) --"Shows (enabled) or hides (disabled) outgoing whispers from Askprice."
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AskPrice/AskPrice.lua $", "$Rev: 6379 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-AskPrice/AskPrice.lua $", "$Rev: 6460 $")

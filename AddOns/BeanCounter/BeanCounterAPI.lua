@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6422 (SwimmingSeadragon)
-	Revision: $Id: BeanCounterAPI.lua 6422 2019-09-22 00:20:05Z none $
+	Version: 8.2.6434 (SwimmingSeadragon)
+	Revision: $Id: BeanCounterAPI.lua 6434 2019-10-20 00:10:07Z none $
 
 	BeanCounterAPI - Functions for other addons to get BeanCounter Data
 	URL: http://auctioneeraddon.com/
@@ -28,7 +28,7 @@
 		since that is it's designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterAPI.lua $","$Rev: 6422 $","5.1.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterAPI.lua $","$Rev: 6434 $","5.1.DEV.", 'auctioneer', 'libs')
 
 local lib = BeanCounter
 lib.API = {}
@@ -178,11 +178,12 @@ local function addDEValue(meta)
 	end
 	return 0
 end
+
 function lib.API.getAHProfit(player, item, lowDate, highDate, includeMeta)
 	if not player or player == "" then player = "server" end
 	if not item then item = "" end
 
-	local sum, low, high, date = 0, 2051283600, 1  -- wow's date system errors when you go to far into the future 2035 seems like a good year
+	local sum, low, high, date = 0, 2051283600, 1  -- wow's date system errors when you go too far into the future, 2035 seems like a good year
 	local settings = {["selectbox"] = {"1", player} , ["bid"] = true, ["auction"] = true, ["failedauction"] = true}
 	local tbl
 	--allow a already API searched data table to be passed instead of just a text string
@@ -369,6 +370,7 @@ function lib.API.createItemLinkFromArray(itemKey, uniqueID)
 	end
 	return
 end
+
 --[[Convert and store an itemLink into the compressed format used in the itemIDArray]]
 function lib.API.storeItemLinkToArray(itemLink)
 	if not itemLink then return end
@@ -383,15 +385,21 @@ end
 Returns sanitized itemlinks. Since hyperlinks now vary depending on level of player who looks/creates them
 ]]
 function lib.API.getItemString(itemLink)
-	if not itemLink or not type(itemLink) == "string" then return end
+	if not itemLink or not type(itemLink) == "string" then
+        --DebugPrintQuick("getItemString bad itemLink ", itemLink)
+        return
+    end
 	local itemString, itemName = itemLink:match("H(item:.-)|h%[(.-)%]")
-	if not itemString then return end
+	if not itemString then
+        --DebugPrintQuick("getItemString no item in link ", itemLink)
+        return
+    end
 
-	--DebugPrintQuick("Itemstring input ", itemString, itemName)
+    --DebugPrintQuick("getItemString input ", itemString, itemName, itemLink )
 	-- WARNING - this must survive multiple iterations on the same link/string without changing it more than once
 	--itemString = itemString:gsub("(item:[^:]+:[^:]+:[^:]+:[^:]+:[^:]+:[^:]+:[^:]+:[^:]+):%d+:%d+", "%1:80:0")	-- OLD, FAILING
 	itemString = itemString:gsub("(item:%d+:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*:[^:]*):%d+:%d*:(.*)", "%1:100::%2")
-	--DebugPrintQuick("Itemstring output ", itemString, itemName)
+    --DebugPrintQuick("getItemString output ", itemString, itemName, itemLink )
 
 	return itemString, itemName
 end

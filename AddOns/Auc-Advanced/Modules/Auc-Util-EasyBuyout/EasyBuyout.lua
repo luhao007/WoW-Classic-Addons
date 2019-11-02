@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - EasyBuyout Utility Module
 	Version: 1.2.5 (GhostfromTexas)
-	Revision: $Id: EasyBuyout.lua 6350 2019-09-22 00:20:05Z none $
+	Revision: $Id: EasyBuyout.lua 6350 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	This Auctioneer module allows for the ability to purchase items from

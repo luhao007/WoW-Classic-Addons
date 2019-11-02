@@ -1,7 +1,7 @@
 --[[
 	Enchantrix Addon for World of Warcraft(tm).
 	Version: 8.2.6428 (SwimmingSeadragon)
-	Revision: $Id: EnxConstantsJewelcrafting.lua 6428 2019-09-22 00:20:05Z none $
+	Revision: $Id: EnxConstantsJewelcrafting.lua 6428 2019-10-20 00:10:07Z none $
 	URL: http://enchantrix.org/
 
 	Enchantrix Constants for Jewelcrafting / Prospecting

@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Search UI - Searcher Vendor
-	Version: 8.2.6415 (SwimmingSeadragon)
-	Revision: $Id: SearcherVendor.lua 6415 2019-09-22 00:20:05Z none $
+	Version: 8.2.6464 (SwimmingSeadragon)
+	Revision: $Id: SearcherVendor.lua 6464 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is a plugin module for the SearchUI that assists in searching by refined paramaters
@@ -111,7 +111,7 @@ function lib:MakeGuiConfig(gui)
 	gui:AddTip(id, "Limit the maximum amount you want to spend with the Vendor searcher")
 	gui:AddControl(id, "MoneyFramePinned",  0.42, 2, "vendor.maxprice", 1, Const.MAXBIDPRICE, "Maximum Price for Vendor")
 
-	gui:AddControl(id, "Note",       0, 1, 100, 14, "TimeLeft:")
+	gui:AddControl(id, "Note",       0, 1, 100, 14, "Bid TimeLeft:")
 	gui:AddControl(id, "Selectbox",  0, 1, private.getTimeLeftStrings(), "vendor.timeleft")
 
 end
@@ -132,10 +132,6 @@ function lib.Search(item)
 		return false, "Does not meet bid/buy requirements"
 	end
 
-	if not private.CheckTimeLeft( item[Const.TLEFT] ) then
-		return false, "Does not meet timeleft requirements"
-	end
-
 	local market = GetItemInfoCache(item[Const.LINK], 11)
 	-- If there's no price, then we obviously can't sell it, ignore!
 	if not market or market == 0 then
@@ -149,13 +145,18 @@ function lib.Search(item)
 	if value > value2 then
 		value = value2
 	end
+
 	if buyprice and buyprice <= value then
 		return "buy", market
 	elseif bidprice and bidprice <= value then
-		return "bid", market
+        if not private.CheckTimeLeft( item[Const.TLEFT] ) then
+            return false, "Does not meet bid timeleft requirements"
+        else
+            return "bid", market
+        end
 	end
 
 	return false, "Not enough profit"
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherVendor.lua $", "$Rev: 6415 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-SearchUI/SearcherVendor.lua $", "$Rev: 6464 $")

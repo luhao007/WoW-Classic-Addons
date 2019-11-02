@@ -2,6 +2,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 	<Script file="CompactUI.lua"/>
 	<Script>
-		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-CompactUI/Embed.xml $", "$Rev: 6410 $")
+		AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-CompactUI/Embed.xml $", "$Rev: 6452 $")
 	</Script>
 </Ui>

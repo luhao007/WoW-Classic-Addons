@@ -1,7 +1,7 @@
 --[[
 	Auctioneer Addon for World of Warcraft(tm).
-	Version: 8.2.6422 (SwimmingSeadragon)
-	Revision: $Id: BeanCounterSearch.lua 6422 2019-09-22 00:20:05Z none $
+	Version: 8.2.6434 (SwimmingSeadragon)
+	Revision: $Id: BeanCounterSearch.lua 6434 2019-10-20 00:10:07Z none $
 
 	BeanCounterSearch - Search routines for BeanCounter data
 	URL: http://auctioneeraddon.com/
@@ -28,7 +28,7 @@
 		since that is it's designated purpose as per:
 		http://www.fsf.org/licensing/licenses/gpl-faq.html#InterpreterIncompat
 ]]
-LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterSearch.lua $","$Rev: 6422 $","5.1.DEV.", 'auctioneer', 'libs')
+LibStub("LibRevision"):Set("$URL: BeanCounter/BeanCounterSearch.lua $","$Rev: 6434 $","5.1.DEV.", 'auctioneer', 'libs')
 
 local lib = BeanCounter
 local private, print, get, set, _BC = lib.getLocals()
@@ -255,6 +255,7 @@ function private.searchServerData(serverName, data, tbl, settings)
 	end
 	return data
 end
+
 function private.searchDB(data, server, player, DB, itemID)
 	for index, itemKey in pairs(server[player][DB][itemID]) do
 		DB = DB:gsub("Neutral", "")--remove the Neutral part so we send it to the proper function
@@ -290,6 +291,7 @@ function private.formatServerData(data, settings)
 
 	return formatedData
 end
+
 --take collected data and format
 local  function styleColors(database) --helper takes formated data table and looks to what colors we use for style
 	-- style colors for the various databases
@@ -307,6 +309,7 @@ local  function styleColors(database) --helper takes formated data table and loo
 		return  1, .5, .1
 	end
 end
+
 function private.styleServerData(data)
 	--create style data for entries that are going to be displayed, created seperatly to allow us to reduce the data table entries
 	local dateString = get("dateString") or "%c"
@@ -325,6 +328,7 @@ end
 local function sorton12(a, b)
 	return a[12] > b[12]
 end
+
 function private.reduceSize(tbl, count)
 	--The data provided is from multiple toons tables, so we need to resort the merged data back into sequential time order
 	sort(tbl, sorton12)
@@ -334,6 +338,7 @@ function private.reduceSize(tbl, count)
 	end
 	return data
 end
+
 --Filter out dates older than we are interested in
 function private.filterbyDate(tbl, lowDate, highDate)
 	if not lowDate then lowDate = 1 end
@@ -347,6 +352,7 @@ function private.filterbyDate(tbl, lowDate, highDate)
 	end
 	return data
 end
+
 --To simplify having two seperate search routines, the Data creation of each table has been made a local function
 function private.COMPLETEDAUCTIONS(id, itemKey, text)
 	local uStack, uMoney, uDeposit, uFee, uBuyout, uBid, uSeller, uTime, uReason, uMeta = private.unpackString(text)
@@ -389,6 +395,7 @@ function private.COMPLETEDAUCTIONS(id, itemKey, text)
 		uMeta or "",
 	}
 end
+
 function private.FAILEDAUCTIONS(id, itemKey, text)
 	local status
 	local uStack, uMoney, uDeposit, uFee, uBuyout, uBid, uSeller, uTime, uReason, uMeta = private.unpackString(text)
@@ -432,6 +439,7 @@ function private.FAILEDAUCTIONS(id, itemKey, text)
 		uMeta or "",
 	}
 end
+
 function private.COMPLETEDBIDSBUYOUTS(id, itemKey, text)
 	local status
 	local uStack, uMoney, uDeposit, uFee, uBuyout, uBid, uSeller, uTime, uReason, uMeta = private.unpackString(text)
@@ -489,6 +497,7 @@ function private.COMPLETEDBIDSBUYOUTS(id, itemKey, text)
 		uMeta or "",
 	}
 end
+
 function private.FAILEDBIDS(id, itemKey, text)
 	local uStack, uMoney, uDeposit, uFee, uBuyout, uBid, uSeller, uTime, uReason, uMeta = private.unpackString(text)
 	if uSeller == "0" then uSeller = "..." end

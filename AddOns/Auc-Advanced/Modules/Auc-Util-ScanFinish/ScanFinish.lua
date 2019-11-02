@@ -1,7 +1,7 @@
 --[[
 	Auctioneer - Scan Finish module
-	Version: 8.2.6345 (SwimmingSeadragon)
-	Revision: $Id: ScanFinish.lua 6345 2019-09-22 00:20:05Z none $
+	Version: 8.2.6456 (SwimmingSeadragon)
+	Revision: $Id: ScanFinish.lua 6456 2019-10-20 00:10:07Z none $
 	URL: http://auctioneeraddon.com/
 
 	This is an Auctioneer module that adds a few event functionalities
@@ -78,8 +78,6 @@ lib.Processors = {
 function lib.OnLoad()
 	--aucPrint("Auctioneer: {{"..libType..":"..libName.."}} loaded!")
 	default("util.scanfinish.activated", true)
-	default("util.scanfinish.shutdown", false)
-	default("util.scanfinish.logout", false)
 	default("util.scanfinish.soundpath", "AuctioneerClassic")
 	default("util.scanfinish.message", "So many auctions... so little time")
 	default("util.scanfinish.messagechannel", "none")
@@ -92,7 +90,6 @@ end
 
 function private.ScanStart(scanSize, querysig, query)
 	if (scanSize ~= "Full") then return end
-	private.AlertShutdownOrLogOff()
 end
 
 
@@ -120,28 +117,6 @@ function private.PerformFinishEvents()
 		DoEmote(get("util.scanfinish.emote"))
 	end
 
-	--Shutdown or Logoff
-	if (get("util.scanfinish.shutdown")) then
-		aucPrint("AucAdvanced: {{"..libName.."}} Shutting Down!!")
-		if not blnDebug then
-			Quit()
-		end
-	elseif (get("util.scanfinish.logout")) then
-		aucPrint("AucAdvanced: {{"..libName.."}} Logging Out!")
-		if not blnDebug then
-			Logout()
-		end
-	end
-end
-
-function private.AlertShutdownOrLogOff()
-	if (get("util.scanfinish.shutdown")) then
-		PlaySound(PlaySoundKitID and "TellMessage" or SOUNDKIT.TELL_MESSAGE) -- HYBRID73
-		aucPrint("AucAdvanced: {{"..libName.."}} |cffff3300Reminder|r: Shutdown is enabled. World of Warcraft will be shut down once the current scan successfully completes.")
-	elseif (get("util.scanfinish.logout")) then
-		PlaySound(PlaySoundKitID and "TellMessage" or SOUNDKIT.TELL_MESSAGE) -- HYBRID73
-		aucPrint("AucAdvanced: {{"..libName.."}} |cffff3300Reminder|r: LogOut is enabled. This character will be logged off once the current scan successfully completes.")
-	end
 end
 
 
@@ -239,17 +214,9 @@ function private.SetupConfigGui(gui)
 	gui:AddTip(id, "Selecting one of these channels will cause your character to say the message text into the selected channel once Auctioneer has completed a scan successfully. \n\nBy choosing Emote, your character will use the text above as a custom emote. \n\nBy selecting None, no message will be sent.")
 
 
-	gui:AddControl(id, "Subhead",	0,	"Shutdown or Log Out")
-	gui:AddControl(id, "Checkbox",   0, 1, "util.scanfinish.shutdown", "Shutdown World of Warcraft")
-	gui:AddTip(id, "Selecting this option will cause Auctioneer to shut down World of Warcraft completely once Auctioneer has completed a scan successfully.")
-	gui:AddControl(id, "Checkbox",   0, 1, "util.scanfinish.logout", "Log Out the current character")
-	gui:AddTip(id, "Selecting this option will cause Auctioneer to log out to the character select screen once Auctioneer has completed a scan successfully. \n\nIf Shutdown is enabled, selecting this will have no effect")
-
-
 	--Debug switch via gui. Currently not exposed to the end user
 	-- gui:AddControl(id, "Subhead",	0,	"")
 	-- gui:AddControl(id, "Checkbox",   0, 1, "util.scanfinish.debug", "Show Debug Information for this session")
-
 
 end
 
@@ -277,4 +244,4 @@ function private.ConfigChanged(fullsetting, value, setting, module, base)
 	end
 end
 
-AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-ScanFinish/ScanFinish.lua $", "$Rev: 6345 $")
+AucAdvanced.RegisterRevision("$URL: Auc-Advanced/Modules/Auc-Util-ScanFinish/ScanFinish.lua $", "$Rev: 6456 $")
