@@ -1703,6 +1703,14 @@ Inst11Quest11_Prequest = "Más componentes importantes" -- 8988
 Inst11Quest11_Folgequest = "Últimos preparativos ("..YELLOW.."Cumbre de Roca Negra Superior"..WHITE..")" -- 8994
 -- No Rewards for this quest
 
+Inst11Quest12 = "12. Juzgar y redimir"
+Inst11Quest12_Aim = "Utiliza el cristal de adivinación en el centro del sótano de El Gran Osario en Scholomance. Al hacerlo, aparecerán los espíritus que tienes que juzgar. Si derrotas a esos espíritus, aparecerá el Cabellero de la Muerte Atracoscuro. Acaba con él y reclama el alma perdida del destrero caído.\n\nEntrega el alma remidida del destrero y la gualdrapa encantada bendecida al destrero caído de Atracoscuro."
+Inst11Quest12_Location = "Lord Grisillo Quiebrasombras (Ciudad de Ventormenta - Catedral; "..YELLOW.."38,33"..WHITE..")"
+Inst11Quest12_Note = "Cadena de misiones para la montura épica de paladín. El sótano de El Gran Osario está en "..YELLOW.."[5]"..WHITE.."."
+Inst11Quest12_Prequest = "Lord Grisillo Quiebrasombras -> El cristal de adivinación"
+Inst11Quest12_Folgequest = "El regreso a El Gran Osario"
+-- No Rewards for this quest
+
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst11Quest1_HORDE = Inst11Quest1
@@ -4091,7 +4099,7 @@ Inst24Quest4_Note = "Despoja a Charlga Filonavaja "..YELLOW.."[7]"..WHITE.." par
 Inst24Quest4_Prequest = "El diario de Soliceja" -- 1100
 Inst24Quest4_Folgequest = "Ninguno"
 --
-Inst24Quest4name1 = "Libertador de Falfindel"
+Inst24Quest4name1 = "Trabuco \"Ojo de mago\""
 Inst24Quest4name2 = "Protectores de Berilo"
 Inst24Quest4name3 = "Faja Puño de piedra"
 Inst24Quest4name4 = "Rodela de mármol"
@@ -4813,9 +4821,9 @@ Inst31Quest2_Note = "Anacronos (Tanaris - Cavernas del Tiempo; "..YELLOW.."65,49
 Inst31Quest2_Prequest = "El legado de C'Thun"
 Inst31Quest2_Folgequest = "Ninguno"
 --
-Inst31Quest1name1 = "Amuleto del Dios caído"
-Inst31Quest1name2 = "Capa del Dios caído"
-Inst31Quest1name3 = "Anillo del Dios caído"
+Inst31Quest2name1 = "Amuleto del Dios caído"
+Inst31Quest2name2 = "Capa del Dios caído"
+Inst31Quest2name3 = "Anillo del Dios caído"
 
 --Quest 3 Alliance
 Inst31Quest3 = "3. Los secretos de los qiraji" -- 8784

@@ -727,15 +727,19 @@ Inst4Quest9description2 = AQITEM_ITEM
 Inst4Quest9ID2 = "22344"
 
 --Quest 10 Alliance
-Inst4Quest10Rewardtext = AQDiscription_REWARD..WHITE.."1"..AQDiscription_AND..WHITE.."2 (x5)"
+Inst4Quest10Rewardtext = AQDiscription_REWARD..WHITE.."1"..AQDiscription_AND..WHITE.."2 "..AQDiscription_AND..WHITE.."3 (x5)"
 --ITEM1
 Inst4Quest10ITC1 = Itemc4;
 Inst4Quest10description1 = AQITEM_PATTERN
 Inst4Quest10ID1 = "12696"
 --ITEM2
-Inst4Quest10ITC2 = Itemc2;
-Inst4Quest10description2 = AQITEM_POTION
-Inst4Quest10ID2 = "9224"
+Inst4Quest10ITC2 = Itemc3;
+Inst4Quest10description2 = AQITEM_BAG
+Inst4Quest10ID2 = "12849"
+--ITEM3
+Inst4Quest10ITC3 = Itemc2;
+Inst4Quest10description3 = AQITEM_POTION
+Inst4Quest10ID3 = "9224"
 
 --Quest 11 Alliance
 Inst4Quest11Rewardtext = AQNoReward
@@ -818,15 +822,19 @@ Inst4Quest11description2_HORDE = AQITEM_ITEM
 Inst4Quest11ID2_HORDE = "22344"
 
 --Quest 12 Horde
-Inst4Quest12Rewardtext_HORDE = AQDiscription_REWARD..WHITE.."1"..AQDiscription_AND..WHITE.."2 (x5)"
+Inst4Quest12Rewardtext_HORDE = AQDiscription_REWARD..WHITE.."1"..AQDiscription_AND..WHITE.."2 "..AQDiscription_AND..WHITE.."3 (x5)"
 --ITEM1
 Inst4Quest12ITC1_HORDE = Itemc4;
 Inst4Quest12description1_HORDE = AQITEM_PATTERN
 Inst4Quest12ID1_HORDE = "12696"
 --ITEM2
 Inst4Quest12ITC2_HORDE = Itemc2;
-Inst4Quest12description2_HORDE = AQITEM_POTION
-Inst4Quest12ID2_HORDE = "9224"
+Inst4Quest12description2_HORDE = AQITEM_BAG
+Inst4Quest12ID2_HORDE = "12849"
+--ITEM3
+Inst4Quest12ITC3_HORDE = Itemc3;
+Inst4Quest12description3_HORDE = AQITEM_POTION
+Inst4Quest12ID3_HORDE = "9224"
 
 --Quest 13 Horde
 Inst4Quest13Rewardtext_HORDE = AQNoReward
@@ -1827,7 +1835,7 @@ Inst15Quest4ID1 = "10773"
 Inst15Quest5Rewardtext = AQNoReward
 
 --Quest 6 Alliance
-Inst15Quest6Rewardtext = AQDiscription_REWARD..WHITE.."1"..AQDiscription_OR..WHITE.."2"..AQDiscription_OR..WHITE.."3"
+Inst15Quest6Rewardtext = AQDiscription_REWARD..WHITE.."1"..AQDiscription_OR..WHITE.."2"..AQDiscription_OR..WHITE.."3"..AQDiscription_AND..WHITE.."4"
 --ITEM1
 Inst15Quest6ITC1 = Itemc4;
 Inst15Quest6description1 = AQITEM_HEAD..AQITEM_PLATE
@@ -1840,6 +1848,10 @@ Inst15Quest6ID2 = "10750"
 Inst15Quest6ITC3 = Itemc4;
 Inst15Quest6description3 = AQITEM_HEAD..AQITEM_CLOTH
 Inst15Quest6ID3 = "10751"
+--ITEM4
+Inst15Quest6ITC4 = Itemc2;
+Inst15Quest6description4 = AQITEM_ITEM
+Inst15Quest6ID4 = "10663"
 
 --Quest 7 Alliance
 Inst15Quest7Rewardtext = AQDiscription_REWARD..WHITE.."1"..AQDiscription_OR..WHITE.."2"

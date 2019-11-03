@@ -948,13 +948,14 @@ Inst4Quest9name2 = "Brazier of Invocation: User's Manual"
 --Quest 10 Alliance
 Inst4Quest10 = "10. The Demon Forge"
 Inst4Quest10_Aim = "Travel to Blackrock Spire and find Goraluk Anvilcrack. Slay him and then use the Blood Stained Pike upon his corpse. After his soul has been siphoned, the pike will be Soul Stained. You must also find the Unforged Rune Covered Breastplate. Return both the Soul Stained Pike and the Unforged Rune Covered Breastplate to Lorax in Winterspring."
-Inst4Quest10_Location = "Lorax (Winterspring; "..YELLOW.."64, 74"..WHITE..")"
+Inst4Quest10_Location = "Lorax (Winterspring; "..YELLOW.."63.8, 73.6"..WHITE..")"
 Inst4Quest10_Note = "Blacksmith quest.  Goraluk Anvilcrack is at "..YELLOW.."[4]"..WHITE.."."
-Inst4Quest10_Prequest = "None"
+Inst4Quest10_Prequest = "Lorax's Tale"
 Inst4Quest10_Folgequest = "None"
 --
 Inst4Quest10name1 = "Plans: Demon Forged Breastplate"
-Inst4Quest10name2 = "Elixir of Demonslaying"
+Inst4Quest10name2 = "Demon Kissed Sack"
+Inst4Quest10name3 = "Elixir of Demonslaying"
 
 --Quest 11 Alliance
 Inst4Quest11 = "11. Egg Collection"
@@ -1050,7 +1051,7 @@ Inst4Quest8_HORDE = "8. Blood of the Black Dragon Champion"
 Inst4Quest8_HORDE_Aim = "Travel to Blackrock Spire and slay General Drakkisath. Gather his blood and return it to Rokaro."
 Inst4Quest8_HORDE_Location = "Rexxar (Roams from Stonetalon Mountains to Feralas)"
 Inst4Quest8_HORDE_Note = "Last part of the Onyxia attunement questline.  Rexxar spawns at the border between Stonetalon Mountains and walks down through Desolace to Feralas.  The best way of finding him is starting in Feralas at around "..YELLOW.."48.2, 24.8"..WHITE.." and moving North to intercept him.   You find General Drakkisath at "..YELLOW.."[8]"..WHITE.."."
-Inst4Quest8_HORDE_Prequest = "Emberstrife -> Ascension..."
+Inst4Quest8_HORDE_Prequest = "The Test of Skulls, Axtroz -> Ascension..."
 Inst4Quest8_HORDE_Folgequest = "None"
 --
 Inst4Quest8name1_HORDE = "Drakefire Amulet"
@@ -1094,6 +1095,7 @@ Inst4Quest12_HORDE_Folgequest = Inst4Quest10_Folgequest
 --
 Inst4Quest12name1_HORDE = Inst4Quest10name1
 Inst4Quest12name2_HORDE = Inst4Quest10name2
+Inst4Quest12name2_HORDE = Inst4Quest10name3
 
 --Quest 13 Horde  (same as Quest 11 Alliance)
 Inst4Quest13_HORDE = "13. Egg Collection"
@@ -2366,8 +2368,8 @@ Inst15QAH = "16 Quests"
 --Quest 1 Alliance
 Inst15Quest1 = "1. Into The Temple of Atal'Hakkar"
 Inst15Quest1_Aim = "Gather 10 Atal'ai Tablets for Brohann Caskbelly in Stormwind."
-Inst15Quest1_Location = "Brohann Caskbelly (Stormwind - Dwarven District; "..YELLOW.."69.5, 40.4"..WHITE..")"
-Inst15Quest1_Note = "The prequest line comes from the same NPC and has quite a few steps.\n\nYou can find the Tablets everywhere in the Temple, both outside and inside the instance."
+Inst15Quest1_Location = "Brohann Caskbelly (Stormwind - Dwarven District; "..YELLOW.."64.2, 20.8"..WHITE..")"
+Inst15Quest1_Note = "The prequest line comes from the same NPC and has quite a few steps.\n\nYou can find the Tablets everywhere in the Temple, both outside and inside the dungeon."
 Inst15Quest1_Prequest = "In Search of The Temple -> Rhapsody's Tale"
 Inst15Quest1_Folgequest = "None"
 --
@@ -2376,8 +2378,8 @@ Inst15Quest1name1 = "Guardian Talisman"
 --Quest 2 Alliance
 Inst15Quest2 = "2. The Sunken Temple"
 Inst15Quest2_Aim = "Find Marvon Rivetseeker in Tanaris."
-Inst15Quest2_Location = "Angelas Moonbreeze (Feralas - Feathermoon Stronghold; "..YELLOW.."31,45"..WHITE..")"
-Inst15Quest2_Note = "You find Marvon Rivetseeker at "..YELLOW.."52,45"..WHITE.."."
+Inst15Quest2_Location = "Angelas Moonbreeze (Feralas - Feathermoon Stronghold; "..YELLOW.."31.8, 45.6"..WHITE..")"
+Inst15Quest2_Note = "You find Marvon Rivetseeker at "..YELLOW.."52.6, 45.8"..WHITE.."."
 Inst15Quest2_Prequest = "None"
 Inst15Quest2_Folgequest = "The Stone Circle"
 -- No Rewards for this quest
@@ -2385,18 +2387,18 @@ Inst15Quest2_Folgequest = "The Stone Circle"
 --Quest 3 Alliance
 Inst15Quest3 = "3. Into the Depths"
 Inst15Quest3_Aim = "Find the Altar of Hakkar in the Sunken Temple in Swamp of Sorrows."
-Inst15Quest3_Location = "Marvon Rivetseeker (Tanaris; "..YELLOW.."52,45"..WHITE..")"
+Inst15Quest3_Location = "Marvon Rivetseeker (Tanaris; "..YELLOW.."52.6, 45.8"..WHITE..")"
 Inst15Quest3_Note = "The Altar is at "..YELLOW.."[1]"..WHITE.."."
-Inst15Quest3_Prequest = "The Stone Circle"
+Inst15Quest3_Prequest = "The Sunken Temple -> The Stone Circle"
 Inst15Quest3_Folgequest = "None"
 -- No Rewards for this quest
 
 --Quest 4 Alliance
 Inst15Quest4 = "4. Secret of the Circle"
 Inst15Quest4_Aim = "Travel into the Sunken Temple and discover the secret hidden in the circle of statues."
-Inst15Quest4_Location = "Marvon Rivetseeker (Tanaris; "..YELLOW.."52,45"..WHITE..")"
+Inst15Quest4_Location = "Marvon Rivetseeker (Tanaris; "..YELLOW.."52.6, 45.8"..WHITE..")"
 Inst15Quest4_Note = "You find the statues at "..YELLOW.."[1]"..WHITE..". See map for order to activate them."
-Inst15Quest4_Prequest = "The Stone Circle"
+Inst15Quest4_Prequest = "The Sunken Temple -> The Stone Circle"
 Inst15Quest4_Folgequest = "None"
 --
 Inst15Quest4name1 = "Hakkari Urn"
@@ -2404,8 +2406,8 @@ Inst15Quest4name1 = "Hakkari Urn"
 --Quest 5 Alliance
 Inst15Quest5 = "5. Haze of Evil"
 Inst15Quest5_Aim = "Collect 5 samples of Atal'ai Haze, then return to Muigin in Un'Goro Crater."
-Inst15Quest5_Location = "Gregan Brewspewer (Feralas; "..YELLOW.."45,25"..WHITE..")"
-Inst15Quest5_Note = "The Prequest 'Muigin and Larion' starts at Muigin (Un'Goro Crater - Marshal's Refuge; "..YELLOW.."42,9"..WHITE.."). You get the Haze from Deep Lurkers, Murk Worms or Oozes in the Temple."
+Inst15Quest5_Location = "Gregan Brewspewer (Feralas; "..YELLOW.."45.0, 25.4"..WHITE..")"
+Inst15Quest5_Note = "The Prequest 'Muigin and Larion' starts at Muigin (Un'Goro Crater - Marshal's Refuge; "..YELLOW.."43.0, 9.6"..WHITE.."). You get the Haze from Deep Lurkers, Murk Worms or Oozes in the Temple."
 Inst15Quest5_Prequest = "Muigin and Larion -> A Visit to Gregan "
 Inst15Quest5_Folgequest = "None"
 -- No Rewards for this quest
@@ -2413,19 +2415,20 @@ Inst15Quest5_Folgequest = "None"
 --Quest 6 Alliance
 Inst15Quest6 = "6. The God Hakkar"
 Inst15Quest6_Aim = "Bring the Filled Egg of Hakkar to Yeh'kinya in Tanaris."
-Inst15Quest6_Location = "Yeh'kinya (Tanaris - Steamwheedle Port; "..YELLOW.."66,22"..WHITE..")"
-Inst15Quest6_Note = "The Questline starts with 'Screecher Spirits' at the same NPC (See "..YELLOW.."[Zul'Farrak]"..WHITE..").\nYou have to use the Egg at "..YELLOW.."[3]"..WHITE.." to start the Event. Once it starts enemies spawn and attack you. Some of them drop the blood of Hakkar. With this blood you can put out the torch around the circle. After this the Avatar of Hakkar spawns. You kill him and loot the 'Essence of Hakkar' which you use to fill the egg."
+Inst15Quest6_Location = "Yeh'kinya (Tanaris - Steamwheedle Port; "..YELLOW.."67.0, 22.4"..WHITE..")"
+Inst15Quest6_Note = "The Questline starts with 'Screecher Spirits' at the same NPC (See "..YELLOW.."[Zul'Farrak]"..WHITE..").\nYou have to use the Egg at "..YELLOW.."[3]"..WHITE.." to start the Event.  Once it starts enemies spawn and attack you.  Some of them drop the blood of Hakkar.  With this blood you can put out the torch around the circle.  After this the Avatar of Hakkar spawns.  You kill him and loot the 'Essence of Hakkar' which you use to fill the egg."
 Inst15Quest6_Prequest = "Screecher Spirits -> The Ancient Egg"
 Inst15Quest6_Folgequest = "None"
 --
 Inst15Quest6name1 = "Avenguard Helm"
 Inst15Quest6name2 = "Lifeforce Dirk"
 Inst15Quest6name3 = "Gemburst Circlet"
+Inst15Quest6name4 = "Essence of Hakkar"
 
 --Quest 7 Alliance
 Inst15Quest7 = "7. Jammal'an the Prophet"
 Inst15Quest7_Aim = "The Atal'ai Exile in The Hinterlands wants the Head of Jammal'an."
-Inst15Quest7_Location = "The Atal'ai Exile (The Hinterlands; "..YELLOW.."33,75"..WHITE..")"
+Inst15Quest7_Location = "The Atal'ai Exile (The Hinterlands; "..YELLOW.."33.6, 75.2"..WHITE..")"
 Inst15Quest7_Note = "You find Jammal'an at "..YELLOW.."[4]"..WHITE.."."
 Inst15Quest7_Prequest = "None"
 Inst15Quest7_Folgequest = "None"
@@ -2444,10 +2447,10 @@ Inst15Quest8_Folgequest = "None"
 Inst15Quest8name1 = "Chained Essence of Eranikus"
 
 --Quest 9 Alliance
-Inst15Quest9 = "9. Trolls of a Feather (Warlock)"
+Inst15Quest9 = "9. Trolls of a Feather"
 Inst15Quest9_Aim = "Bring a total of 6 Voodoo Feathers from the trolls in sunken temple."
-Inst15Quest9_Location = "Impsy (Felwood; "..YELLOW.."42,45"..WHITE..")"
-Inst15Quest9_Note = "Warlock quest. 1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
+Inst15Quest9_Location = "Impsy (Felwood; "..YELLOW.."41.6, 45.0"..WHITE..")"
+Inst15Quest9_Note = "Warlock quest.  1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
 Inst15Quest9_Prequest = "An Imp's Request -> The Wrong Stuff"
 Inst15Quest9_Folgequest = "None"
 --
@@ -2456,10 +2459,10 @@ Inst15Quest9name2 = "Abyss Shard"
 Inst15Quest9name3 = "Robes of Servitude"
 
 --Quest 10 Alliance
-Inst15Quest10 = "10. Voodoo Feathers (Warrior)"
+Inst15Quest10 = "10. Voodoo Feathers"
 Inst15Quest10_Aim = "Bring the Voodoo Feathers from the trolls in the Sunken Temple to the Fallen Hero of the Horde."
-Inst15Quest10_Location = "Fallen Hero of the Horde (Swamp of Sorrows; "..YELLOW.."34,66"..WHITE..")"
-Inst15Quest10_Note = "Warrior quest. 1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
+Inst15Quest10_Location = "Fallen Hero of the Horde (Swamp of Sorrows; "..YELLOW.."34.2, 66.0"..WHITE..")"
+Inst15Quest10_Note = "Warrior quest.  1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
 Inst15Quest10_Prequest = "A Troubled Spirit -> War on the Shadowsworn"
 Inst15Quest10_Folgequest = "None"
 --
@@ -2468,10 +2471,10 @@ Inst15Quest10name2 = "Diamond Flask"
 Inst15Quest10name3 = "Razorsteel Shoulders"
 
 --Quest 11 Alliance
-Inst15Quest11 = "11. A Better Ingredient (Druid)"
+Inst15Quest11 = "11. A Better Ingredient"
 Inst15Quest11_Aim = "Retrieve a Putrid Vine from the guardian at the bottom of the Sunken Temple and return to Torwa Pathfinder."
-Inst15Quest11_Location = "Torwa Pathfinder (Un'Goro Crater; "..YELLOW.."72,76"..WHITE..")"
-Inst15Quest11_Note = "Druid quest. The Putrid Vine drops from Atal'alarion who is summoned at "..YELLOW.."[1]"..WHITE.." by activating the statues in the order listed on the map."
+Inst15Quest11_Location = "Torwa Pathfinder (Un'Goro Crater; "..YELLOW.."71.6, 76.0"..WHITE..")"
+Inst15Quest11_Note = "Druid quest.  The Putrid Vine drops from Atal'alarion who is summoned at "..YELLOW.."[1]"..WHITE.." by activating the statues in the order listed on the map."
 Inst15Quest11_Prequest = "Torwa Pathfinder -> Toxic Test"
 Inst15Quest11_Folgequest = "None"
 --
@@ -2480,10 +2483,10 @@ Inst15Quest11name2 = "Forest's Embrace"
 Inst15Quest11name3 = "Moonshadow Stave"
 
 --Quest 12 Alliance
-Inst15Quest12 = "12. The Green Drake (Hunter)"
+Inst15Quest12 = "12. The Green Drake"
 Inst15Quest12_Aim = "Bring the Tooth of Morphaz to Ogtinc in Azshara. Ogtinc resides atop the cliffs northeast the Ruins of Eldarath."
-Inst15Quest12_Location = "Ogtinc (Azshara; "..YELLOW.."42,43"..WHITE..")"
-Inst15Quest12_Note = "Hunter quest. Morphaz is at "..YELLOW.."[5]"..WHITE.."."
+Inst15Quest12_Location = "Ogtinc (Azshara; "..YELLOW.."42.2, 42.6"..WHITE..")"
+Inst15Quest12_Note = "Hunter quest.  Morphaz is at "..YELLOW.."[5]"..WHITE.."."
 Inst15Quest12_Prequest = "The Hunter's Charm -> Wavethrashing"
 Inst15Quest12_Folgequest = "None"
 --
@@ -2492,10 +2495,10 @@ Inst15Quest12name2 = "Devilsaur Eye"
 Inst15Quest12name3 = "Devilsaur Tooth"
 
 --Quest 13 Alliance
-Inst15Quest13 = "13. Destroy Morphaz (Mage)"
+Inst15Quest13 = "13. Destroy Morphaz"
 Inst15Quest13_Aim = "Retrieve the Arcane Shard from Morphaz and return to Archmage Xylem."
-Inst15Quest13_Location = "Archmage Xylem (Azshara; "..YELLOW.."29,40"..WHITE..")"
-Inst15Quest13_Note = "Mage quest. Morphaz is at "..YELLOW.."[5]"..WHITE.."."
+Inst15Quest13_Location = "Archmage Xylem (Azshara; "..YELLOW.."29.6, 40.6"..WHITE..")"
+Inst15Quest13_Note = "Mage quest.  Morphaz is at "..YELLOW.."[5]"..WHITE.."."
 Inst15Quest13_Prequest = "Magic Dust -> The Siren's Coral"
 Inst15Quest13_Folgequest = "None"
 --
@@ -2504,10 +2507,10 @@ Inst15Quest13name2 = "Arcane Crystal Pendant"
 Inst15Quest13name3 = "Fire Ruby"
 
 --Quest 14 Alliance
-Inst15Quest14 = "14. Blood of Morphaz (Priest)"
+Inst15Quest14 = "14. Blood of Morphaz"
 Inst15Quest14_Aim = "Kill Morphaz in the sunken temple of Atal'Hakkar, and return his blood to Greta Mosshoof in Felwood. The entrance to the sunken temple can be found in the Swamp of Sorrows."
-Inst15Quest14_Location = "Ogtinc (Azshara; "..YELLOW.."42,43"..WHITE..")"
-Inst15Quest14_Note = "Priest quest. Morphaz is at "..YELLOW.."[5]"..WHITE..". Greta Mosshoof is at Felwood - Emerald Sanctuary ("..YELLOW.."51,82"..WHITE..")."
+Inst15Quest14_Location = "Ogtinc (Azshara; "..YELLOW.."42.2, 42.6"..WHITE..")"
+Inst15Quest14_Note = "Priest quest.  Morphaz is at "..YELLOW.."[5]"..WHITE..".  Greta Mosshoof is at Felwood - Emerald Sanctuary ("..YELLOW.."51.2, 82.2"..WHITE..")."
 Inst15Quest14_Prequest = "Cenarion Aid -> The Ichor of Undeath"
 Inst15Quest14_Folgequest = "None"
 --
@@ -2516,10 +2519,10 @@ Inst15Quest14name2 = "Woestave"
 Inst15Quest14name3 = "Circle of Hope"
 
 --Quest 15 Alliance
-Inst15Quest15 = "15. The Azure Key (Rogue)"
+Inst15Quest15 = "15. The Azure Key"
 Inst15Quest15_Aim = "Return the Azure Key to Lord Jorach Ravenholdt."
-Inst15Quest15_Location = "Archmage Xylem (Azshara; "..YELLOW.."29,40"..WHITE..")"
-Inst15Quest15_Note = "Rogue quest. The Azure Key drops from Morphaz at "..YELLOW.."[5]"..WHITE..". Lord Jorach Ravenholdt is at Alterac Mountains - Ravenholdt ("..YELLOW.."86,79"..WHITE..")."
+Inst15Quest15_Location = "Archmage Xylem (Azshara; "..YELLOW.."29.6, 40.6"..WHITE..")"
+Inst15Quest15_Note = "Rogue quest.  The Azure Key drops from Morphaz at "..YELLOW.."[5]"..WHITE..".  Lord Jorach Ravenholdt is at Alterac Mountains - Ravenholdt ("..YELLOW.."86.0, 79.0"..WHITE..")."
 Inst15Quest15_Prequest = "A Simple Request -> Encoded Fragments"
 Inst15Quest15_Folgequest = "None"
 --
@@ -2528,10 +2531,10 @@ Inst15Quest15name2 = "Whisperwalk Boots"
 Inst15Quest15name3 = "Duskbat Drape"
 
 --Quest 16 Alliance
-Inst15Quest16 = "16. Forging the Mightstone (Paladin)"
+Inst15Quest16 = "16. Forging the Mightstone"
 Inst15Quest16_Aim = "Bring the voodoo feathers to Ashlam Valorfist."
-Inst15Quest16_Location = "Commander Ashlam Valorfist (Western Plaguelands - Chillwind Camp; "..YELLOW.."43,85"..WHITE..")"
-Inst15Quest16_Note = "Paladin quest. 1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
+Inst15Quest16_Location = "Commander Ashlam Valorfist (Western Plaguelands - Chillwind Camp; "..YELLOW.."42.8, 84.0"..WHITE..")"
+Inst15Quest16_Note = "Paladin quest.  1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
 Inst15Quest16_Prequest = "Inert Scourgestones"
 Inst15Quest16_Folgequest = "None"
 --
@@ -2544,8 +2547,8 @@ Inst15Quest16name4 = "Chivalrous Signet"
 --Quest 1 Horde
 Inst15Quest1_HORDE = "1. The Temple of Atal'Hakkar"
 Inst15Quest1_HORDE_Aim = "Collect 20 Fetishes of Hakkar and bring them to Fel'Zerul in Stonard."
-Inst15Quest1_HORDE_Location = "Fel'Zerul (Swamp of Sorrows - Stonard; "..YELLOW.."47,54"..WHITE..")"
-Inst15Quest1_HORDE_Note = "All Enemys in the Temple drop Fetishes."
+Inst15Quest1_HORDE_Location = "Fel'Zerul (Swamp of Sorrows - Stonard; "..YELLOW.."48.0, 55.0"..WHITE..")"
+Inst15Quest1_HORDE_Note = "All mobs in the Temple can drop the Fetishes."
 Inst15Quest1_HORDE_Prequest = "Pool of Tears -> Return to Fel'Zerul"
 Inst15Quest1_HORDE_Folgequest = "None"
 --
@@ -2554,8 +2557,8 @@ Inst15Quest1name1_HORDE = "Guardian Talisman"
 --Quest 2 Horde
 Inst15Quest2_HORDE = "2. The Sunken Temple"
 Inst15Quest2_HORDE_Aim = "Find Marvon Rivetseeker in Tanaris."
-Inst15Quest2_HORDE_Location = "Witch Doctor Uzer'i (Feralas; "..YELLOW.."74,43"..WHITE..")"
-Inst15Quest2_HORDE_Note = "You find Marvon Rivetseeker at "..YELLOW.."52,45"..WHITE.."."
+Inst15Quest2_HORDE_Location = "Witch Doctor Uzer'i (Feralas; "..YELLOW.."74.4, 43.4"..WHITE..")"
+Inst15Quest2_HORDE_Note = "You find Marvon Rivetseeker at "..YELLOW.."52.6, 45.8"..WHITE.."."
 Inst15Quest2_HORDE_Prequest = "None"
 Inst15Quest2_HORDE_Folgequest = "The Stone Circle"
 
@@ -2581,8 +2584,8 @@ Inst15Quest4name1_HORDE = Inst15Quest4name1
 --Quest 5 Horde
 Inst15Quest5_HORDE = "5. Zapper Fuel"
 Inst15Quest5_HORDE_Aim = "Deliver the Unloaded Zapper and 5 samples of Atal'ai Haze to Larion in Marshal's Refuge."
-Inst15Quest5_HORDE_Location = "Liv Rizzlefix (Barrens; "..YELLOW.."62,38"..WHITE..")"
-Inst15Quest5_HORDE_Note = "The Prequest 'Larion and Muigin' starts at Larion (Un'Goro Crater; "..YELLOW.."45,8"..WHITE.."). You get the Haze from Deep Lurkers, Murk Worms or Oozes in the Temple."
+Inst15Quest5_HORDE_Location = "Liv Rizzlefix (Barrens; "..YELLOW.."62.4, 38.6"..WHITE..")"
+Inst15Quest5_HORDE_Note = "The prequest 'Larion and Muigin' starts at Larion (Un'Goro Crater; "..YELLOW.."45.6, 8.6"..WHITE..").  You get the Haze from Deep Lurkers, Murk Worms or Oozes in the Temple."
 Inst15Quest5_HORDE_Prequest = "Larion and Muigin -> Marvon's Workshop"
 Inst15Quest5_HORDE_Folgequest = "None"
 
@@ -2704,10 +2707,10 @@ Inst15Quest15name2_HORDE = Inst15Quest15name2
 Inst15Quest15name3_HORDE = Inst15Quest15name3
 
 --Quest 16 Horde
-Inst15Quest16_HORDE = "16. Da Voodoo (Shaman)"
+Inst15Quest16_HORDE = "16. Da Voodoo"
 Inst15Quest16_HORDE_Aim = "Bring the voodoo feathers to Bath'rah the Windwatcher."
-Inst15Quest16_HORDE_Location = "Bath'rah the Windwatcher (Alterac Mountains; "..YELLOW.."80,67"..WHITE..")"
-Inst15Quest16_HORDE_Note = "Shaman quest. 1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
+Inst15Quest16_HORDE_Location = "Bath'rah the Windwatcher (Alterac Mountains; "..YELLOW.."80.4, 66.8"..WHITE..")"
+Inst15Quest16_HORDE_Note = "Shaman quest.  1 Feather drops from each of the named trolls on the ledges overlooking the big room with the hole in the center."
 Inst15Quest16_HORDE_Prequest = "Yes, Elemental Mastery -> Spirit Totem"
 Inst15Quest16_HORDE_Folgequest = "No"
 --
@@ -2726,8 +2729,8 @@ Inst16QAH = "11 Quests"
 --Quest 1 Alliance
 Inst16Quest1 = "1. A Sign of Hope"
 Inst16Quest1_Aim = "Find Hammertoe Grez in Uldaman."
-Inst16Quest1_Location = "Prospector Ryedol (Badlands; "..YELLOW.."53,43"..WHITE..")"
-Inst16Quest1_Note = "The Prequest starts at the Crumpled Map (Badlands; "..YELLOW.."53,33"..WHITE..").\nYou find Hammertoe Grez before you enter the instance, at "..YELLOW.."[1]"..WHITE.." on the Entrance map."
+Inst16Quest1_Location = "Prospector Ryedol (Badlands; "..YELLOW.."53.4, 43.2"..WHITE..")"
+Inst16Quest1_Note = "The Prequest starts at the Crumpled Map (Badlands; "..YELLOW.."53.0, 34.1"..WHITE..").\nYou find Hammertoe Grez in the area before you enter the dungeon's main portal."
 Inst16Quest1_Prequest = "A Sign of Hope"
 Inst16Quest1_Folgequest = "Amulet of Secrets"
 -- No Rewards for this quest
@@ -2735,8 +2738,8 @@ Inst16Quest1_Folgequest = "Amulet of Secrets"
 --Quest 2 Alliance
 Inst16Quest2 = "2. Amulet of Secrets"
 Inst16Quest2_Aim = "Find Hammertoe's Amulet and return it to him in Uldaman."
-Inst16Quest2_Location = "Hammertoe Grez (Uldaman; "..YELLOW.."[1] on Entrance Map"..WHITE..")."
-Inst16Quest2_Note = "The Amulet drops from Magregan Deepshadow at "..YELLOW.."[2] on the Entrance Map"..WHITE.."."
+Inst16Quest2_Location = "Hammertoe Grez (Uldaman; "..YELLOW.."Entrance Area before Dungeon"..WHITE..")."
+Inst16Quest2_Note = "The Amulet drops from Magregan Deepshadow who is in the area before you enter the dungeon's main portal."
 Inst16Quest2_Prequest = "A Sign of Hope"
 Inst16Quest2_Folgequest = "Prospect of Faith"
 -- No Rewards for this quest
@@ -2744,7 +2747,7 @@ Inst16Quest2_Folgequest = "Prospect of Faith"
 --Quest 3 Alliance
 Inst16Quest3 = "3. The Lost Tablets of Will"
 Inst16Quest3_Aim = "Find the Tablet of Will, and return them to Advisor Belgrum in Ironforge."
-Inst16Quest3_Location = "Advisor Belgrum (Ironforge - Hall of Explorers; "..YELLOW.."77,10"..WHITE..")"
+Inst16Quest3_Location = "Advisor Belgrum (Ironforge - Hall of Explorers; "..YELLOW.."77.2, 10.0"..WHITE..")"
 Inst16Quest3_Note = "The tablet is at "..YELLOW.."[8]"..WHITE.."."
 Inst16Quest3_Prequest = "Amulet of Secrets -> An Ambassador of Evil"
 Inst16Quest3_Folgequest = "None"
@@ -2754,8 +2757,8 @@ Inst16Quest3name1 = "Medal of Courage"
 --Quest 4 Alliance
 Inst16Quest4 = "4. Power Stones"
 Inst16Quest4_Aim = "Bring 8 Dentrium Power Stones and 8 An'Alleum Power Stones to Rigglefuzz in the Badlands."
-Inst16Quest4_Location = "Rigglefuzz (Badlands; "..YELLOW.."42,52"..WHITE..")"
-Inst16Quest4_Note = "The stones can be found on any Shadowforge enemies before and in the instance."
+Inst16Quest4_Location = "Rigglefuzz (Badlands; "..YELLOW.."42.4, 52.8"..WHITE..")"
+Inst16Quest4_Note = "The stones can be found on any Shadowforge enemies before and in the dungeon."
 Inst16Quest4_Prequest = "None"
 Inst16Quest4_Folgequest = "None"
 --
@@ -2766,8 +2769,8 @@ Inst16Quest4name3 = "Everlast Boots"
 --Quest 5 Alliance
 Inst16Quest5 = "5. Agmond's Fate"
 Inst16Quest5_Aim = "Bring 4 Carved Stone Urns to Prospector Ironband in Loch Modan."
-Inst16Quest5_Location = "Prospector Ironband (Loch Modan - Ironband's Excavation Site; "..YELLOW.."65,65"..WHITE..")"
-Inst16Quest5_Note = "The Prequest starts at Prospector Stormpike (Ironforge - Hall of Explorers; "..YELLOW.."74,12"..WHITE..").\nThe Urns are scattered throughout the caves before the instance."
+Inst16Quest5_Location = "Prospector Ironband (Loch Modan - Ironband's Excavation Site; "..YELLOW.."65.8, 65.6"..WHITE..")"
+Inst16Quest5_Note = "The Prequest starts at Prospector Stormpike (Ironforge - Hall of Explorers; "..YELLOW.."74.4, 12.0"..WHITE..").\nThe Urns are scattered throughout the caves before the dungeon."
 Inst16Quest5_Prequest = "Ironband Wants You! -> Murdaloc"
 Inst16Quest5_Folgequest = "None"
 --
@@ -2776,8 +2779,8 @@ Inst16Quest5name1 = "Prospector Gloves"
 --Quest 6 Alliance
 Inst16Quest6 = "6. Solution to Doom"
 Inst16Quest6_Aim = "Bring the Tablet of Ryun'eh to Theldurin the Lost."
-Inst16Quest6_Location = "Theldurin the Lost (Badlands; "..YELLOW.."51,76"..WHITE..")"
-Inst16Quest6_Note = "The tablet is north of the caves, at the east end of a tunnel, before the instance. On the Entrance map, it's at "..YELLOW.."[3]"..WHITE.."."
+Inst16Quest6_Location = "Theldurin the Lost (Badlands; "..YELLOW.."51.4, 76.8"..WHITE..")"
+Inst16Quest6_Note = "The tablet is north of the caves, at the east end of a tunnel, before the dungeon."
 Inst16Quest6_Prequest = "None"
 Inst16Quest6_Folgequest = "To Ironforge for Yagyin's Digest"
 --
@@ -2786,7 +2789,7 @@ Inst16Quest6name1 = "Doomsayer's Robe"
 --Quest 7 Alliance
 Inst16Quest7 = "7. The Lost Dwarves"
 Inst16Quest7_Aim = "Find Baelog in Uldaman."
-Inst16Quest7_Location = "Prospector Stormpike (Ironforge - Hall of Explorers; "..YELLOW.."75,12"..WHITE..")"
+Inst16Quest7_Location = "Prospector Stormpike (Ironforge - Hall of Explorers; "..YELLOW.."74.4, 12.0"..WHITE..")"
 Inst16Quest7_Note = "Baelog is at "..YELLOW.."[1]"..WHITE.."."
 Inst16Quest7_Prequest = "None"
 Inst16Quest7_Folgequest = "The Hidden Chamber"
@@ -2796,7 +2799,7 @@ Inst16Quest7_Folgequest = "The Hidden Chamber"
 Inst16Quest8 = "8. The Hidden Chamber"
 Inst16Quest8_Aim = "Read Baelog's Journal, explore the hidden chamber, then report to Prospector Stormpike."
 Inst16Quest8_Location = "Baelog (Uldaman; "..YELLOW.."[1]"..WHITE..")"
-Inst16Quest8_Note = "The Hidden Chamber is at "..YELLOW.."[4]"..WHITE..". To open the Hidden Chamber you need The Shaft of Tsol from Revelosh "..YELLOW.."[3]"..WHITE.." and the Gni'kiv Medallion from Baelog's Chest "..YELLOW.."[1]"..WHITE..". Combine these two items to form Staff of Prehistoria. The Staff is used in the Map Room between "..YELLOW.."[3] and [4]"..WHITE.." to summon Ironaya. After killing her, run inside the room she came from to get quest credit."
+Inst16Quest8_Note = "The Hidden Chamber is at "..YELLOW.."[4]"..WHITE..".  To open the Hidden Chamber you need The Shaft of Tsol from Revelosh "..YELLOW.."[3]"..WHITE.." and the Gni'kiv Medallion from Baelog's Chest "..YELLOW.."[1]"..WHITE..".  Combine these two items to form Staff of Prehistoria.  The Staff is used in the Map Room between "..YELLOW.."[3] and [4]"..WHITE.." to summon Ironaya.  After killing her, run inside the room she came from to get quest credit."
 Inst16Quest8_Prequest = "The Lost Dwarves"
 Inst16Quest8_Folgequest = "None"
 --
@@ -2807,15 +2810,15 @@ Inst16Quest8name2 = "Explorer's League Lodestar"
 Inst16Quest9 = "9. The Shattered Necklace"
 Inst16Quest9_Aim = "Search for the original creator of the shattered necklace to learn of its potential value."
 Inst16Quest9_Location = "Shattered Necklace (random drop from Uldaman)"
-Inst16Quest9_Note = "Bring the necklace to Talvash del Kissel (Ironforge - The Mystic Ward; "..YELLOW.."36,3"..WHITE..")."
+Inst16Quest9_Note = "Bring the necklace to Talvash del Kissel (Ironforge - The Mystic Ward; "..YELLOW.."36.0, 4.0"..WHITE..")."
 Inst16Quest9_Prequest = "None"
 Inst16Quest9_Folgequest = "Lore for a Price"
 -- No Rewards for this quest
 
 --Quest 10 Alliance
 Inst16Quest10 = "10. Back to Uldaman"
-Inst16Quest10_Aim = "Search for clues as to the current disposition of Talvash's necklace within Uldaman. The slain paladin he mentioned was the person who has it last."
-Inst16Quest10_Location = "Talvash del Kissel (Ironforge - The Mystic Ward; "..YELLOW.."36,3"..WHITE..")"
+Inst16Quest10_Aim = "Search for clues as to the current disposition of Talvash's necklace within Uldaman.  The slain paladin he mentioned was the person who has it last."
+Inst16Quest10_Location = "Talvash del Kissel (Ironforge - The Mystic Ward; "..YELLOW.."36.0, 4.0"..WHITE..")"
 Inst16Quest10_Note = "The Paladin is at "..YELLOW.."[2]"..WHITE.."."
 Inst16Quest10_Prequest = "Lore for a Price"
 Inst16Quest10_Folgequest = "Find the Gems"
@@ -2825,7 +2828,7 @@ Inst16Quest10_Folgequest = "Find the Gems"
 Inst16Quest11 = "11. Find the Gems"
 Inst16Quest11_Aim = "Find the ruby, sapphire, and topaz that are scattered throughout Uldaman. Once acquired, contact Talvash del Kissel remotely by using the Phial of Scrying he previously gave you."
 Inst16Quest11_Location = "Remains of a Paladin (Uldaman; "..YELLOW.."[2]"..WHITE..")"
-Inst16Quest11_Note = "The gems are at "..YELLOW.."[1]"..WHITE.." in a Conspicous Urn, "..YELLOW.."[8]"..WHITE.." from the Shadowforge Cache, and "..YELLOW.."[9]"..WHITE.." off Grimlok. Note that when openning the Shadowforge Cache, a few mobs will spawn an aggro you.\nUse Talvash's Scrying Bowl to turn the quest in and get the followup."
+Inst16Quest11_Note = "The gems are at "..YELLOW.."[1]"..WHITE.." in a Conspicous Urn, "..YELLOW.."[8]"..WHITE.." from the Shadowforge Cache, and "..YELLOW.."[9]"..WHITE.." off Grimlok.  Note that when openning the Shadowforge Cache, a few mobs will spawn an aggro you.  Use Talvash's Scrying Bowl to turn the quest in and get the followup."
 Inst16Quest11_Prequest = "Back to Uldaman"
 Inst16Quest11_Folgequest = "Restoring the Necklace"
 -- No Rewards for this quest
@@ -2834,7 +2837,7 @@ Inst16Quest11_Folgequest = "Restoring the Necklace"
 Inst16Quest12 = "12. Restoring the Necklace"
 Inst16Quest12_Aim = "Obtain a power source from the most powerful construct you can find in Uldaman, and deliver it to Talvash del Kissel in Ironforge."
 Inst16Quest12_Location = "Talvash's Scrying Bowl"
-Inst16Quest12_Note = "The Shattered Necklace Power Source drops from Archaedas "..YELLOW.."[10]"..WHITE.."."
+Inst16Quest12_Note = "The Shattered Necklace Power Source drops from Archaedas "..YELLOW.."[10]"..WHITE..".  Talvash del Kissel is at (Ironforge - The Mystic Ward; "..YELLOW.."36.0, 4.0"..WHITE..")."
 Inst16Quest12_Prequest = "Find the Gems."
 Inst16Quest12_Folgequest = "None"
 --
@@ -2843,8 +2846,8 @@ Inst16Quest12name1 = "Talvash's Enhancing Necklace"
 --Quest 13 Alliance
 Inst16Quest13 = "13. Uldaman Reagent Run"
 Inst16Quest13_Aim = "Bring 12 Magenta Fungus Caps to Ghak Healtouch in Thelsamar."
-Inst16Quest13_Location = "Ghak Healtouch (Loch Modan - Thelsamar; "..YELLOW.."37,49"..WHITE..")"
-Inst16Quest13_Note = "The caps are scattered throughout the instance. Herbalists can see them on their minimap if Track Herbs is on and they have the quest. The prequest is obtained from the same NPC."
+Inst16Quest13_Location = "Ghak Healtouch (Loch Modan - Thelsamar; "..YELLOW.."37.0, 49.2"..WHITE..")"
+Inst16Quest13_Note = "The caps are scattered throughout the instance.  Herbalists can see them on their minimap if Track Herbs is on and they have the quest.  The prequest is obtained from the same NPC."
 Inst16Quest13_Prequest = "Badlands Reagent Run"
 Inst16Quest13_Folgequest = "None"
 --
@@ -2853,8 +2856,8 @@ Inst16Quest13name1 = "Restorative Potion"
 --Quest 14 Alliance
 Inst16Quest14 = "14. Reclaimed Treasures"
 Inst16Quest14_Aim = "Get Krom Stoutarm's treasured possession from his chest in the North Common Hall of Uldaman, and bring it to him in Ironforge."
-Inst16Quest14_Location = "Krom Stoutarm (Ironforge - Hall of Explorers; "..YELLOW.."74,9"..WHITE..")"
-Inst16Quest14_Note = "You find the treasure before you enter the instance. It is in the north of the caves, at the southeast end of the first tunnel. On the entrance map, it's at "..YELLOW.."[4]"..WHITE.."."
+Inst16Quest14_Location = "Krom Stoutarm (Ironforge - Hall of Explorers; "..YELLOW.."74.2, 9.8"..WHITE..")"
+Inst16Quest14_Note = "You find the treasure before you enter the instance.  It is in the north of the caves, at the southeast end of the first tunnel."
 Inst16Quest14_Prequest = "None"
 Inst16Quest14_Folgequest = "None"
 -- No Rewards for this quest
@@ -2863,7 +2866,7 @@ Inst16Quest14_Folgequest = "None"
 Inst16Quest15 = "15. The Platinum Discs"
 Inst16Quest15_Aim = "Speak with stone watcher and learn what ancient lore it keeps. Once you have learned what lore it has to offer, activate the Discs of Norgannon. -> Take the miniature version of the Discs of Norgannon to the Explorers' League in Ironforge."
 Inst16Quest15_Location = "The Discs of Norgannon (Uldaman; "..YELLOW.."[11]"..WHITE..")"
-Inst16Quest15_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to High Explorer Magellas in Ironforge - Hall of Explorers ("..YELLOW.."69,18"..WHITE.."). The followup starts another NPC who is nearby."
+Inst16Quest15_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to High Explorer Magellas in Ironforge - Hall of Explorers ("..YELLOW.."69.8, 18.4"..WHITE..").  The followup starts another NPC who is nearby."
 Inst16Quest15_Prequest = "None"
 Inst16Quest15_Folgequest = "Portents of Uldum"
 --
@@ -2872,10 +2875,10 @@ Inst16Quest15name2 = "Superior Healing Potion"
 Inst16Quest15name3 = "Greater Mana Potion"
 
 --Quest 16 Alliance
-Inst16Quest16 = "16. Power in Uldaman (Mage)"
+Inst16Quest16 = "16. Power in Uldaman"
 Inst16Quest16_Aim = "Retrieve an Obsidian Power Source and bring it to Tabetha in Dustwallow Marsh."
-Inst16Quest16_Location = "Tabetha (Dustwallow Marsh; "..YELLOW.."46,57"..WHITE..")"
-Inst16Quest16_Note = "This quest is only available to Mages!\nThe Obsidian Power Source drops from the Obsidian Sentinel at "..YELLOW.."[5]"..WHITE.."."
+Inst16Quest16_Location = "Tabetha (Dustwallow Marsh; "..YELLOW.."46.0, 57.0"..WHITE..")"
+Inst16Quest16_Note = "Mage quest.  The Obsidian Power Source drops from the Obsidian Sentinel at "..YELLOW.."[5]"..WHITE.."."
 Inst16Quest16_Prequest = "The Exorcism"
 Inst16Quest16_Folgequest = "Mana Surges"
 -- No Rewards for this quest
@@ -2883,8 +2886,8 @@ Inst16Quest16_Folgequest = "Mana Surges"
 --Quest 17 Alliance
 Inst16Quest17 = "17. Indurium Ore"
 Inst16Quest17_Aim = "Bring 4 Indurium Ore to Pozzik in Thousand Needles."
-Inst16Quest17_Location = "Pozzik (Thousand Needles - Mirage Raceway; "..YELLOW.."80.1, 75.9"..WHITE..")"
-Inst16Quest17_Note = "This is a repeatable quest after the prequests are complete. It gives no reputation or experience, just a small amount of money. Indurium Ore can be mined inside Uldaman or purchased from other players."
+Inst16Quest17_Location = "Pozzik (Thousand Needles - Mirage Raceway; "..YELLOW.."80.0, 75.8"..WHITE..")"
+Inst16Quest17_Note = "This is a repeatable quest after the prequests are complete.  It gives no reputation or experience, just a small amount of money.  Indurium Ore can be mined inside Uldaman or purchased from other players."
 Inst16Quest17_Prequest = "Keeping Pace -> Rizzle's Schematics"
 Inst16Quest17_Folgequest = "None"
 -- No Rewards for this quest
@@ -2916,7 +2919,7 @@ Inst16Quest2name1_HORDE = Inst16Quest6name1
 --Quest 3 Horde
 Inst16Quest3_HORDE = "3. Necklace Recovery"
 Inst16Quest3_HORDE_Aim = "Look for a valuable necklace within the Uldaman dig site and bring it back to Dran Droffers in Orgrimmar. The necklace may be damaged."
-Inst16Quest3_HORDE_Location = "Dran Droffers (Orgrimmar - The Drag; "..YELLOW.."59,36"..WHITE..")"
+Inst16Quest3_HORDE_Location = "Dran Droffers (Orgrimmar - The Drag; "..YELLOW.."59.4, 36.8"..WHITE..")"
 Inst16Quest3_HORDE_Note = "The necklace is a random drop in the instance."
 Inst16Quest3_HORDE_Prequest = "None"
 Inst16Quest3_HORDE_Folgequest = "Necklace Recovery, Take 2"
@@ -2925,7 +2928,7 @@ Inst16Quest3_HORDE_Folgequest = "Necklace Recovery, Take 2"
 --Quest 4 Horde
 Inst16Quest4_HORDE = "4. Necklace Recovery, Take 2"
 Inst16Quest4_HORDE_Aim = "Find a clue as to the gems' whereabouts in the depths of Uldaman."
-Inst16Quest4_HORDE_Location = "Dran Droffers (Orgrimmar - The Drag; "..YELLOW.."59,36"..WHITE..")"
+Inst16Quest4_HORDE_Location = "Dran Droffers (Orgrimmar - The Drag; "..YELLOW.."59.4, 36.8"..WHITE..")"
 Inst16Quest4_HORDE_Note = "The Paladin is at "..YELLOW.."[2]"..WHITE.."."
 Inst16Quest4_HORDE_Prequest = "Necklace Recovery"
 Inst16Quest4_HORDE_Folgequest = "Translating the Journal"
@@ -2935,7 +2938,7 @@ Inst16Quest4_HORDE_Folgequest = "Translating the Journal"
 Inst16Quest5_HORDE = "5. Translating the Journal"
 Inst16Quest5_HORDE_Aim = "Find someone who can translate the paladin's journal. The closest location that might have someone is Kargath, in the Badlands."
 Inst16Quest5_HORDE_Location = "Remains of a Paladin (Uldaman; "..YELLOW.."[2]"..WHITE..")"
-Inst16Quest5_HORDE_Note = "The translator Jarkal Mossmeld is in Kargath (Badlands; "..YELLOW.."2,46"..WHITE..")."
+Inst16Quest5_HORDE_Note = "The translator Jarkal Mossmeld is at (Badlands - Kargath; "..YELLOW.."2.6, 46.0"..WHITE..")."
 Inst16Quest5_HORDE_Prequest = "Necklace Recovery, Take 2"
 Inst16Quest5_HORDE_Folgequest = "Find the Gems and Power Source"
 -- No Rewards for this quest
@@ -2943,8 +2946,8 @@ Inst16Quest5_HORDE_Folgequest = "Find the Gems and Power Source"
 --Quest 6 Horde
 Inst16Quest6_HORDE = "6. Find the Gems and Power Source"
 Inst16Quest6_HORDE_Aim = "Recover all three gems and a power source for the necklace from Uldaman, and then bring them to Jarkal Mossmeld in Kargath. Jarkal believes a power source might be found on the strongest construct present in Uldaman."
-Inst16Quest6_HORDE_Location = "Jarkal Mossmeld (Badlands - Kargath; "..YELLOW.."2,46"..WHITE..")"
-Inst16Quest6_HORDE_Note = "The gems are at "..YELLOW.."[1]"..WHITE.." in a Conspicous Urn, "..YELLOW.."[8]"..WHITE.." from the Shadowforge Cache, and "..YELLOW.."[9]"..WHITE.." off Grimlok. Note that when openning the Shadowforge Cache, a few mobs will spawn an aggro you. The Shattered Necklace Power Source drops from Archaedas "..YELLOW.."[10]"..WHITE.."."
+Inst16Quest6_HORDE_Location = "Jarkal Mossmeld (Badlands - Kargath; "..YELLOW.."2.6, 46.0"..WHITE..")"
+Inst16Quest6_HORDE_Note = "The gems are at "..YELLOW.."[1]"..WHITE.." in a Conspicous Urn, "..YELLOW.."[8]"..WHITE.." from the Shadowforge Cache, and "..YELLOW.."[9]"..WHITE.." off Grimlok.  Note that when openning the Shadowforge Cache, a few mobs will spawn an aggro you.  The Shattered Necklace Power Source drops from Archaedas "..YELLOW.."[10]"..WHITE.."."
 Inst16Quest6_HORDE_Prequest = "Translating the Journal"
 Inst16Quest6_HORDE_Folgequest = "Deliver the Gems"
 --
@@ -2953,8 +2956,8 @@ Inst16Quest6name1_HORDE = "Jarkal's Enhancing Necklace"
 --Quest 7 Horde
 Inst16Quest7_HORDE = "7. Uldaman Reagent Run"
 Inst16Quest7_HORDE_Aim = "Bring 12 Magenta Fungus Caps to Jarkal Mossmeld in Kargath."
-Inst16Quest7_HORDE_Location = "Jarkal Mossmeld (Badlands - Kargath; "..YELLOW.."2,69"..WHITE..")"
-Inst16Quest7_HORDE_Note = "You get the Prequest from Jarkal Mossmeld, too.\nThe caps are scattered throughout the instance. Herbalists can see them on their minimap if Track Herbs is on and they have the quest. The prequest is obtained from the same NPC."
+Inst16Quest7_HORDE_Location = "Jarkal Mossmeld (Badlands - Kargath; "..YELLOW.."2.6, 46.0"..WHITE..")"
+Inst16Quest7_HORDE_Note = "You get the Prequest from Jarkal Mossmeld.\nThe caps are scattered throughout the instance.  Herbalists can see them on their minimap if Track Herbs is on and they have the quest.  The prequest is obtained from the same NPC."
 Inst16Quest7_HORDE_Prequest = "Badlands Reagent Run"
 Inst16Quest7_HORDE_Folgequest = "Badlands Reagent Run II"
 --
@@ -2963,7 +2966,7 @@ Inst16Quest7name1_HORDE = "Restorative Potion"
 --Quest 8 Horde
 Inst16Quest8_HORDE = "8. Reclaimed Treasures"
 Inst16Quest8_HORDE_Aim = "Get Patrick Garrett's family treasure from their family chest in the South Common Hall of Uldaman, and bring it to him in the Undercity."
-Inst16Quest8_HORDE_Location = "Patrick Garrett (Undercity; "..YELLOW.."72,48"..WHITE..")"
+Inst16Quest8_HORDE_Location = "Patrick Garrett (Undercity; "..YELLOW.."62.6, 48.4"..WHITE..")"
 Inst16Quest8_HORDE_Note = "You find the treasure before you enter the instance. It is at the end of the south tunnel. On the entrance map, it's at "..YELLOW.."[5]"..WHITE.."."
 Inst16Quest8_HORDE_Prequest = "None"
 Inst16Quest8_HORDE_Folgequest = "None"
@@ -2973,7 +2976,7 @@ Inst16Quest8_HORDE_Folgequest = "None"
 Inst16Quest9_HORDE = "9. The Platinum Discs"
 Inst16Quest9_HORDE_Aim = "Speak with stone watcher and learn what ancient lore it keeps. Once you have learned what lore it has to offer, activate the Discs of Norgannon. -> Take the miniature version of the Discs of Norgannon to the one of the sages in Thunder Bluff."
 Inst16Quest9_HORDE_Location = "The Discs of Norgannon (Uldaman; "..YELLOW.."[11]"..WHITE..")"
-Inst16Quest9_HORDE_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to Sage Truthseeker in Thunder Bluff ("..YELLOW.."34,46"..WHITE.."). The followup starts another NPC who is nearby."
+Inst16Quest9_HORDE_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to Sage Truthseeker in Thunder Bluff ("..YELLOW.."34.8, 47.8"..WHITE..").  The followup starts another NPC who is nearby."
 Inst16Quest9_HORDE_Prequest = "None"
 Inst16Quest9_HORDE_Folgequest = "Portents of Uldum"
 --
@@ -2982,7 +2985,7 @@ Inst16Quest9name2_HORDE = "Superior Healing Potion"
 Inst16Quest9name3_HORDE = "Greater Mana Potion"
 
 --Quest 10 Horde  (same as Quest 4 Alliance)
-Inst16Quest10_HORDE = "10. Power in Uldaman (Mage)"
+Inst16Quest10_HORDE = "10. Power in Uldaman"
 Inst16Quest10_HORDE_Aim = Inst16Quest16_Aim
 Inst16Quest10_HORDE_Location = Inst16Quest16_Location
 Inst16Quest10_HORDE_Note = Inst16Quest16_Note
