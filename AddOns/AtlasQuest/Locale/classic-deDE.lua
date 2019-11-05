@@ -279,7 +279,7 @@ Inst1Quest18 = "18. Ein Funken Hoffnung"
 Inst1Quest18_Aim = "Holt Marshal Windsors verloren gegangene Informationen zurück."
 Inst1Quest18_Location = "Marshal Windsor (Blackrocktiefen; "..YELLOW.."[4]"..WHITE..")"
 Inst1Quest18_Note = "Onyxia Einstimmungsqestreihe.  Die verlorene Information droppt vom Golemlord Argelmach bei "..YELLOW.."[14]"..WHITE.." und General Zornesschmied bei "..YELLOW.."[13]"..WHITE.."."
-Inst1Quest18_Prequest = Eine zusammengeknüllte Notiz"
+Inst1Quest18_Prequest = "Eine zusammengeknüllte Notiz"
 Inst1Quest18_Folgequest = "Gefängnisausbruch!"
 -- No Rewards for this quest
 
@@ -923,7 +923,7 @@ Inst4Quest6name2 = "Armschützer des flinken Schlags"
 
 --Quest 7 Alliance
 Inst4Quest7 = "7. Blackhands Befehl"
-Inst4Quest7_Aim = "Dem Brief zufolge, wird das Brandzeichen von General Drakkisath bewacht. Vielleicht solltet Ihr diesem Hinweis nachgehen
+Inst4Quest7_Aim = "Dem Brief zufolge, wird das Brandzeichen von General Drakkisath bewacht. Vielleicht solltet Ihr diesem Hinweis nachgehen"
 Inst4Quest7_Location = "Blackhands Befehl (droppt vom Rüstmeister der Schmetterschilde; "..YELLOW.."[1] auf der Eingangskarte"..WHITE..")"
 Inst4Quest7_Note = "Pechschwingenabstieg Einstimmungsquest. Rüstmeister der Schmetterschilde kannst Du finden, wenn Du vor dem LBRS/UBRS Portal, rechts abbiegst.\n\nGeneral Drakkisath ist bei "..YELLOW.."[8]"..WHITE..". Das Brandzeichen ist hinter ihm."
 Inst4Quest7_Prequest = "Nein"

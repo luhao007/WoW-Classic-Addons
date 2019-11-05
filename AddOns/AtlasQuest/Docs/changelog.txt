@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Version 4.11.57  (for WoW Classic)  November 4, 2019
+
+- Fixed missing Followup quest for Sunken Temple: The Essence of Eranikus  (thanks nihlolino)
+- Fixed UBRS: The Demon Forge error with Horde quest rewards.  (thanks nihlolino)
+- Fixed LUA errors in German translation.  (thanks MrFIXlT)
+
+
+
 Version 4.11.56  (for WoW Classic)  November 3, 2019
 
 - Spanish localization updated.

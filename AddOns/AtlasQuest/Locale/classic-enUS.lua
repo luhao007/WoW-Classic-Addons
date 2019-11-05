@@ -1095,7 +1095,7 @@ Inst4Quest12_HORDE_Folgequest = Inst4Quest10_Folgequest
 --
 Inst4Quest12name1_HORDE = Inst4Quest10name1
 Inst4Quest12name2_HORDE = Inst4Quest10name2
-Inst4Quest12name2_HORDE = Inst4Quest10name3
+Inst4Quest12name3_HORDE = Inst4Quest10name3
 
 --Quest 13 Horde  (same as Quest 11 Alliance)
 Inst4Quest13_HORDE = "13. Egg Collection"
@@ -2442,7 +2442,7 @@ Inst15Quest8_Aim = "Place the Essence of Eranikus in the Essence Font located in
 Inst15Quest8_Location = "The Essence of Eranikus (drops from Shade of Eranikus; "..YELLOW.."[6]"..WHITE..")"
 Inst15Quest8_Note = "You find the Essence Font next to where Shade of Eranikus is at "..YELLOW.."[6]"..WHITE.."."
 Inst15Quest8_Prequest = "None"
-Inst15Quest8_Folgequest = "None"
+Inst15Quest8_Folgequest = "The Essence of Eranikus"
 --
 Inst15Quest8name1 = "Chained Essence of Eranikus"
 
@@ -2510,7 +2510,7 @@ Inst15Quest13name3 = "Fire Ruby"
 Inst15Quest14 = "14. Blood of Morphaz"
 Inst15Quest14_Aim = "Kill Morphaz in the sunken temple of Atal'Hakkar, and return his blood to Greta Mosshoof in Felwood. The entrance to the sunken temple can be found in the Swamp of Sorrows."
 Inst15Quest14_Location = "Ogtinc (Azshara; "..YELLOW.."42.2, 42.6"..WHITE..")"
-Inst15Quest14_Note = "Priest quest.  Morphaz is at "..YELLOW.."[5]"..WHITE..".  Greta Mosshoof is at Felwood - Emerald Sanctuary ("..YELLOW.."51.2, 82.2"..WHITE..")."
+Inst15Quest14_Note = "Priest quest.  Morphaz is at "..YELLOW.."[5]"..WHITE..".  Greta Mosshoof is at (Felwood - Emerald Sanctuary; "..YELLOW.."51.2, 82.2"..WHITE..")."
 Inst15Quest14_Prequest = "Cenarion Aid -> The Ichor of Undeath"
 Inst15Quest14_Folgequest = "None"
 --
@@ -2866,7 +2866,7 @@ Inst16Quest14_Folgequest = "None"
 Inst16Quest15 = "15. The Platinum Discs"
 Inst16Quest15_Aim = "Speak with stone watcher and learn what ancient lore it keeps. Once you have learned what lore it has to offer, activate the Discs of Norgannon. -> Take the miniature version of the Discs of Norgannon to the Explorers' League in Ironforge."
 Inst16Quest15_Location = "The Discs of Norgannon (Uldaman; "..YELLOW.."[11]"..WHITE..")"
-Inst16Quest15_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to High Explorer Magellas in Ironforge - Hall of Explorers ("..YELLOW.."69.8, 18.4"..WHITE..").  The followup starts another NPC who is nearby."
+Inst16Quest15_Note = "After you receive the quest, speak to the stone watcher to the left of the discs.  Then use the platinum discs again to recieve miniature discs, which you'll have to take to High Explorer Magellas at (Ironforge - Hall of Explorers; "..YELLOW.."69.8, 18.4"..WHITE..").  The followup starts another NPC who is nearby."
 Inst16Quest15_Prequest = "None"
 Inst16Quest15_Folgequest = "Portents of Uldum"
 --

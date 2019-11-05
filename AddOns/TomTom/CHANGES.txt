@@ -1,10 +1,76 @@
-lightweight tag 4228d5e42980ece74d233222ccf4a120a7dab1c1 v11302-1.0.7
+lightweight tag 0c15d13705101262fd11f4c221d6bedbfd9e1d7e v11302-1.0.8
 Author:	Ludovicus <ludovicus.maior@gmail.com>
-Date:	Sun Aug 25 15:06:44 2019 -0400
+Date:	Sun Nov 3 15:45:04 2019 -0500
 
-commit 4228d5e42980ece74d233222ccf4a120a7dab1c1
+commit 0c15d13705101262fd11f4c221d6bedbfd9e1d7e
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Sun Aug 25 15:06:44 2019 -0400
+Date:   Sun Nov 3 15:45:04 2019 -0500
 
-    Add Interface for Classic.
+    Classic Cut.
+
+commit 413a28e32166c563fc5e3b2e2d2b1340372df0d5
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 17:56:27 2019 -0400
+
+    #115: Add '/way reset away' and '/way reset not <zone>'.
+
+commit efc97b309ed9f1c38aa337214d7354b2f016e664
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 17:29:18 2019 -0400
+
+    #79: Mention /cway in usage text.
+
+commit e9f1dc17f8486836baae128c5d561859fe367d36
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 17:20:32 2019 -0400
+
+    #75: Lock/Unlock the arrow from the context menu.
+
+commit c0037bfd845a70197baf696f25751f10e18a9ca3
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 17:07:38 2019 -0400
+
+    #35:  Add control of sound channel to play ping through.
+
+commit 404102576381a9254d1acba92a2a25083ed3fb41
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 16:35:02 2019 -0400
+
+    re-enable otherzone flags.
+
+commit ad342b77db7786de06a71c0b6781b2a90da462c4
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 15:13:43 2019 -0400
+
+    Rerun Babelfish to update Localization.enUS.lua
+
+commit 826498340442ec9461bad43ae39f06bf035d3f39
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 14:11:28 2019 -0400
+
+    #472: Disable POI Integration code on Classic.
+
+commit da9c7e8fa7286aafcafac05ce76ba8702b55c0d5
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 14:10:48 2019 -0400
+
+    #472: Do not config POI on classic.
+
+commit 43701e4cf9a561919ba7a399a16fb04148b55c02
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 14:10:13 2019 -0400
+
+    #472:  Dont call EnableDisablePOIIntegration() on classic
+
+commit 42066efb628acff98534aacaded31b3a9deac823
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 13:47:23 2019 -0400
+
+    #477: If no coordinates, do not try to set waypoint from coord block.
+
+commit ef6bb553fdca4240471e14b4380785bf98df5c53
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Sat Oct 19 13:38:41 2019 -0400
+
+    #478: 'Send waypoint to' on arrow.
 
