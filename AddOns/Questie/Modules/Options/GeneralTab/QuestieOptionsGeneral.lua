@@ -1,3 +1,21 @@
+-------------------------
+--Import modules.
+-------------------------
+---@type QuestieQuest
+local QuestieQuest = QuestieLoader:ImportModule("QuestieQuest");
+---@type QuestieOptions
+local QuestieOptions = QuestieLoader:ImportModule("QuestieOptions");
+---@type QuestieOptionsDefaults
+local QuestieOptionsDefaults = QuestieLoader:ImportModule("QuestieOptionsDefaults");
+---@type QuestieOptionsUtils
+local QuestieOptionsUtils = QuestieLoader:ImportModule("QuestieOptionsUtils");
+---@type QuestieTracker
+local QuestieTracker = QuestieLoader:ImportModule("QuestieTracker");
+---@type QuestieFramePool
+local QuestieFramePool = QuestieLoader:ImportModule("QuestieFramePool");
+---@type QuestiePlayer
+local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
+
 QuestieOptions.tabs.general = {...}
 local optionsDefaults = QuestieOptionsDefaults:Load()
 
@@ -31,6 +49,20 @@ function QuestieOptions.tabs.general:Initialize()
                 inline = true,
                 name = function() return QuestieLocale:GetUIString('ICON_TYPE_HEADER'); end,
                 args = {
+                    --[[enableMinimalisticIcons = {
+                        type = "toggle",
+                        order = 0.9,
+                        name = function() return "(VERY VERY WORK IN PROGRESS!!!)"..QuestieLocale:GetUIString('ENABLE_MAP_ICONS_MINIMALISTIC'); end,
+                        desc = function() return "(VERY VERY WORK IN PROGRESS!!!)"..QuestieLocale:GetUIString('ENABLE_MAP_ICONS_DESC_MINIMALISTIC'); end,
+                        width = "full",
+                        disabled = function() return (not Questie.db.char.enabled); end,
+                        get = function () return Questie.db.char.enableMinimalisticIcons; end,
+                        set = function (info, value)
+                            Questie.db.char.enableMinimalisticIcons = value
+                            QuestieFramePool:SetIcons();
+                            QuestieQuest:SmoothReset();
+                        end,
+                    },]]--
                     enableMapToggle = {
                         type = "toggle",
                         order = 1,
@@ -281,7 +313,7 @@ function QuestieOptions.tabs.general:Initialize()
                 step = 1,
                 get = function(info) return QuestieOptions:GetGlobalOptionValue(info); end,
                 set = function (info, value)
-                    QUESTIE_NOTES_CLUSTERMUL_HACK = value;
+                    QUESTIE_CLUSTER_DISTANCE = value;
                     QuestieOptionsUtils:Delay(0.5, QuestieOptions.ClusterRedraw, QuestieLocale:GetUIString('DEBUG_CLUSTER', value))
                     QuestieOptions:SetGlobalOptionValue(info, value)
                 end,
