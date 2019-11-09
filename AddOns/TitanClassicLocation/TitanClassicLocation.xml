@@ -14,7 +14,7 @@
 						TitanPanelButton_OnShow(self);
 					</OnShow>
 					<OnHide>
-					TitanPanelLocationButton_OnHide();
+					    TitanPanelLocationButton_OnHide();
 					</OnHide>
 					<OnEvent>
 						TitanPanelLocationButton_OnEvent(self, event, ...);

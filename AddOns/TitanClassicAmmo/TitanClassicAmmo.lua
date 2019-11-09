@@ -16,9 +16,9 @@
 local _G = getfenv(0);
 local TITAN_AMMO_ID = "Ammo";
 
-local SHOOT_STACK = 250
+local SHOOT_STACK = 200
 local ARROW_STACK = 200
-local THROW_STACK = 100
+local THROW_STACK = 200
 
 local LIM_GOOD = 2
 local LIM_OK   = 1.5
@@ -30,7 +30,7 @@ local THROWN = "INVTYPE_THROWN"
 
 local TITAN_AMMO_THRESHOLD_TABLE = { -- Use ammo stack and threshold limits above to calc colored text
 	["INVTYPE_RANGEDRIGHT"] = {
-		 Values = { SHOOT_STACK*LIM_BAD, SHOOT_STACK*LIM_OK, SHOOT_STACK*LIM_GOOD }, -- 125,375,500
+		 Values = { SHOOT_STACK*LIM_BAD, SHOOT_STACK*LIM_OK, SHOOT_STACK*LIM_GOOD }, -- 100,150,400
 		 Colors = { RED_FONT_COLOR, ORANGE_FONT_COLOR, NORMAL_FONT_COLOR, HIGHLIGHT_FONT_COLOR },
 	 },
 	["INVTYPE_RANGED"] = {
@@ -38,7 +38,7 @@ local TITAN_AMMO_THRESHOLD_TABLE = { -- Use ammo stack and threshold limits abov
 		 Colors = { RED_FONT_COLOR, ORANGE_FONT_COLOR, NORMAL_FONT_COLOR, HIGHLIGHT_FONT_COLOR },
 	 },
 	["INVTYPE_THROWN"] = {
-		 Values = { THROW_STACK*LIM_BAD, THROW_STACK*LIM_OK, THROW_STACK*LIM_GOOD }, -- 50,150,400
+		 Values = { THROW_STACK/10, THROW_STACK/4, THROW_STACK/2 }, -- 20, 50, 100
 		 Colors = { RED_FONT_COLOR, ORANGE_FONT_COLOR, NORMAL_FONT_COLOR, HIGHLIGHT_FONT_COLOR },
 	 },
 };

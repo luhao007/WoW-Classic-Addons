@@ -15,19 +15,20 @@ TPR.ITEM_BAG = {};
 
 -- this index (0) will never be set, just accessed to this state,
 -- it simplifies code for TitanRepair_GetMostDamagedItem() when Tit_R_EquipedMinIndex == 0
-TPR.END=11
+TPR.END=12
 TPR.ITEM_STATUS[0] = { values = {}, name = INVTYPE_HEAD, slot = "VIRTUAL" };
-TPR.ITEM_STATUS[1] = { values = {}, name = INVTYPE_HEAD, slot = "Head" };
-TPR.ITEM_STATUS[2] = { values = {}, name = INVTYPE_SHOULDER, slot = "Shoulder" };
-TPR.ITEM_STATUS[3] = { values = {}, name = INVTYPE_CHEST, slot = "Chest" };
-TPR.ITEM_STATUS[4] = { values = {}, name = INVTYPE_WAIST, slot = "Waist" };
-TPR.ITEM_STATUS[5] = { values = {}, name = INVTYPE_LEGS, slot = "Legs" };
-TPR.ITEM_STATUS[6] = { values = {}, name = INVTYPE_FEET, slot = "Feet" };
-TPR.ITEM_STATUS[7] = { values = {}, name = INVTYPE_WRIST, slot = "Wrist" };
-TPR.ITEM_STATUS[8] = { values = {}, name = INVTYPE_HAND, slot = "Hands" };
-TPR.ITEM_STATUS[9] = { values = {}, name = INVTYPE_WEAPONMAINHAND, slot = "MainHand" };
-TPR.ITEM_STATUS[10] = { values = {}, name = INVTYPE_WEAPONOFFHAND, slot = "SecondaryHand" };
---TPR.ITEM_STATUS[11] = { values = {}, name = INVTYPE_RANGED, slot = "Ranged" }; -- Ranged weapons are no longer available in WoW
+TPR.ITEM_STATUS[1] = { values = {}, name = INVTYPE_HEAD, slot = INVSLOT_HEAD };
+TPR.ITEM_STATUS[2] = { values = {}, name = INVTYPE_SHOULDER, slot = INVSLOT_SHOULDER };
+TPR.ITEM_STATUS[3] = { values = {}, name = INVTYPE_CHEST, slot = INVSLOT_CHEST };
+TPR.ITEM_STATUS[4] = { values = {}, name = INVTYPE_WAIST, slot = INVSLOT_WAIST };
+TPR.ITEM_STATUS[5] = { values = {}, name = INVTYPE_LEGS, slot = INVSLOT_LEGS };
+TPR.ITEM_STATUS[6] = { values = {}, name = INVTYPE_FEET, slot = INVSLOT_FEET };
+TPR.ITEM_STATUS[7] = { values = {}, name = INVTYPE_WRIST, slot = INVSLOT_WRIST };
+TPR.ITEM_STATUS[8] = { values = {}, name = INVTYPE_HAND, slot = INVSLOT_HANDS };
+TPR.ITEM_STATUS[9] = { values = {}, name = INVTYPE_WEAPONMAINHAND, slot = INVSLOT_MAINHAND };
+TPR.ITEM_STATUS[10] = { values = {}, name = INVTYPE_WEAPONOFFHAND, slot = INVSLOT_OFFHAND };
+--TPR.ITEM_STATUS[10] = { values = {}, name = INVTYPE_WEAPONOFFHAND, slot = "SecondaryHand" };
+TPR.ITEM_STATUS[11] = { values = {}, name = INVTYPE_RANGED, slot = INVSLOT_RANGED }; -- Ranged weapons are back in Classic
 TPR.ITEM_STATUS[TPR.END] = { values = {}, name = INVENTORY_TOOLTIP };
 TPR.INVENTORY_STATUS = {}
 TPR.INVENTORY_STATUS[0] = { values = {}, name = INVENTORY_TOOLTIP };
@@ -542,9 +543,9 @@ function TitanRepair_GetEquipedInformation()
 
 	tit_debug_bis("_GetEquipedInfo loop" );
 	for index, value in pairs(INVENTORY_ALERT_STATUS_SLOTS) do -- index begins from 1
-		if index==11 then
+--		if index==11 then
 			--do nothing
-		else
+--		else
 			local act_status, act_val, act_max, act_cost,
 			itemName, itemType, itemSubType, itemRarity, itemColor = TitanRepair_GetStatus(index);
 			if TitanGetVar(TITAN_REPAIR_ID,"IgnoreThrown")
@@ -572,7 +573,7 @@ function TitanRepair_GetEquipedInformation()
 			TPR.ITEM_STATUS[index].values.item_quality = itemRarity;
 			TPR.ITEM_STATUS[index].values.item_color = itemColor;
 			TPR.ITEM_STATUS[index].values.item_frac = act_status;
-		end
+--		end
 	end
 	tit_debug_bis("_GetEquipedInfo loop end " .. (min_status or 0).. " | " ..(min_index or 0));
 	TPR.EquipedMinIndex = min_index;
@@ -609,9 +610,13 @@ function TitanRepair_GetStatus(index, bag)
 		_, repairCost = TitanRepairTooltip:SetBagItem(bag, index)
 		curDurability, maxDurability = GetContainerItemDurability(bag, index)
 	else
-		local slotName = TPR.ITEM_STATUS[index].slot.."Slot"
+--		local slotName = TPR.ITEM_STATUS[index].slot.."Slot"
 		--tit_debug_bis("_GetStatus index="..index..", slotName="..(slotName or "NIL"))
-		local slotId = GetInventorySlotInfo(slotName) or -1
+--		local slotId = GetInventorySlotInfo(slotName) or -1
+		-- Had to change the lookup for Classic. Could not find the right lookup text for ranged so used the constants
+		-- instead. The slot in the array above was changed to match.
+		local slotId = TPR.ITEM_STATUS[index].slot or -1
+		tit_debug_bis("_GetStatus index="..index..", slotId="..(slotId or "NIL"))
 		hasItem, _, repairCost = TitanRepairTooltip:SetInventoryItem("player", slotId)
 		--tit_debug_bis("_GetStatus slotName="..slotName..", slotId="..slotId..", hasItem="..(hasItem or 0))
 		if hasItem then

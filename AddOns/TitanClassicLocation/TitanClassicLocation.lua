@@ -567,7 +567,7 @@ function TitanMapFrame_OnUpdate(self, elapsed)
 	
 	if (mloc == "TOPRIGHT") then
 		TitanMapPlayerLocation:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", -10, -28)
-		TitanMapCursorLocation:SetPoint("TOPLEFT", TitanMapPlayerLocation, "BOTTOMLEFT", 0, 0)
+		TitanMapCursorLocation:SetPoint("TOPRIGHT", TitanMapPlayerLocation, "BOTTOMRIGHT", 0, 0)
 	elseif (mloc == "TOPLEFT") then
 		TitanMapPlayerLocation:SetPoint("TOPLEFT", WorldMapFrame, "TOPLEFT", 10, -28)
 		TitanMapCursorLocation:SetPoint("TOPLEFT", TitanMapPlayerLocation, "BOTTOMLEFT", 0, 0)
