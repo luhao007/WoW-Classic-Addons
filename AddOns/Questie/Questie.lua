@@ -15,6 +15,8 @@ if not QuestieConfigCharacter then
     QuestieConfigCharacter = {}
 end
 
+-- Global debug levels, see bottom of this file and `debugLevel` in QuestieOptionsAdvanced.lua for relevant code
+-- When adding a new level here it MUST be assigned a number and name in `debugLevel.values` as well added to Questie:Debug below
 DEBUG_CRITICAL = "|cff00f2e6[CRITICAL]|r"
 DEBUG_ELEVATED = "|cffebf441[ELEVATED]|r"
 DEBUG_INFO = "|cff00bc32[INFO]|r"
@@ -76,6 +78,8 @@ local QuestieDBMIntegration = QuestieLoader:ImportModule("QuestieDBMIntegration"
 local QuestieLib = QuestieLoader:ImportModule("QuestieLib");
 ---@type QuestiePlayer
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
+---@type QuestieQuestTimers
+local QuestieQuestTimers = QuestieLoader:ImportModule("QuestieQuestTimers")
 
 -- check if user has updated but not restarted the game (todo: add future new source files to this)
 if  (not LQuestie_EasyMenu) or
@@ -202,6 +206,8 @@ function Questie:OnInitialize()
     -- Initialize Coordinates
     QuestieCoords.Initialize();
 
+    QuestieQuestTimers:Initialize()
+
     -- Initialize questiecomms
     --C_ChatInfo.RegisterAddonMessagePrefix("questie")
     -- JoinTemporaryChannel("questie")
@@ -243,7 +249,13 @@ function Questie:OnInitialize()
     C_Timer.After(1, function()
         if not WorldMapContinentDropDown:IsShown() then
             Questie_Toggle:ClearAllPoints();
-            Questie_Toggle:SetPoint('RIGHT', WorldMapFrameCloseButton, 'LEFT', 0, 0);
+            if AtlasToggleFromWorldMap and AtlasToggleFromWorldMap:IsShown() then -- #1498
+                AtlasToggleFromWorldMap:SetScript("OnHide", function() Questie_Toggle:SetPoint('RIGHT', WorldMapFrameCloseButton, 'LEFT', 0, 0) end)
+                AtlasToggleFromWorldMap:SetScript("OnShow", function() Questie_Toggle:SetPoint('RIGHT', AtlasToggleFromWorldMap, 'LEFT', 0, 0) end)
+                Questie_Toggle:SetPoint('RIGHT', AtlasToggleFromWorldMap, 'LEFT', 0, 0);
+            else
+                Questie_Toggle:SetPoint('RIGHT', WorldMapFrameCloseButton, 'LEFT', 0, 0);
+            end
         end
     end);
 
@@ -377,20 +389,19 @@ function Questie:error(...)
     Questie:Error(...)
 end
 
---debuglevel = 5 --1 Critical, 2 ELEVATED, 3 Info, 4, Develop, 5 SPAM THAT SHIT YO
---DEBUG_CRITICAL = "1DEBUG"
---DEBUG_ELEVATED = "2DEBUG"
---DEBUG_INFO = "3DEBUG"
---DEBUG_DEVELOP = "4DEBUG"
---DEBUG_SPAM = "5DEBUG"
-
 function Questie:Debug(...)
     if(Questie.db.global.debugEnabled) then
-        if(Questie.db.global.debugLevel < 5 and select(1, ...) == DEBUG_SPAM)then return; end
-        if(Questie.db.global.debugLevel < 4 and select(1, ...) == DEBUG_DEVELOP)then return; end
-        if(Questie.db.global.debugLevel < 3 and select(1, ...) == DEBUG_INFO)then return; end
-        if(Questie.db.global.debugLevel < 2 and select(1, ...) == DEBUG_ELEVATED)then return; end
-        if(Questie.db.global.debugLevel < 1 and select(1, ...) == DEBUG_CRITICAL)then return; end
+        -- Exponents are defined by `debugLevel.values` in QuestieOptionsAdvanced.lua
+        -- DEBUG_CRITICAL = 0
+        -- DEBUG_ELEVATED = 1
+        -- DEBUG_INFO = 2
+        -- DEBUG_DEVELOP = 3
+        -- DEBUG_SPAM = 4
+        if(bit.band(Questie.db.global.debugLevel, math.pow(2, 4)) == 0 and select(1, ...) == DEBUG_SPAM)then return; end
+        if(bit.band(Questie.db.global.debugLevel, math.pow(2, 3)) == 0 and select(1, ...) == DEBUG_DEVELOP)then return; end
+        if(bit.band(Questie.db.global.debugLevel, math.pow(2, 2)) == 0 and select(1, ...) == DEBUG_INFO)then return; end
+        if(bit.band(Questie.db.global.debugLevel, math.pow(2, 1)) == 0 and select(1, ...) == DEBUG_ELEVATED)then return; end
+        if(bit.band(Questie.db.global.debugLevel, math.pow(2, 0)) == 0 and select(1, ...) == DEBUG_CRITICAL)then return; end
         --Questie:Print(...)
         if(QuestieConfigCharacter.log) then
             QuestieConfigCharacter = {};

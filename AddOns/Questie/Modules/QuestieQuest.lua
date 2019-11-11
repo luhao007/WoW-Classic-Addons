@@ -53,11 +53,6 @@ function QuestieQuest:Initialize()
     QuestieProfessions:Update()
     QuestieReputation:Update()
 
-    -- this inserts the Questie Icons to the MinimapButtonBag ignore list
-    if MBB_Ignore then
-        tinsert(MBB_Ignore, "QuestieFrameGroup")
-    end
-
     _QuestieQuest.questLogHashes = QuestieQuest:GetQuestLogHashes()
 end
 
@@ -275,7 +270,7 @@ function QuestieQuest:UpdateHiddenNotes()
                     icon:FakeHide()
                 else
                     icon:FakeUnhide()
-                end 
+                end
             end
         end
     end
@@ -366,31 +361,31 @@ function QuestieQuest:AcceptQuest(questId)
 
 end
 
-function QuestieQuest:CompleteQuest(QuestId)
-    QuestiePlayer.currentQuestlog[QuestId] = nil;
-    Questie.db.char.complete[QuestId] = true --can we use some other relevant info here?
-    QuestieQuest:RemoveQuestHash(QuestId)
+function QuestieQuest:CompleteQuest(questId)
+    QuestiePlayer.currentQuestlog[questId] = nil;
+    Questie.db.char.complete[questId] = true --can we use some other relevant info here?
+    QuestieQuest:RemoveQuestHash(questId)
 
     --This should probably be done first, because DrawAllAvailableQuests looks at QuestieMap.questIdFrames[QuestId] to add available
     QuestieQuest:CalculateAvailableQuests()
     QuestieQuest:DrawAllAvailableQuests();
 
-    QuestieMap:UnloadQuestFrames(QuestId);
-    if(QuestieMap.questIdFrames[QuestId]) then
-        Questie:Print("ERROR: Just removed all frames but the framelist seems to still be there!", QuestId);
+    QuestieMap:UnloadQuestFrames(questId);
+    if(QuestieMap.questIdFrames[questId]) then
+        Questie:Print("ERROR: Just removed all frames but the framelist seems to still be there!", questId);
     end
-    QuestieTooltips:RemoveQuest(QuestId)
+    QuestieTooltips:RemoveQuest(questId)
     --Unload all the quest frames from the map.
     --QuestieMap:UnloadQuestFrames(QuestId); --We are currently redrawing everything so we might as well not use this now
 
 
-    QuestieTracker:QuestRemoved(QuestId)
+    QuestieTracker:RemoveQuest(questId)
     QuestieTracker:Update()
 
     --For safety, remove all these icons.
-    QuestieMap:UnloadQuestFrames(QuestId, ICON_TYPE_COMPLETE);
+    QuestieMap:UnloadQuestFrames(questId, ICON_TYPE_COMPLETE);
 
-    Questie:Debug(DEBUG_INFO, "[QuestieQuest]: ".. QuestieLocale:GetUIString('DEBUG_COMPLETE_QUEST', QuestId));
+    Questie:Debug(DEBUG_INFO, "[QuestieQuest]: ".. QuestieLocale:GetUIString('DEBUG_COMPLETE_QUEST', questId));
 end
 
 function QuestieQuest:AbandonedQuest(questId)
@@ -419,7 +414,7 @@ function QuestieQuest:AbandonedQuest(questId)
         QuestieQuest:CalculateAvailableQuests()
         QuestieQuest:DrawAllAvailableQuests()
 
-        QuestieTracker:QuestRemoved(questId)
+        QuestieTracker:RemoveQuest(questId)
         QuestieTracker:Update()
 
         Questie:Debug(DEBUG_INFO, "[QuestieQuest]: ".. QuestieLocale:GetUIString('DEBUG_ABANDON_QUEST', questId));
@@ -921,7 +916,7 @@ function QuestieQuest:PopulateObjective(Quest, ObjectiveIndex, Objective, BlockI
             if(not spawnedIcons[questId]) then
                 spawnedIcons[questId] = 0;
             end
-            
+
             --This can be used to make distance ordered list..
             local iconCount = 0;
             local orderedList = {}
@@ -943,7 +938,7 @@ function QuestieQuest:PopulateObjective(Quest, ObjectiveIndex, Objective, BlockI
             if orderedList and orderedList[1] and orderedList[1].Icon == ICON_TYPE_OBJECT then -- new clustering / limit code should prevent problems, always show all object notes
                 range = range * 0.2;  -- Only use 20% of the default range.
             end
-            
+
             local hotzones = QuestieMap.utils:CalcHotzones(orderedList, range, iconCount);
 
             for index, hotzone in pairs(hotzones or {}) do
@@ -1142,7 +1137,7 @@ function QuestieQuest:GetAllQuestObjectives(Quest)
                 for objectiveIndexDB, objectiveDB in pairs(Quest.ObjectiveData) do
                     if objective.type == objectiveDB.Type then
                         -- TODO: use string distance to find closest, dont rely on exact match
-                        
+
                         -- Fetch the name of the objective
                         local oName = nil;
                         if(objectiveDB.Type == "monster" and objectiveDB.Id) then
@@ -1343,7 +1338,7 @@ function QuestieQuest:CompareQuestHashes()
                             _QuestieQuest.questLogHashes[questId] = newHash
                             timer:Cancel();
                             Questie:Debug(DEBUG_DEVELOP, "Accept seems correct, cancel timer");
-                        else   
+                        else
                             Questie:Debug(DEBUG_CRITICAL, "Response is wrong for quest, waiting with timer");
                         end
                     end)]]--
@@ -1490,15 +1485,7 @@ function _QuestieQuest:DrawAvailableQuest(questObject, noChildren)
                         for _, coords in ipairs(Spawns) do
                             local data = {}
                             data.Id = questObject.Id;
-                            if questObject.requiredLevel > QuestiePlayer.GetPlayerLevel() then
-                                data.Icon = ICON_TYPE_AVAILABLE_GRAY
-                            elseif(questObject:IsTrivial()) then
-                                data.Icon = ICON_TYPE_AVAILABLE_GRAY
-                            elseif questObject.Repeatable then
-                                data.Icon = ICON_TYPE_REPEATABLE
-                            else
-                                data.Icon = ICON_TYPE_AVAILABLE
-                            end
+                            data.Icon = _QuestieQuest:GetQuestIcon(questObject)
                             data.GetIconScale = function() return Questie.db.global.availableScale or 1.3 end
                             data.IconScale = data:GetIconScale()
                             data.Type = "available";
@@ -1533,15 +1520,7 @@ function _QuestieQuest:DrawAvailableQuest(questObject, noChildren)
                             --Questie:Debug("Coords", coords[1], coords[2])
                             local data = {}
                             data.Id = questObject.Id;
-                            if questObject.requiredLevel > QuestiePlayer.GetPlayerLevel() then
-                                data.Icon = ICON_TYPE_AVAILABLE_GRAY
-                            elseif(questObject:IsTrivial()) then
-                                data.Icon = ICON_TYPE_AVAILABLE_GRAY
-                            elseif questObject.Repeatable then
-                                data.Icon = ICON_TYPE_REPEATABLE
-                            else
-                                data.Icon = ICON_TYPE_AVAILABLE
-                            end
+                            data.Icon = _QuestieQuest:GetQuestIcon(questObject)
                             data.GetIconScale = function() return Questie.db.global.availableScale or 1.3 end
                             data.IconScale = data.GetIconScale();
                             data.Type = "available";
@@ -1635,26 +1614,33 @@ function QuestieQuest:DrawAllAvailableQuests()--All quests between
             --Draw a specific quest through the function
             _QuestieQuest:DrawAvailableQuest(quest)
         else
-            --We want to change from a gray icon to a nongray.
+            --We might have to update the icon in this situation (config changed/level up)
             for index, frame in ipairs(QuestieMap:GetFramesForQuest(questId)) do
-                --Only run on gray frames.
-                if(frame and frame.data and frame.data.Icon == ICON_TYPE_AVAILABLE_GRAY) then
-                    --Check the min level of the quest against playerLevel
-                    if(frame.data.QuestData.requiredLevel <= playerLevel and not frame.data.QuestData:IsTrivial()) then
-                        if(frame.data.QuestData.Repeatable) then
-                            frame:UpdateTexture(ICON_TYPE_REPEATABLE)
-                        else
-                            frame:UpdateTexture(ICON_TYPE_AVAILABLE)
-                        end
+                if frame and frame.data then
+                    local newIcon = _QuestieQuest:GetQuestIcon(frame.data.QuestData)
+                    if newIcon ~= frame.data.Icon then
+                        frame:UpdateTexture(newIcon)
                     end
-                elseif(frame and frame.data and frame.data.QuestData:IsTrivial() and  frame.data.Icon ~= ICON_TYPE_AVAILABLE_GRAY) then
-                    frame:UpdateTexture(ICON_TYPE_AVAILABLE_GRAY);
                 end
             end
         end
         count = count + 1
     end
     Questie:Debug(DEBUG_INFO, "[QuestieQuest]", QuestieLocale:GetUIString('DEBUG_DRAW', count, QuestiePlayer:GetPlayerLevel()));
+end
+
+function _QuestieQuest:GetQuestIcon(questObject)
+    local icon = {}
+    if questObject.requiredLevel > QuestiePlayer.GetPlayerLevel() then
+        icon = ICON_TYPE_AVAILABLE_GRAY
+    elseif questObject.Repeatable then
+        icon = ICON_TYPE_REPEATABLE
+    elseif(questObject:IsTrivial()) then
+        icon = ICON_TYPE_AVAILABLE_GRAY
+    else
+        icon = ICON_TYPE_AVAILABLE
+    end
+    return icon
 end
 
 function _QuestieQuest:IsDoable(questObject)
@@ -1766,9 +1752,9 @@ end
 --TODO Check that this function does what it is supposed to...
 function QuestieQuest:CalculateAvailableQuests()
     local playerLevel = QuestiePlayer:GetPlayerLevel()
-
     local minLevel = playerLevel - Questie.db.global.minLevelFilter
     local maxLevel = playerLevel + Questie.db.global.maxLevelFilter
+    local showRepeatableQuests = Questie.db.global.showRepeatableQuests
 
     if(not Questie.db.char.manualMinLevelOffset) then
         minLevel = playerLevel - GetQuestGreenRange();
@@ -1777,10 +1763,14 @@ function QuestieQuest:CalculateAvailableQuests()
     QuestieQuest.availableQuests = {}
 
     for questID, v in pairs(QuestieDB.questData) do
-        --Check if we've already completed the quest and that it is not "manually" hidden and that the quest is not currently in the questlog.
+        local quest = QuestieDB:GetQuest(questID)
 
-        if((not Questie.db.char.complete[questID]) and (not QuestieCorrections.hiddenQuests[questID]) and (not QuestiePlayer.currentQuestlog[questID])) then
-            local quest = QuestieDB:GetQuest(questID)
+        --Check if we've already completed the quest and that it is not "manually" hidden and that the quest is not currently in the questlog.
+        if(
+            (not Questie.db.char.complete[questID]) and -- Don't show completed quests
+            (not QuestiePlayer.currentQuestlog[questID]) and -- Don't show quests if they're already in the quest log
+            (not QuestieCorrections.hiddenQuests[questID]) and -- Don't show blacklisted quests
+            ((not quest.Repeatable) or (quest.Repeatable and showRepeatableQuests))) then -- Show repeatable quests if the quest is repeatable and the option is enabled
 
             if quest and _QuestieQuest:LevelRequirementsFulfilled(quest, playerLevel, minLevel, maxLevel) or _QuestieQuest:IsParentQuestActive(quest.parentQuest) then
                 if _QuestieQuest:IsDoable(quest) then

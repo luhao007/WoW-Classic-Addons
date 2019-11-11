@@ -42,6 +42,8 @@ QuestieLocale.locale['ptBR'] = {
     ['ENABLE_ICON_LIMIT_DESC'] = "Enable the limit of icons drawn per type.",
     ['ICON_LIMIT'] = "Icon Limit",
     ['ICON_LIMIT_DESC'] = "Limits the amount of icons drawn per type. ( Default: %s )",
+    ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
+    ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "Opções de mini-carta",
@@ -85,7 +87,7 @@ QuestieLocale.locale['ptBR'] = {
     ['OBJECT_ICON_SCALE_DESC'] = "Qual é o tamanho dos ícones de objeto. (Por defeito: %s)",
     ['EVENT_ICON_SCALE'] = "Escala de ícones de eventos",
     ['EVENT_ICON_SCALE_DESC'] = "Qual é o tamanho dos ícones do evento. (Por defeito: %s)",
-            
+
     ['MAP_COORDS'] = "Coordenadas do mapa e cursor",
     ['ENABLE_MAP_COORDS'] = "Coordenadas do jogador e do cursor",
     ['ENABLE_MAP_COORDS_DESC'] = "Coloque as coordenadas do jogador e as do cursor no título do cartão.",
@@ -205,10 +207,15 @@ QuestieLocale.locale['ptBR'] = {
     ['TRACKER_SHOW_COMPLETE_DESC'] = "Quando esta caixa está marcada, as missões concluídas são exibidas na ferramenta de rastreamento de missões",
     ['TRACKER_SHOW_QUEST_LEVEL'] = "Show Quest Level",
     ['TRACKER_SHOW_QUEST_LEVEL_DESC'] = "When this is checked, the level of quests will show in the Questie tracker.",
+    ['TRACKER_SHOW_QUEST_COUNTER'] = "Show Quest Counter",
+    ['TRACKER_SHOW_QUEST_COUNTER_DESC'] = "When this is checked, the total number of quests you have will be shown above the tracker.",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER'] = "Show Blizzard Quest Timer",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER_DESC'] = "When this is checked, the default timer for quests will be shown.",
     ['TRACKER_COLOR_OBJECTIVES'] = "Cor do objectivo",
     ['TRACKER_COLOR_OBJECTIVES_DESC'] = "Altere a cor dos objetivos no Rastreador de acordo com a integridade",
     ['TRACKER_COLOR_WHITE'] = "Branco",
     ['TRACKER_COLOR_WHITE_TO_GREEN'] = "Branco ao verde",
+    ['TRACKER_COLOR_WHITE_AND_GREEN'] = "White and Green",
     ['TRACKER_COLOR_RED_TO_GREEN'] = "Vermelho ao verde",
     ['TRACKER_FONT_HEADER'] = "Tamanho da fonte para nomes de missões",
     ['TRACKER_FONT_HEADER_DESC'] = "O tamanho da fonte usada pelo rastreamento para nomes de missões",
@@ -232,6 +239,7 @@ QuestieLocale.locale['ptBR'] = {
     ['TRACKER_SHORTCUT'] = " Atalho",
     ['TRACKER_SET_TOMTOM_DESC'] = "Atalho para abrir TomTom",
     ['TRACKER_SHOW_QUESTLOG_DESC'] = "O atalho para exibir a missão de missões",
+    ['TRACKER_UNTRACK_DESC'] = "Removes a quest from the Tracker.",
     ['TRACKER_ACTIVE_QUESTS'] = "Missões Ativas : ",
 
     --Menu contextual do rastreador
@@ -322,10 +330,10 @@ QuestieLocale.locale['ptBR'] = {
     ['DEBUG_ABANDON_QUEST'] = "Missão abandonada: %s",
     ['DEBUG_GET_QUEST'] = "Obter todas as missões",
     ['DEBUG_GET_QUEST_COMP'] = "Obtendo todas as missões concluídas",
-    ['DEBUG_POP_ERROR'] = "Ocorreu um erro ao definir destinos para %s %s %s %s %s",
+    ['DEBUG_POP_ERROR'] = "Ocorreu um erro ao definir destinos para %s %s %s %s",
     ['DEBUG_UNHANDLE_FINISH'] = "Tipo de finalizador não gerenciado: %s %s %s",
     ['DEBUG_NO_FINISH'] = "A missão não tem um finalizador: %s %s",
-    ['DEBUG_POPULATE_ERR'] = "Ocorreu um erro ao definir destinos para %s %s %s %s %s",
+    ['DEBUG_POPULATE_ERR'] = "Ocorreu um erro ao definir destinos para %s %s %s %s",
     ['DEBUG_POPTABLE'] = "Criando uma nova tabela de objetivos",
     ['DEBUG_OBJ_TABLE'] = "Erro: a tabela de objetivos não existe ao obter objetivos,isso nunca deve acontecer!",
     ['DEBUG_ENTRY_ID'] = "Erro ao procurar o ID da entrada para o objectivo %s %s",
@@ -333,7 +341,7 @@ QuestieLocale.locale['ptBR'] = {
     ['DEBUG_UNLOAD_QFRAMES'] = "Descarregando quadros de missões: %s",
     ['DEBUG_UNLOAD_ALL'] = "Descarregando todos os quadros, conta: %s",
     ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000ERREUR Questie:|rTente aceitar missões vazias! Pode ser necessário executar um / recarregar para a missão",
-    ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000ATTENTION !|r Você atualizou o Questie sem reiniciar o jogo, isso pode representar um problema. Por favor, reinicie o jogo antes de continuar",    
+    ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000ATTENTION !|r Você atualizou o Questie sem reiniciar o jogo, isso pode representar um problema. Por favor, reinicie o jogo antes de continuar",
 
     -- TODO finally switch all keys to this style for code readability:
     ['Show on Map'] = "Show on Map",

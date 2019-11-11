@@ -42,6 +42,8 @@ QuestieLocale.locale['deDE'] = {
     ['ENABLE_ICON_LIMIT_DESC'] = "Aktiviert/Deaktiviert, ob die Menge an Icons pro Typ limitiert wird.",
     ['ICON_LIMIT'] = "Icon Limit",
     ['ICON_LIMIT_DESC'] = "Wie viele Icons pro Type gezeigt werden sollen. ( Standard: %s )",
+    ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
+    ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "Minimap-Einstellungen",
@@ -205,10 +207,15 @@ QuestieLocale.locale['deDE'] = {
     ['TRACKER_SHOW_COMPLETE_DESC'] = "Wenn aktiv werden abgeschlossene Quests im Questie-Tracker angezeigt.",
     ['TRACKER_SHOW_QUEST_LEVEL'] = "Zeige Questlevel",
     ['TRACKER_SHOW_QUEST_LEVEL_DESC'] = "Wenn aktiv wird das Questlevel im Questie-Tracker angezeigt.",
+    ['TRACKER_SHOW_QUEST_COUNTER'] = "Zeige Questzähler",
+    ['TRACKER_SHOW_QUEST_COUNTER_DESC'] = "Wenn aktiv wird über dem Tracker ein Zähler angezeigt, wieviele Quests im Questlog sind.",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER'] = "Zeige Blizzard Questtimer",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER_DESC'] = "Wenn aktiv wird der standardmäßige Questtimer von Blizzard angezeigt.",
     ['TRACKER_COLOR_OBJECTIVES'] = "Questzielfarbe",
     ['TRACKER_COLOR_OBJECTIVES_DESC'] = "Verändert die Farbe von Questzielen in Abhängigkeit zum Fortschritt.",
     ['TRACKER_COLOR_WHITE'] = "Weiß",
     ['TRACKER_COLOR_WHITE_TO_GREEN'] = "Weiß zu Grün",
+    ['TRACKER_COLOR_WHITE_AND_GREEN'] = "White and Green",
     ['TRACKER_COLOR_RED_TO_GREEN'] = "Rot zu Grün",
     ['TRACKER_FONT_HEADER'] = "Schriftgröße des Questnamens",
     ['TRACKER_FONT_HEADER_DESC'] = "Die Schriftgröße der Questnamen im Tracker.",
@@ -232,6 +239,7 @@ QuestieLocale.locale['deDE'] = {
     ['TRACKER_SHORTCUT'] = " Shortcut",
     ['TRACKER_SET_TOMTOM_DESC'] = "Der Tracker-Shortcut, um TomTom zu öffnen The tracker shortcut to open TomTom.",
     ['TRACKER_SHOW_QUESTLOG_DESC'] = "Der Tracker-Shortcut, um eine Quest im Questlog anzuzeigen.",
+    ['TRACKER_UNTRACK_DESC'] = "Der Tracker-Shortcut, um eine Quest vom Tracker zu entfernen.",
     ['TRACKER_ACTIVE_QUESTS'] = "Aktive Quests: ",
 
     -- tracker right click menu
@@ -257,7 +265,7 @@ QuestieLocale.locale['deDE'] = {
     ['JOURNEY_AVAILABLE_TITLE'] = "Verfügbare Quests",
     ['JOURNEY_COMPLETE_TITLE'] = "Abgeschlossene Quests",
     ['JOURNEY_REPEATABLE_TITLE'] = "Wiederholbare Quests",
-    ['JOURNEY_UNOPTAINABLE_TITLE'] = "Nicht abschließbare Quests",
+    ['JOURNEY_UNOBTAINABLE_TITLE'] = "Nicht abschließbare Quests",
     ['JOURNEY_SELECT_HEAD'] = "Wähle deinen Kontinent und deine Zone",
     ['JOURNEY_SELECT_CONT'] = "Wähle deinen Kontinent",
     ['JOURNEY_SELECT_ZONE'] = "Wähle deine Zone",

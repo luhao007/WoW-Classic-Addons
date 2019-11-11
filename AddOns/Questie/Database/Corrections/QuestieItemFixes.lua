@@ -112,6 +112,13 @@ function QuestieItemFixes:Load()
         [3372] = {"Leaded Vial",{2609},{1286,1313,1326,1257,1325,5503,},{}}, -- #1476
         [4371] = {"Bronze Tube",{174,2609},{3495,5519,5175,},{}}, -- #1476
         [4639] = {"Enchanted Sea Kelp",{736},{4363},{}},
+        [9306] = {"Stave of Equinex",{2879,2942},{},{144063}}, -- #1487
+        [5646] = {"Vial of Blessed Water",{4441},{},{138498}}, -- #1491
+        [6175] = {"Atal'ai Artifact",{1424},{},{30854,30855,30856}},
+        [16967] = {"Feralas Ahi",{6607},{},{400000}},
+        [16970] = {"Misty Reed Mahi Mahi",{6607},{},{400001}},
+        [16968] = {"Sar'theris Striker",{6607},{},{400002}},
+        [16969] = {"Savage Coast Blue Sailfin",{6607},{},{400003}},
 
         -- quest related herbs
         [2449] = {"Earthroot",{6123,6128},{},{1619,3726}},

@@ -42,6 +42,8 @@ QuestieLocale.locale['ruRU'] = {
     ['ENABLE_ICON_LIMIT_DESC'] = "Enable the limit of icons drawn per type.",
     ['ICON_LIMIT'] = "Icon Limit",
     ['ICON_LIMIT_DESC'] = "Limits the amount of icons drawn per type. ( Default: %s )",
+    ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
+    ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "Миникарта",
@@ -205,10 +207,15 @@ QuestieLocale.locale['ruRU'] = {
     ['TRACKER_SHOW_COMPLETE_DESC'] = "When this is checked, completed quests will show in the Questie tracker.",
     ['TRACKER_SHOW_QUEST_LEVEL'] = "Show Quest Level",
     ['TRACKER_SHOW_QUEST_LEVEL_DESC'] = "When this is checked, the level of quests will show in the Questie tracker.",
+    ['TRACKER_SHOW_QUEST_COUNTER'] = "Show Quest Counter",
+    ['TRACKER_SHOW_QUEST_COUNTER_DESC'] = "When this is checked, the total number of quests you have will be shown above the tracker.",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER'] = "Show Blizzard Quest Timer",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER_DESC'] = "When this is checked, the default timer for quests will be shown.",
     ['TRACKER_COLOR_OBJECTIVES'] = "Objective Color",
     ['TRACKER_COLOR_OBJECTIVES_DESC'] = "Change the color of objectives in the tracker by how complete they are.",
     ['TRACKER_COLOR_WHITE'] = "White",
     ['TRACKER_COLOR_WHITE_TO_GREEN'] = "White to Green",
+    ['TRACKER_COLOR_WHITE_AND_GREEN'] = "White and Green",
     ['TRACKER_COLOR_RED_TO_GREEN'] = "Red to Green",
     ['TRACKER_FONT_HEADER'] = "Font Size for Quest Names",
     ['TRACKER_FONT_HEADER_DESC'] = "The font size the tracker uses for quest names.",
@@ -232,6 +239,7 @@ QuestieLocale.locale['ruRU'] = {
     ['TRACKER_SHORTCUT'] = " Shortcut",
     ['TRACKER_SET_TOMTOM_DESC'] = "The tracker shortcut to open TomTom",
     ['TRACKER_SHOW_QUESTLOG_DESC'] = "The tracker shortcut to show the quest in the quest log.",
+    ['TRACKER_UNTRACK_DESC'] = "Removes a quest from the Tracker.",
     ['TRACKER_ACTIVE_QUESTS'] = "Активный Задание: ",
 
     -- tracker right click menu
@@ -257,7 +265,7 @@ QuestieLocale.locale['ruRU'] = {
     ['JOURNEY_AVAILABLE_TITLE'] = "Доступные задания",
     ['JOURNEY_COMPLETE_TITLE'] = "Выполненные задания",
     ['JOURNEY_REPEATABLE_TITLE'] = "Задание Повторяемый",
-    ['JOURNEY_UNOPTAINABLE_TITLE'] = "Uncompletable Quests",
+    ['JOURNEY_UNOBTAINABLE_TITLE'] = "Unobtainable Quests",
     ['JOURNEY_SELECT_HEAD'] = "Выберите свой континент и локацию",
     ['JOURNEY_SELECT_CONT'] = "Выберите свой континент",
     ['JOURNEY_SELECT_ZONE'] = "Выберите вашу локацию",
@@ -332,7 +340,7 @@ QuestieLocale.locale['ruRU'] = {
     ['DEBUG_DRAW'] = "%s доступные задания обозначены. Уровень персонажа = %s",
     ['DEBUG_UNLOAD_QFRAMES'] = "Выгрузка окон заданий: %s",
     ['DEBUG_UNLOAD_ALL'] = "Выгрузка всех окон, количество: %s",
-    ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000Questie ERROR:|r Attempt to accept nil quest! You may need to run /questie reload", 
+    ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000Questie ERROR:|r Attempt to accept nil quest! You may need to run /questie reload",
     ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000WARNING!|r You have updated Questie without restarting the game, this will likely cause problems. Please restart the game before continuing",
 
     -- TODO finally switch all keys to this style for code readability:

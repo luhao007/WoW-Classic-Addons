@@ -96,6 +96,15 @@ function QuestieQuestFixes:Load()
         [473] = {
             [QuestieDB.questKeys.preQuestSingle] = {455}, -- #809
         },
+        [484] = {
+            [QuestieDB.questKeys.requiredMinRep] = {}, -- #1501
+        },
+        [510] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{1740},nil}, -- #1512
+        },
+        [511] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{1740},nil}, -- #1512
+        },
         [526] = {
             [QuestieDB.questKeys.exclusiveTo] = {322,324}, -- not 100% sure on this one but it seems lightforge ingots is optional, block it after completing subsequent steps (#587)
         },
@@ -123,6 +132,12 @@ function QuestieQuestFixes:Load()
         },
         [621] = {
             [QuestieDB.questKeys.inGroupWith] = {}, -- #886
+        },
+        [624] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{2554},{4056,},},
+        },
+        [637] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{2656},{4433,},}, -- #909
         },
         [639] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- #1205
@@ -167,6 +182,13 @@ function QuestieQuestFixes:Load()
         [930] = {
             [QuestieDB.questKeys.preQuestSingle] = {918,919}, -- #971
         },
+        [944] = {
+            [QuestieDB.questKeys.triggerEnd] = {"Enter the Master's Glaive",{[148]={{38.48,86.45},},},},
+        },
+        [961] = {
+            [QuestieDB.questKeys.preQuestSingle] = {944}, -- #1517
+            [QuestieDB.questKeys.exclusiveTo] = {950}, -- #1517
+        },
         [1026] = {
             [QuestieDB.questKeys.requiredSourceItems] = {5475},
         },
@@ -199,6 +221,9 @@ function QuestieQuestFixes:Load()
         [1204] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- #938
         },
+        [1265] = {
+            [QuestieDB.questKeys.triggerEnd] = {"Sentry Point explored",{[15]={{59.92,40.9},}}},
+        },
         [1275] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- #973 -- #745 prequest is not required in Classic
         },
@@ -213,6 +238,12 @@ function QuestieQuestFixes:Load()
         },
         [1339] = {
             [QuestieDB.questKeys.exclusiveTo] = {1338}, -- mountaineer stormpike's task cant be done if you have finished stormpike's order
+        },
+        [1427] = {
+            [QuestieDB.questKeys.nextQuestInChain] = 1428,
+        },
+        [1428] = {
+            [QuestieDB.questKeys.preQuestSingle] = {1427},
         },
         [1442] = {
             [QuestieDB.questKeys.parentQuest] = 1654,
@@ -350,6 +381,9 @@ function QuestieQuestFixes:Load()
         [3090] = {
             [QuestieDB.questKeys.requiredRaces] = 256, -- #813
         },
+        [3128] = {
+            [QuestieDB.questKeys.preQuestSingle] = {3122},
+        },
         [3374] = {
             [QuestieDB.questKeys.startedBy] = {{5353},nil,{10589,},}, -- #1233
         },
@@ -380,6 +414,9 @@ function QuestieQuestFixes:Load()
         },
         [4083] = {
             [QuestieDB.questKeys.requiredSkill] = {186,230}, -- #1293
+        },
+        [4084] = {
+            [QuestieDB.questKeys.questLevel] = 54, -- #1495
         },
         -- Salve via Hunting/Mining/Gathering/Skinning/Disenchanting repeatable quests
         -- Alliance
@@ -462,8 +499,14 @@ function QuestieQuestFixes:Load()
         [4496] = {
             [QuestieDB.questKeys.preQuestSingle] = {4493,4494},
         },
+        [4561] = {
+            [QuestieDB.questKeys.requiredRaces] = 77, -- #1520
+        },
         [4641] = {
             [QuestieDB.questKeys.requiredRaces] = 178, -- #877
+        },
+        [4661] = {
+            [QuestieDB.questKeys.requiredRaces] = 77, -- #1520
         },
         [4763] = {
             [QuestieDB.questKeys.requiredSourceItems] = {12347,12341,12342,12343,}, -- #798
@@ -590,11 +633,17 @@ function QuestieQuestFixes:Load()
         [6609] = {
             [QuestieDB.questKeys.exclusiveTo] = {6607}, -- #1154
         },
+        [7028] = {
+            [QuestieDB.questKeys.objectivesText] = {"Collect 25 Theradric Crystal Carvings for Willow in Desolace.",},
+        },
         [7068] = {
             [QuestieDB.questKeys.requiredLevel] = 39,
         },
         [7070] = {
             [QuestieDB.questKeys.requiredLevel] = 39,
+        },
+        [7489] = {
+            [QuestieDB.questKeys.preQuestSingle] = {}, -- #1514
         },
         [7492] = {
             [QuestieDB.questKeys.startedBy] = {{10879,10880,10881,},nil,nil,}, -- #1350

@@ -386,12 +386,12 @@ end
 
 -- Draw search results from advanced search tab
 local searchResultTabs = nil;
-function QuestieSearchResults:DrawSearchResultTab(searchGroup, searchType, query)
+function QuestieSearchResults:DrawSearchResultTab(searchGroup, searchType, query, useLast)
     if not searchResultTabs then
         searchGroup:ReleaseChildren();
-        if searchType == BY_NAME then
+        if searchType == BY_NAME and not useLast then
             QuestieSearch:ByName(query)
-        elseif searchType == BY_ID then
+        elseif searchType == BY_ID and not useLast then
             QuestieSearch:ByID(query)
         end
         local results = QuestieSearch.LastResult;
@@ -453,7 +453,7 @@ function QuestieSearchResults:DrawSearchResultTab(searchGroup, searchType, query
     else
         searchGroup:ReleaseChildren();
         searchResultTabs = nil;
-        self:DrawSearchResultTab(searchGroup, searchType, query);
+        self:DrawSearchResultTab(searchGroup, searchType, query, useLast);
     end
 end
 
@@ -501,16 +501,20 @@ function QuestieSearchResults:DrawSearchTab(container)
     searchBox:SetCallback("OnEnterPressed", function()
         if not (searchBox:GetText() == '') then
             local text = string.trim(searchBox:GetText(), " \n\r\t[]");
-            QuestieSearchResults:DrawSearchResultTab(searchGroup, Questie.db.char.searchType, text);
+            QuestieSearchResults:DrawSearchResultTab(searchGroup, Questie.db.char.searchType, text, false);
         end
     end);
+    -- Check for existence of previous search, if present use its text
+    if QuestieSearch.LastResult.query ~= '' then
+        searchBox:SetText(QuestieSearch.LastResult.query)
+    end
     container:AddChild(searchBox);
     -- search button
     searchBtn:SetText(QuestieLocale:GetUIString('JOURNEY_SEARCH_EXE'));
     searchBtn:SetDisabled(true);
     searchBtn:SetCallback("OnClick", function()
         local text = string.trim(searchBox:GetText(), " \n\r\t[]");
-        QuestieSearchResults:DrawSearchResultTab(searchGroup, Questie.db.char.searchType, text);
+        QuestieSearchResults:DrawSearchResultTab(searchGroup, Questie.db.char.searchType, text, false);
     end);
     container:AddChild(searchBtn);
     -- search results
@@ -518,6 +522,12 @@ function QuestieSearchResults:DrawSearchTab(container)
     searchGroup:SetFullWidth(true);
     searchGroup:SetLayout("fill");
     container:AddChild(searchGroup);
+    -- Check for existence of previous search, if present use its result
+    if QuestieSearch.LastResult.query ~= '' then
+        searchBtn:SetDisabled(false)
+        local text = string.trim(searchBox:GetText(), " \n\r\t[]")
+        QuestieSearchResults:DrawSearchResultTab(searchGroup, Questie.db.char.searchType, text, true)
+    end
 end
 
 function QuestieSearchResults:JumpToQuest(button)

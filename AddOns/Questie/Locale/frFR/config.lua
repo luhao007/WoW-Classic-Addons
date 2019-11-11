@@ -42,6 +42,8 @@ QuestieLocale.locale['frFR'] = {
     ['ENABLE_ICON_LIMIT_DESC'] = "Active la limite au nombre d'icônes affichées d'un même type.",
     ['ICON_LIMIT'] = "Limite d'icônes",
     ['ICON_LIMIT_DESC'] = "Limite le nombre d'icônes affichées d'un même type. (Par défaut : %s)",
+    ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
+    ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
 
     -- Onglet Mini-carte
     ['MINIMAP_TAB'] = "Mini-carte",
@@ -90,7 +92,7 @@ QuestieLocale.locale['frFR'] = {
     ['ENABLE_MAP_COORDS'] = "Coordonnées du joueur et du curseur",
     ['ENABLE_MAP_COORDS_DESC'] = "Active les coordonnées du joueur et celles du curseur dans le titre de la carte.",
     ['MAP_COORDS_PRECISION'] = "Précision des coordonnées sur la carte",
-    ['MAP_COORDS_PRECISION_DESC'] = "Définis combien de décimales sont à inclure dans les coordonnées du joueur et du curseur. (Par défaut : %s)",        
+    ['MAP_COORDS_PRECISION_DESC'] = "Définis combien de décimales sont à inclure dans les coordonnées du joueur et du curseur. (Par défaut : %s)",
 
     -- Onglet DBM HUD
     ['DBM_HUD_TAB'] = "DBM HUD",
@@ -207,8 +209,13 @@ QuestieLocale.locale['frFR'] = {
     ['TRACKER_COLOR_OBJECTIVES_DESC'] = "Change la couleur des objectifs dans le suivi en fonction de leur progression.",
     ['TRACKER_SHOW_QUEST_LEVEL'] = "Afficher le niveau de la quête",
     ['TRACKER_SHOW_QUEST_LEVEL_DESC'] = "Affiche le niveau des quêtes dans le suivi des quêtes de Questie.",
+    ['TRACKER_SHOW_QUEST_COUNTER'] = "Show Quest Counter",
+    ['TRACKER_SHOW_QUEST_COUNTER_DESC'] = "When this is checked, the total number of quests you have will be shown above the tracker.",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER'] = "Show Blizzard Quest Timer",
+    ['TRACKER_SHOW_BLIZZARD_QUEST_TIMER_DESC'] = "When this is checked, the default timer for quests will be shown.",
     ['TRACKER_COLOR_WHITE'] = "Blanc",
     ['TRACKER_COLOR_WHITE_TO_GREEN'] = "Blanc à vert",
+    ['TRACKER_COLOR_WHITE_AND_GREEN'] = "White and Green",
     ['TRACKER_COLOR_RED_TO_GREEN'] = "Rouge à vert",
     ['TRACKER_FONT_HEADER'] = "Taille de la police pour les noms des quêtes",
     ['TRACKER_FONT_HEADER_DESC'] = "Définis taille de la police utilisée pour les noms des quêtes dans le suivi.",
@@ -232,6 +239,7 @@ QuestieLocale.locale['frFR'] = {
     ['TRACKER_SHORTCUT'] = " Raccourci",
     ['TRACKER_SET_TOMTOM_DESC'] = "Définis le raccourci servant à ouvrir TomTom.",
     ['TRACKER_SHOW_QUESTLOG_DESC'] = "Définis le raccourci servant à afficher la quête dans le journal des quêtes.",
+    ['TRACKER_UNTRACK_DESC'] = "Removes a quest from the Tracker.",
     ['TRACKER_ACTIVE_QUESTS'] = "Quête Actives : ",
 
     -- Menu Clic droit du suivi
@@ -257,7 +265,7 @@ QuestieLocale.locale['frFR'] = {
     ['JOURNEY_AVAILABLE_TITLE'] = "Quêtes disponibles",
     ['JOURNEY_COMPLETE_TITLE'] = "Quêtes terminées",
     ['JOURNEY_REPEATABLE_TITLE'] = "Quêtes répétable",
-    ['JOURNEY_UNOPTAINABLE_TITLE'] = "Uncompletable Quests",
+    ['JOURNEY_UNOBTAINABLE_TITLE'] = "Unobtainable Quests",
     ['JOURNEY_SELECT_HEAD'] = "Sélectionnez votre continent et votre zone",
     ['JOURNEY_SELECT_CONT'] = "Sélectionnez votre continent",
     ['JOURNEY_SELECT_ZONE'] = "Sélectionnez votre zone",
@@ -313,7 +321,7 @@ QuestieLocale.locale['frFR'] = {
     ['DEBUG_LOWLEVEL'] = "Les quêtes grises sont basculées sur :",
     ['DEBUG_MINLEVEL'] = "minLevelFilter défini sur %s",
     ['DEBUG_MAXLEVEL'] = "maxLevelFilter défini sur %s",
-    ['DEBUG_CLUSTER'] = "Réglage de la valeur de fusionnement, clusterLevelHotzone réglée sur %s : réorganisation !", 
+    ['DEBUG_CLUSTER'] = "Réglage de la valeur de fusionnement, clusterLevelHotzone réglée sur %s : réorganisation !",
     ['DEBUG_ICON_LIMIT'] = "Setting icon limit value to %s : Redrawing!",
     ['DEBUG_ADD_QUEST'] = "Ajout de la quête %s %s",
     ['DEBUG_REMOVE_QUEST'] = "Suppression de la quête %s %s",
@@ -322,10 +330,10 @@ QuestieLocale.locale['frFR'] = {
     ['DEBUG_ABANDON_QUEST'] = "Quête abandonnée : %s",
     ['DEBUG_GET_QUEST'] = "Obtention de toutes les quêtes",
     ['DEBUG_GET_QUEST_COMP'] = "Obtention de toutes les quêtes terminées",
-    ['DEBUG_POP_ERROR'] = "Une erreur s'est produite lors de la définition des objectifs pour %s %s %s %s %s",
+    ['DEBUG_POP_ERROR'] = "Une erreur s'est produite lors de la définition des objectifs pour %s %s %s %s",
     ['DEBUG_UNHANDLE_FINISH'] = "Condition de fin non reconnue : %s %s %s",
     ['DEBUG_NO_FINISH'] = "La quête n'a pas de fin : %s %s",
-    ['DEBUG_POPULATE_ERR'] = "Une erreur s'est produite lors de la création des objectifs pour %s %s %s %s %s",
+    ['DEBUG_POPULATE_ERR'] = "Une erreur s'est produite lors de la création des objectifs pour %s %s %s %s",
     ['DEBUG_POPTABLE'] = "Création d'une nouvelle table d'objectifs",
     ['DEBUG_OBJ_TABLE'] = "Erreur : la table d'objectif n'existe pas lors de l'obtention d'objectifs, cela ne devrait jamais arriver !",
     ['DEBUG_ENTRY_ID'] = "Impossible de trouver l'ID de l'objectif %s %s",
@@ -333,7 +341,7 @@ QuestieLocale.locale['frFR'] = {
     ['DEBUG_UNLOAD_QFRAMES'] = "Vidage du cadres des quêtes : %s",
     ['DEBUG_UNLOAD_ALL'] = "Vidage de tous les cadres, montant : %s",
     ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000ERREUR :|r Tentative d'acceptation d'une quête vide! Vous devrez peut-être exécuter un /questie reload.",
-    ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000ATTENTION !|r Vous avez mis à jour Questie sans redémarrer le jeu, cela risque de poser problème. Veuillez redémarrer le jeu avant de continuer",        
+    ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000ATTENTION !|r Vous avez mis à jour Questie sans redémarrer le jeu, cela risque de poser problème. Veuillez redémarrer le jeu avant de continuer",
 
     -- TODO finally switch all keys to this style for code readability:
     ['Show on Map'] = "Afficher sur la carte",
