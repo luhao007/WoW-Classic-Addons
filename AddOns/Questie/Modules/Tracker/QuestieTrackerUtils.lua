@@ -1,13 +1,15 @@
----@class QuestieTrackerUtils
-local QuestieTrackerUtils = QuestieLoader:CreateModule("QuestieTrackerUtils")
+---@type QuestieTracker
+local QuestieTracker = QuestieLoader:ImportModule("QuestieTracker")
+QuestieTracker.utils = {}
 ---@type QuestieMap
 local QuestieMap = QuestieLoader:ImportModule("QuestieMap")
 
 
 local objectiveFlashTicker = {}
+local tinsert = table.insert
 
 
-function QuestieTrackerUtils:ShowQuestLog(quest)
+function QuestieTracker.utils:ShowQuestLog(quest)
     -- Priority order first check if addon exist otherwise default to original
     local questFrame = QuestLogExFrame or QuestLogFrame;
     HideUIPanel(questFrame);
@@ -24,7 +26,7 @@ function QuestieTrackerUtils:ShowQuestLog(quest)
     QuestLog_Update()
 end
 
-function QuestieTrackerUtils:SetTomTomTarget(title, zone, x, y)
+function QuestieTracker.utils:SetTomTomTarget(title, zone, x, y)
     if TomTom and TomTom.AddWaypoint then
         if Questie.db.char._tom_waypoint and TomTom.RemoveWaypoint then -- remove old waypoint
             TomTom:RemoveWaypoint(Questie.db.char._tom_waypoint)
@@ -33,29 +35,29 @@ function QuestieTrackerUtils:SetTomTomTarget(title, zone, x, y)
     end
 end
 
-function QuestieTrackerUtils:ShowObjectiveOnMap(Objective)
+function QuestieTracker.utils:ShowObjectiveOnMap(Objective)
     -- calculate nearest spawn
-    local spawn, zone, name = QuestieTrackerUtils:GetNearestSpawn(Objective)
+    local spawn, zone, name = QuestieMap:GetNearestSpawn(Objective)
     if spawn then
         --print("Found best spawn: " .. name .. " in zone " .. tostring(zone) .. " at " .. tostring(spawn[1]) .. " " .. tostring(spawn[2]))
         WorldMapFrame:Show()
         WorldMapFrame:SetMapID(ZoneDataAreaIDToUiMapID[zone])
-        QuestieTrackerUtils:FlashObjective(Objective)
+        QuestieTracker.utils:FlashObjective(Objective)
     end
 end
 
-function QuestieTrackerUtils:ShowFinisherOnMap(Quest)
+function QuestieTracker.utils:ShowFinisherOnMap(Quest)
     -- calculate nearest spawn
     local spawn, zone, name = QuestieMap:GetNearestQuestSpawn(Quest)
     if spawn then
         --print("Found best spawn: " .. name .. " in zone " .. tostring(zone) .. " at " .. tostring(spawn[1]) .. " " .. tostring(spawn[2]))
         WorldMapFrame:Show()
         WorldMapFrame:SetMapID(ZoneDataAreaIDToUiMapID[zone])
-        QuestieTrackerUtils:FlashFinisher(Quest)
+        QuestieTracker.utils:FlashFinisher(Quest)
     end
 end
 
-function QuestieTrackerUtils:FlashObjective(Objective) -- really terrible animation code, sorry guys
+function QuestieTracker.utils:FlashObjective(Objective) -- really terrible animation code, sorry guys
     if Objective.AlreadySpawned then
         local toFlash = {}
         -- ugly code
@@ -77,7 +79,7 @@ function QuestieTrackerUtils:FlashObjective(Objective) -- really terrible animat
         for _, spawn in pairs(Objective.AlreadySpawned) do
             if spawn.mapRefs then
                 for _, frame in pairs(spawn.mapRefs) do
-                    table.insert(toFlash, frame)
+                    tinsert(toFlash, frame)
                     if frame._hidden_by_flash then
                         frame:Show()
                     end
@@ -140,7 +142,7 @@ function QuestieTrackerUtils:FlashObjective(Objective) -- really terrible animat
     end
 end
 
-function QuestieTrackerUtils:FlashFinisher(Quest) -- really terrible animation copypasta, sorry guys
+function QuestieTracker.utils:FlashFinisher(Quest) -- really terrible animation copypasta, sorry guys
     local toFlash = {}
     -- ugly code
     for questId, framelist in pairs(QuestieMap.questIdFrames) do
@@ -161,7 +163,7 @@ function QuestieTrackerUtils:FlashFinisher(Quest) -- really terrible animation c
                 local icon = _G[frameName];
                 if not icon.miniMapIcon then
                     icon._size = icon:GetWidth()
-                    table.insert(toFlash, icon)
+                    tinsert(toFlash, icon)
                 end
             end
         end
@@ -218,7 +220,7 @@ function QuestieTrackerUtils:FlashFinisher(Quest) -- really terrible animation c
     end)
 end
 
--- function QuestieTrackerUtils:FlashObjectiveByTexture(Objective) -- really terrible animation code, sorry guys
+-- function QuestieTracker.utils:FlashObjectiveByTexture(Objective) -- really terrible animation code, sorry guys
 --     if Objective.AlreadySpawned then
 --         local toFlash = {}
 --         -- ugly code
@@ -241,7 +243,7 @@ end
 --             if spawn.mapRefs then
 --                 for _, frame in pairs(spawn.mapRefs) do
 --                     if frame.data.ObjectiveData then
---                         table.insert(toFlash, frame)
+--                         tinsert(toFlash, frame)
 --                         if frame._hidden_by_flash then
 --                             frame:Show()
 --                         end
@@ -330,6 +332,6 @@ local bindTruthTable = {
     ['disabled'] = function() return false; end,
 }
 
-function QuestieTrackerUtils:IsBindTrue(bind, button)
+function QuestieTracker.utils:IsBindTrue(bind, button)
     return bind and button and bindTruthTable[bind] and bindTruthTable[bind](button)
 end

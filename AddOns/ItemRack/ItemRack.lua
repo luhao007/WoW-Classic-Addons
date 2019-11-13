@@ -3,7 +3,7 @@ ItemRack = {}
 local disable_delayed_swaps = nil -- temporary. change nil to 1 to stop attempting to delay set swaps while casting
 local _
 
-ItemRack.Version = "3.22"
+ItemRack.Version = "3.23"
 
 ItemRackUser = {
 	Sets = {}, -- user's sets
@@ -151,9 +151,30 @@ function ItemRack.OnLoad(self)
 end
 
 ItemRack.EventHandlers = {}
+ItemRack.ExternalEventHandlers = {}
 
 function ItemRack.OnEvent(self,event,...)
 	ItemRack.EventHandlers[event](self,event,...)
+end
+
+--- Allows third-party addons to listen to ItemRack events, like saving and deleting a set.
+function ItemRack.RegisterExternalEventListener(self,event,handler)
+	local handlers = ItemRack.ExternalEventHandlers[event]
+	if handlers == nil then
+		handlers = {}
+		ItemRack.ExternalEventHandlers[event] = handlers
+	end
+	
+	table.insert(handlers, handler)
+end
+
+function ItemRack.FireItemRackEvent(self,event,...)
+	local handlers = ItemRack.ExternalEventHandlers[event]
+	if handlers ~= nil then
+		for _, handler in pairs(handlers) do
+			handler(event,...)
+		end
+	end
 end
 
 function ItemRack.OnPlayerLogin()

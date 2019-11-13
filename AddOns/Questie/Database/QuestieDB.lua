@@ -12,6 +12,8 @@ local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
 ---@type QuestieDBZone
 local QuestieDBZone = QuestieLoader:ImportModule("QuestieDBZone")
 
+local tinsert = table.insert
+
 -- DB keys
 local DB_NAME, DB_NPC, NOTE_TITLE = 1, 1, 1;
 local DB_STARTS, DB_OBJ, NOTE_COMMENT, DB_MIN_LEVEL_HEALTH = 2, 2, 2, 2;
@@ -63,14 +65,6 @@ QuestieDB._NPCCache = {};
 QuestieDB._ObjectCache = {};
 QuestieDB._ZoneCache = {};
 
-QuestieDB.tempItemKeys = {
-    ['name'] = 1, -- string
-    ['related_quests'] = 2, -- table {questID(int),,...}
-    ['npc_drops'] = 3, -- table {npcID(int),...}
-    ['object_drops'] = 4, -- table {objectID(int),...}
-}
-
-
 function QuestieDB:Initialize()
     QuestieDBZone:ZoneCreateConversion()
     QuestieDB:HideClassAndRaceQuests()
@@ -84,8 +78,8 @@ function QuestieDB:Initialize()
     QuestieDB._ZoneCache = {};
 end
 
-function QuestieDB:ItemLookup(ItemId)
-    local itemName, itemLink = GetItemInfo(ItemId)
+function QuestieDB:ItemLookup(itemId)
+    local itemName, itemLink = GetItemInfo(itemId)
     local item = {}
     item.name = itemName
     item.link = itemLink
@@ -93,67 +87,68 @@ function QuestieDB:ItemLookup(ItemId)
 end
 
 
-function QuestieDB:GetObject(ObjectID)
-    if ObjectID == nil then
+function QuestieDB:GetObject(objectID)
+    if objectID == nil then
         return nil
     end
-    if QuestieDB._ObjectCache[ObjectID] ~= nil then
-        return QuestieDB._ObjectCache[ObjectID];
+    if QuestieDB._ObjectCache[objectID] ~= nil then
+        return QuestieDB._ObjectCache[objectID];
     end
-    if QuestieCorrections.objectFixes[ObjectID] then
-        for k,v in pairs(QuestieCorrections.objectFixes[ObjectID]) do
-            QuestieDB.objectData[ObjectID][k] = v
-        end
+
+    local rawdata = QuestieDB.objectData[objectID];
+    if not rawdata then
+        Questie:Debug(DEBUG_CRITICAL, "[QuestieDB:GetObject] rawdata is nil for objectID:", objectID)
+        return nil
     end
-    local raw = QuestieDB.objectData[ObjectID];
-    if raw ~= nil then
-        local obj = {};
-        obj.id = ObjectID
-        obj.type = "object"
-        for stringKey, intKey in pairs(QuestieDB.objectKeys) do
-            obj[stringKey] = raw[intKey]
-        end
-        QuestieDB._ObjectCache[ObjectID] = obj;
-        return obj;
-    else
-        Questie:Debug(DEBUG_SPAM, "[QuestieQuest]: Missing container ", ObjectID)
+
+    local obj = {};
+
+    obj.id = objectID
+    obj.type = "object"
+    for stringKey, intKey in pairs(QuestieDB.objectKeys) do
+        obj[stringKey] = rawdata[intKey]
     end
+    QuestieDB._ObjectCache[objectID] = obj;
+    return obj;
 end
 
-function QuestieDB:GetItem(ItemID)
-    if ItemID == nil then
+function QuestieDB:GetItem(itemID)
+    if itemID == nil then
         return nil
     end
-    if QuestieDB._ItemCache[ItemID] ~= nil then
-        return QuestieDB._ItemCache[ItemID];
+    if QuestieDB._ItemCache[itemID] ~= nil then
+        return QuestieDB._ItemCache[itemID];
     end
-    -- TODO make itemFixes be accessable by field as well
-    -- if QuestieCorrections.itemFixes[ItemID] then
-    --     for k,v in pairs(QuestieCorrections.itemFixes[ItemID]) do
-    --         CHANGEME_Questie4_ItemDB[ItemID][k] = v
-    --     end
-    -- end
-    local raw = CHANGEME_Questie4_ItemDB[ItemID]; -- TODO: use the good item db, I need to talk to Muehe about the format, this is a temporary fix
+
+    local rawdata = QuestieDB.itemData[itemID]; -- TODO: use the good item db, I need to talk to Muehe about the format, this is a temporary fix
+    if not rawdata then
+        Questie:Debug(DEBUG_CRITICAL, "[QuestieDB:GetItem] rawdata is nil for itemID:", itemID)
+        return nil
+    end
+
     local item = {};
-    if raw ~= nil then
-        item.Id = ItemID;
-        item.Name = raw[QuestieDB.tempItemKeys.name];
-        item.Sources = {};
-        item.Hidden = QuestieCorrections.questItemBlacklist[ItemID]
-        for k,v in pairs(raw[3]) do -- droppedBy = 3, relatedQuests=2, containedIn=4
-            local source = {};
-            source.Type = "monster";
-            source.Id = v;
-            table.insert(item.Sources, source);
-        end
-        for k,v in pairs(raw[4]) do -- droppedBy = 3, relatedQuests=2, containedIn=4
-            local source = {};
-            source.Type = "object";
-            source.Id = v;
-            table.insert(item.Sources, source);
-        end
+
+    for stringKey, intKey in pairs(QuestieDB.itemKeys) do
+        item[stringKey] = rawdata[intKey]
     end
-    QuestieDB._ItemCache[ItemID] = item;
+
+    item.Id = itemID;
+    item.Sources = {};
+    item.Hidden = QuestieCorrections.questItemBlacklist[itemID]
+    for k,v in pairs(rawdata[3]) do -- droppedBy = 3, relatedQuests=2, containedIn=4
+        local source = {};
+        source.Type = "monster";
+        source.Id = v;
+        tinsert(item.Sources, source);
+    end
+    for k,v in pairs(rawdata[4]) do -- droppedBy = 3, relatedQuests=2, containedIn=4
+        local source = {};
+        source.Type = "object";
+        source.Id = v;
+        tinsert(item.Sources, source);
+    end
+
+    QuestieDB._ItemCache[itemID] = item;
     return item
 end
 
@@ -213,7 +208,7 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
                     obj.Name = string.lower(name);
                 end
 
-                QO.Finisher = obj; -- there is only 1 finisher --table.insert(QO.Finisher, obj);
+                QO.Finisher = obj; -- there is only 1 finisher --tinsert(QO.Finisher, obj);
             end
             --end
             --end
@@ -252,7 +247,7 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
             local obj = {};
             obj.Type = "event"
             obj.Coordinates = v
-            table.insert(QO.ObjectiveData, obj);
+            tinsert(QO.ObjectiveData, obj);
         end
     end
     if rawdata[10] ~= nil then
@@ -265,7 +260,7 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
                     obj.Id = _v[1]
                     obj.Text = _v[2];
 
-                    table.insert(QO.ObjectiveData, obj);
+                    tinsert(QO.ObjectiveData, obj);
 
                 end
             end
@@ -279,7 +274,7 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
                     obj.Id = _v[1]
                     obj.Text = _v[2]
 
-                    table.insert(QO.ObjectiveData, obj);
+                    tinsert(QO.ObjectiveData, obj);
 
                 end
             end
@@ -292,7 +287,7 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
                     obj.Id = _v[1]
                     obj.Text = _v[2]
 
-                    table.insert(QO.ObjectiveData, obj);
+                    tinsert(QO.ObjectiveData, obj);
                 end
             end
         end
@@ -316,13 +311,13 @@ function QuestieDB:GetQuest(questID) -- /dump QuestieDB:GetQuest(867)
                 obj.Type = "item"
                 obj.Id = Id
 
-                obj.Name = CHANGEME_Questie4_ItemDB[obj.Id]
+                obj.Name = QuestieDB.itemData[obj.Id]
                 if obj.Name ~= nil then
-                    local name = obj.Name[QuestieDB.tempItemKeys.name]
+                    local name = obj.Name[QuestieDB.itemKeys.name]
                     obj.Name = string.lower(name);
                 end
 
-                table.insert(QO.HiddenObjectiveData, obj);
+                tinsert(QO.HiddenObjectiveData, obj);
             end
         end
     end
@@ -379,14 +374,14 @@ function QuestieDB:_GetSpecialNPC(NPCID)
             local x = QuestieDB._stream:ReadShort() / 655.35
             local y = QuestieDB._stream:ReadShort() / 655.35
             local m = QuestieDB._stream:ReadByte() + 1400
-            table.insert(NPC.newFormatSpawns, {x, y, m});
+            tinsert(NPC.newFormatSpawns, {x, y, m});
             local om = m;
             m = QuestieDBZone:GetAreaIdByUIMapID(m)
             if m then
                 if not NPC.spawns[m] then
                     NPC.spawns[m] = {};
                 end
-                table.insert(NPC.spawns[m], {x, y});
+                tinsert(NPC.spawns[m], {x, y});
             end
         end
         return NPC
@@ -394,51 +389,54 @@ function QuestieDB:_GetSpecialNPC(NPCID)
     return nil
 end
 
-function QuestieDB:GetNPC(NPCID)
-    if NPCID == nil then
+function QuestieDB:GetNPC(npcID)
+    if npcID == nil then
         return nil
     end
-    if(QuestieDB._NPCCache[NPCID]) then
-        return QuestieDB._NPCCache[NPCID]
+    if(QuestieDB._NPCCache[npcID]) then
+        return QuestieDB._NPCCache[npcID]
     end
-    local rawdata = QuestieDB.npcData[NPCID]
-    if(rawdata)then
-        local NPC = {}
-        NPC.type = "monster"
-        NPC.id = NPCID
-        for stringKey, intKey in pairs(QuestieDB.npcKeys) do
-            NPC[stringKey] = rawdata[intKey]
-        end
-        if NPC.spawns == nil and Questie_SpecialNPCs[NPCID] then -- get spawns from script spawns list
-            NPC.spawns = QuestieDB:_GetSpecialNPC(NPCID).spawns
-        end
 
-        ---@class Point
-        ---@class Zone
-        if NPC.waypoints == nil and rawdata[QuestieDB.npcKeys.waypoints] then
-            Questie:Debug(DEBUG_DEVELOP, "Got waypoints! NPC", NPC.name, NPC.id)
-            ---@type table<Zone, table<Point, Point>>
-            NPC.waypoints = rawdata[QuestieDB.npcKeys.waypoints];
-        end
+    local rawdata = QuestieDB.npcData[npcID]    
+    if not rawdata then
+        Questie:Debug(DEBUG_CRITICAL, "[QuestieDB:GetNPC] rawdata is nil for npcID:", npcID)
+        return QuestieDB:_GetSpecialNPC(npcID)
+    end
 
-        if rawdata[DB_NPC_FRIENDLY] then
-            if rawdata[DB_NPC_FRIENDLY] == "AH" then
-                NPC.friendly = true
-            else
-                if QuestieDB.FactionGroup == "Horde" and rawdata[DB_NPC_FRIENDLY] == "H" then
-                    NPC.friendly = true
-                elseif QuestieDB.FactionGroup == "Alliance" and rawdata[DB_NPC_FRIENDLY] == "A" then
-                    NPC.friendly = true
-                end
-            end
+    local npc = {}
+    npc.type = "monster"
+    npc.id = npcID
+    for stringKey, intKey in pairs(QuestieDB.npcKeys) do
+        npc[stringKey] = rawdata[intKey]
+    end
+    if npc.spawns == nil and Questie_SpecialNPCs[npcID] then -- get spawns from script spawns list
+        npc.spawns = QuestieDB:_GetSpecialNPC(npcID).spawns
+    end
+
+    ---@class Point
+    ---@class Zone
+    if npc.waypoints == nil and rawdata[QuestieDB.npcKeys.waypoints] then
+        Questie:Debug(DEBUG_DEVELOP, "Got waypoints! NPC", npc.name, npc.id)
+        ---@type table<Zone, table<Point, Point>>
+        npc.waypoints = rawdata[QuestieDB.npcKeys.waypoints];
+    end
+
+    if rawdata[DB_NPC_FRIENDLY] then
+        if rawdata[DB_NPC_FRIENDLY] == "AH" then
+            npc.friendly = true
         else
-            NPC.friendly = true
+            if QuestieDB.FactionGroup == "Horde" and rawdata[DB_NPC_FRIENDLY] == "H" then
+                npc.friendly = true
+            elseif QuestieDB.FactionGroup == "Alliance" and rawdata[DB_NPC_FRIENDLY] == "A" then
+                npc.friendly = true
+            end
         end
-        QuestieDB._NPCCache[NPCID] = NPC
-        return NPC
     else
-        return QuestieDB:_GetSpecialNPC(NPCID)
+        npc.friendly = true
     end
+
+    QuestieDB._NPCCache[npcID] = npc
+    return npc
 end
 
 function QuestieDB:GetQuestsByName(questName)
@@ -453,7 +451,7 @@ function QuestieDB:GetQuestsByName(questName)
         local haystack = quest[1]
         local lowerHaystack = string.lower(haystack);
         if string.find(lowerHaystack, needle) then
-            table.insert(returnTable, index);
+            tinsert(returnTable, index);
         end
     end
 
@@ -473,7 +471,7 @@ function QuestieDB:GetNPCsByName(npcName)
         local lowerHaystack = string.lower(haystack);
 
         if string.find(lowerHaystack, needle) then
-            table.insert(returnTable, index);
+            tinsert(returnTable, index);
         end
     end
 
@@ -560,9 +558,9 @@ function UnpackBinary(val)
     local ret = {};
     for q=0,16 do
         if bit.band(bit.rshift(val,q), 1) == 1 then
-            table.insert(ret, true);
+            tinsert(ret, true);
         else
-            table.insert(ret, false);
+            tinsert(ret, false);
         end
     end
     return ret;

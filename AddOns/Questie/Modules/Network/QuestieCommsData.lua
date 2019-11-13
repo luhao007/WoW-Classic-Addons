@@ -51,8 +51,8 @@ function QuestieComms.data:GetTooltip(tooltipKey)
                     oName = QuestieDB:GetObject(objective.id).name;
                 elseif((objective.type == "item" or objective.type == "i") and objective.id) then
                     local item = QuestieDB:GetItem(objective.id);
-                    if(item and item.Name) then
-                        oName = item.Name;-- this is capital letters for some reason...
+                    if(item and item.name) then
+                        oName = item.name;-- this is capital letters for some reason...
                     else
                         local itemName = GetItemInfo(objective.id)
                         if(itemName) then
@@ -93,6 +93,9 @@ function QuestieComms.data:RegisterTooltip(questId, playerName, objectives)
         --Questie:Debug(DEBUG_DEVELOP, "Adding tooltip lookup", lookupKey, questId, playerName);
         if(objective.type == "i") then
           local item = QuestieDB:GetItem(objective.id);
+          if not item then
+            return
+          end
           for index, source in pairs(item.Sources or {}) do
             local sourceType = string.sub(source.Type, 1, 1);
             local sourceId = source.Id;

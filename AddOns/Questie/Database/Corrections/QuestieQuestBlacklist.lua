@@ -10,6 +10,7 @@ function QuestieQuestBlacklist:Load()
         [2358] = true, -- Horns of Nez'ra is not in the game at this point. See #921
         [787] = true, -- The New Horde is not in the game. See #830
         [6606] = true, -- Quest is not in the game. See #1338
+        [6072] = true, -- Ayanna Everstride doesn't start "Hunter's Path" (this quest is most likely simply not in the game) #700
         --Stray quests
         [3861] = true, --CLUCK!
         --World event quests
@@ -532,7 +533,7 @@ function QuestieQuestBlacklist:Load()
         [7888] = true,
         [7921] = true,
         [8292] = true,
-        [8299] = true,
+        [8289] = true,
         [7366] = true,
         [7142] = true,
         [8105] = true,

@@ -1,11 +1,7 @@
 ## Interface: 11302
-## Dependencies: ItemRack, Blizzard_MacroUI
-## LoadOnDemand: 1
-
 ## Title: ItemRackOptions
 ## Notes: Load-On-Demand modules for ItemRack
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFF0055FF设置|r
-
-
+## Dependencies: ItemRack, Blizzard_MacroUI
+## LoadOnDemand: 1
 ItemRackOptions.lua
 ItemRackOptions.xml

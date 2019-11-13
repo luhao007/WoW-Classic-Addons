@@ -139,6 +139,9 @@ function QuestieQuestFixes:Load()
         [637] = {
             [QuestieDB.questKeys.startedBy] = {nil,{2656},{4433,},}, -- #909
         },
+        [638] = {
+            [QuestieDB.questKeys.exclusiveTo] = {639}, -- #1205
+        },
         [639] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- #1205
         },
@@ -350,6 +353,9 @@ function QuestieQuestFixes:Load()
         [2241] = {
             [QuestieDB.questKeys.exclusiveTo] = {}, -- #1466
         },
+        [2260] = {
+            [QuestieDB.questKeys.preQuestSingle] = {},
+        },
         [2781] = {
             [QuestieDB.questKeys.startedBy] = {nil,{142122,150075,},nil,}, -- #1081
         },
@@ -494,19 +500,13 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.exclusiveTo] = {1661,4485},
         },
         [4494] = {
-            [QuestieDB.questKeys.preQuestSingle] = {82}, -- #942
+            [QuestieDB.questKeys.preQuestSingle] = {82,7732},
         },
         [4496] = {
             [QuestieDB.questKeys.preQuestSingle] = {4493,4494},
         },
-        [4561] = {
-            [QuestieDB.questKeys.requiredRaces] = 77, -- #1520
-        },
         [4641] = {
             [QuestieDB.questKeys.requiredRaces] = 178, -- #877
-        },
-        [4661] = {
-            [QuestieDB.questKeys.requiredRaces] = 77, -- #1520
         },
         [4763] = {
             [QuestieDB.questKeys.requiredSourceItems] = {12347,12341,12342,12343,}, -- #798
@@ -623,9 +623,15 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.specialFlags] = 0,
         },
         -----------------------
+        [6069] = {
+            [QuestieDB.questKeys.startedBy] = {{11814,},nil,nil,}, -- #1523
+        },
         -- "The Hunter's Path" now started by "Kary Thunderhorn" in Thunder Bluff
         [6070] = {
             [QuestieDB.questKeys.startedBy] = {{3038,},nil,nil,},
+        },
+        [6073] = {
+            [QuestieDB.questKeys.startedBy] = {{5515,},nil,nil,},
         },
         [6608] = {
             [QuestieDB.questKeys.exclusiveTo] = {6607}, -- #1186

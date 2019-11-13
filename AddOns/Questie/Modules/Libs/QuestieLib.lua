@@ -15,6 +15,7 @@ QuestieLib.AddonPath = "Interface\\Addons\\QuestieDev-master\\";
 local math_abs = math.abs;
 local math_sqrt = math.sqrt;
 local math_max = math.max;
+local tinsert = table.insert
 
 --[[
     Red: 5+ level above player
@@ -169,11 +170,19 @@ function QuestieLib:GetColoredQuestName(id, name, level, showLevel, isComplete, 
             if(not blizzLike) then
                 char = string.sub(questTag, 1, 1);
             end
+
+            local langCode = QuestieLocale:GetUILocale() -- the string.sub above doesn't work for multi byte characters in Chinese
             if questType == 1 then
                 name = "[" .. level .. "+" .. "] " .. name -- Elite quest
             elseif questType == 81 then
+                if langCode == "zhCN" or langCode == "zhTW" or langCode == "koKR" or langCode == "ruRU" then
+                    char = "D"
+                end
                 name = "[" .. level .. char .. "] " .. name -- Dungeon quest
             elseif questType == 62 then
+                if langCode == "zhCN" or langCode == "zhTW" or langCode == "koKR" or langCode == "ruRU" then
+                    char = "R"
+                end
                 name = "[" .. level .. char .. "] " .. name -- Raid quest
             elseif questType == 41 then
                 name = "[" .. level .. "] " .. name -- Which one? This is just default.
@@ -274,14 +283,14 @@ function QuestieLib:CacheItemNames(questId)
     if(quest and quest.ObjectiveData) then
         for objectiveIndexDB, objectiveDB in pairs(quest.ObjectiveData) do
             if objectiveDB.Type == "item" then
-                if not CHANGEME_Questie4_ItemDB[objectiveDB.Id] then
+                if not QuestieDB.itemData[objectiveDB.Id] then
                     Questie:Debug(DEBUG_DEVELOP, "Requesting item information for missing itemId:", objectiveDB.Id)
                     local item = Item:CreateFromItemID(objectiveDB.Id)
                     item:ContinueOnItemLoad(function()
                         local itemName = item:GetItemName();
                         --local itemName = GetItemInfo(objectiveDB.Id)
                         --Create an empty item with the name itself but no drops.
-                        CHANGEME_Questie4_ItemDB[objectiveDB.Id] = {itemName,{questId},{},{}};
+                        QuestieDB.itemData[objectiveDB.Id] = {itemName,{questId},{},{}};
                         Questie:Debug(DEBUG_DEVELOP, "Created item information for item:", itemName, ":", objectiveDB.Id);
                     end)
                 end
@@ -373,7 +382,7 @@ function QuestieLib:SortQuestsByLevel(quests)
     end
 
     for _, q in pairs(quests) do
-        table.insert(sortedQuestsByLevel, {q.questLevel, q})
+        tinsert(sortedQuestsByLevel, {q.questLevel, q})
     end
     table.sort(sortedQuestsByLevel, compareTablesByIndex)
 
