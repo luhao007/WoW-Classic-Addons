@@ -298,6 +298,7 @@ FishingTranslations["koKR"] = {
 	["LEFTCLICKTODRAG"] = "좌클릭으로 이동",
 	["LOCATIONS_INFO"] = "장소나 종류 별로 물고기를 잡은 장소를 보여줍니다.",
 	["LOCATIONS_TAB"] = "위치",
+	["LURE_NAME"] = "낚시용 미끼",
 	["MACRONAME"] = "낚시 도움이",
 	["MINIMAPBUTTONPLACEMENT"] = "버튼 위치",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "#NAME# 의 미니맵 버튼의 위치를 변경할 수 있습니다.",

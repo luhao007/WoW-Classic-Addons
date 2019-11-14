@@ -233,6 +233,7 @@ FishingTranslations["zhCN"] = {
 	["LEFTCLICKTODRAG"] = "按住左键拖拽",
 	["LOCATIONS_INFO"] = "根据区域及鱼的种类显示曾经的钓鱼地点",
 	["LOCATIONS_TAB"] = "地点",
+	["LURE_NAME"] = "鱼饵",
 	["MACRONAME"] = "钓鱼助手",
 	["MINIMAPBUTTONPLACEMENT"] = "小地图按钮位置",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "允许在小地图上移动#NAME#图标的位置",

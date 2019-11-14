@@ -332,6 +332,7 @@ FishingTranslations["ptBR"] = {
 	["LEFTCLICKTODRAG"] = "Clique com o botão esquerdo para arrastar",
 	["LOCATIONS_INFO"] = "Exibe onde você capturou peixe seja por Área ou Tipo de Peixe",
 	["LOCATIONS_TAB"] = "Localizações",
+	["LURE_NAME"] = "Isca de Pesca",
 	--[[Translation missing --]]
 	--[[ ["MACRONAME"] = "FishingBuddy",--]] 
 	["MINIMAPBUTTONPLACEMENT"] = "Fixação",

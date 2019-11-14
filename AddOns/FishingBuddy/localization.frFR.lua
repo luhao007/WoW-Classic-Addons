@@ -291,6 +291,7 @@ FishingTranslations["frFR"] = {
 	["LEFTCLICKTODRAG"] = "Clic-gauche pour déplacer",
 	["LOCATIONS_INFO"] = "Affiche où vous avez attrapé les poissons, par zone ou par type de poisson",
 	["LOCATIONS_TAB"] = "Lieux",
+	["LURE_NAME"] = "Appât de pêche",
 	["MACRONAME"] = "FishingBuddy",
 	["MINIMAPBUTTONPLACEMENT"] = "Position du bouton",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "Permet de déplacer le bouton de #NAME# autour de la minimap",

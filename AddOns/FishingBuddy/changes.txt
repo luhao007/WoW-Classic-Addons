@@ -1,3 +1,8 @@
+Version 0.7 Beta 1
+- Find the lure bonus correctly
+- More code cleanup
+- Update support libraries
+
 Version 0.6 Beta 2
 - Fishing Skill levels should be correct (thank you, LibTourist!)
 - More code changes and bug fixes

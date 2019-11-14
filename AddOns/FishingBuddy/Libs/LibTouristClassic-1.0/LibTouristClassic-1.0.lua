@@ -1,7 +1,7 @@
 --[[
 Name: LibTouristClassic-1.0
-Revision: $Rev: 227 $
-Author(s): Mishikal1 (Classic), Odica (maintainer), originally created by ckknight and Arrowmaster
+Revision: $Rev: 234 $
+Author(s): Mishikal1 (Classic), Odica (maintainer), based on LibTourist-3.0, originally created by ckknight and Arrowmaster
 Documentation: https://www.wowace.com/projects/libtourist-1-0/pages/api-reference
 Git: https://repos.wowace.com/wow/libtourist-classic libtourist-classic
 Description: A library to provide information about zones and instances.
@@ -9,7 +9,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibTouristClassic-1.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 227 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 229 $"):match("(%d+)"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 local C_Map = C_Map
@@ -17,6 +17,9 @@ local Tourist, oldLib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not Tourist then
 	return
 end
+
+local addonName, addonData = ...
+
 if oldLib then
 	oldLib = {}
 	for k, v in pairs(Tourist) do
@@ -31,8 +34,6 @@ function Tourist:GetHBD() return HBD end
 local function trace(msg)
 --	DEFAULT_CHAT_FRAME:AddMessage(msg)
 end
-
---trace("|r|cffff4422! -- Tourist:|r Warning: This is an alpha version with limited functionality." )
 
 -- Localization tables
 local BZ = {}
@@ -53,15 +54,6 @@ local isWestern = GetLocale() == "enUS" or GetLocale() == "deDE" or GetLocale() 
 local Azeroth = "Azeroth"
 local Kalimdor = "Kalimdor"
 local Eastern_Kingdoms = "Eastern Kingdoms"
-local Outland = "Outland"
-local Northrend = "Northrend"
-local The_Maelstrom = "The Maelstrom"
-local Pandaria = "Pandaria"
-local Draenor = "Draenor"
-local Broken_Isles = "Broken Isles"
-local Argus = "Argus"
-local Zandalar = "Zandalar"
-local Kul_Tiras = "Kul Tiras"
 
 local X_Y_ZEPPELIN = "%s - %s Zeppelin"
 local X_Y_BOAT = "%s - %s Boat"
@@ -118,7 +110,8 @@ local yardWidths = {}
 local yardHeights = {}
 local yardXOffsets = {}
 local yardYOffsets = {}
-local fishing = {}
+local fishing_low = {}
+local fishing_high = {}
 local cost = {}
 local textures = {}
 local textures_rev = {}
@@ -137,6 +130,33 @@ local gatheringFlightnodes = false
 local flightnodeDataGathered = false
 
 local COSMIC_MAP_ID = 947
+
+
+local flightNodeIgnoreList = {
+	[57] = "Fishing Village, Teldrassil",
+	[54] = "Transport, Feathermoon - Feralas",
+	[35] = "Transport, Orgrimmar Zepplins",
+	[34] = "Transport, Booty Bay - Ratchet",
+	[87] = "Crown Guard Tower, Eastern Plaguelands",
+	[86] = "Eastwall Tower, Eastern Plaguelands",
+	[85] = "Northpass Tower, Eastern Plaguelands",
+	[84] = "Plaguewood Tower, Eastern Plaguelands",
+	[78] = "Naxxramas",
+	[51] = "Transport, Rut'theran - Auberdine",
+	[50] = "Transport, Menethil Ships",
+	[47] = "Transport, Grom'gol - Orgrimmar",
+	[46] = "Southshore Ferry, Hillsbrad",
+	[36] = "Generic, World target",
+	[24] = "Generic, World target for Zeppelin Paths",
+	[15] = "Eastern Plaguelands",
+	[9] = "Booty Bay, Stranglethorn",
+	[3] = "Programmer Isle",
+	[1] = "Northshire Abbey",
+	[59] = "Dun Baldar, Alterac Valley",
+	[60] = "Frostwolf Keep, Alterac Valley",
+}
+
+
 --------------------------------------------------------------------------------------------------------
 --                                            Localization                                            --
 --------------------------------------------------------------------------------------------------------
@@ -211,6 +231,7 @@ local MapIdLookupTable = {
     [209] = "Zul'Farrak",
     [229] = "Blackrock Spire",
     [230] = "Blackrock Depths",
+	[249] = "Onyxia's Lair",
     [329] = "Stratholme",
     [349] = "Maraudon",
     [369] = "Deeprun Tram",
@@ -223,8 +244,8 @@ local MapIdLookupTable = {
     [529] = "Arathi Basin",
     [531] = "Ahn'Qiraj Temple",
     [533] = "Naxxramas",
-    [1004] = "Scarlet Monastery",
-    [1007] = "Scholomance",
+    [189] = "Scarlet Monastery",  -- 1004 ?
+    [289] = "Scholomance",   -- 1007 ?
 }
 
 
@@ -421,7 +442,7 @@ local function GatherFlightnodeData()
 			if numNodes > 0 then
 				for i, node in ipairs(nodes) do
 					if not FlightnodeLookupTable[node.nodeID] then
-						if not missingNodes[node.nodeID] then
+						if not missingNodes[node.nodeID] and not flightNodeIgnoreList[node.nodeID] then
 							trace("|r|cffff4422! -- Tourist: Missing flightnode in lookup: "..tostring(node.nodeID).." = "..tostring(node.name))
 							errCount = errCount + 1
 							missingNodes[node.nodeID] = node.name
@@ -657,18 +678,7 @@ function Tourist:GetContinentMapID(uiMapID)
 	end
 end
 
--- Minimum fishing skill to fish these zones junk-free
-function Tourist:GetFishingLevel(zone)
-	zone = Tourist:GetMapNameByIDAlt(zone) or zone
-	return fishing[zone]
-end
-
--- Formats the minimum and maximum player level for the given zone as "[min]-[max]".
--- Returns one number if min and max are equal.
--- Returns an empty string if no player levels are applicable (like in Cities).
-function Tourist:GetLevelString(zone)
-	local lo, hi = Tourist:GetLevel(zone)
-
+local function FormatLevelString(lo, hi)
 	if lo and hi then
 		if lo == hi then
 			return tostring(lo)
@@ -678,6 +688,29 @@ function Tourist:GetLevelString(zone)
 	else
 		return tostring(lo or hi or "")
 	end
+end
+
+-- Formats the minimum and maximum player level for the given zone as "[min]-[max]".
+-- Returns one number if min and max are equal.
+-- Returns an empty string if no player levels are applicable (like in Cities).
+function Tourist:GetLevelString(zone)
+	local lo, hi = Tourist:GetLevel(zone)
+	return FormatLevelString(lo, hi)
+end
+
+-- Returns minimum fishing skill to fish and minimum skill to avoid get-aways
+function Tourist:GetFishingLevel(zone)
+	zone = Tourist:GetMapNameByIDAlt(zone) or zone
+	return fishing_low[zone], fishing_high[zone]
+end
+
+
+-- Formats the minimum and maximum player level for the given zone as "[min]-[max]".
+-- Returns one number if min and max are equal.
+-- Returns an empty string if no player levels are applicable (like in Cities).
+function Tourist:GetFishingLevelString(zone)
+	local lo, hi = Tourist:GetFishingLevel(zone)
+	return FormatLevelString(lo, hi)
 end
 
 
@@ -920,6 +953,82 @@ function Tourist:GetFactionColor(zone)
 end
 
 
+-- Returns for the specified herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:GetHerb(herbItemID)
+	return addonData.LibTouristClassic.herbs[herbItemID]
+end
+
+-- Returns for the specified mining node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:GetMiningNode(nodeObjectID)
+	-- Some mining nodes have different IDs, i.e. because they drop different secondary items.
+	-- LibTourist only uses the most common nodeType; use the mapping table to find it
+	nodeObjectID = addonData.LibTouristClassic.miningNodeIDMapping[nodeObjectID] or nodeObjectID
+	return addonData.LibTouristClassic.miningNodes[nodeObjectID]
+end
+
+-- Returns an r, g and b value indicating the gathering difficulty of the specified herb
+function Tourist:GetHerbSkillColor(herbItemID, currentSkill)
+	local herb = Tourist:GetHerb(herbItemID)
+	if herb then
+		return Tourist:GetGatheringSkillColor(herb.minLevel, currentSkill)
+	else
+		-- White
+		return 1, 1, 1
+	end
+end
+
+-- Returns an r, g and b value indicating the mining difficulty of the specified mining node
+function Tourist:GetMiningSkillColor(nodeObjectID, currentSkill)
+	local mode = Tourist:GetMiningNode(nodeObjectID)
+	if node then
+		return Tourist:GetGatheringSkillColor(node.minLevel, currentSkill)
+	else
+		-- White
+		return 1, 1, 1
+	end
+end
+
+-- Returns an r, g and b value indicating the gathering difficulty for the specified node level
+function Tourist:GetGatheringSkillColor(minLevel, currentSkill)
+	local lvl1Corr = 0
+	if minLevel == 1 then 
+		lvl1Corr = -1
+	end
+	
+	if currentSkill < minLevel then
+		-- Red
+		return 1, 0, 0	
+	elseif currentSkill < minLevel + 25 + lvl1Corr then
+		-- Orange
+		return 1, 0.7, 0	
+	elseif currentSkill < minLevel + 50 + lvl1Corr then
+		-- Yellow
+		return 1, 1, 0	
+	elseif currentSkill < minLevel + 100 + lvl1Corr then
+		-- Green
+		return 0, 1, 0	
+	else
+		-- Gray
+		return 0.5, 0.5, 0.5
+	end
+end
+
+
+
+
+
+local t = {}
+
 local function retNil()
 	return nil
 end
@@ -971,7 +1080,6 @@ local function mysort(a,b)
 		return a < b
 	end
 end
-local t = {}
 local function myiter(t)
 	local n = t.n
 	n = n + 1
@@ -984,6 +1092,180 @@ local function myiter(t)
 		t.n = nil
 	end
 end
+
+-- Herbs -------------------------
+
+local function herbSorter(a, b)
+	return a.minLevel < b.minLevel
+end
+
+-- Iterates through all standard herbs, returning for each herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:IterateHerbs()
+	local herbs = addonData.LibTouristClassic.herbs
+
+	if not herbs then
+		return retNil
+	else
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(herbs) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, herbSorter)
+		t.n = 0
+		return myiter, t, nil
+	end
+end
+
+-- Iterates through all standard herbs within the specified zone, returning for each herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - numNodes
+function Tourist:IterateHerbsByZone(mapID)
+	local herbs = addonData.LibTouristClassic.herbsByZone[mapID]
+
+	if not herbs then
+		return retNil
+	elseif type(herbs) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(herbs) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, herbSorter)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, herbs, nil
+	end
+end
+
+-- Iterates through the mapIDs of the zones in which the specified herb can be found
+function Tourist:IterateZonesByHerb(herbItemID)
+	local herb, zones
+	herb = Tourist:GetHerb(herbItemID)
+	if herb then zones = herb.zones end
+
+	if not zones then
+		return retNil
+	elseif type(zones) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(zones) do
+			t[#t+1] = k
+		end
+		table.sort(t, mysort)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, zones, nil
+	end
+end
+
+-- Returns true if there are any standard herb nodes in the zone
+function Tourist:DoesZoneHaveHerbs(zone)
+	local mapID = Tourist:GetZoneMapID(zone) or zone
+	return not not addonData.LibTouristClassic.herbsByZone[mapID]
+end
+
+-- Mining nodes -------------------------
+
+local function miningNodeSorter(a, b)
+	return a.minLevel < b.minLevel
+end
+
+-- Iterates through all standard mining nodes, returning for each node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:IterateMiningNodes()
+	local miningNodes = addonData.LibTouristClassic.miningNodes
+
+	if not miningNodes then
+		return retNil
+	else
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(miningNodes) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, miningNodeSorter)
+		t.n = 0
+		return myiter, t, nil
+	end
+end
+
+-- Iterates through all standard mining nodes within the specified zone, returning for each node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - numNodes
+function Tourist:IterateMiningNodesByZone(mapID)
+	local miningNodes = addonData.LibTouristClassic.miningNodesByZone[mapID]
+
+	if not miningNodes then
+		return retNil
+	elseif type(miningNodes) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(miningNodes) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, miningNodeSorter)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, miningNodes, nil
+	end
+end
+
+-- Iterates through the mapIDs of the zones in which the specified mining node can be found
+function Tourist:IterateZonesByMiningNode(miningNodeObjectID)
+	local miningNode, zones
+	miningNode = Tourist:GetMiningNode(miningNodeObjectID)
+	if miningNode then zones = miningNode.zones end
+
+	if not zones then
+		return retNil
+	elseif type(zones) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(zones) do
+			t[#t+1] = k
+		end
+		table.sort(t, mysort)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, zones, nil
+	end
+end
+
+-- Returns true if there are any standard mining nodes in the zone
+function Tourist:DoesZoneHaveMiningNodes(zone)
+	local mapID = Tourist:GetZoneMapID(zone) or zone
+	return not not addonData.LibTouristClassic.miningNodesByZone[mapID]
+end
+
+
+-- Flight nodes -------------------------
+
 local function flightnodesort(a, b)
 	return a.name < b.name
 end
@@ -1767,7 +2049,8 @@ do
 		},
 		faction = "Alliance",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Undercity"]] = {
@@ -1781,7 +2064,8 @@ do
 		},
 		faction = "Horde",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,		
+		fishing_high = 75,
 	}
 
 	zones[BZ["Ironforge"]] = {
@@ -1795,7 +2079,8 @@ do
 		},
 		faction = "Alliance",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Dun Morogh"]] = {
@@ -1809,7 +2094,8 @@ do
 			[BZ["Loch Modan"]] = true,
 		},
 		faction = "Alliance",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Elwynn Forest"]] = {
@@ -1823,7 +2109,8 @@ do
 			[BZ["Duskwood"]] = true,
 		},
 		faction = "Alliance",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Tirisfal Glades"]] = {
@@ -1840,7 +2127,8 @@ do
 			[BZ["Silverpine Forest"]] = true,
 		},
 		faction = "Horde",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Westfall"]] = {
@@ -1857,7 +2145,8 @@ do
 			[4] = true,      -- Sentinel Hill, Westfall (A)
 		},
 		faction = "Alliance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Loch Modan"]] = {
@@ -1874,7 +2163,8 @@ do
 			[8] = true,     -- Thelsamar, Loch Modan (A)
 		},
 		faction = "Alliance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Silverpine Forest"]] = {
@@ -1891,7 +2181,8 @@ do
             [10] = true,     -- The Sepulcher, Silverpine Forest (H)
         },
 		faction = "Horde",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Redridge Mountains"]] = {
@@ -1907,7 +2198,8 @@ do
 			[5] = true,      -- Lakeshire, Redridge (A)
 		},
 		faction = "Alliance",
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Duskwood"]] = {
@@ -1925,7 +2217,8 @@ do
 			[12] = true,     -- Darkshire, Duskwood (A)
 		},
 		faction = "Alliance",
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Alterac Mountains"]] = {
@@ -1938,7 +2231,8 @@ do
 			[BZ["Alterac Valley"]] = true,
 			[BZ["Hillsbrad Foothills"]] = true,
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Hillsbrad Foothills"]] = {
@@ -1956,7 +2250,8 @@ do
 			[13] = true,    -- Tarren Mill, Hillsbrad (H)
 			[14] = true,    -- Southshore, Hillsbrad (A)
 		},
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Wetlands"]] = {
@@ -1972,7 +2267,8 @@ do
 		flightnodes = {
 			[7] = true,      -- Menethil Harbor, Wetlands (A)
 		},
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Arathi Highlands"]] = {
@@ -1989,7 +2285,8 @@ do
 			[16] = true,     -- Refuge Pointe, Arathi (A)
             [17] = true,     -- Hammerfall, Arathi (H)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Stranglethorn Vale"]] = {
@@ -2009,7 +2306,8 @@ do
 			[19] = true,     -- Booty Bay, Stranglethorn (A)
 			[20] = true,     -- Grom'gol, Stranglethorn (H)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["The Hinterlands"]] = {
@@ -2024,7 +2322,8 @@ do
 			[43] = true,     -- Aerie Peak, The Hinterlands (A)
 			[76] = true,     -- Revantusk Village, The Hinterlands (H)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Western Plaguelands"]] = {
@@ -2042,7 +2341,8 @@ do
 		flightnodes = {
 			[66] = true,     -- Chillwind Camp, Western Plaguelands (A)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Eastern Plaguelands"]] = {
@@ -2060,7 +2360,8 @@ do
 			[68] = true,      -- Light's Hope Chapel, Eastern Plaguelands (H)
 		},
 		type = "PvP Zone",
-		fishing_min = 300,
+		fishing_low = 330,
+		fishing_high = 425,
 	}
 
 	zones[BZ["Badlands"]] = {
@@ -2123,6 +2424,8 @@ do
 		complexes = {
 		--	[BZ["Blackrock Mountain"]] = true,
 		},
+		fishing_low = 330,
+		fishing_high = 425,
 	}
 
 	zones[BZ["Swamp of Sorrows"]] = {
@@ -2138,7 +2441,8 @@ do
 		flightnodes = {
 			[56] = true,     -- Stonard, Swamp of Sorrows (H)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Blasted Lands"]] = {
@@ -2151,7 +2455,6 @@ do
 		flightnodes = {
 			[45] = true,     -- Nethergarde Keep, Blasted Lands (A)
 		},
-		fishing_min = 300,
 	}
 
 	zones[BZ["Deadwind Pass"]] = {
@@ -2162,7 +2465,8 @@ do
 			[BZ["Duskwood"]] = true,
 			[BZ["Swamp of Sorrows"]] = true,
 		},
-		fishing_min = 300,
+		fishing_low = 330,
+		fishing_high = 425,
 	}
 
 	-- Kalimdor cities and zones --
@@ -2182,7 +2486,8 @@ do
 		},
 		faction = "Horde",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Thunder Bluff"]] = {
@@ -2195,7 +2500,8 @@ do
 		},
 		faction = "Horde",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Darnassus"]] = {
@@ -2205,7 +2511,8 @@ do
 		},
 		faction = "Alliance",
 		type = "City",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Durotar"]] = {
@@ -2217,7 +2524,8 @@ do
 			[BZ["Orgrimmar"]] = true,
 		},
 		faction = "Horde",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Mulgore"]] = {
@@ -2228,11 +2536,9 @@ do
 			[BZ["Thunder Bluff"]] = true,
 			[BZ["The Barrens"]] = true,
 		},
-		flightnodes = {
-			[22] = true,     -- Thunder Bluff, Mulgore (H)
-		},
 		faction = "Horde",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Teldrassil"]] = {
@@ -2246,7 +2552,8 @@ do
 			[27] = true,     -- Rut'theran Village, Teldrassil (A)
 		},
 		faction = "Alliance",
-		fishing_min = 25,
+		fishing_low = 1,
+		fishing_high = 25,
 	}
 
 	zones[BZ["Azshara"]] = {
@@ -2260,7 +2567,8 @@ do
 			[44] = true, -- Valormok, Azshara (H)
 			[64] = true, -- Talrendis Point, Azshara (A)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Darkshore"]] = {
@@ -2274,7 +2582,8 @@ do
 			[26] = true,     -- Auberdine, Darkshore (A)
 		},
 		faction = "Alliance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["The Barrens"]] = {
@@ -2290,17 +2599,24 @@ do
 		paths = {
 			[BZ["Ashenvale"]] = true,
 			[BZ["Durotar"]] = true,
-			[BZ["Wailing Caverns"]] = true,
-			[transports["BOOTYBAY_RATCHET_BOAT"]] = true,
-			[BZ["Warsong Gulch"]] = isHorde and true or nil,
+			[BZ["Orgrimmar"]] = true,
+			[BZ["Thousand Needles"]] = true,
 			[BZ["Stonetalon Mountains"]] = true,
+			[BZ["Mulgore"]] = true,
+			[BZ["Wailing Caverns"]] = true,
+			[BZ["Warsong Gulch"]] = isHorde and true or nil,
+			[BZ["Razorfen Kraul"]] = true,
+			[BZ["Razorfen Downs"]] = true,
+			[BZ["Dustwallow Marsh"]] = true,
+			[transports["BOOTYBAY_RATCHET_BOAT"]] = true,
 		},
 		flightnodes = {
 			[80] = true,    -- Ratchet, The Barrens (N)
 			[25] = true,    -- The Crossroads, The Barrens (H)
 			[77] = true,    -- Camp Taurajo, The Barrens (H)
 		},
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 	}
 
 	zones[BZ["Ashenvale"]] = {
@@ -2325,7 +2641,8 @@ do
 			[28] = true,     -- Astranaar, Ashenvale (A)
 			[58] = true,     -- Zoram'gar Outpost, Ashenvale (H)
 		},
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Stonetalon Mountains"]] = {
@@ -2341,7 +2658,8 @@ do
 			[33] = true,     -- Stonetalon Peak, Stonetalon Mountains (A)
 			[29] = true,     -- Sun Rock Retreat, Stonetalon Mountains (H)
 		},
-		fishing_min = 150,
+		fishing_low = 55,
+		fishing_high = 150,
 	}
 
 	zones[BZ["Desolace"]] = {
@@ -2358,7 +2676,8 @@ do
 			[38] = true,     -- Shadowprey Village, Desolace (H)
 			[37] = true,     -- Nijel's Point, Desolace (A)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Dustwallow Marsh"]] = {
@@ -2367,7 +2686,7 @@ do
 		continent = Kalimdor,
 		instances = BZ["Onyxia's Lair"],
 		paths = {
-		--	[BZ["Onyxia's Lair"]] = true, -- NOT IN GAME YET
+			[BZ["Onyxia's Lair"]] = true,
 			[BZ["The Barrens"]] = true,
 			[transports["MENETHIL_THERAMORE_BOAT"]] = true,
 		},
@@ -2375,7 +2694,8 @@ do
 			[55] = true,     -- Brackenwall Village, Dustwallow Marsh (H)
 			[32] = true,     -- Theramore, Dustwallow Marsh (A)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Feralas"]] = {
@@ -2400,7 +2720,8 @@ do
 		complexes = {
 			[BZ["Dire Maul"]] = true,
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Thousand Needles"]] = {
@@ -2415,7 +2736,8 @@ do
 		flightnodes = {
 			[30] = true,     -- Freewind Post, Thousand Needles (H)
 		},
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 	}
 
 	zones[BZ["Felwood"]] = {
@@ -2431,7 +2753,8 @@ do
 			[48] = true,     -- Bloodvenom Post, Felwood (H)
 			[65] = true,     -- Talonbranch Glade, Felwood (A)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Tanaris"]] = {
@@ -2448,7 +2771,8 @@ do
 			[39] = true,     -- Gadgetzan, Tanaris (A)
 			[40] = true,     -- Gadgetzan, Tanaris (H)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Un'Goro Crater"]] = {
@@ -2462,7 +2786,8 @@ do
 		flightnodes = {
 			[79] = true,     -- Marshal's Refuge, Un'Goro Crater (N)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	zones[BZ["Winterspring"]] = {
@@ -2476,7 +2801,8 @@ do
 			[53] = true,    -- Everlook, Winterspring (H)
 			[52] = true,    -- Everlook, Winterspring (A)
 		},
-		fishing_min = 300,
+		fishing_low = 330,
+		fishing_high = 425,
 	}
 
 	zones[BZ["Silithus"]] = {
@@ -2500,7 +2826,8 @@ do
 		--	[BZ["Ahn'Qiraj: The Fallen Kingdom"]] = true,
 		},
 		type = "PvP Zone",
-		fishing_min = 300,
+		fishing_low = 330,
+		fishing_high = 425,
 	}
 
 	zones[BZ["Moonglade"]] = {
@@ -2516,7 +2843,8 @@ do
 			[62] = true,    -- Nighthaven, Moonglade (A)
 			[63] = true,    -- Nighthaven, Moonglade (H)
 		},
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 	}
 
 	-- Classic dungeons --
@@ -2540,7 +2868,8 @@ do
 		groupSize = 5,
 		faction = "Alliance",
 		type = "Instance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 		entrancePortal = { BZ["Westfall"], 42.6, 72.2 },
 	}
 
@@ -2561,7 +2890,8 @@ do
 		paths = BZ["The Barrens"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 		entrancePortal = { BZ["The Barrens"], 42.1, 66.5 },
 	}
 
@@ -2572,7 +2902,8 @@ do
 		paths = BZ["Ashenvale"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 75,
+		fishing_low = 1,
+		fishing_high = 75,
 		entrancePortal = { BZ["Ashenvale"], 14.6, 15.3 },
 	}
 
@@ -2584,7 +2915,7 @@ do
 		groupSize = 5,
 		faction = "Alliance",
 		type = "Instance",
-		entrancePortal = { BZ["Stormwind City"], 50.5, 66.3 },
+		entrancePortal = { BZ["Stormwind City"], 39.85, 54.30 },
 	}
 
 	zones[BZ["Gnomeregan"]] = {
@@ -2605,7 +2936,8 @@ do
 		paths = BZ["Tirisfal Glades"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 225,
+		fishing_low = 130,
+		fishing_high = 225,
 		entrancePortal = { BZ["Tirisfal Glades"], 85.3, 32.1 },
 	}
 
@@ -2637,7 +2969,8 @@ do
 		paths = BZ["Desolace"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 		entrancePortal = { BZ["Desolace"], 29, 62.4 },
 	}
 
@@ -2651,42 +2984,42 @@ do
 		entrancePortal = { BZ["Badlands"], 42.4, 18.6 },
 	}
 
---	-- a.k.a. Warpwood Quarter
---	zones[BZ["Dire Maul - East"]] = {
---		low = 56,
---		high = 60,
---		continent = Kalimdor,
---		paths = BZ["Dire Maul"],
---		groupSize = 5,
---		type = "Instance",
---		complex = BZ["Dire Maul"],
---		entrancePortal = { BZ["Feralas"], 66.7, 34.8 },
---	}
---
---	-- a.k.a. Capital Gardens
---	zones[BZ["Dire Maul - West"]] = {
---		low = 56,
---		high = 60,
---		continent = Kalimdor,
---		paths = BZ["Dire Maul"],
---		groupSize = 5,
---		type = "Instance",
---		complex = BZ["Dire Maul"],
---		entrancePortal = { BZ["Feralas"], 60.3, 30.6 },
---	}
---
---	-- a.k.a. Gordok Commons
---	zones[BZ["Dire Maul - North"]] = {
---		low = 56,
---		high = 60,
---		continent = Kalimdor,
---		paths = BZ["Dire Maul"],
---		groupSize = 5,
---		type = "Instance",
---		complex = BZ["Dire Maul"],
---		entrancePortal = { BZ["Feralas"], 62.5, 24.9 },
---	}
---
+	-- a.k.a. Warpwood Quarter
+	zones[BZ["Dire Maul - East"]] = {
+		low = 44,
+		high = 54,
+		continent = Kalimdor,
+		paths = BZ["Dire Maul"],
+		groupSize = 5,
+		type = "Instance",
+		complex = BZ["Dire Maul"],
+		entrancePortal = { BZ["Feralas"], 66.7, 34.8 },
+	}
+
+	-- a.k.a. Capital Gardens
+	zones[BZ["Dire Maul - West"]] = {
+		low = 44,
+		high = 54,
+		continent = Kalimdor,
+		paths = BZ["Dire Maul"],
+		groupSize = 5,
+		type = "Instance",
+		complex = BZ["Dire Maul"],
+		entrancePortal = { BZ["Feralas"], 60.3, 30.6 },
+	}
+
+	-- a.k.a. Gordok Commons
+	zones[BZ["Dire Maul - North"]] = {
+		low = 44,
+		high = 54,
+		continent = Kalimdor,
+		paths = BZ["Dire Maul"],
+		groupSize = 5,
+		type = "Instance",
+		complex = BZ["Dire Maul"],
+		entrancePortal = { BZ["Feralas"], 62.5, 24.9 },
+	}
+
 	zones[BZ["Scholomance"]] = {
 		low = 58,
 		high = 60,
@@ -2694,7 +3027,8 @@ do
 		paths = BZ["Western Plaguelands"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 425,
+		fishing_low = 330,
+		fishing_high = 425,
 		entrancePortal = { BZ["Western Plaguelands"], 69.4, 72.8 },
 	}
 
@@ -2706,7 +3040,8 @@ do
 		paths = BZ["Eastern Plaguelands"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 425,
+		fishing_low = 330,
+		fishing_high = 425,
 		entrancePortal = { BZ["Eastern Plaguelands"], 30.8, 14.4 },
 	}
 
@@ -2743,7 +3078,8 @@ do
 		paths = BZ["Swamp of Sorrows"],
 		groupSize = 5,
 		type = "Instance",
-		fishing_min = 300,
+		fishing_low = 205,
+		fishing_high = 300,
 		entrancePortal = { BZ["Swamp of Sorrows"], 70, 54 },
 	}
 
@@ -2770,7 +3106,8 @@ do
 --		paths = BZ["Stranglethorn Vale"],
 --		groupSize = 20,
 --		type = "Instance",
---		fishing_min = 330,
+--		fishing_low = 205,
+--		fishing_high = 330,
 --		entrancePortal = { BZ["Stranglethorn Vale"], 52.2, 17.1 },
 --	}
 --
@@ -2793,7 +3130,6 @@ do
 		groupSize = 40,
 		type = "Instance",
 		complex = BZ["Blackrock Mountain"],
-		fishing_min = 1,  -- lava
 		entrancePortal = { BZ["Searing Gorge"], 35.4, 84.4 },
 	}
 
@@ -2819,17 +3155,16 @@ do
 		entrancePortal = { BZ["Ahn'Qiraj: The Fallen Kingdom"], 58.9, 14.3 },
 	}
 
---	zones[BZ["Onyxia's Lair"]] = {
---		low = 60,
---		high = 60,
---		continent = Kalimdor,
---		paths = BZ["Dustwallow Marsh"],
---		groupSize = 10,
---		altGroupSize = 25,
---		type = "Instance",
---		entrancePortal = { BZ["Dustwallow Marsh"], 52, 76 },
---	}
---
+	zones[BZ["Onyxia's Lair"]] = {
+		low = 60,
+		high = 60,
+		continent = Kalimdor,
+		paths = BZ["Dustwallow Marsh"],
+		groupSize = 40,
+		type = "Instance",
+		entrancePortal = { BZ["Dustwallow Marsh"], 52, 76 },
+	}
+
 --	zones[BZ["Naxxramas"]] = {
 --		low = 60,
 --		high = 60,
@@ -2837,7 +3172,7 @@ do
 --		paths = BZ["Eastern Plaguelands"],
 --		groupSize = 40,
 --		type = "Instance",
---		fishing_min = 1,  -- acid
+--		fishing_high = 1,  -- acid
 --		entrancePortal = { BZ["Eastern Plaguelands"], 87.30, 51.00 },
 --	}
 
@@ -2875,24 +3210,24 @@ do
 
 	-- Complexes --
 
---	zones[BZ["Dire Maul"]] = {
---		low = 36,
---		high = 60,
---		continent = Kalimdor,
---		instances = {
---			[BZ["Dire Maul - East"]] = true,
---			[BZ["Dire Maul - North"]] = true,
---			[BZ["Dire Maul - West"]] = true,
---		},
---		paths = {
---			[BZ["Feralas"]] = true,
---			[BZ["Dire Maul - East"]] = true,
---			[BZ["Dire Maul - North"]] = true,
---			[BZ["Dire Maul - West"]] = true,
---		},
---		type = "Complex",
---	}
---
+	zones[BZ["Dire Maul"]] = {
+		low = 36,
+		high = 60,
+		continent = Kalimdor,
+		instances = {
+			[BZ["Dire Maul - East"]] = true,
+			[BZ["Dire Maul - North"]] = true,
+			[BZ["Dire Maul - West"]] = true,
+		},
+		paths = {
+			[BZ["Feralas"]] = true,
+			[BZ["Dire Maul - East"]] = true,
+			[BZ["Dire Maul - North"]] = true,
+			[BZ["Dire Maul - West"]] = true,
+		},
+		type = "Complex",
+	}
+
 --	zones[BZ["Blackrock Mountain"]] = {
 --		low = 47,
 --		high = 100,
@@ -2914,7 +3249,7 @@ do
 --			[BZ["Blackrock Spire"]] = true,
 --		},
 --		type = "Complex",
---		fishing_min = 1, -- lava
+--		fishing_high = 1, -- lava
 --	}
 --
 --	zones[BZ["Ahn'Qiraj: The Fallen Kingdom"]] = {
@@ -2937,7 +3272,7 @@ do
 
 	trace("Tourist: Initializing continents...")
 	local continentNames = Tourist:GetMapContinentsAlt()
-	continentNames[947] = "Azeroth"  -- For the Nazjatar zone, which has Azeroth as parent map
+	continentNames[947] = "Azeroth"
 
 	local counter = 0
 
@@ -3041,7 +3376,8 @@ do
 		factions[k] = v.faction
 		yardWidths[k] = v.yards
 		yardHeights[k] = v.yards and v.yards * 2/3 or nil
-		fishing[k] = v.fishing_min
+		fishing_low[k] = v.fishing_low
+		fishing_high[k] = v.fishing_high
 		textures[k] = v.texture
 		complexOfInstance[k] = v.complex
 		zoneComplexes[k] = v.complexes
@@ -3067,7 +3403,9 @@ do
 
 	zones = nil
 
-	trace("Tourist: Initialized.")
+	trace("Tourist: Initialized; loaded by "..tostring(addonName))
 
 	PLAYER_LEVEL_UP(Tourist)
 end
+
+return Tourist

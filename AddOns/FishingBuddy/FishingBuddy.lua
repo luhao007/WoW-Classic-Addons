@@ -187,27 +187,6 @@ local CastingOptions = {
         ["parents"] = { ["EasyCast"] = "d" },
         ["default"] = true
     },
-    ["ContestSupport"] = {
-        ["text"] = FBConstants.CONFIG_CONTESTS_ONOFF,
-        ["tooltip"] = FBConstants.CONFIG_CONTESTS_INFO,
-        ["v"] = 1,
-        ["default"] = false
-    },
-    ["STVTimer"] = {
-        ["text"] = FBConstants.CONFIG_STVTIMER_ONOFF,
-        ["tooltip"] = FBConstants.CONFIG_STVTIMER_INFO,
-        ["v"] = 1,
-        ["default"] = false,
-        ["parents"] = { ["ContestSupport"] = "d" }
-    },
-    ["STVPoolsOnly"] = {
-        ["text"] = FBConstants.CONFIG_STVPOOLSONLY_ONOFF,
-        ["tooltip"] = FBConstants.CONFIG_STVPOOLSONLY_INFO,
-        ["v"] = 1,
-        ["default"] = false,
-        ["primary"] = "ContestSupport",
-        ["parents"] = { ["ContestSupport"] = "d", ["EasyCast"] = "d" }
-    },
     ["MouseEvent"] = {
         ["default"] = "RightButtonUp",
         ["button"] = "FBMouseEvent",

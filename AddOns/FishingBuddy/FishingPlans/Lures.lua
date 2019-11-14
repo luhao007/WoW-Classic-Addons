@@ -91,9 +91,6 @@ local SalmonLure = {
 local function PickLure()
     -- only apply a lure if we're actually fishing with a "real" pole
     if (FL:IsFishingPole()) then
-        if PLANS:CanUseFishingItem(SALMON_LURE_ID, SalmonLure) then
-            return true, SALMON_LURE_ID, SalmonLure[CurLoc]
-        end
 
         local skill, _, _, _ = FL:GetCurrentSkill();
         if (skill > 0) then

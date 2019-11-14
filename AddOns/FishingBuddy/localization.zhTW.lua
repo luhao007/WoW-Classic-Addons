@@ -39,10 +39,8 @@ FishingTranslations["zhTW"] = {
 	["CLICKTOSWITCH_INFO"] = "如果啟用，左鍵點擊切換套裝，不然就開啟Fishing Buddy視窗。",
 	["CLICKTOSWITCH_ONOFF"] = "點擊切換",
 	["COMPATIBLE_SWITCHER"] = "無相容套裝切換",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_ALWAYSHAT_INFO"] = "If enabled, just use the damned hat (even if you don't need it).",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_ALWAYSHAT_ONOFF"] = "Use hats",--]] 
+	["CONFIG_ALWAYSHAT_INFO"] = "啟用時，就會戴上帽子 (就算你不需要)。",
+	["CONFIG_ALWAYSHAT_ONOFF"] = "使用帽子",
 	["CONFIG_ALWAYSLURE_INFO"] = "如果啟用，將替未上魚餌的魚竿上餌。",
 	["CONFIG_ALWAYSLURE_ONOFF"] = "保持魚餌",
 	["CONFIG_AUTOLOOT_INFO"] = "如果啟用，釣魚時自動拾取。",
@@ -115,10 +113,8 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_FISHWARNFISHING_ONOFF"] = "Skill Check",--]] 
 	["CONFIG_FISHWATCH_INFO"] = "在當前釣魚區域釣到的魚上顯示一個文字",
 	["CONFIG_FISHWATCH_ONOFF"] = "釣魚觀察者",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHCURRENT_INFO"] = "Display only the fish caught in the current session.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHCURRENT_ONOFF"] = "Current fish only",--]] 
+	["CONFIG_FISHWATCHCURRENT_INFO"] = "只顯示此次登入後捕獲的魚。",
+	["CONFIG_FISHWATCHCURRENT_ONOFF"] = "只有目前的魚",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_FISHWATCHLOCATION_INFO"] = "Only show raid bosses when on the right continent.",--]] 
 	--[[Translation missing --]]
@@ -133,10 +129,8 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_FISHWATCHSKILL_ONOFF"] = "當前技能",
 	["CONFIG_FISHWATCHTIME_INFO"] = "顯示你最後一次裝備魚竿的總計時間",
 	["CONFIG_FISHWATCHTIME_ONOFF"] = "顯示經過的時間",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHTRASH_INFO"] = "Don't display trash items.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHTRASH_ONOFF"] = "Hide Trash",--]] 
+	["CONFIG_FISHWATCHTRASH_INFO"] = "不要顯示垃圾物品。",
+	["CONFIG_FISHWATCHTRASH_ONOFF"] = "隱藏垃圾",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_FISHWATCHWORLD_INFO"] = "Display available world quests.",--]] 
 	--[[Translation missing --]]
@@ -197,10 +191,8 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_SECRET_FISHING_GOGGES_INFO"] = "If enabled, 'Fishing Without A Poel' will use 'Secret Fishing Goggles' first.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SECRET_FISHING_GOGGLES_INFO"] = "If enabled, 'Fishing Without A Pole' will use 'Secret Fishing Goggles' first.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SHOWBANNER_INFO"] = "If enabled, show the #NAME# banner on login.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SHOWBANNER_ONOFF"] = "Show banner",--]] 
+	["CONFIG_SHOWBANNER_INFO"] = "啟用時，登入遊戲時顯示#NAME#的訊息文字。",
+	["CONFIG_SHOWBANNER_ONOFF"] = "顯示登入訊息",
 	["CONFIG_SHOWLOCATIONZONES_INFO"] = "顯示區域和副區域。",
 	["CONFIG_SHOWLOCATIONZONES_ONOFF"] = "顯示區域",
 	["CONFIG_SHOWNEWFISHIES_INFO"] = "在當前地區釣到新的魚時在聊天區域發一條訊息",
@@ -305,6 +297,7 @@ FishingTranslations["zhTW"] = {
 	["LEFTCLICKTODRAG"] = "左鍵點選拖曳",
 	["LOCATIONS_INFO"] = "根據區域或是魚種顯示你曾經釣過的魚",
 	["LOCATIONS_TAB"] = "位置",
+	["LURE_NAME"] = "鱼饵",
 	["MACRONAME"] = "釣魚助手",
 	["MINIMAPBUTTONPLACEMENT"] = "放置",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "允許你在小地圖旁移動 #NAME# 圖示",

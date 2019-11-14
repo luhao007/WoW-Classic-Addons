@@ -61,6 +61,7 @@ FishingTranslations["enUS"] = {
     RANDOM = "Random",
 
     BOBBER_NAME = "Fishing Bobber",
+    LURE_NAME = "Fishing Lure",
 
     OUTFITS = "Outfits",
     ELAPSED = "Elapsed",

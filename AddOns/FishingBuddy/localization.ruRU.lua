@@ -284,6 +284,8 @@ FishingTranslations["ruRU"] = {
 	["LEFTCLICKTODRAG"] = "[Левый-клик] - перемещение",
 	["LOCATIONS_INFO"] = "Отображает, где вы поймали рыбу по зоне или типу рыбы",
 	["LOCATIONS_TAB"] = "Расположение",
+	--[[Translation missing --]]
+	--[[ ["LURE_NAME"] = "Fishing Lure",--]] 
 	["MACRONAME"] = "Рыбалка",
 	["MINIMAPBUTTONPLACEMENT"] = "Размещение",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "Позволяет перемещать иконку #NAME# у мини-карты",

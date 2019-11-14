@@ -316,6 +316,7 @@ Puntuación estilo Draznar's: %d ]=],
 	["LEFTCLICKTODRAG"] = "Click-Izq para mover",
 	["LOCATIONS_INFO"] = "Muestra info de zona de pesca",
 	["LOCATIONS_TAB"] = "Zona",
+	["LURE_NAME"] = "Cebo de pesca",
 	--[[Translation missing --]]
 	--[[ ["MACRONAME"] = "FishingBuddy",--]] 
 	["MINIMAPBUTTONPLACEMENT"] = "Posición del Botón",

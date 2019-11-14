@@ -306,6 +306,8 @@ FishingTranslations["itIT"] = {
 	["LEFTCLICKTODRAG"] = "Clic sinistro per trascinare",
 	["LOCATIONS_INFO"] = "Mostra dove hai catturato pesci sia per Area che per Tipo di Pesce",
 	["LOCATIONS_TAB"] = "Luoghi",
+	--[[Translation missing --]]
+	--[[ ["LURE_NAME"] = "Fishing Lure",--]] 
 	["MACRONAME"] = "FishingBuddy",
 	["MINIMAPBUTTONPLACEMENT"] = "Piazzamento",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "Permette di muovere l'icona #NAME# attorno alla minimappa.",
