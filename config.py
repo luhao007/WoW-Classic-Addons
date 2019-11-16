@@ -1262,6 +1262,10 @@ MAPPING = {
         'Notes': '显示技能冷却时间',
         'Category': '战斗'
     },
+    'OPie': {
+        'Title-cn': '环形动作条',
+        'Category': '界面'
+    },
     'oRA3': {
         'Title-cn': '团队助手',
         'Notes': '提供团队和小队的一些辅助功能',

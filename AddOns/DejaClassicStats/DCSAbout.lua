@@ -96,15 +96,15 @@ local L = namespace.L 				--localization
 			"|cff0094c4Contributers:|r Dejoblue, Kakjens, loudsoul" .. "|n" .. 
 			"|n" ..																					--(Spacer)
 			"|cff0094c4Localization Translators:|r" .. "|n" ..
-			"|cff0094c4    French:|r Furfx, Brainc3ll, Lightuky, Medaleux, sv002, Darkcraft92, Ymvej, Druidzor, napnapnapnapnap" .. "|n" .. 						--(French)
-			"|cff0094c4    German:|r Scap04, barneyandroid, pas06, flow0284, Markurion, Branduril, NekoNyaaaa" .. "|n" .. 						--(German)
+			"|cff0094c4    French:|r Brainc3ll, Furfx, Lightuky, Medaleux, sv002, Darkcraft92, Ymvej, Druidzor, napnapnapnapnap" .. "|n" .. 						--(French)
+			"|cff0094c4    German:|r barneyandroid, Scap04, pas06, flow0284, Markurion, Branduril, NekoNyaaaa" .. "|n" .. 						--(German)
 			"|cff0094c4    Portuguese:|r Othra, Rhyrol" .. "|n" ..									--(Portuguese)
 			"|cff0094c4    Spanish:|r Tholagar, Mikel391, MrUrkaz, Krounted, Valhallanem" .. "|n" ..						--(Spanish)
 			"|cff0094c4    Italian:|r infinitybofh, INoobInside" .. "|n" ..							--(Portuguese)
-			"|cff0094c4    Korean:|r ji1park, PositiveMind, yuk6196, netaras, meloppy, next96" .. "|n" ..					--(Korean)
-			"|cff0094c4    Russian:|r TGA123, saniok988, Nappsel, Wishko, berufegoru, Hubbotu, n1mrorox" .. "|n" ..						--(Russian)
-			"|cff0094c4    Simplified Chinese:|r JimmyLoveSiren, l1385741, C_Reus, alvisjiang, aenerv7, xlfd2008, y123ao6" .. "|n" ..					--(Simplified Chinese)
-			"|cff0094c4    Traditional Chinese:|r BNSSNB, killsophia, konraddo, y123ao6" .. "|n" ..					--(Traditional Chinese)
+			"|cff0094c4    Korean:|r blacknib, ji1park, PositiveMind, yuk6196, netaras, meloppy, next96" .. "|n" ..					--(Korean)
+			"|cff0094c4    Russian:|r hydest_, TGA123, saniok988, Nappsel, Wishko, berufegoru, Hubbotu, n1mrorox" .. "|n" ..						--(Russian)
+			"|cff0094c4    Simplified Chinese:|r wellcat, 大漠孤盐 , JimmyLoveSiren, l1385741, C_Reus, alvisjiang, aenerv7, xlfd2008, y123ao6" .. "|n" ..					--(Simplified Chinese)
+			"|cff0094c4    Traditional Chinese:|r BNS333, BNSSNB, killsophia, konraddo, y123ao6" .. "|n" ..					--(Traditional Chinese)
 			"|n" ..																					--(Spacer)
 			"|cff0094c4Special Thanks:|r" .. "|n" ..
 			"|cff0094c4    Communities:|r Blizzard, Curse, Classic Warcraft, WoWInterface, ElvUI, and Reddit's /r/wow" .. "|n" .. 
@@ -128,9 +128,9 @@ local L = namespace.L 				--localization
 
 		DCSAboutDCSFrame:SetScript("OnShow", function(self) -- So that the frame shows when switching to DejaClassicStatsPanel		
 			if DCSAboutDCSFrame:IsVisible() then
-				DCSAboutDCS_TitleFS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -30)
-				DCSAboutDCS_FS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -75)
-				DCSAboutDCS_ThanksFS:SetPoint("BOTTOM", DCSAboutDCSFrame, "BOTTOM", 0, 34)
+				DCSAboutDCS_TitleFS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -26)
+				DCSAboutDCS_FS:SetPoint("TOP", DCSAboutDCSFrame, "TOP", 0, -65)
+				DCSAboutDCS_ThanksFS:SetPoint("BOTTOM", DCSAboutDCSFrame, "BOTTOM", 0, 30)
 				DCSAboutDCS_TitleFS:Show()
 				DCSAboutDCS_FS:Show()
 				DCSAboutDCS_ThanksFS:Show()
