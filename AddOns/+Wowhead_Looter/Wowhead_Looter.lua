@@ -1238,12 +1238,14 @@ function wlEvent_TRAINER_SHOW(self)
     SetTrainerServiceTypeFilter("unavailable", fUnavail and 1 or 0);
     SetTrainerServiceTypeFilter("used", fUsed and 1 or 0);
     
-    ClassTrainerFrame.selectedService = oldIndex >= 1 and oldIndex or 1;
-    SelectTrainerService(oldIndex >= 1 and oldIndex or 1);
-    if (ClassTrainerFrame.scrollFrame) then
-        ClassTrainerFrame.scrollFrame.scrollBar:SetValue((ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
+    if ClassTrainerFrame then
+        ClassTrainerFrame.selectedService = oldIndex >= 1 and oldIndex or 1;
+        SelectTrainerService(oldIndex >= 1 and oldIndex or 1);
+        if (ClassTrainerFrame.scrollFrame) then
+            ClassTrainerFrame.scrollFrame.scrollBar:SetValue((ClassTrainerFrame.selectedService-1)*CLASS_TRAINER_SKILL_HEIGHT);
+        end
+        ClassTrainerFrame_Update();
     end
-    ClassTrainerFrame_Update();
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -2422,7 +2424,8 @@ function wlEvent_LOOT_OPENED(self)
     local objectId = nil;
 
     local i = 1;
-    for slot=1, GetNumLootItems() do
+    local numLootItems = GetNumLootItems();
+    for slot=1, numLootItems do
         local lootSources = { GetLootSourceInfo(slot) };
             
         local slotType = GetLootSlotType(slot);
@@ -2488,6 +2491,10 @@ function wlEvent_LOOT_OPENED(self)
     
     local isAoeLoot = (next(aoeNpcs) ~= nil) and 1 or 0;
     wlEvent[wlId][wlN][eventId].isAoeLoot = isAoeLoot;
+
+    if numLootItems == 0 then
+        targetLoots["empty"] = { 0, 0, 0 };
+    end
 
     for typeId, qtyInfo in pairs(targetLoots) do
         local qty = qtyInfo[1] or qtyInfo[2];

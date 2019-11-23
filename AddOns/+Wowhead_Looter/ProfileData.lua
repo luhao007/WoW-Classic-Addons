@@ -105,7 +105,7 @@ function private:event_PLAYER_LOGIN()
     public.scan();
 end
 
---- Removes low-level character info on the PLAYER_LOGOUT event.
+--- Removes invalid character info on the PLAYER_LOGOUT event.
 -- @param self The frame that triggered the event
 function private:event_PLAYER_LOGOUT()
     self:UnregisterEvent("PLAYER_LOGOUT");
@@ -113,7 +113,7 @@ function private:event_PLAYER_LOGOUT()
     local savedData = private.getDataTable();
     local key = private.getKey();
     if savedData[key] then
-        if (not savedData[key].level) or (savedData[key].level < 10) then
+        if not savedData[key].level then
             savedData[key] = nil;
         end
     end
