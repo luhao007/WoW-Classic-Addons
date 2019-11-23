@@ -44,6 +44,10 @@ QuestieLocale.locale['frFR'] = {
     ['ICON_LIMIT_DESC'] = "Limite le nombre d'icônes affichées d'un même type. (Par défaut : %s)",
     ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Quêtes répétables sur la carte",
     ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Active l'affichage des quêtes répétables sur la carte et la mini-carte.",
+    ['ENABLE_AUTO_ACCEPT_QUESTS'] = "Auto Accept Quests",
+    ['ENABLE_AUTO_ACCEPT_QUESTS_DESC'] = "Enable or disable Questie auto-accepting quests.",
+    ['ENABLE_AUTO_COMPLETE'] = "Auto Complete",
+    ['ENABLE_AUTO_COMPLETE_DESC'] = "Enable or disable Questie auto-complete quests.",
 
     -- Onglet Mini-carte
     ['MINIMAP_TAB'] = "Mini-carte",
@@ -144,6 +148,7 @@ QuestieLocale.locale['frFR'] = {
 
     -- Onglet Avancé
     ['ADV_TAB'] = "Avancé",
+    ['ADV_SET'] = "Advanced Settings",
     ['DEV_OPTIONS'] = "Options de développement",
     ['ENABLE_DEBUG'] = "Mode debug",
     ['ENABLE_DEBUG_DESC'] = "Active le mode debug.",
@@ -249,7 +254,7 @@ QuestieLocale.locale['frFR'] = {
     ['TRACKER_CANCEL'] = "Annuler",
     ['TRACKER_UNTRACK'] = "Annuler le suivi",
     ['TRACKER_SHOW_QUESTLOG'] = "Afficher dans le journal de quête",
-    ['TRACKER_SET_TOMTOM'] = "Définir un point TomTom",
+    ['TRACKER_SET_TOMTOM'] = "Définir un point |cFF54e33bTomTom|r",
     ['TRACKER_SHOW_ICONS'] = "Afficher les icônes",
     ['TRACKER_HIDE_ICONS'] = "Masquer les icônes",
     ['TRACKER_OBJECTIVES'] = "Objectifs",

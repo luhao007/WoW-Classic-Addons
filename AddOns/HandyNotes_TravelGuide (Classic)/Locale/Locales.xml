@@ -8,4 +8,5 @@
 	<Script file="koKR.lua"/>
 	<Script file="zhCN.lua"/>
 	<Script file="frFR.lua"/>
+	<Script file="ptBR.lua"/>
 </Ui>

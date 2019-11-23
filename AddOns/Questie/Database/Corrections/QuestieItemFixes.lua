@@ -494,6 +494,12 @@ function QuestieItemFixes:Load()
             [QuestieDB.itemKeys.npcDrops] = {1247},
             [QuestieDB.itemKeys.objectDrops] = {},
         },
+        [12567] = {
+            [QuestieDB.itemKeys.name] = "Filled Flasket",
+            [QuestieDB.itemKeys.relatedQuests] = {4505},
+            [QuestieDB.itemKeys.npcDrops] = {},
+            [QuestieDB.itemKeys.objectDrops] = {148501},
+        },
         [12813] = { -- #1313
             [QuestieDB.itemKeys.name] = "Flask of Mystery Goo",
             [QuestieDB.itemKeys.relatedQuests] = {5085},
@@ -548,7 +554,7 @@ function QuestieItemFixes:Load()
         [9597] = { -- #1461
             [QuestieDB.itemKeys.name] = "Mountain Giant Muisek",
             [QuestieDB.itemKeys.relatedQuests] = {3127},
-            [QuestieDB.itemKeys.npcDrops] = {5357,5358,5359,5360,5361,14603,14604,14638,14639,14640},
+            [QuestieDB.itemKeys.npcDrops] = {5357,5358,14604,14640},
             [QuestieDB.itemKeys.objectDrops] = {},
         },
         [7867] = { -- #1469
@@ -598,6 +604,9 @@ function QuestieItemFixes:Load()
         },
         [6175] = {
             [QuestieDB.itemKeys.objectDrops] = {30854,30855,30856},
+        },
+        [8396] = {
+            [QuestieDB.itemKeys.npcDrops] = {5982},
         },
         [11040] = {
             [QuestieDB.itemKeys.name] = "Morrowgrain",
@@ -785,6 +794,7 @@ _AddMissingItemIDs = function()
     local missingItemIDs = {
         5475,
         11040,
+        12567,
         12236,
         15843,
         15845,

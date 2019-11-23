@@ -28,15 +28,24 @@ local BagTimer
 local function IsAmmoPouch(name)
 	local bagType = ""
 	local color = {r=1,g=1,b=1}; -- WHITE
+	local ammo = false
 	if (name) then
 		for index, value in pairs(L["TITAN_BAG_AMMO_POUCH_NAMES"]) do
 			if (string.find(name, value)) then
-				bagType = "AMMO";
+				ammo = true
+				bagType = "AMMO"
 				color = {r=1,g=1,b=1}; -- WHITE
 			end
 		end
 	end
-	return bagType, color
+--[[
+TitanDebug("IsAmmoPouch"
+.." "..tostring(ammo)
+.." "..tostring(bagType)
+.." "..tostring(used)
+)
+--]]
+	return ammo, bagType, color
 end
 
 --[[
@@ -49,16 +58,18 @@ end
 local function IsShardBag(name)
 	local bagType = ""
 	local color = {r=1,g=1,b=1}; -- WHITE
+	local shard = false
 	if (name) then
 		for index, value in pairs(L["TITAN_BAG_SHARD_BAG_NAMES"]) do
 			if (string.find(name, value)) then
-				bagType = "SHARD";
+				shard = true
+				bagType = "SHARD"
 				color = {r=1,g=1,b=1}; -- WHITE
 				return bagType, color;
 			end
 		end
 	end
-	return bagType, color
+	return shard, bagType, color
 end
 
 --[[
@@ -71,10 +82,12 @@ end
 local function IsProfBag(name)
 	local bagType = ""
 	local color = {r=1,g=1,b=1}; -- WHITE
+	local prof = false
 	-- each if returns if bag name is found, cleaner but could be confusing
 	if (name) then
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_ENCHANTING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "ENCHANTING";
 				color = {r=0,g=0,b=1}; -- BLUE
 				return bagType, color;
@@ -82,6 +95,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_ENGINEERING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "ENGINEERING";
 				color = {r=1,g=0.49,b=0.04}; -- ORANGE
 				return bagType, color;
@@ -89,6 +103,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_HERBALISM"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "HERBALISM";
 				color = {r=0,g=1,b=0}; -- GREEN
 				return bagType, color;
@@ -96,6 +111,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_INSCRIPTION"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "INSCRIPTION";
 				color = {r=0.58,g=0.51,b=0.79}; -- PURPLE
 				return bagType, color;
@@ -103,6 +119,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_JEWELCRAFTING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "JEWELCRAFTING";
 				color = {r=1,g=0,b=0}; -- RED
 				return bagType, color;
@@ -110,6 +127,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_LEATHERWORKING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "LEATHERWORKING";
 				color = {r=0.78,g=0.61,b=0.43}; -- TAN
 				return bagType, color;
@@ -117,6 +135,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_MINING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "MINING";
 				color = {r=1,g=1,b=1}; -- WHITE
 				return bagType, color;
@@ -124,6 +143,7 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_FISHING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "FISHING";
 				color = {r=0.41,g=0.8,b=0.94}; -- LIGHT_BLUE
 				return bagType, color;
@@ -131,13 +151,14 @@ local function IsProfBag(name)
 		end
 		for index, value in pairs(L["TITAN_BAG_PROF_BAG_COOKING"]) do
 			if (string.find(name, value, 1, true)) then
+				prof = true
 				bagType = "COOKING";
 				color = {r=0.96,g=0.55,b=0.73}; -- PINK
 				return bagType, color;
 			end
 		end
 	end
-	return bagType, color
+	return prof, bagType, color
 end
 
 --[[
@@ -154,28 +175,74 @@ local function CountMe(bag)
 	local bagType = ""
 	local color = {r=1,g=1,b=1} -- WHITE
 	local used = 0
-	
+	local countme = false
+	local useme = false
+	local bt = ""
+	local c = {}
+
 	if name ~= "" then -- a bag is in the slot
-		for slot = 1, size do
-			if (GetContainerItemInfo(bag, slot)) then
-				used = used + 1;
-			end
-		end
 		-- check for a special storage bag
-		if (TitanGetVar(TITAN_BAG_ID, "CountAmmoPouchSlots") and bagType == "") then
-			bagType, color = IsAmmoPouch(name)
+		useme, bt, c = IsAmmoPouch(name)
+		if useme then
+			bagType = bt
+			color = c
+			if (TitanGetVar(TITAN_BAG_ID, "CountAmmoPouchSlots")) then
+				countme = true
+			else -- found the bag but do not count any slots
+			end
+		else -- check next type
 		end
-		if (TitanGetVar(TITAN_BAG_ID, "CountShardBagSlots") and bagType == "") then
-			bagType, color = IsShardBag(name)
+		useme, bt, c = IsShardBag(name)
+		if useme then
+			bagType = bt
+			color = c
+			if (TitanGetVar(TITAN_BAG_ID, "CountShardBagSlots")) then
+				countme = true
+			else -- found the bag but do not count any slots
+			end
+		else -- check next type
 		end
-		if (TitanGetVar(TITAN_BAG_ID, "CountProfBagSlots") and bagType == "") then
-			bagType, color = IsProfBag(name)
+		useme, bt, c = IsProfBag(name)
+		if useme then
+			bagType = bt
+			color = c
+			if (TitanGetVar(TITAN_BAG_ID, "CountProfBagSlots")) then
+				countme = true
+			else -- found the bag but do not count any slots
+			end
+		else -- check next type
 		end
-		if (bagType == "") then
+		if (bagType == "") then -- not a special bag
+			countme = true
 			bagType = "NORMAL"
 		end
+		-- Collect the slots IF we should count it
+		if (countme) then
+			for slot = 1, size do
+				if (GetContainerItemInfo(bag, slot)) then
+					used = used + 1;
+				end
+			end
+		else
+			-- Should *not* be counted
+		end
 	end
-	return {size = size, used = used, bagType = bagType, name = name, color = color}
+--[[
+TitanDebug("CountMe"
+.." "..tostring(bag)
+.." '"..tostring(name).."'"
+.." "..tostring(bagType)
+.." "..tostring(size)
+.." "..tostring(used)
+.." "..tostring(countme)
+)
+--]]
+	return {countme = countme,
+		size = size, 
+		used = used, 
+		bagType = bagType,
+		name = name, 
+		color = color}
 end
 --]]
 
@@ -268,27 +335,28 @@ function TitanPanelBagButton_GetButtonText(id)
 	bagRichText = ""
 	for bag = 0, 4 do
 		local info = CountMe(bag)
-		
-		if info.bagType == "" then
+		if info.countme then
+			if info.bagType == "NORMAL" then
+				usedBagSlots = usedBagSlots + info.used
+				totalBagSlots = totalBagSlots + info.size
+			else -- process special storage bag
+				totalProfBagSlots[bag+1] = info.size
+				usedProfBagSlots[bag+1] = info.used
+				availableProfBagSlots[bag+1] = info.size - info.used
+				-- prepare text for the special bag
+				if (TitanGetVar(TITAN_BAG_ID, "ShowUsedSlots")) then
+					bagText = "  [" .. format(L["TITAN_BAG_FORMAT"], usedProfBagSlots[bag+1], totalProfBagSlots[bag+1]) .. "]";
+				else
+					bagText = "  [" .. format(L["TITAN_BAG_FORMAT"], availableProfBagSlots[bag+1], totalProfBagSlots[bag+1]) .. "]";
+				end
+				if ( TitanGetVar(TITAN_BAG_ID, "ShowColoredText") ) then
+					bagRichTextProf[bag+1] = TitanUtils_GetColoredText(bagText, info.color);
+				else
+					bagRichTextProf[bag+1] = TitanUtils_GetHighlightText(bagText);
+				end
+			end
+		else
 			-- no bag in slot
-		elseif info.bagType == "NORMAL" then
-			usedBagSlots = usedBagSlots + info.used
-			totalBagSlots = totalBagSlots + info.size
-		else -- process special storage bag
-			totalProfBagSlots[bag+1] = info.size
-			usedProfBagSlots[bag+1] = info.used
-			availableProfBagSlots[bag+1] = info.size - info.used
-			-- prepare text for the special bag
-			if (TitanGetVar(TITAN_BAG_ID, "ShowUsedSlots")) then
-				bagText = "  [" .. format(L["TITAN_BAG_FORMAT"], usedProfBagSlots[bag+1], totalProfBagSlots[bag+1]) .. "]";
-			else
-				bagText = "  [" .. format(L["TITAN_BAG_FORMAT"], availableProfBagSlots[bag+1], totalProfBagSlots[bag+1]) .. "]";
-			end
-			if ( TitanGetVar(TITAN_BAG_ID, "ShowColoredText") ) then
-				bagRichTextProf[bag+1] = TitanUtils_GetColoredText(bagText, info.color);
-			else
-				bagRichTextProf[bag+1] = TitanUtils_GetHighlightText(bagText);
-			end
 		end
 	end
 	-- process normal bags as one set

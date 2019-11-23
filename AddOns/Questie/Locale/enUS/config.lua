@@ -44,6 +44,10 @@ QuestieLocale.locale['enUS'] = {
     ['ICON_LIMIT_DESC'] = "Limits the amount of icons drawn per type. ( Default: %s )",
     ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
     ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
+    ['ENABLE_AUTO_ACCEPT_QUESTS'] = "Auto Accept Quests",
+    ['ENABLE_AUTO_ACCEPT_QUESTS_DESC'] = "Enable or disable Questie auto-accepting quests.",
+    ['ENABLE_AUTO_COMPLETE'] = "Auto Complete",
+    ['ENABLE_AUTO_COMPLETE_DESC'] = "Enable or disable Questie auto-complete quests.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "Minimap",
@@ -144,6 +148,7 @@ QuestieLocale.locale['enUS'] = {
 
     -- Advanced tab
     ['ADV_TAB'] = "Advanced",
+    ['ADV_SET'] = "Advanced Settings",
     ['DEV_OPTIONS'] = "Developer Options",
     ['ENABLE_DEBUG'] = "Enable Debug",
     ['ENABLE_DEBUG_DESC'] = "Enable or disable debug functionality.",
@@ -249,7 +254,7 @@ QuestieLocale.locale['enUS'] = {
     ['TRACKER_CANCEL'] = "Cancel",
     ['TRACKER_UNTRACK'] = "Untrack Quest",
     ['TRACKER_SHOW_QUESTLOG'] = "Show in Quest Log",
-    ['TRACKER_SET_TOMTOM'] = "Set TomTom Target",
+    ['TRACKER_SET_TOMTOM'] = "Set |cFF54e33bTomTom|r Target",
     ['TRACKER_SHOW_ICONS'] = "Show Icons",
     ['TRACKER_HIDE_ICONS'] = "Hide Icons",
     ['TRACKER_OBJECTIVES'] = "Objectives",

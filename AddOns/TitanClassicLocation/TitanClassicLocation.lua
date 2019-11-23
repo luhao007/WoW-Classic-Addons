@@ -42,6 +42,7 @@ function TitanPanelLocationButton_OnLoad(self)
 		},
 		savedVariables = {
 			ShowZoneText = 1,
+            ShowSubZoneText = 1,
 			ShowCoordsOnMap = true,
 			ShowCursorOnMap = true,
 			ShowLocOnMiniMap = 1,
@@ -117,9 +118,13 @@ function TitanPanelLocationButton_GetButtonText(id)
 			if (button.zoneText == '') then
 				_, _, button.zoneText = C_Map.GetMapInfo(C_Map.GetBestMapUnit("player"));
 			end
-			locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
+            locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
 		else
-			locationText = TitanUtils_ToString(button.subZoneText)..' '..locationText;
+			if (TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText")) then
+                locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
+            else
+                locationText = TitanUtils_ToString(button.zoneText..' - '..button.subZoneText)..' '..locationText;
+            end
 		end
 	else
 		if button.px == 0 and button.py == 0 then
@@ -301,6 +306,12 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
 
 			info = {};
+			info.text = L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"];
+			info.func = TitanPanelLocationButton_ToggleSubZoneDisplay;
+			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText");
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+
+			info = {};
 			info.text = L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_MAP_TEXT"];
 			info.func = TitanPanelLocationButton_ToggleLocationOnMap;
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
@@ -431,6 +442,15 @@ end
 -- **************************************************************************
 function TitanPanelLocationButton_ToggleDisplay()
 	TitanToggleVar(TITAN_LOCATION_ID, "ShowZoneText");
+	TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
+end
+
+-- **************************************************************************
+-- NAME : TitanPanelLocationButton_ToggleSubZoneDisplay()
+-- DESC : Set option to show only subzone text
+-- **************************************************************************
+function TitanPanelLocationButton_ToggleSubZoneDisplay()
+	TitanToggleVar(TITAN_LOCATION_ID, "ShowSubZoneText");
 	TitanPanelButton_UpdateButton(TITAN_LOCATION_ID);
 end
 

@@ -1,5 +1,9 @@
 Revision History:
 =================
+* v2.1.6 (November 19, 2019)
+---------------------------
+- Added Brazilian Portuguese localization from D4MM0N1C https://www.curseforge.com/members/d4mm0n1c
+
 * v2.1.5b (October 13, 2019)
 ---------------------------
 - fixed error on logon (ticket#2 , #3)  https://www.curseforge.com/wow/addons/handynotes-travelguide-classic/issues/2 

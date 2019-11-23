@@ -331,6 +331,7 @@ L["TITAN_LOCATION_TOOLTIP_HOMELOCATION"] = "Position du foyer";
 L["TITAN_LOCATION_TOOLTIP_INN"] = "Auberge : ";
 L["TITAN_LOCATION_MENU_TEXT"] = "Position";
 L["TITAN_LOCATION_MENU_SHOW_ZONE_ON_PANEL_TEXT"] = "Montrer le texte de la zone";
+L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"] = "Show Only Subzone Text";
 L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_MAP_TEXT"] = "Montrer les coordonnées sur la carte du monde";
 L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"] = "Curseur : %s";
 L["TITAN_LOCATION_MAP_PLAYER_COORDS_TEXT"] = "Joueur : %s";

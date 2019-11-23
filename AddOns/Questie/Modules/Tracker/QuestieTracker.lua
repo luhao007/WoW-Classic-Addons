@@ -15,14 +15,18 @@ local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB");
 ---@type QuestieQuestTimers
 local QuestieQuestTimers = QuestieLoader:ImportModule("QuestieQuestTimers")
+---@type QuestieCombatQueue
+local QuestieCombatQueue = QuestieLoader:ImportModule("QuestieCombatQueue")
 
 local _QuestieTracker = QuestieTracker.private
 _QuestieTracker.LineFrames = {}
+_QuestieTracker.ItemButtons = {}
 
 -- these should be configurable maybe
 local trackerLineCount = 64 -- shouldnt need more than this
 local trackerBackgroundPadding = 4
 local lineIndex = 0
+local buttonIndex = 0
 local lastAQW = GetTime()
 local durabilityInitialPosition = nil
 
@@ -34,6 +38,90 @@ _QuestieTracker.IsFirstRun = true -- bad code
 -- Forward declaration
 local _OnClick, _OnEnter, _OnLeave, _AQW_Insert, _RemoveQuestWatch
 
+--[[function _TEST_F2()
+    local bag = CreateFrame("Frame", nil, UIParent)
+    local btn = CreateFrame("Button", nil, bag, "ContainerFrameItemButtonTemplate")
+    btn:SetSize(32, 32)
+    bag:SetSize(32, 32)
+    btn:SetPoint("Center",UIParent)
+    btn:SetID(3)
+    bag:SetID(0)
+    btn.Update = function(self)
+        local texture, count, locked, quality, _, _, link, filtered, _, id = GetContainerItemInfo(0, 3)
+        SetItemButtonTexture(self, texture)
+        --SetItemButtonQuality(self, quality, id)
+        SetItemButtonCount(self, count)
+        SetItemButtonDesaturated(self, locked)
+        --UpdateCooldown(self)
+    end
+    --local oldOnClick = btn:GetScript("OnClick")
+    --btn:RegisterForClicks("LeftButton")
+    btn:SetScript("OnClick", function(self)
+        ContainerFrameItemButton_OnClick(self, "RightButton")
+    end)
+    --btn:SetScript("OnClick", function(self, a, b, c, d, e, f)
+    --    oldOnClick(self, a, b, c, d, e, f)
+    --end)
+    btn:Update()
+    btn:Show()
+    return btn
+end]]--
+
+local function createItemButton()
+    local btn = CreateFrame("Button", nil, nil, "SecureActionButtonTemplate,ActionButtonTemplate")
+    btn:SetAttribute("type", "item");
+
+    btn.SetItem = function(self, id, size)
+        local validTexture = nil
+        for bag=0,5 do -- maybe keyring still acts like a bag
+            for slot=0,24 do
+                local texture, count, locked, quality, _, _, link, filtered, _, itemID = GetContainerItemInfo(bag, slot)
+                if id == itemID then
+                    validTexture = texture
+                    break
+                end
+            end
+        end
+        if validTexture then
+            self.itemID = id
+            self:SetAttribute("item", "item:" .. tostring(id));
+            self:SetNormalTexture(validTexture)
+            self:SetPushedTexture(validTexture)
+            self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+            self:SetSize(size, size)
+            self:SetScript("OnEnter", self.OnEnter)
+            self:SetScript("OnLeave", self.OnLeave)
+            self:RegisterForClicks("AnyUp")
+            return true
+        end -- else error?
+        return false
+    end
+
+    btn.OnEnter = function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+        GameTooltip:SetHyperlink("item:"..tostring(self.itemID)..":0:0:0:0:0:0:0")
+        GameTooltip:Show()
+    end
+    btn.OnLeave = function(self)
+        GameTooltip:Hide()
+    end
+    
+    btn.FakeHide = function(self)
+        self:RegisterForClicks(nil)
+        self:SetScript("OnEnter", nil)
+        self:SetScript("OnLeave", nil)
+        self:SetNormalTexture(nil)
+        self:SetPushedTexture(nil)
+        self:SetHighlightTexture(nil)
+    end
+    btn:FakeHide()
+    --btn:SetParent(_QuestieTracker.baseFrame)
+    --btn:SetPoint("Center",_QuestieTracker.baseFrame)
+    --btn:SetItem(159, 24)
+    --btn:Show()
+
+    return btn
+end
 
 function QuestieTracker:Initialize()
     if QuestieTracker.started or (not Questie.db.global.trackerEnabled) then return; end
@@ -68,6 +156,11 @@ function QuestieTracker:Initialize()
 
     -- This is the best way to not check 19238192398 events which might reset the position of the DurabilityFrame
     hooksecurefunc("UIParent_ManageFramePositions", QuestieTracker.MoveDurabilityFrame)
+
+    -- create buttons for quest items
+    for i=1,20 do
+        _QuestieTracker.ItemButtons[i] = createItemButton()
+    end
 
     -- this number is static, I doubt it will ever need more
     local lastFrame = nil
@@ -131,11 +224,11 @@ function QuestieTracker:Initialize()
         if lastFrame then
             frm:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0,0)
         else
-            if Questie.db.global.trackerCounterEnabled then
-                frm:SetPoint("TOPLEFT", _QuestieTracker.baseFrame, "TOPLEFT", trackerBackgroundPadding, -(trackerBackgroundPadding + _QuestieTracker.activeQuestsFrame:GetHeight()))
-            else
+            --if Questie.db.global.trackerCounterEnabled then
+            --    frm:SetPoint("TOPLEFT", _QuestieTracker.baseFrame, "TOPLEFT", trackerBackgroundPadding, -(trackerBackgroundPadding + _QuestieTracker.activeQuestsFrame:GetHeight()))
+            --else
                 frm:SetPoint("TOPLEFT", _QuestieTracker.baseFrame, "TOPLEFT", trackerBackgroundPadding, -trackerBackgroundPadding)
-            end
+            --end
         end
         frm:SetWidth(1)
         frm:SetMode("header")
@@ -161,7 +254,7 @@ function QuestieTracker:ResetDurabilityFrame()
 end
 
 function QuestieTracker:MoveDurabilityFrame()
-    if Questie.db.global.trackerEnabled and DurabilityFrame:IsShown() then
+    if Questie.db.global.trackerEnabled and DurabilityFrame:IsShown() then -- todo: check if frames are actually on top of eachother (user might have tracker at the other side of the screen)
         DurabilityFrame:ClearAllPoints()
         DurabilityFrame:SetPoint("RIGHT", _QuestieTracker.baseFrame, "LEFT", 0, 0)
     end
@@ -246,10 +339,6 @@ function _QuestieTracker:CreateActiveQuestsFrame()
 
     frm.label = frm:CreateFontString(nil, "ARTWORK", "GameFontNormal")
     frm.label:SetText(QuestieLocale:GetUIString("TRACKER_ACTIVE_QUESTS") .. tostring(numQuests) .. "/20")
-    frm.label:SetFont(frm.label:GetFont(), Questie.db.global.trackerFontSizeHeader)
-    frm.label:SetPoint("TOP", _QuestieTracker.baseFrame)
-
-    frm:SetHeight(Questie.db.global.trackerFontSizeHeader)
     frm:SetWidth(1)
 
     -- hack for click-through
@@ -261,7 +350,10 @@ function _QuestieTracker:CreateActiveQuestsFrame()
 
     frm.Update = function(self)
         local _, activeQuests = GetNumQuestLogEntries()
+        self.label:SetFont(self.label:GetFont(), Questie.db.global.trackerFontSizeHeader)
         self.label:SetText(QuestieLocale:GetUIString("TRACKER_ACTIVE_QUESTS") .. tostring(activeQuests) .. "/20")
+        self.label:SetPoint("TOP", _QuestieTracker.baseFrame, "TOP", 0, Questie.db.global.trackerFontSizeHeader)
+        self:SetHeight(Questie.db.global.trackerFontSizeHeader)
     end
 
     frm:Show()
@@ -283,7 +375,11 @@ function QuestieTracker:Update()
 
     if (not Questie.db.global.trackerEnabled) then
         -- tracker has started but not enabled
-        _QuestieTracker.baseFrame:Hide()
+        if _QuestieTracker.baseFrame and _QuestieTracker.baseFrame:IsShown() then
+            QuestieCombatQueue:Queue(function() 
+                _QuestieTracker.baseFrame:Hide()
+            end)
+        end
         return
     end
     if Questie.db.global.trackerCounterEnabled then
@@ -291,6 +387,7 @@ function QuestieTracker:Update()
     end
 
     lineIndex = 0 -- zero because it simplifies GetNextLine()
+    buttonIndex = 0
     -- populate tracker
     local trackerWidth = 0
     local line = nil
@@ -357,6 +454,34 @@ function QuestieTracker:Update()
             line:SetQuest(quest)
             line:SetObjective(nil)
 
+            if quest.sourceItemId and questCompletePercent[quest.Id] ~= 1 then
+                local button = _QuestieTracker:GetNextItemButton()
+                local fontSizeCompare = Questie.db.global.trackerFontSizeHeader + Questie.db.global.trackerFontSizeLine + Questie.db.global.trackerQuestPadding -- hack to allow refreshing when changing font size
+                if lineIndex ~= button.lineID or quest.sourceItemId ~= button.itemID or fontSizeCompare ~= button.fontSize then
+                    button.lineID = lineIndex -- immediately set to prevent double-queue
+                    button.itemID = quest.sourceItemId
+                    button.fontSize = fontSizeCompare 
+                    button.line = line
+                    QuestieCombatQueue:Queue(function(self)
+                        if self:SetItem(quest.sourceItemId, Questie.db.global.trackerFontSizeHeader * 1.7) then
+                            self:SetParent(_QuestieTracker.baseFrame)
+                            local height = 0 -- there has to be a better way of calculating this
+                            local frame = self.line
+                            while frame and frame ~= _QuestieTracker.baseFrame do
+                                local _,parent,_,_,yOff = frame:GetPoint()
+                                height = height - (frame:GetHeight() - yOff)
+                                frame = parent
+                            end
+                            local linep = {self.line:GetPoint()}
+                            self:SetPoint("TOPLEFT",_QuestieTracker.baseFrame, trackerBackgroundPadding-Questie.db.global.trackerFontSizeHeader * 1.75, height + Questie.db.global.trackerFontSizeHeader/1.2)
+                            self:Show()
+                        else
+                            self:Hide()
+                        end
+                    end, button)
+                end
+            end
+
             local questName = (quest.LocalizedName or quest.name)
             local coloredQuestName = QuestieLib:GetColoredQuestName(quest.Id, questName, quest.level, Questie.db.global.trackerShowQuestLevel, complete)
             line.label:SetText(coloredQuestName)
@@ -366,31 +491,28 @@ function QuestieTracker:Update()
             trackerWidth = math.max(trackerWidth, line.label:GetWidth())
 
             -- Add quest timer
-            line = _QuestieTracker:GetNextLine()
             local seconds = QuestieQuestTimers:GetQuestTimerByQuestId(questId, line)
             if seconds then
+                line = _QuestieTracker:GetNextLine()
                 line:SetMode("header")
                 line:SetQuest(quest)
                 line.label:SetPoint("TOPLEFT", line, 10, 0)
                 line.label:SetText(seconds)
                 line:Show()
                 line.label:Show()
-            else
-                -- No timer for this quest so we can reuse the line
-                lineIndex = lineIndex - 1
             end
 
             if quest.Objectives and not complete then
-                for _,Objective in pairs(quest.Objectives) do
+                for _, objective in pairs(quest.Objectives) do
                     line = _QuestieTracker:GetNextLine()
                     line:SetMode("line")
                     line:SetQuest(quest)
-                    line:SetObjective(Objective)
+                    line:SetObjective(objective)
                     local lineEnding = "" -- initialize because its not set if Needed is 0
-                    if Objective.Needed > 0 then
-                        lineEnding = tostring(Objective.Collected) .. "/" .. tostring(Objective.Needed)
+                    if objective.Needed > 0 then
+                        lineEnding = tostring(objective.Collected) .. "/" .. tostring(objective.Needed)
                     end
-                    line.label:SetText("    " .. QuestieLib:GetRGBForObjective(Objective) .. Objective.Description .. ": " .. lineEnding)
+                    line.label:SetText("    " .. QuestieLib:GetRGBForObjective(objective) .. objective.Description .. ": " .. lineEnding)
                     line:Show()
                     line.label:Show()
                     trackerWidth = math.max(trackerWidth, line.label:GetWidth())
@@ -405,10 +527,27 @@ function QuestieTracker:Update()
         _QuestieTracker.LineFrames[i]:Hide()
     end
 
+    -- and remaining buttons
+    for i=buttonIndex+1, 20 do
+        local button = _QuestieTracker.ItemButtons[i]
+        if button.itemID then
+            button:FakeHide()
+            button.itemID = nil -- immediately clear to prevent double-queue
+            button.lineID = nil
+            button.fontSize = nil
+            QuestieCombatQueue:Queue(function(self)
+                self:SetParent(UIParent)
+                self:Hide()
+            end, button)
+        end
+    end
+
     -- adjust base frame size for dragging
     if line then
-        _QuestieTracker.baseFrame:SetWidth(trackerWidth + trackerBackgroundPadding*2)
-        _QuestieTracker.baseFrame:SetHeight((_QuestieTracker.baseFrame:GetTop() - line:GetBottom()) + trackerBackgroundPadding*2 - Questie.db.global.trackerQuestPadding*2)
+        QuestieCombatQueue:Queue(function(line) 
+            _QuestieTracker.baseFrame:SetWidth(trackerWidth + trackerBackgroundPadding*2)
+            _QuestieTracker.baseFrame:SetHeight((_QuestieTracker.baseFrame:GetTop() - line:GetBottom()) + trackerBackgroundPadding*2 - Questie.db.global.trackerQuestPadding*2)
+        end, line)
     end
     -- make sure tracker is inside the screen
 
@@ -449,10 +588,15 @@ function QuestieTracker:Update()
         end
         QuestieQuest:UpdateHiddenNotes()
     end
+    
     if hasQuest then
-        _QuestieTracker.baseFrame:Show()
+        QuestieCombatQueue:Queue(function() 
+            _QuestieTracker.baseFrame:Show()
+        end)
     else
-        _QuestieTracker.baseFrame:Hide()
+        QuestieCombatQueue:Queue(function() 
+            _QuestieTracker.baseFrame:Hide()
+        end)
     end
 end
 
@@ -461,8 +605,13 @@ function _QuestieTracker:GetNextLine()
     return _QuestieTracker.LineFrames[lineIndex]
 end
 
+function _QuestieTracker:GetNextItemButton()
+    buttonIndex = buttonIndex + 1
+    return _QuestieTracker.ItemButtons[buttonIndex]
+end
+
 function _QuestieTracker:StartFadeTicker()
-    if not _QuestieTracker.FadeTicker then
+    if not _QuestieTracker.FadeTicker and Questie.db.char.trackerBackgroundEnabled then
         _QuestieTracker.FadeTicker = C_Timer.NewTicker(0.02, function()
             if _QuestieTracker.FadeTickerDirection then
                 if _QuestieTracker.FadeTickerValue < 0.3 then
@@ -615,7 +764,7 @@ function QuestieTracker:HookBaseTracker()
         local baseQLTB_OnClick = QuestLogTitleButton_OnClick
         QuestLogTitleButton_OnClick = function(self, button) -- I wanted to use hooksecurefunc but this needs to be a pre-hook to work properly unfortunately
             if (not self) or self.isHeader or not IsShiftKeyDown() then baseQLTB_OnClick(self, button) return end
-            lineIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
+            local lineIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
             if GetNumQuestLeaderBoards(lineIndex) == 0 and not IsQuestWatched(lineIndex) then -- only call if we actually want to fix this quest (normal quests already call AQW_insert)
                 _AQW_Insert(lineIndex, QUEST_WATCH_NO_EXPIRE)
                 QuestWatch_Update()
@@ -702,7 +851,7 @@ function QuestieTracker:SetCounterEnabled(enabled)
     else
         _QuestieTracker.activeQuestsFrame:Hide()
     end
-    _QuestieTracker:RepositionFrames(trackerLineCount, _QuestieTracker.LineFrames)
+    --_QuestieTracker:RepositionFrames(trackerLineCount, _QuestieTracker.LineFrames)
 end
 
 local hexTable = {

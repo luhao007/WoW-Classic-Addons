@@ -44,6 +44,10 @@ QuestieLocale.locale['zhTW'] = {
     ['ICON_LIMIT_DESC'] = "Limits the amount of icons drawn per type. ( Default: %s )",
     ['ENABLE_REPEATABLE_QUEST_ICONS'] = "Show repeatable quests on map",
     ['ENABLE_REPEATABLE_QUEST_ICONS_DESC'] = "Choose whether repeatable quests should be visible on the map and minimap.",
+    ['ENABLE_AUTO_ACCEPT_QUESTS'] = "Auto Accept Quests",
+    ['ENABLE_AUTO_ACCEPT_QUESTS_DESC'] = "Enable or disable Questie auto-accepting quests.",
+    ['ENABLE_AUTO_COMPLETE'] = "Auto Complete",
+    ['ENABLE_AUTO_COMPLETE_DESC'] = "Enable or disable Questie auto-complete quests.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "小地圖選項",
@@ -144,6 +148,7 @@ QuestieLocale.locale['zhTW'] = {
 
     -- Advanced tab
     ['ADV_TAB'] = "進階",
+    ['ADV_SET'] = "Advanced Settings",
     ['DEV_OPTIONS'] = "開發選項",
     ['ENABLE_DEBUG'] = "啟用除錯",
     ['ENABLE_DEBUG_DESC'] = "啟用或停用除錯功能",
@@ -249,7 +254,7 @@ QuestieLocale.locale['zhTW'] = {
     ['TRACKER_CANCEL'] = "取消",
     ['TRACKER_UNTRACK'] = "停止追蹤",
     ['TRACKER_SHOW_QUESTLOG'] = "開啟任務日誌",
-    ['TRACKER_SET_TOMTOM'] = "顯示TomTom箭頭",
+    ['TRACKER_SET_TOMTOM'] = "顯示|cFF54e33bTomTom|r箭頭",
     ['TRACKER_SHOW_ICONS'] = "顯示標記",
     ['TRACKER_HIDE_ICONS'] = "隱藏標記",
     ['TRACKER_OBJECTIVES'] = "目標",

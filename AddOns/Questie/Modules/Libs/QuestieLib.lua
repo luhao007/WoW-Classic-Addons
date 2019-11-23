@@ -10,7 +10,7 @@ local QuestieDB = QuestieLoader:ImportModule("QuestieDB");
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
 
 --Is set in QuestieLib.lua
-QuestieLib.AddonPath = "Interface\\Addons\\QuestieDev-master\\";
+QuestieLib.AddonPath = "Interface\\Addons\\Questie\\";
 
 local math_abs = math.abs;
 local math_sqrt = math.sqrt;
@@ -81,26 +81,26 @@ local function FloatRGBToHex(r, g, b)
     return RGBToHex(r*254, g*254, b*254);
 end
 
-function QuestieLib:GetRGBForObjective(Objective)
-    if Objective.fulfilled ~= nil and Objective.Collected == nil then
-        Objective.Collected = Objective.fulfilled
-        Objective.Needed = Objective.required
+function QuestieLib:GetRGBForObjective(objective)
+    if objective.fulfilled ~= nil and objective.Collected == nil then
+        objective.Collected = objective.fulfilled
+        objective.Needed = objective.required
     end
 
-    if not Objective.Collected or type(Objective.Collected) ~= "number" then return QuestieLib:FloatRGBToHex(0.8, 0.8, 0.8); end
-    local float = Objective.Collected / Objective.Needed
+    if not objective.Collected or type(objective.Collected) ~= "number" then return FloatRGBToHex(0.8, 0.8, 0.8); end
+    local float = objective.Collected / objective.Needed
     local trackerColor = Questie.db.global.trackerColorObjectives
-    
+
     if not trackerColor or trackerColor == "white" then
         return "|cFFEEEEEE";
     elseif trackerColor == "whiteAndGreen" then
-        return Objective.Collected == Objective.Needed and RGBToHex(76, 255, 76) or QuestieLib:FloatRGBToHex(0.8, 0.8, 0.8)
+        return objective.Collected == objective.Needed and RGBToHex(76, 255, 76) or FloatRGBToHex(0.8, 0.8, 0.8)
     elseif trackerColor == "whiteToGreen" then
-        return QuestieLib:FloatRGBToHex(0.8 - float / 2, 0.8 + float / 3, 0.8 - float / 2);
+        return FloatRGBToHex(0.8 - float / 2, 0.8 + float / 3, 0.8 - float / 2);
     else
-        if float < .49 then return QuestieLib:FloatRGBToHex(1, 0 + float / .5, 0); end
-        if float == .50 then return QuestieLib:FloatRGBToHex(1, 1, 0); end
-        if float > .50 then return QuestieLib:FloatRGBToHex(1 - float / 2, 1, 0); end
+        if float < .49 then return FloatRGBToHex(1, 0 + float / .5, 0); end
+        if float == .50 then return FloatRGBToHex(1, 1, 0); end
+        if float > .50 then return FloatRGBToHex(1 - float / 2, 1, 0); end
     end
 end
 
@@ -317,7 +317,7 @@ local cachedTitle = nil;
 --Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo()  -- todo: better place
     if(not cachedTitle) then
-        local name, title, _, _, reason = GetAddOnInfo("QuestieDev-master");
+        local name, title, _, _, reason = GetAddOnInfo("Questie");
         if(reason == "MISSING") then
             _, title = GetAddOnInfo("Questie");
         end
@@ -428,14 +428,28 @@ function QuestieLib:Levenshtein(str1, str2)
     return matrix[len1][len2]
 end
 
--- 1.12 color logic
-local function RGBToHex(r, g, b)
-    if r > 255 then r = 255; end
-    if g > 255 then g = 255; end
-    if b > 255 then b = 255; end
-    return string.format("|cFF%02x%02x%02x", r, g, b);
+local randomSeed = 0;
+function QuestieLib:MathRandomSeed(seed)
+    randomSeed = seed
 end
 
-function QuestieLib:FloatRGBToHex(r, g, b)
-    return RGBToHex(r*254, g*254, b*254);
+function QuestieLib:MathRandom(low_or_high_arg, high_arg)
+    local low = nil
+    local high = nil
+    if low_or_high_arg ~= nil then
+        if high_arg ~= nil then
+            low = low_or_high_arg
+            high = high_arg
+        else
+            low = 1
+            high = low_or_high_arg
+        end
+    end
+
+    randomSeed = (randomSeed * 214013 + 2531011) % 2^32;
+    local rand = (math.floor(randomSeed / 2^16) % 2^15) / 0x7fff;
+    if high == nil then
+        return rand
+    end
+    return low + math.floor(rand * high)
 end

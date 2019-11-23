@@ -1,12 +1,12 @@
 ## Interface: 11302
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 5.2.1
+## Version: 5.2.3
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v5.2.1|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v5.2.3|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -61,18 +61,26 @@ Modules\Libs\QuestieLib.lua
 #Modules\Libs\QuestieCompress.lua
 Modules\Libs\QuestiePlayer.lua
 Modules\Libs\QuestieSerializer.lua
+Modules\Libs\QuestieCombatQueue.lua
+Modules\Libs\QuestieHash.lua
 
 ##Modules
 Modules\QuestieAuto.lua
 Modules\QuestieTooltips.lua
 Modules\QuestieEventHandler.lua
-Modules\QuestieFramePool.lua
+
+#FramePool
+Modules\FramePool\QuestieFramePool.lua
+Modules\FramePool\QuestieFrame.lua
 
 #Map
 Modules\Map\QuestieMap.lua
 Modules\Map\QuestieMapUtils.lua
 
-Modules\QuestieQuest.lua
+#Quest
+Modules\Quest\QuestieQuest.lua
+Modules\Quest\QuestieQuestPrivates.lua
+
 Modules\QuestieNameplate.lua
 Modules\QuestieCoordinates.lua
 

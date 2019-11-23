@@ -42,6 +42,10 @@ QuestieLocale.locale['esMX'] = {
     ['ENABLE_ICON_LIMIT_DESC'] = "Habilita el límite de iconos por tipo.",
     ['ICON_LIMIT'] = "Límite de icono",
     ['ICON_LIMIT_DESC'] = "Limita la cantidad de iconos por tipo. ( Predeterminado: %s)",
+    ['ENABLE_AUTO_ACCEPT_QUESTS'] = "Aceptar misiones automáticamente",
+    ['ENABLE_AUTO_ACCEPT_QUESTS_DESC'] = "Habilita o deshabilita aceptar misiones automáticamente.",
+    ['ENABLE_AUTO_COMPLETE'] = "Completar misiones automáticamente",
+    ['ENABLE_AUTO_COMPLETE_DESC'] = "Habilita o deshabilita completar misiones automáticamente.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "Opciones de minimapa",
@@ -142,6 +146,7 @@ QuestieLocale.locale['esMX'] = {
 
     -- Advanced tab
     ['ADV_TAB'] = "Avanzado",
+    ['ADV_SET'] = "Advanced Settings",
     ['DEV_OPTIONS'] = "Opciones de desarrollador",
     ['ENABLE_DEBUG'] = "Habilitar debug",
     ['ENABLE_DEBUG_DESC'] = "Habilita o deshabilita el modo debug.",
@@ -242,7 +247,7 @@ QuestieLocale.locale['esMX'] = {
     ['TRACKER_CANCEL'] = "Cancelar",
     ['TRACKER_UNTRACK'] = "No rastrear misión",
     ['TRACKER_SHOW_QUESTLOG'] = "Mostrar en registro de misiones",
-    ['TRACKER_SET_TOMTOM'] = "Establecer objetivo de TomTom",
+    ['TRACKER_SET_TOMTOM'] = "Establecer objetivo de|cFF54e33bTomTom|r",
     ['TRACKER_SHOW_ICONS'] = "Mostrar iconos",
     ['TRACKER_HIDE_ICONS'] = "Esconder iconos",
     ['TRACKER_OBJECTIVES'] = "Objetivos",

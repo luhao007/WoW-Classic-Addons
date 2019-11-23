@@ -1254,6 +1254,7 @@ namespace.castTimeIncreases = {
     [12889] = 50,   -- Curse of Tongues
     [15470] = 50,   -- Curse of Tongues
     [25195] = 75,   -- Curse of Tongues
+    [10653] = 20,   -- Curse of the Eye
 
     -- WARLOCK
     [1714] = 50,    -- Curse of Tongues Rank 1
@@ -1261,6 +1262,7 @@ namespace.castTimeIncreases = {
     [1098] = 30,    -- Enslave Demon Rank 1
     [11725] = 30,   -- Enslave Demon Rank 2
     [11726] = 30,   -- Enslave Demon Rank 3
+    [20882] = 30,   -- Enslave Demon (NPC?)
 
     -- ROGUE
     [5760] = 40,    -- Mind-Numbing Poison Rank 1
@@ -1270,9 +1272,10 @@ namespace.castTimeIncreases = {
 }
 
 -- Store both spellID and spell name in this table since UnitAura returns spellIDs but combat log doesn't.
--- Order here is important so we only store highest rank for spell names
-for spellID, slowPercentage in ipairs(namespace.castTimeIncreases) do
+for spellID, slowPercentage in pairs(namespace.castTimeIncreases) do
+    if GetSpellInfo(spellID) then
     namespace.castTimeIncreases[GetSpellInfo(spellID)] = slowPercentage
+end
 end
 
 -- Spells that have cast time reduced by talents.
@@ -1492,6 +1495,26 @@ namespace.crowdControls = {
     [GetSpellInfo(16869)] = 1,      -- Ice Tomb
     [GetSpellInfo(22856)] = 1,      -- Ice Lock
     [GetSpellInfo(16838)] = 1,      -- Banshee Shriek
+}
+
+-- Skip pushback calculation for these spells since they
+-- have 70% chance to ignore pushback when talented
+namespace.pushbackBlacklist = {
+    [GetSpellInfo(1064)] = 1, -- Chain Heal
+    [GetSpellInfo(25357)] = 1, -- Healing Wave
+    [GetSpellInfo(8004)] = 1, -- Lesser Healing Wave
+    [GetSpellInfo(2061)] = 1, -- Flash Heal
+    [GetSpellInfo(2054)] = 1, -- Heal
+    [GetSpellInfo(2050)] = 1, -- Lesser Heal
+    [GetSpellInfo(596)] = 1, -- Prayer of Healing
+    [GetSpellInfo(2060)] = 1, -- Greater Heal
+    [GetSpellInfo(19750)] = 1, -- Flash of Light
+    [GetSpellInfo(635)] = 1, -- Holy Light
+    -- Druid heals are afaik many times not talented so ignoring these
+
+    [GetSpellInfo(4068)] = 1,       -- Iron Grenade
+    [GetSpellInfo(19769)] = 1,      -- Thorium Grenade
+    [GetSpellInfo(13808)] = 1,      -- M73 Frag Grenade
 }
 
 -- Addon Savedvariables

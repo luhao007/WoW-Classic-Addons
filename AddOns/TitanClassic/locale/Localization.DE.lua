@@ -329,6 +329,7 @@ L["TITAN_LOCATION_TOOLTIP_HOMELOCATION"] = "Heimatort: ";
 L["TITAN_LOCATION_TOOLTIP_INN"] = "Gasthaus: ";
 L["TITAN_LOCATION_MENU_TEXT"] = "Position";
 L["TITAN_LOCATION_MENU_SHOW_ZONE_ON_PANEL_TEXT"] = "Zonentext in der Leiste anzeigen";
+L["TITAN_LOCATION_MENU_SHOW_SUBZONE_ON_PANEL_TEXT"] = "Show Only Subzone Text";
 L["TITAN_LOCATION_MENU_SHOW_COORDS_ON_MAP_TEXT"] = "Koordinaten auf der Weltkarte anzeigen";
 L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"] = "Mauszeiger (X,Y): %s";
 L["TITAN_LOCATION_MAP_PLAYER_COORDS_TEXT"] = "Spieler (X,Y): %s";

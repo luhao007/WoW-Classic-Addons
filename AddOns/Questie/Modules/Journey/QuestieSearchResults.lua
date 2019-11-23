@@ -20,6 +20,7 @@ local AceGUI = LibStub("AceGUI-3.0");
 
 local lastOpenSearch = "quest";
 local yellow = "|cFFFFFF00"
+local green = "|cFF40C040"
 local BY_NAME = 1
 local BY_ID = 2
 
@@ -29,6 +30,19 @@ local function AddParagraph(frame, lookupObject, firstKey, secondKey, header, lo
         QuestieJourneyUtils:AddLine(frame,  yellow .. header .. "|r")
         for _,id in pairs(lookupObject[firstKey][secondKey]) do
             QuestieJourneyUtils:AddLine(frame, lookupDB[id][lookupKey].." ("..id..")")
+        end
+    end
+end
+
+local function AddLinkedParagraph(frame, linkType, lookupObject, firstKey, secondKey, header, lookupDB, lookupKey)
+    if lookupObject[firstKey][secondKey] then
+        QuestieJourneyUtils:AddLine(frame,  yellow .. header .. "|r")
+        for _,id in pairs(lookupObject[firstKey][secondKey]) do
+            -- QuestieJourneyUtils:AddLine(frame, lookupDB[id][lookupKey].." ("..id..")")
+            local link = AceGUI:Create("InteractiveLabel")
+            link:SetText(lookupDB[id][lookupKey].." ("..id..")");
+            link:SetCallback("OnClick", function(self) QuestieSearchResults:GetDetailFrame(linkType, id) end)
+            frame:AddChild(link);
         end
     end
 end
@@ -103,12 +117,23 @@ end--]]
 
 function QuestieSearchResults:QuestDetailsFrame(details, id)
     local quest = QuestieDB.questData[id]
+
     -- header
     local title = AceGUI:Create("Heading")
     title:SetFullWidth(true);
     title:SetText(quest[QuestieDB.questKeys.name])
     details:AddChild(title)
-    -- hidden states
+
+    -- is quest finished by player
+    local finished = AceGUI:Create("CheckBox")
+    finished:SetValue(Questie.db.char.complete[id])
+    finished:SetLabel(_G['COMPLETE'])
+    finished:SetDisabled(true)
+    -- reduce offset to next checkbox
+    finished:SetHeight(16)
+    details:AddChild(finished)
+
+    -- hidden by user
     local hiddenByUser = AceGUI:Create("CheckBox")
     hiddenByUser.id = id
     hiddenByUser:SetLabel("Hidden by user")
@@ -141,12 +166,18 @@ function QuestieSearchResults:QuestDetailsFrame(details, id)
             GameTooltip:Hide();
         end
     end)
+    -- reduce offset to next checkbox
+    hiddenByUser:SetHeight(16)
     details:AddChild(hiddenByUser)
+
+    -- hidden by Questie
     local hiddenQuests = AceGUI:Create("CheckBox")
-    hiddenQuests:SetValue(QuestieCorrections.hiddenQuests[id] ~= nil)
+    hiddenQuests:SetValue(QuestieCorrections.hiddenQuests[id])
     hiddenQuests:SetLabel("Hidden by Questie")
     hiddenQuests:SetDisabled(true)
+    -- do not reduce offset, as checkbox is followed by text
     details:AddChild(hiddenQuests)
+
     -- general info
     QuestieJourneyUtils:AddLine(details, yellow .. "Quest ID:|r " .. id)
     QuestieJourneyUtils:AddLine(details,  yellow .. "Quest Level:|r " .. quest[QuestieDB.questKeys.questLevel])
@@ -155,23 +186,26 @@ function QuestieSearchResults:QuestDetailsFrame(details, id)
     if (reqRaces ~= "None") then
         QuestieJourneyUtils:AddLine(details, yellow .. "Required Races:|r " .. reqRaces)
     end
+
     -- objectives text
     if quest[QuestieDB.questKeys.objectivesText] then
         QuestieJourneyUtils:AddLine(details, "")
-        QuestieJourneyUtils:AddLine(details,  yellow .. "Quest Objectives:|r")
+        QuestieJourneyUtils:AddLine(details,  yellow .. "Objectives:|r")
         for k,v in pairs(quest[QuestieDB.questKeys.objectivesText]) do
             QuestieJourneyUtils:AddLine(details, v)
         end
     end
+
     -- quest starters
     QuestieJourneyUtils:AddLine(details, "")
-    AddParagraph(details, quest, QuestieDB.questKeys.startedBy, QuestieDB.questKeys.creatureStart, "Creatures starting this quest:", QuestieDB.npcData, QuestieDB.npcKeys.name)
-    AddParagraph(details, quest, QuestieDB.questKeys.startedBy, QuestieDB.questKeys.objectStart, "Objects starting this quest:", QuestieDB.objectData, QuestieDB.objectKeys.name)
-    AddParagraph(details, quest, QuestieDB.questKeys.startedBy, QuestieDB.questKeys.itemStart, "Items starting this quest:", QuestieDB.itemData, QuestieDB.itemKeys.name)
+    AddLinkedParagraph(details, 'npc', quest, QuestieDB.questKeys.startedBy, 1, "Creatures starting this quest:", QuestieDB.npcData, QuestieDB.npcKeys.name)
+    AddLinkedParagraph(details, 'object', quest, QuestieDB.questKeys.startedBy, 2, "Objects starting this quest:", QuestieDB.objectData, QuestieDB.objectKeys.name)
+    -- TODO change to linked paragraph once item details page exists
+    AddParagraph(details, quest, QuestieDB.questKeys.startedBy, 3, "Items starting this quest:", QuestieDB.itemData, QuestieDB.itemKeys.name)
     -- quest finishers
     QuestieJourneyUtils:AddLine(details, "")
-    AddParagraph(details, quest, QuestieDB.questKeys.finishedBy, QuestieDB.questKeys.creatureEnd, "Creatures finishing this quest:", QuestieDB.npcData, QuestieDB.npcKeys.name)
-    AddParagraph(details, quest, QuestieDB.questKeys.finishedBy, QuestieDB.questKeys.objectEnd, "Objects finishing this quest:", QuestieDB.objectData, QuestieDB.objectKeys.name)
+    AddLinkedParagraph(details, 'npc', quest, QuestieDB.questKeys.finishedBy, 1, "Creatures finishing this quest:", QuestieDB.npcData, QuestieDB.npcKeys.name)
+    AddLinkedParagraph(details, 'object', quest, QuestieDB.questKeys.finishedBy, 2, "Objects finishing this quest:", QuestieDB.objectData, QuestieDB.objectKeys.name)
     QuestieJourneyUtils:AddLine(details, "")
 end
 
@@ -331,8 +365,17 @@ function QuestieSearchResults:DrawResultTab(container, resultType)
     end
     for k,_ in pairs(QuestieSearch.LastResult[resultType]) do
         if database[k] ~= nil and database[k][key] ~= nil then
+            local complete = ''
+            if Questie.db.char.complete[k] and resultType == "quest" then
+                complete = green .. '(' .. _G['COMPLETE'] .. ')|r '
+            end
+            -- TODO rename option to "enabledIDs" or create separate ones for npcs/objects/items
+            local id = ''
+            if Questie.db.global.enableTooltipsQuestID then
+                id = ' (' .. k .. ')'
+            end
             table.insert(results, {
-                ["text"] = database[k][key],
+                ["text"] = complete .. database[k][key] .. id,
                 ["value"] = tonumber(k)
             })
         end

@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: Dathwada
-## Version: v2.1.5b
+## Version: v2.1.6
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_TravelGuideClassicDB
 ## DefaultState: enabled
@@ -10,7 +10,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0旅行指南|r
 ## Notes-zhCN: 在世界地图和小地图上显示船和飞艇的位置.
 
-## X-Date: 2019-10-13
+## X-Date: 2019-11-19
 ## X-Category: Map
 
 #@non-debug@
@@ -23,6 +23,7 @@
 # ## Notes-koKR: 세계 지도와 미니맵에 배와 비행선의 위치를 표시합니다.
 # ## Notes-zhCN: 在世界地图和小地图上显示船和飞艇的位置.
 # ## Notes-frFR: Affiche les emplacements des bateaux et des zepplin sur la carte du monde et la mini-carte.
+# ## Notes-ptBR: Mostrar as localizações dos barcos e zepelins no Mapa-múndi e no Minimapa.
 #@end-debug@
 
 Locale\Locales.xml
@@ -32,6 +33,7 @@ Locale\ruRU.lua
 Locale\koKR.lua
 Locale\zhCN.lua
 Locale\frFR.lua
+Locale\ptBR.lua
 Core\Constants.lua
 Core\Handler.lua
 Core\Config.lua

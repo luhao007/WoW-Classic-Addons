@@ -22,7 +22,7 @@ QuestieOptions.tabs.advanced = {...}
 local optionsDefaults = QuestieOptionsDefaults:Load()
 
 
-function QuestieOptions.tabs.advanced:Initalize()
+function QuestieOptions.tabs.advanced:Initialize()
     return {
         name = function() return QuestieLocale:GetUIString('ADV_TAB'); end,
         type = "group",
@@ -31,7 +31,7 @@ function QuestieOptions.tabs.advanced:Initalize()
             map_options = {
                 type = "header",
                 order = 1,
-                name = function() return "Advanced Settings"; end,
+                name = function() return QuestieLocale:GetUIString('ADV_SET'); end,
             },
             enableIconLimit = {
                 type = "toggle",

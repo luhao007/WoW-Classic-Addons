@@ -80,6 +80,8 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib");
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
 ---@type QuestieQuestTimers
 local QuestieQuestTimers = QuestieLoader:ImportModule("QuestieQuestTimers")
+---@type QuestieCombatQueue
+local QuestieCombatQueue = QuestieLoader:ImportModule("QuestieCombatQueue")
 
 -- check if user has updated but not restarted the game (todo: add future new source files to this)
 if  (not LQuestie_EasyMenu) or
@@ -124,6 +126,7 @@ if  (not LQuestie_EasyMenu) or
     (not QuestieStreamLib) or
     (not QuestieTooltips) or
     (not QuestieSearchResults) or
+    (not QuestieCombatQueue) or 
     (not QuestieTracker) then
     --Delay the warning.
     C_Timer.After(8, function()
@@ -207,6 +210,7 @@ function Questie:OnInitialize()
     QuestieCoords.Initialize();
 
     QuestieQuestTimers:Initialize()
+    QuestieCombatQueue:Initialize()
 
     -- Initialize questiecomms
     --C_ChatInfo.RegisterAddonMessagePrefix("questie")
@@ -228,7 +232,7 @@ function Questie:OnInitialize()
 
     -- Creating the minimap config icon
     Questie.minimapConfigIcon = LibStub("LibDBIcon-1.0");
-    Questie.minimapConfigIcon:Register("MinimapIcon", QuestieOptionsMinimapIcon:Get(), Questie.db.profile.minimap);
+    Questie.minimapConfigIcon:Register("Questie", QuestieOptionsMinimapIcon:Get(), Questie.db.profile.minimap);
 
     -- Update the default text on the map show/hide button for localization
     if Questie.db.char.enabled then
@@ -319,9 +323,9 @@ function Questie:QuestieSlash(input)
         Questie.db.profile.minimap.hide = not Questie.db.profile.minimap.hide;
 
         if Questie.db.profile.minimap.hide then
-            Questie.minimapConfigIcon:Hide("MinimapIcon");
+            Questie.minimapConfigIcon:Hide("Questie");
         else
-            Questie.minimapConfigIcon:Show("MinimapIcon");
+            Questie.minimapConfigIcon:Show("Questie");
         end
         return;
     end
@@ -349,6 +353,8 @@ function Questie:Colorize(str, color)
         c = '|cB900FFFF';
     elseif color == 'yellow' then
         c = '|cFFFFB900';
+    elseif color == "gold" then
+        c = "|cffffd100" -- this is the default game font
     end
 
     return c .. str .. "|r"
