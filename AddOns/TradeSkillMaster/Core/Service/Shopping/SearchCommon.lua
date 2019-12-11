@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local SearchCommon = TSM.Shopping:NewPackage("SearchCommon")
-local private = { findThreadId = nil }
+local Threading = TSM.Include("Service.Threading")
+local private = {
+	findThreadId = nil,
+}
 
 
 
@@ -18,16 +21,16 @@ local private = { findThreadId = nil }
 
 function SearchCommon.OnInitialize()
 	-- initialize threads
-	private.findThreadId = TSMAPI_FOUR.Thread.New("FIND_SEARCH", private.FindThread)
+	private.findThreadId = Threading.New("FIND_SEARCH", private.FindThread)
 end
 
 function SearchCommon.StartFindAuction(auctionScan, auction, callback, noSeller)
-	TSMAPI_FOUR.Thread.SetCallback(private.findThreadId, callback)
-	TSMAPI_FOUR.Thread.Start(private.findThreadId, auctionScan, auction, noSeller)
+	Threading.SetCallback(private.findThreadId, callback)
+	Threading.Start(private.findThreadId, auctionScan, auction, noSeller)
 end
 
 function SearchCommon.StopFindAuction()
-	TSMAPI_FOUR.Thread.Kill(private.findThreadId)
+	Threading.Kill(private.findThreadId)
 end
 
 

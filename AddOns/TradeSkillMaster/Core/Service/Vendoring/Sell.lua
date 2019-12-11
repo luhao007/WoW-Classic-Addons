@@ -8,6 +8,12 @@
 
 local _, TSM = ...
 local Sell = TSM.Vendoring:NewPackage("Sell")
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	ignoreDB = nil,
 }
@@ -19,28 +25,28 @@ local private = {
 -- ============================================================================
 
 function Sell.OnInitialize()
-	local used = TSM.TempTable.Acquire()
-	private.ignoreDB = TSMAPI_FOUR.Database.NewSchema("VENDORING_IGNORE")
+	local used = TempTable.Acquire()
+	private.ignoreDB = Database.NewSchema("VENDORING_IGNORE")
 		:AddUniqueStringField("itemString")
 		:AddBooleanField("ignoreSession")
 		:AddBooleanField("ignorePermanent")
 		:Commit()
 	private.ignoreDB:BulkInsertStart()
 	for itemString in pairs(TSM.db.global.userData.vendoringIgnore) do
-		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
+		itemString = ItemString.Get(itemString)
 		if not used[itemString] then
 			used[itemString] = true
 			private.ignoreDB:BulkInsertNewRow(itemString, false, true)
 		end
 	end
 	private.ignoreDB:BulkInsertEnd()
-	TSM.TempTable.Release(used)
+	TempTable.Release(used)
 
-	private.potentialValueDB = TSMAPI_FOUR.Database.NewSchema("VENDORING_POTENTIAL_VALUE")
+	private.potentialValueDB = Database.NewSchema("VENDORING_POTENTIAL_VALUE")
 		:AddUniqueStringField("itemString")
 		:AddNumberField("potentialValue")
 		:Commit()
-	TSM.Inventory.BagTracking.RegisterCallback(private.UpdatePotentialValueDB)
+	BagTracking.RegisterCallback(private.UpdatePotentialValueDB)
 end
 
 function Sell.IgnoreItemSession(itemString)
@@ -96,15 +102,15 @@ end
 function Sell.CreateIgnoreQuery()
 	return private.ignoreDB:NewQuery()
 		:Equal("ignorePermanent", true)
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:OrderBy("name", true)
 end
 
 function Sell.CreateBagsQuery()
-	local query = TSM.Inventory.BagTracking.CreateQuery()
+	local query = BagTracking.CreateQueryBags()
 		:Distinct("itemString")
 		:LeftJoin(private.ignoreDB, "itemString")
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:LeftJoin(private.potentialValueDB, "itemString")
 	Sell.ResetBagsQuery(query)
 	return query
@@ -113,20 +119,25 @@ end
 function Sell.ResetBagsQuery(query)
 	query:ResetOrderBy()
 	query:ResetFilters()
-	query:GreaterThanOrEqual("bag", 0)
-		:LessThanOrEqual("bag", NUM_BAG_SLOTS)
-		:NotEqual("ignoreSession", true)
+	BagTracking.FilterQueryBags(query)
+	query:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
 		:GreaterThan("vendorSell", 0)
 		:OrderBy("name", true)
 end
 
 function Sell.SellItem(itemString, includeSoulbound)
-	for _, bag, slot, bagItemString in TSMAPI_FOUR.Inventory.BagIterator() do
-		if itemString == bagItemString and TSMAPI_FOUR.Item.ToItemString(GetContainerItemLink(bag, slot)) == itemString then
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("bag", "slot", "itemString")
+		:Equal("isBoP", false)
+		:Equal("isBoA", false)
+	for _, bag, slot, bagItemString in query:Iterator() do
+		if itemString == bagItemString and ItemString.Get(GetContainerItemLink(bag, slot)) == itemString then
 			UseContainerItem(bag, slot)
 		end
 	end
+	query:Release()
 end
 
 
@@ -136,17 +147,19 @@ end
 -- ============================================================================
 
 function private.UpdatePotentialValueDB()
-	local used = TSM.TempTable.Acquire()
 	private.potentialValueDB:TruncateAndBulkInsertStart()
-	for _, _, _, itemString in TSMAPI_FOUR.Inventory.BagIterator() do
-		if not used[itemString] then
-			used[itemString] = true
-			local value = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.vendoringOptions.qsMarketValue, itemString)
-			if value then
-				private.potentialValueDB:BulkInsertNewRow(itemString, value)
-			end
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("itemString")
+		:Distinct("itemString")
+		:Equal("isBoP", false)
+		:Equal("isBoA", false)
+	for _, itemString in query:Iterator() do
+		local value = CustomPrice.GetValue(TSM.db.global.vendoringOptions.qsMarketValue, itemString)
+		if value then
+			private.potentialValueDB:BulkInsertNewRow(itemString, value)
 		end
 	end
+	query:Release()
 	private.potentialValueDB:BulkInsertEnd()
-	TSM.TempTable.Release(used)
 end

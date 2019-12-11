@@ -8,8 +8,14 @@
 
 local _, TSM = ...
 local VendorSearch = TSM.Shopping:NewPackage("VendorSearch")
-local L = TSM.L
-local private = { itemList = {}, scanThreadId = nil }
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	itemList = {},
+	scanThreadId = nil,
+}
 
 
 
@@ -19,7 +25,7 @@ local private = { itemList = {}, scanThreadId = nil }
 
 function VendorSearch.OnInitialize()
 	-- initialize thread
-	private.scanThreadId = TSMAPI_FOUR.Thread.New("VENDOR_SEARCH", private.ScanThread)
+	private.scanThreadId = Threading.New("VENDOR_SEARCH", private.ScanThread)
 end
 
 function VendorSearch.GetScanContext()
@@ -34,7 +40,7 @@ end
 
 function private.ScanThread(auctionScan)
 	if (TSM.AuctionDB.GetLastCompleteScanTime() or 0) < time() - 60 * 60 * 12 then
-		TSM:Print(L["No recent AuctionDB scan data found."])
+		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
 	auctionScan:SetCustomFilterFunc(private.ScanFilter)
@@ -42,11 +48,11 @@ function private.ScanThread(auctionScan)
 	-- create the list of items, and add filters for them
 	wipe(private.itemList)
 	for _, itemString, _, minBuyout in TSM.AuctionDB.LastScanIteratorThreaded() do
-		local vendorSell = TSMAPI_FOUR.Item.GetVendorSell(itemString) or 0
+		local vendorSell = ItemInfo.GetVendorSell(itemString) or 0
 		if vendorSell and minBuyout and minBuyout < vendorSell then
 			tinsert(private.itemList, itemString)
 		end
-		TSMAPI_FOUR.Thread.Yield()
+		Threading.Yield()
 	end
 	auctionScan:AddItemListFiltersThreaded(private.itemList)
 
@@ -56,10 +62,10 @@ function private.ScanThread(auctionScan)
 end
 
 function private.ScanFilter(itemString, itemBuyout)
-	local vendorSell = TSMAPI_FOUR.Item.GetVendorSell(itemString)
+	local vendorSell = ItemInfo.GetVendorSell(itemString)
 	return not vendorSell or itemBuyout == 0 or itemBuyout >= vendorSell
 end
 
 function private.MarketValueFunction(row)
-	return TSMAPI_FOUR.Item.GetVendorSell(row:GetField("itemString"))
+	return ItemInfo.GetVendorSell(row:GetField("itemString"))
 end

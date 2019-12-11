@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local ExportConfirmationList = TSM.Include("LibTSMClass").DefineClass("ExportConfirmationList", TSM.UI.ScrollList)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 TSM.UI.ExportConfirmationList = ExportConfirmationList
 local private = {}
 

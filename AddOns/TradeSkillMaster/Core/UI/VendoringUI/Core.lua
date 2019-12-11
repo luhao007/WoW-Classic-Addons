@@ -8,8 +8,16 @@
 
 local _, TSM = ...
 local VendoringUI = TSM.UI:NewPackage("VendoringUI")
-local L = TSM.L
-local private = { topLevelPages = {}, fsm = nil, defaultUISwitchBtn = nil, isVisible = false }
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local FSM = TSM.Include("Util.FSM")
+local Event = TSM.Include("Util.Event")
+local private = {
+	topLevelPages = {},
+	fsm = nil,
+	defaultUISwitchBtn = nil,
+	isVisible = false,
+}
 local MIN_FRAME_SIZE = { width = 560, height = 500 }
 
 
@@ -90,10 +98,10 @@ function private.FSMCreate()
 	local function MerchantShowDelayed()
 		private.fsm:ProcessEvent("EV_MERCHANT_SHOW")
 	end
-	TSM.Event.Register("MERCHANT_SHOW", function()
-		TSMAPI_FOUR.Delay.AfterFrame("MERCHANT_SHOW_DELAYED", 0, MerchantShowDelayed)
+	Event.Register("MERCHANT_SHOW", function()
+		Delay.AfterFrame("MERCHANT_SHOW_DELAYED", 0, MerchantShowDelayed)
 	end)
-	TSM.Event.Register("MERCHANT_CLOSED", function()
+	Event.Register("MERCHANT_CLOSED", function()
 		private.fsm:ProcessEvent("EV_MERCHANT_CLOSED")
 	end)
 	MerchantFrame:UnregisterEvent("MERCHANT_SHOW")
@@ -105,8 +113,8 @@ function private.FSMCreate()
 	local function DefaultFrameOnHide()
 		private.fsm:ProcessEvent("EV_FRAME_HIDE")
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("MERCHANT_UI")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CLOSED")
+	private.fsm = FSM.New("MERCHANT_UI")
+		:AddState(FSM.NewState("ST_CLOSED")
 			:AddTransition("ST_DEFAULT_OPEN")
 			:AddTransition("ST_FRAME_OPEN")
 			:AddEvent("EV_FRAME_TOGGLE", function(context)
@@ -121,14 +129,14 @@ function private.FSMCreate()
 				end
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_DEFAULT_OPEN")
+		:AddState(FSM.NewState("ST_DEFAULT_OPEN")
 			:SetOnEnter(function(context, isIgnored)
 				MerchantFrame_OnEvent(MerchantFrame, "MERCHANT_SHOW")
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = TSMAPI_FOUR.UI.NewElement("ActionButton", "switchBtn")
 						:SetStyle("width", 60)
-						:SetStyle("height", WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 16 or 15)
-						:SetStyle("anchors", { { "TOPRIGHT", WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and -26 or -27, WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and -3 or -4 } })
+						:SetStyle("height", TSM.IsWowClassic() and 16 or 15)
+						:SetStyle("anchors", { { "TOPRIGHT", TSM.IsWowClassic() and -26 or -27, TSM.IsWowClassic() and -3 or -4 } })
 						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
 						:SetStyle("fontHeight", 12)
 						:DisableClickCooldown()
@@ -155,12 +163,12 @@ function private.FSMCreate()
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_MERCHANT_SHOW", MerchantFrame_Update)
-			:AddEvent("EV_MERCHANT_CLOSED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_MERCHANT_CLOSED", "ST_CLOSED")
 			:AddEvent("EV_SWITCH_BTN_CLICKED", function()
 				return "ST_FRAME_OPEN"
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN")
+		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				assert(not context.frame)
 				MerchantFrame_OnEvent(MerchantFrame, "MERCHANT_SHOW")

@@ -8,6 +8,10 @@
 
 local _, TSM = ...
 local Cost = TSM.Crafting:NewPackage("Cost")
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
+local ItemString = TSM.Include("Util.ItemString")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	matsVisited = {},
 	isItemCraftableCache = {},
@@ -23,7 +27,7 @@ local private = {
 -- ============================================================================
 
 function Cost.GetMatCost(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if not TSM.db.factionrealm.internalData.mats[itemString] then
 		return
 	end
@@ -38,7 +42,7 @@ function Cost.GetMatCost(itemString)
 	end
 	if not private.matCostCache[itemString] then
 		local priceStr = TSM.db.factionrealm.internalData.mats[itemString].customValue or TSM.db.global.craftingOptions.defaultMatCostMethod
-		private.matCostCache[itemString] = TSMAPI_FOUR.CustomPrice.GetValue(priceStr, itemString)
+		private.matCostCache[itemString] = CustomPrice.GetValue(priceStr, itemString)
 	end
 	private.matsVisited[itemString] = nil
 	return private.matCostCache[itemString]
@@ -49,7 +53,7 @@ function Cost.GetCraftingCostBySpellId(spellId)
 	local hasMats = false
 	local mats = nil
 	if private.matsTempInUse then
-		mats = TSM.TempTable.Acquire()
+		mats = TempTable.Acquire()
 	else
 		mats = private.matsTemp
 		private.matsTempInUse = true
@@ -68,12 +72,12 @@ function Cost.GetCraftingCostBySpellId(spellId)
 	if mats == private.matsTemp then
 		private.matsTempInUse = false
 	else
-		TSM.TempTable.Release(mats)
+		TempTable.Release(mats)
 	end
 	if not cost or not hasMats then
 		return
 	end
-	cost = TSM.Math.Round(cost / TSM.Crafting.GetNumResult(spellId))
+	cost = Math.Round(cost / TSM.Crafting.GetNumResult(spellId))
 	return cost > 0 and cost or nil
 end
 
@@ -82,7 +86,7 @@ function Cost.GetCraftedItemValue(itemString)
 	if hasCraftPriceMethod then
 		return craftPrice
 	end
-	return TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.craftingOptions.defaultCraftPriceMethod, itemString)
+	return CustomPrice.GetValue(TSM.db.global.craftingOptions.defaultCraftPriceMethod, itemString)
 end
 
 function Cost.GetProfitBySpellId(spellId)
@@ -99,17 +103,17 @@ end
 
 function Cost.GetSaleRateBySpellId(spellId)
 	local itemString = TSM.Crafting.GetItemString(spellId)
-	return itemString and TSMAPI_FOUR.CustomPrice.GetItemPrice(itemString, "DBRegionSaleRate") or nil
+	return itemString and CustomPrice.GetItemPrice(itemString, "DBRegionSaleRate") or nil
 end
 
 function Cost.GetLowestCostByItem(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if private.isItemCraftableCache.updateTime ~= GetTime() then
 		-- update the cache
 		wipe(private.isItemCraftableCache)
 		private.isItemCraftableCache.updateTime = GetTime()
 		for _, spellId in TSM.Crafting.SpellIterator() do
-			local spellItemString = TSMAPI_FOUR.Item.ToBaseItemString(TSM.Crafting.GetItemString(spellId))
+			local spellItemString = ItemString.GetBase(TSM.Crafting.GetItemString(spellId))
 			if not private.isItemCraftableCache[spellItemString] then
 				private.isItemCraftableCache[spellItemString] = spellId
 			else

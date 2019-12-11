@@ -8,8 +8,15 @@
 
 local _, TSM = ...
 local DisenchantSearch = TSM.Shopping:NewPackage("DisenchantSearch")
-local L = TSM.L
-local private = { itemList = {}, scanThreadId = nil }
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	itemList = {},
+	scanThreadId = nil,
+}
 
 
 
@@ -19,7 +26,7 @@ local private = { itemList = {}, scanThreadId = nil }
 
 function DisenchantSearch.OnInitialize()
 	-- initialize thread
-	private.scanThreadId = TSMAPI_FOUR.Thread.New("DISENCHANT_SEARCH", private.ScanThread)
+	private.scanThreadId = Threading.New("DISENCHANT_SEARCH", private.ScanThread)
 end
 
 function DisenchantSearch.GetScanContext()
@@ -34,7 +41,7 @@ end
 
 function private.ScanThread(auctionScan)
 	if (TSM.AuctionDB.GetLastCompleteScanTime() or 0) < time() - 60 * 60 * 12 then
-		TSM:Print(L["No recent AuctionDB scan data found."])
+		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
 	auctionScan:SetCustomFilterFunc(private.IsItemBuyoutTooHigh)
@@ -45,7 +52,7 @@ function private.ScanThread(auctionScan)
 		if minBuyout and private.ShouldInclude(itemString, minBuyout) then
 			tinsert(private.itemList, itemString)
 		end
-		TSMAPI_FOUR.Thread.Yield()
+		Threading.Yield()
 	end
 	auctionScan:AddItemListFiltersThreaded(private.itemList)
 
@@ -55,11 +62,11 @@ function private.ScanThread(auctionScan)
 end
 
 function private.ShouldInclude(itemString, minBuyout)
-	if not TSMAPI_FOUR.Item.IsDisenchantable(itemString) then
+	if not ItemInfo.IsDisenchantable(itemString) then
 		return false
 	end
 
-	local itemLevel = TSMAPI_FOUR.Item.GetItemLevel(itemString) or -1
+	local itemLevel = ItemInfo.GetItemLevel(itemString) or -1
 	if itemLevel < TSM.db.global.shoppingOptions.minDeSearchLvl or itemLevel > TSM.db.global.shoppingOptions.maxDeSearchLvl then
 		return false
 	end
@@ -72,10 +79,10 @@ function private.ShouldInclude(itemString, minBuyout)
 end
 
 function private.IsItemBuyoutTooHigh(itemString, buyout)
-	local disenchantValue = TSMAPI_FOUR.CustomPrice.GetItemPrice(itemString, "Destroy")
+	local disenchantValue = CustomPrice.GetItemPrice(itemString, "Destroy")
 	return not disenchantValue or buyout > TSM.db.global.shoppingOptions.maxDeSearchPercent / 100 * disenchantValue
 end
 
 function private.MarketValueFunction(row)
-	return TSMAPI_FOUR.CustomPrice.GetItemPrice(row:GetField("itemString"), "Destroy")
+	return CustomPrice.GetItemPrice(row:GetField("itemString"), "Destroy")
 end

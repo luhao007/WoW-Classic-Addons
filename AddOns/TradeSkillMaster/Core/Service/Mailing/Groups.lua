@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Groups = TSM.Mailing:NewPackage("Groups")
+local Threading = TSM.Include("Service.Threading")
 local private = {
 	thread = nil,
 	sendDone = false,
@@ -20,18 +21,18 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
-	private.thread = TSMAPI_FOUR.Thread.New("MAIL_GROUPS", private.GroupsMailThread)
+	private.thread = Threading.New("MAIL_GROUPS", private.GroupsMailThread)
 end
 
 function Groups.KillThread()
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 end
 
 function Groups.StartSending(callback, groupList, sendRepeat)
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 
-	TSMAPI_FOUR.Thread.SetCallback(private.thread, callback)
-	TSMAPI_FOUR.Thread.Start(private.thread, groupList, sendRepeat)
+	Threading.SetCallback(private.thread, callback)
+	Threading.Start(private.thread, groupList, sendRepeat)
 end
 
 
@@ -42,19 +43,19 @@ end
 
 function private.GroupsMailThread(groupList, sendRepeat)
 	while true do
-		local targets = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+		local targets = Threading.AcquireSafeTempTable()
 		for _, groupPath in ipairs(groupList) do
-			local reserved = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+			local reserved = Threading.AcquireSafeTempTable()
 			for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Mailing", groupPath) do
 				if groupPath == TSM.CONST.ROOT_GROUP_PATH then
 					-- TODO
 				else
 					if operationSettings.target ~= "" then
 						if not targets[operationSettings.target] then
-							targets[operationSettings.target] = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+							targets[operationSettings.target] = Threading.AcquireSafeTempTable()
 						end
 						for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-							itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+							itemString = TSM.Groups.TranslateItemString(itemString)
 							local quantity = private.GetItemQuantity(itemString, reserved, operationSettings)
 							if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) then
 								reserved[itemString] = quantity
@@ -66,21 +67,21 @@ function private.GroupsMailThread(groupList, sendRepeat)
 				end
 			end
 
-			TSMAPI_FOUR.Thread.ReleaseSafeTempTable(reserved)
+			Threading.ReleaseSafeTempTable(reserved)
 		end
 
 		for name, items in pairs(targets) do
 			if not TSMAPI_FOUR.PlayerInfo.IsPlayer(name) and next(items) then
 				private.SendItems(name, items)
-				TSMAPI_FOUR.Thread.Sleep(0.5)
+				Threading.Sleep(0.5)
 			end
-			TSMAPI_FOUR.Thread.ReleaseSafeTempTable(items)
+			Threading.ReleaseSafeTempTable(items)
 		end
 
-		TSMAPI_FOUR.Thread.ReleaseSafeTempTable(targets)
+		Threading.ReleaseSafeTempTable(targets)
 
 		if sendRepeat then
-			TSMAPI_FOUR.Thread.Sleep(TSM.db.global.mailingOptions.resendDelay * 60)
+			Threading.Sleep(TSM.db.global.mailingOptions.resendDelay * 60)
 		else
 			break
 		end
@@ -91,7 +92,7 @@ function private.SendItems(target, items)
 	private.sendDone = false
 	TSM.Mailing.Send.StartSending(private.SendCallback, target, "", "", 0, items, true)
 	while not private.sendDone do
-		TSMAPI_FOUR.Thread.Yield(true)
+		Threading.Yield(true)
 	end
 end
 

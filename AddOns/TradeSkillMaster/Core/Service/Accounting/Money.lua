@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local Money = TSM.Accounting:NewPackage("Money")
+local Database = TSM.Include("Util.Database")
+local CSV = TSM.Include("Util.CSV")
+local Log = TSM.Include("Util.Log")
 local private = {
 	db = nil,
 	dataChanged = false,
@@ -23,7 +26,7 @@ local SECONDS_PER_DAY = 24 * 60 * 60
 -- ============================================================================
 
 function Money.OnInitialize()
-	private.db = TSMAPI_FOUR.Database.NewSchema("ACCOUNTING_MONEY")
+	private.db = Database.NewSchema("ACCOUNTING_MONEY")
 		:AddStringField("recordType")
 		:AddStringField("type")
 		:AddNumberField("amount")
@@ -101,14 +104,14 @@ end
 -- ============================================================================
 
 function private.LoadData(recordType, csvRecords)
-	local decodeContext = TSM.CSV.DecodeStart(csvRecords, CSV_KEYS)
+	local decodeContext = CSV.DecodeStart(csvRecords, CSV_KEYS)
 	if not decodeContext then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 		return
 	end
 
-	for type, amount, otherPlayer, player, timestamp in TSM.CSV.DecodeIterator(decodeContext) do
+	for type, amount, otherPlayer, player, timestamp in CSV.DecodeIterator(decodeContext) do
 		amount = tonumber(amount)
 		timestamp = tonumber(timestamp)
 		if amount and timestamp then
@@ -124,8 +127,8 @@ function private.LoadData(recordType, csvRecords)
 		end
 	end
 
-	if not TSM.CSV.DecodeEnd(decodeContext) then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+	if not CSV.DecodeEnd(decodeContext) then
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
 end
@@ -133,12 +136,12 @@ end
 function private.SaveData(recordType)
 	local query = private.db:NewQuery()
 		:Equal("recordType", recordType)
-	local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
+	local encodeContext = CSV.EncodeStart(CSV_KEYS)
 	for _, row in query:Iterator() do
-		TSM.CSV.EncodeAddRowData(encodeContext, row)
+		CSV.EncodeAddRowData(encodeContext, row)
 	end
 	query:Release()
-	return TSM.CSV.EncodeEnd(encodeContext)
+	return CSV.EncodeEnd(encodeContext)
 end
 
 function private.InsertRecord(recordType, type, amount, otherPlayer, timestamp)

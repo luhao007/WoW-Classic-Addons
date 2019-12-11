@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Crafting = TSM.MainUI.Settings.Tooltip:NewPackage("Crafting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 
 

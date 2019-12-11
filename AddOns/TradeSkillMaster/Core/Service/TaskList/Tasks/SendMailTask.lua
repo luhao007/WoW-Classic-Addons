@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local SendMailTask = TSM.Include("LibTSMClass").DefineClass("SendMailTask", TSM.TaskList.ItemTask)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 TSM.TaskList.SendMailTask = SendMailTask
 local private = {
 	registeredCallbacks = false,

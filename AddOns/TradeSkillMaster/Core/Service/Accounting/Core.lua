@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Accounting = TSM:NewPackage("Accounting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
 local private = {}
 
 
@@ -36,10 +38,10 @@ function Accounting.GetSummaryProfitTopItem(timeFilter, characterFilter)
 			:End()
 	end
 
-	local totalSalePrice = TSM.TempTable.Acquire()
-	local numSales = TSM.TempTable.Acquire()
-	local totalBuyPrice = TSM.TempTable.Acquire()
-	local numBuys = TSM.TempTable.Acquire()
+	local totalSalePrice = TempTable.Acquire()
+	local numSales = TempTable.Acquire()
+	local totalBuyPrice = TempTable.Acquire()
+	local numBuys = TempTable.Acquire()
 	for _, recordType, itemString, price, quantity in query:Iterator() do
 		if recordType == "sale" then
 			totalSalePrice[itemString] = (totalSalePrice[itemString] or 0) + price * quantity
@@ -63,10 +65,10 @@ function Accounting.GetSummaryProfitTopItem(timeFilter, characterFilter)
 			end
 		end
 	end
-	TSM.TempTable.Release(totalSalePrice)
-	TSM.TempTable.Release(numSales)
-	TSM.TempTable.Release(totalBuyPrice)
-	TSM.TempTable.Release(numBuys)
+	TempTable.Release(totalSalePrice)
+	TempTable.Release(numSales)
+	TempTable.Release(totalBuyPrice)
+	TempTable.Release(numBuys)
 
 	return topItemString
 end
@@ -110,7 +112,7 @@ function private.GetSummaryInfoByType(recordType, timeFilter, characterFilter)
 	end
 
 	local numDays = 1
-	local itemTotals = TSM.TempTable.Acquire()
+	local itemTotals = TempTable.Acquire()
 	for _, itemString, price, quantity, timestamp in query:Iterator() do
 		local daysAgo = floor((time() - timestamp) / (24 * 60 * 60))
 		numDays = max(numDays, daysAgo)
@@ -128,7 +130,7 @@ function private.GetSummaryInfoByType(recordType, timeFilter, characterFilter)
 			topItemTotal = itemTotal
 		end
 	end
-	TSM.TempTable.Release(itemTotals)
+	TempTable.Release(itemTotals)
 
-	return total, TSM.Math.Round(total / numDays), topItemString
+	return total, Math.Round(total / numDays), topItemString
 end

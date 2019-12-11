@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local Util = TSM.Banking:NewPackage("Util")
+local TempTable = TSM.Include("Util.TempTable")
+local BagTracking = TSM.Include("Service.BagTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
 local private = {}
 
 
@@ -17,20 +20,46 @@ local private = {}
 -- ============================================================================
 
 function Util.BagIterator(autoBaseItems)
-	local includeBoABoP = not TSM.Banking.IsGuildBankOpen()
-	return TSMAPI_FOUR.Inventory.BagIterator(autoBaseItems, includeBoABoP, includeBoABoP)
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+	if autoBaseItems then
+		query:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+			:Select("bag", "slot", "autoBaseItemString", "quantity")
+	else
+		query:Select("bag", "slot", "itemString", "quantity")
+	end
+	if TSM.Banking.IsGuildBankOpen() then
+		query:Equal("isBoP", false)
+			:Equal("isBoA", false)
+	end
+	return query:IteratorAndRelease()
 end
 
 function Util.OpenBankIterator(autoBaseItems)
 	if TSM.Banking.IsGuildBankOpen() then
-		return TSM.Inventory.GuildTracking.GuildBankIterator(autoBaseItems)
+		local query = GuildTracking.CreateQuery()
+		if autoBaseItems then
+			query:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+				:Select("tab", "slot", "autoBaseItemString", "quantity")
+		else
+			query:Select("tab", "slot", "itemString", "quantity")
+		end
+		return query:IteratorAndRelease()
 	else
-		return TSMAPI_FOUR.Inventory.BankIterator(autoBaseItems, true, true, true)
+		local query = BagTracking.CreateQueryBank()
+			:OrderBy("slotId", true)
+		if autoBaseItems then
+			query:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+				:Select("bag", "slot", "autoBaseItemString", "quantity")
+		else
+			query:Select("bag", "slot", "itemString", "quantity")
+		end
+		return query:IteratorAndRelease()
 	end
 end
 
 function Util.PopulateGroupItemsFromBags(items, groups, getNumFunc, ...)
-	local itemQuantity = TSM.TempTable.Acquire()
+	local itemQuantity = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.BagIterator(true) do
 		if private.InGroups(itemString, groups) then
 			itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
@@ -42,11 +71,11 @@ function Util.PopulateGroupItemsFromBags(items, groups, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSM.TempTable.Release(itemQuantity)
+	TempTable.Release(itemQuantity)
 end
 
 function Util.PopulateGroupItemsFromOpenBank(items, groups, getNumFunc, ...)
-	local itemQuantity = TSM.TempTable.Acquire()
+	local itemQuantity = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.OpenBankIterator(true) do
 		if private.InGroups(itemString, groups) then
 			itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
@@ -58,11 +87,11 @@ function Util.PopulateGroupItemsFromOpenBank(items, groups, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSM.TempTable.Release(itemQuantity)
+	TempTable.Release(itemQuantity)
 end
 
 function Util.PopulateItemsFromBags(items, getNumFunc, ...)
-	local itemQuantity = TSM.TempTable.Acquire()
+	local itemQuantity = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Util.BagIterator(true) do
 		itemQuantity[itemString] = (itemQuantity[itemString] or 0) + quantity
 	end
@@ -72,7 +101,7 @@ function Util.PopulateItemsFromBags(items, getNumFunc, ...)
 			items[itemString] = numToMove
 		end
 	end
-	TSM.TempTable.Release(itemQuantity)
+	TempTable.Release(itemQuantity)
 end
 
 

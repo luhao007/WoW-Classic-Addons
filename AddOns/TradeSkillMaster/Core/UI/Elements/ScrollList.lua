@@ -12,6 +12,7 @@
 
 local _, TSM = ...
 local ScrollList = TSM.Include("LibTSMClass").DefineClass("ScrollList", TSM.UI.ScrollFrame, "ABSTRACT")
+local TempTable = TSM.Include("Util.TempTable")
 TSM.UI.ScrollList = ScrollList
 
 
@@ -54,13 +55,13 @@ end
 -- ============================================================================
 
 function ScrollList._VisibleDataIterator(self)
-	local visibleData = TSM.TempTable.Acquire()
+	local visibleData = TempTable.Acquire()
 	for _, data in ipairs(self._data) do
 		if not self:_IsDataHidden(data) then
 			tinsert(visibleData, data)
 		end
 	end
-	return TSM.TempTable.Iterator(visibleData)
+	return TempTable.Iterator(visibleData)
 end
 
 function ScrollList._GetNumVisibleData(self)

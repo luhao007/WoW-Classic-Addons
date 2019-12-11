@@ -9,7 +9,7 @@
 local _, TSM = ...
 local Mailing = TSM.Operations:NewPackage("Mailing")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local OPERATION_INFO = {
 	maxQtyEnabled = { type = "boolean", default = false },
 	maxQty = { type = "number", default = 10 },

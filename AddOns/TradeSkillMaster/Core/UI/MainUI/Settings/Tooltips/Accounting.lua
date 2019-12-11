@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Accounting = TSM.MainUI.Settings.Tooltip:NewPackage("Accounting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 
 

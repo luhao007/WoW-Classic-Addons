@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local Warehousing = TSM.Banking:NewPackage("Warehousing")
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {}
 
 
@@ -17,24 +20,24 @@ local private = {}
 -- ============================================================================
 
 function Warehousing.MoveGroupsToBank(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.GetNumToMoveToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Warehousing.MoveGroupsToBags(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveToBags)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Warehousing.RestockBags(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveRestock)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 
@@ -68,7 +71,7 @@ function private.GetNumToMoveToBags(itemString, numToMove)
 	if operationSettings.moveQuantity ~= 0 then
 		numToMove = min(numToMove, operationSettings.moveQuantity)
 	end
-	return TSM.Math.Floor(numToMove, operationSettings.stackSize ~= 0 and operationSettings.stackSize or 1)
+	return Math.Floor(numToMove, operationSettings.stackSize ~= 0 and operationSettings.stackSize or 1)
 end
 
 function private.GetNumToMoveRestock(itemString, numToMove)
@@ -76,7 +79,10 @@ function private.GetNumToMoveRestock(itemString, numToMove)
 	if not operationSettings then
 		return 0
 	end
-	local numInBags = TSM.Inventory.BagTracking.GetQuantityByAutoBaseItemString(itemString, true, true)
+	local numInBags = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:SumAndRelease("quantity") or 0
 	if operationSettings.restockQuantity == 0 or numInBags >= operationSettings.restockQuantity then
 		return 0
 	end
@@ -84,5 +90,5 @@ function private.GetNumToMoveRestock(itemString, numToMove)
 		numToMove = max(numToMove - operationSettings.restockKeepBankQuantity, 0)
 	end
 	numToMove = min(numToMove, operationSettings.restockQuantity - numInBags)
-	return TSM.Math.Floor(numToMove, operationSettings.restockStackSize ~= 0 and operationSettings.restockStackSize or 1)
+	return Math.Floor(numToMove, operationSettings.restockStackSize ~= 0 and operationSettings.restockStackSize or 1)
 end

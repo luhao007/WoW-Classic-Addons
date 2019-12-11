@@ -8,10 +8,20 @@
 
 local _, TSM = ...
 local Groups = TSM.MainUI:NewPackage("Groups")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Analytics = TSM.Include("Util.Analytics")
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local ItemFilter = TSM.Include("Service.ItemFilter")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	currentGroupPath = TSM.CONST.ROOT_GROUP_PATH,
-	itemFilter = TSMAPI_FOUR.ItemFilter.New(),
+	itemFilter = ItemFilter.New(),
 	groupedItemList = {},
 	ungroupedItemList = { {}, {} },
 	moduleOperationList = {},
@@ -462,7 +472,7 @@ function private.GroupSearchOnTextChanged(input)
 	end
 
 	private.groupSearch = text
-	local searchStr = TSM.String.Escape(private.groupSearch)
+	local searchStr = String.Escape(private.groupSearch)
 	-- Check selection is being filtered out
 	if not strmatch(strlower(private.currentGroupPath), searchStr) then
 		local titleFrame = groupsContentFrame:GetElement("header.title")
@@ -548,14 +558,14 @@ function private.TitleOnValueChanged(text, newValue)
 		-- didn't change
 		text:Draw()
 	elseif strfind(newValue, TSM.CONST.GROUP_SEP) or newValue == "" then
-		TSM:Print(L["Invalid group name."])
+		Log.PrintUser(L["Invalid group name."])
 		text:Draw()
 	elseif TSM.Groups.Exists(newPath) then
-		TSM:Print(L["Group already exists."])
+		Log.PrintUser(L["Group already exists."])
 		text:Draw()
 	else
 		TSM.Groups.Move(private.currentGroupPath, newPath)
-		TSM.Analytics.Action("MOVED_GROUP", private.currentGroupPath, newPath)
+		Analytics.Action("MOVED_GROUP", private.currentGroupPath, newPath)
 		text:GetElement("__parent.__parent.__parent.__parent.groupSelection.groupTree"):SetSelectedGroup(newPath, true)
 	end
 end
@@ -602,13 +612,13 @@ function private.AddItemsOnClick(self)
 	for _, items in ipairs(private.GetUngroupedItemList()) do
 		for _, itemLink in ipairs(items) do
 			if itemList:IsItemSelected(itemLink) then
-				local itemString = TSMAPI_FOUR.Item.ToItemString(itemLink)
+				local itemString = ItemString.Get(itemLink)
 				TSM.Groups.SetItemGroup(itemString, private.currentGroupPath)
 				numAdded = numAdded + 1
 			end
 		end
 	end
-	TSM.Analytics.Action("ADDED_GROUP_ITEMS", private.currentGroupPath, numAdded)
+	Analytics.Action("ADDED_GROUP_ITEMS", private.currentGroupPath, numAdded)
 
 	-- update the item lists
 	itemList:SetItems(private.GetUngroupedItemList(), true)
@@ -686,11 +696,11 @@ function private.RemoveItemsOnClick(self)
 	local targetGroup = IsShiftKeyDown() and TSM.Groups.Path.GetParent(private.currentGroupPath) or nil
 	for _, itemLink in ipairs(private.GetGroupedItemList()) do
 		if itemList:IsItemSelected(itemLink) then
-			TSM.Groups.SetItemGroup(TSMAPI_FOUR.Item.ToItemString(itemLink), targetGroup)
+			TSM.Groups.SetItemGroup(ItemString.Get(itemLink), targetGroup)
 			numRemoved = numRemoved + 1
 		end
 	end
-	TSM.Analytics.Action("REMOVED_GROUP_ITEMS", private.currentGroupPath, numRemoved, targetGroup or "")
+	Analytics.Action("REMOVED_GROUP_ITEMS", private.currentGroupPath, numRemoved, targetGroup or "")
 
 	-- update the item lists
 	itemList:SetItems(private.GetGroupedItemList(), true)
@@ -710,7 +720,7 @@ function private.OverrideToggleOnValueChanged(self, value)
 	local moduleOperationFrame = self:GetParentElement():GetParentElement()
 	local moduleName = moduleOperationFrame:GetContext()
 	TSM.Groups.SetOperationOverride(private.currentGroupPath, moduleName, value)
-	TSM.Analytics.Action("CHANGED_GROUP_OVERRIDE", private.currentGroupPath, moduleName, value)
+	Analytics.Action("CHANGED_GROUP_OVERRIDE", private.currentGroupPath, moduleName, value)
 	moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
 end
 
@@ -728,11 +738,11 @@ function private.NewOperationSelectionChanged(self, operationName)
 		operationName = operationName..extra
 		TSM.Operations.Create(moduleName, operationName)
 		TSM.Groups.AppendOperation(private.currentGroupPath, moduleName, operationName)
-		TSM.Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
+		Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
 		TSM.MainUI.Operations.ShowOperationSettings(self:GetBaseElement(), moduleName, operationName)
 	else
 		TSM.Groups.AppendOperation(private.currentGroupPath, moduleName, operationName)
-		TSM.Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
+		Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
 		moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
 	end
 end
@@ -756,7 +766,7 @@ function private.RemoveOperationOnClick(button)
 	end
 	assert(operationName)
 	TSM.Groups.RemoveOperation(private.currentGroupPath, moduleName, operationIndex)
-	TSM.Analytics.Action("REMOVED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
+	Analytics.Action("REMOVED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
 	moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
 end
 
@@ -773,7 +783,7 @@ end
 -- ============================================================================
 
 function private.ItemSortHelper(a, b)
-	return (TSMAPI_FOUR.Item.GetName(a) or "") < (TSMAPI_FOUR.Item.GetName(b) or "")
+	return (ItemInfo.GetName(a) or "") < (ItemInfo.GetName(b) or "")
 end
 
 function private.GetUngroupedItemList()
@@ -781,25 +791,30 @@ function private.GetUngroupedItemList()
 	wipe(private.ungroupedItemList[2])
 
 	-- items in bags
-	local addedItems = TSM.TempTable.Acquire()
-	for _, _, _, itemString in TSMAPI_FOUR.Inventory.BagIterator(false, false, true) do
+	local addedItems = TempTable.Acquire()
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("itemString")
+		:Equal("isBoP", false)
+	for _, itemString in query:Iterator() do
 		if TSM.db.profile.userData.groups[private.currentGroupPath].ignoreItemVariations then
-			itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+			itemString = ItemString.GetBase(itemString)
 		end
 		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
-			local itemLink = TSMAPI_FOUR.Item.GetLink(itemString)
+			local itemLink = ItemInfo.GetLink(itemString)
 			tinsert(private.ungroupedItemList[1], itemLink)
 			addedItems[itemString] = true
 		end
 	end
-	TSM.TempTable.Release(addedItems)
+	query:Release()
+	TempTable.Release(addedItems)
 	private.ungroupedItemList[1].header = "|cff79a2ff" .. L["Ungrouped Items"] .. "|r"
 
 	-- items in the parent group
 	local parentGroupPath = TSM.Groups.Path.GetParent(private.currentGroupPath)
 	for _, itemString, path in TSM.Groups.ItemIterator() do
 		if path == parentGroupPath and parentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-			local itemLink = TSMAPI_FOUR.Item.GetLink(itemString)
+			local itemLink = ItemInfo.GetLink(itemString)
 			tinsert(private.ungroupedItemList[2], itemLink)
 		end
 	end
@@ -814,21 +829,21 @@ function private.GetGroupedItemList()
 	wipe(private.groupedItemList)
 
 	-- items in this group or a subgroup
-	local itemNames = TSM.TempTable.Acquire()
+	local itemNames = TempTable.Acquire()
 	for _, itemString, path in TSM.Groups.ItemIterator() do
-		if path == private.currentGroupPath or strfind(path, "^"..TSM.String.Escape(private.currentGroupPath)..TSM.CONST.GROUP_SEP) then
-			local link = TSMAPI_FOUR.Item.GetLink(itemString)
+		if path == private.currentGroupPath or strfind(path, "^"..String.Escape(private.currentGroupPath)..TSM.CONST.GROUP_SEP) then
+			local link = ItemInfo.GetLink(itemString)
 			tinsert(private.groupedItemList, link)
-			itemNames[link] = TSMAPI_FOUR.Item.GetName(itemString) or ""
+			itemNames[link] = ItemInfo.GetName(itemString) or ""
 		end
 	end
 
-	TSM.Table.SortWithValueLookup(private.groupedItemList, itemNames)
-	TSM.TempTable.Release(itemNames)
+	Table.SortWithValueLookup(private.groupedItemList, itemNames)
+	TempTable.Release(itemNames)
 	return private.groupedItemList
 end
 
 function private.ItemListItemIsFiltered(itemLink)
-	local basePrice = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.coreOptions.groupPriceSource, itemLink)
+	local basePrice = CustomPrice.GetValue(TSM.db.global.coreOptions.groupPriceSource, itemLink)
 	return not private.itemFilter:Matches(itemLink, basePrice)
 end

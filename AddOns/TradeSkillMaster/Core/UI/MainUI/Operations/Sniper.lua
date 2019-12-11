@@ -8,8 +8,12 @@
 
 local _, TSM = ...
 local Sniper = TSM.MainUI.Operations:NewPackage("Sniper")
-local L = TSM.L
-local private = { currentOperationName = nil }
+local L = TSM.Include("Locale").GetTable()
+local Math = TSM.Include("Util.Math")
+local Money = TSM.Include("Util.Money")
+local private = {
+	currentOperationName = nil,
+}
 
 
 
@@ -59,7 +63,7 @@ function private.GetSniperOperationSettings(operationName)
 						:SetStyle("justifyH", "LEFT")
 						:SetDisabled(TSM.Operations.HasRelationship("Sniper", private.currentOperationName, "belowPrice"))
 						:SetSettingInfo(operation, "belowPrice", TSM.MainUI.Operations.CheckCustomPrice)
-						:SetText(TSM.Money.ToString(operation.belowPrice) or operation.belowPrice)
+						:SetText(Money.ToString(operation.belowPrice) or operation.belowPrice)
 						:SetSpacing(6)
 						:SetMultiLine(true, true)
 						:SetScript("OnSizeChanged", private.SniperPriceOnSizeChanged)
@@ -90,7 +94,7 @@ end
 
 function private.SniperPriceOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.SniperPriceOnMouseUp(frame)
@@ -100,7 +104,7 @@ end
 function private.SniperPriceOnEnterPressed(input)
 	if not TSM.MainUI.Operations.CheckCustomPrice(input:GetText(), true) then
 		local operation = TSM.Operations.GetSettings("Sniper", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(operation.belowPrice) or operation.belowPrice)
+		input:SetText(Money.ToString(operation.belowPrice) or operation.belowPrice)
 		input:SetFocused(true)
 
 		private.SniperPriceOnSizeChanged(input, nil, input:GetHeight())

@@ -8,10 +8,14 @@
 
 local _, TSM = ...
 local Cooldowns = TSM.TaskList:NewPackage("Cooldowns")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local ObjectPool = TSM.Include("Util.ObjectPool")
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
 local private = {
 	query = nil,
-	taskPool = TSMAPI_FOUR.ObjectPool.New("COOLDOWN_TASK", TSM.TaskList.CooldownCraftingTask, 0),
+	taskPool = ObjectPool.New("COOLDOWN_TASK", TSM.TaskList.CooldownCraftingTask, 0),
 	activeTasks = {},
 	activeTaskByProfession = {},
 	currentlyCrafting = nil,
@@ -46,7 +50,7 @@ function private.ActiveTaskIterator()
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
+	return String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.PopulateTasks()
@@ -98,15 +102,15 @@ function private.PopulateTasks()
 	TSM.TaskList.OnTaskUpdated()
 
 	if minPendingCooldown ~= math.huge then
-		TSMAPI_FOUR.Delay.AfterTime("COOLDOWN_UPDATE", minPendingCooldown, private.PopulateTasks)
+		Delay.AfterTime("COOLDOWN_UPDATE", minPendingCooldown, private.PopulateTasks)
 	else
-		TSMAPI_FOUR.Delay.Cancel("COOLDOWN_UPDATE")
+		Delay.Cancel("COOLDOWN_UPDATE")
 	end
 end
 
 function private.RemoveTask(task)
 	local profession = task:GetProfession()
-	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
+	assert(Table.RemoveByValue(private.activeTasks, task) == 1)
 	assert(private.activeTaskByProfession[profession] == task)
 	private.activeTaskByProfession[profession] = nil
 	task:Release()

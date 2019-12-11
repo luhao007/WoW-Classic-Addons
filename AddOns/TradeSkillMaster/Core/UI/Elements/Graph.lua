@@ -12,6 +12,7 @@
 
 local _, TSM = ...
 local Graph = TSM.Include("LibTSMClass").DefineClass("Graph", TSM.UI.Element)
+local Math = TSM.Include("Util.Math")
 TSM.UI.Graph = Graph
 local private = { plotFrameGraphLookup = {} }
 local PLOT_PADDING_LEFT = 12
@@ -162,8 +163,8 @@ function Graph.Draw(self)
 		self._yMax = max(self._yMax, y)
 	end
 	-- add a bit of extra vertical space
-	self._yMin = max(TSM.Math.Round(self._yMin, self._yStep) - self._yStep, 0)
-	self._yMax = TSM.Math.Round(self._yMax, self._yStep) + self._yStep
+	self._yMin = max(Math.Round(self._yMin, self._yStep) - self._yStep, 0)
+	self._yMax = Math.Round(self._yMax, self._yStep) + self._yStep
 
 	local gridLineThickness = self:_GetStyle("gridLineThickness")
 	local gridLineColor = self:_GetStyle("gridLineColor")
@@ -204,8 +205,8 @@ function Graph.Draw(self)
 	-- draw all the lines
 	local xPrev, yPrev = nil, nil
 	for _, x, y in self:_dataIterFunc() do
-		local xCoord = TSM.Math.Scale(x, self._xMin, self._xMax, 0, plotWidth)
-		local yCoord = TSM.Math.Scale(y, self._yMin, self._yMax, 0, plotHeight)
+		local xCoord = Math.Scale(x, self._xMin, self._xMax, 0, plotWidth)
+		local yCoord = Math.Scale(y, self._yMin, self._yMax, 0, plotHeight)
 		if xPrev then
 			self:_DrawFillLine(xPrev, yPrev, xCoord, yCoord, self:_GetStyle("lineThickness"))
 		end
@@ -419,8 +420,8 @@ function private.PlotFrameOnUpdate(plotFrame)
 	if xPos > fromMax then
 		xPos = fromMax
 	end
-	local x = TSM.Math.Scale(xPos, fromMin, fromMax, self._xMin, self._xMax)
-	x = TSM.Math.Round(x - self._xMin, self._xDataStep) + self._xMin
+	local x = Math.Scale(xPos, fromMin, fromMax, self._xMin, self._xMax)
+	x = Math.Round(x - self._xMin, self._xDataStep) + self._xMin
 	local y = nil
 	for _, xVal, yVal in self:_dataIterFunc() do
 		if xVal == x then
@@ -431,8 +432,8 @@ function private.PlotFrameOnUpdate(plotFrame)
 	assert(y)
 	plotFrame.dot:Show()
 	plotFrame.dot:ClearAllPoints()
-	local xCoord = TSM.Math.Scale(x, self._xMin, self._xMax, 0, plotFrame:GetWidth())
-	local yCoord = TSM.Math.Scale(y, self._yMin, self._yMax, 0, plotFrame:GetHeight())
+	local xCoord = Math.Scale(x, self._xMin, self._xMax, 0, plotFrame:GetWidth())
+	local yCoord = Math.Scale(y, self._yMin, self._yMax, 0, plotFrame:GetHeight())
 	plotFrame.dot:SetPoint("CENTER", plotFrame, "BOTTOMLEFT", xCoord, yCoord)
 
 	plotFrame.highlight:Show()

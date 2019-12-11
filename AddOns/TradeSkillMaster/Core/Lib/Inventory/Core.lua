@@ -11,199 +11,11 @@
 
 TSMAPI_FOUR.Inventory = {}
 local _, TSM = ...
-local Inventory = TSM:NewPackage("Inventory")
-local private = {}
+local ItemString = TSM.Include("Util.ItemString")
+local private = {
+	altQuantityDB = nil,
+}
 local PLAYER_NAME = UnitName("player")
-
-
-
--- ============================================================================
--- Module Functions
--- ============================================================================
-
-function Inventory.OnInitialize()
-	private.db = TSMAPI_FOUR.Database.NewSchema("INVENTORY_SUMMARY")
-		:AddUniqueStringField("itemString")
-		:AddNumberField("bagQuantity")
-		:AddNumberField("bankQuantity")
-		:AddNumberField("reagentBankQuantity")
-		:AddNumberField("auctionQuantity")
-		:AddNumberField("mailQuantity")
-		:AddNumberField("guildQuantity")
-		:AddNumberField("altQuantity")
-		:AddNumberField("totalQuantity")
-		:Commit()
-
-	local items = TSM.TempTable.Acquire()
-	local itemQuantities = TSM.TempTable.Acquire()
-	itemQuantities.bagQuantity = TSM.TempTable.Acquire()
-	itemQuantities.bankQuantity = TSM.TempTable.Acquire()
-	itemQuantities.reagentBankQuantity = TSM.TempTable.Acquire()
-	itemQuantities.auctionQuantity = TSM.TempTable.Acquire()
-	itemQuantities.mailQuantity = TSM.TempTable.Acquire()
-	local altItemQuantity = TSM.TempTable.Acquire()
-
-	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
-		local isFactionrealm = factionrealm == (UnitFactionGroup("player").." - "..GetRealmName())
-		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-			local isPlayer = isFactionrealm and TSMAPI_FOUR.PlayerInfo.IsPlayer(character) and character == UnitName("player")
-			for key, tbl in pairs(itemQuantities) do
-				local dbTbl = private.GetCharacterInventoryData(key, character, factionrealm)
-				for itemString, quantity in pairs(dbTbl) do
-					if type(quantity) ~= "number" or quantity <= 0 then
-						dbTbl[itemString] = nil
-					elseif isPlayer then
-						tbl[itemString] = (tbl[itemString] or 0) + quantity
-						items[itemString] = true
-					else
-						altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
-						items[itemString] = true
-					end
-				end
-			end
-			local pendingMail = TSM.db:Get("factionrealm", factionrealm, "internalData", "pendingMail")[character]
-			if pendingMail then
-				for itemString, quantity in pairs(pendingMail) do
-					if type(quantity) ~= "number" or quantity <= 0 then
-						pendingMail[itemString] = nil
-					elseif isPlayer then
-						itemQuantities.mailQuantity[itemString] = (itemQuantities.mailQuantity[itemString] or 0) + quantity
-						items[itemString] = true
-					else
-						altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
-						items[itemString] = true
-					end
-				end
-			end
-		end
-	end
-
-	private.db:BulkInsertStart()
-	for itemString in pairs(items) do
-		local bagQuantity = itemQuantities.bagQuantity[itemString] or 0
-		local bankQuantity = itemQuantities.bankQuantity[itemString] or 0
-		local reagentBankQuantity = itemQuantities.reagentBankQuantity[itemString] or 0
-		local auctionQuantity = itemQuantities.auctionQuantity[itemString] or 0
-		local mailQuantity = itemQuantities.mailQuantity[itemString] or 0
-		local altQuantity = altItemQuantity[itemString] or 0
-		local totalQuantity = bagQuantity + bankQuantity + reagentBankQuantity + auctionQuantity + mailQuantity + altQuantity
-		assert(totalQuantity > 0)
-		-- guildQuantity is set later, so just set it to 0 for now
-		private.db:BulkInsertNewRow(itemString, bagQuantity, bankQuantity, reagentBankQuantity, auctionQuantity, mailQuantity, 0, altQuantity, totalQuantity)
-	end
-	private.db:BulkInsertEnd()
-
-	for _, tbl in pairs(itemQuantities) do
-		TSM.TempTable.Release(tbl)
-	end
-	TSM.TempTable.Release(itemQuantities)
-	TSM.TempTable.Release(altItemQuantity)
-	TSM.TempTable.Release(items)
-end
-
-function Inventory.OnGuildLoaded()
-	local guildName = GetGuildInfo("player")
-	private.WipeQuantity("guildQuantity")
-	for itemString, quantity in pairs(TSM.db.factionrealm.internalData.guildVaults[guildName]) do
-		if quantity > 0 then
-			private.UpdateQuantity(itemString, "guildQuantity", quantity)
-		else
-			TSM.db.factionrealm.internalData.guildVaults[guildName][itemString] = nil
-		end
-	end
-end
-
-function Inventory.ChangeBagItemTotal(bag, itemString, changeQuantity)
-	local totalsTable = nil
-	local field = nil
-	if bag >= BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS then
-		totalsTable = TSM.db.sync.internalData.bagQuantity
-		field = "bagQuantity"
-	elseif bag == BANK_CONTAINER or (bag > NUM_BAG_SLOTS and bag <= NUM_BAG_SLOTS + NUM_BANKBAGSLOTS) then
-		totalsTable = TSM.db.sync.internalData.bankQuantity
-		field = "bankQuantity"
-	elseif bag == REAGENTBANK_CONTAINER then
-		totalsTable = TSM.db.sync.internalData.reagentBankQuantity
-		field = "reagentBankQuantity"
-	else
-		error("Unexpected bag: "..tostring(bag))
-	end
-	totalsTable[itemString] = (totalsTable[itemString] or 0) + changeQuantity
-	private.UpdateQuantity(itemString, field, changeQuantity)
-	assert(totalsTable[itemString] >= 0)
-	if totalsTable[itemString] == 0 then
-		totalsTable[itemString] = nil
-	end
-end
-
-function Inventory.ChangeAuctionQuantity(itemString, qtyToAdd)
-	assert(itemString)
-	TSM.db.sync.internalData.auctionQuantity[itemString] = (TSM.db.sync.internalData.auctionQuantity[itemString] or 0) + qtyToAdd
-	private.UpdateQuantity(itemString, "auctionQuantity", qtyToAdd)
-end
-
-function Inventory.ChangeMailQuantity(itemString, qtyToAdd)
-	assert(itemString)
-	TSM.db.sync.internalData.mailQuantity[itemString] = (TSM.db.sync.internalData.mailQuantity[itemString] or 0) + qtyToAdd
-	private.UpdateQuantity(itemString, "mailQuantity", qtyToAdd)
-end
-
-function Inventory.ChangePendingMailQuantity(itemString, qtyToAdd, playerName)
-	assert(itemString)
-	if not playerName then
-		playerName = UnitName("player")
-	end
-	TSM.db.factionrealm.internalData.pendingMail[playerName][itemString] = (TSM.db.factionrealm.internalData.pendingMail[playerName][itemString] or 0) + qtyToAdd
-	private.UpdateQuantity(itemString, "mailQuantity", qtyToAdd)
-end
-
-function Inventory.ChangeGuildQuantity(itemString, qtyToAdd, guild)
-	guild = guild or GetGuildInfo("player")
-	assert(guild)
-	TSM.db.factionrealm.internalData.guildVaults[guild][itemString] = (TSM.db.factionrealm.internalData.guildVaults[guild][itemString] or 0) + qtyToAdd
-	private.UpdateQuantity(itemString, "guildQuantity", qtyToAdd)
-end
-
-function Inventory.WipeBagQuantity()
-	wipe(TSM.db.sync.internalData.bagQuantity)
-	private.WipeQuantity("bagQuantity")
-end
-
-function Inventory.WipeAuctionQuantity()
-	wipe(TSM.db.sync.internalData.auctionQuantity)
-	private.WipeQuantity("auctionQuantity")
-end
-
-function Inventory.WipeBankQuantity()
-	wipe(TSM.db.sync.internalData.bankQuantity)
-	private.WipeQuantity("bankQuantity")
-end
-
-function Inventory.WipeReagentBankQuantity()
-	wipe(TSM.db.sync.internalData.reagentBankQuantity)
-	private.WipeQuantity("reagentBankQuantity")
-end
-
-function Inventory.WipeMailQuantity()
-	wipe(TSM.db.sync.internalData.mailQuantity)
-	private.WipeQuantity("mailQuantity")
-end
-
-function Inventory.WipeGuildQuantity(guild)
-	assert(guild)
-	wipe(TSM.db.factionrealm.internalData.guildVaults[guild])
-	private.WipeQuantity("guildQuantity")
-end
-
-function Inventory.WipePendingMail(characterName)
-	assert(characterName)
-	wipe(TSM.db.factionrealm.internalData.pendingMail[characterName])
-	private.WipeQuantity("mailQuantity")
-end
-
-function Inventory.CreateQuery()
-	return private.db:NewQuery()
-end
 
 
 
@@ -228,14 +40,14 @@ function TSMAPI_FOUR.Inventory.GetAuctionQuantity(itemString, character, faction
 end
 
 function TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, character, factionrealm)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	character = character or PLAYER_NAME
 	local pendingQuantity = itemString and TSM.db.factionrealm.internalData.pendingMail[character] and TSM.db.factionrealm.internalData.pendingMail[character][itemString] or 0
 	return private.InventoryQuantityHelper(itemString, "mailQuantity", character, factionrealm) + pendingQuantity
 end
 
 function TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, guild)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if not itemString then
 		return 0
 	end
@@ -269,7 +81,7 @@ function TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString)
 end
 
 function TSMAPI_FOUR.Inventory.GetGuildTotal(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if not itemString then
 		return 0
 	end
@@ -283,7 +95,7 @@ function TSMAPI_FOUR.Inventory.GetGuildTotal(itemString)
 end
 
 function TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if not itemString then
 		return 0
 	end
@@ -366,67 +178,10 @@ function private.GetCharacterInventoryData(settingKey, character, factionrealm)
 end
 
 function private.InventoryQuantityHelper(itemString, settingKey, character, factionrealm)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 	if not itemString then
 		return 0
 	end
 	local tbl = private.GetCharacterInventoryData(settingKey, character, factionrealm)
 	return tbl and tbl[itemString] or 0
-end
-
-function private.UpdateQuantity(itemString, field, quantity)
-	assert(itemString and field and quantity)
-	assert(quantity ~= 0)
-
-	if not private.db:HasUniqueRow("itemString", itemString) then
-		-- create a new row
-		private.db:NewRow()
-			:SetField("itemString", itemString)
-			:SetField("bagQuantity", 0)
-			:SetField("bankQuantity", 0)
-			:SetField("reagentBankQuantity", 0)
-			:SetField("auctionQuantity", 0)
-			:SetField("mailQuantity", 0)
-			:SetField("guildQuantity", 0)
-			:SetField("altQuantity", 0)
-			:SetField("totalQuantity", 0)
-			:Create()
-	end
-
-	local row = private.db:GetUniqueRow("itemString", itemString)
-	local oldValue = row:GetField(field)
-	local newValue = oldValue + quantity
-	assert(newValue >= 0)
-	if newValue == 0 and row:GetField("totalQuantity") == oldValue then
-		-- remove this row
-		private.db:DeleteRow(row)
-	else
-		-- update this row
-		row:SetField(field, oldValue + quantity)
-		row:SetField("totalQuantity", row:GetField("totalQuantity") + quantity)
-		row:Update()
-	end
-	row:Release()
-end
-
-function private.WipeQuantity(field)
-	private.db:SetQueryUpdatesPaused(true)
-	local query = private.db:NewQuery()
-	for _, row in query:Iterator() do
-		local oldValue = row:GetField(field)
-		local totalQuantity = row:GetField("totalQuantity")
-		if oldValue == totalQuantity then
-			-- remove this row
-			assert(oldValue > 0)
-			private.db:DeleteRow(row)
-		elseif oldValue ~= 0 then
-			-- update this row
-			assert(totalQuantity - oldValue > 0)
-			row:SetField(field, 0)
-				:SetField("totalQuantity", totalQuantity - oldValue)
-				:Update()
-		end
-	end
-	query:Release()
-	private.db:SetQueryUpdatesPaused(false)
 end

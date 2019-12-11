@@ -12,7 +12,14 @@
 
 local _, TSM = ...
 local AuctionFilter = TSM.Include("LibTSMClass").DefineClass("AuctionFilter")
-local ItemClass = TSM.Include("Data.ItemClass")
+local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
 
 
@@ -96,7 +103,7 @@ end
 
 function AuctionFilter.SetName(self, name)
 	self._name = name
-	self._nameMatch = name and TSM.String.Escape(strlower(name)) or nil
+	self._nameMatch = name and String.Escape(strlower(name)) or nil
 	return self
 end
 
@@ -297,7 +304,7 @@ end
 function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyout, stackSize, targetItemRate)
 	if #self._items > 0 then
 		local found = false
-		local rowBaseItemString = TSMAPI_FOUR.Item.ToBaseItemString(rowItemString)
+		local rowBaseItemString = ItemString.GetBase(rowItemString)
 		for _, itemString in ipairs(self:GetItems()) do
 			if itemString == rowItemString or itemString == rowBaseItemString then
 				found = true
@@ -308,40 +315,40 @@ function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyo
 		end
 	end
 	if self._nameMatch then
-		local name = strlower(TSMAPI_FOUR.Item.GetName(rowItemString))
+		local name = strlower(ItemInfo.GetName(rowItemString))
 		if not strmatch(name, self._nameMatch) or (self._exact and name ~= strlower(self._name)) then
 			return true
 		end
 	end
 	if self._minLevel or self._maxLevel then
-		local minLevel = TSMAPI_FOUR.Item.GetMinLevel(rowItemString)
+		local minLevel = ItemInfo.GetMinLevel(rowItemString)
 		if minLevel < (self._minLevel or -math.huge) or minLevel > (self._maxLevel or math.huge) then
 			return true
 		end
 	end
-	if self._quality and TSMAPI_FOUR.Item.GetQuality(rowItemString) < self._quality then
+	if self._quality and ItemInfo.GetQuality(rowItemString) < self._quality then
 		return true
 	end
-	if self._class and TSMAPI_FOUR.Item.GetClassId(rowItemString) ~= self._class then
+	if self._class and ItemInfo.GetClassId(rowItemString) ~= self._class then
 		return true
 	end
-	if self._subClass and TSMAPI_FOUR.Item.GetSubClassId(rowItemString) ~= self._subClass then
+	if self._subClass and ItemInfo.GetSubClassId(rowItemString) ~= self._subClass then
 		return true
 	end
-	if self._invType and TSMAPI_FOUR.Item.GetInvSlotId(rowItemString) ~= self._invType then
+	if self._invType and ItemInfo.GetInvSlotId(rowItemString) ~= self._invType then
 		return true
 	end
 	if self._evenOnly and stackSize % 5 ~= 0 then
 		return true
 	end
-	local itemLevel = TSMAPI_FOUR.Item.GetItemLevel(rowItemString)
+	local itemLevel = ItemInfo.GetItemLevel(rowItemString)
 	if not ignoreItemLevel and (itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge)) then
 		return true
 	end
-	if self._unlearned and CanIMogIt:PlayerKnowsTransmog(TSMAPI_FOUR.Item.GetLink(rowItemString)) then
+	if self._unlearned and CanIMogIt:PlayerKnowsTransmog(ItemInfo.GetLink(rowItemString)) then
 		return true
 	end
-	if self._canlearn and not CanIMogIt:CharacterCanLearnTransmog(TSMAPI_FOUR.Item.GetLink(rowItemString)) then
+	if self._canlearn and not CanIMogIt:CharacterCanLearnTransmog(ItemInfo.GetLink(rowItemString)) then
 		return true
 	end
 	if self._minPrice or self._maxPrice then
@@ -362,23 +369,17 @@ function AuctionFilter._GetTargetItemRate(self, itemString)
 	if itemString == self._targetItem then
 		return 1
 	end
-	local conversionInfo = TSMAPI_FOUR.Conversions.GetSourceItems(self._targetItem)
-	if not conversionInfo then
-		return 0
-	end
-	if conversionInfo.disenchant then
-		local class = TSMAPI_FOUR.Item.GetClassId(itemString)
-		local itemLevel = TSMAPI_FOUR.Item.GetItemLevel(itemString)
-		local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
-		for _, info in ipairs(conversionInfo.disenchant.sourceInfo) do
-			if class == ItemClass.GetClassIdFromClassString(info.itemType) and quality == info.rarity and itemLevel >= info.minItemLevel and itemLevel <= info.maxItemLevel then
-				return info.amountOfMats
-			end
+	if DisenchantInfo.IsTargetItem(self._targetItem) then
+		local classId = ItemInfo.GetClassId(itemString)
+		local ilvl = ItemInfo.GetItemLevel(itemString)
+		local quality = ItemInfo.GetQuality(itemString)
+		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(self._targetItem, classId, quality, ilvl)
+		if amountOfMats then
+			return amountOfMats
 		end
-		return 0
-	else
-		return conversionInfo.convert[itemString] and conversionInfo.convert[itemString].rate or 0
 	end
+	local conversionInfo = Conversions.GetSourceItems(self._targetItem)
+	return conversionInfo and conversionInfo[itemString] or 0
 end
 
 function AuctionFilter._DoAuctionQueryThreaded(self)
@@ -390,15 +391,15 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 				-- wait for the AH to be ready
 				while not CanSendAuctionQuery() do
 					if self._scan:_IsCancelled() then
-						TSM:LOG_INFO("Stopping canelled scan")
+						Log.Info("Stopping canelled scan")
 						return false
 					end
-					TSMAPI_FOUR.Thread.Yield(true)
+					Threading.Yield(true)
 				end
 				-- query the AH
 				QueryAuctionItems(nil, nil, nil, lastPage)
 				-- wait for the update event
-				TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+				Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
 				local newLastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
 				if newLastPage == lastPage then
 					break
@@ -408,15 +409,15 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		else
 			-- scan the first page
 			-- wait for the AH to be ready
-			TSMAPI_FOUR.Thread.WaitForFunction(CanSendAuctionQuery)
+			Threading.WaitForFunction(CanSendAuctionQuery)
 			-- query the AH
 			QueryAuctionItems(nil, nil, nil, 0)
 			-- wait for the update event
-			TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+			Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
 		end
 	elseif self:_IsGetAll() then
 		-- wait for the AH to be ready
-		TSMAPI_FOUR.Thread.WaitForFunction(CanSendAuctionQuery)
+		Threading.WaitForFunction(CanSendAuctionQuery)
 		if not select(2, CanSendAuctionQuery()) then
 			-- can't do a getall scan right now
 			return false
@@ -424,56 +425,100 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		-- query the AH
 		QueryAuctionItems(nil, nil, nil, 0, nil, nil, true)
 		-- wait for the update event
-		TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+		Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
 	else
-		-- wait for the AH to be ready
-		TSMAPI_FOUR.Thread.WaitForFunction(CanSendAuctionQuery)
-		local classFilterInfo = nil
-		if self._class or self._subClass or self._invType then
-			classFilterInfo = TSM.TempTable.Acquire()
-			if self._invType == LE_INVENTORY_TYPE_CHEST_TYPE or self._invType == LE_INVENTORY_TYPE_ROBE_TYPE then
-				-- default AH sends in queries for both chest types, we need to mimic this when using a chest filter
-				local info1 = TSM.TempTable.Acquire()
-				info1.classID = self._class
-				info1.subClassID = self._subClass
-				info1.inventoryType = LE_INVENTORY_TYPE_CHEST_TYPE
-				tinsert(classFilterInfo, info1)
-				local info2 = TSM.TempTable.Acquire()
-				info2.classID = self._class
-				info2.subClassID = self._subClass
-				info2.inventoryType = LE_INVENTORY_TYPE_ROBE_TYPE
-				tinsert(classFilterInfo, info2)
-			elseif self._invType == LE_INVENTORY_TYPE_NECK_TYPE or self._invType == LE_INVENTORY_TYPE_FINGER_TYPE or self._invType == LE_INVENTORY_TYPE_TRINKET_TYPE or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE or self._invType == LE_INVENTORY_TYPE_BODY_TYPE then
-				local info = TSM.TempTable.Acquire()
-				info.classID = self._class
-				info.subClassID = LE_ITEM_ARMOR_GENERIC
-				info.inventoryType = self._invType
-				tinsert(classFilterInfo, info)
-			elseif self._invType == LE_INVENTORY_TYPE_CLOAK_TYPE then
-				local info = TSM.TempTable.Acquire()
-				info.classID = self._class
-				info.subClassID = LE_ITEM_ARMOR_CLOTH
-				info.inventoryType = LE_INVENTORY_TYPE_CLOAK_TYPE
-				tinsert(classFilterInfo, info)
-			else
-				local info = TSM.TempTable.Acquire()
+		if not TSM.IsWow83() then
+			-- wait for the AH to be ready
+			Threading.WaitForFunction(CanSendAuctionQuery)
+			local classFilterInfo = nil
+			if self._class or self._subClass or self._invType then
+				classFilterInfo = TempTable.Acquire()
+				if self._invType == LE_INVENTORY_TYPE_CHEST_TYPE or self._invType == LE_INVENTORY_TYPE_ROBE_TYPE then
+					-- default AH sends in queries for both chest types, we need to mimic this when using a chest filter
+					local info1 = TempTable.Acquire()
+					info1.classID = self._class
+					info1.subClassID = self._subClass
+					info1.inventoryType = LE_INVENTORY_TYPE_CHEST_TYPE
+					tinsert(classFilterInfo, info1)
+					local info2 = TempTable.Acquire()
+					info2.classID = self._class
+					info2.subClassID = self._subClass
+					info2.inventoryType = LE_INVENTORY_TYPE_ROBE_TYPE
+					tinsert(classFilterInfo, info2)
+				elseif self._invType == LE_INVENTORY_TYPE_NECK_TYPE or self._invType == LE_INVENTORY_TYPE_FINGER_TYPE or self._invType == LE_INVENTORY_TYPE_TRINKET_TYPE or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE or self._invType == LE_INVENTORY_TYPE_BODY_TYPE then
+					local info = TempTable.Acquire()
+					info.classID = self._class
+					info.subClassID = LE_ITEM_ARMOR_GENERIC
+					info.inventoryType = self._invType
+					tinsert(classFilterInfo, info)
+				elseif self._invType == LE_INVENTORY_TYPE_CLOAK_TYPE then
+					local info = TempTable.Acquire()
+					info.classID = self._class
+					info.subClassID = LE_ITEM_ARMOR_CLOTH
+					info.inventoryType = LE_INVENTORY_TYPE_CLOAK_TYPE
+					tinsert(classFilterInfo, info)
+				else
+					local info = TempTable.Acquire()
+					info.classID = self._class
+					info.subClassID = self._subClass
+					info.inventoryType = self._invType
+					tinsert(classFilterInfo, info)
+				end
+			end
+			QueryAuctionItems(self._name, self._minLevel, self._maxLevel, self._page, self._usable, self._quality, nil, self._exact, classFilterInfo)
+			if classFilterInfo then
+				for i = #classFilterInfo, 1, -1 do
+					TempTable.Release(classFilterInfo[i])
+					classFilterInfo[i] = nil
+				end
+				TempTable.Release(classFilterInfo)
+			end
+			-- wait for the update event
+			Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+		else
+			local query = TempTable.Acquire()
+			local sorts = TempTable.Acquire()
+			local filters = TempTable.Acquire()
+			local itemClassFilters = TempTable.Acquire()
+			if self._class or self._subClass or self._invType then
+				local info = TempTable.Acquire()
 				info.classID = self._class
 				info.subClassID = self._subClass
 				info.inventoryType = self._invType
-				tinsert(classFilterInfo, info)
+				tinsert(itemClassFilters, info)
+			end
+
+			query.searchString = self._name or ""
+			query.sorts = sorts
+			query.minLevel = 0
+			query.maxLevel = 0
+			query.filters = filters
+			query.itemClassFilters = itemClassFilters
+			local result = self._scan:_SendBrowseQuery83(query)
+			TempTable.Release(sorts)
+			TempTable.Release(filters)
+			for i = #itemClassFilters, 1, -1 do
+				TempTable.Release(itemClassFilters[i])
+				itemClassFilters[i] = nil
+			end
+			TempTable.Release(itemClassFilters)
+			TempTable.Release(query)
+			if not result then
+				return false
+			end
+
+			Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
+			while not C_AuctionHouse.HasFullBrowseResults() do
+				if self._scan:_IsCancelled() then
+					return false
+				end
+				Log.Info("Requesting more...")
+				C_AuctionHouse.RequestMoreBrowseResults()
+				Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
 			end
 		end
-		QueryAuctionItems(self._name, self._minLevel, self._maxLevel, self._page, self._usable, self._quality, nil, self._exact, classFilterInfo)
-		if classFilterInfo then
-			for i = #classFilterInfo, 1, -1 do
-				TSM.TempTable.Release(classFilterInfo[i])
-				classFilterInfo[i] = nil
-			end
-			TSM.TempTable.Release(classFilterInfo)
-		end
-		-- wait for the update event
-		TSMAPI_FOUR.Thread.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
 	end
+	return true
 end
 
 function AuctionFilter._AddResultRow(self, uuid)

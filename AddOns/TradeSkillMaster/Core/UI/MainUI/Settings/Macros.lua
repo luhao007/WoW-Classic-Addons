@@ -8,10 +8,13 @@
 
 local _, TSM = ...
 local Macros = TSM.MainUI.Settings:NewPackage("Macros")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Vararg = TSM.Include("Util.Vararg")
+local Log = TSM.Include("Util.Log")
 local private = {}
 local MACRO_NAME = "TSMMacro"
-local MACRO_ICON = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and "INV_Misc_Flower_01" or "Achievement_Faction_GoldenLotus"
+local MACRO_ICON = TSM.IsWowClassic() and "INV_Misc_Flower_01" or "Achievement_Faction_GoldenLotus"
 local BINDING_NAME = "MACRO "..MACRO_NAME
 local BUTTON_MAPPING = {
 	["row1.myauctionsCheckbox"] = "TSMCancelAuctionBtn",
@@ -45,7 +48,7 @@ function private.GetMacrosSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings", "macros")
 	local body = GetMacroBody(MACRO_NAME) or ""
 	local upEnabled, downEnabled, altEnabled, ctrlEnabled, shiftEnabled = false, false, false, false, false
-	for _, binding in TSM.Vararg.Iterator(GetBindingKey(BINDING_NAME)) do
+	for _, binding in Vararg.Iterator(GetBindingKey(BINDING_NAME)) do
 		upEnabled = upEnabled or (strfind(binding, "MOUSEWHEELUP") and true)
 		downEnabled = upEnabled or (strfind(binding, "MOUSEWHEELDOWN") and true)
 		altEnabled = altEnabled or (strfind(binding, "ALT-") and true)
@@ -197,19 +200,19 @@ end
 
 function private.CreateButtonOnClick(button)
 	-- remove the old bindings and macros
-	for _, binding in TSM.Vararg.Iterator(GetBindingKey(BINDING_NAME)) do
+	for _, binding in Vararg.Iterator(GetBindingKey(BINDING_NAME)) do
 		SetBinding(binding)
 	end
 	DeleteMacro(MACRO_NAME)
 
 	if GetNumMacros() >= MAX_ACCOUNT_MACROS then
-		TSM:Print(L["Could not create macro as you already have too many. Delete one of your existing macros and try again."])
+		Log.PrintUser(L["Could not create macro as you already have too many. Delete one of your existing macros and try again."])
 		return
 	end
 
 	-- create the new macro
 	local scrollFrame = button:GetParentElement()
-	local lines = TSM.TempTable.Acquire()
+	local lines = TempTable.Acquire()
 	for elementPath, buttonName in pairs(BUTTON_MAPPING) do
 		if scrollFrame:GetElement(elementPath):IsChecked() then
 			tinsert(lines, "/click "..buttonName)
@@ -217,7 +220,7 @@ function private.CreateButtonOnClick(button)
 	end
 	local macroText = table.concat(lines, "\n")
 	CreateMacro(MACRO_NAME, MACRO_ICON, macroText)
-	TSM.TempTable.Release(lines)
+	TempTable.Release(lines)
 
 	-- create the binding
 	local modifierStr = ""
@@ -242,14 +245,14 @@ function private.CreateButtonOnClick(button)
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", BINDING_NAME, bindingMode)
 	end
 
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		AttemptToSaveBindings(CHARACTER_BINDING_SET)
 	else
 		SaveBindings(CHARACTER_BINDING_SET)
 	end
 
-	TSM:Print(L["Macro created and scroll wheel bound!"])
+	Log.PrintUser(L["Macro created and scroll wheel bound!"])
 	if #macroText > MAX_MACRO_LENGTH then
-		TSM:Print(L["WARNING: The macro was too long, so was truncated to fit by WoW."])
+		Log.PrintUser(L["WARNING: The macro was too long, so was truncated to fit by WoW."])
 	end
 end

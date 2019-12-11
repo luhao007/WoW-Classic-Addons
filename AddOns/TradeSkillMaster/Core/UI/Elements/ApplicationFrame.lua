@@ -11,7 +11,8 @@
 -- @classmod ApplicationFrame
 
 local _, TSM = ...
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
 local ApplicationFrame = TSM.Include("LibTSMClass").DefineClass("ApplicationFrame", TSM.UI.Frame)
 TSM.UI.ApplicationFrame = ApplicationFrame
 local private = {}
@@ -223,7 +224,7 @@ function ApplicationFrame.Acquire(self)
 			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
 			:SetStyle("fontHeight", 12)
 			:SetStyle("textColor", "#ffffff")
-			:SetText(TSM:GetVersion())
+			:SetText(TSM.GetVersion())
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
 			:SetStyle("width", 1)
@@ -421,7 +422,7 @@ end
 -- @tparam function callback The callback for when the dialog is closed
 -- @tparam[opt] varag ... Arguments to pass to the callback
 function ApplicationFrame.ShowConfirmationDialog(self, title, subTitle, confirmBtnText, callback, ...)
-	local context = TSM.TempTable.Acquire(...)
+	local context = TempTable.Acquire(...)
 	context.callback = callback
 	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
 		:SetLayout("VERTICAL")
@@ -715,7 +716,7 @@ end
 function private.DialogOnHide(dialog)
 	local context = dialog:GetContext()
 	if context then
-		TSM.TempTable.Release(context)
+		TempTable.Release(context)
 	end
 end
 
@@ -730,5 +731,5 @@ function private.DialogConfirmBtnOnClick(button)
 	local context = dialog:GetContext()
 	dialog:SetContext(nil)
 	self:HideDialog()
-	context.callback(TSM.TempTable.UnpackAndRelease(context))
+	context.callback(TempTable.UnpackAndRelease(context))
 end

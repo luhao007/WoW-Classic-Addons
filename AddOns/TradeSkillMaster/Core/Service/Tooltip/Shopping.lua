@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Shopping = TSM.Tooltip:NewPackage("Shopping")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 local DEFAULTS = {
 	maxPrice = false,

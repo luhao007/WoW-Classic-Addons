@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local AuctionDB = TSM.Tooltip:NewPackage("AuctionDB")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 local DEFAULTS = {
 	minBuyout = true,

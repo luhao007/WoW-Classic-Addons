@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local OpenMailTask = TSM.Include("LibTSMClass").DefineClass("OpenMailTask", TSM.TaskList.ItemTask)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 TSM.TaskList.OpenMailTask = OpenMailTask
 
 

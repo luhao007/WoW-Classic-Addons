@@ -8,9 +8,17 @@
 
 local _, TSM = ...
 local QueryUtil = TSM.Auction:NewPackage("QueryUtil")
-local AuctionCountDatabase = TSM.Include("LibTSMClass").DefineClass("AuctionCountDatabase")
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
-	db = nil,
+	counts = nil,
+	countsUpdateTime = 0,
+	itemStrings = {},
+	isComplete = false,
+	lastPopulateAttempt = nil,
 	itemListByClass = {},
 }
 local MAX_SCAN_DATA_AGE = 24 * 60 * 60
@@ -23,8 +31,9 @@ local MAX_MISSING_ITEM_DATA = 20
 -- Module Functions
 -- ============================================================================
 
-function QueryUtil.OnInitialize()
-	private.db = AuctionCountDatabase()
+function QueryUtil.SetAuctionCounts(counts, updateTime)
+	private.counts = counts
+	private.countsUpdateTime = updateTime
 end
 
 function QueryUtil.GenerateThreaded(itemList, callback)
@@ -34,37 +43,142 @@ end
 
 
 -- ============================================================================
--- AuctionCountDatabase Class
+-- Main Generate Queries Thread
 -- ============================================================================
 
-function AuctionCountDatabase.__init(self)
-	self._itemStrings = {}
-	self._numAuctions = {}
-	self._isComplete = false
+function private.GenerateQueriesThread(itemList, callback)
+	-- get all the item info into the game's cache
+	for _ = 1, MAX_ITEM_INFO_RETRIES do
+		local isMissingItemInfo = false
+		for _, itemString in ipairs(itemList) do
+			if not private.HasInfo(itemString) then
+				isMissingItemInfo = true
+			end
+			Threading.Yield()
+		end
+		if not isMissingItemInfo then
+			break
+		end
+		Threading.Sleep(0.1)
+	end
+
+	-- remove items we're missing info for
+	for i = #itemList, 1, -1 do
+		if not private.HasInfo(itemList[i]) then
+			Log.Err("Missing item info for %s", itemList[i])
+			tremove(itemList, i)
+		end
+		Threading.Yield()
+	end
+
+	if #itemList <= 1 then
+		-- short-circuit for searching for a single or no items
+		for _, itemString in ipairs(itemList) do
+			callback(itemString, private.GetItemQueryInfo(itemString))
+		end
+		return
+	end
+
+	if not TSM.IsWowClassic() then
+		private.PopulateDataThreaded()
+		Threading.Yield()
+		if not private.isComplete then
+			Log.Err("Auction count database not complete")
+		end
+	end
+
+	-- if the DB is not fully populated (or we're on classic), we don't have all the item info, just do individual scans
+	if not private.isComplete then
+		for _, itemString in ipairs(itemList) do
+			callback(itemString, private.GetItemQueryInfo(itemString))
+		end
+		return
+	end
+	Threading.Yield()
+
+	-- organize by class
+	for _, tbl in pairs(private.itemListByClass) do
+		wipe(tbl)
+	end
+	for _, itemString in ipairs(itemList) do
+		local classId = ItemInfo.GetClassId(itemString)
+		if classId and classId ~= LE_ITEM_CLASS_BATTLEPET then
+			private.itemListByClass[classId] = private.itemListByClass[classId] or {}
+			tinsert(private.itemListByClass[classId], itemString)
+		else
+			assert(private.HasInfo(itemString), "Invalid item info for "..tostring(itemString))
+			callback(itemString, private.GetItemQueryInfo(itemString))
+		end
+		Threading.Yield()
+	end
+	for classId, items in pairs(private.itemListByClass) do
+		if #items > 0 then
+			local totalPagesRaw = 0
+			local totalPagesClass = 0
+			-- calculate the number of pages if we scan items individually
+			for _, itemString in ipairs(items) do
+				totalPagesRaw = totalPagesRaw + private.NumAuctionsToNumPages(private.GetItemNumAuctions(itemString))
+				Threading.Yield()
+			end
+			local classMinQuality, classMinLevel, classMaxLevel = nil, nil, nil
+			if totalPagesRaw > 0 then
+				-- calulate the number of pages if we group by class
+				classMinQuality, classMinLevel, classMaxLevel = private.GetCommonInfo(items)
+				totalPagesClass = private.GetQueryNumPages(classId, classMinLevel, classMaxLevel, classMinQuality)
+			end
+			totalPagesRaw = totalPagesRaw > 0 and totalPagesRaw or math.huge
+			totalPagesClass = totalPagesClass > 0 and totalPagesClass or math.huge
+
+			Log.Info("Scanning %d items by class (%d) would be %d pages instead of %d", #items, classId, totalPagesClass, totalPagesRaw)
+			if totalPagesClass < totalPagesRaw then
+				Log.Info("Should group by class")
+				-- attempt to find a common name to filter by
+				local name = private.GetCommonName(items)
+				if name then
+					Log.Info("Should group by filter: %s", name)
+				else
+					name = ""
+				end
+				callback(items, name, classMinLevel, classMaxLevel, classMinQuality, classId, nil)
+				Threading.Yield()
+			else
+				Log.Info("Shouldn't group by anything!")
+				for _, itemString in ipairs(items) do
+					callback(itemString, private.GetItemQueryInfo(itemString))
+				end
+			end
+			Threading.Yield()
+		end
+	end
 end
 
-function AuctionCountDatabase.PopulateDataThreaded(self)
-	if self._isComplete then
+
+
+-- ============================================================================
+-- Helper Functions
+-- ============================================================================
+
+function private.PopulateDataThreaded()
+	if private.isComplete then
 		return true
 	end
-	if self.lastPopulateAttempt == time() then
+	if private.lastPopulateAttempt == time() then
 		return
 	end
-	if (TSM.AuctionDB.GetLastCompleteScanTime() or 0) < time() - MAX_SCAN_DATA_AGE then
-		TSM:LOG_WARN("Scan data too old to optimize searches")
+	if private.countsUpdateTime < time() - MAX_SCAN_DATA_AGE then
+		Log.Warn("Scan data too old to optimize searches")
 		return
 	end
-	self.lastPopulateAttempt = time()
-	self._isComplete = false
-	wipe(self._itemStrings)
-	wipe(self._numAuctions)
-	local orderValueItem = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local orderValueCount = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	private.lastPopulateAttempt = time()
+	private.isComplete = false
+	wipe(private.itemStrings)
+	local orderValueItem = Threading.AcquireSafeTempTable()
+	local orderValueCount = Threading.AcquireSafeTempTable()
 	local numMissing = 0
-	for _, itemString, numAuctions in TSM.AuctionDB.LastScanIteratorThreaded() do
-		local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
-		local level = TSMAPI_FOUR.Item.GetMinLevel(itemString)
-		local classId = TSMAPI_FOUR.Item.GetClassId(itemString)
+	for itemString in pairs(private.counts) do
+		local quality = ItemInfo.GetQuality(itemString)
+		local level = ItemInfo.GetMinLevel(itemString)
+		local classId = ItemInfo.GetClassId(itemString)
 		if quality and level and classId then
 			assert(quality < 10 and level < 200)
 			local orderValue = (classId * 10 + quality) * 200 + level
@@ -74,48 +188,47 @@ function AuctionCountDatabase.PopulateDataThreaded(self)
 			orderValue = orderValue * 10000 + count
 			assert(not orderValueItem[orderValue])
 			orderValueItem[orderValue] = itemString
-			self._numAuctions[itemString] = numAuctions
 		else
 			numMissing = numMissing + 1
 		end
-		TSMAPI_FOUR.Thread.Yield()
+		Threading.Yield()
 	end
 	if numMissing > 0 then
-		TSM:LOG_ERR("Missing %d items worth of data!", numMissing)
+		Log.Err("Missing %d items worth of data!", numMissing)
 	end
 	-- allow for some items to be missing data
-	self._isComplete = numMissing < MAX_MISSING_ITEM_DATA
-	if self._isComplete then
+	private.isComplete = numMissing < MAX_MISSING_ITEM_DATA
+	if private.isComplete then
 		-- pretty roundabout way of sorting to avoid "script ran too long" errors from a long sort() call
-		local orderValueList = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+		local orderValueList = Threading.AcquireSafeTempTable()
 		wipe(orderValueList)
 		for orderValue in pairs(orderValueItem) do
 			tinsert(orderValueList, orderValue)
 		end
-		TSMAPI_FOUR.Thread.Yield(true)
+		Threading.Yield(true)
 		sort(orderValueList)
-		TSMAPI_FOUR.Thread.Yield(true)
-		assert(#self._itemStrings == 0)
+		Threading.Yield(true)
+		assert(#private.itemStrings == 0)
 		for _, orderValue in ipairs(orderValueList) do
-			tinsert(self._itemStrings, orderValueItem[orderValue])
+			tinsert(private.itemStrings, orderValueItem[orderValue])
 		end
-		TSMAPI_FOUR.Thread.ReleaseSafeTempTable(orderValueList)
+		Threading.ReleaseSafeTempTable(orderValueList)
 	end
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(orderValueItem)
-	return self._isComplete
+	Threading.ReleaseSafeTempTable(orderValueItem)
+	return private.isComplete
 end
 
-function AuctionCountDatabase._CompareFunc(self, itemString, queryClass)
-	local class = TSMAPI_FOUR.Item.GetClassId(itemString) or -1
+function private.CompareFunc(itemString, queryClass)
+	local class = ItemInfo.GetClassId(itemString) or -1
 	return class == queryClass and 0 or (class - queryClass)
 end
 
-function AuctionCountDatabase.GetItemNumAuctions(self, itemString)
-	itemString = TSMAPI_FOUR.Item.FilterItemString(itemString)
-	return self._numAuctions[itemString] or 0
+function private.GetItemNumAuctions(itemString)
+	itemString = ItemString.Filter(itemString)
+	return private.counts[itemString] or 0
 end
 
-function AuctionCountDatabase.GetQueryNumPages(self, queryClass, queryMinLevel, queryMaxLevel, queryQuality)
+function private.GetQueryNumPages(queryClass, queryMinLevel, queryMaxLevel, queryQuality)
 	assert(queryClass)
 	queryMinLevel = max(queryMinLevel or 0, 0)
 	queryMaxLevel = queryMaxLevel and queryMaxLevel >= 1 and queryMaxLevel or math.huge
@@ -124,12 +237,12 @@ function AuctionCountDatabase.GetQueryNumPages(self, queryClass, queryMinLevel, 
 	local startIndex = 1
 
 	-- binary search for starting index
-	local low, high = 1, #self._itemStrings
+	local low, high = 1, #private.itemStrings
 	while low <= high do
 		local mid = floor((low + high) / 2)
-		local cmpValue = self:_CompareFunc(self._itemStrings[mid], queryClass)
+		local cmpValue = private.CompareFunc(private.itemStrings[mid], queryClass)
 		if cmpValue == 0 then
-			if mid == 1 or self:_CompareFunc(self._itemStrings[mid-1], queryClass) ~= 0 then
+			if mid == 1 or private.CompareFunc(private.itemStrings[mid-1], queryClass) ~= 0 then
 				-- we've found the row we want
 				startIndex = mid
 				break
@@ -146,149 +259,29 @@ function AuctionCountDatabase.GetQueryNumPages(self, queryClass, queryMinLevel, 
 		end
 	end
 
-	for i = startIndex, #self._itemStrings do
-		local itemString = self._itemStrings[i]
-		local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
-		local class = TSMAPI_FOUR.Item.GetClassId(itemString)
-		local level = TSMAPI_FOUR.Item.GetMinLevel(itemString)
-		if self:_CompareFunc(itemString, class) ~= 0 then
+	for i = startIndex, #private.itemStrings do
+		local itemString = private.itemStrings[i]
+		local quality = ItemInfo.GetQuality(itemString)
+		local class = ItemInfo.GetClassId(itemString)
+		local level = ItemInfo.GetMinLevel(itemString)
+		if private.CompareFunc(itemString, class) ~= 0 then
 			break
 		end
 		if quality >= queryQuality and class == queryClass and level >= queryMinLevel and level <= queryMaxLevel then
-			count = count + self:GetItemNumAuctions(itemString)
+			count = count + private.GetItemNumAuctions(itemString)
 		end
 	end
 	return private.NumAuctionsToNumPages(count)
 end
 
-
-
--- ============================================================================
--- Main Generate Queries Thread
--- ============================================================================
-
-function private.GenerateQueriesThread(itemList, callback)
-
-	-- get all the item info into the game's cache
-	for _ = 1, MAX_ITEM_INFO_RETRIES do
-		local isMissingItemInfo = false
-		for _, itemString in ipairs(itemList) do
-			if not private.HasInfo(itemString) then
-				isMissingItemInfo = true
-			end
-			TSMAPI_FOUR.Thread.Yield()
-		end
-		if not isMissingItemInfo then
-			break
-		end
-		TSMAPI_FOUR.Thread.Sleep(0.1)
-	end
-
-	-- remove items we're missing info for
-	for i = #itemList, 1, -1 do
-		if not private.HasInfo(itemList[i]) then
-			TSM:LOG_ERR("Missing item info for %s", itemList[i])
-			tremove(itemList, i)
-		end
-		TSMAPI_FOUR.Thread.Yield()
-	end
-
-	if #itemList <= 1 then
-		-- short-circuit for searching for a single or no items
-		for _, itemString in ipairs(itemList) do
-			callback(itemString, private.GetItemQueryInfo(itemString))
-		end
-		return
-	end
-
-	local dbComplete = false
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		dbComplete = private.db:PopulateDataThreaded()
-		TSMAPI_FOUR.Thread.Yield()
-		if not dbComplete then
-			TSM:LOG_ERR("Auction count database not complete")
-		end
-	end
-
-	-- if the DB is not fully populated (or we're on classic), we don't have all the item info, just do individual scans
-	if not dbComplete then
-		for _, itemString in ipairs(itemList) do
-			callback(itemString, private.GetItemQueryInfo(itemString))
-		end
-		return
-	end
-	TSMAPI_FOUR.Thread.Yield()
-
-	-- organize by class
-	for _, tbl in pairs(private.itemListByClass) do
-		wipe(tbl)
-	end
-	for _, itemString in ipairs(itemList) do
-		local classId = TSMAPI_FOUR.Item.GetClassId(itemString)
-		if classId and classId ~= LE_ITEM_CLASS_BATTLEPET then
-			private.itemListByClass[classId] = private.itemListByClass[classId] or {}
-			tinsert(private.itemListByClass[classId], itemString)
-		else
-			assert(private.HasInfo(itemString), "Invalid item info for "..tostring(itemString))
-			callback(itemString, private.GetItemQueryInfo(itemString))
-		end
-		TSMAPI_FOUR.Thread.Yield()
-	end
-	for classId, items in pairs(private.itemListByClass) do
-		if #items > 0 then
-			local totalPagesRaw = 0
-			local totalPagesClass = 0
-			-- calculate the number of pages if we scan items individually
-			for _, itemString in ipairs(items) do
-				totalPagesRaw = totalPagesRaw + private.NumAuctionsToNumPages(private.db:GetItemNumAuctions(itemString))
-				TSMAPI_FOUR.Thread.Yield()
-			end
-			local classMinQuality, classMinLevel, classMaxLevel = nil, nil, nil
-			if totalPagesRaw > 0 then
-				-- calulate the number of pages if we group by class
-				classMinQuality, classMinLevel, classMaxLevel = private.GetCommonInfo(items)
-				totalPagesClass = private.db:GetQueryNumPages(classId, classMinLevel, classMaxLevel, classMinQuality)
-			end
-			totalPagesRaw = totalPagesRaw > 0 and totalPagesRaw or math.huge
-			totalPagesClass = totalPagesClass > 0 and totalPagesClass or math.huge
-
-			TSM:LOG_INFO("Scanning %d items by class (%d) would be %d pages instead of %d", #items, classId, totalPagesClass, totalPagesRaw)
-			if totalPagesClass < totalPagesRaw then
-				TSM:LOG_INFO("Should group by class")
-				-- attempt to find a common name to filter by
-				local name = private.GetCommonName(items)
-				if name then
-					TSM:LOG_INFO("Should group by filter: %s", name)
-				else
-					name = ""
-				end
-				callback(items, name, classMinLevel, classMaxLevel, classMinQuality, classId, nil)
-				TSMAPI_FOUR.Thread.Yield()
-			else
-				TSM:LOG_INFO("Shouldn't group by anything!")
-				for _, itemString in ipairs(items) do
-					callback(itemString, private.GetItemQueryInfo(itemString))
-				end
-			end
-			TSMAPI_FOUR.Thread.Yield()
-		end
-	end
-end
-
-
-
--- ============================================================================
--- Helper Functions
--- ============================================================================
-
 function private.GetItemQueryInfo(itemString)
-	local name = TSMAPI_FOUR.Item.GetName(itemString)
-	local level = TSMAPI_FOUR.Item.GetMinLevel(itemString) or 0
-	local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
-	local classId = TSMAPI_FOUR.Item.GetClassId(itemString) or 0
-	local subClassId = TSMAPI_FOUR.Item.GetSubClassId(itemString) or 0
+	local name = ItemInfo.GetName(itemString)
+	local level = ItemInfo.GetMinLevel(itemString) or 0
+	local quality = ItemInfo.GetQuality(itemString)
+	local classId = ItemInfo.GetClassId(itemString) or 0
+	local subClassId = ItemInfo.GetSubClassId(itemString) or 0
 	-- Ignoring level because level can now vary
-	if itemString == TSMAPI_FOUR.Item.ToBaseItemString(itemString) and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR or (classId == LE_ITEM_CLASS_GEM and subClassId == LE_ITEM_GEM_ARTIFACTRELIC)) then
+	if itemString == ItemString.GetBase(itemString) and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR or (classId == LE_ITEM_CLASS_GEM and subClassId == LE_ITEM_GEM_ARTIFACTRELIC)) then
 		level = 0
 	end
 	return name, level, level, quality, classId, subClassId
@@ -315,18 +308,18 @@ end
 
 function private.GetCommonName(items)
 	-- check if we can also group the query by name
-	local nameTemp = TSM.TempTable.Acquire()
+	local nameTemp = TempTable.Acquire()
 	for _, itemString in ipairs(items) do
-		local name = TSMAPI_FOUR.Item.GetName(itemString)
+		local name = ItemInfo.GetName(itemString)
 		if not name then
-			TSM.TempTable.Release(nameTemp)
+			TempTable.Release(nameTemp)
 			return
 		end
 		assert(type(name) == "string", "Unexpected item name: "..tostring(name))
 		tinsert(nameTemp, name)
 	end
 	if #nameTemp ~= #items or #nameTemp < 2 then
-		TSM.TempTable.Release(nameTemp)
+		TempTable.Release(nameTemp)
 		return
 	end
 	sort(nameTemp)
@@ -348,21 +341,21 @@ function private.GetCommonName(items)
 	end
 	-- make sure the common substring has at least one space and is at least 3 characters log
 	if not hasSpace or endIndex < 3 then
-		TSM.TempTable.Release(nameTemp)
+		TempTable.Release(nameTemp)
 		return
 	end
 
 	local commonStr = strsub(str1, 1, endIndex)
 	for _, name in ipairs(nameTemp) do
 		if strsub(name, 1, endIndex) ~= commonStr then
-			TSM.TempTable.Release(nameTemp)
+			TempTable.Release(nameTemp)
 			return
 		end
 	end
-	TSM.TempTable.Release(nameTemp)
+	TempTable.Release(nameTemp)
 	return commonStr
 end
 
 function private.HasInfo(itemString)
-	return TSMAPI_FOUR.Item.GetName(itemString) and TSMAPI_FOUR.Item.GetQuality(itemString)
+	return ItemInfo.GetName(itemString) and ItemInfo.GetQuality(itemString)
 end

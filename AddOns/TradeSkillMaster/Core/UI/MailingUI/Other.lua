@@ -8,7 +8,13 @@
 
 local _, TSM = ...
 local Groups = TSM.UI.MailingUI:NewPackage("Other")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
+local Event = TSM.Include("Util.Event")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	frame = nil,
 }
@@ -149,7 +155,7 @@ function private.GetOtherFrame()
 					:SetStyle("margin.right", 16)
 					:SetStyle("height", 20)
 					:SetStyle("justifyH", "RIGHT")
-					:SetText(TSM.Money.ToString(TSM.db.factionrealm.internalData.mailExcessGoldLimit))
+					:SetText(Money.ToString(TSM.db.factionrealm.internalData.mailExcessGoldLimit))
 					:SetScript("OnTextChanged", private.MoneyOnTextChanged)
 					:SetScript("OnEnterPressed", private.MoneyValueConvert)
 					:SetScript("OnEscapePressed", private.MoneyValueConvert)
@@ -229,15 +235,20 @@ end
 
 function private.EnchantSendBtnOnClick(button)
 	local items = {}
-	for _, _, _, itemString, quantity in TSMAPI_FOUR.Inventory.BagIterator() do
-		if TSMAPI_FOUR.Item.IsDisenchantable(itemString) and not TSMAPI_FOUR.Item.IsSoulbound(itemString) then
-			local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("itemString", "quantity")
+		:Equal("isBoP", false)
+		:Equal("isBoA", false)
+	for _, itemString, quantity in query:Iterator() do
+		if ItemInfo.IsDisenchantable(itemString) and not ItemInfo.IsSoulbound(itemString) then
+			local quality = ItemInfo.GetQuality(itemString)
 			if quality <= TSM.db.global.mailingOptions.deMaxQuality then
 				items[itemString] = (items[itemString] or 0) + quantity
 			end
 		end
 	end
-
+	query:Release()
 	private.fsm:ProcessEvent("EV_BUTTON_CLICKED", TSM.db.factionrealm.internalData.mailDisenchantablesChar, 0, items)
 end
 
@@ -281,7 +292,7 @@ function private.MoneyFocusGained(input)
 end
 
 function private.MoneyOnTextChanged(input)
-	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
 	if text == "" or text == TSM.db.factionrealm.internalData.mailExcessGoldLimit then
 		return
 	end
@@ -290,7 +301,7 @@ function private.MoneyOnTextChanged(input)
 	if limit then
 		TSM.db.factionrealm.internalData.mailExcessGoldLimit = limit >= 0 and limit or 0
 	else
-		TSM.db.factionrealm.internalData.mailExcessGoldLimit = TSM.Money.FromString(text) or 0
+		TSM.db.factionrealm.internalData.mailExcessGoldLimit = Money.FromString(text) or 0
 	end
 
 	private.UpdateGoldButton()
@@ -298,7 +309,7 @@ end
 
 function private.MoneyValueConvert(input)
 	input:SetFocused(false)
-	input:SetText(TSM.Money.ToString(min(TSM.db.factionrealm.internalData.mailExcessGoldLimit, MAXIMUM_BID_PRICE)))
+	input:SetText(Money.ToString(min(TSM.db.factionrealm.internalData.mailExcessGoldLimit, MAXIMUM_BID_PRICE)))
 		:Draw()
 
 	private.UpdateGoldButton()
@@ -359,7 +370,7 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	TSM.Event.Register("PLAYER_MONEY", function()
+	Event.Register("PLAYER_MONEY", function()
 		private.fsm:ProcessEvent("EV_PLAYER_MONEY_UPDATE")
 	end)
 
@@ -382,16 +393,16 @@ function private.FSMCreate()
 			:Draw()
 	end
 
-	private.fsm = TSMAPI_FOUR.FSM.New("MAILING_GROUPS")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_HIDDEN")
+	private.fsm = FSM.New("MAILING_GROUPS")
+		:AddState(FSM.NewState("ST_HIDDEN")
 			:SetOnEnter(function(context)
 				context.frame = nil
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_FRAME_SHOW", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_FRAME_SHOW", "ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function(context, frame)
 				if not context.frame then
 					context.frame = frame
@@ -402,9 +413,9 @@ function private.FSMCreate()
 			:AddEvent("EV_PLAYER_MONEY_UPDATE", function(context)
 				UpdateGold(context)
 			end)
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SENDING_START"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_SENDING_START")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SENDING_START")
+		:AddState(FSM.NewState("ST_SENDING_START")
 			:SetOnEnter(function(context, recipient, money, items)
 				context.sending = true
 				if money > 0 then
@@ -422,9 +433,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_SENDING_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_SENDING_DONE", "ST_SHOWN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_HIDDEN"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_HIDDEN")
 		:Init("ST_HIDDEN", fsmContext)
 end
 

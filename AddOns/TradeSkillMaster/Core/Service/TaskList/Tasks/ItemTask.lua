@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local ItemTask = TSM.Include("LibTSMClass").DefineClass("ItemTask", TSM.TaskList.Task, "ABSTRACT")
+local Table = TSM.Include("Util.Table")
+local Math = TSM.Include("Util.Math")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 TSM.TaskList.ItemTask = ItemTask
 local private = {}
 
@@ -76,10 +79,10 @@ function ItemTask._RemoveItem(self, itemString, quantity)
 	if not self._itemNum[itemString] then
 		return false
 	end
-	self._itemNum[itemString] = TSM.Math.Round(self._itemNum[itemString] - quantity, 0.01)
+	self._itemNum[itemString] = Math.Round(self._itemNum[itemString] - quantity, 0.01)
 	if self._itemNum[itemString] <= 0.01 then
 		self._itemNum[itemString] = nil
-		assert(TSM.Table.RemoveByValue(self._itemList, itemString) == 1)
+		assert(Table.RemoveByValue(self._itemList, itemString) == 1)
 	end
 	if #self._itemList == 0 then
 		self:_doneHandler()
@@ -99,5 +102,5 @@ function private.SubTaskIterator(self, index)
 	if not itemString then
 		return
 	end
-	return index, format("%s (%d)", TSMAPI_FOUR.Item.GetLink(itemString), self._itemNum[itemString])
+	return index, format("%s (%d)", ItemInfo.GetLink(itemString), self._itemNum[itemString])
 end

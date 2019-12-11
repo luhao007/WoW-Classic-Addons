@@ -8,8 +8,14 @@
 
 local _, TSM = ...
 local DestroyingUI = TSM.UI:NewPackage("DestroyingUI")
-local L = TSM.L
-local private = { fsm = nil, query = nil }
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	fsm = nil,
+	query = nil,
+}
 local MIN_FRAME_SIZE = { width = 280, height = 280 }
 local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
 	:SetStyleTable("Text", nil, {
@@ -96,7 +102,7 @@ function private.CreateMainFrame()
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
 						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-						:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
 						:SetTooltipLinkingDisabled(true)
@@ -204,8 +210,8 @@ function private.FSMCreate()
 			context.frame:Draw()
 		end
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("DESTROYING")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_CLOSED")
+	private.fsm = FSM.New("DESTROYING")
+		:AddState(FSM.NewState("ST_FRAME_CLOSED")
 			:SetOnEnter(function(context)
 				if context.frame then
 					context.frame:Hide()
@@ -213,7 +219,7 @@ function private.FSMCreate()
 					context.frame = nil
 				end
 				if context.combineThread then
-					TSMAPI_FOUR.Thread.Kill(context.combineThread)
+					Threading.Kill(context.combineThread)
 					context.combineThread = nil
 				end
 				if context.destroyThread then
@@ -223,14 +229,14 @@ function private.FSMCreate()
 				context.didAutoCombine = false
 			end)
 			:AddTransition("ST_FRAME_OPENING")
-			:AddEvent("EV_FRAME_TOGGLE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_OPENING"))
+			:AddEventTransition("EV_FRAME_TOGGLE", "ST_FRAME_OPENING")
 			:AddEvent("EV_BAG_UPDATE", function(context)
 				if not context.didShowOnce and TSM.db.global.destroyingOptions.autoShow then
 					return "ST_FRAME_OPENING"
 				end
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPENING")
+		:AddState(FSM.NewState("ST_FRAME_OPENING")
 			:SetOnEnter(function(context)
 				context.didShowOnce = true
 				context.frame = private.CreateMainFrame()
@@ -239,7 +245,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_FRAME_OPEN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN")
+		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				UpdateDestroyingFrame(context, true)
 				if TSM.db.global.destroyingOptions.autoStack and not context.didAutoCombine and TSM.Destroying.CanCombine() then
@@ -258,25 +264,25 @@ function private.FSMCreate()
 			:AddTransition("ST_COMBINING_STACKS")
 			:AddTransition("ST_DESTROYING")
 			:AddTransition("ST_FRAME_CLOSED")
-			:AddEvent("EV_COMBINE_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_COMBINING_STACKS"))
-			:AddEvent("EV_DESTROY_BUTTON_PRE_CLICK", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_DESTROYING"))
-			:AddEvent("EV_BAG_UPDATE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_OPEN"))
-			:AddEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+			:AddEventTransition("EV_COMBINE_BUTTON_CLICKED", "ST_COMBINING_STACKS")
+			:AddEventTransition("EV_DESTROY_BUTTON_PRE_CLICK", "ST_DESTROYING")
+			:AddEventTransition("EV_BAG_UPDATE", "ST_FRAME_OPEN")
+			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_COMBINING_STACKS")
+		:AddState(FSM.NewState("ST_COMBINING_STACKS")
 			:SetOnEnter(function(context)
 				assert(not context.combineThread)
 				context.combineThread = TSM.Destroying.GetCombineThread()
-				TSMAPI_FOUR.Thread.SetCallback(context.combineThread, private.FSMCombineCallback)
-				TSMAPI_FOUR.Thread.Start(context.combineThread)
+				Threading.SetCallback(context.combineThread, private.FSMCombineCallback)
+				Threading.Start(context.combineThread)
 				UpdateDestroyingFrame(context)
 			end)
 			:AddTransition("ST_COMBINING_DONE")
 			:AddTransition("ST_FRAME_CLOSED")
-			:AddEvent("EV_COMBINE_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_COMBINING_DONE"))
-			:AddEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+			:AddEventTransition("EV_COMBINE_DONE", "ST_COMBINING_DONE")
+			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_COMBINING_DONE")
+		:AddState(FSM.NewState("ST_COMBINING_DONE")
 			:SetOnEnter(function(context)
 				context.combineThread = nil
 				context.frame:GetElement("content.combineBtn")
@@ -286,22 +292,22 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_FRAME_OPEN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_DESTROYING")
+		:AddState(FSM.NewState("ST_DESTROYING")
 			:SetOnEnter(function(context)
 				assert(not context.destroyThread)
 				context.destroyThread = TSM.Destroying.GetDestroyThread()
-				TSMAPI_FOUR.Thread.SetCallback(context.destroyThread, private.FSMDestroyCallback)
-				TSMAPI_FOUR.Thread.Start(context.destroyThread, context.frame:GetElement("content.destroyBtn"), private.query:GetFirstResult())
+				Threading.SetCallback(context.destroyThread, private.FSMDestroyCallback)
+				Threading.Start(context.destroyThread, context.frame:GetElement("content.destroyBtn"), private.query:GetFirstResult())
 				-- we need the thread to run now so send it a sync message
-				TSMAPI_FOUR.Thread.SendSyncMessage(context.destroyThread)
+				Threading.SendSyncMessage(context.destroyThread)
 				UpdateDestroyingFrame(context)
 			end)
 			:AddTransition("ST_DESTROYING_DONE")
 			:AddTransition("ST_FRAME_CLOSED")
-			:AddEvent("EV_DESTROY_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_DESTROYING_DONE"))
-			:AddEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+			:AddEventTransition("EV_DESTROY_DONE", "ST_DESTROYING_DONE")
+			:AddEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_DESTROYING_DONE")
+		:AddState(FSM.NewState("ST_DESTROYING_DONE")
 			:SetOnEnter(function(context)
 				context.destroyThread = nil
 				context.frame:GetElement("content.destroyBtn")
@@ -311,7 +317,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_FRAME_OPEN")
 		)
-		:AddDefaultEvent("EV_FRAME_TOGGLE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+		:AddDefaultEventTransition("EV_FRAME_TOGGLE", "ST_FRAME_CLOSED")
 		:Init("ST_FRAME_CLOSED", fsmContext)
 end
 

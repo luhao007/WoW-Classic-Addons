@@ -8,7 +8,16 @@
 
 local _, TSM = ...
 local Crafting = TSM.UI.CraftingUI:NewPackage("Crafting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local FSM = TSM.Include("Util.FSM")
+local Event = TSM.Include("Util.Event")
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	db = nil,
 	fsm = nil,
@@ -585,8 +594,8 @@ function private.CreateProfessionBtnOnClick(button)
 		:Select("itemString")
 
 	for _, itemString in query:IteratorAndRelease() do
-		local classId = TSMAPI_FOUR.Item.GetClassId(itemString)
-		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not TSMAPI_FOUR.Item.IsSoulbound(itemString) and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR then
+		local classId = ItemInfo.GetClassId(itemString)
+		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not ItemInfo.IsSoulbound(itemString) and classId ~= LE_ITEM_CLASS_WEAPON and classId ~= LE_ITEM_CLASS_ARMOR then
 			TSM.Groups.SetItemGroup(itemString, mats)
 			numMats = numMats + 1
 		end
@@ -597,16 +606,16 @@ function private.CreateProfessionBtnOnClick(button)
 
 	for _, spellId in query:IteratorAndRelease() do
 		local itemString = TSM.Crafting.GetItemString(spellId)
-		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not TSMAPI_FOUR.Item.IsSoulbound(itemString) then
+		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not ItemInfo.IsSoulbound(itemString) then
 			TSM.Groups.SetItemGroup(itemString, items)
 			numItems = numItems + 1
 		end
 	end
 
 	if numMats > 0 or numItems > 0 then
-		TSM:Printf(L["%s group updated with %d items and %d materials."], profName, numItems, numMats)
+		Log.PrintfUser(L["%s group updated with %d items and %d materials."], profName, numItems, numMats)
 	else
-		TSM:Printf(L["%s group is already up to date."], profName)
+		Log.PrintfUser(L["%s group is already up to date."], profName)
 	end
 
 	baseFrame:GetElement("content.crafting.left.viewContainer.main.content.group.groupTree"):UpdateData(true)
@@ -641,7 +650,7 @@ function private.ProfessionDropdownOnSelectionChanged(_, value)
 	if not value then
 		-- nothing selected
 	else
-		local key = TSM.Table.GetDistinctKey(private.professions, value)
+		local key = Table.GetDistinctKey(private.professions, value)
 		local player, profession = strsplit(KEY_SEP, key)
 		if not profession then
 			-- the current linked / guild / NPC profession was re-selected, so just ignore this change
@@ -709,7 +718,7 @@ function private.ItemOnClick(text)
 			end
 		else
 			if IsShiftKeyDown() and ChatEdit_GetActiveWindow() then
-				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+				if TSM.IsWowClassic() then
 					ChatEdit_InsertLink(GetTradeSkillItemLink(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(spellId)))
 				else
 					ChatEdit_InsertLink(C_TradeSkillUI.GetRecipeItemLink(spellId))
@@ -717,7 +726,7 @@ function private.ItemOnClick(text)
 			end
 		end
 	else
-		TSM.Wow.SafeItemRef(TSMAPI_FOUR.Item.GetLink(text:GetElement("__parent.name"):GetContext()))
+		TSM.Wow.SafeItemRef(ItemInfo.GetLink(text:GetElement("__parent.name"):GetContext()))
 	end
 end
 
@@ -770,18 +779,18 @@ function private.ClearOnClick(button)
 end
 
 function private.QueueAddBtnOnClick(button)
-	local groups = TSM.TempTable.Acquire()
+	local groups = TempTable.Acquire()
 	for _, groupPath in button:GetElement("__parent.groupTree"):SelectedGroupsIterator() do
 		tinsert(groups, groupPath)
 	end
 	TSM.Crafting.Queue.RestockGroups(groups)
-	TSM.TempTable.Release(groups)
+	TempTable.Release(groups)
 end
 
 function private.HandleOnTitleClick(button)
 	if IsShiftKeyDown() then
 		local data = button:GetContext()
-		ChatEdit_InsertLink(TSMAPI_FOUR.Item.GetLink(data))
+		ChatEdit_InsertLink(ItemInfo.GetLink(data))
 	end
 end
 
@@ -830,7 +839,7 @@ function private.FSMCreate()
 		craftingQuantity = nil,
 	}
 
-	TSM.Event.Register("BAG_UPDATE_DELAYED", function()
+	Event.Register("BAG_UPDATE_DELAYED", function()
 		private.fsm:ProcessEvent("EV_BAG_UPDATE_DELAYED")
 	end)
 
@@ -853,7 +862,7 @@ function private.FSMCreate()
 	function fsmPrivate.CraftCallback(success, isDone)
 		fsmPrivate.success = success
 		fsmPrivate.isDone = isDone
-		TSMAPI_FOUR.Delay.AfterFrame(1, CraftCallback)
+		Delay.AfterFrame(1, CraftCallback)
 	end
 	function fsmPrivate.QueueUpdateCallback()
 		private.fsm:ProcessEvent("EV_QUEUE_UPDATE")
@@ -865,6 +874,7 @@ function private.FSMCreate()
 		if context.page == "profession" then
 			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList"):UpdateData(true)
 			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.right.matList"):UpdateData(true)
+			context.frame:GetElement("right.queue.queueList"):Draw()
 		end
 		fsmPrivate.UpdateCraftButtons(context)
 	end
@@ -880,7 +890,7 @@ function private.FSMCreate()
 		wipe(private.professions)
 		wipe(private.professionsOrder)
 		if currentProfession and not isCurrentProfessionPlayer then
-			assert(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC)
+			assert(not TSM.IsWowClassic())
 			local playerName = nil
 			local linked, linkedName = TSM.Crafting.ProfessionUtil.IsLinkedProfession()
 			if linked then
@@ -927,7 +937,7 @@ function private.FSMCreate()
 		wipe(private.professions)
 		wipe(private.professionsOrder)
 		if currentProfession and not isCurrentProfessionPlayer then
-			assert(WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC)
+			assert(not TSM.IsWowClassic())
 			local playerName = nil
 			local linked, linkedName = TSM.Crafting.ProfessionUtil.IsLinkedProfession()
 			if linked then
@@ -1062,9 +1072,9 @@ function private.FSMCreate()
 	function fsmPrivate.UpdateQueueFrame(context)
 		local queueFrame = context.frame:GetElement("right.queue")
 		local totalCost, totalProfit = TSM.Crafting.Queue.GetTotalCostAndProfit()
-		local totalCostText = totalCost and TSM.Money.ToString(totalCost) or ""
+		local totalCostText = totalCost and Money.ToString(totalCost) or ""
 		queueFrame:GetElement("queueCost.text"):SetText(totalCostText)
-		local totalProfitText = totalProfit and TSM.Money.ToString(totalProfit, totalProfit >= 0 and "|cff2cec0d" or "|cffd50000") or ""
+		local totalProfitText = totalProfit and Money.ToString(totalProfit, totalProfit >= 0 and "|cff2cec0d" or "|cffd50000") or ""
 		queueFrame:GetElement("queueProfit.text"):SetText(totalProfitText)
 		queueFrame:GetElement("queueList"):Draw()
 
@@ -1108,7 +1118,7 @@ function private.FSMCreate()
 				:SetPressed(context.craftingSpellId and context.craftingType == "all")
 				:SetDisabled(not canCraft or context.craftingSpellId)
 				:Draw()
-			if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and CraftCreateButton then
+			if TSM.IsWowClassic() and CraftCreateButton then
 				if canCraft then
 					CraftCreateButton:Enable()
 				else
@@ -1129,7 +1139,7 @@ function private.FSMCreate()
 	end
 	function fsmPrivate.StartCraft(context, spellId, quantity)
 		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(spellId, quantity, context.craftingType ~= "craft", fsmPrivate.CraftCallback)
-		TSM:LOG_INFO("Crafting %d (requested %s) of %d", numCrafted, quantity == math.huge and "all" or quantity, spellId)
+		Log.Info("Crafting %d (requested %s) of %d", numCrafted, quantity == math.huge and "all" or quantity, spellId)
 		if numCrafted == 0 then
 			return
 		end
@@ -1138,8 +1148,8 @@ function private.FSMCreate()
 		fsmPrivate.UpdateCraftButtons(context)
 	end
 
-	private.fsm = TSMAPI_FOUR.FSM.New("CRAFTING_UI_CRAFTING")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_CLOSED")
+	private.fsm = FSM.New("CRAFTING_UI_CRAFTING")
+		:AddState(FSM.NewState("ST_FRAME_CLOSED")
 			:SetOnEnter(function(context)
 				context.page = "profession"
 				context.frame = nil
@@ -1163,7 +1173,7 @@ function private.FSMCreate()
 				end
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN_NO_PROFESSION")
+		:AddState(FSM.NewState("ST_FRAME_OPEN_NO_PROFESSION")
 			:SetOnEnter(function(context)
 				fsmPrivate.UpdateContentPage(context)
 				fsmPrivate.UpdateQueueFrame(context)
@@ -1185,7 +1195,7 @@ function private.FSMCreate()
 				fsmPrivate.UpdateQueueFrame(context)
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN_WITH_PROFESSION")
+		:AddState(FSM.NewState("ST_FRAME_OPEN_WITH_PROFESSION")
 			:SetOnEnter(function(context)
 				context.recipeQuery = TSM.Crafting.ProfessionScanner.CreateQuery()
 					:Select("spellId", "categoryId")
@@ -1223,7 +1233,7 @@ function private.FSMCreate()
 					:OrderBy("index", true)
 					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "spellId")
 				if filter ~= "" then
-					filter = TSM.String.Escape(filter)
+					filter = String.Escape(filter)
 					context.recipeQuery
 						:Or()
 							:Matches("name", filter)
@@ -1282,7 +1292,7 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_SPELLCAST_COMPLETE", function(context, success, isDone)
 				if success and context.craftingSpellId then
-					TSM:LOG_INFO("Crafted %d", context.craftingSpellId)
+					Log.Info("Crafted %d", context.craftingSpellId)
 					TSM.Crafting.Queue.Remove(context.craftingSpellId, 1)
 					context.craftingQuantity = context.craftingQuantity - 1
 					assert(context.craftingQuantity >= 0)
@@ -1301,7 +1311,7 @@ function private.FSMCreate()
 				fsmPrivate.UpdateQueueFrame(context)
 			end)
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
 		:Init("ST_FRAME_CLOSED", fsmContext)
 end
 

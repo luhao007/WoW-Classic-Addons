@@ -8,13 +8,18 @@
 
 local _, TSM = ...
 local Crafting = TSM.Operations:NewPackage("Crafting")
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {}
-local L = TSM.L
 local OPERATION_INFO = {
 	minRestock = { type = "number", default = 1 },
 	maxRestock = { type = "number", default = 3 },
 	minProfit = { type = "string", default = "100g" },
 	craftPriceMethod = { type = "string", default = "" },
+}
+local BAD_CRAFTING_PRICE_SOURCES = {
+	crafting = true,
 }
 
 
@@ -28,9 +33,9 @@ function Crafting.OnInitialize()
 	for _, name in TSM.Operations.OperationIterator("Crafting") do
 		local operation = TSM.Operations.GetSettings("Crafting", name)
 		if operation.craftPriceMethod ~= "" then
-			local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(operation.craftPriceMethod, "crafting")
+			local isValid, err = CustomPrice.Validate(operation.craftPriceMethod, BAD_CRAFTING_PRICE_SOURCES)
 			if not isValid then
-				TSM:Printf(L["Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"], name, err)
+				Log.PrintfUser(L["Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"], name, err)
 				operation.craftPriceMethod = ""
 			end
 		end
@@ -42,7 +47,7 @@ function Crafting.HasOperation(itemString)
 end
 
 function Crafting.IsValid(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Crafting", itemString)
 	if not operationSettings then
 		return false
@@ -62,7 +67,7 @@ function Crafting.GetMinProfit(itemString)
 	if operationSettings.minProfit == "" then
 		return false
 	end
-	return true, TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.minProfit, itemString)
+	return true, CustomPrice.GetValue(operationSettings.minProfit, itemString)
 end
 
 function Crafting.GetRestockQuantity(itemString, haveQuantity)
@@ -89,7 +94,7 @@ function Crafting.GetCraftedItemValue(itemString)
 	if operationSettings.craftPriceMethod == "" then
 		return false
 	end
-	return true, TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.craftPriceMethod, itemString)
+	return true, CustomPrice.GetValue(operationSettings.craftPriceMethod, itemString)
 end
 
 
@@ -107,7 +112,7 @@ function private.GetOperationInfo(operationSettings)
 end
 
 function private.GetOperationSettings(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Crafting", itemString)
 	if not operationName then
 		return

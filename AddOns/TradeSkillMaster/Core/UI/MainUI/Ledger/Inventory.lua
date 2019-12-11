@@ -8,8 +8,21 @@
 
 local _, TSM = ...
 local Inventory = TSM.MainUI.Ledger:NewPackage("Inventory")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local Database = TSM.Include("Util.Database")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BagTracking = TSM.Include("Service.BagTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local AltTracking = TSM.Include("Service.AltTracking")
 local private = {
+	db = nil,
 	query = nil,
 	searchFilter = "",
 	groupList = {},
@@ -29,6 +42,23 @@ function Inventory.OnInitialize()
 	TSM.MainUI.Ledger.RegisterPage(L["Inventory"], private.DrawInventoryPage)
 end
 
+function Inventory.OnEnable()
+	private.db = Database.NewSchema("LEDGER_INVENTORY")
+		:AddUniqueStringField("itemString")
+		:Commit()
+	private.query = private.db:NewQuery()
+		:VirtualField("bagQuantity", "number", private.BagQuantityVirtualField)
+		:VirtualField("guildQuantity", "number", private.GuildQuantityVirtualField)
+		:VirtualField("auctionQuantity", "number", private.AuctionQuantityVirtualField)
+		:VirtualField("mailQuantity", "number", private.MailQuantityVirtualField)
+		:VirtualField("totalQuantity", "number", private.TotalQuantityVirtualField)
+		:VirtualField("totalValue", "number", private.TotalValueVirtualField)
+		:VirtualField("totalBankQuantity", "number", private.GetTotalBankQuantity)
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
+		:OrderBy("name", true)
+end
+
 
 
 -- ============================================================================
@@ -37,14 +67,28 @@ end
 
 function private.DrawInventoryPage()
 	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "inventory")
-	if not private.query then
-		private.query = TSM.Inventory.CreateQuery()
-			:VirtualField("totalValue", "number", private.TotalValueVirtualField)
-			:VirtualField("totalBankQuantity", "number", private.GetTotalBankQuantity)
-			:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
-			:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
-			:OrderBy("name", true)
+	local items = TempTable.Acquire()
+	for _, itemString in BagTracking.BaseItemIterator() do
+		items[itemString] = true
 	end
+	for _, itemString in GuildTracking.BaseItemIterator() do
+		items[itemString] = true
+	end
+	for _, itemString in AuctionTracking.BaseItemIterator() do
+		items[itemString] = true
+	end
+	for _, itemString in MailTracking.BaseItemIterator() do
+		items[itemString] = true
+	end
+	for _, itemString in AltTracking.BaseItemIterator() do
+		items[itemString] = true
+	end
+	private.db:TruncateAndBulkInsertStart()
+	for itemString in pairs(items) do
+		private.db:BulkInsertNewRow(itemString)
+	end
+	private.db:BulkInsertEnd()
+	TempTable.Release(items)
 	private.UpdateQuery()
 
 	wipe(private.groupList)
@@ -134,7 +178,7 @@ function private.DrawInventoryPage()
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "value")
 				:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
 				:SetStyle("fontHeight", 14)
-				:SetText(TSM.Money.ToString(private.GetTotalValue()))
+				:SetText(Money.ToString(private.GetTotalValue()))
 			)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "accountingScrollingTableFrame")
@@ -153,7 +197,7 @@ function private.DrawInventoryPage()
 						:SetFont(TSM.UI.Fonts.FRIZQT)
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", TSMAPI_FOUR.Item.GetLink)
+						:SetTextInfo("itemString", ItemInfo.GetLink)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
 						:Commit()
@@ -238,7 +282,7 @@ function private.FilterChangedCommon(element)
 	element:GetElement("__parent.__parent.accountingScrollingTableFrame.scrollingTable")
 		:SetQuery(private.query, true)
 	element:GetElement("__parent.__parent.totalValueRow.value")
-		:SetText(TSM.Money.ToString(private.GetTotalValue()))
+		:SetText(Money.ToString(private.GetTotalValue()))
 		:Draw()
 end
 
@@ -263,7 +307,7 @@ end
 -- ============================================================================
 
 function private.TableGetTotalValueText(totalValue)
-	return tostring(totalValue) == NAN_STR and "" or TSM.Money.ToString(totalValue)
+	return tostring(totalValue) == NAN_STR and "" or Money.ToString(totalValue)
 end
 
 
@@ -273,18 +317,43 @@ end
 -- ============================================================================
 
 function private.CheckCustomPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value)
+	local isValid, err = CustomPrice.Validate(value)
 	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 		return false
 	end
 end
 
+function private.BagQuantityVirtualField(row)
+	return BagTracking.GetBagsQuantityByBaseItemString(row:GetField("itemString"))
+end
+
+function private.GuildQuantityVirtualField(row)
+	return GuildTracking.GetQuantityByBaseItemString(row:GetField("itemString"))
+end
+
+function private.AuctionQuantityVirtualField(row)
+	return AuctionTracking.GetQuantityByBaseItemString(row:GetField("itemString"))
+end
+
+function private.MailQuantityVirtualField(row)
+	return MailTracking.GetQuantityByBaseItemString(row:GetField("itemString"))
+end
+
+function private.TotalQuantityVirtualField(row)
+	local itemString = row:GetField("itemString")
+	local bankQuantity = BagTracking.GetBankQuantityByBaseItemString(itemString)
+	local reagentBankQuantity = BagTracking.GetReagentBankQuantityByBaseItemString(itemString)
+	local altQuantity = AltTracking.GetQuantityByBaseItemString(itemString)
+	local bagQuantity, guildQuantity, auctionQuantity, mailQuantity = row:GetFields("bagQuantity", "guildQuantity", "auctionQuantity", "mailQuantity")
+	return bagQuantity + bankQuantity + reagentBankQuantity + guildQuantity + auctionQuantity + mailQuantity + altQuantity
+end
+
 function private.TotalValueVirtualField(row)
 	local itemString, totalQuantity = row:GetFields("itemString", "totalQuantity")
-	local price = TSMAPI_FOUR.CustomPrice.GetValue(private.valuePriceSource, itemString)
+	local price = CustomPrice.GetValue(private.valuePriceSource, itemString)
 	if not price then
 		return NAN
 	end
@@ -292,32 +361,34 @@ function private.TotalValueVirtualField(row)
 end
 
 function private.GetTotalBankQuantity(row)
-	local bankQuantity, reagentBankQuantity = row:GetFields("bankQuantity", "reagentBankQuantity")
+	local itemString = row:GetField("itemString")
+	local bankQuantity = BagTracking.GetBankQuantityByBaseItemString(itemString)
+	local reagentBankQuantity = BagTracking.GetReagentBankQuantityByBaseItemString(itemString)
 	return bankQuantity + reagentBankQuantity
 end
 
 function private.GetTotalValue()
 	-- can't lookup the value of items while the query is iteratoring, so grab the list of items first
-	local itemQuantities = TSM.TempTable.Acquire()
+	local itemQuantities = TempTable.Acquire()
 	for _, row in private.query:Iterator() do
 		local itemString, total = row:GetFields("itemString", "totalQuantity")
 		itemQuantities[itemString] = total
 	end
 	local totalValue = 0
 	for itemString, total in pairs(itemQuantities) do
-		local price = TSMAPI_FOUR.CustomPrice.GetValue(private.valuePriceSource, itemString)
+		local price = CustomPrice.GetValue(private.valuePriceSource, itemString)
 		if price then
 			totalValue = totalValue + price * total
 		end
 	end
-	TSM.TempTable.Release(itemQuantities)
+	TempTable.Release(itemQuantities)
 	return totalValue
 end
 
 function private.UpdateQuery()
 	private.query:ResetFilters()
 	if private.searchFilter ~= "" then
-		private.query:Matches("name", TSM.String.Escape(private.searchFilter))
+		private.query:Matches("name", String.Escape(private.searchFilter))
 	end
 	if private.groupFilter ~= ALL then
 		private.query:IsNotNil("groupPath")

@@ -8,6 +8,8 @@
 
 local _, TSM = ...
 local DBViewer = TSM.UI:NewPackage("DBViewer")
+local Database = TSM.Include("Util.Database")
+local Log = TSM.Include("Util.Log")
 local private = {
 	frame = nil,
 	frameContext = nil,
@@ -88,7 +90,7 @@ function private.CreateMainFrame()
 end
 
 function private.AddTableRows(frame)
-	for _, name in TSM.Database.InfoNameIterator() do
+	for _, name in Database.InfoNameIterator() do
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "nav_"..name)
 			:SetStyle("height", 20)
 			:SetStyle("margin", { left = 4, right = 4 })
@@ -125,7 +127,7 @@ function private.ContentNavCallback(_, path)
 end
 
 function private.CreateStructureFrame()
-	local query = TSM.Database.CreateInfoFieldQuery(private.selectedDBName)
+	local query = Database.CreateInfoFieldQuery(private.selectedDBName)
 		:OrderBy("order", true)
 	return TSMAPI_FOUR.UI.NewElement("Frame", "structure")
 		:SetLayout("VERTICAL")
@@ -138,14 +140,14 @@ function private.CreateStructureFrame()
 				:SetStyle("fontHeight", 14)
 				:SetStyle("justifyH", "LEFT")
 				:SetStyle("textColor", "#ffffff")
-				:SetText("Total Rows: "..TSM.Database.GetNumRows(private.selectedDBName))
+				:SetText("Total Rows: "..Database.GetNumRows(private.selectedDBName))
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "numRows")
 				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
 				:SetStyle("fontHeight", 14)
 				:SetStyle("justifyH", "LEFT")
 				:SetStyle("textColor", "#ffffff")
-				:SetText("Active Queries: "..TSM.Database.GetNumActiveQueries(private.selectedDBName))
+				:SetText("Active Queries: "..Database.GetNumActiveQueries(private.selectedDBName))
 			)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "table")
@@ -195,7 +197,7 @@ function private.CreateStructureFrame()
 end
 
 function private.CreateBrowseFrame()
-	local query = TSM.Database.CreateDBQuery(private.selectedDBName)
+	local query = Database.CreateDBQuery(private.selectedDBName)
 	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "browse")
 		:SetLayout("VERTICAL")
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "queryInput")
@@ -221,7 +223,7 @@ function private.CreateBrowseFrame()
 
 	local tableElement = frame:GetElement("table")
 	local stInfo = tableElement:GetScrollingTableInfo()
-	local fieldQuery = TSM.Database.CreateInfoFieldQuery(private.selectedDBName)
+	local fieldQuery = Database.CreateInfoFieldQuery(private.selectedDBName)
 		:Select("field")
 		:OrderBy("order", true)
 	local numFields = fieldQuery:Count()
@@ -260,7 +262,7 @@ end
 function private.NavButtonOnClick(button)
 	local navFrame = button:GetParentElement()
 	private.selectedDBName = button:GetText()
-	for _, name in TSM.Database.InfoNameIterator() do
+	for _, name in Database.InfoNameIterator() do
 		navFrame:GetElement("nav_"..name)
 			:SetStyle("textColor", name == private.selectedDBName and "#79a2ff" or "#ffffff")
 			:Draw()
@@ -271,7 +273,7 @@ end
 function private.QueryInputOnEnterPressed(input)
 	local func, errStr = loadstring(input:GetText())
 	if not func then
-		TSM:Printf("Failed to compile code: "..errStr)
+		Log.PrintfUser("Failed to compile code: "..errStr)
 		return
 	end
 	local tableElement = input:GetElement("__parent.table")
@@ -280,7 +282,7 @@ function private.QueryInputOnEnterPressed(input)
 	setfenv(func, { query = query })
 	local ok, funcErrStr = pcall(func)
 	if not ok then
-		TSM:Printf("Failed to execute code: "..funcErrStr)
+		Log.PrintfUser("Failed to execute code: "..funcErrStr)
 		return
 	end
 	tableElement:UpdateData(true)

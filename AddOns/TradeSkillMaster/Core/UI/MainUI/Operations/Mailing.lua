@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Mailing = TSM.MainUI.Operations:NewPackage("Mailing")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = { currentOperationName = nil }
 local RESTOCK_SOURCES = { bank = BANK, guild = GUILD }
 local RESTOCK_SOURCES_ORDER = { "bank", "guild" }

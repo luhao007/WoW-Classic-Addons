@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Warehousing = TSM.MainUI.Operations:NewPackage("Warehousing")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = { currentOperationName = nil }
 
 

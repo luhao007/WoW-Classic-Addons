@@ -11,6 +11,7 @@
 
 TSMAPI_FOUR.PlayerInfo = {}
 local _, TSM = ...
+local Settings = TSM.Include("Service.Settings")
 local private = {
 	isPlayerCache = {},
 }
@@ -31,7 +32,7 @@ local PLAYER_REALM_LOWER = PLAYER_LOWER.." - "..REALM_LOWER
 -- @return An iterator with the following fields: `index, name`
 function TSMAPI_FOUR.PlayerInfo.CharacterIterator(currentAccountOnly)
 	if currentAccountOnly then
-		return TSM.db:FactionrealmCharacterByAccountIterator()
+		return Settings.CharacterByAccountFactionrealmIterator()
 	else
 		return TSM.db:FactionrealmCharacterIterator()
 	end
@@ -141,7 +142,7 @@ function private.IsPlayerHelper(target, includeAlts, includeOtherFaction, includ
 						end
 					end
 				else
-					for _, charKey in TSM.db:FactionrealmCharacterByAccountIterator(nil, factionrealm) do
+					for _, charKey in Settings.CharacterByAccountFactionrealmIterator(nil, factionrealm) do
 						if target == (strlower(charKey).." - "..realmKey) then
 							found = true
 						end

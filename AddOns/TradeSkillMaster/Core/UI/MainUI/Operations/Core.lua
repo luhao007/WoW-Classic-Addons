@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Operations = TSM.MainUI:NewPackage("Operations")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	moduleNames = {},
 	moduleCallbacks = {},
@@ -136,12 +138,12 @@ function Operations.CreateSettingLine(id, labelText, disabled)
 end
 
 function Operations.CheckCustomPrice(value, ignoreError)
-	if TSMAPI_FOUR.CustomPrice.Validate(value) then
+	if CustomPrice.Validate(value) then
 		return true
 	else
 		-- TODO: better error message
 		if not ignoreError then
-			TSM:Print("Your custom price was incorrect. Please try again.")
+			Log.PrintUser("Your custom price was incorrect. Please try again.")
 		end
 		return false
 	end
@@ -380,10 +382,10 @@ function private.TitleOnValueChanged(text, newValue)
 		-- didn't change
 		text:Draw()
 	elseif newValue == "" then
-		TSM:Print(L["Invalid operation name."])
+		Log.PrintUser(L["Invalid operation name."])
 		text:Draw()
 	elseif TSM.Operations.Exists(private.currentModule, newValue) then
-		TSM:Print(L["Group already exists."])
+		Log.PrintUser(L["Group already exists."])
 		text:Draw()
 	else
 		TSM.Operations.Rename(private.currentModule, private.currentOperationName, newValue)
@@ -426,10 +428,10 @@ function private.ApplyNewOnSelectionChanged(dropdown, groupPath)
 		if numOperations == TSM.Operations.GetMaxNumber(private.currentModule) then
 			-- replace the last operation since we're already at the max number of operations
 			TSM.Groups.RemoveOperation(groupPath, private.currentModule, numOperations)
-			TSM:Printf(L["%s previously had the max number of operations, so removed %s."], TSM.Groups.Path.Format(groupPath, true), "|cff99ffff"..lastOperationName.."|r")
+			Log.PrintfUser(L["%s previously had the max number of operations, so removed %s."], TSM.Groups.Path.Format(groupPath, true), "|cff99ffff"..lastOperationName.."|r")
 		end
 		TSM.Groups.AppendOperation(groupPath, private.currentModule, private.currentOperationName)
-		TSM:Printf(L["Added %s to %s."], "|cff99ffff"..private.currentOperationName.."|r", TSM.Groups.Path.Format(groupPath, true))
+		Log.PrintfUser(L["Added %s to %s."], "|cff99ffff"..private.currentOperationName.."|r", TSM.Groups.Path.Format(groupPath, true))
 		parentElement:AddChild(private.CreateGroupOperationLine(groupPath))
 	end
 

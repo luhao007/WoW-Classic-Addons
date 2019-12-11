@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Path = TSM.Groups:NewPackage("Path")
+local String = TSM.Include("Util.String")
 local private = {}
 
 
@@ -41,7 +42,7 @@ function Path.IsChild(groupPath, parentPath)
 	if parentPath == TSM.CONST.ROOT_GROUP_PATH then
 		return groupPath ~= TSM.CONST.ROOT_GROUP_PATH
 	end
-	return strmatch(groupPath, "^"..TSM.String.Escape(parentPath)..TSM.CONST.GROUP_SEP) and true or false
+	return strmatch(groupPath, "^"..String.Escape(parentPath)..TSM.CONST.GROUP_SEP) and true or false
 end
 
 function Path.Format(groupPath, useColor)

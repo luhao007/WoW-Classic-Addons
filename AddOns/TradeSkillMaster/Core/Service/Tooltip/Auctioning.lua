@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Auctioning = TSM.Tooltip:NewPackage("Auctioning")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 local DEFAULTS = {
 	operationPrices = false,
@@ -36,7 +36,7 @@ function private.LoadTooltip(tooltip, itemString, options)
 		return
 	end
 
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local _, operation = TSM.Operations.GetFirstOperationByItem("Auctioning", itemString)
 	if not operation then return end
 

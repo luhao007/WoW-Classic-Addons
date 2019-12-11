@@ -8,7 +8,8 @@
 
 local _, TSM = ...
 local Dashboard = TSM.MainUI:NewPackage("Dashboard")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
 local private = {
 	xData = {},
 	yData = {},
@@ -25,7 +26,7 @@ local private = {
 }
 local TIMELIST = { halfMonth = L["Past Year"], month = L["Past Month"], sevenDays = L["Past 7 Days"], hour = L["Past Day"] }
 local TIMELISTORDER = { "halfMonth", "month", "sevenDays", "hour" }
-local GOLD_GRAPH_SUFFIX = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and "g" or "k"
+local GOLD_GRAPH_SUFFIX = TSM.IsWowClassic() and "g" or "k"
 local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
 	leftWidth = 300,
 }
@@ -600,7 +601,7 @@ function private.TooltipLabel(xValue, yValue)
 		dateFormat = "%b %d "..gsub(date("%I", private.xDataValue[xValue]), "^0?", "").."%p"
 	end
 
-	return strupper(date(dateFormat, private.xDataValue[xValue])).."\n"..TSM.Money.ToString(yValue * (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 1 or 1000) * COPPER_PER_GOLD, nil, "OPT_TRIM")
+	return strupper(date(dateFormat, private.xDataValue[xValue])).."\n"..Money.ToString(yValue * (TSM.IsWowClassic() and 1 or 1000) * COPPER_PER_GOLD, nil, "OPT_TRIM")
 end
 
 function private.GraphGetYLabel(_, yValue)
@@ -663,17 +664,17 @@ function private.PopulateSalesSummary(frame, redraw)
 	local profitTotal = salesTotal - expensesTotal
 	local profitPerDay = salesPerDay - expensesPerDay
 	local profitTopItem = TSM.Accounting.GetSummaryProfitTopItem(private.selectedSummaryTime, private.selectedSummaryCharacter)
-	local profitPerDayText = TSM.Money.ToString(profitPerDay, profitPerDay < 0 and "|cffff0000" or nil)
-	local profitTotalText = TSM.Money.ToString(profitTotal, profitTotal < 0 and "|cffff0000" or nil)
+	local profitPerDayText = Money.ToString(profitPerDay, profitPerDay < 0 and "|cffff0000" or nil)
+	local profitTotalText = Money.ToString(profitTotal, profitTotal < 0 and "|cffff0000" or nil)
 
 	local salesFrame = frame:GetElement("content.summary.sales")
-	salesFrame:GetElement("total.totalAmount"):SetText(TSM.Money.ToString(salesTotal))
-	salesFrame:GetElement("perDay.perDayAmount"):SetText(TSM.Money.ToString(salesPerDay))
+	salesFrame:GetElement("total.totalAmount"):SetText(Money.ToString(salesTotal))
+	salesFrame:GetElement("perDay.perDayAmount"):SetText(Money.ToString(salesPerDay))
 	salesFrame:GetElement("top.topItem"):SetText(TSM.UI.GetColoredItemName(salesTopItem)):SetTooltip(salesTopItem)
 
 	local expensesFrame = frame:GetElement("content.summary.expenses")
-	expensesFrame:GetElement("total.totalSpent"):SetText(TSM.Money.ToString(expensesTotal))
-	expensesFrame:GetElement("perDay.perDayExpense"):SetText(TSM.Money.ToString(expensesPerDay))
+	expensesFrame:GetElement("total.totalSpent"):SetText(Money.ToString(expensesTotal))
+	expensesFrame:GetElement("perDay.perDayExpense"):SetText(Money.ToString(expensesPerDay))
 	expensesFrame:GetElement("top.topItem"):SetText(TSM.UI.GetColoredItemName(expensesTopItem)):SetTooltip(expensesTopItem)
 
 	local profitFrame = frame:GetElement("content.summary.balance")

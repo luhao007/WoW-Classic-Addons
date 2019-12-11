@@ -8,7 +8,8 @@
 
 local _, TSM = ...
 local Groups = TSM.UI.MailingUI:NewPackage("Groups")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
 local private = {
 	filterText = "",
 	fsm = nil
@@ -203,8 +204,8 @@ function private.FSMCreate()
 			:Draw()
 	end
 
-	private.fsm = TSMAPI_FOUR.FSM.New("MAILING_GROUPS")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_HIDDEN")
+	private.fsm = FSM.New("MAILING_GROUPS")
+		:AddState(FSM.NewState("ST_HIDDEN")
 			:SetOnEnter(function(context)
 				TSM.Mailing.Send.KillThread()
 				TSM.Mailing.Groups.KillThread()
@@ -212,9 +213,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_FRAME_SHOW", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_FRAME_SHOW", "ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function(context, frame)
 				if not context.frame then
 					context.frame = frame
@@ -223,9 +224,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_HIDDEN")
 			:AddTransition("ST_SENDING_START")
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SENDING_START"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_SENDING_START")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SENDING_START")
+		:AddState(FSM.NewState("ST_SENDING_START")
 			:SetOnEnter(function(context, sendRepeat)
 				context.sending = true
 				local groups = {}
@@ -240,9 +241,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_SENDING_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_SENDING_DONE", "ST_SHOWN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_HIDDEN"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_HIDDEN")
 		:Init("ST_HIDDEN", fsmContext)
 end
 

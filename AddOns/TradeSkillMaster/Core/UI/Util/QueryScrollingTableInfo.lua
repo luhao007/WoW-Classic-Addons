@@ -7,6 +7,7 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
+local Vararg = TSM.Include("Util.Vararg")
 local QueryScrollingTableInfo = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTableInfo", TSM.UI.Util.ScrollingTableInfo)
 local QueryScrollingTableColumnInfo = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTableColumnInfo", TSM.UI.Util.ScrollingTableColumnInfo)
 TSM.UI.Util.QueryScrollingTableInfo = QueryScrollingTableInfo
@@ -70,7 +71,7 @@ function QueryScrollingTableColumnInfo._Release(self)
 end
 
 function QueryScrollingTableColumnInfo.SetTitles(self, ...)
-	TSM.Vararg.IntoTable(self._titles, ...)
+	Vararg.IntoTable(self._titles, ...)
 	return self
 end
 

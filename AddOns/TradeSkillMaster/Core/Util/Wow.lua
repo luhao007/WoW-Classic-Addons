@@ -11,6 +11,7 @@
 
 local _, TSM = ...
 local Wow = TSM.Init("Util.Wow")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 TSM.Wow = Wow
 local private = {
 	itemLinkedCallbacks = {},
@@ -39,7 +40,7 @@ end
 -- @tparam string link The itemLink or TSM itemString to show the tooltip for
 function Wow.SafeTooltipLink(link)
 	if strmatch(link, "p:") then
-		link = TSMAPI_FOUR.Item.GetLink(link)
+		link = ItemInfo.GetLink(link)
 	end
 	if strmatch(link, "battlepet") then
 		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
@@ -48,7 +49,7 @@ function Wow.SafeTooltipLink(link)
 		local currencyID = strmatch(link, "currency:(%d+)")
 		GameTooltip:SetCurrencyByID(currencyID)
 	else
-		GameTooltip:SetHyperlink(TSMAPI_FOUR.Item.GetLink(link))
+		GameTooltip:SetHyperlink(ItemInfo.GetLink(link))
 	end
 end
 
@@ -60,16 +61,8 @@ function Wow.SafeItemRef(link)
 	local blizzItemString = strmatch(link, "^\124c[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]\124H(item:[^\124]+)\124.+$")
 	blizzItemString = blizzItemString or strmatch(link, "^\124c[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]\124H(battlepet:[^\124]+)\124.+$")
 	if blizzItemString then
-		SetItemRef(blizzItemString, link)
+		SetItemRef(blizzItemString, link, "LeftButton")
 	end
-end
-
---- Checks if the version of an addon is a dev version.
--- @tparam string name The name of the addon
--- @treturn boolean Whether or not the addon is a dev version
-function Wow.IsTSMDevVersion()
-	-- use strmatch does this string doesn't itself get replaced when we deploy
-	return strmatch(GetAddOnMetadata("TradeSkillMaster", "version"), "^@tsm%-project%-version@$") and true or false
 end
 
 --- Checks if an addon is installed.
@@ -119,7 +112,7 @@ do
 		if putIntoChat then
 			return putIntoChat
 		end
-		local name = TSMAPI_FOUR.Item.GetName(itemLink)
+		local name = ItemInfo.GetName(itemLink)
 		if not name or not private.HandleItemLinked(name, itemLink) then
 			return putIntoChat
 		end

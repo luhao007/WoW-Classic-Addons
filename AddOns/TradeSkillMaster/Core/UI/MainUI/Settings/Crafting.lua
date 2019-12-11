@@ -8,8 +8,16 @@
 
 local _, TSM = ...
 local Crafting = TSM.MainUI.Settings:NewPackage("Crafting")
-local L = TSM.L
-local private = { altCharacters = {}, altGuilds = {} }
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	altCharacters = {},
+	altGuilds = {},
+}
+local BAD_MAT_PRICE_SOURCES = {
+	matprice = true,
+}
 
 
 
@@ -123,11 +131,11 @@ end
 -- ============================================================================
 
 function private.CheckMatPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value, "matprice")
-	if(isValid) then
+	local isValid, err = CustomPrice.Validate(value, BAD_MAT_PRICE_SOURCES)
+	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 	end
 end
 

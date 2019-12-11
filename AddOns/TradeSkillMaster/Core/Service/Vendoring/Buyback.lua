@@ -8,6 +8,11 @@
 
 local _, TSM = ...
 local Buyback = TSM.Vendoring:NewPackage("Buyback")
+local Database = TSM.Include("Util.Database")
+local Delay = TSM.Include("Util.Delay")
+local Event = TSM.Include("Util.Event")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	buybackDB = nil,
 }
@@ -19,20 +24,20 @@ local private = {
 -- ============================================================================
 
 function Buyback.OnInitialize()
-	private.buybackDB = TSMAPI_FOUR.Database.NewSchema("BUYBACK")
+	private.buybackDB = Database.NewSchema("BUYBACK")
 		:AddUniqueNumberField("index")
 		:AddStringField("itemString")
 		:AddNumberField("price")
 		:AddNumberField("quantity")
 		:Commit()
-	TSM.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
-	TSM.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
-	TSM.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
+	Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
+	Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
+	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 end
 
 function Buyback.CreateQuery()
 	return private.buybackDB:NewQuery()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 end
 
 function Buyback.BuybackItem(index)
@@ -46,22 +51,22 @@ end
 -- ============================================================================
 
 function private.MerchantShowEventHandler()
-	TSMAPI_FOUR.Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
+	Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
 end
 
 function private.MerchantClosedEventHandler()
-	TSMAPI_FOUR.Delay.Cancel("UPDATE_BUYBACK_DB")
+	Delay.Cancel("UPDATE_BUYBACK_DB")
 	private.buybackDB:Truncate()
 end
 
 function private.MerchantUpdateEventHandler()
-	TSMAPI_FOUR.Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
+	Delay.AfterFrame("UPDATE_BUYBACK_DB", 1, private.UpdateBuybackDB)
 end
 
 function private.UpdateBuybackDB()
 	private.buybackDB:TruncateAndBulkInsertStart()
 	for i = 1, GetNumBuybackItems() do
-		local itemString = TSMAPI_FOUR.Item.ToItemString(GetBuybackItemLink(i))
+		local itemString = ItemString.Get(GetBuybackItemLink(i))
 		if itemString then
 			local _, _, price, quantity = GetBuybackItemInfo(i)
 			private.buybackDB:BulkInsertNewRow(i, itemString, price, quantity)

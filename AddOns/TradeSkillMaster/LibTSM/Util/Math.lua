@@ -12,7 +12,6 @@
 local _, TSM = ...
 local Math = TSM.Init("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
-TSM.Math = Math
 local private = {
 	keysTemp = {},
 }

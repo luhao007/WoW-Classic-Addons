@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Destroying = TSM.MainUI.Settings:NewPackage("Destroying")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {}
 local ITEM_QUALITY_DESCS = { ITEM_QUALITY2_DESC, ITEM_QUALITY3_DESC, ITEM_QUALITY4_DESC }
 local ITEM_QUALITY_KEYS = { 2, 3, 4 }
@@ -114,11 +116,11 @@ end
 -- ============================================================================
 
 function private.CheckCustomPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value)
+	local isValid, err = CustomPrice.Validate(value)
 	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 		return false
 	end
 end

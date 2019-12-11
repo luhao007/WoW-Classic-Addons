@@ -7,8 +7,16 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local L = TSM.L
 local FilterSearch = TSM.Shopping:NewPackage("FilterSearch")
+local L = TSM.Include("Locale").GetTable()
+local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local Threading = TSM.Include("Service.Threading")
+local ItemFilter = TSM.Include("Service.ItemFilter")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local Conversions = TSM.Include("Service.Conversions")
 local private = {
 	scanThreadId = nil,
 	itemFilter = nil,
@@ -25,8 +33,8 @@ local private = {
 
 function FilterSearch.OnInitialize()
 	-- initialize thread
-	private.scanThreadId = TSMAPI_FOUR.Thread.New("FILTER_SEARCH", private.ScanThread)
-	private.itemFilter = TSMAPI_FOUR.ItemFilter.New()
+	private.scanThreadId = Threading.New("FILTER_SEARCH", private.ScanThread)
+	private.itemFilter = ItemFilter.New()
 end
 
 function FilterSearch.GetScanContext(isSpecial)
@@ -37,9 +45,9 @@ end
 function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 	assert(mode == "NORMAL" or mode == "CRAFTING" or mode == "DISENCHANT")
 	local isValid = true
-	local filters = TSM.TempTable.Acquire()
+	local filters = TempTable.Acquire()
 
-	for filter in TSM.String.SplitIterator(filterStr, ";") do
+	for filter in String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
 		if isValid and filter ~= "" and private.itemFilter:ParseStr(filter) then
 			local str = private.itemFilter:GetStr()
@@ -49,16 +57,14 @@ function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 				filter = filter.."/disenchant"
 			end
 			if strfind(strlower(filter), "/crafting") then
-				local craftingTargetItem = str and TSMAPI_FOUR.Conversions.GetTargetItemByName(str) or nil
-				local conversionInfo = craftingTargetItem and TSMAPI_FOUR.Conversions.GetSourceItems(craftingTargetItem)
-				if not conversionInfo or not conversionInfo.convert then
+				local craftingTargetItem = str and Conversions.GetTargetItemByName(str) or nil
+				if not craftingTargetItem or not Conversions.GetSourceItems(craftingTargetItem) then
 					isValid = false
 				end
 			end
 			if strfind(strlower(filter), "/disenchant") then
-				local craftingTargetItem =  str and TSMAPI_FOUR.Conversions.GetTargetItemByName(str) or nil
-				local conversionInfo = craftingTargetItem and TSMAPI_FOUR.Conversions.GetSourceItems(craftingTargetItem)
-				if not conversionInfo or not conversionInfo.disenchant then
+				local targetItemString = str and Conversions.GetTargetItemByName(str) or nil
+				if not DisenchantInfo.IsTargetItem(targetItemString) then
 					isValid = false
 				end
 			end
@@ -71,7 +77,7 @@ function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 	end
 
 	local result = table.concat(filters, ";")
-	TSM.TempTable.Release(filters)
+	TempTable.Release(filters)
 	if not isValid or result == "" then
 		return
 	end
@@ -88,7 +94,7 @@ end
 
 function private.ScanThread(auctionScan, filterStr)
 	local hasFilter = false
-	for filter in TSM.String.SplitIterator(filterStr, ";") do
+	for filter in String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
 		if filter ~= "" and private.itemFilter:ParseStr(filter) then
 			auctionScan:AddItemFilterThreaded(private.itemFilter)
@@ -96,7 +102,7 @@ function private.ScanThread(auctionScan, filterStr)
 		end
 	end
 	if not hasFilter then
-		TSM:Print(L["Invalid search filter"]..": "..filterStr)
+		Log.PrintUser(L["Invalid search filter"]..": "..filterStr)
 		return false
 	end
 	if not private.isSpecial then
@@ -116,7 +122,7 @@ end
 
 function private.MarketValueFunction(row)
 	local targetItem, targetItemRate = row:GetFields("targetItem", "targetItemRate")
-	local value = TSMAPI_FOUR.CustomPrice.GetValue(private.marketValueSource, targetItem)
+	local value = CustomPrice.GetValue(private.marketValueSource, targetItem)
 	if not value then
 		return
 	end

@@ -8,7 +8,18 @@
 
 local _, TSM = ...
 local Send = TSM.UI.MailingUI:NewPackage("Send")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Money = TSM.Include("Util.Money")
+local FSM = TSM.Include("Util.FSM")
+local Database = TSM.Include("Util.Database")
+local Math = TSM.Include("Util.Math")
+local String = TSM.Include("Util.String")
+local Event = TSM.Include("Util.Event")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local InventoryInfo = TSM.Include("Service.InventoryInfo")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	fsm = nil,
 	frame = nil,
@@ -38,7 +49,7 @@ function Send.OnInitialize()
 	private.FSMCreate()
 	TSM.UI.MailingUI.RegisterTopLevelPage(L["Send"], "iconPack.24x24/Send Mail", private.GetSendFrame)
 
-	private.db = TSMAPI_FOUR.Database.NewSchema("MAILTRACKING_SEND_INFO")
+	private.db = Database.NewSchema("MAILTRACKING_SEND_INFO")
 		:AddStringField("itemString")
 		:AddNumberField("quantity")
 		:Commit()
@@ -127,7 +138,7 @@ function private.GetSendFrame()
 					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
 					:SetStyle("fontHeight", 10)
 					:SetStyle("justifyH", "RIGHT")
-					:SetText(L["POSTAGE"]..": "..TSM.Money.ToString(30))
+					:SetText(L["POSTAGE"]..": "..Money.ToString(30))
 				)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("BorderedFrame", "dragBox")
@@ -153,7 +164,7 @@ function private.GetSendFrame()
 							:SetFontHeight(12)
 							:SetJustifyH("LEFT")
 							:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-							:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+							:SetIconInfo("itemString", ItemInfo.GetTexture)
 							:SetTooltipInfo("itemString")
 							:SetTooltipLinkingDisabled(true)
 							:Commit()
@@ -241,7 +252,7 @@ function private.GetSendFrame()
 					:SetStyle("width", 169)
 					:SetStyle("height", 20)
 					:SetStyle("justifyH", "RIGHT")
-					:SetText(TSM.Money.ToString(private.money))
+					:SetText(Money.ToString(private.money))
 					:SetScript("OnTextChanged", private.MoneyOnTextChanged)
 					:SetScript("OnEnterPressed", private.MoneyValueConvert)
 					:SetScript("OnEscapePressed", private.MoneyValueConvert)
@@ -606,13 +617,19 @@ function private.DragBoxOnItemRecieve(frame, button)
 	end
 
 	local _, _, subType = GetCursorInfo()
-	local itemString = TSMAPI_FOUR.Item.ToItemString(subType)
-	local stackSize
-	for _, bag, slot, iString, quantity in TSMAPI_FOUR.Inventory.BagIterator(false, false, true) do
-		if itemString == iString and TSMAPI_FOUR.Inventory.IsBagSlotLocked(bag, slot) then
+	local itemString = ItemString.Get(subType)
+	local stackSize = nil
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("bag", "slot", "quantity")
+		:Equal("isBoP", false)
+		:Equal("itemString", itemString)
+	for _, bag, slot, quantity in query:Iterator() do
+		if InventoryInfo.IsBagSlotLocked(bag, slot) then
 			stackSize = quantity
 		end
 	end
+	query:Release()
 	ClearCursor()
 	if not stackSize then
 		return
@@ -724,7 +741,7 @@ end
 
 function private.DesciptionOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.SendOnValueChanged(checkbox)
@@ -748,10 +765,10 @@ function private.CODOnValueChanged(checkbox)
 		private.isCOD = true
 
 		local input = checkbox:GetElement("__parent.moneyInput")
-		local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
-		local value = tonumber(text) or TSM.Money.FromString(text) or 0
+		local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
+		local value = tonumber(text) or Money.FromString(text) or 0
 		private.money = private.isCOD and min(value, 100000000) or value
-		input:SetText(TSM.Money.ToString(private.money))
+		input:SetText(Money.ToString(private.money))
 			:Draw()
 	else
 		private.isCOD = false
@@ -763,7 +780,7 @@ function private.MoneyFocusGained(input)
 end
 
 function private.MoneyOnTextChanged(input)
-	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
 	if text == "" or text == private.money then
 		return
 	end
@@ -771,20 +788,20 @@ function private.MoneyOnTextChanged(input)
 	if tonumber(text) then
 		private.money = tonumber(text)
 	else
-		private.money = TSM.Money.FromString(text) or 0
+		private.money = Money.FromString(text) or 0
 	end
 
 	private.UpdateSendFrame()
 end
 
 function private.MoneyValueConvert(input)
-	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
-	local value = min(max(tonumber(text) or TSM.Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
+	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	local value = min(max(tonumber(text) or Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
 
 	private.money = private.isCOD and min(value, 100000000) or value
 
 	input:SetFocused(false)
-	input:SetText(TSM.Money.ToString(private.money))
+	input:SetText(Money.ToString(private.money))
 		:Draw()
 end
 
@@ -872,7 +889,7 @@ function private.GenerateListElements(category, filterText)
 	if category == L["Alts"] then
 		for factionrealm in TSM.db:GetConnectedRealmIterator("realm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				character = Ambiguate(gsub(strmatch(character, "(.*) "..TSM.String.Escape("-")).."-"..gsub(factionrealm, TSM.String.Escape("-"), ""), " ", ""), "none")
+				character = Ambiguate(gsub(strmatch(character, "(.*) "..String.Escape("-")).."-"..gsub(factionrealm, String.Escape("-"), ""), " ", ""), "none")
 				if character ~= UnitName("player") then
 					if filterText and filterText ~= "" then
 						if strfind(strlower(character), filterText) then
@@ -940,13 +957,13 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	TSM.Event.Register("MAIL_CLOSED", function()
+	Event.Register("MAIL_CLOSED", function()
 		private.fsm:ProcessEvent("EV_MAIL_CLEAR")
 	end)
-	TSM.Event.Register("MAIL_SEND_INFO_UPDATE", function()
+	Event.Register("MAIL_SEND_INFO_UPDATE", function()
 		private.fsm:ProcessEvent("EV_MAIL_INFO_UPDATE")
 	end)
-	TSM.Event.Register("MAIL_FAILED", function()
+	Event.Register("MAIL_FAILED", function()
 		private.fsm:ProcessEvent("EV_SENDING_DONE")
 	end)
 
@@ -966,7 +983,7 @@ function private.FSMCreate()
 		local size = private.query:Count()
 
 		if size > 0 then
-			postage:SetText(L["POSTAGE"]..": "..TSM.Money.ToString(30 * size))
+			postage:SetText(L["POSTAGE"]..": "..Money.ToString(30 * size))
 				:Draw()
 
 			bigText:Hide()
@@ -976,7 +993,7 @@ function private.FSMCreate()
 			cod:SetDisabled(false)
 				:Draw()
 		else
-			postage:SetText(L["POSTAGE"]..": "..TSM.Money.ToString(30))
+			postage:SetText(L["POSTAGE"]..": "..Money.ToString(30))
 				:Draw()
 
 			bigText:Show()
@@ -1004,7 +1021,7 @@ function private.FSMCreate()
 				local itemName, _, _, stackCount = GetSendMailItem(i)
 				if itemName and stackCount then
 					local itemLink = GetSendMailItemLink(i)
-					local itemString = TSMAPI_FOUR.Item.ToItemString(itemLink)
+					local itemString = ItemString.Get(itemLink)
 
 					private.DatabaseNewRow(itemString, stackCount)
 
@@ -1031,7 +1048,7 @@ function private.FSMCreate()
 		if redraw and context.frame then
 			context.frame:GetElement("container.name.input"):SetText(private.recipient)
 				:Draw()
-			context.frame:GetElement("container.checkbox.moneyInput"):SetText(TSM.Money.ToString(private.money))
+			context.frame:GetElement("container.checkbox.moneyInput"):SetText(Money.ToString(private.money))
 				:Draw()
 		end
 	end
@@ -1040,8 +1057,8 @@ function private.FSMCreate()
 		SetSendMailShowing(true)
 	end
 
-	private.fsm = TSMAPI_FOUR.FSM.New("MAILING_SEND")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_HIDDEN")
+	private.fsm = FSM.New("MAILING_SEND")
+		:AddState(FSM.NewState("ST_HIDDEN")
 			:SetOnEnter(function(context)
 				TSM.Mailing.Send.KillThread()
 				SetSendMailShowing(false)
@@ -1049,14 +1066,14 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_FRAME_SHOW", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_FRAME_SHOW", "ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function(context, frame)
 				if not context.frame then
 					context.frame = frame
 					UpdateFrame(context)
-					TSMAPI_FOUR.Delay.AfterFrame("setMailShowing", 2, SendMailShowing)
+					Delay.AfterFrame("setMailShowing", 2, SendMailShowing)
 				end
 				UpdateButton(context)
 			end)
@@ -1072,9 +1089,9 @@ function private.FSMCreate()
 			:AddEvent("EV_MAIL_CLEAR", function(context, redraw)
 				ClearMail(context, IsShiftKeyDown(), redraw)
 			end)
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SENDING_START"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_SENDING_START")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SENDING_START")
+		:AddState(FSM.NewState("ST_SENDING_START")
 			:SetOnEnter(function(context, keepInfo, recipient, subject, body, money, items)
 				context.sending = true
 				context.keepInfo = keepInfo
@@ -1090,9 +1107,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_SENDING_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_SENDING_DONE", "ST_SHOWN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_HIDDEN"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_HIDDEN")
 		:Init("ST_HIDDEN", fsmContext)
 end
 

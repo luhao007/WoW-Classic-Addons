@@ -7,8 +7,12 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Sync = TSM.Groups:NewPackage("Sync")
-local L = TSM.L
+local GroupsSync = TSM.Groups:NewPackage("Sync")
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
+local Log = TSM.Include("Util.Log")
+local Sync = TSM.Include("Service.Sync")
 local private = {}
 
 
@@ -17,14 +21,14 @@ local private = {}
 -- New Modules Functions
 -- ============================================================================
 
-function Sync.OnInitialize()
-	TSM.Sync.RPC.Register("CREATE_PROFILE", private.RPCCreateProfile)
+function GroupsSync.OnInitialize()
+	Sync.RegisterRPC("CREATE_PROFILE", private.RPCCreateProfile)
 end
 
-function Sync.SendCurrentProfile(targetPlayer)
+function GroupsSync.SendCurrentProfile(targetPlayer)
 	local profileName = TSM.db:GetCurrentProfile()
-	local data = TSM.TempTable.Acquire()
-	data.groups = TSM.TempTable.Acquire()
+	local data = TempTable.Acquire()
+	data.groups = TempTable.Acquire()
 	for groupPath, moduleOperations in pairs(TSM.db:Get("profile", profileName, "userData", "groups")) do
 		data.groups[groupPath] = {}
 		for _, module in TSM.Operations.ModuleIterator() do
@@ -36,15 +40,15 @@ function Sync.SendCurrentProfile(targetPlayer)
 	end
 	data.items = TSM.db:Get("profile", profileName, "userData", "items")
 	data.operations = TSM.db:Get("profile", profileName, "userData", "operations")
-	local result, estimatedTime = TSM.Sync.RPC.Call("CREATE_PROFILE", targetPlayer, private.RPCCreateProfileResultHandler, profileName, UnitName("player"), data)
+	local result, estimatedTime = Sync.CallRPC("CREATE_PROFILE", targetPlayer, private.RPCCreateProfileResultHandler, profileName, UnitName("player"), data)
 	if result then
-		estimatedTime = max(TSM.Math.Round(estimatedTime, 60), 60)
-		TSM:Printf(L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"], profileName, targetPlayer, SecondsToTime(estimatedTime))
+		estimatedTime = max(Math.Round(estimatedTime, 60), 60)
+		Log.PrintfUser(L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"], profileName, targetPlayer, SecondsToTime(estimatedTime))
 	else
-		TSM:Print(L["Failed to send profile. Ensure both characters are online and try again."])
+		Log.PrintUser(L["Failed to send profile. Ensure both characters are online and try again."])
 	end
-	TSM.TempTable.Release(data.groups)
-	TSM.TempTable.Release(data)
+	TempTable.Release(data.groups)
+	TempTable.Release(data)
 end
 
 
@@ -77,21 +81,21 @@ function private.RPCCreateProfile(profileName, playerName, data)
 	-- switch back to our previous profile
 	TSM.db:SetProfile(currentProfile)
 
-	TSM:Printf(L["Added '%s' profile which was received from %s."], profileName, playerName)
+	Log.PrintfUser(L["Added '%s' profile which was received from %s."], profileName, playerName)
 
 	return true, profileName, UnitName("player")
 end
 
 function private.RPCCreateProfileResultHandler(success, ...)
 	if success == nil then
-		TSM:Print(L["Failed to send profile."].." "..L["Ensure both characters are online and try again."])
+		Log.PrintUser(L["Failed to send profile."].." "..L["Ensure both characters are online and try again."])
 		return
 	elseif not success then
 		local errMsg = ...
-		TSM:Print(L["Failed to send profile."].." "..errMsg)
+		Log.PrintUser(L["Failed to send profile."].." "..errMsg)
 		return
 	end
 
 	local profileName, targetPlayer = ...
-	TSM:Printf(L["Successfully sent your '%s' profile to %s!"], profileName, targetPlayer)
+	Log.PrintfUser(L["Successfully sent your '%s' profile to %s!"], profileName, targetPlayer)
 end

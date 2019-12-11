@@ -8,8 +8,14 @@
 
 local _, TSM = ...
 local Auctioning = TSM.MainUI.Settings:NewPackage("Auctioning")
-local L = TSM.L
-local private = { sounds = {}, soundkeys = {} }
+local L = TSM.Include("Locale").GetTable()
+local Sound = TSM.Include("Util.Sound")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local private = {
+	sounds = {},
+	soundkeys = {},
+}
 
 
 
@@ -19,7 +25,7 @@ local private = { sounds = {}, soundkeys = {} }
 
 function Auctioning.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage("Auctioning", "middle", private.GetAuctioningSettingsFrame)
-	for key, name in pairs(TSM.Sound.GetSounds()) do
+	for key, name in pairs(Sound.GetSounds()) do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end
@@ -208,16 +214,16 @@ end
 -- ============================================================================
 
 function private.SoundOnSelectionChanged(self)
-	TSM.Sound.PlaySound(self:GetSelectedItemKey())
+	Sound.PlaySound(self:GetSelectedItemKey())
 end
 
 function private.AddWhitelistOnClick(self)
 	local newPlayer = strlower(strtrim(self:GetElement("__parent.nameInput"):GetText()))
-	if newPlayer == "" or strfind(newPlayer, ",") or newPlayer ~= TSM.String.Escape(newPlayer) then
-		TSM:Printf(L["Invalid player name."])
+	if newPlayer == "" or strfind(newPlayer, ",") or newPlayer ~= String.Escape(newPlayer) then
+		Log.PrintfUser(L["Invalid player name."])
 		return
 	elseif TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer] then
-		TSM:Printf(L["The player \"%s\" is already on your whitelist."], TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer])
+		Log.PrintfUser(L["The player \"%s\" is already on your whitelist."], TSM.db.factionrealm.auctioningOptions.whitelist[newPlayer])
 		return
 	end
 
@@ -225,7 +231,7 @@ function private.AddWhitelistOnClick(self)
 	for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 		for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
 			if strlower(newPlayer) == strlower(character) then
-				TSM:Printf(L["You do not need to add \"%s\", alts are whitelisted automatically."], newPlayer)
+				Log.PrintfUser(L["You do not need to add \"%s\", alts are whitelisted automatically."], newPlayer)
 				isAlt = true
 			end
 		end

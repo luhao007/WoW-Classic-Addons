@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Tooltip = TSM.MainUI.Settings:NewPackage("Tooltip")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 
 
 

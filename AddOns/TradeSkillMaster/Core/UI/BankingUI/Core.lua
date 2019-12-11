@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local BankingUI = TSM.UI:NewPackage("BankingUI")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
 local private = {
 	fsm = nil,
 	currentModule = nil,
@@ -156,7 +159,7 @@ function private.GroupTreeGetList(groups, headerNameLookup)
 end
 
 function private.UpdateCurrentModule(frame)
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	if not TSM.IsWowClassic() then
 		ReagentBankFrame_OnShow(ReagentBankFrame)
 	end
 	-- update nav buttons
@@ -208,6 +211,7 @@ function private.UpdateCurrentModule(frame)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
 		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "depositReagentsBtn", "FOOTER_FULL")
+			:SetDisabled(TSM.IsWowClassic())
 			:SetText(L["DEPOSIT REAGENTS"])
 			:SetScript("OnClick", private.WarehousingDepositReagentsBtnOnClick)
 		)
@@ -291,7 +295,7 @@ function private.BaseFrameOnHide()
 end
 
 function private.CloseBtnOnClick(button)
-	TSM:Print(L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."])
+	Log.PrintUser(L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."])
 	button:GetParentElement():Hide()
 	private.fsm:ProcessEvent("EV_FRAME_HIDDEN")
 end
@@ -357,12 +361,12 @@ function private.SimpleBtnOnClick(button)
 end
 
 function private.GroupBtnOnClick(button)
-	local groups = TSM.TempTable.Acquire()
+	local groups = TempTable.Acquire()
 	for _, groupPath in button:GetElement("__base.content.groupTree"):SelectedGroupsIterator() do
 		groups[groupPath] = true
 	end
 	private.fsm:ProcessEvent("EV_BUTTON_CLICKED", button, button:GetContext(), groups)
-	TSM.TempTable.Release(groups)
+	TempTable.Release(groups)
 end
 
 
@@ -414,7 +418,7 @@ function private.FSMCreate()
 			footerButtonsFrame:GetElement("restockBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("depositReagentsBtn")
-				:SetDisabled(context.progress)
+				:SetDisabled(context.progress or TSM.IsWowClassic())
 			footerButtonsFrame:GetElement("row4.emptyBagsBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("row4.restoreBagsBtn")
@@ -444,8 +448,8 @@ function private.FSMCreate()
 		end
 		footerButtonsFrame:Draw()
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("BANKING_UI")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CLOSED")
+	private.fsm = FSM.New("BANKING_UI")
+		:AddState(FSM.NewState("ST_CLOSED")
 			:SetOnEnter(function(context)
 				if context.frame then
 					context.frame:Hide()
@@ -465,7 +469,7 @@ function private.FSMCreate()
 				return "ST_FRAME_OPEN"
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_HIDDEN")
+		:AddState(FSM.NewState("ST_FRAME_HIDDEN")
 			:SetOnEnter(function(context)
 				TSM.db.global.internalData.bankingUIFrameContext.isOpen = false
 				if context.frame then
@@ -482,7 +486,7 @@ function private.FSMCreate()
 				return "ST_FRAME_OPEN"
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN")
+		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				if not context.frame then
 					context.frame = private.CreateMainFrame()
@@ -495,12 +499,12 @@ function private.FSMCreate()
 			:AddTransition("ST_FRAME_HIDDEN")
 			:AddTransition("ST_PROCESSING")
 			:AddTransition("ST_CLOSED")
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_PROCESSING"))
-			:AddEvent("EV_TOGGLE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_HIDDEN"))
-			:AddEvent("EV_FRAME_HIDDEN", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_HIDDEN"))
-			:AddEvent("EV_NAV_CHANGED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_OPEN"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_PROCESSING")
+			:AddEventTransition("EV_TOGGLE", "ST_FRAME_HIDDEN")
+			:AddEventTransition("EV_FRAME_HIDDEN", "ST_FRAME_HIDDEN")
+			:AddEventTransition("EV_NAV_CHANGED", "ST_FRAME_OPEN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_PROCESSING")
+		:AddState(FSM.NewState("ST_PROCESSING")
 			:SetOnEnter(function(context, button, startFunc, ...)
 				context.activeButton = button
 				context.activeButton
@@ -522,13 +526,13 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_THREAD_DONE", function(context)
 				if context.progress == 0 then
-					TSM:Print(L["Nothing to move."])
+					Log.PrintUser(L["Nothing to move."])
 				end
 				return "ST_FRAME_OPEN"
 			end)
-			:AddEvent("EV_TOGGLE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_HIDDEN"))
+			:AddEventTransition("EV_TOGGLE", "ST_FRAME_HIDDEN")
 		)
-		:AddDefaultEvent("EV_BANK_CLOSED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+		:AddDefaultEventTransition("EV_BANK_CLOSED", "ST_CLOSED")
 		:Init("ST_CLOSED", fsmContext)
 end
 

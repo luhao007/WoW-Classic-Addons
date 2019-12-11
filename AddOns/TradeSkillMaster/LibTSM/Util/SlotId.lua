@@ -11,7 +11,6 @@
 
 local _, TSM = ...
 local SlotId = TSM.Init("Util.SlotId")
-TSM.SlotId = SlotId
 local SLOT_ID_MULTIPLIER = 1000
 
 
@@ -29,7 +28,7 @@ function SlotId.Join(container, slot)
 end
 
 --- Splits a slotId into a container and slot
--- @tparam number The slotId
+-- @tparam number slotId The slotId
 -- @treturn number container The container
 -- @treturn number slot The slot
 function SlotId.Split(slotId)

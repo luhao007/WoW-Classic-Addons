@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Mailing = TSM:NewPackage("Mailing")
+local Event = TSM.Include("Util.Event")
 local private = {
 	mailOpen = false,
 	frameCallbacks = {},
@@ -20,8 +21,8 @@ local private = {
 -- ============================================================================
 
 function Mailing.OnInitialize()
-	TSM.Event.Register("MAIL_SHOW", private.MailShow)
-	TSM.Event.Register("MAIL_CLOSED", private.MailClosed)
+	Event.Register("MAIL_SHOW", private.MailShow)
+	Event.Register("MAIL_CLOSED", private.MailClosed)
 end
 
 function Mailing.RegisterFrameCallback(callback)

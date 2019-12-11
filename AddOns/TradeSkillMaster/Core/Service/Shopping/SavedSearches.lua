@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local SavedSearches = TSM.Shopping:NewPackage("SavedSearches")
-local private = { db = nil }
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local private = {
+	db = nil,
+}
 
 
 
@@ -18,7 +22,7 @@ local private = { db = nil }
 
 function SavedSearches.OnInitialize()
 	-- remove duplicates
-	local keepSearch = TSM.TempTable.Acquire()
+	local keepSearch = TempTable.Acquire()
 	for _, data in ipairs(TSM.db.global.userData.savedShoppingSearches) do
 		local filter = strlower(data.filter)
 		if not keepSearch[filter] then
@@ -38,9 +42,9 @@ function SavedSearches.OnInitialize()
 			tremove(TSM.db.global.userData.savedShoppingSearches, i)
 		end
 	end
-	TSM.TempTable.Release(keepSearch)
+	TempTable.Release(keepSearch)
 
-	private.db = TSMAPI_FOUR.Database.NewSchema("SHOPPING_SAVED_SEARCHES")
+	private.db = Database.NewSchema("SHOPPING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")
 		:AddStringField("name")
 		:AddNumberField("lastSearch")

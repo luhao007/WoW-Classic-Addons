@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Ledger = TSM.MainUI:NewPackage("Ledger")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local Money = TSM.Include("Util.Money")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	pages = {},
@@ -205,8 +209,8 @@ function private.GetItemDetail()
 		:Equal("itemString", private.contextItemString)
 		:OrderBy("time", false)
 
-	local topBuyersTemp = TSM.TempTable.Acquire()
-	local topSellersTemp = TSM.TempTable.Acquire()
+	local topBuyersTemp = TempTable.Acquire()
+	local topSellersTemp = TempTable.Acquire()
 	for _, row in query:Iterator() do
 		local recordType = row:GetField("type")
 		local otherPlayer = row:GetField("otherPlayer")
@@ -227,8 +231,8 @@ function private.GetItemDetail()
 	local topSellers = private.TopSellerBuyerText(topSellersTemp)
 	local topBuyers = private.TopSellerBuyerText(topBuyersTemp)
 
-	TSM.TempTable.Release(topBuyersTemp)
-	TSM.TempTable.Release(topSellersTemp)
+	TempTable.Release(topBuyersTemp)
+	TempTable.Release(topSellersTemp)
 
 	return TSMAPI_FOUR.UI.NewElement("Frame", "content")
 		:SetStylesheet(BASE_STYLESHEET)
@@ -268,7 +272,7 @@ function private.GetItemDetail()
 						:SetStyle("width", 30)
 						:SetStyle("height", 30)
 						:SetStyle("margin", { top = 0, left = 0, right = 8, bottom = 7 })
-						:SetStyle("backgroundTexture", TSMAPI_FOUR.Item.GetTexture(private.contextItemString))
+						:SetStyle("backgroundTexture", ItemInfo.GetTexture(private.contextItemString))
 						:SetTooltip(private.contextItemString)
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "itemName")
@@ -344,13 +348,13 @@ function private.GetItemDetail()
 						:SetText(L["Average Prices:"])
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, "sale")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, "sale")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, "sale")))
 					)
 				)
 				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
@@ -362,13 +366,13 @@ function private.GetItemDetail()
 						:SetText(L["Gold Earned:"])
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, "sale")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, "sale")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, "sale")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, "sale")))
 					)
 				)
 				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "total")
@@ -420,13 +424,13 @@ function private.GetItemDetail()
 						:SetText(L["Average Prices:"])
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, nil, "buy")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 30, "buy")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetAveragePrice(private.contextItemString, SECONDS_PER_DAY * 7, "buy")))
 					)
 				)
 				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
@@ -438,13 +442,13 @@ function private.GetItemDetail()
 						:SetText(L["Gold Spent:"])
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, nil, "buy")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 30, "buy")))
 					)
 					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount", "SUMMARY_NUM")
-						:SetText(TSM.Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, "buy")))
+						:SetText(Money.ToString(TSM.Accounting.Transactions.GetTotalPrice(private.contextItemString, SECONDS_PER_DAY * 7, "buy")))
 					)
 				)
 			)
@@ -526,13 +530,13 @@ end
 
 function private.TopSellerBuyerText(topSellerBuyer)
 	local top = ""
-	local players = TSM.TempTable.Acquire()
+	local players = TempTable.Acquire()
 
 	for player in pairs(topSellerBuyer) do
 		tinsert(players, player)
 	end
 
-	TSM.Table.SortWithValueLookup(players, topSellerBuyer)
+	Table.SortWithValueLookup(players, topSellerBuyer)
 
 	local count = 0
 	for i = #players, 1, -1 do
@@ -543,7 +547,7 @@ function private.TopSellerBuyerText(topSellerBuyer)
 		top = top .. players[i] .. " |cff6fbae6(" .. topSellerBuyer[players[i]] .. ")|r"
 		count = count + 1
 	end
-	TSM.TempTable.Release(players)
+	TempTable.Release(players)
 
 	if count == 0 then
 		return L["None"]
@@ -563,7 +567,7 @@ function private.ItemDetailScrollingTableOnRowClick(scrollingTable, row, button)
 	local subtitle = nil
 	local recordType, itemString, quantity, otherPlayer, price = row:GetFields("type", "itemString", "quantity", "otherPlayer", "price")
 	local name = TSM.UI.GetColoredItemName(itemString) or "?"
-	local amount = TSM.Money.ToString(price * quantity)
+	local amount = Money.ToString(price * quantity)
 	if recordType == "sale" then
 		subtitle = format(L["Sold %d of %s to %s for %s"], quantity, name, otherPlayer, amount)
 	elseif recordType == "buy" then
@@ -599,9 +603,9 @@ function private.TableGetTimeframeText(timestamp)
 end
 
 function private.TableGetTotalPriceText(row)
-	return TSM.Money.ToString(row:GetField("price") * row:GetField("quantity"))
+	return Money.ToString(row:GetField("price") * row:GetField("quantity"))
 end
 
 function private.TableGetPerItemText(row)
-	return TSM.Money.ToString(row:GetField("price"))
+	return Money.ToString(row:GetField("price"))
 end

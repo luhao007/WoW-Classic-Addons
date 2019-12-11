@@ -8,7 +8,8 @@
 
 local _, TSM = ...
 local ImportConfirmationList = TSM.Include("LibTSMClass").DefineClass("ImportConfirmationList", TSM.UI.FastScrollingList)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local String = TSM.Include("Util.String")
 TSM.UI.ImportConfirmationList = ImportConfirmationList
 local private = { rowFrameLookup = {} }
 local EXPANDER_PADDING_LEFT = 7
@@ -222,7 +223,7 @@ function ImportConfirmationList._RemoveRow(self, data)
 			self._import:RemoveModuleOperations(moduleName)
 		end
 	else
-		local groupPath = strmatch(header, TSM.String.Escape(GROUP..": ").."(.+)") or header
+		local groupPath = strmatch(header, String.Escape(GROUP..": ").."(.+)") or header
 		assert(groupPath)
 		if not category then
 			-- remove the group

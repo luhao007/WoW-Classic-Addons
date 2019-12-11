@@ -8,6 +8,13 @@
 
 local _, TSM = ...
 local Banking = TSM:NewPackage("Banking")
+local Event = TSM.Include("Util.Event")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	moveThread = nil,
 	moveItems = {},
@@ -26,13 +33,13 @@ local MOVE_WAIT_TIMEOUT = 2
 -- ============================================================================
 
 function Banking.OnInitialize()
-	private.moveThread = TSMAPI_FOUR.Thread.New("BANKING_MOVE", private.MoveThread)
+	private.moveThread = Threading.New("BANKING_MOVE", private.MoveThread)
 
-	TSM.Event.Register("BANKFRAME_OPENED", private.BankOpened)
-	TSM.Event.Register("BANKFRAME_CLOSED", private.BankClosed)
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSM.Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankOpened)
-		TSM.Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankClosed)
+	Event.Register("BANKFRAME_OPENED", private.BankOpened)
+	Event.Register("BANKFRAME_CLOSED", private.BankClosed)
+	if not TSM.IsWowClassic() then
+		Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankOpened)
+		Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankClosed)
 	end
 end
 
@@ -62,7 +69,7 @@ end
 
 function Banking.EmptyBags(callback)
 	assert(private.openFrame)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.BagIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
@@ -71,7 +78,7 @@ function Banking.EmptyBags(callback)
 	private.callback = callback
 	local context = Banking.IsGuildBankOpen() and Banking.MoveContext.GetBagToGuildBank() or Banking.MoveContext.GetBagToBank()
 	private.StartMove(items, context, private.EmptyBagsThreadCallbackWrapper)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Banking.RestoreBags(callback)
@@ -91,46 +98,46 @@ function Banking.PutByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
-	filterStr = TSM.String.Escape(strlower(filterStr))
+	filterStr = String.Escape(strlower(filterStr))
 
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.BagIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
 
 	for itemString in pairs(items) do
-		local name = strlower(TSMAPI_FOUR.Item.GetName(itemString) or "")
-		if not strmatch(TSMAPI_FOUR.Item.ToBaseItemString(itemString), filterStr) and not strmatch(name, filterStr) then
+		local name = strlower(ItemInfo.GetName(itemString) or "")
+		if not strmatch(ItemString.GetBase(itemString), filterStr) and not strmatch(name, filterStr) then
 			-- remove this item
 			items[itemString] = nil
 		end
 	end
 
 	Banking.MoveToBank(items, private.GetPutCallback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Banking.GetByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
-	filterStr = TSM.String.Escape(strlower(filterStr))
+	filterStr = String.Escape(strlower(filterStr))
 
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	for _, _, _, itemString, quantity in Banking.Util.OpenBankIterator(false) do
 		items[itemString] = (items[itemString] or 0) + quantity
 	end
 
 	for itemString in pairs(items) do
-		local name = strlower(TSMAPI_FOUR.Item.GetName(itemString) or "")
-		if not strmatch(TSMAPI_FOUR.Item.ToBaseItemString(itemString), filterStr) and not strmatch(name, filterStr) then
+		local name = strlower(ItemInfo.GetName(itemString) or "")
+		if not strmatch(ItemString.GetBase(itemString), filterStr) and not strmatch(name, filterStr) then
 			-- remove this item
 			items[itemString] = nil
 		end
 	end
 
 	Banking.MoveToBag(items, private.GetPutCallback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 
@@ -141,12 +148,12 @@ end
 
 function private.MoveThread(context, callback)
 	local numMoves = 0
-	local emptySlotIds = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local emptySlotIds = Threading.AcquireSafeTempTable()
 	context:GetEmptySlotsThreaded(emptySlotIds)
-	local slotIds = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local slotItemString = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local slotMoveQuantity = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local slotEndQuantity = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local slotIds = Threading.AcquireSafeTempTable()
+	local slotItemString = Threading.AcquireSafeTempTable()
+	local slotMoveQuantity = Threading.AcquireSafeTempTable()
+	local slotEndQuantity = Threading.AcquireSafeTempTable()
 	for itemString, numQueued in pairs(private.moveItems) do
 		for _, slotId, quantity in context:SlotIdIterator(itemString) do
 			if numQueued > 0 then
@@ -161,12 +168,12 @@ function private.MoveThread(context, callback)
 					numQueued = numQueued - slotMoveQuantity[slotId]
 					numMoves = numMoves + 1
 				else
-					TSM:LOG_ERR("No target slot")
+					Log.Err("No target slot")
 				end
 			end
 		end
 		if numQueued > 0 then
-			TSM:LOG_ERR("No slots with item (%s)", itemString)
+			Log.Err("No slots with item (%s)", itemString)
 		end
 	end
 
@@ -176,7 +183,7 @@ function private.MoveThread(context, callback)
 		-- do all the pending moves
 		for slotId, targetSlotId in pairs(slotIds) do
 			context:MoveSlot(slotId, targetSlotId, slotMoveQuantity[slotId])
-			TSMAPI_FOUR.Thread.Yield()
+			Threading.Yield()
 			if private.openFrame == "GUILD_BANK" then
 				movedSlotId = slotId
 				break
@@ -199,13 +206,13 @@ function private.MoveThread(context, callback)
 					if didMove and slotId == movedSlotId then
 						break
 					end
-					TSMAPI_FOUR.Thread.Yield()
+					Threading.Yield()
 				end
 			end
 			if didMove then
 				callback("PROGRESS", numDone / numMoves)
 			end
-			TSMAPI_FOUR.Thread.Yield(true)
+			Threading.Yield(true)
 		end
 	end
 
@@ -213,11 +220,11 @@ function private.MoveThread(context, callback)
 		QueryGuildBankTab(GetCurrentGuildBankTab())
 	end
 
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(slotIds)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(slotItemString)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(slotMoveQuantity)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(slotEndQuantity)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(emptySlotIds)
+	Threading.ReleaseSafeTempTable(slotIds)
+	Threading.ReleaseSafeTempTable(slotItemString)
+	Threading.ReleaseSafeTempTable(slotMoveQuantity)
+	Threading.ReleaseSafeTempTable(slotEndQuantity)
+	Threading.ReleaseSafeTempTable(emptySlotIds)
 	callback("DONE")
 end
 
@@ -271,11 +278,11 @@ function private.StartMove(items, context, callback)
 	for itemString, quantity in pairs(items) do
 		private.moveItems[itemString] = quantity
 	end
-	TSMAPI_FOUR.Thread.Start(private.moveThread, context, callback)
+	Threading.Start(private.moveThread, context, callback)
 end
 
 function private.StopMove()
-	TSMAPI_FOUR.Thread.Kill(private.moveThread)
+	Threading.Kill(private.moveThread)
 end
 
 function private.EmptyBagsThreadCallbackWrapper(event, ...)
@@ -300,6 +307,6 @@ end
 
 function private.GetPutCallback(event)
 	if event == "DONE" then
-		TSM:Print(DONE)
+		Log.PrintUser(DONE)
 	end
 end

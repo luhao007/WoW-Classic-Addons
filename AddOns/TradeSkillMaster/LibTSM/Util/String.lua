@@ -11,8 +11,19 @@
 
 local _, TSM = ...
 local String = TSM.Init("Util.String")
-TSM.String = String
-local MAGIC_CHARACTERS = { '[', ']', '(', ')', '.', '+', '-', '*', '?', '^', '$' }
+local MAGIC_CHARACTERS = {
+	["["] = true,
+	["]"] = true,
+	["("] = true,
+	[")"] = true,
+	["."] = true,
+	["+"] = true,
+	["-"] = true,
+	["*"] = true,
+	["?"] = true,
+	["^"] = true,
+	["$"] = true,
+}
 
 
 
@@ -25,25 +36,26 @@ local MAGIC_CHARACTERS = { '[', ']', '(', ')', '.', '+', '-', '*', '?', '^', '$'
 -- separators which are more than one character in length.
 -- @tparam string str The string to be split
 -- @tparam string sep The separator to use to split the string
+-- @?tparam[opt=nil] table resultTbl An optional table to store the result in
 -- @treturn table The result as a list of substrings
-function String.SafeSplit(str, sep)
-	local parts = {}
+function String.SafeSplit(str, sep, resultTbl)
+	resultTbl = resultTbl or {}
 	local s = 1
 	local sepLength = #sep
 	if sepLength == 0 then
-		tinsert(parts, str)
-		return parts
+		tinsert(resultTbl, str)
+		return resultTbl
 	end
 	while true do
 		local e = strfind(str, sep, s)
 		if not e then
-			tinsert(parts, strsub(str, s))
+			tinsert(resultTbl, strsub(str, s))
 			break
 		end
-		tinsert(parts, strsub(str, s, e - 1))
+		tinsert(resultTbl, strsub(str, s, e - 1))
 		s = e + sepLength
 	end
-	return parts
+	return resultTbl
 end
 
 --- Escapes any magic characters used by lua's pattern matching.
@@ -52,7 +64,7 @@ end
 function String.Escape(str)
 	assert(not strmatch(str, "\001"), "Input string must not contain '\\001' characters")
 	str = gsub(str, "%%", "\001")
-	for _, char in ipairs(MAGIC_CHARACTERS) do
+	for char in pairs(MAGIC_CHARACTERS) do
 		str = gsub(str, "%"..char, "%%"..char)
 	end
 	str = gsub(str, "\001", "%%%%")
@@ -76,10 +88,8 @@ end
 -- @within String
 function String.SplitIterator(str, sep)
 	assert(#sep == 1)
-	for _, char in ipairs(MAGIC_CHARACTERS) do
-		if char == sep then
-			sep = "%"..char
-		end
+	if MAGIC_CHARACTERS[sep] then
+		sep = "%"..sep
 	end
 	return gmatch(str, "([^"..sep.."]+)")
 end

@@ -12,7 +12,11 @@
 -- @classmod AuctionScrollingTable
 
 local _, TSM = ...
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
+local Money = TSM.Include("Util.Money")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local AuctionScrollingTable = TSM.Include("LibTSMClass").DefineClass("AuctionScrollingTable", TSM.UI.ScrollingTable)
 TSM.UI.AuctionScrollingTable = AuctionScrollingTable
 local private = {
@@ -299,7 +303,7 @@ function AuctionScrollingTable._UpdateData(self)
 	wipe(self._numAuctionsByItem)
 	wipe(self._numAuctionsByHash)
 
-	local hashes = TSM.TempTable.Acquire()
+	local hashes = TempTable.Acquire()
 	local sortAscending = self._sortAscending
 	local showingAltTitles = self._tableInfo:_GetTitleIndex() ~= 1
 	for _, record in self._query:Iterator() do
@@ -308,9 +312,9 @@ function AuctionScrollingTable._UpdateData(self)
 		local sortValue = private.sortContext.sortValueByHash[hash]
 		if not sortValue then
 			if sortKey == "item" then
-				sortValue = TSMAPI_FOUR.Item.GetName(baseItemString)
+				sortValue = ItemInfo.GetName(baseItemString)
 			elseif sortKey == "ilvl" then
-				sortValue = TSMAPI_FOUR.Item.GetItemLevel(record:GetField("itemString"))
+				sortValue = ItemInfo.GetItemLevel(record:GetField("itemString"))
 			elseif sortKey == "posts" then
 				sortValue = record.stackSize
 			elseif sortKey == "stack" then
@@ -382,7 +386,7 @@ function AuctionScrollingTable._UpdateData(self)
 		end
 	end
 
-	TSM.TempTable.Release(hashes)
+	TempTable.Release(hashes)
 	sort(self._data, sortAscending and private.SortByHashAscendingHelper or private.SortByHashDescendingHelper)
 	wipe(private.sortContext.sortValueByHash)
 	wipe(private.sortContext.baseRecordSortValues)
@@ -613,7 +617,7 @@ end
 
 function private.GetItemLevelCellText(self, context)
 	local record = self._baseRecordByHash[context]
-	return TSMAPI_FOUR.Item.GetItemLevel(record:GetField("itemLink"))
+	return ItemInfo.GetItemLevel(record:GetField("itemLink"))
 end
 
 function private.GetAuctionsPostsText(self, context)
@@ -646,7 +650,7 @@ function private.GetBidCellText(self, context, titleIndex)
 	else
 		error("Unexpected titleIndex: "..tostring(titleIndex))
 	end
-	return record:GetField("isHighBidder") and TSM.Money.ToString(value, "|cff00ff00") or TSM.Money.ToString(value)
+	return record:GetField("isHighBidder") and Money.ToString(value, "|cff00ff00") or Money.ToString(value)
 end
 
 function private.GetBuyoutCellText(self, context, titleIndex)
@@ -659,7 +663,7 @@ function private.GetBuyoutCellText(self, context, titleIndex)
 	else
 		error("Unexpected titleIndex: "..tostring(titleIndex))
 	end
-	return TSM.Money.ToString(value)
+	return Money.ToString(value)
 end
 
 function private.GetPercentCellText(self, context)
@@ -667,7 +671,7 @@ function private.GetPercentCellText(self, context)
 	local pct, bidPct = self:_GetRecordMarketValuePct(record)
 	local pctColor = "|cffffffff"
 	if pct then
-		pct = TSM.Math.Round(100 * pct)
+		pct = Math.Round(100 * pct)
 		for _, info in ipairs(AUCTION_PCT_COLORS) do
 			if pct < info.value then
 				pctColor = info.color
@@ -676,7 +680,7 @@ function private.GetPercentCellText(self, context)
 		end
 	elseif bidPct then
 		pctColor = "|cffbbbbbb"
-		pct = TSM.Math.Round(100 * bidPct)
+		pct = Math.Round(100 * bidPct)
 	end
 	if pct and pct > 999 then
 		pct = ">999"

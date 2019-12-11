@@ -7,9 +7,19 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local L = TSM.L
 local Import = TSM.Groups:NewPackage("Import")
-local private = { groupImports = nil, operationsTemp = {} }
+local L = TSM.Include("Locale").GetTable()
+local ObjectPool = TSM.Include("Util.ObjectPool")
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	groupImports = nil,
+	operationsTemp = {},
+}
 local AceSerializer = LibStub("AceSerializer-3.0")
 local GroupImport = TSM.Include("LibTSMClass").DefineClass("GroupImport")
 
@@ -20,7 +30,7 @@ local GroupImport = TSM.Include("LibTSMClass").DefineClass("GroupImport")
 -- ============================================================================
 
 function Import.OnInitialize()
-	private.groupImports = TSMAPI_FOUR.ObjectPool.New("GROUP_IMPORTS", GroupImport, 1)
+	private.groupImports = ObjectPool.New("GROUP_IMPORTS", GroupImport, 1)
 end
 
 function Import.ParseString(str)
@@ -59,28 +69,28 @@ end
 
 function GroupImport.ParseString(self, str)
 	assert(type(str) == "string")
-	TSM:LOG_INFO("Processing import string (%d characters)", #str)
+	Log.Info("Processing import string (%d characters)", #str)
 	local isValid, data = nil, nil
 	if strsub(str, 1, 1) == "^" then
 		isValid, data = AceSerializer:Deserialize(str)
 		if not isValid or type(data) ~= "table" then
-			TSM:LOG_ERR("Invalid import string")
+			Log.Err("Invalid import string")
 			return false
 		end
 		if type(data.operations) ~= "table" and type(data.groupExport) ~= "string" then
-			TSM:LOG_ERR("Doesn't contain operations or groupExport")
+			Log.Err("Doesn't contain operations or groupExport")
 			return false
 		end
 		if data.operations then
-			TSM:LOG_INFO("Parsing operations")
+			Log.Info("Parsing operations")
 			self:_ParseOperations(data.operations)
 		end
 		if data.groupExport then
-			TSM:LOG_INFO("Parsing group export")
+			Log.Info("Parsing group export")
 			self:_ParseGroupExport(data.groupExport)
 		end
 		if type(data.groupOperations) == "table" then
-			TSM:LOG_INFO("Parsing group operations")
+			Log.Info("Parsing group operations")
 			self:_ParseGroupOperations(data.groupOperations)
 		end
 	else
@@ -96,7 +106,7 @@ function GroupImport.ParseString(self, str)
 
 	-- make sure the import isn't empty
 	if not next(self._items) and not next(self._operations) then
-		TSM:LOG_ERR("Invalid import string")
+		Log.Err("Invalid import string")
 		return false
 	end
 
@@ -104,17 +114,17 @@ function GroupImport.ParseString(self, str)
 end
 
 function GroupImport.GetInfo(self)
-	local numItems = TSM.Table.Count(self._items)
+	local numItems = Table.Count(self._items)
 	local numOperations = 0
 	for _, moduleOperations in pairs(self._operations) do
-		numOperations = numOperations + TSM.Table.Count(moduleOperations)
+		numOperations = numOperations + Table.Count(moduleOperations)
 	end
 	return numItems, numOperations
 end
 
 function GroupImport.Commit(self, rootGroup)
 	if not TSM.Groups.Exists(rootGroup) then
-		TSM:Printf(L["Unable to process import because the target group (%s) no longer exists. Please try again."], TSM.Groups.Path.Format(rootGroup))
+		Log.PrintfUser(L["Unable to process import because the target group (%s) no longer exists. Please try again."], TSM.Groups.Path.Format(rootGroup))
 		return
 	end
 
@@ -156,7 +166,7 @@ function GroupImport.Commit(self, rootGroup)
 	end
 
 	-- get the list of valid groups
-	local newGroups = TSM.TempTable.Acquire()
+	local newGroups = TempTable.Acquire()
 	for relativeGroupPath in pairs(self._groups) do
 		local groupPath = relativeGroupPath == TSM.CONST.ROOT_GROUP_PATH and rootGroup or TSM.Groups.Path.Join(rootGroup, relativeGroupPath)
 		if not newGroups[groupPath] and groupPath ~= TSM.CONST.ROOT_GROUP_PATH and not TSM.Groups.Exists(groupPath) then
@@ -192,47 +202,47 @@ function GroupImport.Commit(self, rootGroup)
 end
 
 function GroupImport.GroupIterator(self)
-	local groups = TSM.TempTable.Acquire()
+	local groups = TempTable.Acquire()
 	for groupPath in pairs(self._groups) do
 		tinsert(groups, groupPath)
 	end
 	TSM.Groups.SortGroupList(groups)
-	return TSM.TempTable.Iterator(groups)
+	return TempTable.Iterator(groups)
 end
 
 function GroupImport.GroupItemIterator(self, groupPath)
-	local items = TSM.TempTable.Acquire()
-	local itemNameLookup = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
+	local itemNameLookup = TempTable.Acquire()
 	for itemString, itemGroupPath in pairs(self._items) do
 		if itemGroupPath == groupPath then
 			tinsert(items, itemString)
-			itemNameLookup[itemString] = TSMAPI_FOUR.Item.GetName(itemString) or itemString
+			itemNameLookup[itemString] = ItemInfo.GetName(itemString) or itemString
 		end
 	end
-	TSM.Table.SortWithValueLookup(items, itemNameLookup)
-	TSM.TempTable.Release(itemNameLookup)
-	return TSM.TempTable.Iterator(items)
+	Table.SortWithValueLookup(items, itemNameLookup)
+	TempTable.Release(itemNameLookup)
+	return TempTable.Iterator(items)
 end
 
 function GroupImport.GroupModuleOperationIterator(self, groupPath, moduleName)
-	local operations = TSM.TempTable.Acquire()
+	local operations = TempTable.Acquire()
 	if self._groups[groupPath][moduleName] and self._groups[groupPath][moduleName].override then
 		for _, operationName in ipairs(self._groups[groupPath][moduleName]) do
 			tinsert(operations, operationName)
 		end
 	end
-	return TSM.TempTable.Iterator(operations)
+	return TempTable.Iterator(operations)
 end
 
 function GroupImport.ModuleOperationIterator(self, moduleName)
-	local operations = TSM.TempTable.Acquire()
+	local operations = TempTable.Acquire()
 	if self._operations[moduleName] then
 		for operationName in pairs(self._operations[moduleName]) do
 			tinsert(operations, operationName)
 		end
 		sort(operations)
 	end
-	return TSM.TempTable.Iterator(operations)
+	return TempTable.Iterator(operations)
 end
 
 function GroupImport.RemoveOperation(self, moduleName, operationName)
@@ -298,7 +308,7 @@ function GroupImport.RemoveExistingGroupedItems(self)
 end
 
 function GroupImport.RemoveGroupOperation(self, groupPath, moduleName, operationName)
-	TSM.Table.RemoveByValue(self._groups[groupPath][moduleName], operationName)
+	Table.RemoveByValue(self._groups[groupPath][moduleName], operationName)
 end
 
 function GroupImport.RemoveGroupOperations(self, groupPath, moduleName)
@@ -314,22 +324,22 @@ end
 function GroupImport._ParseOperations(self, operations)
 	for moduleName, moduleOperations in pairs(operations) do
 		if type(moduleName) ~= "string" and type(moduleOperations) ~= "table" then
-			TSM:LOG_WARN("Removing entry of invalid type (%s, %s)", tostring(moduleName), tostring(moduleOperations))
+			Log.Warn("Removing entry of invalid type (%s, %s)", tostring(moduleName), tostring(moduleOperations))
 			operations[moduleName] = nil
 		elseif not TSM.Operations.ModuleExists(moduleName) then
-			TSM:LOG_WARN("Removing module which doesn't exist (%s)", moduleName)
+			Log.Warn("Removing module which doesn't exist (%s)", moduleName)
 			operations[moduleName] = nil
 		elseif not next(moduleOperations) then
-			TSM:LOG_INFO("Removing empty module (%s)", moduleName)
+			Log.Info("Removing empty module (%s)", moduleName)
 			operations[moduleName] = nil
 		end
 	end
 	for moduleName, moduleOperations in pairs(operations) do
 		for operationName, operationSettings in pairs(moduleOperations) do
 			if type(operationName) ~= "string" or type(operationSettings) ~= "table" then
-				TSM:LOG_WARN("Ignoring entry of invalid type (%s, %s, %s)", moduleName, tostring(operationName), tostring(operationSettings))
+				Log.Warn("Ignoring entry of invalid type (%s, %s, %s)", moduleName, tostring(operationName), tostring(operationSettings))
 			elseif strmatch(operationName, TSM.CONST.OPERATION_SEP) then
-				TSM:LOG_WARN("Ignoring invalid operation name (%s, %s)", moduleName, operationName)
+				Log.Warn("Ignoring invalid operation name (%s, %s)", moduleName, operationName)
 			else
 				operationSettings.ignorePlayer = {}
 				operationSettings.ignoreFactionrealm = {}
@@ -355,11 +365,11 @@ function GroupImport._ParseGroupExport(self, str)
 		str = gsub(str, ";", ",")
 	end
 	local relativePath = TSM.CONST.ROOT_GROUP_PATH
-	for part in TSM.String.SplitIterator(str, ",") do
+	for part in String.SplitIterator(str, ",") do
 		part = strtrim(part)
 		local groupPath = strmatch(part, "^group:(.+)$")
 		local itemString = strmatch(part, "^[ip]?:?[0-9%-:]+$")
-		itemString = itemString and TSMAPI_FOUR.Item.ToItemString(itemString) or nil
+		itemString = itemString and ItemString.Get(itemString) or nil
 		assert(not groupPath or not itemString)
 		if groupPath then
 			-- We export a "," in a group path as "``"
@@ -376,7 +386,7 @@ function GroupImport._ParseGroupExport(self, str)
 			end
 			self._items[itemString] = relativePath
 		else
-			TSM:LOG_ERR("Unknown part: %s", part)
+			Log.Err("Unknown part: %s", part)
 		end
 	end
 end
@@ -386,9 +396,9 @@ function GroupImport._ParseGroupOperations(self, groupOperations)
 		-- We export a "," in a group path as "``"
 		groupPath = gsub(groupPath, "``", ",")
 		if type(groupPath) ~= "string" or type(operations) ~= "table" then
-			TSM:LOG_WARN("Ignoring entry of invalid type (%s, %s)", tostring(groupPath), tostring(operations))
+			Log.Warn("Ignoring entry of invalid type (%s, %s)", tostring(groupPath), tostring(operations))
 		elseif not self._groups[groupPath] then
-			TSM:LOG_WARN("Ignoring operations assigned to unknown group (%s)", groupPath)
+			Log.Warn("Ignoring operations assigned to unknown group (%s)", groupPath)
 		else
 			-- add any missing modules
 			for _, moduleName in TSM.Operations.ModuleIterator() do
@@ -398,11 +408,11 @@ function GroupImport._ParseGroupOperations(self, groupOperations)
 			end
 			for moduleName, moduleOperations in pairs(operations) do
 				if type(moduleName) ~= "string" or type(moduleOperations) ~= "table" then
-					TSM:LOG_WARN("Ignoring entry of invalid type (%s, %s)", tostring(moduleName), tostring(moduleOperations))
+					Log.Warn("Ignoring entry of invalid type (%s, %s)", tostring(moduleName), tostring(moduleOperations))
 				elseif not self._groups[groupPath][moduleName] then
-					TSM:LOG_WARN("Ignoring module which doesn't exist (%s)", moduleName)
+					Log.Warn("Ignoring module which doesn't exist (%s)", moduleName)
 				elseif next(self._groups[groupPath][moduleName]) then
-					TSM:LOG_WARN("Ignoring duplicate operations assigned to group (%s, %s)", groupPath, moduleName)
+					Log.Warn("Ignoring duplicate operations assigned to group (%s, %s)", groupPath, moduleName)
 				else
 					local override = moduleOperations.override and true or nil
 					moduleOperations.override = nil
@@ -413,10 +423,10 @@ function GroupImport._ParseGroupOperations(self, groupOperations)
 					local numOperations = min(#moduleOperations, TSM.Operations.GetMaxNumber(moduleName))
 					for k, v in pairs(moduleOperations) do
 						if type(k) ~= "number" or k < 1 or k > numOperations then
-							TSM:LOG_WARN("Ignorning unknown key (%s, %s, %s, %s)", groupPath, moduleName, tostring(k), tostring(v))
+							Log.Warn("Ignorning unknown key (%s, %s, %s, %s)", groupPath, moduleName, tostring(k), tostring(v))
 							moduleOperations[k] = nil
 						elseif type(v) ~= "string" then
-							TSM:LOG_WARN("Ignorning invalid value (%s, %s, %s, %s)", groupPath, moduleName, k, tostring(v))
+							Log.Warn("Ignorning invalid value (%s, %s, %s, %s)", groupPath, moduleName, k, tostring(v))
 							moduleOperations[k] = nil
 						elseif v == "" then
 							-- ignore empty operation names from old exports
@@ -426,7 +436,7 @@ function GroupImport._ParseGroupOperations(self, groupOperations)
 					wipe(private.operationsTemp)
 					for _, operationName in ipairs(moduleOperations) do
 						if not self._operations[moduleName][operationName] then
-							TSM:LOG_WARN("Ignorning unknown operation (%s, %s, %s)", groupPath, moduleName, operationName)
+							Log.Warn("Ignorning unknown operation (%s, %s, %s)", groupPath, moduleName, operationName)
 						else
 							tinsert(private.operationsTemp, operationName)
 						end

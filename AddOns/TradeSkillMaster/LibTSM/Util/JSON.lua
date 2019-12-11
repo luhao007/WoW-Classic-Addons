@@ -11,7 +11,6 @@
 
 local _, TSM = ...
 local JSON = TSM.Init("Util.JSON")
-TSM.JSON = JSON
 local private = {}
 
 

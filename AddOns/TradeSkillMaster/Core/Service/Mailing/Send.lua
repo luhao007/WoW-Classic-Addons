@@ -8,7 +8,16 @@
 
 local _, TSM = ...
 local Send = TSM.Mailing:NewPackage("Send")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
+local Money = TSM.Include("Util.Money")
+local SlotId = TSM.Include("Util.SlotId")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local InventoryInfo = TSM.Include("Service.InventoryInfo")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	thread = nil,
 	bagUpdate = nil,
@@ -24,19 +33,19 @@ local PLAYER_NAME_REALM = string.gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "
 -- ============================================================================
 
 function Send.OnInitialize()
-	private.thread = TSMAPI_FOUR.Thread.New("MAIL_SENDING", private.SendMailThread)
-	TSM.Inventory.BagTracking.RegisterCallback(private.BagUpdate)
+	private.thread = Threading.New("MAIL_SENDING", private.SendMailThread)
+	BagTracking.RegisterCallback(private.BagUpdate)
 end
 
 function Send.KillThread()
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 end
 
 function Send.StartSending(callback, recipient, subject, body, money, items, isGroup)
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 
-	TSMAPI_FOUR.Thread.SetCallback(private.thread, callback)
-	TSMAPI_FOUR.Thread.Start(private.thread, recipient, subject, body, money, items, isGroup)
+	Threading.SetCallback(private.thread, callback)
+	Threading.Start(private.thread, recipient, subject, body, money, items, isGroup)
 end
 
 
@@ -69,19 +78,24 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 		private.PrintMailMessage(money, items, recipient, individually)
 	end
 
-	local itemInfo = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local itemInfo = Threading.AcquireSafeTempTable()
 
-	for _, bag, slot, itemString, quantity in TSMAPI_FOUR.Inventory.BagIterator(false, false, true) do
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("bag", "slot", "itemString", "quantity")
+		:Equal("isBoP", false)
+	for _, bag, slot, itemString, quantity in query:Iterator() do
 		if isGroup then
-			itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+			itemString = TSM.Groups.TranslateItemString(itemString)
 		end
-		if items[itemString] and not TSMAPI_FOUR.Inventory.IsBagSlotLocked(bag, slot) then
+		if items[itemString] and not InventoryInfo.IsBagSlotLocked(bag, slot) then
 			if not itemInfo[itemString] then
 				itemInfo[itemString] = { locations = {} }
 			end
 			tinsert(itemInfo[itemString].locations, { bag = bag, slot = slot, quantity = quantity })
 		end
 	end
+	query:Release()
 
 	for itemString, quantity in pairs(items) do
 		if quantity > 0 and itemInfo[itemString] and #itemInfo[itemString].locations > 0 then
@@ -108,16 +122,16 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 
 	for itemString in pairs(items) do
 		if items[itemString] > 0 and itemInfo[itemString] and #itemInfo[itemString].locations > 0 then
-			local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(TSMAPI_FOUR.Item.ToItemID(itemString)) or 0)
+			local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(ItemString.ToId(itemString)) or 0)
 			for i = 1, #itemInfo[itemString].locations do
 				local info = itemInfo[itemString].locations[i]
 				if items[itemString] > 0 and info.quantity > 0 then
 					if items[itemString] < info.quantity then
 						if #emptySlotIds > 0 then
-							local splitBag, splitSlot = TSM.SlotId.Split(tremove(emptySlotIds, 1))
+							local splitBag, splitSlot = SlotId.Split(tremove(emptySlotIds, 1))
 							SplitContainerItem(info.bag, info.slot, items[itemString])
 							PickupContainerItem(splitBag, splitSlot)
-							TSMAPI_FOUR.Thread.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
+							Threading.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
 							PickupContainerItem(splitBag, splitSlot)
 							ClickSendMailItemButton()
 
@@ -143,7 +157,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 					end
 				end
 			end
-			TSMAPI_FOUR.Thread.ReleaseSafeTempTable(emptySlotIds)
+			Threading.ReleaseSafeTempTable(emptySlotIds)
 		end
 	end
 
@@ -151,12 +165,12 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 		private.SendMail(recipient, subject, body, money)
 	end
 
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(itemInfo)
+	Threading.ReleaseSafeTempTable(itemInfo)
 end
 
 function private.PrintMailMessage(money, items, target, individually)
 	if money > 0 and not items then
-		TSM:Printf(L["Sending %s to %s"], TSM.Money.ToString(money), target)
+		Log.PrintfUser(L["Sending %s to %s"], Money.ToString(money), target)
 		return
 	end
 
@@ -166,17 +180,17 @@ function private.PrintMailMessage(money, items, target, individually)
 
 	local itemList = ""
 	for k, v in pairs(items) do
-		local coloredItem = TSMAPI_FOUR.Item.GetLink(k)
+		local coloredItem = ItemInfo.GetLink(k)
 		itemList = itemList..coloredItem.."x"..v..", "
 	end
 	itemList = strtrim(itemList, ", ")
 
 	if next(items) and money < 0 then
-		TSM:Printf(L["Sending %s to %s with a COD of %s"], itemList, target, TSM.Money.ToString(money, "|cffff0000"))
+		Log.PrintfUser(L["Sending %s to %s with a COD of %s"], itemList, target, Money.ToString(money, "|cffff0000"))
 	elseif next(items) and individually then
-		TSM:Printf(L["Sending %s individually to %s"], itemList, target)
+		Log.PrintfUser(L["Sending %s individually to %s"], itemList, target)
 	elseif next(items) then
-		TSM:Printf(L["Sending %s to %s"], itemList, target)
+		Log.PrintfUser(L["Sending %s to %s"], itemList, target)
 	end
 end
 
@@ -200,14 +214,14 @@ function private.SendMail(recipient, subject, body, money, noItem)
 	private.bagUpdate = false
 	SendMail(recipient, subject, body)
 
-	if TSMAPI_FOUR.Thread.WaitForEvent("MAIL_SUCCESS", "MAIL_FAILED") == "MAIL_SUCCESS" then
+	if Threading.WaitForEvent("MAIL_SUCCESS", "MAIL_FAILED") == "MAIL_SUCCESS" then
 		if noItem then
-			TSMAPI_FOUR.Thread.Sleep(0.5)
+			Threading.Sleep(0.5)
 		else
-			TSMAPI_FOUR.Thread.WaitForFunction(private.HasNewBagUpdate)
+			Threading.WaitForFunction(private.HasNewBagUpdate)
 		end
 	else
-		TSMAPI_FOUR.Thread.Sleep(0.5)
+		Threading.Sleep(0.5)
 	end
 end
 
@@ -245,25 +259,25 @@ function private.BagSlotHasItem(bag, slot)
 end
 
 function private.GetEmptyBagSlotsThreaded(itemFamily)
-	local emptySlotIds = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local sortvalue = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local emptySlotIds = Threading.AcquireSafeTempTable()
+	local sortvalue = Threading.AcquireSafeTempTable()
 	for bag = 0, NUM_BAG_SLOTS do
 		-- make sure the item can go in this bag
 		local bagFamily = bag ~= 0 and GetItemFamily(GetInventoryItemLink("player", ContainerIDToInventoryID(bag))) or 0
 		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
 			for slot = 1, GetContainerNumSlots(bag) do
 				if not GetContainerItemInfo(bag, slot) then
-					local slotId = TSM.SlotId.Join(bag, slot)
+					local slotId = SlotId.Join(bag, slot)
 					tinsert(emptySlotIds, slotId)
 					-- use special bags first
 					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
 				end
 			end
 		end
-		TSMAPI_FOUR.Thread.Yield()
+		Threading.Yield()
 	end
-	TSM.Table.SortWithValueLookup(emptySlotIds, sortvalue)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortvalue)
+	Table.SortWithValueLookup(emptySlotIds, sortvalue)
+	Threading.ReleaseSafeTempTable(sortvalue)
 
 	return emptySlotIds
 end

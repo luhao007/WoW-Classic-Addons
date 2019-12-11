@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Sell = TSM.UI.VendoringUI:NewPackage("Sell")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	filterText = "",
 	query = nil,
@@ -101,7 +105,7 @@ function private.GetFrame()
 					:SetFontHeight(12)
 					:SetJustifyH("LEFT")
 					:SetTextInfo("itemString", private.GetItemText)
-					:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:SetTooltipLinkingDisabled(true)
@@ -121,7 +125,7 @@ function private.GetFrame()
 					:SetFont(TSM.UI.Fonts.RobotoMedium)
 					:SetFontHeight(12)
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("potentialValue", TSM.Money.ToString)
+					:SetTextInfo("potentialValue", Money.ToString)
 					:SetSortInfo("potentialValue")
 					:Commit()
 				:SetCursor("BUY_CURSOR")
@@ -159,7 +163,7 @@ function private.GetItemText(itemString)
 end
 
 function private.GetVendorSellText(vendorSell)
-	return vendorSell > 0 and TSM.Money.ToString(vendorSell) or ""
+	return vendorSell > 0 and Money.ToString(vendorSell) or ""
 end
 
 
@@ -183,7 +187,7 @@ function private.SearchInputOnTextChanged(input)
 
 	TSM.Vendoring.Sell.ResetBagsQuery(private.query)
 	if text ~= "" then
-		private.query:Matches("name", TSM.String.Escape(text))
+		private.query:Matches("name", String.Escape(text))
 	end
 	input:GetElement("__parent.__parent.__parent.items"):UpdateData(true)
 end
@@ -210,16 +214,16 @@ end
 
 function private.SellBOEBtnOnClick(button)
 	-- checking if an item is disenchantable might cause our query to change since it depends on the ItemInfo DB, so cache the list of items first
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	for _, row in private.query:Iterator() do
 		tinsert(items, row:GetField("itemString"))
 	end
 	for _, itemString in ipairs(items) do
-		if TSMAPI_FOUR.Item.IsDisenchantable(itemString) then
+		if ItemInfo.IsDisenchantable(itemString) then
 			TSM.Vendoring.Sell.SellItem(itemString)
 		end
 	end
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function private.SellAllBtnOnClick(button)

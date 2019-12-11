@@ -8,8 +8,24 @@
 
 local _, TSM = ...
 local CraftingReports = TSM.UI.CraftingUI:NewPackage("CraftingReports")
-local L = TSM.L
-local private = { craftsQuery = nil, matsQuery = nil, filterText = "", craftProfessions = {}, matProfessions = {}, MatPriceSources = {ALL, L["Default Price"], L["Custom Price"]} }
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	craftsQuery = nil,
+	matsQuery = nil,
+	filterText = "",
+	craftProfessions = {},
+	matProfessions = {},
+	MatPriceSources = {
+		ALL,
+		L["Default Price"],
+		L["Custom Price"],
+	},
+}
 
 
 
@@ -138,7 +154,7 @@ function private.GetTabElements(self, path)
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
 						:SetTextInfo(nil, private.CraftsGetCraftNameText)
-						:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("itemName")
 						:Commit()
@@ -347,21 +363,21 @@ function private.CraftsGetAHText(bagQuantity)
 end
 
 function private.CraftsGetCraftingCostText(spellId)
-	return TSM.Money.ToString(TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId))
+	return Money.ToString(TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId))
 end
 
 function private.CraftsGetCostItemValueText(costItemValue)
 	if tostring(costItemValue) == tostring(math.huge * 0) then
 		return ""
 	end
-	return TSM.Money.ToString(costItemValue)
+	return Money.ToString(costItemValue)
 end
 
 function private.CraftsGetProfitText(profit)
 	if tostring(profit) == tostring(math.huge * 0) then
 		return ""
 	end
-	return TSM.Money.ToString(profit, profit >= 0 and "|cff2cec0d" or "|cffd50000")
+	return Money.ToString(profit, profit >= 0 and "|cff2cec0d" or "|cffd50000")
 end
 
 function private.CraftsGetSaleRateText(saleRate)
@@ -375,7 +391,7 @@ function private.MatsGetPriceText(matCost)
 	if tostring(matCost) == tostring(math.huge * 0) then
 		return ""
 	end
-	return TSM.Money.ToString(matCost)
+	return Money.ToString(matCost)
 end
 
 function private.MatsGetNumText(totalQuantity)
@@ -452,7 +468,7 @@ function private.MatsOnRowClick(scrollingTable, row)
 			:SetStyle("fontHeight", 12)
 			:SetStyle("justifyH", "LEFT")
 			:SetStyle("textColor", "#ffffff")
-			:SetText(TSM.Money.ToString(priceStr) or priceStr)
+			:SetText(Money.ToString(priceStr) or priceStr)
 			:SetScript("OnEnterPressed", private.MatPriceInputOnEnterPressed)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
@@ -477,12 +493,12 @@ end
 
 function private.MatPriceInputOnEnterPressed(input)
 	local value = strtrim(input:GetText())
-	if value ~= "" and TSMAPI_FOUR.CustomPrice.Validate(value) then
+	if value ~= "" and CustomPrice.Validate(value) then
 		local itemString = input:GetParentElement():GetContext()
 		TSM.Crafting.SetMatCustomValue(itemString, value)
 	else
 		-- TODO: better error message
-		TSM:Print(L["Invalid custom price entered."])
+		Log.PrintUser(L["Invalid custom price entered."])
 	end
 end
 
@@ -501,7 +517,7 @@ function private.UpdateCraftsQueryWithFilters(frame)
 	-- apply search filter
 	local filter = strtrim(frame:GetElement("search.input"):GetText())
 	if filter ~= "" then
-		private.craftsQuery:Matches("itemName", TSM.String.Escape(filter))
+		private.craftsQuery:Matches("itemName", String.Escape(filter))
 	end
 	-- apply dropdown filter
 	local professionPlayer = frame:GetElement("profession.dropdown"):GetSelection()
@@ -533,7 +549,7 @@ function private.UpdateMatsQueryWithFilters(frame)
 	-- apply search filter
 	local filter = strtrim(frame:GetElement("search.input"):GetText())
 	if filter ~= "" then
-		private.matsQuery:Custom(private.MatItemNameQueryFilter, strlower(TSM.String.Escape(filter)))
+		private.matsQuery:Custom(private.MatItemNameQueryFilter, strlower(String.Escape(filter)))
 	end
 	-- apply dropdown filters
 	local profession = frame:GetElement("profession.dropdown"):GetSelection()
@@ -556,7 +572,7 @@ function private.UpdateMatsQueryWithFilters(frame)
 end
 
 function private.MatItemNameQueryFilter(row, filter)
-	local name = TSMAPI_FOUR.Item.GetName(row:GetField("itemString"))
+	local name = ItemInfo.GetName(row:GetField("itemString"))
 	if not name then return end
 	return strmatch(strlower(name), filter)
 end

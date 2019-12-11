@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local ExpiringMailTask = TSM.Include("LibTSMClass").DefineClass("ExpiringMailTask", TSM.TaskList.Task)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 TSM.TaskList.ExpiringMailTask = ExpiringMailTask
 local private = {}
 

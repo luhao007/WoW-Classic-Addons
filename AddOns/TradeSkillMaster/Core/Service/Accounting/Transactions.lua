@@ -8,7 +8,14 @@
 
 local _, TSM = ...
 local Transactions = TSM.Accounting:NewPackage("Transactions")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local CSV = TSM.Include("Util.CSV")
+local Math = TSM.Include("Util.Math")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
 local private = {
 	db = nil,
 	dbSummary = nil,
@@ -41,15 +48,15 @@ local SECONDS_PER_DAY = 24 * 60 * 60
 
 function Transactions.OnInitialize()
 	if TSM.db.realm.internalData.accountingTrimmed.sales then
-		TSM:Printf(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
+		Log.PrintfUser(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
 		TSM.db.realm.internalData.accountingTrimmed.sales = nil
 	end
 	if TSM.db.realm.internalData.accountingTrimmed.buys then
-		TSM:Printf(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
+		Log.PrintfUser(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
 		TSM.db.realm.internalData.accountingTrimmed.buys = nil
 	end
 
-	private.db = TSMAPI_FOUR.Database.NewSchema("TRANSACTIONS_LOG")
+	private.db = Database.NewSchema("TRANSACTIONS_LOG")
 		:AddStringField("baseItemString")
 		:AddStringField("type")
 		:AddStringField("itemString")
@@ -67,7 +74,7 @@ function Transactions.OnInitialize()
 	private.LoadData("sale", TSM.db.realm.internalData.csvSales, TSM.db.realm.internalData.saveTimeSales)
 	private.LoadData("buy", TSM.db.realm.internalData.csvBuys, TSM.db.realm.internalData.saveTimeBuys)
 	private.db:BulkInsertEnd()
-	private.dbSummary = TSMAPI_FOUR.Database.NewSchema("TRANSACTIONS_SUMMARY")
+	private.dbSummary = Database.NewSchema("TRANSACTIONS_SUMMARY")
 		:AddUniqueStringField("itemString")
 		:AddNumberField("sold")
 		:AddNumberField("avgSellPrice")
@@ -77,14 +84,14 @@ function Transactions.OnInitialize()
 		:Commit()
 	private.baseStatsQuery = private.db:NewQuery()
 		:Select("quantity", "price")
-		:Equal("type", TSM.CONST.BOUND_QUERY_PARAM)
-		:Equal("baseItemString", TSM.CONST.BOUND_QUERY_PARAM)
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
 	private.statsQuery = private.db:NewQuery()
 		:Select("quantity", "price")
-		:Equal("type", TSM.CONST.BOUND_QUERY_PARAM)
-		:Equal("baseItemString", TSM.CONST.BOUND_QUERY_PARAM)
-		:Equal("itemString", TSM.CONST.BOUND_QUERY_PARAM)
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:Equal("itemString", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
 end
 
@@ -149,7 +156,7 @@ function Transactions.RemoveOldData(days)
 end
 
 function Transactions.GetSaleStats(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = isBaseItemString and private.baseStatsQuery or private.statsQuery
 	if isBaseItemString then
@@ -167,7 +174,7 @@ function Transactions.GetSaleStats(itemString)
 end
 
 function Transactions.GetBuyStats(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 
 	-- check if we need to clear our cache
@@ -227,7 +234,7 @@ function Transactions.GetBuyStats(itemString)
 end
 
 function Transactions.GetMaxSalePrice(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("price")
 		:Equal("type", "sale")
@@ -243,7 +250,7 @@ function Transactions.GetMaxSalePrice(itemString)
 end
 
 function Transactions.GetMaxBuyPrice(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("price")
 		:Equal("type", "buy")
@@ -259,7 +266,7 @@ function Transactions.GetMaxBuyPrice(itemString)
 end
 
 function Transactions.GetMinSalePrice(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("price")
 		:Equal("type", "sale")
@@ -275,7 +282,7 @@ function Transactions.GetMinSalePrice(itemString)
 end
 
 function Transactions.GetMinBuyPrice(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("price")
 		:Equal("type", "buy")
@@ -295,7 +302,7 @@ function Transactions.GetAverageSalePrice(itemString)
 	if not totalPrice then
 		return
 	end
-	return TSM.Math.Round(totalPrice / totalNum), totalNum
+	return Math.Round(totalPrice / totalNum), totalNum
 end
 
 function Transactions.GetAverageBuyPrice(itemString)
@@ -303,11 +310,11 @@ function Transactions.GetAverageBuyPrice(itemString)
 	if not totalPrice then
 		return
 	end
-	return TSM.Math.Round(totalPrice / totalNum), totalNum
+	return Math.Round(totalPrice / totalNum), totalNum
 end
 
 function Transactions.GetLastSaleTime(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("time")
 		:Equal("type", "sale")
@@ -323,7 +330,7 @@ function Transactions.GetLastSaleTime(itemString)
 end
 
 function Transactions.GetLastBuyTime(itemString)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery():Select("time")
 		:Equal("type", "buy")
@@ -339,7 +346,7 @@ function Transactions.GetLastBuyTime(itemString)
 end
 
 function Transactions.GetQuantity(itemString, timeFilter, typeFilter)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery()
 		:Equal("type", typeFilter)
@@ -358,7 +365,7 @@ function Transactions.GetQuantity(itemString, timeFilter, typeFilter)
 end
 
 function Transactions.GetAveragePrice(itemString, timeFilter, typeFilter)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery()
 		:Select("price", "quantity")
@@ -382,7 +389,7 @@ function Transactions.GetAveragePrice(itemString, timeFilter, typeFilter)
 end
 
 function Transactions.GetTotalPrice(itemString, timeFilter, typeFilter)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
 	local query = private.db:NewQuery()
 		:Select("price", "quantity")
@@ -406,10 +413,10 @@ function Transactions.CreateSummaryQuery()
 end
 
 function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter, timeFrameFilter)
-	local totalSold = TSM.TempTable.Acquire()
-	local totalSellPrice = TSM.TempTable.Acquire()
-	local totalBought = TSM.TempTable.Acquire()
-	local totalBoughtPrice = TSM.TempTable.Acquire()
+	local totalSold = TempTable.Acquire()
+	local totalSellPrice = TempTable.Acquire()
+	local totalBought = TempTable.Acquire()
+	local totalBoughtPrice = TempTable.Acquire()
 
 	local items = private.db:NewQuery()
 		:Select("itemString", "price", "quantity", "type")
@@ -458,10 +465,10 @@ function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter
 	end
 	private.dbSummary:BulkInsertEnd()
 
-	TSM.TempTable.Release(totalSold)
-	TSM.TempTable.Release(totalSellPrice)
-	TSM.TempTable.Release(totalBought)
-	TSM.TempTable.Release(totalBoughtPrice)
+	TempTable.Release(totalSold)
+	TempTable.Release(totalSellPrice)
+	TempTable.Release(totalBought)
+	TempTable.Release(totalBoughtPrice)
 end
 
 function Transactions.GetCharacters(characters)
@@ -483,19 +490,19 @@ end
 -- ============================================================================
 
 function private.LoadData(recordType, csvRecords, csvSaveTimes)
-	local saveTimes = TSM.String.SafeSplit(csvSaveTimes, ",")
+	local saveTimes = String.SafeSplit(csvSaveTimes, ",")
 
-	local decodeContext = TSM.CSV.DecodeStart(csvRecords, OLD_CSV_KEYS[recordType]) or TSM.CSV.DecodeStart(csvRecords, CSV_KEYS)
+	local decodeContext = CSV.DecodeStart(csvRecords, OLD_CSV_KEYS[recordType]) or CSV.DecodeStart(csvRecords, CSV_KEYS)
 	if not decodeContext then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 		return
 	end
 
 	local saveTimeIndex = 1
-	for itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source in TSM.CSV.DecodeIterator(decodeContext) do
-		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
-		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)
+	for itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source in CSV.DecodeIterator(decodeContext) do
+		itemString = ItemString.Get(itemString)
+		local baseItemString = ItemString.GetBaseFast(itemString)
 		local saveTime = 0
 		if saveTimes and source == "Auction" then
 			saveTime = tonumber(saveTimes[saveTimeIndex])
@@ -518,8 +525,8 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		end
 	end
 
-	if not TSM.CSV.DecodeEnd(decodeContext) then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+	if not CSV.DecodeEnd(decodeContext) then
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
 end
@@ -536,7 +543,7 @@ function private.SaveData(recordType)
 		local saveTimes = {}
 		local shouldTrim = query:Count() > MAX_CSV_RECORDS
 		local lastTime = nil
-		local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
+		local encodeContext = CSV.EncodeStart(CSV_KEYS)
 		for _, row in query:Iterator() do
 			if not shouldTrim or count <= TRIMMED_CSV_RECORDS then
 				-- add the save time
@@ -550,15 +557,15 @@ function private.SaveData(recordType)
 					lastTime = row:GetField("time")
 				end
 				-- add to our list of CSV lines
-				TSM.CSV.EncodeAddRowData(encodeContext, row)
+				CSV.EncodeAddRowData(encodeContext, row)
 			end
 			count = count + 1
 		end
 		query:Release()
-		return TSM.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), lastTime
+		return CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), lastTime
 	else
 		local saveTimes = {}
-		local encodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
+		local encodeContext = CSV.EncodeStart(CSV_KEYS)
 		for _, _, rowRecordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime in private.db:RawIterator() do
 			if rowRecordType == recordType then
 				-- add the save time
@@ -566,10 +573,10 @@ function private.SaveData(recordType)
 					tinsert(saveTimes, saveTime ~= 0 and saveTime or time())
 				end
 				-- add to our list of CSV lines
-				TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source)
+				CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source)
 			end
 		end
-		return TSM.CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), nil
+		return CSV.EncodeEnd(encodeContext), table.concat(saveTimes, ","), nil
 	end
 end
 
@@ -577,7 +584,7 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 	private.dataChanged = true
 	assert(itemString and source and stackSize and price and otherPlayer and timestamp)
 	timestamp = floor(timestamp)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local matchingRow = private.db:NewQuery()
 		:Equal("type", recordType)
 		:Equal("itemString", itemString)

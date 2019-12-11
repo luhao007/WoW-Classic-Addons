@@ -11,7 +11,6 @@
 
 local _, TSM = ...
 local Debug = TSM.Init("Util.Debug")
-TSM.Debug = Debug
 local private = {
 	startSystemTimeMs = floor(GetTime() * 1000),
 	startTimeMs = time() * 1000 + (floor(GetTime() * 1000) % 1000),
@@ -56,7 +55,13 @@ function Debug.GetStackLevelLocation(targetLevel, thread)
 		if not stackLine or stackLine == "" then
 			return
 		end
-		stackLine = strmatch(stackLine, "^%.*([^:]+:%d+):")
+		if TSM.IsWow83() then
+			local numSubs = nil
+			stackLine, numSubs = gsub(stackLine, "^%[string \"@([^%.]+%.lua)\"%](:%d+).*$", "%1%2")
+			stackLine = numSubs > 0 and stackLine or nil
+		else
+			stackLine = strmatch(stackLine, "^%.*([^:]+:%d+):")
+		end
 		if stackLine then
 			local ignored = false
 			for _, matchStr in ipairs(IGNORED_STACK_LEVEL_MATCHERS) do

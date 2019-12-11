@@ -9,6 +9,14 @@
 local _, TSM = ...
 local ProfessionScanner = TSM.Crafting:NewPackage("ProfessionScanner")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
+local Database = TSM.Include("Util.Database")
+local Event = TSM.Include("Util.Event")
+local Delay = TSM.Include("Util.Delay")
+local TempTable = TSM.Include("Util.TempTable")
+local Math = TSM.Include("Util.Math")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	db = nil,
 	hasScanned = false,
@@ -26,7 +34,7 @@ local SCAN_DEBOUNCE_FRAMES = 10
 -- ============================================================================
 
 function ProfessionScanner.OnInitialize()
-	private.db = TSMAPI_FOUR.Database.NewSchema("CRAFTING_RECIPES")
+	private.db = Database.NewSchema("CRAFTING_RECIPES")
 		:AddUniqueNumberField("index")
 		:AddUniqueNumberField("spellId")
 		:AddStringField("name")
@@ -36,11 +44,11 @@ function ProfessionScanner.OnInitialize()
 		:AddNumberField("numSkillUps")
 		:Commit()
 	TSM.Crafting.ProfessionState.RegisterUpdateCallback(private.ProfessionStateUpdate)
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSM.Event.Register("CRAFT_UPDATE", private.OnTradeSkillUpdateEvent)
-		TSM.Event.Register("TRADE_SKILL_UPDATE", private.OnTradeSkillUpdateEvent)
+	if TSM.IsWowClassic() then
+		Event.Register("CRAFT_UPDATE", private.OnTradeSkillUpdateEvent)
+		Event.Register("TRADE_SKILL_UPDATE", private.OnTradeSkillUpdateEvent)
 	else
-		TSM.Event.Register("TRADE_SKILL_LIST_UPDATE", private.OnTradeSkillUpdateEvent)
+		Event.Register("TRADE_SKILL_LIST_UPDATE", private.OnTradeSkillUpdateEvent)
 	end
 end
 
@@ -127,12 +135,12 @@ function private.ProfessionStateUpdate()
 		private.db:Truncate()
 		private.OnTradeSkillUpdateEvent()
 	else
-		TSMAPI_FOUR.Delay.Cancel("PROFESSION_SCAN_DELAY")
+		Delay.Cancel("PROFESSION_SCAN_DELAY")
 	end
 end
 
 function private.OnTradeSkillUpdateEvent()
-	TSMAPI_FOUR.Delay.Cancel("PROFESSION_SCAN_DELAY")
+	Delay.Cancel("PROFESSION_SCAN_DELAY")
 	private.QueueProfessionScan()
 end
 
@@ -143,7 +151,7 @@ end
 -- ============================================================================
 
 function private.QueueProfessionScan()
-	TSMAPI_FOUR.Delay.AfterFrame("PROFESSION_SCAN_DELAY", SCAN_DEBOUNCE_FRAMES, private.ScanProfession)
+	Delay.AfterFrame("PROFESSION_SCAN_DELAY", SCAN_DEBOUNCE_FRAMES, private.ScanProfession)
 end
 
 function private.ScanProfession()
@@ -165,7 +173,7 @@ function private.ScanProfession()
 	end
 
 	assert(professionName and TSM.Crafting.ProfessionUtil.IsDataStable())
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		-- TODO: check and clear filters on classic
 	else
 		local hadFilter = false
@@ -213,7 +221,7 @@ function private.ScanProfession()
 		end
 	end
 
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		local lastHeaderIndex = 0
 		private.db:TruncateAndBulkInsertStart()
 		for i = 1, TSM.Crafting.ProfessionState.IsClassicCrafting() and GetNumCrafts() or GetNumTradeSkills() do
@@ -221,21 +229,21 @@ function private.ScanProfession()
 			if TSM.Crafting.ProfessionState.IsClassicCrafting() then
 				name, _, skillType = GetCraftInfo(i)
 				if skillType ~= "header" then
-					hash = TSM.Math.CalculateHash(name)
+					hash = Math.CalculateHash(name)
 					for j = 1, GetCraftNumReagents(i) do
 						local _, _, quantity = GetCraftReagentInfo(i, j)
-						hash = TSM.Math.CalculateHash(TSMAPI_FOUR.Item.ToItemString(GetCraftReagentItemLink(i, j)), hash)
-						hash = TSM.Math.CalculateHash(quantity, hash)
+						hash = Math.CalculateHash(ItemString.Get(GetCraftReagentItemLink(i, j)), hash)
+						hash = Math.CalculateHash(quantity, hash)
 					end
 				end
 			else
 				name, skillType = GetTradeSkillInfo(i)
 				if skillType ~= "header" then
-					hash = TSM.Math.CalculateHash(name)
+					hash = Math.CalculateHash(name)
 					for j = 1, GetTradeSkillNumReagents(i) do
 						local _, _, quantity = GetTradeSkillReagentInfo(i, j)
-						hash = TSM.Math.CalculateHash(TSMAPI_FOUR.Item.ToItemString(GetTradeSkillReagentItemLink(i, j)), hash)
-						hash = TSM.Math.CalculateHash(quantity, hash)
+						hash = Math.CalculateHash(ItemString.Get(GetTradeSkillReagentItemLink(i, j)), hash)
+						hash = Math.CalculateHash(quantity, hash)
 					end
 				end
 			end
@@ -249,24 +257,24 @@ function private.ScanProfession()
 		end
 		private.db:BulkInsertEnd()
 	else
-		local prevRecipeIds = TSM.TempTable.Acquire()
-		local nextRecipeIds = TSM.TempTable.Acquire()
-		local recipeLearned = TSM.TempTable.Acquire()
-		local recipes = TSM.TempTable.Acquire()
+		local prevRecipeIds = TempTable.Acquire()
+		local nextRecipeIds = TempTable.Acquire()
+		local recipeLearned = TempTable.Acquire()
+		local recipes = TempTable.Acquire()
 		assert(C_TradeSkillUI.GetFilteredRecipeIDs(recipes) == recipes)
-		local spellIdIndex = TSM.TempTable.Acquire()
+		local spellIdIndex = TempTable.Acquire()
 		for index, spellId in ipairs(recipes) do
 			-- There's a Blizzard bug where First Aid duplicates spellIds, so check that we haven't seen this before
 			if not spellIdIndex[spellId] then
 				spellIdIndex[spellId] = index
-				local info = TSM.TempTable.Acquire()
+				local info = TempTable.Acquire()
 				assert(C_TradeSkillUI.GetRecipeInfo(spellId, info) == info)
 				if info.previousRecipeID then
 					prevRecipeIds[spellId] = info.previousRecipeID
 					nextRecipeIds[info.previousRecipeID] = spellId
 				end
 				recipeLearned[spellId] = info.learned
-				TSM.TempTable.Release(info)
+				TempTable.Release(info)
 			end
 		end
 		private.db:TruncateAndBulkInsertStart()
@@ -275,7 +283,7 @@ function private.ScanProfession()
 			-- TODO: show unlearned recipes in the TSM UI
 			-- There's a Blizzard bug where First Aid duplicates spellIds, so check that this is the right index
 			if spellIdIndex[spellId] == index and recipeLearned[spellId] and not hasHigherRank then
-				local info = TSM.TempTable.Acquire()
+				local info = TempTable.Acquire()
 				assert(C_TradeSkillUI.GetRecipeInfo(spellId, info) == info)
 				local rank = -1
 				if prevRecipeIds[spellId] or nextRecipeIds[spellId] then
@@ -288,15 +296,15 @@ function private.ScanProfession()
 				end
 				local numSkillUps = info.difficulty == "optimal" and info.numSkillUps or 1
 				private.db:BulkInsertNewRow(index, spellId, info.name, info.categoryID, info.difficulty, rank, numSkillUps)
-				TSM.TempTable.Release(info)
+				TempTable.Release(info)
 			end
 		end
 		private.db:BulkInsertEnd()
-		TSM.TempTable.Release(spellIdIndex)
-		TSM.TempTable.Release(recipes)
-		TSM.TempTable.Release(prevRecipeIds)
-		TSM.TempTable.Release(nextRecipeIds)
-		TSM.TempTable.Release(recipeLearned)
+		TempTable.Release(spellIdIndex)
+		TempTable.Release(recipes)
+		TempTable.Release(prevRecipeIds)
+		TempTable.Release(nextRecipeIds)
+		TempTable.Release(recipeLearned)
 	end
 
 	if TSM.Crafting.ProfessionUtil.IsNPCProfession() or TSM.Crafting.ProfessionUtil.IsLinkedProfession() or TSM.Crafting.ProfessionUtil.IsGuildProfession() then
@@ -317,7 +325,7 @@ function private.ScanProfession()
 	end
 
 	-- update the link for this profession
-	TSM.db.sync.internalData.playerProfessions[professionName].link = WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and C_TradeSkillUI.GetTradeSkillListLink() or nil
+	TSM.db.sync.internalData.playerProfessions[professionName].link = not TSM.IsWowClassic() and C_TradeSkillUI.GetTradeSkillListLink() or nil
 
 	-- scan all the recipes
 	TSM.Crafting.SetSpellDBQueryUpdatesPaused(true)
@@ -332,7 +340,7 @@ function private.ScanProfession()
 	query:Release()
 	TSM.Crafting.SetSpellDBQueryUpdatesPaused(false)
 
-	TSM:LOG_INFO("Scanned %s (failed to scan %d)", professionName, numFailed)
+	Log.Info("Scanned %s (failed to scan %d)", professionName, numFailed)
 	if numFailed > 0 then
 		-- didn't completely scan, so we'll try again
 		private.QueueProfessionScan()
@@ -347,13 +355,13 @@ end
 
 function private.ScanRecipe(professionName, spellId)
 	-- get the links
-	local itemLink, lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and ProfessionScanner.GetIndexBySpellId(spellId) or spellId)
+	local itemLink, lNum, hNum = TSM.Crafting.ProfessionUtil.GetRecipeInfo(TSM.IsWowClassic() and ProfessionScanner.GetIndexBySpellId(spellId) or spellId)
 	assert(itemLink, "Invalid craft: "..tostring(spellId))
 
 	-- get the itemString and craft name
 	local itemString, craftName = nil, nil
 	if strfind(itemLink, "enchant:") then
-		if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		if TSM.IsWowClassic() then
 			return true
 		else
 			-- result of craft is not an item
@@ -366,8 +374,8 @@ function private.ScanRecipe(professionName, spellId)
 		end
 	elseif strfind(itemLink, "item:") then
 		-- result of craft is item
-		itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemLink)
-		craftName = TSMAPI_FOUR.Item.GetName(itemLink)
+		itemString = ItemString.GetBase(itemLink)
+		craftName = ItemInfo.GetName(itemLink)
 	else
 		error("Invalid craft: "..tostring(spellId))
 	end
@@ -405,12 +413,12 @@ function private.ScanRecipe(professionName, spellId)
 	TSM.Crafting.CreateOrUpdate(spellId, itemString, professionName, craftName, numResult, UnitName("player"), hasCD)
 
 	-- get the mat quantities and add mats to our DB
-	local matQuantities = TSM.TempTable.Acquire()
+	local matQuantities = TempTable.Acquire()
 	local haveInvalidMats = false
 	local numReagents = TSM.Crafting.ProfessionUtil.GetNumMats(spellId)
 	for i = 1, numReagents do
 		local matItemLink, name, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i)
-		local matItemString = TSMAPI_FOUR.Item.ToBaseItemString(matItemLink)
+		local matItemString = ItemString.GetBase(matItemLink)
 		if not matItemString then
 			haveInvalidMats = true
 			break
@@ -419,7 +427,7 @@ function private.ScanRecipe(professionName, spellId)
 			haveInvalidMats = true
 			break
 		end
-		TSM.ItemInfo.StoreItemName(matItemString, name)
+		ItemInfo.StoreItemName(matItemString, name)
 		TSM.db.factionrealm.internalData.mats[matItemString] = TSM.db.factionrealm.internalData.mats[matItemString] or {}
 		matQuantities[matItemString] = quantity
 	end
@@ -433,6 +441,6 @@ function private.ScanRecipe(professionName, spellId)
 	if not haveInvalidMats then
 		TSM.Crafting.SetMats(spellId, matQuantities)
 	end
-	TSM.TempTable.Release(matQuantities)
+	TempTable.Release(matQuantities)
 	return not haveInvalidMats
 end

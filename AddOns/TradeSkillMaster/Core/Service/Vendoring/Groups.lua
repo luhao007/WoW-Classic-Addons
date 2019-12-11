@@ -8,7 +8,16 @@
 
 local _, TSM = ...
 local Groups = TSM.Vendoring:NewPackage("Groups")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
+local Money = TSM.Include("Util.Money")
+local SlotId = TSM.Include("Util.SlotId")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	buyThreadId = nil,
 	sellThreadId = nil,
@@ -23,8 +32,8 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
-	private.buyThreadId = TSMAPI_FOUR.Thread.New("VENDORING_GROUP_BUY", private.BuyThread)
-	private.sellThreadId = TSMAPI_FOUR.Thread.New("VENDORING_GROUP_SELL", private.SellThread)
+	private.buyThreadId = Threading.New("VENDORING_GROUP_BUY", private.BuyThread)
+	private.sellThreadId = Threading.New("VENDORING_GROUP_SELL", private.SellThread)
 end
 
 function Groups.BuyGroups(groups, callback)
@@ -34,8 +43,8 @@ function Groups.BuyGroups(groups, callback)
 	for _, groupPath in ipairs(groups) do
 		tinsert(private.tempGroups, groupPath)
 	end
-	TSMAPI_FOUR.Thread.SetCallback(private.buyThreadId, callback)
-	TSMAPI_FOUR.Thread.Start(private.buyThreadId, private.tempGroups)
+	Threading.SetCallback(private.buyThreadId, callback)
+	Threading.Start(private.buyThreadId, private.tempGroups)
 end
 
 function Groups.SellGroups(groups, callback)
@@ -45,13 +54,13 @@ function Groups.SellGroups(groups, callback)
 	for _, groupPath in ipairs(groups) do
 		tinsert(private.tempGroups, groupPath)
 	end
-	TSMAPI_FOUR.Thread.SetCallback(private.sellThreadId, callback)
-	TSMAPI_FOUR.Thread.Start(private.sellThreadId, private.tempGroups)
+	Threading.SetCallback(private.sellThreadId, callback)
+	Threading.Start(private.sellThreadId, private.tempGroups)
 end
 
 function Groups.StopBuySell()
-	TSMAPI_FOUR.Thread.Kill(private.buyThreadId)
-	TSMAPI_FOUR.Thread.Kill(private.sellThreadId)
+	Threading.Kill(private.buyThreadId)
+	Threading.Kill(private.sellThreadId)
 end
 
 
@@ -65,10 +74,10 @@ function private.BuyThread(groups)
 		groups[groupPath] = true
 	end
 
-	local itemsToBuy = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local itemBuyQuantity = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local itemsToBuy = Threading.AcquireSafeTempTable()
+	local itemBuyQuantity = Threading.AcquireSafeTempTable()
 	local query = TSM.Vendoring.Buy.CreateMerchantQuery()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:InnerJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
 		:Select("itemString", "groupPath", "numAvailable")
 	for _, itemString, groupPath, numAvailable in query:Iterator() do
@@ -92,15 +101,19 @@ function private.BuyThread(groups)
 	for _, itemString in ipairs(itemsToBuy) do
 		local numToBuy = itemBuyQuantity[itemString]
 		TSM.Vendoring.Buy.BuyItem(itemString, numToBuy)
-		TSMAPI_FOUR.Thread.Yield(true)
+		Threading.Yield(true)
 	end
 
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(itemsToBuy)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(itemBuyQuantity)
+	Threading.ReleaseSafeTempTable(itemsToBuy)
+	Threading.ReleaseSafeTempTable(itemBuyQuantity)
 end
 
 function private.GetNumToBuy(itemString, operationSettings)
-	local numHave = TSM.Inventory.BagTracking.GetQuantityByAutoBaseItemString(itemString, true)
+	local numHave = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:Equal("isBoA", false)
+		:SumAndRelease("quantity") or 0
 	if operationSettings.restockSources.bank then
 		numHave = numHave + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
 	end
@@ -144,13 +157,18 @@ function private.SellThread(groups)
 	end
 
 	if TSM.db.global.vendoringOptions.displayMoneyCollected then
-		TSM:Printf(L["Sold %s worth of items."], TSM.Money.ToString(totalValue))
+		Log.PrintfUser(L["Sold %s worth of items."], Money.ToString(totalValue))
 	end
 end
 
 function private.SellItemThreaded(itemString, operationSettings)
 	-- calculate the number to sell
-	local numToSell = TSM.Inventory.BagTracking.GetQuantityByAutoBaseItemString(itemString, true) - operationSettings.keepQty
+	local numHave = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:Equal("isBoA", false)
+		:SumAndRelease("quantity") or 0
+	local numToSell = numHave - operationSettings.keepQty
 	if numToSell <= 0 then
 		return 0
 	end
@@ -161,29 +179,28 @@ function private.SellItemThreaded(itemString, operationSettings)
 	end
 
 	-- check the destroy value
-	local destroyValue = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.vsDestroyValue, itemString) or 0
-	local maxDestroyValue = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.vsMaxDestroyValue, itemString) or 0
+	local destroyValue = CustomPrice.GetValue(operationSettings.vsDestroyValue, itemString) or 0
+	local maxDestroyValue = CustomPrice.GetValue(operationSettings.vsMaxDestroyValue, itemString) or 0
 	if maxDestroyValue > 0 and destroyValue >= maxDestroyValue then
 		return 0
 	end
 
 	-- check the market value
-	local marketValue = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.vsMarketValue, itemString) or 0
-	local maxMarketValue = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.vsMaxMarketValue, itemString) or 0
+	local marketValue = CustomPrice.GetValue(operationSettings.vsMarketValue, itemString) or 0
+	local maxMarketValue = CustomPrice.GetValue(operationSettings.vsMaxMarketValue, itemString) or 0
 	if maxMarketValue > 0 and marketValue >= maxMarketValue then
 		return 0
 	end
 
 	-- get a list of empty slots which we can use to split items into
-	local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(TSMAPI_FOUR.Item.ToItemID(itemString)) or 0)
+	local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(ItemString.ToId(itemString)) or 0)
 
 	-- get a list of slots containing the item we want to sell
-	local slotIds = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local bagQuery = TSM.Inventory.BagTracking.CreateQuery()
-		:Select("slotId", "quantity")
-		:GreaterThanOrEqual("bag", 0)
-		:LessThanOrEqual("bag", NUM_BAG_SLOTS)
+	local slotIds = Threading.AcquireSafeTempTable()
+	local bagQuery = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
+		:Select("slotId", "quantity")
 		:Equal("isBoA", false)
 		:OrderBy("quantity", true)
 	if not operationSettings.sellSoulbound then
@@ -196,24 +213,24 @@ function private.SellItemThreaded(itemString, operationSettings)
 
 	local totalValue = 0
 	for _, slotId in ipairs(slotIds) do
-		local bag, slot = TSM.SlotId.Split(slotId)
-		local quantity = TSM.Inventory.BagTracking.GetQuantityBySlotId(slotId)
+		local bag, slot = SlotId.Split(slotId)
+		local quantity = BagTracking.GetQuantityBySlotId(slotId)
 		if quantity <= numToSell then
 			UseContainerItem(bag, slot)
-			totalValue = totalValue + ((TSMAPI_FOUR.Item.GetVendorSell(itemString) or 0) * quantity)
+			totalValue = totalValue + ((ItemInfo.GetVendorSell(itemString) or 0) * quantity)
 			numToSell = numToSell - quantity
 		else
 			if #emptySlotIds > 0 then
-				local splitBag, splitSlot = TSM.SlotId.Split(tremove(emptySlotIds, 1))
+				local splitBag, splitSlot = SlotId.Split(tremove(emptySlotIds, 1))
 				SplitContainerItem(bag, slot, numToSell)
 				PickupContainerItem(splitBag, splitSlot)
 				-- wait for the stack to be split
-				TSMAPI_FOUR.Thread.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
+				Threading.WaitForFunction(private.BagSlotHasItem, splitBag, splitSlot)
 				PickupContainerItem(splitBag, splitSlot)
 				UseContainerItem(splitBag, splitSlot)
-				totalValue = totalValue + ((TSMAPI_FOUR.Item.GetVendorSell(itemString) or 0) * quantity)
+				totalValue = totalValue + ((ItemInfo.GetVendorSell(itemString) or 0) * quantity)
 			elseif not private.printedBagsFullMsg then
-				TSM:Print(L["Could not sell items due to not having free bag space available to split a stack of items."])
+				Log.PrintUser(L["Could not sell items due to not having free bag space available to split a stack of items."])
 				private.printedBagsFullMsg = true
 			end
 			-- we're done
@@ -222,34 +239,34 @@ function private.SellItemThreaded(itemString, operationSettings)
 		if numToSell == 0 then
 			break
 		end
-		TSMAPI_FOUR.Thread.Yield(true)
+		Threading.Yield(true)
 	end
 
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(slotIds)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(emptySlotIds)
+	Threading.ReleaseSafeTempTable(slotIds)
+	Threading.ReleaseSafeTempTable(emptySlotIds)
 	return totalValue
 end
 
 function private.GetEmptyBagSlotsThreaded(itemFamily)
-	local emptySlotIds = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	local sortvalue = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local emptySlotIds = Threading.AcquireSafeTempTable()
+	local sortvalue = Threading.AcquireSafeTempTable()
 	for bag = 0, NUM_BAG_SLOTS do
 		-- make sure the item can go in this bag
 		local bagFamily = bag ~= 0 and GetItemFamily(GetInventoryItemLink("player", ContainerIDToInventoryID(bag))) or 0
 		if bagFamily == 0 or bit.band(itemFamily, bagFamily) > 0 then
 			for slot = 1, GetContainerNumSlots(bag) do
 				if not GetContainerItemInfo(bag, slot) then
-					local slotId = TSM.SlotId.Join(bag, slot)
+					local slotId = SlotId.Join(bag, slot)
 					tinsert(emptySlotIds, slotId)
 					-- use special bags first
 					sortvalue[slotId] = slotId + (bagFamily > 0 and 0 or 100000)
 				end
 			end
 		end
-		TSMAPI_FOUR.Thread.Yield()
+		Threading.Yield()
 	end
-	TSM.Table.SortWithValueLookup(emptySlotIds, sortvalue)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortvalue)
+	Table.SortWithValueLookup(emptySlotIds, sortvalue)
+	Threading.ReleaseSafeTempTable(sortvalue)
 	return emptySlotIds
 end
 

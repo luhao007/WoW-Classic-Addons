@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Crafting = TSM.Tooltip:NewPackage("Crafting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {}
 local DEFAULTS = {
 	craftingCost = true,
@@ -33,7 +35,7 @@ end
 -- ============================================================================
 
 function private.LoadTooltip(tooltip, itemString, options)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	itemString = ItemString.GetBase(itemString)
 
 	if TSM.Crafting.CanCraftItem(itemString) and options.craftingCost then
 		local cost, spellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
@@ -50,9 +52,9 @@ function private.LoadTooltip(tooltip, itemString, options)
 				tooltip:StartSection()
 				local numResult = TSM.Crafting.GetNumResult(spellId)
 				for _, matItemString, matQuantity in TSM.Crafting.MatIterator(spellId) do
-					local name = TSMAPI_FOUR.Item.GetName(matItemString)
+					local name = ItemInfo.GetName(matItemString)
 					local matCost = TSM.Crafting.Cost.GetMatCost(matItemString)
-					local quality = TSMAPI_FOUR.Item.GetQuality(matItemString)
+					local quality = ItemInfo.GetQuality(matItemString)
 					if name and matCost and quality then
 						tooltip:AddSubItemValueLine(matItemString, matCost, matQuantity / numResult)
 					end

@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local ValueSources = TSM.MainUI.Settings.Tooltip:NewPackage("ValueSources")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 
 

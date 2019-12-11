@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local FailedAuctions = TSM.MainUI.Ledger:NewPackage("FailedAuctions")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 
 
 

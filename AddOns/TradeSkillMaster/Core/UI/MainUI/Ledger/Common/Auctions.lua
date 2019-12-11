@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local Auctions = TSM.MainUI.Ledger.Common:NewPackage("Auctions")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	query = nil,
@@ -78,7 +81,7 @@ function private.DrawAuctionsPage()
 	end
 
 	private.query:Reset()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
 		:OrderBy("time", false)
 
@@ -205,7 +208,7 @@ function private.DrawAuctionsPage()
 						:SetFont(TSM.UI.Fonts.FRIZQT)
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", TSMAPI_FOUR.Item.GetLink)
+						:SetTextInfo("itemString", ItemInfo.GetLink)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
 						:Commit()
@@ -323,7 +326,7 @@ function private.UpdateQuery()
 	private.query:ResetFilters()
 		:Equal("type", private.type)
 	if private.searchFilter ~= "" then
-		private.query:Matches("name", TSM.String.Escape(private.searchFilter))
+		private.query:Matches("name", String.Escape(private.searchFilter))
 	end
 	if private.typeFilter ~= "All" then
 		private.query:Equal("source", private.typeFilter)
@@ -343,7 +346,7 @@ function private.UpdateQuery()
 end
 
 function private.CompareRarityFilter(row, rarityFilter)
-	return TSM.Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
+	return Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
 end
 
 function private.TableSelectionChanged(scrollingTable, row)

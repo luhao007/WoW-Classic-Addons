@@ -8,6 +8,15 @@
 
 local _, TSM = ...
 local Gathering = TSM.Crafting:NewPackage("Gathering")
+local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
+local Database = TSM.Include("Util.Database")
+local Table = TSM.Include("Util.Table")
+local Delay = TSM.Include("Util.Delay")
+local String = TSM.Include("Util.String")
+local TempTable = TSM.Include("Util.TempTable")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local Conversions = TSM.Include("Service.Conversions")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	db = nil,
 	queuedCraftsUpdateQuery = nil,
@@ -23,14 +32,14 @@ local private = {
 -- ============================================================================
 
 function Gathering.OnInitialize()
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
-		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
+	if TSM.IsWowClassic() then
+		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
+		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
 	end
 end
 
 function Gathering.OnEnable()
-	private.db = TSMAPI_FOUR.Database.NewSchema("GATHERING_MATS")
+	private.db = Database.NewSchema("GATHERING_MATS")
 		:AddUniqueStringField("itemString")
 		:AddNumberField("numNeed")
 		:AddNumberField("numHave")
@@ -39,8 +48,8 @@ function Gathering.OnEnable()
 	private.queuedCraftsUpdateQuery = TSM.Crafting.CreateQueuedCraftsQuery()
 		:SetUpdateCallback(private.OnQueuedCraftsUpdated)
 	private.OnQueuedCraftsUpdated()
-	TSM.Inventory.BagTracking.RegisterCallback(function()
-		TSMAPI_FOUR.Delay.AfterTime("GATHERING_BAG_UPDATE", 1, private.UpdateDB)
+	BagTracking.RegisterCallback(function()
+		Delay.AfterTime("GATHERING_BAG_UPDATE", 1, private.UpdateDB)
 	end)
 end
 
@@ -62,7 +71,7 @@ function Gathering.SetCrafter(crafter)
 end
 
 function Gathering.SetProfessions(professions)
-	local numProfessions = TSM.Table.Count(TSM.db.factionrealm.gatheringContext.professions)
+	local numProfessions = Table.Count(TSM.db.factionrealm.gatheringContext.professions)
 	local didChange = false
 	if numProfessions ~= #professions then
 		didChange = true
@@ -183,7 +192,7 @@ end
 function private.UpdateDB()
 	-- delay the update if we're in combat
 	if InCombatLockdown() then
-		TSMAPI_FOUR.Delay.AfterTime("DELAYED_GATHERING_UPDATE", 1, private.UpdateDB)
+		Delay.AfterTime("DELAYED_GATHERING_UPDATE", 1, private.UpdateDB)
 		return
 	end
 	local crafter = TSM.db.factionrealm.gatheringContext.crafter
@@ -192,7 +201,7 @@ function private.UpdateDB()
 		return
 	end
 
-	local matsNumNeed = TSM.TempTable.Acquire()
+	local matsNumNeed = TempTable.Acquire()
 	local query = TSM.Crafting.CreateQueuedCraftsQuery()
 		:Select("spellId", "num")
 		:Custom(private.QueryPlayerFilter, crafter)
@@ -208,9 +217,9 @@ function private.UpdateDB()
 	end
 	query:Release()
 
-	local matQueue = TSM.TempTable.Acquire()
-	local matsNumHave = TSM.TempTable.Acquire()
-	local matsNumHaveExtra = TSM.TempTable.Acquire()
+	local matQueue = TempTable.Acquire()
+	local matsNumHave = TempTable.Acquire()
+	local matsNumHaveExtra = TempTable.Acquire()
 	for itemString, numNeed in pairs(matsNumNeed) do
 		matsNumHave[itemString] = private.GetCrafterInventoryQuantity(itemString)
 		local numUsed = nil
@@ -226,8 +235,8 @@ function private.UpdateDB()
 		end
 	end
 
-	local sourceList = TSM.TempTable.Acquire()
-	local matSourceList = TSM.TempTable.Acquire()
+	local sourceList = TempTable.Acquire()
+	local matSourceList = TempTable.Acquire()
 	while #matQueue > 0 do
 		local itemString = tremove(matQueue)
 		wipe(sourceList)
@@ -300,12 +309,12 @@ function private.UpdateDB()
 	end
 	private.db:BulkInsertEnd()
 
-	TSM.TempTable.Release(sourceList)
-	TSM.TempTable.Release(matSourceList)
-	TSM.TempTable.Release(matsNumNeed)
-	TSM.TempTable.Release(matsNumHave)
-	TSM.TempTable.Release(matsNumHaveExtra)
-	TSM.TempTable.Release(matQueue)
+	TempTable.Release(sourceList)
+	TempTable.Release(matSourceList)
+	TempTable.Release(matsNumNeed)
+	TempTable.Release(matsNumHave)
+	TempTable.Release(matsNumHaveExtra)
+	TempTable.Release(matQueue)
 end
 
 function private.ProcessSource(itemString, numNeed, source, sourceList)
@@ -323,7 +332,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - crafterMailQuantity
 		end
 	elseif source == "vendor" then
-		if TSMAPI_FOUR.Item.GetVendorBuy(itemString) then
+		if ItemInfo.GetVendorBuy(itemString) then
 			-- assume we can buy all we need from the vendor
 			tinsert(sourceList, "vendor/"..numNeed.."/")
 			return 0
@@ -343,7 +352,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - guildBankQuantity
 		end
 	elseif source == "alt" then
-		if TSMAPI_FOUR.Item.IsSoulbound(itemString) then
+		if ItemInfo.IsSoulbound(itemString) then
 			-- can't mail soulbound items
 			return numNeed
 		end
@@ -381,7 +390,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 
 		-- check alts
 		local altNum = 0
-		local altCharacters = TSM.TempTable.Acquire()
+		local altCharacters = TempTable.Acquire()
 		for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
 				local characterKey = nil
@@ -405,7 +414,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		end
 
 		local altCharactersStr = table.concat(altCharacters, "`")
-		TSM.TempTable.Release(altCharacters)
+		TempTable.Release(altCharacters)
 		if altNum > 0 then
 			altNum = min(altNum, numNeed)
 			tinsert(sourceList, "alt/"..altNum.."/"..altCharactersStr)
@@ -428,7 +437,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 
 		-- check alts
 		local totalGuildBankQuantity = 0
-		local altCharacters = TSM.TempTable.Acquire()
+		local altCharacters = TempTable.Acquire()
 		for _, character in TSMAPI_FOUR.PlayerInfo.CharacterIterator(true) do
 			local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(character)
 			if guild and guild ~= currentGuild then
@@ -440,7 +449,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			end
 		end
 		local altCharactersStr = table.concat(altCharacters, "`")
-		TSM.TempTable.Release(altCharacters)
+		TempTable.Release(altCharacters)
 		if totalGuildBankQuantity > 0 then
 			totalGuildBankQuantity = min(totalGuildBankQuantity, numNeed)
 			tinsert(sourceList, "altGuildBank/"..totalGuildBankQuantity.."/"..altCharactersStr)
@@ -455,7 +464,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return 0
 		end
 	elseif source == "auction" then
-		if TSMAPI_FOUR.Item.IsSoulbound(itemString) then
+		if ItemInfo.IsSoulbound(itemString) then
 			-- can't buy soulbound items
 			return numNeed
 		end
@@ -463,12 +472,11 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		tinsert(sourceList, "auction/"..numNeed.."/")
 		return 0
 	elseif source == "auctionCrafting" then
-		if TSMAPI_FOUR.Item.IsSoulbound(itemString) then
+		if ItemInfo.IsSoulbound(itemString) then
 			-- can't buy soulbound items
 			return numNeed
 		end
-		local conversionInfo = TSMAPI_FOUR.Conversions.GetSourceItems(itemString)
-		if not conversionInfo or not conversionInfo.convert or not next(conversionInfo.convert) then
+		if not Conversions.GetSourceItems(itemString) then
 			-- can't convert to get this item
 			return numNeed
 		end
@@ -476,12 +484,11 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		tinsert(sourceList, "auctionCrafting/"..numNeed.."/")
 		return 0
 	elseif source == "auctionDE" then
-		if TSMAPI_FOUR.Item.IsSoulbound(itemString) then
+		if ItemInfo.IsSoulbound(itemString) then
 			-- can't buy soulbound items
 			return numNeed
 		end
-		local conversionInfo = TSMAPI_FOUR.Conversions.GetSourceItems(itemString)
-		if not conversionInfo or not conversionInfo.disenchant then
+		if not DisenchantInfo.IsTargetItem(itemString) then
 			-- can't disenchant to get this item
 			return numNeed
 		end
@@ -495,7 +502,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
+	return String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.GetCrafterInventoryQuantity(itemString)

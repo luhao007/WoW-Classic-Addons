@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local AuctionUI = TSM.UI:NewPackage("AuctionUI")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Event = TSM.Include("Util.Event")
+local Log = TSM.Include("Util.Log")
 local private = {
 	topLevelPages = {},
 	frame = nil,
@@ -30,12 +33,12 @@ local MIN_FRAME_SIZE = { width = 830, height = 587 }
 
 function AuctionUI.OnInitialize()
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
-	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
-	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
-	if select(4, GetBuildInfo()) < 80300 then
-		TSMAPI_FOUR.Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
+	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
+	Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
+	if not TSM.IsWow83() then
+		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
 	else
-		TSMAPI_FOUR.Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
+		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
 	end
 	TSM.Wow.RegisterItemLinkedCallback(private.ItemLinkedCallback)
 end
@@ -72,11 +75,11 @@ end
 
 function AuctionUI.StartingScan(pageName)
 	if private.scanningPage and private.scanningPage ~= pageName then
-		TSM:Printf(L["A scan is already in progress. Please stop that scan before starting another one."])
+		Log.PrintfUser(L["A scan is already in progress. Please stop that scan before starting another one."])
 		return false
 	end
 	private.scanningPage = pageName
-	TSM:LOG_INFO("Starting scan %s", pageName)
+	Log.Info("Starting scan %s", pageName)
 	if private.frame then
 		private.frame:SetPulsingNavButton(private.scanningPage)
 	end
@@ -88,7 +91,7 @@ end
 
 function AuctionUI.EndedScan(pageName)
 	if private.scanningPage == pageName then
-		TSM:LOG_INFO("Ended scan %s", pageName)
+		Log.Info("Ended scan %s", pageName)
 		private.scanningPage = nil
 		if private.frame then
 			private.frame:SetPulsingNavButton()
@@ -130,7 +133,7 @@ end
 
 function private.AuctionFrameInit()
 	local tabTemplateName = nil
-	if select(4, GetBuildInfo()) < 80300 then
+	if not TSM.IsWow83() then
 		private.defaultFrame = AuctionFrame
 		tabTemplateName = "AuctionTabTemplate"
 	else
@@ -145,7 +148,7 @@ function private.AuctionFrameInit()
 		tab:SetID(tabId)
 		tab:SetText("|cff99ffffTSM4|r")
 		tab:SetNormalFontObject(GameFontHighlightSmall)
-		if select(4, GetBuildInfo()) < 80300 then
+		if not TSM.IsWow83() then
 			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
 		else
 			tab:SetPoint("LEFT", AuctionHouseFrame.Tabs[tabId - 1], "RIGHT", -15, 0)
@@ -224,7 +227,11 @@ function private.BaseFrameOnHide(frame)
 	frame:Release()
 	private.frame = nil
 	if not private.isSwitching then
-		CloseAuctionHouse()
+		if not TSM.IsWow83() then
+			CloseAuctionHouse()
+		else
+			C_AuctionHouse.CloseAuctionHouse()
+		end
 	end
 	TSM.UI.AnalyticsRecordClose("auction")
 end
@@ -242,21 +249,24 @@ local function NoOp()
 end
 
 function private.TSMTabOnClick()
-	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
-	local origCloseAuctionHouse = CloseAuctionHouse
 	TSM.db.global.internalData.auctionUIFrameContext.showDefault = false
-	if select(4, GetBuildInfo()) < 80300 then
+	if not TSM.IsWow83() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 	end
 	ClearCursor()
-	CloseAuctionHouse = NoOp
-	if select(4, GetBuildInfo()) < 80300 then
+	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
+	if not TSM.IsWow83() then
+		local origCloseAuctionHouse = CloseAuctionHouse
+		CloseAuctionHouse = NoOp
 		AuctionFrame_Hide()
+		CloseAuctionHouse = origCloseAuctionHouse
 	else
+		local origCloseAuctionHouse = C_AuctionHouse.CloseAuctionHouse
+		C_AuctionHouse.CloseAuctionHouse = NoOp
 		HideUIPanel(private.defaultFrame)
+		C_AuctionHouse.CloseAuctionHouse = origCloseAuctionHouse
 	end
-	CloseAuctionHouse = origCloseAuctionHouse
 	private.ShowAuctionFrame()
 end
 

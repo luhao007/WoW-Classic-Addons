@@ -8,7 +8,12 @@
 
 local _, TSM = ...
 local Queue = TSM.Crafting:NewPackage("Queue")
-local private = { db = nil }
+local Database = TSM.Include("Util.Database")
+local Math = TSM.Include("Util.Math")
+local Log = TSM.Include("Util.Log")
+local private = {
+	db = nil,
+}
 
 
 
@@ -17,7 +22,7 @@ local private = { db = nil }
 -- ============================================================================
 
 function Queue.OnEnable()
-	private.db = TSMAPI_FOUR.Database.NewSchema("CRAFTING_QUEUE")
+	private.db = Database.NewSchema("CRAFTING_QUEUE")
 		:AddUniqueNumberField("spellId")
 		:AddNumberField("num")
 		:Commit()
@@ -39,10 +44,10 @@ end
 function Queue.SetNum(spellId, num)
 	local craftInfo = TSM.db.factionrealm.internalData.crafts[spellId]
 	if not craftInfo then
-		TSM:LOG_ERR("Could not find craft: "..spellId)
+		Log.Err("Could not find craft: "..spellId)
 		return
 	end
-	craftInfo.queued = max(TSM.Math.Round(num or 0), 0)
+	craftInfo.queued = max(Math.Round(num or 0), 0)
 	local query = private.db:NewQuery()
 		:Equal("spellId", spellId)
 	local row = query:GetFirstResult()
@@ -121,7 +126,7 @@ function Queue.RestockGroups(groups)
 				if isValid then
 					private.RestockItem(itemString)
 				elseif err then
-					TSM:Print(err)
+					Log.PrintUser(err)
 				end
 			end
 		end

@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Auctioning = TSM.MainUI.Settings.Tooltip:NewPackage("Auctioning")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {}
 
 

@@ -8,8 +8,13 @@
 
 local _, TSM = ...
 local SavedSearches = TSM.Auctioning:NewPackage("SavedSearches")
-local L = TSM.L
-local private = { db = nil }
+local L = TSM.Include("Locale").GetTable()
+local String = TSM.Include("Util.String")
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local private = {
+	db = nil,
+}
 local FILTER_SEP = "\001"
 
 
@@ -20,7 +25,7 @@ local FILTER_SEP = "\001"
 
 function SavedSearches.OnInitialize()
 	-- remove duplicates
-	local keepSearch = TSM.TempTable.Acquire()
+	local keepSearch = TempTable.Acquire()
 	for _, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
 		local filter = data.filter
 		if not keepSearch[filter] then
@@ -40,9 +45,9 @@ function SavedSearches.OnInitialize()
 			tremove(TSM.db.global.userData.savedAuctioningSearches, i)
 		end
 	end
-	TSM.TempTable.Release(keepSearch)
+	TempTable.Release(keepSearch)
 
-	private.db = TSMAPI_FOUR.Database.NewSchema("AUCTIONING_SAVED_SEARCHES")
+	private.db = Database.NewSchema("AUCTIONING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")
 		:AddNumberField("lastSearch")
 		:AddBooleanField("isFavorite")
@@ -125,9 +130,7 @@ function SavedSearches.RecordSearch(searchList, searchType)
 end
 
 function SavedSearches.FiltersToTable(dbRow, tbl)
-	for filter in gmatch(dbRow:GetField("filter"), "[^"..FILTER_SEP.."]+") do
-		tinsert(tbl, filter)
-	end
+	String.SafeSplit(dbRow:GetField("filter"), FILTER_SEP, tbl)
 end
 
 
@@ -137,7 +140,7 @@ end
 -- ============================================================================
 
 function private.GetSearchName(filter, searchType)
-	local filters = TSM.TempTable.Acquire()
+	local filters = TempTable.Acquire()
 	local searchTypeStr, numFiltersStr = nil, nil
 	if filter == "" or string.sub(filter, 1, 1) == FILTER_SEP then
 		tinsert(filters, L["Base Group"])
@@ -174,9 +177,9 @@ function private.GetSearchName(filter, searchType)
 	local groupList = nil
 	if #filters > 10 then
 		groupList = table.concat(filters, ", ", 1, 10)..",..."
-		TSM.TempTable.Release(filters)
+		TempTable.Release(filters)
 	else
-		groupList = strjoin(", ", TSM.TempTable.UnpackAndRelease(filters))
+		groupList = strjoin(", ", TempTable.UnpackAndRelease(filters))
 	end
 	return format("%s (%s): %s", searchTypeStr, numFiltersStr, groupList)
 end

@@ -590,7 +590,7 @@ function ProfessionInfo.GetName(key)
 end
 
 function ProfessionInfo.IsSubNameClassic(str)
-	assert(WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+	assert(TSM.IsWowClassic())
 	return CLASSIC_SUB_NAMES[str] or false
 end
 

@@ -12,7 +12,6 @@
 local _, TSM = ...
 local Vararg = TSM.Init("Util.Vararg")
 local TempTable = TSM.Include("Util.TempTable")
-TSM.Vararg = Vararg
 
 
 

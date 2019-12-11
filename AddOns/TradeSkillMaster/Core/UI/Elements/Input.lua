@@ -11,6 +11,7 @@
 -- @classmod Input
 
 local _, TSM = ...
+local String = TSM.Include("Util.String")
 local private = { frameInputLookup = {} }
 local Input = TSM.Include("LibTSMClass").DefineClass("Input", TSM.UI.Element)
 TSM.UI.Input = Input
@@ -423,7 +424,7 @@ function private.OnChar(frame)
 	local text = self:GetText()
 	local match = nil
 	for k in pairs(self:_GetStyle("autoComplete")) do
-		local start, ending = strfind(strlower(k), "^"..TSM.String.Escape(strlower(text)))
+		local start, ending = strfind(strlower(k), "^"..String.Escape(strlower(text)))
 		if start and ending and ending == #text then
 			match = k
 			break

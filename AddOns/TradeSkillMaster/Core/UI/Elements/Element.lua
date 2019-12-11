@@ -12,8 +12,12 @@
 
 local _, TSM = ...
 local Element = TSM.Include("LibTSMClass").DefineClass("Element", nil, "ABSTRACT")
+local Log = TSM.Include("Util.Log")
 TSM.UI.Element = Element
-local private = { elementLookup = {}, scriptWrappers = {} }
+local private = {
+	elementLookup = {},
+	scriptWrappers = {},
+}
 local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 
 
@@ -215,7 +219,7 @@ function private.ScriptHandlerCommon(script, frame, ...)
 	self._scripts[script](self, ...)
 	local timeTaken = debugprofilestop() - startTime
 	if timeTaken > SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		TSM:LOG_WARN("Script handler (%s) for frame (%s) took %0.2fms", script, self._id or tostring(self), timeTaken)
+		Log.Warn("Script handler (%s) for frame (%s) took %0.2fms", script, self._id or tostring(self), timeTaken)
 	end
 end
 

@@ -11,7 +11,6 @@
 
 local _, TSM = ...
 local SmartMap = TSM.Init("Util.SmartMap")
-TSM.SmartMap = SmartMap
 local private = {
 	mapContext = {},
 	readerContext = {},

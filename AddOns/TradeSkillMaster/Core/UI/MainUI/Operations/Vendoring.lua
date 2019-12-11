@@ -8,8 +8,11 @@
 
 local _, TSM = ...
 local Vendoring = TSM.MainUI.Operations:NewPackage("Vendoring")
-local L = TSM.L
-local private = { currentOperationName = nil }
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local private = {
+	currentOperationName = nil,
+}
 
 local RESTOCK_SOURCES = { bank = BANK, guild = GUILD, alts = L["Alts"], alts_ah = L["Alts AH"], ah = L["AH"], mail = L["Mail"] }
 local RESTOCK_SOURCES_ORDER = { "bank", "guild", "alts", "alts_ah", "ah", "mail" }
@@ -155,7 +158,7 @@ function private.GetVendoringOperationSettings(operationName)
 					:SetStyle("height", 26)
 					:SetSettingInfo(operation, "vsMarketValue", TSM.MainUI.Operations.CheckCustomPrice)
 					:SetDisabled(TSM.Operations.HasRelationship("Vendoring", private.currentOperationName, "vsMarketValue") or not operation.enableSell)
-					:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMarketValue)) or TSM.Money.ToString(operation.vsMarketValue) or operation.vsMarketValue)
+					:SetText(Money.ToString(Money.FromString(operation.vsMarketValue)) or Money.ToString(operation.vsMarketValue) or operation.vsMarketValue)
 					:SetScript("OnEnterPressed", private.MarketValueOnEnterPressed)
 				)
 			)
@@ -170,7 +173,7 @@ function private.GetVendoringOperationSettings(operationName)
 					:SetStyle("height", 26)
 					:SetSettingInfo(operation, "vsMaxMarketValue", TSM.MainUI.Operations.CheckCustomPrice)
 					:SetDisabled(TSM.Operations.HasRelationship("Vendoring", private.currentOperationName, "vsMaxMarketValue") or not operation.enableSell)
-					:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMaxMarketValue)) or TSM.Money.ToString(operation.vsMaxMarketValue) or operation.vsMaxMarketValue)
+					:SetText(Money.ToString(Money.FromString(operation.vsMaxMarketValue)) or Money.ToString(operation.vsMaxMarketValue) or operation.vsMaxMarketValue)
 					:SetScript("OnEnterPressed", private.MaxMarketValueOnEnterPressed)
 				)
 			)
@@ -185,7 +188,7 @@ function private.GetVendoringOperationSettings(operationName)
 					:SetStyle("height", 26)
 					:SetSettingInfo(operation, "vsDestroyValue", TSM.MainUI.Operations.CheckCustomPrice)
 					:SetDisabled(TSM.Operations.HasRelationship("Vendoring", private.currentOperationName, "vsDestroyValue") or not operation.enableSell)
-					:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsDestroyValue)) or TSM.Money.ToString(operation.vsDestroyValue) or operation.vsDestroyValue)
+					:SetText(Money.ToString(Money.FromString(operation.vsDestroyValue)) or Money.ToString(operation.vsDestroyValue) or operation.vsDestroyValue)
 					:SetScript("OnEnterPressed", private.DestroyValueOnEnterPressed)
 				)
 			)
@@ -201,7 +204,7 @@ function private.GetVendoringOperationSettings(operationName)
 					:SetDisabled(not operation.enableSell)
 					:SetSettingInfo(operation, "vsMaxDestroyValue", TSM.MainUI.Operations.CheckCustomPrice)
 					:SetDisabled(TSM.Operations.HasRelationship("Vendoring", private.currentOperationName, "vsMaxDestroyValue") or not operation.enableSell)
-					:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMaxDestroyValue)) or TSM.Money.ToString(operation.vsMaxDestroyValue) or operation.vsMaxDestroyValue)
+					:SetText(Money.ToString(Money.FromString(operation.vsMaxDestroyValue)) or Money.ToString(operation.vsMaxDestroyValue) or operation.vsMaxDestroyValue)
 					:SetScript("OnEnterPressed", private.MaxDestroyValueOnEnterPressed)
 				)
 			)
@@ -325,10 +328,10 @@ function private.MarketValueOnEnterPressed(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text) then
 		local operation = TSM.Operations.GetSettings("Vendoring", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMarketValue)) or TSM.Money.ToString(operation.vsMarketValue) or operation.vsMarketValue)
+		input:SetText(Money.ToString(Money.FromString(operation.vsMarketValue)) or Money.ToString(operation.vsMarketValue) or operation.vsMarketValue)
 			:Draw()
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end
@@ -337,10 +340,10 @@ function private.MaxMarketValueOnEnterPressed(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text) then
 		local operation = TSM.Operations.GetSettings("Vendoring", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMaxMarketValue)) or TSM.Money.ToString(operation.vsMaxMarketValue) or operation.vsMaxMarketValue)
+		input:SetText(Money.ToString(Money.FromString(operation.vsMaxMarketValue)) or Money.ToString(operation.vsMaxMarketValue) or operation.vsMaxMarketValue)
 			:Draw()
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end
@@ -349,10 +352,10 @@ function private.DestroyValueOnEnterPressed(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text) then
 		local operation = TSM.Operations.GetSettings("Vendoring", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsDestroyValue)) or TSM.Money.ToString(operation.vsDestroyValue) or operation.vsDestroyValue)
+		input:SetText(Money.ToString(Money.FromString(operation.vsDestroyValue)) or Money.ToString(operation.vsDestroyValue) or operation.vsDestroyValue)
 			:Draw()
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end
@@ -361,10 +364,10 @@ function private.MaxDestroyValueOnEnterPressed(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text) then
 		local operation = TSM.Operations.GetSettings("Vendoring", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.vsMaxDestroyValue)) or TSM.Money.ToString(operation.vsMaxDestroyValue) or operation.vsMaxDestroyValue)
+		input:SetText(Money.ToString(Money.FromString(operation.vsMaxDestroyValue)) or Money.ToString(operation.vsMaxDestroyValue) or operation.vsMaxDestroyValue)
 			:Draw()
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end

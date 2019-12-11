@@ -8,8 +8,11 @@
 
 local _, TSM = ...
 local General = TSM.MainUI.Settings.Tooltip:NewPackage("General")
-local L = TSM.L
-local private = { operationModules = {} }
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local private = {
+	operationModules = {},
+}
 
 
 
@@ -84,8 +87,8 @@ function private.GetTooltipSettingsFrame()
 			:SetStyle("margin.bottom", 16)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "priceFormatDropdown")
 				:SetStyle("margin.right", 16)
-				:AddItem(format(L["Coins (%s)"], TSM.Money.ToString(3451267, nil, "OPT_ICON")), "icon")
-				:AddItem(format(L["Text (%s)"], TSM.Money.ToString(3451267)), "text")
+				:AddItem(format(L["Coins (%s)"], Money.ToString(3451267, nil, "OPT_ICON")), "icon")
+				:AddItem(format(L["Text (%s)"], Money.ToString(3451267)), "text")
 				:SetSettingInfo(TSM.db.global.tooltipOptions, "tooltipPriceFormat")
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "modifierDropdown")

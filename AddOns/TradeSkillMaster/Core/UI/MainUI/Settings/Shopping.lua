@@ -8,8 +8,14 @@
 
 local _, TSM = ...
 local Shopping = TSM.MainUI.Settings:NewPackage("Shopping")
-local L = TSM.L
-local private = { sounds = {}, soundkeys = {} }
+local L = TSM.Include("Locale").GetTable()
+local Sound = TSM.Include("Util.Sound")
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	sounds = {},
+	soundkeys = {},
+}
 
 
 -- ============================================================================
@@ -18,7 +24,7 @@ local private = { sounds = {}, soundkeys = {} }
 
 function Shopping.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage("Shopping / Sniper", "middle", private.GetShoppingSettingsFrame)
-	for key, name in pairs(TSM.Sound.GetSounds()) do
+	for key, name in pairs(Sound.GetSounds()) do
 		tinsert(private.sounds, name)
 		tinsert(private.soundkeys, key)
 	end
@@ -169,11 +175,11 @@ end
 -- ============================================================================
 
 function private.CheckCustomPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value)
+	local isValid, err = CustomPrice.Validate(value)
 	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 		return false
 	end
 end

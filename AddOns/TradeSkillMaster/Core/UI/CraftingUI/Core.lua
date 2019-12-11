@@ -8,8 +8,17 @@
 
 local _, TSM = ...
 local CraftingUI = TSM.UI:NewPackage("CraftingUI")
-local L = TSM.L
-local private = { topLevelPages = {}, fsm = nil, craftOpen = nil, tradeSkillOpen = nil, defaultUISwitchBtn = nil, isVisible = false }
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
+local Event = TSM.Include("Util.Event")
+local private = {
+	topLevelPages = {},
+	fsm = nil,
+	craftOpen = nil,
+	tradeSkillOpen = nil,
+	defaultUISwitchBtn = nil,
+	isVisible = false,
+}
 local MIN_FRAME_SIZE = { width = 820, height = 587 }
 local BEAST_TRAINING_DE = "Bestienausbildung"
 local BEAST_TRAINING_ES = "Entrenamiento de bestias"
@@ -50,7 +59,7 @@ function CraftingUI.Toggle()
 end
 
 function CraftingUI.IsProfessionIgnored(name)
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
 			return true
 		elseif name == GetSpellInfo(7620) then -- Fishing
@@ -126,14 +135,14 @@ end
 -- ============================================================================
 
 function private.FSMCreate()
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSM.Event.Register("CRAFT_SHOW", function()
+	if TSM.IsWowClassic() then
+		Event.Register("CRAFT_SHOW", function()
 			CloseTradeSkill()
 			private.craftOpen = true
 			TSM.Crafting.ProfessionState.SetCraftOpen(true)
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 		end)
-		TSM.Event.Register("CRAFT_CLOSE", function()
+		Event.Register("CRAFT_CLOSE", function()
 			private.craftOpen = false
 			TSM.Crafting.ProfessionState.SetCraftOpen(false)
 			if not private.tradeSkillOpen then
@@ -141,21 +150,21 @@ function private.FSMCreate()
 			end
 		end)
 	end
-	TSM.Event.Register("TRADE_SKILL_SHOW", function()
-		if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	Event.Register("TRADE_SKILL_SHOW", function()
+		if TSM.IsWowClassic() then
 			CloseCraft()
 		end
 		private.tradeSkillOpen = true
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 	end)
-	TSM.Event.Register("TRADE_SKILL_CLOSE", function()
+	Event.Register("TRADE_SKILL_CLOSE", function()
 		private.tradeSkillOpen = false
 		if not private.craftOpen then
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSED")
 		end
 	end)
 	-- we'll implement UIParent's event handler directly when necessary for TRADE_SKILL_SHOW
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		UIParent:UnregisterEvent("CRAFT_SHOW")
 	end
 	UIParent:UnregisterEvent("TRADE_SKILL_SHOW")
@@ -178,8 +187,8 @@ function private.FSMCreate()
 	local function DefaultFrameOnHide()
 		private.fsm:ProcessEvent("EV_FRAME_HIDE")
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("CRAFTING_UI")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CLOSED")
+	private.fsm = FSM.New("CRAFTING_UI")
+		:AddState(FSM.NewState("ST_CLOSED")
 			:AddTransition("ST_DEFAULT_OPEN")
 			:AddTransition("ST_FRAME_OPEN")
 			:AddEvent("EV_FRAME_TOGGLE", function(context)
@@ -199,7 +208,7 @@ function private.FSMCreate()
 				end
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_DEFAULT_OPEN")
+		:AddState(FSM.NewState("ST_DEFAULT_OPEN")
 			:SetOnEnter(function(context, isIgnored)
 				if private.craftOpen then
 					UIParent_OnEvent(UIParent, "CRAFT_SHOW")
@@ -210,8 +219,8 @@ function private.FSMCreate()
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = TSMAPI_FOUR.UI.NewElement("ActionButton", "switchBtn")
 						:SetStyle("width", 60)
-						:SetStyle("height", WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and 16 or 15)
-						:SetStyle("anchors", { { "TOPRIGHT", WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and -60 or -27, WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and -16 or -4 } })
+						:SetStyle("height", TSM.IsWowClassic() and 16 or 15)
+						:SetStyle("anchors", { { "TOPRIGHT", TSM.IsWowClassic() and -60 or -27, TSM.IsWowClassic() and -16 or -4 } })
 						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
 						:SetStyle("fontHeight", 12)
 						:SetStyle("relativeLevel", 3)
@@ -232,7 +241,7 @@ function private.FSMCreate()
 				else
 					TradeSkillFrame:SetScript("OnHide", DefaultFrameOnHide)
 				end
-				if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+				if not TSM.IsWowClassic() then
 					local linked, linkedName = TSM.Crafting.ProfessionUtil.IsLinkedProfession()
 					if TSM.Crafting.ProfessionUtil.IsDataStable() and not TSM.Crafting.ProfessionUtil.IsGuildProfession() and (not linked or (linked and linkedName == UnitName("player"))) then
 						TradeSkillFrame:OnEvent("TRADE_SKILL_DATA_SOURCE_CHANGED")
@@ -272,10 +281,10 @@ function private.FSMCreate()
 					end
 				end
 			end)
-			:AddEvent("EV_TRADE_SKILL_CLOSED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
-			:AddEvent("EV_SWITCH_BTN_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_OPEN"))
+			:AddEventTransition("EV_TRADE_SKILL_CLOSED", "ST_CLOSED")
+			:AddEventTransition("EV_SWITCH_BTN_CLICKED", "ST_FRAME_OPEN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN")
+		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				assert(not context.frame)
 				context.frame = private.CreateMainFrame()
@@ -293,7 +302,7 @@ function private.FSMCreate()
 				context.frame:Release()
 				context.frame = nil
 				private.isVisible = false
-				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+				if TSM.IsWowClassic() then
 					UpdateDefaultCraftButton()
 				end
 			end)
@@ -310,9 +319,9 @@ function private.FSMCreate()
 				context.frame:GetElement("titleFrame.switchBtn"):Show()
 				context.frame:GetElement("titleFrame"):Draw()
 			end)
-			:AddEvent("EV_TRADE_SKILL_CLOSED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
-			:AddEvent("EV_SWITCH_BTN_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_DEFAULT_OPEN"))
-			:AddEvent("EV_FRAME_TOGGLE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_TRADE_SKILL_CLOSED", "ST_CLOSED")
+			:AddEventTransition("EV_SWITCH_BTN_CLICKED", "ST_DEFAULT_OPEN")
+			:AddEventTransition("EV_FRAME_TOGGLE", "ST_CLOSED")
 		)
 		:Init("ST_CLOSED", fsmContext)
 end

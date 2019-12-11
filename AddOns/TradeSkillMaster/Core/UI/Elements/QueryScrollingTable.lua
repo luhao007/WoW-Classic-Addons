@@ -13,6 +13,8 @@
 
 local _, TSM = ...
 local QueryScrollingTable = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTable", TSM.UI.ScrollingTable)
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
 TSM.UI.QueryScrollingTable = QueryScrollingTable
 local private = {
 	queryQueryScrollingTableLookup = {},
@@ -107,7 +109,7 @@ function QueryScrollingTable.SetSelection(self, selection)
 	end
 	local index = nil
 	if selection then
-		index = TSM.Table.KeyByValue(self._data, selection)
+		index = Table.KeyByValue(self._data, selection)
 		assert(index)
 	end
 	self._selection = selection
@@ -174,8 +176,8 @@ end
 
 function QueryScrollingTable._UpdateData(self)
 	-- we need to fix up the data within the rows updated to avoid errors with trying to access old DatabaseQueryResultRows
-	local prevRowIndex = TSM.TempTable.Acquire()
-	local newRowData = TSM.TempTable.Acquire()
+	local prevRowIndex = TempTable.Acquire()
+	local newRowData = TempTable.Acquire()
 	for i, row in ipairs(self._rows) do
 		if row:IsVisible() then
 			prevRowIndex[row:GetData()] = i
@@ -202,8 +204,8 @@ function QueryScrollingTable._UpdateData(self)
 			end
 		end
 	end
-	TSM.TempTable.Release(prevRowIndex)
-	TSM.TempTable.Release(newRowData)
+	TempTable.Release(prevRowIndex)
+	TempTable.Release(newRowData)
 	if self._onDataUpdated then
 		self:_onDataUpdated()
 	end

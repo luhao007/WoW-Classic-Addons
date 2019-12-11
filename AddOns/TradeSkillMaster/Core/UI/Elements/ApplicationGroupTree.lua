@@ -13,6 +13,7 @@
 -- @classmod ApplicationGroupTree
 
 local _, TSM = ...
+local TempTable = TSM.Include("Util.TempTable")
 local ApplicationGroupTree = TSM.Include("LibTSMClass").DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
 TSM.UI.ApplicationGroupTree = ApplicationGroupTree
 
@@ -53,13 +54,13 @@ end
 -- @tparam ApplicationGroupTree self The application group tree object
 -- @return Iterator with the following fields: `index, groupPath`
 function ApplicationGroupTree.SelectedGroupsIterator(self)
-	local groups = TSM.TempTable.Acquire()
+	local groups = TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
 		if self._contextTbl.selected[groupPath] then
 			tinsert(groups, groupPath)
 		end
 	end
-	return TSM.TempTable.Iterator(groups)
+	return TempTable.Iterator(groups)
 end
 
 --- Sets the context table.
@@ -125,7 +126,7 @@ end
 function ApplicationGroupTree._UpdateData(self)
 	self.__super:_UpdateData()
 	-- remove data which is no longer present from _contextTbl
-	local selectedGroups = TSM.TempTable.Acquire()
+	local selectedGroups = TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
 		if self:_IsSelected(groupPath) then
 			selectedGroups[groupPath] = true
@@ -135,7 +136,7 @@ function ApplicationGroupTree._UpdateData(self)
 	for groupPath in pairs(selectedGroups) do
 		self._contextTbl.selected[groupPath] = true
 	end
-	TSM.TempTable.Release(selectedGroups)
+	TempTable.Release(selectedGroups)
 end
 
 function ApplicationGroupTree._IsSelected(self, data)

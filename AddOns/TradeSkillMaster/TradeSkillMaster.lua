@@ -11,10 +11,21 @@
 local TSM = TSMAPI_FOUR.Addon.New(...)
 TSMAPI = {} -- FIXME: this is still needed for AppHelper
 local ClassicRealms = TSM.Include("Data.ClassicRealms")
+local Log = TSM.Include("Util.Log")
+local Analytics = TSM.Include("Util.Analytics")
+local Math = TSM.Include("Util.Math")
+local Money = TSM.Include("Util.Money")
+local ItemString = TSM.Include("Util.ItemString")
 local ErrorHandler = TSM.Include("Service.ErrorHandler")
+local SlashCommands = TSM.Include("Service.SlashCommands")
+local Threading = TSM.Include("Service.Threading")
+local Settings = TSM.Include("Service.Settings")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BlackMarket = TSM.Include("Service.BlackMarket")
 local LibRealmInfo = LibStub("LibRealmInfo")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {
 	appInfo = nil
 }
@@ -22,264 +33,10 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.20" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.8.21" then
 		message("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
-
--- Changelog:
--- [6] added 'global.locale' key
--- [7] changed default value of 'tsmItemTweetEnabled' to false
--- [8] added 'global.itemCacheVersion' key
--- [9] removed 'global.itemCacheVersion' key, added 'global.clientVersion' key
--- [10] first TSM4 version - combined all module settings into a single DB
--- [11] added profile.internalData.createdDefaultOperations
--- [12] added global.shoppingOptions.pctSource
--- [13] added profile.internalData.{managementGroupTreeContext,auctioningGroupTreeContext,shoppingGroupTreeContext}
--- [14] added global.userData.savedAuctioningSearches
--- [15] added global.coreOptions.bankUITab, profile.coreOptions.{bankUIBankFramePosition,bankUIGBankFramePosition}
--- [16] moved profile.coreOptions.{bankUIBankFramePosition,bankUIGBankFramePosition} to profile.internalData.{bankUIBankFramePosition,bankUIGBankFramePosition}
--- [17] added global.internalData.{mainUIFrameContext,auctionUIFrameContext,craftingUIFrameContext}
--- [18] removed global.internalData.itemStringLookup
--- [19] added sync scope (initially with internalData.{classKey,bagQuantity,bankQuantity,reagentBankQuantity,auctionQuantity,mailQuantity}), removed factionrealm.internalData.{syncMetadata,accountKey,inventory,characters} and factionrealm.coreOptions.syncAccounts, added global.debug.chatLoggingEnabled
--- [20] added global.tooltipOptions.enabled
--- [21] added global.craftingOptions.{profitPercent,questSmartCrafting,queueSort}
--- [22] added global.coreOptions.cleanGuildBank
--- [23] changed global.shoppingOptions.maxDeSearchPercent default to 100
--- [24] added global.auctioningOptions.{showAuctionDBTab,openAllBags,ahRowDisplay}
--- [25] split realm.internalData.goldLog into sync.internalData.goldLog and factionrealm.internalData.guildGoldLog
--- [26] added profile.internalData.{shoppingTabGroupContext,auctioningTabGroupContext}
--- [27] added char.internalData.craftingCooldowns
--- [28] added global.internalData.mailingUIFrameContext
--- [29] added global.internalData.vendoringUIFrameContext
--- [30] added global.internalData.bankingUIFrameContext
--- [31] changed global.internalData.bankingUIFrameContext default (isOpen = true), added profile.internalData.{bankingWarehousingGroupTreeContext,bankingAuctioningGroupTreeContext,bankingMailingGroupTreeContext}
--- [32] removed factionrealm.internalData.gathering, added factionrealm.internalData.gatheringContext.{crafter,professions}, added profile.gatheringOptions.sources
--- [33] added global.internalData.taskListUIFrameContext
--- [34] removed realm.internalData.{lastAuctionDBCompleteScan,lastAuctionDBSaveTime,auctionDBScanData}
--- [35] added factionrealm.userData.craftingCooldownIgnore
--- [36] removed factionrealm.internalData.playerProfessions and added sync.internalData.playerProfessions
--- [37] removed global.auctioningOptions.showAuctionDBTab
--- [38] removed global.mailingOptions.{defaultMailTab,autoCheck,displayMoneyCollected,deleteEmptyNPCMail,showReloadBtn,sendDelay,defaultPage}, added global.mailingOptions.recentlyMailedList
--- [39] added profile.internalData.{craftingGroupTreeContext,mailingGroupTreeContext,vendoringGroupTreeContext,importGroupTreeContext}
--- [40] removed global.accountingOptions.{timeFormat,mvSource}
--- [41] removed global.coreOptions.groupPriceSource
--- [42] removed global.vendoringOptions.defaultMerchantTab
--- [43] removed global.coreOptions.{moveDelay,bankUITab}, removed global.auctioningOptions.{openAllBags,ahRowDisplay}, removed global.craftingOptions.{profitPercent,questSmartCrafting,queueSort}, removed global.destroyingOptions.{logDays,timeFormat}, removed global.vendoringOptions.{autoSellTrash,qsHideGrouped,qsHideSoulbound,qsBatchSize,defaultPage,qsMaxMarketValue,qsDestroyValue}, removed profile.coreOptions.{cleanBags,cleanBank,cleanReagentBank,cleanGuildBank}
--- [44] changed global.internalData.{mainUIFrameContext,auctionUIFrameContext,craftingUIFrameContext,destroyingUIFrameContext,mailingUIFrameContext,vendoringUIFrameContext,bankingUIFrameContext} default (added "scale = 1")
--- [45] added char.internalData.auctionSaleHints
--- [46] added global.shoppingOptions.{buyoutConfirm,buyoutAlertSource}
--- [47] added factionrealm.internalData.expiringMail and factionrealm.internalData.expiringAuction
--- [48] added profile.internalData.exportGroupTreeContext
--- [49] added factionrealm.internalData.{mailDisenchantablesChar,mailExcessGoldChar,mailExcessGoldLimit}
--- [50] added factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
--- [51-53] resetting factionrealm.internalData.crafts
-
-local SETTINGS_INFO = {
-	version = 53,
-	global = {
-		debug = {
-			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
-		},
-		internalData = {
-			vendorItems = { type = "table", default = {}, lastModifiedVersion = 10 },
-			appMessageId = { type = "number", default = 0, lastModifiedVersion = 10 },
-			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 10 },
-			mainUIFrameContext = { type = "table", default = { width = 948, height = 757, centerX = 0, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			auctionUIFrameContext = { type = "table", default = { width = 830, height = 587, centerX = -300, centerY = 100, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			craftingUIFrameContext = { type = "table", default = { width = 820, height = 587, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			destroyingUIFrameContext = { type = "table", default = { width = 296, height = 442, centerX = 0, centerY = 0, scale = 1 }, lastModifiedVersion = 44 },
-			mailingUIFrameContext = { type = "table", default = { width = 560, height = 500, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			vendoringUIFrameContext = { type = "table", default = { width = 560, height = 500, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			bankingUIFrameContext = { type = "table", default = { width = 325, height = 600, centerX = 500, centerY = 0, tab = "Warehousing", isOpen = true, scale = 1 }, lastModifiedVersion = 44 },
-			taskListUIFrameContext = { type = "table", default = { topRightX = -220, topRightY = -10, minimized = false, isOpen = true }, lastModifiedVersion = 33 },
-		},
-		coreOptions = {
-			globalOperations = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			chatFrame = { type = "string", default = "", lastModifiedVersion = 10 },
-			auctionSaleEnabled = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			auctionSaleSound = { type = "string", default = TSM.Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-			auctionBuyEnabled = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			tsmItemTweetEnabled = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			minimapIcon = { type = "table", default = { hide = false, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },
-			destroyValueSource = { type = "string", default = "dbmarket", lastModifiedVersion = 10 },
-			groupPriceSource = { type = "string", default = "dbmarket", lastModifiedVersion = 41 },
-		},
-		accountingOptions = {
-			trackTrades = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			autoTrackTrades = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			smartBuyPrice = { type = "boolean", default = false, lastModifiedVersion = 10 },
-		},
-		auctioningOptions = {
-			cancelWithBid = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			disableInvalidMsg = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			roundNormalPrice = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			matchWhitelist = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			scanCompleteSound = { type = "string", default = TSM.Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-			confirmCompleteSound = { type = "string", default = TSM.Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-		},
-		craftingOptions = {
-			ignoreCDCraftCost = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			defaultMatCostMethod = { type = "string", default = "min(dbmarket, crafting, vendorbuy, convert(dbmarket))", lastModifiedVersion = 10 },
-			defaultCraftPriceMethod = { type = "string", default = "first(dbminbuyout, dbmarket)", lastModifiedVersion = 10 },
-			ignoreCharacters = { type = "table", default = {}, lastModifiedVersion = 10 },
-			ignoreGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
-		},
-		destroyingOptions = {
-			autoStack = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			includeSoulbound = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			autoShow = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			deMaxQuality = { type = "number", default = 3, lastModifiedVersion = 10 },
-			deAbovePrice = { type = "string", default = "0c", lastModifiedVersion = 10 },
-		},
-		mailingOptions = {
-			sendItemsIndividually = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			inboxMessages = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			sendMessages = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			resendDelay = { type = "number", default = 1, lastModifiedVersion = 10 },
-			keepMailSpace = { type = "number", default = 0, lastModifiedVersion = 10 },
-			deMaxQuality = { type = "number", default = 2, lastModifiedVersion = 10 },
-			openMailSound = { type = "string", default = TSM.Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-			recentlyMailedList = { type = "table", default = {}, lastModifiedVersion = 38 },
-		},
-		shoppingOptions = {
-			minDeSearchLvl = { type = "number", default = 1, lastModifiedVersion = 10 },
-			maxDeSearchLvl = { type = "number", default = 735, lastModifiedVersion = 10 },
-			maxDeSearchPercent = { type = "number", default = 100, lastModifiedVersion = 23 },
-			pctSource  = { type = "string", default = "dbmarket", lastModifiedVersion = 12 },
-			buyoutConfirm  = { type = "boolean", default = false, lastModifiedVersion = 46 },
-			buyoutAlertSource  = { type = "string", default = "min(100000g, 200% dbmarket)", lastModifiedVersion = 46 },
-		},
-		sniperOptions = {
-			sniperSound = { type = "string", default = TSM.Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
-		},
-		vendoringOptions = {
-			displayMoneyCollected = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			qsMarketValue = { type = "string", default = "dbmarket", lastModifiedVersion = 10 },
-		},
-		tooltipOptions = {
-			enabled = { type = "boolean", default = true, lastModifiedVersion = 20 },
-			embeddedTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			customPriceTooltips = { type = "table", default = {}, lastModifiedVersion = 10 },
-			moduleTooltips = { type = "table", default = {}, lastModifiedVersion = 10 },
-			vendorBuyTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			vendorSellTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			groupNameTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			detailedDestroyTooltip = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			millTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			prospectTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			deTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			transformTooltip = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			operationTooltips = { type = "table", default = {}, lastModifiedVersion = 10 },
-			tooltipShowModifier = { type = "string", default = "none", lastModifiedVersion = 10 },
-			inventoryTooltipFormat = { type = "string", default = "full", lastModifiedVersion = 10 },
-			tooltipPriceFormat = { type = "string", default = "text", lastModifiedVersion = 10 },
-		},
-		userData = {
-			operations = { type = "table", default = {}, lastModifiedVersion = 10 },
-			customPriceSources = { type = "table", default = {}, lastModifiedVersion = 10 },
-			destroyingIgnore = { type = "table", default = {}, lastModifiedVersion = 10 },
-			savedShoppingSearches = { type = "table", default = {}, lastModifiedVersion = 10 },
-			vendoringIgnore = { type = "table", default = {}, lastModifiedVersion = 10 },
-			savedAuctioningSearches = { type = "table", default = {}, lastModifiedVersion = 14 },
-		},
-	},
-	profile = {
-		internalData = {
-			createdDefaultOperations = { type = "boolean", default = false, lastModifiedVersion = 11 },
-			managementGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			auctioningGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			shoppingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			shoppingTabGroupContext = { type = "table", default = {}, lastModifiedVersion = 26 },
-			auctioningTabGroupContext = { type = "table", default = {}, lastModifiedVersion = 26 },
-			bankUIBankFramePosition = { type = "table", default = { 100, 300 }, lastModifiedVersion = 16 },
-			bankUIGBankFramePosition = { type = "table", default = { 100, 300 }, lastModifiedVersion = 16 },
-			bankingWarehousingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			bankingAuctioningGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			bankingMailingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			craftingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			mailingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			vendoringGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			importGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			exportGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 48 },
-		},
-		userData = {
-			groups = { type = "table", default = {}, lastModifiedVersion = 10 },
-			items = { type = "table", default = {}, lastModifiedVersion = 10 },
-			operations = { type = "table", default = {}, lastModifiedVersion = 10 },
-		},
-		gatheringOptions = {
-			sources = { type = "table", default = { "vendor", "guildBank", "alt", "altGuildBank", "craftProfit", "auction", "craftNoProfit" }, lastModifiedVersion = 32 },
-		},
-	},
-	factionrealm = {
-		internalData = {
-			characterGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
-			guildVaults = { type = "table", default = {}, lastModifiedVersion = 10 },
-			pendingMail = { type = "table", default = {}, lastModifiedVersion = 10 },
-			expiringMail = { type = "table", default = {}, lastModifiedVersion = 47 },
-			expiringAuction = { type = "table", default = {}, lastModifiedVersion = 47 },
-			mailDisenchantablesChar = { type = "string", default = "", lastModifiedVersion = 49 },
-			mailExcessGoldChar = { type = "string", default = "", lastModifiedVersion = 49 },
-			mailExcessGoldLimit = { type = "number", default = 10000000000, lastModifiedVersion = 49 },
-			crafts = { type = "table", default = {}, lastModifiedVersion = 53 },
-			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
-			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
-			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
-			auctionDBScanTime = { type = "number", default = 0, lastModifiedVersion = 50 },
-			auctionDBScanHash = { type = "number", default = 0, lastModifiedVersion = 50 },
-		},
-		coreOptions = {
-			ignoreGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
-		},
-		auctioningOptions = {
-			whitelist = { type = "table", default = {}, lastModifiedVersion = 10 },
-		},
-		gatheringContext = {
-			crafter = { type = "string", default = "", lastModifiedVersion = 32 },
-			professions = { type = "table", default = {}, lastModifiedVersion = 32 },
-		},
-		userData = {
-			craftingCooldownIgnore = { type = "table", default = {}, lastModifiedVersion = 35 },
-		},
-	},
-	realm = {
-		internalData = {
-			csvSales = { type = "string", default = "", lastModifiedVersion = 10 },
-			csvBuys = { type = "string", default = "", lastModifiedVersion = 10 },
-			csvIncome = { type = "string", default = "", lastModifiedVersion = 10 },
-			csvExpense = { type = "string", default = "", lastModifiedVersion = 10 },
-			csvExpired = { type = "string", default = "", lastModifiedVersion = 10 },
-			csvCancelled = { type = "string", default = "", lastModifiedVersion = 10 },
-			saveTimeSales = { type = "string", default = "", lastModifiedVersion = 10 },
-			saveTimeBuys = { type = "string", default = "", lastModifiedVersion = 10 },
-			saveTimeExpires = { type = "string", default = "", lastModifiedVersion = 10 },
-			saveTimeCancels = { type = "string", default = "", lastModifiedVersion = 10 },
-			accountingTrimmed = { type = "table", default = {}, lastModifiedVersion = 10 },
-		},
-	},
-	char = {
-		internalData = {
-			auctionPrices = { type = "table", default = {}, lastModifiedVersion = 10 },
-			auctionMessages = { type = "table", default = {}, lastModifiedVersion = 10 },
-			craftingCooldowns = { type = "table", default = {}, lastModifiedVersion = 27 },
-			auctionSaleHints = { type = "table", default = {}, lastModifiedVersion = 45 },
-		},
-	},
-	sync = {
-		-- NOTE: whenever these are changed, the sync version needs to be increased in Core/Lib/Sync/Core.lua
-		internalData = {
-			classKey = { type = "string", default = "", lastModifiedVersion = 19 },
-			bagQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
-			bankQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
-			reagentBankQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
-			auctionQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
-			mailQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
-			goldLog = { type = "string", default = "", lastModifiedVersion = 25 },
-			playerProfessions = { type = "table", default = {}, lastModifiedVersion = 36 },
-		},
-	},
-}
 
 
 
@@ -289,169 +46,43 @@ local SETTINGS_INFO = {
 
 function TSM.OnInitialize()
 	-- load settings
-	local db, upgradeObj = TSM.Settings.New("TradeSkillMasterDB", SETTINGS_INFO)
-	TSM.db = db
+	TSM.db = Settings.GetDB()
 
 	-- configure the logger
-	TSM.Logger.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
-	TSM.Logger.SetCurrentThreadNameFunction(TSMAPI_FOUR.Thread.GetCurrentThreadName)
-
-	-- process DB upgrades
-	if upgradeObj then
-		local prevVersion = upgradeObj:GetPrevVersion()
-		if prevVersion < 19 then
-			-- migrate inventory data to the sync scope
-			local oldInventoryData = TSM.TempTable.Acquire()
-			local oldSyncMetadata = TSM.TempTable.Acquire()
-			local oldAccountKey = TSM.TempTable.Acquire()
-			local oldCharacters = TSM.TempTable.Acquire()
-			for key, value in upgradeObj:RemovedSettingIterator() do
-				local scopeType, scopeKey, _, settingKey = upgradeObj:GetKeyInfo(key)
-				if scopeType == "factionrealm" then
-					if settingKey == "inventory" then
-						oldInventoryData[scopeKey] = value
-					elseif settingKey == "syncMetadata" then
-						oldSyncMetadata[scopeKey] = value
-					elseif settingKey == "accountKey" then
-						oldAccountKey[scopeKey] = value
-					elseif settingKey == "characters" then
-						oldCharacters[scopeKey] = value
-					end
-				end
-			end
-			for factionrealm, characters in pairs(oldInventoryData) do
-				local syncMetadata = oldSyncMetadata[factionrealm] and oldSyncMetadata[factionrealm].TSM_CHARACTERS
-				for character, inventoryData in pairs(characters) do
-					if not syncMetadata or not syncMetadata[character] or syncMetadata[character].owner == oldAccountKey[factionrealm] then
-						TSM.db:NewSyncCharacter(character, TSM.db:GetSyncAccountKey(factionrealm), factionrealm)
-						local syncScopeKey = TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm)
-						local class = oldCharacters[factionrealm] and oldCharacters[factionrealm][character]
-						if type(class) == "string" then
-							TSM.db:Set("sync", syncScopeKey, "internalData", "classKey", class)
-						end
-						TSM.db:Set("sync", syncScopeKey, "internalData", "bagQuantity", inventoryData.bag)
-						TSM.db:Set("sync", syncScopeKey, "internalData", "bankQuantity", inventoryData.bank)
-						TSM.db:Set("sync", syncScopeKey, "internalData", "reagentBankQuantity", inventoryData.reagentBank)
-						TSM.db:Set("sync", syncScopeKey, "internalData", "auctionQuantity", inventoryData.auction)
-						TSM.db:Set("sync", syncScopeKey, "internalData", "mailQuantity", inventoryData.mail)
-					end
-				end
-			end
-			TSM.TempTable.Release(oldInventoryData)
-			TSM.TempTable.Release(oldSyncMetadata)
-			TSM.TempTable.Release(oldAccountKey)
-			TSM.TempTable.Release(oldCharacters)
-		end
-		if prevVersion < 25 then
-			-- migrate gold log info
-			local NEW_CSV_COLS = { "minute", "copper" }
-			local function ConvertGoldLogFormat(data)
-				local decodedData = select(2, TSM.CSV.Decode(data))
-				if not decodedData then
-					return
-				end
-				for _, entry in ipairs(decodedData) do
-					local minute = entry.startMinute
-					local copper = entry.copper
-					wipe(entry)
-					entry.minute = minute
-					entry.copper = copper
-				end
-				return TSM.CSV.Encode(NEW_CSV_COLS, decodedData)
-			end
-			local function ProcessGoldLogData(character, data, scopeKey)
-				if type(data) ~= "string" then
-					return
-				end
-				-- check if we know about this character and under what faction
-				local syncScopeKey = nil
-				for factionrealm in TSM.db:FactionrealmByRealmIterator(scopeKey) do
-					local testSyncScopeKey = TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm)
-					if TSM.db:Get("sync", testSyncScopeKey, "internalData", "classKey") then
-						syncScopeKey = testSyncScopeKey
-					end
-				end
-				if syncScopeKey then
-					TSM.db:Set("sync", syncScopeKey, "internalData", "goldLog", ConvertGoldLogFormat(data))
-				else
-					-- check if this is a known guild
-					local found = false
-					for factionrealm in TSM.db:FactionrealmByRealmIterator(scopeKey) do
-						local characterGuilds = TSM.db:Get("factionrealm", factionrealm, "internalData", "characterGuilds")
-						if not found and characterGuilds and TSM.Table.KeyByValue(characterGuilds, character) then
-							local guildGoldLog = TSM.db:Get("factionrealm", factionrealm, "internalData", "guildGoldLog") or {}
-							guildGoldLog[character] = ConvertGoldLogFormat(data)
-							TSM.db:Set("factionrealm", factionrealm, "internalData", "guildGoldLog", guildGoldLog)
-							found = true
-						end
-					end
-				end
-			end
-			if prevVersion >= 10 then
-				for key, value in upgradeObj:RemovedSettingIterator() do
-					local scopeType, scopeKey, _, settingKey = upgradeObj:GetKeyInfo(key)
-					if scopeType == "realm" and settingKey == "goldLog" then
-						for character, data in pairs(value) do
-							ProcessGoldLogData(character, data, scopeKey)
-						end
-					end
-				end
-			end
-		end
-		if prevVersion < 36 then
-			for key, value in upgradeObj:RemovedSettingIterator() do
-				local scopeType, factionrealm, _, settingKey = upgradeObj:GetKeyInfo(key)
-				if scopeType == "factionrealm" and settingKey == "playerProfessions" then
-					for character, data in pairs(value) do
-						-- check if we know about this character
-						local syncScopeKey = TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm)
-						if TSM.db:Get("sync", syncScopeKey, "internalData", "classKey") then
-							TSM.db:Set("sync", syncScopeKey, "internalData", "playerProfessions", data)
-						end
-					end
-				end
-			end
-		end
-		if prevVersion < 53 and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-			for key, value in upgradeObj:RemovedSettingIterator() do
-				local scopeType, factionrealm, namespace, settingKey = upgradeObj:GetKeyInfo(key)
-				if scopeType == "factionrealm" and namespace == "internalData" and settingKey == "crafts" then
-					TSM.db:Set("factionrealm", factionrealm, "internalData", "crafts", value)
-				end
-			end
-		end
-	end
+	Log.SetChatFrame(TSM.db.global.coreOptions.chatFrame)
+	Log.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
+	Log.SetCurrentThreadNameFunction(Threading.GetCurrentThreadName)
 
 	-- store the class of this character
 	TSM.db.sync.internalData.classKey = select(2, UnitClass("player"))
 
 	-- core price sources
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "VendorBuy", L["Buy from Vendor"], TSMAPI_FOUR.Item.GetVendorBuy)
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "VendorSell", L["Sell to Vendor"], TSMAPI_FOUR.Item.GetVendorSell)
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "Destroy", L["Destroy Value"], function(itemString) return TSMAPI_FOUR.Conversions.GetValue(itemString, TSM.db.global.coreOptions.destroyValueSource) end)
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "ItemQuality", L["Item Quality"], TSMAPI_FOUR.Item.GetQuality)
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "ItemLevel", L["Item Level"], TSMAPI_FOUR.Item.GetItemLevel)
-	TSM.CustomPrice.RegisterSource("TradeSkillMaster", "RequiredLevel", L["Required Level"], TSMAPI_FOUR.Item.GetMinLevel)
+	CustomPrice.RegisterSource("TradeSkillMaster", "VendorBuy", L["Buy from Vendor"], ItemInfo.GetVendorBuy)
+	CustomPrice.RegisterSource("TradeSkillMaster", "VendorSell", L["Sell to Vendor"], ItemInfo.GetVendorSell)
+	CustomPrice.RegisterSource("TradeSkillMaster", "Destroy", L["Destroy Value"], function(itemString) return CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource) end)
+	CustomPrice.RegisterSource("TradeSkillMaster", "ItemQuality", L["Item Quality"], ItemInfo.GetQuality)
+	CustomPrice.RegisterSource("TradeSkillMaster", "ItemLevel", L["Item Level"], ItemInfo.GetItemLevel)
+	CustomPrice.RegisterSource("TradeSkillMaster", "RequiredLevel", L["Required Level"], ItemInfo.GetMinLevel)
 
 	-- Auctioneer price sources
 	if TSM.Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
 		if AucAdvanced.Modules.Util.Appraiser and AucAdvanced.Modules.Util.Appraiser.GetPrice then
-			TSM.CustomPrice.RegisterSource("External", "AucAppraiser", L["Auctioneer - Appraiser"], AucAdvanced.Modules.Util.Appraiser.GetPrice, true)
+			CustomPrice.RegisterSource("External", "AucAppraiser", L["Auctioneer - Appraiser"], AucAdvanced.Modules.Util.Appraiser.GetPrice, true)
 		end
 		if AucAdvanced.Modules.Util.SimpleAuction and AucAdvanced.Modules.Util.SimpleAuction.Private.GetItems then
 			local function GetAucMinBuyout(itemLink)
 				return select(6, AucAdvanced.Modules.Util.SimpleAuction.Private.GetItems(itemLink)) or nil
 			end
-			TSM.CustomPrice.RegisterSource("External", "AucMinBuyout", L["Auctioneer - Minimum Buyout"], GetAucMinBuyout, true)
+			CustomPrice.RegisterSource("External", "AucMinBuyout", L["Auctioneer - Minimum Buyout"], GetAucMinBuyout, true)
 		end
 		if AucAdvanced.API.GetMarketValue then
-			TSM.CustomPrice.RegisterSource("External", "AucMarket", L["Auctioneer - Market Value"], AucAdvanced.API.GetMarketValue, true)
+			CustomPrice.RegisterSource("External", "AucMarket", L["Auctioneer - Market Value"], AucAdvanced.API.GetMarketValue, true)
 		end
 	end
 
 	-- Auctionator price sources
 	if TSM.Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout then
-		TSM.CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
+		CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
 	end
 
 	-- TheUndermineJournal and BootyBayGazette price sources
@@ -460,19 +91,19 @@ function TSM.OnInitialize()
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
 		end
-		TSM.CustomPrice.RegisterSource("External", "TUJRecent", L["TUJ 3-Day Price"], GetTUJPrice, true, "recent")
-		TSM.CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
-		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
-		TSM.CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
+		CustomPrice.RegisterSource("External", "TUJRecent", L["TUJ 3-Day Price"], GetTUJPrice, true, "recent")
+		CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
+		CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
+		CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
 	elseif TSM.Wow.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
 		local function GetBBGPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
 		end
-		TSM.CustomPrice.RegisterSource("External", "BBGRecent", L["BBG 3-Day Price"], GetBBGPrice, true, "recent")
-		TSM.CustomPrice.RegisterSource("External", "BBGMarket", L["BBG 14-Day Price"], GetBBGPrice, true, "market")
-		TSM.CustomPrice.RegisterSource("External", "BBGGlobalMean", L["BBG Global Mean"], GetBBGPrice, true, "globalMean")
-		TSM.CustomPrice.RegisterSource("External", "BBGGlobalMedian", L["BBG Global Median"], GetBBGPrice, true, "globalMedian")
+		CustomPrice.RegisterSource("External", "BBGRecent", L["BBG 3-Day Price"], GetBBGPrice, true, "recent")
+		CustomPrice.RegisterSource("External", "BBGMarket", L["BBG 14-Day Price"], GetBBGPrice, true, "market")
+		CustomPrice.RegisterSource("External", "BBGGlobalMean", L["BBG Global Mean"], GetBBGPrice, true, "globalMean")
+		CustomPrice.RegisterSource("External", "BBGGlobalMedian", L["BBG Global Median"], GetBBGPrice, true, "globalMedian")
 	end
 
 	-- AHDB price sources
@@ -481,46 +112,48 @@ function TSM.OnInitialize()
 			local info = AuctionDB:AHGetAuctionInfoByLink(itemLink)
 			return info and info[arg] or nil
 		end
-		TSM.CustomPrice.RegisterSource("External", "AHDBMinBuyout", L["AHDB Minimum Buyout"], GetAHDBPrice, true, "minBuyout")
-		TSM.CustomPrice.RegisterSource("External", "AHDBMinBid", L["AHDB Minimum Bid"], GetAHDBPrice, true, "minBid")
+		CustomPrice.RegisterSource("External", "AHDBMinBuyout", L["AHDB Minimum Buyout"], GetAHDBPrice, true, "minBuyout")
+		CustomPrice.RegisterSource("External", "AHDBMinBid", L["AHDB Minimum Bid"], GetAHDBPrice, true, "minBid")
 	end
 
 	-- module price sources
-	TSM.CustomPrice.RegisterSource("Accounting", "avgSell", L["Avg Sell Price"], TSM.Accounting.Transactions.GetAverageSalePrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "avgSell", L["Avg Sell Price"], TSM.Accounting.Transactions.GetAverageSalePrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "maxSell", L["Max Sell Price"], TSM.Accounting.Transactions.GetMaxSalePrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "minSell", L["Min Sell Price"], TSM.Accounting.Transactions.GetMinSalePrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "avgBuy", L["Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "maxBuy", L["Max Buy Price"], TSM.Accounting.Transactions.GetMaxBuyPrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "minBuy", L["Min Buy Price"], TSM.Accounting.Transactions.GetMinBuyPrice)
-	TSM.CustomPrice.RegisterSource("Accounting", "NumExpires", L["Expires Since Last Sale"], TSM.Accounting.Auctions.GetNumExpiresSinceSale)
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBMarket", L["AuctionDB - Market Value"], TSM.AuctionDB.GetRealmItemData, false, "marketValue")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBMinBuyout", L["AuctionDB - Minimum Buyout"], TSM.AuctionDB.GetRealmItemData, false, "minBuyout")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBHistorical", L["AuctionDB - Historical Price (via TSM App)"], TSM.AuctionDB.GetRealmItemData, false, "historical")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionMinBuyoutAvg", L["AuctionDB - Region Minimum Buyout Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMinBuyout")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionMarketAvg", L["AuctionDB - Region Market Value Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMarketValue")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionHistorical", L["AuctionDB - Region Historical Price (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionHistorical")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionSaleAvg", L["AuctionDB - Region Sale Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionSale")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionSaleRate", L["AuctionDB - Region Sale Rate (via TSM App)"], TSM.AuctionDB.GetRegionSaleInfo, false, "regionSalePercent")
-	TSM.CustomPrice.RegisterSource("AuctionDB", "DBRegionSoldPerDay", L["AuctionDB - Region Sold Per Day (via TSM App)"], TSM.AuctionDB.GetRegionSaleInfo, false, "regionSoldPerDay")
-	TSM.CustomPrice.RegisterSource("Crafting", "Crafting", L["Crafting Cost"], TSM.Crafting.Cost.GetLowestCostByItem)
-	TSM.CustomPrice.RegisterSource("Crafting", "matPrice", L["Crafting Material Cost"], TSM.Crafting.Cost.GetMatCost)
+	CustomPrice.RegisterSource("Accounting", "avgSell", L["Avg Sell Price"], TSM.Accounting.Transactions.GetAverageSalePrice)
+	CustomPrice.RegisterSource("Accounting", "avgSell", L["Avg Sell Price"], TSM.Accounting.Transactions.GetAverageSalePrice)
+	CustomPrice.RegisterSource("Accounting", "maxSell", L["Max Sell Price"], TSM.Accounting.Transactions.GetMaxSalePrice)
+	CustomPrice.RegisterSource("Accounting", "minSell", L["Min Sell Price"], TSM.Accounting.Transactions.GetMinSalePrice)
+	CustomPrice.RegisterSource("Accounting", "avgBuy", L["Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice)
+	CustomPrice.RegisterSource("Accounting", "maxBuy", L["Max Buy Price"], TSM.Accounting.Transactions.GetMaxBuyPrice)
+	CustomPrice.RegisterSource("Accounting", "minBuy", L["Min Buy Price"], TSM.Accounting.Transactions.GetMinBuyPrice)
+	CustomPrice.RegisterSource("Accounting", "NumExpires", L["Expires Since Last Sale"], TSM.Accounting.Auctions.GetNumExpiresSinceSale)
+	CustomPrice.RegisterSource("AuctionDB", "DBMarket", L["AuctionDB - Market Value"], TSM.AuctionDB.GetRealmItemData, false, "marketValue")
+	CustomPrice.RegisterSource("AuctionDB", "DBMinBuyout", L["AuctionDB - Minimum Buyout"], TSM.AuctionDB.GetRealmItemData, false, "minBuyout")
+	CustomPrice.RegisterSource("AuctionDB", "DBHistorical", L["AuctionDB - Historical Price (via TSM App)"], TSM.AuctionDB.GetRealmItemData, false, "historical")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionMinBuyoutAvg", L["AuctionDB - Region Minimum Buyout Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMinBuyout")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionMarketAvg", L["AuctionDB - Region Market Value Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMarketValue")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionHistorical", L["AuctionDB - Region Historical Price (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionHistorical")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionSaleAvg", L["AuctionDB - Region Sale Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionSale")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionSaleRate", L["AuctionDB - Region Sale Rate (via TSM App)"], TSM.AuctionDB.GetRegionSaleInfo, false, "regionSalePercent")
+	CustomPrice.RegisterSource("AuctionDB", "DBRegionSoldPerDay", L["AuctionDB - Region Sold Per Day (via TSM App)"], TSM.AuctionDB.GetRegionSaleInfo, false, "regionSoldPerDay")
+	CustomPrice.RegisterSource("Crafting", "Crafting", L["Crafting Cost"], TSM.Crafting.Cost.GetLowestCostByItem)
+	CustomPrice.RegisterSource("Crafting", "matPrice", L["Crafting Material Cost"], TSM.Crafting.Cost.GetMatCost)
 
 	-- slash commands
-	TSM.SlashCommands.Register("version", private.PrintVersions, L["Prints out the version numbers of all installed modules"])
-	TSM.SlashCommands.Register("sources", TSM.CustomPrice.PrintSources, L["Prints out the available price sources for use in custom prices"])
-	TSM.SlashCommands.Register("price", private.TestPriceSource, L["Allows for testing of custom prices"])
-	TSM.SlashCommands.Register("profile", private.ChangeProfile, L["Changes to the specified profile (i.e. '/tsm profile Default' changes to the 'Default' profile)"])
-	TSM.SlashCommands.Register("debug", private.DebugSlashCommandHandler)
-	TSM.SlashCommands.Register("destroy", TSM.UI.DestroyingUI.Toggle, L["Opens the Destroying frame if there's stuff in your bags to be destroyed."])
-	TSM.SlashCommands.Register("crafting", TSM.UI.CraftingUI.Toggle, L["Toggles the TSM Crafting UI."])
-	TSM.SlashCommands.Register("tasklist", TSM.UI.TaskListUI.Toggle, L["Toggles the TSM Task List UI"])
-	TSM.SlashCommands.Register("bankui", TSM.UI.BankingUI.Toggle, L["Toggles the TSM Banking UI if either the bank or guild bank is currently open."])
-	TSM.SlashCommands.Register("get", TSM.Banking.GetByFilter, L["Gets items from the bank or guild bank matching the item or partial text entered."])
-	TSM.SlashCommands.Register("put", TSM.Banking.PutByFilter, L["Puts items matching the item or partial text entered into the bank or guild bank."])
-	TSM.SlashCommands.Register("restock_help", TSM.Crafting.RestockHelp, L["Tells you why a specific item is not being restocked and added to the queue."])
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSM.SlashCommands.Register("scan", TSM.AuctionDB.RunScan, L["Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."])
+	SlashCommands.Register("", TSM.MainUI.Toggle, L["Toggles the main TSM window"])
+	SlashCommands.Register("help", SlashCommands.PrintHelp, L["Prints the slash command help listing"])
+	SlashCommands.Register("version", private.PrintVersions, L["Prints out the version numbers of all installed modules"])
+	SlashCommands.Register("sources", CustomPrice.PrintSources, L["Prints out the available price sources for use in custom prices"])
+	SlashCommands.Register("price", private.TestPriceSource, L["Allows for testing of custom prices"])
+	SlashCommands.Register("profile", private.ChangeProfile, L["Changes to the specified profile (i.e. '/tsm profile Default' changes to the 'Default' profile)"])
+	SlashCommands.Register("debug", private.DebugSlashCommandHandler)
+	SlashCommands.Register("destroy", TSM.UI.DestroyingUI.Toggle, L["Opens the Destroying frame if there's stuff in your bags to be destroyed."])
+	SlashCommands.Register("crafting", TSM.UI.CraftingUI.Toggle, L["Toggles the TSM Crafting UI."])
+	SlashCommands.Register("tasklist", TSM.UI.TaskListUI.Toggle, L["Toggles the TSM Task List UI"])
+	SlashCommands.Register("bankui", TSM.UI.BankingUI.Toggle, L["Toggles the TSM Banking UI if either the bank or guild bank is currently open."])
+	SlashCommands.Register("get", TSM.Banking.GetByFilter, L["Gets items from the bank or guild bank matching the item or partial text entered."])
+	SlashCommands.Register("put", TSM.Banking.PutByFilter, L["Puts items matching the item or partial text entered into the bank or guild bank."])
+	SlashCommands.Register("restock_help", TSM.Crafting.RestockHelp, L["Tells you why a specific item is not being restocked and added to the queue."])
+	if TSM.IsWowClassic() then
+		SlashCommands.Register("scan", TSM.AuctionDB.RunScan, L["Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."])
 	end
 
 	-- create / register the minimap button
@@ -534,7 +167,7 @@ function TSM.OnInitialize()
 		OnTooltipShow = function(tooltip)
 			local cs = "|cffffffcc"
 			local ce = "|r"
-			tooltip:AddLine("TradeSkillMaster " .. TSM:GetVersion())
+			tooltip:AddLine("TradeSkillMaster " .. TSM.GetVersion())
 			tooltip:AddLine(format(L["%sLeft-Click%s to open the main window"], cs, ce))
 			tooltip:AddLine(format(L["%sDrag%s to move this button"], cs, ce))
 		end,
@@ -542,7 +175,7 @@ function TSM.OnInitialize()
 	LibDBIcon:Register("TradeSkillMaster", dataObj, TSM.db.global.coreOptions.minimapIcon)
 
 	-- cache battle pet names
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	if not TSM.IsWowClassic() then
 		for i = 1, C_PetJournal.GetNumPets() do
 			C_PetJournal.GetPetInfoByIndex(i)
 		end
@@ -624,10 +257,10 @@ function TSM.OnDisable()
 	local success, errMsg = pcall(private.SaveAppData)
 	local timeTaken = debugprofilestop() - startTime
 	if timeTaken > LOGOUT_TIME_WARNING_THRESHOLD_MS then
-		TSM:LOG_WARN("private.SaveAppData took %0.2fms", timeTaken)
+		Log.Warn("private.SaveAppData took %0.2fms", timeTaken)
 	end
 	if not success then
-		TSM:LOG_ERR("private.SaveAppData hit an error: %s", tostring(errMsg))
+		Log.Err	("private.SaveAppData hit an error: %s", tostring(errMsg))
 	end
 	-- ensure we're back on the correct profile
 	TSM.db:SetProfile(originalProfile)
@@ -643,47 +276,47 @@ function private.TestPriceSource(price)
 	local _, endIndex, link = strfind(price, "(\124c[0-9a-f]+\124H[^\124]+\124h%[[^%]]+%]\124h\124r)")
 	price = link and strtrim(strsub(price, endIndex + 1))
 	if not price or price == "" then
-		TSM:Print(L["Usage: /tsm price <ItemLink> <Price String>"])
+		Log.PrintUser(L["Usage: /tsm price <ItemLink> <Price String>"])
 		return
 	end
 
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(price)
+	local isValid, err = CustomPrice.Validate(price)
 	if not isValid then
-		TSM:Printf(L["%s is not a valid custom price and gave the following error: %s"], "|cff99ffff"..price.."|r", err)
+		Log.PrintfUser(L["%s is not a valid custom price and gave the following error: %s"], "|cff99ffff"..price.."|r", err)
 		return
 	end
 
-	local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+	local itemString = ItemString.Get(link)
 	if not itemString then
-		TSM:Printf(L["%s is a valid custom price but %s is an invalid item."], "|cff99ffff"..price.."|r", link)
+		Log.PrintfUser(L["%s is a valid custom price but %s is an invalid item."], "|cff99ffff"..price.."|r", link)
 		return
 	end
 
-	local value = TSMAPI_FOUR.CustomPrice.GetValue(price, itemString)
+	local value = CustomPrice.GetValue(price, itemString)
 	if not value then
-		TSM:Printf(L["%s is a valid custom price but did not give a value for %s."], "|cff99ffff"..price.."|r", link)
+		Log.PrintfUser(L["%s is a valid custom price but did not give a value for %s."], "|cff99ffff"..price.."|r", link)
 		return
 	end
 
-	TSM:Printf(L["A custom price of %s for %s evaluates to %s."], "|cff99ffff"..price.."|r", link, TSM.Money.ToString(value))
+	Log.PrintfUser(L["A custom price of %s for %s evaluates to %s."], "|cff99ffff"..price.."|r", link, Money.ToString(value))
 end
 
 function private.ChangeProfile(targetProfile)
 	targetProfile = strtrim(targetProfile)
 	local profiles = TSM.db:GetProfiles()
 	if targetProfile == "" then
-		TSM:Printf(L["No profile specified. Possible profiles: '%s'"], table.concat(profiles, "', '"))
+		Log.PrintfUser(L["No profile specified. Possible profiles: '%s'"], table.concat(profiles, "', '"))
 	else
 		for _, profile in ipairs(profiles) do
 			if profile == targetProfile then
 				if profile ~= TSM.db:GetCurrentProfile() then
 					TSM.db:SetProfile(profile)
 				end
-				TSM:Printf(L["Profile changed to '%s'."], profile)
+				Log.PrintfUser(L["Profile changed to '%s'."], profile)
 				return
 			end
 		end
-		TSM:Printf(L["Could not find profile '%s'. Possible profiles: '%s'"], targetProfile, table.concat(profiles, "', '"))
+		Log.PrintfUser(L["Could not find profile '%s'. Possible profiles: '%s'"], targetProfile, table.concat(profiles, "', '"))
 	end
 end
 
@@ -694,11 +327,11 @@ function private.DebugSlashCommandHandler(arg)
 		ErrorHandler.ShowManual()
 	elseif arg == "logging" then
 		TSM.db.global.debug.chatLoggingEnabled = not TSM.db.global.debug.chatLoggingEnabled
-		TSM.Logger.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
+		Log.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
 		if TSM.db.global.debug.chatLoggingEnabled then
-			TSM:Printf("Logging to chat enabled")
+			Log.PrintfUser("Logging to chat enabled")
 		else
-			TSM:Printf("Logging to chat disabled")
+			Log.PrintfUser("Logging to chat disabled")
 		end
 	elseif arg == "db" then
 		TSM.UI.DBViewer.Toggle()
@@ -711,15 +344,15 @@ function private.DebugSlashCommandHandler(arg)
 end
 
 function private.PrintVersions()
-	TSM:Print(L["TSM Version Info:"])
-	TSM:PrintfRaw("TradeSkillMaster |cff99ffff%s|r", TSM:GetVersion())
+	Log.PrintUser(L["TSM Version Info:"])
+	Log.PrintfUserRaw("TradeSkillMaster |cff99ffff%s|r", TSM.GetVersion())
 	local appHelperVersion = GetAddOnMetadata("TradeSkillMaster_AppHelper", "Version")
 	if appHelperVersion then
 		-- use strmatch so that our sed command doesn't replace this string
 		if strmatch(appHelperVersion, "^@tsm%-project%-version@$") then
 			appHelperVersion = "Dev"
 		end
-		TSM:PrintfRaw("TradeSkillMaster_AppHelper |cff99ffff%s|r", appHelperVersion)
+		Log.PrintfUserRaw("TradeSkillMaster_AppHelper |cff99ffff%s|r", appHelperVersion)
 	end
 end
 
@@ -771,13 +404,17 @@ function private.SaveAppData()
 	-- save black market data
 	local realmName = GetRealmName()
 	appDB.blackMarket = appDB.blackMarket or {}
-	if TSM.Features.blackMarket then
-		local hash = TSM.Math.CalculateHash(TSM.Features.blackMarket..":"..TSM.Features.blackMarketTime)
-		appDB.blackMarket[realmName] = {data=TSM.Features.blackMarket, key=hash, updateTime=TSM.Features.blackMarketTime}
+	local blackMarketData, blackMarketTime = BlackMarket.GetScanData()
+	if blackMarketData then
+		appDB.blackMarket[realmName] = {
+			data = blackMarketData,
+			key = Math.CalculateHash(blackMarketData..":"..blackMarketTime),
+			updateTime = blackMarketTime
+		}
 	end
 
 	-- save analytics
-	TSM.Analytics.Save(appDB)
+	Analytics.Save(appDB)
 end
 
 
@@ -802,10 +439,6 @@ function TSM:GetChatFrame()
 	return chatFrame
 end
 
-function TSM:GetVersion()
-	return TSM.Wow.IsTSMDevVersion() and "Dev" or GetAddOnMetadata("TradeSkillMaster", "Version")
-end
-
 
 
 -- ============================================================================
@@ -815,7 +448,7 @@ end
 function TSM.GetRegion()
 	local cVar = GetCVar("Portal")
 	local region = nil
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+	if TSM.IsWowClassic() then
 		local currentRealmName = gsub(GetRealmName(), "\226", "'")
 		region = ClassicRealms.GetRegion(currentRealmName) or (cVar ~= "public-test" and cVar) or "PTR"
 		region = region.."-Classic"

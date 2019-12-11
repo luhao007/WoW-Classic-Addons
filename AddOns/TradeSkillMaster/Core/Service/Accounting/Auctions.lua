@@ -8,7 +8,16 @@
 
 local _, TSM = ...
 local Auctions = TSM.Accounting:NewPackage("Auctions")
-local private = { db = nil, numExpiresQuery = nil, dataChanged = false }
+local Database = TSM.Include("Util.Database")
+local CSV = TSM.Include("Util.CSV")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local private = {
+	db = nil,
+	numExpiresQuery = nil,
+	dataChanged = false,
+}
 local COMBINE_TIME_THRESHOLD = 300 -- group expenses within 5 minutes together
 local REMOVE_OLD_THRESHOLD = 365 * 24 * 60 * 60 -- remove records over 1 year old
 local SECONDS_PER_DAY = 24 * 60 * 60
@@ -21,7 +30,7 @@ local CSV_KEYS = { "itemString", "stackSize", "quantity", "player", "time" }
 -- ============================================================================
 
 function Auctions.OnInitialize()
-	private.db = TSMAPI_FOUR.Database.NewSchema("ACCOUNTING_AUCTIONS")
+	private.db = Database.NewSchema("ACCOUNTING_AUCTIONS")
 		:AddStringField("baseItemString")
 		:AddStringField("type")
 		:AddStringField("itemString")
@@ -35,8 +44,8 @@ function Auctions.OnInitialize()
 	private.numExpiresQuery = private.db:NewQuery()
 		:Select("quantity")
 		:Equal("type", "expire")
-		:Equal("baseItemString", TSM.CONST.BOUND_QUERY_PARAM)
-		:GreaterThanOrEqual("time", TSM.CONST.BOUND_QUERY_PARAM)
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:GreaterThanOrEqual("time", Database.BoundQueryParam())
 
 	private.db:BulkInsertStart()
 	private.LoadData("cancel", TSM.db.realm.internalData.csvCancelled, TSM.db.realm.internalData.saveTimeCancels)
@@ -50,8 +59,8 @@ function Auctions.OnDisable()
 		return
 	end
 	local cancelSaveTimes, expireSaveTimes = {}, {}
-	local cancelEncodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
-	local expireEncodeContext = TSM.CSV.EncodeStart(CSV_KEYS)
+	local cancelEncodeContext = CSV.EncodeStart(CSV_KEYS)
+	local expireEncodeContext = CSV.EncodeStart(CSV_KEYS)
 	for _, _, recordType, itemString, stackSize, quantity, player, timestamp, saveTime in private.db:RawIterator() do
 		local saveTimes, encodeContext = nil, nil
 		if recordType == "cancel" then
@@ -66,11 +75,11 @@ function Auctions.OnDisable()
 		-- add the save time
 		tinsert(saveTimes, saveTime ~= 0 and saveTime or time())
 		-- add to our list of CSV lines
-		TSM.CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, player, timestamp)
+		CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, player, timestamp)
 	end
-	TSM.db.realm.internalData.csvCancelled = TSM.CSV.EncodeEnd(cancelEncodeContext)
+	TSM.db.realm.internalData.csvCancelled = CSV.EncodeEnd(cancelEncodeContext)
 	TSM.db.realm.internalData.saveTimeCancels = table.concat(cancelSaveTimes, ",")
-	TSM.db.realm.internalData.csvExpired = TSM.CSV.EncodeEnd(expireEncodeContext)
+	TSM.db.realm.internalData.csvExpired = CSV.EncodeEnd(expireEncodeContext)
 	TSM.db.realm.internalData.saveTimeExpires = table.concat(expireSaveTimes, ",")
 end
 
@@ -84,7 +93,7 @@ end
 
 function Auctions.GetStats(itemString, minTime)
 	local query = private.db:NewQuery()
-		:Equal("baseItemString", TSMAPI_FOUR.Item.ToBaseItemString(itemString))
+		:Equal("baseItemString", ItemString.GetBase(itemString))
 	if minTime then
 		query:GreaterThanOrEqual("time", minTime)
 	end
@@ -106,7 +115,7 @@ function Auctions.GetStats(itemString, minTime)
 end
 
 function Auctions.GetNumExpires(itemString, minTime)
-	private.numExpiresQuery:BindParams(TSMAPI_FOUR.Item.ToBaseItemString(itemString), minTime or 0)
+	private.numExpiresQuery:BindParams(ItemString.GetBase(itemString), minTime or 0)
 	local num = 0
 	for _, quantity in private.numExpiresQuery:Iterator() do
 		num = num + quantity
@@ -144,23 +153,23 @@ end
 -- ============================================================================
 
 function private.LoadData(recordType, csvRecords, csvSaveTimes)
-	local saveTimes = TSM.String.SafeSplit(csvSaveTimes, ",")
+	local saveTimes = String.SafeSplit(csvSaveTimes, ",")
 	if not saveTimes then
 		return
 	end
 
-	local decodeContext = TSM.CSV.DecodeStart(csvRecords, CSV_KEYS)
+	local decodeContext = CSV.DecodeStart(csvRecords, CSV_KEYS)
 	if not decodeContext then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 		return
 	end
 
 	local removeTime = time() - REMOVE_OLD_THRESHOLD
 	local index = 1
-	for itemString, stackSize, quantity, player, timestamp in TSM.CSV.DecodeIterator(decodeContext) do
-		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
-		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)
+	for itemString, stackSize, quantity, player, timestamp in CSV.DecodeIterator(decodeContext) do
+		itemString = ItemString.Get(itemString)
+		local baseItemString = ItemString.GetBaseFast(itemString)
 		local saveTime = tonumber(saveTimes[index])
 		stackSize = tonumber(stackSize)
 		quantity = tonumber(quantity)
@@ -179,8 +188,8 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		index = index + 1
 	end
 
-	if not TSM.CSV.DecodeEnd(decodeContext) then
-		TSM:LOG_ERR("Failed to decode %s records", recordType)
+	if not CSV.DecodeEnd(decodeContext) then
+		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
 end
@@ -189,7 +198,7 @@ function private.InsertRecord(recordType, itemString, stackSize, timestamp)
 	private.dataChanged = true
 	assert(itemString and stackSize and stackSize > 0 and timestamp)
 	timestamp = floor(timestamp)
-	local baseItemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+	local baseItemString = ItemString.GetBase(itemString)
 	local matchingRow = private.db:NewQuery()
 		:Equal("type", recordType)
 		:Equal("baseItemString", baseItemString)

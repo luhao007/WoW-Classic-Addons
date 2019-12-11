@@ -1,6 +1,6 @@
 ## Interface: 11302
 ## Author: TradeSkillMaster Team
-## Version: v4.8.20
+## Version: v4.8.21
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -36,15 +36,17 @@ Core\UI\Fonts.xml
 # LibTSM data files
 LibTSM\Data\BonusIds.lua
 LibTSM\Data\ClassicRealms.lua
+LibTSM\Data\DisenchantInfo.lua
 LibTSM\Data\ItemClass.lua
+LibTSM\Data\Mill.lua
 LibTSM\Data\ProfessionInfo.lua
+LibTSM\Data\Prospect.lua
+LibTSM\Data\Transform.lua
 LibTSM\Data\VendorSell.lua
+LibTSM\Data\VendorTrade.lua
 
 # Constant data files (no dependencies)
 Core\Const\__init.lua
-Core\Const\Conversions.lua
-Core\Const\DisenchantInfo.lua
-Core\Const\NotDisenchantable.lua
 
 # LibTSM utility files
 LibTSM\Util\String.lua
@@ -62,60 +64,64 @@ LibTSM\Util\JSON.lua
 LibTSM\Util\Log.lua
 LibTSM\Util\Event.lua
 LibTSM\Util\Delay.lua
+LibTSM\Util\ObjectPool.lua
+LibTSM\Util\Analytics.lua
+LibTSM\Util\FSMClasses\State.lua
+LibTSM\Util\FSMClasses\Machine.lua
+LibTSM\Util\FSM.lua
+LibTSM\Util\DatabaseClasses\Constants.lua
+LibTSM\Util\DatabaseClasses\QueryResultRow.lua
+LibTSM\Util\DatabaseClasses\QueryClause.lua
+LibTSM\Util\DatabaseClasses\Query.lua
+LibTSM\Util\DatabaseClasses\DBTable.lua
+LibTSM\Util\DatabaseClasses\Schema.lua
+LibTSM\Util\Database.lua
+LibTSM\Util\ItemString.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
+LibTSM\Service\Threading.lua
+LibTSM\Service\SlashCommands.lua
+LibTSM\Service\Settings.lua
+LibTSM\Service\ItemInfo.lua
+LibTSM\Service\ItemFilter.lua
+LibTSM\Service\Conversions.lua
+LibTSM\Service\CustomPrice.lua
+LibTSM\Service\ItemTooltipClasses\ExtraTip.lua
+LibTSM\Service\ItemTooltipClasses\Builder.lua
+LibTSM\Service\ItemTooltipClasses\Wrapper.lua
+LibTSM\Service\ItemTooltip.lua
+LibTSM\Service\BlackMarket.lua
+LibTSM\Service\InventoryInfo.lua
+LibTSM\Service\BagTracking.lua
+LibTSM\Service\GuildTracking.lua
+LibTSM\Service\AuctionTracking.lua
+LibTSM\Service\MailTracking.lua
+LibTSM\Service\AltTracking.lua
+LibTSM\Service\SyncClasses\Constants.lua
+LibTSM\Service\SyncClasses\Comm.lua
+LibTSM\Service\SyncClasses\Connection.lua
+LibTSM\Service\SyncClasses\RPC.lua
+LibTSM\Service\SyncClasses\Mirror.lua
+LibTSM\Service\Sync.lua
 
 # Utility files
 Core\Util\Wow.lua
-Core\Util\Item\__init.lua
-Core\Util\Item\ItemString.lua
 
 # Lib files which only depend on Util files
-Core\Lib\ObjectPool.lua
 Core\Lib\Addon.lua
-Core\Lib\Thread.lua
 
 # Main addon file
 TradeSkillMaster.lua
 
 # Lib files which depend on the main addon file being loaded
-Core\Lib\Settings.lua
-Core\Lib\Analytics.lua
 Core\Lib\Auction\Core.lua
 Core\Lib\Auction\AuctionFilter.lua
 Core\Lib\Auction\QueryUtil.lua
 Core\Lib\Auction\AuctionScan.lua
-Core\Lib\Auction\Util.lua
-Core\Lib\Database\Core.lua
-Core\Lib\Database\Database.lua
-Core\Lib\Database\DatabaseSchema.lua
-Core\Lib\Database\DatabaseQuery.lua
-Core\Lib\Database\DatabaseQueryClause.lua
-Core\Lib\Database\DatabaseQueryResultRow.lua
-Core\Lib\FSM\Core.lua
-Core\Lib\FSM\FSM.lua
-Core\Lib\FSM\FSMState.lua
-Core\Lib\Sync\Core.lua
-Core\Lib\Sync\PlayerUtil.lua
-Core\Lib\Sync\Comm.lua
-Core\Lib\Sync\Connection.lua
-Core\Lib\Sync\RPC.lua
-Core\Lib\Sync\Mirror.lua
 Core\Lib\Inventory\Core.lua
-Core\Lib\Inventory\AuctionTracking.lua
-Core\Lib\Inventory\BagTracking.lua
-Core\Lib\Inventory\MailTracking.lua
-Core\Lib\Inventory\GuildTracking.lua
-Core\Lib\Conversions.lua
-Core\Lib\CustomPrice.lua
 Core\Lib\Exporter.lua
-Core\Lib\Features.lua
-Core\Lib\ItemFilter.lua
-Core\Lib\ItemInfo.lua
 Core\Lib\PlayerInfo.lua
-Core\Lib\SlashCommands.lua
-Core\Lib\TooltipLib.lua
 
 # UI files (depend on main addon file being loaded)
 Core\UI\UI.lua

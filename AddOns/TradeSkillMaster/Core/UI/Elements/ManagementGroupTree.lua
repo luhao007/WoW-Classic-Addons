@@ -12,7 +12,9 @@
 -- @classmod ManagementGroupTree
 
 local _, TSM = ...
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Analytics = TSM.Include("Util.Analytics")
+local String = TSM.Include("Util.String")
 local ManagementGroupTree = TSM.Include("LibTSMClass").DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
 TSM.UI.ManagementGroupTree = ManagementGroupTree
 local private = { rowFrameLookup = {} }
@@ -214,7 +216,7 @@ end
 
 function ManagementGroupTree._SetCollapsed(self, data, collapsed)
 	self.__super:_SetCollapsed(data, collapsed)
-	if collapsed and self._selectedGroup ~= data and strmatch(self._selectedGroup, "^"..TSM.String.Escape(data)) then
+	if collapsed and self._selectedGroup ~= data and strmatch(self._selectedGroup, "^"..String.Escape(data)) then
 		-- we collapsed a parent of the selected group, so select the group we just collapsed instead
 		self:SetSelectedGroup(data, true)
 	end
@@ -272,7 +274,7 @@ function private.PlusButtonOnClick(button)
 		newGroupPath = newGroupPath.." "..num
 	end
 	TSM.Groups.Create(newGroupPath)
-	TSM.Analytics.Action("CREATED_GROUP", newGroupPath)
+	Analytics.Action("CREATED_GROUP", newGroupPath)
 	self:SetSelectedGroup(newGroupPath, true)
 end
 
@@ -283,7 +285,7 @@ end
 
 function private.DeleteConfirmed(self)
 	TSM.Groups.Delete(self._selectedGroup)
-	TSM.Analytics.Action("DELETED_GROUP", self._selectedGroup)
+	Analytics.Action("DELETED_GROUP", self._selectedGroup)
 	self:SetSelectedGroup(TSM.CONST.ROOT_GROUP_PATH, true)
 end
 
@@ -350,6 +352,6 @@ function private.RowOnDragStop(frame)
 	end
 
 	TSM.Groups.Move(oldPath, newPath)
-	TSM.Analytics.Action("MOVED_GROUP", oldPath, newPath)
+	Analytics.Action("MOVED_GROUP", oldPath, newPath)
 	scrollingList:SetSelectedGroup(newPath, true)
 end

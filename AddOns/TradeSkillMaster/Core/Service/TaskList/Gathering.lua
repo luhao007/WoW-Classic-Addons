@@ -8,12 +8,14 @@
 
 local _, TSM = ...
 local Gathering = TSM.TaskList:NewPackage("Gathering")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local ObjectPool = TSM.Include("Util.ObjectPool")
 local private = {
 	activeTasks = {},
 	query = nil,
 	sourceTasks = {},
-	altTaskPool = TSMAPI_FOUR.ObjectPool.New("GATHERING_ALT_TASK", TSM.TaskList.AltTask, 0),
+	altTaskPool = ObjectPool.New("GATHERING_ALT_TASK", TSM.TaskList.AltTask, 0),
 	professionTasks = {},
 	prevHash = nil,
 }
@@ -87,8 +89,8 @@ function private.PopulateTasks()
 		task:WipeSpellIds()
 	end
 
-	local alts = TSM.TempTable.Acquire()
-	local sourceInfo = TSM.TempTable.Acquire()
+	local alts = TempTable.Acquire()
+	local sourceInfo = TempTable.Acquire()
 	for _, itemString, sourcesStr in private.query:Iterator() do
 		TSM.Crafting.Gathering.SourcesStrToTable(sourcesStr, sourceInfo, alts)
 		sourceInfo.alt = nil
@@ -114,7 +116,7 @@ function private.PopulateTasks()
 		-- make sure we processed everything from the sourceInfo table
 		assert(not next(sourceInfo))
 	end
-	TSM.TempTable.Release(sourceInfo)
+	TempTable.Release(sourceInfo)
 
 	for character in pairs(alts) do
 		local task = private.altTaskPool:Get()
@@ -122,7 +124,7 @@ function private.PopulateTasks()
 		private.activeTasks[task] = task
 		task:Update()
 	end
-	TSM.TempTable.Release(alts)
+	TempTable.Release(alts)
 
 	if TSM.db.factionrealm.gatheringContext.crafter then
 		private.sourceTasks.sendMail:SetTarget(TSM.db.factionrealm.gatheringContext.crafter)

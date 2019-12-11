@@ -11,8 +11,7 @@
 
 local _, TSM = ...
 local Sound = TSM.Init("Util.Sound")
-local L = TSM.Include("L")
-TSM.Sound = Sound
+local L = TSM.Include("Locale").GetTable()
 local NO_SOUND_KEY = "TSM_NO_SOUND" -- this can never change
 local SOUNDS = {
 	[NO_SOUND_KEY] = "|cff99ffff"..L["No Sound"].."|r",

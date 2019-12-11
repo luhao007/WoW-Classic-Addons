@@ -8,6 +8,13 @@
 
 local _, TSM = ...
 local Mail = TSM.Accounting:NewPackage("Mail")
+local Event = TSM.Include("Util.Event")
+local Delay = TSM.Include("Util.Delay")
+local String = TSM.Include("Util.String")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local InventoryInfo = TSM.Include("Service.InventoryInfo")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local private = {
 	hooks = {},
 }
@@ -23,8 +30,8 @@ local OUTBID_MATCH_TEXT = AUCTION_OUTBID_MAIL_SUBJECT:gsub("%%s", "(.+)")
 -- ============================================================================
 
 function Mail.OnInitialize()
-	TSM.Event.Register("MAIL_SHOW", function() TSMAPI_FOUR.Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1) end)
-	TSM.Event.Register("MAIL_CLOSED", function() TSMAPI_FOUR.Delay.Cancel("ACCOUNTING_GET_SELLERS") end)
+	Event.Register("MAIL_SHOW", function() Delay.AfterTime("ACCOUNTING_GET_SELLERS", 0.1, private.RequestSellerInfo, 0.1) end)
+	Event.Register("MAIL_CLOSED", function() Delay.Cancel("ACCOUNTING_GET_SELLERS") end)
 	-- hook certain mail functions
 	private.hooks.TakeInboxItem = TakeInboxItem
 	TakeInboxItem = function(...)
@@ -57,7 +64,7 @@ function private.RequestSellerInfo()
 		end
 	end
 	if isDone and GetInboxNumItems() > 0 then
-		TSMAPI_FOUR.Delay.Cancel("ACCOUNTING_GET_SELLERS")
+		Delay.Cancel("ACCOUNTING_GET_SELLERS")
 	end
 end
 
@@ -74,7 +81,7 @@ function private:CanLootMailIndex(index, copper)
 			return
 		end
 		local link = GetInboxItemLink(index, j)
-		local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+		local itemString = ItemString.Get(link)
 		local _, _, _, count = GetInboxItem(index, j)
 		local quantity = count or 0
 		local maxUnique = private.GetInboxMaxUnique(index, j)
@@ -84,12 +91,12 @@ function private:CanLootMailIndex(index, copper)
 		end
 		if itemString then
 			for bag = 0, NUM_BAG_SLOTS do
-				if TSMAPI_FOUR.Inventory.ItemWillGoInBag(link, bag) then
+				if InventoryInfo.ItemWillGoInBag(link, bag) then
 					for slot = 1, GetContainerNumSlots(bag) do
-						local iString = TSMAPI_FOUR.Item.ToItemString(GetContainerItemLink(bag, slot))
+						local iString = ItemString.Get(GetContainerItemLink(bag, slot))
 						if iString == itemString then
 							local _, stackSize = GetContainerItemInfo(bag, slot)
-							local maxStackSize = TSMAPI_FOUR.Item.GetMaxStack(itemString) or 1
+							local maxStackSize = ItemInfo.GetMaxStack(itemString) or 1
 							if (maxStackSize - stackSize) >= quantity then
 								return true
 							end
@@ -160,9 +167,9 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	local success = false
 	if invoiceType == "seller" and buyer and buyer ~= "" then -- AH Sales
 		local saleTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
-		local itemString = TSM.ItemInfo.ItemNameToItemString(itemName)
+		local itemString = ItemInfo.ItemNameToItemString(itemName)
 		if not itemString or itemString == TSM.CONST.UNKNOWN_ITEM_ITEMSTRING then
-			itemString = TSM.Inventory.AuctionTracking.GetSaleHintItemString(itemName, quantity, bid)
+			itemString = AuctionTracking.GetSaleHintItemString(itemName, quantity, bid)
 		end
 		if private:CanLootMailIndex(index, (bid - ahcut)) then
 			if itemString then
@@ -173,7 +180,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 		end
 	elseif invoiceType == "buyer" and buyer and buyer ~= "" then -- AH Buys
 		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
-		local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+		local itemString = ItemString.Get(link)
 		if itemString and private:CanLootMailIndex(index, 0) then
 			local copper = floor(bid / quantity + 0.5)
 			local buyTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
@@ -182,9 +189,9 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 		end
 	elseif codAmount > 0 then -- COD Buys (only if all attachments are same item)
 		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
-		local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+		local itemString = ItemString.Get(link)
 		if itemString and sender then
-			local name = TSMAPI_FOUR.Item.GetName(link)
+			local name = ItemInfo.GetName(link)
 			local total = 0
 			local stacks = 0
 			local ignore = false
@@ -203,7 +210,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 			if total ~= 0 and not ignore and private:CanLootMailIndex(index, codAmount) then
 				local copper = floor(codAmount / total + 0.5)
 				local buyTime = (time() + (daysLeft - 3) * SECONDS_PER_DAY)
-				local maxStack = TSMAPI_FOUR.Item.GetMaxStack(link)
+				local maxStack = ItemInfo.GetMaxStack(link)
 				for _ = 1, stacks do
 					local stackSize = (total >= maxStack) and maxStack or total
 					TSM.Accounting.Transactions.InsertCODBuy(itemString, stackSize, copper, sender, buyTime)
@@ -218,9 +225,9 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	elseif money > 0 and invoiceType ~= "seller" and not strfind(subject, OUTBID_MATCH_TEXT) then
 		local str = nil
 		if GetLocale() == "deDE" then
-			str = gsub(subject, gsub(COD_PAYMENT, TSM.String.Escape("%1$s"), ""), "")
+			str = gsub(subject, gsub(COD_PAYMENT, String.Escape("%1$s"), ""), "")
 		else
-			str = gsub(subject, gsub(COD_PAYMENT, TSM.String.Escape("%s"), ""), "")
+			str = gsub(subject, gsub(COD_PAYMENT, String.Escape("%s"), ""), "")
 		end
 		local saleTime = (time() + (daysLeft - 31) * SECONDS_PER_DAY)
 		if sender and private:CanLootMailIndex(index, money) then
@@ -228,10 +235,10 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 				local codName = strtrim(strmatch(str, "([^%(]+)"))
 				local qty = strmatch(str, "%(([0-9]+)%)")
 				qty = tonumber(qty)
-				local itemString = TSM.ItemInfo.ItemNameToItemString(codName)
+				local itemString = ItemInfo.ItemNameToItemString(codName)
 				if itemString then
 					local copper = floor(money / qty + 0.5)
-					local maxStack = TSMAPI_FOUR.Item.GetMaxStack(itemString) or 1
+					local maxStack = ItemInfo.GetMaxStack(itemString) or 1
 					local stacks = ceil(qty / maxStack)
 
 					for _ = 1, stacks do
@@ -253,7 +260,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
 		local qty = count or 0
-		local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+		local itemString = ItemString.Get(link)
 		if private:CanLootMailIndex(index, 0) and itemString and qty then
 			TSM.Accounting.Auctions.InsertExpire(itemString, qty, expiredTime)
 			success = true
@@ -263,7 +270,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
 		local qty = count or 0
-		local itemString = TSMAPI_FOUR.Item.ToItemString(link)
+		local itemString = ItemString.Get(link)
 		if private:CanLootMailIndex(index, 0) and itemString and qty then
 			TSM.Accounting.Auctions.InsertCancel(itemString, qty, cancelledTime)
 			success = true
@@ -273,7 +280,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	if success then
 		private.hooks[oFunc](index, subIndex)
 	elseif (not stationeryIcon or (invoiceType and (not buyer or buyer == ""))) and attempt <= 5 then
-		TSMAPI_FOUR.Delay.AfterTime("accountingHookDelay", 0.2, function() Mail:ScanCollectedMail(oFunc, attempt + 1, index, subIndex) end)
+		Delay.AfterTime("accountingHookDelay", 0.2, function() Mail:ScanCollectedMail(oFunc, attempt + 1, index, subIndex) end)
 	elseif attempt > 5 then
 		private.hooks[oFunc](index, subIndex)
 	else
@@ -338,7 +345,7 @@ function private:GetFirstInboxItemLink(index)
 	local _, speciesId, level, breedQuality, maxHealth, power, speed = TSMAccountingMailTooltip:SetInboxItem(index)
 	local link = nil
 	if (speciesId or 0) > 0 then
-		link = TSMAPI_FOUR.Item.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
+		link = ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
 	else
 		link = GetInboxItemLink(index, 1)
 	end

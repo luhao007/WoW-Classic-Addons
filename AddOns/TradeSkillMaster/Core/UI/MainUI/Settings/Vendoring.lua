@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local Vendoring = TSM.MainUI.Settings:NewPackage("Vendoring")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {}
 
 
@@ -67,7 +70,7 @@ function private.GetVendoringSettingsFrame()
 					:SetJustifyH("LEFT")
 					:SetIconSize(12)
 					:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-					:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:Commit()
@@ -86,11 +89,11 @@ end
 -- ============================================================================
 
 function private.CheckCustomPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value)
+	local isValid, err = CustomPrice.Validate(value)
 	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 		return false
 	end
 end

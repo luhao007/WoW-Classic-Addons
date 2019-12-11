@@ -25,7 +25,7 @@ local STATIC_DATA = {
 do
 	-- Needed because NUM_LE_ITEM_CLASSS contains an erroneous value
 	local ITEM_CLASS_IDS = nil
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	if not TSM.IsWowClassic() then
 		ITEM_CLASS_IDS = {
 			LE_ITEM_CLASS_WEAPON,
 			LE_ITEM_CLASS_ARMOR,
@@ -61,7 +61,13 @@ do
 			STATIC_DATA.classIdLookup[strlower(class)] = classId
 			STATIC_DATA.classLookup[class] = {}
 			STATIC_DATA.classLookup[class]._index = classId
-			for _, subClassId in pairs({GetAuctionItemSubClasses(classId)}) do
+			local subClasses = nil
+			if not TSM.IsWow83() then
+				subClasses = {GetAuctionItemSubClasses(classId)}
+			else
+				subClasses = C_AuctionHouse.GetAuctionItemSubClasses(classId)
+			end
+			for _, subClassId in pairs(subClasses) do
 				local subClassName = GetItemSubClassInfo(classId, subClassId)
 				if not strfind(subClassName, "(OBSOLETE)") then
 					STATIC_DATA.classLookup[class][subClassName] = subClassId

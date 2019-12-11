@@ -7,8 +7,14 @@
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
-local Sync = TSM.Crafting:NewPackage("Sync")
-local L = TSM.L
+local CraftingSync = TSM.Crafting:NewPackage("Sync")
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local Math = TSM.Include("Util.Math")
+local Log = TSM.Include("Util.Log")
+local Sync = TSM.Include("Service.Sync")
 local private = {
 	hashesTemp = {},
 	spellsTemp = {},
@@ -32,14 +38,14 @@ local RETRY_DELAY = 5
 -- Module Functions
 -- ============================================================================
 
-function Sync.OnInitialize()
-	TSM.Sync.Connection.RegisterConnectionChangedCallback(private.ConnectionChangedHandler)
-	TSM.Sync.RPC.Register("CRAFTING_GET_HASHES", private.RPCGetHashes)
-	TSM.Sync.RPC.Register("CRAFTING_GET_SPELLS", private.RPCGetSpells)
-	TSM.Sync.RPC.Register("CRAFTING_GET_SPELL_INFO", private.RPCGetSpellInfo)
+function CraftingSync.OnInitialize()
+	Sync.RegisterConnectionChangedCallback(private.ConnectionChangedHandler)
+	Sync.RegisterRPC("CRAFTING_GET_HASHES", private.RPCGetHashes)
+	Sync.RegisterRPC("CRAFTING_GET_SPELLS", private.RPCGetSpells)
+	Sync.RegisterRPC("CRAFTING_GET_SPELL_INFO", private.RPCGetSpellInfo)
 end
 
-function Sync.GetStatus(account)
+function CraftingSync.GetStatus(account)
 	local status = private.accountStatus[account]
 	if not status then
 		return "|cffff0000"..L["Not Connected"].."|r"
@@ -68,29 +74,29 @@ end
 function private.RPCGetHashesResultHandler(player, data)
 	if not player then
 		-- request timed out, so try again
-		TSM:LOG_WARN("Getting hashes timed out")
-		TSMAPI_FOUR.Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
+		Log.Warn("Getting hashes timed out")
+		Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
 		return
 	end
-	local currentInfo = TSM.TempTable.Acquire()
+	local currentInfo = TempTable.Acquire()
 	private.GetPlayerProfessionHashes(player, currentInfo)
-	local requestProfessions = TSM.TempTable.Acquire()
+	local requestProfessions = TempTable.Acquire()
 	for profession, hash in pairs(data) do
 		if hash == currentInfo[profession] then
-			TSM:LOG_INFO("%s data for %s already up to date", profession, player)
+			Log.Info("%s data for %s already up to date", profession, player)
 		else
-			TSM:LOG_INFO("Need updated %s data from %s (%s, %s)", profession, player, hash, tostring(currentInfo[hash]))
+			Log.Info("Need updated %s data from %s (%s, %s)", profession, player, hash, tostring(currentInfo[hash]))
 			requestProfessions[profession] = true
 		end
 	end
-	TSM.TempTable.Release(currentInfo)
+	TempTable.Release(currentInfo)
 	if next(requestProfessions) then
 		private.accountStatus[private.accountLookup[player]] = "UPDATING"
-		TSM.Sync.RPC.Call("CRAFTING_GET_SPELLS", player, private.RPCGetSpellsResultHandler, requestProfessions)
+		Sync.CallRPC("CRAFTING_GET_SPELLS", player, private.RPCGetSpellsResultHandler, requestProfessions)
 	else
 		private.accountStatus[private.accountLookup[player]] = "SYNCED"
 	end
-	TSM.TempTable.Release(requestProfessions)
+	TempTable.Release(requestProfessions)
 end
 
 function private.RPCGetSpells(professions)
@@ -113,8 +119,8 @@ end
 function private.RPCGetSpellsResultHandler(player, professionLookup, spells)
 	if not player then
 		-- request timed out, so try again from the start
-		TSM:LOG_WARN("Getting spells timed out")
-		TSMAPI_FOUR.Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
+		Log.Warn("Getting spells timed out")
+		Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
 		return
 	end
 
@@ -127,11 +133,11 @@ function private.RPCGetSpellsResultHandler(player, professionLookup, spells)
 		end
 	end
 	if #spells == 0 then
-		TSM:LOG_INFO("Spells up to date for %s", player)
+		Log.Info("Spells up to date for %s", player)
 		private.accountStatus[private.accountLookup[player]] = "SYNCED"
 	else
-		TSM:LOG_INFO("Requesting %d spells from %s", #spells, player)
-		TSM.Sync.RPC.Call("CRAFTING_GET_SPELL_INFO", player, private.RPCGetSpellInfoResultHandler, professionLookup, spells)
+		Log.Info("Requesting %d spells from %s", #spells, player)
+		Sync.CallRPC("CRAFTING_GET_SPELL_INFO", player, private.RPCGetSpellInfoResultHandler, professionLookup, spells)
 	end
 end
 
@@ -147,15 +153,15 @@ function private.RPCGetSpellInfo(professionLookup, spells)
 		private.spellInfoTemp.numResults[i] = TSM.db.factionrealm.internalData.crafts[spellId].numResult
 		private.spellInfoTemp.hasCDs[i] = TSM.db.factionrealm.internalData.crafts[spellId].hasCD
 	end
-	TSM:LOG_INFO("Sent %d spells", #private.spellInfoTemp.spellIds)
+	Log.Info("Sent %d spells", #private.spellInfoTemp.spellIds)
 	return UnitName("player"), professionLookup, private.spellInfoTemp
 end
 
 function private.RPCGetSpellInfoResultHandler(player, professionLookup, spellInfo)
 	if not player or not professionLookup or not spellInfo then
 		-- request timed out, so try again from the start
-		TSM:LOG_WARN("Getting spell info timed out")
-		TSMAPI_FOUR.Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
+		Log.Warn("Getting spell info timed out")
+		Delay.AfterTime(RETRY_DELAY, private.RPCGetHashes)
 		return
 	end
 
@@ -166,7 +172,7 @@ function private.RPCGetSpellInfoResultHandler(player, professionLookup, spellInf
 		end
 		TSM.Crafting.SetMats(spellId, spellInfo.mats[i])
 	end
-	TSM:LOG_INFO("Added %d spells from %s", #spellInfo.spellIds, player)
+	Log.Info("Added %d spells from %s", #spellInfo.spellIds, player)
 	private.accountStatus[private.accountLookup[player]] = "SYNCED"
 end
 
@@ -181,7 +187,7 @@ function private.ConnectionChangedHandler(account, player, connected)
 		private.accountLookup[player] = account
 		private.accountStatus[account] = "UPDATING"
 		-- issue a request for profession info
-		TSM.Sync.RPC.Call("CRAFTING_GET_HASHES", player, private.RPCGetHashesResultHandler)
+		Sync.CallRPC("CRAFTING_GET_HASHES", player, private.RPCGetHashesResultHandler)
 	else
 		private.accountLookup[player] = nil
 		private.accountStatus[account] = nil
@@ -193,7 +199,7 @@ function private.QueryProfessionFilter(row, professions)
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
+	return String.SeparatedContains(row:GetField("players"), ",", player)
 end
 
 function private.GetPlayerProfessionHashes(player, resultTbl)
@@ -202,6 +208,6 @@ function private.GetPlayerProfessionHashes(player, resultTbl)
 		:Custom(private.QueryPlayerFilter, player)
 		:OrderBy("spellId", true)
 	for _, spellId, profession in query:Iterator() do
-		resultTbl[profession] = TSM.Math.CalculateHash(spellId, resultTbl[profession])
+		resultTbl[profession] = Math.CalculateHash(spellId, resultTbl[profession])
 	end
 end

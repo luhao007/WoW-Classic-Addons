@@ -1,6 +1,13 @@
-## v4.8.20 Changes
+## v4.8.21 Changes
 
-* Fixed bug with saving of Accounting data.
-* Fixed bug with AH not properly hiding.
+* [Classic] Ignoring keyring updates.
+* [Classic] Fixed an error with profession swapping.
+* [Classic] Deposit reagent button is disabled for banking.
+* Properly updating crafting queue when acquiring items.
+* Fixed error with reseting auctioning operations.
+* Auctioning saved searches fix.
+* Sped up inbox scanning.
+* Disenchanting fixes.
+* Various optimizations.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

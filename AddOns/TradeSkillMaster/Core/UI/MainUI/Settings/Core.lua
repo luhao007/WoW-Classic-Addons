@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Settings = TSM.MainUI:NewPackage("Settings")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local private = {
 	settingPages = {
 		top = {},

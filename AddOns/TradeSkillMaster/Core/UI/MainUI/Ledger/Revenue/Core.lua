@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local Revenue = TSM.MainUI.Ledger:NewPackage("Revenue")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 
 
 

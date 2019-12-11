@@ -8,8 +8,17 @@
 
 local _, TSM = ...
 local MyAuctions = TSM.UI.AuctionUI:NewPackage("MyAuctions")
-local L = TSM.L
-local private = { fsm = nil, frame = nil, query = nil }
+local L = TSM.Include("Locale").GetTable()
+local FSM = TSM.Include("Util.FSM")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	fsm = nil,
+	frame = nil,
+	query = nil,
+}
 local DURATION_LIST = {
 	"Short (Under 30m)",
 	"Medium (30m to 2h)",
@@ -110,7 +119,7 @@ function private.GetMyAuctionsFrame()
 					:SetFontHeight(12)
 					:SetJustifyH("LEFT")
 					:SetTextInfo(nil, private.AuctionsGetItemText)
-					:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString", private.AuctionsGetItemTooltip)
 					:Commit()
 				:NewColumn("stackSize")
@@ -381,22 +390,22 @@ function private.FSMCreate()
 			:SetFormattedText(L["Posted Auctions %s:"], "|cff6ebae6"..numPosted.."|r")
 			:Draw()
 		bottomFrame:GetElement("values.sold")
-			:SetText(TSM.Money.ToString(soldGold))
+			:SetText(Money.ToString(soldGold))
 			:Draw()
 		bottomFrame:GetElement("values.posted")
-			:SetText(TSM.Money.ToString(postedGold))
+			:SetText(Money.ToString(postedGold))
 			:Draw()
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("MY_AUCTIONS")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_HIDDEN")
+	private.fsm = FSM.New("MY_AUCTIONS")
+		:AddState(FSM.NewState("ST_HIDDEN")
 			:SetOnEnter(function(context)
 				context.frame = nil
 			end)
 			:AddTransition("ST_HIDDEN")
 			:AddTransition("ST_SHOWNING")
-			:AddEvent("EV_FRAME_SHOWN", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWNING"))
+			:AddEventTransition("EV_FRAME_SHOWN", "ST_SHOWNING")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWNING")
+		:AddState(FSM.NewState("ST_SHOWNING")
 			:SetOnEnter(function(context, frame)
 				context.frame = frame
 				context.filterChanged = true
@@ -404,7 +413,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function(context)
 				UpdateFrame(context)
 			end)
@@ -413,10 +422,10 @@ function private.FSMCreate()
 			:AddTransition("ST_CANCELING")
 			:AddTransition("ST_SKIPPING")
 			:AddTransition("ST_CHANGING_SELECTION")
-			:AddEvent("EV_CANCEL_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CANCELING"))
-			:AddEvent("EV_SKIP_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SKIPPING"))
-			:AddEvent("EV_SELECTION_CHANGED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CHANGING_SELECTION"))
-			:AddEvent("EV_DATA_UPDATED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_CANCEL_CLICKED", "ST_CANCELING")
+			:AddEventTransition("EV_SKIP_CLICKED", "ST_SKIPPING")
+			:AddEventTransition("EV_SELECTION_CHANGED", "ST_CHANGING_SELECTION")
+			:AddEventTransition("EV_DATA_UPDATED", "ST_SHOWN")
 			:AddEvent("EV_FILTER_UPDATED", function(context)
 				local didChange = false
 				local durationFilter = context.frame:GetElement("headerFrame.durationDropdown"):GetSelectedItemKey()
@@ -425,7 +434,7 @@ function private.FSMCreate()
 					didChange = true
 				end
 				local keywordFilter = context.frame:GetElement("headerFrame.keywordInput"):GetText()
-				keywordFilter = keywordFilter ~= "" and TSM.String.Escape(keywordFilter) or nil
+				keywordFilter = keywordFilter ~= "" and String.Escape(keywordFilter) or nil
 				if keywordFilter ~= private.keywordFilter then
 					private.keywordFilter = keywordFilter
 					didChange = true
@@ -442,7 +451,7 @@ function private.FSMCreate()
 				end
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CHANGING_SELECTION")
+		:AddState(FSM.NewState("ST_CHANGING_SELECTION")
 			:SetOnEnter(function(context)
 				local row = context.frame:GetElement("auctions"):GetSelection()
 				context.currentSelectionIndex = row and row:GetField("index") or nil
@@ -450,7 +459,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CANCELING")
+		:AddState(FSM.NewState("ST_CANCELING")
 			:SetOnEnter(function(context)
 				local buttonsFrame = context.frame:GetElement("bottom")
 				buttonsFrame:GetElement("cancelBtn"):SetDisabled(true)
@@ -465,7 +474,7 @@ function private.FSMCreate()
 			:AddTransition("ST_HIDDEN")
 			:AddTransition("ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SKIPPING")
+		:AddState(FSM.NewState("ST_SKIPPING")
 			:SetOnEnter(function(context)
 				context.currentSelectionIndex = context.currentSelectionIndex - 1
 				local selectedRow = nil
@@ -479,7 +488,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_SHOWN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDDEN", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_HIDDEN"))
+		:AddDefaultEventTransition("EV_FRAME_HIDDEN", "ST_HIDDEN")
 		:Init("ST_HIDDEN", fsmContext)
 end
 
@@ -495,7 +504,7 @@ function private.AuctionsGetItemText(row)
 end
 
 function private.AuctionsGetItemTooltip(itemString)
-	return itemString ~= TSM.CONST.PET_CAGE_ITEMSTRING and itemString or nil
+	return itemString ~= ItemString.GetPetCageItemString() and itemString or nil
 end
 
 function private.AuctionsGetTimeLeftText(row)
@@ -527,13 +536,13 @@ function private.AuctionsGetCurrentBidText(row)
 	if saleStatus == 1 then
 		return L["Sold"]
 	elseif row:GetField("highBidder") == "" then
-		return TSM.Money.ToString(row:GetField("currentBid"), nil, "OPT_DISABLE")
+		return Money.ToString(row:GetField("currentBid"), nil, "OPT_DISABLE")
 	else
-		return TSM.Money.ToString(row:GetField("currentBid"))
+		return Money.ToString(row:GetField("currentBid"))
 	end
 end
 
 function private.AuctionsGetCurrentBuyoutText(row)
 	local saleStatus = row:GetField("saleStatus")
-	return TSM.Money.ToString(row:GetField(saleStatus == 1 and "currentBid" or "buyout"))
+	return Money.ToString(row:GetField(saleStatus == 1 and "currentBid" or "buyout"))
 end

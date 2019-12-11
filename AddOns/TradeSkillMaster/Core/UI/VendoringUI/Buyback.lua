@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Buyback = TSM.UI.VendoringUI:NewPackage("Buyback")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	query = nil,
 }
@@ -64,7 +66,7 @@ function private.GetFrame()
 					:SetFontHeight(12)
 					:SetJustifyH("LEFT")
 					:SetTextInfo("itemString", private.GetItemText)
-					:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:SetTooltipLinkingDisabled(true)
@@ -75,7 +77,7 @@ function private.GetFrame()
 					:SetFont(TSM.UI.Fonts.RobotoMedium)
 					:SetFontHeight(12)
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("price", TSM.Money.ToString)
+					:SetTextInfo("price", Money.ToString)
 					:SetSortInfo("price")
 					:Commit()
 				:SetCursor("BUY_CURSOR")

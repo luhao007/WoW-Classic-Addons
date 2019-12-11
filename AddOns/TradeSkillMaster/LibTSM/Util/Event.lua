@@ -13,7 +13,6 @@ local _, TSM = ...
 local Event = TSM.Init("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
-TSM.Event = Event
 local private = {
 	registry = {
 		event = {},

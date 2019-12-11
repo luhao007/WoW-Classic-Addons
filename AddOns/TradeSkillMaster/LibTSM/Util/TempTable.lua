@@ -12,7 +12,6 @@
 local _, TSM = ...
 local TempTable = TSM.Init("Util.TempTable")
 local Debug = TSM.Include("Util.Debug")
-TSM.TempTable = TempTable
 local private = {
 	freeTempTables = {},
 	tempTableState = {},
@@ -58,10 +57,14 @@ end
 --- Iterators over a temporary table, releasing it when done.
 -- NOTE: This iterator must be run to completion and not interrupted (i.e. with a `break` or `return`).
 -- @tparam table tbl The temporary table to iterator over
--- @return An iterator with fields: `index, value` or the return of `helperFunc`
-function TempTable.Iterator(tbl)
+-- @tparam[opt=1] number numFields The number of fields to unpack with each iteration
+-- @return An iterator with fields: `index, {numFields...}`
+function TempTable.Iterator(tbl, numFields)
+	numFields = numFields or 1
+	assert(numFields >= 1 and #tbl % numFields == 0)
 	assert(private.tempTableState[tbl])
-	return private.TempTableIteratorHelper, tbl, 0
+	tbl.__iterNumFields = numFields
+	return private.TempTableIteratorHelper, tbl, 1 - numFields
 end
 
 --- Releases a temporary table.
@@ -101,12 +104,17 @@ end
 -- ============================================================================
 
 function private.TempTableIteratorHelper(tbl, index)
-	index = (index or 0) + 1
+	local numFields = tbl.__iterNumFields
+	index = index + numFields
 	if index > #tbl then
 		TempTable.Release(tbl)
 		return
 	end
-	return index, tbl[index]
+	if numFields == 1 then
+		return index, tbl[index]
+	else
+		return index, unpack(tbl, index, index + numFields - 1)
+	end
 end
 
 function private.TempTableReleaseHelper(tbl, ...)

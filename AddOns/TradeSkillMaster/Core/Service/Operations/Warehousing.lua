@@ -9,7 +9,7 @@
 local _, TSM = ...
 local Warehousing = TSM.Operations:NewPackage("Warehousing")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 local OPERATION_INFO = {
 	moveQuantity = { type = "number", default = 0 },
 	keepBagQuantity = { type = "number", default = 0 },

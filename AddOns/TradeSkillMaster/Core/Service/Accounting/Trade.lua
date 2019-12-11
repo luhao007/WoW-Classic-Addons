@@ -8,8 +8,16 @@
 
 local _, TSM = ...
 local Trade = TSM.Accounting:NewPackage("Trade")
-local L = TSM.L
-local private = { tradeInfo = nil, popupContext = nil }
+local L = TSM.Include("Locale").GetTable()
+local Event = TSM.Include("Util.Event")
+local TempTable = TSM.Include("Util.TempTable")
+local Money = TSM.Include("Util.Money")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	tradeInfo = nil,
+	popupContext = nil,
+}
 
 
 
@@ -18,8 +26,8 @@ local private = { tradeInfo = nil, popupContext = nil }
 -- ============================================================================
 
 function Trade.OnInitialize()
-	TSM.Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
-	TSM.Event.Register("UI_INFO_MESSAGE", private.OnChatMsg)
+	Event.Register("TRADE_ACCEPT_UPDATE", private.OnAcceptUpdate)
+	Event.Register("UI_INFO_MESSAGE", private.OnChatMsg)
 end
 
 
@@ -40,13 +48,13 @@ function private.OnAcceptUpdate(_, player, target)
 			local targetLink = GetTradeTargetItemLink(i)
 			local _, _, targetCount = GetTradeTargetItemInfo(i)
 			if targetLink then
-				tinsert(private.tradeInfo.target, { itemString = TSMAPI_FOUR.Item.ToItemString(targetLink), count = targetCount })
+				tinsert(private.tradeInfo.target, { itemString = ItemString.Get(targetLink), count = targetCount })
 			end
 
 			local playerLink = GetTradePlayerItemLink(i)
 			local _, _, playerCount = GetTradePlayerItemInfo(i)
 			if playerLink then
-				tinsert(private.tradeInfo.player, { itemString = TSMAPI_FOUR.Item.ToItemString(playerLink), count = playerCount })
+				tinsert(private.tradeInfo.player, { itemString = ItemString.Get(playerLink), count = playerCount })
 			end
 		end
 	else
@@ -96,7 +104,7 @@ function private.OnChatMsg(_, msg)
 		if not tradeType or not itemString or not count then
 			return
 		end
-		local insertInfo = TSM.TempTable.Acquire()
+		local insertInfo = TempTable.Acquire()
 		insertInfo.type = tradeType
 		insertInfo.itemString = itemString
 		insertInfo.price = money / count
@@ -104,22 +112,22 @@ function private.OnChatMsg(_, msg)
 		insertInfo.name = private.tradeInfo.target.name
 		local gotText, gaveText = nil, nil
 		if tradeType == "buy" then
-			gotText = format("%sx%d", TSMAPI_FOUR.Item.GetLink(itemString), count)
-			gaveText = TSM.Money.ToString(money)
+			gotText = format("%sx%d", ItemInfo.GetLink(itemString), count)
+			gaveText = Money.ToString(money)
 		elseif tradeType == "sale" then
-			gaveText = format("%sx%d", TSMAPI_FOUR.Item.GetLink(itemString), count)
-			gotText = TSM.Money.ToString(money)
+			gaveText = format("%sx%d", ItemInfo.GetLink(itemString), count)
+			gotText = Money.ToString(money)
 		else
 			error("Invalid tradeType: "..tostring(tradeType))
 		end
 
 		if TSM.db.global.accountingOptions.autoTrackTrades then
 			private.DoInsert(insertInfo)
-			TSM.TempTable.Release(insertInfo)
+			TempTable.Release(insertInfo)
 		else
 			if private.popupContext then
 				-- popup already visible so ignore this
-				TSM.TempTable.Release(insertInfo)
+				TempTable.Release(insertInfo)
 				return
 			end
 			private.popupContext = insertInfo
@@ -132,11 +140,11 @@ function private.OnChatMsg(_, msg)
 					hideOnEscape = true,
 					OnAccept = function()
 						private.DoInsert(private.popupContext)
-						TSM.TempTable.Release(private.popupContext)
+						TempTable.Release(private.popupContext)
 						private.popupContext = nil
 					end,
 					OnCancel = function()
-						TSM.TempTable.Release(private.popupContext)
+						TempTable.Release(private.popupContext)
 						private.popupContext = nil
 					end,
 				}

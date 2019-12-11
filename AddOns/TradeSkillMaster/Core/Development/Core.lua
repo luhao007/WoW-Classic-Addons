@@ -6,7 +6,8 @@
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
--- only create the TSMDEV table if we're in a dev environment
-if strmatch(GetAddOnMetadata("TradeSkillMaster", "Version"), "^@tsm%-project%-version@$") then
+-- only create the TSMDEV table if we're in a dev or test environment
+local version = GetAddOnMetadata("TradeSkillMaster", "Version")
+if strmatch(version, "^@tsm%-project%-version@$") or version == "v4.99.99" then
 	TSMDEV = {}
 end

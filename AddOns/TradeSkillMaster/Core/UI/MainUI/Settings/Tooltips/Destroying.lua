@@ -8,8 +8,12 @@
 
 local _, TSM = ...
 local Destroying = TSM.MainUI.Settings.Tooltip:NewPackage("Destroying")
-local L = TSM.L
-local private = { sources = {}, sourceKeys = {} }
+local L = TSM.Include("Locale").GetTable()
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	sources = {},
+	sourceKeys = {},
+}
 local INVALID_PRICE_SOURCES = {
 	Crafting = true,
 	VendorBuy = true,
@@ -43,7 +47,7 @@ function private.GetTooltipSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings", "tooltips", "destroying")
 	wipe(private.sources)
 	wipe(private.sourceKeys)
-	for key, _, label in TSMAPI_FOUR.CustomPrice.Iterator() do
+	for key, _, label in CustomPrice.Iterator() do
 		if not INVALID_PRICE_SOURCES[key] then
 			tinsert(private.sources, label)
 			tinsert(private.sourceKeys, strlower(key))

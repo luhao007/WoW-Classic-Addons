@@ -8,6 +8,13 @@
 
 local _, TSM = ...
 local Groups = TSM:NewPackage("Groups")
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local SmartMap = TSM.Include("Util.SmartMap")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
 local private = {
 	itemDB = nil,
 	operationsTemp = {},
@@ -22,7 +29,7 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
-	private.itemDB = TSMAPI_FOUR.Database.NewSchema("GROUP_ITEMS")
+	private.itemDB = Database.NewSchema("GROUP_ITEMS")
 		:AddUniqueStringField("itemString")
 		:AddStringField("groupPath")
 		:AddIndex("groupPath")
@@ -64,7 +71,7 @@ function Groups.RebuildDatabase()
 							operations.override = operations.override and true or nil
 						elseif type(key2) ~= "number" or key2 <= 0 or key2 > #operations then
 							-- this is an invalid key
-							TSM:LOG_ERR("Removing invalid operations key (%s, %s): %s", groupPath, key, tostring(key2))
+							Log.Err("Removing invalid operations key (%s, %s): %s", groupPath, key, tostring(key2))
 							operations[key2] = nil
 						end
 					end
@@ -73,20 +80,20 @@ function Groups.RebuildDatabase()
 							-- remove operations which no longer exist
 							-- we used to have a bunch of placeholder "" operations, so don't log for those
 							if operations[i] ~= "" then
-								TSM:LOG_ERR("Removing invalid operation from group (%s): %s, %s", groupPath, key, tostring(operations[i]))
+								Log.Err("Removing invalid operation from group (%s): %s, %s", groupPath, key, tostring(operations[i]))
 							end
 							tremove(operations, i)
 						end
 					end
 				elseif key ~= "ignoreItemVariations" then
 					-- invalid key
-					TSM:LOG_ERR("Removing invalid groupInfo key (%s): %s", groupPath, tostring(key))
+					Log.Err("Removing invalid groupInfo key (%s): %s", groupPath, tostring(key))
 					groupInfo[key] = nil
 				end
 			end
 		else
 			-- remove invalid group paths
-			TSM:LOG_ERR("Removing invalid group path: %s", tostring(groupPath))
+			Log.Err("Removing invalid group path: %s", tostring(groupPath))
 			TSM.db.profile.userData.groups[groupPath] = nil
 		end
 	end
@@ -112,7 +119,7 @@ function Groups.RebuildDatabase()
 		local parentPath = TSM.Groups.Path.GetParent(groupPath)
 		if not TSM.db.profile.userData.groups[parentPath] then
 			-- the parent group doesn't exist, so remove this group
-			TSM:LOG_ERR("Removing group with non-existent parent: %s", tostring(groupPath))
+			Log.Err("Removing group with non-existent parent: %s", tostring(groupPath))
 			TSM.db.profile.userData.groups[groupPath] = nil
 		else
 			for _, moduleName in TSM.Operations.ModuleIterator() do
@@ -124,32 +131,32 @@ function Groups.RebuildDatabase()
 	end
 
 	-- fix up any invalid items
-	local newPaths = TSM.TempTable.Acquire()
+	local newPaths = TempTable.Acquire()
 	for itemString, groupPath in pairs(TSM.db.profile.userData.items) do
-		local newItemString = TSMAPI_FOUR.Item.ToItemString(itemString)
+		local newItemString = ItemString.Get(itemString)
 		if not newItemString then
 			-- this itemstring is invalid
-			TSM:LOG_ERR("Itemstring (%s) is invalid", tostring(itemString))
+			Log.Err("Itemstring (%s) is invalid", tostring(itemString))
 			TSM.db.profile.userData.items[itemString] = nil
 		elseif groupPath == TSM.CONST.ROOT_GROUP_PATH or not TSM.db.profile.userData.groups[groupPath] then
 			-- this group doesn't exist
-			TSM:LOG_ERR("Group (%s) doesn't exist, so removing item (%s)", groupPath, itemString)
+			Log.Err("Group (%s) doesn't exist, so removing item (%s)", groupPath, itemString)
 			TSM.db.profile.userData.items[itemString] = nil
 		elseif newItemString ~= itemString then
 			-- remove this invalid itemstring from this group
-			TSM:LOG_ERR("Itemstring changed (%s -> %s), so removing it from group (%s)", itemString, newItemString, groupPath)
+			Log.Err("Itemstring changed (%s -> %s), so removing it from group (%s)", itemString, newItemString, groupPath)
 			TSM.db.profile.userData.items[itemString] = nil
 			-- add this new item to this group if it's not already in one
 			if not TSM.db.profile.userData.items[newItemString] then
 				newPaths[newItemString] = groupPath
-				TSM:LOG_ERR("Adding to group instead (%s)", groupPath)
+				Log.Err("Adding to group instead (%s)", groupPath)
 			end
 		end
 	end
 	for itemString, groupPath in pairs(newPaths) do
 		TSM.db.profile.userData.items[itemString] = groupPath
 	end
-	TSM.TempTable.Release(newPaths)
+	TempTable.Release(newPaths)
 
 	-- populate our database
 	private.itemDB:TruncateAndBulkInsertStart()
@@ -201,14 +208,14 @@ function Groups.Move(groupPath, newGroupPath)
 	local newParentPath = TSM.Groups.Path.GetParent(newGroupPath)
 	assert(newParentPath and TSM.db.profile.userData.groups[newParentPath], "Parent of target is invalid")
 
-	local changes = TSM.TempTable.Acquire()
+	local changes = TempTable.Acquire()
 	private.itemDB:SetQueryUpdatesPaused(true)
 
 	-- get a list of group path changes for this group and all its subgroups
 	local gsubEscapedNewGroupPath = gsub(newGroupPath, "%%", "%%%%")
 	for path in pairs(TSM.db.profile.userData.groups) do
 		if path == groupPath or TSM.Groups.Path.IsChild(path, groupPath) then
-			changes[path] = gsub(path, "^"..TSM.String.Escape(groupPath), gsubEscapedNewGroupPath)
+			changes[path] = gsub(path, "^"..String.Escape(groupPath), gsubEscapedNewGroupPath)
 		end
 	end
 
@@ -239,7 +246,7 @@ function Groups.Move(groupPath, newGroupPath)
 		end
 	end
 
-	TSM.TempTable.Release(changes)
+	TempTable.Release(changes)
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -263,9 +270,9 @@ function Groups.Delete(groupPath)
 	local query = private.itemDB:NewQuery()
 		:Or()
 			:Equal("groupPath", groupPath)
-			:Matches("groupPath", "^"..TSM.String.Escape(groupPath)..TSM.CONST.GROUP_SEP)
+			:Matches("groupPath", "^"..String.Escape(groupPath)..TSM.CONST.GROUP_SEP)
 		:End()
-	local updateMapItems = TSM.TempTable.Acquire()
+	local updateMapItems = TempTable.Acquire()
 	for _, row in query:Iterator() do
 		local itemString = row:GetField("itemString")
 		assert(TSM.db.profile.userData.items[itemString])
@@ -276,13 +283,13 @@ function Groups.Delete(groupPath)
 	query:Release()
 	private.itemStringMap:SetCallbacksPaused(true)
 	for itemString in private.itemStringMap:Iterator() do
-		if updateMapItems[itemString] or updateMapItems[TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)] then
+		if updateMapItems[itemString] or updateMapItems[ItemString.GetBaseFast(itemString)] then
 			-- either this item itself was removed from a group, or the base item was - in either case trigger an update
 			private.itemStringMap:ValueChanged(itemString)
 		end
 	end
 	private.itemStringMap:SetCallbacksPaused(false)
-	TSM.TempTable.Release(updateMapItems)
+	TempTable.Release(updateMapItems)
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -319,10 +326,10 @@ function Groups.SetItemGroup(itemString, groupPath)
 	if updateMap then
 		private.itemStringMap:SetCallbacksPaused(true)
 		private.itemStringMap:ValueChanged(itemString)
-		if itemString == TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString) then
+		if itemString == ItemString.GetBaseFast(itemString) then
 			-- this is a base item string, so need to also update all other items whose base item is equal to this item
 			for mapItemString in private.itemStringMap:Iterator() do
-				if TSMAPI_FOUR.Item.ToBaseItemStringFast(mapItemString) == itemString then
+				if ItemString.GetBaseFast(mapItemString) == itemString then
 					private.itemStringMap:ValueChanged(mapItemString)
 				end
 			end
@@ -332,7 +339,7 @@ function Groups.SetItemGroup(itemString, groupPath)
 end
 
 function Groups.GetPathByItem(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	assert(itemString)
 	local groupPath = private.itemDB:GetUniqueRowField("itemString", itemString, "groupPath") or TSM.CONST.ROOT_GROUP_PATH
 	assert(TSM.db.profile.userData.groups[groupPath])
@@ -354,14 +361,14 @@ function Groups.ItemIterator(groupPathFilter)
 end
 
 function Groups.GroupIterator()
-	local groups = TSM.TempTable.Acquire()
+	local groups = TempTable.Acquire()
 	for groupPath in pairs(TSM.db.profile.userData.groups) do
 		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
 			tinsert(groups, groupPath)
 		end
 	end
 	Groups.SortGroupList(groups)
-	return TSM.TempTable.Iterator(groups)
+	return TempTable.Iterator(groups)
 end
 
 function Groups.SortGroupList(list)
@@ -412,15 +419,15 @@ end
 function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
 	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
 	assert(groupOperations.override)
-	assert(TSM.Table.RemoveByValue(groupOperations, operationName) > 0)
+	assert(Table.RemoveByValue(groupOperations, operationName) > 0)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
 end
 
 function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
 	-- just blindly remove from all groups - no need to check for override
-	TSM.Table.RemoveByValue(TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName], operationName)
+	Table.RemoveByValue(TSM.db.profile.userData.groups[TSM.CONST.ROOT_GROUP_PATH][moduleName], operationName)
 	for _, groupPath in Groups.GroupIterator() do
-		TSM.Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+		Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
 	end
 end
 
@@ -470,12 +477,12 @@ end
 -- ============================================================================
 
 do
-	private.itemStringMap = TSM.SmartMap.New("string", "string", function(itemString)
+	private.itemStringMap = SmartMap.New("string", "string", function(itemString)
 		if Groups.IsItemInGroup(itemString) then
 			-- this item is in a group, so just return it
 			return itemString
 		end
-		local baseItemString = TSMAPI_FOUR.Item.ToBaseItemStringFast(itemString)
+		local baseItemString = ItemString.GetBaseFast(itemString)
 		-- return the base item if it's in a group; otherwise return the original item
 		return Groups.IsItemInGroup(baseItemString) and baseItemString or itemString
 	end)

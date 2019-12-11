@@ -8,8 +8,12 @@
 
 local _, TSM = ...
 local TableRow = TSM.Include("LibTSMClass").DefineClass("TableRow")
+local Table = TSM.Include("Util.Table")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 TSM.UI.Util.TableRow = TableRow
-local private = { rowFrameLookup = {} }
+local private = {
+	rowFrameLookup = {},
+}
 local ROW_PADDING = 8
 local ICON_SPACING = 4
 
@@ -475,7 +479,7 @@ end
 function private.HeaderColOnClick(button, mouseButton)
 	local self = private.rowFrameLookup[button:GetParent()]
 	if mouseButton == "LeftButton" then
-		self._scrollingTable:_ToggleSort(TSM.Table.GetDistinctKey(self._buttons, button))
+		self._scrollingTable:_ToggleSort(Table.GetDistinctKey(self._buttons, button))
 	elseif mouseButton == "RightButton" then
 		self._scrollingTable._tableInfo:_UpdateTitleIndex()
 		self._scrollingTable:UpdateData(true)
@@ -544,7 +548,7 @@ function private.TooltipFrameOnClick(frame, ...)
 				break
 			end
 		end
-		local link = tooltip and TSMAPI_FOUR.Item.GetLink(tooltip)
+		local link = tooltip and ItemInfo.GetLink(tooltip)
 		if link then
 			if IsShiftKeyDown() then
 				TSM.Wow.SafeItemRef(link)

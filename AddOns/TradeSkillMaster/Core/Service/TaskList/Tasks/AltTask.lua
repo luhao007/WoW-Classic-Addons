@@ -8,7 +8,7 @@
 
 local _, TSM = ...
 local AltTask = TSM.Include("LibTSMClass").DefineClass("AltTask", TSM.TaskList.Task)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
 TSM.TaskList.AltTask = AltTask
 
 

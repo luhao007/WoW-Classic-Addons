@@ -14,7 +14,6 @@ local Delay = TSM.Init("Util.Delay")
 local Debug = TSM.Include("Util.Debug")
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
-TSMAPI_FOUR.Delay = Delay
 local private = {
 	delays = {},
 	frameNumber = 0,
@@ -26,14 +25,20 @@ local MIN_TIME_DURATION = 0.0001
 
 
 -- ============================================================================
--- Module Functions
+-- Module Loading
 -- ============================================================================
 
-function Delay.OnInitialize()
-	local frame = CreateFrame("Frame")
-	frame:SetScript("OnUpdate", private.ProcessDelays)
-	frame:Show()
-end
+Delay:OnModuleLoad(function()
+	private.frame = CreateFrame("Frame")
+	private.frame:SetScript("OnUpdate", private.ProcessDelays)
+	private.frame:Show()
+end)
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
 
 --- Call a callback after a set amount of time.
 -- Note that the delay may be up to 1 frame time longer than requested.
@@ -164,16 +169,4 @@ function private.ProcessDelays()
 			Log.Warn("Delay callback (%s) took %0.2fms", pendingLabel, timeTaken)
 		end
 	end
-end
-
-
-
--- ============================================================================
--- Initialization Code
--- ============================================================================
-
-do
-	private.frame = CreateFrame("Frame")
-	private.frame:SetScript("OnUpdate", private.ProcessDelays)
-	private.frame:Show()
 end

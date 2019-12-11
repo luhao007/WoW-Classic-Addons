@@ -8,7 +8,8 @@
 
 local _, TSM = ...
 local Other = TSM.MainUI.Ledger.Common:NewPackage("Other")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = { query = nil, characters = {}, characterFilter = ALL, typeFilter = "All", recordType = nil, timeFrameFilter = 30 * SECONDS_PER_DAY }
 local TIME_LIST = { ALL, L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
@@ -166,7 +167,7 @@ function private.DrawOtherPage(recordType)
 					:SetFont(TSM.UI.Fonts.FRIZQT)
 					:SetFontHeight(12)
 					:SetJustifyH("RIGHT")
-					:SetTextInfo("amount", TSM.Money.ToString)
+					:SetTextInfo("amount", Money.ToString)
 					:SetSortInfo("amount")
 					:Commit()
 				:NewColumn("time")

@@ -9,7 +9,8 @@
 local _, TSM = ...
 local Shopping = TSM.Operations:NewPackage("Shopping")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local OPERATION_INFO = {
 	restockQuantity = { type = "number", default = 0 },
 	maxPrice = { type = "string", default = "dbmarket" },
@@ -33,7 +34,7 @@ function Shopping.GetMaxPrice(itemString)
 	if not operationSettings then
 		return
 	end
-	return TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+	return CustomPrice.GetValue(operationSettings.maxPrice, itemString)
 end
 
 function Shopping.ShouldShowAboveMaxPrice(itemString)
@@ -55,7 +56,7 @@ function Shopping.IsFiltered(itemString, stackSize, itemBuyout)
 	end
 
 	if not operationSettings.showAboveMaxPrice then
-		local maxPrice = TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+		local maxPrice = CustomPrice.GetValue(operationSettings.maxPrice, itemString)
 		if not maxPrice or itemBuyout > maxPrice then
 			return true, true
 		end
@@ -69,7 +70,7 @@ function Shopping.ValidAndGetRestockQuantity(itemString)
 	if not operationSettings then
 		return false, nil
 	end
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(operationSettings.maxPrice)
+	local isValid, err = CustomPrice.Validate(operationSettings.maxPrice)
 	if not isValid then
 		return false, err
 	end
@@ -95,7 +96,7 @@ function Shopping.ValidAndGetRestockQuantity(itemString)
 		end
 		maxQuantity = operationSettings.restockQuantity - numHave
 	end
-	if not operationSettings.showAboveMaxPrice and not TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.maxPrice, itemString) then
+	if not operationSettings.showAboveMaxPrice and not CustomPrice.GetValue(operationSettings.maxPrice, itemString) then
 		-- we're not showing auctions above the max price and the max price isn't valid for this item, so skip it
 		return false, nil
 	end
@@ -121,7 +122,7 @@ function private.GetOperationInfo(operationSettings)
 end
 
 function private.GetOperationSettings(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Shopping", itemString)
 	if not operationName then
 		return

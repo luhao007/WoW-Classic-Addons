@@ -8,7 +8,13 @@
 
 local _, TSM = ...
 local Inbox = TSM.UI.MailingUI:NewPackage("Inbox")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Money = TSM.Include("Util.Money")
+local Sound = TSM.Include("Util.Sound")
+local FSM = TSM.Include("Util.FSM")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local MailTracking = TSM.Include("Service.MailTracking")
 local private = {
 	fsm = nil,
 	frame = nil,
@@ -176,7 +182,7 @@ function private.GetInboxMailsFrame()
 				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
 				:SetStyle("fontHeight", 13)
 				:SetStyle("justifyH", "RIGHT")
-				:SetText(L["Total Gold"]..": "..TSM.Money.ToString(0))
+				:SetText(L["Total Gold"]..": "..Money.ToString(0))
 			)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "openAllMail")
@@ -238,7 +244,7 @@ function private.GetInboxMailsFrame()
 end
 
 function private.GetInboxItemsFrame()
-	private.itemsQuery = private.itemsQuery or TSM.Inventory.MailTracking.CreateMailItemQuery()
+	private.itemsQuery = private.itemsQuery or MailTracking.CreateMailItemQuery()
 	private.itemsQuery:ResetFilters()
 		:Equal("index", private.selectedMail)
 		:OrderBy("itemIndex", true)
@@ -404,7 +410,7 @@ function private.GetInboxItemsFrame()
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
 						:SetTextInfo(nil, private.FormatInboxItem)
-						:SetIconInfo("itemLink", TSMAPI_FOUR.Item.GetTexture)
+						:SetIconInfo("itemLink", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemLink")
 						:SetTooltipLinkingDisabled(true)
 						:Commit()
@@ -457,7 +463,7 @@ function private.ItemQueryOnRowClick(scrollingTable, row)
 	local index = row:GetField("index")
 	local _, _, _, _, _, cod = GetInboxHeaderInfo(index)
 	if cod > 0 then
-		scrollingTable:GetBaseElement():ShowConfirmationDialog(L["Accepting this item will cost"]..":", TSM.Money.ToString(cod), strupper(ACCEPT), private.TakeInboxItem, scrollingTable, row)
+		scrollingTable:GetBaseElement():ShowConfirmationDialog(L["Accepting this item will cost"]..":", Money.ToString(cod), strupper(ACCEPT), private.TakeInboxItem, scrollingTable, row)
 		return
 	end
 
@@ -494,7 +500,7 @@ end
 function private.TakeAllOnClick(button)
 	local _, _, _, _, _, cod = GetInboxHeaderInfo(private.selectedMail)
 	if cod > 0 then
-		button:GetBaseElement():ShowConfirmationDialog(L["Accepting these item(s) will cost"]..":", TSM.Money.ToString(cod), strupper(ACCEPT), private.AutoLootMailItem, button)
+		button:GetBaseElement():ShowConfirmationDialog(L["Accepting these item(s) will cost"]..":", Money.ToString(cod), strupper(ACCEPT), private.AutoLootMailItem, button)
 	else
 		private.AutoLootMailItem(button)
 	end
@@ -550,7 +556,7 @@ function private.UpdateInboxItemsFrame()
 
 	if cod and cod > 0 then
 		private.frameItems:GetElement("attachments.header.cod"):Show()
-		private.frameItems:GetElement("attachments.header.codAmount"):SetText(TSM.Money.ToString(cod, "|cffff0000"))
+		private.frameItems:GetElement("attachments.header.codAmount"):SetText(Money.ToString(cod, "|cffff0000"))
 		private.frameItems:GetElement("attachments.header.codAmount"):Show()
 	else
 		private.frameItems:GetElement("attachments.header.cod"):Hide()
@@ -586,11 +592,11 @@ function private.UpdateInboxItemsFrame()
 		local invoiceType, itemName, playerName, bid, buyout, deposit, consignment, _, etaHour, etaMin = GetInboxInvoiceInfo(private.selectedMail)
 		local purchaseType = bid == buyout and BUYOUT or HIGH_BIDDER
 		if invoiceType == "buyer" then
-			bodyText = ITEM_PURCHASED_COLON.." "..itemName.."\n"..SOLD_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..AMOUNT_RECEIVED_COLON.." "..TSM.Money.ToString(bid)
+			bodyText = ITEM_PURCHASED_COLON.." "..itemName.."\n"..SOLD_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..AMOUNT_RECEIVED_COLON.." "..Money.ToString(bid)
 		elseif invoiceType == "seller" then
-			bodyText = ITEM_SOLD_COLON.." "..itemName.."\n"..PURCHASED_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..L["Sale Price"]..": "..TSM.Money.ToString(bid).."\n"..L["Deposit"]..": +"..TSM.Money.ToString(deposit).."\n"..L["Auction House Cut"]..": -"..TSM.Money.ToString(consignment, "|cffff0000").."\n\n"..AMOUNT_RECEIVED_COLON.." "..TSM.Money.ToString(bid + deposit - consignment)
+			bodyText = ITEM_SOLD_COLON.." "..itemName.."\n"..PURCHASED_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..L["Sale Price"]..": "..Money.ToString(bid).."\n"..L["Deposit"]..": +"..Money.ToString(deposit).."\n"..L["Auction House Cut"]..": -"..Money.ToString(consignment, "|cffff0000").."\n\n"..AMOUNT_RECEIVED_COLON.." "..Money.ToString(bid + deposit - consignment)
 		elseif invoiceType == "seller_temp_invoice" then
-			bodyText = ITEM_SOLD_COLON.." "..itemName.."\n"..PURCHASED_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..AUCTION_INVOICE_PENDING_FUNDS_COLON.." "..TSM.Money.ToString(bid + deposit - consignment).."\n"..L["Estimated deliver time"]..": "..GameTime_GetFormattedTime(etaHour, etaMin, true)
+			bodyText = ITEM_SOLD_COLON.." "..itemName.."\n"..PURCHASED_BY_COLON.." "..playerName.." ("..purchaseType..")".."\n\n"..AUCTION_INVOICE_PENDING_FUNDS_COLON.." "..Money.ToString(bid + deposit - consignment).."\n"..L["Estimated deliver time"]..": "..GameTime_GetFormattedTime(etaHour, etaMin, true)
 		end
 	end
 	private.frameItems:GetElement("body.scroll.input"):SetText(bodyText or "")
@@ -616,7 +622,7 @@ end
 function private.FormatInboxItem(row)
 	local itemIndex = row:GetField("itemIndex")
 	if itemIndex == 0 then
-		return L["Gold"]..": "..TSM.Money.ToString(row:GetField("itemLink"), "|cff00ff00")
+		return L["Gold"]..": "..Money.ToString(row:GetField("itemLink"), "|cff00ff00")
 	end
 
 	local coloredItem = TSM.UI.GetColoredItemName(row:GetField("itemLink")) or ""
@@ -643,7 +649,7 @@ function private.InboxFrameOnUpdate(frame)
 	frame:GetBaseElement():SetBottomPadding(55)
 
 	private.UpdateCountDown(true)
-	TSMAPI_FOUR.Delay.AfterTime("mailUpdateCounter", 0, private.UpdateCountDown, 1)
+	Delay.AfterTime("mailUpdateCounter", 0, private.UpdateCountDown, 1)
 
 	private.fsm:ProcessEvent("EV_FRAME_SHOW", frame, private.filterText)
 end
@@ -726,7 +732,7 @@ function private.FormatIcon(mailType)
 end
 
 function private.FormatItem(row)
-	private.itemsQuery = private.itemsQuery or TSM.Inventory.MailTracking.CreateMailItemQuery()
+	private.itemsQuery = private.itemsQuery or MailTracking.CreateMailItemQuery()
 
 	private.itemsQuery:ResetFilters()
 		:Equal("index", row:GetField("index"))
@@ -808,9 +814,9 @@ function private.FormatMoney(row)
 
 	local gold
 	if cod > 0 then
-		gold = TSM.Money.ToString(cod, "|cffff0000")
+		gold = Money.ToString(cod, "|cffff0000")
 	elseif money > 0 then
-		gold = TSM.Money.ToString(money, "|cff00ff00")
+		gold = Money.ToString(money, "|cff00ff00")
 	end
 
 	return gold or "--"
@@ -880,7 +886,7 @@ function private.FSMCreate()
 			totalGold = totalGold + row:GetField("money")
 		end
 
-		context.frame:GetElement("footer.gold"):SetText(L["Total Gold"]..": "..TSM.Money.ToString(totalGold))
+		context.frame:GetElement("footer.gold"):SetText(L["Total Gold"]..": "..Money.ToString(totalGold))
 			:Draw()
 	end
 
@@ -951,18 +957,18 @@ function private.FSMCreate()
 		end
 	end
 
-	private.fsm = TSMAPI_FOUR.FSM.New("MAILING_INBOX")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_HIDDEN")
+	private.fsm = FSM.New("MAILING_INBOX")
+		:AddState(FSM.NewState("ST_HIDDEN")
 			:SetOnEnter(function(context)
 				TSM.Mailing.Open.KillThread()
-				TSMAPI_FOUR.Delay.Cancel("mailUpdateCounter")
+				Delay.Cancel("mailUpdateCounter")
 				context.frame = nil
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_HIDDEN")
-			:AddEvent("EV_FRAME_SHOW", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_FRAME_SHOW", "ST_SHOWN")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function(context, frame, filterText)
 				if not context.frame then
 					context.frame = frame
@@ -976,9 +982,9 @@ function private.FSMCreate()
 				UpdateText(context, filterText)
 				UpdateButtons(context, filterText)
 			end)
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_OPENING_START"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_OPENING_START")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_OPENING_START")
+		:AddState(FSM.NewState("ST_OPENING_START")
 			:SetOnEnter(function(context, autoRefresh, keepMoney, filterText, filterType)
 				context.opening = true
 				UpdateButtons(context)
@@ -993,14 +999,14 @@ function private.FSMCreate()
 			:AddEvent("EV_MAIL_DATA_UPDATED", function(context, filterText)
 				UpdateText(context, filterText)
 			end)
-			:AddEvent("EV_OPENING_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_SHOWN"))
+			:AddEventTransition("EV_OPENING_DONE", "ST_SHOWN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_HIDDEN"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_HIDDEN")
 		:Init("ST_HIDDEN", fsmContext)
 end
 
 function private.FSMOpenCallback()
 	private.fsm:ProcessEvent("EV_OPENING_DONE")
 
-	TSM.Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
+	Sound.PlaySound(TSM.db.global.mailingOptions.openMailSound)
 end

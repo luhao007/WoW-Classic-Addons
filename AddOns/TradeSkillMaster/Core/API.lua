@@ -10,6 +10,10 @@
 -- @module TSM_API
 
 local _, TSM = ...
+local Money = TSM.Include("Util.Money")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 TSM_API = {}
 
 
@@ -151,7 +155,7 @@ function TSM_API.GetPriceSourceKeys(result)
 	if type(result) ~= "table" then
 		error("Invalid 'result' argument type (must be a table): "..tostring(result), 2)
 	end
-	for key in TSMAPI_FOUR.CustomPrice.Iterator() do
+	for key in CustomPrice.Iterator() do
 		tinsert(result, key)
 	end
 	return result
@@ -165,7 +169,7 @@ function TSM_API.GetPriceSourceDescription(key)
 	if type(key) ~= "string" then
 		error("Invalid 'key' argument type (must be a string): "..tostring(key), 2)
 	end
-	local result = TSM.CustomPrice.GetDescription(key)
+	local result = CustomPrice.GetDescription(key)
 	if not result then
 		error("Unknown price source key: "..tostring(key), 2)
 	end
@@ -181,7 +185,7 @@ function TSM_API.IsCustomPriceValid(customPriceStr)
 	if type(customPriceStr) ~= "string" then
 		error("Invalid 'customPriceStr' argument type (must be a string): "..tostring(customPriceStr), 2)
 	end
-	return TSMAPI_FOUR.CustomPrice.Validate(customPriceStr)
+	return CustomPrice.Validate(customPriceStr)
 end
 
 --- Evalulates a custom price string or price source key for a given item
@@ -197,7 +201,7 @@ function TSM_API.GetCustomPriceValue(customPriceStr, itemString)
 	if type(itemString) ~= "string" then
 		error("Invalid 'itemString' argument type (must be a string): "..tostring(itemString), 2)
 	end
-	return TSMAPI_FOUR.CustomPrice.GetValue(customPriceStr, itemString)
+	return CustomPrice.GetValue(customPriceStr, itemString)
 end
 
 
@@ -214,7 +218,7 @@ function TSM_API.FormatMoneyString(value)
 	if type(value) ~= "number" then
 		error("Invalid 'value' argument type (must be a number): "..tostring(value), 2)
 	end
-	local result = TSM.Money.ToString(value)
+	local result = Money.ToString(value)
 	assert(result)
 	return result
 end
@@ -227,7 +231,7 @@ function TSM_API.ParseMoneyString(str)
 	if type(str) ~= "string" then
 		error("Invalid 'str' argument type (must be a string): "..tostring(str), 2)
 	end
-	local result = TSM.Money.FromString(str)
+	local result = Money.FromString(str)
 	assert(result)
 	return result
 end
@@ -246,7 +250,7 @@ function TSM_API.ToItemString(item)
 	if type(item) ~= "string" then
 		error("Invalid 'item' argument type (must be a string): "..tostring(item), 2)
 	end
-	return TSMAPI_FOUR.Item.ToItemString(item)
+	return ItemString.Get(item)
 end
 
 --- Gets an item's name from a given TSM item string
@@ -257,7 +261,7 @@ function TSM_API.GetItemName(itemString)
 	if type(itemString) ~= "string" then
 		error("Invalid 'itemString' argument type (must be a string): "..tostring(itemString), 2)
 	end
-	return TSMAPI_FOUR.Item.GetName(itemString)
+	return ItemInfo.GetName(itemString)
 end
 
 --- Gets an item link from a given TSM item string
@@ -268,7 +272,7 @@ function TSM_API.GetItemLink(itemString)
 	if type(itemString) ~= "string" then
 		error("Invalid 'itemString' argument type (must be a string): "..tostring(itemString), 2)
 	end
-	local result = TSMAPI_FOUR.Item.GetLink(itemString)
+	local result = ItemInfo.GetLink(itemString)
 	assert(result)
 	return result
 end

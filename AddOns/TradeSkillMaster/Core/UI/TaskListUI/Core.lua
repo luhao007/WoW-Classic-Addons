@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local TaskListUI = TSM.UI:NewPackage("TaskListUI")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
 local private = {
 	frame = nil,
 	categoryCollapsed = {},
@@ -100,7 +102,7 @@ function TaskListUI.Toggle()
 		assert(not private.frame)
 	else
 		if TSM.TaskList.GetNumTasks() == 0 then
-			TSM:Print(L["Your task list is currently empty."])
+			Log.PrintUser(L["Your task list is currently empty."])
 			return
 		end
 		TSM.db.global.internalData.taskListUIFrameContext.isOpen = true
@@ -148,7 +150,7 @@ end
 
 function private.CreateTaskListElements(frame)
 	-- get all the category counts
-	local categoryCount = TSM.TempTable.Acquire()
+	local categoryCount = TempTable.Acquire()
 	for _, task in TSM.TaskList.Iterator() do
 		local category = task:GetCategory()
 		categoryCount[category] = (categoryCount[category] or 0) + 1
@@ -199,7 +201,7 @@ function private.CreateTaskListElements(frame)
 		end
 	end
 
-	TSM.TempTable.Release(categoryCount)
+	TempTable.Release(categoryCount)
 end
 
 function private.CreateCategoryLine(frame, category, count)
@@ -287,7 +289,7 @@ function private.BaseFrameOnHide(frame)
 end
 
 function private.CloseBtnOnClick(button)
-	TSM:Print(L["Hiding the TSM Task List UI. Type '/tsm tasklist' to reopen it."])
+	Log.PrintUser(L["Hiding the TSM Task List UI. Type '/tsm tasklist' to reopen it."])
 	TSM.db.global.internalData.taskListUIFrameContext.isOpen = false
 	TaskListUI.Toggle()
 end

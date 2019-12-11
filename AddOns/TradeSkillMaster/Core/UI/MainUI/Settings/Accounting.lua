@@ -8,8 +8,13 @@
 
 local _, TSM = ...
 local Accounting = TSM.MainUI.Settings:NewPackage("Accounting")
-local L = TSM.L
-local private = { marketValueItems = {}, marketValueKeys = {} }
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	marketValueItems = {},
+	marketValueKeys = {},
+}
 local DAYS_OLD_OPTIONS = { 30, 45, 60, 75, 90, 180, 360 }
 local INVALID_PRICE_SOURCES = {
 	Crafting = true,
@@ -44,7 +49,7 @@ function private.GetAccountingSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings", "accounting")
 	wipe(private.marketValueItems)
 	wipe(private.marketValueKeys)
-	for key, _, label in TSMAPI_FOUR.CustomPrice.Iterator() do
+	for key, _, label in CustomPrice.Iterator() do
 		if not INVALID_PRICE_SOURCES[key] then
 			tinsert(private.marketValueItems, label)
 			tinsert(private.marketValueKeys, strlower(key))
@@ -146,5 +151,5 @@ function private.ClearBtnOnClick(button)
 end
 
 function private.ClearDataConfirmed(days)
-	TSM:Printf(L["Removed a total of %s old records."], TSM.Accounting.Transactions.RemoveOldData(days) + TSM.Accounting.Money.RemoveOldData(days) + TSM.Accounting.Auctions.RemoveOldData(days))
+	Log.PrintfUser(L["Removed a total of %s old records."], TSM.Accounting.Transactions.RemoveOldData(days) + TSM.Accounting.Money.RemoveOldData(days) + TSM.Accounting.Auctions.RemoveOldData(days))
 end

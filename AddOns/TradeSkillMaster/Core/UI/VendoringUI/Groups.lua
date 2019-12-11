@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local Groups = TSM.UI.VendoringUI:NewPackage("Groups")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local FSM = TSM.Include("Util.FSM")
 local private = {
 	groupSearch = "",
 	fsm = nil,
@@ -235,8 +237,8 @@ function private.FSMCreate()
 			:SetDisabled(context.currentOperation)
 		footer:Draw()
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("VENDORING_GROUPS")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_CLOSED")
+	private.fsm = FSM.New("VENDORING_GROUPS")
+		:AddState(FSM.NewState("ST_FRAME_CLOSED")
 			:SetOnEnter(function(context)
 				context.frame = nil
 				assert(not context.currentOperation)
@@ -248,19 +250,19 @@ function private.FSMCreate()
 				return "ST_FRAME_OPEN"
 			end)
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_FRAME_OPEN")
+		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				UpdateFrame(context)
 			end)
 			:AddTransition("ST_BUSY")
 			:AddTransition("ST_FRAME_CLOSED")
-			:AddEvent("EV_BUTTON_CLICKED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_BUSY"))
+			:AddEventTransition("EV_BUTTON_CLICKED", "ST_BUSY")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_BUSY")
+		:AddState(FSM.NewState("ST_BUSY")
 			:SetOnEnter(function(context, operation)
 				assert(not context.currentOperation)
 				context.currentOperation = operation
-				local groups = TSM.TempTable.Acquire()
+				local groups = TempTable.Acquire()
 				for _, groupPath in context.frame:GetElement("groupTree"):SelectedGroupsIterator() do
 					tinsert(groups, groupPath)
 				end
@@ -271,7 +273,7 @@ function private.FSMCreate()
 				else
 					error("Unexpected operation: "..tostring(operation))
 				end
-				TSM.TempTable.Release(groups)
+				TempTable.Release(groups)
 				UpdateFrame(context)
 			end)
 			:SetOnExit(function(context)
@@ -280,9 +282,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_FRAME_OPEN")
 			:AddTransition("ST_FRAME_CLOSED")
-			:AddEvent("EV_SELL_DONE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_OPEN"))
+			:AddEventTransition("EV_SELL_DONE", "ST_FRAME_OPEN")
 		)
-		:AddDefaultEvent("EV_FRAME_HIDE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_FRAME_CLOSED"))
+		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_FRAME_CLOSED")
 		:Init("ST_FRAME_CLOSED", fsmContext)
 end
 

@@ -8,8 +8,12 @@
 
 local _, TSM = ...
 local Log = TSM.Auctioning:NewPackage("Log")
-local L = TSM.L
-local private = { db = nil }
+local L = TSM.Include("Locale").GetTable()
+local Database = TSM.Include("Util.Database")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	db = nil,
+}
 local RED = "|cffff2211"
 local ORANGE = "|cffff8811"
 local GREEN = "|cff22ff22"
@@ -61,7 +65,7 @@ local REASON_STRINGS = {
 -- ============================================================================
 
 function Log.OnInitialize()
-	private.db = TSMAPI_FOUR.Database.NewSchema("AUCTIONING_LOG")
+	private.db = Database.NewSchema("AUCTIONING_LOG")
 		:AddNumberField("index")
 		:AddStringField("itemString")
 		:AddStringField("seller")
@@ -78,7 +82,7 @@ end
 
 function Log.CreateQuery()
 	return private.db:NewQuery()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:OrderBy("index", true)
 end
 

@@ -15,7 +15,7 @@ local String = TSM.Include("Util.String")
 local Event = TSM.Include("Util.Event")
 local JSON = TSM.Include("Util.JSON")
 local TempTable = TSM.Include("Util.TempTable")
-local L = TSM.Include("L")
+local L = TSM.Include("Locale").GetTable()
 local private = {
 	origErrorHandler = nil,
 	errorFrame = nil,
@@ -83,28 +83,29 @@ local OLD_TSM_MODULES = {
 -- Module Functions
 -- ============================================================================
 
-function ErrorHandler.ShowManual()
-	private.isManual = true
-	TSM.ShowError("Manually triggered error")
-end
-
--- TODO: move to ErrorHandler table
-function TSM.ShowError(err, thread)
-	if thread then
-		local stackLine = debugstack(thread, 0, 1, 0)
-		local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
-		if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
-			-- ignore errors from old modules
-			return
-		end
+function ErrorHandler.ShowForThread(err, thread)
+	local stackLine = debugstack(thread, 0, 1, 0)
+	local oldModule = strmatch(stackLine, "(lMaster_[A-Za-z]+)")
+	if oldModule and tContains(OLD_TSM_MODULES, "TradeSkil"..oldModule) then
+		-- ignore errors from old modules
+		return
 	end
 	-- show an error, but don't cause an exception to be thrown
 	private.isSilent = true
 	private.ErrorHandler(err, thread)
 end
 
+function ErrorHandler.ShowManual()
+	private.isManual = true
+	-- show an error, but don't cause an exception to be thrown
+	private.isSilent = true
+	private.ErrorHandler("Manually triggered error")
+end
+
 function ErrorHandler.SaveReports(appDB)
-	private.errorFrame:Hide()
+	if private.errorFrame then
+		private.errorFrame:Hide()
+	end
 	appDB.errorReports = appDB.errorReports or { updateTime = 0, data = {} }
 	if #private.errorReports > 0 then
 		appDB.errorReports.updateTime = private.errorReports[#private.errorReports].timestamp
@@ -135,6 +136,7 @@ function private.ErrorHandler(msg, thread)
 	private.isSilent = nil
 	local isManual = private.isManual
 	private.isManual = nil
+	private.CreateErrorFrame()
 
 	if type(thread) ~= "thread" then
 		thread = nil
@@ -147,7 +149,7 @@ function private.ErrorHandler(msg, thread)
 	end
 
 	-- shorten the paths in the error message
-	msg = gsub(msg, "%.%.%.T?r?a?d?e?S?k?i?l?lM?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	msg = gsub(msg, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
 	msg = strsub(msg, strfind(msg, "TradeSkillMaster") or 1)
 	msg = gsub(msg, "TradeSkillMaster([^%.])", "TSM%1")
 
@@ -197,7 +199,7 @@ function private.ErrorHandler(msg, thread)
 	errorInfo.tempTableStr = table.concat(tempTableLines, "\n")
 
 	-- object pool info
-	local status, objectPoolInfo = pcall(function() return TSMAPI_FOUR.ObjectPool.GetDebugInfo() end)
+	local status, objectPoolInfo = pcall(function() return TSM.Include("Util.ObjectPool").GetDebugInfo() end)
 	local objectPoolLines = {}
 	if status then
 		for name, objectInfo in pairs(objectPoolInfo) do
@@ -211,7 +213,7 @@ function private.ErrorHandler(msg, thread)
 
 	-- TSM thread info
 	local threadInfoStr = nil
-	status, threadInfoStr = pcall(function() return TSMAPI_FOUR.Thread.GetDebugStr() end)
+	status, threadInfoStr = pcall(function() return TSM.Include("Service.Threading").GetDebugStr() end)
 	errorInfo.threadInfoStr = status and threadInfoStr or ""
 
 	-- recent debug log entries
@@ -330,8 +332,9 @@ function private.GetStackLevelInfo(level, thread, prevStackFunc)
 		level = level + 1
 		stackLine = debugstack(level, 1, 0)
 	end
+	stackLine = gsub(stackLine, "^%[string \"@([^%.]+%.lua)\"%]", "%1")
 	local locals = debuglocals(level)
-	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?lM?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
+	stackLine = gsub(stackLine, "%.%.%.T?r?a?d?e?S?k?i?l?l?M?a?ster([_A-Za-z]*)\\", "TradeSkillMaster%1\\")
 	stackLine = gsub(stackLine, "%.%.%.", "")
 	stackLine = gsub(stackLine, "`", "<", 1)
 	stackLine = gsub(stackLine, "'", ">", 1)
@@ -406,8 +409,8 @@ function private.ParseLocals(locals, file)
 				if isBlizzardFile then
 					-- for Blizzard stack frames, only include level 0 locals
 					shouldIgnoreLine = true
-				elseif isPrivateTable and strmatch(localLine, "^ *[A-Z].+@TSM") then
-					-- ignore functions within the private table
+				elseif strmatch(localLine, "^ *[_]*[A-Z].+@TSM") then
+					-- ignore table methods (based on their name being UpperCamelCase - potentially with leading underscores)
 					shouldIgnoreLine = true
 				elseif isLocaleTable then
 					-- ignore everything within the locale table
@@ -432,6 +435,20 @@ function private.ParseLocals(locals, file)
 		end
 	end
 
+	-- remove any top-level empty tables
+	local i = #private.localLinesTemp
+	while i > 0 do
+		if i > 1 and private.localLinesTemp[i] == "}" and strmatch(private.localLinesTemp[i - 1], "^[A-Za-z_].* = {$") then
+			tremove(private.localLinesTemp, i)
+			tremove(private.localLinesTemp, i - 1)
+			i = i - 2
+		elseif strmatch(private.localLinesTemp[i], "^[A-Za-z_].* = {}$") then
+			tremove(private.localLinesTemp, i)
+			i = i - 1
+		else
+			i = i - 1
+		end
+	end
 	return #private.localLinesTemp > 0 and table.concat(private.localLinesTemp, "\n") or nil
 end
 
@@ -450,6 +467,8 @@ function private.IsTSMAddon(str)
 	elseif strfind(str, "lMaster\\") then
 		return "TradeSkillMaster"
 	elseif strfind(str, "ster\\Core\\UI\\") then
+		return "TradeSkillMaster"
+	elseif strfind(str, "ster\\LibTSM\\") then
 		return "TradeSkillMaster"
 	elseif strfind(str, "^TSM\\") then
 		return "TradeSkillMaster"
@@ -488,10 +507,13 @@ end
 
 
 -- ============================================================================
--- Create Error Frame
+-- Error Frame
 -- ============================================================================
 
-do
+function private.CreateErrorFrame()
+	if private.errorFrame then
+		return
+	end
 	local STEPS_TEXT = "Steps leading up to the error:\n1) List\n2) Steps\n3) Here"
 	local frame = CreateFrame("Frame", nil, UIParent)
 	private.errorFrame = frame
@@ -685,7 +707,7 @@ do
 					-- ignore errors from old modules
 					return
 				end
-				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "^%(tail call%):") and not strmatch(stackLine, "^%[string \"") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") then
+				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") then
 					if not private.IsTSMAddon(stackLine) then
 						tsmErrMsg = nil
 					end

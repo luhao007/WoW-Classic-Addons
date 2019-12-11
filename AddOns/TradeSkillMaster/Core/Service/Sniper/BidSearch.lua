@@ -8,7 +8,10 @@
 
 local _, TSM = ...
 local BidSearch = TSM.Sniper:NewPackage("BidSearch")
-local private = { scanThreadId = nil }
+local Threading = TSM.Include("Service.Threading")
+local private = {
+	scanThreadId = nil,
+}
 
 
 
@@ -17,7 +20,7 @@ local private = { scanThreadId = nil }
 -- ============================================================================
 
 function BidSearch.OnInitialize()
-	private.scanThreadId = TSMAPI_FOUR.Thread.New("SNIPER_BID_SEARCH", private.ScanThread)
+	private.scanThreadId = Threading.New("SNIPER_BID_SEARCH", private.ScanThread)
 end
 
 function BidSearch.GetScanContext()

@@ -13,8 +13,11 @@
 
 local _, TSM = ...
 local ActionButton = TSM.Include("LibTSMClass").DefineClass("ActionButton", TSM.UI.Element)
+local Math = TSM.Include("Util.Math")
 TSM.UI.ActionButton = ActionButton
-local private = { frameButtonLookup = {} }
+local private = {
+	frameButtonLookup = {},
+}
 local ICON_PADDING = 2
 local CLICK_COOLDOWN = 0.2
 
@@ -159,7 +162,7 @@ function ActionButton.Draw(self)
 	self:_ApplyTextStyle(frame.text)
 	frame.text:SetText(self._textStr)
 
-	local height = TSM.Math.Round(self:_GetDimension("HEIGHT"))
+	local height = Math.Round(self:_GetDimension("HEIGHT"))
 	local size = nil
 	if height == 15 or height == 16 then
 		size = "Small"

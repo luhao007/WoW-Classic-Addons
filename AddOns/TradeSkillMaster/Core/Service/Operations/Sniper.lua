@@ -9,7 +9,8 @@
 local _, TSM = ...
 local Sniper = TSM.Operations:NewPackage("Sniper")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local OPERATION_INFO = {
 	belowPrice = { type = "string", default = "max(vendorsell, ifgt(DBRegionMarketAvg, 250000g, 0.8, ifgt(DBRegionMarketAvg, 100000g, 0.7, ifgt(DBRegionMarketAvg, 50000g, 0.6, ifgt(DBRegionMarketAvg, 25000g, 0.5, ifgt(DBRegionMarketAvg, 10000g, 0.4, ifgt(DBRegionMarketAvg, 5000g, 0.3, ifgt(DBRegionMarketAvg, 2000g, 0.2, ifgt(DBRegionMarketAvg, 1000g, 0.1, 0.05)))))))) * DBRegionMarketAvg)" },
 }
@@ -25,12 +26,12 @@ function Sniper.OnInitialize()
 end
 
 function Sniper.GetBelowPrice(itemString)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)
 	if not operationName then
 		return
 	end
-	return TSMAPI_FOUR.CustomPrice.GetValue(operationSettings.belowPrice, itemString)
+	return CustomPrice.GetValue(operationSettings.belowPrice, itemString)
 end
 
 

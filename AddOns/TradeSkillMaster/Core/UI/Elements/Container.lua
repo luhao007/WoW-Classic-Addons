@@ -11,6 +11,8 @@
 -- @classmod Container
 
 local _, TSM = ...
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
 local Container = TSM.Include("LibTSMClass").DefineClass("Container", TSM.UI.Element, "ABSTRACT")
 TSM.UI.Container = Container
 local private = {}
@@ -90,9 +92,9 @@ end
 function Container.RemoveChild(self, child)
 	assert(child:__isa(TSM.UI.Element) and child:_GetBaseFrame():GetParent())
 	child:_GetBaseFrame():SetParent(nil)
-	TSM.Table.RemoveByValue(self._children, child)
-	TSM.Table.RemoveByValue(self._layoutChildren, child)
-	TSM.Table.RemoveByValue(self._noLayoutChildren, child)
+	Table.RemoveByValue(self._children, child)
+	Table.RemoveByValue(self._layoutChildren, child)
+	Table.RemoveByValue(self._noLayoutChildren, child)
 	child:_SetParentElement(nil)
 end
 
@@ -111,13 +113,13 @@ end
 -- @tparam Container self The container object
 -- @return An iterator with the following fields: `index, child`
 function Container.LayoutChildrenIterator(self)
-	local children = TSM.TempTable.Acquire()
+	local children = TempTable.Acquire()
 	for _, child in ipairs(self._layoutChildren) do
 		if child:IsVisible() then
 			tinsert(children, child)
 		end
 	end
-	return TSM.TempTable.Iterator(children)
+	return TempTable.Iterator(children)
 end
 
 function Container.Draw(self)

@@ -8,8 +8,12 @@
 
 local _, TSM = ...
 local Shopping = TSM.MainUI.Operations:NewPackage("Shopping")
-local L = TSM.L
-local private = { currentOperationName = nil }
+local L = TSM.Include("Locale").GetTable()
+local Math = TSM.Include("Util.Math")
+local Money = TSM.Include("Util.Money")
+local private = {
+	currentOperationName = nil,
+}
 local RESTOCK_SOURCES = { bank = BANK, guild = GUILD, alts = L["Alts"], auctions = L["Auctions"] }
 local RESTOCK_SOURCES_ORDER = { "alts", "auctions", "bank", "guild" }
 
@@ -60,7 +64,7 @@ function private.GetShoppingOperationSettings(operationName)
 						:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
 						:SetStyle("fontHeight", 14)
 						:SetStyle("justifyH", "LEFT")
-						:SetText(TSM.Money.ToString(operation.maxPrice) or operation.maxPrice)
+						:SetText(Money.ToString(operation.maxPrice) or operation.maxPrice)
 						:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "maxPrice"))
 						:SetSettingInfo(operation, "maxPrice", TSM.MainUI.Operations.CheckCustomPrice)
 						:SetSpacing(6)
@@ -144,7 +148,7 @@ end
 
 function private.OperationOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.OperationOnMouseUp(frame)
@@ -154,7 +158,7 @@ end
 function private.MaxPriceOnEnterPressed(input)
 	if not TSM.MainUI.Operations.CheckCustomPrice(input:GetText(), true) then
 		local operation = TSM.Operations.GetSettings("Shopping", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(operation.maxPrice) or operation.maxPrice)
+		input:SetText(Money.ToString(operation.maxPrice) or operation.maxPrice)
 		input:SetFocused(true)
 
 		private.OperationOnSizeChanged(input, nil, input:GetHeight())

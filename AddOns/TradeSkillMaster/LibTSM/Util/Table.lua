@@ -12,7 +12,6 @@
 local _, TSM = ...
 local Table = TSM.Init("Util.Table")
 local TempTable = TSM.Include("Util.TempTable")
-TSM.Table = Table
 local private = {
 	filterTemp = {},
 	sortValueLookup = nil,

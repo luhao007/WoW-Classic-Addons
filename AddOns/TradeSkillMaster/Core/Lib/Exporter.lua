@@ -8,6 +8,7 @@
 
 TSMAPI_FOUR.Exporter = {}
 local _, TSM = ...
+local TempTable = TSM.Include("Util.TempTable")
 local LibAceSerializer = LibStub("AceSerializer-3.0")
 local Exporter = TSM.Include("LibTSMClass").DefineClass("Exporter")
 local private = {}
@@ -118,7 +119,7 @@ function Exporter._SaveGroupOperations(self, group)
 end
 
 function Exporter._SaveItems(self, selectedGroups, saveItems)
-	local temp = TSM.TempTable.Acquire()
+	local temp = TempTable.Acquire()
 
 	for _, itemString, groupPath in TSM.Groups.ItemIterator() do
 		if selectedGroups[groupPath] then
@@ -138,7 +139,7 @@ function Exporter._SaveItems(self, selectedGroups, saveItems)
 		end
 		tinsert(saveItems, itemString)
 	end
-	TSM.TempTable.Release(temp)
+	TempTable.Release(temp)
 end
 
 function Exporter._SetupGroupTargets(self)

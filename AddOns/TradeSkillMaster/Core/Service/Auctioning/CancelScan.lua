@@ -8,8 +8,21 @@
 
 local _, TSM = ...
 local CancelScan = TSM.Auctioning:NewPackage("CancelScan")
-local L = TSM.L
-local private = { scanThreadId = nil, queueDB = nil, auctionScanDB = nil, itemList = {}, usedAuctionIndex = {} }
+local L = TSM.Include("Locale").GetTable()
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local private = {
+	scanThreadId = nil,
+	queueDB = nil,
+	auctionScanDB = nil,
+	itemList = {},
+	usedAuctionIndex = {},
+}
 
 
 
@@ -19,8 +32,8 @@ local private = { scanThreadId = nil, queueDB = nil, auctionScanDB = nil, itemLi
 
 function CancelScan.OnInitialize()
 	-- initialize thread
-	private.scanThreadId = TSMAPI_FOUR.Thread.New("CANCEL_SCAN", private.ScanThread)
-	private.queueDB = TSMAPI_FOUR.Database.NewSchema("AUCTIONING_CANCEL_QUEUE")
+	private.scanThreadId = Threading.New("CANCEL_SCAN", private.ScanThread)
+	private.queueDB = Database.NewSchema("AUCTIONING_CANCEL_QUEUE")
 		:AddNumberField("index")
 		:AddStringField("itemString")
 		:AddStringField("operationName")
@@ -55,22 +68,25 @@ end
 
 function CancelScan.DoProcess()
 	local cancelRow = CancelScan.GetCurrentRow()
-
-	local query = TSM.Inventory.AuctionTracking.CreateQuery()
-		:Equal("autoBaseItemString", cancelRow:GetField("itemString"))
-		:Equal("saleStatus", 0)
+	local cancelItemString = cancelRow:GetField("itemString")
+	local query = AuctionTracking.CreateQueryUnsoldItem(cancelItemString)
 		:Equal("stackSize", cancelRow:GetField("stackSize"))
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", cancelItemString)
 		:Custom(private.ProcessQueryHelper, cancelRow)
 		:OrderBy("index", false)
+		:Select("index", "autoBaseItemString", "currentBid", "buyout")
 	if not TSM.db.global.auctioningOptions.cancelWithBid then
 		query:Equal("highBidder", "")
 	end
-	local row = query:GetFirstResultAndRelease()
-	if row then
-		local index, itemString, currentBid, buyout = row:GetFields("index", "autoBaseItemString", "currentBid", "buyout")
-		row:Release()
+	local index, itemString, currentBid, buyout = query:GetFirstResultAndRelease()
+	if index then
 		private.usedAuctionIndex[itemString..buyout..currentBid..index] = true
-		CancelAuction(index)
+		if not TSM.IsWow83() then
+			CancelAuction(index)
+		else
+			C_AuctionHouse.CancelAuction(index)
+		end
 		cancelRow:SetField("numProcessed", cancelRow:GetField("numProcessed") + 1)
 			:Update()
 		cancelRow:Release()
@@ -145,10 +161,10 @@ function private.ScanThread(auctionScan, auctionScanDB, groupList)
 
 	-- generate the list of items we want to scan for
 	wipe(private.itemList)
-	local processedItems = TSM.TempTable.Acquire()
-	local query = TSM.Inventory.AuctionTracking.CreateQuery()
+	local processedItems = TempTable.Acquire()
+	local query = AuctionTracking.CreateQueryUnsold()
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Select("autoBaseItemString")
-		:Equal("saleStatus", 0)
 	if not TSM.db.global.auctioningOptions.cancelWithBid then
 		query:Equal("highBidder", "")
 	end
@@ -159,7 +175,7 @@ function private.ScanThread(auctionScan, auctionScanDB, groupList)
 		processedItems[itemString] = true
 	end
 	query:Release()
-	TSM.TempTable.Release(processedItems)
+	TempTable.Release(processedItems)
 
 	if #private.itemList == 0 then
 		return
@@ -212,24 +228,24 @@ function private.IsOperationValid(itemString, operationName, operationSettings)
 	local undercut = TSM.Auctioning.Util.GetPrice("undercut", operationSettings, itemString)
 	local cancelRepostThreshold = TSM.Auctioning.Util.GetPrice("cancelRepostThreshold", operationSettings, itemString)
 	if not minPrice then
-		errMsg = format(L["Did not cancel %s because your minimum price (%s) is invalid. Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.minPrice)
+		errMsg = format(L["Did not cancel %s because your minimum price (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.minPrice)
 	elseif not maxPrice then
-		errMsg = format(L["Did not cancel %s because your maximum price (%s) is invalid. Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.maxPrice)
+		errMsg = format(L["Did not cancel %s because your maximum price (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.maxPrice)
 	elseif not normalPrice then
-		errMsg = format(L["Did not cancel %s because your normal price (%s) is invalid. Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.normalPrice)
+		errMsg = format(L["Did not cancel %s because your normal price (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.normalPrice)
 	elseif operationSettings.cancelRepost and not cancelRepostThreshold then
-		errMsg = format(L["Did not cancel %s because your cancel to repost threshold (%s) is invalid. Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.cancelRepostThreshold)
+		errMsg = format(L["Did not cancel %s because your cancel to repost threshold (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.cancelRepostThreshold)
 	elseif not undercut then
-		errMsg = format(L["Did not cancel %s because your undercut (%s) is invalid. Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.undercut)
+		errMsg = format(L["Did not cancel %s because your undercut (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.undercut)
 	elseif maxPrice < minPrice then
-		errMsg = format(L["Did not cancel %s because your maximum price (%s) is lower than your minimum price (%s). Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.maxPrice, operationSettings.minPrice)
+		errMsg = format(L["Did not cancel %s because your maximum price (%s) is lower than your minimum price (%s). Check your settings."], ItemInfo.GetLink(itemString), operationSettings.maxPrice, operationSettings.minPrice)
 	elseif normalPrice < minPrice then
-		errMsg = format(L["Did not cancel %s because your normal price (%s) is lower than your minimum price (%s). Check your settings."], TSMAPI_FOUR.Item.GetLink(itemString), operationSettings.normalPrice, operationSettings.minPrice)
+		errMsg = format(L["Did not cancel %s because your normal price (%s) is lower than your minimum price (%s). Check your settings."], ItemInfo.GetLink(itemString), operationSettings.normalPrice, operationSettings.minPrice)
 	end
 
 	if errMsg then
 		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
-			TSM:Print(errMsg)
+			Log.PrintUser(errMsg)
 		end
 		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, 0)
 		return false
@@ -241,22 +257,22 @@ end
 function private.AuctionScanOnFilterDone(_, filter)
 	TSM.Auctioning.Log.SetQueryUpdatesPaused(true)
 	for _, itemString in ipairs(filter:GetItems()) do
-		local isBaseItemString = itemString == TSMAPI_FOUR.Item.ToBaseItemString(itemString)
+		local isBaseItemString = itemString == ItemString.GetBase(itemString)
 		local query = private.auctionScanDB:NewQuery()
 			:Equal(isBaseItemString and "baseItemString" or "itemString", itemString)
 			:GreaterThan("itemBuyout", 0)
 			:OrderBy("itemBuyout", true)
 		local groupPath = TSM.Groups.GetPathByItem(itemString)
 		if groupPath then
-			local auctionsDBQuery = TSM.Inventory.AuctionTracking.CreateQuery()
+			local auctionsDBQuery = AuctionTracking.CreateQueryUnsoldItem(itemString)
+				:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 				:Equal("autoBaseItemString", itemString)
-				:Equal("saleStatus", 0)
 				:OrderBy("index", false)
 			for _, auctionsDBRow in auctionsDBQuery:IteratorAndRelease() do
 				private.GenerateCancels(auctionsDBRow, itemString, query, groupPath)
 			end
 		else
-			TSM:LOG_WARN("Item removed from group since start of scan: %s", itemString)
+			Log.Warn("Item removed from group since start of scan: %s", itemString)
 		end
 		query:Release()
 	end
@@ -289,9 +305,9 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 		return true, "cancelBid", itemBuyout, nil, index
 	end
 
-	local lowestAuction = TSM.TempTable.Acquire()
+	local lowestAuction = TempTable.Acquire()
 	if not TSM.Auctioning.Util.GetLowestAuction(query, itemString, operationSettings, lowestAuction) then
-		TSM.TempTable.Release(lowestAuction)
+		TempTable.Release(lowestAuction)
 		lowestAuction = nil
 	end
 	local minPrice = TSM.Auctioning.Util.GetPrice("minPrice", operationSettings, itemString)
@@ -311,8 +327,8 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 			return false, "cancelNotUndercut", itemBuyout
 		end
 	elseif lowestAuction.hasInvalidSeller then
-		TSM:Printf(L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."], TSMAPI_FOUR.Item.GetLink(itemString))
-		TSM.TempTable.Release(lowestAuction)
+		Log.PrintfUser(L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."], ItemInfo.GetLink(itemString))
+		TempTable.Release(lowestAuction)
 		return false, "invalidSeller", itemBuyout
 	end
 
@@ -380,7 +396,7 @@ function private.GenerateCancel(auctionsDBRow, itemString, operationName, operat
 	end
 
 	local seller = lowestAuction.seller
-	TSM.TempTable.Release(lowestAuction)
+	TempTable.Release(lowestAuction)
 	if shouldCancel then
 		private.AddToQueue(itemString, operationName, itemBid, itemBuyout, stackSize, index)
 	end

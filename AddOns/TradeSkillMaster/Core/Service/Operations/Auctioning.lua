@@ -9,7 +9,8 @@
 local _, TSM = ...
 local Auctioning = TSM.Operations:NewPackage("Auctioning")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
 local OPERATION_INFO = {
 	-- general
 	matchStackSize = { type = "boolean", default = false },
@@ -22,7 +23,7 @@ local OPERATION_INFO = {
 	keepQuantity = { type = "number", default = 0 },
 	keepQtySources = { type = "table", default = {} },
 	maxExpires = { type = "number", default = 0 },
-	duration = { type = "number", default = 24, customSanitizeFunction = nil },
+	duration = { type = "number", default = 2, customSanitizeFunction = nil },
 	bidPercent = { type = "number", default = 1 },
 	undercut = { type = "string", default = "1c" },
 	minPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(0.25*avg(crafting,dbmarket,dbregionmarketavg),1.5*vendorsell))" },
@@ -91,7 +92,7 @@ function private.SanitizeDuration(value)
 end
 
 function private.GetOperationValueHelper(itemString, key)
-	itemString = TSMAPI_FOUR.Item.ToBaseItemString(itemString, true)
+	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Auctioning", itemString)
 	if not operationName then
 		return
@@ -100,7 +101,7 @@ function private.GetOperationValueHelper(itemString, key)
 end
 
 function private.GetOperationInfo(operationSettings)
-	local parts = TSM.TempTable.Acquire()
+	local parts = TempTable.Acquire()
 
 	-- get the post string
 	if operationSettings.postCap == 0 then
@@ -121,6 +122,6 @@ function private.GetOperationInfo(operationSettings)
 	end
 
 	local result = table.concat(parts, " ")
-	TSM.TempTable.Release(parts)
+	TempTable.Release(parts)
 	return result
 end

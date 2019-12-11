@@ -11,6 +11,8 @@
 -- @classmod CraftingQueueList
 
 local _, TSM = ...
+local TempTable = TSM.Include("Util.TempTable")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
 TSM.UI.CraftingQueueList = CraftingQueueList
 local private = {
@@ -105,7 +107,7 @@ function CraftingQueueList._UpdateData(self)
 	if not self._query then
 		return
 	end
-	local categories = TSM.TempTable.Acquire()
+	local categories = TempTable.Acquire()
 	for _, row in self._query:Iterator() do
 		local rawCategory = strjoin(CATEGORY_SEP, row:GetFields("profession", "players"))
 		local category = strlower(rawCategory)
@@ -123,7 +125,7 @@ function CraftingQueueList._UpdateData(self)
 		private.categoryOrder[category] = i
 		tinsert(self._data, categories[category])
 	end
-	TSM.TempTable.Release(categories)
+	TempTable.Release(categories)
 	sort(self._data, private.DataSortComparator)
 end
 
@@ -263,15 +265,18 @@ function private.RowOnEnter(frame)
 		local numQueued = data:GetField("num")
 		local itemString = TSM.Crafting.GetItemString(spellId)
 		local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
-		local tooltipLines = TSM.TempTable.Acquire()
+		local tooltipLines = TempTable.Acquire()
 		tinsert(tooltipLines, name)
 		for _, matItemString, quantity in TSM.Crafting.MatIterator(spellId) do
-			local numHave = TSMAPI_FOUR.Inventory.GetBagQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(matItemString)
+			local numHave = TSMAPI_FOUR.Inventory.GetBagQuantity(matItemString)
+			if not TSM.IsWowClassic() then
+				numHave = numHave + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(matItemString)
+			end
 			local numNeed = quantity * numQueued
 			local color = numHave >= numNeed and "|cff2cec0d" or "|cfff21319"
-			tinsert(tooltipLines, format("%s%d/%d|r - %s", color, numHave, numNeed, TSMAPI_FOUR.Item.GetName(matItemString) or "?"))
+			tinsert(tooltipLines, format("%s%d/%d|r - %s", color, numHave, numNeed, ItemInfo.GetName(matItemString) or "?"))
 		end
-		TSM.UI.ShowTooltip(frame, strjoin("\n", TSM.TempTable.UnpackAndRelease(tooltipLines)))
+		TSM.UI.ShowTooltip(frame, strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)))
 	end
 end
 

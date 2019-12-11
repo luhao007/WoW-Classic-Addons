@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local GreatDealsSearch = TSM.Shopping:NewPackage("GreatDealsSearch")
-local private = { filter = nil }
+local Vararg = TSM.Include("Util.Vararg")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local private = {
+	filter = nil,
+}
 
 
 
@@ -29,9 +33,9 @@ function GreatDealsSearch.OnEnable()
 				break
 			end
 			-- populate item info cache
-			for _, item in TSM.Vararg.Iterator(strsplit(";", private.filter)) do
+			for _, item in Vararg.Iterator(strsplit(";", private.filter)) do
 				item = strsplit("/", item)
-				TSMAPI_FOUR.Item.FetchInfo(item)
+				ItemInfo.FetchInfo(item)
 			end
 			break
 		end

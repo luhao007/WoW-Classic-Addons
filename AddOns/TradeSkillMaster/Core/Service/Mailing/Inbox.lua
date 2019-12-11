@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local Inbox = TSM.Mailing:NewPackage("Inbox")
+local Database = TSM.Include("Util.Database")
+local TempTable = TSM.Include("Util.TempTable")
+local MailTracking = TSM.Include("Service.MailTracking")
 local private = {
 	itemsQuery = nil,
 }
@@ -19,15 +22,13 @@ local private = {
 -- ============================================================================
 
 function Inbox.OnInitialize()
-	private.itemsQuery = private.itemsQuery or TSM.Inventory.MailTracking.CreateMailItemQuery()
-	private.itemsQuery:Equal("index", TSM.CONST.BOUND_QUERY_PARAM)
+	private.itemsQuery = MailTracking.CreateMailItemQuery()
+		:Equal("index", Database.BoundQueryParam())
 end
 
 function Inbox.CreateQuery()
-	local query = TSM.Inventory.MailTracking.CreateMailInboxQuery()
-	query:VirtualField("itemList", "string", private.GetVirtualItemList)
-
-	return query
+	return MailTracking.CreateMailInboxQuery()
+		:VirtualField("itemList", "string", private.GetVirtualItemList)
 end
 
 
@@ -39,7 +40,7 @@ end
 function private.GetVirtualItemList(row)
 	private.itemsQuery:BindParams(row:GetField("index"))
 
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	for _, itemsRow in private.itemsQuery:Iterator() do
 		local itemName = TSM.UI.GetColoredItemName(itemsRow:GetField("itemLink")) or ""
 		local qty = itemsRow:GetField("quantity")
@@ -48,7 +49,7 @@ function private.GetVirtualItemList(row)
 	end
 
 	local result = table.concat(items, ", ")
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 
 	return result
 end

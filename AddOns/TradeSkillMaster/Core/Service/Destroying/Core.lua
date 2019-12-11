@@ -8,6 +8,16 @@
 
 local _, TSM = ...
 local Destroying = TSM:NewPackage("Destroying")
+local Database = TSM.Include("Util.Database")
+local Event = TSM.Include("Util.Event")
+local SlotId = TSM.Include("Util.SlotId")
+local TempTable = TSM.Include("Util.TempTable")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local Conversions = TSM.Include("Service.Conversions")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	combineThread = nil,
 	destroyThread = nil,
@@ -46,37 +56,37 @@ local GEM_CHIPS = {
 -- ============================================================================
 
 function Destroying.OnInitialize()
-	private.combineThread = TSMAPI_FOUR.Thread.New("COMBINE_STACKS", private.CombineThread)
-	private.destroyThread = TSMAPI_FOUR.Thread.New("DESTROY", private.DestroyThread)
-	TSM.Inventory.BagTracking.RegisterCallback(private.UpdateBagDB)
+	private.combineThread = Threading.New("COMBINE_STACKS", private.CombineThread)
+	private.destroyThread = Threading.New("DESTROY", private.DestroyThread)
+	BagTracking.RegisterCallback(private.UpdateBagDB)
 
-	private.ignoreDB = TSMAPI_FOUR.Database.NewSchema("DESTROYING_IGNORE")
+	private.ignoreDB = Database.NewSchema("DESTROYING_IGNORE")
 		:AddUniqueStringField("itemString")
 		:AddBooleanField("ignoreSession")
 		:AddBooleanField("ignorePermanent")
 		:Commit()
 	private.ignoreDB:BulkInsertStart()
-	local used = TSM.TempTable.Acquire()
+	local used = TempTable.Acquire()
 	for itemString in pairs(TSM.db.global.userData.destroyingIgnore) do
-		itemString = TSMAPI_FOUR.Item.ToItemString(itemString)
+		itemString = ItemString.Get(itemString)
 		if not used[itemString] then
 			used[itemString] = true
 			private.ignoreDB:BulkInsertNewRow(itemString, false, true)
 		end
 	end
-	TSM.TempTable.Release(used)
+	TempTable.Release(used)
 	private.ignoreDB:BulkInsertEnd()
 
-	private.destroyInfoDB = TSMAPI_FOUR.Database.NewSchema("DESTROYING_INFO")
+	private.destroyInfoDB = Database.NewSchema("DESTROYING_INFO")
 		:AddUniqueStringField("itemString")
 		:AddNumberField("minQuantity")
 		:AddNumberField("spellId")
 		:Commit()
 
-	TSM.Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
-	TSM.Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
-	TSM.Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
-	TSM.Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
 end
 
 function Destroying.SetBagUpdateCallback(callback)
@@ -85,13 +95,13 @@ function Destroying.SetBagUpdateCallback(callback)
 end
 
 function Destroying.CreateBagQuery()
-	return TSM.Inventory.BagTracking.CreateQuery()
+	return BagTracking.CreateQueryBags()
 		:LeftJoin(private.ignoreDB, "itemString")
 		:InnerJoin(private.destroyInfoDB, "itemString")
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
-		:GreaterThanOrEqual("quantity", TSM.CONST.OTHER_FIELD_QUERY_PARAM, "minQuantity")
+		:GreaterThanOrEqual("quantity", Database.OtherFieldQueryParam("minQuantity"))
 end
 
 function Destroying.CanCombine()
@@ -107,7 +117,7 @@ function Destroying.GetDestroyThread()
 end
 
 function Destroying.KillDestroyThread()
-	TSMAPI_FOUR.Thread.Kill(private.destroyThread)
+	Threading.Kill(private.destroyThread)
 	private.destroyThreadRunning = false
 end
 
@@ -163,7 +173,7 @@ end
 
 function Destroying.CreateIgnoreQuery()
 	return private.ignoreDB:NewQuery()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:Equal("ignorePermanent", true)
 		:OrderBy("name", true)
 end
@@ -183,15 +193,15 @@ function private.CombineThread()
 		end
 		-- wait for the bagDB to change
 		private.newBagUpdate = false
-		TSMAPI_FOUR.Thread.WaitForFunction(private.HasNewBagUpdate)
+		Threading.WaitForFunction(private.HasNewBagUpdate)
 	end
 end
 
 function private.CombineSlotIdToBagSlot(combineSlotId)
 	local sourceSlotId = combineSlotId % TARGET_SLOT_ID_MULTIPLIER
 	local targetSlotId = floor(combineSlotId / TARGET_SLOT_ID_MULTIPLIER)
-	local sourceBag, sourceSlot = TSM.SlotId.Split(sourceSlotId)
-	local targetBag, targetSlot = TSM.SlotId.Split(targetSlotId)
+	local sourceBag, sourceSlot = SlotId.Split(sourceSlotId)
+	local targetBag, targetSlot = SlotId.Split(targetSlotId)
 	return sourceBag, sourceSlot, targetBag, targetSlot
 end
 
@@ -208,7 +218,7 @@ end
 function private.DestroyThread(button, row)
 	private.destroyThreadRunning = true
 	-- we get sent a sync message so we run right away
-	TSMAPI_FOUR.Thread.ReceiveMessage()
+	Threading.ReceiveMessage()
 
 	local itemString, spellId, bag, slot = row:GetFields("itemString", "spellId", "bag", "slot")
 	local spellName = GetSpellInfo(spellId)
@@ -216,7 +226,7 @@ function private.DestroyThread(button, row)
 
 	-- wait for the spell cast to start or fail
 	private.pendingSpellId = spellId
-	local event = TSMAPI_FOUR.Thread.ReceiveMessage()
+	local event = Threading.ReceiveMessage()
 	if event ~= "UNIT_SPELLCAST_START" then
 		-- the spell cast failed for some reason
 		ClearCursor()
@@ -225,13 +235,13 @@ function private.DestroyThread(button, row)
 	end
 
 	-- discard any other messages
-	TSMAPI_FOUR.Thread.Yield(true)
-	while TSMAPI_FOUR.Thread.HasPendingMessage() do
-		TSMAPI_FOUR.Thread.ReceiveMessage()
+	Threading.Yield(true)
+	while Threading.HasPendingMessage() do
+		Threading.ReceiveMessage()
 	end
 
 	-- wait for the spell cast to finish
-	event = TSMAPI_FOUR.Thread.ReceiveMessage()
+	event = Threading.ReceiveMessage()
 	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
 		-- the spell cast was interrupted
 		private.destroyThreadRunning = false
@@ -239,7 +249,7 @@ function private.DestroyThread(button, row)
 	end
 
 	-- wait for the loot window to open
-	TSMAPI_FOUR.Thread.WaitForEvent("LOOT_OPENED")
+	Threading.WaitForEvent("LOOT_OPENED")
 
 	-- add to the log
 	local newEntry = {
@@ -249,7 +259,7 @@ function private.DestroyThread(button, row)
 	}
 	assert(GetNumLootItems() > 0)
 	for i = 1, GetNumLootItems() do
-		local lootItemString = TSMAPI_FOUR.Item.ToItemString(GetLootSlotLink(i))
+		local lootItemString = ItemString.Get(GetLootSlotLink(i))
 		local _, _, quantity = GetLootSlotInfo(i)
 		if lootItemString and (quantity or 0) > 0 then
 			lootItemString = GEM_CHIPS[lootItemString] or lootItemString
@@ -260,8 +270,8 @@ function private.DestroyThread(button, row)
 	tinsert(TSM.db.global.internalData.destroyingHistory[spellName], newEntry)
 
 	-- wait for the loot window to close
-	TSMAPI_FOUR.Thread.WaitForEvent("LOOT_CLOSED")
-	TSMAPI_FOUR.Thread.WaitForEvent("BAG_UPDATE_DELAYED")
+	Threading.WaitForEvent("LOOT_CLOSED")
+	Threading.WaitForEvent("BAG_UPDATE_DELAYED")
 
 	-- we're done
 	private.destroyThreadRunning = false
@@ -271,7 +281,7 @@ function private.SpellCastEventHandler(event, unit, _, spellId)
 	if not private.destroyThreadRunning or unit ~= "player" or spellId ~= private.pendingSpellId then
 		return
 	end
-	TSMAPI_FOUR.Thread.SendMessage(private.destroyThread, event)
+	Threading.SendMessage(private.destroyThread, event)
 end
 
 
@@ -283,9 +293,16 @@ end
 function private.UpdateBagDB()
 	wipe(private.pendingCombines)
 	private.destroyInfoDB:TruncateAndBulkInsertStart()
-	local itemPrevSlotId = TSM.TempTable.Acquire()
-	local checkedItem = TSM.TempTable.Acquire()
-	for _, bag, slot, itemString, quantity in TSMAPI_FOUR.Inventory.BagIterator(nil, TSM.db.global.destroyingOptions.includeSoulbound, TSM.db.global.destroyingOptions.includeSoulbound) do
+	local itemPrevSlotId = TempTable.Acquire()
+	local checkedItem = TempTable.Acquire()
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("slotId", "itemString", "quantity")
+	if not TSM.db.global.destroyingOptions.includeSoulbound then
+		query:Equal("isBoP", false)
+			:Equal("isBoA", false)
+	end
+	for _, slotId, itemString, quantity in query:Iterator() do
 		local minQuantity = nil
 		if checkedItem[itemString] then
 			minQuantity = private.destroyInfoDB:GetUniqueRowField("itemString", itemString, "minQuantity")
@@ -298,7 +315,6 @@ function private.UpdateBagDB()
 			end
 		end
 		if minQuantity and quantity % minQuantity ~= 0 then
-			local slotId = TSM.SlotId.Join(bag, slot)
 			if itemPrevSlotId[itemString] then
 				-- we can combine this with the previous partial stack
 				tinsert(private.pendingCombines, itemPrevSlotId[itemString] * TARGET_SLOT_ID_MULTIPLIER + slotId)
@@ -308,8 +324,9 @@ function private.UpdateBagDB()
 			end
 		end
 	end
-	TSM.TempTable.Release(checkedItem)
-	TSM.TempTable.Release(itemPrevSlotId)
+	query:Release()
+	TempTable.Release(checkedItem)
+	TempTable.Release(itemPrevSlotId)
 	private.destroyInfoDB:BulkInsertEnd()
 
 	private.newBagUpdate = true
@@ -327,8 +344,8 @@ function private.ProcessBagItem(itemString)
 	if not spellId then
 		return
 	elseif spellId == SPELL_IDS.disenchant then
-		local deAbovePrice = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.destroyingOptions.deAbovePrice, itemString) or 0
-		local deValue = TSMAPI_FOUR.CustomPrice.GetValue("Destroy", itemString) or math.huge
+		local deAbovePrice = CustomPrice.GetValue(TSM.db.global.destroyingOptions.deAbovePrice, itemString) or 0
+		local deValue = CustomPrice.GetValue("Destroy", itemString) or math.huge
 		if deValue < deAbovePrice then
 			return
 		end
@@ -342,21 +359,21 @@ function private.IsDestroyable(itemString)
 	end
 
 	-- disenchanting
-	local quality = TSMAPI_FOUR.Item.GetQuality(itemString)
-	if TSMAPI_FOUR.Item.IsDisenchantable(itemString) and quality <= TSM.db.global.destroyingOptions.deMaxQuality then
+	local quality = ItemInfo.GetQuality(itemString)
+	if ItemInfo.IsDisenchantable(itemString) and quality <= TSM.db.global.destroyingOptions.deMaxQuality then
 		private.canDestroyCache[itemString] = IsSpellKnown(SPELL_IDS.disenchant) and SPELL_IDS.disenchant
 		private.destroyQuantityCache[itemString] = 1
 		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
 	end
 
-	local destroyMethod, destroySpellId = nil, nil
-	local classId = TSMAPI_FOUR.Item.GetClassId(itemString)
-	local subClassId = TSMAPI_FOUR.Item.GetSubClassId(itemString)
+	local conversionMethod, destroySpellId = nil, nil
+	local classId = ItemInfo.GetClassId(itemString)
+	local subClassId = ItemInfo.GetSubClassId(itemString)
 	if classId == LE_ITEM_CLASS_TRADEGOODS and subClassId == ITEM_SUB_CLASS_HERB then
-		destroyMethod = "mill"
+		conversionMethod = Conversions.METHOD.MILL
 		destroySpellId = SPELL_IDS.milling
 	elseif classId == LE_ITEM_CLASS_TRADEGOODS and subClassId == ITEM_SUB_CLASS_METAL_AND_STONE then
-		destroyMethod = "prospect"
+		conversionMethod = Conversions.METHOD.PROSPECT
 		destroySpellId = SPELL_IDS.prospect
 	else
 		private.canDestroyCache[itemString] = false
@@ -364,13 +381,14 @@ function private.IsDestroyable(itemString)
 		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
 	end
 
-	for _, targetItem in ipairs(TSMAPI_FOUR.Conversions.GetTargetItemsByMethod(destroyMethod)) do
-		local items = TSMAPI_FOUR.Conversions.GetData(targetItem)
-		if items[itemString] then
-			private.canDestroyCache[itemString] = IsSpellKnown(destroySpellId) and destroySpellId
-			private.destroyQuantityCache[itemString] = 5
-			return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
-		end
+	local hasSourceItem = false
+	for _ in Conversions.TargetItemsByMethodIterator(itemString, conversionMethod) do
+		hasSourceItem = true
+	end
+	if hasSourceItem then
+		private.canDestroyCache[itemString] = IsSpellKnown(destroySpellId) and destroySpellId
+		private.destroyQuantityCache[itemString] = 5
+		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
 	end
 
 	return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]

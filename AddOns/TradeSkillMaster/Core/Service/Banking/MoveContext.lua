@@ -8,6 +8,13 @@
 
 local _, TSM = ...
 local MoveContext = TSM.Banking:NewPackage("MoveContext")
+local Table = TSM.Include("Util.Table")
+local SlotId = TSM.Include("Util.SlotId")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local InventoryInfo = TSM.Include("Service.InventoryInfo")
+local BagTracking = TSM.Include("Service.BagTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
 local private = {
 	bagToBank = nil,
 	bankToBag = nil,
@@ -34,10 +41,10 @@ local BaseMoveContext = TSM.Include("LibTSMClass").DefineClass("BaseMoveContext"
 local BagToBankMoveContext = TSM.Include("LibTSMClass").DefineClass("BagToBankMoveContext", BaseMoveContext)
 
 function BagToBankMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
+	local fromBag, fromSlot = SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSM.SlotId.Split(toSlotId))
+		PickupContainerItem(SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -51,16 +58,16 @@ function BagToBankMoveContext.SlotIdIterator(self, itemString)
 end
 
 function BagToBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
-	local sortValue = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	local sortValue = Threading.AcquireSafeTempTable()
+	if not TSM.IsWowClassic() then
 		private.GetEmptySlotsHelper(REAGENTBANK_CONTAINER, emptySlotIds, sortValue)
 	end
 	private.GetEmptySlotsHelper(BANK_CONTAINER, emptySlotIds, sortValue)
 	for bag = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
-	TSM.Table.SortWithValueLookup(emptySlotIds, sortValue)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortValue)
+	Table.SortWithValueLookup(emptySlotIds, sortValue)
+	Threading.ReleaseSafeTempTable(sortValue)
 end
 
 function BagToBankMoveContext.GetTargetSlotId(self, itemString, emptySlotIds)
@@ -76,10 +83,10 @@ end
 local BankToBagMoveContext = TSM.Include("LibTSMClass").DefineClass("BankToBagMoveContext", BaseMoveContext)
 
 function BankToBagMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
+	local fromBag, fromSlot = SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSM.SlotId.Split(toSlotId))
+		PickupContainerItem(SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -89,21 +96,12 @@ function BankToBagMoveContext.GetSlotQuantity(self, slotId)
 end
 
 function BankToBagMoveContext.SlotIdIterator(self, itemString)
-	local query = TSM.Inventory.BagTracking.CreateQuery()
+	itemString = TSM.Groups.TranslateItemString(itemString)
+	return BagTracking.CreateQueryBankItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
 		:Select("slotId", "quantity")
-		:Or()
-			:Equal("bag", BANK_CONTAINER)
-			:And()
-				:GreaterThan("bag", NUM_BAG_SLOTS)
-				:LessThanOrEqual("bag", NUM_BAG_SLOTS + NUM_BANKBAGSLOTS)
-			:End()
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and IsReagentBankUnlocked() then
-		query:Equal("bag", REAGENTBANK_CONTAINER)
-	end
-	query:End() -- end the Or()
-		:Equal("autoBaseItemString", TSMAPI_FOUR.Item.ToBaseItemString(itemString, true))
-
-	return query:IteratorAndRelease()
+		:IteratorAndRelease()
 end
 
 function BankToBagMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
@@ -123,10 +121,10 @@ end
 local BagToGuildBankMoveContext = TSM.Include("LibTSMClass").DefineClass("BagToGuildBankMoveContext", BaseMoveContext)
 
 function BagToGuildBankMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromBag, fromSlot = TSM.SlotId.Split(fromSlotId)
+	local fromBag, fromSlot = SlotId.Split(fromSlotId)
 	SplitContainerItem(fromBag, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupGuildBankItem(TSM.SlotId.Split(toSlotId))
+		PickupGuildBankItem(SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
@@ -145,7 +143,7 @@ function BagToGuildBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 	if numWithdrawals == -1 or numWithdrawals >= GUILD_BANK_TAB_SLOTS then
 		for slot = 1, GUILD_BANK_TAB_SLOTS do
 			if not GetGuildBankItemInfo(currentTab, slot) then
-				tinsert(emptySlotIds, TSM.SlotId.Join(currentTab, slot))
+				tinsert(emptySlotIds, SlotId.Join(currentTab, slot))
 			end
 		end
 	end
@@ -156,7 +154,7 @@ function BagToGuildBankMoveContext.GetEmptySlotsThreaded(self, emptySlotIds)
 			if numWithdrawals == -1 or numWithdrawals >= GUILD_BANK_TAB_SLOTS then
 				for slot = 1, GUILD_BANK_TAB_SLOTS do
 					if not GetGuildBankItemInfo(tab, slot) then
-						tinsert(emptySlotIds, TSM.SlotId.Join(tab, slot))
+						tinsert(emptySlotIds, SlotId.Join(tab, slot))
 					end
 				end
 			end
@@ -177,25 +175,27 @@ end
 local GuildBankToBagMoveContext = TSM.Include("LibTSMClass").DefineClass("GuildBankToBagMoveContext", BaseMoveContext)
 
 function GuildBankToBagMoveContext.MoveSlot(self, fromSlotId, toSlotId, quantity)
-	local fromTab, fromSlot = TSM.SlotId.Split(fromSlotId)
+	local fromTab, fromSlot = SlotId.Split(fromSlotId)
 	SplitGuildBankItem(fromTab, fromSlot, quantity)
 	if GetCursorInfo() == "item" then
-		PickupContainerItem(TSM.SlotId.Split(toSlotId))
+		PickupContainerItem(SlotId.Split(toSlotId))
 	end
 	ClearCursor()
 end
 
 function GuildBankToBagMoveContext.GetSlotQuantity(self, slotId)
-	local tab, slot = TSM.SlotId.Split(slotId)
+	local tab, slot = SlotId.Split(slotId)
 	QueryGuildBankTab(tab)
 	local _, quantity = GetGuildBankItemInfo(tab, slot)
 	return quantity or 0
 end
 
 function GuildBankToBagMoveContext.SlotIdIterator(self, itemString)
-	return TSM.Inventory.GuildTracking.CreateQuery()
+	itemString = TSM.Groups.TranslateItemString(itemString)
+	return GuildTracking.CreateQueryItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
 		:Select("slotId", "quantity")
-		:Equal("autoBaseItemString", TSMAPI_FOUR.Item.ToBaseItemString(itemString, true))
 		:IteratorAndRelease()
 end
 
@@ -240,16 +240,16 @@ end
 -- ============================================================================
 
 function private.BagBankGetSlotQuantity(slotId)
-	local _, quantity = GetContainerItemInfo(TSM.SlotId.Split(slotId))
+	local _, quantity = GetContainerItemInfo(SlotId.Split(slotId))
 	return quantity or 0
 end
 
 function private.BagSlotIdIterator(itemString)
-	local query = TSM.Inventory.BagTracking.CreateQuery()
+	itemString = TSM.Groups.TranslateItemString(itemString)
+	local query = BagTracking.CreateQueryBagsItem(itemString)
 		:Select("slotId", "quantity")
-		:GreaterThanOrEqual("bag", BACKPACK_CONTAINER)
-		:LessThanOrEqual("bag", NUM_BAG_SLOTS)
-		:Equal("autoBaseItemString", TSMAPI_FOUR.Item.ToBaseItemString(itemString, true))
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
 	if TSM.Banking.IsGuildBankOpen() then
 		query:Equal("isBoA", false)
 		query:Equal("isBoP", false)
@@ -258,12 +258,12 @@ function private.BagSlotIdIterator(itemString)
 end
 
 function private.BagGetEmptySlotsThreaded(emptySlotIds)
-	local sortValue = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+	local sortValue = Threading.AcquireSafeTempTable()
 	for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
-	TSM.Table.SortWithValueLookup(emptySlotIds, sortValue)
-	TSMAPI_FOUR.Thread.ReleaseSafeTempTable(sortValue)
+	Table.SortWithValueLookup(emptySlotIds, sortValue)
+	Threading.ReleaseSafeTempTable(sortValue)
 end
 
 function private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
@@ -277,7 +277,7 @@ function private.GetEmptySlotsHelper(bag, emptySlotIds, sortValue)
 	end
 	for slot = 1, GetContainerNumSlots(bag) do
 		if not GetContainerItemInfo(bag, slot) then
-			local slotId = TSM.SlotId.Join(bag, slot)
+			local slotId = SlotId.Join(bag, slot)
 			tinsert(emptySlotIds, slotId)
 			sortValue[slotId] = slotId + (isSpecial and 0 or 100000)
 		end
@@ -286,8 +286,8 @@ end
 
 function private.BagBankGetTargetSlotId(itemString, emptySlotIds)
 	for i, slotId in ipairs(emptySlotIds) do
-		local bag = TSM.SlotId.Split(slotId)
-		if TSMAPI_FOUR.Inventory.ItemWillGoInBag(TSMAPI_FOUR.Item.GetLink(itemString), bag) then
+		local bag = SlotId.Split(slotId)
+		if InventoryInfo.ItemWillGoInBag(ItemInfo.GetLink(itemString), bag) then
 			return tremove(emptySlotIds, i)
 		end
 	end

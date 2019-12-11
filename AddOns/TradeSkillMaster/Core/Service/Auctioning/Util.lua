@@ -8,7 +8,12 @@
 
 local _, TSM = ...
 local Util = TSM.Auctioning:NewPackage("Util")
-local private = { priceCache = {} }
+local TempTable = TSM.Include("Util.TempTable")
+local Vararg = TSM.Include("Util.Vararg")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	priceCache = {},
+}
 local INVALID_PRICE = {}
 local VALID_PRICE_KEYS = {
 	minPrice = true,
@@ -35,7 +40,7 @@ function Util.GetPrice(key, operation, itemString)
 	end
 	if not private.priceCache[cacheKey] then
 		if key == "normalPrice" then
-			local normalPrice = TSMAPI_FOUR.CustomPrice.GetValue(operation.normalPrice, itemString)
+			local normalPrice = CustomPrice.GetValue(operation.normalPrice, itemString)
 			if normalPrice and TSM.db.global.auctioningOptions.roundNormalPrice then
 				-- round up to the nearest gold
 				normalPrice = ceil(normalPrice / COPPER_PER_GOLD) * COPPER_PER_GOLD
@@ -48,7 +53,7 @@ function Util.GetPrice(key, operation, itemString)
 				private.priceCache[cacheKey] = Util.GetPrice(priceKey, operation, itemString)
 			end
 		else
-			private.priceCache[cacheKey] = TSMAPI_FOUR.CustomPrice.GetValue(operation[key], itemString)
+			private.priceCache[cacheKey] = CustomPrice.GetValue(operation[key], itemString)
 		end
 		private.priceCache[cacheKey] = private.priceCache[cacheKey] or INVALID_PRICE
 	end
@@ -70,7 +75,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 			lowestItemBuyout = lowestItemBuyout or itemBuyout
 			if itemBuyout == lowestItemBuyout then
 				local seller = record:GetField("seller")
-				local temp = TSM.TempTable.Acquire()
+				local temp = TempTable.Acquire()
 				temp.buyout = itemBuyout
 				temp.bid = record:GetField("itemDisplayedBid")
 				temp.seller = seller
@@ -84,7 +89,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 					hasInvalidSeller = true
 				end
 				if operationSettings.blacklist then
-					for _, player in TSM.Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
+					for _, player in Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
 						if strlower(strtrim(player)) == strlower(seller) then
 							temp.isBlacklist = true
 						end
@@ -93,10 +98,10 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 				if not lowestAuction then
 					lowestAuction = temp
 				elseif private.LowestAuctionCompare(temp, lowestAuction) then
-					TSM.TempTable.Release(lowestAuction)
+					TempTable.Release(lowestAuction)
 					lowestAuction = temp
 				else
-					TSM.TempTable.Release(temp)
+					TempTable.Release(temp)
 				end
 			end
 		end
@@ -107,7 +112,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 	for k, v in pairs(lowestAuction) do
 		resultTbl[k] = v
 	end
-	TSM.TempTable.Release(lowestAuction)
+	TempTable.Release(lowestAuction)
 	if resultTbl.isWhitelist and ignoreWhitelist then
 		resultTbl.isWhitelist = false
 	end

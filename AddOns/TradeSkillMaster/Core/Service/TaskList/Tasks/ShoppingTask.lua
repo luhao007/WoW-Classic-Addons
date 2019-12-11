@@ -8,7 +8,9 @@
 
 local _, TSM = ...
 local ShoppingTask = TSM.Include("LibTSMClass").DefineClass("ShoppingTask", TSM.TaskList.ItemTask)
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Log = TSM.Include("Util.Log")
 TSM.TaskList.ShoppingTask = ShoppingTask
 local private = {
 	registeredCallbacks = false,
@@ -103,7 +105,7 @@ end
 -- ============================================================================
 
 function private.UIUpdateCallback()
-	TSMAPI_FOUR.Delay.AfterFrame("SHOPPING_TASK_UPDATE_CALLBACK", 1, private.UIUpdateCallbackDelayed)
+	Delay.AfterFrame("SHOPPING_TASK_UPDATE_CALLBACK", 1, private.UIUpdateCallbackDelayed)
 end
 
 function private.UIUpdateCallbackDelayed()
@@ -113,7 +115,7 @@ function private.UIUpdateCallbackDelayed()
 end
 
 function private.StateCallback(state)
-	TSM:LOG_INFO("State changed (%s)", state)
+	Log.Info("State changed (%s)", state)
 	local self = private.currentlyScanning
 	assert(self)
 	self:_OnSearchStateChanged(state)
@@ -121,7 +123,7 @@ function private.StateCallback(state)
 end
 
 function private.BuyCallback(itemString, quantity)
-	TSM:LOG_INFO("Bought item (%s,%d)", itemString, quantity)
+	Log.Info("Bought item (%s,%d)", itemString, quantity)
 	local self = private.currentlyScanning
 	assert(self)
 	if self:_RemoveItem(itemString, quantity) then

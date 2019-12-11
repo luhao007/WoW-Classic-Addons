@@ -8,11 +8,16 @@
 
 local _, TSM = ...
 local Expirations = TSM.TaskList:NewPackage("Expirations")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Table = TSM.Include("Util.Table")
+local ObjectPool = TSM.Include("Util.ObjectPool")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
 local private = {
 	query = nil,
-	mailTaskPool = TSMAPI_FOUR.ObjectPool.New("EXPIRING_MAIL_TASK", TSM.TaskList.ExpiringMailTask, 0),
-	auctionTaskPool = TSMAPI_FOUR.ObjectPool.New("EXPIRED_AUCTION_TASK", TSM.TaskList.ExpiredAuctionTask, 0),
+	mailTaskPool = ObjectPool.New("EXPIRING_MAIL_TASK", TSM.TaskList.ExpiringMailTask, 0),
+	auctionTaskPool = ObjectPool.New("EXPIRED_AUCTION_TASK", TSM.TaskList.ExpiredAuctionTask, 0),
 	activeTasks = {},
 	expiringMailTasks = {},
 	expiredAuctionTasks = {},
@@ -27,6 +32,8 @@ local DAYS_LEFT_LIMIT = 1
 -- ============================================================================
 
 function Expirations.OnEnable()
+	AuctionTracking.RegisterExpiresCallback(Expirations.Update)
+	MailTracking.RegisterExpiresCallback(private.UpdateDelayed)
 	TSM.TaskList.RegisterTaskPool(private.ActiveTaskIterator)
 	private.PopulateTasks()
 end
@@ -35,15 +42,15 @@ function Expirations.Update()
 	private.PopulateTasks()
 end
 
-function Expirations.UpdateDelayed()
-	TSMAPI_FOUR.Delay.AfterTime("EXPIRATION_UPDATE_DELAYED", 0.5, private.PopulateTasks)
-end
-
 
 
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.UpdateDelayed()
+	Delay.AfterTime("EXPIRATION_UPDATE_DELAYED", 0.5, private.PopulateTasks)
+end
 
 function private.ActiveTaskIterator()
 	return ipairs(private.activeTasks)
@@ -129,21 +136,21 @@ function private.PopulateTasks()
 	TSM.TaskList.OnTaskUpdated()
 
 	if minPendingCooldown ~= math.huge and minPendingCooldown < DAYS_LEFT_LIMIT then
-		TSMAPI_FOUR.Delay.AfterTime("EXPIRATION_UPDATE", minPendingCooldown, private.PopulateTasks)
+		Delay.AfterTime("EXPIRATION_UPDATE", minPendingCooldown, private.PopulateTasks)
 	else
-		TSMAPI_FOUR.Delay.Cancel("EXPIRATION_UPDATE")
+		Delay.Cancel("EXPIRATION_UPDATE")
 	end
 end
 
 function private.RemoveMailTask(task)
-	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
+	assert(Table.RemoveByValue(private.activeTasks, task) == 1)
 	task:Release()
 	private.mailTaskPool:Recycle(task)
 	TSM.TaskList.OnTaskUpdated()
 end
 
 function private.RemoveAuctionTask(task)
-	assert(TSM.Table.RemoveByValue(private.activeTasks, task) == 1)
+	assert(Table.RemoveByValue(private.activeTasks, task) == 1)
 	task:Release()
 	private.auctionTaskPool:Recycle(task)
 	TSM.TaskList.OnTaskUpdated()

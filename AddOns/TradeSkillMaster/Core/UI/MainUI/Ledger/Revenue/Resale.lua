@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Resale = TSM.MainUI.Ledger.Revenue:NewPackage("Resale")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
+local Money = TSM.Include("Util.Money")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
 	query = nil,
@@ -64,7 +68,7 @@ function private.DrawResalePage()
 	end
 
 	private.summaryQuery = private.summaryQuery or TSM.Accounting.Transactions.CreateSummaryQuery()
-		:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:OrderBy("name", true)
 
 	private.UpdateQuery()
@@ -185,7 +189,7 @@ function private.DrawResalePage()
 						:SetFont(TSM.UI.Fonts.FRIZQT)
 						:SetFontHeight(12)
 						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", TSMAPI_FOUR.Item.GetLink)
+						:SetTextInfo("itemString", ItemInfo.GetLink)
 						:SetSortInfo("name")
 						:SetTooltipInfo("itemString")
 						:Commit()
@@ -248,7 +252,7 @@ end
 -- ============================================================================
 
 function private.GetMoneyText(record)
-	return TSM.Money.ToString(record)
+	return Money.ToString(record)
 end
 
 
@@ -309,7 +313,7 @@ function private.UpdateQuery()
 	TSM.Accounting.Transactions.UpdateSummaryData(private.groupFilter, private.typeFilter, private.characterFilter, private.timeFrameFilter)
 
 	if private.searchFilter ~= "" then
-		private.summaryQuery:Matches("name", TSM.String.Escape(private.searchFilter))
+		private.summaryQuery:Matches("name", String.Escape(private.searchFilter))
 	end
 	if #private.rarityFilter ~= 0 then
 		private.summaryQuery:Custom(private.CompareRarityFilter, private.rarityFilter)
@@ -317,7 +321,7 @@ function private.UpdateQuery()
 end
 
 function private.CompareRarityFilter(row, rarityFilter)
-	return TSM.Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
+	return Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
 end
 
 function private.TableSelectionChanged(scrollingTable, row)

@@ -8,6 +8,11 @@
 
 local _, TSM = ...
 local MyAuctions = TSM:NewPackage("MyAuctions")
+local Database = TSM.Include("Util.Database")
+local Event = TSM.Include("Util.Event")
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local private = {
 	pendingDB = nil,
 	ahOpen = false,
@@ -24,26 +29,27 @@ local private = {
 -- ============================================================================
 
 function MyAuctions.OnInitialize()
-	private.pendingDB = TSMAPI_FOUR.Database.NewSchema("MY_AUCTIONS_PENDING")
+	private.pendingDB = Database.NewSchema("MY_AUCTIONS_PENDING")
 		:AddUniqueNumberField("index")
 		:AddNumberField("hash")
 		:AddBooleanField("isPending")
+		:AddIndex("index")
 		:Commit()
-	for field in TSM.Inventory.AuctionTracking.DatabaseFieldIterator() do
+	for field in AuctionTracking.DatabaseFieldIterator() do
 		if field ~= "index" then
 			tinsert(private.dbHashFields, field)
 		end
 	end
 
-	TSM.Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowEventHandler)
-	TSM.Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseHideEventHandler)
-	TSM.Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
-	TSM.Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
-	TSM.Inventory.AuctionTracking.RegisterCallback(private.OnAuctionsUpdated)
+	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowEventHandler)
+	Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseHideEventHandler)
+	Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
+	Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
+	AuctionTracking.RegisterCallback(private.OnAuctionsUpdated)
 end
 
 function MyAuctions.CreateQuery()
-	return TSM.Inventory.AuctionTracking.CreateQuery()
+	return AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
 		:OrderBy("index", false)
 end
@@ -61,8 +67,12 @@ function MyAuctions.CancelAuction(index)
 	end
 	assert(private.expectedCounts[hash] >= 0)
 
-	TSM:LOG_INFO("Canceling (index=%d, hash=%d)", index, hash)
-	CancelAuction(index)
+	Log.Info("Canceling (index=%d, hash=%d)", index, hash)
+	if not TSM.IsWow83() then
+		CancelAuction(index)
+	else
+		C_AuctionHouse.CancelAuction(index)
+	end
 	assert(not row:GetField("isPending"))
 	row:SetField("isPending", true)
 		:Update()
@@ -110,7 +120,7 @@ function private.ChatMsgSystemEventHandler(_, msg)
 	if msg == ERR_AUCTION_REMOVED and #private.pendingHashes > 0 then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
-		TSM:LOG_INFO("Confirmed (hash=%d)", hash)
+		Log.Info("Confirmed (hash=%d)", hash)
 	end
 end
 
@@ -118,7 +128,7 @@ function private.UIErrorMessageEventHandler(_, _, msg)
 	if msg == ERR_ITEM_NOT_FOUND and #private.pendingHashes > 0 then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
-		TSM:LOG_INFO("Failed to cancel (hash=%d)", hash)
+		Log.Info("Failed to cancel (hash=%d)", hash)
 		if private.expectedCounts[hash] then
 			private.expectedCounts[hash] = private.expectedCounts[hash] + 1
 		end
@@ -132,9 +142,9 @@ function private.GetNumRowsByHash(hash)
 end
 
 function private.OnAuctionsUpdated()
-	local minPendingIndexByHash = TSM.TempTable.Acquire()
-	local numByHash = TSM.TempTable.Acquire()
-	local query = TSM.Inventory.AuctionTracking.CreateQuery()
+	local minPendingIndexByHash = TempTable.Acquire()
+	local numByHash = TempTable.Acquire()
+	local query = AuctionTracking.CreateQuery()
 		:OrderBy("index", true)
 	for _, row in query:Iterator() do
 		local index = row:GetField("index")
@@ -144,7 +154,7 @@ function private.OnAuctionsUpdated()
 			minPendingIndexByHash[hash] = index
 		end
 	end
-	local numUsed = TSM.TempTable.Acquire()
+	local numUsed = TempTable.Acquire()
 	private.pendingDB:TruncateAndBulkInsertStart()
 	for _, row in query:Iterator() do
 		local hash = row:CalculateHash(private.dbHashFields)
@@ -170,9 +180,9 @@ function private.OnAuctionsUpdated()
 		private.pendingDB:BulkInsertNewRow(row:GetField("index"), hash, isPending)
 	end
 	private.pendingDB:BulkInsertEnd()
-	TSM.TempTable.Release(numByHash)
-	TSM.TempTable.Release(numUsed)
-	TSM.TempTable.Release(minPendingIndexByHash)
+	TempTable.Release(numByHash)
+	TempTable.Release(numUsed)
+	TempTable.Release(minPendingIndexByHash)
 
 	-- update the player's auction status
 	private.auctionInfo.numPosted = 0

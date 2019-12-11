@@ -8,6 +8,10 @@
 
 local _, TSM = ...
 local Merchant = TSM.Accounting:NewPackage("Merchant")
+local Event = TSM.Include("Util.Event")
+local Math = TSM.Include("Util.Math")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	repairMoney = 0,
 	couldRepair = nil,
@@ -28,11 +32,10 @@ local private = {
 -- ============================================================================
 
 function Merchant.OnInitialize()
-	TSM.Event.Register("MERCHANT_SHOW", private.SetupRepairCost)
-	TSM.Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
-	TSM.Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
-	TSM.Event.Register("MERCHANT_CLOSED", private.OnMerchantClosed)
-	hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
+	Event.Register("MERCHANT_SHOW", private.SetupRepairCost)
+	Event.Register("BAG_UPDATE_DELAYED", private.OnMerchantUpdate)
+	Event.Register("UPDATE_INVENTORY_DURABILITY", private.AddRepairCosts)
+	Event.Register("MERCHANT_CLOSED", private.OnMerchantClosed)
 	hooksecurefunc("UseContainerItem", private.CheckMerchantSale)
 	hooksecurefunc("BuyMerchantItem", private.OnMerchantBuy)
 	hooksecurefunc("BuybackItem", private.OnMerchantBuyback)
@@ -101,9 +104,9 @@ function private.CheckMerchantSale(bag, slot, onSelf)
 		return
 	end
 
-	local itemString = TSMAPI_FOUR.Item.ToItemString(GetContainerItemLink(bag, slot))
+	local itemString = ItemString.Get(GetContainerItemLink(bag, slot))
 	local _, quantity = GetContainerItemInfo(bag, slot)
-	local copper = TSMAPI_FOUR.Item.GetVendorSell(itemString)
+	local copper = ItemInfo.GetVendorSell(itemString)
 	if not itemString or not quantity or not copper then
 		return
 	end
@@ -115,21 +118,21 @@ end
 
 function private.OnMerchantBuy(index, quantity)
 	local _, _, price, batchQuantity = GetMerchantItemInfo(index)
-	local itemString = TSMAPI_FOUR.Item.ToItemString(GetMerchantItemLink(index))
+	local itemString = ItemString.Get(GetMerchantItemLink(index))
 	if not itemString or not price or price <= 0 then
 		return
 	end
 	quantity = quantity or batchQuantity
-	local copper = TSM.Math.Round(price / batchQuantity)
+	local copper = Math.Round(price / batchQuantity)
 	TSM.Accounting.Transactions.InsertVendorBuy(itemString, quantity, copper)
 end
 
 function private.OnMerchantBuyback(index)
 	local _, _, price, quantity = GetBuybackItemInfo(index)
-	local itemString = TSMAPI_FOUR.Item.ToItemString(GetBuybackItemLink(index))
+	local itemString = ItemString.Get(GetBuybackItemLink(index))
 	if not itemString or not price or price <= 0 then
 		return
 	end
-	local copper = TSM.Math.Round(price / quantity)
+	local copper = Math.Round(price / quantity)
 	TSM.Accounting.Transactions.InsertVendorBuy(itemString, quantity, copper)
 end

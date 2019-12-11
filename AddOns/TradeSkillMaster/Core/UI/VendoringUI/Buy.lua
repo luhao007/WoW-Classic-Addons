@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Buy = TSM.UI.VendoringUI:NewPackage("Buy")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	query = nil,
 	filterText = "",
@@ -37,7 +41,7 @@ function private.GetFrame()
 	private.filterText = ""
 	if not private.query then
 		private.query = TSM.Vendoring.Buy.CreateMerchantQuery()
-			:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+			:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 	end
 	private.query:ResetFilters()
 	private.query:NotEqual("numAvailable", 0)
@@ -86,7 +90,7 @@ function private.GetFrame()
 					:SetFontHeight(12)
 					:SetJustifyH("LEFT")
 					:SetTextInfo(nil, private.GetItemText)
-					:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:SetTooltipLinkingDisabled(true)
@@ -154,13 +158,13 @@ function private.GetCostText(row)
 	local costItemString, price = row:GetFields("costItemString", "price")
 	if costItemString == "" then
 		-- just a price
-		return TSM.Money.ToString(price)
+		return Money.ToString(price)
 	elseif price == 0 then
 		-- just an extended cost string
 		return costItemString
 	else
 		-- both
-		return TSM.Money.ToString(price).." "..costItemString
+		return Money.ToString(price).." "..costItemString
 	end
 end
 
@@ -176,7 +180,7 @@ function private.FrameOnUpdate(frame)
 end
 
 function private.FrameOnHide(frame)
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	if not TSM.IsWowClassic() then
 		StackSplitFrame:Hide()
 	else
 		OpenStackSplitFrame()
@@ -194,7 +198,7 @@ function private.SearchInputOnTextChanged(input)
 	private.query:ResetFilters()
 	private.query:NotEqual("numAvailable", 0)
 	if text ~= "" then
-		private.query:Matches("name", TSM.String.Escape(text))
+		private.query:Matches("name", String.Escape(text))
 	end
 	input:GetElement("__parent.__parent.items"):UpdateData(true)
 end
@@ -204,7 +208,7 @@ function private.RowOnClick(table, row, mouseButton)
 		private.splitFrame:SetParent(table:_GetBaseFrame())
 		private.splitFrame:SetAllPoints(table:_GetBaseFrame())
 		private.splitFrame.item = row:GetField("index")
-		if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+		if not TSM.IsWowClassic() then
 			StackSplitFrame:OpenStackSplitFrame(math.huge, private.splitFrame, "TOPLEFT", "TOPRIGHT", IsAltKeyDown() and row:GetField("stackSize") or nil)
 		else
 			OpenStackSplitFrame(math.huge, private.splitFrame, "TOPLEFT", "TOPRIGHT", IsAltKeyDown() and row:GetField("stackSize") or nil)
@@ -220,7 +224,7 @@ function private.RepairOnClick(button)
 
 	if IsAltKeyDown() then
 		if not TSM.Vendoring.Buy.CanGuildRepair() then
-			TSM:Printf(L["Cannot repair from the guild bank!"])
+			Log.PrintfUser(L["Cannot repair from the guild bank!"])
 			return
 		end
 		TSM.Vendoring.Buy.DoGuildRepair()

@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Import = TSM.MainUI:NewPackage("ImportExport")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Table = TSM.Include("Util.Table")
+local Math = TSM.Include("Util.Math")
+local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
 local private = {
 	groupSearch = "",
 	importText = "",
@@ -309,13 +313,13 @@ function private.ExportCollapseAllBtnOnClick(button)
 end
 
 function private.GroupTreeGetList(groups, headerNameLookup)
-	if strmatch(strlower(L["Base Group"]), TSM.String.Escape(private.groupSearch)) then
+	if strmatch(strlower(L["Base Group"]), String.Escape(private.groupSearch)) then
 		tinsert(groups, TSM.CONST.ROOT_GROUP_PATH)
 		headerNameLookup[TSM.CONST.ROOT_GROUP_PATH] = L["Base Group"]
 	end
 
 	for _, path in TSM.Groups.GroupIterator() do
-		if strmatch(strlower(TSM.Groups.Path.GetName(path)), TSM.String.Escape(private.groupSearch)) then
+		if strmatch(strlower(TSM.Groups.Path.GetName(path)), String.Escape(private.groupSearch)) then
 			tinsert(groups, path)
 		end
 	end
@@ -539,7 +543,7 @@ end
 function private.CountOperations(operations)
 	local total = 0
 	for _, module in pairs(operations) do
-		total = total + TSM.Table.Count(module)
+		total = total + Table.Count(module)
 	end
 	return total
 end
@@ -566,7 +570,7 @@ end
 
 function private.ImportOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.ConfirmImportOnClick(element)
@@ -645,7 +649,7 @@ function private.ImportOnClick(element)
 	input:SetText("")
 	input:Draw()
 	if not private.newImport then
-		TSM:Print(L["Invalid import string."])
+		Log.PrintUser(L["Invalid import string."])
 		return
 	end
 

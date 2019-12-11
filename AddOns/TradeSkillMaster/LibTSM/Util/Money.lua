@@ -12,7 +12,6 @@
 local _, TSM = ...
 local Money = TSM.Init("Util.Money")
 local String = TSM.Include("Util.String")
-TSM.Money = Money
 local private =  {
 	textMoneyParts = {},
 }

@@ -12,7 +12,14 @@
 local _, TSM = ...
 TSMAPI_FOUR.UI = {}
 local UI = TSM:NewPackage("UI")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Analytics = TSM.Include("Util.Analytics")
+local TempTable = TSM.Include("Util.TempTable")
+local ObjectPool = TSM.Include("Util.ObjectPool")
+local Table = TSM.Include("Util.Table")
+local Math = TSM.Include("Util.Math")
+local Vararg = TSM.Include("Util.Vararg")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	namedElements = {},
 	frameElementMap = {},
@@ -29,12 +36,32 @@ local private = {
 		vendoring = "",
 	},
 }
-local TIME_LEFT_STRINGS = {
-	"|cfff72d1f30m|r",
-	"|cfff72d1f2h|r",
-	WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and "|cffe1f71f12h|r" or "|cffe1f71f8h|r",
-	WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and "|cff4ff71f48h|r" or "|cff4ff71f24h|r",
-}
+local TIME_LEFT_STRINGS = nil
+do
+	-- get the time left strings
+	if TSM.IsWowClassic() then
+		TIME_LEFT_STRINGS = {
+			"|cfff72d1f30m|r",
+			"|cfff72d1f2h|r",
+			"|cffe1f71f8h|r",
+			"|cff4ff71f24h|r",
+		}
+	elseif not TSM.IsWow83() then
+		TIME_LEFT_STRINGS = {
+			"|cfff72d1f30m|r",
+			"|cfff72d1f2h|r",
+			"|cffe1f71f12h|r",
+			"|cff4ff71f48h|r",
+		}
+	else
+		TIME_LEFT_STRINGS = {
+			"|cfff72d1f1h|r",
+			"|cfff72d1f2h|r",
+			"|cffe1f71f24h|r",
+			"|cff4ff71f48h|r",
+		}
+	end
+end
 local GROUP_LEVEL_COLORS = {
 	"#ffb85c",
 	"#fcf141",
@@ -88,7 +115,7 @@ function private.NewElementHelper(elementType, id, name, ...)
 		assert(_G[name] == element:_GetBaseFrame())
 	else
 		if not private.objectPools[class] then
-			private.objectPools[class] = TSMAPI_FOUR.ObjectPool.New("UI_"..class.__name, class, 1)
+			private.objectPools[class] = ObjectPool.New("UI_"..class.__name, class, 1)
 		end
 		element = private.objectPools[class]:Get()
 	end
@@ -135,8 +162,8 @@ end
 -- @tparam[opt=1] number colorMultiplier A multiplier to apply to the color (must be <= 1)
 -- @treturn string The colored name
 function TSM.UI.GetColoredItemName(item, colorMultiplier)
-	local name = TSMAPI_FOUR.Item.GetName(item)
-	local quality = TSMAPI_FOUR.Item.GetQuality(item)
+	local name = ItemInfo.GetName(item)
+	local quality = ItemInfo.GetQuality(item)
 	return TSM.UI.GetQualityColoredText(name, quality, colorMultiplier)
 end
 
@@ -306,7 +333,7 @@ function UI.ToggleFrameStack()
 
 			if parent then
 				-- check if this exists as an attribute of the parent table
-				local parentKey = TSM.Table.KeyByValue(parent, frame)
+				local parentKey = Table.KeyByValue(parent, frame)
 				if parentKey then
 					return tostring(parentKey), parent
 				end
@@ -372,7 +399,7 @@ function UI.ToggleFrameStack()
 						local height = strataFrame:GetHeight()
 						local mouseEnabled = strataFrame:IsMouseEnabled()
 						local name = GetFrameName(strataFrame)
-						local text = format("  <%d> %s (%d, %d)", level, name, TSM.Math.Round(width), TSM.Math.Round(height))
+						local text = format("  <%d> %s (%d, %d)", level, name, Math.Round(width), Math.Round(height))
 						local isTopFrame = false
 						if not topFrame and not strmatch(name, "innerBorderFrame") then
 							topFrame = strataFrame
@@ -417,7 +444,7 @@ function TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, modul
 	end
 
 	-- need to filter out the groups without operations
-	local keep = TSM.TempTable.Acquire()
+	local keep = TempTable.Acquire()
 	for i = #groups, 1, -1 do
 		local groupPath = groups[i]
 		local hasOperations = false
@@ -435,7 +462,7 @@ function TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, modul
 			tremove(groups, i)
 		end
 	end
-	TSM.TempTable.Release(keep)
+	TempTable.Release(keep)
 
 	tinsert(groups, 1, TSM.CONST.ROOT_GROUP_PATH)
 	headerNameLookup[TSM.CONST.ROOT_GROUP_PATH] = L["Base Group"]
@@ -467,7 +494,7 @@ function TSM.UI.ShowTooltip(parent, tooltip)
 	elseif type(tooltip) == "string" and (strfind(tooltip, "\124Hitem:") or strfind(tooltip, "\124Hbattlepet:") or strfind(tooltip, "^i:") or strfind(tooltip, "^p:")) then
 		TSM.Wow.SafeTooltipLink(tooltip)
 	else
-		for _, line in TSM.Vararg.Iterator(strsplit("\n", tooltip)) do
+		for _, line in Vararg.Iterator(strsplit("\n", tooltip)) do
 			local textLeft, textRight = strsplit(TSM.CONST.TOOLTIP_SEP, line)
 			if textRight then
 				GameTooltip:AddDoubleLine(textLeft, textRight, 1, 1, 1, 1, 1, 1)
@@ -485,7 +512,7 @@ function TSM.UI.HideTooltip()
 	GameTooltip:ClearAllPoints()
 	GameTooltip:SetPoint("CENTER")
 	GameTooltip:Hide()
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+	if not TSM.IsWowClassic() then
 		BattlePetTooltip:ClearAllPoints()
 		BattlePetTooltip:SetPoint("CENTER")
 		BattlePetTooltip:Hide()
@@ -498,7 +525,7 @@ function TSM.UI.AnalyticsRecordPathChange(uiName, ...)
 	if path == private.analyticsPath[uiName] then
 		return
 	end
-	TSM.Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], path)
+	Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], path)
 	private.analyticsPath[uiName] = path
 end
 
@@ -507,6 +534,6 @@ function TSM.UI.AnalyticsRecordClose(uiName)
 	if private.analyticsPath[uiName] == "" then
 		return
 	end
-	TSM.Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], "")
+	Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], "")
 	private.analyticsPath[uiName] = ""
 end

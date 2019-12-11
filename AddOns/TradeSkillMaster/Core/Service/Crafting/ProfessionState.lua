@@ -8,7 +8,18 @@
 
 local _, TSM = ...
 local ProfessionState = TSM.Crafting:NewPackage("ProfessionState")
-local private = { fsm = nil, updateCallbacks = {}, isClosed = true, craftOpen = nil, tradeSkillOpen = nil, professionName = nil }
+local Event = TSM.Include("Util.Event")
+local Delay = TSM.Include("Util.Delay")
+local FSM = TSM.Include("Util.FSM")
+local Log = TSM.Include("Util.Log")
+local private = {
+	fsm = nil,
+	updateCallbacks = {},
+	isClosed = true,
+	craftOpen = nil,
+	tradeSkillOpen = nil,
+	professionName = nil,
+}
 local WAIT_FRAME_DELAY = 5
 
 
@@ -30,7 +41,7 @@ function ProfessionState.GetIsClosed()
 end
 
 function ProfessionState.IsClassicCrafting()
-	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and private.craftOpen
+	return TSM.IsWowClassic() and private.craftOpen
 end
 
 function ProfessionState.SetCraftOpen(open)
@@ -48,45 +59,45 @@ end
 -- ============================================================================
 
 function private.CreateFSM()
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC and not IsAddOnLoaded("Blizzard_CraftUI") then
+	if TSM.IsWowClassic() and not IsAddOnLoaded("Blizzard_CraftUI") then
 		LoadAddOn("Blizzard_CraftUI")
 	end
-	TSM.Event.Register("TRADE_SKILL_SHOW", function()
+	Event.Register("TRADE_SKILL_SHOW", function()
 		private.tradeSkillOpen = true
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 		private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 	end)
-	TSM.Event.Register("TRADE_SKILL_CLOSE", function()
+	Event.Register("TRADE_SKILL_CLOSE", function()
 		private.tradeSkillOpen = false
 		if not private.craftOpen then
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 		end
 	end)
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
-		TSM.Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
+	if not TSM.IsWowClassic() then
+		Event.Register("GARRISON_TRADESKILL_NPC_CLOSED", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 		end)
-		TSM.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
+		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGED", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
-		TSM.Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
+		Event.Register("TRADE_SKILL_DATA_SOURCE_CHANGING", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 		end)
 	else
-		TSM.Event.Register("CRAFT_SHOW", function()
+		Event.Register("CRAFT_SHOW", function()
 			private.craftOpen = true
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_SHOW")
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING")
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
-		TSM.Event.Register("CRAFT_CLOSE", function()
+		Event.Register("CRAFT_CLOSE", function()
 			private.craftOpen = false
 			if not private.tradeSkillOpen then
 				private.fsm:ProcessEvent("EV_TRADE_SKILL_CLOSE")
 			end
 		end)
-		TSM.Event.Register("CRAFT_UPDATE", function()
+		Event.Register("CRAFT_UPDATE", function()
 			private.fsm:ProcessEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED")
 		end)
 	end
@@ -103,8 +114,8 @@ function private.CreateFSM()
 	local function FrameDelayCallback()
 		private.fsm:ProcessEvent("EV_FRAME_DELAY")
 	end
-	private.fsm = TSMAPI_FOUR.FSM.New("PROFESSION_STATE")
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_CLOSED")
+	private.fsm = FSM.New("PROFESSION_STATE")
+		:AddState(FSM.NewState("ST_CLOSED")
 			:SetOnEnter(function()
 				private.isClosed = true
 				private.RunUpdateCallbacks()
@@ -114,20 +125,20 @@ function private.CreateFSM()
 				private.RunUpdateCallbacks()
 			end)
 			:AddTransition("ST_WAITING_FOR_DATA")
-			:AddEvent("EV_TRADE_SKILL_SHOW", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_WAITING_FOR_DATA"))
+			:AddEventTransition("EV_TRADE_SKILL_SHOW", "ST_WAITING_FOR_DATA")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_WAITING_FOR_DATA")
+		:AddState(FSM.NewState("ST_WAITING_FOR_DATA")
 			:AddTransition("ST_WAITING_FOR_READY")
 			:AddTransition("ST_CLOSED")
-			:AddEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_WAITING_FOR_READY"))
-			:AddEvent("EV_TRADE_SKILL_CLOSE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_TRADE_SKILL_DATA_SOURCE_CHANGED", "ST_WAITING_FOR_READY")
+			:AddEventTransition("EV_TRADE_SKILL_CLOSE", "ST_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_WAITING_FOR_READY")
+		:AddState(FSM.NewState("ST_WAITING_FOR_READY")
 			:SetOnEnter(function()
-				TSMAPI_FOUR.Delay.AfterFrame("PROFESSION_STATE_TIME", WAIT_FRAME_DELAY, FrameDelayCallback, WAIT_FRAME_DELAY)
+				Delay.AfterFrame("PROFESSION_STATE_TIME", WAIT_FRAME_DELAY, FrameDelayCallback, WAIT_FRAME_DELAY)
 			end)
 			:SetOnExit(function()
-				TSMAPI_FOUR.Delay.Cancel("PROFESSION_STATE_TIME")
+				Delay.Cancel("PROFESSION_STATE_TIME")
 			end)
 			:AddTransition("ST_SHOWN")
 			:AddTransition("ST_DATA_CHANGING")
@@ -137,16 +148,16 @@ function private.CreateFSM()
 					return "ST_SHOWN"
 				end
 			end)
-			:AddEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_DATA_CHANGING"))
-			:AddEvent("EV_TRADE_SKILL_CLOSE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_TRADE_SKILL_DATA_SOURCE_CHANGING", "ST_DATA_CHANGING")
+			:AddEventTransition("EV_TRADE_SKILL_CLOSE", "ST_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_SHOWN")
+		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function()
 				local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
 				assert(name)
-				TSM:LOG_INFO("Showing profession: %s", name)
+				Log.Info("Showing profession: %s", name)
 				private.professionName = name
-				if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+				if TSM.IsWowClassic() then
 					ToggleDefaultCraftButton()
 				end
 				private.RunUpdateCallbacks()
@@ -157,14 +168,14 @@ function private.CreateFSM()
 			end)
 			:AddTransition("ST_DATA_CHANGING")
 			:AddTransition("ST_CLOSED")
-			:AddEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGING", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_DATA_CHANGING"))
-			:AddEvent("EV_TRADE_SKILL_CLOSE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_TRADE_SKILL_DATA_SOURCE_CHANGING", "ST_DATA_CHANGING")
+			:AddEventTransition("EV_TRADE_SKILL_CLOSE", "ST_CLOSED")
 		)
-		:AddState(TSMAPI_FOUR.FSM.NewState("ST_DATA_CHANGING")
+		:AddState(FSM.NewState("ST_DATA_CHANGING")
 			:AddTransition("ST_WAITING_FOR_READY")
 			:AddTransition("ST_CLOSED")
-			:AddEvent("EV_TRADE_SKILL_DATA_SOURCE_CHANGED", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_WAITING_FOR_READY"))
-			:AddEvent("EV_TRADE_SKILL_CLOSE", TSMAPI_FOUR.FSM.SimpleTransitionEventHandler("ST_CLOSED"))
+			:AddEventTransition("EV_TRADE_SKILL_DATA_SOURCE_CHANGED", "ST_WAITING_FOR_READY")
+			:AddEventTransition("EV_TRADE_SKILL_CLOSE", "ST_CLOSED")
 		)
 		:Init("ST_CLOSED")
 end

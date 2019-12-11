@@ -8,7 +8,13 @@
 
 local _, TSM = ...
 local General = TSM.MainUI.Settings:NewPackage("General")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local Settings = TSM.Include("Service.Settings")
+local Sync = TSM.Include("Service.Sync")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local private = {
 	frame = nil,
@@ -25,7 +31,7 @@ local private = {
 
 function General.OnInitialize()
 	TSM.MainUI.Settings.RegisterSettingPage("General Settings", "top", private.GetGeneralSettingsFrame)
-	TSM.Sync.Connection.RegisterConnectionChangedCallback(private.SyncConnectionChangedCallback)
+	Sync.RegisterConnectionChangedCallback(private.SyncConnectionChangedCallback)
 end
 
 
@@ -49,6 +55,7 @@ function private.GetGeneralSettingsFrame()
 	end
 	if not tContains(private.chatFrameList, TSM.db.global.coreOptions.chatFrame) then
 		TSM.db.global.coreOptions.chatFrame = defaultChatFrame
+		Log.SetChatFrame(defaultChatFrame)
 	end
 
 	wipe(private.characterList)
@@ -237,16 +244,6 @@ function private.GetGeneralSettingsFrame()
 				:SetScript("OnClick", private.NewAccountSyncBtnOnClick)
 			)
 		)
-		:AddChild(TSM.MainUI.Settings.CreateHeading("twitterHeader", L["Twitter Integration"]))
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "twitterDesc")
-			:SetStyle("height", 36)
-			:SetStyle("margin.bottom", 8)
-			:SetStyle("fontHeight", 14)
-			:SetStyle("textColor", "#ffffff")
-			:SetStyle("fontSpacing", 2)
-			:SetText(L["If you have WoW's Twitter integration setup, TSM will add a share link to its enhanced auction sale / purchase messages, as well as replace URLs with a TSM link."])
-		)
-		:AddChildrenWithFunction(private.AddTwitterSetting)
 end
 
 function private.AddProfileRows(frame)
@@ -299,7 +296,7 @@ function private.AddProfileRows(frame)
 end
 
 function private.AddAccountSyncRows(frame)
-	local newAccountStatusText = TSM.Sync.Connection.GetNewAccountStatus()
+	local newAccountStatusText = Sync.GetNewAccountStatus()
 	if newAccountStatusText then
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "accountSyncRow_New")
 			:SetLayout("HORIZONTAL")
@@ -312,13 +309,13 @@ function private.AddAccountSyncRows(frame)
 		)
 	end
 	for _, account in TSM.db:SyncAccountIterator() do
-		local characters = TSM.TempTable.Acquire()
-		for _, character in TSM.db:FactionrealmCharacterByAccountIterator(account) do
+		local characters = TempTable.Acquire()
+		for _, character in Settings.CharacterByAccountFactionrealmIterator(account) do
 			tinsert(characters, character)
 		end
 		sort(characters)
-		local statusText = TSM.Sync.Connection.GetStatus(account).." | "..table.concat(characters, ", ")
-		TSM.TempTable.Release(characters)
+		local statusText = Sync.GetConnectionStatus(account).." | "..table.concat(characters, ", ")
+		TempTable.Release(characters)
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "accountSyncRow_"..account)
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 28)
@@ -354,27 +351,6 @@ function private.AddAccountSyncRows(frame)
 		)
 		frame:GetElement("accountSyncRow_"..account..".sendProfileBtn"):Hide()
 		frame:GetElement("accountSyncRow_"..account..".removeBtn"):Hide()
-	end
-end
-
-function private.AddTwitterSetting(frame)
-	if C_Social.IsSocialEnabled() or true then
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "checkbox")
-			:SetStyle("height", 28)
-			:SetStyle("margin.left", -5)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 12)
-			:SetSettingInfo(TSM.db.global.coreOptions, "tsmItemTweetEnabled")
-			:SetText(L["Enable tweet enhancement"])
-		)
-	else
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-			:SetStyle("textColor", "#c41f3b")
-			:SetStyle("height", 20)
-			:SetStyle("fontHeight", 18)
-			:SetStyle("justifyH", "CENTER")
-			:SetText(L["Twitter Integration Not Enabled"])
-		)
 	end
 end
 
@@ -422,6 +398,7 @@ end
 
 function private.ChatTabOnSelectionChanged(self, selection)
 	TSM.db.global.coreOptions.chatFrame = selection
+	Log.SetChatFrame(selection)
 end
 
 function private.ForgetCharacterOnSelectionChanged(self)
@@ -430,8 +407,8 @@ function private.ForgetCharacterOnSelectionChanged(self)
 	TSM.db:RemoveSyncCharacter(character)
 	TSM.db.factionrealm.internalData.pendingMail[character] = nil
 	TSM.db.factionrealm.internalData.characterGuilds[character] = nil
-	TSM:Printf(L["%s removed."], character)
-	assert(TSM.Table.RemoveByValue(private.characterList, character) == 1)
+	Log.PrintfUser(L["%s removed."], character)
+	assert(Table.RemoveByValue(private.characterList, character) == 1)
 	self:SetSelectedItem(nil)
 		:SetItems(private.characterList)
 		:Draw()
@@ -541,10 +518,10 @@ end
 function private.RenameProfileInputOnEnterPressed(input)
 	local profileName = input:GetText()
 	if not TSM.db:IsValidProfileName(profileName) then
-		TSM:Print(L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."])
+		Log.PrintUser(L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."])
 		return
 	elseif TSM.db:ProfileExists(profileName) then
-		TSM:Print(L["A profile with this name already exists."])
+		Log.PrintUser(L["A profile with this name already exists."])
 		return
 	end
 
@@ -597,10 +574,10 @@ end
 function private.NewProfileBtnOnClick(button)
 	local profileName = strtrim(button:GetElement("__parent.newProfileInput"):GetText())
 	if not TSM.db:IsValidProfileName(profileName) then
-		TSM:Print(L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."])
+		Log.PrintUser(L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."])
 		return
 	elseif TSM.db:ProfileExists(profileName) then
-		TSM:Print(L["A profile with this name already exists."])
+		Log.PrintUser(L["A profile with this name already exists."])
 		return
 	end
 	TSM.db:SetProfile(profileName)
@@ -614,12 +591,12 @@ function private.AccountSyncRowOnEnter(frame)
 	frame:Draw()
 
 	local account = frame:GetContext()
-	local tooltipLines = TSM.TempTable.Acquire()
+	local tooltipLines = TempTable.Acquire()
 	tinsert(tooltipLines, "|cffffff00"..L["Sync Status"].."|r")
-	tinsert(tooltipLines, L["Inventory / Gold Graph"]..TSM.CONST.TOOLTIP_SEP..TSM.Sync.Mirror.GetStatus(account))
+	tinsert(tooltipLines, L["Inventory / Gold Graph"]..TSM.CONST.TOOLTIP_SEP..Sync.GetMirrorStatus(account))
 	tinsert(tooltipLines, L["Profession Info"]..TSM.CONST.TOOLTIP_SEP..TSM.Crafting.Sync.GetStatus(account))
 	TSM.UI.ShowTooltip(frame:_GetBaseFrame(), table.concat(tooltipLines, "\n"))
-	TSM.TempTable.Release(tooltipLines)
+	TempTable.Release(tooltipLines)
 end
 
 function private.AccountSyncRowOnLeave(frame)
@@ -631,7 +608,7 @@ function private.AccountSyncRowOnLeave(frame)
 end
 
 function private.SendProfileOnClick(button)
-	local player = TSM.Sync.Connection.GetConnectedPlayerByAccount(button:GetParentElement():GetContext())
+	local player = Sync.GetConnectedCharacterByAccount(button:GetParentElement():GetContext())
 	if not player then
 		return
 	end
@@ -639,9 +616,9 @@ function private.SendProfileOnClick(button)
 end
 
 function private.RemoveAccountSyncOnClick(button)
-	TSM.Sync.Connection.Remove(button:GetParentElement():GetContext())
+	Sync.RemoveAccount(button:GetParentElement():GetContext())
 	button:GetParentElement():GetParentElement():GetParentElement():ReloadContent()
-	TSM:Print(L["Account sync removed. Please delete the account sync from the other account as well."])
+	Log.PrintUser(L["Account sync removed. Please delete the account sync from the other account as well."])
 end
 
 function private.NewAccountSyncInputOnEnterPressed(input)
@@ -651,8 +628,8 @@ end
 function private.NewAccountSyncBtnOnClick(button)
 	local input = button:GetElement("__parent.newAccountSyncInput")
 	local character = strtrim(input:GetText())
-	if TSM.Sync.Connection.Establish(character) then
-		TSM:Printf(L["Establishing connection to %s. Make sure that you've entered this character's name on the other account."], character)
+	if Sync.EstablishConnection(character) then
+		Log.PrintfUser(L["Establishing connection to %s. Make sure that you've entered this character's name on the other account."], character)
 		private.SyncConnectionChangedCallback()
 	else
 		input:SetText("")
@@ -661,11 +638,11 @@ function private.NewAccountSyncBtnOnClick(button)
 end
 
 function private.CheckCustomPrice(value)
-	local isValid, err = TSMAPI_FOUR.CustomPrice.Validate(value)
+	local isValid, err = CustomPrice.Validate(value)
 	if isValid then
 		return true
 	else
-		TSM:Print(L["Invalid custom price."].." "..err)
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 		return false
 	end
 end

@@ -8,8 +8,15 @@
 
 local _, TSM = ...
 local CustomSources = TSM.MainUI.Settings:NewPackage("CustomSources")
-local L = TSM.L
-local private = { selectedRow = nil, isEditing = nil, editingElement = nil }
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local private = {
+	selectedRow = nil,
+	isEditing = nil,
+	editingElement = nil,
+}
 
 
 
@@ -131,7 +138,7 @@ function private.CreateCustomPriceRow(name)
 end
 
 function private.AddCustomPriceRows(frame)
-	local names = TSM.TempTable.Acquire()
+	local names = TempTable.Acquire()
 	for name in pairs(TSM.db.global.userData.customPriceSources) do
 		tinsert(names, name)
 	end
@@ -139,7 +146,7 @@ function private.AddCustomPriceRows(frame)
 	for _, name in ipairs(names) do
 		frame:AddChild(private.CreateCustomPriceRow(name))
 	end
-	TSM.TempTable.Release(names)
+	TempTable.Release(names)
 end
 
 
@@ -180,13 +187,13 @@ function private.NameOnValueChanged(text, newName)
 	if newName == "" then
 		newName = oldName
 	elseif gsub(newName, "([a-z]+)", "") ~= "" then
-		TSM:Print(L["The name can ONLY contain letters. No spaces, numbers, or special characters."])
+		Log.PrintUser(L["The name can ONLY contain letters. No spaces, numbers, or special characters."])
 		newName = oldName
-	elseif not TSMAPI_FOUR.CustomPrice.ValidateName(newName) then
-		TSM:Printf(L["Price source with name '%s' already exists."], newName)
+	elseif not CustomPrice.ValidateName(newName) then
+		Log.PrintfUser(L["Price source with name '%s' already exists."], newName)
 		newName = oldName
 	else
-		TSM.CustomPrice.RenameCustomPriceSource(oldName, newName)
+		CustomPrice.RenameCustomPriceSource(oldName, newName)
 	end
 	text:GetParentElement():SetContext(newName)
 	text:SetText(newName)
@@ -196,9 +203,9 @@ end
 function private.ValueOnValueChanged(text, newValue)
 	local oldValue = text:GetText()
 	newValue = strlower(strtrim(newValue))
-	local isValid, errText = TSMAPI_FOUR.CustomPrice.Validate(newValue)
+	local isValid, errText = CustomPrice.Validate(newValue)
 	if not isValid then
-		TSM:Print(L["Invalid price source."].." "..errText)
+		Log.PrintUser(L["Invalid price source."].." "..errText)
 		newValue = oldValue
 	else
 		TSM.db.global.userData.customPriceSources[text:GetParentElement():GetContext()] = newValue
@@ -237,7 +244,7 @@ function private.AddNewButtonOnClick(button)
 		suffix = suffix..strchar(random(strbyte("a"), strbyte("z")))
 	end
 
-	TSM.CustomPrice.CreateCustomPriceSource(newName, "")
+	CustomPrice.CreateCustomPriceSource(newName, "")
 	button:GetParentElement()
 		:AddChildBeforeById("addNewBtn", private.CreateCustomPriceRow(newName))
 		:Draw()

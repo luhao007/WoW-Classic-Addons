@@ -12,7 +12,6 @@
 local _, TSM = ...
 local CSV = TSM.Init("Util.CSV")
 local TempTable = TSM.Include("Util.TempTable")
-TSM.CSV = CSV
 local private = {}
 
 

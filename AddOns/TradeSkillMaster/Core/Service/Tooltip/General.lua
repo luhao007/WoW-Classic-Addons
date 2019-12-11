@@ -8,7 +8,14 @@
 
 local _, TSM = ...
 local General = TSM.Tooltip:NewPackage("General")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
+local TempTable = TSM.Include("Util.TempTable")
+local String = TSM.Include("Util.String")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local Conversions = TSM.Include("Service.Conversions")
 
 
 
@@ -30,14 +37,14 @@ function General.LoadTooltip(tooltip, itemString)
 			tooltip:AddLine(leftText, "|cffffffff"..TSM.Groups.Path.Format(groupPath).."|r")
 			for _, moduleName in TSM.Operations.ModuleIterator() do
 				if TSM.db.global.tooltipOptions.operationTooltips[moduleName] then
-					local operations = TSM.TempTable.Acquire()
+					local operations = TempTable.Acquire()
 					for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
 						tinsert(operations, operationName)
 					end
 					if #operations > 0 then
 						tooltip:AddLine(format(#operations == 1 and L["%s operation"] or L["%s operations"], TSM.Operations.GetLocalizedName(moduleName)), "|cffffffff"..table.concat(operations, ", ").."|r")
 					end
-					TSM.TempTable.Release(operations)
+					TempTable.Release(operations)
 				end
 			end
 		end
@@ -45,25 +52,20 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add disenchant value info
 	if TSM.db.global.tooltipOptions.deTooltip then
-		local value = TSMAPI_FOUR.Conversions.GetValue(itemString, TSM.db.global.coreOptions.destroyValueSource, "disenchant")
+		local value = CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, Conversions.METHOD.DISENCHANT)
 		if value then
 			tooltip:AddItemValueLine(L["Disenchant Value"], value)
 			tooltip:StartSection()
 			if TSM.db.global.tooltipOptions.detailedDestroyTooltip then
-				local rarity = TSMAPI_FOUR.Item.GetQuality(itemString)
-				local ilvl = TSMAPI_FOUR.Item.GetItemLevel(TSMAPI_FOUR.Item.ToBaseItemString(itemString))
-				local iType = GetItemClassInfo(TSMAPI_FOUR.Item.GetClassId(itemString))
-				for _, data in ipairs(TSM.CONST.DISENCHANT_INFO) do
-					for targetItem, itemData in pairs(data) do
-						if targetItem ~= "desc" then
-							for _, deData in ipairs(itemData.sourceInfo) do
-								if deData.itemType == iType and deData.rarity == rarity and ilvl >= deData.minItemLevel and ilvl <= deData.maxItemLevel then
-									local matValue = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItem) or 0
-									if matValue > 0 then
-										tooltip:AddSubItemValueLine(targetItem, matValue, deData.amountOfMats, deData.matRate, deData.minAmount, deData.maxAmount)
-									end
-								end
-							end
+				local quality = ItemInfo.GetQuality(itemString)
+				local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+				local classId = ItemInfo.GetClassId(itemString)
+				for targetItemString in DisenchantInfo.TargetItemIterator() do
+					local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+					if amountOfMats then
+						local matValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
+						if matValue > 0 then
+							tooltip:AddSubItemValueLine(targetItemString, matValue, amountOfMats, matRate, minAmount, maxAmount)
 						end
 					end
 				end
@@ -74,18 +76,15 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add mill value info
 	if TSM.db.global.tooltipOptions.millTooltip then
-		local value = TSMAPI_FOUR.Conversions.GetValue(itemString, TSM.db.global.coreOptions.destroyValueSource, "mill")
+		local value = CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, Conversions.METHOD.MILL)
 		if value then
 			tooltip:AddItemValueLine(L["Mill Value"], value)
 			tooltip:StartSection()
 			if TSM.db.global.tooltipOptions.detailedDestroyTooltip then
-				for _, targetItem in ipairs(TSMAPI_FOUR.Conversions.GetTargetItemsByMethod("mill")) do
-					local herbs = TSMAPI_FOUR.Conversions.GetData(targetItem)
-					if herbs[itemString] then
-						local millValue = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItem) or 0
-						if millValue > 0 then
-							tooltip:AddSubItemValueLine(targetItem, millValue, herbs[itemString].rate)
-						end
+				for targetItemString, rate in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.MILL) do
+					local millValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
+					if millValue > 0 then
+						tooltip:AddSubItemValueLine(targetItemString, millValue, rate)
 					end
 				end
 			end
@@ -95,18 +94,15 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add prospect value info
 	if TSM.db.global.tooltipOptions.prospectTooltip then
-		local value = TSMAPI_FOUR.Conversions.GetValue(itemString, TSM.db.global.coreOptions.destroyValueSource, "prospect")
+		local value = CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, Conversions.METHOD.PROSPECT)
 		if value then
 			tooltip:AddItemValueLine(L["Prospect Value"], value)
 			tooltip:StartSection()
 			if TSM.db.global.tooltipOptions.detailedDestroyTooltip then
-				for _, targetItem in ipairs(TSMAPI_FOUR.Conversions.GetTargetItemsByMethod("prospect")) do
-					local gems = TSMAPI_FOUR.Conversions.GetData(targetItem)
-					if gems[itemString] then
-						local prospectValue = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItem) or 0
-						if prospectValue > 0 then
-							tooltip:AddSubItemValueLine(targetItem, prospectValue, gems[itemString].rate)
-						end
+				for targetItemString, rate in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.PROSPECT) do
+					local prospectValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
+					if prospectValue > 0 then
+						tooltip:AddSubItemValueLine(targetItemString, prospectValue, rate)
 					end
 				end
 			end
@@ -116,18 +112,15 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add transform value info
 	if TSM.db.global.tooltipOptions.transformTooltip then
-		local value = TSMAPI_FOUR.Conversions.GetValue(itemString, TSM.db.global.coreOptions.destroyValueSource, "transform")
+		local value = CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource, Conversions.METHOD.TRANSFORM)
 		if value then
 			tooltip:AddItemValueLine(L["Transform Value"], value)
 			tooltip:StartSection()
 			if TSM.db.global.tooltipOptions.detailedDestroyTooltip then
-				for _, targetItem in ipairs(TSMAPI_FOUR.Conversions.GetTargetItemsByMethod("transform")) do
-					local srcItems = TSMAPI_FOUR.Conversions.GetData(targetItem)
-					if srcItems[itemString] then
-						local transformValue = TSMAPI_FOUR.CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItem) or 0
-						if transformValue > 0 then
-							tooltip:AddSubItemValueLine(targetItem, transformValue, srcItems[itemString].rate)
-						end
+				for targetItemString, rate in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.TRANSFORM) do
+					local transformValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
+					if transformValue > 0 then
+						tooltip:AddSubItemValueLine(targetItemString, transformValue, rate)
 					end
 				end
 			end
@@ -137,7 +130,7 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add vendor buy price
 	if TSM.db.global.tooltipOptions.vendorBuyTooltip then
-		local value = TSMAPI_FOUR.Item.GetVendorBuy(itemString) or 0
+		local value = ItemInfo.GetVendorBuy(itemString) or 0
 		if value > 0 then
 			tooltip:AddItemValueLine(L["Vendor Buy Price"], value)
 		end
@@ -145,7 +138,7 @@ function General.LoadTooltip(tooltip, itemString)
 
 	-- add vendor sell price
 	if TSM.db.global.tooltipOptions.vendorSellTooltip then
-		local value = TSMAPI_FOUR.Item.GetVendorSell(itemString) or 0
+		local value = ItemInfo.GetVendorSell(itemString) or 0
 		if value > 0 then
 			tooltip:AddItemValueLine(L["Vendor Sell Price"], value)
 		end
@@ -154,7 +147,7 @@ function General.LoadTooltip(tooltip, itemString)
 	-- add custom price sources
 	for name in pairs(TSM.db.global.userData.customPriceSources) do
 		if TSM.db.global.tooltipOptions.customPriceTooltips[name] then
-			local price = TSMAPI_FOUR.CustomPrice.GetValue(name, itemString) or 0
+			local price = CustomPrice.GetValue(name, itemString) or 0
 			if price > 0 then
 				tooltip:AddItemValueLine(L["Custom Price Source"].." '"..name.."'", price)
 			end
@@ -167,7 +160,7 @@ function General.LoadTooltip(tooltip, itemString)
 		local totalNum = 0
 		for factionrealm in TSM.db:GetConnectedRealmIterator("factionrealm") do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				local realm = strmatch(factionrealm, "^.* "..TSM.String.Escape("-").." (.*)")
+				local realm = strmatch(factionrealm, "^.* "..String.Escape("-").." (.*)")
 				if realm == GetRealmName() then
 					realm = ""
 				else
@@ -223,7 +216,7 @@ function General.LoadTooltip(tooltip, itemString)
 		local totalNum = totalPlayer + totalAlt + totalGuild + totalAuction
 		if totalNum > 0 then
 			local rightText = nil
-			if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+			if not TSM.IsWowClassic() then
 				rightText = format(L["%s (%s player, %s alts, %s guild, %s AH)"], "|cffffffff"..totalNum.."|r", "|cffffffff"..totalPlayer.."|r", "|cffffffff"..totalAlt.."|r", "|cffffffff"..totalGuild.."|r", "|cffffffff"..totalAuction.."|r")
 			else
 				rightText = format(L["%s (%s player, %s alts, %s AH)"], "|cffffffff"..totalNum.."|r", "|cffffffff"..totalPlayer.."|r", "|cffffffff"..totalAlt.."|r", "|cffffffff"..totalAuction.."|r")

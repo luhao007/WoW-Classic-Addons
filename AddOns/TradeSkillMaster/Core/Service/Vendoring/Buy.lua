@@ -8,6 +8,13 @@
 
 local _, TSM = ...
 local Buy = TSM.Vendoring:NewPackage("Buy")
+local Database = TSM.Include("Util.Database")
+local Delay = TSM.Include("Util.Delay")
+local Event = TSM.Include("Util.Event")
+local TempTable = TSM.Include("Util.TempTable")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	merchantDB = nil,
 }
@@ -19,7 +26,7 @@ local private = {
 -- ============================================================================
 
 function Buy.OnInitialize()
-	private.merchantDB = TSMAPI_FOUR.Database.NewSchema("MERCHANT")
+	private.merchantDB = Database.NewSchema("MERCHANT")
 		:AddUniqueNumberField("index")
 		:AddStringField("itemString")
 		:AddNumberField("price")
@@ -27,9 +34,9 @@ function Buy.OnInitialize()
 		:AddNumberField("stackSize")
 		:AddNumberField("numAvailable")
 		:Commit()
-	TSM.Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
-	TSM.Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
-	TSM.Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
+	Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
+	Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
+	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
 end
 
 function Buy.CreateMerchantQuery()
@@ -42,7 +49,7 @@ function Buy.NeedsRepair()
 end
 
 function Buy.CanGuildRepair()
-	return Buy.NeedsRepair() and WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and CanGuildBankRepair()
+	return Buy.NeedsRepair() and not TSM.IsWowClassic() and CanGuildBankRepair()
 end
 
 function Buy.DoGuildRepair()
@@ -94,17 +101,17 @@ end
 -- ============================================================================
 
 function private.MerchantShowEventHandler()
-	TSMAPI_FOUR.Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
+	Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
 end
 
 function private.MerchantClosedEventHandler()
-	TSMAPI_FOUR.Delay.Cancel("UPDATE_MERCHANT_DB")
-	TSMAPI_FOUR.Delay.Cancel("RESCAN_MERCHANT_DB")
+	Delay.Cancel("UPDATE_MERCHANT_DB")
+	Delay.Cancel("RESCAN_MERCHANT_DB")
 	private.merchantDB:Truncate()
 end
 
 function private.MerchantUpdateEventHandler()
-	TSMAPI_FOUR.Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
+	Delay.AfterFrame("UPDATE_MERCHANT_DB", 1, private.UpdateMerchantDB)
 end
 
 function private.UpdateMerchantDB()
@@ -112,9 +119,9 @@ function private.UpdateMerchantDB()
 	private.merchantDB:TruncateAndBulkInsertStart()
 	for i = 1, GetMerchantNumItems() do
 		local itemLink = GetMerchantItemLink(i)
-		local itemString = TSMAPI_FOUR.Item.ToItemString(itemLink)
+		local itemString = ItemString.Get(itemLink)
 		if itemString then
-			TSM.ItemInfo.StoreItemInfoByLink(itemLink)
+			ItemInfo.StoreItemInfoByLink(itemLink)
 			local _, _, price, stackSize, numAvailable, _, _, extendedCost = GetMerchantItemInfo(i)
 			local numAltCurrencies = GetMerchantItemCostInfo(i)
 			-- bug with big keech vendor returning extendedCost = true for gold only items
@@ -124,15 +131,15 @@ function private.UpdateMerchantDB()
 			local costItemsStr = ""
 			if extendedCost then
 				assert(numAltCurrencies > 0)
-				local costItems = TSM.TempTable.Acquire()
+				local costItems = TempTable.Acquire()
 				for j = 1, numAltCurrencies do
 					local _, costNum, costItemLink = GetMerchantItemCostItem(i, j)
-					local costItemString = TSMAPI_FOUR.Item.ToItemString(costItemLink)
+					local costItemString = ItemString.Get(costItemLink)
 					local texture = nil
 					if not costItemLink then
 						needsRetry = true
 					elseif costItemString then
-						texture = TSMAPI_FOUR.Item.GetTexture(costItemString)
+						texture = ItemInfo.GetTexture(costItemString)
 					elseif strmatch(costItemLink, "currency:") then
 						local _
 						_, _, texture = GetCurrencyInfo(costItemLink)
@@ -142,7 +149,7 @@ function private.UpdateMerchantDB()
 					tinsert(costItems, costNum.." |T"..(texture or "")..":12|t")
 				end
 				costItemsStr = table.concat(costItems, " ")
-				TSM.TempTable.Release(costItems)
+				TempTable.Release(costItems)
 			end
 			private.merchantDB:BulkInsertNewRow(i, itemString, price, costItemsStr, stackSize, numAvailable)
 		end
@@ -150,10 +157,10 @@ function private.UpdateMerchantDB()
 	private.merchantDB:BulkInsertEnd()
 
 	if needsRetry then
-		TSM:LOG_ERR("Failed to scan merchant")
-		TSMAPI_FOUR.Delay.AfterTime("RESCAN_MERCHANT_DB", 0.2, private.UpdateMerchantDB)
+		Log.Err("Failed to scan merchant")
+		Delay.AfterTime("RESCAN_MERCHANT_DB", 0.2, private.UpdateMerchantDB)
 	else
-		TSMAPI_FOUR.Delay.Cancel("RESCAN_MERCHANT_DB")
+		Delay.Cancel("RESCAN_MERCHANT_DB")
 	end
 end
 
@@ -176,7 +183,7 @@ function private.GetMaxCanAfford(index)
 		assert(numAltCurrencies > 0)
 		for i = 1, numAltCurrencies do
 			local _, costNum, costItemLink, currencyName = GetMerchantItemCostItem(index, i)
-			local costItemString = TSMAPI_FOUR.Item.ToItemString(costItemLink)
+			local costItemString = ItemString.Get(costItemLink)
 			local costNumHave = nil
 			if costItemString then
 				costNumHave = TSMAPI_FOUR.Inventory.GetBagQuantity(costItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(costItemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(costItemString)

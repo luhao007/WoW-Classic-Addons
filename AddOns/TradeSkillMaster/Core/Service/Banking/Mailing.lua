@@ -8,6 +8,7 @@
 
 local _, TSM = ...
 local Mailing = TSM.Banking:NewPackage("Mailing")
+local TempTable = TSM.Include("Util.TempTable")
 local private = {}
 
 
@@ -17,24 +18,24 @@ local private = {}
 -- ============================================================================
 
 function Mailing.MoveGroupsToBank(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.GroupsGetNumToMoveToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Mailing.NongroupToBank(callback)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateItemsFromBags(items, private.NongroupGetNumToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Mailing.TargetShortfallToBags(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.TargetShortfallGetNumToBags)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 

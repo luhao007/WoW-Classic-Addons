@@ -9,7 +9,8 @@
 local _, TSM = ...
 local Vendoring = TSM.Operations:NewPackage("Vendoring")
 local private = {}
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
 local OPERATION_INFO = {
 	sellAfterExpired = { type = "number", default = 20 },
 	sellSoulbound = { type = "boolean", default = false },
@@ -41,7 +42,7 @@ end
 -- ============================================================================
 
 function private.GetOperationInfo(operationSettings)
-	local parts = TSM.TempTable.Acquire()
+	local parts = TempTable.Acquire()
 	if operationSettings.enableBuy and operationSettings.restockQty > 0 then
 		tinsert(parts, format(L["Restocking to %d."], operationSettings.restockQty))
 	end
@@ -56,6 +57,6 @@ function private.GetOperationInfo(operationSettings)
 	end
 
 	local result = table.concat(parts, " ")
-	TSM.TempTable.Release(parts)
+	TempTable.Release(parts)
 	return result
 end

@@ -8,7 +8,11 @@
 
 local _, TSM = ...
 local Gathering = TSM.UI.CraftingUI:NewPackage("Gathering")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
+local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	frame = nil,
 	query = nil,
@@ -40,11 +44,11 @@ local SOURCE_TEXT_LIST = {
 	L["AH (Disenchanting)"],
 	L["AH (Crafting)"],
 }
-if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-	TSM.Table.RemoveByValue(SOURCE_LIST, "guildBank")
-	TSM.Table.RemoveByValue(SOURCE_LIST, "altGuildBank")
-	TSM.Table.RemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
-	TSM.Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
+if TSM.IsWowClassic() then
+	Table.RemoveByValue(SOURCE_LIST, "guildBank")
+	Table.RemoveByValue(SOURCE_LIST, "altGuildBank")
+	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
+	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
 end
 assert(#SOURCE_LIST == #SOURCE_TEXT_LIST)
 local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
@@ -175,7 +179,7 @@ function private.GetGatheringFrame()
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
 						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-						:SetIconInfo("itemString", TSMAPI_FOUR.Item.GetTexture)
+						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
 						:Commit()
@@ -208,7 +212,7 @@ function private.GetGatheringFrame()
 						:Commit()
 					:Commit()
 				:SetQuery(TSM.Crafting.Gathering.CreateQuery()
-					:InnerJoin(TSM.ItemInfo.GetDBForJoin(), "itemString")
+					:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 					:OrderBy("name", true)
 				)
 				:SetAutoReleaseQuery(true)
@@ -256,17 +260,17 @@ function private.CreateSourceRows(frame)
 end
 
 function private.UpdateSourceRows(setupFrame)
-	if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
-		TSM.Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
+	if TSM.IsWowClassic() then
+		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
+		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
 	end
-	local texts = TSM.TempTable.Acquire()
-	local sources = TSM.TempTable.Acquire()
+	local texts = TempTable.Acquire()
+	local sources = TempTable.Acquire()
 	for i = 1, #SOURCE_LIST do
 		wipe(texts)
 		wipe(sources)
 		for j = 1, #SOURCE_LIST do
-			local index = TSM.Table.KeyByValue(TSM.db.profile.gatheringOptions.sources, SOURCE_LIST[j])
+			local index = Table.KeyByValue(TSM.db.profile.gatheringOptions.sources, SOURCE_LIST[j])
 			if not index or index >= i then
 				tinsert(texts, SOURCE_TEXT_LIST[j])
 				tinsert(sources, SOURCE_LIST[j])
@@ -282,8 +286,8 @@ function private.UpdateSourceRows(setupFrame)
 			:SetHintText(L["Select a Source"])
 			:SetSelectedItemByKey(TSM.db.profile.gatheringOptions.sources[i], true)
 	end
-	TSM.TempTable.Release(texts)
-	TSM.TempTable.Release(sources)
+	TempTable.Release(texts)
+	TempTable.Release(sources)
 end
 
 
@@ -313,14 +317,14 @@ function private.CrafterDropdownOnSelectionChanged(dropdown)
 end
 
 function private.ProfessionDropdownOnSelectionChanged(dropdown)
-	local professions = TSM.TempTable.Acquire()
+	local professions = TempTable.Acquire()
 	for _, profession in ipairs(TSM.Crafting.Gathering.GetProfessionList()) do
 		if dropdown:ItemIsSelected(profession) then
 			tinsert(professions, profession)
 		end
 	end
 	TSM.Crafting.Gathering.SetProfessions(professions)
-	TSM.TempTable.Release(professions)
+	TempTable.Release(professions)
 end
 
 function private.SourceDropdownOnSelectionChanged(dropdown)
@@ -381,5 +385,5 @@ function private.UpdateButtonState()
 end
 
 function private.QueryPlayerFilter(row, player)
-	return TSM.String.SeparatedContains(row:GetField("players"), ",", player)
+	return String.SeparatedContains(row:GetField("players"), ",", player)
 end

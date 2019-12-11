@@ -8,8 +8,13 @@
 
 local _, TSM = ...
 local Crafting = TSM.MainUI.Operations:NewPackage("Crafting")
-local L = TSM.L
-local private = { currentOperationName = nil }
+local L = TSM.Include("Locale").GetTable()
+local Math = TSM.Include("Util.Math")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
+local private = {
+	currentOperationName = nil,
+}
 
 
 
@@ -70,7 +75,7 @@ function private.GetCraftingOperationSettings(operationName)
 						:SetStyle("textColor", "#ffffff")
 						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minProfit") or operation.minProfit == "")
 						:SetSettingInfo(operation, "minProfit", TSM.MainUI.Operations.CheckCustomPrice)
-						:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.minProfit)) or TSM.Money.ToString(operation.minProfit) or operation.minProfit)
+						:SetText(Money.ToString(Money.FromString(operation.minProfit)) or Money.ToString(operation.minProfit) or operation.minProfit)
 						:SetScript("OnEnterPressed", private.MinProfitOnChanged)
 						:SetScript("OnTabPressed", private.MinProfitOnChanged)
 					)
@@ -169,7 +174,7 @@ function private.MinProfitToggleOnValueChanged(toggle, value)
 		:SetStyle("textColor", value and "#e2e2e2" or "#424242")
 	settingsFrame:GetElement("minProfitInputFrame.minProfit.input")
 		:SetDisabled(not value)
-		:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.minProfit)) or operation.minProfit)
+		:SetText(Money.ToString(Money.FromString(operation.minProfit)) or operation.minProfit)
 	settingsFrame:Draw()
 end
 
@@ -187,11 +192,11 @@ function private.CraftPriceToggleOnValueChanged(toggle, value)
 end
 
 function private.MoneyValueConvert(input)
-	local text = gsub(strtrim(input:GetText()), TSM.String.Escape(LARGE_NUMBER_SEPERATOR), "")
-	local value = min(max(tonumber(text) or TSM.Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
+	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	local value = min(max(tonumber(text) or Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
 
 	input:SetFocused(false)
-	input:SetText(TSM.Money.ToString(value))
+	input:SetText(Money.ToString(value))
 		:Draw()
 end
 
@@ -199,9 +204,9 @@ function private.MinProfitOnChanged(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text, true) then
 		local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(operation.minProfit)) or TSM.Money.ToString(operation.minProfit) or operation.minProfit)
+		input:SetText(Money.ToString(Money.FromString(operation.minProfit)) or Money.ToString(operation.minProfit) or operation.minProfit)
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end
@@ -217,7 +222,7 @@ end
 
 function private.CraftPriceOnCursorChanged(input, _, y)
 	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(TSM.Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
 end
 
 function private.CraftPriceOnMouseUp(frame)
@@ -228,12 +233,12 @@ function private.CraftPriceOnEnterPressed(input)
 	local text = input:GetText()
 	if not TSM.MainUI.Operations.CheckCustomPrice(text, true) then
 		local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-		input:SetText(TSM.Money.ToString(operation.craftPriceMethod) or operation.craftPriceMethod)
+		input:SetText(Money.ToString(operation.craftPriceMethod) or operation.craftPriceMethod)
 		input:SetFocused(true)
 
 		private.CraftPriceOnSizeChanged(input, nil, input:GetHeight())
 	else
-		input:SetText(TSM.Money.ToString(TSM.Money.FromString(text)) or TSM.Money.ToString(text) or text)
+		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
 	end
 end

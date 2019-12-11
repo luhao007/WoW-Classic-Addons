@@ -8,6 +8,9 @@
 
 local _, TSM = ...
 local Auctioning = TSM.Banking:NewPackage("Auctioning")
+local TempTable = TSM.Include("Util.TempTable")
+local BagTracking = TSM.Include("Service.BagTracking")
+local GuildTracking = TSM.Include("Service.GuildTracking")
 local private = {}
 
 
@@ -17,31 +20,31 @@ local private = {}
 -- ============================================================================
 
 function Auctioning.MoveGroupsToBank(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.GroupsGetNumToMoveToBank)
 	TSM.Banking.MoveToBank(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Auctioning.PostCapToBags(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveToBags)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Auctioning.ShortfallToBags(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromOpenBank(items, groups, private.GetNumToMoveToBags, true)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 function Auctioning.MaxExpiresToBank(callback, groups)
-	local items = TSM.TempTable.Acquire()
+	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.MaxExpiresGetNumToMoveToBank)
 	TSM.Banking.MoveToBag(items, callback)
-	TSM.TempTable.Release(items)
+	TempTable.Release(items)
 end
 
 
@@ -58,7 +61,10 @@ end
 function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 	local totalNumToMove = 0
 	local numAvailable = numHave
-	local numInBags = TSM.Inventory.BagTracking.GetQuantityByAutoBaseItemString(itemString, true, true)
+	local numInBags = BagTracking.CreateQueryBagsItem(itemString)
+		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:Equal("autoBaseItemString", itemString)
+		:SumAndRelease("quantity") or 0
 	if includeAH then
 		numInBags = numInBags + select(3, TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString)) + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString)
 	end
@@ -78,13 +84,19 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 				if TSM.Banking.IsGuildBankOpen() and operationSettings.keepQtySources.guild then
 					local numInBank = 0
 					if operationSettings.keepQtySources.bank then
-						numInBank = TSM.Inventory.BagTracking.GetBankQuantityByAutoBaseItemString(itemString, true, true)
+						numInBank = BagTracking.CreateQueryBankItem(itemString)
+							:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+							:Equal("autoBaseItemString", itemString)
+							:SumAndRelease("quantity") or 0
 					end
 					numAvailable = numAvailable - max(operationSettings.keepQuantity - numInBank, 0)
 				elseif not TSM.Banking.IsGuildBankOpen() and operationSettings.keepQtySources.bank then
 					local numInBank = 0
 					if operationSettings.keepQtySources.guild then
-						numInBank = TSM.Inventory.GuildTracking.GetQuantityByAutoBaseItemString(itemString)
+						numInBank = GuildTracking.CreateQueryItem(itemString)
+							:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+							:Equal("autoBaseItemString", itemString)
+							:SumAndRelease("quantity") or 0
 					end
 					numAvailable = numAvailable - max(operationSettings.keepQuantity - numInBank, 0)
 				end

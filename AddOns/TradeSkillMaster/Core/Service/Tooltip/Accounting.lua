@@ -8,7 +8,8 @@
 
 local _, TSM = ...
 local Accounting = TSM.Tooltip:NewPackage("Accounting")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Math = TSM.Include("Util.Math")
 local private = {}
 local DEFAULTS = {
 	sale = true,
@@ -39,7 +40,7 @@ function private.LoadTooltip(tooltip, itemString, options)
 	if options.sale or options.saleRate then
 		local totalPrice = nil
 		totalPrice, totalSaleNum = TSM.Accounting.Transactions.GetSaleStats(itemString)
-		avgSalePrice = totalPrice and TSM.Math.Round(totalPrice / totalSaleNum) or nil
+		avgSalePrice = totalPrice and Math.Round(totalPrice / totalSaleNum) or nil
 	end
 
 	local lastSaleTime = TSM.Accounting.Transactions.GetLastSaleTime(itemString)
@@ -66,12 +67,12 @@ function private.LoadTooltip(tooltip, itemString, options)
 	end
 
 	if options.saleRate and totalSaleNum and totalFailed then
-		local saleRate = TSM.Math.Round(totalSaleNum / (totalSaleNum + totalFailed), 0.01)
+		local saleRate = Math.Round(totalSaleNum / (totalSaleNum + totalFailed), 0.01)
 		tooltip:AddLine(L["Sale Rate"], "|cffffffff"..saleRate.."|r")
 	end
 
 	local smartBuyPrice, smartBuyNum, totalBuyNum = TSM.Accounting.Transactions.GetBuyStats(itemString)
-	local avgBuyPrice = (smartBuyPrice and smartBuyPrice > 0 and smartBuyNum and smartBuyNum > 0) and TSM.Math.Round(smartBuyPrice / smartBuyNum) or nil
+	local avgBuyPrice = (smartBuyPrice and smartBuyPrice > 0 and smartBuyNum and smartBuyNum > 0) and Math.Round(smartBuyPrice / smartBuyNum) or nil
 	if options.purchase and avgBuyPrice then
 		local lastBuyTime = TSM.Accounting.Transactions.GetLastBuyTime(itemString)
 		assert(lastBuyTime)

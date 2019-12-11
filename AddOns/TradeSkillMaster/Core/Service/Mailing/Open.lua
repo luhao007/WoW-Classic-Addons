@@ -8,7 +8,16 @@
 
 local _, TSM = ...
 local Open = TSM.Mailing:NewPackage("Open")
-local L = TSM.L
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local Event = TSM.Include("Util.Event")
+local String = TSM.Include("Util.String")
+local Money = TSM.Include("Util.Money")
+local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
+local Threading = TSM.Include("Service.Threading")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local MailTracking = TSM.Include("Service.MailTracking")
 local private = {
 	thread = nil,
 	isOpening = false,
@@ -23,27 +32,27 @@ local private = {
 -- ============================================================================
 
 function Open.OnInitialize()
-	private.thread = TSMAPI_FOUR.Thread.New("MAIL_OPENING", private.OpenMailThread)
+	private.thread = Threading.New("MAIL_OPENING", private.OpenMailThread)
 
-	TSM.Event.Register("MAIL_SHOW", private.ScheduleCheck)
-	TSM.Event.Register("MAIL_CLOSED", private.MailClosedHandler)
+	Event.Register("MAIL_SHOW", private.ScheduleCheck)
+	Event.Register("MAIL_CLOSED", private.MailClosedHandler)
 end
 
 function Open.KillThread()
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 
 	private.PrintMoneyCollected()
 	private.isOpening = false
 end
 
 function Open.StartOpening(callback, autoRefresh, keepMoney, filterText, filterType)
-	TSMAPI_FOUR.Thread.Kill(private.thread)
+	Threading.Kill(private.thread)
 
 	private.isOpening = true
 	private.moneyCollected = 0
 
-	TSMAPI_FOUR.Thread.SetCallback(private.thread, callback)
-	TSMAPI_FOUR.Thread.Start(private.thread, autoRefresh, keepMoney, filterText, filterType)
+	Threading.SetCallback(private.thread, callback)
+	Threading.Start(private.thread, autoRefresh, keepMoney, filterText, filterType)
 end
 
 function Open.GetLastCheckTime()
@@ -71,7 +80,7 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 			query:Equal("icon", filterType)
 		end
 
-		local mails = TSMAPI_FOUR.Thread.AcquireSafeTempTable()
+		local mails = Threading.AcquireSafeTempTable()
 
 		for _, index in query:Iterator() do
 			tinsert(mails, index)
@@ -81,7 +90,7 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 
 		private.OpenMails(mails, keepMoney, filterType)
 
-		TSMAPI_FOUR.Thread.ReleaseSafeTempTable(mails)
+		Threading.ReleaseSafeTempTable(mails)
 
 		if not autoRefresh then
 			break
@@ -93,7 +102,7 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 		end
 
 		CheckInbox()
-		TSMAPI_FOUR.Thread.Sleep(1)
+		Threading.Sleep(1)
 	end
 
 	private.PrintMoneyCollected()
@@ -107,9 +116,9 @@ end
 function private.OpenMails(mails, keepMoney, filterType)
 	for i = 1, #mails do
 		local index = mails[i]
-		TSMAPI_FOUR.Thread.WaitForFunction(private.CanOpenMail)
+		Threading.WaitForFunction(private.CanOpenMail)
 
-		local mailType = TSM.Inventory.MailTracking.GetMailType(index)
+		local mailType = MailTracking.GetMailType(index)
 		if (not filterType and mailType) or (filterType and filterType == mailType) then
 			if CalculateTotalNumberOfFreeBagSlots() <= TSM.db.global.mailingOptions.keepMailSpace then
 				return
@@ -121,7 +130,7 @@ function private.OpenMails(mails, keepMoney, filterType)
 				AutoLootMailItem(index)
 				private.moneyCollected = private.moneyCollected + money
 
-				if TSMAPI_FOUR.Thread.WaitForEvent("CLOSE_INBOX_ITEM", "MAIL_FAILED") ~= "MAIL_FAILED" then
+				if Threading.WaitForEvent("CLOSE_INBOX_ITEM", "MAIL_FAILED") ~= "MAIL_FAILED" then
 					if TSM.db.global.mailingOptions.inboxMessages then
 						private.PrintOpenMailMessage(index)
 					end
@@ -151,7 +160,7 @@ end
 
 function private.PrintMoneyCollected()
 	if TSM.db.global.mailingOptions.inboxMessages and private.moneyCollected > 0 then
-		TSM:Printf(L["Total Gold Collected: %s"], TSM.Money.ToString(private.moneyCollected))
+		Log.PrintfUser(L["Total Gold Collected: %s"], Money.ToString(private.moneyCollected))
 	end
 	private.moneyCollected = 0
 end
@@ -165,10 +174,10 @@ function private.PrintOpenMailMessage(index)
 		local invoiceType, itemName, playerName, bid, _, _, ahcut, _, _, _, quantity = GetInboxInvoiceInfo(index)
 		playerName = playerName or "?"
 		if invoiceType == "buyer" then
-			local itemLink =  TSM.Inventory.MailTracking.GetInboxItemLink(index) or itemName
-			TSM:Printf(L["Bought %sx%d for %s from %s"], itemLink, quantity, TSM.Money.ToString(bid, "|cffff0000"), playerName)
+			local itemLink =  MailTracking.GetInboxItemLink(index) or itemName
+			Log.PrintfUser(L["Bought %sx%d for %s from %s"], itemLink, quantity, Money.ToString(bid, "|cffff0000"), playerName)
 		elseif invoiceType == "seller" then
-			TSM:Printf(L["Sold [%s]x%d for %s to %s"], itemName, quantity, TSM.Money.ToString(bid - ahcut, "|cff00ff00"), playerName)
+			Log.PrintfUser(L["Sold [%s]x%d for %s to %s"], itemName, quantity, Money.ToString(bid - ahcut, "|cff00ff00"), playerName)
 		end
 	elseif hasItem then
 		local itemLink
@@ -177,32 +186,32 @@ function private.PrintOpenMailMessage(index)
 			local link = GetInboxItemLink(index, i)
 			itemLink = itemLink or link
 			quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
-			if TSMAPI_FOUR.Item.ToItemString(itemLink) ~= TSMAPI_FOUR.Item.ToItemString(link) then
+			if ItemString.Get(itemLink) ~= ItemString.Get(link) then
 				itemLink = L["Multiple Items"]
 				quantity = -1
 				break
 			end
 		end
 		if hasItem == 1 then
-			itemLink = TSM.Inventory.MailTracking.GetInboxItemLink(index) or itemLink
+			itemLink = MailTracking.GetInboxItemLink(index) or itemLink
 		end
-		local itemName = TSMAPI_FOUR.Item.GetName(itemLink) or "?"
+		local itemName = ItemInfo.GetName(itemLink) or "?"
 		local itemDesc = (quantity > 0 and format("%sx%d", itemLink, quantity)) or (quantity == -1 and "Multiple Items") or "?"
-		if hasItem == 1 and itemLink and strfind(subject, "^" .. TSM.String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
-			TSM:Printf(L["Your auction of %s expired"], itemDesc)
+		if hasItem == 1 and itemLink and strfind(subject, "^" .. String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
+			Log.PrintfUser(L["Your auction of %s expired"], itemDesc)
 		elseif hasItem == 1 and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.."x%d", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
-			TSM:Printf(L["Cancelled auction of %sx%d"], itemLink, quantity)
+			Log.PrintfUser(L["Cancelled auction of %sx%d"], itemLink, quantity)
 		elseif cod > 0 then
-			TSM:Printf(L["%s sent you a COD of %s for %s"], sender, TSM.Money.ToString(cod, "|cffff0000"), itemDesc)
+			Log.PrintfUser(L["%s sent you a COD of %s for %s"], sender, Money.ToString(cod, "|cffff0000"), itemDesc)
 		elseif money > 0 then
-			TSM:Printf(L["%s sent you %s and %s"], sender, itemDesc, TSM.Money.ToString(money, "|cff00ff00"))
+			Log.PrintfUser(L["%s sent you %s and %s"], sender, itemDesc, Money.ToString(money, "|cff00ff00"))
 		else
-			TSM:Printf(L["%s sent you %s"], sender, itemDesc)
+			Log.PrintfUser(L["%s sent you %s"], sender, itemDesc)
 		end
 	elseif money > 0 then
-		TSM:Printf(L["%s sent you %s"], sender, TSM.Money.ToString(money, "|cff00ff00"))
+		Log.PrintfUser(L["%s sent you %s"], sender, Money.ToString(money, "|cff00ff00"))
 	elseif subject then
-		TSM:Printf(L["%s sent you a message: %s"], sender, subject)
+		Log.PrintfUser(L["%s sent you a message: %s"], sender, subject)
 	end
 end
 
@@ -214,13 +223,13 @@ end
 function private.ScheduleCheck()
 	if not private.lastCheck or time() - private.lastCheck > 60 then
 		private.lastCheck = time()
-		TSMAPI_FOUR.Delay.AfterTime("mailInboxCheck", 61, private.CheckInbox)
+		Delay.AfterTime("mailInboxCheck", 61, private.CheckInbox)
 	else
 		local nextUpdate = 61 - (time() - private.lastCheck)
-		TSMAPI_FOUR.Delay.AfterTime("mailInboxCheck", nextUpdate, private.CheckInbox)
+		Delay.AfterTime("mailInboxCheck", nextUpdate, private.CheckInbox)
 	end
 end
 
 function private.MailClosedHandler()
-	TSMAPI_FOUR.Delay.Cancel("mailInboxCheck")
+	Delay.Cancel("mailInboxCheck")
 end
