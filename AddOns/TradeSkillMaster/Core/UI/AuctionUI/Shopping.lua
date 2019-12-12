@@ -1724,10 +1724,15 @@ function private.QuantityStackInputOnTabPressed(input)
 end
 
 function private.UpdateDepositCost(frame)
+	local itemString = frame:GetElement("confirmBtn"):GetContext()
+	if not itemString then
+		return
+	end
+
 	local postBag, postSlot = BagTracking.CreateQueryBagsAuctionable()
 		:OrderBy("slotId", true)
 		:Select("bag", "slot")
-		:Equal("itemString", frame:GetElement("confirmBtn"):GetContext())
+		:Equal("itemString", itemString)
 		:GetFirstResultAndRelease()
 	if postBag and postSlot then
 		ClearCursor()

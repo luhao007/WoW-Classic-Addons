@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Funkydude, Nebula
 ## Version: v3-classic
 ## OptionalDeps: Ace3, LibCandyBar-3.0, LibSharedMedia-3.0, LibDDI-1.0, LibChatAnims, LibLatency, LibDurability, LibDialog-1.0, Masque

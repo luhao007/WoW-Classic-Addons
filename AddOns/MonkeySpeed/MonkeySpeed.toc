@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Trentin, Jim-Bim
 ## Version: v3.4.0
 ## OptionalDeps: LibDataBroker-1.1

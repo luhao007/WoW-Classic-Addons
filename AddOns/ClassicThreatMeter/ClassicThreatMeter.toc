@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Es (EsreverWoW)
 ## Version: 1.10
 ## OptionalDeps: LibStub, CallbackHandler-1.0, AceAddon-3.0, AceEvent-3.0, AceTimer-3.0, AceBucket-3.0, AceGUI-3.0, AceConfig-3.0, AceComm-3.0, AceSerializer-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, ThreatClassic-1.0

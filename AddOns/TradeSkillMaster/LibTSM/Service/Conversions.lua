@@ -110,10 +110,11 @@ function Conversions.GetSourceItems(targetItemString)
 		depthLookup[targetItemString] = -1 -- set this so we don't loop back through the target item
 		private.sourceItemCache[targetItemString] = {}
 		private.GetSourceItemsHelper(targetItemString, private.sourceItemCache[targetItemString], depthLookup, 0, 1)
+		TempTable.Release(depthLookup)
 		if not next(private.sourceItemCache[targetItemString]) then
 			private.sourceItemCache[targetItemString] = EMPTY_CONVERSION
+			return
 		end
-		TempTable.Release(depthLookup)
 	end
 	return private.sourceItemCache[targetItemString]
 end

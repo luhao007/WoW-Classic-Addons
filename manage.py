@@ -63,7 +63,7 @@ def manage(verbose=False):
 
         toc = TOC(lines)
 
-        toc.tags['Interface'] = '11302' if '_classic_' in os.getcwd() else '80205'
+        toc.tags['Interface'] = '11303' if '_classic_' in os.getcwd() else '80205'
 
         if addon not in MAPPING:
             print('{} not found!'.format(addon))

@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Cybeloras of Aerie Peak
 ## RequiredDeps: TellMeWhen
 ## OptionalDeps: LibBabble-CreatureType-3.0, LibBabble-Race-3.0

@@ -438,6 +438,7 @@ function AuctionScan._CreateAuctionRowIfNotFiltered(self, index, filter)
 		:SetField("filterId", filterId)
 		:SetField("targetItem", targetItem)
 		:SetField("targetItemRate", targetItemRate)
+		:SetField("auctionId", 0)
 		:CreateAndClone()
 end
 

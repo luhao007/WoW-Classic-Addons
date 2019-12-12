@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Sutorix=AT=hotmail.com
 ## Version: 0.7 Beta 1
 ## OptionalDeps: FB_Debugging, Outfitter, myAddOns, Titan, InfoBar, FishWarden

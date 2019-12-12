@@ -223,7 +223,7 @@ local DATA = TSM.IsWowClassic() and {} or {
 		["i:152510"] = 0.825,
 	},
 	["i:168662"] = { -- Maroon Pigment
-		["i:152505"] = 0.825,
+		["i:168487"] = 0.825,
 	},
 }
 

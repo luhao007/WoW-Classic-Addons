@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11303
 ## Author: Isler
 ## Version: 2.5.4
 ## RequiredDeps: CritSound

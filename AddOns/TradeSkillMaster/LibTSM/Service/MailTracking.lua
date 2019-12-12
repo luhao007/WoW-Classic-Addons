@@ -370,12 +370,7 @@ function private.GetMailType(index, firstItemString)
 	elseif numItems and numItems > 0 and info == "buyer" then
 		return "BUY"
 	elseif not info and numItems == 1 then
-		local itemName = nil
-		itemName = firstItemString and ItemInfo.GetName(firstItemString) or nil
-		if not itemName then
-			local itemLink = private.GetInboxItemLink(index, 1)
-			itemName = itemLink and ItemInfo.GetName(itemLink) or nil
-		end
+		local itemName = ItemInfo.GetName(private.GetInboxItemLink(index, 1))
 		if itemName then
 			local _, _, _, quantity = GetInboxItem(index, 1)
 			if quantity and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.." (%d)", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
