@@ -46,9 +46,13 @@ Prat:AddModuleExtension(function()
         }
     }
 
-	Prat.RegisterPattern({ pattern = "|H.-|h.-|h",
+    Prat.RegisterPattern({ pattern = "|c.-|H.-:.-|h.-|h|r",
 			matchfunc=function(link) return Prat:RegisterMatch(link) end, 
 			type = "FRAME", priority = 45 }, module.name)
+
+    Prat.RegisterPattern({ pattern = "|H.-:.-|h.-|h",
+        matchfunc=function(link) return Prat:RegisterMatch(link) end,
+        type = "FRAME", priority = 44 }, module.name)
 
     local ColorPlayer
     do  

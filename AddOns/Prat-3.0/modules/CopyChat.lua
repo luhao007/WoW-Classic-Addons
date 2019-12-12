@@ -162,8 +162,7 @@ PL:AddLocale(PRAT_MODULE, "itIT", L)
 
 L = {
 	["CopyChat"] = {
-		--[[Translation missing --]]
-		[" Text"] = " Text",
+		[" Text"] = "Texto",
 		--[[Translation missing --]]
 		["BBCode"] = "BBCode",
 		--[[Translation missing --]]
@@ -204,8 +203,7 @@ L = {
 		["TOPLEFT"] = "Top, Left",
 		--[[Translation missing --]]
 		["TOPRIGHT"] = "Top, Right",
-		--[[Translation missing --]]
-		["Wowace.com Forums"] = "Wowace.com Forums",
+		["Wowace.com Forums"] = "Wowace.com Fóruns",
 	}
 }
 
@@ -375,7 +373,7 @@ L = {
 		["Copy Text Format"] = "Формат копирования текста",
 		["Copy text from the active chat window."] = "Копировать текст из активного окна чата.",
 		["Copy To Editbox"] = "Копировать чат",
-		["CopyChat"] = "Копия Чата",
+		["CopyChat"] = "Копия Чата ",
 		["HTML"] = true,
 		["Message From : %s"] = "Сообщение от : %s",
 		["Plain"] = "Обычный текст",

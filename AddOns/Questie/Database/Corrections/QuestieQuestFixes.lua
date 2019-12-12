@@ -58,8 +58,12 @@ function QuestieQuestFixes:Load()
         [165] = {
             [QuestieDB.questKeys.exclusiveTo] = {148}, --#1173
         },
+        [254] = {
+            [QuestieDB.questKeys.parentQuest] = {253},
+        },
         [308] = {
             [QuestieDB.questKeys.exclusiveTo] = {311}, -- distracting jarven can't be completed once you get the followup
+            [QuestieDB.questKeys.specialFlags] = 1,
         },
         [310] = {
             [QuestieDB.questKeys.childQuests] = {403},
@@ -80,6 +84,7 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.preQuestSingle] = {427}, -- proof of demise requires at war with the scarlet crusade
         },
         [403] = {
+            [QuestieDB.questKeys.specialFlags] = 1,
             [QuestieDB.questKeys.parentQuest] = 310,
         },
         [410] = { -- the dormant shade
@@ -160,6 +165,9 @@ function QuestieQuestFixes:Load()
         [680] = {
             [QuestieDB.questKeys.preQuestSingle] = {678}, -- #1062
         },
+        [690] = {
+            [QuestieDB.questKeys.exclusiveTo] = {691}, -- #1587
+        },
         [691] = {
             [QuestieDB.questKeys.preQuestSingle] = {},
         },
@@ -181,11 +189,18 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.specialFlags] = 1,
             [QuestieDB.questKeys.exclusiveTo] = {654},
         },
+        [860] = {
+            [QuestieDB.questKeys.exclusiveTo] = {844},
+        },
         [861] = {
+            [QuestieDB.questKeys.nextQuestInChain] = {860},
             [QuestieDB.questKeys.exclusiveTo] = {860,844}, -- #1109
         },
         [862] = {
             [QuestieDB.questKeys.requiredSkill] = {185,76}, -- You need to be a Journeyman for this quest
+        },
+        [886] = {
+            [QuestieDB.questKeys.exclusiveTo] = {870},
         },
         [926] = {
             [QuestieDB.questKeys.parentQuest] = 924, -- #806
@@ -236,11 +251,17 @@ function QuestieQuestFixes:Load()
         [1265] = {
             [QuestieDB.questKeys.triggerEnd] = {"Sentry Point explored",{[15]={{59.92,40.9},}}},
         },
+        [1268] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{21015,21016,},nil,}, -- #1574
+        },
         [1275] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- #973 -- #745 prequest is not required in Classic
         },
         [1276] = {
-            [QuestieDB.questKeys.preQuestSingle] = {1273,},
+            [QuestieDB.questKeys.preQuestSingle] = {1273,}, -- #1574
+        },
+        [1284] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{21015,21016,},nil,},
         },
         [1301] = {
             [QuestieDB.questKeys.exclusiveTo] = {1302}, -- breadcrumb of James Hyal #917
@@ -250,6 +271,12 @@ function QuestieQuestFixes:Load()
         },
         [1339] = {
             [QuestieDB.questKeys.exclusiveTo] = {1338}, -- mountaineer stormpike's task cant be done if you have finished stormpike's order
+        },
+        [1361] = {
+            [QuestieDB.questKeys.exclusiveTo] = {1362},
+        },
+        [1418] = {
+            [QuestieDB.questKeys.exclusiveTo] = {1419,1420}, -- #1594
         },
         [1427] = {
             [QuestieDB.questKeys.nextQuestInChain] = 1428,
@@ -384,6 +411,7 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.requiredRaces] = 77,
         },
         [2501] = {
+            [QuestieDB.questKeys.preQuestSingle] = {}, -- #1541
             [QuestieDB.questKeys.preQuestGroup] = {2500,17}, -- #1541
         },
         [2781] = {
@@ -401,6 +429,16 @@ function QuestieQuestFixes:Load()
         },
         [2922] = {
             [QuestieDB.questKeys.preQuestSingle] = {}, -- Save Techbot's Brain doesn't need the Tinkmaster Overspark breadcrumb #687
+        },
+        [2951] = {
+            [QuestieDB.questKeys.preQuestSingle] = {4601,4602},
+            [QuestieDB.questKeys.specialFlags] = 1,
+        },
+        [2952] = {
+            [QuestieDB.questKeys.exclusiveTo] = {4605,4606},
+        },
+        [2978] = {
+            [QuestieDB.questKeys.startedBy] = {nil,{143980},{9370,},}, -- #1596
         },
         [2981] = {
             [QuestieDB.questKeys.exclusiveTo] = {2975},
@@ -441,6 +479,15 @@ function QuestieQuestFixes:Load()
         [3483] = {
             [QuestieDB.questKeys.parentQuest] = 3449, -- #1008
             [QuestieDB.questKeys.specialFlags] = 1, -- #1131
+        },
+        [3639] = {
+            [QuestieDB.questKeys.exclusiveTo] = {3643,3641},
+        },
+        [3641] = {
+            [QuestieDB.questKeys.exclusiveTo] = {3639},
+        },
+        [3643] = {
+            [QuestieDB.questKeys.exclusiveTo] = {3639},
         },
         [3681] = {
             [QuestieDB.questKeys.exclusiveTo] = {1642,1646,2997,2998,2999,3000},
@@ -520,6 +567,9 @@ function QuestieQuestFixes:Load()
         [4122] = {
             [QuestieDB.questKeys.preQuestSingle] = {4082}, -- #1349
         },
+        [4144] = {
+            [QuestieDB.questKeys.specialFlags] = 1, -- #1590
+        },
         [4224] = {
             [QuestieDB.questKeys.triggerEnd] = {"Ragged John's Story",{[46]={{64,23},},},},
         },
@@ -543,6 +593,20 @@ function QuestieQuestFixes:Load()
         },
         [4496] = {
             [QuestieDB.questKeys.preQuestSingle] = {4493,4494},
+        },
+        [4601] = {
+            [QuestieDB.questKeys.preQuestSingle] = {2951,4602},
+            [QuestieDB.questKeys.specialFlags] = 1,
+        },
+        [4602] = {
+            [QuestieDB.questKeys.preQuestSingle] = {2951,4601},
+            [QuestieDB.questKeys.specialFlags] = 1,
+        },
+        [4605] = {
+            [QuestieDB.questKeys.exclusiveTo] = {2952,4606},
+        },
+        [4606] = {
+            [QuestieDB.questKeys.exclusiveTo] = {2952,4605},
         },
         [4641] = {
             [QuestieDB.questKeys.requiredRaces] = 178, -- #877
@@ -681,11 +745,26 @@ function QuestieQuestFixes:Load()
         [6144] = {
             [QuestieDB.questKeys.preQuestSingle] = {6135,6136}, -- #1572
         },
+        [6603] = {
+            [QuestieDB.questKeys.exclusiveTo] = {5082},
+        },
         [6608] = {
             [QuestieDB.questKeys.exclusiveTo] = {6607}, -- #1186
         },
         [6609] = {
             [QuestieDB.questKeys.exclusiveTo] = {6607}, -- #1154
+        },
+        [6861] = {
+            [QuestieDB.questKeys.objectivesText] = {},
+        },
+        [6862] = {
+            [QuestieDB.questKeys.objectivesText] = {},
+        },
+        [7002] = {
+            [QuestieDB.questKeys.objectivesText] = {},
+        },
+        [7026] = {
+            [QuestieDB.questKeys.objectivesText] = {},
         },
         [7028] = {
             [QuestieDB.questKeys.objectivesText] = {"Collect 25 Theradric Crystal Carvings for Willow in Desolace.",},
@@ -695,6 +774,12 @@ function QuestieQuestFixes:Load()
         },
         [7070] = {
             [QuestieDB.questKeys.requiredLevel] = 39,
+        },
+        [7141] = {
+            [QuestieDB.questKeys.triggerEnd] = {"Defeat Drek'thar.",{[2597]={{47.22,86.95},},},},
+        },
+        [7142] = {
+            [QuestieDB.questKeys.triggerEnd] = {"Defeat Vanndar Stormpike.",{[2597]={{42.29,12.85},},},},
         },
         [7166] = { -- bad race data
             [QuestieDB.questKeys.requiredRaces] = 178,
@@ -710,6 +795,21 @@ function QuestieQuestFixes:Load()
         },
         [7172] = { -- bad race data
             [QuestieDB.questKeys.requiredRaces] = 77,
+        },
+        [7201] = {
+            [QuestieDB.questKeys.preQuestSingle] = {3906},
+        },
+        [7241] = {
+            [QuestieDB.questKeys.exclusiveTo] = {7161},
+        },
+        [7261] = {
+            [QuestieDB.questKeys.exclusiveTo] = {7162},
+        },
+        [7385] = {
+            [QuestieDB.questKeys.objectivesText] = {},
+        },
+        [7386] = {
+            [QuestieDB.questKeys.objectivesText] = {},
         },
         [7426] = { -- bad race data
             [QuestieDB.questKeys.requiredRaces] = 77,
@@ -771,6 +871,9 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.exclusiveTo] = {7638,},
             [QuestieDB.questKeys.zoneOrSort] = -141,
         },
+        [7838] = {
+            [QuestieDB.questKeys.specialFlags] = 1, -- #1589
+        },
         [7886] = { -- #1435
             [QuestieDB.questKeys.startedBy] = {{14733},nil,nil},
             [QuestieDB.questKeys.finishedBy] = {{14733},nil,},
@@ -804,6 +907,42 @@ function QuestieQuestFixes:Load()
         },
         [8296] = { -- bad race data
             [QuestieDB.questKeys.requiredRaces] = 178,
+        },
+        [8368] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8426,8427,8428,8429,8430},
+        },
+        [8372] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8399,8400,8401,8402,8403},
+        },
+        [8399] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8372,8400,8401,8402,8403},
+        },
+        [8400] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8372,8399,8401,8402,8403},
+        },
+        [8401] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8372,8399,8400,8402,8403},
+        },
+        [8402] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8372,8399,8400,8401,8403},
+        },
+        [8403] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8372,8399,8400,8401,8402},
+        },
+        [8426] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8368,8427,8428,8429,8430},
+        },
+        [8427] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8368,8426,8428,8429,8430},
+        },
+        [8428] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8368,8426,8427,8429,8430},
+        },
+        [8429] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8368,8426,8427,8428,8430},
+        },
+        [8430] = {
+            [QuestieDB.questKeys.exclusiveTo] = {8368,8426,8427,8428,8429},
         },
         [8493] = { -- bad race data
             [QuestieDB.questKeys.requiredRaces] = 77,

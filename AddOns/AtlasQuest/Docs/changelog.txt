@@ -2,11 +2,38 @@
 Changelog
 =========
 
+Version 4.11.58  (for WoW Classic)  December 10, 2019
+
+- Russian localization updated by GoodDeath.
+- German localization updated by Guldukat.
+- Spanish localization updated by Woopy.
+- Fixes in Sunken Temple quests (thanks Guldukat)
+
+- Cleanup Progress:
+	- Blackfathom Deeps complete.
+	- Dire Maul East complete.
+	- Dire Maul North complete.
+	- Dire Maul West complete.
+	- Maraudon complete.
+	- Razorfen Downs complete.
+	- Razorfen Kraul complete.
+	- Wailing Caverns complete.
+	- Zul'Farrak complete.
+	- Molten Core complete.
+	- Onyxia's Lair complete.
+	- Zul'Gurub complete.
+	- The Ruins of Ahn'Qiraj complete.
+	- The Temple of Ahn'Qiraj complete.
+	
+
+
+
 Version 4.11.57  (for WoW Classic)  November 4, 2019
 
 - Fixed missing Followup quest for Sunken Temple: The Essence of Eranikus  (thanks nihlolino)
 - Fixed UBRS: The Demon Forge error with Horde quest rewards.  (thanks nihlolino)
 - Fixed LUA errors in German translation.  (thanks MrFIXlT)
+
 
 
 

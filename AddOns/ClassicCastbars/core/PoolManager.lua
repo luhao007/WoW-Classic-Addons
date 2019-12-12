@@ -36,12 +36,10 @@ function PoolManager:InitializeNewFrame(frame)
     frame.Icon:ClearAllPoints()
     frame.Text:ClearAllPoints()
     frame.Icon:SetPoint("LEFT", frame, -15, 0)
-    frame.Flash:ClearAllPoints()
-    frame.Flash:SetPoint("TOPLEFT", -20, 14)
-    frame.Flash:SetPoint("BOTTOMRIGHT", 20, -14)
     frame.Text:SetPoint("CENTER")
 
     -- Clear any scripts inherited from frame template
+    frame:UnregisterAllEvents()
     frame:SetScript("OnLoad", nil)
     frame:SetScript("OnEvent", nil)
     frame:SetScript("OnUpdate", nil)

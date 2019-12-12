@@ -2,6 +2,34 @@
 
 This mod is distributed under Version 2 of the GPL.  A copy of the GPL is included in this zip file with links to non-english translations.
 
+## v1.4.1 (Dec. 02, 2019)
+
+- Items for Sets now show PvP Rank requirements
+- Set Sack of Gems for every Dragon (Ony, Nef,...)
+- Add some missing Class requirements
+- Fix bug with selected boss reset after every reopen
+- Translation updates. Big thanks to all the translators!!!
+
+## v1.4.0 (Dec. 01, 2019)
+
+- New: Items now show class / PvP rank icons
+- Add PvP Non set armor
+- Set Panzor in BRD as rare
+- Add level for Avatar of Hakkar
+- Fix bug with empty boss names
+
+## v1.3.5 (Nov. 30, 2019)
+
+- add Phase 2.5 for PvP
+- move out Phalanx (BRD) into own boss
+- fix bug with item display on first load
+
+## v1.3.4 (Nov. 13, 2019)
+
+- Set content phase 2
+- Update drop data
+- Fix bug with auto selection
+
 ## v1.3.3 (Oct. 28, 2019)
 
 - Fix bug with kr translation

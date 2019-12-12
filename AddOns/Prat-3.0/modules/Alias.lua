@@ -239,18 +239,12 @@ PL:AddLocale(PRAT_MODULE, "itIT", L)
 
 L = {
 	["Alias"] = {
-		--[[Translation missing --]]
-		[" - list all aliases; supply <keyword> to search for matching aliases (cmd aliases: /listallaliases)"] = " - list all aliases; supply <keyword> to search for matching aliases (cmd aliases: /listallaliases)",
-		--[[Translation missing --]]
-		["%s() called with blank string!"] = "%s() called with blank string!",
-		--[[Translation missing --]]
-		["%s() called with nil argument!"] = "%s() called with nil argument!",
-		--[[Translation missing --]]
-		["/%s aliased to \"/%s\""] = "/%s aliased to \"/%s\"",
-		--[[Translation missing --]]
-		["/%s aliased to: /%s"] = "/%s aliased to: /%s",
-		--[[Translation missing --]]
-		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)",
+		[" - list all aliases; supply <keyword> to search for matching aliases (cmd aliases: /listallaliases)"] = "- lista todos os \"apelidos\" ; forneça <palavra-chave> para procurar pelos \"apelidos\" correspondentes (cmd aliases: /listallaliases)",
+		["%s() called with blank string!"] = "%s() chamado faltando um argumento!",
+		["%s() called with nil argument!"] = "%s chamado com um argumento nulo!",
+		["/%s aliased to \"/%s\""] = "/% linkado para \"/%s\"",
+		["/%s aliased to: /%s"] = "/%s linkado para: /%s",
+		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - remove o \"apelido\" <alias> (cmd aliases: /delalias, /remalias)",
 		--[[Translation missing --]]
 		["<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)"] = "<command>[ <value>] - alias <command> to be executed as <value>, or return the value of the currently defined alias for <command> if <command> has not been assigned a value. eg: \"/alias /examplehello /say hello there\" - typing \"/examplehello\" will now cause your character to say \"hello there\"; \"/alias examplehello\" - s \"/examplehello is aliased to /say hello there\" (cmd aliases: /addalias)",
 		--[[Translation missing --]]
@@ -312,12 +306,9 @@ L = {
 		["tried to show value for alias \"%s\" but undefined in module.Aliases!"] = "tried to show value for alias \"%s\" but undefined in module.Aliases!",
 		--[[Translation missing --]]
 		["unalias"] = "unalias",
-		--[[Translation missing --]]
-		["verbose"] = "verbose",
-		--[[Translation missing --]]
-		["warnUser() called with nil argument!"] = "warnUser() called with nil argument!",
-		--[[Translation missing --]]
-		["warnUser() called with zero length string!"] = "warnUser() called with zero length string!",
+		["verbose"] = "prolixo",
+		["warnUser() called with nil argument!"] = "warnUser() chamado com argumento nulo!",
+		["warnUser() called with zero length string!"] = "warnUser() chamado com uma linha vazia.",
 	}
 }
 

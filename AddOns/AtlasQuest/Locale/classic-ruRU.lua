@@ -272,7 +272,7 @@ Inst1Quest14 = "14. Призрачный кубок" -- 4083
 Inst1Quest14_Level = "55"
 Inst1Quest14_Attain = "40"
 Inst1Quest14_Aim = "Драгоценные камни не издают ни звука, когда они падают в глубь чаши..."
-Inst1Quest14_Location = "Gloom'rel (Глубины Черной горы; "..YELLOW.."[18]"..WHITE..")"
+Inst1Quest14_Location = "Мрак'нел (Глубины Черной горы; "..YELLOW.."[18]"..WHITE..")"
 Inst1Quest14_Note = "Только шахтеры с навыком 230 или выше могут получить это задание, чтобы научиться выплавлять черное железо. Материалы для чаши: 2 [Звездный Рубин], 20 [Золотой слиток], 10 [Слиток истинного серебра]. После этого, если у Вас есть [Руда черного железа] Вы можете отнести ее к Черной Кузни "..YELLOW.."[22]"..WHITE.." и выплавить ее."
 Inst1Quest14_Prequest = "Нет"
 Inst1Quest14_Folgequest = "Нет"
@@ -380,7 +380,7 @@ Inst1Quest8_HORDE_Prequest = "Опасное положение" -- 4121
 Inst1Quest8_HORDE_Folgequest = "Нет"
 Inst1Quest8FQuest_HORDE = "true"
 --
-Inst1Quest8name1_HORDE = "Conqueror's Medallion"
+Inst1Quest8name1_HORDE = "Медальон Завоевателя"
 
 --Quest 9 Horde
 Inst1Quest9_HORDE = "9. Восстание машин" -- 4063
@@ -393,13 +393,13 @@ Inst1Quest9_HORDE_Prequest = "Восстание машин" -- 4062
 Inst1Quest9_HORDE_Folgequest = "Нет"
 Inst1Quest9PreQuest_HORDE = "true"
 --
-Inst1Quest9name1_HORDE = "Azure Moon Amice"
-Inst1Quest9name2_HORDE = "Raincaster Drape"
-Inst1Quest9name3_HORDE = "Basaltscale Armor"
-Inst1Quest9name4_HORDE = "Lavaplate Gauntlets"
+Inst1Quest9name1_HORDE = "Лазурный лунный нарамник"
+Inst1Quest9name2_HORDE = "Пелерина Заклинателя Дождя"
+Inst1Quest9name3_HORDE = "Базальтовая чешуйчатая броня"
+Inst1Quest9name4_HORDE = "Лавовые рукавицы"
 
 --Quest 10 Horde  (same as Quest 9 Alliance)
-Inst1Quest10_HORDE = "10. A Taste of Flame"
+Inst1Quest10_HORDE = "10. Вкус пламени"
 Inst1Quest10_HORDE_Level = Inst1Quest9_Level
 Inst1Quest10_HORDE_Attain = Inst1Quest9_Attain
 Inst1Quest10_HORDE_Aim = Inst1Quest9_Aim
@@ -414,14 +414,14 @@ Inst1Quest10name2_HORDE = Inst1Quest9name2
 Inst1Quest10name3_HORDE = Inst1Quest9name3
 
 --Quest 11 Horde
-Inst1Quest11_HORDE = "11. Disharmony of Flame"
+Inst1Quest11_HORDE = "11. Дисгармония пламени"
 Inst1Quest11_HORDE_Level = "52"
 Inst1Quest11_HORDE_Attain = "48"
-Inst1Quest11_HORDE_Aim = "Travel to the quarry in Blackrock Mountain and slay Overmaster Pyron. Return to Thunderheart when you have completed this assignment."
-Inst1Quest11_HORDE_Location = "Thunderheart (Badlands - Kargath; "..YELLOW.."3,48"..WHITE..")"
-Inst1Quest11_HORDE_Note = "Overmaster Pyron is a fire elemental outside the instance. He's at "..YELLOW.."[24]"..WHITE.." on the Blackrock Depths map and at "..YELLOW.."[1]"..WHITE.." on the Blackrock Mountain entrance map."
-Inst1Quest11_HORDE_Prequest = "None"
-Inst1Quest11_HORDE_Folgequest = "Disharmony of Fire"
+Inst1Quest11_HORDE_Aim = "Отправьтесь в карьер у Черной горы и уничтожьте Подчинителя Пирона. По выполнению вернитесь к Громосерду."
+Inst1Quest11_HORDE_Location = "Громосерд  (Бесплодные земли  - Каргат; "..YELLOW.."3,48"..WHITE..")"
+Inst1Quest11_HORDE_Note = "Подчинитель Пирон огненный элементаль. "..YELLOW.."[24]"..WHITE.."Локация Тлеющее ущелье."..YELLOW.."[1]"..WHITE.."Возле  Глубин Черной горы."
+Inst1Quest11_HORDE_Prequest = "Нет"
+Inst1Quest11_HORDE_Folgequest = "Дисгармония пламени"
 -- No Rewards for this quest
 
 --Quest 12 Horde
@@ -435,10 +435,10 @@ Inst1Quest12_HORDE_Prequest = "Дисгармония пламени" -- 3906
 Inst1Quest12_HORDE_Folgequest = "Нет"
 Inst1Quest12FQuest_HORDE = "true"
 --
-Inst1Quest12name1_HORDE = "Sunborne Cape"
-Inst1Quest12name2_HORDE = "Nightfall Gloves"
-Inst1Quest12name3_HORDE = "Crypt Demon Bracers"
-Inst1Quest12name4_HORDE = "Stalwart Clutch"
+Inst1Quest12name1_HORDE = "Солнечная накидка"
+Inst1Quest12name2_HORDE = "Сумрачные перчатки"
+Inst1Quest12name3_HORDE = "Наручи демона склепа"
+Inst1Quest12name4_HORDE = "Стойкий поясок"
 
 --Quest 13 Horde
 Inst1Quest13_HORDE = "13. Последний элемент" -- 7201
@@ -451,7 +451,7 @@ Inst1Quest13_HORDE_Prequest = "Нет"
 Inst1Quest13_HORDE_Folgequest = "Нет"
 Inst1Quest13PreQuest_HORDE = "true"
 --
-Inst1Quest13name1_HORDE = "Lagrave's Seal"
+Inst1Quest13name1_HORDE = "Печать Лаграва"
 
 --Quest 14 Horde
 Inst1Quest14_HORDE = "14. Командир Гор'шак" -- 3981
@@ -475,11 +475,11 @@ Inst1Quest15_HORDE_Prequest = "Командир Гор'шак -> Восточн�
 Inst1Quest15_HORDE_Folgequest = "Спасенная принцесса" -- 4004
 Inst1Quest15FQuest_HORDE = "true"
 --
-Inst1Quest15name1_HORDE = "Thrall's Resolve"
-Inst1Quest15name2_HORDE = "Eye of Orgrimmar"
+Inst1Quest15name1_HORDE = "Решимость Тралла"
+Inst1Quest15name2_HORDE = "Око Оргриммара"
 
 --Quest 16 Horde  (same as Quest 12 Alliance)
-Inst1Quest16_HORDE = "16. Attunement to the Core"
+Inst1Quest16_HORDE = "16. Сродство с недрами"
 Inst1Quest16_HORDE_Level = Inst1Quest12_Level
 Inst1Quest16_HORDE_Attain = Inst1Quest12_Attain
 Inst1Quest16_HORDE_Aim = Inst1Quest12_Aim
@@ -490,7 +490,7 @@ Inst1Quest16_HORDE_Folgequest = Inst1Quest12_Folgequest
 -- No Rewards for this quest
 
 --Quest 17 Horde  (same as Quest 13 Alliance)
-Inst1Quest17_HORDE = "17. The Challenge"
+Inst1Quest17_HORDE = "17. Вызов"
 Inst1Quest17_HORDE_Level = Inst1Quest13_Level
 Inst1Quest17_HORDE_Attain = Inst1Quest13_Attain
 Inst1Quest17_HORDE_Aim = Inst1Quest13_Aim
@@ -501,7 +501,7 @@ Inst1Quest17_HORDE_Folgequest = Inst1Quest13_Folgequest
 -- No Rewards for this quest
 
 --Quest 18 Horde  (same as Quest 14 Alliance)
-Inst1Quest18_HORDE = "18. The Spectral Chalice"
+Inst1Quest18_HORDE = "18. Призрачный кубок"
 Inst1Quest18_HORDE_Level = Inst1Quest14_Level
 Inst1Quest18_HORDE_Attain = Inst1Quest14_Attain
 Inst1Quest18_HORDE_Aim = Inst1Quest14_Aim
@@ -1060,12 +1060,12 @@ Inst4Quest8_Aim = "Соберите 40 наручей Черной горы и �
 Inst4Quest8_Location = "Бодли (Черная гора; "..YELLOW.."[D] на карте входа"..WHITE..")"
 Inst4Quest8_Note = "Чтобы увидеть Бодли нужен Спектральный сканер иных измерений. Вы получите его за задание 'В поисках Антиона'. Боевые наручи Черной горы добываются с противников, у которых написано Чернорук в имени. Настой великой силы создается алхимиками."
 Inst4Quest8_Prequest = "Правая часть амулета Лорда Вальтхалака ("..YELLOW.."Вершина Черной горы"..WHITE..")" -- 8989
-Inst4Quest8_Folgequest = "Mea Culpa, Лорд Вальтхалак" -- 8995
+Inst4Quest8_Folgequest = "Моя вина, Лорд Вальтхалак" -- 8995
 Inst4Quest8PreQuest = "true"
 -- No Rewards for this quest
 
 --Quest 9 Alliance
-Inst4Quest9 = "10. Mea Culpa, Лорд Вальтхалак" -- 8995
+Inst4Quest9 = "10. Моя вина, Лорд Вальтхалак" -- 8995
 Inst4Quest9_Level = "60"
 Inst4Quest9_Attain = "58"
 Inst4Quest9_Aim = "Вызвать Лорда Вальтхалака с помощью жаровни Призыва. Убить его и использовать амулет. Потом вернуть амулет духу Вальтхалака."
@@ -1207,7 +1207,7 @@ Inst4Quest8FQuest_HORDE = "true"
 Inst4Quest8name1_HORDE = "Амулет Пламени дракона"
 
 --Quest 9 Horde  (same as Quest 7 Alliance)
-Inst4Quest9_HORDE = "9. Blackhand's Command"
+Inst4Quest9_HORDE = "9. Приказ Чернорука"
 Inst4Quest9_HORDE_Level = Inst4Quest7_Level
 Inst4Quest9_HORDE_Attain = Inst4Quest7_Attain
 Inst4Quest9_HORDE_Aim = Inst4Quest7_Aim
@@ -1218,7 +1218,7 @@ Inst4Quest9_HORDE_Folgequest = Inst4Quest7_Folgequest
 -- No Rewards for this quest
 
 --Quest 10 Horde  (same as Quest 8 Alliance)
-Inst4Quest10_HORDE = "10. Final Preparations"
+Inst4Quest10_HORDE = "10. Последние приготовления"
 Inst4Quest10_HORDE_Level = Inst4Quest8_Level
 Inst4Quest10_HORDE_Attain = Inst4Quest8_Attain
 Inst4Quest10_HORDE_Aim = Inst4Quest8_Aim
@@ -1229,7 +1229,7 @@ Inst4Quest10_HORDE_Folgequest = Inst4Quest8_Folgequest
 -- No Rewards for this quest
 
 --Quest 11 Horde  (same as Quest 9 Alliance)
-Inst4Quest11_HORDE = "11. Mea Culpa, Lord Valthalak"
+Inst4Quest11_HORDE = "11. Моя вина, Лорд Вальтхалак"
 Inst4Quest11_HORDE_Level = Inst4Quest9_Level
 Inst4Quest11_HORDE_Attain = Inst4Quest9_Attain
 Inst4Quest11_HORDE_Aim = Inst4Quest9_Aim
@@ -1242,7 +1242,7 @@ Inst4Quest11name1_HORDE = Inst4Quest9name1
 Inst4Quest11name2_HORDE = Inst4Quest9name2
 
 --Quest 12 Horde  (same as Quest 10 Alliance)
-Inst4Quest12_HORDE = "12. The Demon Forge"
+Inst4Quest12_HORDE = "12. Демонова кузня"
 Inst4Quest12_HORDE_Level = Inst4Quest10_Level
 Inst4Quest12_HORDE_Attain = Inst4Quest10_Attain
 Inst4Quest12_HORDE_Aim = Inst4Quest10_Aim
@@ -1633,7 +1633,7 @@ Inst7Quest3_Level = "40"
 Inst7Quest3_Attain = "34"
 Inst7Quest3_Aim = "Убейте верховного инквизитора Вайтмейн, командира Могрейна из Алого ордена, воителя Ирода из Алого ордена и псаря Локси, после этого вернитесь с докладом к Ролею Благочестивому в Южнобережье."
 Inst7Quest3_Location = "Ролей Благочестивый (Предгорья Хилсбрада - Южнобережье; "..YELLOW.."51,58"..WHITE..")"
-Inst7Quest3_Note = "This quest line starts at Brother Crowley in Stormwind - Cathedral of Light ("..YELLOW.."52.3, 43.1"..WHITE..").\nYou can find High Inquisitor Whitemane and Scarlet Commander Mograine at "..YELLOW.."SM: Cathedral [2]"..WHITE..", Herod at "..YELLOW.."SM: Armory [1]"..WHITE.." and Houndmaster Loksey at "..YELLOW.."SM: Library [1]"..WHITE.."."
+Inst7Quest3_Note = "Вы найдете Верховного инквизитора Вайтмейн и Командира Могрейна из Алого ордена в "..YELLOW.."МАО: Собор [2]"..WHITE..", Герода в"..YELLOW.."МАО: Оружейная [1]"..WHITE.." и псаря Локси в "..YELLOW.."МАО: Библиотека [1]"..WHITE.."."
 Inst7Quest3_Prequest = "Брат Антон -> Путями Алого ордена"
 Inst7Quest3_Folgequest = "Нет"
 Inst7Quest3PreQuest = "true"
@@ -1705,7 +1705,7 @@ Inst7Quest5_HORDE_Level = "42"
 Inst7Quest5_HORDE_Attain = "33"
 Inst7Quest5_HORDE_Aim = "Убейте верховного инквизитора Вайтмейн, командира Могрейна из Алого ордена, воителя Ирода из Алого ордена и псаря Локси. Затем возвращайтесь к Вариматасу в Подгород."
 Inst7Quest5_HORDE_Location = "Вариматас (Подгород - Королевский квартал; "..YELLOW.."56,92"..WHITE..")"
-Inst7Quest5_HORDE_Note = "Вы найдете Верховного инквизитора Вайтмейн и Командира Могрейна из Алого ордена около "..YELLOW.."[2]"..WHITE..", Герода около "..YELLOW.."[1]"..WHITE.." и псаря Локси около "..YELLOW.."[1]"..WHITE.."."
+Inst7Quest5_HORDE_Note = "Вы найдете Верховного инквизитора Вайтмейн и Командира Могрейна из Алого ордена в "..YELLOW.."МАО: Собор [2]"..WHITE..", Герода в"..YELLOW.."МАО: Оружейная [1]"..WHITE.." и псаря Локси в "..YELLOW.."МАО: Библиотека [1]"..WHITE.."."
 Inst7Quest5_HORDE_Prequest = "Нет"
 Inst7Quest5_HORDE_Folgequest = "Нет"
 --
@@ -1755,7 +1755,7 @@ Inst8Quest2_HORDE_Level = "42"
 Inst8Quest2_HORDE_Attain = "33"
 Inst8Quest2_HORDE_Aim = Inst7Quest5_HORDE_Aim 
 Inst8Quest2_HORDE_Location = Inst7Quest5_HORDE_Location
-Inst8Quest4_Note_HORDE = Inst7Quest5_Note_HORDE
+Inst8Quest2_HORDE_Note = Inst7Quest5_HORDE_Note
 Inst8Quest2_HORDE_Prequest = "Нет"
 Inst8Quest2_HORDE_Folgequest = "Нет"
 --
@@ -1805,7 +1805,7 @@ Inst9Quest2_HORDE_Level = "42"
 Inst9Quest2_HORDE_Attain = "33"
 Inst9Quest2_HORDE_Aim = Inst7Quest5_HORDE_Aim 
 Inst9Quest2_HORDE_Location = Inst7Quest5_HORDE_Location
-Inst9Quest4_Note_HORDE = Inst7Quest5_Note_HORDE
+Inst9Quest2_HORDE_Note = Inst7Quest5_HORDE_Note
 Inst9Quest2_HORDE_Prequest = "Нет"
 Inst9Quest2_HORDE_Folgequest = "Нет"
 --
@@ -3492,7 +3492,7 @@ Inst16Quest2_HORDE_Aim = Inst16Quest6_Aim
 Inst16Quest2_HORDE_Location = Inst16Quest6_Location
 Inst16Quest2_HORDE_Note = Inst16Quest6_Note
 Inst16Quest2_HORDE_Prequest = Inst16Quest6_Prequest
-Inst16Quest2_HORDE_Folgequest = "To the Undercity for Yagyin's Digest"
+Inst16Quest2_HORDE_Folgequest = "В Подгород за книгой Йагина"
 --
 Inst16Quest2name1_HORDE = Inst16Quest6name1
 
@@ -3583,7 +3583,7 @@ Inst16Quest9name2_HORDE = "Наилучшее лечебное зелье"
 Inst16Quest9name3_HORDE = "Сильное зелье маны"
 
 --Quest 10 Horde  (same as Quest 4 Alliance)
-Inst16Quest10_HORDE = "10. Сила Ульдамана"
+Inst16Quest10_HORDE = "10. Сила Ульдамана(Маг)"
 Inst16Quest10_HORDE_Level = Inst16Quest16_Level
 Inst16Quest10_HORDE_Attain = Inst16Quest16_Attain
 Inst16Quest10_HORDE_Aim = Inst16Quest16_Aim
@@ -5160,9 +5160,9 @@ Inst25Quest7name2_HORDE = Inst25Quest5name2
 
 --------------- INST27 - Zul'Farrak ---------------
 
-Inst26Caption = "Zul'Farrak"
-Inst26QAA = "7 Quests"
-Inst26QAH = "7 Quests"
+Inst26Caption = "Зул'Фаррак"
+Inst26QAA = "7 заданий"
+Inst26QAH = "7 заданий"
 
 --Quest 1 Alliance
 Inst26Quest1 = "1. Троллье месиво"

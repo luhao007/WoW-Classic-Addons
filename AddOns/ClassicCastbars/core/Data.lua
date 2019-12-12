@@ -208,9 +208,9 @@ local castSpellIDs = {
     21048, -- Curse of the Tribes
     5267, -- Dalaran Wizard Disguise
     27723, -- Dark Desire
-    19799, -- Dark Iron Bomb
+    19784, -- Dark Iron Bomb
     5268, -- Dark Iron Dwarf Disguise
-    16588, -- Dark Mending
+    19775, -- Dark Mending
     7106, -- Dark Restore
     3335, -- Dark Sludge
     16587, -- Dark Whispers
@@ -731,7 +731,6 @@ local castSpellIDs = {
     20051, -- Runed Arcanite Rod
     21403, -- Ryson's All Seeing Eye
     21425, -- Ryson's Eye in the Sky
-    1050, -- Sacrifice
     10459, -- Sacrifice Spinneret
     27832, -- Sageblade
     19566, -- Salt Shaker
@@ -1142,7 +1141,43 @@ local castSpellIDs = {
     24422, -- Zandalar Signet of Might
     24421, -- Zandalar Signet of Mojo
     24420, -- Zandalar Signet of Serenity
+    1050, -- Sacrific
+    22651, -- Sacrifice 2 (On German client this is named Opfern but other Sacrifice is named Opferung)
     10181, -- Frostbolt (needs to be last for chinese clients, see issue #16)
+
+    -- Channeled casts in random order. These are used to retrieve spell icon later on (namespace.channeledSpells only stores spell name)
+    -- Commented out IDs are duplicates that also has a normal cast already listed above.
+    746, -- First Aid
+    13278, -- Gnomish Death Ray
+    20577, -- Cannibalize
+    10797, -- Starshards
+    16430, -- Soul Tap
+    27640, -- Baron Rivendare's Soul Drain
+    7290, -- Soul Siphon
+    24322, -- Blood Siphon
+    27177, -- Defile
+    17401, -- Hurricane
+    740, -- Tranquility
+    20687, -- Starfall
+    6197, -- Eagle Eye
+    --1002, -- Eyes of the Beast
+    --1510, -- Volley
+    136, -- Mend Pet
+    5143, -- Arcane Missiles
+    --10, -- Blizzard
+    12051, -- Evocation
+    15407, -- Mind Flay
+    2096, -- Mind Vision
+    --605, -- Mind Control
+    --126, -- Eye of Kilrogg
+    689, -- Drain Life
+    5138, -- Drain Mana
+    1120, -- Drain Soul
+    --5740, -- Rain of Fire
+    1949, -- Hellfire
+    755, -- Health Funnel
+    17854, -- Consume Shadows
+    --6358, -- Seduction Channel
 }
 
 local counter, cursor = 0, 1
@@ -1175,60 +1210,56 @@ end
 
 C_Timer.After(0.1, BuildSpellNameToSpellIDTable) -- run asap once the current call stack has executed
 
--- For channeled spells we need both the spell ID and cast time since
--- GetSpellInfo doesn't return any cast time for channeled casts.
--- value[1] is the cast time in seconds, value[2] is the spell ID used to retrive
--- spell icon later on.
--- TODO: merge with main spell table and just store the cast time here as value
+-- GetSpellInfo doesn't return any cast time for channeled casts
+-- so we need to store the cast time ourself
 namespace.channeledSpells = {
     -- MISC
-    [GetSpellInfo(746)] = { 8, 746 },         -- First Aid
-    [GetSpellInfo(13278)] = { 4, 13278 },     -- Gnomish Death Ray
-    [GetSpellInfo(20577)] = { 10, 20577 },    -- Cannibalize
-    [GetSpellInfo(10797)] = { 6, 10797 },     -- Starshards
-    [GetSpellInfo(16430)] = { 12, 16430 },    -- Soul Tap
-    [GetSpellInfo(24323)] = { 8, 24323 },     -- Blood Siphon
-    [GetSpellInfo(27640)] = { 3, 27640 },     -- Baron Rivendare's Soul Drain
-    [GetSpellInfo(7290)] = { 10, 7290 },      -- Soul Siphon
-    [GetSpellInfo(24322)] = { 8, 24322 },     -- Blood Siphon
-    [GetSpellInfo(27177)] = { 10, 27177 },    -- Defile
+    [GetSpellInfo(746)] = 8000,      -- First Aid
+    [GetSpellInfo(13278)] = 4000,    -- Gnomish Death Ray
+    [GetSpellInfo(20577)] = 10000,   -- Cannibalize
+    [GetSpellInfo(10797)] = 6000,    -- Starshards
+    [GetSpellInfo(16430)] = 12000,   -- Soul Tap
+    [GetSpellInfo(24323)] = 8000,    -- Blood Siphon
+    [GetSpellInfo(27640)] = 3000,    -- Baron Rivendare's Soul Drain
+    [GetSpellInfo(7290)] = 10000,    -- Soul Siphon
+    [GetSpellInfo(24322)] = 8000,    -- Blood Siphon
+    [GetSpellInfo(27177)] = 10000,   -- Defile
 
     -- DRUID
-    [GetSpellInfo(17401)] = { 10, 17401 },   -- Hurricane
-    [GetSpellInfo(740)] = { 10, 740 },       -- Tranquility
-    [GetSpellInfo(20687)] = { 10, 20687 },   -- Starfall
+    [GetSpellInfo(17401)] = 10000,   -- Hurricane
+    [GetSpellInfo(740)] = 10000,     -- Tranquility
+    [GetSpellInfo(20687)] = 10000,   -- Starfall
 
     -- HUNTER
-    [GetSpellInfo(6197)] = { 60, 6197 },      -- Eagle Eye
-    [GetSpellInfo(1002)] = { 60, 1002 },      -- Eyes of the Beast
-    [GetSpellInfo(1510)] = { 6, 1510 },       -- Volley
-    [GetSpellInfo(136)] = { 5, 136 },         -- Mend Pet
+    [GetSpellInfo(6197)] = 60000,     -- Eagle Eye
+    [GetSpellInfo(1002)] = 60000,     -- Eyes of the Beast
+    [GetSpellInfo(1510)] = 6000,      -- Volley
+    [GetSpellInfo(136)] = 5000,       -- Mend Pet
 
     -- MAGE
-    [GetSpellInfo(5143)] = { 5, 5143, },       -- Arcane Missiles
-    [GetSpellInfo(10)] = { 8, 10 },            -- Blizzard
-    [GetSpellInfo(12051)] = { 8, 12051 },      -- Evocation
+    [GetSpellInfo(5143)] = 5000,      -- Arcane Missiles
+    [GetSpellInfo(10)] = 8000,        -- Blizzard
+    [GetSpellInfo(12051)] = 8000,     -- Evocation
 
     -- PRIEST
-    [GetSpellInfo(15407)] = { 3, 15407 },     -- Mind Flay
-    [GetSpellInfo(2096)] = { 60, 2096 },      -- Mind Vision
-    [GetSpellInfo(605)] = { 3, 605 },         -- Mind Control
+    [GetSpellInfo(15407)] = 3000,     -- Mind Flay
+    [GetSpellInfo(2096)] = 60000,     -- Mind Vision
+    [GetSpellInfo(605)] = 3000,       -- Mind Control
 
     -- WARLOCK
-    [GetSpellInfo(126)] = { 45, 126 },        -- Eye of Kilrogg
-    [GetSpellInfo(689)] = { 5, 689 },         -- Drain Life
-    [GetSpellInfo(5138)] = { 5, 5138 },       -- Drain Mana
-    [GetSpellInfo(1120)] = { 15, 1120 },      -- Drain Soul
-    [GetSpellInfo(5740)] = { 8, 5740 },       -- Rain of Fire
-    [GetSpellInfo(1949)] = { 15, 1949 },      -- Hellfire
-    [GetSpellInfo(755)] = { 10, 755 },        -- Health Funnel
-    [GetSpellInfo(17854)] = { 10, 17854 },    -- Consume Shadows
-    [GetSpellInfo(6358)] = { 15, 6358 },      -- Seduction Channel
+    [GetSpellInfo(126)] = 45000,      -- Eye of Kilrogg
+    [GetSpellInfo(689)] = 5000,       -- Drain Life
+    [GetSpellInfo(5138)] = 5000,      -- Drain Mana
+    [GetSpellInfo(1120)] = 15000,     -- Drain Soul
+    [GetSpellInfo(5740)] = 8000,      -- Rain of Fire
+    [GetSpellInfo(1949)] = 15000,     -- Hellfire
+    [GetSpellInfo(755)] = 10000,      -- Health Funnel
+    [GetSpellInfo(17854)] = 10000,    -- Consume Shadows
+    [GetSpellInfo(6358)] = 15000,     -- Seduction Channel
 }
 
 -- List of abilities that increases cast time (reduces speed)
 -- Value here is the slow percentage.
--- TODO: check if these also affect Aimed Shot/Volley + bosses
 namespace.castTimeIncreases = {
     -- ITEMS
     [17331] = 10,   -- Fang of the Crystal Spider
@@ -1272,13 +1303,15 @@ namespace.castTimeIncreases = {
 }
 
 -- Store both spellID and spell name in this table since UnitAura returns spellIDs but combat log doesn't.
-for spellID, slowPercentage in pairs(namespace.castTimeIncreases) do
-    if GetSpellInfo(spellID) then
-    namespace.castTimeIncreases[GetSpellInfo(spellID)] = slowPercentage
-end
-end
+C_Timer.After(10, function()
+    for spellID, slowPercentage in pairs(namespace.castTimeIncreases) do
+        if GetSpellInfo(spellID) then
+            namespace.castTimeIncreases[GetSpellInfo(spellID)] = slowPercentage
+        end
+    end
+end)
 
--- Spells that have cast time reduced by talents.
+-- Spells that often have cast time reduced by talents.
 namespace.castTimeTalentDecreases = {
     [GetSpellInfo(403)] = 2000,      -- Lightning Bolt
     [GetSpellInfo(421)] = 1500,      -- Chain Lightning
@@ -1498,23 +1531,171 @@ namespace.crowdControls = {
 }
 
 -- Skip pushback calculation for these spells since they
--- have 70% chance to ignore pushback when talented
+-- have chance to ignore pushback when talented, or is always immune.
 namespace.pushbackBlacklist = {
-    [GetSpellInfo(1064)] = 1, -- Chain Heal
-    [GetSpellInfo(25357)] = 1, -- Healing Wave
-    [GetSpellInfo(8004)] = 1, -- Lesser Healing Wave
-    [GetSpellInfo(2061)] = 1, -- Flash Heal
-    [GetSpellInfo(2054)] = 1, -- Heal
-    [GetSpellInfo(2050)] = 1, -- Lesser Heal
-    [GetSpellInfo(596)] = 1, -- Prayer of Healing
-    [GetSpellInfo(2060)] = 1, -- Greater Heal
-    [GetSpellInfo(19750)] = 1, -- Flash of Light
-    [GetSpellInfo(635)] = 1, -- Holy Light
-    -- Druid heals are afaik many times not talented so ignoring these
+    [GetSpellInfo(1064)] = 1,       -- Chain Heal
+    [GetSpellInfo(25357)] = 1,      -- Healing Wave
+    [GetSpellInfo(8004)] = 1,       -- Lesser Healing Wave
+    [GetSpellInfo(2061)] = 1,       -- Flash Heal
+    [GetSpellInfo(2054)] = 1,       -- Heal
+    [GetSpellInfo(2050)] = 1,       -- Lesser Heal
+    [GetSpellInfo(596)] = 1,        -- Prayer of Healing
+    [GetSpellInfo(2060)] = 1,       -- Greater Heal
+    [GetSpellInfo(19750)] = 1,      -- Flash of Light
+    [GetSpellInfo(635)] = 1,        -- Holy Light
+    -- Druid heals are afaik many times not talented so ignoring them for now
 
     [GetSpellInfo(4068)] = 1,       -- Iron Grenade
     [GetSpellInfo(19769)] = 1,      -- Thorium Grenade
-    [GetSpellInfo(13808)] = 1,      -- M73 Frag Grenade
+    [GetSpellInfo(13278)] = 1,      -- Gnomish Death Ray
+    [GetSpellInfo(20589)] = 1,      -- Escape Artist
+    [GetSpellInfo(20549)] = 1,      -- War Stomp
+}
+
+-- Casts that should be stopped on damage received
+namespace.stopCastOnDamageList = {
+    [GetSpellInfo(8690)] = 1, -- Hearthstone
+    [GetSpellInfo(5784)] = 1, -- Summon Felsteed
+    [GetSpellInfo(23161)] = 1, -- Summon Dreadsteed
+    [GetSpellInfo(13819)] = 1, -- Summon Warhorse
+    [GetSpellInfo(23214)] = 1, -- Summon Charger
+    [GetSpellInfo(2006)] = 1, -- Resurrection
+    [GetSpellInfo(2008)] = 1, -- Ancestral Spirit
+    [GetSpellInfo(7328)] = 1, -- Redemption
+    [GetSpellInfo(22999)] = 1, -- Defibrillate
+    -- First Aid not included here since we track aura removed
+}
+
+namespace.unaffectedCastModsSpells = {
+    -- Player Spells
+    [11605] = 1, -- Slam
+    [6651] = 1, -- Instant Toxin
+    [1842] = 1, -- Disarm Trap
+    [6461] = 1, -- Pick Lock
+    [20904] = 1, -- Aimed Shot
+    [2641] = 1, -- Dismiss Pet
+    [2480] = 1, -- Shoot Bow
+    [7918] = 1, -- Shoot Gun
+    [20549] = 1, -- War Stomp
+    [20589] = 1, -- Escape Artist
+    [22027] = 1, -- Remove Insignia
+    [6510] = 1, -- Blinding Powder
+    [7355] = 1, -- Stuck
+
+    -- NPCs and Others
+    [2835] = 1, -- Deadly Poison
+    [3131] = 1, -- Frost Breath
+    [15664] = 1, -- Venom Spit
+    [7068] = 1, -- Veil of Shadow
+    [16247] = 1, -- Curse of Thorns
+    [14030] = 1, -- Hooked Net
+    [20716] = 1, -- Sand Breath
+    [8275] = 1, -- Poisoned Shot
+    [1980] = 1, -- Bombard
+    [3015] = 1, -- Bombard II
+    [1536] = 1, -- Longshot II
+    [3007] = 1, -- Longshot III
+    [1540] = 1, -- Volley
+    [3013] = 1, -- Volley II
+    [4164] = 1, -- Throw Rock
+    [4165] = 1, -- Throw Rock II
+    [3537] = 1, -- Minions of Malathrom
+    [5567] = 1, -- Miring Mud
+    [28352] = 1, -- Breath of Sargeras
+    [7106] = 1, -- Dark Restore
+    [4075] = 1, -- Large Seaforium Charge
+    [5106] = 1, -- Crystal Flash
+    [22979] = 1, -- Shadow Flame
+    [3611] = 1, -- Minion of Morganth
+    [27794] = 1, -- Cleave
+    [25247] = 1, -- Longsight
+    [5208] = 1, -- Poisoned Harpoon
+    [14532] = 1, -- Creeper Venom
+    [3132] = 1, -- Chilling Breath
+    [3650] = 1, -- Sling Mud
+    [3651] = 1, -- Shield of Reflection
+    [3143] = 1, -- Glacial Roar
+    [6296] = 1, -- Enchant: Fiery Blaze
+    [24194] = 1, -- Uther's Tribute
+    [7364] = 1, -- Light Torch
+    [12684] = 1, -- Kadrak's Flag
+    [7919] = 1, -- Shoot Crossbow
+    [6907] = 1, -- Diseased Slime
+    [3204] = 1, -- Sapper Explode
+    [26234] = 1, -- Submerge Visual
+    [26063] = 1, -- Ouro Submerge Visual
+    [6925] = 1, -- Gift of the Xavian
+    [7951] = 1, -- Toxic Spit
+    [24195] = 1, -- Grom's Tribute
+    [16554] = 1, -- Toxic Bolt
+    [15495] = 1, -- Explosive Shot
+    [6530] = 1, -- Sling Dirt
+    [26072] = 1, -- Dust Cloud
+    [5514] = 1, -- Darken Vision
+    [11016] = 1, -- Soul Bite
+    [21050] = 1, -- Melodious Rapture
+    [4520] = 1, -- Wide Sweep
+    [4526] = 1, -- Mass Dispell
+    [6576] = 1, -- Intimidating Growl
+    [20627] = 1, -- Lightning Breath
+    [25793] = 1, -- Demon Summoning Torch
+    [23254] = 1, -- Redeeming the Soul
+    [18711] = 1, -- Forging
+    [12198] = 1, -- Marksman Hit
+    [8153] = 1, -- Owl Form
+    [6626] = 1, -- Set NG-5 Charge (Blue)
+    [6630] = 1, -- Set NG-5 Charge (Red)
+    [30081] = 1, -- Retching Plague
+    [6656] = 1, -- Remote Detonate
+    [10254] = 1, -- Stone Dwarf Awaken Visual
+    [3359] = 1, -- Drink Potion
+    [17618] = 1, -- Summon Risen Lackey
+    [8286] = 1, -- Summon Boar Spirit
+    [17235] = 1, -- Raise Undead Scarab
+    [8386] = 1, -- Attacking
+    [28311] = 1, -- Slime Bolt
+    [1698] = 1, -- Shockwave
+    [23008] = 1, -- Powerful Seaforium Charge
+    [6951] = 1, -- Decayed Strength
+    [28732] = 1, -- Widow's Embrace
+    [28995] = 1, -- Stoneskin
+    [24706] = 1, -- Toss Stink Bomb
+    [6257] = 1, -- Torch Toss
+    [7359] = 1, -- Bright Campfire
+    [16590] = 1, -- Summon Zombie
+    [9612] = 1, -- Ink Spray
+    [3436] = 1, -- Wandering Plague
+    [9636] = 1, -- Summon Swamp Spirit
+    [17204] = 1, -- Summon Skeleton
+    [7896] = 1, -- Exploding Shot
+    [23392] = 1, -- Boulder
+    [7920] = 1, -- Mebok Smart Drink
+    [8682] = 1, -- Fake Shot
+    [28614] = 1, -- Pointy Spike
+    [8016] = 1, -- Spirit Decay
+    [26102] = 1, -- Sand Blast
+    [3477] = 1, -- Spirit Steal
+    [5395] = 1, -- Death Capsule
+    [5159] = 1, -- Melt Ore
+    [5403] = 1, -- Crash of Waves
+    [8256] = 1, -- Lethal Toxin
+    [6441] = 1, -- Explosive Shells
+    [10850] = 1, -- Powerful Smelling Salts
+    [3488] = 1, -- Felstrom Resurrection
+    [10346] = 1, -- Machine Gun
+    [12740] = 1, -- Summon Infernal Servant
+    [6469] = 1, -- Skeletal Miner Explode
+    [11397] = 1, -- Diseased Shot
+    [4950] = 1, -- Summon Helcular's Puppets
+    [8363] = 1, -- Parasite
+    [16531] = 1, -- Summon Frail Skeleton
+    [16072] = 1, -- Purify and Place Food
+    [20629] = 1, -- Corrosive Venom Spit
+    [28615] = 1, -- Spike Volley
+    [19566] = 1, -- Salt Shaker
+    [7901] = 1, -- Decayed Agility
+    [7054] = 1, -- Forsaken Skills
+    [24189] = 1, -- Force Punch
 }
 
 -- Addon Savedvariables

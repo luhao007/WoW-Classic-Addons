@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: yess
-## Version: 1.9
+## Version: v1.9.1
 
 ## Title: Blizzmove
 ## Notes: Move those blizzard windows

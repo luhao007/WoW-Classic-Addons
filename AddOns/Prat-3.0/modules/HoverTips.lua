@@ -139,9 +139,8 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["HoverTips"] = {
-		["module_desc"] = "Показывает подсказку при наведении курсора на ссылку в чате",
-		--[[Translation missing --]]
-		["module_name"] = "Hover Tips",
+		["module_desc"] = "Показывает подсказку при наведении курсора на ссылку в чате ",
+		["module_name"] = "Советы по наведению курсора",
 	}
 }
 
@@ -150,10 +149,8 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["HoverTips"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Shows tooltip when hovering over link in chat",
-		--[[Translation missing --]]
-		["module_name"] = "Hover Tips",
+		["module_desc"] = "鼠标悬停在聊天链接上时显示工具提示",
+		["module_name"] = "悬停提示",
 	}
 }
 

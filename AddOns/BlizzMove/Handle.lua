@@ -1,4 +1,4 @@
--- BlizzMmove, move the blizzard frames by yess
+﻿-- BlizzMmove, move the blizzard frames by yess
 if not _G.BlizzMove then BlizzMove = {} end
 local BlizzMove = BlizzMove
 

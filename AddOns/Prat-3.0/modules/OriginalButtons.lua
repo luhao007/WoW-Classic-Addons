@@ -181,7 +181,7 @@ L = {
 		--[[Translation missing --]]
 		["chatmenu_name"] = "Show Chat Menu",
 		["Default"] = "Padrão",
-		["Original Buttons"] = "Botões Original",
+		["Original Buttons"] = "Botões Originais",
 		--[[Translation missing --]]
 		["reflow_desc"] = "Chatframe text should flow around the buttons not under them.",
 		--[[Translation missing --]]
@@ -196,7 +196,7 @@ L = {
 		["Set Position"] = "Definir Posição",
 		--[[Translation missing --]]
 		["Sets position of chat menu and arrows for all chat windows."] = "Sets position of chat menu and arrows for all chat windows.",
-		["Show Arrows"] = "Mostar Setas",
+		["Show Arrows"] = "Mostrar Setas",
 		--[[Translation missing --]]
 		["Show Chat%d Arrows"] = "Show Chat%d Arrows",
 		--[[Translation missing --]]

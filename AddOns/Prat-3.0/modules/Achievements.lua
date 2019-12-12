@@ -241,7 +241,7 @@ Prat:AddModuleToLoad(function()
 		["grats_donthave_10"] = "Não vejo a hora de ter esse, %s",
 		["grats_donthave_2"] = "Boa %s, eu ainda preciso desse",
 		["grats_donthave_3"] = "Eu também quero esse, %s. Parabéns!",
-		["grats_donthave_4"] = "Nossa %s, brilhante",
+		["grats_donthave_4"] = "Nossa %s, que incrível.",
 		--[[Translation missing --]]
 		["grats_donthave_5"] = "I'm jealous %s, grats!",
 		--[[Translation missing --]]
@@ -546,43 +546,41 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["Achievements"] = {
-		["completed"] = "сделано ",
-		["customGrats_defualt"] = "Поздравляю %s",
-		["customGrats_desc"] = "Использовать персональное сообщение вместо рандомного",
-		["customGrats_name"] = "Использовать своё ПОЗДРАВИТЕЛЬНОЕ сообщение",
-		["customGratsText_desc"] = "Стандартное ГРАЦ сообщение. Напишите свой текст ГРАЦ сообщения. Если хотите включить имя игрока в сообщение - то добавьте %s",
-		["customGratsText_name"] = "Поздравительное сообщение",
-		--[[Translation missing --]]
-		["dontShowAchievements_desc"] = "Hide all achievement messages",
-		--[[Translation missing --]]
-		["dontShowAchievements_name"] = "Don't show achievements",
-		["grats_donthave_1"] = "Поздравляю %s",
-		["grats_donthave_10"] = "Я не могу дождаться, когда тоже получу его %s",
-		["grats_donthave_2"] = "Гц %s, мне всё ещё нужно это достижение",
-		["grats_donthave_3"] = "Я тоже его хочу %s, гц!",
-		["grats_donthave_4"] = "Ого %s, гц!",
-		["grats_donthave_5"] = "Как же я завидую %s, гц!",
-		["grats_donthave_6"] = "Я столько лет работаю над ним %s, гц!",
-		["grats_donthave_7"] = "Мне всё ещё нужно это достижение %s, гц!",
-		["grats_donthave_8"] = "Жду ещё достижений %s, гц!",
-		["grats_donthave_9"] = "С нетерпением хочу получить такую же %s, гц!",
-		["grats_have_1"] = "Гц %s",
-		["grats_have_10"] = "Отличная работа %s, теперь у нас обоих есть это достижение",
-		["grats_have_2"] = "Гц %s, я такую уже сделал",
-		["grats_have_3"] = "Вау %s, зачётно!",
-		["grats_have_4"] = "Да светится сие достижение на глубине твоего моря ачив %s",
-		["grats_have_5"] = "Не могу забыть, как трудно получал её %s",
-		["grats_have_6"] = "%s, сделал дело - гуляй смело!",
-		["grats_have_7"] = "Я столько лет трудился над ним %s, гц!",
-		["grats_have_8"] = "Я помню, как это делалось,% s, Грац!",
-		["grats_have_9"] = "Красиво сделано",
-		["grats_link"] = "GRATS",
-		["module_desc"] = "Индивидуальные настройки, связанные с достижениями",
-		["module_name"] = "Достижения",
-		["showCompletedDate_desc"] = "Показывать дату, когда вы сделали достижение, рядом с ссылкой",
-		["showCompletedDate_name"] = "Показывать дату завершения",
-		["showGratsLink_desc"] = "Показывать ссылку GRATS для поздравления",
-		["showGratsLink_name"] = "Показывать GRATS ссылку",
+		["completed"] = "сделано",
+		["customGrats_defualt"] = "Поздравляю %s ",
+		["customGrats_desc"] = "Использовать персональное сообщение вместо рандомного ",
+		["customGrats_name"] = "Использовать своё ПОЗДРАВИТЕЛЬНОЕ сообщение ",
+		["customGratsText_desc"] = "Стандартное ГРАЦ сообщение. Напишите свой текст ГРАЦ сообщения. Если хотите включить имя игрока в сообщение - то добавьте %s  ",
+		["customGratsText_name"] = "Поздравительное сообщение ",
+		["dontShowAchievements_desc"] = "Скрыть все сообщения о достижениях",
+		["dontShowAchievements_name"] = "Не показывать достижения ",
+		["grats_donthave_1"] = "Поздравляю %s ",
+		["grats_donthave_10"] = "Я не могу дождаться, когда тоже получу его %s ",
+		["grats_donthave_2"] = "Гц %s, мне всё ещё нужно это достижение ",
+		["grats_donthave_3"] = "Я тоже его хочу %s, гц! ",
+		["grats_donthave_4"] = "Ого %s, гц!  ",
+		["grats_donthave_5"] = "Как же я завидую %s, гц!  ",
+		["grats_donthave_6"] = "Я столько лет работаю над ним %s, гц!  ",
+		["grats_donthave_7"] = "Мне всё ещё нужно это достижение %s, гц! ",
+		["grats_donthave_8"] = "Жду ещё достижений %s, гц!  ",
+		["grats_donthave_9"] = "С нетерпением хочу получить такую же %s, гц! ",
+		["grats_have_1"] = "Гц %s ",
+		["grats_have_10"] = "Отличная работа %s, теперь у нас обоих есть это достижение ",
+		["grats_have_2"] = "Гц %s, я такую уже сделал ",
+		["grats_have_3"] = "Вау %s, зачётно! ",
+		["grats_have_4"] = "Да светится сие достижение на глубине твоего моря ачив %s ",
+		["grats_have_5"] = "Не могу забыть, как трудно получал её %s . ",
+		["grats_have_6"] = "%s, сделал дело - гуляй смело!  ",
+		["grats_have_7"] = "Я столько лет трудился над ним %s, гц! ",
+		["grats_have_8"] = "Я помню, как это делалось,% s, Грац! ",
+		["grats_have_9"] = "Красиво сделано %s",
+		["grats_link"] = "GRATS ",
+		["module_desc"] = "Индивидуальные настройки, связанные с достижениями ",
+		["module_name"] = "Достижения ",
+		["showCompletedDate_desc"] = "Показывать дату, когда вы сделали достижение, рядом с ссылкой ",
+		["showCompletedDate_name"] = "Показывать дату завершения ",
+		["showGratsLink_desc"] = "Показывать ссылку GRATS для поздравления ",
+		["showGratsLink_name"] = "Показывать GRATS ссылку ",
 	}
 }
 
@@ -591,76 +589,41 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["Achievements"] = {
-		--[[Translation missing --]]
-		["completed"] = "Completed %s",
-		--[[Translation missing --]]
-		["customGrats_defualt"] = "Grats %s",
-		--[[Translation missing --]]
-		["customGrats_desc"] = "Use a custom grats message instead of a random one",
-		--[[Translation missing --]]
-		["customGrats_name"] = "Use Custom Grats Message",
-		--[[Translation missing --]]
-		["customGratsText_desc"] = "Custom grats message. Type any text you wish for your grats message, if you want to include the player's name use '%s' as a placeholder",
-		--[[Translation missing --]]
-		["customGratsText_name"] = "Grats Message",
-		--[[Translation missing --]]
-		["dontShowAchievements_desc"] = "Hide all achievement messages",
-		--[[Translation missing --]]
-		["dontShowAchievements_name"] = "Don't show achievements",
-		--[[Translation missing --]]
-		["grats_donthave_1"] = "Grats %s",
-		--[[Translation missing --]]
-		["grats_donthave_10"] = "I can't wait to get that one %s",
-		--[[Translation missing --]]
-		["grats_donthave_2"] = "Gz %s, I still need that",
-		--[[Translation missing --]]
-		["grats_donthave_3"] = "I want that one %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_4"] = "Wow %s that's great",
-		--[[Translation missing --]]
-		["grats_donthave_5"] = "I'm jealous %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_6"] = "I have been working on that for ages %s",
-		--[[Translation missing --]]
-		["grats_donthave_7"] = "Still need that one %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
-		--[[Translation missing --]]
-		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
-		--[[Translation missing --]]
-		["grats_have_1"] = "Grats %s",
-		--[[Translation missing --]]
-		["grats_have_10"] = "Good work %s, now we both have it",
-		--[[Translation missing --]]
-		["grats_have_2"] = "Gz %s, I have that one too",
-		--[[Translation missing --]]
-		["grats_have_3"] = "Wow %s that's great",
-		--[[Translation missing --]]
-		["grats_have_4"] = "Welcome to the club %s",
-		--[[Translation missing --]]
-		["grats_have_5"] = "I can still rememeber getting that one %s",
-		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
-		--[[Translation missing --]]
-		["grats_have_7"] = "I worked on that for ages %s, grats!",
-		--[[Translation missing --]]
-		["grats_have_8"] = "I remember doing that, %s, grats!",
-		--[[Translation missing --]]
-		["grats_have_9"] = "Nicely done %s",
-		--[[Translation missing --]]
-		["grats_link"] = "say grats",
-		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
-		--[[Translation missing --]]
-		["module_name"] = "Achievements",
-		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
-		--[[Translation missing --]]
-		["showCompletedDate_name"] = "Show completed date",
-		--[[Translation missing --]]
-		["showGratsLink_desc"] = "Show a clickable link which sends a grats message",
-		--[[Translation missing --]]
-		["showGratsLink_name"] = "Show grats link",
+		["completed"] = "已完成 %s",
+		["customGrats_defualt"] = "恭喜 %s",
+		["customGrats_desc"] = "使用自定义的恭喜消息替代随机的消息",
+		["customGrats_name"] = "使用自定义的恭喜消息",
+		["customGratsText_desc"] = "自定义恭喜消息。编辑输入任意文字成为你的恭喜消息，如果要包含玩家名字 请在文字中使用“％s”代替名字。",
+		["customGratsText_name"] = "恭喜消息",
+		["dontShowAchievements_desc"] = "隐藏所有与成就相关的消息",
+		["dontShowAchievements_name"] = "不显示成就",
+		["grats_donthave_1"] = "恭喜 %s",
+		["grats_donthave_10"] = "我急切的希望收到那个 %s",
+		["grats_donthave_2"] = "恭贺 %s, 我仍需完成",
+		["grats_donthave_3"] = "我也想完成 %s, 恭喜!",
+		["grats_donthave_4"] = "哇 %s 太棒了",
+		["grats_donthave_5"] = "好羡慕 %s, 恭喜!",
+		["grats_donthave_6"] = "这段时间我一直在努力 %s",
+		["grats_donthave_7"] = "仍需努力完成 %s, 恭喜!",
+		["grats_donthave_8"] = "好像拿到你获得的成就 %s",
+		["grats_donthave_9"] = "期待自己是下一个完成的 %s, 好厉害!",
+		["grats_have_1"] = "恭喜 %s",
+		["grats_have_10"] = "好样的 %s, 现在我们都共享到了",
+		["grats_have_2"] = "敬贺 %s, 我也有了",
+		["grats_have_3"] = "哇 %s 太棒了",
+		["grats_have_4"] = "欢迎加入成就党 %s",
+		["grats_have_5"] = "我始终心心念念想获得那个 %s",
+		["grats_have_6"] = "那是一种仪式般的历程 %s",
+		["grats_have_7"] = "我已经做了很久了 %s, 恭喜!",
+		["grats_have_8"] = "我一直没忘做那个, %s,恭喜!",
+		["grats_have_9"] = "干得漂亮 %s",
+		["grats_link"] = "表示恭喜",
+		["module_desc"] = "与成就相关的自定义",
+		["module_name"] = "成就",
+		["showCompletedDate_desc"] = "在链接旁边显示你的成就完成日期",
+		["showCompletedDate_name"] = "显示完成日期",
+		["showGratsLink_desc"] = "显示发送恭喜消息的可点击链接",
+		["showGratsLink_name"] = "显示恭喜链接",
 	}
 }
 

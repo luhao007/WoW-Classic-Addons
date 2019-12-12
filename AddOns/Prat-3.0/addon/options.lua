@@ -239,7 +239,6 @@ L = {
 	["modulecontrol_name"] = "Настройка модулей",
 	["prat"] = "Prat",
 	["reload_required"] = "Эта настройка вступит в силу только после %s вашего интерфейса.",
-	--[[Translation missing --]]
 	["unloaded_desc"] = "Module is not loaded, load it to see description"
 }
 
@@ -265,8 +264,7 @@ L = {
 	["modulecontrol_name"] = "模块控制",
 	["prat"] = "Prat",
 	["reload_required"] = "在%s您的插件以前,此选项不会完全生效",
-	--[[Translation missing --]]
-	["unloaded_desc"] = "Module is not loaded, load it to see description"
+	["unloaded_desc"] = "模块未加载，请加载以查看描述"
 }
 
 
@@ -388,8 +386,8 @@ L = {
 	--[[Translation missing --]]
 	["load_enabledonrestart"] = "Enabled (reload)",
 	["load_no"] = "Não Carregar",
-	["modulecontrol_desc"] = "Controlar carregamento de módulos permitidos pelo Prat",
-	["modulecontrol_name"] = "Controle de Módulo",
+	["modulecontrol_desc"] = "Controla o carregamento e ativação de módulos do Prat.",
+	["modulecontrol_name"] = "Controle do Módulo",
 	["prat"] = "Prat",
 	["reload_required"] = "Essa alteração pode não ter efeitos até você %s sua IU.",
 	--[[Translation missing --]]

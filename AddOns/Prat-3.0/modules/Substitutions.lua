@@ -373,10 +373,8 @@ PL:AddLocale(PRAT_MODULE, "itIT", L)
 
 L = {
 	["Substitutions"] = {
-		--[[Translation missing --]]
-		["%d total user defined substitutions"] = "%d total user defined substitutions",
-		--[[Translation missing --]]
-		["|cffff0000warning:|r subtitution \"%s\" already defined as \"%s\", overwriting"] = "|cffff0000warning:|r subtitution \"%s\" already defined as \"%s\", overwriting",
+		["%d total user defined substitutions"] = "%d substituições definidas pelo usuário",
+		["|cffff0000warning:|r subtitution \"%s\" already defined as \"%s\", overwriting"] = "|cffff0000warning:|r substituindo. \"%s\" já definido como\"%s\", sobrescrevendo",
 		--[[Translation missing --]]
 		["<noguild>"] = "<noguild>",
 		--[[Translation missing --]]
@@ -520,12 +518,9 @@ Click to paste into the chat.]=],
 		["unknown sex"] = "unknown sex",
 		--[[Translation missing --]]
 		["user defined substition \"%s\" not found"] = "user defined substition \"%s\" not found",
-		--[[Translation missing --]]
-		["User defined substitutions"] = "User defined substitutions",
-		--[[Translation missing --]]
-		["user substitutions index (usersubs_idx) doesn't exist! oh dear."] = "user substitutions index (usersubs_idx) doesn't exist! oh dear.",
-		--[[Translation missing --]]
-		["usersub_"] = "usersub_",
+		["User defined substitutions"] = "Substituições definidas pelo usuário",
+		["user substitutions index (usersubs_idx) doesn't exist! oh dear."] = "índice de substituição do úsuario (usersubs_idx) não existe! Oh não!",
+		["usersub_"] = true,
 	}
 }
 

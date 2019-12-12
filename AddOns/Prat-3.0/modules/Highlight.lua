@@ -155,10 +155,9 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["Highlight"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Highlight your own name, and various other text",
-		--[[Translation missing --]]
-		["module_name"] = "Highlight",
+		["module_desc"] = "Выделите свое имя и другой текст",
+		["module_name"] = [=[Основной момент
+]=],
 	}
 }
 
@@ -167,10 +166,8 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["Highlight"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Highlight your own name, and various other text",
-		--[[Translation missing --]]
-		["module_name"] = "Highlight",
+		["module_desc"] = "突出显示你自己的名字，以及各种其他文字",
+		["module_name"] = "高亮度突显",
 	}
 }
 

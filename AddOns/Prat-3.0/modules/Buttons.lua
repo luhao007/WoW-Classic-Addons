@@ -438,18 +438,14 @@ L = {
 		["Show Chat%d Arrows"] = "Показывать стрелки %d чата",
 		["showbnet_desc"] = "Показать меню Общение",
 		["showbnet_name"] = "Показать меню Общение",
-		--[[Translation missing --]]
-		["showchannel_desc"] = "Show Channel Button",
-		--[[Translation missing --]]
-		["showchannel_name"] = "Show Channel Button",
+		["showchannel_desc"] = "Показать кнопку канала ",
+		["showchannel_name"] = "Показать кнопку канала ",
 		["showmenu_desc"] = "Отображать меню команд",
 		["showmenu_name"] = "Отображать меню",
 		["showminimize_desc"] = "Показать Кнопку минимизации",
 		["showminimize_name"] = "Показать Кнопку минимизации",
-		--[[Translation missing --]]
-		["showvoice_desc"] = "Show Voice Buttons",
-		--[[Translation missing --]]
-		["showvoice_name"] = "Show Voice Buttons",
+		["showvoice_desc"] = "Показать голосовую кнопку  ",
+		["showvoice_name"] = "Показать голосовую кнопку  ",
 		["Toggle showing chat arrows for each chat window."] = "Показывать стрелки для каждого окна чата.",
 		["Toggles navigation arrows on and off."] = "Вкл/выкл навигационных стрелок.",
 	}
@@ -477,14 +473,14 @@ L = {
 		["Show Chat%d Arrows"] = "显示聊天%d箭头",
 		["showbnet_desc"] = "显示社交菜单",
 		["showbnet_name"] = "显示社交菜单",
-		["showchannel_desc"] = "显示频道按钮",
-		["showchannel_name"] = "显示频道按钮",
+		["showchannel_desc"] = "显示频道按钮 ",
+		["showchannel_name"] = "显示频道按钮 ",
 		["showmenu_desc"] = "显示聊天菜单",
 		["showmenu_name"] = "显示菜单",
 		["showminimize_desc"] = "显示最小化按钮",
 		["showminimize_name"] = "显示最小化按钮",
-		["showvoice_desc"] = "显示声音按钮",
-		["showvoice_name"] = "显示声音按钮",
+		["showvoice_desc"] = "显示语音按钮 ",
+		["showvoice_name"] = "显示语音按钮",
 		["Toggle showing chat arrows for each chat window."] = "为各个聊天窗口显示上下翻页箭头",
 		["Toggles navigation arrows on and off."] = "切换导航箭头开与关",
 	}

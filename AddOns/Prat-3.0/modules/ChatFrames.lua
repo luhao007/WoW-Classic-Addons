@@ -351,8 +351,7 @@ L = {
 		["rememberframepositions_desc"] = "记住聊天框的位置,在加载时恢复.",
 		["rememberframepositions_name"] = "记住位置",
 		["removeclamp_desc"] = "允许聊天框架移动至屏幕边缘齐平",
-		--[[Translation missing --]]
-		["removeclamp_name"] = "Zero Clamp Size",
+		["removeclamp_name"] = "零距离边缘固定",
 	}
 }
 
