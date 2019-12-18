@@ -121,7 +121,7 @@ function TitanPanelLocationButton_GetButtonText(id)
             locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
 		else
 			if (TitanGetVar(TITAN_LOCATION_ID, "ShowSubZoneText")) then
-                locationText = TitanUtils_ToString(button.zoneText)..' '..locationText;
+                locationText = TitanUtils_ToString(button.subZoneText)..' '..locationText;
             else
                 locationText = TitanUtils_ToString(button.zoneText..' - '..button.subZoneText)..' '..locationText;
             end

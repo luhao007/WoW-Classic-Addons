@@ -4,7 +4,8 @@ local AB = assert(T.ActionBook:compatible(2, 21), "A compatible version of Actio
 local L, C = AB:locale(true), GetLocale()
 
 local z, K, V = nil
-V = C == "deDE" and { -- 29/29 (100%)
+V =
+	C == "deDE" and { -- 29/29 (100%)
 		"Fähigkeiten", "Auch Gegenstände mit gleichem Namen nutzen", "Kampfhaustier", "Kampfhaustiere", "Eigenes Makro", "Ausrüstungsset", "Ausrüstungssets", "Zusätzlicher Aktionsbutton", "Flugreittier", "Bodenreittier",
 		"Gegenstand", "Gegenstände", "Makro", "Makros", "Verschiedenes", "Reittier", "Reittiere", "Neues Makro", "Zeige nur wenn angelegt", "Begleiterfähigkeit",
 		"Begleiterfähigkeiten", "Zielmarkierungssymbol", "Weltmarkierung", "Markierungssymbole", "Zeige einen Platzhalter wenn nicht verfügbar", "Zauber", "Spielzeug", "Spielzeuge", "Benutze den höchsten bekannten Rang",
@@ -24,10 +25,10 @@ V = C == "deDE" and { -- 29/29 (100%)
 		"Item", "Items", "Macro", "Macros", "Divers", "Monture", "Montures", "Nouvelle Macro", "Afficher seulement quand équipé", "Compétence du Familier",
 		"Compétences du familier", "Marqueur de Raid", "Marqueur de Terrain", "Marqueurs de Raid", "Toujours afficher cette action", "Sort", "Jouet", "Jouets", z,
 	}
-	or C == "koKR" and { -- 28/29 (96%)
+	or C == "koKR" and { -- 29/29 (100%)
 		"능력", "같은 이름의 아이템 사용", "애완동물 대전", "전투 애완동물", "사용자 정의 매크로", "장비 구성", "장비 구성", "추가 행동 버튼", "나는 탈것", "지상 탈것",
 		"아이템", "아이템", "매크로", "매크로", "기타", "탈것", "탈것", "새 매크로", "착용 시에만 표시", "소환수 능력",
-		"소환수 능력", "공격대 징표", "공격대 위치 표시기", "공격대 징표", "이 조각 항상 표시", "주문", "장난감", "장난감", z,
+		"소환수 능력", "공격대 징표", "공격대 위치 표시기", "공격대 징표", "이 조각 항상 표시", "주문", "장난감", "장난감", "알려진 최고 레벨 사용",
 	}
 	or C == "ruRU" and { -- 22/29 (75%)
 		"Способности", "Использовать предметы с таким же именем", "Боевой питомец", "Боевые питомцы", "Пользовательские макросы", "Комплект экипировки", "Комплекты экипировки", z, z, "Наземные средства передвижения",

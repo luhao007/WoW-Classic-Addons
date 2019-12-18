@@ -137,8 +137,11 @@ AuctionTracking:OnSettingsLoad(function()
 		end)
 		-- TODO: hook C_AuctionHouse.StartCommoditiesPurchase / C_AuctionHouse.ConfirmCommoditiesPurchase
 	end
+end)
 
+AuctionTracking:OnGameDataLoad(function()
 	-- setup auction created / cancelled filtering
+	-- NOTE: this is delayed until the game is loaded to avoid taint issues
 	local ElvUIChat, ElvUIChatIsEnabled = nil, nil
 	if IsAddOnLoaded("ElvUI") and ElvUI then
 		ElvUIChat = ElvUI[1]:GetModule("Chat")

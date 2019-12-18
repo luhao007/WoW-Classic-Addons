@@ -37,7 +37,11 @@ end
 function UnitFramesPlus_PlayerPosition()
     if UnitFramesPlusVar["player"]["moved"] == 0 then
         PlayerFrame:ClearAllPoints();
-        PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
+        if TitanPanel_AdjustFrames then
+            PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -TITAN_PANEL_BAR_HEIGHT);
+        else
+            PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4);
+        end
     else
         PlayerFrame:ClearAllPoints();
         PlayerFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["player"]["x"], UnitFramesPlusVar["player"]["y"]);
@@ -434,7 +438,7 @@ function UnitFramesPlus_PlayerColorHPBarDisplayUpdate()
     end
 end
 
---嗯？
+--目标生命条染色
 hooksecurefunc("UnitFrameHealthBar_Update", function(statusbar, unit)
     if unit == "player" and statusbar.unit == "player" then 
         UnitFramesPlus_PlayerColorHPBarDisplayUpdate();
@@ -450,9 +454,10 @@ end);
 function UnitFramesPlus_PlayerPortraitIndicator()
     local registered = PlayerFrame:IsEventRegistered("UNIT_COMBAT");
     if UnitFramesPlusDB["player"]["indicator"] == 1 then
-        -- if not registered then
-        --     PlayerFrame:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
-        -- end
+        if not registered then
+            -- PlayerFrame:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
+            PlayerFrame:RegisterUnitEvent("UNIT_COMBAT", "player");
+        end
         return;
     else
         if registered then
@@ -640,11 +645,10 @@ end
 function UnitFramesPlus_PlayerFrameAutohideDisplayUpdate()
     if not InCombatLockdown() then
         if UnitFramesPlusDB["player"]["autohide"] == 1 then
-            local powertype = UnitPowerType("player");
+            -- local powertype = UnitPowerType("player");
             -- if (( powertype == 0 or powertype == 2 or powertype == 3 ) and UnitPower("player") ~= UnitPowerMax("player"))
                 -- or (( powertype == 1 or powertype == 6 ) and UnitPower("player") ~= 0)
-                if (UnitHealth("player") ~= UnitHealthMax("player"))
-                or UnitExists("target") then
+            if (UnitHealth("player") ~= UnitHealthMax("player")) or UnitExists("target") then
                 PlayerFrame:SetAlpha(1);
                 return;
             end
@@ -689,28 +693,36 @@ function UnitFramesPlus_PlayerBarTextMouseShow()
         PlayerFrameHealthBarText:SetAlpha(0);
         PlayerFrameHealthBarTextLeft:SetAlpha(0);
         PlayerFrameHealthBarTextRight:SetAlpha(0);
-        PlayerFrameHealthBar:SetScript("OnEnter",function(self)
+        PlayerFrameHealthBar:SetScript("OnEnter", function(self)
             PlayerFrameHealthBarText:SetAlpha(1);
             PlayerFrameHealthBarTextLeft:SetAlpha(1);
             PlayerFrameHealthBarTextRight:SetAlpha(1);
+            if ( self.tooltipTitle ) then
+                GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+            end
         end);
-        PlayerFrameHealthBar:SetScript("OnLeave",function()
+        PlayerFrameHealthBar:SetScript("OnLeave", function()
             PlayerFrameHealthBarText:SetAlpha(0);
             PlayerFrameHealthBarTextLeft:SetAlpha(0);
             PlayerFrameHealthBarTextRight:SetAlpha(0);
+            GameTooltip:Hide();
         end);
         PlayerFrameManaBarText:SetAlpha(0);
         PlayerFrameManaBarTextLeft:SetAlpha(0);
         PlayerFrameManaBarTextRight:SetAlpha(0);
-        PlayerFrameManaBar:SetScript("OnEnter",function(self)
+        PlayerFrameManaBar:SetScript("OnEnter", function(self)
             PlayerFrameManaBarText:SetAlpha(1);
             PlayerFrameManaBarTextLeft:SetAlpha(1);
             PlayerFrameManaBarTextRight:SetAlpha(1);
+            if ( self.tooltipTitle ) then
+                GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+            end
         end);
-        PlayerFrameManaBar:SetScript("OnLeave",function()
+        PlayerFrameManaBar:SetScript("OnLeave", function()
             PlayerFrameManaBarText:SetAlpha(0);
             PlayerFrameManaBarTextLeft:SetAlpha(0);
             PlayerFrameManaBarTextRight:SetAlpha(0);
+            GameTooltip:Hide();
         end);
         -- PlayerFrameAlternateManaBarText:SetAlpha(0);
         -- PlayerFrameAlternateManaBar.LeftText:SetAlpha(0);
@@ -729,19 +741,45 @@ function UnitFramesPlus_PlayerBarTextMouseShow()
         PlayerFrameHealthBarText:SetAlpha(1);
         PlayerFrameHealthBarTextLeft:SetAlpha(1);
         PlayerFrameHealthBarTextRight:SetAlpha(1);
-        PlayerFrameHealthBar:SetScript("OnEnter",nil);
-        PlayerFrameHealthBar:SetScript("OnLeave",nil);
+        PlayerFrameHealthBar:SetScript("OnEnter", function(self)
+            if ( self.tooltipTitle ) then
+                GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+            end
+        end);
+        PlayerFrameHealthBar:SetScript("OnLeave", function()
+            GameTooltip:Hide();
+        end);
         PlayerFrameManaBarText:SetAlpha(1);
         PlayerFrameManaBarTextLeft:SetAlpha(1);
         PlayerFrameManaBarTextRight:SetAlpha(1);
-        PlayerFrameManaBar:SetScript("OnEnter",nil);
-        PlayerFrameManaBar:SetScript("OnLeave",nil);
+        PlayerFrameManaBar:SetScript("OnEnter", function(self)
+            if ( self.tooltipTitle ) then
+                GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
+            end
+        end);
+        PlayerFrameManaBar:SetScript("OnLeave", function()
+            GameTooltip:Hide();
+        end);
         -- PlayerFrameAlternateManaBarText:SetAlpha(1);
         -- PlayerFrameAlternateManaBar.LeftText:SetAlpha(1);
         -- PlayerFrameAlternateManaBar.RightText:SetAlpha(1);
         -- PlayerFrameAlternateManaBar:SetScript("OnEnter",nil);
         -- PlayerFrameAlternateManaBar:SetScript("OnLeave",nil);
     end
+end
+
+function UnitFramesPlus_PlayerExtraTextFontSize()
+    UFP_PlayerHPMPPctHP:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    UFP_PlayerHPMPPctMP:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    UFP_PlayerHPMPPctPct:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+
+    PlayerName:SetFont(GameFontNormalSmall:GetFont(), UnitFramesPlusDB["player"]["fontsize"]);
+    PlayerFrameHealthBarText:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    PlayerFrameHealthBarTextLeft:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    PlayerFrameHealthBarTextRight:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    PlayerFrameManaBarText:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    PlayerFrameManaBarTextLeft:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
+    PlayerFrameManaBarTextRight:SetFont(TextStatusBarText:GetFont(), UnitFramesPlusDB["player"]["fontsize"], "OUTLINE");
 end
 
 --模块初始化
@@ -756,6 +794,7 @@ function UnitFramesPlus_PlayerInit()
     UnitFramesPlus_PlayerFrameScale();
     UnitFramesPlus_PlayerFrameAutohide();
     UnitFramesPlus_PlayerBarTextMouseShow();
+    UnitFramesPlus_PlayerExtraTextFontSize();
 end
 
 function UnitFramesPlus_PlayerLayout()

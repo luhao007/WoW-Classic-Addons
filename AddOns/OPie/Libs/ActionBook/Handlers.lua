@@ -48,7 +48,7 @@ if MODERN then -- mount: mount ID
 			end)
 			clickPrefix = SLASH_CLICK1 .. " " .. bn .. " "
 		end
-		function summonAction(mountID)
+		summonAction = function(mountID)
 			return "attribute", "type","macro", "macrotext",clickPrefix .. mountID
 		end
 	end
@@ -88,7 +88,10 @@ if MODERN then -- mount: mount ID
 		return actionMap[id]
 	end
 	local function describeMount(id)
-		local name, sid, icon = C_MountJournal.GetMountInfoByID(id)
+		local name, sid, icon, _4, _5, _6, _7, factionLocked, factionId = C_MountJournal.GetMountInfoByID(id)
+		if name and factionLocked then
+			name = name .. (factionId == 0 and "|A:QuestPortraitIcon-Horde-small:14:14:0:-1|a" or "|A:QuestPortraitIcon-Alliance-small:15:13:-1:-1|a")
+		end
 		return L"Mount", name, icon, nil, GameTooltip.SetMountBySpellID, sid
 	end
 	AB:RegisterActionType("mount", createMount, describeMount)
@@ -326,11 +329,6 @@ do -- macrotext
 	local function canUseViaSCUI(clause)
 		if (tonumber(clause) or 0) > INVSLOT_LAST_EQUIPPED then
 			-- SCUI will pass to UseInventoryItem
-			return false
-		end
-		local iid = tonumber(clause:match("^%s*item:([x%x]+)"))
-		if iid and C_ToyBox.GetToyInfo(iid) then
-			-- Toys aren't matched by item:id syntax in UIBN
 			return false
 		end
 		return true

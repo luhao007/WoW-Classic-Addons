@@ -167,7 +167,7 @@ do -- instance:arena/bg/ratedbg/lfr/raid/scenario + outland/northrend/...
 		local _, itype, did, _, _, _, _, imid = GetInstanceInfo()
 		if imid and mapTypes[imid] then
 			itype = mapTypes[imid]
-		elseif itype == "pvp" and IsRatedBattleground() then
+		elseif itype == "pvp" and MODERN and IsRatedBattleground() then
 			itype = "ratedbg"
 		elseif itype == "none" and MODERN and IsInActiveWorldPVP() then
 			itype = "worldpvp"

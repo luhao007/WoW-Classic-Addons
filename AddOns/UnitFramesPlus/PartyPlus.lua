@@ -27,13 +27,21 @@ end
 --关闭团队风格小队界面
 function UnitFramesPlus_PartyOriginSet()
     if UnitFramesPlusDB["party"]["origin"] == 1 then
-        SetCVar("useCompactPartyFrames", "0");
-        -- CompactRaidFrameContainer:UnregisterAllEvents();
-        -- CompactRaidFrameContainer:Hide();
+        if tonumber(GetCVar("useCompactPartyFrames")) == 1 then
+            SetCVar("useCompactPartyFrames", "0");
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate2Players:Disable();
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate3Players:Disable();
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate5Players:Disable();
+            CompactUnitFrameProfilesRaidStylePartyFrames:SetChecked(false);
+        end
     else
-        SetCVar("useCompactPartyFrames", "1");
-        -- CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
-        -- CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
+        if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
+            SetCVar("useCompactPartyFrames", "1");
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate2Players:Disable();
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate3Players:Disable();
+            _G["CompactUnitFrameProfiles"].optionsFrame.autoActivate5Players:Disable();
+            CompactUnitFrameProfilesRaidStylePartyFrames:SetChecked(false);
+        end
     end
 end
 
@@ -79,7 +87,7 @@ end
 
 --队友等级
 for id = 1, 4, 1 do
-    local PartyLevel = CreateFrame("Frame", "UFP_PartyLevel"..id,  _G["PartyMemberFrame"..id]);
+    local PartyLevel = CreateFrame("Frame", "UFP_PartyLevel"..id, _G["PartyMemberFrame"..id]);
     PartyLevel:SetAttribute("unit", "party"..id);
     RegisterUnitWatch(PartyLevel);
     PartyLevel.Text = _G["UFP_PartyLevel"..id]:CreateFontString("PartyMemberFrame"..id.."Level", "OVERLAY", "GameTooltipText");
@@ -142,68 +150,68 @@ function UnitFramesPlus_PartyLevelDisplayUpdate(id)
     _G["UFP_PartyLevel"..id].Text:SetText(LevelText);
 end
 
---队友生命条染色
-function UnitFramesPlus_PartyColorHPBar()
-    for id = 1, 4, 1 do
-        if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["colorhp"] == 1 then
-            if UnitFramesPlusDB["party"]["colortype"] == 1 then
-                _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", nil);
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PLAYER_ENTERING_WORLD");
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("GROUP_ROSTER_UPDATE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_LEADER_CHANGED");
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_MEMBER_ENABLE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_MEMBER_DISABLE");
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "party"..id);
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "party"..id);
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_CONNECTION", "party"..id);
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_PHASE", "party"..id);
-                _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_PET", "party"..id);
-                _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", function(self, event, ...)
-                    -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
-                        UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
-                    -- end
-                end)
-            elseif UnitFramesPlusDB["party"]["colortype"] == 2 then
-                if _G["PartyMemberFrame"..id.."HealthBar"]:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PLAYER_ENTERING_WORLD");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("GROUP_ROSTER_UPDATE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_LEADER_CHANGED");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_ENABLE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_DISABLE");
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_EXITED_VEHICLE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_CONNECTION");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PHASE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PET");
-                    _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", nil);
-                end
-                _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", function(self, value)
-                    -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
-                        UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
-                    -- end
-                end)
-            end
-            -- _G["PartyMemberFrame"..id.."HealthBar"].lockColor = true;
-        else
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", nil);
-            if _G["PartyMemberFrame"..id.."HealthBar"]:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PLAYER_ENTERING_WORLD");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("GROUP_ROSTER_UPDATE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_LEADER_CHANGED");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_ENABLE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_DISABLE");
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_ENTERED_VEHICLE");
-                -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_EXITED_VEHICLE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_CONNECTION");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PHASE");
-                _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PET");
-                _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", nil);
-            end
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetStatusBarColor(0, 1, 0);
-            -- _G["PartyMemberFrame"..id.."HealthBar"].lockColor = nil;
-        end
-    end
-end
+-- --队友生命条染色
+-- function UnitFramesPlus_PartyColorHPBar()
+--     for id = 1, 4, 1 do
+--         if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["colorhp"] == 1 then
+--             if UnitFramesPlusDB["party"]["colortype"] == 1 then
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", nil);
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PLAYER_ENTERING_WORLD");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("GROUP_ROSTER_UPDATE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_LEADER_CHANGED");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_MEMBER_ENABLE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterEvent("PARTY_MEMBER_DISABLE");
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "party"..id);
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "party"..id);
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_CONNECTION", "party"..id);
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_PHASE", "party"..id);
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:RegisterUnitEvent("UNIT_PET", "party"..id);
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", function(self, event, ...)
+--                     -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
+--                         UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
+--                     -- end
+--                 end)
+--             elseif UnitFramesPlusDB["party"]["colortype"] == 2 then
+--                 if _G["PartyMemberFrame"..id.."HealthBar"]:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PLAYER_ENTERING_WORLD");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("GROUP_ROSTER_UPDATE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_LEADER_CHANGED");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_ENABLE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_DISABLE");
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_EXITED_VEHICLE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_CONNECTION");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PHASE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PET");
+--                     _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", nil);
+--                 end
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", function(self, value)
+--                     -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
+--                         UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
+--                     -- end
+--                 end)
+--             end
+--             -- _G["PartyMemberFrame"..id.."HealthBar"].lockColor = true;
+--         else
+--             _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnValueChanged", nil);
+--             if _G["PartyMemberFrame"..id.."HealthBar"]:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PLAYER_ENTERING_WORLD");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("GROUP_ROSTER_UPDATE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_LEADER_CHANGED");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_ENABLE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("PARTY_MEMBER_DISABLE");
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_ENTERED_VEHICLE");
+--                 -- _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_EXITED_VEHICLE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_CONNECTION");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PHASE");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:UnregisterEvent("UNIT_PET");
+--                 _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEvent", nil);
+--             end
+--             _G["PartyMemberFrame"..id.."HealthBar"]:SetStatusBarColor(0, 1, 0);
+--             -- _G["PartyMemberFrame"..id.."HealthBar"].lockColor = nil;
+--         end
+--     end
+-- end
 
 --设置插件时刷新队友生命条染色显示
 function UnitFramesPlus_PartyColorHPBarDisplayUpdate(id)
@@ -221,6 +229,22 @@ function UnitFramesPlus_PartyColorHPBarDisplayUpdate(id)
         end
     end
 end
+
+--队友生命条染色
+hooksecurefunc("UnitFrameHealthBar_Update", function(statusbar, unit)
+    for id = 1, 4, 1 do
+        if unit == "party"..id and statusbar.unit == "party"..id then
+            UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
+        end
+    end
+end);
+hooksecurefunc("HealthBar_OnValueChanged", function(self, value, smooth)
+    for id = 1, 4, 1 do
+        if self.unit == "party"..id then
+            UnitFramesPlus_PartyColorHPBarDisplayUpdate(id);
+        end
+    end
+end);
 
 --队友名字染色
 for id = 1, 4, 1 do
@@ -477,7 +501,7 @@ for id = 1, 4, 1 do
     PartyHPPct.Text:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
     PartyHPPct.Text:SetTextColor(1, 0.82, 0);
     PartyHPPct.Text:SetJustifyH("LEFT");
-    
+
     --队友死亡、灵魂提示
     local PartyDeath = CreateFrame("Frame", "UFP_PartyDeath"..id,  _G["PartyMemberFrame"..id]);
     PartyDeath:SetAttribute("unit", "party"..id);
@@ -568,7 +592,7 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
         end
 
         if UnitFramesPlusDB["party"]["death"] == 1 then
-            if CurHP == 0 then
+            if UnitIsDead("party"..id) then
                 DeathText = UFPLocal_DeathText;
             elseif UnitIsGhost("party"..id) then
                 DeathText = UFPLocal_GhostText;
@@ -1035,7 +1059,11 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                 _G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown:SetAlpha(cdalpha);
                 -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetTextColor(r, g, b);
                 -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetAlpha(textalpha);
-                _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText(timetext);
+                if (not IsAddOnLoaded("OmniCC")) then
+                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText(timetext);
+                else
+                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText("");
+                end
             end
 
             for j = 1, UFP_MAX_PARTY_DEBUFFS, 1 do
@@ -1090,7 +1118,11 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown:SetAlpha(cdalpha);
                 -- _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetTextColor(r, g, b);
                 -- _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetAlpha(textalpha);
-                _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetText(timetext);
+                if (not IsAddOnLoaded("OmniCC")) then
+                    _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetText(timetext);
+                else
+                    _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetText("");
+                end
                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CountText:SetText(counttext);
             end
 
@@ -1147,7 +1179,11 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                 _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Cooldown:SetAlpha(cdalpha);
                 -- _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CooldownText:SetTextColor(r, g, b);
                 -- _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CooldownText:SetAlpha(textalpha);
-                _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CooldownText:SetText(timetext);
+                if (not IsAddOnLoaded("OmniCC")) then
+                    _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CooldownText:SetText(timetext);
+                else
+                    _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CooldownText:SetText("");
+                end
                 _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].CountText:SetText(counttext);
             end
         end
@@ -1240,28 +1276,32 @@ function UnitFramesPlus_PartyBarTextMouseShow()
             _G["PartyMemberFrame"..id.."HealthBarText"]:SetAlpha(0);
             -- _G["PartyMemberFrame"..id.."HealthBarTextLeft"]:SetAlpha(0);
             -- _G["PartyMemberFrame"..id.."HealthBarTextRight"]:SetAlpha(0);
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEnter",function(self)
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEnter", function(self)
                 _G["PartyMemberFrame"..id.."HealthBarText"]:SetAlpha(1);
                 -- _G["PartyMemberFrame"..id.."HealthBarTextLeft"]:SetAlpha(1);
                 -- _G["PartyMemberFrame"..id.."HealthBarTextRight"]:SetAlpha(1);
+                UnitFrame_UpdateTooltip(_G["PartyMemberFrame"..id]);
             end);
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnLeave",function()
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnLeave", function()
                 _G["PartyMemberFrame"..id.."HealthBarText"]:SetAlpha(0);
                 -- _G["PartyMemberFrame"..id.."HealthBarTextLeft"]:SetAlpha(0);
                 -- _G["PartyMemberFrame"..id.."HealthBarTextRight"]:SetAlpha(0);
+                GameTooltip:Hide();
             end);
             _G["PartyMemberFrame"..id.."ManaBarText"]:SetAlpha(0);
             -- _G["PartyMemberFrame"..id.."ManaBarTextLeft"]:SetAlpha(0);
             -- _G["PartyMemberFrame"..id.."ManaBarTextRight"]:SetAlpha(0);
-            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnEnter",function(self)
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnEnter", function(self)
                 _G["PartyMemberFrame"..id.."ManaBarText"]:SetAlpha(1);
                 -- _G["PartyMemberFrame"..id.."ManaBarTextLeft"]:SetAlpha(1);
                 -- _G["PartyMemberFrame"..id.."ManaBarTextRight"]:SetAlpha(1);
+                UnitFrame_UpdateTooltip(_G["PartyMemberFrame"..id]);
             end);
-            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnLeave",function()
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnLeave", function()
                 _G["PartyMemberFrame"..id.."ManaBarText"]:SetAlpha(0);
                 -- _G["PartyMemberFrame"..id.."ManaBarTextLeft"]:SetAlpha(0);
                 -- _G["PartyMemberFrame"..id.."ManaBarTextRight"]:SetAlpha(0);
+                GameTooltip:Hide();
             end);
         end
     else
@@ -1269,55 +1309,61 @@ function UnitFramesPlus_PartyBarTextMouseShow()
             _G["PartyMemberFrame"..id.."HealthBarText"]:SetAlpha(1);
             -- _G["PartyMemberFrame"..id.."HealthBarTextLeft"]:SetAlpha(1);
             -- _G["PartyMemberFrame"..id.."HealthBarTextRight"]:SetAlpha(1);
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEnter",nil);
-            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnLeave",nil);
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnEnter", function()
+                UnitFrame_UpdateTooltip(_G["PartyMemberFrame"..id]);
+            end);
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetScript("OnLeave", function()
+                GameTooltip:Hide();
+            end);
             _G["PartyMemberFrame"..id.."ManaBarText"]:SetAlpha(1);
             -- _G["PartyMemberFrame"..id.."ManaBarTextLeft"]:SetAlpha(1);
             -- _G["PartyMemberFrame"..id.."ManaBarTextRight"]:SetAlpha(1);
-            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnEnter",nil);
-            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnLeave",nil);
-        end
-    end
-end
-
-local function UnitFramesPlus_OriginPartyFrames()
-    if UnitFramesPlusDB["party"]["origin"] == 1 then
-        if tonumber(GetCVar("useCompactPartyFrames")) == 1 then
-            SetCVar("useCompactPartyFrames", 0, 1);
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnEnter", function()
+                UnitFrame_UpdateTooltip(_G["PartyMemberFrame"..id]);
+            end);
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetScript("OnLeave", function()
+                GameTooltip:Hide();
+            end);
         end
     end
 end
 
 local ht = CreateFrame("Frame");
-ht:RegisterEvent("PLAYER_ENTERING_WORLD");
+ht:RegisterEvent("PLAYER_LOGIN");
+ht:RegisterEvent("GROUP_ROSTER_UPDATE");
 ht:SetScript("OnEvent", function(self, event, ...)
     UnitFramesPlus_PartyToolsHide();
-    ht:UnregisterEvent("PLAYER_ENTERING_WORLD");
 end)
 
---头像缩放
+--隐藏工具
 function UnitFramesPlus_PartyToolsHideSet()
-    if UnitFramesPlusDB["party"]["hidetools"] == 1 then
-        CompactRaidFrameManager:UnregisterAllEvents();
-        CompactRaidFrameManager:Hide();
-        -- CompactRaidFrameContainer:UnregisterAllEvents();
-        -- CompactRaidFrameContainer:Hide();
+    if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["hidetools"] == 1 and (not UnitInRaid("player")) then
+        if CompactRaidFrameManager then
+            if CompactRaidFrameManager:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+                CompactRaidFrameManager:UnregisterAllEvents();
+            end
+            if CompactRaidFrameManager:IsShown() then
+                CompactRaidFrameManager:Hide();
+            end
+        end
     else
-        CompactRaidFrameManager:Show();
-        -- CompactRaidFrameContainer:Show();
-        if not CompactRaidFrameManager:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-            CompactRaidFrameManager:RegisterEvent("DISPLAY_SIZE_CHANGED");
-            CompactRaidFrameManager:RegisterEvent("UI_SCALE_CHANGED");
-            CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE");
-            CompactRaidFrameManager:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
-            CompactRaidFrameManager:RegisterEvent("UNIT_FLAGS");
-            CompactRaidFrameManager:RegisterEvent("PLAYER_FLAGS_CHANGED");
-            CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD");
-            CompactRaidFrameManager:RegisterEvent("PARTY_LEADER_CHANGED");
-            CompactRaidFrameManager:RegisterEvent("RAID_TARGET_UPDATE");
-            CompactRaidFrameManager:RegisterEvent("PLAYER_TARGET_CHANGED");
-            -- CompactRaidFrameContainer:RegisterEvent("GROUP_ROSTER_UPDATE");
-            -- CompactRaidFrameContainer:RegisterEvent("UNIT_PET");
+        if CompactRaidFrameManager then
+            if UnitInParty("player") or UnitInRaid("player") then
+                RaidOptionsFrame_UpdatePartyFrames();
+                CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
+            end
+            if not CompactRaidFrameManager:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+                CompactRaidFrameManager:RegisterEvent("DISPLAY_SIZE_CHANGED");
+                CompactRaidFrameManager:RegisterEvent("UI_SCALE_CHANGED");
+                CompactRaidFrameManager:RegisterEvent("GROUP_ROSTER_UPDATE");
+                CompactRaidFrameManager:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
+                CompactRaidFrameManager:RegisterEvent("UNIT_FLAGS");
+                CompactRaidFrameManager:RegisterEvent("PLAYER_FLAGS_CHANGED");
+                CompactRaidFrameManager:RegisterEvent("PLAYER_ENTERING_WORLD");
+                CompactRaidFrameManager:RegisterEvent("PARTY_LEADER_CHANGED");
+                CompactRaidFrameManager:RegisterEvent("RAID_TARGET_UPDATE");
+                CompactRaidFrameManager:RegisterEvent("PLAYER_TARGET_CHANGED");
+            end
         end
     end
 end
@@ -1335,22 +1381,33 @@ function UnitFramesPlus_PartyToolsHide()
     end
 end
 
+function UnitFramesPlus_PartyExtraTextFontSize()
+    for id = 1, 4, 1 do
+        _G["PartyMemberFrame"..id.."HealthBarText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
+        _G["PartyMemberFrame"..id.."ManaBarText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
+        _G["PartyMemberFrame"..id.."Level"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
+        _G["PartyMemberFrame"..id.."HPPct"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
+        _G["PartyMemberFrame"..id.."DeathText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"]+2, "OUTLINE");
+
+        _G["PartyMemberFrame"..id.."Name"]:SetFont(GameFontNormalSmall:GetFont(), UnitFramesPlusDB["party"]["fontsize"]+2);
+    end
+end
 --模块初始化
 function UnitFramesPlus_PartyInit()
-    UnitFramesPlus_PartyOrigin();
     UnitFramesPlus_PartyShiftDrag();
     UnitFramesPlus_PartyOfflineDetection();
     UnitFramesPlus_PartyPortrait();
     UnitFramesPlus_PartyPortraitIndicator();
     UnitFramesPlus_PartyBuff();
     UnitFramesPlus_PartyScale();
-    UnitFramesPlus_PartyColorHPBar();
+    -- UnitFramesPlus_PartyColorHPBar();
     UnitFramesPlus_PartyName();
     UnitFramesPlus_PartyLevel();
     UnitFramesPlus_PartyHealthPct();
     UnitFramesPlus_PartyBarTextMouseShow();
+    UnitFramesPlus_PartyExtraTextFontSize();
 end
 
 function UnitFramesPlus_PartyCvar()
-    UnitFramesPlus_OriginPartyFrames();
+    UnitFramesPlus_PartyOrigin();
 end

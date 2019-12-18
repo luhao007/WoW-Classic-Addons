@@ -67,6 +67,7 @@ LibChatHandler-1.0\lib.xml
 LibChecksum-1.0\LibChecksum.lua
 LibClassicCasterino\LibClassicCasterino.lua
 LibClassicDurations\LibClassicDurations.xml
+LibClassicMobHealth-1.0\lib.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibDBIcon-1.0\lib.xml
 LibDDI-1.0\lib.xml

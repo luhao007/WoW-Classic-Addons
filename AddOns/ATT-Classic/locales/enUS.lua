@@ -383,8 +383,8 @@ app.L = {
 		[-297] = "Interface\\Icons\\inv_letter_17", 								-- Mailbox
 		[-299] = "Interface\\Icons\\achievement_garrisonquests_1000", 				-- Missions
 		[-304] = "Interface\\Icons\\INV_BannerPVP_03",								-- Battlegrounds
-		[-318] = "Interface\\Icons\\garrison_purplearmor",							-- Armor
-		[-319] = "Interface\\Icons\\garrison_purpleweapon",							-- Weapons
+		[-318] = "Interface\\Icons\\INV_Chest_Plate03",								-- Armor
+		[-319] = "Interface\\Icons\\INV_Sword_23",									-- Weapons
 		[-320] = "Interface\\Icons\\inv_helmet_03",									-- Head
 		[-321] = "Interface\\Icons\\inv_shoulder_05",								-- Shoulder
 		[-322] = "Interface\\Icons\\inv_misc_cape_11",								-- Back
@@ -716,7 +716,7 @@ app.L = {
 		[-319] = AUCTION_CATEGORY_WEAPONS, 										-- Weapons
 		[-320] = INVTYPE_HEAD, 													-- Head
 		[-321] = INVTYPE_SHOULDER, 												-- Shoulder
-		[-322] = GetItemSubClassInfo(8,3),										-- Back
+		[-322] = INVTYPE_CLOAK,													-- Back
 		[-323] = INVTYPE_CHEST, 												-- Chest
 		[-324] = INVTYPE_BODY, 													-- Shirt
 		[-325] = INVTYPE_TABARD, 												-- Tabard
@@ -765,28 +765,11 @@ app.L = {
 -- Blizzard Events and Anniversaries
 		[-494] = MAC_OPTIONS_MISC, 												-- Miscellaneous
 		
-		[-518] = "Kul Tiras and Zandalar",
 		[-520] = "Expansion Pre-Launch",
-		[-521] = "Burning Crusade: Dark Portal Opens",
-		[-522] = "Wrath of the Lich King: Zombie Infestation",
-		[-523] = "Cataclysm: Elemental Unrest",
-		[-525] = "Warlords of Draenor: Iron Horde Incursion",
-		[-526] = "Legion: Legion Invasion",
-		[-527] = "Battle for Azeroth: War of the Thorns",
-		[-528] = "Broken Isles",												-- Broken Isles [Mole Machine]
-		[-531] = "2008 Spirit of Competition Event",
-		[-532] = "Heroes of the Storm Promotion",
-		[-533] = "Hearthstone Promotion",
 		[-534] = "Collector's Edition",
 		
-		[-536] = "Overwatch Promotion",
-		[-537] = "Starcraft Promotion",
-		[-538] = "Diablo 20th Anniversary Promotion",
 		[-539] = "Gates of Ahn'Qiraj",
 		[-540] = "The Scourge Invasion",
-		[-541] = "Battle for Sun's Reach",
-		[-542] = "Battlefield: Barrens",
-		[-543] = "Legion Invasions",
 		[-544] = "WoW Collector's Edition",
 		[-545] = "Blizzcon",
 		[-546] = REFER_A_FRIEND,												-- Recruit A Friend
@@ -795,13 +778,6 @@ app.L = {
 		[-549] = "Korea Only",
 		[-550] = "Starcraft Collector's Edition",
 		[-551] = "Diablo Collector's Edition",
-		[-552] = "Warcraft 3 Spoils of War Edition",
-		[-553] = "2006 ICoke Promotion",
-		[-554] = "EU Fansite Promotion",
-		[-555] = "Korean Promotional Event",
-		[-556] = "Arena Tournament",
-		[-557] = "Korea World Event",
-		[-558] = "Battle.net World Championship Shanghai 2012",
 
 		[-560] = CINEMATIC_NAME_1,												-- World of Warcraft
 		
@@ -944,7 +920,41 @@ app.L = {
 		[-9913] = FACTION_HORDE, 													-- Horde
 		[-9914] = FACTION_ALLIANCE, 												-- Alliance
 		
-		[-10066] = "Legendary",
+-- PVP Ranks
+	-- Alliance
+		[-8001] = PVP_RANK_5_1, -- Private
+		[-8002] = PVP_RANK_6_1, -- Corporal
+		[-8003] = PVP_RANK_7_1, -- Sergeant
+		[-8004] = PVP_RANK_8_1, -- Master Sergeant
+		[-8005] = PVP_RANK_9_1, -- Sergeant Major
+		[-8006] = PVP_RANK_10_1, -- Knight
+		[-8007] = PVP_RANK_11_1, -- Knight-Lieutenant
+		[-8008] = PVP_RANK_12_1, -- Knight-Captain
+		[-8009] = PVP_RANK_13_1, -- Knight-Champion
+		[-8010] = PVP_RANK_14_1, -- Lieutenant Commander
+		[-8011] = PVP_RANK_15_1, -- Commander
+		[-8012] = PVP_RANK_16_1, -- Marshal
+		[-8013] = PVP_RANK_17_1, -- Field Marshal
+		[-8014] = PVP_RANK_18_1, -- Grand Marshal
+
+	-- Horde
+		[-8015] = PVP_RANK_0_0, -- Scout
+		[-8016] = PVP_RANK_6_0, -- Grunt
+		[-8017] = PVP_RANK_7_0, -- Sergeant
+		[-8018] = PVP_RANK_8_0, -- Senior Sergeant
+		[-8019] = PVP_RANK_9_0, -- First Sergeant
+		[-8020] = PVP_RANK_10_0, -- Stone Guard
+		[-8021] = PVP_RANK_11_0, -- Blood Guard
+		[-8022] = PVP_RANK_12_0, -- Legionnaire
+		[-8023] = PVP_RANK_13_0, -- Centurion
+		[-8024] = PVP_RANK_14_0, -- Champion
+		[-8025] = PVP_RANK_15_0, -- Lieutenant General
+		[-8026] = PVP_RANK_16_0, -- General
+		[-8027] = PVP_RANK_17_0, -- Warlord
+		[-8028] = PVP_RANK_18_0, -- High Warlord
+
+
+	[-10066] = "Legendary",
 	},
 
 	["OBJECT_ID_ICONS"] = {
@@ -1116,6 +1126,7 @@ app.L = {
 		[21042] = "Theramore Guard Badge", 
 		[35251] = "Karnitol's Chest",
 		[37099] = "Atal'ai Tablet",
+		[51708] = "Eliza's Grave Dirt",
 		[103821] = "Doan's Strongbox",
 		[112888] = "Dusty Shelf",
 		[112948] = "Intrepid's Locked Strongbox",
@@ -1345,6 +1356,9 @@ app.L = {
 		
 		-- Poisons
 		[70] = "Interface\\Icons\\ability_creature_poison_06", -- Consumable
+		
+		-- Weapon Skills
+		[71] = "Interface\\Icons\\INV_Weapon_Halberd_10", -- Weapon Skills
 	},
 	["TRADESKILL_CATEGORY_NAMES"] = {
 		-- Engineering
@@ -1432,6 +1446,9 @@ app.L = {
 		
 		-- Poisons
 		[70] = "Consumable",	-- Consumable
+
+		-- Weapon Skills
+		[71] = "Weapon Skills", -- Weapon Skills
 	},
 	
 	-- Saved Instance Name => Dungeon Journal Instance Name Converter
@@ -1470,6 +1487,7 @@ app.L = {
 		["Stratholme"] = 317,
 		["Temple of Ahn'Qiraj"] = 320,
 		["The Temple of Atal'hakkar"] = 220,
+		["The Temple of Atal'Hakkar"] = 220,
 		["The Stockade"] = 225,
 		["Uldaman"] = 230,
 		["Wailing Caverns"] = 279,

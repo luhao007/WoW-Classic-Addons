@@ -227,6 +227,6 @@ Prat:AddModuleToLoad(function()
 
     Prat:SetModulePatterns(module, {
         { pattern = Prat.GetNamePattern(UnitName("player")), matchfunc = highlightPlayer, priority = 100 },
-        { pattern = "<(.+)>", matchfunc = highlightGuild, priority = 100 },
+        { pattern = "<(..-)>", matchfunc = highlightGuild, priority = 100 },
     })
 end)

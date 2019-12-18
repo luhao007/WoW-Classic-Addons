@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Cybeloras of Aerie Peak
-## Version: 8.7.1
+## Version: 8.7.3
 ## OptionalDeps: Masque, Ace3, OmniCC, tullaCC, sct, sctd, MikScrollingBattleText, Parrot, DRList-1.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibDogTag-Stats-3.0, LibSpellRange-1.0, LibOO-1.0, LibRangeCheck-2.0, LibBabble-CreatureType-3.0, LibBabble-Race-3.0, ElvUI, DBM-Core, BigWigs, LibClassicCasterino, LibClasicMobHealth-1.0, RealMobHealth
 ## SavedVariables: TellMeWhenDB
 ## SavedVariablesPerCharacter: TellMeWhen_Settings
@@ -73,6 +73,7 @@ Components\Core\BaseClasses\IconDataProcessorComponent.lua
 Components\Core\Spells\Equivalencies.lua
 Components\Core\Spells\Spells.lua
 Components\Core\Spells\AuraDurations.lua
+Components\Core\Spells\Totems.lua
 Components\Core\Spells\AuraCache.lua
 Components\Core\Spells\ClassSpellCache.lua
 

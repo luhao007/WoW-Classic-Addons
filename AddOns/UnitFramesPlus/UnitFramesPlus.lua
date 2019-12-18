@@ -37,6 +37,7 @@ UnitFramesPlusDefaultDB = {
         coordpct = 1,    --副本战场内显示为百分比
         autohide = 0,    --玩家头像自动隐藏
         mouseshow = 0,    --鼠标滑过时才显示数值
+        fontsize = 12,       --扩展显示的数字大小
     },
 
     pet = {
@@ -76,6 +77,7 @@ UnitFramesPlusDefaultDB = {
         unittype = 2,    --1为千进制(k/m)，2为万进位(万/亿)
         threat = 1,      --仇恨高亮
         threattext = 1,      --仇恨百分比
+        fontsize = 12,       --扩展显示的数字大小
     },
 
     targettarget = {
@@ -123,6 +125,7 @@ UnitFramesPlusDefaultDB = {
         hpmpunit = 1,        --生命值和法力值进位
         unittype = 2,    --1为千进制(k/m)，2为万进位(万/亿)
         hidetools = 0,      --隐藏团队工具
+        fontsize = 10,       --扩展显示的数字大小
     },
 
     partytarget = {
@@ -354,22 +357,6 @@ ufpcb:SetScript("OnEvent", function(self, event)
     UnitFramesPlus_Call();
 end)
 
---系统面板修复
-function UnitFramesPlus_OpenInterfacePanel(panel)
-        local panelName = panel.name;
-        if not panelName then return end
-        local t = {};
-        for i, p in pairs(INTERFACEOPTIONS_ADDONCATEGORIES) do
-            if p.name == panelName then
-                p.collapsed = true;
-                t.element = p;
-                InterfaceOptionsListButton_ToggleSubCategories(t);
-            end
-        end
-    InterfaceOptionsFrame_OpenToCategory(panel);
-    InterfaceOptionsFrame_OpenToCategory(panel);
-end
-
 --设置面板载入
 local function UnitFramesPlus_LoadOptionPanel()
     if not IsAddOnLoaded("UnitFramesPlus_Options") then
@@ -394,7 +381,8 @@ function UnitFramesPlus_SlashHandler(arg)
     end
     local result = UnitFramesPlus_LoadOptionPanel();
     if result == false then return end
-    UnitFramesPlus_OpenInterfacePanel(UnitFramesPlus_OptionsFrame);
+    InterfaceOptionsFrame_OpenToCategory(UnitFramesPlus_OptionsFrame);
+    InterfaceOptionsFrame_OpenToCategory(UnitFramesPlus_OptionsFrame);
 end
 SlashCmdList["UnitFramesPlus"] = UnitFramesPlus_SlashHandler;
 SLASH_UnitFramesPlus1 = "/unitframesplus";
@@ -509,7 +497,7 @@ end
 local ufp = CreateFrame("Frame");
 ufp:RegisterEvent("ADDON_LOADED");
 ufp:RegisterEvent("VARIABLES_LOADED");
--- ufp:RegisterEvent("PLAYER_ENTERING_WORLD");
+-- ufp:RegisterEvent("PLAYER_LOGIN");
 ufp:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" then
         local name = ...;
@@ -521,11 +509,11 @@ ufp:SetScript("OnEvent", function(self, event, ...)
 
             if TitanPanel_AdjustFrames then
                 hooksecurefunc("TitanPanel_AdjustFrames", function()
-                    if UnitFramesPlusVar["player"]["moved"] ~= 0 then
+                    if not InCombatLockdown() then
                         UnitFramesPlus_PlayerPosition();
+                        UnitFramesPlus_TargetPosition();
+                        UnitFramesPlus_PartyPosition();
                     end
-                    UnitFramesPlus_TargetPosition();
-                    UnitFramesPlus_PartyPosition();
                 end);
             end
         end
@@ -533,7 +521,6 @@ ufp:SetScript("OnEvent", function(self, event, ...)
         UnitFramesPlus_CVar();
         UnitFramesPlus_Layout();
         ufp:UnregisterEvent("VARIABLES_LOADED");
-    -- elseif event == "PLAYER_ENTERING_WORLD" then
-    --     ufp:UnregisterEvent("PLAYER_ENTERING_WORLD");
+    -- elseif event == "PLAYER_LOGIN" then
     end
 end)

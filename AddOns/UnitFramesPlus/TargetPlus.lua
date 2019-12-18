@@ -76,6 +76,9 @@ function UnitFramesPlus_TargetFrameScaleSet(newscale)
     local newscale = newscale or UnitFramesPlusDB["target"]["scale"];
     local point, relativeTo, relativePoint, offsetX, offsetY = TargetFrame:GetPoint();
     TargetFrame:SetScale(newscale);
+    if ComboFrame then
+        ComboFrame:SetScale(newscale);
+    end
     TargetFrame:ClearAllPoints();
     TargetFrame:SetPoint(point, relativeTo, relativePoint, offsetX*oldscale/newscale, offsetY*oldscale/newscale);
     if UnitFramesPlusDB["target"]["portrait"] == 1 and UnitFramesPlusDB["target"]["portraittype"] == 1 then
@@ -479,7 +482,7 @@ function UnitFramesPlus_TargetColorHPBarDisplayUpdate()
     end
 end
 
---嗯？
+--目标生命条染色
 hooksecurefunc("UnitFrameHealthBar_Update", function(statusbar, unit)
     if unit == "target" and statusbar.unit == "target" then
         UnitFramesPlus_TargetColorHPBarDisplayUpdate();
@@ -1185,40 +1188,52 @@ function UnitFramesPlus_TargetBarTextMouseShow()
         TargetFrameTextureFrameHealthBarText:SetAlpha(0);
         -- TargetFrameTextureFrameHealthBarTextLeft:SetAlpha(0);
         -- TargetFrameTextureFrameHealthBarTextRight:SetAlpha(0);
-        TargetFrameHealthBar:SetScript("OnEnter",function(self)
+        TargetFrameHealthBar:SetScript("OnEnter", function(self)
             TargetFrameTextureFrameHealthBarText:SetAlpha(1);
             -- TargetFrameTextureFrameHealthBarTextLeft:SetAlpha(1);
             -- TargetFrameTextureFrameHealthBarTextRight:SetAlpha(1);
+            UnitFrame_UpdateTooltip(TargetFrame);
         end);
-        TargetFrameHealthBar:SetScript("OnLeave",function()
+        TargetFrameHealthBar:SetScript("OnLeave", function()
             TargetFrameTextureFrameHealthBarText:SetAlpha(0);
             -- TargetFrameTextureFrameHealthBarTextLeft:SetAlpha(0);
             -- TargetFrameTextureFrameHealthBarTextRight:SetAlpha(0);
+            GameTooltip:Hide();
         end);
         TargetFrameTextureFrameManaBarText:SetAlpha(0);
         -- TargetFrameTextureFrameManaBarTextLeft:SetAlpha(0);
         -- TargetFrameTextureFrameManaBarTextRight:SetAlpha(0);
-        TargetFrameManaBar:SetScript("OnEnter",function(self)
+        TargetFrameManaBar:SetScript("OnEnter", function(self)
             TargetFrameTextureFrameManaBarText:SetAlpha(1);
             -- TargetFrameTextureFrameManaBarTextLeft:SetAlpha(1);
             -- TargetFrameTextureFrameManaBarTextRight:SetAlpha(1);
+            UnitFrame_UpdateTooltip(TargetFrame);
         end);
-        TargetFrameManaBar:SetScript("OnLeave",function()
+        TargetFrameManaBar:SetScript("OnLeave", function()
             TargetFrameTextureFrameManaBarText:SetAlpha(0);
             -- TargetFrameTextureFrameManaBarTextLeft:SetAlpha(0);
             -- TargetFrameTextureFrameManaBarTextRight:SetAlpha(0);
+            GameTooltip:Hide();
         end);
     else
         TargetFrameTextureFrameHealthBarText:SetAlpha(1);
         -- TargetFrameTextureFrameHealthBarTextLeft:SetAlpha(1);
         -- TargetFrameTextureFrameHealthBarTextRight:SetAlpha(1);
-        TargetFrameHealthBar:SetScript("OnEnter",nil);
-        TargetFrameHealthBar:SetScript("OnLeave",nil);
+        TargetFrameHealthBar:SetScript("OnEnter", function()
+            UnitFrame_UpdateTooltip(TargetFrame);
+        end);
+        TargetFrameHealthBar:SetScript("OnLeave", function()
+            GameTooltip:Hide();
+        end);
         TargetFrameTextureFrameManaBarText:SetAlpha(1);
         -- TargetFrameTextureFrameManaBarTextLeft:SetAlpha(1);
         -- TargetFrameTextureFrameManaBarTextRight:SetAlpha(1);
-        TargetFrameManaBar:SetScript("OnEnter",nil);
-        TargetFrameManaBar:SetScript("OnLeave",nil);
+        TargetFrameManaBar:SetScript("OnEnter", function()
+            UnitFrame_UpdateTooltip(TargetFrame);
+        end);
+        TargetFrameManaBar:SetScript("OnLeave", function()
+            GameTooltip:Hide();
+        end);
     end
 end
 
@@ -1228,6 +1243,18 @@ local function UnitFramesPlus_SysToT()
             SetCVar("showTargetOfTarget", 0, 1);
         end
     end
+end
+
+function UnitFramesPlus_TargetExtraTextFontSize()
+    UFP_TargetThreatText:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+    UFP_TargetHPText:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+    UFP_TargetMPText:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE")
+    UFP_TargetHPMPPctHP:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+    UFP_TargetHPMPPctMP:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+    UFP_TargetHPMPPctPct:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+    UFP_TargetRace:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["target"]["fontsize"], "OUTLINE");
+
+    TargetFrameTextureFrameName:SetFont(GameFontNormalSmall:GetFont(), UnitFramesPlusDB["target"]["fontsize"]);
 end
 
 --模块初始化
@@ -1245,6 +1272,7 @@ function UnitFramesPlus_TargetInit()
     UnitFramesPlus_TargetBuffCooldown();
     UnitFramesPlus_TargetCooldownText();
     UnitFramesPlus_TargetThreat();
+    UnitFramesPlus_TargetExtraTextFontSize();
 end
 
 function UnitFramesPlus_TargetLayout()

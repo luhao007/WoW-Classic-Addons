@@ -322,14 +322,13 @@ end
 -- end
 
 -- local pvp = CreateFrame("Frame");
--- pvp:RegisterEvent("PLAYER_ENTERING_WORLD");
+-- pvp:RegisterEvent("PLAYER_LOGIN");
 -- pvp:SetScript("OnEvent", function(self, event, ...)
---     if event == "PLAYER_ENTERING_WORLD" then
+--     if event == "PLAYER_LOGIN" then
 --         if IsAddOnLoaded("Blizzard_ArenaUI") then
 --             UnitFramesPlus_ArenaEnemyBarTextMouseShow();
 --             UnitFramesPlus_ArenaEnemyHPPctCreateFrame();
 --             UnitFramesPlus_ArenaEnemyHPPct();
---             pvp:UnregisterEvent("PLAYER_ENTERING_WORLD");
 --         end
 --     end
 -- end)

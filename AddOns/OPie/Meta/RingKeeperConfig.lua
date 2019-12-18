@@ -983,6 +983,7 @@ newSlice = CreateFrame("Frame", nil, ringContainer) do
 		f.ico = f:CreateTexture(nil, "ARTWORK")
 		f.ico:SetSize(32,32) f.ico:SetPoint("LEFT", 1, 0)
 		f.name = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		f.name:SetHeight(12)
 		f.name:SetPoint("TOPLEFT", f.ico, "TOPRIGHT", 3, -2)
 		f.name:SetPoint("RIGHT", -2, 0)
 		f.name:SetJustifyH("LEFT")

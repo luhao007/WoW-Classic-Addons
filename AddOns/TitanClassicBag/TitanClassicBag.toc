@@ -1,11 +1,11 @@
 ## Interface: 11303
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.1.4.11302
+## Version: 1.1.5.11303
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel Classic [|cffeda55fBag|r] |cff00aa001.1.4.11302|r
+## Title: Titan Panel Classic [|cffeda55fBag|r] |cff00aa001.1.5.11303|r
 ## Notes: Adds bag and free slot information to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0背包|r
 ## Notes-zhCN: 泰坦面板的背包模块

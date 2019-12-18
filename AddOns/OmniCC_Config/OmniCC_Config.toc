@@ -9,7 +9,4 @@
 ## Notes-zhCN: 显示技能冷却时间
 
 
-localization\localization.xml
-widgets\widgets.xml
-mainPanel.lua
-panels\panels.xml
+..\OmniCC\config\config.xml

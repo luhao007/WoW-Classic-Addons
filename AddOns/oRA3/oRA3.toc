@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Funkydude, Nebula
-## Version: v3-classic
+## Version: v4-classic
 ## OptionalDeps: Ace3, LibCandyBar-3.0, LibSharedMedia-3.0, LibDDI-1.0, LibChatAnims, LibLatency, LibDurability, LibDialog-1.0, Masque
 ## SavedVariables: oRA3DB
 
@@ -15,6 +15,7 @@
 ## X-Curse-Project-ID: 15655
 
 # X-WoWI-ID: 14635
+
 
 locales\enUS.lua
 locales\itIT.lua

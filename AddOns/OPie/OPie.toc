@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: foxlit
-## Version: Ancient Walnut 5
+## Version: Ancient Walnut 6
 ## SavedVariables: OneRing_Config
 
 ## Title: OPie

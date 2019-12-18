@@ -2668,11 +2668,19 @@ app.BaseDeathClass = {
 		elseif key == "icon" then
 			return "Interface\\Addons\\ATT-Classic\\assets\\Normal";
 		elseif key == "collectible" then
-			return true;
+			return app.Settings:Get("Thing:Deaths");
 		elseif key == "progress" then
-			return math.min(1000, GetDataMember("Deaths", 0));
+			if t.collectible then
+				return math.min(1000, GetDataMember("Deaths", 0));
+			else
+				return 0;
+			end
 		elseif key == "total" then
-			return 1000;
+			if t.collectible then
+				return 1000;
+			else
+				return 0;
+			end
 		elseif key == "description" then
 			return "The ATT Gods must be sated. Go forth and attempt to level, mortal!\n\n 'Live! Die! Live Again!'\n";
 		else
@@ -3399,6 +3407,7 @@ end
 -- Profession Lib
 app.SkillIDToSpellID = setmetatable({
 	[171] = 2259,	-- Alchemy
+	[261] = 5149,	-- Beast Training
 	[164] = 2018,	-- Blacksmithing
 	[185] = 2550,	-- Cooking
 	[333] = 7411,	-- Enchanting
@@ -3556,7 +3565,7 @@ app.BaseRecipe = {
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if IsSpellKnown(t.spellID) then
+			if IsSpellKnown(t.spellID) or IsPlayerSpell(t.spellID) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -4077,7 +4086,8 @@ local function CreateMiniListForGroup(group)
 		popout.shouldFullRefresh = true;
 		if group.questID or group.sourceQuests then
 			-- This is a quest object. Let's show prereqs and breadcrumbs.
-			if group.parent.questID == group.questID then
+			local questID = group.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and group.altQuestID or group.questID;
+			if (group.parent.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and group.parent.altQuestID or group.parent.questID) == questID then
 				group = group.parent;
 			end
 			local mainQuest = CloneData(group);
@@ -4085,8 +4095,8 @@ local function CreateMiniListForGroup(group)
 			local g = { mainQuest };
 			
 			-- Check to see if Source Quests are listed elsewhere.
-			if group.questID and not group.sourceQuests then
-				local searchResults = SearchForField("questID", group.questID);
+			if questID and not group.sourceQuests then
+				local searchResults = SearchForField("questID", questID);
 				if searchResults and #searchResults > 1 then
 					for i=1,#searchResults,1 do
 						local searchResult = searchResults[i];
@@ -4115,7 +4125,8 @@ local function CreateMiniListForGroup(group)
 							for i=1,#sourceQuest,1 do
 								-- Only care about the first search result.
 								local sq = sourceQuest[i];
-								if sq.parent and sq.parent.questID == sq.questID then
+								questID = sq.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and sq.altQuestID or sq.questID;
+								if sq.parent and sq.parent.questID == questID then
 									sq = sq.parent;
 								end
 								if sq and app.GroupFilter(sq) and not sq.isBreadcrumb then
@@ -4126,7 +4137,7 @@ local function CreateMiniListForGroup(group)
 												found = sq;
 												break;
 											end
-										elseif sq.questID == sourceQuestID then
+										elseif questID == sourceQuestID then
 											found = sq;
 											break;
 										end
@@ -5338,6 +5349,35 @@ function app:GetDataCache()
 			db.text = TRANSMOG_SOURCE_4;
 			db.icon = "Interface/ICONS/INV_Misc_Map_01";
 			db.g = app.Categories.WorldDrops;
+			table.insert(g, db);
+		end
+
+		-- Factions
+		if app.Categories.Factions then
+			db = {};
+			db.text = "Factions";
+			db.icon = "Interface/ICONS/INV_Misc_Map_01";
+			db.g = app.Categories.Factions;
+			table.insert(g, db);
+		end
+
+		-- PvP
+		if app.Categories.PvP then
+			db = {};
+			db.text = "PvP";
+			db.icon = "Interface/ICONS/INV_Misc_Map_01";
+			db.g = app.Categories.PvP;
+			table.insert(g, db);
+		end
+		
+		-- Craftables
+		if app.Categories.Craftables then
+			db = {};
+			db.expanded = false;
+			db.text = LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM;
+			db.icon = "Interface\\ICONS\\ability_repair";
+			db.g = app.Categories.Craftables;
+			db.collectible = false;
 			table.insert(g, db);
 		end
 		
@@ -6807,8 +6847,8 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					local numberOfCrafts = GetNumCrafts();
 					for craftIndex = 1,numberOfCrafts do
 						local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
-						if craftType ~= "header" then
-							local spellID = app.SpellNameToSpellID[craftName];
+						if craftType ~= "header" and craftType ~= "none" then
+							local spellID = craftSubSpellName and select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName];
 							if spellID then
 								SetTempDataSubMember("CollectedSpells", spellID, 1);
 								if not GetDataSubMember("CollectedSpells", spellID) then
@@ -7035,11 +7075,13 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					end
 				end
 			elseif e == "TRADE_SKILL_CLOSE" or e == "CRAFT_CLOSE" then
-				self:RefreshRecipes();
-				self:Update();
-				if not self:UpdateFrameVisibility() then
-					self:SetVisible(false);
-				end
+				StartCoroutine("TSMWHY3", function()
+					self:RefreshRecipes();
+					self:Update();
+					if not self:UpdateFrameVisibility() then
+						self:SetVisible(false);
+					end
+				end);
 			end
 		end);
 		return;

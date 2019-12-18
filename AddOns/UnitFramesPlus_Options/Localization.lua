@@ -13,6 +13,7 @@
     UFP_OP_Player_Options = "玩家设定";
     UFP_OP_Player_Autohide = "头像自动隐藏";
     UFP_OP_Scale = "缩放：";
+    UFP_OP_FontSize = "字体大小：";
     UFP_OP_Player_Dragon = "显示精英头像";
     UFP_OP_Player_Elite = "精英";
     UFP_OP_Player_RareElite = "稀有精英";
@@ -118,6 +119,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Player_Options = "玩家設定";
     UFP_OP_Player_Autohide = "頭像自動隱藏";
     UFP_OP_Scale = "縮放：";
+    UFP_OP_FontSize = "字體大小：";
     UFP_OP_Player_Dragon = "顯示精英頭像";
     UFP_OP_Player_Elite = "精英";
     UFP_OP_Player_RareElite = "稀有精英";
@@ -223,6 +225,7 @@ else
     UFP_OP_Player_Options = "Player Options";
     UFP_OP_Player_Autohide = "Auto hide";
     UFP_OP_Scale = "Scale: ";
+    UFP_OP_FontSize = "Font: ";
     UFP_OP_Player_Dragon = "Dragon border";
     UFP_OP_Player_Elite = "Elite";
     UFP_OP_Player_RareElite = "Rare elite";

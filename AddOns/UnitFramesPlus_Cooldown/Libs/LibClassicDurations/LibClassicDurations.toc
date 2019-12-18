@@ -1,6 +1,6 @@
-## Interface: 11302
+## Interface: 11303
 ## Title: LibClassicDurations
-## Version: 1.20-beta1
+## Version: 1.31
 ## Author: d87
 
 ## X-Curse-Project-ID: 323800

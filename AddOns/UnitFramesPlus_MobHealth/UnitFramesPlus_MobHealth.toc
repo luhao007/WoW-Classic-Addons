@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Isler
-## Version: 1.31.2
+## Version: 1.32
 ## RequiredDeps: UnitFramesPlus
 ## SavedVariables: UnitFramesPlusMobHealthDB, UnitFramesPlusMobHealthOpt
 

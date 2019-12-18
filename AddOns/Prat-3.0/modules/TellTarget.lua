@@ -266,6 +266,10 @@ L = {
       self:SendTellToTarget(editBox.chatFrame, msg, editBox)
     end
     self.hooks[editBox].OnTextChanged(editBox, ...)
+    -- set header's font
+    local font, fontsize, style = ChatFrame1:GetFont()
+    local header = _G[editBox:GetName().."Header"];
+    header:SetFont( font, fontsize, style )
   end
 
   function module:SendTellToTarget(frame, text, editBox)

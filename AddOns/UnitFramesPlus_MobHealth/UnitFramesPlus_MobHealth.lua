@@ -61,7 +61,11 @@ function UnitFramesPlus_PruneData()
     for _, kind in ipairs({ "pet", "pc" }) do
         for guidlevel in pairs(UnitFramesPlusMobHealthDB[kind]) do
             local guid, level = strsplit("-", guidlevel);
-            if level and tonumber(level) < maxLevel then
+            if level then
+                if tonumber(level) < maxLevel then
+                    UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
+                end
+            else
                 UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
             end
         end
@@ -77,15 +81,19 @@ function UnitFramesPlus_PruneData()
         if next(UnitFramesPlusMobHealthDB[kind]) then
             for guidlevel, health in pairs(UnitFramesPlusMobHealthDB[kind]) do
                 local guid, level = strsplit("-", guidlevel);
-                if level and mobs[guid] then
-                    if tonumber(level) > tonumber(mobs[guid]) then
-                        UnitFramesPlusMobHealthDB[kind][guid.."-"..mobs[guid]] = nil;
-                        mobs[guid] = level;
+                if level then
+                    if mobs[guid] then
+                        if tonumber(level) > tonumber(mobs[guid]) then
+                            UnitFramesPlusMobHealthDB[kind][guid.."-"..mobs[guid]] = nil;
+                            mobs[guid] = level;
+                        else
+                            UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
+                        end
                     else
-                        UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
+                        mobs[guid] = level;
                     end
                 else
-                    mobs[guid] = level;
+                    UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
                 end
             end
         end
@@ -100,7 +108,11 @@ function UnitFramesPlus_PruneData()
     for _, kind in ipairs({ "npc" }) do
         for guidlevel in pairs(UnitFramesPlusMobHealthDB[kind]) do
             local guid, level = strsplit("-", guidlevel);
-            if level and tonumber(level) < maxLevel then
+            if level then
+                if tonumber(level) < maxLevel then
+                    UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
+                end
+            else
                 UnitFramesPlusMobHealthDB[kind][guidlevel] = nil;
             end
         end
