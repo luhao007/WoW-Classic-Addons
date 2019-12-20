@@ -1,9 +1,9 @@
 # Blizzmove
 
-## [v1.9.1](https://github.com/zanony/BlizzMove/tree/v1.9.1) (2019-11-09)
-[Full Changelog](https://github.com/zanony/BlizzMove/compare/1.9...v1.9.1)
+## [v1.9.2](https://github.com/zanony/BlizzMove/tree/v1.9.2) (2019-12-18)
+[Full Changelog](https://github.com/zanony/BlizzMove/compare/v1.9.1...v1.9.2)
 
-- added support for azerite item&essence frames (#4)  
-- Merge pull request #3 from fubaBfA/master  
-    added some Classic Frames & Code Cleanup  
-- added some Classic Frames & Code Cleanup  
+- Clean up code, add more frames. (#6)  
+    Cleaned up the code, and added frames from https://github.com/Suraf/BlizzMove, and fixed some issues like the code for the objective tracker.  
+    	modified:   BlizzMove.lua  
+    	modified:   Handle.lua  

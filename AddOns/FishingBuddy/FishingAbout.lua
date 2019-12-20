@@ -81,6 +81,7 @@ credits[FBConstants.ROLE_TRANSLATE_RURU] = {
 	["BloodyFess"] = { "V1.2d", "V1.2h" },
 	["Turbid121"] = { "V1.2h", "V1.2i" },
 	["PocoMaxa"] = { "V1.6b", },
+	["Arrogant_Dreamer"] = { "V1.10..9", },
 };
 
 credits[FBConstants.ROLE_TRANSLATE_PTBR] = {

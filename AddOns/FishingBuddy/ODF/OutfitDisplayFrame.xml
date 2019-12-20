@@ -363,11 +363,11 @@
 				</Anchors>
 			</CheckButton>
 			<PlayerModel name="FBOutfitFrameModelFrame">
-				<Size x="233" y="224"/>
+				<Size x="303" y="291"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="65" y="-78"/>
+							<AbsDimension x="25" y="-15"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -377,7 +377,11 @@
 							<AbsDimension x="35" y="35"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="35" y="-10"/>
+								</Offset>
+							</Anchor>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -436,7 +440,8 @@
 				<Scripts>
 					<OnUpdate function="Model_OnUpdate"/>
 					<OnLoad>
-						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, nil, nil, nil);
+						Model_OnLoad(self, MODELFRAME_MAX_PLAYER_ZOOM, nil, nil, CharacterModelFrame_OnMouseUp);
+						self:SetUnit("player");
 					</OnLoad>
 				</Scripts>
 			</PlayerModel>

@@ -36,25 +36,25 @@ FishingTranslations["zhTW"] = {
 	["CLEANUP_NONEMSG"] = "無舊設定遺留。",
 	["CLEANUP_NOOLDMSG"] = "沒有舊的玩家設定 |c#GREEN#%s|r.",
 	["CLEANUP_WILLMSG"] = "舊設定遺留 |c#RED#%s|r: %s.",
-	["CLICKTOSWITCH_INFO"] = "如果啟用，左鍵點擊切換套裝，不然就開啟Fishing Buddy視窗。",
+	["CLICKTOSWITCH_INFO"] = "啟用時，左鍵點擊切換套裝，不然就開啟#NAME#視窗。",
 	["CLICKTOSWITCH_ONOFF"] = "點擊切換",
 	["COMPATIBLE_SWITCHER"] = "無相容套裝切換",
 	["CONFIG_ALWAYSHAT_INFO"] = "啟用時，就會戴上帽子 (就算你不需要)。",
 	["CONFIG_ALWAYSHAT_ONOFF"] = "使用帽子",
-	["CONFIG_ALWAYSLURE_INFO"] = "如果啟用，將替未上魚餌的魚竿上餌。",
+	["CONFIG_ALWAYSLURE_INFO"] = "啟用時，將替未上魚餌的魚竿上餌。",
 	["CONFIG_ALWAYSLURE_ONOFF"] = "保持魚餌",
-	["CONFIG_AUTOLOOT_INFO"] = "如果啟用，釣魚時自動拾取。",
+	["CONFIG_AUTOLOOT_INFO"] = "啟用時，釣魚時會自動拾取。",
 	["CONFIG_AUTOLOOT_INFOD"] = "自動拾取關閉，因為FishWarden被開啟",
 	["CONFIG_AUTOLOOT_ONOFF"] = "自動拾取",
-	["CONFIG_AUTOOPEN_INFO"] = "如果啟用，雙擊滑鼠打開釣魚任務物品",
+	["CONFIG_AUTOOPEN_INFO"] = "啟用時，點兩下滑鼠會打開釣魚任務物品。",
 	["CONFIG_AUTOOPEN_ONOFF"] = "打開任務物品",
-	["CONFIG_BGSOUNDS_INFO"] = "如果啟用，當WoW在背景運行時啟用音效。",
+	["CONFIG_BGSOUNDS_INFO"] = "啟用時，當魔獸在背景運行時啟用音效。",
 	["CONFIG_BGSOUNDS_ONOFF"] = "背景音效",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BIGDRAENOR_INFO"] = "If enabled, attempt to maximize skill while in Draenor and Broken Islands.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BIGDRAENOR_ONOFF"] = "Max Fishing",--]] 
-	["CONFIG_BOBBINGBERG_INFO"] = "如果啟用，將施放漂浮冰山",
+	["CONFIG_BOBBINGBERG_INFO"] = "啟用時，將施放漂浮冰山。",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
 	["CONFIG_CONTESTS_INFO"] = "顯示釣魚比賽計時器",
@@ -65,9 +65,9 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_DALARANLURES_INFO"] = "If enabled, apply special Dalaran coin lures when available.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DALARANLURES_ONOFF"] = "Dalaran Lures",--]] 
-	["CONFIG_DERBYTIMER_INFO"] = "如果啟用，顯示卡魯耶克釣魚大賽開始的倒數計時器以及剩餘時間。",
+	["CONFIG_DERBYTIMER_INFO"] = "啟用時，顯示卡魯耶克釣魚大賽開始的倒數計時器以及剩餘時間。",
 	["CONFIG_DERBYTIMER_ONOFF"] = "卡魯耶克釣魚大賽計時器",
-	["CONFIG_DINGQUESTFISH_INFO"] = "如果啟用，當釣到納特‧帕格聲望用魚時會撥放音效。",
+	["CONFIG_DINGQUESTFISH_INFO"] = "啟用時，當釣到納特‧帕格聲望用魚時會撥放音效。",
 	["CONFIG_DINGQUESTFISH_ONOFF"] = "釣魚聲望提示音",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DRAENORBAIT_INFO"] = "If enabled, attempt to use the right 'special' bait for the current zone.",--]] 
@@ -77,7 +77,7 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_DRAENORBAITMAINTAIN_INFO"] = "If enabled, maintain existing 'special' bait, do not apply based on location.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DRAENORBAITMAINTAIN_ONOFF"] = "Maintain bait only",--]] 
-	["CONFIG_DRINKHEAVILY_INFO"] = "如果啟用，每當你在釣魚並且'口乾'時飲用 #LAGER#",
+	["CONFIG_DRINKHEAVILY_INFO"] = "啟用時，每當你在釣魚並且 '口乾' 時飲用#LAGER#",
 	["CONFIG_DRINKHEAVILY_ONOFF"] = "喝淡啤酒",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DROWNEDMANA_INFO"] = "If enabled, turn in Drowned Mana for reputation",--]] 
@@ -87,9 +87,9 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_EASYCAST_INFOD"] = "快速釣魚被關閉，因為 Fishing Ace被開啟。",
 	["CONFIG_EASYCAST_ONOFF"] = "快速釣魚",
 	["CONFIG_EASYCASTKEYS_INFO"] = "如果有指定組合按鍵，按下按鍵時無視釣魚裝備。",
-	["CONFIG_EASYLURES_INFO"] = "如果啟用，不論需要與否，當你開始釣魚時替你的魚竿重新上餌。",
+	["CONFIG_EASYLURES_INFO"] = "啟用時，不論需要與否，當你開始釣魚時替你的魚竿重新上餌。",
 	["CONFIG_EASYLURES_ONOFF"] = "快速魚餌",
-	["CONFIG_ENHANCESOUNDS_INFO"] = "當啟用時，增強釣魚音效並降低其他音效。",
+	["CONFIG_ENHANCESOUNDS_INFO"] = "啟用時，增強釣魚音效並降低其他音效。",
 	["CONFIG_ENHANCESOUNDS_ONOFF"] = "增強釣魚音效",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_FILTERRAIDLOOT_INFO"] = "If enabled, low level loot in a fishing raid is filtered.",--]] 
@@ -99,10 +99,10 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_FINDFISH_ONOFF"] = "尋找魚類",
 	["CONFIG_FISHINGBUDDY_INFO"] = "呼換你釣魚時的特別夥伴",
 	["CONFIG_FISHINGBUDDY_ONOFF"] = "釣魚夥伴",
-	["CONFIG_FISHINGCHARM_INFO"] = "如果啟用，使用潘達利亞得到的釣魚護符",
+	["CONFIG_FISHINGCHARM_INFO"] = "啟用時，使用潘達利亞得到的釣魚護符。",
 	["CONFIG_FISHINGFLUFF_INFO"] = "開啟各種釣魚時的休閒功能",
 	["CONFIG_FISHINGFLUFF_ONOFF"] = "釣魚樂趣",
-	["CONFIG_FISHINGRAFT_INFO"] = "如果啟用，將施放釣魚竹筏",
+	["CONFIG_FISHINGRAFT_INFO"] = "啟用時，將施放釣魚竹筏。",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_FISHINGRAID_INFO"] = "Turn on Fishing Raid features.",--]] 
 	--[[Translation missing --]]
@@ -149,7 +149,7 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_KEEPONTRUCKIN_INFO"] = "If fishing without a pole, continue casting without the modifier key",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_KEEPONTRUCKIN_ONOFF"] = "Keep Casting",--]] 
-	["CONFIG_LASTRESORT_INFO"] = "如果啟用，加上最大的餌，即使這個餌無法讓上鉤率達到100%。",
+	["CONFIG_LASTRESORT_INFO"] = "啟用時，加上最大的餌，即使這個餌無法讓上鉤率達到 100%。",
 	["CONFIG_LASTRESORT_ONOFF"] = "最大的餌",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_LUNKERQUESTS_INFO"] = "Automatically turn in lunker quests",--]] 
@@ -158,24 +158,24 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_MAINTAINBERG_INFO"] = "啟用時，將不使用漂浮冰山，僅保持已啟用的使用狀態。",
 	["CONFIG_MAINTAINRAFT_INFO"] = "啟用時，將不使用竹筏道具，僅保持已啟用竹筏的使用狀態。",
 	["CONFIG_MAINTAINRAFTBERG_ONOFF"] = "只維持原效果",
-	["CONFIG_MAXSOUND_INFO"] = "如果啟用，於釣魚時將音效音量開到最大。",
+	["CONFIG_MAXSOUND_INFO"] = "啟用時，於釣魚時將音效音量開到最大。",
 	["CONFIG_MAXSOUND_ONOFF"] = "最大音量",
 	["CONFIG_MINIMAPBUTTON_INFO"] = "在小地圖顯示一個 #名稱# 的圖示",
 	["CONFIG_MINIMAPBUTTON_ONOFF"] = "顯示小地圖圖示",
 	["CONFIG_MINIMAPMOVE_INFO"] = "如果啟動，小地圖圖示可以拖曳移動",
 	["CONFIG_MINIMAPMOVE_ONOFF"] = "可拖曳",
-	["CONFIG_MOUNTEDCAST_INFO"] = "如果啟用，允許在坐騎上施法",
+	["CONFIG_MOUNTEDCAST_INFO"] = "啟用時，允許在坐騎上施法。",
 	["CONFIG_MOUNTEDCAST_ONOFF"] = "在坐騎上",
 	["CONFIG_MOUSEEVENT_INFO"] = "點擊滑鼠按鈕拋竿",
 	["CONFIG_MOUSEEVENT_ONOFF"] = "使用釣魚技能按鈕",
-	["CONFIG_ONLYMINE_INFO"] = "如果啟用，快速釣魚僅會檢查你裝備的魚竿",
+	["CONFIG_ONLYMINE_INFO"] = "啟用時，快速釣魚僅會檢查你裝備的魚竿。",
 	["CONFIG_ONLYMINE_ONOFF"] = "僅裝備魚竿",
 	["CONFIG_OUTFITTER_TEXT"] = "裝備技能獎勵: %s#BR#Draznar的風格評分: %d ",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_OVERWALKING_INFO"] = "If enabled, use the raft even if we're using the artifact pole.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_OVERWALKING_ONOFF"] = "Always Raft",--]] 
-	["CONFIG_PARTIALGEAR_INFO"] = "如果啟用，即使沒有裝備魚竿，只要身上穿著任一含釣魚加成的裝備即會使用釣魚技能",
+	["CONFIG_PARTIALGEAR_INFO"] = "啟用時，即使沒有裝備魚竿，只要身上穿著任一含釣魚加成的裝備即會使用釣魚技能。",
 	["CONFIG_PARTIALGEAR_ONOFF"] = "不完全著裝",
 	["CONFIG_PREVENTRECAST_INFO"] = "釣魚中調用巨集將不會重複施放釣魚技能.若需要會重上魚餌.",
 	["CONFIG_PREVENTRECAST_ONOFF"] = "避免重複使用釣魚技能",
@@ -197,21 +197,21 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_SHOWLOCATIONZONES_ONOFF"] = "顯示區域",
 	["CONFIG_SHOWNEWFISHIES_INFO"] = "在當前地區釣到新的魚時在聊天區域發一條訊息",
 	["CONFIG_SHOWNEWFISHIES_ONOFF"] = "顯示新的魚",
-	["CONFIG_SHOWPOOLS_INFO"] = "如果啟用，已知魚點將顯示於小地圖。",
+	["CONFIG_SHOWPOOLS_INFO"] = "啟用時，已知魚點將顯示於小地圖。",
 	["CONFIG_SHOWPOOLS_ONOFF"] = "顯示魚點",
 	["CONFIG_SORTBYPERCENT_INFO"] = "依照釣到的魚的數量排序顯示替代名稱排序。",
 	["CONFIG_SORTBYPERCENT_ONOFF"] = "依照數量分類",
-	["CONFIG_SPARKLIES_INFO"] = "如果啟用，在釣魚時魚點的閃光提示將會更顯眼",
+	["CONFIG_SPARKLIES_INFO"] = "啟用時，在釣魚時魚點的閃光提示將會更顯眼。",
 	["CONFIG_SPARKLIES_ONOFF"] = "增強魚點顯示",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SPECIALBOBBERS_INFO"] = "If enabled, apply a randomly selected custom bobber.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SPECIALBOBBERS_ONOFF"] = "Bobbers",--]] 
-	["CONFIG_STVPOOLSONLY_INFO"] = "假如啟用,自動拋竿只會在游標在魚群的時候啟用",
+	["CONFIG_STVPOOLSONLY_INFO"] = "啟用時，自動拋竿只會在游標在魚群的時候啟用。",
 	["CONFIG_STVPOOLSONLY_ONOFF"] = "僅在魚群自動拋竿",
-	["CONFIG_STVTIMER_INFO"] = "假如啟用,顯示一個釣魚大賽計時器並且倒數剩下時間",
+	["CONFIG_STVTIMER_INFO"] = "啟用時，顯示一個釣魚大賽計時器並且倒數剩下時間。",
 	["CONFIG_STVTIMER_ONOFF"] = "釣魚大賽計時器",
-	["CONFIG_TOOLTIPS_INFO"] = "假如啟用,漁獲訊息資訊會顯示在物品提示中",
+	["CONFIG_TOOLTIPS_INFO"] = "啟用時，漁獲訊息資訊會顯示在物品提示中。",
 	["CONFIG_TOOLTIPS_ONOFF"] = "在提示裡顯示漁獲訊息",
 	["CONFIG_TOONMACRO_INFO"] = "為角色建立釣魚巨集",
 	["CONFIG_TOONMACRO_ONOFF"] = "每個角色",
@@ -221,12 +221,12 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_TRADESKILL_ONOFF"] = "Setup Skills",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRAWLERTOTEM_INFO"] = "If enabled, use the toy.",--]] 
-	["CONFIG_TURNOFFPVP_INFO"] = "假如啟用,當你裝備魚竿時會停用PVP",
+	["CONFIG_TURNOFFPVP_INFO"] = "啟用時，當你裝備魚竿時會停用 PvP。",
 	["CONFIG_TURNOFFPVP_ONOFF"] = "停用PVP",
-	["CONFIG_TURNONSOUND_INFO"] = "如果啟用，釣魚時音效永遠開啟。",
+	["CONFIG_TURNONSOUND_INFO"] = "啟用時，釣魚時音效永遠開啟。",
 	["CONFIG_TURNONSOUND_ONOFF"] = "強制音效",
 	["CONFIG_TUSKAARSPEAR_INFO"] = "啟用時，盡可能的使用尖銳巨牙矛。",
-	["CONFIG_USEACTION_INFO"] = "假如啟用, #NAME# 會搜尋動作列上的按鈕來拋竿",
+	["CONFIG_USEACTION_INFO"] = "啟用時，#NAME#會搜尋快捷列上的按鈕來拋竿。",
 	["CONFIG_USEACTION_ONOFF"] = "使用動作列",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_USERAFTS_INFO"] = "If enabled, use a fishing raft item.",--]] 
@@ -234,7 +234,7 @@ FishingTranslations["zhTW"] = {
 	--[[ ["CONFIG_USERAFTS_INFOD"] = "If you have Pandaren fishing skill, open the Trade Skill window.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_USERAFTS_ONOFF"] = "Use rafts",--]] 
-	["CONFIG_WATCHBOBBER_INFO"] = "如果啟用，當滑鼠游標位於釣魚浮標上時 #NAME# 將不會施放。",
+	["CONFIG_WATCHBOBBER_INFO"] = "啟用時，當滑鼠游標位於釣魚浮標上時將不會施放#NAME#。",
 	["CONFIG_WATCHBOBBER_ONOFF"] = "專注釣魚",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_WAVEBOARD_INFO"] = "If enabled, use the Gnarlwood Waveboard.",--]] 
@@ -297,7 +297,7 @@ FishingTranslations["zhTW"] = {
 	["LEFTCLICKTODRAG"] = "左鍵點選拖曳",
 	["LOCATIONS_INFO"] = "根據區域或是魚種顯示你曾經釣過的魚",
 	["LOCATIONS_TAB"] = "位置",
-	["LURE_NAME"] = "鱼饵",
+	["LURE_NAME"] = "魚餌",
 	["MACRONAME"] = "釣魚助手",
 	["MINIMAPBUTTONPLACEMENT"] = "放置",
 	["MINIMAPBUTTONPLACEMENTTOOLTIP"] = "允許你在小地圖旁移動 #NAME# 圖示",

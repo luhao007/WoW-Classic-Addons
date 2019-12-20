@@ -1,6 +1,6 @@
 --[[
 Name: LibTouristClassic-1.0
-Revision: $Rev: 234 $
+Revision: $Rev: 235 $
 Author(s): Mishikal1 (Classic), Odica (maintainer), based on LibTourist-3.0, originally created by ckknight and Arrowmaster
 Documentation: https://www.wowace.com/projects/libtourist-1-0/pages/api-reference
 Git: https://repos.wowace.com/wow/libtourist-classic libtourist-classic
@@ -9,7 +9,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibTouristClassic-1.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 229 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 235 $"):match("(%d+)"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 local C_Map = C_Map
@@ -421,7 +421,7 @@ end
 ]]--
 
 local function GatherFlightnodeData()
-	local zMapID, zName, nodes
+	local zMapID, zName, nodes, numNodes
 	local count = 0
 	local errCount = 0
 	if gatheringFlightnodes == true then return end
