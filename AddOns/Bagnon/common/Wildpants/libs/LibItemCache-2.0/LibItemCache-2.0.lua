@@ -18,21 +18,22 @@ along with the library. If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-2.0', 23)
-if not Lib then return end
+local Lib = LibStub:NewLibrary('LibItemCache-2.0', 20)
+if not Lib then
+	return
+end
 
-local PLAYER, GUILD, FACTION, REALM, REALMS
+local FACTION = UnitFactionGroup('player')
 local COMPLETE_LINK = '|c.+|H.+|h.+|h|r'
 local PET_LINK = '|c%s|Hbattlepet:%sx0|h[%s]|h|r'
 local PET_STRING = '^' .. strrep('%d+:', 6) .. '%d+$'
 local EMPTY_FUNC = function() end
+local PLAYER, REALM, REALMS
 
 local FindRealms = function()
 	if not REALM then
 		PLAYER, REALM = UnitFullName('player')
-		FACTION = UnitFactionGroup('player')
 		REALMS = GetAutoCompleteRealms()
-		GUILD = GetGuildInfo('player')
 
 		if not REALMS or #REALMS == 0 then
 			REALMS = {REALM}
@@ -40,7 +41,7 @@ local FindRealms = function()
 	end
 end
 
-local Events, Caches = LibStub('AceEvent-3.0'), {}
+local Caches = {}
 local AccessInterfaces = function(self, key)
 	for name, lib in LibStub:IterateLibraries() do
 		if lib.IsItemCache and lib[key] then
@@ -53,7 +54,7 @@ local AccessInterfaces = function(self, key)
 end
 
 setmetatable(Caches, { __index = AccessInterfaces })
-Events:Embed(Lib)
+LibStub('AceEvent-3.0'):Embed(Lib)
 
 Lib:RegisterEvent('BANKFRAME_OPENED', function() Lib.AtBank = true; Lib:SendMessage('CACHE_BANK_OPENED') end)
 Lib:RegisterEvent('BANKFRAME_CLOSED', function() Lib.AtBank = false; Lib:SendMessage('CACHE_BANK_CLOSED') end)
@@ -72,8 +73,8 @@ end
 --[[ Owners ]]--
 
 function Lib:GetOwnerInfo(owner)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsOwnerCached(realm, name, isguild)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsOwnerCached(realm, name, isguild)
 
 	local api = isguild and 'GetGuild' or 'GetPlayer'
 	local owner = cached and Caches[api](Caches, realm, name) or {}
@@ -81,7 +82,7 @@ function Lib:GetOwnerInfo(owner)
 		owner.faction = FACTION
 
 		if isguild then
-			owner.money = GetGuildBankMoney()
+			-- what information should go here?
 		else
 			owner.money = (GetMoney() or 0) - GetCursorMoney() - GetPlayerTradeMoney()
 			owner.class = select(2, UnitClass('player'))
@@ -99,8 +100,8 @@ function Lib:GetOwnerInfo(owner)
 end
 
 function Lib:DeleteOwnerInfo(owner)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsOwnerCached(realm, name, isguild)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsOwnerCached(realm, name, isguild)
 
 	if cached then
 		if isguild then
@@ -143,12 +144,26 @@ end
 --[[ Items and Bags ]]--
 
 function Lib:GetBagInfo(owner, bag)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsBagCached(realm, name, isguild, bag)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsBagCached(realm, name, isguild, bag)
 
 	local api = isguild and 'GetGuildTab' or 'GetBag'
 	local query = cached or isguild and bag ~= GetCurrentGuildBankTab()
 	local item = query and Caches[api](Caches, realm, name, bag) or {}
+
+	if isguild then
+		item.count = 98
+	elseif bag == 'vault' then
+		item.count = 160
+	elseif bag == 'equip' then
+		item.count = INVSLOT_LAST_EQUIPPED
+	else
+		if bag == REAGENTBANK_CONTAINER or bag == BACKPACK_CONTAINER or bag == BANK_CONTAINER then
+			item.count = GetContainerNumSlots(bag)
+		end
+
+		item.owned = item.owned or (bag >= KEYRING_CONTAINER and bag <= NUM_BAG_SLOTS) or item.id or item.link
+	end
 
 	if cached then
 		item.cached = true
@@ -165,9 +180,7 @@ function Lib:GetBagInfo(owner, bag)
 		if bag == REAGENTBANK_CONTAINER then
 			item.cost = GetReagentBankCost()
 			item.owned = IsReagentBankUnlocked()
-		elseif bag == KEYRING_CONTAINER then
-			item.count = HasKey() and GetContainerNumSlots(bag)
-		elseif bag > BACKPACK_CONTAINER then
+		elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
 			item.slot = ContainerIDToInventoryID(bag)
 			item.link = GetInventoryItemLink('player', item.slot)
 			item.icon = GetInventoryItemTexture('player', item.slot)
@@ -180,31 +193,12 @@ function Lib:GetBagInfo(owner, bag)
 		end
 	end
 
-	if isguild then
-		item.count = 98
-		item.family = 0
-	elseif bag == 'vault' then
-		item.count = 160
-		item.family = 0
-	elseif bag == 'equip' then
-		item.count = INVSLOT_LAST_EQUIPPED
-		item.family = -4
-		item.owned = true
-	else
-		item.owned = item.owned or (bag >= KEYRING_CONTAINER and bag <= NUM_BAG_SLOTS) or item.id or item.link
-
-		if bag <= BACKPACK_CONTAINER then
-			item.count = item.count or (bag ~= KEYRING_CONTAINER and item.owned and GetContainerNumSlots(bag))
-			item.family = bag < BANK_CONTAINER and bag or 0
-		end
-	end
-
-	return Lib:RestoreItemData(item)
+	return self:RestoreItemData(item)
 end
 
 function Lib:GetItemInfo(owner, bag, slot)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsBagCached(realm, name, isguild, bag)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsBagCached(realm, name, isguild, bag)
 
 	local api = isguild and 'GetGuildItem' or 'GetItem'
 	local item = cached and Caches[api](Caches, realm, name, bag, slot) or {}
@@ -222,12 +216,12 @@ function Lib:GetItemInfo(owner, bag, slot)
 		item.icon, item.count, item.locked, item.quality, item.readable, item.lootable, item.link, item.filtered, item.worthless, item.id = GetContainerItemInfo(bag, slot)
 	end
 
-	return Lib:RestoreItemData(item)
+	return self:RestoreItemData(item)
 end
 
 function Lib:GetItemID(owner, bag, slot)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsBagCached(realm, name, isguild, bag)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsBagCached(realm, name, isguild, bag)
 
 	if cached then
 		local api = isguild and 'GetGuildItem' or 'GetItem'
@@ -247,8 +241,8 @@ function Lib:GetItemID(owner, bag, slot)
 end
 
 function Lib:PickupItem(owner, bag, slot)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
-	local cached = Lib:IsBagCached(realm, name, isguild, bag)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
+	local cached = self:IsBagCached(realm, name, isguild, bag)
 
 	if not cached then
 		if isguild then
@@ -267,7 +261,7 @@ end
 --[[ Advanced ]]--
 
 function Lib:GetOwnerID(owner)
-	local realm, name, isguild = Lib:GetOwnerAddress(owner)
+	local realm, name, isguild = self:GetOwnerAddress(owner)
 	return (isguild and '® ' or '') .. name .. ' - ' .. realm
 end
 
@@ -284,43 +278,34 @@ function Lib:GetOwnerAddress(owner)
 end
 
 function Lib:IsOwnerCached(realm, name, isguild)
-	return realm ~= REALM or name ~= (isguild and GUILD or PLAYER)
+	if isguild then
+		return realm ~= REALM or name ~= GetGuildInfo('player')
+	else
+		return realm ~= REALM or name ~= PLAYER
+	end
 end
 
 function Lib:IsBagCached(realm, name, isguild, bag)
-	if Lib:IsOwnerCached(realm, name, isguild) then
+	if self:IsOwnerCached(realm, name, isguild) then
 		return true
 	end
 
 	if isguild then
-		return not Lib.AtGuild
+		return not self.AtGuild
 	end
 
 	local isBankBag = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or type(bag) == 'number' and bag > NUM_BAG_SLOTS
-	return isBankBag and not Lib.AtBank or bag == 'vault' and not Lib.AtVault
+	return isBankBag and not self.AtBank or bag == 'vault' and not self.AtVault
 end
 
 function Lib:RestoreItemData(item)
-	local link, id, quality, icon, equip, class, subclass, name, level, minLevel, stack, price, bind, expac, set, crafting = Lib:RestoreLinkData(item.link or item.id)
+	local link, id, quality, icon = self:RestoreLinkData(item.link or item.id)
+	local query = link or item.id or id
 
-	item.link = link
+	item.icon = item.icon or icon or query and GetItemIcon(query)
+	item.quality = (not item.quality or item.quality < 0) and quality or item.quality
 	item.id = item.id or id
-	item.family = item.family or item.id and GetItemFamily(item.id) or 0
-	item.quality = (item.quality and item.quality >= 0 and item.quality) or quality
-
-	item.bind = item.bind or bind
-	item.class = item.class or class
-	item.crafting = item.crafting or crafting
-	item.equip = item.equip or equip
-	item.expac = item.expac or expac
-	item.icon = item.icon or icon
-	item.level = item.level or level
-	item.minLevel = item.minLevel or minLevel
-	item.name = item.name or name
-	item.price = item.price or price
-	item.stack = item.stack or stack
-	item.set = item.set or set
-	item.subclass = item.subclass or subclass
+	item.link = link
 	return item
 end
 
@@ -339,61 +324,8 @@ function Lib:RestoreLinkData(partial)
 	end
 
 	if partial then
-		local id, _, _, equip, icon, class, subclass = GetItemInfoInstant(partial)
-		local name, link, quality, level, minLevel, _, _, stack, _,_, price, _,_, bind, expac, set, crafting = GetItemInfo(partial)
-		return link, id, quality, icon, equip, class, subclass, name, level, minLevel, stack, price, bind, expac, set, crafting
-	end
-end
-
-
---[[ Location ]]--
-
-function Lib:InBank() -- naming for legacy purposes
-	return Lib.AtBank
-end
-
-function Lib:InVault()
-	return Lib.AtVault
-end
-
-function Lib:InGuild()
-	return Lib.AtGuild
-end
-
-
---[[ Static ]]--
-
-function Lib:IsBackpack(bag)
-	return bag == BACKPACK_CONTAINER
-end
-
-function Lib:IsBackpackBag(bag)
-  return bag > BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS
-end
-
-function Lib:IsKeyring(bag)
-	return bag == KEYRING_CONTAINER
-end
-
-function Lib:IsBank(bag)
-  return bag == BANK_CONTAINER
-end
-
-function Lib:IsBankBag(bag)
-  return bag > NUM_BAG_SLOTS and bag <= (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS)
-end
-
-function Lib:IsReagents(bag)
-	return bag == REAGENTBANK_CONTAINER
-end
-
-
---[[ Embedding ]]--
-
-function Lib:Embed(object)
-	for k, v in pairs(Lib) do
-		if k ~= 'Embed' and type(v) == 'function' and type(Events[k]) ~= 'function' then
-			object[k] = v
-		end
+		local _, link, quality, _, _, _, _, _, _, icon = GetItemInfo(partial)
+		local id = tonumber(partial) or tonumber(partial:match('^(%d+)') or partial:match('item:(%d+)'))
+		return link, id, quality, icon
 	end
 end

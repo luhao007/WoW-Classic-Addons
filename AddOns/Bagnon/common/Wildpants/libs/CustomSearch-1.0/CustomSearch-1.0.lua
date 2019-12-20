@@ -19,7 +19,9 @@ This file is part of CustomSearch.
 --]]
 
 local Lib = LibStub:NewLibrary('CustomSearch-1.0', 9)
-if not Lib then return end
+if not Lib then
+	return
+end
 
 
 --[[ Parsing ]]--
@@ -196,3 +198,5 @@ do
 	Lib.NOT_MATCH = Lib:Clean(Lib.NOT)
 	setmetatable(Lib, {__call = Lib.Matches})
 end
+
+return Lib

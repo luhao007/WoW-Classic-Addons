@@ -4,7 +4,7 @@
 --]]
 
 local ADDON, Addon = ...
-local AutoDisplay = Addon:NewModule('AutoDisplay')
+local AutoDisplay = Addon:NewModule('AutoDisplay', 'AceEvent-3.0')
 
 
 --[[ Startup ]]--
@@ -22,8 +22,8 @@ function AutoDisplay:RegisterGameEvents()
 	self:UnregisterAllMessages()
 
 	self:RegisterMessage(ADDON .. 'UPDATE_ALL', 'RegisterGameEvents')
-	self:RegisterMessage('CACHE_BANK_OPENED', 'ShowBank')
-	self:RegisterMessage('CACHE_BANK_CLOSED', 'HideBank')
+	self:RegisterMessage('CACHE_BANK_CLOSED')
+	self:RegisterMessage('CACHE_BANK_OPENED')
 
 	self:RegisterDisplayEvents('displayAuction', 'AUCTION_HOUSE_SHOW', 'AUCTION_HOUSE_CLOSED')
 	self:RegisterDisplayEvents('displayCraft', 'TRADE_SKILL_SHOW', 'TRADE_SKILL_CLOSE')
@@ -54,11 +54,11 @@ function AutoDisplay:RegisterGameEvents()
 
 	WorldMapFrame:HookScript('OnShow', function()
 		if Addon.sets.closeMap then
-			Addon.Frames:Hide('inventory', true)
+			Addon:HideFrame('inventory', true)
 		end
 	end)
 
-	if Addon.Frames:IsEnabled('bank') then
+	if Addon:IsFrameEnabled('bank') then
 		BankFrame:UnregisterAllEvents()
 	else
 		BankFrame:RegisterEvent('BANKFRAME_OPENED')
@@ -79,29 +79,29 @@ function AutoDisplay:RegisterDisplayEvents(setting, showEvent, hideEvent)
 end
 
 function AutoDisplay:ShowInventory()
-	Addon.Frames:Show('inventory')
+	Addon:ShowFrame('inventory')
 end
 
 function AutoDisplay:HideInventory()
-	Addon.Frames:Hide('inventory')
+	Addon:HideFrame('inventory')
 end
 
-function AutoDisplay:ShowBank()
-	local bank = Addon.Frames:Show('bank')
+function AutoDisplay:CACHE_BANK_OPENED()
+	local bank = Addon:ShowFrame('bank')
 	if bank then
 		bank:SetOwner(nil)
 	end
 
 	if Addon.sets.displayBank then
-		Addon.Frames:Show('inventory')
+		Addon:ShowFrame('inventory')
 	end
 end
 
-function AutoDisplay:HideBank()
-	Addon.Frames:Hide('bank')
+function AutoDisplay:CACHE_BANK_CLOSED()
+	Addon:HideFrame('bank')
 
 	if Addon.sets.closeBank then
-		Addon.Frames:Hide('inventory')
+		Addon:HideFrame('inventory')
 	end
 end
 
@@ -112,13 +112,13 @@ function AutoDisplay:HookInterfaceEvents()
 	-- character frame
 	CharacterFrame:HookScript('OnShow', function()
 		if Addon.sets.displayPlayer then
-			Addon.Frames:Show('inventory')
+			Addon:ShowFrame('inventory')
 		end
 	end)
 
 	CharacterFrame:HookScript('OnHide', function()
 		if Addon.sets.displayPlayer then
-			Addon.Frames:Hide('inventory')
+			Addon:HideFrame('inventory')
 		end
 	end)
 
@@ -127,7 +127,7 @@ function AutoDisplay:HookInterfaceEvents()
 	local onMerchantHide = MerchantFrame:GetScript('OnHide')
 	local hideInventory = function()
 		if canHide then
-			Addon.Frames:Hide('inventory', true)
+			Addon:HideFrame('inventory')
 		end
 	end
 
@@ -143,14 +143,14 @@ function AutoDisplay:HookInterfaceEvents()
 	-- backpack
 	local oToggleBackpack = ToggleBackpack
 	ToggleBackpack = function()
-		if not Addon.Frames:ToggleBag('inventory', BACKPACK_CONTAINER) then
+		if not Addon:ToggleBag('inventory', BACKPACK_CONTAINER) then
 			oToggleBackpack()
 		end
 	end
 
 	local oOpenBackpack = OpenBackpack
 	OpenBackpack = function()
-		if not Addon.Frames:ShowBag('inventory', BACKPACK_CONTAINER) then
+		if not Addon:ShowBag('inventory', BACKPACK_CONTAINER) then
 			oOpenBackpack()
 		end
 	end
@@ -158,14 +158,14 @@ function AutoDisplay:HookInterfaceEvents()
 	-- single bag
 	local oToggleBag = ToggleBag
 	ToggleBag = function(bag)
-		if not Addon.Frames:ToggleBag(self:Bag2Frame(bag)) then
+		if not Addon:ToggleBag(self:Bag2Frame(bag)) then
 			oToggleBag(bag)
 		end
 	end
 
 	local oOpenBag = OpenBag
 	OpenBag = function(bag)
-		if not Addon.Frames:ShowBag(self:Bag2Frame(bag)) then
+		if not Addon:ShowBag(self:Bag2Frame(bag)) then
 			oOpenBag(bag)
 		end
 	end
@@ -173,7 +173,7 @@ function AutoDisplay:HookInterfaceEvents()
 	-- all bags
 	local oOpenAllBags = OpenAllBags
 	OpenAllBags = function(frame)
-		if not Addon.Frames:Show('inventory') then
+		if not Addon:ShowFrame('inventory') then
 			oOpenAllBags(frame)
 		end
 	end
@@ -181,7 +181,7 @@ function AutoDisplay:HookInterfaceEvents()
 	if ToggleAllBags then
 		local oToggleAllBags = ToggleAllBags
 		ToggleAllBags = function()
-			if not Addon.Frames:Toggle('inventory') then
+			if not Addon:ToggleFrame('inventory') then
 				oToggleAllBags()
 			end
 		end

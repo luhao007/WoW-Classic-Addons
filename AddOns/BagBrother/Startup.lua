@@ -75,10 +75,6 @@ function Brother:UpdateData()
 		self:PLAYER_EQUIPMENT_CHANGED(i)
 	end
 
-	if HasKey() then
-		self:BAG_UPDATE(KEYRING_CONTAINER)
-	end
-
 	self:GUILD_ROSTER_UPDATE()
 	self:PLAYER_MONEY()
 end

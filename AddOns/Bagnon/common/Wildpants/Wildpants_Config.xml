@@ -1,4 +1,5 @@
-<Ui>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Include file="libs\config.xml"/>
 	<Include file="localization\config\localization.xml"/>
 	<Include file="config\config.xml"/>
 </Ui>
