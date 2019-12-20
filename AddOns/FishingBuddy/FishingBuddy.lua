@@ -558,7 +558,7 @@ end
 FishingBuddy.ReadyForFishing = ReadyForFishing;
 
 local function CheckCastingKeys()
-    return true
+    return ReadyForFishing();
 end
 
 local QuestLures = {};

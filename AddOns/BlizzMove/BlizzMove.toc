@@ -1,8 +1,8 @@
 ## Interface: 11303
 ## Author: yess
-## Version: v1.9.2
+## Version: v1.9.3
 
-## Title: Blizzmove
+## Title: BlizzMove
 ## Notes: Move those blizzard windows
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFFFFE00ABlizzMove|r
 ## Notes-zhCN: 移动内置的各种窗口
