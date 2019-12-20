@@ -9,4 +9,4 @@
 ## Notes-zhCN: Bagnon公会银行模块
 
 
-..\Bagnon\modules\guild.xml
+..\Bagnon\addons\guild\guild.xml
