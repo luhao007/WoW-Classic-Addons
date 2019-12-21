@@ -9,4 +9,4 @@
 ## Notes-zhCN: Bagnon设置模块
 
 
-..\Bagnon\modules\config.xml
+..\Bagnon\addons\config\config.xml

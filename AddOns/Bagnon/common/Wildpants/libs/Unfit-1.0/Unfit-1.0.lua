@@ -16,9 +16,7 @@ This file is part of Unfit.
 --]]
 
 local Lib = LibStub:NewLibrary('Unfit-1.0', 9)
-if not Lib then
-	return
-end
+if not Lib then return end
 
 
 --[[ Data ]]--
