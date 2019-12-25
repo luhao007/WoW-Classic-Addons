@@ -109,7 +109,7 @@ local L = namespace.L 				--localization
 			"|cff0094c4Special Thanks:|r" .. "|n" ..
 			"|cff0094c4    Communities:|r Blizzard, Curse, Classic Warcraft, WoWInterface, ElvUI, and Reddit's /r/wow" .. "|n" .. 
 			"|cff0094c4    Testers:|r wazerFPS, and vorfare." .. "|n" .. 
-			"|cff0094c4    Individuals:|r Baudzila, 10leej, wizardanim, sykz42, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU" 
+			"|cff0094c4    Individuals:|r Penguiin, Baudzila, 10leej, wizardanim, sykz42, Phanx, Ro, Choonster, Zork, Lombra, myrroddin, Darth_Predator, sirann, and YOU" 
 		);
 		DCSAboutDCS_FS:SetFont("Fonts\\FRIZQT__.TTF", 13)
 		DCSAboutDCS_FS:SetTextColor(0, 0, 0, 1)

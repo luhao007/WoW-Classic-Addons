@@ -1388,6 +1388,7 @@ namespace.crowdControls = {
     [GetSpellInfo(710)] = 1,        -- Banish
 
     -- ITEMS
+    [GetSpellInfo(21167)] = 1,      -- Snowball
     [GetSpellInfo(13327)] = 1,      -- Reckless Charge
     [GetSpellInfo(1090)] = 1,       -- Sleep
     [GetSpellInfo(5134)] = 1,       -- Flash Bomb Fear
@@ -1409,6 +1410,7 @@ namespace.crowdControls = {
     [GetSpellInfo(12562)] = 1,      -- The Big One
     [GetSpellInfo(15283)] = 1,      -- Stunning Blow (Weapon Proc)
     [GetSpellInfo(56)] = 1,         -- Stun (Weapon Proc)
+    [GetSpellInfo(21152)] = 1,      -- Earthshaker (Weapon Proc)
     [GetSpellInfo(26108)] = 1,      -- Glimpse of Madness
     [GetSpellInfo(8345)] = 1,       -- Control Machine (Gnomish Universal Remote trinket)
     [GetSpellInfo(13235)] = 1,      -- Forcefield Collapse (Gnomish Harm Prevention Belt)
@@ -1563,6 +1565,15 @@ namespace.stopCastOnDamageList = {
     [GetSpellInfo(2008)] = 1, -- Ancestral Spirit
     [GetSpellInfo(7328)] = 1, -- Redemption
     [GetSpellInfo(22999)] = 1, -- Defibrillate
+    [GetSpellInfo(3565)] = 1, -- Teleport: Darnassus
+    [GetSpellInfo(3562)] = 1, -- Teleport: Ironforge
+    [GetSpellInfo(18960)] = 1, -- Teleport: Moonglade
+    [GetSpellInfo(3567)] = 1, -- Teleport: Orgrimmar
+    [GetSpellInfo(3561)] = 1, -- Teleport: Stormwind
+    [GetSpellInfo(3566)] = 1, -- Teleport: Thunder Bluff
+    [GetSpellInfo(3563)] = 1, -- Teleport: Undercity
+    [GetSpellInfo(556)] = 1, -- Astrall Recall
+    [GetSpellInfo(22563)] = 1, -- Recall
     -- First Aid not included here since we track aura removed
 }
 

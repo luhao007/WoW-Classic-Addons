@@ -48,8 +48,8 @@ end
 function Group:AddSlider(arg, min,max)
 	local s = self:AddLabeled('Slider', arg)
 	s:SetCall('OnValue', function(_, v) self.sets[arg] = v end)
+	s:SetRange(min, max)
 	s:SetValue(self.sets[arg])
-	s:SetRange(min,max)
 	return s
 end
 

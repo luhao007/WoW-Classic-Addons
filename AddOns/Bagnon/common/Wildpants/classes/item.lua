@@ -45,13 +45,13 @@ function Item:New(parent, bag, slot)
 end
 
 function Item:Construct()
-	local b = self:Bind(self:GetBlizzard() or self:Super(Item):Construct())
+	local b = self:GetBlizzard() or self:Super(Item):Construct()
 	local name = b:GetName()
 
-	b.UpdateTooltip = nil
 	b.Flash = b:CreateAnimationGroup()
 	b.IconGlow = b:CreateTexture(nil, 'OVERLAY', nil, -1)
 	b.Cooldown, b.QuestBorder = _G[name .. 'Cooldown'], _G[name .. 'IconQuestTexture']
+	b.UpdateTooltip = self.UpdateTooltip
 
 	b.newitemglowAnim:SetLooping('NONE')
 	b.IconOverlay:SetAtlas('AzeriteIconFrame')
@@ -94,7 +94,7 @@ function Item:GetBlizzard(id)
 			local b = _G[format('ContainerFrame%dItem%d', bag, slot)]
 			if b then
 					b:ClearAllPoints()
-					return b
+					return self:Bind(b)
 			end
     end
 end

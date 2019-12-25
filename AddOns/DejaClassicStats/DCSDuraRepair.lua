@@ -490,8 +490,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowDuraChecked = {
 
 local DCS_ShowDuraCheck = CreateFrame("CheckButton", "DCS_ShowDuraCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowDuraCheck:RegisterEvent("PLAYER_LOGIN")
-    DCS_ShowDuraCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	DCS_ShowDuraCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowDuraCheck:ClearAllPoints()
 	--DCS_ShowDuraCheck:SetPoint("TOPLEFT", 30, -315)
 	DCS_ShowDuraCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -75)
@@ -621,8 +619,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowDuraTextureChecked = {
 
 local DCS_ShowDuraTextureCheck = CreateFrame("CheckButton", "DCS_ShowDuraTextureCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowDuraTextureCheck:RegisterEvent("PLAYER_LOGIN")
-    DCS_ShowDuraTextureCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	DCS_ShowDuraTextureCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowDuraTextureCheck:ClearAllPoints()
 	--DCS_ShowDuraTextureCheck:SetPoint("TOPLEFT", 30, -275)
 	DCS_ShowDuraTextureCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -35)
@@ -705,8 +701,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowAverageRepairChecked = {
 
 local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDuraCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowAverageDuraCheck:RegisterEvent("PLAYER_LOGIN")
-    DCS_ShowAverageDuraCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	DCS_ShowAverageDuraCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowAverageDuraCheck:ClearAllPoints()
 	--DCS_ShowAverageDuraCheck:SetPoint("TOPLEFT", 30, -295)
 	DCS_ShowAverageDuraCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -55)
@@ -785,10 +779,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowItemRepairChecked = {
 
 local DCS_ShowItemRepairCheck = CreateFrame("CheckButton", "DCS_ShowItemRepairCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowItemRepairCheck:RegisterEvent("PLAYER_LOGIN")
-	DCS_ShowItemRepairCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	DCS_ShowItemRepairCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
-	DCS_ShowItemRepairCheck:RegisterEvent("MERCHANT_SHOW")
-	DCS_ShowItemRepairCheck:RegisterEvent("MERCHANT_CLOSED") --without this event repair cost should remain unchanged from the last vendor
 	DCS_ShowItemRepairCheck:ClearAllPoints()
 	DCS_ShowItemRepairCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -95)
 	DCS_ShowItemRepairCheck:SetScale(1)
@@ -3970,10 +3960,8 @@ local function DCS_Item_Enchant_GetText()
 				-- print(Enchant) --Enchant ID...because, ya know, let's not be logical, Blizzard...
 				-- if (slot == CharacterHandsSlot) then
 				-- 	if 
-				if (slot == CharacterRangedSlot) then
-					if (Enchant == 2523) then
-						addon.hasBiznicks = true
-					end
+				if (Enchant == "2523") then
+					addon.hasBiznicks = true
 				end
 				if showenchant then
 					v.enchant:SetTextColor(getItemQualityColor(item:GetItemQuality())) --upvalue call
@@ -3998,8 +3986,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowEnchantChecked = {
 
 local DCS_ShowEnchantCheck = CreateFrame("CheckButton", "DCS_ShowEnchantCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 DCS_ShowEnchantCheck:RegisterEvent("PLAYER_LOGIN")
-DCS_ShowEnchantCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-DCS_ShowEnchantCheck:RegisterEvent("UNIT_STATS")
 
 DCS_ShowEnchantCheck:ClearAllPoints()
 	DCS_ShowEnchantCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -175)
@@ -4030,8 +4016,6 @@ gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsAbbrevEnchantsChecked = {
 
 local DCS_AbbrevEnchantsCheck = CreateFrame("CheckButton", "DCS_AbbrevEnchantsCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 DCS_AbbrevEnchantsCheck:RegisterEvent("PLAYER_LOGIN")
-DCS_AbbrevEnchantsCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-DCS_AbbrevEnchantsCheck:RegisterEvent("UNIT_STATS")
 
 DCS_AbbrevEnchantsCheck:ClearAllPoints()
 	DCS_AbbrevEnchantsCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -195)

@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Wardz
-## Version: v1.2.0-hotfix
+## Version: v1.2.1
 ## SavedVariables: ClassicCastbarsDB
 
 ## Title: ClassicCastbars
@@ -11,7 +11,6 @@
 ## X-Curse-Project-ID: 322865
 ## X-WoWI-ID: 24925
 
-core/UIFrameFade.lua
 core/PoolManager.lua
 core/AnchorManager.lua
 core/Data.lua

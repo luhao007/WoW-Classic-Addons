@@ -75,7 +75,7 @@ function Brother:UpdateData()
 		self:PLAYER_EQUIPMENT_CHANGED(i)
 	end
 
-	if HasKey() then
+	if HasKey and HasKey() then
 		self:BAG_UPDATE(KEYRING_CONTAINER)
 	end
 

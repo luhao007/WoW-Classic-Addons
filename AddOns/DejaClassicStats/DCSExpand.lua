@@ -169,24 +169,27 @@ local DejaClassicStatsExpandEventFrame = CreateFrame("Frame", "DejaClassicStatsE
 			self:UnregisterEvent("ADDON_LOADED")
 			for k, v in ipairs(DCS_BLIZZ_SKILL_PANELS) do
 				if _G[v.."Frame"] == nil then
-					LoadAddOn("Blizzard_"..v.."UI")
-					_G[v.."Frame"]:HookScript("OnShow", function(self)
-						if PaperDollFrame:IsVisible() then
-							local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
-							if checked == true then
-								DCS_CharacterFrame_Collapse()
+					if _G[v.."Frame"] == "DetailsFrame" then return
+					else
+						LoadAddOn("Blizzard_"..v.."UI")
+						_G[v.."Frame"]:HookScript("OnShow", function(self)
+							if PaperDollFrame:IsVisible() then
+								local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
+								if checked == true then
+									DCS_CharacterFrame_Collapse()
+								end
 							end
-						end
-					end)
-					_G[v.."Frame"]:HookScript("OnHide", function(self)
-						if TradeSkillFrame:IsVisible() or CraftFrame:IsVisible() or TalentFrame:IsVisible() then return
-						else
-							local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
-							if checked == true then
-								DCS_CharacterFrame_Expand()
+						end)
+						_G[v.."Frame"]:HookScript("OnHide", function(self)
+							if TradeSkillFrame:IsVisible() or CraftFrame:IsVisible() or TalentFrame:IsVisible() then return
+							else
+								local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
+								if checked == true then
+									DCS_CharacterFrame_Expand()
+								end
 							end
-						end
-					end)
+						end)
+					end
 				end
 			end
 			

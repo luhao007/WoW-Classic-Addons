@@ -1,6 +1,6 @@
 ## Interface: 11303
-## Author: Yike Xia, Mini_Dragon
-## Version: 20190406
+## Author: 夏一可, Mini_Dragon
+## Version: 20191221
 ## RequiredDeps: DBM-Core
 ## DefaultState: enabled
 
@@ -12,6 +12,6 @@
 ## X-DBM-Voice: 1
 ## X-DBM-Voice-Name: 夏一可(普通话女)
 ## X-DBM-Voice-ShortName: Yike
-## X-DBM-Voice-Version: 9
+## X-DBM-Voice-Version: 10
 ## X-DBM-Voice-HasCount: 1
 

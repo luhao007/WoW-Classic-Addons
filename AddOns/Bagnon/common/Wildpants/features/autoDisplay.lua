@@ -127,7 +127,7 @@ function AutoDisplay:HookInterfaceEvents()
 	local onMerchantHide = MerchantFrame:GetScript('OnHide')
 	local hideInventory = function()
 		if canHide then
-			Addon.Frames:Hide('inventory', true)
+			Addon.Frames:Hide('inventory')
 		end
 	end
 
