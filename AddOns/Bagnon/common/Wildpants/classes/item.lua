@@ -10,7 +10,6 @@ local Unfit = LibStub('Unfit-1.0')
 
 Item.SlotTypes = {
 	[-3] = 'reagent',
-	[-2] = 'key',
 	[0x00001] = 'quiver',
 	[0x00002] = 'quiver',
 	[0x00003] = 'soul',
@@ -18,6 +17,7 @@ Item.SlotTypes = {
 	[0x00006] = 'herb',
 	[0x00007] = 'enchant',
 	[0x00008] = 'leather',
+	[0x00009] = 'key',
 	[0x00010] = 'inscribe',
 	[0x00020] = 'herb',
 	[0x00040] = 'enchant',
@@ -172,15 +172,6 @@ function Item:OnPreClick(button)
 			end
 		end
 	end
-
-	if Addon.LoadVault then
-		for i = 1,9 do
-			if not GetVoidTransferDepositInfo(i) then
-				self.depositSlot = i
-				return
-			end
-		end
-	end
 end
 
 function Item:OnClick(button)
@@ -188,12 +179,18 @@ function Item:OnClick(button)
 		if Addon.sets.flashFind and self.info.id then
 			self:SendSignal('FLASH_ITEM', self.info.id)
 		end
-	elseif GetNumVoidTransferDeposit and GetNumVoidTransferDeposit() > 0 and button == 'RightButton' then
-		if self.canDeposit and self.depositSlot then
+	elseif Addon:InVault() then
+		if self.depositSlot then
 			ClickVoidTransferDepositSlot(self.depositSlot, true)
+			self.depositSlot = nil
+		else
+			for i = 1,10 do
+				if not GetVoidTransferDepositInfo(i) then
+					self.depositSlot = i - 1
+					return
+				end
+			end
 		end
-
-		self.canDeposit = not self.canDeposit
 	end
 end
 

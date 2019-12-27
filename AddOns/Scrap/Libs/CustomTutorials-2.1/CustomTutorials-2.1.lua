@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with CustomTutorials. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 8)
+local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 9)
 if Lib then
 	Lib.NewFrame, Lib.NewButton, Lib.UpdateFrame = nil
 	Lib.numFrames = Lib.numFrames or 1
@@ -26,7 +26,8 @@ else
 	return
 end
 
-local BUTTON_TEX = 'Interface\\Buttons\\UI-SpellbookIcon-%sPage-%s'
+local Embeds = {'RegisterTutorials', 'TriggerTutorial', 'ResetTutorials', 'GetTutorials'}
+local ButtonTextures = 'Interface\\Buttons\\UI-SpellbookIcon-%sPage-%s'
 local Frames = Lib.frames
 
 
@@ -105,9 +106,9 @@ end
 local function NewButton(frame, name, direction)
 	local button = CreateFrame('Button', nil, frame)
 	button:SetHighlightTexture('Interface\\Buttons\\UI-Common-MouseHilight')
-	button:SetDisabledTexture(BUTTON_TEX:format(name, 'Disabled'))
-	button:SetPushedTexture(BUTTON_TEX:format(name, 'Down'))
-	button:SetNormalTexture(BUTTON_TEX:format(name, 'Up'))
+	button:SetDisabledTexture(ButtonTextures:format(name, 'Disabled'))
+	button:SetPushedTexture(ButtonTextures:format(name, 'Down'))
+	button:SetNormalTexture(ButtonTextures:format(name, 'Up'))
 	button:SetPoint('BOTTOM', 120 * direction, 2)
 	button:SetSize(26, 26)
 	button:SetScript('OnClick', function()
@@ -216,4 +217,10 @@ end
 
 function Lib:GetTutorials()
 	return self and Lib.frames[self] and Lib.frames[self].data
+end
+
+function Lib:Embed(object)
+	for _,k in ipairs(Embeds) do
+		object[k] = self[k]
+	end
 end

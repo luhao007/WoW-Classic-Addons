@@ -1,12 +1,8 @@
 ## Interface: 11303
-## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
+## Title: Bagnon Guild Bank
+## Author: Tuller & Jaliborc (João Cardoso)
+## Notes: Single window display for your guild bank
 ## RequiredDeps: Bagnon
 ## LoadOnDemand: 1
-
-## Title: Bagnon Guild Bank
-## Notes: Single window display for your guild bank
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0公会银行|r
-## Notes-zhCN: Bagnon公会银行模块
-
 
 ..\Bagnon\addons\guild\guild.xml

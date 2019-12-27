@@ -1,16 +1,11 @@
 ## Interface: 11303
-## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 13.19
+## Title: Scrap Merchant
+## Notes: Load on demand merchant UI for Scrap.
+
+## Author: Jaliborc (João Cardoso)
+## X-License: GNU General Public License Version 3
+## X-Category: Inventory
 ## Dependencies: Scrap
 ## LoadOnDemand: 1
 
-## Title: Scrap Merchant
-## Notes: Load on demand merchant button.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF69CCF0商人|r
-## Notes-zhCN: 在商人出售界面添加出售垃圾的按钮
-
-## X-License: GNU General Public License Version 3
-## X-Category: Inventory
-
-..\Scrap\Libs\SecureTabs-2.0\SecureTabs-2.0.lua
-Scrap_Merchant.lua
+..\Scrap\addons\merchant\merchant.xml
