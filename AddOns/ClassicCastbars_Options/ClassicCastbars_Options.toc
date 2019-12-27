@@ -1,7 +1,11 @@
 ## Interface: 11303
+## Dependencies: ClassicCastbars
+
 ## Title: ClassicCastbars_Options
 ## Notes: Configuration for ClassicCastbars. Type /castbars for options.
-## Dependencies: ClassicCastbars
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFF0055FF设置|r
+## Notes-zhCN: ClassicCastbars设置模块
+
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
