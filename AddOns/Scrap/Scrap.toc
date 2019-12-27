@@ -1,16 +1,14 @@
 ## Interface: 11303
-## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.1
-## OptionalDeps: WoWUnit, TestPoncho
-## SavedVariables: Scrap_Sets
-## SavedVariablesPerCharacter: Scrap_CharSets
-
 ## Title: Scrap
 ## Notes: Sells all your junk at the merchant.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
-## Notes-zhCN: 自动出售灰色物品
 
+## Author: Jaliborc (João Cardoso)
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory
+## Version: 8.2.2
+
+## SavedVariablesPerCharacter: Scrap_CharSets
+## SavedVariables: Scrap_Sets
+## OptionalDeps: WoWUnit, TestPoncho
 
 addons\main\main.xml
