@@ -1435,6 +1435,12 @@ MAPPING = {
         'Notes': '自动出售灰色物品',
         'Category': '物品'
     },
+    'Scrap_Config': {
+        'Title-cn': '垃圾管理',
+        'Title-sub': '设置',
+        'Notes': 'Scrap设置模块',
+        'Category': '物品'
+    },
     'Scrap_Merchant': {
         'Title-cn': '垃圾管理',
         'Title-sub': '商人',
