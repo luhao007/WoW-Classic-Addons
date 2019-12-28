@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: phyber
-## Version: 80205-1
+## Version: 80205-2
 ## OptionalDeps: Ace3, Voyeur
 ## SavedVariablesPerCharacter: FizzleDB
 
