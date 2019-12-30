@@ -246,10 +246,9 @@ local function GetFishingOutfit()
 end
 
 local function StyleString(long, points)
+  local pstring = FBConstants.POINTS;
   if ( points == 1 ) then
 	 pstring = FBConstants.POINT;
-  else
-	 pstring = FBConstants.POINTS;
   end
   if ( long ) then
 	  return FB_ODFConstants.STYLEPOINTS..points.." "..pstring;
@@ -477,14 +476,14 @@ FishingEvents["VARIABLES_LOADED"] = function()
 												ODF_Choose,
 												ODF_Switch);
 
-	groups = {}
+	local groups = {}
 	tinsert(groups, {
 		["name"] = FB_ODFConstants.OUTFITS_TAB,
 		["icon"] = "Interface\\Icons\\INV_Shirt_14",
 		["frame"] = FishingOutfitFrameTab
 	})
 	-- Need to do this after we handle the translations
-	optionstab = {
+	local optionstab = {
 		["name"] = FBConstants.OPTIONS_TAB,
 		["tooltip"] = FBConstants.OPTIONS_INFO,
 		["icon"] = 133153,

@@ -58,27 +58,24 @@ FishingTranslations["deDE"] = {
 	["CONFIG_BGSOUNDS_ONOFF"] = "Soundeffekte im Hintergrund",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BIGDRAENOR_INFO"] = "If enabled, attempt to maximize skill while in Draenor and Broken Islands.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_BIGDRAENOR_ONOFF"] = "Max Fishing",--]] 
+	["CONFIG_BIGDRAENOR_ONOFF"] = "Max Angeln",
 	["CONFIG_BOBBINGBERG_INFO"] = "Wenn aktiviert, benutze Bipsis schlingernde Scholle",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
+	["CONFIG_BOBBINGBERG_ONOFF"] = [=[Benutze Bipsis schlingernde Scholle
+]=],
 	["CONFIG_CONTESTS_INFO"] = "Zeigt einen Timer für Angelwettbewerbe an.",
 	["CONFIG_CONTESTS_ONOFF"] = "Unterstützung für Angelwettbewerb",
 	["CONFIG_CREATEMACRO_INFO"] = "Erstellt ein Makro das #NAME# ausführt.",
 	["CONFIG_CREATEMACRO_ONOFF"] = "Makro erstellen",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DALARANLURES_INFO"] = "If enabled, apply special Dalaran coin lures when available.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_DALARANLURES_ONOFF"] = "Dalaran Lures",--]] 
+	["CONFIG_DALARANLURES_ONOFF"] = "Dalaran Köder",
 	["CONFIG_DERBYTIMER_INFO"] = "Falls aktiviert, wird ein Countdown Timer für den Beginn des Kalu'ak Angel Derbys angezeigt, sowie ein Countdown für die noch verbleibende Zeit.",
 	["CONFIG_DERBYTIMER_ONOFF"] = "Derby Timer",
 	["CONFIG_DINGQUESTFISH_INFO"] = "Bei aktivierung wird der Quest erledigt Ton abgespielt sobald man einen der Nat Pagle Ruf Fische fängt.",
 	["CONFIG_DINGQUESTFISH_ONOFF"] = "Fisch klingeln",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DRAENORBAIT_INFO"] = "If enabled, attempt to use the right 'special' bait for the current zone.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_DRAENORBAIT_ONOFF"] = "Special Bait",--]] 
+	["CONFIG_DRAENORBAIT_ONOFF"] = "Spezieller Köder",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_DRAENORBAITMAINTAIN_INFO"] = "If enabled, maintain existing 'special' bait, do not apply based on location.",--]] 
 	--[[Translation missing --]]

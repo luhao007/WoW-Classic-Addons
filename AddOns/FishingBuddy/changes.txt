@@ -1,3 +1,6 @@
+Version 0.7.1 Beta 1
+- Fix globals leaks and other code foos
+
 Version 0.7 Beta 4
 - Find the lure bonus correctly
 - Outfit display working

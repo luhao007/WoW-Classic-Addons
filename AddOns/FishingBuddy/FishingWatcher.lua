@@ -792,7 +792,7 @@ local function UpdateFishieEntry(info)
         local numbers = white.."(".."|r"..color1..amount;
 
         if ( dopercent ) then
-            local percent = format("%.1f", ( amount / totalAmount ) * 100);
+            local percent = string.format("%.1f", ( amount / totalAmount ) * 100);
             numbers = numbers.." : "..percent.."%";
         end
         if ( not currentonly and gotDiffs ) then
@@ -800,7 +800,7 @@ local function UpdateFishieEntry(info)
             amount = info.current or 0;
             local diffs = amount;
             if ( dopercent ) then
-                local percent = format("%.1f", ( amount / totalCurrent ) * 100);
+                local percent = string.format("%.1f", ( amount / totalCurrent ) * 100);
                 diffs = diffs.." : "..percent.."%";
             end
             numbers = numbers..color2..diffs.."|r";
