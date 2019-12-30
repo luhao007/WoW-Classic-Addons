@@ -1,4 +1,4 @@
--- $Id: Data.lua 42 2019-09-07 16:37:35Z arith $
+-- $Id: Data.lua 46 2019-12-30 14:31:30Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -135,7 +135,7 @@ db.AtlasMaps = {
 		{ WHIT.."15) "..Atlas:GetBossName("The Grim Guzzler") },
 		{ WHIT..INDENT..Atlas:GetBossName("Hurley Blackbreath", 380), 380 },
 		{ WHIT..INDENT..Atlas:GetBossName("Lokhtos Darkbargainer") },
-		{ WHIT..INDENT..L["Mistress Nagmara"] }, 
+		{ WHIT..INDENT..Atlas:GetBossName("Mistress Nagmara") }, 
 		{ WHIT..INDENT..Atlas:GetBossName("Phalanx", 381), 381 },
 		{ WHIT..INDENT..Atlas:GetBossName("Plugger Spazzring", 383), 383 },
 		{ WHIT..INDENT..L["Private Rocknot"] },
@@ -536,11 +536,11 @@ db.AtlasMaps = {
 		{ WHIT.." 3) "..Atlas:GetBossName("Sneed") },
 		{ WHIT..INDENT..L["Sneed's Shredder"] },
 		{ WHIT.." 4) "..Atlas:GetBossName("Gilnid") },
-		{ WHIT.." 5) "..Atlas:GetBossName("Defias Gunpowder") },
+		{ WHIT.." 5) "..L["Defias Gunpowder"] },
 		{ WHIT.." 6) "..Atlas:GetBossName("Captain Greenskin") },
-		{ WHIT..INDENT..L["Edwin VanCleef"] },
-		{ WHIT..INDENT..L["Mr. Smite"] },
-		{ WHIT..INDENT..L["Cookie"] },
+		{ WHIT..INDENT..Atlas:GetBossName("Edwin VanCleef") },
+		{ WHIT..INDENT..Atlas:GetBossName("Mr. Smite") },
+		{ WHIT..INDENT..Atlas:GetBossName("Cookie") },
 	},
 	TheStockade = {
 		ZoneName = { BZ["The Stockade"] },
@@ -859,7 +859,7 @@ db.AtlasMaps = {
 		JournalInstanceID = 226,
 		Module = "Atlas_ClassicWoW",
 		{ BLUE.." A) "..ALC["Entrance"], 10001 },
-		{ WHIT.." 1) "..Atlas:GetBossName("Maur Grimtotem") },
+		{ WHIT.." 1) "..Atlas:GetBossName("Oggleflint") },
 		{ WHIT.." 2) "..Atlas:GetBossName("Taragaman the Hungerer") },
 		{ WHIT.." 3) "..Atlas:GetBossName("Jergosh the Invoker") },
 		{ WHIT.." 4) "..Atlas:GetBossName("Bazzalan") },
@@ -1321,7 +1321,6 @@ db.DropDownLayouts = {
 			"SMCathedral",			-- Classic WoW
 			"SMGraveyard",			-- Classic WoW
 			"SMLibrary",			-- Classic WoW
-			"Scholomance",			-- Classic WoW
 			"TheDeadmines",			-- Classic WoW, Catalysm
 			"TheDeadminesEnt",		-- Classic WoW
 			"TheStockade",			-- Classic WoW
@@ -1341,6 +1340,7 @@ db.DropDownLayouts = {
 			"BlackrockSpireUpper",		-- Classic WoW
 			"Maraudon",			-- Classic WoW
 			"MaraudonEnt",			-- Classic WoW
+			"Scholomance",			-- Classic WoW
 			"Stratholme",			-- Classic WoW
 			"TheSunkenTemple",		-- Classic WoW
 			"TheSunkenTempleEnt",		-- Classic WoW

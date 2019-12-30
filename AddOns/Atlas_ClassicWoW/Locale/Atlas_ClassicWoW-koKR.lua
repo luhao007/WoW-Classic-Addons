@@ -29,52 +29,42 @@ local L = AceLocale:NewLocale("Atlas_ClassicWoW", "koKR", false);
 
 if L then
 L["\"Ambassador\" Dagg'thol"] = "\"대사\" 다그톨"
---[[Translation missing --]]
---[[ L["3rd Box Opened: Postmaster Malown"] = ""--]] 
+L["3rd Box Opened: Postmaster Malown"] = "3번째 우체통 개방: 우체국장 말로운"
 L["Abandonded Mole Machine"] = "버려진 굴착기"
 L["Acride <Scarshield Legion>"] = "아크라이드 <방패 부대>"
---[[Translation missing --]]
---[[ L["Alarm-a-bomb 2600"] = ""--]] 
---[[Translation missing --]]
---[[ L["Alchemy Lab"] = ""--]] 
---[[Translation missing --]]
---[[ L["Altar of Blood"] = ""--]] 
+L["Alarm-a-bomb 2600"] = "경보폭탄 2600"
+L["Alchemy Lab"] = "연금술 실험대"
+L["Altar of Hakkar"] = "Altar of Hakkar"
 L["Amnennar's Phylactery"] = "암네나르의 성물함"
---[[Translation missing --]]
---[[ L["Ancient Equine Spirit"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ancient Treasure"] = ""--]] 
+L["Ancient Equine Spirit"] = "고대 준마의 영혼"
+L["Ancient Treasure"] = "고대 궤짝"
 L["Andorgos <Brood of Malygos>"] = "안도르고스 <말리고스의 혈족>"
+L["Annora (Master Enchanter)"] = "안노라 <마법부여의 대가>"
 L["Aoren Sunglow <The Reliquary>"] = "아오렌 선글로 <성물회>"
-L["AQ"] = "AQ"
-L["AQ10"] = "AQ10"
-L["AQ40"] = "AQ40"
+L["AQ"] = "안퀴"
+L["AQ10"] = "폐허"
+L["AQ40"] = "사원"
 L["Archmage Angela Dosantos <Brotherhood of the Light>"] = "대마법사 안젤라 도산토스 <빛의 결사단>"
---[[Translation missing --]]
---[[ L["Argent Guard Thaelrid"] = ""--]] 
---[[Translation missing --]]
---[[ L["Armory"] = ""--]] 
+L["Argent Guard Thaelrid"] = "은빛경비병 타엘리드"
+L["Arm"] = "2번방"
+L["Armory"] = "무기고"
 L["Arygos"] = "아리고스"
---[[Translation missing --]]
---[[ L["Atal'alarion"] = ""--]] 
+L["Atal'alarion"] = "아탈알라리온"
+L["Atiesh"] = "아티쉬"
+L["Attunement Required"] = "입장 요구 조건 있음"
 L["Auld Stonespire"] = "아울드 스톤스파이어"
---[[Translation missing --]]
---[[ L["Awbee"] = ""--]] 
+L["Aurius"] = "아우리우스"
+L["Awbee"] = "아우비"
 L["B.E Barechus <S.A.F.E.>"] = "B.E 버랙허스 <안심지대>"
---[[Translation missing --]]
---[[ L["Baelog's Chest"] = ""--]] 
---[[Translation missing --]]
---[[ L["Belnistrasz"] = ""--]] 
-L["BFD"] = "검은심연 나락"
---[[Translation missing --]]
---[[ L["Bijou"] = ""--]] 
+L["Baelog's Chest"] = "밸로그의 상자"
+L["Belnistrasz"] = "벨리스트라즈"
+L["BFD"] = "심연"
+L["Bijou"] = "비쥬"
 L["Blastmaster Emi Shortfuse"] = "폭발물전문가 에미 쇼트퓨즈"
---[[Translation missing --]]
---[[ L["Blood of Innocents"] = ""--]] 
---[[Translation missing --]]
---[[ L["Bodley"] = ""--]] 
-L["BRD"] = "BRD"
-L["BRM"] = "BRM"
+L["Blood of Innocents"] = "순결한 피"
+L["Bodley"] = "보들리"
+L["BRD"] = "나락"
+L["BRM"] = "검바"
 L["BWL"] = "검둥"
 L["Caelestrasz"] = "캘레스트라즈"
 L["Captain Drenn"] = "부대장 드렌"
@@ -82,44 +72,36 @@ L["Captain Qeez"] = "부대장 퀴즈"
 L["Captain Tuubid"] = "부대장 투비드"
 L["Captain Wyrmak"] = "군주 웜막"
 L["Captain Xurrem"] = "부대장 수렘"
---[[Translation missing --]]
---[[ L["Cathedral"] = ""--]] 
+L["Cath"] = "3번방"
+L["Cathedral"] = "대성당"
 L["Celebras the Redeemed"] = "회복된 셀레브라스"
---[[Translation missing --]]
---[[ L["Chase Begins"] = ""--]] 
---[[Translation missing --]]
---[[ L["Chase Ends"] = ""--]] 
+L["Chase Begins"] = "추격 시작"
+L["Chase Ends"] = "추격 끝"
 L["Chief Engineer Bilgewhizzle <Gadgetzan Water Co.>"] = "선임기술자 빌지위즐 <가젯잔 수자원개발회사>"
 L["Chomper"] = "강철이빨바실리스크"
 L["Colonel Zerran"] = "사령관 제란"
 L["Commander Bagran"] = "사령관 바그란"
---[[Translation missing --]]
---[[ L["Conspicuous Urn"] = ""--]] 
---[[Translation missing --]]
---[[ L["Cookie"] = ""--]] 
+L["Commander Gor'shak"] = "사령관 고르샤크"
+L["Conspicuous Urn"] = "눈에 띄는 항아리"
+L["Cookie"] = "쿠키"
 L["Core Fragment"] = "핵 조각"
 L["Crusade Commander Eligor Dawnbringer <Brotherhood of the Light>"] = "십자군 사령관 엘리고르 돈브링어 <빛의 결사단>"
 L["Crusade Commander Korfax <Brotherhood of the Light>"] = "십자군 사령관 코팩스 <빛의 결사단>"
---[[Translation missing --]]
---[[ L["Crusaders' Square Postbox"] = ""--]] 
+L["Crusaders' Square Postbox"] = "십자군 광장 우체통"
 L["Cursed Centaur"] = "저주받은 켄타우로스"
---[[Translation missing --]]
---[[ L["Dark Iron Ambassador"] = ""--]] 
+L["Dark Iron Ambassador"] = "검은무쇠단 사절"
+L["Deathstalker Adamant"] = "죽음의추적자 아다만트"
+L["Defias Gunpowder"] = "데피아즈단 화약"
 L["Dire Maul Arena"] = "혈투의 전장 투기장"
 L["Dire Pool"] = "혈투의 웅덩이"
---[[Translation missing --]]
---[[ L["Disciple of Naralex"] = ""--]] 
---[[Translation missing --]]
---[[ L["Divination Scryer"] = ""--]] 
-L["DM"] = "DM"
---[[Translation missing --]]
---[[ L["Doomrigger's Clasp"] = ""--]] 
---[[Translation missing --]]
---[[ L["Drakkisath's Brand"] = ""--]] 
+L["Disciple of Naralex"] = "나랄렉스의 신도"
+L["Divination Scryer"] = "Divination Scryer"
+L["DM"] = "혈투"
+L["Doomrigger's Clasp"] = "파멸의 기념물"
+L["Drakkisath's Brand"] = "드라키사스의 낙인"
 L["Druid of the Talon"] = "갈퀴발톱의 드루이드"
 L["Ebru <Disciple of Naralex>"] = "에브루 <나랄렉스의 신도>"
---[[Translation missing --]]
---[[ L["Edwin VanCleef"] = ""--]] 
+L["Edwin VanCleef"] = "에드윈 밴클리프"
 L["Elder Farwhisper"] = "장로 파위스퍼"
 L["Elder Mistwalker"] = "장로 미스트워커"
 L["Elder Morndeep"] = "장로 몬딥"
@@ -127,105 +109,93 @@ L["Elder Splitrock"] = "장로 스플릿락"
 L["Elder Starsong"] = "장로 스타송"
 L["Elder Stonefort"] = "장로 스톤포트"
 L["Elder Wildmane"] = "장로 와일드메인"
---[[Translation missing --]]
---[[ L["Elders' Square Postbox"] = ""--]] 
---[[Translation missing --]]
---[[ L["Essence Font"] = ""--]] 
+L["Elders' Square Postbox"] = "장로의 광장 우체통"
+L["Essence Font"] = "정수의 샘"
 L["Estulan <The Highborne>"] = "에스툴란 <명가>"
+L["Exit"] = "출구"
 L["Face <S.A.F.E.>"] = "멋쟁이 <안심지대>"
 L["Falrin Treeshaper"] = "팔린 트리셰이퍼"
---[[Translation missing --]]
---[[ L["Father Flame"] = ""--]] 
---[[Translation missing --]]
---[[ L["Fathom Core"] = ""--]] 
+L["Father Flame"] = "태초의 불꽃"
+L["Fathom Core"] = "심연의 핵"
+L["Fel Steed"] = "지옥마"
 L["Ferra"] = "페라"
---[[Translation missing --]]
---[[ L["Festival Lane Postbox"] = ""--]] 
---[[Translation missing --]]
---[[ L["Fifth Mosh'aru Tablet"] = ""--]] 
---[[Translation missing --]]
---[[ L["Finkle Einhorn"] = ""--]] 
+L["Festival Lane Postbox"] = "축제의 거리 우체통"
+L["Fifth Mosh'aru Tablet"] = "다섯 번째 모쉬아루 서판"
+L["Finkle Einhorn"] = "핀클 에인혼"
 L["Fire of Aku'mai"] = "아쿠마이의 불"
---[[Translation missing --]]
---[[ L["Four Kaldorei Elites"] = ""--]] 
---[[Translation missing --]]
---[[ L["Fras Siabi"] = ""--]] 
---[[Translation missing --]]
---[[ L["Fras Siabi's Postbox"] = ""--]] 
+L["Fras Siabi"] = "프라스 샤비"
+L["Fras Siabi's Postbox"] = "프라스 샤비의 우체통"
 L["Furgus Warpwood"] = "굽이나무 퍼거스"
 L["Galamav the Marksman <Kargath Expeditionary Force>"] = "명사수 갈라마브 <카르가스 원정대>"
+L["Gnashjaw"] = "갈기턱"
 L["Gnome"] = "놈"
---[[Translation missing --]]
---[[ L["Gomora the Bloodletter"] = ""--]] 
+L["Gomora the Bloodletter"] = "피를 부르는 고모라"
+L["Graveyard"] = "묘지"
+L["GY"] = "4번방"
 L["Hann Ibal <S.A.F.E.>"] = "한이발 <안심지대>"
---[[Translation missing --]]
---[[ L["Heralath Fallowbrook"] = ""--]] 
+L["Heralath Fallowbrook"] = "헤랄라스 팰로우브룩"
 L["Hierophant Theodora Mulvadania <Kargath Expeditionary Force>"] = "제사장 테오도라 뮬바다니아 <카르가스 원정대>"
 L["High Examiner Tae'thelan Bloodwatcher <The Reliquary>"] = "고위 검사관 태더란 블러드워처 <성물회>"
---[[Translation missing --]]
---[[ L["Human Remains"] = ""--]] 
+L["High Justice Grimstone"] = "대법관 그림스톤"
+L["Human Remains"] = "Human Remains"
 L["Invoker Xorenth"] = "기원사 소렌스"
 L["Ironbark the Redeemed"] = "회복된 무쇠껍질"
 L["Jalinda Sprig <Morgan's Militia>"] = "잘린다 스프리그 <모건의 민병대>"
---[[Translation missing --]]
---[[ L["J'eevee's Jar"] = ""--]] 
+L["Jarien"] = "자리엔"
+L["J'eevee's Jar"] = "지비의 단지"
 L["Je'neu Sancrea <The Earthen Ring>"] = "제네우 생크리 <대지 고리회>"
---[[Translation missing --]]
---[[ L["Jordan's Hammer"] = ""--]] 
+L["Jordan's Hammer"] = "조던의 망치"
 L["Kand Sandseeker <Explorer's League>"] = "칸드 샌드시커 <탐험가 연맹>"
 L["Kandrostrasz <Brood of Alexstrasza>"] = "칸드로스트라즈 <알렉스트라자 혈족>"
---[[Translation missing --]]
---[[ L["Kernobee"] = ""--]] 
+L["Kernobee"] = "케르노비"
 L["Kevin Dawson <Morgan's Militia>"] = "케빈 도슨 <모건의 민병대>"
+L["Kharan Mighthammer"] = "카란 마이트해머"
 L["Kherrah"] = "케라"
---[[Translation missing --]]
---[[ L["King's Square Postbox"] = ""--]] 
+L["King's Square Postbox"] = "왕의 광장 우체통"
 L["Knot Thimblejack"] = "노트 팀블잭"
 L["Koristrasza"] = "코리스트라자"
-L["LBRS"] = "LBRS"
+L["LBRS"] = "하층"
 L["Lead Prospector Durdin <Explorer's League>"] = "선임 발굴조사단장 더딘 <탐험가 연맹>"
+L["Lefty"] = "레프티"
 L["Lexlort <Kargath Expeditionary Force>"] = "렉스로트 <카르가스 원정대>"
---[[Translation missing --]]
---[[ L["Library"] = ""--]] 
+L["Lib"] = "1번방"
+L["Library"] = "도서관"
 L["Lidia Sunglow <The Reliquary>"] = "리디아 선글로 <성물회>"
+L["Lokhtos Darkbargainer"] = "로크토스 아크바게이너"
 L["Lokhtos Darkbargainer <The Thorium Brotherhood>"] = "로크토스 다크바게이너 <토륨 대장조합>"
 L["Lord Itharius"] = "군주 이타리우스"
 L["Lorekeeper Javon"] = "현자 야본"
 L["Lorekeeper Kildrath"] = "현자 킬드라스"
 L["Lorekeeper Lydros"] = "현자 리드로스"
 L["Lorekeeper Mykos"] = "현자 마이코스"
---[[Translation missing --]]
---[[ L["Lorgalis Manuscript"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lothos Riftwaker"] = ""--]] 
-L["Mail Box"] = "우편함"
+L["Lorgalis Manuscript"] = "로르갈리스 초본"
+L["Lothos Riftwaker"] = "로소스 리프트웨이커"
+L["Lower"] = "지하"
+L["Mail Box"] = "우체통"
 L["Major Pakkon"] = "부사령관 팍콘"
 L["Major Yeggeth"] = "부사령관 예게스"
+L["Malgen Longspear"] = "말겐 롱스피어"
+L["Malor the Zealous"] = "광신자 말로"
 L["Mara"] = "마라"
---[[Translation missing --]]
---[[ L["Maraudos (The Fourth Khan)"] = ""--]] 
---[[Translation missing --]]
---[[ L["Market Row Postbox"] = ""--]] 
+L["Maraudos (The Fourth Khan)"] = "마라우도스 <제4대 칸>"
+L["Market Row Postbox"] = "상가 우체통"
 L["Marshal Maxwell <Morgan's Militia>"] = "치안대장 맥스웰 <모건의 민병대>"
+L["Marshal Windsor"] = "치안대장 윈저"
 L["Master Craftsman Wilhelm <Brotherhood of the Light>"] = "수석 기능공 빌헬름 <빛의 결사단>"
 L["Master Elemental Shaper Krixix"] = "수석 원소구현술사 크릭시스"
---[[Translation missing --]]
---[[ L["Matrix Punchograph 3005-B"] = ""--]] 
---[[Translation missing --]]
---[[ L["Matrix Punchograph 3005-C"] = ""--]] 
---[[Translation missing --]]
---[[ L["Matrix Punchograph 3005-D"] = ""--]] 
+L["Matrix Punchograph 3005-B"] = "행렬천공기록기3005-B"
+L["Matrix Punchograph 3005-C"] = "행렬천공기록기3005-C"
+L["Matrix Punchograph 3005-D"] = "행렬천공기록기3005-D"
 L["Maxwort Uberglint"] = "맥스워트 우버글린트"
 L["Mayara Brightwing <Morgan's Militia>"] = "마야라 브라이트윙 <모건의 민병대>"
 L["Mazoga's Spirit"] = "마조가의 영혼"
 L["MC"] = "화심"
---[[Translation missing --]]
---[[ L["Medallion of Faith"] = ""--]] 
+L["Medallion of Faith"] = "신념의 메달"
 L["Merithra of the Dream"] = "꿈의 메리스라"
 L["Mistress Nagmara"] = "지배인 나그마라"
+L["Monument of Franclorn Forgewright"] = "프랑클론 포지라이트의 석상"
 L["Mountaineer Orfus <Morgan's Militia>"] = "산악경비대 오르푸스 <모건의 민병대>"
---[[Translation missing --]]
---[[ L["Mr. Smite"] = ""--]] 
+L["Mr. Smite"] = "미스터 스마이트"
 L["Murd Doc <S.A.F.E.>"] = "멀독 <안심지대>"
 L["Muyoh <Disciple of Naralex>"] = "무요 <나랄렉스의 신도>"
 L["Nalpak <Disciple of Naralex>"] = "날팍 <나랄렉스의 신도>"
@@ -234,114 +204,97 @@ L["Nurse Lillian"] = "간호사 릴리안"
 L["Old Ironbark"] = "늙은 무쇠껍질"
 L["Olga Runesworn <Explorer's League>"] = "올가 룬스원 <탐험가 연맹>"
 L["Oralius <Morgan's Militia>"] = "오랄리우스 <모건의 민병대>"
---[[Translation missing --]]
---[[ L["Orb of Command"] = ""--]] 
+L["Orb of Command"] = "지배의 수정구"
 L["Orb of Domination"] = "지배의 수정구"
 L["Packmaster Stonebruiser <Brotherhood of the Light>"] = "짐노새 주인 스톤브루저 <빛의 결사단>"
 L["Priestess Udum'bra"] = "여사제 우둠브라"
 L["Private Rocknot"] = "병사 락노트"
 L["Prospector Seymour <Morgan's Militia>"] = "발굴조사단장 시머 <모건의 민병대>"
---[[Translation missing --]]
---[[ L["Pylons"] = ""--]] 
---[[Translation missing --]]
---[[ L["Raven"] = ""--]] 
+L["Pylons"] = "파일론"
+L["Raven"] = "레이븐"
 L["Razal'blade <Kargath Expeditionary Force>"] = "라잘블레이드 <카르가스 원정대>"
---[[Translation missing --]]
---[[ L["Remains of a Paladin"] = ""--]] 
+L["Remains of a Paladin"] = "성기사의 유해"
 L["RFC"] = "성불"
 L["RFD"] = "구릉"
 L["RFK"] = "우리"
 L["Rifle Commander Coe"] = "소총부대장 코우"
+L["Rotfang"] = "썩은송곳니"
 L["Roughshod Pike"] = "날카로운 장창"
---[[Translation missing --]]
---[[ L["Safe Room"] = ""--]] 
---[[Translation missing --]]
---[[ L["Scarshield Quartermaster <Scarshield Legion>"] = ""--]] 
+L["Scarshield Quartermaster <Scarshield Legion>"] = "방패부대 병참장교 <방패 부대>"
 L["Schematic: Field Repair Bot 74A"] = "설계도: 야전수리로봇 74A"
---[[Translation missing --]]
---[[ L["Scout Cage"] = ""--]] 
---[[Translation missing --]]
---[[ L["Secret Chest"] = ""--]] 
+L["Scholo"] = "스칼"
+L["Secret Chest"] = "비밀 상자"
 L["Sentinel Aluwyn"] = "파수꾼 알루윈"
+L["SFK"] = "성채"
 L["Shadowforge Brazier"] = "어둠괴철로 화로"
---[[Translation missing --]]
---[[ L["Shadowforge Cache"] = ""--]] 
+L["Shadowforge Cache"] = "Shadowforge Cache"
 L["Shen'dralar Ancient"] = "센드랄라 고대인"
 L["Shen'dralar Provisioner"] = "센드랄라 배급원"
 L["Shen'dralar Watcher"] = "센드랄라 감시자"
---[[Translation missing --]]
---[[ L["Sixth Mosh'aru Tablet"] = ""--]] 
---[[Translation missing --]]
---[[ L["Skeletal Remains of Kariel Winthalus"] = ""--]] 
---[[Translation missing --]]
---[[ L["Sneed's Shredder"] = ""--]] 
+L["Side"] = "뒷문"
+L["Sixth Mosh'aru Tablet"] = "여섯 번째 모쉬아루 서판"
+L["Skeletal Remains of Kariel Winthalus"] = "카리엘 윈탈루스의 유해"
+L["Sneed's Shredder"] = "스니드의 벌목기"
+L["Sorcerer Ashcrombe"] = "마법사 애쉬크롬비"
+L["Sothos"] = "소도스"
+L["Spawn of Hakkar"] = "학카르의 화신"
 L["Spirit of Agamaggan <Ancient>"] = "아감마간의 혼 <고대정령>"
 L["Spoils of Blackfathom"] = "검은심연의 전리품"
-L["ST"] = "ST"
---[[Translation missing --]]
---[[ L["Statue Activation Order"] = ""--]] 
+L["ST"] = "아탈"
+L["Stairway"] = "통로"
+L["Statue Activation Order"] = "석상 작동 순서"
 L["Stocks"] = "지하감옥"
 L["Stonemaul Ogre"] = "돌망치 오우거"
-L["Strat"] = "스트라"
+L["Strat"] = "솔룸"
 L["Stratholme Courier"] = "스트라솔름 급사"
---[[Translation missing --]]
---[[ L["Summoner's Tomb"] = ""--]] 
---[[Translation missing --]]
---[[ L["Tablet of Will"] = ""--]] 
+L["Summoner's Tomb"] = "소환사의 무덤"
+L["Tablet of Will"] = "결의의 서판"
 L["Thal'trak Proudtusk <Kargath Expeditionary Force>"] = "탈트라크 프라우드터스크 <카르가스 원정대>"
---[[Translation missing --]]
---[[ L["The Behemoth"] = ""--]] 
-L["The Black Anvil"] = "검은 모루"
+L["The Behemoth"] = "거수"
+L["The Black Anvil"] = "어둠괴철로 도시"
 L["The Black Forge"] = "검은 제련소"
---[[Translation missing --]]
---[[ L["The Deed to Brill"] = ""--]] 
---[[Translation missing --]]
---[[ L["The Deed to Caer Darrow"] = ""--]] 
---[[Translation missing --]]
---[[ L["The Deed to Southshore"] = ""--]] 
---[[Translation missing --]]
---[[ L["The Deed to Tarren Mill"] = ""--]] 
+L["The Deed to Brill"] = "브릴 증서"
+L["The Deed to Caer Darrow"] = "카엘 다로우 증서"
+L["The Deed to Southshore"] = "사우스쇼어 증서"
+L["The Deed to Tarren Mill"] = "타렌 밀농장 증서"
 L["The Discs of Norgannon"] = "노르간논의 원반"
+L["The Grim Guzzler"] = "험상궂은 주정뱅이 선술집"
+L["The Lyceum"] = "리케이온"
 L["The Nameless Prophet"] = "이름 없는 예언자"
 L["The Shadowforge Lock"] = "어둠괴철로 자물쇠"
 L["The Sparklematic 5200"] = "빤질빤질세척기 5200"
---[[Translation missing --]]
---[[ L["The Vault"] = ""--]] 
+L["The Vault"] = "검은 금고"
+L["Theldren"] = "텔드렌"
 L["Thunderheart <Kargath Expeditionary Force>"] = "썬더하트 <카르가스 원정대>"
 L["Tink Sprocketwhistle <Engineering Supplies>"] = "팅크 스프로켓휘슬 <기술용품 상인>"
 L["Tinkee Steamboil"] = "팅키 스팀보일"
 L["Torben Zapblast <Teleportation Specialist>"] = "토르벤 잽블라스트 <순간이동 전문가>"
---[[Translation missing --]]
---[[ L["Torch Lever"] = ""--]] 
+L["Torch Lever"] = "토치 레버"
 L["Tran'rek"] = "트란렉"
---[[Translation missing --]]
---[[ L["Troll Minibosses"] = ""--]] 
-L["Ulda"] = "울다"
---[[Translation missing --]]
---[[ L["Unfired Plate Gauntlets"] = ""--]] 
+L["Troll Minibosses"] = "트롤 중간우두머리들"
+L["UBRS"] = "상층"
+L["Ulda"] = "울다만"
+L["Unfired Plate Gauntlets"] = "불타지 않은 판금 건틀릿"
 L["Urok's Tribute Pile"] = "우로크의 제물더미"
---[[Translation missing --]]
---[[ L["Various Postbox Keys"] = ""--]] 
---[[Translation missing --]]
---[[ L["Veng (The Fifth Khan)"] = ""--]] 
+L["Vaelan"] = "밸란"
+L["Va'jashni"] = "바자쉬니"
+L["Varies"] = "달라짐"
+L["Various Postbox Keys"] = "여러 곳의 우체통에 열쇠"
+L["Veng (The Fifth Khan)"] = "벵 <제5대 칸>"
 L["Vethsera <Brood of Ysera>"] = "베스세라 <이세라 혈족>"
---[[Translation missing --]]
---[[ L["Vorrel Sengutz"] = ""--]] 
+L["Vorrel Sengutz"] = "보렐 센구츠"
+L["Walkway"] = "통로"
 L["Warden Thelwater"] = "교도소장 델워터"
 L["Warlord Goretooth <Kargath Expeditionary Force>"] = "장군 고어투스 <카르가스 원정대>"
+L["Warosh"] = "와로쉬"
 L["Watchman Doomgrip"] = "보초 둠그립"
 L["WC"] = "통곡"
---[[Translation missing --]]
---[[ L["Weaver"] = ""--]] 
+L["Weaver"] = "위버"
 L["Weegli Blastfuse"] = "위글리 블라스트퓨즈"
---[[Translation missing --]]
---[[ L["Willix the Importer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ysida Harmon"] = ""--]] 
+L["Willix the Importer"] = "수입업자 윌릭스"
+L["Ysida Harmon"] = "이시다 하몬"
 L["Yuka Screwspigot <Engineering Supplies>"] = "유카 스크류스피곳 <기술용품 상인>"
 L["Zeya"] = "제야"
-L["ZF"] = "ZF"
---[[Translation missing --]]
---[[ L["Zul'Farrak Dead Hero"] = ""--]] 
-
+L["ZF"] = "줄파락"
+L["Zul'Farrak Dead Hero"] = "죽음의 줄파락 영웅"
 end

@@ -1,4 +1,4 @@
-if GetLocale() ~= "esES" then return end
+if GetLocale() ~= "esMX" then return end
 local L
 
 --------------------------------
@@ -60,7 +60,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(369)
 
 L:SetGeneralLocalization{
-	name 		= "Alto Interrogador Gerstahn"
+	name 		= "Alta interrogadora Gerstahn"
 }
 -----------------
 -- Lord Roccor --
@@ -92,7 +92,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(373)
 
 L:SetGeneralLocalization{
-	name 		= "Piromántico Fruto del Saber"
+	name 		= "Piromántico Cultugrano"
 }
 --------------------
 -- Lord Incendius --
@@ -108,7 +108,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(375)
 
 L:SetGeneralLocalization{
-	name 		= "Guarda Stilgiss"
+	name 		= "Depositario Stilgiss"
 }
 ----------------------
 -- Finoso Vironegro --
@@ -116,7 +116,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(376)
 
 L:SetGeneralLocalization{
-	name 		= "Finoso Virunegro"
+	name 		= "Finoso Vironegro"
 }
 --------------
 -- Bael'Gar --
@@ -206,7 +206,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(388)
 
 L:SetGeneralLocalization{
-	name 		= "Alto Señor Omokk"
+	name 		= "Alto señor Omokk"
 }
 -----------------------------
 --  Shadow Hunter Vosh'gajin  --
@@ -270,7 +270,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(396)
 
 L:SetGeneralLocalization{
-	name 		= "Señor Supremo Vermiothalak"
+	name 		= "Señor supremo Vermiothalak"
 }
 
 -------------------------
@@ -281,7 +281,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("PyroguardEmberseer")
 
 L:SetGeneralLocalization{
-	name 		= "Piroguardián brasadivino"
+	name 		= "Piroguardia Brasadivino"
 }
 -----------------------------
 --  Solakar Flamewreath  --
@@ -561,7 +561,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(418)
 
 L:SetGeneralLocalization{
-	name 		= "Gopleamasa 9-60"
+	name 		= "Golpeamasa 9-60"
 }
 -----------------------------
 --  Mekgineer Thermaplugg  --
@@ -734,7 +734,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("PlaguemawtheRotting")
 
 L:SetGeneralLocalization{
-	name 		= "Fauzpeste el Putrefacto"
+	name 		= "Faucepeste el Podrido"
 }
 
 -------------------------
@@ -763,7 +763,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("DeathSpeakerJargba")
 
 L:SetGeneralLocalization{
-	name 		= "Médium Jargba"
+	name 		= "Portavoz de la muerte Jargba"
 }
 
 -----------------------------
@@ -772,7 +772,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("OverlordRamtusk")
 
 L:SetGeneralLocalization{
-	name 		= "Señor Supremo Colmicarnero"
+	name 		= "Señor supremo Colmicarnero"
 }
 
 -----------------------------
@@ -799,7 +799,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("EarthcallerHalmgar")
 
 L:SetGeneralLocalization{
-	name 		= "Clamor de Tierra Halmgar"
+	name 		= "Clamatierras Halmgar"
 }
 
 -----------------------------
@@ -873,7 +873,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Fairbanks")
 
 L:SetGeneralLocalization{
-	name 		= "Alto Inquisidor Ribalimpia"
+	name 		= "Alto inquisidor Ribalimpia"
 }
 
 -------------------------
@@ -929,7 +929,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("RasFrostwhisper")
 
 L:SetGeneralLocalization{
-	name 		= "Ras Levescarcha"
+	name 		= "Ras Murmuhielo"
 }
 
 -----------------------------
@@ -1038,7 +1038,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("OdotheBlindwatcher")
 
 L:SetGeneralLocalization{
-	name 		= "Odo el Cegato"
+	name 		= "Odo el Vigía Ciego"
 }
 
 -----------------------------
@@ -1117,7 +1117,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("DextrenWard")
 
 L:SetGeneralLocalization{
-	name 		= "Dextren Tutor"
+	name 		= "Dextren Ward"
 }
 -----------------------------
 --  Bruegal Ironknuckle  --
@@ -1190,7 +1190,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(450)
 
 L:SetGeneralLocalization{
-	name 		= "El Imperdonable"
+	name 		= "La Imperdonable"
 }
 
 -----------------------------
@@ -1342,7 +1342,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(470)
 
 L:SetGeneralLocalization{
-	name 		= "Vigilante de piedra anciano"
+	name 		= "Vigilante pétreo anciano"
 }
 -----------------------------
 --  Galgann Firehammer  --

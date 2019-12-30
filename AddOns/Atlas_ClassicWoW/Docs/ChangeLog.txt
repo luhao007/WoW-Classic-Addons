@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 43 2019-09-08 03:38:13Z arith $
+$Id: ChangeLog.txt 46 2019-12-30 14:31:30Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -7,6 +7,15 @@ Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 ==============
 = Change Log =
 ==============
+
+v1.45.01.11303.01 (2019/12/30)
+------------------------
+- ToC update to support WoW Classic 1.13.3
+- Added boss names to locale files.
+- Map data fixing:
+  - Ragefire Chasm, 1ast boss: Oggleflint
+- Map revamp:
+  - Maraudon, Maraudon Entrace
 
 v1.45.00.11302.05 (Sep. 17, 2019)
 ------------------------
