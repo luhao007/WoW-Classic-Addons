@@ -107,7 +107,7 @@ AQDiscription_LEVEL = "Nivel: ";
 AQDiscription_START = "Empieza: \n";
 AQDiscription_AIM = "Objetivo: \n";
 AQDiscription_NOTE = "Nota: \n";
-AQDiscription_PREQUEST= "Misión previa: ";
+AQDiscription_PREQUEST= "Misión requisita: ";
 AQDiscription_FOLGEQUEST = "Misión siguiente: ";
 AQFinishedTEXT = "Misión completa: ";
 

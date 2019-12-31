@@ -4283,128 +4283,128 @@ Inst26QAA = "7 Quests"
 Inst26QAH = "7 Quests"
 
 --Quest 1 Alliance
-Inst26Quest1 = "1. Troll Temper"
-Inst26Quest1_Aim = "Bring 20 Vials of Troll Temper to Trenton Lighthammer in Gadgetzan."
+Inst26Quest1 = "1. Trollaushärter"
+Inst26Quest1_Aim = "Bringt 20 Phiolen Trollaushärter zu Trenton Lighthammer in Gadgetzan."
 Inst26Quest1_Location = "Trenton Lighthammer (Tanaris - Gadgetzan; "..YELLOW.."51,28"..WHITE..")"
-Inst26Quest1_Note = "Every Troll can drop the Tempers."
+Inst26Quest1_Note = "Jeder Troll kann den Aushärter fallen lassen."
 Inst26Quest1_Prequest = "Nein"
 Inst26Quest1_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 2 Alliance
-Inst26Quest2 = "2. Scarab Shells"
-Inst26Quest2_Aim = "Bring 5 Uncracked Scarab Shells to Tran'rek in Gadgetzan."
+Inst26Quest2 = "2. Skarabäuspanzerschalen"
+Inst26Quest2_Aim = "Bringt Tran’rek in Gadgetzan 5 unbeschädigte Skarabäuspanzerschalen."
 Inst26Quest2_Location = "Tran'rek (Tanaris - Gadgetzan; "..YELLOW.."51,26"..WHITE..")"
-Inst26Quest2_Note = "The prequest starts at Krazek (Schlingendorntal - Booty Bay; "..YELLOW.."25,77"..WHITE..").\nEvery Scarab can drop the Shells. A lot of Scarabs are at "..YELLOW.."[2]"..WHITE.."."
+Inst26Quest2_Note = "Die Vorquest startet bei Krazek (Schlingendorntal - Booty Bay; "..YELLOW.."25,77"..WHITE..").\nJeder Skarabäus kann die Schalen fallen lassen. Eine Menge Skarabäen sind bei "..YELLOW.."[2]"..WHITE.."."
 Inst26Quest2_Prequest = "Tran'rek"
 Inst26Quest2_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 3 Alliance
-Inst26Quest3 = "3. Tiara of the Deep"
-Inst26Quest3_Aim = "Bring the Tiara of the Deep to Tabetha in Marschen von Dustwallow."
+Inst26Quest3 = "3. Tiara der Tiefen"
+Inst26Quest3_Aim = "Bringt die Tiara der Tiefen zu Tabetha in den Marschen von Dustwallow."
 Inst26Quest3_Location = "Tabetha (Marschen von Dustwallow; "..YELLOW.."46,57"..WHITE..")"
-Inst26Quest3_Note = "You get the prequest from Bink (Ironforge; "..YELLOW.."25,8"..WHITE..").\nHydromancer Velratha drops the Tiara of the Deep at "..YELLOW.."[6]"..WHITE.."."
-Inst26Quest3_Prequest = "Tabetha's Task"
+Inst26Quest3_Note = "Du bekommst die Vorquest von Bink (Ironforge; "..YELLOW.."25,8"..WHITE..").\nWasserbeschwörerin Velratha droppt die Tiara der Tiefen bei "..YELLOW.."[6]"..WHITE.."."
+Inst26Quest3_Prequest = "Tabethas Aufgabe"
 Inst26Quest3_Folgequest = "Nein"
 --
-Inst26Quest3name1 = "Spellshifter Rod"
-Inst26Quest3name2 = "Gemshale Pauldrons"
+Inst26Quest3name1 = "Zauberformerrute"
+Inst26Quest3name2 = "Edelsteinschiefer-Schulterstücke"
 
 --Quest 4 Alliance
-Inst26Quest4 = "4. Nekrum's Medallion"
-Inst26Quest4_Aim = "Bring Nekrum's Medallion to Thadius Grimshade in the Blasted Lands."
-Inst26Quest4_Location = "Thadius Grimshade (The Blasted Lands - Nethergarde Keep; "..YELLOW.."66,19"..WHITE..")"
-Inst26Quest4_Note = "The Questline starts at Gryphon Master Talonaxe (The Hinterlands - Wildhammer Stronghold; "..YELLOW.."9,44"..WHITE..").\nNekrum spawns at "..YELLOW.."[4]"..WHITE.." with the final crowd you fight for the Temple event."
-Inst26Quest4_Prequest = "Witherbark Cages -> Thadius Grimshade"
-Inst26Quest4_Folgequest = "The Divination"
+Inst26Quest4 = "4. Nekrums Medaillon"
+Inst26Quest4_Aim = "Bringt Thadius Grimshade in den verwüsteten Landen Nekrums Medaillon."
+Inst26Quest4_Location = "Thadius Grimshade (Verwüstete Lande - Burg Nethergarde ; "..YELLOW.."66,19"..WHITE..")"
+Inst26Quest4_Note = "Die Questreihe startet bei Greifenmeister Talonaxe (Hinterland - Wildhammer Stronghold; "..YELLOW.."9,44"..WHITE..").\nNekrum erscheint bei "..YELLOW.."[4]"..WHITE.." mit der letzten Gruppe, die du beim Tempel-Event bekämpfst."
+Inst26Quest4_Prequest = "Käfige der Witherbark -> Thadius Grimshade"
+Inst26Quest4_Folgequest = "Der Rutengang"
 -- No Rewards for this quest
 
 --Quest 5 Alliance
-Inst26Quest5 = "5. The Prophecy of Mosh'aru"
-Inst26Quest5_Aim = "Bring the First and Second Mosh'aru Tablets to Yeh'kinya in Tanaris."
+Inst26Quest5 = "5. Die Prophezeiung von Mosh'aru"
+Inst26Quest5_Aim = "Bringt die erste und die zweite Mosh'aru-Schrifttafel zu Yeh'kinya nach Tanaris."
 Inst26Quest5_Location = "Yeh'kinya (Tanaris - Steamwheedle Port; "..YELLOW.."66,22"..WHITE..")"
-Inst26Quest5_Note = "You get the prequest from the same NPC.\nThe Tablets drop from Theka the Martyr at "..YELLOW.."[2]"..WHITE.." and Hydromancer Velratha at "..YELLOW.."[6]"..WHITE.."."
-Inst26Quest5_Prequest = "Screecher Spirits"
-Inst26Quest5_Folgequest = "The Ancient Egg"
+Inst26Quest5_Note = "Du bekommst die Vorquest vom selben NPC.\nDie Tafeln droppen von Theka der Märtyrer bei "..YELLOW.."[2]"..WHITE.." und Wasserbschwörerin Velratha bei "..YELLOW.."[6]"..WHITE.."."
+Inst26Quest5_Prequest = "Kreischergeister"
+Inst26Quest5_Folgequest = "Das uralte Ei"
 -- No Rewards for this quest
 
 --Quest 6 Alliance
-Inst26Quest6 = "6. Divino-matic Rod"
-Inst26Quest6_Aim = "Bring the Divino-matic Rod to Chief Engineer Bilgewhizzle in Gadgetzan."
-Inst26Quest6_Location = "Chief Engineer Bilgewhizzle (Tanaris - Gadgetzan; "..YELLOW.."52,28"..WHITE..")"
-Inst26Quest6_Note = "You get the Rod from Sergeant Bly. You can find him at "..YELLOW.."[4]"..WHITE.." after the Temple event."
+Inst26Quest6 = "6. Wünschel-mato-Rute"
+Inst26Quest6_Aim = "Bringt die Wünschel-mato-Rute nach Gadgetzan zu Chefingenieur Bilgewhizzle."
+Inst26Quest6_Location = "Chefingenieur Bilgewhizzle (Tanaris - Gadgetzan; "..YELLOW.."52,28"..WHITE..")"
+Inst26Quest6_Note = "Du bekommst die Rute von Sergeant Bly. Du findest ihn bei "..YELLOW.."[4]"..WHITE.." nach dem Tempel-Event."
 Inst26Quest6_Prequest = "Nein"
 Inst26Quest6_Folgequest = "Nein"
 --
-Inst26Quest6name1 = "Masons Fraternity Ring"
-Inst26Quest6name2 = "Engineer's Guild Headpiece"
+Inst26Quest6name1 = "Maurer-Bruderschaftsring"
+Inst26Quest6name2 = "Ingenieursgildenkopfstück"
 
 --Quest 7 Alliance
 Inst26Quest7 = "7. Gahz'rilla"
-Inst26Quest7_Aim = "Bring Gahz'rilla's Electrified Scale to Wizzle Brassbolts in the Shimmering Flats."
-Inst26Quest7_Location = "Wizzle Brassbolts (Thousands Needles - Mirage Raceway; "..YELLOW.."78,77"..WHITE..")"
-Inst26Quest7_Note = "You get the prequest from Klockmort Spannerspan (Ironforge - Tüftlerstadt; "..YELLOW.."68,46"..WHITE.."). It is not necessary to have the prequest to get the Gahz'rilla quest.\nYou summon Gahz'rilla at "..YELLOW.."[6]"..WHITE.." by banging the gong. The Mallet of Zul'Farrak is no longer required."
-Inst26Quest7_Prequest = "The Brassbolts Brothers"
+Inst26Quest7_Aim = "Bringt Wizzle Brassbolts in der schimmernden Ebene Gahz'rillas energiegeladene Schuppe."
+Inst26Quest7_Location = "Wizzle Brassbolts (Tausend Nadeln - Mirage Raceway; "..YELLOW.."78,77"..WHITE..")"
+Inst26Quest7_Note = "Du bekommst die Vorquest von Klockmort Spannerspan (Ironforge - Tüftlerstadt; "..YELLOW.."68,46"..WHITE.."). Es ist nicht notwendig, die Vorquest zu haben, um die Gahz'rilla-Quest zu bekommen.\nGahz'rilla erscheint bei "..YELLOW.."[6]"..WHITE.." wenn du die Glocke schlägst. Ein Gruppenmitglied muss den Schlegel von Zul'Farrak haben."
+Inst26Quest7_Prequest = "Die Brüder Brassbolt"
 Inst26Quest7_Folgequest = "Nein"
 --
-Inst26Quest7name1 = "Carrot on a Stick"
+Inst26Quest7name1 = "Karotte am Stiel"
 
 
 --Quest 1 Horde
-Inst26Quest1_HORDE = "1. The Spider God"
-Inst26Quest1_HORDE_Aim = "Read from the Tablet of Theka to learn the name of the Witherbark spider god, then return to Master Gadrin."
-Inst26Quest1_HORDE_Location = "Meister Gadrin (Durotar - Sen'jin Village; "..YELLOW.."55,74"..WHITE..")"
-Inst26Quest1_HORDE_Note = "The Questline starts at a Venom Bottle, which is found on tables in Troll Villages in The Hinterlands.\nYou find the Tablet at "..YELLOW.."[2]"..WHITE.."."
-Inst26Quest1_HORDE_Prequest = "Venom Bottles -> Consult Master Gadrin"
-Inst26Quest1_HORDE_Folgequest = "Summoning Shadra"
+Inst26Quest1_HORDE = "1. Der Spinnengott"
+Inst26Quest1_HORDE_Aim = "Lest von der Schrifttafel des Theka, um den Namen des Spinnengottes der Witherbark zu erfahren, und kehrt dann zu Meister Gadrin zurück."
+Inst26Quest1_HORDE_Location = "Meister Gadrin (Durotar - Sen'jin; "..YELLOW.."55,74"..WHITE..")"
+Inst26Quest1_HORDE_Note = "Die Questreihe beginnt mit einer Giftflasche, die auf Tischen in den Trolldörfern zu finden ist in Hinterland.\nDu findest die Tische bei "..YELLOW.."[2]"..WHITE.."."
+Inst26Quest1_HORDE_Prequest = "Giftflaschen -> Konsultiert Meister Gadrin"
+Inst26Quest1_HORDE_Folgequest = "Die Beschwörung von Shadra"
 -- No Rewards for this quest
 
---Quest 2 Horde  (same as Quest 1 Alliance)
-Inst26Quest2_HORDE = "2. Troll Temper"
+--Quest 2 Horde
+Inst26Quest2_HORDE = "2. Trollaushärter"
 Inst26Quest2_HORDE_Aim = Inst26Quest1_Aim
 Inst26Quest2_HORDE_Location = Inst26Quest1_Location
 Inst26Quest2_HORDE_Note = Inst26Quest1_Note
-Inst26Quest2_HORDE_Prequest = Inst26Quest1_Prequest
-Inst26Quest2_HORDE_Folgequest = Inst26Quest1_Folgequest
+Inst26Quest2_HORDE_Prequest = "Nein"
+Inst26Quest2_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
---Quest 3 Horde  (same as Quest 2 Alliance)
-Inst26Quest3_HORDE = "3. Scarab Shells"
+--Quest 3 Horde
+Inst26Quest3_HORDE = "3. Skarabäuspanzerschalen"
 Inst26Quest3_HORDE_Aim = Inst26Quest2_Aim
 Inst26Quest3_HORDE_Location = Inst26Quest2_Location
 Inst26Quest3_HORDE_Note = Inst26Quest2_Note
-Inst26Quest3_HORDE_Prequest = Inst26Quest2_Prequest
-Inst26Quest3_HORDE_Folgequest = Inst26Quest2_Folgequest
+Inst26Quest3_HORDE_Prequest = "Tran'rek"
+Inst26Quest3_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
---Quest 4 Horde  (same as Quest 3 Alliance - no prequest)
-Inst26Quest4_HORDE = "4. Tiara of the Deep"
+--Quest 4 Horde
+Inst26Quest4_HORDE = "4. Tiara der Tiefen"
 Inst26Quest4_HORDE_Aim = Inst26Quest3_Aim
 Inst26Quest4_HORDE_Location = Inst26Quest3_Location
-Inst26Quest4_HORDE_Note = "Hydromancer Velratha drops the Tiara of the Deep at "..YELLOW.."[6]"..WHITE.."."
+Inst26Quest4_HORDE_Note = "Wasserbeschwörerin Velratha droppt die Tiara der Tiefe bei "..YELLOW.."[6]"..WHITE.."."
 Inst26Quest4_HORDE_Prequest = "Nein"
-Inst26Quest4_HORDE_Folgequest = Inst26Quest3_Folgequest
+Inst26Quest4_HORDE_Folgequest = "Nein"
 --
 Inst26Quest4name1_HORDE = Inst26Quest3name1
 Inst26Quest4name2_HORDE = Inst26Quest3name2
 
---Quest 5 Horde  (same as Quest 5 Alliance)
+--Quest 5 Horde
 Inst26Quest5_HORDE = Inst26Quest5
 Inst26Quest5_HORDE_Aim = Inst26Quest5_Aim
 Inst26Quest5_HORDE_Location = Inst26Quest5_Location
 Inst26Quest5_HORDE_Note = Inst26Quest5_Note
-Inst26Quest5_HORDE_Prequest = Inst26Quest5_Prequest
-Inst26Quest5_HORDE_Folgequest = Inst26Quest5_Folgequest
+Inst26Quest5_HORDE_Prequest = "Kreischergeister"
+Inst26Quest5_HORDE_Folgequest = "Das uralte Ei"
 -- No Rewards for this quest
 
---Quest 6 Horde  (same as Quest 6 Alliance)
+--Quest 6 Horde
 Inst26Quest6_HORDE = Inst26Quest6
 Inst26Quest6_HORDE_Aim = Inst26Quest6_Aim
 Inst26Quest6_HORDE_Location = Inst26Quest6_Location
 Inst26Quest6_HORDE_Note = Inst26Quest6_Note
-Inst26Quest6_HORDE_Prequest = Inst26Quest6_Prequest
-Inst26Quest6_HORDE_Folgequest = Inst26Quest6_Folgequest
+Inst26Quest6_HORDE_Prequest = "Nein"
+Inst26Quest6_HORDE_Folgequest = "Nein"
 --
 Inst26Quest6name1_HORDE = Inst26Quest6name1
 Inst26Quest6name2_HORDE = Inst26Quest6name2
@@ -4413,9 +4413,9 @@ Inst26Quest6name2_HORDE = Inst26Quest6name2
 Inst26Quest7_HORDE = Inst26Quest7
 Inst26Quest7_HORDE_Aim = Inst26Quest7_Aim
 Inst26Quest7_HORDE_Location = Inst26Quest7_Location
-Inst26Quest7_HORDE_Note = "You summon Gahz'rilla at "..YELLOW.."[6]"..WHITE.." by banging the gong. The Mallet of Zul'Farrak is no longer required."
+Inst26Quest7_HORDE_Note = "Gahz'rilla erscheint bei "..YELLOW.."[6]"..WHITE.." wenn du die Glocke schlägst. Ein Gruppenmitglied muss den Schlegel von Zul'Farrak haben."
 Inst26Quest7_HORDE_Prequest = "Nein"
-Inst26Quest7_HORDE_Folgequest = Inst26Quest7_Folgequest
+Inst26Quest7_HORDE_Folgequest = "Nein"
 --
 Inst26Quest7name1_HORDE = Inst26Quest7name1
 

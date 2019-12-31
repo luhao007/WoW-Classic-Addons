@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 46 2019-12-30 14:31:30Z arith $
+$Id: ChangeLog.txt 50 2019-12-31 08:15:35Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,6 +8,13 @@ Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 = Change Log =
 ==============
 
+v1.45.01.11303.02 (2019/12/31)
+------------------------
+- Map revamp:
+  - Blackfathom Deeps
+- Maps added:
+  - Onyxia's Lair
+  
 v1.45.01.11303.01 (2019/12/30)
 ------------------------
 - ToC update to support WoW Classic 1.13.3

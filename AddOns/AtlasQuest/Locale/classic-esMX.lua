@@ -904,7 +904,7 @@ Inst4Quest5_Note = "Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.
 Inst4Quest5_Prequest = "Orden del general Drakkisath ("..YELLOW.."Cumbre de Roca Negra Inferior"..WHITE..")" -- 5089
 Inst4Quest5_Folgequest = "Ninguno"
 --
-Inst4Quest5name1 = "Marca de Tirania"
+Inst4Quest5name1 = "Marca de Tiranía"
 Inst4Quest5name2 = "Ojo de la bestia"
 Inst4Quest5name3 = "Amplitud de Puño Negro"
 
@@ -1037,7 +1037,7 @@ Inst4Quest6_HORDE_Note = "Es la misión para la armonización con Onyxia. Encuen
 Inst4Quest6_HORDE_Prequest = "La orden del Señor de la Guerra -> La sabiduría de Eitrigg" -- 4903 -> 4941
 Inst4Quest6_HORDE_Folgequest = "Lo que trae el viento" -- 6566
 --
-Inst4Quest6name1_HORDE = "Marca de Tirania"
+Inst4Quest6name1_HORDE = "Marca de Tiranía"
 Inst4Quest6name2_HORDE = "Ojo de la bestia"
 Inst4Quest6name3_HORDE = "Amplitud de Puño Negro"
 
@@ -2432,6 +2432,7 @@ Inst15Quest6_Folgequest = "Ninguno"
 Inst15Quest6name1 = "Yelmo de guardia vengador"
 Inst15Quest6name2 = "Puntilla de fuerza de vida"
 Inst15Quest6name3 = "Aro Ráfaga de gemas"
+Inst15Quest6name4 = "Esencia de Hakkar"
 
 --Quest 7 Alliance
 Inst15Quest7 = "7. Jammal'an el Profeta" -- 1446
@@ -3494,72 +3495,62 @@ Inst20Quest10_Folgequest = "Ninguno"
 Inst20Quest10name1 = "Sello real de Eldre'Thalas"
 
 --Quest 11 Alliance
-Inst20Quest11 = "11. El choque de Escarcha y tú" -- 7505
+Inst20Quest11 = "11. Sombras acechadoras" -- 7502
 Inst20Quest11_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest11_Location = "El choque de Escarcha y tú (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest11_Note = "Solamente para Chamanes: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest11_Location = "Sombras acechadoras (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest11_Note = "Solamente para Brujos: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
 Inst20Quest11_Prequest = "Ninguno"
 Inst20Quest11_Folgequest = "Ninguno"
 --
 Inst20Quest11name1 = "Sello real de Eldre'Thalas"
 
 --Quest 12 Alliance
-Inst20Quest12 = "12. Sombras acechadoras" -- 7502
+Inst20Quest12 = "12. Códice de Defensa" -- 7499
 Inst20Quest12_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest12_Location = "Sombras acechadoras (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest12_Note = "Solamente para Brujos: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest12_Location = "Códice de Defensa (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest12_Note = "Solamente para Guerreros: Devuelves el libro al Tradicionalista Kildrath a la "..YELLOW.."1' Librería"..WHITE.."."
 Inst20Quest12_Prequest = "Ninguno"
 Inst20Quest12_Folgequest = "Ninguno"
 --
 Inst20Quest12name1 = "Sello real de Eldre'Thalas"
 
 --Quest 13 Alliance
-Inst20Quest13 = "13. Códice de Defensa" -- 7499
-Inst20Quest13_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest13_Location = "Códice de Defensa (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest13_Note = "Solamente para Guerreros: Devuelves el libro al Tradicionalista Kildrath a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest13 = "13. El tratado sobre enfoque" -- 7484
+Inst20Quest13_Aim = "Lleva 1 tratado sobre enfoque, 1 diamante negro prístino, 4 fragmentos luminosos grandes y 2 pieles de Sombra al Tradicionalista Lydros a La Masacre para obtener un arcanum de enfoque."
+Inst20Quest13_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
+Inst20Quest13_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. El Piel de Sombra es ligado y puedes conseguirlo de algunos jefes, Ensamblajes resucitados, y Guardahuesos resucitados en "..YELLOW.."Scholomance"..WHITE.."."
 Inst20Quest13_Prequest = "Ninguno"
 Inst20Quest13_Folgequest = "Ninguno"
 --
-Inst20Quest13name1 = "Sello real de Eldre'Thalas"
+Inst20Quest13name1 = "Arcanum de enfoque"
 
 --Quest 14 Alliance
-Inst20Quest14 = "14. El tratado sobre enfoque" -- 7484
-Inst20Quest14_Aim = "Lleva 1 tratado sobre enfoque, 1 diamante negro prístino, 4 fragmentos luminosos grandes y 2 pieles de Sombra al Tradicionalista Lydros a La Masacre para obtener un arcanum de enfoque."
+Inst20Quest14 = "14. El tratado sobre protección" -- 7485
+Inst20Quest14_Aim = "Lleva 1 tratado sobre protección, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 1 costura desgarrada de abominación al Tradicionalista Lydros a La Masacre para obtener un arcanum de protección."
 Inst20Quest14_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest14_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. El Piel de Sombra es ligado y puedes conseguirlo de algunos jefes, Ensamblajes resucitados, y Guardahuesos resucitados en "..YELLOW.."Scholomance"..WHITE.."."
+Inst20Quest14_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. Las Costuras desgarradas de abominación son ligadas y puedes conseguirlas de Ramstein el Empachador, Eructaveneno, Vomitón bílico, y Horror de retazos en "..YELLOW.."Stratholme"..WHITE.."."
 Inst20Quest14_Prequest = "Ninguno"
 Inst20Quest14_Folgequest = "Ninguno"
 --
-Inst20Quest14name1 = "Arcanum de enfoque"
+Inst20Quest14name1 = "Arcanum de protección"
 
 --Quest 15 Alliance
-Inst20Quest15 = "15. El tratado sobre protección" -- 7485
-Inst20Quest15_Aim = "Lleva 1 tratado sobre protección, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 1 costura desgarrada de abominación al Tradicionalista Lydros a La Masacre para obtener un arcanum de protección."
+Inst20Quest15 = "15. El tratado sobre rapidez" -- 7483
+Inst20Quest15_Aim = "Lleva 1 tratado sobre rapidez, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 2 sangres de héroes al Tradicionalista Lydros a La Masacre para obtener un arcanum de rapidez."
 Inst20Quest15_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest15_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. Las Costuras desgarradas de abominación son ligadas y puedes conseguirlas de Ramstein el Empachador, Eructaveneno, Vomitón bílico, y Horror de retazos en "..YELLOW.."Stratholme"..WHITE.."."
+Inst20Quest15_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. La Sangre de héroes se encuentra al piso en localizaciones aleatorias en Las Tierras de la Peste del Oeste y Este."
 Inst20Quest15_Prequest = "Ninguno"
 Inst20Quest15_Folgequest = "Ninguno"
 --
-Inst20Quest15name1 = "Arcanum de protección"
+Inst20Quest15name1 = "Arcanum de rapidez"
 
 --Quest 16 Alliance
-Inst20Quest16 = "16. El tratado sobre rapidez" -- 7483
-Inst20Quest16_Aim = "Lleva 1 tratado sobre rapidez, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 2 sangres de héroes al Tradicionalista Lydros a La Masacre para obtener un arcanum de rapidez."
-Inst20Quest16_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest16_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. La Sangre de héroes se encuentra al piso en localizaciones aleatorias en Las Tierras de la Peste del Oeste y Este."
+Inst20Quest16 = "16. Compendio de Foror" -- 7507
+Inst20Quest16_Aim = "Devuelve el compendio de matar dragones de Foror a El Athenaeum."
+Inst20Quest16_Location = "Compendio de matar dragones de Foror (botín aleatorio de los jefes en "..YELLOW.."La Masacre"..WHITE..")"
+Inst20Quest16_Note = "Solamente para Guerreros y Paladines. Devuélvelo al Tradicionalista Lydros en (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE.."). Te permite empezar la misión para forjar Quel'Serrar después de terminar la misión."
 Inst20Quest16_Prequest = "Ninguno"
-Inst20Quest16_Folgequest = "Ninguno"
---
-Inst20Quest16name1 = "Arcanum de rapidez"
-
---Quest 17 Alliance
-Inst20Quest17 = "17. Compendio de Foror" -- 7507
-Inst20Quest17_Aim = "Devuelve el compendio de matar dragones de Foror a El Athenaeum."
-Inst20Quest17_Location = "Compendio de matar dragones de Foror (botín aleatorio de los jefes en "..YELLOW.."La Masacre"..WHITE..")"
-Inst20Quest17_Note = "Solamente para Guerreros y Paladines. Devuélvelo al Tradicionalista Lydros en (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE.."). Te permite empezar la misión para forjar Quel'Serrar después de terminar la misión."
-Inst20Quest17_Prequest = "Ninguno"
-Inst20Quest17_Folgequest = "Forjar Quel'Serrar" -- 7508
+Inst20Quest16_Folgequest = "Forjar Quel'Serrar" -- 7508
 -- No Rewards for this quest
 
 
@@ -3632,15 +3623,15 @@ Inst20Quest7_HORDE_Folgequest = Inst20Quest7_Folgequest
 --
 Inst20Quest7name1_HORDE = Inst20Quest7name1
 
---Quest 8 Horde  (same as Quest 8 Alliance)   - THIS QUEST TO BE REMOVED
-Inst20Quest8_HORDE = Inst20Quest8
-Inst20Quest8_HORDE_Aim = Inst20Quest8_Aim
-Inst20Quest8_HORDE_Location = Inst20Quest8_Location
-Inst20Quest8_HORDE_Note = Inst20Quest8_Note
-Inst20Quest8_HORDE_Prequest = Inst20Quest8_Prequest
-Inst20Quest8_HORDE_Folgequest = Inst20Quest8_Folgequest
+--Quest 8 Horde
+Inst20Quest8_HORDE = "8. El choque de Escarcha y tú" -- 7505
+Inst20Quest8_HORDE_Aim = "Devuelve el libro a sus legítimos dueños. "
+Inst20Quest8_HORDE_Location = "El choque de Escarcha y tú (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest8_HORDE_Note = "Solamente para Chamanes: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest8_HORDE_Prequest = "Ninguno"
+Inst20Quest8_HORDE_Folgequest = "Ninguno"
 --
-Inst20Quest8name1_HORDE = Inst20Quest8name1
+Inst20Quest11name1 = "Sello real de Eldre'Thalas"
 
 --Quest 9 Horde  (same as Quest 9 Alliance)
 Inst20Quest9_HORDE = Inst20Quest9
@@ -3721,16 +3712,6 @@ Inst20Quest16_HORDE_Prequest = Inst20Quest16_Prequest
 Inst20Quest16_HORDE_Folgequest = Inst20Quest16_Folgequest
 --
 Inst20Quest16name1_HORDE = Inst20Quest16name1
-
---Quest 17 Horde  (same as Quest 17 Alliance)   - THIS QUEST TO BE REMOVED
-Inst20Quest17_HORDE = Inst20Quest17
-Inst20Quest17_HORDE_Aim = Inst20Quest17_Aim
-Inst20Quest17_HORDE_Location = Inst20Quest17_Location
-Inst20Quest17_HORDE_Note = Inst20Quest17_Note
-Inst20Quest17_HORDE_Prequest = Inst20Quest17_Prequest
-Inst20Quest17_HORDE_Folgequest = Inst20Quest17_Folgequest
--- No Rewards for this quest
-
 
 
 --------------- INST21 - Maraudon ---------------
@@ -3903,7 +3884,7 @@ Inst21Quest7_HORDE_Folgequest = "La semilla de vida" -- 7066
 --
 Inst21Quest7name1_HORDE = "Zumbaespada"
 Inst21Quest7name2_HORDE = "Vara de resurgimiento"
-Inst21Quest7name3_HORDE = "Objetivo del Guardaverde"
+Inst21Quest7name3_HORDE = "Objetivo del vigilante verdeante"
 
 --Quest 8 Horde (same as Quest 8 Alliance)
 Inst21Quest8_HORDE = Inst21Quest8
@@ -4006,13 +3987,13 @@ Inst23Quest2name1 = "Anillo garra de dragón"
 --Quest 3 Alliance
 Inst23Quest3 = "3. Trae la Luz" -- 3636
 Inst23Quest3_Aim = "El arzobispo Benedictus quiere que mates a Amnennar el Gélido en Zahúrda Rajacieno."
-Inst23Quest3_Location = "Arzobispo Bendictus (Ventormenta - Catedral de la Luz; "..YELLOW.."39,27"..WHITE..")"
+Inst23Quest3_Location = "Arzobispo Benedictus (Ventormenta - Catedral de la Luz; "..YELLOW.."39,27"..WHITE..")"
 Inst23Quest3_Note = "Amnennar el Gélido es el último jefe en la Zahúrda Rajacieno. Lo encuentras en "..YELLOW.."[6]"..WHITE.."."
 Inst23Quest3_Prequest = "Ninguno"
 Inst23Quest3_Folgequest = "Ninguno"
 --
 Inst23Quest3name1 = "Espada del vencedor"
-Inst23Quest3name2 = "Dije del Resplandor Ámbar"
+Inst23Quest3name2 = "Dije Resplandor de Ámbar"
 
 
 --Quest 1 Horde (same as Quest 1 Alliance)
@@ -4115,7 +4096,7 @@ Inst24Quest4name4 = "Rodela de mármol"
 Inst24Quest5 = "5. Armadura de malla endurecida con fuego" -- 1701
 Inst24Quest5_Aim = "Reúne los materiales que necesita Furen Barbalarga y llévaselos a Ventormenta."
 Inst24Quest5_Location = "Furen Barbalarga (Ventormenta - Distrito de los Enanos; "..YELLOW.."57,16"..WHITE..")"
-Inst24Quest5_Note = "Solamente para Guerreros: Consigues el Vial de flogisto de Roogug en "..YELLOW.."[1]"..WHITE..".\n\nLa misión siguiente es diferente para cada raza. Sangre ardiente para Humanos, Coral férreo para Enanos y Gnomos, y Cáscaras asoladas para Elfos de la Noche." -- 1705, 1710, 1708
+Inst24Quest5_Note = "Solamente para Guerreros: Consigues el Vial de flogisto de Roogug en "..YELLOW.."[1]"..WHITE..".\n\nDespués de completar la misión, se abrirá 3 nuevas misiones: Sangre ardiente en Ventormenta, Coral férreo en Forjaz, y Cáscaras asoladas en Darnassus." -- 1705, 1710, 1708
 Inst24Quest5_Prequest = "El forjador de escudos" -- 1702
 Inst24Quest5_Folgequest = "(Ve la Nota)"
 -- No Rewards for this quest
@@ -4165,7 +4146,7 @@ Inst24Quest4_HORDE_Prequest = "Ninguno"
 Inst24Quest4_HORDE_Folgequest = "Ninguno"
 --
 Inst24Quest4name1_HORDE = "Protectores de Berilo"
-Inst24Quest4name2_HORDE = "Faja Puñopiedra"
+Inst24Quest4name2_HORDE = "Faja Puño de piedra"
 Inst24Quest4name3_HORDE = "Rodela de mármol"
 
 --Quest 5 Horde

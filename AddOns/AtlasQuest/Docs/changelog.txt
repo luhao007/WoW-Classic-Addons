@@ -2,6 +2,16 @@
 Changelog
 =========
 
+Version 4.11.59  (for WoW Classic)  December 31, 2019
+
+- TOC updated to 11303.
+- Updates to Spanish localization by Woopy.
+- Updates to German localization by Guldukat.
+- "The God Hakkar" Horde quest reward was missing.  Reported by Woopy.
+
+
+
+
 Version 4.11.58  (for WoW Classic)  December 10, 2019
 
 - Russian localization updated by GoodDeath.

@@ -39,7 +39,7 @@ local function setter(setting, value)
 	if (setting == "MinimapButtonVisible") then
 		FishingBuddy_Player["MinimapData"].hide = (not value);
 	else
-		FishingBuddy.BaseSetSetting(setting, value);
+		FishingBuddy.OptionSetSetting(setting, value);
 	end
 end
 
@@ -51,7 +51,7 @@ local function getter(setting)
 			return false;
 		end
 	else
-		return FishingBuddy.BaseGetSetting(setting);
+		return FishingBuddy.OptionGetSetting(setting);
 	end
 end
 

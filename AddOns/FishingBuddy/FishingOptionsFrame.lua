@@ -18,22 +18,43 @@ local function FindOptionInfo (setting)
     -- return nil;
 end
 
-local function GetDefault(setting)
-    local info = FindOptionInfo(setting);
-    if ( info and info.options ) then
-        local opt = info.options[setting];
-        if ( opt ) then
-            if ( opt.check and opt.checkfail ) then
-                if ( not opt.check() ) then
-                    return opt.checkfail;
-                end
-            end
-            return opt.default;
+local function GetSettingOption(setting)
+    if ( setting ) then
+        local info = FindOptionInfo(setting);
+        if info and info.options then
+            return info.options[setting];
         end
     end
     -- return nil;
 end
+FishingBuddy.GetSettingOption = GetSettingOption;
+
+local function GetDefault(setting)
+    local opt = GetSettingOption(setting);
+    if ( opt ) then
+        if ( opt.check and opt.checkfail ) then
+            if ( not opt.check() ) then
+                return opt.checkfail;
+            end
+        end
+        return opt.default;
+    end
+    -- return nil;
+end
 FishingBuddy.GetDefault = GetDefault;
+
+local function OptionGetSetting(setting)
+    info = GetSettingOption(setting)
+    if info then
+        if ( info.global ) then
+            val = FishingBuddy.GlobalGetSetting(setting);
+        else
+            val = FishingBuddy.BaseGetSetting(setting);
+        end
+    end
+    return val
+end
+FishingBuddy.OptionGetSetting = OptionGetSetting
 
 local function GetSetting(setting)
     local val = nil;
@@ -45,10 +66,8 @@ local function GetSetting(setting)
                 if ( val == nil ) then
                     val = GetDefault(setting);
                 end
-            elseif ( info.global ) then
-                val = FishingBuddy.GlobalGetSetting(setting);
             else
-                val = FishingBuddy.BaseGetSetting(setting);
+                val = OptionGetSetting(setting)
             end
         end
     end
@@ -62,6 +81,18 @@ local function GetSettingBool(setting)
 end
 FishingBuddy.GetSettingBool = GetSettingBool;
 
+local function OptionSetSetting(setting, value)
+    info = GetSettingOption(setting)
+    if info then
+        if ( info.global ) then
+            FishingBuddy.GlobalSetSetting(setting, value);
+        else
+            FishingBuddy.BaseSetSetting(setting, value);
+        end
+    end
+end
+FishingBuddy.OptionSetSetting = OptionSetSetting
+
 local function SetSetting(setting, value)
     if ( setting ) then
         local info = FindOptionInfo(setting);
@@ -73,26 +104,13 @@ local function SetSetting(setting, value)
                 else
                     info.setter(setting, value);
                 end
-            elseif ( info.global ) then
-                FishingBuddy.GlobalSetSetting(setting, value);
             else
-                FishingBuddy.BaseSetSetting(setting, value);
+                OptionSetSetting(setting, value)
             end
         end
     end
 end
 FishingBuddy.SetSetting = SetSetting;
-
-local function GetSettingOption(setting)
-    if ( setting ) then
-        local info = FindOptionInfo(setting);
-        if info then
-            return info.options[setting];
-        end
-    end
-    -- return nil;
-end
-FishingBuddy.GetSettingOption = GetSettingOption;
 
 local function ActiveSetting(setting)
     local info = GetSettingOption(setting);

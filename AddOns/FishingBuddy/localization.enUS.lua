@@ -111,6 +111,10 @@ FishingTranslations["enUS"] = {
     CONFIG_TRADESKILL_ONOFF       = "Setup Skills",
     CONFIG_TRADESKILL_INFO        = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",
 
+    -- Hack for classic
+    CONFIG_TOWNSFOLK_ONOFF       = "Fix TownsfolkTracker",
+    CONFIG_TOWNSFOLK_INFO        = "Fix the TownsfolkTracker error on startup.",
+
     CONFIG_SHOWNEWFISHIES_ONOFF	 = "Show new fish",
     CONFIG_SHOWNEWFISHIES_INFO	 = "Display a message in the chat area when a new fish for the current location is caught.",
     CONFIG_FISHWATCH_ONOFF		 = "Fish watcher",

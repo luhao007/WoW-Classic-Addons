@@ -422,6 +422,16 @@ FishingInit.ConvertToMapId = function()
 	FishingBuddy_Info['ZoneIndex'] = nil
 end
 
+FishingInit.GSB = function(val)
+	return val ~= nil and (val == true or val == 1);
+end
+
+FishingInit.GlobalGSB = function(setting)
+	if FishingBuddy_Info and FishingBuddy_Info["Settings"] then
+		return FishingInit.GSB(FishingBuddy_Info["Settings"][setting])
+	end
+end
+
 FishingInit.UpdateFishingDB = function()
 	local version = FishingBuddy_Info["Version"];
 	if ( not version ) then
@@ -554,6 +564,23 @@ FishingInit.UpdateFishingDB = function()
         FishingBuddy_Player["Settings"]["UseRaft"] = FishingBuddy_Player["Settings"]["UseAnglersRaft"] or  FishingBuddy_Player["Settings"]["UseBobbingBerg"];
         FishingBuddy_Player["Settings"]["UseAnglersRaft"] = nil;
     end
+
+	-- Check for TownsfolkTracker
+	if TownsfolkTracker and FishingInit.GlobalGSB("TownsfolkTracker") then
+		TownsfolkTracker.OldCreateIcons = TownsfolkTracker.CreateIcons;
+		function TownsfolkTracker:CreateIcons()
+			if self.icons_created then
+				return
+			end
+			TownsfolkTracker:OldCreateIcons()
+			self.icons_created = True
+		end
+		TownsfolkTracker.OldDrawDungeonMinimapIcons = TownsfolkTracker.DrawDungeonMinimapIcons;
+		function TownsfolkTracker:DrawDungeonMinimapIcons(mapId)
+			self:CreateIcons()
+			self:OldDrawDungeonMinimapIcons(mapId)
+		end
+	end
 
 	-- save this for other pieces that might need to update
 	lastVersion = version;

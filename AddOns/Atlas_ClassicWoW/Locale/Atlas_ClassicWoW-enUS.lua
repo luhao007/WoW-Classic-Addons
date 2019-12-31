@@ -1,4 +1,4 @@
-﻿-- $Id: Atlas_ClassicWoW-enUS.lua 46 2019-12-30 14:31:30Z arith $
+﻿-- $Id: Atlas_ClassicWoW-enUS.lua 51 2019-12-31 12:56:10Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -182,6 +182,12 @@ if L then
 
 	L["Elder Splitrock"] = "Elder Splitrock";
 	L["Celebras the Redeemed"] = "Celebras the Redeemed";
+
+	--OnyxiasLair
+	L["Drakefire Amulet"] = "Drakefire Amulet"
+	L["Onyxian Warders"] = "Onyxian Warders"
+	L["Whelp Eggs"] = "Whelp Eggs"
+	L["Onyxia"] = "Onyxia"
 
 	--Ragefire Chasm
 	L["Taragaman the Hungerer"] = "Taragaman the Hungerer";
@@ -405,7 +411,7 @@ if L then
 	L["Sulfuron Harbinger"] = "Sulfuron Harbinger"
 	L["Majordomo Executus"] = "Majordomo Executus"
 	L["Ragnaros"] = "Ragnaros"
-
+	
 	--Scholomance
 	L["Kirtonos the Herald"] = "Kirtonos the Herald"
 	L["Jandice Barov"] = "Jandice Barov"
@@ -480,6 +486,9 @@ if L then
 	L["Shade of Eranikus"] = "Shade of Eranikus"
 	L["Lord Itharius"] = "Lord Itharius";
 	L["Elder Starsong"] = "Elder Starsong";
+	L["Jade"] = "Jade";
+	L["Kazkaz the Unholy"] = "Kazkaz the Unholy";
+	L["Zekkis"] = "Zekkis";
 	
 	-- Scarlet Monastery
 	L["Interrogator Vishas"] = "Interrogator Vishas";
@@ -520,7 +529,7 @@ if L then
 	L["The Discs of Norgannon"] = "The Discs of Norgannon";
 	
 	-- Classic
-		L["Lothos Riftwaker"] = "Lothos Riftwaker"
+	L["Lothos Riftwaker"] = "Lothos Riftwaker"
 	L["Elder Morndeep"] = "Elder Morndeep"
 	L["The Vault"] = "The Vault"
 	L["Watchman Doomgrip"] = "Watchman Doomgrip"

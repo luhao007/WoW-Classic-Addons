@@ -103,7 +103,7 @@ Inst1Quest1_Note = "Franclorn está al centro de la Montaña Roca Negra encima d
 Inst1Quest1_Prequest = "El legado de los Hierro Negro" -- 3801
 Inst1Quest1_Folgequest = "Ninguno"
 --
-Inst1Quest1name1 = "Llave de Forjatiniebla"
+Inst1Quest1name1 = "Llave Sombratiniebla"
 
 --Quest 2 Alliance
 Inst1Quest2 = "2. Ribbly Llavenrosca" -- 4136
@@ -113,7 +113,7 @@ Inst1Quest2_Note = "Obtienes la misión previa de Yorba Llavenrosca (Tanaris - P
 Inst1Quest2_Prequest = "Yuka Llavenrosca" -- 4324
 Inst1Quest2_Folgequest = "Ninguno"
 --
-Inst1Quest2name1 = "Botas de rencor"
+Inst1Quest2name1 = "Botas rencor"
 Inst1Quest2name2 = "Bufas de penitencia"
 Inst1Quest2name3 = "Armadura de acero seccionador"
 
@@ -179,7 +179,7 @@ Inst1Quest8_Note = "Despoja a cualquier enano para obtener las riñoneras."
 Inst1Quest8_Prequest = "Ninguno"
 Inst1Quest8_Folgequest = "Ninguno"
 --
-Inst1Quest8name1 = "Una riñonera deslucida"
+Inst1Quest8name1 = "Una riñonera sucia"
 
 --Quest 9 Alliance
 Inst1Quest9 = "9. Un sabor a llamarada" -- 4024
@@ -189,7 +189,7 @@ Inst1Quest9_Note = "La cadena de misiones empieza con Kalaran Espada del Viento 
 Inst1Quest9_Prequest = "La llama pura -> Un sabor a llamarada" -- 3442 -> 4022
 Inst1Quest9_Folgequest = "Ninguno"
 --
-Inst1Quest9name1 = "Manteo Piel de esquisto"
+Inst1Quest9name1 = "Manteo de esquisto"
 Inst1Quest9name2 = "Bufas de pellejo de vermis"
 Inst1Quest9name3 = "Fajín valconiano"
 
@@ -287,7 +287,7 @@ Inst1Quest19_Note = "Esta misión es una parte de la cadena para la armonizació
 Inst1Quest19_Prequest = "Una brizna de esperanza" -- 4282
 Inst1Quest19_Folgequest = "Tienes una cita en Ventormenta" -- 6204
 --
-Inst1Quest19name1 = "Resguardo contra los Elementos"
+Inst1Quest19name1 = "Amuleto de los Elementos"
 Inst1Quest19name2 = "Hoja de Juicio"
 Inst1Quest19name3 = "Hoja apta para la lucha"
 
@@ -333,10 +333,10 @@ Inst1Quest4_HORDE_Note = "Obtienes la misión previa de la Boticaria Zinge en En
 Inst1Quest4_HORDE_Prequest = "Vivian Lagrave" -- 4133
 Inst1Quest4_HORDE_Folgequest = "Ninguno"
 --
-Inst1Quest4name1_HORDE = "Poción de sanación excelente"
+Inst1Quest4name1_HORDE = "Poción de curación excelente"
 Inst1Quest4name2_HORDE = "Poción de maná superior"
-Inst1Quest4name3_HORDE = "Cayada Golpepresto"
-Inst1Quest4name4_HORDE = "Cuchilla de extremidad"
+Inst1Quest4name3_HORDE = "Cayada Golpeveloz"
+Inst1Quest4name4_HORDE = "Cuchilla de miembro"
 
 --Quest 5 Horde  (same as Quest 7 Alliance)
 Inst1Quest5_HORDE = "5. El corazón de la montaña"
@@ -383,7 +383,7 @@ Inst1Quest9_HORDE_Note = "Obtienes la misión previa de Hierofante Theodora Mulv
 Inst1Quest9_HORDE_Prequest = "La revuelta de las máquinas" -- 4062
 Inst1Quest9_HORDE_Folgequest = "Ninguno"
 --
-Inst1Quest9name1_HORDE = "Amito de luna azur"
+Inst1Quest9name1_HORDE = "Hombre de luna azur"
 Inst1Quest9name2_HORDE = "Mantón de lanzalluvias"
 Inst1Quest9name3_HORDE = "Armadura de escamas de basalto"
 Inst1Quest9name4_HORDE = "Guanteles de placas de lava"
@@ -420,7 +420,7 @@ Inst1Quest12_HORDE_Folgequest = "Ninguno"
 Inst1Quest12name1_HORDE = "Manteo nacido del Sol"
 Inst1Quest12name2_HORDE = "Guantes Ocaso"
 Inst1Quest12name3_HORDE = "Brazales de demonio de cripta"
-Inst1Quest12name4_HORDE = "Agarre de adepto"
+Inst1Quest12name4_HORDE = "Garra Stalwart"
 
 --Quest 13 Horde
 Inst1Quest13_HORDE = "13. El último elemento" -- 7201
@@ -430,7 +430,7 @@ Inst1Quest13_HORDE_Note = "Obtienes la misión previa de Corazón Atronador (Tie
 Inst1Quest13_HORDE_Prequest = "Ninguno"
 Inst1Quest13_HORDE_Folgequest = "Ninguno"
 --
-Inst1Quest13name1_HORDE = "Sello de Lagrave"
+Inst1Quest13name1_HORDE = "Lacre de Lagrave"
 
 --Quest 14 Horde
 Inst1Quest14_HORDE = "14. Comandante Gor'shak" -- 3981
@@ -507,9 +507,9 @@ Inst2Quest2_Note = "Alto señor Bolvar Fordragón está en Ventormenta - Castill
 Inst2Quest2_Prequest = "Ninguno"
 Inst2Quest2_Folgequest = "Señor de Roca Negra" -- 7782
 --
-Inst2Quest2name1 = "Medallón de maestro matadragones"
-Inst2Quest2name2 = "Orbe de maestro matadragones"
-Inst2Quest2name3 = "Anillo de maestro matadragones"
+Inst2Quest2name1 = "Medallón de cazador de dragones"
+Inst2Quest2name2 = "Orbe de cazador de dragones"
+Inst2Quest2name3 = "Anillo de cazador de dragones"
 
 --Quest 3 Alliance
 Inst2Quest3 = "3. Solo uno puede alzarse" -- 8288
@@ -580,7 +580,7 @@ Inst3Quest2_Note = "Encuentras el cachorro de huargo en "..YELLOW.."[16]"..WHITE
 Inst3Quest2_Prequest = "Ninguno"
 Inst3Quest2_Folgequest = "Ninguno"
 --
-Inst3Quest2name1 = "Transportador de huargos"
+Inst3Quest2name1 = "Lupo porteador"
 
 --Quest 3 Alliance
 Inst3Quest3 = "3. Bestia amaestrada" -- 4862
@@ -590,7 +590,7 @@ Inst3Quest3_Note = "Encuentras los huevos de araña cerca de "..YELLOW.."[11]"..
 Inst3Quest3_Prequest = "Ninguno"
 Inst3Quest3_Folgequest = "Ninguno"
 --
-Inst3Quest3name1 = "Jaula de Telebrasada"
+Inst3Quest3name1 = "Portador de Telebrasada"
 
 --Quest 4 Alliance
 Inst3Quest4 = "4. La leche de la madre" -- 4866
@@ -644,7 +644,7 @@ Inst3Quest8_Folgequest = "Ninguno"
 Inst3Quest8name1 = "Grilletes Vermiothalak"
 Inst3Quest8name2 = "Limitador de circunferencia de Omokk"
 Inst3Quest8name3 = "Bozal de Halycon"
-Inst3Quest8name4 = "Ceñidor de Vosh'gajin"
+Inst3Quest8name4 = "Playa de Vosh'gajin"
 Inst3Quest8name5 = "Mandiletes de maña de Voone"
 
 --Quest 9 Alliance
@@ -691,7 +691,7 @@ Inst3Quest13_Note = "Misión para Herreros. Cazadora de las Sombras Vosh'gajin e
 Inst3Quest13_Prequest = "Ninguno"
 Inst3Quest13_Folgequest = "Ninguno"
 --
-Inst3Quest13name1 = "Diseño: Filo del Alba"
+Inst3Quest13name1 = "Diseño: filo del Alba"
 
 --Quest 14 Alliance
 Inst3Quest14 = "14. Muerte abrasadora" -- 5103
@@ -904,7 +904,7 @@ Inst4Quest5_Note = "Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.
 Inst4Quest5_Prequest = "Orden del general Drakkisath ("..YELLOW.."Cumbre de Roca Negra Inferior"..WHITE..")" -- 5089
 Inst4Quest5_Folgequest = "Ninguno"
 --
-Inst4Quest5name1 = "Marca de Tirania"
+Inst4Quest5name1 = "Marca de Tiranía"
 Inst4Quest5name2 = "Ojo de la bestia"
 Inst4Quest5name3 = "Amplitud de Puño Negro"
 
@@ -916,8 +916,8 @@ Inst4Quest6_Note = "Obtienes la misión previa de Conde Remington Bonacresta (Ve
 Inst4Quest6_Prequest = "Mayara Alasol" -- 4766
 Inst4Quest6_Folgequest = "Entrega a Bonacresta" -- 4765
 --
-Inst4Quest6name1 = "Botines Piepresto"
-Inst4Quest6name2 = "Guardabrazos golpeguiño"
+Inst4Quest6name1 = "Botines Pieveloz"
+Inst4Quest6name2 = "Guardabrazos Golpeguiño"
 
 --Quest 7 Alliance
 Inst4Quest7 = "7. Orden de Puño Negro" -- 7761
@@ -949,16 +949,16 @@ Inst4Quest9name1 = "Blandón de Invocación"
 Inst4Quest9name2 = "Blandón de Invocación: manual"
 
 --Quest 10 Alliance
-Inst4Quest10 = "11. La forja demoníaca" -- 5127
+Inst4Quest10 = "10. La forja demoníaca" -- 5127
 Inst4Quest10_Aim = "Viaja a la Cumbre de Roca Negra y encuentra a Goraluk Yunquegrieta. Mátale y utiliza el Pica manchada de sangre sobre su cadáver. Cuando hayas absorbido su alma, la pica estará manchada de alma."
 Inst4Quest10_Location = "Lorax (Cuna del Invierno; "..YELLOW.."64,74"..WHITE..")"
 Inst4Quest10_Note = "Misión para Herreros. Goraluk Yunquegrieta está en "..YELLOW.."[4]"..WHITE.."."
 Inst4Quest10_Prequest = "Ninguno"
 Inst4Quest10_Folgequest = "Ninguno"
 --
-Inst4Quest10name1 = "Diseño: coraza de demonio forjada"
-Inst4Quest10name2 = "Elixir de matanza de demonios"
-Inst4Quest10name3 = "Saco besado por demonio"
+Inst4Quest10name1 = "Diseño: peto de demonio forjado"
+Inst4Quest10name2 = "Saco besado por demonio"
+Inst4Quest10name3 = "Elixir de matanza de demonios"
 
 
 --Quest 11 Alliance
@@ -971,7 +971,7 @@ Inst4Quest11_Folgequest = "Leonid Barthalomew -> Gambito del Alba ("..YELLOW.."S
 -- No Rewards for this quest
 
 --Quest 12 Alliance
-Inst4Quest12 = "7. Amuleto Pirodraco" -- 6502
+Inst4Quest12 = "12. Amuleto Pirodraco" -- 6502
 Inst4Quest12_Aim = "Tienes que recuperar la sangre de dragón Negro Campeón, la tiene el general Drakkisath. Puedes encontrar a Drakkisath en su sala del trono, tras las Salas de la Ascensión, en la Cumbre de Roca Negra."
 Inst4Quest12_Location = "Haleh (Cuna del Invierno; "..YELLOW.."54,51"..WHITE..")"
 Inst4Quest12_Note = "Es la parte final para la cadena de misiones para la armonización con Onyxia por la Alianza. Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.."."
@@ -1037,7 +1037,7 @@ Inst4Quest6_HORDE_Note = "Es la misión para la armonización con Onyxia. Encuen
 Inst4Quest6_HORDE_Prequest = "La orden del Señor de la Guerra -> La sabiduría de Eitrigg" -- 4903 -> 4941
 Inst4Quest6_HORDE_Folgequest = "Lo que trae el viento" -- 6566
 --
-Inst4Quest6name1_HORDE = "Marca de Tirania"
+Inst4Quest6name1_HORDE = "Marca de Tiranía"
 Inst4Quest6name2_HORDE = "Ojo de la bestia"
 Inst4Quest6name3_HORDE = "Amplitud de Puño Negro"
 
@@ -1129,7 +1129,7 @@ Inst5Quest1_Folgequest = "Ninguno"
 --
 Inst5Quest1name1 = "Hoja corta sólida"
 Inst5Quest1name2 = "Daga para tallar"
-Inst5Quest1name3 = "Hacha penetrante"
+Inst5Quest1name3 = "Hacha atravesadora"
 
 --Quest 2 Alliance
 Inst5Quest2 = "2. Recolección de recuerdos" -- 168
@@ -1171,8 +1171,8 @@ Inst5Quest5_Note = "Empieza la cadena de misiones a Gryan Mantorrecio (Páramos 
 Inst5Quest5_Prequest = "La hermandad de los Defias" -- 155
 Inst5Quest5_Folgequest = "Ninguno"
 --
-Inst5Quest5name1 = "Botarga de los Páramos de Poniente"
-Inst5Quest5name2 = "Guerrera de los Páramos de Poniente"
+Inst5Quest5name1 = "Albarca de los Páramos de Poniente"
+Inst5Quest5name2 = "Túnica de los Páramos de Poniente"
 Inst5Quest5name3 = "Bastón de los Páramos de Poniente"
 
 --Quest 6 Alliance
@@ -1403,7 +1403,7 @@ Inst7Quest2_Prequest = "Santo y seña" -- 1950
 Inst7Quest2_Folgequest = "Varitas de mago" -- 1952
 --
 Inst7Quest2name1 = "Varita Furia de Hielo"
-Inst7Quest2name2 = "Varita de fuerza abisal"
+Inst7Quest2name2 = "Varita de potencia abisal"
 Inst7Quest2name3 = "Varita Ira Ardiente"
 
 
@@ -1416,7 +1416,7 @@ Inst7Quest3_Prequest = "Hermano Anton -> El sendero Escarlata" -- 6141 -> 1052
 Inst7Quest3_Folgequest = "Ninguno"
 --
 Inst7Quest3name1 = "Espada de Serenidad"
-Inst7Quest3name2 = "Masticahuesos"
+Inst7Quest3name2 = "Mascahuesos"
 Inst7Quest3name3 = "Amenaza negra"
 Inst7Quest3name4 = "Orbe de Lorica"
 
@@ -1643,22 +1643,22 @@ Inst11Quest5_Aim = "Vuelve a Scholomance con la sangre inocente. Busca el Porche
 Inst11Quest5_Location = "Eva Sarkhoff (Tierras de la Peste del Oeste - Castel Darrow; "..YELLOW.."70,73"..WHITE..")"
 Inst11Quest5_Note = "El Porche está en "..YELLOW.."[2]"..WHITE.."."
 Inst11Quest5_Prequest = "Bolsa de los horrores de Krastinov" -- 5515
-Inst11Quest5_Folgequest = "El humano, Ras Murmuhielo" -- 5461
+Inst11Quest5_Folgequest = "El humano, Ras Levescarcha" -- 5461
 --
 Inst11Quest5name1 = "Esencia espectral"
 Inst11Quest5name2 = "Rosa de Penelope"
 Inst11Quest5name3 = "Canción de Mirah"
 
 --Quest 6 Alliance
-Inst11Quest6 = "6. El exánime, Ras Murmuhielo" -- 5466
-Inst11Quest6_Aim = "Busca a Ras Murmuhielo en Scholomance. Cuando lo hayas encontrado utiliza el Libro de Memorias del Alma sobre su rostro no-muerto. Si consiguieras convertirlo en mortal, derrótale y recupera la Cabeza humana de Ras Murmuhielo. Lleva la cabeza al magistrado Marduke."
+Inst11Quest6 = "6. El exánime, Ras Levescarcha" -- 5466
+Inst11Quest6_Aim = "Busca a Ras Levescarcha en Scholomance. Cuando lo hayas encontrado utiliza el Libro de Memorias del Alma sobre su rostro no-muerto. Si consiguieras convertirlo en mortal, derrótale y recupera la Cabeza humana de Ras Murmuhielo. Lleva la cabeza al magistrado Marduke."
 Inst11Quest6_Location = "Magistrado Marduke (Tierras de la Peste del Oeste - Castel Darrow; "..YELLOW.."70,73"..WHITE..")"
-Inst11Quest6_Note = "Encuentras a Ras Murmuhielo en "..YELLOW.."[7]"..WHITE.."."
-Inst11Quest6_Prequest = "El humano, Ras Murmuhielo - > El Libro de Memorias del Alma" -- 5461 -> 5465
+Inst11Quest6_Note = "Encuentras a Ras Levescarcha en "..YELLOW.."[7]"..WHITE.."."
+Inst11Quest6_Prequest = "El humano, Ras Levescarcha - > El Libro de Memorias del Alma" -- 5461 -> 5465
 Inst11Quest6_Folgequest = "Ninguno"
 --
 Inst11Quest6name1 = "Guarda fuerte de Villa Darrow"
-Inst11Quest6name2 = "Hoja de guerra de Castel Darrow"
+Inst11Quest6name2 = "Espada de guerra de Castel Darrow"
 Inst11Quest6name3 = "Corona de Castel Darrow"
 Inst11Quest6name4 = "Pico Darrow"
 
@@ -1681,7 +1681,7 @@ Inst11Quest8_Prequest = "Esencia de cría - > Betina Bigglezink" -- 4726 -> 5531
 Inst11Quest8_Folgequest = "Ninguno"
 --
 Inst11Quest8name1 = "Segadora de viento"
-Inst11Quest8name2 = "Esquirla danzante"
+Inst11Quest8name2 = "Plata de danza"
 
 --Quest 9 Alliance
 Inst11Quest9 = "9. Entrega de diablillo" -- 7629
@@ -1890,7 +1890,7 @@ Inst12Quest2_HORDE_Note = "Encuentras el libro en "..YELLOW.."[11]"..WHITE.." en
 Inst12Quest2_HORDE_Prequest = "Ninguno"
 Inst12Quest2_HORDE_Folgequest = "Ninguno"
 --
-Inst12Quest2name1_HORDE = "Botas grisáceas"
+Inst12Quest2name1_HORDE = "Botas pardas"
 Inst12Quest2name2_HORDE = "Brazales con cierre de acero"
 
 --Quest 3 Horde
@@ -1901,7 +1901,7 @@ Inst12Quest3_HORDE_Note = "Encuentras al Archimago Arugal en "..YELLOW.."[13]"..
 Inst12Quest3_HORDE_Prequest = "Ninguno"
 Inst12Quest3_HORDE_Folgequest = "Ninguno"
 --
-Inst12Quest3name1_HORDE = "Sello de Sylvanas"
+Inst12Quest3name1_HORDE = "Lacre de Sylvanas"
 
 --Quest 4 Horde  (same as Quest 2 Alliance)
 Inst12Quest4_HORDE = "4. El orbe de Soran'ruk"
@@ -1930,7 +1930,7 @@ Inst13Quest1_Note = "Encuentras a Targorr en "..YELLOW.."[1]"..WHITE.."."
 Inst13Quest1_Prequest = "Ninguno"
 Inst13Quest1_Folgequest = "Ninguno"
 --
-Inst13Quest1name1 = "Tizona Lucine"
+Inst13Quest1name1 = "Espada larga Lucine"
 Inst13Quest1name2 = "Bastón de raíz endurecido"
 
 --Quest 2 Alliance
@@ -1970,8 +1970,8 @@ Inst13Quest5_Note = "Obtienes la misión previa de Motley también. Encuentras a
 Inst13Quest5_Prequest = "La guerra contra los Hierro Negro" -- 303
 Inst13Quest5_Folgequest = "Ninguno"
 --
-Inst13Quest5name1 = "Cinturón de Vindicación"
-Inst13Quest5name2 = "Azotacabezas"
+Inst13Quest5name1 = "Cinturón de Confirmación"
+Inst13Quest5name2 = "Azota cabezas"
 
 --Quest 6 Alliance
 Inst13Quest6 = "6. El motín de Las Mazmorras" -- 391
@@ -2007,7 +2007,7 @@ Inst14Quest2_Note = "La información sobre la Plaga está en los 3 zigurats que 
 Inst14Quest2_Prequest = "La carne no miente" -- 5212
 Inst14Quest2_Folgequest = "Ninguno"
 --
-Inst14Quest2name1 = "Sello del Alba"
+Inst14Quest2name1 = "Lacre del Alba"
 Inst14Quest2name2 = "Runa del Alba"
 
 --Quest 3 Alliance
@@ -2018,7 +2018,7 @@ Inst14Quest3_Note = "Encuentras el Agua bendita en las cajas en Stratholme. Es p
 Inst14Quest3_Prequest = "Ninguno"
 Inst14Quest3_Folgequest = "Ninguno"
 --
-Inst14Quest3name1 = "Poción de sanación excelente"
+Inst14Quest3name1 = "Poción de curación excelente"
 Inst14Quest3name2 = "Poción de maná superior"
 Inst14Quest3name3 = "Corona del Penitente"
 Inst14Quest3name4 = "Sortija del Penitente"
@@ -2150,7 +2150,7 @@ Inst14Quest16_Note = "Solamente para Herreros: Invoca al Armero Guardia Negra ce
 Inst14Quest16_Prequest = "Ninguno"
 Inst14Quest16_Folgequest = "Ninguno"
 --
-Inst14Quest16name1 = "Diseño: Estoque llameante"
+Inst14Quest16name1 = "Diseño: estoque llameante"
 
 --Quest 17 Alliance
 Inst14Quest17 = "17. Dulce serenidad" -- 5305
@@ -2353,7 +2353,7 @@ Inst14Quest18_HORDE_Note = "Obtienes la misión previa de Nathanos Clamañublo t
 Inst14Quest18_HORDE_Prequest = "La orden del Señor forestal -> Alaocaso, cómo te odio..." -- 6133 -> 6135
 Inst14Quest18_HORDE_Folgequest = "Ninguno"
 --
-Inst14Quest18name1_HORDE = "Sello real de Alexis"
+Inst14Quest18name1_HORDE = "Lacre real de Alexis"
 Inst14Quest18name2_HORDE = "Círculo elemental"
 
 --Quest 19 Horde  (same as Quest 18 Alliance)
@@ -2382,7 +2382,7 @@ Inst15Quest1_Note = "Obtienes la misión previa del mismo PNJ.\n\nEncuentras las
 Inst15Quest1_Prequest = "En búsqueda del templo -> El relato de Rapsodio" -- 1448 -> 1469
 Inst15Quest1_Folgequest = "Ninguno"
 --
-Inst15Quest1name1 = "Dije guardián"
+Inst15Quest1name1 = "Talismán guardián"
 
 --Quest 2 Alliance
 Inst15Quest2 = "2. El Templo Sumergido"
@@ -2430,8 +2430,9 @@ Inst15Quest6_Prequest = "Los espíritus de los estridadores -> El huevo antiguo"
 Inst15Quest6_Folgequest = "Ninguno"
 --
 Inst15Quest6name1 = "Yelmo de guardia vengador"
-Inst15Quest6name2 = "Puntilla de fuerza de vida"
+Inst15Quest6name2 = "Daga dirk Potencia de vida"
 Inst15Quest6name3 = "Aro Ráfaga de gemas"
+Inst15Quest6name4 = "Esencia de Hakkar"
 
 --Quest 7 Alliance
 Inst15Quest7 = "7. Jammal'an el Profeta" -- 1446
@@ -2478,7 +2479,7 @@ Inst15Quest10_Folgequest = "Ninguno"
 --
 Inst15Quest10name1 = "Visor de furia"
 Inst15Quest10name2 = "Frasco de diamante"
-Inst15Quest10name3 = "Sobrehombros Acero afilado"
+Inst15Quest10name3 = "Hombreras acero afilado"
 
 --Quest 11 Alliance
 Inst15Quest11 = "11. Un ingrediente mejor" -- 9053
@@ -2490,7 +2491,7 @@ Inst15Quest11_Note = "Solamente para Druidas: Despoja a Atal'alarion que está i
 Inst15Quest11_Prequest = "Torwa Abrecaminos -> Prueba de toxicidad" -- 9063 -> 9051
 Inst15Quest11_Folgequest = "Ninguno"
 --
-Inst15Quest11name1 = "Pellejo grisáceo"
+Inst15Quest11name1 = "Pelambre canoso"
 Inst15Quest11name2 = "Abrazo del bosque"
 Inst15Quest11name3 = "Bastón Sombra Lunar"
 
@@ -2526,8 +2527,8 @@ Inst15Quest14_Note = "Solamente para Sacerdotes: Morphaz está en "..YELLOW.."[5
 Inst15Quest14_Prequest = "Ayuda a Cenarion -> El icor de los no-muertos" -- 8254 -> 8256
 Inst15Quest14_Folgequest = "Ninguno"
 --
-Inst15Quest14name1 = "Cuentas de rezo benditas"
-Inst15Quest14name2 = "Báculo de aflicción"
+Inst15Quest14name1 = "Cuentas de oración benditas"
+Inst15Quest14name2 = "Bastón de aflicción"
 Inst15Quest14name3 = "Círculo de Esperanza"
 
 --Quest 15 Alliance
@@ -2550,7 +2551,7 @@ Inst15Quest16_Note = "Solamente para Paladines: Despoja a los minijefes trol par
 Inst15Quest16_Prequest = "Piedras de la Plaga inertes" -- 8416
 Inst15Quest16_Folgequest = "Ninguno"
 --
-Inst15Quest16name1 = "Piedra de poderío sagrada"
+Inst15Quest16name1 = "Piedra sagrada del poderío"
 Inst15Quest16name2 = "Hoja forjada con luz"
 Inst15Quest16name3 = "Orbe santificado"
 Inst15Quest16name4 = "Sello caballeresco"
@@ -2775,7 +2776,7 @@ Inst16Quest4_Note = "Despoja a cualquier enemigo de Forjatiniebla dentro o afuer
 Inst16Quest4_Prequest = "Ninguno"
 Inst16Quest4_Folgequest = "Ninguno"
 --
-Inst16Quest4name1 = "Círculo de Piedras energizado"
+Inst16Quest4name1 = "Círculo de Piedras cargado"
 Inst16Quest4name2 = "Brazales de Duracin"
 Inst16Quest4name3 = "Botas perpetuas"
 
@@ -2797,7 +2798,7 @@ Inst16Quest6_Note = "La tablilla está al norte de las cuevas, al fin este del t
 Inst16Quest6_Prequest = "Ninguno"
 Inst16Quest6_Folgequest = "Ir a Forjaz a buscar el \"Compendio\" de Yagyin" -- 727
 --
-Inst16Quest6name1 = "Toga de orador del Sino"
+Inst16Quest6name1 = "Toga de cuentacondenas"
 
 --Quest 7 Alliance
 Inst16Quest7 = "7. Los enanos desaparecidos" -- 2398
@@ -2817,7 +2818,7 @@ Inst16Quest8_Prequest = "Los enanos desaparecidos" -- 2398
 Inst16Quest8_Folgequest = "Ninguno"
 --
 Inst16Quest8name1 = "Carga de enano"
-Inst16Quest8name2 = "Estrella polar de la Liga de Expedicionarios"
+Inst16Quest8name2 = "Norte y guía de la Liga de Expedicionarios"
 
 --Quest 9 Alliance
 Inst16Quest9 = "9. El collar hecho añicos" -- 2198
@@ -2866,7 +2867,7 @@ Inst16Quest13_Note = "Las setas están desperdigadas a través de toda la instan
 Inst16Quest13_Prequest = "Componentes de Tierras Inhóspitas" -- 2500
 Inst16Quest13_Folgequest = "Ninguno"
 --
-Inst16Quest13name1 = "Poción restauradora"
+Inst16Quest13name1 = "Poción reconstituyente"
 
 --Quest 14 Alliance
 Inst16Quest14 = "14. Los tesoros reclamados" -- 1360
@@ -2890,7 +2891,7 @@ Inst16Quest15_Prequest = "Ninguno"
 Inst16Quest15_Folgequest = "Presagios de Uldum" -- 2963
 --
 Inst16Quest15name1 = "Saco de pelambre descongelada"
-Inst16Quest15name2 = "Poción de sanación excelente"
+Inst16Quest15name2 = "Poción de curación excelente"
 Inst16Quest15name3 = "Poción de maná superior"
 
 --Quest 16 Alliance
@@ -2982,7 +2983,7 @@ Inst16Quest7_HORDE_Note = "Obtienes la misión previa de Jarkal Musgofusión tam
 Inst16Quest7_HORDE_Prequest = "Componentes de Tierras Inhóspitas" -- 2258
 Inst16Quest7_HORDE_Folgequest = "Componentes de Tierras Inhóspitas II"  -- 2203
 --
-Inst16Quest7name1_HORDE = "Poción restauradora"
+Inst16Quest7name1_HORDE = "Poción reconstituyente"
 
 --Quest 8 Horde
 Inst16Quest8_HORDE = "8. Los tesoros reclamados" -- 2342
@@ -3002,7 +3003,7 @@ Inst16Quest9_HORDE_Prequest = "Ninguno"
 Inst16Quest9_HORDE_Folgequest = "Presagios de Uldum" -- 2965
 --
 Inst16Quest9name1_HORDE = "Saco de pelambre descongelada"
-Inst16Quest9name2_HORDE = "Poción de sanación excelente"
+Inst16Quest9name2_HORDE = "Poción de curación excelente"
 Inst16Quest9name3_HORDE = "Poción de maná superior"
 
 --Quest 10 Horde  (same as Quest 4 Alliance)
@@ -3032,14 +3033,14 @@ Inst17QAA = "6 Misiones"
 Inst17QAH = "5 Misiones"
 
 --Quest 1 Alliance
-Inst17Quest1 = "1. Conocimiento en las Cavernas" -- 971
-Inst17Quest1_Aim = "Lleva el manuscrito de Lorgalis a Gerrig Agarrahueso en la Caverna Abandonada de Forjaz."
+Inst17Quest1 = "1. El conocimiento de las profundidades" -- 971
+Inst17Quest1_Aim = "Lleva el manuscrito de Lorgalis a Gerrig Agarrahueso, que está en la Caverna Abandonada en Forjaz."
 Inst17Quest1_Location = "Gerrig Agarrahueso (Forjaz - La Caverna Abandonada; "..YELLOW.."50,5"..WHITE..")"
 Inst17Quest1_Note = "Encuentras el manuscrito en "..YELLOW.."[2]"..WHITE.." en el agua."
 Inst17Quest1_Prequest = "Ninguno"
 Inst17Quest1_Folgequest = "Ninguno"
 --
-Inst17Quest1name1 = "Anillo de apoyo"
+Inst17Quest1name1 = "Anillo de sustención"
 
 --Quest 2 Alliance
 Inst17Quest2 = "2. Investigaciones acerca de la corrupción" -- 1275
@@ -3049,7 +3050,7 @@ Inst17Quest2_Note = "La misión previa es opcional. Lo consigues de Argos Susurr
 Inst17Quest2_Prequest = "Lejana corrupción" -- 3765
 Inst17Quest2_Folgequest = "Ninguno"
 --
-Inst17Quest2name1 = "Broches de alfazaques"
+Inst17Quest2name1 = "Broches de escarabajos"
 Inst17Quest2name2 = "Manteo de prelación"
 
 --Quest 3 Alliance
@@ -3183,8 +3184,8 @@ Inst18Quest3_Note = "Encuentras a Alzzin el Formaferal en la parte "..YELLOW.."E
 Inst18Quest3_Prequest = "Un relicario de Pureza" -- 5527
 Inst18Quest3_Folgequest = "Ninguno"
 --
-Inst18Quest3name1 = "Escudo de Milli"
-Inst18Quest3name2 = "Lexicón de Milli"
+Inst18Quest3name1 = "Escudo de milicia"
+Inst18Quest3name2 = "Lexicón de milicia"
 
 --Quest 4 Alliance
 Inst18Quest4 = "4. La parte izquierda del amuleto de Lord Valthalak" -- 8967
@@ -3298,7 +3299,7 @@ Inst19Quest2_Note = "Misión repitible. Consigues el Tanino de ogro cerca de "..
 Inst19Quest2_Prequest = "Ninguno"
 Inst19Quest2_Folgequest = "Ninguno"
 --
-Inst19Quest2name1 = "Disfraz de ogro Gordok"
+Inst19Quest2name1 = "Taje ogro de Gordok"
 
 --Quest 3 Alliance
 Inst19Quest3 = "3. ¡Libera a Knot!" -- 5525
@@ -3317,7 +3318,7 @@ Inst19Quest4_Note = "El Príncipe Tortheldrin está en La Masacre "..YELLOW.."Oe
 Inst19Quest4_Prequest = "Ninguno"
 Inst19Quest4_Folgequest = "Ninguno"
 --
-Inst19Quest4name1 = "Manijas de Gordok"
+Inst19Quest4name1 = "Mitones de Gordok"
 Inst19Quest4name2 = "Guantes de Gordok"
 Inst19Quest4name3 = "Guanteletes de Gordok"
 Inst19Quest4name4 = "Manoplas de Gordok"
@@ -3441,7 +3442,7 @@ Inst20Quest5_Note = "Solamente para Druidas: Devuelves el libro al Tradicionalis
 Inst20Quest5_Prequest = "Ninguno"
 Inst20Quest5_Folgequest = "Ninguno"
 --
-Inst20Quest5name1 = "Sello real de Eldre'Thalas"
+Inst20Quest5name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 6 Alliance
 Inst20Quest6 = "6. La mejor raza de cazadores" -- 7503
@@ -3451,7 +3452,7 @@ Inst20Quest6_Note = "Solamente para Cazadores: Devuelves el libro al Tradicional
 Inst20Quest6_Prequest = "Ninguno"
 Inst20Quest6_Folgequest = "Ninguno"
 --
-Inst20Quest6name1 = "Sello real de Eldre'Thalas"
+Inst20Quest6name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 7 Alliance
 Inst20Quest7 = "7. El libro de cocina del Arcanista" -- 7500
@@ -3461,7 +3462,7 @@ Inst20Quest7_Note = "Solamente para Magos: Devuelves el libro al Tradicionalista
 Inst20Quest7_Prequest = "Ninguno"
 Inst20Quest7_Folgequest = "Ninguno"
 --
-Inst20Quest7name1 = "Sello real de Eldre'Thalas"
+Inst20Quest7name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 8 Alliance
 Inst20Quest8 = "8. La Luz y cómo alterarla" -- 7501
@@ -3471,7 +3472,7 @@ Inst20Quest8_Note = "Solamente para Paladines: Devuelves el libro al Tradicional
 Inst20Quest8_Prequest = "Ninguno"
 Inst20Quest8_Folgequest = "Ninguno"
 --
-Inst20Quest8name1 = "Sello real de Eldre'Thalas"
+Inst20Quest8name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 9 Alliance
 Inst20Quest9 = "9. Sagrada Bologna: lo que la Luz nunca te dirá" -- 7504
@@ -3481,7 +3482,7 @@ Inst20Quest9_Note = "Solamente para Sacerdotes: Devuelves el libro al Tradiciona
 Inst20Quest9_Prequest = "Ninguno"
 Inst20Quest9_Folgequest = "Ninguno"
 --
-Inst20Quest9name1 = "Sello real de Eldre'Thalas"
+Inst20Quest9name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 10 Alliance
 Inst20Quest10 = "10. Garona: Un Estudio sobre el Sigilo y la Traición" -- 7498
@@ -3491,75 +3492,65 @@ Inst20Quest10_Note = "Solamente para Pícaros: Devuelves el libro al Tradicional
 Inst20Quest10_Prequest = "Ninguno"
 Inst20Quest10_Folgequest = "Ninguno"
 --
-Inst20Quest10name1 = "Sello real de Eldre'Thalas"
+Inst20Quest10name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 11 Alliance
-Inst20Quest11 = "11. El choque de Escarcha y tú" -- 7505
+Inst20Quest11 = "11. Sombras acechadoras" -- 7502
 Inst20Quest11_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest11_Location = "El choque de Escarcha y tú (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest11_Note = "Solamente para Chamanes: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest11_Location = "Sombras acechadoras (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest11_Note = "Solamente para Brujos: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
 Inst20Quest11_Prequest = "Ninguno"
 Inst20Quest11_Folgequest = "Ninguno"
 --
-Inst20Quest11name1 = "Sello real de Eldre'Thalas"
+Inst20Quest11name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 12 Alliance
-Inst20Quest12 = "12. Sombras acechadoras" -- 7502
+Inst20Quest12 = "12. Códice de Defensa" -- 7499
 Inst20Quest12_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest12_Location = "Sombras acechadoras (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest12_Note = "Solamente para Brujos: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest12_Location = "Códice de Defensa (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest12_Note = "Solamente para Guerreros: Devuelves el libro al Tradicionalista Kildrath a la "..YELLOW.."1' Librería"..WHITE.."."
 Inst20Quest12_Prequest = "Ninguno"
 Inst20Quest12_Folgequest = "Ninguno"
 --
-Inst20Quest12name1 = "Sello real de Eldre'Thalas"
+Inst20Quest12name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 13 Alliance
-Inst20Quest13 = "13. Códice de Defensa" -- 7499
-Inst20Quest13_Aim = "Devuelve el libro a sus legítimos dueños. "
-Inst20Quest13_Location = "Códice de Defensa (botín aleatorio de todas las alas de La Masacre)"
-Inst20Quest13_Note = "Solamente para Guerreros: Devuelves el libro al Tradicionalista Kildrath a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest13 = "13. El tratado sobre enfoque" -- 7484
+Inst20Quest13_Aim = "Lleva 1 tratado sobre enfoque, 1 diamante negro prístino, 4 fragmentos luminosos grandes y 2 pieles de Sombra al Tradicionalista Lydros a La Masacre para obtener un arcanum de enfoque."
+Inst20Quest13_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
+Inst20Quest13_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. El Piel de Sombra es ligado y puedes conseguirlo de algunos jefes, Ensamblajes resucitados, y Guardahuesos resucitados en "..YELLOW.."Scholomance"..WHITE.."."
 Inst20Quest13_Prequest = "Ninguno"
 Inst20Quest13_Folgequest = "Ninguno"
 --
-Inst20Quest13name1 = "Sello real de Eldre'Thalas"
+Inst20Quest13name1 = "Arcano de Enfoque"
 
 --Quest 14 Alliance
-Inst20Quest14 = "14. El tratado sobre enfoque" -- 7484
-Inst20Quest14_Aim = "Lleva 1 tratado sobre enfoque, 1 diamante negro prístino, 4 fragmentos luminosos grandes y 2 pieles de Sombra al Tradicionalista Lydros a La Masacre para obtener un arcanum de enfoque."
+Inst20Quest14 = "14. El tratado sobre protección" -- 7485
+Inst20Quest14_Aim = "Lleva 1 tratado sobre protección, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 1 costura desgarrada de abominación al Tradicionalista Lydros a La Masacre para obtener un arcanum de protección."
 Inst20Quest14_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest14_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. El Piel de Sombra es ligado y puedes conseguirlo de algunos jefes, Ensamblajes resucitados, y Guardahuesos resucitados en "..YELLOW.."Scholomance"..WHITE.."."
+Inst20Quest14_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. Las Costuras desgarradas de abominación son ligadas y puedes conseguirlas de Ramstein el Empachador, Eructaveneno, Vomitón bílico, y Horror de retazos en "..YELLOW.."Stratholme"..WHITE.."."
 Inst20Quest14_Prequest = "Ninguno"
 Inst20Quest14_Folgequest = "Ninguno"
 --
-Inst20Quest14name1 = "Arcanum de enfoque"
+Inst20Quest14name1 = "Arcano de Protección"
 
 --Quest 15 Alliance
-Inst20Quest15 = "15. El tratado sobre protección" -- 7485
-Inst20Quest15_Aim = "Lleva 1 tratado sobre protección, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 1 costura desgarrada de abominación al Tradicionalista Lydros a La Masacre para obtener un arcanum de protección."
+Inst20Quest15 = "15. El tratado sobre rapidez" -- 7483
+Inst20Quest15_Aim = "Lleva 1 tratado sobre rapidez, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 2 sangres de héroes al Tradicionalista Lydros a La Masacre para obtener un arcanum de rapidez."
 Inst20Quest15_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest15_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. Las Costuras desgarradas de abominación son ligadas y puedes conseguirlas de Ramstein el Empachador, Eructaveneno, Vomitón bílico, y Horror de retazos en "..YELLOW.."Stratholme"..WHITE.."."
+Inst20Quest15_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. La Sangre de héroes se encuentra al piso en localizaciones aleatorias en Las Tierras de la Peste del Oeste y Este."
 Inst20Quest15_Prequest = "Ninguno"
 Inst20Quest15_Folgequest = "Ninguno"
 --
-Inst20Quest15name1 = "Arcanum de protección"
+Inst20Quest15name1 = "Arcano de Rapidez"
 
 --Quest 16 Alliance
-Inst20Quest16 = "16. El tratado sobre rapidez" -- 7483
-Inst20Quest16_Aim = "Lleva 1 tratado sobre rapidez, 1 diamante negro prístino, 2 fragmentos luminosos grandes y 2 sangres de héroes al Tradicionalista Lydros a La Masacre para obtener un arcanum de rapidez."
-Inst20Quest16_Location = "Tradicionalista Lydros (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE..")"
-Inst20Quest16_Note = "Tienes que completar la misión \"Leyendas élficas\" antes de empezar esta misión.\n\nEl tratado es botín aleatorio de La Masacre y puedes comerciarlo y comprarlo en la subasta. La Sangre de héroes se encuentra al piso en localizaciones aleatorias en Las Tierras de la Peste del Oeste y Este."
+Inst20Quest16 = "16. Compendio de Foror" -- 7507
+Inst20Quest16_Aim = "Devuelve el compendio de matar dragones de Foror a El Athenaeum."
+Inst20Quest16_Location = "Compendio de matar dragones de Foror (botín aleatorio de los jefes en "..YELLOW.."La Masacre"..WHITE..")"
+Inst20Quest16_Note = "Solamente para Guerreros y Paladines. Devuélvelo al Tradicionalista Lydros en (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE.."). Te permite empezar la misión para forjar Quel'Serrar después de terminar la misión."
 Inst20Quest16_Prequest = "Ninguno"
-Inst20Quest16_Folgequest = "Ninguno"
---
-Inst20Quest16name1 = "Arcanum de rapidez"
-
---Quest 17 Alliance
-Inst20Quest17 = "17. Compendio de Foror" -- 7507
-Inst20Quest17_Aim = "Devuelve el compendio de matar dragones de Foror a El Athenaeum."
-Inst20Quest17_Location = "Compendio de matar dragones de Foror (botín aleatorio de los jefes en "..YELLOW.."La Masacre"..WHITE..")"
-Inst20Quest17_Note = "Solamente para Guerreros y Paladines. Devuélvelo al Tradicionalista Lydros en (La Masacre Oeste; "..YELLOW.."[1'] Librería"..WHITE.."). Te permite empezar la misión para forjar Quel'Serrar después de terminar la misión."
-Inst20Quest17_Prequest = "Ninguno"
-Inst20Quest17_Folgequest = "Forjar Quel'Serrar" -- 7508
+Inst20Quest16_Folgequest = "Forjar Quel'Serrar" -- 7508
 -- No Rewards for this quest
 
 
@@ -3632,15 +3623,15 @@ Inst20Quest7_HORDE_Folgequest = Inst20Quest7_Folgequest
 --
 Inst20Quest7name1_HORDE = Inst20Quest7name1
 
---Quest 8 Horde  (same as Quest 8 Alliance)   - THIS QUEST TO BE REMOVED
-Inst20Quest8_HORDE = Inst20Quest8
-Inst20Quest8_HORDE_Aim = Inst20Quest8_Aim
-Inst20Quest8_HORDE_Location = Inst20Quest8_Location
-Inst20Quest8_HORDE_Note = Inst20Quest8_Note
-Inst20Quest8_HORDE_Prequest = Inst20Quest8_Prequest
-Inst20Quest8_HORDE_Folgequest = Inst20Quest8_Folgequest
+--Quest 8 Horde
+Inst20Quest8_HORDE = "8. El choque de Escarcha y tú" -- 7505
+Inst20Quest8_HORDE_Aim = "Devuelve el libro a sus legítimos dueños. "
+Inst20Quest8_HORDE_Location = "El choque de Escarcha y tú (botín aleatorio de todas las alas de La Masacre)"
+Inst20Quest8_HORDE_Note = "Solamente para Chamanes: Devuelves el libro al Tradicionalista Javon a la "..YELLOW.."1' Librería"..WHITE.."."
+Inst20Quest8_HORDE_Prequest = "Ninguno"
+Inst20Quest8_HORDE_Folgequest = "Ninguno"
 --
-Inst20Quest8name1_HORDE = Inst20Quest8name1
+Inst20Quest11name1 = "Lacre real de Eldre'Thalas"
 
 --Quest 9 Horde  (same as Quest 9 Alliance)
 Inst20Quest9_HORDE = Inst20Quest9
@@ -3721,18 +3712,8 @@ Inst20Quest16_HORDE_Prequest = Inst20Quest16_Prequest
 Inst20Quest16_HORDE_Folgequest = Inst20Quest16_Folgequest
 --
 Inst20Quest16name1_HORDE = Inst20Quest16name1
-
---Quest 17 Horde  (same as Quest 17 Alliance)   - THIS QUEST TO BE REMOVED
-Inst20Quest17_HORDE = Inst20Quest17
-Inst20Quest17_HORDE_Aim = Inst20Quest17_Aim
-Inst20Quest17_HORDE_Location = Inst20Quest17_Location
-Inst20Quest17_HORDE_Note = Inst20Quest17_Note
-Inst20Quest17_HORDE_Prequest = Inst20Quest17_Prequest
-Inst20Quest17_HORDE_Folgequest = Inst20Quest17_Folgequest
--- No Rewards for this quest
-
-
-
+	
+	
 --------------- INST21 - Maraudon ---------------
 
 Inst21Caption = "Maraudon"
@@ -3759,7 +3740,7 @@ Inst21Quest2_Prequest = "Ninguno"
 Inst21Quest2_Folgequest = "Ninguno"
 --
 Inst21Quest2name1 = "Aro de Semillaleña"
-Inst21Quest2name2 = "Faja de arbusto"
+Inst21Quest2name2 = "Faja arbusto"
 Inst21Quest2name3 = "Guanteletes ramazarza"
 
 --Quest 3 Alliance
@@ -3771,8 +3752,8 @@ Inst21Quest3_Prequest = "Ninguno"
 Inst21Quest3_Folgequest = "Ninguno"
 --
 Inst21Quest3name1 = "Togas de sagacidad"
-Inst21Quest3name2 = "Yelmo de argollas de duende"
-Inst21Quest3name3 = "Cota de malla incansable"
+Inst21Quest3name2 = "Yelmo Sprightring"
+Inst21Quest3name3 = "Cadena incansable"
 Inst21Quest3name4 = "Espaldares de mole de piedra"
 
 --Quest 4 Alliance
@@ -3785,6 +3766,7 @@ Inst21Quest4_Prequest = "Ninguno"
 Inst21Quest4_Folgequest = "Ninguno"
 --
 Inst21Quest4name1 = "Marca del elegido"
+Inst21Quest4name2 = "Amuleto de los espíritus"
 
 --Quest 5 Alliance
 Inst21Quest5 = "5. Leyendas de Maraudon" -- 7044
@@ -3815,7 +3797,7 @@ Inst21Quest7_Folgequest = "La semilla de vida" -- 7066
 --
 Inst21Quest7name1 = "Zumbaespada"
 Inst21Quest7name2 = "Vara de resurgimiento"
-Inst21Quest7name3 = "Objetivo del vigilante verdeante"
+Inst21Quest7name3 = "Objetivo del vigilante de Verdantis"
 
 --Quest 8 Alliance
 Inst21Quest8 = "8. La semilla de vida" -- 7066
@@ -3847,7 +3829,7 @@ Inst21Quest2_HORDE_Prequest = "Ninguno"
 Inst21Quest2_HORDE_Folgequest = "Ninguno"
 --
 Inst21Quest2name1_HORDE = "Aro de Semillaleña"
-Inst21Quest2name2_HORDE = "Faja de arbusto"
+Inst21Quest2name2_HORDE = "Faja arbusto"
 Inst21Quest2name3_HORDE = "Guanteletes ramazarza"
 
 --Quest 3 Horde (same as Quest 3 Alliance)
@@ -3903,7 +3885,7 @@ Inst21Quest7_HORDE_Folgequest = "La semilla de vida" -- 7066
 --
 Inst21Quest7name1_HORDE = "Zumbaespada"
 Inst21Quest7name2_HORDE = "Vara de resurgimiento"
-Inst21Quest7name3_HORDE = "Objetivo del Guardaverde"
+Inst21Quest7name3_HORDE = "Objetivo del vigilante de Verdantis"
 
 --Quest 8 Horde (same as Quest 8 Alliance)
 Inst21Quest8_HORDE = Inst21Quest8
@@ -3939,7 +3921,7 @@ Inst22Quest2_HORDE_Note = "Despoja a los Cultores y Brujos Hoja Abrasadoras para
 Inst22Quest2_HORDE_Prequest = "Ninguno"
 Inst22Quest2_HORDE_Folgequest = "Ninguno"
 --
-Inst22Quest2name1_HORDE = "Calzas espantosas"
+Inst22Quest2name1_HORDE = "Pantalones espantosos"
 Inst22Quest2name2_HORDE = "Leotardos de cenagal"
 Inst22Quest2name3_HORDE = "Leotardos gárgola"
 
@@ -3962,7 +3944,7 @@ Inst22Quest4_HORDE_Note = "Encuentras a Bazzalan en "..YELLOW.."[4]"..WHITE.." y
 Inst22Quest4_HORDE_Prequest = "Enemigos ocultos" -- 5727
 Inst22Quest4_HORDE_Folgequest = "Enemigos ocultos" -- 5729
 --
-Inst22Quest4name1_HORDE = "Kris de Orgrimmar"
+Inst22Quest4name1_HORDE = "Puñal hindú de Orgrimmar"
 Inst22Quest4name2_HORDE = "Martillo de Orgrimmar"
 Inst22Quest4name3_HORDE = "Hacha de Orgrimmar"
 Inst22Quest4name4_HORDE = "Bastón de Orgrimmar"
@@ -4006,13 +3988,13 @@ Inst23Quest2name1 = "Anillo garra de dragón"
 --Quest 3 Alliance
 Inst23Quest3 = "3. Trae la Luz" -- 3636
 Inst23Quest3_Aim = "El arzobispo Benedictus quiere que mates a Amnennar el Gélido en Zahúrda Rajacieno."
-Inst23Quest3_Location = "Arzobispo Bendictus (Ventormenta - Catedral de la Luz; "..YELLOW.."39,27"..WHITE..")"
+Inst23Quest3_Location = "Arzobispo Benedictus (Ventormenta - Catedral de la Luz; "..YELLOW.."39,27"..WHITE..")"
 Inst23Quest3_Note = "Amnennar el Gélido es el último jefe en la Zahúrda Rajacieno. Lo encuentras en "..YELLOW.."[6]"..WHITE.."."
 Inst23Quest3_Prequest = "Ninguno"
 Inst23Quest3_Folgequest = "Ninguno"
 --
 Inst23Quest3name1 = "Espada del vencedor"
-Inst23Quest3name2 = "Dije del Resplandor Ámbar"
+Inst23Quest3name2 = "Talismán Resplandor de Ámbar"
 
 
 --Quest 1 Horde (same as Quest 1 Alliance)
@@ -4034,7 +4016,7 @@ Inst23Quest2_HORDE_Folgequest = "Ninguno"
 --
 Inst23Quest2name1_HORDE = "Partecalaveras"
 Inst23Quest2name2_HORDE = "Escupeuñas"
-Inst23Quest2name3_HORDE = "Toga de zelote"
+Inst23Quest2name3_HORDE = "Toga de Zealot"
 
 --Quest 3 Horde (same as Quest 2 Alliance)
 Inst23Quest3_HORDE = "3. Extinguir el ídolo"
@@ -4095,7 +4077,7 @@ Inst24Quest3_Prequest = "Ninguno"
 Inst24Quest3_Folgequest = "Ninguno"
 --
 Inst24Quest3name1 = "Anillo de mono"
-Inst24Quest3name2 = "Aro de culebra"
+Inst24Quest3name2 = "Aro de serpiente"
 Inst24Quest3name3 = "Sortija de tigre"
 
 --Quest 4 Alliance
@@ -4107,7 +4089,7 @@ Inst24Quest4_Prequest = "El diario de Soliceja" -- 1100
 Inst24Quest4_Folgequest = "Ninguno"
 --
 Inst24Quest4name1 = "Trabuco \"Ojo de mago\""
-Inst24Quest4name2 = "Protectores de Berilo"
+Inst24Quest4name2 = "Protectores de berilio"
 Inst24Quest4name3 = "Faja Puño de piedra"
 Inst24Quest4name4 = "Rodela de mármol"
 
@@ -4115,7 +4097,7 @@ Inst24Quest4name4 = "Rodela de mármol"
 Inst24Quest5 = "5. Armadura de malla endurecida con fuego" -- 1701
 Inst24Quest5_Aim = "Reúne los materiales que necesita Furen Barbalarga y llévaselos a Ventormenta."
 Inst24Quest5_Location = "Furen Barbalarga (Ventormenta - Distrito de los Enanos; "..YELLOW.."57,16"..WHITE..")"
-Inst24Quest5_Note = "Solamente para Guerreros: Consigues el Vial de flogisto de Roogug en "..YELLOW.."[1]"..WHITE..".\n\nLa misión siguiente es diferente para cada raza. Sangre ardiente para Humanos, Coral férreo para Enanos y Gnomos, y Cáscaras asoladas para Elfos de la Noche." -- 1705, 1710, 1708
+Inst24Quest5_Note = "Solamente para Guerreros: Consigues el Vial de flogisto de Roogug en "..YELLOW.."[1]"..WHITE..".\n\nDespués de completar la misión, se abrirá 3 nuevas misiones: Sangre ardiente en Ventormenta, Coral férreo en Forjaz, y Cáscaras asoladas en Darnassus." -- 1705, 1710, 1708
 Inst24Quest5_Prequest = "El forjador de escudos" -- 1702
 Inst24Quest5_Folgequest = "(Ve la Nota)"
 -- No Rewards for this quest
@@ -4164,8 +4146,8 @@ Inst24Quest4_HORDE_Note = "Encuentras a Charlga Filonavaja en "..YELLOW.."[7]"..
 Inst24Quest4_HORDE_Prequest = "Ninguno"
 Inst24Quest4_HORDE_Folgequest = "Ninguno"
 --
-Inst24Quest4name1_HORDE = "Protectores de Berilo"
-Inst24Quest4name2_HORDE = "Faja Puñopiedra"
+Inst24Quest4name1_HORDE = "Protectores de berilio"
+Inst24Quest4name2_HORDE = "Faja Puño de piedra"
 Inst24Quest4name3_HORDE = "Rodela de mármol"
 
 --Quest 5 Horde
@@ -4375,7 +4357,7 @@ Inst26Quest6_Prequest = "Ninguno"
 Inst26Quest6_Folgequest = "Ninguno"
 --
 Inst26Quest6name1 = "Anillo de fraternidad masona"
-Inst26Quest6name2 = "Sombrero de hermandad de ingeniero"
+Inst26Quest6name2 = "Celada de hermandad de ingeniero"
 
 --Quest 7 Alliance
 Inst26Quest7 = "7. Gahz'rilla" -- 2770
@@ -4519,7 +4501,7 @@ Inst27Quest6_Note = "Botín de los jefes en el Núcleo de Magma."
 Inst27Quest6_Prequest = "Guisón, ex mejor amigo" -- 8577
 Inst27Quest6_Folgequest = "Buenas y malas noticias (Tienes que completar las cadenas de misiones Dracónico para torpes y ¡Nunca me preguntes por mi negocio!" -- 8728
 --
-Inst27Quest6name1 = "Poción de rejuvenecimiento sublime"
+Inst27Quest6name1 = "Poción rejuvenecedora sublime"
 
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
@@ -4584,7 +4566,7 @@ Inst27Quest6name1_HORDE = Inst27Quest6name1
 
 --------------- INST28 - Onyxia's Lair ---------------
 
-Inst28Caption = "Onyxias Lair"
+Inst28Caption = "Guarida de Onyxia"
 Inst28QAA = "2 Misiones"
 Inst28QAH = "2 Misiones"
 

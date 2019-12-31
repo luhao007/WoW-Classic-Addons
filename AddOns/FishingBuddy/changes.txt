@@ -1,3 +1,6 @@
+Version 0.7.2 Beta 1
+- Option to fix issue with TownsfolkTracker and older HereBeDragons
+
 Version 0.7.1 Beta 1
 - Fix globals leaks and other code foos
 
