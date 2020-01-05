@@ -46,8 +46,8 @@ function private.ScanThread(auctionScan)
 	return true
 end
 
-function private.ScanFilter(itemString, _, _, itemDisplayedBid)
-	if itemDisplayedBid == 0 then
+function private.ScanFilter(itemString, itemBuyout, _, itemDisplayedBid)
+	if itemDisplayedBid == 0 or itemBuyout == itemDisplayedBid then
 		return true
 	end
 

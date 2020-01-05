@@ -106,13 +106,13 @@ local READER_MT = {
 -- Module Functions
 -- ============================================================================
 
-function SmartMap.New(keyType, valueType, func)
-	assert(VALID_FIELD_TYPES[keyType] and VALID_FIELD_TYPES[valueType] and type(func) == "function")
+function SmartMap.New(keyType, valueType, callable)
+	assert(VALID_FIELD_TYPES[keyType] and VALID_FIELD_TYPES[valueType])
 	local map = setmetatable({}, SMART_MAP_MT)
 	private.mapContext[map] = {
 		keyType = keyType,
 		valueType = valueType,
-		func = func,
+		func = callable,
 		data = {},
 		readers = {},
 		callbacksPaused = 0,

@@ -55,7 +55,7 @@ function PostScan.OnInitialize()
 		:Commit()
 	private.scanThreadId = Threading.New("POST_SCAN", private.ScanThread)
 	private.queueDB = Database.NewSchema("AUCTIONING_POST_QUEUE")
-		:AddNumberField("index")
+		:AddNumberField("auctionId")
 		:AddStringField("itemString")
 		:AddStringField("operationName")
 		:AddNumberField("bid")
@@ -67,7 +67,7 @@ function PostScan.OnInitialize()
 		:AddNumberField("numProcessed")
 		:AddNumberField("numConfirmed")
 		:AddNumberField("numFailed")
-		:AddIndex("index")
+		:AddIndex("auctionId")
 		:AddIndex("itemString")
 		:Commit()
 	-- We maintain our own bag database rather than using the one in BagTracking since we need to be able to remove items
@@ -115,7 +115,7 @@ end
 function PostScan.GetCurrentRow()
 	return private.queueDB:NewQuery()
 		:Custom(private.NextProcessRowQueryHelper)
-		:OrderBy("index", true)
+		:OrderBy("auctionId", true)
 		:GetFirstResultAndRelease()
 end
 
@@ -126,7 +126,7 @@ end
 function PostScan.DoProcess()
 	local success, noRetry = nil, false
 	local postRow = PostScan.GetCurrentRow()
-	local itemString, stackSize, bid, buyout, postTime = postRow:GetFields("itemString", "stackSize", "bid", "buyout", "postTime")
+	local itemString, stackSize, bid, buyout, itemBuyout, postTime = postRow:GetFields("itemString", "stackSize", "bid", "buyout", "itemBuyout", "postTime")
 	local bag, slot = private.GetPostBagSlot(itemString, stackSize)
 	if bag then
 		if not TSM.IsWow83() then
@@ -140,13 +140,14 @@ function PostScan.DoProcess()
 		else
 			bid = Math.Round(bid, COPPER_PER_SILVER)
 			buyout = Math.Round(buyout, COPPER_PER_SILVER)
+			itemBuyout = Math.Round(itemBuyout, COPPER_PER_SILVER)
 			private.itemLocation:Clear()
 			private.itemLocation:SetBagAndSlot(bag, slot)
 			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
 			if commodityStatus == Enum.ItemCommodityStatus.Item then
 				C_AuctionHouse.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
 			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
-				C_AuctionHouse.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
+				C_AuctionHouse.PostCommodity(private.itemLocation, postTime, stackSize, itemBuyout)
 			else
 				error("Unknown commodity status: "..tostring(itemString))
 			end
@@ -185,7 +186,7 @@ function PostScan.HandleConfirm(success, canRetry)
 
 	local confirmRow = private.queueDB:NewQuery()
 		:Custom(private.ConfirmRowQueryHelper)
-		:OrderBy("index", true)
+		:OrderBy("auctionId", true)
 		:GetFirstResultAndRelease()
 	if not confirmRow then
 		-- we may have posted something outside of TSM
@@ -205,7 +206,7 @@ function PostScan.PrepareFailedPosts()
 	private.queueDB:SetQueryUpdatesPaused(true)
 	local query = private.queueDB:NewQuery()
 		:GreaterThan("numFailed", 0)
-		:OrderBy("index", true)
+		:OrderBy("auctionId", true)
 	for _, row in query:Iterator() do
 		local numFailed, numProcessed, numConfirmed = row:GetFields("numFailed", "numProcessed", "numConfirmed")
 		assert(numProcessed >= numFailed and numConfirmed >= numFailed)
@@ -340,24 +341,29 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 		return nil
 	end
 
-	-- check the stack size
-	local maxStackSize = ItemInfo.GetMaxStack(itemString)
-	local minPostStackSize = operationSettings.stackSizeIsCap and 1 or operationSettings.stackSize
-	if not maxStackSize then
-		-- couldn't lookup item info for this item (shouldn't happen)
-		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
-			Log.PrintfUser(L["Did not post %s because Blizzard didn't provide all necessary information for it. Try again later."], ItemInfo.GetLink(itemString))
+	local minPostQuantity = nil
+	if TSM.IsWow83() then
+		minPostQuantity = 1
+	else
+		-- check the stack size
+		local maxStackSize = ItemInfo.GetMaxStack(itemString)
+		minPostQuantity = operationSettings.stackSizeIsCap and 1 or operationSettings.stackSize
+		if not maxStackSize then
+			-- couldn't lookup item info for this item (shouldn't happen)
+			if not TSM.db.global.auctioningOptions.disableInvalidMsg then
+				Log.PrintfUser(L["Did not post %s because Blizzard didn't provide all necessary information for it. Try again later."], ItemInfo.GetLink(itemString))
+			end
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+			return false
+		elseif maxStackSize < minPostQuantity then
+			-- invalid stack size
+			return nil
 		end
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
-		return false
-	elseif maxStackSize < minPostStackSize then
-		-- invalid stack size
-		return nil
 	end
 
 	-- check that we have enough to post
 	num = num - private.GetKeepQuantity(itemString, operationSettings)
-	if num < minPostStackSize then
+	if num < minPostQuantity then
 		-- not enough items to post for this operation
 		TSM.Auctioning.Log.AddEntry(itemString, operationName, "postNotEnough", "", 0, math.huge)
 		return nil
@@ -404,7 +410,7 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 			-- just a warning, not an error
 			Log.PrintfUser(L["WARNING: You minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."], ItemInfo.GetLink(itemString))
 		end
-		return true, operationSettings.stackSize * operationSettings.postCap
+		return true, (TSM.IsWow83() and 1 or operationSettings.stackSize) * operationSettings.postCap
 	end
 end
 
@@ -433,7 +439,7 @@ function private.IsFilterDoneForItem(auctionScan, itemString)
 				:GreaterThan("itemBuyout", 0)
 				:GreaterThan("timeLeft", operationSettings.ignoreLowDuration)
 				:OrderBy("itemBuyout", true)
-			if operationSettings.matchStackSize then
+			if not TSM.IsWow83() and operationSettings.matchStackSize then
 				query:Equal("stackSize", operationSettings.stackSize)
 			end
 			local numBuyouts = query:Count()
@@ -484,11 +490,11 @@ function private.AuctionScanOnFilterDone(_, filter)
 				if private.IsOperationValid(itemString, numHave, operationName, operationSettings) then
 					local operationNumHave = numHave - private.GetKeepQuantity(itemString, operationSettings)
 					if operationNumHave > 0 then
-						local reason, numUsed, itemBuyout, seller, index = private.GeneratePosts(itemString, operationName, operationSettings, operationNumHave, query)
+						local reason, numUsed, itemBuyout, seller, auctionId = private.GeneratePosts(itemString, operationName, operationSettings, operationNumHave, query)
 						numHave = numHave - (numUsed or 0)
 						seller = seller or ""
-						index = index or math.huge
-						TSM.Auctioning.Log.AddEntry(itemString, operationName, reason, seller, itemBuyout or 0, index)
+						auctionId = auctionId or math.huge
+						TSM.Auctioning.Log.AddEntry(itemString, operationName, reason, seller, itemBuyout or 0, auctionId)
 					end
 				end
 			end
@@ -505,20 +511,25 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 		return "postNotEnough"
 	end
 
-	local maxStackSize = ItemInfo.GetMaxStack(itemString)
-	if operationSettings.stackSize > maxStackSize and not operationSettings.stackSizeIsCap then
-		return "postNotEnough"
-	end
-
-	local perAuction = min(operationSettings.stackSize, maxStackSize)
-	local maxCanPost = min(floor(numHave / perAuction), operationSettings.postCap)
-	if maxCanPost == 0 then
-		if operationSettings.stackSizeIsCap then
-			perAuction = numHave
-			maxCanPost = 1
-		else
-			-- not enough for single post
+	local perAuction, maxCanPost = nil, nil
+	if TSM.IsWow83() then
+		perAuction = min(operationSettings.postCap, numHave)
+		maxCanPost = 1
+	else
+		local maxStackSize = ItemInfo.GetMaxStack(itemString)
+		if not TSM.IsWow83() and operationSettings.stackSize > maxStackSize and not operationSettings.stackSizeIsCap then
 			return "postNotEnough"
+		end
+		perAuction = min(operationSettings.stackSize, maxStackSize)
+		maxCanPost = min(floor(numHave / perAuction), operationSettings.postCap)
+		if maxCanPost == 0 then
+			if operationSettings.stackSizeIsCap then
+				perAuction = numHave
+				maxCanPost = 1
+			else
+				-- not enough for single post
+				return "postNotEnough"
+			end
 		end
 	end
 
@@ -623,27 +634,31 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 		activeAuctions = activeAuctions + numStacks
 	end
 	queueQuery:Release()
-	maxCanPost = min(operationSettings.postCap - activeAuctions, maxCanPost)
-	if maxCanPost <= 0 then
+	if TSM.IsWow83() then
+		perAuction = min(operationSettings.postCap - activeAuctions, perAuction)
+	else
+		maxCanPost = min(operationSettings.postCap - activeAuctions, maxCanPost)
+	end
+	if maxCanPost <= 0 or perAuction <= 0 then
 		return "postTooMany"
 	end
 
 	-- insert the posts into our DB
-	local index = private.nextQueueIndex
+	local auctionId = private.nextQueueIndex
 	local postTime = operationSettings.duration
 	private.AddToQueue(itemString, operationName, bid, buyout, perAuction, maxCanPost, postTime)
 	-- check if we can post an extra partial stack
-	local extraStack = (maxCanPost < operationSettings.postCap and operationSettings.stackSizeIsCap and (numHave % perAuction)) or 0
+	local extraStack = (not TSM.IsWow83() and maxCanPost < operationSettings.postCap and operationSettings.stackSizeIsCap and (numHave % perAuction)) or 0
 	if extraStack > 0 then
 		private.AddToQueue(itemString, operationName, bid, buyout, extraStack, 1, postTime)
 	end
-	return reason, (perAuction * maxCanPost) + extraStack, buyout, seller, index
+	return reason, (perAuction * maxCanPost) + extraStack, buyout, seller, auctionId
 end
 
 function private.AddToQueue(itemString, operationName, itemBid, itemBuyout, stackSize, numStacks, postTime)
 	private.DebugLogInsert(itemString, "Queued %d stacks of %d", stackSize, numStacks)
 	private.queueDB:NewRow()
-		:SetField("index", private.nextQueueIndex)
+		:SetField("auctionId", private.nextQueueIndex)
 		:SetField("itemString", itemString)
 		:SetField("operationName", operationName)
 		:SetField("bid", min(itemBid * stackSize, MAXIMUM_BID_PRICE))

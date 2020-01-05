@@ -909,7 +909,7 @@ function private.FSMCreate()
 		if currentRow then
 			local selectedRow = nil
 			for _, row in private.logQuery:Iterator() do
-				if currentRow:GetField("index") == row:GetField("index") then
+				if currentRow:GetField("auctionId") == row:GetField("index") then
 					selectedRow = row
 				end
 			end

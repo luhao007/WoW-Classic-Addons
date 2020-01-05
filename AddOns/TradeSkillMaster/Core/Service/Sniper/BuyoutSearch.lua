@@ -39,6 +39,7 @@ function private.ScanThread(auctionScan)
 	if numFilters == 0 then
 		auctionScan:NewAuctionFilter()
 			:SetSniper(true)
+			:SetShouldScanItemFunction(private.FilterShouldScanItemFunction)
 	else
 		assert(numFilters == 1)
 	end
@@ -51,8 +52,8 @@ function private.ScanFilter(itemString, itemBuyout)
 		return true
 	end
 
-	local maxPrice = TSM.Operations.Sniper.GetBelowPrice(itemString)
-	if not maxPrice or itemBuyout > maxPrice then
+	local belowPrice = TSM.Operations.Sniper.GetBelowPrice(itemString)
+	if itemBuyout > (belowPrice or 0) then
 		return true
 	end
 
@@ -61,4 +62,17 @@ end
 
 function private.MarketValueFunction(row)
 	return TSM.Operations.Sniper.GetBelowPrice(row:GetField("itemString"))
+end
+
+function private.FilterShouldScanItemFunction(filter, baseItemString, minPrice)
+	if minPrice <= (TSM.Operations.Sniper.GetBelowPrice(baseItemString) or 0) then
+		return true
+	end
+	local result = false
+	for _, itemString in TSM.Groups.ItemIterator(nil, baseItemString) do
+		if minPrice <= (TSM.Operations.Sniper.GetBelowPrice(itemString) or 0) then
+			result = true
+		end
+	end
+	return result
 end

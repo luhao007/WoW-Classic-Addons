@@ -24,6 +24,7 @@ local private = {
 	lastCheck = nil,
 	moneyCollected = 0,
 }
+local MAIL_REFRESH_TIME = TSM.IsWow83() and 15 or 60
 
 
 
@@ -221,11 +222,11 @@ end
 -- ============================================================================
 
 function private.ScheduleCheck()
-	if not private.lastCheck or time() - private.lastCheck > 60 then
+	if not private.lastCheck or time() - private.lastCheck > (MAIL_REFRESH_TIME - 1) then
 		private.lastCheck = time()
-		Delay.AfterTime("mailInboxCheck", 61, private.CheckInbox)
+		Delay.AfterTime("mailInboxCheck", MAIL_REFRESH_TIME, private.CheckInbox)
 	else
-		local nextUpdate = 61 - (time() - private.lastCheck)
+		local nextUpdate = MAIL_REFRESH_TIME - (time() - private.lastCheck)
 		Delay.AfterTime("mailInboxCheck", nextUpdate, private.CheckInbox)
 	end
 end

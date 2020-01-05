@@ -42,7 +42,7 @@ function Operations.OnInitialize()
 	TSM.db:RegisterCallback("OnProfileUpdated", private.OnProfileUpdated)
 end
 
-function Operations.Register(moduleName, localizedName, operationInfo, maxOperations, infoCallback)
+function Operations.Register(moduleName, localizedName, operationInfo, maxOperations, infoCallback, customSanitizeFunction)
 	for key, info in pairs(operationInfo) do
 		assert(type(key) == "string" and type(info) == "table")
 		assert(info.type == type(info.default))
@@ -57,6 +57,7 @@ function Operations.Register(moduleName, localizedName, operationInfo, maxOperat
 		localizedName = localizedName,
 		maxOperations = maxOperations,
 		infoCallback = infoCallback,
+		customSanitizeFunction = customSanitizeFunction,
 	}
 
 	local shouldCreateDefaultOperations = private.shouldCreateDefaultOperations or not private.operations[moduleName]
@@ -207,6 +208,9 @@ end
 
 function Operations.SanitizeSettings(moduleName, operationName, operationSettings)
 	local operationInfo = private.operationInfo[moduleName].info
+	if private.operationInfo[moduleName].customSanitizeFunction then
+		private.operationInfo[moduleName].customSanitizeFunction(operationSettings)
+	end
 	for key, value in pairs(operationSettings) do
 		if not operationInfo[key] then
 			operationSettings[key] = nil

@@ -30,6 +30,7 @@ function SearchCommon.StartFindAuction(auctionScan, auction, callback, noSeller)
 end
 
 function SearchCommon.StopFindAuction()
+	Threading.SetCallback(private.findThreadId, nil)
 	Threading.Kill(private.findThreadId)
 end
 

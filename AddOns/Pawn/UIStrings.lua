@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2019 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -79,6 +79,7 @@ local PawnStatsUnfiltered =
 	{L.ArcaneSpellDamage, "ArcaneSpellDamage", L.ArcaneSpellDamageInfo, PawnStatNormal, nil, PawnStatClassicOnly},
 	{L.FrostSpellDamage, "FrostSpellDamage", L.FrostSpellDamageInfo, PawnStatNormal, nil, PawnStatClassicOnly},
 	{L.HolySpellDamage, "HolySpellDamage", L.HolySpellDamageInfo, PawnStatNormal, nil, PawnStatClassicOnly},
+	{ITEM_MOD_CORRUPTION or "Corruption", "Corruption", L.CorruptionInfo, PawnStatNormal, nil, PawnStatLiveOnly}, -- *** Can remove fallback after patch 8.3 hits
 
 	{L.WeaponStats},
 	{STAT_DPS_SHORT, "Dps", L.DpsInfo, PawnStatUnignorable},

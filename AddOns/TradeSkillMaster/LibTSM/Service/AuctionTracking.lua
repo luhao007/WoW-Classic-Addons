@@ -87,8 +87,10 @@ AuctionTracking:OnSettingsLoad(function()
 		:AddNumberField("buyout")
 		:AddNumberField("stackSize")
 		:AddNumberField("saleStatus")
+		:AddNumberField("auctionId")
 		:AddIndex("index")
 		:AddIndex("saleStatus")
+		:AddIndex("auctionId")
 		:Commit()
 	private.quantityDB = Database.NewSchema("AUCTION_TRACKING_QUANTITY")
 		:AddUniqueStringField("itemString")
@@ -194,10 +196,6 @@ end
 function AuctionTracking.CreateQueryUnsoldItem(itemString)
 	return AuctionTracking.CreateQueryUnsold()
 		:Equal(itemString == ItemString.GetBaseFast(itemString) and "baseItemString" or "itemString", itemString)
-end
-
-function AuctionTracking.GetFieldByIndex(index, field)
-	return private.indexDB:GetUniqueRowField("index", index, field)
 end
 
 function AuctionTracking.GetSaleHintItemString(name, stackSize, buyout)
@@ -309,28 +307,32 @@ function private.AuctionOwnedListUpdateDelayed()
 		quality = quality or ItemInfo.GetQuality(link)
 		if link and name and texture and quality then
 			assert(saleStatus == 0 or saleStatus == 1)
-			duration = saleStatus == 0 and duration or (time() + duration)
-			if saleStatus == 0 then
-				if duration == 1 then -- 30 min
-					expire = min(expire, time() + 0.5 * 60 * 60)
-				elseif duration == 2 then -- 2 hours
-					expire = min(expire, time() + 2 * 60 * 60)
-				elseif duration == 3 then -- 12 hours
-					expire = min(expire, time() + 12 * 60 * 60)
-				end
-			end
 			highBidder = highBidder or ""
 			local itemString = ItemString.Get(link)
 			local currentBid = highBidder ~= "" and bid or minBid
 			if saleStatus == 0 then
+				if TSM.IsWow83() then
+					duration = time() + duration
+					expire = min(expire, duration)
+				else
+					if duration == 1 then -- 30 min
+						expire = min(expire, time() + 0.5 * 60 * 60)
+					elseif duration == 2 then -- 2 hours
+						expire = min(expire, time() + 2 * 60 * 60)
+					elseif duration == 3 then -- 12 hours
+						expire = min(expire, time() + 12 * 60 * 60)
+					end
+				end
 				local baseItemString = ItemString.GetBaseFast(itemString)
 				private.settings.auctionQuantity[baseItemString] = (private.settings.auctionQuantity[baseItemString] or 0) + stackSize
 				local hintInfo = strjoin(SALE_HINT_SEP, ItemInfo.GetName(link), itemString, stackSize, buyout)
 				private.settings.auctionSaleHints[hintInfo] = time()
+			else
+				duration = time() + duration
 			end
 			private.indexUpdates.pending[index] = nil
 			tremove(private.indexUpdates.list, i)
-			private.indexDB:BulkInsertNewRow(auctionId, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus)
+			private.indexDB:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus, auctionId)
 		end
 	end
 	private.RebuildQuantityDB()
@@ -395,8 +397,7 @@ function private.GetOwnedAuctionInfo(index)
 		end
 		local bid = info.bidAmount or info.buyoutAmount
 		local minBid = bid
-		local duration = 2 -- FIXME
-		return info.auctionID, link, nil, nil, info.quantity, nil, minBid, info.buyoutAmount, bid, info.bidder or "", info.status, duration
+		return info.auctionID, link, nil, nil, info.quantity, nil, minBid, info.buyoutAmount, bid, info.bidder or "", info.status, info.timeLeftSeconds
 	end
 end
 

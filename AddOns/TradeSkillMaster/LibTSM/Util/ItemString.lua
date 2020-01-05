@@ -18,6 +18,7 @@ local private = {
 	itemStringCache = {},
 	baseItemStringMap = nil,
 	baseItemStringReader = nil,
+	hasNonBaseItemStrings = {},
 }
 local ITEM_UPGRADE_VALUE_SHIFT = 1000000
 local ITEM_MAX_ID = 999999
@@ -89,7 +90,6 @@ end
 
 --- Converts the parameter into a base itemString.
 -- @tparam string item An item to get the base itemString of
--- whether or not this specific item is in a group (preserve the full itemString) or not (convert to a baseItemString)
 -- @treturn string The base itemString
 function ItemString.GetBase(item)
 	-- make sure it's a valid itemString
@@ -99,6 +99,21 @@ function ItemString.GetBase(item)
 	-- quickly return if we're certain it's already a valid baseItemString
 	if type(itemString) == "string" and strmatch(itemString, "^[ip]:[0-9]+$") then return itemString end
 	return ItemString.GetBaseFast(itemString)
+end
+
+--- Converts an itemKey from WoW into a base itemString.
+-- @tparam table itemKey An itemKey to get the itemString of
+-- @treturn string The base itemString
+function ItemString.GetBaseFromItemKey(itemKey)
+	if itemKey.battlePetSpeciesID > 0 then
+		return "p:"..itemKey.battlePetSpeciesID
+	else
+		return "i:"..itemKey.itemID
+	end
+end
+
+function ItemString.HasNonBase(baseItemString)
+	return private.hasNonBaseItemStrings[baseItemString]
 end
 
 --- Converts the parameter into a WoW itemString.
@@ -257,5 +272,9 @@ function private.GetUpgradeValue(itemString)
 end
 
 function private.ToBaseItemString(itemString)
-	return strmatch(itemString, "[ip]:%d+")
+	local baseItemString = strmatch(itemString, "[ip]:%d+")
+	if baseItemString ~= itemString then
+		private.hasNonBaseItemStrings[baseItemString] = true
+	end
+	return baseItemString
 end

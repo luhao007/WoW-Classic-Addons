@@ -20,6 +20,7 @@ local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local SmartMap = TSM.Include("Util.SmartMap")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local Conversions = TSM.Include("Service.Conversions")
@@ -28,10 +29,9 @@ local private = {
 	priceSourceKeys = {},
 	priceSourceInfo = {},
 	customPriceCache = {},
-	priceCache = {},
-	priceCacheActive = nil,
 	proxyData = {},
 	settings = nil,
+	sanitizeCache = {},
 }
 local ITEM_STRING_PATTERN = "[ip]:[0-9:%-]+"
 local MONEY_PATTERNS = {
@@ -133,7 +133,8 @@ end)
 -- @tparam function callback The price source callback
 -- @tparam[opt=false] boolean fullLink Whether or not the full itemLink is required instead of just the itemString
 -- @param[opt] arg An additional argument which is passed to the callback
-function CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, arg)
+-- @tparam[opt=false] booolean isVolatile Should be set if the price source may change without CustomPrice.OnSourceChange being called
+function CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, arg, isVolatile)
 	tinsert(private.priceSourceKeys, strlower(key))
 	private.priceSourceInfo[strlower(key)] = {
 		moduleName = moduleName,
@@ -142,6 +143,7 @@ function CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, 
 		callback = callback,
 		takeItemString = not fullLink,
 		arg = arg,
+		isVolatile = isVolatile,
 	}
 end
 
@@ -165,6 +167,8 @@ function CustomPrice.RenameCustomPriceSource(oldName, newName)
 	private.settings.customPriceSources[newName] = private.settings.customPriceSources[oldName]
 	private.settings.customPriceSources[oldName] = nil
 	wipe(private.customPriceCache)
+	CustomPrice.OnSourceChange(oldName)
+	CustomPrice.OnSourceChange(newName)
 end
 
 --- Delete a custom price source.
@@ -173,6 +177,17 @@ function CustomPrice.DeleteCustomPriceSource(name)
 	assert(private.settings.customPriceSources[name])
 	private.settings.customPriceSources[name] = nil
 	wipe(private.customPriceCache)
+	CustomPrice.OnSourceChange(name)
+end
+
+--- Sets the value of a custom price source.
+-- @tparam string name The name of the custom price source
+-- @tparam string value The value of the custom price source
+function CustomPrice.SetCustomPriceSource(name, value)
+	assert(private.settings.customPriceSources[name])
+	private.settings.customPriceSources[name] = value
+	wipe(private.customPriceCache)
+	CustomPrice.OnSourceChange(name)
 end
 
 --- Print built-in price sources to chat.
@@ -250,8 +265,8 @@ end
 -- @treturn boolean Whether or not the custom price string is valid
 -- @treturn ?string The error message if the custom price string was invalid
 function CustomPrice.Validate(customPriceStr, badPriceSources)
-	local func, err = private.ParseCustomPrice(customPriceStr, badPriceSources)
-	return func and true or false, err
+	local proxy, err = private.ParseCustomPrice(customPriceStr, badPriceSources)
+	return proxy and true or false, err
 end
 
 --- Evaulates a custom price source for an item.
@@ -260,21 +275,18 @@ end
 -- @treturn ?number The resulting value or nil if the custom price string is invalid
 -- @treturn ?string The error message if the custom price string was invalid
 function CustomPrice.GetValue(customPriceStr, itemString)
-	local func, err = private.ParseCustomPrice(customPriceStr)
-	if not func then
+	local proxy, err = private.ParseCustomPrice(customPriceStr)
+	if not proxy then
 		return nil, err
 	end
 	local value = nil
-	if not private.priceCacheActive then
-		assert(not next(private.priceCache))
-		private.priceCacheActive = true
-		value = func(itemString)
-		wipe(private.priceCache)
-		private.priceCacheActive = nil
+	local mapReader = private.proxyData[proxy].mapReader
+	if mapReader then
+		value = mapReader[itemString]
 	else
-		value = func(itemString)
+		value = proxy(itemString)
 	end
-	return value
+	return (value or 0) > 0 and value or nil
 end
 
 --- Gets a built-in price source's value for an item.
@@ -297,7 +309,9 @@ function CustomPrice.GetItemPrice(itemString, key)
 end
 
 function CustomPrice.GetConversionsValue(sourceItemString, customPrice, method)
-	if not customPrice then return end
+	if not customPrice then
+		return
+	end
 
 	-- calculate disenchant value first
 	if (not method or method == Conversions.METHOD.DISENCHANT) and ItemInfo.IsDisenchantable(sourceItemString) then
@@ -345,26 +359,77 @@ function CustomPrice.Iterator()
 	return Table.Iterator(private.priceSourceKeys, CustomPriceIteratorHelper)
 end
 
---- Iterate over the custom price sources needed to make this custom price string calculable.
--- @param string customPriceStr The custom price string
--- @return An iterator of custom price names
-function CustomPrice.DependentCustomPriceSourceIterator(customPriceStr)
-	local queue = TempTable.Acquire()
-	local results = TempTable.Acquire()
+--- Should be called when the value of a registered source changes.
+-- @tparam string key The key of the price source
+-- @?tparam[opt=nil] string itemString The item which the source changed for or nil if it changed for all items
+function CustomPrice.OnSourceChange(key, itemString)
+	key = strlower(key)
+	local isSpecificItem = itemString ~= ItemString.GetBase(itemString) or not ItemString.HasNonBase(itemString)
+	for _, data in pairs(private.proxyData) do
+		if data.map then
+			local clearAll, clearItem, clearBaseItem = false, false, nil
+			if data.dependantPriceSources[key] then
+				if not itemString then
+					-- clear all items
+					clearAll = true
+				else
+					for dependantItemString in pairs(data.dependantPriceSources[key]) do
+						if dependantItemString == "_item" then
+							if isSpecificItem then
+								-- just clear the specific item
+								clearItem = true
+							else
+								-- clear all items which have a matching baseItemString
+								clearBaseItem = true
+							end
+						elseif dependantItemString == "_baseitem" then
+							if not isSpecificItem then
+								-- just clear the item which was passed (and was a base item)
+								clearItem = true
+							end
+						else
+							if dependantItemString == (isSpecificItem and itemString or ItemString.GetBase(dependantItemString)) then
+								-- clear all items
+								clearAll = true
+							end
+						end
+					end
+				end
+			end
 
-	private.AddToCustomPriceDependencyQueue(queue, customPriceStr)
-	local name, value = next(queue)
-	while value do
-		queue[name] = nil
-		if private.settings.customPriceSources[name] and not results[name] then
-			results[name] = true
-			private.AddToCustomPriceDependencyQueue(queue, private.settings.customPriceSources[name])
-			tinsert(results, name)
+			if data.dependantPriceSources._convertPriceSource == key then
+				-- TODO: could optimize this to only clear the items which have the specified item as a source item, but this should be pretty rare
+				clearAll = true
+			end
+
+			local customPriceSourceName = Table.KeyByValue(private.settings.customPriceSources, data.origStr)
+			data.map:SetCallbacksPaused(true)
+			if clearAll then
+				for mapItemString in data.map:Iterator() do
+					data.map:ValueChanged(mapItemString)
+				end
+				if customPriceSourceName then
+					CustomPrice.OnSourceChange(customPriceSourceName)
+				end
+			elseif clearBaseItem then
+				for mapItemString in data.map:Iterator() do
+					if ItemString.GetBase(mapItemString) == itemString then
+						data.map:ValueChanged(mapItemString)
+						if customPriceSourceName then
+							CustomPrice.OnSourceChange(customPriceSourceName, mapItemString)
+						end
+					end
+				end
+			end
+			if not clearAll and clearItem then
+				data.map:ValueChanged(itemString)
+				if customPriceSourceName then
+					CustomPrice.OnSourceChange(customPriceSourceName, itemString)
+				end
+			end
+			data.map:SetCallbacksPaused(false)
 		end
-		name, value = next(queue)
 	end
-	TempTable.Release(queue)
-	return TempTable.Iterator(results)
 end
 
 
@@ -453,28 +518,29 @@ private.customPriceFunctions = {
 		if not itemString then
 			return NAN
 		end
-		local cacheKey = itemString..key..tostring(extraParam)
-		if not private.priceCache[cacheKey] then
-			if key == "convert" then
-				local minPrice = nil
-				local conversions = Conversions.GetSourceItems(itemString)
-				if conversions then
-					for sourceItemString, rate in pairs(conversions) do
-						local price = CustomPrice.GetItemPrice(sourceItemString, extraParam)
-						if price then
-							price = price / rate
-							minPrice = min(minPrice or price, price)
-						end
-					end
-				end
-				private.priceCache[cacheKey] = minPrice or NAN
-			elseif extraParam == "custom" then
-				private.priceCache[cacheKey] = CustomPrice.GetValue(private.settings.customPriceSources[key], itemString) or NAN
-			else
-				private.priceCache[cacheKey] = CustomPrice.GetItemPrice(itemString, key) or NAN
+		if key == "convert" then
+			local conversions = Conversions.GetSourceItems(itemString)
+			if not conversions then
+				return NAN
 			end
+			local minPrice = nil
+			for sourceItemString, rate in pairs(conversions) do
+				local price = CustomPrice.GetItemPrice(sourceItemString, extraParam)
+				if price then
+					price = price / rate
+					minPrice = min(minPrice or price, price)
+				end
+			end
+			return minPrice or NAN
+		elseif extraParam == "custom" then
+			if not private.settings.customPriceSources[key] then
+				-- custom price source has since been deleted
+				return NAN
+			end
+			return CustomPrice.GetValue(private.settings.customPriceSources[key], itemString) or NAN
+		else
+			return CustomPrice.GetItemPrice(itemString, key) or NAN
 		end
-		return private.priceCache[cacheKey] or NAN
 	end,
 }
 private.proxyMT = {
@@ -486,18 +552,22 @@ private.proxyMT = {
 			-- these keys can always be accessed
 			return data[index]
 		end
-		if not data.isUnlocked then error("Attempt to access a hidden table", 2) end
+		if not data.isUnlocked then
+			error("Attempt to access a hidden table", 2)
+		end
 		return data[index]
 	end,
 	__newindex = function(self, index, value)
 		local data = private.proxyData[self]
-		if not data.isUnlocked then error("Attempt to modify a hidden table", 2) end
+		if not data.isUnlocked then
+			error("Attempt to modify a hidden table", 2)
+		end
 		data[index] = value
 	end,
 	__call = function(self, item)
 		local data = private.proxyData[self]
 		data.isUnlocked = true
-		local result = self.func(self, item, ItemString.GetBase(item))
+		local result = data.func(self, item, ItemString.GetBase(item)) or 0
 		data.isUnlocked = false
 		return result
 	end,
@@ -530,24 +600,32 @@ function private.RunComparison(comparison, ...)
 	end
 end
 
-function private.CreateCustomPriceObj(func, origStr)
+function private.CreateCustomPriceObj(func, origStr, dependantPriceSources, canCache)
 	local proxy = newproxy(true)
 	private.proxyData[proxy] = {
 		isUnlocked = false,
 		globalContext = private.context,
 		origStr = origStr,
 		func = func,
+		dependantPriceSources = dependantPriceSources,
+		map = nil,
+		mapReader = nil,
 	}
 	local mt = getmetatable(proxy)
 	for key, value in pairs(private.proxyMT) do
 		mt[key] = value
+	end
+	if canCache then
+		local map = SmartMap.New("string", "number", proxy)
+		private.proxyData[proxy].map = map
+		private.proxyData[proxy].mapReader = map:CreateReader()
 	end
 	return proxy
 end
 
 function private.ParsePriceString(str, badPriceSources)
 	if tonumber(str) then
-		return private.CreateCustomPriceObj(function() return tonumber(str) end, str)
+		return private.CreateCustomPriceObj(function() return tonumber(str) end, str, {}, true)
 	end
 
 	local origStr = str
@@ -721,25 +799,43 @@ function private.ParsePriceString(str, badPriceSources)
 		elseif strtrim(word) == "" then
 			-- harmless extra spaces
 		else
-			-- check if this is an operation export that they tried to use as a custom price
 			if strfind(word, "^%^1%^t%^") then
+				-- this is an operation export that they tried to use as a custom price
 				return nil, L["This looks like an exported operation and not a custom price."]
+			elseif strfind(word, "global") then
+				-- this is an old global price
+				return nil, L["It looks like you're trying to reference an old global price source which no longer exists."]
 			end
 			return nil, format(L["Invalid word: '%s'"], word)
 		end
 		i = i + 1
 	end
 
-	for key in pairs(private.settings.customPriceSources) do
-		str = private.PriceSourceParsingHelper(str, strlower(key), "custom")
+	local canCache = true
+	local dependantPriceSources = {}
+	for key, value in pairs(private.settings.customPriceSources) do
+		key = strlower(key)
+		local usedKey = nil
+		str, usedKey = private.PriceSourceParsingHelper(str, key, "custom", dependantPriceSources)
+		if usedKey then
+			local customPriceProxy, errMsg = private.ParseCustomPrice(value, badPriceSources)
+			if not customPriceProxy then
+				return nil, format(L["The '%s' custom price source is invalid."], key).." "..errMsg
+			end
+			canCache = canCache and private.proxyData[customPriceProxy].map
+		end
 	end
 
-	for key in pairs(private.priceSourceInfo) do
-		str = private.PriceSourceParsingHelper(str, key)
+	for key, info in pairs(private.priceSourceInfo) do
+		local usedKey = nil
+		str, usedKey = private.PriceSourceParsingHelper(str, key, nil, dependantPriceSources)
+		canCache = canCache and (not usedKey or not info.isVolatile)
 	end
 
 	-- replace "~convert~" appropriately
 	if convertPriceSource then
+		canCache = canCache and not private.priceSourceInfo[convertPriceSource].isVolatile
+		dependantPriceSources._convertPriceSource = convertPriceSource
 		convertItem = convertItem and ('"'..convertItem..'"') or "_item"
 		str = gsub(str, "~convert~", format("self._priceHelper(%s, \"convert\", \"%s\")", convertItem, convertPriceSource))
 	end
@@ -760,23 +856,41 @@ function private.ParsePriceString(str, badPriceSources)
 	if not success then
 		return nil, L["Invalid function."]
 	end
-	return private.CreateCustomPriceObj(func, origStr)
+	return private.CreateCustomPriceObj(func, origStr, dependantPriceSources, canCache)
 end
 
-function private.PriceSourceParsingHelper(str, key, extraArg)
+function private.PriceSourceParsingHelper(str, key, extraArg, dependantPriceSources)
 	extraArg = extraArg and (",\""..extraArg.."\"") or ""
+	local numReplacements, usedKey = nil, false
 	-- replace all "<priceSource> <itemString>" occurances with the proper parameters (with the itemString)
-	str = gsub(str, format(" %s (%s) ", key, ITEM_STRING_PATTERN), format(" self._priceHelper(\"%%1\",\"%s\"%s) ", key, extraArg))
+	str, numReplacements = gsub(str, format(" %s (%s) ", key, ITEM_STRING_PATTERN), format(" self._priceHelper(\"%%1\",\"%s\"%s) ", key, extraArg))
+	if numReplacements > 0 then
+		for itemString in gmatch(str, " self%._priceHelper%(\"("..ITEM_STRING_PATTERN..")\",\""..key.."\""..String.Escape(extraArg).."%) ") do
+			-- add all the items used for this key
+			dependantPriceSources[key] = dependantPriceSources[key] or {}
+			dependantPriceSources[key][itemString] = true
+		end
+		usedKey = true
+	end
 	-- replace all "<priceSource> baseitem" occurances with the proper parameters (with _baseitem for the item)
-	str = gsub(str, format(" %s ~baseitem~ ", key), format(" self._priceHelper(_baseitem,\"%s\"%s) ", key, extraArg))
+	str, numReplacements = gsub(str, format(" %s ~baseitem~ ", key), format(" self._priceHelper(_baseitem,\"%s\"%s) ", key, extraArg))
+	if numReplacements > 0 then
+		dependantPriceSources[key] = dependantPriceSources[key] or {}
+		dependantPriceSources[key]._baseitem = true
+		usedKey = true
+	end
 	-- replace all "<priceSource>" occurances with the proper parameters (with _item for the item)
-	str = gsub(str, format(" %s ", key), format(" self._priceHelper(_item,\"%s\"%s) ", key, extraArg))
-	return str
+	str, numReplacements = gsub(str, format(" %s ", key), format(" self._priceHelper(_item,\"%s\"%s) ", key, extraArg))
+	if numReplacements > 0 then
+		dependantPriceSources[key] = dependantPriceSources[key] or {}
+		dependantPriceSources[key]._item = true
+		usedKey = true
+	end
+	return str, usedKey
 end
 
 function private.ParseCustomPrice(customPriceStr, badPriceSources)
-	customPriceStr = customPriceStr and strlower(strtrim(tostring(customPriceStr)))
-	customPriceStr = Money.FromString(customPriceStr) and gsub(customPriceStr, String.Escape(LARGE_NUMBER_SEPERATOR), "") or customPriceStr
+	customPriceStr = private.SanitizeCustomPriceString(customPriceStr)
 	if not customPriceStr or customPriceStr == "" then
 		return nil, L["Empty price string."]
 	end
@@ -801,9 +915,13 @@ function private.ModuleSortFunc(a, b)
 	end
 end
 
-function private.AddToCustomPriceDependencyQueue(queue, value)
-	value = strlower(value)
-	for piece in gmatch(value, "[a-z]+") do
-		queue[piece] = true
+function private.SanitizeCustomPriceString(customPriceStr)
+	assert(customPriceStr)
+	local result = private.sanitizeCache[customPriceStr]
+	if not result then
+		result = strlower(strtrim(tostring(customPriceStr)))
+		result = Money.FromString(result) and gsub(result, String.Escape(LARGE_NUMBER_SEPERATOR), "") or result
+		private.sanitizeCache[customPriceStr] = result
 	end
+	return result
 end

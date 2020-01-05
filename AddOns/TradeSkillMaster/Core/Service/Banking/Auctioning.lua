@@ -102,7 +102,7 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 				end
 			end
 
-			local numNeeded = operationSettings.stackSize * operationSettings.postCap
+			local numNeeded = (TSM.IsWow83() and 1 or operationSettings.stackSize) * operationSettings.postCap
 			if numInBags > numNeeded then
 				-- we can satisfy this operation from the bags
 				numInBags = numInBags - numNeeded
@@ -135,7 +135,7 @@ function private.MaxExpiresGetNumToMoveToBank(itemString, numHave)
 			end
 		end
 		if not operationHasExpired then
-			numToKeepInBags = numToKeepInBags + operationSettings.stackSize * operationSettings.postCap
+			numToKeepInBags = numToKeepInBags + (TSM.IsWow83() and 1 or operationSettings.stackSize) * operationSettings.postCap
 		end
 	end
 	return max(numHave - numToKeepInBags, 0)

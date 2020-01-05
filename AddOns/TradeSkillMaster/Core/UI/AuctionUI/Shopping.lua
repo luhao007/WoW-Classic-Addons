@@ -16,6 +16,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local Money = TSM.Include("Util.Money")
 local Log = TSM.Include("Util.Log")
+local Math = TSM.Include("Util.Math")
 local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -43,6 +44,7 @@ local private = {
 	postTimeStr = nil,
 	perItem = true,
 	updateCallbacks = {},
+	itemLocation = ItemLocation.CreateEmpty(),
 }
 local SINGLE_ITEM_SEARCH_TYPES = {
 	normal = "|cffffd839" .. L["Normal"] .. "|r",
@@ -679,151 +681,11 @@ function private.GetScanFrame()
 end
 
 function private.BidBtnOnClick(button)
-	private.fsm:ProcessEvent("EV_BID_CONFIRMATION")
+	private.fsm:ProcessEvent("EV_BID_CLICKED")
 end
 
 function private.BuyoutBtnOnClick(button)
-	private.fsm:ProcessEvent("EV_BUY_CONFIRMATION")
-end
-
-function private.BuyoutConfirmationShow(context, isBuy)
-	if context.scanFrame:GetBaseElement():IsDialogVisible() then
-		return
-	end
-
-	local record = context.scanFrame:GetElement("auctions"):GetSelectedRecord()
-	local buyout = isBuy and record:GetField("buyout") or TSM.Auction.GetRequiredBidByScanResultRow(record)
-	local stackSize = record:GetField("stackSize")
-	local itemString = record:GetField("itemString")
-
-	local numConfirmed = context.numConfirmed + 1
-
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:SetStyle("width", 290)
-		:SetStyle("height", 156)
-		:SetStyle("anchors", { { "CENTER" } })
-		:SetStyle("background", "#2e2e2e")
-		:SetStyle("border", "#e2e2e2")
-		:SetStyle("borderSize", 1)
-		:SetStyle("padding", 8)
-		:SetMouseEnabled(true)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "item")
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "icon")
-				:SetStyle("width", 22)
-				:SetStyle("height", 22)
-				:SetStyle("margin", { right = 8, bottom = 2 })
-				:SetStyle("backgroundTexture", ItemInfo.GetTexture(itemString))
-				:SetTooltip(itemString)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "name")
-				:SetStyle("height", 22)
-				:SetStyle("margin", { bottom = 2, right = 16 })
-				:SetStyle("font", TSM.UI.Fonts.FRIZQT)
-				:SetStyle("fontHeight", 16)
-				:SetStyle("justifyH", "LEFT")
-				:SetText(TSM.UI.GetColoredItemName(itemString))
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "stack")
-			:SetStyle("height", 20)
-			:SetStyle("margin.bottom", 4)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("justifyH", "LEFT")
-			:SetText(L["Qty"]..": "..stackSize)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "price")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(L["Price Per Item"]..":")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "money")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "RIGHT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(Money.ToString(ceil(buyout / stackSize)))
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buyout")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(isBuy and L["Auction Buyout"]..":" or L["Auction Bid"]..":")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "money")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "RIGHT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(Money.ToString(buyout))
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "stacks")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(isBuy and L["Purchasing Auction"]..":" or L["Bidding Auction"]..":")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "number")
-				:SetStyle("height", 20)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "RIGHT")
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(numConfirmed.."/"..context.numFound)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "TSMShoppingConfirmBuyoutBtn")
-			:SetStyle("margin.top", 6)
-			:SetStyle("width", 276)
-			:SetStyle("height", 26)
-			:SetText(isBuy and L["BUYOUT"] or L["BID"])
-			:SetScript("OnClick", isBuy and private.ConfirmBuyoutBtnOnClick or private.ConfirmBidBtnOnClick)
-		)
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "closeBtn")
-			:SetStyle("width", 18)
-			:SetStyle("height", 18)
-			:SetStyle("anchors", { { "TOPRIGHT", -4, -4 } })
-			:SetStyle("backgroundTexturePack", "iconPack.18x18/Close/Default")
-			:SetScript("OnClick", private.BuyoutConfirmCloseBtnOnClick)
-		)
-
-	context.scanFrame:GetBaseElement():ShowDialogFrame(frame)
-end
-
-function private.BuyoutConfirmCloseBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-end
-
-function private.ConfirmBidBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-	private.fsm:ProcessEvent("EV_BID_AUCTION")
-end
-
-function private.ConfirmBuyoutBtnOnClick(button)
-	button:GetBaseElement():HideDialog()
-	private.fsm:ProcessEvent("EV_BUY_AUCTION")
+	private.fsm:ProcessEvent("EV_BUYOUT_CLICKED")
 end
 
 function private.PostDialogShow(baseFrame, record)
@@ -909,80 +771,120 @@ function private.GetPostingFrame()
 				:SetScript("OnClick", private.ItemBtnOnClick)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "quantity")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-				:SetStyle("width", 110)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(L["Stack / Quantity"] .. ":")
+	if TSM.IsWow83() then
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "quantity")
+				:SetLayout("HORIZONTAL")
+				:SetStyle("height", 20)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
+					:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("textColor", "#e2e2e2")
+					:SetText(L["Quantity"] .. ":")
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "stackSize")
+					:SetStyle("width", 100)
+					:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("height", 18)
+					:SetStyle("justifyH", "RIGHT")
+					:SetMinNumber(1)
+					:SetMaxNumber(9999)
+					:SetMaxLetters(4)
+					:SetScript("OnTextChanged", private.QuantityStackInputOnTextChanged)
+					:SetScript("OnTabPressed", private.QuantityStackInputOnTabPressed)
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "num")
-				:SetStyle("height", 18)
-				:SetStyle("margin.left", 8)
-				:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "RIGHT")
-				:SetMinNumber(1)
-				:SetMaxNumber(9999)
-				:SetMaxLetters(4)
-				:SetText("1")
-				:SetScript("OnTextChanged", private.QuantityNumInputOnTextChanged)
-				:SetScript("OnTabPressed", private.QuantityNumInputOnTabPressed)
+			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "maxBtns")
+				:SetLayout("HORIZONTAL")
+				:SetStyle("height", 20)
+				:SetStyle("margin.bottom", 8)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer1"))
+				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "stackSizeBtn")
+					:SetStyle("width", 100)
+					:SetStyle("height", 15)
+					:SetStyle("margin.left", 4)
+					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+					:SetStyle("fontHeight", 12)
+					:SetText(L["MAX"])
+					:SetScript("OnClick", private.MaxStackSizeBtnOnClick)
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "ofText")
-				:SetStyle("width", 20)
-				:SetStyle("margin", 4)
-				:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("justifyH", "CENTER")
-				:SetText(L["of"])
+	else
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "quantity")
+				:SetLayout("HORIZONTAL")
+				:SetStyle("height", 20)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
+					:SetStyle("width", 110)
+					:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("textColor", "#e2e2e2")
+					:SetText(L["Stack / Quantity"] .. ":")
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "num")
+					:SetStyle("height", 18)
+					:SetStyle("margin.left", 8)
+					:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("justifyH", "RIGHT")
+					:SetMinNumber(1)
+					:SetMaxNumber(9999)
+					:SetMaxLetters(4)
+					:SetText("1")
+					:SetScript("OnTextChanged", private.QuantityNumInputOnTextChanged)
+					:SetScript("OnTabPressed", private.QuantityNumInputOnTabPressed)
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "ofText")
+					:SetStyle("width", 20)
+					:SetStyle("margin", 4)
+					:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("justifyH", "CENTER")
+					:SetText(L["of"])
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "stackSize")
+					:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
+					:SetStyle("fontHeight", 12)
+					:SetStyle("height", 18)
+					:SetStyle("justifyH", "RIGHT")
+					:SetMinNumber(1)
+					:SetMaxNumber(9999)
+					:SetMaxLetters(4)
+					:SetScript("OnTextChanged", private.QuantityStackInputOnTextChanged)
+					:SetScript("OnTabPressed", private.QuantityStackInputOnTabPressed)
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "stackSize")
-				:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("height", 18)
-				:SetStyle("justifyH", "RIGHT")
-				:SetMinNumber(1)
-				:SetMaxNumber(9999)
-				:SetMaxLetters(4)
-				:SetScript("OnTextChanged", private.QuantityStackInputOnTextChanged)
-				:SetScript("OnTabPressed", private.QuantityStackInputOnTabPressed)
+			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "maxBtns")
+				:SetLayout("HORIZONTAL")
+				:SetStyle("height", 20)
+				:SetStyle("margin.bottom", 8)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer1")
+					:SetStyle("width", 118)
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "numBtn")
+					:SetStyle("height", 15)
+					:SetStyle("margin.left", 4)
+					:SetStyle("margin.right", 4)
+					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+					:SetStyle("fontHeight", 12)
+					:SetText(L["MAX"])
+					:SetScript("OnClick", private.MaxNumBtnOnClick)
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer2")
+					:SetStyle("width", 20)
+					:SetStyle("margin", 4)
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "stackSizeBtn")
+					:SetStyle("height", 15)
+					:SetStyle("margin.left", 4)
+					:SetStyle("margin.right", 4)
+					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+					:SetStyle("fontHeight", 12)
+					:SetText(L["MAX"])
+					:SetScript("OnClick", private.MaxStackSizeBtnOnClick)
+				)
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "maxBtns")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:SetStyle("margin.bottom", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer1")
-				:SetStyle("width", 118)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "numBtn")
-				:SetStyle("height", 15)
-				:SetStyle("margin.left", 4)
-				:SetStyle("margin.right", 4)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["MAX"])
-				:SetScript("OnClick", private.MaxNumBtnOnClick)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer2")
-				:SetStyle("width", 20)
-				:SetStyle("margin", 4)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "stackSizeBtn")
-				:SetStyle("height", 15)
-				:SetStyle("margin.left", 4)
-				:SetStyle("margin.right", 4)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["MAX"])
-				:SetScript("OnClick", private.MaxStackSizeBtnOnClick)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "duration")
+	end
+	frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "duration")
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 20)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
@@ -1008,18 +910,31 @@ function private.GetPostingFrame()
 			)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "stack")
-			:SetStyle("width", 49)
-			:SetStyle("height", 14)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("margin", { left = 199, bottom = 4 })
-			:SetStyle("fontHeight", 10)
-			:SetStyle("justifyH", "RIGHT")
-			:SetStyle("textColor", "#ffd839")
-			:SetText(L["Per Unit"])
-			:SetScript("OnClick", private.StackBtnOnClick)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "bid")
+	if TSM.IsWow83() then
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "stack")
+				:SetStyle("width", 49)
+				:SetStyle("height", 14)
+				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+				:SetStyle("margin", { left = 199, bottom = 4 })
+				:SetStyle("fontHeight", 10)
+				:SetStyle("justifyH", "RIGHT")
+				:SetStyle("textColor", "#ffd839")
+				:SetText(L["Per Unit"])
+			)
+	else
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "stack")
+				:SetStyle("width", 49)
+				:SetStyle("height", 14)
+				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+				:SetStyle("margin", { left = 199, bottom = 4 })
+				:SetStyle("fontHeight", 10)
+				:SetStyle("justifyH", "RIGHT")
+				:SetStyle("textColor", "#ffd839")
+				:SetText(L["Per Unit"])
+				:SetScript("OnClick", private.StackBtnOnClick)
+			)
+	end
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "bid")
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 20)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
@@ -1191,12 +1106,18 @@ function private.PostingFrameOnUpdate(frame)
 	end
 	local undercut = TSMAPI_FOUR.PlayerInfo.IsPlayer(record.seller, true, true, true) and 0 or 1
 	local bid = floor(record.displayedBid / record.stackSize) - undercut
+	if TSM.IsWow83() then
+		bid = Math.Round(bid, COPPER_PER_SILVER)
+	end
 	if bid <= 0 then
 		bid = 1
 	elseif bid > MAXIMUM_BID_PRICE then
 		bid = MAXIMUM_BID_PRICE
 	end
 	local buyout = floor(record.buyout / record.stackSize) - undercut
+	if TSM.IsWow83() then
+		buyout = Math.Round(buyout, COPPER_PER_SILVER)
+	end
 	if buyout < 0 then
 		buyout = 0
 	elseif buyout > MAXIMUM_BID_PRICE then
@@ -1210,19 +1131,29 @@ function private.PostingFrameOnUpdate(frame)
 		:SetTooltip(private.itemString)
 	frame:GetElement("item.name")
 		:SetText(TSM.UI.GetColoredItemName(private.itemString))
-	frame:GetElement("quantity.num")
-		:SetDisabled(cagedPet)
+	if TSM.IsWow83() then
+		if ItemInfo.IsCommodity(private.itemString) then
+			frame:GetElement("bid"):Hide()
+		else
+			frame:GetElement("bid"):Show()
+		end
+	else
+		frame:GetElement("quantity.num")
+			:SetDisabled(cagedPet)
+		frame:GetElement("maxBtns.numBtn")
+			:SetDisabled(cagedPet)
+	end
+	local maxPostStack = private.GetMaxPostStack(private.itemString)
 	frame:GetElement("quantity.stackSize")
 		:SetDisabled(cagedPet)
-		:SetText(record.stackSize)
-	frame:GetElement("maxBtns.numBtn")
-		:SetDisabled(cagedPet)
+		:SetText(min(record.stackSize, maxPostStack))
+		:SetMaxNumber(maxPostStack)
 	frame:GetElement("maxBtns.stackSizeBtn")
 		:SetDisabled(cagedPet)
 	frame:GetElement("bid.text")
-		:SetText(Money.ToString(bid))
+		:SetText(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
 	frame:GetElement("buyout.text")
-		:SetText(Money.ToString(buyout))
+		:SetText(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
 	frame:GetElement("confirmBtn")
 		:SetContext(private.itemString)
 
@@ -1577,11 +1508,11 @@ function private.StackBtnOnClick(button)
 		local stackSizeEdit = frame:GetElement("quantity.stackSize"):GetText()
 		stackSizeEdit = tonumber(stackSizeEdit)
 		if stackSize == stackSizeEdit then
-			private.BuyoutTextOnValueChanged(buyoutText, Money.ToString(buyout - undercut), true)
-			private.BidTextOnValueChanged(bidText, Money.ToString(bid - undercut), true)
+			private.BuyoutTextOnValueChanged(buyoutText, Money.ToString(buyout - undercut, nil, "OPT_83_NO_COPPER"), true)
+			private.BidTextOnValueChanged(bidText, Money.ToString(bid - undercut, nil, "OPT_83_NO_COPPER"), true)
 		else
-			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(record.buyout / stackSize) * stackSizeEdit) or 0, true)
-			private.BidTextOnValueChanged(bidText, Money.ToString(floor(record.displayedBid / stackSize) * stackSizeEdit), true)
+			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(record.buyout / stackSize) * stackSizeEdit, nil, "OPT_83_NO_COPPER") or 0, true)
+			private.BidTextOnValueChanged(bidText, Money.ToString(floor(record.displayedBid / stackSize) * stackSizeEdit, nil, "OPT_83_NO_COPPER"), true)
 		end
 		button:SetText(L["Per Stack"])
 	else
@@ -1593,11 +1524,11 @@ function private.StackBtnOnClick(button)
 		local stackSizeEdit = frame:GetElement("quantity.stackSize"):GetText()
 		stackSizeEdit = tonumber(stackSizeEdit)
 		if stackSize == stackSizeEdit then
-			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(buyout / stackSizeEdit) - undercut) or 0, true)
-			private.BidTextOnValueChanged(bidText, Money.ToString(floor(bid / stackSizeEdit) - undercut), true)
+			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(buyout / stackSizeEdit) - undercut, nil, "OPT_83_NO_COPPER") or 0, true)
+			private.BidTextOnValueChanged(bidText, Money.ToString(floor(bid / stackSizeEdit) - undercut, nil, "OPT_83_NO_COPPER"), true)
 		else
-			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(record.buyout / stackSize)) or 0, true)
-			private.BidTextOnValueChanged(bidText, Money.ToString(floor(record.displayedBid / stackSize)), true)
+			private.BuyoutTextOnValueChanged(buyoutText, Money.FromString(buyoutText:GetText()) > 0 and Money.ToString(floor(record.buyout / stackSize), nil, "OPT_83_NO_COPPER") or 0, true)
+			private.BidTextOnValueChanged(bidText, Money.ToString(floor(record.displayedBid / stackSize), nil, "OPT_83_NO_COPPER"), true)
 		end
 		button:SetText(L["Per Unit"])
 	end
@@ -1611,11 +1542,11 @@ function private.BidTextOnValueChanged(text, value, skipUpdate)
 		local frame = text:GetParentElement():GetParentElement()
 		local buyout = Money.FromString(frame:GetElement("buyout.text"):GetText())
 		if private.perItem and buyout > 0 and value > buyout then
-			text:SetText(Money.ToString(buyout))
+			text:SetText(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
 		elseif not private.perItem and buyout > 0 and value > buyout then
-			text:SetText(Money.ToString(buyout))
+			text:SetText(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
 		else
-			text:SetText(Money.ToString(value))
+			text:SetText(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
 		end
 	end
 	text:Draw()
@@ -1628,14 +1559,17 @@ end
 function private.BuyoutTextOnValueChanged(text, value, skipUpdate)
 	value = Money.FromString(value)
 	if value then
+		if TSM.IsWow83() then
+			value = Math.Round(value, COPPER_PER_SILVER)
+		end
 		value = min(value, MAXIMUM_BID_PRICE)
 		local frame = text:GetParentElement():GetParentElement()
 		local bidText = frame:GetElement("bid.text")
 		local bid = Money.FromString(bidText:GetText())
 		if value > 0 and bid > value then
-			private.BidTextOnValueChanged(bidText, Money.ToString(value), skipUpdate)
+			private.BidTextOnValueChanged(bidText, Money.ToString(value, nil, "OPT_83_NO_COPPER"), skipUpdate)
 		end
-		text:SetText(Money.ToString(value))
+		text:SetText(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
 	end
 	text:Draw()
 
@@ -1708,11 +1642,11 @@ function private.QuantityStackInputOnTextChanged(input)
 	stackSizeEdit = tonumber(stackSizeEdit)
 	-- always update buyout first
 	if stackSize == stackSizeEdit then
-		private.BuyoutTextOnValueChanged(buyoutText, Money.ToString(buyout - undercut))
-		private.BidTextOnValueChanged(bidText, Money.ToString(bid - undercut))
+		private.BuyoutTextOnValueChanged(buyoutText, Money.ToString(buyout - undercut, nil, "OPT_83_NO_COPPER"))
+		private.BidTextOnValueChanged(bidText, Money.ToString(bid - undercut, nil, "OPT_83_NO_COPPER"))
 	else
-		private.BuyoutTextOnValueChanged(buyoutText, Money.ToString((floor(buyout / stackSize) * stackSizeEdit)))
-		private.BidTextOnValueChanged(bidText, Money.ToString((floor(bid / stackSize) * stackSizeEdit)))
+		private.BuyoutTextOnValueChanged(buyoutText, Money.ToString(floor(buyout / stackSize) * stackSizeEdit, nil, "OPT_83_NO_COPPER"))
+		private.BidTextOnValueChanged(bidText, Money.ToString(floor(bid / stackSize) * stackSizeEdit, nil, "OPT_83_NO_COPPER"))
 	end
 end
 
@@ -1734,14 +1668,9 @@ function private.UpdateDepositCost(frame)
 		:Select("bag", "slot")
 		:Equal("itemString", itemString)
 		:GetFirstResultAndRelease()
-	if postBag and postSlot then
-		ClearCursor()
-		PickupContainerItem(postBag, postSlot)
-		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-		ClearCursor()
-	else
+	if not postBag or not postSlot then
 		frame:GetElement("deposit.text")
-			:SetText(Money.ToString(0))
+			:SetText(Money.ToString(0, nil, "OPT_83_NO_COPPER"))
 			:Draw()
 		frame:GetElement("confirmBtn")
 			:SetDisabled(true)
@@ -1751,59 +1680,92 @@ function private.UpdateDepositCost(frame)
 
 	private.postTimeStr = frame:GetElement("duration.toggle"):GetValue()
 	local postTime = Table.GetDistinctKey(POST_TIME_STRS, private.postTimeStr)
-
-	local bid = Money.FromString(frame:GetElement("bid.text"):GetText())
-	local buyout = Money.FromString(frame:GetElement("buyout.text"):GetText())
-	local num = tonumber(frame:GetElement("quantity.num"):GetText())
 	local stackSize = tonumber(frame:GetElement("quantity.stackSize"):GetText())
-	if private.perItem then
-		bid = bid * stackSize
-		buyout = buyout * stackSize
+	local depositCost = nil
+	if TSM.IsWow83() then
+		private.itemLocation:Clear()
+		private.itemLocation:SetBagAndSlot(postBag, postSlot)
+		local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
+		if commodityStatus == Enum.ItemCommodityStatus.Item then
+			depositCost = C_AuctionHouse.CalculateItemDeposit(private.itemLocation, postTime, stackSize)
+		elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
+			depositCost = C_AuctionHouse.CalculateCommodityDeposit(ItemString.ToId(itemString), postTime, stackSize)
+		else
+			error("Unknown commodity status: "..tostring(itemString))
+		end
+	else
+		local bid = Money.FromString(frame:GetElement("bid.text"):GetText())
+		local buyout = Money.FromString(frame:GetElement("buyout.text"):GetText())
+		if private.perItem then
+			bid = bid * stackSize
+			buyout = buyout * stackSize
+		end
+		local num = tonumber(frame:GetElement("quantity.num"):GetText())
+		ClearCursor()
+		PickupContainerItem(postBag, postSlot)
+		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+		ClearCursor()
+		depositCost = GetAuctionDeposit(postTime, bid, buyout, stackSize, num)
+		ClearCursor()
+		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+		ClearCursor()
 	end
 
 	frame:GetElement("deposit.text")
-		:SetText(Money.ToString(GetAuctionDeposit(postTime, bid, buyout, stackSize, num)))
+		:SetText(Money.ToString(depositCost))
 		:Draw()
 	frame:GetElement("confirmBtn")
 		:SetDisabled(false)
 		:Draw()
-
-	ClearCursor()
-	ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-	ClearCursor()
 end
 
 function private.PostButtonOnClick(button)
 	local frame = button:GetParentElement()
-	local num = frame:GetElement("quantity.num"):GetText()
 	local stackSize = frame:GetElement("quantity.stackSize"):GetText()
-	num = tonumber(num)
 	stackSize = tonumber(stackSize)
 	local bid = Money.FromString(frame:GetElement("bid.text"):GetText())
 	local buyout = Money.FromString(frame:GetElement("buyout.text"):GetText())
-	if private.perItem then
-		bid = bid * stackSize
-		buyout = buyout * stackSize
-	end
-
+	local itemString = button:GetContext()
 	local postBag, postSlot = BagTracking.CreateQueryBagsAuctionable()
 		:OrderBy("slotId", true)
 		:Select("bag", "slot")
-		:Equal("itemString", button:GetContext())
+		:Equal("itemString", itemString)
 		:GetFirstResultAndRelease()
 	if postBag and postSlot then
-		if strfind(button:GetContext(), "^p") then
-			stackSize = 1
-			num = 1
-		end
-		-- need to set the duration in the default UI to avoid Blizzard errors
+
 		local postTime = Table.GetDistinctKey(POST_TIME_STRS, frame:GetElement("duration.toggle"):GetValue())
-		AuctionFrameAuctions.duration = postTime
-		ClearCursor()
-		PickupContainerItem(postBag, postSlot)
-		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
-		PostAuction(bid, buyout, postTime, stackSize, num)
-		ClearCursor()
+		if TSM.IsWow83() then
+			bid = Math.Round(bid, COPPER_PER_SILVER)
+			buyout = Math.Round(buyout, COPPER_PER_SILVER)
+			private.itemLocation:Clear()
+			private.itemLocation:SetBagAndSlot(postBag, postSlot)
+			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
+			if commodityStatus == Enum.ItemCommodityStatus.Item then
+				C_AuctionHouse.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
+			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
+				C_AuctionHouse.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
+			else
+				error("Unknown commodity status: "..tostring(itemString))
+			end
+		else
+			local num = frame:GetElement("quantity.num"):GetText()
+			num = tonumber(num)
+			if strfind(button:GetContext(), "^p") then
+				stackSize = 1
+				num = 1
+			end
+			if private.perItem then
+				bid = bid * stackSize
+				buyout = buyout * stackSize
+			end
+			-- need to set the duration in the default UI to avoid Blizzard errors
+			AuctionFrameAuctions.duration = postTime
+			ClearCursor()
+			PickupContainerItem(postBag, postSlot)
+			ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
+			PostAuction(bid, buyout, postTime, stackSize, num)
+			ClearCursor()
+		end
 	end
 	frame:GetBaseElement():HideDialog()
 end
@@ -1834,6 +1796,15 @@ function private.GetBagQuantity(itemString)
 		:SumAndRelease("quantity") or 0
 end
 
+function private.GetMaxPostStack(itemString)
+	local numHave = private.GetBagQuantity(itemString)
+	if TSM.IsWow83() then
+		return ItemInfo.IsCommodity(itemString) and numHave or 1
+	else
+		return min(ItemInfo.GetMaxStack(itemString), numHave)
+	end
+end
+
 function private.MaxNumBtnOnClick(button)
 	button:GetElement("__parent.__parent.quantity.stackSize"):SetFocused(false)
 	local itemString = button:GetElement("__parent.__parent.confirmBtn"):GetContext()
@@ -1848,20 +1819,24 @@ function private.MaxNumBtnOnClick(button)
 end
 
 function private.MaxStackSizeBtnOnClick(button)
-	button:GetElement("__parent.__parent.quantity.num"):SetFocused(false)
+	if not TSM.IsWow83() then
+		button:GetElement("__parent.__parent.quantity.num"):SetFocused(false)
+	end
 	local itemString = button:GetElement("__parent.__parent.confirmBtn"):GetContext()
 	local numHave = private.GetBagQuantity(itemString)
-	local stackSize = min(ItemInfo.GetMaxStack(itemString), numHave)
+	local stackSize = private.GetMaxPostStack(itemString)
 	assert(stackSize > 0)
 	button:GetElement("__parent.__parent.quantity.stackSize")
 		:SetText(stackSize)
 		:Draw()
-	local numStacks = tonumber(button:GetElement("__parent.__parent.quantity.num"):GetText())
-	local newStackSize = floor(numHave / stackSize)
-	if numStacks > newStackSize then
-		button:GetElement("__parent.__parent.quantity.num")
-			:SetText(newStackSize)
-			:Draw()
+	if not TSM.IsWow83() then
+		local numStacks = tonumber(button:GetElement("__parent.__parent.quantity.num"):GetText())
+		local newStackSize = floor(numHave / stackSize)
+		if numStacks > newStackSize then
+			button:GetElement("__parent.__parent.quantity.num")
+				:SetText(newStackSize)
+				:Draw()
+		end
 	end
 end
 
@@ -1896,6 +1871,7 @@ function private.FSMCreate()
 		findResult = nil,
 		numFound = 0,
 		numBought = 0,
+		lastBuyQuantity = 0,
 		numBid = 0,
 		numConfirmed = 0,
 		scanContext = nil,
@@ -1968,6 +1944,7 @@ function private.FSMCreate()
 				context.findResult = nil
 				context.numFound = 0
 				context.numBought = 0
+				context.lastBuyQuantity = 0
 				context.numBid = 0
 				context.numConfirmed = 0
 				context.buyCallback = nil
@@ -2074,6 +2051,7 @@ function private.FSMCreate()
 				context.findResult = nil
 				context.numFound = 0
 				context.numBought = 0
+				context.lastBuyQuantity = 0
 				context.numBid = 0
 				context.numConfirmed = 0
 				context.progress = 1
@@ -2177,8 +2155,14 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_AUCTION_FOUND")
 			:SetOnEnter(function(context, result)
 				TSM.UI.AuctionUI.EndedScan(L["Shopping"])
-				context.findResult = result
-				context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+				if TSM.IsWow83() then
+					local numCanBuy = min(result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+					context.findResult = numCanBuy > 0
+					context.numFound = numCanBuy
+				else
+					context.findResult = result
+					context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+				end
 				assert(context.numBought == 0 and context.numBid == 0 and context.numConfirmed == 0)
 				return "ST_BUYING"
 			end)
@@ -2188,21 +2172,23 @@ function private.FSMCreate()
 			:SetOnEnter(function(context)
 				TSM.UI.AuctionUI.EndedScan(L["Shopping"])
 				local link = context.findAuction:GetField("rawLink")
-				context.auctionScan:DeleteRowFromDB(context.findAuction)
+				context.auctionScan:DeleteRowFromDB(context.findAuction, 0)
 				Log.PrintfUser(L["Failed to find auction for %s, so removing it from the results."], link)
 				return "ST_RESULTS"
 			end)
 			:AddTransition("ST_RESULTS")
 		)
 		:AddState(FSM.NewState("ST_BUYING")
-			:SetOnEnter(function(context, removeRecord)
-				if removeRecord then
-					if context.scanFrame then
+			:SetOnEnter(function(context, numToRemove)
+				if numToRemove then
+					-- remove the one we just bought
+					context.db:SetQueryUpdatesPaused(true)
+					local deletedRow = context.auctionScan:DeleteRowFromDB(context.findAuction, numToRemove)
+					if deletedRow and context.scanFrame then
 						-- move to the next auction
 						context.scanFrame:GetElement("auctions"):SelectNextRecord()
 					end
-					-- remove the one we just bought
-					context.auctionScan:DeleteRowFromDB(context.findAuction, true)
+					context.db:SetQueryUpdatesPaused(false)
 					context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
 				end
 				local selection = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
@@ -2226,9 +2212,14 @@ function private.FSMCreate()
 				context.progress = context.numConfirmed / context.numFound
 				context.progressText = progressText
 				context.postDisabled = private.GetBagQuantity(selection:GetField("itemString")) == 0
-				local requiredBid = TSM.Auction.GetRequiredBidByScanResultRow(selection)
-				context.bidDisabled = selection:GetField("displayedBid") == selection:GetField("buyout") or numCanBuy == 0 or GetMoney() < requiredBid or TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true) or selection:GetField("isHighBidder")
-				context.buyoutDisabled = selection:GetField("buyout") == 0 or numCanBuy == 0 or GetMoney() < selection:GetField("buyout") or TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
+				local isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
+				if numCanBuy == 0 or isPlayer or (TSM.IsWow83() and numConfirming > 0) then
+					context.bidDisabled = true
+					context.buyoutDisabled = true
+				else
+					context.bidDisabled = not TSM.Auction.CanBid(selection)
+					context.buyoutDisabled = not TSM.Auction.CanBuyout(selection, context.db)
+				end
 				UpdateScanFrame(context)
 			end)
 			:AddTransition("ST_BUYING")
@@ -2240,10 +2231,11 @@ function private.FSMCreate()
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_AUCTION_SELECTION_CHANGED", "ST_BUYING")
-			:AddEventTransition("EV_BUY_CONFIRMATION", "ST_BUY_CONFIRMATION")
-			:AddEventTransition("EV_BID_CONFIRMATION", "ST_BID_CONFIRMATION")
-			:AddEventTransition("EV_BID_AUCTION", "ST_PLACING_BID")
-			:AddEventTransition("EV_BUY_AUCTION", "ST_PLACING_BUY")
+			:AddEventTransition("EV_BUYOUT_CLICKED", "ST_BUY_CONFIRMATION")
+			:AddEventTransition("EV_BID_CLICKED", "ST_BID_CONFIRMATION")
+			:AddEvent("EV_CONFIRMED", function(context, isBuy, quantity)
+				return isBuy and "ST_PLACING_BUY" or "ST_PLACING_BID", quantity
+			end)
 			:AddEvent("EV_MSG", function(context, msg)
 				if not context.findAuction then
 					return
@@ -2279,17 +2271,11 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_BUY_CONFIRMATION")
 			:SetOnEnter(function(context)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelectedRecord()
-				local price = CustomPrice.GetValue(TSM.db.global.shoppingOptions.buyoutAlertSource, selection:GetField("itemString"))
-				if not TSM.db.global.shoppingOptions.buyoutConfirm or (price and ceil(selection:GetField("buyout") / selection:GetField("stackSize")) < price) then
-					if selection:GetField("isHighBidder") then
-						private.BuyoutConfirmationShow(context, true)
-					else
-						return "ST_PLACING_BUY"
-					end
+				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, true, context.numConfirmed + 1, context.numFound, private.FSMConfirmationCallback) then
+					return "ST_BUYING"
 				else
-					private.BuyoutConfirmationShow(context, true)
+					return "ST_PLACING_BUY", selection:GetField("stackSize")
 				end
-				return "ST_BUYING"
 			end)
 			:AddTransition("ST_PLACING_BUY")
 			:AddTransition("ST_BUYING")
@@ -2297,25 +2283,23 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_BID_CONFIRMATION")
 			:SetOnEnter(function(context)
 				local selection = context.scanFrame:GetElement("auctions"):GetSelectedRecord()
-				local price = CustomPrice.GetValue(TSM.db.global.shoppingOptions.buyoutAlertSource, selection:GetField("itemString"))
-				local requiredBid = TSM.Auction.GetRequiredBidByScanResultRow(selection)
-				if not TSM.db.global.shoppingOptions.buyoutConfirm or (price and ceil(requiredBid / selection:GetField("stackSize")) < price) then
-					return "ST_PLACING_BID"
+				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, false, context.numConfirmed + 1, context.numFound, private.FSMConfirmationCallback) then
+					return "ST_BUYING"
 				else
-					private.BuyoutConfirmationShow(context, false)
+					return "ST_PLACING_BID", selection:GetField("stackSize")
 				end
-				return "ST_BUYING"
 			end)
 			:AddTransition("ST_PLACING_BID")
 			:AddTransition("ST_BUYING")
 		)
 		:AddState(FSM.NewState("ST_PLACING_BUY")
-			:SetOnEnter(function(context)
-				local index = tremove(context.findResult, #context.findResult)
-				assert(index)
+			:SetOnEnter(function(context, quantity)
+				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
+				assert(TSM.IsWow83() or index)
 				-- buy the auction
-				if context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetField("buyout"), context.findAuction) then
-					context.numBought = context.numBought + 1
+				if context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetField("buyout"), context.findAuction, false, quantity) then
+					context.numBought = context.numBought + (TSM.IsWow83() and quantity or 1)
+					context.lastBuyQuantity = quantity
 				else
 					Log.PrintfUser(L["Failed to buy auction of %s."], context.findAuction:GetField("rawLink"))
 				end
@@ -2326,22 +2310,23 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_CONFIRMING_BUY")
 			:SetOnEnter(function(context, success)
 				if success then
-					context.buyCallback(context.findAuction:GetField("targetItem"), context.findAuction:GetField("stackSize") * context.findAuction:GetField("targetItemRate"))
+					context.buyCallback(context.findAuction:GetField("targetItem"), context.lastBuyQuantity * context.findAuction:GetField("targetItemRate"))
 				else
 					Log.PrintfUser(L["Failed to buy auction of %s."], context.findAuction:GetField("rawLink"))
 				end
-				context.numConfirmed = context.numConfirmed + 1
-				return "ST_BUYING", true
+				context.numConfirmed = context.numConfirmed + (TSM.IsWow83() and context.lastBuyQuantity or 1)
+				return "ST_BUYING", context.lastBuyQuantity
 			end)
 			:AddTransition("ST_BUYING")
 		)
 		:AddState(FSM.NewState("ST_PLACING_BID")
-			:SetOnEnter(function(context)
-				local index = tremove(context.findResult, #context.findResult)
-				assert(index)
+			:SetOnEnter(function(context, quantity)
+				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
+				assert(not TSM.IsWow83() or index)
 				-- bid on the auction
-				if context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction) then
-					context.numBid = context.numBid + 1
+				if context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction, false, quantity) then
+					context.numBid = context.numBid + (TSM.IsWow83() and quantity or 1)
+					context.lastBuyQuantity = quantity
 				else
 					Log.PrintfUser(L["Failed to bid on auction of %s."], context.findAuction:GetField("rawLink"))
 				end
@@ -2392,4 +2377,8 @@ function private.FSMFindAuctionCallback(result)
 	else
 		private.fsm:ProcessEvent("EV_AUCTION_NOT_FOUND")
 	end
+end
+
+function private.FSMConfirmationCallback(isBuy, quantity)
+	private.fsm:ProcessEvent("EV_CONFIRMED", isBuy, quantity)
 end

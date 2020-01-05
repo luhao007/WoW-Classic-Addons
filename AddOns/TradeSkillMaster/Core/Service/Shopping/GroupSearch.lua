@@ -10,6 +10,7 @@ local _, TSM = ...
 local GroupSearch = TSM.Shopping:NewPackage("GroupSearch")
 local L = TSM.Include("Locale").GetTable()
 local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
@@ -66,6 +67,7 @@ function private.ScanThread(auctionScan, groupList)
 	auctionScan:AddItemListFiltersThreaded(private.itemList, private.maxQuantity)
 	for _, filter in auctionScan:FilterIterator() do
 		filter:SetIsDoneFunction(private.FilterIsDoneFunction)
+		filter:SetShouldScanItemFunction(private.FilterShouldScanItemFunction)
 	end
 
 	-- run the scan
@@ -101,6 +103,15 @@ function private.FilterIsDoneFunction(filter)
 		end
 	end
 	return true
+end
+
+function private.FilterShouldScanItemFunction(filter, baseItemString, minPrice)
+	for _, itemString in ipairs(filter:GetItems()) do
+		if ItemString.GetBaseFast(itemString) == baseItemString and TSM.Operations.Shopping.ShouldScanItem(itemString, minPrice) then
+			return true
+		end
+	end
+	return false
 end
 
 function private.MarketValueFunction(row)

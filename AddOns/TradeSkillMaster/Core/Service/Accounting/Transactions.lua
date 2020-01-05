@@ -16,6 +16,7 @@ local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	db = nil,
 	dbSummary = nil,
@@ -142,16 +143,13 @@ end
 
 function Transactions.RemoveOldData(days)
 	private.dataChanged = true
-	local query = private.db:NewQuery()
-		:LessThan("time", time() - days * SECONDS_PER_DAY)
-	local numRecords = 0
 	private.db:SetQueryUpdatesPaused(true)
-	for _, row in query:Iterator() do
-		private.db:DeleteRow(row)
-		numRecords = numRecords + 1
-	end
-	query:Release()
+	local numRecords = private.db:NewQuery()
+		:LessThan("time", time() - days * SECONDS_PER_DAY)
+		:DeleteAndRelease()
 	private.db:SetQueryUpdatesPaused(false)
+	private.OnItemRecordsChanged("sale")
+	private.OnItemRecordsChanged("buy")
 	return numRecords
 end
 
@@ -316,7 +314,8 @@ end
 function Transactions.GetLastSaleTime(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("time")
+	local query = private.db:NewQuery()
+		:Select("time")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("time", false)
@@ -479,8 +478,11 @@ function Transactions.GetCharacters(characters)
 end
 
 function Transactions.RemoveRowByUUID(uuid)
+	local recordType = private.db:GetRowFieldByUUID(uuid, "type")
+	local itemString = private.db:GetRowFieldByUUID(uuid, "itemString")
 	private.db:DeleteRowByUUID(uuid)
 	private.dataChanged = true
+	private.OnItemRecordsChanged(recordType, itemString)
 end
 
 
@@ -529,6 +531,8 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
+
+	private.OnItemRecordsChanged(recordType)
 end
 
 function private.SaveData(recordType)
@@ -615,5 +619,22 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 			:SetField("source", source)
 			:SetField("saveTime", 0)
 			:Create()
+	end
+
+	private.OnItemRecordsChanged(recordType, itemString)
+end
+
+function private.OnItemRecordsChanged(recordType, itemString)
+	if recordType == "sale" then
+		CustomPrice.OnSourceChange("AvgSell", itemString)
+		CustomPrice.OnSourceChange("MaxSell", itemString)
+		CustomPrice.OnSourceChange("MinSell", itemString)
+		CustomPrice.OnSourceChange("NumExpires", itemString)
+	elseif recordType == "buy" then
+		CustomPrice.OnSourceChange("AvgBuy", itemString)
+		CustomPrice.OnSourceChange("MaxBuy", itemString)
+		CustomPrice.OnSourceChange("MinBuy", itemString)
+	else
+		error("Invalid recordType: "..tostring(recordType))
 	end
 end

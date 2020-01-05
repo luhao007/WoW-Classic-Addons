@@ -58,6 +58,7 @@ function AuctionFilter.__init(self)
 	self._itemMaxQuantities = {}
 	self._resultIncludesRow = {}
 	self._isDoneFunction = nil
+	self._shouldScanItemFunction = nil
 end
 
 function AuctionFilter._Acquire(self, scan)
@@ -93,6 +94,7 @@ function AuctionFilter._Release(self)
 	wipe(self._itemMaxQuantities)
 	wipe(self._resultIncludesRow)
 	self._isDoneFunction = nil
+	self._shouldScanItemFunction = nil
 end
 
 
@@ -249,6 +251,11 @@ function AuctionFilter.SetIsDoneFunction(self, func)
 	return self
 end
 
+function AuctionFilter.SetShouldScanItemFunction(self, func)
+	self._shouldScanItemFunction = func
+	return self
+end
+
 function AuctionFilter.GetItems(self)
 	return self._items
 end
@@ -290,7 +297,7 @@ end
 function AuctionFilter._NextPage(self)
 	if self:_IsSniper() or self:_IsGetAll() then
 		return false
-	elseif self._isDoneFunction and self:_isDoneFunction(self._scan) then
+	elseif self._isDoneFunction and self._isDoneFunction(self, self._scan) then
 		return false
 	end
 	self._page = self._page + 1
@@ -301,10 +308,50 @@ function AuctionFilter._GetPageProgress(self)
 	return self._page, self._numPages
 end
 
+function AuctionFilter._IsItemFiltered(self, baseItemString, itemLevel)
+	if #self._items > 0 then
+		local found = false
+		for _, filterItemString in ipairs(self:GetItems()) do
+			if ItemString.GetBaseFast(filterItemString) == baseItemString then
+				found = true
+				break
+			end
+		end
+		if not found then
+			return true
+		end
+	end
+	if self._minLevel or self._maxLevel then
+		local minLevel = ItemInfo.GetMinLevel(baseItemString)
+		if minLevel < (self._minLevel or -math.huge) or minLevel > (self._maxLevel or math.huge) then
+			return true
+		end
+	end
+	if self._class and ItemInfo.GetClassId(baseItemString) ~= self._class then
+		return true
+	end
+	if self._subClass and ItemInfo.GetSubClassId(baseItemString) ~= self._subClass then
+		return true
+	end
+	if self._invType and ItemInfo.GetInvSlotId(baseItemString) ~= self._invType then
+		return true
+	end
+	if itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge) then
+		return true
+	end
+	if self._unlearned and CanIMogIt:PlayerKnowsTransmog(ItemInfo.GetLink(baseItemString)) then
+		return true
+	end
+	if self._canlearn and not CanIMogIt:CharacterCanLearnTransmog(ItemInfo.GetLink(baseItemString)) then
+		return true
+	end
+	return false
+end
+
 function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyout, stackSize, targetItemRate)
 	if #self._items > 0 then
 		local found = false
-		local rowBaseItemString = ItemString.GetBase(rowItemString)
+		local rowBaseItemString = ItemString.GetBaseFast(rowItemString)
 		for _, itemString in ipairs(self:GetItems()) do
 			if itemString == rowItemString or itemString == rowBaseItemString then
 				found = true
@@ -382,52 +429,101 @@ function AuctionFilter._GetTargetItemRate(self, itemString)
 	return conversionInfo and conversionInfo[itemString] or 0
 end
 
+function AuctionFilter._ShouldScanItem(self, baseItemString, minPrice)
+	return not self._shouldScanItemFunction or self._shouldScanItemFunction(self, baseItemString, minPrice)
+end
+
 function AuctionFilter._DoAuctionQueryThreaded(self)
-	if self:_IsSniper() then
-		if self._sniperLastPage then
-			-- scan the last page
-			local lastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
-			while true do
-				-- wait for the AH to be ready
-				while not CanSendAuctionQuery() do
-					if self._scan:_IsCancelled() then
-						Log.Info("Stopping canelled scan")
-						return false
-					end
-					Threading.Yield(true)
-				end
-				-- query the AH
-				QueryAuctionItems(nil, nil, nil, lastPage)
-				-- wait for the update event
-				Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
-				local newLastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
-				if newLastPage == lastPage then
-					break
-				end
-				lastPage = newLastPage
-			end
-		else
-			-- scan the first page
-			-- wait for the AH to be ready
-			Threading.WaitForFunction(CanSendAuctionQuery)
-			-- query the AH
-			QueryAuctionItems(nil, nil, nil, 0)
-			-- wait for the update event
-			Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+	if TSM.IsWow83() then
+		assert(not self:_IsGetAll()) -- GetAll is not supported on >= 8.3
+
+		local query = TempTable.Acquire()
+		local sorts = TempTable.Acquire()
+		local filters = TempTable.Acquire()
+		local itemClassFilters = TempTable.Acquire()
+		if self._class or self._subClass or self._invType then
+			local info = TempTable.Acquire()
+			info.classID = self._class
+			info.subClassID = self._subClass
+			info.inventoryType = self._invType
+			tinsert(itemClassFilters, info)
 		end
-	elseif self:_IsGetAll() then
-		-- wait for the AH to be ready
-		Threading.WaitForFunction(CanSendAuctionQuery)
-		if not select(2, CanSendAuctionQuery()) then
-			-- can't do a getall scan right now
+
+		query.searchString = self._name or ""
+		query.sorts = sorts
+		query.minLevel = 0
+		query.maxLevel = 0
+		query.filters = filters
+		query.itemClassFilters = itemClassFilters
+		local result = self._scan:_SendBrowseQuery83(query)
+		TempTable.Release(sorts)
+		TempTable.Release(filters)
+		for i = #itemClassFilters, 1, -1 do
+			TempTable.Release(itemClassFilters[i])
+			itemClassFilters[i] = nil
+		end
+		TempTable.Release(itemClassFilters)
+		TempTable.Release(query)
+		if not result then
 			return false
 		end
-		-- query the AH
-		QueryAuctionItems(nil, nil, nil, 0, nil, nil, true)
-		-- wait for the update event
-		Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+
+		-- wait for the browse results to fully load
+		Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
+		while not C_AuctionHouse.HasFullBrowseResults() do
+			if self._scan:_IsCancelled() then
+				return false
+			end
+			Log.Info("Requesting more...")
+			C_AuctionHouse.RequestMoreBrowseResults()
+			Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
+		end
 	else
-		if not TSM.IsWow83() then
+		if self:_IsSniper() then
+			if self._sniperLastPage then
+				-- scan the last page
+				local lastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
+				while true do
+					-- wait for the AH to be ready
+					while not CanSendAuctionQuery() do
+						if self._scan:_IsCancelled() then
+							Log.Info("Stopping canelled scan")
+							return false
+						end
+						Threading.Yield(true)
+					end
+					-- query the AH
+					QueryAuctionItems(nil, nil, nil, lastPage)
+					-- wait for the update event
+					Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+					local newLastPage = max(ceil(select(2, GetNumAuctionItems("list")) / NUM_AUCTION_ITEMS_PER_PAGE) - 1, 0)
+					if newLastPage == lastPage then
+						break
+					end
+					lastPage = newLastPage
+				end
+			else
+				-- scan the first page
+				-- wait for the AH to be ready
+				Threading.WaitForFunction(CanSendAuctionQuery)
+				-- query the AH
+				QueryAuctionItems(nil, nil, nil, 0)
+				-- wait for the update event
+				Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+			end
+		elseif self:_IsGetAll() then
+			assert(TSM.IsWowClassic()) -- currently only support GetAll scans on classic
+			-- wait for the AH to be ready
+			Threading.WaitForFunction(CanSendAuctionQuery)
+			if not select(2, CanSendAuctionQuery()) then
+				-- can't do a getall scan right now
+				return false
+			end
+			-- query the AH
+			QueryAuctionItems(nil, nil, nil, 0, nil, nil, true)
+			-- wait for the update event
+			Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
+		else
 			-- wait for the AH to be ready
 			Threading.WaitForFunction(CanSendAuctionQuery)
 			local classFilterInfo = nil
@@ -475,47 +571,6 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 			end
 			-- wait for the update event
 			Threading.WaitForEvent("AUCTION_ITEM_LIST_UPDATE")
-		else
-			local query = TempTable.Acquire()
-			local sorts = TempTable.Acquire()
-			local filters = TempTable.Acquire()
-			local itemClassFilters = TempTable.Acquire()
-			if self._class or self._subClass or self._invType then
-				local info = TempTable.Acquire()
-				info.classID = self._class
-				info.subClassID = self._subClass
-				info.inventoryType = self._invType
-				tinsert(itemClassFilters, info)
-			end
-
-			query.searchString = self._name or ""
-			query.sorts = sorts
-			query.minLevel = 0
-			query.maxLevel = 0
-			query.filters = filters
-			query.itemClassFilters = itemClassFilters
-			local result = self._scan:_SendBrowseQuery83(query)
-			TempTable.Release(sorts)
-			TempTable.Release(filters)
-			for i = #itemClassFilters, 1, -1 do
-				TempTable.Release(itemClassFilters[i])
-				itemClassFilters[i] = nil
-			end
-			TempTable.Release(itemClassFilters)
-			TempTable.Release(query)
-			if not result then
-				return false
-			end
-
-			Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
-			while not C_AuctionHouse.HasFullBrowseResults() do
-				if self._scan:_IsCancelled() then
-					return false
-				end
-				Log.Info("Requesting more...")
-				C_AuctionHouse.RequestMoreBrowseResults()
-				Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
-			end
 		end
 	end
 	return true
@@ -548,47 +603,61 @@ function AuctionFilter._GetNumCanBuy(self, row)
 	return num
 end
 
-function AuctionFilter._RemoveResultRows(self, db, row, bought)
-	self._resultIncludesRow[row:GetUUID()] = nil
-	db:DeleteRow(row)
-	if not bought then
-		return
+function AuctionFilter._RemoveResultRows(self, db, row, numBought)
+	local result = false
+	local stackSize, itemString, baseItemString = row:GetFields("stackSize", "itemString", "baseItemString")
+	if numBought == 0 or numBought == stackSize then
+		self._resultIncludesRow[row:GetUUID()] = nil
+		db:DeleteRow(row)
+		result = true
+		if numBought == 0 then
+			return result
+		end
+	else
+		stackSize = stackSize - numBought
+		assert(stackSize > 0)
+		assert(TSM.IsWow83() and ItemInfo.IsCommodity(itemString))
+		row:SetField("stackSize", stackSize)
+			:Update()
 	end
 
-	local numBought, itemString, baseItemString = row:GetFields("stackSize", "itemString", "baseItemString")
 	if self._generalMaxQuantity then
-		self._generalMaxQuantity = self._generalMaxQuantity - numBought
+		self._generalMaxQuantity = self._generalMaxQuantity - stackSize
 		if self._generalMaxQuantity <= 0 then
 			-- remove everything
 			for uuid in pairs(self._resultIncludesRow) do
 				self._resultIncludesRow[uuid] = nil
 				db:DeleteRowByUUID(uuid)
+				result = true
 			end
 		end
 	end
 	if self._itemMaxQuantities then
 		if self._itemMaxQuantities[itemString] then
-			self._itemMaxQuantities[itemString] = self._itemMaxQuantities[itemString] - numBought
+			self._itemMaxQuantities[itemString] = self._itemMaxQuantities[itemString] - stackSize
 			if self._itemMaxQuantities[itemString] <= 0 then
 				-- remove all of this item
 				for uuid in pairs(self._resultIncludesRow) do
 					if db:GetRowFieldByUUID(uuid, "itemString") == itemString then
 						self._resultIncludesRow[uuid] = nil
 						db:DeleteRowByUUID(uuid)
+						result = true
 					end
 				end
 			end
 		elseif self._itemMaxQuantities[baseItemString] then
-			self._itemMaxQuantities[baseItemString] = self._itemMaxQuantities[baseItemString] - numBought
+			self._itemMaxQuantities[baseItemString] = self._itemMaxQuantities[baseItemString] - stackSize
 			if self._itemMaxQuantities[baseItemString] <= 0 then
 				-- remove all of this item
 				for uuid in pairs(self._resultIncludesRow) do
 					if db:GetRowFieldByUUID(uuid, "baseItemString") == baseItemString then
 						self._resultIncludesRow[uuid] = nil
 						db:DeleteRowByUUID(uuid)
+						result = true
 					end
 				end
 			end
 		end
 	end
+	return result
 end

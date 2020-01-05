@@ -11,21 +11,19 @@ local Auctioning = TSM.Operations:NewPackage("Auctioning")
 local private = {}
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
+local Money = TSM.Include("Util.Money")
 local OPERATION_INFO = {
 	-- general
-	matchStackSize = { type = "boolean", default = false },
 	blacklist = { type = "string", default = "" },
 	ignoreLowDuration = { type = "number", default = 0 },
 	-- post
-	stackSize = { type = "number", default = 1 },
-	stackSizeIsCap = { type = "boolean", default = false },
 	postCap = { type = "number", default = 5 },
 	keepQuantity = { type = "number", default = 0 },
 	keepQtySources = { type = "table", default = {} },
 	maxExpires = { type = "number", default = 0 },
 	duration = { type = "number", default = 2, customSanitizeFunction = nil },
 	bidPercent = { type = "number", default = 1 },
-	undercut = { type = "string", default = "1c" },
+	undercut = { type = "string", default = "0c" },
 	minPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(0.25*avg(crafting,dbmarket,dbregionmarketavg),1.5*vendorsell))" },
 	maxPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(5*avg(crafting,dbmarket,dbregionmarketavg),30*vendorsell))" },
 	normalPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(2*avg(crafting,dbmarket,dbregionmarketavg),12*vendorsell))" },
@@ -38,11 +36,19 @@ local OPERATION_INFO = {
 	cancelRepostThreshold = { type = "string", default = "1g" },
 }
 local OPERATION_VALUE_LIMITS = {
-	postCap = { min = 0, max = 200 },
-	stackSize = { min = 1, max = 200 },
+	postCap = { min = 0, max = 5000 },
 	keepQuantity = { min = 0, max = 5000 },
 	maxExpires = { min = 0, max = 5000 },
+	keepPosted = { min = 0, max = 5000 },
 }
+if not TSM.IsWow83() then
+	OPERATION_INFO.undercut.default = "1c"
+	OPERATION_INFO.matchStackSize = { type = "boolean", default = false }
+	OPERATION_INFO.stackSize = { type = "number", default = 1 }
+	OPERATION_INFO.stackSizeIsCap = { type = "boolean", default = false }
+	OPERATION_VALUE_LIMITS.stackSize = { min = 1, max = 200 }
+	OPERATION_VALUE_LIMITS.postCap.max = 200
+end
 
 
 
@@ -52,7 +58,7 @@ local OPERATION_VALUE_LIMITS = {
 
 function Auctioning.OnInitialize()
 	OPERATION_INFO.duration.customSanitizeFunction = private.SanitizeDuration
-	TSM.Operations.Register("Auctioning", L["Auctioning"], OPERATION_INFO, 20, private.GetOperationInfo)
+	TSM.Operations.Register("Auctioning", L["Auctioning"], OPERATION_INFO, 20, private.GetOperationInfo, private.OperationSanitize)
 end
 
 function Auctioning.GetMinMaxValues(key)
@@ -77,6 +83,17 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.OperationSanitize(operation)
+	if TSM.IsWow83() then
+		if operation.stackSize then
+			operation.postCap = operation.postCap * operation.stackSize
+		end
+		if (Money.FromString(operation.undercut) or math.huge) < 50 then
+			operation.undercut = "0c"
+		end
+	end
+end
 
 function private.SanitizeDuration(value)
 	-- convert from 12/24/48 durations to 1/2/3 API values

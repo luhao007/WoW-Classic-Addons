@@ -212,6 +212,7 @@ function private.OnEvent(_, event, arg)
 		for _, path in ipairs(private.loadOrder) do
 			private.ProcessSettingsLoad(path)
 		end
+		private.frame:UnregisterEvent("ADDON_LOADED")
 	elseif event == "PLAYER_LOGIN" then
 		assert(private.gotAddonLoaded and not private.gotPlayerLogin and not private.gotPlayerLogout)
 		private.gotPlayerLogin = true
@@ -220,8 +221,12 @@ function private.OnEvent(_, event, arg)
 			private.ProcessGameDataLoad(path)
 		end
 	elseif event == "PLAYER_LOGOUT" then
-		assert(private.gotAddonLoaded and private.gotPlayerLogin and not private.gotPlayerLogout)
+		assert(private.gotAddonLoaded and not private.gotPlayerLogout)
 		private.gotPlayerLogout = true
+		if not private.gotPlayerLogin then
+			-- this can happen if the player exists the game during the loading screen, in which case we just ignore it
+			return
+		end
 		-- unload in the opposite order we loaded
 		for i = #private.loadOrder, 1, -1 do
 			private.ProcessModuleUnload(private.loadOrder[i])
@@ -241,5 +246,4 @@ do
 	private.frame:RegisterEvent("PLAYER_LOGIN")
 	private.frame:RegisterEvent("PLAYER_LOGOUT")
 	private.frame:SetScript("OnEvent", private.OnEvent)
-	private.frame:Show()
 end

@@ -95,22 +95,36 @@ function AuctionScrollingTable.Acquire(self)
 			:SetJustifyH("RIGHT")
 			:SetTextFunction(private.GetItemLevelCellText)
 			:Commit()
-		:NewColumn("posts")
-			:SetTitles(L["Posts"])
-			:SetWidth(40)
-			:SetFont(TSM.UI.Fonts.RobotoMedium)
-			:SetFontHeight(12)
-			:SetJustifyH("RIGHT")
-			:SetTextFunction(private.GetAuctionsPostsText)
-			:Commit()
-		:NewColumn("stack")
-			:SetTitles(L["Stack"])
-			:SetWidth(40)
-			:SetFont(TSM.UI.Fonts.RobotoMedium)
-			:SetFontHeight(12)
-			:SetJustifyH("RIGHT")
-			:SetTextFunction(private.GetAuctionsStackText)
-			:Commit()
+	if TSM.IsWow83() then
+		self:GetScrollingTableInfo()
+			:NewColumn("qty")
+				:SetTitles(L["Qty"])
+				:SetWidth(40)
+				:SetFont(TSM.UI.Fonts.RobotoMedium)
+				:SetFontHeight(12)
+				:SetJustifyH("RIGHT")
+				:SetTextFunction(private.GetAuctionsQuantityText)
+				:Commit()
+	else
+		self:GetScrollingTableInfo()
+			:NewColumn("posts")
+				:SetTitles(L["Posts"])
+				:SetWidth(40)
+				:SetFont(TSM.UI.Fonts.RobotoMedium)
+				:SetFontHeight(12)
+				:SetJustifyH("RIGHT")
+				:SetTextFunction(private.GetAuctionsPostsText)
+				:Commit()
+			:NewColumn("stack")
+				:SetTitles(L["Stack"])
+				:SetWidth(40)
+				:SetFont(TSM.UI.Fonts.RobotoMedium)
+				:SetFontHeight(12)
+				:SetJustifyH("RIGHT")
+				:SetTextFunction(private.GetAuctionsStackText)
+				:Commit()
+	end
+	self:GetScrollingTableInfo()
 		:NewColumn("timeLeft")
 			:SetTitleIcon("iconPack.14x14/Clock")
 			:SetWidth(26)
@@ -319,6 +333,8 @@ function AuctionScrollingTable._UpdateData(self)
 				sortValue = record.stackSize
 			elseif sortKey == "stack" then
 				sortValue = record.stackSize
+			elseif sortKey == "qty" then
+				sortValue = record.stackSize
 			elseif sortKey == "timeLeft" then
 				sortValue = record.timeLeft
 			elseif sortKey == "seller" then
@@ -355,11 +371,19 @@ function AuctionScrollingTable._UpdateData(self)
 		end
 
 		-- count the number of auctions grouped by hash
-		if not self._numAuctionsByHash[hash] then
-			self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
-			self._numAuctionsByHash[hash] = 0
+		if TSM.IsWow83() then
+			if not self._numAuctionsByHash[hash] then
+				self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
+				self._numAuctionsByHash[hash] = 0
+			end
+			self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + record.stackSize
+		else
+			if not self._numAuctionsByHash[hash] then
+				self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
+				self._numAuctionsByHash[hash] = 0
+			end
+			self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + 1
 		end
-		self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + 1
 
 		-- use the highest filterId record so more recent auctions show up first in sniper
 		if not self._baseRecordByHash[hash] or record.filterId > self._baseRecordByHash[hash].filterId then
@@ -620,6 +644,11 @@ function private.GetItemLevelCellText(self, context)
 	return ItemInfo.GetItemLevel(record:GetField("itemLink"))
 end
 
+function private.GetAuctionsQuantityText(self, context)
+	local record = self._baseRecordByHash[context]
+	return self._numAuctionsByHash[record:GetField("hash")]
+end
+
 function private.GetAuctionsPostsText(self, context)
 	local record = self._baseRecordByHash[context]
 	return self._numAuctionsByHash[record:GetField("hash")]
@@ -650,7 +679,7 @@ function private.GetBidCellText(self, context, titleIndex)
 	else
 		error("Unexpected titleIndex: "..tostring(titleIndex))
 	end
-	return record:GetField("isHighBidder") and Money.ToString(value, "|cff00ff00") or Money.ToString(value)
+	return Money.ToString(value, record:GetField("isHighBidder") and "|cff00ff00" or nil, "OPT_83_NO_COPPER")
 end
 
 function private.GetBuyoutCellText(self, context, titleIndex)
@@ -663,7 +692,7 @@ function private.GetBuyoutCellText(self, context, titleIndex)
 	else
 		error("Unexpected titleIndex: "..tostring(titleIndex))
 	end
-	return Money.ToString(value)
+	return Money.ToString(value, nil, "OPT_83_NO_COPPER")
 end
 
 function private.GetPercentCellText(self, context)

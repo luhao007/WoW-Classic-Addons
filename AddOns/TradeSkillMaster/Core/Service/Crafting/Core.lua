@@ -496,71 +496,12 @@ end
 function Crafting.RestockHelp(link)
 	local itemString = ItemString.Get(link)
 	if not itemString then
-		return print(L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"])
+		Log.PrintUser(L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"])
+		return
 	end
 
-	Log.PrintfUser(L["Restock help for %s:"], link)
-
-	-- check if the item is in a group
-	local groupPath = TSM.Groups.GetPathByItem(itemString)
-	if not groupPath then
-		return print(L["This item is not in a TSM group."])
-	end
-
-	-- check that there's a crafting operation applied
-	if not TSM.Operations.Crafting.HasOperation(itemString) then
-		return print(format(L["There is no Crafting operation applied to this item's TSM group (%s)."], TSM.Groups.Path.Format(groupPath)))
-	end
-
-	-- check if it's an invalid operation
-	local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
-	if not isValid then
-		return print(err)
-	end
-
-	-- check that this item is craftable
-	if not TSM.Crafting.CanCraftItem(itemString) then
-		return print(L["You don't know how to craft this item."])
-	end
-
-	-- check the restock quantity
-	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString))
-	if neededQuantity then
-		return print(format(L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."]))
-	end
-
-	-- check the prices on the item and the min profit
-	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
-	if hasMinProfit then
-		local cost = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
-		local craftedValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
-		local profit = cost and craftedValue and (craftedValue - cost) or nil
-
-		-- check that there's a crafted value
-		if not craftedValue then
-			return print(L["The 'Craft Value Method' did not return a value for this item."])
-		end
-
-		-- check that there's a crafted cost
-		if not cost then
-			return print(L["This item does not have a crafting cost. Check that all of its mats have mat prices."])
-		end
-
-		-- check that there's a profit
-		if not profit then
-			return print(L["There is a crafting cost and crafted item value, but TSM wasn't able to calculate a profit. This shouldn't happen!"])
-		end
-
-		if not minProfit then
-			return print(L["The min profit did not evalulate to a valid value for this item."])
-		end
-
-		if profit < minProfit then
-			return print(format(L["The profit of this item (%s) is below the min profit (%s)."], Money.ToString(profit), Money.ToString(minProfit)))
-		end
-	end
-
-	print(L["This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."])
+	local msg = private.GetRestockHelpMessage(itemString)
+	Log.PrintfUser(L["Restock help for %s: %s"], link, msg)
 end
 
 function Crafting.IgnoreCooldown(spellId)
@@ -642,4 +583,65 @@ end
 
 function private.MatCostVirtualField(itemString)
 	return TSM.Crafting.Cost.GetMatCost(itemString) or math.huge * 0
+end
+
+function private.GetRestockHelpMessage(itemString)
+	-- check if the item is in a group
+	local groupPath = TSM.Groups.GetPathByItem(itemString)
+	if not groupPath then
+		return L["This item is not in a TSM group."]
+	end
+
+	-- check that there's a crafting operation applied
+	if not TSM.Operations.Crafting.HasOperation(itemString) then
+		return format(L["There is no Crafting operation applied to this item's TSM group (%s)."], TSM.Groups.Path.Format(groupPath))
+	end
+
+	-- check if it's an invalid operation
+	local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
+	if not isValid then
+		return err
+	end
+
+	-- check that this item is craftable
+	if not TSM.Crafting.CanCraftItem(itemString) then
+		return L["You don't know how to craft this item."]
+	end
+
+	-- check the restock quantity
+	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString))
+	if neededQuantity == 0 then
+		return L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."]
+	end
+
+	-- check the prices on the item and the min profit
+	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
+	if hasMinProfit then
+		local cost = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
+		local craftedValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
+		local profit = cost and craftedValue and (craftedValue - cost) or nil
+
+		-- check that there's a crafted value
+		if not craftedValue then
+			return L["The 'Craft Value Method' did not return a value for this item."]
+		end
+
+		-- check that there's a crafted cost
+		if not cost then
+			return L["This item does not have a crafting cost. Check that all of its mats have mat prices."]
+		end
+
+		-- check that there's a profit
+		assert(profit)
+
+		if not minProfit then
+			return L["The min profit did not evalulate to a valid value for this item."]
+		end
+
+		if profit < minProfit then
+			return format(L["The profit of this item (%s) is below the min profit (%s)."], Money.ToString(profit), Money.ToString(minProfit))
+		end
+	end
+
+	return L["This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."]
 end

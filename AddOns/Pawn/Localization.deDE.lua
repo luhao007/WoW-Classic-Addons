@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2019 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -94,6 +94,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["BlockValueInfo"] = "Shield block value.  Increases the damage that a shield absorbs when it successfully blocks.",
 		["Cloth"] = "Stoff",
 		["ClothInfo"] = "Punkte, die zugewiesen werden sollen, wenn der Gegenstand Stoff ist.",
+		["CorruptionInfo"] = "Corruption of N'Zoth.  A negative value for Corruption will remove points from an item's score based on the level of corruption.",
 		["Crit"] = "Krit",
 		["CritInfo"] = "Kritische Treffer.  Chance, dass Angriffe und Heilungen stärkere Wirkung haben.",
 		--[[Translation missing --]]
@@ -285,6 +286,7 @@ Weitere Informationen zur Anpassung von Pawn findet ihr in der Hilfedatei (Readm
 		["Charges"] = "^.+ Ladungen?$",
 		["Cloth"] = "^Stoff$",
 		["CooldownRemaining"] = "^Verbleibende Abklingzeit:",
+		["Corruption"] = "^%+?# Verderbnis$",
 		["Crit"] = "^%+?# [Kk]ritischer Trefferwert%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Anlegen: Erhöht Eure Chance, einen kritischen Treffer zu erzielen, um #%%%.$",

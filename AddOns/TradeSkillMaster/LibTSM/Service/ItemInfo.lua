@@ -30,6 +30,7 @@ local private = {
 	availableItems = {},
 	isRebuilding = false,
 	settings = nil,
+	infoChangeCallbacks = {},
 }
 local UNKNOWN_ITEM_ITEMSTRING = "i:0"
 local ITEM_MAX_ID = 999999
@@ -183,6 +184,7 @@ ItemInfo:OnSettingsLoad(function()
 		private.db:BulkInsertNewRow(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent)
 	end
 	private.db:BulkInsertEnd()
+	private.DoInfoChangedCallbacks()
 
 	-- process pending item info every 0.05 seconds
 	Delay.AfterTime("processItemInfo", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
@@ -249,6 +251,12 @@ end)
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+--- Register a callback which is called when item info changes.
+-- @tparam function callback The function to be called
+function ItemInfo.RegisterInfoChangeCallback(callback)
+	tinsert(private.infoChangeCallbacks, callback)
+end
 
 --- Store the name of an item.
 -- This function is used to opportunistically populate the item cache with item names.
@@ -615,6 +623,17 @@ function ItemInfo.IsDisenchantable(item)
 	return quality >= LE_ITEM_QUALITY_UNCOMMON and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
 end
 
+--- Get whether or not the item is a commodity in WoW 8.3 (and above).
+-- @tparam string item The item
+-- @treturn ?number The inventory slot id
+function ItemInfo.IsCommodity(item)
+	local stackSize = ItemInfo.GetMaxStack(item)
+	if not stackSize then
+		return nil
+	end
+	return stackSize > 1
+end
+
 --- Fetch info for the item.
 -- This function can be called ahead of time for items which we know we need to have info cached for.
 -- @tparam string item The item
@@ -691,6 +710,9 @@ function private.GetFieldValueHelper(itemString, field, baseIsSame, storeBaseVal
 end
 
 function private.ProcessItemInfo()
+	if InCombatLockdown() then
+		return
+	end
 	private.db:SetQueryUpdatesPaused(true)
 
 	-- create rows for items which don't exist at all in the DB in bulk
@@ -776,12 +798,16 @@ function private.ScanMerchant()
 	for i = 1, GetMerchantNumItems() do
 		local itemString = ItemString.Get(GetMerchantItemLink(i))
 		if itemString then
+			local currentValue = private.settings.vendorItems[itemString]
+			local newValue = nil
 			local _, _, price, quantity, _, _, _, extendedCost = GetMerchantItemInfo(i)
 			-- bug with big keech vendor returning extendedCost = true for gold only items so need to check GetMerchantItemCostInfo
 			if price > 0 and (not extendedCost or GetMerchantItemCostInfo(i) == 0) then
-				private.settings.vendorItems[itemString] = Math.Round(price / quantity)
-			else
-				private.settings.vendorItems[itemString] = nil
+				newValue = Math.Round(price / quantity)
+			end
+			if newValue ~= currentValue then
+				private.settings.vendorItems[itemString] = newValue
+				private.DoInfoChangedCallbacks(itemString)
 			end
 		end
 	end
@@ -840,6 +866,7 @@ function private.SetSingleField(itemString, key, value)
 	end
 	private.CreateDBRowIfNotExists(itemString)
 	private.db:SetUniqueRowField("itemString", itemString, key, value)
+	private.DoInfoChangedCallbacks(itemString)
 end
 
 function private.SetItemInfoInstantFields(itemString, texture, classId, subClassId, invSlotId)
@@ -852,6 +879,7 @@ function private.SetItemInfoInstantFields(itemString, texture, classId, subClass
 	private.db:SetUniqueRowField("itemString", itemString, "classId", classId)
 	private.db:SetUniqueRowField("itemString", itemString, "subClassId", subClassId)
 	private.db:SetUniqueRowField("itemString", itemString, "invSlotId", invSlotId)
+	private.DoInfoChangedCallbacks(itemString)
 end
 
 function private.StoreGetItemInfoInstant(itemString)
@@ -932,6 +960,7 @@ function private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, max
 	private.db:SetUniqueRowField("itemString", itemString, "quality", quality)
 	private.db:SetUniqueRowField("itemString", itemString, "isBOP", isBOP)
 	private.db:SetUniqueRowField("itemString", itemString, "isCraftingReagent", isCraftingReagent)
+	private.DoInfoChangedCallbacks(itemString)
 end
 
 function private.StoreGetItemInfo(itemString)
@@ -1029,4 +1058,10 @@ function private.ProcessAvailableItems()
 	TempTable.Release(processedItems)
 
 	private.db:SetQueryUpdatesPaused(false)
+end
+
+function private.DoInfoChangedCallbacks(itemString)
+	for _, callback in ipairs(private.infoChangeCallbacks) do
+		callback(itemString)
+	end
 end

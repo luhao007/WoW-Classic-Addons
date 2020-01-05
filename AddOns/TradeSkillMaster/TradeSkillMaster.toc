@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: TradeSkillMaster Team
-## Version: v4.8.24
+## Version: v4.9.5
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -200,6 +200,7 @@ Core\UI\Support\TexturePacks.lua
 Core\UI\Support\Stylesheet.lua
 
 Core\UI\AuctionUI\Core.lua
+Core\UI\AuctionUI\BuyUtil.lua
 Core\UI\AuctionUI\MyAuctions.lua
 Core\UI\AuctionUI\Auctioning.lua
 Core\UI\AuctionUI\Shopping.lua

@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2019 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -91,6 +91,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["BlockValueInfo"] = "Shield block value.  Increases the damage that a shield absorbs when it successfully blocks.",
 		["Cloth"] = "Cloth",
 		["ClothInfo"] = "Points to be assigned if the item is cloth.",
+		["CorruptionInfo"] = "Corruption of N'Zoth.  A negative value for Corruption will remove points from an item's score based on the level of corruption.",
 		["Crit"] = "Crit",
 		["CritInfo"] = "Critical strike.  Increases the chance that your attacks and healing spells will hit with increased potency.  (In WoW Classic, this only affects physical attacks.)",
 		["DefenseInfo"] = "Defense skill.  Decreases the chance that you'll be hit by boss attacks.",
@@ -260,6 +261,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Charges"] = "^.+ Charges?$",
 		["Cloth"] = "^Cloth$",
 		["CooldownRemaining"] = "^Cooldown remaining:",
+		["Corruption"] = "^%+?# Corruption$",
 		["Crit"] = "^%+?# Critical [Ss]trike%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Equip: Improves your chance to get a critical strike by #%%%.$",

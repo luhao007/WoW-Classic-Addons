@@ -32,7 +32,9 @@ function Groups.OnInitialize()
 	private.itemDB = Database.NewSchema("GROUP_ITEMS")
 		:AddUniqueStringField("itemString")
 		:AddStringField("groupPath")
+		:AddSmartMapField("baseItemString", ItemString.GetBaseMap(), "itemString")
 		:AddIndex("groupPath")
+		:AddIndex("baseItemString")
 		:Commit()
 	private.itemStringMapReader = private.itemStringMap:CreateReader()
 	Groups.RebuildDatabase()
@@ -350,12 +352,15 @@ function Groups.IsItemInGroup(itemString)
 	return private.itemDB:HasUniqueRow("itemString", itemString)
 end
 
-function Groups.ItemIterator(groupPathFilter)
+function Groups.ItemIterator(groupPathFilter, baseItemStringFilter)
 	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
 	local query = private.itemDB:NewQuery()
 		:Select("itemString", "groupPath")
 	if groupPathFilter then
 		query:Equal("groupPath", groupPathFilter)
+	end
+	if baseItemStringFilter then
+		query:Equal("baseItemString", baseItemStringFilter)
 	end
 	return query:IteratorAndRelease()
 end

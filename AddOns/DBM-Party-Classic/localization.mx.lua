@@ -111,12 +111,12 @@ L:SetGeneralLocalization{
 	name 		= "Depositario Stilgiss"
 }
 ----------------------
--- Finoso Vironegro --
+-- Finoso Virunegro --
 ----------------------
 L = DBM:GetModLocalization(376)
 
 L:SetGeneralLocalization{
-	name 		= "Finoso Vironegro"
+	name 		= "Finoso Virunegro"
 }
 --------------
 -- Bael'Gar --
@@ -1272,7 +1272,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("Dreamscythe")
 
 L:SetGeneralLocalization{
-	name 		= "Guadañasueños"
+	name 		= "Segasueños"
 }
 
 L = DBM:GetModLocalization("Weaver")
@@ -1478,7 +1478,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(485)
 
 L:SetGeneralLocalization{
-	name 		= "Theka la Mártir"
+	name 		= "Theka el Mártir"
 }
 
 -----------------------------

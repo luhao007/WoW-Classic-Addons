@@ -19,6 +19,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	region = nil,
 	appRealmData = {},
@@ -135,6 +136,16 @@ function AuctionDB.OnEnable()
 	if not next(private.appRealmData) and not next(private.scanRealmData) then
 		Log.PrintUser(L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from |cff99ffffhttp://tradeskillmaster.com|r to automatically update your AuctionDB data (and auto-backup your TSM settings)."])
 	end
+
+	CustomPrice.OnSourceChange("DBMarket")
+	CustomPrice.OnSourceChange("DBMinBuyout")
+	CustomPrice.OnSourceChange("DBHistorical")
+	CustomPrice.OnSourceChange("DBRegionMinBuyoutAvg")
+	CustomPrice.OnSourceChange("DBRegionMarketAvg")
+	CustomPrice.OnSourceChange("DBRegionHistorical")
+	CustomPrice.OnSourceChange("DBRegionSaleAvg")
+	CustomPrice.OnSourceChange("DBRegionSaleRate")
+	CustomPrice.OnSourceChange("DBRegionSoldPerDay")
 	collectgarbage()
 end
 
@@ -152,10 +163,7 @@ function AuctionDB.OnDisable()
 end
 
 function AuctionDB.GetLastCompleteScanTime()
-	if not private.appRealmTime and not private.scanRealmTime then
-		return nil
-	end
-	return max(private.appRealmTime or 0, private.scanRealmTime or 0)
+	return private.didScan and (private.scanRealmTime or 0) or (private.appRealmTime or 0)
 end
 
 function AuctionDB.LastScanIteratorThreaded()
@@ -172,10 +180,7 @@ function AuctionDB.LastScanIteratorThreaded()
 			if baseItemString ~= itemString then
 				baseItems[baseItemString] = true
 			end
-			if not itemNumAuctions[itemString] then
-				itemNumAuctions[itemString] = 0
-			end
-			itemNumAuctions[itemString] = itemNumAuctions[itemString] + data.numAuctions
+			itemNumAuctions[itemString] = (itemNumAuctions[itemString] or 0) + data.numAuctions
 			if data.minBuyout and data.minBuyout > 0 then
 				itemMinBuyout[itemString] = min(itemMinBuyout[itemString] or math.huge, data.minBuyout)
 			end
@@ -311,6 +316,7 @@ function private.OnFullScanDone()
 	collectgarbage()
 	Log.PrintfUser(L["Completed full AH scan (%d auctions)!"], numScannedAuctions)
 	private.didScan = true
+	CustomPrice.OnSourceChange("DBMinBuyout")
 end
 
 function private.ProcessScanResultItem(itemString, itemBuyout, stackSize)

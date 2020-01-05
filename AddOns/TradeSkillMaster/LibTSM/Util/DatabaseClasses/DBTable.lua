@@ -187,7 +187,7 @@ function DatabaseTable.DeleteRowByUUID(self, uuid)
 		tremove(indexList, deleteIndex)
 	end
 	for field, uniqueValues in pairs(self._uniques) do
-		uniqueValues[self:_GetRowData(uuid, field)] = nil
+		uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
 	end
 
 	-- lookup the index of the row being deleted
@@ -304,7 +304,7 @@ function DatabaseTable.GetUniqueRowField(self, uniqueField, uniqueValue, field)
 	if not uuid then
 		return
 	end
-	return self:_GetRowData(uuid, field)
+	return self:GetRowFieldByUUID(uuid, field)
 end
 
 --- Set a single field within a unique row.
@@ -365,14 +365,22 @@ end
 -- @tparam string field The field
 -- @return The value of the field
 function DatabaseTable.GetRowFieldByUUID(self, uuid, field)
-	assert(not self._bulkInsertContext)
-	assert(self._uuidToDataOffsetLookup[uuid])
-
-	local fieldType = self:_GetFieldType(field)
-	if not fieldType then
-		error(format("Field %s doesn't exist", tostring(field)), 3)
+	local smartMapReader = self._smartMapReaderLookup[field]
+	if smartMapReader then
+		return smartMapReader[self:GetRowFieldByUUID(uuid, self._smartMapInputLookup[field])]
 	end
-	return self:_GetRowData(uuid, field)
+	local dataOffset = self._uuidToDataOffsetLookup[uuid]
+	local fieldOffset = self._fieldOffsetLookup[field]
+	if not dataOffset then
+		error("Invalid UUID: "..tostring(uuid))
+	elseif not fieldOffset then
+		error("Invalid field: "..tostring(field))
+	end
+	local result = self._data[dataOffset + fieldOffset - 1]
+	if result == nil then
+		error("Failed to get row data")
+	end
+	return result
 end
 
 --- Starts a bulk insert into the database.
@@ -380,7 +388,8 @@ end
 function DatabaseTable.BulkInsertStart(self)
 	assert(not self._bulkInsertContext)
 	self._bulkInsertContext = TempTable.Acquire()
-	self._bulkInsertContext.hasNewData = false
+	self._bulkInsertContext.firstDataIndex = nil
+	self._bulkInsertContext.firstUUIDIndex = nil
 	self._bulkInsertContext.indexValues = TempTable.Acquire()
 	for field in pairs(self._indexLists) do
 		self._bulkInsertContext.indexValues[field] = TempTable.Acquire()
@@ -408,13 +417,17 @@ end
 --- Inserts a new row as part of the on-going bulk insert.
 -- @tparam DatabaseTable self The database object
 -- @param ... The fields which make up this new row (in `schema.fieldOrder` order)
-function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, extraValue)
+function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, extraValue)
+	local uuid = private.GetNextUUID()
+	local rowIndex = #self._data + 1
+	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
 	elseif extraValue ~= nil then
 		error("Too many values")
-	elseif not self._bulkInsertContext.hasNewData then
-		self._bulkInsertContext.hasNewData = true
+	elseif not self._bulkInsertContext.firstDataIndex then
+		self._bulkInsertContext.firstDataIndex = rowIndex
+		self._bulkInsertContext.firstUUIDIndex = uuidIndex
 		for _, indexList in pairs(self._indexLists) do
 			wipe(indexList)
 		end
@@ -443,14 +456,13 @@ function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9
 	tempTbl[20] = v20
 	tempTbl[21] = v21
 	tempTbl[22] = v22
+	tempTbl[23] = v23
 	local numFields = #tempTbl
 	if numFields ~= self._numStoredFields then
-		error("Invalid number of values")
+		error(format("Invalid number of values (%d, %s)", numFields, tostring(self._numStoredFields)))
 	end
-	local uuid = private.GetNextUUID()
-	local rowIndex = #self._data + 1
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
-	self._uuids[#self._uuids + 1] = uuid
+	self._uuids[uuidIndex] = uuid
 
 	for i = 1, numFields do
 		local field = self._storedFieldList[i]
@@ -493,23 +505,25 @@ function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9
 end
 
 function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extraValue)
+	local uuid = private.GetNextUUID()
+	local rowIndex = #self._data + 1
+	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
 	elseif self._bulkInsertContext.fastNum ~= 6 then
 		error("Invalid usage of fast insert")
 	elseif v6 == nil or extraValue ~= nil then
 		error("Wrong number of values")
-	elseif not self._bulkInsertContext.hasNewData then
-		self._bulkInsertContext.hasNewData = true
+	elseif not self._bulkInsertContext.firstDataIndex then
+		self._bulkInsertContext.firstDataIndex = rowIndex
+		self._bulkInsertContext.firstUUIDIndex = uuidIndex
 		for _, indexList in pairs(self._indexLists) do
 			wipe(indexList)
 		end
 	end
 
-	local uuid = private.GetNextUUID()
-	local rowIndex = #self._data + 1
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
-	self._uuids[#self._uuids + 1] = uuid
+	self._uuids[uuidIndex] = uuid
 
 	self._data[rowIndex] = v1
 	self._data[rowIndex + 1] = v2
@@ -523,23 +537,25 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 end
 
 function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v8, extraValue)
+	local uuid = private.GetNextUUID()
+	local rowIndex = #self._data + 1
+	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
 	elseif self._bulkInsertContext.fastNum ~= 8 then
 		error("Invalid usage of fast insert")
 	elseif v8 == nil or extraValue ~= nil then
 		error("Wrong number of values")
-	elseif not self._bulkInsertContext.hasNewData then
-		self._bulkInsertContext.hasNewData = true
+	elseif not self._bulkInsertContext.firstDataIndex then
+		self._bulkInsertContext.firstDataIndex = rowIndex
+		self._bulkInsertContext.firstUUIDIndex = uuidIndex
 		for _, indexList in pairs(self._indexLists) do
 			wipe(indexList)
 		end
 	end
 
-	local uuid = private.GetNextUUID()
-	local rowIndex = #self._data + 1
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
-	self._uuids[#self._uuids + 1] = uuid
+	self._uuids[uuidIndex] = uuid
 
 	self._data[rowIndex] = v1
 	self._data[rowIndex + 1] = v2
@@ -555,23 +571,25 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 end
 
 function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, extraValue)
+	local uuid = private.GetNextUUID()
+	local rowIndex = #self._data + 1
+	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
 	elseif self._bulkInsertContext.fastNum ~= 11 then
 		error("Invalid usage of fast insert")
 	elseif v11 == nil or extraValue ~= nil then
 		error("Wrong number of values")
-	elseif not self._bulkInsertContext.hasNewData then
-		self._bulkInsertContext.hasNewData = true
+	elseif not self._bulkInsertContext.firstDataIndex then
+		self._bulkInsertContext.firstDataIndex = rowIndex
+		self._bulkInsertContext.firstUUIDIndex = uuidIndex
 		for _, indexList in pairs(self._indexLists) do
 			wipe(indexList)
 		end
 	end
 
-	local uuid = private.GetNextUUID()
-	local rowIndex = #self._data + 1
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
-	self._uuids[#self._uuids + 1] = uuid
+	self._uuids[uuidIndex] = uuid
 
 	self._data[rowIndex] = v1
 	self._data[rowIndex + 1] = v2
@@ -589,11 +607,19 @@ function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
 end
 
+function DatabaseTable.BulkInsertUUIDIterator(self)
+	if not self._bulkInsertContext.firstUUIDIndex then
+		return nop
+	end
+	local firstIndex = self._bulkInsertContext.firstUUIDIndex
+	return next, self._uuids, firstIndex > 1 and (firstIndex - 1) or nil
+end
+
 --- Ends a bulk insert into the database.
 -- @tparam DatabaseTable self The database object
 function DatabaseTable.BulkInsertEnd(self)
 	assert(self._bulkInsertContext)
-	if self._bulkInsertContext.hasNewData then
+	if self._bulkInsertContext.firstDataIndex then
 		for field, indexList in pairs(self._indexLists) do
 			private.indexListSortValues = self._bulkInsertContext.indexValues[field]
 			for i, uuid in ipairs(self._uuids) do
@@ -604,6 +630,55 @@ function DatabaseTable.BulkInsertEnd(self)
 			private.indexListSortValues = nil
 		end
 		self:_UpdateQueries()
+	end
+	for _, tbl in pairs(self._bulkInsertContext.indexValues) do
+		TempTable.Release(tbl)
+	end
+	TempTable.Release(self._bulkInsertContext.indexValues)
+	TempTable.Release(self._bulkInsertContext)
+	self._bulkInsertContext = nil
+	self:SetQueryUpdatesPaused(false)
+end
+
+--- Aborts a bulk insert into the database without adding any of the rows.
+-- @tparam DatabaseTable self The database object
+function DatabaseTable.BulkInsertAbort(self)
+	assert(self._bulkInsertContext)
+	if self._bulkInsertContext.firstDataIndex then
+		-- remove all the unique values
+		for i = #self._uuids, self._bulkInsertContext.firstUUIDIndex, -1 do
+			local uuid = self._uuids[i]
+			for field, values in pairs(self._uniques) do
+				local value = self:GetRowFieldByUUID(uuid, field)
+				if values[value] == nil then
+					error("Could not find unique values")
+				end
+				values[value] = nil
+			end
+		end
+
+		-- remove all the UUIDs
+		for i = #self._uuids, self._bulkInsertContext.firstUUIDIndex, -1 do
+			local uuid = self._uuids[i]
+			self._uuidToDataOffsetLookup[uuid] = nil
+			self._uuids[i] = nil
+		end
+
+		-- remove all the data we inserted
+		for i = #self._data, self._bulkInsertContext.firstDataIndex, -1 do
+			self._data[i] = nil
+		end
+
+		-- rebuild the index lists
+		for field, indexList in pairs(self._indexLists) do
+			private.indexListSortValues = self._bulkInsertContext.indexValues[field]
+			for i, uuid in ipairs(self._uuids) do
+				indexList[i] = uuid
+				assert(private.indexListSortValues[uuid] ~= nil)
+			end
+			sort(indexList, private.IndexListSortHelper)
+			private.indexListSortValues = nil
+		end
 	end
 	for _, tbl in pairs(self._bulkInsertContext.indexValues) do
 		TempTable.Release(tbl)
@@ -835,7 +910,7 @@ function DatabaseTable._UpdateRow(self, row, oldValues)
 		if oldValue ~= nil then
 			assert(uniqueValues[oldValue] == uuid)
 			uniqueValues[oldValue] = nil
-			uniqueValues[self:_GetRowData(uuid, field)] = uuid
+			uniqueValues[self:GetRowFieldByUUID(uuid, field)] = uuid
 			changedIndexUnique = true
 		end
 	end
@@ -852,29 +927,10 @@ function DatabaseTable._GetRowIndexValue(self, uuid, field)
 	if extraField or not f1 then
 		error("Unsupported number of fields in multi-field index")
 	elseif f2 then
-		return self:_GetRowData(uuid, f1)..Constants.DB_INDEX_VALUE_SEP..self:_GetRowData(uuid, f2)
+		return self:GetRowFieldByUUID(uuid, f1)..Constants.DB_INDEX_VALUE_SEP..self:GetRowFieldByUUID(uuid, f2)
 	elseif f1 then
-		return self:_GetRowData(uuid, field)
+		return self:GetRowFieldByUUID(uuid, field)
 	end
-end
-
-function DatabaseTable._GetRowData(self, uuid, field)
-	local smartMapReader = self._smartMapReaderLookup[field]
-	if smartMapReader then
-		return smartMapReader[self:_GetRowData(uuid, self._smartMapInputLookup[field])]
-	end
-	local dataOffset = self._uuidToDataOffsetLookup[uuid]
-	local fieldOffset = self._fieldOffsetLookup[field]
-	if not dataOffset then
-		error("Invalid UUID: "..tostring(uuid))
-	elseif not fieldOffset then
-		error("Invalid field: "..tostring(field))
-	end
-	local result = self._data[dataOffset + fieldOffset - 1]
-	if result == nil then
-		error("Failed to get row data")
-	end
-	return result
 end
 
 

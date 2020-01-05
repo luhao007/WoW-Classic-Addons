@@ -63,7 +63,7 @@ function private.GetDetailsSettings()
 		:SetStyle("padding.right", 16)
 		:SetStyle("padding.top", -8)
 		:AddChild(TSM.MainUI.Operations.CreateHeadingLine("generalOptions", L["General Options"]))
-		:AddChild(private.CreateToggleLine("matchStackSize", L["Match stack size?"]))
+		:AddChildrenWithFunction(private.AddMaxStackSizeSetting)
 		:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("ignoreLowDuration", L["Ignore auctions by duration?"])
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "dropdown")
 				:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "ignoreLowDuration"))
@@ -81,6 +81,12 @@ function private.GetDetailsSettings()
 		)
 		:AddChildrenWithFunction(private.AddBlacklistPlayers)
 		:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Auctioning", private.currentOperationName))
+end
+
+function private.AddMaxStackSizeSetting(frame)
+	if not TSM.IsWow83() then
+		frame:AddChild(private.CreateToggleLine("matchStackSize", L["Match stack size?"]))
+	end
 end
 
 function private.GetPostingSettings()
@@ -112,11 +118,10 @@ function private.GetPostingSettings()
 				:SetScript("OnValueChanged", private.SetAuctioningDuration)
 			)
 		)
-		:AddChild(private.CreateNumericInputLine("postCap", L["Set post cap to:"], 200))
-		:AddChild(private.CreateNumericInputLine("stackSize", L["Set posted stack size to:"], 1000))
-		:AddChild(private.CreateToggleLine("stackSizeIsCap", L["Allow partial stack?"]))
-		:AddChild(private.CreateNumericInputLine("keepQuantity", L["Keep this amount in bags:"], 5000))
-		:AddChild(private.CreateNumericInputLine("maxExpires", L["Don't post after this many expires:"], 5000))
+		:AddChild(private.CreateNumericInputLine("postCap", L["Set post cap to:"]))
+		:AddChildrenWithFunction(private.AddStackSizeSettings)
+		:AddChild(private.CreateNumericInputLine("keepQuantity", L["Keep this amount in bags:"]))
+		:AddChild(private.CreateNumericInputLine("maxExpires", L["Don't post after this many expires:"]))
 		:AddChild(TSM.MainUI.Operations.CreateHeadingLine("priceSettingsTitle", L["Price Settings"]))
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "priceSettingsDesc")
 			:SetStyle("margin.top", -12)
@@ -153,7 +158,7 @@ function private.GetPostingSettings()
 					:SetStyle("fontHeight", 16)
 					:SetStyle("justifyH", "CENTER")
 					:SetDisabled(TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, "undercut"))
-					:SetSettingInfo(operation, "undercut", TSM.MainUI.Operations.CheckCustomPrice)
+					:SetSettingInfo(operation, "undercut", private.CheckUndercut)
 					:SetText(Money.ToString(Money.FromString(operation.undercut)) or Money.ToString(operation.undercut) or operation.undercut)
 					:SetScript("OnEnterPressed", private.UndercutOnChanged)
 					:SetScript("OnTabPressed", private.UndercutOnChanged)
@@ -290,6 +295,13 @@ function private.GetPostingSettings()
 		)
 end
 
+function private.AddStackSizeSettings(frame)
+	if not TSM.IsWow83() then
+		frame:AddChild(private.CreateNumericInputLine("stackSize", L["Set posted stack size to:"]))
+		frame:AddChild(private.CreateToggleLine("stackSizeIsCap", L["Allow partial stack?"]))
+	end
+end
+
 function private.GetCancelingSettings()
 	TSM.UI.AnalyticsRecordPathChange("main", "operations", "auctioning", "canceling")
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
@@ -308,7 +320,7 @@ function private.GetCancelingSettings()
 		)
 		:AddChild(private.CreateToggleLine("cancelUndercut", L["Cancel undercut auctions?"]))
 		:AddChild(private.CreateToggleLine("cancelRepost", L["Cancel to repost higher?"]))
-		:AddChild(private.CreateNumericInputLine("keepPosted", L["Keep posted:"], 500))
+		:AddChild(private.CreateNumericInputLine("keepPosted", L["Keep posted:"]))
 		:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("cancelRepostThreshold", L["Repost Higher Threshold"])
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
 				:SetStyle("background", "#5c5c5c")
@@ -369,7 +381,8 @@ function private.AddBlacklistPlayers(frame)
 	frame:AddChild(containerFrame)
 end
 
-function private.CreateNumericInputLine(key, label, max)
+function private.CreateNumericInputLine(key, label)
+	local _, maxValue = TSM.Operations.Auctioning.GetMinMaxValues(key)
 	local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
 	local hasRelationship = TSM.Operations.HasRelationship("Auctioning", private.currentOperationName, key)
 	return TSM.MainUI.Operations.CreateLinkedSettingLine(key, label)
@@ -386,11 +399,11 @@ function private.CreateNumericInputLine(key, label, max)
 				:SetStyle("fontHeight", 16)
 				:SetDisabled(hasRelationship)
 				:SetSettingInfo(operation, key)
-				:SetMaxNumber(max)
+				:SetMaxNumber(maxValue)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "maxLabel")
 				:SetStyle("fontHeight", 12)
-				:SetText(format(L["(max %d)"], max))
+				:SetText(format(L["(max %d)"], maxValue))
 				:SetStyle("textColor", hasRelationship and "#424242" or "#e2e2e2")
 			)
 		)
@@ -409,6 +422,14 @@ function private.CreateToggleLine(key, label)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
 		)
+end
+
+function private.CheckUndercut(value, ignoreError)
+	if TSM.IsWow83() and Money.FromString(Money.ToString(value) or value) == 0 then
+		return true
+	else
+		return TSM.MainUI.Operations.CheckCustomPrice(value, ignoreError)
+	end
 end
 
 
@@ -513,7 +534,7 @@ end
 
 function private.UndercutOnChanged(input)
 	local text = input:GetText()
-	if not TSM.MainUI.Operations.CheckCustomPrice(text, true) then
+	if not private.CheckUndercut(text, true) then
 		local operation = TSM.Operations.GetSettings("Auctioning", private.currentOperationName)
 		input:SetText(Money.ToString(Money.FromString(operation.undercut)) or Money.ToString(operation.undercut) or operation.undercut)
 	else

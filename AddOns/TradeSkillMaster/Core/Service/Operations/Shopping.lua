@@ -65,6 +65,18 @@ function Shopping.IsFiltered(itemString, stackSize, itemBuyout)
 	return false, false
 end
 
+function Shopping.ShouldScanItem(itemString, minPrice)
+	local operationSettings = private.GetOperationSettings(itemString)
+	if not operationSettings then
+		return false
+	end
+	if operationSettings.evenStacks or operationSettings.showAboveMaxPrice then
+		return true
+	end
+	local maxPrice = CustomPrice.GetValue(operationSettings.maxPrice, itemString)
+	return minPrice <= (maxPrice or 0)
+end
+
 function Shopping.ValidAndGetRestockQuantity(itemString)
 	local operationSettings = private.GetOperationSettings(itemString)
 	if not operationSettings then

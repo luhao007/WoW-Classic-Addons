@@ -1,7 +1,7 @@
 ## Interface: 11303
 ## Author: Sutorix=AT=hotmail.com
-## Version: 0.7.2 Beta 1
-## OptionalDeps: FB_Debugging, Outfitter, myAddOns, Titan, InfoBar, FishWarden
+## Version: 0.7.2 Beta 2
+## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
 ## SavedVariables: FishingBuddy_Info
 ## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
 

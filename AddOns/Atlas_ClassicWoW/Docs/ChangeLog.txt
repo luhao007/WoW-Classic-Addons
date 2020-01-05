@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 50 2019-12-31 08:15:35Z arith $
+$Id: ChangeLog.txt 54 2020-01-02 13:27:04Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,14 +8,35 @@ Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 = Change Log =
 ==============
 
-v1.45.01.11303.02 (2019/12/31)
+v1.45.01.11303.05 (Jan. 02, 2020)
+------------------------
+- Dungeon level range updated. 
+- Maps added:
+  - Zul'Gurub
+ - Maps updated:
+  - GnomereganEnt, ScarletMonasteryEnt, TheDeadminesEnt, BlackrockMountainEnt
+
+v1.45.01.11303.04 (Jan. 01, 2020)
+------------------------
+- Maps updated:
+  - Blackrock Spire Lower & Upper
+
+v1.45.01.11303.03 (Dec. 31, 2019
+------------------------
+- Move Onyxia's Lair to Kalimdor as that is where is should be
+- Maps added:
+  - Temple of Ahn'Qiraj, Ruins of Ahn'Qiraj
+- Maps updated:
+  - The Sunken Temple Entrance
+
+v1.45.01.11303.02 (Dec. 31, 2019)
 ------------------------
 - Map revamp:
   - Blackfathom Deeps
 - Maps added:
   - Onyxia's Lair
   
-v1.45.01.11303.01 (2019/12/30)
+v1.45.01.11303.01 (Dec. 30, 2019)
 ------------------------
 - ToC update to support WoW Classic 1.13.3
 - Added boss names to locale files.

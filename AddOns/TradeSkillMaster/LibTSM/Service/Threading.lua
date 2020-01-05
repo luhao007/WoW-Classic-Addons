@@ -373,7 +373,7 @@ function Thread._GetDebugInfo(self)
 	if self._startTime then
 		local wallTime = debugprofilestop() - self._startTime
 		local cpuTime = self._cpuTimeUsed
-		timeStr = format("Running for %.1f seconds (CPU: %dms, %.2f%%)", wallTime, cpuTime, (cpuTime / wallTime) * 100)
+		timeStr = format("Running for %.1f seconds (CPU: %dms, %.2f%%)", wallTime / 1000, cpuTime, (cpuTime / wallTime) * 100)
 	end
 
 	local createStr = "Created @"..self._createCaller

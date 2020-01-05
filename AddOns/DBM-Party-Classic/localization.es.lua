@@ -111,7 +111,7 @@ L:SetGeneralLocalization{
 	name 		= "Guarda Stilgiss"
 }
 ----------------------
--- Finoso Vironegro --
+-- Finoso Virunegro --
 ----------------------
 L = DBM:GetModLocalization(376)
 
@@ -305,7 +305,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization("JedRunewatcher")
 
 L:SetGeneralLocalization{
-	name 		= "Jed Vigía de las Runas"
+	name 		= "Jed Observarrunas"
 }
 -----------------------------
 --  Warchief Rend Blackhand  --
@@ -1478,7 +1478,7 @@ L:SetGeneralLocalization{
 L = DBM:GetModLocalization(485)
 
 L:SetGeneralLocalization{
-	name 		= "Theka la Mártir"
+	name 		= "Theka el Mártir"
 }
 
 -----------------------------

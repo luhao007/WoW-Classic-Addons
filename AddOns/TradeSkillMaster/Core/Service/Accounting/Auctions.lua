@@ -13,6 +13,7 @@ local CSV = TSM.Include("Util.CSV")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	db = nil,
 	numExpiresQuery = nil,
@@ -51,6 +52,7 @@ function Auctions.OnInitialize()
 	private.LoadData("cancel", TSM.db.realm.internalData.csvCancelled, TSM.db.realm.internalData.saveTimeCancels)
 	private.LoadData("expire", TSM.db.realm.internalData.csvExpired, TSM.db.realm.internalData.saveTimeExpires)
 	private.db:BulkInsertEnd()
+	CustomPrice.OnSourceChange("NumExpires")
 end
 
 function Auctions.OnDisable()
@@ -133,16 +135,12 @@ end
 
 function Auctions.RemoveOldData(days)
 	private.dataChanged = true
-	local query = private.db:NewQuery()
-		:LessThan("time", time() - days * SECONDS_PER_DAY)
-	local numRecords = 0
 	private.db:SetQueryUpdatesPaused(true)
-	for _, row in query:Iterator() do
-		private.db:DeleteRow(row)
-		numRecords = numRecords + 1
-	end
-	query:Release()
+	local numRecords = private.db:NewQuery()
+		:LessThan("time", time() - days * SECONDS_PER_DAY)
+		:DeleteAndRelease()
 	private.db:SetQueryUpdatesPaused(false)
+	CustomPrice.OnSourceChange("NumExpires")
 	return numRecords
 end
 
@@ -192,6 +190,8 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 		Log.Err("Failed to decode %s records", recordType)
 		private.dataChanged = true
 	end
+
+	CustomPrice.OnSourceChange("NumExpires")
 end
 
 function private.InsertRecord(recordType, itemString, stackSize, timestamp)
@@ -223,5 +223,9 @@ function private.InsertRecord(recordType, itemString, stackSize, timestamp)
 			:SetField("time", timestamp)
 			:SetField("saveTime", 0)
 			:Create()
+	end
+
+	if recordType == "expire" then
+		CustomPrice.OnSourceChange("NumExpires", itemString)
 	end
 end

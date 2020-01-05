@@ -33,10 +33,11 @@ function MyAuctions.OnInitialize()
 		:AddUniqueNumberField("index")
 		:AddNumberField("hash")
 		:AddBooleanField("isPending")
+		:AddNumberField("pendingAuctionId")
 		:AddIndex("index")
 		:Commit()
 	for field in AuctionTracking.DatabaseFieldIterator() do
-		if field ~= "index" then
+		if field ~= "index" and field ~= "auctionId" then
 			tinsert(private.dbHashFields, field)
 		end
 	end
@@ -54,9 +55,9 @@ function MyAuctions.CreateQuery()
 		:OrderBy("index", false)
 end
 
-function MyAuctions.CancelAuction(index)
+function MyAuctions.CancelAuction(auctionId)
 	local row = private.pendingDB:NewQuery()
-		:Equal("index", index)
+		:Equal("pendingAuctionId", auctionId)
 		:GetFirstResultAndRelease()
 	local hash = row:GetField("hash")
 	assert(hash)
@@ -67,11 +68,11 @@ function MyAuctions.CancelAuction(index)
 	end
 	assert(private.expectedCounts[hash] >= 0)
 
-	Log.Info("Canceling (index=%d, hash=%d)", index, hash)
+	Log.Info("Canceling (auctionId=%d, hash=%d)", auctionId, hash)
 	if not TSM.IsWow83() then
-		CancelAuction(index)
+		CancelAuction(auctionId)
 	else
-		C_AuctionHouse.CancelAuction(index)
+		C_AuctionHouse.CancelAuction(auctionId)
 	end
 	assert(not row:GetField("isPending"))
 	row:SetField("isPending", true)
@@ -82,11 +83,14 @@ function MyAuctions.CancelAuction(index)
 end
 
 function MyAuctions.CanCancel(index)
-	local count = private.pendingDB:NewQuery()
+	local query = private.pendingDB:NewQuery()
 		:Equal("isPending", true)
-		:LessThanOrEqual("index", index)
-		:CountAndRelease()
-	return count == 0
+	if TSM.IsWow83() then
+		query:Equal("pendingAuctionId", index)
+	else
+		query:LessThanOrEqual("index", index)
+	end
+	return query:CountAndRelease() == 0
 end
 
 function MyAuctions.GetNumPending()
@@ -177,7 +181,7 @@ function private.OnAuctionsUpdated()
 			-- it's a later auction which is pending
 			isPending = false
 		end
-		private.pendingDB:BulkInsertNewRow(row:GetField("index"), hash, isPending)
+		private.pendingDB:BulkInsertNewRow(row:GetField("index"), hash, isPending, row:GetField("auctionId"))
 	end
 	private.pendingDB:BulkInsertEnd()
 	TempTable.Release(numByHash)

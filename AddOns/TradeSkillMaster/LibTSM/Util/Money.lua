@@ -36,6 +36,7 @@ local COPPER_TEXT_DISABLED = "|cff402d22c|r"
 --
 -- * OPT\_ICON Use texture icons instead of g/s/c letters
 -- * OPT\_TRIM Remove any non-significant 0 valued denominations (i.e. "1g" instead of "1g 0s 0c")
+-- * OPT\_83\_NO\_COPPER Remove the copper value entirely if we're patch 8.3
 -- * OPT\_DISABLE Uses a muted color from the denomination text (not allowed with "OPT\_ICON" or "OPT\_NO\_COLOR")
 -- @tparam number value The money value to be converted in copper (100 copper per silver, 100 silver per gold)
 -- @tparam[opt] string color A color prefix to use for the numbers in the result (i.e. "|cff00ff00" for red)
@@ -49,7 +50,7 @@ function Money.ToString(value, color, ...)
 	assert(not color or strmatch(color, "^\124cff[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]$"))
 
 	-- parse the options
-	local isIcon, trim, disabled = nil, nil, nil
+	local isIcon, trim, disabled, noCopper = false, false, false, false
 	for i = 1, select('#', ...) do
 		local opt = select(i, ...)
 		if opt == nil then
@@ -60,6 +61,8 @@ function Money.ToString(value, color, ...)
 			trim = true
 		elseif opt == "OPT_DISABLE" then
 			disabled = true
+		elseif opt == "OPT_83_NO_COPPER" then
+			noCopper = TSM.IsWow83()
 		else
 			error("Invalid option: "..tostring(opt))
 		end
@@ -71,6 +74,7 @@ function Money.ToString(value, color, ...)
 	local gold = floor(value / COPPER_PER_GOLD)
 	local silver = floor((value % COPPER_PER_GOLD) / COPPER_PER_SILVER)
 	local copper = floor(value % COPPER_PER_SILVER)
+	assert(not noCopper or copper == 0)
 	local goldText, silverText, copperText = nil, nil, nil
 	if isIcon then
 		goldText, silverText, copperText = GOLD_ICON, SILVER_ICON, COPPER_ICON
@@ -81,39 +85,23 @@ function Money.ToString(value, color, ...)
 	end
 
 	if value == 0 then
-		return private.FormatNumber(0, false, color)..copperText
+		return private.FormatNumber(0, true, color)..(noCopper and silverText or copperText)
 	end
 
-	local text = nil
-	local shouldPad = false
-	if trim then
-		wipe(private.textMoneyParts)
-		-- add gold
-		if gold > 0 then
-			tinsert(private.textMoneyParts, private.FormatNumber(gold, false, color, true)..goldText)
-			shouldPad = true
-		end
-		-- add silver
-		if silver > 0 then
-			tinsert(private.textMoneyParts, private.FormatNumber(silver, shouldPad, color)..silverText)
-			shouldPad = true
-		end
-		-- add copper
-		if copper > 0 then
-			tinsert(private.textMoneyParts, private.FormatNumber(copper, shouldPad, color)..copperText)
-			shouldPad = true
-		end
-		text = table.concat(private.textMoneyParts, " ")
-	else
-		if gold > 0 then
-			text = private.FormatNumber(gold, false, color, true)..goldText.." "..private.FormatNumber(silver, true, color)..silverText.." "..private.FormatNumber(copper, true, color)..copperText
-		elseif silver > 0 then
-			text = private.FormatNumber(silver, false, color)..silverText.." "..private.FormatNumber(copper, true, color)..copperText
-		else
-			text = private.FormatNumber(copper, false, color)..copperText
-		end
+	wipe(private.textMoneyParts)
+	-- add gold
+	if gold > 0 then
+		private.InsertMoneyPart(gold, color, goldText)
 	end
-
+	-- add silver
+	if silver > 0 or (not trim and gold > 0) then
+		private.InsertMoneyPart(silver, color, silverText)
+	end
+	-- add copper
+	if copper > 0 or (not trim and not noCopper and (gold + silver) > 0) then
+		private.InsertMoneyPart(copper, color, copperText)
+	end
+	local text = table.concat(private.textMoneyParts, " ")
 	if isNegative then
 		return (color and (color.."-|r") or "-")..text
 	else
@@ -152,10 +140,14 @@ end
 -- Helper Functions
 -- ============================================================================
 
-function private.FormatNumber(num, pad, color, sep)
-	if num < 10 and pad then
+function private.InsertMoneyPart(value, color, text)
+	tinsert(private.textMoneyParts, private.FormatNumber(value, #private.textMoneyParts == 0, color)..text)
+end
+
+function private.FormatNumber(num, isMostSignificant, color)
+	if num < 10 and not isMostSignificant then
 		num = "0"..num
-	elseif sep and num >= 1000 then
+	elseif isMostSignificant and num >= 1000 then
 		num = tostring(num)
 		local result = ""
 		for i = 4, #num, 3 do

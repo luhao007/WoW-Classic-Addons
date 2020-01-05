@@ -70,7 +70,20 @@ function private.GetSelectionFrame()
 		:SetLayout("VERTICAL")
 		:SetStyle("background", "#272727")
 		:SetStyle("padding", { top = 38 })
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
+	if TSM.IsWow83() then
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
+			:SetLayout("HORIZONTAL")
+			:SetStyle("height", 26)
+			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "leftSpacer"))
+			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "buyoutScanBtn")
+				:SetStyle("width", 200)
+				:SetText(L["Run Buyout Sniper"])
+				:SetScript("OnClick", private.BuyoutScanButtonOnClick)
+			)
+			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "rightSpacer"))
+		)
+	else
+		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 26)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "leftSpacer"))
@@ -84,10 +97,12 @@ function private.GetSelectionFrame()
 				:SetStyle("width", 200)
 				:SetText(L["Run Bid Sniper"])
 				:SetScript("OnClick", private.BidScanButtonOnClick)
+				:SetDisabled(TSM.IsWow83())
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "rightSpacer"))
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
+	end
+	frame:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
 			:SetStyle("margin", { top = 16 })
 			:SetStyle("height", 2)
 			:SetStyle("color", "#9d9d9d")
@@ -102,7 +117,7 @@ function private.GetSelectionFrame()
 			:SetStyle("fontHeight", 14)
 			:SetStyle("justifyH", "CENTER")
 			:SetStyle("textColor", "#ffffff")
-			:SetText(L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."])
+			:SetText(TSM.IsWow83() and L["Start either a 'Buyout' sniper using the button above."] or L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."])
 		)
 		:SetScript("OnUpdate", private.SelectionFrameOnUpdate)
 		:SetScript("OnHide", private.SelectionFrameOnHide)
@@ -302,6 +317,7 @@ function private.FSMCreate()
 		findResult = nil,
 		numFound = 0,
 		numActioned = 0,
+		lastBuyQuantity = 0,
 		numConfirmed = 0,
 	}
 	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
@@ -407,6 +423,7 @@ function private.FSMCreate()
 				context.findResult = nil
 				context.numFound = 0
 				context.numActioned = 0
+				context.lastBuyQuantity = 0
 				context.numConfirmed = 0
 				if context.auctionScan then
 					context.auctionScan:Release()
@@ -480,6 +497,7 @@ function private.FSMCreate()
 				context.findResult = nil
 				context.numFound = 0
 				context.numActioned = 0
+				context.lastBuyQuantity = 0
 				context.numConfirmed = 0
 				context.progress = 0
 				context.progressText = L["Running Sniper Scan"]
@@ -531,7 +549,7 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_AUCTION_ROW_REMOVED", function(context, row)
 				local removingFindAuction = context.findAuction == row
-				context.auctionScan:DeleteRowFromDB(row)
+				context.auctionScan:DeleteRowFromDB(row, 0)
 				if removingFindAuction then
 					return "ST_RESULTS"
 				end
@@ -544,8 +562,14 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_AUCTION_FOUND")
 			:SetOnEnter(function(context, result)
-				context.findResult = result
-				context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+				if TSM.IsWow83() then
+					local numCanBuy = min(result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+					context.findResult = numCanBuy > 0
+					context.numFound = numCanBuy
+				else
+					context.findResult = result
+					context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+				end
 				assert(context.numActioned == 0 and context.numConfirmed == 0)
 				return "ST_BIDDING_BUYING"
 			end)
@@ -554,14 +578,25 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_AUCTION_NOT_FOUND")
 			:SetOnEnter(function(context)
 				local link = context.findAuction:GetField("rawLink")
-				context.auctionScan:DeleteRowFromDB(context.findAuction)
+				context.auctionScan:DeleteRowFromDB(context.findAuction, 0)
 				Log.PrintfUser(L["Failed to find auction for %s, so removing it from the results."], link)
 				return "ST_RESULTS"
 			end)
 			:AddTransition("ST_RESULTS")
 		)
 		:AddState(FSM.NewState("ST_BIDDING_BUYING")
-			:SetOnEnter(function(context)
+			:SetOnEnter(function(context, numToRemove)
+				if numToRemove then
+					-- remove the one we just bought
+					context.db:SetQueryUpdatesPaused(true)
+					local deletedRow = context.auctionScan:DeleteRowFromDB(context.findAuction, numToRemove)
+					if deletedRow and context.scanFrame then
+						-- move to the next auction
+						context.scanFrame:GetElement("auctions"):SelectNextRecord()
+					end
+					context.db:SetQueryUpdatesPaused(false)
+					context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
+				end
 				local selection = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
 				local auctionSelected = selection and context.findHash == selection:GetField("hash")
 				local numCanAction = not auctionSelected and 0 or (context.numFound - context.numActioned)
@@ -590,20 +625,36 @@ function private.FSMCreate()
 				end
 				context.progress = context.numConfirmed / context.numFound
 				context.progressText = L["Scan Paused"].." - "..progressText
-				context.buttonsDisabled = numCanAction == 0
+				local isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
+				if numCanAction == 0 or isPlayer or (TSM.IsWow83() and numConfirming > 0) then
+					context.buttonsDisabled = true
+				else
+					if context.scanType == "buyout" then
+						context.buttonsDisabled = not TSM.Auction.CanBuyout(selection, context.db)
+					elseif context.scanType == "bid" then
+						context.buttonsDisabled = not TSM.Auction.CanBid(selection)
+					else
+						error("Invalid scanType: "..tostring(context.scanType))
+					end
+				end
 				if context.scanFrame then
 					context.scanFrame:GetElement("bottom.progressBar"):SetProgressIconHidden(context.numConfirmed == context.numActioned)
 				end
 				UpdateBuyButtons(context, selection)
 				UpdateScanFrame(context)
 			end)
+			:AddTransition("ST_BID_BUY_CONFIRMATION")
 			:AddTransition("ST_BIDDING_BUYING")
 			:AddTransition("ST_PLACING_BID_BUY")
 			:AddTransition("ST_CONFIRMING_BID_BUY")
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_AUCTION_SELECTION_CHANGED", "ST_RESULTS")
-			:AddEventTransition("EV_ACTION_CLICKED", "ST_PLACING_BID_BUY")
+			:AddEventTransition("EV_ACTION_CLICKED", "ST_BID_BUY_CONFIRMATION")
+			:AddEvent("EV_CONFIRMED", function(context, isBuy, quantity)
+				assert(isBuy == (context.scanType == "buyout"))
+				return "ST_PLACING_BID_BUY", quantity
+			end)
 			:AddEvent("EV_MSG", function(context, msg)
 				if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY then
 					-- failed to bid/buy an auction
@@ -617,10 +668,22 @@ function private.FSMCreate()
 				end
 			end)
 		)
-		:AddState(FSM.NewState("ST_PLACING_BID_BUY")
+		:AddState(FSM.NewState("ST_BID_BUY_CONFIRMATION")
 			:SetOnEnter(function(context)
-				local index = tremove(context.findResult, #context.findResult)
-				assert(index)
+				local selection = context.scanFrame:GetElement("auctions"):GetSelectedRecord()
+				if TSM.UI.AuctionUI.BuyUtil.ShowConfirmation(context.scanFrame, selection, context.scanType == "buyout", context.numConfirmed + 1, context.numFound, private.FSMConfirmationCallback) then
+					return "ST_BIDDING_BUYING"
+				else
+					return "ST_PLACING_BID_BUY", selection:GetField("stackSize")
+				end
+			end)
+			:AddTransition("ST_PLACING_BID_BUY")
+			:AddTransition("ST_BIDDING_BUYING")
+		)
+		:AddState(FSM.NewState("ST_PLACING_BID_BUY")
+			:SetOnEnter(function(context, quantity)
+				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
+				assert(TSM.IsWow83() or index)
 				local bidBuyout = nil
 				if context.scanType == "buyout" then
 					bidBuyout = context.findAuction:GetField("buyout")
@@ -629,13 +692,14 @@ function private.FSMCreate()
 				else
 					error("Invalid scanType: "..tostring(context.scanType))
 				end
-				if context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, true) then
-					context.numActioned = context.numActioned + 1
+				if context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, true, quantity) then
+					context.numActioned = context.numActioned + (TSM.IsWow83() and quantity or 1)
+					context.lastBuyQuantity = quantity
 				else
 					if context.scanType == "buyout" then
-						Log.PrintfUser(L["Failed to buy auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("buyout")))
+						Log.PrintfUser(L["Failed to buy auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("buyout"), nil, "OPT_83_NO_COPPER"))
 					elseif context.scanType == "bid" then
-						Log.PrintfUser(L["Failed to bid on auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("bid")))
+						Log.PrintfUser(L["Failed to bid on auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("bid"), nil, "OPT_83_NO_COPPER"))
 					else
 						error("Invalid scanType: "..tostring(context.scanType))
 					end
@@ -647,13 +711,11 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_CONFIRMING_BID_BUY")
 			:SetOnEnter(function(context, success)
 				if not success then
-					Log.PrintfUser(L["Failed to buy auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("buyout")))
+					Log.PrintfUser(L["Failed to buy auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("buyout"), nil, "OPT_83_NO_COPPER"))
 				end
-				context.numConfirmed = context.numConfirmed + 1
-				-- remove this row
-				context.auctionScan:DeleteRowFromDB(context.findAuction, true)
+				context.numConfirmed = context.numConfirmed + (TSM.IsWow83() and context.lastBuyQuantity or 1)
 				context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
-				return "ST_BIDDING_BUYING"
+				return "ST_BIDDING_BUYING", context.lastBuyQuantity
 			end)
 			:AddTransition("ST_BIDDING_BUYING")
 		)
@@ -668,7 +730,7 @@ function private.FSMCreate()
 		:AddDefaultEventTransition("EV_AUCTION_HOUSE_CLOSED", "ST_INIT")
 		:AddDefaultEventTransition("EV_STOP_CLICKED", "ST_INIT")
 		:AddDefaultEvent("EV_AUCTION_ROW_REMOVED", function(context, row)
-			context.auctionScan:DeleteRowFromDB(row)
+			context.auctionScan:DeleteRowFromDB(row, 0)
 		end)
 		:Init("ST_INIT", fsmContext)
 end
@@ -697,4 +759,8 @@ function private.FSMFindAuctionCallback(result)
 	else
 		private.fsm:ProcessEvent("EV_AUCTION_NOT_FOUND")
 	end
+end
+
+function private.FSMConfirmationCallback(isBuy, quantity)
+	private.fsm:ProcessEvent("EV_CONFIRMED", isBuy, quantity)
 end

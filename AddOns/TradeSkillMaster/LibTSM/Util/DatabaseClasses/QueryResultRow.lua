@@ -234,7 +234,7 @@ local ROW_MT = {
 			if not context.db:_GetFieldType(key) then
 				error("Invalid field: "..tostring(key), 2)
 			end
-			result = context.db:_GetRowData(context.uuid, key)
+			result = context.db:GetRowFieldByUUID(context.uuid, key)
 		end
 		if result ~= nil then
 			rawset(self, key, result)

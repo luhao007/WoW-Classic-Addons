@@ -50,6 +50,7 @@ function AuctionScan.__init(self)
 	self._filtersScanned = 0
 	self._pagesScanned = 0
 	self._numPages = 0
+	self._progressChanged = true
 	self._onProgressUpdateHandler = nil
 	self._onFilterDoneHandler = nil
 	self._customFilterFunc = nil
@@ -80,6 +81,7 @@ function AuctionScan._Release(self)
 	self._filtersScanned = 0
 	self._pagesScanned = 0
 	self._numPages = 0
+	self._progressChanged = true
 	self._onProgressUpdateHandler = nil
 	self._onFilterDoneHandler = nil
 	self._customFilterFunc = nil
@@ -140,6 +142,7 @@ function AuctionScan.NewAuctionFilter(self)
 	local filter = TSM.Auction.NewAuctionFilter()
 	filter:_Acquire(self)
 	tinsert(self._filters, filter)
+	self._progressChanged = true
 	return filter
 end
 
@@ -229,16 +232,26 @@ function AuctionScan.FindAuctionThreaded(self, row, noSeller)
 	end
 end
 
-function AuctionScan.PlaceBidOrBuyout(self, index, bidBuyout, validateRow, noSeller)
+function AuctionScan.PlaceBidOrBuyout(self, index, bidBuyout, validateRow, noSeller, quantity)
 	if TSM.IsWow83() then
-		local isCommodity, itemId = strsplit("~", validateRow:GetField("hash"))
-		isCommodity = isCommodity == "true"
-		if isCommodity then
-			itemId = tonumber(itemId)
-			local itemBuyout = validateRow:GetField("itemBuyout")
-			local quantity = 1
-			-- TODO: implement a way for the user to specify how many they want to buy, and properly deduct the quantity
-			-- from the current results row (instead of removing it)
+		local itemString = validateRow:GetField("itemString")
+		if ItemInfo.IsCommodity(itemString) then
+			local itemId = ItemString.ToId(itemString)
+			-- get the cheapest auction we can buy
+			local itemBuyout, numOwnerItems, stackSize = self._db:NewQuery()
+				:Equal("itemString", validateRow:GetField("itemString"))
+				:NotEqual("stackSize", Database.OtherFieldQueryParam("numOwnerItems"))
+				:OrderBy("itemBuyout", true)
+				:Select("itemBuyout", "numOwnerItems", "stackSize")
+				:GetFirstResultAndRelease()
+			if quantity > stackSize - numOwnerItems then
+				-- trying to buy too many
+				return false
+			end
+			if itemBuyout ~= validateRow:GetField("itemBuyout") then
+				-- cheapest auction isn't selected
+				return false
+			end
 			C_AuctionHouse.StartCommoditiesPurchase(itemId, quantity, itemBuyout)
 			C_AuctionHouse.ConfirmCommoditiesPurchase(itemId, quantity)
 		else
@@ -270,7 +283,7 @@ function AuctionScan.GetNumCanBuy(self, row)
 	return rowFilter:_GetNumCanBuy(row)
 end
 
-function AuctionScan.DeleteRowFromDB(self, row, bought)
+function AuctionScan.DeleteRowFromDB(self, row, numBought)
 	local rowFilter = nil
 	for _, filter in ipairs(self._filters) do
 		if filter:_IncludesResultRow(row:GetUUID()) then
@@ -280,8 +293,9 @@ function AuctionScan.DeleteRowFromDB(self, row, bought)
 	end
 	assert(rowFilter)
 	self._db:SetQueryUpdatesPaused(true)
-	rowFilter:_RemoveResultRows(self._db, row, bought)
+	local result = rowFilter:_RemoveResultRows(self._db, row, numBought)
 	self._db:SetQueryUpdatesPaused(false)
+	return result
 end
 
 function AuctionScan.Cancel(self)
@@ -325,8 +339,13 @@ function AuctionScan._GetAuctionRowFields(self, index, filter)
 	local timeLeft = GetAuctionItemTimeLeft("list", index)
 	local itemLink = ItemInfo.GeneralizeLink(rawLink)
 	local itemString = ItemString.Get(itemLink)
-	if not itemString or not buyout or not stackSize or not timeLeft then
-		return
+	seller = private.FixSellerName(seller, sellerFull) or "?"
+	if not itemString or not buyout or not stackSize or not timeLeft or not ItemInfo.GetName(itemLink) then
+		return false
+	elseif not ItemInfo.GetItemLevel(itemLink) and not self._ignoreItemLevel then
+		return false
+	elseif seller == "?" and self._resolveSellers and buyout ~= 0 then
+		return false
 	end
 	-- pet auctions don't give textures so get from our item database
 	texture = texture or ItemInfo.GetTexture(itemLink)
@@ -335,20 +354,19 @@ function AuctionScan._GetAuctionRowFields(self, index, filter)
 	local itemBuyout = (buyout > 0) and floor(buyout / stackSize) or 0
 	-- this is to get around a bug in Blizzard's code where the minIncrement value will be inconsistent for auctions where the player is the highest bidder
 	minIncrement = isHighBidder and 0 or minIncrement
-	seller = private.FixSellerName(seller, sellerFull) or "?"
 	local hash = self:_GetAuctionRowHash(index, false)
 	local hashNoSeller = self:_GetAuctionRowHash(index, true)
 	local targetItem = filter and filter:_GetTargetItem() or itemString
 	local targetItemRate = filter and filter:_GetTargetItemRate(itemString)
 	return rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder,
 		seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink,
-		itemString, hash, hashNoSeller, private.filterId, targetItem, targetItemRate
+		itemString, hash, hashNoSeller, private.filterId, targetItem, targetItemRate, 0, 0
 end
 
 function AuctionScan._GetAuctionRowFields83(self, isCommodity, itemKey, index, filter)
 	local rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid = nil, nil, nil, nil, nil, nil, nil, nil
 	local isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout = nil, nil, nil, nil, nil, nil
-	local itemLink, itemString, hash, hashNoSeller, targetItem, targetItemRate, auctionId = nil, nil, nil, nil, nil, nil, nil
+	local itemLink, itemString, hash, hashNoSeller, targetItem, targetItemRate, auctionId, numOwnerItems = nil, nil, nil, nil, nil, nil, nil, nil
 	local resultInfo = nil
 	if isCommodity then
 		resultInfo = C_AuctionHouse.GetCommoditySearchResultInfo(itemKey.itemID, index)
@@ -356,8 +374,9 @@ function AuctionScan._GetAuctionRowFields83(self, isCommodity, itemKey, index, f
 		resultInfo = C_AuctionHouse.GetItemSearchResultInfo(itemKey, index)
 	end
 	if not resultInfo then
-		return
+		return nil
 	end
+
 	if isCommodity then
 		rawLink = ItemInfo.GetLink(itemKey.itemID)
 		buyout = resultInfo.unitPrice * resultInfo.quantity
@@ -377,10 +396,27 @@ function AuctionScan._GetAuctionRowFields83(self, isCommodity, itemKey, index, f
 		timeLeft = resultInfo.timeLeft + 1
 	end
 	itemLink = ItemInfo.GeneralizeLink(rawLink)
+	itemString = ItemString.Get(itemLink)
+
+	-- validate the data
+	if not itemString or not ItemInfo.GetName(itemLink) then
+		return nil
+	elseif not ItemInfo.GetItemLevel(itemLink) and not self._ignoreItemLevel then
+		return nil
+	elseif #resultInfo.owners == 0 and self._resolveSellers and buyout ~= 0 then
+		return nil
+	end
+	for i, owner in ipairs(resultInfo.owners) do
+		if owner == "player" then
+			resultInfo.owners[i] = UnitName("player")
+		elseif owner == "" and self._resolveSellers and buyout ~= 0 then
+			return nil
+		end
+	end
+
 	texture = ItemInfo.GetTexture(itemLink)
 	rawName = ItemInfo.GetName(rawLink)
 	stackSize = resultInfo.quantity
-	itemString = ItemString.Get(itemLink)
 	itemBuyout = buyout / stackSize
 	isHighBidder = false -- FIXME: figure out what this should be (for non-commodities)
 	minBid = resultInfo.minBid or buyout
@@ -388,58 +424,21 @@ function AuctionScan._GetAuctionRowFields83(self, isCommodity, itemKey, index, f
 	bid = resultInfo.bidAmount or 0
 	displayedBid = bid == 0 and minBid or bid
 	itemDisplayedBid = displayedBid / stackSize
-	for i, owner in ipairs(resultInfo.owners) do
-		if owner == "player" then
-			resultInfo.owners[i] = UnitName("player")
-		end
-	end
 	seller = table.concat(resultInfo.owners, ",")
 	if isCommodity then
-		hash = strjoin("~", tostringall(true, itemKey.itemID, buyout, timeLeft, stackSize))
-		hashNoSeller = strjoin("~", tostringall(true, itemKey.itemID, buyout, seller, timeLeft, stackSize))
+		hash = strjoin("~", tostringall(itemKey.itemID, itemBuyout, seller))
+		hashNoSeller = strjoin("~", tostringall(itemKey.itemID, itemBuyout))
 	else
-		hash = strjoin("~", tostringall(false, itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, itemKey.battlePetSpeciesID, rawLink, minBid, minIncrement, buyout, bid, timeLeft, stackSize, isHighBidder))
-		hashNoSeller = strjoin("~", tostringall(false, itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, itemKey.battlePetSpeciesID, rawLink, minBid, minIncrement, buyout, bid, seller, timeLeft, stackSize, isHighBidder))
+		hash = strjoin("~", tostringall(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, itemKey.battlePetSpeciesID, rawLink, minBid, minIncrement, buyout, bid, stackSize, isHighBidder, seller))
+		hashNoSeller = strjoin("~", tostringall(itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, itemKey.battlePetSpeciesID, rawLink, minBid, minIncrement, buyout, bid, stackSize, isHighBidder))
 	end
 	targetItem = filter and filter:_GetTargetItem() or itemString
 	targetItemRate = filter and filter:_GetTargetItemRate(itemString)
 	auctionId = resultInfo.auctionID
+	numOwnerItems = resultInfo.numOwnerItems or 0
 	return rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder,
 		seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink,
-		itemString, hash, hashNoSeller, private.filterId, targetItem, targetItemRate, auctionId
-end
-
-function AuctionScan._CreateAuctionRowIfNotFiltered(self, index, filter)
-	local rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder,
-		seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink,
-		itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate = self:_GetAuctionRowFields(index, filter)
-	if filter:_IsFiltered(self._ignoreItemLevel, itemString, itemBuyout, stackSize, targetItemRate) or self:_IsFiltered(itemString, itemBuyout, stackSize, itemDisplayedBid) then
-		return nil
-	end
-	return self._db:NewRow()
-		:SetField("rawName", rawName)
-		:SetField("rawLink", rawLink)
-		:SetField("texture", texture)
-		:SetField("stackSize", stackSize)
-		:SetField("minBid", minBid)
-		:SetField("minIncrement", minIncrement)
-		:SetField("buyout", buyout)
-		:SetField("bid", bid)
-		:SetField("isHighBidder", isHighBidder)
-		:SetField("seller", seller)
-		:SetField("timeLeft", timeLeft)
-		:SetField("displayedBid", displayedBid)
-		:SetField("itemDisplayedBid", itemDisplayedBid)
-		:SetField("itemBuyout", itemBuyout)
-		:SetField("itemLink", itemLink)
-		:SetField("itemString", itemString)
-		:SetField("hash", hash)
-		:SetField("hashNoSeller", hashNoSeller)
-		:SetField("filterId", filterId)
-		:SetField("targetItem", targetItem)
-		:SetField("targetItemRate", targetItemRate)
-		:SetField("auctionId", 0)
-		:CreateAndClone()
+		itemString, hash, hashNoSeller, private.filterId, targetItem, targetItemRate, auctionId, numOwnerItems
 end
 
 function AuctionScan._NotifyFilterDone(self, filter, numNewResults)
@@ -449,14 +448,18 @@ function AuctionScan._NotifyFilterDone(self, filter, numNewResults)
 end
 
 function AuctionScan._SetFiltersScanned(self, num)
+	self._progressChanged = self._progressChanged or num ~= self._filtersScanned
 	self._filtersScanned = num
 	self:_SetPageProgress(0, 0)
 end
 
 function AuctionScan._SetPageProgress(self, pagesScanned, numPages)
+	self._progressChanged = self._progressChanged or pagesScanned ~= self._pagesScanned or numPages ~= self._numPages
 	self._pagesScanned = pagesScanned
 	self._numPages = numPages
-	if self._onProgressUpdateHandler then
+	local changed = self._progressChanged
+	self._progressChanged = false
+	if changed and self._onProgressUpdateHandler then
 		self:_onProgressUpdateHandler()
 	end
 end
@@ -527,6 +530,7 @@ function TSMAPI_FOUR.Auction.NewDatabase(name)
 		:AddStringField("targetItem")
 		:AddNumberField("targetItemRate")
 		:AddNumberField("auctionId")
+		:AddNumberField("numOwnerItems")
 		:Commit()
 end
 
@@ -577,14 +581,7 @@ function private.IsAuctionPageValidThreaded(auctionScan)
 	for i = 1, numAuctions do
 		-- checks to make sure all the data has been sent to the client
 		-- if not, the data is bad and we'll wait / try again
-		local _, _, _, stackSize, _, _, buyout, _, _, seller, timeLeft, _, _, _, itemLink, itemString = auctionScan:_GetAuctionRowFields(i)
-		local name = ItemInfo.GetName(itemLink)
-		local itemLevel = ItemInfo.GetItemLevel(itemLink)
-		if not itemString or not buyout or not stackSize or not name or not timeLeft then
-			return false
-		elseif not itemLevel and not auctionScan._ignoreItemLevel then
-			return false
-		elseif not seller and auctionScan._resolveSellers and buyout ~= 0 then
+		if not auctionScan:_GetAuctionRowFields(i) then
 			return false
 		end
 		Threading.Yield()
@@ -595,12 +592,92 @@ end
 
 function private.ScanAuctionPageThreaded(auctionScan, filter)
 	if not TSM.IsWow83() then
-		local startTime = GetTime()
-		local lastSuccessTime = GetTime()
-		local index = 1
+		-- scan the results
+		local scanResult, numInsertedRows = private.ProcessScanResultsThreaded(auctionScan, filter)
+		if not scanResult then
+			return false
+		end
+		return true, numInsertedRows
+	else
+		local results = C_AuctionHouse.GetBrowseResults()
+		filter:_SetNumPages(#results)
 		local numInsertedRows = 0
-		while true do
-			local numAuctions, totalAuctions = GetNumAuctionItems("list")
+		for i = 1, #results do
+			local itemKey = results[i].itemKey
+			local minPrice = results[i].minPrice
+			local baseItemString = ItemString.GetBaseFromItemKey(itemKey)
+			if not filter:_IsItemFiltered(baseItemString, itemKey.itemLevel) and filter:_ShouldScanItem(baseItemString, minPrice) then
+				-- check if the item is a commodity or not
+				local isCommodity = ItemInfo.IsCommodity(itemKey.itemID)
+				while isCommodity == nil do
+					Threading.Yield(true)
+					isCommodity = ItemInfo.IsCommodity(itemKey.itemID)
+					if auctionScan:_IsCancelled() then
+						Log.Info("Stopping cancelled scan")
+						return false
+					end
+				end
+
+				-- send the query for this item
+				Threading.Yield(true)
+				if not C_AuctionHouse.HasSearchResults(itemKey) then
+					if not private.SendSearchQuery83(itemKey, auctionScan) then
+						return false
+					end
+					Threading.WaitForEvent(isCommodity and "COMMODITY_SEARCH_RESULTS_UPDATED" or "ITEM_SEARCH_RESULTS_UPDATED")
+				end
+
+				-- get all the search results
+				if isCommodity then
+					while not C_AuctionHouse.HasFullCommoditySearchResults(itemKey.itemID) do
+						Log.Info("Requesting more...")
+						C_AuctionHouse.RequestMoreCommoditySearchResults(itemKey.itemID)
+						Threading.WaitForEvent("COMMODITY_SEARCH_RESULTS_ADDED")
+					end
+				else
+					while not C_AuctionHouse.HasFullItemSearchResults(itemKey) do
+						Log.Info("Requesting more...")
+						C_AuctionHouse.RequestMoreItemSearchResults(itemKey)
+						Threading.WaitForEvent("ITEM_SEARCH_RESULTS_ADDED")
+					end
+				end
+
+				-- scan the results
+				local scanResult, scanNumInsertedRows = private.ProcessScanResultsThreaded(auctionScan, filter, isCommodity, itemKey)
+				if not scanResult then
+					return false
+				end
+				numInsertedRows = numInsertedRows + scanNumInsertedRows
+			end
+
+			-- update the "page"
+			filter:_SetPage(i)
+			auctionScan:_SetPageProgress(filter:_GetPageProgress())
+			Threading.Yield()
+		end
+		return true, numInsertedRows
+	end
+end
+
+function private.ProcessScanResultsThreaded(auctionScan, filter, isCommodity, itemKey)
+	local numInsertedRows = 0
+	local startTime = GetTime()
+	local lastSuccessTime = GetTime()
+	local index = 1
+	while true do
+		local numAuctions = nil
+		local prevIndex = index
+		local numNewInsertedRows = nil
+		if TSM.IsWow83() then
+			if isCommodity then
+				numAuctions = C_AuctionHouse.GetNumCommoditySearchResults(itemKey.itemID)
+			else
+				numAuctions = C_AuctionHouse.GetNumItemSearchResults(itemKey)
+			end
+			index, numNewInsertedRows = private.ProcessAuctionRows(auctionScan, filter, index, numAuctions, isCommodity, itemKey)
+		else
+			local totalAuctions = nil
+			numAuctions, totalAuctions = GetNumAuctionItems("list")
 			if totalAuctions <= NUM_AUCTION_ITEMS_PER_PAGE and numAuctions ~= totalAuctions then
 				-- there are cases where we get (0, 1) from the API - no idea why and it'll cause bugs later, so we should count it as invalid
 				Log.Err("Unexpected number of auctions (%d, %d)", numAuctions, totalAuctions)
@@ -610,148 +687,123 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 				Log.Err("Switched off GetAll results")
 				return false
 			end
-
-			auctionScan._db:BulkInsertStart()
-			local maxIndex = min(numAuctions, index + NUM_AUCTION_ITEMS_PER_PAGE)
-			while index <= maxIndex do
-				local rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate = auctionScan:_GetAuctionRowFields(index, filter)
-				if not itemString or not buyout or not stackSize or not ItemInfo.GetName(itemLink) or not timeLeft then
-					break
-				elseif not ItemInfo.GetItemLevel(itemLink) and not auctionScan._ignoreItemLevel then
-					break
-				elseif seller == "?" and auctionScan._resolveSellers and buyout ~= 0 then
-					break
-				end
-				index = index + 1
-				lastSuccessTime = GetTime()
-				if not filter:_IsFiltered(auctionScan._ignoreItemLevel, itemString, itemBuyout, stackSize, targetItemRate) and not auctionScan:_IsFiltered(itemString, itemBuyout, stackSize, itemDisplayedBid) then
-					local uuid = auctionScan._db:BulkInsertNewRow(rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate, 0)
-					filter:_AddResultRow(uuid)
-					numInsertedRows = numInsertedRows + 1
-				end
-			end
-			auctionScan._db:BulkInsertEnd()
-
+			index, numNewInsertedRows = private.ProcessAuctionRows(auctionScan, filter, index, min(numAuctions, index + NUM_AUCTION_ITEMS_PER_PAGE))
 			if filter:_IsGetAll() then
 				-- update the "page"
 				filter:_SetPage(index)
 				filter:_SetNumPages(numAuctions)
-			else
+			elseif not filter:_IsSniper() then
 				filter:_SetNumPages(ceil(totalAuctions / NUM_AUCTION_ITEMS_PER_PAGE))
 			end
 			auctionScan:_SetPageProgress(filter:_GetPageProgress())
-
-			if index > numAuctions then
-				return true, numInsertedRows
-			elseif GetTime() > startTime + 300 then
-				Log.Err("Timed out on entire scan")
-				return false
-			elseif GetTime() > lastSuccessTime + 30 then
-				Log.Err("Timed out on index (%d)", index)
-				return false
-			end
-			Threading.Sleep(0.01)
-			if auctionScan:_IsCancelled() then
-				Log.Info("Stopping cancelled scan")
-				return false
-			end
 		end
-	else
-		local results = C_AuctionHouse.GetBrowseResults()
-		filter:_SetNumPages(#results)
-		local numInsertedRows = 0
-		for i = 1, #results do
-			local itemKey = results[i].itemKey
 
-			-- check if the item is a commodity or not
-			local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey)
-			while not itemKeyInfo do
-				Threading.Yield(true)
-				itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(itemKey)
-				if auctionScan:_IsCancelled() then
-					Log.Info("Stopping cancelled scan")
-					return false
-				end
-			end
-			local isCommodity = itemKeyInfo.isCommodity
-
-			-- send the query for this item
-			Threading.Yield(true)
-			if not C_AuctionHouse.HasSearchResults(itemKey) then
-				if not private.SendSearchQuery83(itemKey, auctionScan) then
-					return false
-				end
-				Threading.WaitForEvent(itemKeyInfo.isCommodity and "COMMODITY_SEARCH_RESULTS_UPDATED" or "ITEM_SEARCH_RESULTS_UPDATED")
-			end
-
-			-- get all the search results
-			if itemKeyInfo.isCommodity then
-				while not C_AuctionHouse.HasFullCommoditySearchResults(itemKey.itemID) do
-					Log.Info("Requesting more...")
-					C_AuctionHouse.RequestMoreCommoditySearchResults(itemKey.itemID)
-					Threading.WaitForEvent("COMMODITY_SEARCH_RESULTS_ADDED")
-				end
-			else
-				while not C_AuctionHouse.HasFullItemSearchResults(itemKey) do
-					Log.Info("Requesting more...")
-					C_AuctionHouse.RequestMoreItemSearchResults(itemKey)
-					Threading.WaitForEvent("ITEM_SEARCH_RESULTS_ADDED")
-				end
-			end
-
-			-- scan the results
-			local startTime = GetTime()
-			local lastSuccessTime = GetTime()
-			local index = 1
-			while true do
-				local numItemResults = nil
-				if isCommodity then
-					numItemResults = C_AuctionHouse.GetNumCommoditySearchResults(itemKey.itemID)
-				else
-					numItemResults = C_AuctionHouse.GetNumItemSearchResults(itemKey)
-				end
-				auctionScan._db:BulkInsertStart()
-				while index <= numItemResults do
-					local rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate, auctionId = auctionScan:_GetAuctionRowFields83(isCommodity, itemKey, index, filter)
-					if not itemString or not buyout or not stackSize or not ItemInfo.GetName(itemLink) or not timeLeft then
-						break
-					elseif not ItemInfo.GetItemLevel(itemLink) and not auctionScan._ignoreItemLevel then
-						break
-					elseif seller == "" and auctionScan._resolveSellers and buyout ~= 0 then
-						break
-					end
-					index = index + 1
-					lastSuccessTime = GetTime()
-					if not filter:_IsFiltered(auctionScan._ignoreItemLevel, itemString, itemBuyout, stackSize, targetItemRate) and not auctionScan:_IsFiltered(itemString, itemBuyout, stackSize, itemDisplayedBid) then
-						local uuid = auctionScan._db:BulkInsertNewRow(rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate, auctionId)
-						filter:_AddResultRow(uuid)
-						numInsertedRows = numInsertedRows + 1
-					end
-				end
-				auctionScan._db:BulkInsertEnd()
-
-				if index > numItemResults then
-					break
-				elseif GetTime() > startTime + 300 then
-					Log.Err("Timed out on entire scan")
-					return false
-				elseif GetTime() > lastSuccessTime + 30 then
-					Log.Err("Timed out on index (%d)", index)
-					return false
-				end
-				Threading.Sleep(0.01)
-				if auctionScan:_IsCancelled() then
-					Log.Info("Stopping cancelled scan")
-					return false
-				end
-			end
-
-			-- update the "page"
-			filter:_SetPage(i)
-			auctionScan:_SetPageProgress(filter:_GetPageProgress())
+		if not index then
+			return false
 		end
-		return true, numInsertedRows
+		if index ~= prevIndex then
+			lastSuccessTime = GetTime()
+		end
+		numInsertedRows = numInsertedRows + numNewInsertedRows
+
+		if index > numAuctions then
+			break
+		elseif GetTime() > startTime + 300 then
+			Log.Err("Timed out on entire scan")
+			return false
+		elseif GetTime() > lastSuccessTime + 30 then
+			Log.Err("Timed out on index (%d)", index)
+			return false
+		end
+		Threading.Sleep(0.01)
+		if auctionScan:_IsCancelled() then
+			Log.Info("Stopping cancelled scan")
+			return false
+		end
 	end
+	return true, numInsertedRows
+end
+
+function private.ProcessAuctionRows(auctionScan, filter, index, maxIndex, isCommodity, itemKey)
+	auctionScan._db:BulkInsertStart()
+	local firstInvalidIndex = nil
+	for i = index, maxIndex do
+		local isValid = nil
+		if TSM.IsWow83() then
+			isValid = private.ProcessAuctionRow(auctionScan, filter, not firstInvalidIndex, auctionScan:_GetAuctionRowFields83(isCommodity, itemKey, i, filter))
+		else
+			isValid = private.ProcessAuctionRow(auctionScan, filter, not firstInvalidIndex, auctionScan:_GetAuctionRowFields(i, filter))
+		end
+		if not isValid then
+			firstInvalidIndex = firstInvalidIndex or i
+		end
+	end
+	if firstInvalidIndex then
+		index = firstInvalidIndex
+	else
+		index = maxIndex + 1
+	end
+
+	local numInsertedRows = 0
+	if filter:_IsSniper() then
+		-- don't store any rows for failed sniper queries
+		if index <= maxIndex then
+			Log.Err("Failed to validate sniper results")
+			auctionScan._db:BulkInsertAbort()
+			return nil
+		end
+		local newUUIDs = TempTable.Acquire()
+		for _, uuid in auctionScan._db:BulkInsertUUIDIterator() do
+			tinsert(newUUIDs, uuid)
+			filter:_AddResultRow(uuid)
+		end
+		auctionScan._db:SetQueryUpdatesPaused(true)
+		auctionScan._db:BulkInsertEnd()
+		for _, uuid in ipairs(newUUIDs) do
+			local hashNoSeller = auctionScan._db:GetRowFieldByUUID(uuid, "hashNoSeller")
+			-- remove existing duplicates from previous filters
+			local query = auctionScan._db:NewQuery()
+				:Equal("hashNoSeller", hashNoSeller)
+				:LessThan("filterId", private.filterId)
+			local removedOld = false
+			for _, oldRow in query:Iterator() do
+				removedOld = true
+				auctionScan:DeleteRowFromDB(oldRow, 0)
+			end
+			query:Release()
+			if not removedOld then
+				local newQuery = auctionScan._db:NewQuery()
+					:Equal("hashNoSeller", hashNoSeller)
+					:Equal("filterId", private.filterId)
+				if newQuery:Count() == 1 then
+					numInsertedRows = numInsertedRows + 1
+				end
+				newQuery:Release()
+			end
+		end
+		TempTable.Release(newUUIDs)
+		auctionScan._db:SetQueryUpdatesPaused(false)
+	else
+		for _, uuid in auctionScan._db:BulkInsertUUIDIterator() do
+			filter:_AddResultRow(uuid)
+			numInsertedRows = numInsertedRows + 1
+		end
+		auctionScan._db:BulkInsertEnd()
+	end
+
+	return index, numInsertedRows
+end
+
+function private.ProcessAuctionRow(auctionScan, filter, shouldInsert, rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate, auctionId, numOwnerItems)
+	if not rawName then
+		return false
+	end
+	if not filter:_IsFiltered(auctionScan._ignoreItemLevel, itemString, itemBuyout, stackSize, targetItemRate) and not auctionScan:_IsFiltered(itemString, itemBuyout, stackSize, itemDisplayedBid) then
+		if shouldInsert then
+			auctionScan._db:BulkInsertNewRow(rawName, rawLink, texture, stackSize, minBid, minIncrement, buyout, bid, isHighBidder, seller, timeLeft, displayedBid, itemDisplayedBid, itemBuyout, itemLink, itemString, hash, hashNoSeller, filterId, targetItem, targetItemRate, auctionId, numOwnerItems)
+		end
+	end
+	return true
 end
 
 function private.ValidateThreaded(auctionScan)
@@ -842,61 +894,18 @@ function private.ScanQueryThreaded(auctionScan)
 				break
 			end
 			-- we've made the query, now store the results
-			if filter:_IsSniper() then
-				-- check the result
-				if not private.ValidateThreaded(auctionScan) then
-					-- don't store results for a failed filter
-					Log.Err("Failed to scan filter")
-					filterSuccess = false
-					break
-				elseif auctionScan:_IsCancelled() then
-					Log.Info("Stopping cancelled scan")
-					break
-				end
-				auctionScan._db:SetQueryUpdatesPaused(true)
-				for j = 1, GetNumAuctionItems("list") do
-					local row = auctionScan:_CreateAuctionRowIfNotFiltered(j, filter)
-					if row then
-						local hashNoSeller = row:GetField("hashNoSeller")
-						-- remove existing duplicates from previous filters
-						local query = auctionScan._db:NewQuery()
-							:Equal("hashNoSeller", hashNoSeller)
-							:LessThan("filterId", private.filterId)
-						local removedOld = false
-						for _, oldRow in query:Iterator() do
-							removedOld = true
-							auctionScan:DeleteRowFromDB(oldRow, false)
-						end
-						query:Release()
-						if not removedOld then
-							local newQuery = auctionScan._db:NewQuery()
-								:Equal("hashNoSeller", hashNoSeller)
-								:Equal("filterId", private.filterId)
-							if newQuery:Count() == 1 then
-								numNewResults = numNewResults + 1
-							end
-							newQuery:Release()
-						end
-						filter:_AddResultRow(row:GetUUID())
-						row:Release()
-					end
-				end
-				auctionScan._db:SetQueryUpdatesPaused(false)
-			else
-				-- scan the results
-				local scanSuccess, numInsertedRows = private.ScanAuctionPageThreaded(auctionScan, filter)
-				if not scanSuccess then
-					-- don't store results for a failed filter
-					Log.Err("Failed to scan filter")
-					filterSuccess = false
-					break
-				elseif auctionScan:_IsCancelled() then
-					Log.Info("Stopping cancelled scan")
-					break
-				end
-				numInsertedRows = numInsertedRows
-			end
 			private.filterId = private.filterId + 1
+			local scanSuccess, numInsertedRows = private.ScanAuctionPageThreaded(auctionScan, filter)
+			if not scanSuccess then
+				-- don't store results for a failed filter
+				Log.Err("Failed to scan filter")
+				filterSuccess = false
+				break
+			elseif auctionScan:_IsCancelled() then
+				Log.Info("Stopping cancelled scan")
+				break
+			end
+			numNewResults = numNewResults + numInsertedRows
 			hasMorePages = filter:_NextPage()
 			auctionScan:_SetPageProgress(filter:_GetPageProgress())
 		end
@@ -916,6 +925,7 @@ function private.ScanQueryThreaded(auctionScan)
 end
 
 function private.FindAuctionThreaded(auctionScan, row, noSeller)
+	auctionScan._cancelled = false
 	-- make sure we're not in the middle of a query where the results are going to change on us
 	Threading.WaitForFunction(CanSendAuctionQuery)
 	local timeout = 5
@@ -1112,13 +1122,14 @@ function private.FindAuctionOnCurrentPage(auctionScan, row, noSeller)
 end
 
 function private.FindAuctionThreaded83(auctionScan, row, noSeller)
-	local isCommodity, itemId, itemLevel, itemSuffix, battlePetSpeciesID = strsplit("~", row:GetField("hash"))
-	isCommodity = isCommodity == "true"
+	auctionScan._cancelled = false
+	local itemId, itemLevel, itemSuffix, battlePetSpeciesID = strsplit("~", row:GetField("hash"))
+	local isCommodity = ItemInfo.IsCommodity(row:GetField("itemString"))
 	itemId = tonumber(itemId)
 	itemLevel = tonumber(itemLevel)
 	itemSuffix = tonumber(itemSuffix)
 	battlePetSpeciesID = tonumber(battlePetSpeciesID)
-	local itemKey = TempTable.Acquire()
+	local itemKey = Threading.AcquireSafeTempTable()
 	itemKey.itemID = itemId
 	itemKey.itemLevel = isCommodity and 0 or itemLevel
 	itemKey.itemSuffix = isCommodity and 0 or itemSuffix
@@ -1126,6 +1137,7 @@ function private.FindAuctionThreaded83(auctionScan, row, noSeller)
 	-- send the query for this item
 	if not C_AuctionHouse.HasSearchResults(itemKey) then
 		if not private.SendSearchQuery83(itemKey, auctionScan) then
+			Threading.ReleaseSafeTempTable(itemKey)
 			return nil
 		end
 		Threading.WaitForEvent(isCommodity and "COMMODITY_SEARCH_RESULTS_UPDATED" or "ITEM_SEARCH_RESULTS_UPDATED")
@@ -1153,20 +1165,15 @@ function private.FindAuctionThreaded83(auctionScan, row, noSeller)
 	else
 		numItemResults = C_AuctionHouse.GetNumItemSearchResults(itemKey)
 	end
+	local result = nil
 	for i = 1, numItemResults do
-		local resultInfo = nil
-		if isCommodity then
-			resultInfo = C_AuctionHouse.GetCommoditySearchResultInfo(itemKey.itemID, i)
-			tinsert(auctionScan._findResult, i)
-		else
-			resultInfo = C_AuctionHouse.GetItemSearchResultInfo(itemKey, i)
-			if resultInfo.auctionID == row:GetField("auctionId") then
-				tinsert(auctionScan._findResult, i)
-			end
+		local _, _, _, stackSize, _, _, _, _, _, _, _, _, _, _, _, _, hash, hashNoSeller = auctionScan:_GetAuctionRowFields83(isCommodity, itemKey, i)
+		if (noSeller and hashNoSeller or hash) == row:GetField(noSeller and "hashNoSeller" or "hash") then
+			result = (result or 0) + stackSize
 		end
 	end
-	TempTable.Release(itemKey)
-	return #auctionScan._findResult > 0 and auctionScan._findResult or nil
+	Threading.ReleaseSafeTempTable(itemKey)
+	return result
 end
 
 function private.FixSellerName(seller, sellerFull)

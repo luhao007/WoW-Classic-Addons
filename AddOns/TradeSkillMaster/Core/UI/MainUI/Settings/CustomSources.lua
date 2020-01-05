@@ -208,7 +208,7 @@ function private.ValueOnValueChanged(text, newValue)
 		Log.PrintUser(L["Invalid price source."].." "..errText)
 		newValue = oldValue
 	else
-		TSM.db.global.userData.customPriceSources[text:GetParentElement():GetContext()] = newValue
+		CustomPrice.SetCustomPriceSource(text:GetParentElement():GetContext(), newValue)
 	end
 	text:SetText(newValue)
 		:Draw()
@@ -221,7 +221,7 @@ function private.DeleteCustomPriceOnClick(button)
 			:Draw()
 		private.editingElement = nil
 	end
-	TSM.db.global.userData.customPriceSources[button:GetParentElement():GetContext()] = nil
+	CustomPrice.DeleteCustomPriceSource(button:GetParentElement():GetContext())
 	local rowFrame = button:GetParentElement()
 	local parentFrame = rowFrame:GetParentElement()
 	parentFrame:RemoveChild(rowFrame)

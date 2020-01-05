@@ -10,6 +10,8 @@ local _, TSM = ...
 local Util = TSM.Auctioning:NewPackage("Util")
 local TempTable = TSM.Include("Util.TempTable")
 local Vararg = TSM.Include("Util.Vararg")
+local Money = TSM.Include("Util.Money")
+local String = TSM.Include("Util.String")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	priceCache = {},
@@ -52,6 +54,8 @@ function Util.GetPrice(key, operation, itemString)
 			if VALID_PRICE_KEYS[priceKey] then
 				private.priceCache[cacheKey] = Util.GetPrice(priceKey, operation, itemString)
 			end
+		elseif TSM.IsWow83() and key == "undercut" and Money.FromString(operation[key]) == 0 then
+			private.priceCache[cacheKey] = 0
 		else
 			private.priceCache[cacheKey] = CustomPrice.GetValue(operation[key], itemString)
 		end
@@ -79,8 +83,17 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 				temp.buyout = itemBuyout
 				temp.bid = record:GetField("itemDisplayedBid")
 				temp.seller = seller
-				temp.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(seller)] and true or false
-				temp.isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(seller, true, true, true)
+				temp.auctionId = record:GetField("auctionId")
+				temp.isWhitelist = false
+				temp.isPlayer = false
+				for seller2 in String.SplitIterator(seller, ",") do
+					if TSM.db.factionrealm.auctioningOptions.whitelist[strlower(seller2)] then
+						temp.isWhitelist = true
+					end
+					if TSMAPI_FOUR.PlayerInfo.IsPlayer(seller, true, true, true) then
+						temp.isPlayer = true
+					end
+				end
 				if not temp.isWhitelist and not temp.isPlayer then
 					-- there is a non-whitelisted competitor, so we don't care if a whitelisted competitor also posts at this price
 					ignoreWhitelist = true
@@ -90,7 +103,7 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 				end
 				if operationSettings.blacklist then
 					for _, player in Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
-						if strlower(strtrim(player)) == strlower(seller) then
+						if String.SeparatedContains(strlower(seller), ",", strlower(strtrim(player))) then
 							temp.isBlacklist = true
 						end
 					end
@@ -124,8 +137,9 @@ function Util.GetPlayerAuctionCount(query, itemString, operationSettings, findBi
 	local quantity = 0
 	for _, record in query:Iterator() do
 		if not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
-			if record:GetField("itemDisplayedBid") == findBid and record:GetField("itemBuyout") == findBuyout and record:GetField("stackSize") == findStackSize and TSMAPI_FOUR.PlayerInfo.IsPlayer(record:GetField("seller"), true, true, true) then
-				quantity = quantity + 1
+			local itemDisplayedBid, itemBuyout, stackSize = record:GetFields("itemDisplayedBid", "itemBuyout", "stackSize")
+			if itemDisplayedBid == findBid and itemBuyout == findBuyout and (TSM.IsWow83() or stackSize == findStackSize) then
+				quantity = quantity + private.GetPlayerAuctionCount(record)
 			end
 		end
 	end
@@ -135,7 +149,7 @@ end
 function Util.GetPlayerLowestBuyout(query, itemString, operationSettings)
 	local lowestItemBuyout = nil
 	for _, record in query:Iterator() do
-		if not lowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and TSMAPI_FOUR.PlayerInfo.IsPlayer(record:GetField("seller"), true, true, true) then
+		if not lowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) > 0 then
 			lowestItemBuyout = record:GetField("itemBuyout")
 		end
 	end
@@ -145,18 +159,19 @@ end
 function Util.IsPlayerOnlySeller(query, itemString, operationSettings)
 	local isOnly = true
 	for _, record in query:Iterator() do
-		if isOnly and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and not TSMAPI_FOUR.PlayerInfo.IsPlayer(record:GetField("seller"), true, true, true) then
+		if isOnly and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) < (TSM.IsWow83() and record:GetField("stackSize") or 1) then
 			isOnly = false
 		end
 	end
 	return isOnly
 end
 
-function Util.GetNextLowestItemBuyout(query, itemString, lowestItemBuyout, operationSettings)
+function Util.GetNextLowestItemBuyout(query, itemString, lowestAuction, operationSettings)
 	local nextLowestItemBuyout = nil
 	for _, record in query:Iterator() do
-		local itemBuyout = record:GetField("itemBuyout")
-		if not nextLowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and itemBuyout > lowestItemBuyout then
+		local itemBuyout, auctionId = record:GetFields("itemBuyout", "auctionId")
+		local isLower = itemBuyout > lowestAuction.buyout or (itemBuyout == lowestAuction.buyout and auctionId < lowestAuction.auctionId)
+		if not nextLowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and isLower then
 			nextLowestItemBuyout = itemBuyout
 		end
 	end
@@ -165,7 +180,7 @@ end
 
 function Util.GetQueueStatus(query)
 	local numProcessed, numConfirmed, numFailed, totalNum = 0, 0, 0, 0
-	query:OrderBy("index", true)
+	query:OrderBy("auctionId", true)
 	for _, row in query:Iterator() do
 		local rowNumStacks, rowNumProcessed, rowNumConfirmed, rowNumFailed = row:GetFields("numStacks", "numProcessed", "numConfirmed", "numFailed")
 		totalNum = totalNum + rowNumStacks
@@ -187,7 +202,7 @@ function private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings
 	if record:GetField("timeLeft") <= operationSettings.ignoreLowDuration then
 		-- ignoring low duration
 		return true
-	elseif operationSettings.matchStackSize and record:GetField("stackSize") ~= operationSettings.stackSize then
+	elseif not TSM.IsWow83() and operationSettings.matchStackSize and record:GetField("stackSize") ~= operationSettings.stackSize then
 		-- matching stack size
 		return true
 	elseif operationSettings.priceReset == "ignore" and record:GetField("itemBuyout") then
@@ -207,8 +222,19 @@ function private.LowestAuctionCompare(a, b)
 	if a.isWhitelist ~= b.isWhitelist then
 		return a.isWhitelist
 	end
+	if a.auctionId ~= b.auctionId then
+		return a.auctionId > b.auctionId
+	end
 	if a.isPlayer ~= b.isPlayer then
-		return a.isPlayer
+		return b.isPlayer
 	end
 	return tostring(a) < tostring(b)
+end
+
+function private.GetPlayerAuctionCount(row)
+	if TSM.IsWow83() then
+		return row:GetField("numOwnerItems")
+	else
+		return TSMAPI_FOUR.PlayerInfo.IsPlayer(row:GetField("seller"), true, true, true) and 1 or 0
+	end
 end

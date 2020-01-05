@@ -786,6 +786,18 @@ function DatabaseQuery.HashAndRelease(self)
 	return result
 end
 
+--- Deletes all the result rows from the database and releases the query.
+-- @tparam DatabaseQuery self The database query object
+-- @?treturn number The number of rows deleted (equal to `:Count()`)
+function DatabaseQuery.DeleteAndRelease(self)
+	local count = self:Count()
+	for _, uuid in ipairs(self._result) do
+		self._db:DeleteRowByUUID(uuid)
+	end
+	self:Release()
+	return count
+end
+
 --- Resets the database query.
 -- @tparam DatabaseQuery self The database query object
 -- @treturn DatabaseQuery The database query object
@@ -965,7 +977,7 @@ function DatabaseQuery._DoUpdateCallback(self, uuid)
 						break
 					end
 					local joinField = self._joinFields[i]
-					local joinValue = joinDB:_GetRowData(uuid, joinField)
+					local joinValue = joinDB:GetRowFieldByUUID(uuid, joinField)
 					if self._db:_IsUnique(joinField) then
 						localUUID = self._db:_GetUniqueRow(joinField, joinValue)
 					elseif self._db:_IsIndex(joinField) then
@@ -1192,7 +1204,7 @@ function DatabaseQuery._ResultShouldIncludeRow(self, uuid, skipQuery, numJoinDBs
 		local joinType = self._joinTypes[i]
 		local joinDB = self._joinDBs[i]
 		local joinField = self._joinFields[i]
-		if joinType == "INNER" and not joinDB:_GetUniqueRow(joinField, self._db:_GetRowData(uuid, joinField)) then
+		if joinType == "INNER" and not joinDB:_GetUniqueRow(joinField, self._db:GetRowFieldByUUID(uuid, joinField)) then
 			return false
 		end
 	end
@@ -1271,7 +1283,7 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 		return value
 	elseif #self._joinDBs == 0 or self._db:_GetFieldType(field) then
 		-- this is a local field
-		return self._db:_GetRowData(uuid, field)
+		return self._db:GetRowFieldByUUID(uuid, field)
 	else
 		-- this is a foreign field
 		local joinDB = nil
@@ -1291,7 +1303,7 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 		end
 		local foreignUUID = joinDB:_GetUniqueRow(joinField, self:_GetResultRowData(uuid, joinField))
 		if foreignUUID then
-			return joinDB:_GetRowData(foreignUUID, field)
+			return joinDB:GetRowFieldByUUID(foreignUUID, field)
 		end
 	end
 end

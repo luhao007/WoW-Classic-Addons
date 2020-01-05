@@ -26,8 +26,8 @@ local private = {
 	nextUpdate = nil,
 	filterText = ""
 }
-
 local PLAYER_NAME = UnitName("player")
+local MAIL_REFRESH_TIME = TSM.IsWow83() and 15 or 60
 
 
 
@@ -833,9 +833,9 @@ function private.UpdateCountDown(force)
 		return
 	end
 
-	local nextUpdate = 61 - (time() - TSM.Mailing.Open.GetLastCheckTime())
-	if nextUpdate == 0 then
-		nextUpdate = 61
+	local nextUpdate = MAIL_REFRESH_TIME - (time() - TSM.Mailing.Open.GetLastCheckTime())
+	if nextUpdate <= 0 then
+		nextUpdate = MAIL_REFRESH_TIME
 	end
 
 	if nextUpdate ~= private.nextUpdate or force then

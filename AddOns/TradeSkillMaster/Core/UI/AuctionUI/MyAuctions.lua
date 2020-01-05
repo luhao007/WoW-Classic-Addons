@@ -25,6 +25,9 @@ local DURATION_LIST = {
 	"Long (2h to 12h)",
 	"Very Long (Over 12h)",
 }
+local SECONDS_PER_MIN = 60
+local SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN
+local SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR
 
 
 
@@ -348,13 +351,13 @@ function private.FSMCreate()
 		if context.currentSelectionIndex then
 			-- find the highest index which is at most context.currentSelectionIndex
 			for _, row in private.query:Iterator() do
-				local rowIndex = row:GetField("index")
-				if rowIndex <= context.currentSelectionIndex and rowIndex > (selectedRow and selectedRow:GetField("index") or 0) and TSM.MyAuctions.CanCancel(rowIndex) then
+				local auctionId = row:GetFields("auctionId")
+				if auctionId <= context.currentSelectionIndex and auctionId > (selectedRow and selectedRow:GetField("auctionId") or 0) and TSM.MyAuctions.CanCancel(auctionId) then
 					selectedRow = row
 				end
 			end
 		end
-		context.currentSelectionIndex = selectedRow and selectedRow:GetField("index") or nil
+		context.currentSelectionIndex = selectedRow and selectedRow:GetField("auctionId") or nil
 		auctions:SetSelection(selectedRow and selectedRow:GetUUID() or nil, true)
 
 		context.frame:GetElement("headerFrame.clearfilterBtn")
@@ -454,7 +457,7 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_CHANGING_SELECTION")
 			:SetOnEnter(function(context)
 				local row = context.frame:GetElement("auctions"):GetSelection()
-				context.currentSelectionIndex = row and row:GetField("index") or nil
+				context.currentSelectionIndex = row and row:GetField("auctionId") or nil
 				return "ST_SHOWN"
 			end)
 			:AddTransition("ST_SHOWN")
@@ -465,9 +468,9 @@ function private.FSMCreate()
 				buttonsFrame:GetElement("cancelBtn"):SetDisabled(true)
 				buttonsFrame:GetElement("skipBtn"):SetDisabled(true)
 				buttonsFrame:Draw()
-				local selectedIndex = context.frame:GetElement("auctions"):GetSelection():GetField("index")
-				if TSM.MyAuctions.CanCancel(selectedIndex) then
-					TSM.MyAuctions.CancelAuction(selectedIndex)
+				local auctionId = context.frame:GetElement("auctions"):GetSelection():GetField("auctionId")
+				if TSM.MyAuctions.CanCancel(auctionId) then
+					TSM.MyAuctions.CancelAuction(auctionId)
 				end
 				return "ST_SHOWN"
 			end)
@@ -479,7 +482,7 @@ function private.FSMCreate()
 				context.currentSelectionIndex = context.currentSelectionIndex - 1
 				local selectedRow = nil
 				for _, row in private.query:Iterator() do
-					if row:GetField("index") == context.currentSelectionIndex then
+					if row:GetField("auctionId") == context.currentSelectionIndex then
 						selectedRow = row:GetUUID()
 					end
 				end
@@ -508,13 +511,20 @@ function private.AuctionsGetItemTooltip(itemString)
 end
 
 function private.AuctionsGetTimeLeftText(row)
-	local saleStatus = row:GetField("saleStatus")
-	local duration = row:GetField("duration")
-	if saleStatus == 1 then
-		local timeLeft = duration - time()
-		return timeLeft < 60 and format("%ds", timeLeft) or format("%dm %ds", floor(timeLeft / 60), timeLeft % 60)
-	elseif row:GetField("isPending") then
+	local saleStatus, duration, isPending = row:GetFields("saleStatus", "duration", "isPending")
+	if saleStatus == 0 and isPending then
 		return "..."
+	elseif saleStatus == 1 or TSM.IsWow83() then
+		local timeLeft = duration - time()
+		if timeLeft < SECONDS_PER_MIN then
+			return timeLeft.."s"
+		elseif timeLeft < SECONDS_PER_HOUR then
+			return floor(timeLeft / SECONDS_PER_MIN).."m"
+		elseif timeLeft < SECONDS_PER_DAY then
+			return floor(timeLeft / SECONDS_PER_HOUR).."h"
+		else
+			return floor(timeLeft / SECONDS_PER_DAY).."d"
+		end
 	else
 		return TSM.UI.GetTimeLeftString(duration)
 	end

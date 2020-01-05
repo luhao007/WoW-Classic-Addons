@@ -12,7 +12,6 @@ local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
-local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -25,6 +24,7 @@ local private = {
 	isOpen = false,
 	tooltip = nil,
 	expiresCallbacks = {},
+	cancelAuctionQuery = nil,
 }
 local PLAYER_NAME = UnitName("player")
 
@@ -115,6 +115,10 @@ MailTracking:OnSettingsLoad(function()
 			private.ChangePendingMailQuantity(itemString, stackSize)
 		end)
 	else
+		private.cancelAuctionQuery = AuctionTracking.CreateQuery()
+			:Equal("auctionId", Database.BoundQueryParam())
+			:Select("itemString", "stackSize")
+
 		-- handle auction buying
 		hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
 			-- TODO: figure out how to get the info we need
@@ -122,12 +126,10 @@ MailTracking:OnSettingsLoad(function()
 
 		-- handle auction canceling
 		hooksecurefunc(C_AuctionHouse, "CancelAuction", function(auctionId)
-			local itemString = AuctionTracking.GetFieldByIndex(auctionId, "itemString")
-			if not itemString then
-				return
+			private.cancelAuctionQuery:BindParams(auctionId)
+			for _, itemString, stackSize in private.cancelAuctionQuery:Iterator() do
+				private.ChangePendingMailQuantity(itemString, stackSize)
 			end
-			local stackSize = AuctionTracking.GetFieldByIndex(auctionId, "stackSize")
-			private.ChangePendingMailQuantity(itemString, stackSize)
 		end)
 	end
 
@@ -369,17 +371,13 @@ function private.GetMailType(index, firstItemString)
 		return "SALE"
 	elseif numItems and numItems > 0 and info == "buyer" then
 		return "BUY"
-	elseif not info and numItems == 1 then
-		local itemName = ItemInfo.GetName(private.GetInboxItemLink(index, 1))
-		if itemName then
-			local _, _, _, quantity = GetInboxItem(index, 1)
-			if quantity and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.." (%d)", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
-				return "CANCEL"
-			end
+	elseif not info then
+		if strfind(subject, string.gsub("^"..AUCTION_REMOVED_MAIL_SUBJECT, "%%s", "")) then
+			return "CANCEL"
+		end
 
-			if itemName and strfind(subject, "^"..String.Escape(format(AUCTION_EXPIRED_MAIL_SUBJECT, itemName))) then
-				return "EXPIRE"
-			end
+		if strfind(subject, string.gsub("^"..AUCTION_EXPIRED_MAIL_SUBJECT, "%%s", "")) then
+			return "EXPIRE"
 		end
 	end
 
