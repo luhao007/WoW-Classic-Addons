@@ -151,7 +151,7 @@ if TSM.IsWowClassic() then
 			maxLevel = 60,
 			sourceInfo = {
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 56, maxItemLevel = 60, matRate = 0.200, minAmount = 1, maxAmount = 2, amountOfMats = 0.300},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 61, maxItemLevel = 65, matRate = 0.200, minAmount = 2, maxAmount = 3, amountOfMats = 0.990},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 61, maxItemLevel = 65, matRate = 0.200, minAmount = 2, maxAmount = 3, amountOfMats = 0.500},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 56, maxItemLevel = 60, matRate = 0.750, minAmount = 1, maxAmount = 2, amountOfMats = 1.100},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 61, maxItemLevel = 65, matRate = 0.750, minAmount = 2, maxAmount = 3, amountOfMats = 1.850},
 			},

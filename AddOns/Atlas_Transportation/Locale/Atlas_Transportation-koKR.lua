@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-koKR.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-koKR.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -32,6 +32,8 @@ L["Abandoned Kite"] = "버려진 연"
 L["Airship"] = "비행선"
 L["Aludane Whitecloud <Flight Master>"] = "알루데인 화이트클라우드 <비행 조련사>"
 L["Blue"] = "청색"
+--[[Translation missing --]]
+--[[ L["Camp Taurajo"] = ""--]] 
 L["Class Order Halls"] = "직업 연맹 전당"
 L["Class Specific Only"] = "특정 직업만"
 L["Climbing Rope"] = "등반용 밧줄"
@@ -75,13 +77,19 @@ L["South of the path along Lake Elune'ara"] = "엘룬아라 호수를 따라 난
 L["Special transportation"] = "특별한 탈것"
 L["Talua <Eagle Keeper>"] = "탈루아 <독수리 조련사>"
 L["Taxi Nodes"] = "비행 경로"
+--[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
 L["Teleportation Nexus"] = "순간이동 거점"
+--[[Translation missing --]]
+--[[ L["The Barrens"] = ""--]] 
 L["The Bogpaddle Bullet"] = "수렁진흙탕 총알로켓"
 L["Transportation Maps"] = "탈것 지도"
 --[[Translation missing --]]
 --[[ L["Transporter"] = ""--]] 
 L["Transporters by the sea and on the cliff"] = "바닷가 절벽 위에 있는 순간이동기"
 L["Two ways portal"] = "양방향 차원문"
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "경고: 낙하"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "전사의 착륙 / 도약 지점 (하늘보루에서 또는 하늘보루로)"
 L["West of the path to Timbermaw Hold"] = "나무구렁 요새로 가는 길 서쪽"

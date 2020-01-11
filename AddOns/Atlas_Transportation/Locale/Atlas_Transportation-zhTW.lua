@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-zhTW.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-zhTW.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -32,6 +32,8 @@ L["Abandoned Kite"] = "被遺棄的鳶"
 L["Airship"] = "飛行器"
 L["Aludane Whitecloud <Flight Master>"] = "艾魯丹·白雲 <飛行管理員>"
 L["Blue"] = "藍"
+--[[Translation missing --]]
+--[[ L["Camp Taurajo"] = ""--]] 
 L["Class Order Halls"] = "職業大廳"
 L["Class Specific Only"] = "僅限特定職業"
 L["Climbing Rope"] = "登山繩"
@@ -75,12 +77,18 @@ L["South of the path along Lake Elune'ara"] = "月神湖南方小徑"
 L["Special transportation"] = "特殊運輸工具"
 L["Talua <Eagle Keeper>"] = "塔陸亞 <飼鷹者>"
 L["Taxi Nodes"] = "航行點"
+--[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
 L["Teleportation Nexus"] = "傳送網路"
+--[[Translation missing --]]
+--[[ L["The Barrens"] = ""--]] 
 L["The Bogpaddle Bullet"] = "沼槳火箭"
 L["Transportation Maps"] = "交通網路地圖"
 L["Transporter"] = "輸送者"
 L["Transporters by the sea and on the cliff"] = "傳送器位於懸崖上與懸崖下"
 L["Two ways portal"] = "雙向傳送門"
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "小心輕放"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "戰士的降落 / 跳躍點（往返擎天堡）"
 L["West of the path to Timbermaw Hold"] = "往木喉要塞小徑西方"

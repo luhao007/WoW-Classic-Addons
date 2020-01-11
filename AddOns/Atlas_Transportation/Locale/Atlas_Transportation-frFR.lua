@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-frFR.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-frFR.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -33,6 +33,8 @@ L["Abandoned Kite"] = "Cerf-volant abandonné"
 --[[ L["Airship"] = ""--]] 
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Nuageblanc <Maître de vol>"
 L["Blue"] = "Bleu"
+--[[Translation missing --]]
+--[[ L["Camp Taurajo"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 
 --[[Translation missing --]]
@@ -96,13 +98,19 @@ L["Special transportation"] = "Transport spécial"
 L["Talua <Eagle Keeper>"] = "Talua <Responsable des aigles>"
 L["Taxi Nodes"] = "Nœuds de transports"
 --[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Teleportation Nexus"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["The Barrens"] = ""--]] 
 L["The Bogpaddle Bullet"] = "La balle de Brasse-Tourbe"
 L["Transportation Maps"] = "Cartes des Transports"
 L["Transporter"] = "Transporteur"
 L["Transporters by the sea and on the cliff"] = "Transporteurs par la mer et sur la falaise"
 --[[Translation missing --]]
 --[[ L["Two ways portal"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Warning: Drop"] = ""--]] 
 --[[Translation missing --]]

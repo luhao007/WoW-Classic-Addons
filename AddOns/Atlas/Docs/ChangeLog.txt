@@ -1,8 +1,8 @@
-$Id: ChangeLog.txt 333 2019-09-04 11:03:14Z arith $
+$Id: ChangeLog.txt 346 2020-01-06 15:16:04Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 Known Issues:
@@ -15,9 +15,38 @@ Known Issues:
 = Change Log =
 ==============
 
+v1.46.04.11303.01 (Jan. 09, 2020)
+------------------------
+- WoW Classic branch
+
+v1.46.04 (Jan. 06, 2020)
+------------------------
+- WorldMap icon adjustment for WoW classic
+- Integration of AtlasLoot - Battle for Azeroth
+
+v1.46.03 (Jan. 06, 2020)
+------------------------
+- Library update: LibBabble-SubZone
+
+v1.46.02 (Jan. 05, 2020)
+------------------------
+- Library update: LibBabble-SubZone
+
+v1.46.01 (Jan. 04, 2020)
+------------------------
+- Library update: LibBabble-SubZone
+
+v1.46.00 (Jan. 01, 2020)
+------------------------
+- Added BfA map module's support
+
 v1.45.02.11303.01 (Dec. 30, 2019)
 ------------------------
 - ToC update to support Classic WoW 1.13.3
+
+v1.45.02 (Dec. 30, 2019)
+------------------------
+- ToC update to support WoW 8.2.5
 
 v1.45.01.11302 (Sep. 04, 2019)
 ------------------------

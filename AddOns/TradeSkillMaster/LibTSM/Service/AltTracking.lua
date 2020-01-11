@@ -35,11 +35,20 @@ AltTracking:OnSettingsLoad(function()
 				altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
 			end
 		end
-		local pendingMail = Settings.Get("factionrealm", factionrealm, "internalData", "pendingMail")[character]
+		local pendingMailLookup = Settings.Get("factionrealm", factionrealm, "internalData", "pendingMail")
+		local pendingMail = pendingMailLookup[character]
+		local isValid = true
 		if pendingMail then
 			for itemString, quantity in pairs(pendingMail) do
+				if type(quantity) ~= "number" then
+					isValid = false
+					break
+				end
 				altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
 			end
+		end
+		if not isValid then
+			pendingMailLookup[character] = nil
 		end
 	end
 	private.quantityDB:BulkInsertStart()

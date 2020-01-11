@@ -49,7 +49,9 @@ function Filter.__init(self)
 	self._minPrice = nil
 	self._maxPrice = nil
 	self._maxQuantity = nil
-	self._usableOnly = nil
+	self._uncollected = nil
+	self._usable = nil
+	self._upgrades = nil
 	self._unlearned = nil
 	self._canlearn = nil
 	self._exactOnly = nil
@@ -76,7 +78,9 @@ function Filter._Reset(self)
 	self._minPrice = 0
 	self._maxPrice = math.huge
 	self._maxQuantity = math.huge
-	self._usableOnly = nil
+	self._uncollected = nil
+	self._usable = nil
+	self._upgrades = nil
 	self._unlearned = nil
 	self._canlearn = nil
 	self._exactOnly = nil
@@ -175,11 +179,23 @@ function Filter.ParseStr(self, str)
 			end
 			numPriceParts = numPriceParts + 1
 			hasNonCraftingPart = true
-		elseif strlower(part) == "usable" then
-			if self._usableOnly then
+		elseif TSM.IsWow83() and strlower(part) == "uncollected" then
+			if self._uncollected then
 				self._isValid = false
 			end
-			self._usableOnly = true
+			self._uncollected = true
+			hasNonCraftingPart = true
+		elseif strlower(part) == "usable" then
+			if self._usable then
+				self._isValid = false
+			end
+			self._usable = true
+			hasNonCraftingPart = true
+		elseif TSM.IsWow83() and strlower(part) == "upgrades" then
+			if self._upgrades then
+				self._isValid = false
+			end
+			self._upgrades = true
 			hasNonCraftingPart = true
 		elseif strlower(part) == "unlearned" then
 			if self._unlearned then
@@ -282,8 +298,16 @@ function Filter.GetMaxItemLevel(self)
 	return self._maxItemLevel ~= math.huge and self._maxItemLevel or nil
 end
 
+function Filter.GetUncollected(self)
+	return self._uncollected
+end
+
 function Filter.GetUsableOnly(self)
-	return self._usableOnly
+	return self._usable
+end
+
+function Filter.GetUpgrades(self)
+	return self._upgrades
 end
 
 function Filter.GetUnlearned(self)

@@ -1,10 +1,10 @@
--- $Id: Atlas-koKR.lua 329 2019-09-04 08:14:03Z arith $
+-- $Id: Atlas-koKR.lua 337 2020-01-01 14:49:58Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -71,11 +71,15 @@ L["ATLAS_DDL_CONTINENT_DEEPHOLM"] = "심원의 영지 인스턴스"
 L["ATLAS_DDL_CONTINENT_DRAENOR"] = "드레노어 인스턴스"
 L["ATLAS_DDL_CONTINENT_EASTERN"] = "동부 왕국 인스턴스"
 L["ATLAS_DDL_CONTINENT_KALIMDOR"] = "칼림도어 인스턴스"
+L["ATLAS_DDL_CONTINENT_KULTIRAS"] = "쿨 티라스 인스턴스"
+L["ATLAS_DDL_CONTINENT_NAZJATAR"] = "나즈자타 인스턴스"
 L["ATLAS_DDL_CONTINENT_NORTHREND"] = "노스렌드 인스턴스"
 L["ATLAS_DDL_CONTINENT_OUTLAND"] = "아웃랜드 인스턴스"
 L["ATLAS_DDL_CONTINENT_PANDARIA"] = "판다리아 인스턴스"
+L["ATLAS_DDL_CONTINENT_ZANDALAR"] = "잔달라 인스턴스"
 L["ATLAS_DDL_EXPANSION"] = "확장"
 L["ATLAS_DDL_EXPANSION_BC"] = "불타는 성전 인스턴스"
+L["ATLAS_DDL_EXPANSION_BFA"] = "격전의 아제로스 인스턴스"
 L["ATLAS_DDL_EXPANSION_CATA"] = "대격변 인스턴스"
 L["ATLAS_DDL_EXPANSION_LEGION"] = "군단 인스턴스"
 L["ATLAS_DDL_EXPANSION_LEGION1"] = "군단 던전"
@@ -88,6 +92,10 @@ L["ATLAS_DDL_LEVEL"] = "레벨"
 L["ATLAS_DDL_LEVEL_100PLUS"] = "인스턴스 레벨 100+"
 L["ATLAS_DDL_LEVEL_100TO110"] = "인스턴스 레벨 100-110"
 L["ATLAS_DDL_LEVEL_110PLUS"] = "인스턴스 레벨 110+"
+L["ATLAS_DDL_LEVEL_110TO120"] = "인스턴스 레벨 110-120"
+L["ATLAS_DDL_LEVEL_120PLUS"] = "인스턴스 레벨 120+"
+L["ATLAS_DDL_LEVEL_120TO130"] = "인스턴스 레벨 120-130"
+L["ATLAS_DDL_LEVEL_130PLUS"] = "인스턴스 레벨 130+"
 L["ATLAS_DDL_LEVEL_45TO60"] = "인스턴스 레벨 45-60"
 L["ATLAS_DDL_LEVEL_60TO70"] = "인스턴스 레벨 60-70"
 L["ATLAS_DDL_LEVEL_70TO80"] = "인스턴스 레벨 70-80"
@@ -102,26 +110,32 @@ L["ATLAS_DDL_PARTYSIZE_5"] = "5인 인스턴스"
 L["ATLAS_DDL_TYPE"] = "유형"
 L["ATLAS_DDL_TYPE_ENTRANCE"] = "입구"
 L["ATLAS_DDL_TYPE_INSTANCE"] = "인스턴스"
-L["ATLAS_DEP_MSG1"] = "Atlas가 오래된 모듈을 감지했습니다."
-L["ATLAS_DEP_MSG2"] = "이 캐릭터에 대해서 비활성화됨."
-L["ATLAS_DEP_MSG3"] = "AddOns 폴더에서 이들을 삭제하세요."
+L["ATLAS_DEP_MSG1"] = "Atlas에서 오래된 플러그인/모듈/애드온을 감지했습니다."
+L["ATLAS_DEP_MSG2"] = "그것은 / 이 캐릭터에서 비활성화 되었습니다."
+L["ATLAS_DEP_MSG3"] = [=[AddOns 폴더에서 파일을 삭제하고 최신 버전을 설치하세요.
+
+오래된 플러그인/모듈/애드온 목록:]=]
+L["ATLAS_DEP_MSG4"] = "최신 버전을 설치했으면 애드온 목록에서 최신 버전을 활성화해야 합니다."
 L["ATLAS_DEP_OK"] = "확인"
 L["ATLAS_ENTRANCE_BUTTON"] = "입구"
 L["ATLAS_EXPAND_BUTTON"] = "Atlas 일러두기 패널을 열려면 클릭하세요."
 L["ATLAS_INFO"] = "Atlas 정보"
 L["ATLAS_INFO_12200"] = [=[중요 공지:
 
-애드온 파일의 크기가 증가함에 따라, 던전 지도 및 내부 플러그인을 별도의 애드온 패키지로 옮겼습니다.
+애드온 파일 크기 증가에 대한 우려로 인해, 던전 맵과 내장
+플러그인은 별도의 애드온 패키지에 포함되어 있지 않습니다.
 
-유명 게임 웹사이트에서 애드온을 다운로드 받으신 분들은
-Atlas의 핵심 기능과 WoW의 가장 최근 확장팩 지도만을 포함하고 있는 코어 애드온 만을 받으셨을 수 있습니다.
+일부 유명한 게임 웹 사이트에서 애드온을 다운로드하는
+사용자는 Atlas 핵심 기능과 최신 와우 확장팩 지도만 포함하는
+핵심 애드온 만 얻을 수 있습니다.
 
-만약 옛 확장팩의 지도 또는 Atlas의 모든 플러그인을 사용하고 싶으신 분들은 별도의 애드온을 설치하셔야 합니다.
+이전 확장팩의 모든 지도를 보고싶은 경우 그리고 모든 지도를 원할 경우
+우리가 만든 Atlas 플러그인을 별도로 다운로드하여 설치해야합니다.
 
-어디서 받는지 확인하시려면 다음 웹페이지를 확인하시거나:
+자세한 정보는 아래 포럼 주제를 읽어보세요.:
 |cff6666ffhttp://www.atlasmod.com/phpBB3/viewtopic.php?t=1522|cffffffff
 
-Atlas 홈페이지를 방문하십시요:
+또는 웹 사이트를 방문하여 다운로드 할 위치를 확인하세요.:
 |cff6666ffhttp://www.atlasmod.com/|cffffffff]=]
 L["ATLAS_INFO_12201"] = [=[[Wow 5.0에서 추가된 새로운 시나리오 지도를 제공하기 위해, 새로운 플러그인 - |cff6666ffAtlas Scenarios|cffffffff 를 제작하였습니다.
 
@@ -133,14 +147,21 @@ L["ATLAS_LDB_HINT"] = [=[좌클릭 - Atlas 열기.
 L["ATLAS_MINIMAPLDB_HINT"] = [=[좌클릭은 Atlas 열기.
 우클릭은 Atlas 옵션.
 좌클릭 끌기는 이 버튼 이동. ]=]
-L["ATLAS_MISSING_MODULE"] = [=[Atlas가 일부 빠진 모듈 / 플러그인을 감지했습니다.  
+L["ATLAS_MISSING_MODULE"] = [=[Atlas가 누락된 모듈 / 플러그인을 감지했습니다.
 
-Atlas에 의해 중지된 오래된 모듈 / 플러그인일 수 있습니다. 
-막 최신 버전을 모두 설치한 경우, 모두 활성화되어 있는지 확인하기 위해 애드온 목록으로 이동하세요. 
+Atlas가 비활성화 한 오래된 모듈 / 플러그인이 있을 수 있습니다.
+최신 버전을 모두 설치 한 경우 애드온 목록으로 이동하여 모든 기능이 활성화되어 있는지 확인하세요.
 
-이런 "빠진" 모듈 / 플러그인이 필요하지 않고 이 메시지를 다시 보고싶지 않은 경우, 알림을 중지하기 위해 옵션 패널로 이동할 수 있습니다. 
+\"누락된\" 모듈 / 플러그인이 필요하지 않고 이 메시지를 다시 표시하지 않으려는 경우 옵션 패널로 이동하여 알림을 비활성화 할 수 있습니다.
 
-빠진 모듈 / 플러그인 목록:]=]
+누락된 모듈 / 플러그인 목록:
+]=]
+L["ATLAS_NO_MODULE_OR_PLUGIN"] = [=[|cffff66ff오류:|r
+Atlas는 설치 및 활성화 된 맵 모듈 또는 
+플러그인을 감지 할 수 없습니다.
+Atlas 자체는 맵 브라우저이므로 맵을 
+찾아 보려면 최소한 하나의 맵 모듈 또는 
+플러그인을 설치해야 합니다.]=]
 L["ATLAS_OPEN_ACHIEVEMENT"] = "상세 업적을 열려면 클릭하세요."
 L["ATLAS_OPEN_ADDON_LIST"] = "애드온 목록 열기"
 L["ATLAS_OPEN_ADVENTURE"] = "모험 안내서 창을 열려면 클릭하세요."
@@ -158,11 +179,11 @@ L["ATLAS_OPTIONS_BUTPOS"] = "버튼 위치"
 L["ATLAS_OPTIONS_BUTRAD"] = "버튼 반지름"
 L["ATLAS_OPTIONS_BUTTON"] = "옵션"
 L["ATLAS_OPTIONS_CATDD"] = "인스턴스 지도 정렬 방식:"
-L["ATLAS_OPTIONS_CHECKMODULE"] = "빠진 모듈 / 플러그인 알림."
-L["ATLAS_OPTIONS_CHECKMODULE_TIP"] = "WoW가 로드된 후 빠진 Atlas 모듈 / 플러그인이 있는지 검사를 수행할 수 있습니다."
+L["ATLAS_OPTIONS_CHECKMODULE"] = "누락된 모듈 / 플러그인 알림."
+L["ATLAS_OPTIONS_CHECKMODULE_TIP"] = "와우가 로드된 후 누락된 Atlas 모듈 / 플러그인이 있는지 확인합니다."
 L["ATLAS_OPTIONS_CLAMPED"] = "창을 화면에 가둠"
 L["ATLAS_OPTIONS_CLAMPED_TIP"] = "게임 화면 밖으로 마우스로 끌 수 없도록 Atlas 창을 화면에 가둡니다."
-L["ATLAS_OPTIONS_COLORINGDROPDOWN"] = "던전 드롭다운 목록 색상 표시"
+L["ATLAS_OPTIONS_COLORINGDROPDOWN"] = "인스턴스 드롭다운을 색상으로 표시"
 L["ATLAS_OPTIONS_COLORINGDROPDOWN_TIP"] = "인스턴스의 최소 권장 레벨과 플레이어의 레벨에 따라, 인스턴스 난이도를 색상으로 표시합니다. "
 L["ATLAS_OPTIONS_CTRL"] = "툴팁을 보기 위해 Control 키 사용"
 L["ATLAS_OPTIONS_CTRL_TIP"] = "Control 키를 누르면서 지도 정보 위에 마우스를 올려 놓은 동안 툴팁 텍스트를 표시합니다. 창에 표시하기 너무 길 때 유용합니다."
@@ -198,7 +219,7 @@ L["ATLAS_STRING_SELECT_CAT"] = "카테고리 선택"
 L["ATLAS_STRING_SELECT_MAP"] = "지도 선택"
 L["ATLAS_TITLE"] = "Atlas"
 L["ATLAS_TOGGLE_LOOT"] = "전리품 패널을 켜고 끄려면 우클릭하세요."
-L["Attunement Required"] = "조율이 요구됨"
+L["Attunement Required"] = "조율 필요"
 L["Back"] = "뒤쪽"
 L["Basement"] = "지하"
 L["BINDING_HEADER_ATLAS_TITLE"] = "Atlas 단축키 설정"
@@ -251,10 +272,11 @@ L["MapG"] = " [G]"
 L["MapH"] = " [H]"
 L["MapI"] = " [I]"
 L["MapJ"] = " [J]"
-L["MapsNotFound"] = [=[현재 선택된 던전에 해당하는 지도 이미지가 없습니다.
+L["MapsNotFound"] = [=[현재 선택된 인스턴스에는 해당 맵 이미지가 연결되어 있지 않습니다.
 
-관련 Atlas 지도 모듈을 설치했는지 확인 바랍니다.]=]
+해당 Atlas 맵 모듈을 설치했는지 확인하십시오.]=]
 L["Meeting Stone"] = "만남의 돌"
+L["Middle"] = "중앙"
 L["Midsummer Festival"] = "한여름 불꽃축제"
 L["Moonwell"] = "달샘"
 L["Mythic"] = "신화"
@@ -290,6 +312,7 @@ L["Soridormi <The Scale of Sands>"] = "소리도르미 <시간의 중재자>"
 L["South"] = "남쪽"
 L["Spawn Point"] = "스폰 장소"
 L["Stairs"] = "계단"
+L["Stairs to %s"] = "%s까지의 계단"
 L["Start"] = "시작"
 L["Steward of Time <Keepers of Time>"] = "시간의 청지기 <시간의 수호자>"
 L["Summon"] = "소환"
@@ -298,12 +321,18 @@ L["Teleporter destination"] = "순간이동 목적지"
 L["The Behemoth"] = "거수"
 L["Third Stop"] = "세 번째 대기"
 L["Top"] = "정상"
+L["Transport"] = "운송"
 L["Tunnel"] = "터널"
 L["Underwater"] = "수중"
 L["Upper"] = "상층"
 L["Upper floor"] = "상층"
 L["Varies"] = "위치 바뀜"
 L["Wanders"] = "떠돌이"
+L["Wave 10"] = "10 웨이브"
+L["Wave 12"] = "12 웨이브"
+L["Wave 18"] = "18 웨이브"
+L["Wave 5"] = "5 웨이브"
+L["Wave 6"] = "6 웨이브"
 L["West"] = "서쪽"
 L["Yarley <Armorer>"] = "야를리 <방어구 제작자>"
 L["Zaladormu"] = "잘라도르무"

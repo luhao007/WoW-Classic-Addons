@@ -38,7 +38,9 @@ function AuctionFilter.__init(self)
 	self._class = nil
 	self._subClass = nil
 	self._invType = nil
+	self._uncollected = nil
 	self._usable = nil
+	self._upgrades = nil
 	self._unlearned = nil
 	self._canlearn = nil
 	self._exact = nil
@@ -77,7 +79,9 @@ function AuctionFilter._Release(self)
 	self._class = nil
 	self._subClass = nil
 	self._invType = nil
+	self._uncollected = nil
 	self._usable = nil
+	self._upgrades = nil
 	self._unlearned = nil
 	self._canlearn = nil
 	self._exact = nil
@@ -139,8 +143,18 @@ function AuctionFilter.SetInvType(self, invType)
 	return self
 end
 
+function AuctionFilter.SetUncollected(self, uncollected)
+	self._uncollected = uncollected
+	return self
+end
+
 function AuctionFilter.SetUsable(self, usable)
 	self._usable = usable
+	return self
+end
+
+function AuctionFilter.SetUpgrades(self, upgrades)
+	self._upgrades = upgrades
 	return self
 end
 
@@ -228,7 +242,9 @@ function AuctionFilter.SetGetAll(self)
 	assert(self._class == nil)
 	assert(self._subClass == nil)
 	assert(self._invType == nil)
+	assert(self._uncollected == nil)
 	assert(self._usable == nil)
+	assert(self._upgrades == nil)
 	assert(self._unlearned == nil)
 	assert(self._canlearn == nil)
 	assert(self._exact == nil)
@@ -440,6 +456,21 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		local query = TempTable.Acquire()
 		local sorts = TempTable.Acquire()
 		local filters = TempTable.Acquire()
+		if self._uncollected then
+			tinsert(filters, Enum.AuctionHouseFilter.UncollectedOnly)
+		end
+		if self._usable then
+			tinsert(filters, Enum.AuctionHouseFilter.UsableOnly)
+		end
+		if self._upgrades then
+			tinsert(filters, Enum.AuctionHouseFilter.UpgradesOnly)
+		end
+		if self._exact then
+			tinsert(filters, Enum.AuctionHouseFilter.ExactMatch)
+		end
+		for i = Enum.AuctionHouseFilter.PoorQuality, Enum.AuctionHouseFilter.ArtifactQuality do
+			tinsert(filters, i)
+		end
 		local itemClassFilters = TempTable.Acquire()
 		if self._class or self._subClass or self._invType then
 			local info = TempTable.Acquire()
@@ -449,10 +480,11 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 			tinsert(itemClassFilters, info)
 		end
 
-		query.searchString = self._name or ""
+		-- Blizzard currently doesn't handle search strings with a "." or "-" in them very well, so remove them
+		query.searchString = gsub(self._name or "", "[%-%.]", "")
 		query.sorts = sorts
-		query.minLevel = 0
-		query.maxLevel = 0
+		query.minLevel = self._minLevel or 0
+		query.maxLevel = self._maxLevel or 0
 		query.filters = filters
 		query.itemClassFilters = itemClassFilters
 		local result = self._scan:_SendBrowseQuery83(query)

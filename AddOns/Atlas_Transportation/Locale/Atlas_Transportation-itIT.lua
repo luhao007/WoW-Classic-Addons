@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-itIT.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-itIT.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -36,6 +36,8 @@ if L then
 --[[ L["Aludane Whitecloud <Flight Master>"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Blue"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Camp Taurajo"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 
 --[[Translation missing --]]
@@ -123,7 +125,11 @@ if L then
 --[[Translation missing --]]
 --[[ L["Taxi Nodes"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Teleportation Nexus"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["The Barrens"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["The Bogpaddle Bullet"] = ""--]] 
 --[[Translation missing --]]
@@ -134,6 +140,8 @@ if L then
 --[[ L["Transporters by the sea and on the cliff"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Two ways portal"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Warning: Drop"] = ""--]] 
 --[[Translation missing --]]

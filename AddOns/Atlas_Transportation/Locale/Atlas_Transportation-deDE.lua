@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-deDE.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-deDE.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -32,6 +32,7 @@ L["Abandoned Kite"] = "Herrenloser Drachen"
 L["Airship"] = "Luftschiff"
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Wolkenweiß <Flugmeister>"
 L["Blue"] = "Blau"
+L["Camp Taurajo"] = "Camp Taurajo"
 L["Class Order Halls"] = "Klassenordenshallen"
 L["Class Specific Only"] = "Nur klassenspezifische"
 L["Climbing Rope"] = "Kletterseil"
@@ -50,8 +51,7 @@ L["Hunter Only"] = "Nur für Jäger"
 L["Illidari Gateway"] = "Illidaritor"
 L["Jump to Skyhold"] = "Zur Himmelsfeste springen"
 L["Legend"] = "Legende"
---[[Translation missing --]]
---[[ L["Nutral"] = ""--]] 
+L["Nutral"] = " Nutral"
 L["Only available after winning the PvP battle"] = "Nur nach Sieg in der PvP-Schlacht verfügbar"
 L["Orange"] = "Orange"
 L["Orb of Translocation"] = "Translokationskugel"
@@ -76,12 +76,17 @@ L["South of the path along Lake Elune'ara"] = "Südlich des Elune'ara Seewegs"
 L["Special transportation"] = "Spezielle Beförderungsroute"
 L["Talua <Eagle Keeper>"] = "Talua <Adlerhüterin>"
 L["Taxi Nodes"] = "Flugpunkte"
+--[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
 L["Teleportation Nexus"] = "Teleportationsnexus"
+L["The Barrens"] = "Das Brachland"
 L["The Bogpaddle Bullet"] = "Der Kraulsumpfexpress"
 L["Transportation Maps"] = "Beförderungsrouten"
 L["Transporter"] = "Transporter"
 L["Transporters by the sea and on the cliff"] = "Transporter übers Meer und am Kliff"
 L["Two ways portal"] = "Zweiwegeportal"
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "Achtung: Du wirst fallen"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "Lande-/Sprungpunkt der Krieger (zur Himmelsfeste oder zurück)"
 L["West of the path to Timbermaw Hold"] = "Westlich des Weges zur Holzschlundfeste"

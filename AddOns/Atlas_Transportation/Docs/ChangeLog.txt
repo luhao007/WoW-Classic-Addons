@@ -1,12 +1,25 @@
-$Id: ChangeLog.txt 104 2019-09-07 10:05:34Z arith $
+$Id: ChangeLog.txt 109 2020-01-10 16:18:39Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 ==============
 = Change Log =
 ==============
+
+v1.46.02.11303.00 (Jan. 11, 2020)
+------------------------
+- Merge WoW classic's map data and re-create WoW classic's maps
+
+v1.46.01 (Jan. 08, 2020)
+------------------------
+- Added missing Argus map image
+
+v1.46.00 (Jan. 07, 2020)
+------------------------
+- ToC update to support WoW 8.2.5
+- Added Argus
 
 v1.45.00.11302.00 (Sep. 06, 2019)
 ------------------------

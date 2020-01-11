@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-zhCN.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-zhCN.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -33,9 +33,9 @@ local L = AceLocale:NewLocale("Atlas_Transportation", "zhCN", false);
 if L then
 L["Abandoned Kite"] = "被遗弃的风筝"
 L["Airship"] = "飞船"
---[[Translation missing --]]
---[[ L["Aludane Whitecloud <Flight Master>"] = ""--]] 
+L["Aludane Whitecloud <Flight Master>"] = "奥鲁丹·白云 <飞行管理员>"
 L["Blue"] = "蓝"
+L["Camp Taurajo"] = "陶拉祖营地"
 L["Class Order Halls"] = "职业大厅"
 L["Class Specific Only"] = "职业特定专用"
 L["Climbing Rope"] = "登山绳索"
@@ -77,15 +77,19 @@ L["Shado-Pan Rope"] = "影踪派绳索"
 L["Ship / Zeppelin sailing path to destination"] = "船只 / 飞船航向目的地的路径"
 L["South of the path along Lake Elune'ara"] = "月神湖旁小径的南方"
 L["Special transportation"] = "特殊交通"
---[[Translation missing --]]
---[[ L["Talua <Eagle Keeper>"] = ""--]] 
+L["Talua <Eagle Keeper>"] = "塔鲁瓦 <雄鹰管理员>"
 L["Taxi Nodes"] = "飞行点"
+--[[Translation missing --]]
+--[[ L["Teleport Beacon"] = ""--]] 
 L["Teleportation Nexus"] = "传送中枢"
+L["The Barrens"] = "贫瘠之地"
 L["The Bogpaddle Bullet"] = "沼桨弹头"
 L["Transportation Maps"] = "交通线路图"
 L["Transporter"] = "传送者"
 L["Transporters by the sea and on the cliff"] = "在海上或悬崖上的传送者"
 L["Two ways portal"] = "双向传送门"
+--[[Translation missing --]]
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "警告：跌落"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "战士着陆/飞跃点（往返苍穹要塞）"
 L["West of the path to Timbermaw Hold"] = "通往木喉要塞道路的西方"

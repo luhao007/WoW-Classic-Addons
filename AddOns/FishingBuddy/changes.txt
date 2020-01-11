@@ -1,3 +1,9 @@
+Version 0.7.3 Beta 1
+- Update LibBabble-SubZone
+
+Version 0.7.2 Beta 2
+- Make TownsfolkTracker an optional dependency so that it loads before us (and we can fix it)
+
 Version 0.7.2 Beta 1
 - Option to fix issue with TownsfolkTracker and older HereBeDragons
 

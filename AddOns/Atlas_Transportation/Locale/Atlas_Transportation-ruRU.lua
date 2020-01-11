@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-ruRU.lua 101 2019-09-04 07:50:56Z arith $
+-- $Id: Atlas_Transportation-ruRU.lua 105 2020-01-07 15:45:25Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -38,20 +38,18 @@ L["Abandoned Kite"] = "Брошенный воздушный змей"
 L["Airship"] = "Воздушное судно"
 L["Aludane Whitecloud <Flight Master>"] = "Алудан Белое Облако <Распорядитель полетов>"
 L["Blue"] = "Синий"
+L["Camp Taurajo"] = "Лагерь Таурахо"
 L["Class Order Halls"] = "Оплоты классов"
 L["Class Specific Only"] = "Для определённых классов"
 L["Climbing Rope"] = "Канат"
 L["Connection to the Hall of Shadows"] = "Соединение с Оплотом Теней"
 L["Death Knight Only"] = "только рыцарю смерти"
 L["Druid Only"] = "только друиду"
---[[Translation missing --]]
---[[ L["Exploration"] = ""--]] 
+L["Exploration"] = "Исследование"
 L["Flight to Trueshot Lodge"] = "Полёт в Приют Стрелка"
 L["From sea level to ground level"] = "От уровня моря к земле"
---[[Translation missing --]]
---[[ L["Gleep Chatterswitch"] = ""--]] 
---[[Translation missing --]]
---[[ L["Great Eagle"] = ""--]] 
+L["Gleep Chatterswitch"] = "Глип Кряхтумблер"
+L["Great Eagle"] = "Большой орел"
 L["Green"] = "Зелёный"
 L["Gryphon"] = "Грифон"
 L["Gryphon Master"] = "Укротитель грифонов"
@@ -74,11 +72,9 @@ L["Purple"] = "Пурпурный"
 L["Rappelling Rope"] = "Канат для спуска"
 L["Red"] = "Красный"
 L["Require to complete \"Meet the Scout\" quest line first."] = "Необходимо сначала выполнить серию заданий \"Встреча с разведчицей\"."
---[[Translation missing --]]
---[[ L["Requires Eagle Ally Advancement"] = ""--]] 
+L["Requires Eagle Ally Advancement"] = "Требуется для продвижение Орлы-помощники"
 L["Requires honored faction with Sha'tari Skyguard"] = "Требуется Уважение у фракции Стражи Небес Ша'тар"
---[[Translation missing --]]
---[[ L["Requires Teleportation Nexus Advancement"] = ""--]] 
+L["Requires Teleportation Nexus Advancement"] = "Требуется для продвижение Нексус телепортации"
 L["Seahorse"] = "Морской конек"
 L["Shado-Pan Rope"] = "Шадопанская веревка"
 L["Ship / Zeppelin sailing path to destination"] = "Путь корабля / дирижабля"
@@ -87,13 +83,16 @@ L["Special transportation"] = "Особый транспорт"
 L["Talua <Eagle Keeper>"] = "Талуа <Хозяйка орлов>"
 L["Taxi Nodes"] = "Мастера полетов"
 --[[Translation missing --]]
---[[ L["Teleportation Nexus"] = ""--]] 
+--[[ L["Teleport Beacon"] = ""--]] 
+L["Teleportation Nexus"] = "Нексус телепортации"
+L["The Barrens"] = "Степи"
 L["The Bogpaddle Bullet"] = "Болотный экспресс"
 L["Transportation Maps"] = "Маршруты полётов"
 L["Transporter"] = "Транспорт"
 L["Transporters by the sea and on the cliff"] = "Транспорт у моря и утёсов"
+L["Two ways portal"] = "Двусторонний портал"
 --[[Translation missing --]]
---[[ L["Two ways portal"] = ""--]] 
+--[[ L["Vindicaar"] = ""--]] 
 L["Warning: Drop"] = "Осторожно: упадёте"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "Точка приземления / прыжка воинов (из Небесной Цитадели и обратно)"
 L["West of the path to Timbermaw Hold"] = "Западный путь в Крепость Древобрюхов"

@@ -35,6 +35,7 @@ local private = {
 	didScan = false,
 	auctionScan = nil,
 	lastProgressUpdateTime = 0,
+	isScanning = false,
 }
 local CSV_KEYS = { "itemString", "minBuyout", "marketValue", "numAuctions", "quantity", "lastScan" }
 
@@ -163,7 +164,8 @@ function AuctionDB.OnDisable()
 end
 
 function AuctionDB.GetLastCompleteScanTime()
-	return private.didScan and (private.scanRealmTime or 0) or (private.appRealmTime or 0)
+	local result = private.didScan and (private.scanRealmTime or 0) or (private.appRealmTime or 0)
+	return result ~= 0 and result or nil
 end
 
 function AuctionDB.LastScanIteratorThreaded()
@@ -228,6 +230,9 @@ function AuctionDB.GetRegionSaleInfo(itemString, key)
 end
 
 function AuctionDB.RunScan()
+	if private.isScanning then
+		return
+	end
 	if not private.ahOpen then
 		Log.PrintUser(L["ERROR: The auction house must be open in order to do a scan."])
 		return
@@ -242,6 +247,7 @@ function AuctionDB.RunScan()
 	end
 	Log.PrintUser(L["Starting full AH scan. Please note that this scan may cause your game client to lag or crash. This scan generally takes 1-2 minutes."])
 	Threading.Start(private.scanThreadId)
+	private.isScanning = true
 end
 
 
@@ -268,6 +274,7 @@ function private.ScanThread()
 	private.auctionScan:NewAuctionFilter()
 		:SetGetAll(true)
 	private.auctionScan:StartScanThreaded()
+	private.isScanning = false
 end
 
 function private.OnProgressUpdate()
@@ -518,14 +525,19 @@ function private.OnAuctionHouseShow()
 	private.ahOpen = true
 	if not TSM.IsWowClassic() or not select(2, CanSendAuctionQuery()) then
 		return
-	elseif (AuctionDB.GetLastCompleteScanTime() or 0) > time() - 60 * 60 * 6 then
+	elseif (AuctionDB.GetLastCompleteScanTime() or 0) > time() - 60 * 60 * 2 then
+		-- the most recent scan is from the past 2 hours
+		return
+	elseif (TSM.db.factionrealm.internalData.auctionDBScanTime or 0) > time() - 60 * 60 * 24 then
+		-- this user has contributed a scan within the past 24 hours
 		return
 	end
 	StaticPopupDialogs["TSM_AUCTIONDB_SCAN"] = StaticPopupDialogs["TSM_AUCTIONDB_SCAN"] or {
-		text = L["TSM does not have recent AuctionDB data. You can run '/tsm scan' to manually scan the AH."],
-		button1 = OKAY,
+		text = L["TSM does not have recent AuctionDB data. Would you like to run a full AH scan?"],
+		button1 = YES,
+		button2 = NO,
 		timeout = 0,
-		whileDead = true,
+		OnAccept = AuctionDB.RunScan,
 	}
 	TSM.Wow.ShowStaticPopupDialog("TSM_AUCTIONDB_SCAN")
 end
