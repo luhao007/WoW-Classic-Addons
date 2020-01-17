@@ -122,7 +122,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 
 	for itemString in pairs(items) do
 		if items[itemString] > 0 and itemInfo[itemString] and #itemInfo[itemString].locations > 0 then
-			local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(ItemString.ToId(itemString)) or 0)
+			local emptySlotIds = private.GetEmptyBagSlotsThreaded(ItemString.IsItem(itemString) and GetItemFamily(ItemString.ToId(itemString)) or 0)
 			for i = 1, #itemInfo[itemString].locations do
 				local info = itemInfo[itemString].locations[i]
 				if items[itemString] > 0 and info.quantity > 0 then

@@ -70,7 +70,7 @@
 -- 38 = Highlord Kruul
 
 
--- German localisation by Guldukat Realm [EU] Antonidas
+-- German localisation by Guldukat Realm [EU] Antonidas on Retail Server
 
 
 if ( GetLocale() == "deDE" ) then
@@ -95,15 +95,15 @@ local YELLOW = "|cffFFd200";   -- Ingame Yellow
 
 --------------- INST1 - Blackrock Depths ---------------
 
-Inst1Caption = "Blackrocktiefen"
+Inst1Caption = "Schwarzfelstiefen"
 Inst1QAA = "19 Quests"
 Inst1QAH = "18 Quests"
 
 --Quest 1 Alliance
 Inst1Quest1 = "1. Dunkeleisenerbe"
 Inst1Quest1_Aim = "Erschlagt Fineous Darkvire und bergt den großen Hammer Ironfel. Bringt Ironfel zum Schrein von Thaurissan und legt ihn auf die Statue von Franclorn Forgewright."
-Inst1Quest1_Location = "Franclorn Forgewright (Schwarzfelsberg; "..GREEN.."[1'] auf der Eingangskarte"..WHITE..")"
-Inst1Quest1_Note = "Franclorn Forgewright befindet sich im Raum auf den Weg zu den Instanzen BRD und MC.  Du musst tot sein, um ihn sehen zu können.  Er gibt Dir auch die Prequest für... wenn Du seine Geschichte anhörst.\nFineous Darkvire ist bei "..YELLOW.."[9]"..WHITE..". Der Schrein neben der Arena bei "..YELLOW.."[7]"..WHITE.."."
+Inst1Quest1_Location = "Franclorn Forgewright (Schwarzfels; "..GREEN.."[1'] auf der Eingangskarte"..WHITE..")"
+Inst1Quest1_Note = "Franclorn Forgewright befindet sich im Raum auf den Weg zu den Instanzen BRD und MC.  Du musst tot sein, um ihn sehen zu können.  Er gibt Dir auch die Vorquest für, wenn Du seine Geschichte anhörst.\nFineous Darkvire ist bei "..YELLOW.."[9]"..WHITE..". Der Schrein ist neben der Arena bei "..YELLOW.."[7]"..WHITE.."."
 Inst1Quest1_Prequest = "Dunkeleisenerbe"
 Inst1Quest1_Folgequest = "Nein"
 --
@@ -123,8 +123,8 @@ Inst1Quest2name3 = "Stahlschienenrüstung"
 
 --Quest 3 Alliance
 Inst1Quest3 = "3. Der Liebestrank"
-Inst1Quest3_Aim = "Bringt 4 Gromsblut-Kräuter, 10 Riesensilbervenen und Nagmaras gefüllte Phiole zu Herrin Nagmara in den Blackrocktiefen."
-Inst1Quest3_Location = "Herrin Nagmara (Blackrocktiefen; "..YELLOW.."[15]"..WHITE..")"
+Inst1Quest3_Aim = "Bringt 4 Gromsblut-Kräuter, 10 Riesensilbervenen und Nagmaras gefüllte Phiole zu Herrin Nagmara in den Schwarzfelstiefen."
+Inst1Quest3_Location = "Herrin Nagmara (Schwarzfelstiefen; "..YELLOW.."[15]"..WHITE..")"
 Inst1Quest3_Note = "Die Riesensilbervene bekommst Du von den Giganten in Azshara.  Gromsblut kann per Kräuterkundler gefunden werden oder über das Aktionshaus gekauft werden.  Die Phliloe wird befüllt in (Un'Goro - Golakka-Krater; "..YELLOW.."31.0, 50.0"..WHITE..").\nNach beendigung der Quest, kannst Du die Hintertür benutzen um die Phalanx zu töten."
 Inst1Quest3_Prequest = "Nein"
 Inst1Quest3_Folgequest = "Nein"
@@ -148,14 +148,14 @@ Inst1Quest4name3 = "Gliedmaßenspaltbeil"
 Inst1Quest5 = "5. Übermeister Pyron"
 Inst1Quest5_Aim = "Erschlagt Übermeister Pyron und kehrt dann zu Jalinda Sprig zurück."
 Inst1Quest5_Location = "Jalinda Sprig (Brennede Steppe - Morgan's Vigil; "..YELLOW.."85.4, 70.0"..WHITE..")"
-Inst1Quest5_Note = "Übermeister Pyron ist ein Feuerelementar außerhalb der Dungeon.  Er patroulliert in der Nähe von "..YELLOW.."[24]"..WHITE.." auf der Karte von den Blackrocktiefen bei "..YELLOW.."[3]"..WHITE.."."
+Inst1Quest5_Note = "Übermeister Pyron ist ein Feuerelementar außerhalb der Dungeon.  Er patroulliert in der Nähe von "..YELLOW.."[24]"..WHITE.." auf der Karte von den Schwarzfelstiefen bei "..YELLOW.."[3]"..WHITE.."."
 Inst1Quest5_Prequest = "Nein"
 Inst1Quest5_Folgequest = "Incendius!"
 -- No Rewards for this quest
 
 --Quest 6 Alliance
 Inst1Quest6 = "6. Incendius!"
-Inst1Quest6_Aim = "Sucht Lord Incendius in den Blackrocktiefen und vernichtet ihn!"
+Inst1Quest6_Aim = "Sucht Lord Incendius in den Schwarzfelstiefen und vernichtet ihn!"
 Inst1Quest6_Location = Inst1Quest5_Location
 Inst1Quest6_Note = "Lord Incendius befindet sich beim Schwarzen Amboss bei "..YELLOW.."[10]"..WHITE.."."
 Inst1Quest6_Prequest = "Übermeister Pyron"
@@ -177,7 +177,7 @@ Inst1Quest7_Folgequest = "Nein"
 
 --Quest 8 Alliance
 Inst1Quest8 = "8. Feine Sachen"
-Inst1Quest8_Aim = "Reist in die Blackrocktiefen und holt 20 Dunkeleisengürteltaschen. Kehrt zu Oralius zurück, sobald die Aufgabe erledigt ist. Ihr nehmt an, dass die Dunkeleisenzwerge in den Blackrocktiefen diese 'Gürteltaschen'-Dinger."
+Inst1Quest8_Aim = "Reist in die Schwarzfelstiefen und holt 20 Dunkeleisengürteltaschen. Kehrt zu Oralius zurück, sobald die Aufgabe erledigt ist. Ihr nehmt an, dass die Dunkeleisenzwerge in den Schwarzfelstiefen diese 'Gürteltaschen'-Dinger."
 Inst1Quest8_Location = "Oralius (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.6"..WHITE..")"
 Inst1Quest8_Note = "Alle Zwerge können dies fallen lassen."
 Inst1Quest8_Prequest = "Nein"
@@ -187,7 +187,7 @@ Inst1Quest8name1 = "Eine schmuddelige Gürteltasche"
 
 --Quest 9 Alliance
 Inst1Quest9 = "9. Eine Kostprobe der Flamme"
-Inst1Quest9_Aim = "Begebt Euch in die Blackrocktiefen und tötet Bael'Gar.  Bringt die eingeschlossene feurige Essenz zu Cyrus Therepentous zurück."
+Inst1Quest9_Aim = "Begebt Euch in die Schwarzfelstiefen und tötet Bael'Gar.  Bringt die eingeschlossene feurige Essenz zu Cyrus Therepentous zurück."
 Inst1Quest9_Location = "Cyrus Therepentous (Brennende Steppe - Slither Rock; "..YELLOW.."94.8, 31.6"..WHITE..")"
 Inst1Quest9_Note = "Die Questreihe staret bei Kalaran Windblade (Sengende Schlucht; "..YELLOW.."39.0, 38.8"..WHITE..").\nBael'Gar ist bei "..YELLOW.."[11]"..WHITE..".  Benutzt die veränderte Haut des schwarzen DrachenschwarmsUauf auf Bael'Gars Überreste um die Quest abzuschließen."
 Inst1Quest9_Prequest = "Die fehlerlose Flamme -> Eine Kostprobe der Flamme"
@@ -199,7 +199,7 @@ Inst1Quest9name3 = "Valconische Schärpe"
 
 --Quest 10 Alliance
 Inst1Quest10 = "10. Kharan Mighthammer"
-Inst1Quest10_Aim = "Begebt Euch in die Blackrocktiefen und findet Kharan Mighthammer.\nDer König erwähnte, dass Kharan dort gefangen gehalten wird - Vielleicht solltest Du nach einem Gefängis suchen."
+Inst1Quest10_Aim = "Begebt Euch in die Schwarzfelstiefen und findet Kharan Mighthammer.\nDer König erwähnte, dass Kharan dort gefangen gehalten wird - Vielleicht solltest Du nach einem Gefängis suchen."
 Inst1Quest10_Location = "König Magni Bronzebeard (Ironforge; "..YELLOW.."39.4, 55.8"..WHITE..")"
 Inst1Quest10_Note = "Die Vorquest startet bei der königliche Historikerin Archesonus (Ironforge; "..YELLOW.."38.6, 55.4"..WHITE..").  Kharan Mighthammer ist bei "..YELLOW.."[2]"..WHITE.."."
 Inst1Quest10_Prequest = "Die glimmenden Ruinen von Thaurissan"
@@ -208,7 +208,7 @@ Inst1Quest10_Folgequest = "Der Überbringer schlechter Botschaften..."
 
 --Quest 11 Alliance
 Inst1Quest11 = "11. Das Schicksal des Königreichs"
-Inst1Quest11_Aim = "Kehrt in die Blackrocktiefen zurück und rettet Prinzessin Moira Bronzebeard aus den Fängen des bösen Imperators Dagran Thaurissan."
+Inst1Quest11_Aim = "Kehrt in die Schwarzfelstiefen zurück und rettet Prinzessin Moira Bronzebeard aus den Fängen des bösen Imperators Dagran Thaurissan."
 Inst1Quest11_Location = "König Magni Bronzebeard (Ironforge; "..YELLOW.."39.4, 55.8"..WHITE..")"
 Inst1Quest11_Note = "Prinzessin Moira Bronzebeard ist bei "..YELLOW.."[21]"..WHITE..".  Du musst Imperator Dagran Thaurissan besiegen und die Prinzessin muss überleben um diese Quest abschließen zu können.  Die Prinzessin schickt dich zurück zu König Magni Bronzebeard in Ironforge für deine Belohnung."
 Inst1Quest11_Prequest = Inst1Quest10_Prequest
@@ -219,8 +219,8 @@ Inst1Quest11name2 = "Liedstein von Ironforge"
 
 --Quest 12 Alliance
 Inst1Quest12 = "12. Abstimmung mit dem Kern"
-Inst1Quest12_Aim = "Begebt Euch zum Portal in den Blackrocktiefen, das in den geschmolzenen Kern führt, und findet ein Kernfragment. Kehrt mit dem Fragment zu Lothos Riftwaker am Schwarzfels zurück."
-Inst1Quest12_Location = "Lothos Riftwaker (Blackrockberg; "..YELLOW.."[E] auf der Eingangskarte"..WHITE..")"
+Inst1Quest12_Aim = "Begebt Euch zum Portal in den Schwarzfelstiefen, das in den geschmolzenen Kern führt, und findet ein Kernfragment. Kehrt mit dem Fragment zu Lothos Riftwaker am Schwarzfels zurück."
+Inst1Quest12_Location = "Lothos Riftwaker (Schwarzfels; "..YELLOW.."[E] auf der Eingangskarte"..WHITE..")"
 Inst1Quest12_Note = "Geschmolzener Kern Abstimmungsquest.  Nach Beendigung der Quest, kannst Du den Geschmolzenen Kern betreten, wenn Du Lothos Riftwalker ansprichst.\nDu findest das Kernfragment in der Nähe vom "..YELLOW.."[23]"..WHITE..",  Geschmolzenen Kern Portals."
 Inst1Quest12_Prequest = "Nein"
 Inst1Quest12_Folgequest = "Nein"
@@ -228,7 +228,7 @@ Inst1Quest12_Folgequest = "Nein"
 
 --Quest 13 Alliance
 Inst1Quest13 = "13. Die Herausforderung"
-Inst1Quest13_Aim = "Reist zum Ring des Gesetzes der Blackrocktiefen und errichtet das Banner der Provokation in dessen Mitte, während Ihr von Oberrichter Grimmstein verurteilt werdet. Tötet Theldren und seine Gladiatoren und kehrt dann mit dem ersten Stück von Lord Valthalaks Amulett zu Anthion Harmon in den Östlichen Pestländern zurück."
+Inst1Quest13_Aim = "Reist zum Ring des Gesetzes der Schwarzfelstiefen und errichtet das Banner der Provokation in dessen Mitte, während Ihr von Oberrichter Grimmstein verurteilt werdet. Tötet Theldren und seine Gladiatoren und kehrt dann mit dem ersten Stück von Lord Valthalaks Amulett zu Anthion Harmon in den Östlichen Pestländern zurück."
 Inst1Quest13_Location = "Falrin Treeshaper (Düsterbruch West; "..GREEN.."[1'] Bibliothek"..GREEN..")"
 Inst1Quest13_Note = "Dungeonset Questreihe.  Der Ring des Gesetzes ist bei "..YELLOW.."[6]"..WHITE.."."
 Inst1Quest13_Prequest = "Nein"
@@ -238,7 +238,7 @@ Inst1Quest13_Folgequest = "Anthions Abschiedsworte"
 --Quest 14 Alliance
 Inst1Quest14 = "14. Der spektrale Kelch"
 Inst1Quest14_Aim = "Plaziert die Materialien, die Glom'RelPlace haben möchte, in den Spektralen Kelch."
-Inst1Quest14_Location = "Gloom'Rel (Blackrocktiefen; "..YELLOW.."[18]"..WHITE..")"
+Inst1Quest14_Location = "Gloom'Rel (Schwarzfelstiefen; "..YELLOW.."[18]"..WHITE..")"
 Inst1Quest14_Note = "Dies ist eine Bergbauquest und erfordert einen Skill von mindestens 230 oder Höher um zu lernen wie man Dunkeleisenerz verhütten kann.  Du benötigst 2 Sternrubine, 20 Goldbarren und 10 Echtsilberbarren.  Wenn Du Dunkeleisenerz hast, kannst Du es zum Schwarzen Amboss bringen und dort verhütten bei "..YELLOW.."[22]"..WHITE..".  Dies ist der einzigste Ort im Spiel um es verhütten zu können."
 Inst1Quest14_Prequest = "Nein"
 Inst1Quest14_Folgequest = "Nein"
@@ -246,7 +246,7 @@ Inst1Quest14_Folgequest = "Nein"
 
 --Quest 15 Alliance
 Inst1Quest15 = "15. Marshal Windsor"
-Inst1Quest15_Aim = "Reist zum Blackrock im Nordwesten und dann weiter zu den Blackrocktiefen. Findet heraus, was aus Marshal Windsor geworden ist."
+Inst1Quest15_Aim = "Reist zum Blackrock im Nordwesten und dann weiter zu den Schwarzfelstiefen. Findet heraus, was aus Marshal Windsor geworden ist."
 Inst1Quest15_Location = "Marshal Maxwell (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..")"
 Inst1Quest15_Note = "Onyxia Einstimmungsqestreihe.  Diese startet bei Helendis Riverhorn (Brennende Steppe - Morgan's Vigil; "..YELLOW.."85.6, 68.8"..WHITE..").\nMarshal Windsor ist bei "..YELLOW.."[4]"..WHITE.."."
 Inst1Quest15_Prequest = "Drachkin-Bedrohung -> Die wahren Meister"
@@ -256,8 +256,8 @@ Inst1Quest15_Folgequest = "Verlorene Hoffnung"
 --Quest 16 Alliance
 Inst1Quest16 = "16. Verlorene Hoffnung"
 Inst1Quest16_Aim = "Überbringt Marshal Maxwell die schlechten Neuigkeiten."
-Inst1Quest16_Location = "Marshal Windsor (Blackrocktiefen; "..YELLOW.."[4]"..WHITE..")"
-Inst1Quest16_Note = "Onyxia Einstimmungsqestreihe.  Marshal Maxwell ist bei (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..").  Die nächste Quest in der Questreihe startet von einem zufälligen Dropp in den Blackrocktiefen."
+Inst1Quest16_Location = "Marshal Windsor (Schwarzfelstiefen; "..YELLOW.."[4]"..WHITE..")"
+Inst1Quest16_Note = "Onyxia Einstimmungsqestreihe.  Marshal Maxwell ist bei (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..").  Die nächste Quest in der Questreihe startet von einem zufälligen Dropp in den Schwarzfelstiefen."
 Inst1Quest16_Prequest = "Marshal Windsor"
 Inst1Quest16_Folgequest = "Nein"
 --
@@ -268,7 +268,7 @@ Inst1Quest16name3 = "Scherwindgamaschen"
 --Quest 17 Alliance
 Inst1Quest17 = "17. Eine zusammengeknüllte Notiz"
 Inst1Quest17_Aim = "Soeben seid Ihr auf etwas gestoßen, das Marshal Windsor mit Sicherheit sehr interessiert. Vielleicht besteht ja doch noch Hoffnung."
-Inst1Quest17_Location = "Eine zusammengeknüllte Notiz (zufälliger Dropp in den Blackrocktiefen)"
+Inst1Quest17_Location = "Eine zusammengeknüllte Notiz (zufälliger Dropp in den Schwarzfelstiefen)"
 Inst1Quest17_Note = "Onyxia Einstimmungsqestreihe.  Marshal Windsor ist bei "..YELLOW.."[4]"..WHITE..". Beste Chancen für diesen Dropp sind die Dunkeleisenzwerge."
 Inst1Quest17_Prequest = "Verlorene Hoffnung"
 Inst1Quest17_Folgequest = "Ein Funken Hoffnung"
@@ -277,7 +277,7 @@ Inst1Quest17_Folgequest = "Ein Funken Hoffnung"
 --Quest 18 Alliance
 Inst1Quest18 = "18. Ein Funken Hoffnung"
 Inst1Quest18_Aim = "Holt Marshal Windsors verloren gegangene Informationen zurück."
-Inst1Quest18_Location = "Marshal Windsor (Blackrocktiefen; "..YELLOW.."[4]"..WHITE..")"
+Inst1Quest18_Location = "Marshal Windsor (Schwarzfelstiefen; "..YELLOW.."[4]"..WHITE..")"
 Inst1Quest18_Note = "Onyxia Einstimmungsqestreihe.  Die verlorene Information droppt vom Golemlord Argelmach bei "..YELLOW.."[14]"..WHITE.." und General Zornesschmied bei "..YELLOW.."[13]"..WHITE.."."
 Inst1Quest18_Prequest = "Eine zusammengeknüllte Notiz"
 Inst1Quest18_Folgequest = "Gefängnisausbruch!"
@@ -286,7 +286,7 @@ Inst1Quest18_Folgequest = "Gefängnisausbruch!"
 --Quest 19 Alliance
 Inst1Quest19 = "19. Gefängnisausbruch!"
 Inst1Quest19_Aim = "Helft Marshal Windsor, seine Ausrüstung zurückzuholen und seine Freunde zu befreien. Kehrt zu Marshal Windsor zurück, wenn Ihr Erfolg hattet."
-Inst1Quest19_Location = "Marshal Windsor (Blackrocktiefen; "..YELLOW.."[4]"..WHITE..")"
+Inst1Quest19_Location = "Marshal Windsor (Schwarzfelstiefen; "..YELLOW.."[4]"..WHITE..")"
 Inst1Quest19_Note = "Onyxia Einstimmungsqestreihe.  Dies ist eine Begleitquest.  Sei Dir sicher das jeder aus der Gruppe diese Quest hat bevor ihr diese Startet.  Diese Quest ist leichter, wenn ihr den Ring des Gesetzes vorher säubert ("..YELLOW.."[6]"..WHITE..") und den Gang zum Eingange. Du findest Marshal Maxwell in der Brennende Steppe- Morgan's Vigil ("..YELLOW.."84.6, 68.8"..WHITE..")."
 Inst1Quest19_Prequest = "Ein Funken Hoffnung"
 Inst1Quest19_Folgequest = "Treffen in Stormwind"
@@ -353,7 +353,7 @@ Inst1Quest5_HORDE_Folgequest = "Nein"
 
 --Quest 6 Horde
 Inst1Quest6_HORDE = "6. SOFORT TÖTEN: Dunkeleisenzwerge"
-Inst1Quest6_HORDE_Aim = "Begebt Euch in die Blackrocktiefen und vernichtet die üblen Aggressoren! Kriegsherr Goretooth möchte, dass Ihr 15 Gardisten der Zorneshämmer, 10 Aufseher der Zorneshämmer und 5 Fußsoldaten der Zorneshämmer tötet. Kehrt zu ihm zurück, sobald Ihr die Aufgabe erfüllt habt."
+Inst1Quest6_HORDE_Aim = "Begebt Euch in die Schwarzfelstiefen und vernichtet die üblen Aggressoren! Kriegsherr Goretooth möchte, dass Ihr 15 Gardisten der Zorneshämmer, 10 Aufseher der Zorneshämmer und 5 Fußsoldaten der Zorneshämmer tötet. Kehrt zu ihm zurück, sobald Ihr die Aufgabe erfüllt habt."
 Inst1Quest6_HORDE_Location = "Steckbrief (Ödland - Kargath; "..YELLOW.."3.8, 47.5"..WHITE..")"
 Inst1Quest6_HORDE_Note = "Du kannst die Zwerge im ersten Teil der Dungeion finden. \nGebe die Quest ab beim Kriegsherr Goretooth bei (Ödland - Kargath, "..YELLOW.."5.8, 47.6"..WHITE..")."
 Inst1Quest6_HORDE_Prequest = "Nein"
@@ -362,7 +362,7 @@ Inst1Quest6_HORDE_Folgequest = "SOFORT TÖTEN: Hochrangige Führungskräfte der 
 
 --Quest 7 Horde
 Inst1Quest7_HORDE = "7. SOFORT TÖTEN: Hochrangige Führungskräfte der Dunkeleisenzwerge"
-Inst1Quest7_HORDE_Aim = "Begebt Euch in die Blackrocktiefen und vernichtet die üblen Aggressoren! Kriegsherr Goretooth möchte, dass Ihr 10 Sanitäter der Zorneshämmer, 10 Soldaten der Zorneshämmer und 10 Offiziere der Zorneshämmer tötet. Kehrt zu ihm zurück, sobald Ihr die Aufgabe erfüllt habt."
+Inst1Quest7_HORDE_Aim = "Begebt Euch in die Schwarzfelstiefen und vernichtet die üblen Aggressoren! Kriegsherr Goretooth möchte, dass Ihr 10 Sanitäter der Zorneshämmer, 10 Soldaten der Zorneshämmer und 10 Offiziere der Zorneshämmer tötet. Kehrt zu ihm zurück, sobald Ihr die Aufgabe erfüllt habt."
 Inst1Quest7_HORDE_Location = "Steckbrief (Ödland - Kargath; "..YELLOW.."3.8, 47.5"..WHITE..")"
 Inst1Quest7_HORDE_Note = "Die Zwerge die Du brauchst sind in der Nähe von Bael'Gar bei "..YELLOW.."[11]"..WHITE..". \nGebe die Quest ab beim Kriegsherr Goretooth bei (Ödland - Kargath, "..YELLOW.."5.8, 47.6"..WHITE..")."
 Inst1Quest7_HORDE_Prequest = "SOFORT TÖTEN: Dunkeleisenzwerge"
@@ -371,9 +371,9 @@ Inst1Quest7_HORDE_Folgequest = "Nein"
 
 --Quest 8 Horde
 Inst1Quest8_HORDE = "8. Operation: Tod dem Zornesschmied"
-Inst1Quest8_HORDE_Aim = "Begebt Euch zu den Blackrocktiefen und eliminiert General Zornesschmied! Kehrt zum Kriegsherrn Goretooth zurück, sobald Ihr diese Aufgabe erledigt habt."
+Inst1Quest8_HORDE_Aim = "Begebt Euch zu den Schwarzfelstiefen und eliminiert General Zornesschmied! Kehrt zum Kriegsherrn Goretooth zurück, sobald Ihr diese Aufgabe erledigt habt."
 Inst1Quest8_HORDE_Location = "Kriegsherr (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE..")"
-Inst1Quest8_HORDE_Note = "Um diese Quest machen zu können musst Du erst die beeine'SOFORT TÖTEN' Questen machen und dann starte die Quest Grark Lorkrub von Lexlort (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE.."). \nGeneral Angerforge ist bei "..YELLOW.."[13]"..WHITE.."."
+Inst1Quest8_HORDE_Note = "Um diese Quest machen zu können musst Du erst die beiden'SOFORT TÖTEN' Quests machen und dann starte die Quest Grark Lorkrub von Lexlort (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE.."). \nGeneral Angerforge ist bei "..YELLOW.."[13]"..WHITE.."."
 Inst1Quest8_HORDE_Prequest = "Grark Lorkrub -> Gefährliche Zwickmühle"
 Inst1Quest8_HORDE_Folgequest = "Nein"
 --
@@ -415,9 +415,9 @@ Inst1Quest11_HORDE_Folgequest = "Disharmonie des Feuers"
 
 --Quest 12 Horde
 Inst1Quest12_HORDE = "12. Disharmonie des Feuers"
-Inst1Quest12_HORDE_Aim = "Betretet die Blackrocktiefen und spürt Lord Incendius auf. Tötet ihn und bringt jegliche Informationsquelle, die Ihr finden könnt, zu Thunderheart."
+Inst1Quest12_HORDE_Aim = "Betretet die Schwarzfelstiefen und spürt Lord Incendius auf. Tötet ihn und bringt jegliche Informationsquelle, die Ihr finden könnt, zu Thunderheart."
 Inst1Quest12_HORDE_Location = "Thunderheart (Ödland - Kargath; "..YELLOW.."3.4, 48.2"..WHITE..")"
-Inst1Quest12_HORDE_Note = "Du bekommst die Vorquest ebenfalls vom Thunderheart.  Lord Incendius befindet sich beim Schwarzen Amboss bei "..YELLOW.."[10]"..WHITE.."."
+Inst1Quest12_HORDE_Note = "Du bekommst die Vorquest ebenfalls von Thunderheart.  Lord Incendius befindet sich beim Schwarzen Amboss bei "..YELLOW.."[10]"..WHITE.."."
 Inst1Quest12_HORDE_Prequest = "Disharmonie der Flamme"
 Inst1Quest12_HORDE_Folgequest = "Nein"
 --
@@ -428,7 +428,7 @@ Inst1Quest12name4_HORDE = "Wackere Umklammerung"
 
 --Quest 13 Horde
 Inst1Quest13_HORDE = "13. Das letzte Element"
-Inst1Quest13_HORDE_Aim = "Begebt Euch in die Blackrocktiefen und beschafft 10 Essenzen der Elemente. Euer erster Gedanke ist, die Golems und die Schöpfer der Golems zu suchen. Doch Ihr erinnert Euch, dass Vivian Lagrave auch etwas von Elementaren vor sich hingemurmelt hat."
+Inst1Quest13_HORDE_Aim = "Begebt Euch in die Schwarzfelstiefen und beschafft 10 Essenzen der Elemente. Euer erster Gedanke ist, die Golems und die Schöpfer der Golems zu suchen. Doch Ihr erinnert Euch, dass Vivian Lagrave auch etwas von Elementaren vor sich hingemurmelt hat."
 Inst1Quest13_HORDE_Location = "Schattenmagieren Vivian Lagrave (Ödland - Kargath; "..YELLOW.."3.0, 47.6"..WHITE..")"
 Inst1Quest13_HORDE_Note = "Du bekommst die Vorquest vom Thunderheart (Ödland - Kargath; "..YELLOW.."3.4, 48.2"..WHITE..").\n Jedes Elementar kann die Essenz der Elemente droppen."
 Inst1Quest13_HORDE_Prequest = "Disharmonie der Flamme"
@@ -438,7 +438,7 @@ Inst1Quest13name1_HORDE = "Lagraves Siegel"
 
 --Quest 14 Horde
 Inst1Quest14_HORDE = "14. Kommandant Gor'shak"
-Inst1Quest14_HORDE_Aim = "Sucht Kommandant Gor'shak in den Blackrocktiefen.\nIhr erinnert Euch, dass auf dem primitiv gezeichneten Bild des Orcs auch Gitter vor dem Gesicht zu sehen waren. Vielleicht solltet Ihr nach einer Art Gefängnis suchen."
+Inst1Quest14_HORDE_Aim = "Sucht Kommandant Gor'shak in den Schwarzfelstiefen.\nIhr erinnert Euch, dass auf dem primitiv gezeichneten Bild des Orcs auch Gitter vor dem Gesicht zu sehen waren. Vielleicht solltet Ihr nach einer Art Gefängnis suchen."
 Inst1Quest14_HORDE_Location = "Galamav der Schütze (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE..")"
 Inst1Quest14_HORDE_Note = "Du bekommst die Vorquest vom Thunderheart (Ödland - Kargath; "..YELLOW.."3.4, 48.2"..WHITE..").\nKommandant Gor'shak ist bei "..YELLOW.."[3]"..WHITE..".  Der Schlüssel, um das Gefängnis zu öffnen, droppt vom Verhörmeisterin Gerstahn "..YELLOW.."[5]"..WHITE..".  Um die Quest abzuschließen, spreche mit Kharan Mighthammer, bei "..YELLOW.."[2]"..WHITE.." und mit Kriegshäuptling Thrall in Orgrimmar bevor Du die nächste Quest annimmst."
 Inst1Quest14_HORDE_Prequest = "Disharmonie der Flamme"
@@ -560,7 +560,7 @@ Inst2Quest3_HORDE_Folgequest = Inst2Quest3_Folgequest
 
 --------------- INST3 - Lower Blackrock Spire ---------------
 
-Inst3Caption = "Blackrockspitze (Unten)"
+Inst3Caption = "Schwarzfelsspitze (Unten)"
 Inst3QAA = "14 Quests"
 Inst3QAH = "14 Quests"
 
@@ -577,7 +577,7 @@ Inst3Quest1name2 = "Zerlumptes Hakkaricape"
 
 --Quest 2 Alliance
 Inst3Quest2 = "2. Kiblers Exotische Tiere"
-Inst3Quest2_Aim = "Begebt Euch zur Blackrockspitze und sucht Worgwelpen der Blutäxte. Benutzt den Käfig, um die wilden kleinen Bestien zu transportieren. Bringt einen eingesperrten Worgwelpen zu Kibler."
+Inst3Quest2_Aim = "Begebt Euch zur Schwarzfelsspitze und sucht Worgwelpen der Blutäxte. Benutzt den Käfig, um die wilden kleinen Bestien zu transportieren. Bringt einen eingesperrten Worgwelpen zu Kibler."
 Inst3Quest2_Location = "Kibler (Brennende Steppe - Flammenkamm; "..YELLOW.."65.8, 22.0"..WHITE..")"
 Inst3Quest2_Note = "Du findest die Worhwelpen in der Nähe von Halcyon bei "..YELLOW.."[16]"..WHITE.."."
 Inst3Quest2_Prequest = "Nein"
@@ -587,7 +587,7 @@ Inst3Quest2name1 = "Worgtransportkorb"
 
 --Quest 3 Alliance
 Inst3Quest3 = "3. Be-Öh-Es-Eh"
-Inst3Quest3_Aim = "Reist zur Blackrockspitze und sammelt 15 Spitzenspinnen-Eier für Kibler."
+Inst3Quest3_Aim = "Reist zur Schwarzfelsspitze und sammelt 15 Spitzenspinnen-Eier für Kibler."
 Inst3Quest3_Location = "Kibler (Brennende Steppe - Flammenkamm; "..YELLOW.."65.8, 22.0"..WHITE..")"
 Inst3Quest3_Note = "Du findest die Spitzenspinnen-Eier in der Nähe von Mutter Glimmernetz bei "..YELLOW.."[11]"..WHITE.."."
 Inst3Quest3_Prequest = "Nein"
@@ -597,7 +597,7 @@ Inst3Quest3name1 = "Glimmernetztransportkorb"
 
 --Quest 4 Alliance
 Inst3Quest4 = "4. Muttermilch"
-Inst3Quest4_Aim = "Ihr findet Mutter Glimmernetz im Herzen der Blackrockspitze. Kämpft mit ihr und bringt sie dazu, Euch zu vergiften. Es kann gut sein, dass Ihr sie sogar töten müsst. Kehrt zum struppigen John zurück, sobald Ihr vergiftet seid, damit er Euch 'melken' kann."
+Inst3Quest4_Aim = "Ihr findet Mutter Glimmernetz im Herzen der Schwarzfelsspitze. Kämpft mit ihr und bringt sie dazu, Euch zu vergiften. Es kann gut sein, dass Ihr sie sogar töten müsst. Kehrt zum struppigen John zurück, sobald Ihr vergiftet seid, damit er Euch 'melken' kann."
 Inst3Quest4_Location = "Ragged John (Brennende Steppe - Flammenkamm; "..YELLOW.."65.0, 23.6"..WHITE..")"
 Inst3Quest4_Note = "Mutter Glimmernetz ist bei "..YELLOW.."[11]"..WHITE..". Der Gifteffekt kann jeden Spieler erwischen. Wenn der Effekt entfernt wird, scheiterst Du auch an der Quest."
 Inst3Quest4_Prequest = "Nein"
@@ -607,7 +607,7 @@ Inst3Quest4name1 = "Der immervolle Becher des struppigen John"
 
 --Quest 5 Alliance
 Inst3Quest5 = "5. Stellt sie ab"
-Inst3Quest5_Aim = "Begebt Euch zur Blackrockspitze und vernichtet die Quelle der Bedrohung durch die Worgs. Als Ihr Helendis verlasst, ruft er Euch noch einen Namen hinterher: Halycon. Darauf beziehen sich die Orcs im Zusammenhang mit den Worgs."
+Inst3Quest5_Aim = "Begebt Euch zur Schwarzfelsspitze und vernichtet die Quelle der Bedrohung durch die Worgs. Als Ihr Helendis verlasst, ruft er Euch noch einen Namen hinterher: Halycon. Darauf beziehen sich die Orcs im Zusammenhang mit den Worgs."
 Inst3Quest5_Location = "Helendis Riverhorn (Brennende Steppe - Morgan's Vigil; "..YELLOW.."85.6, 68.8"..WHITE..")"
 Inst3Quest5_Note = "Du findest Halycon bei "..YELLOW.."[16]"..WHITE.."."
 Inst3Quest5_Prequest = "Nein"
@@ -620,7 +620,7 @@ Inst3Quest5name3 = "Jadeschuppenbrustplatte"
 --Quest 6 Alliance
 Inst3Quest6 = "6. Urok Schreckensbote"
 Inst3Quest6_Aim = "Lest Waroshs Rolle. Bringt Waroshs Mojo zu Warosh."
-Inst3Quest6_Location = "Warosh (Blackrockspitze; "..YELLOW.."[2]"..WHITE..")"
+Inst3Quest6_Location = "Warosh (Schwarzfelsspitze; "..YELLOW.."[2]"..WHITE..")"
 Inst3Quest6_Note = "Um Waroshs Mojo zu bekommen, musst Du Urok Doomhowl beschwören und töten "..YELLOW.."[13]"..WHITE..". Für die Beschwörung brauchst Du einen Speer und den Kopf von Hochlord Omokk "..YELLOW.."[6]"..WHITE..". Der Speer ist bei "..YELLOW.."[4]"..WHITE..". Während der Beschwörung erscheinen einige Wellen von Ogern bevor Urok Doomhowl erscheint."
 Inst3Quest6_Prequest = "Nein"
 Inst3Quest6_Folgequest = "Nein"
@@ -630,7 +630,7 @@ Inst3Quest6name1 = "Prisma-Talisman"
 --Quest 7 Alliance
 Inst3Quest7 = "7. Bijous Habseligkeiten"
 Inst3Quest7_Aim = "Sucht Bijous Habseligkeiten und bringt sie ihr. Viel Glück!"
-Inst3Quest7_Location = "Bijou (Blackrockspitze; "..YELLOW.."[3]"..WHITE..")"
+Inst3Quest7_Location = "Bijou (Schwarzfelsspitze; "..YELLOW.."[3]"..WHITE..")"
 Inst3Quest7_Note = "Du findest Bijous Habseligkeiten auf den Weg zu Mutter Glimmernetz bei "..YELLOW.."[11]"..WHITE..".\nTDie Folgeqquest führt Dich zu Marshal Maxwell bei (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..")."
 Inst3Quest7_Prequest = "Nein"
 Inst3Quest7_Folgequest = "Nachricht an Maxwell"
@@ -638,7 +638,7 @@ Inst3Quest7_Folgequest = "Nachricht an Maxwell"
 
 --Quest 8 Alliance
 Inst3Quest8 = "8. Maxwells Mission"
-Inst3Quest8_Aim = "Reist zur Blackrockspitze und schaltet Kriegsmeister Voone, Hochlord Omokk und Oberanführer Wyrmthalak aus. Kehrt zu Marshal Maxwell zurück, wenn Eure Aufgabe erledigt ist."
+Inst3Quest8_Aim = "Reist zur Schwarzfelsspitze und schaltet Kriegsmeister Voone, Hochlord Omokk und Oberanführer Wyrmthalak aus. Kehrt zu Marshal Maxwell zurück, wenn Eure Aufgabe erledigt ist."
 Inst3Quest8_Location = "Marshal Maxwell (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..")"
 Inst3Quest8_Note = "Du findest Kriegsmeister Voone bei "..YELLOW.."[8]"..WHITE..", Hochlord Omokk bei "..YELLOW.."[6]"..WHITE.." und Oberanführer Wyrmthalak bei "..YELLOW.."[17]"..WHITE.."."
 Inst3Quest8_Prequest = "Nachricht an Maxwell"
@@ -653,7 +653,7 @@ Inst3Quest8name5 = "Voones Zwingenhandschutz"
 --Quest 9 Alliance
 Inst3Quest9 = "9. Siegel des Aufstiegs"
 Inst3Quest9_Aim = "Sucht die drei Edelsteine der Befehlsgewalt: den Edelstein der Gluthauer, den Edelstein der Felsspitzoger und den Edelstein der Blutäxte. Bringt sie zusammen mit dem unverzierten Siegel des Aufstiegs zu Vaelan zurück."
-Inst3Quest9_Location = "Vaelan (Blackrockspitze; "..YELLOW.."[1]"..WHITE..")"
+Inst3Quest9_Location = "Vaelan (Schwarzfelsspitze; "..YELLOW.."[1]"..WHITE..")"
 Inst3Quest9_Note = "Dies ist die Quest für den Schlüssel für die Obere Schwarzfelsspitze.  Du bekommst den Edelstein der Felsspitzoger von Hochlord Omokk bei "..YELLOW.."[6]"..WHITE..", den Edelstein der Gluthauer von Kriegsmeister Voone bei "..YELLOW.."[8]"..WHITE.." und den Edelstein der Blutäxte von Obermeister Wyrmthalak bei "..YELLOW.."[17]"..WHITE..".  Das Unverziertes Siegel des Aufstiegs kann von jedem Gegner innerhalb und außerhalb der Instanz droppen."
 Inst3Quest9_Prequest = "Nein"
 Inst3Quest9_Folgequest = "Siegel des Aufstiegs"
@@ -665,13 +665,13 @@ Inst3Quest10_Aim = "Bringt den Befehl von General Drakkisath zu Marshal Maxwell 
 Inst3Quest10_Location = "General Drakkisaths Befehl (droppt vom Hochlorrd Wyrmthalak; "..YELLOW.."[17]"..WHITE..")"
 Inst3Quest10_Note = "Marshal Maxwell ist in der Brennende Steppe - Morgan's Vigil; ("..YELLOW.."84.6, 68.8"..WHITE..")."
 Inst3Quest10_Prequest = "Nein"
-Inst3Quest10_Folgequest = "General Drakkisaths Befehl ("..YELLOW.."Untere Blackrockspitze"..WHITE..")"
+Inst3Quest10_Folgequest = "General Drakkisaths Befehl ("..YELLOW.."Untere Schwarzfelsspitze"..WHITE..")"
 -- No Rewards for this quest
 
 --Quest 11 Alliance
 Inst3Quest11 = "11. Das linke Stück von Lord Valthalaks Amulett"
 Inst3Quest11_Aim = "Benutzt das Räuchergefäß der Beschwörung, um den Geist von Mor Grauhuf zu beschwören und zu vernichten. Kehrt dann mit dem linken Stück von Lord Valthalaks Amulett und dem Räuchergefäß der Beschwörung zu Bodley im Schwarzfels zurück."
-Inst3Quest11_Location = "Bodley (Blackrockberg; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
+Inst3Quest11_Location = "Bodley (Schwarzfels; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
 Inst3Quest11_Note = "Dungeonrüstungsset Questreihe.  Der Extradimensionaler Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst dies aus der Quest 'Suche nach Anthion'.\n\nMor Grauhuf wird beschworen bei "..YELLOW.."[8]"..WHITE.."."
 Inst3Quest11_Prequest = "Komponenten von großer Wichtigkeit"
 Inst3Quest11_Folgequest = "Ich sehe die Insel Alcaz in Eurer Zukunft..."
@@ -680,15 +680,15 @@ Inst3Quest11_Folgequest = "Ich sehe die Insel Alcaz in Eurer Zukunft..."
 --Quest 12 Alliance
 Inst3Quest12 = "12. Das rechte Stück von Lord Valthalaks Amulett"
 Inst3Quest12_Aim = "Benutzt das Räuchergefäß der Beschwörung, um den Geist von Mor Grauhuf zu beschwören und zu vernichten. Kehrt dann mit Lord Valthalaks zusammengesetzten Amulett und dem Räuchergefäß der Beschwörung zu Bodley im Schwarzfels zurück."
-Inst3Quest12_Location = "Bodley (Blackrockberg; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
+Inst3Quest12_Location = "Bodley (Schwarzfels; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
 Inst3Quest12_Note = "Dungeonrüstungsset Questreihe.  Der Extradimensionaler Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst dies aus der Quest 'Suche nach Anthion'.\n\nMor Grauhuf wird beschworen bei "..YELLOW.."[8]"..WHITE.."."
 Inst3Quest12_Prequest = "Mehr Komponenten von großer Wichtigkeit"
-Inst3Quest12_Folgequest = "Letzte Vorbereitungen ("..YELLOW.."Untere Blackrockspitze"..WHITE..")"
+Inst3Quest12_Folgequest = "Letzte Vorbereitungen ("..YELLOW.."Untere Schwarzfelsspitze"..WHITE..")"
 -- No Rewards for this quest
 
 --Quest 13 Alliance
 Inst3Quest13 = "13. Schlangenstein der Schattenjägerin"
-Inst3Quest13_Aim = "Begebt Euch zur Blackrockspitze und erschlagt Schattenjägerin Vosh'gajin. Holt Vosh'gajins Schlangenstein und kehrt zu Kilram zurück."
+Inst3Quest13_Aim = "Begebt Euch zur Schwarzfelsspitze und erschlagt Schattenjägerin Vosh'gajin. Holt Vosh'gajins Schlangenstein und kehrt zu Kilram zurück."
 Inst3Quest13_Location = "Kilram (Winterspring - Everlook; "..YELLOW.."61.2, 37.0"..WHITE..")"
 Inst3Quest13_Note = "Schmiedekunstquest.  Schattenjäger Vosh'gajin ist bei "..YELLOW.."[7]"..WHITE.."."
 Inst3Quest13_Prequest = "Nein"
@@ -699,7 +699,7 @@ Inst3Quest13name1 = "Pläne: Dämmerungsschneide"
 --Quest 14 Alliance
 Inst3Quest14 = "14. Heißer, feuriger Tod"
 Inst3Quest14_Aim = "Jemand auf dieser Welt muss doch wissen, was mit diesen Stulpen zu tun ist. Viel Glück!"
-Inst3Quest14_Location = "Human Remains (Untere Blackrockspitze; "..YELLOW.."[9]"..WHITE..")"
+Inst3Quest14_Location = "Human Remains (Untere Schwarzfelsspitze; "..YELLOW.."[9]"..WHITE..")"
 Inst3Quest14_Note = "Schmiedekunstquest.  Stelle sicher, dass Du die Feurige Plattenstulpen von den menschlichen Überreste aufhebst, in der Nähe von "..YELLOW.."[9]"..WHITE..". Kehre zurück zu Malyfous Darkhammer (Winterspring - Everlook; "..YELLOW.."61.0, 38.6"..WHITE..").  Die Belohungen sind für die Folgequest."
 Inst3Quest14_Prequest = "Nein"
 Inst3Quest14_Folgequest = "Feurige Plattenstulpen"
@@ -773,7 +773,7 @@ Inst3Quest6name1_HORDE = Inst3Quest6name1
 
 --Quest 7 Horde
 Inst3Quest7_HORDE = "7. Agentin Bijou"
-Inst3Quest7_HORDE_Aim = "Begebt Euch zur Blackrockspitze und findet heraus, was aus Bijou geworden ist."
+Inst3Quest7_HORDE_Aim = "Begebt Euch zur Schwarzfelsspitze und findet heraus, was aus Bijou geworden ist."
 Inst3Quest7_HORDE_Location = "Lexlort (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE..")"
 Inst3Quest7_HORDE_Note = "Du findest Bijou bei "..YELLOW.."[3]"..WHITE.."."
 Inst3Quest7_HORDE_Prequest = "Nein"
@@ -783,7 +783,7 @@ Inst3Quest7_HORDE_Folgequest = "Bijous Habseligkeiten"
 --Quest 8 Horde
 Inst3Quest8_HORDE = "8. Bijous Habseligkeiten"
 Inst3Quest8_HORDE_Aim = "Sucht Bijous Habseligkeiten und bringt sie ihr. Ihr erinnert Euch daran, dass sie erwähnte, ihre Sachen auf der untersten Ebene der Stadt versteckt zu haben."
-Inst3Quest8_HORDE_Location = "Bijou (Blackrock Spire; "..YELLOW.."[3]"..WHITE..")"
+Inst3Quest8_HORDE_Location = "Bijou (Schwarzfelsspitze; "..YELLOW.."[3]"..WHITE..")"
 Inst3Quest8_HORDE_Note = "Du findest die Habseligkeiten auf den Weg zu Mutter Glimmernetz bei "..YELLOW.."[11]"..WHITE..".\Die Belohnung bekommst Du aus der Folgequest, welche Dich zu Lexlort zurückführt, in (Ödland - Kargath; "..YELLOW.."5.8, 47.6"..WHITE..")."
 Inst3Quest8_HORDE_Prequest = "Agentin Bijou"
 Inst3Quest8_HORDE_Folgequest = "Bijous Aufklärungsbericht"
@@ -806,7 +806,7 @@ Inst3Quest10_HORDE_Aim = "Tötet Hochlord Omokk, Kriegsmeister Voone und Oberanf
 Inst3Quest10_HORDE_Location = "Kriegsherr Goretooth (Ödland - Kargath; "..YELLOW.."65,22"..WHITE..")"
 Inst3Quest10_HORDE_Note = "Onyxia Einstimmungsqestreihe.  Du findest Hochlord Omokk bei "..YELLOW.."[6]"..WHITE..", Kriegsmeister Voone bei "..YELLOW.."[8]"..WHITE.." und Oberanführer Wyrmthalak bei "..YELLOW.."[17]"..WHITE..".  Die Blackrockdokumente erscheienn bei einen der 3 Bosse."
 Inst3Quest10_HORDE_Prequest = "Nein"
-Inst3Quest10_HORDE_Folgequest = "Eitriggs Weisheit -> Für die Horde! ("..YELLOW.."Untere Blackrockspitze"..WHITE..")"
+Inst3Quest10_HORDE_Folgequest = "Eitriggs Weisheit -> Für die Horde! ("..YELLOW.."Untere Schwarzfelsspitze"..WHITE..")"
 --
 Inst3Quest10name1_HORDE = Inst3Quest8name1
 Inst3Quest10name2_HORDE = Inst3Quest8name2
@@ -857,14 +857,14 @@ Inst3Quest14name2_HORDE = Inst3Quest14name2
 
 --------------- INST4 - Upper Blackrock Spire ---------------
 
-Inst4Caption = "Blackrockspitze (Obere)"
+Inst4Caption = "Schwarzfelsspitze (Obere)"
 Inst4QAA = "12 Quests"
 Inst4QAH = "13 Quests"
 
 --Quest 1 Alliance
 Inst4Quest1 = "1. Die oberste Beschützerin"
 Inst4Quest1_Aim = "Begebt Euch nach Winterspring und sucht Haleh. Gebt ihr Awbees Schuppe."
-Inst4Quest1_Location = "Awbee (Blackrockspitze; "..YELLOW.."[6]"..WHITE..")"
+Inst4Quest1_Location = "Awbee (Schwarzfelsspitze; "..YELLOW.."[6]"..WHITE..")"
 Inst4Quest1_Note = "Du findest Awbee in den Raum hinter der Arena bei "..YELLOW.."[6]"..WHITE..". Sie steht auf einem Vorsprung.\nHaleh ist in Winterspring ("..YELLOW.."54.4, 51.2"..WHITE..").  Es gibt eine Höhle bei den Koordinaten "..YELLOW.."57.0, 50.0"..WHITE..".  Am Ende ist ein Portal, dass Dich zu Haleh portet."
 Inst4Quest1_Prequest = "Nein"
 Inst4Quest1_Folgequest = "Der Zorn des blauen Drachenschwarms"
@@ -873,7 +873,7 @@ Inst4Quest1_Folgequest = "Der Zorn des blauen Drachenschwarms"
 --Quest 2 Alliance
 Inst4Quest2 = "2. Finkle Einhorn, zu Euren Diensten!"
 Inst4Quest2_Aim = "Sprecht mit Malyfous Darkhammer in Everlook."
-Inst4Quest2_Location = "Finkle Einhorn (Blackrockspitze; "..YELLOW.."[7]"..WHITE..")"
+Inst4Quest2_Location = "Finkle Einhorn (Schwarzfelsspitze; "..YELLOW.."[7]"..WHITE..")"
 Inst4Quest2_Note = "Finkle Einhorn erscheint nach der Tötung der Bestie. Du findest Malyfous Darkhammer in (Winterspring - Everlook; "..YELLOW.."61.0, 38.6"..WHITE..")."
 Inst4Quest2_Prequest = "Nein"
 Inst4Quest2_Folgequest = "Brustplatte des Blutdurstes, Gamaschen von Arcana, Kappe des scharlachroten Wissenden"
@@ -900,10 +900,10 @@ Inst4Quest4_Folgequest = "Der geschmolzene Kern"
 
 --Quest 5 Alliance
 Inst4Quest5 = "5. General Drakkisaths Niedergang"
-Inst4Quest5_Aim = "Begebt Euch zur Blackrockspitze und schaltet General Drakkisath aus. Kehrt zu Marshal Maxwell zurück, wenn Eure Aufgabe erledigt ist."
+Inst4Quest5_Aim = "Begebt Euch zur Schwarzfelsspitze und schaltet General Drakkisath aus. Kehrt zu Marshal Maxwell zurück, wenn Eure Aufgabe erledigt ist."
 Inst4Quest5_Location = "Marshal Maxwell (Brennende Steppe - Morgan's Vigil; "..YELLOW.."84.6, 68.8"..WHITE..")"
 Inst4Quest5_Note = "Du findest General Drakkisath bei "..YELLOW.."[8]"..WHITE.."."
-Inst4Quest5_Prequest = "General Drakkisaths Befehl ("..YELLOW.."Untere Blackrockspitze"..WHITE..")"
+Inst4Quest5_Prequest = "General Drakkisaths Befehl ("..YELLOW.."Untere Schwarzfelsspitze"..WHITE..")"
 Inst4Quest5_Folgequest = "Nein"
 --
 Inst4Quest5name1 = "Mal der Tyrannei"
@@ -933,8 +933,8 @@ Inst4Quest7_Folgequest = "Nein"
 --Quest 8 Alliance
 Inst4Quest8 = "8. Letzte Vorbereitungen"
 Inst4Quest8_Aim = "Bringt Bodley im Schwarzfels 40 Schwarzfelsarmschienen und ein Fläschchen der obersten Macht."
-Inst4Quest8_Location = "Bodley (Blackrockberg; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
-Inst4Quest8_Note = "Dungeonrüstungsset Questreihe.  Der Extradimensionaler Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst dies aus der Quest 'Suche nach Anthion'.  Blackrockarmschienen droppen von den Gegnern in der Unteren und Oberen Blackrockspitze und außerhalb der Instanz.  Gegner mit dem Namen 'Blackhand' haben eine höhere Chance den Gegenstand zu droppen.  Fläschchen mit oberster Macht kann von einem Alchimisten hergestellt werden.  Die Vorquests haben Abschnitte in der Oberen Blackrockspitze, Düsterbruch, Stratholme und Scholomance."
+Inst4Quest8_Location = "Bodley (Schwarzfels; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
+Inst4Quest8_Note = "Dungeonrüstungsset Questreihe.  Der Extradimensionaler Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst dies aus der Quest 'Suche nach Anthion'.  Blackrockarmschienen droppen von den Gegnern in der Unteren und Oberen Schwarzfelsspitze und außerhalb der Instanz.  Gegner mit dem Namen 'Blackhand' haben eine höhere Chance den Gegenstand zu droppen.  Fläschchen mit oberster Macht kann von einem Alchimisten hergestellt werden.  Die Vorquests haben Abschnitte in der Oberen Schwarzfelsspitze, Düsterbruch, Stratholme und Scholomance."
 Inst4Quest8_Prequest = "Das rechte Stück von Lord Valthalaks Amulett"
 Inst4Quest8_Folgequest = "Mea Culpa, Lord Valthalak"
 -- No Rewards for this quest
@@ -942,7 +942,7 @@ Inst4Quest8_Folgequest = "Mea Culpa, Lord Valthalak"
 --Quest 9 Alliance
 Inst4Quest9 = "9. Mea Culpa, Lord Valthalak"
 Inst4Quest9_Aim = "Benutzt das Räuchergefäß der Beschwörung, um Lord Valthalak zu beschwören. Macht ihn unschädlich und benutzt dann Lord Valthalaks Amulett bei seiner Leiche. Danach werdet Ihr dem Geist von Lord Valthalak sein Amulett zurückgeben müssen."
-Inst4Quest9_Location = "Bodley (Blackrockbergn; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
+Inst4Quest9_Location = "Bodley (Schwarzfels; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
 Inst4Quest9_Note = "Dungeonrüstungsset Questreihe  Der Extradimensionaler Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst dies aus der Quest 'Suche nach Anthion'.  Lord Valthalak ist beschwörbar bei "..YELLOW.."[7]"..WHITE..".  Die Belohnung erhälst Du in der Folgequest."
 Inst4Quest9_Prequest = "Letzte Vorbereitungen"
 Inst4Quest9_Folgequest = "Rückkehr zu Bodley"
@@ -952,7 +952,7 @@ Inst4Quest9name2 = "Handbuch: Räuchergefäß der Anrufung"
 
 --Quest 10 Alliance
 Inst4Quest10 = "10. Die Dämonenschmiede"
-Inst4Quest10_Aim = "Begebt Euch zur Blackrockspitze und sucht Goraluk Hammerbruch. Erschlagt ihn und wendet dann die blutbefleckte Pike auf seine Leiche an. Nachdem seine Seele abgesaugt wurde, wird die Pike seelenbefleckt sein. Ihr müsst außerdem die ungeschmiedete runenbedeckte Brustplatte finden.Bringt die seelenbefleckte Pike und die ungeschmiedete runenbedeckte Brustplate zu Lorax in Winterspring."
+Inst4Quest10_Aim = "Begebt Euch zur Schwarzfelsspitze und sucht Goraluk Hammerbruch. Erschlagt ihn und wendet dann die blutbefleckte Pike auf seine Leiche an. Nachdem seine Seele abgesaugt wurde, wird die Pike seelenbefleckt sein. Ihr müsst außerdem die ungeschmiedete runenbedeckte Brustplatte finden.Bringt die seelenbefleckte Pike und die ungeschmiedete runenbedeckte Brustplate zu Lorax in Winterspring."
 Inst4Quest10_Location = "Lorax (Winterspring; "..YELLOW.."64, 74"..WHITE..")"
 Inst4Quest10_Note = "Schmiedekunstquest.  Goraluk Hammerbruch ist bei "..YELLOW.."[4]"..WHITE.."."
 Inst4Quest10_Prequest = "Lorax' Geschichte"
@@ -973,7 +973,7 @@ Inst4Quest11_Folgequest = "Leonid Barthalomew -> Dämmerungstrickfalle  ("..YELL
 
 --Quest 12 Alliance
 Inst4Quest12 = "12. Drachenfeueramulett"
-Inst4Quest12_Aim = "Ihr müsst das Blut des schwarzen Großdrachen-Helden von General Drakkisath bekommen. Ihr findet Drakkisath in seinem Thronsaal hinter den Hallen des Aufstiegs auf der Blackrockspitze."
+Inst4Quest12_Aim = "Ihr müsst das Blut des schwarzen Großdrachen-Helden von General Drakkisath bekommen. Ihr findet Drakkisath in seinem Thronsaal hinter den Hallen des Aufstiegs auf der Schwarzfelsspitze."
 Inst4Quest12_Location = "Haleh (Winterspring; "..YELLOW.."54.4, 51.2"..WHITE..")"
 Inst4Quest12_Note = "Dies ist die letze Quest für die Onyxiaeinstimmungsquestreihe.  Weitere Information, um diese Questreihe zu starten, siehe bei der Quest 'Marshal Windsor'.  Du findest General Drakkisath bei "..YELLOW.."[8]"..WHITE.."."
 Inst4Quest12_Prequest = "Die große Maskerade -> Das Großdrachenauge"
@@ -1032,7 +1032,7 @@ Inst4Quest5name2_HORDE = Inst4Quest6name2
 
 --Quest 6 Horde
 Inst4Quest6_HORDE = "6. Für die Horde!"
-Inst4Quest6_HORDE_Aim = "Begebt Euch zur Blackrockspitze und tötet den Kriegshäuptling Rend Blackhand. Nehmt seinen Kopf und kehrt nach Orgrimmar zurück."
+Inst4Quest6_HORDE_Aim = "Begebt Euch zur Schwarzfelsspitze und tötet den Kriegshäuptling Rend Blackhand. Nehmt seinen Kopf und kehrt nach Orgrimmar zurück."
 Inst4Quest6_HORDE_Location = "Thrall (Orgrimmar; "..YELLOW.."32, 37.8"..WHITE..")"
 Inst4Quest6_HORDE_Note = "Onyxia Einstimmungsqestreihe.  Du findest Kriegshäuptling Rend Blackhand bei "..YELLOW.."[5]"..WHITE.."."
 Inst4Quest6_HORDE_Prequest = "Befehl des Kriegsherrn -> Eitriggs Weisheit"
@@ -1044,7 +1044,7 @@ Inst4Quest6name3_HORDE = Inst4Quest5name3
 
 --Quest 7 Horde
 Inst4Quest7_HORDE = "7. Oculus-Illusionen"
-Inst4Quest7_HORDE_Aim = "Reist zur Blackrockspitze und sammelt 20 schwarze Drachenbrutaugen. Kehrt zu Myranda der Vettel zurück, sobald Ihr die Aufgabe erfüllt habt."
+Inst4Quest7_HORDE_Aim = "Reist zur Schwarzfelsspitze und sammelt 20 schwarze Drachenbrutaugen. Kehrt zu Myranda der Vettel zurück, sobald Ihr die Aufgabe erfüllt habt."
 Inst4Quest7_HORDE_Location = "Myranda die Vettel (Westliche Pestländer - Sorrow Hill; "..YELLOW.."50.8, 77.8"..WHITE..")"
 Inst4Quest7_HORDE_Note = "Onyxia Einstimmungsqestreihe.  Die schwarzen Drachenblutaugen werden von den Drachkingegner fallen gelassen."
 Inst4Quest7_HORDE_Prequest = "Was der Wind erzählt -> Nachricht von Rexxar"
@@ -1053,7 +1053,7 @@ Inst4Quest7_HORDE_Folgequest = "Aschenschwinge"
 
 --Quest 8 Horde
 Inst4Quest8_HORDE = "8. Blut des schwarzen Großdrachen-Helden"
-Inst4Quest8_HORDE_Aim = "Begebt Euch zur Blackrockspitze und tötet General Drakkisath. Sammelt sein Blut und bringt es zu Rexxar."
+Inst4Quest8_HORDE_Aim = "Begebt Euch zur Schwarzfelsspitze und tötet General Drakkisath. Sammelt sein Blut und bringt es zu Rexxar."
 Inst4Quest8_HORDE_Location = "Rexxar (Steht am Durchgang zwischen Das verbrannte Tal und Desolace)"
 Inst4Quest8_HORDE_Note = "Letzte Quest der Onyxia Einstimmungsqestreihe.  Rexxar erscheint an der Grenze vom Steinkrallengebirge und wandert rüber nach Desolace Richtung Feralas.  Der beste Weg ihn zu finden, starte in Feralas bei "..YELLOW.."48.2, 24.8"..WHITE.." und wandere in Richtung Norden um ihm abzufangen.   Du findest General Drakkisath bei "..YELLOW.."[8]"..WHITE.."."
 Inst4Quest8_HORDE_Prequest = "Die Prüfung der Schädel, Axtroz -> Aufstieg..."
@@ -1407,8 +1407,8 @@ Inst7Quest2name3 = "Zauberstab des Wutfeuers"
 
 --Quest 3 Alliance
 Inst7Quest3 = "3. Im Namen des Lichts"
-Inst7Quest3_Aim = "Tötet Hochinquisitor Whitemane, den Scharlachroten Kommandant Mograine, Herod, den Scharlachroten Helden sowie den Hundemeister Loksey und meldet Euch dann wieder bei Raleigh dem Andächtigen in Southshore."
-Inst7Quest3_Location = "Raleigh der Andächtige ( Vorgebirge von Hillsbrad - Southshore; "..YELLOW.."51,58"..WHITE..")"
+Inst7Quest3_Aim = "Tötet Hochinquisitor Whitemane, den Scharlachroten Kommandant Mograine, Herod, den Scharlachroten Helden sowie den Hundemeister Loksey und meldet Euch dann wieder bei Raleigh dem Andächtigen in Südshore."
+Inst7Quest3_Location = "Raleigh der Andächtige ( Vorgebirge von Hillsbrad - Südshore; "..YELLOW.."51,58"..WHITE..")"
 Inst7Quest3_Note = "Die Questreihe startet bei Bruder Crowley in Stormwind - Kathedrale des Lichts ("..YELLOW.."52.3, 43.1"..WHITE..").\nDu findest Hochinquisitorr Whitemane und Scharlachroter Kommandant Mograine bei "..YELLOW.."SM: Kathedrale [2]"..WHITE..", Herod bei "..YELLOW.."SM: Waffenkammer [1]"..WHITE.." und Hundemeister Loksey bei "..YELLOW.."SM: Bibliothek [1]"..WHITE.."."
 Inst7Quest3_Prequest = "Bruder Anton -> Auf dem Scharlachroten Pfad"
 Inst7Quest3_Folgequest = "Nein"
@@ -1662,9 +1662,9 @@ Inst11Quest6name4 = "Froststachel"
 
 --Quest 7 Alliance
 Inst11Quest7 = "7. Das Familienvermögen der Barovs"
-Inst11Quest7_Aim = "Begebt Euch zur Scholomance und holt das Familienvermögen der Barovs zurück. Dieses Vermögen besteht aus vier Besitzurkunden: Es sind die Besitzurkunde für Caer Darrow, die Besitzurkunde für Brill, die Besitzurkunde für Tarrens Mühle und die Besitzurkunde für Southshore. Kehrt zu Weldon Barov zurück, sobald die Aufgabe erledigt ist."
+Inst11Quest7_Aim = "Begebt Euch zur Scholomance und holt das Familienvermögen der Barovs zurück. Dieses Vermögen besteht aus vier Besitzurkunden: Es sind die Besitzurkunde für Caer Darrow, die Besitzurkunde für Brill, die Besitzurkunde für Tarrens Mühle und die Besitzurkunde für Südshore. Kehrt zu Weldon Barov zurück, sobald die Aufgabe erledigt ist."
 Inst11Quest7_Location = "Weldon Barov (Westliche Pestländer - Chillwind Lager; "..YELLOW.."43,83"..WHITE..")"
-Inst11Quest7_Note = "Du findest die Besitzurkunde für Caer Darrow bei "..YELLOW.."[12]"..WHITE..", Besitzurkunde für Brill bei "..YELLOW.."[7]"..WHITE..", Besitzurkunde für Tarrens Mühle bei "..YELLOW.."[4]"..WHITE.." und Besitzurkunde für Southshore bei "..YELLOW.."[1]"..WHITE..".\nDie Belohnung erhälst Du in der Folgeuest."
+Inst11Quest7_Note = "Du findest die Besitzurkunde für Caer Darrow bei "..YELLOW.."[12]"..WHITE..", Besitzurkunde für Brill bei "..YELLOW.."[7]"..WHITE..", Besitzurkunde für Tarrens Mühle bei "..YELLOW.."[4]"..WHITE.." und Besitzurkunde für Südshore bei "..YELLOW.."[1]"..WHITE..".\nDie Belohnung erhälst Du in der Folgeuest."
 Inst11Quest7_Prequest = "Nein"
 Inst11Quest7_Folgequest = "Der letzte Barov"
 --
@@ -1693,7 +1693,7 @@ Inst11Quest9_Folgequest = "Schreckensross von Xoroth ("..YELLOW.."Düsterbruch W
 --Quest 10 Alliance
 Inst11Quest10 = "10. Das linke Stück von Lord Valthalaks Amulett"
 Inst11Quest10_Aim = "Benutzt das Räuchergefäß der Beschwörung, um den Geist von Kormok zu beschwören und zu vernichten. Kehrt dann mit dem linken Stück von Lord Valthalaks Amulett und dem Räuchergefäß der Beschwörung zu Bodley im Schwarzfels zurück."
-Inst11Quest10_Location = "Bodley (Blackrockberg; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
+Inst11Quest10_Location = "Bodley (Schwarzfels; "..YELLOW.."[D] auf der Eingangskarte"..WHITE..")"
 Inst11Quest10_Note = "Ein extradimensionalen  Geisterdetektor wird benötigt um Bodley zu sehen. Du bekommst diese aus der Quest'Suche nach Anthion'.\n\nKormok ist beschwöbar bei "..YELLOW.."[7]"..WHITE.."."
 Inst11Quest10_Prequest = "Komponenten von großer Wichtigkeit"
 Inst11Quest10_Folgequest = "Ich sehe die Insel Alcaz in Eurer Zukunft..."
@@ -1705,7 +1705,7 @@ Inst11Quest11_Aim = "Benutzt das Räuchergefäß der Beschwörung, um den Geist 
 Inst11Quest11_Location = Inst11Quest10_Location
 Inst11Quest11_Note = Inst11Quest10_Note
 Inst11Quest11_Prequest = "Mehr Komponenten von großer Wichtigkeit"
-Inst11Quest11_Folgequest = "Letzte Vorbereitungen ("..YELLOW.."Obere Blackrockspitze"..WHITE..")"
+Inst11Quest11_Folgequest = "Letzte Vorbereitungen ("..YELLOW.."Obere Schwarzfelsspitze"..WHITE..")"
 -- No Rewards for this quest
 
 --Quest 12 Alliance
@@ -1781,7 +1781,7 @@ Inst11Quest6name4_HORDE = "Froststachel"
 
 --Quest 7 Horde
 Inst11Quest7_HORDE = Inst11Quest7
-Inst11Quest7_HORDE_Aim = "Begebt Euch zur Scholomance und holt das Familienvermögen der Barovs zurück. Dieses Vermögen besteht aus vier Besitzurkunden: Es sind die Besitzurkunde für Caer Darrow, die Besitzurkunde für Brill, die Besitzurkunde für Tarrens Mühle und die Besitzurkunde für Southshore. Kehrt zu Alexi Barov zurück, sobald die Aufgabe erledigt ist."
+Inst11Quest7_HORDE_Aim = "Begebt Euch zur Scholomance und holt das Familienvermögen der Barovs zurück. Dieses Vermögen besteht aus vier Besitzurkunden: Es sind die Besitzurkunde für Caer Darrow, die Besitzurkunde für Brill, die Besitzurkunde für Tarrens Mühle und die Besitzurkunde für Südshore. Kehrt zu Alexi Barov zurück, sobald die Aufgabe erledigt ist."
 Inst11Quest7_HORDE_Location = "Alexi Barov (Tirisfal- Das Bollwerk; "..YELLOW.."80,73"..WHITE..")"
 Inst11Quest7_HORDE_Note = Inst11Quest7_Note
 Inst11Quest7_HORDE_Prequest = "Nein"
@@ -3376,8 +3376,8 @@ Inst19Quest5name2_HORDE = Inst19Quest5name2
 --------------- INST20 - Dire Maul West ---------------
 
 Inst20Caption = "Düsterbruch (West)"
-Inst20QAA = "17 Quests"
-Inst20QAH = "17 Quests"
+Inst20QAA = "16 Quests"
+Inst20QAH = "16 Quests"
 
 --Quest 1 Alliance
 Inst20Quest1 = "1. Elfische Legenden"
@@ -4423,70 +4423,79 @@ Inst26Quest7name1_HORDE = Inst26Quest7name1
 
 --------------- INST27 - Molten Core ---------------
 
-Inst27Caption = "Molten Core"
-Inst27QAA = "6 Quests"
-Inst27QAH = "6 Quests"
+Inst27Caption = "Geschmolzener Kern"
+Inst27QAA = "7 Quests"
+Inst27QAH = "7 Quests"
 
 --Quest 1 Alliance
-Inst27Quest1 = "1. The Molten Core"
-Inst27Quest1_Aim = "Kill 1 Fire Lord, 1 Molten Giant, 1 Ancient Core Hound and 1 Lava Surger, then return to Duke Hydraxis in Azshara."
-Inst27Quest1_Location = "Duke Hydraxis (Azshara; "..YELLOW.."79,73"..WHITE..")"
-Inst27Quest1_Note = "These are non-bosses inside Molten Core.\n\nAfter patch 3.0.8, you can no longer start this questline. If you already have the quest though, you can complete it."
-Inst27Quest1_Prequest = "Eye of the Emberseer ("..YELLOW.."Upper Blackrock Spire"..WHITE..")"
-Inst27Quest1_Folgequest = "Agent of Hydraxis"
+Inst27Quest1 = "1. Der geschmolzene Kern"
+Inst27Quest1_Aim = "Tötet 1 Feuerlord, 1 geschmolzenen Riesen, 1 uralten Kernhund sowie 1 Lavawoger und kehrt dann zu Fürst Hydraxis in Azshara zurück."
+Inst27Quest1_Location = "Fürst Hydraxis (Azshara; "..YELLOW.."79,73"..WHITE..")"
+Inst27Quest1_Note = "Dies sind Nicht-Bosse, die sich im Inneren des geschmolzenen Kerns befinden."
+Inst27Quest1_Prequest = "Auge des Glutsehers ("..YELLOW.."Obere Schwarzfelsspitze"..WHITE..")"
+Inst27Quest1_Folgequest = "Agent von Hydraxis"
 -- No Rewards for this quest
 
 --Quest 2 Alliance
-Inst27Quest2 = "2. Hands of the Enemy"
-Inst27Quest2_Aim = "Bring the Hands of Lucifron, Sulfuron, Gehennas and Shazzrah to Duke Hydraxis in Azshara."
-Inst27Quest2_Location = "Duke Hydraxis (Azshara; "..YELLOW.."79,73"..WHITE..")"
-Inst27Quest2_Note = "Lucifron ist bei "..YELLOW.."[1]"..WHITE..", Sulfuron ist bei "..YELLOW.."[8]"..WHITE..", Gehennas ist bei "..YELLOW.."[3]"..WHITE.." and Shazzrah ist bei "..YELLOW.."[5]"..WHITE..".\nRewards listed are for the followup, 'A Hero's Reward'. After patch 3.0.8, you can no longer start this questline. If you already have the quest though, you can complete it."
-Inst27Quest2_Prequest = "Eye of the Emberseer -> Agent of Hydraxis"
-Inst27Quest2_Folgequest = "A Hero's Reward"
+Inst27Quest2 = "2. Hände des Feindes"
+Inst27Quest2_Aim = "Bringt die Hände von Lucifron, Sulfuron, Gehennas und Shazzrah zu Fürst Hydraxis in Azshara."
+Inst27Quest2_Location = Inst27Quest1_Location
+Inst27Quest2_Note = "Lucifron ist bei "..YELLOW.."[1]"..WHITE..", Sulfuron ist bei "..YELLOW.."[8]"..WHITE..", Gehennas ist bei "..YELLOW.."[3]"..WHITE.." und Shazzrah ist bei "..YELLOW.."[5]"..WHITE..".\nDie Belohnungen bekommst Du mit der Folgequest."
+Inst27Quest2_Prequest = "Auge des Glutsehers -> Agent von Hydraxis"
+Inst27Quest2_Folgequest = "Die Belohnung eines Helden"
 --
-Inst27Quest2name1 = "Ocean's Breeze"
-Inst27Quest2name2 = "Tidal Loop"
+Inst27Quest2name1 = "Meeresbrise"
+Inst27Quest2name2 = "Gezeitenschleife"
 
 --Quest 3 Alliance
-Inst27Quest3 = "3. Thunderaan the Windseeker"
-Inst27Quest3_Aim = "To free Thunderaan the Windseeker from his prison, you must present the right and left halves of the Bindings of the Windseeker, 10 bars of Elementium, and the Essence of the Firelord to Highlord Demitrian in Silithus."
-Inst27Quest3_Location = "Highlord Demitrian (Silithus; "..YELLOW.."22,9"..WHITE..")"
-Inst27Quest3_Note = "Part of the Thunderfury, Blessed Blade of the Windseeker questline. It starts after obtaining either the left or right Bindings of the Windseeker from Garr at "..YELLOW.."[4]"..WHITE.." or Baron Geddon at "..YELLOW.."[6]"..WHITE..". Then talk to Highlord Demitrian to start the questline. Essence of the Firelord drops from Ragnaros at "..YELLOW.."[10]"..WHITE..". After turning this part in, Prince Thunderaan is summoned and you must kill him. He's a 40-man raid boss."
-Inst27Quest3_Prequest = "Examine the Vessel"
-Inst27Quest3_Folgequest = "Rise, Thunderfury!"
+Inst27Quest3 = "3. Donneraan der Windsucher"
+Inst27Quest3_Aim = "Um Donneraan den Windsucher aus seiner Gefangenschaft zu befreien, müsst Ihr Hochlord Demitrian die rechten und linken Hälften der Fesseln des Windsuchers, 10 Elementiumbarren und die Essenz des Feuerfürsten bringen."
+Inst27Quest3_Location = "Hochlord Demitrian (Silithus; "..YELLOW.."22,9"..WHITE..")"
+Inst27Quest3_Note = "Teil von der Donnernzorn, Gesegnete Klinge vonder Windseeker Questlreihe. Es beginnt, nachdem entweder die linke oder rechte Bindung des Windseekers von Garr bei "..YELLOW.."[4]"..WHITE.." oder Baron Geddon bei "..YELLOW.."[6]"..WHITE..". Dann spreche mit Hochlord Demitrian um die Questreihe zu beginnen Die Essence vom Feuerlord droppt von Ragnaros bei "..YELLOW.."[10]"..WHITE..". Nachdem du diesen Teil abgegeben hast, wird Prinze Thunderaan erscheinen und Du musst ihn töten."
+Inst27Quest3_Prequest = "Untersuchung des Gefäßes"
+Inst27Quest3_Folgequest = "Donnerzorn erwache!"
 -- No Rewards for this quest
 
 --Quest 4 Alliance
-Inst27Quest4 = "4. A Binding Contract"
-Inst27Quest4_Aim = "Turn the Thorium Brotherhood Contract in to Lokhtos Darkbargainer if you would like to receive the plans for Sulfuron."
-Inst27Quest4_Location = "Lokhtos Darkbargainer (Blackrock Depths; "..YELLOW.."[15]"..WHITE..")"
-Inst27Quest4_Note = "You need a Sulfuron Ingot to get the contract from Lokhtos. They drop from Golemagg the Incinerator in Molten Core at "..YELLOW.."[7]"..WHITE.."."
+Inst27Quest4 = "4. Ein verbindlicher Vertrag"
+Inst27Quest4_Aim = "Bringt den Vertrag der Thoriumbruderschaft zu Lokhtos Darkbargainer, wenn Ihr die Pläne für das Sulfuron erhalten möchtet."
+Inst27Quest4_Location = "Lokhtos Darkbargainer (Schwarzfelstiefen; "..YELLOW.."[15]"..WHITE..")"
+Inst27Quest4_Note = "Du brauchst einen Sulfuronblock, um den Vertrag von Lokhtos zu bekommen. Diese droppt von Golemagg der Verbrenner im Geschmolzenen Kern bei "..YELLOW.."[7]"..WHITE.."."
 Inst27Quest4_Prequest = "Nein"
 Inst27Quest4_Folgequest = "Nein"
 --
-Inst27Quest4name1 = "Plans: Sulfuron Hammer"
+Inst27Quest4name1 = "Pläne: Sulfuronhammer"
 
 --Quest 5 Alliance
-Inst27Quest5 = "5. The Ancient Leaf"
-Inst27Quest5_Aim = "Find the owner of the Ancient Petrified Leaf."
-Inst27Quest5_Location = "Ancient Petrified Leaf (drops from Cache of the Firelord; "..YELLOW.."[9]"..WHITE..")"
-Inst27Quest5_Note = "Turns in to Vartrus the Ancient at (Felwood - Irontree Woods; "..YELLOW.."49,24"..WHITE..")."
+Inst27Quest5 = "5. Das uralte Blatt (Jägerquest)"
+Inst27Quest5_Aim = "Findet den Besitzer des uralten, versteinerten Blatts. Viel Glück, <Name>; die Welt ist groß."
+Inst27Quest5_Location = "Uraltes versteinertes Blatt (droppt vom Behälter des Feuerfürsten; "..YELLOW.."[9]"..WHITE..")"
+Inst27Quest5_Note = "Kehrt zu Vartrus der Uralte zurück bei (Teufelswald - Eisenwald; "..YELLOW.."49,24"..WHITE..")."
 Inst27Quest5_Prequest = "Nein"
-Inst27Quest5_Folgequest = "Ancient Sinew Wrapped Lamina ("..YELLOW.."Azuregos"..WHITE..")"
+Inst27Quest5_Folgequest = "Die passende Sehne -> Uraltes in Sehnen eingewickeltes Laminablatt ("..YELLOW.."Azuregos"..WHITE..")"
 -- No Rewards for this quest
 
 --Quest 6 Alliance
-Inst27Quest6 = "6. Scrying Goggles? No Problem!"
-Inst27Quest6_Aim = "Find Narain's Scrying Goggles and return them to Narain Soothfancy in Tanaris."
-Inst27Quest6_Location = "Inconspicuous Crate (Silverpine Forest - Greymane Wall; "..YELLOW.."46.2, 86.6"..WHITE..")"
-Inst27Quest6_Note = "As of Patch 3.0.2, the Goggles will drop off any mob in Molten Core. The quest turns in to Narain Soothfancy (Tanaris; "..YELLOW.."65.3, 18.6"..WHITE.."), which is also where the pre-quest is obtained."
-Inst27Quest6_Prequest = "Stewvul, Ex-B.F.F."
+Inst27Quest6 = "6. Wahrsagerbrille? Kein Problem!"
+Inst27Quest6_Aim = "Findet Narains Wahrsagerbrille und bringt sie Narain Pfauentraum in Tanaris."
+Inst27Quest6_Location = "Unauffällige Kiste (Silberwald - Greymane-Wall; "..YELLOW.."46.2, 86.6"..WHITE..")"
+Inst27Quest6_Note = "Die Quest führt Dich zu Narain Soothfancy in (Tanaris - Steamwheedle "..YELLOW.."65.3, 18.6"..WHITE.."), wo du auch die Vorquest erhältst."
+Inst27Quest6_Prequest = "Stewvul, ehemals allerbester Freund"
 Inst27Quest6_Folgequest = "Nein"
 --
-Inst27Quest6name1 = "Major Rejuvenation Potion"
+Inst27Quest6name1 = "Erheblicher Verjüngungstrank"
+
+--Quest 7 Alliance
+Inst27Quest7 = "7. Abstimmung mit dem Kern"
+Inst27Quest7_Aim = "Begebt Euch zum Portal in den Schwarzfelstiefen, das in den geschmolzenen Kern führt, und findet ein Kernfragment. Kehrt mit dem Fragment zu Lothos Riftwaker am Blackrock zurück."
+Inst27Quest7_Location = "Lothos Riftwaker (Schwarzfels; "..GREEN.."[2'] auf der Eingangskarte"..WHITE..")"
+Inst27Quest7_Note = "??"
+Inst27Quest7_Prequest = "Nein"
+Inst27Quest7_Folgequest = "Nein"
+-- No Rewards for this quest
 
 
---Quest 1 Horde  (same as Quest 1 Alliance)
+--Quest 1 Horde
 Inst27Quest1_HORDE = Inst27Quest1
 Inst27Quest1_HORDE_Aim = Inst27Quest1_Aim
 Inst27Quest1_HORDE_Location = Inst27Quest1_Location
@@ -4495,7 +4504,7 @@ Inst27Quest1_HORDE_Prequest = Inst27Quest1_Prequest
 Inst27Quest1_HORDE_Folgequest = Inst27Quest1_Folgequest
 -- No Rewards for this quest
 
---Quest 2 Horde  (same as Quest 2 Alliance)
+--Quest 2 Horde
 Inst27Quest2_HORDE = Inst27Quest2
 Inst27Quest2_HORDE_Aim = Inst27Quest2_Aim
 Inst27Quest2_HORDE_Location = Inst27Quest2_Location
@@ -4503,10 +4512,10 @@ Inst27Quest2_HORDE_Note = Inst27Quest2_Note
 Inst27Quest2_HORDE_Prequest = Inst27Quest2_Prequest
 Inst27Quest2_HORDE_Folgequest = Inst27Quest2_Folgequest
 --
-Inst27Quest2name1_HORDE = Inst27Quest2name1
+Inst27Quest2name1_HORDE = "Meeresbrise"
 Inst27Quest2name2_HORDE = Inst27Quest2name2
 
---Quest 3 Horde  (same as Quest 3 Alliance)
+--Quest 3 Horde
 Inst27Quest3_HORDE = Inst27Quest3
 Inst27Quest3_HORDE_Aim = Inst27Quest3_Aim
 Inst27Quest3_HORDE_Location = Inst27Quest3_Location
@@ -4515,34 +4524,43 @@ Inst27Quest3_HORDE_Prequest = Inst27Quest3_Prequest
 Inst27Quest3_HORDE_Folgequest = Inst27Quest3_Folgequest
 -- No Rewards for this quest
 
---Quest 4 Horde  (same as Quest 4 Alliance)
+--Quest 4 Horde
 Inst27Quest4_HORDE = Inst27Quest4
 Inst27Quest4_HORDE_Aim = Inst27Quest4_Aim
 Inst27Quest4_HORDE_Location = Inst27Quest4_Location
 Inst27Quest4_HORDE_Note = Inst27Quest4_Note
-Inst27Quest4_HORDE_Prequest = Inst27Quest4_Prequest
-Inst27Quest4_HORDE_Folgequest = Inst27Quest4_Folgequest
+Inst27Quest4_HORDE_Prequest = "Nein"
+Inst27Quest4_HORDE_Folgequest = "Nein"
 --
 Inst27Quest4name1_HORDE = Inst27Quest4name1
 
---Quest 5 Horde  (same as Quest 5 Alliance)
+--Quest 5 Horde
 Inst27Quest5_HORDE = Inst27Quest5
 Inst27Quest5_HORDE_Aim = Inst27Quest5_Aim
 Inst27Quest5_HORDE_Location = Inst27Quest5_Location
 Inst27Quest5_HORDE_Note = Inst27Quest5_Note
-Inst27Quest5_HORDE_Prequest = Inst27Quest5_Prequest
+Inst27Quest5_HORDE_Prequest = "Nein"
 Inst27Quest5_HORDE_Folgequest = Inst27Quest5_Folgequest
 -- No Rewards for this quest
 
---Quest 6 Horde  (same as Quest 6 Alliance)
+--Quest 6 Horde
 Inst27Quest6_HORDE = Inst27Quest6
 Inst27Quest6_HORDE_Aim = Inst27Quest6_Aim
 Inst27Quest6_HORDE_Location = Inst27Quest6_Location
 Inst27Quest6_HORDE_Note = Inst27Quest6_Note
-Inst27Quest6_HORDE_Prequest = Inst27Quest6_Prequest
-Inst27Quest6_HORDE_Folgequest = Inst27Quest6_Folgequest
+Inst27Quest6_HORDE_Prequest = "Nein"
+Inst27Quest6_HORDE_Folgequest = "Die gute und die schlechte Nachricht"
 --
 Inst27Quest6name1_HORDE = Inst27Quest6name1
+
+--Quest 7 Horde
+Inst27Quest7_HORDE = Inst27Quest7
+Inst27Quest7_HORDE_Aim = Inst27Quest7_Aim
+Inst27Quest7_HORDE_Location = Inst27Quest7_Location
+Inst27Quest7_HORDE_Note = Inst27Quest7_Note
+Inst27Quest7_HORDE_Prequest = "Nein"
+Inst27Quest7_HORDE_Folgequest = "Nein"
+-- No Rewards for this quest
 
 
 
@@ -4875,15 +4893,15 @@ Inst32QAH = "Keine Quests"
 
 
 
---------------- INST33 - Alterac Valley ---------------
+--------------- INST33 - Alteractal ---------------
 
-Inst33Caption = "Alterac Valley"
+Inst33Caption = "Alteractal"
 Inst33QAA = "17 Quests"
 Inst33QAH = "17 Quests"
 
 --Quest 1 Alliance
 Inst33Quest1 = "1. The Sovereign Imperative"
-Inst33Quest1_Aim = "Travel to Alterac Valley in the Hillsbrad Foothills. Outside of the entrance tunnel, find and speak with Lieutenant Haggerdin."
+Inst33Quest1_Aim = "Travel to Alteractal in the Hillsbrad Foothills. Outside of the entrance tunnel, find and speak with Lieutenant Haggerdin."
 Inst33Quest1_Location = "Lieutenant Rotimer (Ironforge - The Commons; "..YELLOW.."30,62"..WHITE..")"
 Inst33Quest1_Note = "Lieutenant Haggerdin ist bei (Alterac Mountains; "..YELLOW.."39,81"..WHITE..")."
 Inst33Quest1_Prequest = "Nein"
@@ -4892,9 +4910,9 @@ Inst33Quest1_Folgequest = "Proving Grounds"
 
 --Quest 2 Alliance
 Inst33Quest2 = "2. Proving Grounds"
-Inst33Quest2_Aim = "Travel to the Icewing Caverns located southwest of Dun Baldar in Alterac Valley and recover the Stormpike Banner. Return the Stormpike Banner to Lieutenant Haggerdin in the Alterac Mountains."
+Inst33Quest2_Aim = "Travel to the Icewing Caverns located Südwest of Dun Baldar in Alteractal and recover the Stormpike Banner. Return the Stormpike Banner to Lieutenant Haggerdin in the Alterac Mountains."
 Inst33Quest2_Location = "Lieutenant Haggerdin (Alterac Mountains; "..YELLOW.."39,81"..WHITE..")"
-Inst33Quest2_Note = "The Stormpike Banner is in the Icewing Cavern at "..YELLOW.."[11]"..WHITE.." on the Alterac Valley - Nord map. Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
+Inst33Quest2_Note = "The Stormpike Banner is in the Icewing Cavern at "..YELLOW.."[11]"..WHITE.." on the Alteractal - Nord map. Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
 Inst33Quest2_Prequest = "The Sovereign Imperative"
 Inst33Quest2_Folgequest = "Nein"
 --
@@ -4903,9 +4921,9 @@ Inst33Quest2name2 = "The Frostwolf Artichoke"
 
 --Quest 3 Alliance
 Inst33Quest3 = "3. The Battle of Alterac"
-Inst33Quest3_Aim = "Enter Alterac Valley, defeat the Horde general Drek'thar, and then return to Prospector Stonehewer in the Alterac Mountains."
-Inst33Quest3_Location = "Prospector Stonehewer (Alterac Mountains; "..YELLOW.."41,80"..WHITE..") and\n(Alterac Valley - Nord; "..YELLOW.."[B]"..WHITE..")"
-Inst33Quest3_Note = "Drek'thar ist bei (Alterac Valley - South; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
+Inst33Quest3_Aim = "Enter Alteractal, defeat the Horde general Drek'thar, and then return to Prospector Stonehewer in the Alterac Mountains."
+Inst33Quest3_Location = "Prospector Stonehewer (Alterac Mountains; "..YELLOW.."41,80"..WHITE..") and\n(Alteractal - Nord; "..YELLOW.."[B]"..WHITE..")"
+Inst33Quest3_Note = "Drek'thar ist bei (Alteractal - Süd; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
 Inst33Quest3_Prequest = "Nein"
 Inst33Quest3_Folgequest = "Hero of the Stormpike"
 --
@@ -4917,8 +4935,8 @@ Inst33Quest3name4 = "Cold Forged Hammer"
 --Quest 4 Alliance
 Inst33Quest4 = "4. The Quartermaster"
 Inst33Quest4_Aim = "Speak with the Stormpike Quartermaster."
-Inst33Quest4_Location = "Mountaineer Boombellow (Alterac Valley - Nord; "..YELLOW.."Near [3] Before Bridge"..WHITE..")"
-Inst33Quest4_Note = "The Stormpike Quartermaster ist bei (Alterac Valley - Nord; "..YELLOW.."[7]"..WHITE..") and provides more quests."
+Inst33Quest4_Location = "Mountaineer Boombellow (Alteractal - Nord; "..YELLOW.."Near [3] Before Bridge"..WHITE..")"
+Inst33Quest4_Note = "The Stormpike Quartermaster ist bei (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..") and provides more quests."
 Inst33Quest4_Prequest = "Nein"
 Inst33Quest4_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -4926,8 +4944,8 @@ Inst33Quest4_Folgequest = "Nein"
 --Quest 5 Alliance
 Inst33Quest5 = "5. Coldtooth Supplies"
 Inst33Quest5_Aim = "Bring 10 Coldtooth Supplies to the Alliance Quartermaster in Dun Baldar."
-Inst33Quest5_Location = "Stormpike Quartermaster (Alterac Valley - Nord; "..YELLOW.."[7]"..WHITE..")"
-Inst33Quest5_Note = "The supplies can be found in the Coldtooth Mine at (Alterac Valley - South; "..YELLOW.."[6]"..WHITE..")."
+Inst33Quest5_Location = "Stormpike Quartermaster (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..")"
+Inst33Quest5_Note = "The supplies can be found in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..")."
 Inst33Quest5_Prequest = "Nein"
 Inst33Quest5_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -4935,8 +4953,8 @@ Inst33Quest5_Folgequest = "Nein"
 --Quest 6 Alliance
 Inst33Quest6 = "6. Irondeep Supplies"
 Inst33Quest6_Aim = "Bring 10 Irondeep Supplies to the Alliance Quartermaster in Dun Baldar."
-Inst33Quest6_Location = "Stormpike Quartermaster (Alterac Valley - Nord; "..YELLOW.."[7]"..WHITE..")"
-Inst33Quest6_Note = "The supplies can be found in the Irondeep Mine at (Alterac Valley - Nord; "..YELLOW.."[1]"..WHITE..")."
+Inst33Quest6_Location = "Stormpike Quartermaster (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..")"
+Inst33Quest6_Note = "The supplies can be found in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..")."
 Inst33Quest6_Prequest = "Nein"
 Inst33Quest6_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -4944,7 +4962,7 @@ Inst33Quest6_Folgequest = "Nein"
 --Quest 7 Alliance
 Inst33Quest7 = "7. Armor Scraps"
 Inst33Quest7_Aim = "Bring 20 Armor Scraps to Murgot Deepforge in Dun Baldar."
-Inst33Quest7_Location = "Murgot Deepforge (Alterac Valley - Nord; "..YELLOW.."[4]"..WHITE..")"
+Inst33Quest7_Location = "Murgot Deepforge (Alteractal - Nord; "..YELLOW.."[4]"..WHITE..")"
 Inst33Quest7_Note = "Loot the corpse of enemy players for scraps. The followup is just the same, quest, but repeatable."
 Inst33Quest7_Prequest = "Nein"
 Inst33Quest7_Folgequest = "More Armor Scraps"
@@ -4954,7 +4972,7 @@ Inst33Quest7_Folgequest = "More Armor Scraps"
 Inst33Quest8 = "8. Capture a Mine"
 Inst33Quest8_Aim = "Capture a mine that the Stormpike does not control, then return to Sergeant Durgen Stormpike in the Alterac Mountains."
 Inst33Quest8_Location = "Sergeant Durgen Stormpike (Alterac Mountains; "..YELLOW.."37,77"..WHITE..")"
-Inst33Quest8_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alterac Valley - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alterac Valley - South; "..YELLOW.."[6]"..WHITE..") while the Horde control it."
+Inst33Quest8_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") while the Horde control it."
 Inst33Quest8_Prequest = "Nein"
 Inst33Quest8_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -4969,7 +4987,7 @@ Inst33Quest9_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 10 Alliance
-Inst33Quest10 = "10. Alterac Valley Friedhofs"
+Inst33Quest10 = "10. Alteractal Friedhofs"
 Inst33Quest10_Aim = "Assault a Friedhof, then return to Sergeant Durgen Stormpike in the Alterac Mountains."
 Inst33Quest10_Location = "Sergeant Durgen Stormpike (Alterac Mountains; "..YELLOW.."37,77"..WHITE..")"
 Inst33Quest10_Note = "Reportedly you do not need to do anything but be near a Friedhof when the Alliance assaults it. It does not need to be captured, just assaulted."
@@ -4979,8 +4997,8 @@ Inst33Quest10_Folgequest = "Nein"
 
 --Quest 11 Alliance
 Inst33Quest11 = "11. Empty Stables"
-Inst33Quest11_Aim = "Locate an Alterac Ram in Alterac Valley. Use the Stormpike Training Collar when you are near the Alterac Ram to 'tame' the beast. Once tamed, the Alterac Ram will follow you back to the Stable Master. Speak with the Stable Master to earn credit for the capture."
-Inst33Quest11_Location = "Stormpike Stable Master (Alterac Valley - Nord; "..YELLOW.."[6]"..WHITE..")"
+Inst33Quest11_Aim = "Locate an Alterac Ram in Alteractal. Use the Stormpike Training Collar when you are near the Alterac Ram to 'tame' the beast. Once tamed, the Alterac Ram will follow you back to the Stable Master. Speak with the Stable Master to earn credit for the capture."
+Inst33Quest11_Location = "Stormpike Stable Master (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
 Inst33Quest11_Note = "You can find a Ram outside the base. The taming process is just like that of a Hunter taming a pet. The quest is repeatable up to a total of 25 times per battleground by the same player or players. After 25 Rams have been tamed, the Stormpike Cavalry will arrive to assist in the battle."
 Inst33Quest11_Prequest = "Nein"
 Inst33Quest11_Folgequest = "Nein"
@@ -4989,8 +5007,8 @@ Inst33Quest11_Folgequest = "Nein"
 --Quest 12 Alliance
 Inst33Quest12 = "12. Ram Riding Harnesses"
 Inst33Quest12_Aim = "You must strike at our enemy's base, slaying the frostwolves they use as mounts and taking their hides. Return their hides to me so that harnesses may be made for the cavalry. Go!"
-Inst33Quest12_Location = "Stormpike Ram Rider Commander (Alterac Valley - Nord; "..YELLOW.."[6]"..WHITE..")"
-Inst33Quest12_Note = "Frostwolves can be found in the southern area of Alterac Valley."
+Inst33Quest12_Location = "Stormpike Ram Rider Commander (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
+Inst33Quest12_Note = "Frostwolves can be found in the Südern area of Alteractal."
 Inst33Quest12_Prequest = "Nein"
 Inst33Quest12_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -4998,8 +5016,8 @@ Inst33Quest12_Folgequest = "Nein"
 --Quest 13 Alliance
 Inst33Quest13 = "13. Crystal Cluster"
 Inst33Quest13_Aim = "There are times which you may be entrenched in battle for days or weeks on end. During those longer periods of activity you may end up collecting large clusters of the Frostwolf's storm crystals.\n\nThe Circle accepts such offerings."
-Inst33Quest13_Location = "Arch Druid Renferal (Alterac Valley - Nord; "..YELLOW.."[2]"..WHITE..")"
-Inst33Quest13_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alterac Valley - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
+Inst33Quest13_Location = "Arch Druid Renferal (Alteractal - Nord; "..YELLOW.."[2]"..WHITE..")"
+Inst33Quest13_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alteractal - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
 Inst33Quest13_Prequest = "Nein"
 Inst33Quest13_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5007,8 +5025,8 @@ Inst33Quest13_Folgequest = "Nein"
 --Quest 14 Alliance
 Inst33Quest14 = "14. Ivus the Forest Lord"
 Inst33Quest14_Aim = "The Frostwolf Clan is protected by a taint of elemental energy. Their shaman meddle in powers that will surely destroy us all if left unchecked.\n\nThe Frostwolf soldiers carry elemental charms called storm crystals. We can use the charms to conjure Ivus. Venture forth and claim the crystals."
-Inst33Quest14_Location = "Arch Druid Renferal (Alterac Valley - Nord; "..YELLOW.."[2]"..WHITE..")"
-Inst33Quest14_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alterac Valley - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
+Inst33Quest14_Location = "Arch Druid Renferal (Alteractal - Nord; "..YELLOW.."[2]"..WHITE..")"
+Inst33Quest14_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alteractal - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
 Inst33Quest14_Prequest = "Nein"
 Inst33Quest14_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5016,7 +5034,7 @@ Inst33Quest14_Folgequest = "Nein"
 --Quest 15 Alliance
 Inst33Quest15 = "15. Call of Air - Slidore's Fleet"
 Inst33Quest15_Aim = "My gryphons are poised to strike at the front lines but cannot make the attack until the lines are thinned out.\n\nThe Frostwolf warriors charged with holding the front lines wear medals of service proudly upon their chests. Rip those medals off their rotten corpses and bring them back here.\n\nOnce the front line is sufficiently thinned out, I will make the call to air! Death from above!"
-Inst33Quest15_Location = "Wing Commander Slidore (Alterac Valley - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest15_Location = "Wing Commander Slidore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest15_Note = "Kill Horde NPCs for the Frostwolf Soldier's Medal."
 Inst33Quest15_Prequest = "Nein"
 Inst33Quest15_Folgequest = "Nein"
@@ -5025,7 +5043,7 @@ Inst33Quest15_Folgequest = "Nein"
 --Quest 16 Alliance
 Inst33Quest16 = "16. Call of Air - Vipore's Fleet"
 Inst33Quest16_Aim = "The elite Frostwolf units that guard the lines must be dealt with, soldier! I'm tasking you with thinning out that herd of savages. Return to me with medals from their lieutenants and legionnaires. When I feel that enough of the riff-raff has been dealt with, I'll deploy the air strike."
-Inst33Quest16_Location = "Wing Commander Vipore (Alterac Valley - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest16_Location = "Wing Commander Vipore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest16_Note = "Kill Horde NPCs for the Frostwolf Lieutenant's Medal."
 Inst33Quest16_Prequest = "Nein"
 Inst33Quest16_Folgequest = "Nein"
@@ -5034,7 +5052,7 @@ Inst33Quest16_Folgequest = "Nein"
 --Quest 17 Alliance
 Inst33Quest17 = "17. Call of Air - Ichman's Fleet"
 Inst33Quest17_Aim = "Return to the battlefield and strike at the heart of the Frostwolf's command. Take down their commanders and guardians. Return to me with as many of their medals as you can stuff in your pack! I promise you, when my gryphons see the bounty and smell the blood of our enemies, they will fly again! Go now!"
-Inst33Quest17_Location = "Wing Commander Ichman (Alterac Valley - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest17_Location = "Wing Commander Ichman (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest17_Note = "Kill Horde NPCs for the Frostwolf Commander's Medals. After turning in 50, Wing Commander Ichman will either send a gryphon to attack the Horde base or give you a beacon to plant in the Snowfall Friedhof. If the beacon is protected long enough a gryphon will come to defend it."
 Inst33Quest17_Prequest = "Nein"
 Inst33Quest17_Folgequest = "Nein"
@@ -5043,7 +5061,7 @@ Inst33Quest17_Folgequest = "Nein"
 
 --Quest 1 Horde
 Inst33Quest1_HORDE = "1. In Defense of Frostwolf"
-Inst33Quest1_HORDE_Aim = "Venture to Alterac Valley, located in the Alterac Mountains. Find and speak with Warmaster Laggrond - who stands outside the tunnel entrance - to begin your career as a soldier of Frostwolf. You will find Alterac Valley Nord of Tarren Mill at the base of the Alterac Mountains."
+Inst33Quest1_HORDE_Aim = "Venture to Alteractal, located in the Alterac Mountains. Find and speak with Warmaster Laggrond - who stands outside the tunnel entrance - to begin your career as a soldier of Frostwolf. You will find Alteractal Nord of Tarren Mill at the base of the Alterac Mountains."
 Inst33Quest1_HORDE_Location = "Frostwolf Ambassador Rokhstrom (Orgrimmar - Valley of Strength "..YELLOW.."50,71"..WHITE..")"
 Inst33Quest1_HORDE_Note = "Warmaster Laggrond ist bei (Alterac Mountains; "..YELLOW.."62,59"..WHITE..")."
 Inst33Quest1_HORDE_Prequest = "Nein"
@@ -5052,9 +5070,9 @@ Inst33Quest1_HORDE_Folgequest = "Proving Grounds"
 
 --Quest 2 Horde
 Inst33Quest2_HORDE = "2. Proving Grounds"
-Inst33Quest2_HORDE_Aim = "Travel to the Wildpaw cavern located southeast of the main base in Alterac Valley and find the Frostwolf Banner. Return the Frostwolf Banner to Warmaster Laggrond."
+Inst33Quest2_HORDE_Aim = "Travel to the Wildpaw cavern located Southeast of the main base in Alteractal and find the Frostwolf Banner. Return the Frostwolf Banner to Warmaster Laggrond."
 Inst33Quest2_HORDE_Location = "Warmaster Laggrond (Alterac Mountains; "..YELLOW.."62,59"..WHITE..")"
-Inst33Quest2_HORDE_Note = "The Frostwolf Banner is in the Wildpaw Cavern at (Alterac Valley - South; "..YELLOW.."[15]"..WHITE.."). Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
+Inst33Quest2_HORDE_Note = "The Frostwolf Banner is in the Wildpaw Cavern at (Alteractal - Süd; "..YELLOW.."[15]"..WHITE.."). Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
 Inst33Quest2_HORDE_Prequest = "In Defense of Frostwolf"
 Inst33Quest2_HORDE_Folgequest = "Nein"
 --
@@ -5063,9 +5081,9 @@ Inst33Quest2name2_HORDE = "Peeling the Onion"
 
 --Quest 3 Horde
 Inst33Quest3_HORDE = "3. The Battle for Alterac"
-Inst33Quest3_HORDE_Aim = "Enter Alterac Valley and defeat the dwarven general, Vanndar Stormpike. Then, return to Voggah Deathgrip in the Alterac Mountains."
+Inst33Quest3_HORDE_Aim = "Enter Alteractal and defeat the dwarven general, Vanndar Stormpike. Then, return to Voggah Deathgrip in the Alterac Mountains."
 Inst33Quest3_HORDE_Location = "Voggah Deathgrip (Alterac Mountains; "..YELLOW.."64,60"..WHITE..")"
-Inst33Quest3_HORDE_Note = "Vanndar Stormpike ist bei (Alterac Valley - Nord; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
+Inst33Quest3_HORDE_Note = "Vanndar Stormpike ist bei (Alteractal - Nord; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
 Inst33Quest3_HORDE_Prequest = "Nein"
 Inst33Quest3_HORDE_Folgequest = "Hero of the Frostwolf"
 --
@@ -5077,7 +5095,7 @@ Inst33Quest3name4_HORDE = "Cold Forged Hammer"
 --Quest 4 Horde
 Inst33Quest4_HORDE = "4. Speak with our Quartermaster"
 Inst33Quest4_HORDE_Aim = "Speak with the Frostwolf Quartermaster."
-Inst33Quest4_HORDE_Location = "Jotek (Alterac Valley - South; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest4_HORDE_Location = "Jotek (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest4_HORDE_Note = "The Frostwolf Quartermaster ist bei "..YELLOW.."[10]"..WHITE.." and provides more quests."
 Inst33Quest4_HORDE_Prequest = "Nein"
 Inst33Quest4_HORDE_Folgequest = "Nein"
@@ -5086,8 +5104,8 @@ Inst33Quest4_HORDE_Folgequest = "Nein"
 --Quest 5 Horde
 Inst33Quest5_HORDE = "5. Coldtooth Supplies"
 Inst33Quest5_HORDE_Aim = "Bring 10 Coldtooth Supplies to the Horde Quatermaster in Frostwolf Keep."
-Inst33Quest5_HORDE_Location = "Frostwolf Quartermaster (Alterac Valley - South; "..YELLOW.."[10]"..WHITE..")"
-Inst33Quest5_HORDE_Note = "The supplies can be found in the Coldtooth Mine at (Alterac Valley - South; "..YELLOW.."[6]"..WHITE..")."
+Inst33Quest5_HORDE_Location = "Frostwolf Quartermaster (Alteractal - Süd; "..YELLOW.."[10]"..WHITE..")"
+Inst33Quest5_HORDE_Note = "The supplies can be found in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..")."
 Inst33Quest5_HORDE_Prequest = "Nein"
 Inst33Quest5_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5095,8 +5113,8 @@ Inst33Quest5_HORDE_Folgequest = "Nein"
 --Quest 6 Horde
 Inst33Quest6_HORDE = "6. Irondeep Supplies"
 Inst33Quest6_HORDE_Aim = "Bring 10 Irondeep Supplies to the Horde Quartermaster in Frostwolf Keep."
-Inst33Quest6_HORDE_Location = "Frostwolf Quartermaster (Alterac Valley - South; "..YELLOW.."[10]"..WHITE..")"
-Inst33Quest6_HORDE_Note = "The supplies can be found in the Irondeep Mine at (Alterac Valley - Nord; "..YELLOW.."[1]"..WHITE..")."
+Inst33Quest6_HORDE_Location = "Frostwolf Quartermaster (Alteractal - Süd; "..YELLOW.."[10]"..WHITE..")"
+Inst33Quest6_HORDE_Note = "The supplies can be found in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..")."
 Inst33Quest6_HORDE_Prequest = "Nein"
 Inst33Quest6_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5104,7 +5122,7 @@ Inst33Quest6_HORDE_Folgequest = "Nein"
 --Quest 7 Horde
 Inst33Quest7_HORDE = "7. Enemy Booty"
 Inst33Quest7_HORDE_Aim = "Bring 20 Armor Scraps to Smith Regzar in Frostwolf Village."
-Inst33Quest7_HORDE_Location = "Smith Regzar (Alterac Valley - South; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest7_HORDE_Location = "Smith Regzar (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest7_HORDE_Note = "Loot the corpse of enemy players for scraps. The followup is just the same, quest, but repeatable."
 Inst33Quest7_HORDE_Prequest = "Nein"
 Inst33Quest7_HORDE_Folgequest = "More Booty!"
@@ -5114,7 +5132,7 @@ Inst33Quest7_HORDE_Folgequest = "More Booty!"
 Inst33Quest8_HORDE = "8. Capture a Mine"
 Inst33Quest8_HORDE_Aim = "Capture a mine, then return to Corporal Teeka Bloodsnarl in the Alterac Mountains."
 Inst33Quest8_HORDE_Location = "Corporal Teeka Bloodsnarl (Alterac Mountains; "..YELLOW.."66,55"..WHITE..")"
-Inst33Quest8_HORDE_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alterac Valley - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alterac Valley - South; "..YELLOW.."[6]"..WHITE..") while the Alliance control it."
+Inst33Quest8_HORDE_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") while the Alliance control it."
 Inst33Quest8_HORDE_Prequest = "Nein"
 Inst33Quest8_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5139,8 +5157,8 @@ Inst33Quest10_HORDE_Folgequest = "Nein"
 
 --Quest 11 Horde
 Inst33Quest11_HORDE = "11. Empty Stables"
-Inst33Quest11_HORDE_Aim = "Locate a Frostwolf in Alterac Valley. Use the Frostwolf Muzzle when you are near the Frostwolf to 'tame' the beast. Once tamed, the Frostwolf will follow you back to the Frostwolf Stable Master. Speak with the Frostwolf Stable Master to earn credit for the capture."
-Inst33Quest11_HORDE_Location = "Frostwolf Stable Master (Alterac Valley - South; "..YELLOW.."[9]"..WHITE..")"
+Inst33Quest11_HORDE_Aim = "Locate a Frostwolf in Alteractal. Use the Frostwolf Muzzle when you are near the Frostwolf to 'tame' the beast. Once tamed, the Frostwolf will follow you back to the Frostwolf Stable Master. Speak with the Frostwolf Stable Master to earn credit for the capture."
+Inst33Quest11_HORDE_Location = "Frostwolf Stable Master (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
 Inst33Quest11_HORDE_Note = "You can find a Frostwolf outside the base. The taming process is just like that of a Hunter taming a pet. The quest is repeatable up to a total of 25 times per battleground by the same player or players. After 25 Rams have been tamed, the Frostwolf Cavalry will arrive to assist in the battle."
 Inst33Quest11_HORDE_Prequest = "Nein"
 Inst33Quest11_HORDE_Folgequest = "Nein"
@@ -5149,8 +5167,8 @@ Inst33Quest11_HORDE_Folgequest = "Nein"
 --Quest 12 Horde
 Inst33Quest12_HORDE = "12. Ram Hide Harnesses"
 Inst33Quest12_HORDE_Aim = "You must strike at the indigenous rams of the region. The very same rams that the Stormpike cavalry uses as mounts!\n\nSlay them and return to me with their hides. Once we have gathered enough hides, we will fashion harnesses for the riders. The Frostwolf Wolf Riders will ride once more!"
-Inst33Quest12_HORDE_Location = "Frostwolf Wolf Rider Commander (Alterac Valley - South; "..YELLOW.."[9]"..WHITE..")"
-Inst33Quest12_HORDE_Note = "The Rams can be found in the Nordern area of Alterac Valley."
+Inst33Quest12_HORDE_Location = "Frostwolf Wolf Rider Commander (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
+Inst33Quest12_HORDE_Note = "The Rams can be found in the Nordern area of Alteractal."
 Inst33Quest12_HORDE_Prequest = "Nein"
 Inst33Quest12_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5158,8 +5176,8 @@ Inst33Quest12_HORDE_Folgequest = "Nein"
 --Quest 13 Horde
 Inst33Quest13_HORDE = "13. A Gallon of Blood"
 Inst33Quest13_HORDE_Aim = "You have the option of offering larger quantities of the blood taken from our enemies. I will be glad to accept gallon sized offerings."
-Inst33Quest13_HORDE_Location = "Primalist Thurloga (Alterac Valley - South; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest13_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alterac Valley - South; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
+Inst33Quest13_HORDE_Location = "Primalist Thurloga (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest13_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alteractal - Süd; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
 Inst33Quest13_HORDE_Prequest = "Nein"
 Inst33Quest13_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5167,8 +5185,8 @@ Inst33Quest13_HORDE_Folgequest = "Nein"
 --Quest 14 Horde
 Inst33Quest14_HORDE = "14. Lokholar the Ice Lord"
 Inst33Quest14_HORDE_Aim = "You must strike down our enemies and bring to me their blood. Once enough blood has been gathered, the ritual of summoning may begin.\n\nVictory will be assured when the elemental lord is loosed upon the Stormpike army."
-Inst33Quest14_HORDE_Location = "Primalist Thurloga (Alterac Valley - South; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest14_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alterac Valley - South; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
+Inst33Quest14_HORDE_Location = "Primalist Thurloga (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest14_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alteractal - Süd; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
 Inst33Quest14_HORDE_Prequest = "Nein"
 Inst33Quest14_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5176,7 +5194,7 @@ Inst33Quest14_HORDE_Folgequest = "Nein"
 --Quest 15 Horde
 Inst33Quest15_HORDE = "15. Call of Air - Guse's Fleet"
 Inst33Quest15_HORDE_Aim = "My riders are set to make a strike on the central battlefield; but first, I must wet their appetites - preparing them for the assault.\n\nI need enough Stormpike Soldier Flesh to feed a fleet! Hundreds of pounds! Surely you can handle that, yes? Get going!"
-Inst33Quest15_HORDE_Location = "Wing Commander Guse (Alterac Valley - South; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest15_HORDE_Location = "Wing Commander Guse (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
 Inst33Quest15_HORDE_Note = "Kill Horde NPCs for the Stormpike Soldier's Flesh. Reportedly 90 flesh are needed to make the Wing Commander do whatever she does."
 Inst33Quest15_HORDE_Prequest = "Nein"
 Inst33Quest15_HORDE_Folgequest = "Nein"
@@ -5185,7 +5203,7 @@ Inst33Quest15_HORDE_Folgequest = "Nein"
 --Quest 16 Horde
 Inst33Quest16_HORDE = "16. Call of Air - Jeztor's Fleet"
 Inst33Quest16_HORDE_Aim = "My War Riders must taste in the flesh of their targets. This will ensure a surgical strike against our enemies!\n\nMy fleet is the second most powerful in our air command. Thusly, they will strike at the more powerful of our adversaries. For this, then, they need the flesh of the Stormpike Lieutenants."
-Inst33Quest16_HORDE_Location = "Wing Commander Jeztor (Alterac Valley - South; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest16_HORDE_Location = "Wing Commander Jeztor (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
 Inst33Quest16_HORDE_Note = "Kill Alliance NPCs for the Stormpike Lieutenant's Flesh."
 Inst33Quest16_HORDE_Prequest = "Nein"
 Inst33Quest16_HORDE_Folgequest = "Nein"
@@ -5194,7 +5212,7 @@ Inst33Quest16_HORDE_Folgequest = "Nein"
 --Quest 17 Horde
 Inst33Quest17_HORDE = "17. Call of Air - Mulverick's Fleet"
 Inst33Quest17_HORDE_Aim = "First, my war riders need targets to gun for - high priority targets. I'm going to need to feed them the flesh of Stormpike Commanders. Unfortunately, those little buggers are entrenched deep behind enemy lines! You've definitely got your work cut out for you."
-Inst33Quest17_HORDE_Location = "Wing Commander Mulverick (Alterac Valley - South; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest17_HORDE_Location = "Wing Commander Mulverick (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
 Inst33Quest17_HORDE_Note = "Kill Alliance NPCs for the Stormpike Commander's Flesh."
 Inst33Quest17_HORDE_Prequest = "Nein"
 Inst33Quest17_HORDE_Folgequest = "Nein"
@@ -5204,66 +5222,66 @@ Inst33Quest17_HORDE_Folgequest = "Nein"
 
 --------------- INST34 - Arathi Basin ---------------
 
-Inst34Caption = "Arathi Basin"
+Inst34Caption = "Arathibecken"
 Inst34QAA = "3 Quests"
 Inst34QAH = "3 Quests"
 
 --Quest 1 Alliance
-Inst34Quest1 = "1. The Battle for Arathi Basin!"
-Inst34Quest1_Aim = "Assault the mine, the lumber mill, the blacksmith and the farm, then return to Field Marshal Oslight in Refuge Pointe."
-Inst34Quest1_Location = "Field Marshal Oslight (Arathi Highlands - Refuge Pointe; "..YELLOW.."46,45"..WHITE..")"
-Inst34Quest1_Note = "The locations to be assaulted are marked on the map as 2 through 5."
+Inst34Quest1 = "1. Die Schlacht um das Arathibecken!"
+Inst34Quest1_Aim = "Erobert die Mine, das Sägewerk, die Schmiede und den Hof und meldet Euch anschließend bei Feldmarschall Lichtmark in der Zuflucht."
+Inst34Quest1_Location = "Feldmarschall Oslight (Arathihochland - Die Zuflucht; "..YELLOW.."46,45"..WHITE..")"
+Inst34Quest1_Note = "Die Orte, die angegriffen werden sollen, sind auf der Karte als 2 bis 5 markiert."
 Inst34Quest1_Prequest = "Nein"
 Inst34Quest1_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 2 Alliance
-Inst34Quest2 = "2. Control Four Bases"
-Inst34Quest2_Aim = "Enter Arathi Basin, capture and control four bases at the same time, and then return to Field Marshal Oslight at Refuge Pointe."
-Inst34Quest2_Location = "Field Marshal Oslight (Arathi Highlands - Refuge Pointe; "..YELLOW.."46,45"..WHITE..")"
-Inst34Quest2_Note = "You need to be Friendly with the League of Arathor to get this quest."
+Inst34Quest2 = "2. Kontrolliert vier Stützpunkte"
+Inst34Quest2_Aim = "Betretet das Arathibecken, erobert und kontrolliert gleichzeitig vier Stützpunkte im Arathibecken und kehrt danach zu Feldmarschall Lichtmark in der Zuflucht zurück."
+Inst34Quest2_Location = Inst34Quest1_Location
+Inst34Quest2_Note = "Du brauchst einen freundschaftlichen Ruf beim Bund von Arathor, um dieses Quest zu bekommen."
 Inst34Quest2_Prequest = "Nein"
 Inst34Quest2_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 3 Alliance
-Inst34Quest3 = "3. Control Five Bases"
-Inst34Quest3_Aim = "Control 5 bases in Arathi Basin at the same time, then return to Field Marshal Oslight at Refuge Pointe."
-Inst34Quest3_Location = "Field Marshal Oslight (Arathi Highlands - Refuge Pointe; "..YELLOW.."46,45"..WHITE..")"
-Inst34Quest3_Note = "You need to be Exalted with the League of Arathor to get this quest."
+Inst34Quest3 = "3. Kontrolliert fünf Stützpunkte"
+Inst34Quest3_Aim = "Kontrolliert gleichzeitig fünf Stützpunkte im Arathibecken und kehrt danach zu Feldmarschall Lichtmark in der Zuflucht zurück."
+Inst34Quest3_Location = Inst34Quest1_Location
+Inst34Quest3_Note = "Du brauchst einen ehrfürchtigen Ruf beim Bund von Arathor, um dieses Quest zu bekommen."
 Inst34Quest3_Prequest = "Nein"
 Inst34Quest3_Folgequest = "Nein"
 --
-Inst34Quest3name1 = "Arathor Battle Tabard"
+Inst34Quest3name1 = "Wappenrock der Arathor"
 
 
 --Quest 1 Horde
-Inst34Quest1_HORDE = "1. The Battle for Arathi Basin!"
-Inst34Quest1_HORDE_Aim = "Assault the Arathi Basin mine, lumber mill, blacksmith and stable, and then return to Deathmaster Dwire in Hammerfall."
-Inst34Quest1_HORDE_Location = "Deathmaster Dwire (Arathi Highlands - Hammerfall; "..YELLOW.."74,35"..WHITE..")"
-Inst34Quest1_HORDE_Note = "The locations to be assaulted are marked on the map as 1 through 4."
+Inst34Quest1_HORDE = Inst34Quest1
+Inst34Quest1_HORDE_Aim = "Erobert die Mine, das Sägewerk, die Schmiede, den Hof und die Ställe und kehrt dann zu Todesmeister Dwire in Hammerfall zurück."
+Inst34Quest1_HORDE_Location = "Todesmeister Dwire (Arathihochland - Hammerfall; "..YELLOW.."74,35"..WHITE..")"
+Inst34Quest1_HORDE_Note = "Die Orte, die angegriffen werden sollen, sind auf der Karte als 1 bis 4 markiert."
 Inst34Quest1_HORDE_Prequest = "Nein"
 Inst34Quest1_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 2 Horde
-Inst34Quest2_HORDE = "2. Take Four Bases"
-Inst34Quest2_HORDE_Aim = "Hold four bases at the same time in Arathi Basin, and then return to Deathmaster Dwire in Hammerfall."
-Inst34Quest2_HORDE_Location = "Deathmaster Dwire (Arathi Highlands - Hammerfall; "..YELLOW.."74,35"..WHITE..")"
-Inst34Quest2_HORDE_Note = "You need to be Friendly with The Defilers to get this quest."
+Inst34Quest2_HORDE = "2. Erobert vier Stützpunkte"
+Inst34Quest2_HORDE_Aim = "Haltet vier Stützpunkte zur selben Zeit im Arathibecken und kehrt danach zu Todesmeister Dwire nach Hammerfall zurück."
+Inst34Quest2_HORDE_Location = Inst34Quest1_HORDE_Location
+Inst34Quest2_HORDE_Note = "Du brauchst einen freundschaftlichen Ruf bei den Entweihten, um dieses Quest zu bekommen."
 Inst34Quest2_HORDE_Prequest = "Nein"
 Inst34Quest2_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 3 Horde
-Inst34Quest3_HORDE = "3. Take Five Bases"
-Inst34Quest3_HORDE_Aim = "Hold five bases in Arathi Basin at the same time, then return to Deathmaster Dwire in Hammerfall."
-Inst34Quest3_HORDE_Location = "Deathmaster Dwire (Arathi Highlands - Hammerfall; "..YELLOW.."74,35"..WHITE..")"
-Inst34Quest3_HORDE_Note = "You need to be Exalted with The Defilers to get this quest."
+Inst34Quest3_HORDE = "3. Erobert fünf Stützpunkte"
+Inst34Quest3_HORDE_Aim = "Haltet fünf Stützpunkte zur selben Zeit im Arathibecken und kehrt danach zu Todesmeister Dunkels nach Hammerfall zurück."
+Inst34Quest3_HORDE_Location = Inst34Quest1_HORDE_Location
+Inst34Quest3_HORDE_Note = "Du brauchst einen ehrfürchtigen Ruf bei den Entweihten, um dieses Quest zu bekommen."
 Inst34Quest3_HORDE_Prequest = "Nein"
 Inst34Quest3_HORDE_Folgequest = "Nein"
 --
-Inst34Quest3name1_HORDE = "Battle Tabard of the Defilers"
+Inst34Quest3name1_HORDE = "Wappenrock der Entweihten"
 
 
 
@@ -5318,9 +5336,9 @@ Inst37QAA = "1 Quest"
 Inst37QAH = "1 Quest"
 
 --Quest 1 Alliance
-Inst37Quest1 = "1. Uraltes in Sehnen eingewickeltes Laminablatt (Hunter)"
+Inst37Quest1 = "1. Uraltes in Sehnen eingewickeltes Laminablatt (Jäger)"
 Inst37Quest1_Aim = "Hastat der Uralte hat Euch um die Beschaffung einer Sehne eines ausgewachsenen, blauen Drachens gebeten. Solltet Ihr diese Sehne finden, kehrt zu Hastat im Teufelswald zurück."
-Inst37Quest1_Location = "Hastat der Uralte (Felwood - Irontree Woods; "..YELLOW.."48,24"..WHITE..")"
+Inst37Quest1_Location = "Hastat der Uralte (Teufelswald - Der Eisenwald; "..YELLOW.."48,24"..WHITE..")"
 Inst37Quest1_Note = "Töte Azuregos um die Sehne eine ausgewachsenen blauen Drachens zu erhalten. Er wandert um die Mitte der südlichen Halbinsel in Azshara in der Nähe von "..YELLOW.."[1]"..WHITE.."."
 Inst37Quest1_Prequest = "Das uralte Blatt ("..YELLOW.."Molten Core"..WHITE..")"
 Inst37Quest1_Folgequest = "Nein"

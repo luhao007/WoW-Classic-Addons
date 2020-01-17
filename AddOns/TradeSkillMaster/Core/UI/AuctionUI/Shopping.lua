@@ -1111,9 +1111,11 @@ function private.PostingFrameOnUpdate(frame)
 	elseif bid > MAXIMUM_BID_PRICE then
 		bid = MAXIMUM_BID_PRICE
 	end
-	local buyout = floor(record.buyout / record.stackSize) - undercut
+	local buyout = nil
 	if TSM.IsWow83() then
-		buyout = Math.Round(buyout, COPPER_PER_SILVER)
+		buyout = Math.Round(record.buyout / record.stackSize - undercut, COPPER_PER_SILVER)
+	else
+		buyout = floor(record.buyout / record.stackSize) - undercut
 	end
 	if buyout < 0 then
 		buyout = 0
@@ -1143,7 +1145,7 @@ function private.PostingFrameOnUpdate(frame)
 	local maxPostStack = private.GetMaxPostStack(private.itemString)
 	frame:GetElement("quantity.stackSize")
 		:SetDisabled(cagedPet)
-		:SetText(min(record.stackSize, maxPostStack))
+		:SetText(TSM.IsWowClassic() and min(record.stackSize, maxPostStack) or maxPostStack)
 		:SetMaxNumber(maxPostStack)
 	frame:GetElement("maxBtns.stackSizeBtn")
 		:SetDisabled(cagedPet)
@@ -2318,7 +2320,7 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_PLACING_BID")
 			:SetOnEnter(function(context, quantity)
 				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
-				assert(not TSM.IsWow83() or index)
+				assert(TSM.IsWow83() or index)
 				-- bid on the auction
 				if context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction, false, quantity) then
 					context.numBid = context.numBid + (TSM.IsWow83() and quantity or 1)

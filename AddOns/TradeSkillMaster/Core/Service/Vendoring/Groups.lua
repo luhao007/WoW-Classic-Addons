@@ -193,7 +193,7 @@ function private.SellItemThreaded(itemString, operationSettings)
 	end
 
 	-- get a list of empty slots which we can use to split items into
-	local emptySlotIds = private.GetEmptyBagSlotsThreaded(GetItemFamily(ItemString.ToId(itemString)) or 0)
+	local emptySlotIds = private.GetEmptyBagSlotsThreaded(ItemString.IsItem(itemString) and GetItemFamily(ItemString.ToId(itemString)) or 0)
 
 	-- get a list of slots containing the item we want to sell
 	local slotIds = Threading.AcquireSafeTempTable()

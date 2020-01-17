@@ -576,7 +576,13 @@ function Thread._WaitForEvent(self, ...)
 		self._eventNames[event] = true
 		private.schedulerFrame:RegisterEvent(event)
 	end
+	local st = GetTime()
 	self:_Yield()
+	local yieldTime = GetTime() - st
+	if yieldTime > 5 then
+		local firstEvent = ...
+		Log.Warn("Waited %d seconds for %s", yieldTime, firstEvent)
+	end
 	local result = self._eventArgs
 	self._eventArgs = nil
 	return TempTable.UnpackAndRelease(result)

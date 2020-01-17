@@ -455,7 +455,7 @@ function ItemInfo.GetMinLevel(item)
 	-- if there is a random enchant, but no bonusIds, so the itemLevel is the same as the base item
 	local baseIsSame = strmatch(itemString, "^i:[0-9]+:[%-0-9]+$") and true or false
 	local minLevel = private.GetFieldValueHelper(itemString, "minLevel", baseIsSame, true, 0)
-	if not minLevel and private.IsItem(itemString) then
+	if not minLevel and ItemString.IsItem(itemString) then
 		local baseItemString = ItemString.GetBase(itemString)
 		local classId = ItemInfo.GetClassId(itemString)
 		local subClassId = ItemInfo.GetSubClassId(itemString)
@@ -477,7 +477,7 @@ function ItemInfo.GetMaxStack(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then return end
 	local maxStack = private.GetFieldValueHelper(itemString, "maxStack", true, true, 1)
-	if not maxStack and private.IsItem(itemString) then
+	if not maxStack and ItemString.IsItem(itemString) then
 		-- we might be able to deduce the maxStack based on the classId and subClassId
 		local classId = ItemInfo.GetClassId(item)
 		local subClassId = ItemInfo.GetSubClassId(item)
@@ -641,7 +641,7 @@ function ItemInfo.FetchInfo(item)
 	if item == UNKNOWN_ITEM_ITEMSTRING then return end
 	local itemString = ItemString.Get(item)
 	if not itemString then return end
-	if private.IsPet(itemString) then
+	if ItemString.IsPet(itemString) then
 		if not private.GetField(itemString, "name") then
 			private.StoreGetItemInfoInstant(itemString)
 		end
@@ -658,7 +658,7 @@ end
 function ItemInfo.GeneralizeLink(itemLink)
 	local itemString = ItemString.Get(itemLink)
 	if not itemString then return end
-	if private.IsItem(itemString) and not strmatch(itemString, "i:[0-9]+:[0-9%-]*:[0-9]*") then
+	if ItemString.IsItem(itemString) and not strmatch(itemString, "i:[0-9]+:[0-9%-]*:[0-9]*") then
 		-- swap out the itemString part of the link
 		local leader, quality, _, name, trailer, trailer2, extra = ("\124"):split(itemLink)
 		if trailer2 and not extra then
@@ -674,21 +674,13 @@ end
 -- Helper Functions
 -- ============================================================================
 
-function private.IsPet(itemString)
-	return strmatch(itemString, "^p:") and true or false
-end
-
-function private.IsItem(itemString)
-	return strmatch(itemString, "^i:") and true or false
-end
-
 function private.GetFieldValueHelper(itemString, field, baseIsSame, storeBaseValue, petDefaultValue)
 	local value = private.GetField(itemString, field)
 	if value ~= nil then
 		return value
 	end
 	ItemInfo.FetchInfo(itemString)
-	if private.IsPet(itemString) then
+	if ItemString.IsPet(itemString) then
 		-- we can fetch info instantly for pets so try again
 		value = private.GetField(itemString, field)
 		if value == nil and petDefaultValue ~= nil then
@@ -754,7 +746,7 @@ function private.ProcessItemInfo()
 			-- give up on this item
 			if private.numRequests[itemString] ~= math.huge then
 				private.numRequests[itemString] = math.huge
-				local itemId = ItemString.ToId(itemString)
+				local itemId = ItemString.IsItem(itemString) and ItemString.ToId(itemString) or nil
 				if not TSM.IsWowClassic() then
 					Log.Err("Giving up on item info for %s", itemString)
 				end
@@ -965,7 +957,7 @@ end
 
 function private.StoreGetItemInfo(itemString)
 	private.StoreGetItemInfoInstant(itemString)
-	assert(private.IsItem(itemString))
+	assert(ItemString.IsItem(itemString))
 	local wowItemString = ItemString.ToWow(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local baseWowItemString = ItemString.ToWow(baseItemString)

@@ -19,6 +19,7 @@ local ObjectPool = TSM.Include("Util.ObjectPool")
 local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")
 local Vararg = TSM.Include("Util.Vararg")
+local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	namedElements = {},
@@ -491,7 +492,7 @@ function TSM.UI.ShowTooltip(parent, tooltip)
 		else
 			GameTooltip:SetHyperlink("enchant:"..tooltip)
 		end
-	elseif type(tooltip) == "string" and (strfind(tooltip, "\124Hitem:") or strfind(tooltip, "\124Hbattlepet:") or strfind(tooltip, "^i:") or strfind(tooltip, "^p:")) then
+	elseif type(tooltip) == "string" and (strfind(tooltip, "\124Hitem:") or strfind(tooltip, "\124Hbattlepet:") or ItemString.IsItem(tooltip) or ItemString.IsPet(tooltip)) then
 		TSM.Wow.SafeTooltipLink(tooltip)
 	else
 		for _, line in Vararg.Iterator(strsplit("\n", tooltip)) do

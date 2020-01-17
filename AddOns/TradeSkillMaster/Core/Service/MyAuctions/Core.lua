@@ -13,6 +13,7 @@ local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	pendingDB = nil,
 	ahOpen = false,
@@ -52,7 +53,7 @@ end
 function MyAuctions.CreateQuery()
 	return AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
-		:OrderBy("index", false)
+		:OrderBy("index", TSM.IsWow83())
 end
 
 function MyAuctions.CancelAuction(auctionId)
@@ -129,7 +130,7 @@ function private.ChatMsgSystemEventHandler(_, msg)
 end
 
 function private.UIErrorMessageEventHandler(_, _, msg)
-	if msg == ERR_ITEM_NOT_FOUND and #private.pendingHashes > 0 then
+	if (msg == ERR_ITEM_NOT_FOUND or msg == ERR_NOT_ENOUGH_MONEY) and #private.pendingHashes > 0 then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
 		Log.Info("Failed to cancel (hash=%d)", hash)
@@ -194,9 +195,13 @@ function private.OnAuctionsUpdated()
 	private.auctionInfo.postedGold = 0
 	private.auctionInfo.soldGold = 0
 	for _, row in query:Iterator() do
-		local saleStatus, buyout, currentBid = row:GetFields("saleStatus", "buyout", "currentBid")
+		local itemString, saleStatus, buyout, currentBid, stackSize = row:GetFields("itemString", "saleStatus", "buyout", "currentBid", "stackSize")
 		private.auctionInfo.numPosted = private.auctionInfo.numPosted + 1
-		private.auctionInfo.postedGold = private.auctionInfo.postedGold + buyout
+		if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
+			private.auctionInfo.postedGold = private.auctionInfo.postedGold + (buyout * stackSize)
+		else
+			private.auctionInfo.postedGold = private.auctionInfo.postedGold + buyout
+		end
 		if saleStatus == 1 then
 			private.auctionInfo.numSold = private.auctionInfo.numSold + 1
 			-- if somebody did a buyout, then bid will be equal to buyout, otherwise it'll be the winning bid

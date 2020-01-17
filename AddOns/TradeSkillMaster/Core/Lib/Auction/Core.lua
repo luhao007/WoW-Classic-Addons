@@ -37,7 +37,11 @@ end
 
 function Auction.GetRequiredBidByScanResultRow(row)
 	local bid, minBid, minIncrement = row:GetFields("bid", "minBid", "minIncrement")
-	return bid == 0 and minBid or (bid + minIncrement)
+	if TSM.IsWow83() then
+		return minBid
+	else
+		return bid == 0 and minBid or (bid + minIncrement)
+	end
 end
 
 function Auction.CanBid(row)

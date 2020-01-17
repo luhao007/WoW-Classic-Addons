@@ -1,7 +1,6 @@
 # BlizzMove
 
-## [v1.9.4](https://github.com/zanony/BlizzMove/tree/v1.9.4) (2019-12-31)
-[Full Changelog](https://github.com/zanony/BlizzMove/compare/v1.9.3...v1.9.4)
+## [v1.9.6](https://github.com/zanony/BlizzMove/tree/v1.9.6) (2020-01-15)
+[Full Changelog](https://github.com/zanony/BlizzMove/compare/1.9.5...v1.9.6)
 
-- Move some frames, Fix some of them, Add Quest List (Classic & Retail) (#8)  
-    * Swap some frames around, refractor code, create move handles and small stuff  
+- toc bump  

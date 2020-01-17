@@ -1,12 +1,19 @@
-$Id: ChangeLog.txt 1561 2019-09-07 08:51:31Z arith $
+$Id: ChangeLog.txt 1564 2020-01-15 15:53:51Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon@gmail.com>
+Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon@gmail.com>
 
 ==============
 = Change Log =
 ==============
+
+v1.46.00.11303.00 (Jan. 16, 2020)
+------------------------
+- ToC update to support WoW 1.13.3
+- Update level ranges
+- Added Seething Shore
+- Added WoW Classic's support
 
 v1.45.00.11302.00 (Sep. 06, 2019)
 ------------------------

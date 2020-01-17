@@ -64,13 +64,13 @@ function private.MarketValueFunction(row)
 	return TSM.Operations.Sniper.GetBelowPrice(row:GetField("itemString"))
 end
 
-function private.FilterShouldScanItemFunction(filter, baseItemString, minPrice)
-	if minPrice <= (TSM.Operations.Sniper.GetBelowPrice(baseItemString) or 0) then
-		return true
+function private.FilterShouldScanItemFunction(filter, baseItemString, itemString, minPrice)
+	if itemString then
+		return minPrice <= (TSM.Operations.Sniper.GetBelowPrice(itemString) or 0)
 	end
 	local result = false
-	for _, itemString in TSM.Groups.ItemIterator(nil, baseItemString) do
-		if minPrice <= (TSM.Operations.Sniper.GetBelowPrice(itemString) or 0) then
+	for _, groupItemString in TSM.Groups.ItemIterator(nil, baseItemString) do
+		if minPrice <= (TSM.Operations.Sniper.GetBelowPrice(groupItemString) or 0) then
 			result = true
 		end
 	end

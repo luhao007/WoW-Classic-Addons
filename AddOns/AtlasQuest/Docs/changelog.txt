@@ -2,6 +2,16 @@
 Changelog
 =========
 
+Version 4.11.60  (for WoW Classic)  January 16, 2020
+
+- Compatibility updates to work with new version of Atlas.
+- Updates to Spanish localization by Woopy.
+- Updates to German localization by Guldukat.
+- Updated boss location numbers for Lower & Upper Blackrock Spire to conform with new Atlas update.
+
+
+
+
 Version 4.11.59  (for WoW Classic)  December 31, 2019
 
 - TOC updated to 11303.

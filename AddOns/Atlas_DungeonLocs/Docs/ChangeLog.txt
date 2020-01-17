@@ -1,12 +1,22 @@
-ˇ$Id: ChangeLog.txt 52 2019-09-04 07:43:51Z arith $
+ˇ$Id: ChangeLog.txt 60 2020-01-16 13:51:24Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbertat gmail dot com>
 Copyright 2010 - Lothaer <lothayerat gmail dot com>, Atlas Team
-Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 = Change Log =
 ==============
+
+v1.46.01.11303.00 (Jan. 16, 2020)
+------------------------
+- Merge with WoW classic's dungeon maps
+
+v1.46.00 (Jan. 05, 2020)
+------------------------
+- ToC update to support WoW 8.2.5
+- Added Argus instance location map
+- Added Battle for Azeroth instance location maps
 
 v1.45.00.11302.01 (Sep. 07, 2019)
 ------------------------

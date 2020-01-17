@@ -105,9 +105,12 @@ function private.FilterIsDoneFunction(filter)
 	return true
 end
 
-function private.FilterShouldScanItemFunction(filter, baseItemString, minPrice)
-	for _, itemString in ipairs(filter:GetItems()) do
-		if ItemString.GetBaseFast(itemString) == baseItemString and TSM.Operations.Shopping.ShouldScanItem(itemString, minPrice) then
+function private.FilterShouldScanItemFunction(filter, baseItemString, itemString, minPrice)
+	if itemString then
+		return TSM.Operations.Shopping.ShouldScanItem(itemString, minPrice)
+	end
+	for _, filterItemString in ipairs(filter:GetItems()) do
+		if ItemString.GetBaseFast(filterItemString) == baseItemString and TSM.Operations.Shopping.ShouldScanItem(filterItemString, minPrice) then
 			return true
 		end
 	end

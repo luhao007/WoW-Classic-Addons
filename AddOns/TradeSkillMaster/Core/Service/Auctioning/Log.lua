@@ -45,6 +45,7 @@ local REASON_STRINGS = {
 	cancelDisabled = ORANGE .. L["Canceling disabled."] .. "|r",
 	cancelNotUndercut = GREEN .. L["Your auction has not been undercut."] .. "|r",
 	cancelBid = CYAN .. L["Auction has been bid on."] .. "|r",
+	cancelNoMoney = CYAN .. L["Not enough money to cancel."] .. "|r",
 	cancelKeepPosted = CYAN .. L["Keeping undercut auctions posted."] .. "|r",
 	cancelBelowMin = ORANGE .. L["Not canceling auction below min price."] .. "|r",
 	cancelAtReset = GREEN .. L["Not canceling auction at reset price."] .. "|r",

@@ -74,8 +74,10 @@ end
 -- @treturn number The itemId
 function ItemString.ToId(item)
 	local itemString = ItemString.Get(item)
-	if type(itemString) ~= "string" then return end
-	return tonumber(strmatch(itemString, "^i:(%d+)"))
+	if type(itemString) ~= "string" then
+		return
+	end
+	return tonumber(strmatch(itemString, "^[ip]:(%d+)"))
 end
 
 --- Converts the parameter into a base itemString.
@@ -113,7 +115,7 @@ function ItemString.GetBaseFromItemKey(itemKey)
 end
 
 function ItemString.HasNonBase(baseItemString)
-	return private.hasNonBaseItemStrings[baseItemString]
+	return private.hasNonBaseItemStrings[baseItemString] or false
 end
 
 --- Converts the parameter into a WoW itemString.
@@ -131,6 +133,14 @@ function ItemString.ToWow(itemString)
 		return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":512::"..numBonus..":"..bonusIds..":"..upgradeValue..":::"
 	end
 	return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":::"..(numBonus and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.*)") or "")..":::"
+end
+
+function ItemString.IsItem(itemString)
+	return strmatch(itemString, "^i:") and true or false
+end
+
+function ItemString.IsPet(itemString)
+	return strmatch(itemString, "^p:") and true or false
 end
 
 

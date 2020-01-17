@@ -1,10 +1,10 @@
--- $Id: Atlas_Battlegrounds-koKR.lua 1557 2019-09-04 07:36:03Z arith $
+-- $Id: Atlas_Battlegrounds-koKR.lua 1564 2020-01-15 15:53:51Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -57,6 +57,8 @@ if L then
 --[[Translation missing --]]
 --[[ L["Battleground Maps"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Bonfire"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Brogus Thunderbrew <Food & Drink>"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Broken Temple Graveyard"] = ""--]] 
@@ -84,6 +86,8 @@ if L then
 --[[ L["Contested Graveyards"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Coreiel <Blade Merchant>"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Crash Site"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Defending Team"] = ""--]] 
 --[[Translation missing --]]
@@ -179,7 +183,11 @@ if L then
 --[[Translation missing --]]
 --[[ L["Orb of Power"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Overlook"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Overlord Agmar"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Plunge"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Primalist Thurloga"] = ""--]] 
 --[[Translation missing --]]
@@ -195,7 +203,13 @@ if L then
 --[[Translation missing --]]
 --[[ L["Resurrection Point"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Ridge"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Ruins"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Sergeant Parker <Baradin's Wardens>"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Shipwreck"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Slidore's Beacon"] = ""--]] 
 --[[Translation missing --]]
@@ -212,6 +226,8 @@ if L then
 --[[ L["Spirit Towers"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Staff Sergeant Lazgar <Hellscream's Reach>"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Steamsaw"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Stormpike Aid Station"] = ""--]] 
 --[[Translation missing --]]
@@ -231,6 +247,10 @@ if L then
 --[[Translation missing --]]
 --[[ L["Svalbrad Farmountain <Trade Goods>"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Tar Pits"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Temple"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["The Docks"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["The Hangar"] = ""--]] 
@@ -243,7 +263,11 @@ if L then
 --[[Translation missing --]]
 --[[ L["The Workshop"] = ""--]] 
 --[[Translation missing --]]
+--[[ L["Tide Pools"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Titan Relic"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Tower"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Tower Point"] = ""--]] 
 --[[Translation missing --]]
@@ -252,6 +276,8 @@ if L then
 --[[ L["Vanndar Stormpike <Stormpike General>"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Vipore's Beacon"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Waterfall"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["West Beacon"] = ""--]] 
 --[[Translation missing --]]

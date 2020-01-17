@@ -31,6 +31,7 @@ local private = {
 		list = {},
 		pending = {},
 	},
+	cancelAuctionId = nil,
 	lastScanNum = nil,
 	ignoreUpdateEvent = nil,
 	lastPurchase = {},
@@ -66,12 +67,7 @@ AuctionTracking:OnSettingsLoad(function()
 		Event.Register("AUCTION_OWNED_LIST_UPDATE", private.AuctionOwnedListUpdateHandler)
 	else
 		Event.Register("OWNED_AUCTIONS_UPDATED", private.AuctionOwnedListUpdateHandler)
-		Event.Register("AUCTION_CANCELED", AuctionTracking.QueryOwnedAuctions)
-		Event.Register("CHAT_MSG_SYSTEM", function(_, msg)
-			if msg == ERR_AUCTION_STARTED or msg == ERR_AUCTION_REMOVED then
-				AuctionTracking.QueryOwnedAuctions()
-			end
-		end)
+		Event.Register("AUCTION_CANCELED", private.AuctionCanceledHandler)
 	end
 	private.indexDB = Database.NewSchema("AUCTION_TRACKING_INDEXES")
 		:AddUniqueNumberField("index")
@@ -116,6 +112,9 @@ AuctionTracking:OnSettingsLoad(function()
 		end)
 		hooksecurefunc(C_AuctionHouse, "PostItem", function(_, duration)
 			private.PostAuctionHookHandler(duration)
+		end)
+		hooksecurefunc(C_AuctionHouse, "CancelAuction", function(auctionId)
+			private.cancelAuctionId = auctionId
 		end)
 	end
 
@@ -212,10 +211,13 @@ function AuctionTracking.GetQuantityByBaseItemString(baseItemString)
 end
 
 function AuctionTracking.QueryOwnedAuctions()
-	if not TSM.IsWow83() then
-		GetOwnerAuctionItems()
-	else
+	if not private.isAHOpen then
+		return
+	end
+	if TSM.IsWow83() then
 		C_AuctionHouse.QueryOwnedAuctions(SORT_ORDER_83)
+	else
+		GetOwnerAuctionItems()
 	end
 end
 
@@ -227,8 +229,10 @@ end
 
 function private.AuctionHouseShowHandler()
 	private.isAHOpen = true
-	AuctionTracking.QueryOwnedAuctions()
-	if not TSM.IsWow83() then
+	if TSM.IsWow83() then
+		Delay.AfterTime(0.1, AuctionTracking.QueryOwnedAuctions)
+	else
+		AuctionTracking.QueryOwnedAuctions()
 		-- We don't always get AUCTION_OWNED_LIST_UPDATE events, so do our own scanning if needed
 		Delay.AfterTime("AUCTION_BACKGROUND_SCAN", 1, private.DoBackgroundScan, 1)
 	end
@@ -258,6 +262,19 @@ function private.AuctionOwnedListUpdateHandler()
 		end
 	end
 	Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
+end
+
+function private.AuctionCanceledHandler(_, auctionId)
+	local row = private.indexDB:NewQuery()
+		:Equal("auctionId", auctionId == 0 and private.cancelAuctionId or auctionId)
+		:GetFirstResultAndRelease()
+	private.cancelAuctionId = nil
+	if not row then
+		return
+	end
+
+	private.indexDB:DeleteRow(row)
+	row:Release()
 end
 
 function private.AuctionOwnedListUpdateDelayed()

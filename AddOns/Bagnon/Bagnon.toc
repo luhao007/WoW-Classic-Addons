@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
-## Version: 8.2.27
+## Version: 8.3.1
 ## OptionalDeps: BagBrother, WoWUnit, TestPoncho
 ## SavedVariables: Bagnon_Sets
 

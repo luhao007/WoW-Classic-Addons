@@ -1,10 +1,10 @@
--- $Id: Atlas_Battlegrounds-ruRU.lua 1557 2019-09-04 07:36:03Z arith $
+-- $Id: Atlas_Battlegrounds-ruRU.lua 1564 2020-01-15 15:53:51Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -53,6 +53,8 @@ L["Attacking Team"] = "Группа штурма"
 L["AV"] = "АД"
 L["Battleground Demolisher"] = "Разрушитель"
 L["Battleground Maps"] = "Карты Полей Сражений"
+--[[Translation missing --]]
+--[[ L["Bonfire"] = ""--]] 
 L["Brogus Thunderbrew <Food & Drink>"] = "Брогус Грозовар <Еда и напитки>"
 L["Broken Temple Graveyard"] = "Кладбище Павшего храма"
 L["Broken Temple Vihecal Workshop"] = "Мастерской в Павшем храме"
@@ -67,6 +69,8 @@ L["Commander Stevens <Baradin's Wardens>"] = "Командир Стивенс <�
 L["Commander Zanoth <Hellscream's Reach>"] = "Командир Занот <Батальон Адского Крика>"
 L["Contested Graveyards"] = "Спорные Кладбища"
 L["Coreiel <Blade Merchant>"] = "Кориэль <Торговец клинками>"
+--[[Translation missing --]]
+--[[ L["Crash Site"] = ""--]] 
 L["Defending Team"] = "Группа защиты"
 L["Dragonmaw Clan Compound"] = "Клан Драконьей Пасти"
 L["Drek'Thar <Frostwolf General>"] = "Дрек'Тар <Генерал клана Северного Волка>"
@@ -114,7 +118,11 @@ L["Mine Cart Spawn Point"] = "Точка спавна вагонетки"
 L["Mulverick's Beacon"] = "Маяк Малверика"
 L["Murgot Deepforge"] = "Мургот Подземная Кузня"
 L["Orb of Power"] = "Сферы могущества"
+--[[Translation missing --]]
+--[[ L["Overlook"] = ""--]] 
 L["Overlord Agmar"] = "Командир Агмар"
+--[[Translation missing --]]
+--[[ L["Plunge"] = ""--]] 
 L["Primalist Thurloga"] = "Старейшина Турлога"
 L["Private Garnoth <Hellscream's Reach>"] = "Рядовой Гарнот <Батальон Адского Крика>"
 L["Prospector Stonehewer"] = "Геолог Камнетерка"
@@ -122,7 +130,13 @@ L["Quartermaster Davian Vaclav"] = "Интендант Дэвиан Ваклав
 L["Quartermaster Jaffrey Noreliqe"] = "Интендант Джеффри Норелик"
 L["Rescued"] = "Спасенный"
 L["Resurrection Point"] = "Точки воскрешения"
+--[[Translation missing --]]
+--[[ L["Ridge"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Ruins"] = ""--]] 
 L["Sergeant Parker <Baradin's Wardens>"] = "Сержант Паркер <Защитники Тол Барада>"
+--[[Translation missing --]]
+--[[ L["Shipwreck"] = ""--]] 
 L["Slidore's Beacon"] = "Маяк Макарча"
 L["Smith Regzar"] = "Кузнец Регзар"
 L["SotA"] = "Берег"
@@ -131,6 +145,7 @@ L["Southwest Graveyard"] = "Юго-Западное кладбище"
 L["Span of 5"] = "Диапазон: 5"
 L["Spirit Towers"] = "Башни Духов"
 L["Staff Sergeant Lazgar <Hellscream's Reach>"] = "Штаб-сержант Лазгар <Батальон Адского Крика>"
+L["Steamsaw"] = "Паровая пила"
 L["Stormpike Aid Station"] = "Лазарет Грозовой Вершины"
 L["Stormpike Banner"] = "Знамя Грозовой Вершины"
 L["Stormpike Lumber Yard"] = "Лесопилка Грозовой Вершины"
@@ -140,17 +155,27 @@ L["Stormpike Stable Master <Stable Master>"] = "Смотритель стойл 
 L["Sunken Ring Graveyard"] = "Кладбище Затопленного Круга"
 L["Sunken Ring Vihecal Workshop"] = "Мастерской в Затопленном Круге"
 L["Svalbrad Farmountain <Trade Goods>"] = "Свальбрад Дальногор <Хозяйственные товары>"
+--[[Translation missing --]]
+--[[ L["Tar Pits"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Temple"] = ""--]] 
 L["The Docks"] = "Причал"
 L["The Hangar"] = [=[Ангар	]=]
 L["The Quarry"] = "Каменоломня"
 L["The Refinery"] = "Нефтезавод"
 L["The Silithyst Must Flow"] = "The Silithyst Must Flow"
 L["The Workshop"] = "Мастерская"
+--[[Translation missing --]]
+--[[ L["Tide Pools"] = ""--]] 
 L["Titan Relic"] = "Реликвия титанов"
+--[[Translation missing --]]
+--[[ L["Tower"] = ""--]] 
 L["Tower Point"] = "Смотровая башня"
 L["Twinspire Graveyard"] = "Кладбище Двух Башен"
 L["Vanndar Stormpike <Stormpike General>"] = "Вандар Грозовая Вершина <Генерал клана Грозовой Вершины>"
 L["Vipore's Beacon"] = "Маяк Сквороца"
+--[[Translation missing --]]
+--[[ L["Waterfall"] = ""--]] 
 L["West Beacon"] = "Западный Маяк"
 L["West Frostwolf Tower"] = "Западная башня Северного Волка"
 L["Western Crater"] = "Западный Кратер"

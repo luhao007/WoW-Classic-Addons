@@ -16,11 +16,15 @@ local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Event = TSM.Include("Util.Event")
 local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
+local private = {
+	gotBrowseResultsUpdate = false,
+}
 
 
 
@@ -324,11 +328,11 @@ function AuctionFilter._GetPageProgress(self)
 	return self._page, self._numPages
 end
 
-function AuctionFilter._IsItemFiltered(self, baseItemString, itemLevel)
+function AuctionFilter._IsItemFiltered(self, baseItemString, itemString, itemLevel, quality, itemName, totalQuantity, minPrice)
 	if #self._items > 0 then
 		local found = false
 		for _, filterItemString in ipairs(self:GetItems()) do
-			if ItemString.GetBaseFast(filterItemString) == baseItemString then
+			if filterItemString == itemString or ItemString.GetBaseFast(filterItemString) == baseItemString then
 				found = true
 				break
 			end
@@ -337,11 +341,20 @@ function AuctionFilter._IsItemFiltered(self, baseItemString, itemLevel)
 			return true
 		end
 	end
+	if self._nameMatch and itemName then
+		local name = strlower(itemName)
+		if not strmatch(name, self._nameMatch) or (self._exact and name ~= strlower(self._name)) then
+			return true
+		end
+	end
 	if self._minLevel or self._maxLevel then
 		local minLevel = ItemInfo.GetMinLevel(baseItemString)
 		if minLevel < (self._minLevel or -math.huge) or minLevel > (self._maxLevel or math.huge) then
 			return true
 		end
+	end
+	if self._quality and quality and quality < self._quality then
+		return true
 	end
 	if self._class and ItemInfo.GetClassId(baseItemString) ~= self._class then
 		return true
@@ -352,13 +365,19 @@ function AuctionFilter._IsItemFiltered(self, baseItemString, itemLevel)
 	if self._invType and ItemInfo.GetInvSlotId(baseItemString) ~= self._invType then
 		return true
 	end
-	if itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge) then
+	if self._evenOnly and totalQuantity < 5 then
+		return true
+	end
+	if itemLevel and (itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge)) then
 		return true
 	end
 	if self._unlearned and CanIMogIt:PlayerKnowsTransmog(ItemInfo.GetLink(baseItemString)) then
 		return true
 	end
 	if self._canlearn and not CanIMogIt:CharacterCanLearnTransmog(ItemInfo.GetLink(baseItemString)) then
+		return true
+	end
+	if minPrice > (self._minPrice or math.huge) then
 		return true
 	end
 	return false
@@ -401,8 +420,14 @@ function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyo
 	if self._invType and ItemInfo.GetInvSlotId(rowItemString) ~= self._invType then
 		return true
 	end
-	if self._evenOnly and stackSize % 5 ~= 0 then
-		return true
+	if TSM.IsWow83() then
+		if self._evenOnly and stackSize < 5 then
+			return true
+		end
+	else
+		if self._evenOnly and stackSize % 5 ~= 0 then
+			return true
+		end
 	end
 	local itemLevel = ItemInfo.GetItemLevel(rowItemString)
 	if not ignoreItemLevel and (itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge)) then
@@ -445,17 +470,17 @@ function AuctionFilter._GetTargetItemRate(self, itemString)
 	return conversionInfo and conversionInfo[itemString] or 0
 end
 
-function AuctionFilter._ShouldScanItem(self, baseItemString, minPrice)
-	return not self._shouldScanItemFunction or self._shouldScanItemFunction(self, baseItemString, minPrice)
+function AuctionFilter._ShouldScanItem(self, baseItemString, itemString, minPrice)
+	return not self._shouldScanItemFunction or self._shouldScanItemFunction(self, baseItemString, itemString, minPrice)
 end
 
 function AuctionFilter._DoAuctionQueryThreaded(self)
 	if TSM.IsWow83() then
 		assert(not self:_IsGetAll()) -- GetAll is not supported on >= 8.3
 
-		local query = TempTable.Acquire()
-		local sorts = TempTable.Acquire()
-		local filters = TempTable.Acquire()
+		local query = Threading.AcquireSafeTempTable()
+		local sorts = Threading.AcquireSafeTempTable()
+		local filters = Threading.AcquireSafeTempTable()
 		if self._uncollected then
 			tinsert(filters, Enum.AuctionHouseFilter.UncollectedOnly)
 		end
@@ -468,47 +493,60 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		if self._exact then
 			tinsert(filters, Enum.AuctionHouseFilter.ExactMatch)
 		end
-		for i = Enum.AuctionHouseFilter.PoorQuality, Enum.AuctionHouseFilter.ArtifactQuality do
+		for i = (self._quality or 0) + Enum.AuctionHouseFilter.PoorQuality, Enum.AuctionHouseFilter.ArtifactQuality do
 			tinsert(filters, i)
 		end
-		local itemClassFilters = TempTable.Acquire()
+		local itemClassFilters = Threading.AcquireSafeTempTable()
 		if self._class or self._subClass or self._invType then
-			local info = TempTable.Acquire()
+			local info = Threading.AcquireSafeTempTable()
 			info.classID = self._class
 			info.subClassID = self._subClass
 			info.inventoryType = self._invType
 			tinsert(itemClassFilters, info)
 		end
 
-		-- Blizzard currently doesn't handle search strings with a "." or "-" in them very well, so remove them
-		query.searchString = gsub(self._name or "", "[%-%.]", "")
+		query.searchString = self._name or ""
 		query.sorts = sorts
 		query.minLevel = self._minLevel or 0
 		query.maxLevel = self._maxLevel or 0
 		query.filters = filters
 		query.itemClassFilters = itemClassFilters
-		local result = self._scan:_SendBrowseQuery83(query)
-		TempTable.Release(sorts)
-		TempTable.Release(filters)
+		while true do
+			private.gotBrowseResultsUpdate = false
+			local result = self._scan:_SendBrowseQuery83(query)
+			if result then
+				for _ = 1, 50 do
+					if private.gotBrowseResultsUpdate then
+						break
+					end
+					Threading.Sleep(0.1)
+				end
+				if private.gotBrowseResultsUpdate then
+					break
+				end
+				Log.Warn("Retrying browse query which didn't result in an update event")
+			else
+				Threading.Sleep(0.5)
+				Log.Warn("Retrying throttled browse query")
+			end
+		end
+		Threading.ReleaseSafeTempTable(sorts)
+		Threading.ReleaseSafeTempTable(filters)
 		for i = #itemClassFilters, 1, -1 do
-			TempTable.Release(itemClassFilters[i])
+			Threading.ReleaseSafeTempTable(itemClassFilters[i])
 			itemClassFilters[i] = nil
 		end
-		TempTable.Release(itemClassFilters)
-		TempTable.Release(query)
-		if not result then
-			return false
-		end
+		Threading.ReleaseSafeTempTable(itemClassFilters)
+		Threading.ReleaseSafeTempTable(query)
 
 		-- wait for the browse results to fully load
-		Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
 		while not C_AuctionHouse.HasFullBrowseResults() do
 			if self._scan:_IsCancelled() then
 				return false
 			end
 			Log.Info("Requesting more...")
 			C_AuctionHouse.RequestMoreBrowseResults()
-			Threading.WaitForEvent("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
+			Threading.Sleep(0.5)
 		end
 	else
 		if self:_IsSniper() then
@@ -692,4 +730,18 @@ function AuctionFilter._RemoveResultRows(self, db, row, numBought)
 		end
 	end
 	return result
+end
+
+
+
+-- ============================================================================
+-- Initialization Code
+-- ============================================================================
+
+do
+	if not TSM.IsWowClassic() then
+		Event.Register("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", function()
+			private.gotBrowseResultsUpdate = true
+		end)
+	end
 end

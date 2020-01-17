@@ -93,7 +93,7 @@ MailTracking:OnSettingsLoad(function()
 	Event.Register("MAIL_CLOSED", private.MailClosedHandler)
 	Event.Register("MAIL_INBOX_UPDATE", private.MailInboxUpdateHandler)
 
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		-- handle auction buying
 		hooksecurefunc("PlaceAuctionBid", function(listType, index, bidPlaced)
 			local itemString = ItemString.GetBase(GetAuctionItemLink(listType, index))
@@ -118,11 +118,6 @@ MailTracking:OnSettingsLoad(function()
 		private.cancelAuctionQuery = AuctionTracking.CreateQuery()
 			:Equal("auctionId", Database.BoundQueryParam())
 			:Select("itemString", "stackSize")
-
-		-- handle auction buying
-		hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
-			-- TODO: figure out how to get the info we need
-		end)
 
 		-- handle auction canceling
 		hooksecurefunc(C_AuctionHouse, "CancelAuction", function(auctionId)
@@ -213,6 +208,10 @@ end
 
 function MailTracking.GetQuantityByBaseItemString(baseItemString)
 	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "quantity") or 0
+end
+
+function MailTracking.RecordAuctionBuyout(baseItemString, stackSize)
+	private.ChangePendingMailQuantity(baseItemString, stackSize)
 end
 
 

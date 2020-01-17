@@ -1,12 +1,22 @@
-$Id: ChangeLog.txt 54 2020-01-02 13:27:04Z arith $
+$Id: ChangeLog.txt 62 2020-01-15 14:49:15Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 = Change Log =
 ==============
+
+v1.46.0011303.00 (Jan. 15, 2020)
+------------------------
+- Merge with wow classic's database and maps
+- Classic Map revamp / addition: 
+  - Wailing Caverns Entrance map revamp; added rare bosses: Mad Magglish, Trigore the Lasher, Boahn
+  - Uldaman Entrance map; added elite bosses and item location
+  - Uldaman map
+  - Zul'Gurub
+  - Naxxramas
 
 v1.45.01.11303.05 (Jan. 02, 2020)
 ------------------------
@@ -44,6 +54,10 @@ v1.45.01.11303.01 (Dec. 30, 2019)
   - Ragefire Chasm, 1ast boss: Oggleflint
 - Map revamp:
   - Maraudon, Maraudon Entrace
+
+v1.45.01 (Dec. 30, 2019)
+------------------------
+- ToC update to support WoW 8.2.5
 
 v1.45.00.11302.05 (Sep. 17, 2019)
 ------------------------

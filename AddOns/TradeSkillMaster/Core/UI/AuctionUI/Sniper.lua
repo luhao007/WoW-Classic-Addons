@@ -462,7 +462,9 @@ function private.FSMCreate()
 				UpdateScanFrame(context)
 				Threading.SetCallback(context.scanThreadId, private.FSMScanCallback)
 				Threading.Start(context.scanThreadId, context.auctionScan)
-				Delay.AfterTime("sniperPhaseDetect", PHASED_TIME, private.FSMPhasedCallback)
+				if TSM.IsWowClassic() then
+					Delay.AfterTime("sniperPhaseDetect", PHASED_TIME, private.FSMPhasedCallback)
+				end
 			end)
 			:SetOnExit(function(context)
 				Delay.Cancel("sniperPhaseDetect")

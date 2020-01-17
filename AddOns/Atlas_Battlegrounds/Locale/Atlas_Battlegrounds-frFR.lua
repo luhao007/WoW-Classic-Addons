@@ -1,10 +1,10 @@
--- $Id: Atlas_Battlegrounds-frFR.lua 1557 2019-09-04 07:36:03Z arith $
+-- $Id: Atlas_Battlegrounds-frFR.lua 1564 2020-01-15 15:53:51Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2019 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -44,6 +44,8 @@ L["Attacking Team"] = "Equipe en attaque"
 L["AV"] = "AV/Alterac"
 L["Battleground Demolisher"] = "Démolisseur de champ de bataille"
 L["Battleground Maps"] = "Cartes des champs de bataille"
+--[[Translation missing --]]
+--[[ L["Bonfire"] = ""--]] 
 L["Brogus Thunderbrew <Food & Drink>"] = "Brogus Tonnebière <Nourriture & boissons>"
 L["Broken Temple Graveyard"] = "Cimetière du temple Brisé"
 L["Broken Temple Vihecal Workshop"] = "Atelier du temple Brisé"
@@ -59,6 +61,8 @@ L["Commander Stevens <Baradin's Wardens>"] = "Commandant Stevens <Gardiens de Ba
 L["Commander Zanoth <Hellscream's Reach>"] = "Commandant Zanoth <Poing de Hurlenfer>"
 L["Contested Graveyards"] = "Cimetières contestés"
 L["Coreiel <Blade Merchant>"] = "Coreiel <Marchande de lames>"
+--[[Translation missing --]]
+--[[ L["Crash Site"] = ""--]] 
 L["Defending Team"] = "Equipe en défense"
 L["Dragonmaw Clan Compound"] = "Forge des Gueules-de-Dragon"
 L["Drek'Thar <Frostwolf General>"] = "Drek'Thar <Général Loup-de-givre>"
@@ -106,7 +110,11 @@ L["Mine Cart Spawn Point"] = "Mine Cart Spawn Point"
 L["Mulverick's Beacon"] = "Balise de Mulverick"
 L["Murgot Deepforge"] = "Murgot Forge-profonde"
 L["Orb of Power"] = "Orb of Power"
+--[[Translation missing --]]
+--[[ L["Overlook"] = ""--]] 
 L["Overlord Agmar"] = "Seigneur Agmar"
+--[[Translation missing --]]
+--[[ L["Plunge"] = ""--]] 
 L["Primalist Thurloga"] = "Primaliste Thurloga"
 L["Private Garnoth <Hellscream's Reach>"] = "Soldat Garnoth <Poing de Hurlenfer>"
 L["Prospector Stonehewer"] = "Prospectrice Taillepierre"
@@ -114,7 +122,13 @@ L["Quartermaster Davian Vaclav"] = "Intendant Davian Vaclav"
 L["Quartermaster Jaffrey Noreliqe"] = "Intendant Jaffrey Noreliqe"
 L["Rescued"] = "Sauvé"
 L["Resurrection Point"] = "Point de résurrection"
+--[[Translation missing --]]
+--[[ L["Ridge"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Ruins"] = ""--]] 
 L["Sergeant Parker <Baradin's Wardens>"] = "Sergent Parker <Gardiens de Baradin>"
+--[[Translation missing --]]
+--[[ L["Shipwreck"] = ""--]] 
 L["Slidore's Beacon"] = "Balise de Slidore"
 L["Smith Regzar"] = "Forgeron Regzar"
 L["SotA"] = "RdA"
@@ -123,6 +137,8 @@ L["Southwest Graveyard"] = "Cimetière Sud-Ouest"
 L["Span of 5"] = "par tranche de 5"
 L["Spirit Towers"] = "Tour des esprits"
 L["Staff Sergeant Lazgar <Hellscream's Reach>"] = "Sergent-chef Lazgar <Poing de Hurlenfer>"
+--[[Translation missing --]]
+--[[ L["Steamsaw"] = ""--]] 
 L["Stormpike Aid Station"] = "Poste de Secours Foudrepique"
 L["Stormpike Banner"] = "Bannière foudrepique"
 L["Stormpike Lumber Yard"] = "Entrepôt de bois Foudrepique"
@@ -132,17 +148,27 @@ L["Stormpike Stable Master <Stable Master>"] = "Maître des écuries Foudrepique
 L["Sunken Ring Graveyard"] = "Cimetière de l'arène Engloutie"
 L["Sunken Ring Vihecal Workshop"] = "Atelier de l'arène Engloutie"
 L["Svalbrad Farmountain <Trade Goods>"] = "Svalbrad Mont-lointain <Fournitures d'artisanat>"
+--[[Translation missing --]]
+--[[ L["Tar Pits"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Temple"] = ""--]] 
 L["The Docks"] = "Docks"
 L["The Hangar"] = "Hangar"
 L["The Quarry"] = "Carrière"
 L["The Refinery"] = "Raffinerie"
 L["The Silithyst Must Flow"] = "Le silithyste doit couler à flots "
 L["The Workshop"] = "Atelier"
+--[[Translation missing --]]
+--[[ L["Tide Pools"] = ""--]] 
 L["Titan Relic"] = "Relique des titans"
+--[[Translation missing --]]
+--[[ L["Tower"] = ""--]] 
 L["Tower Point"] = "Tour de la Halte"
 L["Twinspire Graveyard"] = "Cimetière des flèches jumelles"
 L["Vanndar Stormpike <Stormpike General>"] = "Vanndar Foudrepique <Général foudrepique>"
 L["Vipore's Beacon"] = "Balise de Vipore"
+--[[Translation missing --]]
+--[[ L["Waterfall"] = ""--]] 
 L["West Beacon"] = "Balise Ouest"
 L["West Frostwolf Tower"] = "Tour Loup-de-givre occidentale"
 L["Western Crater"] = "Cratère Ouest"

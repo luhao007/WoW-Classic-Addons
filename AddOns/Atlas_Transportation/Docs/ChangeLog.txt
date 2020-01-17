@@ -8,6 +8,10 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 = Change Log =
 ==============
 
+v1.46.03.11303.00 (Jan. 13, 2020)
+------------------------
+- Removed Emerald Sanctuary from classic Kalimdor maps
+
 v1.46.02.11303.00 (Jan. 11, 2020)
 ------------------------
 - Merge WoW classic's map data and re-create WoW classic's maps

@@ -25,6 +25,7 @@ local private = {
 		sortValueByHash = {},
 		baseItemStringByHash = {},
 		isBaseItemHash = {},
+		maxAuctionIdByHash = {},
 	},
 	rowFrameLookup = {},
 	queryAuctionScrollingTableLookup = {},
@@ -352,22 +353,27 @@ function AuctionScrollingTable._UpdateData(self)
 			end
 			private.sortContext.sortValueByHash[hash] = sortValue
 		end
+		private.sortContext.maxAuctionIdByHash[hash] = max(private.sortContext.maxAuctionIdByHash[hash] or 0, record.auctionId)
 		if not private.sortContext.baseItemStringByHash[hash] then
 			-- insert the hash
 			tinsert(hashes, hash)
 			private.sortContext.baseItemStringByHash[hash] = baseItemString
 		end
 
-		-- determine if this comes before the current base record
-		local baseRecordSortValue = private.sortContext.baseRecordSortValues[baseItemString]
-		if not baseRecordSortValue or (sortAscending and sortValue < baseRecordSortValue) or (not sortAscending and sortValue > baseRecordSortValue) then
-			local prevRecord = self._baseRecordByItem[baseItemString]
+		-- determine if this comes before the current base item record
+		local prevBaseItemRecord = self._baseRecordByItem[baseItemString]
+		if private.RecordSortHelper(record, prevBaseItemRecord, sortAscending) then
 			self._baseRecordByItem[baseItemString] = record
-			private.sortContext.isBaseItemHash[record.hash] = true
-			if prevRecord then
-				private.sortContext.isBaseItemHash[prevRecord.hash] = nil
+			private.sortContext.isBaseItemHash[hash] = true
+			if prevBaseItemRecord then
+				private.sortContext.isBaseItemHash[prevBaseItemRecord.hash] = nil
 			end
 			private.sortContext.baseRecordSortValues[baseItemString] = sortValue
+		end
+
+		-- determine if this comes before the current base hash record
+		if private.RecordSortHelper(record, self._baseRecordByHash[hash], sortAscending) then
+			self._baseRecordByHash[hash] = record
 		end
 
 		-- count the number of auctions grouped by hash
@@ -383,20 +389,6 @@ function AuctionScrollingTable._UpdateData(self)
 				self._numAuctionsByHash[hash] = 0
 			end
 			self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + 1
-		end
-
-		-- use the highest filterId record so more recent auctions show up first in sniper
-		if not self._baseRecordByHash[hash] or record.filterId > self._baseRecordByHash[hash].filterId then
-			self._baseRecordByHash[hash] = record
-			-- need to make sure _baseRecordByHash and _baseRecordByItem are kept in sync
-			if private.sortContext.baseRecordSortValues[baseItemString] == sortValue then
-				local prevRecord = self._baseRecordByItem[baseItemString]
-				self._baseRecordByItem[baseItemString] = record
-				private.sortContext.isBaseItemHash[record.hash] = true
-				if prevRecord then
-					private.sortContext.isBaseItemHash[prevRecord.hash] = nil
-				end
-			end
 		end
 	end
 
@@ -416,6 +408,7 @@ function AuctionScrollingTable._UpdateData(self)
 	wipe(private.sortContext.baseRecordSortValues)
 	wipe(private.sortContext.baseItemStringByHash)
 	wipe(private.sortContext.isBaseItemHash)
+	wipe(private.sortContext.maxAuctionIdByHash)
 
 	-- reselect the row in case the grouping changed
 	local newSelection = self:GetSelection()
@@ -574,6 +567,28 @@ function private.QueryUpdateCallback(query)
 	private.queryAuctionScrollingTableLookup[query]:UpdateData(true)
 end
 
+function private.RecordSortHelper(a, b, sortAscending)
+	local aSortValue = a and private.sortContext.sortValueByHash[a.hash] or nil
+	local bSortValue = b and private.sortContext.sortValueByHash[b.hash] or nil
+	if aSortValue == nil then
+		return false
+	elseif bSortValue == nil then
+		return true
+	elseif aSortValue ~= bSortValue then
+		if sortAscending then
+			return aSortValue < bSortValue
+		else
+			return aSortValue > bSortValue
+		end
+	elseif a.auctionId ~= b.auctionId then
+		return a.auctionId > b.auctionId
+	elseif a.filterId ~= b.filterId then
+		return a.filterId > b.filterId
+	else
+		return tostring(a) < tostring(b)
+	end
+end
+
 function private.SortByHashAscendingHelper(a, b)
 	local sortContext = private.sortContext
 	local aBaseItemString = sortContext.baseItemStringByHash[a]
@@ -588,7 +603,10 @@ function private.SortByHashAscendingHelper(a, b)
 			elseif sortContext.isBaseItemHash[b] then
 				return false
 			else
-				return a < b
+				-- show the higher auctionId first
+				local aAuctionId = sortContext.maxAuctionIdByHash[a]
+				local bAuctionId = sortContext.maxAuctionIdByHash[b]
+				return aAuctionId > bAuctionId
 			end
 		end
 		return aSortValue < bSortValue
@@ -617,7 +635,10 @@ function private.SortByHashDescendingHelper(a, b)
 			elseif sortContext.isBaseItemHash[b] then
 				return false
 			else
-				return a > b
+				-- show the higher auctionId first
+				local aAuctionId = sortContext.maxAuctionIdByHash[a]
+				local bAuctionId = sortContext.maxAuctionIdByHash[b]
+				return aAuctionId > bAuctionId
 			end
 		end
 		return aSortValue > bSortValue

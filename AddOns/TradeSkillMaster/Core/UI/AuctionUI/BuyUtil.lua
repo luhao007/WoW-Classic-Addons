@@ -226,7 +226,7 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 					:SetStyle("fontHeight", 12)
 					:SetStyle("justifyH", "RIGHT")
 					:SetStyle("textColor", "#e2e2e2")
-					:SetText(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
+					:SetText(Money.ToString(TSM.IsWowClassic() and buyout or ceil(buyout / stackSize), nil, "OPT_83_NO_COPPER"))
 				)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "stacks")
