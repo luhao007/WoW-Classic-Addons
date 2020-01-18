@@ -1111,6 +1111,10 @@ MAPPING = {
         'Title-sub': '宝藏 战争前线',
         'Category': '界面'
     },
+    'honorspy': {
+        'Title-cn': '荣誉间谍',
+        'Category': '战斗'
+    },
     'HPetBattleAny': {
         'Title-cn': '宠物对战增强',
         'Category': '战斗'

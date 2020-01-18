@@ -1,4 +1,4 @@
--- $Id: utf8.lua 184 2008-10-09 21:54:37Z nevcairiel $
+-- $Id: utf8.lua 179 2009-04-03 18:10:03Z pasta $
 --
 -- Provides UTF-8 aware string functions implemented in pure lua:
 -- * string.utf8len(s)
@@ -165,15 +165,9 @@ local function utf8len(s)
 	local bytes = strlen(s)
 	local len = 0
 
-	while pos <= bytes and len ~= chars do
-		local c = s:byte(pos)
+	while pos <= bytes do
 		len = len + 1
-
 		pos = pos + utf8charbytes(s, pos)
-	end
-
-	if chars ~= nil then
-		return pos - 1
 	end
 
 	return len

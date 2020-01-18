@@ -1,6 +1,7 @@
 ------------------------------------------------------------------------
-r1524 | Resike | 2019-12-11 18:28:04 +0000 (Wed, 11 Dec 2019) | 1 line
+r1528 | Resike | 2020-01-18 00:01:36 +0000 (Sat, 18 Jan 2020) | 1 line
 Changed paths:
+   M /trunk/GUI_Main.lua
    M /trunk/Recount.toc
 
 - Classic TOC switch.

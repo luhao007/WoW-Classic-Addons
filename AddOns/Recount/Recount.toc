@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Cryect, ported to 2.4 by Elsia, maintained by Resike from 5.4
-## Version: v1.13.3a
+## Version: v1.13.3b
 ## OptionalDeps: Ace3, LibDropdown-1.0, LibSharedMedia-3.0, LibBossIDs-1.0, LibGraph-2.0
 ## SavedVariables: RecountDB
 ## SavedVariablesPerCharacter: RecountPerCharDB
@@ -10,6 +10,10 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF伤害统计|r |cFFFFE00ARecount|r
 ## Notes-zhCN: 基于 Graph 裤开发的伤害/治疗统计插件.
 
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
 
 locales\Recount-enUS.lua
 locales\Recount-deDE.lua

@@ -21,12 +21,9 @@ L["Allows the data of a window to be reported"] = "Permite reportar los datos de
 L["Appearance"] = "Apariencia"
 L["Arcane"] = "Arcano"
 L["Arenas"] = "Arenas"
---[[Translation missing --]]
---[[ L["Astral Power Abilities"] = "Astral Power Abilities"--]] 
---[[Translation missing --]]
---[[ L["Astral Power Gained"] = "Astral Power Gained"--]] 
---[[Translation missing --]]
---[[ L["Astral Power Sources"] = "Astral Power Sources"--]] 
+L["Astral Power Abilities"] = "Habilidades de poder astrales"
+L["Astral Power Gained"] = "Poder astral ganado"
+L["Astral Power Sources"] = "Recursos de poder astral"
 L["Attack Name"] = "Nombre del ataque"
 L["Attack Summary Incoming (Click for Outgoing)"] = "Resumen de ataque entrante (Clic para saliente)"
 L["Attack Summary Outgoing (Click for Incoming)"] = "Resumen de ataque saliente (Clic para entrante)"
@@ -142,12 +139,9 @@ L["Friendly Fired On"] = "Fuego amigo en"
 L["From"] = "De"
 L["Frost"] = "Escarcha"
 L["Frostfire"] = "Pirofrío"
---[[Translation missing --]]
---[[ L["Fury Abilities"] = "Fury Abilities"--]] 
---[[Translation missing --]]
---[[ L["Fury Gained"] = "Fury Gained"--]] 
---[[Translation missing --]]
---[[ L["Fury Sources"] = "Fury Sources"--]] 
+L["Fury Abilities"] = "Habilidades de furia"
+L["Fury Gained"] = "Furia generada"
+L["Fury Sources"] = "Recursos de furia"
 L["Gained"] = "Ganado"
 L["General Window Options"] = "Opciones de la ventana general"
 L["Glancing"] = "Vistazo"
@@ -173,8 +167,7 @@ L["Heals"] = "Sanaciones"
 L["Health"] = "Vida"
 L["Hide"] = "Ocultar"
 L["Hide When Not Collecting"] = "Oculto cuando no recolecta"
---[[Translation missing --]]
---[[ L["Hide While In Pet Battle"] = "Hide While In Pet Battle"--]] 
+L["Hide While In Pet Battle"] = "Ocultar en batalla de mascota"
 L["Hides the main window"] = "Oculta la ventana principal"
 L["Hit"] = "Golpe"
 L["Holy"] = "Sagrado"
@@ -288,8 +281,7 @@ L["Rage Sources"] = "Fuentes de ira"
 L["Raid"] = "Banda"
 L["Raid Instances"] = "Instancias de banda"
 L["Rank Number"] = "Número de rango"
---[[Translation missing --]]
---[[ L["RealID"] = "RealID"--]] 
+L["RealID"] = "ID Real"
 L["Realtime"] = "Tiempo real"
 L["Record Buffs/Debuffs"] = "Grabar beneficios/perjuicios"
 L["Record Data"] = "Grabar datos"
@@ -432,8 +424,7 @@ L["Times"] = "Tiempos"
 L["Title"] = "Título"
 L["Title Text"] = "Texto de título"
 L["Toggle"] = "Activar/desactivar"
---[[Translation missing --]]
---[[ L["Toggle merge pets"] = "Toggle merge pets"--]] 
+L["Toggle merge pets"] = "Activa/desactiva unir mascotas"
 L["Toggle pause of global data collection"] = "Activa/desactiva la pausa de recolección de datos global"
 L["Toggles sending synchronization messages"] = "Activa/desactiva el envío de mensajes de sincronización"
 L["Toggles the main window"] = "Muestra/oculta la ventana principal"

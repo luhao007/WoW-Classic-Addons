@@ -1,0 +1,21 @@
+## Interface: 11303
+## Author: kakysha
+## Version: 1.7.1
+## OptionalDeps: Ace3
+## SavedVariables: HonorSpyDB
+
+## Title: HonorSpy
+## Notes: Records PvP standings of all players
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF荣誉间谍|r |cFFFFE00Ahonorspy|r
+## Notes-zhCN: PvP 荣誉监视榜,用于收集并监视服务器荣誉角色并排行
+
+## X-Category: Battlegrounds/PvP
+## X-Curse-Project-ID: 348370
+
+Localizations\embeds.xml
+
+honorspy.lua
+GUI.lua
+settings.lua
+export.lua
+HybridScrollFrame.xml
