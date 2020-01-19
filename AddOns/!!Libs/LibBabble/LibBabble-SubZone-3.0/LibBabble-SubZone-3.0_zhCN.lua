@@ -6068,4 +6068,10 @@ lib:SetCurrentTranslations
 ["Zul'Mashar"] = "祖玛沙尔",
 ["Zun'watha"] = "祖瓦沙",
 ["Zuuldaia Ruins"] = "祖丹亚废墟",
+
+-- 被删除的怀旧服地名
+["Auberdine"] = "奥伯丁",
+["Camp Taurajo"] = "陶拉祖营地",
+["Kargath"] = "卡加斯",
+["The Barrens"] = "贫瘠之地",
 }

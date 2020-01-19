@@ -11,10 +11,6 @@
 ## Notes-zhCN: 基于 Graph 裤开发的伤害/治疗统计插件.
 
 
-#@no-lib-strip@
-embeds.xml
-#@end-no-lib-strip@
-
 locales\Recount-enUS.lua
 locales\Recount-deDE.lua
 locales\Recount-esES.lua

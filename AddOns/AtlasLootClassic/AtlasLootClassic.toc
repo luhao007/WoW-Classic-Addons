@@ -18,8 +18,6 @@
 ## X-Curse-Project-ID: 326516
 ## X-WoWI-ID: 25185
 
-embeds.xml
-
 Init.lua
 Constants.lua
 db.lua

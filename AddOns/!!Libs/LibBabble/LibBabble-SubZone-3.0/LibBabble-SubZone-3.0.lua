@@ -6086,6 +6086,12 @@ lib:SetBaseTranslations
 ["Zul'Mashar"] = "Zul'Mashar",
 ["Zun'watha"] = "Zun'watha",
 ["Zuuldaia Ruins"] = "Zuuldaia Ruins",
+
+-- Patches for legacy location in classic WoW
+["Auberdine"] = "Auberdine",
+["Camp Taurajo"] = "Camp Taurajo",
+["Kargath"] = "Kargath",
+["The Barrens"] = "The Barrens",
 }
 
 

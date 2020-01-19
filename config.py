@@ -373,11 +373,6 @@ MAPPING = {
         'Category': '界面'
     },
     'BtWObjectiveFilter': {
-        'Title-cn': '人口普查',
-        'Notes': '统计服务器中的人口数量',
-        'Category': '账号'
-    },
-    'BtWObjectiveFilter': {
         'Title-cn': '追踪过滤',
         'Notes': '在任务和副本目标等追踪界面中添加一个过滤器，来关闭不想看到的追踪',
         'Category': '界面'
