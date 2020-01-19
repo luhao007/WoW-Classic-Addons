@@ -1,14 +1,22 @@
 ------------------------------------------------------------------------
-r1226 | nevcairiel | 2019-08-12 09:31:28 +0000 (Mon, 12 Aug 2019) | 1 line
+r1230 | funkydude | 2020-01-14 17:01:25 +0000 (Tue, 14 Jan 2020) | 1 line
 Changed paths:
-   M /trunk/changelog.txt
+   M /trunk/Ace3.toc
 
-Update changelog
+bump toc
 ------------------------------------------------------------------------
-r1225 | nevcairiel | 2019-08-06 13:37:52 +0000 (Tue, 06 Aug 2019) | 1 line
+r1229 | funkydude | 2019-10-11 20:48:50 +0000 (Fri, 11 Oct 2019) | 1 line
 Changed paths:
-   M /trunk/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+   M /trunk/Ace3.toc
 
-AceConfigDialog-3.0: Add an alternate backdrop for classic, since the DialogBorderDarkTemplate does not exist there
+bump toc
+------------------------------------------------------------------------
+r1228 | nevcairiel | 2019-09-06 08:51:17 +0000 (Fri, 06 Sep 2019) | 3 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+
+AceGUI-3.0: Avoid re-entrance into the Release function
+
+This can happen if a frame is released in a callback fired in the release process, and may in some cases throw errors.
 ------------------------------------------------------------------------
 

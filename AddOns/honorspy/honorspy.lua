@@ -2,7 +2,7 @@ HonorSpy = LibStub("AceAddon-3.0"):NewAddon("HonorSpy", "AceConsole-3.0", "AceHo
 
 local L = LibStub("AceLocale-3.0"):GetLocale("HonorSpy", true)
 
-local addonName = GetAddOnMetadata("HonorSpy", "Title");
+local addonName = "HonorSpy";
 local commPrefix = addonName .. "4";
 
 local paused = false; -- pause all inspections when user opens inspect frame
@@ -101,7 +101,7 @@ function HonorSpy:INSPECT_HONOR_UPDATE()
 	ClearInspectPlayer();
 	NotifyInspect("target"); -- change real target back to player's target, broken by prev NotifyInspect call
 	ClearInspectPlayer();
-	
+
 	player.last_checked = GetServerTime();
 	player.RP = 0;
 
@@ -201,7 +201,7 @@ function HonorSpy:PLAYER_TARGET_CHANGED()
 end
 
 function HonorSpy:UpdatePlayerData(cb)
-	if (paused) then 
+	if (paused) then
 		return
 	end
 	callback = cb
@@ -236,7 +236,7 @@ function HonorSpy:BuildStandingsTable(sort_by)
 	for playerName, player in pairs(HonorSpy.db.factionrealm.currentStandings) do
 		table.insert(t, {playerName, player.class, player.thisWeekHonor or 0, player.lastWeekHonor or 0, player.standing or 0, player.RP or 0, player.rank or 0, player.last_checked or 0})
 	end
-	
+
 	local sort_column = 3; -- ThisWeekHonor
 	if (sort_by == L["Standing"]) then sort_column = 4; end
 	if (sort_by == L["Rank"]) then sort_column = 6; end
@@ -252,7 +252,7 @@ end
 function HonorSpy:GetBrackets(pool_size)
 			  -- 1   2       3      4	  5		 6		7	   8		9	 10		11		12		13	14
 	local brk =  {1, 0.845, 0.697, 0.566, 0.436, 0.327, 0.228, 0.159, 0.100, 0.060, 0.035, 0.020, 0.008, 0.003} -- brackets percentage
-	
+
 	if (not pool_size) then
 		return brk
 	end
@@ -268,7 +268,7 @@ function HonorSpy:Estimate(playerOfInterest)
 	end
 	playerOfInterest = string.utf8upper(string.utf8sub(playerOfInterest, 1, 1))..string.utf8lower(string.utf8sub(playerOfInterest, 2))
 
-	
+
 	local standing = -1;
 	local t = HonorSpy:BuildStandingsTable()
 	local avg_lastchecked = 0;
@@ -327,7 +327,7 @@ function HonorSpy:Report(playerOfInterest, skipUpdate)
 		HonorSpy:UpdatePlayerData() -- will update for next time, this report gonna be for old data
 	end
 	playerOfInterest = string.utf8upper(string.utf8sub(playerOfInterest, 1, 1))..string.utf8lower(string.utf8sub(playerOfInterest, 2))
-	
+
 	local pool_size, standing, bracket, RP, EstRP, Rank, Progress, EstRank, EstProgress = HonorSpy:Estimate(playerOfInterest)
 	if (not standing) then
 		self:Print(format(L["Player %s not found in table"], playerOfInterest));
@@ -349,7 +349,7 @@ function table.copy(t)
 end
 
 function class_exist(className)
-	if className == "WARRIOR" or 
+	if className == "WARRIOR" or
 	className == "PRIEST" or
 	className == "SHAMAN" or
 	className == "WARLOCK" or
@@ -388,7 +388,7 @@ end
 
 function store_player(playerName, player)
 	if (player == nil or playerName == nil or playerName:find("[%d%p%s%c%z]") or isFakePlayer(playerName) or not playerIsValid(player)) then return end
-	
+
 	local player = table.copy(player);
 	local localPlayer = HonorSpy.db.factionrealm.currentStandings[playerName];
 	if (localPlayer == nil or localPlayer.last_checked < player.last_checked) then
@@ -501,7 +501,7 @@ function HonorSpy:TestNextFakePlayer()
 	end
 	if (nameToTest) then
 		C_FriendList.AddFriend(nameToTest, "HonorSpy testing")
-		HS_wait(1, function() HonorSpy:TestNextFakePlayer() end) 
+		HS_wait(1, function() HonorSpy:TestNextFakePlayer() end)
 	end
 end
 
@@ -537,7 +537,7 @@ function getResetTime()
 
 	local reset_seconds = resetDay*24*60*60 + resetHour*60*60 -- reset time in seconds from week start
 	local now_seconds = s + m*60 + h*60*60 + day*24*60*60 -- seconds passed from week start
-	
+
 	local week_start = currentUnixTime - now_seconds
 	local must_reset_on = 0
 
@@ -585,12 +585,12 @@ function DrawMinimapIcon()
 		type = "data source",
 		text = addonName,
 		icon = "Interface\\Icons\\Inv_Misc_Bomb_04",
-		OnClick = function(self, button) 
+		OnClick = function(self, button)
 			if (button == "RightButton") then
 				HonorSpy:Report()
 			elseif (button == "MiddleButton") then
 				HonorSpy:Report(UnitIsPlayer("target") and UnitName("target") or nil)
-			else 
+			else
 				HonorSpy:CheckNeedReset()
 				HonorSpyGUI:Toggle()
 			end
