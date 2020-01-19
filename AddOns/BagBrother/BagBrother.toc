@@ -9,7 +9,6 @@
 ## Notes-zhCN: 记录背包和银行中的物品
 
 
-LibStub.lua
 Startup.lua
 Events.lua
 API.lua

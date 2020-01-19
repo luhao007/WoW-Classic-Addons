@@ -10,16 +10,6 @@
 
 ## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibCompress, LibRealmInfo
 
-# External libraries
-External\EmbeddedLibs\LibStub\LibStub.lua
-External\EmbeddedLibs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-External\EmbeddedLibs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-External\EmbeddedLibs\LibDBIcon-1.0\LibDBIcon-1.0.lua
-External\EmbeddedLibs\AceComm-3.0\AceComm-3.0.xml
-External\EmbeddedLibs\AceSerializer-3.0\AceSerializer-3.0.xml
-External\EmbeddedLibs\LibCompress\lib.xml
-External\EmbeddedLibs\LibRealmInfo\LibRealmInfo.lua
-
 # Our core init file
 LibTSM\Core.lua
 
