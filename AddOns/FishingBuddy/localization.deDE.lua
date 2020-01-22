@@ -14,8 +14,7 @@ FishingTranslations["deDE"] = {
 	["ABOUT_TAB"] = "Über",
 	["ADDFISHINFOMSG"] = "'%s' zum Standort %s hinzufügen.",
 	["ALLZOMGPETS"] = "Schließt alle Haustiere ein",
-	--[[Translation missing --]]
-	--[[ ["AUTHOR"] = "Sutorix (sutorix@hotmail.com)",--]] 
+	["AUTHOR"] = "Sutorix (sutorix@hotmail.com)",
 	--[[Translation missing --]]
 	--[[ ["BINDING_HEADER_FISHINGBUDDY_BINDINGS"] = "#NAME#",--]] 
 	["BINDING_NAME_FISHINGBUDDY_GOFISHING"] = "Anziehen und angeln gehen",
@@ -43,10 +42,8 @@ FishingTranslations["deDE"] = {
 	["CLICKTOSWITCH_INFO"] = "Falls aktiviert, wird ein Linksklick die Ausrüstungen wechseln, ansonsten wird er das Fishing-Buddy-Fenster öffnen.",
 	["CLICKTOSWITCH_ONOFF"] = "Anklicken, um zu wechseln",
 	["COMPATIBLE_SWITCHER"] = "Kein kompatibler Ausrüstungswechsler gefunden.",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_ALWAYSHAT_INFO"] = "If enabled, just use the damned hat (even if you don't need it).",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_ALWAYSHAT_ONOFF"] = "Use hats",--]] 
+	["CONFIG_ALWAYSHAT_INFO"] = "Wenn aktiviert, dann benutz einfach den verdammten Hut (Selbst wenn es nicht nötig ist).",
+	["CONFIG_ALWAYSHAT_ONOFF"] = "Nutze Hüte",
 	["CONFIG_ALWAYSLURE_INFO"] = "Falls aktiviert, wird ein Angelköder angebracht, wann immer die Angelrute über keinen verfügt.",
 	["CONFIG_ALWAYSLURE_ONOFF"] = "Immer ködern",
 	["CONFIG_AUTOLOOT_INFO"] = "Falls aktiviert, ist das automatische Plündern während des Angelns eingeschaltet.",

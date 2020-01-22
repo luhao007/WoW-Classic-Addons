@@ -4,6 +4,7 @@
 --                                     --
 --                                     --
 --    Patch: 1.13.2                    --
+--    Updated: January 19, 2020        --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
@@ -38,7 +39,7 @@ wlTime = GetServerTime();
 wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList = 0, 0, "", "", {};
 wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlUnit = {}, {}, {}, {}, {}, {};
 wlItemDurability, wlItemBonuses = {}, {};
-wlBaseStats2, wlProfileData, wlTradeSkillDifficulty = {}, {}, {};
+wlProfileData, wlTradeSkillDifficulty = {}, {};
 
 -- SavedVariablesPerCharacter
 wlSetting = {};
@@ -564,18 +565,6 @@ function wlGetNextEventId()
         wlEventId = wlEventId + 1;
         return wlEventId;
     end
-end
-
---**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
-
---- Event handler for PLAYER_LEVEL_UP
--- @param self The frame that received the event
--- @param ... Event info, includes the new level and primary stat delta values
--- @see wlGetBaseStats
-function wlEvent_PLAYER_LEVEL_UP(self, ...)
-    local level, healthDelta, manaDelta, _, _, strDelta, agiDelta, staDelta, intDelta, spiDelta = ...;
-
-    wlGetBaseStats(level, {strDelta, agiDelta, staDelta, intDelta, spiDelta, healthDelta, manaDelta});
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -2390,7 +2379,9 @@ function wlEvent_LOOT_OPENED(self)
             -- SendAddonMessage does not allow to send nil or "" as msg.
             -- Only send it if we got a valid 'guid'. This should not affect any data.
             if guid then
-                SendAddonMessage("WL_LOOT_COOLDOWN", guid, IsPartyLFG and IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
+                SendAddonMessage("WL_LOOT_COOLDOWN", guid,
+                        (wlIsInBattleground() and "BATTLEGROUND") or
+                        IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
             end
         else
             wlEvent_CHAT_MSG_ADDON(self, "WL_LOOT_COOLDOWN", guid, "RAID", UnitName("player"));
@@ -2518,7 +2509,9 @@ function wlEvent_LOOT_OPENED(self)
                 do break end;
             end
             if wlIsInParty() then
-                SendAddonMessage("WL_LOOT_COOLDOWN", guidMsg, IsPartyLFG and IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
+                SendAddonMessage("WL_LOOT_COOLDOWN", guidMsg,
+                        (wlIsInBattleground() and "BATTLEGROUND") or
+                        IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
             else
                 wlEvent_CHAT_MSG_ADDON(self, "WL_LOOT_COOLDOWN", guidMsg, "RAID", UnitName("player"));
             end
@@ -2662,6 +2655,10 @@ function wlIsInParty()
     return GetNumSubgroupMembers() > 0 or GetNumGroupMembers() > 1;
 end
 
+function wlIsInBattleground()
+    return UnitInBattleground("player") ~= nil;
+end
+
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
 
 
@@ -2714,7 +2711,6 @@ function wlCollect(userInitiated)
     wlQueryTimePlayed();
     
     wlScanTitles()
-    wlGetBaseStats();
     wlGetTime();
     WL_ADDONTABLE.profileData.scan();
 
@@ -3298,7 +3294,6 @@ end
 
 local wlEvents = {
     -- player
-    PLAYER_LEVEL_UP = wlEvent_PLAYER_LEVEL_UP,
     PLAYER_LOGIN = wlEvent_PLAYER_LOGIN,
     PLAYER_LOGOUT = wlEvent_PLAYER_LOGOUT,
     ADDON_LOADED = wlEvent_ADDON_LOADED,
@@ -4764,7 +4759,7 @@ function wlReset()
     wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList = WL_VERSION, 0, "", "", {};
     wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlUnit = {}, {}, {}, {}, {}, {};
     wlItemDurability, wlItemBonuses = {}, {};
-    wlBaseStats2, wlProfileData, wlTradeSkillDifficulty = {}, {}, {};
+    wlProfileData, wlTradeSkillDifficulty = {}, {};
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -4834,93 +4829,6 @@ function wlArrayLength(array, depth)
     end
 
     return count;
-end
-
---**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
-
---- Records the character's primary stats (without buffs) into a SavedVariable for datamining use.
--- @param newLevel Optional; When this is called upon level up, this holds the correct level.
--- @param statDeltas Optional; When this is called upon level up, will have additional corrections for the stats.
-function wlGetBaseStats(newLevel, statDeltas)
-    local level = UnitLevel("player");
-    local class = select(3, UnitClass("player"));
-    local race = select(3, UnitRace("player"));
-
-    if newLevel and newLevel ~= level then
-        level = newLevel
-    else
-        statDeltas = {}
-    end
-
-    wlBaseStats2[class] = wlBaseStats2[class] or {};
-    wlBaseStats2[class][race] = wlBaseStats2[class][race] or {};
-    wlBaseStats2[class][race][level] = {};
-
-    -- Loop through 5 primary stats
-    for statId=1, 5 do
-        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
-        wlBaseStats2[class][race][level][statId] = {
-            class = class,
-            race = race,
-            level = level,
-            stat = statId,
-            amount = effectiveStat - posBuff - negBuff + (statDeltas[statId] or 0),
-        }
-    end
-
-    -- Get base health
-    do
-        local health = UnitHealthMax("player");
-
-        -- Add health from the levelup
-        health = health + (statDeltas[6] or 0);
-
-        -- Are we a tauren?
-        if race == 6 then
-            -- Remove HP mult buff
-            health = floor((health / 1.05) + 0.5);
-        end
-
-        -- Get stamina, including buffs
-        local statId = 3;
-        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
-        local stamina = effectiveStat + (statDeltas[statId] or 0);
-
-        -- Subtract health gained from stamina
-        health = health - min(20, stamina) - max(0, stamina - 20) * 10;
-
-        wlBaseStats2[class][race][level][6] = {
-            class = class,
-            race = race,
-            level = level,
-            stat = 6,
-            amount = health,
-        }
-    end
-
-    -- Get base mana
-    do
-        local mana = UnitPowerMax("player", 0);
-
-        -- Add mana from the levelup
-        mana = mana + (statDeltas[7] or 0);
-
-        -- Get intellect, including buffs
-        local statId = 4;
-        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
-        local intellect = effectiveStat + (statDeltas[statId] or 0);
-
-        -- Subtract mana gained from intellect
-        mana = mana - min(20, intellect) - max(0, intellect - 20) * 15;
-
-        wlBaseStats2[class][race][level][7] = {
-            class = class,
-            race = race,
-            level = level,
-            stat = 7,
-            amount = mana,
-        }
-    end
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--

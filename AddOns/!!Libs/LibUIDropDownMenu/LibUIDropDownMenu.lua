@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 40 2018-12-23 16:14:03Z arith $
+-- $Id: LibUIDropDownMenu.lua 43 2019-09-02 14:14:50Z arith $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -13,7 +13,7 @@ local CreateFrame, GetCursorPosition, GetCVar, GetScreenHeight, GetScreenWidth, 
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-2.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 40 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 43 $"):match("%d+"))
 
 local LibStub = _G.LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -1287,8 +1287,8 @@ function L_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, 
 	L_UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	L_UIDROPDOWNMENU_MENU_LEVEL = level;
 	L_UIDROPDOWNMENU_MENU_VALUE = value;
-	local listFrame = _G["L_DropDownList"..level];
 	local listFrameName = "L_DropDownList"..level;
+	local listFrame = _G[listFrameName];
 	local tempFrame;
 	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then

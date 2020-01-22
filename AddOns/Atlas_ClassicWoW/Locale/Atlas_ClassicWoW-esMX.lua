@@ -31,8 +31,7 @@ if L then
 L["\"Ambassador\" Dagg'thol"] = "\"Embajador\" Dagg'thol"
 L["3rd Box Opened: Postmaster Malown"] = "3ª Caja Abierta: Jefe de correos Gassol"
 L["Abandonded Mole Machine"] = "Máquina topo abandonada"
---[[Translation missing --]]
---[[ L["Abomination Wing"] = ""--]] 
+L["Abomination Wing"] = "El Arrabal de los Ensamblajes"
 L["Acride <Scarshield Legion>"] = "Acride <Legión Escudo del Estigma>"
 L["Agathelos the Raging"] = "Agathelos el Furioso"
 L["Aggem Thorncurse"] = "Aggem Malaespina"
@@ -51,8 +50,7 @@ L["Ancient Treasure"] = "Tesoro Antiguo"
 L["Andorgos <Brood of Malygos>"] = "Andorgos <Camada de Malygos>"
 L["Annora (Master Enchanter)"] = "Annora <Maestra encantadora>"
 L["Antu'sul"] = "Antu'sul"
---[[Translation missing --]]
---[[ L["Anub'Rekhan"] = ""--]] 
+L["Anub'Rekhan"] = "Anub'Rekhan"
 L["Anub'shiah"] = "Anub'shiah"
 L["Aoren Sunglow <The Reliquary>"] = "Aoren Brillo del Sol <El Relicario>"
 L["AQ"] = "AQ"
@@ -64,8 +62,7 @@ L["Archaedas"] = "Archaedas"
 L["Archivist Galford"] = "Archivista Galford"
 L["Archmage Angela Dosantos <Brotherhood of the Light>"] = "Archimaga Angela Dosantos <Hermandad de la Luz>"
 L["Archmage Arugal"] = "Archimago Arugal"
---[[Translation missing --]]
---[[ L["Archmage Tarsis Kir-Moldir"] = ""--]] 
+L["Archmage Tarsis Kir-Moldir"] = "Archimago Tarsis Kil-Moldir"
 L["Argent Guard Thaelrid"] = "Guardia Argenta Thaelrid"
 L["Arm"] = "Arsenal"
 L["Armory"] = "Arsenal"
@@ -112,7 +109,7 @@ L["Burning Felguard"] = "Guardia vil ardiente"
 L["Buru the Gorger"] = "Buru el Manducador"
 L["BWL"] = "GAN"
 L["Caelestrasz"] = "Caelestrasz"
-L["Cannon Master Willey"] = "Cañonero Jefe Willey"
+L["Cannon Master Willey"] = "Maestro cañonero Willey"
 L["Captain Drenn"] = "Capitán Drenn"
 L["Captain Greenskin"] = "Capitán Verdetez"
 L["Captain Kromcrush"] = "Capitán Kromcrush"
@@ -152,8 +149,7 @@ L["Dark Coffer"] = "Arca oscura"
 L["Dark Iron Ambassador"] = "Embajador Hierro Negro"
 L["Darkmaster Gandling"] = "Maestro oscuro Gandling"
 L["Death Speaker Jargba"] = "Portavoz de la muerte Jargba"
---[[Translation missing --]]
---[[ L["Deathknight Wing"] = ""--]] 
+L["Deathknight Wing"] = "El Arrabal Militar"
 L["Deathstalker Adamant"] = "Mortacechador Adamant"
 L["Deathsworn Captain"] = "Capitán Juramorte"
 L["Defias Gunpowder"] = "Pólvora de los Defias"
@@ -172,7 +168,7 @@ L["Drakkisath's Brand"] = "La marca de Drakkisath"
 L["Dreamscythe"] = "Segasueños"
 L["Druid of the Talon"] = "Druida de la Garfa"
 L["Dustwraith"] = "Ánima de polvo"
-L["Ebonroc"] = "Ebonroc"
+L["Ebonroc"] = "Ebanorroca"
 L["Ebru <Disciple of Naralex>"] = "Ebru <Discípula de Naralex>"
 L["Edwin VanCleef"] = "Edwin VanCleef"
 L["Elder Farwhisper"] = "Ancestro Levesusurro"
@@ -206,13 +202,11 @@ L["Finkle Einhorn"] = "Finkle Einhorn"
 L["Fire of Aku'mai"] = "Fuego de Aku'mai"
 L["Firemaw"] = "Faucefogo"
 L["Flamegor"] = "Flamagor"
---[[Translation missing --]]
---[[ L["Four Horsemen Chest"] = ""--]] 
+L["Four Horsemen Chest"] = "Cofre de los Cuatro Jinetes"
 L["Four Kaldorei Elites"] = "Cuatro Élites Kaldorei"
 L["Fras Siabi"] = "Fras Siabi"
 L["Fras Siabi's Postbox"] = "Buzón de Fras Siabi"
---[[Translation missing --]]
---[[ L["Frostwyrm Lair"] = ""--]] 
+L["Frostwyrm Lair"] = "Guarida Helada"
 L["Furgus Warpwood"] = "Furgus Alabeo"
 L["Galamav the Marksman <Kargath Expeditionary Force>"] = "Galamav el Tirador <Fuerza Expedicionaria de Kargath>"
 L["Galgann Firehammer"] = "Galgann Flamartillo"
@@ -227,8 +221,7 @@ L["Ghamoo-ra"] = "Ghamoo-ra"
 L["Ghok Bashguud"] = "Ghok Bashguud"
 L["Gilnid"] = "Gilnid"
 L["Gizrul the Slavener"] = "Gizrul el Esclavista"
---[[Translation missing --]]
---[[ L["Gluth"] = ""--]] 
+L["Gluth"] = "Gluth"
 L["Glutton"] = "Glotón"
 L["Gnashjaw"] = "Rechinador"
 L["Gnome"] = "Gnomer"
@@ -236,15 +229,12 @@ L["Golem Lord Argelmach"] = "Señor Gólem Argelmach"
 L["Golemagg the Incinerator"] = "Golemagg el Incinerador"
 L["Gomora the Bloodletter"] = "Gomora el Flebotomista"
 L["Gorosh the Dervish"] = "Gorosh el Endemoniado"
---[[Translation missing --]]
---[[ L["Gothik the Harvester"] = ""--]] 
---[[Translation missing --]]
---[[ L["Grand Widow Faerlina"] = ""--]] 
+L["Gothik the Harvester"] = "Gothik el Cosechador"
+L["Grand Widow Faerlina"] = "Gran Viuda Faerlina"
 L["Graveyard"] = "Cementerio"
 L["Grimlok"] = "Grimlok"
 L["Grizzle"] = "Grisez"
---[[Translation missing --]]
---[[ L["Grobbulus"] = ""--]] 
+L["Grobbulus"] = "Grobbulus"
 L["Grubbis"] = "Grubbis"
 L["Guard Fengus"] = "Guardia Fengus"
 L["Guard Mol'dar"] = "Guardia Mol'dar"
@@ -258,8 +248,7 @@ L["Hann Ibal <S.A.F.E.>"] = "Hann Ibal <S.E.G.U.R.O.>"
 L["Hazzas"] = "Hazzas"
 L["Hearthsinger Forresten"] = "Cantachimeneas Forresten"
 L["Hedrum the Creeper"] = "Hedrum el Trepador"
---[[Translation missing --]]
---[[ L["Heigan the Unclean"] = ""--]] 
+L["Heigan the Unclean"] = "Heigan el Impuro"
 L["Heralath Fallowbrook"] = "Heralath Arroyobarbecho"
 L["Herod"] = "Herod"
 L["Hierophant Theodora Mulvadania <Kargath Expeditionary Force>"] = "Hierofante Theodora Mulvadania <Fuerza Expedicionaria de Kargath>"
@@ -268,8 +257,7 @@ L["High Inquisitor Fairbanks"] = "Alto inquisidor Ribalimpia"
 L["High Inquisitor Whitemane"] = "Alta inquisidora Melenablanca"
 L["High Interrogator Gerstahn"] = "Alta interrogadora Gerstahn"
 L["High Justice Grimstone"] = "Alto justiciero Pedrasiniestra"
---[[Translation missing --]]
---[[ L["Highlord Mograine <The Ashbringer>"] = ""--]] 
+L["Highlord Mograine <The Ashbringer>"] = "Alto señor Mograine <El portador de la Crematoria>"
 L["Highlord Omokk"] = "Alto señor Omokk"
 L["Houndmaster Grebmar"] = "Maestro de canes Grebmar"
 L["Houndmaster Loksey"] = "Maestro de canes Loksey"
@@ -280,8 +268,7 @@ L["Hydrospawn"] = "Hidromilecio"
 L["Illyanna Ravenoak"] = "Illyanna Roblecuervo"
 L["Immol'thar"] = "Immol'thar"
 L["Instructor Malicia"] = "Instructora Malicia"
---[[Translation missing --]]
---[[ L["Instructor Razuvious"] = ""--]] 
+L["Instructor Razuvious"] = "Instructor Razuvious"
 L["Interrogator Vishas"] = "Interrogador Vishas"
 L["Invoker Xorenth"] = "Convocador Xorenth"
 L["Ironaya"] = "Hierraya"
@@ -300,8 +287,7 @@ L["Kam Deepfury"] = "Kam Furiahonda"
 L["Kand Sandseeker <Explorer's League>"] = "Kand Buscadunas <Liga de Expedicionarios>"
 L["Kandrostrasz <Brood of Alexstrasza>"] = "Kandrostrasz <Camada de Alexstrasza>"
 L["Kazkaz the Unholy"] = "Kazkaz el Blasfemo"
---[[Translation missing --]]
---[[ L["Kel'Thuzad"] = ""--]] 
+L["Kel'Thuzad"] = "Kel'Thuzad"
 L["Kernobee"] = "Kernobee"
 L["Kevin Dawson <Morgan's Militia>"] = "Kevin Dawson <Milicia de Morgan>"
 L["Kharan Mighthammer"] = "Kharan Martillo Poderoso"
@@ -316,8 +302,7 @@ L["Kri"] = "Kri"
 L["Krom Stoutarm's Chest"] = "Cofre de Krom Brazorrecio"
 L["Kurinnaxx"] = "Kurinnaxx"
 L["Lady Anacondra"] = "Lady Anacondra"
---[[Translation missing --]]
---[[ L["Lady Blaumeux"] = ""--]] 
+L["Lady Blaumeux"] = "Lady Blaumeux"
 L["Lady Illucia Barov"] = "Lady Illucia Barov"
 L["Lady Sarevess"] = "Lady Sarevess"
 L["Landslide"] = "Derrumblo"
@@ -329,8 +314,7 @@ L["Lexlort <Kargath Expeditionary Force>"] = "Lexlort <Fuerza Expedicionaria de 
 L["Lib"] = "Bib"
 L["Library"] = "Biblioteca"
 L["Lidia Sunglow <The Reliquary>"] = "Lidia Brillo del Sol <El Relicario>"
---[[Translation missing --]]
---[[ L["Loatheb"] = ""--]] 
+L["Loatheb"] = "Loatheb"
 L["Lokhtos Darkbargainer"] = "Lokhtos Tratoscuro"
 L["Lokhtos Darkbargainer <The Thorium Brotherhood>"] = "Lokhtos Tratoscuro <La Hermandad del Torio>"
 L["Lord Alexei Barov"] = "Lord Alexei Barov"
@@ -353,8 +337,7 @@ L["Lothos Riftwaker"] = "Lothos Levantagrietas"
 L["Lower"] = "Inferior"
 L["Lucifron"] = "Lucifron"
 L["Mad Magglish"] = "Loco Magglish"
---[[Translation missing --]]
---[[ L["Maexxna"] = ""--]] 
+L["Maexxna"] = "Maexxna"
 L["Magister Kalendris"] = "Magister Kalendris"
 L["Magistrate Barthilas"] = "Magistrado Barthilas"
 L["Magmadar"] = "Magmadar"
@@ -394,8 +377,7 @@ L["Mordresh Fire Eye"] = "Mordresh Ojo de Fuego"
 L["Morphaz"] = "Morphaz"
 L["Mother Smolderweb"] = "Madre Telabrasada"
 L["Mountaineer Orfus <Morgan's Militia>"] = "Montaraz Orfus <Milicia de Morgan>"
---[[Translation missing --]]
---[[ L["Mr. Bigglesworth"] = ""--]] 
+L["Mr. Bigglesworth"] = "Baldomero"
 L["Mr. Smite"] = "Don Mamporro"
 L["Murd Doc <S.A.F.E.>"] = "Murd Doc <S.E.G.U.R.O.>"
 L["Mutanus the Devourer"] = "Mutanus el Devorador"
@@ -405,8 +387,7 @@ L["Naralex"] = "Naralex"
 L["Nefarian"] = "Nefarian"
 L["Nekrum Gutchewer"] = "Nekrum Cometripas"
 L["Nerub'enkan"] = "Nerub'enkan"
---[[Translation missing --]]
---[[ L["Noth the Plaguebringer"] = ""--]] 
+L["Noth the Plaguebringer"] = "Noth el Pesteador"
 L["Noxxion"] = "Noxxion"
 L["Nurse Lillian"] = "Enfermera Lillian"
 L["Obsidian Sentinel"] = "Centinela obsidiana"
@@ -430,11 +411,9 @@ L["Overlord Wyrmthalak"] = "Señor supremo Vermiothalak"
 L["Overmaster Pyron"] = "Maestro Supremo Pyron"
 L["Packmaster Stonebruiser <Brotherhood of the Light>"] = "Maestro de manada Mazadura <Hermandad de la Luz>"
 L["Panzor the Invincible"] = "Panzor el Invencible"
---[[Translation missing --]]
---[[ L["Patchwerk"] = ""--]] 
+L["Patchwerk"] = "Remendejo"
 L["Phalanx"] = "Falange"
---[[Translation missing --]]
---[[ L["Plague Wing"] = ""--]] 
+L["Plague Wing"] = "El Arrabal de la Peste"
 L["Plaguemaw the Rotting"] = "Faucepeste el Podrido"
 L["Plugger Spazzring"] = "Plugger Aropatoso"
 L["Postmaster Malown"] = "Jefe de correos Gassol"
@@ -477,8 +456,7 @@ L["Roughshod Pike"] = "Pica férrea"
 L["Ruuzlu"] = "Ruuzlu"
 L["Safe Room"] = "Habitación segura"
 L["Sandarr Dunereaver"] = "Sandarr Asaltadunas"
---[[Translation missing --]]
---[[ L["Sapphiron"] = ""--]] 
+L["Sapphiron"] = "Sapphiron"
 L["Scarlet Commander Mograine"] = "Comandante Escarlata Mograine"
 L["Scarshield Quartermaster <Scarshield Legion>"] = "Intendente del Escudo del Estigma <Legión Escudo del Estigma>"
 L["Schematic: Field Repair Bot 74A"] = "Esquema: robot de reparación de campo 74A"
@@ -499,8 +477,7 @@ L["Shen'dralar Ancient"] = "Ancestro Shen'dralar"
 L["Shen'dralar Provisioner"] = "Proveedor Shen'dralar"
 L["Shen'dralar Watcher"] = "Vigía Shen'dralar"
 L["Side"] = "Lado"
---[[Translation missing --]]
---[[ L["Sir Zeliek"] = ""--]] 
+L["Sir Zeliek"] = "Sir Zeliek"
 L["Sixth Mosh'aru Tablet"] = "Sexta tablilla Mosh'aru"
 L["Skeletal Remains of Kariel Winthalus"] = "Restos de Kariel Winthalus"
 L["Skul"] = "Skul"
@@ -511,8 +488,7 @@ L["Sneed's Shredder"] = "Trituradora de Sneed"
 L["Sorcerer Ashcrombe"] = "Hechicero Ashcrombe"
 L["Sothos"] = "Sothos"
 L["Spawn of Hakkar"] = "Engendro de Hakkar"
---[[Translation missing --]]
---[[ L["Spider Wing"] = ""--]] 
+L["Spider Wing"] = "El Arrabal Arácnido"
 L["Spirestone Lord Magus"] = "Señor Magus Cumbrerroca"
 L["Spirit of Agamaggan <Ancient>"] = "Espíritu de Agamaggan <Anciano>"
 L["Spoils of Blackfathom"] = "Botín de las Cavernas de Brazanegra"
@@ -532,11 +508,9 @@ L["Tablet of Will"] = "Tablilla de Voluntad"
 L["Taragaman the Hungerer"] = "Taragaman el Hambriento"
 L["Targorr the Dread"] = "Targorr el Pavoroso"
 L["Tendris Warpwood"] = "Tendris Alabeo"
---[[Translation missing --]]
---[[ L["Thaddius"] = ""--]] 
+L["Thaddius"] = "Thaddius"
 L["Thal'trak Proudtusk <Kargath Expeditionary Force>"] = "Thal'trak Colmillo Orgulloso <Fuerza Expedicionaria de Kargath>"
---[[Translation missing --]]
---[[ L["Thane Korth'azz"] = ""--]] 
+L["Thane Korth'azz"] = "Señor feudal Korth'azz"
 L["The Beast"] = "La Bestia"
 L["The Behemoth"] = "El Behemoth"
 L["The Black Anvil"] = "El Yunquenegro"
@@ -546,8 +520,7 @@ L["The Deed to Caer Darrow"] = "Las escrituras de Castel Darrow"
 L["The Deed to Southshore"] = "Las escrituras de Costasur"
 L["The Deed to Tarren Mill"] = "Las escrituras de Molino Tarren"
 L["The Discs of Norgannon"] = "Los Discos de Norgannon"
---[[Translation missing --]]
---[[ L["The Four Horsemen"] = ""--]] 
+L["The Four Horsemen"] = "Los Cuatro Jinetes"
 L["The Grim Guzzler"] = "El Tragapenas"
 L["The Lyceum"] = "El Liceo"
 L["The Nameless Prophet"] = "El profeta sin nombre"
@@ -555,7 +528,7 @@ L["The Prophet Skeram"] = "El profeta Skeram"
 L["The Ravenian"] = "El Devorador"
 L["The Shadowforge Lock"] = "El candado de Forjatiniebla"
 L["The Sparklematic 5200"] = "El Destellamatic 5200"
-L["The Unforgiven"] = "El Imperdonable"
+L["The Unforgiven"] = "La Imperdonable"
 L["The Vault"] = "Cámara Negra"
 L["Theka the Martyr"] = "Theka el Mártir"
 L["Theldren"] = "Theldren"
@@ -600,11 +573,11 @@ L["Warden Thelwater"] = "Celador Thelagua"
 L["Warder Stilgiss"] = "Depositario Stilgiss"
 L["Warlord Goretooth <Kargath Expeditionary Force>"] = "Señor de la guerra Dientegore <Fuerza Expedicionaria de Kargath>"
 L["Warosh"] = "Warosh"
-L["Watchman Doomgrip"] = "Vigía Presaletal"
+L["Watchman Doomgrip"] = "Velador Presaletal"
 L["WC"] = "CL"
 L["Weaver"] = "Sastrón"
 L["Weegli Blastfuse"] = "Weegli Plomofundido"
-L["Whelp Eggs"] = "Huevos de cría"
+L["Whelp Eggs"] = "Cría de Onyxia"
 L["Willix the Importer"] = "Willix el Importador"
 L["Witch Doctor Zum'rah"] = "Médico brujo Zum'rah"
 L["Wolf Master Nandos"] = "Maestro de lobos Nandos"

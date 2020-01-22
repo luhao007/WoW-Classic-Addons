@@ -25,7 +25,7 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 	local stackSize = record:GetField("stackSize")
 	local itemString = record:GetField("itemString")
 	local shouldConfirm = false
-	if TSM.IsWow83() and ItemInfo.IsCommodity(itemString) then
+	if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
 		shouldConfirm = true
 	elseif isBuy and record:GetField("isHighBidder") then
 		shouldConfirm = true
@@ -41,13 +41,13 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 		return true
 	end
 
-	if TSM.IsWow83() and ItemInfo.IsCommodity(itemString) then
+	if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
 		assert(isBuy)
 		local numAvailable = stackSize - record:GetField("numOwnerItems")
 		baseFrame:ShowDialogFrame(TSMAPI_FOUR.UI.NewElement("Frame", "frame")
 			:SetLayout("VERTICAL")
 			:SetStyle("width", 290)
-			:SetStyle("height", 154)
+			:SetStyle("height", 144)
 			:SetStyle("anchors", { { "CENTER" } })
 			:SetStyle("background", "#2e2e2e")
 			:SetStyle("border", "#e2e2e2")
@@ -134,6 +134,16 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 					:SetMaxNumber(numAvailable)
 					:SetStyle("justifyH", "CENTER")
 					:SetScript("OnTextChanged", private.InputQtyOnTextChanged)
+				)
+				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "maxBtn")
+					:SetStyle("width", 50)
+					:SetStyle("height", 15)
+					:SetStyle("margin.left", 4)
+					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
+					:SetStyle("fontHeight", 12)
+					:SetContext(numAvailable)
+					:SetText(L["MAX"])
+					:SetScript("OnClick", private.MaxQtyBtnOnClick)
 				)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "confirmBtn")
@@ -280,18 +290,26 @@ function private.BuyoutConfirmCloseBtnOnClick(button)
 end
 
 function private.InputQtyOnTextChanged(input)
+	local minQuantity, maxQuantity = input:GetMinMaxNumber()
+	local quantity = input:GetNumber()
 	input:SetText(input:GetText())
-	local total = Money.FromString(input:GetElement("__parent.__parent.price.money"):GetText()) * input:GetNumber()
+	local total = Money.FromString(input:GetElement("__parent.__parent.price.money"):GetText()) * quantity
 	input:GetElement("__parent.__parent.total.money"):SetText(Money.ToString(total, nil, "OPT_83_NO_COPPER"))
 		:Draw()
 
 	local confirmBtn = input:GetElement("__parent.__parent.confirmBtn")
-	if total > 0 and GetMoney() > total then
+	if total > 0 and GetMoney() > total and quantity >= minQuantity and quantity <= maxQuantity then
 		confirmBtn:SetDisabled(false)
 	else
 		confirmBtn:SetDisabled(true)
 	end
 	confirmBtn:Draw()
+end
+
+function private.MaxQtyBtnOnClick(button)
+	button:GetElement("__parent.input")
+		:SetText(button:GetContext())
+		:Draw()
 end
 
 function private.ConfirmBtnOnClick(button)

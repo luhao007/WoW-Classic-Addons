@@ -35,7 +35,7 @@ function AuctionUI.OnInitialize()
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
 	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionUI") end)
 	else
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
@@ -133,7 +133,7 @@ end
 
 function private.AuctionFrameInit()
 	local tabTemplateName = nil
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		private.defaultFrame = AuctionFrame
 		tabTemplateName = "AuctionTabTemplate"
 	else
@@ -148,7 +148,7 @@ function private.AuctionFrameInit()
 		tab:SetID(tabId)
 		tab:SetText("|cff99ffffTSM4|r")
 		tab:SetNormalFontObject(GameFontHighlightSmall)
-		if not TSM.IsWow83() then
+		if TSM.IsWowClassic() then
 			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
 		else
 			tab:SetPoint("LEFT", AuctionHouseFrame.Tabs[tabId - 1], "RIGHT", -15, 0)
@@ -227,7 +227,7 @@ function private.BaseFrameOnHide(frame)
 	frame:Release()
 	private.frame = nil
 	if not private.isSwitching then
-		if not TSM.IsWow83() then
+		if TSM.IsWowClassic() then
 			CloseAuctionHouse()
 		else
 			C_AuctionHouse.CloseAuctionHouse()
@@ -250,13 +250,13 @@ end
 
 function private.TSMTabOnClick()
 	TSM.db.global.internalData.auctionUIFrameContext.showDefault = false
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 	end
 	ClearCursor()
 	-- Replace CloseAuctionHouse() with a no-op while hiding the AH frame so we don't stop interacting with the AH NPC
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		local origCloseAuctionHouse = CloseAuctionHouse
 		CloseAuctionHouse = NoOp
 		AuctionFrame_Hide()

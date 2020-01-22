@@ -1,6 +1,6 @@
 # Prat 3.0
 
-## [3.7.45](https://github.com/sylvanaar/prat-3-0/tree/3.7.45) (2019-12-14)
-[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.7.44...3.7.45)
+## [3.7.47](https://github.com/sylvanaar/prat-3-0/tree/3.7.47) (2020-01-19)
+[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.7.46...3.7.47)
 
-- Classic TOC 11303  
+- Create CODE\_OF\_CONDUCT.md  

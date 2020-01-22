@@ -420,7 +420,7 @@ function AuctionFilter._IsFiltered(self, ignoreItemLevel, rowItemString, rowBuyo
 	if self._invType and ItemInfo.GetInvSlotId(rowItemString) ~= self._invType then
 		return true
 	end
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		if self._evenOnly and stackSize < 5 then
 			return true
 		end
@@ -475,7 +475,7 @@ function AuctionFilter._ShouldScanItem(self, baseItemString, itemString, minPric
 end
 
 function AuctionFilter._DoAuctionQueryThreaded(self)
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		assert(not self:_IsGetAll()) -- GetAll is not supported on >= 8.3
 
 		local query = Threading.AcquireSafeTempTable()
@@ -686,7 +686,7 @@ function AuctionFilter._RemoveResultRows(self, db, row, numBought)
 	else
 		stackSize = stackSize - numBought
 		assert(stackSize > 0)
-		assert(TSM.IsWow83() and ItemInfo.IsCommodity(itemString))
+		assert(not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString))
 		row:SetField("stackSize", stackSize)
 			:Update()
 	end

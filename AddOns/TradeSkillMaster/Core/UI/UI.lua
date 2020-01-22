@@ -47,13 +47,6 @@ do
 			"|cffe1f71f8h|r",
 			"|cff4ff71f24h|r",
 		}
-	elseif not TSM.IsWow83() then
-		TIME_LEFT_STRINGS = {
-			"|cfff72d1f30m|r",
-			"|cfff72d1f2h|r",
-			"|cffe1f71f12h|r",
-			"|cff4ff71f48h|r",
-		}
 	else
 		TIME_LEFT_STRINGS = {
 			"|cfff72d1f1h|r",

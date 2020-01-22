@@ -771,7 +771,7 @@ function private.GetPostingFrame()
 				:SetScript("OnClick", private.ItemBtnOnClick)
 			)
 		)
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "quantity")
 				:SetLayout("HORIZONTAL")
 				:SetStyle("height", 20)
@@ -907,7 +907,7 @@ function private.GetPostingFrame()
 			)
 		)
 		:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "stack")
 				:SetStyle("width", 49)
 				:SetStyle("height", 14)
@@ -1103,7 +1103,7 @@ function private.PostingFrameOnUpdate(frame)
 	end
 	local undercut = TSMAPI_FOUR.PlayerInfo.IsPlayer(record.seller, true, true, true) and 0 or 1
 	local bid = floor(record.displayedBid / record.stackSize) - undercut
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		bid = Math.Round(bid, COPPER_PER_SILVER)
 	end
 	if bid <= 0 then
@@ -1112,10 +1112,10 @@ function private.PostingFrameOnUpdate(frame)
 		bid = MAXIMUM_BID_PRICE
 	end
 	local buyout = nil
-	if TSM.IsWow83() then
-		buyout = Math.Round(record.buyout / record.stackSize - undercut, COPPER_PER_SILVER)
-	else
+	if TSM.IsWowClassic() then
 		buyout = floor(record.buyout / record.stackSize) - undercut
+	else
+		buyout = Math.Round(record.buyout / record.stackSize - undercut, COPPER_PER_SILVER)
 	end
 	if buyout < 0 then
 		buyout = 0
@@ -1130,7 +1130,7 @@ function private.PostingFrameOnUpdate(frame)
 		:SetTooltip(private.itemString)
 	frame:GetElement("item.name")
 		:SetText(TSM.UI.GetColoredItemName(private.itemString))
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		if ItemInfo.IsCommodity(private.itemString) then
 			frame:GetElement("bid"):Hide()
 		else
@@ -1558,7 +1558,7 @@ end
 function private.BuyoutTextOnValueChanged(text, value, skipUpdate)
 	value = Money.FromString(value)
 	if value then
-		if TSM.IsWow83() then
+		if not TSM.IsWowClassic() then
 			value = Math.Round(value, COPPER_PER_SILVER)
 		end
 		value = min(value, MAXIMUM_BID_PRICE)
@@ -1681,7 +1681,7 @@ function private.UpdateDepositCost(frame)
 	local postTime = Table.GetDistinctKey(POST_TIME_STRS, private.postTimeStr)
 	local stackSize = tonumber(frame:GetElement("quantity.stackSize"):GetText())
 	local depositCost = nil
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		private.itemLocation:Clear()
 		private.itemLocation:SetBagAndSlot(postBag, postSlot)
 		local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
@@ -1732,7 +1732,7 @@ function private.PostButtonOnClick(button)
 		:GetFirstResultAndRelease()
 	if postBag and postSlot then
 		local postTime = Table.GetDistinctKey(POST_TIME_STRS, frame:GetElement("duration.toggle"):GetValue())
-		if TSM.IsWow83() then
+		if not TSM.IsWowClassic() then
 			bid = Math.Round(bid, COPPER_PER_SILVER)
 			buyout = Math.Round(buyout, COPPER_PER_SILVER)
 			private.itemLocation:Clear()
@@ -1796,10 +1796,10 @@ end
 
 function private.GetMaxPostStack(itemString)
 	local numHave = private.GetBagQuantity(itemString)
-	if TSM.IsWow83() then
-		return numHave
-	else
+	if TSM.IsWowClassic() then
 		return min(ItemInfo.GetMaxStack(itemString), numHave)
+	else
+		return numHave
 	end
 end
 
@@ -1817,7 +1817,7 @@ function private.MaxNumBtnOnClick(button)
 end
 
 function private.MaxStackSizeBtnOnClick(button)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		button:GetElement("__parent.__parent.quantity.num"):SetFocused(false)
 	end
 	local itemString = button:GetElement("__parent.__parent.confirmBtn"):GetContext()
@@ -1827,7 +1827,7 @@ function private.MaxStackSizeBtnOnClick(button)
 	button:GetElement("__parent.__parent.quantity.stackSize")
 		:SetText(stackSize)
 		:Draw()
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		local numStacks = tonumber(button:GetElement("__parent.__parent.quantity.num"):GetText())
 		local newStackSize = floor(numHave / stackSize)
 		if numStacks > newStackSize then
@@ -2153,7 +2153,7 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_AUCTION_FOUND")
 			:SetOnEnter(function(context, result)
 				TSM.UI.AuctionUI.EndedScan(L["Shopping"])
-				if TSM.IsWow83() then
+				if not TSM.IsWowClassic() then
 					local numCanBuy = min(result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
 					context.findResult = numCanBuy > 0
 					context.numFound = numCanBuy
@@ -2211,7 +2211,7 @@ function private.FSMCreate()
 				context.progressText = progressText
 				context.postDisabled = private.GetBagQuantity(selection:GetField("itemString")) == 0
 				local isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
-				if numCanBuy == 0 or isPlayer or (TSM.IsWow83() and numConfirming > 0) then
+				if numCanBuy == 0 or isPlayer or (not TSM.IsWowClassic() and numConfirming > 0) then
 					context.bidDisabled = true
 					context.buyoutDisabled = true
 				else
@@ -2292,11 +2292,11 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_PLACING_BUY")
 			:SetOnEnter(function(context, quantity)
-				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
-				assert(TSM.IsWow83() or index)
+				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
+				assert(not TSM.IsWowClassic() or index)
 				-- buy the auction
 				if context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetField("buyout"), context.findAuction, false, quantity) then
-					context.numBought = context.numBought + (TSM.IsWow83() and quantity or 1)
+					context.numBought = context.numBought + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
 					Log.PrintfUser(L["Failed to buy auction of %s."], context.findAuction:GetField("rawLink"))
@@ -2312,18 +2312,18 @@ function private.FSMCreate()
 				else
 					Log.PrintfUser(L["Failed to buy auction of %s."], context.findAuction:GetField("rawLink"))
 				end
-				context.numConfirmed = context.numConfirmed + (TSM.IsWow83() and context.lastBuyQuantity or 1)
+				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
 				return "ST_BUYING", context.lastBuyQuantity
 			end)
 			:AddTransition("ST_BUYING")
 		)
 		:AddState(FSM.NewState("ST_PLACING_BID")
 			:SetOnEnter(function(context, quantity)
-				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
-				assert(TSM.IsWow83() or index)
+				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
+				assert(not TSM.IsWowClassic() or index)
 				-- bid on the auction
 				if context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction, false, quantity) then
-					context.numBid = context.numBid + (TSM.IsWow83() and quantity or 1)
+					context.numBid = context.numBid + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
 					Log.PrintfUser(L["Failed to bid on auction of %s."], context.findAuction:GetField("rawLink"))

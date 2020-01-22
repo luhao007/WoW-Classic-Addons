@@ -55,12 +55,12 @@ function Debug.GetStackLevelLocation(targetLevel, thread)
 		if not stackLine or stackLine == "" then
 			return
 		end
-		if TSM.IsWow83() then
+		if TSM.IsWowClassic() or TSM.__IS_TEST_ENV then
+			stackLine = strmatch(stackLine, "^%.*([^:]+:%d+):")
+		else
 			local numSubs = nil
 			stackLine, numSubs = gsub(stackLine, "^%[string \"@([^%.]+%.lua)\"%](:%d+).*$", "%1%2")
 			stackLine = numSubs > 0 and stackLine or nil
-		else
-			stackLine = strmatch(stackLine, "^%.*([^:]+:%d+):")
 		end
 		if stackLine then
 			local ignored = false

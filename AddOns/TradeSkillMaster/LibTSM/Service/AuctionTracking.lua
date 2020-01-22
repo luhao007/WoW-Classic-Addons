@@ -42,7 +42,7 @@ local private = {
 local PLAYER_NAME = UnitName("player")
 local SALE_HINT_SEP = "\001"
 local SALE_HINT_EXPIRE_TIME = 33 * 24 * 60 * 60
-local SORT_ORDER_83 = TSM.IsWow83() and {
+local SORT_ORDER = not TSM.IsWowClassic() and {
 	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
 	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
 }
@@ -63,7 +63,7 @@ AuctionTracking:OnSettingsLoad(function()
 		:AddKey("global", "coreOptions", "auctionSaleSound")
 	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowHandler)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseClosedHandler)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		Event.Register("AUCTION_OWNED_LIST_UPDATE", private.AuctionOwnedListUpdateHandler)
 	else
 		Event.Register("OWNED_AUCTIONS_UPDATED", private.AuctionOwnedListUpdateHandler)
@@ -102,7 +102,7 @@ AuctionTracking:OnSettingsLoad(function()
 		end
 	end
 
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		hooksecurefunc("PostAuction", function(_, _, duration)
 			private.PostAuctionHookHandler(duration)
 		end)
@@ -120,7 +120,7 @@ AuctionTracking:OnSettingsLoad(function()
 
 	-- setup enhanced sale / buy messages
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", private.FilterSystemMsg)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		hooksecurefunc("PlaceAuctionBid", function(_, index, amountPaid)
 			local link = GetAuctionItemLink("list", index)
 			local name, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo("list", index)
@@ -214,10 +214,10 @@ function AuctionTracking.QueryOwnedAuctions()
 	if not private.isAHOpen then
 		return
 	end
-	if TSM.IsWow83() then
-		C_AuctionHouse.QueryOwnedAuctions(SORT_ORDER_83)
-	else
+	if TSM.IsWowClassic() then
 		GetOwnerAuctionItems()
+	else
+		C_AuctionHouse.QueryOwnedAuctions(SORT_ORDER)
 	end
 end
 
@@ -229,12 +229,12 @@ end
 
 function private.AuctionHouseShowHandler()
 	private.isAHOpen = true
-	if TSM.IsWow83() then
-		Delay.AfterTime(0.1, AuctionTracking.QueryOwnedAuctions)
-	else
+	if TSM.IsWowClassic() then
 		AuctionTracking.QueryOwnedAuctions()
 		-- We don't always get AUCTION_OWNED_LIST_UPDATE events, so do our own scanning if needed
 		Delay.AfterTime("AUCTION_BACKGROUND_SCAN", 1, private.DoBackgroundScan, 1)
+	else
+		Delay.AfterTime(0.1, AuctionTracking.QueryOwnedAuctions)
 	end
 end
 
@@ -284,12 +284,12 @@ function private.AuctionOwnedListUpdateDelayed()
 		-- default UI auctions tab is visible, so scan later
 		Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
 		return
-	elseif TSM.IsWow83() and not C_AuctionHouse.HasFullOwnedAuctionResults() then
+	elseif not TSM.IsWowClassic() and not C_AuctionHouse.HasFullOwnedAuctionResults() then
 		-- don't have all the results yet, so try again in a moment
 		Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 0.1, private.AuctionOwnedListUpdateDelayed)
 		return
 	end
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		-- check if we need to change the sort
 		local needsSort = false
 		local numColumns = #AuctionSort.owner_duration
@@ -328,10 +328,7 @@ function private.AuctionOwnedListUpdateDelayed()
 			local itemString = ItemString.Get(link)
 			local currentBid = highBidder ~= "" and bid or minBid
 			if saleStatus == 0 then
-				if TSM.IsWow83() then
-					duration = time() + duration
-					expire = min(expire, duration)
-				else
+				if TSM.IsWowClassic() then
 					if duration == 1 then -- 30 min
 						expire = min(expire, time() + 0.5 * 60 * 60)
 					elseif duration == 2 then -- 2 hours
@@ -339,6 +336,9 @@ function private.AuctionOwnedListUpdateDelayed()
 					elseif duration == 3 then -- 12 hours
 						expire = min(expire, time() + 12 * 60 * 60)
 					end
+				else
+					duration = time() + duration
+					expire = min(expire, duration)
 				end
 				local baseItemString = ItemString.GetBaseFast(itemString)
 				private.settings.auctionQuantity[baseItemString] = (private.settings.auctionQuantity[baseItemString] or 0) + stackSize
@@ -390,7 +390,7 @@ function private.RebuildQuantityDB()
 end
 
 function private.GetNumOwnedAuctions()
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		return GetNumAuctionItems("owner")
 	else
 		return C_AuctionHouse.GetNumOwnedAuctions()
@@ -398,7 +398,7 @@ function private.GetNumOwnedAuctions()
 end
 
 function private.GetOwnedAuctionInfo(index)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		local name, texture, stackSize, quality, _, _, _, minBid, _, buyout, bid, highBidder, _, _, _, saleStatus = GetAuctionItemInfo("owner", index)
 		local link = name and name ~= "" and GetAuctionItemLink("owner", index)
 		if not link then

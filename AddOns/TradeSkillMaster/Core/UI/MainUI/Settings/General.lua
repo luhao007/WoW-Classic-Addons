@@ -203,6 +203,7 @@ function private.GetGeneralSettingsFrame()
 				:SetStyle("hintJustifyH", "LEFT")
 				:SetHintText(L["Enter a name for the new profile"])
 				:SetScript("OnEnterPressed", private.NewProfileInputOnEnterPressed)
+				:SetScript("OnTextChanged", private.NewProfileInputOnTextChanged)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "newProfileBtn")
 				:SetStyle("width", 240)
@@ -569,6 +570,10 @@ end
 
 function private.NewProfileInputOnEnterPressed(input)
 	input:GetElement("__parent.newProfileBtn"):Click()
+end
+
+function private.NewProfileInputOnTextChanged(input)
+	input:SetText(input:GetText())
 end
 
 function private.NewProfileBtnOnClick(button)

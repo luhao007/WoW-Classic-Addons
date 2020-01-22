@@ -96,7 +96,7 @@ function AuctionScrollingTable.Acquire(self)
 			:SetJustifyH("RIGHT")
 			:SetTextFunction(private.GetItemLevelCellText)
 			:Commit()
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		self:GetScrollingTableInfo()
 			:NewColumn("qty")
 				:SetTitles(L["Qty"])
@@ -377,19 +377,11 @@ function AuctionScrollingTable._UpdateData(self)
 		end
 
 		-- count the number of auctions grouped by hash
-		if TSM.IsWow83() then
-			if not self._numAuctionsByHash[hash] then
-				self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
-				self._numAuctionsByHash[hash] = 0
-			end
-			self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + record.stackSize
-		else
-			if not self._numAuctionsByHash[hash] then
-				self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
-				self._numAuctionsByHash[hash] = 0
-			end
-			self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + 1
+		if not self._numAuctionsByHash[hash] then
+			self._numAuctionsByItem[baseItemString] = (self._numAuctionsByItem[baseItemString] or 0) + 1
+			self._numAuctionsByHash[hash] = 0
 		end
+		self._numAuctionsByHash[hash] = self._numAuctionsByHash[hash] + (TSM.IsWowClassic() and 1 or record.stackSize)
 	end
 
 	-- sort the data

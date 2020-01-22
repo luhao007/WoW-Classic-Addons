@@ -1,3 +1,6 @@
+Version 0.7.3 Beta 2
+- Update LibTouristClassic
+
 Version 0.7.3 Beta 1
 - Update LibBabble-SubZone
 

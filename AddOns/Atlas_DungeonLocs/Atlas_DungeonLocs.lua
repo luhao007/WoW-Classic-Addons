@@ -1,4 +1,4 @@
--- $Id: Atlas_DungeonLocs.lua 60 2020-01-16 13:51:24Z arith $
+-- $Id: Atlas_DungeonLocs.lua 63 2020-01-19 16:30:36Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -363,8 +363,8 @@ else
 			{ WHIT.." 7) "..BZ["Shrine of the Storm"]..GREY..ALC["Comma"].._RED..BZ["Stormsong Valley"], 10007 },
 			{ WHIT.." 8) "..BZ["Crucible of Storms"]..GREY..ALC["Comma"].._RED..BZ["Stormsong Valley"], 10008 },
 		},
-		DLZuldazar = {
-			ZoneName = { BZ["Zuldazar"] },
+		DLZandalar = {
+			ZoneName = { BZ["Zandalar"] },
 			{ WHIT.." 1) "..BZ["The MOTHERLODE!!"]..GREY..ALC["Comma"].._RED..BZ["Zuldazar"], 10001 },
 			{ WHIT.." 2) "..BZ["Atal'Dazar"]..GREY..ALC["Comma"].._RED..BZ["Zuldazar"], 10002 },
 			{ WHIT.." 3) "..BZ["Kings' Rest"]..GREY..ALC["Comma"].._RED..BZ["Zuldazar"], 10003 },
@@ -523,7 +523,7 @@ else
 			{ 7, 10007, 389, 86 },
 			{ 8, 10008, 411, 124 },
 		},
-		DLZuldazar = {
+		DLZandalar = {
 			{ 1, 10001, 223, 416 },
 			{ 2, 10002, 271, 316 },
 			{ 3, 10003, 234, 312 },

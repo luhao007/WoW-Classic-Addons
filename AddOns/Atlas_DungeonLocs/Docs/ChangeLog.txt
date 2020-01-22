@@ -1,4 +1,4 @@
-ˇ$Id: ChangeLog.txt 60 2020-01-16 13:51:24Z arith $
+ˇ$Id: ChangeLog.txt 63 2020-01-19 16:30:36Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbertat gmail dot com>
 Copyright 2010 - Lothaer <lothayerat gmail dot com>, Atlas Team
@@ -8,6 +8,10 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 = Change Log =
 ==============
 
+v1.47.00.11303.00 (Jan. 20, 2020)
+------------------------
+- ToC update to support WoW 8.3.0
+- Corrected dungeon location of Zuldazar to Zandalar
 v1.46.01.11303.00 (Jan. 16, 2020)
 ------------------------
 - Merge with WoW classic's dungeon maps

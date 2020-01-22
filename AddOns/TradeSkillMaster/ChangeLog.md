@@ -1,12 +1,10 @@
-## v4.9.16 Changes
+## v4.9.17 Changes
 
-* Fixed issue with items not showing in Shopping search results in some situations
-* [Retail] Fixed My Auctions total amounts
-* [Retail] Fixed false-positive phasing messages
-* [Retail] Fixed error after stopping a scan
-* [Retail] Fixed issue with how Auctioning was rounding prices to the nearest silver
-* [Retail] Fixed issue with trying to buy commodity items not always finding the auction
-* [Retail] Fixed issue with purchased auctions not being counted towards mail inventory
-* [Retail] Fixed issue with Shopping buy confirmation showing the incorrect auction price
+* The total posted auction stats in My Auctions will no longer include sold auctions
+* Fixed issue with custom price source updates not properly reflecting until a reload
+* Fixed issue with creating new profiles not working
+* [Retail] Fixed issue with Accounting recording of purchases and sales with multiple sellers / buyers
+* [Retail] Added new 8.3 bonusIds
+* [Retail] Added "MAX" button to Shopping's commodity buyout confirmation dialog
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

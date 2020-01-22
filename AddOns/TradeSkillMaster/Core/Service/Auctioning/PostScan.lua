@@ -129,7 +129,7 @@ function PostScan.DoProcess()
 	local itemString, stackSize, bid, buyout, itemBuyout, postTime = postRow:GetFields("itemString", "stackSize", "bid", "buyout", "itemBuyout", "postTime")
 	local bag, slot = private.GetPostBagSlot(itemString, stackSize)
 	if bag then
-		if not TSM.IsWow83() then
+		if TSM.IsWowClassic() then
 			-- need to set the duration in the default UI to avoid Blizzard errors
 			AuctionFrameAuctions.duration = postTime
 			ClearCursor()
@@ -343,7 +343,7 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 	end
 
 	local minPostQuantity = nil
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		minPostQuantity = 1
 	else
 		-- check the stack size
@@ -411,7 +411,7 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 			-- just a warning, not an error
 			Log.PrintfUser(L["WARNING: Your minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."], ItemInfo.GetLink(itemString))
 		end
-		return true, (TSM.IsWow83() and 1 or operationSettings.stackSize) * operationSettings.postCap
+		return true, (TSM.IsWowClassic() and operationSettings.stackSize or 1) * operationSettings.postCap
 	end
 end
 
@@ -440,7 +440,7 @@ function private.IsFilterDoneForItem(auctionScan, itemString)
 				:GreaterThan("itemBuyout", 0)
 				:GreaterThan("timeLeft", operationSettings.ignoreLowDuration)
 				:OrderBy("itemBuyout", true)
-			if not TSM.IsWow83() and operationSettings.matchStackSize then
+			if TSM.IsWowClassic() and operationSettings.matchStackSize then
 				query:Equal("stackSize", operationSettings.stackSize)
 			end
 			local numBuyouts = query:Count()
@@ -514,12 +514,12 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	end
 
 	local perAuction, maxCanPost = nil, nil
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		perAuction = min(operationSettings.postCap, numHave)
 		maxCanPost = 1
 	else
 		local maxStackSize = ItemInfo.GetMaxStack(itemString)
-		if not TSM.IsWow83() and operationSettings.stackSize > maxStackSize and not operationSettings.stackSizeIsCap then
+		if TSM.IsWowClassic() and operationSettings.stackSize > maxStackSize and not operationSettings.stackSizeIsCap then
 			return "postNotEnough"
 		end
 		perAuction = min(operationSettings.stackSize, maxStackSize)
@@ -624,15 +624,15 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	if lowestAuction then
 		TempTable.Release(lowestAuction)
 	end
-	if TSM.IsWow83() then
+	if TSM.IsWowClassic() then
+		bid = floor(bid)
+	else
 		bid = max(Math.Round(bid, COPPER_PER_SILVER), COPPER_PER_SILVER)
 		buyout = max(Math.Round(buyout, COPPER_PER_SILVER), COPPER_PER_SILVER)
-	else
-		bid = floor(bid)
 	end
 
-	bid = min(bid, TSM.IsWow83() and MAXIMUM_BID_PRICE - 99 or MAXIMUM_BID_PRICE)
-	buyout = min(buyout, TSM.IsWow83() and MAXIMUM_BID_PRICE - 99 or MAXIMUM_BID_PRICE)
+	bid = min(bid, TSM.IsWowClassic() and MAXIMUM_BID_PRICE or MAXIMUM_BID_PRICE - 99)
+	buyout = min(buyout, TSM.IsWowClassic() and MAXIMUM_BID_PRICE or MAXIMUM_BID_PRICE - 99)
 
 	-- check if we can't post anymore
 	local queueQuery = private.queueDB:NewQuery()
@@ -644,10 +644,10 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 		activeAuctions = activeAuctions + numStacks
 	end
 	queueQuery:Release()
-	if TSM.IsWow83() then
-		perAuction = min(operationSettings.postCap - activeAuctions, perAuction)
-	else
+	if TSM.IsWowClassic() then
 		maxCanPost = min(operationSettings.postCap - activeAuctions, maxCanPost)
+	else
+		perAuction = min(operationSettings.postCap - activeAuctions, perAuction)
 	end
 	if maxCanPost <= 0 or perAuction <= 0 then
 		return "postTooMany"
@@ -661,7 +661,7 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	-- insert the posts into our DB
 	local auctionId = private.nextQueueIndex
 	local postTime = operationSettings.duration
-	if TSM.IsWow83() and not ItemInfo.IsCommodity(itemString) then
+	if not TSM.IsWowClassic() and not ItemInfo.IsCommodity(itemString) then
 		-- post non-commodities as single stacks
 		assert(maxCanPost == 1)
 		maxCanPost = perAuction
@@ -669,7 +669,7 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 	end
 	private.AddToQueue(itemString, operationName, bid, buyout, perAuction, maxCanPost, postTime)
 	-- check if we can post an extra partial stack
-	local extraStack = (not TSM.IsWow83() and maxCanPost < operationSettings.postCap and operationSettings.stackSizeIsCap and (numHave % perAuction)) or 0
+	local extraStack = (TSM.IsWowClassic() and maxCanPost < operationSettings.postCap and operationSettings.stackSizeIsCap and (numHave % perAuction)) or 0
 	if extraStack > 0 then
 		private.AddToQueue(itemString, operationName, bid, buyout, extraStack, 1, postTime)
 	end

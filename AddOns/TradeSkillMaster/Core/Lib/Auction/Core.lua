@@ -37,10 +37,10 @@ end
 
 function Auction.GetRequiredBidByScanResultRow(row)
 	local bid, minBid, minIncrement = row:GetFields("bid", "minBid", "minIncrement")
-	if TSM.IsWow83() then
-		return minBid
-	else
+	if TSM.IsWowClassic() then
 		return bid == 0 and minBid or (bid + minIncrement)
+	else
+		return minBid
 	end
 end
 
@@ -49,7 +49,7 @@ function Auction.CanBid(row)
 		return false
 	elseif row:GetField("displayedBid") == row:GetField("buyout") then
 		return false
-	elseif TSM.IsWow83() and ItemInfo.IsCommodity(row:GetField("itemString")) then
+	elseif not TSM.IsWowClassic() and ItemInfo.IsCommodity(row:GetField("itemString")) then
 		return false
 	elseif GetMoney() < Auction.GetRequiredBidByScanResultRow(row) then
 		return false
@@ -58,10 +58,10 @@ function Auction.CanBid(row)
 end
 
 function Auction.CanBuyout(row, db)
-	local buyout = row:GetField(TSM.IsWow83() and "itemBuyout" or "buyout")
+	local buyout = row:GetField(TSM.IsWowClassic() and "buyout" or "itemBuyout")
 	if buyout == 0 or GetMoney() < buyout then
 		return false
-	elseif TSM.IsWow83() and ItemInfo.IsCommodity(row:GetField("itemString")) then
+	elseif not TSM.IsWowClassic() and ItemInfo.IsCommodity(row:GetField("itemString")) then
 		-- make sure it's the cheapest
 		local itemBuyout = db:NewQuery()
 			:Equal("itemString", row:GetField("itemString"))

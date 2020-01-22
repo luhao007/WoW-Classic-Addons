@@ -179,7 +179,7 @@ function Filter.ParseStr(self, str)
 			end
 			numPriceParts = numPriceParts + 1
 			hasNonCraftingPart = true
-		elseif TSM.IsWow83() and strlower(part) == "uncollected" then
+		elseif not TSM.IsWowClassic() and strlower(part) == "uncollected" then
 			if self._uncollected then
 				self._isValid = false
 			end
@@ -191,7 +191,7 @@ function Filter.ParseStr(self, str)
 			end
 			self._usable = true
 			hasNonCraftingPart = true
-		elseif TSM.IsWow83() and strlower(part) == "upgrades" then
+		elseif not TSM.IsWowClassic() and strlower(part) == "upgrades" then
 			if self._upgrades then
 				self._isValid = false
 			end

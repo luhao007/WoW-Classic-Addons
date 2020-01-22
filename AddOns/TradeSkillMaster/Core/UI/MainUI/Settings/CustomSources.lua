@@ -184,6 +184,9 @@ end
 function private.NameOnValueChanged(text, newName)
 	local oldName = text:GetText()
 	newName = strlower(strtrim(newName))
+	if newName == oldName then
+		return
+	end
 	if newName == "" then
 		newName = oldName
 	elseif gsub(newName, "([a-z]+)", "") ~= "" then

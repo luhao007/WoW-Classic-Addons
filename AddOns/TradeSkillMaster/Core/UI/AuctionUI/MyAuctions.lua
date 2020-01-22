@@ -337,7 +337,7 @@ function private.FSMCreate()
 			private.query:Release()
 			private.query = TSM.MyAuctions.CreateQuery()
 			if private.durationFilter then
-				if TSM.IsWow83() then
+				if not TSM.IsWowClassic() then
 					if private.durationFilter == 1 then
 						private.query:LessThan("duration", time() + (30 * SECONDS_PER_MIN))
 					elseif private.durationFilter == 2 then
@@ -362,7 +362,7 @@ function private.FSMCreate()
 		-- select the next row we can cancel (or clear the selection otherwise)
 		local selectedRow = nil
 		if context.currentSelectionIndex then
-			if TSM.IsWow83() and TSM.MyAuctions.CanCancel(context.currentSelectionAuctionId) then
+			if not TSM.IsWowClassic() and TSM.MyAuctions.CanCancel(context.currentSelectionAuctionId) then
 				-- try to select the same row
 				for _, row in private.query:Iterator() do
 					local auctionId = row:GetFields("auctionId")
@@ -374,7 +374,7 @@ function private.FSMCreate()
 			-- find the next auction to cancel
 			for _, row in private.query:Iterator() do
 				local index, auctionId = row:GetFields("index", "auctionId")
-				if not selectedRow and TSM.MyAuctions.CanCancel(auctionId) and ((TSM.IsWow83() and index >= context.currentSelectionIndex) or (not TSM.IsWow83() and index <= context.currentSelectionIndex)) then
+				if not selectedRow and TSM.MyAuctions.CanCancel(auctionId) and ((not TSM.IsWowClassic() and index >= context.currentSelectionIndex) or (TSM.IsWowClassic() and index <= context.currentSelectionIndex)) then
 					selectedRow = row
 				end
 			end
@@ -403,7 +403,7 @@ function private.FSMCreate()
 		end
 		local bottomFrame = context.frame:GetElement("bottom")
 		bottomFrame:GetElement("cancelBtn")
-			:SetDisabled(not hasSelection or (TSM.IsWow83() and numPending > 0) or (not TSM.IsWowClassic() and context.currentSelectionAuctionId and C_AuctionHouse.GetCancelCost(context.currentSelectionAuctionId) > GetMoney()))
+			:SetDisabled(not hasSelection or (not TSM.IsWowClassic() and numPending > 0) or (not TSM.IsWowClassic() and context.currentSelectionAuctionId and C_AuctionHouse.GetCancelCost(context.currentSelectionAuctionId) > GetMoney()))
 			:Draw()
 		bottomFrame:GetElement("skipBtn")
 			:SetDisabled(not hasSelection)
@@ -511,7 +511,7 @@ function private.FSMCreate()
 				local selectedRow = nil
 				for _, row in private.query:Iterator() do
 					local index, auctionId = row:GetFields("index", "auctionId")
-					if not selectedRow and TSM.MyAuctions.CanCancel(auctionId) and (TSM.IsWow83() and index > context.currentSelectionIndex) or (not TSM.IsWow83() and index < context.currentSelectionIndex) then
+					if not selectedRow and TSM.MyAuctions.CanCancel(auctionId) and (not TSM.IsWowClassic() and index > context.currentSelectionIndex) or (TSM.IsWowClassic() and index < context.currentSelectionIndex) then
 						selectedRow = row
 					end
 				end
@@ -549,7 +549,7 @@ function private.AuctionsGetTimeLeftText(row)
 	local saleStatus, duration, isPending = row:GetFields("saleStatus", "duration", "isPending")
 	if saleStatus == 0 and isPending then
 		return "..."
-	elseif saleStatus == 1 or TSM.IsWow83() then
+	elseif saleStatus == 1 or not TSM.IsWowClassic() then
 		local timeLeft = duration - time()
 		if timeLeft < SECONDS_PER_MIN then
 			return timeLeft.."s"
@@ -567,7 +567,7 @@ end
 
 function private.AuctionsGetHighBidderText(row)
 	local saleStatus = row:GetField("saleStatus")
-	return saleStatus == 1 and TSM.IsWow83() and "" or row:GetField("highBidder")
+	return saleStatus == 1 and not TSM.IsWowClassic() and "" or row:GetField("highBidder")
 end
 
 function private.AuctionsGetGroupText(itemString)

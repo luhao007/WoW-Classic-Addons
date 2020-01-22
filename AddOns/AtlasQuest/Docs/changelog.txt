@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Version 4.11.61  (for WoW Classic)  January 19, 2020
+
+- Updates to Spanish localization by Woopy.
+- Fixed "Holy Mightstone" quest reward color for Sunken Temple: Forging The Mightstone.  Reported by Woopy.
+- Copied "Attunement to the Core" quest to Molten Core.  Recommended by Guldukat.
+
+
+
 Version 4.11.60  (for WoW Classic)  January 16, 2020
 
 - Compatibility updates to work with new version of Atlas.

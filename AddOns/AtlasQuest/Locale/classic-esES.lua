@@ -4994,7 +4994,7 @@ Inst33Quest12_Folgequest = "Ninguno"
 
 --Quest 13 Alliance
 Inst33Quest13 = "13. Recogida de cristal" -- 7386
-Inst33Quest13_Aim = "There are times which you may be entrenched in battle for days or weeks on end. During those longer periods of activity you may end up collecting large clusters of the Frostwolf's storm crystals.\n\nThe Circle accepts such offerings."
+Inst33Quest13_Aim = "A veces te puedes encontrar atrincherado en la batalla durante varios días o incluso varias semanas. En esos períodos más largos de actividad, puedes acabar recogiendo grandes bloques de cristales de tormenta de los Lobo Gélido.\n\nEl Círculo acepta tales ofrendas, <nombre>."
 Inst33Quest13_Location = "Archidruida Renferal (Valle de Alterac - Norte; "..YELLOW.."[2]"..WHITE..")"
 Inst33Quest13_Note = "Despúes de entregar alrededor 200 cristales, Archidruida Renferal caminará hacia (Valle de Alterac - Norte; "..YELLOW.."[19]"..WHITE.."). Empezará el ritual de invocación que requiere 10 jugadores para asistirle. Si lo completa, invocará Ivus, el Señor del Bosque para ayudarles en la batalla."
 Inst33Quest13_Prequest = "Ninguno"
@@ -5003,7 +5003,7 @@ Inst33Quest13_Folgequest = "Ninguno"
 
 --Quest 14 Alliance
 Inst33Quest14 = "14. Ivus, el Señor del Bosque" -- 6881
-Inst33Quest14_Aim = "The Frostwolf Clan is protected by a taint of elemental energy. Their shaman meddle in powers that will surely destroy us all if left unchecked.\n\nThe Frostwolf soldiers carry elemental charms called storm crystals. We can use the charms to conjure Ivus. Venture forth and claim the crystals."
+Inst33Quest14_Aim = "El clan Lobo Gélido está protegido por una contaminación de energía elemental. Su chamán anda metido con poderes que seguramente nos aniquilarían si no nos ocupamos de ellos.\n\n¡El daño se ha extendido demasiado para que el Círculo lo controle! Tenemos que invocar a Ivus para que nos ayude.\n\nLos soldados Lobo Gélido llevan talismanes de elemental llamados cristales de tormenta. Podemos usar estos talismanes para conjurar a Ivus. ¡Adéntrate hasta ese lugar y recupera esos cristales, <nombre>!"
 Inst33Quest14_Location = "Archidruida Renferal (Valle de Alterac - Norte; "..YELLOW.."[2]"..WHITE..")"
 Inst33Quest14_Note = "Despúes de entregar alrededor 200 cristales, Archidruida Renferal caminará hacia (Valle de Alterac - Norte; "..YELLOW.."[19]"..WHITE.."). Empezará el ritual de invocación que requiere 10 jugadores para asistirle. Si lo completa, invocará Ivus, el Señor del Bosque para ayudarles en la batalla."
 Inst33Quest14_Prequest = "Ninguno"
@@ -5012,7 +5012,7 @@ Inst33Quest14_Folgequest = "Ninguno"
 
 --Quest 15 Alliance
 Inst33Quest15 = "15. La llamada del aire: la flota de Slidore" -- 6942
-Inst33Quest15_Aim = "My gryphons are poised to strike at the front lines but cannot make the attack until the lines are thinned out.\n\nThe Frostwolf warriors charged with holding the front lines wear medals of service proudly upon their chests. Rip those medals off their rotten corpses and bring them back here.\n\nOnce the front line is sufficiently thinned out, I will make the call to air! Death from above!"
+Inst33Quest15_Aim = "Mis grifos están listos para atacar a las primeras líneas del frente pero no pueden hacerlo hasta que las líneas se reduzcan algo.\n\nLos guerreros Lobo Gélido, encargados de resistir en las primeras líneas del frente, llevan medallas de servicio que lucen orgullosos en la pechera. Arráncales esas medallas de sus podridos cadáveres y tráemelas.\n\nCuando la primera línea del frente esté suficientemente diezmada, ¡daré la orden de atacar desde el aire! ¡Muerte desde el cielo!"
 Inst33Quest15_Location = "Comandante del aire Slidore (Valle de Alterac - Norte; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest15_Note = "Mata a los PNJs Horda para obtener las Medallas de Soldado Lobo Gélido."
 Inst33Quest15_Prequest = "Ninguno"
@@ -5021,7 +5021,7 @@ Inst33Quest15_Folgequest = "Ninguno"
 
 --Quest 16 Alliance
 Inst33Quest16 = "16. La llamada del aire: la flota de Vipore" -- 6941
-Inst33Quest16_Aim = "The elite Frostwolf units that guard the lines must be dealt with, soldier! I'm tasking you with thinning out that herd of savages. Return to me with medals from their Tenientes and legionnaires. When I feel that enough of the riff-raff has been dealt with, I'll deploy the air strike."
+Inst33Quest16_Aim = "¡Hay que ocuparse de las unidades de élite de los Lobo Gélido que vigilan las líneas, soldado! Te encargo que diezmes a esa manada de salvajes. Vuelve aquí con las medallas de sus tenientes y legionarios. Cuando me parezca que hemos despachado a suficiente chusma, desplegaré la fuerza aérea."
 Inst33Quest16_Location = "Comandante del aire Vipore (Valle de Alterac - Norte; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest16_Note = "Mata a los PNJs Horda para obtener las Medallas de Teniente Lobo Gélido."
 Inst33Quest16_Prequest = "Ninguno"
@@ -5030,7 +5030,7 @@ Inst33Quest16_Folgequest = "Ninguno"
 
 --Quest 17 Alliance
 Inst33Quest17 = "17. La llamada del aire: la flota de Ichman" -- 6943
-Inst33Quest17_Aim = "Return to the battlefield and strike at the heart of the Frostwolf's command. Take down their commanders and guardians. Return to me with as many of their medals as you can stuff in your pack! I promise you, when my gryphons see the bounty and smell the blood of our enemies, they will fly again! Go now!"
+Inst33Quest17_Aim = "Regresa al campo de batalla y ataca directo al corazón del mando de los Lobo Gélido. Acaba con sus comandantes y guardianes. Vuelve aquí y tráeme sus medallas, ¡todas las que te quepan en la talega! Te lo prometo, cuando mis grifos vean el botín y huelan la sangre de nuestro enemigo, ¡volverán a volar! ¡Ahora vete!"
 Inst33Quest17_Location = "Comandante del aire Ichman (Valle de Alterac - Norte; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest17_Note = "Mata a los PNJs Horda para obtener las Medallas de Comandante Lobo Gélido. Después de entregarlas 50 veces, el Comandante del aire Ichman enviará grifos para atacar el base de la Horda o un señal al Cementerio Avalancha. Si el señal está protegido bastante tiempo, un grifo lo defenderá."
 Inst33Quest17_Prequest = "Ninguno"
@@ -5154,7 +5154,7 @@ Inst33Quest12_HORDE_Folgequest = "Ninguno"
 
 --Quest 13 Horde
 Inst33Quest13_HORDE = "13. Un galón de sangre" -- 7385
-Inst33Quest13_HORDE_Aim = "You have the option of offering larger quantities of the blood taken from our enemies. I will be glad to accept gallon sized offerings."
+Inst33Quest13_HORDE_Aim = "Tienes la posibilidad de ofrecer cantidades mayores de sangre de nuestros enemigos. Será un placer aceptar ofrendas de mayor tamaño, <nombre>."
 Inst33Quest13_HORDE_Location = "Primalista Thurloga (Valle de Alterac - Sur; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest13_HORDE_Note = "Despúes de entregar alrededor 150 galones de sangre, Primalista Thurloga caminará hacia (Valle de Alterac - Sur; "..YELLOW.."[14]"..WHITE.."). Empezará el ritual de invocación que requiere 10 jugadores para asistirle. Si lo completa, invocará Lokholar, el Señor del Hielo para ayudarles en la batalla."
 Inst33Quest13_HORDE_Prequest = "Ninguno"
@@ -5163,7 +5163,7 @@ Inst33Quest13_HORDE_Folgequest = "Ninguno"
 
 --Quest 14 Horde
 Inst33Quest14_HORDE = "14. Lokholar, el Señor del Hielo" -- 6801
-Inst33Quest14_HORDE_Aim = "You must strike down our enemies and bring to me their blood. Once enough blood has been gathered, the ritual of summoning may begin.\n\nVictory will be assured when the elemental lord is loosed upon the Stormpike army."
+Inst33Quest14_HORDE_Aim = "Vengo de Cima del Trueno, <raza>. El propio Cairne ha decidido que ayude al clan Lobo Gélido en estos amargos tiempos.\n\nPero no perdamos más el tiempo. Debes atacar a nuestros enemigos y traerme su sangre. Cuando tenga suficiente sangre, podrá empezar el ritual del conjuro.\n\nLa victoria estará garantizada cuando el señor elemental quede liberado sobre el ejército de los Pico Tormenta."
 Inst33Quest14_HORDE_Location = "Primalista Thurloga (Valle de Alterac - Sur; "..YELLOW.."[8]"..WHITE..")"
 Inst33Quest14_HORDE_Note = "Despúes de entregar alrededor 150 galones de sangre, Primalista Thurloga caminará hacia (Valle de Alterac - Sur; "..YELLOW.."[14]"..WHITE.."). Empezará el ritual de invocación que requiere 10 jugadores para asistirle. Si lo completa, invocará Lokholar, el Señor del Hielo para ayudarles en la batalla."
 Inst33Quest14_HORDE_Prequest = "Ninguno"
@@ -5190,7 +5190,7 @@ Inst33Quest16_HORDE_Folgequest = "Ninguno"
 
 --Quest 17 Horde
 Inst33Quest17_HORDE = "17. La llamada del aire: flota de Mulverick" -- 6827
-Inst33Quest17_HORDE_Aim = "First, my war riders need targets to gun for - high priority targets. I'm going to need to feed them the flesh of Stormpike Commanders. Unfortunately, those little buggers are entrenched deep behind enemy lines! You've definitely got your work cut out for you."
+Inst33Quest17_HORDE_Aim = "He pasado días encerrado en un horrible antro de enanos. ¡Vaya si quiero venganza!\n\nDebemos planificarlo minuciosamente.\n\nPrimero mis alas de guerra necesitan objetivos a los que apuntar, objetivos de alta prioridad. Tendré que alimentarlos con carne de los Comandantes Pico Tormenta. Por desgracia, ¡esos malnacidos están atrincherados muy lejos detrás de las líneas enemigas! Ahí tienes un trabajo a tu medida."
 Inst33Quest17_HORDE_Location = "Comandante del aire Mulverick (Valle de Alterac - Sur; "..YELLOW.."[13]"..WHITE..")"
 Inst33Quest17_HORDE_Note = "Mata a los PNJs Horda para obtener la Carne de Comandante Pico Tormenta."
 Inst33Quest17_HORDE_Prequest = "Ninguno"

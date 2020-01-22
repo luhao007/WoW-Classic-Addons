@@ -70,7 +70,7 @@ function private.GetSelectionFrame()
 		:SetLayout("VERTICAL")
 		:SetStyle("background", "#272727")
 		:SetStyle("padding", { top = 38 })
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
 			:SetLayout("HORIZONTAL")
 			:SetStyle("height", 26)
@@ -97,7 +97,7 @@ function private.GetSelectionFrame()
 				:SetStyle("width", 200)
 				:SetText(L["Run Bid Sniper"])
 				:SetScript("OnClick", private.BidScanButtonOnClick)
-				:SetDisabled(TSM.IsWow83())
+				:SetDisabled(not TSM.IsWowClassic())
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "rightSpacer"))
 		)
@@ -117,7 +117,7 @@ function private.GetSelectionFrame()
 			:SetStyle("fontHeight", 14)
 			:SetStyle("justifyH", "CENTER")
 			:SetStyle("textColor", "#ffffff")
-			:SetText(TSM.IsWow83() and L["Start either a 'Buyout' sniper using the button above."] or L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."])
+			:SetText(TSM.IsWowClassic() and L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."] or L["Start either a 'Buyout' sniper using the button above."])
 		)
 		:SetScript("OnUpdate", private.SelectionFrameOnUpdate)
 		:SetScript("OnHide", private.SelectionFrameOnHide)
@@ -564,13 +564,13 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_AUCTION_FOUND")
 			:SetOnEnter(function(context, result)
-				if TSM.IsWow83() then
+				if TSM.IsWowClassic() then
+					context.findResult = result
+					context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
+				else
 					local numCanBuy = min(result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
 					context.findResult = numCanBuy > 0
 					context.numFound = numCanBuy
-				else
-					context.findResult = result
-					context.numFound = min(#result, context.auctionScan:GetNumCanBuy(context.findAuction) or math.huge)
 				end
 				assert(context.numActioned == 0 and context.numConfirmed == 0)
 				return "ST_BIDDING_BUYING"
@@ -628,7 +628,7 @@ function private.FSMCreate()
 				context.progress = context.numConfirmed / context.numFound
 				context.progressText = L["Scan Paused"].." - "..progressText
 				local isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
-				if numCanAction == 0 or isPlayer or (TSM.IsWow83() and numConfirming > 0) then
+				if numCanAction == 0 or isPlayer or (not TSM.IsWowClassic() and numConfirming > 0) then
 					context.buttonsDisabled = true
 				else
 					if context.scanType == "buyout" then
@@ -684,8 +684,8 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_PLACING_BID_BUY")
 			:SetOnEnter(function(context, quantity)
-				local index = not TSM.IsWow83() and tremove(context.findResult, #context.findResult) or nil
-				assert(TSM.IsWow83() or index)
+				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
+				assert(not TSM.IsWowClassic() or index)
 				local bidBuyout = nil
 				if context.scanType == "buyout" then
 					bidBuyout = context.findAuction:GetField("buyout")
@@ -695,7 +695,7 @@ function private.FSMCreate()
 					error("Invalid scanType: "..tostring(context.scanType))
 				end
 				if context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, true, quantity) then
-					context.numActioned = context.numActioned + (TSM.IsWow83() and quantity or 1)
+					context.numActioned = context.numActioned + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
 					if context.scanType == "buyout" then
@@ -715,7 +715,7 @@ function private.FSMCreate()
 				if not success then
 					Log.PrintfUser(L["Failed to buy auction of %s (x%s) for %s."], context.findAuction:GetField("rawLink"), context.findAuction:GetField("stackSize"), Money.ToString(context.findAuction:GetField("buyout"), nil, "OPT_83_NO_COPPER"))
 				end
-				context.numConfirmed = context.numConfirmed + (TSM.IsWow83() and context.lastBuyQuantity or 1)
+				context.numConfirmed = context.numConfirmed + (TSM.IsWowClassic() and 1 or context.lastBuyQuantity)
 				context.findAuction = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelectedRecord()
 				return "ST_BIDDING_BUYING", context.lastBuyQuantity
 			end)

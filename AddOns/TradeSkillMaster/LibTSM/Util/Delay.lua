@@ -102,6 +102,7 @@ function Delay.AfterFrame(label, duration, callback, repeatDelay)
 		end
 	else
 		label = Debug.GetStackLevelLocation(2)
+		assert(label)
 	end
 
 	local delayTbl = TempTable.Acquire()

@@ -12,7 +12,6 @@ local ADDON_NAME, TSM = ...
 TSMAPI_FOUR = {}
 local VERSION_RAW = GetAddOnMetadata("TradeSkillMaster", "Version")
 local IS_DEV_VERSION = strmatch(VERSION_RAW, "^@tsm%-project%-version@$") and true or false
-local IS_WOW_83 = select(4, GetBuildInfo()) >= 80300
 local private = {
 	path = {},
 	context = {},
@@ -116,10 +115,6 @@ end
 
 function TSM.IsWowClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-end
-
-function TSM.IsWow83()
-	return IS_WOW_83
 end
 
 

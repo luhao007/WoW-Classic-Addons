@@ -112,8 +112,16 @@ CustomPrice:OnSettingsLoad(function()
 	private.settings = Settings.NewView()
 		:AddKey("global", "userData", "customPriceSources")
 
-	for name in pairs(private.settings.customPriceSources) do
-		if not CustomPrice.ValidateName(name, true) then
+	for name, str in pairs(private.settings.customPriceSources) do
+		if CustomPrice.ValidateName(name, true) then
+			str = private.SanitizeCustomPriceString(str)
+			private.settings.customPriceSources[name] = str
+			for _, data in pairs(private.proxyData) do
+				if data.origStr == str then
+					data.customPriceSourceNames[name] = true
+				end
+			end
+		else
 			Log.PrintfUser(L["Removed custom price source (%s) which has an invalid name."], name)
 			CustomPrice.DeleteCustomPriceSource(name)
 		end
@@ -154,7 +162,13 @@ function CustomPrice.CreateCustomPriceSource(name, value)
 	assert(name ~= "")
 	assert(gsub(name, "([a-z]+)", "") == "")
 	assert(not private.settings.customPriceSources[name])
+	value = private.SanitizeCustomPriceString(value)
 	private.settings.customPriceSources[name] = value
+	for _, data in pairs(private.proxyData) do
+		if data.origStr == value then
+			data.customPriceSourceNames[name] = true
+		end
+	end
 	wipe(private.customPriceCache)
 end
 
@@ -162,10 +176,19 @@ end
 -- @tparam string oldName The old name of the custom price source
 -- @tparam string newName The new name of the custom price source
 function CustomPrice.RenameCustomPriceSource(oldName, newName)
-	if oldName == newName then return end
-	assert(private.settings.customPriceSources[oldName])
-	private.settings.customPriceSources[newName] = private.settings.customPriceSources[oldName]
+	if oldName == newName then
+		return
+	end
+	local value = private.settings.customPriceSources[oldName]
+	assert(value)
+	private.settings.customPriceSources[newName] = value
 	private.settings.customPriceSources[oldName] = nil
+	for _, data in pairs(private.proxyData) do
+		data.customPriceSourceNames[oldName] = nil
+		if data.origStr == value then
+			data.customPriceSourceNames[newName] = true
+		end
+	end
 	wipe(private.customPriceCache)
 	CustomPrice.OnSourceChange(oldName)
 	CustomPrice.OnSourceChange(newName)
@@ -176,6 +199,9 @@ end
 function CustomPrice.DeleteCustomPriceSource(name)
 	assert(private.settings.customPriceSources[name])
 	private.settings.customPriceSources[name] = nil
+	for _, data in pairs(private.proxyData) do
+		data.customPriceSourceNames[name] = nil
+	end
 	wipe(private.customPriceCache)
 	CustomPrice.OnSourceChange(name)
 end
@@ -185,7 +211,11 @@ end
 -- @tparam string value The value of the custom price source
 function CustomPrice.SetCustomPriceSource(name, value)
 	assert(private.settings.customPriceSources[name])
+	value = private.SanitizeCustomPriceString(value)
 	private.settings.customPriceSources[name] = value
+	for _, data in pairs(private.proxyData) do
+		data.customPriceSourceNames[name] = data.origStr == value or nil
+	end
 	wipe(private.customPriceCache)
 	CustomPrice.OnSourceChange(name)
 end
@@ -402,29 +432,28 @@ function CustomPrice.OnSourceChange(key, itemString)
 				clearAll = true
 			end
 
-			local customPriceSourceName = Table.KeyByValue(private.settings.customPriceSources, data.origStr)
 			data.map:SetCallbacksPaused(true)
 			if clearAll then
 				for mapItemString in data.map:Iterator() do
 					data.map:ValueChanged(mapItemString)
 				end
-				if customPriceSourceName then
-					CustomPrice.OnSourceChange(customPriceSourceName)
+				for name in pairs(data.customPriceSourceNames) do
+					CustomPrice.OnSourceChange(name)
 				end
 			elseif clearBaseItem then
 				for mapItemString in data.map:Iterator() do
 					if ItemString.GetBase(mapItemString) == itemString then
 						data.map:ValueChanged(mapItemString)
-						if customPriceSourceName then
-							CustomPrice.OnSourceChange(customPriceSourceName, mapItemString)
+						for name in pairs(data.customPriceSourceNames) do
+							CustomPrice.OnSourceChange(name)
 						end
 					end
 				end
 			end
 			if not clearAll and clearItem then
 				data.map:ValueChanged(itemString)
-				if customPriceSourceName then
-					CustomPrice.OnSourceChange(customPriceSourceName, itemString)
+				for name in pairs(data.customPriceSourceNames) do
+					CustomPrice.OnSourceChange(name)
 				end
 			end
 			data.map:SetCallbacksPaused(false)
@@ -533,11 +562,12 @@ private.customPriceFunctions = {
 			end
 			return minPrice or NAN
 		elseif extraParam == "custom" then
-			if not private.settings.customPriceSources[key] then
+			local customPriceSourceStr = private.settings.customPriceSources[key]
+			if not customPriceSourceStr then
 				-- custom price source has since been deleted
 				return NAN
 			end
-			return CustomPrice.GetValue(private.settings.customPriceSources[key], itemString) or NAN
+			return CustomPrice.GetValue(customPriceSourceStr, itemString) or NAN
 		else
 			return CustomPrice.GetItemPrice(itemString, key) or NAN
 		end
@@ -601,11 +631,18 @@ function private.RunComparison(comparison, ...)
 end
 
 function private.CreateCustomPriceObj(func, origStr, dependantPriceSources, canCache)
+	local customPriceSourceNames = {}
+	for name, str in pairs(private.settings.customPriceSources) do
+		if str == origStr then
+			customPriceSourceNames[name] = true
+		end
+	end
 	local proxy = newproxy(true)
 	private.proxyData[proxy] = {
 		isUnlocked = false,
 		globalContext = private.context,
 		origStr = origStr,
+		customPriceSourceNames = customPriceSourceNames,
 		func = func,
 		dependantPriceSources = dependantPriceSources,
 		map = nil,

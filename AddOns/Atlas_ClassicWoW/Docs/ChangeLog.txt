@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 62 2020-01-15 14:49:15Z arith $
+$Id: ChangeLog.txt 64 2020-01-19 16:36:32Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,7 +8,14 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 = Change Log =
 ==============
 
-v1.46.0011303.00 (Jan. 15, 2020)
+v1.47.00.11303.00 (Jan. 20, 2020)
+------------------------
+- ToC update to support WoW 8.2.5
+- Classic: 
+  - Corrected Wailing Caverns and Razorfen Kraul's location to The Barrens
+  - Corrected Ahn'Qiraj's location to Silithus
+
+v1.46.00.11303.00 (Jan. 15, 2020)
 ------------------------
 - Merge with wow classic's database and maps
 - Classic Map revamp / addition: 

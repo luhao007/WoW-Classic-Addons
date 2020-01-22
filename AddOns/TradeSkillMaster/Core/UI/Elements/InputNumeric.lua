@@ -70,6 +70,14 @@ function InputNumeric.SetMinNumber(self, minNumber)
 	return self
 end
 
+--- Get the minimum and maximum numbers.
+-- @tparam InputNumeric self The input numeric object
+-- @treturn number minNumber The minimum number
+-- @treturn number maxNumber The maximum number
+function InputNumeric.GetMinMaxNumber(self)
+	return self._minNumber, self._maxNumber
+end
+
 
 
 -- ============================================================================

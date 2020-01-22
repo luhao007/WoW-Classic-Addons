@@ -1,5 +1,5 @@
 ## Interface: 11303
-## Version: 2.3.17
+## Version: 2.3.18
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
@@ -30,4 +30,4 @@ Pawn.lua
 PawnUI.lua
 PawnUI.xml
 AskMrRobot.lua
-ClassicTemplates.lua
+ClassicHawsJon.lua

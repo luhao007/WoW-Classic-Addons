@@ -246,7 +246,7 @@ end
 function PawnUIFrame_ScaleSelector_UpdateAuto()
 	local Scale = PawnCommon.Scales[PawnUICurrentScale]
 	if Scale and Scale.ClassID and Scale.SpecID then
-		local _, LocalizedSpecName, _, IconTexturePath = GetSpecializationInfoForClassID(Scale.ClassID, Scale.SpecID)
+		local _, LocalizedSpecName, _, IconTexturePath = PawnGetSpecializationInfoForClassID(Scale.ClassID, Scale.SpecID)
 		PawnUIFrame_ScaleSelector_SpecLabel:SetText(LocalizedSpecName)
 		PawnUIFrame_ScaleSelector_SpecIcon:SetTexture(IconTexturePath)
 	else
@@ -1965,7 +1965,8 @@ function PawnUIAboutTabPage_OnShow()
 	if VgerCore.IsClassic then
 		-- WoW Classic doesn't use the Mr. Robot scales, so hide that logo and information.
 		PawnUIFrame_MrRobotLogo:Hide()
-		PawnUIFrame_MrRobotLabel:Hide()
+		PawnUIFrame_MrRobotLabel:SetPoint("TOPLEFT", 25, -210)
+		PawnUIFrame_MrRobotLabel:SetText("Special thanks to HawsJon for collecting the stat weights used in the starter scales.")
 	end
 end
 

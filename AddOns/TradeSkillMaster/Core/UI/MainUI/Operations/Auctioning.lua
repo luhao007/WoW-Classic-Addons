@@ -84,7 +84,7 @@ function private.GetDetailsSettings()
 end
 
 function private.AddMaxStackSizeSetting(frame)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		frame:AddChild(private.CreateToggleLine("matchStackSize", L["Match stack size?"]))
 	end
 end
@@ -296,7 +296,7 @@ function private.GetPostingSettings()
 end
 
 function private.AddStackSizeSettings(frame)
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		frame:AddChild(private.CreateNumericInputLine("stackSize", L["Set posted stack size to:"]))
 		frame:AddChild(private.CreateToggleLine("stackSizeIsCap", L["Allow partial stack?"]))
 	end
@@ -425,7 +425,7 @@ function private.CreateToggleLine(key, label)
 end
 
 function private.CheckUndercut(value, ignoreError)
-	if TSM.IsWow83() and Money.FromString(Money.ToString(value) or value) == 0 then
+	if not TSM.IsWowClassic() and Money.FromString(Money.ToString(value) or value) == 0 then
 		return true
 	else
 		return TSM.MainUI.Operations.CheckCustomPrice(value, ignoreError)

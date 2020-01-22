@@ -748,7 +748,7 @@ function private.RunPostBagsButtonOnclick(button)
 end
 
 function private.ScanBackButtonOnClick()
-	if not TSM.IsWow83() then
+	if TSM.IsWowClassic() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 		ClearCursor()
@@ -815,7 +815,7 @@ function private.FSMCreate()
 	local POST_ERR_MSGS = {
 		-- errors where we can retry
 		[ERR_ITEM_NOT_FOUND] = true,
-		[ERR_AUCTION_DATABASE_ERROR] = not TSM.IsWow83() and true or nil,
+		[ERR_AUCTION_DATABASE_ERROR] = TSM.IsWowClassic() and true or nil,
 		-- errors where we can't retry
 		[ERR_AUCTION_REPAIR_ITEM] = false,
 		[ERR_AUCTION_LIMITED_DURATION_ITEM] = false,
@@ -858,7 +858,7 @@ function private.FSMCreate()
 		local stackSize = tonumber(currentRow:GetField("stackSize"))
 		local depositCost = 0
 		if postBag and postSlot then
-			if not TSM.IsWow83() then
+			if TSM.IsWowClassic() then
 				ClearCursor()
 				PickupContainerItem(postBag, postSlot)
 				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
@@ -937,10 +937,10 @@ function private.FSMCreate()
 				:SetTooltip(itemString)
 				:Draw()
 			detailsHeader1:GetElement("bid.text")
-				:SetText(Money.ToString(currentRow:GetField((TSM.IsWow83() and ItemInfo.IsCommodity(itemString)) and "itemBuyout" or "bid"), nil, "OPT_83_NO_COPPER"))
+				:SetText(Money.ToString(currentRow:GetField((TSM.IsWowClassic() or not ItemInfo.IsCommodity(itemString)) and "bid" or "itemBuyout"), nil, "OPT_83_NO_COPPER"))
 				:Draw()
 			detailsHeader1:GetElement("buyout.text")
-				:SetText(Money.ToString(currentRow:GetField((TSM.IsWow83() and ItemInfo.IsCommodity(itemString)) and "itemBuyout" or "buyout"), nil, "OPT_83_NO_COPPER"))
+				:SetText(Money.ToString(currentRow:GetField((TSM.IsWowClassic() or not ItemInfo.IsCommodity(itemString)) and "buyout" or "itemBuyout"), nil, "OPT_83_NO_COPPER"))
 				:Draw()
 			detailsHeader2:GetElement("quantity.text")
 				:SetText(format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")))
@@ -1048,7 +1048,7 @@ function private.FSMCreate()
 				:SetProgress(totalNum > 0 and (numProcessed / totalNum) or 1)
 				:SetProgressIconHidden(iconHidden)
 				:SetText(progressText)
-			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (TSM.IsWow83() and numConfirmed ~= numProcessed))
+			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (not TSM.IsWowClassic() and numConfirmed ~= numProcessed))
 			bottom:GetElement("skipBtn"):SetDisabled(numProcessed == totalNum)
 		else
 			-- we're scanning

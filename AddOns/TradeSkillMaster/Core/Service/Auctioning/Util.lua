@@ -55,7 +55,7 @@ function Util.GetPrice(key, operation, itemString)
 			if VALID_PRICE_KEYS[priceKey] then
 				private.priceCache[cacheKey] = Util.GetPrice(priceKey, operation, itemString)
 			end
-		elseif TSM.IsWow83() and key == "undercut" and Money.FromString(Money.ToString(operation[key]) or operation[key]) == 0 then
+		elseif not TSM.IsWowClassic() and key == "undercut" and Money.FromString(Money.ToString(operation[key]) or operation[key]) == 0 then
 			private.priceCache[cacheKey] = 0
 		else
 			private.priceCache[cacheKey] = CustomPrice.GetValue(operation[key], itemString)
@@ -69,7 +69,7 @@ function Util.GetPrice(key, operation, itemString)
 end
 
 function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		local foundLowest = false
 		for _, record in query:Iterator() do
 			if not foundLowest and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
@@ -154,7 +154,7 @@ function Util.GetPlayerAuctionCount(query, itemString, operationSettings, findBi
 	for _, record in query:Iterator() do
 		if not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
 			local itemDisplayedBid, itemBuyout, stackSize = record:GetFields("itemDisplayedBid", "itemBuyout", "stackSize")
-			if itemDisplayedBid == findBid and itemBuyout == findBuyout and (TSM.IsWow83() or stackSize == findStackSize) then
+			if itemDisplayedBid == findBid and itemBuyout == findBuyout and (not TSM.IsWowClassic() or stackSize == findStackSize) then
 				quantity = quantity + private.GetPlayerAuctionCount(record)
 			end
 		end
@@ -185,7 +185,7 @@ end
 function Util.IsPlayerOnlySeller(query, itemString, operationSettings)
 	local isOnly = true
 	for _, record in query:Iterator() do
-		if isOnly and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) < (TSM.IsWow83() and record:GetField("stackSize") or 1) then
+		if isOnly and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) < (TSM.IsWowClassic() and 1 or record:GetField("stackSize")) then
 			isOnly = false
 		end
 	end
@@ -228,7 +228,7 @@ function private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings
 	if record:GetField("timeLeft") <= operationSettings.ignoreLowDuration then
 		-- ignoring low duration
 		return true
-	elseif not TSM.IsWow83() and operationSettings.matchStackSize and record:GetField("stackSize") ~= operationSettings.stackSize then
+	elseif TSM.IsWowClassic() and operationSettings.matchStackSize and record:GetField("stackSize") ~= operationSettings.stackSize then
 		-- matching stack size
 		return true
 	elseif operationSettings.priceReset == "ignore" and record:GetField("itemBuyout") then
@@ -258,9 +258,9 @@ function private.LowestAuctionCompare(a, b)
 end
 
 function private.GetPlayerAuctionCount(row)
-	if TSM.IsWow83() then
-		return row:GetField("numOwnerItems")
-	else
+	if TSM.IsWowClassic() then
 		return TSMAPI_FOUR.PlayerInfo.IsPlayer(row:GetField("seller"), true, true, true) and 1 or 0
+	else
+		return row:GetField("numOwnerItems")
 	end
 end

@@ -15,6 +15,15 @@ Known Issues:
 = Change Log =
 ==============
 
+v1.47.00.11303.00 (Jan. 20, 2020)
+------------------------
+- WoW Classic branch
+
+v1.47.00 (Jan. 20, 2020)
+------------------------
+- ToC update to support WoW 8.3.0
+- Added AreaID table so that we can lookup AreaName via C_Map.GetAreaInfo()
+
 v1.46.04.11303.01 (Jan. 09, 2020)
 ------------------------
 - WoW Classic branch

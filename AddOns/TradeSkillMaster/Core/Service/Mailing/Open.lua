@@ -24,7 +24,7 @@ local private = {
 	lastCheck = nil,
 	moneyCollected = 0,
 }
-local MAIL_REFRESH_TIME = TSM.IsWow83() and 15 or 60
+local MAIL_REFRESH_TIME = TSM.IsWowClassic() and 60 or 15
 
 
 

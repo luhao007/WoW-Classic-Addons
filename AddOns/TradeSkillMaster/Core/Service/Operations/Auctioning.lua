@@ -41,7 +41,7 @@ local OPERATION_VALUE_LIMITS = {
 	maxExpires = { min = 0, max = 5000 },
 	keepPosted = { min = 0, max = 5000 },
 }
-if not TSM.IsWow83() then
+if TSM.IsWowClassic() then
 	OPERATION_INFO.undercut.default = "1c"
 	OPERATION_INFO.matchStackSize = { type = "boolean", default = false }
 	OPERATION_INFO.stackSize = { type = "number", default = 1 }
@@ -85,11 +85,11 @@ end
 -- ============================================================================
 
 function private.OperationSanitize(operation)
-	if TSM.IsWow83() then
+	if not TSM.IsWowClassic() then
 		if operation.stackSize then
 			operation.postCap = operation.postCap * operation.stackSize
 		end
-		if (Money.FromString(operation.undercut) or math.huge) < 50 then
+		if (type(operation.undercut) == "number" and operation.undercut or Money.FromString(operation.undercut) or math.huge) < 50 then
 			operation.undercut = "0c"
 		end
 	end

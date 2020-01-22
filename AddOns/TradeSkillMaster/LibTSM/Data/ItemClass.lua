@@ -62,7 +62,7 @@ do
 			STATIC_DATA.classLookup[class] = {}
 			STATIC_DATA.classLookup[class]._index = classId
 			local subClasses = nil
-			if not TSM.IsWow83() then
+			if TSM.IsWowClassic() then
 				subClasses = {GetAuctionItemSubClasses(classId)}
 			else
 				subClasses = C_AuctionHouse.GetAuctionItemSubClasses(classId)

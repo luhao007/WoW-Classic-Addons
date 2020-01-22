@@ -90,6 +90,7 @@ Prat:AddModuleToLoad(function()
     ["Don't overwrite existing links"] = true,
     ["Don't overwrite existing alt <-> main links when importing or adding new alts."] = true,
     [".*[Aa]lts?$"] = true,
+    [".*[Tt]wink.*$"] = true,
     ["(.-)'s? [Aa]lt"] = "%f[%a\192-\255]([%a\192-\255]+)%f[^%a\128-\255]'s [Aa]lt",
     ["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\192-\255]([%a\192-\255]+)%f[^%a\128-\255]'s [Aa]lt",
     ['ERROR: some function sent a blank message!'] = true,
@@ -149,9 +150,10 @@ L = {
 		["%d alts found for %s: %s"] = true,
 		["%s alts imported from LOKWhoIsWho"] = true,
 		["%s total alts linked to mains"] = true,
-		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
-		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
+		["(.-)'s? [Aa]lt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
+		["([^%s%p%d%c%z]+)'s alt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
 		[".*[Aa]lts?$"] = true,
+		[".*[Tt]wink.*$"] = true,
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = true,
 		["<main> (eg /altnames listalts Fin)"] = true,
 		["<search term> (eg, /altnames find fin)"] = true,
@@ -215,6 +217,7 @@ L = {
 		["No arg string given to :addAlt()"] = true,
 		["no characters called \"%s\" found; nothing deleted"] = true,
 		["No Guild Greet database found"] = true,
+		["No main name suPLied to link %s to"] = true,
 		["No main name supplied to link %s to"] = true,
 		["no matches found"] = true,
 		["quiet"] = "Be quiet",
@@ -252,10 +255,12 @@ L = {
 		["%s alts imported from LOKWhoIsWho"] = "%s alts imported from LOKWhoIsWho",
 		["%s total alts linked to mains"] = "%s nb total de reroll liés au personnage principal",
 		--[[Translation missing --]]
-		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
+		["(.-)'s? [Aa]lt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
 		--[[Translation missing --]]
-		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
+		["([^%s%p%d%c%z]+)'s alt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
 		[".*[Aa]lts?$"] = ".*[Rr]erolls?$",
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		--[[Translation missing --]]
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		--[[Translation missing --]]
@@ -363,6 +368,8 @@ L = {
 		--[[Translation missing --]]
 		["No Guild Greet database found"] = "No Guild Greet database found",
 		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
+		--[[Translation missing --]]
 		["No main name supplied to link %s to"] = "No main name supplied to link %s to",
 		--[[Translation missing --]]
 		["no matches found"] = "no matches found",
@@ -421,6 +428,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = " %f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]s [Aa]lt",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]s [Aa]lt",
 		[".*[Aa]lts?$"] = true,
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<Altname> (z.B. /altnames del FalscherAltname)",
 		["<main> (eg /altnames listalts Fin)"] = "<main> (z.b. /altnames listalts Shylera)",
 		["<search term> (eg, /altnames find fin)"] = "<Suchbegriff> (z.b. /altnames find Shy)",
@@ -484,6 +493,8 @@ L = {
 		["No arg string given to :addAlt()"] = "Kein Parameter angegeben für: :addAlt()",
 		["no characters called \"%s\" found; nothing deleted"] = "Keine Charaktere mit dem Namen \"%s\" gefunden; es wurde nichts gelöscht.",
 		["No Guild Greet database found"] = "Keine Gilden-Begrüßungs-Datenbank gefunden.",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		["No main name supplied to link %s to"] = "Kein Hauptcharname geliefert, mit dem %s verknüpft werden kann.",
 		["no matches found"] = "Keine Übereinstimmungen gefunden.",
 		["quiet"] = "Sei ruhig",
@@ -521,6 +532,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]의 부캐릭터",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]의 부 캐릭터",
 		[".*[Aa]lts?$"] = ".*부캐릭터?$",
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<부 캐릭터 이름> (예, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		["<main> (eg /altnames listalts Fin)"] = "<주 캐릭터> (예 /altnames listalts Fin)",
 		["<search term> (eg, /altnames find fin)"] = "<검색 구문> (예, /altnames find fin)",
@@ -584,6 +597,8 @@ L = {
 		["No arg string given to :addAlt()"] = ":addAlt()에 변수 구문이 주어지지 않았습니다",
 		["no characters called \"%s\" found; nothing deleted"] = "요청한 \"%s\" 캐릭터 찾을 수 없음; 삭제하지 못함",
 		["No Guild Greet database found"] = "길드 쪽지 데이터베이스 찾을 수 없음",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		["No main name supplied to link %s to"] = "%s|1과;와; 연결할 주 캐릭터 이름 제공되지 않음",
 		["no matches found"] = "일치 하는 것 없음",
 		["quiet"] = "조용하게",
@@ -622,11 +637,13 @@ L = {
 		--[[Translation missing --]]
 		["%s total alts linked to mains"] = "%s total alts linked to mains",
 		--[[Translation missing --]]
-		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
+		["(.-)'s? [Aa]lt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
 		--[[Translation missing --]]
-		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
+		["([^%s%p%d%c%z]+)'s alt"] = "%f[%aÀ-ÿ]([%aÀ-ÿ]+)%f[^%a-ÿ]'s [Aa]lt",
 		--[[Translation missing --]]
 		[".*[Aa]lts?$"] = ".*[Aa]lts?$",
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		--[[Translation missing --]]
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		--[[Translation missing --]]
@@ -754,6 +771,8 @@ L = {
 		--[[Translation missing --]]
 		["No Guild Greet database found"] = "No Guild Greet database found",
 		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
+		--[[Translation missing --]]
 		["No main name supplied to link %s to"] = "No main name supplied to link %s to",
 		--[[Translation missing --]]
 		["no matches found"] = "no matches found",
@@ -813,6 +832,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Аа]льт",
 		["([^%s%p%d%c%z]+)'s alt"] = "[Аа]льт %f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]",
 		[".*[Aa]lts?$"] = ".*[Аа]льты?$",
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<имя альта> (к примеру, /altnames del Загзаг)",
 		["<main> (eg /altnames listalts Fin)"] = "<основной> (к примеру: /altnames listalts Загзаг)",
 		["<search term> (eg, /altnames find fin)"] = "<элемент поиска> (к примеру, /altnames find Загзаг)",
@@ -876,6 +897,8 @@ L = {
 		["No arg string given to :addAlt()"] = "Не задано значение строки для: :addAlt()",
 		["no characters called \"%s\" found; nothing deleted"] = "не найден персонаж по имени \"%s\"; нечего удалять",
 		["No Guild Greet database found"] = "База данных Guild Greet не найдена",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		["No main name supplied to link %s to"] = "Не предоставлено основное имя для связки %s к",
 		["no matches found"] = "совпадений не найдено",
 		["quiet"] = "тихий",
@@ -913,6 +936,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = true,
 		["([^%s%p%d%c%z]+)'s alt"] = true,
 		[".*[Aa]lts?$"] = true,
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<马甲名称> (例, /altnames del 某个你以为是但不是的某人分身)",
 		["<main> (eg /altnames listalts Fin)"] = "<本尊> (例 /altnames listalts 顶尖战士)",
 		["<search term> (eg, /altnames find fin)"] = "<搜索条件>(例, /altnames find 顶尖战士)",
@@ -977,6 +1002,8 @@ L = {
 		["No arg string given to :addAlt()"] = "无字符串参数到:addAlt()",
 		["no characters called \"%s\" found; nothing deleted"] = "未发现称作\"%s\"角色;无删除",
 		["No Guild Greet database found"] = "未发现公会欢迎数据库",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		["No main name supplied to link %s to"] = "没有本尊名称以供联结%s",
 		["no matches found"] = "无匹配发现",
 		["quiet"] = "安静",
@@ -1014,6 +1041,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
 		[".*[Aa]lts?$"] = true,
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<nombre alt> (ej, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		["<main> (eg /altnames listalts Fin)"] = "<principal> (ej /altnames listalts Fin)",
 		["<search term> (eg, /altnames find fin)"] = "<término búsqueda> (ej, /altnames find fin)",
@@ -1087,6 +1116,8 @@ L = {
 		["no characters called \"%s\" found; nothing deleted"] = "no se han encontrado personajes llamados \"%s\"; nada eliminado",
 		--[[Translation missing --]]
 		["No Guild Greet database found"] = "No Guild Greet database found",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		["No main name supplied to link %s to"] = "Sin nombre principal proporcionado para el enlace %s",
 		["no matches found"] = "Ninguna coincidencia encontrada",
 		["quiet"] = "Silencioso",
@@ -1129,6 +1160,8 @@ L = {
 		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]'s [Aa]lt",
 		[".*[Aa]lts?$"] = true,
+		--[[Translation missing --]]
+		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<alt name> (例如, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		["<main> (eg /altnames listalts Fin)"] = "<main> (例如 /altnames listalts Fin)",
 		["<search term> (eg, /altnames find fin)"] = "<search term> (例如, /altnames find fin)",
@@ -1209,6 +1242,8 @@ L = {
 		["No arg string given to :addAlt()"] = "No arg string given to :addAlt()",
 		["no characters called \"%s\" found; nothing deleted"] = "找不到角色\"%s\"; 沒有刪除",
 		["No Guild Greet database found"] = "找不到公會問候資料庫",
+		--[[Translation missing --]]
+		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
 		--[[Translation missing --]]
 		["No main name supplied to link %s to"] = "No main name supplied to link %s to",
 		["no matches found"] = "找不到符合",
@@ -2105,7 +2140,13 @@ L = {
 
     for x = 1, totalmembers do
       local name, rank, rankIndex, level, class, zone, publicnote, officernote, online, status = GetGuildRosterInfo(x)
-      if name then guildMembers[string.lower(name)] = name end
+      if name then
+        --since GetGuildRosterInfo returns Playername-Realm we need to trim Realmname
+        --later we can compare Playername with officernote/publicnote
+        --nobody is typing Playername with realm into the notes
+        local shortname, realm = strsplit("-", name, 2)
+        guildMembers[string.lower(shortname)] = shortname
+      end
     end
 
 
@@ -2138,8 +2179,8 @@ L = {
       local cleanpubnote = publicnote:match(Prat.AnyNamePattern)
       local cleanoffnote = officernote:match(Prat.AnyNamePattern)
 
-      -- check for guild members with rank "alt" or "alts" or "officer alt"
-      if (rank:match(PL[".*[Aa]lts?$"]) or (altrank and rank == altrank)) and (cleanpubnote and
+      -- check for guild members with rank "alt" or "alts" or "officer alt" or "twink"
+      if (rank:match(PL[".*[Aa]lts?$"]) or rank:match(PL[".*[Tt]wink.*$"]) or (altrank and rank == altrank)) and (cleanpubnote and
                                                                               guildMembers[cleanpubnote:lower()]) then
         -- self:print(string.format('found mainname name for member %s', name))
         mainname = cleanpubnote

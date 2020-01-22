@@ -62,7 +62,7 @@ function Money.ToString(value, color, ...)
 		elseif opt == "OPT_DISABLE" then
 			disabled = true
 		elseif opt == "OPT_83_NO_COPPER" then
-			noCopper = TSM.IsWow83()
+			noCopper = not TSM.IsWowClassic()
 		else
 			error("Invalid option: "..tostring(opt))
 		end

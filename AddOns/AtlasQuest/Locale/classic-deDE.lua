@@ -4276,7 +4276,7 @@ Inst25Quest7name2_HORDE = "Morastgaloschen"
 
 
 
---------------- INST27 - Zul'Farrak ---------------
+--------------- INST26 - Zul'Farrak ---------------
 
 Inst26Caption = "Zul'Farrak"
 Inst26QAA = "7 Quests"
