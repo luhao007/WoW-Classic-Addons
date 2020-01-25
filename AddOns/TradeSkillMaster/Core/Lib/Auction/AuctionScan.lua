@@ -1300,21 +1300,11 @@ function private.SendSearchQuery83(itemKey, auctionScan, isCommodity, sellQuery)
 		if private.ThrottleQuery83(auctionScan) then
 			private.pendingUpdateItemKey = itemKey
 			private.gotUpdateEvent = false
-			if C_AuctionHouse.HasSearchResults(itemKey) then
-				if isCommodity then
-					Log.Info("Refreshing commodity results (itemID=%d, numResults=%d)...", itemKey.itemID, itemKey.itemSuffix, itemKey.itemLevel, C_AuctionHouse.GetNumCommoditySearchResults(itemKey.itemID))
-					C_AuctionHouse.RefreshCommoditySearchResults(itemKey.itemID)
-				else
-					Log.Info("Refreshing item results (itemID=%d, itemSuffix=%d, itemLevel=%d, numResults=%d)...", itemKey.itemID, itemKey.itemSuffix, itemKey.itemLevel, C_AuctionHouse.GetNumItemSearchResults(itemKey))
-					C_AuctionHouse.RefreshItemSearchResults(itemKey)
-				end
+			Log.Info("Sending search query (itemID=%d, itemSuffix=%d, itemLevel=%d, isSell=%s)...", itemKey.itemID, itemKey.itemSuffix, itemKey.itemLevel, sellQuery)
+			if sellQuery then
+				C_AuctionHouse.SendSellSearchQuery(itemKey, EMPTY_SORTS_TABLE, true)
 			else
-				Log.Info("Sending search query (itemID=%d, itemSuffix=%d, itemLevel=%d, isSell=%d)...", itemKey.itemID, itemKey.itemSuffix, itemKey.itemLevel, sellQuery)
-				if sellQuery then
-					C_AuctionHouse.SendSellSearchQuery(itemKey, EMPTY_SORTS_TABLE, true)
-				else
-					C_AuctionHouse.SendSearchQuery(itemKey, EMPTY_SORTS_TABLE, true)
-				end
+				C_AuctionHouse.SendSearchQuery(itemKey, EMPTY_SORTS_TABLE, true)
 			end
 			for _ = 1, 50 do
 				if private.gotUpdateEvent then
@@ -1382,14 +1372,14 @@ end
 do
 	if not TSM.IsWowClassic() then
 		Event.Register("COMMODITY_SEARCH_RESULTS_UPDATED", function(_, itemId)
-			Log.Info("COMMODITY_SEARCH_RESULTS_UPDATED (itemId=%d, numResults=%d)", itemId, C_AuctionHouse.GetNumCommoditySearchResults(itemId))
+			Log.Info("COMMODITY_SEARCH_RESULTS_UPDATED (itemId=%d, numResults=%d, hasFullResults=%s)", itemId, C_AuctionHouse.GetNumCommoditySearchResults(itemId), C_AuctionHouse.HasFullCommoditySearchResults(itemId))
 			if private.pendingUpdateItemKey and itemId == private.pendingUpdateItemKey.itemID then
 				private.gotUpdateEvent = true
 				private.pendingUpdateItemKey = nil
 			end
 		end)
 		Event.Register("ITEM_SEARCH_RESULTS_UPDATED", function(_, itemKey)
-			Log.Info("ITEM_SEARCH_RESULTS_UPDATED (itemId=%d, itemLevel=%d, itemSuffix=%d, numResults=%d)", itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, C_AuctionHouse.GetNumItemSearchResults(itemKey))
+			Log.Info("ITEM_SEARCH_RESULTS_UPDATED (itemId=%d, itemLevel=%d, itemSuffix=%d, numResults=%d, hasFullResults=%s)", itemKey.itemID, itemKey.itemLevel, itemKey.itemSuffix, C_AuctionHouse.GetNumItemSearchResults(itemKey), C_AuctionHouse.HasFullItemSearchResults(itemKey))
 			if private.pendingUpdateItemKey and Table.Equal(itemKey, private.pendingUpdateItemKey) then
 				private.gotUpdateEvent = true
 				private.pendingUpdateItemKey = nil

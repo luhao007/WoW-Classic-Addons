@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: kakysha
-## Version: 1.7.1
+## Version: 1.7.2
 ## OptionalDeps: Ace3
 ## SavedVariables: HonorSpyDB
 

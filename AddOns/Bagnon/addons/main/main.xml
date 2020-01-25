@@ -1,6 +1,7 @@
 <Ui>
 	<Include file="style.xml"/>
 	<Include file="..\..\common\Wildpants\Wildpants.xml"/>
+	<Include file="..\..\common\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 
 	<Script file="brokerPlugin.lua"/>
 	<Script file="brokerDisplay.lua"/>

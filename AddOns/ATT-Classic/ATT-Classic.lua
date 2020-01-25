@@ -1476,27 +1476,15 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 					end
 				end
 				if app.Settings:GetTooltipSetting("itemID") then tinsert(info, { left = L["ITEM_ID"], right = tostring(itemID) }); end
-				if app.Settings:GetTooltipSetting("SpecializationRequirements") then
-					local specs = GetItemSpecInfo(itemID);
-					if specs then
-						if #specs > 0 then
-							table.sort(specs);
-							local spec_label = "";
-							local atleastone = false;
-							for key, specID in ipairs(specs) do
-								local id, name, description, icon, role, class = GetSpecializationInfoByID(specID);
-								if class == app.Class then
-									spec_label = spec_label .. "  |T" .. icon .. ":0|t " .. name;
-									atleastone = true;
-								end
-							end
-							if atleastone then
-								tinsert(info, { right = spec_label });
-							else
-								tinsert(info, { right = "Not available in Personal Loot." });
-							end
-						else
-							tinsert(info, { right = "Not available in Personal Loot." });
+				
+				-- Show Reservations
+				local reservesForItem = GetTempDataMember("SoftReservesByItemID")[itemID];
+				if reservesForItem and app.Settings:GetTooltipSetting("SoftReserves") then
+					local left = "Soft Reserves";
+					for i,guid in ipairs(reservesForItem) do
+						if guid and IsGUIDInGroup(guid) then
+							tinsert(info, { left = left, right = app.CreateSoftReserveUnit(guid).tooltipText });
+							left = nil;
 						end
 					end
 				end
@@ -1819,6 +1807,10 @@ local function SendResponseMessage(msg, player)
 		C_ChatInfo.SendAddonMessage("ATTC", msg, "WHISPER", player);
 	end
 end
+local function SendGUIDWhisper(msg, guid)
+	local name = select(6, GetPlayerInfoByGUID(guid));
+	if name then SendChatMessage(msg, "WHISPER", nil, name); end
+end
 
 -- Lua Constructor Lib
 local fieldCache = {};
@@ -1917,12 +1909,6 @@ fieldConverters = {
 			elseif v[1] == "o" and v[2] > 0 then
 				CacheField(group, "objectID", v[2]);
 			end
-		end
-	end,
-	["altQuests"] = function(group, value)
-		_cache = rawget(fieldConverters, "questID");
-		for i,questID in ipairs(value) do
-			_cache(group, questID);
 		end
 	end,
 	["maps"] = function(group, value)
@@ -2578,39 +2564,39 @@ end
 
 -- Character Class Lib
 (function()
-local classKeys = {
-	[1] = "WARRIOR",
-	[2] = "PALADIN",
-	[3] = "HUNTER",
-	[4] = "ROGUE",
-	[5] = "PRIEST",
-	[7] = "SHAMAN",
-	[8] = "MAGE",
-	[9] = "WARLOCK",
-	[11] = "DRUID",
-};
-local classNames = {
-	[1] = "Warrior",
-	[2] = "Paladin",
-	[3] = "Hunter",
-	[4] = "Rogue",
-	[5] = "Priest",
-	[7] = "Shaman",
-	[8] = "Mage",
-	[9] = "Warlock",
-	[11] = "Druid",
-};
 local classIcons = {
-	[1] = "Interface\\Icons\\ClassIcon_Warrior",
-	[2] = "Interface\\Icons\\ClassIcon_Paladin",
-	[3] = "Interface\\Icons\\ClassIcon_Hunter",
-	[4] = "Interface\\Icons\\ClassIcon_Rogue",
-	[5] = "Interface\\Icons\\ClassIcon_Priest",
-	[7] = "Interface\\Icons\\ClassIcon_Shaman",
-	[8] = "Interface\\Icons\\ClassIcon_Mage",
-	[9] = "Interface\\Icons\\ClassIcon_Warlock",
-	[11] = "Interface\\Icons\\ClassIcon_Druid",
+	[1] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Warrior",
+	[2] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Paladin",
+	[3] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Hunter",
+	[4] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Rogue",
+	[5] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Priest",
+	[7] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Shaman",
+	[8] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Mage",
+	[9] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Warlock",
+	[11] = "Interface\\Addons\\ATT-Classic\\assets\\ClassIcon_Druid",
 };
+local SoftReserveUnitOnClick = function(self, button)
+	if button == "RightButton" then
+		app:ShowPopupDialog((self.ref.text or "??") .. "\n \nAre you sure you want to delete this entry?",
+		function()
+			local guid = self.ref.guid;
+			if guid then
+				app:UpdateSoftReserveInternal(guid, nil);
+				app:GetWindow("SoftReserves"):Update(true);
+			end
+		end);
+	else
+		
+	end
+	return true;
+end
+app.GetClassIDFromClassFile = function(classFile)
+	for i,icon in pairs(classIcons) do
+		if C_CreatureInfo.GetClassInfo(i).classFile == classFile then
+			return i;
+		end
+	end
+end
 app.BaseCharacterClass = {
 	__index = function(t, key)
 		if key == "key" then
@@ -2620,7 +2606,7 @@ app.BaseCharacterClass = {
 			rawset(t, "text", text);
 			return text;
 		elseif key == "name" then
-			return classNames[t.classID];
+			return C_CreatureInfo.GetClassInfo(t.classID).className;
 		elseif key == "icon" then
 			return classIcons[t.classID];
 		elseif key == "c" then
@@ -2628,7 +2614,7 @@ app.BaseCharacterClass = {
 			rawset(t, "c", c);
 			return c;
 		elseif key == "classColors" then
-			return RAID_CLASS_COLORS[classKeys[t.classID]];
+			return RAID_CLASS_COLORS[C_CreatureInfo.GetClassInfo(t.classID).classFile];
 		else
 			-- Something that isn't dynamic.
 			return table[key];
@@ -2637,6 +2623,419 @@ app.BaseCharacterClass = {
 };
 app.CreateCharacterClass = function(id, t)
 	return setmetatable(constructor(id, t, "classID"), app.BaseCharacterClass);
+end
+app.BaseUnit = {
+	__index = function(t, key)
+		if key == "key" then
+			return "unit";
+		elseif key == "text" then
+			local name = UnitName(t.unit);
+			if name then
+				rawset(t, "name", name);
+				local className, classFile, classID = UnitClass(t.unit);
+				if classFile then name = "|c" .. RAID_CLASS_COLORS[classFile].colorStr .. name .. "|r"; end
+				if rawget(t, "isML") then name = name .. " |cFFFFFFFF(" .. MASTER_LOOTER .. ")|r"; end
+				rawset(t, "className", className);
+				rawset(t, "classFile", classFile);
+				rawset(t, "classID", classID);
+				rawset(t, "text", name);
+				return name;
+			end
+			return t.unit;
+		elseif key == "name" then
+			return UnitName(t.unit);
+		elseif key == "guid" then
+			return UnitGUID(t.unit);
+		elseif key == "title" then
+			if IsInGroup() then
+				if rawget(t, "isML") then return MASTER_LOOTER; end
+				if UnitIsGroupLeader(t.name) then return RAID_LEADER; end
+			end
+		elseif key == "description" then
+			return LEVEL .. " " .. (UnitLevel(t.unit) or "??") .. " " .. (UnitRace(t.unit) or "??") .. " " .. (UnitClass(t.unit) or "??");
+		elseif key == "icon" then
+			if t.classID then return classIcons[t.classID]; end
+		else
+			-- Something that isn't dynamic.
+			return table[key];
+		end
+	end
+};
+app.CreateUnit = function(unit, t)
+	return setmetatable(constructor(unit, t, "unit"), app.BaseUnit);
+end
+app.BaseSoftReserveUnit = {
+	__index = function(t, key)
+		if key == "key" then
+			return "unit";
+		elseif key == "unitText" then
+			local name, className, classFile, classID = UnitName(t.unit);
+			if name then
+				className, classFile, classID = UnitClass(t.unit);
+			elseif #{strsplit("-", t.unit)} > 1 then
+				-- It's a GUID.
+				rawset(t, "guid", t.unit);
+				className, classFile, _, _, _, name = GetPlayerInfoByGUID(t.unit);
+				classID = app.GetClassIDFromClassFile(classFile);
+			end
+			if name then
+				rawset(t, "name", name);
+				if classFile then name = "|c" .. RAID_CLASS_COLORS[classFile].colorStr .. name .. "|r"; end
+				rawset(t, "className", className);
+				rawset(t, "classFile", classFile);
+				rawset(t, "classID", classID);
+				return name;
+			end
+			return t.unit;
+		elseif key == "text" then
+			local name = t.unitText;
+			if name then
+				local itemID = t.itemID;
+				if itemID then
+					local itemName, itemLink,_,_,_,_,_,_,_,icon = GetItemInfo(itemID);
+					if itemLink then
+						name = name .. " - " .. (icon and ("|T" .. icon .. ":0|t") or "") .. itemLink;
+					else
+						name = name .. " - " .. RETRIEVING_DATA;
+					end
+				else
+					name = name .. " - No Soft Reserve Selected";
+				end
+				return name;
+			end
+			return t.unit;
+		elseif key == "name" then
+			return UnitName(t.unit);
+		elseif key == "guid" then
+			return UnitGUID(t.unit);
+		elseif key == "icon" then
+			if t.classID then return classIcons[t.classID]; end
+		elseif key == "visible" then
+			return true;
+		elseif key == "itemID" then
+			local guid = t.guid;
+			if guid then
+				local reserve = rawget(GetDataMember("SoftReserves"), guid);
+				if reserve then
+					return type(reserve) == 'number' and reserve or reserve[1];
+				end
+			end
+		elseif key == "preview" then
+			return t.itemID and select(5, GetItemInfoInstant(t.itemID)) or "Interface\\Icons\\INV_Misc_QuestionMark";
+		elseif key == "link" then
+			if t.itemID then
+				return select(2, GetItemInfo(t.itemID));
+			end
+		elseif key == "tooltipText" then
+			local text = t.unitText;
+			local guid = t.guid;
+			local icon = t.icon;
+			if icon then text = "|T" .. icon .. ":0|t " .. text; end
+			if guid and not IsGUIDInGroup(guid) then
+				text = text .. " |CFFFFFFFF(Not in Group)|r";
+			end
+			return text;
+		elseif key == "OnClick" then
+			return SoftReserveUnitOnClick;
+		else
+			-- Something that isn't dynamic.
+			return table[key];
+		end
+	end
+};
+app.CreateSoftReserveUnit = function(unit, t)
+	return setmetatable(constructor(unit, t, "unit"), app.BaseSoftReserveUnit);
+end
+app.ParseSoftReserve = function(app, guid, cmd, isSilentMode, isCurrentPlayer)
+	-- Attempt to parse the command.
+	if cmd and cmd ~= "" then
+		cmd = cmd:match("^%s*(.+)$");
+		if cmd == "clear" or cmd == '0' then
+			app:UpdateSoftReserve(guid, nil, time(), isSilentMode, isCurrentPlayer);
+			return;
+		end
+		
+		-- Parse out the itemID if possible.
+		local itemID = tonumber(cmd) or GetItemInfoInstant(cmd);
+		if itemID then cmd = "itemid:" .. itemID; end
+		
+		-- Search for the Link in the database
+		local group = SearchForLink(cmd);
+		if group and #group > 0 then
+			for i,g in ipairs(group) do
+				if g.itemID then
+					app:UpdateSoftReserve(guid, g.itemID, time(), isSilentMode, isCurrentPlayer);
+					return true;
+				end
+			end
+		end
+	end
+	
+	-- Send back an error message.
+	SendGUIDWhisper("Unrecognized Command. Please use '!sr [itemLink/itemID]'. You can send an item link or an itemID from WoWHead. EX: '!sr 12345' or '!sr [Azuresong Mageblade]'", guid);
+end
+app.QuerySoftReserve = function(app, guid, cmd, target)
+	-- Attempt to parse the command.
+	if cmd and cmd ~= "" then
+		local all = not IsInGroup() or not IsGUIDInGroup(guid);
+		cmd = cmd:match("^%s*(.+)$");
+		if strsub(cmd, 1, 3) == "all" then
+			cmd = strsub(cmd, 4):match("^%s*(.+)$");
+			all = true;
+		elseif cmd == "srml" then
+			if IsInGroup() then
+				-- If the requester is in the group, then you've gotta be the Master Looter to respond.
+				if IsGUIDInGroup(guid) then
+					local lootMethod, partyIndex, raidIndex = GetLootMethod();
+					if lootMethod == "master" then
+						local visible = true;
+						if raidIndex then
+							if UnitName("player") ~= GetRaidRosterInfo(raidIndex) then
+								return true;
+							end
+						elseif partyIndex ~= 0 then
+							if UnitName("player") ~= UnitName("party" .. partyIndex) then
+								return true;
+							end
+						end
+					end
+				end
+				
+				local reserves = GetDataMember("SoftReserves");
+				if reserves then
+					local count, length, msg, s = 7, 0, "!\tsrml";
+					for gu,reserve in pairs(reserves) do
+						if gu and IsGUIDInGroup(gu) then
+							s = "\t" .. gu .. "\t" .. reserve[1];
+							length = string.len(s);
+							if count + length >= 255 then
+								C_ChatInfo.SendAddonMessage("ATTC", msg, "WHISPER", target);
+								count = 7;
+								msg = "!\tsrml";
+							else
+								count = count + length;
+								msg = msg .. s;
+							end
+						end
+					end
+					if count > 5 then
+						C_ChatInfo.SendAddonMessage("ATTC", msg, "WHISPER", target);
+					end
+				end
+			end
+			return true;
+		end
+		
+		-- Parse out the itemID if possible.
+		local itemID = tonumber(cmd) or GetItemInfoInstant(cmd);
+		if itemID then cmd = "itemid:" .. itemID; end
+		
+		-- Search for the Link in the database
+		local group = SearchForLink(cmd);
+		if group and #group > 0 then
+			for i,g in ipairs(group) do
+				if g.itemID then
+					local link = g.link;
+					if not link or link == RETRIEVING_DATA or strsub(link, 1, 4) == "item" then
+						link = "item:" .. g.itemID;
+					end
+					local sr = {};
+					local message = link .. " ";
+					local reservesForItem = GetTempDataMember("SoftReservesByItemID")[g.itemID];
+					if reservesForItem then
+						for i,guid in ipairs(reservesForItem) do
+							if guid and (all or IsGUIDInGroup(guid)) then
+								local unit = app.CreateSoftReserveUnit(guid);
+								table.insert(sr, unit.unitText and unit.name or guid);
+							end
+						end
+					end
+					if #sr == 0 then
+						if all then
+							message = message .. "Not Soft Reserved by anyone.";
+						else
+							message = message .. "Not Soft Reserved by anyone in our group.";
+						end
+					else
+						for i,name in ipairs(sr) do
+							if i > 1 then message = message .. ", "; end
+							message = message .. name;
+						end
+					end
+					SendGUIDWhisper(message, guid);
+					return true;
+				end
+			end
+		end
+	else
+		local reserve = rawget(GetDataMember("SoftReserves"), guid);
+		if reserve then
+			-- Parse out the itemID if possible.
+			local itemID = type(reserve) == 'number' and reserve or reserve[1];
+			if itemID then itemID = "itemid:" .. itemID; end
+			
+			-- Search for the Link in the database
+			local group = SearchForLink(itemID);
+			if group and #group > 0 then
+				for i,g in ipairs(group) do
+					if g.itemID then
+						local link = g.link;
+						if not link or link == RETRIEVING_DATA or strsub(link, 1, 4) == "item" then
+							link = "item:" .. g.itemID;
+						end
+						SendGUIDWhisper("You have " .. link .. " Soft Reserved.", guid);
+						return true;
+					end
+				end
+			end
+		else
+			SendGUIDWhisper("You have nothing Soft Reserved.", guid);
+			return true;
+		end
+	end
+	
+	-- Send back an error message.
+	SendGUIDWhisper("Unrecognized Command. Please use '!sr [itemLink/itemID]'. You can send an item link or an itemID from WoWHead. EX: '!sr 12345' or '!sr [Azuresong Mageblade]'", guid);
+end
+app.UpdateSoftReserveInternal = function(app, guid, itemID, timeStamp)
+	local reserves = GetDataMember("SoftReserves");
+	local reservesByItemID = GetTempDataMember("SoftReservesByItemID");
+	
+	-- Check the Old Reserve against the new one.
+	local oldreserve = reserves[guid];
+	if oldreserve then
+		-- If there was an old reservation...
+		local oldItemID = oldreserve[1];
+		if oldItemID then
+			if oldItemID == itemID then
+				return true;
+			end
+			
+			-- Uncache the reserve
+			local reservesForItem = reservesByItemID[oldItemID];
+			if reservesForItem then
+				for i,value in ipairs(reservesForItem) do
+					if value == guid then
+						table.remove(reservesForItem, i);
+						break;
+					end
+				end
+			end
+		end
+	end
+	
+	-- Update the Reservation
+	wipe(searchCache);
+	if itemID and itemID > 0 then
+		reserves[guid] = { itemID, timeStamp or time() };
+		local reservesForItem = reservesByItemID[itemID];
+		if not reservesForItem then
+			reservesForItem = {};
+			reservesByItemID[itemID] = reservesForItem;
+		end
+		table.insert(reservesForItem, guid);
+	else
+		reserves[guid] = nil;
+	end
+end
+app.UpdateSoftReserve = function(app, guid, itemID, timeStamp, silentMode, isCurrentPlayer)
+	if IsInGroup() and GetDataMember("SoftReserves")[guid] and app.Settings:GetTooltipSetting("SoftReservesLocked") then
+		if not silentMode then
+			SendGUIDWhisper("The Soft Reserve is currently locked by your Master Looter. Please make sure to update your Soft Reserve before raid next time!", guid);
+		end
+	else
+		-- If they didn't previously have a reserve, then allow it. If so, then reject it.
+		app:UpdateSoftReserveInternal(guid, itemID);
+		app:GetWindow("SoftReserves"):Update(true);
+		if not silentMode then
+			if itemID then
+				local searchResults = SearchForLink("itemid:" .. itemID);
+				if searchResults and #searchResults > 0 then
+					SendGUIDWhisper("SR: Updated to " .. (searchResults[1].link or select(1, GetItemInfo(itemID)) or ("itemid:" .. itemID)), guid);
+				end
+			else
+				SendGUIDWhisper("SR: Cleared.", guid);
+			end
+		end
+	end
+end
+app.BaseQuestUnit = {
+	__index = function(t, key)
+		if key == "key" then
+			return "unit";
+		elseif key == "unitText" then
+			local name, className, classFile, classID = UnitName(t.unit);
+			if name then
+				className, classFile, classID = UnitClass(t.unit);
+			elseif #{strsplit("-", t.unit)} > 1 then
+				-- It's a GUID.
+				rawset(t, "guid", t.unit);
+				className, classFile, _, _, _, name = GetPlayerInfoByGUID(t.unit);
+				classID = app.GetClassIDFromClassFile(classFile);
+			end
+			if name then
+				rawset(t, "name", name);
+				if classFile then name = "|c" .. RAID_CLASS_COLORS[classFile].colorStr .. name .. "|r"; end
+				rawset(t, "className", className);
+				rawset(t, "classFile", classFile);
+				rawset(t, "classID", classID);
+				return name;
+			end
+			return t.unit;
+		elseif key == "text" then
+			return t.unitText;
+		elseif key == "name" then
+			local name = UnitName(t.unit);
+			if name then
+				rawset(t, "name", name);
+				return name;
+			elseif #{strsplit("-", t.unit)} > 1 then
+				-- It's a GUID.
+				rawset(t, "guid", t.unit);
+				local className, classFile, _, _, _, name = GetPlayerInfoByGUID(t.unit);
+				if name then
+					rawset(t, "name", name);
+					return name;
+				end
+			end
+		elseif key == "guid" then
+			return UnitGUID(t.unit);
+		elseif key == "icon" then
+			if t.classID then return classIcons[t.classID]; end
+		elseif key == "visible" then
+			return true;
+		elseif key == "collectible" then
+			return true;
+		elseif key == "trackable" then
+			return true;
+		elseif key == "collected" then
+			return t.saved;
+		elseif key == "saved" then
+			local questID = t.parent.parent.questID;
+			if questID then
+				local guid = t.guid;
+				if guid and questID then
+					if guid == app.GUID then
+						return IsQuestFlaggedCompleted(questID);
+					else
+						local questsForGUID = GetDataMember("GroupQuestsByGUID")[guid] or GetDataMember("CollectedQuestsPerCharacter")[guid];
+						return questsForGUID and questsForGUID[questID];
+					end
+				end
+			end
+		elseif key == "tooltipText" then
+			local text = t.unitText;
+			local icon = t.icon;
+			if icon then text = "|T" .. icon .. ":0|t " .. text; end
+			return text;
+		else
+			-- Something that isn't dynamic.
+			return table[key];
+		end
+	end
+};
+app.CreateQuestUnit = function(unit, t)
+	return setmetatable(constructor(unit, t, "unit"), app.BaseQuestUnit);
 end
 end)();
 
@@ -2990,6 +3389,95 @@ app.BaseItem = {
 app.CreateItem  = function(id, t)
 	return setmetatable(constructor(id, t, "itemID"), app.BaseItem);
 end
+
+-- Loot Method + Threshold Lib
+(function()
+local lootMethodIcons = {
+	freeforall = "Interface\\Icons\\Ability_Rogue_Sprint",
+	group = "Interface\\Icons\\INV_Misc_Coin_01",
+	master = "Interface\\Icons\\Ability_Warrior_BattleShout",
+	needbeforegreed = "Interface\\Icons\\Ability_Rogue_Eviscerate",
+	roundrobin = "Interface\\Icons\\INV_Misc_Coin_01",
+};
+local lootThresholdIcons = {
+	"Interface\\Icons\\inv_sword_04",	-- Common
+	"Interface\\Icons\\inv_sword_24",	-- Uncommon
+	"Interface\\Icons\\inv_sword_42",	-- Rare
+	"Interface\\Icons\\inv_sword_62",	-- Epic
+	"Interface\\Icons\\inv_hammer_unique_sulfuras",	-- Legendary
+	[0] = "Interface\\Icons\\inv_sword_04",	-- Poor
+};
+local setLootMethod = function(self, button)
+	if IsInGroup() then
+		if self.ref.id == "master" then
+			SetLootMethod(self.ref.id, UnitName("player"));
+		else
+			SetLootMethod(self.ref.id);
+		end
+	end
+	if self then self:GetParent():GetParent():Reset(); end
+	return true;
+end;
+local setLootThreshold = function(self, button)
+	if IsInGroup() then
+		SetLootThreshold(self.ref.id);
+	end
+	if self then self:GetParent():GetParent():Reset(); end
+	return true;
+end;
+app.BaseLootMethod = {
+	__index = function(t, key)
+		if key == "key" then
+			return "id";
+		elseif key == "text" then
+			return UnitLootMethod[t.id].text;
+		elseif key == "description" then
+			return UnitLootMethod[t.id].tooltipText;
+		elseif key == "icon" then
+			return lootMethodIcons[t.id];
+		elseif key == "visible" then
+			return true;
+		elseif key == "back" then
+			return 0.5;
+		elseif key == "OnClick" then
+			return setLootMethod;
+		else
+			-- Something that isn't dynamic.
+			return table[key];
+		end
+	end
+};
+app.CreateLootMethod = function(id, t)
+	return setmetatable(constructor(id, t, "id"), app.BaseLootMethod);
+end
+app.BaseLootThreshold = {
+	__index = function(t, key)
+		if key == "key" then
+			return "id";
+		elseif key == "text" then
+			return ITEM_QUALITY_COLORS[t.id].hex .. t.name .. "|r";
+		elseif key == "name" then
+			return _G["ITEM_QUALITY" .. t.id .. "_DESC"];
+		elseif key == "description" then
+			return NEWBIE_TOOLTIP_UNIT_LOOT_THRESHOLD;
+		elseif key == "icon" then
+			return lootThresholdIcons[t.id];
+		elseif key == "visible" then
+			return true;
+		elseif key == "back" then
+			return 0.5;
+		elseif key == "OnClick" then
+			return setLootThreshold;
+		else
+			-- Something that isn't dynamic.
+			return table[key];
+		end
+	end
+};
+app.CreateLootThreshold = function(id, t)
+	return setmetatable(constructor(id, t, "id"), app.BaseLootThreshold);
+end
+end)();
 
 -- Map Lib
 (function()
@@ -3420,6 +3908,24 @@ app.SkillIDToSpellID = setmetatable({
 	[393] = 8613,	-- Skinning
 	[197] = 3908,	-- Tailoring
 	[40] = 2842,	-- Poison
+	
+	-- Specializations
+	[20219] = 20219,	-- Gnomish Engineering
+	[20222] = 20222,	-- Goblin Engineering
+	[9788] = 9788,		-- Armorsmith
+	[9787] = 9787,		-- Weaponsmith
+	[17041] = 17041,	-- Master Axesmith
+	[17040] = 17040,	-- Master Hammersmith
+	[17039] = 17039,	-- Master Swordsmith
+}, {__index = function(t,k) return k; end})
+app.SpecializationSpellIDs = setmetatable({
+	[20219] = 20219,	-- Gnomish Engineering
+	[20222] = 20222,	-- Goblin Engineering
+	[9788] = 9788,		-- Armorsmith
+	[9787] = 9787,		-- Weaponsmith
+	[17041] = 17041,	-- Master Axesmith
+	[17040] = 17040,	-- Master Hammersmith
+	[17039] = 17039,	-- Master Swordsmith
 }, {__index = function(t,k) return k; end})
 app.BaseProfession = {
 	__index = function(t, key)
@@ -3698,6 +4204,7 @@ function app.FilterItemClass(item)
 		if app.ItemBindFilter(item) then return true; end
 		return app.ItemTypeFilter(item)
 			and app.RequireBindingFilter(item)
+			and app.RequiredSkillFilter(item.requireSkill)
 			and app.ClassRequirementFilter(item)
 			and app.RaceRequirementFilter(item);
 	end
@@ -3722,6 +4229,13 @@ end
 function app.FilterItemClass_RequireBinding(item)
 	if item.b and (item.b == 2 or item.b == 3) then
 		return false;
+	else
+		return true;
+	end
+end
+function app.FilterItemClass_RequiredSkill(requireSkill)
+	if requireSkill then
+		return GetTempDataMember("Professions")[requireSkill];
 	else
 		return true;
 	end
@@ -3751,6 +4265,7 @@ app.CollectedItemVisibilityFilter = app.NoFilter;
 app.ClassRequirementFilter = app.NoFilter;
 app.RaceRequirementFilter = app.NoFilter;
 app.RequireBindingFilter = app.NoFilter;
+app.RequiredSkillFilter = app.NoFilter;
 app.SeasonalItemFilter = app.NoFilter;
 app.UnobtainableItemFilter = app.FilterItemClass_UnobtainableItem;
 app.ShowIncompleteThings = app.Filter;
@@ -4087,11 +4602,13 @@ local function CreateMiniListForGroup(group)
 		if group.questID or group.sourceQuests then
 			-- This is a quest object. Let's show prereqs and breadcrumbs.
 			local questID = group.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and group.altQuestID or group.questID;
-			if (group.parent.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and group.parent.altQuestID or group.parent.questID) == questID then
-				group = group.parent;
+			if questID then
+				if (group.parent.altQuestID and app.FactionID == Enum.FlightPathFaction.Horde and group.parent.altQuestID or group.parent.questID) == questID then
+					group = group.parent;
+				end
 			end
 			local mainQuest = CloneData(group);
-			mainQuest.collectible = true;
+			if questID then mainQuest.collectible = true; end
 			local g = { mainQuest };
 			
 			-- Check to see if Source Quests are listed elsewhere.
@@ -5056,10 +5573,12 @@ local function RowOnEnter(self)
 					local sqs = SearchForField("questID", sourceQuestID);
 					if sqs and #sqs > 0 then
 						local sq = sqs[1];
-						if sq and sq.isBreadcrumb then
-							table.insert(bc, sqs[1]);
-						else
-							table.insert(prereqs, sqs[1]);
+						if sq and app.ClassRequirementFilter(sq) and app.RaceRequirementFilter(sq) then
+							if sq.isBreadcrumb then
+								table.insert(bc, sqs[1]);
+							else
+								table.insert(prereqs, sqs[1]);
+							end
 						end
 					else
 						table.insert(prereqs, {questID = sourceQuestID});
@@ -5705,13 +6224,159 @@ end
 -- Create the Primary Collection Window (this allows you to save the size and location)
 app:GetWindow("Prime"):SetSize(425, 305);
 app:GetWindow("Unsorted");
+app:GetWindow("Attuned", UIParent, function(self)
+	if self:IsVisible() then
+		if not self.initialized then
+			self.initialized = true;
+			
+			-- Soft Reserves
+			local attunements = {
+				['text'] = "Attunements",
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_HEROIC_GloryoftheRaider", 
+				["description"] = "This list shows you all of the players you have encountered that are Attuned to raids.",
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['OnUpdate'] = function(data)
+					data.progress = 0;
+					data.total = 0;
+					data.indent = 0;
+					data.back = 1;
+					local nameToGUID = {};
+					local groupMembers = data.groupMembersHeader.g;
+					local guildMembers = data.guildMembersHeader.g;
+					wipe(groupMembers);
+					wipe(guildMembers);
+					local count = GetNumGroupMembers();
+					if count > 0 then
+						for raidIndex = 2, 40, 1 do
+							local name = GetRaidRosterInfo(raidIndex);
+							if name then
+								local unit = app.CreateQuestUnit(name);
+								local guid = unit.guid;
+								if guid then nameToGUID[name] = guid; end
+								table.insert(groupMembers, unit);
+							end
+						end
+					end
+					
+					local count = GetNumGuildMembers();
+					if count > 0 then
+						for guildIndex = 1, count, 1 do
+							local guid = select(17, GetGuildRosterInfo(guildIndex));
+							if guid then
+								local unit = app.CreateQuestUnit(guid);
+								local name = unit.name;
+								if name then nameToGUID[name] = guid; end
+								table.insert(guildMembers, unit);
+							end
+						end
+					end
+					
+					-- Process Addon Messages
+					local addonMessages = GetDataMember("AddonMessageProcessor");
+					if addonMessages and #addonMessages > 0 then
+						local unprocessedMessages = {};
+						for i,message in ipairs(addonMessages) do
+							local guid = nameToGUID[message[1]];
+							if guid then
+								-- Attempt to process a quest message.
+								if message[2] == 'q' then
+									GetDataSubMember("GroupQuestsByGUID", guid, {})[message[3]] = 1;
+								else
+									table.insert(unprocessedMessages, message);
+								end
+							else
+								table.insert(unprocessedMessages, message);
+							end
+						end
+						SetDataMember("AddonMessageProcessor", unprocessedMessages);
+					end
+					
+					-- Sort Member List
+					table.sort(guildMembers, data.Sort);
+					table.sort(groupMembers, data.Sort);
+					table.insert(groupMembers, app.CreateQuestUnit("player"));
+					
+					local g = {};
+					table.insert(g, data.MoltenCore);
+					wipe(data.MoltenCore.g);
+					table.insert(data.MoltenCore.g, data.groupMembersHeader);
+					table.insert(data.MoltenCore.g, data.guildMembersHeader);
+					data.g = g;
+				end,
+				['g'] = {},
+				['MoltenCore'] = app.CreateMap(232, {	-- Molten Core
+					['icon'] = "Interface\\Icons\\Spell_Fire_Immolation",
+					['description'] = "These are players attuned to Molten Core.\n\nPeople can whisper you '!mc' to mark themselves attuned.",
+					['questID'] = 7848,	-- Attunement to the Core
+					['total'] = 0,
+					['progress'] = 0,
+					['visible'] = true,
+					["isRaid"] = true,
+					['g'] = {},
+					['back'] = 0.5,
+				}),
+				['guildMembersHeader'] = {
+					['text'] = "Guild Members",
+					['icon'] = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
+					['description'] = "These players are in your guild.",
+					['visible'] = true,
+					['g'] = {},
+					['OnUpdate'] = function(data)
+						data.visible = #data.g > 0;
+					end,
+				},
+				['groupMembersHeader'] = {
+					['text'] = "Group Members",
+					['icon'] = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
+					['description'] = "These players are currently in your group.",
+					['visible'] = true,
+					['g'] = {},
+					['OnUpdate'] = function(data)
+						data.visible = #data.g > 0;
+					end,
+				},
+				['Sort'] = function(a, b)
+					return b.text > a.text;
+				end,
+			};
+			
+			self.Reset = function()
+				self.data = attunements;
+			end
+			
+			-- Setup Event Handlers and register for events
+			self:SetScript("OnEvent", function(self, e, ...) self:Update(); end);
+			self:RegisterEvent("CHAT_MSG_SYSTEM");
+			self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+			self:RegisterEvent("GUILD_ROSTER_UPDATE");
+			self:RegisterEvent("GROUP_ROSTER_UPDATE");
+			self:Reset();
+		end
+		
+		-- Update the groups without forcing Debug Mode.
+		local visibilityFilter, groupFilter = app.VisibilityFilter, app.GroupFilter;
+		app.GroupFilter = app.ObjectVisibilityFilter;
+		app.VisibilityFilter = app.ObjectVisibilityFilter;
+		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
+		BuildGroups(self.data, self.data.g);
+		for i,g in ipairs(self.data.g) do
+			if g.OnUpdate then g.OnUpdate(g, self); end
+		end
+		UpdateGroups(self.data, self.data.g);
+		UpdateWindow(self, true);
+		app.GroupFilter = groupFilter;
+		app.VisibilityFilter = visibilityFilter;
+	end
+end);
 app:GetWindow("CosmicInfuser", UIParent, function(self)
 	if self:IsVisible() then
 		if not self.initialized then
 			self.initialized = true;
 			self.data = {
 				['text'] = "Cosmic Infuser",
-				['icon'] = "Interface\\Icons\\INV_Misc_Celestial Map.blp", 
+				['icon'] = "Interface/ICONS/INV_Misc_Map_01", 
 				["description"] = "This window helps debug when we're missing map IDs in the addon.",
 				['visible'] = true, 
 				['expanded'] = true,
@@ -5790,7 +6455,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 		self.initialized = true;
 		self.data = {
 			['text'] = "Session History",
-			['icon'] = "Interface\\Icons\\Achievement_Dungeon_GloryoftheRaider.blp", 
+			['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_GloryoftheRaider.blp", 
 			["description"] = "This keeps a visual record of all of the quests, maps, loot, and vendors that you have come into contact with since the session was started.",
 			['visible'] = true, 
 			['expanded'] = true,
@@ -6395,18 +7060,170 @@ app:GetWindow("RaidAssistant", UIParent, function(self)
 		if not self.initialized then
 			self.initialized = true;
 			
+			-- Loot Method Switching
+			local lootmethod, lootmasters, lootthreshold, raidassistant;
+			lootmethod = {
+				['text'] = LOOT_METHOD,
+				['icon'] = "Interface\\Icons\\INV_Misc_Coin_01.blp",
+				["description"] = "This setting allows you to customize what kind of loot will drop and how much.\n\nThis only works while in a party - If you're by yourself, you can create a Premade Group (just don't invite anyone) and then change it.\n\nClick this row to go back to the Raid Assistant.",
+				['OnClick'] = function(row, button)
+					self.data = raidassistant;
+					self:Update(true);
+					return true;
+				end,
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['g'] = {},
+				['OnUpdate'] = function(data)
+					data.g = {};
+					if data.options then
+						for i,option in ipairs(data.options) do
+							table.insert(data.g, option);
+						end
+					end
+					for key,value in pairs(UnitLootMethod) do
+						table.insert(data.g, app.CreateLootMethod(key));
+					end
+				end,
+			};
+			lootmasters = {
+				['text'] = MASTER_LOOTER,
+				['icon'] = "Interface\\Icons\\INV_Misc_Coin_01.blp",
+				["description"] = "This setting allows you to select a new Master Looter.",
+				['OnClick'] = function(row, button)
+					self.data = raidassistant;
+					self:Update(true);
+					return true;
+				end,
+				['OnUpdate'] = function(data)
+					data.g = {};
+					local count = GetNumGroupMembers();
+					if count > 0 then
+						for raidIndex = 1, 40, 1 do
+							local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(raidIndex);
+							if name then
+								table.insert(data.g, app.CreateUnit(name, {
+									['isML'] = isML,
+									['name'] = name,
+									['visible'] = true,
+									['OnClick'] = function(row, button)
+										SetLootMethod("master", row.ref.name);
+										self:Reset();
+										return true;
+									end,
+									['back'] = 0.5,
+								}));
+							end
+						end
+					end
+				end,
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['g'] = {},
+			};
+			lootthreshold = {
+				['text'] = LOOT_TRESHOLD,
+				['icon'] = "Interface\\Icons\\INV_Misc_Coin_01.blp",
+				["description"] = "Select a new loot threshold.",
+				['OnClick'] = function(row, button)
+					self.data = raidassistant;
+					self:Update(true);
+					return true;
+				end,
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['g'] = {
+					app.CreateLootThreshold(2),
+					app.CreateLootThreshold(3),
+					app.CreateLootThreshold(4)
+				},
+			};
+			
 			-- Raid Assistant
-			local raidassistant = {
+			raidassistant = {
 				['text'] = "Raid Assistant",
-				['icon'] = "Interface\\Icons\\Achievement_Dungeon_GloryoftheRaider.blp", 
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_GloryoftheRaider", 
 				["description"] = "Never enter the instance with the wrong settings again! Verify that everything is as it should be!",
 				['visible'] = true, 
 				['expanded'] = true,
 				['back'] = 1,
 				['g'] = {
+					app.CreateLootMethod("group", {
+						['title'] = LOOT_METHOD,
+						['visible'] = true,
+						['OnClick'] = function(row, button)
+							if UnitIsGroupLeader("player") then
+								self.data = lootmethod;
+								self:Update(true);
+							end
+							return true;
+						end,
+						['OnUpdate'] = function(data)
+							data.visible = IsInGroup();
+							if data.visible then
+								data.id = GetLootMethod();
+							end
+						end,
+						['back'] = 0.5,
+					}),
+					app.CreateUnit("player", {
+						['title'] = MASTER_LOOTER,
+						["description"] = "This player is currently the Master Looter.",
+						['visible'] = true,
+						['isML'] = true,
+						['OnClick'] = function(row, button)
+							if UnitIsGroupLeader("player") then
+								self.data = lootmasters;
+								self:Update(true);
+							end
+							return true;
+						end,
+						['OnUpdate'] = function(data)
+							if IsInGroup() then
+								local lootMethod, partyIndex, raidIndex = GetLootMethod();
+								if lootMethod == "master" then
+									if raidIndex then
+										data.unit = GetRaidRosterInfo(raidIndex);
+									elseif partyIndex == 0 then
+										data.unit = "player";
+									else
+										data.unit = UnitName("party" .. partyIndex);
+									end
+									data.text = nil;
+									data.visible = true;
+								else
+									data.visible = false;
+								end
+							else
+								data.visible = false;
+							end
+						end,
+						['back'] = 0.5,
+					}),
+					app.CreateLootThreshold(2, {
+						['title'] = LOOT_TRESHOLD,
+						['visible'] = true,
+						['OnClick'] = function(row, button)
+							if UnitIsGroupLeader("player") then
+								self.data = lootthreshold;
+								self:Update(true);
+							end
+							return true;
+						end,
+						['OnUpdate'] = function(data)
+							data.visible = IsInGroup();
+							if data.visible then
+								data.id = GetLootThreshold();
+							end
+						end,
+						['back'] = 0.5,
+					}),
 					{
 						['text'] = "Reset Instances",
-						['icon'] = "Interface\\Icons\\Ability_Priest_VoidShift",
+						['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Ability_Priest_VoidShift",
 						['description'] = "Click here to reset your instances.\n\nAlt+Click to toggle automatically resetting your instances when you leave a dungeon.\n\nWARNING: BE CAREFUL WITH THIS!",
 						['visible'] = true,
 						['OnClick'] = function(row, button)
@@ -6437,7 +7254,7 @@ app:GetWindow("RaidAssistant", UIParent, function(self)
 						['visible'] = true,
 						['OnClick'] = function(row, button)
 							LeaveParty();
-							self.data = raidassistant;
+							self:Reset();
 							UpdateWindow(self, true);
 							return true;
 						end,
@@ -6447,22 +7264,30 @@ app:GetWindow("RaidAssistant", UIParent, function(self)
 					},
 				}
 			};
-			self.data = raidassistant;
+			self.Reset = function()
+				self.data = raidassistant;
+			end
 			
 			-- Setup Event Handlers and register for events
 			self:SetScript("OnEvent", function(self, e, ...) self:Update(); end);
 			self:RegisterEvent("CHAT_MSG_SYSTEM");
 			self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 			self:RegisterEvent("GROUP_ROSTER_UPDATE");
+			self:Reset();
 		end
 		
 		-- Update the window and all of its row data
-		if self.data.OnUpdate then self.data.OnUpdate(self.data); end
+		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
 		for i,g in ipairs(self.data.g) do
-			if g.OnUpdate then g.OnUpdate(g); end
+			if g.OnUpdate then g.OnUpdate(g, self); end
 		end
+		
+		-- Update the groups without forcing Debug Mode.
+		local visibilityFilter = app.VisibilityFilter;
+		app.VisibilityFilter = app.ObjectVisibilityFilter;
 		BuildGroups(self.data, self.data.g);
 		UpdateWindow(self, true);
+		app.VisibilityFilter = visibilityFilter;
 	end
 end);
 app:GetWindow("Random", UIParent, function(self)
@@ -6594,7 +7419,7 @@ app:GetWindow("Random", UIParent, function(self)
 			local mainHeader, filterHeader;
 			local rerollOption = {
 				['text'] = "Reroll",
-				['icon'] = "Interface\\Icons\\ability_monk_roll",
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\ability_monk_roll",
 				['description'] = "Click this button to reroll using the active filter.",
 				['visible'] = true,
 				['OnClick'] = function(row, button)
@@ -6607,7 +7432,7 @@ app:GetWindow("Random", UIParent, function(self)
 			};
 			filterHeader = {
 				['text'] = "Apply a Search Filter",
-				['icon'] = "Interface\\Icons\\TRADE_ARCHAEOLOGY.blp", 
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\TRADE_ARCHAEOLOGY.blp", 
 				["description"] = "Please select a search filter option.",
 				['visible'] = true,
 				['expanded'] = true,
@@ -6650,7 +7475,7 @@ app:GetWindow("Random", UIParent, function(self)
 					},
 					{
 						['text'] = "Instance",
-						['icon'] = "Interface\\Icons\\Achievement_Dungeon_HEROIC_GloryoftheRaider",
+						['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_HEROIC_GloryoftheRaider",
 						['description'] = "Click this button to select a random instance based on what you're missing.",
 						['visible'] = true,
 						['OnClick'] = function(row, button)
@@ -6665,7 +7490,7 @@ app:GetWindow("Random", UIParent, function(self)
 					},
 					{
 						['text'] = "Dungeon",
-						['icon'] = "Interface\\Icons\\Achievement_Dungeon_GloryoftheHERO",
+						['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_GloryoftheHERO",
 						['description'] = "Click this button to select a random dungeon based on what you're missing.",
 						['visible'] = true,
 						['OnClick'] = function(row, button)
@@ -6680,7 +7505,7 @@ app:GetWindow("Random", UIParent, function(self)
 					},
 					{
 						['text'] = "Raid",
-						['icon'] = "Interface\\Icons\\Achievement_Dungeon_GloryoftheRaider",
+						['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_GloryoftheRaider",
 						['description'] = "Click this button to select a random raid based on what you're missing.",
 						['visible'] = true,
 						['OnClick'] = function(row, button)
@@ -6712,7 +7537,7 @@ app:GetWindow("Random", UIParent, function(self)
 			};
 			mainHeader = {
 				['text'] = "Random - Go Get 'Em!",
-				['icon'] = "Interface\\Icons\\Ability_Rogue_RolltheBones.blp", 
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Ability_Rogue_RolltheBones.blp", 
 				["description"] = "This window allows you to randomly select a place or item to get. Go get 'em!",
 				['visible'] = true, 
 				['expanded'] = true,
@@ -6724,7 +7549,7 @@ app:GetWindow("Random", UIParent, function(self)
 				['options'] = {
 					{
 						['text'] = "Change Search Filter",
-						['icon'] = "Interface\\Icons\\TRADE_ARCHAEOLOGY.blp", 
+						['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\TRADE_ARCHAEOLOGY.blp", 
 						["description"] = "Click this to change your search filter.",
 						['visible'] = true,
 						['OnClick'] = function(row, button)
@@ -6796,9 +7621,227 @@ app:GetWindow("Random", UIParent, function(self)
 		self.data.progress = 0;
 		self.data.total = 0;
 		self.data.indent = 0;
+		
+		-- Update the groups without forcing Debug Mode.
+		local visibilityFilter = app.VisibilityFilter;
+		app.VisibilityFilter = app.ObjectVisibilityFilter;
 		BuildGroups(self.data, self.data.g);
 		UpdateGroups(self.data, self.data.g);
 		UpdateWindow(self, true);
+		app.VisibilityFilter = visibilityFilter;
+	end
+end);
+app:GetWindow("SoftReserves", UIParent, function(self)
+	if self:IsVisible() then
+		if not self.initialized then
+			self.initialized = true;
+			
+			-- Soft Reserves
+			local softReserves = {
+				['text'] = "Soft Reserves",
+				['icon'] = "Interface\\Addons\\ATT-Classic\\assets\\Achievement_Dungeon_HEROIC_GloryoftheRaider", 
+				["description"] = "The soft reservation list submitted by your raid group. This is managed through the Master Looter, should they have ATT-Classic installed. If not, this feature will not function.\n\nML: Members of your raid without ATT-Classic installed can whisper you '!sr <itemlink>' or '!sr <itemID>' to Soft Reserve an item.",
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['OnUpdate'] = function(data)
+					local g = {};
+					local groupMembers = {};
+					groupMembers[app.GUID] = true;	-- Prevent the player's 
+					local count = GetNumGroupMembers();
+					if count > 0 then
+						for raidIndex = 1, 40, 1 do
+							local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(raidIndex);
+							if name then
+								local unit = app.CreateSoftReserveUnit(name);
+								local guid = unit.guid;
+								if guid and not groupMembers[guid]then
+									groupMembers[guid] = true;
+									table.insert(g, unit);
+								end
+							end
+						end
+					end
+					
+					-- Sort Member List
+					table.sort(g, data.Sort);
+					
+					-- Insert Control Methods
+					table.insert(g, 1, app.CreateSoftReserveUnit(app.GUID));
+					table.insert(g, 1, data.queryMasterLooter);
+					table.insert(g, 1, data.queryGuildMembers);
+					table.insert(g, 1, data.queryGroupMembers);
+					table.insert(g, 1, data.lockSoftReserves);
+					table.insert(g, 1, data.lootMethodReminder);
+					data.g = g;
+					
+					-- Show non-group members.
+					local nonGroupMembers = {};
+					local softReserves = GetDataMember("SoftReserves");
+					for guid,reserve in pairs(softReserves) do
+						if not groupMembers[guid] then
+							groupMembers[guid] = true;
+							table.insert(nonGroupMembers, app.CreateSoftReserveUnit(guid));
+						end
+					end
+					if #nonGroupMembers > 0 then
+						data.nonGroupMembersHeader.g = nonGroupMembers;
+						table.sort(nonGroupMembers, data.Sort);
+						table.insert(data.g, data.nonGroupMembersHeader);
+					end
+				end,
+				['g'] = {},
+				['lockSoftReserves'] = setmetatable({
+					['text'] = "Lock All Soft Reserves",
+					['icon'] = "Interface\\Icons\\INV_MISC_KEY_13",
+					['description'] = "Click to toggle locking the Soft Reserves. You must click this again to turn it back off.",
+					['visible'] = true,
+					['OnClick'] = function(row, button)
+						app.Settings:SetTooltipSetting("SoftReservesLocked", not app.Settings:GetTooltipSetting("SoftReservesLocked"));
+						wipe(searchCache);
+						self:Update();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = not IsInGroup() or UnitIsGroupLeader("player");
+					end,
+				}, {
+					__index = function(t, key)
+						if key == "title" then
+							if t.saved then return "Locked"; end
+						elseif key == "saved" then
+							if app.Settings:GetTooltipSetting("SoftReservesLocked") then
+								return 1;
+							end
+						elseif key == "trackable" then
+							return true;
+						else
+							return table[key];
+						end
+					end
+				}),
+				['lootMethodReminder'] = app.CreateLootMethod("group", {
+					['title'] = LOOT_METHOD,
+					['description'] = "If you are seeing this option, you are the group leader and have not setup Master Looter yet.",
+					['visible'] = true,
+					['OnClick'] = function(row, button)
+						SetLootMethod("master", UnitName("player"));
+						self:Reset();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = IsInGroup() and UnitIsGroupLeader("player");
+						if data.visible then
+							data.id = GetLootMethod();
+							data.visible = data.id ~= "master";
+						end
+					end,
+					['back'] = 0.5,
+				}),
+				['nonGroupMembersHeader'] = {
+					['text'] = "Non-Group Members",
+					['icon'] = "Interface\\Icons\\INV_Misc_Head_Dragon_01",
+					['description'] = "These are players that have Soft Reserved something in your raid, but are not currently in your raid.",
+					['visible'] = true,
+					['g'] = {},
+					['OnUpdate'] = function(data)
+						data.visible = #data.g > 0;
+					end,
+					['back'] = 0.5,
+				},
+				['queryGroupMembers'] = {
+					['text'] = "Query Group Members",
+					['icon'] = "Interface\\Icons\\INV_Wand_05",
+					['description'] = "Press this button to send an addon message to your Group Members to update their Soft Reserves.",
+					['visible'] = true,
+					['g'] = {},
+					['OnClick'] = function(row, button)
+						SendGroupMessage("?\tsr");
+						self:Reset();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = IsInGroup() and not app.Settings:GetTooltipSetting("SoftReservesLocked");
+					end,
+					['back'] = 0.5,
+				},
+				['queryGuildMembers'] = {
+					['text'] = "Query Guild Members",
+					['icon'] = "Interface\\Icons\\INV_Wand_04",
+					['description'] = "Press this button to send an addon message to your Guild Members to update their Soft Reserves.",
+					['visible'] = true,
+					['g'] = {},
+					['OnClick'] = function(row, button)
+						SendGuildMessage("?\tsr");
+						self:Reset();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = not app.Settings:GetTooltipSetting("SoftReservesLocked");
+					end,
+					['back'] = 0.5,
+				},
+				['queryMasterLooter'] = {
+					['text'] = "Query Master Looter",
+					['icon'] = "Interface\\Icons\\INV_Wand_06",
+					['description'] = "Press this button to send an addon message to the Master Looter for a list of all the Soft Reserves in the raid.",
+					['visible'] = true,
+					['cooldown'] = 0,
+					['g'] = {},
+					['OnClick'] = function(row, button)
+						SendGroupMessage("?\tsrml");
+						self:Reset();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						if IsInGroup() then
+							local lootMethod, partyIndex, raidIndex = GetLootMethod();
+							if lootMethod == "master" then
+								if raidIndex then
+									data.visible = UnitName("player") ~= GetRaidRosterInfo(raidIndex);
+								elseif partyIndex == 0 then
+									data.visible = false;
+								else
+									data.visible = UnitName("player") ~= UnitName("party" .. partyIndex);
+								end
+							else
+								data.visible = false;
+							end
+						else
+							data.visible = false;
+						end
+					end,
+					['back'] = 0.5,
+				},
+				['Sort'] = function(a, b)
+					return b.text > a.text;
+				end,
+			};
+			
+			self.Reset = function()
+				self.data = softReserves;
+			end
+			
+			-- Setup Event Handlers and register for events
+			self:SetScript("OnEvent", function(self, e, ...) self:Update(); end);
+			self:RegisterEvent("CHAT_MSG_SYSTEM");
+			self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+			self:RegisterEvent("GROUP_ROSTER_UPDATE");
+			self:Reset();
+		end
+		
+		-- Update the window and all of its row data
+		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
+		for i,g in ipairs(self.data.g) do
+			if g.OnUpdate then g.OnUpdate(g, self); end
+		end
+		
+		-- Update the groups without forcing Debug Mode.
+		local visibilityFilter = app.VisibilityFilter;
+		app.VisibilityFilter = app.ObjectVisibilityFilter;
+		BuildGroups(self.data, self.data.g);
+		UpdateWindow(self, true);
+		app.VisibilityFilter = visibilityFilter;
 	end
 end);
 app:GetWindow("Tradeskills", UIParent, function(self, ...)
@@ -6931,11 +7974,22 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					tradeSkillID = 0;
 				end
 				
+				-- Check for Specializations
+				for specializationID,spellID in pairs(app.SpecializationSpellIDs) do
+					if IsSpellKnown(spellID) then
+						-- Mark this as a profession used by this character.
+						GetTempDataMember("Professions")[spellID] = true;
+					end
+				end
+				
 				-- Open the Tradeskill list for this Profession
 				if app.Categories.Professions then
 					local g = {};
 					for i,group in ipairs(app.Categories.Professions) do
 						if group.spellID == craftSkillID or group.spellID == tradeSkillID then
+							-- Mark this as a profession used by this character.
+							GetTempDataMember("Professions")[group.requireSkill] = true;
+							
 							local cache = self.cache[group.spellID];
 							if not cache then
 								cache = CloneData(group);
@@ -7223,6 +8277,9 @@ SlashCmdList["ATTC"] = function(cmd)
 		elseif cmd == "ran" or cmd == "rand" or cmd == "random" then
 			app:GetWindow("Random"):Toggle();
 			return true;
+		elseif cmd == "sr" then
+			app:GetWindow("SoftReserves"):Toggle();
+			return true;
 		elseif cmd == "unsorted" then
 			app:GetWindow("Unsorted"):Toggle();
 			return true;
@@ -7269,6 +8326,22 @@ SlashCmdList["ATTCRAN"] = function(cmd)
 	app:GetWindow("Random"):Toggle();
 end
 
+SLASH_ATTCSR1 = "/attsr";
+SLASH_ATTCSR2 = "/attsoft";
+SLASH_ATTCSR3 = "/attsoftreserve";
+SLASH_ATTCSR4 = "/attsoftreserves";
+SLASH_ATTCSR5 = "/sr";
+SLASH_ATTCSR6 = "/softreserve";
+SLASH_ATTCSR7 = "/softreserves";
+SlashCmdList["ATTCSR"] = function(cmd)
+	if cmd and cmd ~= "" then
+		app:ParseSoftReserve(UnitGUID("player"), cmd, true, true);
+	else
+		-- Default command
+		app:GetWindow("SoftReserves"):Toggle();
+	end
+end
+
 SLASH_ATTUNED1 = "/attuned";
 SlashCmdList["ATTUNED"] = function(cmd)
 	if IsInRaid() or (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and IsInInstance()) or IsInGroup(LE_PARTY_CATEGORY_HOME) then
@@ -7304,6 +8377,7 @@ end
 app:RegisterEvent("ADDON_LOADED");
 app:RegisterEvent("BOSS_KILL");
 app:RegisterEvent("CHAT_MSG_ADDON");
+app:RegisterEvent("CHAT_MSG_WHISPER")
 app:RegisterEvent("PLAYER_DEAD");
 app:RegisterEvent("PLAYER_LOGIN");
 app:RegisterEvent("VARIABLES_LOADED");
@@ -7335,8 +8409,9 @@ app.events.VARIABLES_LOADED = function()
 	app.Race = race;
 	app.RaceIndex = raceIndex;
 	local name, realm = UnitName("player");
+	if not realm then realm = GetRealmName(); end
 	app.GUID = UnitGUID("player");
-	app.Me = "|c" .. (RAID_CLASS_COLORS[classInfo.classFile].colorStr or "ff1eff00") .. name .. "-" .. (realm or GetRealmName()) .. "|r";
+	app.Me = "|c" .. (RAID_CLASS_COLORS[classInfo.classFile].colorStr or "ff1eff00") .. name .. "-" .. realm .. "|r";
 	app.Faction = UnitFactionGroup("player");
 	if app.Faction == "Horde" then
 		app.FactionID = Enum.FlightPathFaction.Horde;
@@ -7353,6 +8428,25 @@ app.events.VARIABLES_LOADED = function()
 	GetDataMember("CollectedQuests", {});
 	GetDataMember("CollectedSpells", {});
 	GetDataMember("WaypointFilters", {});
+	GetDataMember("GroupQuestsByGUID", {});
+	GetDataMember("AddonMessageProcessor", {});
+	
+	-- Check the format of the Soft Reserve Cache
+	local reserves = GetDataMember("SoftReserves", {});
+	local reservesByItemID = GetTempDataMember("SoftReservesByItemID", {});
+	for guid,reserve in pairs(reserves) do
+		if type(reserve) == 'number' then
+			reserve = { reserve, time() };
+			reserves[guid] = reserve;
+		end
+		local itemID = reserve[1];
+		local reservesForItem = reservesByItemID[itemID];
+		if not reservesForItem then
+			reservesForItem = {};
+			reservesByItemID[itemID] = reservesForItem;
+		end
+		table.insert(reservesForItem, guid);
+	end
 	
 	-- Cache your character's deaths.
 	local totalDeaths = GetDataMember("Deaths", 0);
@@ -7366,6 +8460,15 @@ app.events.VARIABLES_LOADED = function()
 		myLockouts = {};
 		lockouts[app.GUID] = myLockouts;
 		SetTempDataMember("lockouts", myLockouts);
+	end
+	
+	-- Cache your character's professions.
+	local professions = GetDataMember("ProfessionsPerCharacter", {});
+	local myProfessions = GetTempDataMember("Professions", professions[app.GUID]);
+	if not myProfessions then
+		myProfessions = {};
+		professions[app.GUID] = myProfessions;
+		SetTempDataMember("Professions", myProfessions);
 	end
 	
 	-- Cache your character's profession data.
@@ -7452,6 +8555,7 @@ app.events.VARIABLES_LOADED = function()
 	-- Clean up settings
 	local oldsettings = {};
 	for i,key in ipairs({
+		"AddonMessageProcessor",
 		"Characters",
 		"CollectedFactions",
 		"CollectedFactionsPerCharacter",
@@ -7463,10 +8567,13 @@ app.events.VARIABLES_LOADED = function()
 		"CollectedSpellsPerCharacter",
 		"Deaths",
 		"DeathsPerCharacter",
+		"GroupQuestsByGUID",
 		"lockouts",
 		"Position",
+		"ProfessionsPerCharacter",
 		"RandomSearchFilter",
 		"Reagents",
+		"SoftReserves",
 		"WaypointFilters",
 		"EnableTomTomWaypointsOnTaxi",
 		"TomTomIgnoreCompletedObjects"
@@ -7969,9 +9076,9 @@ app.events.ADDON_LOADED = function(addonName)
 		end);
 	end
 end
-app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zoneChannelID, localID, name, instanceID)
+app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zoneChannelID, localID, name, instanceID, ...)
 	if prefix == "ATTC" then
-		--print(prefix, text, channel, sender, target, zoneChannelID, localID, name, instanceID)
+		--print(prefix, text, channel, sender, target, zoneChannelID, localID, name, instanceID, ...)
 		local args = { strsplit("\t", text) };
 		local cmd = args[1];
 		if cmd then
@@ -7985,6 +9092,15 @@ app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zone
 							local b = tonumber(args[i]);
 							response = response .. "\t" .. b .. "\t" .. (IsQuestFlaggedCompleted(b) and 1 or 0);
 						end
+					elseif a == "sr" then
+						if target == UnitName("player") then
+							return false;
+						else
+							local softReserve = GetDataMember("SoftReserves")[app.GUID];
+							response = "sr" .. "\t" .. app.GUID .. "\t" .. (softReserve and ((softReserve[1] or 0) .. "\t" .. (softReserve[2] or 0)) or "0\t0");
+						end
+					elseif a == "srml" then -- Soft Reserve (Master Looter) Command
+						app:QuerySoftReserve(UnitGUID(target), a, target);
 					end
 				else
 					local data = app:GetWindow("Prime").data;
@@ -7993,16 +9109,24 @@ app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zone
 				if response then SendResponseMessage("!\t" .. response, sender); end
 			elseif cmd == "!" then	-- Query Response
 				if a == "ATTC" then
-					print(sender .. ": " .. GetProgressColorText(tonumber(args[3]), tonumber(args[4])) .. " " .. args[5]);
+					print(target .. ": " .. GetProgressColorText(tonumber(args[3]), tonumber(args[4])) .. " " .. args[5]);
 				else
 					if a == "q" then
 						local response = " ";
+						local processor = GetDataMember("AddonMessageProcessor");
 						for i=3,#args,2 do
 							local b = tonumber(args[i]);
 							local c = tonumber(args[i + 1]);
+							if c == 1 then table.insert(processor, { target, "q", b }); end
 							response = response .. b .. ": " .. GetCompletionIcon(c == 1) .. " - ";
 						end
-						print(response .. sender);
+					elseif a == "sr" then
+						app:UpdateSoftReserve(args[3], tonumber(args[4]), tonumber(args[5]), true);
+					elseif a == "srml" then
+						for i=3,#args,2 do
+							app:UpdateSoftReserveInternal(args[i], tonumber(args[i + 1]));
+						end
+						app:GetWindow("SoftReserves"):Update(true);
 					end
 				end
 			elseif cmd == "to" then	-- To Command
@@ -8011,7 +9135,44 @@ app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zone
 				if myName == name and (not server or GetRealmName() == server) then
 					app.events.CHAT_MSG_ADDON(prefix, strsub(text, 5 + strlen(a)), "WHISPER", sender);
 				end
+			elseif cmd == "sr" then -- Soft Reserve Command
+				app:ParseSoftReserve(UnitGUID(target), a, true);
 			end
+		end
+	end
+end
+app.events.CHAT_MSG_WHISPER = function(text, playerName, _, _, _, _, _, _, _, _, _, guid)
+	text = text:match("^%s*(.+)$") or "";
+	local action = strsub(text, 1, 1);
+	if action == '!' then	-- Send
+		local lowercased = string.lower(text);
+		local cmd = strsub(lowercased, 2, 3);
+		if cmd == "sr" then
+			app:ParseSoftReserve(guid, strsub(text, 4));
+		elseif cmd == "mc" then
+			GetDataSubMember("GroupQuestsByGUID", guid, {})[7848] = 1;
+		else
+			cmd = strsub(lowercased, 2, 4);
+			if cmd == "ony" then
+				GetDataSubMember("GroupQuestsByGUID", guid, {})[app.FactionID == Enum.FlightPathFaction.Horde and 6602 or 6502] = 1;
+			elseif cmd == "bwl" then
+				GetDataSubMember("GroupQuestsByGUID", guid, {})[7761] = 1;
+			end
+		end
+	elseif action == '?' then	-- Request
+		local lowercased = string.lower(text);
+		if strsub(lowercased, 2, 3) == "sr" then
+			-- Turn off the AskPrice addon message if it's a Soft Reserve.
+			if AucAdvanced and AucAdvanced.Settings then
+				local oldSetting = AucAdvanced.Settings.GetSetting('util.askprice.activated');
+				if oldSetting then
+					AucAdvanced.Settings.SetSetting("util.askprice.activated", false);
+					C_Timer.After(0.01, function()
+						AucAdvanced.Settings.SetSetting("util.askprice.activated", true);
+					end);
+				end
+			end
+			app:QuerySoftReserve(guid, strsub(text, 4));
 		end
 	end
 end

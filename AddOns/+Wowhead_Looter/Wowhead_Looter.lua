@@ -4,7 +4,7 @@
 --                                     --
 --                                     --
 --    Patch: 1.13.2                    --
---    Updated: January 19, 2020        --
+--    Updated: January 22, 2020        --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
@@ -482,7 +482,6 @@ local GetTrainerServiceInfo = GetTrainerServiceInfo;
 local GetTrainerServiceSkillReq = GetTrainerServiceSkillReq;
 local IsEquippedItem = IsEquippedItem;
 local IsFishingLoot = IsFishingLoot;
-local IsPartyLFG = IsPartyLFG;
 local LootSlotIsCoin = LootSlotIsCoin;
 local LootSlotIsCurrency = LootSlotIsCurrency;
 local LootSlotIsItem = LootSlotIsItem;
@@ -2381,7 +2380,7 @@ function wlEvent_LOOT_OPENED(self)
             if guid then
                 SendAddonMessage("WL_LOOT_COOLDOWN", guid,
                         (wlIsInBattleground() and "BATTLEGROUND") or
-                        IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
+                        IsInRaid() and "RAID" or "PARTY");
             end
         else
             wlEvent_CHAT_MSG_ADDON(self, "WL_LOOT_COOLDOWN", guid, "RAID", UnitName("player"));
@@ -2511,7 +2510,7 @@ function wlEvent_LOOT_OPENED(self)
             if wlIsInParty() then
                 SendAddonMessage("WL_LOOT_COOLDOWN", guidMsg,
                         (wlIsInBattleground() and "BATTLEGROUND") or
-                        IsPartyLFG() and "INSTANCE_CHAT" or "RAID");
+                        IsInRaid() and "RAID" or "PARTY");
             else
                 wlEvent_CHAT_MSG_ADDON(self, "WL_LOOT_COOLDOWN", guidMsg, "RAID", UnitName("player"));
             end
