@@ -4,7 +4,7 @@
 --                                     --
 --                                     --
 --    Patch: 1.13.2                    --
---    Updated: January 22, 2020        --
+--    Updated: January 24, 2020        --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
@@ -1732,6 +1732,9 @@ end
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
 
 function wlEvent_QUEST_COMPLETE(self)
+    if not wlTracker.quest then
+        return;
+    end
     if wlTracker.quest.action ~= "progress" or wlTracker.quest.id ~= GetQuestID() then
         wlClearTracker("quest"); -- Not the same quest
 
@@ -1788,6 +1791,10 @@ end
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
 
 function wlRegisterQuestReturn()
+    if not wlTracker.quest then
+        return;
+    end
+
     if wlTracker.quest.action ~= "complete" then
         return;
     end
