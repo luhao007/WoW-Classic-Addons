@@ -87,6 +87,17 @@ function Log.CreateQuery()
 		:OrderBy("index", true)
 end
 
+function Log.UpdateRowByIndex(index, field, value)
+	local row = private.db:NewQuery()
+		:Equal("index", index)
+		:GetFirstResultAndRelease()
+
+	row:SetField(field, value)
+		:Update()
+
+	row:Release()
+end
+
 function Log.SetQueryUpdatesPaused(paused)
 	private.db:SetQueryUpdatesPaused(paused)
 end

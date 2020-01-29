@@ -117,6 +117,10 @@ function TSM.IsWowClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 end
 
+function TSM.DebugLogout()
+	private.UnloadAll()
+end
+
 
 
 -- ============================================================================
@@ -195,6 +199,13 @@ function private.ProcessModuleUnload(path)
 	end
 end
 
+function private.UnloadAll()
+	-- unload in the opposite order we loaded
+	for i = #private.loadOrder, 1, -1 do
+		private.ProcessModuleUnload(private.loadOrder[i])
+	end
+end
+
 function private.OnEvent(_, event, arg)
 	if event == "ADDON_LOADED" and arg == ADDON_NAME and not private.gotAddonLoaded then
 		assert(not private.gotAddonLoaded and not private.gotPlayerLogin and not private.gotPlayerLogout)
@@ -222,10 +233,7 @@ function private.OnEvent(_, event, arg)
 			-- this can happen if the player exists the game during the loading screen, in which case we just ignore it
 			return
 		end
-		-- unload in the opposite order we loaded
-		for i = #private.loadOrder, 1, -1 do
-			private.ProcessModuleUnload(private.loadOrder[i])
-		end
+		private.UnloadAll()
 	end
 end
 

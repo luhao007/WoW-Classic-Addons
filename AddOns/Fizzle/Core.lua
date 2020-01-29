@@ -37,12 +37,12 @@ local items, nditems -- our item slot tables
 local function getOptions()
     local options = {
         type = "group",
-        name = GetAddOnMetadata("Fizzle", "Title"),
+        name = "Fizzle",
         args = {
             fizzledesc = {
                 type = "description",
                 order = 0,
-                name = GetAddOnMetadata("Fizzle", "Notes"),
+                name = "Fizzle",
             },
             percent = {
                 name = L["Percent"],
@@ -169,7 +169,7 @@ function Fizzle:OnInitialize()
     db = self.db.profile
 
     -- Get the addon title.
-    local title = GetAddOnMetadata("Fizzle", "Title")
+    local title = "Fizzle"
 
     -- Register our options
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Fizzle", getOptions)

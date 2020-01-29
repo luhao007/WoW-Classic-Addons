@@ -31,7 +31,6 @@ function EditableText.__init(self)
 	frame:SetAutoFocus(false)
 	frame:SetScript("OnEscapePressed", private.OnEscapePressed)
 	frame:SetScript("OnEnterPressed", private.OnEnterPressed)
-	frame:SetScript("OnEditFocusGained", private.OnEditFocusGained)
 	frame:SetScript("OnEditFocusLost", private.OnEditFocusLost)
 	private.frameEditableTextLookup[frame] = self
 
@@ -181,4 +180,9 @@ function private.OnEnterPressed(frame)
 	local self = private.frameEditableTextLookup[frame]
 	self:SetEditing(false)
 	self:_onValueChangedHandler(newText)
+end
+
+function private.OnEditFocusLost(frame)
+	local self = private.frameEditableTextLookup[frame]
+	self:SetEditing(false)
 end

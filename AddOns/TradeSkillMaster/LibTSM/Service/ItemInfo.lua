@@ -39,30 +39,45 @@ local ITEM_INFO_INTERVAL = 0.05
 local MAX_REQUESTED_ITEM_INFO = 50
 local MAX_REQUESTS_PER_ITEM = 5
 local UNKNOWN_ITEM_NAME = L["Unknown Item"]
-local DB_VERSION = 5
-local RECORD_DATA_LENGTH = 17
-local FIELD_LENGTH_BITS = {
-	itemLevel = 16,
-	minLevel = 8,
-	maxStack = 16,
-	vendorSell = 32,
-	invSlotId = 8,
-	texture = 32,
-	classId = 8,
-	subClassId = 8,
-	quality = 4,
-	isBOP = 2,
-	isCraftingReagent = 2,
+local DB_VERSION = 6
+local ENCODING_NUM_BITS = 6
+local ENCODING_NUM_VALUES = 2 ^ ENCODING_NUM_BITS
+local ENCODING_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+assert(#ENCODING_ALPHABET == ENCODING_NUM_VALUES)
+local ENCODING_TABLE = {}
+local DECODING_TABLE = {}
+for i = 0, #ENCODING_ALPHABET - 1 do
+	local encodedValue = strbyte(ENCODING_ALPHABET, i + 1, i + 1)
+	ENCODING_TABLE[i] = encodedValue
+	DECODING_TABLE[encodedValue] = i
+end
+local RECORD_DATA_LENGTH_CHARS = 22
+local FIELD_INFO = {
+	itemLevel = { numBits = 12, numChars = nil, nilValue = nil, maxValue = nil }, -- 10
+	minLevel = { numBits = 12, numChars = nil, nilValue = nil, maxValue = nil }, -- 8
+	vendorSell = { numBits = 30, numChars = nil, nilValue = nil, maxValue = nil }, -- 30
+	maxStack = { numBits = 12, numChars = nil, nilValue = nil, maxValue = nil }, -- 10
+	invSlotId = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 5
+	texture = { numBits = 30, numChars = nil, nilValue = nil, maxValue = nil }, -- 27
+	classId = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 5
+	subClassId = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 5
+	quality = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 4
+	isBOP = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 2
+	isCraftingReagent = { numBits = 6, numChars = nil, nilValue = nil, maxValue = nil }, -- 2
 }
+do
+	local totalLengthChars = 0
+	for _, info in pairs(FIELD_INFO) do
+		assert(info.numBits % ENCODING_NUM_BITS == 0)
+		info.numChars = info.numBits / ENCODING_NUM_BITS
+		totalLengthChars = totalLengthChars + info.numChars
+		info.nilValue = 2 ^ info.numBits - 1
+		info.maxValue = 2 ^ info.numBits - 2
+	end
+	assert(totalLengthChars == RECORD_DATA_LENGTH_CHARS)
+end
 local PENDING_STATE_NEW = 1
 local PENDING_STATE_CREATED = 2
-do
-	local totalLength = 0
-	for _, length in pairs(FIELD_LENGTH_BITS) do
-		totalLength = totalLength + length
-	end
-	assert(totalLength == RECORD_DATA_LENGTH * 8)
-end
 local ITEM_QUALITY_BY_HEX_LOOKUP = {}
 for quality, info in pairs(ITEM_QUALITY_COLORS) do
 	ITEM_QUALITY_BY_HEX_LOOKUP[info.hex] = quality
@@ -116,7 +131,7 @@ ItemInfo:OnSettingsLoad(function()
 
 	-- load the item info database
 	local build, revision = GetBuildInfo()
-	if not TSMItemInfoDB or #TSMItemInfoDB.data % RECORD_DATA_LENGTH ~= 0 or TSMItemInfoDB.version ~= DB_VERSION or TSMItemInfoDB.locale ~= GetLocale() or TSMItemInfoDB.build ~= build or TSMItemInfoDB.revision ~= revision then
+	if not TSMItemInfoDB or #TSMItemInfoDB.data % RECORD_DATA_LENGTH_CHARS ~= 0 or TSMItemInfoDB.version ~= DB_VERSION or TSMItemInfoDB.locale ~= GetLocale() or TSMItemInfoDB.build ~= build or TSMItemInfoDB.revision ~= revision then
 		private.isRebuilding = true
 		TSMItemInfoDB = {
 			names = nil,
@@ -158,31 +173,55 @@ ItemInfo:OnSettingsLoad(function()
 		:AddNumberField("isCraftingReagent")
 		:Commit()
 	private.db:BulkInsertStart()
+	local context = TempTable.Acquire()
 	for i = 1, numItemsLoaded do
+		-- load all the fields from the string
+		local dataOffset = (i - 1) * RECORD_DATA_LENGTH_CHARS + 1
+		local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, bExtra = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH_CHARS - 1)
+		assert(b21 and not bExtra)
+		context[1] = b0
+		context[2] = b1
+		context[3] = b2
+		context[4] = b3
+		context[5] = b4
+		context[6] = b5
+		context[7] = b6
+		context[8] = b7
+		context[9] = b8
+		context[10] = b9
+		context[11] = b10
+		context[12] = b11
+		context[13] = b12
+		context[14] = b13
+		context[15] = b14
+		context[16] = b15
+		context[17] = b16
+		context[18] = b17
+		context[19] = b18
+		context[20] = b19
+		context[21] = b20
+		context[22] = b21
+
+		-- load the fields
+		context.offset = 1
+		local itemLevel = private.LoadDBField(context, FIELD_INFO.itemLevel)
+		local minLevel = private.LoadDBField(context, FIELD_INFO.minLevel)
+		local vendorSell = private.LoadDBField(context, FIELD_INFO.vendorSell)
+		local maxStack = private.LoadDBField(context, FIELD_INFO.maxStack)
+		local invSlotId = private.LoadDBField(context, FIELD_INFO.invSlotId)
+		local texture = private.LoadDBField(context, FIELD_INFO.texture)
+		local classId = private.LoadDBField(context, FIELD_INFO.classId)
+		local subClassId = private.LoadDBField(context, FIELD_INFO.subClassId)
+		local quality = private.LoadDBField(context, FIELD_INFO.quality)
+		local isBOP = private.LoadDBField(context, FIELD_INFO.isBOP)
+		local isCraftingReagent = private.LoadDBField(context, FIELD_INFO.isCraftingReagent)
+
+		-- store in the DB
 		local itemString = itemStrings[i]
 		local name = names[i]
-		-- decode all the fields
-		local dataOffset = (i - 1) * RECORD_DATA_LENGTH + 1
-		local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16 = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH - 1)
-		local itemLevel = (b0 == 0xff and b1 == 0xff) and -1 or (b0 + b1 * 256)
-		local minLevel = (b2 == 0xff) and -1 or b2
-		local maxStack = (b3 == 0xff and b4 == 0xff) and -1 or (b3 + b4 * 256)
-		local vendorSell = (b5 == 0xff and b6 == 0xff and b7 == 0xff and b8 == 0xff) and -1 or (b5 + b6 * 256 + b7 * 65536 + b8 * 16777216)
-		local invSlotId = (b10 == 0xff) and -1 or b10
-		local texture = (b11 == 0xff and b12 == 0xff and b13 == 0xff and b14 == 0xff) and -1 or (b11 + b12 * 256 + b13 * 65536 + b14 * 16777216)
-		local classId = (b15 == 0xff) and -1 or b15
-		local subClassId = (b16 == 0xff) and -1 or b16
-		local quality = b9 % 0x10
-		b9 = (b9 - quality) / 0x10
-		quality = quality == 0xf and -1 or quality
-		local isBOP = b9 % 0x4
-		b9 = (b9 - isBOP) / 0x4
-		isBOP = isBOP == 0x3 and -1 or isBOP
-		local isCraftingReagent = b9 % 0x4
-		isCraftingReagent = isCraftingReagent == 0x3 and -1 or isCraftingReagent
-		-- store in the DB
 		private.db:BulkInsertNewRow(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent)
 	end
+	TempTable.Release(context)
 	private.db:BulkInsertEnd()
 	private.DoInfoChangedCallbacks()
 
@@ -204,27 +243,29 @@ ItemInfo:OnModuleUnload(function()
 	local dataParts = {}
 	local rawData = private.db:GetRawData()
 	local numFields = private.db:GetNumStoredFields()
+	local context = {}
 	for i = 1, private.db:GetNumRows() do
 		local startOffset = (i - 1) * numFields + 1
 		local itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent = unpack(rawData, startOffset, startOffset + numFields - 1)
-		itemLevel = itemLevel == -1 and 0xffff or itemLevel
-		minLevel = minLevel == -1 and 0xff or minLevel
-		maxStack = maxStack == -1 and 0xffff or maxStack
-		vendorSell = vendorSell == -1 and 0xffffffff or vendorSell
-		invSlotId = invSlotId == -1 and 0xff or invSlotId
-		texture = texture == -1 and 0xffffffff or texture
-		classId = classId == -1 and 0xff or classId
-		subClassId = subClassId == -1 and 0xff or subClassId
-		quality = quality == -1 and 0xf or quality
-		isBOP = isBOP == -1 and 0x3 or isBOP
-		isCraftingReagent = isCraftingReagent == -1 and 0x3 or isCraftingReagent
-		local bitfield = quality + isBOP * 16 + isCraftingReagent * 64
+
+		context.offset = 1
+		private.StoreDBField(context, FIELD_INFO.itemLevel, itemLevel)
+		private.StoreDBField(context, FIELD_INFO.minLevel, minLevel)
+		private.StoreDBField(context, FIELD_INFO.vendorSell, vendorSell)
+		private.StoreDBField(context, FIELD_INFO.maxStack, maxStack)
+		private.StoreDBField(context, FIELD_INFO.invSlotId, invSlotId)
+		private.StoreDBField(context, FIELD_INFO.texture, texture)
+		private.StoreDBField(context, FIELD_INFO.classId, classId)
+		private.StoreDBField(context, FIELD_INFO.subClassId, subClassId)
+		private.StoreDBField(context, FIELD_INFO.quality, quality)
+		private.StoreDBField(context, FIELD_INFO.isBOP, isBOP)
+		private.StoreDBField(context, FIELD_INFO.isCraftingReagent, isCraftingReagent)
 
 		names[i] = name
 		itemStrings[i] = itemString
-		dataParts[i] = strchar(itemLevel % 256, itemLevel / 256, minLevel, maxStack % 256, maxStack / 256, vendorSell % 256, (vendorSell % 65536) / 256, (vendorSell % 16777216) / 65536, vendorSell / 16777216, bitfield, invSlotId, texture % 256, (texture % 65536) / 256, (texture % 16777216) / 65536, texture / 16777216, classId, subClassId)
+		dataParts[i] = strchar(unpack(context))
 
-		if #dataParts[i] ~= RECORD_DATA_LENGTH then
+		if #dataParts[i] ~= RECORD_DATA_LENGTH_CHARS then
 			names[i] = nil
 			itemStrings[i] = nil
 			dataParts[i] = nil
@@ -234,7 +275,7 @@ ItemInfo:OnModuleUnload(function()
 	TSMItemInfoDB.itemStrings = #itemStrings > 0 and table.concat(itemStrings, SEP_CHAR) or nil
 	TSMItemInfoDB.data = table.concat(dataParts)
 
-	if #TSMItemInfoDB.data % RECORD_DATA_LENGTH ~= 0 then
+	if #TSMItemInfoDB.data % RECORD_DATA_LENGTH_CHARS ~= 0 then
 		TSMItemInfoDB = nil
 		return
 	end
@@ -627,6 +668,9 @@ end
 -- @tparam string item The item
 -- @treturn ?number The inventory slot id
 function ItemInfo.IsCommodity(item)
+	if TSM.IsWowClassic() then
+		return false
+	end
 	local stackSize = ItemInfo.GetMaxStack(item)
 	if not stackSize then
 		return nil
@@ -673,6 +717,31 @@ end
 -- ============================================================================
 -- Helper Functions
 -- ============================================================================
+
+function private.LoadDBField(context, info)
+	local result = 0
+	local offset = context.offset
+	for i = 0, info.numChars - 1 do
+		local charValue = DECODING_TABLE[context[offset + i]]
+		result = result + charValue * 2 ^ (ENCODING_NUM_BITS * i)
+	end
+	context.offset = context.offset + info.numChars
+	return result == info.nilValue and -1 or result
+end
+
+function private.StoreDBField(context, info, value)
+	if value == -1 then
+		value = info.nilValue
+	end
+	local offset = context.offset
+	for i = 0, info.numChars - 1 do
+		local charValue = value % 2 ^ ENCODING_NUM_BITS
+		value = (value - charValue) / 2 ^ ENCODING_NUM_BITS
+		context[offset + i] = ENCODING_TABLE[charValue]
+	end
+	context.offset = context.offset + info.numChars
+	assert(value == 0)
+end
 
 function private.GetFieldValueHelper(itemString, field, baseIsSame, storeBaseValue, petDefaultValue)
 	local value = private.GetField(itemString, field)
@@ -813,7 +882,7 @@ function private.CheckFieldValue(key, value)
 	if value == -1 then
 		return
 	end
-	assert(value >= 0 and value < 2 ^ FIELD_LENGTH_BITS[key] - 1)
+	assert(value >= 0 and value <= FIELD_INFO[key].maxValue)
 end
 
 function private.GetField(itemString, key)
@@ -966,7 +1035,7 @@ function private.StoreGetItemInfo(itemString)
 	local isBOP = (bindType == LE_ITEM_BIND_ON_ACQUIRE or bindType == LE_ITEM_BIND_QUEST) and 1 or 0
 	isCraftingReagent = isCraftingReagent and 1 or 0
 	-- some items (i.e. "i:40752" produce a very high max stack, so cap it)
-	maxStack = maxStack and min(maxStack, 2 ^ FIELD_LENGTH_BITS.maxStack - 2) or nil
+	maxStack = maxStack and min(maxStack, FIELD_INFO.maxStack.maxValue) or nil
 	-- some items (i.e. "i:117356::1:573") produce an negative min level
 	minLevel = minLevel and max(minLevel, 0) or nil
 

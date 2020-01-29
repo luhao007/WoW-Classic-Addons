@@ -136,7 +136,7 @@ end
 function ProfessionUtil.GetNumCraftable(spellId)
 	local num, numAll = math.huge, math.huge
 	for i = 1, ProfessionUtil.GetNumMats(spellId) do
-		local matItemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i)
+		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i)
 		local itemString = ItemString.Get(matItemLink)
 		if not itemString or not quantity then
 			return 0, 0
@@ -318,6 +318,10 @@ function ProfessionUtil.GetMatInfo(spellId, index)
 	else
 		itemLink = C_TradeSkillUI.GetRecipeReagentItemLink(spellId, index)
 		name, texture, quantity = C_TradeSkillUI.GetRecipeReagentInfo(spellId, index)
+		if itemLink then
+			name = name or ItemInfo.GetName(itemLink)
+			texture = texture or ItemInfo.GetTexture(itemLink)
+		end
 	end
 	return itemLink, name, texture, quantity
 end

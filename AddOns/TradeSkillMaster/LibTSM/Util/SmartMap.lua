@@ -116,6 +116,7 @@ function SmartMap.New(keyType, valueType, callable)
 		data = {},
 		readers = {},
 		callbacksPaused = 0,
+		hasReaderCallback = false,
 	}
 	return map
 end
@@ -131,6 +132,15 @@ function private.MapValueChanged(self, key)
 	local oldValue = mapContext.data[key]
 	if oldValue == nil then
 		-- nobody cares about this value
+		return
+	end
+
+	if not mapContext.hasReaderCallback then
+		-- no reader has registered a callback, so just clear the value
+		mapContext.data[key] = nil
+		for _, reader in ipairs(mapContext.readers) do
+			rawset(reader, key, nil)
+		end
 		return
 	end
 
@@ -185,7 +195,9 @@ end
 function private.MapCreateReader(self, callback)
 	assert(callback == nil or type(callback) == "function")
 	local reader = setmetatable({}, READER_MT)
-	tinsert(private.mapContext[self].readers, reader)
+	local mapContext = private.mapContext[self]
+	tinsert(mapContext.readers, reader)
+	mapContext.hasReaderCallback = mapContext.hasReaderCallback or (callback and true or false)
 	private.readerContext[reader] = {
 		map = self,
 		callback = callback,

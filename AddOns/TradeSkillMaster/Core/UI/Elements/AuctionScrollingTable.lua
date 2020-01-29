@@ -245,6 +245,7 @@ end
 -- @treturn AuctionScrollingTable The auction scrolling table object
 function AuctionScrollingTable.SetMarketValueFunction(self, func)
 	self._marketValueFunc = func
+	self:_UpdateData()
 	return self
 end
 

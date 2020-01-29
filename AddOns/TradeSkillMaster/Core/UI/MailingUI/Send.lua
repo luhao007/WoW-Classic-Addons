@@ -1109,7 +1109,10 @@ function private.FSMCreate()
 			:AddTransition("ST_HIDDEN")
 			:AddEventTransition("EV_SENDING_DONE", "ST_SHOWN")
 		)
-		:AddDefaultEventTransition("EV_FRAME_HIDE", "ST_HIDDEN")
+		:AddDefaultEvent("EV_FRAME_HIDE", function(context)
+			context.frame = nil
+			return "ST_HIDDEN"
+		end)
 		:Init("ST_HIDDEN", fsmContext)
 end
 

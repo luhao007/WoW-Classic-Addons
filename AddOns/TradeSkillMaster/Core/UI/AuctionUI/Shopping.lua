@@ -2032,7 +2032,7 @@ function private.FSMCreate()
 					else
 						progress = (filtersScanned + pagesScanned / numPages) / numFilters
 					end
-					text = format(L["Scanning %d / %d (Page %d / %d)"], filtersScanned + 1, numFilters, pagesScanned + 1, numPages)
+					text = format(L["Scanning %d / %d (Page %d / %d)"], filtersScanned + 1, numFilters, pagesScanned < numPages and pagesScanned + 1 or numPages, numPages)
 				end
 				context.progress = progress
 				context.progressText = text
@@ -2067,7 +2067,7 @@ function private.FSMCreate()
 						cheapest:Release()
 					end
 				end
-				context.postDisabled = not context.itemInfo and true or private.GetBagQuantity(context.itemInfo.itemString) == 0
+				context.postDisabled = not context.itemInfo or private.GetBagQuantity(context.itemInfo.itemString) == 0
 				context.bidDisabled = true
 				context.buyoutDisabled = true
 				context.stopDisabled = true
@@ -2209,7 +2209,7 @@ function private.FSMCreate()
 				end
 				context.progress = context.numConfirmed / context.numFound
 				context.progressText = progressText
-				context.postDisabled = private.GetBagQuantity(selection:GetField("itemString")) == 0
+				context.postDisabled = not selection or private.GetBagQuantity(selection:GetField("itemString")) == 0
 				local isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(selection.seller, true, true, true)
 				if numCanBuy == 0 or isPlayer or (not TSM.IsWowClassic() and numConfirming > 0) then
 					context.bidDisabled = true

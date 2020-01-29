@@ -380,6 +380,7 @@ function private.ScanRecipe(professionName, spellId)
 		error("Invalid craft: "..tostring(spellId))
 	end
 	if not itemString or not craftName then
+		Log.Warn("No itemString (%s) or craftName (%s) found (%s, %s)", tostring(itemString), tostring(craftName), tostring(professionName), tostring(spellId))
 		return false
 	end
 
@@ -420,10 +421,12 @@ function private.ScanRecipe(professionName, spellId)
 		local matItemLink, name, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, i)
 		local matItemString = ItemString.GetBase(matItemLink)
 		if not matItemString then
+			Log.Warn("Failed to get itemString for mat %d (%s, %s)", i, tostring(professionName), tostring(spellId))
 			haveInvalidMats = true
 			break
 		end
 		if not name or not quantity then
+			Log.Warn("Failed to get name (%s) or quantity (%s) for mat (%s, %s, %d)", tostring(name), tostring(quantity), tostring(professionName), tostring(spellId), i)
 			haveInvalidMats = true
 			break
 		end

@@ -1,6 +1,6 @@
 # Prat 3.0
 
-## [3.7.47](https://github.com/sylvanaar/prat-3-0/tree/3.7.47) (2020-01-19)
-[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.7.46...3.7.47)
+## [3.7.50](https://github.com/sylvanaar/prat-3-0/tree/3.7.50) (2020-01-26)
+[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.7.49...3.7.50)
 
-- Create CODE\_OF\_CONDUCT.md  
+- Add a guard against misbehaved addons which add chat types without a valid CHAT\_TYPE\_INFO entry  

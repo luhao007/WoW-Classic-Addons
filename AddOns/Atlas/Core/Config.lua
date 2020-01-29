@@ -63,7 +63,7 @@ local function getOptions()
 	if not options then
 		options = {
 			type = "group",
-			name = addon.LocName,
+			name = "Atlas",
 			args = {
 				general = {
 					order = 1,
@@ -89,7 +89,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_SHOWBUT"],
 									desc = L["ATLAS_OPTIONS_SHOWBUT_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return not addon.db.profile.minimap.hide
 									end,
 									set = function(info, value)
@@ -103,7 +103,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_RCLICK"],
 									desc = L["ATLAS_OPTIONS_RCLICK_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.rightClick
 									end,
 									set = function(info, value)
@@ -116,7 +116,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_ACRONYMS"],
 									desc = L["ATLAS_OPTIONS_ACRONYMS_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.showAcronyms
 									end,
 									set = function(info, value)
@@ -130,7 +130,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_CTRL"],
 									desc = L["ATLAS_OPTIONS_CTRL_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.controlClick
 									end,
 									set = function(info, value)
@@ -143,7 +143,7 @@ local function getOptions()
 									type = "toggle",
 									name = L["ATLAS_OPTIONS_BOSS_POTRAIT"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.showBossPotrait
 									end,
 									set = function(info, value)
@@ -157,7 +157,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_COLORINGDROPDOWN"],
 									desc = L["ATLAS_OPTIONS_COLORINGDROPDOWN_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.dropdowns.color
 									end,
 									set = function(info, value)
@@ -167,12 +167,12 @@ local function getOptions()
 									end,
 								},
 								dropdowns_size = {
-									order = 17, 
+									order = 17,
 									type = "range",
 									name = L["ATLAS_OPTIONS_MAXMENUITEMS"],
 									desc = L["ATLAS_OPTIONS_MAXMENUITEMS_TIP"],
 									width = "full",
-									min = 5, max = 50, bigStep = 1, 
+									min = 5, max = 50, bigStep = 1,
 									get	= function()
 										return addon.db.profile.options.dropdowns.maxItems
 									end,
@@ -193,7 +193,7 @@ local function getOptions()
 									order = 21,
 									type = "range",
 									name = L["ATLAS_OPTIONS_TRANS"],
-									min = 0, max = 1, bigStep = 0.01, 
+									min = 0, max = 1, bigStep = 0.01,
 									isPercent = true,
 									--width = "full",
 									get	= function()
@@ -247,7 +247,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_CHECKMODULE"],
 									desc = L["ATLAS_OPTIONS_CHECKMODULE_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.checkMissingModules
 									end,
 									set = function(info, value)
@@ -259,7 +259,7 @@ local function getOptions()
 									type = "toggle",
 									name = L["ATLAS_OPTIONS_SHOWWMBUT"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.worldMapButton
 									end,
 									set = function(info, value)
@@ -278,7 +278,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_AUTOSEL"],
 									desc = L["ATLAS_OPTIONS_AUTOSEL_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.autoSelect
 									end,
 									set = function(info, value)
@@ -291,7 +291,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_CLAMPED"],
 									desc = L["ATLAS_OPTIONS_CLAMPED_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.clamp
 									end,
 									set = function(info, value)
@@ -306,7 +306,7 @@ local function getOptions()
 									name = L["ATLAS_OPTIONS_LOCK"],
 									desc = L["ATLAS_OPTIONS_LOCK_TIP"],
 									width = "double",
-									get = function() 
+									get = function()
 										return addon.db.profile.options.frames.lock
 									end,
 									set = function(info, value)
@@ -351,7 +351,7 @@ local function getOptions()
 			options.args[k] = (type(v) == "function") and v() or v
 		end
 	end
-	
+
 	return options
 end
 
@@ -363,7 +363,7 @@ local function openOptions()
 	InterfaceOptionsFrame:Raise()
 end
 
-function addon:OpenOptions() 
+function addon:OpenOptions()
 	openOptions()
 end
 
@@ -375,8 +375,8 @@ function addon:SetupOptions()
 	self.optionsFrames = {}
 
 	-- setup options table
-	AceConfigReg:RegisterOptionsTable(addon.LocName, getOptions)
-	self.optionsFrames.General = AceConfigDialog:AddToBlizOptions(addon.LocName, nil, nil, "general")
+	AceConfigReg:RegisterOptionsTable("Atlas", getOptions)
+	self.optionsFrames.General = AceConfigDialog:AddToBlizOptions("Atlas", nil, nil, "general")
 
 	self:RegisterModuleOptions("Profiles", giveProfiles, L["Profile Options"])
 

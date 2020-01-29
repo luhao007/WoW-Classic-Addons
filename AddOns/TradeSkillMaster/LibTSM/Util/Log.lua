@@ -42,7 +42,18 @@ function Log.SetChatFrame(chatFrame)
 end
 
 function Log.SetLoggingToChatEnabled(enabled)
+	if private.logToChat == enabled then
+		return
+	end
 	private.logToChat = enabled
+	if enabled then
+		-- dump our buffer
+		local len = Log.Length()
+		print(format("Printing %d buffered logs:", len))
+		for i = 1, len do
+			private.LogToChat(Log.Get(i))
+		end
+	end
 end
 
 function Log.SetCurrentThreadNameFunction(func)
@@ -163,6 +174,10 @@ function private.Log(severity, fmtStr, ...)
 	private.len = min(private.len + 1, MAX_ROWS)
 
 	if private.logToChat then
-		print(format("%s %s{%s}|r %s", timeStr, CHAT_COLORS[severity], location, msg))
+		private.LogToChat(severity, location, timeStr, msg)
 	end
+end
+
+function private.LogToChat(severity, location, timeStr, msg)
+	print(format("%s %s{%s}|r %s", timeStr, CHAT_COLORS[severity], location, msg))
 end

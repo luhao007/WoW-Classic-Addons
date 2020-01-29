@@ -231,10 +231,17 @@ end
 
 function PostScan.ChangePostDetail(field, value)
 	local postRow = PostScan.GetCurrentRow()
+	local isCommodity = ItemInfo.IsCommodity(postRow:GetField("itemString"))
 	if field == "bid" then
+		assert(not isCommodity)
 		value = min(max(value, 1), postRow:GetField("buyout"))
+	elseif field == "buyout" then
+		if not isCommodity and value < postRow:GetField("bid") then
+			postRow:SetField("bid", value)
+		end
+		TSM.Auctioning.Log.UpdateRowByIndex(postRow:GetField("auctionId"), field, value)
 	end
-	postRow:SetField(field, value)
+	postRow:SetField((field == "buyout" and isCommodity) and "itemBuyout" or field, value)
 		:Update()
 	postRow:Release()
 end

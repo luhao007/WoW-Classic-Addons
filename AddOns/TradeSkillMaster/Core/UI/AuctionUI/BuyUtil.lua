@@ -25,7 +25,7 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 	local stackSize = record:GetField("stackSize")
 	local itemString = record:GetField("itemString")
 	local shouldConfirm = false
-	if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
+	if ItemInfo.IsCommodity(itemString) then
 		shouldConfirm = true
 	elseif isBuy and record:GetField("isHighBidder") then
 		shouldConfirm = true
@@ -41,7 +41,7 @@ function BuyUtil.ShowConfirmation(baseFrame, record, isBuy, auctionNum, numFound
 		return true
 	end
 
-	if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
+	if ItemInfo.IsCommodity(itemString) then
 		assert(isBuy)
 		local numAvailable = stackSize - record:GetField("numOwnerItems")
 		baseFrame:ShowDialogFrame(TSMAPI_FOUR.UI.NewElement("Frame", "frame")

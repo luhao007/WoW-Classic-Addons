@@ -49,7 +49,7 @@ function Auction.CanBid(row)
 		return false
 	elseif row:GetField("displayedBid") == row:GetField("buyout") then
 		return false
-	elseif not TSM.IsWowClassic() and ItemInfo.IsCommodity(row:GetField("itemString")) then
+	elseif ItemInfo.IsCommodity(row:GetField("itemString")) then
 		return false
 	elseif GetMoney() < Auction.GetRequiredBidByScanResultRow(row) then
 		return false
@@ -61,7 +61,7 @@ function Auction.CanBuyout(row, db)
 	local buyout = row:GetField(TSM.IsWowClassic() and "buyout" or "itemBuyout")
 	if buyout == 0 or GetMoney() < buyout then
 		return false
-	elseif not TSM.IsWowClassic() and ItemInfo.IsCommodity(row:GetField("itemString")) then
+	elseif ItemInfo.IsCommodity(row:GetField("itemString")) then
 		-- make sure it's the cheapest
 		local itemBuyout = db:NewQuery()
 			:Equal("itemString", row:GetField("itemString"))

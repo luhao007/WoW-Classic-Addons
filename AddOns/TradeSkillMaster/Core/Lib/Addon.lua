@@ -192,4 +192,5 @@ function private.OnDisableHelper()
 	if TSM.OnDisable then
 		TSM.OnDisable()
 	end
+	TSM.DebugLogout()
 end

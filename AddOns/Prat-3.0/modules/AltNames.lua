@@ -428,8 +428,7 @@ L = {
 		["(.-)'s? [Aa]lt"] = " %f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]s [Aa]lt",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]s [Aa]lt",
 		[".*[Aa]lts?$"] = true,
-		--[[Translation missing --]]
-		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
+		[".*[Tt]wink.*$"] = true,
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<Altname> (z.B. /altnames del FalscherAltname)",
 		["<main> (eg /altnames listalts Fin)"] = "<main> (z.b. /altnames listalts Shylera)",
 		["<search term> (eg, /altnames find fin)"] = "<Suchbegriff> (z.b. /altnames find Shy)",
@@ -493,8 +492,7 @@ L = {
 		["No arg string given to :addAlt()"] = "Kein Parameter angegeben für: :addAlt()",
 		["no characters called \"%s\" found; nothing deleted"] = "Keine Charaktere mit dem Namen \"%s\" gefunden; es wurde nichts gelöscht.",
 		["No Guild Greet database found"] = "Keine Gilden-Begrüßungs-Datenbank gefunden.",
-		--[[Translation missing --]]
-		["No main name suPLied to link %s to"] = "No main name suPLied to link %s to",
+		["No main name suPLied to link %s to"] = "Es wurde kein Hauptname für den Link zu %s angegeben",
 		["No main name supplied to link %s to"] = "Kein Hauptcharname geliefert, mit dem %s verknüpft werden kann.",
 		["no matches found"] = "Keine Übereinstimmungen gefunden.",
 		["quiet"] = "Sei ruhig",

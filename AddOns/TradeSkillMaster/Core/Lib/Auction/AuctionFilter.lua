@@ -24,6 +24,7 @@ local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
 local private = {
 	gotBrowseResultsUpdate = false,
+	gotBrowseResultsAdded = false,
 }
 
 
@@ -542,11 +543,22 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		-- wait for the browse results to fully load
 		while not C_AuctionHouse.HasFullBrowseResults() do
 			if self._scan:_IsCancelled() then
+				Log.Info("Stopping cancelled scan")
 				return false
 			end
 			Log.Info("Requesting more...")
+			private.gotBrowseResultsAdded = false
 			C_AuctionHouse.RequestMoreBrowseResults()
-			Threading.Sleep(0.5)
+			for _ = 1, 20 do
+				if private.gotBrowseResultsAdded then
+					break
+				end
+				Threading.Sleep(0.1)
+			end
+			if not private.gotBrowseResultsAdded then
+				Log.Warn("Timed out waiting for browse results added event")
+				return false
+			end
 		end
 	else
 		if self:_IsSniper() then
@@ -686,7 +698,7 @@ function AuctionFilter._RemoveResultRows(self, db, row, numBought)
 	else
 		stackSize = stackSize - numBought
 		assert(stackSize > 0)
-		assert(not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString))
+		assert(ItemInfo.IsCommodity(itemString))
 		row:SetField("stackSize", stackSize)
 			:Update()
 	end
@@ -741,7 +753,12 @@ end
 do
 	if not TSM.IsWowClassic() then
 		Event.Register("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", function()
+			Log.Info("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
 			private.gotBrowseResultsUpdate = true
+		end)
+		Event.Register("AUCTION_HOUSE_BROWSE_RESULTS_ADDED", function()
+			Log.Info("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
+			private.gotBrowseResultsAdded = true
 		end)
 	end
 end

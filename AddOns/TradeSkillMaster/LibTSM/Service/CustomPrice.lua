@@ -397,7 +397,7 @@ function CustomPrice.OnSourceChange(key, itemString)
 	local isSpecificItem = itemString ~= ItemString.GetBase(itemString) or not ItemString.HasNonBase(itemString)
 	for _, data in pairs(private.proxyData) do
 		if data.map then
-			local clearAll, clearItem, clearBaseItem = false, false, nil
+			local clearAll, clearItem, clearBaseItem = false, false, false
 			if data.dependantPriceSources[key] then
 				if not itemString then
 					-- clear all items
@@ -445,7 +445,7 @@ function CustomPrice.OnSourceChange(key, itemString)
 					if ItemString.GetBase(mapItemString) == itemString then
 						data.map:ValueChanged(mapItemString)
 						for name in pairs(data.customPriceSourceNames) do
-							CustomPrice.OnSourceChange(name)
+							CustomPrice.OnSourceChange(name, mapItemString)
 						end
 					end
 				end
@@ -453,7 +453,7 @@ function CustomPrice.OnSourceChange(key, itemString)
 			if not clearAll and clearItem then
 				data.map:ValueChanged(itemString)
 				for name in pairs(data.customPriceSourceNames) do
-					CustomPrice.OnSourceChange(name)
+					CustomPrice.OnSourceChange(name, itemString)
 				end
 			end
 			data.map:SetCallbacksPaused(false)

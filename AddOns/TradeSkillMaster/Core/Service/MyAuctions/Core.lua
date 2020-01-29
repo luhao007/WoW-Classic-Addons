@@ -202,7 +202,7 @@ function private.OnAuctionsUpdated()
 			private.auctionInfo.soldGold = private.auctionInfo.soldGold + currentBid
 		else
 			private.auctionInfo.numPosted = private.auctionInfo.numPosted + 1
-			if not TSM.IsWowClassic() and ItemInfo.IsCommodity(itemString) then
+			if ItemInfo.IsCommodity(itemString) then
 				private.auctionInfo.postedGold = private.auctionInfo.postedGold + (buyout * stackSize)
 			else
 				private.auctionInfo.postedGold = private.auctionInfo.postedGold + buyout

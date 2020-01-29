@@ -406,6 +406,8 @@ function AuctionScan._GetAuctionRowFields83(self, isCommodity, itemKey, index, f
 			timeLeft = 4
 		end
 	else
+		-- use the itemKey from the results as it might have more info (i.e. level / suffix) than what we queried for
+		itemKey = resultInfo.itemKey
 		rawLink = resultInfo.itemLink
 		buyout = (resultInfo.buyoutAmount or 0) * resultInfo.quantity
 		timeLeft = resultInfo.timeLeft + 1
