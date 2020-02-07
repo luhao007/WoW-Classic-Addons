@@ -8,12 +8,14 @@
 
 local _, TSM = ...
 local MyAuctions = TSM:NewPackage("MyAuctions")
+local L = TSM.Include("Locale").GetTable()
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local private = {
 	pendingDB = nil,
 	ahOpen = false,
@@ -21,6 +23,7 @@ local private = {
 	expectedCounts = {},
 	auctionInfo = { numPosted = 0, numSold = 0, postedGold = 0, soldGold = 0 },
 	dbHashFields = {},
+	pendingFuture = nil,
 }
 
 
@@ -62,19 +65,25 @@ function MyAuctions.CancelAuction(auctionId)
 		:GetFirstResultAndRelease()
 	local hash = row:GetField("hash")
 	assert(hash)
+
+	Log.Info("Canceling (auctionId=%d, hash=%d)", auctionId, hash)
+	if TSM.IsWowClassic() then
+		CancelAuction(auctionId)
+	else
+		private.pendingFuture = AuctionHouseWrapper.CancelAuction(auctionId)
+		if not private.pendingFuture then
+			Log.PrintUser(L["Failed to cancel auction due to the auction house being busy. Ensure no other addons are scanning the AH and try again."])
+			return
+		end
+		private.pendingFuture:SetScript("OnDone", private.PendingFutureOnDone)
+	end
+
 	if private.expectedCounts[hash] and private.expectedCounts[hash] > 0 then
 		private.expectedCounts[hash] = private.expectedCounts[hash] - 1
 	else
 		private.expectedCounts[hash] = private.GetNumRowsByHash(hash) - 1
 	end
 	assert(private.expectedCounts[hash] >= 0)
-
-	Log.Info("Canceling (auctionId=%d, hash=%d)", auctionId, hash)
-	if TSM.IsWowClassic() then
-		CancelAuction(auctionId)
-	else
-		C_AuctionHouse.CancelAuction(auctionId)
-	end
 	assert(not row:GetField("isPending"))
 	row:SetField("isPending", true)
 		:Update()
@@ -119,10 +128,14 @@ end
 
 function private.AuctionHouseHideEventHandler()
 	private.ahOpen = false
+	if private.pendingFuture then
+		private.pendingFuture:Cancel()
+		private.pendingFuture = nil
+	end
 end
 
 function private.ChatMsgSystemEventHandler(_, msg)
-	if msg == ERR_AUCTION_REMOVED and #private.pendingHashes > 0 then
+	if msg == ERR_AUCTION_REMOVED and #private.pendingHashes > 0 and TSM.IsWowClassic() then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
 		Log.Info("Confirmed (hash=%d)", hash)
@@ -130,9 +143,24 @@ function private.ChatMsgSystemEventHandler(_, msg)
 end
 
 function private.UIErrorMessageEventHandler(_, _, msg)
-	if (msg == ERR_ITEM_NOT_FOUND or msg == ERR_NOT_ENOUGH_MONEY) and #private.pendingHashes > 0 then
+	if (msg == ERR_ITEM_NOT_FOUND or msg == ERR_NOT_ENOUGH_MONEY) and #private.pendingHashes > 0 and TSM.IsWowClassic() then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
+		Log.Info("Failed to cancel (hash=%d)", hash)
+		if private.expectedCounts[hash] then
+			private.expectedCounts[hash] = private.expectedCounts[hash] + 1
+		end
+	end
+end
+
+function private.PendingFutureOnDone()
+	local result = private.pendingFuture:GetValue()
+	private.pendingFuture = nil
+	local hash = tremove(private.pendingHashes, 1)
+	assert(hash)
+	if result then
+		Log.Info("Confirmed (hash=%d)", hash)
+	else
 		Log.Info("Failed to cancel (hash=%d)", hash)
 		if private.expectedCounts[hash] then
 			private.expectedCounts[hash] = private.expectedCounts[hash] + 1

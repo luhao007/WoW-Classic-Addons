@@ -49,7 +49,7 @@ function FilterSearch.PrepareFilter(filterStr, mode, marketValueSource)
 
 	for filter in String.SplitIterator(filterStr, ";") do
 		filter = strtrim(filter)
-		if isValid and filter ~= "" and private.itemFilter:ParseStr(filter) then
+		if filter ~= "" and private.itemFilter:ParseStr(filter) and isValid then
 			local str = private.itemFilter:GetStr()
 			if mode == "CRAFTING" and not strfind(strlower(filter), "/crafting") and str then
 				filter = filter.."/crafting"

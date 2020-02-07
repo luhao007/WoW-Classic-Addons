@@ -31,7 +31,7 @@ local private = {
 	groupSearch = "",
 	selectionFrame = nil,
 	logQuery = nil,
-	itemLocation = ItemLocation.CreateEmpty(),
+	itemLocation = ItemLocation:CreateEmpty(),
 }
 local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
 	leftWidth = 272,
@@ -796,42 +796,45 @@ function private.FSMCreate()
 		auctionScan = nil,
 		scanProgress = 0,
 		scanProgressText = L["Starting Scan..."],
+		pendingFuture = nil,
 	}
 	private.scanQuery = fsmContext.db:NewQuery()
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
-	Event.Register("CHAT_MSG_SYSTEM", function(_, msg)
-		if msg == ERR_AUCTION_STARTED then
-			private.fsm:SetLoggingEnabled(false)
-			private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", true)
-			private.fsm:SetLoggingEnabled(true)
-		elseif msg == ERR_AUCTION_REMOVED then
-			private.fsm:SetLoggingEnabled(false)
-			private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", true)
-			private.fsm:SetLoggingEnabled(true)
-		end
-	end)
-	local POST_ERR_MSGS = {
-		-- errors where we can retry
-		[ERR_ITEM_NOT_FOUND] = true,
-		[ERR_AUCTION_DATABASE_ERROR] = TSM.IsWowClassic() and true or nil,
-		-- errors where we can't retry
-		[ERR_AUCTION_REPAIR_ITEM] = false,
-		[ERR_AUCTION_LIMITED_DURATION_ITEM] = false,
-		[ERR_AUCTION_USED_CHARGES] = false,
-		[ERR_AUCTION_WRAPPED_ITEM] = false,
-		[ERR_AUCTION_BAG] = false,
-		[ERR_NOT_ENOUGH_MONEY] = false,
-	}
-	Event.Register("UI_ERROR_MESSAGE", function(_, _, msg)
-		if POST_ERR_MSGS[msg] ~= nil then
-			private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", false, POST_ERR_MSGS[msg])
-		end
-		if msg == ERR_ITEM_NOT_FOUND then
-			private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", false, true)
-		end
-	end)
+	if TSM.IsWowClassic() then
+		Event.Register("CHAT_MSG_SYSTEM", function(_, msg)
+			if msg == ERR_AUCTION_STARTED then
+				private.fsm:SetLoggingEnabled(false)
+				private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", true)
+				private.fsm:SetLoggingEnabled(true)
+			elseif msg == ERR_AUCTION_REMOVED then
+				private.fsm:SetLoggingEnabled(false)
+				private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", true)
+				private.fsm:SetLoggingEnabled(true)
+			end
+		end)
+		local POST_ERR_MSGS = {
+			-- errors where we can retry
+			[ERR_ITEM_NOT_FOUND] = true,
+			[ERR_AUCTION_DATABASE_ERROR] = true,
+			-- errors where we can't retry
+			[ERR_AUCTION_REPAIR_ITEM] = false,
+			[ERR_AUCTION_LIMITED_DURATION_ITEM] = false,
+			[ERR_AUCTION_USED_CHARGES] = false,
+			[ERR_AUCTION_WRAPPED_ITEM] = false,
+			[ERR_AUCTION_BAG] = false,
+			[ERR_NOT_ENOUGH_MONEY] = false,
+		}
+		Event.Register("UI_ERROR_MESSAGE", function(_, _, msg)
+			if POST_ERR_MSGS[msg] ~= nil then
+				private.fsm:ProcessEvent("EV_AUCTION_POST_CONFIRM", false, POST_ERR_MSGS[msg])
+			end
+			if msg == ERR_ITEM_NOT_FOUND then
+				private.fsm:ProcessEvent("EV_AUCTION_CANCEL_CONFIRM", false, true)
+			end
+		end)
+	end
 	local function UpdateDepositCost(context)
 		if context.scanType ~= "POST" then
 			return
@@ -1056,7 +1059,7 @@ function private.FSMCreate()
 				:SetProgress(totalNum > 0 and (numProcessed / totalNum) or 1)
 				:SetProgressIconHidden(iconHidden)
 				:SetText(progressText)
-			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (not TSM.IsWowClassic() and numConfirmed ~= numProcessed))
+			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (not TSM.IsWowClassic() and context.pendingFuture))
 			bottom:GetElement("skipBtn"):SetDisabled(numProcessed == totalNum)
 		else
 			-- we're scanning
@@ -1088,6 +1091,10 @@ function private.FSMCreate()
 				if context.auctionScan then
 					context.auctionScan:Release()
 					context.auctionScan = nil
+				end
+				if context.pendingFuture then
+					context.pendingFuture:Reset()
+					context.pendingFuture = nil
 				end
 
 				if ... then
@@ -1208,19 +1215,20 @@ function private.FSMCreate()
 			:AddTransition("ST_INIT")
 			:AddTransition("ST_HANDLING_CONFIRM")
 			:AddEvent("EV_PROCESS_CLICKED", function(context)
+				local result, noRetry = nil, nil
 				if context.scanType == "POST" then
-					local success, noRetry = TSM.Auctioning.PostScan.DoProcess()
-					if not success then
-						-- we failed to post
-						return "ST_HANDLING_CONFIRM", false, not noRetry
-					end
+					result, noRetry = TSM.Auctioning.PostScan.DoProcess()
 				elseif context.scanType == "CANCEL" then
-					if not TSM.Auctioning.CancelScan.DoProcess() then
-						-- we failed to cancel but can retry
-						return "ST_HANDLING_CONFIRM", false, true
-					end
+					result, noRetry = TSM.Auctioning.CancelScan.DoProcess()
 				else
 					error("Invalid scan type: "..tostring(context.scanType))
+				end
+				if not result then
+					-- we failed to post / cancel
+					return "ST_HANDLING_CONFIRM", false, not noRetry
+				elseif not TSM.IsWowClassic() then
+					context.pendingFuture = result
+					context.pendingFuture:SetScript("OnDone", private.FSMPendingFutureOneDone)
 				end
 				UpdateScanFrame(context)
 			end)
@@ -1233,6 +1241,20 @@ function private.FSMCreate()
 					error("Invalid scan type: "..tostring(context.scanType))
 				end
 				UpdateScanFrame(context)
+			end)
+			:AddEvent("EV_PENDING_FUTURE_DONE", function(context)
+				assert(context.pendingFuture:IsDone())
+				local value = context.pendingFuture:GetValue()
+				context.pendingFuture = nil
+				if value == true then
+					return "ST_HANDLING_CONFIRM", true, false
+				elseif value == false then
+					return "ST_HANDLING_CONFIRM", false, true
+				elseif value == nil then
+					return "ST_HANDLING_CONFIRM", false, false
+				else
+					error("Invalid value: "..tostring(value))
+				end
 			end)
 			:AddEvent("EV_AUCTION_POST_CONFIRM", function(context, success, canRetry)
 				if context.scanType == "POST" then
@@ -1272,6 +1294,9 @@ function private.FSMCreate()
 		end)
 		:AddDefaultEventTransition("EV_BACK_BUTTON_CLICKED", "ST_INIT")
 		:AddDefaultEventTransition("EV_AUCTION_HOUSE_CLOSED", "ST_INIT")
+		:AddDefaultEvent("EV_PENDING_FUTURE_DONE", function(context)
+			error("Unexpected pending future done event")
+		end)
 		:Init("ST_INIT", fsmContext)
 end
 
@@ -1284,6 +1309,10 @@ end
 
 function private.FSMScanCallback()
 	private.fsm:ProcessEvent("EV_SCAN_COMPLETE")
+end
+
+function private.FSMPendingFutureOneDone(value)
+	private.fsm:ProcessEvent("EV_PENDING_FUTURE_DONE")
 end
 
 

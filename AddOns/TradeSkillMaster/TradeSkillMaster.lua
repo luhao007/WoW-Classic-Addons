@@ -33,7 +33,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.9.19" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.9.22" then
 		message("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -285,9 +285,10 @@ function TSM.OnDisable()
 	end
 	if not success then
 		Log.Err("private.SaveAppData hit an error: %s", tostring(errMsg))
+		-- force ourselves back to the original profile
+		TSM.db:SetProfile(originalProfile, true)
+		error("Error while saving app data: "..tostring(errMsg))
 	end
-	-- ensure we're back on the correct profile
-	TSM.db:SetProfile(originalProfile)
 end
 
 

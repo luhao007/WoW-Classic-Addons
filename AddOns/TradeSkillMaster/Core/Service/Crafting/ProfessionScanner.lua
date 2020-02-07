@@ -376,6 +376,11 @@ function private.ScanRecipe(professionName, spellId)
 		-- result of craft is item
 		itemString = ItemString.GetBase(itemLink)
 		craftName = ItemInfo.GetName(itemLink)
+		-- Blizzard broke Brilliant Scarlet Ruby in 8.3, so just hard-code a workaround
+		if spellId == 53946 and not itemString and not craftName then
+			itemString = "i:39998"
+			craftName = GetSpellInfo(spellId)
+		end
 	else
 		error("Invalid craft: "..tostring(spellId))
 	end

@@ -820,7 +820,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1026,7 +1026,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1402,7 +1402,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1531,7 +1531,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1888,7 +1888,7 @@ else
 			{ WHIT.."37) "..BZ["Soggy's Gamble"] },
 			{ "" },
 			{ BLUE..BZ["Vale of Eternal Blossoms"] },
-			{ WHIT.."38) "..BZ["Serpent's Spine"] },
+			{ WHIT.."38) "..BZ["Serpent's Spine"] },    
 			{ WHIT.."39) "..BZ["Shrine of Two Moons"] },
 			{ "" },
 			{ BLUE..BZ["Isle of Giants"] },
@@ -3276,3 +3276,4 @@ else
 end
 
 Atlas:RegisterPlugin(private.addon_name, private.db.category, private.db.maps, private.db.coords)
+

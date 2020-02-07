@@ -236,6 +236,7 @@ function private.GetGeneralSettingsFrame()
 				:SetStyle("hintJustifyH", "LEFT")
 				:SetHintText(L["Enter name of logged-in character from other account"])
 				:SetScript("OnEnterPressed", private.NewAccountSyncInputOnEnterPressed)
+				:SetScript("OnTextChanged", private.NewAccountSyncInputOnTextChanged)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "newAccountSyncBtn")
 				:SetStyle("width", 240)
@@ -628,6 +629,10 @@ end
 
 function private.NewAccountSyncInputOnEnterPressed(input)
 	input:GetElement("__parent.newAccountSyncBtn"):Click()
+end
+
+function private.NewAccountSyncInputOnTextChanged(input)
+	input:SetText(input:GetText())
 end
 
 function private.NewAccountSyncBtnOnClick(button)

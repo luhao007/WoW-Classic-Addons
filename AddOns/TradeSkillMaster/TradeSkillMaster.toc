@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: TradeSkillMaster Team
-## Version: v4.9.19
+## Version: v4.9.22
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -67,9 +67,11 @@ LibTSM\Util\DatabaseClasses\DBTable.lua
 LibTSM\Util\DatabaseClasses\Schema.lua
 LibTSM\Util\Database.lua
 LibTSM\Util\ItemString.lua
+LibTSM\Util\Future.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
+LibTSM\Service\AuctionHouseWrapper.lua
 LibTSM\Service\Threading.lua
 LibTSM\Service\SlashCommands.lua
 LibTSM\Service\Settings.lua

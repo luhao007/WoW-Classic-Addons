@@ -382,6 +382,24 @@ L["TITAN_LOOTTYPE_SHOWDUNGEONDIFF_LABEL"] = "Exibir Dificuldade da Masmorra/Raid
 L["TITAN_LOOTTYPE_SETDUNGEONDIFF_LABEL"] = "Configurar Dificuldade da Masmorra";
 L["TITAN_LOOTTYPE_SETRAIDDIFF_LABEL"] = "Configurar Dificuldade da Raide";
 L["TITAN_LOOTTYPE_AUTODIFF_LABEL"] = "Automático (Baseado no Grupo)";
+-- Tracker part
+L["BtnRoll"]  = "Roll" -- button
+L["BtnPass"]  = "Pass" -- button
+L["BtnClear"] = "Start" -- button (was 'Clear')
+L["BtnAnnounce"] = "Result" -- button (was 'Announce')
+L["BtnNotRolled"] = "Remind" -- button (was 'Not Rolled')
+L["TextPass"] = "pass" -- string to search for when player passes on loot
+L["MsgNotRolled"] = "Reminder sent." -- nag players who have not rolled
+L["MsgClosing"] = "Closing tracker window." -- when leader closes tracker
+L["TxtLine"] = "------------------------------------------------------------------------------------------------------"
+L["MsgNbRolls"] = "%d Roll(s)" -- number of rolls at bottom of frame
+L["MsgRollCleared"] = "MsgRollCleared" -- sent when BtnClear is clicked
+L["MsgStart"] = "New roll starting now! Type '/rnd' or '%s'"
+L["MsgBar"] = "==============================" -- used as part of start message to players
+L["MsgAnnounce"] = "%s won with a roll of %d."
+L["RaidPass"]="'/raid pass'" -- used to 'end' NotRolledNag message
+L["PartyPass"]="'/party pass'" -- used to 'end' NotRolledNag message
+L["NotRolledNag"]="{star} Please type '/roll' or 'pass' " -- cannot use L["TextPass"] here ????
 
 L["TITAN_MEMORY_FORMAT"] = "%.3f".."MB";
 L["TITAN_MEMORY_FORMAT_KB"] = "%d".."KB";

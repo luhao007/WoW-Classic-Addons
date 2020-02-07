@@ -172,7 +172,7 @@ function private.TargetItemsByMethodIteratorHelper(context, index)
 			return
 		end
 		local info = items[context.sourceItemString]
-		if info and ((not context.method and context.method ~= Conversions.METHOD.CRAFT) or info.method == context.method) then
+		if info and ((not context.method and info.method ~= Conversions.METHOD.CRAFT) or info.method == context.method) then
 			return index, info.rate
 		end
 	end

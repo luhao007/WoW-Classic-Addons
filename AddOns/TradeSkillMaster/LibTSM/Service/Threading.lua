@@ -162,6 +162,13 @@ function Threading.WaitForFunction(func, ...)
 	return private.runningThread:_WaitForFunction(func, ...)
 end
 
+--- Wait for a future.
+-- This must be called from a thread context. It will block the thread until the specified future is done.
+-- @tparam Future future The future to wait for
+function Threading.WaitForFuture(future)
+	return private.runningThread:_WaitForFuture(future)
+end
+
 --- Acquire a temp table.
 -- This must be called from a thread context. Any time a thread needs to maintain a temp table across a potential yield,
 -- it should use this API. This API will release the temp tables in the case that the thread gets killed.
@@ -229,6 +236,8 @@ function Thread.__init(self, name, func)
 	self._waitFunction = nil
 	self._waitFunctionArgs = nil
 	self._waitFunctionResult = nil
+	self._waitFuture = nil
+	self._waitFutureResult = nil
 	self._syncMessage = nil
 	self._syncMessageDest = nil
 	self._messages = {}
@@ -255,6 +264,8 @@ function Thread._Start(self, ...)
 	self._waitFunction = nil
 	self._waitFunctionArgs = nil
 	self._waitFunctionResult = nil
+	self._waitFuture = nil
+	self._waitFutureResult = nil
 	self._syncMessage = nil
 	self._syncMessageDest = nil
 	assert(not next(self._messages))
@@ -300,6 +311,11 @@ function Thread._Cleanup(self)
 	if self._waitFunctionArgs then
 		TempTable.Release(self._waitFunctionArgs)
 		self._waitFunctionArgs = nil
+	end
+	if self._waitFuture then
+		self._waitFuture:Cancel()
+		self._waitFuture = nil
+		self._waitFutureResult = nil
 	end
 	if self._waitFunctionResult then
 		TempTable.Release(self._waitFunctionResult)
@@ -352,6 +368,8 @@ function Thread._GetDebugInfo(self)
 			end
 		end
 		stateStr = format("Waiting for %s", functionName or tostring(self._waitFunction))
+	elseif self._state == "WAITING_FOR_FUTURE" then
+		stateStr = format("Waiting for future (%s)", self._waitFuture:GetName())
 	elseif self._state == "FORCED_YIELD" then
 		stateStr = "Forced yield"
 	elseif self._state == "SENDING_SYNC_MESSAGE" then
@@ -471,6 +489,13 @@ function Thread._UpdateState(self, elapsed)
 			self._state = "READY"
 		else
 			TempTable.Release(result)
+		end
+	elseif self._state == "WAITING_FOR_FUTURE" then
+		assert(self._waitFuture)
+		if self._waitFuture:IsDone() then
+			self._waitFutureResult = self._waitFuture:GetValue()
+			self._waitFuture = nil
+			self._state = "READY"
 		end
 	elseif self._state == "FORCED_YIELD" then
 		self._state = "READY"
@@ -606,6 +631,20 @@ function Thread._WaitForFunction(self, func, ...)
 	self._waitFunctionArgs = nil
 	self._waitFunctionResult = nil
 	return TempTable.UnpackAndRelease(result)
+end
+
+function Thread._WaitForFuture(self, future)
+	-- try the future once before yielding
+	if future:IsDone() then
+		return future:GetValue()
+	end
+	-- do the yield
+	self._state = "WAITING_FOR_FUTURE"
+	self._waitFuture = future
+	self:_Yield()
+	local result = self._waitFutureResult
+	self._waitFutureResult = nil
+	return result
 end
 
 function Thread._AcquireSafeTempTable(self, ...)

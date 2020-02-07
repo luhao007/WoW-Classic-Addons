@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Wardz
-## Version: v1.2.4
+## Version: v1.2.5
 ## SavedVariables: ClassicCastbarsDB
 
 ## Title: ClassicCastbars

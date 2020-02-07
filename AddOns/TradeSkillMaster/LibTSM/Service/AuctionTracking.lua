@@ -1,8 +1,8 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---          http://www.curse.com/addons/wow/tradeskillmaster_warehousing          --
+--             https://www.curseforge.com/wow/addons/tradeskill-master            --
 --                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
+--             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
@@ -19,6 +19,7 @@ local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local private = {
 	settings = nil,
 	indexDB = nil,
@@ -38,6 +39,7 @@ local private = {
 	prevLineId = nil,
 	prevLineResult = nil,
 	origChatFrameOnEvent = nil,
+	pendingFuture = nil,
 }
 local PLAYER_NAME = UnitName("player")
 local SALE_HINT_SEP = "\001"
@@ -217,7 +219,15 @@ function AuctionTracking.QueryOwnedAuctions()
 	if TSM.IsWowClassic() then
 		GetOwnerAuctionItems()
 	else
-		C_AuctionHouse.QueryOwnedAuctions(SORT_ORDER)
+		if private.pendingFuture then
+			return
+		end
+		private.pendingFuture = AuctionHouseWrapper.QueryOwnedAuctions(SORT_ORDER)
+		if not private.pendingFuture then
+			Delay.AfterTime(0.5, AuctionTracking.QueryOwnedAuctions)
+			return
+		end
+		private.pendingFuture:SetScript("OnDone", private.PendingFutureOnDone)
 	end
 end
 
@@ -517,4 +527,10 @@ function private.FilterSystemMsg(_, _, msg, ...)
 			return nil, private.prevLineResult, ...
 		end
 	end
+end
+
+function private.PendingFutureOnDone()
+	-- we also hook the event, so don't care what the result is
+	private.pendingFuture:GetValue()
+	private.pendingFuture = nil
 end

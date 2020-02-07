@@ -16,6 +16,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local private = {
 	scanThreadId = nil,
 	queueDB = nil,
@@ -81,24 +82,26 @@ function CancelScan.DoProcess()
 	end
 	local auctionId, itemString, currentBid, buyout = query:GetFirstResultAndRelease()
 	if auctionId then
+		local result = nil
 		if TSM.IsWowClassic() then
 			private.usedAuctionIndex[itemString..buyout..currentBid..auctionId] = true
 			CancelAuction(auctionId)
+			result = true
 		else
 			private.usedAuctionIndex[auctionId] = true
-			C_AuctionHouse.CancelAuction(auctionId)
+			result = AuctionHouseWrapper.CancelAuction(auctionId)
 		end
 		cancelRow:SetField("numProcessed", cancelRow:GetField("numProcessed") + 1)
 			:Update()
 		cancelRow:Release()
-		return true
+		return result, false
 	end
 
 	-- we couldn't find this item, so mark this cancel as failed and we'll try again later
 	cancelRow:SetField("numProcessed", cancelRow:GetField("numProcessed") + 1)
 		:Update()
 	cancelRow:Release()
-	return false
+	return false, false
 end
 
 function CancelScan.DoSkip()

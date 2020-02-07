@@ -14,5 +14,14 @@
 ## X-Website: http://www.atlasmod.com
 ## X-Category: Map
 
+#@non-debug@
+#@end-non-debug@
+#@debug@
+# ## Title: Atlas |r|cFF0099FF[Transportation]|r
+# ## Title-zhTW: |r|cFF0099FF[地圖]|rAtlas 交通網路圖
+# ## Notes: Transportation Maps
+# ## Notes-zhTW: Atlas 交通網路圖插件，顯示各大陸的海陸空交通節點
+#@end-debug@
+
 Locale\Locales.xml
 Atlas_Transportation.lua

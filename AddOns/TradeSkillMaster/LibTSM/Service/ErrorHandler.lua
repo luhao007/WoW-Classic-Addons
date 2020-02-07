@@ -180,12 +180,13 @@ function private.ErrorHandler(msg, thread)
 	end
 
 	private.num = private.num + 1
+	local clientVersion, clientBuild = GetBuildInfo()
 	local errorInfo = {
 		msg = #stackInfo > 0 and gsub(msg, String.Escape(stackInfo[1].file)..":"..stackInfo[1].line..": ", "") or msg,
 		stackInfo = stackInfo,
 		time = time(),
 		debugTime = floor(debugprofilestop()),
-		client = GetBuildInfo(),
+		client = format("%s (%s)", clientVersion, clientBuild),
 		locale = GetLocale(),
 		inCombat = tostring(InCombatLockdown() and true or false),
 		version = TSM.GetVersion(),
@@ -403,7 +404,7 @@ function private.ParseLocals(locals, file)
 		if not shouldIgnoreLine then
 			local level = #strmatch(localLine, "^ *")
 			localLine = strrep("  ", level)..strtrim(localLine)
-			localLine = gsub(localLine, "Interface\\[aA]dd[Oo]ns\\TradeSkillMaster", "TSM")
+			localLine = gsub(localLine, "Interface\\[Aa]dd[Oo]ns\\TradeSkillMaster", "TSM")
 			localLine = gsub(localLine, "\124", "\\124")
 			if level > 0 then
 				if isBlizzardFile then
@@ -689,7 +690,7 @@ end
 
 do
 	private.origErrorHandler = geterrorhandler()
-	seterrorhandler(function(errMsg)
+	local function ErrorHandlerFunc(errMsg)
 		local tsmErrMsg = strtrim(tostring(errMsg))
 		if private.ignoreErrors then
 			-- we're ignoring errors
@@ -730,7 +731,13 @@ do
 			return
 		end
 		return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
-	end)
+	end
+	seterrorhandler(ErrorHandlerFunc)
+	--[[if BugGrabber and BugGrabber.RegisterCallback then
+		BugGrabber.RegisterCallback({}, "BugGrabber_BugGrabbed", function(_, errObj)
+			ErrorHandlerFunc(errObj.message)
+		end)
+	end--]]
 	Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedHandler)
 	Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedHandler)
 end

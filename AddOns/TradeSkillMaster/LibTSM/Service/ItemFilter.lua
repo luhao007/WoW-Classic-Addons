@@ -108,6 +108,10 @@ function Filter.ParseStr(self, str)
 		part = strtrim(part)
 		if self._isValid ~= nil then
 			-- already done iterating, but can't break / return out of a VarargIterator
+			if strmatch(part, "^[ip]:[0-9]+") then
+				-- request item info in case we failed due to not having it (for next time)
+				ItemInfo.FetchInfo(part)
+			end
 		elseif i == 1 then
 			-- first part must be a filter string or an item
 			if strmatch(part, "^[ip]:[0-9]+") then

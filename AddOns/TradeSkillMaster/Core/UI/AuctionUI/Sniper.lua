@@ -694,7 +694,10 @@ function private.FSMCreate()
 				else
 					error("Invalid scanType: "..tostring(context.scanType))
 				end
-				if context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, true, quantity) then
+				-- TODO: do the prepare at the time we show the confirmation dialog
+				local result = context.auctionScan:PrepareForBidOrBuyout(index, context.findAuction, true, quantity)
+				result = result and context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, quantity)
+				if result then
 					context.numActioned = context.numActioned + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else

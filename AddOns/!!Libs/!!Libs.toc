@@ -86,10 +86,11 @@ LibRealmID\LibRealmID.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
+LibThreatClassic2\lib.xml
 LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1.lua
 
 # Other Libs required by various addons
 AccurateTime\AccurateTime.lua
-ThreatClassic-1.0\lib.xml
+# ThreatClassic-1.0\lib.xml

@@ -16,16 +16,16 @@ local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
-local Event = TSM.Include("Util.Event")
 local ItemString = TSM.Include("Util.ItemString")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
-local private = {
-	gotBrowseResultsUpdate = false,
-	gotBrowseResultsAdded = false,
-}
+local DEFAULT_83_SORTS = not TSM.IsWowClassic() and {
+	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
+	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
+} or nil
 
 
 
@@ -480,7 +480,6 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		assert(not self:_IsGetAll()) -- GetAll is not supported on >= 8.3
 
 		local query = Threading.AcquireSafeTempTable()
-		local sorts = Threading.AcquireSafeTempTable()
 		local filters = Threading.AcquireSafeTempTable()
 		if self._uncollected then
 			tinsert(filters, Enum.AuctionHouseFilter.UncollectedOnly)
@@ -507,31 +506,26 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		end
 
 		query.searchString = self._name or ""
-		query.sorts = sorts
+		query.sorts = DEFAULT_83_SORTS
 		query.minLevel = self._minLevel or 0
 		query.maxLevel = self._maxLevel or 0
 		query.filters = filters
 		query.itemClassFilters = itemClassFilters
 		while true do
-			private.gotBrowseResultsUpdate = false
-			local result = self._scan:_SendBrowseQuery83(query)
-			if result then
-				for _ = 1, 50 do
-					if private.gotBrowseResultsUpdate then
-						break
-					end
-					Threading.Sleep(0.1)
-				end
-				if private.gotBrowseResultsUpdate then
-					break
-				end
-				Log.Warn("Retrying browse query which didn't result in an update event")
-			else
+			if self._scan:_IsCancelled() then
+				Log.Info("Stopping cancelled scan")
+				return false
+			end
+			local future = AuctionHouseWrapper.SendBrowseQuery(query)
+			if not future then
+				Log.Err("Failed to send browse query - retrying")
 				Threading.Sleep(0.5)
-				Log.Warn("Retrying throttled browse query")
+			elseif not Threading.WaitForFuture(future) then
+				Log.Warn("Retrying browse query which timed-out")
+			else
+				break
 			end
 		end
-		Threading.ReleaseSafeTempTable(sorts)
 		Threading.ReleaseSafeTempTable(filters)
 		for i = #itemClassFilters, 1, -1 do
 			Threading.ReleaseSafeTempTable(itemClassFilters[i])
@@ -540,24 +534,18 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		Threading.ReleaseSafeTempTable(itemClassFilters)
 		Threading.ReleaseSafeTempTable(query)
 
-		-- wait for the browse results to fully load
+		-- load the full browse results
 		while not C_AuctionHouse.HasFullBrowseResults() do
 			if self._scan:_IsCancelled() then
 				Log.Info("Stopping cancelled scan")
 				return false
 			end
-			Log.Info("Requesting more...")
-			private.gotBrowseResultsAdded = false
-			C_AuctionHouse.RequestMoreBrowseResults()
-			for _ = 1, 20 do
-				if private.gotBrowseResultsAdded then
-					break
-				end
-				Threading.Sleep(0.1)
-			end
-			if not private.gotBrowseResultsAdded then
-				Log.Warn("Timed out waiting for browse results added event")
-				return false
+			local future = AuctionHouseWrapper.RequestMoreBrowseResults()
+			if not future then
+				Log.Err("Failed to request full browse results - retrying")
+				Threading.Sleep(0.5)
+			elseif not Threading.WaitForFuture(future) then
+				Log.Warn("Timed out waiting for full browse results - retrying")
 			end
 		end
 	else
@@ -569,7 +557,7 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 					-- wait for the AH to be ready
 					while not CanSendAuctionQuery() do
 						if self._scan:_IsCancelled() then
-							Log.Info("Stopping canelled scan")
+							Log.Info("Stopping cancelled scan")
 							return false
 						end
 						Threading.Yield(true)
@@ -742,23 +730,4 @@ function AuctionFilter._RemoveResultRows(self, db, row, numBought)
 		end
 	end
 	return result
-end
-
-
-
--- ============================================================================
--- Initialization Code
--- ============================================================================
-
-do
-	if not TSM.IsWowClassic() then
-		Event.Register("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", function()
-			Log.Info("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
-			private.gotBrowseResultsUpdate = true
-		end)
-		Event.Register("AUCTION_HOUSE_BROWSE_RESULTS_ADDED", function()
-			Log.Info("AUCTION_HOUSE_BROWSE_RESULTS_ADDED")
-			private.gotBrowseResultsAdded = true
-		end)
-	end
 end

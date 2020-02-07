@@ -18,6 +18,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local private = {
 	scanThreadId = nil,
 	queueDB = nil,
@@ -27,7 +28,7 @@ local private = {
 	itemList = {},
 	operationDB = nil,
 	debugLog = {},
-	itemLocation = ItemLocation.CreateEmpty(),
+	itemLocation = ItemLocation:CreateEmpty(),
 }
 local RESET_REASON_LOOKUP = {
 	minPrice = "postResetMin",
@@ -124,11 +125,13 @@ function PostScan.GetStatus()
 end
 
 function PostScan.DoProcess()
-	local success, noRetry = nil, false
+	local result, noRetry = nil, false
 	local postRow = PostScan.GetCurrentRow()
 	local itemString, stackSize, bid, buyout, itemBuyout, postTime = postRow:GetFields("itemString", "stackSize", "bid", "buyout", "itemBuyout", "postTime")
 	local bag, slot = private.GetPostBagSlot(itemString, stackSize)
 	if bag then
+		local _, bagQuantity = GetContainerItemInfo(bag, slot)
+		Log.Info("Posting %s x %d from %d,%d (%d)", itemString, stackSize, bag, slot, bagQuantity or -1)
 		if TSM.IsWowClassic() then
 			-- need to set the duration in the default UI to avoid Blizzard errors
 			AuctionFrameAuctions.duration = postTime
@@ -137,6 +140,7 @@ function PostScan.DoProcess()
 			ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 			PostAuction(bid, buyout, postTime, stackSize, 1)
 			ClearCursor()
+			result = true
 		else
 			bid = Math.Round(bid / stackSize, COPPER_PER_SILVER)
 			buyout = Math.Round(buyout / stackSize, COPPER_PER_SILVER)
@@ -145,29 +149,31 @@ function PostScan.DoProcess()
 			private.itemLocation:SetBagAndSlot(bag, slot)
 			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
 			if commodityStatus == Enum.ItemCommodityStatus.Item then
-				C_AuctionHouse.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
+				result = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
 			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
-				C_AuctionHouse.PostCommodity(private.itemLocation, postTime, stackSize, itemBuyout)
+				result = AuctionHouseWrapper.PostCommodity(private.itemLocation, postTime, stackSize, itemBuyout)
 			else
 				error("Unknown commodity status: "..tostring(itemString))
 			end
+			if not result then
+				Log.Err("Failed to post (%s, %s, %s)", itemString, bag, slot)
+			end
 		end
-		local _, bagQuantity = GetContainerItemInfo(bag, slot)
-		Log.Info("Posting %s x %d from %d,%d (%d)", itemString, stackSize, bag, slot, bagQuantity or -1)
-		private.DebugLogInsert(itemString, "Posting %d from %d, %d", stackSize, bag, slot)
-		success = true
 	else
 		-- we couldn't find this item, so mark this post as failed and we'll try again later
-		success = false
+		result = false
 		noRetry = slot
 		if noRetry then
 			Log.PrintfUser(L["Failed to post %sx%d as the item no longer exists in your bags."], ItemInfo.GetLink(itemString), stackSize)
 		end
 	end
+	if result then
+		private.DebugLogInsert(itemString, "Posting %d from %d, %d", stackSize, bag, slot)
+	end
 	postRow:SetField("numProcessed", postRow:GetField("numProcessed") + 1)
 		:Update()
 	postRow:Release()
-	return success, noRetry
+	return result, noRetry
 end
 
 function PostScan.DoSkip()

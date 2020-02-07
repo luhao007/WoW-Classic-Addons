@@ -1,8 +1,8 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---          http://www.curse.com/addons/wow/tradeskillmaster_warehousing          --
+--             https://www.curseforge.com/wow/addons/tradeskill-master            --
 --                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
+--             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
 --    All Rights Reserved* - Detailed license information included with addon.    --
 -- ------------------------------------------------------------------------------ --
 
@@ -938,7 +938,7 @@ private.SettingsDBMethods = {
 		return ipairs(private.context[self].db._scopeKeys.profile)
 	end,
 
-	SetProfile = function(self, profileName)
+	SetProfile = function(self, profileName, noCallback)
 		assert(type(profileName) == "string", tostring(profileName))
 		assert(not strfind(profileName, KEY_SEP))
 		local context = private.context[self]
@@ -955,7 +955,7 @@ private.SettingsDBMethods = {
 			isNew = true
 		end
 
-		if context.callbacks.OnProfileUpdated then
+		if context.callbacks.OnProfileUpdated and not noCallback then
 			context.callbacks.OnProfileUpdated(isNew)
 		end
 	end,

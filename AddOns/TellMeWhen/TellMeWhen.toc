@@ -19,14 +19,14 @@
 #  --------------------
 #  TellMeWhen
 #  Originally by Nephthys of Hyjal <lieandswell@yahoo.com>
-#
+# 
 #  Other contributions by:
 # 		Sweetmms of Blackrock, Oozebull of Twisting Nether, Oodyboo of Mug'thol,
 # 		Banjankri of Blackrock, Predeter of Proudmoore, Xenyr of Aszune
-#
+# 
 #  Currently maintained by
 #  Cybeloras of Aerie Peak
-#  --------------------
+#  -------------------- 
 
 
 # Also dont forget to bump both of these - X-Interface is used to get the interface version in-game to check that the user is using a current client.

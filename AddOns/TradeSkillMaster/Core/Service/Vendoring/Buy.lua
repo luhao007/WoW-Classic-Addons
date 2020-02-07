@@ -61,14 +61,10 @@ function Buy.DoRepair()
 end
 
 function Buy.BuyItem(itemString, quantity)
-	local query = Buy.CreateMerchantQuery()
-		:Equal("itemString", itemString)
-		:OrderBy("index", true)
-	local row = query:GetFirstResultAndRelease()
-	if not row then
+	local index = private.GetFirstIndex(itemString)
+	if not index then
 		return
 	end
-	local index = row:GetField("index")
 	local maxStack = GetMerchantItemMaxStack(index)
 	quantity = min(quantity, private.GetMaxCanAfford(index))
 	while quantity > 0 do
@@ -87,11 +83,8 @@ function Buy.BuyItemIndex(index, quantity)
 end
 
 function Buy.CanBuyItem(itemString)
-	local query = Buy.CreateMerchantQuery()
-		:Equal("itemString", itemString)
-		:OrderBy("index", true)
-	local row = query:GetFirstResultAndRelease()
-	return row and true or false
+	local index = private.GetFirstIndex(itemString)
+	return index and true or false
 end
 
 
@@ -203,4 +196,12 @@ function private.GetMaxCanAfford(index)
 	end
 
 	return maxCanAfford
+end
+
+function private.GetFirstIndex(itemString)
+	return Buy.CreateMerchantQuery()
+		:Equal("itemString", itemString)
+		:OrderBy("index", true)
+		:Select("index")
+		:GetFirstResultAndRelease()
 end

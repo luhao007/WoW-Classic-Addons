@@ -12,8 +12,13 @@ local L = TSM.Include("Locale").GetTable()
 local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
+local Log = TSM.Include("Util.Log")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	currentOperationName = nil,
+}
+local BAD_CRAFT_VALUE_PRICE_SOURCES = {
+	crafting = true,
 }
 
 
@@ -115,7 +120,7 @@ function private.GetCraftingOperationSettings(operationName)
 						:SetStyle("fontHeight", 14)
 						:SetStyle("justifyH", "LEFT")
 						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "craftPriceMethod") or operation.craftPriceMethod == "")
-						:SetSettingInfo(operation, "craftPriceMethod", TSM.MainUI.Operations.CheckCustomPrice)
+						:SetSettingInfo(operation, "craftPriceMethod", private.CheckCraftValue)
 						:SetText(operation.craftPriceMethod ~= "" and operation.craftPriceMethod or TSM.db.global.craftingOptions.defaultCraftPriceMethod)
 						:SetSpacing(6)
 						:SetMultiLine(true, true)
@@ -240,5 +245,20 @@ function private.CraftPriceOnEnterPressed(input)
 	else
 		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
 			:Draw()
+	end
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.CheckCraftValue(value)
+	local isValid, err = CustomPrice.Validate(value, BAD_CRAFT_VALUE_PRICE_SOURCES)
+	if isValid then
+		return true
+	else
+		Log.PrintUser(L["Invalid custom price."].." "..err)
 	end
 end

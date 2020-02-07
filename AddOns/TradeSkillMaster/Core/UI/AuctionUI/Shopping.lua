@@ -22,6 +22,7 @@ local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
+local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local private = {
 	singleItemSearchType = "normal",
 	fsm = nil,
@@ -44,7 +45,7 @@ local private = {
 	postTimeStr = nil,
 	perItem = true,
 	updateCallbacks = {},
-	itemLocation = ItemLocation.CreateEmpty(),
+	itemLocation = ItemLocation:CreateEmpty(),
 }
 local SINGLE_ITEM_SEARCH_TYPES = {
 	normal = "|cffffd839" .. L["Normal"] .. "|r",
@@ -1400,7 +1401,7 @@ function private.StartFilterSearchHelper(viewContainer, filter, isGreatDeals, it
 	local mode = (private.singleItemSearchType == "crafting" and not isGreatDeals) and "CRAFTING" or "NORMAL"
 	filter = TSM.Shopping.FilterSearch.PrepareFilter(strtrim(filter), mode, TSM.db.global.shoppingOptions.pctSource)
 	if not filter or filter == "" then
-		viewContainer:SetPath("scan", true)
+		viewContainer:SetPath("selection", true)
 		Log.PrintUser(L["Invalid search filter"]..": "..originalFilter)
 		return
 	end
@@ -1738,12 +1739,17 @@ function private.PostButtonOnClick(button)
 			private.itemLocation:Clear()
 			private.itemLocation:SetBagAndSlot(postBag, postSlot)
 			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
+			local future = nil
 			if commodityStatus == Enum.ItemCommodityStatus.Item then
-				C_AuctionHouse.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
+				future = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
 			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
-				C_AuctionHouse.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
+				future = AuctionHouseWrapper.PostCommodity(private.itemLocation, postTime, stackSize, buyout)
 			else
 				error("Unknown commodity status: "..tostring(itemString))
+			end
+			if future then
+				-- TODO: wait for the future
+				future:Cancel()
 			end
 		else
 			local num = frame:GetElement("quantity.num"):GetText()
@@ -2295,7 +2301,10 @@ function private.FSMCreate()
 				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
 				assert(not TSM.IsWowClassic() or index)
 				-- buy the auction
-				if context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetField("buyout"), context.findAuction, false, quantity) then
+				-- TODO: do the prepare at the time we show the confirmation dialog
+				local result = context.auctionScan:PrepareForBidOrBuyout(index, context.findAuction, false, quantity)
+				result = result and context.auctionScan:PlaceBidOrBuyout(index, context.findAuction:GetField("buyout"), context.findAuction, quantity)
+				if result then
 					context.numBought = context.numBought + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
@@ -2322,7 +2331,9 @@ function private.FSMCreate()
 				local index = TSM.IsWowClassic() and tremove(context.findResult, #context.findResult) or nil
 				assert(not TSM.IsWowClassic() or index)
 				-- bid on the auction
-				if context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction, false, quantity) then
+				local result = context.auctionScan:PrepareForBidOrBuyout(index, context.findAuction, false, quantity)
+				result = result and context.auctionScan:PlaceBidOrBuyout(index, TSM.Auction.GetRequiredBidByScanResultRow(context.findAuction), context.findAuction, quantity)
+				if result then
 					context.numBid = context.numBid + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else
