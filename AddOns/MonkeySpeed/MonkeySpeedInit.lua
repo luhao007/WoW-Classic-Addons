@@ -121,7 +121,7 @@ function MonkeySpeed_Init()
 	MonkeySpeed_showPercent_Changed()
 	
 	local MonkeySpeedOptions = CreateFrame("FRAME", "MonkeySpeedOptions")
-	MonkeySpeedOptions.name = GetAddOnMetadata("MonkeySpeed", "Title")
+	MonkeySpeedOptions.name = "MonkeySpeed"
 	MonkeySpeedOptions.default = function (self) MonkeySpeed_ResetConfig() end
 	MonkeySpeedOptions.refresh = function (self) MonkeySpeed_RefreshConfig() end
 	InterfaceOptions_AddCategory(MonkeySpeedOptions)
@@ -129,7 +129,7 @@ function MonkeySpeed_Init()
 	local MonkeySpeedOptionsHeader = MonkeySpeedOptions:CreateFontString(nil, "ARTWORK")
 	MonkeySpeedOptionsHeader:SetFontObject(GameFontNormalLarge)
 	MonkeySpeedOptionsHeader:SetPoint("TOPLEFT", 16, -16)
-	MonkeySpeedOptionsHeader:SetText(GetAddOnMetadata("MonkeySpeed", "Title") .. " " .. GetAddOnMetadata("MonkeySpeed", "Version"))
+	MonkeySpeedOptionsHeader:SetText("MonkeySpeed" .. " " .. GetAddOnMetadata("MonkeySpeed", "Version"))
 	
 	local MonkeySpeedGeneral = MonkeySpeedOptions:CreateFontString(nil, "ARTWORK")
 	MonkeySpeedGeneral:SetFontObject(GameFontWhite)

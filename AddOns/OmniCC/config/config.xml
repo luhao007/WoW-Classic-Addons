@@ -1,5 +1,4 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Include file="..\libs\config.xml"/>
 	<Include file="localization\localization.xml"/>
 	<Script file="preview.lua" />
 	<Script file="themes.lua" />

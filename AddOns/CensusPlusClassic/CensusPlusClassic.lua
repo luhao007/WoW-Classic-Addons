@@ -3673,7 +3673,7 @@ end
 function CensusPlusBlizzardOptions()
 	-- Create main frame for information text
 	CensusPlusOptions = CreateFrame("FRAME", "CensusPlusOptions")
-	CensusPlusOptions.name = GetAddOnMetadata("CensusPlusClassic", "Title")
+	CensusPlusOptions.name = "CensusPlusClassic"
 	CensusPlusOptions.default = function(self)
 		CensusPlus_ResetConfig()
 	end

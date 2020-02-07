@@ -2,7 +2,7 @@ HonorSpy = LibStub("AceAddon-3.0"):NewAddon("HonorSpy", "AceConsole-3.0", "AceHo
 
 local L = LibStub("AceLocale-3.0"):GetLocale("HonorSpy", true)
 
-local addonName = GetAddOnMetadata("HonorSpy", "Title");
+local addonName = "Honorspy";
 local commPrefix = addonName .. "4";
 
 local paused = false; -- pause all inspections when user opens inspect frame
