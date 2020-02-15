@@ -91,3 +91,6 @@ def main():
 if __name__ == '__main__':
     # main()
     print(os.listdir('AddOns/ItemRackOptions'))
+    with open('Addons/ItemRackOptions/ItemRackOptions.toc', 'rb') as f:
+        print(f.readlines())
+    
