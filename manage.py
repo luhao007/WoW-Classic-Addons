@@ -90,4 +90,4 @@ def main():
 
 if __name__ == '__main__':
     # main()
-    print(os.listdir('AddOns'))
+    print(os.listdir('AddOns/ItemRackOptions'))
