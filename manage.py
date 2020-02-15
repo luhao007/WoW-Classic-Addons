@@ -89,4 +89,5 @@ def main():
     print('All done.')
 
 if __name__ == '__main__':
-    main()
+    # main()
+    print(os.listdir('.'))
