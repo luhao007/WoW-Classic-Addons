@@ -16,5 +16,4 @@ jobs:
     - name: Re-organize the addons
       run: |
         pip install chardet
-        pwd
-        ls -la
+        python manage.py
