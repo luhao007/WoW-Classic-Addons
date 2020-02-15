@@ -974,6 +974,10 @@ function private.FSMCreate()
 	}
 
 	local function UpdateFrame(context)
+		if not context.frame then
+			return
+		end
+
 		local smallText = context.frame:GetElement("container.dragBox.dragTextSmall")
 		local bigText = context.frame:GetElement("container.dragBox.dragTextBig")
 		local postage = context.frame:GetElement("container.header.postage")

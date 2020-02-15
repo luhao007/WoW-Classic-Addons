@@ -9,6 +9,7 @@
 local _, TSM = ...
 local TableRow = TSM.Include("LibTSMClass").DefineClass("TableRow")
 local Table = TSM.Include("Util.Table")
+local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 TSM.UI.Util.TableRow = TableRow
 local private = {
@@ -551,7 +552,7 @@ function private.TooltipFrameOnClick(frame, ...)
 		local link = tooltip and ItemInfo.GetLink(tooltip)
 		if link then
 			if IsShiftKeyDown() then
-				TSM.Wow.SafeItemRef(link)
+				Wow.SafeItemRef(link)
 			elseif IsControlKeyDown() then
 				DressUpItemLink(link)
 			end

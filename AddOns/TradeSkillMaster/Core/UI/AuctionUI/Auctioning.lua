@@ -1093,7 +1093,7 @@ function private.FSMCreate()
 					context.auctionScan = nil
 				end
 				if context.pendingFuture then
-					context.pendingFuture:Reset()
+					context.pendingFuture:Cancel()
 					context.pendingFuture = nil
 				end
 

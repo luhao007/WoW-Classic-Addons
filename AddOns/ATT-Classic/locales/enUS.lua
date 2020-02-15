@@ -92,13 +92,16 @@ app.L = {
 
 	["ABBREVIATIONS"] = {
 		["ALL THE THINGS"] = "ATT",
-		["ATT-Classic"] = "ATT",
+		["ATT%-Classic"] = "ATT",
 		["Expansion Pre"] = "Pre",
 		["Dungeons & Raids"] = "D&R",
 		["Player vs Player"] = STAT_CATEGORY_PVP,
 		["Player vs. Player"] = STAT_CATEGORY_PVP,
-		["Outdoor Zones"] = LFG_TYPE_ZONE,
-		["Zone Drop"] = LFG_TYPE_ZONE,
+		["Outdoor Zones"] = LFG_TYPE_ZONE
+	};
+	["ABBREVIATIONS_POST"] = {
+		--[" %-%> " .. LFG_TYPE_ZONE] = "",
+		[TRACKER_HEADER_QUESTS] = BATTLE_PET_SOURCE_2,
 	};
 	["FILTER_ID_TYPES"] = {
 		-- "Armor Types"
@@ -975,8 +978,8 @@ app.L = {
 		[2059] = "Interface\\Icons\\INV_Misc_Bone_DwarfSkull_01",
 		[2076] = "Interface\\Icons\\INV_Misc_Cauldron_Arcane",
 		[2083] = "Interface\\Icons\\inv_misc_scrollunrolled04",
-		[2701] = "Interface\\Icons\\INV_Misc_Apexis_Shard",
-		[2702] = "Interface\\Icons\\Achievement_Scenario_GreenStone",
+		[2701] = "Interface\\Icons\\INV_Stone_15",
+		[2702] = "Interface\\Icons\\INV_Stone_15",
 		[2713] = "Interface\\Icons\\INV_Inscription_ScrollOfWisdom_01",
 		[2908] = "Interface\\Icons\\INV_Crate_03",
 		[3972] = "Interface\\Icons\\inv_misc_head_human_01",
@@ -1108,6 +1111,9 @@ app.L = {
 		[2059] = "A Dwarven Corpse",
 		[2076] = "Bubbling Cauldron",
 		[2083] = "Bloodsail Correspondence",
+		[2689] = "Stone of West Binding",
+		[2690] = "Stone of Outer Binding",
+		[2691] = "Stone of East Binding",
 		[2701] = "Iridescent Shards",
 		[2702] = "Stone of Inner Binding",
 		[2713] = "Wanted Board",

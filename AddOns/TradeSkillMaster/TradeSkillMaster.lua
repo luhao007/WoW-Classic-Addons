@@ -16,6 +16,7 @@ local Analytics = TSM.Include("Util.Analytics")
 local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
+local Wow = TSM.Include("Util.Wow")
 local ErrorHandler = TSM.Include("Service.ErrorHandler")
 local SlashCommands = TSM.Include("Service.SlashCommands")
 local Threading = TSM.Include("Service.Threading")
@@ -33,8 +34,8 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.9.22" then
-		message("TSM was just updated and may not work properly until you restart WoW.")
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.9.26" then
+		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
 
@@ -72,7 +73,7 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("TradeSkillMaster", "RequiredLevel", L["Required Level"], ItemInfo.GetMinLevel)
 
 	-- Auctioneer price sources
-	if TSM.Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
+	if Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
 		local registeredAuctioneerSources = {}
 		hooksecurefunc(AucAdvanced, "SendProcessorMessage", function(msg)
 			if msg == "scanfinish" then
@@ -99,7 +100,7 @@ function TSM.OnInitialize()
 	end
 
 	-- Auctionator price sources
-	if TSM.Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout and Atr_RegisterFor_DBupdated then
+	if Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout and Atr_RegisterFor_DBupdated then
 		Atr_RegisterFor_DBupdated(function(...)
 			CustomPrice.OnSourceChange("AtrValue")
 		end)
@@ -107,7 +108,7 @@ function TSM.OnInitialize()
 	end
 
 	-- TheUndermineJournal and BootyBayGazette price sources
-	if TSM.Wow.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
+	if Wow.IsAddonEnabled("TheUndermineJournal") and TUJMarketInfo then
 		local function GetTUJPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
@@ -116,7 +117,7 @@ function TSM.OnInitialize()
 		CustomPrice.RegisterSource("External", "TUJMarket", L["TUJ 14-Day Price"], GetTUJPrice, true, "market")
 		CustomPrice.RegisterSource("External", "TUJGlobalMean", L["TUJ Global Mean"], GetTUJPrice, true, "globalMean")
 		CustomPrice.RegisterSource("External", "TUJGlobalMedian", L["TUJ Global Median"], GetTUJPrice, true, "globalMedian")
-	elseif TSM.Wow.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
+	elseif Wow.IsAddonEnabled("BootyBayGazette") and TUJMarketInfo then
 		local function GetBBGPrice(itemLink, arg)
 			local data = TUJMarketInfo(itemLink)
 			return data and data[arg] or nil
@@ -128,7 +129,7 @@ function TSM.OnInitialize()
 	end
 
 	-- AHDB price sources
-	if TSM.Wow.IsAddonEnabled("AuctionDB") and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
+	if Wow.IsAddonEnabled("AuctionDB") and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
 		hooksecurefunc(AuctionDB, "AHendOfScanCB", function(...)
 			CustomPrice.OnSourceChange("AHDBMinBuyout")
 			CustomPrice.OnSourceChange("AHDBMinBid")
@@ -210,11 +211,19 @@ function TSM.OnInitialize()
 end
 
 function TSM.OnEnable()
-	if not TSM.Wow.IsAddonInstalled("TradeSkillMaster_AppHelper") then
+	for i = 1, GetNumAddOns() do
+		local name = GetAddOnInfo(i)
+		if strmatch(name, "^TradeSkillMaster") and name ~= "TradeSkillMaster" and name ~= "TradeSkillMaster_AppHelper" and name ~= "TradeSkillMaster_StringConverter" then
+			Wow.ShowBasicMessage(format(L["An old TSM addon was found installed. Please remove %s and any other old TSM addons to avoid issues."], name))
+			break
+		end
+	end
+
+	if not Wow.IsAddonInstalled("TradeSkillMaster_AppHelper") then
 		return
 	end
 
-	if not TSM.Wow.IsAddonEnabled("TradeSkillMaster_AppHelper") then
+	if not Wow.IsAddonEnabled("TradeSkillMaster_AppHelper") then
 		-- TSM_AppHelper is disabled
 		StaticPopupDialogs["TSM_APP_DATA_ERROR"] = {
 			text = L["The TradeSkillMaster_AppHelper addon is installed, but not enabled. TSM has enabled it and requires a reload."],
@@ -226,7 +235,7 @@ function TSM.OnEnable()
 				ReloadUI()
 			end,
 		}
-		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 		return
 	end
 
@@ -240,7 +249,7 @@ function TSM.OnEnable()
 			timeout = 0,
 			whileDead = true,
 		}
-		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 		return
 	end
 
@@ -259,7 +268,7 @@ function TSM.OnEnable()
 			button1 = OKAY,
 			timeout = 0,
 		}
-		TSM.Wow.ShowStaticPopupDialog("TSM_APP_MESSAGE")
+		Wow.ShowStaticPopupDialog("TSM_APP_MESSAGE")
 	end
 
 	if time() - private.appInfo.lastSync > 60 * 60 then
@@ -270,7 +279,7 @@ function TSM.OnEnable()
 			timeout = 0,
 			whileDead = true,
 		}
-		TSM.Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
+		Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 	end
 end
 
@@ -363,8 +372,7 @@ function private.DebugSlashCommandHandler(arg)
 	elseif arg == "logout" then
 		TSM.AddonTestLogout()
 	elseif arg == "clearitemdb" then
-		TSMItemInfoDB = nil
-		ReloadUI()
+		ItemInfo.ClearDB()
 	end
 end
 

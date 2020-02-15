@@ -23,7 +23,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 TSM.Auction.classes.AuctionFilter = AuctionFilter
 local DEFAULT_83_SORTS = not TSM.IsWowClassic() and {
-	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
+	{ sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
 	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
 } or nil
 
@@ -369,8 +369,16 @@ function AuctionFilter._IsItemFiltered(self, baseItemString, itemString, itemLev
 	if self._evenOnly and totalQuantity < 5 then
 		return true
 	end
-	if itemLevel and (itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge)) then
-		return true
+	if itemLevel and itemString then
+		-- we know the exact itemLevel
+		if itemLevel < (self._minItemLevel or 0) or itemLevel > (self._maxItemLevel or math.huge) then
+			return true
+		end
+	elseif itemLevel then
+		-- we know the max itemLevel
+		if itemLevel < (self._minItemLevel or 0) then
+			return true
+		end
 	end
 	if self._unlearned and CanIMogIt:PlayerKnowsTransmog(ItemInfo.GetLink(baseItemString)) then
 		return true
@@ -507,8 +515,8 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 
 		query.searchString = self._name or ""
 		query.sorts = DEFAULT_83_SORTS
-		query.minLevel = self._minLevel or 0
-		query.maxLevel = self._maxLevel or 0
+		query.minLevel = self._minLevel
+		query.maxLevel = self._maxLevel
 		query.filters = filters
 		query.itemClassFilters = itemClassFilters
 		while true do

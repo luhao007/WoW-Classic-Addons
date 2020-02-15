@@ -400,6 +400,10 @@ function DatabaseTable.BulkInsertStart(self)
 	end
 	if not next(self._uniques) and #self._multiFieldIndexFields == 0 and Table.Count(self._indexLists) == 1 and self._indexLists[self._storedFieldList[1]] then
 		self._bulkInsertContext.fastNum = self._numStoredFields
+		self._bulkInsertContext.fastIndex = true
+	elseif not next(self._indexLists) and #self._multiFieldIndexFields == 0 and Table.Count(self._uniques) == 1 and self._uniques[self._storedFieldList[1]] then
+		self._bulkInsertContext.fastNum = self._numStoredFields
+		self._bulkInsertContext.fastUnique = true
 	end
 	self:SetQueryUpdatesPaused(true)
 end
@@ -532,8 +536,17 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 	self._data[rowIndex + 4] = v5
 	self._data[rowIndex + 5] = v6
 
-	-- the first field is always an index (and the only index)
-	self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	if self._bulkInsertContext.fastIndex then
+		-- the first field is always an index (and the only index)
+		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	elseif self._bulkInsertContext.fastUnique then
+		-- the first field is always a unique (and the only unique)
+		local uniqueValues = self._uniques[self._storedFieldList[1]]
+		if uniqueValues[v1] ~= nil then
+			error("A row with this unique value already exists", 2)
+		end
+		uniqueValues[v1] = uuid
+	end
 end
 
 function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v8, extraValue)
@@ -566,8 +579,17 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 	self._data[rowIndex + 6] = v7
 	self._data[rowIndex + 7] = v8
 
-	-- the first field is always an index (and the only index)
-	self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	if self._bulkInsertContext.fastIndex then
+		-- the first field is always an index (and the only index)
+		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	elseif self._bulkInsertContext.fastUnique then
+		-- the first field is always a unique (and the only unique)
+		local uniqueValues = self._uniques[self._storedFieldList[1]]
+		if uniqueValues[v1] ~= nil then
+			error("A row with this unique value already exists", 2)
+		end
+		uniqueValues[v1] = uuid
+	end
 end
 
 function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, extraValue)
@@ -603,8 +625,65 @@ function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._data[rowIndex + 9] = v10
 	self._data[rowIndex + 10] = v11
 
-	-- the first field is always an index (and the only index)
-	self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	if self._bulkInsertContext.fastIndex then
+		-- the first field is always an index (and the only index)
+		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	elseif self._bulkInsertContext.fastUnique then
+		-- the first field is always a unique (and the only unique)
+		local uniqueValues = self._uniques[self._storedFieldList[1]]
+		if uniqueValues[v1] ~= nil then
+			error("A row with this unique value already exists", 2)
+		end
+		uniqueValues[v1] = uuid
+	end
+end
+
+function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, extraValue)
+	local uuid = private.GetNextUUID()
+	local rowIndex = #self._data + 1
+	local uuidIndex = #self._uuids + 1
+	if not self._bulkInsertContext then
+		error("Bulk insert hasn't been started")
+	elseif self._bulkInsertContext.fastNum ~= 13 then
+		error("Invalid usage of fast insert")
+	elseif v11 == nil or extraValue ~= nil then
+		error("Wrong number of values")
+	elseif not self._bulkInsertContext.firstDataIndex then
+		self._bulkInsertContext.firstDataIndex = rowIndex
+		self._bulkInsertContext.firstUUIDIndex = uuidIndex
+		for _, indexList in pairs(self._indexLists) do
+			wipe(indexList)
+		end
+	end
+
+	self._uuidToDataOffsetLookup[uuid] = rowIndex
+	self._uuids[uuidIndex] = uuid
+
+	self._data[rowIndex] = v1
+	self._data[rowIndex + 1] = v2
+	self._data[rowIndex + 2] = v3
+	self._data[rowIndex + 3] = v4
+	self._data[rowIndex + 4] = v5
+	self._data[rowIndex + 5] = v6
+	self._data[rowIndex + 6] = v7
+	self._data[rowIndex + 7] = v8
+	self._data[rowIndex + 8] = v9
+	self._data[rowIndex + 9] = v10
+	self._data[rowIndex + 10] = v11
+	self._data[rowIndex + 11] = v12
+	self._data[rowIndex + 12] = v13
+
+	if self._bulkInsertContext.fastIndex then
+		-- the first field is always an index (and the only index)
+		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
+	elseif self._bulkInsertContext.fastUnique then
+		-- the first field is always a unique (and the only unique)
+		local uniqueValues = self._uniques[self._storedFieldList[1]]
+		if uniqueValues[v1] ~= nil then
+			error("A row with this unique value already exists", 2)
+		end
+		uniqueValues[v1] = uuid
+	end
 end
 
 function DatabaseTable.BulkInsertUUIDIterator(self)

@@ -40,7 +40,7 @@ function AuctionUI.OnInitialize()
 	else
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
 	end
-	TSM.Wow.RegisterItemLinkedCallback(private.ItemLinkedCallback)
+	TSM.UI.RegisterItemLinkedCallback(private.ItemLinkedCallback)
 end
 
 function AuctionUI.OnDisable()

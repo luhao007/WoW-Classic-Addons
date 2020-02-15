@@ -180,12 +180,11 @@ function private.ToItemString(item)
 	local result = nil
 	if strmatch(item, "^i:([0-9%-:]+)$") then
 		return private.FixItemString(item)
-	elseif strmatch(item, "^p:([0-9%-:]+)$") then
-		result = strjoin(":", strmatch(item, "^(p):(%d+:%d+:%d+)"))
-		if result then
-			return result
-		end
-		return item
+	elseif strmatch(item, "^p:([0-9:]+)$") then
+		local p0, p1, p2, p3 = strsplit(":", item)
+		p2 = p2 or "0"
+		p3 = p3 or "0"
+		return strjoin(":", p0, p1, p2, p3)
 	end
 
 	result = strmatch(item, "^\124cff[0-9a-z]+\124[Hh](.+)\124h%[.+%]\124h\124r$")
@@ -231,6 +230,10 @@ function private.RemoveExtra(itemString)
 	local num = 1
 	while num > 0 do
 		itemString, num = gsub(itemString, ":0?$", "")
+		if num > 1 and strmatch(itemString, "^p:") then
+			-- pets shouldn't end in :0
+			return nil
+		end
 	end
 	return itemString
 end

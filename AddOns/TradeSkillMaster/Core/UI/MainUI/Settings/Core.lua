@@ -9,6 +9,7 @@
 local _, TSM = ...
 local Settings = TSM.MainUI:NewPackage("Settings")
 local L = TSM.Include("Locale").GetTable()
+local Wow = TSM.Include("Util.Wow")
 local private = {
 	settingPages = {
 		top = {},
@@ -136,7 +137,7 @@ function Settings.PromptToReload()
 		timeout = 0,
 		OnAccept = ReloadUI,
 	}
-	TSM.Wow.ShowStaticPopupDialog("TSMReloadPrompt")
+	Wow.ShowStaticPopupDialog("TSMReloadPrompt")
 end
 
 

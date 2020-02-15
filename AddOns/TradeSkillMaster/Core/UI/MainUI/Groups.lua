@@ -693,7 +693,9 @@ end
 function private.RemoveItemsOnClick(self)
 	local itemList = self:GetElement("__parent.content.itemList")
 	local numRemoved = 0
-	local targetGroup = IsShiftKeyDown() and TSM.Groups.Path.GetParent(private.currentGroupPath) or nil
+	local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
+	parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
+	local targetGroup = IsShiftKeyDown() and parentGroup or nil
 	for _, itemLink in ipairs(private.GetGroupedItemList()) do
 		if itemList:IsItemSelected(itemLink) then
 			TSM.Groups.SetItemGroup(ItemString.Get(itemLink), targetGroup)

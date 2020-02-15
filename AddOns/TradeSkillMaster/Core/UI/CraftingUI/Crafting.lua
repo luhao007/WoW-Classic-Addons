@@ -17,6 +17,7 @@ local Table = TSM.Include("Util.Table")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Wow = TSM.Include("Util.Wow")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	db = nil,
@@ -46,7 +47,7 @@ private.dividedContainerContext = {}
 -- ============================================================================
 
 function Crafting.OnInitialize()
-	TSM.Wow.RegisterItemLinkedCallback(private.ItemLinkedCallback)
+	TSM.UI.RegisterItemLinkedCallback(private.ItemLinkedCallback)
 	TSM.UI.CraftingUI.RegisterTopLevelPage("Crafting", "iconPack.24x24/Crafting", private.GetCraftingFrame)
 	private.FSMCreate()
 end
@@ -726,7 +727,7 @@ function private.ItemOnClick(text)
 			end
 		end
 	else
-		TSM.Wow.SafeItemRef(ItemInfo.GetLink(text:GetElement("__parent.name"):GetContext()))
+		Wow.SafeItemRef(ItemInfo.GetLink(text:GetElement("__parent.name"):GetContext()))
 	end
 end
 

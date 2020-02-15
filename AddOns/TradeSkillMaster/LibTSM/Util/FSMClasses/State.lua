@@ -56,9 +56,10 @@ end
 --- Set the OnEnter handler.
 -- This function is called upon entering the state.
 -- @tparam FSMState self The FSM state object
--- @tparam function handler The handler function
+-- @tparam ?function|string handler The handler function or a method name to call on the context object
 -- @treturn FSMState The FSM state object
 function FSMState.SetOnEnter(self, handler)
+	assert(type(handler) == "function" or type(handler) == "string")
 	self._onEnterHandler = handler
 	return self
 end
@@ -66,9 +67,10 @@ end
 --- Set the OnExit handler.
 -- This function is called upon existing the state.
 -- @tparam FSMState self The FSM state object
--- @tparam function handler The handler function
+-- @tparam ?function|string handler The handler function or a method name to call on the context object
 -- @treturn FSMState The FSM state object
 function FSMState.SetOnExit(self, handler)
+	assert(type(handler) == "function" or type(handler) == "string")
 	self._onExitHandler = handler
 	return self
 end
@@ -139,13 +141,17 @@ function FSMState._ProcessEvent(self, event, context, ...)
 end
 
 function FSMState._Enter(self, context, ...)
-	if self._onEnterHandler then
+	if type(self._onEnterHandler) == "function" then
 		return self._onEnterHandler(context, ...)
+	elseif type(self._onEnterHandler) == "string" then
+		return context[self._onEnterHandler](context, ...)
 	end
 end
 
 function FSMState._Exit(self, context)
-	if self._onExitHandler then
+	if type(self._onExitHandler) == "function" then
 		return self._onExitHandler(context)
+	elseif type(self._onExitHandler) == "string" then
+		return context[self._onExitHandler](context)
 	end
 end

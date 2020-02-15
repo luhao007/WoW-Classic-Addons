@@ -25,6 +25,11 @@ function Sniper.OnInitialize()
 	TSM.Operations.Register("Sniper", L["Sniper"], OPERATION_INFO, 1, private.GetOperationInfo)
 end
 
+function Sniper.HasOperation(itemString)
+	itemString = TSM.Groups.TranslateItemString(itemString)
+	return TSM.Operations.GetFirstOperationByItem("Sniper", itemString) and true or false
+end
+
 function Sniper.GetBelowPrice(itemString)
 	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)

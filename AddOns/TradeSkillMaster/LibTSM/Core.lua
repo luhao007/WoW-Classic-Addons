@@ -129,7 +129,7 @@ end
 
 function private.ModuleInfoIterator(_, index)
 	index = index + 1
-	local path = private.moduleList[index]
+	local path = private.initOrder[index]
 	if not path then
 		return
 	end

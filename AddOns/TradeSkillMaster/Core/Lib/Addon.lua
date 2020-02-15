@@ -45,6 +45,16 @@ function private.DoInitialize()
 		end
 		tinsert(private.enableQueue, addon)
 	end
+	if private.totalInitializeTime == 0 then
+		for _, path, moduleLoadTime, settingsLoadTime in TSM.ModuleInfoIterator() do
+			if moduleLoadTime > TIME_WARNING_THRESHOLD_MS then
+				Log.Warn("Loading module %s took %0.2fms", path, moduleLoadTime)
+			end
+			if settingsLoadTime > TIME_WARNING_THRESHOLD_MS then
+				Log.Warn("Loading settings for %s took %0.2fms", path, settingsLoadTime)
+			end
+		end
+	end
 	private.totalInitializeTime = private.totalInitializeTime + debugprofilestop() - eventStartTime
 	return #private.initializeQueue == 0
 end
@@ -63,6 +73,13 @@ function private.DoEnable()
 		end
 		tinsert(private.disableQueue, addon)
 	end
+	if private.totalEnableTime == 0 then
+		for _, path, _, _, gameDataLoadTime in TSM.ModuleInfoIterator() do
+			if (gameDataLoadTime or 0) > TIME_WARNING_THRESHOLD_MS then
+				Log.Warn("Loading game data for %s took %0.2fms", path, gameDataLoadTime)
+			end
+		end
+	end
 	private.totalEnableTime = private.totalEnableTime + debugprofilestop() - eventStartTime
 	return #private.enableQueue == 0
 end
@@ -70,6 +87,26 @@ end
 function private.PlayerLogoutHandler()
 	private.OnDisableHelper()
 	wipe(private.disableQueue)
+end
+
+function private.OnDisableHelper()
+	local disableStartTime = debugprofilestop()
+	for _, addon in ipairs(private.disableQueue) do
+		-- defer the main TSM.OnDisable() call to the very end
+		if addon.OnDisable and addon ~= TSM then
+			local startTime = debugprofilestop()
+			addon.OnDisable()
+			local timeTaken = debugprofilestop() - startTime
+			if timeTaken > TIME_WARNING_THRESHOLD_MS then
+				Log.Warn("OnDisable (%s) took %0.2fms", addon, timeTaken)
+			end
+		end
+	end
+	local totalDisableTime = debugprofilestop() - disableStartTime
+	Analytics.Action("ADDON_DISABLE", floor(totalDisableTime))
+	if TSM.OnDisable then
+		TSM.OnDisable()
+	end
 end
 
 do
@@ -166,31 +203,10 @@ end
 
 function TSM.AddonTestLogout()
 	private.OnDisableHelper()
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.OnDisableHelper()
-	local disableStartTime = debugprofilestop()
-	for _, addon in ipairs(private.disableQueue) do
-		-- defer the main TSM.OnDisable() call to the very end
-		if addon.OnDisable and addon ~= TSM then
-			local startTime = debugprofilestop()
-			addon.OnDisable()
-			local timeTaken = debugprofilestop() - startTime
-			if timeTaken > TIME_WARNING_THRESHOLD_MS then
-				Log.Warn("OnDisable (%s) took %0.2fms", addon, timeTaken)
-			end
+	TSM.DebugLogout()
+	for _, path, _, _, _, moduleUnloadTime in TSM.ModuleInfoIterator() do
+		if moduleUnloadTime > TIME_WARNING_THRESHOLD_MS then
+			Log.Warn("Unloading %s took %0.2fms", path, moduleUnloadTime)
 		end
 	end
-	local totalDisableTime = debugprofilestop() - disableStartTime
-	Analytics.Action("ADDON_DISABLE", floor(totalDisableTime))
-	if TSM.OnDisable then
-		TSM.OnDisable()
-	end
-	TSM.DebugLogout()
 end

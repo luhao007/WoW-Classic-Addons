@@ -31,6 +31,7 @@ local FUTURE_MT = {
 			assert(type(handler) == "function")
 			local context = private.context[self]
 			if script == "OnDone" then
+				assert(context.state ~= "DONE")
 				assert(not context.onDone)
 				context.onDone = handler
 			elseif script == "OnCleanup" then

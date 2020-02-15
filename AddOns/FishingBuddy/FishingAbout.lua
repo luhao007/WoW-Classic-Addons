@@ -127,6 +127,7 @@ credits[FBConstants.ROLE_HELP_BUGS] = {
 	["Globe"] = { "https://www.townlong-yak.com/globe"},
 	["Zwixx"] = { "Help with Classic skill fix" },
 	["PierrotIV"] = { "Help with Classic skill fix" },
+	["TheSpanishinq"] = { "SubZone fishing skill update" },
 };
 
 -- Ideas and suggestions

@@ -115,15 +115,21 @@ end
 function FSMMachine.ProcessEvent(self, event, ...)
 	assert(self._currentState, "FSM not initialized")
 	if self._handlingEvent then
+		Log.RaiseStackLevel()
 		Log.Warn("[%s] %s (ignored - handling event)", self._name, event)
+		Log.LowerStackLevel()
 		return self
 	elseif self._inTransition then
+		Log.RaiseStackLevel()
 		Log.Warn("[%s] %s (ignored - in transition)", self._name, event)
+		Log.LowerStackLevel()
 		return self
 	end
 
 	if self._loggingDisabledCount == 0 then
+		Log.RaiseStackLevel()
 		Log.Info("[%s] %s", self._name, event)
+		Log.LowerStackLevel()
 	end
 	self._handlingEvent = true
 	local currentStateObj = self._stateObjs[self._currentState]
@@ -160,7 +166,11 @@ function FSMMachine._Transition(self, eventResult)
 		local toState = tremove(result, 1)
 		local toStateObj = self._stateObjs[toState]
 		if self._loggingDisabledCount == 0 then
+			Log.RaiseStackLevel()
+			Log.RaiseStackLevel()
 			Log.Info("[%s] %s -> %s", self._name, self._currentState, toState)
+			Log.LowerStackLevel()
+			Log.LowerStackLevel()
 		end
 		assert(toStateObj and currentStateObj:_IsTransitionValid(toState), "invalid transition")
 		self._inTransition = true

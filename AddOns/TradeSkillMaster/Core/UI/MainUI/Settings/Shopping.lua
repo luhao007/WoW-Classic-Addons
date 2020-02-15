@@ -163,6 +163,7 @@ function private.GetShoppingSettingsFrame()
 			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "dropdown")
 				:SetItems(private.sounds, private.soundkeys)
 				:SetSettingInfo(TSM.db.global.sniperOptions, "sniperSound")
+				:SetScript("OnSelectionChanged", private.SoundOnSelectionChanged)
 			)
 			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
 		)
@@ -173,6 +174,10 @@ end
 -- ============================================================================
 -- Local Script Handlers
 -- ============================================================================
+
+function private.SoundOnSelectionChanged(self)
+	Sound.PlaySound(self:GetSelectedItemKey())
+end
 
 function private.CheckCustomPrice(value)
 	local isValid, err = CustomPrice.Validate(value)

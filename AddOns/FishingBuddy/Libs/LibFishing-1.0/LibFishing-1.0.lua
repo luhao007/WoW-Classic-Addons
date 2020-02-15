@@ -1495,6 +1495,8 @@ function FishLib:GetLocSubZone(sname)
 end
 
 local subzoneskills = {
+    ["Bay of Storms"] = 425,
+    ["Hetaera's Clutch"] = 425,
     ["Jademir Lake"] = 425,
     ["Verdantis River"] = 300,
     ["The Forbidding Sea"] = 225,

@@ -50,7 +50,7 @@
     UFP_OP_BuiltinExactEnemyHPPrune = "精简内置数据";
     UFP_OP_BuiltinThreat = "使用内置仇恨高亮";
     UFP_OP_BuiltinThreattext = "显示仇恨百分比";
-    UFP_OP_BuiltinThreatTooltip = "每个小队/团队成员都必须装有至少一个基于LibThreatClassic的插件才能正常计算仇恨";
+    UFP_OP_BuiltinThreatTooltip = "每个小队/团队成员都必须装有至少一个基于LibThreatClassic2的插件才能正常计算仇恨";
     UFP_OP_ColorName = "名字职业染色";
     UFP_OP_Portrait_Indicator = "显示头像内战斗信息";
     UFP_OP_Portrait_3DBG = "显示3D头像背景";
@@ -69,6 +69,7 @@
     UFP_OP_ShortName = "隐藏服务器名";
     UFP_OP_Party_Options = "队伍设定";
     UFP_OP_Party_Origin = "关闭团队风格小队界面";
+    UFP_OP_Party_Pet = "显示队友宠物";
     UFP_OP_Party_Level = "显示等级";
     UFP_OP_Party_HP = "显示生命值";
     UFP_OP_Party_HPPct = "显示为百分比";
@@ -76,7 +77,9 @@
     UFP_OP_Party_Target = "显示队友目标";
     UFP_OP_Party_TargetLite = "简易模式";
     UFP_OP_Party_OnOff = "离线监测";
-    UFP_OP_Party_Hidetools = "隐藏团队工具";
+    UFP_OP_Party_HideRaid = "隐藏系统团队框架并显示小队框架";
+    UFP_OP_Party_EnableRaid  = "重载界面以启用系统团队插件\n（请勿使用Grid2等插件再次禁用！）";
+    -- UFP_OP_Party_Always = "团队中显示小队";
     UFP_OP_Buff = "显示Buff";
     UFP_OP_Filter = "Buff过滤";
     UFP_OP_FilterAll = "所有";
@@ -96,7 +99,7 @@
     UFP_OP_InfoText3 = "欢迎发送邮件到|cFFFFFF99isler@live.com|R提出您的意见和建议。";
     UFP_OP_InfoText4 = "内置冷却计时基于LibClassicDurations。";
     UFP_OP_InfoText5 = "内置敌对目标精确生命值显示基于LibClassicMobHealth-1.0。";
-    UFP_OP_InfoText6 = "内置敌对目标仇恨高亮/百分比显示基于LibThreatClassic-1.0。";
+    UFP_OP_InfoText6 = "内置敌对目标仇恨高亮/百分比显示基于LibThreatClassic2。";
     UFP_OP_Reset = "恢复默认设置";
     UFP_OP_Reload_info = "需重载界面";
     UFP_OP_MinimapButton_Show = "显示小地图设置按钮";
@@ -156,7 +159,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_BuiltinExactEnemyHPPrune = "精簡內置資料";
     UFP_OP_BuiltinThreat = "使用內置仇恨高亮";
     UFP_OP_BuiltinThreattext = "顯示仇恨百分比";
-    UFP_OP_BuiltinThreatTooltip = "每個小隊/團隊成員都必須裝有至少一個基於LibThreatClassic的插件才能正常計算仇恨";
+    UFP_OP_BuiltinThreatTooltip = "每個小隊/團隊成員都必須裝有至少一個基於LibThreatClassic2的插件才能正常計算仇恨";
     UFP_OP_ColorName = "名字職業染色";
     UFP_OP_Portrait_Indicator = "顯示頭像內戰鬥資訊";
     UFP_OP_Portrait_3DBG = "顯示3D頭像背景";
@@ -175,6 +178,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_ShortName = "隱藏伺服器名";
     UFP_OP_Party_Options = "隊伍設定";
     UFP_OP_Party_Origin = "關閉團隊風格小隊介面";
+    UFP_OP_Party_Pet = "顯示隊友寵物";
     UFP_OP_Party_Level = "顯示等級";
     UFP_OP_Party_HP = "顯示生命值";
     UFP_OP_Party_HPPct = "顯示為百分比";
@@ -182,7 +186,9 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_Party_Target = "顯示隊友目標";
     UFP_OP_Party_TargetLite = "簡易模式";
     UFP_OP_Party_OnOff = "離線監測";
-    UFP_OP_Party_Hidetools = "隱藏團隊工具";
+    UFP_OP_Party_HideRaid = "隱藏系统團隊框架并顯示小隊框架";
+    UFP_OP_Party_EnableRaid  = "重載介面以啟用系統團隊插件\n（請勿使用Grid2等插件再次禁用！）";
+    -- UFP_OP_Party_Always = "團隊中顯示小隊";
     UFP_OP_Buff = "顯示Buff";
     UFP_OP_Filter = "Buff過濾";
     UFP_OP_FilterAll = "所有";
@@ -202,7 +208,7 @@ elseif GetLocale() == "zhTW" then
     UFP_OP_InfoText3 = "歡迎發送郵件到|cFFFFFF99isler@live.com|R提出您的意見和建議。";
     UFP_OP_InfoText4 = "內置冷卻計時基於LibClassicDurations。";
     UFP_OP_InfoText5 = "內置敵對目標精確生命值顯示基於LibClassicMobHealth-1.0。";
-    UFP_OP_InfoText6 = "內置敵對目標仇恨高亮/百分比顯示基於LibThreatClassic-1.0。";
+    UFP_OP_InfoText6 = "內置敵對目標仇恨高亮/百分比顯示基於LibThreatClassic2。";
     UFP_OP_Reset = "恢復默認設置";
     UFP_OP_Reload_info = "需重載介面";
     UFP_OP_MinimapButton_Show = "顯示小地圖設置按鈕";
@@ -262,7 +268,7 @@ else
     UFP_OP_BuiltinExactEnemyHPPrune = "Prune built-in data";
     UFP_OP_BuiltinThreat = "Built-in Threat highlight";
     UFP_OP_BuiltinThreattext = "Built-in Threat percent";
-    UFP_OP_BuiltinThreatTooltip = "Each party/raid member should use at least one LibThreatClassic based addon for threat calculation";
+    UFP_OP_BuiltinThreatTooltip = "Each party/raid member should use at least one LibThreatClassic2 based addon for threat calculation";
     UFP_OP_ColorName = "Class colored name";
     UFP_OP_Portrait_Indicator = "Portrait combat indicator";
     UFP_OP_Portrait_3DBG = "Portrait background";
@@ -281,6 +287,7 @@ else
     UFP_OP_ShortName = "Hide realm name";
     UFP_OP_Party_Options = "Party Options";
     UFP_OP_Party_Origin = "Disable raid-style party frames";
+    UFP_OP_Party_Pet = "Show party pet";
     UFP_OP_Party_Level = "Party member level";
     UFP_OP_Party_HP = "Party member HP";
     UFP_OP_Party_HPPct = "Show as percent";
@@ -288,7 +295,9 @@ else
     UFP_OP_Party_Target = "Enable party target";
     UFP_OP_Party_TargetLite = "Lite mode";
     UFP_OP_Party_OnOff = "Offline detection";
-    UFP_OP_Party_Hidetools = "Hide raid tools";
+    UFP_OP_Party_HideRaid = "Hide blizzard raid frame and show party frame";
+    UFP_OP_Party_EnableRaid  = "Reload to enbale blizzard raid addons\n(DONOT disbale again with Grid2, etc.)";
+    -- UFP_OP_Party_Always = "Show party in raid";
     UFP_OP_Buff = "Party member buff";
     UFP_OP_Filter = "Buff filter";
     UFP_OP_FilterAll = "All";
@@ -308,7 +317,7 @@ else
     UFP_OP_InfoText3 = "Contact: |cFFFFFF99isler@live.com|R";
     UFP_OP_InfoText4 = "Built-in cooldown effect is powered by LibClassicDurations.";
     UFP_OP_InfoText5 = "Built-in exact HP numbers is based on LibClassicMobHealth-1.0.";
-    UFP_OP_InfoText6 = "Built-in threat highlight and percent are powered by LibThreatClassic-1.0.";
+    UFP_OP_InfoText6 = "Built-in threat highlight and percent are powered by LibThreatClassic2.";
     UFP_OP_Reset = "Restore defaults";
     UFP_OP_Reload_info = "Reload your user interface.";
     UFP_OP_MinimapButton_Show = "Enable minimap button";

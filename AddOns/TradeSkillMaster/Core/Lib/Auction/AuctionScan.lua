@@ -15,6 +15,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Vararg = TSM.Include("Util.Vararg")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local Math = TSM.Include("Util.Math")
 local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -630,43 +631,10 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 			local itemKey = results[i].itemKey
 			local minPrice = results[i].minPrice
 			local totalQuantity = results[i].totalQuantity
-			local baseItemString = ItemString.GetBaseFromItemKey(itemKey)
-			if filter:_IsItemFiltered(baseItemString, nil, nil, nil, nil, totalQuantity, minPrice) or not filter:_ShouldScanItem(baseItemString, nil, minPrice) then
+			local baseItemString, itemString, itemName, itemLevel, quality = private.GetInfoFromItemKey(itemKey)
+			itemLevel = itemLevel or (itemKey.battlePetSpeciesID == 0 and itemKey.itemLevel) or nil
+			if filter:_IsItemFiltered(baseItemString, itemString, itemLevel, quality, itemName, totalQuantity, minPrice) or not filter:_ShouldScanItem(baseItemString, itemString, minPrice) then
 				tremove(results, i)
-			else
-				local itemKeyInfo = private.GetItemKeyInfo(auctionScan, itemKey)
-				if not itemKeyInfo then
-					Log.Info("Stopping cancelled scan")
-					return false
-				end
-				local itemLevel = nil
-				if not auctionScan._ignoreItemLevel then
-					itemLevel = itemKeyInfo.battlePetLink and ItemInfo.GetItemLevel(itemKeyInfo.battlePetLink) or itemKey.itemLevel
-					if itemLevel == 0 then
-						itemLevel = nil
-					end
-					if not itemLevel and not ItemString.HasNonBase(baseItemString) then
-						while not ItemInfo.GetItemLevel(baseItemString) do
-							Threading.Yield(true)
-						end
-						itemLevel = ItemInfo.GetItemLevel(baseItemString)
-					end
-				end
-				local itemString = nil
-				if itemKeyInfo.battlePetLink then
-					itemString = ItemString.Get(itemKeyInfo.battlePetLink)
-				elseif not ItemString.HasNonBase(baseItemString) then
-					itemString = baseItemString
-				end
-				local itemName = itemKeyInfo.itemName
-				local quality = itemKeyInfo.quality
-				assert(baseItemString and minPrice and itemName and quality and totalQuantity)
-				while not ItemInfo.GetMinLevel(baseItemString) do
-					Threading.Yield(true)
-				end
-				if filter:_IsItemFiltered(baseItemString, itemString, itemLevel, quality, itemName, totalQuantity, minPrice) or not filter:_ShouldScanItem(baseItemString, itemString, minPrice) then
-					tremove(results, i)
-				end
 			end
 			Threading.Yield()
 		end
@@ -679,6 +647,8 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 		local numInsertedRows = 0
 		for i = 1, #results do
 			local itemKey = results[i].itemKey
+			local minPrice = results[i].minPrice
+			local totalQuantity = results[i].totalQuantity
 
 			-- check if the item is a commodity or not
 			local isCommodity = ItemInfo.IsCommodity(itemKey.itemID)
@@ -691,7 +661,7 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 				end
 			end
 
-			local success, scanNumInsertedRows = private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, false)
+			local success, scanNumInsertedRows = private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, false, minPrice, totalQuantity)
 			if not success then
 				return false
 			end
@@ -706,7 +676,38 @@ function private.ScanAuctionPageThreaded(auctionScan, filter)
 	end
 end
 
-function private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, sellQuery)
+function private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, sellQuery, minPrice, totalQuantity)
+	local itemKeyInfo = private.GetItemKeyInfo(auctionScan, itemKey)
+	if not itemKeyInfo then
+		Log.Info("Stopping cancelled scan")
+		return false
+	end
+
+	-- if there's a minPrice and totalQuantity passed, check if we can skip scanning this tiem
+	if minPrice and totalQuantity then
+		local baseItemString, itemString, itemName, itemLevel, quality = private.GetInfoFromItemKey(itemKey)
+		if not auctionScan._ignoreItemLevel then
+			local newItemLevel = itemKeyInfo.battlePetLink and ItemInfo.GetItemLevel(itemKeyInfo.battlePetLink) or itemKey.itemLevel
+			if newItemLevel == 0 then
+				newItemLevel = nil
+			end
+			assert(not itemLevel or not newItemLevel or newItemLevel == itemLevel, format("Invalid level (%s, %s, %s, %s)", baseItemString, itemKeyInfo.battlePetLink or "?", tostring(itemLevel), tostring(newItemLevel)))
+			itemLevel = itemLevel or newItemLevel
+		end
+		if not itemString and itemKeyInfo.battlePetLink then
+			itemString = ItemString.Get(itemKeyInfo.battlePetLink)
+		end
+		assert(not itemName or itemName == itemKeyInfo.itemName, format("Invalid item name (%s, %s)", tostring(itemName), tostring(itemKeyInfo.itemName)))
+		assert(not quality or quality == itemKeyInfo.quality, format("Invalid quality (%s, %s)", tostring(quality), tostring(itemKeyInfo.quality)))
+		itemName = itemName or itemKeyInfo.itemName
+		quality = quality or itemKeyInfo.quality
+		assert(baseItemString and itemName and quality and totalQuantity)
+		if filter:_IsItemFiltered(baseItemString, itemString, itemLevel, quality, itemName, totalQuantity, minPrice) or not filter:_ShouldScanItem(baseItemString, itemString, minPrice) then
+			-- don't need to scan this item
+			return true, 0
+		end
+	end
+
 	-- send the query for this item
 	if not private.SendSearchQuery83(itemKey, auctionScan, isCommodity, sellQuery) then
 		return false
@@ -718,6 +719,35 @@ function private.ScanItemKey83(auctionScan, filter, isCommodity, itemKey, sellQu
 		return false
 	end
 	return true, scanNumInsertedRows
+end
+
+function private.GetInfoFromItemKey(itemKey)
+	local baseItemString = ItemString.GetBaseFromItemKey(itemKey)
+	if itemKey.battlePetSpeciesID ~= 0 or itemKey.itemSuffix ~= 0 or itemKey.itemLevel ~= 0 then
+		while ItemInfo.CanHaveVariations(baseItemString) == nil do
+			Threading.Yield(true)
+		end
+		if ItemInfo.CanHaveVariations(baseItemString) then
+			return baseItemString, nil, nil, nil, nil
+		end
+	end
+	while not ItemInfo.GetName(baseItemString) do
+		Threading.Yield(true)
+	end
+	local itemName = ItemInfo.GetName(baseItemString)
+	while not ItemInfo.GetItemLevel(baseItemString) do
+		Threading.Yield(true)
+	end
+	local itemLevel = ItemInfo.GetItemLevel(baseItemString)
+	while not ItemInfo.GetQuality(baseItemString) do
+		Threading.Yield(true)
+	end
+	local quality = ItemInfo.GetQuality(baseItemString)
+	-- don't need to return the minLevel, but need to ensure it's cached
+	while not ItemInfo.GetMinLevel(baseItemString) do
+		Threading.Yield(true)
+	end
+	return baseItemString, baseItemString, itemName, itemLevel, quality
 end
 
 function private.ProcessScanResultsThreaded(auctionScan, filter, isCommodity, itemKey)
@@ -807,8 +837,8 @@ function private.ProcessAuctionRows(auctionScan, filter, index, maxIndex, isComm
 
 	local numInsertedRows = 0
 	if filter:_IsSniper() then
-		-- don't store any rows for failed sniper queries
-		if index <= maxIndex then
+		-- don't store any rows for failed sniper queries on Classic (on retail we'll retry)
+		if index <= maxIndex and TSM.IsWowClassic() then
 			Log.Err("Failed to validate sniper results")
 			auctionScan._db:BulkInsertAbort()
 			return nil
@@ -931,6 +961,7 @@ function private.ScanQueryThreaded(auctionScan)
 	-- loop through each filter to perform
 	auctionScan:_SetFiltersScanned(0)
 	auctionScan._cancelled = false
+	AuctionHouseWrapper.GetAndResetTotalHookedTime()
 	local allSuccess = true
 	for i, filter in ipairs(auctionScan._filters) do
 		if TSM.IsWowClassic() then
@@ -985,7 +1016,12 @@ function private.ScanQueryThreaded(auctionScan)
 			break
 		end
 	end
-	if not allSuccess then
+	if allSuccess then
+		local hookedTime = AuctionHouseWrapper.GetAndResetTotalHookedTime()
+		if hookedTime > 1 then
+			Log.PrintfUser(L["Scan was slowed down by %s seconds by other AH addons."], Math.Round(hookedTime, 0.1))
+		end
+	else
 		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
 	end
 end
@@ -1313,8 +1349,7 @@ function private.SendSearchQuery83(itemKey, auctionScan, isCommodity, sellQuery)
 	-- send the query for this item
 	while true do
 		-- if the client doesn't have the itemKeyInfo cached, our search query will fail, so request that first
-		local itemKeyInfo = private.GetItemKeyInfo(auctionScan, itemKey)
-		if not itemKeyInfo then
+		if not private.GetItemKeyInfo(auctionScan, itemKey) then
 			Log.Info("Stopping cancelled scan")
 			return false
 		end

@@ -15,14 +15,18 @@ local Event = TSM.Include("Util.Event")
 local Table = TSM.Include("Util.Table")
 local Future = TSM.Include("Util.Future")
 local Vararg = TSM.Include("Util.Vararg")
+local Wow = TSM.Include("Util.Wow")
 local APIWrapper = LibTSMClass.DefineClass("APIWrapper")
 local private = {
 	wrappers = {},
 	events = {},
 	argsTemp = {},
+	sortsPartsTemp = {},
 	itemKeyPartsTemp = {},
 	searchQueryAPITimes = {},
 	isAHOpen = false,
+	lastResponseReceived = 0,
+	totalHookedTime = 0,
 }
 local API_TIMEOUT = 5
 local SEARCH_QUERY_THROTTLE_INTERVAL = 60
@@ -52,14 +56,17 @@ local API_EVENT_INFO = {
 	},
 	RequestMoreBrowseResults = {
 		AUCTION_HOUSE_BROWSE_RESULTS_ADDED = { result = true },
+		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
 	},
 	SendSearchQuery = {
 		COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
 		ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
+		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
 	},
 	SendSellSearchQuery = {
 		COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
 		ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
+		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
 	},
 	RequestMoreCommoditySearchResults = {
 		COMMODITY_SEARCH_RESULTS_ADDED = { result = true },
@@ -146,7 +153,7 @@ local API_EVENT_INFO = {
 -- ============================================================================
 
 AuctionHouseWrapper:OnModuleLoad(function()
-	if TSM.IsWowClassic() then
+	if TSM.IsWowClassic() or not private.CheckClientBuild() then
 		return
 	end
 
@@ -166,17 +173,16 @@ AuctionHouseWrapper:OnModuleLoad(function()
 		tinsert(private.searchQueryAPITimes, GetTime())
 	end)
 
-	local clientBuild = select(2, GetBuildInfo())
-	if tonumber(clientBuild) >= 33237 then
-		-- extra events that are interesting to log
-		Event.Register("AUCTION_HOUSE_NEW_RESULTS_RECEIVED", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_SENT", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY", private.UnusedEventHandler)
-		Event.Register("AUCTION_HOUSE_THROTTLED_SYSTEM_READY", private.UnusedEventHandler)
-	end
+	-- general events
+	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED", private.ResponseReceivedHandler)
+
+	-- extra events that are interesting to log
+	Event.Register("AUCTION_HOUSE_NEW_RESULTS_RECEIVED", private.UnusedEventHandler)
+	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED", private.UnusedEventHandler)
+	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED", private.UnusedEventHandler)
+	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_SENT", private.UnusedEventHandler)
+	Event.Register("AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY", private.UnusedEventHandler)
+	Event.Register("AUCTION_HOUSE_THROTTLED_SYSTEM_READY", private.UnusedEventHandler)
 end)
 
 
@@ -185,9 +191,15 @@ end)
 -- Module Functions
 -- ============================================================================
 
+function AuctionHouseWrapper.GetAndResetTotalHookedTime()
+	local total = private.totalHookedTime
+	private.totalHookedTime = 0
+	return total
+end
+
 function AuctionHouseWrapper.SendBrowseQuery(query)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.SendBrowseQuery:Start(query)
@@ -195,7 +207,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreBrowseResults()
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreBrowseResults:Start()
@@ -203,7 +215,7 @@ end
 
 function AuctionHouseWrapper.SendSearchQuery(itemKey, isSell)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	-- remove times which are beyond the throttle interval
@@ -228,7 +240,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreCommoditySearchResults(itemId)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreCommoditySearchResults:Start(itemId)
@@ -236,7 +248,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreItemSearchResults(itemKey)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreItemSearchResults:Start(itemKey)
@@ -244,7 +256,7 @@ end
 
 function AuctionHouseWrapper.QueryOwnedAuctions(sorts)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.QueryOwnedAuctions:Start(sorts)
@@ -252,7 +264,7 @@ end
 
 function AuctionHouseWrapper.GetItemKeyInfo(itemKey, restrictQualityToFilter)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.GetItemKeyInfo:Start(itemKey, restrictQualityToFilter)
@@ -260,7 +272,7 @@ end
 
 function AuctionHouseWrapper.CancelAuction(auctionId)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.CancelAuction:Start(auctionId)
@@ -268,7 +280,7 @@ end
 
 function AuctionHouseWrapper.StartCommoditiesPurchase(itemId, quantity, itemBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.StartCommoditiesPurchase:Start(itemId, quantity, itemBuyout)
@@ -276,6 +288,9 @@ end
 
 function AuctionHouseWrapper.ConfirmCommoditiesPurchase(itemId, quantity)
 	assert(not TSM.IsWowClassic())
+	if not private.CheckClientBuild() then
+		return
+	end
 	-- TODO: re-enable this once we don't try to start and confirm in the same frame
 	-- if not private.CheckAllIdle() then
 	-- 	return
@@ -285,7 +300,7 @@ end
 
 function AuctionHouseWrapper.PlaceBid(auctionId, bidBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PlaceBid:Start(auctionId, bidBuyout)
@@ -293,7 +308,7 @@ end
 
 function AuctionHouseWrapper.PostItem(itemLocation, postTime, stackSize, bid, buyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PostItem:Start(itemLocation, postTime, stackSize, bid, buyout)
@@ -301,7 +316,7 @@ end
 
 function AuctionHouseWrapper.PostCommodity(itemLocation, postTime, stackSize, itemBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
+	if not private.CheckClientBuild() or not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PostCommodity:Start(itemLocation, postTime, stackSize, itemBuyout)
@@ -317,6 +332,7 @@ function APIWrapper.__init(self, name)
 	self._name = name
 	self._args = {}
 	self._state = "IDLE"
+	self._hookedTime = nil
 	self._future = Future.New(self._name.."_FUTURE")
 	self._future:SetScript("OnCleanup", function()
 		if self._state == "PENDING_REQUESTED" then
@@ -343,7 +359,7 @@ function APIWrapper.__init(self, name)
 				Log.Info("%s(%s)", self._name, private.ArgsToStr(...))
 			end
 			for _, wrapper in pairs(private.wrappers) do
-				if wrapper ~= self then
+				if wrapper ~= self and GetTime() ~= private.lastResponseReceived then
 					wrapper:CancelIfPending()
 				end
 			end
@@ -397,6 +413,7 @@ function APIWrapper._HandleAPICall(self, ...)
 			end
 		end
 		self._state = "PENDING_HOOKED"
+		self._hookedTime = GetTime()
 	elseif self._state == "STARTING" then
 		self._future:Start()
 		if INFO_APIS[self._name] then
@@ -440,6 +457,11 @@ function APIWrapper._ValidateEvent(self, eventName, ...)
 		info = API_EVENT_INFO[self._name][eventName]
 	end
 	assert(info)
+	if info.timeoutChange then
+		Delay.Cancel(self._name.."_TIMEOUT")
+		Delay.AfterTime(self._name.."_TIMEOUT", info.timeoutChange, self._timeoutWrapper)
+		return false
+	end
 	local eventIsValid, result = true, info.result
 	if info.rawFilterFunc then
 		if not info.rawFilterFunc(self._args, ...) then
@@ -481,6 +503,8 @@ end
 
 function APIWrapper._Done(self, result)
 	wipe(self._args)
+	local hookedTime = self._hookedTime
+	self._hookedTime = nil
 	Delay.Cancel(self._name.."_TIMEOUT")
 	if self._state == "PENDING_REQUESTED" then
 		self._state = "DONE"
@@ -488,6 +512,9 @@ function APIWrapper._Done(self, result)
 		self._future:Done(result)
 	elseif self._state == "PENDING_HOOKED" then
 		self._state = "IDLE"
+		if hookedTime then
+			private.totalHookedTime = private.totalHookedTime + GetTime() - hookedTime
+		end
 	else
 		error("Unexpected state: "..self._state)
 	end
@@ -511,7 +538,7 @@ function private.AuctionHouseClosedHandler()
 end
 
 function private.ItemKeyToStr(itemKey)
-	wipe(private.itemKeyPartsTemp)
+	assert(#private.itemKeyPartsTemp == 0)
 	if itemKey.itemID ~= 0 then
 		tinsert(private.itemKeyPartsTemp, "itemID="..itemKey.itemID)
 	end
@@ -524,45 +551,47 @@ function private.ItemKeyToStr(itemKey)
 	if itemKey.battlePetSpeciesID ~= 0 then
 		tinsert(private.itemKeyPartsTemp, "battlePetSpeciesID="..itemKey.battlePetSpeciesID)
 	end
-	return format("{%s}", table.concat(private.itemKeyPartsTemp, ","))
+	local result = format("{%s}", table.concat(private.itemKeyPartsTemp, ","))
+	wipe(private.itemKeyPartsTemp)
+	return result
+end
+
+function private.SortsToStr(sorts)
+	assert(#private.sortsPartsTemp == 0)
+	for _, sort in ipairs(sorts) do
+		local name = Table.KeyByValue(Enum.AuctionHouseSortOrder, sort.sortOrder) or "?"
+		tinsert(private.sortsPartsTemp, format("%s%s", sort.reverseSort and "-" or "", name))
+	end
+	local result = format("{%s}", table.concat(private.sortsPartsTemp, ","))
+	wipe(private.sortsPartsTemp)
+	return result
+end
+
+function private.ArgToStr(arg)
+	if type(arg) == "table" then
+		local count = Table.Count(arg)
+		if arg.itemID and arg.itemSuffix then
+			return private.ItemKeyToStr(arg)
+		elseif arg.searchString then
+			return format("{searchString=\"%s\", sorts=%s, minLevel=%s, maxLevel=%s, filters=%s, itemClassFilters=%s}", arg.searchString, private.SortsToStr(arg.sorts), private.ArgToStr(arg.minLevel), private.ArgToStr(arg.maxLevel), private.ArgToStr(arg.filters), private.ArgToStr(arg.itemClassFilters))
+		elseif arg.IsBagAndSlot then
+			return format("{<ItemLocation:(%d,%d)>}", arg:GetBagAndSlot())
+		elseif count == 0 then
+			return "{}"
+		elseif count == #arg then
+			return format("{<%d items>}", count)
+		else
+			return "{...}"
+		end
+	else
+		return tostring(arg)
+	end
 end
 
 function private.ArgsToStr(...)
 	assert(#private.argsTemp == 0)
 	for _, arg in Vararg.Iterator(...) do
-		if type(arg) == "table" then
-			local count = Table.Count(arg)
-			if arg.itemID and arg.itemSuffix then
-				wipe(private.itemKeyPartsTemp)
-				if arg.itemID ~= 0 then
-					tinsert(private.itemKeyPartsTemp, "itemID="..arg.itemID)
-				end
-				if arg.itemLevel ~= 0 then
-					tinsert(private.itemKeyPartsTemp, "itemLevel="..arg.itemLevel)
-				end
-				if arg.itemSuffix ~= 0 then
-					tinsert(private.itemKeyPartsTemp, "itemSuffix="..arg.itemSuffix)
-				end
-				if arg.battlePetSpeciesID ~= 0 then
-					tinsert(private.itemKeyPartsTemp, "battlePetSpeciesID="..arg.battlePetSpeciesID)
-				end
-				local itemKeyStr = format("{%s}", table.concat(private.itemKeyPartsTemp, ","))
-				wipe(private.itemKeyPartsTemp)
-				tinsert(private.argsTemp, itemKeyStr)
-			elseif arg.searchString then
-				tinsert(private.argsTemp, format("{searchString=\"%s\", ...}", arg.searchString))
-			elseif arg.IsBagAndSlot then
-				tinsert(private.argsTemp, format("{<ItemLocation:(%d,%d)>}", arg:GetBagAndSlot()))
-			elseif count == 0 then
-				tinsert(private.argsTemp, "{}")
-			elseif count == #arg then
-				tinsert(private.argsTemp, format("{<%d items>}", count))
-			else
-				tinsert(private.argsTemp, "{...}")
-			end
-		else
-			tinsert(private.argsTemp, tostring(arg))
-		end
+		tinsert(private.argsTemp, private.ArgToStr(arg))
 	end
 	local result = table.concat(private.argsTemp, ",")
 	wipe(private.argsTemp)
@@ -599,6 +628,11 @@ function private.EventHandler(eventName, ...)
 	end
 end
 
+function private.ResponseReceivedHandler(eventName, ...)
+	Log.Info("%s (%s)", eventName, private.ArgsToStr(...))
+	private.lastResponseReceived = GetTime()
+end
+
 function private.UnusedEventHandler(eventName, ...)
 	Log.Info("%s (%s)", eventName, private.ArgsToStr(...))
 end
@@ -618,4 +652,12 @@ function private.CheckAllIdle()
 		end
 	end
 	return true
+end
+
+function private.CheckClientBuild()
+	if tonumber((select(2, GetBuildInfo()))) >= 33237 then
+		return true
+	end
+	Wow.ShowBasicMessage("TSM requires a newer version of the WoW client to function propertly. Close WoW and update it through the Blizzard launcher.")
+	return false
 end

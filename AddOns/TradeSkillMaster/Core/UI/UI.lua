@@ -36,6 +36,7 @@ local private = {
 		task_list = "",
 		vendoring = "",
 	},
+	itemLinkedCallbacks = {},
 }
 local TIME_LEFT_STRINGS = nil
 do
@@ -486,7 +487,7 @@ function TSM.UI.ShowTooltip(parent, tooltip)
 			GameTooltip:SetHyperlink("enchant:"..tooltip)
 		end
 	elseif type(tooltip) == "string" and (strfind(tooltip, "\124Hitem:") or strfind(tooltip, "\124Hbattlepet:") or ItemString.IsItem(tooltip) or ItemString.IsPet(tooltip)) then
-		TSM.Wow.SafeTooltipLink(tooltip)
+		private.SafeTooltipLink(tooltip)
 	else
 		for _, line in Vararg.Iterator(strsplit("\n", tooltip)) do
 			local textLeft, textRight = strsplit(TSM.CONST.TOOLTIP_SEP, line)
@@ -530,4 +531,65 @@ function TSM.UI.AnalyticsRecordClose(uiName)
 	end
 	Analytics.Action("UI_NAVIGATION", private.analyticsPath[uiName], "")
 	private.analyticsPath[uiName] = ""
+end
+
+function TSM.UI.RegisterItemLinkedCallback(callback)
+	tinsert(private.itemLinkedCallbacks, callback)
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.SafeTooltipLink(link)
+	if strmatch(link, "p:") then
+		link = ItemInfo.GetLink(link)
+	end
+	if strmatch(link, "battlepet") then
+		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
+		BattlePetToolTip_Show(tonumber(speciesID), tonumber(level) or 0, tonumber(breedQuality) or 0, tonumber(maxHealth) or 0, tonumber(power) or 0, tonumber(speed) or 0, gsub(gsub(link, "^(.*)%[", ""), "%](.*)$", ""))
+	elseif strmatch(link, "currency") then
+		local currencyID = strmatch(link, "currency:(%d+)")
+		GameTooltip:SetCurrencyByID(currencyID)
+	else
+		GameTooltip:SetHyperlink(ItemInfo.GetLink(link))
+	end
+end
+
+function private.HandleItemLinked(name, itemLink)
+	for _, callback in ipairs(private.itemLinkedCallbacks) do
+		if callback(name, itemLink) then
+			return true
+		end
+	end
+end
+
+
+
+-- ============================================================================
+-- Item Link Setup
+-- ============================================================================
+
+do
+	local function HandleShiftClickItem(origFunc, itemLink)
+		local putIntoChat = origFunc(itemLink)
+		if putIntoChat then
+			return putIntoChat
+		end
+		local name = ItemInfo.GetName(itemLink)
+		if not name or not private.HandleItemLinked(name, itemLink) then
+			return putIntoChat
+		end
+		return true
+	end
+	local origHandleModifiedItemClick = HandleModifiedItemClick
+	HandleModifiedItemClick = function(link)
+		return HandleShiftClickItem(origHandleModifiedItemClick, link)
+	end
+	local origChatEdit_InsertLink = ChatEdit_InsertLink
+	ChatEdit_InsertLink = function(link)
+		return HandleShiftClickItem(origChatEdit_InsertLink, link)
+	end
 end

@@ -17,6 +17,7 @@ local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local Wow = TSM.Include("Util.Wow")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -539,7 +540,7 @@ function private.OnAuctionHouseShow()
 		timeout = 0,
 		OnAccept = AuctionDB.RunScan,
 	}
-	TSM.Wow.ShowStaticPopupDialog("TSM_AUCTIONDB_SCAN")
+	Wow.ShowStaticPopupDialog("TSM_AUCTIONDB_SCAN")
 end
 
 function private.OnAuctionHouseClosed()

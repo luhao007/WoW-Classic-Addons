@@ -30,7 +30,7 @@ DBM_CORE_LOOT_SPEC_REMINDER			= "현재 전문화는 %s입니다. 현재 지정�
 
 DBM_CORE_BIGWIGS_ICON_CONFLICT		= "DBM이 BigWigs와 DBM 모두 공격대 징표 기능을 사용하고 있음을 감지했습니다. 충돌을 방지하기 위해 공대장이 두 애드온중 하나의 징표 설정을 비활성화해야 합니다."
 
-DBM_CORE_MOD_AVAILABLE				= "이 지역에서 %s|1을;를; 사용할 수 있습니다. Curse/Twitch, WoWI, deadlybossmods.com에서 다운로드 받으실 수 있습니다."
+DBM_CORE_MOD_AVAILABLE				= "이 지역에서 %s|1을;를; 사용할 수 있습니다. Curse/Twitch, WoWI에서 다운로드 받으실 수 있습니다."
 
 DBM_CORE_COMBAT_STARTED				= "%s 전투 시작. 행운을 빕니다! :)";
 DBM_CORE_COMBAT_STARTED_IN_PROGRESS	= "%s 전투 진행 도중 참가했습니다. 행운을 빕니다! :)"
@@ -306,6 +306,7 @@ DBM_CORE_AUTO_ANNOUNCE_TEXTS.adds			= "%s 남은 수: %%d"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.cast			= "%s 시전: %.1f초"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.soon			= "곧 %s"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.sooncount		= "곧 %s (%%s)"
+DBM_CORE_AUTO_ANNOUNCE_TEXTS.countdown		= "%s %%d초 전"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.prewarn		= "%2$s 후 %1$s"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.bait		= "곧 %s - 위치 유도"
 DBM_CORE_AUTO_ANNOUNCE_TEXTS.stage			= "%s단계"
@@ -325,6 +326,7 @@ DBM_CORE_AUTO_ANNOUNCE_OPTIONS.adds			= "$spell:%s의 남은 수 알림 보기"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.cast			= "$spell:%s 시전시 경고 보기"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.soon		= prewarnOption
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.sooncount	= prewarnOption
+DBM_CORE_AUTO_ANNOUNCE_OPTIONS.countdown	= "$spell:%s의 초읽기 사전 경고 보기"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.prewarn 		= prewarnOption
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.bait		= "$spell:%s 사전 경고 보기 (위치 유도)"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.stage		= "%s단계 알림"
@@ -426,13 +428,18 @@ DBM_CORE_AUTO_TIMER_TEXTS.cd				= "%s 쿨타임"
 DBM_CORE_AUTO_TIMER_TEXTS.cdcount		= "%s 쿨타임 (%%s)"
 DBM_CORE_AUTO_TIMER_TEXTS.cdsource		= "%s 쿨타임: >%%s<"
 DBM_CORE_AUTO_TIMER_TEXTS.cdspecial		= "특수 능력 쿨타임"
+DBM_CORE_AUTO_TIMER_TEXTS.cdspecialshort	= "~특수 능력"
 DBM_CORE_AUTO_TIMER_TEXTS.next			= "다음 %s"
 DBM_CORE_AUTO_TIMER_TEXTS.nextcount		= "다음 %s (%%s)"
 DBM_CORE_AUTO_TIMER_TEXTS.nextsource		= "다음 %s: %%s"
 DBM_CORE_AUTO_TIMER_TEXTS.nextspecial		= "다음 특수 능력"
+DBM_CORE_AUTO_TIMER_TEXTS.nextspecialshort	= "특수 능력"
 DBM_CORE_AUTO_TIMER_TEXTS.stage			= "다음 단계"
+DBM_CORE_AUTO_TIMER_TEXTS.stageshort		= "단계"
 DBM_CORE_AUTO_TIMER_TEXTS.adds			= "쫄 등장"
+DBM_CORE_AUTO_TIMER_TEXTS.addsshort		= "쫄"
 DBM_CORE_AUTO_TIMER_TEXTS.addscustom		= "쫄 등장 (%%s)"
+DBM_CORE_AUTO_TIMER_TEXTS.addscustomshort	= "쫄 (%%s)"
 DBM_CORE_AUTO_TIMER_TEXTS.roleplay		= "롤플레이"
 
 DBM_CORE_AUTO_TIMER_OPTIONS.target		= "$spell:%s 디버프 타이머 바 보기"
