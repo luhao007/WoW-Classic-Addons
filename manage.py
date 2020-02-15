@@ -49,8 +49,8 @@ def get_notes(addon):
     return m.get('Notes')
 
 def manage(verbose=False):
-    for addon in os.listdir('./Addons'):
-        path = './Addons/{0}/{0}.toc'.format(addon)
+    for addon in os.listdir('AddOns'):
+        path = os.path.join('Addons', addon, '{0}.toc'.format(addon))
 
         if verbose:
             print('Processing {}...'.format(path), end='')
@@ -89,7 +89,4 @@ def main():
     print('All done.')
 
 if __name__ == '__main__':
-    # main()
-    print(os.listdir('.'))
-    print(os.path.join(os.getcwd(), 'Addons'))
-    print(os.listdir(os.path.join(os.getcwd(), 'Addons')))
+    main()
