@@ -91,4 +91,5 @@ def main():
 if __name__ == '__main__':
     # main()
     print(os.listdir('.'))
-    print(os.listdir('.\Addons'))
+    print(os.path.join('.', 'Addons'))
+    print(os.listdir(os.path.join('.', 'Addons')))
