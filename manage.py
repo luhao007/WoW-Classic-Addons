@@ -50,7 +50,7 @@ def get_notes(addon):
 
 def manage(verbose=False):
     for addon in os.listdir('AddOns'):
-        path = os.path.join('Addons', addon, '{0}.toc'.format(addon))
+        path = os.path.join('AddOns', addon, '{0}.toc'.format(addon))
 
         if verbose:
             print('Processing {}...'.format(path), end='')
@@ -89,8 +89,4 @@ def main():
     print('All done.')
 
 if __name__ == '__main__':
-    # main()
-    print(os.listdir('AddOns/ItemRackOptions'))
-    with open(os.path.join(os.getcwd(), 'Addons/ItemRackOptions/ItemRackOptions.toc'), 'rb') as f:
-        print(f.readlines())
-    
+    main()
