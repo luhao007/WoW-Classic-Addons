@@ -49,8 +49,8 @@ def get_notes(addon):
     return m.get('Notes')
 
 def manage(verbose=False):
-    for addon in os.listdir('Addons'):
-        path = 'Addons/{0}/{0}.toc'.format(addon)
+    for addon in os.listdir('./Addons'):
+        path = './Addons/{0}/{0}.toc'.format(addon)
 
         if verbose:
             print('Processing {}...'.format(path), end='')
