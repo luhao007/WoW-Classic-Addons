@@ -1,10 +1,14 @@
 ## Interface: 11303
-## Title: Grail |cff69ccf0Quests |r|cffeda55fClassic|r|cff69ccf0 zhCN|r
 ## Author: Scott M Harrison
-## Notes: Provides localized zhCN quest names to Grail for Classic
 ## Version: 33302
 ## Dependencies: Grail
 ## LoadOnDemand: 1
+
+## Title: Grail |cff69ccf0Quests |r|cffeda55fClassic|r|cff69ccf0 zhCN|r
+## Notes: Provides localized zhCN quest names to Grail for Classic
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库 |cFF69CCF0任务|r|r |cFF22B14C中文|r
+## Notes-zhCN: 怀旧服本地数据库的中文本地化模块
+
 
 Grail-Quests-_classic_-zhCN.lua
 Grail-Quests-_classic_-description-zhCN.lua

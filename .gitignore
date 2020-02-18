@@ -2,3 +2,5 @@ __pycache__/
 .vscode/
 Temp/
 *.7z
+*.rar
+*.zip
