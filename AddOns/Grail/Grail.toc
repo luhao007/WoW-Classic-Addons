@@ -1,13 +1,9 @@
 ## Interface: 11303
+## Title: Grail
 ## Author: Scott M Harrison
-## Version: 107
+## Notes: Knows about quests
+## Version: 108
 ## SavedVariables: GrailDatabase
 ## SavedVariablesPerCharacter: GrailDatabasePlayer
-
-## Title: Grail
-## Notes: Knows about quests
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFFFFE00AGrail|r
-## Notes-zhCN: 本地数据库，包含任务，成就，NPC等数据
-
 
 Grail.lua
