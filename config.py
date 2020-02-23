@@ -1498,6 +1498,11 @@ MAPPING = {
         'Title-sub': '设置',
         'Category': '战斗'
     },
+    'ThreatClassic2': {
+        'Title-cn': '仇恨统计',
+        'Notes': '统计目标仇恨，需队友也开启同样插件才能取得仇恨数据',
+        'Category': '战斗'
+    },
     'TinyInspect': {
         'Title-cn': '装备观察',
         'Notes': '独立的装备列表',

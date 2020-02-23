@@ -44,7 +44,8 @@ end
 FishingBuddy.GetDefault = GetDefault;
 
 local function OptionGetSetting(setting)
-    info = GetSettingOption(setting)
+    local info = GetSettingOption(setting)
+    local val = nil
     if info then
         if ( info.global ) then
             val = FishingBuddy.GlobalGetSetting(setting);
@@ -82,7 +83,7 @@ end
 FishingBuddy.GetSettingBool = GetSettingBool;
 
 local function OptionSetSetting(setting, value)
-    info = GetSettingOption(setting)
+    local info = GetSettingOption(setting)
     if info then
         if ( info.global ) then
             FishingBuddy.GlobalSetSetting(setting, value);

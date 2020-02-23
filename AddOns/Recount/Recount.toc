@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Cryect, ported to 2.4 by Elsia, maintained by Resike from 5.4
-## Version: v1.13.3b
+## Version: v1.13.3c
 ## OptionalDeps: Ace3, LibDropdown-1.0, LibSharedMedia-3.0, LibBossIDs-1.0, LibGraph-2.0
 ## SavedVariables: RecountDB
 ## SavedVariablesPerCharacter: RecountPerCharDB

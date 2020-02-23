@@ -861,6 +861,7 @@ FishLib.FishingLevels = {
     [119] = 525,
     [120] = 550,
     [22] = 225,
+    [181] = 425,
 }
 
 local infoslot = nil;
@@ -1526,20 +1527,22 @@ local subzoneskills = {
 function FishLib:GetCurrentFishingLevel()
     local mapID = self:GetCurrentMapId()
     local current_max = LT:GetFishingLevel(mapID)
+    local continent, _ = self:GetCurrentMapContinent()
     if current_max == 0 then
-        local continent, _ = self:GetCurrentMapContinent()
         -- Let's just go with continent level skill for now, since
         -- subzone skill levels are now up in the air.
         local info = self.continent_fishing[continent] or DEFAULT_SKILL
         current_max = info.max
     end
+
+    -- now need to do this again.
+    local _, subzone = self:GetZoneInfo()
+    if (continent ~= 7 and subzoneskills[subzone]) then
+        current_max = subzoneskills[subzone];
+    else
+        current_max = self.FishingLevels[mapID] or DEFAULT_SKILL.max;
+    end
     return current_max
-    -- local _, subzone = self:GetZoneInfo()
-    -- if (continent ~= 7 and subzoneskills[subzone]) then
-    -- 	return subzoneskills[subzone];
-    -- else
-    -- 	return self.FishingLevels[mapID] or DEFAULT_FISHING;
-    -- end
 end
 
 -- return a nicely formatted line about the local zone skill and yours
@@ -1699,7 +1702,7 @@ function FishLib:AddTooltip(text, tooltip)
     if ( not tooltip ) then
         tooltip = GameTooltip;
     end
-    local c = color or {{}, {}};
+    -- local c = color or {{}, {}};
     if ( text ) then
         if ( type(text) == "table" ) then
             for _,l in pairs(text) do
@@ -1844,14 +1847,17 @@ end
 FishLib.MOUSE1 = "RightButtonUp";
 FishLib.MOUSE2 = "Button4Up";
 FishLib.MOUSE3 = "Button5Up";
+FishLib.MOUSE4 = "MiddleButtonUp";
 FishLib.CastButton = {};
 FishLib.CastButton[FishLib.MOUSE1] = "RightButton";
 FishLib.CastButton[FishLib.MOUSE2] = "Button4";
 FishLib.CastButton[FishLib.MOUSE3] = "Button5";
-FishLib.CastKey = {};
-FishLib.CastKey[FishLib.MOUSE1] = "BUTTON2";
-FishLib.CastKey[FishLib.MOUSE2] = "BUTTON4";
-FishLib.CastKey[FishLib.MOUSE3] = "BUTTON5";
+FishLib.CastButton[FishLib.MOUSE4] = "MiddleButton";
+FishLib.CastingKeys = {};
+FishLib.CastingKeys[FishLib.MOUSE1] = "BUTTON2";
+FishLib.CastingKeys[FishLib.MOUSE2] = "BUTTON4";
+FishLib.CastingKeys[FishLib.MOUSE3] = "BUTTON5";
+FishLib.CastingKeys[FishLib.MOUSE4] = "BUTTON3";
 
 function FishLib:GetSAMouseEvent()
     if (not self.buttonevent) then
@@ -1865,7 +1871,7 @@ function FishLib:GetSAMouseButton()
 end
 
 function FishLib:GetSAMouseKey()
-    return self.CastKey[self:GetSAMouseEvent()];
+    return self.CastingKeys[self:GetSAMouseEvent()];
 end
 
 function FishLib:SetSAMouseEvent(buttonevent)

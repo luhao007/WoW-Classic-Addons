@@ -104,13 +104,11 @@ FBConstants.Keys[FBConstants.KEYS_SHIFT] = FBConstants.KEYS_SHIFT_TEXT;
 FBConstants.Keys[FBConstants.KEYS_CTRL] = FBConstants.KEYS_CTRL_TEXT;
 FBConstants.Keys[FBConstants.KEYS_ALT] = FBConstants.KEYS_ALT_TEXT;
 
-FBConstants.MOUSE1 = "RightButtonUp";
-FBConstants.MOUSE2 = "Button4Up";
-FBConstants.MOUSE3 = "Button5Up";
-FBConstants.CastClick = {};
-FBConstants.CastClick[FBConstants.MOUSE1] = KEY_BUTTON2;
-FBConstants.CastClick[FBConstants.MOUSE2] = KEY_BUTTON4;
-FBConstants.CastClick[FBConstants.MOUSE3] = KEY_BUTTON5;
+FBConstants.CastingKeyLabel = {};
+FBConstants.CastingKeyLabel[FL.MOUSE1] = KEY_BUTTON2;
+FBConstants.CastingKeyLabel[FL.MOUSE2] = KEY_BUTTON4;
+FBConstants.CastingKeyLabel[FL.MOUSE3] = KEY_BUTTON5;
+FBConstants.CastingKeyLabel[FL.MOUSE4] = KEY_BUTTON3;
 
 -- Continents
 FBConstants.KALIMDOR = 1

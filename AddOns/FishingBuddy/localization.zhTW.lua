@@ -227,7 +227,7 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_TURNONSOUND_ONOFF"] = "強制音效",
 	["CONFIG_TUSKAARSPEAR_INFO"] = "啟用時，盡可能的使用尖銳巨牙矛。",
 	["CONFIG_USEACTION_INFO"] = "啟用時，#NAME#會搜尋快捷列上的按鈕來拋竿。",
-	["CONFIG_USEACTION_ONOFF"] = "使用動作列",
+	["CONFIG_USEACTION_ONOFF"] = "使用快捷列",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_USERAFTS_INFO"] = "If enabled, use a fishing raft item.",--]] 
 	--[[Translation missing --]]

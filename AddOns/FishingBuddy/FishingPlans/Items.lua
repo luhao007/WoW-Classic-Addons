@@ -26,7 +26,7 @@ local TrawlerTotem = {
     ["enUS"] = "Trawler Totem",
     spell = 251211,
     setting = "UseTrawlerTotem",
-    ["tooltip"] = FBConstants.CONFIG_TUSKAARSPEAR_INFO,
+    ["tooltip"] = FBConstants.CONFIG_TRAWLERTOTEM_INFO,
     ["toy"] = true,
     ["default"] = false,
 }

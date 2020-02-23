@@ -1,9 +1,12 @@
 ------------------------------------------------------------------------
-r1528 | Resike | 2020-01-18 00:01:36 +0000 (Sat, 18 Jan 2020) | 1 line
+r1532 | Resike | 2020-02-23 01:01:28 +0000 (Sun, 23 Feb 2020) | 1 line
 Changed paths:
-   M /trunk/GUI_Main.lua
+   M /trunk/Fights.lua
+   M /trunk/GUI_Config.lua
+   M /trunk/Recount.lua
    M /trunk/Recount.toc
+   M /trunk/WindowOrder.lua
 
-- Classic TOC switch.
+- Cleanup
 ------------------------------------------------------------------------
 

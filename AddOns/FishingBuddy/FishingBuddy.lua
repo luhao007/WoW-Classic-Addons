@@ -1355,7 +1355,7 @@ FishingBuddy.OnEvent = function(self, event, ...)
         FishingBuddy.AddSchoolFish();
 
         FishingBuddy.CreateFBMappedDropDown("FBEasyKeys", "EasyCastKeys", FBConstants.CONFIG_EASYCAST_ONOFF, FBConstants.Keys)
-        FishingBuddy.CreateFBMappedDropDown("FBMouseEvent", "MouseEvent", FBConstants.CONFIG_MOUSEEVENT_ONOFF, FBConstants.CastClick)
+        FishingBuddy.CreateFBMappedDropDown("FBMouseEvent", "MouseEvent", FBConstants.CONFIG_MOUSEEVENT_ONOFF, FBConstants.CastingKeyLabel)
 
         FishingBuddy.OptionsFrame.HandleOptions(name, "Interface\\Icons\\INV_Fishingpole_02", CastingOptions);
         FishingBuddy.OptionsFrame.HandleOptions(nil, nil, InvisibleOptions);
