@@ -238,6 +238,7 @@ function Thread.__init(self, name, func)
 	self._waitFunctionResult = nil
 	self._waitFuture = nil
 	self._waitFutureResult = nil
+	self._waitFutureDone = false
 	self._syncMessage = nil
 	self._syncMessageDest = nil
 	self._messages = {}
@@ -266,6 +267,7 @@ function Thread._Start(self, ...)
 	self._waitFunctionResult = nil
 	self._waitFuture = nil
 	self._waitFutureResult = nil
+	self._waitFutureDone = false
 	self._syncMessage = nil
 	self._syncMessageDest = nil
 	assert(not next(self._messages))
@@ -316,6 +318,7 @@ function Thread._Cleanup(self)
 		self._waitFuture:Cancel()
 		self._waitFuture = nil
 		self._waitFutureResult = nil
+		self._waitFutureDone = false
 	end
 	if self._waitFunctionResult then
 		TempTable.Release(self._waitFunctionResult)
@@ -491,11 +494,12 @@ function Thread._UpdateState(self, elapsed)
 			TempTable.Release(result)
 		end
 	elseif self._state == "WAITING_FOR_FUTURE" then
-		assert(self._waitFuture)
-		if self._waitFuture:IsDone() then
-			self._waitFutureResult = self._waitFuture:GetValue()
-			self._waitFuture = nil
+		if self._waitFutureDone then
+			assert(not self._waitFuture)
+			self._waitFutureDone = false
 			self._state = "READY"
+		else
+			assert(self._waitFuture)
 		end
 	elseif self._state == "FORCED_YIELD" then
 		self._state = "READY"
@@ -512,13 +516,28 @@ function Thread._UpdateState(self, elapsed)
 end
 
 function Thread._ProcessEvent(self, event, ...)
-	if self._state == "WAITING_FOR_EVENT" then
-		assert(next(self._eventNames) or self._eventArgs)
-		if self._eventNames[event] then
-			wipe(self._eventNames) -- only trigger the event once then clear all
-			self._eventArgs = TempTable.Acquire(event, ...)
-		end
+	if self._state ~= "WAITING_FOR_EVENT" then
+		return
 	end
+	assert(next(self._eventNames) or self._eventArgs)
+	if not self._eventNames[event] then
+		return
+	end
+	wipe(self._eventNames) -- only trigger the event once then clear all
+	self._eventArgs = TempTable.Acquire(event, ...)
+end
+
+function Thread._OnFutureDone(self, future)
+	if self._state ~= "WAITING_FOR_FUTURE" then
+		return
+	end
+	assert(self._waitFuture or self._waitFutureDone)
+	if future ~= self._waitFuture then
+		return
+	end
+	self._waitFutureResult = self._waitFuture:GetValue()
+	self._waitFutureDone = true
+	self._waitFuture = nil
 end
 
 function Thread._HandleSyncMessage(self, ...)
@@ -638,7 +657,8 @@ function Thread._WaitForFuture(self, future)
 	if future:IsDone() then
 		return future:GetValue()
 	end
-	-- do the yield
+	-- register our OnDone handler and do the yield
+	future:SetScript("OnDone", private.OnFutureDone)
 	self._state = "WAITING_FOR_FUTURE"
 	self._waitFuture = future
 	self:_Yield()
@@ -764,6 +784,12 @@ function private.ProcessEvent(self, event, ...)
 	local timeTaken = debugprofilestop() - startTime
 	if timeTaken > SCHEDULER_TIME_WARNING_THRESHOLD_MS then
 		Log.Warn("Scheduler took %.2fms to process %s", timeTaken, tostring(event))
+	end
+end
+
+function private.OnFutureDone(future)
+	for _, thread in pairs(private.threads) do
+		thread:_OnFutureDone(future)
 	end
 end
 

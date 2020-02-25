@@ -506,11 +506,37 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 		end
 		local itemClassFilters = Threading.AcquireSafeTempTable()
 		if self._class or self._subClass or self._invType then
-			local info = Threading.AcquireSafeTempTable()
-			info.classID = self._class
-			info.subClassID = self._subClass
-			info.inventoryType = self._invType
-			tinsert(itemClassFilters, info)
+			if self._invType == LE_INVENTORY_TYPE_CHEST_TYPE or self._invType == LE_INVENTORY_TYPE_ROBE_TYPE then
+				-- default AH only sends queries for robe chest type, we need to mimic this when using a chest filter
+				local info1 = Threading.AcquireSafeTempTable()
+				info1.classID = LE_ITEM_CLASS_ARMOR
+				info1.subClassID = self._subClass
+				info1.inventoryType = LE_INVENTORY_TYPE_CHEST_TYPE
+				tinsert(itemClassFilters, info1)
+				local info2 = Threading.AcquireSafeTempTable()
+				info2.classID = LE_ITEM_CLASS_ARMOR
+				info2.subClassID = self._subClass
+				info2.inventoryType = LE_INVENTORY_TYPE_ROBE_TYPE
+				tinsert(itemClassFilters, info2)
+			elseif self._invType == LE_INVENTORY_TYPE_NECK_TYPE or self._invType == LE_INVENTORY_TYPE_FINGER_TYPE or self._invType == LE_INVENTORY_TYPE_TRINKET_TYPE or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE or self._invType == LE_INVENTORY_TYPE_BODY_TYPE then
+				local info = Threading.AcquireSafeTempTable()
+				info.classID = LE_ITEM_CLASS_ARMOR
+				info.subClassID = LE_ITEM_ARMOR_GENERIC
+				info.inventoryType = self._invType
+				tinsert(itemClassFilters, info)
+			elseif self._invType == LE_INVENTORY_TYPE_CLOAK_TYPE then
+				local info = Threading.AcquireSafeTempTable()
+				info.classID = LE_ITEM_CLASS_ARMOR
+				info.subClassID = LE_ITEM_ARMOR_CLOTH
+				info.inventoryType = LE_INVENTORY_TYPE_CLOAK_TYPE
+				tinsert(itemClassFilters, info)
+			else
+				local info = Threading.AcquireSafeTempTable()
+				info.classID = self._class
+				info.subClassID = self._subClass
+				info.inventoryType = self._invType
+				tinsert(itemClassFilters, info)
+			end
 		end
 
 		query.searchString = self._name or ""
@@ -608,26 +634,26 @@ function AuctionFilter._DoAuctionQueryThreaded(self)
 			if self._class or self._subClass or self._invType then
 				classFilterInfo = TempTable.Acquire()
 				if self._invType == LE_INVENTORY_TYPE_CHEST_TYPE or self._invType == LE_INVENTORY_TYPE_ROBE_TYPE then
-					-- default AH sends in queries for both chest types, we need to mimic this when using a chest filter
+					-- default AH only sends in queries for robe chest type, we need to mimic this when using a chest filter
 					local info1 = TempTable.Acquire()
-					info1.classID = self._class
+					info1.classID = LE_ITEM_CLASS_ARMOR
 					info1.subClassID = self._subClass
 					info1.inventoryType = LE_INVENTORY_TYPE_CHEST_TYPE
 					tinsert(classFilterInfo, info1)
 					local info2 = TempTable.Acquire()
-					info2.classID = self._class
+					info2.classID = LE_ITEM_CLASS_ARMOR
 					info2.subClassID = self._subClass
 					info2.inventoryType = LE_INVENTORY_TYPE_ROBE_TYPE
 					tinsert(classFilterInfo, info2)
 				elseif self._invType == LE_INVENTORY_TYPE_NECK_TYPE or self._invType == LE_INVENTORY_TYPE_FINGER_TYPE or self._invType == LE_INVENTORY_TYPE_TRINKET_TYPE or self._invType == LE_INVENTORY_TYPE_HOLDABLE_TYPE or self._invType == LE_INVENTORY_TYPE_BODY_TYPE then
 					local info = TempTable.Acquire()
-					info.classID = self._class
+					info.classID = LE_ITEM_CLASS_ARMOR
 					info.subClassID = LE_ITEM_ARMOR_GENERIC
 					info.inventoryType = self._invType
 					tinsert(classFilterInfo, info)
 				elseif self._invType == LE_INVENTORY_TYPE_CLOAK_TYPE then
 					local info = TempTable.Acquire()
-					info.classID = self._class
+					info.classID = LE_ITEM_CLASS_ARMOR
 					info.subClassID = LE_ITEM_ARMOR_CLOTH
 					info.inventoryType = LE_INVENTORY_TYPE_CLOAK_TYPE
 					tinsert(classFilterInfo, info)

@@ -197,6 +197,13 @@ function AuctionHouseWrapper.GetAndResetTotalHookedTime()
 	return total
 end
 
+function AuctionHouseWrapper.GetMacroText()
+	if not TSM.IsDevVersion() then
+		return ""
+	end
+	return [[/run if not __TSM_SCRIPT_RAN then __TSM_SCRIPT_RAN=1 local t,k=C_AuctionHouse,"RequestMoreBrowseResults" local o=t[k] t[k]=function()o()end end]]
+end
+
 function AuctionHouseWrapper.SendBrowseQuery(query)
 	assert(not TSM.IsWowClassic())
 	if not private.CheckClientBuild() or not private.CheckAllIdle() then
@@ -353,6 +360,9 @@ function APIWrapper.__init(self, name)
 		if not INFO_APIS[self._name] then
 			Log.Info("%s(%s)", self._name, private.ArgsToStr(...))
 		end
+		if self:_IsPending() and select("#", ...) == 0 then
+			return
+		end
 		self:CancelIfPending()
 		if self:_HandleAPICall(...) then
 			if INFO_APIS[self._name] then
@@ -377,7 +387,7 @@ function APIWrapper.IsIdle(self)
 end
 
 function APIWrapper.CancelIfPending(self)
-	if self._state ~= "PENDING_REQUESTED" and self._state ~= "PENDING_HOOKED" then
+	if not self:_IsPending() then
 		return
 	end
 	Log.Warn("Canceling pending (%s, %s)", self._name, self._state)
@@ -392,6 +402,10 @@ function APIWrapper.Start(self, ...)
 	self._state = "STARTING"
 	self:_CallAPI(...)
 	return self._future
+end
+
+function APIWrapper._IsPending(self)
+	return self._state == "PENDING_REQUESTED" or self._state == "PENDING_HOOKED"
 end
 
 function APIWrapper._CallAPI(self, ...)

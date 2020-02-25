@@ -1,0 +1,22 @@
+## Interface: 11303
+## Author: M(Mermaid)
+## Version: 1.0.2
+## SavedVariables: MerInspectDB
+
+## Title: MerInspect
+## Notes: Inspect Assiest
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF观察助手|r |cFFFFE00AMerInspect|r
+## Notes-zhCN: 观察助手
+
+
+libs\lib.xml
+locales\locales.xml
+templates\templates.xml
+Options.lua
+ItemSlot.lua
+ItemBorder.lua
+InspectCore.lua
+InspectUnit.lua
+InspectUnitGemAndEnchant.lua
+InspectUnitSpecialization.lua
+InspectUnitStats.lua

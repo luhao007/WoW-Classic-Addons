@@ -1123,7 +1123,7 @@ function private.PostingFrameOnUpdate(frame)
 	elseif buyout > MAXIMUM_BID_PRICE then
 		buyout = MAXIMUM_BID_PRICE
 	end
-	local cagedPet = strfind(private.itemString, "^p")
+
 	private.perItem = true
 
 	frame:GetElement("item.icon")
@@ -1131,25 +1131,15 @@ function private.PostingFrameOnUpdate(frame)
 		:SetTooltip(private.itemString)
 	frame:GetElement("item.name")
 		:SetText(TSM.UI.GetColoredItemName(private.itemString))
-	if not TSM.IsWowClassic() then
-		if ItemInfo.IsCommodity(private.itemString) then
-			frame:GetElement("bid"):Hide()
-		else
-			frame:GetElement("bid"):Show()
-		end
+	if ItemInfo.IsCommodity(private.itemString) then
+		frame:GetElement("bid"):Hide()
 	else
-		frame:GetElement("quantity.num")
-			:SetDisabled(cagedPet)
-		frame:GetElement("maxBtns.numBtn")
-			:SetDisabled(cagedPet)
+		frame:GetElement("bid"):Show()
 	end
 	local maxPostStack = private.GetMaxPostStack(private.itemString)
 	frame:GetElement("quantity.stackSize")
-		:SetDisabled(cagedPet)
-		:SetText(TSM.IsWowClassic() and min(record.stackSize, maxPostStack) or maxPostStack)
+		:SetText(min(record.stackSize, maxPostStack))
 		:SetMaxNumber(maxPostStack)
-	frame:GetElement("maxBtns.stackSizeBtn")
-		:SetDisabled(cagedPet)
 	frame:GetElement("bid.text")
 		:SetText(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
 	frame:GetElement("buyout.text")

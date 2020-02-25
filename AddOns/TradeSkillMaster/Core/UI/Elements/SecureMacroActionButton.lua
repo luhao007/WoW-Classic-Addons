@@ -40,7 +40,7 @@ end
 -- by any arguments to the script
 -- @treturn SecureMacroActionButton The secure macro action button object
 function SecureMacroActionButton.SetScript(self, script, handler)
-	if script == "PreClick" then
+	if script == "PreClick" or script == "PostClick" then
 		self.__super.__super:SetScript(script, handler)
 	else
 		error("Unknown SecureActionButton script: "..tostring(script))

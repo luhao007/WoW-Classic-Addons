@@ -57,7 +57,7 @@ local FUTURE_MT = {
 			context.state = "DONE"
 			context.value = value
 			if context.onDone then
-				context.onDone()
+				context.onDone(self)
 			end
 		end,
 		IsDone = function(self)

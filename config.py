@@ -1151,6 +1151,10 @@ MAPPING = {
         'Title-cn': '集合石',
         'Category': '副本'
     },
+    'MerInspect': {
+        'Title-cn': '观察助手',
+        'Category': '界面'
+    },
     'MikScrollingBattleText': {
         'Title-cn': '浮动战斗信息',
         'Category': '战斗'

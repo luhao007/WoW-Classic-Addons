@@ -4157,8 +4157,7 @@ L["You've been phased which has caused the AH to stop working due to a bug on Bl
 L["You've been undercut."] = "You've been undercut."
 	elseif locale == "esMX" then
 L = L or {}
---[[Translation missing --]]
-L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Group:Groups; Selected (%d |4Item:Items;)"
+L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Grupo:Grupos; Seleccionado (%d |4Artículo:Artículos;)"
 L["%d auctions"] = "%d subastas"
 L["%d Groups"] = "%d Grupos"
 L["%d Items"] = "%d Objetos"
@@ -4169,26 +4168,21 @@ L["%d Sold Auctions"] = "%d Subastas vendidas"
 L["%s (%s bags, %s bank, %s AH, %s mail)"] = "%s (%s Bolsas, %s Banco, %s Casa de subastas, %s Correo)"
 L["%s (%s player, %s alts, %s guild, %s AH)"] = "%s (%s Jugador, %s Alters, %s Hermandad, %s Casa de subastas)"
 L["%s (%s profit)"] = "%s (%s ganancia)"
---[[Translation missing --]]
-L["%s |4operation:operations;"] = "%s |4operation:operations;"
+L["%s |4operation:operations;"] = "%s |4operación:operaciones;"
 L["%s ago"] = "Hace %s"
 L["%s Crafts"] = "%s Creaciones"
 L["%s group updated with %d items and %d materials."] = "Grupo %s actualizado con %d objetos y %d materiales."
 L["%s in guild vault"] = "%s en cámara de la Hermandad"
 L["%s is a valid custom price but %s is an invalid item."] = "%s es un precio válido, pero %s no es un objeto válido."
 L["%s is a valid custom price but did not give a value for %s."] = "%s es un precio válido pero no dio un valor para %s."
---[[Translation missing --]]
-L["'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."] = "'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."
+L["'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."] = "'%s' es una operación no válida! El reabastecimiento mínimo de %d es mayor que el reabastecimiento máximo de %d."
 L["%s is not a valid custom price and gave the following error: %s"] = "%s no es un precio válido y dio el siguiente error: %s"
 L["%s Operations"] = "%s Operaciones"
---[[Translation missing --]]
-L["%s previously had the max number of operations, so removed %s."] = "%s previously had the max number of operations, so removed %s."
+L["%s previously had the max number of operations, so removed %s."] = "%s anteriormente tenía el número máximo de operaciones, por lo que se eliminó %s."
 L["%s removed."] = "%s eliminado."
 L["%s sent you %s"] = "%s enviado a ti %s"
---[[Translation missing --]]
-L["%s sent you %s and %s"] = "%s sent you %s and %s"
---[[Translation missing --]]
-L["%s sent you a COD of %s for %s"] = "%s sent you a COD of %s for %s"
+L["%s sent you %s and %s"] = "%s te envoi %s y %s"
+L["%s sent you a COD of %s for %s"] = "%s le envió un COD de %s para %s"
 L["%s sent you a message: %s"] = "%s te ha enviado un mensaje: %s"
 L["%s total"] = "%s total"
 L["%sDrag%s to move this button"] = "%sArrastra%s para mover este botón"
@@ -4204,10 +4198,8 @@ L["(minimum 0 - maximum 905)"] = "(mínimo 0 - máximo 905)"
 L["(minimum 0.5 - maximum 10)"] = "(mínimo 0,5 - máximo 10)"
 L["/tsm help|r - Shows this help listing"] = "/tsm help|r - Muestra este listado de ayuda."
 L["/tsm|r - opens the main TSM window."] = "/tsm|r - Abre la ventana principal de TSM."
---[[Translation missing --]]
-L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."] = "|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."
---[[Translation missing --]]
-L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."] = "|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."
+L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."] = "|cffff0000IMPORTANT:|r Cuando TSM_Accounting La última vez que se guardaron datos para este reino, era demasiado grande para que WoW los manejara, por lo que los datos antiguos se recortaron automáticamente para evitar la corrupción de las variables guardadas. El último %s de los datos de compra se ha conservado."
+L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."] = "|cffff0000IMPORTANT:|r Cuando TSM_Accounting La última vez que se guardaron datos para este reino, era demasiado grande para que WoW los manejara, por lo que los datos antiguos se recortaron automáticamente para evitar la corrupción de las variables guardadas. Se han conservado los últimos %s de datos de venta."
 --[[Translation missing --]]
 L["|cffffd839Left-Click|r to ignore an item for this session. Hold |cffffd839Shift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."] = "|cffffd839Left-Click|r to ignore an item for this session. Hold |cffffd839Shift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."
 --[[Translation missing --]]
@@ -5987,8 +5979,7 @@ L["Your default craft value method was invalid so it has been returned to the de
 L["Your task list is currently empty."] = "Your task list is currently empty."
 --[[Translation missing --]]
 L["You've been phased which has caused the AH to stop working due to a bug on Blizzard's end. Please close and reopen the AH and restart Sniper."] = "You've been phased which has caused the AH to stop working due to a bug on Blizzard's end. Please close and reopen the AH and restart Sniper."
---[[Translation missing --]]
-L["You've been undercut."] = "You've been undercut."
+L["You've been undercut."] = "Has sido socavado(a)."
 	elseif locale == "frFR" then
 L = L or {}
 L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Group:Groups; Sélectionné (%d |4Objet:Objets;)"
@@ -13605,7 +13596,7 @@ L["You've been phased which has caused the AH to stop working due to a bug on Bl
 L["You've been undercut."] = "Вашу цену сбили."
 	elseif locale == "zhCN" then
 L = L or {}
-L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Group:Groups; 选定的 (%d |4Item:Items;)"
+L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4组:组; 选定的 (%d |4项目:项目;)"
 L["%d auctions"] = "%d拍卖"
 L["%d Groups"] = "%d分组"
 L["%d Items"] = "%d物品"
@@ -13616,7 +13607,7 @@ L["%d Sold Auctions"] = "%d个物品已卖出"
 L["%s (%s bags, %s bank, %s AH, %s mail)"] = "%s (%s 背包, %s 银行, %s 拍卖行, %s 邮件)"
 L["%s (%s player, %s alts, %s guild, %s AH)"] = "%s (%s 玩家, %s 小号, %s 公会, %s 拍卖行)"
 L["%s (%s profit)"] = "%s (%s利润)"
-L["%s |4operation:operations;"] = "%s |4operation:操作;"
+L["%s |4operation:operations;"] = "%s |4操作:操作;"
 L["%s ago"] = "%s之前"
 L["%s Crafts"] = "%s专业"
 L["%s group updated with %d items and %d materials."] = "%s分组已更新%d件和%d件材料"
@@ -13640,19 +13631,19 @@ L["(max %d)"] = "(最高%d)"
 L["(max 5000)"] = "(最多5000)"
 L["(min %d - max %d)"] = "(最低 %d - 最高 %d)"
 L["(min 0 - max 10000)"] = "(最低 0 - 最高 10000)"
-L["(minimum 0 - maximum 20)"] = "(0 - 20)"
-L["(minimum 0 - maximum 2000)"] = "(0 - 2000)"
-L["(minimum 0 - maximum 905)"] = "(0 - 905)"
-L["(minimum 0.5 - maximum 10)"] = "(0.5 - 10)"
-L["/tsm help|r - Shows this help listing"] = "/tsm help - 显示帮助列表"
-L["/tsm|r - opens the main TSM window."] = "/tsm - 打开TSM主窗口。"
+L["(minimum 0 - maximum 20)"] = "(最低 0 - 最高 20)"
+L["(minimum 0 - maximum 2000)"] = "(最低 0 - 最高 2000)"
+L["(minimum 0 - maximum 905)"] = "(最低 0 - 最高 905)"
+L["(minimum 0.5 - maximum 10)"] = "(最低 0.5 - 最高 10)"
+L["/tsm help|r - Shows this help listing"] = "/tsm help - 显示此帮助列表"
+L["/tsm|r - opens the main TSM window."] = "/tsm - 打开 TSM 主窗口。"
 L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."] = "|cffff0000重要通知:|r TSM_Accounting在本服务器最后的存储数据对WOW来说太大了，旧的数据将被自动删除以避免损坏已保存的参数。最后的 %s 购买数据已保留。"
-L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."] = "|cffff0000重要通知:|r 当TSM_Accounting在本服务器最后的存储数据对WOW来说太大难以处理，旧的数据将被削减以避免损坏已保存的参数。最后的 %s 出售数据已保存。"
+L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."] = "|cffff0000重要通知:|r 当 TSM_Accounting 在本服务器最后的存储数据对 WOW 来说太大难以处理,旧的数据将被削减以避免损坏已保存的参数. 最后的 %s 出售数据已保存."
 L["|cffffd839Left-Click|r to ignore an item for this session. Hold |cffffd839Shift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."] = "|cffffd839左键点击|r 临时忽略物品。按住|cffffd839Shift|r 左键点击永久忽略物品。你可以在Vendoring设置中从永久忽略列表中移除物品。"
 L["|cffffd839Left-Click|r to ignore an item this session."] = "|cffffd839左键点击|r临时忽略物品。"
 L["|cffffd839Shift-Left-Click|r to ignore it permanently."] = "|cffffd839Shift+左键|r永久忽略物品。"
 L["1 Group"] = "1 组"
-L["1 Item"] = "1 项物品"
+L["1 Item"] = "1 项"
 L["12 hr"] = "12 小时"
 L["24 hr"] = "24 小时"
 L["48 hr"] = "48 小时"
@@ -13660,40 +13651,41 @@ L["A custom price of %s for %s evaluates to %s."] = "%s的自定义价格为%s�
 L["A maximum of 1 convert() function is allowed."] = "最多允许1兑换函数。"
 L["A profile with that name already exists on the target account. Rename it first and try again."] = "目标账号上已存在同名档案。请在重新命名后重试。"
 L["A profile with this name already exists."] = "已存在同名档案。"
-L["A scan is already in progress. Please stop that scan before starting another one."] = "一项扫描正在进行中。在开始新的扫描之前请停止前一项扫描。"
-L["Above max expires."] = "超过最大流拍次数。"
-L["Above max price. Not posting."] = "超出最高价。不发布。"
+L["A scan is already in progress. Please stop that scan before starting another one."] = "扫描已在进行中。请先停止该扫描然后再开始另一扫描。"
+L["Above max expires."] = "超过上限会过期。"
+L["Above max price. Not posting."] = "高于最高价。不发布。"
 L["Above max price. Posting at max price."] = "超出最高价。以最高价发布。"
 L["Above max price. Posting at min price."] = "超出最高价。以最低价发布。"
-L["Above max price. Posting at normal price."] = "超出最高价。以正常价发布。"
+L["Above max price. Posting at normal price."] = "高于最高价。以正常价格发布。"
 L["Accepting these item(s) will cost"] = "接受这些物品将花费"
-L["Accepting this item will cost"] = "接受此物品将花费"
+L["Accepting this item will cost"] = "接受此项目将花费"
 L["Account sync removed. Please delete the account sync from the other account as well."] = "帐户同步已删除, 请同时从其他帐户中删除帐户同步."
 L["Account Syncing"] = "账务同步"
-L["Accounting"] = "账务"
-L["Accounting Tooltips"] = "账务提示"
+L["Accounting"] = "会计"
+L["Accounting Tooltips"] = "会计工具提示"
 L["Activity Type"] = "活动类型"
 L["ADD %d ITEMS"] = "添加%d物品"
-L["Add / Remove Items"] = "增加/移除 物品"
-L["ADD NEW CUSTOM PRICE SOURCE"] = "添加新的自定义价格"
+L["Add / Remove Items"] = "添加/删除项目"
+L["ADD NEW CUSTOM PRICE SOURCE"] = "添加新的自定义价格来源"
 L["ADD OPERATION"] = "添加操作"
 L["Add Player"] = "添加玩家"
 L["Add Subject / Description"] = "添加主题/描述"
 L["Add Subject / Description (Optional)"] = "添加主题/描述（可选）"
-L["ADD TO MAIL"] = "添加至邮件"
+L["ADD TO MAIL"] = "加入邮件"
 L["Added '%s' profile which was received from %s."] = "添加了从%s收到的'%s'个人资料。"
-L["Added %s to %s."] = "已将%s添加至%s。"
+--[[Translation missing --]]
+L["Added %s to %s."] = "Added %s to %s."
 L["Additional error suppressed"] = "已阻止的其他错误"
-L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "调整下面的设置以应用到该操作的拍卖分组"
-L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "调整下面的设置以应用到该操作的取消分组"
+L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "调整以下设置以设置如何拍卖与该操作关联的组。"
+L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "调整以下设置以设置如何取消此操作的组。"
 L["Adjust the settings below to set how groups attached to this operation will be priced."] = "调整以下设置以设置添加到此操作分组组的定价方式。"
-L["Advanced Item Search"] = "高级物品搜索"
-L["Advanced Options"] = "高级设置"
+L["Advanced Item Search"] = "高级项目搜索"
+L["Advanced Options"] = "高级选项"
 L["AH"] = "拍卖行"
 L["AH (Crafting)"] = "拍卖行（制造业）"
 L["AH (Disenchanting)"] = "拍卖行（分解）"
 L["AH BUSY"] = "拍卖行繁忙"
-L["AH Frame Options"] = "拍卖行框体选项"
+L["AH Frame Options"] = "拍卖行框架选项"
 L["Alarm Clock"] = "闹钟"
 L["All Auctions"] = "所有拍卖"
 L["All Characters and Guilds"] = "所有角色和专精"
@@ -13706,9 +13698,9 @@ L["Alts"] = "小号"
 L["Alts AH"] = "小号AH"
 L["Amount"] = "数量"
 L["AMOUNT"] = "数量"
-L["Amount of Bag Space to Keep Free"] = "背包剩余空间"
-L["APPLY FILTERS"] = "应用筛选"
-L["Apply operation to group:"] = "应用操作到分组："
+L["Amount of Bag Space to Keep Free"] = "可用的背包剩余空间"
+L["APPLY FILTERS"] = "应用过滤器"
+L["Apply operation to group:"] = "将操作应用于组："
 L["Are you sure you want to clear old accounting data?"] = "确定清除旧的账务数据吗？"
 L["Are you sure you want to delete this group?"] = "你确定要删除这个分组吗？"
 L["Are you sure you want to delete this operation?"] = "你确定要删除这个操作吗？"
@@ -13752,7 +13744,8 @@ L["Bags"] = "背包"
 L["Banks"] = "银行"
 L["Base Group"] = "基础分组"
 L["Base Item"] = "基础物品"
-L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."] = "以下是你当前通过模块获得的可购入价格。点击%s来输入你的自定义价格。"
+--[[Translation missing --]]
+L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."] = "Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."
 L["Below custom price:"] = "低于自定义价格："
 L["Below min price. Posting at max price."] = "低于最低价。按最高价发布。"
 L["Below min price. Posting at min price."] = "低于最低价。按最低价发布。"
@@ -14701,13 +14694,13 @@ L["You've been undercut."] = "已被压价"
 	elseif locale == "zhTW" then
 L = L or {}
 L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Group：群組; 已選擇（%d |4項目：項目;）"
-L["%d auctions"] = "%d 拍卖"
-L["%d Groups"] = "%d分組"
+L["%d auctions"] = "%d 拍賣"
+L["%d Groups"] = "%d 分組"
 L["%d Items"] = "%d 物品"
 L["%d of %d"] = "发布%d堆，每堆%d个"
-L["%d Operations"] = "%d操作"
-L["%d Posted Auctions"] = "已发布%d个拍卖"
-L["%d Sold Auctions"] = "%d个拍卖已卖出"
+L["%d Operations"] = "%d 操作"
+L["%d Posted Auctions"] = "已發布%d個拍賣"
+L["%d Sold Auctions"] = "%d 個拍賣已售出"
 L["%s (%s bags, %s bank, %s AH, %s mail)"] = "%s (%s 包包, %s 銀行, %s 拍賣場, %s 信箱)"
 L["%s (%s player, %s alts, %s guild, %s AH)"] = "%s (%s 玩家, %s 小号, %s 公会, %s 拍卖行)"
 L["%s (%s profit)"] = "%s (%s 利潤)"
@@ -14724,40 +14717,27 @@ L["%s is a valid custom price but did not give a value for %s."] = "%s 是一個
 --[[Translation missing --]]
 L["'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."] = "'%s' is an invalid operation! Min restock of %d is higher than max restock of %d."
 L["%s is not a valid custom price and gave the following error: %s"] = "%s 不是一個有效的自定義價格,錯誤資訊: %s"
---[[Translation missing --]]
-L["%s Operations"] = "%s Operations"
+L["%s Operations"] = "%s 行動"
 --[[Translation missing --]]
 L["%s previously had the max number of operations, so removed %s."] = "%s previously had the max number of operations, so removed %s."
 L["%s removed."] = "%s 移除."
---[[Translation missing --]]
-L["%s sent you %s"] = "%s sent you %s"
---[[Translation missing --]]
-L["%s sent you %s and %s"] = "%s sent you %s and %s"
+L["%s sent you %s"] = "%s 發送給你 %s"
+L["%s sent you %s and %s"] = "%s 發送給你 %s 和 %s"
 --[[Translation missing --]]
 L["%s sent you a COD of %s for %s"] = "%s sent you a COD of %s for %s"
---[[Translation missing --]]
-L["%s sent you a message: %s"] = "%s sent you a message: %s"
+L["%s sent you a message: %s"] = "%s 發訊息給你: %s"
 L["%s total"] = "%s 全部"
 L["%sDrag%s to move this button"] = "%s拖曳%s 移動該按紐"
 L["%sLeft-Click%s to open the main window"] = "%s點擊%s 開啟主視窗"
---[[Translation missing --]]
-L["(%d/500 Characters)"] = "(%d/500 Characters)"
---[[Translation missing --]]
-L["(max %d)"] = "(max %d)"
---[[Translation missing --]]
-L["(max 5000)"] = "(max 5000)"
---[[Translation missing --]]
-L["(min %d - max %d)"] = "(min %d - max %d)"
---[[Translation missing --]]
-L["(min 0 - max 10000)"] = "(min 0 - max 10000)"
---[[Translation missing --]]
-L["(minimum 0 - maximum 20)"] = "(minimum 0 - maximum 20)"
---[[Translation missing --]]
-L["(minimum 0 - maximum 2000)"] = "(minimum 0 - maximum 2000)"
---[[Translation missing --]]
-L["(minimum 0 - maximum 905)"] = "(minimum 0 - maximum 905)"
---[[Translation missing --]]
-L["(minimum 0.5 - maximum 10)"] = "(minimum 0.5 - maximum 10)"
+L["(%d/500 Characters)"] = "(%d/500 字符)"
+L["(max %d)"] = "(最多 %d)"
+L["(max 5000)"] = "(最多 5000)"
+L["(min %d - max %d)"] = "(最少 %d - 最多 %d)"
+L["(min 0 - max 10000)"] = "(最少 0 - max 最多)"
+L["(minimum 0 - maximum 20)"] = "(最小值 0 - 最大值 20)"
+L["(minimum 0 - maximum 2000)"] = "(最小值 0 - 最大值 2000)"
+L["(minimum 0 - maximum 905)"] = "(最小值 0 - 最大值 905)"
+L["(minimum 0.5 - maximum 10)"] = "(最小值 0.5 - 最大值 10)"
 L["/tsm help|r - Shows this help listing"] = "/tsm help|r - 顯示幫助列表"
 L["/tsm|r - opens the main TSM window."] = "/tsm|r - 開啟TSM主視窗。"
 --[[Translation missing --]]
@@ -14770,74 +14750,45 @@ L["|cffffd839Left-Click|r to ignore an item for this session. Hold |cffffd839Shi
 L["|cffffd839Left-Click|r to ignore an item this session."] = "|cffffd839Left-Click|r to ignore an item this session."
 --[[Translation missing --]]
 L["|cffffd839Shift-Left-Click|r to ignore it permanently."] = "|cffffd839Shift-Left-Click|r to ignore it permanently."
---[[Translation missing --]]
-L["1 Group"] = "1 Group"
+L["1 Group"] = "1 群組"
 L["1 Item"] = "1 物品"
 L["12 hr"] = "12小時"
 L["24 hr"] = "24小時"
 L["48 hr"] = "48小時"
 L["A custom price of %s for %s evaluates to %s."] = "%s的自定義價格為%s到%s。"
 L["A maximum of 1 convert() function is allowed."] = "最多只允許1個convert()函數。"
---[[Translation missing --]]
-L["A profile with that name already exists on the target account. Rename it first and try again."] = "A profile with that name already exists on the target account. Rename it first and try again."
---[[Translation missing --]]
-L["A profile with this name already exists."] = "A profile with this name already exists."
---[[Translation missing --]]
-L["A scan is already in progress. Please stop that scan before starting another one."] = "A scan is already in progress. Please stop that scan before starting another one."
---[[Translation missing --]]
-L["Above max expires."] = "Above max expires."
---[[Translation missing --]]
-L["Above max price. Not posting."] = "Above max price. Not posting."
---[[Translation missing --]]
-L["Above max price. Posting at max price."] = "Above max price. Posting at max price."
---[[Translation missing --]]
-L["Above max price. Posting at min price."] = "Above max price. Posting at min price."
---[[Translation missing --]]
-L["Above max price. Posting at normal price."] = "Above max price. Posting at normal price."
---[[Translation missing --]]
-L["Accepting these item(s) will cost"] = "Accepting these item(s) will cost"
---[[Translation missing --]]
-L["Accepting this item will cost"] = "Accepting this item will cost"
---[[Translation missing --]]
-L["Account sync removed. Please delete the account sync from the other account as well."] = "Account sync removed. Please delete the account sync from the other account as well."
+L["A profile with that name already exists on the target account. Rename it first and try again."] = "目標帳戶上已經存在具有該名稱的配置文件。 首先重命名，然後重試。"
+L["A profile with this name already exists."] = "具有此名稱的配置文件已存在。"
+L["A scan is already in progress. Please stop that scan before starting another one."] = "掃描已在進行中。 在開始另一掃描之前，請停止該掃描。"
+L["Above max expires."] = "超過上限會過期。"
+L["Above max price. Not posting."] = "高於最高價。 不發布。"
+L["Above max price. Posting at max price."] = "高於最高價。 以最高價格發布。"
+L["Above max price. Posting at min price."] = "高於最高價。 以最低價格發布。"
+L["Above max price. Posting at normal price."] = [=[
+高於最高價。 以正常價格發布。]=]
+L["Accepting these item(s) will cost"] = "接受這些物品將花費"
+L["Accepting this item will cost"] = "接受此項目將花費"
+L["Account sync removed. Please delete the account sync from the other account as well."] = "帳戶同步已刪除。 請同時從另一個帳戶中刪除該帳戶同步。"
 L["Account Syncing"] = "帳戶同步"
---[[Translation missing --]]
-L["Accounting"] = "Accounting"
---[[Translation missing --]]
-L["Accounting Tooltips"] = "Accounting Tooltips"
---[[Translation missing --]]
-L["Activity Type"] = "Activity Type"
---[[Translation missing --]]
-L["ADD %d ITEMS"] = "ADD %d ITEMS"
---[[Translation missing --]]
-L["Add / Remove Items"] = "Add / Remove Items"
---[[Translation missing --]]
-L["ADD NEW CUSTOM PRICE SOURCE"] = "ADD NEW CUSTOM PRICE SOURCE"
---[[Translation missing --]]
-L["ADD OPERATION"] = "ADD OPERATION"
---[[Translation missing --]]
-L["Add Player"] = "Add Player"
---[[Translation missing --]]
-L["Add Subject / Description"] = "Add Subject / Description"
---[[Translation missing --]]
-L["Add Subject / Description (Optional)"] = "Add Subject / Description (Optional)"
---[[Translation missing --]]
-L["ADD TO MAIL"] = "ADD TO MAIL"
---[[Translation missing --]]
-L["Added '%s' profile which was received from %s."] = "Added '%s' profile which was received from %s."
---[[Translation missing --]]
-L["Added %s to %s."] = "Added %s to %s."
+L["Accounting"] = "會計"
+L["Accounting Tooltips"] = "會計工具提示"
+L["Activity Type"] = "活動類型"
+L["ADD %d ITEMS"] = "增加 %d 項目"
+L["Add / Remove Items"] = "增加 / 移除 項目"
+L["ADD NEW CUSTOM PRICE SOURCE"] = "添加新的自定義價格來源"
+L["ADD OPERATION"] = "添加操作"
+L["Add Player"] = "添加播放器"
+L["Add Subject / Description"] = "添加主題/說明"
+L["Add Subject / Description (Optional)"] = "添加主題/說明（可選）"
+L["ADD TO MAIL"] = "加入郵件"
+L["Added '%s' profile which was received from %s."] = "添加了從%s收到的'%s'個人資料。"
+L["Added %s to %s."] = "已將%s添加到%s。"
 L["Additional error suppressed"] = "隱藏的其他錯誤"
---[[Translation missing --]]
-L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "Adjust the settings below to set how groups attached to this operation will be auctioned."
---[[Translation missing --]]
-L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "Adjust the settings below to set how groups attached to this operation will be cancelled."
---[[Translation missing --]]
-L["Adjust the settings below to set how groups attached to this operation will be priced."] = "Adjust the settings below to set how groups attached to this operation will be priced."
---[[Translation missing --]]
-L["Advanced Item Search"] = "Advanced Item Search"
---[[Translation missing --]]
-L["Advanced Options"] = "Advanced Options"
+L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "調整以下設置以設置如何拍賣與該操作關聯的群組。"
+L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "調整以下設置以設置如何取消此操作的群組。"
+L["Adjust the settings below to set how groups attached to this operation will be priced."] = "調整以下設置以設置該操作附加群組的定價方式。"
+L["Advanced Item Search"] = "進階項目搜索"
+L["Advanced Options"] = "進階選項"
 L["AH"] = "拍賣場"
 --[[Translation missing --]]
 L["AH (Crafting)"] = "AH (Crafting)"
@@ -14848,114 +14799,69 @@ L["AH BUSY"] = "AH BUSY"
 --[[Translation missing --]]
 L["AH Frame Options"] = "AH Frame Options"
 L["Alarm Clock"] = "警示鐘"
---[[Translation missing --]]
-L["All Auctions"] = "All Auctions"
---[[Translation missing --]]
-L["All Characters and Guilds"] = "All Characters and Guilds"
---[[Translation missing --]]
-L["All Item Classes"] = "All Item Classes"
---[[Translation missing --]]
-L["All Professions"] = "All Professions"
---[[Translation missing --]]
-L["All Subclasses"] = "All Subclasses"
+L["All Auctions"] = "所有拍賣"
+L["All Characters and Guilds"] = "所有角色和公會"
+L["All Item Classes"] = "所有物品類別"
+L["All Professions"] = "所有專業"
+L["All Subclasses"] = "所有子分類"
 --[[Translation missing --]]
 L["Allow partial stack?"] = "Allow partial stack?"
 --[[Translation missing --]]
 L["Alt Guild Bank"] = "Alt Guild Bank"
---[[Translation missing --]]
-L["Alts"] = "Alts"
+L["Alts"] = "替代項"
 --[[Translation missing --]]
 L["Alts AH"] = "Alts AH"
---[[Translation missing --]]
-L["Amount"] = "Amount"
---[[Translation missing --]]
-L["AMOUNT"] = "AMOUNT"
---[[Translation missing --]]
-L["Amount of Bag Space to Keep Free"] = "Amount of Bag Space to Keep Free"
---[[Translation missing --]]
-L["APPLY FILTERS"] = "APPLY FILTERS"
---[[Translation missing --]]
-L["Apply operation to group:"] = "Apply operation to group:"
---[[Translation missing --]]
-L["Are you sure you want to clear old accounting data?"] = "Are you sure you want to clear old accounting data?"
+L["Amount"] = "數量"
+L["AMOUNT"] = "數量"
+L["Amount of Bag Space to Keep Free"] = "可用的袋子空間量"
+L["APPLY FILTERS"] = "應用過濾器"
+L["Apply operation to group:"] = "將操作應用於群組："
+L["Are you sure you want to clear old accounting data?"] = "您確定要清除舊的會計數據嗎？"
 L["Are you sure you want to delete this group?"] = "你確定要取消這個群組?"
 L["Are you sure you want to delete this operation?"] = "你確定要取消這個動作?"
---[[Translation missing --]]
-L["Are you sure you want to reset all operation settings?"] = "Are you sure you want to reset all operation settings?"
---[[Translation missing --]]
-L["At above max price and not undercut."] = "At above max price and not undercut."
---[[Translation missing --]]
-L["At normal price and not undercut."] = "At normal price and not undercut."
---[[Translation missing --]]
-L["Auction"] = "Auction"
---[[Translation missing --]]
-L["Auction Bid"] = "Auction Bid"
---[[Translation missing --]]
-L["Auction Buyout"] = "Auction Buyout"
---[[Translation missing --]]
-L["AUCTION DETAILS"] = "AUCTION DETAILS"
---[[Translation missing --]]
-L["Auction Duration"] = "Auction Duration"
---[[Translation missing --]]
-L["Auction has been bid on."] = "Auction has been bid on."
+L["Are you sure you want to reset all operation settings?"] = "您確定要重設所有操作設置嗎？"
+L["At above max price and not undercut."] = "以高於最高價的價格購買，並且不能削價。"
+L["At normal price and not undercut."] = "價格正常且不削價。"
+L["Auction"] = "拍賣"
+L["Auction Bid"] = "競標價格"
+L["Auction Buyout"] = "拍賣買斷"
+L["AUCTION DETAILS"] = "拍賣細節"
+L["Auction Duration"] = "拍賣時間"
+L["Auction has been bid on."] = "拍賣已結標"
 --[[Translation missing --]]
 L["Auction House Cut"] = "Auction House Cut"
---[[Translation missing --]]
-L["Auction Sale Sound"] = "Auction Sale Sound"
+L["Auction Sale Sound"] = "拍賣銷售聲音"
 L["Auction Window Close"] = "關閉拍賣視窗"
 L["Auction Window Open"] = "開啟拍賣視窗"
 L["Auctionator - Auction Value"] = "Auctionator - 拍賣價格"
---[[Translation missing --]]
-L["AuctionDB - Market Value"] = "AuctionDB - Market Value"
+L["AuctionDB - Market Value"] = "AuctionDB-市場價值"
 L["Auctioneer - Appraiser"] = "Auctioneer - 出價"
 L["Auctioneer - Market Value"] = "Auctioneer - 市場價格"
 L["Auctioneer - Minimum Buyout"] = "Auctioneer - 最小直購價"
---[[Translation missing --]]
-L["Auctioning"] = "Auctioning"
---[[Translation missing --]]
-L["Auctioning Log"] = "Auctioning Log"
---[[Translation missing --]]
-L["Auctioning Operation"] = "Auctioning Operation"
---[[Translation missing --]]
-L["Auctioning 'POST'/'CANCEL' Button"] = "Auctioning 'POST'/'CANCEL' Button"
---[[Translation missing --]]
-L["Auctioning Tooltips"] = "Auctioning Tooltips"
+L["Auctioning"] = "拍賣"
+L["Auctioning Log"] = "拍賣日誌"
+L["Auctioning Operation"] = "拍賣業務"
+L["Auctioning 'POST'/'CANCEL' Button"] = "拍賣“ 張貼” /“ 取消”按鈕"
+L["Auctioning Tooltips"] = "拍賣工具提示"
 L["Auctions"] = "拍賣"
---[[Translation missing --]]
-L["Auto Quest Complete"] = "Auto Quest Complete"
---[[Translation missing --]]
-L["Average Earned Per Day:"] = "Average Earned Per Day:"
---[[Translation missing --]]
-L["Average Prices:"] = "Average Prices:"
---[[Translation missing --]]
-L["Average Profit Per Day:"] = "Average Profit Per Day:"
---[[Translation missing --]]
-L["Average Spent Per Day:"] = "Average Spent Per Day:"
---[[Translation missing --]]
-L["Avg Buy Price"] = "Avg Buy Price"
---[[Translation missing --]]
-L["Avg Resale Profit"] = "Avg Resale Profit"
---[[Translation missing --]]
-L["Avg Sell Price"] = "Avg Sell Price"
---[[Translation missing --]]
-L["BACK"] = "BACK"
---[[Translation missing --]]
-L["BACK TO LIST"] = "BACK TO LIST"
---[[Translation missing --]]
-L["Back to List"] = "Back to List"
---[[Translation missing --]]
-L["Bag"] = "Bag"
-L["Bags"] = "包包"
---[[Translation missing --]]
-L["Banks"] = "Banks"
---[[Translation missing --]]
-L["Base Group"] = "Base Group"
---[[Translation missing --]]
-L["Base Item"] = "Base Item"
---[[Translation missing --]]
-L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."] = "Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."
---[[Translation missing --]]
-L["Below custom price:"] = "Below custom price:"
+L["Auto Quest Complete"] = "自動任務完成"
+L["Average Earned Per Day:"] = "每天平均收入："
+L["Average Prices:"] = "平均價格："
+L["Average Profit Per Day:"] = "每日平均利潤："
+L["Average Spent Per Day:"] = "每天平均花費："
+L["Avg Buy Price"] = "平均購買價"
+L["Avg Resale Profit"] = "平均轉售利潤"
+L["Avg Sell Price"] = "平均售價"
+L["BACK"] = "返回"
+L["BACK TO LIST"] = "返回目錄"
+L["Back to List"] = "返回目錄"
+L["Bag"] = "背包"
+L["Bags"] = "背包"
+L["Banks"] = "銀行"
+L["Base Group"] = "基本群組"
+L["Base Item"] = "基礎項目"
+L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."] = "以下是按模組分類的當前可用價格來源。您將在自定義價格框中輸入%skey|r。"
+L["Below custom price:"] = "低於定制價格："
 --[[Translation missing --]]
 L["Below min price. Posting at max price."] = "Below min price. Posting at max price."
 --[[Translation missing --]]
@@ -14964,57 +14870,36 @@ L["Below min price. Posting at min price."] = "Below min price. Posting at min p
 L["Below min price. Posting at normal price."] = "Below min price. Posting at normal price."
 --[[Translation missing --]]
 L["Below, you can manage your profiles which allow you to have entirely different sets of groups."] = "Below, you can manage your profiles which allow you to have entirely different sets of groups."
---[[Translation missing --]]
-L["BID"] = "BID"
---[[Translation missing --]]
-L["Bid %d / %d"] = "Bid %d / %d"
---[[Translation missing --]]
-L["Bid (item)"] = "Bid (item)"
---[[Translation missing --]]
-L["Bid (stack)"] = "Bid (stack)"
---[[Translation missing --]]
-L["Bid Price"] = "Bid Price"
---[[Translation missing --]]
-L["Bid Sniper Paused"] = "Bid Sniper Paused"
---[[Translation missing --]]
-L["Bid Sniper Running"] = "Bid Sniper Running"
---[[Translation missing --]]
-L["Bidding Auction"] = "Bidding Auction"
---[[Translation missing --]]
-L["Blacklisted players:"] = "Blacklisted players:"
+L["BID"] = "出價"
+L["Bid %d / %d"] = "出價%d/%d"
+L["Bid (item)"] = "出價（項目）"
+L["Bid (stack)"] = "出價（堆疊）"
+L["Bid Price"] = "競標"
+L["Bid Sniper Paused"] = "競標狙擊手已暫停"
+L["Bid Sniper Running"] = "競標狙擊手運行"
+L["Bidding Auction"] = "招標拍賣"
+L["Blacklisted players:"] = "列入黑名單的玩家："
 --[[Translation missing --]]
 L["Bought"] = "Bought"
---[[Translation missing --]]
-L["Bought %d of %s from %s for %s"] = "Bought %d of %s from %s for %s"
+L["Bought %d of %s from %s for %s"] = "從%d向%s購買了%s，共%s"
 --[[Translation missing --]]
 L["Bought %sx%d for %s from %s"] = "Bought %sx%d for %s from %s"
 --[[Translation missing --]]
 L["Bound Actions"] = "Bound Actions"
 --[[Translation missing --]]
 L["BUSY"] = "BUSY"
---[[Translation missing --]]
-L["BUY"] = "BUY"
---[[Translation missing --]]
-L["Buy"] = "Buy"
---[[Translation missing --]]
-L["Buy %d / %d"] = "Buy %d / %d"
---[[Translation missing --]]
-L["Buy %d / %d (Confirming %d / %d)"] = "Buy %d / %d (Confirming %d / %d)"
---[[Translation missing --]]
-L["Buy from AH"] = "Buy from AH"
+L["BUY"] = "購買"
+L["Buy"] = "購買"
+L["Buy %d / %d"] = "購買%d/%d"
+L["Buy %d / %d (Confirming %d / %d)"] = "購買%d/%d（確認%d/%d）"
+L["Buy from AH"] = "從AH購買"
 L["Buy from Vendor"] = "向商人購買"
---[[Translation missing --]]
-L["BUY GROUPS"] = "BUY GROUPS"
---[[Translation missing --]]
-L["Buy Options"] = "Buy Options"
---[[Translation missing --]]
-L["BUYBACK ALL"] = "BUYBACK ALL"
---[[Translation missing --]]
-L["Buyer/Seller"] = "Buyer/Seller"
---[[Translation missing --]]
-L["BUYOUT"] = "BUYOUT"
---[[Translation missing --]]
-L["Buyout (item)"] = "Buyout (item)"
+L["BUY GROUPS"] = "購買群組"
+L["Buy Options"] = "購買選項"
+L["BUYBACK ALL"] = "全部回購"
+L["Buyer/Seller"] = "買方/賣方"
+L["BUYOUT"] = "買斷"
+L["Buyout (item)"] = "買斷（項目）"
 --[[Translation missing --]]
 L["Buyout (stack)"] = "Buyout (stack)"
 --[[Translation missing --]]
@@ -15086,8 +14971,7 @@ L["Clear"] = "清除"
 L["Clear All"] = "Clear All"
 --[[Translation missing --]]
 L["CLEAR DATA"] = "CLEAR DATA"
---[[Translation missing --]]
-L["Clear Filters"] = "Clear Filters"
+L["Clear Filters"] = "清除篩選"
 --[[Translation missing --]]
 L["Clear Old Data"] = "Clear Old Data"
 --[[Translation missing --]]
@@ -15107,8 +14991,7 @@ L["Combine Partial Stacks"] = "Combine Partial Stacks"
 L["Combining..."] = "Combining..."
 --[[Translation missing --]]
 L["Configuration Scroll Wheel"] = "Configuration Scroll Wheel"
---[[Translation missing --]]
-L["Confirm"] = "Confirm"
+L["Confirm"] = "確認"
 --[[Translation missing --]]
 L["Confirm Complete Sound"] = "Confirm Complete Sound"
 --[[Translation missing --]]
@@ -15117,16 +15000,11 @@ L["Confirming %d / %d"] = "Confirming %d / %d"
 L["Connected to %s"] = "Connected to %s"
 --[[Translation missing --]]
 L["Connecting to %s"] = "Connecting to %s"
---[[Translation missing --]]
-L["CONTACTS"] = "CONTACTS"
---[[Translation missing --]]
-L["Contacts Menu"] = "Contacts Menu"
---[[Translation missing --]]
-L["Cooldown"] = "Cooldown"
---[[Translation missing --]]
-L["Cooldowns"] = "Cooldowns"
---[[Translation missing --]]
-L["Cost"] = "Cost"
+L["CONTACTS"] = "聯絡人"
+L["Contacts Menu"] = "聯絡簿"
+L["Cooldown"] = "倒數"
+L["Cooldowns"] = "倒數時間"
+L["Cost"] = "成本"
 --[[Translation missing --]]
 L["Could not create macro as you already have too many. Delete one of your existing macros and try again."] = "Could not create macro as you already have too many. Delete one of your existing macros and try again."
 --[[Translation missing --]]
@@ -15135,14 +15013,12 @@ L["Could not find profile '%s'. Possible profiles: '%s'"] = "Could not find prof
 L["Could not sell items due to not having free bag space available to split a stack of items."] = "Could not sell items due to not having free bag space available to split a stack of items."
 --[[Translation missing --]]
 L["Craft"] = "Craft"
---[[Translation missing --]]
-L["CRAFT"] = "CRAFT"
+L["CRAFT"] = "製造"
 --[[Translation missing --]]
 L["Craft (Unprofitable)"] = "Craft (Unprofitable)"
 --[[Translation missing --]]
 L["Craft (When Profitable)"] = "Craft (When Profitable)"
---[[Translation missing --]]
-L["Craft All"] = "Craft All"
+L["Craft All"] = "全部製造"
 --[[Translation missing --]]
 L["CRAFT ALL"] = "CRAFT ALL"
 --[[Translation missing --]]
@@ -15165,8 +15041,7 @@ L["Crafting 'CRAFT NEXT' Button"] = "Crafting 'CRAFT NEXT' Button"
 L["Crafting Queue"] = "Crafting Queue"
 --[[Translation missing --]]
 L["Crafting Tooltips"] = "Crafting Tooltips"
---[[Translation missing --]]
-L["Crafts"] = "Crafts"
+L["Crafts"] = "工藝"
 --[[Translation missing --]]
 L["Crafts %d"] = "Crafts %d"
 --[[Translation missing --]]
@@ -15282,50 +15157,29 @@ L["Disenchanting Options"] = "Disenchanting Options"
 L["Display auctioning values"] = "Display auctioning values"
 --[[Translation missing --]]
 L["Display cancelled since last sale"] = "Display cancelled since last sale"
---[[Translation missing --]]
-L["Display crafting cost"] = "Display crafting cost"
---[[Translation missing --]]
-L["Display detailed destroy info"] = "Display detailed destroy info"
---[[Translation missing --]]
-L["Display disenchant value"] = "Display disenchant value"
---[[Translation missing --]]
-L["Display expired auctions"] = "Display expired auctions"
---[[Translation missing --]]
-L["Display group name"] = "Display group name"
---[[Translation missing --]]
-L["Display historical price"] = "Display historical price"
---[[Translation missing --]]
-L["Display market value"] = "Display market value"
+L["Display crafting cost"] = "展示製作成本"
+L["Display detailed destroy info"] = "顯示詳細的銷毀信息"
+L["Display disenchant value"] = "顯示分解價值"
+L["Display expired auctions"] = "顯示過期的拍賣"
+L["Display group name"] = "顯示群組名稱"
+L["Display historical price"] = "顯示歷史價格"
+L["Display market value"] = "顯示市場價值"
 --[[Translation missing --]]
 L["Display mill value"] = "Display mill value"
---[[Translation missing --]]
-L["Display min buyout"] = "Display min buyout"
---[[Translation missing --]]
-L["Display Operation Names"] = "Display Operation Names"
---[[Translation missing --]]
-L["Display prospect value"] = "Display prospect value"
---[[Translation missing --]]
-L["Display purchase info"] = "Display purchase info"
---[[Translation missing --]]
-L["Display region historical price"] = "Display region historical price"
---[[Translation missing --]]
-L["Display region market value avg"] = "Display region market value avg"
---[[Translation missing --]]
-L["Display region min buyout avg"] = "Display region min buyout avg"
---[[Translation missing --]]
-L["Display region sale avg"] = "Display region sale avg"
---[[Translation missing --]]
-L["Display region sale rate"] = "Display region sale rate"
---[[Translation missing --]]
-L["Display region sold per day"] = "Display region sold per day"
---[[Translation missing --]]
-L["Display sale info"] = "Display sale info"
---[[Translation missing --]]
-L["Display sale rate"] = "Display sale rate"
---[[Translation missing --]]
-L["Display shopping max price"] = "Display shopping max price"
---[[Translation missing --]]
-L["Display total money recieved in chat?"] = "Display total money recieved in chat?"
+L["Display min buyout"] = "顯示最低買斷"
+L["Display Operation Names"] = "顯示操作名稱"
+L["Display prospect value"] = "顯示潛在價值"
+L["Display purchase info"] = "顯示購買信息"
+L["Display region historical price"] = "顯示區域歷史價格"
+L["Display region market value avg"] = "顯示區域市場價值平均值"
+L["Display region min buyout avg"] = "顯示區域最低買斷平均值"
+L["Display region sale avg"] = "顯示區域銷售平均"
+L["Display region sale rate"] = "顯示區域銷售率"
+L["Display region sold per day"] = "每天售出的顯示區域"
+L["Display sale info"] = "顯示銷售信息"
+L["Display sale rate"] = "顯示銷售率"
+L["Display shopping max price"] = "顯示購物最高價"
+L["Display total money recieved in chat?"] = "顯示聊天中收到的總金額？"
 --[[Translation missing --]]
 L["Display transform value"] = "Display transform value"
 --[[Translation missing --]]
@@ -15352,8 +15206,7 @@ L["Don't prompt to record trades"] = "Don't prompt to record trades"
 L["DOWN"] = "DOWN"
 --[[Translation missing --]]
 L["Drag in Additional Items (%d/%d Items)"] = "Drag in Additional Items (%d/%d Items)"
---[[Translation missing --]]
-L["Drag Item(s) Into Box"] = "Drag Item(s) Into Box"
+L["Drag Item(s) Into Box"] = "將物品放在這裡隨郵件發送"
 --[[Translation missing --]]
 L["Duplicate"] = "Duplicate"
 --[[Translation missing --]]
@@ -15425,8 +15278,7 @@ L["Expired"] = "Expired"
 L["Expired Auctions"] = "Expired Auctions"
 --[[Translation missing --]]
 L["Expired Since Last Sale"] = "Expired Since Last Sale"
---[[Translation missing --]]
-L["Expires"] = "Expires"
+L["Expires"] = "信件退回時間"
 --[[Translation missing --]]
 L["EXPIRES"] = "EXPIRES"
 --[[Translation missing --]]
@@ -15483,8 +15335,7 @@ L["Fishing Reel In"] = "Fishing Reel In"
 L["Forget Character"] = "Forget Character"
 --[[Translation missing --]]
 L["Found auction sound"] = "Found auction sound"
---[[Translation missing --]]
-L["Friends"] = "Friends"
+L["Friends"] = "好友"
 --[[Translation missing --]]
 L["From"] = "From"
 --[[Translation missing --]]
@@ -15506,8 +15357,7 @@ L["Global Operation Confirmation"] = "Global Operation Confirmation"
 L["Gold"] = "Gold"
 --[[Translation missing --]]
 L["Gold Earned:"] = "Gold Earned:"
---[[Translation missing --]]
-L["GOLD ON HAND"] = "GOLD ON HAND"
+L["GOLD ON HAND"] = "手上金額"
 --[[Translation missing --]]
 L["Gold Spent:"] = "Gold Spent:"
 --[[Translation missing --]]
@@ -15523,10 +15373,8 @@ L["Group Settings"] = "Group Settings"
 --[[Translation missing --]]
 L["Grouped Items"] = "Grouped Items"
 L["Groups"] = "分組"
---[[Translation missing --]]
-L["Guild"] = "Guild"
---[[Translation missing --]]
-L["Guild Bank"] = "Guild Bank"
+L["Guild"] = "公會"
+L["Guild Bank"] = "公會銀行"
 --[[Translation missing --]]
 L["GVault"] = "GVault"
 --[[Translation missing --]]
@@ -15633,8 +15481,7 @@ L["Invalid search filter"] = "Invalid search filter"
 --[[Translation missing --]]
 L["Invalid seller data returned by server."] = "Invalid seller data returned by server."
 L["Invalid word: '%s'"] = "無效詞：“%s”"
---[[Translation missing --]]
-L["Inventory"] = "Inventory"
+L["Inventory"] = "庫存"
 --[[Translation missing --]]
 L["Inventory / Gold Graph"] = "Inventory / Gold Graph"
 --[[Translation missing --]]
@@ -15666,8 +15513,7 @@ L["ITEM SUBCLASS"] = "ITEM SUBCLASS"
 L["Item Value"] = "Item Value"
 --[[Translation missing --]]
 L["Item/Group is invalid (see chat)."] = "Item/Group is invalid (see chat)."
---[[Translation missing --]]
-L["ITEMS"] = "ITEMS"
+L["ITEMS"] = "物品"
 L["Items"] = "物品"
 --[[Translation missing --]]
 L["Items in Bags"] = "Items in Bags"
@@ -15746,8 +15592,7 @@ L["Mailing Options"] = "Mailing Options"
 L["Mailing up to %d to %s."] = "Mailing up to %d to %s."
 --[[Translation missing --]]
 L["Main Settings"] = "Main Settings"
---[[Translation missing --]]
-L["Make Cash On Delivery?"] = "Make Cash On Delivery?"
+L["Make Cash On Delivery?"] = "付款取信"
 --[[Translation missing --]]
 L["Management Options"] = "Management Options"
 --[[Translation missing --]]
@@ -15814,8 +15659,7 @@ L["Min Buy Price"] = "Min Buy Price"
 L["Min Buyout"] = "Min Buyout"
 --[[Translation missing --]]
 L["Min Sell Price"] = "Min Sell Price"
---[[Translation missing --]]
-L["Min/Normal/Max Prices"] = "Min/Normal/Max Prices"
+L["Min/Normal/Max Prices"] = "最低/一般/最高 售價"
 --[[Translation missing --]]
 L["Minimum Days Old"] = "Minimum Days Old"
 --[[Translation missing --]]
@@ -15829,8 +15673,7 @@ L["MINIMUM RARITY"] = "MINIMUM RARITY"
 --[[Translation missing --]]
 L["Minimum restock quantity:"] = "Minimum restock quantity:"
 L["Misplaced comma"] = "錯誤的逗號分隔"
---[[Translation missing --]]
-L["Missing Materials"] = "Missing Materials"
+L["Missing Materials"] = "缺少材料"
 --[[Translation missing --]]
 L["Missing operator between sets of parenthesis"] = "Missing operator between sets of parenthesis"
 --[[Translation missing --]]
@@ -15939,8 +15782,7 @@ L["Only show craftable"] = "Only show craftable"
 L["Only show items with disenchant value above custom price"] = "Only show items with disenchant value above custom price"
 --[[Translation missing --]]
 L["OPEN"] = "OPEN"
---[[Translation missing --]]
-L["OPEN ALL MAIL"] = "OPEN ALL MAIL"
+L["OPEN ALL MAIL"] = "全部開啓"
 --[[Translation missing --]]
 L["Open Mail"] = "Open Mail"
 --[[Translation missing --]]
@@ -15980,8 +15822,7 @@ L["Per Item"] = "Per Item"
 L["Per Stack"] = "Per Stack"
 --[[Translation missing --]]
 L["Per Unit"] = "Per Unit"
---[[Translation missing --]]
-L["Player Gold"] = "Player Gold"
+L["Player Gold"] = "玩家持有金錢"
 --[[Translation missing --]]
 L["Player Invite Accept"] = "Player Invite Accept"
 --[[Translation missing --]]
@@ -16000,8 +15841,7 @@ L["POST CAP TO BAGS"] = "POST CAP TO BAGS"
 L["Post Scan"] = "Post Scan"
 --[[Translation missing --]]
 L["POST SELECTED"] = "POST SELECTED"
---[[Translation missing --]]
-L["POSTAGE"] = "POSTAGE"
+L["POSTAGE"] = "郵資"
 --[[Translation missing --]]
 L["Postage"] = "Postage"
 --[[Translation missing --]]
@@ -16055,8 +15895,7 @@ L["Profile changed to '%s'."] = "Profile changed to '%s'."
 L["Profiles"] = "配置檔"
 --[[Translation missing --]]
 L["PROFIT"] = "PROFIT"
---[[Translation missing --]]
-L["Profit"] = "Profit"
+L["Profit"] = "利潤"
 --[[Translation missing --]]
 L["Prospect Value"] = "Prospect Value"
 --[[Translation missing --]]
@@ -16069,8 +15908,7 @@ L["Purchased (Total Price)"] = "Purchased (Total Price)"
 L["Purchases"] = "Purchases"
 --[[Translation missing --]]
 L["Purchasing Auction"] = "Purchasing Auction"
---[[Translation missing --]]
-L["Qty"] = "Qty"
+L["Qty"] = "數量"
 --[[Translation missing --]]
 L["Quantity Bought:"] = "Quantity Bought:"
 --[[Translation missing --]]
@@ -16105,10 +15943,8 @@ L["Realm Data Tooltips"] = "Realm Data Tooltips"
 L["Recent Scans"] = "Recent Scans"
 --[[Translation missing --]]
 L["Recent Searches"] = "Recent Searches"
---[[Translation missing --]]
-L["Recently Mailed"] = "Recently Mailed"
---[[Translation missing --]]
-L["RECIPIENT"] = "RECIPIENT"
+L["Recently Mailed"] = "最近郵寄"
+L["RECIPIENT"] = "收件人"
 --[[Translation missing --]]
 L["Region Avg Daily Sold"] = "Region Avg Daily Sold"
 --[[Translation missing --]]
@@ -16243,8 +16079,7 @@ L["Search"] = "Search"
 L["Search Bags"] = "Search Bags"
 --[[Translation missing --]]
 L["Search Groups"] = "Search Groups"
---[[Translation missing --]]
-L["Search Inbox"] = "Search Inbox"
+L["Search Inbox"] = "搜索郵箱"
 --[[Translation missing --]]
 L["Search Operations"] = "Search Operations"
 --[[Translation missing --]]
@@ -16289,8 +16124,7 @@ L["Select which shopping information to display in item tooltips."] = "Select wh
 L["Selected Groups"] = "Selected Groups"
 --[[Translation missing --]]
 L["Selected Operations"] = "Selected Operations"
---[[Translation missing --]]
-L["Sell"] = "Sell"
+L["Sell"] = "售出"
 --[[Translation missing --]]
 L["SELL ALL"] = "SELL ALL"
 --[[Translation missing --]]
@@ -16302,14 +16136,12 @@ L["Sell Options"] = "Sell Options"
 --[[Translation missing --]]
 L["Sell soulbound items?"] = "Sell soulbound items?"
 L["Sell to Vendor"] = "賣給商人"
---[[Translation missing --]]
-L["SELL TRASH"] = "SELL TRASH"
+L["SELL TRASH"] = "售出垃圾"
 --[[Translation missing --]]
 L["Seller"] = "Seller"
 --[[Translation missing --]]
 L["Selling soulbound items."] = "Selling soulbound items."
---[[Translation missing --]]
-L["Send"] = "Send"
+L["Send"] = "發件箱"
 --[[Translation missing --]]
 L["SEND DISENCHANTABLES"] = "SEND DISENCHANTABLES"
 --[[Translation missing --]]
@@ -16318,10 +16150,8 @@ L["Send Excess Gold to Banker"] = "Send Excess Gold to Banker"
 L["SEND GOLD"] = "SEND GOLD"
 --[[Translation missing --]]
 L["Send grouped items individually"] = "Send grouped items individually"
---[[Translation missing --]]
-L["SEND MAIL"] = "SEND MAIL"
---[[Translation missing --]]
-L["Send Money"] = "Send Money"
+L["SEND MAIL"] = "發送"
+L["Send Money"] = "寄送金額"
 --[[Translation missing --]]
 L["Send Profile"] = "Send Profile"
 --[[Translation missing --]]
@@ -16338,26 +16168,22 @@ L["Sending Settings"] = "Sending Settings"
 L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"] = "Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"
 --[[Translation missing --]]
 L["SENDING..."] = "SENDING..."
---[[Translation missing --]]
-L["Set auction duration to:"] = "Set auction duration to:"
+L["Set auction duration to:"] = "設定拍賣週期為"
 --[[Translation missing --]]
 L["Set bid as percentage of buyout:"] = "Set bid as percentage of buyout:"
 --[[Translation missing --]]
 L["Set keep in bags quantity?"] = "Set keep in bags quantity?"
 --[[Translation missing --]]
 L["Set keep in bank quantity?"] = "Set keep in bank quantity?"
---[[Translation missing --]]
-L["Set Maximum Price:"] = "Set Maximum Price:"
+L["Set Maximum Price:"] = "設定最高價格"
 --[[Translation missing --]]
 L["Set maximum quantity?"] = "Set maximum quantity?"
---[[Translation missing --]]
-L["Set Minimum Price:"] = "Set Minimum Price:"
+L["Set Minimum Price:"] = "設定最低價格"
 --[[Translation missing --]]
 L["Set minimum profit?"] = "Set minimum profit?"
 --[[Translation missing --]]
 L["Set move quantity?"] = "Set move quantity?"
---[[Translation missing --]]
-L["Set Normal Price:"] = "Set Normal Price:"
+L["Set Normal Price:"] = "設定一般價格"
 --[[Translation missing --]]
 L["Set post cap to:"] = "Set post cap to:"
 --[[Translation missing --]]
@@ -16371,8 +16197,7 @@ L["Setup"] = "Setup"
 --[[Translation missing --]]
 L["SETUP ACCOUNT SYNC"] = "SETUP ACCOUNT SYNC"
 L["Shards"] = "碎片"
---[[Translation missing --]]
-L["Shopping"] = "Shopping"
+L["Shopping"] = "拍賣"
 --[[Translation missing --]]
 L["Shopping 'BUYOUT' Button"] = "Shopping 'BUYOUT' Button"
 --[[Translation missing --]]
@@ -16399,14 +16224,12 @@ L["Show Destroying frame automatically"] = "Show Destroying frame automatically"
 L["Show material cost"] = "Show material cost"
 --[[Translation missing --]]
 L["Show on Modifier"] = "Show on Modifier"
---[[Translation missing --]]
-L["Showing %d Mail"] = "Showing %d Mail"
+L["Showing %d Mail"] = "顯示 %d 信件"
 --[[Translation missing --]]
 L["Showing %d of %d Mail"] = "Showing %d of %d Mail"
 --[[Translation missing --]]
 L["Showing %d of %d Mails"] = "Showing %d of %d Mails"
---[[Translation missing --]]
-L["Showing all %d Mails"] = "Showing all %d Mails"
+L["Showing all %d Mails"] = "顯示全部 %d 信件"
 --[[Translation missing --]]
 L["Simple"] = "Simple"
 --[[Translation missing --]]
@@ -16480,10 +16303,8 @@ L["Sync Setup Error: This character is already part of a known account."] = "Syn
 L["Sync Setup Error: You entered the name of the current character and not the character on the other account."] = "Sync Setup Error: You entered the name of the current character and not the character on the other account."
 --[[Translation missing --]]
 L["Sync Status"] = "Sync Status"
---[[Translation missing --]]
-L["TAKE ALL"] = "TAKE ALL"
---[[Translation missing --]]
-L["Take Attachments"] = "Take Attachments"
+L["TAKE ALL"] = "全部取回"
+L["Take Attachments"] = "拿取附件"
 --[[Translation missing --]]
 L["Target Character"] = "Target Character"
 --[[Translation missing --]]
@@ -16557,8 +16378,7 @@ L["Top Item:"] = "Top Item:"
 L["Top Sellers:"] = "Top Sellers:"
 --[[Translation missing --]]
 L["Total"] = "Total"
---[[Translation missing --]]
-L["Total Gold"] = "Total Gold"
+L["Total Gold"] = "全部金額"
 --[[Translation missing --]]
 L["Total Gold Collected: %s"] = "Total Gold Collected: %s"
 --[[Translation missing --]]
@@ -16575,8 +16395,7 @@ L["Total Value"] = "Total Value"
 L["Total Value of All Items"] = "Total Value of All Items"
 --[[Translation missing --]]
 L["Track Sales / Purchases via trade"] = "Track Sales / Purchases via trade"
---[[Translation missing --]]
-L["TradeSkillMaster Info"] = "TradeSkillMaster Info"
+L["TradeSkillMaster Info"] = "TradeSkillMaster 資訊"
 --[[Translation missing --]]
 L["Transform Value"] = "Transform Value"
 --[[Translation missing --]]
@@ -16597,8 +16416,7 @@ L["TSM is currently rebuilding its item cache which may cause FPS drops and resu
 L["TSM is missing important information from the TSM Desktop Application. Please ensure the TSM Desktop Application is running and is properly configured."] = "TSM is missing important information from the TSM Desktop Application. Please ensure the TSM Desktop Application is running and is properly configured."
 --[[Translation missing --]]
 L["TSM Mailing"] = "TSM Mailing"
---[[Translation missing --]]
-L["TSM TASK LIST"] = "TSM TASK LIST"
+L["TSM TASK LIST"] = "TSM任務清單"
 --[[Translation missing --]]
 L["TSM Vendoring"] = "TSM Vendoring"
 L["TSM Version Info:"] = "TSM版本資訊:"
@@ -16620,8 +16438,7 @@ L["Twitter Integration"] = "Twitter Integration"
 L["Twitter Integration Not Enabled"] = "Twitter Integration Not Enabled"
 --[[Translation missing --]]
 L["Type"] = "Type"
---[[Translation missing --]]
-L["Type Something"] = "Type Something"
+L["Type Something"] = "輸入某種物品"
 --[[Translation missing --]]
 L["Unable to process import because the target group (%s) no longer exists. Please try again."] = "Unable to process import because the target group (%s) no longer exists. Please try again."
 L["Unbalanced parentheses."] = "缺少括弧。"
@@ -16670,8 +16487,7 @@ L["Vendor Search"] = "Vendor Search"
 L["VENDOR SEARCH"] = "VENDOR SEARCH"
 --[[Translation missing --]]
 L["Vendor Sell"] = "Vendor Sell"
---[[Translation missing --]]
-L["Vendor Sell Price"] = "Vendor Sell Price"
+L["Vendor Sell Price"] = "售價"
 --[[Translation missing --]]
 L["Vendoring 'SELL ALL' Button"] = "Vendoring 'SELL ALL' Button"
 --[[Translation missing --]]
@@ -16751,12 +16567,10 @@ L["Your Buyout"] = "Your Buyout"
 L["Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"] = "Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"
 --[[Translation missing --]]
 L["Your default craft value method was invalid so it has been returned to the default. Details: %s"] = "Your default craft value method was invalid so it has been returned to the default. Details: %s"
---[[Translation missing --]]
-L["Your task list is currently empty."] = "Your task list is currently empty."
+L["Your task list is currently empty."] = "您的任務列表當前為空。"
 --[[Translation missing --]]
 L["You've been phased which has caused the AH to stop working due to a bug on Blizzard's end. Please close and reopen the AH and restart Sniper."] = "You've been phased which has caused the AH to stop working due to a bug on Blizzard's end. Please close and reopen the AH and restart Sniper."
---[[Translation missing --]]
-L["You've been undercut."] = "You've been undercut."
+L["You've been undercut."] = "你已經被削價了。"
 	else
 		error("Unknown locale: "..tostring(locale))
 	end
