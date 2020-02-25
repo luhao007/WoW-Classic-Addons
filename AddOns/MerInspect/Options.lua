@@ -17,8 +17,8 @@ end})
 
 local DefaultDB = {
     version = VERSION,
-    ShowItemSlotString = true,              --物品部位文字
     ShowItemBorder = true,                  --物品直角邊框
+    ShowItemSlotString = false,              --物品部位文字
     ShowCharacterItemSheet = false,          --玩家自己裝備列表
     ShowCharacterItemStats = false,          --玩家自己屬性統計
     ShowInspectAngularBorder = false,       --觀察面板直角邊框

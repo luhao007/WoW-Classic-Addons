@@ -7,7 +7,7 @@ local defaults = {
         Border = true,
         Invert = false,
         HideText = false,
-        DisplayWhenFull = true,
+        DisplayWhenFull = false,
         modules = {
             ["Inspect"] = true,
         },
