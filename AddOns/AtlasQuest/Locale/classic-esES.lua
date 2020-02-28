@@ -2851,7 +2851,7 @@ Inst16Quest12name1 = "Collar de mejoría de Talvash"
 
 --Quest 13 Alliance
 Inst16Quest13 = "13. Componentes de Uldaman" -- 17
-Inst16Quest13_Aim = "Lleva 12 setas magenta a Ghak Sanadón a Thelsamar."
+Inst16Quest13_Aim = "Lleva 12 setas moradas a Ghak Sanadón a Thelsamar."
 Inst16Quest13_Location = "Ghak Sanadón (Loch Modan - Thelsamar; "..YELLOW.."37,49"..WHITE..")"
 Inst16Quest13_Note = "Las setas están desperdigadas a través de toda la estancia. Se puede rastrear las hierbas si tienes la profesión Botánica."
 Inst16Quest13_Prequest = "Componentes de Tierras Inhóspitas" -- 2500
@@ -2870,7 +2870,7 @@ Inst16Quest14_Folgequest = "Ninguno"
 
 --Quest 15 Alliance
 Inst16Quest15 = "15. Los discos de platino" -- 2278 -> 2439
-Inst16Quest15_Aim = "Habla con el vigía de piedra y descubre qué conocimiento antiguo alberga. Cuando hayas adquirido el conocimiento que te ofrece, activa los Discos de Norgannon. -> Lleva la reproducción en miniatura de los Discos de Norgannon a la Liga de Expedicionarios de Forjaz."
+Inst16Quest15_Aim = "Habla con el guardapiedras y descubre qué conocimiento antiguo alberga. Cuando hayas adquirido el conocimiento que te ofrece, activa los Discos de Norgannon. -> Lleva la reproducción en miniatura de los Discos de Norgannon a la Liga de Expedicionarios de Forjaz."
 Inst16Quest15_Location = "Los Discos de Norgannon (Uldaman; "..YELLOW.."[11]"..WHITE..")"
 Inst16Quest15_Note = "Despúes de adquirir la misión, habla con el vigía de piedra a la izquierda de los discos. Usa los discos de platino para recibir los discos de platino en miniatura y llévaselos al Alto expedicionario Magellas en Forjaz - Sala de los Exploradores ("..YELLOW.."69,18"..WHITE.."). La misión siguiente empieza con un PNJ que está cerca."
 Inst16Quest15_Prequest = "Ninguno"
@@ -3615,7 +3615,7 @@ Inst20Quest8_HORDE_Note = "Solamente para Chamanes: Devuelves el libro al Tradic
 Inst20Quest8_HORDE_Prequest = "Ninguno"
 Inst20Quest8_HORDE_Folgequest = "Ninguno"
 --
-Inst20Quest11name1 = "Lacre real de Eldre'Thalas"
+Inst20Quest8name1_HORDE = "Lacre real de Eldre'Thalas"
 
 --Quest 9 Horde  (same as Quest 9 Alliance)
 Inst20Quest9_HORDE = Inst20Quest9

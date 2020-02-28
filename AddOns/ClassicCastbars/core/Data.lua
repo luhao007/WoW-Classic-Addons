@@ -1729,9 +1729,8 @@ namespace.unaffectedCastModsSpells = {
 
 -- Addon Savedvariables
 namespace.defaultConfig = {
-    version = "15", -- settings version
+    version = "16", -- settings version
     pushbackDetect = true,
-    movementDetect = true,
     locale = GetLocale(),
 
     nameplate = {
@@ -1844,7 +1843,7 @@ namespace.defaultConfig = {
 
     player = {
         enabled = false,
-        width = 195,
+        width = 190,
         height = 20,
         iconSize = 22,
         showCastInfoOnly = false,
@@ -1864,7 +1863,7 @@ namespace.defaultConfig = {
         statusColorChannel = { 0, 1, 0, 1 },
         textColor = { 1, 1, 1, 1 },
         textPositionX = 0,
-        textPositionY = 0,
+        textPositionY = 1,
         frameLevel = 10,
         statusBackgroundColor = { 0, 0, 0, 0.535 },
     },

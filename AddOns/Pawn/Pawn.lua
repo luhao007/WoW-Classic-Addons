@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0322
+PawnVersion = 2.0323
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.11
@@ -210,6 +210,9 @@ function PawnInitialize()
 		-- causes the detection to fail, so just directly check the version.
 		hooksecurefunc(GameTooltip, "SetAuctionItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetAuctionItem", ...) end)
 		hooksecurefunc(GameTooltip, "SetAuctionSellItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetAuctionSellItem", ...) end)
+	end
+	if not VgerCore.IsClassic then
+		hooksecurefunc(GameTooltip, "SetItemKey", function(self, ItemID, ItemLevel, Suffix, ...) PawnUpdateTooltip("GameTooltip", "SetItemKey", ItemID, ItemLevel, Suffix, ...) end)
 	end
 	hooksecurefunc(GameTooltip, "SetBagItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetBagItem", ...) end)
 	hooksecurefunc(GameTooltip, "SetBuybackItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetBuybackItem", ...) end)

@@ -74,9 +74,7 @@ end
 
 function Lib:Update(panel, selection)
 	local secureTabs = self.tabs[panel]
-	if not secureTabs then
-		return
-	end
+	if not secureTabs then return end
 
 	for i, tab in ipairs(secureTabs) do
 		local selected = tab == selection

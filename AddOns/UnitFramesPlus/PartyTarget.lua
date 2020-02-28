@@ -183,17 +183,16 @@ end
 function UnitFramesPlus_PartyTargetDisplayUpdate(id)
     local unit = "party"..id.."target";
     if UnitExists(unit) then
-        local name = UnitName(unit);
-        -- local name, realm = UnitName(unit);
-        -- local fullname = name;
-        -- if realm then
-        --     if UnitFramesPlusDB["partytarget"]["shortname"] == 1 then
-        --         fullname = name.."(*)";
-        --     else
-        --         fullname = name.."-"..realm;
-        --     end
-        -- end
-        -- _G["UFP_PartyTarget"..id].Name:SetText(fullname);
+        -- short name
+        local name, realm = UnitName(unit);
+        local fullname = name;
+        if realm and realm ~= "" then
+            if UnitFramesPlusDB["partytarget"]["shortname"] == 1 then
+                fullname = name.."(*)";
+            else
+                fullname = name.."-"..realm;
+            end
+        end
         _G["UFP_PartyTarget"..id].Name:SetText(name);
 
         local color = NORMAL_FONT_COLOR;

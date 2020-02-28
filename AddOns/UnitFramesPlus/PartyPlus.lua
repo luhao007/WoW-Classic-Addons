@@ -66,26 +66,28 @@ end
 
 --非战斗状态中允许shift+左键拖动队友头像
 local function UnitFramesPlus_PartyShiftDrag()
-    PartyMemberFrame1:SetScript("OnMouseDown", function(self, elapsed)
-        if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["movable"] == 1 then
-            if IsShiftKeyDown() and (not InCombatLockdown()) then
-                PartyMemberFrame1:StartMoving();
-                UnitFramesPlusVar["party"]["moving"] = 1;
+    for id = 1, 4, 1 do
+        _G["PartyMemberFrame"..id]:SetScript("OnMouseDown", function(self, elapsed)
+            if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["movable"] == 1 then
+                if IsShiftKeyDown() and (not InCombatLockdown()) then
+                    PartyMemberFrame1:StartMoving();
+                    UnitFramesPlusVar["party"]["moving"] = 1;
+                end
             end
-        end
-    end)
+        end)
 
-    PartyMemberFrame1:SetScript("OnMouseUp", function(self, elapsed)
-        if UnitFramesPlusVar["party"]["moving"] == 1 then
-            PartyMemberFrame1:StopMovingOrSizing();
-            UnitFramesPlusVar["party"]["moving"] = 0;
-            UnitFramesPlusVar["party"]["moved"] = 1;
-            local left = PartyMemberFrame1:GetLeft();
-            local bottom = PartyMemberFrame1:GetBottom();
-            UnitFramesPlusVar["party"]["x"] = left;
-            UnitFramesPlusVar["party"]["y"] = bottom;
-        end
-    end)
+        _G["PartyMemberFrame"..id]:SetScript("OnMouseUp", function(self, elapsed)
+            if UnitFramesPlusVar["party"]["moving"] == 1 then
+                PartyMemberFrame1:StopMovingOrSizing();
+                UnitFramesPlusVar["party"]["moving"] = 0;
+                UnitFramesPlusVar["party"]["moved"] = 1;
+                local left = PartyMemberFrame1:GetLeft();
+                local bottom = PartyMemberFrame1:GetBottom();
+                UnitFramesPlusVar["party"]["x"] = left;
+                UnitFramesPlusVar["party"]["y"] = bottom;
+            end
+        end)
+    end
 
     PartyMemberFrame1:SetMovable(1);
     PartyMemberFrame1:SetClampedToScreen(1);
@@ -257,8 +259,7 @@ function UnitFramesPlus_PartyName()
             _G["UFP_PartyColorName"..id]:RegisterUnitEvent("UNIT_PET", "party"..id);
             _G["UFP_PartyColorName"..id]:SetScript("OnEvent", function(self, event, ...)
                 -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
-                    UnitFramesPlus_PartyColorNameDisplayUpdate(id);
-                    UnitFramesPlus_PartyShortNameDisplayUpdate(id);
+                    UnitFramesPlus_PartyNameDisplayUpdate(id);
                 -- end
             end)
         else
@@ -270,23 +271,13 @@ function UnitFramesPlus_PartyName()
     end
 end
 
---设置插件时刷新队友名字染色显示
-function UnitFramesPlus_PartyColorNameDisplayUpdate(id)
+--设置插件时刷新队友名字显示
+function UnitFramesPlus_PartyNameDisplayUpdate(id)
     if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
-        local color = NORMAL_FONT_COLOR;
-        if UnitFramesPlusDB["party"]["colorname"] == 1 then
-            color = RAID_CLASS_COLORS[select(2, UnitClass(_G["PartyMemberFrame"..id].unit))] or NORMAL_FONT_COLOR;
-        end
-        _G["PartyMemberFrame"..id].name:SetTextColor(color.r, color.g, color.b);
-    end
-end
-
---设置插件时隐藏队友服务器显示
-function UnitFramesPlus_PartyShortNameDisplayUpdate(id)
-    if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
+        -- short name
         local name, realm = UnitName("party"..id);
         local fullname = name;
-        if realm then
+        if realm and realm ~= "" then
             if UnitFramesPlusDB["party"]["shortname"] == 1 then
                 fullname = name.."(*)";
             else
@@ -294,6 +285,13 @@ function UnitFramesPlus_PartyShortNameDisplayUpdate(id)
             end
         end
         _G["PartyMemberFrame"..id].name:SetText(fullname);
+
+        -- color name
+        local color = NORMAL_FONT_COLOR;
+        if UnitFramesPlusDB["party"]["colorname"] == 1 then
+            color = RAID_CLASS_COLORS[select(2, UnitClass("party"..id))] or NORMAL_FONT_COLOR;
+        end
+        _G["PartyMemberFrame"..id].name:SetTextColor(color.r, color.g, color.b);
     end
 end
 
@@ -469,17 +467,17 @@ for id = 1, 4, 1 do
     PartyHPPct.Text:SetTextColor(1, 0.82, 0);
     PartyHPPct.Text:SetJustifyH("LEFT");
 
-    --队友死亡、灵魂提示
-    local PartyDeath = CreateFrame("Frame", "UFP_PartyDeath"..id,  _G["PartyMemberFrame"..id]);
-    PartyDeath:SetAttribute("unit", "party"..id);
-    RegisterUnitWatch(PartyDeath);
-    PartyDeath:SetFrameLevel(7);
-    PartyDeath.Text = PartyDeath:CreateFontString("PartyMemberFrame"..id.."DeathText", "OVERLAY", "GameTooltipText");
-    PartyDeath.Text:ClearAllPoints();
-    PartyDeath.Text:SetPoint("CENTER", _G["PartyMemberFrame"..id.."Portrait"], "CENTER", 0, 0);
-    PartyDeath.Text:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
-    PartyDeath.Text:SetTextColor(1, 1, 1);
-    PartyDeath.Text:SetJustifyH("CENTER");
+    -- --队友死亡、灵魂提示
+    -- local PartyDeath = CreateFrame("Frame", "UFP_PartyDeath"..id,  _G["PartyMemberFrame"..id]);
+    -- PartyDeath:SetAttribute("unit", "party"..id);
+    -- RegisterUnitWatch(PartyDeath);
+    -- PartyDeath:SetFrameLevel(7);
+    -- PartyDeath.Text = PartyDeath:CreateFontString("PartyMemberFrame"..id.."DeathText", "OVERLAY", "GameTooltipText");
+    -- PartyDeath.Text:ClearAllPoints();
+    -- PartyDeath.Text:SetPoint("CENTER", _G["PartyMemberFrame"..id.."Portrait"], "CENTER", 0, 0);
+    -- PartyDeath.Text:SetFont(GameFontNormal:GetFont(), 12, "OUTLINE");
+    -- PartyDeath.Text:SetTextColor(1, 1, 1);
+    -- PartyDeath.Text:SetJustifyH("CENTER");
 end
 
 function UnitFramesPlus_PartyHealthPct()
@@ -547,16 +545,16 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
             end
         end
 
-        if UnitFramesPlusDB["party"]["death"] == 1 then
-            if UnitIsDead("party"..id) then
-                DeathText = UFPLocal_DeathText;
-            elseif UnitIsGhost("party"..id) then
-                DeathText = UFPLocal_GhostText;
-            end
-        end
+        -- if UnitFramesPlusDB["party"]["death"] == 1 then
+        --     if UnitIsDead("party"..id) then
+        --         DeathText = UFPLocal_DeathText;
+        --     elseif UnitIsGhost("party"..id) then
+        --         DeathText = UFPLocal_GhostText;
+        --     end
+        -- end
     end
     _G["UFP_PartyHPPct"..id].Text:SetText(PctText);
-    _G["UFP_PartyDeath"..id].Text:SetText(DeathText);
+    -- _G["UFP_PartyDeath"..id].Text:SetText(DeathText);
 
     _G["PartyMemberFrame"..id.."HealthBarText"]:SetText(HPText);
     -- _G["PartyMemberFrame"..id.."ManaBarText"]:SetText(MPText);
@@ -623,75 +621,75 @@ function UnitFramesPlus_PartyPortraitIndicator()
     end
 end
 
---队友离线检测
-for id = 1, 4, 1 do
-    local PartyOfflineStatus = _G["PartyMemberFrame"..id]:CreateTexture("UFP_PartyOfflineStatus"..id, "OVERLAY", _G["PartyMemberFrame"..id]);
-    _G["UFP_PartyOfflineStatus"..id]:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon");
-    _G["UFP_PartyOfflineStatus"..id]:SetWidth(64);
-    _G["UFP_PartyOfflineStatus"..id]:SetHeight(64);
-    _G["UFP_PartyOfflineStatus"..id]:ClearAllPoints();
-    _G["UFP_PartyOfflineStatus"..id]:SetPoint("LEFT", _G["PartyMemberFrame"..id], "LEFT", -7, -1);
-    _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
-end
+-- --队友离线检测
+-- for id = 1, 4, 1 do
+--     local PartyOfflineStatus = _G["PartyMemberFrame"..id]:CreateTexture("UFP_PartyOfflineStatus"..id, "OVERLAY", _G["PartyMemberFrame"..id]);
+--     _G["UFP_PartyOfflineStatus"..id]:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon");
+--     _G["UFP_PartyOfflineStatus"..id]:SetWidth(64);
+--     _G["UFP_PartyOfflineStatus"..id]:SetHeight(64);
+--     _G["UFP_PartyOfflineStatus"..id]:ClearAllPoints();
+--     _G["UFP_PartyOfflineStatus"..id]:SetPoint("LEFT", _G["PartyMemberFrame"..id], "LEFT", -7, -1);
+--     _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
+-- end
 
-local pm = CreateFrame("Frame");
-function UnitFramesPlus_PartyOfflineDetection()
-    if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["onoff"] == 1 then
-        pm:RegisterEvent("PLAYER_ENTERING_WORLD");
-        pm:RegisterEvent("GROUP_ROSTER_UPDATE");
-        pm:RegisterEvent("PARTY_LEADER_CHANGED");
-        pm:RegisterEvent("PARTY_MEMBER_ENABLE");
-        pm:RegisterEvent("PARTY_MEMBER_DISABLE");
-        pm:RegisterEvent("UNIT_CONNECTION");
-        pm:SetScript("OnEvent", function(self, event, ...)
-            -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
-                if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" then
-                    UnitFramesPlus_PartyOfflineDetectionDisplayUpdate();
-                elseif event == "UNIT_CONNECTION" then
-                    local unit, hasConnected = ...;
-                    for id = 1, 4, 1 do
-                        if UnitExists("party"..id) and unit == "party"..id then
-                            if hasConnected == false then
-                                -- _G["PartyMemberFrame"..id]:SetAlpha(0.5);
-                                _G["UFP_PartyOfflineStatus"..id]:SetAlpha(1);
-                            else
-                                -- _G["PartyMemberFrame"..id]:SetAlpha(1);
-                                _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
-                            end
-                        end
-                    end
-                end
-            -- end
-        end)
-    else
-        for id = 1, 4, 1 do
-            -- _G["PartyMemberFrame"..id]:SetAlpha(1);
-            _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
-        end
-        if pm:IsEventRegistered("PLAYER_ENTERING_WORLD") then
-            pm:UnregisterAllEvents();
-            pm:SetScript("OnEvent", nil);
-        end
-    end
-end
+-- local pm = CreateFrame("Frame");
+-- function UnitFramesPlus_PartyOfflineDetection()
+--     if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["onoff"] == 1 then
+--         pm:RegisterEvent("PLAYER_ENTERING_WORLD");
+--         pm:RegisterEvent("GROUP_ROSTER_UPDATE");
+--         pm:RegisterEvent("PARTY_LEADER_CHANGED");
+--         pm:RegisterEvent("PARTY_MEMBER_ENABLE");
+--         pm:RegisterEvent("PARTY_MEMBER_DISABLE");
+--         pm:RegisterEvent("UNIT_CONNECTION");
+--         pm:SetScript("OnEvent", function(self, event, ...)
+--             -- if tonumber(GetCVar("useCompactPartyFrames")) ~= 1 then
+--                 if event == "PLAYER_ENTERING_WORLD" or event == "GROUP_ROSTER_UPDATE" or event == "PARTY_LEADER_CHANGED" or event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" then
+--                     UnitFramesPlus_PartyOfflineDetectionDisplayUpdate();
+--                 elseif event == "UNIT_CONNECTION" then
+--                     local unit, hasConnected = ...;
+--                     for id = 1, 4, 1 do
+--                         if UnitExists("party"..id) and unit == "party"..id then
+--                             if hasConnected == false then
+--                                 -- _G["PartyMemberFrame"..id]:SetAlpha(0.5);
+--                                 _G["UFP_PartyOfflineStatus"..id]:SetAlpha(1);
+--                             else
+--                                 -- _G["PartyMemberFrame"..id]:SetAlpha(1);
+--                                 _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
+--                             end
+--                         end
+--                     end
+--                 end
+--             -- end
+--         end)
+--     else
+--         for id = 1, 4, 1 do
+--             -- _G["PartyMemberFrame"..id]:SetAlpha(1);
+--             _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
+--         end
+--         if pm:IsEventRegistered("PLAYER_ENTERING_WORLD") then
+--             pm:UnregisterAllEvents();
+--             pm:SetScript("OnEvent", nil);
+--         end
+--     end
+-- end
 
---刷新队友离线检测显示
-function UnitFramesPlus_PartyOfflineDetectionDisplayUpdate()
-    for id = 1, 4, 1 do
-        if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["onoff"] == 1 then
-            if not UnitIsConnected("party"..id) then
-                -- _G["PartyMemberFrame"..id]:SetAlpha(0.5);
-                _G["UFP_PartyOfflineStatus"..id]:SetAlpha(1);
-            else
-                -- _G["PartyMemberFrame"..id]:SetAlpha(1);
-                _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
-            end
-        else
-            -- _G["PartyMemberFrame"..id]:SetAlpha(1);
-            _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
-        end
-    end
-end
+-- --刷新队友离线检测显示
+-- function UnitFramesPlus_PartyOfflineDetectionDisplayUpdate()
+--     for id = 1, 4, 1 do
+--         if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["onoff"] == 1 then
+--             if not UnitIsConnected("party"..id) then
+--                 -- _G["PartyMemberFrame"..id]:SetAlpha(0.5);
+--                 _G["UFP_PartyOfflineStatus"..id]:SetAlpha(1);
+--             else
+--                 -- _G["PartyMemberFrame"..id]:SetAlpha(1);
+--                 _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
+--             end
+--         else
+--             -- _G["PartyMemberFrame"..id]:SetAlpha(1);
+--             _G["UFP_PartyOfflineStatus"..id]:SetAlpha(0);
+--         end
+--     end
+-- end
 
 -- local frf = CreateFrame("Frame");
 -- function UnitFramesPlus_FrameRangeFade()
@@ -731,8 +729,8 @@ local UnitFramesPlusBuffFilter = {
     nil,
     "CANCELABLE",
     "NOT_CANCELABLE",
-    "RAID",
-    "PLAYER",
+    -- "RAID",
+    -- "PLAYER",
     -- "CANCELABLE|PLAYER",
     -- "NOT_CANCELABLE|PLAYER",
     -- "CANCELABLE|RAID",
@@ -858,6 +856,7 @@ for id = 1, 4, 1 do
             GameTooltip:Hide();
         end)
     end
+
     _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:ClearAllPoints();
     _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:SetPoint("LEFT", _G["PartyMemberFrame"..id.."PetFrame"], "RIGHT", -3, -1);
     -- for j = 1, UFP_MAX_PARTY_PET_DEBUFFS, 1 do
@@ -876,8 +875,6 @@ for id = 1, 4, 1 do
     --     RegisterUnitWatch(petdebuff);
 
     --     petdebuff.Icon = petdebuff:CreateTexture("UFP_PartyPetMemberFrame"..id.."Debuff"..j.."Icon", "ARTWORK");
-    --     petdebuff.Icon:SetWidth(14);
-    --     petdebuff.Icon:SetHeight(14);
     --     petdebuff.Icon:ClearAllPoints();
     --     petdebuff.Icon:SetAllPoints(petdebuff);
 
@@ -904,7 +901,7 @@ for id = 1, 4, 1 do
     --     petdebuff.CountText:SetPoint("BOTTOMRIGHT", petdebuff.Icon, "BOTTOMRIGHT", 0, 0);
 
     --     petdebuff.Border = petdebuff:CreateTexture("UFP_PartyPetMemberFrame"..id.."Debuff"..j.."Border", "OVERLAY");
-    --     petdebuff.Border:SetTexture("Interface\\Buttons\\UI-Dedebuff-Overlays");
+    --     petdebuff.Border:SetTexture("Interface\\Buttons\\UI-Debuff-Overlays");
     --     petdebuff.Border:SetWidth(17);
     --     petdebuff.Border:SetHeight(17);
     --     petdebuff.Border:SetTexCoord(0.296875, 0.5703125, 0, 0.515625);
@@ -1149,8 +1146,9 @@ function UnitFramesPlus_PartyPositionSet()
         PartyMemberFrame1:ClearAllPoints();
         PartyMemberFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["party"]["x"], UnitFramesPlusVar["party"]["y"]);
     else
-        if not PartyMemberFrame1:GetPoint() then
-            PartyMemberFrame1:SetPoint("TOPLEFT", 10, -160)
+        if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
+            PartyMemberFrame1:ClearAllPoints();
+            PartyMemberFrame1:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 10, -160)
         end
     end
 end
@@ -1286,91 +1284,6 @@ function UnitFramesPlus_PartyBarTextMouseShow()
     end
 end
 
--- local sf;
--- StaticPopupDialogs["UFP_HIDERAIDFRAME"] = {
---     text = UFPLocal_HideRaid,
---     button1 = RELOADUI,
---     OnAccept = function()
---         sf("Blizzard_CompactRaidFrames");
---         sf("Blizzard_CUFProfiles");
---         ReloadUI();
---     end,
---     whileDead = 1, hideOnEscape = 1, showAlert = 1
--- }
--- function UnitFramesPlus_HideRaidFrameSet()
---     local state = IsAddOnLoaded("Blizzard_CompactRaidFrames")
---     if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["hideraid"] == 1 then
---         sf = DisableAddOn;
---         if state == true then
---             StaticPopup_Show("UFP_HIDERAIDFRAME");
---         end
---     else
---         sf = EnableAddOn;
---         if state == false then
---             StaticPopup_Show("UFP_HIDERAIDFRAME");
---         end
---     end
--- end
-
-local _GetDisplayedAllyFrames = GetDisplayedAllyFrames;
-function GetDisplayedAllyFrames()
-    local useCompact = GetCVarBool("useCompactPartyFrames")
-    if ( IsInGroup() and (IsInRaid() or useCompact) and (UnitFramesPlusDB["party"]["origin"] ~= 1 or UnitFramesPlusDB["party"]["hideraid"] ~= 1) ) then
-        return "raid";
-    elseif ( IsInGroup() ) then
-        return "party";
-    else
-        return nil;
-    end
-end
-
-function UnitFramesPlus_PartyMemberFrame_UpdateMember()
-    for id = 1, 4, 1 do
-        if UnitExists("party"..id) then
-            PartyMemberFrame_UpdateMember(_G["PartyMemberFrame"..id])
-        end
-    end
-end
-
-local CompactRaidFrameManager_Show;
-function UnitFramesPlus_CompactRaidFrameManager_DisplayUpdate()
-    if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["hideraid"] == 1 then
-        local state = IsAddOnLoaded("Blizzard_CompactRaidFrames")
-        if state == true then
-            CompactRaidFrameManager.Show = function() end
-            CompactRaidFrameManager:Hide();
-        end
-    else
-        if GetDisplayedAllyFrames() == "raid" then
-            local state = IsAddOnLoaded("Blizzard_CompactRaidFrames")
-            if state == true then
-                CompactRaidFrameManager.Show = CompactRaidFrameManager_Show;
-                CompactRaidFrameManager_UpdateShown(CompactRaidFrameManager);
-                CompactRaidFrameManager_UpdateDisplayCounts(CompactRaidFrameManager);
-                CompactRaidFrameManager_UpdateRaidIcons();
-            end
-        end
-    end
-end
-
-function UnitFramesPlus_HideRaidFrameSet()
-    UnitFramesPlus_CompactRaidFrameManager_DisplayUpdate();
-    UnitFramesPlus_PartyMemberFrame_UpdateMember();
-end
-
-function UnitFramesPlus_HideRaidFrame()
-    if not InCombatLockdown() then
-        UnitFramesPlus_HideRaidFrameSet();
-    else
-        local func = {};
-        func.name = "UnitFramesPlus_HideRaidFrameSet";
-        func.callback = function()
-            UnitFramesPlus_HideRaidFrameSet();
-        end;
-        UnitFramesPlus_WaitforCall(func);
-    end
-end
-
 function UnitFramesPlus_PartyPetSet()
     if UnitFramesPlusDB["party"]["pet"] == 0 then
         if GetCVar("showPartypets") == "1" then
@@ -1409,94 +1322,51 @@ function UnitFramesPlus_PartyPet()
     end
 end
 
-local UFP_Party_UpdateQueued = false
-local UnitFramesPlus_PartyMemberFrame_UpdateMember = PartyMemberFrame_UpdateMember;
-function PartyMemberFrame_UpdateMember(self)
-    if ( GetDisplayedAllyFrames() ~= "party" ) then
-        self:Hide();
-        UpdatePartyMemberBackground();
-        return;
-    end
-    local id = self:GetID();
-    local unit = "party"..id;
-    if ( UnitExists(unit) ) then
-        if InCombatLockdown() then
-            UFP_Party_UpdateQueued = true
-        else
-            self:Show();
+local sf;
+StaticPopupDialogs["UFP_HIDERAIDFRAME"] = {
+    text = UFPLocal_HideRaid,
+    button1 = OKAY,
+    button2 = CANCEL,
+    OnAccept = function()
+        sf("Blizzard_CompactRaidFrames");
+        sf("Blizzard_CUFProfiles");
+        ReloadUI();
+    end,
+    OnCancel = function()
+        UnitFramesPlusDB["party"]["hideraid"] = 1 - UnitFramesPlusDB["party"]["hideraid"];
+        if IsAddOnLoaded("UnitFramesPlus_Options") then
+            _G["UnitFramesPlus_OptionsFrame_PartyHideRaid"]:SetChecked(UnitFramesPlusDB["party"]["hideraid"]==1);
         end
-
-        if VoiceActivityManager then
-            local guid = UnitGUID(unit);
-            VoiceActivityManager:RegisterFrameForVoiceActivityNotifications(self, guid, nil, "VoiceActivityNotificationPartyTemplate", "Button", PartyMemberFrame_VoiceActivityNotificationCreatedCallback);
+    end,
+    whileDead = 1, hideOnEscape = 1, showAlert = 1
+}
+function UnitFramesPlus_HideRaidFrameSet()
+    local state = IsAddOnLoaded("Blizzard_CompactRaidFrames");
+    if UnitFramesPlusDB["party"]["hideraid"] == 1 then
+        sf = DisableAddOn;
+        if state == true then
+            StaticPopup_Show("UFP_HIDERAIDFRAME");
         end
-
-        UnitFrame_Update(self, true);
     else
-        if VoiceActivityManager then
-            VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
-            self.voiceNotification = nil;
-        end
-        if InCombatLockdown() then
-            UFP_Party_UpdateQueued = true
-        else
-            self:Hide();
+        sf = EnableAddOn;
+        if state == false then
+            StaticPopup_Show("UFP_HIDERAIDFRAME");
         end
     end
-    PartyMemberFrame_UpdatePet(self);
-    PartyMemberFrame_UpdatePvPStatus(self);
-    RefreshDebuffs(self, "party"..id, nil, nil, true);
-    PartyMemberFrame_UpdateVoiceStatus(self);
-    PartyMemberFrame_UpdateReadyCheck(self);
-    PartyMemberFrame_UpdateOnlineStatus(self);
-    PartyMemberFrame_UpdateNotPresentIcon(self);
-    UpdatePartyMemberBackground();
 end
 
-local UFP_PartyPet_UpdateQueued = false
-local UnitFramesPlus_PartyMemberFrame_UpdatePet = PartyMemberFrame_UpdatePet;
-function PartyMemberFrame_UpdatePet(self, id)
-    if ( not id ) then
-        id = self:GetID();
-    end
-
-    local frameName = "PartyMemberFrame"..id;
-    local petFrame = _G["PartyMemberFrame"..id.."PetFrame"];
-
-    if InCombatLockdown() then
-        UFP_PartyPet_UpdateQueued = true
+function UnitFramesPlus_HideRaidFrame()
+    if not InCombatLockdown() then
+        UnitFramesPlus_HideRaidFrameSet();
     else
-        if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" ) then
-            petFrame:Show();
-            petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -43);
-        else
-            petFrame:Hide();
-            petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
-        end
+        local func = {};
+        func.name = "UnitFramesPlus_HideRaidFrameSet";
+        func.callback = function()
+            UnitFramesPlus_HideRaidFrameSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
     end
-
-    PartyMemberFrame_RefreshPetDebuffs(self, id);
-    UpdatePartyMemberBackground();
 end
-
-local ft = CreateFrame("Frame");
-ft:RegisterEvent("PLAYER_REGEN_ENABLED");
-ft:SetScript("OnEvent", function(self, event, ...)
-    if (event == "PLAYER_REGEN_ENABLED") then
-        if UFP_Party_UpdateQueued then
-            for id=1, MAX_PARTY_MEMBERS do
-                PartyMemberFrame_UpdateMember(_G["PartyMemberFrame"..id], id);
-            end
-            UFP_Party_UpdateQueued = false;
-        end
-        if UFP_PartyPet_UpdateQueued then
-            for id=1, MAX_PARTY_MEMBERS do
-                PartyMemberFrame_UpdatePet(_G["PartyMemberFrame"..id], id);
-            end
-            UFP_PartyPet_UpdateQueued = false;
-        end
-    end
-end)
 
 function UnitFramesPlus_PartyExtraTextFontSize()
     for id = 1, 4, 1 do
@@ -1504,16 +1374,25 @@ function UnitFramesPlus_PartyExtraTextFontSize()
         _G["PartyMemberFrame"..id.."ManaBarText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
         _G["PartyMemberFrame"..id.."Level"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
         _G["PartyMemberFrame"..id.."HPPct"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"], "OUTLINE");
-        _G["PartyMemberFrame"..id.."DeathText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"]+2, "OUTLINE");
+        -- _G["PartyMemberFrame"..id.."DeathText"]:SetFont(GameFontNormal:GetFont(), UnitFramesPlusDB["party"]["fontsize"]+2, "OUTLINE");
 
         _G["PartyMemberFrame"..id.."Name"]:SetFont(GameFontNormalSmall:GetFont(), UnitFramesPlusDB["party"]["fontsize"]+2);
     end
 end
 
+function UnitFramesPlus_PartyMemberFrameFix()
+    for id = 1, 4, 1 do
+        _G["PartyMemberFrame"..id.."NotPresentIcon"]:ClearAllPoints();
+        _G["PartyMemberFrame"..id.."NotPresentIcon"]:SetPoint("RIGHT", _G["PartyMemberFrame"..id], "LEFT", -2, 0);
+    end
+end
+
 --模块初始化
 function UnitFramesPlus_PartyInit()
+    UnitFramesPlus_PartyMemberFrameFix();
     UnitFramesPlus_PartyShiftDrag();
-    UnitFramesPlus_PartyOfflineDetection();
+    UnitFramesPlus_PartyPosition();
+    -- UnitFramesPlus_PartyOfflineDetection();
     UnitFramesPlus_PartyPortrait();
     UnitFramesPlus_PartyPortraitIndicator();
     UnitFramesPlus_PartyBuff();
@@ -1524,10 +1403,6 @@ function UnitFramesPlus_PartyInit()
     UnitFramesPlus_PartyHealthPct();
     UnitFramesPlus_PartyBarTextMouseShow();
     UnitFramesPlus_PartyExtraTextFontSize();
-    local state = IsAddOnLoaded("Blizzard_CompactRaidFrames")
-    if state == true then
-        CompactRaidFrameManager_Show = CompactRaidFrameManager.Show;
-    end
     UnitFramesPlus_HideRaidFrame();
 end
 

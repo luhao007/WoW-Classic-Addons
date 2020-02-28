@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Thandrenn
-## Version: 4.11.61
+## Version: 4.11.62
 ## RequiredDeps: Atlas
 ## Dependencies: 
 ## OptionalDeps: 
@@ -20,8 +20,8 @@
 ## X-Category: Quests
 ## X-License: GPLv2
 ## X-Credits: AtlasQuest Team
-## X-Localizations: enUS, deDE, zhCN, ruRU, esES, esMX
-## X-Date: January 19, 2020
+## X-Localizations: enUS, deDE, zhCN, zhTW, ruRU, esES, esMX
+## X-Date: February 24, 2020
 ## X-Help: AtlasQuestHelp
 
 AtlasQuest_InsideFrame.xml

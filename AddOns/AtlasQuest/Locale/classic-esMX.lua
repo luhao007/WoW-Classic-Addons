@@ -2823,7 +2823,7 @@ Inst16Quest9_Folgequest = "Esa información tiene un precio" -- 2199
 
 --Quest 10 Alliance
 Inst16Quest10 = "10. El regreso a Uldaman" -- 2200
-Inst16Quest10_Aim = "Busca pistas sobre el paradero del collar de Talvash en Uldaman. Dijo que un paladín muerto fue su último dueño."
+Inst16Quest10_Aim = "Busca pistas de la ubicación actual del collar de Talvash dentro de Uldaman. El paladín asesinado que mencionó fue la última persona que lo tenía."
 Inst16Quest10_Location = "Talvash del Kissel (Forjaz - La Sala Mística; "..YELLOW.."36,3"..WHITE..")"
 Inst16Quest10_Note = "El paladín está en "..YELLOW.."[2]"..WHITE.."."
 Inst16Quest10_Prequest = "Esa información tiene un precio" -- 2199
@@ -2853,7 +2853,7 @@ Inst16Quest12name1 = "Collar de mejoría de Talvash"
 Inst16Quest13 = "13. Componentes de Uldaman" -- 17
 Inst16Quest13_Aim = "Lleva 12 setas magenta a Ghak Sanadón a Thelsamar."
 Inst16Quest13_Location = "Ghak Sanadón (Loch Modan - Thelsamar; "..YELLOW.."37,49"..WHITE..")"
-Inst16Quest13_Note = "Las setas están desperdigadas a través de toda la estancia. Se puede rastrear las hierbas si tienes la profesión Botánica."
+Inst16Quest13_Note = "Las setas están desperdigadas a través de toda la estancia. Se puede rastrear las hierbas si tienes la profesión Herboristería."
 Inst16Quest13_Prequest = "Componentes de Tierras Inhóspitas" -- 2500
 Inst16Quest13_Folgequest = "Ninguno"
 --
@@ -3615,7 +3615,7 @@ Inst20Quest8_HORDE_Note = "Solamente para Chamanes: Devuelves el libro al Tradic
 Inst20Quest8_HORDE_Prequest = "Ninguno"
 Inst20Quest8_HORDE_Folgequest = "Ninguno"
 --
-Inst20Quest11name1 = "Sello real de Eldre'Thalas"
+Inst20Quest8name1_HORDE = "Sello real de Eldre'Thalas"
 
 --Quest 9 Horde  (same as Quest 9 Alliance)
 Inst20Quest9_HORDE = Inst20Quest9
