@@ -1,9 +1,9 @@
 ------------------------------------------------------------------------
-r63 | Caliaha | 2019-10-28 16:58:27 +0000 (Mon, 28 Oct 2019) | 2 lines
+r65 | Caliaha | 2020-03-04 03:56:36 +0000 (Wed, 04 Mar 2020) | 2 lines
 Changed paths:
-   M /trunk/locales/ruRU.lua
+   M /trunk/data.lua
 
-Corrected ruRU locale
+Marked three vendors as poison vendors
 
 ------------------------------------------------------------------------
 

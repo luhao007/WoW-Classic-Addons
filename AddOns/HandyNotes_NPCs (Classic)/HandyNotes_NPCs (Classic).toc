@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Revel of Pagle
-## Version: 1.21
+## Version: 1.22
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_NPCsClassicDB
 

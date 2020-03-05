@@ -14812,7 +14812,7 @@ L["Alts"] = "替代項"
 --[[Translation missing --]]
 L["Alts AH"] = "Alts AH"
 L["Amount"] = "數量"
-L["AMOUNT"] = "數量"
+L["AMOUNT"] = "寄送金額"
 L["Amount of Bag Space to Keep Free"] = "可用的袋子空間量"
 L["APPLY FILTERS"] = "應用過濾器"
 L["Apply operation to group:"] = "將操作應用於群組："
@@ -14828,8 +14828,7 @@ L["Auction Buyout"] = "拍賣買斷"
 L["AUCTION DETAILS"] = "拍賣細節"
 L["Auction Duration"] = "拍賣時間"
 L["Auction has been bid on."] = "拍賣已結標"
---[[Translation missing --]]
-L["Auction House Cut"] = "Auction House Cut"
+L["Auction House Cut"] = "拍賣費"
 L["Auction Sale Sound"] = "拍賣銷售聲音"
 L["Auction Window Close"] = "關閉拍賣視窗"
 L["Auction Window Open"] = "開啟拍賣視窗"
@@ -14838,7 +14837,7 @@ L["AuctionDB - Market Value"] = "AuctionDB-市場價值"
 L["Auctioneer - Appraiser"] = "Auctioneer - 出價"
 L["Auctioneer - Market Value"] = "Auctioneer - 市場價格"
 L["Auctioneer - Minimum Buyout"] = "Auctioneer - 最小直購價"
-L["Auctioning"] = "拍賣"
+L["Auctioning"] = "賣出"
 L["Auctioning Log"] = "拍賣日誌"
 L["Auctioning Operation"] = "拍賣業務"
 L["Auctioning 'POST'/'CANCEL' Button"] = "拍賣“ 張貼” /“ 取消”按鈕"
@@ -14896,7 +14895,7 @@ L["Buy from AH"] = "從AH購買"
 L["Buy from Vendor"] = "向商人購買"
 L["BUY GROUPS"] = "購買群組"
 L["Buy Options"] = "購買選項"
-L["BUYBACK ALL"] = "全部回購"
+L["BUYBACK ALL"] = "全部購回"
 L["Buyer/Seller"] = "買方/賣方"
 L["BUYOUT"] = "買斷"
 L["Buyout (item)"] = "買斷（項目）"
@@ -15082,8 +15081,7 @@ L["Define what priority Gathering gives certain sources."] = "Define what priori
 L["Delete Profile Confirmation"] = "Delete Profile Confirmation"
 --[[Translation missing --]]
 L["Delete this record?"] = "Delete this record?"
---[[Translation missing --]]
-L["Deposit"] = "Deposit"
+L["Deposit"] = "保證金"
 --[[Translation missing --]]
 L["Deposit Cost"] = "Deposit Cost"
 --[[Translation missing --]]
@@ -15237,8 +15235,7 @@ L["Enable sending chat messages"] = "Enable sending chat messages"
 L["Enable TSM Tooltips"] = "Enable TSM Tooltips"
 --[[Translation missing --]]
 L["Enable tweet enhancement"] = "Enable tweet enhancement"
---[[Translation missing --]]
-L["Enchant Vellum"] = "Enchant Vellum"
+L["Enchant Vellum"] = "附魔皮紙"
 --[[Translation missing --]]
 L["Ensure both characters are online and try again."] = "Ensure both characters are online and try again."
 --[[Translation missing --]]
@@ -15287,8 +15284,7 @@ L["Expires Since Last Sale"] = "Expires Since Last Sale"
 L["Expiring Mails"] = "Expiring Mails"
 --[[Translation missing --]]
 L["Exploration"] = "Exploration"
---[[Translation missing --]]
-L["Export"] = "Export"
+L["Export"] = "匯出"
 --[[Translation missing --]]
 L["Export List"] = "Export List"
 --[[Translation missing --]]
@@ -15336,8 +15332,7 @@ L["Forget Character"] = "Forget Character"
 --[[Translation missing --]]
 L["Found auction sound"] = "Found auction sound"
 L["Friends"] = "好友"
---[[Translation missing --]]
-L["From"] = "From"
+L["From"] = "來自"
 --[[Translation missing --]]
 L["Full"] = "Full"
 --[[Translation missing --]]
@@ -15353,8 +15348,7 @@ L["Get from Bank"] = "Get from Bank"
 L["Get from Guild Bank"] = "Get from Guild Bank"
 --[[Translation missing --]]
 L["Global Operation Confirmation"] = "Global Operation Confirmation"
---[[Translation missing --]]
-L["Gold"] = "Gold"
+L["Gold"] = "隨信寄送的金額"
 --[[Translation missing --]]
 L["Gold Earned:"] = "Gold Earned:"
 L["GOLD ON HAND"] = "手上金額"
@@ -15372,7 +15366,7 @@ L["Group Operations"] = "Group Operations"
 L["Group Settings"] = "Group Settings"
 --[[Translation missing --]]
 L["Grouped Items"] = "Grouped Items"
-L["Groups"] = "分組"
+L["Groups"] = "群組"
 L["Guild"] = "公會"
 L["Guild Bank"] = "公會銀行"
 --[[Translation missing --]]
@@ -15434,8 +15428,7 @@ L["Ignored Cooldowns"] = "Ignored Cooldowns"
 L["Ignored Items"] = "Ignored Items"
 --[[Translation missing --]]
 L["ilvl"] = "ilvl"
---[[Translation missing --]]
-L["Import"] = "Import"
+L["Import"] = "匯入"
 --[[Translation missing --]]
 L["IMPORT"] = "IMPORT"
 --[[Translation missing --]]
@@ -15659,7 +15652,7 @@ L["Min Buy Price"] = "Min Buy Price"
 L["Min Buyout"] = "Min Buyout"
 --[[Translation missing --]]
 L["Min Sell Price"] = "Min Sell Price"
-L["Min/Normal/Max Prices"] = "最低/一般/最高 售價"
+L["Min/Normal/Max Prices"] = "最低/一般/最高 拍賣價"
 --[[Translation missing --]]
 L["Minimum Days Old"] = "Minimum Days Old"
 --[[Translation missing --]]
@@ -15712,8 +15705,7 @@ L["New Group"] = "新分組"
 L["New Operation"] = "New Operation"
 --[[Translation missing --]]
 L["NEWS AND INFORMATION"] = "NEWS AND INFORMATION"
---[[Translation missing --]]
-L["No Attachments"] = "No Attachments"
+L["No Attachments"] = "沒有附件"
 --[[Translation missing --]]
 L["No Crafts"] = "No Crafts"
 --[[Translation missing --]]
@@ -15969,16 +15961,13 @@ L["Removed a total of %s old records."] = "Removed a total of %s old records."
 L["Rename"] = "Rename"
 --[[Translation missing --]]
 L["Rename Profile"] = "Rename Profile"
---[[Translation missing --]]
-L["REPAIR"] = "REPAIR"
+L["REPAIR"] = "修理"
 --[[Translation missing --]]
 L["Repair Bill"] = "Repair Bill"
 --[[Translation missing --]]
 L["Replace duplicate operations?"] = "Replace duplicate operations?"
---[[Translation missing --]]
-L["REPLY"] = "REPLY"
---[[Translation missing --]]
-L["REPORT SPAM"] = "REPORT SPAM"
+L["REPLY"] = "回覆"
+L["REPORT SPAM"] = "舉報玩家"
 --[[Translation missing --]]
 L["Repost Higher Threshold"] = "Repost Higher Threshold"
 --[[Translation missing --]]
@@ -16051,8 +16040,7 @@ L["Running Sniper Scan"] = "Running Sniper Scan"
 L["Sale"] = "Sale"
 --[[Translation missing --]]
 L["SALE DATA"] = "SALE DATA"
---[[Translation missing --]]
-L["Sale Price"] = "Sale Price"
+L["Sale Price"] = "出售價格"
 --[[Translation missing --]]
 L["Sale Rate"] = "Sale Rate"
 --[[Translation missing --]]
@@ -16086,8 +16074,7 @@ L["Search Operations"] = "Search Operations"
 L["Search Patterns"] = "Search Patterns"
 --[[Translation missing --]]
 L["Search Usable Items Only?"] = "Search Usable Items Only?"
---[[Translation missing --]]
-L["Search Vendor"] = "Search Vendor"
+L["Search Vendor"] = "搜尋物品"
 --[[Translation missing --]]
 L["Select a Source"] = "Select a Source"
 --[[Translation missing --]]
@@ -16125,8 +16112,7 @@ L["Selected Groups"] = "Selected Groups"
 --[[Translation missing --]]
 L["Selected Operations"] = "Selected Operations"
 L["Sell"] = "售出"
---[[Translation missing --]]
-L["SELL ALL"] = "SELL ALL"
+L["SELL ALL"] = "全部售出"
 --[[Translation missing --]]
 L["SELL BOES"] = "SELL BOES"
 --[[Translation missing --]]
@@ -16197,7 +16183,7 @@ L["Setup"] = "Setup"
 --[[Translation missing --]]
 L["SETUP ACCOUNT SYNC"] = "SETUP ACCOUNT SYNC"
 L["Shards"] = "碎片"
-L["Shopping"] = "拍賣"
+L["Shopping"] = "購買"
 --[[Translation missing --]]
 L["Shopping 'BUYOUT' Button"] = "Shopping 'BUYOUT' Button"
 --[[Translation missing --]]
@@ -16239,8 +16225,7 @@ L["Skip Import confirmation?"] = "Skip Import confirmation?"
 --[[Translation missing --]]
 L["Skipped: No assigned operation"] = "Skipped: No assigned operation"
 L["Slash Commands:"] = "斜線命令列表："
---[[Translation missing --]]
-L["Sniper"] = "Sniper"
+L["Sniper"] = "買家"
 --[[Translation missing --]]
 L["Sniper 'BUYOUT' Button"] = "Sniper 'BUYOUT' Button"
 --[[Translation missing --]]
@@ -16286,8 +16271,7 @@ L["Starting Scan..."] = "Starting Scan..."
 L["STOP"] = "STOP"
 --[[Translation missing --]]
 L["Store operations globally"] = "Store operations globally"
---[[Translation missing --]]
-L["Subject"] = "Subject"
+L["Subject"] = "主題"
 --[[Translation missing --]]
 L["SUBJECT"] = "SUBJECT"
 --[[Translation missing --]]
@@ -16479,15 +16463,14 @@ L["ValueSources"] = "ValueSources"
 L["Variable Name"] = "Variable Name"
 --[[Translation missing --]]
 L["Vendor"] = "Vendor"
---[[Translation missing --]]
-L["Vendor Buy Price"] = "Vendor Buy Price"
+L["Vendor Buy Price"] = "買價"
 --[[Translation missing --]]
 L["Vendor Search"] = "Vendor Search"
 --[[Translation missing --]]
 L["VENDOR SEARCH"] = "VENDOR SEARCH"
 --[[Translation missing --]]
 L["Vendor Sell"] = "Vendor Sell"
-L["Vendor Sell Price"] = "售價"
+L["Vendor Sell Price"] = "賣價"
 --[[Translation missing --]]
 L["Vendoring 'SELL ALL' Button"] = "Vendoring 'SELL ALL' Button"
 --[[Translation missing --]]

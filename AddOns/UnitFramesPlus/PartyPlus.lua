@@ -100,10 +100,10 @@ for id = 1, 4, 1 do
     RegisterUnitWatch(PartyLevel);
     PartyLevel.Text = _G["UFP_PartyLevel"..id]:CreateFontString("PartyMemberFrame"..id.."Level", "OVERLAY", "GameTooltipText");
     PartyLevel.Text:ClearAllPoints();
-    PartyLevel.Text:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "BOTTOMLEFT", -9, 12);
+    PartyLevel.Text:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "BOTTOMLEFT", -5, 12);
     PartyLevel.Text:SetFont(GameFontNormal:GetFont(), 10, "OUTLINE");
     PartyLevel.Text:SetTextColor(1, 0.82, 0);
-    PartyLevel.Text:SetJustifyH("LEFT");
+    PartyLevel.Text:SetJustifyH("CENTER");
 end
 
 function UnitFramesPlus_PartyLevel()
@@ -195,7 +195,7 @@ end
 
 --设置插件时刷新队友生命条染色显示
 function UnitFramesPlus_PartyColorHPBarDisplayUpdate(id)
-    if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
+    if UnitExists("party"..id) and UnitIsConnected("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
         if UnitFramesPlusDB["party"]["colorhp"] == 1 then
             if UnitFramesPlusDB["party"]["colortype"] == 2 then
                 local CurHP = UnitHealth("party"..id);
@@ -355,6 +355,7 @@ function UnitFramesPlus_PartyPortrait()
                                 _G["UFP_Party3DPortrait"..id].Background:SetVertexColor(color.r/1.5, color.g/1.5, color.b/1.5, 1);
                             end
                             UnitFramesPlus_PartyPortraitDisplayUpdate(id);
+                            UnitFramesPlus_PartyPortrait3DBGDisplayUpdate(id);
                         end
                     elseif event == "UNIT_MODEL_CHANGED" or event == "UNIT_CONNECTION" or event == "UNIT_PHASE" then
                         UnitFramesPlus_PartyPortraitDisplayUpdate(id);
@@ -396,7 +397,9 @@ function UnitFramesPlus_PartyPortrait()
         end
     else
         for id = 1, 4, 1 do
-            _G["PartyMemberFrame"..id.."Portrait"]:Show();
+            if UnitExists("party"..id) then
+                _G["PartyMemberFrame"..id.."Portrait"]:Show();
+            end
             _G["UFP_Party3DPortrait"..id]:Hide();
             _G["UFP_PartyClassPortrait"..id]:Hide();
             if _G["UFP_PartyPortraitType"..id]:IsEventRegistered("PLAYER_ENTERING_WORLD") then
@@ -523,7 +526,7 @@ function UnitFramesPlus_PartyHealthPctDisplayUpdate(id)
     local HPText = "";
     -- local MPText = "";
     local PctText = "";
-    local DeathText = "";
+    -- local DeathText = "";
     if UnitExists("party"..id) and UnitFramesPlusDB["party"]["origin"] == 1 then
         local CurHP = UnitHealth("party"..id);
 
@@ -743,7 +746,7 @@ local UFP_MAX_PARTY_PET_DEBUFFS = 4;
 for id = 1, 4, 1 do
     for j = 1, UFP_MAX_PARTY_BUFFS, 1 do
         local buff = CreateFrame("Button", "UFP_PartyMemberFrame"..id.."Buff"..j, _G["PartyMemberFrame"..id]);
-        buff:SetFrameLevel(7);
+        buff:SetFrameLevel(_G["PartyMemberFrame"..id]:GetFrameLevel()+1);
         buff:SetWidth(15);
         buff:SetHeight(15);
         buff:SetID(j);
@@ -761,7 +764,7 @@ for id = 1, 4, 1 do
         buff.Icon:SetAllPoints(buff);
 
         buff.Cooldown = CreateFrame("Cooldown", "UFP_PartyMemberFrame"..id.."Buff"..j.."Cooldown", buff, "CooldownFrameTemplate");
-        buff.Cooldown:SetFrameLevel(8);
+        buff.Cooldown:SetFrameLevel(buff:GetFrameLevel()+1);
         buff.Cooldown:SetReverse(true);
         buff.Cooldown:ClearAllPoints();
         buff.Cooldown:SetAllPoints(buff.Icon);
@@ -798,9 +801,12 @@ for id = 1, 4, 1 do
             GameTooltip:Hide();
         end)
     end
+
+    _G["PartyMemberFrame"..id.."Debuff1"]:ClearAllPoints();
+    -- _G["PartyMemberFrame"..id.."Debuff1"]:SetPoint("BOTTOMLEFT", _G["PartyMemberFrame"..id], "TOPRIGHT", -8, 4);
     for j = 1, UFP_MAX_PARTY_DEBUFFS, 1 do
         local debuff = CreateFrame("Button", "UFP_PartyMemberFrame"..id.."Debuff"..j, _G["PartyMemberFrame"..id]);
-        debuff:SetFrameLevel(7);
+        debuff:SetFrameLevel(_G["UFP_PartyMemberFrame"..id.."Buff1"]:GetFrameLevel()+2);
         debuff:SetWidth(17);
         debuff:SetHeight(17);
         debuff:SetID(j);
@@ -818,7 +824,7 @@ for id = 1, 4, 1 do
         debuff.Icon:SetAllPoints(debuff);
 
         debuff.Cooldown = CreateFrame("Cooldown", "UFP_PartyMemberFrame"..id.."Debuff"..j.."Cooldown", debuff, "CooldownFrameTemplate");
-        debuff.Cooldown:SetFrameLevel(8);
+        debuff.Cooldown:SetFrameLevel(debuff:GetFrameLevel()+1);
         debuff.Cooldown:SetReverse(true);
         debuff.Cooldown:ClearAllPoints();
         debuff.Cooldown:SetAllPoints(debuff.Icon);
@@ -858,7 +864,8 @@ for id = 1, 4, 1 do
     end
 
     _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:ClearAllPoints();
-    _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:SetPoint("LEFT", _G["PartyMemberFrame"..id.."PetFrame"], "RIGHT", -3, -1);
+    -- _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:SetPoint("LEFT", _G["PartyMemberFrame"..id.."PetFrame"], "RIGHT", -3, -1);
+    _G["PartyMemberFrame"..id.."PetFrameDebuff1"]:SetPoint("BOTTOM", _G["PartyMemberFrame"..id.."PetFrame"], "TOP", -26, 0);
     -- for j = 1, UFP_MAX_PARTY_PET_DEBUFFS, 1 do
     --     local petdebuff = CreateFrame("Button", "UFP_PartyPetMemberFrame"..id.."Debuff"..j, _G["PartyMemberFrame"..id.."PetFrame"]);
     --     petdebuff:SetFrameLevel(7);
@@ -929,16 +936,29 @@ end)
 local pb = CreateFrame("Frame");
 function UnitFramesPlus_PartyBuff()
     UnitFramesPlus_PartyMemberPosition();
+    pb:SetScript("OnUpdate", function(self, elapsed)
+        self.timer = (self.timer or 0) + elapsed;
+        if self.timer >= 0.1 then
+            UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
+            self.timer = 0;
+        end
+    end)
     if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["buff"] == 1 then
-        pb:SetScript("OnUpdate", function(self, elapsed)
-            self.timer = (self.timer or 0) + elapsed;
-            if self.timer >= 0.1 then
-                UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
-                self.timer = 0;
-            end
-        end)
+        for id = 1, 4, 1 do
+            _G["UFP_PartyMemberFrame"..id.."Debuff1"]:ClearAllPoints()
+            _G["UFP_PartyMemberFrame"..id.."Debuff1"]:SetPoint("BOTTOMLEFT", _G["PartyMemberFrame"..id], "TOPRIGHT", -8, 4);
+        end
+        -- pb:SetScript("OnUpdate", function(self, elapsed)
+        --     self.timer = (self.timer or 0) + elapsed;
+        --     if self.timer >= 0.1 then
+        --         UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
+        --         self.timer = 0;
+        --     end
+        -- end)
     else
         for id = 1, 4, 1 do
+            _G["UFP_PartyMemberFrame"..id.."Debuff1"]:ClearAllPoints()
+            _G["UFP_PartyMemberFrame"..id.."Debuff1"]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "TOPLEFT", 48, -32);
             for j = 1, UFP_MAX_PARTY_BUFFS, 1 do
                 _G["UFP_PartyMemberFrame"..id.."Buff"..j]:SetAlpha(0);
             end
@@ -949,7 +969,7 @@ function UnitFramesPlus_PartyBuff()
             --     _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j]:SetAlpha(0);
             -- end
         end
-        pb:SetScript("OnUpdate", nil);
+        -- pb:SetScript("OnUpdate", nil);
     end
 end
 
@@ -960,59 +980,61 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
     end
     for id = 1, 4, 1 do
         if UnitExists("party"..id) then
-            for j = 1, UFP_MAX_PARTY_BUFFS, 1 do
-                local alpha = 0;
-                local cdalpha = 0;
-                local timetext = "";
-                -- local textalpha = 0.7;
-                -- local r, g, b = 0, 1, 0;
+            if UnitFramesPlusDB["party"]["origin"] == 1 and UnitFramesPlusDB["party"]["buff"] == 1 then
+                for j = 1, UFP_MAX_PARTY_BUFFS, 1 do
+                    local alpha = 0;
+                    local cdalpha = 0;
+                    local timetext = "";
+                    -- local textalpha = 0.7;
+                    -- local r, g, b = 0, 1, 0;
 
-                local _, icon, _, _, duration, expirationTime, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
-                if icon then
-                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].Icon:SetTexture(icon);
-                    alpha = 1;
+                    local _, icon, _, _, duration, expirationTime, caster, _, _, spellId = UnitBuff("party"..id, j, filter);
+                    if icon then
+                        _G["UFP_PartyMemberFrame"..id.."Buff"..j].Icon:SetTexture(icon);
+                        alpha = 1;
 
-                    if UnitFramesPlusDB["party"]["cooldown"] == 1 then
-                        cdalpha = 1;
+                        if UnitFramesPlusDB["party"]["cooldown"] == 1 then
+                            cdalpha = 1;
 
-                        if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
-                            local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
-                            if duration == 0 and durationNew then
-                                duration = durationNew
-                                expirationTime = expirationTimeNew
-                            end
+                            if UnitFramesPlusDB["global"]["builtincd"] == 1 and UFPClassicDurations then
+                                local durationNew, expirationTimeNew = UFPClassicDurations:GetAuraDurationByUnit("party"..id, spellId, caster)
+                                if duration == 0 and durationNew then
+                                    duration = durationNew
+                                    expirationTime = expirationTimeNew
+                                end
 
-                            if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
-                                local timeleft = expirationTime - GetTime();
-                                if timeleft >= 0 then
-                                    if timeleft < 60 then
-                                        timetext = math.floor(timeleft+1);
-                                        -- textalpha = 1 - timeleft/200;
-                                        -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
-                                    elseif timeleft <= 1800 then
-                                        timetext = math.floor(timeleft/60+1).."m";
-                                    else
-                                        timetext = math.floor(timeleft/3600+1).."h";
+                                if UnitFramesPlusDB["global"]["cdtext"] == 1 and expirationTime and expirationTime ~= 0 and duration > 0 then
+                                    local timeleft = expirationTime - GetTime();
+                                    if timeleft >= 0 then
+                                        if timeleft < 60 then
+                                            timetext = math.floor(timeleft+1);
+                                            -- textalpha = 1 - timeleft/200;
+                                            -- r, g, b = UnitFramesPlus_GetRGB(timeleft, 60);
+                                        elseif timeleft <= 1800 then
+                                            timetext = math.floor(timeleft/60+1).."m";
+                                        else
+                                            timetext = math.floor(timeleft/3600+1).."h";
+                                        end
                                     end
                                 end
-                            end
 
-                            CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
+                                CooldownFrame_Set(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown, expirationTime - duration, duration, true);
+                            else
+                                CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown);
+                            end
                         else
                             CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown);
                         end
-                    else
-                        CooldownFrame_Clear(_G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown);
                     end
-                end
-                _G["UFP_PartyMemberFrame"..id.."Buff"..j]:SetAlpha(alpha);
-                _G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown:SetAlpha(cdalpha);
-                -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetTextColor(r, g, b);
-                -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetAlpha(textalpha);
-                if (not IsAddOnLoaded("OmniCC")) then
-                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText(timetext);
-                else
-                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText("");
+                    _G["UFP_PartyMemberFrame"..id.."Buff"..j]:SetAlpha(alpha);
+                    _G["UFP_PartyMemberFrame"..id.."Buff"..j].Cooldown:SetAlpha(cdalpha);
+                    -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetTextColor(r, g, b);
+                    -- _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetAlpha(textalpha);
+                    if (not IsAddOnLoaded("OmniCC")) then
+                        _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText(timetext);
+                    else
+                        _G["UFP_PartyMemberFrame"..id.."Buff"..j].CooldownText:SetText("");
+                    end
                 end
             end
 
@@ -1066,6 +1088,8 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
                     end
                 end
                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j]:SetAlpha(alpha);
+                _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Icon:SetAlpha(alpha);
+                _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Border:SetAlpha(alpha);
                 _G["UFP_PartyMemberFrame"..id.."Debuff"..j].Cooldown:SetAlpha(cdalpha);
                 -- _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetTextColor(r, g, b);
                 -- _G["UFP_PartyMemberFrame"..id.."Debuff"..j].CooldownText:SetAlpha(textalpha);
@@ -1086,7 +1110,6 @@ function UnitFramesPlus_OptionsFrame_PartyBuffDisplayUpdate()
 
             --     local _, icon, count, _, duration, expirationTime, caster, _, _, spellId = UnitDebuff("partypet"..id, j);
             --     if icon then
-            --         -- print(icon)
             --         _G["UFP_PartyPetMemberFrame"..id.."Debuff"..j].Icon:SetTexture(icon);
             --         alpha = 1;
             --         if count > 1 then
@@ -1148,7 +1171,7 @@ function UnitFramesPlus_PartyPositionSet()
     else
         if not IsAddOnLoaded("Blizzard_CompactRaidFrames") then
             PartyMemberFrame1:ClearAllPoints();
-            PartyMemberFrame1:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 10, -160)
+            PartyMemberFrame1:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 10, -160);
         end
     end
 end
@@ -1171,13 +1194,15 @@ function UnitFramesPlus_PartyMemberPositionSet()
         for id = 2, 4, 1 do
             local lowid = id - 1;
             _G["PartyMemberFrame"..id]:ClearAllPoints();
-            _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid.."PetFrame"], "BOTTOMLEFT", -23, -20);
+            -- _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid.."PetFrame"], "BOTTOMLEFT", -23, -20);
+            _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid], "TOPLEFT", 0, -86);
         end
     else
         for id = 2, 4, 1 do
             local lowid = id - 1;
             _G["PartyMemberFrame"..id]:ClearAllPoints();
-            _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid.."PetFrame"], "BOTTOMLEFT", -23, -10);
+            -- _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid.."PetFrame"], "BOTTOMLEFT", -23, -10);
+            _G["PartyMemberFrame"..id]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..lowid], "TOPLEFT", 0, -68);
         end
     end
 end
@@ -1284,6 +1309,12 @@ function UnitFramesPlus_PartyBarTextMouseShow()
     end
 end
 
+-- hooksecurefunc("PartyMemberFrame_UpdateNotPresentIcon", function(self)
+--     if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" and UnitFramesPlusDB["party"]["pet"] == 1) then
+--         _G["PartyMemberFrame"..self:GetID().."PetFrame"]:SetAlpha(self:GetAlpha());
+--     end
+-- end)
+
 function UnitFramesPlus_PartyPetSet()
     if UnitFramesPlusDB["party"]["pet"] == 0 then
         if GetCVar("showPartypets") == "1" then
@@ -1298,14 +1329,16 @@ function UnitFramesPlus_PartyPetSet()
         if UnitExists("party"..id) then
             if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" and UnitFramesPlusDB["party"]["pet"] == 1) then
                 _G["PartyMemberFrame"..id.."PetFrame"]:Show();
-                _G["PartyMemberFrame"..id.."PetFrame"]:ClearAllPoints();
-                _G["PartyMemberFrame"..id.."PetFrame"]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "TOPLEFT", 23, -43);
+                -- _G["PartyMemberFrame"..id.."PetFrame"]:ClearAllPoints();
+                -- _G["PartyMemberFrame"..id.."PetFrame"]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "TOPLEFT", 23, -43);
             else
                 _G["PartyMemberFrame"..id.."PetFrame"]:Hide();
-                _G["PartyMemberFrame"..id.."PetFrame"]:ClearAllPoints();
-                _G["PartyMemberFrame"..id.."PetFrame"]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "TOPLEFT", 23, -27);
+                -- _G["PartyMemberFrame"..id.."PetFrame"]:ClearAllPoints();
+                -- _G["PartyMemberFrame"..id.."PetFrame"]:SetPoint("TOPLEFT", _G["PartyMemberFrame"..id], "TOPLEFT", 23, -27);
             end
         end
+        _G["PartyMemberFrame"..id.."PetFrame"]:ClearAllPoints();
+        _G["PartyMemberFrame"..id.."PetFrame"]:SetPoint("RIGHT", _G["PartyMemberFrame"..id], "LEFT", -5, 0);
     end
 end
 
@@ -1322,6 +1355,397 @@ function UnitFramesPlus_PartyPet()
     end
 end
 
+local UFPHider = CreateFrame("Frame");
+UFPHider:Hide();
+function UnitFramesPlus_PartyShowHideSet()
+    if GetDisplayedAllyFrames() == nil or (GetDisplayedAllyFrames() == "raid" and (UnitFramesPlusDB["party"]["hideraid"] ~= 1 or UnitFramesPlusDB["party"]["always"] ~= 1)) then
+        -- if PartyMemberFrame1:GetParent() == UIParent then
+            for id = 1, MAX_PARTY_MEMBERS, 1 do
+                _G["PartyMemberFrame"..id]:SetParent(UFPHider);
+            end
+            -- PartyMemberBackground:SetParent(UFPHider);
+        -- end
+    else
+        -- if PartyMemberFrame1:GetParent() == UFPHider then
+            for id = 1, MAX_PARTY_MEMBERS, 1 do
+                _G["PartyMemberFrame"..id]:SetParent(UIParent);
+            end
+            -- PartyMemberBackground:SetParent(UIParent);
+        -- end
+    end
+    if GetDisplayedAllyFrames() == nil or (GetDisplayedAllyFrames() == "raid" and (UnitFramesPlusDB["party"]["hideraid"] ~= 1 or UnitFramesPlusDB["party"]["always"] ~= 1)) or UnitFramesPlusDB["party"]["pet"] ~= 1 then
+        -- if PartyMemberFrame1PetFrame:GetParent() == UIParent then
+            for id = 1, MAX_PARTY_MEMBERS, 1 do
+                _G["PartyMemberFrame"..id.."PetFrame"]:SetParent(UFPHider);
+            end
+        -- end
+    else
+        -- if PartyMemberFrame1PetFrame:GetParent() == UFPHider then
+            for id = 1, MAX_PARTY_MEMBERS, 1 do
+                _G["PartyMemberFrame"..id.."PetFrame"]:SetParent(UIParent);
+            end
+        -- end
+    end
+
+    RaidOptionsFrame_UpdatePartyFrames();
+    for id = 1, MAX_PARTY_MEMBERS, 1 do
+        UnitFramesPlus_PartyMemberFrame_UpdateMember(_G["PartyMemberFrame"..id]);
+    end
+end
+
+function UnitFramesPlus_PartyShowHide()
+    if not InCombatLockdown() then
+        UnitFramesPlus_PartyShowHideSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_PartyShowHideSet";
+        func.callback = function()
+            UnitFramesPlus_PartyShowHideSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
+local updateneeded = 0;
+function UnitFramesPlus_CombatCheck()
+    if InCombatLockdown() then return true end
+
+    local id;
+    for id = 1, MAX_PARTY_MEMBERS, 1 do
+        if ( UnitExists("party"..id) ) then
+            if UnitInParty("party"..id) and UnitAffectingCombat("party"..id) then
+                return true;
+            end
+        end
+    end
+
+    return false;
+end
+
+-- -- Interface/AddOns/Blizzard_CompactRaidFrames/Blizzard_CompactRaidFrameManager.lua
+-- local _CompactRaidFrameManager_UpdateContainerLockVisibility = CompactRaidFrameManager_UpdateContainerLockVisibility
+-- function UnitFramesPlus_CompactRaidFrameManager_UpdateContainerLockVisibility(self)
+--     local combat = UnitFramesPlus_CombatCheck();
+--     if combat == false then
+--         if ( GetDisplayedAllyFrames() ~= "raid" or not CompactRaidFrameManagerDisplayFrameLockedModeToggle.lockMode ) then
+--             CompactRaidFrameManager_LockContainer(self);
+--         else
+--             CompactRaidFrameManager_UnlockContainer(self);
+--         end
+--     else
+--         updateneeded = 1;
+--     end
+-- end
+
+-- -- Interface/AddOns/Blizzard_CompactRaidFrames/Blizzard_CompactRaidFrameManager.lua
+-- local _CompactRaidFrameManager_UpdateShown = CompactRaidFrameManager_UpdateShown
+-- function UnitFramesPlus_CompactRaidFrameManager_UpdateShown(self)
+--     local combat = UnitFramesPlus_CombatCheck();
+--     if combat == false then
+--         if ( GetDisplayedAllyFrames() ) then
+--             self:Show();
+--         else
+--             self:Hide();
+--         end
+--         CompactRaidFrameManager_UpdateOptionsFlowContainer(self);
+--         CompactRaidFrameManager_UpdateContainerVisibility();
+--     else
+--         updateneeded = 1;
+--     end
+-- end
+
+-- Interface/FrameXML/RaidFrame.lua
+local _RaidOptionsFrame_UpdatePartyFrames = RaidOptionsFrame_UpdatePartyFrames;
+function UnitFramesPlus_RaidOptionsFrame_UpdatePartyFrames()
+    if GetDisplayedAllyFrames() == nil or (GetDisplayedAllyFrames() == "raid" and (UnitFramesPlusDB["party"]["hideraid"] ~= 1 or UnitFramesPlusDB["party"]["always"] ~= 1)) then
+        HidePartyFrame();
+    else
+        HidePartyFrame();
+        ShowPartyFrame();
+    end
+    UpdatePartyMemberBackground();
+end
+
+-- Interface/FrameXML/PartyMemberFrame.lua
+-- local _HidePartyFrame = HidePartyFrame;
+-- function UnitFramesPlus_HidePartyFrame()
+--     local combat = UnitFramesPlus_CombatCheck();
+--     if combat == false then
+--         for i=1, MAX_PARTY_MEMBERS, 1 do
+--             _G["PartyMemberFrame"..i]:Hide();
+--         end
+--     else
+--         updateneeded = 1;
+--     end
+-- end
+
+-- Interface/FrameXML/PartyMemberFrame.lua
+-- local _ShowPartyFrame = ShowPartyFrame;
+-- function UnitFramesPlus_ShowPartyFrame()
+--     local combat = UnitFramesPlus_CombatCheck();
+--     if combat == false then
+--         for i=1, MAX_PARTY_MEMBERS, 1 do
+--             if ( UnitExists("party"..i) ) then
+--                 _G["PartyMemberFrame"..i]:Show();
+--             end
+--         end
+--     else
+--         updateneeded = 1;
+--     end
+-- end
+
+-- Interface/FrameXML/PartyMemberFrame.lua
+local _PartyMemberFrame_UpdatePet = PartyMemberFrame_UpdatePet;
+function UnitFramesPlus_PartyMemberFrame_UpdatePet(self, id)
+    if ( not id ) then
+        id = self:GetID();
+    end
+
+    local frameName = "PartyMemberFrame"..id;
+    local petFrame = _G["PartyMemberFrame"..id.."PetFrame"];
+
+    if ( UnitIsConnected("party"..id) and UnitExists("partypet"..id) and SHOW_PARTY_PETS == "1" and SHOW_PARTY_PETS == "1" ) then
+        petFrame:Show();
+        -- petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -43);
+    else
+        petFrame:Hide();
+        -- petFrame:SetPoint("TOPLEFT", frameName, "TOPLEFT", 23, -27);
+    end
+
+    PartyMemberFrame_RefreshPetDebuffs(self, id);
+    UpdatePartyMemberBackground();
+end
+
+local _PartyMemberFrame_UpdateMember = PartyMemberFrame_UpdateMember;
+function UnitFramesPlus_PartyMemberFrame_UpdateMember(self)
+    if GetDisplayedAllyFrames() == nil or ( GetDisplayedAllyFrames() == "raid" and (UnitFramesPlusDB["party"]["hideraid"] ~= 1 or (UnitFramesPlusDB["party"]["hideraid"] == 1 and UnitFramesPlusDB["party"]["always"] ~= 1 ))) then
+        self:Hide();
+        UpdatePartyMemberBackground();
+        return;
+    end
+    local id = self:GetID();
+    local unit = "party"..id;
+    if ( UnitExists(unit) ) then
+        self:Show();
+
+        if VoiceActivityManager then
+            local guid = UnitGUID(unit);
+            VoiceActivityManager:RegisterFrameForVoiceActivityNotifications(self, guid, nil, "VoiceActivityNotificationPartyTemplate", "Button", PartyMemberFrame_VoiceActivityNotificationCreatedCallback);
+        end
+
+        UnitFrame_Update(self, true);
+    else
+        if VoiceActivityManager then
+            VoiceActivityManager:UnregisterFrameForVoiceActivityNotifications(self);
+            self.voiceNotification = nil;
+        end
+        self:Hide();
+    end
+    PartyMemberFrame_UpdatePet(self);
+    PartyMemberFrame_UpdatePvPStatus(self);
+    RefreshDebuffs(self, "party"..id, nil, nil, true);
+    PartyMemberFrame_UpdateVoiceStatus(self);
+    PartyMemberFrame_UpdateReadyCheck(self);
+    PartyMemberFrame_UpdateOnlineStatus(self);
+    PartyMemberFrame_UpdateNotPresentIcon(self);
+    UpdatePartyMemberBackground();
+end
+
+local _PartyMemberFrame_UpdateArt = PartyMemberFrame_UpdateArt;
+function UnitFramesPlus_PartyMemberFrame_UpdateArt(self)
+    local combat = UnitFramesPlus_CombatCheck();
+    if combat == false then
+        local unit = "party"..self:GetID();
+        PartyMemberFrame_ToPlayerArt(self);
+    else
+        updateneeded = 1;
+    end
+end
+
+local _PartyMemberFrame_UpdateOnlineStatus = PartyMemberFrame_UpdateOnlineStatus;
+function UnitFramesPlus_PartyMemberFrame_UpdateOnlineStatus(self)
+    if ( UnitExists("party"..self:GetID()) and not UnitIsConnected("party"..self:GetID()) ) then
+        -- Handle disconnected state
+        local selfName = self:GetName();
+        local healthBar = _G[selfName.."HealthBar"];
+        local unitHPMin, unitHPMax = healthBar:GetMinMaxValues();
+
+        healthBar:SetValue(unitHPMax);
+        healthBar:SetStatusBarColor(0.5, 0.5, 0.5);
+        SetDesaturation(_G[selfName.."Portrait"], true);
+        _G[selfName.."Disconnect"]:Show();
+        _G[selfName.."PetFrame"]:Hide();
+        return;
+    else
+        local selfName = self:GetName();
+        SetDesaturation(_G[selfName.."Portrait"], false);
+        _G[selfName.."Disconnect"]:Hide();
+    end
+end
+
+function UnitFramesPlus_ShowPartyFrameSet()
+    PartyMemberFrame_UpdateMember = UnitFramesPlus_PartyMemberFrame_UpdateMember;
+    -- -- CompactRaidFrameManager_UpdateContainerLockVisibility = UnitFramesPlus_CompactRaidFrameManager_UpdateContainerLockVisibility;
+    -- -- CompactRaidFrameManager_UpdateShown = UnitFramesPlus_CompactRaidFrameManager_UpdateShown;
+    RaidOptionsFrame_UpdatePartyFrames = UnitFramesPlus_RaidOptionsFrame_UpdatePartyFrames;
+    -- HidePartyFrame = UnitFramesPlus_HidePartyFrame;
+    -- ShowPartyFrame = UnitFramesPlus_ShowPartyFrame;
+    PartyMemberFrame_UpdateArt = UnitFramesPlus_PartyMemberFrame_UpdateArt;
+    PartyMemberFrame_UpdateOnlineStatus = UnitFramesPlus_PartyMemberFrame_UpdateOnlineStatus;
+    PartyMemberFrame_UpdatePet = UnitFramesPlus_PartyMemberFrame_UpdatePet;
+    for id = 1, MAX_PARTY_MEMBERS, 1 do
+        _G["PartyMemberFrame"..id]:Show();
+        _G["PartyMemberFrame"..id].Show = function(self)
+            local id = self:GetID();
+            _G["PartyMemberFrame"..id.."Texture"]:SetAlpha(1);
+            _G["PartyMemberFrame"..id.."Name"]:SetAlpha(1);
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetAlpha(1);
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetAlpha(1);
+            if _G["PartyMemberFrame"..id.."Portrait"]:GetAlpha() == 0 then
+                _G["PartyMemberFrame"..id.."Portrait"]:SetAlpha(1);
+            end
+            local alpha = UnitInOtherParty("party"..id) and 0.6 or 1;
+            _G["PartyMemberFrame"..id]:SetAlpha(alpha);
+            _G["UFP_Party3DPortrait"..id]:SetAlpha(1);
+            _G["UFP_PartyClassPortrait"..id]:SetAlpha(1);
+            if ( UnitExists("partypet"..id) and UnitFramesPlusDB["party"]["pet"] == 1 ) then
+                _G["PartyMemberFrame"..id.."PetFrame"]:SetAlpha(alpha);
+            end
+        end
+        _G["PartyMemberFrame"..id].Hide = function(self)
+            local id = self:GetID();
+            _G["PartyMemberFrame"..id.."Flash"]:Hide();
+            _G["PartyMemberFrame"..id.."VehicleTexture"]:Hide();
+            _G["PartyMemberFrame"..id.."Status"]:Hide();
+            _G["PartyMemberFrame"..id.."LeaderIcon"]:Hide();
+            _G["PartyMemberFrame"..id.."MasterIcon"]:Hide();
+            _G["PartyMemberFrame"..id.."GuideIcon"]:Hide();
+            _G["PartyMemberFrame"..id.."PVPIcon"]:Hide();
+            _G["PartyMemberFrame"..id.."Disconnect"]:Hide();
+            _G["PartyMemberFrame"..id.."ReadyCheck"]:Hide();
+            _G["PartyMemberFrame"..id.."NotPresentIcon"]:Hide();
+            _G["PartyMemberFrame"..id.."Background"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id.."Texture"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id.."Name"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id.."HealthBar"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id.."ManaBar"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id.."Portrait"]:SetAlpha(0);
+            _G["PartyMemberFrame"..id]:SetAlpha(0);
+            _G["UFP_Party3DPortrait"..id]:SetAlpha(0);
+            _G["UFP_PartyClassPortrait"..id]:SetAlpha(0);
+            if ( not UnitExists("partypet"..id) or UnitFramesPlusDB["party"]["pet"] ~= 1 ) then
+                _G["PartyMemberFrame"..id.."PetFrame"]:SetAlpha(0);
+            end
+        end
+        _G["PartyMemberFrame"..id]:Hide();
+
+        _G["PartyMemberFrame"..id.."PetFrame"]:Show();
+        _G["PartyMemberFrame"..id.."PetFrame"].Show = function(self) 
+            if ( UnitExists("partypet"..id) and UnitFramesPlusDB["party"]["pet"] == 1 ) then
+                local alpha = UnitInOtherParty("party"..id) and 0.6 or 1;
+                _G["PartyMemberFrame"..id.."PetFrame"]:SetAlpha(alpha);
+            end
+        end
+        _G["PartyMemberFrame"..id.."PetFrame"].Hide = function(self) self:SetAlpha(0) end
+        _G["PartyMemberFrame"..id.."PetFrame"]:Hide();
+    end
+
+    -- PartyMemberBackground:Show();
+    -- PartyMemberBackground.Show = function(self) self:SetAlpha(1) end
+    -- PartyMemberBackground.Hide = function(self) self:SetAlpha(0) end
+    -- PartyMemberBackground:Hide();
+    PartyMemberBackground:Hide();
+    PartyMemberBackground.Show = function() end
+    PartyMemberBackground.Hide = function() end
+end
+
+function UnitFramesPlus_ShowPartyFrame()
+    if not InCombatLockdown() then
+        UnitFramesPlus_ShowPartyFrameSet();
+    else
+        local func = {};
+        func.name = "UnitFramesPlus_ShowPartyFrameSet";
+        func.callback = function()
+            UnitFramesPlus_ShowPartyFrameSet();
+        end;
+        UnitFramesPlus_WaitforCall(func);
+    end
+end
+
+local up = CreateFrame("Frame");
+up:RegisterEvent("PLAYER_REGEN_ENABLED");
+up:RegisterEvent("PLAYER_ENTERING_WORLD");
+up:RegisterEvent("GROUP_ROSTER_UPDATE");
+up:RegisterEvent("UPDATE_ACTIVE_BATTLEFIELD");
+up:SetScript("OnEvent", function(self, event, ...)
+    -- if UnitFramesPlusDB["party"]["hideraid"] == 1 and UnitFramesPlusDB["party"]["always"] == 1 then
+        if event == "PLAYER_REGEN_ENABLED" then
+            if updateneeded == 1 then
+                for id = 1, MAX_PARTY_MEMBERS, 1 do
+                    PartyMemberFrame_UpdateMember(_G["PartyMemberFrame"..id]);
+                end
+                updateneeded = 0;
+            end
+        elseif event == "PLAYER_ENTERING_WORLD" then
+            for id = 1, MAX_PARTY_MEMBERS, 1 do
+                PartyMemberFrame_UpdateMember(_G["PartyMemberFrame"..id]);
+            end
+        elseif event == "GROUP_ROSTER_UPDATE" or event == "UPDATE_ACTIVE_BATTLEFIELD" then
+            UnitFramesPlus_PartyShowHide();
+        end
+    -- end
+end)
+
+-- hooksecurefunc("PartyMemberFrame_UpdateMember", function(self)
+--     -- if UnitFramesPlusDB["party"]["hideraid"] == 1 and UnitFramesPlusDB["party"]["always"] == 1 then
+--         local id = self:GetID();
+--         if ( GetDisplayedAllyFrames() == "party" and UnitExists("party"..id) ) then
+--             _G["PartyMemberFrame"..id.."Texture"]:SetAlpha(1);
+--             _G["PartyMemberFrame"..id.."Name"]:SetAlpha(1);
+--             _G["PartyMemberFrame"..id.."HealthBar"]:SetAlpha(1);
+--             _G["PartyMemberFrame"..id.."ManaBar"]:SetAlpha(1);
+--             if _G["PartyMemberFrame"..id.."Portrait"]:GetAlpha() == 0 then
+--                 _G["PartyMemberFrame"..id.."Portrait"]:SetAlpha(1);
+--             end
+--             if _G["PartyMemberFrame"..id]:GetAlpha() == 0 then
+--                 _G["PartyMemberFrame"..id]:SetAlpha(1);
+--             end
+--         else
+--             _G["PartyMemberFrame"..id.."Flash"]:Hide();
+--             _G["PartyMemberFrame"..id.."VehicleTexture"]:Hide();
+--             _G["PartyMemberFrame"..id.."Status"]:Hide();
+--             _G["PartyMemberFrame"..id.."LeaderIcon"]:Hide();
+--             _G["PartyMemberFrame"..id.."MasterIcon"]:Hide();
+--             _G["PartyMemberFrame"..id.."GuideIcon"]:Hide();
+--             _G["PartyMemberFrame"..id.."PVPIcon"]:Hide();
+--             _G["PartyMemberFrame"..id.."Disconnect"]:Hide();
+--             _G["PartyMemberFrame"..id.."ReadyCheck"]:Hide();
+--             _G["PartyMemberFrame"..id.."NotPresentIcon"]:Hide();
+--             _G["PartyMemberFrame"..id.."Background"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id.."Texture"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id.."Name"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id.."HealthBar"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id.."ManaBar"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id.."Portrait"]:SetAlpha(0);
+--             _G["PartyMemberFrame"..id]:SetAlpha(0);
+--         end
+--         if ( UnitExists("partypet"..id) and UnitFramesPlusDB["party"]["pet"] == 1 ) then
+--             _G["PartyMemberFrame"..id.."PetFrame"]:SetAlpha(1);
+--         else
+--             _G["PartyMemberFrame"..id.."PetFrame"]:SetAlpha(0);
+--         end
+--     -- end
+-- end);
+
+hooksecurefunc("PartyMemberHealthCheck", function(self, value)
+    -- if UnitFramesPlusDB["party"]["hideraid"] == 1 and UnitFramesPlusDB["party"]["always"] == 1 then
+        local id = self:GetParent():GetID();
+        if not UnitExists("party"..id) then
+            _G["PartyMemberFrame"..id.."Portrait"]:SetAlpha(0);
+        end
+    -- end
+end)
+
 local sf;
 StaticPopupDialogs["UFP_HIDERAIDFRAME"] = {
     text = UFPLocal_HideRaid,
@@ -1336,6 +1760,12 @@ StaticPopupDialogs["UFP_HIDERAIDFRAME"] = {
         UnitFramesPlusDB["party"]["hideraid"] = 1 - UnitFramesPlusDB["party"]["hideraid"];
         if IsAddOnLoaded("UnitFramesPlus_Options") then
             _G["UnitFramesPlus_OptionsFrame_PartyHideRaid"]:SetChecked(UnitFramesPlusDB["party"]["hideraid"]==1);
+            if UnitFramesPlusDB["party"]["hideraid"] == 1 then
+                BlizzardOptionsPanel_CheckButton_Enable(UnitFramesPlus_OptionsFrame_PartyInRaid);
+                UnitFramesPlus_OptionsFrame_PartyInRaidText:SetTextColor(1, 1, 1);
+            else
+                BlizzardOptionsPanel_CheckButton_Disable(UnitFramesPlus_OptionsFrame_PartyInRaid);
+            end
         end
     end,
     whileDead = 1, hideOnEscape = 1, showAlert = 1
@@ -1382,28 +1812,33 @@ end
 
 function UnitFramesPlus_PartyMemberFrameFix()
     for id = 1, 4, 1 do
+        _G["PartyMemberFrame"..id.."NotPresentIcon"]:SetFrameLevel(_G["PartyMemberFrame"..id]:GetFrameLevel()+2);
         _G["PartyMemberFrame"..id.."NotPresentIcon"]:ClearAllPoints();
-        _G["PartyMemberFrame"..id.."NotPresentIcon"]:SetPoint("RIGHT", _G["PartyMemberFrame"..id], "LEFT", -2, 0);
+        -- _G["PartyMemberFrame"..id.."NotPresentIcon"]:SetPoint("BOTTOMRIGHT", _G["PartyMemberFrame"..id.."Portrait"], "TOPLEFT", 12, -12);
+        _G["PartyMemberFrame"..id.."NotPresentIcon"]:SetPoint("RIGHT", _G["PartyMemberFrame"..id.."Name"], "LEFT", 0, 0);
     end
 end
 
 --模块初始化
 function UnitFramesPlus_PartyInit()
+    UnitFramesPlus_ShowPartyFrame();
+    UnitFramesPlus_PartyShowHide();
     UnitFramesPlus_PartyMemberFrameFix();
     UnitFramesPlus_PartyShiftDrag();
-    UnitFramesPlus_PartyPosition();
     -- UnitFramesPlus_PartyOfflineDetection();
     UnitFramesPlus_PartyPortrait();
     UnitFramesPlus_PartyPortraitIndicator();
     UnitFramesPlus_PartyBuff();
-    UnitFramesPlus_PartyScale();
     -- UnitFramesPlus_PartyColorHPBar();
     UnitFramesPlus_PartyName();
     UnitFramesPlus_PartyLevel();
     UnitFramesPlus_PartyHealthPct();
     UnitFramesPlus_PartyBarTextMouseShow();
     UnitFramesPlus_PartyExtraTextFontSize();
-    UnitFramesPlus_HideRaidFrame();
+    -- UnitFramesPlus_HideRaidFrame();
+    UnitFramesPlus_PartyPosition();
+    UnitFramesPlus_PartyPet();
+    UnitFramesPlus_PartyScale();
 end
 
 function UnitFramesPlus_PartyCvar()

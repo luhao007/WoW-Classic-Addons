@@ -12,8 +12,6 @@
 ## X-Category: Map
 ## X-License: GPL v2
 
-embeds.xml
-
 Locales\constants.cn.lua
 Locales\constants.de.lua
 Locales\constants.es.lua

@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: TradeSkillMaster Team
-## Version: v4.9.27
+## Version: v4.9.28
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -9,6 +9,8 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
 
 ## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibCompress, LibRealmInfo
+
+# External libraries
 
 # Our core init file
 LibTSM\Core.lua

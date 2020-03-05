@@ -1,3 +1,20 @@
+v1.2.9:
+- Add new statusbar color option for cast failed.
+- Fix castbar sometimes being incorrectly shown for a split second when you switch targets and the old target used a channeled spell before.
+- Add 64.29% of German localizations, thanks to x_RazzorX_x!
+
+
+v1.2.8:
+- Castbar now shows a red failed indicator on cast stopped. (Interrupt indicator will still say "Interrupted" instead of "Failed" so you can still track successful interrupts.)
+- Improvements to castbar finish animations.
+- Fix Lua error from v1.2.7 when using player castbar without timer text enabled.
+- Add more French localizations, thanks to Irhala!
+
+
+v1.2.7:
+- Player castbar timer text is now placed outside the castbar if the spell name is too long, just like with the target castbar.
+
+
 v1.2.6:
 - Target castbar is no longer auto reanchored on target of target frame being shown or hidden, instead it's always placed below the target of target frame area.
 - Fix "Show Cast Info Only" option sometimes bugging out if you have it enabled for one type of unit frame but disabled for another.

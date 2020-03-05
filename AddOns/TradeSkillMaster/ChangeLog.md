@@ -1,9 +1,5 @@
-## v4.9.27 Changes
+## v4.9.28 Changes
 
-* [Retail] Fixed error when using the default UI or another AH addon while TSM is scanning
-* [Retail] Added new bonusIds
-* [Retail] Fixed issue with some armor subclass filters
-* [Retail] Fixed issue with posting pets
-
+* [Retail] Working around a Blizzard bug to speed up Sniper scans
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

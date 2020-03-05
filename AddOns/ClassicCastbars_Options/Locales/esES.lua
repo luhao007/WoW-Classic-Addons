@@ -39,10 +39,6 @@ L["ICON_SIZE"] = "Tamaño del Icono"
 L["ICON_SIZE_TOOLTIP"] = "Establece el tamaño del icono de hechizo de la barra de lanzamiento."
 L["LSM_TEXTURE_NOTE"] = [=[
 Nota: Si usa una textura / fuente de terceros personalizada y la elimina más adelante de su ordenador, deberá restablecer manualmente la textura o fuente aquí para que el complemento continúe funcionando.]=]
-L["MOVEMENT_DETECT"] = "Dejar la barra de lanzamiento en movimiento"
-L["MOVEMENT_DETECT_TOOLTIP"] = [=[Habilita esto para dejar la barra de lanzamiento cuando mueva su personaje.
-Es posible que desee deshabilitar esto si juega con alta latencia, ya que a veces puede detener incorrectamente la barra de lanzamiento para los jugadores con retraso.
-]=]
 L["NAMEPLATE"] = "Placa identificativa"
 L["PARTY"] = "Grupo"
 L["PLAYER"] = "Jugador"
