@@ -7,5 +7,5 @@ if not AL then return end
 AL["|cff33ff99Rank:|r %s"] = "|cff33ff99Patente:|r %s"
 AL["Battlegrounds"] = "Campos de Batalha"
 AL["Class Sets"] = "Conjuntos de classe"
-AL["Insignia"] = "Insignia"
+AL["Insignia"] = "Insígnia"
 AL["PvP Ranks"] = "Postes de JxJ"

@@ -6,12 +6,29 @@
         DecursiveEmbedsxmlCheck = false;
     </Script>
 
+    <!--@no-lib-strip@-->
+
+
+
+
+
+
+
+
 
     <Include file="Libs\BugGrabber\load.xml" />
 
     <Script>
         DecursiveInEmbeddedMode = true;
     </Script>
+
+    <!--@end-no-lib-strip@-->
+
+
+
+    <!--@no-lib-strip@-->
+    <!--@end-no-lib-strip@-->
+
 
     <Script>
         DecursiveEmbedsxmlCheck = "2.7.6.7";

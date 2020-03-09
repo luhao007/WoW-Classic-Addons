@@ -13,7 +13,6 @@
 ## X-Curse-Project-ID: 348370
 
 Localizations\embeds.xml
-
 honorspy.lua
 GUI.lua
 settings.lua

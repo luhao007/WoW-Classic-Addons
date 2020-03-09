@@ -18,7 +18,6 @@
 ## X-License: GPLv3
 
 #libraries\includes.xml
-
 fonts\includes.xml
 
 addon\includes.xml
@@ -28,6 +27,4 @@ services\includes.xml
 modules\includes.xml
 
 modules\highcpu2.xml
-
-
 

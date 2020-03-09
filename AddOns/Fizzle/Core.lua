@@ -7,7 +7,7 @@ local defaults = {
         Border = true,
         Invert = false,
         HideText = false,
-        DisplayWhenFull = false,
+        DisplayWhenFull = true,
         modules = {
             ["Inspect"] = true,
         },
@@ -37,7 +37,7 @@ local items, nditems -- our item slot tables
 local function getOptions()
     local options = {
         type = "group",
-        name = "Fizzle",
+        name = GetAddOnMetadata("Fizzle", "Title"),
         args = {
             fizzledesc = {
                 type = "description",
@@ -169,7 +169,7 @@ function Fizzle:OnInitialize()
     db = self.db.profile
 
     -- Get the addon title.
-    local title = "Fizzle"
+    local title = GetAddOnMetadata("Fizzle", "Title")
 
     -- Register our options
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Fizzle", getOptions)

@@ -14,8 +14,5 @@
 ## X-URL: http://zip.norganna.org/libs/!Swatter/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-##
 Support\Load.xml
 Swatter.lua

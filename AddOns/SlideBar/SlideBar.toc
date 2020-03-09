@@ -16,7 +16,4 @@
 ## X-URL: http://zip.norganna.org/libs/SlideBar/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-##
 Load.xml

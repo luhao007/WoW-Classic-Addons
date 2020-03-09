@@ -1,13 +1,17 @@
+import logging
 import os
 
 from config import MAPPING
 from utils import process_file
 
+logger = logging.getLogger('toc')
+
 
 class TOC(object):
 
     def __init__(self, lines):
-        self.tags = dict(l[3:].split(':', 1) for l in lines if l.startswith('## ') and ':' in l)
+        self.tags = dict(l[3:].split(':', 1) for l in lines
+                         if l.startswith('## ') and ':' in l)
         self.contents = [l for l in lines if not l.startswith('## ')]
         for i, e in enumerate(self.contents):
             if e != '\n':
@@ -19,6 +23,27 @@ class TOC(object):
     def tags_to_line(self, tags):
         return ['## {}: {}\n'.format(tag, self.tags[tag].strip())
                 for tag in tags if tag in self.tags]
+
+    def trim_contents(self):
+        prev = ''
+        removes = set([])
+        for i, line in enumerate(self.contents):
+            # Remove emtpy line following empty lines or comments
+            if line == '\n' and prev[0] in ['\n', '#']:
+                removes.add(i)
+
+            # if it is end-of-block, then add an empty line
+            if prev.startswith('#@end'):
+                self.contents.insert(i, '\n')
+
+            # Remove empty comment line
+            if line.startswith('#') and set(line).issubset(['#', ' ', '\n']):
+                removes.add(i)
+
+            prev = line
+
+        for i in sorted(removes, reverse=True):
+            self.contents.pop(i)
 
     def to_lines(self):
         keys = ['Interface', 'Author', 'Version',
@@ -36,6 +61,7 @@ class TOC(object):
         ret += self.tags_to_line(k for k in self.tags if k.startswith('X-'))
         ret += ['\n']
 
+        self.trim_contents()
         ret += self.contents
 
         return ret
@@ -73,7 +99,9 @@ def get_title(addon):
         else:
             color = 'FF69CCF0'
         title += '|c{}{}|r'.format(color, sub)
-    elif ('DBM' not in addon or addon == 'DBM-Core') and 'Grail-' not in addon and addon != '!!Libs':
+    elif not (('DBM' in addon and addon != 'DBM-Core') or
+              'Grail-' in addon or
+              addon == '!!Libs'):
         title += '|cFFFFE00A{}|r'.format(m.get('Title-en', addon))
 
     return title.strip()
@@ -84,10 +112,10 @@ def get_notes(addon):
     return m.get('Notes')
 
 
-def process_toc(verbose=False):
+def process_toc(version, verbose=False):
     for addon in os.listdir('AddOns'):
         if addon not in MAPPING:
-            print('{} not found!'.format(addon))
+            logger.warn('%s not found!', addon)
             continue
 
         path = os.path.join('AddOns', addon, '{0}.toc'.format(addon))
@@ -95,7 +123,7 @@ def process_toc(verbose=False):
         def process(lines):
             toc = TOC(lines)
 
-            toc.tags['Interface'] = '11303' if '_classic_' in os.getcwd() else '80300'
+            toc.tags['Interface'] = version
 
             title = get_title(addon)
             if title:
@@ -107,4 +135,4 @@ def process_toc(verbose=False):
 
             return toc.to_lines()
 
-        process_file(path, process, verbose)
+        process_file(path, process)

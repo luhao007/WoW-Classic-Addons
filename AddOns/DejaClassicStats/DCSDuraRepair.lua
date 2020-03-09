@@ -485,7 +485,7 @@ local function DCS_Item_DurabilityTop()
 end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowDuraChecked = {
-	ShowDuraSetChecked = false,
+	ShowDuraSetChecked = true,
 }	
 
 local DCS_ShowDuraCheck = CreateFrame("CheckButton", "DCS_ShowDuraCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
@@ -774,7 +774,7 @@ end
 
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowItemRepairChecked = {
-	ShowItemRepairSetChecked = false,
+	ShowItemRepairSetChecked = true,
 }	
 
 local DCS_ShowItemRepairCheck = CreateFrame("CheckButton", "DCS_ShowItemRepairCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
@@ -862,7 +862,7 @@ local function DCS_Item_Level_Center()
 end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowItemLevelChecked = {
-	ShowItemLevelSetChecked = false,
+	ShowItemLevelSetChecked = true,
 }
 
 local DCS_ShowItemLevelCheck = CreateFrame("CheckButton", "DCS_ShowItemLevelCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
@@ -3981,7 +3981,7 @@ local function DCS_Item_Enchant_GetText()
 end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowEnchantChecked = {
-	ShowEnchantSetChecked = false,
+	ShowEnchantSetChecked = true,
 }
 
 local DCS_ShowEnchantCheck = CreateFrame("CheckButton", "DCS_ShowEnchantCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")

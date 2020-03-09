@@ -251,9 +251,9 @@ GameTooltipModel.SetCreatureID = function(self, creatureID)
 	end
 	self:Show();
 end
-GameTooltipModel.TrySetDisplayInfos = function(self, reference, displayInfos)
-	if displayInfos then
-		local count = #displayInfos;
+GameTooltipModel.TrySetDisplayInfo = function(self, reference, displayInfo)
+	if displayInfo then
+		local count = #displayInfo;
 		if count > 0 then
 			local rotation = reference.modelRotation and ((reference.modelRotation * math.pi) / 180) or MODELFRAME_DEFAULT_ROTATION;
 			local scale = reference.modelScale or 1;
@@ -263,7 +263,7 @@ GameTooltipModel.TrySetDisplayInfos = function(self, reference, displayInfos)
 				if count < 3 then
 					for i=1,count do
 						model = self.Models[i];
-						model:SetDisplayInfo(displayInfos[i]);
+						model:SetDisplayInfo(displayInfo[i]);
 						model:SetCamDistanceScale(scale);
 						model:SetFacing(rotation);
 						model:SetPosition(0, (i % 2 == 0 and 0.5 or -0.5), 0);
@@ -273,7 +273,7 @@ GameTooltipModel.TrySetDisplayInfos = function(self, reference, displayInfos)
 					scale = (1 + (ratio * 0.5)) * scale;
 					for i=1,count do
 						model = self.Models[i];
-						model:SetDisplayInfo(displayInfos[i]);
+						model:SetDisplayInfo(displayInfo[i]);
 						model:SetCamDistanceScale(scale);
 						model:SetFacing(rotation);
 						fi = math.floor(i / 2);
@@ -284,7 +284,7 @@ GameTooltipModel.TrySetDisplayInfos = function(self, reference, displayInfos)
 			else
 				self.Model:SetFacing(rotation);
 				self.Model:SetCamDistanceScale(scale);
-				self.Model:SetDisplayInfo(displayInfos[1]);
+				self.Model:SetDisplayInfo(displayInfo[1]);
 				self.Model:Show();
 			end
 			self:Show();
@@ -296,21 +296,18 @@ GameTooltipModel.TrySetModel = function(self, reference)
 	GameTooltipModel.HideAllModels(self);
 	if app.Settings:GetTooltipSetting("Models") then
 		self.lastModel = reference;
-		local displayInfos = reference.displayInfo;
-		if GameTooltipModel.TrySetDisplayInfos(self, reference, displayInfos) then
-			return true;
-		elseif reference.qgs then
+		if reference.qgs then
 			if #reference.qgs > 1 then
-				displayInfos = {};
+				local displayInfo = {};
 				local markedKeys = {};
 				for i,creatureID in ipairs(reference.qgs) do
 					local displayID = app.NPCDisplayIDFromID[creatureID];
 					if displayID and not markedKeys[displayID] then
-						tinsert(displayInfos, displayID);
+						tinsert(displayInfo, displayID);
 						markedKeys[displayID] = 1;
 					end
 				end
-				if GameTooltipModel.TrySetDisplayInfos(self, reference, displayInfos) then
+				if GameTooltipModel.TrySetDisplayInfo(self, reference, displayInfo) then
 					return true;
 				end
 			else
@@ -325,18 +322,18 @@ GameTooltipModel.TrySetModel = function(self, reference)
 				end
 			end
 		elseif reference.providers then
-			displayInfos = {}
+			local displayInfo = {}
 			local markedKeys = {}
 			for k,v in pairs(reference.providers) do
 				if v[1] == "n" and v[2] > 0 then
 					local displayID = app.NPCDisplayIDFromID[v[2]];
 					if displayID and not markedKeys[displayID] then
-						tinsert(displayInfos, displayID);
+						tinsert(displayInfo, displayID);
 						markedKeys[displayID] = 1;
 					end
 				end
 			end
-			if GameTooltipModel.TrySetDisplayInfos(self, reference, displayInfos) then
+			if GameTooltipModel.TrySetDisplayInfo(self, reference, displayInfo) then
 				return true;
 			end
 		end
@@ -1369,7 +1366,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 					return not (a.npcID and a.npcID == -1) and b.npcID and b.npcID == -1;
 				end);
 				for i,j in ipairs(group) do
-					if j.g and not (j.achievementID and j.parent.difficultyID) and j.npcID ~= 0 then
+					if j.g and j.npcID ~= 0 then
 						for k,l in ipairs(j.g) do
 							tinsert(subgroup, l);
 						end
@@ -1379,52 +1376,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 				end
 				group = subgroup;
 			end
-		elseif paramA == "achievementID" then
-			-- Don't do anything for things linked to maps.
-			local regroup = {};
-			local criteriaID = ...;
-			if app.Settings:Get("AccountMode") then
-				for i,j in ipairs(group) do
-					if j.criteriaID == criteriaID and app.RecursiveUnobtainableFilter(j) then
-						if j.mapID or j.parent == nil or j.parent.parent == nil then
-							tinsert(regroup, setmetatable({["g"] = {}}, { __index = j }));
-						else
-							tinsert(regroup, j);
-						end
-					end
-				end
-			else
-				for i,j in ipairs(group) do
-					if j.criteriaID == criteriaID and app.RecursiveClassAndRaceFilter(j) and app.RecursiveUnobtainableFilter(j) then
-						if j.mapID or j.parent == nil or j.parent.parent == nil then
-							tinsert(regroup, setmetatable({["g"] = {}}, { __index = j }));
-						else
-							tinsert(regroup, j);
-						end
-					end
-				end
-			end
-			
-			group = regroup;
 		elseif paramA == "titleID" then
-			-- Don't do anything
-			local regroup = {};
-			if app.Settings:Get("AccountMode") then
-				for i,j in ipairs(group) do
-					if app.RecursiveUnobtainableFilter(j) then
-						tinsert(regroup, setmetatable({["g"] = {}}, { __index = j }));
-					end
-				end
-			else
-				for i,j in ipairs(group) do
-					if app.RecursiveClassAndRaceFilter(j) and app.RecursiveUnobtainableFilter(j) then
-						tinsert(regroup, setmetatable({["g"] = {}}, { __index = j }));
-					end
-				end
-			end
-			
-			group = regroup;
-		elseif paramA == "followerID" then
 			-- Don't do anything
 			local regroup = {};
 			if app.Settings:Get("AccountMode") then
@@ -1449,7 +1401,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 				local itemString = string.match(paramA, "item[%-?%d:]+");
 				if itemString then
 					if app.Settings:GetTooltipSetting("itemString") then tinsert(info, { left = itemString }); end
-					local _, itemID2, enchantId, gemId1, gemId2, gemId3, gemId4, suffixId, uniqueId, linkLevel, specializationID, upgradeId, difficultyID, numBonusIds = strsplit(":", itemString);
+					local itemID2 = select(2, strsplit(":", itemString));
 					if itemID2 then
 						itemID = tonumber(itemID2); 
 						paramA = "itemID";
@@ -1468,9 +1420,6 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 						paramB = id;
 					elseif kind == "creatureid" or kind == "npcid" then
 						paramA = "creatureID";
-						paramB = id;
-					elseif kind == "achievementid" then
-						paramA = "achievementID";
 						paramB = id;
 					end
 				end
@@ -1668,15 +1617,6 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 		end
 		
 		if group.g and #group.g > 0 then
-			--[[
-			if app.Settings:GetTooltipSetting("Descriptions") and not (paramA == "achievementID" or paramA == "titleID") then
-				for i,j in ipairs(group.g) do
-					if j.description and ((j[paramA] and j[paramA] == paramB) or (paramA == "itemID" and group.key == j.key)) then
-						tinsert(info, 1, { left = j.description, wrap = true, color = "ff66ccff" });
-					end
-				end
-			end
-			]]--
 			if app.Settings:GetTooltipSetting("SummarizeThings") then
 				local entries, left, right = {};
 				BuildContainsInfo(group.g, entries, paramA, paramB, "  ", app.noDepth and 99 or 1);
@@ -2666,6 +2606,8 @@ app.BaseCharacterClass = {
 			local c = { t.classID };
 			rawset(t, "c", c);
 			return c;
+		elseif key == "nmc" then
+			return t.classID ~= app.ClassIndex;
 		elseif key == "classColors" then
 			return RAID_CLASS_COLORS[C_CreatureInfo.GetClassInfo(t.classID).classFile];
 		else
@@ -4131,7 +4073,7 @@ app.BaseRecipe = {
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if IsSpellKnown(t.spellID) or IsPlayerSpell(t.spellID) then
+			if IsSpellKnown(t.spellID) or IsPlayerSpell(t.spellID) or IsSpellKnown(t.spellID, true) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -4217,7 +4159,7 @@ app.BaseSpell = {
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if IsSpellKnown(t.spellID) then
+			if IsSpellKnown(t.spellID) or IsSpellKnown(t.spellID, true) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -5471,7 +5413,7 @@ local function RowOnEnter(self)
 				local providerID = provider[2] or 0
 				local providerString = "UNKNOWN"
 				if providerType == "o" then
-					providerString = L["OBJECT_ID_NAMES"][providerID] or 'Object #'..providerID
+					providerString = L["OBJECT_ID_NAMES"][providerID] or reference.text or 'Object #'..providerID
 				elseif providerType == "n" then
 					providerString = (providerID > 0 and NPCNameFromID[providerID]) or "Creature #"..providerID
 				elseif providerType == "i" then
@@ -6042,7 +5984,14 @@ function app:GetDataCache()
 		
 		-- Holidays
 		if app.Categories.Holidays then
-			db = app.CreateNPC(-3, app.Categories.Holidays);
+			db = app.CreateNPC(-5, app.Categories.Holidays);
+			db.expanded = false;
+			table.insert(g, db);
+		end
+		
+		-- World Events
+		if app.Categories.WorldEvents then
+			db = app.CreateNPC(-3, app.Categories.WorldEvents);
 			db.expanded = false;
 			table.insert(g, db);
 		end
@@ -6836,24 +6785,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 					group = clone;
 					
 					-- If this is relative to a holiday, let's do something special
-					if GetRelativeField(group, "npcID", -3) then
-						if group.achievementID then
-							if group.criteriaID then
-								if group.parent.achievementID then
-									group = app.CreateAchievement(group.parent.achievementID, 
-										{ g = { group }, total = group.total, progress = group.progress, 
-											u = group.parent.u, races = group.parent.races, r = group.r, c = group.parent.c, nmc = group.parent.nmc, nmr = group.parent.nmr });
-								else
-									group = app.CreateAchievement(group.achievementID,
-										{ g = { group }, total = group.total, progress = group.progress,
-											u = group.u, races = group.races, r = group.r, c = group.c, nmc = group.nmc, nmr = group.nmr });
-								end
-							end
-						elseif group.criteriaID and group.parent.achievementID then
-							group = app.CreateAchievement(group.parent.achievementID, { g = { group }, total = group.total, progress = group.progress, 
-								u = group.parent.u, races = group.parent.races, r = group.r, c = group.parent.c, nmc = group.parent.nmc, nmr = group.parent.nmr });
-						end
-						
+					if GetRelativeField(group, "npcID", -5) then
 						local holidayID = GetRelativeValue(group, "holidayID");
 						local u = group.u or GetRelativeValue(group, "u");
 						if group.key == "npcID" then
@@ -6869,7 +6801,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 						end
 						if holidayID then group = app.CreateHoliday(holidayID, { g = { group }, u = u }); end
 						MergeObject(holiday, group);
-					elseif group.key == "mapID" or group.key == "classID" then
+					elseif group.key == "mapID" then
 						header.key = group.key;
 						header[group.key] = group[group.key];
 						MergeObject({header}, group);
@@ -6916,7 +6848,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 						else
 							-- Attempt to scan for the main holiday header.
 							local done = false;
-							for j,o in ipairs(SearchForField("npcID", -3)) do
+							for j,o in ipairs(SearchForField("npcID", -5)) do
 								if o.g and #o.g > 5 and o.g[1].holidayID then
 									for k,group in ipairs(o.g) do
 										if group.holidayID and group.u == u then
@@ -6935,40 +6867,7 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 						end
 					end
 					
-					tinsert(groups, 1, app.CreateNPC(-3, { g = holiday, description = "A specific holiday may need to be active for you to complete the referenced Things within this section." }));
-				end
-				
-				-- Check for timewalking difficulty objects
-				for i, group in ipairs(groups) do
-					if group.difficultyID and group.difficultyID == 24 and group.g then
-						-- Look for a Common Boss Drop header.
-						local cbdIndex = -1;
-						for j, subgroup in ipairs(group.g) do
-							if subgroup.npcID and subgroup.npcID == -1 then
-								cbdIndex = j;
-								break;
-							end
-						end
-						
-						-- Push the Common Boss Drop header to the top.
-						if cbdIndex > -1 then
-							table.insert(group.g, 1, table.remove(group.g, cbdIndex));
-						end
-						
-						-- Look for a Zone Drop header.
-						cbdIndex = -1;
-						for j, subgroup in ipairs(group.g) do
-							if subgroup.npcID and subgroup.npcID == 0 then
-								cbdIndex = j;
-								break;
-							end
-						end
-						
-						-- Push the Zone Drop header to the top.
-						if cbdIndex > -1 then
-							table.insert(group.g, 1, table.remove(group.g, cbdIndex));
-						end
-					end
+					tinsert(groups, 1, app.CreateNPC(-5, { g = holiday, description = "A specific holiday may need to be active for you to complete the referenced Things within this section." }));
 				end
 				
 				-- Swap out the map data for the header.

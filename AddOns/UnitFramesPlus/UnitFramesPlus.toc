@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: Isler
-## Version: 1.36.1
+## Version: 1.36.2
 ## SavedVariables: UnitFramesPlusDB
 ## SavedVariablesPerCharacter: UnitFramesPlusVar
 
@@ -30,5 +30,4 @@ PartyPlus.lua
 PartyTarget.lua
 
 #PartyCastbar.lua
-
 ExtPlus.lua

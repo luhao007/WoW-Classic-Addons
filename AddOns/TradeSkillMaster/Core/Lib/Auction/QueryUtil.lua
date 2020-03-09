@@ -81,9 +81,31 @@ function private.GenerateQueriesThread(itemList, callback)
 	end
 
 	if not TSM.IsWowClassic() then
+		-- sort the item list so all base items are grouped together
+		sort(itemList)
+		local currentBaseItemString = nil
+		local currentItems = TempTable.Acquire()
 		for _, itemString in ipairs(itemList) do
-			callback(itemString, private.GetItemQueryInfo(itemString))
+			local baseItemString = ItemString.GetBaseFast(itemString)
+			assert(baseItemString)
+			if baseItemString == currentBaseItemString then
+				-- same base item
+				tinsert(currentItems, itemString)
+			else
+				-- new base item
+				if currentBaseItemString then
+					callback(currentItems)
+					wipe(currentItems)
+				end
+				currentBaseItemString = baseItemString
+				tinsert(currentItems, itemString)
+			end
 		end
+		if currentBaseItemString then
+			callback(currentItems)
+			wipe(currentItems)
+		end
+		TempTable.Release(currentItems)
 		return
 	else
 		-- TODO: add optimizations in for classic?

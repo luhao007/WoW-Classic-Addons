@@ -9,7 +9,10 @@ Use ctrl + scroll wheel over a window title to adjust the scale of the window fo
 
 [![Watch the video](https://img.youtube.com/vi/jPcpkQjCTZU/hqdefault.jpg)](https://youtu.be/jPcpkQjCTZU)
 
-## CurseForge:
+## CurseForge
+[https://www.curseforge.com/wow/addons/blizzmove](https://www.curseforge.com/wow/addons/blizzmove)
+
+## WowAce
 [https://www.wowace.com/projects/blizzmove](https://www.wowace.com/projects/blizzmove)
 
 ## WoWInterface

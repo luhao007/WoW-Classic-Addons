@@ -15,9 +15,6 @@
 ## X-URL: http://zip.norganna.org/libs/Stubby/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-##
 Support\Load.xml
 
 Libs\Load.xml

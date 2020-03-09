@@ -22,6 +22,5 @@
 # ## Notes: Battleground Maps
 # ## Notes-zhTW: Atlas 戰場地圖插件
 #@end-debug@
-
 Locale\Locales.xml
 Atlas_Battlegrounds.lua

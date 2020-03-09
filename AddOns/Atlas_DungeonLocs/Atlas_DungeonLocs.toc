@@ -22,6 +22,5 @@
 # ## Notes: Dungeon Locations
 # ## Notes-zhTW: Atlas 地下城位置地圖插件，顯示各個地下城 (副本) 所在位置
 #@end-debug@
-
 Locale\Locales.xml
 Atlas_DungeonLocs.lua

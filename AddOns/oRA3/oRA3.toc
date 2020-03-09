@@ -15,8 +15,6 @@
 ## X-Curse-Project-ID: 15655
 
 # X-WoWI-ID: 14635
-
-
 locales\enUS.lua
 locales\itIT.lua
 locales\ptBR.lua
@@ -27,10 +25,8 @@ locales\zhTW.lua
 locales\frFR.lua
 locales\deDE.lua
 locales\esES.lua
-
 oRA3.lua
 modulePrototype.lua
-
 # module order in options
 #modules\Alerts.lua
 #modules\BattleRes.lua

@@ -1,0 +1,61 @@
+tag e0e844b4e5c4873cde81184d677d2851f6c5d2f4 v80300.1
+Author:	Parnic <parnic@parnic.com>
+Date:	Tue Jan 14 20:06:14 2020 -0600
+
+Tagging as v80300.1
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEE0A2fAU9k/Q1rnkadTZ3tKV9Cz1UFAl4ec5sACgkQTZ3tKV9C
+z1VCMwf/X/KkrghdbrI8TO5JiB/zXvTO1E+ovuN6D2MGIiSCIqMv/eDxJ+CwLmXs
+jVWX+U1te4E/DcNx2lKYeYSZXVo189iwsKPXY4opMTlV3MmsxjFG6/UFTot8sOzJ
+cxJOPaGWeI8dowiuXXruT1MuAlLJS5O0Le5UfWR2DoPM3uG8nXuXlTa9Z9U5Rk5a
+I1hKFCGu5FZYEdiieNJ3kjUmAGwigs21TsQqrG559hZPN/cqhc2BiFkT4XPmhL88
+MIYCy9Z3P5iHFvNTqSYYN2ojXJFmSBWLyR7JfL7nRgM4J1cO4fPTPp89RA3DIO4A
+DmXhuNIyhW47h3eQB4hKh1Bdstu8sA==
+=Y8IW
+-----END PGP SIGNATURE-----
+
+commit 021fd03384c180866f0b2d1342d314076bf7e657
+Author: Parnic <parnic@parnic.com>
+Date:   Tue Jan 14 20:02:42 2020 -0600
+
+    Updated TOC to 8.3
+
+commit 2df75a898385daab57ac276684ee494b09fa71e4
+Author: Andrew Scott <ascott18@gmail.com>
+Date:   Fri Dec 6 19:57:33 2019 -0800
+
+    Fix incorrect return type of `[HappyText]`
+
+commit 68ef16e6b7bcd0bbf39e563e764a54f32384ef14
+Author: Parnic <parnic@parnic.com>
+Date:   Mon Sep 16 21:16:42 2019 -0500
+
+    Actually re-added support for pet happiness in Classic
+    
+    Commit f54d8964 added incorrect logic that caused the tags to go away on Classic. The only change that should have stuck around from that commit was to use the proper unit event.
+
+commit f54d896417c48d4d949f214017390c6d095b79cc
+Author: Parnic <github@parnic.com>
+Date:   Fri Sep 6 11:28:49 2019 -0500
+
+    Re-added support for pet happiness in Classic
+
+commit 93a898dc15c565e18f6b9a965ee01f8e945f269b
+Author: Parnic <parnic@parnic.com>
+Date:   Sun Aug 11 20:42:18 2019 -0500
+
+    Safer WoW Classic check
+    
+    These constants are defined in 8.2 and Classic, so it shouldn't be an issue, but might as well make sure we retain as much compatibility with old versions as possible.
+
+commit fd7cf8d938d1383b4bc0356c8434c359c9b401fd
+Author: Parnic <parnic@parnic.com>
+Date:   Sun Aug 11 15:34:23 2019 -0500
+
+    More Classic updates
+    
+    Changed wow_classic checks to use the WOW_PROJECT_CLASSIC constant instead of interface version checks.
+    Fixed GetQuestDifficultyColor errors in Classic.
+    Fixed user-reported UnitHasVehicleUI errors in Combos tag.
+

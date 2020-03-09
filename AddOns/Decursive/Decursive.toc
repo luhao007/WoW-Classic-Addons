@@ -25,31 +25,20 @@
 ## X-eMail: Decursive@2072productions.com
 
 embeds.xml
-
 Dcr_DIAG.lua
 Dcr_DIAG.xml
-
 Localization\load.xml
-
 DCR_init.lua
 Dcr_LDB.lua
 Dcr_utils.lua
-
-
 Dcr_opt.lua
 Dcr_Events.lua
-
 Dcr_Raid.lua
-
 Decursive.lua
 Decursive.xml
-
 Dcr_lists.lua
 Dcr_lists.xml
-
 Dcr_DebuffsFrame.lua
 Dcr_DebuffsFrame.xml
-
 Dcr_LiveList.lua
 Dcr_LiveList.xml
-

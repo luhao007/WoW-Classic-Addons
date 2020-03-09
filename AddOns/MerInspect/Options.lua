@@ -17,14 +17,14 @@ end})
 
 local DefaultDB = {
     version = VERSION,
+    ShowItemSlotString = true,              --物品部位文字
     ShowItemBorder = true,                  --物品直角邊框
-    ShowItemSlotString = false,              --物品部位文字
-    ShowCharacterItemSheet = false,          --玩家自己裝備列表
-    ShowCharacterItemStats = false,          --玩家自己屬性統計
+    ShowCharacterItemSheet = true,          --玩家自己裝備列表
+    ShowCharacterItemStats = true,          --玩家自己屬性統計
     ShowInspectAngularBorder = false,       --觀察面板直角邊框
     ShowInspectColoredLabel = true,         --觀察面板顔色隨物品品質
     ShowInspectItemSheet = true,            --顯示观察对象装备列表
-        ShowOwnFrameWhenInspecting = true,  --觀察同時顯示自己裝備列表
+        ShowOwnFrameWhenInspecting = false,  --觀察同時顯示自己裝備列表
         ShowItemStats = true,                --顯示裝備屬性統計
 }
 

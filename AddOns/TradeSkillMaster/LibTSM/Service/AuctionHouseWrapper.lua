@@ -15,7 +15,6 @@ local Event = TSM.Include("Util.Event")
 local Table = TSM.Include("Util.Table")
 local Future = TSM.Include("Util.Future")
 local Vararg = TSM.Include("Util.Vararg")
-local Wow = TSM.Include("Util.Wow")
 local APIWrapper = LibTSMClass.DefineClass("APIWrapper")
 local private = {
 	wrappers = {},
@@ -153,7 +152,7 @@ local API_EVENT_INFO = {
 -- ============================================================================
 
 AuctionHouseWrapper:OnModuleLoad(function()
-	if TSM.IsWowClassic() or not private.CheckClientBuild() then
+	if TSM.IsWowClassic() then
 		return
 	end
 
@@ -203,7 +202,7 @@ end
 
 function AuctionHouseWrapper.SendBrowseQuery(query)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.SendBrowseQuery:Start(query)
@@ -211,7 +210,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreBrowseResults()
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreBrowseResults:Start()
@@ -219,7 +218,7 @@ end
 
 function AuctionHouseWrapper.SendSearchQuery(itemKey, isSell)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	-- remove times which are beyond the throttle interval
@@ -244,7 +243,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreCommoditySearchResults(itemId)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreCommoditySearchResults:Start(itemId)
@@ -252,7 +251,7 @@ end
 
 function AuctionHouseWrapper.RequestMoreItemSearchResults(itemKey)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.RequestMoreItemSearchResults:Start(itemKey)
@@ -260,7 +259,7 @@ end
 
 function AuctionHouseWrapper.QueryOwnedAuctions(sorts)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.QueryOwnedAuctions:Start(sorts)
@@ -268,7 +267,7 @@ end
 
 function AuctionHouseWrapper.GetItemKeyInfo(itemKey, restrictQualityToFilter)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.GetItemKeyInfo:Start(itemKey, restrictQualityToFilter)
@@ -276,7 +275,7 @@ end
 
 function AuctionHouseWrapper.CancelAuction(auctionId)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.CancelAuction:Start(auctionId)
@@ -284,7 +283,7 @@ end
 
 function AuctionHouseWrapper.StartCommoditiesPurchase(itemId, quantity, itemBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.StartCommoditiesPurchase:Start(itemId, quantity, itemBuyout)
@@ -292,9 +291,6 @@ end
 
 function AuctionHouseWrapper.ConfirmCommoditiesPurchase(itemId, quantity)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() then
-		return
-	end
 	-- TODO: re-enable this once we don't try to start and confirm in the same frame
 	-- if not private.CheckAllIdle() then
 	-- 	return
@@ -304,7 +300,7 @@ end
 
 function AuctionHouseWrapper.PlaceBid(auctionId, bidBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PlaceBid:Start(auctionId, bidBuyout)
@@ -312,7 +308,7 @@ end
 
 function AuctionHouseWrapper.PostItem(itemLocation, postTime, stackSize, bid, buyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PostItem:Start(itemLocation, postTime, stackSize, bid, buyout)
@@ -320,7 +316,7 @@ end
 
 function AuctionHouseWrapper.PostCommodity(itemLocation, postTime, stackSize, itemBuyout)
 	assert(not TSM.IsWowClassic())
-	if not private.CheckClientBuild() or not private.CheckAllIdle() then
+	if not private.CheckAllIdle() then
 		return
 	end
 	return private.wrappers.PostCommodity:Start(itemLocation, postTime, stackSize, itemBuyout)
@@ -663,12 +659,4 @@ function private.CheckAllIdle()
 		end
 	end
 	return true
-end
-
-function private.CheckClientBuild()
-	if tonumber((select(2, GetBuildInfo()))) >= 33237 then
-		return true
-	end
-	Wow.ShowBasicMessage("TSM requires a newer version of the WoW client to function propertly. Close WoW and update it through the Blizzard launcher.")
-	return false
 end

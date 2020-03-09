@@ -56,7 +56,7 @@ addon.Templates = private.Templates
 --addon.dropdowns. = private.dropdowns
 addon.constants.addon_name = private.addon_name
 addon.Name = FOLDER_NAME
-addon.LocName = "Atlas"
+addon.LocName = select(2, GetAddOnInfo(addon.Name))
 addon.Notes = select(3, GetAddOnInfo(addon.Name))
 _G.Atlas = addon
 

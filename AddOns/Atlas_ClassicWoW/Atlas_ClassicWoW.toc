@@ -22,7 +22,6 @@
 # ## Notes: Classic WoW Dungeon Maps
 # ## Notes-zhTW: 艾澤拉斯副本地圖模組
 #@end-debug@
-
 Locale\Locales.xml
 Core.lua
 Data.lua

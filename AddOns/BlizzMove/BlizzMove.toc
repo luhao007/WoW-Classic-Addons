@@ -1,6 +1,6 @@
 ## Interface: 11303
 ## Author: the-rebel-Mermaid - github.com/the-rebel-Mermaid/BlizzMove/
-## Version: v2.1.4a
+## Version: v2.1.4b
 
 ## Title: BlizzMove
 ## Notes: Move those blizzard windows

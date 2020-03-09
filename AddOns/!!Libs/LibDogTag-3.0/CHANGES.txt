@@ -1,0 +1,23 @@
+tag 5772e5a70edeb83c3f4901ec5a5cf17157b6db46 v80300.1
+Author:	Parnic <parnic@parnic.com>
+Date:	Tue Jan 14 20:05:00 2020 -0600
+
+Tagging as v80300.1
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEE0A2fAU9k/Q1rnkadTZ3tKV9Cz1UFAl4ec1oACgkQTZ3tKV9C
+z1VVaAgAtcELx3EzO+8latSRQNDoVHrGzhkamy+j22NMqQFEjFBdQB3unN6sDGE+
+i9GdRGWn5dRDTVDLkZ8T0n/LA3WriaQBcUz6RkQl0ygi6F4Qr2kGrdAbksseWYQV
+fE1AhG39EuiSZHO0Lx8/wLpcbRFWtx/NzAIke627ciIAe+WUOpIdorDUeotM1ZDe
+k7ARGqTuNDHqJo8C4BgAPsQ4OBzfT3xU/JaHsuoXSs5Kf6IDKwz3ycX8649/gBtR
+8siHa1HVcjfRMj8KvWtX8FA7EY79f6nEWj5EgbzyJTtK21pYD4HgBoQHcxxWbBtp
+TysVYal1pnCaznmU3kP+S8ve5YFGfw==
+=nte6
+-----END PGP SIGNATURE-----
+
+commit 831a6fb9d0551774308a27b1107bc9a3bc0539aa
+Author: Parnic <parnic@parnic.com>
+Date:   Tue Jan 14 20:02:23 2020 -0600
+
+    Updated TOC to 8.3
+

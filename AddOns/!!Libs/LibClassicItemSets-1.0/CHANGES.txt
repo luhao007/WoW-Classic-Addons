@@ -1,0 +1,12 @@
+tag 4ee47a64ba170815fdaecc236d7fb76da7ecc73e WoW-1.13.2-r3
+Author:	Lag <lagysera@gmail.com>
+Date:	Sat Aug 10 16:19:30 2019 +0200
+
+WoW-1.13.2-r3
+
+commit d9fd20c2f0d5010686ece3e36fc50731df3928a3
+Author: Lag <lagysera@gmail.com>
+Date:   Sat Aug 10 15:59:40 2019 +0200
+
+    add support for set quality ids
+

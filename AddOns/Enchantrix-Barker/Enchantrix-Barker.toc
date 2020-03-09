@@ -16,9 +16,6 @@
 ## X-URL: http://auctioneeraddon.com/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-##
 BarkerManifest.lua
 
 BarkerObjects.lua

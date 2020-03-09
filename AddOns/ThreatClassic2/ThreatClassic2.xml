@@ -2,6 +2,8 @@
 	<!-- Init -->
 	<Script file="core\init.lua"/>
 
+	<!-- Libraries -->
+
 	<!-- Locales -->
 	<Script file="locale\enUS.lua"/>
 	<Script file="locale\deDE.lua"/>

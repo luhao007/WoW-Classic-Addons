@@ -18,10 +18,6 @@
 ## X-URL: http://auctioneeraddon.com/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-
-##
 EnxManifest.lua
 
 Libs\Load.xml

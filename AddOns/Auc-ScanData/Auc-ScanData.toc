@@ -17,8 +17,5 @@
 ## X-URL: http://auctioneeraddon.com/
 ## X-Feedback: http://forums.norganna.org
 
-##
-##
-##
 StringRope.lua
 ScanData.lua
