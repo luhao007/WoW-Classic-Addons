@@ -1,0 +1,18 @@
+tag 822f90c09068b53c2d2945596af68666c03a12ee 1.0.23
+Author:	Andrew Scott <ascott18@gmail.com>
+Date:	Sun Jul 22 14:23:55 2018 -0700
+
+1.0.23
+
+commit cf4bd235cb7c5551000cf080954ea1e478fab9e6
+Author: Andrew Scott <ascott18@gmail.com>
+Date:   Sun Jul 22 14:23:48 2018 -0700
+
+    TOC bump, remove old 7.1 workaround - not needed anymore in BFA.
+
+commit 4722c2ceb9c1e79cdb8064f7099e2dbf68ededf4
+Author: Andrew Scott <ascott18@gmail.com>
+Date:   Wed Oct 5 21:21:01 2016 -0700
+
+    Fixes for Blizzard's bugs in the 7.1 PTR
+

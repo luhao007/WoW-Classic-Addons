@@ -1,0 +1,8 @@
+------------------------------------------------------------------------
+r36 | funkydude | 2019-08-01 14:57:12 +0000 (Thu, 01 Aug 2019) | 1 line
+Changed paths:
+   M /trunk/LibChatAnims/LibChatAnims.lua
+
+Let chat addons query if a chat tab is alerting since we don't change this variable anymore.
+------------------------------------------------------------------------
+

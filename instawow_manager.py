@@ -12,13 +12,13 @@ class InstawowManager(object):
         self.config = game_flavour + ('_lib' if lib else '')
         config_root = Path(click.get_app_dir('instawow')) / self.config
         os.environ['INSTAWOW_CONFIG_DIR'] = str(config_root)
-        config_path = config_root / 'config.json'
-        if not os.path.exists(config_root) or not os.path.exists(config_path):
-            addon_dir = Path(os.getcwd()) / 'Addons/'
-            if lib:
-                addon_dir /= '!!Libs'
-            config = Config(addon_dir=addon_dir, game_flavour=game_flavour)
-            config.write()
+
+        addon_dir = Path(os.getcwd()) / 'Addons/'
+        if lib:
+            addon_dir /= '!!Libs'
+            game_flavour = 'retail'
+        config = Config(addon_dir=addon_dir, game_flavour=game_flavour)
+        config.write()
 
         self.manager = instawow.cli.ManagerWrapper(debug=False).m
 

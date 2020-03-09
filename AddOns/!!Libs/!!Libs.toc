@@ -30,7 +30,7 @@ Ace3\AceSerializer-3.0\AceSerializer-3.0.xml
 
 # Ace3 Additional Libs
 LibSharedMedia-3.0\lib.xml
-AceGUI-3.0-SharedMediaWidgets\widget.xml
+AceGUI-3.0-SharedMediaWidgets\AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 # Libs Needs to be Imported before Other Libs
 LibCompress\lib.xml
@@ -61,33 +61,33 @@ DRList-1.0\DRList-1.0.xml
 LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
-LibChatAnims\LibChatAnims.xml
+LibChatAnims\LibChatAnims\LibChatAnims.xml
 LibChatHandler-1.0\lib.xml
 LibChecksum-1.0\LibChecksum.lua
 LibClassicCasterino\LibClassicCasterino.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
-LibDBIcon-1.0\lib.xml
+LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
 LibDDI-1.0\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
 LibDogTag-Stats-3.0\lib.xml
 LibDogTag-Unit-3.0\lib.xml
-LibDropDown-1.0\LibDropDown-1.0.lua
+LibDropDown-1.0\LibDropDown-1.0\LibDropDown-1.0.lua
 LibDurability\LibDurability.xml
-LibGraph-2.0\LibGraph-2.0.lua
-LibLatency\LibLatency.xml
+LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
+LibLatency\LibLatency\LibLatency.xml
 LibOO-1.0\lib.xml
 LibQTip-1.0\lib.xml
-LibRangeCheck-2.0\LibRangeCheck-2.0.lua
+LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmID\LibRealmID.lua
 LibRealmInfo\LibRealmInfo.lua
-LibSink-2.0\lib.xml
+LibSink-2.0\LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 LibThreatClassic2\lib.xml
 LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibWho-2.0\LibWho-2.0.lua
-LibWindow-1.1\LibWindow-1.1.lua
+LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
 
 # Other Libs required by various addons
 AccurateTime\AccurateTime.lua

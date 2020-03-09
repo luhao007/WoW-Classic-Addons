@@ -10,16 +10,14 @@ DogTag_Stats_funcs[#DogTag_Stats_funcs+1] = function(DogTag_Stats, DogTag)
 local L = DogTag_Stats.L
 
 
-if GetMasteryEffect then
-	DogTag:AddTag("Stats", "Mastery", {
-		code = GetMasteryEffect,
-		ret = "number",
-		events = "MASTERY_UPDATE",
-		doc = L["Returns your Mastery effect percentage"],
-		example = '[Mastery:Round(1)] => "17.2"; [Mastery:Round(1):Percent] => "17.2%"',
-		category = L["Enhancements"],
-	})
-end
+DogTag:AddTag("Stats", "Mastery", {
+	code = GetMasteryEffect,
+	ret = "number",
+	events = "MASTERY_UPDATE",
+	doc = L["Returns your Mastery effect percentage"],
+	example = '[Mastery:Round(1)] => "17.2"; [Mastery:Round(1):Percent] => "17.2%"',
+	category = L["Enhancements"],
+})
 
 
 DogTag:AddTag("Stats", "Spirit", {
@@ -54,56 +52,50 @@ DogTag:AddTag("Stats", "Haste", {
 
 
 if GetMultistrike then
-	DogTag:AddTag("Stats", "Multistrike", {
-		code = GetMultistrike,
-		ret = "number",
-		events = "MULTISTRIKE_UPDATE",
-		doc = L["Returns your Multistrike percentage"],
-		example = '[Multistrike:Round(1)] => "17.2"; [Multistrike:Round(1):Percent] => "17.2%"',
-		category = L["Enhancements"],
-	})
+DogTag:AddTag("Stats", "Multistrike", {
+	code = GetMultistrike,
+	ret = "number",
+	events = "MULTISTRIKE_UPDATE",
+	doc = L["Returns your Multistrike percentage"],
+	example = '[Multistrike:Round(1)] => "17.2"; [Multistrike:Round(1):Percent] => "17.2%"',
+	category = L["Enhancements"],
+})
 end
 
-if GetLifesteal then
-	DogTag:AddTag("Stats", "Leech", {
-		code = GetLifesteal,
-		ret = "number",
-		events = "LIFESTEAL_UPDATE",
-		doc = L["Returns your Leech percentage"],
-		example = '[Leech:Round(1)] => "1.2"; [Leech:Round(1):Percent] => "1.2%"',
-		category = L["Enhancements"],
-	})
+DogTag:AddTag("Stats", "Leech", {
+	code = GetLifesteal,
+	ret = "number",
+	events = "LIFESTEAL_UPDATE",
+	doc = L["Returns your Leech percentage"],
+	example = '[Leech:Round(1)] => "1.2"; [Leech:Round(1):Percent] => "1.2%"',
+	category = L["Enhancements"],
+})
 
-	-- The leech tag was originally called Lifesteel. Make an alias so it still works for people who were using it.
-	DogTag:AddTag("Stats", "Lifesteal", {
-		alias = "[Leech]",
-		noDoc = true,
-	})
-end
+-- The leech tag was originally called Lifesteel. Make an alias so it still works for people who were using it.
+DogTag:AddTag("Stats", "Lifesteal", {
+	alias = "[Leech]",
+	noDoc = true,
+})
 
-if GetVersatilityBonus then
-	DogTag:AddTag("Stats", "Versatility", {
-		code = function()
-			return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE)
-		end,
-		ret = "number",
-		events = "COMBAT_RATING_UPDATE",
-		doc = L["Returns your Versatility damage and healing increase percentage."],
-		example = '[Versatility] => "3.6"; [Versatility:Round(1):Percent] => "3.6%"',
-		category = L["Enhancements"],
-	})
-end
+DogTag:AddTag("Stats", "Versatility", {
+	code = function()
+		return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) + GetVersatilityBonus(CR_VERSATILITY_DAMAGE_DONE)
+	end,
+	ret = "number",
+	events = "COMBAT_RATING_UPDATE",
+	doc = L["Returns your Versatility damage and healing increase percentage."],
+	example = '[Versatility] => "3.6"; [Versatility:Round(1):Percent] => "3.6%"',
+	category = L["Enhancements"],
+})
 
-if GetAvoidance then
-	DogTag:AddTag("Stats", "Avoidance", {
-		code = GetAvoidance,
-		ret = "number",
-		events = "AVOIDANCE_UPDATE",
-		doc = L["Returns your Avoidance percentage"],
-		example = '[Avoidance:Round(1)] => "2.2"; [Avoidance:Round(1):Percent] => "2.2%"',
-		category = L["Enhancements"],
-	})
-end
+DogTag:AddTag("Stats", "Avoidance", {
+	code = GetAvoidance,
+	ret = "number",
+	events = "AVOIDANCE_UPDATE",
+	doc = L["Returns your Avoidance percentage"],
+	example = '[Avoidance:Round(1)] => "2.2"; [Avoidance:Round(1):Percent] => "2.2%"',
+	category = L["Enhancements"],
+})
 
 
 end

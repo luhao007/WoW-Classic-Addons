@@ -1,0 +1,9 @@
+------------------------------------------------------------------------
+r33 | cybeloras | 2018-08-11 18:35:11 +0000 (Sat, 11 Aug 2018) | 1 line
+Changed paths:
+   M /trunk/Categories/Spell.lua
+   M /trunk/LibDogTag-Stats-3.0.toc
+
+TOC bump, added SpellCrit tag back
+------------------------------------------------------------------------
+

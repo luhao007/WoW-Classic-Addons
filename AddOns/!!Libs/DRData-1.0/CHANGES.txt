@@ -1,0 +1,268 @@
+Changes since tag v2.8.6
+
+commit 6faff7ad6ecd42b1c15f2e481ffa4ecf5e601d64
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Fri Jul 26 18:23:16 2019 -0700
+
+    Update data from Gladius
+
+commit b73b5dd6ee3a66f493f7e176a09cfc02e8b3d691
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Sep 9 14:17:23 2018 -0700
+
+    ToC bump
+
+commit 4ba90291c0a1b4b6c78417d41cccb6ea7df7610a
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Sep 9 14:17:06 2018 -0700
+
+    Some updates for BfA
+
+commit 14a2ac2236bddd3515d9119ddfdf6ef6695d3fcd
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Thu Oct 27 19:32:11 2016 -0700
+
+    Looks like the fists of fury ID changed in 7.1 for some reason
+
+commit 4211e1aaa896bfe74436efd0bddcf374c77178ba
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sat Oct 22 12:16:05 2016 -0700
+
+    Added fists of fury with Heavy-Handed Strikes talent
+
+commit edd840a4881eda79b7c1c167502c5384ec8942dd
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Tue Jul 26 23:30:37 2016 +0200
+
+    Remove absolete hunter spell ids
+    
+    Freezing Trap provider changed.
+    Glyph of Explosive Trap removed.
+
+commit 66bf68777128e1aaa1c22f3f5e398ec876006bee
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Mon Jul 25 16:03:45 2016 -0700
+
+    Removed pre-Legion backwards compatibility now that the pre-patch is live.
+
+commit 343ae86a49312ffda0825a15c66116b23984bc89
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Jul 17 21:56:35 2016 -0700
+
+    Re-remove Ice Nova under the assumption that it still doesns't DR.
+
+commit 67e9603c1e4f80e689e29cdb32873aadbcb452d8
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Jul 17 21:53:43 2016 -0700
+
+    Packager won't package. Bumping version and trying one more time.
+
+commit 434d54017c16a72dd953d12f57532c1040c3316e
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Jul 17 21:49:08 2016 -0700
+
+    Updates for Legion. Many of the spells added were only guesses, but I've removed all the spells that aren't in the gamed and added what should be all of the new ones.
+
+commit 9619178e409e03dcddbb718e7d31eb5563b9238a
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Mar 8 16:58:00 2015 -0700
+
+    Ice nova no longer DRs with anything in 6.1.
+    Dragon's Breath is on disorient, not incapacitate.
+
+commit 41be89685618e5ede4f2fbe938f07902bd65f071
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Feb 11 15:29:36 2015 -0800
+
+    Added Ice Nova to incapacitates
+
+commit 819e51372ff326a279dd75eddd0b9788c9bc9949
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sun Dec 7 11:04:15 2014 -0800
+
+    Verified ID for the Rake stun while prowled (Druid)
+
+commit 4ace88a37e35f173aca55194330fb72a6c4e05e9
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Fri Nov 7 15:25:51 2014 +0100
+
+    Some warlock fixes
+    
+    Blood Horror - debuff id differs from spell id
+    Fear - different debuff id with glyph of fear
+
+commit 4ace88a37e35f173aca55194330fb72a6c4e05e9
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Fri Nov 7 15:25:51 2014 +0100
+
+    Some warlock fixes
+    
+    Blood Horror - debuff id differs from spell id
+    Fear - different debuff id with glyph of fear
+
+commit 61864fb279ccd32530d481ad24bb026731729bd8
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu Oct 23 21:57:34 2014 +0200
+
+    Removed pre-6.0 compatibility.
+
+commit a4da9f52e8a0e4c3dc0fd6ca84ce2aee19d0adf1
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu Oct 23 21:52:27 2014 +0200
+
+    TOC bump.
+
+commit 1ae06e447de4353662fafc243c4376ec30416c37
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu Aug 14 23:25:55 2014 +0200
+
+    Added a warning about deprecated categories.
+
+commit cb462f695fcd183f95e84cb8e1c3420b0ab02b8e
+Author: Adirelle <adirelle@gmail.com>
+Date:   Sun Aug 10 11:26:23 2014 +0200
+
+    Minor 6.0 fixes.
+
+commit 5977019db388d9d22d9441050ddc76e285b639f9
+Author: Adirelle <adirelle@gmail.com>
+Date:   Sun Aug 10 11:25:58 2014 +0200
+
+    Fills category names and pve info from actual categories.
+    
+    Ensure 5.4/6.0 compatibility.
+
+commit 6936297ebc6ded16ad362d460912e8453f18fa14
+Author: Adirelle <adirelle@gmail.com>
+Date:   Sun Aug 10 10:37:58 2014 +0200
+
+    Handle taunt DR.
+    
+    Fixes #5.
+
+commit 6936297ebc6ded16ad362d460912e8453f18fa14
+Author: Adirelle <adirelle@gmail.com>
+Date:   Sun Aug 10 10:37:58 2014 +0200
+
+    Handle taunt DR.
+    
+    Fixes #5.
+
+commit 369f3fc32af8faa194d0ddd415d230d7e82cc71a
+Author: Adirelle <adirelle@gmail.com>
+Date:   Sun Aug 10 10:37:00 2014 +0200
+
+    Handles knockback reset time.
+    
+    Fixes #4.
+
+commit 726703e4d42ef902d01b96681b00699c5c169a54
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Aug 6 18:54:55 2014 -0700
+
+    I'm 99% sure that the short stun category is gone now. Charge is a root now, and earthquake and dragon roar say "knock down"
+
+commit 726703e4d42ef902d01b96681b00699c5c169a54
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Aug 6 18:54:55 2014 -0700
+
+    I'm 99% sure that the short stun category is gone now. Charge is a root now, and earthquake and dragon roar say "knock down"
+
+commit f78cd6daa3f3bec197891d3d220c99f9f8670d44
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Aug 6 18:54:55 2014 -0700
+
+    I'm 99% sure that the short stun category is gone now. Charge is a root now, and earthquake and dragon roar say "knock down"
+
+commit b323783c638f41c364d75f08213c5328d5863e5e
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Aug 6 18:51:13 2014 -0700
+
+    Updates for WoD (still compatible with live)
+
+commit be7fe70e8411b3bffd2290e48f3729ef0c2d5a47
+Author: Adirelle <adirelle@gmail.com>
+Date:   Wed May 7 11:43:50 2014 +0200
+
+    Fixed warlock providers.
+
+commit 1a3356e9132359df1518e98ea922fb725880228c
+Author: Adirelle <adirelle@gmail.com>
+Date:   Tue May 6 07:45:49 2014 +0200
+
+    Minor version bump.
+
+commit 8b3914c4904b7280f1612c26bb7a6ab65b54fa9d
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Tue May 6 00:11:51 2014 +0200
+
+    Monk: Added providers and confirmed ids
+
+commit 8b3914c4904b7280f1612c26bb7a6ab65b54fa9d
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Tue May 6 00:11:51 2014 +0200
+
+    Monk: Added providers and confirmed ids
+
+commit 8b3914c4904b7280f1612c26bb7a6ab65b54fa9d
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Tue May 6 00:11:51 2014 +0200
+
+    Monk: Added providers and confirmed ids
+
+commit dbc691b6ba1679c1bed3dc1759e6a909474f3ea6
+Author: Rainrider <rainrider.wow@gmail.com>
+Date:   Mon May 5 23:18:01 2014 +0200
+
+    Hunter: fixed Charge provider, Narrow Escape, Entrapment
+    
+    Confirmed all hunter pet spells in-game
+
+commit 80ebc7daa35bb46f83380acb1d248e4524ab593f
+Author: Adirelle <adirelle@gmail.com>
+Date:   Mon May 5 16:12:20 2014 +0200
+
+    Updated the providers of hunter spells.
+
+commit e50f59014371a23241260e1c0b9b1cd69b7d5d3c
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu May 1 10:32:35 2014 +0200
+
+    Added an API to get the spell ("provider") that applies the CC debuff.
+    
+    Initial work: for now the debuff id is returned as the provider id. The data needs to be updated.
+
+commit 0dbb66a7fcf442269ead011dc2b8d4045a0255d4
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Mar 19 19:10:50 2014 -0700
+
+    Fix spellID for Storm Bolt
+
+commit e50f59014371a23241260e1c0b9b1cd69b7d5d3c
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu May 1 10:32:35 2014 +0200
+
+    Added an API to get the spell ("provider") that applies the CC debuff.
+    
+    Initial work: for now the debuff id is returned as the provider id. The data needs to be updated.
+
+commit e50f59014371a23241260e1c0b9b1cd69b7d5d3c
+Author: Adirelle <adirelle@gmail.com>
+Date:   Thu May 1 10:32:35 2014 +0200
+
+    Added an API to get the spell ("provider") that applies the CC debuff.
+    
+    Initial work: for now the debuff id is returned as the provider id. The data needs to be updated.
+
+commit 0dbb66a7fcf442269ead011dc2b8d4045a0255d4
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Wed Mar 19 19:10:50 2014 -0700
+
+    Fix spellID for Storm Bolt
+
+commit ec137c63104430f10656befcbd5a7188d82db0bc
+Author: Cybeloras <ascott18@gmail.com>
+Date:   Sat Feb 15 23:23:01 2014 -0800
+
+    Added the Incarnation version of Pounce
+

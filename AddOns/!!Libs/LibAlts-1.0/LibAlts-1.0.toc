@@ -3,7 +3,7 @@
 
 ## Title: Lib: LibAlts-1.0
 ## Notes: Shared handling of alternate identity data between addons.
-## Version: 2.0.1 
+## Version: r49 
 ## Author: Sylvanaar
 ## X-Category: Library
 
@@ -11,5 +11,9 @@
 
 ## LoadOnDemand: 1
 
+#@no-lib-strip@
+LibStub\LibStub.lua
+CallbackHandler-1.0\CallbackHandler-1.0.xml
+#@end-no-lib-strip@
 
 lib.xml
