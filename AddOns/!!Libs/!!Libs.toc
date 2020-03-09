@@ -53,11 +53,13 @@ LibBabble\LibBabble-Race-3.0\LibBabble-Race-3.0.lua
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 # LibBabble\LibBabble-TalentTree-3.0\LibBabble-TalentTree-3.0.lua
 # LibBabble\LibBabble-Zone-3.0\LibBabble-Zone-3.0.lua
+
 # DR Libs
 DRData-1.0\DRData-1.0.xml
 DRList-1.0\DRList-1.0.xml
 
 # Other Ace Libs
+!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
@@ -74,7 +76,7 @@ LibDogTag-3.0\lib.xml
 LibDogTag-Stats-3.0\lib.xml
 LibDogTag-Unit-3.0\lib.xml
 LibDropDown-1.0\LibDropDown-1.0\LibDropDown-1.0.lua
-LibDurability\LibDurability.xml
+LibDurability\LibDurability\LibDurability.xml
 LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
 LibLatency\LibLatency\LibLatency.xml
 LibOO-1.0\lib.xml
@@ -85,7 +87,6 @@ LibRealmInfo\LibRealmInfo.lua
 LibSink-2.0\LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 LibThreatClassic2\lib.xml
-LibUIDropDownMenu\LibUIDropDownMenu.xml
 LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
 
