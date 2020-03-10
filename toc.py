@@ -29,11 +29,13 @@ class TOC(object):
         removes = set([])
         for i, line in enumerate(self.contents):
             # Remove emtpy line following empty lines or comments
-            if line == '\n' and prev[0] in ['\n', '#']:
-                removes.add(i)
+            if line == '\n':
+                if prev == '\n' or (prev.startswith('#') and
+                                    not prev.startswith('#@end')):
+                    removes.add(i)
 
             # if it is end-of-block, then add an empty line
-            if prev.startswith('#@end'):
+            if prev.startswith('#@end') and line != '\n':
                 self.contents.insert(i, '\n')
 
             # Remove empty comment line

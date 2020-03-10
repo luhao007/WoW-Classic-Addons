@@ -47,12 +47,8 @@ LibBabble\LibBabble-3.0.lua
 LibBabble\LibBabble-Boss-3.0\LibBabble-Boss-3.0.lua
 LibBabble\LibBabble-CreatureType-3.0\LibBabble-CreatureType-3.0.lua
 LibBabble\LibBabble-Faction-3.0\LibBabble-Faction-3.0.lua
-# LibBabble\LibBabble-Inventory-3.0\LibBabble-Inventory-3.0.lua
-# LibBabble\LibBabble-ItemSet-3.0\LibBabble-ItemSet-3.0.lua
 LibBabble\LibBabble-Race-3.0\LibBabble-Race-3.0.lua
 LibBabble\LibBabble-SubZone-3.0\lib.xml
-# LibBabble\LibBabble-TalentTree-3.0\LibBabble-TalentTree-3.0.lua
-# LibBabble\LibBabble-Zone-3.0\LibBabble-Zone-3.0.lua
 
 # DR Libs
 DRData-1.0\DRData-1.0.xml

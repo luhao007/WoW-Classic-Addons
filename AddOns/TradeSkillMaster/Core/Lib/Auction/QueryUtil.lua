@@ -94,7 +94,7 @@ function private.GenerateQueriesThread(itemList, callback)
 			else
 				-- new base item
 				if currentBaseItemString then
-					callback(currentItems)
+					callback(currentItems, ItemInfo.GetName(currentBaseItemString))
 					wipe(currentItems)
 				end
 				currentBaseItemString = baseItemString
@@ -102,7 +102,7 @@ function private.GenerateQueriesThread(itemList, callback)
 			end
 		end
 		if currentBaseItemString then
-			callback(currentItems)
+			callback(currentItems, ItemInfo.GetName(currentBaseItemString))
 			wipe(currentItems)
 		end
 		TempTable.Release(currentItems)

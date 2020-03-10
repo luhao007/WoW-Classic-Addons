@@ -1,5 +1,5 @@
-## v4.9.29 Changes
+## v4.9.30 Changes
 
-* [Retail] Optimized scanning for multiple variations of the same base item
+* [Retail] Fixed an issue with previous release that affected scanning speed
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

@@ -46,6 +46,7 @@
 # ## Notes-zhCN: |cff00CC33副本地图浏览器|r
 # ## Notes-zhTW: Atlas 地圖集主程式
 #@end-debug@
+
 Data\Constants.lua
 Data\AreaIDs.lua
 Locale\Locales.xml

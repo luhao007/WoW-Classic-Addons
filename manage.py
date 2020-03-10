@@ -55,6 +55,21 @@ class Handler(object):
         for addon, lib_path in libs:
             self.remove_libraries(addon, lib_path)
 
+    def handle_dejaclassicstats(self):
+        def f(lines):
+            # Change thest defaults value to false
+            defaults = ['ShowDuraSetChecked', 'ShowItemRepairSetChecked',
+                        'ShowItemLevelSetChecked', 'ShowEnchantSetChecked']
+            ret = []
+            for line in lines:
+                if line.split(' = ')[0].strip() in defaults:
+                    ret.append(line.replace('true', 'false'))
+                else:
+                    ret.append(line)
+            return ret
+        path = 'AddOns/DejaClassicStats/DCSDuraRepair.lua'
+        process_file(path, f)
+
     def handle_decursive(self):
         for lib in os.listdir('Addons/Decursive/Libs'):
             if lib == 'BugGrabber':
@@ -67,6 +82,23 @@ class Handler(object):
         def f(lines):
             return [l for l in lines if 'Libs' not in l or 'BugGrabber' in l]
         path = 'Addons/Decursive/embeds.xml'
+        process_file(path, f)
+
+    def handle_fizzle(self):
+        def f(lines):
+            ret = []
+            for line in lines:
+                if line == '       DisplayWhenFull = true,':
+                    # Change default settings to not dixplay the '100%'.
+                    ret.append('       DisplayWhenFull = false,')
+                else:
+                    # Only show 'Fizzle' in the options, not the meta name.
+                    ret.append(line.replace(
+                                'GetAddOnMetadata("Fizzle", "Title")',
+                                'Fizzle'
+                               ))
+            return ret
+        path = 'Addons/Fizzle/Core.lua'
         process_file(path, f)
 
     def handle_grail(self):
