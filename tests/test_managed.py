@@ -1,38 +1,53 @@
 import os
 import unittest
+from pathlib import Path
 from pprint import pprint
 
 
 class CheckManagedAddons(unittest.TestCase):
 
-    def test_checkToc(self):
+    def test_check_toc(self):
         for addon in os.listdir('AddOns'):
-            self.assertTrue(os.path.exists(os.path.join('Addons', addon, '{0}.toc'.format(addon))), '{0}.toc not existed!'.format(addon))
+            path = Path('Addons') / addon / '{0}.toc'.format(addon)
+            self.assertTrue(os.path.exists(path),
+                            '{0}.toc not existed!'.format(addon))
 
-    def test_checkLibrary(self):
-        path = os.path.join('Addons', '!!Libs')
-        with open(os.path.join(path, '!!Libs.toc'), 'r', encoding='utf-8') as f:
+    def test_check_library(self):
+        root = Path('Addons') / '!!Libs'
+        with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
-        for lib in os.listdir(path):
+        for lib in os.listdir(root):
             if '.toc' not in lib:
-                self.assertTrue(any(lib in l for l in lines), '{0} in !!Libs, but not used in !!Libs.toc'.format(lib))
+                self.assertTrue(
+                    any(lib in l for l in lines),
+                    '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
+                )
 
+    def test_check_duplicate_libraries(self):
+        root = Path('Addons/!!Libs')
+        libs = [lib for lib in os.listdir(root) if os.path.isdir(root / lib)]
 
-    def test_checkDuplicateLibraries(self):
-        path = os.path.join('Addons', '!!Libs')
-        
-        libs = {lib for lib in os.listdir(path) if os.path.isdir(os.path.join(path, lib))}
-        duplicates = {}      
+        path = root / 'Ace3'
+        libs += [lib for lib in os.listdir(path) if os.path.isdir(path / lib)]
+
+        duplicates = {}
         for root, dirs, _ in os.walk('Addons'):
             if '!!Libs' in root:
                 continue
 
-            dup = libs & set(dirs)
+            dup = set(dirs).intersection(libs)
             if dup:
-                duplicates[root] = dirs
-            
+                duplicates[root] = dup
+
         if duplicates:
             print('Found below duplicate libraries:')
             pprint(duplicates)
-            self.fail('Found duplicated libraries!')
+
+            # Ignore these embedded liraries, as they have customized versions
+            whitelist = ['Questie']
+
+            for k in duplicates:
+                addon = k.split('\\')[1]
+                if addon not in whitelist:
+                    self.fail('Found duplicated libraries in {}'.format(addon))

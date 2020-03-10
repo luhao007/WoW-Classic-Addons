@@ -9,8 +9,4 @@
 ## X-Repple: 界面
 
 #Library
-Libs\LibStub\LibStub.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-Libs\LibClassicDurations\LibClassicDurations.xml
-
 UnitFramesPlus_Cooldown.lua

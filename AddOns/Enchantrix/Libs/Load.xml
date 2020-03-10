@@ -2,7 +2,6 @@
 	<Include file="Babylonian\Load.xml"/>
 	<Include file="Configator\Load.xml"/>
 	<Include file="DebugLib\Load.xml"/>
-	<Include file="LibDataBroker\Load.xml"/>
 	<Include file="LibExtraTip\Load.xml"/>
 	<Include file="TipHelper\Load.xml"/>
 </Ui>

@@ -71,7 +71,7 @@ LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
 LibDogTag-Stats-3.0\lib.xml
 LibDogTag-Unit-3.0\lib.xml
-LibDropDown-1.0\LibDropDown-1.0\LibDropDown-1.0.lua
+LibDropdown-1.0\LibDropdown-1.0\lib.xml
 LibDurability\LibDurability\LibDurability.xml
 LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
 LibLatency\LibLatency\LibLatency.xml
@@ -85,6 +85,3 @@ LibSpellRange-1.0\lib.xml
 LibThreatClassic2\lib.xml
 LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
-
-# Other Libs required by various addons
-AccurateTime\AccurateTime.lua

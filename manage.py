@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -12,24 +11,32 @@ from utils import process_file, rm_tree
 
 class Handler(object):
 
-    def remove_libraries(self, addon, lib_path):
-        """Remove the embedded libraries"""
-        path = Path('Addons') / addon / lib_path
-        if os.path.exists(path):
-            shutil.rmtree(path)
+    def remove_libraries_all(self, addon, lib_path):
+        """Remove all embedded libraries"""
+        rm_tree(Path('Addons') / addon / lib_path)
 
         # Extra library that need to be removed
         libs = ['embeds.xml', 'libs.xml', 'LibDataBroker-1.1.lua']
         for lib in libs:
-            path = Path('Addons') / addon / lib
-            if os.path.exists(path):
-                os.remove(path)
+            rm_tree(Path('Addons') / addon / lib)
 
-        def f(lines):
-            return [l for l in lines if not any(l.startswith(lib) for lib in
-                                                libs + [lib_path])]
-        toc_path = Path('Addons') / addon / '{}.toc'.format(addon)
-        process_file(toc_path, f)
+        process_file(
+            Path('Addons') / addon / '{}.toc'.format(addon),
+            lambda lines: [l for l in lines
+                           if not any(l.startswith(lib)
+                                      for lib in libs + [lib_path])]
+        )
+
+    def remove_libraries(self, libs, root, xml_path):
+        """Remove selected embedded libraries from root and xml."""
+        for lib in libs:
+            rm_tree(Path(root) / lib)
+
+        process_file(
+            xml_path,
+            lambda lines: [l for l in lines
+                           if not any(lib in l for lib in libs)]
+        )
 
     def handle_libraries(self):
         libs = [
@@ -53,9 +60,39 @@ class Handler(object):
             ('WIM', 'Libs'),
         ]
         for addon, lib_path in libs:
-            self.remove_libraries(addon, lib_path)
+            self.remove_libraries_all(addon, lib_path)
 
-    def handle_dejaclassicstats(self):
+    def handle_auctioneer(self):
+        addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
+
+        for addon in addons:
+            rm_tree(Path('Addons') / addon / 'Libs' / 'LibDataBroker')
+            process_file(
+                Path('Addons') / addon / 'Libs' / 'Load.xml',
+                lambda lines: [l for l in lines if 'LibDataBroker' not in l]
+            )
+
+        rm_tree('Addons/SlideBar/Libs')
+        process_file(
+            'Addons/SlideBar/Load.xml',
+            lambda lines: [l for l in lines if 'Libs' not in l]
+        )
+
+    def handle_bagnon(self):
+        rm_tree('AddOns/Bagnon/common/LibDataBroker-1.1')
+        process_file(
+            'Addons/Bagnon/addons/main/main.xml',
+            lambda lines: [l for l in lines if 'LibDataBroker' not in l]
+        )
+
+        self.remove_libraries(
+            ['AceEvent-3.0', 'AceLocale-3.0',
+             'CallbackHandler-1.0', 'LibStub'],
+            'AddOns/Bagnon/common/Wildpants/libs',
+            'AddOns/Bagnon/common/Wildpants/libs/libs.xml'
+        )
+
+    def handle_dcs(self):
         def f(lines):
             # Change thest defaults value to false
             defaults = ['ShowDuraSetChecked', 'ShowItemRepairSetChecked',
@@ -75,14 +112,22 @@ class Handler(object):
             if lib == 'BugGrabber':
                 continue
 
-            path = Path('Addons/Decursive/Libs') / lib
-            if os.path.exists(path):
-                shutil.rmtree(path)
+            rm_tree(Path('Addons/Decursive/Libs') / lib)
 
-        def f(lines):
-            return [l for l in lines if 'Libs' not in l or 'BugGrabber' in l]
-        path = 'Addons/Decursive/embeds.xml'
-        process_file(path, f)
+        process_file(
+            'Addons/Decursive/embeds.xml',
+            lambda lines: [l for l in lines
+                           if 'Libs' not in l or 'BugGrabber' in l]
+        )
+
+    def handle_fb(self):
+        self.remove_libraries(
+            ['CallbackHandler-1.0', 'HereBeDragons',
+             'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
+             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
+            'Addons/FishingBuddy/Libs',
+            'Addons/FishingBuddy/Libs/Libs.xml'
+        )
 
     def handle_fizzle(self):
         def f(lines):
@@ -98,8 +143,7 @@ class Handler(object):
                                 'Fizzle'
                                ))
             return ret
-        path = 'Addons/Fizzle/Core.lua'
-        process_file(path, f)
+        process_file('Addons/Fizzle/Core.lua', f)
 
     def handle_grail(self):
         game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
@@ -118,45 +162,36 @@ class Handler(object):
                 rm_tree(Path('Addons') / folder)
 
     def handle_honorspy(self):
-        self.remove_libraries('honorspy', 'Libs')
+        self.remove_libraries_all('honorspy', 'Libs')
 
-        def f(lines):
-            return ['local addonName = "Honorspy";\n'
-                    if l.startswith('local addonName') else l for l in lines]
-        path = 'Addons/honorspy/honorspy.lua'
-        process_file(path, f)
+        process_file(
+            'Addons/honorspy/honorspy.lua',
+            lambda lines: ['local addonName = "Honorspy";\n'
+                           if l.startswith('local addonName') else l
+                           for l in lines]
+        )
 
     def handle_omnicc(self):
-        path = 'Addons/OmniCC/libs'
-        if os.path.exists(path):
-            shutil.rmtree(path)
+        rm_tree('Addons/OmniCC/libs')
 
-        def f(lines):
-            return [l for l in lines if 'main.xml' not in l]
-        path = 'Addons/OmniCC/main/main.xml'
-        process_file(path, f)
+        process_file(
+            'Addons/OmniCC/main/main.xml',
+            lambda lines: [l for l in lines if 'main.xml' not in l]
+        )
 
     def handle_prat(self):
         rm_tree('Addons/Prat-3.0_Libraries')
 
     def handle_scrap(self):
-        libs = ['AceEvent-3.0', 'AceLocale-3.0',
-                'CallbackHandler-1.0', 'LibStub']
-        for lib in libs:
-            path = Path('Addons/Scrap/libs') / lib
-            if os.path.exists(path):
-                shutil.rmtree(path)
+        self.remove_libraries(
+            ['AceEvent-3.0', 'AceLocale-3.0',
+             'CallbackHandler-1.0', 'LibStub'],
+            'Addons/Scrap/libs',
+            'Addons/Scrap/libs/main.xml'
+        )
 
-        def f(lines):
-            return [l for l in lines if not any(l.startswith(lib)
-                                                for lib in libs)]
-        path = 'Addons/Scrap/libs/main.xml'
-        process_file(path, f)
-
-    def handle_threat_classic2(self):
-        path = 'Addons/ThreatClassic2/Libs'
-        if os.path.exists(path):
-            shutil.rmtree(path)
+    def handle_tc2(self):
+        rm_tree('Addons/ThreatClassic2/Libs')
 
         def f(lines):
             return [l for l in lines if 'Libs' not in l]
@@ -166,20 +201,24 @@ class Handler(object):
     def handle_tsm(self):
         rm_tree('Addons/TradeSkillMaster/External/EmbeddedLibs/')
 
-        def f1(lines):
-            orig = r'".+ttf"'
-            targ = r'"Fonts\\\\ARKai_C.ttf"'
-            return [re.sub(orig, targ, l) for l in lines]
-        path = 'Addons/TradeSkillMaster/Core/UI/Support/Fonts.lua'
-        process_file(path, f1)
+        process_file(
+            'Addons/TradeSkillMaster/Core/UI/Support/Fonts.lua',
+            lambda lines: [re.sub(r'".+ttf"',
+                                  r'"Fonts\\\\ARKai_C.ttf"',
+                                  l)
+                           for l in lines]
+        )
 
-        def f2(lines):
-            return [l for l in lines if 'EmbeddedLibs' not in l]
-        path = 'Addons/TradeSkillMaster/TradeSkillMaster.toc'
-        process_file(path, f2)
+        process_file(
+            'Addons/TradeSkillMaster/TradeSkillMaster.toc',
+            lambda lines: [l for l in lines if 'EmbeddedLibs' not in l]
+        )
 
     def handle_ufp(self):
         rm_tree('Addons/UnitFramesPlus_MobHealth')
+
+        self.remove_libraries_all('UnitFramesPlus_Cooldown', 'Libs')
+        self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
 
     def process(self):
         for f in dir(self):

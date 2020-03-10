@@ -9,6 +9,4 @@
 ## X-Repple: 界面
 
 #Library
-LibThreatClassic2\lib.xml
-
 UnitFramesPlus_Threat.lua
