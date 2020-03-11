@@ -338,16 +338,18 @@ end
 local cachedTitle = nil
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo() -- todo: better place
-    if (not cachedTitle) then
-        local name, title, _, _, reason = GetAddOnInfo("Questie")
-        if (reason == "MISSING") then _, title = GetAddOnInfo("Questie") end
-        cachedTitle = title
-    end
-    -- %d = digit, %p = punctuation character, %x = hexadecimal digits.
-    local major, minor, patch, commit = string.match(cachedTitle,
-                                                     "(%d+)%p(%d+)%p(%d+)")
-    return tonumber(major), tonumber(minor), tonumber(patch)
+    return 5, 7, 2
 end
+--    if (not cachedTitle) then
+--        local name, title, _, _, reason = GetAddOnInfo("Questie")
+--        if (reason == "MISSING") then _, title = GetAddOnInfo("Questie") end
+--        cachedTitle = title
+--    end
+--    -- %d = digit, %p = punctuation character, %x = hexadecimal digits.
+--    local major, minor, patch, commit = string.match(cachedTitle,
+--                                                     "(%d+)%p(%d+)%p(%d+)")
+--    return tonumber(major), tonumber(minor), tonumber(patch)
+--end
 
 function QuestieLib:GetAddonVersionString()
     local major, minor, patch = QuestieLib:GetAddonVersionInfo()

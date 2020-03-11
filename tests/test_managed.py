@@ -15,7 +15,7 @@ class CheckManagedAddons(unittest.TestCase):
                             '{0}.toc not existed!'.format(addon))
 
     def test_check_libs(self):
-        root = Path('Addons') / '!!Libs'
+        root = Path('Addons/!!Libs')
         with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
 

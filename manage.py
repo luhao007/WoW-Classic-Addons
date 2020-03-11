@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from instawow_manager import InstawowManager
-from toc import process_toc
+from toc import process_toc, TOC
 from utils import process_file, rm_tree
 
 
@@ -251,6 +251,34 @@ class Handler(object):
 
     def handle_prat(self):
         rm_tree('Addons/Prat-3.0_Libraries')
+
+    def handle_questie(self):
+        root = Path('Addons/Questie')
+        with open(root / 'Questie.toc', 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        toc = TOC(lines)
+
+        version = toc.tags['Version']
+        major, minor, patch = version.split('.')
+
+        def handle(lines):
+            func = 'function QuestieLib:GetAddonVersionInfo()'
+            for i, l in enumerate(lines):
+                if l.startswith(func):
+                    break
+
+            ret = lines[:i+1]
+            ret.append('    return {}, {}, {}\n'.format(major, minor, patch))
+            ret.append('end\n')
+            end = lines[i:].index('end\n')
+
+            for l in lines[i+1:i+end+1]:
+                ret.append('--{}'.format(l))
+            ret += lines[i+end+1:]
+            return ret
+
+        process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
     def handle_scrap(self):
         self.remove_libraries(

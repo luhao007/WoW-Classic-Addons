@@ -10,8 +10,12 @@ logger = logging.getLogger('toc')
 class TOC(object):
 
     def __init__(self, lines):
-        self.tags = dict(l[3:].split(':', 1) for l in lines
-                         if l.startswith('## ') and ':' in l)
+        self.tags = {}
+        for l in lines:
+            if l.startswith('## ') and ':' in l:
+                k, v = l[3:].split(':', 1)
+                self.tags[k.strip()] = v.strip()
+
         self.contents = [l for l in lines if not l.startswith('## ')]
         for i, e in enumerate(self.contents):
             if e != '\n':
@@ -21,7 +25,7 @@ class TOC(object):
             self.contents = []
 
     def tags_to_line(self, tags):
-        return ['## {}: {}\n'.format(tag, self.tags[tag].strip())
+        return ['## {}: {}\n'.format(tag, self.tags[tag])
                 for tag in tags if tag in self.tags]
 
     def trim_contents(self):
