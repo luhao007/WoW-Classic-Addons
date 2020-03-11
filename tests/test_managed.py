@@ -35,7 +35,7 @@ class CheckManagedAddOns(unittest.TestCase):
                 continue
             path = root / line.strip()
             self.assertTrue(
-                os.path.exists(path.replace('\\', '/', count=-1)),
+                os.path.exists(str(path).replace('\\', '/', count=-1)),
                 '{0} in !!Libs.toc, but not exists!'.format(path)
             )
 
