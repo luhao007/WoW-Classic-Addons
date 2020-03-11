@@ -6,16 +6,16 @@ from pprint import pprint
 from toc import TOC
 
 
-class CheckManagedAddons(unittest.TestCase):
+class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
-            path = Path('Addons') / addon / '{0}.toc'.format(addon)
+            path = Path('AddOns') / addon / '{0}.toc'.format(addon)
             self.assertTrue(os.path.exists(path),
                             '{0}.toc not existed!'.format(addon))
 
     def test_check_libs(self):
-        root = Path('Addons/!!Libs')
+        root = Path('AddOns/!!Libs')
         with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
@@ -40,14 +40,14 @@ class CheckManagedAddons(unittest.TestCase):
             )
 
     def test_check_duplicate_libraries(self):
-        root = Path('Addons/!!Libs')
+        root = Path('AddOns/!!Libs')
         libs = [lib for lib in os.listdir(root) if os.path.isdir(root / lib)]
 
         path = root / 'Ace3'
         libs += [lib for lib in os.listdir(path) if os.path.isdir(path / lib)]
 
         duplicates = {}
-        for root, dirs, _ in os.walk('Addons'):
+        for root, dirs, _ in os.walk('AddOns'):
             if '!!Libs' in root:
                 continue
 

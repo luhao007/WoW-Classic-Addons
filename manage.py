@@ -13,15 +13,15 @@ class Handler(object):
 
     def remove_libraries_all(self, addon, lib_path):
         """Remove all embedded libraries"""
-        rm_tree(Path('Addons') / addon / lib_path)
+        rm_tree(Path('AddOns') / addon / lib_path)
 
         # Extra library that need to be removed
         libs = ['embeds.xml', 'libs.xml', 'LibDataBroker-1.1.lua']
         for lib in libs:
-            rm_tree(Path('Addons') / addon / lib)
+            rm_tree(Path('AddOns') / addon / lib)
 
         process_file(
-            Path('Addons') / addon / '{}.toc'.format(addon),
+            Path('AddOns') / addon / '{}.toc'.format(addon),
             lambda lines: [l for l in lines
                            if not any(l.startswith(lib)
                                       for lib in libs + [lib_path])]
@@ -41,7 +41,7 @@ class Handler(object):
     def handle_libs(self):
         def handle_graph(lines):
             orig = 'local TextureDirectory\n'
-            tar = 'local TextureDirectory = "Interface\\\\Addons\\\\!!Libs' + \
+            tar = 'local TextureDirectory = "Interface\\\\AddOns\\\\!!Libs' + \
                   '\\\\LibGraph-2.0\\\\LibGraph-2.0\\\\"\n'
 
             if orig not in lines:
@@ -61,7 +61,7 @@ class Handler(object):
             return ret
 
         process_file(
-            'Addons/!!Libs/LibGraph-2.0/LibGraph-2.0/LibGraph-2.0.lua',
+            'AddOns/!!Libs/LibGraph-2.0/LibGraph-2.0/LibGraph-2.0.lua',
             handle_graph
         )
 
@@ -85,7 +85,7 @@ class Handler(object):
                 return ret
 
             process_file(
-                'Addons/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua',
+                'AddOns/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua',
                 handle_dogtag_stats
             )
 
@@ -114,24 +114,24 @@ class Handler(object):
             self.remove_libraries_all(addon, lib_path)
 
     def handle_auctioneer(self):
-        addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
+        Addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
 
-        for addon in addons:
-            rm_tree(Path('Addons') / addon / 'Libs' / 'LibDataBroker')
+        for addon in Addons:
+            rm_tree(Path('AddOns') / addon / 'Libs' / 'LibDataBroker')
             process_file(
-                Path('Addons') / addon / 'Libs' / 'Load.xml',
+                Path('AddOns') / addon / 'Libs' / 'Load.xml',
                 lambda lines: [l for l in lines if 'LibDataBroker' not in l]
             )
 
-        rm_tree('Addons/SlideBar/Libs')
+        rm_tree('AddOns/SlideBar/Libs')
         process_file(
-            'Addons/SlideBar/Load.xml',
+            'AddOns/SlideBar/Load.xml',
             lambda lines: [l for l in lines if 'Libs' not in l]
         )
 
     def handle_atlas(self):
         process_file(
-            'Addons/Atlas/Core/Atlas.lua',
+            'AddOns/Atlas/Core/Atlas.lua',
             lambda lines: ['addon.LocName = "Atlas"\n'
                            if l.startswith('addon.LocName') else l
                            for l in lines]
@@ -140,7 +140,7 @@ class Handler(object):
     def handle_bagnon(self):
         rm_tree('AddOns/Bagnon/common/LibDataBroker-1.1')
         process_file(
-            'Addons/Bagnon/addons/main/main.xml',
+            'AddOns/Bagnon/AddOns/main/main.xml',
             lambda lines: [l for l in lines if 'LibDataBroker' not in l]
         )
 
@@ -167,14 +167,14 @@ class Handler(object):
         process_file(path, f)
 
     def handle_decursive(self):
-        for lib in os.listdir('Addons/Decursive/Libs'):
+        for lib in os.listdir('AddOns/Decursive/Libs'):
             if lib == 'BugGrabber':
                 continue
 
-            rm_tree(Path('Addons/Decursive/Libs') / lib)
+            rm_tree(Path('AddOns/Decursive/Libs') / lib)
 
         process_file(
-            'Addons/Decursive/embeds.xml',
+            'AddOns/Decursive/embeds.xml',
             lambda lines: [l for l in lines
                            if 'Libs' not in l or 'BugGrabber' in l]
         )
@@ -184,8 +184,8 @@ class Handler(object):
             ['CallbackHandler-1.0', 'HereBeDragons',
              'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
              'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
-            'Addons/FishingBuddy/Libs',
-            'Addons/FishingBuddy/Libs/Libs.xml'
+            'AddOns/FishingBuddy/Libs',
+            'AddOns/FishingBuddy/Libs/Libs.xml'
         )
 
     def handle_fizzle(self):
@@ -202,29 +202,29 @@ class Handler(object):
                                 '"Fizzle"'
                                ))
             return ret
-        process_file('Addons/Fizzle/Core.lua', f)
+        process_file('AddOns/Fizzle/Core.lua', f)
 
     def handle_grail(self):
         game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
-        for folder in os.listdir('Addons'):
+        for folder in os.listdir('AddOns'):
             if 'Grail' not in folder:
                 continue
 
             if (('NPCs' in folder or 'Quests' in folder) and
                not folder.endswith('_') and
                ('enUS' not in folder and 'zhCN' not in folder)):
-                rm_tree(Path('Addons') / folder)
+                rm_tree(Path('AddOns') / folder)
 
             if ((game_flavour == 'retail' and 'classic' in folder) or
                (game_flavour == 'classic') and ('retail' in folder or
                                                 'Achievements' in folder)):
-                rm_tree(Path('Addons') / folder)
+                rm_tree(Path('AddOns') / folder)
 
     def handle_honorspy(self):
         self.remove_libraries_all('honorspy', 'Libs')
 
         process_file(
-            'Addons/honorspy/honorspy.lua',
+            'AddOns/honorspy/honorspy.lua',
             lambda lines: ['local addonName = "Honorspy";\n'
                            if l.startswith('local addonName') else l
                            for l in lines]
@@ -232,7 +232,7 @@ class Handler(object):
 
     def handle_monkeyspeed(self):
         process_file(
-            'Addons/MonkeySpeed/MonkeySpeedInit.lua',
+            'AddOns/MonkeySpeed/MonkeySpeedInit.lua',
             lambda lines: [l.replace(
                               'GetAddOnMetadata("MonkeySpeed", "Title")',
                               '"MonkeySpeed"'
@@ -241,19 +241,19 @@ class Handler(object):
         )
 
     def handle_omnicc(self):
-        rm_tree('Addons/OmniCC/libs')
+        rm_tree('AddOns/OmniCC/libs')
 
         for xml_path in ['main/main.xml', 'config/config.xml']:
             process_file(
-                Path('Addons/OmniCC/') / xml_path,
+                Path('AddOns/OmniCC/') / xml_path,
                 lambda lines: [l for l in lines if 'libs' not in l]
             )
 
     def handle_prat(self):
-        rm_tree('Addons/Prat-3.0_Libraries')
+        rm_tree('AddOns/Prat-3.0_Libraries')
 
     def handle_questie(self):
-        root = Path('Addons/Questie')
+        root = Path('AddOns/Questie')
         with open(root / 'Questie.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
@@ -284,23 +284,23 @@ class Handler(object):
         self.remove_libraries(
             ['AceEvent-3.0', 'AceLocale-3.0',
              'CallbackHandler-1.0', 'LibStub'],
-            'Addons/Scrap/libs',
-            'Addons/Scrap/libs/main.xml'
+            'AddOns/Scrap/libs',
+            'AddOns/Scrap/libs/main.xml'
         )
 
     def handle_tc2(self):
-        rm_tree('Addons/ThreatClassic2/Libs')
+        rm_tree('AddOns/ThreatClassic2/Libs')
 
         def f(lines):
             return [l for l in lines if 'Libs' not in l]
-        path = 'Addons/ThreatClassic2/ThreatClassic2.xml'
+        path = 'AddOns/ThreatClassic2/ThreatClassic2.xml'
         process_file(path, f)
 
     def handle_tsm(self):
-        rm_tree('Addons/TradeSkillMaster/External/EmbeddedLibs/')
+        rm_tree('AddOns/TradeSkillMaster/External/EmbeddedLibs/')
 
         process_file(
-            'Addons/TradeSkillMaster/Core/UI/Support/Fonts.lua',
+            'AddOns/TradeSkillMaster/Core/UI/Support/Fonts.lua',
             lambda lines: [re.sub(r'".+ttf"',
                                   r'"Fonts\\\\ARKai_C.ttf"',
                                   l)
@@ -308,12 +308,12 @@ class Handler(object):
         )
 
         process_file(
-            'Addons/TradeSkillMaster/TradeSkillMaster.toc',
+            'AddOns/TradeSkillMaster/TradeSkillMaster.toc',
             lambda lines: [l for l in lines if 'EmbeddedLibs' not in l]
         )
 
     def handle_ufp(self):
-        rm_tree('Addons/UnitFramesPlus_MobHealth')
+        rm_tree('AddOns/UnitFramesPlus_MobHealth')
 
         self.remove_libraries_all('UnitFramesPlus_Cooldown', 'Libs')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
