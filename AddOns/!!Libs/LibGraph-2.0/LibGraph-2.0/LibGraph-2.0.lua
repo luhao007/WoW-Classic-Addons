@@ -17,15 +17,15 @@ local minor = 90000 + tonumber(("$Revision: 55 $"):match("(%d+)"))
 --Search for just Addon\\ at the front since the interface part often gets trimmed
 --Do this before anything else, so if it errors, any existing loaded copy of LibGraph-2.0
 --doesn't get modified with a newer revision (this one)
-local TextureDirectory
-do
-	local path = string.match(debugstack(1, 1, 0), "AddOns\\(.+)LibGraph%-2%.0%.lua")
-	if path then
-		TextureDirectory = "Interface\\AddOns\\"..path
-	else
-		error(major.." cannot determine the folder it is located in because the path is too long and got truncated in the debugstack(1, 1, 0) function call")
-	end
-end
+local TextureDirectory = "Interface\\Addons\\!!Libs\\LibGraph-2.0\\LibGraph-2.0\\"
+--do
+--	local path = string.match(debugstack(1, 1, 0), "AddOns\\(.+)LibGraph%-2%.0%.lua")
+--	if path then
+--		TextureDirectory = "Interface\\AddOns\\"..path
+--	else
+--		error(major.." cannot determine the folder it is located in because the path is too long and got truncated in the debugstack(1, 1, 0) function call")
+--	end
+--end
 
 
 if not LibStub then error(major .. " requires LibStub") end
@@ -243,7 +243,7 @@ local function SetupGraphLineFunctions(graph)
 
 	graph.SetLineTexture = GraphFunctions.SetLineTexture
 	graph.SetBorderSize = GraphFunctions.SetBorderSize
-	
+
 	graph.LockXMin = GraphFunctions.LockXMin
 	graph.LockXMax = GraphFunctions.LockXMax
 	graph.LockYMin = GraphFunctions.LockYMin
@@ -491,7 +491,7 @@ function GraphFunctions:SetAutoscaleYAxis(scale)
 	self.AutoScale = scale
 end
 
---SetBarColors - 
+--SetBarColors -
 function GraphFunctions:SetBarColors(BotColor, TopColor)
 	local Temp
 	if BotColor.r then
@@ -632,7 +632,7 @@ function GraphFunctions:SetUpdateLimit(Time)
 	self.LimitUpdates = Time
 end
 
-function GraphFunctions:SetDecay(decay) 
+function GraphFunctions:SetDecay(decay)
 	self.DecaySet = decay
 	self.Decay = math_pow(self.DecaySet, self.BarWidth)
 	self.ExpNorm = 1 / (1 - self.Decay) / 0.95 --Actually a finite geometric series (divide 0.96 instead of 1 since seems doesn't quite work right)
@@ -681,11 +681,11 @@ function GraphFunctions:AddDataSeries(points, color, n2, linetexture)
 	end
 
 	if linetexture then
-		if not linetexture:find ("\\") and not linetexture:find ("//") then 
+		if not linetexture:find ("\\") and not linetexture:find ("//") then
 			linetexture = TextureDirectory..linetexture
 		end
 	end
-	
+
 	tinsert(self.Data,{Points = data; Color = color; LineTexture=linetexture})
 
 	self.NeedsUpdate = true
@@ -1214,7 +1214,7 @@ end
 
 
 -------------------------------------------------------------------------------
---Grid & Axis Drawing Functions 
+--Grid & Axis Drawing Functions
 -------------------------------------------------------------------------------
 
 function GraphFunctions:SetAxisDrawing(xaxis, yaxis)
@@ -1293,21 +1293,21 @@ function GraphFunctions:SetLineTexture(texture)
 	end
 
 	--> full path
-	if (texture:find ("\\") or texture:find ("//")) then 
+	if (texture:find ("\\") or texture:find ("//")) then
 		self.CustomLine = texture
 	--> using an image inside lib-graph folder
-	else 
+	else
 		self.CustomLine = TextureDirectory..texture
 	end
 end
 
 function GraphFunctions:SetBorderSize(border, size)
 	border = string.lower (border)
-	
+
 	if (type (size) ~= "number") then
 		return assert (false, "Parameter 2 for SetBorderSize must be a number")
 	end
-	
+
 	if (border == "left") then
 		self.CustomLeftBorder = size
 		return true
@@ -1321,7 +1321,7 @@ function GraphFunctions:SetBorderSize(border, size)
 		self.CustomBottomBorder = size
 		return true
 	end
-	
+
 	return assert (false, "Usage: GraphObject:SetBorderSize (LEFT RIGHT TOP BOTTOM, SIZE)")
 end
 
@@ -1712,7 +1712,7 @@ function GraphFunctions:RefreshLineGraph()
 				self.XMin = MinX - XBorder
 			end
 		end
-		
+
 		if not self.LockOnXMax then
 			if (self.CustomRightBorder) then
 				self.XMax = MaxX + self.CustomRightBorder --> custom size of right border
@@ -1720,7 +1720,7 @@ function GraphFunctions:RefreshLineGraph()
 				self.XMax = MaxX + XBorder
 			end
 		end
-		
+
 		if not self.LockOnYMin then
 			if (self.CustomBottomBorder) then
 				self.YMin = MinY + self.CustomBottomBorder --> custom size of bottom border
@@ -1728,7 +1728,7 @@ function GraphFunctions:RefreshLineGraph()
 				self.YMin = MinY - YBorder
 			end
 		end
-		
+
 		if not self.LockOnYMax then
 			if (self.CustomTopBorder) then
 				self.YMax = MaxY + self.CustomTopBorder --> custom size of top border
@@ -1747,7 +1747,7 @@ function GraphFunctions:RefreshLineGraph()
 	for k1, series in pairs(self.Data) do
 		local LastPoint
 		LastPoint = nil
-		
+
 		for k2, point in pairs(series.Points) do
 			if LastPoint then
 				local TPoint = {x = point[1]; y = point[2]}
@@ -1900,7 +1900,7 @@ function lib:DrawLine(C, sx, sy, ex, ey, w, color, layer, linetexture)
 	end
 
 	local T = tremove(C.GraphLib_Lines) or C:CreateTexture(nil, "ARTWORK")
-	
+
 	if linetexture then --> this data series texture
 		T:SetTexture(linetexture)
 	elseif C.CustomLine then --> overall chart texture
@@ -1908,7 +1908,7 @@ function lib:DrawLine(C, sx, sy, ex, ey, w, color, layer, linetexture)
 	else --> no texture assigned, use default
 		T:SetTexture(TextureDirectory.."line")
 	end
-	
+
 	tinsert(C.GraphLib_Lines_Used, T)
 
 	T:SetDrawLayer(layer or "ARTWORK")

@@ -33,14 +33,14 @@ DogTag:AddTag("Stats", "ResilienceReduction", {
 	category = L["PvP"],
 })
 
-DogTag:AddTag("Stats", "PvPPowerDamage", {
-	code = GetPvpPowerDamage,
-	ret = "number",
-	events = "COMBAT_RATING_UPDATE",
-	doc = L["Returns your damage increase percentage from PvP power."],
-	example = '[PvPPowerDamage:Round(1)] => "37.9"; [PvPPowerDamage:Round(1):Percent] => "37.9%"',
-	category = L["PvP"],
-})
+--DogTag:AddTag("Stats", "PvPPowerDamage", {
+--	code = GetPvpPowerDamage,
+--	ret = "number",
+--	events = "COMBAT_RATING_UPDATE",
+--	doc = L["Returns your damage increase percentage from PvP power."],
+--	example = '[PvPPowerDamage:Round(1)] => "37.9"; [PvPPowerDamage:Round(1):Percent] => "37.9%"',
+--	category = L["PvP"],
+--})
 
 DogTag:AddTag("Stats", "PvPPowerHealing", {
 	code = GetPvpPowerHealing,

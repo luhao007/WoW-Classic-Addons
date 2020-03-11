@@ -38,7 +38,58 @@ class Handler(object):
                            if not any(lib in l for lib in libs)]
         )
 
-    def handle_libraries(self):
+    def handle_libs(self):
+        def handle_graph(lines):
+            orig = 'local TextureDirectory\n'
+            tar = 'local TextureDirectory = "Interface\\\\Addons\\\\!!Libs' + \
+                  '\\\\LibGraph-2.0\\\\LibGraph-2.0\\\\"\n'
+
+            if orig not in lines:
+                return lines
+
+            # Comment out the block discovering TextureDirectory
+            # The dictory discovery system is not working here
+            start = lines.index(orig)
+            ret = lines[:start]
+            ret.append(tar)
+            end = lines[start:].index('end\n')
+
+            for l in lines[start+1:start+end+1]:
+                ret.append('--{}'.format(l))
+            ret += lines[start+end+1:]
+
+            return ret
+
+        process_file(
+            'Addons/!!Libs/LibGraph-2.0/LibGraph-2.0/LibGraph-2.0.lua',
+            handle_graph
+        )
+
+        game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
+        if game_flavour == 'classic':
+            def handle_dogtag_stats(lines):
+                orig = 'DogTag:AddTag("Stats", "PvPPowerDamage", {\n'
+
+                if orig not in lines:
+                    return lines
+
+                # Comment the block, we don't have PVP Power in classic
+                start = lines.index(orig)
+                ret = lines[:start]
+                end = lines[start:].index('})\n')
+
+                for l in lines[start:start+end+1]:
+                    ret.append('--{}'.format(l))
+                ret += lines[start+end+1:]
+
+                return ret
+
+            process_file(
+                'Addons/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua',
+                handle_dogtag_stats
+            )
+
+    def handle_dup_libraries(self):
         libs = [
             ('Atlas', 'Libs'),
             ('AtlasLootClassic', 'Libs'),
