@@ -78,6 +78,14 @@ class Handler(object):
             lambda lines: [l for l in lines if 'Libs' not in l]
         )
 
+    def handle_atlas(self):
+        process_file(
+            'Addons/Atlas/Core/Atlas.lua',
+            lambda lines: ['addon.LocName = "Atlas"\n'
+                           if l.startswith('addon.LocName') else l
+                           for l in lines]
+        )
+
     def handle_bagnon(self):
         rm_tree('AddOns/Bagnon/common/LibDataBroker-1.1')
         process_file(
@@ -140,7 +148,7 @@ class Handler(object):
                     # Only show 'Fizzle' in the options, not the meta name.
                     ret.append(line.replace(
                                 'GetAddOnMetadata("Fizzle", "Title")',
-                                'Fizzle'
+                                '"Fizzle"'
                                ))
             return ret
         process_file('Addons/Fizzle/Core.lua', f)
@@ -171,13 +179,24 @@ class Handler(object):
                            for l in lines]
         )
 
+    def handle_monkeyspeed(self):
+        process_file(
+            'Addons/MonkeySpeed/MonkeySpeedInit.lua',
+            lambda lines: [l.replace(
+                              'GetAddOnMetadata("MonkeySpeed", "Title")',
+                              '"MonkeySpeed"'
+                           ) if '"Title"' in l else l
+                           for l in lines]
+        )
+
     def handle_omnicc(self):
         rm_tree('Addons/OmniCC/libs')
 
-        process_file(
-            'Addons/OmniCC/main/main.xml',
-            lambda lines: [l for l in lines if 'main.xml' not in l]
-        )
+        for xml_path in ['main/main.xml', 'config/config.xml']:
+            process_file(
+                Path('Addons/OmniCC/') / xml_path,
+                lambda lines: [l for l in lines if 'libs' not in l]
+            )
 
     def handle_prat(self):
         rm_tree('Addons/Prat-3.0_Libraries')

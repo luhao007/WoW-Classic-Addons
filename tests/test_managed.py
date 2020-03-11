@@ -3,26 +3,41 @@ import unittest
 from pathlib import Path
 from pprint import pprint
 
+from toc import TOC
+
 
 class CheckManagedAddons(unittest.TestCase):
 
-    def test_check_toc(self):
+    def test_check_addon_toc(self):
         for addon in os.listdir('AddOns'):
             path = Path('Addons') / addon / '{0}.toc'.format(addon)
             self.assertTrue(os.path.exists(path),
                             '{0}.toc not existed!'.format(addon))
 
-    def test_check_library(self):
+    def test_check_libs(self):
         root = Path('Addons') / '!!Libs'
         with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
+        toc = TOC(lines)
+
+        # Check every lib folder exists in the toc
         for lib in os.listdir(root):
             if '.toc' not in lib:
                 self.assertTrue(
-                    any(lib in l for l in lines),
+                    any(lib in l for l in toc.contents),
                     '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
                 )
+
+        # Check every .lua or .xml file in the toc exists
+        for line in toc.contents:
+            if line.startswith('#') or line == '\n':
+                continue
+            path = root / line.strip()
+            self.assertTrue(
+                os.path.exists(path),
+                '{0} in !!Libs.toc, but not exists!'.format(path)
+            )
 
     def test_check_duplicate_libraries(self):
         root = Path('Addons/!!Libs')
