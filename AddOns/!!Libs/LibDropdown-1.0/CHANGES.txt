@@ -1,0 +1,16 @@
+Changes since tag 1.0.9
+
+commit 3a893a2de2f46a3bc7fecabfe7f6ba05f33c3429
+Author: David Hedbor <neotron@gmail.com>
+Date:   Sun Sep 15 11:39:22 2019 -0700
+
+    Update LibDropdown-1.0.toc
+    
+    8.2.0 bump
+
+commit abdbbb689586406ed84765ee9085663f038d45ac
+Author: David Hedbor <neotron@gmail.com>
+Date:   Sun Sep 15 11:28:54 2019 -0700
+
+    Create README.md
+
