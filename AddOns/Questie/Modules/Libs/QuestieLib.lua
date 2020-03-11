@@ -340,6 +340,8 @@ local cachedTitle = nil
 function QuestieLib:GetAddonVersionInfo() -- todo: better place
     return 5, 7, 2
 end
+--    return 5, 7, 2
+--end
 --    if (not cachedTitle) then
 --        local name, title, _, _, reason = GetAddOnInfo("Questie")
 --        if (reason == "MISSING") then _, title = GetAddOnInfo("Questie") end
