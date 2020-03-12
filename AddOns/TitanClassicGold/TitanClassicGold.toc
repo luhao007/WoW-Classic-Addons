@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
 ## Version: 1.2.0.11303
 ## Dependencies: TitanClassic

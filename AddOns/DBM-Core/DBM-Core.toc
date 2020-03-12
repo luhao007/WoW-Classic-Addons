@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: Tandanu and Nitram and MysticalOS
 ## Version: 1.13.38
 ## Dependencies: DBM-StatusBarTimers, DBM-DefaultSkin

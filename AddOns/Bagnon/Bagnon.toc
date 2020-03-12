@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
 ## Version: 8.3.5
 ## OptionalDeps: BagBrother, WoWUnit, TestPoncho

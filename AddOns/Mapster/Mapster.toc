@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: Nevcairiel
 ## Version: 1.8.5
 ## OptionalDeps: Ace3, LibWindow-1.1

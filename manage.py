@@ -331,7 +331,7 @@ def manage():
 
     Handler().process()
 
-    process_toc('11303' if game_flavour == 'classic' else '80300')
+    process_toc('11304' if game_flavour == 'classic' else '80300')
     logging.info('Finished.')
 
 

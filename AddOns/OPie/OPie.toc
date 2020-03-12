@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: foxlit
 ## Version: Ancient Walnut 6
 ## SavedVariables: OneRing_Config

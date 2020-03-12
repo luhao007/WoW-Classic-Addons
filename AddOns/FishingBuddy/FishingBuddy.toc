@@ -1,4 +1,4 @@
-## Interface: 11303
+## Interface: 11304
 ## Author: Sutorix=AT=hotmail.com
 ## Version: 0.7.3 Beta 4
 ## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
