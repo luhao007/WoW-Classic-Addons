@@ -24,7 +24,7 @@ TPR.ITEM_STATUS[4] = { values = {}, name = INVTYPE_WAIST, slot = INVSLOT_WAIST }
 TPR.ITEM_STATUS[5] = { values = {}, name = INVTYPE_LEGS, slot = INVSLOT_LEGS };
 TPR.ITEM_STATUS[6] = { values = {}, name = INVTYPE_FEET, slot = INVSLOT_FEET };
 TPR.ITEM_STATUS[7] = { values = {}, name = INVTYPE_WRIST, slot = INVSLOT_WRIST };
-TPR.ITEM_STATUS[8] = { values = {}, name = INVTYPE_HAND, slot = INVSLOT_HANDS };
+TPR.ITEM_STATUS[8] = { values = {}, name = INVTYPE_HAND, slot = INVSLOT_HAND };
 TPR.ITEM_STATUS[9] = { values = {}, name = INVTYPE_WEAPONMAINHAND, slot = INVSLOT_MAINHAND };
 TPR.ITEM_STATUS[10] = { values = {}, name = INVTYPE_WEAPONOFFHAND, slot = INVSLOT_OFFHAND };
 --TPR.ITEM_STATUS[10] = { values = {}, name = INVTYPE_WEAPONOFFHAND, slot = "SecondaryHand" };

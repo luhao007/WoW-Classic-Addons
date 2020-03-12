@@ -9,9 +9,9 @@ On right-click it will show the normal Titan options.
 The left-click it will depend whether the user is group leader or loot master :
   if not leader a /roll will be done.
   if leader the tracker window will pop, giving them additional options
-  - Clear      : Start a new roll
-  - Announce   : State the results
-  - Not Rolled : Nag those who have not rolled
+  - Start   : Start a new roll
+  - Remind  : Nag those who have not rolled with a whisper
+  - Results : State the results
 
 Once a leader initiates a roll, the tracker will pop for other Titan users who are using LootType.
 :DESC

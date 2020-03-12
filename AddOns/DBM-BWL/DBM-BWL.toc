@@ -31,3 +31,4 @@ Ebonroc.lua
 Flamegor.lua
 Chromaggus.lua
 Nefarian.lua
+TalonGuards.lua

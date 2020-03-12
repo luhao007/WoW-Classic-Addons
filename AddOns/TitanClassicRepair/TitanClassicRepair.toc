@@ -1,11 +1,11 @@
 ## Interface: 11304
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.2.0.11303
+## Version: 1.2.1.11304
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel Classic [|cffeda55fRepair|r] |cff00aa001.2.0.11303|r
+## Title: Titan Panel Classic [|cffeda55fRepair|r] |cff00aa001.2.1.11304|r
 ## Notes: Provides a configurable durability display. Also adds the ability to auto repair items and inventory at vendors
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0修理|r
 ## Notes-zhCN: 泰坦面板的修理模块

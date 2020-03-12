@@ -1191,35 +1191,38 @@ DCS_SPELL_STAT_LIST = {
 }
 
 local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHideStats)
-	DejaClassicStatsFrame.statFrame = CreateFrame("Frame", "DCS"..StatKey.."StatFrame", DejaClassicStatsFrame)
-	DejaClassicStatsFrame.statFrame:SetPoint("TOPLEFT", DCS_STAT_DATA[StatKey].relativeTo, "BOTTOMLEFT", (15 + XoffSet), ( (-14 * (YoffSet - 1)) -2) )
-	DejaClassicStatsFrame.statFrame:SetSize(160, 16)
+	local isDCSFrameCreated = _G["DCS"..StatKey.."StatFrame"]
+	if (isDCSFrameCreated == nil) then
+		DejaClassicStatsFrame.statFrame = CreateFrame("Frame", "DCS"..StatKey.."StatFrame", DejaClassicStatsFrame)
+		DejaClassicStatsFrame.statFrame:SetPoint("TOPLEFT", DCS_STAT_DATA[StatKey].relativeTo, "BOTTOMLEFT", (15 + XoffSet), ( (-14 * (YoffSet - 1)) -2) )
+		DejaClassicStatsFrame.statFrame:SetSize(160, 16)
 
-	DejaClassicStatsFrame.stat = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."NameFS", "GameFontNormal")
-	DejaClassicStatsFrame.stat:SetPoint("LEFT", DejaClassicStatsFrame.statFrame, "LEFT")
-	if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
-		DejaClassicStatsFrame.stat:SetFontObject("GameFontNormalLarge")
-	else
-		DejaClassicStatsFrame.stat:SetFontObject("GameFontNormal")
-	end	
-	DejaClassicStatsFrame.stat:SetJustifyH("LEFT")
-	DejaClassicStatsFrame.stat:SetShadowOffset(1, -1) 
-	DejaClassicStatsFrame.stat:SetShadowColor(0, 0, 0)
-	DejaClassicStatsFrame.stat:SetTextColor(1, 0.8, 0.1)
-	DejaClassicStatsFrame.stat:SetText("")
+		DejaClassicStatsFrame.stat = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."NameFS", "GameFontNormal")
+		DejaClassicStatsFrame.stat:SetPoint("LEFT", DejaClassicStatsFrame.statFrame, "LEFT")
+		if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
+			DejaClassicStatsFrame.stat:SetFontObject("GameFontNormalLarge")
+		else
+			DejaClassicStatsFrame.stat:SetFontObject("GameFontNormal")
+		end	
+		DejaClassicStatsFrame.stat:SetJustifyH("LEFT")
+		DejaClassicStatsFrame.stat:SetShadowOffset(1, -1) 
+		DejaClassicStatsFrame.stat:SetShadowColor(0, 0, 0)
+		DejaClassicStatsFrame.stat:SetTextColor(1, 0.8, 0.1)
+		DejaClassicStatsFrame.stat:SetText("")
 
-	DejaClassicStatsFrame.value = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."ValueFS", "GameFontNormal")
-	DejaClassicStatsFrame.value:SetPoint("RIGHT", DejaClassicStatsFrame.statFrame, "RIGHT")
-	if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
-		DejaClassicStatsFrame.value:SetFontObject("GameFontNormalLarge")
-	else
-		DejaClassicStatsFrame.value:SetFontObject("GameFontNormal")
+		DejaClassicStatsFrame.value = DejaClassicStatsFrame.statFrame:CreateFontString(StatKey.."ValueFS", "GameFontNormal")
+		DejaClassicStatsFrame.value:SetPoint("RIGHT", DejaClassicStatsFrame.statFrame, "RIGHT")
+		if (namespace.locale == "zhCN") or (namespace.locale == "zhTW") or (namespace.locale == "koKR") then
+			DejaClassicStatsFrame.value:SetFontObject("GameFontNormalLarge")
+		else
+			DejaClassicStatsFrame.value:SetFontObject("GameFontNormal")
+		end
+		DejaClassicStatsFrame.value:SetJustifyH("RIGHT")
+		DejaClassicStatsFrame.value:SetShadowOffset(1, -1) 
+		DejaClassicStatsFrame.value:SetShadowColor(0, 0, 0)
+		DejaClassicStatsFrame.value:SetTextColor(1,1,1,1)
+		DejaClassicStatsFrame.value:SetText("")
 	end
-	DejaClassicStatsFrame.value:SetJustifyH("RIGHT")
-	DejaClassicStatsFrame.value:SetShadowOffset(1, -1) 
-	DejaClassicStatsFrame.value:SetShadowColor(0, 0, 0)
-	DejaClassicStatsFrame.value:SetTextColor(1,1,1,1)
-	DejaClassicStatsFrame.value:SetText("")
 
 	if ShowHideStats then
 		_G["DCS"..StatKey.."StatFrame"]:Show()

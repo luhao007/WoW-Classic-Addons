@@ -18,7 +18,9 @@ class Handler(object):
         # Extra library that need to be removed
         libs = ['embeds.xml', 'libs.xml', 'LibDataBroker-1.1.lua']
         for lib in libs:
-            rm_tree(Path('AddOns') / addon / lib)
+            path = Path('AddOns') / addon / lib
+            if os.path.exists(path):
+                os.remove(path)
 
         process_file(
             Path('AddOns') / addon / '{}.toc'.format(addon),
