@@ -235,7 +235,7 @@ local Default_Profile = {
 				NumFormat = 1,
 			},
 			Position = {
-				x = -100,
+				x = 500,
 				y = 0,
 				w = 140,
 				h = 200,

@@ -301,7 +301,10 @@ class Manager(object):
     def handle_recount(self):
         process_file(
             'Addons/Recount/Recount.lua',
-            self.defaults_func(['				x = -100,'])
+            self.defaults_func([
+                '				x = 500,',
+                '				x = 250,',
+            ])
         )
 
     def handle_scrap(self):
