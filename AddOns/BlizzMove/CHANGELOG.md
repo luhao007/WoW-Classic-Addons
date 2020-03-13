@@ -1,6 +1,6 @@
 # BlizzMove
 
-## [v2.1.4b](https://github.com/the-rebel-Mermaid/BlizzMove/tree/v2.1.4b) (2020-03-05)
-[Full Changelog](https://github.com/the-rebel-Mermaid/BlizzMove/commits/v2.1.4b)
+## [v2.1.4c](https://github.com/the-rebel-Mermaid/BlizzMove/tree/v2.1.4c) (2020-03-12)
+[Full Changelog](https://github.com/the-rebel-Mermaid/BlizzMove/commits/v2.1.4c)
 
-- Add the correct interface version to .toc for classic.  
+- Update for classic 1.13.4  

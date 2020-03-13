@@ -1,5 +1,5 @@
-## v4.9.30 Changes
+## v4.9.31 Changes
 
-* [Retail] Fixed an issue with previous release that affected scanning speed
+* [Classic] TOC bump for 1.13.4
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

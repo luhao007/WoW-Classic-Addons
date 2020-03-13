@@ -4,6 +4,8 @@ from pathlib import Path
 import click
 import instawow.cli
 from instawow.config import Config
+from instawow.models import Pkg
+from instawow.exceptions import PkgUpToDate
 
 
 class InstawowManager(object):
@@ -22,6 +24,9 @@ class InstawowManager(object):
 
         self.manager = instawow.cli.ManagerWrapper(debug=False).m
 
+    def get_addons(self):
+        return self.manager.db_session.query(Pkg).all()
+
     def reinstall(self):
         addons = instawow.cli.import_from_csv(self.manager,
                                               '{}.csv'.format(self.config))
@@ -30,14 +35,18 @@ class InstawowManager(object):
         print(instawow.cli.Report(results))
 
     def update(self):
-        results = self.manager.run(self.manager.update([]))
-        if results:
-            print(instawow.cli.Report(results))
+        addons = [p.to_defn() for p in self.get_addons()]
+        results = self.manager.run(self.manager.update(addons))
+        report = instawow.cli.Report(results,
+                                     lambda r: not isinstance(r, PkgUpToDate))
+        if str(report):
+            print(report)
         else:
             print('All {} addons are up-to-date!'.format(self.config))
 
     def show(self):
-        os.system('instawow list')
+        for addon in self.get_addons():
+            print('{}: {}'.format(addon.name, addon.version))
 
     def reconcile(self):
         os.system('instawow reconcile')

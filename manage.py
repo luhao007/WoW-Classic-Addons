@@ -1,15 +1,12 @@
-import logging
 import os
 import re
-import sys
 from pathlib import Path
 
-from instawow_manager import InstawowManager
-from toc import process_toc, TOC
+from toc import TOC
 from utils import process_file, rm_tree
 
 
-class Handler(object):
+class Manager(object):
 
     def remove_libraries_all(self, addon, lib_path):
         """Remove all embedded libraries"""
@@ -262,7 +259,7 @@ class Handler(object):
         toc = TOC(lines)
 
         version = toc.tags['Version']
-        major, minor, patch = version.split('.')
+        major, minor, patch = version.split(' ')[0].split('.')
 
         def handle(lines):
             func = 'function QuestieLib:GetAddonVersionInfo()'
@@ -275,8 +272,10 @@ class Handler(object):
             ret.append('end\n')
             end = lines[i:].index('end\n')
 
-            for l in lines[i+1:i+end+1]:
-                ret.append('--{}'.format(l))
+            if not lines[i+1].strip().startswith('return'):
+                for l in lines[i+1:i+end+1]:
+                    ret.append('--{}'.format(l))
+
             ret += lines[i+end+1:]
             return ret
 
@@ -324,27 +323,3 @@ class Handler(object):
         for f in dir(self):
             if f.startswith('handle'):
                 getattr(self, f)()
-
-
-def manage():
-    game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
-    for lib in [False, True]:
-        InstawowManager(game_flavour, lib).update()
-
-    Handler().process()
-
-    process_toc('11304' if game_flavour == 'classic' else '80300')
-    logging.info('Finished.')
-
-
-def main():
-    verbose = bool(set(['--verbose', '-v']) & set(sys.argv))
-    if verbose:
-        logging.basicConfig(level=logging.INFO)
-
-    manage()
-    print('All done.')
-
-
-if __name__ == '__main__':
-    main()

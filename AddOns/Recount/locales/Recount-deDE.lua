@@ -275,8 +275,7 @@ L["Rage Sources"] = "Wut (Quellen)"
 L["Raid"] = "Schlachtzug"
 L["Raid Instances"] = "Schlachtzuginstanzen"
 L["Rank Number"] = "Platzierung"
---[[Translation missing --]]
---[[ L["RealID"] = "RealID"--]] 
+L["RealID"] = "Real ID"
 L["Realtime"] = "Echtzeit"
 L["Record Buffs/Debuffs"] = "Buffs/Debuffs aufzeichnen"
 L["Record Data"] = "Daten aufzeichnen"

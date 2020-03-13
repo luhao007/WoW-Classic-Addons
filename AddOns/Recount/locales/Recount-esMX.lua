@@ -195,12 +195,9 @@ L["Lines Reported"] = "Líneas reportadas"
 L["Lines reported set to: "] = "Líneas reportadas ajustado a:"
 L["Lock"] = "Bloquear"
 L["Lock Windows"] = "Bloquear ventanas"
---[[Translation missing --]]
---[[ L["Maelstorm Abilities"] = "Maelstorm Abilities"--]] 
---[[Translation missing --]]
---[[ L["Maelstorm Gained"] = "Maelstorm Gained"--]] 
---[[Translation missing --]]
---[[ L["Maelstorm Sources"] = "Maelstorm Sources"--]] 
+L["Maelstorm Abilities"] = "Habilidades de Vorágine"
+L["Maelstorm Gained"] = "Vorágine ganada"
+L["Maelstorm Sources"] = "Fuentes de Vorágine"
 L["Main"] = "Principal"
 L["Main Window"] = "Ventana principal"
 L["Main Window Options"] = "Opciones de la ventana principal"
@@ -247,12 +244,9 @@ L["Overall Data"] = "Datos generales"
 L["Overheal"] = "Sobrecuración"
 L["Overhealing"] = "Sobrecuración"
 L["Overhealing Done"] = "Sobrecuración hecha"
---[[Translation missing --]]
---[[ L["Pain Abilities"] = "Pain Abilities"--]] 
---[[Translation missing --]]
---[[ L["Pain Gained"] = "Pain Gained"--]] 
---[[Translation missing --]]
---[[ L["Pain Sources"] = "Pain Sources"--]] 
+L["Pain Abilities"] = "Habilidades de Dolor"
+L["Pain Gained"] = "Dolor ganado"
+L["Pain Sources"] = "Fuentes de Dolor"
 L["Parry"] = "Parado"
 L["Party"] = "Grupo"
 L["Party Instances"] = "Instancias de grupo"
@@ -316,16 +310,12 @@ L["Ressers"] = "Resucitadores"
 L["Right-click|r to open the options menu"] = "Clic derecho|r para abrir el menú de opciones"
 L["Row Height"] = "Altura de fila"
 L["Row Spacing"] = "Espaciado de fila"
---[[Translation missing --]]
---[[ L["Runic Power Abilities"] = "Runic Power Abilities"--]] 
+L["Runic Power Abilities"] = "Habilidades de Poder rúnico"
 L["Runic Power Gained"] = "Poder rúnico ganado"
---[[Translation missing --]]
---[[ L["Runic Power Sources"] = "Runic Power Sources"--]] 
+L["Runic Power Sources"] = "Fuentes de Poder rúnico"
 L["'s Absorbs"] = "- Absorbió"
---[[Translation missing --]]
---[[ L["'s Astral Power Gained"] = "'s Astral Power Gained"--]] 
---[[Translation missing --]]
---[[ L["'s Astral Power Gained From"] = "'s Astral Power Gained From"--]] 
+L["'s Astral Power Gained"] = "Poder Astral ganado"
+L["'s Astral Power Gained From"] = "Poder Astral ganado de"
 L["'s Dispels"] = " - Disipaciones"
 L["'s DOT Uptime"] = " - Tiempo activo del DOT"
 L["'s DPS"] = " - DPS"
@@ -334,35 +324,27 @@ L["'s Effective Healing"] = " - Curaciones efectivas"
 L["'s Energy Gained"] = " - Energía ganada"
 L["'s Energy Gained From"] = " - Energía ganada de"
 L["'s Friendly Fire"] = " - Fuego amigo"
---[[Translation missing --]]
---[[ L["'s Fury Gained"] = "'s Fury Gained"--]] 
---[[Translation missing --]]
---[[ L["'s Fury Gained From"] = "'s Fury Gained From"--]] 
+L["'s Fury Gained"] = "Furia ganada"
+L["'s Fury Gained From"] = "Furia ganada de"
 L["'s Hostile Attacks"] = " - Ataques hostiles"
 L["'s HOT Uptime"] = " - Tiempo activo del HOT"
 L["'s HPS"] = " - HPS"
 L["'s HTPS"] = " - HTPS"
 L["'s Interrupts"] = " - Interrupciones"
---[[Translation missing --]]
---[[ L["'s Maelstorm Gained"] = "'s Maelstorm Gained"--]] 
---[[Translation missing --]]
---[[ L["'s Maelstorm Gained From"] = "'s Maelstorm Gained From"--]] 
+L["'s Maelstorm Gained"] = "Vorágine ganada"
+L["'s Maelstorm Gained From"] = "Vorágine ganada de"
 L["'s Mana Gained"] = " - Maná ganado"
 L["'s Mana Gained From"] = " - Maná ganado de"
 L["'s Network Traffic"] = " - Tráfico de Red"
 L["'s Overhealing"] = " - Sobrecuración"
---[[Translation missing --]]
---[[ L["'s Pain Gained"] = "'s Pain Gained"--]] 
---[[Translation missing --]]
---[[ L["'s Pain Gained From"] = "'s Pain Gained From"--]] 
+L["'s Pain Gained"] = "Dolor ganado"
+L["'s Pain Gained From"] = "Dolor ganado de"
 L["'s Partial Resists"] = " - Parcialmente resistidos"
 L["'s Rage Gained"] = " - Ira ganada"
 L["'s Rage Gained From"] = " - Ira ganada de"
 L["'s Resses"] = " - Resurrecciones"
---[[Translation missing --]]
---[[ L["'s Runic Power Gained"] = "'s Runic Power Gained"--]] 
---[[Translation missing --]]
---[[ L["'s Runic Power Gained From"] = "'s Runic Power Gained From"--]] 
+L["'s Runic Power Gained"] = "Poder rúnico ganado"
+L["'s Runic Power Gained From"] = "Poder rúnico ganado de"
 L["'s Time Spent"] = " - Tiempo consumido"
 L["'s Time Spent Attacking"] = " - Tiempo consumido atacando"
 L["'s Time Spent Healing"] = " - Tiempo consumido curando"
