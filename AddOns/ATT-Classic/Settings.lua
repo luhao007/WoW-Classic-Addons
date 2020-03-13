@@ -98,7 +98,7 @@ local FilterSettingsBase = {
 };
 local TooltipSettingsBase = {
 	__index = {
-		["Auto:MiniList"] = true,
+		["Auto:MiniList"] = false,
 		["Auto:ProfessionList"] = true,
 		["Celebrate"] = true,
 		["Channel"] = "master",
@@ -106,7 +106,7 @@ local TooltipSettingsBase = {
 		["Descriptions"] = true,
 		["DisplayInCombat"] = true,
 		["Enabled"] = true,
-		["MinimapButton"] = true,
+		["MinimapButton"] = false,
 		["MinimapSize"] = 36,
 		["MinimapStyle"] = true,
 		["Models"] = true,

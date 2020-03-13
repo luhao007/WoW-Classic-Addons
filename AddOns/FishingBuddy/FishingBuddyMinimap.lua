@@ -67,7 +67,7 @@ MinimapEvents["VARIABLES_LOADED"] = function()
 	local _, info;
 	
 	if ( not FishingBuddy_Player["MinimapData"] ) then
-		FishingBuddy_Player["MinimapData"] = { hide=false };
+		FishingBuddy_Player["MinimapData"] = { hide=true };
 	end
 
 	-- Fix Curse bug #246

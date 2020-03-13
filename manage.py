@@ -66,26 +66,12 @@ class Manager(object):
 
         game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
         if game_flavour == 'classic':
-            def handle_dogtag_stats(lines):
-                orig = 'DogTag:AddTag("Stats", "PvPPowerDamage", {\n'
-
-                if orig not in lines:
-                    return lines
-
-                # Comment the block, we don't have PVP Power in classic
-                start = lines.index(orig)
-                ret = lines[:start]
-                end = lines[start:].index('})\n')
-
-                for l in lines[start:start+end+1]:
-                    ret.append('--{}'.format(l))
-                ret += lines[start+end+1:]
-
-                return ret
-
+            path = 'AddOns/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua'
+            if os.path.exists(path):
+                os.remove(path)
             process_file(
-                'AddOns/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua',
-                handle_dogtag_stats
+                'AddOns/!!Libs/LibDogTag-Stats-3.0/lib.xml',
+                lambda lines: [l for l in lines if 'PvP.lua' not in lines]
             )
 
     def handle_dup_libraries(self):
@@ -112,6 +98,34 @@ class Manager(object):
         for addon, lib_path in libs:
             self.remove_libraries_all(addon, lib_path)
 
+    def defaults_func(self, defaults):
+        def handle(lines):
+            ret = []
+            for l in lines:
+                for default in defaults:
+                    if l.startswith(default.split('= ')[0] + '= '):
+                        ret.append(default+'\n')
+                        break
+                else:
+                    ret.append(l)
+            return ret
+        return handle
+
+    def handle_att(self):
+        process_file(
+            'Addons/ATT-Classic/Settings.lua',
+            self.defaults_func([
+                '		["MinimapButton"] = false,',
+                '		["Auto:MiniList"] = false,',
+            ])
+        )
+
+    def handle_atlasloot(self):
+        process_file(
+            'Addons/AtlasLootClassic/db.lua',
+            self.defaults_func(['			shown = false,'])
+        )
+
     def handle_auctioneer(self):
         Addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
 
@@ -131,9 +145,7 @@ class Manager(object):
     def handle_atlas(self):
         process_file(
             'AddOns/Atlas/Core/Atlas.lua',
-            lambda lines: ['addon.LocName = "Atlas"\n'
-                           if l.startswith('addon.LocName') else l
-                           for l in lines]
+            self.defaults_func(['addon.LocName = "Atlas"'])
         )
 
     def handle_bagnon(self):
@@ -187,6 +199,13 @@ class Manager(object):
             'AddOns/FishingBuddy/Libs/Libs.xml'
         )
 
+        process_file(
+            'Addons/FishingBuddy/FishingBuddyMinimap.lua',
+            self.defaults_func(
+                '		FishingBuddy_Player["MinimapData"] = { hide=true };'
+            )
+        )
+
     def handle_fizzle(self):
         def f(lines):
             ret = []
@@ -224,9 +243,7 @@ class Manager(object):
 
         process_file(
             'AddOns/honorspy/honorspy.lua',
-            lambda lines: ['local addonName = "Honorspy";\n'
-                           if l.startswith('local addonName') else l
-                           for l in lines]
+            self.defaults_func(['local addonName = "Honorspy";'])
         )
 
     def handle_monkeyspeed(self):
@@ -281,6 +298,12 @@ class Manager(object):
 
         process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
+    def handle_recount(self):
+        process_file(
+            'Addons/Recount/Recount.lua',
+            self.defaults_func(['				x = -100,'])
+        )
+
     def handle_scrap(self):
         self.remove_libraries(
             ['AceEvent-3.0', 'AceLocale-3.0',
@@ -318,6 +341,12 @@ class Manager(object):
 
         self.remove_libraries_all('UnitFramesPlus_Cooldown', 'Libs')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
+
+    def handle_whlooter(self):
+        process_file(
+            'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
+            self.defaults_func(['wlSetting = {minimap=false};'])
+        )
 
     def process(self):
         for f in dir(self):
