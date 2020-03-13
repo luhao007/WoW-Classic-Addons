@@ -18,7 +18,7 @@ def update():
     for lib in [False, True]:
         InstawowManager(game_flavour, lib).update()
 
-    print('Hanlding Tocs...', end='')
+    print('Modifying addons to fit each other...', end='')
     Manager().process()
     print('Done!')
 
