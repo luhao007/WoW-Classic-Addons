@@ -64,14 +64,13 @@ class Manager(object):
             handle_graph
         )
 
-        game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
-        if game_flavour == 'classic':
+        if '_classic_' in os.getcwd():
             path = 'AddOns/!!Libs/LibDogTag-Stats-3.0/Categories/PvP.lua'
             if os.path.exists(path):
                 os.remove(path)
             process_file(
                 'AddOns/!!Libs/LibDogTag-Stats-3.0/lib.xml',
-                lambda lines: [l for l in lines if 'PvP.lua' not in lines]
+                lambda lines: [l for l in lines if 'PvP' not in l]
             )
 
     def handle_dup_libraries(self):

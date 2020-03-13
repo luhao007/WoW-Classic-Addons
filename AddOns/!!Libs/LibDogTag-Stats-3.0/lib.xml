@@ -8,7 +8,6 @@
 
 	<Script file="Categories\Defense.lua" />
 	<Script file="Categories\Melee.lua" />
-	<Script file="Categories\PvP.lua" />
 	<Script file="Categories\Ranged.lua" />
 	<Script file="Categories\Regen.lua" />
 	<Script file="Categories\Spell.lua" />
