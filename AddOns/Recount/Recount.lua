@@ -237,7 +237,7 @@ local Default_Profile = {
 			Position = {
 				x = 500,
 				y = 0,
-				w = 140,
+				w = 250,
 				h = 200,
 			},
 		},

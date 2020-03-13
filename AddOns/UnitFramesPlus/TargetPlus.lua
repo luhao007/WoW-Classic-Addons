@@ -11,6 +11,9 @@ function UnitFramesPlus_TargetPositionSet()
         TargetFrame:ClearAllPoints();
         TargetFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", UnitFramesPlusVar["target"]["x"], UnitFramesPlusVar["target"]["y"]);
     end
+    if UnitFramesPlus_TargetTargetPosition then
+        UnitFramesPlus_TargetTargetPosition();
+    end
 end
 
 function UnitFramesPlus_TargetPosition()
@@ -50,8 +53,10 @@ local function UnitFramesPlus_TargetShiftDrag()
         end
     end)
 
-    TargetFrame:SetMovable(1);
-    TargetFrame:SetClampedToScreen(1);
+    TargetFrame_SetLocked(true);
+    TargetFrame:SetMovable(true);
+    TargetFrame:SetUserPlaced(false);
+    TargetFrame:SetClampedToScreen(true);
 
     --更改目标头像默认位置以防止其和玩家扩展框重叠
     hooksecurefunc("UIParent_UpdateTopFramePositions", function()

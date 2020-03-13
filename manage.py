@@ -98,32 +98,30 @@ class Manager(object):
         for addon, lib_path in libs:
             self.remove_libraries_all(addon, lib_path)
 
-    def defaults_func(self, defaults):
+    def change_defaults(self, path, defaults):
         def handle(lines):
             ret = []
             for l in lines:
-                for default in defaults:
-                    if l.startswith(default.split('= ')[0] + '= '):
-                        ret.append(default+'\n')
+                for d in [defaults] if isinstance(defaults, str) else defaults:
+                    if l.startswith(d.split('= ')[0] + '= '):
+                        ret.append(d+'\n')
                         break
                 else:
                     ret.append(l)
             return ret
-        return handle
+        process_file(path, handle)
 
     def handle_att(self):
-        process_file(
+        self.change_defaults(
             'Addons/ATT-Classic/Settings.lua',
-            self.defaults_func([
-                '		["MinimapButton"] = false,',
-                '		["Auto:MiniList"] = false,',
-            ])
+            ['		["MinimapButton"] = false,',
+             '		["Auto:MiniList"] = false,']
         )
 
     def handle_atlasloot(self):
-        process_file(
+        self.change_defaults(
             'Addons/AtlasLootClassic/db.lua',
-            self.defaults_func(['			shown = false,'])
+            '			shown = false,'
         )
 
     def handle_auctioneer(self):
@@ -143,9 +141,9 @@ class Manager(object):
         )
 
     def handle_atlas(self):
-        process_file(
+        self.change_defaults(
             'AddOns/Atlas/Core/Atlas.lua',
-            self.defaults_func(['addon.LocName = "Atlas"'])
+            'addon.LocName = "Atlas"',
         )
 
     def handle_bagnon(self):
@@ -199,11 +197,9 @@ class Manager(object):
             'AddOns/FishingBuddy/Libs/Libs.xml'
         )
 
-        process_file(
+        self.change_defaults(
             'Addons/FishingBuddy/FishingBuddyMinimap.lua',
-            self.defaults_func(
-                '		FishingBuddy_Player["MinimapData"] = { hide=true };'
-            )
+            '		FishingBuddy_Player["MinimapData"] = { hide=true };'
         )
 
     def handle_fizzle(self):
@@ -241,9 +237,10 @@ class Manager(object):
     def handle_honorspy(self):
         self.remove_libraries_all('honorspy', 'Libs')
 
-        process_file(
+        self.change_defaults(
             'AddOns/honorspy/honorspy.lua',
-            self.defaults_func(['local addonName = "Honorspy";'])
+            ['local addonName = "Honorspy";',
+             '			minimapButton = {hide = true},']
         )
 
     def handle_monkeyspeed(self):
@@ -299,12 +296,10 @@ class Manager(object):
         process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
     def handle_recount(self):
-        process_file(
+        self.change_defaults(
             'Addons/Recount/Recount.lua',
-            self.defaults_func([
-                '				x = 500,',
-                '				x = 250,',
-            ])
+            ['				x = 500,',
+             '				w = 250,'],
         )
 
     def handle_scrap(self):
@@ -346,9 +341,9 @@ class Manager(object):
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
 
     def handle_whlooter(self):
-        process_file(
+        self.change_defaults(
             'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
-            self.defaults_func(['wlSetting = {minimap=false};'])
+            'wlSetting = {minimap=false};'
         )
 
     def process(self):

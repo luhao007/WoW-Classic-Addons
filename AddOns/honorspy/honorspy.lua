@@ -16,7 +16,7 @@ function HonorSpy:OnInitialize()
 		factionrealm = {
 			currentStandings = {},
 			last_reset = 0,
-			minimapButton = {hide = false},
+			minimapButton = {hide = true},
 			actualCommPrefix = "",
 			fakePlayers = {},
 			goodPlayers = {}
