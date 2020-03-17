@@ -69,7 +69,6 @@ LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
 LibDDI-1.0\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
-LibDogTag-Stats-3.0\lib.xml
 LibDogTag-Unit-3.0\lib.xml
 LibDropdown-1.0\LibDropdown-1.0\lib.xml
 LibDurability\LibDurability\LibDurability.xml

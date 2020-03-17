@@ -1,5 +1,5 @@
-## v4.0.6 Changes
+## v4.0.8 Changes
 
-* Updated TOC for WoW Classic 1.13.3.
+* [Classic] Updated TOC for WoW Classic 1.13.4
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)
