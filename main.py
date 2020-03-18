@@ -17,14 +17,13 @@ class Context(object):
         self.manager = InstawowManager(self.game_flavour, False)
         self.manager_lib = InstawowManager(self.game_flavour, True)
 
+    def manage(self):
+        print('Modifying addons to fit each other...', end='')
+        Manager().process()
+        print('Done!')
 
-def manage(game_flavour):
-    print('Modifying addons to fit each other...', end='')
-    Manager().process()
-    print('Done!')
-
-    process_toc('11304' if game_flavour == 'classic' else '80300')
-    logging.info('Finished.')
+        process_toc('11304' if self.game_flavour == 'classic' else '80300')
+        logging.info('Finished.')
 
 
 @click.group(context_settings={'help_option_names': ('-h', '--help')})
@@ -45,7 +44,16 @@ def install(obj, addons):
     """Install addons"""
     obj.manager.install(addons)
     obj.manager.export()
-    manage(obj.game_flavour)
+    obj.manage()
+
+
+@main.command()
+@click.pass_obj
+def update(obj):
+    """Update all addons"""
+    obj.manager.update()
+    obj.manager_lib.update()
+    obj.manage()
 
 
 @main.command()
@@ -62,15 +70,6 @@ def remove(obj, addons):
 def show(obj):
     """Show all addons"""
     obj.manager.show()
-
-
-@main.command()
-@click.pass_obj
-def update(obj):
-    """Update all addons"""
-    obj.manager.update()
-    obj.manager_lib.update()
-    manage(obj.game_flavour)
 
 
 if __name__ == "__main__":

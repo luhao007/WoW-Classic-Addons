@@ -64,4 +64,5 @@ class InstawowManager(object):
                                    '{}.csv'.format(self.config))
 
     def reconcile(self):
+        # TODO: Use instawow.cli
         os.system('instawow reconcile')
