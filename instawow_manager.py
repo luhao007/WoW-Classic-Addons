@@ -25,7 +25,8 @@ class InstawowManager(object):
         self.manager = instawow.cli.ManagerWrapper(debug=False).m
 
     def get_addons(self):
-        return self.manager.db_session.query(Pkg).all()
+        query = self.manager.db_session.query(Pkg)
+        return query.order_by(Pkg.source, Pkg.name).all()
 
     def reinstall(self):
         addons = instawow.cli.import_from_csv(self.manager,
@@ -44,12 +45,23 @@ class InstawowManager(object):
         else:
             print('All {} addons are up-to-date!'.format(self.config))
 
+    def install(self, addons):
+        addons = instawow.cli.parse_into_defn(self.manager, addons)
+        results = self.manager.run(self.manager.install(addons, replace=False))
+        print(instawow.cli.Report(results))
+
+    def remove(self, addons):
+        addons = instawow.cli.parse_into_defn(self.manager, addons)
+        results = self.manager.run(self.manager.remove(addons))
+        print(instawow.cli.Report(results))
+
     def show(self):
         for addon in self.get_addons():
             print('{}: {}'.format(addon.name, addon.version))
 
+    def export(self):
+        instawow.cli.export_to_csv(self.get_addons(),
+                                   '{}.csv'.format(self.config))
+
     def reconcile(self):
         os.system('instawow reconcile')
-
-    def export(self):
-        os.system('instawow list -e {}.csv'.format(self.config))

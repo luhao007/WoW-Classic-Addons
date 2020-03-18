@@ -1145,7 +1145,7 @@ MAPPING = {
         'Title-cn': '小地图按钮整合',
         'Title-sub': 'Minimap Button Bag',
         'Notes': '将小地图的按钮整合成一个',
-        'Category': '任务'
+        'Category': '界面'
     },
     'MeetingStone': {
         'Title-cn': '集合石',

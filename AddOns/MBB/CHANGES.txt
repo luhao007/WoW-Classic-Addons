@@ -1,0 +1,44 @@
+commit 94a85bc36fced5840138b67fd53e09048ceca366
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 17:53:08 2020 -0800
+
+    Fix file structure
+
+commit 391692c18540fee26daa14c21b8e1ff191f1a935
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 15:35:13 2020 -0800
+
+    Fix versioning
+
+commit 51ddda16ba2fc1c44b349dac467d1889173a19a1
+Author: VallanTV <59833187+VallanTV@users.noreply.github.com>
+Date:   Mon Jan 13 08:34:28 2020 -0800
+
+    Update README.md
+
+commit b865e0f4f4a67f1b93807fb904aad86223370648
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 08:26:47 2020 -0800
+
+    Fix for Questie
+    
+    There are a ton of these ignores than can probably be removed but they don't hurt anything for now.
+
+commit 2c73bb04bdd7b83adb33d3edba7c6745a2def6f7
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 08:25:57 2020 -0800
+
+    Change to 1.0 for Classic.
+
+commit 2f427de91762f30a16e5f023e335917edd83e85e
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 07:18:17 2020 -0800
+
+    Initial commit of WoW Retail MBB Source
+
+commit f049ab76f70d5c69986c28e8a8879cb8ab86a774
+Author: VallanTV <vallantv@protonmail.com>
+Date:   Mon Jan 13 07:17:20 2020 -0800
+
+    Initial commit
+

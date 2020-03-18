@@ -1,0 +1,20 @@
+## Interface: 11304
+## Author: karlsnyder, vallantv
+## Version: 1.0.0
+## SavedVariablesPerCharacter: MBB_Exclude, MBB_Options
+
+## Title: MinimapButtonBag
+## Notes: Cleans up minimap buttons and makes them accessible through a pop out menu!
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF小地图按钮整合|r |cFF69CCF0Minimap Button Bag|r
+## Notes-zhCN: 将小地图的按钮整合成一个
+
+## X-Category: Map
+
+localization-enGB.lua
+localization-frFR.lua
+localization-deDE.lua
+localization-zhCN.lua
+localization-zhTW.lua
+localization-koKR.lua
+localization-ruRU.lua
+MBB.xml
