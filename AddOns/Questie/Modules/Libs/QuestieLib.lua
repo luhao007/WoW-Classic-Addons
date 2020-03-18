@@ -338,7 +338,7 @@ end
 local cachedTitle = nil
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo() -- todo: better place
-    return 5, 8, 0
+    return 5, 9, 0
 end
 --    if (not cachedTitle) then
 --        local name, title, _, _, reason = GetAddOnInfo("Questie")
@@ -357,7 +357,7 @@ function QuestieLib:GetAddonVersionString()
 end
 
 -- Search for just Addon\\ at the front since the interface part often gets trimmed
--- Code Credit Author(s): Cryect (cryect@gmail.com), Xinhuan and their LibGraph-2.0
+-- Code Credit Author(s): Cryect (cryect@gmail.com), Xinhuan and their LibGraph-2.0 
 do
     local path = string.match(debugstack(1, 1, 0),
                               "AddOns\\(.+)Modules\\Libs\\QuestieLib.lua")
@@ -478,4 +478,16 @@ function QuestieLib:MathRandom(low_or_high_arg, high_arg)
         return rand
     end
     return low + math.floor(rand * high)
+end
+
+function QuestieLib:UnpackBinary(val)
+    local ret = {}
+    for q=0, 16 do
+        if bit.band(bit.rshift(val,q), 1) == 1 then
+            tinsert(ret, true)
+        else
+            tinsert(ret, false)
+        end
+    end
+    return ret
 end
