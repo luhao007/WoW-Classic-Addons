@@ -41,10 +41,11 @@ class CheckManagedAddOns(unittest.TestCase):
 
     def test_check_duplicate_libraries(self):
         root = Path('AddOns/!!Libs')
-        libs = [lib for lib in os.listdir(root) if os.path.isdir(root / lib)]
-
-        path = root / 'Ace3'
-        libs += [lib for lib in os.listdir(path) if os.path.isdir(path / lib)]
+        paths = [root, root / 'Ace3', root / 'LibBabble']
+        libs = []
+        for path in paths:
+            libs += [lib for lib in os.listdir(path)
+                     if os.path.isdir(path / lib)]
 
         duplicates = {}
         for root, dirs, _ in os.walk('AddOns'):
