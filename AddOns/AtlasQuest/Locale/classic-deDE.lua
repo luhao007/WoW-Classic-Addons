@@ -4900,320 +4900,320 @@ Inst33QAA = "17 Quests"
 Inst33QAH = "17 Quests"
 
 --Quest 1 Alliance
-Inst33Quest1 = "1. The Sovereign Imperative"
-Inst33Quest1_Aim = "Travel to Alteractal in the Hillsbrad Foothills. Outside of the entrance tunnel, find and speak with Lieutenant Haggerdin."
-Inst33Quest1_Location = "Lieutenant Rotimer (Ironforge - The Commons; "..YELLOW.."30,62"..WHITE..")"
-Inst33Quest1_Note = "Lieutenant Haggerdin ist bei (Alterac Mountains; "..YELLOW.."39,81"..WHITE..")."
+Inst33Quest1 = "1. Die hoheitliche Anordnung"
+Inst33Quest1_Aim = "Reist ins Alteractal im Vorgebirge von Hillsbrad. Wenn Ihr dort angekommen seid, meldet Euch umgehend bei Leutnant Haggerdin."
+Inst33Quest1_Location = "Lieutenant Rotimer (Ironforge - Das Bankenviertel; "..YELLOW.."30,62"..WHITE..")"
+Inst33Quest1_Note = "Lieutenant Haggerdin ist bei (Alteracgebirge; "..YELLOW.."39,81"..WHITE..")."
 Inst33Quest1_Prequest = "Nein"
-Inst33Quest1_Folgequest = "Proving Grounds"
+Inst33Quest1_Folgequest = "Flaggenjagd"
 -- No Rewards for this quest
 
 --Quest 2 Alliance
-Inst33Quest2 = "2. Proving Grounds"
-Inst33Quest2_Aim = "Travel to the Icewing Caverns located Südwest of Dun Baldar in Alteractal and recover the Stormpike Banner. Return the Stormpike Banner to Lieutenant Haggerdin in the Alterac Mountains."
-Inst33Quest2_Location = "Lieutenant Haggerdin (Alterac Mountains; "..YELLOW.."39,81"..WHITE..")"
-Inst33Quest2_Note = "The Stormpike Banner is in the Icewing Cavern at "..YELLOW.."[11]"..WHITE.." on the Alteractal - Nord map. Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
-Inst33Quest2_Prequest = "The Sovereign Imperative"
+Inst33Quest2 = "2. Flaggenjagd"
+Inst33Quest2_Aim = "Begebt euch in die Icewinghöhle südwestlich von Dun Baldar und findet das Banner der Stormpike. Bringt anschließend Lieutenant Haggerdin im Alteracgebirge das Banner. "
+Inst33Quest2_Location = Inst33Quest1_Note
+Inst33Quest2_Note = "Das Banner der Stormpike ist in der Icewinghöhle bei "..YELLOW.."[11]"..WHITE.." im Alteractal - Nord. Sprich jedes Mal mit demselben NPC, wenn du eine neue Rufstufe erreicht hast, für ein verbessertes Abzeichen erhältst.\n\nDie Prequest ist nicht notwendig, um diese Quest zu erhalten."
+Inst33Quest2_Prequest = "Aufstieg und Anerkennung"
 Inst33Quest2_Folgequest = "Nein"
 --
-Inst33Quest2name1 = "Stormpike Insignia Rank 1"
-Inst33Quest2name2 = "The Frostwolf Artichoke"
+Inst33Quest2name1 = "Abzeichen der Stormpike Rang 1"
+Inst33Quest2name2 = "Frostwölfe abserviert"
 
 --Quest 3 Alliance
-Inst33Quest3 = "3. The Battle of Alterac"
-Inst33Quest3_Aim = "Enter Alteractal, defeat the Horde general Drek'thar, and then return to Prospector Stonehewer in the Alterac Mountains."
-Inst33Quest3_Location = "Prospector Stonehewer (Alterac Mountains; "..YELLOW.."41,80"..WHITE..") and\n(Alteractal - Nord; "..YELLOW.."[B]"..WHITE..")"
-Inst33Quest3_Note = "Drek'thar ist bei (Alteractal - Süd; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
+Inst33Quest3 = "3. Die Schlacht um Alterac"
+Inst33Quest3_Aim = "Betretet das Alteractal, bezwingt den Hordegeneral Drek'thar und kehrt dann zu Ausgrabungsleiter Stonehewer im Alteracgebirge zurück."
+Inst33Quest3_Location = "Ausgrabungsleiter Stonehewer (Alteracgebirge; "..YELLOW.."41,80"..WHITE..") und\n(Alteractal - Nord; "..YELLOW.."[B]"..WHITE..")"
+Inst33Quest3_Note = "Drek'thar ist bei (Alteractal - Süd; "..YELLOW.."[B]"..WHITE.."). Er muss nicht wirklich getötet werden, um die Quest zu beenden. Das Schlachtfeld muss nur auf irgendeine Art und Weise von deiner Seite gewonnen werden.\nNachdem du diese Quest abgegeben hast, sprich noch einmal mit dem NPC, um die Belohnung zu erhalten."
 Inst33Quest3_Prequest = "Nein"
-Inst33Quest3_Folgequest = "Hero of the Stormpike"
+Inst33Quest3_Folgequest = "Held der Stormpike"
 --
-Inst33Quest3name1 = "Bloodseeker"
-Inst33Quest3name2 = "Ice Barbed Spear"
-Inst33Quest3name3 = "Wand of Biting Cold"
-Inst33Quest3name4 = "Cold Forged Hammer"
+Inst33Quest3name1 = "Blutsucher"
+Inst33Quest3name2 = "Eisstachelspeer"
+Inst33Quest3name3 = "Zauberstab der beißenden Kälte"
+Inst33Quest3name4 = "Kaltgeschmiedeter Hammer"
 
 --Quest 4 Alliance
-Inst33Quest4 = "4. The Quartermaster"
-Inst33Quest4_Aim = "Speak with the Stormpike Quartermaster."
-Inst33Quest4_Location = "Mountaineer Boombellow (Alteractal - Nord; "..YELLOW.."Near [3] Before Bridge"..WHITE..")"
-Inst33Quest4_Note = "The Stormpike Quartermaster ist bei (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..") and provides more quests."
+Inst33Quest4 = "4. Der Rüstmeister"
+Inst33Quest4_Aim = "Sprecht mit dem Rüstmeister der Stormpike."
+Inst33Quest4_Location = "Gebirgsjäger Boombellow (Alteractal - Nord; "..YELLOW.."Nähe [3] Vor der Brücke"..WHITE..")"
+Inst33Quest4_Note = "Der Rüstmeister der Stormpike ist bei (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..") und bietet mehr Quests."
 Inst33Quest4_Prequest = "Nein"
 Inst33Quest4_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 5 Alliance
-Inst33Quest5 = "5. Coldtooth Supplies"
-Inst33Quest5_Aim = "Bring 10 Coldtooth Supplies to the Alliance Quartermaster in Dun Baldar."
-Inst33Quest5_Location = "Stormpike Quartermaster (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..")"
-Inst33Quest5_Note = "The supplies can be found in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..")."
+Inst33Quest5 = "5. Coldtooth-Vorräte"
+Inst33Quest5_Aim = "Bringt 10 Coldtooth-Vorräte zum Rüstmeister der Allianz in Dun Baldar."
+Inst33Quest5_Location = Inst33Quest4_Location
+Inst33Quest5_Note = "Die Vorräte befinden sich in der Coldtooth Mine bei (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..")."
 Inst33Quest5_Prequest = "Nein"
 Inst33Quest5_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 6 Alliance
-Inst33Quest6 = "6. Irondeep Supplies"
-Inst33Quest6_Aim = "Bring 10 Irondeep Supplies to the Alliance Quartermaster in Dun Baldar."
-Inst33Quest6_Location = "Stormpike Quartermaster (Alteractal - Nord; "..YELLOW.."[7]"..WHITE..")"
-Inst33Quest6_Note = "The supplies can be found in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..")."
+Inst33Quest6 = "6. Irondeep-Vorräte"
+Inst33Quest6_Aim = "Bringt 10 Irondeep-Vorräte zum Rüstmeister der Allianz in Dun Baldar."
+Inst33Quest6_Location = Inst33Quest4_Location
+Inst33Quest6_Note = "Die Vorräte befinden sich in der Irondeep-Mine bei (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..")."
 Inst33Quest6_Prequest = "Nein"
 Inst33Quest6_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 7 Alliance
-Inst33Quest7 = "7. Armor Scraps"
-Inst33Quest7_Aim = "Bring 20 Armor Scraps to Murgot Deepforge in Dun Baldar."
+Inst33Quest7 = "7. Rüstungsfetzen"
+Inst33Quest7_Aim = "Bringt Murgot Deepforge in Dun Baldar 20 Rüstungsfetzen."
 Inst33Quest7_Location = "Murgot Deepforge (Alteractal - Nord; "..YELLOW.."[4]"..WHITE..")"
-Inst33Quest7_Note = "Loot the corpse of enemy players for scraps. The followup is just the same, quest, but repeatable."
+Inst33Quest7_Note = "Plündert die Leichen der gegnerischen Spieler für Fetzen. Die Folgequest ist die selbe und eine wiederholbare Quest."
 Inst33Quest7_Prequest = "Nein"
-Inst33Quest7_Folgequest = "More Armor Scraps"
+Inst33Quest7_Folgequest = "Mehr Rüstungsfetzen"
 -- No Rewards for this quest
 
 --Quest 8 Alliance
-Inst33Quest8 = "8. Capture a Mine"
-Inst33Quest8_Aim = "Capture a mine that the Stormpike does not control, then return to Sergeant Durgen Stormpike in the Alterac Mountains."
-Inst33Quest8_Location = "Sergeant Durgen Stormpike (Alterac Mountains; "..YELLOW.."37,77"..WHITE..")"
-Inst33Quest8_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") while the Horde control it."
+Inst33Quest8 = "8. Mine besetzen"
+Inst33Quest8_Aim = "Erobert eine Mine, die die Stormpike noch nicht kontrollieren, und kehrt dann zu Sergeant Durgen Stormpike im Alteracgebirge zurück."
+Inst33Quest8_Location = "Sergeant Durgen Stormpike (Alteracgebirge; "..YELLOW.."37,77"..WHITE..")"
+Inst33Quest8_Note = "Um die Quest zu beenden musst Du den Morloch in der Irondeep Mine bei (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") oder Zuchtmeister Schnuffel in der Coldtooth Mine bei (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") die unter der Kontrolle der Horde ist."
 Inst33Quest8_Prequest = "Nein"
 Inst33Quest8_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 9 Alliance
-Inst33Quest9 = "9. Towers and Bunkers"
-Inst33Quest9_Aim = "Destroy the banner at an enemy tower or bunker, then return to Sergeant Durgen Stormpike in the Alterac Mountains."
-Inst33Quest9_Location = "Sergeant Durgen Stormpike (Alterac Mountains; "..YELLOW.."37,77"..WHITE..")"
-Inst33Quest9_Note = "Reportedly, the Tower or Bunker need not actually be destroyed to complete the quest, just assaulted."
+Inst33Quest9 = "9. Türme und Bunker"
+Inst33Quest9_Aim = "Zerstört das Banner im Inneren eines gegnerischen Bunkers oder Turms. Kehrt anschließend zu Sergeant Durgen Stormpike im Alteracgebirge zurück."
+Inst33Quest9_Location = Inst33Quest8_Location
+Inst33Quest9_Note = "Berichten zufolge muss der Turm oder Bunker nicht wirklich zerstört werden, um die Quest zu beenden, sondern nur angegriffen werden."
 Inst33Quest9_Prequest = "Nein"
 Inst33Quest9_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 10 Alliance
-Inst33Quest10 = "10. Alteractal Friedhofs"
-Inst33Quest10_Aim = "Assault a Friedhof, then return to Sergeant Durgen Stormpike in the Alterac Mountains."
-Inst33Quest10_Location = "Sergeant Durgen Stormpike (Alterac Mountains; "..YELLOW.."37,77"..WHITE..")"
-Inst33Quest10_Note = "Reportedly you do not need to do anything but be near a Friedhof when the Alliance assaults it. It does not need to be captured, just assaulted."
+Inst33Quest10 = "10. Die Friedhöfe im Alteractal"
+Inst33Quest10_Aim = "Erobert einen Friedhof und kehrt zu Sergeant Durgen Stormpike im Alteracgebirge zurück."
+Inst33Quest10_Location = Inst33Quest8_Location
+Inst33Quest10_Note = "Angeblich musst du nichts weiter tun, als in der Nähe eines Friedhofes zu sein, wenn die Horde ihn angreift. Du musst diese nicht übernehmen sondern nur angreifen."
 Inst33Quest10_Prequest = "Nein"
 Inst33Quest10_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 11 Alliance
-Inst33Quest11 = "11. Empty Stables"
-Inst33Quest11_Aim = "Locate an Alterac Ram in Alteractal. Use the Stormpike Training Collar when you are near the Alterac Ram to 'tame' the beast. Once tamed, the Alterac Ram will follow you back to the Stable Master. Speak with the Stable Master to earn credit for the capture."
-Inst33Quest11_Location = "Stormpike Stable Master (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
-Inst33Quest11_Note = "You can find a Ram outside the base. The taming process is just like that of a Hunter taming a pet. The quest is repeatable up to a total of 25 times per battleground by the same player or players. After 25 Rams have been tamed, the Stormpike Cavalry will arrive to assist in the battle."
+Inst33Quest11 = "11. Verwaiste Ställe"
+Inst33Quest11_Aim = "Findet einen Alteracwidder im Alteractal. Wenn Ihr Euch in der Nähe eines Alteracwidders befindet, benutzt das Stormpike Zähmungshalsband um das Tier einzufangen. Nach erfolgreicher Zähmung, folgt Euch der Alteracwidder bis zum Stallmeister zurück. Sprecht mit dem Stallmeister um für Euren Fang belohnt zu werden."
+Inst33Quest11_Location = "Stormpike Stallmeister (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
+Inst33Quest11_Note = "Du kannst einen Widder außerhalb der Basis finden. Der Prozess der Zähmung ist genau wie der eines Jägers, der ein Haustier zähmt. Die Quest ist bis zu insgesamt 25 Mal pro Schlachtfeld durch denselben oder dieselben Spieler wiederholbar. Nachdem 25 Widder gezähmt worden sind, wird die Sturmspike-Kavallerie eintreffen, um bei der Schlacht zu helfen."
 Inst33Quest11_Prequest = "Nein"
 Inst33Quest11_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 12 Alliance
-Inst33Quest12 = "12. Ram Riding Harnesses"
-Inst33Quest12_Aim = "You must strike at our enemy's base, slaying the frostwolves they use as mounts and taking their hides. Return their hides to me so that harnesses may be made for the cavalry. Go!"
-Inst33Quest12_Location = "Stormpike Ram Rider Commander (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
-Inst33Quest12_Note = "Frostwolves can be found in the Südern area of Alteractal."
+Inst33Quest12 = "12. Widderzaumzeug"
+Inst33Quest12_Aim = "Ihr müsst zur Basis des Feindes vorrücken und dort die Frostwölfe töten, die sie als Reittiere benutzen. Bringt mir ihre Häute, damit wir daraus die Geschirre für unsere Kavallerie fertigen können. Geht!"
+Inst33Quest12_Location = "Kommandant der Stormpike-Widderreiter (Alteractal - Nord; "..YELLOW.."[6]"..WHITE..")"
+Inst33Quest12_Note = "Frostwölfe können im südlichen Bereich des Alteractals gefunden werden."
 Inst33Quest12_Prequest = "Nein"
 Inst33Quest12_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 13 Alliance
-Inst33Quest13 = "13. Crystal Cluster"
-Inst33Quest13_Aim = "There are times which you may be entrenched in battle for days or weeks on end. During those longer periods of activity you may end up collecting large clusters of the Frostwolf's storm crystals.\n\nThe Circle accepts such offerings."
-Inst33Quest13_Location = "Arch Druid Renferal (Alteractal - Nord; "..YELLOW.."[2]"..WHITE..")"
-Inst33Quest13_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alteractal - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
+Inst33Quest13 = "13. Haufenweise Kristalle"
+Inst33Quest13_Aim = "Es gibt hier Zeiten, in denen Ihr Tage oder sogar Wochen auf den Schlachtfeldern zubringt. Vielleicht könnt Ihr während dieser Zeit nach größeren Gruppen von Frostwolf Sturmkristallen Ausschau halten.\n\nDer Zirkel wäre hocherfreut über derartige Spenden."
+Inst33Quest13_Location = "Erzdruide Renferal (Alteractal - Nord; "..YELLOW.."[2]"..WHITE..")"
+Inst33Quest13_Note = "Nach dem abgeben von 200 Kristallen, wird Erzdruide Renferal beginnen sich Richtung (Alteractal - Nord; "..YELLOW.."[19]"..WHITE..") zu bewegen. Dort angekommen, wird sie ein Beschwörungsritual beginnen, bei dem 10 Personen zur Unterstützung benötigt werden. Bei Erfolg, wird Ivus der Waldfürst herbeigerufen, um im Kampf zu helfen."
 Inst33Quest13_Prequest = "Nein"
 Inst33Quest13_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 14 Alliance
-Inst33Quest14 = "14. Ivus the Forest Lord"
-Inst33Quest14_Aim = "The Frostwolf Clan is protected by a taint of elemental energy. Their shaman meddle in powers that will surely destroy us all if left unchecked.\n\nThe Frostwolf soldiers carry elemental charms called storm crystals. We can use the charms to conjure Ivus. Venture forth and claim the crystals."
-Inst33Quest14_Location = "Arch Druid Renferal (Alteractal - Nord; "..YELLOW.."[2]"..WHITE..")"
-Inst33Quest14_Note = "After turning in 200 or so crystals, Arch Druid Renferal will begin walking towards (Alteractal - Nord; "..YELLOW.."[19]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Ivus the Forest Lord will be summoned to help the battle."
+Inst33Quest14 = "14. Ivus der Waldfürst"
+Inst33Quest14_Aim = "Der Frostwolfklan wird durch eine Besudelung aus Elementarenergie geschützt. Ihre Schamanen stümpern mit Mächten herum, die uns sicherlich alle vernichten werden, wenn sie nicht im Zaum gehalten werden.\n\nDer Schaden ist zu groß geworden, als dass der Kreis ihn noch kontrollieren kann! Wir müssen Ivus zu Hilfe rufen.. Zieht los und holt die Kristalle."
+Inst33Quest14_Location = Inst33Quest13_Location
+Inst33Quest14_Note = Inst33Quest13_Note
 Inst33Quest14_Prequest = "Nein"
 Inst33Quest14_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 15 Alliance
-Inst33Quest15 = "15. Call of Air - Slidore's Fleet"
-Inst33Quest15_Aim = "My gryphons are poised to strike at the front lines but cannot make the attack until the lines are thinned out.\n\nThe Frostwolf warriors charged with holding the front lines wear medals of service proudly upon their chests. Rip those medals off their rotten corpses and bring them back here.\n\nOnce the front line is sufficiently thinned out, I will make the call to air! Death from above!"
-Inst33Quest15_Location = "Wing Commander Slidore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest15_Note = "Kill Horde NPCs for the Frostwolf Soldier's Medal."
+Inst33Quest15 = "15. Ruf der Lüfte - Slidores Luftflotte"
+Inst33Quest15_Aim = "Meine Greifen sind bereit, an den Frontlinien zuzuschlagen, können den Angriff aber erst vornehmen, wenn die Linien ausgedünnt sind.\n\nDie Krieger der Horde, die mit dem Halten der Frontlinien betraut sind, tragen stolz Verdienstmedaillen an ihrer Brust. Reißt diese Medaillen von ihren verfaulten Körpern und bringt sie mir.\n\nWenn die Frontlinie ausreichend ausgedünnt wurde, werde ich den Luftschlag anordnen! Tod von oben!"
+Inst33Quest15_Location = "Schwadronskommandant Slidore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest15_Note = "Tötet die NPCs der Horde für die Frostwolf Medaille des Soldaten."
 Inst33Quest15_Prequest = "Nein"
 Inst33Quest15_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 16 Alliance
-Inst33Quest16 = "16. Call of Air - Vipore's Fleet"
-Inst33Quest16_Aim = "The elite Frostwolf units that guard the lines must be dealt with, soldier! I'm tasking you with thinning out that herd of savages. Return to me with medals from their lieutenants and legionnaires. When I feel that enough of the riff-raff has been dealt with, I'll deploy the air strike."
-Inst33Quest16_Location = "Wing Commander Vipore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest16_Note = "Kill Horde NPCs for the Frostwolf Lieutenant's Medal."
+Inst33Quest16 = "16. Ruf der Lüfte - Vipores Luftflotte"
+Inst33Quest16_Aim = "Die Eliteeinheiten der Horde, die die Linien bewachen, müssen erledigt werden! Ich vertraue Euch die Aufgabe an, diese Herde von Wilden auszudünnen. Kehrt mit den Medaillen ihrer Offiziere und Legionäre zu mir zurück. Wenn ich das Gefühl habe, dass ausreichend Gesindel erledigt wurde, werde ich den Luftschlag anordnen."
+Inst33Quest16_Location = "Schwadronskommandant Vipore (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest16_Note = "Tötet die NPCs der Horde für die Frostwolf Medaille des Lieutenants."
 Inst33Quest16_Prequest = "Nein"
 Inst33Quest16_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 17 Alliance
-Inst33Quest17 = "17. Call of Air - Ichman's Fleet"
-Inst33Quest17_Aim = "Return to the battlefield and strike at the heart of the Frostwolf's command. Take down their commanders and guardians. Return to me with as many of their medals as you can stuff in your pack! I promise you, when my gryphons see the bounty and smell the blood of our enemies, they will fly again! Go now!"
-Inst33Quest17_Location = "Wing Commander Ichman (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest17_Note = "Kill Horde NPCs for the Frostwolf Commander's Medals. After turning in 50, Wing Commander Ichman will either send a gryphon to attack the Horde base or give you a beacon to plant in the Snowfall Friedhof. If the beacon is protected long enough a gryphon will come to defend it."
+Inst33Quest17 = "17. Ruf der Lüfte - Ichmans Luftflotte"
+Inst33Quest17_Aim = "Kehrt zum Schlachtfeld zurück und schlagt im Herzen des Befehlsstabs der Horde zu. Erledigt ihre Kommandanten und Wächter. Kehrt mit so vielen ihrer Medaillen zu mir zurück, wie Ihr in Eurem Beutel unterbringen könnt! Ich verspreche Euch, wenn meine Greifen die Beute sehen und das Blut unserer Feinde riechen, werden sie wieder fliegen! Geht jetzt!"
+Inst33Quest17_Location = "Schwadronskommandant Ichman (Alteractal - Nord; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest17_Note = "Tötet die NPCs der Horde für die Frostwolf Medaille des Kommandanten. Nach dem Abgeben von 50 Medaillen, wird Schwadronskommandant Ichman entweder einen Greif schicken, um den Stützpunkt der Horde anzugreifen oder gibt dir ein Leuchtfeuer, das du im Schneefall Friedhof platzieren kannst. Wenn das Leuchtfeuer lange genug beschützt wird, kommt ein Greif, um es zu verteidigen."
 Inst33Quest17_Prequest = "Nein"
 Inst33Quest17_Folgequest = "Nein"
 -- No Rewards for this quest
 
 
 --Quest 1 Horde
-Inst33Quest1_HORDE = "1. In Defense of Frostwolf"
-Inst33Quest1_HORDE_Aim = "Venture to Alteractal, located in the Alterac Mountains. Find and speak with Warmaster Laggrond - who stands outside the tunnel entrance - to begin your career as a soldier of Frostwolf. You will find Alteractal Nord of Tarren Mill at the base of the Alterac Mountains."
-Inst33Quest1_HORDE_Location = "Frostwolf Ambassador Rokhstrom (Orgrimmar - Valley of Strength "..YELLOW.."50,71"..WHITE..")"
-Inst33Quest1_HORDE_Note = "Warmaster Laggrond ist bei (Alterac Mountains; "..YELLOW.."62,59"..WHITE..")."
+Inst33Quest1_HORDE = "1. Die Verteidigung von Frostwolf"
+Inst33Quest1_HORDE_Aim = "Reist ins Alteractal im Vorgebirge von Hillsbrad. Sucht dort Kriegsmeister Laggrond auf und beginnt Eure Karriere als Soldat der Frostwolf. "
+Inst33Quest1_HORDE_Location = "Frostwolf Botschafter Rokhstrom (Orgrimmar - Tal der Stärke "..YELLOW.."50,71"..WHITE..")"
+Inst33Quest1_HORDE_Note = "Kriegsmeister Laggrond ist bei (Alteracgebirge; "..YELLOW.."62,59"..WHITE..")."
 Inst33Quest1_HORDE_Prequest = "Nein"
-Inst33Quest1_HORDE_Folgequest = "Proving Grounds"
+Inst33Quest1_HORDE_Folgequest = Inst33Quest2
 -- No Rewards for this quest
 
 --Quest 2 Horde
-Inst33Quest2_HORDE = "2. Proving Grounds"
-Inst33Quest2_HORDE_Aim = "Travel to the Wildpaw cavern located Southeast of the main base in Alteractal and find the Frostwolf Banner. Return the Frostwolf Banner to Warmaster Laggrond."
-Inst33Quest2_HORDE_Location = "Warmaster Laggrond (Alterac Mountains; "..YELLOW.."62,59"..WHITE..")"
-Inst33Quest2_HORDE_Note = "The Frostwolf Banner is in the Wildpaw Cavern at (Alteractal - Süd; "..YELLOW.."[15]"..WHITE.."). Talk to the same NPC each time you gain a new Reputation level for an upgraded Insignia.\n\nThe prequest is not necessary to obtain this quest."
-Inst33Quest2_HORDE_Prequest = "In Defense of Frostwolf"
+Inst33Quest2_HORDE = Inst33Quest2
+Inst33Quest2_HORDE_Aim = "Begebt euch in die Höhle der Wildpfoten südöstlich vom Hauptstützpunkt und findet das Banner der Frostwolf. Bringt anschließend Kriegsmeister Laggrond das Banner."
+Inst33Quest2_HORDE_Location = "Kriegsmeister Laggrond (Alteracgebirge; "..YELLOW.."62,59"..WHITE..")"
+Inst33Quest2_HORDE_Note = "Der Frostwolf Banner ist in der Höhle der Waldpfoten bei (Alteractal - Süd; "..YELLOW.."[15]"..WHITE.."). Sprich jedes Mal mit demselben NPC, wenn du eine neue Rufstufe erreicht hast, für ein verbessertes Abzeichen erhältst.\n\nDie Prequest ist nicht notwendig, um diese Quest zu erhalten."
+Inst33Quest2_HORDE_Prequest = "Die Verteidigung von Frostwolf"
 Inst33Quest2_HORDE_Folgequest = "Nein"
 --
-Inst33Quest2name1_HORDE = "Frostwolf Insignia Rank 1"
-Inst33Quest2name2_HORDE = "Peeling the Onion"
+Inst33Quest2name1_HORDE = "Abzeichen der Frostwolf Rang 1"
+Inst33Quest2name2_HORDE = "Schrittweise zum Sieg"
 
 --Quest 3 Horde
-Inst33Quest3_HORDE = "3. The Battle for Alterac"
-Inst33Quest3_HORDE_Aim = "Enter Alteractal and defeat the dwarven general, Vanndar Stormpike. Then, return to Voggah Deathgrip in the Alterac Mountains."
-Inst33Quest3_HORDE_Location = "Voggah Deathgrip (Alterac Mountains; "..YELLOW.."64,60"..WHITE..")"
-Inst33Quest3_HORDE_Note = "Vanndar Stormpike ist bei (Alteractal - Nord; "..YELLOW.."[B]"..WHITE.."). He does not actually need to be killed to complete the quest. The battleground just has to be won by your side in any manner.\nAfter turning this quest in, talk to the NPC again for the reward."
+Inst33Quest3_HORDE = Inst33Quest3
+Inst33Quest3_HORDE_Aim = "Betretet das Alteractal und bezwingt den Zwergengeneral, Vanndar Stormpike. Kehrt anschließend zu Voggah Deathgrip im Alteracgebirge zurück. "
+Inst33Quest3_HORDE_Location = "Voggah Deathgrip (Alteracgebirge; "..YELLOW.."64,60"..WHITE..")"
+Inst33Quest3_HORDE_Note = "Vanndar Stormpike ist bei (Alteractal - Nord; "..YELLOW.."[B]"..WHITE.."). Er muss nicht wirklich getötet werden, um die Quest zu beenden. Das Schlachtfeld muss nur auf irgendeine Art und Weise von deiner Seite gewonnen werden.\nNachdem du diese Quest abgegeben hast, sprich noch einmal mit dem NPC, um die Belohnung zu erhalten."
 Inst33Quest3_HORDE_Prequest = "Nein"
-Inst33Quest3_HORDE_Folgequest = "Hero of the Frostwolf"
+Inst33Quest3_HORDE_Folgequest = "Held der Frostwolf"
 --
-Inst33Quest3name1_HORDE = "Bloodseeker"
-Inst33Quest3name2_HORDE = "Ice Barbed Spear"
-Inst33Quest3name3_HORDE = "Wand of Biting Cold"
-Inst33Quest3name4_HORDE = "Cold Forged Hammer"
+Inst33Quest3name1_HORDE = "Blutsucher"
+Inst33Quest3name2_HORDE = "Eisstachelspeer"
+Inst33Quest3name3_HORDE = Inst33Quest3name3
+Inst33Quest3name4_HORDE = Inst33Quest3name4
 
 --Quest 4 Horde
-Inst33Quest4_HORDE = "4. Speak with our Quartermaster"
-Inst33Quest4_HORDE_Aim = "Speak with the Frostwolf Quartermaster."
+Inst33Quest4_HORDE = "4. Sprecht mit unserem Rüstmeister"
+Inst33Quest4_HORDE_Aim = "Sprecht mit dem Rüstmeister der Frostwolf."
 Inst33Quest4_HORDE_Location = "Jotek (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest4_HORDE_Note = "The Frostwolf Quartermaster ist bei "..YELLOW.."[10]"..WHITE.." and provides more quests."
+Inst33Quest4_HORDE_Note = "Rüstmeister der Frostwolf ist bei "..YELLOW.."[10]"..WHITE.." und bietet mehr Quests."
 Inst33Quest4_HORDE_Prequest = "Nein"
 Inst33Quest4_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 5 Horde
-Inst33Quest5_HORDE = "5. Coldtooth Supplies"
-Inst33Quest5_HORDE_Aim = "Bring 10 Coldtooth Supplies to the Horde Quatermaster in Frostwolf Keep."
-Inst33Quest5_HORDE_Location = "Frostwolf Quartermaster (Alteractal - Süd; "..YELLOW.."[10]"..WHITE..")"
-Inst33Quest5_HORDE_Note = "The supplies can be found in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..")."
+Inst33Quest5_HORDE = Inst33Quest5
+Inst33Quest5_HORDE_Aim = "Bringt 10 Coldtooth-Vorräte zum Rüstmeister der Horde in die Burg Frostwolf."
+Inst33Quest5_HORDE_Location = "Rüstmeister der Frostwolf (Alteractal - Süd; "..YELLOW.."[10]"..WHITE..")"
+Inst33Quest5_HORDE_Note = Inst33Quest5_Note
 Inst33Quest5_HORDE_Prequest = "Nein"
 Inst33Quest5_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 6 Horde
-Inst33Quest6_HORDE = "6. Irondeep Supplies"
-Inst33Quest6_HORDE_Aim = "Bring 10 Irondeep Supplies to the Horde Quartermaster in Frostwolf Keep."
-Inst33Quest6_HORDE_Location = "Frostwolf Quartermaster (Alteractal - Süd; "..YELLOW.."[10]"..WHITE..")"
-Inst33Quest6_HORDE_Note = "The supplies can be found in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..")."
+Inst33Quest6_HORDE = Inst33Quest6
+Inst33Quest6_HORDE_Aim = "Bringt 10 Irondeep-Vorräte zum Rüstmeister der Horde in die Burg Frostwolf."
+Inst33Quest6_HORDE_Location = Inst33Quest5_HORDE_Location
+Inst33Quest6_HORDE_Note = Inst33Quest6_Note
 Inst33Quest6_HORDE_Prequest = "Nein"
 Inst33Quest6_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 7 Horde
-Inst33Quest7_HORDE = "7. Enemy Booty"
-Inst33Quest7_HORDE_Aim = "Bring 20 Armor Scraps to Smith Regzar in Frostwolf Village."
-Inst33Quest7_HORDE_Location = "Smith Regzar (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest7_HORDE_Note = "Loot the corpse of enemy players for scraps. The followup is just the same, quest, but repeatable."
+Inst33Quest7_HORDE = "7. Beutezug im Feindesland"
+Inst33Quest7_HORDE_Aim = "Bringt 20 Rüstungsfetzen zu Schmied Regzar in Frostwolf."
+Inst33Quest7_HORDE_Location = "Schmied Regzar (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
+Inst33Quest7_HORDE_Note = Inst33Quest7_Note
 Inst33Quest7_HORDE_Prequest = "Nein"
-Inst33Quest7_HORDE_Folgequest = "More Booty!"
+Inst33Quest7_HORDE_Folgequest = "Mehr Beute!"
 -- No Rewards for this quest
 
 --Quest 8 Horde
-Inst33Quest8_HORDE = "8. Capture a Mine"
-Inst33Quest8_HORDE_Aim = "Capture a mine, then return to Corporal Teeka Bloodsnarl in the Alterac Mountains."
-Inst33Quest8_HORDE_Location = "Corporal Teeka Bloodsnarl (Alterac Mountains; "..YELLOW.."66,55"..WHITE..")"
-Inst33Quest8_HORDE_Note = "To complete the quest, you must kill either Morloch in the Irondeep Mine at (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") or Taskmaster Snivvle in the Coldtooth Mine at (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") while the Alliance control it."
+Inst33Quest8_HORDE = "8. Eine Mine besetzen"
+Inst33Quest8_HORDE_Aim = "Erobert eine Mine und kehrt zu Corporal Teeka Bloodsnarl im Alteracgebirge zurück."
+Inst33Quest8_HORDE_Location = "Corporal Teeka Bloodsnarl (Alteracgebirge; "..YELLOW.."66,55"..WHITE..")"
+Inst33Quest8_HORDE_Note = "Um die Quest zu beenden musst Du den Morloch in der Irondeep Mine bei (Alteractal - Nord; "..YELLOW.."[1]"..WHITE..") oder Zuchtmeister Schnuffel in der Coldtooth Mine bei (Alteractal - Süd; "..YELLOW.."[6]"..WHITE..") die unter der Kontrolle der Allianz ist."
 Inst33Quest8_HORDE_Prequest = "Nein"
 Inst33Quest8_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 9 Horde
-Inst33Quest9_HORDE = "9. Towers and Bunkers"
-Inst33Quest9_HORDE_Aim = "Capture an enemy tower, then return to Corporal Teeka Bloodsnarl in the Alterac Mountains."
-Inst33Quest9_HORDE_Location = "Corporal Teeka Bloodsnarl (Alterac Mountains; "..YELLOW.."66,55"..WHITE..")"
-Inst33Quest9_HORDE_Note = "Reportedly, the Tower or Bunker need not actually be destroyed to complete the quest, just assaulted."
+Inst33Quest9_HORDE = Inst33Quest9
+Inst33Quest9_HORDE_Aim = "Erobert einen gegnerischen Turm und kehrt anschließend zu Corporal Teeka Bloodsnarl in Frostwolf zurück."
+Inst33Quest9_HORDE_Location = Inst33Quest8_HORDE_Location
+Inst33Quest9_HORDE_Note = Inst33Quest9_Note
 Inst33Quest9_HORDE_Prequest = "Nein"
 Inst33Quest9_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 10 Horde
-Inst33Quest10_HORDE = "10. The Friedhofs of Alterac"
-Inst33Quest10_HORDE_Aim = "Assault a Friedhof, then return to Corporal Teeka Bloodsnarl in the Alterac Mountains."
-Inst33Quest10_HORDE_Location = "Corporal Teeka Bloodsnarl (Alterac Mountains; "..YELLOW.."66,55"..WHITE..")"
-Inst33Quest10_HORDE_Note = "Reportedly you do not need to do anything but be near a Friedhof when the Horde assaults it. It does not need to be captured, just assaulted."
+Inst33Quest10_HORDE = Inst33Quest10
+Inst33Quest10_HORDE_Aim = "Erobert einen Friedhof und kehrt zu Corporal Teeka Bloodsnarl im Alteracgebirge zurück."
+Inst33Quest10_HORDE_Location = Inst33Quest9_HORDE_Location
+Inst33Quest10_HORDE_Note = "Angeblich musst du nichts weiter tun, als in der Nähe eines Friedhofes zu sein, wenn die Allianz ihn angreift. Du musst diese nicht übernehmen sondern nur angreifen."
 Inst33Quest10_HORDE_Prequest = "Nein"
 Inst33Quest10_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 11 Horde
-Inst33Quest11_HORDE = "11. Empty Stables"
-Inst33Quest11_HORDE_Aim = "Locate a Frostwolf in Alteractal. Use the Frostwolf Muzzle when you are near the Frostwolf to 'tame' the beast. Once tamed, the Frostwolf will follow you back to the Frostwolf Stable Master. Speak with the Frostwolf Stable Master to earn credit for the capture."
-Inst33Quest11_HORDE_Location = "Frostwolf Stable Master (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
-Inst33Quest11_HORDE_Note = "You can find a Frostwolf outside the base. The taming process is just like that of a Hunter taming a pet. The quest is repeatable up to a total of 25 times per battleground by the same player or players. After 25 Rams have been tamed, the Frostwolf Cavalry will arrive to assist in the battle."
+Inst33Quest11_HORDE = Inst33Quest11
+Inst33Quest11_HORDE_Aim = "Findet einen Frostwolf im Alteractal. Wenn Ihr Euch in der Nähe eines Frostwolfs befindet, benutzt den Frostwolfmaulkorb um das Tier einzufangen. Nach erfolgreicher Zähmung, folgt Euch der Frostwolf bis zum Stallmeister zurück. Sprecht mit dem Stallmeister um für Euren Fang belohnt zu werden."
+Inst33Quest11_HORDE_Location = "Stallmeisterin der Frostwolf (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
+Inst33Quest11_HORDE_Note = "Du kannst einen Frostwolf außerhalb der Basis finden. Der Prozess der Zähmung ist genau wie der eines Jägers, der ein Haustier zähmt. Die Quest ist bis zu insgesamt 25 Mal pro Schlachtfeld durch denselben oder dieselben Spieler wiederholbar. Nachdem 25 Frostwölfe gezähmt worden sind, wird die Frostwolf-Kavallerie eintreffen, um bei der Schlacht zu helfen."
 Inst33Quest11_HORDE_Prequest = "Nein"
 Inst33Quest11_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 12 Horde
-Inst33Quest12_HORDE = "12. Ram Hide Harnesses"
-Inst33Quest12_HORDE_Aim = "You must strike at the indigenous rams of the region. The very same rams that the Stormpike cavalry uses as mounts!\n\nSlay them and return to me with their hides. Once we have gathered enough hides, we will fashion harnesses for the riders. The Frostwolf Wolf Riders will ride once more!"
-Inst33Quest12_HORDE_Location = "Frostwolf Wolf Rider Commander (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
-Inst33Quest12_HORDE_Note = "The Rams can be found in the Nordern area of Alteractal."
+Inst33Quest12_HORDE = "12. Widderledernes Zaumzeug"
+Inst33Quest12_HORDE_Aim = "Ihr müsst die einheimischen Widder jagen. Genau die Widder, die die Stormpike-Kavallerie als Reittiere benutzt!\n\nTötet sie und bringt mir ihre Häute. Sobald wir genug Häute gesammelt haben, können wir daraus Geschirre für unsere Reiter machen. Die Frostwolfreiter werden wieder reiten!"
+Inst33Quest12_HORDE_Location = "Wolfsreiterkommandant der Frostwolf (Alteractal - Süd; "..YELLOW.."[9]"..WHITE..")"
+Inst33Quest12_HORDE_Note = "Das Zaumzeug kann im nördlichen Teil des Alteractals gefunden werden."
 Inst33Quest12_HORDE_Prequest = "Nein"
 Inst33Quest12_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 13 Horde
-Inst33Quest13_HORDE = "13. A Gallon of Blood"
-Inst33Quest13_HORDE_Aim = "You have the option of offering larger quantities of the blood taken from our enemies. I will be glad to accept gallon sized offerings."
+Inst33Quest13_HORDE = "13. Eine Gallone Blut"
+Inst33Quest13_HORDE_Aim = "Wenn Ihr Euch nützlich machen wollt, spendet mir große Mengen Feindesblut. Ich wäre hocherfreut, Gallonen von Blut entgegen zu nehmen."
 Inst33Quest13_HORDE_Location = "Primalist Thurloga (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest13_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alteractal - Süd; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
+Inst33Quest13_HORDE_Note = "Nach dem abgeben von 150 Gallonen Blut, wird Primalist Thurloga beginnen sich Richtung (Alteractal - Süd; "..YELLOW.."[1]"..WHITE..") zu bewegen. Dort angekommen, wird sie ein Beschwörungsritual beginnen, bei dem 10 Personen zur Unterstützung benötigt werden. Bei Erfolg, wird Lokholar der Eislord herbeigerufen, um im Kampf zu helfen"
 Inst33Quest13_HORDE_Prequest = "Nein"
 Inst33Quest13_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 14 Horde
-Inst33Quest14_HORDE = "14. Lokholar the Ice Lord"
-Inst33Quest14_HORDE_Aim = "You must strike down our enemies and bring to me their blood. Once enough blood has been gathered, the ritual of summoning may begin.\n\nVictory will be assured when the elemental lord is loosed upon the Stormpike army."
-Inst33Quest14_HORDE_Location = "Primalist Thurloga (Alteractal - Süd; "..YELLOW.."[8]"..WHITE..")"
-Inst33Quest14_HORDE_Note = "After turning in 150 or so Blood, Primalist Thurloga will begin walking towards (Alteractal - Süd; "..YELLOW.."[1]"..WHITE.."). Once there, she will begin a summoning ritual which will require 10 people to assist. If successful, Lokholar the Ice Lord will be summoned to kill Alliance players."
+Inst33Quest14_HORDE = "14. Lokholar der Eislord"
+Inst33Quest14_HORDE_Aim = "Doch lasst uns nicht noch mehr Zeit verschwenden. Ihr müsst unsere Feinde niederstrecken und mir ihr Blut bringen. Wenn Ihr ausreichend Blut gesammelt habt, dann kann das Ritual der Beschwörung beginnen.\n\nDer Sieg ist uns sicher, wenn der Lord der Elementare auf die Stormpike-Armee losgelassen wird."
+Inst33Quest14_HORDE_Location = Inst33Quest13_HORDE_Location
+Inst33Quest14_HORDE_Note = Inst33Quest13_HORDE_Note
 Inst33Quest14_HORDE_Prequest = "Nein"
 Inst33Quest14_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 15 Horde
-Inst33Quest15_HORDE = "15. Call of Air - Guse's Fleet"
-Inst33Quest15_HORDE_Aim = "My riders are set to make a strike on the central battlefield; but first, I must wet their appetites - preparing them for the assault.\n\nI need enough Stormpike Soldier Flesh to feed a fleet! Hundreds of pounds! Surely you can handle that, yes? Get going!"
-Inst33Quest15_HORDE_Location = "Wing Commander Guse (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest15_HORDE_Note = "Kill Horde NPCs for the Stormpike Soldier's Flesh. Reportedly 90 flesh are needed to make the Wing Commander do whatever she does."
+Inst33Quest15_HORDE = "15. Ruf der Lüfte - Guses Luftflotte"
+Inst33Quest15_HORDE_Aim = "Meine Reiter sind bereit, einen Schlag auf dem zentralen Schlachtfeld zu landen, aber zuerst muss ich ihnen den Mund wässrig machen - sie auf den Angriff vorbereiten!\n\nIch benötige ausreichend Soldatenfleisch der Allianz, um eine Flotte zu ernähren! Hunderte Pfund! Ihr könnt das doch sicherlich übernehmen, nicht wahr? Geht schon!"
+Inst33Quest15_HORDE_Location = "Schwadronskommandant Guse (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest15_HORDE_Note = "Tötet Allianze NPCs für das Fleisch eines Stormpike-Soldaten. Beachte es werden 90 Fleischstücke benötigt den Schwadronskommandant zu veranlassen, das zu tun, was zu tut ist."
 Inst33Quest15_HORDE_Prequest = "Nein"
 Inst33Quest15_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 16 Horde
-Inst33Quest16_HORDE = "16. Call of Air - Jeztor's Fleet"
-Inst33Quest16_HORDE_Aim = "My War Riders must taste in the flesh of their targets. This will ensure a surgical strike against our enemies!\n\nMy fleet is the second most powerful in our air command. Thusly, they will strike at the more powerful of our adversaries. For this, then, they need the flesh of the Stormpike Lieutenants."
-Inst33Quest16_HORDE_Location = "Wing Commander Jeztor (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest16_HORDE_Note = "Kill Alliance NPCs for the Stormpike Lieutenant's Flesh."
+Inst33Quest16_HORDE = "16. Ruf der Lüfte - Jeztors Luftflotte"
+Inst33Quest16_HORDE_Aim = "Meine Kriegsreiter müssen das Fleisch ihrer Ziele schmecken. Damit wird ein chirurgischer Schlag gegen unsere Feinde sichergestellt!\n\nMeine Flotte ist die zweitmächtigste in unserem Luftkommando. Daher wird sie beim mächtigsten unserer Gegner zuschlagen. Und dafür benötigt sie das Fleisch der Lieutenants der Allianz."
+Inst33Quest16_HORDE_Location = "Schwadronskommandant Jeztor (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest16_HORDE_Note = "Tötet Allianze NPCs für das Fleisch eines Stormpike-Lieutnants."
 Inst33Quest16_HORDE_Prequest = "Nein"
 Inst33Quest16_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
 
 --Quest 17 Horde
-Inst33Quest17_HORDE = "17. Call of Air - Mulverick's Fleet"
-Inst33Quest17_HORDE_Aim = "First, my war riders need targets to gun for - high priority targets. I'm going to need to feed them the flesh of Stormpike Commanders. Unfortunately, those little buggers are entrenched deep behind enemy lines! You've definitely got your work cut out for you."
-Inst33Quest17_HORDE_Location = "Wing Commander Mulverick (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest17_HORDE_Note = "Kill Alliance NPCs for the Stormpike Commander's Flesh."
+Inst33Quest17_HORDE = "17. Ruf der Lüfte - Mulvericks Luftflotte"
+Inst33Quest17_HORDE_Aim = "Zuerst benötigen meine Kriegsreiter Ziele, auf die sie sich konzentrieren können - Ziele von hoher Priorität. Ich muss das Fleisch der Kommandanten der Allianz an sie verfüttern. Leider haben sich diese kleinen Mistkerle tief hinter den feindlichen Linien verschanzt! Diese Arbeit ist wahrlich wie geschaffen für Euch."
+Inst33Quest17_HORDE_Location = "Schwadronskommandant Mulverick (Alteractal - Süd; "..YELLOW.."[13]"..WHITE..")"
+Inst33Quest17_HORDE_Note = "Tötet Allianze NPCs für das Fleisch eines Stormpike-Kommandanten."
 Inst33Quest17_HORDE_Prequest = "Nein"
 Inst33Quest17_HORDE_Folgequest = "Nein"
 -- No Rewards for this quest
@@ -5287,7 +5287,7 @@ Inst34Quest3name1_HORDE = "Wappenrock der Entweihten"
 
 --------------- INST35 - Warsong Gulch ---------------
 
-Inst35Caption = "Warsong Gulch"
+Inst35Caption = "Warsongschlucht"
 Inst35QAA = "Keine Quests"
 Inst35QAH = "Keine Quests"
 

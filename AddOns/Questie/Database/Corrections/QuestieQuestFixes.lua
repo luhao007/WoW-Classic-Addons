@@ -542,13 +542,25 @@ function QuestieQuestFixes:Load()
         [2241] = {
             [QuestieDB.questKeys.exclusiveTo] = {}, -- #1466
         },
+        [2259] = {
+            [QuestieDB.questKeys.exclusiveTo] = {2260}, -- #1825
+        },
         [2260] = {
             [QuestieDB.questKeys.preQuestSingle] = {},
+            [QuestieDB.questKeys.exclusiveTo] = {2281}, -- #1825
         },
         [2281] = {
             [QuestieDB.questKeys.exclusiveTo] = {2299}, -- #1817
         },
+        [2298] = {
+            [QuestieDB.questKeys.preQuestSingle] = {},
+            [QuestieDB.questKeys.exclusiveTo] = {2281}, -- #1825
+        },
         [2299] = {
+            [QuestieDB.questKeys.exclusiveTo] = {2281}, -- #1817
+        },
+        [2300] = {
+            [QuestieDB.questKeys.preQuestSingle] = {}, -- #1825
             [QuestieDB.questKeys.exclusiveTo] = {2281}, -- #1817
         },
         [2358] = { -- bad race data
@@ -998,6 +1010,12 @@ function QuestieQuestFixes:Load()
         },
         [6522] = {
             [QuestieDB.questKeys.startedBy] = {{4421},nil,{17008}},
+        },
+        [6562] = {
+            [QuestieDB.questKeys.exclusiveTo] = {6563}, -- #1826
+        },
+        [6563] = {
+            [QuestieDB.questKeys.preQuestSingle] = {}, -- #1826
         },
         [6564] = {
             [QuestieDB.questKeys.startedBy] = {{4802},nil,{16790}},

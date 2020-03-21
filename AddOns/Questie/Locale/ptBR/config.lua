@@ -213,6 +213,7 @@ QuestieLocale.locale['ptBR'] = {
     ['SLASH_TOGGLE_Questie'] = "Questie Alternar - Ativar / Desativar a exibição da Questie sobre o mapa e no mapa ",
     ['SLASH_JOURNEY'] = "/questie journey - Alterne a janela Minha viagem",
     ['SLASH_TRACKER'] = "/questie tracker [show/hide/reset] -- Toggles the Tracker. Add \"show\", \"hide\", \"reset\" to explicit show/hide or reset the Tracker",
+    ['SLASH_TO_MAP'] = "/questie tomap [<npcId>/<npcName>/reset] -- Adds manual notes to the map for a given NPC ID or name. If the name is ambiguous multipe notes might be added. Without a second command the target will be added to the map. The \"reset\" command removes all notes",
     ['SLASH_MINIMAP'] = "/questie minimap - Alterne o botão na miniplaca para Questie",
 
     --Perseguidor
@@ -279,6 +280,7 @@ QuestieLocale.locale['ptBR'] = {
     ['TRACKER_SET_TOMTOM'] = "Defina o alvo |cFF54e33bTomTom|r",
     ['TRACKER_SHOW_ICONS'] = "Mostrar ícones",
     ['TRACKER_HIDE_ICONS'] = "Ocultar ícones",
+    ['TRACKER_LINK_TO_CHAT'] = "Link Quest to chat",
     ['TRACKER_OBJECTIVES'] = "Objectivos",
     ['TRACKER_SHOW_ON_MAP'] = "Mostrar no mapa",
     ['TRACKER_UNLOCK'] = "Desbloqueado o rastreador",

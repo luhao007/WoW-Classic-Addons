@@ -213,6 +213,7 @@ QuestieLocale.locale['frFR'] = {
     ['SLASH_TOGGLE_Questie'] = "/questie toggle - Active ou désactive l'affichage de Questie sur la carte et la mini-carte",
     ['SLASH_JOURNEY'] = "/questie journey - Ouvre la fenêtre Mon voyage.",
     ['SLASH_TRACKER'] = "/questie tracker [show/hide/reset] -- Toggles the Tracker. Add \"show\", \"hide\", \"reset\" to explicit show/hide or reset the Tracker",
+    ['SLASH_TO_MAP'] = "/questie tomap [<npcId>/<npcName>/reset] -- Adds manual notes to the map for a given NPC ID or name. If the name is ambiguous multipe notes might be added. Without a second command the target will be added to the map. The \"reset\" command removes all notes",
     ['SLASH_MINIMAP'] = "/questie minimap - Affiche ou désactive le bouton Questie autour de la mini-carte.",
 
     -- Traqueur
@@ -279,6 +280,7 @@ QuestieLocale.locale['frFR'] = {
     ['TRACKER_SET_TOMTOM'] = "Définir un point |cFF54e33bTomTom|r",
     ['TRACKER_SHOW_ICONS'] = "Afficher les icônes",
     ['TRACKER_HIDE_ICONS'] = "Masquer les icônes",
+    ['TRACKER_LINK_TO_CHAT'] = "Link Quest to chat",
     ['TRACKER_OBJECTIVES'] = "Objectifs",
     ['TRACKER_SHOW_ON_MAP'] = "Afficher sur la carte",
     ['TRACKER_UNLOCK'] = "Déverrouiller la fenêtre du suivi",

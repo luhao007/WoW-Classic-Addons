@@ -3839,6 +3839,7 @@ Inst21Quest4_HORDE_Prequest = Inst21Quest4_Prequest
 Inst21Quest4_HORDE_Folgequest = Inst21Quest4_Folgequest
 --
 Inst21Quest4name1_HORDE = Inst21Quest4name1
+Inst21Quest4name2_HORDE = Inst21Quest4name2
 
 --Quest 5 Horde (same as Quest 5 Alliance)
 Inst21Quest5_HORDE = Inst21Quest5
@@ -4343,7 +4344,7 @@ Inst26Quest6name2 = "Celada de hermandad de ingeniero"
 Inst26Quest7 = "7. Gahz'rilla" -- 2770
 Inst26Quest7_Aim = "Llévale la escama electrificada de Gahz'rilla a Wizzle Pernolatón, que está en El Desierto de Sal."
 Inst26Quest7_Location = "Wizzle Pernolatón (Las Mil Agujas - Circuito del Espejismo; "..YELLOW.."78,77"..WHITE..")"
-Inst26Quest7_Note = "Obtienes la misión requisita de Klockmort Palmalicate (Forjaz - Ciudad Manitas; "..YELLOW.."68,46"..WHITE.."). No es necesario tener la misión requisita para obtener la misión de Gahz'rilla.\nInvoca a Gahz'rilla en "..YELLOW.."[6]"..WHITE.." con la Marra de Zul'Farrak.\nObtienes la marra sacra de Qiaga la Vigilante (Tierras del Interior - El Altar de Zul; "..YELLOW.."49,70"..WHITE.."). Úsala al Altar de Jinta'Alor en "..YELLOW.."59,77"..WHITE.." para crear la Marra de Zul'Farrak."
+Inst26Quest7_Note = "Obtienes la misión requisita de Klockmort Palmalicate (Forjaz - Ciudad Manitas; "..YELLOW.."68,46"..WHITE.."). No es necesario tener la misión requisita para obtener la misión de Gahz'rilla.\nInvoca a Gahz'rilla en "..YELLOW.."[6]"..WHITE.." con la Marra de Zul'Farrak.\nObtienes la marra sacra de Qiaga la Vigilante (Tierras del Interior - El Altar de Zul; "..YELLOW.."49,70"..WHITE.."). Úsala al Altar de Jintha'Alor en "..YELLOW.."59,77"..WHITE.." para crear la Marra de Zul'Farrak."
 Inst26Quest7_Prequest = "Los hermanos Pernolatón" -- 2769
 Inst26Quest7_Folgequest = "Ninguno"
 --
@@ -4984,7 +4985,7 @@ Inst33Quest11_Folgequest = "Ninguno"
 -- No Rewards for this quest
 
 --Quest 12 Alliance
-Inst33Quest12 = "12. Arneses de pellejo de carnero" -- 7026
+Inst33Quest12 = "12. Arneses para carneros de montar" -- 7026
 Inst33Quest12_Aim = "You must strike at our enemy's base, slaying the frostwolves they use as mounts and taking their hides. Return their hides to me so that harnesses may be made for the cavalry. Go!"
 Inst33Quest12_Location = "Comandante de jinetes de carneros Pico Tormenta (Valle de Alterac - Norte; "..YELLOW.."[6]"..WHITE..")"
 Inst33Quest12_Note = "Los Lobos Gélidos se encuentran al sur del Valle de Alterac."
@@ -5144,7 +5145,7 @@ Inst33Quest11_HORDE_Folgequest = "Ninguno"
 -- No Rewards for this quest
 
 --Quest 12 Horde
-Inst33Quest12_HORDE = "12. Arneses de pellejo de carnero" -- 7002
+Inst33Quest12_HORDE = "12. Arneses para carneros de montar" -- 7002
 Inst33Quest12_HORDE_Aim = "You must strike at the indigenous rams of the region. The very same rams that the Stormpike cavalry uses as mounts!\n\nSlay them and return to me with their hides. Once we have gathered enough hides, we will fashion harnesses for the riders. The Frostwolf Wolf Riders will ride once more!"
 Inst33Quest12_HORDE_Location = "Comandante jinete de lobos Lobo Gélido (Valle de Alterac - Sur; "..YELLOW.."[9]"..WHITE..")"
 Inst33Quest12_HORDE_Note = "Los carneros se encuentran al norte del Valle de Alterac."
@@ -5172,9 +5173,9 @@ Inst33Quest14_HORDE_Folgequest = "Ninguno"
 
 --Quest 15 Horde
 Inst33Quest15_HORDE = "15. La llamada del aire: flota de Guse" -- 6825
-Inst33Quest15_HORDE_Aim = "My riders are set to make a strike on the central battlefield; but first, I must wet their appetites - preparing them for the assault.\n\nI need enough Stormpike Soldier Flesh to feed a fleet! Hundreds of pounds! Surely you can handle that, yes? Get going!"
+Inst33Quest15_HORDE_Aim = "Mis jinetes están listos para un ataque sobre el campo de batalla central pero primero hay que despertar su apetito… prepararlos para el asalto.\n\nNecesito carne de soldados Pico Tormenta, ¡como para alimentar a una flota! ¡Cientos de kilos! Seguro que puedes encargarte de eso, ¿verdad? ¡Andando!"
 Inst33Quest15_HORDE_Location = "Comandante del aire Guse (Valle de Alterac - Sur; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest15_HORDE_Note = "Mata a los PNJs Horda para obtener la Carne de Soldado Pico Tormenta."
+Inst33Quest15_HORDE_Note = "Mata a los PNJs Alianza para obtener la Carne de Soldado Pico Tormenta."
 Inst33Quest15_HORDE_Prequest = "Ninguno"
 Inst33Quest15_HORDE_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -5183,7 +5184,7 @@ Inst33Quest15_HORDE_Folgequest = "Ninguno"
 Inst33Quest16_HORDE = "16. La llamada del aire: flota de Jeztor" -- 6826
 Inst33Quest16_HORDE_Aim = "My War Riders must taste in the flesh of their targets. This will ensure a surgical strike against our enemies!\n\nMy fleet is the second most powerful in our air command. Thusly, they will strike at the more powerful of our adversaries. For this, then, they need the flesh of the Stormpike Tenientes."
 Inst33Quest16_HORDE_Location = "Comandante del aire Jeztor (Valle de Alterac - Sur; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest16_HORDE_Note = "Mata a los PNJs Horda para obtener la Carne de Teniente Pico Tormenta."
+Inst33Quest16_HORDE_Note = "Mata a los PNJs Alianza para obtener la Carne de Teniente Pico Tormenta."
 Inst33Quest16_HORDE_Prequest = "Ninguno"
 Inst33Quest16_HORDE_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -5192,7 +5193,7 @@ Inst33Quest16_HORDE_Folgequest = "Ninguno"
 Inst33Quest17_HORDE = "17. La llamada del aire: flota de Mulverick" -- 6827
 Inst33Quest17_HORDE_Aim = "He pasado días encerrado en un horrible antro de enanos. ¡Vaya si quiero venganza!\n\nDebemos planificarlo minuciosamente.\n\nPrimero mis alas de guerra necesitan objetivos a los que apuntar, objetivos de alta prioridad. Tendré que alimentarlos con carne de los Comandantes Pico Tormenta. Por desgracia, ¡esos malnacidos están atrincherados muy lejos detrás de las líneas enemigas! Ahí tienes un trabajo a tu medida."
 Inst33Quest17_HORDE_Location = "Comandante del aire Mulverick (Valle de Alterac - Sur; "..YELLOW.."[13]"..WHITE..")"
-Inst33Quest17_HORDE_Note = "Mata a los PNJs Horda para obtener la Carne de Comandante Pico Tormenta."
+Inst33Quest17_HORDE_Note = "Mata a los PNJs Alianza para obtener la Carne de Comandante Pico Tormenta."
 Inst33Quest17_HORDE_Prequest = "Ninguno"
 Inst33Quest17_HORDE_Folgequest = "Ninguno"
 -- No Rewards for this quest

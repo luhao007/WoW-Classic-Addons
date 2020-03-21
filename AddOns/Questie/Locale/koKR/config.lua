@@ -213,6 +213,7 @@ QuestieLocale.locale['koKR'] = {
     ['SLASH_TOGGLE_QUESTIE'] = "/questie toggle -- 맵과 미니맵에 퀘스티 아이콘을 표시합니다",
     ['SLASH_JOURNEY'] = "/questie journey -- 나의 여정 창을 표시합니다",
     ['SLASH_TRACKER'] = "/questie tracker [show/hide/reset] -- Toggles the Tracker. Add \"show\", \"hide\", \"reset\" to explicit show/hide or reset the Tracker",
+    ['SLASH_TO_MAP'] = "/questie tomap [<npcId>/<npcName>/reset] -- Adds manual notes to the map for a given NPC ID or name. If the name is ambiguous multipe notes might be added. Without a second command the target will be added to the map. The \"reset\" command removes all notes",
     ['SLASH_MINIMAP'] = "/questie minimap -- Questie 미니맵 아이콘을 표시합니다",
 
     -- Tracker
@@ -279,6 +280,7 @@ QuestieLocale.locale['koKR'] = {
     ['TRACKER_SET_TOMTOM'] = "|cFF54e33bTomTom|r 대상 설정",
     ['TRACKER_SHOW_ICONS'] = "아이콘 표시",
     ['TRACKER_HIDE_ICONS'] = "아이콘 가리기",
+    ['TRACKER_LINK_TO_CHAT'] = "Link Quest to chat",
     ['TRACKER_OBJECTIVES'] = "목표",
     ['TRACKER_SHOW_ON_MAP'] = "지도에서 보기",
     ['TRACKER_UNLOCK'] = "추적기 잠금해제",
