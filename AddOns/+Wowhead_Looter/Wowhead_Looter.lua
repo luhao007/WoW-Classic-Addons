@@ -3,15 +3,15 @@
 --     W o w h e a d   L o o t e r     --
 --                                     --
 --                                     --
---    Patch: 1.13.2                    --
---    Updated: January 24, 2020        --
+--    Patch: 1.13.4                    --
+--    Updated: March 20, 2020          --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
 
 
 local WL_NAME = "|cffffff7fWowhead Looter|r";
-local WL_VERSION = 11302;
+local WL_VERSION = 11304;
 local WL_VERSION_PATCH = 0;
 local WL_ADDONNAME, WL_ADDONTABLE = ...
 
@@ -1502,6 +1502,21 @@ function wlRegisterObject(id)
             dl = uiMapID,
             n = 1,
         });
+        if (IsInInstance()) then
+            local name, iType, difficultyIndex, difficultyName, maxPlayers, dynamicDifficulty, isDynamic,
+                instanceMapId, lfgId = GetInstanceInfo();
+            wlUpdateVariable(wlObject, id, zone, uiMapID, i, "instance", "set", {
+                name = name,
+                iType = iType,
+                difficultyIndex = difficultyIndex,
+                difficultyName = difficultyName,
+                maxPlayers = maxPlayers,
+                dynamicDifficulty = dynamicDifficulty,
+                isDynamic = isDynamic,
+                instanceMapId = instanceMapId,
+                lfgId = lfgId,
+            });
+        end
     end
 end
 
