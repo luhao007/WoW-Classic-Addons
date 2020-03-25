@@ -196,10 +196,6 @@ function AuctionHouseWrapper.GetAndResetTotalHookedTime()
 	return total
 end
 
-function AuctionHouseWrapper.GetMacroText()
-	return [[/run if not __TSM_SCRIPT_RAN then __TSM_SCRIPT_RAN=1 local t,k=C_AuctionHouse,"RequestMoreBrowseResults" local o=t[k] t[k]=function()o()end end]]
-end
-
 function AuctionHouseWrapper.SendBrowseQuery(query)
 	assert(not TSM.IsWowClassic())
 	if not private.CheckAllIdle() then

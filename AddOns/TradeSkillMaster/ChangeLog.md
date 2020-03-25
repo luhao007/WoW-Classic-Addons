@@ -1,5 +1,5 @@
-## v4.9.31 Changes
+## v4.9.32 Changes
 
-* [Classic] TOC bump for 1.13.4
+* [Retail] Fixed issue with Sniper not working after recent client update
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

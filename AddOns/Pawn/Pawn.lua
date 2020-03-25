@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0323
+PawnVersion = 2.0324
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.11
@@ -3423,7 +3423,8 @@ function PawnFindBestItems(ScaleName, InventoryOnly)
 	end end
 	
 	-- Now, scan all of the items in the player's equipment sets.
-	if not InventoryOnly then
+	-- (Equipment sets don't exist on Classic.)
+	if not InventoryOnly and not VgerCore.IsClassic then
 		local _, i
 		for _, i in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
 			local _, _, EquipmentSetID = C_EquipmentSet.GetEquipmentSetInfo(i)
@@ -5201,7 +5202,8 @@ function PawnGetSpecializationInfoForClassID(ClassID, SpecID)
 	if GetSpecializationInfoForClassID then return GetSpecializationInfoForClassID(ClassID, SpecID) end
 
 	local SpecInfo = PawnLocal.Specs[ClassID][SpecID]
-	return nil, SpecInfo.Name, nil, SpecInfo.Texture, SpecInfo.Role
+	-- The second-to-last parameter should be SpecInfo.Icon, but many of the icons used in BfA aren't valid on Classic.
+	return nil, SpecInfo.Name, nil, nil, SpecInfo.Role
 end
 
 -- To generate PawnLocal.Specs to place into Localization.lua:

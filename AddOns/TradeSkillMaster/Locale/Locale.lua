@@ -13596,7 +13596,7 @@ L["You've been phased which has caused the AH to stop working due to a bug on Bl
 L["You've been undercut."] = "Вашу цену сбили."
 	elseif locale == "zhCN" then
 L = L or {}
-L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4组:组; 选定的 (%d |4项目:项目;)"
+L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4组:组; 已选中 (%d |4物品:物品;)"
 L["%d auctions"] = "%d拍卖"
 L["%d Groups"] = "%d分组"
 L["%d Items"] = "%d物品"
@@ -13673,8 +13673,7 @@ L["Add Subject / Description"] = "添加主题/描述"
 L["Add Subject / Description (Optional)"] = "添加主题/描述（可选）"
 L["ADD TO MAIL"] = "加入邮件"
 L["Added '%s' profile which was received from %s."] = "添加了从%s收到的'%s'个人资料。"
---[[Translation missing --]]
-L["Added %s to %s."] = "Added %s to %s."
+L["Added %s to %s."] = "增加 %s 到 %s."
 L["Additional error suppressed"] = "已阻止的其他错误"
 L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "调整以下设置以设置如何拍卖与该操作关联的组。"
 L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "调整以下设置以设置如何取消此操作的组。"
@@ -14898,7 +14897,7 @@ L["Buy Options"] = "購買選項"
 L["BUYBACK ALL"] = "全部購回"
 L["Buyer/Seller"] = "買方/賣方"
 L["BUYOUT"] = "買斷"
-L["Buyout (item)"] = "買斷（項目）"
+L["Buyout (item)"] = "直購 (項目)"
 --[[Translation missing --]]
 L["Buyout (stack)"] = "Buyout (stack)"
 --[[Translation missing --]]
@@ -14962,8 +14961,7 @@ L["CHARACTER"] = "CHARACTER"
 --[[Translation missing --]]
 L["Character"] = "Character"
 L["Chat Tab"] = "聊天標籤"
---[[Translation missing --]]
-L["Cheapest auction below min price."] = "Cheapest auction below min price."
+L["Cheapest auction below min price."] = "低於最低價的最便宜拍賣價"
 L["Clear"] = "清除"
 --[[Translation missing --]]
 L["Clear All"] = "Clear All"
@@ -15008,8 +15006,7 @@ L["Could not create macro as you already have too many. Delete one of your exist
 L["Could not find profile '%s'. Possible profiles: '%s'"] = "Could not find profile '%s'. Possible profiles: '%s'"
 --[[Translation missing --]]
 L["Could not sell items due to not having free bag space available to split a stack of items."] = "Could not sell items due to not having free bag space available to split a stack of items."
---[[Translation missing --]]
-L["Craft"] = "Craft"
+L["Craft"] = "製造數量"
 L["CRAFT"] = "製造"
 --[[Translation missing --]]
 L["Craft (Unprofitable)"] = "Craft (Unprofitable)"
@@ -15020,8 +15017,7 @@ L["Craft All"] = "全部製造"
 L["CRAFT ALL"] = "CRAFT ALL"
 --[[Translation missing --]]
 L["Craft Name"] = "Craft Name"
---[[Translation missing --]]
-L["CRAFT NEXT"] = "CRAFT NEXT"
+L["CRAFT NEXT"] = "製作下一項"
 --[[Translation missing --]]
 L["Craft value method:"] = "Craft value method:"
 --[[Translation missing --]]
@@ -15037,7 +15033,7 @@ L["Crafting 'CRAFT NEXT' Button"] = "Crafting 'CRAFT NEXT' Button"
 L["Crafting Queue"] = "製造佇列"
 --[[Translation missing --]]
 L["Crafting Tooltips"] = "Crafting Tooltips"
-L["Crafts"] = "工藝"
+L["Crafts"] = "製造數量"
 --[[Translation missing --]]
 L["Crafts %d"] = "Crafts %d"
 --[[Translation missing --]]
@@ -15416,8 +15412,7 @@ L["Ignore operation on faction-realms:"] = "Ignore operation on faction-realms:"
 L["Ignored Cooldowns"] = "Ignored Cooldowns"
 --[[Translation missing --]]
 L["Ignored Items"] = "Ignored Items"
---[[Translation missing --]]
-L["ilvl"] = "ilvl"
+L["ilvl"] = "物品等級"
 L["Import"] = "匯入"
 --[[Translation missing --]]
 L["IMPORT"] = "IMPORT"
@@ -15830,8 +15825,7 @@ L["Posting"] = "發佈中"
 L["Posting %d / %d"] = "Posting %d / %d"
 --[[Translation missing --]]
 L["Posting %d stack(s) of %d for %d hours."] = "Posting %d stack(s) of %d for %d hours."
---[[Translation missing --]]
-L["Posting at normal price."] = "Posting at normal price."
+L["Posting at normal price."] = "以一般價格發佈."
 --[[Translation missing --]]
 L["Posting at whitelisted player's price."] = "Posting at whitelisted player's price."
 --[[Translation missing --]]

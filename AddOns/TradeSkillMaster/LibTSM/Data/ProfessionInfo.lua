@@ -19,10 +19,6 @@ local PROFESSION_NAMES = {
 	Mining = GetSpellInfo(2575),
 	Smelting = GetSpellInfo(2656),
 	Poisons = GetSpellInfo(2842),
-	Herbalism = GetSpellInfo(170691),
-	HerbalismSkills = GetSpellInfo(193290),
-	Skinning = GetSpellInfo(8613),
-	SkinningSkills = GetSpellInfo(194174),
 }
 local CLASSIC_SUB_NAMES = {
 	[APPRENTICE] = true,

@@ -35,13 +35,14 @@ function PlayerProfessions.OnInitialize()
 	private.db = Database.NewSchema("PLAYER_PROFESSIONS")
 		:AddStringField("player")
 		:AddStringField("profession")
+		:AddNumberField("skillId")
 		:AddNumberField("level")
 		:AddNumberField("maxLevel")
 		:AddBooleanField("isSecondary")
 		:AddIndex("player")
 		:Commit()
 	private.query = private.db:NewQuery()
-		:Select("player", "profession", "level", "maxLevel")
+		:Select("player", "profession", "skillId", "level", "maxLevel")
 		:OrderBy("isSecondary", true)
 		:OrderBy("level", false)
 		:OrderBy("profession", true)
@@ -73,13 +74,14 @@ function private.StartPlayerProfessionsThread()
 	Threading.Start(private.playerProfessionsThread)
 end
 
-function private.UpdatePlayerProfessionInfo(name, level, maxLevel, isSecondary)
+function private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, isSecondary)
 	local professionInfo = TSM.db.sync.internalData.playerProfessions[name] or {}
 	TSM.db.sync.internalData.playerProfessions[name] = professionInfo
 	-- preserve whether or not we've prompted to create groups and the profession link if possible
 	local oldPrompted = professionInfo.prompted or nil
 	local oldLink = professionInfo.link or nil
 	wipe(professionInfo)
+	professionInfo.skillId = skillId
 	professionInfo.level = level
 	professionInfo.maxLevel = maxLevel
 	professionInfo.isSecondary = isSecondary
@@ -132,7 +134,7 @@ function private.PlayerProfessionsSkillUpdate()
 					end
 				end
 				if level and maxLevel and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
-					private.UpdatePlayerProfessionInfo(name, level, maxLevel, name == GetSpellInfo(129))
+					private.UpdatePlayerProfessionInfo(name, -1, level, maxLevel, name == GetSpellInfo(129))
 				end
 			end
 		end
@@ -140,9 +142,9 @@ function private.PlayerProfessionsSkillUpdate()
 		local professionIds = TempTable.Acquire(GetProfessions())
 		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
 			if id ~= 8 and id ~= 9 then -- ignore fishing and arheology
-				local name, _, level, maxLevel = GetProfessionInfo(id)
+				local name, _, level, maxLevel, _, _, skillId = GetProfessionInfo(id)
 				if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
-					private.UpdatePlayerProfessionInfo(name, level, maxLevel, i > 2)
+					private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
 				end
 			end
 		end
@@ -155,7 +157,7 @@ function private.PlayerProfessionsSkillUpdate()
 		local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), "internalData", "playerProfessions")
 		if playerProfessions then
 			for name, info in pairs(playerProfessions) do
-				private.db:BulkInsertNewRow(character, name, info.level, info.maxLevel, info.isSecondary)
+				private.db:BulkInsertNewRow(character, name, info.skillId or -1, info.level, info.maxLevel, info.isSecondary)
 			end
 		end
 	end
@@ -214,7 +216,7 @@ function private.PlayerProfessionsThread()
 				end
 				if level and maxLevel and not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
 					forgetProfession[name] = nil
-					private.UpdatePlayerProfessionInfo(name, level, maxLevel, name == GetSpellInfo(129))
+					private.UpdatePlayerProfessionInfo(name, -1, level, maxLevel, name == GetSpellInfo(129))
 				end
 			end
 		end
@@ -225,10 +227,10 @@ function private.PlayerProfessionsThread()
 		professionIds[3] = nil
 		professionIds[4] = nil
 		for i, id in pairs(professionIds) do -- needs to be pairs since there might be holes
-			local name, _, level, maxLevel = Threading.WaitForFunction(GetProfessionInfo, id)
+			local name, _, level, maxLevel, _, _, skillId = Threading.WaitForFunction(GetProfessionInfo, id)
 			if not TSM.UI.CraftingUI.IsProfessionIgnored(name) then -- exclude ignored professions
 				forgetProfession[name] = nil
-				private.UpdatePlayerProfessionInfo(name, level, maxLevel, i > 2)
+				private.UpdatePlayerProfessionInfo(name, skillId, level, maxLevel, i > 2)
 			end
 		end
 		Threading.ReleaseSafeTempTable(professionIds)
@@ -288,7 +290,7 @@ function private.PlayerProfessionsThread()
 		local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), "internalData", "playerProfessions")
 		if playerProfessions then
 			for name, info in pairs(playerProfessions) do
-				private.db:BulkInsertNewRow(character, name, info.level, info.maxLevel, info.isSecondary)
+				private.db:BulkInsertNewRow(character, name, info.skillId or -1, info.level, info.maxLevel, info.isSecondary)
 			end
 		end
 	end

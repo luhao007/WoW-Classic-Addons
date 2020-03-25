@@ -13,6 +13,10 @@ L["AUTO_POS_BAR_TOOLTIP"] = [=[勾选此选项时, 将会根据用户框体显�
 
 注意: 可能不兼容第三方用户框体.]=]
 L["BORDER_COLOR"] = "边框颜色"
+L["BORDERSHIELD"] = "显示无法打断的盾牌"
+L["BORDERSHIELD_TOOLTIP"] = [=[施法无法被打断时，在施法条周围显示盾牌。停用这个选项时，无法打断的施法会显示灰色背景。
+
+|cffffff00按住组合按键，像是 SHIFT 或 CTRL 键不放，再点一下 "开关测试模式" 按钮可以测试显示盾牌的施法条。|r]=]
 L["CAST_BORDER"] = "边框纹理"
 L["CAST_BORDER_TOOLTIP"] = "为施法条选择边框纹理."
 L["CAST_FONT"] = "施法条字体"
@@ -45,23 +49,16 @@ L["NAMEPLATE"] = "姓名板"
 L["PARTY"] = "小队"
 L["PLAYER"] = "玩家"
 L["POSXY_TOOLTIP"] = "调整XY坐标偏移量以移动框体"
-L["PUSHBACK"] = "侦测施法延迟"
-L["PUSHBACK_TOOLTIP"] = [=[为施法时受到攻击以及减益效果 (例如: 语言诅咒) 而造成的延迟启用侦测功能.
-
-注意: 由于特定法术和天赋可能会忽略延迟, 故侦测到的延迟不完全准确, 仅供参考.
-]=]
 L["REQUIRES_RESTART"] = "关闭施法条模组需要重载界面, 点击应用来重载界面"
 L["RESET_ALL"] = "重置所有设置"
-L["SHOW_CAST_INFO_ONLY"] = "仅显示施法信息"
-L["SHOW_CAST_INFO_ONLY_TOOLTIP"] = [=[启用将隐藏施法计时器, 但是仍然会显示施法信息.
-
-如果您仅想显示施法名称而不是整个施法条, 则需要将施法条高度设置为 '0', 並且将边框设置为 '无'.]=]
+L["SHOW_SPARK"] = "显示施法条亮点效果"
 L["SHOW_TIMER"] = "显示计时器文字"
 L["SHOW_TIMER_TOOLTIP"] = "为当前的施法显示倒计时."
 L["STATUS_BG_COLOR"] = "选择背景颜色"
 L["STATUS_CHANNEL_COLOR"] = "引导指示器填充颜色"
 L["STATUS_COLOR"] = "施法指示器填充颜色"
 L["STATUS_FAILED_COLOR"] = "施法失败颜色"
+L["STATUS_UNINTERRUPTIBLE_COLOR"] = "选择无法打断颜色"
 L["TARGET"] = "目标"
 L["TEST"] = "切换测试模式"
 L["TEST_MODE_DRAG"] = "测试模式 - 拖动来调整施法条位置"

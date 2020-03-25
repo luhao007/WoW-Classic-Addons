@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Cladhaire
-## Version: v11303-1.0.9
+## Version: v11304-1.1.2
 ## OptionalDeps: HereBeDragons-2.0
 ## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
 
@@ -12,7 +12,7 @@
 ## X-Localizations: enUS, enGB, deDE, frFR, zhCN, ruRU, zhTW
 ## X-CompatibleLocales: enUS, enGB, deDE, frFR, esES, esMX, zhCN, zhTW, koKR, ruRU
 
-##retail ## Interface: 80205
+##retail ## Interface: 80300
 AddonCore.lua
 
 Localization.enUS.lua

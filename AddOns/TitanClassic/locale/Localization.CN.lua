@@ -94,7 +94,7 @@ L["TITAN_PANEL_GLOBAL_RESET_PART"] = "重置选项";
 L["TITAN_PANEL_GLOBAL_ERR_1"] = "当一个全局配置文件在使用中时你可以无法加载";
 
 -- general panel locale
-L["TITAN_PANEL_VERSION_INFO"] = "版本|cffffd700 |cffff8c00"..TITAN_PANEL_ONLY.." 开发团队出品"; 
+L["TITAN_PANEL_VERSION_INFO"] = "版本|cffffd700 |cffff8c00"..TITAN_PANEL_ONLY.." 开发团队出品";
 L["TITAN_PANEL_MENU_TITLE"] = TITAN_PANEL;
 L["TITAN_PANEL_MENU_HIDE"] = "隐藏";
 L["TITAN_PANEL_MENU_IN_COMBAT_LOCKDOWN"] = "(战斗中)";
@@ -153,7 +153,7 @@ L["TITAN_PANEL_MENU_TEXTURE_SETTINGS"] = "皮肤";
 L["TITAN_PANEL_MENU_LSM_FONTS"] = "面板字体"
 L["TITAN_PANEL_MENU_ENABLED"] = "启用";
 L["TITAN_PANEL_MENU_DISABLED"] = "禁用";
-L["TITAN_PANEL_SHIFT_LEFT"] = "向左移动"; 
+L["TITAN_PANEL_SHIFT_LEFT"] = "向左移动";
 L["TITAN_PANEL_SHIFT_RIGHT"] = "向右移动";
 L["TITAN_PANEL_MENU_SHOW_PLUGIN_TEXT"] = "显示扩展组件文本";
 L["TITAN_PANEL_MENU_BAR_ALWAYS"] = "总是显示"; --？？
@@ -166,7 +166,7 @@ L["TITAN_PANEL_MENU_PLUGIN_RESET_DESC"] = "刷新扩展组件的文本和位置"
 L["TITAN_PANEL_MENU_SILENT_LOAD"] = "Silent Load";
 L["TITAN_PANEL_MENU_HIDE_ORDERHALL"] = "Hide Order Hall Command Bar";
 
--- localization strings for AceConfigDialog-3.0     
+-- localization strings for AceConfigDialog-3.0
 L["TITAN_ABOUT_VERSION"] = "版本";
 L["TITAN_ABOUT_AUTHOR"] = "作者";
 L["TITAN_ABOUT_CREDITS"] = "贡献者";
@@ -174,13 +174,13 @@ L["TITAN_ABOUT_CATEGORY"] = "类别";
 L["TITAN_ABOUT_EMAIL"] = "Email";
 L["TITAN_ABOUT_WEB"] = "网址";
 L["TITAN_ABOUT_LICENSE"] = "许可证";
-L["TITAN_PANEL_CONFIG_MAIN_LABEL"] = "信息条插件. 在屏幕顶部或底部增加一个信息面板，允许用户添加显示所需信息或者快速载入其他插件.";			 
+L["TITAN_PANEL_CONFIG_MAIN_LABEL"] = "信息条插件. 在屏幕顶部或底部增加一个信息面板，允许用户添加显示所需信息或者快速载入其他插件.";
 L["TITAN_TRANS_MENU_TEXT"] = TITAN_PANEL.." 透明度";
 L["TITAN_TRANS_MENU_TEXT_SHORT"] = "透明度";
-L["TITAN_TRANS_MENU_DESC"] = "为 "..TITAN_PANEL.." 面板条和提示文字调整透明度.";		
+L["TITAN_TRANS_MENU_DESC"] = "为 "..TITAN_PANEL.." 面板条和提示文字调整透明度.";
 L["TITAN_TRANS_MAIN_CONTROL_TITLE"] = "主面板条";
 L["TITAN_TRANS_AUX_CONTROL_TITLE"] = "辅面板条";
-L["TITAN_TRANS_CONTROL_TITLE_TOOLTIP"] = "提示文字";		 
+L["TITAN_TRANS_CONTROL_TITLE_TOOLTIP"] = "提示文字";
 L["TITAN_TRANS_TOOLTIP_DESC"] = "为扩展组件和其提示文字调整透明度.";
 L["TITAN_UISCALE_MENU_TEXT"] = TITAN_PANEL.." 缩放和字体";
 L["TITAN_UISCALE_MENU_TEXT_SHORT"] = "缩放和字体";
@@ -189,7 +189,7 @@ L["TITAN_UISCALE_CONTROL_TITLE_PANEL"] = TITAN_PANEL.." 缩放";
 L["TITAN_UISCALE_CONTROL_TITLE_BUTTON"] = "按钮间距";
 L["TITAN_UISCALE_CONTROL_TITLE_ICON"] = "图标间距";
 L["TITAN_UISCALE_CONTROL_TOOLTIP_TOOLTIPFONT"] = "提示文字缩放";
-L["TITAN_UISCALE_TOOLTIP_DISABLE_TEXT"] = "禁用提示文字缩放";		 
+L["TITAN_UISCALE_TOOLTIP_DISABLE_TEXT"] = "禁用提示文字缩放";
 L["TITAN_UISCALE_MENU_DESC"] = "控制 "..TITAN_PANEL.."的界面.";
 L["TITAN_UISCALE_SLIDER_DESC"] = "设置你整体用户界面的缩放.";
 L["TITAN_UISCALE_PANEL_SLIDER_DESC"] = "控制 "..TITAN_PANEL.." 的各个按钮图标的缩放.";
@@ -238,7 +238,7 @@ L["TITAN_PANEL_MENU_ADV_VEHICLE"] = "坐骑";
 L["TITAN_PANEL_MENU_ADV_VEHICLE_DESC"] = "当你上下坐骑遇到页面框架出错时更改设定值(通常是增大).";
 
 L["TITAN_AUTOHIDE_TOOLTIP"] = "控制"..TITAN_PANEL.."自动隐藏 开/关";
-     
+
 L["TITAN_AMMO_FORMAT"] = "%d";
 L["TITAN_AMMO_BUTTON_LABEL_AMMO"] = "弹药: ";
 L["TITAN_AMMO_BUTTON_LABEL_THROWN"] = "投掷武器: ";
@@ -270,7 +270,7 @@ L["TITAN_BAG_MENU_IGNORE_PROF_BAGS_SLOTS"] = "忽略各专业背包空间";
 L["TITAN_BAG_SHARD_BAG_NAMES"] = {"灵魂袋", "小灵魂袋", "灵魂箱", "恶魔布包", "熔火恶魔布包", "黑色暗影背包", "深渊背包"};
 L["TITAN_BAG_AMMO_POUCH_NAMES"] = {"裂蹄牛皮箭袋", "座狼皮箭袋", "龙筋箭袋", "蛛魔强固箭袋", "千羽箭袋", "结缔皮箭袋", "鹰身人皮箭袋", "雷布里的箭袋", "快捷箭袋", "重型箭袋", "守夜人箭袋", "狩猎箭袋", "中型箭袋", "轻皮箭袋", "小箭袋", "轻型箭袋", "走私者的弹药包", "龙鳞弹药包", "结缔皮弹药包", "虚空鳞片弹药包", "豺狼人皮弹药包", "厚皮弹药包", "重皮弹药包", "守夜人的弹药包", "中型弹药包", "猎枪弹药包", "轻皮弹药包", "小型弹药包"};
 L["TITAN_BAG_PROF_BAG_ENCHANTING"] = {
-"魔化魔纹布包", "魔化符文布包", "附魔师之袋", "大附魔袋", "魔焰背包", 
+"魔化魔纹布包", "魔化符文布包", "附魔师之袋", "大附魔袋", "魔焰背包",
 "神秘背包", "异界之袋", "“马车——限定款”附魔之夜手提包"};
 L["TITAN_BAG_PROF_BAG_ENGINEERING"] = {
 "重工具箱", "魔铁工具箱", "泰坦神铁工具箱", "氪金工具箱", "源质工具箱", "“马车——狂人”高科技背包"};
@@ -288,7 +288,7 @@ L["TITAN_BAG_PROF_BAG_MINING"] = {
 L["TITAN_BAG_PROF_BAG_FISHING"] = {"捕鱼大师的工具箱"};
 L["TITAN_BAG_PROF_BAG_COOKING"] = {"便携式冷柜", "Advanced Refrigeration Unit"};
 
-L["TITAN_CLOCK_TOOLTIP"] = "时钟";     
+L["TITAN_CLOCK_TOOLTIP"] = "时钟";
 L["TITAN_CLOCK_TOOLTIP_VALUE"] = "与服务器的时差: ";
 L["TITAN_CLOCK_TOOLTIP_LOCAL_TIME"] = "本地时间: ";
 L["TITAN_CLOCK_TOOLTIP_SERVER_TIME"] = "服务器时间: ";
@@ -407,7 +407,7 @@ L["TITAN_MEMORY_TOOLTIP"] = "内存使用";
 L["TITAN_MEMORY_TOOLTIP_CURRENT_MEMORY"] = "当前: ";
 L["TITAN_MEMORY_TOOLTIP_INITIAL_MEMORY"] = "起始: ";
 L["TITAN_MEMORY_TOOLTIP_INCREASING_RATE"] = "增长率: ";
-L["TITAN_MEMORY_KBMB_LABEL"] = "KB/MB";     
+L["TITAN_MEMORY_KBMB_LABEL"] = "KB/MB";
 
 L["TITAN_PERFORMANCE_TOOLTIP"] = "性能信息";
 L["TITAN_PERFORMANCE_MENU_TEXT"] = "性能";
@@ -452,7 +452,7 @@ L["TITAN_XP_TOOLTIP_LEVEL_XP"] = "当前等级所获经验: ";
 L["TITAN_XP_TOOLTIP_TOLEVEL_XP"] = "升级所需经验: ";
 L["TITAN_XP_TOOLTIP_SESSION_XP"] = "本次连接所获经验: ";
 L["TITAN_XP_TOOLTIP_XPHR_LEVEL"] = "经验/小时 当前级别: ";
-L["TITAN_XP_TOOLTIP_XPHR_SESSION"] = "经验/小时 本次连接: ";     
+L["TITAN_XP_TOOLTIP_XPHR_SESSION"] = "经验/小时 本次连接: ";
 L["TITAN_XP_TOOLTIP_TOLEVEL_LEVEL"] = "升级时间 (按等级效率): ";
 L["TITAN_XP_TOOLTIP_TOLEVEL_SESSION"] = "升级时间 (按连接效率): ";
 L["TITAN_XP_MENU_TEXT"] = "经验";
@@ -480,8 +480,8 @@ L["TITAN_REGEN_MENU_TOOLTIP_TITLE"] = "恢复速度"
 L["TITAN_REGEN_MENU_SHOW2"] = "生命值"
 L["TITAN_REGEN_MENU_SHOW3"] = "法力值"
 L["TITAN_REGEN_MENU_SHOW4"] = "显示百分比"
-L["TITAN_REGEN_BUTTON_TEXT_HP"] = "法力值: "
-L["TITAN_REGEN_BUTTON_TEXT_MP"] = "生命值: "
+L["TITAN_REGEN_BUTTON_TEXT_HP"] = "生命值: "
+L["TITAN_REGEN_BUTTON_TEXT_MP"] = "法力值: "
 L["TITAN_REGEN_TOOLTIP1"] = "生命值: \t"..GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..RED_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE..")";
 L["TITAN_REGEN_TOOLTIP2"] = "法力值: \t"..GREEN_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." / " ..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE.." ("..RED_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE..")";
 L["TITAN_REGEN_TOOLTIP3"] = "最快生命回复速度: \t"..HIGHLIGHT_FONT_COLOR_CODE.."%d"..FONT_COLOR_CODE_CLOSE;
@@ -538,7 +538,7 @@ L["TITAN_REPAIR_CANNOT_AFFORD"] = "现在，至少，你没钱来修理."
 L["TITAN_REPAIR_REPORT_COST_MENU"] = "报告修理费到聊天频道"
 L["TITAN_REPAIR_REPORT_COST_CHAT"] = "修理花费 "
 
-L["TITAN_PLUGINS_MENU_TITLE"] = "扩展模块"; 
+L["TITAN_PLUGINS_MENU_TITLE"] = "扩展模块";
 
 L["TITAN_GOLD_TOOLTIPTEXT"] = "统计所持有金币信息";
 L["TITAN_GOLD_ITEMNAME"] = "金币助手";

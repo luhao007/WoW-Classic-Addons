@@ -138,7 +138,8 @@ function ProfessionUtil.GetNumCraftable(spellId)
 	for i = 1, ProfessionUtil.GetNumMats(spellId) do
 		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i)
 		local itemString = ItemString.Get(matItemLink)
-		if not itemString or not quantity then
+		local totalQuantity = TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString)
+		if not itemString or not quantity or totalQuantity == 0 then
 			return 0, 0
 		end
 		local bagQuantity = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
@@ -146,7 +147,7 @@ function ProfessionUtil.GetNumCraftable(spellId)
 			bagQuantity = bagQuantity + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString)
 		end
 		num = min(num, floor(bagQuantity / quantity))
-		numAll = min(numAll, floor(TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString) / quantity))
+		numAll = min(numAll, floor(totalQuantity / quantity))
 	end
 	if num == math.huge or numAll == math.huge then
 		return 0, 0
@@ -184,21 +185,19 @@ function ProfessionUtil.IsEnchant(spellId)
 	return altVerb and true or false
 end
 
-function ProfessionUtil.OpenProfession(profession)
-	if profession == ProfessionInfo.GetName("Mining") then
-		-- mining needs to be opened as smelting
-		profession = ProfessionInfo.GetName("Smelting")
-	elseif not TSM.IsWowClassic() and profession == ProfessionInfo.GetName("Herbalism") then
-		-- herbalism needs to be opened as herbalism skills
-		profession = ProfessionInfo.GetName("HerbalismSkills")
-	elseif not TSM.IsWowClassic() and profession == ProfessionInfo.GetName("Skinning") then
-		-- skinning needs to be opened as skinning skills
-		profession = ProfessionInfo.GetName("SkinningSkills")
+function ProfessionUtil.OpenProfession(profession, skillId)
+	if TSM.IsWowClassic() then
+		if profession == ProfessionInfo.GetName("Mining") then
+			-- mining needs to be opened as smelting
+			profession = ProfessionInfo.GetName("Smelting")
+		end
+		if PROFESSION_LOOKUP[profession] then
+			profession = PROFESSION_LOOKUP[profession]
+		end
+		CastSpellByName(profession)
+	else
+		C_TradeSkillUI.OpenTradeSkill(skillId)
 	end
-	if PROFESSION_LOOKUP[profession] then
-		profession = PROFESSION_LOOKUP[profession]
-	end
-	CastSpellByName(profession)
 end
 
 function ProfessionUtil.PrepareToCraft(spellId, quantity)

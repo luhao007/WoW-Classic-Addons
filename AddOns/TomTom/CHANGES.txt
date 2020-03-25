@@ -1,10 +1,10 @@
-lightweight tag 651a141b483f4a0df38754e1ef26e3f7cb1ff06a v11303-1.0.9
+lightweight tag 37ad0562a2729c8585ccd2abe029fea66863d2d1 v11304-1.1.2
 Author:	Ludovicus <ludovicus.maior@gmail.com>
-Date:	Fri Dec 13 10:44:04 2019 -0500
+Date:	Mon Mar 23 18:27:04 2020 -0400
 
-commit 651a141b483f4a0df38754e1ef26e3f7cb1ff06a
+commit 37ad0562a2729c8585ccd2abe029fea66863d2d1
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Fri Dec 13 10:44:04 2019 -0500
+Date:   Mon Mar 23 18:27:04 2020 -0400
 
     Set Classic Interface
 

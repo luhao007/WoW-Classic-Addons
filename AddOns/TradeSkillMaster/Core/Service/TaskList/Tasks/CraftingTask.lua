@@ -28,6 +28,7 @@ local private = {
 function CraftingTask.__init(self)
 	self.__super:__init()
 	self._profession = nil
+	self._skillId = nil
 	self._spellIds = {}
 	self._spellQuantity = {}
 
@@ -42,12 +43,18 @@ end
 function CraftingTask.Acquire(self, doneHandler, category, profession)
 	self.__super:Acquire(doneHandler, category, format(L["%s Crafts"], profession))
 	self._profession = profession
+	for _, _, prof, skillId in TSM.Crafting.PlayerProfessions.Iterator() do
+		if not self._skillId and prof == profession then
+			self._skillId = skillId
+		end
+	end
 	private.activeTasks[self] = true
 end
 
 function CraftingTask.Release(self)
 	self.__super:Release()
 	self._profession = nil
+	self._skillId = nil
 	wipe(self._spellIds)
 	wipe(self._spellQuantity)
 	private.activeTasks[self] = nil
@@ -94,7 +101,7 @@ function CraftingTask.OnButtonClick(self)
 			private.currentlyCrafting = nil
 		end
 	elseif self._buttonText == L["OPEN"] then
-		TSM.Crafting.ProfessionUtil.OpenProfession(self._profession)
+		TSM.Crafting.ProfessionUtil.OpenProfession(self._profession, self._skillId)
 	else
 		error("Invalid state: "..tostring(self._buttonText))
 	end
