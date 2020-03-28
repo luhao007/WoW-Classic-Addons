@@ -1,0 +1,23 @@
+## Interface: 11304
+## Author: Boshi Lian(farmer1992@gmail.com)
+## Version: v5.3.4-classic
+## SavedVariables: MyslotExports
+
+## Title: Myslot
+## Notes: Myslot is for transferring settings between accounts. Feedback farmer1992@gmail.com
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF键位设置|r |cFFFFE00AMyslot|r
+## Notes-zhCN: Myslot可以帮助你在账号之间共享配置。反馈：farmer1992@gmail.com
+
+
+libs\base64.lua
+libs\crc32.lua
+libs\lua-pb\lua-pb.xml
+
+protobuf\Myslot.lua
+
+event.lua
+locales.lua
+keys.lua
+Myslot.lua
+gui.lua
+options.lua

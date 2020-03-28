@@ -1244,6 +1244,10 @@ MAPPING = {
         'Notes': '在大秘境中显示一个计时器',
         'Category': '副本'
     },
+    'Myslot': {
+        'Title-cn': '键位设置',
+        'Category': '界面',
+    },
     'NPCScan': {
         'Title-cn': 'NPC扫描',
         'Notes': '扫描特定的NPC，如稀有精英',

@@ -78,6 +78,7 @@ class Manager(object):
             ('HandyNotes', 'Libs'),
             ('MapSter', 'Libs'),
             ('oRA3', 'libs'),
+            ('PortalMage', 'libs'),
             ('Quartz', 'libs'),
             ('Recount', 'libs'),
             ('TellMeWhen', 'Lib'),
