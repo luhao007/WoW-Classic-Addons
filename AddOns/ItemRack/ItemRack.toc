@@ -1,12 +1,8 @@
-## Interface: 11304
+## Interface: 11302
+## Title: ItemRack
 ## Author: Gello - Updated for Classic by Rottenbeer
 ## SavedVariables: ItemRackSettings, ItemRackItems, ItemRackEvents
 ## SavedVariablesPerCharacter: ItemRackUser
-
-## Title: ItemRack
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
-
-
 ItemRack.lua
 ItemRack.xml
 ItemRackButtons.lua
@@ -14,3 +10,6 @@ ItemRackButtons.xml
 ItemRackEquip.lua
 ItemRackQueue.lua
 ItemRackEvents.lua
+
+
+
