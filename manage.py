@@ -464,8 +464,7 @@ class Manager(object):
         self.change_defaults(
             path,
             ['			ShowCoordsOnMap = false,',
-             '			ShowCursorOnMap = false,',
-             '			ShowLocOnMiniMap = 0,']
+             '			ShowCursorOnMap = false,']
         )
 
     def handle_tomtom(self):

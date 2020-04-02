@@ -23,7 +23,7 @@ local LocationTimer = nil;
 -- DESC : Registers the plugin upon it loading
 -- **************************************************************************
 function TitanPanelLocationButton_OnLoad(self)
-	self.registry = { 
+	self.registry = {
 		id = TITAN_LOCATION_ID,
 		category = "Built-ins",
 		version = TITAN_VERSION,
@@ -45,7 +45,7 @@ function TitanPanelLocationButton_OnLoad(self)
             ShowSubZoneText = 1,
 			ShowCoordsOnMap = false,
 			ShowCursorOnMap = false,
-			ShowLocOnMiniMap = 0,
+			ShowLocOnMiniMap = 1,
 			ShowIcon = 1,
 			ShowLabelText = 1,
 			ShowColoredText = 1,
@@ -61,7 +61,7 @@ function TitanPanelLocationButton_OnLoad(self)
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	
+
 	TitanPanelLocation_CreateMapFrames();
 end
 
@@ -224,9 +224,9 @@ end
 -- NAME : TitanPanelLocation_HandleUpdater()
 -- DESC : Check to see if you are inside an instance
 -- **************************************************************************
-function TitanPanelLocation_HandleUpdater()	
+function TitanPanelLocation_HandleUpdater()
 	if TitanPanelLocationButton:IsVisible() and not LocationTimer then
-		LocationTimer = AceTimer.ScheduleRepeatingTimer("TitanPanelLocation", TitanPanelLocationButton_CheckForUpdate, 0.5)		 
+		LocationTimer = AceTimer.ScheduleRepeatingTimer("TitanPanelLocation", TitanPanelLocationButton_CheckForUpdate, 0.5)
 	end
 end
 
@@ -323,7 +323,7 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "ShowLocOnMiniMap");
 			info.disabled = InCombatLockdown()
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
-			
+
 			info = {};
 			info.text = L["TITAN_LOCATION_MENU_UPDATE_WORLD_MAP"];
 			info.func = function()
@@ -332,10 +332,10 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 			info.checked = TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap");
 			info.disabled = InCombatLockdown()
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
-			
+
 			TitanPanelRightClickMenu_AddSpacer(_G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
 			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_MENU_MAP_COORDS_TITLE"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
-			
+
 			info = {};
 			info.text = L["TITAN_LOCATION_MENU_MAP_COORDS_LOC_1"]
 			info.func = function()
@@ -371,7 +371,7 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 			end
 			info.checked = CoordLoc("BOTTOMRIGHT")
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
-			
+
 		end
 		if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == "CoordFormat" then
 			TitanPanelRightClickMenu_AddTitle(L["TITAN_LOCATION_FORMAT_COORD_LABEL"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
@@ -410,7 +410,7 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 		end
 		return
 	end
-		 
+
 	-- level 1
 	TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_LOCATION_ID].menuText);
 
@@ -461,7 +461,7 @@ end
 function TitanPanelLocationButton_ToggleLocationOnMap()
 	TitanToggleVar(TITAN_LOCATION_ID, "ShowCoordsOnMap");
 	if (TitanMapPlayerLocation~=nil) then
-		if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then		
+		if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then
 			TitanMapPlayerLocation:Show();
 		else
 			TitanMapPlayerLocation:Hide();
@@ -545,14 +545,14 @@ function TitanMapFrame_OnUpdate(self, elapsed)
 			x, y = WorldMapFrame:GetNormalizedCursorPosition();
 		else
 			x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition();
-		end]]	
+		end]]
 		x = x / WorldMapFrame:GetEffectiveScale();
 		y = y / WorldMapFrame:GetEffectiveScale();
 
 		local centerX, centerY = WorldMapFrame.ScrollContainer:GetCenter();
 		local width = WorldMapFrame.ScrollContainer:GetWidth();
 		local height = WorldMapFrame.ScrollContainer:GetHeight();
-		local cx = ((x - (centerX - (width/2))) / width) -- OFFSET_X 
+		local cx = ((x - (centerX - (width/2))) / width) -- OFFSET_X
 		local cy = ((centerY + (height/2) - y ) / height) --  OFFSET_Y
 		-- cut off if the cursor coords are beyond the map, show 0,0
 		if cx < 0 or cx > 1 or cy < 0 or cy > 1 then
@@ -568,7 +568,7 @@ function TitanMapFrame_OnUpdate(self, elapsed)
 			cursorLocationText = format(L["TITAN_LOCATION_FORMAT3"], 100 * cx, 100 * cy);
 		end
 		if (TitanGetVar(TITAN_LOCATION_ID, "ShowCoordsOnMap")) then
-			TitanMapCursorLocation:SetText(format(L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"], 
+			TitanMapCursorLocation:SetText(format(L["TITAN_LOCATION_MAP_CURSOR_COORDS_TEXT"],
 				TitanUtils_GetHighlightText(cursorLocationText)));
 		else
 			TitanMapPlayerLocation:SetText("");
@@ -584,7 +584,7 @@ function TitanMapFrame_OnUpdate(self, elapsed)
 	local xbuff = 10 -- to get away from the frame border
 	local buff  = 5  -- between the player and cursor frames
 	local mloc = TitanGetVar(TITAN_LOCATION_ID, "MapLocation") or "TOPRIGHT"
-	
+
 	if (mloc == "TOPRIGHT") then
 		TitanMapPlayerLocation:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", -10, -28)
 		TitanMapCursorLocation:SetPoint("TOPRIGHT", TitanMapPlayerLocation, "BOTTOMRIGHT", 0, 0)
@@ -638,7 +638,7 @@ function TitanPanelLocation_CreateMapFrames()
 			playertext:SetPoint("TOPRIGHT",WorldMapFrame,"TOPRIGHT",0,0);
 			local cursortext = frame:CreateFontString("TitanMapCursorLocation", "ARTWORK", "GameFontNormal");
 			cursortext:SetPoint("TOPRIGHT",WorldMapFrame,"TOPRIGHT",0,0);
-			frame:HookScript("OnUpdate",TitanMapFrame_OnUpdate);	
+			frame:HookScript("OnUpdate",TitanMapFrame_OnUpdate);
 		end
 	end);
 
