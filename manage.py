@@ -1,19 +1,47 @@
 import os
 import re
 from pathlib import Path
+import shutil
 
 from toc import TOC
 from utils import process_file, rm_tree
 
 
+def classic_only(func):
+    def wrapper(*args):
+        if '_classic_' in os.getcwd():
+            func(*args)
+    return wrapper
+
+
+def retail_only(func):
+    def wrapper(*args):
+        if '_retail_' in os.getcwd():
+            func(*args)
+    return wrapper
+
+
 class Manager(object):
 
-    def remove_libraries_all(self, addon, lib_path):
+    def is_classic(self):
+        return '_classic_' in os.getcwd()
+
+    def remove_libraries_all(self, addon, lib_path=None):
         """Remove all embedded libraries"""
+        if not lib_path:
+            for p in ['libs', 'lib']:
+                path = Path('Addons') / addon / p
+                if os.path.exists(path):
+                    lib_path = p
+                    break
+            else:
+                return
+
         rm_tree(Path('AddOns') / addon / lib_path)
 
         # Extra library that need to be removed
-        libs = ['embeds.xml', 'libs.xml', 'LibDataBroker-1.1.lua']
+        libs = ['embeds.xml', 'Embeds.xml', 'libs.xml',
+                'Libs.xml', 'LibDataBroker-1.1.lua']
         for lib in libs:
             path = Path('AddOns') / addon / lib
             if os.path.exists(path):
@@ -22,7 +50,7 @@ class Manager(object):
         process_file(
             Path('AddOns') / addon / '{}.toc'.format(addon),
             lambda lines: [l for l in lines
-                           if not any(l.startswith(lib)
+                           if not any(l.lower().startswith(lib.lower())
                                       for lib in libs + [lib_path])]
         )
 
@@ -37,7 +65,7 @@ class Manager(object):
                            if not any(lib+'\\' in l for lib in libs)]
         )
 
-    def handle_libs(self):
+    def handle_lib_graph(self):
         def handle_graph(lines):
             orig = 'local TextureDirectory\n'
             tar = 'local TextureDirectory = "Interface\\\\AddOns\\\\!!Libs' + \
@@ -64,29 +92,40 @@ class Manager(object):
             handle_graph
         )
 
+    def handle_lib_babbles(self):
+        root = Path('Addons/!!Libs/')
+        for lib in os.listdir(root):
+            if lib.startswith('LibBabble-'):
+                shutil.copytree(root/lib,
+                                root/'LibBabble'/lib,
+                                dirs_exist_ok=True)
+                shutil.rmtree(root/lib)
+
+    def handle_libs(self):
+        pass
+
     def handle_dup_libraries(self):
-        libs = [
-            ('Atlas', 'Libs'),
-            ('AtlasLootClassic', 'Libs'),
-            ('AtlasLootClassic_Options', 'Libs'),
-            ('ATT-Classic', 'lib'),
-            ('ClassicCastbars_Options', 'Libs'),
-            ('DBM-Core', 'Libs'),
-            ('Fizzle', 'Libs'),
-            ('GatherMate2', 'Libs'),
-            ('HandyNotes_NPCs (Classic)', 'libs'),
-            ('HandyNotes', 'Libs'),
-            ('MapSter', 'Libs'),
-            ('oRA3', 'libs'),
-            ('Quartz', 'libs'),
-            ('Recount', 'libs'),
-            ('TellMeWhen', 'Lib'),
-            ('TitanClassic', 'libs'),
-            ('TomTom', 'libs'),
-            ('WIM', 'Libs'),
-        ]
-        for addon, lib_path in libs:
-            self.remove_libraries_all(addon, lib_path)
+        addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
+                  'MapSter', 'oRA3', 'Quartz', 'TellMeWhen', 'TomTom',
+                  'WIM']
+        if self.is_classic():
+            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
+                       'ATT-Classic', 'ClassicCastbars_Options',
+                       'Fizzle', 'HandyNotes_NPCs (Classic)',
+                       'Recount', 'TitanClassic']
+        else:
+            addons += ['AllTheThings', 'FasterCamera',
+                       'GladiatorlosSA2', 'Gladius', 'Grid2', 'Grid2Options',
+                       'HandyNotes_Argus', 'HandyNotes_BrokenShore',
+                       'HandyNotes_DraenorTreasures',
+                       'HandyNotes_LegionRaresTreasures',
+                       'HandyNotes_SuramarShalAranTelemancy',
+                       'HandyNotes_TimelessIsleChests',
+                       'HandyNotes_WarfrontRares', 'NPCScan', 'Omen',
+                       'RangeDisplay', 'RangeDisplay_Options',
+                       'RelicInspector', 'Titan']
+        for addon in addons:
+            self.remove_libraries_all(addon)
 
     def change_defaults(self, path, defaults):
         def handle(lines):
@@ -103,14 +142,25 @@ class Manager(object):
 
     def handle_att(self):
         self.change_defaults(
-            'Addons/ATT-Classic/Settings.lua',
+            'Addons/{}/Settings.lua'.format(
+                'ATT-Classic' if self.is_classic() else 'AllTheThings'),
             ['		["MinimapButton"] = false,',
              '		["Auto:MiniList"] = false,']
         )
 
     def handle_atlasloot(self):
+        if not self.is_classic():
+            self.remove_libraries(
+                ['CallbackHandler-1.0', 'LibBabble-Boss-3.0',
+                 'LibBabble-Faction-3.0', 'LibBabble-ItemSet-3.0',
+                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDialog-1.0',
+                 'LibSharedMedia-3.0', 'LibStub'],
+                'AddOns/AtlasLoot/Libs',
+                'AddOns/AtlasLoot/embeds.xml'
+            )
         self.change_defaults(
-            'Addons/AtlasLootClassic/db.lua',
+            'Addons/AtlasLoot{}/db.lua'.format(
+                'Classic' if self.is_classic() else ''),
             '			shown = false,'
         )
 
@@ -162,7 +212,8 @@ class Manager(object):
                 else:
                     ret.append(line)
             return ret
-        path = 'AddOns/DejaClassicStats/DCSDuraRepair.lua'
+        path = 'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
+            'Classic' if self.is_classic() else 'Character')
         process_file(path, f)
 
     def handle_decursive(self):
@@ -182,7 +233,8 @@ class Manager(object):
         self.remove_libraries(
             ['CallbackHandler-1.0', 'HereBeDragons',
              'LibBabble-SubZone-3.0', 'LibDataBroker-1.1',
-             'LibDBIcon-1.0', 'LibStub', 'LibWindow-1.1'],
+             'LibDBIcon-1.0', 'LibPetJournal-2.0',
+             'LibStub', 'LibTourist-3.0', 'LibWindow-1.1'],
             'AddOns/FishingBuddy/Libs',
             'AddOns/FishingBuddy/Libs/Libs.xml'
         )
@@ -192,6 +244,7 @@ class Manager(object):
             '		FishingBuddy_Player["MinimapData"] = { hide=true };'
         )
 
+    @classic_only
     def handle_fizzle(self):
         def f(lines):
             ret = []
@@ -209,7 +262,6 @@ class Manager(object):
         process_file('AddOns/Fizzle/Core.lua', f)
 
     def handle_grail(self):
-        game_flavour = 'classic' if '_classic_' in os.getcwd() else 'retail'
         for folder in os.listdir('AddOns'):
             if 'Grail' not in folder:
                 continue
@@ -219,18 +271,46 @@ class Manager(object):
                ('enUS' not in folder and 'zhCN' not in folder)):
                 rm_tree(Path('AddOns') / folder)
 
-            if ((game_flavour == 'retail' and 'classic' in folder) or
-               (game_flavour == 'classic') and ('retail' in folder or
-                                                'Achievements' in folder)):
+            if ((not self.is_classic() and 'classic' in folder) or
+                (self.is_classic() and
+                 ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
+    @retail_only
+    def handle_grid(self):
+        rm_tree('Addons/Grid2LDB')
+
+    @classic_only
     def handle_honorspy(self):
-        self.remove_libraries_all('honorspy', 'Libs')
+        self.remove_libraries_all('honorspy')
 
         self.change_defaults(
             'AddOns/honorspy/honorspy.lua',
             ['local addonName = "Honorspy";',
-             '			minimapButton = {hide = true},']
+                '			minimapButton = {hide = true},']
+        )
+
+    @retail_only
+    def handle_meetingstone(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+             'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
+             'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
+             'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
+             'LibStub', 'LibWindow-1.1'],
+            'Addons/MeetingStone/Libs',
+            'Addons/MeetingStone/Libs/Embeds.xml'
+        )
+
+    @retail_only
+    def handle_mogit(self):
+        self.remove_libraries(
+            ['AceConfig-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
+             'CallbackHandler-1.0', 'LibBabble-Boss-3.0',
+             'LibBabble-Inventory-3.0', 'LibBabble-Race-3.0', 'LibDBIcon-1.0',
+             'LibDataBroker-1.1', 'LibStub'],
+            'Addons/MogIt/Libs',
+            'Addons/MogIt/Libs/Embeds.xml'
         )
 
     def handle_monkeyspeed(self):
@@ -252,9 +332,28 @@ class Manager(object):
                 lambda lines: [l for l in lines if 'libs' not in l]
             )
 
+    @retail_only
+    def handle_oa(self):
+        self.remove_libraries(
+            ['CallbackHandler-1.0', 'LibBabble-Inventory-3.0',
+             'LibBabble-SubZone-3.0', 'LibSharedMedia-3.0', 'LibStub'],
+            'Addons/Overachiever/libs',
+            'Addons/Overachiever/Overachiever.toc'
+        )
+
+    @retail_only
+    def handle_pt(self):
+        self.remove_libraries(
+            ['AceEvent-3.0', 'AceLocale-3.0', 'CallbackHandler-1.0',
+             'LibPetJournal-2.0', 'LibStub'],
+            'Addons/PetTracker/libs',
+            'Addons/PetTracker/libs/main.xml'
+        )
+
     def handle_prat(self):
         rm_tree('AddOns/Prat-3.0_Libraries')
 
+    @classic_only
     def handle_questie(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
@@ -295,6 +394,23 @@ class Manager(object):
 
         process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
+    @retail_only
+    def handle_rarity(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceConfig-3.0',
+             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+             'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
+             'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'HereBeDragons-2.0', 'LibBabble-Boss-3.0',
+             'LibBabble-CreatureType-3.0', 'LibBabble-SubZone-3.0',
+             'LibBars-1.0', 'LibCompress', 'LibDBIcon-1.0',
+             'LibDataBroker-1.1', 'LibQTip-1.0', 'LibSharedMedia-3.0',
+             'LibSink-2.0', 'LibStub'],
+            'AddOns/Rarity/Libs',
+            'AddOns/Rarity/Rarity.toc'
+        )
+
+    @classic_only
     def handle_recount(self):
         self.change_defaults(
             'Addons/Recount/Recount.lua',
@@ -310,6 +426,30 @@ class Manager(object):
             'AddOns/Scrap/libs/main.xml'
         )
 
+    @retail_only
+    def handle_sc(self):
+        # We need the embeds.xml
+        rm_tree('Addons/Simulationcraft/libs')
+        process_file(
+            'Addons/Simulationcraft/Simulationcraft.toc',
+            lambda lines: [l for l in lines
+                           if not l.lower().startswith('libs\\')]
+        )
+
+    @retail_only
+    def handle_skada(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceConfigDialog-3.0', 'AceConfigRegistry-3.0',
+             'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
+             'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0', 'AceTimer-3.0',
+             'CallbackHandler-1.0', 'LibBossIDs-1.0', 'LibDBIcon-1.0',
+             'LibDataBroker-1.1', 'LibNotify-1.0', 'LibSharedMedia-3.0',
+             'LibStub', 'LibWindow-1.1'],
+            'AddOns/Skada/lib',
+            'AddOns/Skada/embeds.xml'
+        )
+
+    @classic_only
     def handle_tc2(self):
         rm_tree('AddOns/ThreatClassic2/Libs')
 
@@ -318,13 +458,30 @@ class Manager(object):
         path = 'AddOns/ThreatClassic2/ThreatClassic2.xml'
         process_file(path, f)
 
+    def handle_titan(self):
+        path = 'Addons/Titan{0}Location/Titan{0}Location.lua'.format(
+            'Classic' if self.is_classic() else '')
+        self.change_defaults(
+            path,
+            ['			ShowCoordsOnMap = false,',
+             '			ShowCursorOnMap = false,',
+             '			ShowLocOnMiniMap = 0,']
+        )
+
+    def handle_tomtom(self):
+        self.change_defaults(
+            'Addons/TomTom/TomTom.lua',
+            ['                playerenable = false,',
+             '                cursorenable = false,']
+        )
+
     def handle_tsm(self):
         rm_tree('AddOns/TradeSkillMaster/External/EmbeddedLibs/')
 
         process_file(
             'AddOns/TradeSkillMaster/Core/UI/Support/Fonts.lua',
             lambda lines: [re.sub(r'".+ttf"',
-                                  r'"Fonts\\\\ARKai_C.ttf"',
+                                  r'"Fonts\\\\ARKai_T.ttf"',
                                   l)
                            for l in lines]
         )
@@ -334,16 +491,30 @@ class Manager(object):
             lambda lines: [l for l in lines if 'EmbeddedLibs' not in l]
         )
 
+    @classic_only
     def handle_ufp(self):
         rm_tree('AddOns/UnitFramesPlus_MobHealth')
 
-        self.remove_libraries_all('UnitFramesPlus_Cooldown', 'Libs')
+        self.remove_libraries_all('UnitFramesPlus_Cooldown')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
 
     def handle_whlooter(self):
         self.change_defaults(
             'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
             'wlSetting = {minimap=false};'
+        )
+
+    @retail_only
+    def handle_wqt(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0',
+             'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0', 'AceGUI-3.0',
+             'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
+             'CallbackHandler-1.0', 'HereBeDragons', 'LibDBIcon-1.0',
+             'LibDataBroker-1.1', 'LibDeflate', 'LG', 'LibSharedMedia-3.0',
+             'LibStub', 'LibWindow-1.1'],
+            'Addons/WorldQuestTracker/libs',
+            'Addons/WorldQuestTracker/libs/libs.xml'
         )
 
     def process(self):

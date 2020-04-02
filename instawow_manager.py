@@ -62,7 +62,3 @@ class InstawowManager(object):
     def export(self):
         instawow.cli.export_to_csv(self.get_addons(),
                                    '{}.csv'.format(self.config))
-
-    def reconcile(self):
-        # TODO: Use instawow.cli
-        os.system('instawow reconcile')

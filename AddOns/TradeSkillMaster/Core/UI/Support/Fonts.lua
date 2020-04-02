@@ -10,12 +10,12 @@ local _, TSM = ...
 
 TSM.UI.Fonts = {
 	FRIZQT = TSM.UI.GetFont(TSM4FrizQT),
-	MontserratRegular = "Fonts\\ARKai_C.ttf",
-	MontserratMedium = "Fonts\\ARKai_C.ttf",
-	MontserratBold = "Fonts\\ARKai_C.ttf",
-	MontserratItalic = "Fonts\\ARKai_C.ttf",
-	RobotoMedium = "Fonts\\ARKai_C.ttf",
-	RobotoRegular = "Fonts\\ARKai_C.ttf",
+	MontserratRegular = "Fonts\\ARKai_T.ttf",
+	MontserratMedium = "Fonts\\ARKai_T.ttf",
+	MontserratBold = "Fonts\\ARKai_T.ttf",
+	MontserratItalic = "Fonts\\ARKai_T.ttf",
+	RobotoMedium = "Fonts\\ARKai_T.ttf",
+	RobotoRegular = "Fonts\\ARKai_T.ttf",
 }
 
 do

@@ -45,10 +45,10 @@ function TomTom:Initialize(event, addon)
                 throttle = 0.2,
             },
             mapcoords = {
-                playerenable = true,
+                playerenable = false,
                 playeraccuracy = 2,
                 playeroffset = 0,
-                cursorenable = true,
+                cursorenable = false,
                 cursoraccuracy = 2,
                 cursoroffset = 0,
 				throttle = 0.1,

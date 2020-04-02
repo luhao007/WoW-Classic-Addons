@@ -43,9 +43,9 @@ function TitanPanelLocationButton_OnLoad(self)
 		savedVariables = {
 			ShowZoneText = 1,
             ShowSubZoneText = 1,
-			ShowCoordsOnMap = true,
-			ShowCursorOnMap = true,
-			ShowLocOnMiniMap = 1,
+			ShowCoordsOnMap = false,
+			ShowCursorOnMap = false,
+			ShowLocOnMiniMap = 0,
 			ShowIcon = 1,
 			ShowLabelText = 1,
 			ShowColoredText = 1,

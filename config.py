@@ -52,6 +52,11 @@ MAPPING = {
         'Title-sub': '竞技场',
         'Category': '副本'
     },
+    'Atlas_BattleforAzeroth': {
+        'Title-cn': '副本地图',
+        'Title-sub': '争霸艾泽拉斯',
+        'Category': '副本'
+    },
     'Atlas_Battlegrounds': {
         'Title-cn': '副本地图',
         'Title-sub': '战场',
@@ -1306,9 +1311,9 @@ MAPPING = {
         'Title-cn': '宠物追踪',
         'Category': '收藏'
     },
-    'PetTracker_Breeds': {
+    'PetTracker_Battle': {
         'Title-cn': '宠物追踪',
-        'Title-sub': '品种',
+        'Title-sub': '战斗',
         'Category': '收藏'
     },
     'PetTracker_Config': {
@@ -1319,16 +1324,6 @@ MAPPING = {
     'PetTracker_Journal': {
         'Title-cn': '宠物追踪',
         'Title-sub': '日志',
-        'Category': '收藏'
-    },
-    'PetTracker_Switcher': {
-        'Title-cn': '宠物追踪',
-        'Title-sub': '切换',
-        'Category': '收藏'
-    },
-    'PetTracker_Upgrades': {
-        'Title-cn': '宠物追踪',
-        'Title-sub': '升级',
         'Category': '收藏'
     },
     'Prat-3.0': {

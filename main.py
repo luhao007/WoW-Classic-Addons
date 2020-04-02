@@ -38,6 +38,13 @@ def main(ctx, verbose):
 
 
 @main.command()
+@click.pass_obj
+def manage(obj):
+    """Manage addons"""
+    obj.manage()
+
+
+@main.command()
 @click.argument('addons', required=True, nargs=-1)
 @click.pass_obj
 def install(obj, addons):
@@ -45,6 +52,16 @@ def install(obj, addons):
     obj.manager.install(addons)
     obj.manager.export()
     obj.manage()
+
+
+@main.command()
+@click.argument('libs', required=True, nargs=-1)
+@click.pass_obj
+def install_lib(obj, libs):
+    """Install libraries"""
+    obj.manager_lib.install(libs)
+    obj.manager_lib.export()
+    Manager().handle_libs()
 
 
 @main.command()
