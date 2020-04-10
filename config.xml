@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE AddonConfig [
+	<!ELEMENT AddonConfig (Addon*)>
+
+	<!ELEMENT Addon (Title, Title-en?, Notes?, Category, SubAddons?)>
+	<!ATTLIST Addon name CDATA #REQUIRED>
+
+	<!ELEMENT Title (#PCDATA)>
+	<!ELEMENT Title-en (#PCDATA)>
+	<!ELEMENT Notes (#PCDATA)>
+	<!ELEMENT Category (#PCDATA)>
+
+	<!ELEMENT SubAddons (SubAddon*)>
+	<!ELEMENT SubAddon (Title, TitleExtra?, Notes?)>
+	<!ATTLIST SubAddon name CDATA #REQUIRED>
+
+	<!ELEMENT TitleExtra (#PCDATA)>
+]>
+
 <AddonConfig>
 	<Addon name="!!Libs">
 		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
