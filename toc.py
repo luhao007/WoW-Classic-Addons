@@ -76,17 +76,18 @@ class TOC(object):
 def get_title(config_tree, name):
     parts = []
 
+    ns = {'x': 'https://www.github.com/luhao007'}
     path = './/*[@name="{}"]'.format(name)
     config = config_tree.find(path)
-    if config.tag == 'SubAddon':
-        cat = config_tree.find('{}../../Category'.format(path)).text
-        title = config_tree.find('{}../../Title'.format(path)).text
-        sub = config.find('Title').text
+    if config.tag.endswith('SubAddon'):
+        cat = config_tree.find('{}../../x:Category'.format(path), ns).text
+        title = config_tree.find('{}../../x:Title'.format(path), ns).text
+        sub = config.find('x:Title', ns).text
     else:
-        cat = config.find('Category').text
-        title = config.find('Title').text
-        if config.find('Title-en') is not None:
-            en = config.find('Title-en').text
+        cat = config.find('x:Category', ns).text
+        title = config.find('x:Title', ns).text
+        if config.find('x:Title-en', ns) is not None:
+            en = config.find('x:Title-en', ns).text
         else:
             en = name
 
@@ -108,7 +109,7 @@ def get_title(config_tree, name):
 
     parts.append('|cFFFFFFFF{}|r'.format(title))
 
-    if config.tag == 'SubAddon':
+    if config.tag.endswith('SubAddon'):
         if sub == '设置':
             color = 'FF0055FF'
         elif '文' in sub:
@@ -121,7 +122,7 @@ def get_title(config_tree, name):
               name == '!!Libs'):
         parts.append('|cFFFFE00A{}|r'.format(en))
 
-    ext = config.find('TitleExtra')
+    ext = config.find('x:TitleExtra', ns)
     if ext is not None:
         parts.append('|cFF22B14C{}|r'.format(ext.text))
 

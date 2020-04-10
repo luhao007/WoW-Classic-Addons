@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<AddonConfig
-xmlns="https://www.github.com/luhao007"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
+<AddonConfig xmlns="https://www.github.com/luhao007"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
 	<Addon name="!!Libs">
 		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
 		<Category>基础库</Category>
@@ -1348,6 +1347,9 @@ xsi:schemaLocation="https://www.github.com/luhao007 addon.xsd">
 		<SubAddons>
 			<SubAddon name="WeakAurasArchive">
 				<Title>存档</Title>
+			</SubAddon>
+			<SubAddon name="WeakAurasModelPaths">
+				<Title>模型路径</Title>
 			</SubAddon>
 			<SubAddon name="WeakAurasOptions">
 				<Title>设置</Title>
