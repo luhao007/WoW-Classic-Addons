@@ -11,6 +11,7 @@
 
 ## X-Category: Map
 ## X-License: GPL v2
+## X-Part-Of: AtlasLootClassic
 
 core.lua
 

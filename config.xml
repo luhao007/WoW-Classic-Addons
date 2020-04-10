@@ -6,12 +6,6 @@
 		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
 		<Category>基础库</Category>
 	</Addon>
-	<Addon name="!Swatter">
-		<Title>错误提示</Title>
-		<Title-en>Swatter</Title-en>
-		<Notes>增强错误提示，将错误显示在弹出窗口中</Notes>
-		<Category>基础库</Category>
-	</Addon>
 	<Addon name="+Wowhead_Looter">
 		<Title>Wowhead数据采集</Title>
 		<Notes>收集各种游戏内数据并上传Wowhead</Notes>
@@ -210,6 +204,10 @@
 		<Notes>拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品</Notes>
 		<Category>物品</Category>
 		<SubAddons>
+			<SubAddon name="!Swatter">
+				<Title>错误提示</Title>
+				<Notes>增强错误提示，将错误显示在弹出窗口中</Notes>
+			</SubAddon>
 			<SubAddon name="Auc-Filter-Basic">
 				<Title>基础过滤条件</Title>
 				<Notes>提供基础过滤条件，比如最低装等，最低价格等等</Notes>
@@ -242,18 +240,42 @@
 				<Title>功能：固定搜索页面</Title>
 				<Notes>让拍卖行每次搜索时都固定显示新物品，来避免物品重复出现的问题</Notes>
 			</SubAddon>
+			<SubAddon name="BeanCounter">
+				<Title>物品会计师</Title>
+				<Notes>存储物品购买销售记录</Notes>
+			</SubAddon>
+			<SubAddon name="Enchantrix">
+				<Title>附魔助手</Title>
+				<Notes>提示物品分解后可能得到的材料</Notes>
+			</SubAddon>
+			<SubAddon name="Enchantrix-Barker">
+				<Title>附魔助手</Title>
+				<TitleExtra>叫卖</TitleExtra>
+				<Notes>将可以进行的附魔价格发送到交易频道</Notes>
+			</SubAddon>
+			<SubAddon name="SlideBar">
+				<Title>侧边滑动栏</Title>
+				<Notes>在屏幕边提供一个可以滑动栏来显示小地图图标</Notes>
+			</SubAddon>
+			<SubAddon name="Stubby">
+				<Title>插件自动加载</Title>
+				<Notes>让插件可以自动启动</Notes>
+			</SubAddon>
+			<SubAddon name="Informant">
+				<Title>物品信息</Title>
+				<Notes>在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等</Notes>
+			</SubAddon>
 		</SubAddons>
-	</Addon>
-	<Addon name="BagBrother">
-		<Title>背包助手</Title>
-		<Notes>记录背包和银行中的物品</Notes>
-		<Category>物品</Category>
 	</Addon>
 	<Addon name="Bagnon">
 		<Title>背包整合</Title>
 		<Notes>将背包整合成一个窗口</Notes>
 		<Category>物品</Category>
 		<SubAddons>
+			<SubAddon name="BagBrother">
+				<Title>助手</Title>
+				<Notes>记录背包和银行中的物品</Notes>
+			</SubAddon>
 			<SubAddon name="Bagnon_Config">
 				<Title>设置</Title>
 				<Notes>Bagnon设置模块</Notes>
@@ -273,19 +295,9 @@
 		<Notes>显示战斗宠物的品种（如速度型）</Notes>
 		<Category>收藏</Category>
 	</Addon>
-	<Addon name="BeanCounter">
-		<Title>物品会计师</Title>
-		<Notes>存储物品购买销售记录</Notes>
-		<Category>物品</Category>
-	</Addon>
 	<Addon name="BlizzMove">
 		<Title>窗口移动</Title>
 		<Notes>移动内置的各种窗口</Notes>
-		<Category>界面</Category>
-	</Addon>
-	<Addon name="BtWObjectiveFilter">
-		<Title>追踪过滤</Title>
-		<Notes>在任务和副本目标等追踪界面中添加一个过滤器，来关闭不想看到的追踪</Notes>
 		<Category>界面</Category>
 	</Addon>
 	<Addon name="BtWQuests">
@@ -293,6 +305,10 @@
 		<Notes>将所有任务的前置任务和后续任务用流程图显示出来</Notes>
 		<Category>任务</Category>
 		<SubAddons>
+			<SubAddon name="BtWObjectiveFilter">
+				<Title>追踪过滤</Title>
+				<Notes>在任务和副本目标等追踪界面中添加一个过滤器，来关闭不想看到的追踪</Notes>
+			</SubAddon>
 			<SubAddon name="BtWQuestsBattleForAzeroth">
 				<Title>争霸艾泽拉斯</Title>
 				<Notes>BtWQuests 争霸艾泽拉斯模块</Notes>
@@ -605,17 +621,6 @@
 		<Notes>施法时自动下马</Notes>
 		<Category>物品</Category>
 	</Addon>
-	<Addon name="Enchantrix">
-		<Title>附魔助手</Title>
-		<Notes>提示物品分解后可能得到的材料</Notes>
-		<Category>物品</Category>
-		<SubAddons>
-			<SubAddon name="Enchantrix-Barker">
-				<Title>叫卖</Title>
-				<Notes>将可以进行的附魔价格发送到交易频道</Notes>
-			</SubAddon>
-		</SubAddons>
-	</Addon>
 	<Addon name="FasterCamera">
 		<Title>视野调整</Title>
 		<Notes>提供调整视野上限，快速缩放视野等功能</Notes>
@@ -838,11 +843,6 @@
 	<Addon name="HPetBattleAny">
 		<Title>宠物对战增强</Title>
 		<Category>战斗</Category>
-	</Addon>
-	<Addon name="Informant">
-		<Title>物品信息</Title>
-		<Notes>在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等</Notes>
-		<Category>物品</Category>
 	</Addon>
 	<Addon name="ItemRack">
 		<Title>一键换装</Title>
@@ -1148,16 +1148,6 @@
 		<Title>伤害统计</Title>
 		<Notes>伤害统计窗口</Notes>
 		<Category>战斗</Category>
-	</Addon>
-	<Addon name="SlideBar">
-		<Title>侧边滑动栏</Title>
-		<Notes>在屏幕边提供一个可以滑动栏来显示小地图图标</Notes>
-		<Category>界面</Category>
-	</Addon>
-	<Addon name="Stubby">
-		<Title>插件自动加载</Title>
-		<Notes>让插件可以自动启动</Notes>
-		<Category>基础库</Category>
 	</Addon>
 	<Addon name="TellMeWhen">
 		<Title>技能提示</Title>

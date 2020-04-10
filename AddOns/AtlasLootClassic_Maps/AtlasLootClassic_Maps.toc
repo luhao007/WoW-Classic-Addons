@@ -10,5 +10,6 @@
 ## Notes-zhCN: AtlasLoot 地图模块
 
 ## X-Curse-Project-ID: 340018
+## X-Part-Of: AtlasLootClassic
 
 core.lua

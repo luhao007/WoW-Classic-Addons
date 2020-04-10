@@ -7,6 +7,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF69CCF0冷却计时|r
 
 ## X-Repple: 界面
+## X-Part-Of: UnitFramesPlus
 
 #Library
 UnitFramesPlus_Cooldown.lua

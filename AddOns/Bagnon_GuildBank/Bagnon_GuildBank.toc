@@ -8,5 +8,6 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0公会银行|r
 ## Notes-zhCN: Bagnon公会银行模块
 
+## X-Part-Of: Bagnon
 
 ..\Bagnon\addons\guild\guild.xml

@@ -10,6 +10,7 @@
 ## Notes-zhCN: Deadly Boss Mods的设置界面
 
 ## X-Min-Interface: 11302
+## X-Part-Of: DBM-Core
 
 localization.en.lua
 localization.de.lua

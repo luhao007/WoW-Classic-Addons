@@ -9,5 +9,6 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0奖励|r
 ## Notes-zhCN: 非声望奖励数据库
 
+## X-Part-Of: Grail
 
 Grail-Rewards.lua

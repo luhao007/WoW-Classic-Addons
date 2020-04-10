@@ -8,5 +8,6 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF技能冷却|r |cFF0055FF设置|r
 ## Notes-zhCN: 显示技能冷却时间
 
+## X-Part-Of: OmniCC
 
 ..\OmniCC\config\config.xml

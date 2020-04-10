@@ -12,6 +12,7 @@
 ## X-DBM-Mod-Has-Single-Format: 1
 ## X-DBM-Mod-Sort: 11
 ## X-DBM-Mod-MapID: 309
+## X-Part-Of: DBM-Core
 
 localization.en.lua
 localization.es.lua

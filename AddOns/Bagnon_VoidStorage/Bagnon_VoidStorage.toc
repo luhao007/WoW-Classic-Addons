@@ -8,5 +8,6 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0虚空仓库|r
 ## Notes-zhCN: Bagnon虚空仓库模块
 
+## X-Part-Of: Bagnon
 
 ..\Bagnon\addons\vault\vault.xml

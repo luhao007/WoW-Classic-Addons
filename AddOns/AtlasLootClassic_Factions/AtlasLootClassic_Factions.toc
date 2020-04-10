@@ -12,6 +12,7 @@
 ## X-Category: Map
 ## X-License: GPL v2
 ## X-AtlasLootClassic-LootModule: 1
+## X-Part-Of: AtlasLootClassic
 
 Locales\Locales.xml
 

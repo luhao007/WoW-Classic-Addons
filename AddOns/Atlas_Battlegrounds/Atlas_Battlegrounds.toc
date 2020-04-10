@@ -13,6 +13,7 @@
 ## X-Email: atlas.addon at gmail.com
 ## X-Website: http://www.atlasmod.com
 ## X-Category: Map
+## X-Part-Of: Atlas
 
 #@non-debug@
 #@end-non-debug@

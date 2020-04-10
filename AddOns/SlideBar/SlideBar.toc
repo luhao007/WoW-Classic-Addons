@@ -7,10 +7,10 @@
 
 ## Title: SlideBar |cff224477(lib)
 ## Notes: Allows alternative placement of minimap icons into an expanding bar that sits off the side of the screen.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF侧边滑动栏|r |cFFFFE00ASlideBar|r
+## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0侧边滑动栏|r
 ## Notes-zhCN: 在屏幕边提供一个可以滑动栏来显示小地图图标
 
-## X-Part-Of: Libraries
+## X-Part-Of: Auc-Advanced
 ## X-Category: Library
 ## X-Max-Interface: 80100
 ## X-URL: http://zip.norganna.org/libs/SlideBar/

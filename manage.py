@@ -1,10 +1,15 @@
+import functools
 import os
 import re
-from pathlib import Path
 import shutil
+import logging
+from pathlib import Path
+from xml.etree import ElementTree
 
 from toc import TOC
 from utils import process_file, rm_tree
+
+logger = logging.getLogger('manager')
 
 
 def classic_only(func):
@@ -23,8 +28,16 @@ def retail_only(func):
 
 class Manager(object):
 
-    def is_classic(self):
-        return '_classic_' in os.getcwd()
+    def __init__(self):
+        self.is_classic = '_classic_' in os.getcwd()
+        self.config = ElementTree.parse('config.xml')
+
+    def process(self):
+        for f in dir(self):
+            if f.startswith('handle'):
+                getattr(self, f)()
+
+        self.process_toc()
 
     def remove_libraries_all(self, addon, lib_path=None):
         """Remove all embedded libraries"""
@@ -78,10 +91,96 @@ class Manager(object):
             return ret
         process_file(path, handle)
 
-    def process(self):
-        for f in dir(self):
-            if f.startswith('handle'):
-                getattr(self, f)()
+    ###################
+    # Handle Addon Tocs
+    ###################
+
+    @functools.lru_cache
+    def get_addon_config(self, addon):
+        return self.config.find('.//*[@name="{}"]'.format(addon))
+
+    @functools.lru_cache
+    def get_addon_parent_config(self, addon):
+        return self.config.find('.//*[@name="{}"]../..'.format(addon))
+
+    def get_title(self, addon):
+        parts = []
+        ns = {'x': 'https://www.github.com/luhao007'}
+
+        config = self.get_addon_config(addon)
+        if config.tag.endswith('SubAddon'):
+            parent_config = self.get_addon_parent_config(addon)
+            cat = parent_config.find('x:Category', ns).text
+            title = parent_config.find('x:Title', ns).text
+            sub = config.find('x:Title', ns).text
+        else:
+            cat = config.find('x:Category', ns).text
+            title = config.find('x:Title', ns).text
+            if config.find('x:Title-en', ns) is not None:
+                en = config.find('x:Title-en', ns).text
+            else:
+                en = addon
+
+        colors = {
+            '基础库': 'FF0000',     # Red
+            '任务': '00FF7F',       # Spring green
+            '物品': '1E90FF',       # Doget blue
+            '界面': 'BA55D3',       # Medium orchid
+            '副本': 'FF7D0A',       # Orange - DBM
+            '战斗': 'FF1493',       # Deep pink
+        }
+        color = colors.get(cat, 'FFFFFF')       # Defaults to white
+        parts.append('|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r'.format(color, cat))
+
+        parts.append('|cFFFFFFFF{}|r'.format(title))
+
+        if config.tag.endswith('SubAddon'):
+            if sub == '设置':
+                color = 'FF0055FF'
+            else:
+                color = 'FF69CCF0'
+            parts.append('|c{}{}|r'.format(color, sub))
+        elif not (('DBM' in addon and addon != 'DBM-Core') or
+                  'Grail-' in addon or
+                  addon == '!!Libs'):
+            parts.append('|cFFFFE00A{}|r'.format(en))
+
+        ext = config.find('x:TitleExtra', ns)
+        if ext is not None:
+            parts.append('|cFF22B14C{}|r'.format(ext.text))
+
+        return ' '.join(parts)
+
+    def process_toc(self):
+        for addon in os.listdir('AddOns'):
+            config = self.get_addon_config(addon)
+            if not config:
+                logger.warn('%s not found!', addon)
+                continue
+
+            path = os.path.join('AddOns', addon, '{}.toc'.format(addon))
+
+            def process(lines):
+                toc = TOC(lines)
+
+                toc.tags['Interface'] = '11304' if self.is_classic else '80300'
+                toc.tags['Title-zhCN'] = self.get_title(addon)
+
+                note = config.find('Notes')
+                if note:
+                    toc.tags['Notes-zhCN'] = note.text
+
+                if config.tag.endswith('SubAddon'):
+                    parent_config = self.get_addon_parent_config(addon)
+                    toc.tags['X-Part-Of'] = parent_config.get('name')
+
+                return toc.to_lines()
+
+            process_file(path, process)
+
+    ##########################
+    # Handle individual addons
+    ##########################
 
     def handle_lib_graph(self):
         def handle_graph(lines):
@@ -125,7 +224,7 @@ class Manager(object):
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
                   'MapSter', 'oRA3', 'Quartz', 'TellMeWhen', 'TomTom']
-        if self.is_classic():
+        if self.is_classic:
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
@@ -147,13 +246,13 @@ class Manager(object):
     def handle_att(self):
         self.change_defaults(
             'Addons/{}/Settings.lua'.format(
-                'ATT-Classic' if self.is_classic() else 'AllTheThings'),
+                'ATT-Classic' if self.is_classic else 'AllTheThings'),
             ['		["MinimapButton"] = false,',
              '		["Auto:MiniList"] = false,']
         )
 
     def handle_atlasloot(self):
-        if not self.is_classic():
+        if not self.is_classic:
             self.remove_libraries(
                 ['CallbackHandler-1.0', 'LibBabble-Boss-3.0',
                  'LibBabble-Faction-3.0', 'LibBabble-ItemSet-3.0',
@@ -164,7 +263,7 @@ class Manager(object):
             )
         self.change_defaults(
             'Addons/AtlasLoot{}/db.lua'.format(
-                'Classic' if self.is_classic() else ''),
+                'Classic' if self.is_classic else ''),
             '			shown = false,'
         )
 
@@ -217,7 +316,7 @@ class Manager(object):
                     ret.append(line)
             return ret
         path = 'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
-            'Classic' if self.is_classic() else 'Character')
+            'Classic' if self.is_classic else 'Character')
         process_file(path, f)
 
     def handle_decursive(self):
@@ -275,8 +374,8 @@ class Manager(object):
                ('enUS' not in folder and 'zhCN' not in folder)):
                 rm_tree(Path('AddOns') / folder)
 
-            if ((not self.is_classic() and 'classic' in folder) or
-                (self.is_classic() and
+            if ((not self.is_classic and 'classic' in folder) or
+                (self.is_classic and
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
@@ -464,7 +563,7 @@ class Manager(object):
 
     def handle_titan(self):
         path = 'Addons/Titan{0}Location/Titan{0}Location.lua'.format(
-            'Classic' if self.is_classic() else '')
+            'Classic' if self.is_classic else '')
         self.change_defaults(
             path,
             ['			ShowCoordsOnMap = false,',

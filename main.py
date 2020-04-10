@@ -4,7 +4,6 @@ import click
 
 from instawow_manager import InstawowManager
 from manage import Manager
-from toc import process_toc
 
 
 class Context(object):
@@ -21,9 +20,6 @@ class Context(object):
         print('Modifying addons to fit each other...', end='')
         Manager().process()
         print('Done!')
-
-        process_toc('11304' if self.game_flavour == 'classic' else '80300')
-        logging.info('Finished.')
 
 
 @click.group(context_settings={'help_option_names': ('-h', '--help')})

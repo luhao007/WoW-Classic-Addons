@@ -10,5 +10,6 @@
 
 ## X-License: GNU General Public License Version 3
 ## X-Category: Inventory
+## X-Part-Of: Scrap
 
 ..\Scrap\addons\config\config.xml

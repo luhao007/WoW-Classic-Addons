@@ -11,7 +11,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFFFFE00AAuc-Advanced|r
 ## Notes-zhCN: 拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品
 
-## X-Part-Of: Auctioneer
+## X-Part-Of: Auc-Advanced
 ## X-Category: Auction House
 ## X-Max-Interface: 80100
 ## X-URL: http://auctioneeraddon.com/

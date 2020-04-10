@@ -11,6 +11,7 @@
 
 ## X-Category: Combat
 ## X-Embeds: LibBabble-CreatureType-3.0, LibBabble-Race-3.0
+## X-Part-Of: TellMeWhen
 
 # All files for TellMeWhen_Options are now stored in the main addon.
 # However, they still are not loaded until TellMeWhen_Options, so there is no difference in performance or anything.

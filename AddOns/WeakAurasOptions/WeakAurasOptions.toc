@@ -11,6 +11,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF0055FF设置|r
 
 ## X-Category: Interface Enhancements
+## X-Part-Of: WeakAuras
 
 locales.xml
 

@@ -11,5 +11,6 @@
 ## Notes-zhCN: 泰坦面板的弹药模块
 
 ## X-Child-Of: TitanClassic
+## X-Part-Of: TitanClassic
 
 TitanClassicAmmo.xml

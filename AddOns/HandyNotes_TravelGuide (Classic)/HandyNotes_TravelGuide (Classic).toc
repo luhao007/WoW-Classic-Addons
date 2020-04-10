@@ -12,6 +12,7 @@
 
 ## X-Date: 2019-11-19
 ## X-Category: Map
+## X-Part-Of: HandyNotes
 
 #@non-debug@
 #@end-non-debug@

@@ -8,10 +8,10 @@
 
 ## Title: Informant
 ## Notes: Displays detailed item information in tooltips, such as use, vendor sales information, and more.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF物品信息|r |cFFFFE00AInformant|r
+## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0物品信息|r
 ## Notes-zhCN: 在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等
 
-## X-Part-Of: Auctioneer
+## X-Part-Of: Auc-Advanced
 ## X-Category: Item Data
 ## X-Max-Interface: 80100
 ## X-URL: http://auctioneeraddon.com/

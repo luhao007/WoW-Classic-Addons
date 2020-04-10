@@ -8,6 +8,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF技能距离检测|r |cFF0055FF设置|r
 ## Notes-zhCN: tullaRange设置模块
 
+## X-Part-Of: tullaRange
 
 localization\localization.xml
 widgets\widgets.xml

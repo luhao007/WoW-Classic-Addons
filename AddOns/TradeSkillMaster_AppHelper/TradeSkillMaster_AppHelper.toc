@@ -7,6 +7,7 @@
 ## Notes: Acts as a connection between the TSM addon and app.
 ## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFF69CCF0数据助手|r
 
+## X-Part-Of: TradeSkillMaster
 
 TradeSkillMaster_AppHelper.lua
 AppData.lua
