@@ -1,0 +1,1373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AddonConfig>
+	<Addon name="!!Libs">
+		<Title>|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r</Title>
+		<Category>基础库</Category>
+	</Addon>
+	<Addon name="!Swatter">
+		<Title>错误提示</Title>
+		<Title-en>Swatter</Title-en>
+		<Notes>增强错误提示，将错误显示在弹出窗口中</Notes>
+		<Category>基础库</Category>
+	</Addon>
+	<Addon name="+Wowhead_Looter">
+		<Title>Wowhead数据采集</Title>
+		<Notes>收集各种游戏内数据并上传Wowhead</Notes>
+		<Category>账号</Category>
+	</Addon>
+	<Addon name="ACP">
+		<Title>插件管理</Title>
+		<Category>基础库</Category>
+	</Addon>
+	<Addon name="ATT-Classic">
+		<Title>收集控助手</Title>
+		<Notes>追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况</Notes>
+		<Category>收藏</Category>
+	</Addon>
+	<Addon name="AchievementsReminder">
+		<Title>成就提醒</Title>
+		<Notes>提示当前区域可完成的成就以及完成方法</Notes>
+		<Category>收藏</Category>
+	</Addon>
+	<Addon name="AdvancedInterfaceOptions">
+		<Title>高级界面设置</Title>
+		<Notes>可以修改各种隐藏参数，包括隐藏的内部CVar参数</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="AllTheThings">
+		<Title>收集控助手</Title>
+		<Notes>追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况</Notes>
+		<Category>收藏</Category>
+	</Addon>
+	<Addon name="Atlas">
+		<Title>副本地图</Title>
+		<Category>副本</Category>
+		<SubAddons>
+			<SubAddon name="Atlas_Arena">
+				<Title>竞技场</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_BattleforAzeroth">
+				<Title>争霸艾泽拉斯</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_Battlegrounds">
+				<Title>战场</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_BurningCrusade">
+				<Title>燃烧的远征</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_Cataclysm">
+				<Title>大地的裂变</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_ClassicWoW">
+				<Title>经典旧世</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_ClassOrderHalls">
+				<Title>职业大厅</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_DungeonLocs">
+				<Title>副本位置</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_Legion">
+				<Title>军团再临</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_MistsofPandaria">
+				<Title>熊猫人之迷</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_OutdoorRaids">
+				<Title>户外首领</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_Scenarios">
+				<Title>场景战役</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_Transportation">
+				<Title>交通</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_WarlordsofDraenor">
+				<Title>德拉诺之王</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_WorldEvents">
+				<Title>世界事件</Title>
+			</SubAddon>
+			<SubAddon name="Atlas_WrathoftheLichKing">
+				<Title>巫妖王之怒</Title>
+			</SubAddon>
+			<SubAddon name="AtlasMajorCitiesEnhanced">
+				<Title>主城地图</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="AtlasLoot">
+		<Title>副本掉落</Title>
+		<Notes>显示首领可能掉落的物品</Notes>
+		<Category>副本</Category>
+		<SubAddons>
+			<SubAddon name="AtlasLoot_BattleforAzeroth">
+				<Title>争霸艾泽拉斯</Title>
+				<Notes>AtlasLoot 争霸艾泽拉斯副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_BurningCrusade">
+				<Title>燃烧的远征</Title>
+				<Notes>AtlasLoot 燃烧的远征副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Cataclysm">
+				<Title>大地的裂变</Title>
+				<Notes>AtlasLoot 大地的裂变副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Classic">
+				<Title>经典旧世</Title>
+				<Notes>AtlasLoot 经典旧世副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Collections">
+				<Title>套装</Title>
+				<Notes>AtlasLoot 套装列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Crafting">
+				<Title>专业制作</Title>
+				<Notes>AtlasLoot 专业制作物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Factions">
+				<Title>阵营</Title>
+				<Notes>AtlasLoot 阵营物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Legion">
+				<Title>军团再临</Title>
+				<Notes>AtlasLoot 军团再临副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_MistsofPandaria">
+				<Title>熊猫人之谜</Title>
+				<Notes>AtlasLoot 熊猫人之谜副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_Options">
+				<Title>设置</Title>
+				<Notes>AtlasLoot 选项模块</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_PvP">
+				<Title>PVP</Title>
+				<Notes>AtlasLoot PVP物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_WarlordsofDraenor">
+				<Title>德拉诺之王</Title>
+				<Notes>AtlasLoot 德拉诺之王副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_WorldEvents">
+				<Title>世界事件</Title>
+				<Notes>AtlasLoot 世界事件物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLoot_WrathoftheLichKing">
+				<Title>巫妖王之怒</Title>
+				<Notes>AtlasLoot 巫妖王之怒副本掉落列表</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="AtlasLootClassic">
+		<Title>副本掉落</Title>
+		<Notes>显示首领可能掉落的物品</Notes>
+		<Category>副本</Category>
+		<SubAddons>
+			<SubAddon name="AtlasLootClassic_Collections">
+				<Title>套装</Title>
+				<Notes>AtlasLoot 套装列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_Crafting">
+				<Title>专业制作</Title>
+				<Notes>AtlasLoot 专业制作物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_Data">
+				<Title>数据</Title>
+				<Notes>AtlasLoot 物品数据</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_DungeonsAndRaids">
+				<Title>地下城和团队</Title>
+				<Notes>AtlasLoot 地下城和团队副本掉落列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_Factions">
+				<Title>阵营</Title>
+				<Notes>AtlasLoot 阵营物品列表</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_Maps">
+				<Title>地图</Title>
+				<Notes>AtlasLoot 地图模块</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_Options">
+				<Title>设置</Title>
+				<Notes>AtlasLoot 选项模块</Notes>
+			</SubAddon>
+			<SubAddon name="AtlasLootClassic_PvP">
+				<Title>PVP</Title>
+				<Notes>AtlasLoot PVP物品列表</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="AtlasQuest">
+		<Title>副本任务</Title>
+		<Notes>副本任务列表</Notes>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="Auc-Advanced">
+		<Title>拍卖助手</Title>
+		<Notes>拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品</Notes>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="Auc-Filter-Basic">
+				<Title>基础过滤条件</Title>
+				<Notes>提供基础过滤条件，比如最低装等，最低价格等等</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-ScanData">
+				<Title>数据扫描</Title>
+				<Notes>让拍卖助手支持延时扫描功能，用来分页扫描拍卖行的大量数据</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Stat-Histogram">
+				<Title>统计：直方图</Title>
+				<Notes>让拍卖助手可以用直方图的形式展示统计数据</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Stat-Purchased">
+				<Title>统计：已售物品</Title>
+				<Notes>让拍卖助手用来推测已售商品（还未到原定拍卖时间就已下架）</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Stat-Simple">
+				<Title>统计：简单统计</Title>
+				<Notes>提供1/3/7/14天指数移动平均的统计数据</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Stat-StdDev">
+				<Title>统计：标准差</Title>
+				<Notes>让拍卖助手通过标准差来提供参考拍卖价格</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Stat-iLevel">
+				<Title>统计：装备等级</Title>
+				<Notes>让拍卖助手通过装备类型，装备等级等一系列参数来合并统计数据</Notes>
+			</SubAddon>
+			<SubAddon name="Auc-Util-FixAH">
+				<Title>功能：固定搜索页面</Title>
+				<Notes>让拍卖行每次搜索时都固定显示新物品，来避免物品重复出现的问题</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="BagBrother">
+		<Title>背包助手</Title>
+		<Notes>记录背包和银行中的物品</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="Bagnon">
+		<Title>背包整合</Title>
+		<Notes>将背包整合成一个窗口</Notes>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="Bagnon_Config">
+				<Title>设置</Title>
+				<Notes>Bagnon设置模块</Notes>
+			</SubAddon>
+			<SubAddon name="Bagnon_GuildBank">
+				<Title>公会银行</Title>
+				<Notes>Bagnon公会银行模块</Notes>
+			</SubAddon>
+			<SubAddon name="Bagnon_VoidStorage">
+				<Title>虚空仓库</Title>
+				<Notes>Bagnon虚空仓库模块</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="BattlePetBreedID">
+		<Title>战斗宠物品种</Title>
+		<Notes>显示战斗宠物的品种（如速度型）</Notes>
+		<Category>收藏</Category>
+	</Addon>
+	<Addon name="BeanCounter">
+		<Title>物品会计师</Title>
+		<Notes>存储物品购买销售记录</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="BlizzMove">
+		<Title>窗口移动</Title>
+		<Notes>移动内置的各种窗口</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="BtWObjectiveFilter">
+		<Title>追踪过滤</Title>
+		<Notes>在任务和副本目标等追踪界面中添加一个过滤器，来关闭不想看到的追踪</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="BtWQuests">
+		<Title>任务流程图</Title>
+		<Notes>将所有任务的前置任务和后续任务用流程图显示出来</Notes>
+		<Category>任务</Category>
+		<SubAddons>
+			<SubAddon name="BtWQuestsBattleForAzeroth">
+				<Title>争霸艾泽拉斯</Title>
+				<Notes>BtWQuests 争霸艾泽拉斯模块</Notes>
+			</SubAddon>
+			<SubAddon name="BtWQuestsBattleForAzerothPrologue">
+				<Title>争霸艾泽拉斯前夕</Title>
+				<Notes>BtWQuests 争霸艾泽拉斯前夕模块</Notes>
+			</SubAddon>
+			<SubAddon name="BtWQuestsClassic">
+				<Title>经典旧世</Title>
+				<Notes>BtWQuests 经典旧世模块</Notes>
+			</SubAddon>
+			<SubAddon name="BtWQuestsLegion">
+				<Title>军团再临</Title>
+				<Notes>BtWQuests 军团再临模块</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="ButtonForge">
+		<Title>额外动作条</Title>
+		<Notes>自定义的额外动作条</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="CensusPlusClassic">
+		<Title>人口普查</Title>
+		<Notes>统计服务器中的人口数量</Notes>
+		<Category>账号</Category>
+	</Addon>
+	<Addon name="ClassicCastbars">
+		<Title>敌对施法条</Title>
+		<Notes>显示一个预估的敌对施法条</Notes>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="ClassicCastbars_Options">
+				<Title>设置</Title>
+				<Notes>ClassicCastbars设置模块</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="ClassicThreatMeter">
+		<Title>仇恨统计</Title>
+		<Notes>统计目标仇恨，需队友也开启同样插件才能取得仇恨数据</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="ClearFont">
+		<Title>游戏字体</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="CritSound">
+		<Title>爆击音效</Title>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="CritSound_Options">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Cromulent">
+		<Title>地图信息</Title>
+		<Notes>在世界地图中显示额外的地图信息（如适合等级，钓鱼等级等）</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="DBM-Core">
+		<Title>副本助手</Title>
+		<Title-en>DBM</Title-en>
+		<Notes>功能强大的副本助手，支持所有Boss。</Notes>
+		<Category>副本</Category>
+		<SubAddons>
+			<SubAddon name="DBM-AntorusBurningThrone">
+				<Title>安托鲁斯，燃烧王座</Title>
+			</SubAddon>
+			<SubAddon name="DBM-AQ20">
+				<Title>安其拉废墟</Title>
+			</SubAddon>
+			<SubAddon name="DBM-AQ40">
+				<Title>安其拉神殿</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Argus">
+				<Title>阿古斯</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Azeroth-BfA">
+				<Title>艾泽拉斯（争霸艾泽拉斯）</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Azeroth">
+				<Title>艾泽拉斯（经典旧世）</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BaradinHold">
+				<Title>巴拉丁监狱</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BastionTwilight">
+				<Title>暮光堡垒</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BlackrockFoundry">
+				<Title>黑石铸造厂</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BlackTemple">
+				<Title>黑暗神殿</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BlackwingDescent">
+				<Title>黑翼血环</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Brawlers">
+				<Title>搏击俱乐部</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BrokenIsles">
+				<Title>破碎群岛</Title>
+			</SubAddon>
+			<SubAddon name="DBM-BWL">
+				<Title>黑翼之巢</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Challenges">
+				<Title>白虎试练场</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ChamberOfAspects">
+				<Title>龙眠神殿</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Coliseum">
+				<Title>十字军的试炼</Title>
+			</SubAddon>
+			<SubAddon name="DBM-CrucibleofStorms">
+				<Title>风暴熔炉</Title>
+			</SubAddon>
+			<SubAddon name="DBM-DefaultSkin">
+				<Title>皮肤：经典计时条</Title>
+			</SubAddon>
+			<SubAddon name="DBM-DMF">
+				<Title>暗月马戏团</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Draenor">
+				<Title>德拉诺</Title>
+			</SubAddon>
+			<SubAddon name="DBM-DragonSoul">
+				<Title>巨龙之魂</Title>
+			</SubAddon>
+			<SubAddon name="DBM-EmeraldNightmare">
+				<Title>翡翠梦魇</Title>
+			</SubAddon>
+			<SubAddon name="DBM-EternalPalace">
+				<Title>永恒王宫</Title>
+			</SubAddon>
+			<SubAddon name="DBM-EyeOfEternity">
+				<Title>永恒之眼</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Firelands">
+				<Title>火焰之地</Title>
+			</SubAddon>
+			<SubAddon name="DBM-GarrisonInvasions">
+				<Title>要塞入侵</Title>
+			</SubAddon>
+			<SubAddon name="DBM-GUI">
+				<Title>设置</Title>
+			</SubAddon>
+			<SubAddon name="DBM-HeartofFear">
+				<Title>恐惧之心</Title>
+			</SubAddon>
+			<SubAddon name="DBM-HellfireCitadel">
+				<Title>地狱火堡垒</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Highmaul">
+				<Title>悬槌堡</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Hyjal">
+				<Title>海加尔山之战</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Icecrown">
+				<Title>冰冠堡垒</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Karazhan">
+				<Title>卡拉赞</Title>
+			</SubAddon>
+			<SubAddon name="DBM-MC">
+				<Title>熔火之心</Title>
+			</SubAddon>
+			<SubAddon name="DBM-MogushanVaults">
+				<Title>魔古山宝库</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Naxx">
+				<Title>纳克萨玛斯</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Nighthold">
+				<Title>暗夜要塞</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Nyalotha">
+				<Title>尼奥罗萨</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Onyxia">
+				<Title>奥妮克西娅的巢穴</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Outlands">
+				<Title>外域</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Pandaria">
+				<Title>潘达利亚</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Party-BC">
+				<Title>燃烧的远征</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-BfA">
+				<Title>争霸艾泽拉斯</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-Cataclysm">
+				<Title>大地的裂变</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-Classic">
+				<Title>经典旧世</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-Legion">
+				<Title>军团再临</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-MoP">
+				<Title>熊猫人之谜</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-WoD">
+				<Title>德拉诺之王</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-WotLK">
+				<Title>巫妖王之怒</Title>
+				<TitleExtra>小队</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-PvP">
+				<Title>PvP</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Scenario-MoP">
+				<Title>场景战役</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Serpentshrine">
+				<Title>毒蛇神殿</Title>
+			</SubAddon>
+			<SubAddon name="DBM-SiegeOfOrgrimmarV2">
+				<Title>决战奥格瑞玛</Title>
+			</SubAddon>
+			<SubAddon name="DBM-SoundEventsPack">
+				<Title>声音特效</Title>
+				<Notes>为DBM添加声音特效（如战斗胜利等）</Notes>
+			</SubAddon>
+			<SubAddon name="DBM-StatusBarTimers">
+				<Title>状态条计时器</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Sunwell">
+				<Title>太阳之井高地</Title>
+			</SubAddon>
+			<SubAddon name="DBM-TerraceofEndlessSpring">
+				<Title>永春台</Title>
+			</SubAddon>
+			<SubAddon name="DBM-TheEye">
+				<Title>风暴要塞</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ThroneFourWinds">
+				<Title>四风王座</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ThroneofThunder">
+				<Title>雷电王座</Title>
+			</SubAddon>
+			<SubAddon name="DBM-TimelessIsle">
+				<Title>永恒岛</Title>
+			</SubAddon>
+			<SubAddon name="DBM-TombofSargeras">
+				<Title>萨格拉斯之墓</Title>
+			</SubAddon>
+			<SubAddon name="DBM-TrialofValor">
+				<Title>冠军的试炼</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Uldir">
+				<Title>奥迪尔</Title>
+			</SubAddon>
+			<SubAddon name="DBM-Ulduar">
+				<Title>奥杜尔</Title>
+			</SubAddon>
+			<SubAddon name="DBM-VoA">
+				<Title>阿尔卡冯的宝库</Title>
+			</SubAddon>
+			<SubAddon name="DBM-VPYike">
+				<Title>夏一可语音包</Title>
+			</SubAddon>
+			<SubAddon name="DBM-WorldEvents">
+				<Title>世界事件</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ZuldazarRaid">
+				<Title>达萨罗之战</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ZG">
+				<Title>祖尔格拉布</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Decursive">
+		<Title>一键驱散</Title>
+		<Notes>一键驱散队员的异常状态</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="DejaCharacterStats">
+		<Title>角色属性</Title>
+		<Notes>在角色面板中显示额外的信息，如法术命中等</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="DejaClassicStats">
+		<Title>角色属性</Title>
+		<Notes>在角色面板中显示额外的信息，如法术命中等</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Dismounter">
+		<Title>自动下马</Title>
+		<Notes>施法时自动下马</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="Enchantrix">
+		<Title>附魔助手</Title>
+		<Notes>提示物品分解后可能得到的材料</Notes>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="Enchantrix-Barker">
+				<Title>叫卖</Title>
+				<Notes>将可以进行的附魔价格发送到交易频道</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="FasterCamera">
+		<Title>视野调整</Title>
+		<Notes>提供调整视野上限，快速缩放视野等功能</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="FishingBuddy">
+		<Title>钓鱼助手</Title>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="FB_TrackingFrame">
+				<Title>追踪框</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Fizzle">
+		<Title>装备着色</Title>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="GarrisonMissionManager">
+		<Title>要塞任务管理</Title>
+		<Notes>协助管理要塞随从任务</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="GatherMate2">
+		<Title>采集助手</Title>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="GatherMate2_Data">
+				<Title>数据</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="GearManagerEx">
+		<Title>一键换装</Title>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="GladiatorlosSA2">
+		<Title>角斗士助手</Title>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="GladiatorlosSA_zhCN">
+				<Title>夏一可语音包</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Gladius">
+		<Title>竞技场助手</Title>
+		<Notes>在竞技场中显示敌人</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="Grail">
+		<Title>本地数据库</Title>
+		<Notes>本地数据库，包含任务，成就，NPC等数据</Notes>
+		<Category>任务</Category>
+		<SubAddons>
+			<SubAddon name="Grail-Achievements">
+				<Title>声望</Title>
+				<Notes>声望数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_classic_">
+				<Title>NPC</Title>
+				<Notes>怀旧服NPC数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_classic_-enUS">
+				<Title>NPC</Title>
+				<TitleExtra>英文</TitleExtra>
+				<Notes>怀旧服NPC数据库的英文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_classic_-zhCN">
+				<Title>NPC</Title>
+				<TitleExtra>中文</TitleExtra>
+				<Notes>怀旧服NPC数据库的中文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_retail_">
+				<Title>NPC</Title>
+				<Notes>正式服NPC数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_retail_-enUS">
+				<Title>NPC</Title>
+				<TitleExtra>英文</TitleExtra>
+				<Notes>正式服NPC数据库的英文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-NPCs-_retail_-zhCN">
+				<Title>NPC</Title>
+				<TitleExtra>中文</TitleExtra>
+				<Notes>正式服NPC数据库的中文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_classic_">
+				<Title>任务</Title>
+				<Notes>怀旧服本地数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_classic_-enUS">
+				<Title>任务</Title>
+				<TitleExtra>英文</TitleExtra>
+				<Notes>怀旧服本地数据库的英文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_classic_-zhCN">
+				<Title>任务</Title>
+				<TitleExtra>中文</TitleExtra>
+				<Notes>怀旧服本地数据库的中文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_retail_">
+				<Title>任务</Title>
+				<Notes>正式服本地数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_retail_-enUS">
+				<Title>任务</Title>
+				<TitleExtra>英文</TitleExtra>
+				<Notes>正式服本地数据库的英文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Quests-_retail_-zhCN">
+				<Title>任务</Title>
+				<TitleExtra>中文</TitleExtra>
+				<Notes>正式服本地数据库的中文本地化模块</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Reputations-_classic_">
+				<Title>声望</Title>
+				<Notes>怀旧服声望数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Reputations-_retail_">
+				<Title>声望</Title>
+				<Notes>正式服声望数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-Rewards">
+				<Title>奖励</Title>
+				<Notes>非声望奖励数据库</Notes>
+			</SubAddon>
+			<SubAddon name="Grail-When">
+				<Title>完成时间</Title>
+				<Notes>帮助Grail记录各项任务，声望和成就的完成时间</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Grid2">
+		<Title>团队面板</Title>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="Grid2LDB">
+				<Title>库文件</Title>
+			</SubAddon>
+			<SubAddon name="Grid2Options">
+				<Title>设置</Title>
+			</SubAddon>
+			<SubAddon name="Grid2RaidDebuffs">
+				<Title>团队首领减益</Title>
+			</SubAddon>
+			<SubAddon name="Grid2RaidDebuffsOptions">
+				<Title>团队首领减益 设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="GroupCalendar">
+		<Title>团队行事历</Title>
+		<Notes>在团队或朋友间同步显示事件</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="HandyNotes">
+		<Title>地图标记</Title>
+		<Notes>可以在地图上添加标记</Notes>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="HandyNotes_Argus">
+				<Title>宝藏/稀有 阿古斯</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_AzerothsTopTunes">
+				<Title>成就 艾泽拉斯金曲</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_BattleForAzerothTreasures">
+				<Title>宝藏/稀有 争霸艾泽拉斯</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_BrokenShore">
+				<Title>宝藏/稀有 破碎海滩</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_DraenorTreasures">
+				<Title>宝藏/稀有 德拉诺</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_DungeonLocations (Classic)">
+				<Title>副本入口</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_HallowsEnd">
+				<Title>万圣节</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_LegionRaresTreasures">
+				<Title>宝藏/稀有 军团再临</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_LostAndFound">
+				<Title>失物招领</Title>
+				<Notes>显示熊猫人之谜“失物招领“成就所需物品的地点</Notes>
+			</SubAddon>
+			<SubAddon name="HandyNotes_LunarFestival">
+				<Title>节日 春节</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_NPCs (Classic)">
+				<Title>NPC</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_SummerFestival">
+				<Title>节日 仲夏节</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_SuramarShalAranTelemancy">
+				<Title>苏拉玛传送点</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_TimelessIsleChests">
+				<Title>宝藏 永恒岛</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_TravelGuide (Classic)">
+				<Title>旅行指南</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_WarfrontRares">
+				<Title>稀有 战争前线</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_WarfrontTreasures">
+				<Title>宝藏 战争前线</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="honorspy">
+		<Title>荣誉间谍</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="HPetBattleAny">
+		<Title>宠物对战增强</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="Informant">
+		<Title>物品信息</Title>
+		<Notes>在鼠标提示中提供更详细的物品信息，如商店购买价和销售价等</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="ItemRack">
+		<Title>一键换装</Title>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="ItemRackOptions">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Mapster">
+		<Title>地图增强</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MasterPlan">
+		<Title>要塞助手</Title>
+		<Category>任务</Category>
+		<SubAddons>
+			<SubAddon name="MasterPlanA">
+				<Title>额外功能</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="MBB">
+		<Title>小地图按钮整合</Title>
+		<Notes>将小地图的按钮整合成一个</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MeetingStone">
+		<Title>集合石</Title>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="MerInspect">
+		<Title>观察助手</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MikScrollingBattleText">
+		<Title>浮动战斗信息</Title>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="MSBTOptions">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="MogIt">
+		<Title>幻化助手</Title>
+		<Notes>提供额外的幻化辅助功能。</Notes>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="MogIt_Artifact">
+				<Title>神器</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Cloth">
+				<Title>布甲</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Leather">
+				<Title>皮甲</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Mail">
+				<Title>锁甲</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_OneHanded">
+				<Title>单手武器</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Other">
+				<Title>其他</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Plate">
+				<Title>板甲</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_Ranged">
+				<Title>远程武器</Title>
+			</SubAddon>
+			<SubAddon name="MogIt_TwoHanded">
+				<Title>双手武器</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="MonkeyBuddy">
+		<Title>Monkey伴侣</Title>
+		<Notes>在小地图旁提供一个猴子图标，可修改Monkey模块的设置</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MonkeyLibrary">
+		<Title>Monkey运行库</Title>
+		<Notes>Monkey模块的通用库</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MonkeyQuest">
+		<Title>Monkey任务追踪窗口</Title>
+		<Notes>独立任务追踪窗口</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MonkeyQuestLog">
+		<Title>Monkey任务窗口</Title>
+		<Notes>独立任务窗口</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MonkeySpeed">
+		<Title>Monkey移动速度</Title>
+		<Notes>显示当前移动速度</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="MythicPlusTimer">
+		<Title>大秘境计时</Title>
+		<Notes>在大秘境中显示一个计时器</Notes>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="Myslot">
+		<Title>键位设置</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="NPCScan">
+		<Title>NPC扫描</Title>
+		<Notes>扫描特定的NPC，如稀有精英</Notes>
+		<Category>收藏</Category>
+	</Addon>
+	<Addon name="Omen">
+		<Title>仇恨统计</Title>
+		<Notes>小巧独立的仇恨统计窗口</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="OmniCC">
+		<Title>技能冷却</Title>
+		<Notes>显示技能冷却时间</Notes>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="OmniCC_Config">
+				<Title>设置</Title>
+				<Notes>显示技能冷却时间</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="OPie">
+		<Title>环形动作条</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="oRA3">
+		<Title>团队助手</Title>
+		<Notes>提供团队和小队的一些辅助功能</Notes>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="Overachiever">
+		<Title>成就助手</Title>
+		<Notes>提供一些辅助管理成就的功能</Notes>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="Overachiever_Cache">
+				<Title>缓存</Title>
+			</SubAddon>
+			<SubAddon name="Overachiever_Tabs">
+				<Title>界面</Title>
+			</SubAddon>
+			<SubAddon name="Overachiever_Trade">
+				<Title>交易</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Pawn">
+		<Title>装备评分</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="PetTracker">
+		<Title>宠物追踪</Title>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="PetTracker_Battle">
+				<Title>战斗</Title>
+			</SubAddon>
+			<SubAddon name="PetTracker_Config">
+				<Title>设置</Title>
+			</SubAddon>
+			<SubAddon name="PetTracker_Journal">
+				<Title>日志</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Prat-3.0">
+		<Title>聊天增强</Title>
+		<Title-en>Prat</Title-en>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Quartz">
+		<Title>施法条</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="Questie">
+		<Title>任务助手</Title>
+		<Notes>在地图和小地图上提供任务指引，在怪物身上提示任务进度</Notes>
+		<Category>任务</Category>
+	</Addon>
+	<Addon name="RaidAchievement">
+		<Title>团队成就助手</Title>
+		<Notes>在团队和小队中追踪成就完成情况，并给与相应提示。内置当前版本的副本模块。</Notes>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="RaidAchievement_CataHeroics">
+				<Title>大地的裂变小队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_CataRaids">
+				<Title>大地的裂变团队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_Icecrown">
+				<Title>冰冠堡垒</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_LegionHeroics">
+				<Title>军团再临小队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_LegionRaids">
+				<Title>军团再临团队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_Naxxramas">
+				<Title>纳克萨玛斯</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_OldModules">
+				<Title>经典模块</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_Ulduar">
+				<Title>奥杜尔</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_WoDHeroics">
+				<Title>德拉诺之王小队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_WoDRaids">
+				<Title>德拉诺之王团队</Title>
+			</SubAddon>
+			<SubAddon name="RaidAchievement_WotlkHeroics">
+				<Title>巫妖王之怒小队</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="RangeDisplay">
+		<Title>目标距离</Title>
+		<Notes>显示与目标的距离。</Notes>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="RangeDisplay_Options">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Rarity">
+		<Title>稀有物品追踪</Title>
+		<Notes>显示与目标的距离。</Notes>
+		<Category>收藏</Category>
+		<SubAddons>
+			<SubAddon name="Rarity_Options">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="Recount">
+		<Title>伤害统计</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="RelicInspector">
+		<Title>钥石信息</Title>
+		<Category>副本</Category>
+	</Addon>
+	<Addon name="Rematch">
+		<Title>宠物对战增强</Title>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="Scrap">
+		<Title>垃圾管理</Title>
+		<Notes>自动出售灰色物品</Notes>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="Scrap_Config">
+				<Title>设置</Title>
+				<Notes>Scrap设置模块</Notes>
+			</SubAddon>
+			<SubAddon name="Scrap_Merchant">
+				<Title>商人</Title>
+				<Notes>在商人出售界面添加出售垃圾的按钮</Notes>
+			</SubAddon>
+			<SubAddon name="Scrap_Options">
+				<Title>设置</Title>
+				<Notes>Scrap设置模块</Notes>
+			</SubAddon>
+			<SubAddon name="Scrap_Spotlight">
+				<Title>高亮</Title>
+				<Notes>将背包中的灰色物品颜色变灰</Notes>
+			</SubAddon>
+			<SubAddon name="Scrap_Visualizer">
+				<Title>可视化列表</Title>
+				<Notes>提供一个可视化列表来查看灰色物品</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="SimpleRaidTargetIcons">
+		<Title>团队标记助手</Title>
+		<Notes>双击目标即可添加团队标记</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Simulationcraft">
+		<Title>输出模拟器</Title>
+		<Notes>模拟当前人物的输出，来确认哪个装备属性更好。</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="Skada">
+		<Title>伤害统计</Title>
+		<Notes>伤害统计窗口</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="SlideBar">
+		<Title>侧边滑动栏</Title>
+		<Notes>在屏幕边提供一个可以滑动栏来显示小地图图标</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Stubby">
+		<Title>插件自动加载</Title>
+		<Notes>让插件可以自动启动</Notes>
+		<Category>基础库</Category>
+	</Addon>
+	<Addon name="TellMeWhen">
+		<Title>技能提示</Title>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="TellMeWhen_Options">
+				<Title>设置</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="ThreatClassic2">
+		<Title>仇恨统计</Title>
+		<Notes>统计目标仇恨，需队友也开启同样插件才能取得仇恨数据</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="TinyInspect">
+		<Title>装备观察</Title>
+		<Notes>独立的装备列表</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="TinyTooltip">
+		<Title>鼠标提示增强</Title>
+		<Notes>在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置</Notes>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Titan">
+		<Title>泰坦面板</Title>
+		<Notes>在屏幕顶端/底端增加一个可视化侧边栏</Notes>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="TitanAmmo">
+				<Title>弹药</Title>
+				<Notes>泰坦面板的弹药模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanBag">
+				<Title>背包</Title>
+				<Notes>泰坦面板的背包模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClock">
+				<Title>时钟</Title>
+				<Notes>泰坦面板的时钟模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanCurrency">
+				<Title>货币</Title>
+				<Notes>泰坦面板的货币模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanGold">
+				<Title>金币</Title>
+				<Notes>泰坦面板的金币模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanLocation">
+				<Title>位置</Title>
+				<Notes>泰坦面板的位置模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanLootType">
+				<Title>分配方式</Title>
+				<Notes>泰坦面板的分配方式模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanPerformance">
+				<Title>性能</Title>
+				<Notes>泰坦面板的性能模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanRepair">
+				<Title>修理</Title>
+				<Notes>泰坦面板的修理模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanReputation">
+				<Title>声望</Title>
+				<Notes>泰坦面板的声望模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanVolume">
+				<Title>音量</Title>
+				<Notes>泰坦面板的音量模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanXP">
+				<Title>经验</Title>
+				<Notes>泰坦面板的经验模块</Notes>
+			</SubAddon>
+			<SubAddon name="titan-simulationcraft">
+				<Title>模拟</Title>
+				<Notes>泰坦面板上添加一个SimulationCraft按钮。</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="TitanClassic">
+		<Title>泰坦面板</Title>
+		<Notes>在屏幕顶端/底端增加一个可视化侧边栏</Notes>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="TitanClassicAmmo">
+				<Title>弹药</Title>
+				<Notes>泰坦面板的弹药模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicBag">
+				<Title>背包</Title>
+				<Notes>泰坦面板的背包模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicClock">
+				<Title>时钟</Title>
+				<Notes>泰坦面板的时钟模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicGold">
+				<Title>金币</Title>
+				<Notes>泰坦面板的金币模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicLocation">
+				<Title>位置</Title>
+				<Notes>泰坦面板的位置模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicLootType">
+				<Title>分配方式</Title>
+				<Notes>泰坦面板的分配方式模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicPerformance">
+				<Title>性能</Title>
+				<Notes>泰坦面板的性能模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicRegen">
+				<Title>恢复</Title>
+				<Notes>泰坦面板的恢复模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicRepair">
+				<Title>修理</Title>
+				<Notes>泰坦面板的修理模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicVolume">
+				<Title>音量</Title>
+				<Notes>泰坦面板的音量模块</Notes>
+			</SubAddon>
+			<SubAddon name="TitanClassicXP">
+				<Title>经验</Title>
+				<Notes>泰坦面板的经验模块</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="TomTom">
+		<Title>导航助手</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="TradeSkillMaster">
+		<Title>专业助手</Title>
+		<Category>物品</Category>
+		<SubAddons>
+			<SubAddon name="TradeSkillMaster_AppHelper">
+				<Title>数据助手</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="TrinketMenu">
+		<Title>饰品助手</Title>
+		<Notes>小巧独立的饰品管理器</Notes>
+		<Category>物品</Category>
+	</Addon>
+	<Addon name="tullaRange">
+		<Title>技能距离检测</Title>
+		<Notes>目标距离过远时，将技能图标显示为红色</Notes>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="tullaRange_Config">
+				<Title>设置</Title>
+				<Notes>tullaRange设置模块</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="UnitFramesPlus">
+		<Title>头像增强</Title>
+		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="UnitFramesPlus_Cooldown">
+				<Title>冷却计时</Title>
+			</SubAddon>
+			<SubAddon name="UnitFramesPlus_MobHealth">
+				<Title>目标血量</Title>
+			</SubAddon>
+			<SubAddon name="UnitFramesPlus_Options">
+				<Title>设置</Title>
+			</SubAddon>
+			<SubAddon name="UnitFramesPlus_Threat">
+				<Title>目标仇恨</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="WeakAuras">
+		<Title>图形提示</Title>
+		<Notes>自定义显示基于增益、减益以及其他触发的图形以及信息。</Notes>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name="WeakAurasArchive">
+				<Title>存档</Title>
+			</SubAddon>
+			<SubAddon name="WeakAurasOptions">
+				<Title>设置</Title>
+			</SubAddon>
+			<SubAddon name="WeakAurasTemplates">
+				<Title>模板</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
+	<Addon name="WIM">
+		<Title>即时通信</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="Wholly">
+		<Title>任务完成辅助</Title>
+		<Category>任务</Category>
+	</Addon>
+	<Addon name="WorldQuestsList">
+		<Title>世界任务列表</Title>
+		<Category>任务</Category>
+	</Addon>
+	<Addon name="WorldQuestTracker">
+		<Title>世界任务追踪</Title>
+		<Category>任务</Category>
+	</Addon>
+</AddonConfig>

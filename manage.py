@@ -65,6 +65,24 @@ class Manager(object):
                            if not any(lib+'\\' in l for lib in libs)]
         )
 
+    def change_defaults(self, path, defaults):
+        def handle(lines):
+            ret = []
+            for l in lines:
+                for d in [defaults] if isinstance(defaults, str) else defaults:
+                    if l.startswith(d.split('= ')[0] + '= '):
+                        ret.append(d+'\n')
+                        break
+                else:
+                    ret.append(l)
+            return ret
+        process_file(path, handle)
+
+    def process(self):
+        for f in dir(self):
+            if f.startswith('handle'):
+                getattr(self, f)()
+
     def handle_lib_graph(self):
         def handle_graph(lines):
             orig = 'local TextureDirectory\n'
@@ -106,8 +124,7 @@ class Manager(object):
 
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
-                  'MapSter', 'oRA3', 'Quartz', 'TellMeWhen', 'TomTom',
-                  'WIM']
+                  'MapSter', 'oRA3', 'Quartz', 'TellMeWhen', 'TomTom']
         if self.is_classic():
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
@@ -126,19 +143,6 @@ class Manager(object):
                        'RelicInspector', 'Titan']
         for addon in addons:
             self.remove_libraries_all(addon)
-
-    def change_defaults(self, path, defaults):
-        def handle(lines):
-            ret = []
-            for l in lines:
-                for d in [defaults] if isinstance(defaults, str) else defaults:
-                    if l.startswith(d.split('= ')[0] + '= '):
-                        ret.append(d+'\n')
-                        break
-                else:
-                    ret.append(l)
-            return ret
-        process_file(path, handle)
 
     def handle_att(self):
         self.change_defaults(
@@ -510,6 +514,14 @@ class Manager(object):
             'Addons/WeakAuras/embeds.xml'
         )
 
+    def handle_wim(self):
+        self.remove_libraries(
+            ['CallbackHandler-1.0', 'ChatThrottleLib', 'LibChatAnims',
+             'LibSharedMedia-3.0', 'LibStub'],
+            'Addons/WIM/Libs',
+            'Addons/WIM/Libs/includes.xml'
+        )
+
     def handle_whlooter(self):
         self.change_defaults(
             'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
@@ -528,8 +540,3 @@ class Manager(object):
             'Addons/WorldQuestTracker/libs',
             'Addons/WorldQuestTracker/libs/libs.xml'
         )
-
-    def process(self):
-        for f in dir(self):
-            if f.startswith('handle'):
-                getattr(self, f)()

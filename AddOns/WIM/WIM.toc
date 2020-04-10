@@ -15,6 +15,7 @@
 ## X-Category: Chat
 ## X-Embeds: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatHandler-1.0, LibChatAnims
 
+Libs\Includes.xml
 Sources\Namespace.lua
 Sources\Locale.lua
 Localization\Includes.xml

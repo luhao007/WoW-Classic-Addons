@@ -5,7 +5,7 @@
 
 ## Title: Addon Control Panel
 ## Notes: Adds an addon manager in game via the 'Addons' menu. Special support for multi-part addons. Based on rMCP by Rophy.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF0000基础库|r|cFFFFE00A>|r |cFFFFFFFF插件管理|r |cFFFFE00AAddon Control Panel|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF0000基础库|r|cFFFFE00A>|r |cFFFFFFFF插件管理|r |cFFFFE00AACP|r
 ## Notes-zhCN: 在系统选项按「插件管理」按钮管理插件。ACP 以 rMCP（MCP，由 Rophy 修改）为基础。
 
 ## X-Curse-Project-ID: 7529

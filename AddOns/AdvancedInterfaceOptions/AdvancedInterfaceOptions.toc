@@ -7,7 +7,7 @@
 
 ## Title: Advanced Interface Options
 ## Notes: Restores access to removed interface options in Legion
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF高级界面设置|r |cFFFFE00AAdvanced Interface Options|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF高级界面设置|r |cFFFFE00AAdvancedInterfaceOptions|r
 ## Notes-zhCN: 可以修改各种隐藏参数，包括隐藏的内部CVar参数
 
 ## X-Category: Interface Enhancements

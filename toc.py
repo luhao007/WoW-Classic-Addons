@@ -1,7 +1,7 @@
 import logging
 import os
 
-from config import MAPPING
+from xml.etree import ElementTree as ET
 from utils import process_file
 
 logger = logging.getLogger('toc')
@@ -73,71 +73,80 @@ class TOC(object):
         return ret
 
 
-def get_title(addon):
-    m = MAPPING[addon]
-    title = ''
+def get_title(config_tree, name):
+    parts = []
 
-    if 'Category' in m:
-        cat = m['Category']
-        if cat == '任务':
-            color = '00FF7F'  # Spring green
-        elif cat == '基础库':
-            color = 'FF0000'  # Red
-        elif cat == '物品':
-            color = '1E90FF'  # Doget blue
-        elif cat == '界面':
-            color = 'BA55D3'  # Medium orchid
-        elif cat == '副本':
-            color = 'FF7D0A'  # Orange - DBM
-        elif cat == '战斗':
-            color = 'FF1493'  # Deep pink
+    path = './/*[@name="{}"]'.format(name)
+    config = config_tree.find(path)
+    if config.tag == 'SubAddon':
+        cat = config_tree.find('{}../../Category'.format(path)).text
+        title = config_tree.find('{}../../Title'.format(path)).text
+        sub = config.find('Title').text
+    else:
+        cat = config.find('Category').text
+        title = config.find('Title').text
+        if config.find('Title-en') is not None:
+            en = config.find('Title-en').text
         else:
-            color = 'FFFFFF'  # White
-        title += '|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r '.format(color, cat)
-    if 'Title-cn' in m:
-        title += '|cFFFFFFFF{}|r '.format(m['Title-cn'])
-    if 'Title-sub' in m:
-        sub = m['Title-sub']
+            en = name
+
+    if cat == '任务':
+        color = '00FF7F'  # Spring green
+    elif cat == '基础库':
+        color = 'FF0000'  # Red
+    elif cat == '物品':
+        color = '1E90FF'  # Doget blue
+    elif cat == '界面':
+        color = 'BA55D3'  # Medium orchid
+    elif cat == '副本':
+        color = 'FF7D0A'  # Orange - DBM
+    elif cat == '战斗':
+        color = 'FF1493'  # Deep pink
+    else:
+        color = 'FFFFFF'  # White
+    parts.append('|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r'.format(color, cat))
+
+    parts.append('|cFFFFFFFF{}|r'.format(title))
+
+    if config.tag == 'SubAddon':
         if sub == '设置':
             color = 'FF0055FF'
         elif '文' in sub:
             color = 'FF22B14C'
         else:
             color = 'FF69CCF0'
-        title += '|c{}{}|r'.format(color, sub)
-    elif not (('DBM' in addon and addon != 'DBM-Core') or
-              'Grail-' in addon or
-              addon == '!!Libs'):
-        title += '|cFFFFE00A{}|r'.format(m.get('Title-en', addon))
+        parts.append('|c{}{}|r'.format(color, sub))
+    elif not (('DBM' in name and name != 'DBM-Core') or
+              'Grail-' in name or
+              name == '!!Libs'):
+        parts.append('|cFFFFE00A{}|r'.format(en))
 
-    return title.strip()
+    ext = config.find('TitleExtra')
+    if ext is not None:
+        parts.append('|cFF22B14C{}|r'.format(ext.text))
 
-
-def get_notes(addon):
-    m = MAPPING[addon]
-    return m.get('Notes')
+    return ' '.join(parts)
 
 
 def process_toc(version, verbose=False):
+    config_tree = ET.parse('config.xml')
     for addon in os.listdir('AddOns'):
-        if addon not in MAPPING:
+        config = config_tree.find('.//*[@name="{}"]'.format(addon))
+        if not config:
             logger.warn('%s not found!', addon)
             continue
 
-        path = os.path.join('AddOns', addon, '{0}.toc'.format(addon))
+        path = os.path.join('AddOns', addon, '{}.toc'.format(addon))
 
         def process(lines):
             toc = TOC(lines)
 
             toc.tags['Interface'] = version
+            toc.tags['Title-zhCN'] = get_title(config_tree, addon)
 
-            title = get_title(addon)
-            if title:
-                toc.tags['Title-zhCN'] = title
-
-            note = get_notes(addon)
+            note = config.find('Notes')
             if note:
-                toc.tags['Notes-zhCN'] = note
+                toc.tags['Notes-zhCN'] = note.text
 
             return toc.to_lines()
 

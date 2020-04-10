@@ -7,7 +7,7 @@
 
 ## Title: TellMeWhen Options
 ## Notes: Options and configuration for TellMeWhen
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF技能状态提示|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF技能提示|r |cFF0055FF设置|r
 
 ## X-Category: Combat
 ## X-Embeds: LibBabble-CreatureType-3.0, LibBabble-Race-3.0

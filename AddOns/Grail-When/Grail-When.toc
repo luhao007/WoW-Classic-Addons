@@ -7,7 +7,7 @@
 
 ## Title: Grail |r|cff69ccf0When|r
 ## Notes: Provides completion date information to Grail
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库 |cFF69CCF0完成时间|r|r
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0完成时间|r
 ## Notes-zhCN: 帮助Grail记录各项任务，声望和成就的完成时间
 
 

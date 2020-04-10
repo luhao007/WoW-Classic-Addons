@@ -1,5 +1,5 @@
 ## Interface: 11304
-## RequiredDeps:
+## RequiredDeps: 
 ## OptionalDeps: LibDBIcon-1.0, LibDataBroker-1.1
 ## SavedVariables: gGroupCalendar_Settings, gGroupCalendar_Database, GroupCalendarDB, gGroupCalendar_MiniMapSettings, gGroupCalendar_Database2, gGroupCalendar_PlayerDatabases
 

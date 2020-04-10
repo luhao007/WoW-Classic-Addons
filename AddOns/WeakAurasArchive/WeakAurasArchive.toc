@@ -4,7 +4,7 @@
 ## SavedVariables: WeakAurasArchive
 
 ## Title: WeakAuras Archive
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF69CCF0存档|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF69CCF0存档|r
 
 
 WeakAurasArchive.lua
