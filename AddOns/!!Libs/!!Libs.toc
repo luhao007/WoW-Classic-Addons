@@ -65,7 +65,9 @@ LibChecksum-1.0\LibChecksum.lua
 LibClassicCasterino\LibClassicCasterino.lua
 LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
+LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
+LibDeflate\lib.xml
 LibDDI-1.0\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml

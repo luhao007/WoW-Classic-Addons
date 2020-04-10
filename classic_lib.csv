@@ -8,11 +8,11 @@ curse:libalts-1-0,default
 curse:libbossids-1-0,default
 curse:libcandybar-3-0,default
 curse:libchatanims,default
-curse:libclassicdurations,default
-curse:libclassicitemsets-1-0,default
 curse:libcompress,default
+curse:libcustomglow,default
 curse:libdbicon-1-0,default
 curse:libddi-1-0,default
+curse:libdeflate,default
 curse:libdialog-1-0,default
 curse:libdogtag-3-0,default
 curse:libdogtag-unit-3-0,default

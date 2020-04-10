@@ -111,7 +111,7 @@ class Manager(object):
         if self.is_classic():
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
-                       'Fizzle', 'HandyNotes_NPCs (Classic)',
+                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
                        'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
@@ -496,6 +496,19 @@ class Manager(object):
 
         self.remove_libraries_all('UnitFramesPlus_Cooldown')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
+
+    def handle_wa(self):
+        self.remove_libraries(
+            ['AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0', 'AceEvent-3.0',
+             'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
+             'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
+             'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibSpellRange-1.0',
+             'LibStub'],
+            'Addons/WeakAuras/Libs',
+            'Addons/WeakAuras/embeds.xml'
+        )
 
     def handle_whlooter(self):
         self.change_defaults(

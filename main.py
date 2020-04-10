@@ -89,5 +89,12 @@ def show(obj):
     obj.manager.show()
 
 
+@main.command()
+@click.pass_obj
+def show_libs(obj):
+    """Show all libraries"""
+    obj.manager_lib.show()
+
+
 if __name__ == "__main__":
     main()  # pylint: disable=no-value-for-parameter

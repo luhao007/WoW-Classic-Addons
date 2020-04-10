@@ -1020,6 +1020,11 @@ MAPPING = {
         'Title-sub': '团队首领减益 设置',
         'Category': '界面'
     },
+    'GroupCalendar': {
+        'Title-cn': '团队行事历',
+        'Notes': '在团队或朋友间同步显示事件',
+        'Category': '界面',
+    },
     'HandyNotes': {
         'Title-cn': '地图标记',
         'Notes': '可以在地图上添加标记',
@@ -1724,6 +1729,26 @@ MAPPING = {
         'Title-cn': '头像增强',
         'Title-sub': '目标仇恨',
         'Category': '界面'
+    },
+    'WeakAuras': {
+        'Title-cn': '图形提示',
+        'Notes': '自定义显示基于增益、减益以及其他触发的图形以及信息。',
+        'Category': '战斗'
+    },
+    'WeakAurasArchive': {
+        'Title-cn': '图形提示',
+        'Title-sub': '存档',
+        'Category': '战斗'
+    },
+    'WeakAurasOptions': {
+        'Title-cn': '图形提示',
+        'Title-sub': '设置',
+        'Category': '战斗'
+    },
+    'WeakAurasTemplates': {
+        'Title-cn': '图形提示',
+        'Title-sub': '模板',
+        'Category': '战斗'
     },
     'WIM': {
         'Title-cn': '即时通信',

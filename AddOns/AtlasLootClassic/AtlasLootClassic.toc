@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Lag
-## Version: v1.4.7
+## Version: v1.4.8
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1, LibClassicItemSets-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: AtlasLootClassicDB
@@ -26,8 +26,8 @@ Locales\Locales.xml
 
 AtlasLoot.xml
 AtlasLoot.lua
-
 Loader.lua
+
 Core\SlashCommands.lua
 Core\ClickHandler.lua
 Core\Tooltip.lua
@@ -39,6 +39,7 @@ Core\TargetScan.lua
 #Core\AtlasIntegration.lua
 #Core\WorldMapIntegration.xml
 MiniMapButton.lua
+
 Data\Token.lua
 Data\Sets.lua
 Data\Profession.lua
@@ -48,8 +49,10 @@ Data\ContentPhase.lua
 Data\Droprate.lua
 Data\AutoSelect.lua
 Data\Requirements.lua
+
 ItemDB\ItemDB.lua
 ItemDB\SoundData.lua
+
 Button\Button.lua
 Button\Item_type.lua
 Button\Link_type.lua
@@ -70,6 +73,7 @@ GUI\Template_Model.lua
 GUI\ItemFrame.lua
 GUI\ModelFrame.lua
 GUI\SoundFrame.lua
+
 Addons\Addons.lua
 Addons\Sources.lua
 Addons\Favourites.lua

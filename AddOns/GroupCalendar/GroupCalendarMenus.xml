@@ -1,0 +1,410 @@
+<UI xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ http://wowprogramming.com/FrameXML/UI.xsd">
+	
+	<Frame name="CalendarTimeTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cTimeLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="50" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString text=":" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="RIGHT" relativeTo="$parentLabel">
+							<Offset>
+								<AbsDimension x="64" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentHour" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="45" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentLabel">
+						<Offset>
+							<AbsDimension x="-15" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarHourDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarHourDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentMinute" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="43" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentHour">
+						<Offset>
+							<AbsDimension x="-29" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarMinuteDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarMinuteDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentAMPM" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="48" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentMinute">
+						<Offset>
+							<AbsDimension x="-32" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarAMPMDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarAMPMDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CalendarDurationTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cDurationLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="50" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentDuration" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentLabel">
+						<Offset>
+							<AbsDimension x="-15" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarDurationDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarDurationDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CalendarEventTypeTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cEventLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="50" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentEventType" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentLabel">
+						<Offset>
+							<AbsDimension x="-15" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarEventTypeDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarEventTypeDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CalendarPlayerClassMenuTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cPlayerClassLabel" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="-25" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarClassDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarClassDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CalendarPlayerRaceMenuTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cPlayerRaceLabel" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="-25" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarRaceDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarRaceDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="CalendarPlayerStatusMenuTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cPlayerStatusLabel" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="-25" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarStatusDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarStatusDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Frame name="CalendarPlayerRankMenuTemplate" hidden="false" virtual="true">
+		<Size>
+			<AbsDimension x="100" y="20"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cRankLabel" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="-12" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset>
+							<AbsDimension x="-25" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarGuildRank_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarGuildRank_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<Frame name="CalendarCharactersTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="150" y="21"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentLabel" text="GroupCalendar_cCharactersLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="50" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+				<Size>
+					<AbsDimension x="100" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentLabel">
+						<Offset>
+							<AbsDimension x="-15" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						CalendarCharactersDropDown_OnLoad(self);
+					</OnLoad>
+					<OnShow>
+						CalendarCharactersDropDown_OnLoad(self);
+					</OnShow>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+  <Frame name="CalendarRolesTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="150" y="21"/>
+    </Size>
+    <Layers>
+      <Layer level="OVERLAY">
+        <FontString name="$parentLabel" text="GroupCalendar_cRoleLabel" inherits="GameFontNormalSmall">
+          <Anchors>
+            <Anchor point="RIGHT" relativePoint="LEFT">
+              <Offset>
+                <AbsDimension x="50" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Frame name="$parentMenu" inherits="CalendarDropDownTemplate">
+        <Size>
+          <AbsDimension x="100" y="21"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentLabel">
+            <Offset>
+              <AbsDimension x="-15" y="-3"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            CalendarRolesDropDown_OnLoad(self);
+          </OnLoad>
+          <OnShow>
+            CalendarRolesDropDown_OnLoad(self);
+          </OnShow>
+        </Scripts>
+      </Frame>
+    </Frames>
+  </Frame>
+	
+</UI>
