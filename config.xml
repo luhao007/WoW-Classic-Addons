@@ -258,8 +258,8 @@
 				<Notes>在屏幕边提供一个可以滑动栏来显示小地图图标</Notes>
 			</SubAddon>
 			<SubAddon name="Stubby">
-				<Title>插件自动加载</Title>
-				<Notes>让插件可以自动启动</Notes>
+				<Title>调用助手</Title>
+				<Notes>让Auctioneer各种子插件可以需要时自动加载</Notes>
 			</SubAddon>
 			<SubAddon name="Informant">
 				<Title>物品信息</Title>
