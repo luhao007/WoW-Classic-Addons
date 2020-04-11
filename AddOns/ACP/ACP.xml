@@ -9,7 +9,7 @@
             <Layer level="BACKGROUND">
                 <FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT">
                     <Size>
-                        <AbsDimension x="200" y="12"/>
+                        <AbsDimension x="270" y="12"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT">
@@ -21,7 +21,7 @@
                 </FontString>
                 <FontString name="$parentStatus" inherits="GameFontNormalSmall" justifyH="LEFT">
                     <Size>
-                        <AbsDimension x="160" y="12"/>
+                        <AbsDimension x="90" y="12"/>
                     </Size>
                     <Anchors>
                         <Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT">

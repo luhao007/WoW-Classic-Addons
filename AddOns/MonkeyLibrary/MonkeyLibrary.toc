@@ -3,8 +3,9 @@
 
 ## Title: MonkeyLibrary v2.10.2
 ## Notes: Common files and functions for MonkeyMods.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey运行库|r |cFFFFE00AMonkeyLibrary|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFF69CCF0运行库|r
 ## Notes-zhCN: Monkey模块的通用库
 
+## X-Part-Of: MonkeyQuest
 
 MonkeyLibrary.xml

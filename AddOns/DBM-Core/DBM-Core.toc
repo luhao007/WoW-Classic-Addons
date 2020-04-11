@@ -16,6 +16,7 @@
 ## X-Website: http://www.deadlybossmods.com
 ## X-Curse-Project-ID: 3358
 ## X-WoWI-ID: 24921
+## X-Part-Of: DBM-Core
 
 localization.en.lua
 localization.de.lua

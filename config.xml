@@ -217,27 +217,33 @@
 				<Notes>让拍卖助手支持延时扫描功能，用来分页扫描拍卖行的大量数据</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Stat-Histogram">
-				<Title>统计：直方图</Title>
+				<Title>统计</Title>
+				<TitleExtra>直方图</TitleExtra>
 				<Notes>让拍卖助手可以用直方图的形式展示统计数据</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Stat-Purchased">
-				<Title>统计：已售物品</Title>
+				<Title>统计</Title>
+				<TitleExtra>已售物品</TitleExtra>
 				<Notes>让拍卖助手用来推测已售商品（还未到原定拍卖时间就已下架）</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Stat-Simple">
-				<Title>统计：简单统计</Title>
+				<Title>统计</Title>
+				<TitleExtra>简单统计</TitleExtra>
 				<Notes>提供1/3/7/14天指数移动平均的统计数据</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Stat-StdDev">
-				<Title>统计：标准差</Title>
+				<Title>统计</Title>
+				<TitleExtra>标准差</TitleExtra>
 				<Notes>让拍卖助手通过标准差来提供参考拍卖价格</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Stat-iLevel">
-				<Title>统计：装备等级</Title>
+				<Title>统计</Title>
+				<TitleExtra>装备等级</TitleExtra>
 				<Notes>让拍卖助手通过装备类型，装备等级等一系列参数来合并统计数据</Notes>
 			</SubAddon>
 			<SubAddon name="Auc-Util-FixAH">
-				<Title>功能：固定搜索页面</Title>
+				<Title>功能</Title>
+				<TitleExtra>固定搜索页面</TitleExtra>
 				<Notes>让拍卖行每次搜索时都固定显示新物品，来避免物品重复出现的问题</Notes>
 			</SubAddon>
 			<SubAddon name="BeanCounter">
@@ -390,10 +396,12 @@
 				<Title>阿古斯</Title>
 			</SubAddon>
 			<SubAddon name="DBM-Azeroth-BfA">
-				<Title>艾泽拉斯（争霸艾泽拉斯）</Title>
+				<Title>户外</Title>
+				<TitleExtra>艾泽拉斯（争霸艾泽拉斯）</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Azeroth">
-				<Title>艾泽拉斯（经典旧世）</Title>
+				<Title>户外</Title>
+				<TitleExtra>艾泽拉斯（经典旧世）</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-BaradinHold">
 				<Title>巴拉丁监狱</Title>
@@ -414,7 +422,8 @@
 				<Title>搏击俱乐部</Title>
 			</SubAddon>
 			<SubAddon name="DBM-BrokenIsles">
-				<Title>破碎群岛</Title>
+				<Title>户外</Title>
+				<TitleExtra>破碎群岛</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-BWL">
 				<Title>黑翼之巢</Title>
@@ -432,13 +441,15 @@
 				<Title>风暴熔炉</Title>
 			</SubAddon>
 			<SubAddon name="DBM-DefaultSkin">
-				<Title>皮肤：经典计时条</Title>
+				<Title>皮肤</Title>
+				<TitleExtra>经典计时条</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-DMF">
 				<Title>暗月马戏团</Title>
 			</SubAddon>
 			<SubAddon name="DBM-Draenor">
-				<Title>德拉诺</Title>
+				<Title>户外</Title>
+				<TitleExtra>德拉诺</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-DragonSoul">
 				<Title>巨龙之魂</Title>
@@ -498,42 +509,44 @@
 				<Title>奥妮克西娅的巢穴</Title>
 			</SubAddon>
 			<SubAddon name="DBM-Outlands">
-				<Title>外域</Title>
+				<Title>户外</Title>
+				<TitleExtra>外域</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Pandaria">
-				<Title>潘达利亚</Title>
+				<Title>户外</Title>
+				<TitleExtra>潘达利亚</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-BC">
-				<Title>燃烧的远征</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>燃烧的远征</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-BfA">
-				<Title>争霸艾泽拉斯</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>争霸艾泽拉斯</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-Cataclysm">
-				<Title>大地的裂变</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>大地的裂变</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-Classic">
-				<Title>经典旧世</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>经典旧世</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-Legion">
-				<Title>军团再临</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>军团再临</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-MoP">
-				<Title>熊猫人之谜</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>熊猫人之谜</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-WoD">
-				<Title>德拉诺之王</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>德拉诺之王</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-WotLK">
-				<Title>巫妖王之怒</Title>
-				<TitleExtra>小队</TitleExtra>
+				<Title>小队</Title>
+				<TitleExtra>巫妖王之怒</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-PvP">
 				<Title>PvP</Title>
@@ -570,7 +583,8 @@
 				<Title>雷电王座</Title>
 			</SubAddon>
 			<SubAddon name="DBM-TimelessIsle">
-				<Title>永恒岛</Title>
+				<Title>户外</Title>
+				<TitleExtra>永恒岛</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-TombofSargeras">
 				<Title>萨格拉斯之墓</Title>
@@ -768,7 +782,8 @@
 				<Title>团队首领减益</Title>
 			</SubAddon>
 			<SubAddon name="Grid2RaidDebuffsOptions">
-				<Title>团队首领减益 设置</Title>
+				<Title>团队首领减益</Title>
+				<TitleExtra>设置</TitleExtra>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
@@ -783,56 +798,69 @@
 		<Category>界面</Category>
 		<SubAddons>
 			<SubAddon name="HandyNotes_Argus">
-				<Title>宝藏/稀有 阿古斯</Title>
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>阿古斯</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_AzerothsTopTunes">
-				<Title>成就 艾泽拉斯金曲</Title>
+				<Title>成就</Title>
+				<TitleExtra>艾泽拉斯金曲</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_BattleForAzerothTreasures">
-				<Title>宝藏/稀有 争霸艾泽拉斯</Title>
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>争霸艾泽拉斯</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_BrokenShore">
-				<Title>宝藏/稀有 破碎海滩</Title>
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>破碎海滩</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_DraenorTreasures">
-				<Title>宝藏/稀有 德拉诺</Title>
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>德拉诺</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_DungeonLocations (Classic)">
 				<Title>副本入口</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_HallowsEnd">
-				<Title>万圣节</Title>
+				<Title>节日</Title>
+				<TitleExtra>万圣节</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_LegionRaresTreasures">
-				<Title>宝藏/稀有 军团再临</Title>
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>军团再临</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_LostAndFound">
-				<Title>失物招领</Title>
+				<Title>成就</Title>
+				<TitleExtra>失物招领</TitleExtra>
 				<Notes>显示熊猫人之谜“失物招领“成就所需物品的地点</Notes>
 			</SubAddon>
 			<SubAddon name="HandyNotes_LunarFestival">
-				<Title>节日 春节</Title>
+				<Title>节日</Title>
+				<TitleExtra>春节</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_NPCs (Classic)">
 				<Title>NPC</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_SummerFestival">
-				<Title>节日 仲夏节</Title>
+				<Title>节日</Title>
+				<TitleExtra>仲夏节</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_SuramarShalAranTelemancy">
 				<Title>苏拉玛传送点</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_TimelessIsleChests">
-				<Title>宝藏 永恒岛</Title>
+				<Title>宝藏</Title>
+				<TitleExtra>永恒岛</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_TravelGuide (Classic)">
 				<Title>旅行指南</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
-				<Title>稀有 战争前线</Title>
+				<Title>稀有</Title>
+				<TitleExtra>战争前线</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontTreasures">
-				<Title>宝藏 战争前线</Title>
+				<Title>宝藏</Title>
+				<TitleExtra>战争前线</TitleExtra>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
@@ -922,28 +950,27 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
-	<Addon name="MonkeyBuddy">
-		<Title>Monkey伴侣</Title>
-		<Notes>在小地图旁提供一个猴子图标，可修改Monkey模块的设置</Notes>
-		<Category>界面</Category>
-	</Addon>
-	<Addon name="MonkeyLibrary">
-		<Title>Monkey运行库</Title>
-		<Notes>Monkey模块的通用库</Notes>
-		<Category>界面</Category>
-	</Addon>
 	<Addon name="MonkeyQuest">
-		<Title>Monkey任务追踪窗口</Title>
+		<Title>任务追踪</Title>
 		<Notes>独立任务追踪窗口</Notes>
 		<Category>界面</Category>
-	</Addon>
-	<Addon name="MonkeyQuestLog">
-		<Title>Monkey任务窗口</Title>
-		<Notes>独立任务窗口</Notes>
-		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="MonkeyLibrary">
+				<Title>运行库</Title>
+				<Notes>Monkey模块的通用库</Notes>
+			</SubAddon>
+			<SubAddon name="MonkeyBuddy">
+				<Title>伴侣</Title>
+				<Notes>在小地图旁提供一个猴子图标，可修改MonkeyQeust的设置</Notes>
+			</SubAddon>
+			<SubAddon name="MonkeyQuestLog">
+				<Title>任务窗口</Title>
+				<Notes>独立任务窗口</Notes>
+			</SubAddon>
+		</SubAddons>
 	</Addon>
 	<Addon name="MonkeySpeed">
-		<Title>Monkey移动速度</Title>
+		<Title>移动速度</Title>
 		<Notes>显示当前移动速度</Notes>
 		<Category>界面</Category>
 	</Addon>

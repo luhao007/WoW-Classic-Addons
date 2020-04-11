@@ -50,7 +50,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cUseServerDateTime = "使用伺服器日期与时间";
 	GroupCalendar_cUseServerDateTimeDescription = "启动此功能将会以伺服器的日期与时间来显示活动资讯，若关闭此功能则会以您的电脑日期及时间来显示。";
-		
+
 	GroupCalendar_cChannelStatus =
 	{
 		Starting = {mText = "状态: 开始", mColor = {r = 1, g = 1, b = 0.3}},
@@ -156,7 +156,7 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cGnomerEventName = "诺姆瑞根";
 	GroupCalendar_cMaraEventName = "玛拉顿";
 	GroupCalendar_cMCEventName = "熔火之心";
-	GroupCalendar_cOnyxiaEventName = "奥尼西亚洞穴";
+	GroupCalendar_cOnyxiaEventName = "奥妮克希亚的巢穴";
 	GroupCalendar_cRFCEventName = "怒焰裂谷";
 	GroupCalendar_cRFDEventName = "剃刀高地";
 	GroupCalendar_cRFKEventName = "剃刀沼泽";
@@ -277,7 +277,7 @@ if GetLocale() == "zhCN" then
 
 	CalendarEventEditor_cNotTrustedMsg = "由于信任设置而无法创建事件";
 	CalendarEventEditor_cOk = "好的";
-	
+
 
 	CalendarEventEditor_cNotAttending = "不出席";
 	CalendarEventEditor_cConfirmed = "已确定";
@@ -455,7 +455,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cChangesDelayedMessage = "团体行事历: 资料将于网络资讯同步化后变更。在资料同步化完成之前，资料不会传送，";
 
-	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?"; 
+	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?";
 	GroupCalendar_cKill = "删除";
 
 	GroupCalendar_cNotAnOfficerError = "团体行事历: 只有公会干部成员能执行此动作";

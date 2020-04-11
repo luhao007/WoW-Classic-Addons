@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="https://www.github.com/luhao007"
            xmlns="https://www.github.com/luhao007"
-           elementFormDefault="qualified">
+           elementFormDefault="unqualified">
 
     <xs:element name="AddonConfig">
         <xs:complexType>
@@ -14,10 +14,10 @@
 
     <xs:complexType name="Addon">
         <xs:sequence>
-            <xs:element name="Title" type="xs:string"/>
-            <xs:element name="Title-en" type="xs:string" minOccurs="0"/>
-            <xs:element name="Notes" type="xs:string" minOccurs="0"/>
-            <xs:element name="Category" type="xs:string"/>
+            <xs:element name="Title" type="xs:string"  nillable="false" maxOccurs="1"/>
+            <xs:element name="Title-en" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Category" type="xs:string" nillable="false" maxOccurs="1"/>
             <xs:element name="SubAddons" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>
@@ -31,9 +31,9 @@
 
     <xs:complexType name="SubAddon">
         <xs:sequence>
-            <xs:element name="Title" type="xs:string"/>
-            <xs:element name="TitleExtra" type="xs:string" minOccurs="0"/>
-            <xs:element name="Notes" type="xs:string" minOccurs="0"/>
+            <xs:element name="Title" type="xs:string" nillable="false" maxOccurs="1"/>
+            <xs:element name="TitleExtra" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Notes" type="xs:string" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string"/>
     </xs:complexType>

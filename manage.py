@@ -173,6 +173,8 @@ class Manager(object):
                 if config.tag.endswith('SubAddon'):
                     parent_config = self.get_addon_parent_config(addon)
                     toc.tags['X-Part-Of'] = parent_config.get('name')
+                elif addon in ['DBM-Core', 'Auc-Advanced']:
+                    toc.tags['X-Part-Of'] = addon
 
                 return toc.to_lines()
 
@@ -242,6 +244,24 @@ class Manager(object):
                        'RelicInspector', 'Titan']
         for addon in addons:
             self.remove_libraries_all(addon)
+
+    def handle_acp(self):
+        def handle(lines):
+            ret = []
+            for i, l in enumerate(lines):
+                if 'FontString name="$parentTitle"' in l:
+                    i1 = i
+                elif 'FontString name="$parentStatus"' in l:
+                    i2 = i
+
+            ret = lines[:i1+2]
+            ret.append(' '*24 + '<AbsDimension x="270" y="12"/>\n')
+            ret += lines[i1+3:i2+2]
+            ret.append(' '*24 + '<AbsDimension x="90" y="12"/>\n')
+            ret += lines[i2+3:]
+            return ret
+
+        process_file('Addons/ACP/ACP.xml', handle)
 
     def handle_att(self):
         self.change_defaults(

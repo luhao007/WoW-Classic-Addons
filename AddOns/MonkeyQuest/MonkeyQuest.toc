@@ -6,7 +6,7 @@
 
 ## Title: MonkeyQuest v2.10.2
 ## Notes: Displays your quests for quick viewing.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFFMonkey任务追踪窗口|r |cFFFFE00AMonkeyQuest|r
+## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFFFFE00AMonkeyQuest|r
 ## Notes-zhCN: 独立任务追踪窗口
 
 

@@ -3,7 +3,7 @@
 ## LoadOnDemand: 0
 
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff0055FFDefault Skin (REQUIRED)|r
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0皮肤：经典计时条|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0皮肤|r |cFF22B14C经典计时条|r
 
 ## X-Min-Interface: 11302
 ## X-DBM-Timer-Skin: 1
