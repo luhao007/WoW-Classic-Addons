@@ -120,7 +120,10 @@ local TooltipSettingsBase = {
 		["RaceRequirements"] = true,
 		["Report:Collected"] = true,
 		["ShowIconOnly"] = false,
+		["Show:CraftedItems"] = false,
+		["Show:Recipes"] = false,
 		["Show:Remaining"] = false,
+		["Show:SpellRanks"] = true,
 		["SoftReserves"] = true,
 		["SourceLocations"] = true,
 		["SourceLocations:Completed"] = true,
@@ -1236,6 +1239,56 @@ end);
 SummarizeThingsCheckBox:SetATTTooltip("Enable this option to summarize Things in the tooltip. For example, if a Thing can be turned into a Vendor for another Thing, then show that other thing in the tooltip to provide visibility for its multiple uses. If a Thing acts as a Container for a number of other Things, this option will show all of the other Things that the container Contains.\n\nWe recommend that you keep this setting turned on.");
 SummarizeThingsCheckBox:SetPoint("TOPLEFT", ShortenProgressCheckBox, "BOTTOMLEFT", -8, 4);
 
+local ShowCraftedItemsCheckBox = settings:CreateCheckBox("Show Crafted Items",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Show:CraftedItems"));
+	if not settings:GetTooltipSetting("Enabled") or not settings:GetTooltipSetting("SummarizeThings") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("Show:CraftedItems", self:GetChecked());
+end);
+ShowCraftedItemsCheckBox:SetATTTooltip("Enable this option if you want to see a list of all of the items that can be crafted by any of your characters for a reagent in its tooltip.");
+ShowCraftedItemsCheckBox:SetPoint("TOPLEFT", SummarizeThingsCheckBox, "BOTTOMLEFT", 8, 4);
+
+local ShowRecipesCheckBox = settings:CreateCheckBox("Show Recipes",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Show:Recipes"));
+	if not settings:GetTooltipSetting("Enabled") or not settings:GetTooltipSetting("SummarizeThings") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("Show:Recipes", self:GetChecked());
+end);
+ShowRecipesCheckBox:SetATTTooltip("Enable this option if you want to see a list of all of the recipes that can be crafted by any of your characters for a reagent in its tooltip.");
+ShowRecipesCheckBox:SetPoint("TOPLEFT", ShowCraftedItemsCheckBox, "BOTTOMLEFT", 0, 4);
+
+local ShowSpellRanksCheckBox = settings:CreateCheckBox("Show Spell Ranks",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Show:SpellRanks"));
+	if not settings:GetTooltipSetting("Enabled") or not settings:GetTooltipSetting("SummarizeThings") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("Show:SpellRanks", self:GetChecked());
+end);
+ShowSpellRanksCheckBox:SetATTTooltip("Enable this option if you want to see the best spell rank of triviality for any unleveled related profession for a reagent in its tooltip.\n\nSpell Ranks of 'trivial' or lesser will not be displayed.\nWhile on Account or Debug Mode, this will show for all of your characters that you have cached in ATT.");
+ShowSpellRanksCheckBox:SetPoint("TOPLEFT", ShowRecipesCheckBox, "BOTTOMLEFT", 0, 4);
 
 local ShowCoordinatesCheckBox = settings:CreateCheckBox("Show Coordinates",
 function(self)
@@ -1252,7 +1305,7 @@ function(self)
 	settings:SetTooltipSetting("Coordinates", self:GetChecked());
 end);
 ShowCoordinatesCheckBox:SetATTTooltip("Enable this option if you want to see coordinates in the tooltip when hovering over an entry in the mini list.");
-ShowCoordinatesCheckBox:SetPoint("TOPLEFT", SummarizeThingsCheckBox, "BOTTOMLEFT", 0, 4);
+ShowCoordinatesCheckBox:SetPoint("TOPLEFT", ShowSpellRanksCheckBox, "BOTTOMLEFT", -8, 4);
 
 local ShowDescriptionsCheckBox = settings:CreateCheckBox("Show Descriptions",
 function(self)
@@ -1306,23 +1359,6 @@ end);
 ShowModelsCheckBox:SetATTTooltip("Enable this option to show models within a preview instead of the icon on the tooltip.\n\nThis option may assist you in identifying what a Rare Spawn or Vendor looks like. It might be a good idea to keep this turned on for that reason.");
 ShowModelsCheckBox:SetPoint("TOPLEFT", ShowKnownByCheckBox, "BOTTOMLEFT", 0, 4);
 
-local ShowRemainingCheckBox = settings:CreateCheckBox("Show Remaining Things",
-function(self)
-	self:SetChecked(settings:GetTooltipSetting("Show:Remaining"));
-	if self:GetChecked() then
-		app.GetProgressText = app.GetProgressTextRemaining;
-	else
-		app.GetProgressText = app.GetProgressTextDefault;
-	end
-end,
-function(self)
-	settings:SetTooltipSetting("Show:Remaining", self:GetChecked());
-	-- app:RefreshData();
-	app:UpdateWindows();
-end);
-ShowRemainingCheckBox:SetATTTooltip("Enable this option if you want to see the number of items remaining instead of the progress over total.");
-ShowRemainingCheckBox:SetPoint("TOPLEFT", ShowModelsCheckBox, "BOTTOMLEFT", 0, 4);
-
 local ShowClassRequirementsCheckBox = settings:CreateCheckBox("Show Class Requirements",
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("ClassRequirements"));
@@ -1338,7 +1374,7 @@ function(self)
 	settings:SetTooltipSetting("ClassRequirements", self:GetChecked());
 end);
 ShowClassRequirementsCheckBox:SetATTTooltip("Enable this option if you want to see the full list of class requirements in the tooltip.");
-ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowRemainingCheckBox, "BOTTOMLEFT", -8, 4);
+ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowModelsCheckBox, "BOTTOMLEFT", 0, 4);
 
 local ShowRaceRequirementsCheckBox = settings:CreateCheckBox("Show Race Requirements",
 function(self)
@@ -1441,6 +1477,23 @@ function(self)
 end);
 ShowSourceLocationsForThingsCheckBox:SetATTTooltip("Enable this option if you want to see Source Locations for Things.");
 ShowSourceLocationsForThingsCheckBox:SetPoint("TOPLEFT", ShowSourceLocationsForCreaturesCheckBox, "BOTTOMLEFT", 0, 4);
+
+local ShowRemainingCheckBox = settings:CreateCheckBox("Show Remaining Things",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Show:Remaining"));
+	if self:GetChecked() then
+		app.GetProgressText = app.GetProgressTextRemaining;
+	else
+		app.GetProgressText = app.GetProgressTextDefault;
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("Show:Remaining", self:GetChecked());
+	-- app:RefreshData();
+	app:UpdateWindows();
+end);
+ShowRemainingCheckBox:SetATTTooltip("Enable this option if you want to see the number of items remaining instead of the progress over total.");
+ShowRemainingCheckBox:SetPoint("TOPLEFT", ShowSourceLocationsForThingsCheckBox, "BOTTOMLEFT", -8, 4);
 
 local DebuggingLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 DebuggingLabel:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -220, -8);

@@ -1,13 +1,12 @@
 ## Interface: 11304
 ## Author: Crieve-Sargeras
-## Version: 0.1.7a
+## Version: 0.1.8
 ## SavedVariables: ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
 ## Title: ATT-Classic
 ## Notes: Addon for Tracking Collections & Account Completion
 ## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF收藏|r|cFFFFE00A>|r |cFFFFFFFF收集控助手|r |cFFFFE00AATT-Classic|r
-## Notes-zhCN: 追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况
 
 ## X-Curse-Project-ID: 267285
 
