@@ -6,6 +6,5 @@
 ## X-Credits: Ammo, Rabbit
 ## X-Category: Library
 
-embeds.xml
 LibCandyBar-3.0\lib.xml
 

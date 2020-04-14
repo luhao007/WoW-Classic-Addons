@@ -12,8 +12,6 @@
 ## LoadOnDemand: 1
 
 #@no-lib-strip@
-LibStub\LibStub.lua
-CallbackHandler-1.0\CallbackHandler-1.0.xml
 #@end-no-lib-strip@
 
 lib.xml

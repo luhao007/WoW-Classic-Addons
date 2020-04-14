@@ -10,5 +10,4 @@
 ## X-Compatible-With: 70300, 11302
 ## OptionalDeps:
 
-LibStub\LibStub.lua
 lib.xml

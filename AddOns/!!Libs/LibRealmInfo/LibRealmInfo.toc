@@ -15,6 +15,5 @@
 ## X-WoWI-ID: 22987
 
 ## OptionalDeps: LibStub
-LibStub\LibStub.lua
 
 LibRealmInfo.lua

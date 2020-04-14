@@ -7,6 +7,5 @@
 ## X-Category: Library
 ## X-Email: xinhuan AT gmail DOT com
 
-LibStub.lua
 LibGraph-2.0\LibGraph-2.0.lua
 

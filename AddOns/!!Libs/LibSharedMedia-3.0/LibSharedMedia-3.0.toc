@@ -11,8 +11,6 @@
 ## X-Revision: 113
 ## X-Date: 2019-07-14T17:20:43Z
 
-LibStub\LibStub.lua
-CallbackHandler-1.0\CallbackHandler-1.0.lua
 
 LibSharedMedia-3.0\lib.xml
 

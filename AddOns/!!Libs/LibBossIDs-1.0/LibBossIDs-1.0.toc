@@ -1,4 +1,4 @@
-﻿## Interface: 60200
+## Interface: 60200
 ## LoadOnDemand: 1
 ## Title: Lib: BossIDs-1.0
 ## Notes: A library to provide mobIDs for bosses.
@@ -10,5 +10,4 @@
 ## X-Curse-Project-ID: libbossids-1-0
 ## X-Curse-Repository-ID: wow/libbossids-1-0/mainline
 
-LibStub\LibStub.lua
 lib.xml

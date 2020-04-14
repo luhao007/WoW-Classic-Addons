@@ -222,18 +222,38 @@ class Manager(object):
 
     def handle_lib_in_libs(self):
         root = Path('AddOns/!!Libs')
-        libs = []
-        for p in ['libs', 'lib']:
-            if os.path.exists(root / p):
-                lib_path = p
-                break
-        else:
-            return
+        for lib in os.listdir(root):
+            if not os.path.isdir(root/lib) or lib == 'Ace3':
+                continue
 
-        
-        libs = ['LibThreatClassic2']
-        for lib in libs:
-            self.remove_libraries_all('!!Libs/{}'.format(lib))
+            embeds = ['CallbackHandler-1.0', 'LibStub']
+            for p in ['libs', 'lib']:
+                if os.path.exists(root / lib / p):
+                    embeds.append(p)
+                    embeds.append(p.capitalize())
+                    break
+
+            for embed in embeds:
+                rm_tree(root / lib / embed)
+
+            if os.path.exists(root / lib / 'embeds.xml'):
+                os.remove(root / lib / 'embeds.xml')
+                embeds.append('embeds.xml')
+
+            files = ['lib.xml', '{}.xml'.format(lib), '{}.toc'.format(lib)]
+            for f in files:
+                if os.path.exists(root / lib / f):
+                    process_file(
+                        root / lib / f,
+                        lambda lines: [l for l in lines
+                                       if not any(l.startswith(embed)
+                                                  for embed in embeds)]
+                    )
+
+    def process_libs(self):
+        for f in dir(self):
+            if f.startswith('handle_lib'):
+                getattr(self, f)()
 
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',

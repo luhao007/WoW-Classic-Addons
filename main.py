@@ -57,7 +57,7 @@ def install_lib(obj, libs):
     """Install libraries"""
     obj.manager_lib.install(libs)
     obj.manager_lib.export()
-    Manager().handle_libs()
+    Manager().process_libs()
 
 
 @main.command()

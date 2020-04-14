@@ -7,6 +7,5 @@
 ## OptionalDeps: LibStub
 
 #@no-lib-strip@
-LibStub\LibStub.lua
 #@end-no-lib-strip@
 LibUIDropDownMenu\LibUIDropDownMenu.xml

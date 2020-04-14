@@ -10,5 +10,4 @@
 ## X-License: GPL v2
 ## LoadOnDemand: 1
 
-LibStub\LibStub.lua
 lib.xml

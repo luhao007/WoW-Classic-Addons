@@ -10,5 +10,4 @@
 ## X-License: Ace3 BSD-like license
 ## X-Website: http://www.wowace.com/addons/libqtip-1-0/
 
-LibStub\LibStub.lua
 lib.xml

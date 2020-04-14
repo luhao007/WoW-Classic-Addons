@@ -7,5 +7,4 @@
 ## X-Category: Library
 ## X-License: LGPLv3
 
-LibStub\LibStub.lua
 lib.xml

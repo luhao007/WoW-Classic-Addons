@@ -8,5 +8,4 @@
 ## X-Category: Libraries
 ## X-License: All Rights Reserved
 
-LibStub\LibStub.lua
 lib.xml

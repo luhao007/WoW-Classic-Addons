@@ -10,6 +10,5 @@
 ## X-Credits: Rabbit
 ## X-License: CC-BY-NC-SA 3.0
 
-embeds.xml
 LibSink-2.0\lib.xml
 
