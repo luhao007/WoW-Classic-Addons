@@ -39,6 +39,11 @@ class Manager(object):
 
         self.process_toc()
 
+    def process_libs(self):
+        for f in dir(self):
+            if f.startswith('handle_lib'):
+                getattr(self, f)()
+
     def remove_libraries_all(self, addon, lib_path=None):
         """Remove all embedded libraries"""
         if not lib_path:
@@ -180,9 +185,9 @@ class Manager(object):
 
             process_file(path, process)
 
-    ##########################
-    # Handle individual addons
-    ##########################
+    ###########################
+    # Handle embedded libraries
+    ###########################
 
     def handle_lib_graph(self):
         def handle_graph(lines):
@@ -226,7 +231,7 @@ class Manager(object):
             if not os.path.isdir(root/lib) or lib == 'Ace3':
                 continue
 
-            embeds = ['CallbackHandler-1.0', 'LibStub']
+            embeds = ['CallbackHandler-1.0', 'LibStub', 'LibStub-1.0']
             for p in ['libs', 'lib']:
                 if os.path.exists(root / lib / p):
                     embeds.append(p)
@@ -250,10 +255,9 @@ class Manager(object):
                                                   for embed in embeds)]
                     )
 
-    def process_libs(self):
-        for f in dir(self):
-            if f.startswith('handle_lib'):
-                getattr(self, f)()
+    ##########################
+    # Handle individual addons
+    ##########################
 
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
