@@ -4,7 +4,7 @@
 	<Script file="LibThreatClassic2.lua" />
 
 	<Script file="ThreatClassModuleCore.lua" />
-	
+
 	<Script file="ClassModules\Classic\Rogue.lua" />
 	<Script file="ClassModules\Classic\Warrior.lua" />
 	<Script file="ClassModules\Classic\Warlock.lua" />
@@ -29,6 +29,7 @@
 	<Script file="NPCModules\BlackwingLair\Flamegor.lua" />
 	<Script file="NPCModules\BlackwingLair\Ebonroc.lua" />
 	<Script file="NPCModules\BlackwingLair\Nefarian.lua" />
+	<Script file="NPCModules\ZulGurub\Hakkar.lua" />
 	<Script file="NPCModules\AQ40\Ouro.lua" />
 	<Script file="NPCModules\Naxxramas\Kelthuzad.lua" />
 	<Script file="NPCModules\Naxxramas\Noth.lua" />

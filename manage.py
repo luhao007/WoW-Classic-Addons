@@ -220,8 +220,20 @@ class Manager(object):
                                 dirs_exist_ok=True)
                 shutil.rmtree(root/lib)
 
-    def handle_libs(self):
-        pass
+    def handle_lib_in_libs(self):
+        root = Path('AddOns/!!Libs')
+        libs = []
+        for p in ['libs', 'lib']:
+            if os.path.exists(root / p):
+                lib_path = p
+                break
+        else:
+            return
+
+        
+        libs = ['LibThreatClassic2']
+        for lib in libs:
+            self.remove_libraries_all('!!Libs/{}'.format(lib))
 
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
@@ -574,6 +586,11 @@ class Manager(object):
 
     @classic_only
     def handle_tc2(self):
+        path = 'Addons/ThreatClassic2/Libs/LibThreatClassic2'
+        if os.path.exists(path):
+            dst = 'Addons/!!Libs/LibThreatClassic2'
+            rm_tree(dst)
+            shutil.copytree(path, dst)
         rm_tree('AddOns/ThreatClassic2/Libs')
 
         def f(lines):
