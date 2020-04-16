@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <!--@non-retail@-->
-  <Include file="Libs\!LibTotemInfo\embeds.xml"/>
   <Script file="Libs\LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/>
   <!--@end-non-retail@-->
   <Script file="Libs\LibGetFrame-1.0\LibGetFrame-1.0.lua"/>

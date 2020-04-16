@@ -269,7 +269,7 @@ class Manager(object):
                        'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
-                       'GladiatorlosSA2', 'Gladius', 'Grid2', 'Grid2Options',
+                       'GladiatorlosSA2', 'Gladius', 'Grid2',
                        'HandyNotes_Argus', 'HandyNotes_BrokenShore',
                        'HandyNotes_DraenorTreasures',
                        'HandyNotes_LegionRaresTreasures',
@@ -438,6 +438,14 @@ class Manager(object):
     @retail_only
     def handle_grid(self):
         rm_tree('Addons/Grid2LDB')
+
+        self.remove_libraries(
+            ['AceComm-3.0', 'AceConfig-3.0', 'AceGUI-3.0', 'AceHook-3.0',
+             'AceGUI-3.0-SharedMediaWidgets', 'AceSerializer-3.0',
+             'LibCompress'],
+            'Addons/Grid2Options/Libs',
+            'Addons/Grid2Options/Grid2Options.toc'
+        )
 
     @classic_only
     def handle_honorspy(self):

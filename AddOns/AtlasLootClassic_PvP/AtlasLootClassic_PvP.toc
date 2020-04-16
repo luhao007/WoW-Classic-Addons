@@ -1,13 +1,13 @@
 ## Interface: 11304
 ## Author: Lag
-## Version: v1.4.8
+## Version: v1.5.0
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
 ## Title: AtlasLootClassic |cFF0099FF[PvP]|r
 ## Notes: AtlasLoot loot tables from PvP
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0PVP|r
-## Notes-zhCN: AtlasLoot PVP物品列表
+## Notes-zhCN: AtlasLoot  PvP掉落列表
 
 ## X-Category: Map
 ## X-License: GPL v2
