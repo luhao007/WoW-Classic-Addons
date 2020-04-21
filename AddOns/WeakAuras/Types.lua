@@ -17,7 +17,7 @@ WeakAuras.glow_action_types = {
 
 WeakAuras.glow_frame_types = {
   UNITFRAME = L["Unit Frame"],
-  NAMEPLATE = L["Name Plate"],
+  NAMEPLATE = L["Nameplate"],
   FRAMESELECTOR = L["Frame Selector"]
 }
 
@@ -2162,6 +2162,10 @@ WeakAuras.difficulty_info = {
   [33] = {
     size = "flexible",
     difficulty = "timewalking",
+  },
+  [148] = {
+    size = "twenty",
+    difficulty = "normal",
   },
 }
 

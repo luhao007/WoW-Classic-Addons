@@ -539,9 +539,9 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 선택한 한가지만 일치할 때 불러옴]=]
 	L["Name Info"] = "이름 정보"
 	L["Name Pattern Match"] = "이름 패턴 일치"
-	--[[Translation missing --]]
-	L["Name Plate"] = "Name Plate"
 	L["Name(s)"] = "이름(s)"
+	--[[Translation missing --]]
+	L["Nameplate"] = "Nameplate"
 	L["Nameplates"] = "이름표"
 	L["Negator"] = "Not"
 	L["Never"] = "절대 안함"

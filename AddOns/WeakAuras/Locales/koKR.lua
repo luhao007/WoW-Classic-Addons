@@ -627,8 +627,6 @@ L["Mythic+ Affix"] = "쐐기돌 수정치"
 L["Name"] = "이름"
 --[[Translation missing --]]
 L["Name of Caster's Target"] = "Name of Caster's Target"
---[[Translation missing --]]
-L["Name Plate"] = "Name Plate"
 L["Nameplate"] = "이름표"
 --[[Translation missing --]]
 L["Nameplate Type"] = "Nameplate Type"
@@ -675,6 +673,8 @@ L["Officer"] = "길드관리자"
 L["Offset Timer"] = "Offset Timer"
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "이전 세트 ID는 wowhead.com/item-sets 와 같은 웹 사이트에서 찾을 수 있습니다."
 L["On Cooldown"] = "재사용 대기 중일 때"
+--[[Translation missing --]]
+L["On Taxi"] = "On Taxi"
 --[[Translation missing --]]
 L["Only if BigWigs shows it on it's bar"] = "Only if BigWigs shows it on it's bar"
 --[[Translation missing --]]

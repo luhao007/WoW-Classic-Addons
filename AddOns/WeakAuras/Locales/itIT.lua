@@ -891,8 +891,6 @@ L["Name"] = "Name"
 --[[Translation missing --]]
 L["Name of Caster's Target"] = "Name of Caster's Target"
 --[[Translation missing --]]
-L["Name Plate"] = "Name Plate"
---[[Translation missing --]]
 L["Nameplate"] = "Nameplate"
 --[[Translation missing --]]
 L["Nameplate Type"] = "Nameplate Type"
@@ -960,6 +958,8 @@ L["Offset Timer"] = "Offset Timer"
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "Older set IDs can be found on websites such as wowhead.com/item-sets"
 --[[Translation missing --]]
 L["On Cooldown"] = "On Cooldown"
+--[[Translation missing --]]
+L["On Taxi"] = "On Taxi"
 --[[Translation missing --]]
 L["Only if BigWigs shows it on it's bar"] = "Only if BigWigs shows it on it's bar"
 --[[Translation missing --]]

@@ -609,8 +609,6 @@ L["Multi-target"] = "Multi-cibles"
 L["Mythic+ Affix"] = "Affixe de Mythique +"
 L["Name"] = "Nom"
 L["Name of Caster's Target"] = "Nom de la cible du lanceur"
---[[Translation missing --]]
-L["Name Plate"] = "Name Plate"
 L["Nameplate"] = "Barre de vie"
 --[[Translation missing --]]
 L["Nameplate Type"] = "Nameplate Type"
@@ -653,6 +651,8 @@ L["Officer"] = "Officier"
 L["Offset Timer"] = "Décalage de la durée"
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "Des ID de jeu plus anciennes peuvent être trouvés sur des sites Web tels que wowhead.com/item-sets"
 L["On Cooldown"] = "En recharge"
+--[[Translation missing --]]
+L["On Taxi"] = "On Taxi"
 --[[Translation missing --]]
 L["Only if BigWigs shows it on it's bar"] = "Only if BigWigs shows it on it's bar"
 --[[Translation missing --]]

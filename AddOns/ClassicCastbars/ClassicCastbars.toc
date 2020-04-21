@@ -1,13 +1,12 @@
 ## Interface: 11304
 ## Author: Wardz
-## Version: v1.3.3
+## Version: v1.3.5
 ## SavedVariables: ClassicCastbarsDB
 ## SavedVariablesPerCharacter: ClassicCastbarsCharDB
 
 ## Title: ClassicCastbars
 ## Notes: Adds castbars to various unitframes.
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFFFFE00AClassicCastbars|r
-## Notes-zhCN: 显示一个预估的敌对施法条
 
 ## X-Curse-Project-ID: 322865
 ## X-WoWI-ID: 24925
