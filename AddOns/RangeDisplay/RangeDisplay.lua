@@ -1,6 +1,6 @@
 --[[
 Name: RangeDisplay
-Revision: $Revision: 387 $
+Revision: $Revision: 392 $
 Author(s): mitch0
 Website: http://www.wowace.com/projects/range-display/
 SVN: svn://svn.wowace.com/wow/range-display/mainline/trunk
@@ -10,9 +10,9 @@ License: Public Domain
 
 local AppName, RangeDisplay = ...
 local OptionsAppName = AppName .. "_Options"
-local VERSION = AppName .. "-v4.8.4"
+local VERSION = AppName .. "-v4.9.3"
 --[===[@debug@
-local VERSION = AppName .. "-r" .. ("$Revision: 387 $"):match("%d+")
+local VERSION = AppName .. "-r" .. ("$Revision: 392 $"):match("%d+")
 --@end-debug@]===]
 
 local rc = LibStub("LibRangeCheck-2.0")
@@ -29,6 +29,7 @@ local mute = nil
 -- cached stuff
 
 local _G = _G
+local IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
 local UnitExists = _G.UnitExists
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitCanAttack = _G.UnitCanAttack
@@ -104,7 +105,7 @@ local DefaultText = "%d - %d"
 
 local defaults = {
     global = {
-        enableArena = false,         --default change ture to false
+        enableArena = true,
     },
     profile = {
         locked = false,
@@ -209,7 +210,7 @@ local defaults = {
         },
     },
 }
---[[
+
 for i = 1, 5 do
     defaults.profile.units['arena' .. i] = {
         enabled = false,
@@ -217,7 +218,7 @@ for i = 1, 5 do
         y = (5 - i) * (DefaultFrameHeight + 5),
     }
 end
-]]--
+
 -- Per unit data
 
 local function setDisplayColor_Text(ud, color)
@@ -241,7 +242,7 @@ local function checkTarget(ud)
         ud.useSound = not mute
         return true
     elseif UnitCanAssist("player", unit) then
-        ud.useSound = not mute and not ud.db.warnEnemyOnly
+        ud.useSound = not mute and not ud.db.warnEnemyOnly 
         return not ud.db.enemyOnly
     else
         ud.useSound = false
@@ -671,7 +672,16 @@ local units = {
         update = updateCheckValid,
     },
 }
---[[
+
+if not IsClassic then
+    local fu = {
+        unit = "focus",
+        name = L["focus"],
+        event = "PLAYER_FOCUS_CHANGED",
+    }
+    tinsert(units, fu)
+end
+
 local arenaUnits
 
 local arenaMasterUnit = {
@@ -696,7 +706,7 @@ local arenaMasterUnit = {
             end
         end,
 }
-]]--
+
 -- AceAddon stuff
 
 function RangeDisplay:OnInitialize()
@@ -709,8 +719,8 @@ function RangeDisplay:OnInitialize()
     if LibDualSpec then
         LibDualSpec:EnhanceDatabase(self.db, AppName)
     end
---[[
-    if self.db.global.enableArena and not arenaUnits then
+
+    if not IsClassic and self.db.global.enableArena and not arenaUnits then
         arenaUnits = {}
         tinsert(arenaUnits, arenaMasterUnit)
         tinsert(units, arenaMasterUnit)
@@ -723,7 +733,6 @@ function RangeDisplay:OnInitialize()
             tinsert(units, au)
         end
     end
-]]--
     for _, ud in ipairs(units) do
         ud.profileChanged = ud.profileChanged or profileChanged
         ud.applySettings = ud.applySettings or applySettings
@@ -931,7 +940,6 @@ end
 -- register slash command
 
 SLASH_RANGEDISPLAY1 = "/rangedisplay"
-SLASH_RANGEDISPLAY2 = "/rd"
 SlashCmdList["RANGEDISPLAY"] = function(msg)
     msg = strtrim(msg or "")
     if msg == "locked" then
