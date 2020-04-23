@@ -261,7 +261,8 @@ class Manager(object):
 
     def handle_dup_libraries(self):
         addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
-                  'MapSter', 'oRA3', 'Quartz', 'TellMeWhen', 'TomTom']
+                  'MapSter', 'oRA3', 'Quartz', 'RangeDisplay',
+                  'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
         if self.is_classic:
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
@@ -276,7 +277,6 @@ class Manager(object):
                        'HandyNotes_SuramarShalAranTelemancy',
                        'HandyNotes_TimelessIsleChests',
                        'HandyNotes_WarfrontRares', 'NPCScan', 'Omen',
-                       'RangeDisplay', 'RangeDisplay_Options',
                        'RelicInspector', 'Titan']
         for addon in addons:
             self.remove_libraries_all(addon)
