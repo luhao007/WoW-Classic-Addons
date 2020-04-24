@@ -903,6 +903,10 @@
 		<Title>集合石</Title>
 		<Category>副本</Category>
 	</Addon>
+	<Addon name="MeetingHorn">
+		<Title>集结号</Title>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="MerInspect">
 		<Title>观察助手</Title>
 		<Category>界面</Category>
@@ -1101,6 +1105,10 @@
 				<Title>巫妖王之怒小队</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="RaidLedger">
+		<Title>金团账本</Title>
+		<Category>副本</Category>
 	</Addon>
 	<Addon name="RangeDisplay">
 		<Title>目标距离</Title>

@@ -1,0 +1,52 @@
+lightweight tag a1f6a2950cf559701d57675fcb55d9190a06524a v1.5.0
+Author:	Boshi Lian <farmer1992@gmail.com>
+Date:	Mon Apr 20 15:17:27 2020 -0700
+
+commit a1f6a2950cf559701d57675fcb55d9190a06524a
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 15:17:27 2020 -0700
+
+    add default text
+
+commit 01d451349643a9765326b953ca8d9a29b97c1eec
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 15:09:22 2020 -0700
+
+    black list
+
+commit f724dff56aa05e8aae9f57a702471e8d3445f3ed
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 14:30:56 2020 -0700
+
+    split stack support
+
+commit a61a885f6caf0b40549833114b7a0b1170abc5b0
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 14:07:16 2020 -0700
+
+    loot event to support stack
+
+commit defd4aefd06cb274c5304d5f38ffd490a8123028
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 13:52:18 2020 -0700
+
+    set count popup
+
+commit d17c02f94473cda9984347058f118dc10e8ab6d7
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Mon Apr 20 12:32:27 2020 -0700
+
+    introduce count
+
+commit 66507c764d7874a92ae42f5c78ba22c65add05c1
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Fri Apr 10 22:31:48 2020 -0700
+
+    add row lock
+
+commit da05603bc67e7d50f7b18e7ac1dcd123f22a4c06
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Fri Apr 10 19:42:45 2020 -0700
+
+    better split into lock
+
