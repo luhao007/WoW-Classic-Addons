@@ -28,7 +28,7 @@ locales\esES.lua
 oRA3.lua
 modulePrototype.lua
 # module order in options
-#modules\Alerts.lua
+modules\Alerts.lua
 #modules\BattleRes.lua
 #modules\Consumables.lua
 #modules\Cooldowns\module.xml

@@ -1,4 +1,4 @@
-Recount = LibStub("AceAddon-3.0"):NewAddon("Recount", "AceConsole-3.0",--[["AceEvent-3.0",]] "AceComm-3.0", "AceTimer-3.0")
+Recount = LibStub("AceAddon-3.0"):NewAddon("Recount", "AceConsole-3.0", "AceComm-3.0", "AceTimer-3.0")
 local Recount = _G.Recount
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
@@ -11,8 +11,7 @@ local FilterSize	= 20
 local RampUp		= 5
 local RampDown		= 10
 
-Recount.Version = tonumber(string.sub("$Revision: 1536 $", 12, -3))
-
+Recount.Version = tonumber(string.sub("$Revision: 1540 $", 12, -3))
 
 local _G = _G
 local abs = abs
