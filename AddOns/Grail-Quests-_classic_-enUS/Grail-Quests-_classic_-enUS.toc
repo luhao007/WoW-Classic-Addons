@@ -6,7 +6,7 @@
 
 ## Title: Grail |cff69ccf0Quests |r|cffeda55fClassic|r|cff69ccf0 enUS|r
 ## Notes: Provides localized enUS quest names to Grail for Classic
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0任务|r |cFF22B14C英文|r
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0任务|r |cFF22B14C英文|r
 
 ## X-Part-Of: Grail
 

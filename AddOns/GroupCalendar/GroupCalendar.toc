@@ -5,7 +5,7 @@
 
 ## Title: Group Calendar
 ## Notes: Manage/Create Event's for guild/friends who share the same addon & channel+password.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF团队行事历|r |cFFFFE00AGroupCalendar|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队行事历|r |cFFFFE00AGroupCalendar|r
 ## Notes-zhCN: 在团队或朋友间同步显示事件
 
 

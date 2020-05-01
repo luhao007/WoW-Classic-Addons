@@ -7,7 +7,7 @@
 
 ## Title: Decursive |cffff00ff -Ace3-|r
 ## Notes: Afflictions display and cleaning for solo, group and raid with advanced filtering and priority system.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF一键驱散|r |cFFFFE00ADecursive|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF一键驱散|r |cFFFFE00ADecursive|r
 ## Notes-zhCN: 一键驱散队员的异常状态
 
 ## X-Max-Interface: 80300

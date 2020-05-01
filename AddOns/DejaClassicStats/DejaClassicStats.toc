@@ -6,7 +6,7 @@
 
 ## Title: |cff00c0ffDejaClassicStats|r
 ## Notes: Dejablue's improved character stats panel view.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF角色属性|r |cFFFFE00ADejaClassicStats|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF角色属性|r |cFFFFE00ADejaClassicStats|r
 ## Notes-zhCN: 在角色面板中显示额外的信息，如法术命中等
 
 

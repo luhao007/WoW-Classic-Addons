@@ -6,7 +6,7 @@
 
 ## Title: TrinketMenu |cFF99CC01rev|r |cFFFF00007.3.2|r
 ## Notes: Addon to manage trinkets.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF饰品助手|r |cFFFFE00ATrinketMenu|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF饰品助手|r |cFFFFE00ATrinketMenu|r
 ## Notes-zhCN: 小巧独立的饰品管理器
 
 

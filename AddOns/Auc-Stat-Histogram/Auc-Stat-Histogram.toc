@@ -7,7 +7,7 @@
 
 ## Title: Auc:Stat:Histogram
 ## Notes: Statistics extension for Auctioneer that uses a histogram data collection method.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C直方图|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C直方图|r
 ## Notes-zhCN: 让拍卖助手可以用直方图的形式展示统计数据
 
 ## X-Part-Of: Auc-Advanced

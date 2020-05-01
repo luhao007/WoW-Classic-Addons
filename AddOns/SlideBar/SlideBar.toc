@@ -7,7 +7,7 @@
 
 ## Title: SlideBar |cff224477(lib)
 ## Notes: Allows alternative placement of minimap icons into an expanding bar that sits off the side of the screen.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0侧边滑动栏|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0侧边滑动栏|r
 ## Notes-zhCN: 在屏幕边提供一个可以滑动栏来显示小地图图标
 
 ## X-Part-Of: Auc-Advanced

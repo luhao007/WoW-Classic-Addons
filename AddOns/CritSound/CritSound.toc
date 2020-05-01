@@ -5,7 +5,7 @@
 
 ## Title: CritSound
 ## Notes: Plays a sound when you perform a critical hit or healing.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF爆击音效|r |cFFFFE00ACritSound|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF爆击音效|r |cFFFFE00ACritSound|r
 ## Notes-zhCN: 当你的近战、远程攻击以及伤害、治疗技能等爆击时播放预设音效
 
 ## X-Repple: 辅助

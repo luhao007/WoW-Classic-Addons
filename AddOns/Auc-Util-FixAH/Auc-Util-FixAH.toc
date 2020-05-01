@@ -4,7 +4,7 @@
 
 ## Title: Auc:Util:FixAH
 ## Notes: Works around a paging issue when viewing items in the Auction House "browse" frame.  Simply forces all new searches to show the results beginning on the first page.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0功能|r |cFF22B14C固定搜索页面|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0功能|r |cFF22B14C固定搜索页面|r
 ## Notes-zhCN: 让拍卖行每次搜索时都固定显示新物品，来避免物品重复出现的问题
 
 ## X-Part-Of: Auc-Advanced

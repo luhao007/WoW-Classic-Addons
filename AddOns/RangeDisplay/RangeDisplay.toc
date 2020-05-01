@@ -7,7 +7,7 @@
 
 ## Title: RangeDisplay
 ## Notes: Estimated range display. Type /rangedisplay for config
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF目标距离|r |cFFFFE00ARangeDisplay|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF目标距离|r |cFFFFE00ARangeDisplay|r
 ## Notes-zhCN: 显示与目标的距离。
 
 ## X-LoadOn-Always: true

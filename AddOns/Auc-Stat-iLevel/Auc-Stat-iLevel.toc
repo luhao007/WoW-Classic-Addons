@@ -7,7 +7,7 @@
 
 ## Title: Auc:Stat:iLevel
 ## Notes: Statistics extension for Auctioneer that uses the variance to detect outliers, grouping data upon the item quality, type, and item level.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C装备等级|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C装备等级|r
 ## Notes-zhCN: 让拍卖助手通过装备类型，装备等级等一系列参数来合并统计数据
 
 ## X-Part-Of: Auc-Advanced

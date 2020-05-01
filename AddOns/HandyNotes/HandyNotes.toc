@@ -8,7 +8,7 @@
 
 ## Title: HandyNotes
 ## Notes: Handy notes for your maps
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFFFFE00AHandyNotes|r
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFFFFE00AHandyNotes|r
 
 ## X-Category: Map
 ## X-eMail: xinhuan @ gmail DOT com

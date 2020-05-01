@@ -6,7 +6,7 @@
 
 ## Title: UnitFramesPlus
 ## Notes: Enhanced Unit Frames
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFFFFE00AUnitFramesPlus|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFFFFE00AUnitFramesPlus|r
 ## Notes-zhCN: 扩展系统头像功能
 
 ## X-Repple: 界面

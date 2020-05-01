@@ -7,7 +7,7 @@
 
 ## Title: Auc:Stat:Purchased Stats
 ## Notes: Statistics extension for Auctioneer that assumes an item was bought out if the auction ends early.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C已售物品|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C已售物品|r
 ## Notes-zhCN: 让拍卖助手用来推测已售商品（还未到原定拍卖时间就已下架）
 
 ## X-Part-Of: Auc-Advanced

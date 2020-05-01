@@ -5,7 +5,7 @@
 
 ## Title: tullaRange
 ## Notes: Out of range coloring based on RedRange
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF技能距离检测|r |cFFFFE00AtullaRange|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF技能距离检测|r |cFFFFE00AtullaRange|r
 ## Notes-zhCN: 目标距离过远时，将技能图标显示为红色
 
 

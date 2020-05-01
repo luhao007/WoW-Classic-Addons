@@ -8,7 +8,7 @@
 
 ## Title: Wowhead Looter
 ## Notes: Gathers data for Wowhead while you play. Version 11304.
-## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF账号|r|cFFFFE00A>|r |cFFFFFFFFWowhead数据采集|r |cFFFFE00A+Wowhead_Looter|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWowhead数据采集|r |cFFFFE00A+Wowhead_Looter|r
 
 
 Wowhead_Looter.xml

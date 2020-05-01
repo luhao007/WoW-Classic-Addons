@@ -7,7 +7,7 @@
 
 ## Title: GatherMate2
 ## Notes: Collects Herbs, Mines, Gas Clouds, Archaeology, Treasure and Fishing locations and adds them to the worldmap and minimap
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFFFFE00AGatherMate2|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFFFFE00AGatherMate2|r
 ## Notes-zhCN: 收集草药、矿、气云和钓鱼的地点，并增加他们到世界地图和小地图。
 
 ## X-Email: sal.scotto@gmail.com

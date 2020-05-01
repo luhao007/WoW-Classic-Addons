@@ -5,7 +5,7 @@
 
 ## Title: OPie
 ## Notes: Group abilities into rings that appear when you hold down a binding.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF环形动作条|r |cFFFFE00AOPie|r
 ## Notes-zhCN: 当你按下快捷键时显示一个环形的技能分组.
 
 ## X-URL-UpdateRSS: https://www.townlong-yak.com/opie/rss/main

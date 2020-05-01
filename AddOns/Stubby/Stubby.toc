@@ -6,7 +6,7 @@
 
 ## Title: Stubby |cff224477(lib)
 ## Notes: Allows AddOns to load automatically, and provides event handling support.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0调用助手|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0调用助手|r
 ## Notes-zhCN: 让插件可以自动启动
 
 ## X-Part-Of: Auc-Advanced

@@ -5,7 +5,7 @@
 
 ## Title: Scrap Merchant
 ## Notes: Load on demand merchant UI for Scrap.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF69CCF0商人|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF69CCF0商人|r
 ## Notes-zhCN: 在商人出售界面添加出售垃圾的按钮
 
 ## X-License: GNU General Public License Version 3

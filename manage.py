@@ -127,12 +127,14 @@ class Manager(object):
                 en = addon
 
         colors = {
-            '基础库': 'FF0000',     # Red
-            '任务': '00FF7F',       # Spring green
-            '物品': '1E90FF',       # Doget blue
-            '界面': 'BA55D3',       # Medium orchid
-            '副本': 'FF7D0A',       # Orange - DBM
-            '战斗': 'FF1493',       # Deep pink
+            '基础库': 'C41F3B',     # Red - DK
+            '任务': '00FF96',       # Spring green - Monk
+            '物品': '0070DE',       # Doget blue - Shaman
+            '界面': 'A330C9',       # Dark Magenta - DH
+            '副本': 'FF7D0A',       # Orange - Druid
+            '战斗': 'C79C6E',       # Tan - Warrior
+            '探索': '40C7EB',       # Light Blue - Mage
+            '收藏': 'A9D271',       # Green - Hunter
         }
         color = colors.get(cat, 'FFFFFF')       # Defaults to white
         parts.append('|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r'.format(color, cat))
@@ -526,6 +528,14 @@ class Manager(object):
              'LibBabble-SubZone-3.0', 'LibSharedMedia-3.0', 'LibStub'],
             'Addons/Overachiever/libs',
             'Addons/Overachiever/Overachiever.toc'
+        )
+
+        process_file(
+            'Addons/Overachiever/Overachiever.lua',
+            lambda lines: [l.replace(
+                'GetAddOnMetadata("Overachiever", "Title")',
+                '"Overarchiever"'
+            ) for l in lines]
         )
 
     @retail_only

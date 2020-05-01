@@ -8,7 +8,7 @@
 
 ## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v5.10.2|r
 ## Notes: A standalone Classic QuestHelper
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 
 
 embeds.xml

@@ -6,7 +6,7 @@
 
 ## Title: TinyTooltip
 ## Notes: TinyTooltip
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF鼠标提示增强|r |cFFFFE00ATinyTooltip|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF鼠标提示增强|r |cFFFFE00ATinyTooltip|r
 ## Notes-zhCN: 在鼠标提示中显示更多信息，并可选择鼠标提示窗口的位置
 
 

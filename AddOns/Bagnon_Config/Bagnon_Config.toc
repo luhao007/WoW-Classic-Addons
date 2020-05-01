@@ -5,7 +5,7 @@
 
 ## Title: Bagnon Config
 ## Notes: An options menu for Bagnon
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF0055FF设置|r
 ## Notes-zhCN: Bagnon设置模块
 
 ## X-Part-Of: Bagnon

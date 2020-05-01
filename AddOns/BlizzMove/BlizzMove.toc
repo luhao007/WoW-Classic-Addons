@@ -4,7 +4,7 @@
 
 ## Title: BlizzMove
 ## Notes: Move those blizzard windows
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFFFFE00ABlizzMove|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFFFFE00ABlizzMove|r
 ## Notes-zhCN: 移动内置的各种窗口
 
 ## X-WoWI-ID: 23875

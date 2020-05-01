@@ -7,7 +7,7 @@
 
 ## Title: Scrap
 ## Notes: Sells all your junk at the merchant.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFFFFE00AScrap|r
 ## Notes-zhCN: 自动出售灰色物品
 
 ## X-License: GNU General Public License Version 3

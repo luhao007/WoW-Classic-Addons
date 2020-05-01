@@ -9,7 +9,7 @@
 	<Addon name="+Wowhead_Looter">
 		<Title>Wowhead数据采集</Title>
 		<Notes>收集各种游戏内数据并上传Wowhead</Notes>
-		<Category>账号</Category>
+		<Category>辅助</Category>
 	</Addon>
 	<Addon name="ACP">
 		<Title>插件管理</Title>
@@ -392,6 +392,9 @@
 			<SubAddon name="DBM-AQ40">
 				<Title>安其拉神殿</Title>
 			</SubAddon>
+			<SubAddon name="DBM-Archaeology">
+				<Title>考古学</Title>
+			</SubAddon>
 			<SubAddon name="DBM-Argus">
 				<Title>阿古斯</Title>
 			</SubAddon>
@@ -427,6 +430,9 @@
 			</SubAddon>
 			<SubAddon name="DBM-BWL">
 				<Title>黑翼之巢</Title>
+			</SubAddon>
+			<SubAddon name="DBM-CastleNathria">
+				<Title>纳斯利亚堡</Title>
 			</SubAddon>
 			<SubAddon name="DBM-Challenges">
 				<Title>白虎试练场</Title>
@@ -539,6 +545,10 @@
 			<SubAddon name="DBM-Party-MoP">
 				<Title>小队</Title>
 				<TitleExtra>熊猫人之谜</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-Party-Shadowlands">
+				<Title>小队</Title>
+				<TitleExtra>暗影国度</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-Party-WoD">
 				<Title>小队</Title>
@@ -795,7 +805,7 @@
 	<Addon name="HandyNotes">
 		<Title>地图标记</Title>
 		<Notes>可以在地图上添加标记</Notes>
-		<Category>界面</Category>
+		<Category>探索</Category>
 		<SubAddons>
 			<SubAddon name="HandyNotes_Argus">
 				<Title>宝藏/稀有</Title>
@@ -816,6 +826,9 @@
 			<SubAddon name="HandyNotes_DraenorTreasures">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>德拉诺</TitleExtra>
+			</SubAddon>
+			<SubAddon name="HandyNotes_DungeonLocations">
+				<Title>副本入口</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_DungeonLocations (Classic)">
 				<Title>副本入口</Title>
@@ -854,6 +867,10 @@
 			<SubAddon name="HandyNotes_TravelGuide (Classic)">
 				<Title>旅行指南</Title>
 			</SubAddon>
+			<SubAddon name="HandyNotes_VisionsOfNZoth">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>恩佐斯的幻象</TitleExtra>
+			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
 				<Title>稀有</Title>
 				<TitleExtra>战争前线</TitleExtra>
@@ -883,7 +900,7 @@
 	</Addon>
 	<Addon name="Mapster">
 		<Title>地图增强</Title>
-		<Category>界面</Category>
+		<Category>探索</Category>
 	</Addon>
 	<Addon name="MasterPlan">
 		<Title>要塞助手</Title>
@@ -1169,11 +1186,6 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
-	<Addon name="SimpleRaidTargetIcons">
-		<Title>团队标记助手</Title>
-		<Notes>双击目标即可添加团队标记</Notes>
-		<Category>界面</Category>
-	</Addon>
 	<Addon name="Simulationcraft">
 		<Title>输出模拟器</Title>
 		<Notes>模拟当前人物的输出，来确认哪个装备属性更好。</Notes>
@@ -1318,9 +1330,55 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="TomCats">
+		<Title>旅行指南</Title>
+		<Notes>汤姆猫旅行指南</Notes>
+		<Category>探索</Category>
+		<SubAddons>
+			<SubAddon name="TomCats-ArathiHighlandsRares">
+				<Title>阿拉希高地</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-ChildrensWeek">
+				<Title>儿童周</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Complete">
+				<Title>完整包</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-DarkshoreRares">
+				<Title>黑海岸</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-HallowsEnd">
+				<Title>万圣节</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Hivemind">
+				<Title>主脑</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-LoveIsInTheAir">
+				<Title>情人节</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-LunarFestival">
+				<Title>春节</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Mechagon">
+				<Title>麦卡贡</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Nazjatar">
+				<Title>纳沙塔尔</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Noblegarden">
+				<Title>复活节</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-Nzoth">
+				<Title>恩佐斯</Title>
+			</SubAddon>
+			<SubAddon name="TomCats-WarfrontsCommandCenter">
+				<Title>战争前线指挥中心</Title>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
 	<Addon name="TomTom">
 		<Title>导航助手</Title>
-		<Category>界面</Category>
+		<Category>探索</Category>
 	</Addon>
 	<Addon name="TradeSkillMaster">
 		<Title>专业助手</Title>

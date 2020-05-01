@@ -5,7 +5,7 @@
 ## LoadOnDemand: 1
 
 ## Title: UnitFramesPlus Options
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF头像增强|r |cFF0055FF设置|r
 
 ## X-Repple: 界面
 ## X-Part-Of: UnitFramesPlus

@@ -4,7 +4,7 @@
 ## SavedVariablesPerCharacter: ItemRackUser
 
 ## Title: ItemRack
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
 
 
 ItemRack.lua

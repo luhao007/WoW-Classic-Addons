@@ -5,7 +5,7 @@
 
 ## Title: Pawn
 ## Notes: Pawn helps you compare items and find upgrades.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
 
 
 VgerCore\VgerCore.lua

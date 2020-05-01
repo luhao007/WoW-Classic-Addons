@@ -8,7 +8,7 @@
 
 ## Title: WeakAuras 2
 ## Notes: A powerful, comprehensive utility for displaying graphics and information based on buffs, debuffs, and other triggers.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFFFFE00AWeakAuras|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFFFFE00AWeakAuras|r
 
 ## X-Category: Interface Enhancements
 ## X-Website: https://www.curseforge.com/wow/addons/weakauras-2

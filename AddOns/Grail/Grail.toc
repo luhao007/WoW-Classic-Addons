@@ -6,7 +6,7 @@
 
 ## Title: Grail
 ## Notes: Knows about quests
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFFFFE00AGrail|r
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFFFFE00AGrail|r
 
 
 Grail.lua

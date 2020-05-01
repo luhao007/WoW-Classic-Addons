@@ -7,7 +7,7 @@
 
 ## Title: WeakAuras Templates
 ## Notes: Templates for WeakAuras
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF69CCF0模板|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF69CCF0模板|r
 
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras

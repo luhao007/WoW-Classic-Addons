@@ -5,7 +5,7 @@
 
 ## Title: Scrap Options
 ## Notes: Load on demand options and tutorials.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF垃圾管理|r |cFF0055FF设置|r
 ## Notes-zhCN: Scrap设置模块
 
 ## X-License: GNU General Public License Version 3

@@ -7,7 +7,7 @@
 
 ## Title: RangeDisplay Options
 ## Notes: Configuration options for RangeDisplay
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF目标距离|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF目标距离|r |cFF0055FF设置|r
 
 ## X-License: Public Domain
 ## X-RelSite-WoWI: 7297

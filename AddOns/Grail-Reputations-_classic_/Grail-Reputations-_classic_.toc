@@ -6,7 +6,7 @@
 
 ## Title: Grail |cff69ccf0Reputations |r|cffeda55fClassic|r
 ## Notes: Provides reputation award information to Grail for Classic
-## Title-zhCN: |cFFFFE00A<|r|cFF00FF7F任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0声望|r
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0声望|r
 
 ## X-Part-Of: Grail
 

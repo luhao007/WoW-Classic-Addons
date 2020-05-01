@@ -5,7 +5,7 @@
 
 ## Title: MinimapButtonBag
 ## Notes: Cleans up minimap buttons and makes them accessible through a pop out menu!
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF小地图按钮整合|r |cFFFFE00AMBB|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF小地图按钮整合|r |cFFFFE00AMBB|r
 ## Notes-zhCN: 将小地图的按钮整合成一个
 
 ## X-Category: Map

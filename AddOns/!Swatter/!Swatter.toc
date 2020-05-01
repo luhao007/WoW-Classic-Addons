@@ -5,7 +5,7 @@
 
 ## Title: Swatter |cff224477(lib)
 ## Notes: Debugging tool for handling and displaying of error messages in a useful way.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0错误提示|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0错误提示|r
 ## Notes-zhCN: 增强错误提示，将错误显示在弹出窗口中
 
 ## X-Part-Of: Auc-Advanced

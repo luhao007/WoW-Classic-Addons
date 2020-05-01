@@ -6,7 +6,7 @@
 
 ## Title: ClearFont
 ## Notes: Modify Game Fonts and Size, Color, Shadow Of Them.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF游戏字体|r |cFFFFE00AClearFont|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF游戏字体|r |cFFFFE00AClearFont|r
 ## Notes-zhCN: 更改游戏字体及其大小、颜色、阴影等特效
 
 ## X-Repple: 界面

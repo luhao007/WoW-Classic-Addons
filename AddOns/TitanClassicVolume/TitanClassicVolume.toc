@@ -7,7 +7,7 @@
 
 ## Title: Titan Panel Classic [|cffeda55fVolume|r] |cff00aa001.2.2.11304|r
 ## Notes: Adds a volume control icon on your Titan Bar
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0音量|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0音量|r
 ## Notes-zhCN: 泰坦面板的音量模块
 
 ## X-Child-Of: TitanClassic

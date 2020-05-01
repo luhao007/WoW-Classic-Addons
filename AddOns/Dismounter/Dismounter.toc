@@ -5,7 +5,7 @@
 
 ## Title: Dismounter
 ## Notes: Automatically dismounts you when performing an action
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF自动下马|r |cFFFFE00ADismounter|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF自动下马|r |cFFFFE00ADismounter|r
 ## Notes-zhCN: 施法时自动下马
 
 

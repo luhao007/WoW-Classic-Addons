@@ -7,7 +7,7 @@
 
 ## Title: Fishing Buddy (Classic)
 ## Notes: Help with fishing related tasks -- clothing, fish information, etc.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF钓鱼助手|r |cFFFFE00AFishingBuddy|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF钓鱼助手|r |cFFFFE00AFishingBuddy|r
 
 ## X-Date: July 21, 2005
 ## X-Help: FBConstants.HELPMSG

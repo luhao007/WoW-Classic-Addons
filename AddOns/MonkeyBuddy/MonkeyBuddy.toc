@@ -6,7 +6,7 @@
 
 ## Title: MonkeyBuddy v2.10.0
 ## Notes: Helps you configure your MonkeyMods.
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFF69CCF0伴侣|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFF69CCF0伴侣|r
 ## Notes-zhCN: 在小地图旁提供一个猴子图标，可修改Monkey模块的设置
 
 ## X-Part-Of: MonkeyQuest

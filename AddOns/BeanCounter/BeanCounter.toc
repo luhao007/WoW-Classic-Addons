@@ -7,7 +7,7 @@
 
 ## Title: BeanCounter
 ## Notes: Auction House transaction history to include purchases and sales, failures and successes.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0物品会计师|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0物品会计师|r
 ## Notes-zhCN: 存储物品购买销售记录
 
 ## X-Part-Of: Auc-Advanced

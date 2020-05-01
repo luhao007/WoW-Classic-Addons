@@ -7,7 +7,7 @@
 
 ## Title: Auc:Stat:Std Deviation
 ## Notes: Statistics extension for Auctioneer that uses the variance to detect, and ignore, outliers and provides pricing recommendations.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C标准差|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0统计|r |cFF22B14C标准差|r
 ## Notes-zhCN: 让拍卖助手通过标准差来提供参考拍卖价格
 
 ## X-Part-Of: Auc-Advanced

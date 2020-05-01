@@ -3,7 +3,7 @@
 
 ## Title: ClassicCastbars_Options
 ## Notes: Configuration for ClassicCastbars. Type /castbars for options.
-## Title-zhCN: |cFFFFE00A<|r|cFFFF1493战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFF0055FF设置|r
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFF0055FF设置|r
 
 ## X-Part-Of: ClassicCastbars
 

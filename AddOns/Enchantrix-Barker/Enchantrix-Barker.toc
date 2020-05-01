@@ -7,7 +7,7 @@
 
 ## Title: EnchantrixBarker
 ## Notes: Sends a price list of Enchants that a user has available for sale to the Trade channel. [8.2.6469] This AddOn is licensed under the GNU GPL, see GPL.txt for details.
-## Title-zhCN: |cFFFFE00A<|r|cFF1E90FF物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0附魔助手|r |cFF22B14C叫卖|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF拍卖助手|r |cFF69CCF0附魔助手|r |cFF22B14C叫卖|r
 ## Notes-zhCN: 将可以进行的附魔价格发送到交易频道
 
 ## X-Part-Of: Auc-Advanced

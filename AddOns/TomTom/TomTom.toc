@@ -6,7 +6,7 @@
 
 ## Title: TomTom
 ## Notes: Acts as your portable navigation assistant
-## Title-zhCN: |cFFFFE00A<|r|cFFBA55D3界面|r|cFFFFE00A>|r |cFFFFFFFF导航助手|r |cFFFFE00ATomTom|r
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF导航助手|r |cFFFFE00ATomTom|r
 ## Notes-zhCN: 一个简单的导航助手。
 
 ## X-Localizations: enUS, enGB, deDE, frFR, zhCN, ruRU, zhTW
