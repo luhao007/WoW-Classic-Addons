@@ -71,7 +71,7 @@ L.bar_marker			= "Угроза игрока красным"
 L.bar_texture			= "Текстура"
 L.bar_classColor		= "Использовать цвет класса"
 L.bar_defaultColor		= "Пользовательский цвет"
-L.bar_alpha				= "Прозрачность Панели"
+L.bar_alpha				= "Прозрачность Панели (default colors)"
 L.bar_colorMod			= "Модификатор цвета"
 
 L.font					= "Шрифт"
@@ -82,7 +82,7 @@ L.font_shadow			= "Тень"
 
 L.warnings				= "Предупреждения"
 L.warnings_sound		= "Включить звуки."
-L.warnings_threshold	= "Порог предупреждения (0-100%)."
+L.warnings_threshold	= "Порог предупреждения (100% = aggro)."
 
 L.warnings_soundFile		= "Звук предупреждения."
 L.sound_pulledFile		= "Звук при Агро."

@@ -1403,12 +1403,27 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 											end
 										elseif j.providers then
 											tinsert(regroup, j);
+										else
+											-- Do a quick search on the itemID.
+											local searchResults = app.SearchForField("itemID", j.itemID);
+											if searchResults and #searchResults > 0 then
+												for k,searchResult in ipairs(searchResults) do
+													if searchResult.providers then
+														for l,provider in ipairs(searchResult.providers) do
+															if provider[1] == 'i' and provider[2] == j.itemID then
+																tinsert(regroup, j);
+																break;
+															end
+														end
+														break;
+													end
+												end
+											end
 										end
 									end
 								else
 									tinsert(regroup, j);
 								end
-								
 							end
 						end
 					end
@@ -3481,7 +3496,7 @@ app.BaseItem = {
 		elseif key == "trackable" then
 			return t.questID;
 		elseif key == "repeatable" then
-			return t.isDaily or t.isWeekly;
+			return t.isDaily or t.isWeekly or t.isYearly;
 		elseif key == "saved" then
 			return IsQuestFlaggedCompletedForObject(t);
 		elseif key == "name" then
@@ -3952,7 +3967,7 @@ app.BaseNPC = {
 		elseif key == "collected" then
 			return t.saved;
 		elseif key == "repeatable" then
-			return t.isDaily or t.isWeekly;
+			return t.isDaily or t.isWeekly or t.isYearly;
 		else
 			-- Something that isn't dynamic.
 			return table[key];
@@ -4155,7 +4170,7 @@ app.BaseQuest = {
 		elseif key == "collected" then
 			return t.saved;
 		elseif key == "repeatable" then
-			return t.isDaily or t.isWeekly;
+			return t.isDaily or t.isWeekly or t.isYearly;
 		elseif key == "saved" then
 			return IsQuestFlaggedCompletedForObject(t);
 		else
@@ -6283,6 +6298,29 @@ function app:GetDataCache()
 		BuildGroups(allData, allData.g);
 		app:GetWindow("Unsorted").data = allData;
 		CacheFields(allData);
+		
+		-- Check for Vendors missing Coordinates
+		--[[
+		local searchResults = SearchForFieldContainer("creatureID");
+		if searchResults then
+			local missingCoordinates = {};
+			for npcID,_ in pairs(searchResults) do
+				for i,data in ipairs(_) do
+					if not data.coords and data.parent then
+						if data.parent.npcID == -2 or data.parent.npcID == -16 then 
+							-- If this is a rare or vendor with no coordinates
+							tinsert(missingCoordinates, npcID);
+							break;
+						end
+					end
+				end
+			end
+			table.sort(missingCoordinates);
+			for i,npcID in ipairs(missingCoordinates) do
+				print("NPC ID " .. npcID .. " is missing coordinates.");
+			end
+		end
+		]]--
 	end
 	return allData;
 end
@@ -6315,6 +6353,7 @@ function app:RefreshData(lazy, got, manual)
 		else
 			app:UpdateWindows(nil, got);
 		end
+		
 		-- Send a message to your party members.
 		local data = app:GetWindow("Prime").data;
 		local msg = "A\t" .. app.Version .. "\t" .. (data.progress or 0) .. "\t" .. (data.total or 0);

@@ -1,52 +1,28 @@
-lightweight tag a1f6a2950cf559701d57675fcb55d9190a06524a v1.5.0
+lightweight tag 1eb3c691f3ec63c12382aea571d5570184c57eea v1.6.8
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Mon Apr 20 15:17:27 2020 -0700
+Date:	Fri May 1 09:08:28 2020 -0700
 
-commit a1f6a2950cf559701d57675fcb55d9190a06524a
+commit 1eb3c691f3ec63c12382aea571d5570184c57eea
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 15:17:27 2020 -0700
+Date:   Fri May 1 09:08:28 2020 -0700
 
-    add default text
+    opt for btn and icon
 
-commit 01d451349643a9765326b953ca8d9a29b97c1eec
+commit d866b695a39bc6ea5e41efd4b48132dfc51eceff
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 15:09:22 2020 -0700
+Date:   Fri May 1 08:14:37 2020 -0700
 
-    black list
+    trim toc
 
-commit f724dff56aa05e8aae9f57a702471e8d3445f3ed
+commit 5682efb35238bd55685de5b609212f776b87ae6a
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 14:30:56 2020 -0700
+Date:   Fri May 1 08:13:33 2020 -0700
 
-    split stack support
+    introduce minimap icon :(
 
-commit a61a885f6caf0b40549833114b7a0b1170abc5b0
+commit c34f7a0628925dc93e950a3d99417218f9d6e968
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 14:07:16 2020 -0700
+Date:   Thu Apr 30 12:12:28 2020 -0700
 
-    loot event to support stack
-
-commit defd4aefd06cb274c5304d5f38ffd490a8123028
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 13:52:18 2020 -0700
-
-    set count popup
-
-commit d17c02f94473cda9984347058f118dc10e8ab6d7
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Apr 20 12:32:27 2020 -0700
-
-    introduce count
-
-commit 66507c764d7874a92ae42f5c78ba22c65add05c1
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri Apr 10 22:31:48 2020 -0700
-
-    add row lock
-
-commit da05603bc67e7d50f7b18e7ac1dcd123f22a4c06
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri Apr 10 19:42:45 2020 -0700
-
-    better split into lock
+    remove bid price due to confusing
 
