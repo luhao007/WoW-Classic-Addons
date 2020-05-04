@@ -250,10 +250,15 @@ class Manager(object):
             files = ['lib.xml', '{}.xml'.format(lib), '{}.toc'.format(lib)]
             for f in files:
                 if os.path.exists(root / lib / f):
+                    s = '{}{}'.format(
+                        '<Script file="' if f.endswith('.toc') else '',
+                        embed
+                    )
+
                     process_file(
                         root / lib / f,
                         lambda lines: [l for l in lines
-                                       if not any(l.startswith(embed)
+                                       if not any(l.strip().startswith(s)
                                                   for embed in embeds)]
                     )
 
