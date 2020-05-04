@@ -402,10 +402,8 @@ Prat:AddModuleToLoad(function()
 		["customGratsText_desc"] = "Custom grats message. Type any text you wish for your grats message, if you want to include the player's name use '%s' as a placeholder",
 		--[[Translation missing --]]
 		["customGratsText_name"] = "Grats Message",
-		--[[Translation missing --]]
-		["dontShowAchievements_desc"] = "Hide all achievement messages",
-		--[[Translation missing --]]
-		["dontShowAchievements_name"] = "Don't show achievements",
+		["dontShowAchievements_desc"] = "모든 업적 메세지 숨기기",
+		["dontShowAchievements_name"] = "업적 보이지 않기",
 		--[[Translation missing --]]
 		["grats_donthave_1"] = "Grats %s",
 		--[[Translation missing --]]
@@ -448,10 +446,8 @@ Prat:AddModuleToLoad(function()
 		["grats_have_9"] = "Nicely done %s",
 		--[[Translation missing --]]
 		["grats_link"] = "say grats",
-		--[[Translation missing --]]
-		["module_desc"] = "Achievment related customizations",
-		--[[Translation missing --]]
-		["module_name"] = "Achievements",
+		["module_desc"] = "업적 관련 사용자 설정",
+		["module_name"] = "업적",
 		--[[Translation missing --]]
 		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
 		--[[Translation missing --]]

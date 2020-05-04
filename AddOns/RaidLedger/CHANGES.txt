@@ -1,28 +1,34 @@
-lightweight tag 1eb3c691f3ec63c12382aea571d5570184c57eea v1.6.8
+lightweight tag eb928cc72d4ea66d63e6455812f017bc22e7131f v1.6.10
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Fri May 1 09:08:28 2020 -0700
+Date:	Sun May 3 02:58:45 2020 -0700
 
-commit 1eb3c691f3ec63c12382aea571d5570184c57eea
+commit eb928cc72d4ea66d63e6455812f017bc22e7131f
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri May 1 09:08:28 2020 -0700
+Date:   Sun May 3 02:58:45 2020 -0700
 
-    opt for btn and icon
+    toast for ledger clear
 
-commit d866b695a39bc6ea5e41efd4b48132dfc51eceff
+commit 1505e585056c76eb8a1c75a6cd66092783bbf8ec
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri May 1 08:14:37 2020 -0700
+Date:   Sun May 3 00:16:48 2020 -0700
 
-    trim toc
+    flat lib
 
-commit 5682efb35238bd55685de5b609212f776b87ae6a
+commit 382153be9e3a87a3dedb9ddfca63b0278af742bb
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri May 1 08:13:33 2020 -0700
+Date:   Sat May 2 23:53:38 2020 -0700
 
-    introduce minimap icon :(
+    fix data name
 
-commit c34f7a0628925dc93e950a3d99417218f9d6e968
+commit 1e4fdc05cd10b15085b42f503b95e3a65311f115
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Thu Apr 30 12:12:28 2020 -0700
+Date:   Sat May 2 23:52:50 2020 -0700
 
-    remove bid price due to confusing
+    fix minimap opt
+
+commit f5ae1a2405a36240254ee1210fc6bcce2c08dfc6
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Sat May 2 22:19:36 2020 -0700
+
+    width now auto fit
 

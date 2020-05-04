@@ -337,10 +337,8 @@ L = {
 		["Show Chat%d Arrows"] = "대화창%d의 화살표 보이기",
 		["showbnet_desc"] = "커뮤니티 메뉴 표시",
 		["showbnet_name"] = "커뮤니티 메뉴 표시",
-		--[[Translation missing --]]
-		["showchannel_desc"] = "Show Channel Button",
-		--[[Translation missing --]]
-		["showchannel_name"] = "Show Channel Button",
+		["showchannel_desc"] = "채널 버튼 보이기",
+		["showchannel_name"] = "채널 버튼 보이기",
 		["showmenu_desc"] = "대화 메뉴 표시",
 		["showmenu_name"] = "메뉴 표시",
 		["showminimize_desc"] = "최소화 버튼 표시",

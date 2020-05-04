@@ -71,8 +71,8 @@ end)
 RegEvent("ADDON_LOADED", function()
     local ldb = LibStub("LibDataBroker-1.1")
     local icon = LibStub("LibDBIcon-1.0")
-    
-    icon:Register("RaidLedger", ldb:NewDataObject("Bunnies!", {
+
+    icon:Register("RaidLedger", ldb:NewDataObject("RaidLedger", {
             icon = "Interface\\Icons\\inv_misc_note_03",
             OnClick = function() 
                 if GUI.mainframe:IsShown() then
@@ -84,7 +84,56 @@ RegEvent("ADDON_LOADED", function()
             OnTooltipShow = function(tooltip)
                 tooltip:AddLine(L["Raid Ledger"])
             end,
-        }),  { hide = not Database:GetConfigOrDefault("autoaddloot", true) })
+        }),  { hide = not Database:GetConfigOrDefault("minimapicon", true) })
+end)
+
+local clearledger = function()
+    StaticPopup_Show("RAIDLEDGER_CLEARMSG")
+end
+
+local cleartoast = AlertFrame:AddSimpleAlertFrameSubSystem("MoneyWonAlertFrameTemplate", function(frame, text)
+
+    frame.Icon:SetTexture("Interface\\Icons\\inv_misc_note_03")
+    frame.Label:SetText(L["Raid Ledger"])
+    frame.Amount:SetText(L["Click here to clear ledger"])
+    frame.Amount:SetWidth(180)
+    frame.Amount:SetFontObject(GameFontWhite)
+    frame:SetScript("OnClick", clearledger)
+
+    if not frame.closebtn then
+        b = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+        b:SetPoint("TOPRIGHT", frame, 0, 0);
+        frame.closebtn = b
+    end
+
+end)
+
+local lastzone = nil
+
+C_Timer.NewTicker(5, function()
+    local zone = GetInstanceInfo()
+    if not zone then
+        return
+    end
+
+    if zone == "" then
+        return
+    end
+
+    local _, type = IsInInstance()
+
+    if type == "raid" or type == "party" then
+
+        if lastzone ~= zone then
+            if #Database:GetCurrentLedger()["items"] > 0 then
+                cleartoast:AddAlert()
+            end
+        end
+
+    end
+
+    lastzone = zone
+
 end)
 
 

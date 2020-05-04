@@ -131,10 +131,8 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["Highlight"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Highlight your own name, and various other text",
-		--[[Translation missing --]]
-		["module_name"] = "Highlight",
+		["module_desc"] = "사용자 이름 및  기타 텍스트 강조하기",
+		["module_name"] = "강조하기",
 	}
 }
 

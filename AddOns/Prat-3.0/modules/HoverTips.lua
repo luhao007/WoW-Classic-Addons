@@ -115,10 +115,8 @@ Prat:AddModuleToLoad(function()
   
   L = {
 	["HoverTips"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Shows tooltip when hovering over link in chat",
-		--[[Translation missing --]]
-		["module_name"] = "Hover Tips",
+		["module_desc"] = "채팅창에 마우스 오버시 링크 툴팁 보이기",
+		["module_name"] = "툴팁",
 	}
 }
 

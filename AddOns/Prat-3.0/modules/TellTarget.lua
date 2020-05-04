@@ -112,7 +112,7 @@ L = {
  
 L = {
 	["TellTarget"] = {
-		["/tt"] = true,
+		["/tt"] = "/ㅅㅅ",
 		["Adds telltarget slash command (/tt)."] = "대상에게 말하기 슬래쉬 명령어를 추가합니다 (/tt).",
 		["No target selected."] = "대상이 선택되지 않았습니다.",
 		["NoTarget"] = "대상 없음",
@@ -267,8 +267,11 @@ L = {
     end
     self.hooks[editBox].OnTextChanged(editBox, ...)
     -- set header's font
-    local font, fontsize, style = ChatFrame1:GetFont()
     local header = _G[editBox:GetName().."Header"];
+
+    local _, fontsize, _ = header:GetFont()
+    local font, _, style = ChatFrame1:GetFont()
+
     header:SetFont( font, fontsize, style )
   end
 

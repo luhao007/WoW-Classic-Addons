@@ -110,14 +110,10 @@ Prat:AddModuleToLoad(function()
     
   L = {
 	["Invites"] = {
-		--[[Translation missing --]]
-		["Enable Alt-Invite"] = "Enable Alt-Invite",
-		--[[Translation missing --]]
-		["Enable Invite Links"] = "Enable Invite Links",
-		--[[Translation missing --]]
-		["module_desc"] = "Options for easy inviting of players to groups",
-		--[[Translation missing --]]
-		["module_name"] = "Invites",
+		["Enable Alt-Invite"] = "Alt-초대 켜기",
+		["Enable Invite Links"] = "초대 링크 켜기",
+		["module_desc"] = "사용자 그룹 쉽게 추가하기 옵션",
+		["module_name"] = "초대",
 		--[[Translation missing --]]
 		["Toggle group invites by alt-clicking hyperlinked keywords like 'invite'."] = "Toggle group invites by alt-clicking hyperlinked keywords like 'invite'.",
 		--[[Translation missing --]]

@@ -60,6 +60,7 @@ Prat:AddModuleToLoad(function()
     ["HH:MM:SS AM (12-hour)"] = true,
     ["HH:MM:SS (12-hour)"] = true,
     ["HH:MM:SS (24-hour)"] = true,
+    ["HH:MM AM (12-hour)"] = true,
     ["HH:MM (12-hour)"] = true,
     ["HH:MM (24-hour)"] = true,
     ["MM:SS"] = true,
@@ -83,6 +84,7 @@ L = {
 		["Format All Timestamps"] = true,
 		["HH:MM (12-hour)"] = true,
 		["HH:MM (24-hour)"] = true,
+		["HH:MM AM (12-hour)"] = true,
 		["HH:MM:SS (12-hour)"] = true,
 		["HH:MM:SS (24-hour)"] = true,
 		["HH:MM:SS AM (12-hour)"] = true,
@@ -119,6 +121,8 @@ L = {
 		["Format All Timestamps"] = "Formatage de l'heure",
 		["HH:MM (12-hour)"] = "HH:MM (12 heures)",
 		["HH:MM (24-hour)"] = "HH:MM (24 heures)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12 heures)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24 heures)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12 heures)",
@@ -155,6 +159,8 @@ L = {
 		["Format All Timestamps"] = "Formatiere alle Zeitstempel",
 		["HH:MM (12-hour)"] = "HH:MM (12-Stunden)",
 		["HH:MM (24-hour)"] = "HH:MM (24-Stunden)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-Stunden)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24-Stunden)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12-Stunden)",
@@ -166,7 +172,7 @@ L = {
 		["Set the timestamp format"] = "Format für Zeitstempel einstellen",
 		["Set Timestamp Color"] = "Farbe für Zeitstempel einstellen",
 		["Sets the color of the timestamp."] = "Stellt die Farbe des Zeitstempels ein.",
-		["Show Timestamp"] = "Teitstempel anzeigen",
+		["Show Timestamp"] = "Zeitstempel anzeigen",
 		["show_desc"] = "Anzeige des Zeitstempels für jedes Fenster ein- und ausschalten.",
 		["show_name"] = "Zeitstempel anzeigen",
 		["space_desc"] = "Das Einfügen eines Leerzeichens nach dem Zeitstempel ein- und ausschalten.",
@@ -191,6 +197,8 @@ L = {
 		["Format All Timestamps"] = "모든 시간 표시 형식",
 		["HH:MM (12-hour)"] = "HH:MM (12시간제)",
 		["HH:MM (24-hour)"] = "HH:MM (24시간제)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12시간제)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24시간제)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12시간제)",
@@ -233,6 +241,8 @@ L = {
 		["HH:MM (12-hour)"] = "HH:MM (12-hour)",
 		--[[Translation missing --]]
 		["HH:MM (24-hour)"] = "HH:MM (24-hour)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		--[[Translation missing --]]
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-hour)",
 		--[[Translation missing --]]
@@ -289,6 +299,8 @@ L = {
 		["Format All Timestamps"] = "Формат всего времени",
 		["HH:MM (12-hour)"] = "HH:MM (12-ч)",
 		["HH:MM (24-hour)"] = "HH:MM (24-ч)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-ч)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24-ч)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12-ч)",
@@ -325,6 +337,8 @@ L = {
 		["Format All Timestamps"] = "所有时间戳格式",
 		["HH:MM (12-hour)"] = "时:分 (12-小时)",
 		["HH:MM (24-hour)"] = "时:分 (24-小时)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "时:分:秒 (12-小时)",
 		["HH:MM:SS (24-hour)"] = "时:分:秒 (24-小时)",
 		["HH:MM:SS AM (12-hour)"] = "时:分:秒 上午(12-小时)",
@@ -361,6 +375,8 @@ L = {
 		["Format All Timestamps"] = "Formatear Todas las Mascaras de Tiempo",
 		["HH:MM (12-hour)"] = "HH:MM (12-horas)",
 		["HH:MM (24-hour)"] = "HH:MM (24-horas)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-horas)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24-horas)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12-horas)",
@@ -397,6 +413,8 @@ L = {
 		["Format All Timestamps"] = "所有時間戳格式",
 		["HH:MM (12-hour)"] = "HH:MM (12時制)",
 		["HH:MM (24-hour)"] = "HH:MM (24時制)",
+		--[[Translation missing --]]
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12時制)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24時制)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12時制)",
@@ -436,6 +454,7 @@ L = {
     ["%I:%M:%S %p"] = PL["HH:MM:SS AM (12-hour)"],
     ["%I:%M:%S"] = PL["HH:MM:SS (12-hour)"],
     ["%X"] = PL["HH:MM:SS (24-hour)"],
+    ["%I:%M %p"] = PL["HH:MM AM (12-hour)"],
     ["%I:%M"] = PL["HH:MM (12-hour)"],
     ["%H:%M"] = PL["HH:MM (24-hour)"],
     ["%M:%S"] = PL["MM:SS"],

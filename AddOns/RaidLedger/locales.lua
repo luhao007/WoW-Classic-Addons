@@ -37,6 +37,7 @@ L["Bid mode"] = true
 L["Bid price"] = true
 L["Cannot find any debit entry in template, please check your template in options"] = true
 L["Clear"] = true
+L["Click here to clear ledger"] = true
 L["Close text export"] = true
 L["Compensation"] = true
 L["Compensation added"] = true
@@ -135,6 +136,8 @@ L["Beneficiary"] = "Begünstigster"
 --[[ L["Bid price"] = "Bid price"--]] 
 L["Cannot find any debit entry in template, please check your template in options"] = "Kann keine Lastposteneinträge in der Vorlage finden. Bitte checke deine Vorlagen in den Optionen"
 L["Clear"] = "Neu"
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 L["Close text export"] = "Text Export schließen"
 L["Compensation"] = "Vergütung"
 L["Compensation added"] = "Vergütung hinzugefügt"
@@ -264,6 +267,8 @@ elseif locale == 'esES' then
 --[[ L["Cannot find any debit entry in template, please check your template in options"] = "Cannot find any debit entry in template, please check your template in options"--]] 
 --[[Translation missing --]]
 --[[ L["Clear"] = "Clear"--]] 
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 --[[Translation missing --]]
 --[[ L["Close text export"] = "Close text export"--]] 
 --[[Translation missing --]]
@@ -441,6 +446,8 @@ elseif locale == 'esMX' then
 --[[Translation missing --]]
 --[[ L["Clear"] = "Clear"--]] 
 --[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
+--[[Translation missing --]]
 --[[ L["Close text export"] = "Close text export"--]] 
 --[[Translation missing --]]
 --[[ L["Compensation"] = "Compensation"--]] 
@@ -616,6 +623,8 @@ elseif locale == 'frFR' then
 --[[ L["Cannot find any debit entry in template, please check your template in options"] = "Cannot find any debit entry in template, please check your template in options"--]] 
 --[[Translation missing --]]
 --[[ L["Clear"] = "Clear"--]] 
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 --[[Translation missing --]]
 --[[ L["Close text export"] = "Close text export"--]] 
 --[[Translation missing --]]
@@ -793,6 +802,8 @@ elseif locale == 'itIT' then
 --[[Translation missing --]]
 --[[ L["Clear"] = "Clear"--]] 
 --[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
+--[[Translation missing --]]
 --[[ L["Close text export"] = "Close text export"--]] 
 --[[Translation missing --]]
 --[[ L["Compensation"] = "Compensation"--]] 
@@ -949,6 +960,8 @@ L["Bid mode"] = "경매 모드"
 L["Bid price"] = "입찰 가격"
 L["Cannot find any debit entry in template, please check your template in options"] = "템플릿에서 지출 항목을 찾을 수 없습니다. 옵션에서 템플릿을 확인하십시오."
 L["Clear"] = "지우기"
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 L["Close text export"] = "문자 내보내기 닫기"
 L["Compensation"] = "보상"
 L["Compensation added"] = "보상 추가"
@@ -980,8 +993,7 @@ L["is bought in"] = "구매함"
 L["Item added"] = "추가된 아이템"
 L["Last used"] = "마지막 사용됨"
 L["Member credit for subgroup"] = "하위 그룹의 회원 수입"
---[[Translation missing --]]
---[[ L["Minimap Icon"] = "Minimap Icon"--]] 
+L["Minimap Icon"] = "미니맵 아이콘"
 L["Must bid higher than"] = "상위 입찰 필요"
 L["Name of Debit template"] = "지출 템플릿의 이름"
 L["Net Profit"] = "순이익"
@@ -989,8 +1001,7 @@ L["Other"] = "기타"
 L["Pause"] = "정지"
 L["Per Member"] = "회원 당"
 L["Per Member credit"] = "회원 당 수입"
---[[Translation missing --]]
---[[ L["Raid Frame Button"] = "Raid Frame Button"--]] 
+L["Raid Frame Button"] = "공격대 프레임 버튼"
 L["Raid Ledger"] = "공격대 장부"
 L["Remove all records?"] = "모든 기록을 삭제 하시겠습니까?"
 L["Remove ALL SAME record?"] = "모든 SAME 레코드를 제거하시겠습니까?"
@@ -1002,7 +1013,7 @@ L["Right click to choose channel"] = "우클릭 : 채널 선택"
 L["Right click to fine-tune"] = "우클릭 : 미세조정 "
 L["Right click to remove record"] = "우클릭으로 기록 제거"
 L["Round down"] = "절삭"
-L["Round per member credit down"] = "멤버마다 절삭"
+L["Round per member credit down"] = "실버 단위 절삭"
 L["Set split into number when team size changes automatically"] = "멤버 수 변경될 때 마다 분할 수 설정"
 L["Shift + item/name to add to record"] = "Shift + 아이템/이름으로 기록에 추가"
 L["Shift + Right click to remove ALL SAME record"] = "Shift + 우클릭으로 모든 SAME 레코드 제거"
@@ -1059,6 +1070,8 @@ elseif locale == 'ptBR' then
 --[[ L["Cannot find any debit entry in template, please check your template in options"] = "Cannot find any debit entry in template, please check your template in options"--]] 
 --[[Translation missing --]]
 --[[ L["Clear"] = "Clear"--]] 
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 --[[Translation missing --]]
 --[[ L["Close text export"] = "Close text export"--]] 
 --[[Translation missing --]]
@@ -1227,6 +1240,8 @@ L["Beneficiary"] = "Бенефициарий"
 --[[Translation missing --]]
 --[[ L["Cannot find any debit entry in template, please check your template in options"] = "Cannot find any debit entry in template, please check your template in options"--]] 
 L["Clear"] = "Очистить"
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 L["Close text export"] = "Закрыть экспорт текста"
 L["Compensation"] = "Компенсация"
 L["Compensation added"] = "Компенсация добавлена"
@@ -1351,6 +1366,7 @@ L["Bid mode"] = "加价模式"
 L["Bid price"] = "竞拍价"
 L["Cannot find any debit entry in template, please check your template in options"] = "无法在支出模板中找到任何内容, 请在选项中检查模板内容"
 L["Clear"] = "清空"
+L["Click here to clear ledger"] = "点我清空账本"
 L["Close text export"] = "关闭文本模式"
 L["Compensation"] = "补助"
 L["Compensation added"] = "已经添补助"
@@ -1449,6 +1465,8 @@ L["Beneficiary"] = "獲取人"
 --[[ L["Bid price"] = "Bid price"--]] 
 L["Cannot find any debit entry in template, please check your template in options"] = "無法在支出模板中找到任何內容, 請在選項中檢查模板內容"
 L["Clear"] = "清空"
+--[[Translation missing --]]
+--[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
 L["Close text export"] = "關閉文字模式"
 L["Compensation"] = "補助"
 L["Compensation added"] = "已經添補助"

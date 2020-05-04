@@ -1,16 +1,20 @@
 ## Interface: 11304
 ## Author: Boshi Lian(farmer1992@gmail.com)
-## Version: v1.6.8
+## Version: v1.6.10
 ## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## Title: Raid Ledger
-## Notes: A ledger for GDKP/gold run raid. Feedback: farmer1992@gmail.com
+## Notes: @localization(locale="enUS", key="TOC_NOTES")@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF金团账本|r |cFFFFE00ARaidLedger|r
-## Notes-zhCN: 金团账本，帮你在金团中记账 反馈问题 farmer1992@gmail.com
+## Notes-zhCN: @localization(locale="zhCN", key="TOC_NOTES")@
 
 
-lib\LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
-lib\LibDBIcon-1.0\embeds.xml
+lib\LibStub\LibStub.lua
+lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
+lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+lib\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
 lib\lib-st\Core.lua
 lib\LibDeformat-3.0\LibDeformat-3.0.lua
 

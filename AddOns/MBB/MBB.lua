@@ -8,7 +8,7 @@
 	
 ]]
 
-MBB_Version = "1.0.0";
+MBB_Version = "1.1.1";
 
 -- Setup some variable for debugging.
 MBB_DebugFlag = 0;
@@ -79,7 +79,9 @@ MBB_Ignore = {
 	[39] = "poiMinimap",	-- QuestPointer
 	[40] = "MiniMapLFGFrame",    -- LFG
 	[41] = "PremadeFilter_MinimapButton",    -- PreMadeFilter
-	[42] = "QuestieFrame" -- Questie Fix
+	[42] = "QuestieFrame", -- Questie Fix
+	[43] = "NauticusClassicMiniIcon", -- NauticusClassic Fix
+	[44] = "Spy_" --Spy Addon
 };
 
 MBB_IgnoreSize = {

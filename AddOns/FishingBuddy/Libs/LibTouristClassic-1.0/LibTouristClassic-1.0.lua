@@ -1,15 +1,15 @@
 --[[
 Name: LibTouristClassic-1.0
-Revision: $Rev: 236 $
-Author(s): Mishikal1 (Classic), Odica (maintainer), based on LibTourist-3.0, originally created by ckknight and Arrowmaster
+Revision: $Rev: 239 $
+Author(s): Odica, Mishikal1; based on LibTourist-3.0
 Documentation: https://www.wowace.com/projects/libtourist-1-0/pages/api-reference
 Git: https://repos.wowace.com/wow/libtourist-classic libtourist-classic
-Description: A library to provide information about zones and instances.
+Description: A library to provide information about zones and instances for WoW Classic
 License: MIT
 ]]
 
 local MAJOR_VERSION = "LibTouristClassic-1.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 236 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 239 $"):match("(%d+)"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 local C_Map = C_Map
@@ -577,9 +577,7 @@ local function PLAYER_LEVEL_UP(self, level)
 end
 
 
--- Public alternative for GetMapContinents, removes the map IDs that were added to its output in WoW 6.0
--- Note: GetMapContinents has been removed entirely in 8.0
--- 8.0.1: returns uiMapID as key
+-- Public alternative for legacy function GetMapContinents. Returns uiMapID as key, continent name as value.
 function Tourist:GetMapContinentsAlt()
 	local continents = C_Map.GetMapChildrenInfo(COSMIC_MAP_ID, Enum.UIMapType.Continent, true)
 	local retValue = {}
@@ -589,10 +587,7 @@ function Tourist:GetMapContinentsAlt()
 	return retValue
 end
 
--- Public Alternative for GetMapZones because GetMapZones does NOT return all zones (as of 6.0.2),
--- making its output useless as input for SetMapZoom.
--- Note: GetMapZones has been removed entirely in 8.0, just as SetMapZoom
--- 8.0.1: returns uiMapID as key
+-- Public Alternative for legacy function GetMapZones. Returns uiMapID as key, zone name as value.
 function Tourist:GetMapZonesAlt(continentID)
 	if mapZonesByContinentID[continentID] then
 		-- Get from cache
@@ -615,8 +610,7 @@ function Tourist:GetMapZonesAlt(continentID)
 	end
 end
 
--- Public alternative for GetMapNameByID (which was removed in 8.0.1),
--- returns a unique localized zone name to be used to lookup data in LibTourist
+-- Public alternative for legacy function GetMapNameByID
 -- Takes a uiMapID or instanceID and returns the localized name
 function Tourist:GetMapNameByIDAlt(uiMapID)
 	if tonumber(uiMapID) == nil then
@@ -2635,10 +2629,11 @@ do
 
 	zones[BZ["Ragefire Chasm"]] = {
 		low = 13,
-		high = 20,
+		high = 18,
 		continent = Kalimdor,
 		paths = BZ["Orgrimmar"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		faction = "Horde",
 		type = "Instance",
 		entrancePortal = { BZ["Orgrimmar"], 52.8, 49 },
@@ -2649,7 +2644,8 @@ do
 		high = 26,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Westfall"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		faction = "Alliance",
 		type = "Instance",
 		fishing_low = 1,
@@ -2658,11 +2654,12 @@ do
 	}
 
 	zones[BZ["Shadowfang Keep"]] = {
-		low = 20,
-		high = 28,
+		low = 22,
+		high = 30,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Silverpine Forest"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		entrancePortal = { BZ["Silverpine Forest"], 44.80, 67.83 },
 	}
@@ -2672,7 +2669,8 @@ do
 		high = 24,
 		continent = Kalimdor,
 		paths = BZ["The Barrens"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		fishing_low = 1,
 		fishing_high = 75,
@@ -2680,11 +2678,12 @@ do
 	}
 
 	zones[BZ["Blackfathom Deeps"]] = {
-		low = 23,
-		high = 30,
+		low = 24,
+		high = 32,
 		continent = Kalimdor,
 		paths = BZ["Ashenvale"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		fishing_low = 1,
 		fishing_high = 75,
@@ -2696,7 +2695,8 @@ do
 		high = 32,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Stormwind City"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		faction = "Alliance",
 		type = "Instance",
 		entrancePortal = { BZ["Stormwind City"], 39.85, 54.30 },
@@ -2707,18 +2707,21 @@ do
 		high = 38,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Dun Morogh"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		faction = "Alliance",
 		type = "Instance",
 		entrancePortal = { BZ["Dun Morogh"], 24, 38.9 },
 	}
 
+	-- Consists of Graveyard, Library, Armory and Cathedral
 	zones[BZ["Scarlet Monastery"]] = {
-		low = 33,
-		high = 44,
+		low = 34,
+		high = 45,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Tirisfal Glades"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		fishing_low = 130,
 		fishing_high = 225,
@@ -2730,7 +2733,8 @@ do
 		high = 38,
 		continent = Kalimdor,
 		paths = BZ["The Barrens"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		entrancePortal = { BZ["The Barrens"], 40.8, 94.5 },
 	}
@@ -2740,18 +2744,20 @@ do
 		high = 46,
 		continent = Kalimdor,
 		paths = BZ["The Barrens"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		entrancePortal = { BZ["The Barrens"], 47.5, 23.7 },
 	}
 
 	-- consists of The Wicked Grotto, Foulspore Cavern and Earth Song Falls
 	zones[BZ["Maraudon"]] = {
-		low = 40,
-		high = 50,
+		low = 46,
+		high = 55,
 		continent = Kalimdor,
 		paths = BZ["Desolace"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		fishing_low = 205,
 		fishing_high = 300,
@@ -2759,22 +2765,24 @@ do
 	}
 
 	zones[BZ["Uldaman"]] = {
-		low = 38,
-		high = 46,
+		low = 41,
+		high = 51,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Badlands"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		entrancePortal = { BZ["Badlands"], 42.4, 18.6 },
 	}
 
 	-- a.k.a. Warpwood Quarter
 	zones[BZ["Dire Maul - East"]] = {
-		low = 44,
-		high = 54,
+		low = 55,
+		high = 60,
 		continent = Kalimdor,
 		paths = BZ["Dire Maul"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		complex = BZ["Dire Maul"],
 		entrancePortal = { BZ["Feralas"], 66.7, 34.8 },
@@ -2782,11 +2790,12 @@ do
 
 	-- a.k.a. Capital Gardens
 	zones[BZ["Dire Maul - West"]] = {
-		low = 44,
-		high = 54,
+		low = 55,
+		high = 60,
 		continent = Kalimdor,
 		paths = BZ["Dire Maul"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		complex = BZ["Dire Maul"],
 		entrancePortal = { BZ["Feralas"], 60.3, 30.6 },
@@ -2794,11 +2803,12 @@ do
 
 	-- a.k.a. Gordok Commons
 	zones[BZ["Dire Maul - North"]] = {
-		low = 44,
-		high = 54,
+		low = 55,
+		high = 60,
 		continent = Kalimdor,
 		paths = BZ["Dire Maul"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		complex = BZ["Dire Maul"],
 		entrancePortal = { BZ["Feralas"], 62.5, 24.9 },
@@ -2818,7 +2828,7 @@ do
 
 	-- consists of Main Gate and Service Entrance
 	zones[BZ["Stratholme"]] = {
-		low = 56,
+		low = 58,
 		high = 60,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Eastern Plaguelands"],
@@ -2830,19 +2840,20 @@ do
 	}
 
 	zones[BZ["Zul'Farrak"]] = {
-		low = 43,
-		high = 50,
+		low = 42,
+		high = 46,
 		continent = Kalimdor,
 		paths = BZ["Tanaris"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		entrancePortal = { BZ["Tanaris"], 36, 11.7 },
 	}
 
 	-- consists of Detention Block and Upper City
 	zones[BZ["Blackrock Depths"]] = {
-		low = 50,
-		high = 56,
+		low = 52,
+		high = 60,
 		continent = Eastern_Kingdoms,
 		paths = {
 			[BZ["Molten Core"]] = true,
@@ -2856,11 +2867,12 @@ do
 
 	-- a.k.a. Sunken Temple
 	zones[BZ["The Temple of Atal'Hakkar"]] = {
-		low = 44,
-		high = 52,
+		low = 50,
+		high = 56,
 		continent = Eastern_Kingdoms,
 		paths = BZ["Swamp of Sorrows"],
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 		fishing_low = 205,
 		fishing_high = 300,
@@ -2868,14 +2880,15 @@ do
 	}
 
 	zones[BZ["Blackrock Spire"]] = {
-		low = 56,
+		low = 55,
 		high = 60,
 		continent = Eastern_Kingdoms,
 		paths = {
 --			[BZ["Blackrock Mountain"]] = true,
 			[BZ["Blackwing Lair"]] = true,
 		},
-		groupSize = 5,
+		groupMinSize = 5,
+		groupMaxSize = 10,
 		type = "Instance",
 --		complex = BZ["Blackrock Mountain"],
 		entrancePortal = { BZ["Burning Steppes"], 29.7, 37.5 },
@@ -7265,7 +7278,7 @@ end
 
 	zones = nil
 
-	DEFAULT_CHAT_FRAME:AddMessage("LibTourist Classic initialized, loaded by "..tostring(addonName))
+	trace("LibTourist Classic initialized, loaded by "..tostring(addonName))
 
 	PLAYER_LEVEL_UP(Tourist)
 end

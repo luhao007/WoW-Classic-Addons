@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101071
+local MINOR_VERSION = 101072
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -1539,7 +1539,7 @@ function FishLib:GetCurrentFishingLevel()
     local _, subzone = self:GetZoneInfo()
     if (continent ~= 7 and subzoneskills[subzone]) then
         current_max = subzoneskills[subzone];
-    else
+    elseif current_max == 0 then
         current_max = self.FishingLevels[mapID] or DEFAULT_SKILL.max;
     end
     return current_max
