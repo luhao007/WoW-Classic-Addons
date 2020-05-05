@@ -1,0 +1,68 @@
+## Interface: 11304
+## Author: Pastamancer & Maia, Jerry, Toadkiller
+## Version: r955
+## OptionalDeps: Ace3, Clique
+## LoadOnDemand: 0
+## SavedVariables: Grid2DB
+## DefaultState: enabled
+
+## Title: Grid2
+## Notes: A modular, lightweight and screen-estate saving grid of party/raid unit frames
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFFFFE00AGrid2|r
+## Notes-zhCN: 小巧的轻量级模块化队伍框架
+
+## X-WoW-Project: classic
+## X-Curse-Project-ID: 15226
+
+# Ace Libraries
+#Locales
+locales.xml
+
+# Grid2
+GridCore.lua
+GridUtils.lua
+GridRoster.lua
+GridFrame.lua
+GridLayout.lua
+GridLayoutLayouts.lua
+GridIndicator.lua
+GridStatus.lua
+GridSetup.lua
+GridDefaults.lua
+GridDefaultsClassic.lua
+
+# Indicators
+modules\IndicatorAlpha.lua
+modules\IndicatorBorder.lua
+modules\IndicatorBar.lua
+modules\IndicatorMultiBar.lua
+modules\IndicatorText.lua
+modules\IndicatorIcon.lua
+modules\IndicatorIcons.lua
+modules\IndicatorSquare.lua
+modules\IndicatorTooltip.lua
+modules\IndicatorPortrait.lua
+
+# Statuses
+modules\StatusHealth.lua
+modules\StatusMana.lua
+modules\StatusColor.lua
+modules\StatusName.lua
+modules\StatusOffline.lua
+modules\StatusPvP.lua
+modules\StatusRange.lua
+modules\StatusReadyCheck.lua
+modules\StatusRole.lua
+modules\StatusTarget.lua
+modules\StatusVoiceComm.lua
+modules\StatusRaidIcon.lua
+modules\StatusAFK.lua
+modules\StatusBanzai.lua
+modules\StatusRes.lua
+modules\StatusHealsAoe.lua
+modules\StatusSelf.lua
+modules\StatusDirection.lua
+modules\StatusCombat.lua
+modules\StatusAuras.lua
+modules\StatusAurasBuffs.lua
+modules\StatusAurasDebuffs.lua

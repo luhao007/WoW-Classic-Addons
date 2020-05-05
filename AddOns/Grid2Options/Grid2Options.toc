@@ -1,0 +1,26 @@
+## Interface: 11304
+## Version: r955
+## Dependencies: Grid2
+## LoadOnDemand: 1
+
+## Title: Grid2 |cd0ff7d0aOptions|r
+## Notes: Configuration module for Grid2
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFF0055FF设置|r
+
+## X-Part-Of: Grid2
+
+# Ace Libraries
+Libs\AceGUI-3.0-Search-EditBox\AceGUI-3.0-Search-EditBox.xml
+
+# Locales
+locales.xml
+
+# Grid2Options
+GridCore.lua
+GridUtils.lua
+GridGeneral.lua
+GridIndicators.lua
+GridStatuses.lua
+GridThemes.lua
+
+modules.xml

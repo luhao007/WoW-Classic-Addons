@@ -18,6 +18,7 @@ ADDONSELF.L = L
 local locale = GetLocale()
 
 if locale == 'enUs' then
+L["# line starts with # will be ignored"] = true
 L["# one item per line, can be item name or item id"] = true
 L["#Try to convert to item link"] = true
 L["/raidledger"] = true
@@ -108,6 +109,8 @@ L["Value"] = true
 L["Winner"] = true
 
 elseif locale == 'deDE' then
+--[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
 --[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 L["#Try to convert to item link"] = "#Versuche zu Itemlink zu convertieren"
@@ -229,6 +232,8 @@ L["Value"] = "Wert"
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'esES' then
+--[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
 --[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 --[[Translation missing --]]
@@ -408,6 +413,8 @@ elseif locale == 'esES' then
 
 elseif locale == 'esMX' then
 --[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
+--[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 --[[Translation missing --]]
 --[[ L["#Try to convert to item link"] = "#Try to convert to item link"--]] 
@@ -585,6 +592,8 @@ elseif locale == 'esMX' then
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'frFR' then
+--[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
 --[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 --[[Translation missing --]]
@@ -764,6 +773,8 @@ elseif locale == 'frFR' then
 
 elseif locale == 'itIT' then
 --[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
+--[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 --[[Translation missing --]]
 --[[ L["#Try to convert to item link"] = "#Try to convert to item link"--]] 
@@ -941,6 +952,7 @@ elseif locale == 'itIT' then
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'koKR' then
+L["# line starts with # will be ignored"] = "무시 될 라인 시작"
 L["# one item per line, can be item name or item id"] = "# 아이템 이름 또는 아이템 ID를 한 줄에 하나씩 입력"
 L["#Try to convert to item link"] = "#아이템 링크로 변환을 시도합니다."
 L["/raidledger"] = "/raidledger"
@@ -960,8 +972,7 @@ L["Bid mode"] = "경매 모드"
 L["Bid price"] = "입찰 가격"
 L["Cannot find any debit entry in template, please check your template in options"] = "템플릿에서 지출 항목을 찾을 수 없습니다. 옵션에서 템플릿을 확인하십시오."
 L["Clear"] = "지우기"
---[[Translation missing --]]
---[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
+L["Click here to clear ledger"] = "클릭하여 장부 클리어"
 L["Close text export"] = "문자 내보내기 닫기"
 L["Compensation"] = "보상"
 L["Compensation added"] = "보상 추가"
@@ -988,7 +999,7 @@ L["Hammer Price"] = "낙찰가"
 L["Hide locked items"] = "잠금 아이템 감추기"
 L["Import from ledger"] = "장부에서 가져오기"
 L["In Raid Only"] = "공격대에서만"
-L["Input only"] = "입력만"
+L["Input only"] = "분배자 수동 입력"
 L["is bought in"] = "구매함"
 L["Item added"] = "추가된 아이템"
 L["Last used"] = "마지막 사용됨"
@@ -1014,7 +1025,7 @@ L["Right click to fine-tune"] = "우클릭 : 미세조정 "
 L["Right click to remove record"] = "우클릭으로 기록 제거"
 L["Round down"] = "절삭"
 L["Round per member credit down"] = "실버 단위 절삭"
-L["Set split into number when team size changes automatically"] = "멤버 수 변경될 때 마다 분할 수 설정"
+L["Set split into number when team size changes automatically"] = "수동으로 분배자 수 설정하기"
 L["Shift + item/name to add to record"] = "Shift + 아이템/이름으로 기록에 추가"
 L["Shift + Right click to remove ALL SAME record"] = "Shift + 우클릭으로 모든 SAME 레코드 제거"
 L["Special Members"] = "특별 회원"
@@ -1032,6 +1043,8 @@ L["Value"] = "가격"
 L["Winner"] = "낙찰"
 
 elseif locale == 'ptBR' then
+--[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
 --[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 --[[Translation missing --]]
@@ -1211,6 +1224,8 @@ elseif locale == 'ptBR' then
 
 elseif locale == 'ruRU' then
 --[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
+--[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 L["#Try to convert to item link"] = "#Попробуйте преобразовать в ссылку предмета"
 L["/raidledger"] = "/raidledger"
@@ -1347,6 +1362,7 @@ L["Value"] = "Значение"
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'zhCN' then
+L["# line starts with # will be ignored"] = "# 以 # 开头的行自动被忽略"
 L["# one item per line, can be item name or item id"] = "# 每行一条, 可以是物品名称或物品ID"
 L["#Try to convert to item link"] = "#尝试转换为物品链接"
 L["/raidledger"] = "/gtuan"
@@ -1437,6 +1453,8 @@ L["Value"] = "费用"
 L["Winner"] = "赢家"
 
 elseif locale == 'zhTW' then
+--[[Translation missing --]]
+--[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
 --[[Translation missing --]]
 --[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
 L["#Try to convert to item link"] = "#嘗試轉換為物品連結"

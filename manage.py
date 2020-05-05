@@ -267,7 +267,7 @@ class Manager(object):
     ##########################
 
     def handle_dup_libraries(self):
-        addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
+        addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'Grid2', 'HandyNotes',
                   'MapSter', 'oRA3', 'Quartz', 'RangeDisplay',
                   'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
         if self.is_classic:
@@ -277,7 +277,7 @@ class Manager(object):
                        'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
-                       'GladiatorlosSA2', 'Gladius', 'Grid2',
+                       'GladiatorlosSA2', 'Gladius',
                        'HandyNotes_Argus', 'HandyNotes_BrokenShore',
                        'HandyNotes_DraenorTreasures',
                        'HandyNotes_LegionRaresTreasures',
@@ -442,7 +442,6 @@ class Manager(object):
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
-    @retail_only
     def handle_grid(self):
         rm_tree('Addons/Grid2LDB')
 
