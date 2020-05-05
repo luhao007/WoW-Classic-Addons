@@ -9,12 +9,6 @@
 ## Notes-zhCN: 金团账本，帮你在金团中记账 反馈问题 farmer1992@gmail.com
 
 
-lib\LibStub\LibStub.lua
-lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
-lib\LibDataBroker-1.1\LibDataBroker-1.1.lua
-
-lib\LibDBIcon-1.0\LibDBIcon-1.0.lua
-
 lib\lib-st\Core.lua
 lib\LibDeformat-3.0\LibDeformat-3.0.lua
 

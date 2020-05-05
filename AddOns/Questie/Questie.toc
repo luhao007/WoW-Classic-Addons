@@ -9,6 +9,7 @@
 ## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v5.10.2|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
+## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
 
 embeds.xml

@@ -64,7 +64,7 @@ class CheckManagedAddOns(unittest.TestCase):
             pprint(duplicates)
 
             # Ignore these embedded liraries, as they have customized versions
-            whitelist = ['Questie']
+            whitelist = ['Questie', 'MeetingHorn', 'VuhDo', 'WeakAuras']
 
             for k in duplicates:
                 paths = []

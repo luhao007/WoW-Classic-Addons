@@ -79,6 +79,15 @@ def remove(obj, addons):
 
 
 @main.command()
+@click.argument('libs', required=True, nargs=-1)
+@click.pass_obj
+def remove_lib(obj, libs):
+    """Remove addons"""
+    obj.manager_lib.remove(libs)
+    obj.manager_lib.export()
+
+
+@main.command()
 @click.pass_obj
 def show(obj):
     """Show all addons"""

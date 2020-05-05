@@ -7,7 +7,7 @@
 ## Title: AtlasLootClassic |cFFFF0000[Data]|r
 ## Notes: AtlasLoot data module
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本掉落|r |cFF69CCF0数据|r
-## Notes-zhCN: AtlasLoot 数据模块
+## Notes-zhCN: AtlasLoot 物品数据
 
 ## X-Category: Map
 ## X-License: GPL v2

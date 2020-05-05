@@ -10,6 +10,7 @@
 ## Title: |cffffd200Deadly Boss Mods|r |cff69ccf0Core|r
 ## Notes: Deadly Boss Mods
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
+## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
 ## X-Min-Interface: 11304
 ## X-Website: http://www.deadlybossmods.com

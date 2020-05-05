@@ -173,8 +173,9 @@ class Manager(object):
                 toc.tags['Interface'] = '11304' if self.is_classic else '80300'
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
-                note = config.find('Notes')
-                if note:
+                ns = {'x': 'https://www.github.com/luhao007'}
+                note = config.find('x:Notes', ns)
+                if note is not None:
                     toc.tags['Notes-zhCN'] = note.text
 
                 if config.tag.endswith('SubAddon'):
@@ -267,7 +268,7 @@ class Manager(object):
     ##########################
 
     def handle_dup_libraries(self):
-        addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'Grid2', 'HandyNotes',
+        addons = ['Atlas', 'DBM-Core', 'GatherMate2', 'HandyNotes',
                   'MapSter', 'oRA3', 'Quartz', 'RangeDisplay',
                   'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
         if self.is_classic:
@@ -442,8 +443,11 @@ class Manager(object):
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
+    @retail_only
     def handle_grid(self):
         rm_tree('Addons/Grid2LDB')
+
+        self.remove_libraries_all('Grid2', 'Libs')
 
         self.remove_libraries(
             ['AceComm-3.0', 'AceConfig-3.0', 'AceGUI-3.0', 'AceHook-3.0',
@@ -595,6 +599,15 @@ class Manager(object):
 
         process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
+    @classic_only
+    def handle_rl(self):
+        self.remove_libraries(
+            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
+             'LibStub'],
+            'Addons/RaidLedger/lib',
+            'Addons/RaidLedger/RaidLedger.toc'
+        )
+
     @retail_only
     def handle_rarity(self):
         self.remove_libraries(
@@ -702,6 +715,19 @@ class Manager(object):
 
         self.remove_libraries_all('UnitFramesPlus_Cooldown')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
+
+    @classic_only
+    def handle_vuhdo(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+             'AceEvent-3.0', 'AceGUI-3.0', 'AceLocale-3.0',
+             'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'LibClassicDurations', 'LibCompress', 'LibCustomGlow-1.0',
+             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibSharedMedia-3.0',
+             'LibStub', 'LibThreatClassic2', 'UTF8'],
+            'Addons/VuhDo/Libs',
+            'Addons/VuhDo/Libs/Libs.xml'
+        )
 
     def handle_wa(self):
         self.remove_libraries(
