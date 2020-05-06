@@ -86,7 +86,8 @@ function private:CanLootMailIndex(index, copper)
 		local quantity = count or 0
 		local maxUnique = private.GetInboxMaxUnique(index, j)
 		-- dont record unique items that we can't loot
-		if maxUnique > 0 and maxUnique < TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString) + quantity then
+		local playerQty = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
+		if maxUnique > 0 and maxUnique < playerQty + quantity then
 			return
 		end
 		if itemString then

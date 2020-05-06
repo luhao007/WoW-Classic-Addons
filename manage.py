@@ -275,7 +275,7 @@ class Manager(object):
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'Recount', 'TitanClassic']
+                       'NovaWorldBuffs', 'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
@@ -716,7 +716,6 @@ class Manager(object):
         self.remove_libraries_all('UnitFramesPlus_Cooldown')
         self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
 
-    @classic_only
     def handle_vuhdo(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',

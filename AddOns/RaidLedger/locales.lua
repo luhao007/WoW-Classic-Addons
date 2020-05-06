@@ -1223,40 +1223,27 @@ elseif locale == 'ptBR' then
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'ruRU' then
---[[Translation missing --]]
---[[ L["# line starts with # will be ignored"] = "# line starts with # will be ignored"--]] 
---[[Translation missing --]]
---[[ L["# one item per line, can be item name or item id"] = "# one item per line, can be item name or item id"--]] 
+L["# line starts with # will be ignored"] = "# строка, начинающаяся с #, будет проигнорирована"
+L["# one item per line, can be item name or item id"] = "# один предмет в строке, может быть именем предмета или идентификатором предмета"
 L["#Try to convert to item link"] = "#Попробуйте преобразовать в ссылку предмета"
 L["/raidledger"] = "/raidledger"
 L["[Unknown]"] = "[Неизвестно]"
---[[Translation missing --]]
---[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
---[[Translation missing --]]
---[[ L["Auto recording loot"] = "Auto recording loot"--]] 
+L["Auto recording blacklist"] = "Автоматическая запись черного списка"
+L["Auto recording loot"] = "Автоматическая запись добычи"
 L["Auto recording loot: In Raid Only"] = "Автоматическая запись добычи: только в рейде"
 L["Auto recording loot: Off"] = "Автоматическая запись добычи: Выкл."
 L["Auto recording loot: On"] = "Автоматическая запись добычи: Вкл."
---[[Translation missing --]]
---[[ L["Auto recording quality"] = "Auto recording quality"--]] 
+L["Auto recording quality"] = "Автоматическая запись качества добычи"
 L["Beneficiary"] = "Бенефициарий"
---[[Translation missing --]]
---[[ L["Bid accept"] = "Bid accept"--]] 
---[[Translation missing --]]
---[[ L["Bid canceled"] = "Bid canceled"--]] 
---[[Translation missing --]]
---[[ L["Bid denied"] = "Bid denied"--]] 
---[[Translation missing --]]
---[[ L["Bid increment"] = "Bid increment"--]] 
---[[Translation missing --]]
---[[ L["Bid mode"] = "Bid mode"--]] 
---[[Translation missing --]]
---[[ L["Bid price"] = "Bid price"--]] 
---[[Translation missing --]]
---[[ L["Cannot find any debit entry in template, please check your template in options"] = "Cannot find any debit entry in template, please check your template in options"--]] 
+L["Bid accept"] = "Заявка принята"
+L["Bid canceled"] = "Заявка отменена"
+L["Bid denied"] = "Заявка отклонена"
+L["Bid increment"] = "Увеличение заявок"
+L["Bid mode"] = "Режим Заявок"
+L["Bid price"] = "Цена Заявки"
+L["Cannot find any debit entry in template, please check your template in options"] = "Не удается найти ни одной дебетовой записи в шаблоне, пожалуйста, проверьте свой шаблон в настройках"
 L["Clear"] = "Очистить"
---[[Translation missing --]]
---[[ L["Click here to clear ledger"] = "Click here to clear ledger"--]] 
+L["Click here to clear ledger"] = "Нажмите здесь, чтобы очистить главную книгу"
 L["Close text export"] = "Закрыть экспорт текста"
 L["Compensation"] = "Компенсация"
 L["Compensation added"] = "Компенсация добавлена"
@@ -1266,26 +1253,19 @@ L["Compensation: Other"] = "Компенсация: Другое"
 L["Compensation: Repait Bot"] = "Компенсации: Ремонтный бот"
 L["Compensation: Tank"] = "Компенсация: Танк"
 L["convert failed, text can be either item id or item name"] = "преобразование не удалось, текст может быть либо ID элемента или имя элемента"
---[[Translation missing --]]
---[[ L["Count down time"] = "Count down time"--]] 
+L["Count down time"] = "Обратный отсчет времени"
 L["Credit"] = "Кредит"
---[[Translation missing --]]
---[[ L["CTRL + click for summary mode"] = "CTRL + click for summary mode"--]] 
---[[Translation missing --]]
---[[ L["CTRL + Click to apply debit template"] = "CTRL + Click to apply debit template"--]] 
---[[Translation missing --]]
---[[ L["CTRL + Click to start and then pause timer"] = "CTRL + Click to start and then pause timer"--]] 
---[[Translation missing --]]
---[[ L["Current price"] = "Current price"--]] 
+L["CTRL + click for summary mode"] = "CTRL + щелчок для режима сводки"
+L["CTRL + Click to apply debit template"] = "CTRL + щелчок, чтобы применить шаблон дебета"
+L["CTRL + Click to start and then pause timer"] = "Ctrl + щелчок, чтобы начать, а затем поставить на паузу"
+L["Current price"] = "Текущая цена"
 L["Debit"] = "Дебит"
---[[Translation missing --]]
---[[ L["Debit Template"] = "Debit Template"--]] 
+L["Debit Template"] = "Дебетовый Шаблон"
 L["Entry"] = "Вход"
 L["Expense"] = "Расход"
 L["Export as text"] = "Экспорт в виде текста"
 L["Feedback"] = "Обратная связь"
---[[Translation missing --]]
---[[ L["Go"] = "Go"--]] 
+L["Go"] = "Начинаем"
 --[[Translation missing --]]
 --[[ L["Hammer Price"] = "Hammer Price"--]] 
 --[[Translation missing --]]

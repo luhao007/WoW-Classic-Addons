@@ -1004,6 +1004,11 @@
 		<Title>键位设置</Title>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="NovaWorldBuffs">
+		<Title>世界增益</Title>
+		<Category>辅助</Category>
+		<Notes>与其他玩家共享世界BUFF刷新时间</Notes>
+	</Addon>
 	<Addon name="NPCScan">
 		<Title>NPC扫描</Title>
 		<Notes>扫描特定的NPC，如稀有精英</Notes>

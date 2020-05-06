@@ -1,46 +1,16 @@
-lightweight tag a1aad151fc93f07d63dd11b2b0f9cdb59c79cfea v1.6.11
+lightweight tag b71cf8493eb42a273e3cb67a7e879dac29dc1b04 v1.6.16
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Mon May 4 02:53:19 2020 -0700
+Date:	Tue May 5 23:42:10 2020 -0700
 
-commit a1aad151fc93f07d63dd11b2b0f9cdb59c79cfea
+commit b71cf8493eb42a273e3cb67a7e879dac29dc1b04
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon May 4 02:53:19 2020 -0700
+Date:   Tue May 5 23:42:10 2020 -0700
 
-    remove item from alert
+    fix template to support revenue percent
 
-commit 9629b4a4af83024693a8b3f8d64244b7841e6a06
+commit 25e78e7df545c84e163af20b84553415b4d2f460
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon May 4 02:44:02 2020 -0700
+Date:   Tue May 5 23:39:03 2020 -0700
 
-    remove all countdown alert
-
-commit 2883d88c6b99c030891ebf75d236164a8483556a
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon May 4 02:34:03 2020 -0700
-
-    smarter autocomplete
-
-commit 79673c21832f14462ad73f80e652d73f5cabeb59
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon May 4 01:51:13 2020 -0700
-
-    shift + click to editbox
-
-commit 9977b013cfabc233a3db4b82a75a7be112a02f66
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Sun May 3 15:55:03 2020 -0700
-
-    better comment
-
-commit 610f3ee623c91a7ee57d739c574d161e40e268a6
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Sun May 3 06:30:59 2020 -0700
-
-    remove top n (unused)
-
-commit 366f3d1ad39ff02863ec38da05132371aaddb1d3
-Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Sun May 3 03:43:23 2020 -0700
-
-    remove focus on enter
+    fix dup item add
 

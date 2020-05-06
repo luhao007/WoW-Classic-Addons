@@ -754,6 +754,9 @@ function private.CraftAllBtnOnClick(button)
 end
 
 function private.QueueOnRowClick(button, data, mouseButton)
+	if not private.IsPlayerProfession() then
+		return
+	end
 	local spellId = data:GetField("spellId")
 	if mouseButton == "RightButton" then
 		private.fsm:ProcessEvent("EV_QUEUE_RIGHT_CLICKED", spellId)
