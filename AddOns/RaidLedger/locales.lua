@@ -23,6 +23,7 @@ L["# one item per line, can be item name or item id"] = true
 L["#Try to convert to item link"] = true
 L["/raidledger"] = true
 L["[Unknown]"] = true
+L["0 credit items"] = true
 L["Auto recording blacklist"] = true
 L["Auto recording loot"] = true
 L["Auto recording loot: In Raid Only"] = true
@@ -116,6 +117,8 @@ elseif locale == 'deDE' then
 L["#Try to convert to item link"] = "#Versuche zu Itemlink zu convertieren"
 L["/raidledger"] = "/raidledger"
 L["[Unknown]"] = "[Unbekannt]"
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 L["Auto recording loot"] = "Loot automatisch speichern"
@@ -242,6 +245,8 @@ elseif locale == 'esES' then
 --[[ L["/raidledger"] = "/raidledger"--]] 
 --[[Translation missing --]]
 --[[ L["[Unknown]"] = "[Unknown]"--]] 
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 --[[Translation missing --]]
@@ -423,6 +428,8 @@ elseif locale == 'esMX' then
 --[[Translation missing --]]
 --[[ L["[Unknown]"] = "[Unknown]"--]] 
 --[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
+--[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording loot"] = "Auto recording loot"--]] 
@@ -602,6 +609,8 @@ elseif locale == 'frFR' then
 --[[ L["/raidledger"] = "/raidledger"--]] 
 --[[Translation missing --]]
 --[[ L["[Unknown]"] = "[Unknown]"--]] 
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 --[[Translation missing --]]
@@ -783,6 +792,8 @@ elseif locale == 'itIT' then
 --[[Translation missing --]]
 --[[ L["[Unknown]"] = "[Unknown]"--]] 
 --[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
+--[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording loot"] = "Auto recording loot"--]] 
@@ -952,11 +963,13 @@ elseif locale == 'itIT' then
 --[[ L["Winner"] = "Winner"--]] 
 
 elseif locale == 'koKR' then
-L["# line starts with # will be ignored"] = "무시 될 라인 시작"
+L["# line starts with # will be ignored"] = "# 무시 될 라인 시작"
 L["# one item per line, can be item name or item id"] = "# 아이템 이름 또는 아이템 ID를 한 줄에 하나씩 입력"
 L["#Try to convert to item link"] = "#아이템 링크로 변환을 시도합니다."
 L["/raidledger"] = "/raidledger"
 L["[Unknown]"] = "[알 수 없음]"
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 L["Auto recording blacklist"] = "블랙리스트 자동 기록"
 L["Auto recording loot"] = "전리품 자동 기록"
 L["Auto recording loot: In Raid Only"] = "전리품 자동 기록: 공격대에서만"
@@ -999,7 +1012,7 @@ L["Hammer Price"] = "낙찰가"
 L["Hide locked items"] = "잠금 아이템 감추기"
 L["Import from ledger"] = "장부에서 가져오기"
 L["In Raid Only"] = "공격대에서만"
-L["Input only"] = "분배자 수동 입력"
+L["Input only"] = "수동 입력"
 L["is bought in"] = "구매함"
 L["Item added"] = "추가된 아이템"
 L["Last used"] = "마지막 사용됨"
@@ -1025,7 +1038,7 @@ L["Right click to fine-tune"] = "우클릭 : 미세조정 "
 L["Right click to remove record"] = "우클릭으로 기록 제거"
 L["Round down"] = "절삭"
 L["Round per member credit down"] = "실버 단위 절삭"
-L["Set split into number when team size changes automatically"] = "수동으로 분배자 수 설정하기"
+L["Set split into number when team size changes automatically"] = "수동으로 분배 수 설정하기"
 L["Shift + item/name to add to record"] = "Shift + 아이템/이름으로 기록에 추가"
 L["Shift + Right click to remove ALL SAME record"] = "Shift + 우클릭으로 모든 SAME 레코드 제거"
 L["Special Members"] = "특별 회원"
@@ -1053,6 +1066,8 @@ elseif locale == 'ptBR' then
 --[[ L["/raidledger"] = "/raidledger"--]] 
 --[[Translation missing --]]
 --[[ L["[Unknown]"] = "[Unknown]"--]] 
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 --[[Translation missing --]]
@@ -1228,6 +1243,8 @@ L["# one item per line, can be item name or item id"] = "# один предме
 L["#Try to convert to item link"] = "#Попробуйте преобразовать в ссылку предмета"
 L["/raidledger"] = "/raidledger"
 L["[Unknown]"] = "[Неизвестно]"
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 L["Auto recording blacklist"] = "Автоматическая запись черного списка"
 L["Auto recording loot"] = "Автоматическая запись добычи"
 L["Auto recording loot: In Raid Only"] = "Автоматическая запись добычи: только в рейде"
@@ -1347,6 +1364,7 @@ L["# one item per line, can be item name or item id"] = "# 每行一条, 可以�
 L["#Try to convert to item link"] = "#尝试转换为物品链接"
 L["/raidledger"] = "/gtuan"
 L["[Unknown]"] = "[未知]"
+L["0 credit items"] = "0 收入物品"
 L["Auto recording blacklist"] = "自动拾取黑名单"
 L["Auto recording loot"] = "自动拾取记录"
 L["Auto recording loot: In Raid Only"] = "自动拾取记录: 仅团队中"
@@ -1440,6 +1458,8 @@ elseif locale == 'zhTW' then
 L["#Try to convert to item link"] = "#嘗試轉換為物品連結"
 L["/raidledger"] = "/gtuan"
 L["[Unknown]"] = "[未知]"
+--[[Translation missing --]]
+--[[ L["0 credit items"] = "0 credit items"--]] 
 --[[Translation missing --]]
 --[[ L["Auto recording blacklist"] = "Auto recording blacklist"--]] 
 L["Auto recording loot"] = "自動拾取紀錄"
