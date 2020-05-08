@@ -97,7 +97,7 @@ Inst1QAH = "18 Misiones"
 
 --Quest 1 Alliance
 Inst1Quest1 = "1. El legado de los Hierro Negro" -- 3802
-Inst1Quest1_Aim = "Mata a Finoso Virunegro y recupera el gran martillo, Ferrovil. Lleva a Ferrovil al Santuario de Thaurissan y coloca el martillo en la estatua de Franclorn Forjador."
+Inst1Quest1_Aim = "Mata a Finoso Virunegro y recupera el gran martillo, Ferrovil. Lleva a Ferrovil al Santuario de Thaurissan y coloca el martillo en la estatua de Franclorn Forjafina."
 Inst1Quest1_Location = "Franclorn Forjador (Montaña Roca Negra; "..GREEN.."[1'] en el mapa de la Entrada"..WHITE..")"
 Inst1Quest1_Note = "Franclorn está al centro de la Montaña Roca Negra encima de su tumba. Tienes que estar muerto para hablar consigo para empezar la misión.\nFinoso Virunegro está en "..YELLOW.."[9]"..WHITE..". Encuentras el Santuario cerca de la arena en "..YELLOW.."[7]"..WHITE.."."
 Inst1Quest1_Prequest = "El legado de los Hierro Negro" -- 3801
@@ -142,9 +142,9 @@ Inst1Quest4name3 = "Cuchilla de miembro"
 
 --Quest 5 Alliance  
 Inst1Quest5 = "5. Gran maestro Pyron"
-Inst1Quest5_Aim = "Mata al maestro supremo Pyron y vuelve junto a Jalinda Espiga."
-Inst1Quest5_Location = "Jalinda Espiga (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,70"..WHITE..")"
-Inst1Quest5_Note = "Maestro supremo Pyron es un elemental de fuego afuera de la mazmorra. Patrulla cerca del portal en "..YELLOW.."[24]"..WHITE.." en el mapa de Las Profundidades Roca Negra en "..YELLOW.."[3]"..WHITE.." en el mapa de entrada de la Montaña Roca Negra."
+Inst1Quest5_Aim = "Mata al gran maestro Pyron y vuelve junto a Jalinda Sprig."
+Inst1Quest5_Location = "Jalinda Spring (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,70"..WHITE..")"
+Inst1Quest5_Note = "Gran Maestro Pyron es un elemental de fuego afuera de la mazmorra. Patrulla cerca del portal en "..YELLOW.."[24]"..WHITE.." en el mapa de Las Profundidades Roca Negra en "..YELLOW.."[3]"..WHITE.." en el mapa de entrada de la Montaña Roca Negra."
 Inst1Quest5_Prequest = "Ninguno"
 Inst1Quest5_Folgequest = "¡Incendius!"
 -- No Rewards for this quest
@@ -152,8 +152,8 @@ Inst1Quest5_Folgequest = "¡Incendius!"
 --Quest 6 Alliance
 Inst1Quest6 = "6. ¡Incendius!"
 Inst1Quest6_Aim = "Encuentra a Lord Incendius en las Profundidades de Roca Negra ¡y acaba con él! "
-Inst1Quest6_Location = "Jalinda Espiga (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,69"..WHITE..")"
-Inst1Quest6_Note = "Obtienes la misión requisita de Jalinda Espiga también. Encuentras a Lord Incendius en "..YELLOW.."[10]"..WHITE.."."
+Inst1Quest6_Location = "Jalinda Spring (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,69"..WHITE..")"
+Inst1Quest6_Note = "Obtienes la misión requisita de Jalinda Spring también. Encuentras a Lord Incendius en "..YELLOW.."[10]"..WHITE.."."
 Inst1Quest6_Prequest = "Gran maestro Pyron" -- 4262
 Inst1Quest6_Folgequest = "Ninguno"
 --
@@ -195,10 +195,10 @@ Inst1Quest9name3 = "Fajín valconiano"
 
 --Quest 10 Alliance
 Inst1Quest10 = "10. Kharan Martillazo" -- 4341
-Inst1Quest10_Aim = "Ve a las Profundidades de Roca Negra y encuentra a Kharan Martillazo.\nEl rey dijo que estaba prisionero allí; busca una cárcel."
+Inst1Quest10_Aim = "Ve a las Profundidades de Roca Negra y encuentra a Kharan Martillazo.\n\nEl rey dijo que estaba prisionero allí; busca una cárcel."
 Inst1Quest10_Location = "Rey Magni Barbabronce (Forjaz; "..YELLOW.."39,55"..WHITE..")"
 Inst1Quest10_Note = "La misión requisita empieza con Historiadora Real Archesonus (Forjaz; "..YELLOW.."38,55"..WHITE.."). Kharan Martillazo está en "..YELLOW.."[2]"..WHITE.."."
-Inst1Quest10_Prequest = "Las humeantes Ruinas de Thaurissan" -- 3701
+Inst1Quest10_Prequest = "Las ruinas humeantes de Thaurissan" -- 3701
 Inst1Quest10_Folgequest = "Portador de malas noticias" -- 4361
 -- No Rewards for this quest
 
@@ -215,9 +215,9 @@ Inst1Quest11name2 = "Piedracanto de Forjaz"
 
 --Quest 12 Alliance
 Inst1Quest12 = "12. Armonización con el Núcleo" -- 7848
-Inst1Quest12_Aim = "Acércate al portal de entrada del Núcleo de Magma en las Profundidades de Roca Negra y recoge un trozo del Núcleo. Llévaselo a Lothos Levantagrietas a la Montaña Roca Negra. "
+Inst1Quest12_Aim = "Acércate al portal de entrada del Núcleo de Magma en las Profundidades de Roca Negra y recoge un fragmento del Núcleo. Llévaselo a Lothos Levantagrietas a la Montaña Roca Negra."
 Inst1Quest12_Location = "Lothos Levantagrietas (Montaña Roca Negra; "..YELLOW.."[E] en el mapa de la Entrada"..WHITE..")"
-Inst1Quest12_Note = "Después de completar la misión, puedes usar el portal justo al lado de Lothos Levantagrietas para entrar el Núcleo de Magma.\nEncuentras el Trozo del Núcleo cerca de "..YELLOW.."[23]"..WHITE.."."
+Inst1Quest12_Note = "Después de completar la misión, puedes usar el portal justo al lado de Lothos Levantagrietas para entrar el Núcleo de Magma.\nEncuentras el Fragmento del Núcleo cerca de "..YELLOW.."[23]"..WHITE.."."
 Inst1Quest12_Prequest = "Ninguno"
 Inst1Quest12_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -244,7 +244,7 @@ Inst1Quest14_Folgequest = "Ninguno"
 Inst1Quest15 = "15. El alguacil Windsor" -- 4241
 Inst1Quest15_Aim = "Viaja a la Montaña Roca Negra al noroeste y adéntrate en las Profundidades de Roca Negra. Averigua qué le ha ocurrido al alguacil Windsor.\nRecuerdas que John Andrajoso había comentado que se habían llevado a una cárcel a Windsor."
 Inst1Quest15_Location = "Mariscal Maxwell (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,68"..WHITE..")"
-Inst1Quest15_Note = "Esta misión es una parte de la cadena para la armonización con Onyxia. La misión para la cadena empieza con Helendis Rivacuerno (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,68"..WHITE..").\nMariscal Windsor está en "..YELLOW.."[4]"..WHITE..". Tienes que regresar a Mariscal Maxwell después de completar la misión."
+Inst1Quest15_Note = "Esta misión es una parte de la cadena para la armonización con Onyxia. La misión para la cadena empieza con Helendis Rivacuerno (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,68"..WHITE..").\nAlguacil Windsor está en "..YELLOW.."[4]"..WHITE..". Tienes que regresar a Mariscal Maxwell después de completar la misión."
 Inst1Quest15_Prequest = "La amenaza de los dragonantes -> Los verdaderos maestros" -- 4182 -> 4224
 Inst1Quest15_Folgequest = "Esperanza perdida" -- 4242
 --
@@ -263,18 +263,18 @@ Inst1Quest16name3 = "Leotardos Cortaviento"
 
 --Quest 17 Alliance
 Inst1Quest17 = "17. Una nota arrugada"
-Inst1Quest17_Aim = "Puede que acabes de toparte con algo que le interesaría ver al mariscal Windsor. Puede que haya esperanza, después de todo."
+Inst1Quest17_Aim = "Puede que acabes de toparte con algo que le interesaría ver al alguacil Windsor. Puede que haya esperanza, después de todo."
 Inst1Quest17_Location = "Una nota arrugada (botín aleatorio de Profundidades de Roca Negra)"
-Inst1Quest17_Note = "Esta misión es una parte de la cadena de misiones para la armonización de Onyxia. Mariscal Windsor está en "..YELLOW.."[4]"..WHITE.."."
+Inst1Quest17_Note = "Esta misión es una parte de la cadena de misiones para la armonización de Onyxia. Alguacil Windsor está en "..YELLOW.."[4]"..WHITE.."."
 Inst1Quest17_Prequest = "Esperanza perdida"
 Inst1Quest17_Folgequest = "Una esperanza hecha trizas"
 -- No Rewards for this quest
 
 --Quest 18 Alliance
 Inst1Quest18 = "18. Una esperanza hecha trizas"
-Inst1Quest18_Aim = "Devuélvele al mariscal Windsor la información perdida.\nEl mariscal Windsor cree que la información está siendo retenida en manos del Señor Gólem Argelmach y del general Forjainquina."
+Inst1Quest18_Aim = "Devuélvele al alguacil Windsor la información perdida.\nEl alguacil Windsor cree que la información está siendo retenida en manos del Señor Gólem Argelmach y del general Forjira."
 Inst1Quest18_Location = "Alguacil Windsor (Profundidades de Roca Negra; "..YELLOW.."[4]"..WHITE..")"
-Inst1Quest18_Note = "Esta misión es una parte de la cadena para la armonización de Onyxia. Mariscal Windsor está en "..YELLOW.."[4]"..WHITE..".\nEncuentras al Señor Gólem Argelmach en "..YELLOW.."[14]"..WHITE.." y a General Forjainquina en "..YELLOW.."[13]"..WHITE.."."
+Inst1Quest18_Note = "Esta misión es una parte de la cadena para la armonización de Onyxia. Alguacil Windsor está en "..YELLOW.."[4]"..WHITE..".\nEncuentras al Señor Gólem Argelmach en "..YELLOW.."[14]"..WHITE.." y a General Forjainquina en "..YELLOW.."[13]"..WHITE.."."
 Inst1Quest18_Prequest = "Una nota arrugada"
 Inst1Quest18_Folgequest = "La fuga de la prisión"
 -- No Rewards for this quest
@@ -283,7 +283,7 @@ Inst1Quest18_Folgequest = "La fuga de la prisión"
 Inst1Quest19 = "19. La fuga de la prisión"
 Inst1Quest19_Aim = "Ayuda al alguacil Windsor a recuperar su equipo y a liberar a sus amigos. Vuelve junto al mariscal Maxwell si lo consigues."
 Inst1Quest19_Location = "Alguacil Windsor (Profundidades de Roca Negra; "..YELLOW.."[4]"..WHITE..")"
-Inst1Quest19_Note = "Esta misión es una parte de la cadena para la armonización con Onyxia. Mariscal Windsor está en "..YELLOW.."[4]"..WHITE..".\nEs más fácil realizar la misión si haces el Círculo de la Ley ("..YELLOW.."[6]"..WHITE..") y el camino a la entrada antes de empezar el evento. Encuentras a Mariscal Maxwell en Las Estepas Ardientes - Vigilia de Morgan ("..YELLOW.."84,68"..WHITE..")"
+Inst1Quest19_Note = "Esta misión es una parte de la cadena para la armonización con Onyxia. Alguacil Windsor está en "..YELLOW.."[4]"..WHITE..".\nEs más fácil realizar la misión si haces el Círculo de la Ley ("..YELLOW.."[6]"..WHITE..") y el camino a la entrada antes de empezar el evento. Encuentras a Mariscal Maxwell en Las Estepas Ardientes - Vigilia de Morgan ("..YELLOW.."84,68"..WHITE..")"
 Inst1Quest19_Prequest = "Una brizna de esperanza" -- 4282
 Inst1Quest19_Folgequest = "Tienes una cita en Ventormenta" -- 6204
 --
@@ -366,10 +366,10 @@ Inst1Quest7_HORDE_Folgequest = "Grark Lorkrub -> ¡Estás en un aprieto! (Misió
 -- No Rewards for this quest
 
 --Quest 8 Horde
-Inst1Quest8_HORDE = "8. Operación: muerte a Forjainquina" -- 4132
-Inst1Quest8_HORDE_Aim = "Viaja hasta las Profundidades de Roca Negra ¡y mata al general Forjainquina! Vuelve junto al señor de la guerra Dientegore cuando hayas acabado la tarea."
+Inst1Quest8_HORDE = "8. Operación: muerte a Forjafuria" -- 4132
+Inst1Quest8_HORDE_Aim = "Viaja hasta las Profundidades de Roca Negra ¡y mata al general Forjira! Vuelve junto al señor de la guerra Dientegore cuando hayas acabado la tarea."
 Inst1Quest8_HORDE_Location = "Señor de la guerra Dientegore (Tierras Inhóspitas - Kargath; "..YELLOW.."5,47"..WHITE..")"
-Inst1Quest8_HORDE_Note = "Encuentras al General Forjainquina en "..YELLOW.."[13]"..WHITE..". Él pedirá ayuda cuando tenga menos del 30% de salud."
+Inst1Quest8_HORDE_Note = "Encuentras al General Forjira en "..YELLOW.."[13]"..WHITE..". Él pedirá ayuda cuando tenga menos del 30% de salud."
 Inst1Quest8_HORDE_Prequest = "¡Estás en un aprieto!" -- 4121
 Inst1Quest8_HORDE_Folgequest = "Ninguno"
 --
@@ -540,9 +540,9 @@ Inst2Quest2_HORDE_Note = "La misión siguiente te envia al Alto señor supremo C
 Inst2Quest2_HORDE_Prequest = "Ninguno"
 Inst2Quest2_HORDE_Folgequest = "Señor de Roca Negra" -- 7784
 --
-Inst2Quest2name1_HORDE = "Medallón de maestro matadragones"
-Inst2Quest2name2_HORDE = "Orbe de maestro matadragones"
-Inst2Quest2name3_HORDE = "Anillo de maestro matadragones"
+Inst2Quest2name1_HORDE = Inst2Quest2name1
+Inst2Quest2name2_HORDE = Inst2Quest2name2
+Inst2Quest2name3_HORDE = Inst2Quest2name3
 
 --Quest 3 Horde  (same as Quest 3 Alliance)
 Inst2Quest3_HORDE = Inst2Quest3
@@ -615,10 +615,10 @@ Inst3Quest5name2 = "Chaleco de calador"
 Inst3Quest5name3 = "Coraza de Luna de jade"
 
 --Quest 6 Alliance
-Inst3Quest6 = "6. Urok Aullasino" -- 4867
+Inst3Quest6 = "6. Urok Doomhowl" -- 4867
 Inst3Quest6_Aim = "Lee el pergamino de Warosh. Llévale el mojo de Warosh a Warosh."
 Inst3Quest6_Location = "Warosh (Cumbre de Roca Negra Inferior; "..YELLOW.."[2]"..WHITE..")"
-Inst3Quest6_Note = "Invoca y mata a Urok Aullasino en "..YELLOW.."[13]"..WHITE.." para obtener el Mojo de Warosh. Para invocarlo, necesitas la Pica férrea y la Cabeza de Omokk en "..YELLOW.."[6]"..WHITE..". La Pica férrea está en "..YELLOW.."[4]"..WHITE..". Durante la invocación, aparecerán oleadas de ogros antes de que aparezca Urok Aullasino. Usa la Pica férrea para dañar a los ogros."
+Inst3Quest6_Note = "Invoca y mata a Urok Aullapocalipsis en "..YELLOW.."[13]"..WHITE.." para obtener el Mojo de Warosh. Para invocarlo, necesitas la Pica férrea y la Cabeza de Omokk en "..YELLOW.."[6]"..WHITE..". La Pica férrea está en "..YELLOW.."[4]"..WHITE..". Durante la invocación, aparecerán oleadas de ogros antes de que aparezca Urok Aullasino. Usa la Pica férrea para dañar a los ogros."
 Inst3Quest6_Prequest = "Ninguno"
 Inst3Quest6_Folgequest = "Ninguno"
 --
@@ -808,7 +808,7 @@ Inst3Quest10_HORDE_Folgequest = "La sabiduría de Eitrigg -> ¡Por la Horda! (".
 Inst3Quest10name1_HORDE = "Grilletes Vermiothalak"
 Inst3Quest10name2_HORDE = "Limitador de circunferencia de Omokk"
 Inst3Quest10name3_HORDE = "Bozal de Halycon"
-Inst3Quest10name4_HORDE = "Ceñidor de Vosh'gajin"
+Inst3Quest10name4_HORDE = "Playa de Vosh'gajin"
 Inst3Quest10name5_HORDE = "Mandiletes de maña de Voone"
 
 --Quest 11 Horde  (same as Quest 11 Alliance)
@@ -1026,7 +1026,7 @@ Inst4Quest5_HORDE_Note = "Obtienes la misión requisita de la Boticaria Zinge en
 Inst4Quest5_HORDE_Prequest = "Vivian Lagrave y la tablilla de Rocanegra" -- 4769
 Inst4Quest5_HORDE_Folgequest = "Ninguno"
 --
-Inst4Quest5name1_HORDE = "Botines Piepresto"
+Inst4Quest5name1_HORDE = "Botines Pieveloz"
 Inst4Quest5name2_HORDE = "Guardabrazos golpeguiño"
 
 --Quest 6 Horde
@@ -1058,7 +1058,7 @@ Inst4Quest8_HORDE_Note = "Es la parte final para la misión para la armonizació
 Inst4Quest8_HORDE_Prequest = "Brasaliza -> El ascenso" -- 6570 -> 6601
 Inst4Quest8_HORDE_Folgequest = "Ninguno"
 --
-Inst4Quest8name1_HORDE = "Amuleto Pirodraco"
+Inst4Quest8name1_HORDE = "Amuleto de Pirodraco"
 
 --Quest 9 Horde  (same as Quest 7 Alliance)
 Inst4Quest9_HORDE = "9. Orden de Puño Negro"
@@ -1099,6 +1099,7 @@ Inst4Quest12_HORDE_Folgequest = Inst4Quest10_Folgequest
 --
 Inst4Quest12name1_HORDE = Inst4Quest10name1
 Inst4Quest12name2_HORDE = Inst4Quest10name2
+Inst4Quest12name3_HORDE = Inst4Quest10name3
 
 --Quest 13 Horde  (same as Quest 11 Alliance)
 Inst4Quest13_HORDE = "13. La colecta de huevos"
@@ -1169,9 +1170,9 @@ Inst5Quest5_Note = "Empieza la cadena de misiones a Gryan Mantorrecio (Páramos 
 Inst5Quest5_Prequest = "La hermandad de los Defias" -- 155
 Inst5Quest5_Folgequest = "Ninguno"
 --
-Inst5Quest5name1 = "Albarca de los Páramos de Poniente"
-Inst5Quest5name2 = "Túnica de los Páramos de Poniente"
-Inst5Quest5name3 = "Bastón de los Páramos de Poniente"
+Inst5Quest5name1 = "Albarca de Páramos de Poniente"
+Inst5Quest5name2 = "Túnica de Páramos de Poniente"
+Inst5Quest5name3 = "Bastón de Páramos de Poniente"
 
 --Quest 6 Alliance
 Inst5Quest6 = "6. La prueba de rectitud" -- 1654
@@ -1437,7 +1438,7 @@ Inst7Quest2_HORDE_Prequest = "Prueba de fe - > Prueba de conocimiento" -- 1149 -
 Inst7Quest2_HORDE_Folgequest = "Prueba de conocimiento" -- 6628
 --
 Inst7Quest2name1_HORDE = "Martillo tormenta de viento"
-Inst7Quest2name2_HORDE = "Llama danzarina"
+Inst7Quest2name2_HORDE = "Llama de danza"
 
 --Quest 3 Horde
 Inst7Quest3_HORDE = "3. El Compendio de los Caídos" -- 1049
@@ -1448,7 +1449,7 @@ Inst7Quest3_HORDE_Prequest = "Ninguno"
 Inst7Quest3_HORDE_Folgequest = "Ninguno"
 --
 Inst7Quest3name1_HORDE = "Protector vil"
-Inst7Quest3name2_HORDE = "Rodela piedra de fuerza"
+Inst7Quest3name2_HORDE = "Rodela Piedra de potencia"
 Inst7Quest3name3_HORDE = "Orbe omega"
 
 --Quest 4 Horde  (same as Quest 2 Alliance)
@@ -1686,7 +1687,7 @@ Inst11Quest9 = "9. Entrega de diablillo" -- 7629
 Inst11Quest9_Aim = "Llévale el diablillo en un tarro al laboratorio de alquimia de Scholomance. Después de crear el papiro llévale el tarro a Gorzeeki Ojovago."
 Inst11Quest9_Location = "Gorzeeki Ojosalvajes (Las Estepas Ardientes; "..YELLOW.."12,31"..WHITE..")"
 Inst11Quest9_Note = "Solamente para Brujos: Encuentras el Laboratorio de alquimia en "..YELLOW.."[7]"..WHITE.."."
-Inst11Quest9_Prequest = "Mor'zul Sangredoble - > Polvo estelar xorothiano" -- 7562 -> 7625
+Inst11Quest9_Prequest = "Mor'zul Sangredoble -> Polvo estelar xorothiano" -- 7562 -> 7625
 Inst11Quest9_Folgequest = "Corcel nefasto xorothiano ("..YELLOW.."La Masacre Oeste"..WHITE..")" -- 7631
 -- No Rewards for this quest
 
@@ -2105,7 +2106,8 @@ Inst14Quest12_Location = "Anthion Harmon (Tierras de la Peste del Este - Stratho
 Inst14Quest12_Note = "Anthion está fuera del portal a Stratholme. Tienes que llevar el Detector de fantasmas extradimensional para verlo. Lo obtienes de la misión requisita. La cadena de misiones empieza con Una compensación justa. Deliana en Forjaz ("..YELLOW.."43,52"..WHITE..") para la Alianza, Mokvar en Orgrimmar ("..YELLOW.."38,37"..WHITE..") para la Horda.\nTienes que matar al Barón Osahendido en 45 minutos o menos."
 Inst14Quest12_Prequest = "Buscando a Anthion" -- 8929
 Inst14Quest12_Folgequest = "Prueba de vida" -- 8946
--- No Rewards for this quest
+--
+Inst14Quest12name1 = "Cartera de Ysida"
 
 --Quest 13 Alliance
 Inst14Quest13 = "13. La parte izquierda del amuleto de Lord Valthalak" -- 8968
@@ -2288,7 +2290,8 @@ Inst14Quest12_HORDE_Location = Inst14Quest12_Location
 Inst14Quest12_HORDE_Note = Inst14Quest12_Note
 Inst14Quest12_HORDE_Prequest = Inst14Quest12_Prequest
 Inst14Quest12_HORDE_Folgequest = Inst14Quest12_Folgequest
--- No Rewards for this quest
+--
+Inst14Quest12name1_HORDE = Inst14Quest12name1
 
 --Quest 13 Horde  (same as Quest 13 Alliance)
 Inst14Quest13_HORDE = Inst14Quest13
@@ -2386,7 +2389,7 @@ Inst15Quest2_Aim = "Encuentra a Marvon Buscarroblones en Tanaris."
 Inst15Quest2_Location = "Angelas Brisaluna (Feralas - Bastión Plumaluna; "..YELLOW.."31,45"..WHITE..")"
 Inst15Quest2_Note = "Encuentras a Marvon Buscarroblones en "..YELLOW.."52,45"..WHITE.."."
 Inst15Quest2_Prequest = "Ninguno"
-Inst15Quest2_Folgequest = "El círculo de piedra"
+Inst15Quest2_Folgequest = "El Círculo de Piedras"
 -- No Rewards for this quest
 
 --Quest 3 Alliance
@@ -2410,7 +2413,7 @@ Inst15Quest4name1 = "Urna Hakkari"
 
 --Quest 5 Alliance
 Inst15Quest5 = "5. Bruma del mal" -- 4143
-Inst15Quest5_Aim = "Reúne 5 muestras de calima Atal'ai y después ve a ver de nuevo a Muigin al Cráter de Un'Goro."
+Inst15Quest5_Aim = "Reúne 5 muestras de bruma Atal'ai y después ve a ver de nuevo a Muigin al Cráter de Un'Goro."
 Inst15Quest5_Location = "Gregan Vomitabrebaje (Feralas; "..YELLOW.."45,25"..WHITE..")"
 Inst15Quest5_Note = "La misión requisita 'Muigin y Larion' empieza con Muigin (Cráter de Un'Goro - Refugio de Marshal; "..YELLOW.."42,9"..WHITE.."). Despoja a los Rondadores de lo profundo, Gusanos de la oscuridad, y Mocos saturados para obtener las calimas."
 Inst15Quest5_Prequest = "Muigin y Larion -> Visita a Gregan" -- 4141 -> 4142
@@ -2419,10 +2422,10 @@ Inst15Quest5_Folgequest = "Ninguno"
 
 --Quest 6 Alliance
 Inst15Quest6 = "6. El dios Hakkar" -- 3528
-Inst15Quest6_Aim = "Llévale el huevo de Hakkar relleno a Yeh'kinya, que está en Tanaris."
+Inst15Quest6_Aim = "Llévale el Huevo relleno de Hakkar a Yeh'kinya, que está en Tanaris."
 Inst15Quest6_Location = "Yeh'kinya (Tanaris - Puerto Bonvapor; "..YELLOW.."66,22"..WHITE..")"
-Inst15Quest6_Note = "La cadena de misiones empieza con 'Los espíritus de los estridadores' al mismo PNJ (Ve "..YELLOW.."[Zul'Farrak]"..WHITE..").\nUsas el huevo en "..YELLOW.."[3]"..WHITE.." para comenzar el evento. Aparecerán criaturas que te atacan. Despójalos para obtener la sangre de Hakkar. Usa la sangre para extinguir la antorcha en el círculo. Después de extinguir la antorcha, aparece el Avatar de Hakkar. Mátalo y despójalo para obtener la 'Esencia de Hakkar' para llenar el huevo."
-Inst15Quest6_Prequest = "Los espíritus de los estridadores -> El huevo antiguo" -- 3520 -> 4787
+Inst15Quest6_Note = "La cadena de misiones empieza con 'Los espíritus de los estriadores' al mismo PNJ (Ve "..YELLOW.."[Zul'Farrak]"..WHITE..").\nUsas el huevo en "..YELLOW.."[3]"..WHITE.." para comenzar el evento. Aparecerán criaturas que te atacan. Despójalos para obtener la sangre de Hakkar. Usa la sangre para extinguir la antorcha en el círculo. Después de extinguir la antorcha, aparece el Avatar de Hakkar. Mátalo y despójalo para obtener la 'Esencia de Hakkar' para llenar el huevo."
+Inst15Quest6_Prequest = "Los espíritus de los estriadores -> El huevo antiguo" -- 3520 -> 4787
 Inst15Quest6_Folgequest = "Ninguno"
 --
 Inst15Quest6name1 = "Yelmo de guardia vengador"
@@ -2460,12 +2463,12 @@ Inst15Quest9_Prequest = "Pedido de un diablillo -> La mercancía equivocada" -- 
 Inst15Quest9_Folgequest = "Ninguno"
 --
 Inst15Quest9name1 = "Cosechador de almas"
-Inst15Quest9name2 = "Fragmento Abisal"
+Inst15Quest9name2 = "Fragmento abisal"
 Inst15Quest9name3 = "Togas de Servidumbre"
 
 --Quest 10 Alliance
 Inst15Quest10 = "10. Plumas Vudú" -- 8425
-Inst15Quest10_Aim = "Llévale las plumas vudú de los trols del Templo Sumergido al héroe caído de la Horda."
+Inst15Quest10_Aim = "Llévale las plumas vudú de los trols del Templo Sumergido al Héroe Caído de la Horda."
 Inst15Quest10_Location = "Héroe caído de la Horda (Pantano de las Penas; "..YELLOW.."34,66"..WHITE..")"
 Inst15Quest10_Note = "Solamente para Guerreros: Despoja a los minijefes trol para obtener las plumas."
 Inst15Quest10_Prequest = "Un espíritu afligido -> La guerra contra los Sombra Jurada" -- 8417 -> 8424
@@ -2533,7 +2536,7 @@ Inst15Quest15_Folgequest = "Ninguno"
 --
 Inst15Quest15name1 = "Máscara de ébano"
 Inst15Quest15name2 = "Botas Caminasusurro"
-Inst15Quest15name3 = "Mantón de Murciumbrío"
+Inst15Quest15name3 = "Mantón Murciumbrío"
 
 --Quest 16 Alliance
 Inst15Quest16 = "16. La forja de la piedra de poderío" -- 8418
@@ -2557,7 +2560,7 @@ Inst15Quest1_HORDE_Note = "Despoja a cualquier criatura para obtener los fetiche
 Inst15Quest1_HORDE_Prequest = "Charca de Lágrimas -> Regresa junto a Fel'Zerul" -- 1424 -> 1444
 Inst15Quest1_HORDE_Folgequest = "Ninguno"
 --
-Inst15Quest1name1_HORDE = "Dije guardián"
+Inst15Quest1name1_HORDE = "Talismán guardián"
 
 --Quest 2 Horde
 Inst15Quest2_HORDE = "2. El Templo Sumergido"
@@ -2588,7 +2591,7 @@ Inst15Quest4name1_HORDE = Inst15Quest4name1
 
 --Quest 5 Horde
 Inst15Quest5_HORDE = "5. Combustible de irradior" -- 4146
-Inst15Quest5_HORDE_Aim = "Entrega el Controlador descargado y 5 muestras de calima Atal'ai a Larion, en el Refugio de Marshal."
+Inst15Quest5_HORDE_Aim = "Entrega el Controlador descargado y 5 muestras de bruma Atal'ai a Larion, en el Refugio de Marshal."
 Inst15Quest5_HORDE_Location = "Liv Rizzlefix (Los Baldíos; "..YELLOW.."62,38"..WHITE..")"
 Inst15Quest5_HORDE_Note = "La misión requisita 'Larion y Muigin' empieza con Larion (Cráter de Un'Goro; "..YELLOW.."45,8"..WHITE.."). Despoja a los Rondadores de lo profundo, Gusanos de la oscuridad, y Mocos saturados para obtener las calimas."
 Inst15Quest5_HORDE_Prequest = "Larion y Muigin -> El taller de Marvon" -- 4145 -> 4147
@@ -2606,6 +2609,7 @@ Inst15Quest6_HORDE_Folgequest = Inst15Quest6_Folgequest
 Inst15Quest6name1_HORDE = Inst15Quest6name1
 Inst15Quest6name2_HORDE = Inst15Quest6name2
 Inst15Quest6name3_HORDE = Inst15Quest6name3
+Inst15Quest6name4_HORDE = Inst15Quest6name4
 
 --Quest 7 Horde  (same as Quest 7 Alliance)
 Inst15Quest7_HORDE = Inst15Quest7
@@ -2714,7 +2718,7 @@ Inst15Quest15name3_HORDE = Inst15Quest15name3
 
 --Quest 16 Horde
 Inst15Quest16_HORDE = "16. Vudú" -- 8413
-Inst15Quest16_HORDE_Aim = "Lleva las plumas vudú a Bath'rah el Vigía del viento."
+Inst15Quest16_HORDE_Aim = "Lleva las plumas vudú a Bath'rah el Cazavientos."
 Inst15Quest16_HORDE_Location = "Bath'rah el Cazavientos (Montañas de Alterac; "..YELLOW.."80,67"..WHITE..")"
 Inst15Quest16_HORDE_Note = "Solamente para Chamanes: Despoja a los minijefes trol para obtener las plumas."
 Inst15Quest16_HORDE_Prequest = "Tótem de espíritu" -- 8412
@@ -3162,7 +3166,7 @@ Inst18Quest2name1 = "Hilador de conocimiento"
 
 --Quest 3 Alliance
 Inst18Quest3 = "3. Fragmentos de gangrevid" -- 5526
-Inst18Quest3_Aim = "Encuentra gangrevid en La Masacre y coge un fragmento. Es probable que solo puedas conseguirlo si derrotas a Alzzin el Formaferal. Usa el relicario de Pureza para guardar el fragmento y llévaselo a Rabine Saturna a Amparo de la Noche, en Claro de la Luna."
+Inst18Quest3_Aim = "Encuentra gangrevid en La Masacre y coge un fragmento. Es probable que solo puedas conseguirlo si derrotas a Alzzin el Formaferal. Usa el relicario de Pureza para guardar el fragmento y llévaselo al rabino Saturna a Amparo de la Noche, en Claro de la Luna."
 Inst18Quest3_Location = "Rabine Saturna (Claro de la Luna - Amparo de la Noche; "..YELLOW.."51,44"..WHITE..")"
 Inst18Quest3_Note = "Encuentras a Alzzin el Formaferal en la parte "..YELLOW.."Este"..WHITE.." de La Masacre en "..YELLOW.."[5]"..WHITE..". El relicario está en Silithius en "..YELLOW.."62,54"..WHITE..". Obtienes la misión requisita de Rabine Saturna también."
 Inst18Quest3_Prequest = "Un relicario de Pureza" -- 5527
@@ -3717,7 +3721,7 @@ Inst21Quest1name2 = "Colgante de fragmento de sombras prodigioso"
 
 --Quest 2 Alliance
 Inst21Quest2 = "2. La corrupción de Lenguavil" -- 7041
-Inst21Quest2_Aim = "Llena el vial cerúleo cubierto en el estanque naranja de Maraudon.\nAplica el vial cerúleo lleno a la hiedravil para que emerja el sucesor tóxico.\nCura 8 plantas eliminando su sucesor tóxico e informa a Talendria en Punta de Nijel."
+Inst21Quest2_Aim = "Llena el vial revestido en el estanque naranja de Maraudon.\n\nAplica el líquido a la hiedra tallovil para que emerja el vástago tóxico.\n\nCura 8 plantas eliminando su vástago tóxico e informa a Talendria en Punta de Nijel."
 Inst21Quest2_Location = "Talendria (Desolace - Punta de Nijel; "..YELLOW.."68,8"..WHITE..")"
 Inst21Quest2_Note = "Llenas el vial en cualquier estanque fuera de la estancia al lado naranja. Las plantas están en las localizaciones moradas y naranjas dentro de la estancia."
 Inst21Quest2_Prequest = "Ninguno"
@@ -3728,8 +3732,8 @@ Inst21Quest2name2 = "Faja arbusto"
 Inst21Quest2name3 = "Guanteletes ramazarza"
 
 --Quest 3 Alliance
-Inst21Quest3 = "3. Los males de Maraudon" -- 7028
-Inst21Quest3_Aim = "Recoge 15 tallas de cristal terádrico y llévaselas a Willow a Desolace."
+Inst21Quest3 = "3. Los males de Maraudón" -- 7028
+Inst21Quest3_Aim = "Recoge 25 tallas de cristal terádrico y llévaselas a Willow a Desolace."
 Inst21Quest3_Location = "Willow (Desolace; "..YELLOW.."62,39"..WHITE..")"
 Inst21Quest3_Note = "Puedes despojar a la mayoría de las criaturas en Maraudon para obtener las tallas."
 Inst21Quest3_Prequest = "Ninguno"
@@ -3753,17 +3757,17 @@ Inst21Quest4name1 = "Marca del elegido"
 Inst21Quest4name2 = "Amuleto de los espíritus"
 
 --Quest 5 Alliance
-Inst21Quest5 = "5. Leyendas de Maraudon" -- 7044
-Inst21Quest5_Aim = "Recupera las 2 partes del cetro de Celebras: la vara y el diamante de Celebras.\nEncuentra el modo de hablar con Celebras."
-Inst21Quest5_Location = "Cavindra (Desolace - Maraudon; "..YELLOW.."[4] on Entrance Map"..WHITE..")"
+Inst21Quest5 = "5. Leyendas de Maraudón" -- 7044
+Inst21Quest5_Aim = "Recupera las 2 partes del Cetro de Celebras: la vara y el diamante Celebrian.\nEncuentra el modo de hablar con Celebras."
+Inst21Quest5_Location = "Cavindra (Desolace - Maraudon; "..YELLOW.."[4] en el mapa de la entrada"..WHITE..")"
 Inst21Quest5_Note = "Encuentras a Cavindra al comienzo de la parte naranja antes de entrar la estancia.\nConsigues el Vara de Celebras de Noxxion en "..YELLOW.."[2]"..WHITE.." y el Diamante de Celebras de Lord Lenguavil en "..YELLOW.."[5]"..WHITE..". Celebras está en "..YELLOW.."[7]"..WHITE..". Tienes que derrotarlo para hablar consigo."
 Inst21Quest5_Prequest = "Ninguno"
 Inst21Quest5_Folgequest = "El cetro de Celebras" -- 7046
 -- No Rewards for this quest
 
 --Quest 6 Alliance
-Inst21Quest6 = "6. El cetro de Celebras" -- 7046
-Inst21Quest6_Aim = "Ayuda a Celebras el Redimido mientras reconstruye el cetro de Celebras.\nHabla con él después del ritual."
+Inst21Quest6 = "6. El Cetro de Celebras" -- 7046
+Inst21Quest6_Aim = "Ayuda a Celebras el Redimido mientras reconstruye el Cetro de Celebras.\n\nHabla con él después del ritual."
 Inst21Quest6_Location = "Celebras el Redimido (Maraudon; "..YELLOW.."[7]"..WHITE..")"
 Inst21Quest6_Note = "Celebras crea el Cetro. Habla con él después del ritual."
 Inst21Quest6_Prequest = "Leyendas de Maraudon" -- 7044
@@ -3773,7 +3777,7 @@ Inst21Quest6name1 = "Cetro de Celebras"
 
 --Quest 7 Alliance
 Inst21Quest7 = "7. Corrupción de la tierra y de la semilla" -- 7065
-Inst21Quest7_Aim = "Mata a la princesa Theradras y ve a ver al vigilante Marandis a Punta de Nijel, en Desolace."
+Inst21Quest7_Aim = "Mata a la princesa Theradras y ve a ver al guardián Marandis a Punta de Nijel, en Desolace."
 Inst21Quest7_Location = "Vigilante Marandis (Desolace - Punta de Nijel; "..YELLOW.."63,10"..WHITE..")"
 Inst21Quest7_Note = "Encuentras a la Princesa Theradras en "..YELLOW.."[11]"..WHITE.."."
 Inst21Quest7_Prequest = "Ninguno"
@@ -3784,8 +3788,8 @@ Inst21Quest7name2 = "Vara de resurgimiento"
 Inst21Quest7name3 = "Objetivo del vigilante de Verdantis"
 
 --Quest 8 Alliance
-Inst21Quest8 = "8. La semilla de vida" -- 7066
-Inst21Quest8_Aim = "Busca a Remulos en Claro de la Luna y dale la semilla de vida."
+Inst21Quest8 = "8. La semilla de la vida" -- 7066
+Inst21Quest8_Aim = "Busca a Remulos en Claro de la Luna y dale la semilla de la vida."
 Inst21Quest8_Location = "Espíritu de Zaetar (Maraudon; "..YELLOW.."[11]"..WHITE..")"
 Inst21Quest8_Note = "El Espíritu de Zaetar aparece después de matar a la Princesa Theradras en "..YELLOW.."[11]"..WHITE..". Encuentras al Guardián Remulos en (Claro de la Luna - Santuario de Remulos; "..YELLOW.."36,41"..WHITE..")."
 Inst21Quest8_Prequest = "Corrupción de la tierra y de la semilla" -- 7065
@@ -3806,7 +3810,7 @@ Inst21Quest1name2_HORDE = "Colgante de fragmento de sombras prodigioso"
 
 --Quest 2 Horde
 Inst21Quest2_HORDE = "2. La corrupción de Lenguavil" -- 7029
-Inst21Quest2_HORDE_Aim = "Llena el vial cerúleo cubierto en el estanque naranja de Maraudon.\nAplica el vial cerúleo lleno a la hiedravil para que emerja el sucesor tóxico.\nCura 8 plantas eliminando su sucesor tóxico e informa a Vark Marca de Guerra en la Aldea Cazasombras."
+Inst21Quest2_HORDE_Aim = "Llena el vial revestido en el estanque naranja de Maraudon.\n\nAplica el líquido a la hiedra tallovil para que emerja el vástago tóxico.\nCura 8 plantas eliminando su vástago tóxico e informa a Vark Marcaguerra en la Aldea Cazasombras."
 Inst21Quest2_HORDE_Location = "Vark Marca de Guerra (Desolace - Aldea Cazasombras; "..YELLOW.."23,70"..WHITE..")"
 Inst21Quest2_HORDE_Note = "Llenas el vial en cualquier estanque fuera de la estancia al lado naranja. Las plantas están en las localizaciones moradas y naranjas dentro de la estancia."
 Inst21Quest2_HORDE_Prequest = "Ninguno"
@@ -4022,7 +4026,7 @@ Inst23Quest4_HORDE_Prequest = "Ninguno"
 Inst23Quest4_HORDE_Folgequest = "Ninguno"
 --
 Inst23Quest4name1_HORDE = "Espada del vencedor"
-Inst23Quest4name2_HORDE = "Dije del Resplandor Ámbar"
+Inst23Quest4name2_HORDE = "Talismán Resplandor de Ámbar"
 
 
 
@@ -4156,8 +4160,8 @@ Inst25Quest1_Note = "Despoja a las bestias descarrriadas dentro y afuera de la e
 Inst25Quest1_Prequest = "Ninguno"
 Inst25Quest1_Folgequest = "Ninguno"
 --
-Inst25Quest1name1 = "Leotardos descarriados escurridizos"
-Inst25Quest1name2 = "Talega de pellejo descarriado"
+Inst25Quest1name1 = "Leotardos desviados escurridizos"
+Inst25Quest1name2 = "Talega de pellejo desviado"
 
 --Quest 2 Alliance
 Inst25Quest2 = "2. ¡A por la botella!" -- 959
@@ -4185,7 +4189,7 @@ Inst25Quest4_Note = "Ebru está dentro de una cueva oculta encima de la entrada 
 Inst25Quest4_Prequest = "Ninguno"
 Inst25Quest4_Folgequest = "Ninguno"
 --
-Inst25Quest4name1 = "Patrón: cinturón de escamas descarriadas"
+Inst25Quest4name1 = "Patrón: cinturón de escamas desviadas"
 Inst25Quest4name2 = "Palo de fritura"
 Inst25Quest4name3 = "Guanteletes de Damire"
 
@@ -4293,7 +4297,7 @@ Inst26Quest1_Folgequest = "Ninguno"
 
 --Quest 2 Alliance
 Inst26Quest2 = "2. Caparazones de escarabajo" -- 2865
-Inst26Quest2_Aim = "Lleva 5 caparazones de escarabajo sin rajar a Tran'rek en Gadgetzan."
+Inst26Quest2_Aim = "Lleva 5 caparazones de escarabajo sin grietas a Tran'rek en Gadgetzan."
 Inst26Quest2_Location = "Tran'rek (Tanaris - Gadgetzan; "..YELLOW.."51,26"..WHITE..")"
 Inst26Quest2_Note = "La misión requisita empieza con Krazek (Vega de Tuercespina - Bahía del Botín; "..YELLOW.."25,77"..WHITE..").\nDespoja a cualquier escarabajo para obtener los caparazones. Hay muchos escarabajos que están en "..YELLOW.."[2]"..WHITE.."."
 Inst26Quest2_Prequest = "Tran'rek" -- 2864
@@ -4301,8 +4305,8 @@ Inst26Quest2_Folgequest = "Ninguno"
 -- No Rewards for this quest
 
 --Quest 3 Alliance
-Inst26Quest3 = "3. Tiara de las profundidades" -- 2846
-Inst26Quest3_Aim = "Lleva la tiara de las profundidades a Tabetha en el Marjal Revolcafango."
+Inst26Quest3 = "3. Tiara de la Profundidad" -- 2846
+Inst26Quest3_Aim = "Lleva la Tiara de la Profundidad a Tabetha en el Marjal Revolcafango."
 Inst26Quest3_Location = "Tabetha (Marjal Revolcafango; "..YELLOW.."46,57"..WHITE..")"
 Inst26Quest3_Note = "Despoja a Hidromántica Velratha en "..YELLOW.."[6]"..WHITE.." para obtener la tiara de las profundidades."
 Inst26Quest3_Prequest = "La tarea de Tabetha" -- 2861
@@ -4325,14 +4329,14 @@ Inst26Quest5 = "5. La profecía de Mosh'aru" -- 3527
 Inst26Quest5_Aim = "Llévale la primera y segunda tablillas Mosh'aru a Yeh'kinya, que está en Tanaris."
 Inst26Quest5_Location = "Yeh'kinya (Tanaris - Puerto Bonvapor; "..YELLOW.."66,22"..WHITE..")"
 Inst26Quest5_Note = "Obtienes la misión requisita de Yeh'kinya también.\nDespoja a Theka el Martír en "..YELLOW.."[2]"..WHITE.." y Hidromántica Velratha en "..YELLOW.."[6]"..WHITE.." para obtener la primera y segunda tablillas Mosh'aru."
-Inst26Quest5_Prequest = "Los espíritus de los estridadores" -- 3520
+Inst26Quest5_Prequest = "Los espíritus de los estriadores" -- 3520
 Inst26Quest5_Folgequest = "El huevo antiguo" -- 4787
 -- No Rewards for this quest
 
 --Quest 6 Alliance
-Inst26Quest6 = "6. Vara divinomática" -- 2768
-Inst26Quest6_Aim = "Lleva la vara divinomática al ingeniero jefe Pasaquillas en Gadgetzan."
-Inst26Quest6_Location = "Ingeniero Jefe Pasaquillas (Tanaris - Gadgetzan; "..YELLOW.."52,28"..WHITE..")"
+Inst26Quest6 = "6. Cetro Divinomático" -- 2768
+Inst26Quest6_Aim = "Lleva el Cetro Divinomático al ingeniero jefe Silvaina en Gadgetzan."
+Inst26Quest6_Location = "Ingeniero Jefe Silvaina (Tanaris - Gadgetzan; "..YELLOW.."52,28"..WHITE..")"
 Inst26Quest6_Note = "Obtienes la vara del Sargento Bly. Lo encuentras en "..YELLOW.."[4]"..WHITE.." después del evento en las escaleras."
 Inst26Quest6_Prequest = "Ninguno"
 Inst26Quest6_Folgequest = "Ninguno"
@@ -4484,6 +4488,14 @@ Inst27Quest6_Folgequest = "Buenas y malas noticias (Tienes que completar las cad
 --
 Inst27Quest6name1 = "Poción rejuvenecedora sublime"
 
+--Quest 7 Alliance
+Inst27Quest7 = "7. Armonización con el Núcleo" -- 7848
+Inst27Quest7_Aim = Inst1Quest12_Aim
+Inst27Quest7_Location = Inst1Quest12_Location
+Inst27Quest7_Note = Inst1Quest12_Note
+Inst27Quest7_Prequest = Inst1Quest12_Prequest
+Inst27Quest7_Folgequest = Inst1Quest12_Folgequest
+-- No Rewards for this quest
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst27Quest1_HORDE = Inst27Quest1
@@ -4543,6 +4555,14 @@ Inst27Quest6_HORDE_Folgequest = Inst27Quest6_Folgequest
 --
 Inst27Quest6name1_HORDE = Inst27Quest6name1
 
+--Quest 7 Horde (same as Quest 7 Alliance)
+Inst27Quest7_HORDE = Inst27Quest7 -- 7848
+Inst27Quest7_HORDE_Aim = Inst1Quest12_Aim
+Inst27Quest7_HORDE_Location = Inst1Quest12_Location
+Inst27Quest7_HORDE_Note = Inst1Quest12_Note
+Inst27Quest7_HORDE_Prequest = Inst1Quest12_Prequest
+Inst27Quest7_HORDE_Folgequest = Inst1Quest12_Folgequest
+-- No Rewards for this quest
 
 
 --------------- INST28 - Onyxia's Lair ---------------
@@ -4722,7 +4742,7 @@ Inst30Quest1_Folgequest = "Ninguno"
 Inst30Quest1name1 = "Talismán del Mar de Dunas"
 Inst30Quest1name2 = "Amuleto del Mar de Dunas"
 Inst30Quest1name3 = "Gargantilla del Mar de Dunas"
-Inst30Quest1name4 = "Colgante del Mar de Dunas"
+Inst30Quest1name4 = "Colgante de las Arenas Movedizas"
 
 --Quest 2 Alliance
 Inst30Quest2 = "2. El veneno perfecto" -- 9023

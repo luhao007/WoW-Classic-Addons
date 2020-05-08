@@ -1,8 +1,8 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("NovaWorldBuffs", "koKR");
 if (not L) then
-	return;
+    return;
 end
-
+ 
 --Rend buff aura name.
 L["Warchief's Blessing"] = "대족장의 축복";
 --Onyxia and Nefarian buff aura name.
@@ -119,9 +119,9 @@ L["buffResetsIn"] = "%s 버프가 %s 후 리셋";
 L["rendFirstYellMsg"] = "대족장의 축복 6초 전!!";
 L["onyxiaFirstYellMsg"] = "오닉 버프 14초 전!!";
 L["nefarianFirstYellMsg"] = "네파 버프 15초 전!!";
-L["rendBuffDropped"] = "대족장의 축복 끝!!";
+L["rendBuffDropped"] = "대족장의 축복 완료!!";
 L["onyxiaBuffDropped"] = "오닉 버프 완료!!";
-L["nefarianBuffDropped"] = "네파 버프 끝!!";
+L["nefarianBuffDropped"] = "네파 버프 완료!!";
 L["onyxiaNpcKilledHorde"] = "대군주 룬탁이 죽음 (오닉버프 NPC).";
 L["onyxiaNpcKilledAlliance"] = "상사 매팅글리가 죽음 (오닉버프 NPC).";
 L["nefarianNpcKilledHorde"] = "대군주 사울팽이 죽음 (네파버프 NPC).";
@@ -184,8 +184,10 @@ L["Jaedenar"] = "자에데나르";
 L["North-West of Irontree Woods"] = "강철나무 숲(북서)";
 L["South of Irontree Woods"] = "강철나무 숲(남)";
  
-L["cityMapLayerMsgHorde"] = "현재 위상은 %s 입니다.\n위상이 정해진 후에 \n오그리마 내 아무 NPC를 타겟하면 타이머가 교정됩니다.|r";
-L["cityMapLayerMsgAlliance"] = "현재 위상은 %s 입니다.\n위상이 정해진 후에 \n스톰윈드 내 아무 NPC를 선택하면 타이머가 교정됩니다.|r";
-L["noLayerYetHorde"] = "로그인 후 오그리마 NPC를 타겟하세요.\n오그리마 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
-L["noLayerYetAlliance"] = "로그인 후 스톰윈드 NPC를 타겟하세요.\n스톰윈드 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
+L["worldMapBuffsMsg"] = "/buff 명령으로 당신 케릭터들의 \n월드버프를 보여줍니다.";
+L["cityMapLayerMsgHorde"] = "현재 위상은 %s 입니다.\n지역변경 후 오그리마 내 NPC를 \n타겟하면 위상이 업데이트 됩니다.|r";
+L["cityMapLayerMsgAlliance"] = "현재 위상은 %s 입니다.\n지역변경 후 스톰윈드 내 \n NPC를 타겟하면 위상이 업데이트 됩니다.|r";
+L["noLayerYetHorde"] = "오그리마 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
+L["noLayerYetAlliance"] = "스톰윈드 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
+ 
 L["Reset Data"] = "기록 리셋"; --A button to Reset buffs window data.

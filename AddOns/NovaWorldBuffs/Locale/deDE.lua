@@ -55,17 +55,17 @@ L["Revel in his rallying cry"] = "Lasst seinen Siegesschrei eure Herzen höher s
 --Alliance Onyxia buff NPC.
 L["Major Mattingly"] = "Major Mattingly";
 --Alliance Onyxia buff NPC first yell string (part of his first yell msg before before buff).
---L["history has been made"] = "";
+L["history has been made"] = "am heutigen Tage ist Geschichte geschrieben worden";
 --Alliance Onyxia buff NPC second yell string (part of his second yell msg before before buff).
---L["Onyxia, hangs from the arches"] = "";
+L["Onyxia, hangs from the arches"] = "Onyxia baumelt leblos von den Torbögen";
 
 
 --Alliance Nefarian buff NPC.
 L["Field Marshal Afrasiabi"] = "Feldmarschall Afrasiabi";
 --Alliance Nefarian buff NPC first yell string (part of his first yell msg before before buff).
---L["the Lord of Blackrock is slain"] = "";
+L["the Lord of Blackrock is slain"] = "der Herrscher des Blackrocks wurde besiegt";
 --Alliance Nefarian buff NPC second yell string (part of his second yell msg before before buff).
---L["Revel in the rallying cry"] = "";
+L["Revel in the rallying cry"] = "Lasst den Siegesschrei des Drachentöters eure Herzen höher schlagen";
 
 ---===========----
 ---NPC's killed---

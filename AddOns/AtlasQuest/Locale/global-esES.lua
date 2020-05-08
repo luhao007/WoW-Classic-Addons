@@ -137,7 +137,7 @@ AQITEM_HANDS = "Manos,"
 AQITEM_FEET = "Pies,"
 AQITEM_WRIST = "Muñeca,"
 AQITEM_HEAD = "Cabeza,"
-AQITEM_BACK = "Espalda"
+AQITEM_BACK = "Atrás"
 AQITEM_TABARD = "Tabardo"
 
 AQITEM_CLOTH = " Tela"
@@ -151,7 +151,7 @@ AQITEM_ONEHAND = "Una mano,"
 AQITEM_TWOHAND = "Dos manos,"
 
 AQITEM_ITEM = "Objeto" -- Use this for those oddball rewards which aren't really anything else.
-AQITEM_TRINKET = "Abalorio"
+AQITEM_TRINKET = "Alhaja"
 AQITEM_RELIC = "Reliquia"
 AQITEM_POTION = "Poción"
 AQITEM_OFFHAND = "Sostener con la mano izquierda"

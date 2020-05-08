@@ -1,16 +1,22 @@
-lightweight tag d771d7accc6dfdd819b0623ec8d88aa41e97db56 v1.7.0
+lightweight tag accf81188cee12e301b0314bd81534428796ed9b v1.7.1
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Wed May 6 15:49:21 2020 -0700
+Date:	Fri May 8 01:21:23 2020 -0700
 
-commit d771d7accc6dfdd819b0623ec8d88aa41e97db56
+commit accf81188cee12e301b0314bd81534428796ed9b
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Wed May 6 15:49:21 2020 -0700
+Date:   Fri May 8 01:21:23 2020 -0700
 
-    fix count not count
+    more to report
 
-commit caa7480a9db5789b85c82836f1e408082d3c27a4
+commit 40b5ec73202d1ffec1b293a520c8eb3809918538
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Wed May 6 15:47:46 2020 -0700
+Date:   Fri May 8 00:38:39 2020 -0700
 
-    add 0 credit item report
+    better ui with expand arrow
+
+commit 7b9b2efc6d222d2d3cb2ca2ee7da56da9e7811e7
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Thu May 7 23:15:51 2020 -0700
+
+    dup fool proof
 

@@ -142,7 +142,7 @@ Inst1Quest4name3 = "Cuchilla de extremidad"
 
 --Quest 5 Alliance  
 Inst1Quest5 = "5. Maestro supremo Pyron"
-Inst1Quest5_Aim = "Mata al maestro supremo Pyron y vuelve junto a Jalinda Espiga."
+Inst1Quest5_Aim = "Mata al maestro supremo Pyron y regresa con Jalinda Espiga."
 Inst1Quest5_Location = "Jalinda Espiga (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,70"..WHITE..")"
 Inst1Quest5_Note = "Maestro supremo Pyron es un elemental de fuego afuera del calabozo. Patrulla cerca del portal en "..YELLOW.."[24]"..WHITE.." en el mapa de Las Profundidades Roca Negra en "..YELLOW.."[3]"..WHITE.." en el mapa de entrada de la Montaña Roca Negra."
 Inst1Quest5_Prequest = "Ninguno"
@@ -154,7 +154,7 @@ Inst1Quest6 = "6. ¡Incendius!"
 Inst1Quest6_Aim = "Encuentra a Lord Incendius en las Profundidades de Roca Negra ¡y acaba con él! "
 Inst1Quest6_Location = "Jalinda Espiga (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,69"..WHITE..")"
 Inst1Quest6_Note = "Obtienes la misión requisita de Jalinda Espiga también. Encuentras a Lord Incendius en "..YELLOW.."[10]"..WHITE.."."
-Inst1Quest6_Prequest = "Gran maestro Pyron" -- 4262
+Inst1Quest6_Prequest = "Maestro supremo Pyron" -- 4262
 Inst1Quest6_Folgequest = "Ninguno"
 --
 Inst1Quest6name1 = "Manteo nacido del Sol"
@@ -173,7 +173,7 @@ Inst1Quest7_Folgequest = "Ninguno"
 
 --Quest 8 Alliance
 Inst1Quest8 = "8. Buena mercancía" -- 4286
-Inst1Quest8_Aim = "Viaja a las Profundidades de Roca Negra y recupera 20 riñoneras Hierro Negro. Vuelve junto a Oralius cuando hayas completado esta tarea. Se da por sentado que los enanos Hierro Negro de las Profundidades de Roca Negra llevan estos inventos de riñoneras. "
+Inst1Quest8_Aim = "Viaja a las Profundidades de Roca Negra y recupera 20 riñoneras Hierro Negro. Vuelve con Oralius cuando termines. Supones que los enanos Hierro Negro de las Profundidades de Roca Negra llevan estas extrañas \"riñoneras\"."
 Inst1Quest8_Location = "Oralius (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,68"..WHITE..")"
 Inst1Quest8_Note = "Despoja a cualquier enano para obtener las riñoneras."
 Inst1Quest8_Prequest = "Ninguno"
@@ -254,7 +254,7 @@ Inst1Quest16 = "16. Esperanza perdida"
 Inst1Quest16_Aim = "Dale las malas noticias a mariscal Maxwell. "
 Inst1Quest16_Location = "Mariscal Windsor (Profundidades de Roca Negra; "..YELLOW.."[4]"..WHITE..")"
 Inst1Quest16_Note = "Esta misión es una parte de la cadena para la armonización de Onyxia. Mariscal Maxwell está en (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."85,69"..WHITE.."). La siguiente misión en la cadena se despoja en las Profundidades de Roca Negra."
-Inst1Quest16_Prequest = "Marshal Windsor"
+Inst1Quest16_Prequest = "El mariscal Windsor"
 Inst1Quest16_Folgequest = "Ninguno"
 --
 Inst1Quest16name1 = "Yelmo de conservador"
@@ -1099,6 +1099,7 @@ Inst4Quest12_HORDE_Folgequest = Inst4Quest10_Folgequest
 --
 Inst4Quest12name1_HORDE = Inst4Quest10name1
 Inst4Quest12name2_HORDE = Inst4Quest10name2
+Inst4Quest12name3_HORDE = Inst4Quest10name3
 
 --Quest 13 Horde  (same as Quest 11 Alliance)
 Inst4Quest13_HORDE = "13. La colecta de huevos"
@@ -1686,7 +1687,7 @@ Inst11Quest9 = "9. Entrega de diablillo" -- 7629
 Inst11Quest9_Aim = "Llévale el diablillo en un tarro al laboratorio de alquimia de Scholomance. Después de crear el papiro llévale el tarro a Gorzeeki Ojovago."
 Inst11Quest9_Location = "Gorzeeki Ojovago (Las Estepas Ardientes; "..YELLOW.."12,31"..WHITE..")"
 Inst11Quest9_Note = "Solamente para Brujos: Encuentras el Laboratorio de alquimia en "..YELLOW.."[7]"..WHITE.."."
-Inst11Quest9_Prequest = "Mor'zul Sangredoble - > Polvo estelar xorothiano" -- 7562 -> 7625
+Inst11Quest9_Prequest = "Mor'zul Sangredoble -> Polvo estelar xorothiano" -- 7562 -> 7625
 Inst11Quest9_Folgequest = "Corcel nefasto xorothiano ("..YELLOW.."La Masacre Oeste"..WHITE..")" -- 7631
 -- No Rewards for this quest
 
@@ -2105,7 +2106,8 @@ Inst14Quest12_Location = "Anthion Harmon (Tierras de la Peste del Este - Stratho
 Inst14Quest12_Note = "Anthion está fuera del portal a Stratholme. Tienes que llevar el Detector de fantasmas extradimensional para verlo. Lo obtienes de la misión requisita. La cadena de misiones empieza con Una compensación justa. Deliana en Forjaz ("..YELLOW.."43,52"..WHITE..") para la Alianza, Mokvar en Orgrimmar ("..YELLOW.."38,37"..WHITE..") para la Horda.\nTienes que matar al Barón Osahendido en 45 minutos o menos."
 Inst14Quest12_Prequest = "Buscando a Anthion" -- 8929
 Inst14Quest12_Folgequest = "Prueba de vida" -- 8946
--- No Rewards for this quest
+--
+Inst14Quest12name1 = "Cartera de Ysida"
 
 --Quest 13 Alliance
 Inst14Quest13 = "13. La parte izquierda del amuleto de Lord Valthalak" -- 8968
@@ -2288,7 +2290,8 @@ Inst14Quest12_HORDE_Location = Inst14Quest12_Location
 Inst14Quest12_HORDE_Note = Inst14Quest12_Note
 Inst14Quest12_HORDE_Prequest = Inst14Quest12_Prequest
 Inst14Quest12_HORDE_Folgequest = Inst14Quest12_Folgequest
--- No Rewards for this quest
+--
+Inst14Quest12name1_HORDE = Inst14Quest12name1
 
 --Quest 13 Horde  (same as Quest 13 Alliance)
 Inst14Quest13_HORDE = Inst14Quest13
@@ -2394,7 +2397,7 @@ Inst15Quest3 = "3. En las profundidades" -- 3446
 Inst15Quest3_Aim = "Encuentra el Altar de Hakkar en el Templo Sumergido, en el Pantano de las Penas."
 Inst15Quest3_Location = "Marvon Buscarroblones (Tanaris; "..YELLOW.."52,45"..WHITE..")"
 Inst15Quest3_Note = "El Altar está en "..YELLOW.."[1]"..WHITE.."."
-Inst15Quest3_Prequest = "El Círculo de Piedras" -- 3444
+Inst15Quest3_Prequest = "El círculo de piedra" -- 3444
 Inst15Quest3_Folgequest = "Ninguno"
 -- No Rewards for this quest
 
@@ -2403,7 +2406,7 @@ Inst15Quest4 = "4. El secreto del círculo" -- 3447
 Inst15Quest4_Aim = "Ve al Templo Sumergido y descubre el secreto oculto en el círculo de estatuas."
 Inst15Quest4_Location = "Marvon Buscarroblones (Tanaris; "..YELLOW.."52,45"..WHITE..")"
 Inst15Quest4_Note = "Encuentras las estatuas en "..YELLOW.."[1]"..WHITE..". Ve en el mapa para ver la orden de activarlas."
-Inst15Quest4_Prequest = "El Círculo de Piedras" -- 3444
+Inst15Quest4_Prequest = "El círculo de piedra" -- 3444
 Inst15Quest4_Folgequest = "Ninguno"
 --
 Inst15Quest4name1 = "Urna Hakkari"
@@ -2483,7 +2486,7 @@ Inst15Quest11_Note = "Solamente para Druidas: Despoja a Atal'alarion que está i
 Inst15Quest11_Prequest = "Torwa Abrecaminos -> Prueba de toxicidad" -- 9063 -> 9051
 Inst15Quest11_Folgequest = "Ninguno"
 --
-Inst15Quest11name1 = "Pellejo grisáceo"
+Inst15Quest11name1 = "Pelambre grisácea"
 Inst15Quest11name2 = "Abrazo del bosque"
 Inst15Quest11name3 = "Bastón Sombra Lunar"
 
@@ -2606,6 +2609,7 @@ Inst15Quest6_HORDE_Folgequest = Inst15Quest6_Folgequest
 Inst15Quest6name1_HORDE = Inst15Quest6name1
 Inst15Quest6name2_HORDE = Inst15Quest6name2
 Inst15Quest6name3_HORDE = Inst15Quest6name3
+Inst15Quest6name4_HORDE = Inst15Quest6name4
 
 --Quest 7 Horde  (same as Quest 7 Alliance)
 Inst15Quest7_HORDE = Inst15Quest7
@@ -3729,7 +3733,7 @@ Inst21Quest2name3 = "Guanteletes ramazarza"
 
 --Quest 3 Alliance
 Inst21Quest3 = "3. Los males de Maraudon" -- 7028
-Inst21Quest3_Aim = "Recoge 15 tallas de cristal terádrico y llévaselas a Willow a Desolace."
+Inst21Quest3_Aim = "Recoge 25 tallas de cristal terádrico para Willow en Desolace."
 Inst21Quest3_Location = "Willow (Desolace; "..YELLOW.."62,39"..WHITE..")"
 Inst21Quest3_Note = "Puedes despojar a la mayoría de las criaturas en Maraudon para obtener las tallas."
 Inst21Quest3_Prequest = "Ninguno"
@@ -3744,7 +3748,7 @@ Inst21Quest3name4 = "Espaldares de mole de piedra"
 Inst21Quest4 = "4. Las instrucciones del Paria" -- 7067
 Inst21Quest4_Aim = "Lee las instrucciones del Paria. Busca el Amuleto de Unidad en Maraudon y llévaselo al sur de Desolace."
 Inst21Quest4_Location = "Paria Centauro (Desolace; "..YELLOW.."45,86"..WHITE..")"
-Inst21Quest4_Note = "Los 5 Khans (Descripción para Las instrucciones del Paria)"
+Inst21Quest4_Note = "Los 5 Kahns (Descripción para Las instrucciones del Paria)"
 Inst21Quest4_Page = {2, "Encuentras el Paria Centauro al sur de Desolace. Camina entre "..YELLOW.."44,85"..WHITE.." y "..YELLOW.."50,87"..WHITE..".\nPrimero, debes matar al Profeta sin nombre ("..YELLOW.."[A] en el mapa de la Entrada"..WHITE.."). Lo encuentras antes de entrar la estancia, antes de la parte con la bifurcación para entrar al lado morado o naranja. Después de matarlo, debes matar a los 5 Khans. El Primer Khan está al camino central ("..YELLOW.."[1] en el mapa de la Entrada"..WHITE.."). El Segundo Khan está en la parte morada de Maraudon antes de entrar la estancia ("..YELLOW.."[2] en el mapa de la Entrada"..WHITE.."). El Tercer Khan está en la parte naranja antes de entrar la estancia ("..YELLOW.."[3] en el mapa de la Entrada"..WHITE.."). El Cuarto Khan está cerca de "..YELLOW.."[4]"..WHITE.." y El Quinto Khan está cerca de  "..YELLOW.."[1]"..WHITE..".", };
 Inst21Quest4_Prequest = "Ninguno"
 Inst21Quest4_Folgequest = "Ninguno"
@@ -3755,7 +3759,7 @@ Inst21Quest4name2 = "Amuleto de los espíritus"
 --Quest 5 Alliance
 Inst21Quest5 = "5. Leyendas de Maraudon" -- 7044
 Inst21Quest5_Aim = "Recupera las 2 partes del cetro de Celebras: la vara y el diamante de Celebras.\nEncuentra el modo de hablar con Celebras."
-Inst21Quest5_Location = "Cavindra (Desolace - Maraudon; "..YELLOW.."[4] on Entrance Map"..WHITE..")"
+Inst21Quest5_Location = "Cavindra (Desolace - Maraudon; "..YELLOW.."[4] en el mapa de la Entrada"..WHITE..")"
 Inst21Quest5_Note = "Encuentras a Cavindra al comienzo de la parte naranja antes de entrar la estancia.\nConsigues el Vara de Celebras de Noxxion en "..YELLOW.."[2]"..WHITE.." y el Diamante de Celebras de Lord Lenguavil en "..YELLOW.."[5]"..WHITE..". Celebras está en "..YELLOW.."[7]"..WHITE..". Tienes que derrotarlo para hablar consigo."
 Inst21Quest5_Prequest = "Ninguno"
 Inst21Quest5_Folgequest = "El cetro de Celebras" -- 7046
@@ -4022,7 +4026,7 @@ Inst23Quest4_HORDE_Prequest = "Ninguno"
 Inst23Quest4_HORDE_Folgequest = "Ninguno"
 --
 Inst23Quest4name1_HORDE = "Espada del vencedor"
-Inst23Quest4name2_HORDE = "Dije del Resplandor Ámbar"
+Inst23Quest4name2_HORDE = "Dije Resplandor de Ámbar"
 
 
 
@@ -4484,6 +4488,14 @@ Inst27Quest6_Folgequest = "Buenas y malas noticias (Tienes que completar las cad
 --
 Inst27Quest6name1 = "Poción de rejuvenecimiento sublime"
 
+--Quest 7 Alliance
+Inst27Quest7 = "7. Armonización con el Núcleo" -- 7848
+Inst27Quest7_Aim = Inst1Quest12_Aim
+Inst27Quest7_Location = Inst1Quest12_Location
+Inst27Quest7_Note = Inst1Quest12_Note
+Inst27Quest7_Prequest = Inst1Quest12_Prequest
+Inst27Quest7_Folgequest = Inst1Quest12_Folgequest
+-- No Rewards for this quest
 
 --Quest 1 Horde  (same as Quest 1 Alliance)
 Inst27Quest1_HORDE = Inst27Quest1
@@ -4543,7 +4555,14 @@ Inst27Quest6_HORDE_Folgequest = Inst27Quest6_Folgequest
 --
 Inst27Quest6name1_HORDE = Inst27Quest6name1
 
-
+--Quest 7 Horde (same as Quest 7 Alliance)
+Inst27Quest7_HORDE = Inst27Quest7 -- 7848
+Inst27Quest7_HORDE_Aim = Inst1Quest12_Aim
+Inst27Quest7_HORDE_Location = Inst1Quest12_Location
+Inst27Quest7_HORDE_Note = Inst1Quest12_Note
+Inst27Quest7_HORDE_Prequest = Inst1Quest12_Prequest
+Inst27Quest7_HORDE_Folgequest = Inst1Quest12_Folgequest
+-- No Rewards for this quest
 
 --------------- INST28 - Onyxia's Lair ---------------
 

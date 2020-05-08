@@ -101,6 +101,7 @@ L["Split into (Current %d)"] = true
 L["Start bid"] = true
 L["Starting price"] = true
 L["Subgroup total"] = true
+L["Summary"] = true
 L["Time left"] = true
 L["TITLE"] = "Raid Ledger"
 L["TOC_NOTES"] = "A ledger for GDKP/gold run raid. Feedback: farmer1992@gmail.com"
@@ -224,6 +225,8 @@ L["Split into (Current %d)"] = "Aufteilen in (Aktuelle  %d)"
 --[[Translation missing --]]
 --[[ L["Starting price"] = "Starting price"--]] 
 L["Subgroup total"] = "Untergruppe Gesamt"
+--[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
 --[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 L["TITLE"] = "Titel"
@@ -401,6 +404,8 @@ elseif locale == 'esES' then
 --[[ L["Starting price"] = "Starting price"--]] 
 --[[Translation missing --]]
 --[[ L["Subgroup total"] = "Subgroup total"--]] 
+--[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
 --[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 --[[Translation missing --]]
@@ -584,6 +589,8 @@ elseif locale == 'esMX' then
 --[[Translation missing --]]
 --[[ L["Subgroup total"] = "Subgroup total"--]] 
 --[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
+--[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 --[[Translation missing --]]
 --[[ L["TITLE"] = "Raid Ledger"--]] 
@@ -765,6 +772,8 @@ elseif locale == 'frFR' then
 --[[ L["Starting price"] = "Starting price"--]] 
 --[[Translation missing --]]
 --[[ L["Subgroup total"] = "Subgroup total"--]] 
+--[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
 --[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 --[[Translation missing --]]
@@ -948,6 +957,8 @@ elseif locale == 'itIT' then
 --[[Translation missing --]]
 --[[ L["Subgroup total"] = "Subgroup total"--]] 
 --[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
+--[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 --[[Translation missing --]]
 --[[ L["TITLE"] = "Raid Ledger"--]] 
@@ -1047,6 +1058,8 @@ L["Split into (Current %d)"] = "돈을 나눈 사람 수 (지금 %d)"
 L["Start bid"] = "입찰 시작"
 L["Starting price"] = "시작 금액"
 L["Subgroup total"] = "하위 그룹 합계"
+--[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
 L["Time left"] = "남은 시간"
 L["TITLE"] = "공격대 장부"
 L["TOC_NOTES"] = "공격대의 골드 분배 시행에 대한 장부, 피드백: farmer1992@gmail.com"
@@ -1223,6 +1236,8 @@ elseif locale == 'ptBR' then
 --[[Translation missing --]]
 --[[ L["Subgroup total"] = "Subgroup total"--]] 
 --[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
+--[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 --[[Translation missing --]]
 --[[ L["TITLE"] = "Raid Ledger"--]] 
@@ -1348,6 +1363,8 @@ L["Split into (Current %d)"] = "Разделить на (текущий %d)"
 --[[ L["Starting price"] = "Starting price"--]] 
 L["Subgroup total"] = "Всего подгрупп"
 --[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
+--[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 L["TITLE"] = "Рейдовая книга"
 --[[Translation missing --]]
@@ -1392,7 +1409,7 @@ L["Compensation: Tank"] = "补助: 坦克"
 L["convert failed, text can be either item id or item name"] = "转换失败, 名称可以是物品ID, 物品名称"
 L["Count down time"] = "倒计时"
 L["Credit"] = "收入"
-L["CTRL + click for summary mode"] = "CTRL + 点击以简介模式报告"
+L["CTRL + click for summary mode"] = "CTRL + 点击发送扼要报告"
 L["CTRL + Click to apply debit template"] = "CTRL + 点击应用支出模板"
 L["CTRL + Click to start and then pause timer"] = "CTRL + 点击开始并马上暂停计时"
 L["Current price"] = "当前价格"
@@ -1442,6 +1459,7 @@ L["Split into (Current %d)"] = "分钱人数 (当前 %d)"
 L["Start bid"] = "开始拍卖"
 L["Starting price"] = "起拍价"
 L["Subgroup total"] = "小队总和"
+L["Summary"] = "汇总"
 L["Time left"] = "剩余时间"
 L["TITLE"] = "Raid Ledger 金团账本"
 L["TOC_NOTES"] = "金团账本，帮你在金团中记账 反馈问题 farmer1992@gmail.com"
@@ -1565,6 +1583,8 @@ L["Split into (Current %d)"] = "分錢人數 (當前 %d)"
 --[[Translation missing --]]
 --[[ L["Starting price"] = "Starting price"--]] 
 L["Subgroup total"] = "小隊總和"
+--[[Translation missing --]]
+--[[ L["Summary"] = "Summary"--]] 
 --[[Translation missing --]]
 --[[ L["Time left"] = "Time left"--]] 
 L["TITLE"] = "金團賬本"

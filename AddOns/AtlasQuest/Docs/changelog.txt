@@ -2,6 +2,16 @@
 Changelog
 =========
 
+Version 4.11.64  (for WoW Classic)  May 7, 2020
+
+- TOC updated to 11304.
+- Updates to Spanish localization by Woopy.
+- Bug Fix: UBRS "The Demon Forge" quest reward colors were wrong on Horde side.  Reported by Woopy.
+- Bug Fix: Stratholme "Deadman's Plea" was not showing quest reward on Horde side.  Reported by Woopy.
+
+
+
+
 Version 4.11.63  (for WoW Classic)  March 20, 2020
 
 - Updates to Spanish localization by Woopy.
