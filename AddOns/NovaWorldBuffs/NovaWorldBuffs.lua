@@ -379,7 +379,7 @@ function NWB:createDataLayered(distribution)
 	if (not lastSendLayerMap[distribution]) then
 		lastSendLayerMap[distribution] = 0;
 	end
-	local sendLayerMap;
+	local sendLayerMap, foundTimer;
 	if ((GetServerTime() - lastSendLayerMap[distribution]) > 540 or NWB.isDebug or distribution == "GUILD") then
 		--Only send layermap info once per 10mins, this data won't change much except right after a server restart.
 		--So there's no need to use the addon bandwidth every time we send, 540 seconds should be every 2rd yell.
@@ -404,6 +404,7 @@ function NWB:createDataLayered(distribution)
 			if (NWB.data.layers[layer].GUID) then
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end
+			foundTimer = true;
 		end
 		if (NWB.data.layers[layer].onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
 			if (not data.layers) then
@@ -420,6 +421,7 @@ function NWB:createDataLayered(distribution)
 			if (NWB.data.layers[layer].GUID) then
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end
+			foundTimer = true;
 		end
 		if (NWB.data.layers[layer].nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
 			if (not data.layers) then
@@ -436,6 +438,7 @@ function NWB:createDataLayered(distribution)
 			if (NWB.data.layers[layer].GUID) then
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end
+			foundTimer = true;
 		end
 		if ((NWB.data.layers[layer].onyNpcDied > NWB.data.layers[layer].onyTimer) and
 				(NWB.data.layers[layer].onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime))) then
@@ -449,6 +452,7 @@ function NWB:createDataLayered(distribution)
 			if (NWB.data.layers[layer].GUID) then
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end
+			foundTimer = true;
 		end
 		if ((NWB.data.layers[layer].nefNpcDied > NWB.data.layers[layer].nefTimer) and
 				(NWB.data.layers[layer].nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime))) then
@@ -462,8 +466,9 @@ function NWB:createDataLayered(distribution)
 			if (NWB.data.layers[layer].GUID) then
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end
+			foundTimer = true;
 		end
-		if (sendLayerMap) then
+		if (sendLayerMap and foundTimer) then
 			if (NWB.data.layers[layer].layerMap and next(NWB.data.layers[layer].layerMap)) then
 				lastSendLayerMap[distribution] = GetServerTime();
 				if (not data.layers) then
@@ -646,6 +651,17 @@ function NWB:receivedData(data, sender, distribution)
 	if (NWB.isLayered and data.layers) then
 		--There's a lot of ugly shit in this function trying to quick fix timer bugs for this layered stuff...
 		for layer, vv in NWB:pairsByKeys(data.layers) do
+			--Temp fix, this can be removed soon.
+			if (vv["rendTimer"] and vv["rendTimer"] == 0 and vv["onyTimer"] and vv["onyTimer"] == 0
+					 and vv["nefTimer"] and vv["nefTimer"] == 0 and vv["onyNpcDied"] and vv["onyNpcDied"] == 0
+					  and vv["nefNpcDied"] and vv["nefNpcDied"] == 0) then
+				--Do nothing if all timers are 0, this is to fix a bug in last version with layerMaps causing old layer data
+				--to bounce back and forth between users, making it so layers with no timers keep being created after server
+				--restart and won't disappear.
+				--Usually layers with no timers would not be sent, but because they contain the new layermaps now the table
+				--isn't empty and gets sent, this has been corrected but old versions can still send data so we ignore it here.
+				--This can be removed when we next ignore older versions.
+			else
 			if (type(vv) == "table" and next(vv)) then
 				for localLayer, localV in pairs(NWB.data.layers) do
 					--Quick fix for timestamps sometimes syncing between layers.
@@ -788,6 +804,7 @@ function NWB:receivedData(data, sender, distribution)
 							end
 						end
 					end
+				end
 				end
 			end
 		end
@@ -2685,7 +2702,7 @@ f:SetScript("OnEvent", function(self, event, ...)
 			--Another temp bug fix just to see if it's an issue with the serialized table data being sent..
 			--NWB:sendComm("GUILD", "ping");
 			if (IsInGuild()) then
-				C_ChatInfo.SendAddonMessage(NWB.commPrefix, Serializer:Serialize("ping"), "GUILD");
+				C_ChatInfo.SendAddonMessage(NWB.commPrefix, Serializer:Serialize("ping " .. version), "GUILD");
 			end
 		end)
 	elseif (event == "PLAYER_ENTERING_WORLD") then
@@ -5734,7 +5751,11 @@ function NWB:setCurrentLayerText(unit)
 		return;
 	end
 	if (unitType ~= "Creature" or NWB.companionCreatures[tonumber(npcID)]) then
-		NWBlayerFrame.fs2:SetText("|cFF9CD6DETarget any NPC in Stormwind to see your current layer.|r");
+		if (NWB.faction == "Horde") then
+			NWBlayerFrame.fs2:SetText("|cFF9CD6DETarget any NPC in Orgrimmar to see your current layer.|r");
+		else
+			NWBlayerFrame.fs2:SetText("|cFF9CD6DETarget any NPC in Stormwind to see your current layer.|r");
+		end
 		return;
 	end
 	local count = 0;
