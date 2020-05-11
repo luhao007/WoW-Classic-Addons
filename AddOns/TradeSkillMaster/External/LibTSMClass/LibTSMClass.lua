@@ -284,8 +284,11 @@ end
 
 function private.InstAs(inst, targetClass)
 	local instInfo = private.instInfo[inst]
-	if not targetClass or not instInfo.isClassLookup[targetClass] then
-		error(format("Object (%s) is not an instance of the requested class (%s)!", tostring(inst), tostring(targetClass)), 2)
+	instInfo.currentClass = targetClass
+	if not targetClass then
+		error(format("Requested class does not exist!"), 2)
+	elseif not instInfo.isClassLookup[targetClass] then
+		error(format("Object is not an instance of the requested class (%s)!", tostring(targetClass)), 2)
 	end
 	-- For classes with no superclass, we don't go through the __index metamethod, so can't use __as
 	if not instInfo.hasSuperclass then
@@ -295,7 +298,6 @@ function private.InstAs(inst, targetClass)
 	if not instInfo.methodClass then
 		error("The superclass can only be referenced within a class method.", 2)
 	end
-	instInfo.currentClass = targetClass
 	return inst
 end
 

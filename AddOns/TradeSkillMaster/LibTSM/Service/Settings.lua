@@ -69,6 +69,7 @@ local DEFAULT_DB = {
 		char = {},
 		sync = {},
 	},
+	_lastModifiedVersion = {},
 }
 
 -- Changelog:
@@ -664,6 +665,7 @@ function private.Constructor(name, rawSettingsInfo)
 	-- flatten and validate rawSettingsInfo and generate hash data
 	local settingsInfo = CopyTable(rawSettingsInfo)
 	local hashDataParts = TempTable.Acquire()
+	local newLastModifiedVersion = TempTable.Acquire()
 	for scope, scopeSettingsInfo in pairs(rawSettingsInfo) do
 		if scope ~= "version" then
 			assert(SCOPE_TYPES[scope], "Invalid scope: "..tostring(scope))
@@ -687,6 +689,7 @@ function private.Constructor(name, rawSettingsInfo)
 							end
 						elseif k == "lastModifiedVersion" then
 							assert(type(v) == "number" and v <= version, "Invalid lastModifiedVersion for key: "..key)
+							newLastModifiedVersion[strjoin(KEY_SEP, SCOPE_TYPES[scope], namespace, key)] = v
 						else
 							error("Unexpected key in settingsInfo for key: "..key)
 						end
@@ -712,10 +715,6 @@ function private.Constructor(name, rawSettingsInfo)
 	elseif db._version == version and db._hash ~= hash then
 		-- the hash didn't match
 		assert(not TSM.IsDevVersion(), "Invalid settings hash! Did you forget to increase the version?")
-		isValid = false
-	elseif db._version > version then
-		-- this is a downgrade
-		assert(not TSM.IsDevVersion(), "Unexpected DB version! If you really want to downgrade, comment out this line (remember to uncomment before committing).")
 		isValid = false
 	elseif db._syncOwner and db._syncOwner[SCOPE_KEYS.sync] and db._syncOwner[SCOPE_KEYS.sync] ~= db._syncAccountKey[SCOPE_KEYS.factionrealm] then
 		-- we aren't the owner of this character, so wipe the DB and show a manual error
@@ -760,6 +759,7 @@ function private.Constructor(name, rawSettingsInfo)
 	end
 
 	-- do any necessary upgrading or downgrading if the version changed
+	db._lastModifiedVersion = db._lastModifiedVersion or {}
 	local removedSettings, prevVersion = nil, nil
 	if version ~= db._version then
 		-- clear any settings which no longer exist, and set new/updated settings to their default values
@@ -768,14 +768,21 @@ function private.Constructor(name, rawSettingsInfo)
 			-- ignore metadata (keys starting with "_")
 			if strsub(key, 1, 1) ~= "_" then
 				local scopeTypeShort, namespace, settingKey = strmatch(key, "^(.+)"..KEY_SEP..".+"..KEY_SEP.."(.+)"..KEY_SEP.."(.+)$")
+				local settingLastModifiedVersion = db._lastModifiedVersion[strjoin(KEY_SEP, scopeTypeShort, namespace, settingKey)]
 				local scopeType = scopeTypeShort and private.ScopeReverseLookup(scopeTypeShort)
 				local info = settingKey and settingsInfo[scopeType] and settingsInfo[scopeType][namespace] and settingsInfo[scopeType][namespace][settingKey]
 				if not info then
 					-- this setting was removed so remove it from the db
 					removedSettings[key] = db[key]
 					db[key] = nil
-				elseif info.lastModifiedVersion > db._version or version < db._version then
-					-- this will be reset to the default value in the next for loop below
+				elseif info.lastModifiedVersion > db._version then
+					-- this setting was updated, so we'll reset it to the default value
+					removedSettings[key] = db[key]
+				elseif not settingLastModifiedVersion and version < db._version then
+					-- we don't have lastModifiedVersion info for this setting and the DB is getting downgraded, so we'll reset it to the default value
+					removedSettings[key] = db[key]
+				elseif (settingLastModifiedVersion or 0) > version then
+					-- this setting is being downgraded, so we'll reset it to the default value
 					removedSettings[key] = db[key]
 				end
 			end
@@ -784,7 +791,8 @@ function private.Constructor(name, rawSettingsInfo)
 			if scope ~= "version" then
 				for namespace, namespaceInfo in pairs(scopeInfo) do
 					for settingKey, info in pairs(namespaceInfo) do
-						if info.lastModifiedVersion > db._version or version < db._version then
+						local settingLastModifiedVersion = db._lastModifiedVersion[strjoin(KEY_SEP, SCOPE_TYPES[scope], namespace, settingKey)]
+						if info.lastModifiedVersion > db._version or (not settingLastModifiedVersion and version < db._version) or (settingLastModifiedVersion or 0) > version then
 							-- this is either a new setting or was changed or this is a downgrade - either way set it to the default value
 							private.SetScopeDefaults(db, settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES[scope], ".+", namespace, settingKey))
 						end
@@ -799,6 +807,13 @@ function private.Constructor(name, rawSettingsInfo)
 		end
 		db._version = version
 	end
+
+	-- populate the new lastModifiedVersion info
+	wipe(db._lastModifiedVersion)
+	for k, v in pairs(newLastModifiedVersion) do
+		db._lastModifiedVersion[k] = v
+	end
+	TempTable.Release(newLastModifiedVersion)
 
 	-- make the db table protected
 	setmetatable(db, PROTECTED_TABLE_MT)
@@ -1234,6 +1249,7 @@ function private.ValidateDB(db)
 	if #db > 0 then return end
 	if type(db._version) ~= "number" then return end
 	if type(db._hash) ~= "number" then return end
+	if db._lastModifiedVersion ~= nil and type(db._lastModifiedVersion) ~= "table" then return end
 	if type(db._scopeKeys) ~= "table" then return end
 	for scopeType, keys in pairs(db._scopeKeys) do
 		if not SCOPE_TYPES[scopeType] then return end

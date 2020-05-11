@@ -6,6 +6,7 @@
 ## Title: ItemRack
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
 
+## X-Curse-Project-ID: 340903
 
 ItemRack.lua
 ItemRack.xml
@@ -14,4 +15,3 @@ ItemRackButtons.xml
 ItemRackEquip.lua
 ItemRackQueue.lua
 ItemRackEvents.lua
-

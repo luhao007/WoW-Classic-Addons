@@ -251,16 +251,16 @@ class Manager(object):
             files = ['lib.xml', '{}.xml'.format(lib), '{}.toc'.format(lib)]
             for f in files:
                 if os.path.exists(root / lib / f):
-                    s = '{}{}'.format(
-                        '<Script file="' if f.endswith('.toc') else '',
-                        embed
-                    )
+                    def exclude(l):
+                        if f.endswith('.toc'):
+                            return any(l.startswith(s)for s in embeds)
+                        else:
+                            return any('file="{}'.format(s) in l
+                                       for s in embeds)
 
                     process_file(
                         root / lib / f,
-                        lambda lines: [l for l in lines
-                                       if not any(l.strip().startswith(s)
-                                                  for embed in embeds)]
+                        lambda lines: [l for l in lines if not exclude(l)]
                     )
 
     ##########################

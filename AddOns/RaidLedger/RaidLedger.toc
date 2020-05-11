@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Boshi Lian(farmer1992@gmail.com)
-## Version: v1.7.1
+## Version: v1.8.1
 ## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## Title: Raid Ledger
@@ -20,4 +20,5 @@ db.lua
 options.lua
 gui.lua
 
+trade.lua
 cli.lua

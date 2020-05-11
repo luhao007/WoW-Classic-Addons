@@ -1,7 +1,7 @@
 --[[
     This file is part of Decursive.
 
-    Decursive (v 2.7.6.7) add-on for World of Warcraft UI
+    Decursive (v 2.7.7) add-on for World of Warcraft UI
     Copyright (C) 2006-2019 John Wellesz (Decursive AT 2072productions.com) ( http://www.2072productions.com/to/decursive.php )
 
     Decursive is free software: you can redistribute it and/or modify
@@ -81,7 +81,7 @@ T._LoadedFiles["koKR.lua"] = false;
 local L = LibStub("AceLocale-3.0"):NewLocale("Decursive", "koKR");
 
 if not L then
-    T._LoadedFiles["koKR.lua"] = "2.7.6.7";
+    T._LoadedFiles["koKR.lua"] = "2.7.7";
     return;
 end;
 
@@ -211,9 +211,9 @@ L["OPT_ADD_A_CUSTOM_SPELL"] = "사용자정의 주문 / 아이템 추가"
 L["OPT_ADD_A_CUSTOM_SPELL_DESC"] = "여기에 주문 또는 사용 가능한 아이템을 끌어다 놓습니다. 그것의 이름, 숫자 ID를 직접 쓰거나 쉬프트-클릭을 사용할 수도 있습니다."
 L["OPT_ADDDEBUFF"] = "사용자정의 피해 추가"
 L["OPT_ADDDEBUFF_DESC"] = "이 목록에 새로운 피해 추가"
-L["OPT_ADDDEBUFF_USAGE"] = "<디버프명>"
-L["OPT_ADDDEBUFFFHIST"] = "최근의 디버프 추가"
-L["OPT_ADDDEBUFFFHIST_DESC"] = "예전에 사용된 디버프를 추가합니다."
+L["OPT_ADDDEBUFF_USAGE"] = "<피해 주문ID> (WoWHead.com에서 주문ID를 찾을 수 있습니다.)"
+L["OPT_ADDDEBUFFFHIST"] = "최근 해제한 피해 추가"
+L["OPT_ADDDEBUFFFHIST_DESC"] = "최근에 해제한 피해의 기록을 사용하여 피해를 추가합니다."
 L["OPT_ADVDISP"] = "고급 표시 설정"
 L["OPT_ADVDISP_DESC"] = "각 MUF 사이의 공간을 설정하기 위해 테두리와 중앙의 투명도를 별도로 설정할 수 있습니다."
 L["OPT_AFFLICTEDBYSKIPPED"] = "%s|1이;가; %s|1으로;로; 피해를 입으면 예외 처리합니다."
@@ -326,6 +326,7 @@ Decursive 바를 움직여 이 목록을 이동할 수 있습니다. (/DCRSHOW�
 L["OPT_ENABLEDEBUG"] = "디버깅 사용"
 L["OPT_ENABLEDEBUG_DESC"] = "디버깅 출력 사용"
 L["OPT_ENABLEDECURSIVE"] = "Decursive 사용"
+L["OPT_FILTERED_DEBUFF_RENAMED"] = "주문ID %d의 필터링된 피해 \"%s\"|1이;가; 자동으로 \"%s\"|1으로;로; 이름이 변경되었습니다."
 L["OPT_FILTEROUTCLASSES_FOR_X"] = "%q|1은;는; 전투 중 지정된 클래스에서 무시됩니다."
 L["OPT_GENERAL"] = "기본 설정"
 L["OPT_GROWDIRECTION"] = "MUF 표시 반전"
@@ -344,6 +345,7 @@ L["OPT_INPUT_SPELL_BAD_INPUT_ALREADY_HERE"] = "주문이 이미 나열됨!"
 L["OPT_INPUT_SPELL_BAD_INPUT_DEFAULT_SPELL"] = "Decursive가 이 주문을 이미 관리함. 특별한 순위 추가는 해당 ID 또는 주문을 쉬프트-클릭으로 입력하세요."
 L["OPT_INPUT_SPELL_BAD_INPUT_ID"] = "주문ID가 올바르지 않음!"
 L["OPT_INPUT_SPELL_BAD_INPUT_NOT_SPELL"] = "마법책에서 주문을 찾을 수 없음!"
+L["OPT_ISNOTVALID_SPELLID"] = "유효한 주문ID가 아닙니다."
 L["OPT_LIVELIST"] = "실시간 목록"
 L["OPT_LIVELIST_DESC"] = [=[이것은 ""Decursive" 바 아래에 피해받은 유닛의 목록과 관련한 설정입니다.
 
@@ -425,10 +427,11 @@ L["OPT_RESTPROFILECONF"] = [=[정말로 '(%s) %s'
 초기화할까요?]=]
 L["OPT_REVERSE_LIVELIST_DESC"] = "실시간 목록을 아래에서 위로 채웁니다."
 L["OPT_SCANLENGTH_DESC"] = "각 탐색의 시간 간격을 지정합니다."
+L["OPT_SETAFFTYPECOLOR_DESC"] = "\"%s\" 피해 유형의 색상을 설정하십시오. (작은 유닛프레임의 툴팁과 실시간 목록에 나타남)"
 L["OPT_SHOW_STEALTH_STATUS"] = "은신 상태 보기"
-L["OPT_SHOW_STEALTH_STATUS_DESC"] = "플레이어가 은신중이면, 그 MUF는 특정한 색상을 갖게 될 것임"
+L["OPT_SHOW_STEALTH_STATUS_DESC"] = "플레이어가 은신중이면, 그 작은 유닛프레임은 특정한 색상 발현함"
 L["OPT_SHOWBORDER"] = "직업 색상 테두리 표시"
-L["OPT_SHOWBORDER_DESC"] = "MUF에 유닛의 직업에 따른 색상을 테두리로 표시합니다."
+L["OPT_SHOWBORDER_DESC"] = "작은 유닛프레임에 유닛의 직업에 따른 색상을 테두리로 표시합니다."
 L["OPT_SHOWHELP"] = "도움말 표시"
 L["OPT_SHOWHELP_DESC"] = "작은 유닛 프레임에 마우스를 올리면 정보 툴팁을 표시합니다."
 L["OPT_SHOWMFS"] = "작은 유닛 프레임(MUF) 표시"
@@ -436,6 +439,9 @@ L["OPT_SHOWMFS_DESC"] = "클릭으로 해제하려면 반드시 활성화 되어
 L["OPT_SHOWMINIMAPICON"] = "미니맵 아이콘"
 L["OPT_SHOWMINIMAPICON_DESC"] = "미니맵 아이콘을 표시합니다."
 L["OPT_SHOWTOOLTIP_DESC"] = "실시간 목록과 작은 유닛 프레임에 디버프에 대한 자세한 툴팁을 표시합니다."
+L["OPT_SPELL_DESCRIPTION_LOADING"] = "설명을 불러오는중... 나중에 다시 시도하세요."
+L["OPT_SPELL_DESCRIPTION_UNAVAILABLE"] = "설명을 사용할 수 없음"
+L["OPT_SPELLID_MISSING_READD"] = "이 메시지 대신 적절한 설명을 보려면 주문ID를 사용하여 이 피해를 다시 추가해야 합니다."
 L["OPT_STICKTORIGHT"] = "MUF창 우측 정렬"
 L["OPT_STICKTORIGHT_DESC"] = "MUF창은 오른쪽에서 왼쪽으로 생기며 동작은 자동적으로 이루어질 것입니다."
 L["OPT_TESTLAYOUT"] = "레이아웃 테스트"
@@ -447,7 +453,7 @@ L["OPT_TIE_LIVELIST_DESC"] = "실시간 목록을 아래에서 위로 생성합�
 L["OPT_TIECENTERANDBORDER"] = "가운데와 테두리의 투명도"
 L["OPT_TIECENTERANDBORDER_OPT"] = "체크 시 테두리의 투명도가 가운데 투명도의 절반이 됩니다."
 L["OPT_TIEXYSPACING"] = "수평/수직 간격"
-L["OPT_TIEXYSPACING_DESC"] = "MUF의 수평과 수직 간격이 같아 집니다."
+L["OPT_TIEXYSPACING_DESC"] = "작은 유닛프레임의 수평과 수직 간격이 같아 집니다."
 L["OPT_UNITPERLINES"] = "한 줄에 표시할 유닛의 갯수"
 L["OPT_UNITPERLINES_DESC"] = "한 줄에 표시할 작은 유닛프레임의 최대 갯수를 지정합니다."
 L["OPT_USERDEBUFF"] = "해당 디버프는 Decursive의 기본 디버프가 아닙니다."
@@ -495,4 +501,4 @@ L["UNSTABLERELEASE"] = "비안정화판 배포"
 
 
 
-T._LoadedFiles["koKR.lua"] = "2.7.6.7";
+T._LoadedFiles["koKR.lua"] = "2.7.7";

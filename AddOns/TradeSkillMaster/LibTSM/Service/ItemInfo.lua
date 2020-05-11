@@ -164,8 +164,8 @@ ItemInfo:OnSettingsLoad(function()
 		private.settings.vendorItems[itemString] = private.settings.vendorItems[itemString] or cost
 	end
 
-	local names = TSMItemInfoDB.names and String.SafeSplit(TSMItemInfoDB.names, SEP_CHAR) or {}
-	local itemStrings = TSMItemInfoDB.itemStrings and String.SafeSplit(TSMItemInfoDB.itemStrings, SEP_CHAR) or {}
+	local names = private.LoadLongString(TSMItemInfoDB.names)
+	local itemStrings = private.LoadLongString(TSMItemInfoDB.itemStrings)
 	assert(#itemStrings == #names)
 	local numItemsLoaded = #names
 	Log.Info("Imported %d items worth of data", numItemsLoaded)
@@ -350,8 +350,8 @@ ItemInfo:OnModuleUnload(function()
 			dataParts[i] = nil
 		end
 	end
-	TSMItemInfoDB.names = #names > 0 and table.concat(names, SEP_CHAR) or nil
-	TSMItemInfoDB.itemStrings = #itemStrings > 0 and table.concat(itemStrings, SEP_CHAR) or nil
+	TSMItemInfoDB.names = private.StoreLongString(names)
+	TSMItemInfoDB.itemStrings = private.StoreLongString(itemStrings)
 	TSMItemInfoDB.data = table.concat(dataParts)
 
 	if #TSMItemInfoDB.data % RECORD_DATA_LENGTH_CHARS ~= 0 then
@@ -1207,5 +1207,35 @@ end
 function private.DoInfoChangedCallbacks(itemString)
 	for _, callback in ipairs(private.infoChangeCallbacks) do
 		callback(itemString)
+	end
+end
+
+function private.LoadLongString(value)
+	local result = {}
+	if type(value) == "string" then
+		String.SafeSplit(value, SEP_CHAR, result)
+	elseif type(value) == "table" then
+		for _, part in ipairs(value) do
+			String.SafeSplit(part, SEP_CHAR, result)
+		end
+	else
+		assert(value == nil)
+	end
+	return result
+end
+
+function private.StoreLongString(values)
+	assert(type(values) == "table")
+	-- store no more than 1000 values per string
+	if #values == 0 then
+		return nil
+	elseif #values <= 1000 then
+		return table.concat(values, SEP_CHAR)
+	else
+		local result = {}
+		for i = 1, #values, 1000 do
+			tinsert(result, table.concat(values, SEP_CHAR, i, min(i + 1000 - 1, #values)))
+		end
+		return result
 	end
 end

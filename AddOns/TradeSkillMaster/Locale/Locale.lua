@@ -6587,8 +6587,7 @@ L["Missing operator between sets of parenthesis"] = "Missing operator between se
 L["Modifiers:"] = "Modificateurs:"
 --[[Translation missing --]]
 L["Money Frame Open"] = "Money Frame Open"
---[[Translation missing --]]
-L["Money Transfer"] = "Money Transfer"
+L["Money Transfer"] = "Transfert d'argent"
 --[[Translation missing --]]
 L["Most Profitable Item:"] = "Most Profitable Item:"
 L["MOVE"] = "DEPLACER"
@@ -6641,8 +6640,7 @@ L["Not enough items in bags."] = "Pas assez d'objets dans les sacs."
 L["NOT OPEN"] = "FERMÉ"
 L["Not Scanned"] = "Non scanné"
 L["Nothing to move."] = "Rien à déplacer."
---[[Translation missing --]]
-L["NPC"] = "NPC"
+L["NPC"] = "PNJ"
 L["Number Owned"] = "Nombre possédé"
 --[[Translation missing --]]
 L["of"] = "of"
@@ -6654,12 +6652,10 @@ L["Only show craftable"] = "Only show craftable"
 L["Only show items with disenchant value above custom price"] = "Only show items with disenchant value above custom price"
 L["OPEN"] = "OUVERT"
 L["OPEN ALL MAIL"] = "TOUT OUVRIR"
---[[Translation missing --]]
-L["Open Mail"] = "Open Mail"
+L["Open Mail"] = "Ouvrir le courrier"
 --[[Translation missing --]]
 L["Open Mail Complete Sound"] = "Open Mail Complete Sound"
---[[Translation missing --]]
-L["Open Task List"] = "Open Task List"
+L["Open Task List"] = "Ouvrir Liste des Tâches"
 L["Operation"] = "Opération"
 L["Operations"] = "Opérations"
 L["Other Character"] = "Autre personnage"
@@ -6674,8 +6670,8 @@ L["Override parent operations"] = "Override parent operations"
 L["Parent Items"] = "Parent Items"
 L["Past 7 Days"] = "7 derniers jours"
 L["Past Day"] = "Dernières 24 heures"
-L["Past Month"] = "Derniers 30 jours"
-L["Past Year"] = "Derniers 12 mois"
+L["Past Month"] = "30 derniers jours"
+L["Past Year"] = "12 derniers mois"
 L["Paste string here"] = "Coller du texte ici"
 L["Paste your import string in the field below and then press 'IMPORT'. You can import everything from item lists (comma delineated please) to whole group & operation structures."] = "Collez votre formule d'importation (import string) dans le champ ci-dessous et cliquez sur 'IMPORTER'. Vous pouvez importer tout ce que vous voulez depuis des listes d'objets (séparées par des virgules svp) à des groupes entiers et structures d'opérations."
 L["Per Item"] = "Par objet"
@@ -6738,8 +6734,7 @@ L["Profile changed to '%s'."] = "Profile changed to '%s'."
 L["Profiles"] = "Profils"
 L["PROFIT"] = "BENEFICE"
 L["Profit"] = "Bénéfice"
---[[Translation missing --]]
-L["Prospect Value"] = "Prospect Value"
+L["Prospect Value"] = "Valeur de Prospection"
 L["PURCHASE DATA"] = "DONNÉES D'ACHAT"
 L["Purchased (Min/Avg/Max Price)"] = "Acheté (Prix Min/Moyen/Max)"
 L["Purchased (Total Price)"] = "Acheté (Prix total)"
@@ -6748,8 +6743,7 @@ L["Purchases"] = "Achats"
 L["Purchasing Auction"] = "Purchasing Auction"
 --[[Translation missing --]]
 L["Qty"] = "Qty"
---[[Translation missing --]]
-L["Quantity Bought:"] = "Quantity Bought:"
+L["Quantity Bought:"] = "Quantité Achetée"
 L["Quantity Sold:"] = "quantité vendue :"
 L["Quantity to move:"] = "Quantité à déplacer :"
 L["Quest Added"] = "Quête ajoutée"
@@ -6758,10 +6752,9 @@ L["Quest Completed"] = "Quête terminée"
 L["Quest Objectives Complete"] = "Quest Objectives Complete"
 --[[Translation missing --]]
 L["QUEUE"] = "QUEUE"
---[[Translation missing --]]
-L["Quick Sell Options"] = "Quick Sell Options"
-L["Quickly mail all excess disenchantable items to a character"] = "Envoie facilement tout objet désenchantable au personnage de votre choix."
-L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Envoie facilement tout montant d'Or (limité à un montant restant minimum) au personnage de votre choix."
+L["Quick Sell Options"] = "Options de Vente Rapide"
+L["Quickly mail all excess disenchantable items to a character"] = "Envoie tout objet désenchantable au personnage de votre choix."
+L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Envoie tout montant d'Or (limité à un montant restant minimum) à un personnage."
 L["Raid Warning"] = "Alerte de Raid"
 L["Read More"] = "Lire plus"
 --[[Translation missing --]]
@@ -6844,7 +6837,6 @@ L["RESTORE BAGS"] = "RESTORE BAGS"
 L["Resume Scan"] = "Resume Scan"
 --[[Translation missing --]]
 L["Retrying %d auction(s) which failed."] = "Retrying %d auction(s) which failed."
---[[Translation missing --]]
 L["Revenue"] = "Revenue"
 --[[Translation missing --]]
 L["Round normal price"] = "Round normal price"
@@ -6910,8 +6902,7 @@ L["Selected Groups"] = "Groupes sélectionnés"
 L["Selected Operations"] = "Opérations sélectionnées"
 L["Sell"] = "Vendre"
 L["SELL ALL"] = "Tout vendre"
---[[Translation missing --]]
-L["SELL BOES"] = "SELL BOES"
+L["SELL BOES"] = "VENDRE LQE"
 --[[Translation missing --]]
 L["SELL GROUPS"] = "SELL GROUPS"
 L["Sell Options"] = "Options de vente"
@@ -7006,7 +6997,6 @@ L["SKIP"] = "PASSER"
 L["Skip Import confirmation?"] = "Passer la confirmation d'import ?"
 L["Skipped: No assigned operation"] = "Passé : Aucune opération assignée"
 L["Slash Commands:"] = "Commandes Slash:"
---[[Translation missing --]]
 L["Sniper"] = "Sniper"
 L["Sniper 'BUYOUT' Button"] = "Bouton 'RACHAT' du sniper"
 L["Sniper Options"] = "Options du sniper"
@@ -7104,8 +7094,7 @@ L["This item will be added to the queue when you restock its group. If this isn'
 L["This looks like an exported operation and not a custom price."] = "This looks like an exported operation and not a custom price."
 --[[Translation missing --]]
 L["This will copy the settings from '%s' into your currently-active one."] = "This will copy the settings from '%s' into your currently-active one."
---[[Translation missing --]]
-L["This will permanently delete the '%s' profile."] = "This will permanently delete the '%s' profile."
+L["This will permanently delete the '%s' profile."] = "Cela supprimera définitivement le profil '%s'."
 --[[Translation missing --]]
 L["This will reset all groups and operations (if not stored globally) to be wiped from this profile."] = "This will reset all groups and operations (if not stored globally) to be wiped from this profile."
 L["Time"] = "Temps"
@@ -7123,7 +7112,7 @@ L["Top Buyers:"] = "Top acheteurs:"
 L["Top Item:"] = "Meilleur objet :"
 L["Top Sellers:"] = "Top vendeurs :"
 L["Total"] = "Total"
-L["Total Gold"] = "Pièces d'Or total :"
+L["Total Gold"] = "Pièces d'Or"
 L["Total Gold Collected: %s"] = "Pièces d'Or collectées : %s"
 L["Total Gold Earned:"] = "Total de pièces d'Or gagnées :"
 L["Total Gold Spent:"] = "Total de pièces d'Or dépensées :"
@@ -7208,8 +7197,7 @@ L["Vendor Sell Price"] = "Prix de vente au marchant"
 L["Vendoring 'SELL ALL' Button"] = "Vendoring 'SELL ALL' Button"
 --[[Translation missing --]]
 L["View ignored items in the Destroying options."] = "View ignored items in the Destroying options."
---[[Translation missing --]]
-L["Warehousing"] = "Warehousing"
+L["Warehousing"] = "Entreposage"
 --[[Translation missing --]]
 L["Warehousing will move a max of %d of each item in this group keeping %d of each item back when bags > bank/gbank, %d of each item back when bank/gbank > bags."] = "Warehousing will move a max of %d of each item in this group keeping %d of each item back when bags > bank/gbank, %d of each item back when bank/gbank > bags."
 --[[Translation missing --]]

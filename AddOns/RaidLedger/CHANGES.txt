@@ -1,22 +1,28 @@
-lightweight tag accf81188cee12e301b0314bd81534428796ed9b v1.7.1
+lightweight tag fdc8f8593e5558b1b92d596a409ce29dd6fc3e96 v1.8.1
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Fri May 8 01:21:23 2020 -0700
+Date:	Mon May 11 02:58:29 2020 -0700
 
-commit accf81188cee12e301b0314bd81534428796ed9b
+commit fdc8f8593e5558b1b92d596a409ce29dd6fc3e96
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri May 8 01:21:23 2020 -0700
+Date:   Mon May 11 02:58:29 2020 -0700
 
-    more to report
+    ra opt on bf
 
-commit 40b5ec73202d1ffec1b293a520c8eb3809918538
+commit 0f5cec5a3990c4f3d9540ebbc3574e921f852166
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Fri May 8 00:38:39 2020 -0700
+Date:   Mon May 11 02:47:44 2020 -0700
 
-    better ui with expand arrow
+    better popuo
 
-commit 7b9b2efc6d222d2d3cb2ca2ee7da56da9e7811e7
+commit 2c2497f5c5c20fd8b143af52e44b693c513c195e
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Thu May 7 23:15:51 2020 -0700
+Date:   Sat May 9 02:19:42 2020 -0700
 
-    dup fool proof
+    optimze split editbox
+
+commit 371e3bc67fbe4f5a17978015dd36b6a318fc2cd2
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Sat May 9 01:57:18 2020 -0700
+
+    fix name case when autocomplete
 

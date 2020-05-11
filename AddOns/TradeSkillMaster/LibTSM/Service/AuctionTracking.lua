@@ -48,6 +48,7 @@ local SORT_ORDER = not TSM.IsWowClassic() and {
 	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
 	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
 }
+local AUCTIONABLE_WOW_TOKEN_ITEM_ID = 122270
 
 
 
@@ -328,38 +329,43 @@ function private.AuctionOwnedListUpdateDelayed()
 	local expire = math.huge
 	for i = #private.indexUpdates.list, 1, -1 do
 		local index = private.indexUpdates.list[i]
-		local auctionId, link, name, texture, stackSize, quality, minBid, buyout, bid, highBidder, saleStatus, duration = private.GetOwnedAuctionInfo(index)
-		name = name or ItemInfo.GetName(link)
-		texture = texture or ItemInfo.GetTexture(link)
-		quality = quality or ItemInfo.GetQuality(link)
-		if link and name and texture and quality then
-			assert(saleStatus == 0 or saleStatus == 1)
-			highBidder = highBidder or ""
-			local itemString = ItemString.Get(link)
-			local currentBid = highBidder ~= "" and bid or minBid
-			if saleStatus == 0 then
-				if TSM.IsWowClassic() then
-					if duration == 1 then -- 30 min
-						expire = min(expire, time() + 0.5 * 60 * 60)
-					elseif duration == 2 then -- 2 hours
-						expire = min(expire, time() + 2 * 60 * 60)
-					elseif duration == 3 then -- 12 hours
-						expire = min(expire, time() + 12 * 60 * 60)
-					end
-				else
-					duration = time() + duration
-					expire = min(expire, duration)
-				end
-				local baseItemString = ItemString.GetBaseFast(itemString)
-				private.settings.auctionQuantity[baseItemString] = (private.settings.auctionQuantity[baseItemString] or 0) + stackSize
-				local hintInfo = strjoin(SALE_HINT_SEP, ItemInfo.GetName(link), itemString, stackSize, buyout)
-				private.settings.auctionSaleHints[hintInfo] = time()
-			else
-				duration = time() + duration
-			end
+		local auctionId, link, name, texture, stackSize, quality, minBid, buyout, bid, highBidder, saleStatus, duration, shouldIgnore = private.GetOwnedAuctionInfo(index)
+		if shouldIgnore then
 			private.indexUpdates.pending[index] = nil
 			tremove(private.indexUpdates.list, i)
-			private.indexDB:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus, auctionId)
+		else
+			name = name or ItemInfo.GetName(link)
+			texture = texture or ItemInfo.GetTexture(link)
+			quality = quality or ItemInfo.GetQuality(link)
+			if link and name and texture and quality then
+				assert(saleStatus == 0 or saleStatus == 1)
+				highBidder = highBidder or ""
+				local itemString = ItemString.Get(link)
+				local currentBid = highBidder ~= "" and bid or minBid
+				if saleStatus == 0 then
+					if TSM.IsWowClassic() then
+						if duration == 1 then -- 30 min
+							expire = min(expire, time() + 0.5 * 60 * 60)
+						elseif duration == 2 then -- 2 hours
+							expire = min(expire, time() + 2 * 60 * 60)
+						elseif duration == 3 then -- 12 hours
+							expire = min(expire, time() + 12 * 60 * 60)
+						end
+					else
+						duration = time() + duration
+						expire = min(expire, duration)
+					end
+					local baseItemString = ItemString.GetBaseFast(itemString)
+					private.settings.auctionQuantity[baseItemString] = (private.settings.auctionQuantity[baseItemString] or 0) + stackSize
+					local hintInfo = strjoin(SALE_HINT_SEP, ItemInfo.GetName(link), itemString, stackSize, buyout)
+					private.settings.auctionSaleHints[hintInfo] = time()
+				else
+					duration = time() + duration
+				end
+				private.indexUpdates.pending[index] = nil
+				tremove(private.indexUpdates.list, i)
+				private.indexDB:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus, auctionId)
+			end
 		end
 	end
 	private.RebuildQuantityDB()
@@ -418,6 +424,10 @@ function private.GetOwnedAuctionInfo(index)
 		return index, link, name, texture, stackSize, quality, minBid, buyout, bid, highBidder, saleStatus, duration
 	else
 		local info = C_AuctionHouse.GetOwnedAuctionInfo(index)
+		if info.itemKey.itemID == AUCTIONABLE_WOW_TOKEN_ITEM_ID then
+			-- this is a token, so just ignore it
+			return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true
+		end
 		local link = info and info.itemLink
 		if not link then
 			return

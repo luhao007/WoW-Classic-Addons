@@ -652,9 +652,9 @@ function NWB:receivedData(data, sender, distribution)
 		--There's a lot of ugly shit in this function trying to quick fix timer bugs for this layered stuff...
 		for layer, vv in NWB:pairsByKeys(data.layers) do
 			--Temp fix, this can be removed soon.
-			if (vv["rendTimer"] and vv["rendTimer"] == 0 and vv["onyTimer"] and vv["onyTimer"] == 0
-					 and vv["nefTimer"] and vv["nefTimer"] == 0 and vv["onyNpcDied"] and vv["onyNpcDied"] == 0
-					  and vv["nefNpcDied"] and vv["nefNpcDied"] == 0) then
+			if ((not vv["rendTimer"] or vv["rendTimer"] == 0) and (not vv["onyTimer"] or vv["onyTimer"] == 0)
+					 and (not vv["nefTimer"] or vv["nefTimer"] == 0) and (not vv["onyNpcDied"] or vv["onyNpcDied"] == 0)
+					  and (not vv["nefNpcDied"] or vv["nefNpcDied"] == 0)) then
 				--Do nothing if all timers are 0, this is to fix a bug in last version with layerMaps causing old layer data
 				--to bounce back and forth between users, making it so layers with no timers keep being created after server
 				--restart and won't disappear.
@@ -784,7 +784,7 @@ function NWB:receivedData(data, sender, distribution)
 													skip = true;
 												end
 											end
-											if (not skip) then
+											if (NWB:validateZoneID(zoneID, layer, mapID) and not skip) then
 												NWB.data.layers[layer].layerMap[zoneID] = mapID;
 											end
 										end
@@ -2956,6 +2956,9 @@ function NWB:startFlash()
 end
 
 function NWB:playSound(sound, type)
+	if (NWB.db.global.disableAllSounds) then
+		return;
+	end
 	if (IsInInstance() and NWB.db.global.soundsDisableInInstances) then
 		return;
 	end
@@ -2973,7 +2976,7 @@ function NWB:playSound(sound, type)
 			return;
 		end
 	end
-	if (not NWB.db.global.disableAllSounds and NWB.db.global[sound] and NWB.db.global[sound] ~= "None") then
+	if (NWB.db.global[sound] and NWB.db.global[sound] ~= "None") then
 		if (sound == "soundsRendDrop" and NWB.db.global.soundsRendDrop == "NWB - Rend Voice") then
 			PlaySoundFile("Interface\\AddOns\\NovaWorldBuffs\\Media\\RendDropped.ogg", "Master");
 		elseif (sound == "soundsOnyDrop" and NWB.db.global.soundsOnyDrop == "NWB - Ony Voice") then
@@ -5935,12 +5938,7 @@ function NWB:mapCurrentLayer(unit)
 					return;
 				end
 			end
-			if (NWB.layerMapWhitelist[zone]) then
-				if (zoneID > 10000) then
-					--Azshara (128144) I don't know where tf a zoneid this high came from, but it was recorded.
-					--Maybe a parsing error with the guid?
-					return;
-				end
+			if (NWB.layerMapWhitelist[zone] and NWB:validateZoneID(zoneID, NWB.lastKnownLayerMapID, zone)) then
 				--If zone is not mapped yet since server restart then add it.
 				NWB:debug("mapped new zone to layer id", NWB.lastKnownLayerMapID, "zoneid:", zoneID, "zone:", zone);
 				NWB.data.layers[NWB.lastKnownLayerMapID].layerMap[zoneID] = zone;
@@ -5951,6 +5949,29 @@ function NWB:mapCurrentLayer(unit)
 		end
 	end
 	NWB:recalcMinimapLayerFrame();
+end
+
+function NWB:validateZoneID(zoneID, layerID, mapID)
+	local blackList = {
+	};
+	if (zoneID > 10000) then
+		--Azshara (128144) I don't know where tf a zoneid this high came from, but it was recorded.
+		--Maybe a parsing error with the guid?
+		--Edit same number recorded again in Azshara after data reset (same week though).
+		--Some kinda subzone there with same mapid? Seen this in a few different zones now.
+		--Blasted Lands (814) Feralas (966) Mulgore (12138) Durotar (101136)
+		return;
+	end
+	if (layerID) then
+		for k, v in pairs(NWB.data.layers[layerID].layerMap) do
+			if (mapID and mapID == v) then
+				--If we already have a zoneid with this mapid then don't overwrite it.
+				--NWB:debug("mapid already known");
+				return;
+			end
+		end
+	end
+	return true;
 end
 
 function NWB:resetLayerMaps()
