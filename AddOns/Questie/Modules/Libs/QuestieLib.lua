@@ -338,7 +338,7 @@ end
 local cachedTitle = nil
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo() -- todo: better place
-    return 5, 10, 2
+    return 5, 10, 3
 end
 --    if (not cachedTitle) then
 --        local name, title, _, _, reason = GetAddOnInfo("Questie")

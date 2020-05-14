@@ -768,7 +768,7 @@ function private.Constructor(name, rawSettingsInfo)
 			-- ignore metadata (keys starting with "_")
 			if strsub(key, 1, 1) ~= "_" then
 				local scopeTypeShort, namespace, settingKey = strmatch(key, "^(.+)"..KEY_SEP..".+"..KEY_SEP.."(.+)"..KEY_SEP.."(.+)$")
-				local settingLastModifiedVersion = db._lastModifiedVersion[strjoin(KEY_SEP, scopeTypeShort, namespace, settingKey)]
+				local settingLastModifiedVersion = scopeTypeShort and db._lastModifiedVersion[strjoin(KEY_SEP, scopeTypeShort, namespace, settingKey)]
 				local scopeType = scopeTypeShort and private.ScopeReverseLookup(scopeTypeShort)
 				local info = settingKey and settingsInfo[scopeType] and settingsInfo[scopeType][namespace] and settingsInfo[scopeType][namespace][settingKey]
 				if not info then
