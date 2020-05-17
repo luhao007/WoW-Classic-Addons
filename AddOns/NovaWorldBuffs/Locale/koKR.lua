@@ -54,17 +54,17 @@ L["Revel in his rallying cry"] = "모두 함께 함성을 질러 승리를 축�
 --Alliance Onyxia buff NPC.
 L["Major Mattingly"] = "상사 매팅글리";
 --Alliance Onyxia buff NPC first yell string (part of his first yell msg before before buff).
---L["history has been made"] = "";
+L["history has been made"] = "역사가 이루어졌노라";
 --Alliance Onyxia buff NPC second yell string (part of his second yell msg before before buff).
---L["Onyxia, hangs from the arches"] = "";
+L["Onyxia, hangs from the arches"] = "오닉시아의 목이 잘려 홍예문에 걸려 있다";
  
  
 --Alliance Nefarian buff NPC.
 L["Field Marshal Afrasiabi"] = "야전사령관 아프라샤비";
 --Alliance Nefarian buff NPC first yell string (part of his first yell msg before before buff).
---L["the Lord of Blackrock is slain"] = "";
+L["the Lord of Blackrock is slain"] = "검은바위부족의 군주가 쓰려졌다";
 --Alliance Nefarian buff NPC second yell string (part of his second yell msg before before buff).
---L["Revel in the rallying cry"] = "";
+L["Revel in the rallying cry"] = "단결을 향한 외침을 즐겨라";
  
 ---===========----
 ---NPC's killed---
@@ -78,7 +78,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "오닉시아 NPC (룬탁) 가 %s 전에 �
 L["NefarianNpcKilledHordeWithTimer"] = "네파리안 NPC (사울팽) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "오닉시아 NPC (매팅글리) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
 L["NefarianNpcKilledAllianceWithTimer"] = "네파리안 NPC (아프라샤비) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
-L["anyNpcKilledAllianceWithTimer"] = "NPC 가 %s 전에 죽었다."; --Map timers tooltip msg.
+L["anyNpcKilledWithTimer"] = "NPC 가 %s 전에 죽었다."; --Map timers tooltip msg.
  
  
 ---==============---

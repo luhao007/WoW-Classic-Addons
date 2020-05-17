@@ -75,7 +75,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "Onyxia NPC (Runthak) was killed %s ago no 
 L["NefarianNpcKilledHordeWithTimer"] = "Nefarian NPC (Saurfang) was killed %s ago no buff recorded since.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Onyxia NPC (Mattingly) was killed %s ago no buff recorded since.";
 L["NefarianNpcKilledAllianceWithTimer"] = "Nefarian NPC (Afrasiabi) was killed %s ago no buff recorded since.";
-L["anyNpcKilledAllianceWithTimer"] = "NPC was killed %s ago"; --Map timers tooltip msg.
+L["anyNpcKilledWithTimer"] = "NPC was killed %s ago"; --Map timers tooltip msg.
 
 
 ---==============---

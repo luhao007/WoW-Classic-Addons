@@ -79,7 +79,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "Le PNJ d'Onyxia (Runthak) a été tué il 
 L["NefarianNpcKilledHordeWithTimer"] = "Le PNJ de Nefarian (Saurfang) a été tué il y a %s, pas de buff enregistré depuis";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Le PNJ d'Onyxia (Mattingly) a été tué il y a %s, pas de buff enregistré depuis";
 L["NefarianNpcKilledAllianceWithTimer"] = "Le PNJ de Nefarian (Afrasiabi) a été tué il y a %s, pas de buff enregistré depuis";
-L["anyNpcKilledAllianceWithTimer"] = "Le PNJ a été tué il y a %s";
+L["anyNpcKilledWithTimer"] = "Le PNJ a été tué il y a %s";
 
 ---==============---
 ---Darkmoon Faire---

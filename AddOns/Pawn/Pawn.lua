@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0325
+PawnVersion = 2.0326
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.11
@@ -370,12 +370,14 @@ function PawnInitialize()
 	
 	-- EquipCompare compatibility
 	if ComparisonTooltip1 then
-		VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetHyperlinkCompareItem", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetHyperlinkCompareItem", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end)
-		VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetHyperlinkCompareItem", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetHyperlinkCompareItem", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end)
-		VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetInventoryItem", function(self, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetInventoryItem", ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end) -- EquipCompare with CharactersViewer
-		VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetInventoryItem", function(self, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetInventoryItem", ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end) -- EquipCompare with CharactersViewer
-		VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetHyperlink", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetHyperlink", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end) -- EquipCompare with Armory
-		VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetHyperlink", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetHyperlink", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end) -- EquipCompare with Armory
+		if ComparisonTooltip1.SetHyperlinkCompareItem then VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetHyperlinkCompareItem", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetHyperlinkCompareItem", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end) end
+		if ComparisonTooltip1.SetInventoryItem then VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetInventoryItem", function(self, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetInventoryItem", ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end) end -- EquipCompare with CharactersViewer
+		if ComparisonTooltip1.SetHyperlink then VgerCore.HookInsecureFunction(ComparisonTooltip1, "SetHyperlink", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip1", "SetHyperlink", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip1, true) end) end -- EquipCompare with Armory
+	end
+	if ComparisonTooltip2 then
+		if ComparisonTooltip2.SetHyperlinkCompareItem then VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetHyperlinkCompareItem", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetHyperlinkCompareItem", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end) end
+		if ComparisonTooltip2.SetInventoryItem then VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetInventoryItem", function(self, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetInventoryItem", ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end) end -- EquipCompare with CharactersViewer
+		if ComparisonTooltip2.SetHyperlink then VgerCore.HookInsecureFunction(ComparisonTooltip2, "SetHyperlink", function(self, ItemLink, ...) PawnUpdateTooltip("ComparisonTooltip2", "SetHyperlink", ItemLink, ...) PawnAttachIconToTooltip(ComparisonTooltip2, true) end) end -- EquipCompare with Armory
 	end
 	
 	-- Outfitter compatibility
@@ -1577,41 +1579,43 @@ function PawnAddValuesToTooltip(Tooltip, ItemValues, UpgradeInfo, BestItemFor, S
 			end
 			
 			-- Add info to the tooltip if this item is an upgrade or best-in-slot.
-			local ThisUpgrade, _
-			WasUpgradeOrBest = false
-			if UpgradeInfo then
-				for _, ThisUpgrade in pairs(UpgradeInfo) do
-					if ThisUpgrade.ScaleName == ScaleName then
-						if ThisUpgrade.PercentUpgrade >= PawnBigUpgradeThreshold then -- 100 = 10,000%
-							-- For particularly huge upgrades, don't say ridiculous things like "999999999% upgrade"
-							TooltipText = format(PawnLocal.TooltipBigUpgradeAnnotation, TooltipText, "")
-						elseif NeedsEnhancements then
-							TooltipText = format(PawnLocal.TooltipUpgradeNeedsEnhancementsAnnotation, TooltipText, 100 * ThisUpgrade.PercentUpgrade, "")
-						else
-							TooltipText = format(PawnLocal.TooltipUpgradeAnnotation, TooltipText, 100 * ThisUpgrade.PercentUpgrade, "")
+			if TooltipText then
+				local ThisUpgrade, _
+				WasUpgradeOrBest = false
+				if UpgradeInfo then
+					for _, ThisUpgrade in pairs(UpgradeInfo) do
+						if ThisUpgrade.ScaleName == ScaleName then
+							if ThisUpgrade.PercentUpgrade >= PawnBigUpgradeThreshold then -- 100 = 10,000%
+								-- For particularly huge upgrades, don't say ridiculous things like "999999999% upgrade"
+								TooltipText = format(PawnLocal.TooltipBigUpgradeAnnotation, TooltipText, "")
+							elseif NeedsEnhancements then
+								TooltipText = format(PawnLocal.TooltipUpgradeNeedsEnhancementsAnnotation, TooltipText, 100 * ThisUpgrade.PercentUpgrade, "")
+							else
+								TooltipText = format(PawnLocal.TooltipUpgradeAnnotation, TooltipText, 100 * ThisUpgrade.PercentUpgrade, "")
+							end
+							WasUpgradeOrBest = true
+							break
 						end
-						WasUpgradeOrBest = true
-						break
+					end
+				elseif BestItemFor and BestItemFor[ScaleName] then
+					WasUpgradeOrBest = true
+					if PawnCommon.ShowValuesForUpgradesOnly then
+						TooltipText = format(PawnLocal.TooltipBestAnnotationSimple, TooltipText)
+					else
+						TooltipText = format(PawnLocal.TooltipBestAnnotation, TooltipText)
+					end
+				elseif SecondBestItemFor and SecondBestItemFor[ScaleName] then
+					WasUpgradeOrBest = true
+					if PawnCommon.ShowValuesForUpgradesOnly then
+						TooltipText = format(PawnLocal.TooltipSecondBestAnnotationSimple, TooltipText)
+					else
+						TooltipText = format(PawnLocal.TooltipSecondBestAnnotation, TooltipText)
 					end
 				end
-			elseif BestItemFor and BestItemFor[ScaleName] then
-				WasUpgradeOrBest = true
-				if PawnCommon.ShowValuesForUpgradesOnly then
-					TooltipText = format(PawnLocal.TooltipBestAnnotationSimple, TooltipText)
-				else
-					TooltipText = format(PawnLocal.TooltipBestAnnotation, TooltipText)
-				end
-			elseif SecondBestItemFor and SecondBestItemFor[ScaleName] then
-				WasUpgradeOrBest = true
-				if PawnCommon.ShowValuesForUpgradesOnly then
-					TooltipText = format(PawnLocal.TooltipSecondBestAnnotationSimple, TooltipText)
-				else
-					TooltipText = format(PawnLocal.TooltipSecondBestAnnotation, TooltipText)
-				end
+				if not WasUpgradeOrBest and PawnCommon.ShowValuesForUpgradesOnly then TooltipText = nil end
+				
+				PawnAddTooltipLine(Tooltip, TooltipText)
 			end
-			if not WasUpgradeOrBest and PawnCommon.ShowValuesForUpgradesOnly then TooltipText = nil end
-			
-			PawnAddTooltipLine(Tooltip, TooltipText)
 		end
 	end
 

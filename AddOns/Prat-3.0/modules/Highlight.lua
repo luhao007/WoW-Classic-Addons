@@ -25,74 +25,61 @@
 -------------------------------------------------------------------------------
 
 Prat:AddModuleToLoad(function()
-    local function dbg(...) end
+  local function dbg(...) end
 
-    --[===[@debug@
-    function dbg(...) Prat:PrintLiteral(...) end
+  --[===[@debug@
+  function dbg(...) Prat:PrintLiteral(...) end
 
-    --@end-debug@]===]
+  --@end-debug@]===]
 
-    local PRAT_MODULE = Prat:RequestModuleName("Highlight")
+  local PRAT_MODULE = Prat:RequestModuleName("Highlight")
 
-    if PRAT_MODULE == nil then
-        return
-    end
+  if PRAT_MODULE == nil then
+    return
+  end
 
-    local module = Prat:NewModule(PRAT_MODULE)
+  local module = Prat:NewModule(PRAT_MODULE)
 
-    -- define localized strings
-    local PL = module.PL
-
-
-    Prat:SetModuleDefaults(module.name, {
-        profile = {
-            on = true,
-            player = true,
-            guild = true
-        }
-    })
-
-    --[===[@debug@
-    PL:AddLocale(PRAT_MODULE, "enUS", {
-        ["module_name"] = "Highlight",
-        ["module_desc"] = "Highlight your own name, and various other text",
-    } )
-    --@end-debug@]===]
-
-    -- These Localizations are auto-generated. To help with localization
-    -- please go to http://www.wowace.com/projects/prat-3-0/localization/
+  -- define localized strings
+  local PL = module.PL
 
 
-    --@non-debug@
-  do
-      local L
+  Prat:SetModuleDefaults(module.name, {
+    profile = {
+      on = true,
+      player = true,
+      guild = true
+    }
+  })
 
-  
-  L = {
+  --[===[@debug@
+  PL:AddLocale(PRAT_MODULE, "enUS", {
+    ["module_name"] = "Highlight",
+    ["module_desc"] = "Highlight your own name, and various other text",
+  })
+  --@end-debug@]===]
+
+  -- These Localizations are auto-generated. To help with localization
+  -- please go to http://www.wowace.com/projects/prat-3-0/localization/
+
+
+  --@non-debug@
+do
+    local L
+
+
+L = {
 	["Highlight"] = {
 		["module_desc"] = "Highlight your own name, and various other text",
 		["module_name"] = "Highlight",
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "enUS", L)
+PL:AddLocale(PRAT_MODULE, "enUS", L)
 
 
-  
-  L = {
-	["Highlight"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Highlight your own name, and various other text",
-		--[[Translation missing --]]
-		["module_name"] = "Highlight",
-	}
-}
 
-  PL:AddLocale(PRAT_MODULE, "itIT", L)
-
-
-  
-  L = {
+L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
@@ -101,11 +88,11 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "ptBR", L)
+PL:AddLocale(PRAT_MODULE, "itIT", L)
 
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
@@ -114,32 +101,45 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "frFR", L)
+PL:AddLocale(PRAT_MODULE, "ptBR", L)
 
 
-  
-  L = {
+
+L = {
+	["Highlight"] = {
+		--[[Translation missing --]]
+		["module_desc"] = "Highlight your own name, and various other text",
+		--[[Translation missing --]]
+		["module_name"] = "Highlight",
+	}
+}
+
+PL:AddLocale(PRAT_MODULE, "frFR", L)
+
+
+
+L = {
 	["Highlight"] = {
 		["module_desc"] = "Markiert dein eigener Name und verschiedene andere Texte",
 		["module_name"] = "Markierung",
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "deDE", L)
+PL:AddLocale(PRAT_MODULE, "deDE", L)
 
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		["module_desc"] = "사용자 이름 및  기타 텍스트 강조하기",
 		["module_name"] = "강조하기",
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "koKR",  L)
+PL:AddLocale(PRAT_MODULE, "koKR",  L)
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
@@ -148,10 +148,10 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "esMX",  L)
+PL:AddLocale(PRAT_MODULE, "esMX",  L)
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		["module_desc"] = "Выделите свое имя и другой текст",
 		["module_name"] = [=[Основной момент
@@ -159,20 +159,20 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "ruRU",  L)
+PL:AddLocale(PRAT_MODULE, "ruRU",  L)
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		["module_desc"] = "突出显示你自己的名字，以及各种其他文字",
 		["module_name"] = "高亮度突显",
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "zhCN",  L)
+PL:AddLocale(PRAT_MODULE, "zhCN",  L)
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
@@ -181,10 +181,10 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "esES",  L)
+PL:AddLocale(PRAT_MODULE, "esES",  L)
 
-  
-  L = {
+
+L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
@@ -193,38 +193,39 @@ Prat:AddModuleToLoad(function()
 	}
 }
 
-  PL:AddLocale(PRAT_MODULE, "zhTW",  L)
+PL:AddLocale(PRAT_MODULE, "zhTW",  L)
+end
+--@end-non-debug@
+
+
+
+  --    Prat:SetModuleOptions(module.name, {})
+
+
+  local CLR = Prat.CLR
+  local function guildBracket(text)
+    return CLR:Colorize("ffffff", text)
   end
-  --@end-non-debug@
+
+  local function guildText(text)
+    return CLR:Colorize("00ff00", text)
+  end
 
 
-
-    --    Prat:SetModuleOptions(module.name, {})
-
-
-    local CLR = Prat.CLR
-    local function guildBracket(text)
-        return CLR:Colorize("ffffff", text)
+  local function highlightPlayer(text)
+    if module.db.profile.player then
+      return CLR:Colorize("00ff00", text)
     end
-    local function guildText(text)
-        return CLR:Colorize("00ff00", text)
+  end
+
+  local function highlightGuild(text)
+    if module.db.profile.guild then
+      return Prat:RegisterMatch(guildBracket("<") .. guildText(text) .. guildBracket(">"))
     end
+  end
 
-
-    local function highlightPlayer(text)
-        if module.db.profile.player then
-            return CLR:Colorize("00ff00", text)
-        end
-    end
-
-    local function highlightGuild(text)
-        if module.db.profile.guild then
-            return Prat:RegisterMatch(guildBracket("<")..guildText(text)..guildBracket(">"))
-        end
-    end
-
-    Prat:SetModulePatterns(module, {
-        { pattern = Prat.GetNamePattern(UnitName("player")), matchfunc = highlightPlayer, priority = 100 },
-        { pattern = "<(..-)>", matchfunc = highlightGuild, priority = 100 },
-    })
+  Prat:SetModulePatterns(module, {
+    { pattern = Prat.GetNamePattern(UnitName("player")), matchfunc = highlightPlayer, priority = 100 },
+    { pattern = "<(..-)>", matchfunc = highlightGuild, priority = 100 },
+  })
 end)

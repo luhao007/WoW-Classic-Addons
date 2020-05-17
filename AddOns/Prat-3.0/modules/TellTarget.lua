@@ -259,7 +259,7 @@ L = {
   function module:GetDescription()
     return PL["Adds telltarget slash command (/tt)."]
   end
-  
+
   function module:OnTextChanged(editBox, ...)
     local command, msg = editBox:GetText():match("^(/%S+)%s(.*)$")
     if command == "/tt" or command == PL["/tt"] then

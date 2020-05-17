@@ -79,7 +79,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "奥妮克希亚 NPC (伦萨克) 已经被�
 L["NefarianNpcKilledHordeWithTimer"] = "奈法利安 NPC (萨鲁法尔大王)已经被击杀了 %s ， 之后没有任何buff记录。";
 L["onyxiaNpcKilledAllianceWithTimer"] = "奥妮克希亚 buff NPC (玛丁雷少校) 已经被击杀了 %s ， 之后没有任何buff记录。";
 L["NefarianNpcKilledAllianceWithTimer"] = "奈法利安 buff NPC (艾法希比元帅)已经被击杀了 %s ， 之后没有任何buff记录。";
-L["anyNpcKilledAllianceWithTimer"] = "NPC 在 %s 以前被击杀了"; --Map timers tooltip msg.
+L["anyNpcKilledWithTimer"] = "NPC 在 %s 以前被击杀了"; --Map timers tooltip msg.
 
 
 ---==============---

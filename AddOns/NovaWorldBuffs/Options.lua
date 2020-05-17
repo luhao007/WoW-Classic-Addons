@@ -343,7 +343,7 @@ NWB.options = {
 			name = "Guild Message Timer Warnings",
 			order = 50,
 		},
-		guild30 = {
+		--[[guild30 = {
 			type = "toggle",
 			name = "30 Minutes",
 			desc = "Send a message to guild chat when 30 minutes left.",
@@ -358,7 +358,7 @@ NWB.options = {
 			order = 52,
 			get = "getGuild15",
 			set = "setGuild15",
-		},
+		},]]
 		guild10 = {
 			type = "toggle",
 			name = "10 Minutes",
@@ -367,14 +367,14 @@ NWB.options = {
 			get = "getGuild10",
 			set = "setGuild10",
 		},
-		guild5 = {
+		--[[guild5 = {
 			type = "toggle",
 			name = "5 Minutes",
 			desc = "Send a message to guild chat when 5 minutes left.",
 			order = 54,
 			get = "getGuild5",
 			set = "setGuild5",
-		},
+		},]]
 		guild1 = {
 			type = "toggle",
 			name = "1 Minute",
@@ -383,14 +383,14 @@ NWB.options = {
 			get = "getGuild1",
 			set = "setGuild1",
 		},
-		guildReset = {
+		--[[guildReset = {
 			type = "toggle",
 			name = "Buff Has Reset",
 			desc = "Send a message to guild chat when a buff has reset and a new one can be dropped.",
 			order = 56,
 			get = "getGuild0",
 			set = "setGuild0",
-		},
+		},]]
 		guildNpcDialogue = {
 			type = "toggle",
 			name = "NPC Dialogue Started",
@@ -512,28 +512,50 @@ NWB.options = {
 			type = "toggle",
 			name = "Dragon Minimap",
 			desc = "Show Night Dragon's Breath icons on the mini map?.",
-			order = 71
+			order = 80
 			,
 			get = "getShowDragonMinimapMarkers",
 			set = "setShowDragonMinimapMarkers",
 		},
+		showExpiredTimers = {
+			type = "toggle",
+			name = "Show Expired Timers",
+			desc = "Show expired timers in Felwood? They will be shown in red text how long ago a timer expired, the default "
+					.. "time is 5 minutes (people say songflowers stay cleansed for 5 minutes after spawn?).",
+			order = 81,
+			get = "getShowExpiredTimers",
+			set = "setShowExpiredTimers",
+		},
+		expiredTimersDuration = {
+			type = "range",
+			name = "Expired Timers Duraton",
+			desc = "How long should Felwood timers show for after expiring on the world map?",
+			order = 82,
+			get = "getExpiredTimersDuration",
+			set = "setExpiredTimersDuration",
+			min = 1,
+			max = 60,
+			softMin = 1,
+			softMax = 60,
+			step = 1,
+		},
 		dmf = {
 			type = "header",
 			name = "Darkmoon Faire",
-			order = 80,
+			order = 90,
 		},
 		dmfDesc = {
 			type = "description",
 			name = "|CffDEDE42Your DMF damage buff cooldown will also show on the Darkmoon Faire map icon when you hover it, if you"
 					.. " have a cooldown and DMF is currently up.",
 			fontSize = "medium",
-			order = 81,
+			order = 91,
 		},
 		showDmfWb = {
 			type = "toggle",
 			name = "Show DMF with /wb",
 			desc = "Show DMF spawn timer together with /wb command?",
-			order = 82,
+			order = 92,
 			get = "getShowDmfWb",
 			set = "setShowDmfWb",
 		},
@@ -541,7 +563,7 @@ NWB.options = {
 			type = "toggle",
 			name = "DMF Spawn with /wb",
 			desc = "Show DMF spawn timer together with /wb command?",
-			order = 82,
+			order = 92,
 			get = "getShowDmfWb",
 			set = "setShowDmfWb",
 		},
@@ -550,7 +572,7 @@ NWB.options = {
 			name = "DMF Buff Cooldown /wb",
 			desc = "Show your DMF buff cooldown timer together with /wb command? Only shows when you are on an active cooldown"
 					.. " and DMF is currently up.",
-			order = 83,
+			order = 93,
 			get = "getShowDmfBuffWb",
 			set = "setShowDmfBuffWb",
 		},
@@ -558,7 +580,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Show Close To Spawn",
 			desc = "Show DMF spawn timer at logon and together with /wb command when it's within 12 hours of spawn or despawn.",
-			order = 83,
+			order = 93,
 			get = "getShowDmfWhenClose",
 			set = "setShowDmfWhenClose",
 		},]]
@@ -566,7 +588,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Show Always Logon",
 			desc = "Show DMF spawn timer at logon always, even if it's not close to spawn.",
-			order = 84,
+			order = 94,
 			get = "getShowDmfLogon",
 			set = "setShowDmfLogon",
 		},]]
@@ -575,27 +597,27 @@ NWB.options = {
 			name = "Show Map Marker",
 			desc = "Show DMF map marker with spawn timer and buff cooldown info in Mulgore and Elwynn Forest "
 					.. "world maps (whichever is next spawn). You can also type /dmf map to open the world map strait to this marker.",
-			order = 85,
+			order = 95,
 			get = "getShowDmfMap",
 			set = "setShowDmfMap",
 		},
 		guildChatFilter = {
 			type = "header",
 			name = "Guild Chat Filter",
-			order = 90,
+			order = 100,
 		},
 		guildChatFilterDesc = {
 			type = "description",
 			name = "|CffDEDE42This will block any guild msgs from this addon you choose so you don't see them. It will stop "
 					.. "you from seeing your own msgs and msgs from other addon users in guild chat.",
 			fontSize = "medium",
-			order = 91,
+			order = 101,
 		},
 		filterYells = {
 			type = "toggle",
 			name = "Filter Buff Warning",
 			desc = "Filter the msg when a buff is about to drop in a few seconds (Onyxia will drop in 14 seconds).",
-			order = 92,
+			order = 102,
 			get = "getFilterYells",
 			set = "setFilterYells",
 		},
@@ -603,7 +625,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter Buff Dropped",
 			desc = "Filter the msg when a buff has dropped (Rallying Cry of the Dragonslayer (Onyxia) has dropped).",
-			order = 93,
+			order = 103,
 			get = "getFilterDrops",
 			set = "setFilterDrops",
 		},
@@ -611,7 +633,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter Timer Msgs",
 			desc = "Filter timer msgs (Onyxia resets in 1 minute).",
-			order = 94,
+			order = 104,
 			get = "getFilterTimers",
 			set = "setFilterTimers",
 		},
@@ -619,7 +641,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter !wb command",
 			desc = "Filter the !wb and !dmf in guild chat when typed by players.",
-			order = 95,
+			order = 105,
 			get = "getFilterCommand",
 			set = "setFilterCommand",
 		},
@@ -627,7 +649,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter !wb reply",
 			desc = "Filter the reply msg with timers this addon does when !wb or !!dmf is used.",
-			order = 96,
+			order = 106,
 			get = "getFilterCommandResponse",
 			set = "setFilterCommandResponse",
 		},
@@ -635,7 +657,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter Songflowers",
 			desc = "Filter the msg when a songflower is picked.",
-			order = 97,
+			order = 107,
 			get = "getFilterSongflowers",
 			set = "setFilterSongflowers",
 		},
@@ -643,7 +665,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Filter NPC Killed",
 			desc = "Filter the msg when a buff hand in NPC is killed in your city.",
-			order = 98,
+			order = 108,
 			get = "getFilterNpcKilled",
 			set = "setFilterNpcKilled",
 		},
@@ -901,7 +923,8 @@ NWB.optionDefaults = {
 		soundsOnyDrop = "NWB - Zelda",
 		soundsNefDrop = "NWB - Zelda",
 		soundsZanDrop = "NWB - Zelda",
-		
+		showExpiredTimers = true,
+		expiredTimersDuration = 5,
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = true, --Enable features being tested on occasion.
@@ -1456,6 +1479,24 @@ end
 
 function NWB:getShowDragonMinimapMarkers(info)
 	return self.db.global.showDragonMinimapMarkers;
+end
+
+--Show expired timers.
+function NWB:setShowExpiredTimers(info, value)
+	self.db.global.showExpiredTimers = value;
+end
+
+function NWB:getShowExpiredTimers(info)
+	return self.db.global.showExpiredTimers;
+end
+
+--Expired timers duration.
+function NWB:setExpiredTimersDuration(info, value)
+	self.db.global.expiredTimersDuration = value;
+end
+
+function NWB:getExpiredTimersDuration(info)
+	return self.db.global.expiredTimersDuration;
 end
 
 --Show DMF at logon always.

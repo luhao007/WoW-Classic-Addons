@@ -60,7 +60,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "奧妮克西婭增益NPC (倫薩克) 已�
 L["NefarianNpcKilledHordeWithTimer"] = "奈法利安增益NPC (薩魯法爾) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
 L["onyxiaNpcKilledAllianceWithTimer"] = "奧妮克西婭增益NPC (瑪丁雷) 已經被殺了 %s 時間，之後沒有任何增益紀錄。";
 L["NefarianNpcKilledAllianceWithTimer"] = "奈法利安增益NPC (艾法希比) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
-L["anyNpcKilledAllianceWithTimer"] = "在 %s 以前被殺了"; --Map timers tooltip msg.
+L["anyNpcKilledWithTimer"] = "在 %s 以前被殺了"; --Map timers tooltip msg.
 
 ---========---
 ---Alliance---

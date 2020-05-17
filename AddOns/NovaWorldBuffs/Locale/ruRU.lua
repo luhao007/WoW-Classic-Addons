@@ -79,7 +79,7 @@ L["onyxiaNpcKilledHordeWithTimer"] = "Рунтак (баф Ониксии) бы�
 L["NefarianNpcKilledHordeWithTimer"] = "Саурфанг (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Маттингли (баф Ониксии) был убит %s назад. С тех пор баф не был зафиксирован.";
 L["NefarianNpcKilledAllianceWithTimer"] = "Афрасиаби (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
-L["anyNpcKilledAllianceWithTimer"] = "был убит %s назад"; --Map timers tooltip msg.
+L["anyNpcKilledWithTimer"] = "был убит %s назад"; --Map timers tooltip msg.
 
 ---==============---
 ---Darkmoon Faire---
