@@ -13,10 +13,11 @@ Prat:AddModuleToLoad(function()
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_name = "Search",
     module_desc = "Adds the ability to search the chatframes.",
-    module_info = "This module adds the /find and /findall commands to search the chat history\n\nUsage:\n\n /find <text> \n\n /findall <text>",
+    module_info = "This module adds the /find commands to search the chat history\n\nUsage:\n\n /find <text>",
     err_tooshort = "Search term is too short",
     err_notfound = "Not Found",
     find_results = "Find Results:",
+    bnet_removed = "<BNET REMOVED>",
   })
   --@end-debug@]===]
 
@@ -29,17 +30,16 @@ Prat:AddModuleToLoad(function()
 
 L = {
 	["Search"] = {
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "Not Found",
 		["err_tooshort"] = "Search term is too short",
 		["find_results"] = "Find Results:",
 		["module_desc"] = "Adds the ability to search the chatframes.",
-		["module_info"] = [=[This module adds the /find and /findall commands to search the chat history
+		["module_info"] = [=[This module adds the /find commands to search the chat history
 
 Usage:
 
- /find <text> 
-
- /findall <text>]=],
+ /find <text>]=],
 		["module_name"] = "Search",
 	}
 }
@@ -51,6 +51,8 @@ Usage:
 L = {
 	["Search"] = {
 		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
+		--[[Translation missing --]]
 		["err_notfound"] = "Not Found",
 		--[[Translation missing --]]
 		["err_tooshort"] = "Search term is too short",
@@ -58,13 +60,11 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find and /findall commands to search the chat history
+		["module_info"] = [=[This module adds the /find commands to search the chat history
 
 Usage:
 
- /find <text> 
-
- /findall <text>]=],
+ /find <text>]=],
 		--[[Translation missing --]]
 		["module_name"] = "Search",
 	}
@@ -76,6 +76,8 @@ Usage:
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "Nicht gefunden",
 		["err_tooshort"] = "Suchbegriff ist zu kurz",
 		["find_results"] = "Gefundene Ergebnisse:",
@@ -101,6 +103,8 @@ Suche]=],
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "찾을 수 없음",
 		["err_tooshort"] = "검색 구문이 너무 짧습니다",
 		["find_results"] = "검색 결과:",
@@ -123,6 +127,8 @@ L = {
 L = {
 	["Search"] = {
 		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
+		--[[Translation missing --]]
 		["err_notfound"] = "Not Found",
 		--[[Translation missing --]]
 		["err_tooshort"] = "Search term is too short",
@@ -131,13 +137,11 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find and /findall commands to search the chat history
+		["module_info"] = [=[This module adds the /find commands to search the chat history
 
 Usage:
 
- /find <text> 
-
- /findall <text>]=],
+ /find <text>]=],
 		--[[Translation missing --]]
 		["module_name"] = "Search",
 	}
@@ -149,6 +153,8 @@ Usage:
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "Не Найденно",
 		["err_tooshort"] = "Критерий поиска слишком короток",
 		["find_results"] = "Найти Результаты:",
@@ -170,6 +176,8 @@ L = {
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "没找到",
 		["err_tooshort"] = "搜索文字太短",
 		["find_results"] = "查找结果：",
@@ -191,6 +199,8 @@ L = {
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "No encontrado",
 		["err_tooshort"] = "Termino de búsqueda demasiado corto",
 		--[[Translation missing --]]
@@ -198,13 +208,11 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find and /findall commands to search the chat history
+		["module_info"] = [=[This module adds the /find commands to search the chat history
 
 Usage:
 
- /find <text> 
-
- /findall <text>]=],
+ /find <text>]=],
 		--[[Translation missing --]]
 		["module_name"] = "Search",
 	}
@@ -216,19 +224,19 @@ Usage:
 
 L = {
 	["Search"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["err_notfound"] = "找不到",
 		["err_tooshort"] = "尋找物品太短",
 		["find_results"] = "找到結果:",
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find and /findall commands to search the chat history
+		["module_info"] = [=[This module adds the /find commands to search the chat history
 
 Usage:
 
- /find <text> 
-
- /findall <text>]=],
+ /find <text>]=],
 		["module_name"] = "尋找",
 	}
 }
@@ -263,17 +271,13 @@ Usage:
 
 
   SLASH_FIND1 = "/find"
-  SlashCmdList["FIND"] = function(msg) module:Find(msg, false) end
+  SlashCmdList["FIND"] = function(msg) module:Find(msg, true) end
 
-  SLASH_FINDALL1 = "/findall"
-  SlashCmdList["FINDALL"] = function(msg) module:Find(msg, true) end
-
-  local MAX_SCRAPE_TIME = 30
   local foundlines = {}
   local scrapelines = {}
 
   local function out(frame, msg)
-    frame:print(frame, msg)
+    frame:AddMessage(msg)
   end
 
   function module:Find(word, all, frame)
@@ -289,7 +293,7 @@ Usage:
 
     if #word <= 1 then
       frame:ScrollToBottom()
-      out(frame, PL.err_tooshorL)
+      out(frame, PL.err_tooshort)
       return
     end
 
@@ -298,40 +302,19 @@ Usage:
       return
     end
 
-    local starttime = time()
-    local runtime = 0
-
-    if not all and self.lastsearch == word then
-      frame:PageUp()
-    end
-
-    if all then
-      frame:ScrollToBottom()
-    end
-
     self.lastsearch = word
 
-    repeat
-      self:ScrapeFrame(frame, nil, true)
+    self:ScrapeFrame(frame, nil, true)
 
-      for _, v in ipairs(scrapelines) do
-        if v.message:find(word) then
-          if all then
-            table.insert(foundlines, v)
-          else
-            return
-          end
+    for _, v in ipairs(scrapelines) do
+      if v.message and v.message:find(word) then
+        if all then
+          table.insert(foundlines, v)
+        else
+          return
         end
       end
-
-      frame:PageUp()
-      runtime = time() - starttime
-      if runtime >= MAX_SCRAPE_TIME then
-        out(frame, "Frame scraping timeout exceeded, results will be incomplete.")
-        break;
-      end
-
-    until frame:AtTop() or runtime >= MAX_SCRAPE_TIME
+    end
 
     self.lastsearch = nil
 
@@ -340,12 +323,11 @@ Usage:
     if all and #foundlines > 0 then
       out(frame, PL.find_results)
 
-      Prat.loading = true
+      Prat.loading = true -- prevent double timestamp
       for _, v in ipairs(foundlines) do
-        frame:AddMessage(v.message, v.r, v.g, v.b)
+        frame:AddMessage(v.message:gsub("|K.-|k", PL.bnet_removed), v.r, v.g, v.b)
       end
       Prat.loading = nil
-
     else
       out(frame, PL.err_notfound)
     end
@@ -356,10 +338,9 @@ Usage:
   function module:ScrapeFrame(frame)
     wipe(scrapelines)
 
-    for _, v in ipairs(frame.visibleLines) do
-      local msg = v.messageInfo
-      if msg then
-        table.insert(scrapelines, 1, msg)
+    for _, v in ipairs(frame.historyBuffer.elements) do
+      if v.message then
+        table.insert(scrapelines, v)
       end
     end
   end

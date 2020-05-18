@@ -43,6 +43,8 @@ Prat:AddModuleToLoad(function()
     ["randomclr_desc"] = "Use a random color for each server.",
     ["colon_name"] = "Show Colon",
     ["colon_desc"] = "Toggle adding colon after server replacement.",
+    ["hide_name"] = "Hide Server",
+    ["hide_desc"] = "Never display the server name",
     ["autoabbreviate_name"] = "Auto-abbreviate",
     ["autoabbreviate_desc"] = "Shorten the server name to 3 letters",
   })
@@ -61,6 +63,8 @@ L = {
 		["autoabbreviate_name"] = "Auto-abbreviate",
 		["colon_desc"] = "Toggle adding colon after server replacement.",
 		["colon_name"] = "Show Colon",
+		["hide_desc"] = "Never display the server name",
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "Use a random color for each server.",
 		["randomclr_name"] = "Random Colors",
 		["Server name abbreviation options."] = true,
@@ -81,6 +85,10 @@ L = {
 		["colon_desc"] = "Toggle adding colon after server replacement.",
 		--[[Translation missing --]]
 		["colon_name"] = "Show Colon",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "Utiliser une couleur aléatoire pour chaque serveur.",
 		["randomclr_name"] = "Couleurs aléatoires",
 		["Server name abbreviation options."] = "Options d'abréviation des noms de serveur.",
@@ -99,6 +107,10 @@ L = {
 		["autoabbreviate_name"] = "Auto-Abkürzen",
 		["colon_desc"] = "Hinzufügen eines Doppelpunkts nach dem Ersetzen des Servers ein-/ausschalten.",
 		["colon_name"] = "Doppelpunkt anzeigen",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "Eine zufällige Farbe für jeden Server verwenden.",
 		["randomclr_name"] = "Zufällige Farben",
 		["Server name abbreviation options."] = "Optionen für Abkürzungen von Server-Namen",
@@ -117,6 +129,10 @@ L = {
 		["autoabbreviate_name"] = "자동-줄임",
 		["colon_desc"] = "서버 대체 이름 뒤에 콜론 추가 기능을 끄거나 켭니다.",
 		["colon_name"] = "콜론 표시",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "서버 이름에 무작위 색상을 사용합니다.",
 		["randomclr_name"] = "무작위 색상",
 		["Server name abbreviation options."] = "서버 이름 줄이기 옵션입니다.",
@@ -140,6 +156,10 @@ L = {
 		--[[Translation missing --]]
 		["colon_name"] = "Show Colon",
 		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
+		--[[Translation missing --]]
 		["randomclr_desc"] = "Use a random color for each server.",
 		--[[Translation missing --]]
 		["randomclr_name"] = "Random Colors",
@@ -161,6 +181,10 @@ L = {
 		["autoabbreviate_name"] = "Авто-сокращение",
 		["colon_desc"] = "Вкл/Выкл добавление двоеточия после замещения сервера.",
 		["colon_name"] = "Показывать двоеточие",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "Использовать случайные цвета для всех серверов.",
 		["randomclr_name"] = "Случайные цвета",
 		["Server name abbreviation options."] = "Настройки сокращений имен серверов.",
@@ -179,6 +203,10 @@ L = {
 		["autoabbreviate_name"] = "自动缩写",
 		["colon_desc"] = "在服务器后添加冒号",
 		["colon_name"] = "显示冒号",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "为每个服务器使用随机颜色",
 		["randomclr_name"] = "随机颜色",
 		["Server name abbreviation options."] = "服务器名称缩写选项",
@@ -197,6 +225,10 @@ L = {
 		["autoabbreviate_name"] = "Auto-abreviar",
 		["colon_desc"] = "Alterna añadir dos puntos despues del servidor reemplazado.",
 		["colon_name"] = "Mostrar dos puntos",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "Utiliza un color aleatorio para cada servidor.",
 		["randomclr_name"] = "Colores Aleatorios",
 		["Server name abbreviation options."] = "Opciones de la abreviatura del nombre del servidor.",
@@ -217,6 +249,10 @@ L = {
 		--[[Translation missing --]]
 		["colon_desc"] = "Toggle adding colon after server replacement.",
 		["colon_name"] = "顯示冒號",
+		--[[Translation missing --]]
+		["hide_desc"] = "Never display the server name",
+		--[[Translation missing --]]
+		["hide_name"] = "Hide Server",
 		["randomclr_desc"] = "伺服器名稱使用隨機色彩",
 		["randomclr_name"] = "隨機色彩",
 		["Server name abbreviation options."] = "伺服器名稱縮寫選項",
@@ -238,6 +274,7 @@ L = {
       space = true,
       colon = true,
       autoabbreviate = true,
+      hide = false,
       chanSave = {},
       serveropts = {
         ["*"] = {
@@ -264,17 +301,24 @@ L = {
     type = "group",
     plugins = serverPlugins,
     args = {
+      hide = {
+        type = "toggle",
+        name = PL["hide_name"],
+        desc = PL["hide_desc"],
+      },
       autoabbreviate = {
         type = "toggle",
         name = PL["autoabbreviate_name"],
         desc = PL["autoabbreviate_desc"],
-        order = 250
+        order = 250,
+        disabled = function(info) return info.handler.db.profile.hide end,
       },
       randomclr = {
         type = "toggle",
         name = PL["randomclr_name"],
         desc = PL["randomclr_desc"],
-        order = 250
+        order = 250,
+        disabled = function(info) return info.handler.db.profile.hide end,
       }
     }
   })
@@ -363,6 +407,10 @@ L = {
       m.SERVER = opts.shortname
     end
 
+    if self.db.profile.hide then
+      m.SERVER = ""
+    end
+
     if m.SERVER and strlen(m.SERVER) > 0 then
       m.SERVER = self:FormatServer(m.SERVER, serverKey)
     end
@@ -384,7 +432,7 @@ L = {
     if server == nil or serverKey == nil then return end
 
     if self.db.profile.autoabbreviate then
-      server = server:match("[\192-\255]?%a?[\128-\191]*[\192-\255]?%a?[\128-\191]*[\192-\255]?%a?[\128-\191]*")
+      server = server:match("^([%a\192-\255]?[\128-\191]*[%a\192-\255]?[\128-\191]*[%a\192-\255]?[\128-\191]*)")
     end
 
     return Server(serverKey, server)

@@ -56,6 +56,10 @@ Prat:AddModuleToLoad(function()
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Highlight",
     ["module_desc"] = "Highlight your own name, and various other text",
+    ["player_name"] = "Highlight Self",
+    ["player_desc"] = "Highlight you own name in a special color",
+    ["guild_name"] = "Highlight Guilds",
+    ["guild_desc"] = "Highlight things which looks like guild names"
   })
   --@end-debug@]===]
 
@@ -70,8 +74,12 @@ do
 
 L = {
 	["Highlight"] = {
+		["guild_desc"] = "Highlight things which looks like guild names",
+		["guild_name"] = "Highlight Guilds",
 		["module_desc"] = "Highlight your own name, and various other text",
 		["module_name"] = "Highlight",
+		["player_desc"] = "Highlight you own name in a special color",
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -82,9 +90,17 @@ PL:AddLocale(PRAT_MODULE, "enUS", L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -95,9 +111,17 @@ PL:AddLocale(PRAT_MODULE, "itIT", L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -108,9 +132,17 @@ PL:AddLocale(PRAT_MODULE, "ptBR", L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -120,8 +152,16 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 
 L = {
 	["Highlight"] = {
+		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
 		["module_desc"] = "Markiert dein eigener Name und verschiedene andere Texte",
 		["module_name"] = "Markierung",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -131,8 +171,16 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 
 L = {
 	["Highlight"] = {
+		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
 		["module_desc"] = "사용자 이름 및  기타 텍스트 강조하기",
 		["module_name"] = "강조하기",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -142,9 +190,17 @@ PL:AddLocale(PRAT_MODULE, "koKR",  L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -153,9 +209,17 @@ PL:AddLocale(PRAT_MODULE, "esMX",  L)
 
 L = {
 	["Highlight"] = {
+		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
 		["module_desc"] = "Выделите свое имя и другой текст",
 		["module_name"] = [=[Основной момент
 ]=],
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -164,8 +228,16 @@ PL:AddLocale(PRAT_MODULE, "ruRU",  L)
 
 L = {
 	["Highlight"] = {
+		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
 		["module_desc"] = "突出显示你自己的名字，以及各种其他文字",
 		["module_name"] = "高亮度突显",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -175,9 +247,17 @@ PL:AddLocale(PRAT_MODULE, "zhCN",  L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -187,9 +267,17 @@ PL:AddLocale(PRAT_MODULE, "esES",  L)
 L = {
 	["Highlight"] = {
 		--[[Translation missing --]]
+		["guild_desc"] = "Highlight things which looks like guild names",
+		--[[Translation missing --]]
+		["guild_name"] = "Highlight Guilds",
+		--[[Translation missing --]]
 		["module_desc"] = "Highlight your own name, and various other text",
 		--[[Translation missing --]]
 		["module_name"] = "Highlight",
+		--[[Translation missing --]]
+		["player_desc"] = "Highlight you own name in a special color",
+		--[[Translation missing --]]
+		["player_name"] = "Highlight Self",
 	}
 }
 
@@ -197,10 +285,21 @@ PL:AddLocale(PRAT_MODULE, "zhTW",  L)
 end
 --@end-non-debug@
 
+  local toggleOption = {
+    name = function(info) return PL[info[#info] .. "_name"] end,
+    desc = function(info) return PL[info[#info] .. "_desc"] end,
+    type = "toggle",
+  }
 
-
-  --    Prat:SetModuleOptions(module.name, {})
-
+  Prat:SetModuleOptions(module.name, {
+    name = PL.module_name,
+    desc = PL.module_desc,
+    type = "group",
+    args = {
+      player = toggleOption,
+      guild = toggleOption
+    }
+  })
 
   local CLR = Prat.CLR
   local function guildBracket(text)
@@ -214,7 +313,7 @@ end
 
   local function highlightPlayer(text)
     if module.db.profile.player then
-      return CLR:Colorize("00ff00", text)
+      return Prat:RegisterMatch(CLR:Colorize("00ff00", text))
     end
   end
 
@@ -225,7 +324,7 @@ end
   end
 
   Prat:SetModulePatterns(module, {
-    { pattern = Prat.GetNamePattern(UnitName("player")), matchfunc = highlightPlayer, priority = 100 },
-    { pattern = "<(..-)>", matchfunc = highlightGuild, priority = 100 },
+    { pattern = Prat.GetNamePattern(UnitName("player")), matchfunc = highlightPlayer, priority = 47 },
+    { pattern = "<(..-)>", matchfunc = highlightGuild, priority = 49 },
   })
 end)

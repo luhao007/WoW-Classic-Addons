@@ -14,13 +14,12 @@ NWB.hasAddon = {};
 NWB.realm = GetRealmName();
 NWB.faction = UnitFactionGroup("player");
 NWB.loadTime = 0;
---Can limit new layers created here, Blizzard have stated only 2 layers per realm.
---I can set this to 2 so only the first 2 layers after restart show up as a last ditch fix if needed.
---It's not a good solution though because the old layers still exist in database after restarts until the timers expire.
 NWB.limitLayerCount = 99;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
 local Serializer = LibStub:GetLibrary("AceSerializer-3.0");
 local LibDeflate = LibStub:GetLibrary("LibDeflate");
+local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
+NWB.LDBIcon = LibStub("LibDBIcon-1.0");
 local version = GetAddOnMetadata("NovaWorldBuffs", "Version") or 9999;
 NWB.latestRemoteVersion = version;
 
@@ -54,6 +53,7 @@ function NWB:OnInitialize()
 	self:removeOldLayers();
 	self:ticker();
 	self:yellTicker();
+	self:createBroker();
 end
 
 --Set font used in fontstrings on frames.
@@ -221,6 +221,7 @@ function NWB:sendComm(distribution, string, target)
 end
 
 --Send full data.
+NWB.lastDataSent = 0;
 function NWB:sendData(distribution, target, prio)
 	if (not prio) then
 		prio = "NORMAL";
@@ -322,24 +323,24 @@ function NWB:createData(distribution)
 	end
 	if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
 		data['rendTimer'] = NWB.data.rendTimer;
-		data['rendTimerWho'] = NWB.data.rendTimerWho;
+		--data['rendTimerWho'] = NWB.data.rendTimerWho;
 		data['rendYell'] = NWB.data.rendYell or 0;
 		data['rendYell2'] = NWB.data.rendYell2 or 0;
-		data['rendSource'] = NWB.data.rendSource;
+		--data['rendSource'] = NWB.data.rendSource;
 	end
 	if (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
 		data['onyTimer'] = NWB.data.onyTimer;
-		data['onyTimerWho'] = NWB.data.onyTimerWho;
+		--data['onyTimerWho'] = NWB.data.onyTimerWho;
 		data['onyYell'] = NWB.data.onyYell or 0;
 		data['onyYell2'] = NWB.data.onyYell2 or 0;
-		data['onySource'] = NWB.data.onySource;
+		--data['onySource'] = NWB.data.onySource;
 	end
 	if (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
 		data['nefTimer'] = NWB.data.nefTimer;
-		data['nefTimerWho'] = NWB.data.nefTimerWho;
+		--data['nefTimerWho'] = NWB.data.nefTimerWho;
 		data['nefYell'] = NWB.data.nefYell or 0;
 		data['nefYell2'] = NWB.data.nefYell2 or 0;
-		data['nefSource'] = NWB.data.nefSource;
+		--data['nefSource'] = NWB.data.nefSource;
 	end
 	--[[if (NWB.data.zanTimer > (GetServerTime() - NWB.db.global.zanRespawnTime)) then
 		data['zanTimer'] = NWB.data.zanTimer;
@@ -1699,6 +1700,22 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 	end
 end
 
+--Future setting to allow guild masters to disable timer msgs in chat.
+NWB.guildMasterSetting = 0;
+function NWB:checkGuildMasterNote()
+	--1 = Timers and buff dropped msgs only.
+	--2 = !wb command only.
+	--3 = Songflowers only.
+	--4 = Timers and !wb (songflower picked still enabled).
+	--5 = All msgs.
+	local note = "";
+	
+	note = tolower(note);
+	if (string.find(tolower(note), "nwb5")) then
+		NWB.guildMasterSetting = 5;
+	end
+end
+
 --Guild chat msg event.
 local guildWbCmdCooldown, guildDmfCmdCooldown = 0, 0;
 function NWB:chatMsgGuild(...)
@@ -2014,13 +2031,17 @@ function NWB:combatLogEventUnfiltered(...)
 			if (expirationTime >= 3599.5 and (zone == 1454 or not NWB.isLayered) and unitType == "Creature") then
 				NWB:trackNewBuff(spellName, "rend");
 				NWB:playSound("soundsRendDrop", "rend");
-				if (NWB.isLayered and (not npcID or npcID ~= "4949")) then
+				if (NWB.isLayered and (not npcID or npcID ~= "4949") and NWB.faction ~= "Alliance") then
 					--Some parts on the edges of orgrimmar seem to give the buff from Herald instead of Thrall, even while on map 1454.
 					--This creates a false 3rd layer with the barrens zoneid, took way too long to figure this out...
 					NWB:debug("bad rend buff source on layered realm", sourceGUID);
 					return;
 				end
-				NWB:setRendBuff("self", UnitName("player"), zoneID, sourceGUID);
+				if (NWB.isLayered and NWB.faction == "Alliance") then
+					NWB:setRendBuff("self", UnitName("player"), zoneID, sourceGUID, true);
+				else
+					NWB:setRendBuff("self", UnitName("player"), zoneID, sourceGUID);
+				end
 			end
 		elseif (destName == UnitName("player") and spellName == L["Spirit of Zandalar"] and (GetServerTime() - lastZanBuffGained) > 1) then
 			--Zan buff has no sourceName or sourceGUID, not sure why.
@@ -2157,7 +2178,7 @@ function NWB:combatLogEventUnfiltered(...)
 end
 
 local rendLastSet, onyLastSet, nefLastSet, zanLastSet = 0, 0, 0, 0;
-function NWB:setRendBuff(source, sender, zoneID, GUID)
+function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 	--Check if this addon has already set a timer a few seconds before another addon's comm.
 	if (source ~= "self" and (GetServerTime() - NWB.data.rendTimer) < 10) then
 		return;
@@ -2172,15 +2193,33 @@ function NWB:setRendBuff(source, sender, zoneID, GUID)
 			count = count + 1;
 		end
 		if (count <= NWB.limitLayerCount) then
-			if (not NWB.data.layers[zoneID]) then
-				NWB:createNewLayer(zoneID, GUID);
-			end
-			if (NWB.data.layers[zoneID]) then
-				NWB.data.layers[zoneID].rendTimer = GetServerTime();
-				NWB.data.layers[zoneID].rendTimerWho = sender;
-				NWB.data.layers[zoneID].rendSource = source;
-				NWB.data.layers[zoneID].rendYell = NWB.data.rendYell;
-				NWB.data.layers[zoneID].rendYell2 = NWB.data.rendYell2;
+			if (isAllianceAndLayered) then
+				if (not NWB.data.layers[NWB.lastKnownLayerMapID]) then
+					NWB:print("Got rend buff but no layer ID was found.");
+					return;
+				elseif (NWB.lastKnownLayerMapID > 0) then
+					zoneID = NWB.lastKnownLayerMapID;
+					if (NWB.data.layers[zoneID]) then
+						NWB.data.layers[zoneID].rendTimer = GetServerTime();
+						NWB.data.layers[zoneID].rendTimerWho = sender;
+						NWB.data.layers[zoneID].rendSource = source;
+						NWB.data.layers[zoneID].rendYell = NWB.data.rendYell;
+						NWB.data.layers[zoneID].rendYell2 = NWB.data.rendYell2;
+					end
+				else
+					return;
+				end
+			else
+				if (not NWB.data.layers[zoneID]) then
+					NWB:createNewLayer(zoneID, GUID);
+				end
+				if (NWB.data.layers[zoneID]) then
+					NWB.data.layers[zoneID].rendTimer = GetServerTime();
+					NWB.data.layers[zoneID].rendTimerWho = sender;
+					NWB.data.layers[zoneID].rendSource = source;
+					NWB.data.layers[zoneID].rendYell = NWB.data.rendYell;
+					NWB.data.layers[zoneID].rendYell2 = NWB.data.rendYell2;
+				end
 			end
 		end
 	end
@@ -3275,15 +3314,7 @@ function SlashCmdList.NWBCMD(msg, editBox)
 		return;
 	end
 	if (msg == "options" or msg == "option" or msg == "config" or msg == "menu") then
-		--Opening the frame needs to be run twice to avoid a bug.
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
-		--Hack to fix the issue of interface options not opening to menus below the current scroll range.
-		--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
-		local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
-		if (min < max) then
-			InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
-		end
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+		NWB:openConfig();
 	elseif (msg ~= nil and msg ~= "") then
 		NWB:print(NWB:getShortBuffTimers(nil, arg), msg);
 	else
@@ -3292,6 +3323,18 @@ function SlashCmdList.NWBCMD(msg, editBox)
 			NWB:openLayerFrame();
 		end
 	end
+end
+
+function NWB:openConfig()
+	--Opening the frame needs to be run twice to avoid a bug.
+	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+	--Hack to fix the issue of interface options not opening to menus below the current scroll range.
+	--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
+	local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
+	if (min < max) then
+		InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
+	end
+	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
 end
 
 function NWB:resetTimerData()
@@ -3321,6 +3364,124 @@ function NWB:resetTimerData()
 	NWB.data.zanYell = 0;
 	NWB.data.zanYell2 = 0;
 	NWB:print("All timer data has been reset.");
+end
+
+--I do not know wtf I am doing with data broker stuff.
+--I'm not using any panel and this probably looks all wrong, seems to work though.
+local NWBLDB, doUpdateMinimapButton;
+function NWB:createBroker()
+	local data = {
+		type = "launcher",
+		label = "NWB",
+		text = "NovaWorldBuffs",
+		icon = "Interface\\Icons\\inv_misc_head_dragon_01",
+		OnClick = function(self, button)
+			if (button == "LeftButton" and IsShiftKeyDown()) then
+				if (WorldMapFrame and WorldMapFrame:IsShown()) then
+					WorldMapFrame:Hide();
+				else
+					WorldMapFrame:Show();
+					WorldMapFrame:SetMapID(1448);
+				end
+			elseif (button == "LeftButton") then
+				NWB:openLayerFrame();
+			elseif (button == "RightButton" and IsShiftKeyDown()) then
+				if (InterfaceOptionsFrame and InterfaceOptionsFrame:IsShown()) then
+					InterfaceOptionsFrame:Hide();
+				else
+					NWB:openConfig();
+				end
+			elseif (button == "RightButton") then
+				NWB:openBuffListFrame();
+			end
+		end,
+		OnLeave = function(self, button)
+			doUpdateMinimapButton = nil;
+		end,
+		OnTooltipShow = function(tooltip)
+			doUpdateMinimapButton = true;
+			NWB:updateMinimapButton(tooltip);
+		end,
+		OnEnter = function(self, button)
+			GameTooltip:SetOwner(self, "ANCHOR_NONE")
+			GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+			doUpdateMinimapButton = true;
+			NWB:updateMinimapButton(GameTooltip, true);
+			GameTooltip:Show()
+		end,
+	};
+	NWBLDB = LDB:NewDataObject("NWB", data);
+	NWB.LDBIcon:Register("NovaWorldBuffs", NWBLDB, NWB.db.global.minimapIcon);
+end
+
+function NWB:updateMinimapButton(tooltip, usingPanel)
+	local _, relativeTo = tooltip:GetPoint();
+	if (doUpdateMinimapButton and (usingPanel or relativeTo and relativeTo:GetName() == "LibDBIcon10_NovaWorldBuffs")) then
+		tooltip:ClearLines()
+		tooltip:AddLine("NovaWorldBuffs");
+		if (not NWB.isLayered) then
+			local msg = "";
+			if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
+				if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+					msg = L["rend"] .. ": " .. NWB:getTimeString(NWB.db.global.rendRespawnTime - (GetServerTime() - NWB.data.rendTimer), true) .. ".";
+					if (NWB.db.global.showTimeStamp) then
+						local timeStamp = NWB:getTimeFormat(NWB.data.rendTimer + NWB.db.global.rendRespawnTime);
+						msg = msg .. " (" .. timeStamp .. ")";
+					end
+				else
+					msg = L["rend"] .. ": " .. L["noCurrentTimer"] .. ".";
+				end
+				if ((not isLogon or NWB.db.global.logonRend) and not NWB.isLayered) then
+					tooltip:AddLine(NWB.chatColor .. msg);
+				end
+			end
+			if ((NWB.data.onyNpcDied > NWB.data.onyTimer) and
+					(NWB.data.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime))) then
+				if (NWB.faction == "Horde") then
+					msg = string.format(L["onyxiaNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
+				else
+					msg = string.format(L["onyxiaNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
+				end
+			elseif (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+				msg = L["onyxia"] .. ": " .. NWB:getTimeString(NWB.db.global.onyRespawnTime - (GetServerTime() - NWB.data.onyTimer), true) .. ".";
+				if (NWB.db.global.showTimeStamp) then
+					local timeStamp = NWB:getTimeFormat(NWB.data.onyTimer + NWB.db.global.onyRespawnTime);
+					msg = msg .. " (" .. timeStamp .. ")";
+				end
+			else
+				msg = L["onyxia"] .. ": " .. L["noCurrentTimer"] .. ".";
+			end
+			if ((not isLogon or NWB.db.global.logonOny) and not NWB.isLayered) then
+				tooltip:AddLine(NWB.chatColor .. msg);
+			end
+			if ((NWB.data.nefNpcDied > NWB.data.nefTimer) and
+					(NWB.data.nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime))) then
+				if (NWB.faction == "Horde") then
+					msg = string.format(L["nefarianNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
+				else
+					msg = string.format(L["nefarianNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
+				end
+			elseif (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+				msg = L["nefarian"] .. ": " .. NWB:getTimeString(NWB.db.global.nefRespawnTime - (GetServerTime() - NWB.data.nefTimer), true) .. ".";
+				if (NWB.db.global.showTimeStamp) then
+					local timeStamp = NWB:getTimeFormat(NWB.data.nefTimer + NWB.db.global.nefRespawnTime);
+					msg = msg .. " (" .. timeStamp .. ")";
+				end
+			else
+				msg = L["nefarian"] .. ": " .. L["noCurrentTimer"] .. ".";
+			end
+			if ((not isLogon or NWB.db.global.logonNef) and not NWB.isLayered) then
+				tooltip:AddLine(NWB.chatColor .. msg);
+			end
+		end
+		tooltip:AddLine("|cFF9CD6DELeft-Click|r Timers");
+		tooltip:AddLine("|cFF9CD6DERight-Click|r Buffs");
+		tooltip:AddLine("|cFF9CD6DEShift Left-Click|r Felwood Map");
+		tooltip:AddLine("|cFF9CD6DEShift Right-Click|r Config");
+		C_Timer.After(0.1, function()
+			NWB:updateMinimapButton(tooltip, usingPanel);
+		end)
+	end
 end
 
 ---===== Most of these are now disabled, only DBM is left =====---
@@ -3457,15 +3618,7 @@ function SlashCmdList.NWBSFCMD(msg, editBox)
 		return;
 	end
 	if (msg == "options" or msg == "option" or msg == "config" or msg == "menu") then
-		--Opening the frame needs to be run twice to avoid a bug.
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
-		--Hack to fix the issue of interface options not opening to menus below the current scroll range.
-		--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
-		local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
-		if (min < max) then
-			InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
-		end
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+		NWB:openConfig();
 		return;
 	end
 	local string = L["Songflower"] .. ":";
@@ -4727,15 +4880,7 @@ function SlashCmdList.NWBDMFCMD(msg, editBox)
 		return;
 	end
 	if (msg == "options" or msg == "option" or msg == "config" or msg == "menu") then
-		--Opening the frame needs to be run twice to avoid a bug.
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
-		--Hack to fix the issue of interface options not opening to menus below the current scroll range.
-		--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
-		local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
-		if (min < max) then
-			InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
-		end
-		InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+		NWB:openConfig();
 		return;
 	end
 	local output, zone, dmfFound;
@@ -5193,15 +5338,7 @@ NWBbuffListFrameConfButton:SetHeight(17);
 NWBbuffListFrameConfButton:SetText(L["Options"]);
 NWBbuffListFrameConfButton:SetNormalFontObject("GameFontNormalSmall");
 NWBbuffListFrameConfButton:SetScript("OnClick", function(self, arg)
-	--Opening the frame needs to be run twice to avoid a bug.
-	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
-	--Hack to fix the issue of interface options not opening to menus below the current scroll range.
-	--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
-	local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
-	if (min < max) then
-		InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
-	end
-	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+	NWB:openConfig();
 end)
 NWBbuffListFrameConfButton:SetScript("OnMouseDown", function(self, button)
 	if (button == "LeftButton" and not self:GetParent():GetParent().isMoving) then
@@ -5322,7 +5459,7 @@ function NWB:recalcBuffListFrame()
 	local foundChars;
 	for k, v in NWB:pairsByKeys(NWB.db.global) do --Iterate realms.
 		local msg = "";
-		if (type(v) == "table") then --The only tables in db.global are realm names.
+		if (type(v) == "table" and k ~= "minimapIcon") then --The only tables in db.global are realm names.
 			local realm = k;
 			for k, v in NWB:pairsByKeys(v) do --Iterate factions.
 				local msg2 = "";
@@ -5409,7 +5546,7 @@ end
 function NWB:resetBuffData()
 	for k, v in NWB:pairsByKeys(NWB.db.global) do --Iterate realms.
 		local msg = "";
-		if (type(v) == "table") then --The only tables in db.global are realm names.
+		if (type(v) == "table" and k ~= "minimapIcon") then --The only tables in db.global are realm names.
 			local realm = k;
 			for k, v in NWB:pairsByKeys(v) do --Iterate factions.
 				local f = k;
@@ -5543,15 +5680,7 @@ NWBlayerFrameConfButton:SetHeight(17);
 NWBlayerFrameConfButton:SetText(L["Options"]);
 NWBlayerFrameConfButton:SetNormalFontObject("GameFontNormalSmall");
 NWBlayerFrameConfButton:SetScript("OnClick", function(self, arg)
-	--Opening the frame needs to be run twice to avoid a bug.
-	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
-	--Hack to fix the issue of interface options not opening to menus below the current scroll range.
-	--This addon name starts with N and will always be closer to the middle so just scroll to the middle when opening.
-	local min, max = InterfaceOptionsFrameAddOnsListScrollBar:GetMinMaxValues();
-	if (min < max) then
-		InterfaceOptionsFrameAddOnsListScrollBar:SetValue(math.floor(max/2));
-	end
-	InterfaceOptionsFrame_OpenToCategory("NovaWorldBuffs");
+	NWB:openConfig();
 end)
 NWBlayerFrameConfButton:SetScript("OnMouseDown", function(self, button)
 	if (button == "LeftButton" and not self:GetParent():GetParent().isMoving) then
@@ -6122,8 +6251,8 @@ function NWB:mapCurrentLayer(unit)
 						end
 					end
 				end
-			--end
-		end
+			end
+		--end
 		if (not foundOldID or NWB.lastKnownLayerMapID < 1) then
 			NWB:debug("no known last layer");
 			return;
@@ -6191,7 +6320,7 @@ end
 function NWB:validateZoneID(zoneID, layerID, mapID)
 	local blackList = {
 	};
-	if (zoneID > 10000) then
+	if (tonumber(zoneID) and tonumber(zoneID) > 10000) then
 		--Azshara (128144) I don't know where tf a zoneid this high came from, but it was recorded.
 		--Maybe a parsing error with the guid?
 		--Edit same number recorded again in Azshara after data reset (same week though).
@@ -6448,33 +6577,35 @@ end
 function NWB:convertLayerToNonLayer()
 	print("|cFFFFFF00Looking for layered timers to convert.")
 	local found;
-	for k, v in NWB:pairsByKeys(NWB.data.layers) do
-		if (v.rendTimer and v.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
-			NWB.data.rendTimer = v.rendTimer;
-			NWB.data.rendYell = v.rendYell or 0;
-			print("|cFFFFFF00Found current Rend timer, converting.")
-			found = true;
+	if (NWB.data.layers) then
+		for k, v in NWB:pairsByKeys(NWB.data.layers) do
+			if (v.rendTimer and v.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+				NWB.data.rendTimer = v.rendTimer;
+				NWB.data.rendYell = v.rendYell or 0;
+				print("|cFFFFFF00Found current Rend timer, converting.")
+				found = true;
+			end
+			if (v.onyTimer and v.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+				NWB.data.onyTimer = v.onyTimer;
+				NWB.data.onyYell = v.onyYell or 0;
+				NWB.data.onyNpcDied = v.onyNpcDied or 0;
+				print("|cFFFFFF00Found current Onyxia timer, converting.")
+				found = true;
+			end
+			if (v.nefTimer and v.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+				NWB.data.nefTimer = v.nefTimer;
+				NWB.data.nefYell = v.nefYell or 0;
+				NWB.data.nefNpcDied = v.nefNpcDied or 0;
+				print("|cFFFFFF00Found current Nefarian timer, converting.")
+				found = true;
+			end
+			if (found) then
+				print("|cFFFFFF00Done.")
+			else
+				print("|cFFFFFF00Done, found no timers on old layer 1.")
+			end
+			return;
 		end
-		if (v.onyTimer and v.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
-			NWB.data.onyTimer = v.onyTimer;
-			NWB.data.onyYell = v.onyYell or 0;
-			NWB.data.onyNpcDied = v.onyNpcDied or 0;
-			print("|cFFFFFF00Found current Onyxia timer, converting.")
-			found = true;
-		end
-		if (v.nefTimer and v.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
-			NWB.data.nefTimer = v.nefTimer;
-			NWB.data.nefYell = v.nefYell or 0;
-			NWB.data.nefNpcDied = v.nefNpcDied or 0;
-			print("|cFFFFFF00Found current Nefarian timer, converting.")
-			found = true;
-		end
-		if (found) then
-			print("|cFFFFFF00Done.")
-		else
-			print("|cFFFFFF00Done, found no timers on old layer 1.")
-		end
-		return;
 	end
 end
 

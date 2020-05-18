@@ -3,7 +3,6 @@
 --------------------------------------
 
 --Only need layered realms here for now.
---Unfinished future stuff.
 NWB.usRealms = {
 	--["Arugal"] = true,
 	--["Benediction"] = true,

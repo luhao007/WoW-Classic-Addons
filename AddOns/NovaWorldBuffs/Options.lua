@@ -162,16 +162,24 @@ NWB.options = {
 			get = "getFlashMinimized",
 			set = "setFlashMinimized",
 		},
+		minimapButton = {
+			type = "toggle",
+			name = "Show Minimap Button",
+			desc = "Show the NWB button the minimap?",
+			order = 20,
+			get = "getMinimapButton",
+			set = "setMinimapButton",
+		},
 		logonHeader = {
 			type = "header",
 			name = "Logon Messages",
-			order = 20,
+			order = 23,
 		},
 		logonPrint = {
 			type = "toggle",
 			name = "Logon Timers",
 			desc = "Show timers in the chat window when you log on, you can disable all logon msgs with this setting.",
-			order = 21,
+			order = 24,
 			get = "getLogonPrint",
 			set = "setLogonPrint",
 		},
@@ -179,7 +187,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Rend",
 			desc = "Show Rend timer in the chat window when you log on.",
-			order = 22,
+			order = 25,
 			get = "getLogonRend",
 			set = "setLogonRend",
 		},
@@ -187,7 +195,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Onyxia",
 			desc = "Show Onyxia timer in the chat window when you log on.",
-			order = 23,
+			order = 26,
 			get = "getLogonOny",
 			set = "setLogonOny",
 		},
@@ -195,7 +203,7 @@ NWB.options = {
 			type = "toggle",
 			name = "Nefarian",
 			desc = "Show Nefarian timer in the chat window when you log on.",
-			order = 24,
+			order = 27,
 			get = "getLogonNef",
 			set = "setLogonNef",
 		},
@@ -203,7 +211,7 @@ NWB.options = {
 			type = "toggle",
 			name = "DMF Spawn",
 			desc = "Show Darkmoon Faire spawn time, this will only show when there is less than 6 hours left until spawn or despawn.",
-			order = 25,
+			order = 8,
 			get = "getLogonDmfSpawn",
 			set = "setLogonDmfSpawn",
 		},
@@ -211,7 +219,7 @@ NWB.options = {
 			type = "toggle",
 			name = "DMF Buff Coooldown",
 			desc = "Show Darkmoon Faire buff 5 hour cooldown, this will only show when you have an ative cooldown and when DMF is up.",
-			order = 26,
+			order = 29,
 			get = "getLogonDmfBuffCooldown",
 			set = "setLogonDmfBuffCooldown",
 		},
@@ -925,6 +933,8 @@ NWB.optionDefaults = {
 		soundsZanDrop = "NWB - Zelda",
 		showExpiredTimers = true,
 		expiredTimersDuration = 5,
+		minimapIcon = {["minimapPos"] = 165, ["hide"] = false},
+		minimapButton = true,
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = true, --Enable features being tested on occasion.
@@ -1146,13 +1156,29 @@ function NWB:getShowAllAlts(info)
 	return self.db.global.showAllAlts;
 end
 
---Show all alts in the buffs window.
+--Flash minimized.
 function NWB:setFlashMinimized(info, value)
 	self.db.global.flashMinimized = value;
 end
 
 function NWB:getFlashMinimized(info)
 	return self.db.global.flashMinimized;
+end
+
+--Minimap button
+function NWB:setMinimapButton(info, value)
+	self.db.global.minimapButton = value;
+	if (value) then
+		NWB.LDBIcon:Show("NovaWorldBuffs");
+		self.db.global.minimapIcon.hide = false;
+	else
+		NWB.LDBIcon:Hide("NovaWorldBuffs");
+		self.db.global.minimapIcon.hide = true;
+	end
+end
+
+function NWB:getMinimapButton(info)
+	return self.db.global.minimapButton;
 end
 
 --Chat 30 minute warning.

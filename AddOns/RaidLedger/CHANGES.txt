@@ -1,10 +1,10 @@
-lightweight tag a3403dc5a7c177ad20b45ce1fee67649dee87167 v1.8.2
+lightweight tag 867a092fb6b67b4c5db8233fae744d724a5b7955 v1.8.3
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Tue May 12 04:57:13 2020 -0700
+Date:	Sun May 17 03:56:06 2020 -0700
 
-commit a3403dc5a7c177ad20b45ce1fee67649dee87167
+commit 867a092fb6b67b4c5db8233fae744d724a5b7955
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Tue May 12 04:57:13 2020 -0700
+Date:   Sun May 17 03:56:06 2020 -0700
 
-    fix minimap icon pos
+    make sure not triggering add when chatbox active
 

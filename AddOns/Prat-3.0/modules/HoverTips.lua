@@ -195,7 +195,8 @@ end
     spell = true,
     quest = true,
     achievement = true,
-    currency = true
+    currency = true,
+    battlepet = true,
   }
 
   function module:OnEnable()
@@ -215,21 +216,27 @@ end
   end
 
   local showingTooltip = false
-  function module:OnHyperlinkEnter(f, link)
+  function module:OnHyperlinkEnter(f, link, text)
     local t = strmatch(link, "^(.-):")
     if linkTypes[t] then
-      showingTooltip = true
-      ShowUIPanel(GameTooltip)
-      GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
-      GameTooltip:SetHyperlink(link)
-      GameTooltip:Show()
+      if t == "battlepet" then
+        showingTooltip = BattlePetTooltip
+        GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+        BattlePetToolTip_ShowLink(text)
+      else
+        showingTooltip = GameTooltip
+        ShowUIPanel(GameTooltip)
+        GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+        GameTooltip:SetHyperlink(link)
+        GameTooltip:Show()
+      end
     end
   end
 
   function module:OnHyperlinkLeave(f, link)
     if showingTooltip then
+      showingTooltip:Hide()
       showingTooltip = false
-      GameTooltip:Hide()
     end
   end
 end)
