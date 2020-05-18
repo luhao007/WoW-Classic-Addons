@@ -683,7 +683,7 @@
 	</Addon>
 	<Addon name="GladiatorlosSA2">
 		<Title>角斗士助手</Title>
-		<Category>物品</Category>
+		<Category>PVP</Category>
 		<SubAddons>
 			<SubAddon name="GladiatorlosSA_zhCN">
 				<Title>夏一可语音包</Title>
@@ -693,7 +693,7 @@
 	<Addon name="Gladius">
 		<Title>竞技场助手</Title>
 		<Notes>在竞技场中显示敌人</Notes>
-		<Category>物品</Category>
+		<Category>PVP</Category>
 	</Addon>
 	<Addon name="Grail">
 		<Title>本地数据库</Title>
@@ -775,25 +775,6 @@
 			<SubAddon name="Grail-When">
 				<Title>完成时间</Title>
 				<Notes>帮助Grail记录各项任务，声望和成就的完成时间</Notes>
-			</SubAddon>
-		</SubAddons>
-	</Addon>
-	<Addon name="Grid2">
-		<Title>团队面板</Title>
-		<Category>界面</Category>
-		<SubAddons>
-			<SubAddon name="Grid2LDB">
-				<Title>库文件</Title>
-			</SubAddon>
-			<SubAddon name="Grid2Options">
-				<Title>设置</Title>
-			</SubAddon>
-			<SubAddon name="Grid2RaidDebuffs">
-				<Title>团队首领减益</Title>
-			</SubAddon>
-			<SubAddon name="Grid2RaidDebuffsOptions">
-				<Title>团队首领减益</Title>
-				<TitleExtra>设置</TitleExtra>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
@@ -883,11 +864,11 @@
 	</Addon>
 	<Addon name="honorspy">
 		<Title>荣誉间谍</Title>
-		<Category>战斗</Category>
+		<Category>PVP</Category>
 	</Addon>
 	<Addon name="HPetBattleAny">
 		<Title>宠物对战增强</Title>
-		<Category>战斗</Category>
+		<Category>收藏</Category>
 	</Addon>
 	<Addon name="ItemRack">
 		<Title>一键换装</Title>

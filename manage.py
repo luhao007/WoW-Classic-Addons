@@ -133,10 +133,12 @@ class Manager(object):
             '界面': 'A330C9',       # Dark Magenta - DH
             '副本': 'FF7D0A',       # Orange - Druid
             '战斗': 'C79C6E',       # Tan - Warrior
+            'PVP': '8787ED',        # Purple - Warlock
             '探索': '40C7EB',       # Light Blue - Mage
             '收藏': 'A9D271',       # Green - Hunter
+            '辅助': 'FFFFFF',       # White - Priest
         }
-        color = colors.get(cat, 'FFFFFF')       # Defaults to white
+        color = colors.get(cat, 'FFF569')   # Unknown defaults to Rogue Yellow
         parts.append('|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r'.format(color, cat))
 
         parts.append('|cFFFFFFFF{}|r'.format(title))
@@ -251,16 +253,16 @@ class Manager(object):
             files = ['lib.xml', '{}.xml'.format(lib), '{}.toc'.format(lib)]
             for f in files:
                 if os.path.exists(root / lib / f):
-                    def exclude(l):
-                        if f.endswith('.toc'):
-                            return any(l.startswith(s)for s in embeds)
-                        else:
-                            return any('file="{}'.format(s) in l
-                                       for s in embeds)
+                    s = '{}{}'.format(
+                        '<Script file="' if f.endswith('.toc') else '',
+                        embed
+                    )
 
                     process_file(
                         root / lib / f,
-                        lambda lines: [l for l in lines if not exclude(l)]
+                        lambda lines: [l for l in lines
+                                       if not any(l.strip().startswith(s)
+                                                  for embed in embeds)]
                     )
 
     ##########################
@@ -275,7 +277,7 @@ class Manager(object):
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'NovaWorldBuffs', 'Recount', 'TitanClassic']
+                       'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
@@ -442,20 +444,6 @@ class Manager(object):
                 (self.is_classic and
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
-
-    @retail_only
-    def handle_grid(self):
-        rm_tree('Addons/Grid2LDB')
-
-        self.remove_libraries_all('Grid2', 'Libs')
-
-        self.remove_libraries(
-            ['AceComm-3.0', 'AceConfig-3.0', 'AceGUI-3.0', 'AceHook-3.0',
-             'AceGUI-3.0-SharedMediaWidgets', 'AceSerializer-3.0',
-             'LibCompress'],
-            'Addons/Grid2Options/Libs',
-            'Addons/Grid2Options/Grid2Options.toc'
-        )
 
     @classic_only
     def handle_honorspy(self):

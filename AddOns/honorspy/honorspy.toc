@@ -6,7 +6,7 @@
 
 ## Title: HonorSpy
 ## Notes: Records PvP standings of all players
-## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF荣誉间谍|r |cFFFFE00Ahonorspy|r
+## Title-zhCN: |cFFFFE00A<|r|cFF8787EDPVP|r|cFFFFE00A>|r |cFFFFFFFF荣誉间谍|r |cFFFFE00Ahonorspy|r
 ## Notes-zhCN: PvP 荣誉监视榜,用于收集并监视服务器荣誉角色并排行
 
 ## X-Category: Battlegrounds/PvP
