@@ -1654,6 +1654,10 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 	if (not IsInGuild()) then
 		return;
 	end
+	--Disable guild msg if GM has it disabled in their public note.
+	if (NWB:checkGuildMasterSetting(type)) then
+		return;
+	end
 	GuildRoster();
 	local numTotalMembers = GetNumGuildMembers();
 	local onlineMembers = {};
@@ -1700,19 +1704,63 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 	end
 end
 
---Future setting to allow guild masters to disable timer msgs in chat.
-NWB.guildMasterSetting = 0;
-function NWB:checkGuildMasterNote()
-	--1 = Timers and buff dropped msgs only.
-	--2 = !wb command only.
-	--3 = Songflowers only.
-	--4 = Timers and !wb (songflower picked still enabled).
-	--5 = All msgs.
+--Setting to allow guild masters to disable msgs in chat.
+NWB.guildMasterSettings = {};
+function NWB:checkGuildMasterSetting(type)
+	if (NWB.db.global.disableAllGuildMsgs) then
+		return;
+	end
+	if (not IsInGuild()) then
+		return;
+	end
 	local note = "";
-	
-	note = tolower(note);
-	if (string.find(tolower(note), "nwb5")) then
-		NWB.guildMasterSetting = 5;
+	local name, rank, rankIndex;
+	local numTotalMembers = GetNumGuildMembers();
+	for i = 1, numTotalMembers do
+		name, rank, rankIndex, _, _, _, note = GetGuildRosterInfo(i);
+		if (rankIndex == 0) then
+			--Guild Master.
+			break;
+		end
+	end
+	local settings = {
+		--Disable certain guild msgs based on guild masters note.
+		["#nwb1"] = 1, --1 = Disable All msgs.
+		["#nwb2"] = 2, --2 = Disable timers msgs.
+		["#nwb3"] = 3, --3 = Disable buff dropped msgs.
+		["#nwb4"] = 4, --4 = Disable !wb command.
+		["#nwb5"] = 5, --5 = Disable Songflowers msgs.
+	}
+	local found;
+	NWB.guildMasterSettings = {};
+	for k, v in pairs(settings) do
+		if (note and string.find(string.lower(note), k)) then
+			NWB:debug("Guild master setting found:", k);
+			NWB.guildMasterSettings[v] = true;
+			if (v == 1) then
+				found = true;
+			elseif (v == 2) then
+				if (type == "guild30" or type == "guild15" or type == "guild10"
+					 or type == "guild5" or type == "guild1" or type == "guild0") then
+					found = true;
+				end
+			elseif (v == 3) then
+				if (type == "guildBuffDropped" or type == "guildNpcDialogue" or type == "guildZanDialogue") then
+					found = true;
+				end
+			elseif (v == 4) then
+				if (type == "guildCommand") then
+					found = true;
+				end
+			elseif (v == 5) then
+				if (type == "guildSongflower") then
+					found = true;
+				end
+			end
+		end
+	end
+	if (found) then
+		return true;
 	end
 end
 
@@ -2797,6 +2845,7 @@ f:RegisterEvent("CHAT_MSG_WHISPER");
 f:RegisterEvent("CHAT_MSG_BN_WHISPER");
 f:RegisterEvent("CHAT_MSG_SYSTEM");
 f:RegisterEvent("CHAT_MSG_ADDON");
+f:RegisterEvent("GUILD_ROSTER_UPDATE");
 local doLogon = true;
 f:SetScript("OnEvent", function(self, event, ...)
 	if (event == "PLAYER_LOGIN") then
@@ -2907,6 +2956,8 @@ f:SetScript("OnEvent", function(self, event, ...)
 				NWB.hasAddon[normalizedWho] = "0";
 			end
 		end
+	elseif (event == "GUILD_ROSTER_UPDATE") then
+		NWB:checkGuildMasterSetting("set");
 	end
 end)
 
@@ -4425,7 +4476,7 @@ function NWB:updateWorldbuffMarkers(type, layer)
 		end
 		local npcKilled;
 		if (type == "ony" or type == "nef") then
-			if (NWB.data.layers[layer][type .. "NpcDied"] and NWB.data.layers[layer][type .. "Timer"]
+			if (NWB.data.layers[layer] and NWB.data.layers[layer][type .. "NpcDied"] and NWB.data.layers[layer][type .. "Timer"]
 					and (NWB.data.layers[layer][type .. "NpcDied"] > NWB.data.layers[layer][type .. "Timer"])) then
 				local killedAgo = NWB:getTimeString(GetServerTime() - NWB.data.layers[layer][type .. "NpcDied"], true) 
 				local tooltipString = "|CffDEDE42" .. _G[type .. layer .. "NWBWorldMap"].name .. "\n"
@@ -4439,7 +4490,7 @@ function NWB:updateWorldbuffMarkers(type, layer)
 			end
 		end
 		local timeStringShort;
-		if (time > 0 and not npcKilled) then
+		if (NWB.data.layers[layer] and _G[type .. layer .. "NWBWorldMap"] and time > 0 and not npcKilled) then
 	    	local timeString = NWB:getTimeString(time, true);
 	    	timeStringShort = NWB:getTimeString(time, true, true);
 	    	local timeStamp = NWB:getTimeFormat(NWB.data.layers[layer][type .. "Timer"] + NWB.db.global[type .. "RespawnTime"]);
@@ -4453,7 +4504,7 @@ function NWB:updateWorldbuffMarkers(type, layer)
 	  		_G[type .. layer .. "NWBWorldMap"].tooltip.fs:SetText("|CffDEDE42" .. _G[type .. layer .. "NWBWorldMap"].name);
 	  	end
 		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
-		if (_G["nef" .. layer .. "NWBWorldMap"].noLayerFrame) then
+		if (_G["nef" .. layer .. "NWBWorldMap"] and _G["nef" .. layer .. "NWBWorldMap"].noLayerFrame) then
 			if (NWB.faction == "Horde" and zone == 1454) then
 				if (NWB.currentLayer > 0) then
 					local layerMsg = L["cityMapLayerMsgHorde"];
@@ -5769,6 +5820,7 @@ function NWB:openLayerFrame()
 		NWBlayerFrame.fs3:SetText("");
 	end
 	NWB:removeOldLayers();
+	NWB:checkGuildMasterSetting("set");
 	NWBlayerFrame.fs:SetFont(NWB.regionFont, 14);
 	if (NWBlayerFrame:IsShown()) then
 		NWBlayerFrame:Hide();
@@ -6032,6 +6084,31 @@ function NWB:recalclayerFrame()
 		NWBlayerFrame.EditBox:Insert(NWB.chatColor .. "\nNo current timers found.");
 	end
 	NWB:setCurrentLayerText();
+	local found;
+	local gmText = "";
+	if (next(NWB.guildMasterSettings)) then
+		for k, v in NWB:pairsByKeys(NWB.guildMasterSettings) do
+			if (k == 1) then
+				gmText = "\n -All NWB guild msgs disabled (#nwb1).";
+				found = true;
+			elseif (k == 2) then
+				gmText = "\n -Timer guild msgs disabled (#nwb2).";
+				found = true;
+			elseif (k == 3) then
+				gmText = "\n -Buff dropped guild msgs disabled (#nwb3).";
+				found = true;
+			elseif (k == 4) then
+				gmText = "\n -!wb guild command disabled (#nwb4).";
+				found = true;
+			elseif (k == 5) then
+				gmText = "\n -Songflower guild msgs disabled (#nwb5).";
+				found = true;
+			end
+		end
+	end
+	if (found) then
+		NWBlayerFrame.EditBox:Insert("\n\n|cFF9CD6DEGuild master public guild note settings enabled:" .. gmText);
+	end
 	--NWBlayerFrame.EditBox:SetText(msg2);
 	--NWBlayerFrame:SetVerticalScroll(scroll);
 	if (NWB.latestRemoteVersion and tonumber(NWB.latestRemoteVersion) > tonumber(version)) then
@@ -6326,6 +6403,8 @@ function NWB:validateZoneID(zoneID, layerID, mapID)
 		--Edit same number recorded again in Azshara after data reset (same week though).
 		--Some kinda subzone there with same mapid? Seen this in a few different zones now.
 		--Blasted Lands (814) Feralas (966) Mulgore (12138) Durotar (101136)
+		--Legit layers can appear with higher than 10,000 zoneid if created later in the week.
+		--Need a better way to handle these fake layers so I can allow legit high layers at some point.
 		return;
 	end
 	if (layerID) then

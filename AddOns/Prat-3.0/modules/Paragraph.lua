@@ -336,6 +336,7 @@ end
     profile = {
       on = false,
       justification = { ["*"] = "LEFT" },
+      spacing = 0
     }
   })
 
@@ -368,7 +369,16 @@ end
             ChatFrame5 = justifyoption,
             ChatFrame6 = justifyoption,
             ChatFrame7 = justifyoption,
-          }
+          },
+        },
+        spacing = {
+          name = PL["Line Spacing"],
+          desc = PL["Set the line spacing for all chat windows."],
+          type = "range",
+          min = 0,
+          max = 20,
+          step = 1,
+          order = 109
         },
         info = {
           name = "Note: Playerlinks, itemlinks, and any other link type will not work when justification is set to anything other than 'Left'",
@@ -406,6 +416,7 @@ end
     local prof = self.db.profile
     for k, v in pairs(Prat.Frames) do
       v:SetJustifyH(enable and prof.justification[k] or "LEFT")
+      v:SetSpacing(prof.spacing)
     end
   end
 

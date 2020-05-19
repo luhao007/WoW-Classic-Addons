@@ -277,7 +277,7 @@ class Manager(object):
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'Recount', 'TitanClassic']
+                       'NovaWorldBuffs', 'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',

@@ -24,7 +24,6 @@ local movableFrames = {
 	HelpFrame,
 	InterfaceOptionsFrame,
 	ItemTextFrame,
-	LevelUpDisplay,
 	LootFrame,
 	MailFrame,
 	MerchantFrame,

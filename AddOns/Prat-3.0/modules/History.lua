@@ -638,7 +638,7 @@ L = {
     end
 
     local editBoxText = editBox:GetText();
-    if (strlen(editBoxText) > 0) then
+    if (strlen(editBoxText) > 0 and not IsSecureCmd(editBoxText)) then
       text = text .. " " .. editBox:GetText();
       self:saveLine(text, editBox)
     end
