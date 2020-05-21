@@ -850,9 +850,6 @@ end
   local regexp = "(|cffffff00|Hachievement:([0-9]+):(.+):([%-0-9]+):([%-0-9]+):([%-0-9]+):([%-0-9]+):([%-0-9]+):([%-0-9]+):([%-0-9]+):([%-0-9]+)|h%[([^]]+)%]|h|r)"
   local gratsLinkType = "gratsl"
 
-
-
-
   local function buildGratsLink(name, group, channel, achievementId)
     if type(name) == "nil" or type(group) == "nil" then
     else
@@ -869,7 +866,7 @@ end
 
     local text, theirId, theirPlayerGuid, theirDone, theirMonth, theirDay, theirYear, _, _, _, _, theirAchievmentName = ...
 
-    if not (tostring(theirPlayerGuid):len() > 3) or (tostring(theirDone) == "0") then return end
+    if not (tostring(theirPlayerGuid):len() > 3) then return end
 
     local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAch, wasEarnedByMe, earnedBy = GetAchievementInfo(theirId)
 
@@ -881,14 +878,14 @@ end
     if group == "CHANNEL" and not tonumber(channelNum) then return end
 
     if completed then
-      return Prat:RegisterMatch(text .. module:addDate(day, month, year) .. module:addGrats(theirName, group, channelNum, theirId))
-    else
-      return Prat:RegisterMatch(text .. module:addGrats(theirName, group, channelNum, theirId))
+      return Prat:RegisterMatch(text .. module:addDate(day, month, year) .. (theirDone and module:addGrats(theirName, group, channelNum, theirId, Prat.CurrentMessage)) or "")
+    elseif theirDone then
+      return Prat:RegisterMatch(text .. module:addGrats(theirName, group, channelNum, theirId, Prat.CurrentMessage))
     end
   end
 
   Prat:SetModulePatterns(module, {
-    { pattern = regexp, matchfunc = ShowOurCompletion, priority = 100 },
+    { pattern = regexp, matchfunc = ShowOurCompletion, priority = 42 },
   })
 
   function module:OnModuleEnable()
@@ -900,8 +897,8 @@ end
     Prat.UnregisterAllChatEvents(self)
   end
 
-  function module:addGrats(name, group, channel, achievementId)
-    if self.db.profile.showGratsLink then
+  function module:addGrats(name, group, channel, achievementId, m)
+    if self.db.profile.showGratsLink and Prat.CanSendChatMessage(m.CHATTYPE) then
       return " " .. buildGratsLink(name, group, channel, achievementId)
     end
 
@@ -945,8 +942,8 @@ end
     if group == "WHISPER" then
       SendChatMessage(grats:format(theirName), group, nil, theirName)
     elseif group == "CHANNEL" then
-      SendChatMessage(grats:format(theirName), group, nil, tonumber(channel))
-    else
+      SendChatMessage(grats:format(theirName), "WHISPER", nil, theirName)
+    elseif Prat.CanSendChatMessage(group) then
       SendChatMessage(grats:format(theirName), group)
     end
 

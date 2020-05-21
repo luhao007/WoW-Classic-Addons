@@ -46,7 +46,7 @@ Prat:AddModuleToLoad(function()
 
   Prat:SetModuleDefaults(module.name, {
     profile = {
-      on = true,
+      on = false,
     }
   })
 
@@ -54,6 +54,7 @@ Prat:AddModuleToLoad(function()
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Mentions",
     ["module_desc"] = "Support mentioning other players in chat",
+    module_info = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
   })
   --@end-debug@]===]
 
@@ -69,6 +70,7 @@ do
 L = {
 	["Mentions"] = {
 		["module_desc"] = "Support mentioning other players in chat",
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
 		["module_name"] = "Mentions",
 	}
 }
@@ -81,6 +83,8 @@ L = {
 	["Mentions"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
+		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
 		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
@@ -95,6 +99,8 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
 		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
+		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
 }
@@ -108,6 +114,8 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
 		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
+		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
 }
@@ -118,10 +126,9 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 
 L = {
 	["Mentions"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Support mentioning other players in chat",
-		--[[Translation missing --]]
-		["module_name"] = "Mentions",
+		["module_desc"] = "Unterstützung beim Erwähnen anderer Spieler im Chat",
+		["module_info"] = "DIESES MODUL IST EXPERIMENTELL = Es fügt die Fähigkeit hinzu, Personen im Chat zu erwähnen, um dich zu alarmieren>",
+		["module_name"] = "Erwähnungen",
 	}
 }
 
@@ -133,6 +140,8 @@ L = {
 	["Mentions"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
+		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
 		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
@@ -146,6 +155,8 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
 		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
+		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
 }
@@ -157,6 +168,8 @@ L = {
 	["Mentions"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
+		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
 		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
@@ -170,6 +183,8 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
 		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
+		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
 }
@@ -182,6 +197,8 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
 		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
+		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
 }
@@ -193,6 +210,8 @@ L = {
 	["Mentions"] = {
 		--[[Translation missing --]]
 		["module_desc"] = "Support mentioning other players in chat",
+		--[[Translation missing --]]
+		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
 		--[[Translation missing --]]
 		["module_name"] = "Mentions",
 	}
@@ -212,19 +231,58 @@ end
     name = PL.module_name,
     desc = PL.module_desc,
     type = "group",
-    args = {}
+    args = {
+      info = {
+        name = PL.module_info,
+        type = "description",
+      }
+    }
   })
 
-  local function handleMention(match, m)
-    dbg(match, m)
-    local name = match:sub(2)
+  local CLR = Prat.CLR
 
-    SendChatMessage(m.MESSAGE, "WHISPER", GetDefaultLanguage("player"), name);
+  local function GetChatCLR(name)
+    if name == nil then return CLR.COLOR_NONE end
+
+    local type = strsub(name, 10);
+    local info = ChatTypeInfo[type];
+    if not info then
+      return CLR.COLOR_NONE
+    end
+    return CLR:GetHexColor(info)
+  end
+
+  local function ChatType(text, type) return CLR:Colorize(GetChatCLR(type), text) end
+
+  local function channelLink(name, type, channel)
+    return "|Hchannel:" .. type .. ":" .. (channel or "0") .. "|h[" .. ChatType(name, "CHAT_MSG_" .. type) .. "]|h"
+  end
+
+  local function handleMention(match, m)
+--    dbg(match, m)
+    local name = match:sub(2)
+    local event = "CHAT_MSG_" .. m.CTYPE
+    local from = "(in " .. _G[event] .. ") "
+--    dbg(from)
+    SendChatMessage(from .. m.MESSAGE, "WHISPER", GetDefaultLanguage("player"), name);
 
     return match;
   end
 
+  Prat:SetModulePatterns(module, {
+    { pattern = "@%S+", matchfunc = handleMention, priority = 47, type = "OUTBOUND" }
+  })
+
   function module:OnModuleEnable()
+    self:RegisterTabComplete()
+    Prat.RegisterChatEvent(self, "Prat_FrameMessage")
+  end
+
+  function module:Prat_FrameMessage(arg, message, frame, event)
+--    message.MESSAGE:gsub("%(in ([^)]+)%)", function(type) end)
+  end
+
+  function module:RegisterTabComplete()
     local CLR = Prat.CLR
     local AceTab = LibStub("AceTab-3.0")
     local tabcompleteName = "mentions-tab-complete"
@@ -235,7 +293,7 @@ end
       local foundCache = {}
       AceTab:RegisterTabCompletion(tabcompleteName, "@",
         function(t, ...)
-          dbg(t, ...)
+          --          dbg(t, ...)
           for name in pairs(playernames.Classes) do
             table.insert(t, name)
           end
@@ -271,14 +329,5 @@ end
           return name:gsub(Prat.MULTIBYTE_FIRST_CHAR, string.upper, 1):match("^[^%-]+")
         end)
     end
-    --    else
-    --      if AceTab:IsTabCompletionRegistered(tabcompleteName) then
-    --        AceTab:UnregisterTabCompletion(tabcompleteName)
-    --      end
-    --    end
   end
-
-  Prat:SetModulePatterns(module, {
-    { pattern = "@%S+", matchfunc = handleMention, priority = 47, type = "OUTBOUND" }
-  })
 end)

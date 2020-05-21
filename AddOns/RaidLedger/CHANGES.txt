@@ -1,10 +1,22 @@
-lightweight tag 867a092fb6b67b4c5db8233fae744d724a5b7955 v1.8.3
+lightweight tag fd9bd22fda05f97846158635dd7382f598a2073e v1.8.4
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Sun May 17 03:56:06 2020 -0700
+Date:	Tue May 19 06:33:38 2020 -0700
 
-commit 867a092fb6b67b4c5db8233fae744d724a5b7955
+commit fd9bd22fda05f97846158635dd7382f598a2073e
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Sun May 17 03:56:06 2020 -0700
+Date:   Tue May 19 06:33:38 2020 -0700
 
-    make sure not triggering add when chatbox active
+    csv support
+
+commit 4d2b9e288c600ccfecd391dbe22f24f3d3d7e46e
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Tue May 19 06:01:54 2020 -0700
+
+    template can be applied in main gui
+
+commit 3c2acee81b94382412b58e1e871fa0f5e87fd69d
+Author: Boshi Lian <farmer1992@gmail.com>
+Date:   Sun May 17 04:12:17 2020 -0700
+
+    fix % prefix
 

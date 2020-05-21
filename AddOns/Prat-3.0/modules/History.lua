@@ -59,6 +59,7 @@ Prat:AddModuleToLoad(function()
     ["Color GMOTD"] = true,
     delaygmotd_name = "Delay GMOTD",
     delaygmotd_desc = "Delay GMOTD until after all the startup spam",
+    bnet_removed = "<BNET REMOVED>",
   })
   --@end-debug@]===]
 
@@ -71,6 +72,7 @@ Prat:AddModuleToLoad(function()
 
 L = {
 	["History"] = {
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = true,
 		["Color GMOTD"] = true,
 		["Colors the GMOTD label"] = true,
@@ -98,6 +100,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "Option de l'historique.",
 		--[[Translation missing --]]
 		["Color GMOTD"] = "Color GMOTD",
@@ -130,6 +134,7 @@ L = {
 
 L = {
 	["History"] = {
+		["bnet_removed"] = "<BNET ENTFERNT>",
 		["Chat history options."] = "Optionen zum Chatverlauf.",
 		["Color GMOTD"] = "Farbe der Gildennachricht des Tages",
 		["Colors the GMOTD label"] = "Färbt die GMOTD-Beschriftung",
@@ -157,6 +162,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "대화 내역 옵션입니다.",
 		["Color GMOTD"] = "오늘의 길드 메시지에 색상입히기",
 		["Colors the GMOTD label"] = "오늘의 길드 메시지 제목에 색상입히기",
@@ -184,6 +191,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		--[[Translation missing --]]
 		["Chat history options."] = "Chat history options.",
 		--[[Translation missing --]]
@@ -229,6 +238,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "Настройки истории чата.",
 		["Color GMOTD"] = "Цвет  GMOTD",
 		["Colors the GMOTD label"] = "Цвета названия СДГ",
@@ -256,6 +267,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "历史聊天记录选项",
 		["Color GMOTD"] = "每日公会信息颜色",
 		["Colors the GMOTD label"] = "为每日公会信息标签着色",
@@ -283,6 +296,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "Opciones del historial del chat.",
 		--[[Translation missing --]]
 		["Color GMOTD"] = "Color GMOTD",
@@ -319,6 +334,8 @@ L = {
 
 L = {
 	["History"] = {
+		--[[Translation missing --]]
+		["bnet_removed"] = "<BNET REMOVED>",
 		["Chat history options."] = "歷史訊息選項。",
 		["Color GMOTD"] = "顏色 GMOTD",
 		["Colors the GMOTD label"] = "顏色 GMOTD 標籤",

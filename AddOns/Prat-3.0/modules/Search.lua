@@ -76,8 +76,7 @@ Usage:
 
 L = {
 	["Search"] = {
-		--[[Translation missing --]]
-		["bnet_removed"] = "<BNET REMOVED>",
+		["bnet_removed"] = "<BNET ENTFERNT>",
 		["err_notfound"] = "Nicht gefunden",
 		["err_tooshort"] = "Suchbegriff ist zu kurz",
 		["find_results"] = "Gefundene Ergebnisse:",

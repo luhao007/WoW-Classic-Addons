@@ -164,8 +164,7 @@ L = {
 		["Format All Timestamps"] = "Formatiere alle Zeitstempel",
 		["HH:MM (12-hour)"] = "HH:MM (12-Stunden)",
 		["HH:MM (24-hour)"] = "HH:MM (24-Stunden)",
-		--[[Translation missing --]]
-		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-Stunden)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-Stunden)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24-Stunden)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12-Stunden)",

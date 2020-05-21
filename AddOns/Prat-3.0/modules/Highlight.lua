@@ -152,16 +152,12 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 
 L = {
 	["Highlight"] = {
-		--[[Translation missing --]]
-		["guild_desc"] = "Highlight things which looks like guild names",
-		--[[Translation missing --]]
-		["guild_name"] = "Highlight Guilds",
+		["guild_desc"] = "Markiert Dinge, die wie Gildennamen aussehen",
+		["guild_name"] = "Markiert Gilden",
 		["module_desc"] = "Markiert dein eigener Name und verschiedene andere Texte",
 		["module_name"] = "Markierung",
-		--[[Translation missing --]]
-		["player_desc"] = "Highlight you own name in a special color",
-		--[[Translation missing --]]
-		["player_name"] = "Highlight Self",
+		["player_desc"] = "Markiert deinen eigenen Namen in einer speziellen Farbe",
+		["player_name"] = "Markiert dich selbst",
 	}
 }
 

@@ -107,10 +107,8 @@ L = {
 		["autoabbreviate_name"] = "Auto-Abkürzen",
 		["colon_desc"] = "Hinzufügen eines Doppelpunkts nach dem Ersetzen des Servers ein-/ausschalten.",
 		["colon_name"] = "Doppelpunkt anzeigen",
-		--[[Translation missing --]]
-		["hide_desc"] = "Never display the server name",
-		--[[Translation missing --]]
-		["hide_name"] = "Hide Server",
+		["hide_desc"] = "Zeigt niemals den Servernamen an",
+		["hide_name"] = "Server ausblenden",
 		["randomclr_desc"] = "Eine zufällige Farbe für jeden Server verwenden.",
 		["randomclr_name"] = "Zufällige Farben",
 		["Server name abbreviation options."] = "Optionen für Abkürzungen von Server-Namen",

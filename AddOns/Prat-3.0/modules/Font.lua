@@ -515,7 +515,7 @@ end
     get = "GetSubValue",
     set = "SetSubValue",
     min = 4,
-    max = 40,
+    max = 100,
     step = 1,
     hidden = function(info) return Prat.FrameList[info[#info]] == nil end,
   }
