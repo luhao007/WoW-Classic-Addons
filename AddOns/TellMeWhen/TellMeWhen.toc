@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Cybeloras of Aerie Peak
-## Version: 8.7.4
+## Version: 8.7.5
 ## OptionalDeps: Masque, Ace3, OmniCC, tullaCC, sct, sctd, MikScrollingBattleText, Parrot, DRList-1.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibDogTag-Stats-3.0, LibSpellRange-1.0, LibOO-1.0, LibRangeCheck-2.0, LibBabble-CreatureType-3.0, LibBabble-Race-3.0, ElvUI, DBM-Core, BigWigs, LibClassicCasterino, LibClasicMobHealth-1.0, RealMobHealth
 ## SavedVariables: TellMeWhenDB
 ## SavedVariablesPerCharacter: TellMeWhen_Settings
@@ -28,6 +28,7 @@
 # Also dont forget to bump both of these - X-Interface is used to get the interface version in-game to check that the user is using a current client.
 # DONT FORGET TO TOC BUMP TELLMEWHEN_OPTIONS TOO!!
 # The per character settings are the old settings, but we still need them to upgrade to the new ones. If they aren't defined, then they will be deleted immediately
+# DRList-1.0 uses an unconventional folder layout, requiring the double nesting.
 Localization\TellMeWhen-enUS.lua
 #Localization\TellMeWhen-deDE.lua
 Localization\TellMeWhen-esES.lua

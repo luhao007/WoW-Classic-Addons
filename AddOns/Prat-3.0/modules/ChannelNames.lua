@@ -742,10 +742,6 @@ end
     Prat.EnableProcessingForEvent("CHAT_MSG_CHANNEL_NOTICE_USER")
     Prat.EnableProcessingForEvent("CHAT_MSG_CHANNEL_LEAVE")
     Prat.EnableProcessingForEvent("CHAT_MSG_CHANNEL_JOIN")
-
-    self:AddOutboundWhisperColoring()
-
-    --self:RawHook("ChatEdit_UpdateHeader", true)
   end
 
   function module:OnModuleDisable()
@@ -756,33 +752,6 @@ end
   function module:GetDescription()
     return PL["Channel name abbreviation options."]
   end
-
-  --function module:ChatEdit_UpdateHeader(editBox, ...)
-  --    self.hooks["ChatEdit_UpdateHeader"](...)
-  --
-  --    local type = editBox:GetAttribute("chatType");
-  --	if ( not type ) then
-  --		return;
-  --	end
-  --
-  --	local info = ChatTypeInfo[type];
-  --	local header = _G[editBox:GetName().."Header"];
-  --	if ( not header ) then
-  --		return;
-  --	end
-  --
-  --    if ( type == "CHANNEL" ) then
-  --		local channel, channelName, instanceID = Prat.GetChannelName(editBox:GetAttribute("channelTarget"));
-  --		if ( channelName ) then
-  --			if ( instanceID > 0 ) then
-  --				channelName = channelName.." "..instanceID;
-  --			end
-  --			info = ChatTypeInfo["CHANNEL"..channel];
-  --			editBox:SetAttribute("channelTarget", channel);
-  --			header:SetFormattedText(CHAT_CHANNEL_SEND, channel, channelName);
-  --		end
-  --    end
-  --end
 
   --[[------------------------------------------------
       Core Functions
@@ -796,26 +765,6 @@ end
 
   function module:RefreshOptions()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("Prat")
-  end
-
-  function module:AddOutboundWhisperColoring()
-    if not CHAT_CONFIG_CHAT_LEFT then return end
-
-    for i, v in ipairs(CHAT_CONFIG_CHAT_LEFT) do
-      if v.type == "WHISPER" then
-        v.text = CHAT_MSG_WHISPER
-        v.func = function(self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
-
-        table.insert(CHAT_CONFIG_CHAT_LEFT, i, {
-          text = CHAT_MSG_WHISPER_INFORM,
-          type = "WHISPER_INFORM",
-          checked = function() return IsListeningForMessageType("WHISPER"); end;
-          func = function(self, checked) ToggleChatMessageGroup(checked, "WHISPER"); end;
-        })
-
-        break
-      end
-    end
   end
 
   function module:AddNickname(info, name)

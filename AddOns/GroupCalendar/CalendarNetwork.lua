@@ -205,6 +205,10 @@ function CalendarNetwork_ProcessCommand(pSender, pTrustLevel, pCommand)
 		CalendarNetwork_SetLastUpdateTime();	
 		gGroupCalendar_EventSyncLastAuthor = pSender;
 		CalendarNetwork_ProcessEventTitleUpdateCommand(pSender, vOperands);
+	elseif vOpcode == "EVT3" then
+		CalendarNetwork_SetLastUpdateTime();	
+		gGroupCalendar_EventSyncLastAuthor = pSender;
+		CalendarNetwork_ProcessEventDescUpdateCommand(pSender, vOperands);
 	elseif vOpcode == "RSVP1" then
 		CalendarNetwork_SetLastUpdateTime();	
 		gGroupCalendar_EventSyncLastAuthor = pSender;
@@ -249,7 +253,11 @@ function CalendarNetwork_ProcessEventUpdateCommand(pSender, pCommand)
 		local vTime = tonumber(pCommand[7]);
 		local vDuration = tonumber(pCommand[8]);
 		local vMinLevel = tonumber(pCommand[9]);
-		local vMaxLevel = tonumber(pCommand[10]);	
+		local vMaxLevel = tonumber(pCommand[10]);
+		local vGuildRank = GuildControlGetNumRanks() - 1;
+		if table.getn(pCommand) > 10 and pCommand[11] ~= nil then
+			vGuildRank = tonumber(pCommand[11]);
+		end
 
 		local foundEvent = nil;
 		local updateEvent = false;
@@ -288,6 +296,7 @@ function CalendarNetwork_ProcessEventUpdateCommand(pSender, pCommand)
 			foundEvent.mStatus = vStatus;
 			foundEvent.mTime = vTime;
 			foundEvent.mDuration = vDuration;
+			foundEvent.mGuildRank = vGuildRank;
 			foundEvent.mGUID = vGUID;
 			foundEvent.mMinLevel = vMinLevel;
 			foundEvent.mMaxLevel = vMaxLevel;
@@ -300,6 +309,7 @@ function CalendarNetwork_ProcessEventUpdateCommand(pSender, pCommand)
 			foundEvent.mStatus = vStatus;
 			foundEvent.mTime = vTime;
 			foundEvent.mDuration = vDuration;
+			foundEvent.mGuildRank = vGuildRank;
 			foundEvent.mMinLevel = vMinLevel;
 			foundEvent.mMaxLevel = vMaxLevel;
 
@@ -355,6 +365,36 @@ function CalendarNetwork_ProcessEventTitleUpdateCommand(pSender, pCommand)
 						vEvent.mChangedDate = vChangedDate;
 						vEvent.mChangedTime = vChangedTime;
 						vEvent.mTitle = vTitle;							
+				
+						-- Update the calendar
+						GroupCalendar_EventChanged(gGroupCalendar_GuildDatabase, vEvent);
+					end	
+					break;
+				end
+			end
+		end
+	end
+end
+
+function CalendarNetwork_ProcessEventDescUpdateCommand(pSender, pCommand)
+	if gGroupCalendar_GuildDatabase then
+		local vDate = tonumber(pCommand[1]);
+		local vGUID = pCommand[2];
+		local vChangedDate = tonumber(pCommand[3]);
+		local vChangedTime = tonumber(pCommand[4]);
+		local vDesc = Calendar_UnescapeString(pCommand[5]);	
+
+		-- Check if the date is more recent
+		if gGroupCalendar_GuildDatabase.Events[vDate] then
+			for vEventIndex, vEvent in pairs (gGroupCalendar_GuildDatabase.Events[vDate]) do
+				if vEvent.mGUID == vGUID then
+					if EventDatabase_SecondDateTimeNewer(vEvent.mChangedDate, vEvent.mChangedTime, vChangedDate, vChangedTime) > 0 then
+						-- Update is newer than what we have. Update the event.
+
+						-- Update the event values
+						vEvent.mChangedDate = vChangedDate;
+						vEvent.mChangedTime = vChangedTime;
+						vEvent.mDescription = vDesc;							
 				
 						-- Update the calendar
 						GroupCalendar_EventChanged(gGroupCalendar_GuildDatabase, vEvent);
@@ -1183,42 +1223,46 @@ function CalendarNetwork_FlushCaches()
 end
 
 function CalendarNetwork_GetGuildRosterCache()
-	if gCalendarNetwork_GuildMemberRankCache then
+	if IsInGuild() then
+		if gCalendarNetwork_GuildMemberRankCache then
 
-		return gCalendarNetwork_GuildMemberRankCache;
-	end
-	
-	-- Clear the cache
-	
-	gCalendarNetwork_GuildMemberRankCache = {};
-	
-	-- Scan the roster and collect the info
-
-	local		vNumGuildMembers = GetNumGuildMembers(true);
-	for vIndex = 1, vNumGuildMembers do
-		local	vName, vRank, vRankIndex, vLevel, vClass, vZone, vNote, vOfficerNote, vOnline = GetGuildRosterInfo(vIndex);
-		
-		if vName then -- Have to check for name in case a guild member gets booted while querying the roster
-			vName = GroupCalendar_RemoveRealmName(vName);
-			local	vMemberInfo =
-			{
-				Name = vName,
-				RankIndex = vRankIndex,
-				Level = vLevel,
-				Class = vClass,
-				Zone = vZone,
-				OfficerNote = vOfficerNote,
-				Online = vOnline
-			};
-			
-			gCalendarNetwork_GuildMemberRankCache[strupper(vName)] = vMemberInfo;
-
+			return gCalendarNetwork_GuildMemberRankCache;
 		end
+	
+		-- Clear the cache
+	
+		gCalendarNetwork_GuildMemberRankCache = {};
+	
+		-- Scan the roster and collect the info
+
+		local		vNumGuildMembers = GetNumGuildMembers(true);
+		for vIndex = 1, vNumGuildMembers do
+			local	vName, vRank, vRankIndex, vLevel, vClass, vZone, vNote, vOfficerNote, vOnline = GetGuildRosterInfo(vIndex);
+		
+			if vName then -- Have to check for name in case a guild member gets booted while querying the roster
+				vName = GroupCalendar_RemoveRealmName(vName);
+				local	vMemberInfo =
+				{
+					Name = vName,
+					RankIndex = vRankIndex,
+					Level = vLevel,
+					Class = vClass,
+					Zone = vZone,
+					OfficerNote = vOfficerNote,
+					Online = vOnline
+				};
+			
+				gCalendarNetwork_GuildMemberRankCache[strupper(vName)] = vMemberInfo;
+
+			end
+		end
+	
+		-- Dump any cached trust info
+	
+		gCalendarNetwork_UserTrustCache = {};
+	else
+		gCalendarNetwork_GuildMemberRankCache = {};
 	end
-	
-	-- Dump any cached trust info
-	
-	gCalendarNetwork_UserTrustCache = {};
 	
 	return gCalendarNetwork_GuildMemberRankCache;
 end
@@ -1281,8 +1325,10 @@ function CalendarNetwork_UserIsInSameGuild(pUserName)
 end
 
 function CalendarNetwork_SendMessage(pMessage, priority)
-	ChatThrottleLib:SendAddonMessage(priority, gGroupCalendar_MessagePrefix0, pMessage, "GUILD");
-	--C_ChatInfo.SendAddonMessage(gGroupCalendar_MessagePrefix0, pMessage, "GUILD");
+	if IsInGuild() then
+		ChatThrottleLib:SendAddonMessage(priority, gGroupCalendar_MessagePrefix0, pMessage, "GUILD");
+		--C_ChatInfo.SendAddonMessage(gGroupCalendar_MessagePrefix0, pMessage, "GUILD");
+	end
 end
 
 function CalendarNetwork_ChannelMessageReceived(pSender, pMessage)
@@ -1291,17 +1337,19 @@ function CalendarNetwork_ChannelMessageReceived(pSender, pMessage)
 end
 
 function CalendarNetwork_GetGuildMemberIndex(pPlayerName)
-	local		vUpperUserName = strupper(pPlayerName);
-	local		vNumGuildMembers = GetNumGuildMembers(true);
+	if IsInGuild() then
+		local		vUpperUserName = strupper(pPlayerName);
+		local		vNumGuildMembers = GetNumGuildMembers(true);
 	
-	for vIndex = 1, vNumGuildMembers do
-		local	vName = GetGuildRosterInfo(vIndex);
+		for vIndex = 1, vNumGuildMembers do
+			local	vName = GetGuildRosterInfo(vIndex);
 		
-		if strupper(GroupCalendar_RemoveRealmName(vName)) == vUpperUserName then
-			return vIndex;
+			if strupper(GroupCalendar_RemoveRealmName(vName)) == vUpperUserName then
+				return vIndex;
+			end
 		end
 	end
-	
+
 	return nil;
 end
 
@@ -1705,6 +1753,12 @@ function CalendarNetwork_SendEventUpdate(pEvent, pIncRSVPs, pPriority)
 		cmd1 = cmd1 .. ",".. pEvent.mMaxLevel;
 	else
 		cmd1 = cmd1 .. ",";
+	end	
+	
+	if pEvent.mGuildRank then
+		cmd1 = cmd1 .. "," .. pEvent.mGuildRank;
+	else
+		cmd1 = cmd1 .. "," ..  (GuildControlGetNumRanks() - 1);
 	end
 
 	--if pEvent.mUserName then
@@ -1725,7 +1779,19 @@ function CalendarNetwork_SendEventUpdate(pEvent, pIncRSVPs, pPriority)
 
 
 	CalendarNetwork_QueueOutboundMessage(cmd2, pPriority);
-	
+
+	-- Because this was added in a later version, some users would try to transmit a nil event desc even though other users have data.
+	-- Going forward, desc will be a blank string instead of a nil so that the app can tell the difference between missing data and a blank desc
+	if pEvent.mDescription ~= nil then
+		local cmd3 = "/EVT3:" .. pEvent.mDate .. "," .. pEvent.mGUID .. "," .. pEvent.mChangedDate .. "," .. pEvent.mChangedTime;
+		if pEvent.mDescription then
+			cmd3 = cmd3 .. ",".. Calendar_EscapeString(pEvent.mDescription);	
+		else
+			cmd3 = cmd3 .. ",";
+		end
+
+		CalendarNetwork_QueueOutboundMessage(cmd3, pPriority);
+	end
 
 	if pEvent.mAttendance and pIncRSVPs and pEvent.mStatus ~= "D" then
 		for vAttendee, vRSVP in pairs(pEvent.mAttendance) do

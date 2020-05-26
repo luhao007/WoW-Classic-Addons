@@ -1,4 +1,4 @@
-﻿-- File containing localized strings
+-- File containing localized strings
 -- Translation : zhCN - AndyAska.com (20060626)
 
 if GetLocale() == "zhCN" then
@@ -50,7 +50,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cUseServerDateTime = "使用伺服器日期与时间";
 	GroupCalendar_cUseServerDateTimeDescription = "启动此功能将会以伺服器的日期与时间来显示活动资讯，若关闭此功能则会以您的电脑日期及时间来显示。";
-
+		
 	GroupCalendar_cChannelStatus =
 	{
 		Starting = {mText = "状态: 开始", mColor = {r = 1, g = 1, b = 0.3}},
@@ -174,7 +174,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cPvPEventName = "综合 PvP";
 	GroupCalendar_cABEventName = "阿拉希盆地";
-	GroupCalendar_cAVEventName = "奥特蔺克山谷";
+	GroupCalendar_cAVEventName = "奥特兰克山谷";
 	GroupCalendar_cWSGEventName = "战歌峡谷";
 
 	GroupCalendar_cZGResetEventName = "祖尔格拉布 重置";
@@ -186,9 +186,9 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cNaxxResetEventName = "纳克萨玛斯 重置";
 
 	GroupCalendar_cTransmuteCooldownEventName = "转换 就绪";
-	GroupCalendar_cSaltShakerCooldownEventName = "Salt Shaker 就绪";
+	GroupCalendar_cSaltShakerCooldownEventName = "筛盐器 就绪";
 	GroupCalendar_cMoonclothCooldownEventName = "月布 就绪";
-	GroupCalendar_cSnowmasterCooldownEventName = "SnowMaster 9000 就绪";
+	GroupCalendar_cSnowmasterCooldownEventName = "雪王9000型 就绪";
 
 	GroupCalendar_cPersonalEventOwner = "私人";
 
@@ -277,7 +277,7 @@ if GetLocale() == "zhCN" then
 
 	CalendarEventEditor_cNotTrustedMsg = "由于信任设置而无法创建事件";
 	CalendarEventEditor_cOk = "好的";
-
+	
 
 	CalendarEventEditor_cNotAttending = "不出席";
 	CalendarEventEditor_cConfirmed = "已确定";
@@ -358,6 +358,8 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cInviteNow = "邀请到队伍";
 	GroupCalendar_cStatus = "状态";
 	GroupCalendar_cAddPlayerEllipses = "加入玩家...";
+	GroupCalendar_cAll = "全部";
+	GroupCalendar_cClearSelected = "清除选择";
 
 	GroupCalendar_cAddPlayer = "加入玩家";
 	GroupCalendar_cPlayerLevel = "等级:";
@@ -385,6 +387,7 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cViewByRank = "检视阶级";
 	GroupCalendar_cViewByName = "检视名称";
 	GroupCalendar_cViewByStatus = "检视状态";
+	GroupCalendar_cViewByClass = "检视职业";
 	GroupCalendar_cViewByClassRank = "检视职业阶级";
 
 	GroupCalendar_cMaxPartySizeLabel = "队伍人数上限:";
@@ -430,6 +433,7 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cPriorityLabel = "优先权:";
 	GroupCalendar_cPriorityDate = "时间";
 	GroupCalendar_cPriorityRank = "阶级";
+	GroupCalendar_cPriorityClass = "职业";
 
 	GroupCalendar_cConfrimDeleteRSVP = "将 %s 从此活动中移除? 除非你手动把他们重新加入，否则他们将无法再参加。";
 
@@ -455,7 +459,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cChangesDelayedMessage = "团体行事历: 资料将于网络资讯同步化后变更。在资料同步化完成之前，资料不会传送，";
 
-	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?";
+	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?"; 
 	GroupCalendar_cKill = "删除";
 
 	GroupCalendar_cNotAnOfficerError = "团体行事历: 只有公会干部成员能执行此动作";

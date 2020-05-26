@@ -25,6 +25,8 @@ gGroupCalendar_PlayerGuildRank = nil;
 gGroupCalendar_RealmName = GetRealmName();
 gGroupCalendar_Initialized = false;
 
+gGroupCalendar_ExternalApiSupport = true;
+
 gGroupCalendar_InCombat = false;
 
 gGroupCalendar_ServerTimeZoneOffset = 0; -- Offset that, when added to the server time yields the local time

@@ -118,24 +118,25 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-      <Frame name="$parentRole" inherits="CalendarRolesTemplate">
-        <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parentGuildRank" relativePoint="TOPLEFT">
-            <Offset>
-              <AbsDimension x="-60" y="-30"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-      </Frame>
+      
 			<Frame name="$parentStatus" inherits="CalendarPlayerStatusMenuTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentGuildRank">
+					<Anchor point="TOPLEFT" relativeTo="$parentGuildRank" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-70"/>
+							<AbsDimension x="0" y="-30"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
 			</Frame>
+      <Frame name="$parentRole" inherits="CalendarRolesTemplate">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parentStatus" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="-50" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Frame>
 			<EditBox name="$parentLevel" letters="2" historyLines="0" autofocus="false" inherits="GroupCalendarInputBoxTemplate">
 				<Size>
 					<AbsDimension x="40" y="20"/>
@@ -190,12 +191,12 @@
 			</Frame>
 			<EditBox name="$parentComment" letters="50" historyLines="0" autofocus="false" inherits="GroupCalendarInputBoxTemplate">
 				<Size>
-					<AbsDimension x="130" y="20"/>
+					<AbsDimension x="230" y="20"/>
 				</Size>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRace">
+					<Anchor point="TOPLEFT" relativeTo="$parentRole" relativePoint="TOPLEFT">
 						<Offset>
-							<AbsDimension x="0" y="-40"/>
+							<AbsDimension x="50" y="-55"/>
 						</Offset>
 					</Anchor>
 				</Anchors>

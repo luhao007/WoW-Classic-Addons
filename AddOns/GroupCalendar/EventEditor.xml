@@ -161,12 +161,12 @@
 					</Frame>
 					<EditBox name="CalendarEventTitle" letters="50" historyLines="0" autofocus="false" inherits="GroupCalendarInputBoxTemplate">
 						<Size>
-							<AbsDimension x="172" y="20"/>
+							<AbsDimension x="165" y="10"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventType" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="62" y="-28"/>
+									<AbsDimension x="59" y="-28"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -202,6 +202,7 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
+					
 					<Frame name="CalendarEventEditorDuration" inherits="CalendarDurationTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventEditorTime" relativePoint="TOPLEFT">
@@ -211,15 +212,46 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					
+										
+					<Frame name="CalendarEventMinRank" inherits="CalendarDropDownTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CalendarEventEditorDuration" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="35" y="-20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<FontString inherits="GameFontNormalSmall" text="GroupCalendar_cRankMinLabel" justifyH="RIGHT">
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="10" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								CalendarGuildRank_OnLoad(self);
+							</OnLoad>
+							<OnShow>
+								CalendarGuildRank_OnLoad(self);
+							</OnShow>
+						</Scripts>
+					</Frame>					
+
 					<EditBox name="CalendarEventMinLevel" autofocus="false" inherits="GroupCalendarInputBoxTemplate">
 						<Size>
 							<AbsDimension x="40" y="20"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CalendarEventEditorDuration" relativePoint="TOPLEFT">
+							<Anchor point="TOPLEFT" relativeTo="CalendarEventMinRank" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="62" y="-30"/>
+									<AbsDimension x="23" y="-28"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -276,19 +308,19 @@
 					
 					<Frame name="CalendarEventDescriptionFrame" inherits="CalendarInputFrameTemplate">
 						<Size>
-							<AbsDimension x="220" y="50"/>
+							<AbsDimension x="220" y="40"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventMinLevel" relativePoint="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-5" y="-30"/>
+									<AbsDimension x="-7" y="-25"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 						<Frames>
 							<ScrollFrame name="CalendarEventDescriptionScrollFrame" inherits="UIPanelScrollFrameTemplate">
 								<Size>
-									<AbsDimension x="195" y="44"/>
+									<AbsDimension x="195" y="34"/>
 								</Size>
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
@@ -378,7 +410,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventDescriptionFrame" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="-75" y="0"/>
+									<AbsDimension x="-60" y="5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -396,7 +428,7 @@
             <Anchors>
               <Anchor point="TOPRIGHT" relativeTo="CalendarEventDescriptionFrame" relativePoint="BOTTOMRIGHT">
                 <Offset>
-                  <AbsDimension x="-20" y="-3"/>
+                  <AbsDimension x="-20" y="0"/>
                 </Offset>
               </Anchor>
             </Anchors>
@@ -405,7 +437,7 @@
             <Anchors>
               <Anchor point="TOPRIGHT" relativeTo="CalendarEventEditorCharacter" relativePoint="BOTTOMRIGHT">
                 <Offset>
-                  <AbsDimension x="0" y="-7"/>
+                  <AbsDimension x="0" y="0"/>
                 </Offset>
               </Anchor>
             </Anchors>            

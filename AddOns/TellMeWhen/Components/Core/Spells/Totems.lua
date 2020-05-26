@@ -45,6 +45,8 @@ local WATER = 3
 local AIR = 4
 
 local totemsById = {
+    [ 2484] = { texture = 136102, slot = EARTH, duration = 45 },  -- Earthbind
+    [ 6496] = { texture = 136082, slot = AIR,   duration = 300 }, -- Sentry
     [ 8143] = { texture = 136108, slot = EARTH, duration = 120 }, -- Tremor
     [ 8166] = { texture = 136070, slot = WATER, duration = 120 }, -- Poison Cleansing
     [ 8170] = { texture = 136019, slot = WATER, duration = 120 }, -- Disease Cleansing
@@ -92,7 +94,7 @@ frame:SetScript("OnEvent", function(self, event)
             
         if sourceGUID == pGUID and cleuEvent == "SPELL_SUMMON" and spellName then
             local info = totemsByName[spellName]
-            if cleuEvent == "SPELL_SUMMON" then
+            if cleuEvent == "SPELL_SUMMON" and info then
                 Slots[info.slot] = {
                     name = info.name,
                     start = TMW.time,

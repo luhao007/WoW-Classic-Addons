@@ -1,4 +1,4 @@
-﻿-- File containing localized strings
+-- File containing localized strings
 -- Translation : zhTW - AndyAska.com (20060626)
 
 if GetLocale() == "zhTW" then
@@ -357,6 +357,8 @@ if GetLocale() == "zhTW" then
 	GroupCalendar_cInviteNow = "邀請到隊伍";
 	GroupCalendar_cStatus = "狀態";
 	GroupCalendar_cAddPlayerEllipses = "加入玩家...";
+	GroupCalendar_cAll = "所有";
+	GroupCalendar_cClearSelected = "清除選擇";
 
 	GroupCalendar_cAddPlayer = "加入玩家";
 	GroupCalendar_cPlayerLevel = "等級:";
@@ -384,6 +386,7 @@ if GetLocale() == "zhTW" then
 	GroupCalendar_cViewByRank = "檢視階級";
 	GroupCalendar_cViewByName = "檢視名稱";
 	GroupCalendar_cViewByStatus = "檢視狀態";
+	GroupCalendar_cViewByClass = "檢視職業";
 	GroupCalendar_cViewByClassRank = "檢視職業階級";
 
 	GroupCalendar_cMaxPartySizeLabel = "隊伍人數上限:";
@@ -429,6 +432,7 @@ if GetLocale() == "zhTW" then
 	GroupCalendar_cPriorityLabel = "優先權:";
 	GroupCalendar_cPriorityDate = "時間";
 	GroupCalendar_cPriorityRank = "階級";
+	GroupCalendar_cPriorityClass = "職業";
 
 	GroupCalendar_cConfrimDeleteRSVP = "將 %s 從此活動中移除? 除非你手動把他們重新加入，否則他們將無法再參加。";
 

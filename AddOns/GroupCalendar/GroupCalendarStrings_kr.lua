@@ -279,6 +279,9 @@ if GetLocale() == "koKR" then
 	CalendarEventEditor_cPending = "미결정";
 	CalendarEventEditor_cUnknownStatus = "알수없는 %s";
 
+	GroupCalendar_cAll = "모두";
+	GroupCalendar_cClearSelected = "선택 지우기";
+
 	GroupCalendar_cChannelNameLabel = "채널이름:";
 	GroupCalendar_cPasswordLabel = "비밀번호:";
 

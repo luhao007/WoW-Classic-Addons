@@ -671,12 +671,21 @@ L = {
         sndprof = self.db.profile.incoming
       end
 
-      if msgtype == "PARTY_LEADER" or msgtype == "RAID_LEADER" or msgtype == "PARTY_GUIDE" then
+      if msgtype == "PARTY_LEADER" or msgtype == "RAID_LEADER" or
+        msgtype == "PARTY_GUIDE" or msgtype == "INSTANCE_CHAT_LEADER" then
         msgtype = "GROUP_LEAD"
       end
 
-      if msgtype == "INSTANCE_CHAT" or msgtype == "INSTANCE_CHAT_LEADER" then
-        msgtype = "RAID"
+      if msgtype == "INSTANCE_CHAT" then
+        msgtype = IsInRaid() and "RAID" or "PARTY"
+      end
+
+      if msgtype == "RAID_WARNING" then
+        msgtype = "GROUP_LEAD"
+      end
+
+      if msgtype == "GUILD_ACHIEVEMENT" or msgtype == "GUILD_ITEM_LOOTED" then
+        msgtype = "GUILD"
       end
 
       self:PlaySound(sndprof[msgtype], event)

@@ -1,0 +1,22 @@
+lightweight tag 3cdf01d00319d7a4fa502efef9da54cce8e2140e v2.0.4-release
+Author:	Anthony Bott <ab_bott@tpg.com.au>
+Date:	Sun May 24 08:44:01 2020 +1000
+
+commit 3cdf01d00319d7a4fa502efef9da54cce8e2140e
+Author: Anthony Bott <ab_bott@tpg.com.au>
+Date:   Sun May 24 08:44:01 2020 +1000
+
+    v2.0.4
+
+commit c6707a8aeac679c60c110059c127fd3a2a103ddf
+Author: LasterOfDesaster <fabian.pfannerstill@gmx.de>
+Date:   Mon May 11 18:02:41 2020 +0200
+
+    Added further de-DE localization'
+
+commit c6707a8aeac679c60c110059c127fd3a2a103ddf
+Author: LasterOfDesaster <fabian.pfannerstill@gmx.de>
+Date:   Mon May 11 18:02:41 2020 +0200
+
+    Added further de-DE localization'
+

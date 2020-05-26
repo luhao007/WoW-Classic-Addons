@@ -1,4 +1,4 @@
-﻿gGroupCalendar_VersionString = "1.13.3.3.22";
+gGroupCalendar_VersionString = "2.0.4";
 
 GroupCalendar_cTitle = "Group Calendar v%s";
 
@@ -275,6 +275,8 @@ GroupCalendar_cCommentLabel = "Comment:";
 CalendarEditor_cNewEvent = "New Event...";
 CalendarEditor_cEventsTitle = "Events";
 
+GroupCalendar_cRankMinLabel = "Guild rank:";
+CalendarEventEditor_cNotRightRankMsg = "You don't meet the guild rank requirement to show the event";
 CalendarEventEditor_cNotTrustedMsg = "Cannot create events due to trust settings.";
 CalendarEventEditor_cOk = "OKAY";
 
@@ -368,6 +370,8 @@ GroupCalendar_cEditPlayer = "Edit Player...";
 GroupCalendar_cInviteNow = "Inivte to group";
 GroupCalendar_cStatus = "Status";
 GroupCalendar_cAddPlayerEllipses = "Add player...";
+GroupCalendar_cAll = "All";
+GroupCalendar_cClearSelected = "Clear Selected";
 
 GroupCalendar_cAddPlayer = "Add player";
 GroupCalendar_cPlayerLevel = "Level:";
@@ -395,6 +399,7 @@ GroupCalendar_cViewByDate = "View by Date";
 GroupCalendar_cViewByRank = "View by Rank";
 GroupCalendar_cViewByName = "View by Name";
 GroupCalendar_cViewByStatus = "View by Status";
+GroupCalendar_cViewByClass = "View by Class";
 GroupCalendar_cViewByClassRank = "View by Class and Rank";
 
 GroupCalendar_cMaxPartySizeLabel = "Maximum party size:";
@@ -440,6 +445,7 @@ GroupCalendar_cLeftGroupStatus = "Left group";
 GroupCalendar_cPriorityLabel = "Priority:";
 GroupCalendar_cPriorityDate = "Date";
 GroupCalendar_cPriorityRank = "Rank";
+GroupCalendar_cPriorityClass = "Class";
 
 GroupCalendar_cConfrimDeleteRSVP = "Remove %s from this event? They can't join again unless you add them back manually.";
 

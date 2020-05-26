@@ -233,20 +233,20 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventViewerDescription" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="40" y="0"/>
+									<AbsDimension x="40" y="-5"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
 					</Frame>
-          <Frame name="CalendarEventViewerRole" inherits="CalendarRolesTemplate">
-            <Anchors>
-              <Anchor point="TOPLEFT" relativeTo="CalendarEventViewerCharacter" relativePoint="BOTTOMLEFT">
-                <Offset>
-                  <AbsDimension x="0" y="-6"/>
-                </Offset>
-              </Anchor>
-            </Anchors>
-          </Frame>
+					<Frame name="CalendarEventViewerRole" inherits="CalendarRolesTemplate">
+						<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CalendarEventViewerCharacter" relativePoint="BOTTOMLEFT">
+							<Offset>
+							<AbsDimension x="0" y="-6"/>
+							</Offset>
+						</Anchor>
+						</Anchors>
+					</Frame>
 					<CheckButton name="CalendarEventViewerYes" inherits="OptionsCheckButtonTemplate">
 						<Size>
 							<AbsDimension x="26" y="26"/>
@@ -254,7 +254,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CalendarEventViewerRole" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="20" y="-8"/>
+									<AbsDimension x="20" y="-35"/>
 								</Offset>
 							</Anchor>
 						</Anchors>

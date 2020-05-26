@@ -481,6 +481,8 @@ function CalendarGroupInvites_GetGroupItemCompare(pSortBy)
 		return CalendarGroupInvites_CompareGroupItemsByDate;
 	elseif pSortBy == "Name" then
 		return CalendarGroupInvites_CompareGroupItemsByName;
+	elseif pSortBy == "Class" then
+		return CalendarGroupInvites_CompareGroupItemsByRank;
 	else
 		Calendar_ErrorMessage("GroupCalendar: Unknown sorting method in CalendarGroupInvites_GetGroupItemCompare:"..pSortyBy);
 	end
@@ -590,53 +592,26 @@ function CalendarGroupInvites_InviteNow()
 			return;
 		end
 		
-		-- See if there's room for more
-		
-		if gGroupCalendar_Invites.Group.NumJoinedOrInvited >= vMaxPartyMembers then
-			if GetNumRaidMembers() == 0 then
-				-- Convert to a raid
-				
-				if gGroupCalendar_Invites.Group.NumJoinedMembers > 1
-				and gGroupCalendar_Invites.PartyFormed then
-					CalendarGroupInvites_SetStatus("ConvertingToRaid");
-					
-					if gGroupCalendar_Settings.DebugInvites then
-						Calendar_DebugMessage("Converting to raid");
-					end
-					
-					ConvertToRaid();
-				
-				-- Wait for at least one player to accept
-				
-				else
-					CalendarGroupInvites_SetStatus("AwaitingAcceptance");
-					if gGroupCalendar_Settings.DebugInvites then
-						Calendar_DebugMessage("Waiting for players to accept");
-					end
-				end
-			
-			-- self state is only reached if the raid is full and the player
-			-- tries to invite more
-			
-			else
-				CalendarGroupInvites_SetStatus("RaidFull");
-				gGroupCalendar_Invites.Inviting = false;
+		-- Convert to a raid		
+		if gGroupCalendar_Invites.Group.NumJoinedOrInvited >= 5 and UnitInRaid("player") == nil then
+			CalendarGroupInvites_SetStatus("ConvertingToRaid");
+			if gGroupCalendar_Settings.DebugInvites then
+				Calendar_DebugMessage("Converting to raid");
 			end
-			
-			return;
+			ConvertToRaid();
 		end
-		
+				
 		-- Invite the player
 		
 		if gGroupCalendar_Settings.DebugInvites then
 			Calendar_DebugMessage("Inviting "..vPlayer.mName);
 		end
 		
-		SendChatMessage(
-				format(GroupCalendar_cInviteWhisperFormat, EventDatabase_GetEventDisplayName(gGroupCalendar_Invites.Event)),
-				"WHISPER",
-				nil,
-				vPlayer.mName);
+		--SendChatMessage(
+		--		format(GroupCalendar_cInviteWhisperFormat, EventDatabase_GetEventDisplayName(gGroupCalendar_Invites.Event)),
+		--		"WHISPER",
+		--		nil,
+		--		vPlayer.mName);
 		
 		InviteUnit(vPlayer.mName);
 		
@@ -805,8 +780,73 @@ function CalendarGroupInvites_SelectionChanged()
 	CalendarGroupInvites_SetReadyStatus();
 end
 
-function CalendarGroupInvites_AutoSelectPlayers()
-	CalendarClassLimits_Open(gGroupCalendar_Invites.Limits, GroupCalendar_cAutoSelectWindowTitle, true, CalendarGroupInvites_AutoSelectFromLimits);
+function CalendarGroupInvites_AutoSelectPlayers(frame)
+
+	local dropdown = CreateFrame("Frame", "Test_DropDown", UIParent, "UIDropDownMenuTemplate");
+	UIDropDownMenu_Initialize(dropdown, CalendarAutoSelectionDropDown_Initialize, "MENU");
+
+	ToggleDropDownMenu(1, nil, dropdown, frame, -20, 0);
+
+	--CalendarClassLimits_Open(gGroupCalendar_Invites.Limits, GroupCalendar_cAutoSelectWindowTitle, true, CalendarGroupInvites_AutoSelectFromLimits);
+end
+
+function CalendarGroupInvites_AutoSelectAllPlayers()
+	local	vProspects = {};
+	for vCategory, vCategoryInfo in pairs(gGroupCalendar_Invites.Group.Categories) do
+		for vIndex, vPlayer in pairs(vCategoryInfo.mAttendees) do
+			if vPlayer.mGroupStatus ~= "Joined"
+			and vPlayer.mGroupStatus ~= "Invited" then
+				vPlayer.mSelected = true;				
+			end
+		end
+	end	
+	
+	CalendarGroupInvites_SelectionChanged();
+	CalendarGroupInvites_NotifyGroupChanged();
+end
+
+function CalendarGroupInvites_AutoSelectApprovedPlayers()
+	local	vProspects = {};
+	for vCategory, vCategoryInfo in pairs(gGroupCalendar_Invites.Group.Categories) do
+		for vIndex, vPlayer in pairs(vCategoryInfo.mAttendees) do
+			if vPlayer.mGroupStatus ~= "Joined"
+			and vPlayer.mGroupStatus ~= "Invited" 
+			and vPlayer.mGroupStatus ~= "Standby" then
+				vPlayer.mSelected = true;				
+			end
+		end
+	end	
+	
+	CalendarGroupInvites_SelectionChanged();
+	CalendarGroupInvites_NotifyGroupChanged();
+end
+
+function CalendarGroupInvites_AutoSelectDeselectAllPlayers()
+	local	vProspects = {};
+	for vCategory, vCategoryInfo in pairs(gGroupCalendar_Invites.Group.Categories) do
+		for vIndex, vPlayer in pairs(vCategoryInfo.mAttendees) do			
+			vPlayer.mSelected = false;			
+		end
+	end	
+	
+	CalendarGroupInvites_SelectionChanged();
+	CalendarGroupInvites_NotifyGroupChanged();
+end
+
+
+
+function CalendarGroupInvites_AutoSelectStandbyPlayers()
+	local	vProspects = {};
+	for vCategory, vCategoryInfo in pairs(gGroupCalendar_Invites.Group.Categories) do
+		for vIndex, vPlayer in pairs(vCategoryInfo.mAttendees) do
+			if vPlayer.mGroupStatus == "Standby" then
+				vPlayer.mSelected = true;				
+			end
+		end
+	end	
+	
+	CalendarGroupInvites_SelectionChanged();
+	CalendarGroupInvites_NotifyGroupChanged();
 end
 
 function CalendarGroupInvites_AutoSelectFromLimits(pLimits)

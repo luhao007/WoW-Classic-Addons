@@ -265,10 +265,7 @@ end
 
 
 function ClearChatSections(message)
-  if message then wipe(message) end
-  --    for k,v in pairs(message) do
-  --        message[k] = SplitMessageSrc[k] and nil -- WTF?
-  --    end
+  wipe(message)
 end
 
 local function safestr(s) return s or "" end
@@ -406,6 +403,9 @@ function SplitChatMessage(frame, event, ...)
         type == "CHANNEL_NOTICE" or type == "CHANNEL_NOTICE_USER") then
         -- no link
         s.NONPLAYER = arg2
+      elseif type == "EMOTE" then
+        s.PLAYER =  _G.Ambiguate(arg2, "none"):match("([^%-]+)%-?(.*)")
+      elseif type == "TEXT_EMOTE" then
       else
         s.PLAYERLINK = arg2
 
@@ -685,7 +685,7 @@ function SplitChatMessage(frame, event, ...)
     s.ACCESSID = _G.ChatHistory_GetAccessID(chatGroup, chatTarget);
     s.TYPEID = _G.ChatHistory_GetAccessID(type, chatTarget, arg12 or arg13);
 
-    s.ORG = SplitMessageOrg
+    SplitMessage.ORG = SplitMessageOrg
 
     return SplitMessage, info
   end

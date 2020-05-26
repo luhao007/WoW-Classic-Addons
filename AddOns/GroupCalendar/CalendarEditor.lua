@@ -147,6 +147,15 @@ function CalendarEditor_NewEvent()
 	end
 end
 
+StaticPopupDialogs["CALENDAR_RANK_TO_LOW"] = {
+	text = CalendarEventEditor_cNotRightRankMsg,
+	button1 = CalendarEventEditor_cOk,	
+	timeout = 10,
+	whileDead = 1,
+	hideOnEscape = 1,
+	showAlert = 1,
+};
+
 function CalendarEditor_EditIndexedEvent(pIndex)
 	local		vCompiledEvent = gCalendarEditor_CompiledSchedule[pIndex];
 	
@@ -158,8 +167,27 @@ function CalendarEditor_EditIndexedEvent(pIndex)
 		if not EventDatabase_IsResetEventType(vCompiledEvent.mType) and trustlvl >= 2 then
 			CalendarEventEditor_EditEvent(gGroupCalendar_GuildDatabase, vCompiledEvent, false);
 		else
-			CalendarEventViewer_ViewEvent(gGroupCalendar_GuildDatabase, vCompiledEvent);
+
+			if vCompiledEvent.mGuildRank then
+				-- rank argument existing
+
+				local guildRankIndex = 0;
+				if IsInGuild() then
+					_, _, guildRankIndex = GetGuildInfo("player");
+				end
+
+				if guildRankIndex <= vCompiledEvent.mGuildRank then
+					-- granted
+					CalendarEventViewer_ViewEvent(gGroupCalendar_GuildDatabase, vCompiledEvent);
+				else
+					-- denied
+					StaticPopup_Show("CALENDAR_RANK_TO_LOW");
+				end
+
+			else 
+				-- no rank set
+				CalendarEventViewer_ViewEvent(gGroupCalendar_GuildDatabase, vCompiledEvent);
+			end
 		end
 	end
-	
 end

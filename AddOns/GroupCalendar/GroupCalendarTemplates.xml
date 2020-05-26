@@ -2,7 +2,8 @@
 <UI xmlns="http://www.blizzard.com/wow/ui/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ http://wowprogramming.com/FrameXML/UI.xsd">
-	
+
+ 
 	<Frame name="CalendarDropDownTemplate" inherits="UIDropDownMenuTemplate" hidden="false" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -979,11 +980,13 @@
             </Layers>
 						<Scripts>
 							<OnClick>
-								CalendarGroupInvites_AutoSelectPlayers();
+								CalendarGroupInvites_AutoSelectPlayers(self);
 							</OnClick>              
 						</Scripts>
 					</Button>
-					<Button name="$parentInvite" inherits="CalendarSmallButtonTemplate" text="GroupCalendar_cInviteButtonTitle">
+          
+
+          <Button name="$parentInvite" inherits="CalendarSmallButtonTemplate" text="GroupCalendar_cInviteButtonTitle">
 						<Size>
 							<AbsDimension x="120" y="21"/>
 						</Size>

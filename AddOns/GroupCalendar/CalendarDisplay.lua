@@ -1146,6 +1146,12 @@ function Calendar_GetDayOfWeek(pMonth, pDay, pYear)
 	
 end
 
+function CalendarAutoSelectionDropDown_OnLoad(frame)
+	UIDropDownMenu_Initialize(frame, CalendarAutoSelectionDropDown_Initialize);
+	--UIDropDownMenu_SetWidth(frame, 42);
+	--UIDropDownMenu_Refresh(frame);
+end
+
 function CalendarHourDropDown_OnLoad(frame)
 	UIDropDownMenu_Initialize(frame, CalendarHourDropDown_Initialize);
 	UIDropDownMenu_SetWidth(frame, 42);
@@ -1244,6 +1250,41 @@ function GroupCalendarViewMenu_OnLoad(frame)
 	UIDropDownMenu_Initialize(frame, GroupCalendarViewMenu_Initialize);
 	UIDropDownMenu_SetWidth(frame, 100);
 	UIDropDownMenu_Refresh(frame);
+end
+
+function CalendarAutoSelectionDropDown_Initialize(vFrame, level, menuList)
+	
+	vItem = UIDropDownMenu_CreateInfo();
+	vItem.text = GroupCalendar_cAttending;
+	vItem.arg1 = 1;
+	vItem.value = 1;
+	--vItem.owner = vFrame;
+	vItem.func = CalendarGroupInvites_AutoSelectApprovedPlayers;
+	UIDropDownMenu_AddButton(vItem);	
+
+	vItem = UIDropDownMenu_CreateInfo();
+	vItem.text = GroupCalendar_cStandby;
+	vItem.arg1 = 2;
+	vItem.value = 2;
+	--vItem.owner = vFrame;
+	vItem.func = CalendarGroupInvites_AutoSelectStandbyPlayers;
+	UIDropDownMenu_AddButton(vItem);
+
+	vItem = UIDropDownMenu_CreateInfo();
+	vItem.text = GroupCalendar_cAll;
+	vItem.arg1 = 3;
+	vItem.value = 3;
+	--vItem.owner = vFrame;
+	vItem.func = CalendarGroupInvites_AutoSelectAllPlayers;
+	UIDropDownMenu_AddButton(vItem);
+
+	vItem = UIDropDownMenu_CreateInfo();
+	vItem.text = GroupCalendar_cClearSelected;
+	vItem.arg1 = 4;
+	vItem.value = 4;
+	--vItem.owner = vFrame;
+	vItem.func = CalendarGroupInvites_AutoSelectDeselectAllPlayers;
+	UIDropDownMenu_AddButton(vItem);
 end
 
 function CalendarHourDropDown_Initialize(vFrame, level, menuList)
@@ -1425,18 +1466,20 @@ end
 
 function CalendarGuildRankDropDown_Initialize(vFrame, level, menuList)
 	--local	vFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	local	vNumRanks = GuildControlGetNumRanks();
+	if IsInGuild() then
+		local	vNumRanks = GuildControlGetNumRanks();
 	
-	for vIndex = 1, vNumRanks do
-		local	vRankName = GuildControlGetRankName(vIndex);
-		local	vItem = UIDropDownMenu_CreateInfo();
+		for vIndex = 1, vNumRanks do
+			local	vRankName = GuildControlGetRankName(vIndex);
+			local	vItem = UIDropDownMenu_CreateInfo();
 
-		vItem.text = vRankName;
-		vItem.value = vIndex - 1;
-		vItem.owner = vFrame;
-		vItem.func = CalendarDropDown_OnClick;
+			vItem.text = vRankName;
+			vItem.value = vIndex - 1;
+			vItem.owner = vFrame;
+			vItem.func = CalendarDropDown_OnClick;
 
-		UIDropDownMenu_AddButton(vItem);
+			UIDropDownMenu_AddButton(vItem);
+		end
 	end
 end
 
@@ -1479,6 +1522,7 @@ function CalendarPriorityDropDown_Initialize(vFrame, level, menuList)
 	
 	Calendar_AddMenuItem(vFrame, GroupCalendar_cPriorityDate, "Date")
 	Calendar_AddMenuItem(vFrame, GroupCalendar_cPriorityRank, "Rank")
+	Calendar_AddMenuItem(vFrame, GroupCalendar_cPriorityClass, "Class")
 end
 
 function CalendarCharactersDropDown_Initialize(vFrame, level, menuList)
@@ -1624,6 +1668,7 @@ function GroupCalendarViewMenu_Initialize(vFrame, level, menuList)
 	UIDropDownMenu_AddButton({text = GroupCalendar_cViewByDate, value = "Date", owner = vFrame, func = CalendarDropDown_OnClick});
 	UIDropDownMenu_AddButton({text = GroupCalendar_cViewByRank, value = "Rank", owner = vFrame, func = CalendarDropDown_OnClick});
 	UIDropDownMenu_AddButton({text = GroupCalendar_cViewByName, value = "Name", owner = vFrame, func = CalendarDropDown_OnClick});
+	UIDropDownMenu_AddButton({text = GroupCalendar_cViewByClass, value = "Class", owner = vFrame, func = CalendarDropDown_OnClick});
 end
 
 function CalendarDropDown_OnClick(data)	
@@ -1679,21 +1724,23 @@ function Calendar_AutoCompleteFriend(pEditBox)
 end
 
 function Calendar_AutoCompleteGuildMember(pEditBox)
-	local	vNumMembers = GetNumGuildMembers(true);
+	if IsInGuild() then
+		local	vNumMembers = GetNumGuildMembers(true);
 	
-	if vNumMembers == 0 then
-		return false;
-	end
+		if vNumMembers == 0 then
+			return false;
+		end
 	
-	local	vEditBoxText = strupper(pEditBox:GetText());
-	local	vEditBoxTextLength = strlen(vEditBoxText);
+		local	vEditBoxText = strupper(pEditBox:GetText());
+		local	vEditBoxTextLength = strlen(vEditBoxText);
 	
-	for vIndex = 1, vNumMembers do
-		local	vName = GetGuildRosterInfo(vIndex);
-		vName = GroupCalendar_RemoveRealmName(vName);
-		if strfind(strupper(vName), "^"..vEditBoxText) then
-			Calendar_SetEditBoxAutoCompleteText(pEditBox, vName);
-			return true;
+		for vIndex = 1, vNumMembers do
+			local	vName = GetGuildRosterInfo(vIndex);
+			vName = GroupCalendar_RemoveRealmName(vName);
+			if strfind(strupper(vName), "^"..vEditBoxText) then
+				Calendar_SetEditBoxAutoCompleteText(pEditBox, vName);
+				return true;
+			end
 		end
 	end
 	
