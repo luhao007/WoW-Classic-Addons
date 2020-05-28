@@ -371,8 +371,8 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 L = {
 	["Alias"] = {
 		[" - list all aliases; supply <keyword> to search for matching aliases (cmd aliases: /listallaliases)"] = "- Auflisten aller Aliase; <Suchbegriff> eingeben, um nach passenden Aliasen zu suchen (cmd aliases: /listallaliases)",
-		["%s() called with blank string!"] = "%s() mit leerem String aufgerufen!",
-		["%s() called with nil argument!"] = "%s() mit nil Parameter aufgerufen!",
+		["%s() called with blank string!"] = "%s() mit leerer Zeichenfolge aufgerufen!",
+		["%s() called with nil argument!"] = "%s() mit Null Parameter aufgerufen!",
 		["/%s aliased to \"/%s\""] = "/%s hat nun den Alias \"/%s\"",
 		["/%s aliased to: /%s"] = "/%s hat nun den Alias: /%s",
 		["<alias> - remove the alias <alias> (cmd aliases: /delalias, /remalias)"] = "<alias> - entfernt den Alias <alias> (cmd aliases: /delalias, /remalias)",
@@ -409,7 +409,7 @@ L = {
 		["unalias"] = "Alias aufheben",
 		["verbose"] = "verlängern",
 		["warnUser() called with nil argument!"] = "warnUser() mit nil-Paramter aufgerufen!",
-		["warnUser() called with zero length string!"] = "warnUser() mit leerem String aufgerufen!",
+		["warnUser() called with zero length string!"] = "warnt Benutzer() mit leerem String aufgerufen!",
 	}
 }
 

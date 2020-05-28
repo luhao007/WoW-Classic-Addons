@@ -17,6 +17,7 @@
 localization.en.lua
 localization.es.lua
 localization.kr.lua
+localization.mx.lua
 localization.ru.lua
 localization.cn.lua
 Venoxis.lua

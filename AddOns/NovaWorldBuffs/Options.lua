@@ -153,15 +153,6 @@ NWB.options = {
 			get = "getShowAllAlts",
 			set = "setShowAllAlts",
 		},
-		flashMinimized = {
-			type = "toggle",
-			name = "Flash Minimized",
-			desc = "Flash the wow client when you have it minimized and a buff is about to drop? Flashes when  minute left on timer "
-					.. "and when a head is handed in a few seconds before buff drops.",
-			order = 17,
-			get = "getFlashMinimized",
-			set = "setFlashMinimized",
-		},
 		minimapButton = {
 			type = "toggle",
 			name = "Show Minimap Button",
@@ -211,7 +202,7 @@ NWB.options = {
 			type = "toggle",
 			name = "DMF Spawn",
 			desc = "Show Darkmoon Faire spawn time, this will only show when there is less than 6 hours left until spawn or despawn.",
-			order = 8,
+			order = 28,
 			get = "getLogonDmfSpawn",
 			set = "setLogonDmfSpawn",
 		},
@@ -345,6 +336,22 @@ NWB.options = {
 			order = 47,
 			get = "getMiddleBuffWarning",
 			set = "setMiddleBuffWarning",
+		},
+		middleHideCombat = {
+			type = "toggle",
+			name = "Hide In Combat",
+			desc = "Hide middle of the screen warnings in combat?",
+			order = 48,
+			get = "getMiddleHideCombat",
+			set = "settMiddleHideCombat",
+		},
+		middleHideRaid = {
+			type = "toggle",
+			name = "Hide In Raid",
+			desc = "Hide middle of the screen warnings in raid instances? (Doesn't hide in normal dungeons)",
+			order = 49,
+			get = "getMiddleHideRaid",
+			set = "settMiddleHideRaid",
 		},
 		guildWarningHeader = {
 			type = "header",
@@ -787,6 +794,35 @@ NWB.options = {
 			get = "getSoundsZanDrop",
 			set = "setSoundsZanDrop",
 		},
+		flash = {
+			type = "header",
+			name = "Flash When Minimized",
+			order = 130,
+		},
+		flashOneMin = {
+			type = "toggle",
+			name = "Flash One Minute",
+			desc = "Flash the wow client when you have it minimized and 1 minute is left on timer?",
+			order = 131,
+			get = "getFlashOneMin",
+			set = "setFlashOneMin",
+		},
+		flashFirstYell = {
+			type = "toggle",
+			name = "Flash NPC Yell",
+			desc = "Flash the wow client when you have it minimized and the NPC's out a few seconds before buff drops?",
+			order = 132,
+			get = "getFlashFirstYell",
+			set = "setFlashFirstYell",
+		},
+		flashFirstYellZan = {
+			type = "toggle",
+			name = "Flash Zandalar",
+			desc = "Flash the wow client when you have it minimized and the Zandalar buff is about to go out?",
+			order = 133,
+			get = "getFlashFirstYellZan",
+			set = "setFlashFirstYellZan",
+		},
 	},
 };
 
@@ -845,6 +881,8 @@ NWB.optionDefaults = {
 		middle1 = true,
 		middle0 = true,
 		middleBuffWarning = true,
+		middleHideCombat = false,
+		middleHideRaid = false,
 		guild30 = false,
 		guild15 = false,
 		guild10 = true,
@@ -911,7 +949,6 @@ NWB.optionDefaults = {
 		logonDmfBuffCooldown = true,
 		showDmfBuffWb = true,
 		showAllAlts = false,
-		flashMinimized = true,
 		filterYells = false,
 		filterDrops = false,
 		filterTimers = false,
@@ -935,6 +972,9 @@ NWB.optionDefaults = {
 		expiredTimersDuration = 5,
 		minimapIcon = {["minimapPos"] = 165, ["hide"] = false},
 		minimapButton = true,
+		flashOneMin = true,
+		flashFirstYell = true,
+		flashFirstYellZan = true,
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = true, --Enable features being tested on occasion.
@@ -1165,6 +1205,33 @@ function NWB:getFlashMinimized(info)
 	return self.db.global.flashMinimized;
 end
 
+--Flash minimized.
+function NWB:setFlashOneMin(info, value)
+	self.db.global.flashOneMin = value;
+end
+
+function NWB:getFlashOneMin(info)
+	return self.db.global.flashOneMin;
+end
+
+--Flash minimized.
+function NWB:setFlashFirstYell(info, value)
+	self.db.global.flashFirstYell = value;
+end
+
+function NWB:getFlashFirstYell(info)
+	return self.db.global.flashFirstYell;
+end
+
+--Flash minimized.
+function NWB:setFlashFirstYellZan(info, value)
+	self.db.global.flashFirstYellZan = value;
+end
+
+function NWB:getFlashFirstYellZan(info)
+	return self.db.global.flashFirstYellZan;
+end
+
 --Minimap button
 function NWB:setMinimapButton(info, value)
 	self.db.global.minimapButton = value;
@@ -1305,6 +1372,24 @@ end
 
 function NWB:getMiddleBuffWarning(info)
 	return self.db.global.middleBuffWarning;
+end
+
+--Middle of the screen hide in combat.
+function NWB:setMiddleHideCombat(info, value)
+	self.db.global.middleHideCombat = value;
+end
+
+function NWB:getMiddleHideCombat(info)
+	return self.db.global.middleHideCombat;
+end
+
+--Middle of the screen hide in raid.
+function NWB:setMiddleHideRaid(info, value)
+	self.db.global.middleHideRaid = value;
+end
+
+function NWB:getMiddleHideRaid(info)
+	return self.db.global.middleHideRaid;
 end
 
 --Guild 30 minute warning.

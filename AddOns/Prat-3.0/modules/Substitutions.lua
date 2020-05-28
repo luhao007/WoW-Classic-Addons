@@ -649,7 +649,7 @@ L = {
 		["A module to provide basic chat substitutions."] = "Ein Modul, das grundlegende Ersetzungen zur Verfügung stellt.",
 		["Are you sure - this will delete all user defined substitutions and reset defaults?"] = "Bist du sicher - dies wird alle vom Benutzer definierten Ersetzungen löschen und auf Standard zurücksetzen.",
 		["Are you sure?"] = "Bist du sicher?",
-		["can't find substitution index for a substitution named '%s'"] = "Kann Ersetzungsindex für eine Ersetzung mit dem Namen '%s' nicht finden.",
+		["can't find substitution index for a substitution named '%s'"] = "Es kann kein Ersatzindex für eine Ersetzung mit dem Namen '%s' gefunden werden.",
 		["current-prompt"] = [=[Gegenwärtiger Wert: '%s'
 Anklicken, um in den Chat einzufügen.]=],
 		["defined %s: expands to => %s"] = "definiert %s: erweitert zu => %s",

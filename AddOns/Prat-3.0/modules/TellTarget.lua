@@ -96,12 +96,12 @@ L = {
 L = {
 	["TellTarget"] = {
 		["/tt"] = true,
-		["Adds telltarget slash command (/tt)."] = "Fügt das Slash-Kommando TellTarget (/tt) hinzu",
+		["Adds telltarget slash command (/tt)."] = "Fügt den Slash-Befehl Ziel Sagen (/tt) hinzu.",
 		["No target selected."] = "Kein Ziel ausgewählt.",
 		["NoTarget"] = "KeinZiel",
 		["Target does not exist."] = "Ziel existiert nicht.",
 		["Target is not a player."] = "Ziel ist kein Spieler.",
-		["TellTarget"] = true,
+		["TellTarget"] = "Ziel Sagen",
 	}
 }
 

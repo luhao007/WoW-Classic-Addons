@@ -264,9 +264,9 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 L = {
 	["PopupMessage"] = {
 		["Add Nickname"] = "Spitzname hinzufügen",
-		["Adds an alternate name to show in popups."] = "Einen anderen (alternierenden) Namen hinzufügen, der in Popups angezeigt werden soll.",
+		["Adds an alternate name to show in popups."] = "Fügt einen alternativen Namen hinzu, der in Popups angezeigt werden soll.",
 		["Clear Nickname"] = "Spitznamen löschen",
-		["Clears alternate name to show in popups."] = "Einen anderen (alternierenden) Namen löschen, der in Popups angezeigt werden soll.",
+		["Clears alternate name to show in popups."] = "Löscht den alternativen Namen, der in Popups angezeigt werden soll.",
 		["framealpha_desc"] = "Den Transparenzwert des Popup-Rahmens bei voller Darstellung einstellen.",
 		["framealpha_name"] = "Transparenz der Popup-Rahmens",
 		["Popup"] = true,

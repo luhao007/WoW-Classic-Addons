@@ -278,7 +278,7 @@ Usage:
 
   function module:StashSearch(frame)
     frame:SetAlpha(self.db.profile.searchinactivealpha)
-    frame:SetWidth(50)
+    frame:SetWidth(30)
   end
 
   function module:UnstashSearch(frame)
@@ -315,14 +315,6 @@ Usage:
 
   Prat:SetModuleInit(module, function(self)
     self.searchBoxes = {}
-
-    for name, frame in pairs(Prat.HookedFrames) do
-      if not self.searchBoxes[name] then
-        self.searchBoxes[name] = self:CreateSearchBox(frame)
-      end
-    end
-
-    Prat.RegisterChatEvent(self, Prat.Events.FRAMES_UPDATED)
   end)
 
   function module:Prat_FramesUpdated(info, name, chatFrame, ...)
@@ -332,6 +324,14 @@ Usage:
   end
 
   function module:OnModuleEnable()
+    Prat.RegisterChatEvent(self, Prat.Events.FRAMES_UPDATED)
+
+    for name, frame in pairs(Prat.HookedFrames) do
+      if not self.searchBoxes[name] then
+        self.searchBoxes[name] = self:CreateSearchBox(frame)
+      end
+    end
+
     for _, f in pairs(self.searchBoxes) do
       f:Show()
 
@@ -428,6 +428,7 @@ Usage:
     end
 
     wipe(foundlines)
+    wipe(scrapelines)
   end
 
   function module:ScrapeFrame(frame)

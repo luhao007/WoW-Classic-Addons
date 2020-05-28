@@ -1,6 +1,5 @@
 --------------------
 --Nova World Buffs--
---Classic WoW world buff timers and pre warnings.
 --Novaspark-Arugal OCE (classic).
 --https://www.curseforge.com/members/venomisto/projects
 --Note: Server restarts will cause the timers to be inaccurate because the NPC's reset.
@@ -142,6 +141,8 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		remoteVersion = "0";
 	end
 	NWB.hasAddon[sender] = remoteVersion or "0";
+	--Trying to fix double guild msg bug, extract settings from data first even if the rest fails for some reason.
+	NWB:extractSettings(data, sender, distribution);
 	--if (commPrefix == "NWB") then
 		--NWB:debug("received", commPrefix, distribution, sender, cmd);
 	--end
@@ -151,13 +152,15 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		return;
 	end
 	--Some updates requite ignoring old versions.
-	if (tonumber(remoteVersion) < 1.53) then
+	if (tonumber(remoteVersion) < 1.58) then
+		--NWB:extractSettings(data, sender, distribution);
 		if (cmd == "requestData" and distribution == "GUILD") then
 			NWB:sendData("GUILD");
 		end
 		return;
 	end
 	if (cmd == "data" or cmd == "settings") then
+		--NWB:extractSettings(data, sender, distribution);
 		NWB:receivedData(data, sender, distribution);
 	elseif (cmd == "requestData") then
 		--Other addon users request data when they log on.
@@ -196,6 +199,9 @@ function NWB:sendComm(distribution, string, target)
 		return;
 	end
 	if (distribution == "GUILD" and not IsInGuild()) then
+		return;
+	end
+	if (UnitInBattleground("player") and distribution ~= "GUILD") then
 		return;
 	end
 	if (distribution == "CHANNEL") then
@@ -323,24 +329,24 @@ function NWB:createData(distribution)
 	end
 	if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
 		data['rendTimer'] = NWB.data.rendTimer;
-		--data['rendTimerWho'] = NWB.data.rendTimerWho;
+		data['rendTimerWho'] = NWB.data.rendTimerWho;
 		data['rendYell'] = NWB.data.rendYell or 0;
 		data['rendYell2'] = NWB.data.rendYell2 or 0;
-		--data['rendSource'] = NWB.data.rendSource;
+		data['rendSource'] = NWB.data.rendSource;
 	end
 	if (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
 		data['onyTimer'] = NWB.data.onyTimer;
-		--data['onyTimerWho'] = NWB.data.onyTimerWho;
+		data['onyTimerWho'] = NWB.data.onyTimerWho;
 		data['onyYell'] = NWB.data.onyYell or 0;
 		data['onyYell2'] = NWB.data.onyYell2 or 0;
-		--data['onySource'] = NWB.data.onySource;
+		data['onySource'] = NWB.data.onySource;
 	end
 	if (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
 		data['nefTimer'] = NWB.data.nefTimer;
-		--data['nefTimerWho'] = NWB.data.nefTimerWho;
+		data['nefTimerWho'] = NWB.data.nefTimerWho;
 		data['nefYell'] = NWB.data.nefYell or 0;
 		data['nefYell2'] = NWB.data.nefYell2 or 0;
-		--data['nefSource'] = NWB.data.nefSource;
+		data['nefSource'] = NWB.data.nefSource;
 	end
 	--[[if (NWB.data.zanTimer > (GetServerTime() - NWB.db.global.zanRespawnTime)) then
 		data['zanTimer'] = NWB.data.zanTimer;
@@ -364,19 +370,13 @@ function NWB:createData(distribution)
 		end
 	end
 	for k, v in pairs(NWB.tubers) do
-		--Add currently active songflower timers.
+		--Add currently active tuber timers.
 		if (NWB.data[k] > GetServerTime() - 1500) then
 			data[k] = NWB.data[k];
 		end
 	end
 	for k, v in pairs(NWB.dragons) do
-		--Add currently active songflower timers.
-		if (NWB.data[k] > GetServerTime() - 1500) then
-			data[k] = NWB.data[k];
-		end
-	end
-	for k, v in pairs(NWB.dragons) do
-		--Add currently active songflower timers.
+		--Add currently active dragon timers.
 		if (NWB.data[k] > GetServerTime() - 1500) then
 			data[k] = NWB.data[k];
 		end
@@ -407,7 +407,8 @@ function NWB:createDataLayered(distribution)
 		sendLayerMapDelay = 1260;
 	end
 	local sendLayerMap, foundTimer;
-	if ((GetServerTime() - lastSendLayerMap[distribution]) > sendLayerMapDelay or distribution == "GUILD") then
+	--if ((GetServerTime() - lastSendLayerMap[distribution]) > sendLayerMapDelay or distribution == "GUILD") then
+	if ((GetServerTime() - lastSendLayerMap[distribution]) > sendLayerMapDelay) then
 		--Layermap data data won't change much except right after a server restart.
 		--So there's no need to use the addon bandwidth every time we send.
 		sendLayerMap = true;
@@ -518,19 +519,13 @@ function NWB:createDataLayered(distribution)
 		end
 	end
 	for k, v in pairs(NWB.tubers) do
-		--Add currently active songflower timers.
+		--Add currently active tuber timers.
 		if (NWB.data[k] > GetServerTime() - 1500) then
 			data[k] = NWB.data[k];
 		end
 	end
 	for k, v in pairs(NWB.dragons) do
-		--Add currently active songflower timers.
-		if (NWB.data[k] > GetServerTime() - 1500) then
-			data[k] = NWB.data[k];
-		end
-	end
-	for k, v in pairs(NWB.dragons) do
-		--Add currently active songflower timers.
+		--Add currently active dragon timers.
 		if (NWB.data[k] > GetServerTime() - 1500) then
 			data[k] = NWB.data[k];
 		end
@@ -623,6 +618,29 @@ local validKeys = {
 	["GUID"] = true,
 };
 
+function NWB:extractSettings(data, sender, distribution)
+	if (distribution ~= "GUILD") then
+		return;
+	end
+	if (not data) then
+		NWB:debug("extractSettings no data received from:", sender);
+		return;
+	end
+	local deserializeResult, data = Serializer:Deserialize(data);
+	if (not deserializeResult) then
+		--NWB:debug("Failed to deserialize extractSettings data.");
+		return;
+	end
+	local nameOnly, realm = strsplit("-", sender, 2);
+	--NWB:debug(data)
+	for k, v in pairs(data) do
+		if (type(v) == "table" and string.match(k, nameOnly) and string.match(k, "%-") and next(v)) then
+			--NWB:debug("Extracted settings from:", sender);
+			NWB.data[k] = v;
+		end
+	end
+end
+
 --Add received data to our database.
 --This is super ugly for layered stuff, but it's meant to work with all diff versions at once, will be cleaned up later.
 function NWB:receivedData(data, sender, distribution)
@@ -643,7 +661,8 @@ function NWB:receivedData(data, sender, distribution)
 		return;
 	end
 	if (data["rendTimer"] and (data["rendTimer"] < NWB.data["rendTimer"] or 
-		(data["rendYell"] < (data["rendTimer"] - 120) and data["rendYell2"] < (data["rendTimer"] - 120)))) then
+			(data["rendYell"] and data["rendYell"] < (data["rendTimer"] - 120)
+			and data["rendYell2"] and data["rendYell2"] < (data["rendTimer"] - 120)))) then
 		--Don't overwrite any data for this timer type if it's an old timer.
 		if (data["rendYell"] < (data["rendTimer"] - 120) and data["rendYell2"] < (data["rendTimer"] - 120)) then
 			--NWB:debug("invalid rend timer from", sender, "npcyell:", data["rendYell"], "buffdropped:", data["rendTimer"]);
@@ -655,7 +674,8 @@ function NWB:receivedData(data, sender, distribution)
 		data['rendSource'] = nil;
 	end
 	if (data["onyTimer"] and (data["onyTimer"] < NWB.data["onyTimer"] or
-			(data["onyYell"] < (data["onyTimer"] - 120) and data["onyYell2"] < (data["onyTimer"] - 120)))) then
+			(data["onyYell"] and data["onyYell"] < (data["onyTimer"] - 120)
+			and data["onyYell2"] and data["onyYell2"] < (data["onyTimer"] - 120)))) then
 		if (data["onyYell"] < (data["onyTimer"] - 120) and data["onyYell2"] < (data["onyTimer"] - 120)) then
 			--NWB:debug("invalid ony timer from", sender, "npcyell:", data["onyYell"], "buffdropped:", data["onyTimer"]);
 		end
@@ -666,7 +686,8 @@ function NWB:receivedData(data, sender, distribution)
 		data['onySource'] = nil;
 	end
 	if (data["nefTimer"] and (data["nefTimer"] < NWB.data["nefTimer"] or
-			(data["nefYell"] < (data["nefTimer"] - 120) and data["nefYell2"] < (data["nefTimer"] - 120)))) then
+			(data["nefYell"] and data["nefYell"] < (data["nefTimer"] - 120)
+			and data["nefYell2"] and data["nefYell2"] < (data["nefTimer"] - 120)))) then
 		if (data["nefYell"] < (data["nefTimer"] - 120) and data["nefYell2"] < (data["nefTimer"] - 120)) then
 			--NWB:debug("invalid nef timer from", sender, "npcyell:", data["nefYell"], "buffdropped:", data["nefTimer"]);
 		end
@@ -1208,50 +1229,6 @@ function NWB.addClickLinks(self, event, msg, author, ...)
 	--end
 end
 
-function NWB.guildChatFilter(self, event, msg, author, ...)
-	local types = {
-		--NPC dialogue started msgs.
-		["zanFirstYellMsg"] = "filterYells",
-		["rendFirstYellMsg"] = "filterYells",
-		["onyxiaFirstYellMsg"] = "filterYells",
-		["nefarianFirstYellMsg"] = "filterYells",
-		--Buff has dropped msgs.
-		["rendBuffDropped"] = "filterDrops",
-		["onyxiaBuffDropped"] = "filterDrops",
-		["nefarianBuffDropped"] = "filterDrops",
-		["zanBuffDropped"] = "filterDrops",
-		--Timer msgs.
-		["newBuffCanBeDropped"] = "filterTimers", --"A new %s buff can be dropped now"
-		["buffResetsIn"] = "filterTimers",--"%s resets in %s";
-		--Songflower msgs.
-		["songflowerPicked"] = "filterSongflowers",
-		--Npc killed
-		["onyxiaNpcKilledHorde"] = "filterNpcKilled",
-		["onyxiaNpcKilledAlliance"] = "filterNpcKilled",
-		["nefarianNpcKilledHorde"] = "filterNpcKilled",
-		["nefarianNpcKilledAlliance"] = "filterNpcKilled",
-	};
-	for k, v in pairs(types) do
-		local match = string.gsub(L[k], "%(", "%%(");
-		match = string.gsub(match, "%)", "%%)");
-		match = string.gsub(match, "%%s", "(.+)");
-		if (NWB.db.global[v] and string.match(msg, "%[WorldBuffs%]") and string.match(msg, match)) then
-			NWB:debug("filtering", k);
-			return true;
-		end
-	end
-	if (NWB.db.global.filterCommand and (string.match(msg, "^!wb") or string.match(msg, "^!dmf"))) then
-		NWB:debug("filtering command");
-		return true;
-	end
-	if (NWB.db.global.filterCommandResponse and string.match(msg, "%[WorldBuffs%]") and
-			string.match(msg, L["onyxia"] .. ":(.+)" .. L["nefarian"] .. ":")) then
-		NWB:debug("filtering command response");
-		return true;
-	end
-	return false, msg, author, ...;
-end
-
 ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", NWB.addClickLinks);
@@ -1260,7 +1237,6 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND_LEADER", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", NWB.addClickLinks);
-ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", NWB.guildChatFilter);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", NWB.addClickLinks);
 ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", NWB.addClickLinks);
@@ -1487,6 +1463,7 @@ function NWB:ticker()
 	end)
 end
 
+--Please Blizzard lets us use compression libs for yell msgs, they get blocked by some filter only on the yell/say channel.
 function NWB:yellTicker()
 	local yellDelay = 440;
 	if (NWB.cnRealms[NWB.realm] or NWB.twRealms[NWB.realm] or NWB.krRealms[NWB.realm]) then
@@ -1513,18 +1490,23 @@ end
 --Filter addon comm warnings from yell for 5 seconds after sending a yell.
 --Even though we only send 1 msg every few minutes I think it can still trigger this msg if a large amount of people are in 1 spot.
 --Even if it triggers this msg the data still got out there to most people, it will spread just fine over time.
---"yell" msgs possibly don't just send 1 msg to the server but instead loop through every player close and send 1 by 1?
+--Server side limit depends on how many people are close by when you send maybe?
 --NWB.doFilterAddonChatMsg = false;
 local function filterAddonChatMsg(self, event, msg, author, ...)
 	if (event == "CHAT_MSG_SYSTEM") then
-		--if (NWB.doFilterAddonChatMsg) then
-		if ((GetServerTime() - NWB.lastDataSent) < 30) then
+		--Filter if any data sent in the last 30 seconds.
+		--But always filter on CN realms, they still get msgs even though we're filtering 30 seconds after.
+		--I think CN have some other addon issues over there.
+		if (string.find(msg, "The number of messages that can be sent is limited")) then
+			NWB:debug("System msg:", GetServerTime() - NWB.lastDataSent);
+		end
+		if ((GetServerTime() - NWB.lastDataSent) < 30 or NWB.cnRealms[NWB.realm]) then
 			--The number of messages that can be sent is limited, please wait to send another message.
 			if (string.find(msg, ERR_CHAT_THROTTLED) or string.find(msg, "The number of messages that can be sent is limited")
 					or string.find(msg, "可发送的信息数量受限") or string.find(msg, "本頻道可傳送的訊息數量有限")) then
-				if (not NWB.isDebug) then
+				--if (not NWB.isDebug) then
 					return true;
-				end
+				--end
 	    	end
 	    end
     elseif (event == "CHAT_MSG_WHISPER") then
@@ -1607,22 +1589,6 @@ function NWB:doWarning(type, num, secondsLeft, layer)
 	elseif (NWB.db.global.chat0 and num == 0 and send) then
 		NWB:print(msg);
 	end
-	--Middle of the screen.
-	local colorTable = {r = self.db.global.middleColorR, g = self.db.global.middleColorG, 
-			b = self.db.global.middleColorB, id = 41, sticky = 0};
-	if (NWB.db.global.middle30 and num == 30 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	elseif (NWB.db.global.middle15 and num == 15 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	elseif (NWB.db.global.middle10 and num == 10 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	elseif (NWB.db.global.middle5 and num == 5 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	elseif (NWB.db.global.middle1 and num == 1 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	elseif (NWB.db.global.middle0 and num == 0 and send) then
-		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
-	end
 	--Guild.
 	local loadWait = GetServerTime() - NWB.loadTime;
 	if (loadWait > 5 and NWB.db.global.guild30 and num == 30 and send) then
@@ -1639,7 +1605,30 @@ function NWB:doWarning(type, num, secondsLeft, layer)
 		--NWB:sendGuildMsg(msg, "guild0");
 	end
 	if (num == 1) then
-		NWB:startFlash();
+		NWB:startFlash("flashOneMin");
+	end
+	--Middle of the screen.
+	if (InCombatLockdown() and NWB.db.global.middleHideCombat) then
+		return;
+	end
+	local inInstance, instanceType = IsInInstance();
+	if (inInstance and instanceType == "raid" and NWB.db.global.middleHideRaid) then
+		return;
+	end
+	local colorTable = {r = self.db.global.middleColorR, g = self.db.global.middleColorG, 
+			b = self.db.global.middleColorB, id = 41, sticky = 0};
+	if (NWB.db.global.middle30 and num == 30 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	elseif (NWB.db.global.middle15 and num == 15 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	elseif (NWB.db.global.middle10 and num == 10 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	elseif (NWB.db.global.middle5 and num == 5 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	elseif (NWB.db.global.middle1 and num == 1 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	elseif (NWB.db.global.middle0 and num == 0 and send) then
+		RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
 	end
 end
 
@@ -1707,9 +1696,6 @@ end
 --Setting to allow guild masters to disable msgs in chat.
 NWB.guildMasterSettings = {};
 function NWB:checkGuildMasterSetting(type)
-	if (NWB.db.global.disableAllGuildMsgs) then
-		return;
-	end
 	if (not IsInGuild()) then
 		return;
 	end
@@ -1735,7 +1721,7 @@ function NWB:checkGuildMasterSetting(type)
 	NWB.guildMasterSettings = {};
 	for k, v in pairs(settings) do
 		if (note and string.find(string.lower(note), k)) then
-			NWB:debug("Guild master setting found:", k);
+			--NWB:debug("Guild master setting found:", k);
 			NWB.guildMasterSettings[v] = true;
 			if (v == 1) then
 				found = true;
@@ -1869,7 +1855,7 @@ function NWB:doFirstYell(type)
 				NWB:sendGuildMsg(L["rendFirstYellMsg"], "guildNpcDialogue");
 			end
 			rendFirstYell = GetServerTime();
-			NWB:startFlash();
+			NWB:startFlash("flashFirstYell");
 			if (NWB.db.global.middleBuffWarning) then
 				RaidNotice_AddMessage(RaidWarningFrame, L["rendFirstYellMsg"], colorTable, 5);
 			end
@@ -1883,7 +1869,7 @@ function NWB:doFirstYell(type)
 				NWB:sendGuildMsg(L["onyxiaFirstYellMsg"], "guildNpcDialogue");
 			end
 			onyFirstYell = GetServerTime();
-			NWB:startFlash();
+			NWB:startFlash("flashFirstYell");
 			if (NWB.db.global.middleBuffWarning) then
 				RaidNotice_AddMessage(RaidWarningFrame, L["onyxiaFirstYellMsg"], colorTable, 5);
 			end
@@ -1897,7 +1883,7 @@ function NWB:doFirstYell(type)
 				NWB:sendGuildMsg(L["nefarianFirstYellMsg"], "guildNpcDialogue");
 			end
 			nefFirstYell = GetServerTime();
-			NWB:startFlash();
+			NWB:startFlash("flashFirstYell");
 			if (NWB.db.global.middleBuffWarning) then
 				RaidNotice_AddMessage(RaidWarningFrame, L["nefarianFirstYellMsg"], colorTable, 5);
 			end
@@ -1916,7 +1902,7 @@ function NWB:doFirstYell(type)
 			end
 			NWB:debug(L["zanFirstYellMsg"]);
 			zanFirstYell = GetServerTime();
-			NWB:startFlash();
+			NWB:startFlash("flashFirstYellZan");
 			if (NWB.db.global.middleBuffWarning) then
 				RaidNotice_AddMessage(RaidWarningFrame, L["zanFirstYellMsg"], colorTable, 5);
 			end
@@ -2101,7 +2087,8 @@ function NWB:combatLogEventUnfiltered(...)
 				lastZanBuffGained = GetServerTime();
 				NWB:playSound("soundsZanDrop", "zan");
 			end
-		elseif ((npcID == "14720" or npcID == "14721") and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
+		elseif (((NWB.faction == "Horde" and npcID == "14720") or (NWB.faction == "Alliance" and npcID == "14721"))
+				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
 				and ((GetServerTime() - NWB.data.nefYell2) < 60 or (GetServerTime() - NWB.data.nefYell) < 60)
 				and unitType == "Creature") then
 			--To tell the difference between nef and ony we check if there a nef npc yell recently, if not then fall back to ony.
@@ -2115,7 +2102,8 @@ function NWB:combatLogEventUnfiltered(...)
 				end
 				NWB:playSound("soundsNefDrop", "nef");
 			end
-		elseif ((npcID == "14392" or npcID == "14394")and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
+		elseif (((NWB.faction == "Horde" and npcID == "14392") or (NWB.faction == "Alliance" and npcID == "14394"))
+				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
 				and ((GetServerTime() - NWB.data.onyYell2) < 60 or (GetServerTime() - NWB.data.onyYell) < 60)
 				and ((GetServerTime() - NWB.data.nefYell2) > 60)
 				and unitType == "Creature") then
@@ -2231,6 +2219,15 @@ function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 	if (source ~= "self" and (GetServerTime() - NWB.data.rendTimer) < 10) then
 		return;
 	end
+	local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+	if (NWB.faction == "Horde" and zone ~= 1454 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
+		return;
+	end
+	if (NWB.faction == "Alliance" and zone ~= 1453 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
+		return;
+	end
 	if (not NWB:validateNewTimer("rend", source)) then
 		NWB:debug("failed rend timer validation", source);
 		return;
@@ -2343,6 +2340,15 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID)
 	if ((GetServerTime() - nefLastSet) < 20) then
 		return;
 	end
+	local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+	if (NWB.faction == "Horde" and zone ~= 1454 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
+		return;
+	end
+	if (NWB.faction == "Alliance" and zone ~= 1453 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
+		return;
+	end
 	if (source ~= "self" and (GetServerTime() - NWB.data.onyTimer) < 10) then
 		return;
 	end
@@ -2409,6 +2415,15 @@ function NWB:setNefBuff(source, sender, zoneID, GUID)
 		return;
 	end
 	if (source ~= "self" and (GetServerTime() - NWB.data.nefTimer) < 10) then
+		return;
+	end
+	local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+	if (NWB.faction == "Horde" and zone ~= 1454 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
+		return;
+	end
+	if (NWB.faction == "Alliance" and zone ~= 1453 and zone ~= 1413) then
+		NWB:debug("not in a valid zone to set rend timer");
 		return;
 	end
 	if (not NWB:validateNewTimer("nef", source)) then
@@ -3134,8 +3149,8 @@ function NWB:getRegionTimeFormat()
 end
 
 local lastFlash = 0;
-function NWB:startFlash()
-	if (NWB.db.global.flashMinimized) then
+function NWB:startFlash(type)
+	if (NWB.db.global[type]) then
 		if (lastFlash < (GetServerTime() - 4)) then
 			FlashClientIcon();
 			lastFlash = GetServerTime();
@@ -6089,19 +6104,19 @@ function NWB:recalclayerFrame()
 	if (next(NWB.guildMasterSettings)) then
 		for k, v in NWB:pairsByKeys(NWB.guildMasterSettings) do
 			if (k == 1) then
-				gmText = "\n -All NWB guild msgs disabled (#nwb1).";
+				gmText = gmText .. "\n -All NWB guild msgs disabled (#nwb1).";
 				found = true;
 			elseif (k == 2) then
-				gmText = "\n -Timer guild msgs disabled (#nwb2).";
+				gmText = gmText ..  "\n -Timer guild msgs disabled (#nwb2).";
 				found = true;
 			elseif (k == 3) then
-				gmText = "\n -Buff dropped guild msgs disabled (#nwb3).";
+				gmText = gmText ..  "\n -Buff dropped guild msgs disabled (#nwb3).";
 				found = true;
 			elseif (k == 4) then
-				gmText = "\n -!wb guild command disabled (#nwb4).";
+				gmText = gmText ..  "\n -!wb guild command disabled (#nwb4).";
 				found = true;
 			elseif (k == 5) then
-				gmText = "\n -Songflower guild msgs disabled (#nwb5).";
+				gmText = gmText ..  "\n -Songflower guild msgs disabled (#nwb5).";
 				found = true;
 			end
 		end

@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Novaspark-Arugal OCE
-## Version: 1.57
+## Version: 1.58
 ## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs
@@ -14,3 +14,4 @@ NovaWorldBuffs.lua
 Options.lua
 NWBCreatures.lua
 NWBRealms.lua
+NWBGuildFilter.lua

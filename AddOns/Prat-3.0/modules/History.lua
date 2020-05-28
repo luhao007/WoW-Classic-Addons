@@ -53,8 +53,8 @@ Prat:AddModuleToLoad(function()
     ["Store the chat lines between sessions"] = true,
     ["Scrollback Options"] = true,
     divider = "========== End of Scrollback ==========",
-    scrollbacklen_name = "Scrollback Length",
-    scrollbacklen_desc = "Number of chatlines to save in the scrollback buffer.",
+    scrollbackduration_name = "Scrollback Duration",
+    scrollbackduration_desc = "How many hours to keep the saved messages.",
     ["Colors the GMOTD label"] = true,
     ["Color GMOTD"] = true,
     delaygmotd_name = "Delay GMOTD",
@@ -85,6 +85,8 @@ L = {
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = true,
 		["Scrollback"] = true,
 		["Scrollback Options"] = true,
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "Number of chatlines to save in the scrollback buffer.",
 		["scrollbacklen_name"] = "Scrollback Length",
 		["Set Chat Lines"] = true,
@@ -119,6 +121,10 @@ L = {
 		["Scrollback"] = "Scrollback",
 		--[[Translation missing --]]
 		["Scrollback Options"] = "Scrollback Options",
+		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "Nombre de lignes de discussions à sauvegarder dans l'historique.",
 		["scrollbacklen_name"] = "Taille de l'historique",
 		["Set Chat Lines"] = "Historique de discussions",
@@ -147,6 +153,10 @@ L = {
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Speichert Befehlsverlauf zwischen Sitzungen (um mit Alt + \"Pfeil nach oben\" oder nur \"Pfeil nach oben\" verwendet zu werden).",
 		["Scrollback"] = "Aufzeichnung",
 		["Scrollback Options"] = "Optionen zum Aufwärtsscrollen",
+		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "Anzahl der Chatzeilen, die im Puffer gespeichert werden sollen",
 		["scrollbacklen_name"] = "Scroll-Weite",
 		["Set Chat Lines"] = "Chatzeilen einstellen",
@@ -176,6 +186,10 @@ L = {
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "세션 간 명령어 내역을 저장합니다 (Alt+위 화살표나 위 화살표로 사용하는)",
 		["Scrollback"] = "스크롤백",
 		["Scrollback Options"] = "스크롤백 옵션",
+		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "스크롤백 저장소에 저장할 대화 줄의 숫자입니다.",
 		["scrollbacklen_name"] = "스크롤백 길이",
 		["Set Chat Lines"] = "대화 내역 설정",
@@ -218,6 +232,10 @@ L = {
 		--[[Translation missing --]]
 		["Scrollback Options"] = "Scrollback Options",
 		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
+		--[[Translation missing --]]
 		["scrollbacklen_desc"] = "Number of chatlines to save in the scrollback buffer.",
 		--[[Translation missing --]]
 		["scrollbacklen_name"] = "Scrollback Length",
@@ -252,6 +270,10 @@ L = {
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Сохранять историю команд между сеансами (для использования используйте alt+ стрелка вверх или просто стрелку вверх)",
 		["Scrollback"] = "История сообщений",
 		["Scrollback Options"] = "Вернуть опции",
+		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "Количество строк чата, которое надо сохранять в буфере истории сообщений.",
 		["scrollbacklen_name"] = "Длина истории сообщений",
 		["Set Chat Lines"] = "Задать число строк чата",
@@ -281,6 +303,10 @@ L = {
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "存储会话之间命令的历史记录(使用alt+上箭头键或仅上箭头键)",
 		["Scrollback"] = "回卷",
 		["Scrollback Options"] = "回滚选项",
+		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
 		["scrollbacklen_desc"] = "聊天内容回滚缓冲数量",
 		["scrollbacklen_name"] = "回卷长度",
 		["Set Chat Lines"] = "聊天行设置",
@@ -317,6 +343,10 @@ L = {
 		--[[Translation missing --]]
 		["Scrollback Options"] = "Scrollback Options",
 		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
+		--[[Translation missing --]]
 		["scrollbacklen_desc"] = "Number of chatlines to save in the scrollback buffer.",
 		--[[Translation missing --]]
 		["scrollbacklen_name"] = "Scrollback Length",
@@ -351,6 +381,10 @@ L = {
 		["Scrollback"] = "捲動",
 		["Scrollback Options"] = "捲動選項",
 		--[[Translation missing --]]
+		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
+		--[[Translation missing --]]
+		["scrollbackduration_name"] = "Scrollback Duration",
+		--[[Translation missing --]]
 		["scrollbacklen_desc"] = "Number of chatlines to save in the scrollback buffer.",
 		["scrollbacklen_name"] = "捲動長度",
 		["Set Chat Lines"] = "設定聊天行數",
@@ -372,9 +406,9 @@ L = {
       chatlinesframes = {},
       chatlines = 384,
       maxlines = 50,
+      scrollbackduration = 24,
       savehistory = false,
       scrollback = true,
-      scrollbacklen = 50,
       colorgmotd = true,
       delaygmotd = true,
     }
@@ -656,7 +690,7 @@ L = {
 
     local editBoxText = editBox:GetText();
     if (strlen(editBoxText) > 0 and not IsSecureCmd(editBoxText)) then
-      text = text .. " " .. editBox:GetText();
+      text = (header and (text .. " ") or "") .. editBox:GetText();
       self:saveLine(text, editBox)
     end
   end

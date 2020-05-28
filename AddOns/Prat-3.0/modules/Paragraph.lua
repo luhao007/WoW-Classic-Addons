@@ -171,7 +171,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 L = {
 	["Paragraph"] = {
 		["adjustlinks_desc"] = "Links anpassen, um die Fähigkeit des Anklickens wiederherzustellen, wenn Text zentriert oder rechtsbündig ist.",
-		["adjustlinks_name"] = "Platzierung von Spieler-/Gegenstands-Links reparieren.",
+		["adjustlinks_name"] = "Platzierung von Spieler-/Gegenstandslinks korrigieren",
 		["Center"] = "Mitte",
 		["Chat window paragraph options."] = "Paragraphoptionen in Chatfenstern.",
 		["justification_desc"] = "Horizontale Ausrichtung für jedes Chat-Fenster einstellen.",
@@ -395,6 +395,7 @@ end
 
   function module:OnModuleEnable()
     self:ConfigureAllChatFrames(true)
+    Prat.RegisterChatEvent(self, Prat.Events.FRAMES_UPDATED)
   end
 
   function module:OnModuleDisable()
@@ -402,6 +403,10 @@ end
   end
 
   function module:OnValueChanged()
+    self:ConfigureAllChatFrames(true)
+  end
+
+  function module:Prat_FramesUpdated()
     self:ConfigureAllChatFrames(true)
   end
 
