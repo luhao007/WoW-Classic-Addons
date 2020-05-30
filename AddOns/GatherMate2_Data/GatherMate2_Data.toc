@@ -1,0 +1,17 @@
+## Interface: 11304
+## Author: kagaro, Xinhuan, Spinx, Marrtin
+## Version: v2020-05-04
+## Dependencies: GatherMate2
+## LoadOnDemand: 1
+
+## Title: GatherMate2Data
+## Notes: GatherMate2 data fetched from Wowhead
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFF69CCF0数据|r
+
+## X-Part-Of: GatherMate2
+
+MiningData.lua
+HerbalismData.lua
+FishData.lua
+TreasureData.lua
+GatherMateData.lua
