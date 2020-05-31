@@ -76,7 +76,7 @@ Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]===]
 
 --@non-debug@
-Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.7.81".."|r)"
+Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.4".."|r)"
 --@end-non-debug@
 
 
@@ -273,12 +273,12 @@ function Format(smf, event, color, ...)
     local r, g, b, id = color.r or 1, color.g or 1, color.b or 1, 1
 
     -- Remove all the pattern matches ahead of time
-    m.MESSAGE = Prat.MatchPatterns(m.MESSAGE)
+    m.MESSAGE = Prat.MatchPatterns(m)
 
     callbacks:Fire(PRE_ADDMESSAGE, m, this, event, Prat.BuildChatText(m), r, g, b, id)
 
     -- Pattern Matches Put Back IN
-    m.MESSAGE = Prat.ReplaceMatches(m.MESSAGE)
+    m.MESSAGE = Prat.ReplaceMatches(m)
 
     if process then
       -- We are about to send the message
@@ -437,9 +437,8 @@ function addon:PostEnable()
   self:SecureHook("ChatEdit_ParseText")
 
   -- Display Hooking
-  for _, v in pairs(HookedFrames) do
-    self:RawHook(v, "AddMessage", true)
-  end
+  DummyFrame = _G.CreateFrame("ScrollingMessageFrame")
+  self:RawHook(DummyFrame, "AddMessage", true)
 
   -- ItemRef Hooking
 
@@ -562,6 +561,43 @@ function addon:ProcessUserEnteredChat(m)
   m.MESSAGE = ReplaceMatches(m, "OUTBOUND")
 end
 
+local fieldBlacklist = {
+  historyBuffer = true,
+  isLayoutDirty = true,
+  isDisplayDirty = true,
+  onDisplayRefreshedCallback = true,
+  onScrollChangedCallback = true,
+  onTextCopiedCallback = true,
+  scrollOffset = true,
+  visibleLines = true,
+  highlightTexturePool = true,
+  fontStringPool = true,
+}
+local savedFrame = {}
+function CreateProxy(frame)
+  for k, v in pairs(frame) do
+    if type(v) ~= "function" and not fieldBlacklist[k] then
+      savedFrame[k] = DummyFrame[k]
+      DummyFrame[k] = v
+    end
+  end
+  DummyFrame.tellTimer = frame.tellTimer
+  DummyFrame.IsShown = function() return true end
+  return DummyFrame
+end
+
+function RestoreProxy()
+  for k, v in pairs(savedFrame) do
+      DummyFrame[k] = v
+  end
+  for k,v in pairs(DummyFrame) do
+    if type(v) ~= "function" and not fieldBlacklist[k] then
+      if savedFrame[k] == nil then
+        DummyFrame[k] = nil
+      end
+    end
+  end
+end
 
 function addon:ChatFrame_MessageEventHandler(this, event, ...)
   local PRE_ADDMESSAGE = "Prat_PreAddMessage"
@@ -599,11 +635,11 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
     return true
   end
 
-  if not info or not EventIsProcessed(event) then
+  if not info then
     return self.hooks["ChatFrame_MessageEventHandler"](this, event, ...)
   else
     local m = message --SplitMessage
-    CurrentMessage = m
+
 
     -- Prat_FrameMessage is fired for every message going to the
     -- chatframe which is displayable (has a chat infotype)
@@ -627,32 +663,38 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
     -- A return value of true means that the message was processed
     -- normally this would result in the OnEvent returning
     -- for that chatframe
-    m.CAPTUREOUTPUT = this
-    CMEResult = self.hooks["ChatFrame_MessageEventHandler"](this, event, ...) -- This specifically does not use message.EVENT
+    local proxy = CreateProxy(this)
+
+    m.CAPTUREOUTPUT = proxy
+    CMEResult = self.hooks["ChatFrame_MessageEventHandler"](proxy, event, ...) -- This specifically does not use message.EVENT
+    this.tellTimer = proxy.tellTimer
+
+    RestoreProxy()
 
     m.CAPTUREOUTPUT = false
 
     --        DBG_OUTPUT("CMEResult", CMEResult)
     if type(m.OUTPUT) == "string" and not m.DONOTPROCESS then
-      local r, g, b, id = self.INFO.r, self.INFO.g, self.INFO.b, self.INFO.id
-
-      -- Remove all the pattern matches ahead of time
-      m.MESSAGE = MatchPatterns(m, "FRAME")
-
-      callbacks:Fire(PRE_ADDMESSAGE, message, this, message.EVENT, BuildChatText(message), r, g, b, id)
-
-      -- Pattern Matches Put Back IN
-      m.MESSAGE = ReplaceMatches(m, "FRAME")
+      CurrentMessage = m
+      local r, g, b, id = m.INFO.r, m.INFO.g, m.INFO.b, m.INFO.id
 
       if process then
+        -- Remove all the pattern matches ahead of time
+        m.MESSAGE = MatchPatterns(m, "FRAME")
+      end
+
+       callbacks:Fire(PRE_ADDMESSAGE, message, this, message.EVENT, BuildChatText(message), r, g, b, id)
+
+      if process then
+        -- Pattern Matches Put Back IN
+        m.MESSAGE = ReplaceMatches(m, "FRAME")
+
         -- We are about to send the message
         m.OUTPUT = BuildChatText(message) -- Combine all the chat sections
       else
-        if type(m.OUTPUT) == "string" then
-          -- Now we have the chatstring that the client was planning to output
-          -- For now just do it. (Tack on POST too)
-          m.OUTPUT = (m.PRE or "") .. m.OUTPUT .. (m.POST or "")
-        end
+        -- Now we have the chatstring that the client was planning to output
+        -- For now just do it. (Tack on POST too)
+        m.OUTPUT = (m.PRE or "") .. m.OUTPUT .. (m.POST or "")
       end
 
       -- Allow for message blocking during the patern match phase
@@ -661,19 +703,29 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
       elseif m.OUTPUT:len() > 0 then
         this:AddMessage(m.OUTPUT, r, g, b, id, false, m.ACCESSID, m.TYPEID);
 
-
         -- We have called addmessage by now, or we have skipped it
         -- regardless, we call postaddmessage. This was changed to allow
         -- for more flexibility in the customfilters module, speficially
         -- it allows for replacements to occur in blocked messages
 
         callbacks:Fire(POST_ADDMESSAGE, m, this, message.EVENT, m.OUTPUT, r, g, b, id, false, m.ACCESSID, m.TYPEID)
+
+        if ( not this:IsShown() ) then
+          if ( (this == _G.DEFAULT_CHAT_FRAME and m.INFO.flashTabOnGeneral) or (this ~= _G.DEFAULT_CHAT_FRAME and m.INFO.flashTab) ) then
+            if ( not _G.CHAT_OPTIONS.HIDE_FRAME_ALERTS or m.CHATTYPE == "WHISPER" or m.CHATTYPE == "BN_WHISPER" ) then	--BN_WHISPER FIXME
+              if (not _G.FCFManager_ShouldSuppressMessageFlash(this, m.CHATGROUP, m.CHATTARGET) ) then
+                _G.FCF_StartAlertFlash(this);
+              end
+            end
+          end
+        end
+
+
+        LastMessage = m
       end
     end
 
     m.CAPTUREOUTPUT = nil
-    m.OUTPUT = nil
-    m.INFO = nil
 
     CurrentMessage = nil
   end
@@ -681,20 +733,11 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
   return CMEResult
 end
 
-
-addon.INFO = {
-  r = 1.0,
-  g = 1.0,
-  b = 1.0,
-  id = 0
-}
-
 function addon:AddMessage(frame, text, r, g, b, id, ...)
   local s = SplitMessage
   if s.OUTPUT == nil and s.CAPTUREOUTPUT == frame --[[ and Prat.dumping == false]] then
-    self.INFO.r, self.INFO.g, self.INFO.b, self.INFO.id = r, g, b, id
-    s.OUTPUT = text
-    s.INFO = self.INFO
+    s.INFO.r, s.INFO.g, s.INFO.b, s.INFO.id = r, g, b, id
+    s.ORG.OUTPUT = text
   else
     self.hooks[frame].AddMessage(frame, text, r, g, b, id, ...)
   end
@@ -722,12 +765,12 @@ end
 
 function CanSendChatMessage(type)
   if type == "SAY" or type == "YELL" then
-    return  _G.IsInInstance("player")
+    return _G.IsInInstance("player")
   elseif type == "RAID" or type == "GUILD" or type == "WHISPER" then
     return true
   end
 
-    return false
+  return false
 end
 
 
@@ -756,11 +799,8 @@ RegisterChatCommand("pratunblacklist",
 
 RegisterChatCommand("pratdebugmsg",
   function(name)
-    Prat:PrintLiteral(SplitMessage, SplitMessage.ORG)
+    Prat:PrintLiteral(LastMessage, LastMessage.ORG)
 
     local cc = addon:GetModule("CopyChat", true)
-    local activeFrame = _G.FCFDock_GetSelectedWindow(_G.GENERAL_CHAT_DOCK)
-    _G.FCFDock_SelectWindow(_G.GENERAL_CHAT_DOCK, _G.ChatFrame1)
-    if cc then cc:ScrapeFullChatFrame(_G.ChatFrame1) end
-    _G.FCFDock_SelectWindow(_G.GENERAL_CHAT_DOCK, activeFrame)
+    if cc then cc:ScrapeFullChatFrame(printFrame or _G.DEFAULT_CHAT_FRAME, true) end
   end)

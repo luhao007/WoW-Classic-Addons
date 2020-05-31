@@ -50,10 +50,17 @@ Prat:AddModuleExtension(function()
       desc = PL.scrollbackduration_desc,
       type = "range",
       order = 126,
-      min = 1,
+      min = 0,
       max = 168,
       step = 1,
       bigStep = 24,
+      disabled = function() return not module.db.profile.scrollback end
+    },
+    removespam = {
+      name = PL.removespam_name,
+      desc = PL.removespam_desc,
+      type = "toggle",
+      order = 127,
       disabled = function() return not module.db.profile.scrollback end
     }
   }
@@ -72,7 +79,7 @@ Prat:AddModuleExtension(function()
     if self.db.profile.scrollback then
       self:RestoreLastSession()
 
-      for k, v in pairs(Prat.Frames) do
+      for k, v in pairs(Prat.HookedFrames) do
         self.scrollback[k] = v.historyBuffer
       end
     end
@@ -82,7 +89,7 @@ Prat:AddModuleExtension(function()
 
   function module:OnValueChanged(info, b)
     if self.db.profile.scrollback then
-      for k, v in pairs(Prat.Frames) do
+      for k, v in pairs(Prat.HookedFrames) do
         if not v.isTemporary then
           self.scrollback[k] = v.historyBuffer
         end
@@ -104,17 +111,21 @@ Prat:AddModuleExtension(function()
     end
   end
 
+  local function isRealChatMessage(message)
+    return message.extraData and message.extraData.n == #message.extraData
+  end
+
   function module:RestoreLastSession()
     local now, maxTime = GetTime(), self.db.profile.scrollbackduration * 60 * 60
     for frame, scrollback in pairs(self.scrollback) do
       local f = _G[frame]
-      if scrollback.elements and scrollback.headIndex and scrollback.maxElements then
+      if scrollback.elements and scrollback.headIndex and scrollback.maxElements and frame ~= "ChatFrame2" then
         if f and #scrollback.elements then
           local timeShown = false
           for i = 1, #scrollback.elements do
             local line = self:GetEntryAtIndex(scrollback, i)
-            if line and line.message then
-              if (now - line.timestamp) <= maxTime then
+            if line and line.message and (not self.db.profile.removespam or isRealChatMessage(line)) then
+              if maxTime > 0 and (now - line.timestamp) <= maxTime then
                 if not timeShown then
                   f:BackFillMessage(PL.divider)
 
@@ -124,7 +135,7 @@ Prat:AddModuleExtension(function()
                 end
 
                 line.message = line.message:gsub("|K.-|k", PL.bnet_removed)
-                f:BackFillMessage(f:UnpackageEntry(line))
+                f.historyBuffer:PushBack(line)
               end
             end
           end

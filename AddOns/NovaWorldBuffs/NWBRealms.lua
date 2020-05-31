@@ -9,10 +9,10 @@ NWB.usRealms = {
 	--["Earthfury"] = true,
 	--["Faerlina"] = true,
 	--["Fairbanks"] = true,
-	--["Herod"] = true,
+	["Herod"] = true,
 	--["Pagle"] = true,
 	--["Sulfuras"] = true,
-	--["Whitemane"] = true,
+	["Whitemane"] = true,
 }
 
 NWB.euRealms = {

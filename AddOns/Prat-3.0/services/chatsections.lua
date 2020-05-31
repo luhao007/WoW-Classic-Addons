@@ -44,13 +44,15 @@ local function RunMessageEventFilters(frame, event, arg1, arg2, arg3, arg4, arg5
 
   if chatFilters then
     for _, filterFunc in next, chatFilters do
-      filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newrg14, newarg15, newarg16, newarg17 =
-      filterFunc(frame, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
-      if filter then
-        return true
-      elseif (newarg1) then
-        arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 =
-        newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newrg14, newarg15, newarg16, newarg17
+      if filterFunc ~= MessageEventFilter then
+        filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newrg14, newarg15, newarg16, newarg17 =
+        filterFunc(frame, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+        if filter then
+          return true
+        elseif (newarg1) then
+          arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 =
+          newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newrg14, newarg15, newarg16, newarg17
+        end
       end
     end
   end
@@ -273,26 +275,46 @@ local function safestr(s) return s or "" end
 function SplitChatMessage(frame, event, ...)
   local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...
 
-  ClearChatSections(SplitMessageOrg)
-  ClearChatSections(SplitMessage)
-
   if (strsub((event or ""), 1, 8) == "CHAT_MSG") then
     local type = strsub(event, 10)
-    local info = _G.ChatTypeInfo[type]
 
     if (arg16) then
       -- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
       return true;
     end
 
+    local info
+    local channelLength = strlen(arg4);
+    local infoType = type;
+    if ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
+      local found = 0;
+      for index, value in pairs(frame.channelList) do
+        if ( channelLength > strlen(value) ) then
+          -- arg9 is the channel name without the number in front...
+          if ( ((arg7 > 0) and (frame.zoneChannelList[index] == arg7)) or (strupper(value) == strupper(arg9)) ) then
+            found = 1;
+            infoType = "CHANNEL"..arg8;
+            info = _G.ChatTypeInfo[infoType];
+            break;
+          end
+        end
+      end
+      if ( (found == 0) or not info ) then
+        return true;
+      end
+    end
+
+    ClearChatSections(SplitMessageOrg)
+    ClearChatSections(SplitMessage)
+
     local s = SplitMessageOrg
 
+    s.INFOTYPE = infoType
+    info = _G.ChatTypeInfo[infoType]
     -- blizzard bug, arg2 (player name) can have an extra space
     if arg2 then
       arg2 = arg2:trim()
     end
-
-    local channelLength = strlen(safestr(arg4));
 
     s.GUID = arg12
 
@@ -308,6 +330,8 @@ function SplitChatMessage(frame, event, ...)
         }
       end
     end
+
+    s.FRAME = frame and frame:GetName()
     --@end-debug@]===]
 
     --        if NEW_CHATFILTERS then
@@ -404,7 +428,7 @@ function SplitChatMessage(frame, event, ...)
         -- no link
         s.NONPLAYER = arg2
       elseif type == "EMOTE" then
-        s.PLAYER =  _G.Ambiguate(arg2, "none"):match("([^%-]+)%-?(.*)")
+        s.PLAYER = _G.Ambiguate(arg2, "none"):match("([^%-]+)%-?(.*)")
       elseif type == "TEXT_EMOTE" then
       else
         s.PLAYERLINK = arg2
@@ -687,16 +711,11 @@ function SplitChatMessage(frame, event, ...)
 
     SplitMessage.ORG = SplitMessageOrg
 
+    s.INFO = info
+
     return SplitMessage, info
   end
 end
-
-local NULL_INFO = {
-  r = 1.0,
-  g = 1.0,
-  b = 1.0,
-  id = 0
-}
 
 
 

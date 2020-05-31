@@ -291,17 +291,19 @@ Usage:
     local f = CreateFrame("EditBox", name .. "ChatSearchEditBox", chatFrame, "SearchBoxTemplate")
 
     f:SetWidth(130)
-    f:SetHeight(50)
+    f:SetHeight(16)
     f:SetFrameStrata("HIGH")
-    f:SetPoint("TOPRIGHT", chatFrame, "TOPRIGHT", 10, 10)
-    f:SetScript("OnEnter", function() self:UnstashSearch(f) end)
+    f:SetPoint("TOPRIGHT", chatFrame, "TOPRIGHT")
+    f:SetScript("OnEnter", function()
+      local hoverAlpha = self.db.profile.searchinactivealpha + (self.db.profile.searchactivealpha - self.db.profile.searchinactivealpha) / 2
+      if f:HasFocus() then self:UnstashSearch(f) else f:SetAlpha(hoverAlpha) end
+    end)
     f:SetScript("OnLeave", function()
       if f:HasFocus() then self:UnstashSearch(f) else self:StashSearch(f) end
     end)
-    f:SetScript("OnEditFocusLost", function()
-      if f:IsMouseOver() then self:UnstashSearch(f) else self:StashSearch(f) end
-    end)
+    f:SetScript("OnEditFocusLost", function() self:StashSearch(f) end)
     f:SetScript("OnEditFocusGained", function() self:UnstashSearch(f) end)
+    f:SetScript("OnEscapePressed", function() f:ClearFocus() end)
     f:SetScript("OnEnterPressed", function(frame)
       local query = f:GetText()
       if query and query:len() > 0 then
@@ -309,6 +311,20 @@ Usage:
       end
     end)
     f.anim = f:CreateAnimationGroup()
+    f.anim.fade1 = f.anim:CreateAnimation("Alpha")
+    f.anim.fade1:SetFromAlpha(self.db.profile.searchactivealpha)
+    f.anim.fade1:SetDuration(3)
+    f.anim.fade1:SetToAlpha(self.db.profile.searchinactivealpha)
+    f.anim.fade1:SetSmoothing("IN")
+    f.anim:SetScript("OnFinished", function(...)
+      if f:HasFocus() then
+        self:UnstashSearch(f)
+      else
+        self:StashSearch(f)
+      end
+    end)
+
+    f.anim:Play()
 
     return f
   end
@@ -334,21 +350,6 @@ Usage:
 
     for _, f in pairs(self.searchBoxes) do
       f:Show()
-
-      f.anim.fade1 = f.anim:CreateAnimation("Alpha")
-      f.anim.fade1:SetFromAlpha(self.db.profile.searchactivealpha)
-      f.anim.fade1:SetDuration(3)
-      f.anim.fade1:SetToAlpha(self.db.profile.searchinactivealpha)
-      f.anim.fade1:SetSmoothing("IN")
-      f.anim:SetScript("OnFinished", function(...)
-        if f:HasFocus() or f:IsMouseOver() then
-          self:UnstashSearch(f)
-        else
-          self:StashSearch(f)
-        end
-      end)
-
-      f.anim:Play()
     end
   end
 
@@ -434,9 +435,11 @@ Usage:
   function module:ScrapeFrame(frame)
     wipe(scrapelines)
 
-    for _, v in ipairs(frame.historyBuffer.elements) do
-      if v.message then
-        table.insert(scrapelines, v)
+    for i=frame:GetNumMessages(),1,-1 do
+      local msg = frame.historyBuffer:GetEntryAtIndex(i)
+
+      if msg and msg.message then
+        table.insert(scrapelines, msg)
       end
     end
   end

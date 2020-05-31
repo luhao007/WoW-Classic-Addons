@@ -41,22 +41,13 @@ NWB.options = {
 			get = "getShowWorldMapMarkers",
 			set = "setShowWorldMapMarkers",
 		},
-		disableAllGuildMsgs = {
-			type = "toggle",
-			name = "Disable Guild Msgs",
-			desc = "Disable all guild messages including timers and when buffs drop? Note: You can disable all msgs 1 by 1 below and "
-					.. "just leave certain things enabled such as the !wb command to help out your guild if you rather.",
-			order = 5,
-			get = "getDisableAllGuildMsgs",
-			set = "setDisableAllGuildMsgs",
-		},
 		receiveGuildDataOnly  = {
 			type = "toggle",
 			name = "Guild Data Only",
 			desc = "This will make it so you don't get timer data from anyone outside the guild. You should only enable this "
 					.. "if you think someone is spoofing wrong timer data on purpose because it will lower the accuracy of your timers "
 					.. "with less people to pull data from. It will make it especially hard to get songflower timers becaus "
-					.. "they are so short.",
+					.. "they are so short. Every single person in the guild needs this enabled for it to even work.",
 			order = 6,
 			get = "getReceiveGuildDataOnly",
 			set = "setReceiveGuildDataOnly",
@@ -125,16 +116,6 @@ NWB.options = {
 			order = 12,
 			get = "getTimeStampZone",
 			set = "setTimeStampZone",
-		},
-		guildCommand = {
-			type = "toggle",
-			name = "Guild Commands",
-			desc = "Reply with timer info to !wb and !dmf commands in guild chat? You should probably leave this enabled to help your guild, " 
-					.. "if you really want to disable all guild msgs and leave only this command then untick everything else in the "
-					.. "guild sectionand don't tick the Disable All Guild Msgs at the top.",
-			order = 14,
-			get = "getGuildCommand",
-			set = "setGuildCommand",
 		},
 		colorizePrefixLinks = {
 			type = "toggle",
@@ -351,29 +332,13 @@ NWB.options = {
 			desc = "Hide middle of the screen warnings in raid instances? (Doesn't hide in normal dungeons)",
 			order = 49,
 			get = "getMiddleHideRaid",
-			set = "settMiddleHideRaid",
+			set = "setMiddleHideRaid",
 		},
 		guildWarningHeader = {
 			type = "header",
-			name = "Guild Message Timer Warnings",
+			name = "Guild Messages",
 			order = 50,
 		},
-		--[[guild30 = {
-			type = "toggle",
-			name = "30 Minutes",
-			desc = "Send a message to guild chat when 30 minutes left.",
-			order = 51,
-			get = "getGuild30",
-			set = "setGuild30",
-		},
-		guild15 = {
-			type = "toggle",
-			name = "15 Minutes",
-			desc = "Send a message to guild chat when 15 minutes left.",
-			order = 52,
-			get = "getGuild15",
-			set = "setGuild15",
-		},]]
 		guild10 = {
 			type = "toggle",
 			name = "10 Minutes",
@@ -382,14 +347,6 @@ NWB.options = {
 			get = "getGuild10",
 			set = "setGuild10",
 		},
-		--[[guild5 = {
-			type = "toggle",
-			name = "5 Minutes",
-			desc = "Send a message to guild chat when 5 minutes left.",
-			order = 54,
-			get = "getGuild5",
-			set = "setGuild5",
-		},]]
 		guild1 = {
 			type = "toggle",
 			name = "1 Minute",
@@ -398,14 +355,6 @@ NWB.options = {
 			get = "getGuild1",
 			set = "setGuild1",
 		},
-		--[[guildReset = {
-			type = "toggle",
-			name = "Buff Has Reset",
-			desc = "Send a message to guild chat when a buff has reset and a new one can be dropped.",
-			order = 56,
-			get = "getGuild0",
-			set = "setGuild0",
-		},]]
 		guildNpcDialogue = {
 			type = "toggle",
 			name = "NPC Dialogue Started",
@@ -424,22 +373,41 @@ NWB.options = {
 			get = "getGuildBuffDropped",
 			set = "setGuildBuffDropped",
 		},
-		guildNpcKilled = {
-			type = "toggle",
-			name = "NPC Was Killed",
-			desc = "Send a message to guild when one of the buff NPC's were killed in Orgrimmar or Stormwind? (mind control reset).",
-			order = 59,
-			get = "getGuildNpcKilled",
-			set = "setGuildNpcKilled",
-		},
 		guildZanDialogue = {
 			type = "toggle",
 			name = "Zandalar Buff Warning",
 			desc = "Send a message to guild when Spirit of Zandalar buff is about to drop? (If you want no guild msgs at all "
 					.. "for this buff then everyone in guild needs to disable this).",
-			order = 60,
+			order = 59,
 			get = "getGuildZanDialogue",
 			set = "setGuildZanDialogue",
+		},
+		guildNpcKilled = {
+			type = "toggle",
+			name = "NPC Was Killed",
+			desc = "Send a message to guild when one of the buff NPC's were killed in Orgrimmar or Stormwind? (mind control reset).",
+			order = 60,
+			get = "getGuildNpcKilled",
+			set = "setGuildNpcKilled",
+		},
+		guildCommand = {
+			type = "toggle",
+			name = "Guild Commands",
+			desc = "Reply with timer info to !wb and !dmf commands in guild chat? You should probably leave this enabled to help your guild, " 
+					.. "if you really want to disable all guild msgs and leave only this command then untick everything else in the "
+					.. "guild sectionand don't tick the Disable All Guild Msgs at the top.",
+			order = 61,
+			get = "getGuildCommand",
+			set = "setGuildCommand",
+		},
+		disableAllGuildMsgs = {
+			type = "toggle",
+			name = "Disable All Guild Msgs",
+			desc = "Disable all guild messages including timers and when buffs drop? Note: You can disable all msgs one by one above and "
+					.. "just leave certain things enabled to help out your guild if you rather.",
+			order = 62,
+			get = "getDisableAllGuildMsgs",
+			set = "setDisableAllGuildMsgs",
 		},
 		songflowers = {
 			type = "header",
@@ -883,12 +851,15 @@ NWB.optionDefaults = {
 		middleBuffWarning = true,
 		middleHideCombat = false,
 		middleHideRaid = false,
-		guild30 = false,
-		guild15 = false,
-		guild10 = true,
-		guild5 = false,
-		guild1 = true,
-		guild0 = false,
+		--These are 1/0 instead of true/false to be smaller via addon comms.
+		guild10 = 1,
+		guild1 = 1,
+		guildNpcKilled = 1,
+		guildBuffDropped = 1,
+		guildNpcDialogue = 1,
+		guildZanDialogue = 1,
+		guildCommand = 1,
+		disableAllGuildMsgs = 0,
 		rendRespawnTime = 10800,
 		rendBuffTime = 3600,
 		onyRespawnTime = 21600,
@@ -902,12 +873,6 @@ NWB.optionDefaults = {
 		showTimeStamp = true,
 		timeStampFormat = 12,
 		timeStampZone = "local",
-		guildNpcKilled = true,
-		guildBuffDropped = true,
-		guildNpcDialogue = true,
-		guildZanDialogue = true,
-		guildCommand = true,
-		disableAllGuildMsgs = false,
 		receiveGuildDataOnly = false,
 		guildSongflower = true,
 		mySongflowerOnly = false,
@@ -978,7 +943,8 @@ NWB.optionDefaults = {
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = true, --Enable features being tested on occasion.
-		resetLayerMaps = true;
+		resetLayerMaps = true,
+		convertSettings = true,
 	},
 };
 
@@ -1068,6 +1034,52 @@ function NWB:buildRealmFactionData()
 	self.data = self.db.global[NWB.realm][NWB.faction];
 end
 
+function NWB:convertSettings()
+	if (NWB.db.global.convertSettings) then
+		if (NWB.db.global.guild10 == true or NWB.db.global.guild10 == 1) then
+			NWB.db.global.guild10 = 1;
+		else
+			NWB.db.global.guild10 = 0;
+		end
+		if (NWB.db.global.guild1 or NWB.db.global.guild1 == 1) then
+			NWB.db.global.guild1 = 1;
+		else
+			NWB.db.global.guild1 = 0;
+		end
+		if (NWB.db.global.guildNpcKilled == true or NWB.db.global.guildNpcKilled == 1) then
+			NWB.db.global.guildNpcKilled = 1;
+		else
+			NWB.db.global.guildNpcKilled = 0;
+		end
+		if (NWB.db.global.guildBuffDropped == true or NWB.db.global.guildBuffDropped == 1) then
+			NWB.db.global.guildBuffDropped = 1;
+		else
+			NWB.db.global.guildBuffDropped = 0;
+		end
+		if (NWB.db.global.guildNpcDialogue == true or NWB.db.global.guildNpcDialogue == 1) then
+			NWB.db.global.guildNpcDialogue = 1;
+		else
+			NWB.db.global.guildNpcDialogue = 0;
+		end
+		if (NWB.db.global.guildZanDialogue == true or NWB.db.global.guildZanDialogue == 1) then
+			NWB.db.global.guildZanDialogue = 1;
+		else
+			NWB.db.global.guildZanDialogue = 0;
+		end
+		if (NWB.db.global.guildCommand == true or NWB.db.global.guildCommand == 1) then
+			NWB.db.global.guildCommand = 1;
+		else
+			NWB.db.global.guildCommand = 0;
+		end
+		if (NWB.db.global.disableAllGuildMsgs == true or NWB.db.global.disableAllGuildMsgs == 1) then
+			NWB.db.global.disableAllGuildMsgs = 1;
+		else
+			NWB.db.global.disableAllGuildMsgs = 0;
+		end
+		NWB.db.global.convertSettings = false;
+	end
+end
+
 --Print timers to chat window at logon time.
 function NWB:setLogonPrint(info, value)
 	self.db.global.logonPrint = value;
@@ -1122,16 +1134,6 @@ end
 
 function NWB:getAllianceEnableRend(info)
 	return self.db.global.allianceEnableRend;
-end
-
---Disable all guild msgs.
-function NWB:setDisableAllGuildMsgs(info, value)
-	self.db.global.disableAllGuildMsgs = value;
-	NWB:sendData("GUILD");
-end
-
-function NWB:getDisableAllGuildMsgs(info)
-	return self.db.global.disableAllGuildMsgs;
 end
 
 --Ignore data from outside the guild.
@@ -1391,109 +1393,149 @@ end
 function NWB:getMiddleHideRaid(info)
 	return self.db.global.middleHideRaid;
 end
-
---Guild 30 minute warning.
-function NWB:setGuild30(info, value)
-	self.db.global.guild30 = value;
-end
-
-function NWB:getGuild30(info)
-	return self.db.global.guild30;
-end
-
---Guild 15 minute warning.
-function NWB:setGuild15(info, value)
-	self.db.global.guild15 = value;
-end
-
-function NWB:getGuild15(info)
-	return self.db.global.guild15;
-end
-
+		
 --Guild 10 minute warning.
 function NWB:setGuild10(info, value)
-	self.db.global.guild10 = value;
+	if (value) then
+		self.db.global.guild10 = 1;
+	else
+		self.db.global.guild10 = 0;
+	end
+	NWB:sendSettings("GUILD");
 end
 
 function NWB:getGuild10(info)
-	return self.db.global.guild10;
-end
-
---Guild 5 minute warning.
-function NWB:setGuild5(info, value)
-	self.db.global.guild5 = value;
-end
-
-function NWB:getGuild5(info)
-	return self.db.global.guild5;
+	if (self.db.global.guild10 == 1) then
+		return true;
+	else
+		return false;
+	end
 end
 
 --Guild 1 minute warning.
 function NWB:setGuild1(info, value)
-	self.db.global.guild1 = value;
+	if (value) then
+		self.db.global.guild1 = 1;
+	else
+		self.db.global.guild1 = 0;
+	end
+	NWB:sendSettings("GUILD");
 end
 
 function NWB:getGuild1(info)
-	return self.db.global.guild1;
-end
-
---Guild 0 minute warning.
-function NWB:setGuild0(info, value)
-	self.db.global.guild0 = value;
-end
-
-function NWB:getGuild0(info)
-	return self.db.global.guild0;
-end
-
---Guild NPC dialogue started.
-function NWB:setGuildNpcDialogue(info, value)
-	self.db.global.guildNpcDialogue = value;
-	NWB:sendData("GUILD");
-end
-
-function NWB:getGuildNpcDialogue(info)
-	return self.db.global.guildNpcDialogue;
-end
-
---Guild Zan dialogue started.
-function NWB:setGuildZanDialogue(info, value)
-	self.db.global.guildZanDialogue = value;
-	NWB:sendData("GUILD");
-end
-
-function NWB:getGuildZanDialogue(info)
-	return self.db.global.guildZanDialogue;
-end
-
---Guild buff dropped.
-function NWB:setGuildBuffDropped(info, value)
-	self.db.global.guildBuffDropped = value;
-	NWB:sendData("GUILD");
-end
-
-function NWB:getGuildBuffDropped(info)
-	return self.db.global.guildBuffDropped;
+	if (self.db.global.guild1 == 1) then
+		return true;
+	else
+		return false;
+	end
 end
 
 --Guild NPC killed.
 function NWB:setGuildNpcKilled(info, value)
-	self.db.global.guildNpcKilled = value;
-	NWB:sendData("GUILD");
+	if (value) then
+		self.db.global.guildNpcKilled = 1;
+	else
+		self.db.global.guildNpcKilled = 0;
+	end
+	NWB:sendSettings("GUILD");
 end
 
 function NWB:getGuildNpcKilled(info)
-	return self.db.global.guildNpcKilled;
+	if (self.db.global.guildNpcKilled == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--Guild buff dropped.
+function NWB:setGuildBuffDropped(info, value)
+	if (value) then
+		self.db.global.guildBuffDropped = 1;
+	else
+		self.db.global.guildBuffDropped = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getGuildBuffDropped(info)
+	if (self.db.global.guildBuffDropped == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--Guild NPC dialogue started.
+function NWB:setGuildNpcDialogue(info, value)
+	if (value) then
+		self.db.global.guildNpcDialogue = 1;
+	else
+		self.db.global.guildNpcDialogue = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getGuildNpcDialogue(info)
+	if (self.db.global.guildNpcDialogue == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--Guild Zan dialogue started.
+function NWB:setGuildZanDialogue(info, value)
+	if (value) then
+		self.db.global.guildZanDialogue = 1;
+	else
+		self.db.global.guildZanDialogue = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getGuildZanDialogue(info)
+	if (self.db.global.guildZanDialogue == 1) then
+		return true;
+	else
+		return false;
+	end
 end
 
 --Guild !wb command.
 function NWB:setGuildCommand(info, value)
-	self.db.global.guildCommand = value;
-	NWB:sendData("GUILD");
+	if (value) then
+		self.db.global.guildCommand = 1;
+	else
+		self.db.global.guildCommand = 0;
+	end
+	NWB:sendSettings("GUILD");
 end
 
 function NWB:getGuildCommand(info)
-	return self.db.global.guildCommand;
+	if (self.db.global.guildCommand == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--Disable all guild msgs.
+function NWB:setDisableAllGuildMsgs(info, value)
+	if (value) then
+		self.db.global.disableAllGuildMsgs = 1;
+	else
+		self.db.global.disableAllGuildMsgs = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getDisableAllGuildMsgs(info)
+	if (self.db.global.disableAllGuildMsgs == 1) then
+		return true;
+	else
+		return false;
+	end
 end
 
 --Guild songflower picked announce.

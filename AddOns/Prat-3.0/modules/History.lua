@@ -60,6 +60,8 @@ Prat:AddModuleToLoad(function()
     delaygmotd_name = "Delay GMOTD",
     delaygmotd_desc = "Delay GMOTD until after all the startup spam",
     bnet_removed = "<BNET REMOVED>",
+    removespam_name = "Remove Spam",
+    removespam_desc = "Remove addon spam messages when restoring the chat history"
   })
   --@end-debug@]===]
 
@@ -81,6 +83,8 @@ L = {
 		["divider"] = "========== End of Scrollback ==========",
 		["History"] = true,
 		["Maximum number of lines of command history to save."] = true,
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = true,
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = true,
 		["Scrollback"] = true,
@@ -115,6 +119,10 @@ L = {
 		["divider"] = "========== Fin de l'historique ==========",
 		["History"] = "Historique",
 		["Maximum number of lines of command history to save."] = "Nombre maximum de lignes de commande à sauvegarder dans l'historique.",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "Historique de commandes",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Sauvegarde l'historique des commandes entre les sessions (à utiliser avec alt+haut ou juste haut)",
 		--[[Translation missing --]]
@@ -149,14 +157,14 @@ L = {
 		["divider"] = "======= Ende der Aufzeichnungen =======",
 		["History"] = "Verlauf",
 		["Maximum number of lines of command history to save."] = "Maximal zu speichernde Zeilenanzahl des Befehlsverlaufs.",
+		["removespam_desc"] = "Entfernt Addon Spam-Nachrichten, wenn du den Chat-Verlauf wiederherstellst",
+		["removespam_name"] = "Spam entfernen",
 		["Save Command History"] = "Befehlsverlauf speichern",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Speichert Befehlsverlauf zwischen Sitzungen (um mit Alt + \"Pfeil nach oben\" oder nur \"Pfeil nach oben\" verwendet zu werden).",
 		["Scrollback"] = "Aufzeichnung",
 		["Scrollback Options"] = "Optionen zum Aufwärtsscrollen",
-		--[[Translation missing --]]
-		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
-		--[[Translation missing --]]
-		["scrollbackduration_name"] = "Scrollback Duration",
+		["scrollbackduration_desc"] = "Wie viele Stunden, um die gespeicherten Nachrichten zu speichern.",
+		["scrollbackduration_name"] = "Zurückscrollen Dauer",
 		["scrollbacklen_desc"] = "Anzahl der Chatzeilen, die im Puffer gespeichert werden sollen",
 		["scrollbacklen_name"] = "Scroll-Weite",
 		["Set Chat Lines"] = "Chatzeilen einstellen",
@@ -182,6 +190,10 @@ L = {
 		["divider"] = "========== 이전 대화 목록의 끝 ==========",
 		["History"] = "대화 내역",
 		["Maximum number of lines of command history to save."] = "저장할 명령어 내역의 최대 갯수입니다.",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "명령어 내역 저장",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "세션 간 명령어 내역을 저장합니다 (Alt+위 화살표나 위 화살표로 사용하는)",
 		["Scrollback"] = "스크롤백",
@@ -223,6 +235,10 @@ L = {
 		["History"] = "History",
 		--[[Translation missing --]]
 		["Maximum number of lines of command history to save."] = "Maximum number of lines of command history to save.",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		--[[Translation missing --]]
 		["Save Command History"] = "Save Command History",
 		--[[Translation missing --]]
@@ -266,6 +282,10 @@ L = {
 		["divider"] = "========== Конец истории сообщений ==========",
 		["History"] = "История",
 		["Maximum number of lines of command history to save."] = "Максимальное число строк сохранённых в истории команд.",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "Сохранять историю команд",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Сохранять историю команд между сеансами (для использования используйте alt+ стрелка вверх или просто стрелку вверх)",
 		["Scrollback"] = "История сообщений",
@@ -299,6 +319,10 @@ L = {
 		["divider"] = "========== 回卷结束 ==========",
 		["History"] = "历史记录",
 		["Maximum number of lines of command history to save."] = "存储命令记录最大行数",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "命令记录存储",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "存储会话之间命令的历史记录(使用alt+上箭头键或仅上箭头键)",
 		["Scrollback"] = "回卷",
@@ -336,6 +360,10 @@ L = {
 		["divider"] = "========== Fin del Registro ==========",
 		["History"] = "Historial",
 		["Maximum number of lines of command history to save."] = "Máximo número de líneas a guardar por el comando historial.",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "Comando Guardar Historial",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Guarda el historial de comandos entre sesiones (para utilizar con alt+flecha arriba o sólo la flecha arriba)",
 		--[[Translation missing --]]
@@ -375,6 +403,10 @@ L = {
 		["divider"] = "========== 捲動結束 ==========",
 		["History"] = "歷史訊息",
 		["Maximum number of lines of command history to save."] = "最大行數的指令記錄儲存。",
+		--[[Translation missing --]]
+		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
+		--[[Translation missing --]]
+		["removespam_name"] = "Remove Spam",
 		["Save Command History"] = "儲存指令歷史",
 		--[[Translation missing --]]
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Saves command history between sessions (for use with alt+up arrow or just the up arrow)",
@@ -409,6 +441,7 @@ L = {
       scrollbackduration = 24,
       savehistory = false,
       scrollback = true,
+      removespam = true,
       colorgmotd = true,
       delaygmotd = true,
     }
