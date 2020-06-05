@@ -170,7 +170,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 
 L = {
 	["ChannelNames"] = {
-		["%s settings."] = "%s -Einstellungen.",
+		["%s settings."] = "%s - Einstellungen",
 		["<string>"] = "<Zeichenfolge>",
 		["Add Channel Abbreviation"] = "Hinzufügen einer Kanal-Abkürzung",
 		["addnick_desc"] = "Fügt einen abgekürzten Kanalnamen hinzu. Füge den Vorsatz '#' dem Namen hinzu, um die Nummer des Kanals mit anzuzeigen (z.B. '#Handel')",

@@ -161,12 +161,12 @@ L = {
 		["removespam_name"] = "Spam entfernen",
 		["Save Command History"] = "Befehlsverlauf speichern",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Speichert Befehlsverlauf zwischen Sitzungen (um mit Alt + \"Pfeil nach oben\" oder nur \"Pfeil nach oben\" verwendet zu werden).",
-		["Scrollback"] = "Aufzeichnung",
-		["Scrollback Options"] = "Optionen zum Aufwärtsscrollen",
+		["Scrollback"] = "Zurückblättern",
+		["Scrollback Options"] = "Optionen für das Zurückblättern",
 		["scrollbackduration_desc"] = "Wie viele Stunden, um die gespeicherten Nachrichten zu speichern.",
-		["scrollbackduration_name"] = "Zurückscrollen Dauer",
-		["scrollbacklen_desc"] = "Anzahl der Chatzeilen, die im Puffer gespeichert werden sollen",
-		["scrollbacklen_name"] = "Scroll-Weite",
+		["scrollbackduration_name"] = "Dauer vom Zurückblättern",
+		["scrollbacklen_desc"] = "Anzahl der Chat-Zeilen, die im Zurückblättern Puffer gespeichert werden sollen.",
+		["scrollbacklen_name"] = "Länge vom Zurückblättern",
 		["Set Chat Lines"] = "Chatzeilen einstellen",
 		["Set Command History"] = "Befehlsverlauf einstellen",
 		["Set the number of lines of chat history for each window."] = "Die Zeilenanzahl des Chatverlaufs für jedes Fenster einstellen.",
@@ -722,8 +722,8 @@ L = {
     end
 
     local editBoxText = editBox:GetText();
-    if (strlen(editBoxText) > 0 and not IsSecureCmd(editBoxText)) then
-      text = (header and (text .. " ") or "") .. editBox:GetText();
+    if (strlen(editBoxText) > 0 and not IsSecureCmd(editBoxText:match("^/[%a%d_]+") or "")) then
+      text = (header and (text .. " ") or "") .. editBoxText;
       self:saveLine(text, editBox)
     end
   end

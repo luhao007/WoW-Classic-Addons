@@ -76,7 +76,7 @@ Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]===]
 
 --@non-debug@
-Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.4".."|r)"
+Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.8".."|r)"
 --@end-non-debug@
 
 
@@ -269,7 +269,7 @@ function Format(smf, event, color, ...)
   callbacks:Fire(FRAME_MESSAGE, m, this, event)
 
   if not m.DONOTPROCESS then
-    color = color or DEF_INFO
+    color = color or info
     local r, g, b, id = color.r or 1, color.g or 1, color.b or 1, 1
 
     -- Remove all the pattern matches ahead of time
@@ -338,11 +338,19 @@ end
 
 function addon:UpdateProfileDelayed()
   for k, v in self:IterateModules() do
-    if v:IsEnabled() then
+    if v.db.profile.on then
+      if v:IsEnabled() then
+        v:Disable()
+        v:Enable()
+      else
+        v:Enable()
+      end
+    else
       v:Disable()
-      v:Enable()
     end
   end
+
+  UpdateOptions()
 end
 
 function GetReloadUILink(Requestor)
@@ -581,16 +589,15 @@ function CreateProxy(frame)
       DummyFrame[k] = v
     end
   end
-  DummyFrame.tellTimer = frame.tellTimer
   DummyFrame.IsShown = function() return true end
   return DummyFrame
 end
 
 function RestoreProxy()
   for k, v in pairs(savedFrame) do
-      DummyFrame[k] = v
+    DummyFrame[k] = v
   end
-  for k,v in pairs(DummyFrame) do
+  for k, v in pairs(DummyFrame) do
     if type(v) ~= "function" and not fieldBlacklist[k] then
       if savedFrame[k] == nil then
         DummyFrame[k] = nil
@@ -604,6 +611,7 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
   local POST_ADDMESSAGE = "Prat_PostAddMessage"
   local FRAME_MESSAGE = "Prat_FrameMessage"
   local POST_ADDMESSAGE_BLOCKED = "Prat_PostAddMessageBlocked"
+
 
   local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15 = ...
 
@@ -683,7 +691,7 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
         m.MESSAGE = MatchPatterns(m, "FRAME")
       end
 
-       callbacks:Fire(PRE_ADDMESSAGE, message, this, message.EVENT, BuildChatText(message), r, g, b, id)
+      callbacks:Fire(PRE_ADDMESSAGE, message, this, message.EVENT, BuildChatText(message), r, g, b, id)
 
       if process then
         -- Pattern Matches Put Back IN
@@ -710,10 +718,10 @@ function addon:ChatFrame_MessageEventHandler(this, event, ...)
 
         callbacks:Fire(POST_ADDMESSAGE, m, this, message.EVENT, m.OUTPUT, r, g, b, id, false, m.ACCESSID, m.TYPEID)
 
-        if ( not this:IsShown() ) then
-          if ( (this == _G.DEFAULT_CHAT_FRAME and m.INFO.flashTabOnGeneral) or (this ~= _G.DEFAULT_CHAT_FRAME and m.INFO.flashTab) ) then
-            if ( not _G.CHAT_OPTIONS.HIDE_FRAME_ALERTS or m.CHATTYPE == "WHISPER" or m.CHATTYPE == "BN_WHISPER" ) then	--BN_WHISPER FIXME
-              if (not _G.FCFManager_ShouldSuppressMessageFlash(this, m.CHATGROUP, m.CHATTARGET) ) then
+        if (not this:IsShown()) then
+          if ((this == _G.DEFAULT_CHAT_FRAME and m.INFO.flashTabOnGeneral) or (this ~= _G.DEFAULT_CHAT_FRAME and m.INFO.flashTab)) then
+            if (not _G.CHAT_OPTIONS.HIDE_FRAME_ALERTS or m.CHATTYPE == "WHISPER" or m.CHATTYPE == "BN_WHISPER") then --BN_WHISPER FIXME
+              if (not _G.FCFManager_ShouldSuppressMessageFlash(this, m.CHATGROUP, m.CHATTARGET)) then
                 _G.FCF_StartAlertFlash(this);
               end
             end
@@ -736,7 +744,7 @@ end
 function addon:AddMessage(frame, text, r, g, b, id, ...)
   local s = SplitMessage
   if s.OUTPUT == nil and s.CAPTUREOUTPUT == frame --[[ and Prat.dumping == false]] then
-    s.INFO.r, s.INFO.g, s.INFO.b, s.INFO.id = r, g, b, id
+    --    s.INFO.r, s.INFO.g, s.INFO.b, s.INFO.id = r, g, b, id
     s.ORG.OUTPUT = text
   else
     self.hooks[frame].AddMessage(frame, text, r, g, b, id, ...)

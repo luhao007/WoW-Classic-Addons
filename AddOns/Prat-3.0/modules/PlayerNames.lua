@@ -97,6 +97,8 @@ Prat:AddModuleToLoad(function()
     ["Too many matches (%d possible)"] = true,
     ["Actively Query Player Info"] = true,
     ["Query the server for all player names we do not know. Note: This happpens pretty slowly, and this data is not saved."] = true,
+    bnetclienticon_name = "Show BNet Client Icon",
+    bnetclienticon_desc = "Show an icon indicating which game or client the Battle.Net friend is using"
   })
   --@end-debug@]===]
 
@@ -111,6 +113,8 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = true,
 		["Angled"] = true,
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = true,
 		["Brackets Common Color"] = true,
 		["Brackets Use Common Color"] = true,
@@ -181,6 +185,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "Interroger activement les joueurs",
 		["Angled"] = "Chevrons",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "Crochets",
 		["Brackets Common Color"] = "Couleur des crochets",
 		["Brackets Use Common Color"] = "Couleur des crochets",
@@ -255,6 +263,8 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "Spielerinformationen aktiv abfragen",
 		["Angled"] = "Abgewinkelt",
+		["bnetclienticon_desc"] = "Zeigt ein Symbol an, das angibt, welches Spiel oder welchen Client der Battle.Net-Freund verwendet",
+		["bnetclienticon_name"] = "BNet-Client Symbol anzeigen",
 		["Brackets"] = "Klammern",
 		["Brackets Common Color"] = "Standardfarbe der Klammern",
 		["Brackets Use Common Color"] = "Klammern verwende die Standardfarbe",
@@ -262,7 +272,7 @@ L = {
 		["Color by Level Difference"] = "Entsprechend des Stufenunterschieds einfärben",
 		["coloreverywhere_desc"] = "Spielernamen einfärben, wenn diese im Text einer Chat-Mitteilung auftreten.",
 		["coloreverywhere_name"] = "Namen überall einfärben",
-		["Enable Alt-Invite"] = "Alt-Einladungen aktivieren",
+		["Enable Alt-Invite"] = "Alternative Einladung aktivieren",
 		["Enable Invite Links"] = "Einladungs-Links aktivieren",
 		["Enable TabComplete"] = "TabComplete aktivieren",
 		["hoverhilight_desc"] = "Chat-Zeilen eines bestimmten Spielers hervorheben, wenn die Maus über den Spielerlink gelegt wird.",
@@ -325,6 +335,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "적극적인 플레이어 정보 요청",
 		["Angled"] = "<플레이어>",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "괄호 선택",
 		["Brackets Common Color"] = "괄호 색상",
 		["Brackets Use Common Color"] = "괄호에 색상 사용",
@@ -397,6 +411,10 @@ L = {
 		["Actively Query Player Info"] = "Actively Query Player Info",
 		--[[Translation missing --]]
 		["Angled"] = "Angled",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		--[[Translation missing --]]
 		["Brackets"] = "Brackets",
 		--[[Translation missing --]]
@@ -525,6 +543,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "Активный запрос инфы о игроке",
 		["Angled"] = "Треугольные",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "Скобки",
 		["Brackets Common Color"] = "Основной цвет скобок",
 		["Brackets Use Common Color"] = "Скобки общего цвета",
@@ -595,6 +617,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "活跃的查询玩家信息",
 		["Angled"] = "折角",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "括号",
 		["Brackets Common Color"] = "同一颜色括号",
 		["Brackets Use Common Color"] = "使用同一颜色括号",
@@ -665,6 +691,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "Pedir Información de Jugador Activamente",
 		["Angled"] = "Angulo",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "Corchetes",
 		["Brackets Common Color"] = "Color Común Corchetes",
 		["Brackets Use Common Color"] = "Utilizar Color Común Corchetes",
@@ -740,6 +770,10 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "主動查詢玩家資訊",
 		["Angled"] = "角",
+		--[[Translation missing --]]
+		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
+		--[[Translation missing --]]
+		["bnetclienticon_name"] = "Show BNet Client Icon",
 		["Brackets"] = "括號",
 		["Brackets Common Color"] = "括號通用色彩",
 		["Brackets Use Common Color"] = "括號使用的通用色彩",
@@ -844,6 +878,7 @@ L = {
       usecommoncolor = true,
       bracketscommoncolor = true,
       linkifycommon = true,
+      bnetclienticon = true,
       bracketscolor = {
         r = 0.85,
         g = 0.85,
@@ -959,6 +994,12 @@ L = {
         type = "toggle",
         order = 136,
       },
+      bnetclienticon = {
+        name = PL.bnetclienticon_name,
+        desc = PL.bnetclienticon_desc,
+        type = "toggle",
+        order = 137,
+      },
       levelcolor = {
         name = PL["Level Color Mode"],
         desc = PL["How to color other player's level."],
@@ -1065,9 +1106,12 @@ L = {
     Prat.RegisterMessageItem("PLAYERTARGETICON", "Ss", "after")
 
     Prat.EnableProcessingForEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
+    Prat.EnableProcessingForEvent("CHAT_MSG_ACHIEVEMENT")
 
     Prat.RegisterMessageItem("PLAYERLEVEL", "PREPLAYERDELIM", "before")
     Prat.RegisterMessageItem("PLAYERGROUP", "POSTPLAYERDELIM", "after")
+
+    Prat.RegisterMessageItem("PLAYERCLIENTICON", "PLAYERLEVEL", "before")
 
     self:RegisterEvent("FRIENDLIST_UPDATE", "updateFriends")
     self:RegisterEvent("GUILD_ROSTER_UPDATE", "updateGuild")
@@ -1214,6 +1258,32 @@ L = {
     end
   end
 
+  local GetBnetClientByID
+  if Prat.IsClassic then
+    GetBnetClientByID = function(bnetAccountID)
+      if not bnetAccountID then return end
+
+      local _, _, _, _, _, gameAccountID = BNGetFriendInfoByID(bnetAccountID)
+      if gameAccountID then
+        local _, toonName, client, realmName, _, faction, race, class, _, zoneName, level, gameText,
+        broadcastText, broadcastTime = BNGetGameAccountInfo(gameAccountID)
+        -- Pre-8.2.5 API returns empty strings if friend is online on non-WoW client
+        -- We return only non-empty strings for consistency with other "no data" situations
+        if client ~= "" then
+          return client
+        end
+      end
+    end
+  else
+    GetBnetClientByID = function(bnetAccountID)
+      if not bnetAccountID then return end
+
+      local accountInfo = C_BattleNet.GetAccountInfoByID(bnetAccountID)
+      if accountInfo then
+        return accountInfo.gameAccountInfo.clientProgram
+      end
+    end
+  end
 
   --[[------------------------------------------------
     Core Functions
@@ -1546,6 +1616,12 @@ L = {
         message.PLAYER = CLR:Random(message.PLAYER, message.PLAYER:lower())
       end
 
+      if self.db.profile.bnetclienticon then
+        local client = GetBnetClientByID(message.PRESENCE_ID)
+        if client then
+          message.PLAYERCLIENTICON = ("|T%s:%d:%d:%d:%d|t"):format(BNet_GetClientTexture(client), 14, 14, 0, -6)
+        end
+      end
     else
       -- Add the player name in the proper color
       message.PLAYER = CLR:Player(message.PLAYER, Name, class)

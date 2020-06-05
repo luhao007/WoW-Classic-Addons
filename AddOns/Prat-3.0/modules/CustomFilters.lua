@@ -82,6 +82,8 @@ Prat:AddModuleToLoad(function()
     ["ForwardCustom"] = true,
     ["ForwardMessageCustom"] = "Private Channel",
     ["Forward the message to a custom chat channel."] = "Output to a private chat channel",
+    chatframesink_name = "Chatframe",
+    chatframesink_desc = "Output to a chat window"
   })
   --@end-debug@]===]
 
@@ -101,6 +103,8 @@ L = {
 		["Block Message"] = true,
 		["Channel Data"] = true,
 		["Channel to send output text to."] = true,
+		["chatframesink_desc"] = "Output to a chat window",
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = true,
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = true,
 		["Filter Name"] = true,
@@ -159,6 +163,10 @@ L = {
 		["Channel Data"] = "Channel Data",
 		--[[Translation missing --]]
 		["Channel to send output text to."] = "Channel to send output text to.",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "Activé",
 		--[[Translation missing --]]
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "Extra data for WHISPER (target) and CHANNEL (channel name or num)",
@@ -235,12 +243,14 @@ L = {
 
 L = {
 	["CustomFilters"] = {
-		["<string>"] = true,
+		["<string>"] = "<Zeichenfolge>",
 		["Add a pattern to search for."] = "Muster hinzufügen, nach dem gesucht wird.",
 		["Add Pattern"] = "Muster hinzufügen",
 		["Block Message"] = "Blockiere Mitteilung",
 		["Channel Data"] = "Kanal-Daten",
 		["Channel to send output text to."] = "Kanal, an den Ausgabetext gesendet werden soll.",
+		["chatframesink_desc"] = "Ausgabe in ein Chat-Fenster",
+		["chatframesink_name"] = "Chatrahmen",
 		["Enabled"] = "Aktiviert",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "Zusätzliche Daten für WHISPER (Ziel) und CHANNEL (Kanalname oder -nummer)",
 		["Filter Name"] = "Name filtern",
@@ -293,6 +303,10 @@ L = {
 		["Block Message"] = "메시지 차단",
 		["Channel Data"] = "채널 데이터",
 		["Channel to send output text to."] = "출력 내용을 보낼 채널.",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "사용",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "귓속말 (대상)과 채널 (채널 이름 또는 숫자)의 추가 데이터",
 		["Filter Name"] = "필터 이름",
@@ -351,6 +365,10 @@ L = {
 		["Channel Data"] = "Channel Data",
 		--[[Translation missing --]]
 		["Channel to send output text to."] = "Channel to send output text to.",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		--[[Translation missing --]]
 		["Enabled"] = "Enabled",
 		--[[Translation missing --]]
@@ -439,6 +457,10 @@ L = {
 		["Block Message"] = "Блокировка сообщения",
 		["Channel Data"] = "Канал данных",
 		["Channel to send output text to."] = "Канал для отсылки выходящего текста.",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "Включено",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "Добавочные данные для ШЕПОТА (цель) и КАНАЛА (название канала или номер)",
 		["Filter Name"] = "Название фильтра",
@@ -491,6 +513,10 @@ L = {
 		["Block Message"] = "消息阻止",
 		["Channel Data"] = "频道数据",
 		["Channel to send output text to."] = "频道发送输出文本",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "启用",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "密语(目标)和频道(频道名称或数字)的扩展数据",
 		["Filter Name"] = "过滤器名字",
@@ -543,6 +569,10 @@ L = {
 		["Block Message"] = "Bloque de Mensaje",
 		["Channel Data"] = "Datos de Canal",
 		["Channel to send output text to."] = "Canal a enviar el texto de salida",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "Activado",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "Datos extra para SUSURRAR (objetivo) y CANAL (nombre de canal o número)",
 		["Filter Name"] = "Nombre del Filtro",
@@ -595,6 +625,10 @@ L = {
 		["Block Message"] = "屏蔽訊息",
 		["Channel Data"] = "頻道資料",
 		["Channel to send output text to."] = "頻道發送輸出文字至。",
+		--[[Translation missing --]]
+		["chatframesink_desc"] = "Output to a chat window",
+		--[[Translation missing --]]
+		["chatframesink_name"] = "Chatframe",
 		["Enabled"] = "已啟用",
 		["Extra data for WHISPER (target) and CHANNEL (channel name or num)"] = "額外資料密話(目標)和頻道(頻道名稱或數字)",
 		["Filter Name"] = "過濾名稱",
@@ -1141,19 +1175,35 @@ end
 
   Prat:SetModuleInit(module,
     function(self)
---      local function tailChan(t, cnum, cname, ...)
---        if not cnum then return t end
---        if Prat.IsPrivateChannel(cnum) then
---          t[#t + 1] = cname
---        end
---        return tailChan(t, ...)
---      end
---
---      self:RegisterSink(PL["ForwardCustom"],
---        PL["ForwardMessageCustom"],
---        PL["Forward the message to a custom chat channel."],
---        "ForwardCustom",
---        function() return tailChan({}, GetChannelList()) end)
+      --      local function tailChan(t, cnum, cname, ...)
+      --        if not cnum then return t end
+      --        if Prat.IsPrivateChannel(cnum) then
+      --          t[#t + 1] = cname
+      --        end
+      --        return tailChan(t, ...)
+      --      end
+      --
+      --      self:RegisterSink(PL["ForwardCustom"],
+      --        PL["ForwardMessageCustom"],
+      --        PL["Forward the message to a custom chat channel."],
+      --        "ForwardCustom",
+      --        function() return tailChan({}, GetChannelList()) end)
+
+      self:RegisterSink(PL.chatframesink_name,
+        PL.chatframesink_name,
+        PL.chatframesink_desc,
+        "ChatframeSink",
+        function()
+          local keys = {}
+          for k, v in pairs(Prat.HookedFrames) do
+            if not v.isTemporary and (v:IsShown() or v.isDocked) then
+              keys[#keys + 1] = v.name or k
+            end
+          end
+
+          return keys
+        end)
+
 
       local modeOpts = modeOptions.mode
       for k, v in pairs(modeOpts) do
@@ -1190,7 +1240,7 @@ end
   end
 
   function module:Prat_PostAddMessage(info, message, frame, event, text, r, g, b, id)
-    local uid = Prat.EVENT_ID
+    local uid = message.LINE_ID
     if uid and
       uid == self.lastevent and
       self.lasteventtype == event then
@@ -1413,34 +1463,46 @@ end
     LibStub("AceConfigRegistry-3.0"):NotifyChange("Prat")
   end
 
---  local sink
---  function module:ForwardCustom(source, text, ...)
---    sink = sink or LibStub("LibSink-2.0")
---    local s = sink.storageForAddon[source]
---    local loc = s and s.sink20ScrollArea or ""
---    local cnum = Prat.GetChannelName(loc)
---
---    if cnum and cnum > 0 then
---      local cleantext = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
---
---      SendChatMessage(cleantext, "CHANNEL", GetDefaultLanguage("player"), cnum)
---    end
---  end
---
---  --msg, chatType, language, channel)
---  function module:Forward(source, text, r, g, b, ...)
---    local cleantext = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
---
---    if self.db.profile.outputchannel == CHAT_MSG_WHISPER_INFORM then
---      SendChatMessage(cleantext, "WHISPER", GetDefaultLanguage("player"), self.db.profile.outputchanneldata)
---    elseif self.db.profile.outputchannel == CHAT_MSG_CHANNEL_LIST then
---      SendChatMessage(cleantext, "CHANNEL", GetDefaultLanguage("player"), Prat.GetChannelName(self.db.profile.outputchanneldata))
---    else
---      local chatType = strsub(self.db.profile.outputchannel, 10)
---      SendChatMessage(cleantext, chatType, GetDefaultLanguage("player"))
---    end
---  end
+  --  local sink
+  --  function module:ForwardCustom(source, text, ...)
+  --    sink = sink or LibStub("LibSink-2.0")
+  --    local s = sink.storageForAddon[source]
+  --    local loc = s and s.sink20ScrollArea or ""
+  --    local cnum = Prat.GetChannelName(loc)
+  --
+  --    if cnum and cnum > 0 then
+  --      local cleantext = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
+  --
+  --      SendChatMessage(cleantext, "CHANNEL", GetDefaultLanguage("player"), cnum)
+  --    end
+  --  end
+  --
+  --  --msg, chatType, language, channel)
+  --  function module:Forward(source, text, r, g, b, ...)
+  --    local cleantext = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
+  --
+  --    if self.db.profile.outputchannel == CHAT_MSG_WHISPER_INFORM then
+  --      SendChatMessage(cleantext, "WHISPER", GetDefaultLanguage("player"), self.db.profile.outputchanneldata)
+  --    elseif self.db.profile.outputchannel == CHAT_MSG_CHANNEL_LIST then
+  --      SendChatMessage(cleantext, "CHANNEL", GetDefaultLanguage("player"), Prat.GetChannelName(self.db.profile.outputchanneldata))
+  --    else
+  --      local chatType = strsub(self.db.profile.outputchannel, 10)
+  --      SendChatMessage(cleantext, chatType, GetDefaultLanguage("player"))
+  --    end
+  --  end
 
+  function module:ChatframeSink(source, text, r, g, b, ...)
+    local sink = LibStub("LibSink-2.0")
+    local s = sink.storageForAddon[source]
+    local name = s and s.sink20ScrollArea or ""
+
+    for k, v in pairs(Prat.HookedFrames) do
+      if k == name or v.name == name then
+        v:AddMessage(text, r, g, b)
+        return
+      end
+    end
+  end
 
   return
 end) -- Prat:AddModuleToLoad

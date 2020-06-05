@@ -611,8 +611,8 @@ L = {
   ------------------------------------------------]] --
   function module:AddMessage(frame, text, ...)
     if self.db.profile.show and self.db.profile.show[frame:GetName()] and not Prat.loading then
-      frame:TransformMessages(function(message, ...) return message == text end,
-            function(message, ...) return self:InsertTimeStamp(message, frame), ... end)
+      frame.historyBuffer:GetEntryAtIndex(1).message =
+        self:InsertTimeStamp(frame.historyBuffer:GetEntryAtIndex(1).message, frame)
     end
   end
 

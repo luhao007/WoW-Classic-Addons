@@ -233,11 +233,11 @@ L = {
 		["Scroll"] = "Scrollen",
 		["Set Ctrl+MouseWheel Speed"] = "Geschwindigkeit für <Strg>-Mausrad einstellen",
 		["Set MouseWheel Speed"] = "Geschwindigkeit des Mausrads einstellen",
-		["Set number of lines mousewheel will scroll when ctrl is pressed."] = "Anzahl der Zeilen, die per Mausrad weitergescrollt werden, während <Strg> gedrückt wird, einstellen.",
-		["Set number of lines mousewheel will scroll."] = "Zeilenanzahl einstellen, die das Mausrad weiterscrollt.",
+		["Set number of lines mousewheel will scroll when ctrl is pressed."] = "Die Anzahl der Zeilen festlegen, mit denen das Mausrad einen Textlauf durchführt, während die Strg-Taste gedrückt wird.",
+		["Set number of lines mousewheel will scroll."] = "Stellt die Anzahl der Zeilen ein, mit denen das Mausrad einen Textlauf durchführt.",
 		["Set TheLowDown Delay"] = "TheLowDown-Verzögerung einstellen",
 		["Set time to wait before jumping to the bottom of chat windows."] = "Wartezeit einstellen, ehe zum Ende von Chatfenstern gesprungen wird.",
-		["Text scroll direction"] = "Scroll-Richtung im Text",
+		["Text scroll direction"] = "Textlaufrichtung",
 		["Top"] = "Von oben nach unten",
 	}
 }

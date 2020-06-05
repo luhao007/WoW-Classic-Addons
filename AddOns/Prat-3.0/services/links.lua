@@ -52,6 +52,16 @@ function BuildLink(linktype, data, text, color, link_start, link_end)
 end
 
 
+function FormatLink(linkType, linkDisplayText, ...)
+  local linkFormatTable = { ("|H%s"):format(linkType), ... };
+  local returnLink = tconcat(linkFormatTable, ":");
+  if linkDisplayText then
+    return returnLink .. ("|h%s|h"):format(linkDisplayText);
+  else
+    return returnLink .. "|h";
+  end
+end
+
 do
   local LinkRegistry = {}
 
@@ -84,17 +94,24 @@ do
     tremove(LinkRegistry, idx)
   end
 
-  function SetHyperlinkHook(hooks, frame, link, ...)
+  function SetHyperlinkHook(hooks, tooltip, link, ...)
     debug("SetItemRef ", link, ...)
     for i, reg_link in ipairs(LinkRegistry) do
       if reg_link.linkid == link:sub(1, (reg_link.linkid):len()) then
-        if (reg_link.linkfunc(reg_link.handler, link, ...) == false) then
+        local frame
+        for _,v in pairs(HookedFrames) do
+          if v:IsMouseOver() and ((v.isDocked and v:IsShown()) or not v.isDocked) then
+            frame = v
+            break
+          end
+        end
+        if (reg_link.linkfunc(reg_link.handler, link, frame, ...) == false) then
           debug([[DUMP_LINK("SetHyperlink ", "Link Handled Internally")]])
           return false
         end
       end
     end
-    hooks.SetHyperlink(frame, link, ...)
+    hooks.SetHyperlink(tooltip, link, ...)
   end
 end
 

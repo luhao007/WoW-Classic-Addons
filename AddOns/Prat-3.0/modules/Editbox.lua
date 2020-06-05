@@ -130,9 +130,7 @@ L = {
 		["Border texture"] = "Randtextur",
 		["Bottom"] = "Unten",
 		["Color border by channel"] = "Rand einfärben nach Kanal",
-		["currently_broken_alt_behavior"] = [=[Das Verhalten der Pfeiltasten im Chat ist im aktuellen WoW-Client defekt,
-
-verwende stattdessen Alt+Hoch und Alt+Runter, um durch den Chatverlauf zu scrollen.]=],
+		["currently_broken_alt_behavior"] = "Das Verhalten der Pfeiltasten im aktuellen WoW-Client ist unterbrochen. Verwende ALT-HOCH und ALT-RUNTER anstelle von nur HOCH RUNTER, um auf den Verlauf zuzugreifen",
 		["Edge Size"] = "Kantengröße",
 		["Editbox"] = "Eingabefeld",
 		["Editbox options."] = "Optionen für das Eingabefeld.",

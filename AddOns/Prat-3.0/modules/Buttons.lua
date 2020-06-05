@@ -293,8 +293,8 @@ L = {
 		["Default"] = "Standard",
 		["Right, Inside Frame"] = "Rechts, innerhalb des Rahmens",
 		["Right, Outside Frame"] = "Rechts, außerhalb des Rahmens",
-		["scrollReminder_desc"] = "Zeigt eine Erinnerungsschaltfläche an, wenn du dich nicht am unteren Ende des Chatfensters befindest.",
-		["scrollReminder_name"] = "ScrollDown-Erinnerung anzeigen",
+		["scrollReminder_desc"] = "Erinnerungsschaltfläche anzeigen, wenn du nicht am unteren Rand eines Chat-Fensters bist.",
+		["scrollReminder_name"] = "Vorscrollen-Erinnerung anzeigen",
 		["Set Position"] = "Position einstellen",
 		["Sets position of chat menu and arrows for all chat windows."] = "Stellt die Position des Chatmenüs und der Navigationspfeile für alle Chatfenster ein.",
 		["Show Arrows"] = "Zeige die Navigationspfeile",
@@ -656,7 +656,7 @@ end
 
     Prat.RegisterChatEvent(self, Prat.Events.POST_ADDMESSAGE)
 
-    self:SecureHook("FCF_DockFrame")
+    self:SecureHook("FCF_SetButtonSide")
   end
 
   function module:APLyAllSettings()
@@ -861,10 +861,6 @@ end
   --[[ - - ------------------------------------------------
     Core Functions
   --------------------------------------------- - ]] --
-  function module:FCF_DockFrame(frame)
-    self:FCF_SetButtonSide(frame)
-  end
-
   function module:FCF_SetButtonSide(chatFrame, buttonSide)
     local f = _G[chatFrame:GetName() .. "ButtonFrameBottomButton"]
     local bf = _G[chatFrame:GetName() .. "ButtonFrame"]

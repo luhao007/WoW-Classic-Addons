@@ -284,7 +284,7 @@ function SplitChatMessage(frame, event, ...)
     end
 
     local info
-    local channelLength = strlen(arg4);
+    local channelLength = arg4 and strlen(arg4) or 0
     local infoType = type;
     if ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
       local found = 0;
@@ -309,6 +309,7 @@ function SplitChatMessage(frame, event, ...)
 
     local s = SplitMessageOrg
 
+    s.LINE_ID = arg11
     s.INFOTYPE = infoType
     info = _G.ChatTypeInfo[infoType]
     -- blizzard bug, arg2 (player name) can have an extra space
@@ -324,7 +325,7 @@ function SplitChatMessage(frame, event, ...)
     }
 
     if CHAT_PLAYER_GUIDS then
-      if s.GUID and s.GUID:len() > 0 and s.GUID ~= "0000000000000000" then
+      if s.GUID and s.GUID:len() > 0 and s.GUID ~= "0000000000000000" and s.GUID ~= "0x0300000000000000" then
         s.GUIDINFO = {
           _G.GetPlayerInfoByGUID(s.GUID)
         }
@@ -368,8 +369,6 @@ function SplitChatMessage(frame, event, ...)
     elseif (chatGroup == "WHISPER" or chatGroup == "BN_WHISPER") then
       if (not (strsub(arg2, 1, 2) == "|K")) then
         chatTarget = strupper(arg2);
-        s.presenceID = _G.BNet_GetBNetIDAccount(arg2)
-        --s.presenceID = presenceID and _G.BNIsSelf(presenceID)
       else
         chatTarget = arg2;
       end
@@ -472,10 +471,16 @@ function SplitChatMessage(frame, event, ...)
           --          end
         else
           if (type ~= "BN_WHISPER" and type ~= "BN_WHISPER_INFORM" and type ~= "BN_CONVERSATION") or arg2 == _G.UnitName("player") --[[or presenceID]] then
-            s.PLAYERLINKDATA = ":" .. safestr(arg11) .. ":" .. chatGroup .. (chatTarget and ":" .. chatTarget or "")
+            s.PLAYERLINKDATA = ":" .. safestr(arg11) .. ":" .. chatGroup .. (chatTarget and (":" .. chatTarget) or "")
           else
             s.lL = "|HBNplayer:"
-            s.PLAYERLINKDATA = ":" .. safestr(arg13) .. ":" .. safestr(arg11) .. ":" .. chatGroup .. (chatTarget and ":" .. chatTarget or "")
+            local battleTag, _
+            if _G.C_BattleNet and  _G.C_BattleNet.GetAccountInfoByID then
+              battleTag =  _G.C_BattleNet.GetAccountInfoByID(arg13).battleTag
+            else
+              _, _, battleTag = _G. BNGetFriendInfoByID(arg13)
+            end
+            s.PLAYERLINKDATA = ":" .. safestr(arg13) .. ":" .. safestr(arg11) .. ":" .. chatGroup ..  ":" .. chatTarget ..  (battleTag and (":" .. battleTag) or "")
             s.PRESENCE_ID = arg13
           end
         end
@@ -507,22 +512,20 @@ function SplitChatMessage(frame, event, ...)
         s.MESSAGE = chatnotice:format(arg2)
       end
     elseif type == "CHANNEL_NOTICE" then
-      local globalstring = _G["CHAT_" .. arg1 .. "_NOTICE_BN"];
-      if (not globalstring) then
-        globalstring = _G["CHAT_" .. arg1 .. "_NOTICE"];
-      end
-
-      if (arg10 > 0) then
-        arg4 = arg4 .. " " .. arg10;
-      end
-
-      if _G["CHAT_" .. arg1 .. "_NOTICE"] then
-        if arg1 == "YOU_JOINED" or arg1 == "YOU_LEFT" or arg1 == "YOU_CHANGED" or arg1 == "SUSPENDED" or arg1 == "NOT_IN_LFG" then
-          s.MESSAGE = _G["CHAT_" .. arg1 .. "_NOTICE"]:format(arg8, arg4):trim()
-        else
-          s.MESSAGE = _G["CHAT_" .. arg1 .. "_NOTICE"]:gsub("|Hchannel:[^|]-|h[^|]-|h", ""):trim()
+      local globalstring;
+      if ( arg1 == "TRIAL_RESTRICTED" ) then
+        globalstring = _G.CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
+      else
+        globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
+        if ( not globalstring ) then
+          globalstring = _G["CHAT_"..arg1.."_NOTICE"];
+          if not globalstring then
+            _G.GMError(("Missing global string for %q"):format("CHAT_"..arg1.."_NOTICE"));
+            return;
+          end
         end
       end
+      s.MESSAGE = _G.format(globalstring, arg8, _G.ChatFrame_ResolvePrefixedChannelName(arg4))
     end
 
     local arg6 = safestr(arg6)

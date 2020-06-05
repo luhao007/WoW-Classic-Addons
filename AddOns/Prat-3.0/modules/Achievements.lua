@@ -864,7 +864,7 @@ end
     local type = Prat.CurrentMessage.CHATTYPE
     if type == "WHISPER_INFORM" then return end
 
-    local text, theirId, theirPlayerGuid, theirDone, theirMonth, theirDay, theirYear, _, _, _, _, theirAchievmentName = ...
+    local text, theirId, theirPlayerGuid, theirDone, theirMonth, theirDay, theirYear, _, _, _, _, theirAchievmentName, frame = ...
 
     if not (tostring(theirPlayerGuid):len() > 3) then return end
 
@@ -889,6 +889,8 @@ end
   })
 
   function module:OnModuleEnable()
+    Prat.EnableProcessingForEvent("CHAT_MSG_GUILD_ACHIEVEMENT")
+    Prat.EnableProcessingForEvent("CHAT_MSG_ACHIEVEMENT")
     Prat.RegisterChatEvent(self, "Prat_FrameMessage")
     Prat.RegisterLinkType({ linkid = gratsLinkType, linkfunc = self.OnGratsLink, handler = self }, self.name)
   end
@@ -913,7 +915,7 @@ end
     return ""
   end
 
-  function module:OnGratsLink(link, text, button, ...)
+  function module:OnGratsLink(link)
     --        dbg(link)
     local theirName, group, channel, id = strsub(link, gratsLinkType:len() + 2):match("([^:]*):([^:]*):([^:]*):([^:]*)")
 

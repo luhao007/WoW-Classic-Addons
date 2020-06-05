@@ -566,6 +566,14 @@ end
             module:ScrapeFullChatFrame(frame)
           end
         end)
+
+      Prat.RegisterLinkType({ linkid = "pratcopy", linkfunc = module.CopyLink, handler = module }, module.name)
+
+      module.timestamps = Prat.Addon:GetModule("Timestamps", true)
+
+      if module.timestamps then
+        module:RawHook(module.timestamps, "GetTime")
+      end
     end)
 
   function module:OnModuleEnable()
@@ -610,6 +618,40 @@ end
       Core Functions
   ------------------------------------------------]] --
 
+  function module:CopyLink(link, frame)
+    if frame then
+      for lineIndex, visibleLine in ipairs(frame.visibleLines) do
+        if visibleLine:IsMouseOver() then
+          local info = visibleLine.messageInfo
+          if info.message then
+            local text = info.message:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):gsub("|H.-|h", ""):gsub("|h", "")
+            text = text:gsub("|K.-|k", ""):gsub("|T.-|t", ""):gsub("|A.-|a", "")
+
+            local editBox = ChatEdit_ChooseBoxForSend(frame);
+
+            --DEBUG FIXME - for now, we're not going to remove spaces from names. We need to make sure X-server still works.
+            -- Remove spaces from the server name for slash command parsing
+            --name = gsub(name, " ", "");
+
+            if (editBox ~= ChatEdit_GetActiveWindow()) then
+              ChatFrame_OpenChat(text, frame);
+            else
+              editBox:SetText(text);
+            end
+          end
+          return false
+        end
+      end
+    end
+
+    return false
+  end
+
+  function module:GetTime(...)
+    local stamp = self.hooks[self.timestamps].GetTime(...)
+    return "|H" .. "pratcopy" ..  "|h" .. stamp .. "|h"
+  end
+
   module.lines = {}
   module.str = nil
 
@@ -640,27 +682,27 @@ end
     self:DoCopyChat(frame, noshow)
   end
 
-  function module:ScrapeFullChatFrame(frame, nostrip)
-    self:DoCopyChatScroll(frame, nostrip)
+  function module:ScrapeFullChatFrame(frame, no)
+    self:DoCopyChatScroll(frame)
   end
 
   function module:MenuScrape()
     self:ScrapeChatFrame(SELECTED_CHAT_FRAME)
   end
 
-  function module:DoCopyChatScroll(frame, nostrip)
+  function module:DoCopyChatScroll(frame)
     local scrapelines = {}
     local str
 
     if frame:GetNumMessages() == 0 then return end
 
-    for i=frame:GetNumMessages(),1,-1 do
+    for i = frame:GetNumMessages(), 1, -1 do
       local msg = frame.historyBuffer:GetEntryAtIndex(i)
       msg = msg and msg.message
 
       if msg then
-        local stripped = msg:gsub("|K.-|k", "<BNET REMOVED>")
-        table.insert(scrapelines, nostrip and msg or stripped)
+        local stripped = msg:gsub("|K[^|]-|k", "<BNET REMOVED>")
+        table.insert(scrapelines, stripped)
       end
     end
 

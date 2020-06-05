@@ -94,7 +94,7 @@ L = {
 
 L = {
 	["Invites"] = {
-		["Enable Alt-Invite"] = "Aktiviere Alt-Einladen",
+		["Enable Alt-Invite"] = "Alternative Einladung aktivieren",
 		["Enable Invite Links"] = "Aktiviere Einladungs-Links",
 		["module_desc"] = "Optionen zum einfachen Einladen von Spielern für Gruppen",
 		["module_name"] = "Einladungen",
@@ -360,11 +360,11 @@ L = {
 
   function module:SetItemRef(link, ...)
     if (strsub(link, 1, 6) == "player") then
-      self:Player_Link(link, ...)
+      self:Player_Link(link)
     end
   end
 
-  function module:Player_Link(link, text, button, ...)
+  function module:Player_Link(link)
     if self.db.profile.altinvite then
       local name = strsub(link, 8);
       if (name and (strlen(name) > 0)) then
