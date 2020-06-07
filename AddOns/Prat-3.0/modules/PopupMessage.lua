@@ -270,7 +270,7 @@ L = {
 		["framealpha_desc"] = "Den Transparenzwert des Popup-Rahmens bei voller Darstellung einstellen.",
 		["framealpha_name"] = "Transparenz der Popup-Rahmens",
 		["Popup"] = true,
-		["PopupMessage"] = true,
+		["PopupMessage"] = "Popup Meldung",
 		["Remove Nickname"] = "Spitznamen entfernen",
 		["Removes an alternate name to show in popups."] = "Entfernt einen alternativen Namen, der in Popups angezeigt werden soll.",
 		["Set Separately"] = "Einzeln einstellen",
@@ -284,8 +284,8 @@ L = {
 		["show_perframename"] = "Popups vom Chatfenster%d anzeigen",
 		["showall_desc"] = "Popups für alle Chatfenster anzeigen.",
 		["showall_name"] = "Alle Popups anzeigen",
-		["Shows messages in a popup window."] = "Mitteilungen in einem Popup-Fenster anzeigen.",
-		["Shows messages with your name in a popup."] = "Mitteilungen in einem Popup-Fenster mit deinem Namen anzeigen.",
+		["Shows messages in a popup window."] = "Zeigt Nachrichten in einem Popup-Fenster an.",
+		["Shows messages with your name in a popup."] = "Zeigt Nachrichten mit deinem Namen in einem Popup an.",
 		["Toggle setting options separately for each chat window."] = "Optionseinstellungen einzeln für jedes Chatfenster umschalten.",
 	}
 }

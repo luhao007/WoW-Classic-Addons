@@ -386,72 +386,44 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 
 L = {
 	["Achievements"] = {
-		--[[Translation missing --]]
-		["completed"] = "Completed %s",
-		--[[Translation missing --]]
-		["customGrats_defualt"] = "Grats %s",
-		--[[Translation missing --]]
-		["customGrats_desc"] = "Use a custom grats message instead of a random one",
-		--[[Translation missing --]]
-		["customGrats_name"] = "Use Custom Grats Message",
-		--[[Translation missing --]]
-		["customGratsText_desc"] = "Custom grats message. Type any text you wish for your grats message, if you want to include the player's name use '%s' as a placeholder",
-		--[[Translation missing --]]
-		["customGratsText_name"] = "Grats Message",
+		["completed"] = "%s 완료",
+		["customGrats_defualt"] = "%s님 축하!",
+		["customGrats_desc"] = "임의의 메시지 대신 사용자 정의 축하 메시지를 사용하십시오.",
+		["customGrats_name"] = "사용자 정의 축하 메세지 사용",
+		["customGratsText_desc"] = "사용자 정의 축하 메시지. 플레이어의 이름을 포함하려면 '%s' 변수를 사용하고 축하 메시지에 원하는 텍스트를 입력하십시오.",
+		["customGratsText_name"] = "축하 메세지",
 		["dontShowAchievements_desc"] = "모든 업적 메세지 숨기기",
 		["dontShowAchievements_name"] = "업적 보이지 않기",
-		--[[Translation missing --]]
-		["grats_donthave_1"] = "Grats %s",
-		--[[Translation missing --]]
-		["grats_donthave_10"] = "I can't wait to get that one %s",
-		--[[Translation missing --]]
-		["grats_donthave_2"] = "Gz %s, I still need that",
-		--[[Translation missing --]]
-		["grats_donthave_3"] = "I want that one %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_4"] = "Wow %s that's great",
-		--[[Translation missing --]]
-		["grats_donthave_5"] = "I'm jealous %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_6"] = "I have been working on that for ages %s",
-		--[[Translation missing --]]
-		["grats_donthave_7"] = "Still need that one %s, grats!",
-		--[[Translation missing --]]
-		["grats_donthave_8"] = "WTB your achievment %s",
-		--[[Translation missing --]]
-		["grats_donthave_9"] = "Looking forward to that one myself %s, good job!",
-		--[[Translation missing --]]
-		["grats_have_1"] = "Grats %s",
-		--[[Translation missing --]]
-		["grats_have_10"] = "Good work %s, now we both have it",
-		--[[Translation missing --]]
-		["grats_have_2"] = "Gz %s, I have that one too",
-		--[[Translation missing --]]
-		["grats_have_3"] = "Wow %s that's great",
-		--[[Translation missing --]]
-		["grats_have_4"] = "Welcome to the club %s",
-		--[[Translation missing --]]
-		["grats_have_5"] = "I can still rememeber getting that one %s",
+		["grats_donthave_1"] = "%s님 축하해요.",
+		["grats_donthave_10"] = "난 하나뿐인 %s님을 얻기 위해 기다릴 수 없어요.",
+		["grats_donthave_2"] = "%s님 축하, 난 아직도 그게 필요해요.",
+		["grats_donthave_3"] = "나는 %s님을 원해요, 축하!",
+		["grats_donthave_4"] = "와우 %s님 대단하심.",
+		["grats_donthave_5"] = "난 %s님이 질투나, 추카!",
+		["grats_donthave_6"] = "나는 %s님을 위해 그 작업을 해왔어요.",
+		["grats_donthave_7"] = "아직 %s님이 필요함. 축하!",
+		["grats_donthave_8"] = "%s님 업적을 사고싶어요.",
+		["grats_donthave_9"] = "나도 %s님을 기대하고 있어요. 잘했어요!",
+		["grats_have_1"] = "%s님 축하해요.",
+		["grats_have_10"] = "%s님 잘했어요. 이제 우리 둘 다 갖고 있네요.",
+		["grats_have_2"] = "%s님 축하! 나도 마찬가지죠.",
+		["grats_have_3"] = "와우 %s님 대단하심.",
+		["grats_have_4"] = "%s님 클럽에 오신 것을 환영합니다.",
+		["grats_have_5"] = "나는 여전히 %s님께 받은 것을 기억할 수 있어요.",
 		--[[Translation missing --]]
 		["grats_have_6"] = "That one is a rite of passge %s",
 		--[[Translation missing --]]
 		["grats_have_7"] = "I worked on that for ages %s, grats!",
 		--[[Translation missing --]]
 		["grats_have_8"] = "I remember doing that, %s, grats!",
-		--[[Translation missing --]]
-		["grats_have_9"] = "Nicely done %s",
-		--[[Translation missing --]]
-		["grats_link"] = "say grats",
+		["grats_have_9"] = "%s님 잘하셨어요.",
+		["grats_link"] = "축하한다고 말함",
 		["module_desc"] = "업적 관련 사용자 설정",
 		["module_name"] = "업적",
-		--[[Translation missing --]]
-		["showCompletedDate_desc"] = "Show the date you completed the acheievment next to the link",
-		--[[Translation missing --]]
-		["showCompletedDate_name"] = "Show completed date",
-		--[[Translation missing --]]
-		["showGratsLink_desc"] = "Show a clickable link which sends a grats message",
-		--[[Translation missing --]]
-		["showGratsLink_name"] = "Show grats link",
+		["showCompletedDate_desc"] = "링크 옆에 업적을 완료 한 날짜 표시",
+		["showCompletedDate_name"] = "완료 날짜 표시",
+		["showGratsLink_desc"] = "환영 메시지를 보내는 클릭 가능한 링크 표시",
+		["showGratsLink_name"] = "환영 링크 표시",
 	}
 }
 

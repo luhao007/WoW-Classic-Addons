@@ -294,7 +294,7 @@ L = {
 		["Right, Inside Frame"] = "Rechts, innerhalb des Rahmens",
 		["Right, Outside Frame"] = "Rechts, außerhalb des Rahmens",
 		["scrollReminder_desc"] = "Erinnerungsschaltfläche anzeigen, wenn du nicht am unteren Rand eines Chat-Fensters bist.",
-		["scrollReminder_name"] = "Vorscrollen-Erinnerung anzeigen",
+		["scrollReminder_name"] = "Runterscrollen-Erinnerung anzeigen",
 		["Set Position"] = "Position einstellen",
 		["Sets position of chat menu and arrows for all chat windows."] = "Stellt die Position des Chatmenüs und der Navigationspfeile für alle Chatfenster ein.",
 		["Show Arrows"] = "Zeige die Navigationspfeile",
@@ -305,8 +305,8 @@ L = {
 		["showchannel_name"] = "Kanalschaltfläche anzeigen",
 		["showmenu_desc"] = "Chatmenü anzeigen",
 		["showmenu_name"] = "Zeige das Menü",
-		["showminimize_desc"] = "Zeigt den Schalter zum Minimieren an",
-		["showminimize_name"] = "Zeige Minimieren-Knopf",
+		["showminimize_desc"] = "Minimiertaste anzeigen",
+		["showminimize_name"] = "Minimiertaste anzeigen",
 		["showvoice_desc"] = "Sprachschaltflächen anzeigen",
 		["showvoice_name"] = "Sprachschaltflächen anzeigen",
 		["Toggle showing chat arrows for each chat window."] = "Anzeige der Navigationspfeile für jedes Chatfenster ein- und ausschalten.",
@@ -343,10 +343,8 @@ L = {
 		["showmenu_name"] = "메뉴 표시",
 		["showminimize_desc"] = "최소화 버튼 표시",
 		["showminimize_name"] = "최소화 버튼 표시",
-		--[[Translation missing --]]
-		["showvoice_desc"] = "Show Voice Buttons",
-		--[[Translation missing --]]
-		["showvoice_name"] = "Show Voice Buttons",
+		["showvoice_desc"] = "음성 버튼 표시",
+		["showvoice_name"] = "음성 버튼 표시",
 		["Toggle showing chat arrows for each chat window."] = "각 채팅창 별로 화살표 표시를 끄고 켭니다.",
 		["Toggles navigation arrows on and off."] = "상하 화살표를 끄고 켭니다.",
 	}

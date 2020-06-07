@@ -430,6 +430,17 @@ class Manager(object):
             return ret
         process_file('AddOns/Fizzle/Core.lua', f)
 
+    @classic_only
+    def handle_goodleader(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceDB-3.0',
+             'AceEvent-3.0', 'AceHook-3.0', 'AceLocale-3.0',
+             'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibStub'],
+            'AddOns/GoodLeader/Libs',
+            'AddOns/GoodLeader/Libs/Libs.xml'
+        )
+
     def handle_grail(self):
         for folder in os.listdir('AddOns'):
             if 'Grail' not in folder:

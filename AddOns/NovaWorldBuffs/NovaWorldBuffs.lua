@@ -672,6 +672,23 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 		return;
 	end
 	GuildRoster();
+	local shortSettingsKeys = {
+		--Check the short keys we use for sending smaller data also.
+		--Just incase there wern't converted back properly on data received for some reason.
+		["disableAllGuildMsgs"] = "a",
+		["guildBuffDropped"] = "b",
+		["guildNpcDialogue"] = "c",
+		["guildZanDialogue"] = "d",
+		["guildNpcKilled"] = "e",
+		["guildSongflower"] = "f",
+		["guildCommand"] = "g",
+		["guild30"] = "h",
+		["guild15"] = "i",
+		["guild10"] = "j",
+		["guild5"] = "k",
+		["guild1"] = "l",
+		["guild0"] = "m",
+	};
 	local numTotalMembers = GetNumGuildMembers();
 	local onlineMembers = {};
 	local me = UnitName("player") .. "-" .. GetNormalizedRealmName();
@@ -687,12 +704,12 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 			--If type then check our db for other peoples settings to ignore them in online list if they have this type disabled.
 			if (name and online and NWB.hasAddon[name] and not isMobile) then
 				if (NWB.data[name]) then
-					--If another guild member check thier settings.
-					--if ((NWB.data[name][type] == true or NWB.data[name][oldSettings[type]] == true)
-					--if ((NWB.data[name][type] == true)
-					--		and NWB.data[name].disableAllGuildMsgs ~= true) then
-					if ((NWB.data[name][type] == true or NWB.data[name][type] == 1)
-							and NWB.data[name].disableAllGuildMsgs ~= true and NWB.data[name].disableAllGuildMsgs ~= 1) then
+					--If this is another guild member then check their settings.	
+					--A few different checks for backwards compatability.
+					if ((NWB.data[name][type] == true or NWB.data[name][type] == 1
+							or NWB.data[name][shortSettingsKeys[type]] == true or NWB.data[name][shortSettingsKeys[type]] == 1)
+							and NWB.data[name].disableAllGuildMsgs ~= true and NWB.data[name].disableAllGuildMsgs ~= 1
+							and NWB.data[name].a ~= true and NWB.data[name].a ~= 1) then
 						--Has addon and has this type of msg type option enabled.
 						onlineMembers[name] = true;
 					end
@@ -1234,7 +1251,61 @@ function NWB:combatLogEventUnfiltered(...)
 		end
 	elseif (subEvent == "SPELL_AURA_REMOVED" and destName == UnitName("player")) then
 		NWB:untrackBuff(spellName);
-	end	
+	elseif (subEvent == "SPELL_DISPEL") then
+		--This is still in testing but not ready yet
+		--Half way through adding this when they enabled realms on a few reams again so had to push an update.
+		--So this is still mostly disabled until next version.
+		if (not NWB.db.global.dispellsMine and not NWB.db.global.dispellsMineWBOnly
+				and not NWB.db.global.dispellsAll and not NWB.db.global.dispellsAllWBOnly) then
+			return;
+		end
+		local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
+			destName, destFlags, destRaidFlags, _, spellName, _, _, extraSpellName, _, auraType = CombatLogGetCurrentEventInfo();
+		if (auraType == "BUFF") then
+			--NWB:debug(CombatLogGetCurrentEventInfo());
+		end
+		if (not string.match(destGUID, "Player") or UnitInBattleground("player")
+				or (not string.match(sourceGUID, "Player") and not string.match(sourceGUID, "Pet"))) then
+			return;
+		end
+		if (auraType == "BUFF" and bit.band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) == COMBATLOG_OBJECT_REACTION_HOSTILE) then
+			local dispellableWorldBuffs = {
+				[L["Songflower Serenade"]] = true,
+				[L["Resist Fire"]] = true,
+				[L["Mol'dar's Moxie"]] = true,
+				[L["Fengus' Ferocity"]] = true,
+				[L["Slip'kik's Savvy"]] = true,
+			}
+			if (dispellableWorldBuffs[extraSpellName] and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm] and not string.match(destGUID, "Pet")) then
+				--Only record world buff dispells and not other buffs.
+				--Disabled on high layer regions, don't want to add any extra data to sync there.
+			end
+			local _, sourceClass = GetPlayerInfoByGUID(sourceGUID);
+			local _, _, _, sourceHex = GetClassColor(sourceClass);
+			local sourceWho = "|c" .. sourceHex .. sourceName .. "|r"
+			local _, destClass = GetPlayerInfoByGUID(destGUID);
+			local _, _, _, destHex = GetClassColor(destClass);
+			local destWho = "|c" .. destHex .. destName .. "|r"
+			local spell = "|cff71d5ff[" .. extraSpellName .. "]|r";
+			if (string.match(sourceGUID, "Pet")) then
+				sourceWho = sourceName .. " (Pet)";
+			end
+			if (destName == UnitName("player")) then
+				if (NWB.db.global.dispellsMine and NWB.db.global.dispellsMineWBOnly and dispellableWorldBuffs[spellName]) then
+					NWB:print(sourceWho .. NWB.chatColor .. " dispelled your " .. spell .. NWB.chatColor .. ".");
+				elseif (NWB.db.global.dispellsMine) then
+					NWB:print(sourceWho .. NWB.chatColor .. " dispelled your " .. spell .. NWB.chatColor .. ".");
+				end
+			else
+				if (NWB.db.global.dispellsAll and NWB.db.global.dispellsAllWBOnly and dispellableWorldBuffs[spellName]) then
+					NWB:print(sourceWho .. NWB.chatColor .. " dispelled " .. destWho .. " " .. spell .. NWB.chatColor .. ".");
+				elseif (NWB.db.global.dispellsAll) then
+					NWB:print(sourceWho .. NWB.chatColor .. " dispelled " .. destWho .. " " .. spell .. NWB.chatColor .. ".");
+				end
+			end
+		end
+	end
 end
 
 local rendLastSet, onyLastSet, nefLastSet, zanLastSet = 0, 0, 0, 0;
@@ -1634,6 +1705,7 @@ end
 
 --/played can sometimes drift a bit with buff durations, probably due to loads times and such.
 --Here we resync the buff tracking with current buff durations.
+--And pick up any buffs not being tracked already for whenever reason.
 function NWB:syncBuffsWithCurrentDuration()
 	for i = 1, 32 do
 		local spellName, _, _, _, _, expirationTime, _, _, _, spellID = UnitBuff("player", i);
@@ -1644,6 +1716,9 @@ function NWB:syncBuffsWithCurrentDuration()
 				local maxDuration = NWB.db.global[type .. "BuffTime"] or 0;
 				local elapsedDuration = maxDuration - timeLeft;
 				local newPlayedCache = NWB.played - elapsedDuration;
+				if (timeLeft > 0) then
+					NWB.data.myChars[UnitName("player")].buffs[spellName].track = true;
+				end
 				--Change the played seconds this was buff was set at to match the current time elapsed on our current buff.
 				NWB.data.myChars[UnitName("player")].buffs[spellName].playedCacheSetAt = math.floor(newPlayedCache);
 				--NWB:debug("resyncing tracked buff", spellName);
@@ -1931,23 +2006,30 @@ f:SetScript("OnEvent", function(self, event, ...)
 			doLogon = nil;
 		end
 		C_Timer.After(2, function()
-			NWB:sendData("YELL");
+			--Ghost check, no need to spam addon comms when a 40 man raid wipes.
+			if (not UnitIsGhost("player")) then
+				NWB:sendData("YELL");
+			end
 		end);
 	elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		NWB:combatLogEventUnfiltered(...);
 	elseif (event == "CHAT_MSG_MONSTER_YELL") then
 		NWB:monsterYell(...);
 	elseif (event == "GROUP_JOINED") then
-		C_Timer.After(5, function()
-			if (UnitInBattleground("player")) then
-				return;
-			end
-			if (IsInRaid()) then
-  				NWB:sendData("RAID");
-  			elseif (IsInGroup()) then
-  				NWB:sendData("PARTY");
-  			end
-  		end)
+		--Skip party sync close to logon, no need to fill up the addon comm bandwidth further.
+		--This event fires at logon if grouped already.
+		if (GetServerTime() - NWB.loadTime > 60) then
+			C_Timer.After(5, function()
+				if (UnitInBattleground("player")) then
+					return;
+				end
+				if (IsInRaid()) then
+	  				NWB:sendData("RAID");
+	  			elseif (IsInGroup()) then
+	  				NWB:sendData("PARTY");
+	  			end
+	  		end)
+  		end
   	elseif (event == "CHAT_MSG_GUILD") then
   		NWB:chatMsgGuild(...);
 	elseif (event == "TIME_PLAYED_MSG") then
@@ -2366,7 +2448,7 @@ function SlashCmdList.NWBCMD(msg, editBox)
 		NWB:openLayerMapFrame();
 		return;
 	end
-	if (msg == "version" or msg == "versions") then
+	if (msg == "version" or msg == "versions" or msg == "ver" or msg == "vers") then
 		NWB:openVersionFrame();
 		return;
 	end
@@ -4520,7 +4602,8 @@ function NWB:recalcBuffListFrame()
 		if (NWB.data.myChars[UnitName("player")].buffs) then
 			for k, v in pairs(NWB.data.myChars[UnitName("player")].buffs) do
 				if (v.type == "dmf" and (v.timeLeft + 7200) > 0) then
-					buffText = string.format(L["dmfBuffCooldownMsg"],  NWB:getTimeString(v.timeLeft + 7200, true));
+					buffText = string.format(L["dmfBuffCooldownMsg"],  NWB:getTimeString(v.timeLeft + 7200, true))
+							.. "\Note: On rare occasions DMF buff can reset early, not sure why yet.";
 					dmfFound = true;
 					break;
 				end
@@ -4692,8 +4775,7 @@ NWBlayerFrame.fs2:SetText("|cFF9CD6DETarget any NPC to see your current layer.|r
 NWBlayerFrame.fs3 = NWBlayerFrame:CreateFontString("NWBbuffListFrameFS", "HIGH");
 NWBlayerFrame.fs3:SetPoint("BOTTOM", 0, 2);
 NWBlayerFrame.fs3:SetFont(NWB.regionFont, 14);
-NWBlayerFrame.fs3:SetText("|cFFDEDE42Layers may be inaccurate for a few hours after server restarts.\n"
-		.. "Layers will disappear from here 6 hours after having no timers.");
+NWBlayerFrame.fs3:SetText("|cFFDEDE42" .. L["layerFrameMsgOne"] .. "\n" .. L["layerFrameMsgTwo"]);
 
 local NWBlayerDragFrame = CreateFrame("Frame", "NWBlayerDragFrame", NWBlayerFrame);
 NWBlayerDragFrame:SetToplevel(true);
@@ -4924,6 +5006,10 @@ function NWB:createNewLayer(zoneID, GUID)
 				and (GetServerTime() - NWB.data.layerMapBackups[zoneID].created) < 518400) then
 				--Restore layermap backup if less than 6 days old.
 			NWB.data.layers[zoneID].layerMap = NWB.data.layerMapBackups[zoneID];
+			if (NWB.data.layers[zoneID].layerMap.created) then
+				--Remove the created timestamp, it's not needed in the layermap, only in the backup.
+				NWB.data.layers[zoneID].layerMap.created = nil;
+			end
 		end
 		NWB:debug("created new layer", zoneID);
 		NWB:createWorldbuffMarkers();
@@ -4973,7 +5059,7 @@ function NWB:removeOldLayers()
 	if (NWB.data.layerMapBackups and NWB.data.layers and next(NWB.data.layers)) then
 		for k, v in pairs(NWB.data.layerMapBackups) do
 			--Remove layermap backups older than 6 days.
-			--Thesebackups are just there to be restored when a layer dissapears because no timers for a long time (like overnight).
+			--Thesebackups are just there to be restored when a layer disappears because no timers for a long time (like overnight).
 			if (not v.created or (GetServerTime() - v.created) > 518400) then
 				NWB.data.layerMapBackups[k] = nil;
 			end
@@ -5235,7 +5321,7 @@ function NWB:setCurrentLayerText(unit)
 	for k, v in NWB:pairsByKeys(NWB.data.layers) do
 		count = count + 1;
 		if (k == tonumber(zoneID)) then
-			NWBlayerFrame.fs2:SetText("|cFF9CD6DEYou are currently on |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
+			NWBlayerFrame.fs2:SetText("|cFF9CD6DE" .. L["You are currently on"] .. " |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
 			NWB.currentLayer = count;
 			NWB.lastKnownLayer = count;
 			NWB.lastKnownLayerID = k;
@@ -5591,6 +5677,11 @@ function NWB:recalcLayerMapFrame()
 			local zoneCount = 0;
 			local text = "";
 			if (v.layerMap and next(v.layerMap)) then
+				if (v.layerMap.created) then
+					--Remove "created" timestamp from layerMap, it's imported from layerMapBackups.
+					--I'll change it so the timestamp isn't imported and this check can be removed later.
+					v.layerMap.created = nil;
+				end
 				for kk, vv in NWB:pairsByKeys(v.layerMap) do
 					zoneCount = zoneCount + 1;
 					local mapInfo = C_Map.GetMapInfo(vv);
@@ -5817,39 +5908,12 @@ function NWB:recalcMinimapLayerFrame()
 	end
 	local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
 	local foundOldID, foundLayer;
-	--[[for k, v in pairs(NWB.data.layers) do
-		if (v.layerMap and next(v.layerMap)) then
-			for kk, vv in pairs(v.layerMap) do
-				if (zone == vv) then
-					--Also can start mapping if we pickup our current layer from an already known id.
-					WB:debug("found mapped id2");
-					NWB.lastKnownLayerMapID = k;
-					foundOldID = true;
-				end
-			end
-		end
-	end
-	local count, layerNum = 0, 0;
-	if (foundOldID) then
-		for k, v in NWB:pairsByKeys(NWB.data.layers) do
-			count = count + 1;
-			if (k == NWB.lastKnownLayerMapID) then
-				NWBlayerFrame.fs2:SetText("|cFF9CD6DEYou are currently on |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
-				--NWB.currentLayer = count;
-				--NWB.lastKnownLayer = count;
-				--NWB.lastKnownLayerID = k;
-				--NWB.lastKnownLayerTime = GetServerTime();
-				layerNum = count;
-				foundLayer = true;
-			end
-		end
-	end]]
 	local count, layerNum = 0, 0;
 	if (NWB.lastKnownLayerMapID > 0) then
 		for k, v in NWB:pairsByKeys(NWB.data.layers) do
 			count = count + 1;
 			if (k == NWB.lastKnownLayerMapID) then
-				NWBlayerFrame.fs2:SetText("|cFF9CD6DEYou are currently on |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
+				NWBlayerFrame.fs2:SetText("|cFF9CD6DE" .. L["You are currently on"] .. " |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
 				NWB.currentLayer = count;
 				NWB.lastKnownLayer = count;
 				NWB.lastKnownLayerID = k;

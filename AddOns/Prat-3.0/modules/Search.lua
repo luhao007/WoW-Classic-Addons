@@ -18,7 +18,7 @@ Prat:AddModuleToLoad(function()
   PL:AddLocale(PRAT_MODULE, "enUS", {
     module_name = "Search",
     module_desc = "Adds the ability to search the chatframes.",
-    module_info = "This module adds the /find commands to search the chat history\n\nUsage:\n\n /find <text>",
+    module_info = "This module adds search boxes on the chat frames, and the /find commands to search the chat history\n\nUsage:\n\n /find <text>",
     err_tooshort = "Search term is too short",
     err_notfound = "Not Found",
     find_results = "Find Results:",
@@ -40,7 +40,7 @@ L = {
 		["err_tooshort"] = "Search term is too short",
 		["find_results"] = "Find Results:",
 		["module_desc"] = "Adds the ability to search the chatframes.",
-		["module_info"] = [=[This module adds the /find commands to search the chat history
+		["module_info"] = [=[This module adds search boxes on the chat frames, and the /find commands to search the chat history
 
 Usage:
 
@@ -65,7 +65,7 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find commands to search the chat history
+		["module_info"] = [=[This module adds search boxes on the chat frames, and the /find commands to search the chat history
 
 Usage:
 
@@ -107,8 +107,7 @@ Suche]=],
 
 L = {
 	["Search"] = {
-		--[[Translation missing --]]
-		["bnet_removed"] = "<BNET REMOVED>",
+		["bnet_removed"] = "<베틀넷 제거됨>",
 		["err_notfound"] = "찾을 수 없음",
 		["err_tooshort"] = "검색 구문이 너무 짧습니다",
 		["find_results"] = "검색 결과:",
@@ -141,7 +140,7 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find commands to search the chat history
+		["module_info"] = [=[This module adds search boxes on the chat frames, and the /find commands to search the chat history
 
 Usage:
 
@@ -212,7 +211,7 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find commands to search the chat history
+		["module_info"] = [=[This module adds search boxes on the chat frames, and the /find commands to search the chat history
 
 Usage:
 
@@ -236,7 +235,7 @@ L = {
 		--[[Translation missing --]]
 		["module_desc"] = "Adds the ability to search the chatframes.",
 		--[[Translation missing --]]
-		["module_info"] = [=[This module adds the /find commands to search the chat history
+		["module_info"] = [=[This module adds search boxes on the chat frames, and the /find commands to search the chat history
 
 Usage:
 
@@ -366,10 +365,6 @@ Usage:
   local foundlines = {}
   local scrapelines = {}
 
-  local function out(frame, msg)
-    frame:AddMessage(msg)
-  end
-
   local CLR = Prat.CLR
   local function SearchTerm(term) return CLR:Colorize("ffff40", term) end
 
@@ -386,13 +381,13 @@ Usage:
 
     if #word <= 1 then
       frame:ScrollToBottom()
-      out(frame, PL.err_tooshort)
+      self:Output(frame, PL.err_tooshort)
       return
     end
 
     if frame:GetNumMessages() == 0 then
       frame:ScrollToBottom()
-      out(frame, PL.err_notfound)
+      self:Output(frame, PL.err_notfound)
       return
     end
 
@@ -415,17 +410,17 @@ Usage:
     frame:ScrollToBottom()
 
     if all and #foundlines > 0 then
-      out(frame, "-------------------------------------------------------------")
-      out(frame, PL.find_results .. ": " .. SearchTerm(word))
+      self:Output(frame, "-------------------------------------------------------------")
+      self:Output(frame, PL.find_results .. ": " .. SearchTerm(word))
 
       Prat.loading = true -- prevent double timestamp
       for _, v in ipairs(foundlines) do
         frame:AddMessage(v.message:gsub("|K.-|k", PL.bnet_removed), v.r, v.g, v.b)
       end
       Prat.loading = nil
-      out(frame, "-------------------------------------------------------------")
+      self:Output(frame, "-------------------------------------------------------------")
     else
-      out(frame, PL.err_notfound)
+      self:Output(frame, PL.err_notfound)
     end
 
     wipe(foundlines)

@@ -1,0 +1,11 @@
+## Interface: 11304
+## Author: NetEase
+## Version: 0.0.13
+## SavedVariables: GOODLEADER_DB
+
+## Title: GoodLeader
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF好团长|r |cFFFFE00AGoodLeader|r
+## Notes-zhCN: 显示团长经历
+
+
+Load.xml

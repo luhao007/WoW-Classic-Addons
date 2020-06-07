@@ -111,8 +111,8 @@ L = {
 		["hide_name"] = "Server ausblenden",
 		["randomclr_desc"] = "Eine zufällige Farbe für jeden Server verwenden.",
 		["randomclr_name"] = "Zufällige Farben",
-		["Server name abbreviation options."] = "Optionen für Abkürzungen von Server-Namen",
-		["ServerNames"] = "ServerNamen",
+		["Server name abbreviation options."] = "Abkürzungsoptionen für Servernamen.",
+		["ServerNames"] = "Servernamen",
 	}
 }
 
@@ -127,10 +127,8 @@ L = {
 		["autoabbreviate_name"] = "자동-줄임",
 		["colon_desc"] = "서버 대체 이름 뒤에 콜론 추가 기능을 끄거나 켭니다.",
 		["colon_name"] = "콜론 표시",
-		--[[Translation missing --]]
-		["hide_desc"] = "Never display the server name",
-		--[[Translation missing --]]
-		["hide_name"] = "Hide Server",
+		["hide_desc"] = "서버명 표시하지 않음",
+		["hide_name"] = "서버 숨김",
 		["randomclr_desc"] = "서버 이름에 무작위 색상을 사용합니다.",
 		["randomclr_name"] = "무작위 색상",
 		["Server name abbreviation options."] = "서버 이름 줄이기 옵션입니다.",

@@ -231,7 +231,7 @@ function NWB:getGuildDataStatus()
 	end
 	--Check temp table to see if we're first in alphabetical order.
 	local count = 0;
-	local limit = 3;
+	local limit = 2;
 	for k, v in NWB:pairsByKeys(onlineMembers) do
 		count = count + 1;
 		if (count > limit) then
@@ -614,6 +614,7 @@ function NWB:extractSettings(data, sender, distribution)
 		--NWB:debug("Failed to deserialize extractSettings data.");
 		return;
 	end
+	data = NWB:convertKeys(data, nil, distribution);
 	local nameOnly, realm = strsplit("-", sender, 2);
 	for k, v in pairs(data) do
 		if (type(v) == "table" and string.match(k, nameOnly) and string.match(k, "%-") and next(v)) then
@@ -1112,13 +1113,10 @@ for k,v in pairs(hashKeys) do
 end
 
 --Recursively convert keys to small strings for sending over addon comms.
---And convert timestamps to a short hash.
+--And convert timestamps to a short hash (yell channel only because you can't use compression libs there).
 --Set shorten to true for sending, false to expand after receiving.
 --This shrinks my data by about 45%.
 function NWB:convertKeys(table, shorten, distribution)
-	if (NWB.isDebug) then
-		--return table
-	end
 	local keys = shortKeys;
 	if (shorten) then
 		keys = shortKeysReversed;

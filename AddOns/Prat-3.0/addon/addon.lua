@@ -76,7 +76,7 @@ Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]===]
 
 --@non-debug@
-Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.8".."|r)"
+Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.11".."|r)"
 --@end-non-debug@
 
 
@@ -85,12 +85,13 @@ local om = getmetatable(Prat)
 if om then
   for k, v in pairs(om) do am[k] = v end
 end
-am.__tostring = function() return Version end
+am.__tostring = function() return "Prat |cff8080ff3.0|r" end
 setmetatable(Prat, am)
 
 
 Prat.Prat3 = true
 Prat.IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
+Prat.IsRetail = not Prat.IsClassic
 
 
 local function dbg(...) end
@@ -427,7 +428,7 @@ end
 
 function addon:PostEnable()
   --[===[@debug@
-  self:Print(Version)
+  Prat:Print(Version)
   --@end-debug@]===]
 
   AddPrintMethods()
@@ -485,12 +486,12 @@ function addon:PostEnable()
       end
     end
 
-    self:Print(("Module Count: |cff80ffff%d|r total |cff80ffff%d|r loaded, |cff80ffff%d|r enabled"):format(total, loaded, enabled))
+    Prat:Print(("Module Count: |cff80ffff%d|r total |cff80ffff%d|r loaded, |cff80ffff%d|r enabled"):format(total, loaded, enabled))
   end
 
   if MemoryUse then
     _G.collectgarbage("collect")
-    self:Print("Memory Use: " .. MemoryUse())
+    Prat:Print("Memory Use: " .. MemoryUse())
   end
   --@end-debug@]===]
 

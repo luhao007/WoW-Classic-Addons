@@ -91,7 +91,7 @@ Prat:AddModuleToLoad(function()
     ["Toggle using a common color for brackets around player names."] = true,
     ["linkifycommon_name"] = "Linkify Common Messages",
     ["linkifycommon_desc"] = "Linkify Common Messages",
-    ["Prat_Playernames: Stored Player Data Cleared"] = true,
+    msg_stored_data_cleared = "Stored Player Data Cleared",
     ["tabcomplete_name"] = "Possible Names",
     ["Tab completion : "] = true,
     ["Too many matches (%d possible)"] = true,
@@ -137,6 +137,7 @@ L = {
 		["Level Color Mode"] = true,
 		["linkifycommon_desc"] = "Linkify Common Messages",
 		["linkifycommon_name"] = "Linkify Common Messages",
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = true,
 		["None"] = true,
 		["Player Color Mode"] = true,
@@ -213,6 +214,8 @@ L = {
 		["linkifycommon_desc"] = "Linkify Common Messages",
 		--[[Translation missing --]]
 		["linkifycommon_name"] = "Linkify Common Messages",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = "Pas de couleur",
 		["None"] = "Aucun",
 		["Player Color Mode"] = "Couleur des joueurs",
@@ -287,11 +290,12 @@ L = {
 		["Level Color Mode"] = "Stufenfarbe-Modus",
 		["linkifycommon_desc"] = "Allgemeine Mitteilungen in Links umwandeln",
 		["linkifycommon_name"] = "Allgemeine Mitteilungen in Links umwandeln",
+		["msg_stored_data_cleared"] = "Gespeicherte Spielerdaten gelöscht",
 		["No additional coloring"] = "Keine zusätzliche Einfärbung",
 		["None"] = "Keine",
-		["Player Color Mode"] = "Spielerfarbe-Modus",
-		["Player name formating options."] = "Formatierungsoptionen für Spielernamen",
-		["PlayerNames"] = true,
+		["Player Color Mode"] = "Spieler Farbmodus",
+		["Player name formating options."] = "Formatierungsoptionen für Spielernamen.",
+		["PlayerNames"] = "Spielernamen",
 		["Prat_Playernames: Stored Player Data Cleared"] = "Prat_Playernames: Gespeicherte Spielerdaten gelöscht",
 		["Query the server for all player names we do not know. Note: This happpens pretty slowly, and this data is not saved."] = "Alle uns unbekannten Spielernamen beim Server abfragen. Merke: dies passiert ziemlich langsam und diese Daten sind nicht gespeichert.",
 		["Random"] = "Zufällig",
@@ -335,10 +339,8 @@ L = {
 	["PlayerNames"] = {
 		["Actively Query Player Info"] = "적극적인 플레이어 정보 요청",
 		["Angled"] = "<플레이어>",
-		--[[Translation missing --]]
-		["bnetclienticon_desc"] = "Show an icon indicating which game or client the Battle.Net friend is using",
-		--[[Translation missing --]]
-		["bnetclienticon_name"] = "Show BNet Client Icon",
+		["bnetclienticon_desc"] = "Battle.Net 친구가 사용중인 게임 또는 클라이언트를 나타내는 아이콘 표시",
+		["bnetclienticon_name"] = "베틀넷 클라이언트 아이콘 표시",
 		["Brackets"] = "괄호 선택",
 		["Brackets Common Color"] = "괄호 색상",
 		["Brackets Use Common Color"] = "괄호에 색상 사용",
@@ -361,6 +363,7 @@ L = {
 		["Level Color Mode"] = "레벨 색상 설정",
 		["linkifycommon_desc"] = "일반 메시지 링크",
 		["linkifycommon_name"] = "일반 메시지 링크",
+		["msg_stored_data_cleared"] = "저장된 플레이어 데이터가 지워짐",
 		["No additional coloring"] = "사용 안함",
 		["None"] = "안함",
 		["Player Color Mode"] = "플레이어 색상 설정",
@@ -459,6 +462,8 @@ L = {
 		["linkifycommon_desc"] = "Linkify Common Messages",
 		--[[Translation missing --]]
 		["linkifycommon_name"] = "Linkify Common Messages",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		--[[Translation missing --]]
 		["No additional coloring"] = "No additional coloring",
 		--[[Translation missing --]]
@@ -569,6 +574,8 @@ L = {
 		["Level Color Mode"] = "Режим окрашивания уровня",
 		["linkifycommon_desc"] = "Общие сообщения с сылками",
 		["linkifycommon_name"] = "Общие сообщения с сылками",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = "Отключить дополнительное цвето-выделение",
 		["None"] = "Нет",
 		["Player Color Mode"] = "Режим цвета игрока",
@@ -643,6 +650,8 @@ L = {
 		["Level Color Mode"] = "等级着色模式",
 		["linkifycommon_desc"] = "自助链接公共信息",
 		["linkifycommon_name"] = "自助链接公共信息",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = "无额外着色",
 		["None"] = "无",
 		["Player Color Mode"] = "玩家着色模式",
@@ -718,6 +727,8 @@ L = {
 		["Level Color Mode"] = "Modo Color por Nivel",
 		["linkifycommon_desc"] = "Linkify Common Messages",
 		["linkifycommon_name"] = "Enlazar Mensajes Comunes",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = "Sin color adicional",
 		["None"] = "Ninguno",
 		["Player Color Mode"] = "Modo Color del Jugador",
@@ -798,6 +809,8 @@ L = {
 		["Level Color Mode"] = "等級色彩模式",
 		["linkifycommon_desc"] = "製作連結共同的訊息",
 		["linkifycommon_name"] = "製作連結共同的訊息",
+		--[[Translation missing --]]
+		["msg_stored_data_cleared"] = "Stored Player Data Cleared",
 		["No additional coloring"] = "無額外著色",
 		["None"] = "無",
 		["Player Color Mode"] = "玩家色彩模式",
@@ -1434,7 +1447,7 @@ L = {
 
     self:EmptyDataCache(true)
 
-    Prat:Print(PL["Prat_Playernames: Stored Player Data Cleared"])
+    self:Output(PL.msg_stored_data_cleared)
   end
 
   --

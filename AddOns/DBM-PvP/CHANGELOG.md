@@ -1,15 +1,10 @@
 # <DBM> PvP
 
-## [r89](https://github.com/DeadlyBossMods/DBM-PvP/tree/r89) (2020-06-03)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r88...r89)
+## [r90](https://github.com/DeadlyBossMods/DBM-PvP/tree/r90) (2020-06-06)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r89...r90)
 
-- Fix Lua errors  
-- Silvershard Mines now tracks time to cart caps  
-- Fix battleground messages not detecting  
 - Merge branch 'master' of github.com:DeadlyBossMods/DBM-PvP  
-- Fix Seething Shore  
-- Sync editorconfig from DeadlyBossMods  
-- Merge pull request #21 from nanjuekaien1/patch-1  
+- Fix zone id for Silvershard Mines  
+- Merge pull request #22 from nanjuekaien1/patch-1  
     Update localization.cn.lua  
-- Update MapID's  
 - Update localization.cn.lua  

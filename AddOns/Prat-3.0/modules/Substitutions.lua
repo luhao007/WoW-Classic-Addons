@@ -689,7 +689,7 @@ Anklicken, um in den Chat einzufügen.]=],
 		["PlayerManaDeficit"] = "SpielerManaDefizit",
 		["PlayerMaxHP"] = "SpielerMaxHP",
 		["PlayerMaxMana"] = "SpielerMaxMana",
-		["PlayerName"] = "SpielerName",
+		["PlayerName"] = "Spielername",
 		["PlayerPercentHP"] = "SpielerProzentHP",
 		["PlayerPercentMana"] = "SpielerProzentMana",
 		["RandNum"] = "ZufNum",
@@ -1352,24 +1352,21 @@ end
   function module:BuildModuleOptions(args)
     local modulePatterns = Prat.GetModulePatterns(self)
 
-    local order = 500
-
     self.buildingMenu = true
 
-    for k, v in pairs(modulePatterns) do
-      local name = v.optname
-      local pat = v.pattern:gsub("%%%%", "%%")
+    for _, v in pairs(modulePatterns) do
+      if v then
+        local name = v.optname
+        local pat = v.pattern:gsub("%%%%", "%%")
 
-      order = order + 10
+        args[name] = args[name] or {}
+        local d = args[name]
 
-      args[name] = args[name] or {}
-      local d = args[name]
-
-      d.name = name .. " " .. pat
-      d.desc = subDesc
-      d.type = "execute"
-      d.func = "DoPat"
-      d.order = order
+        d.name = name .. " " .. pat
+        d.desc = subDesc
+        d.type = "execute"
+        d.func = "DoPat"
+      end
     end
 
     self.buildingMenu = false
@@ -1397,8 +1394,8 @@ end
     local name = info[#info] or ""
 
     if modulePatterns then
-      for k, v in pairs(modulePatterns) do
-        if v.optname == name then
+      for _, v in pairs(modulePatterns) do
+        if v and v.optname == name then
           return v
         end
       end

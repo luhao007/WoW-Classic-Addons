@@ -138,12 +138,9 @@ PL:AddLocale(PRAT_MODULE, "deDE", L)
 
 L = {
 	["Mentions"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Support mentioning other players in chat",
-		--[[Translation missing --]]
-		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
-		--[[Translation missing --]]
-		["module_name"] = "Mentions",
+		["module_desc"] = "채팅에서 다른 플레이어를 언급하는 것을 지원",
+		["module_info"] = "이 모듈은 실험적입니다=채팅에서 사람들을 @언급하여 경보하는 기능을 추가합니다.",
+		["module_name"] = "언급",
 	}
 }
 

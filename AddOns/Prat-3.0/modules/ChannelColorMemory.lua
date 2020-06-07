@@ -81,8 +81,8 @@ L = {
 L = {
 	["ChannelColorMemory"] = {
 		["(%w+)%s?(.*)"] = true,
-		["ChannelColorMemory"] = true,
-		["Remembers the colors of each channel name."] = "Speichert die Farbe jedes Kanalnamens.",
+		["ChannelColorMemory"] = "Kanalfarbspeicher",
+		["Remembers the colors of each channel name."] = "Erinnert sich an die Farben jedes Kanalnamens.",
 	}
 }
 

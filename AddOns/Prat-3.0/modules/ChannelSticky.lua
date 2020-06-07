@@ -118,16 +118,16 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 L = {
 	["ChannelSticky"] = {
 		["Channel"] = "Kanal",
-		["ChannelSticky"] = true,
-		["Chat channel sticky options."] = "\"Sticky\"-Optionen für Chat-Kanal.",
-		["ChatType"] = true,
-		["Per chat type options."] = "Optionen nach Chat-Type.",
+		["ChannelSticky"] = "Kanal Sticky",
+		["Chat channel sticky options."] = "Sticky-Optionen für Chat-Kanäle.",
+		["ChatType"] = "Chat-Typ",
+		["Per chat type options."] = "Optionen per Chat-Typ.",
 		["smartgroup_desc"] = "Fügt einen Befehl /gr hinzu, der automatisch den richtigen Chat-Typ aufnimmt - RAID, PARTY, oder BATTLEGROUND",
 		["smartgroup_name"] = "Intelligente Gruppen",
-		["Sticky %s"] = "\"Sticky\" %s",
-		["Sticky Per Chat Frame"] = "\"Sticky\" nach Chat-Rahmen",
+		["Sticky %s"] = true,
+		["Sticky Per Chat Frame"] = "Sticky per Chat-Rahmen",
 		["Toggle remembering the chat type last used per chat frame."] = "Das Merken des Chat-Typs, der zuletzt im Chatfenster aktiviert war, umschalten.",
-		["Toggles sticky on and off for %s."] = "\"Sticky\" ein- und ausschalten für %s.",
+		["Toggles sticky on and off for %s."] = "Schaltet den Sticky für %s ein und aus.",
 	}
 }
 

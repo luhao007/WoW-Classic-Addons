@@ -96,6 +96,10 @@ L = {
 		["Set Chat Lines"] = true,
 		["Set Command History"] = true,
 		["Set the number of lines of chat history for each window."] = true,
+		["storage_char"] = "Character",
+		["storage_desc"] = "Which location should the history be saved to.",
+		["storage_name"] = "Save To",
+		["storage_server"] = "Server",
 		["Store the chat lines between sessions"] = true,
 	}
 }
@@ -138,6 +142,14 @@ L = {
 		["Set Chat Lines"] = "Historique de discussions",
 		["Set Command History"] = "Historique de commandes",
 		["Set the number of lines of chat history for each window."] = "Définit le nombre de lignes dans l'historique pour chaque fenêtre.",
+		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
 		["Store the chat lines between sessions"] = "Sauvegarder l'historique des discussions entre les sessions.",
 	}
 }
@@ -154,7 +166,7 @@ L = {
 		["Colors the GMOTD label"] = "Färbt die GMOTD-Beschriftung",
 		["delaygmotd_desc"] = "GMOTD verzögern, bis die Ausgabe aller Mitteilungen nach dem Einloggen vollendet ist.",
 		["delaygmotd_name"] = "GMOTD verzögern",
-		["divider"] = "======= Ende der Aufzeichnungen =======",
+		["divider"] = "========== Ende des Zurückblättern ==========",
 		["History"] = "Verlauf",
 		["Maximum number of lines of command history to save."] = "Maximal zu speichernde Zeilenanzahl des Befehlsverlaufs.",
 		["removespam_desc"] = "Entfernt Addon Spam-Nachrichten, wenn du den Chat-Verlauf wiederherstellst",
@@ -170,7 +182,11 @@ L = {
 		["Set Chat Lines"] = "Chatzeilen einstellen",
 		["Set Command History"] = "Befehlsverlauf einstellen",
 		["Set the number of lines of chat history for each window."] = "Die Zeilenanzahl des Chatverlaufs für jedes Fenster einstellen.",
-		["Store the chat lines between sessions"] = "Speichert den Chat zwischen den Sitzungen",
+		["storage_char"] = "Charakter",
+		["storage_desc"] = "An welchem Ort soll der Verlauf gespeichert werden?",
+		["storage_name"] = "Speichern unter",
+		["storage_server"] = "Server",
+		["Store the chat lines between sessions"] = "Speichert die Chat-Zeilen zwischen den Sitzungen",
 	}
 }
 
@@ -180,8 +196,7 @@ L = {
 
 L = {
 	["History"] = {
-		--[[Translation missing --]]
-		["bnet_removed"] = "<BNET REMOVED>",
+		["bnet_removed"] = "<베틀넷 제거됨>",
 		["Chat history options."] = "대화 내역 옵션입니다.",
 		["Color GMOTD"] = "오늘의 길드 메시지에 색상입히기",
 		["Colors the GMOTD label"] = "오늘의 길드 메시지 제목에 색상입히기",
@@ -190,23 +205,27 @@ L = {
 		["divider"] = "========== 이전 대화 목록의 끝 ==========",
 		["History"] = "대화 내역",
 		["Maximum number of lines of command history to save."] = "저장할 명령어 내역의 최대 갯수입니다.",
-		--[[Translation missing --]]
-		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
-		--[[Translation missing --]]
-		["removespam_name"] = "Remove Spam",
+		["removespam_desc"] = "채팅 기록을 복원 할 때 애드온 스팸 메시지 제거",
+		["removespam_name"] = "스팸 제거",
 		["Save Command History"] = "명령어 내역 저장",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "세션 간 명령어 내역을 저장합니다 (Alt+위 화살표나 위 화살표로 사용하는)",
 		["Scrollback"] = "스크롤백",
 		["Scrollback Options"] = "스크롤백 옵션",
-		--[[Translation missing --]]
-		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
-		--[[Translation missing --]]
-		["scrollbackduration_name"] = "Scrollback Duration",
+		["scrollbackduration_desc"] = "저장된 메시지를 보관할 시간.",
+		["scrollbackduration_name"] = "스크롤백 구간",
 		["scrollbacklen_desc"] = "스크롤백 저장소에 저장할 대화 줄의 숫자입니다.",
 		["scrollbacklen_name"] = "스크롤백 길이",
 		["Set Chat Lines"] = "대화 내역 설정",
 		["Set Command History"] = "명령어 내역 설정",
 		["Set the number of lines of chat history for each window."] = "각 대화창 별로 대화 내역의 줄의 갯수를 설정합니다.",
+		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
 		["Store the chat lines between sessions"] = "세션 간 대화 내용 저장하기",
 	}
 }
@@ -262,6 +281,14 @@ L = {
 		--[[Translation missing --]]
 		["Set the number of lines of chat history for each window."] = "Set the number of lines of chat history for each window.",
 		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
+		--[[Translation missing --]]
 		["Store the chat lines between sessions"] = "Store the chat lines between sessions",
 	}
 }
@@ -299,6 +326,14 @@ L = {
 		["Set Chat Lines"] = "Задать число строк чата",
 		["Set Command History"] = "История команд",
 		["Set the number of lines of chat history for each window."] = "Установите число строк истории чата для всех окон чата.",
+		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
 		["Store the chat lines between sessions"] = "Сохранять строки чата между сессиями",
 	}
 }
@@ -336,6 +371,14 @@ L = {
 		["Set Chat Lines"] = "聊天行设置",
 		["Set Command History"] = "命令历史记录",
 		["Set the number of lines of chat history for each window."] = "为每个聊天窗口设置聊天历史记录行数",
+		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
 		["Store the chat lines between sessions"] = "在会话之间存储聊天内容",
 	}
 }
@@ -382,6 +425,14 @@ L = {
 		["Set Command History"] = "Establecer Historial de Comandos",
 		["Set the number of lines of chat history for each window."] = "Establece el número de líneas del historial de chat para cada ventana.",
 		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
+		--[[Translation missing --]]
 		["Store the chat lines between sessions"] = "Store the chat lines between sessions",
 	}
 }
@@ -422,6 +473,14 @@ L = {
 		["Set Chat Lines"] = "設定聊天行數",
 		["Set Command History"] = "設定指令歷史",
 		["Set the number of lines of chat history for each window."] = "設定行數的聊天記錄每個視窗。",
+		--[[Translation missing --]]
+		["storage_char"] = "Character",
+		--[[Translation missing --]]
+		["storage_desc"] = "Which location should the history be saved to.",
+		--[[Translation missing --]]
+		["storage_name"] = "Save To",
+		--[[Translation missing --]]
+		["storage_server"] = "Server",
 		--[[Translation missing --]]
 		["Store the chat lines between sessions"] = "Store the chat lines between sessions",
 	}

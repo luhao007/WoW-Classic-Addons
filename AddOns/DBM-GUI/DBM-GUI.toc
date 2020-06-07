@@ -1,5 +1,5 @@
 ## Interface: 11304
-## Author: Nitram and Tandanu
+## Author: Nitram, Tandanu and QartemisT
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## DefaultState: enabled

@@ -456,7 +456,7 @@ L = {
 		["Don't overwrite existing links"] = "Überschreibe keine vorhandenen Links",
 		["don't use"] = "Nicht verwenden",
 		["Don't use data from the PlayerNames module at all"] = "Daten vom Modul SpielerNamen nicht verwenden.",
-		["ERROR: some function sent a blank message!"] = "ERROR: eine Funktion hat eine leere Nachricht hinterlassen.",
+		["ERROR: some function sent a blank message!"] = "FEHLER: Eine Funktion hat eine leere Nachricht gesendet!",
 		["Find characters"] = "Charaktersuche",
 		["Fix alts"] = "Alternativen reparieren",
 		["Fix corrupted entries in your list of alt names."] = "Korrigiert beschädigte Einträge in der Liste der Alternativnamen.",
@@ -530,8 +530,7 @@ L = {
 		["(.-)'s? [Aa]lt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]의 부캐릭터",
 		["([^%s%p%d%c%z]+)'s alt"] = "%f[%a\\192-\\255]([%a\\192-\\255]+)%f[^%a\\128-\\255]의 부 캐릭터",
 		[".*[Aa]lts?$"] = ".*부캐릭터?$",
-		--[[Translation missing --]]
-		[".*[Tt]wink.*$"] = ".*[Tt]wink.*$",
+		[".*[Tt]wink.*$"] = true,
 		["<alt name> (eg, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)"] = "<부 캐릭터 이름> (예, /altnames del Personyouthoughtwassomeonesaltbutreallyisnt)",
 		["<main> (eg /altnames listalts Fin)"] = "<주 캐릭터> (예 /altnames listalts Fin)",
 		["<search term> (eg, /altnames find fin)"] = "<검색 구문> (예, /altnames find fin)",
@@ -1749,8 +1748,7 @@ L = {
     local verbose = (not self.db.profile.quiet)
 
     if (not self.silent) and (verbose or printanyway) then
-      msg = string.format('|cffffd100' .. PL['AltNames'] .. ':|r %s', msg)
-      DEFAULT_CHAT_FRAME:AddMessage(msg)
+      self:Output(msg)
     end
   end
 
@@ -2014,10 +2012,12 @@ L = {
 
     local mainname = message.PLAYERLINK
 
-    if self.db.profile.on and isAlt(mainname) then
+    local altname = isAlt(mainname) or isAlt(Ambiguate(mainname, "all"))
+
+    if self.db.profile.on and altname then
       local pres = message.PRESENCE_ID or 0
 
-      local altname = isAlt(mainname)
+
       local padfmt = self.padfmt or ' (%s)'
 
 

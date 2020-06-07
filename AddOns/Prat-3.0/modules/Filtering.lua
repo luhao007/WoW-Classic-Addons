@@ -191,7 +191,7 @@ L = {
 		["leavejoin_name"] = "Filter Kanal Verlassen/Beitreten",
 		["notices_desc"] = "Die allgemein üblichen Benachrichtigungen in Kanälen verhindern, z.B. Moderatorenwechsel.",
 		["notices_name"] = "Kanal-Meldungen filtern",
-		["tradespam_desc"] = "Begrenze die Nachrichten um zu verhindern das gleiche Nachrichten ständig wiederholt werden",
+		["tradespam_desc"] = "Unterdrückt Nachrichten, um zu verhindern, dass dieselbe Nachricht mehrmals wiederholt wird",
 		["tradespam_name"] = "Spam begrenzen",
 	}
 }

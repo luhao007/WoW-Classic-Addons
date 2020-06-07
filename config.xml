@@ -695,6 +695,11 @@
 		<Notes>在竞技场中显示敌人</Notes>
 		<Category>PVP</Category>
 	</Addon>
+	<Addon name="GoodLeader">
+		<Title>好团长</Title>
+		<Notes>显示团长经历</Notes>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="Grail">
 		<Title>本地数据库</Title>
 		<Notes>本地数据库，包含任务，成就，NPC等数据</Notes>
