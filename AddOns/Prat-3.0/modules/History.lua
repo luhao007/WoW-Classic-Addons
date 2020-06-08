@@ -218,14 +218,10 @@ L = {
 		["Set Chat Lines"] = "대화 내역 설정",
 		["Set Command History"] = "명령어 내역 설정",
 		["Set the number of lines of chat history for each window."] = "각 대화창 별로 대화 내역의 줄의 갯수를 설정합니다.",
-		--[[Translation missing --]]
-		["storage_char"] = "Character",
-		--[[Translation missing --]]
-		["storage_desc"] = "Which location should the history be saved to.",
-		--[[Translation missing --]]
-		["storage_name"] = "Save To",
-		--[[Translation missing --]]
-		["storage_server"] = "Server",
+		["storage_char"] = "캐릭터",
+		["storage_desc"] = "기록을 저장할 위치",
+		["storage_name"] = "저장",
+		["storage_server"] = "서버",
 		["Store the chat lines between sessions"] = "세션 간 대화 내용 저장하기",
 	}
 }

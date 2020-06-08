@@ -127,7 +127,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 
 L = {
 	["Clear"] = {
-		["Adds clear text slash commands (/clear)(/cls)(/clearall)(/clsall)."] = "Fügt \"Slash\"-Befehle zum Löschen von Text hinzu (/clear)(/cls)(/clsall).",
+		["Adds clear text slash commands (/clear)(/cls)(/clearall)(/clsall)."] = "Fügt Slash-Befehle zum Löschen von Text hinzu (/clear)(/cls)(/clearall)(/clsall).",
 		["Clear"] = "Löschen",
 		["Clearall"] = "Alles löschen",
 		["Clears all chat frames."] = "Alle Chatfenster leeren",

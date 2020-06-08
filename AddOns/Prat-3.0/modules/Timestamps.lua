@@ -605,9 +605,12 @@ L = {
     end
   end)
 
+  local hookedFrames = {}
+
   function module:OnModuleEnable()
     for _, v in pairs(Prat.HookedFrames) do
       self:SecureHook(v, "AddMessage")
+      hookedFrames[v:GetName()] = true
     end
 
     self.secondsDifference = 0
@@ -621,7 +624,7 @@ L = {
     return PL["Chat window timestamp options."]
   end
 
-  local hookedFrames = {}
+
 
   function module:Prat_FramesUpdated(info, name, chatFrame, ...)
     if not hookedFrames[chatFrame:GetName()] then

@@ -171,7 +171,7 @@ L = {
 	["modulecontrol_name"] = "모듈 제어",
 	["prat"] = "Prat",
 	["reload_required"] = "이 설정은 애드온을 %s 해야 변경된 사항이 적용됩니다.",
-	["unloaded_desc"] = "모듈을 불러오지 않았으니, 불러와 설명을 보십시오."
+	["unloaded_desc"] = "모듈을 불러오지 못함, 설명을 보려면 불러오세요."
 }
 
 

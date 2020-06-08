@@ -142,8 +142,8 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 
 L = {
 	["AddonMsgs"] = {
-		["Addon message options."] = "Optionen für AddOn-Meldungen",
-		["AddonMsgs"] = "AddOn-Meldungen",
+		["Addon message options."] = "Addon-Nachrichtenoptionen.",
+		["AddonMsgs"] = "Addon-Nachrichten",
 		["show_desc"] = "Anzeige versteckter AddOn-Meldungen in jedem Chatfenster ein-/ausschalten.",
 		["show_name"] = "AddOn-Meldungen anzeigen",
 		["show_perframedesc"] = "Anzeige versteckter AddOn-Meldungen ein-/ausschalten.",

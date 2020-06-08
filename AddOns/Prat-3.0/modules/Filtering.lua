@@ -181,11 +181,11 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 
 L = {
 	["Filtering"] = {
-		["A module to provide basic chat filtering."] = "Ein Modul, welches das elementare Filtern von Chat ermöglicht.",
-		["afkdnd_desc"] = "AFK- und DND-Mitteilungen unterdrücken",
-		["afkdnd_name"] = "AFK- und DND-Mitteilungen unterdrücken",
-		["bgjoin_desc"] = "Filtert bzw. entfernt Schlachtzugsverlassens- und -beitrittsnachrichten.",
-		["bgjoin_name"] = "Filter BG Verlassen/Betreten",
+		["A module to provide basic chat filtering."] = "Ein Modul zur grundlegenden Chat-Filterung.",
+		["afkdnd_desc"] = "AFK- und DND-Meldungen unterdrücken.",
+		["afkdnd_name"] = "AFK- und DND-Meldungen unterdrücken.",
+		["bgjoin_desc"] = "Filtert Schlachtfeld Verlassen- und Beitrittmeldungen herraus",
+		["bgjoin_name"] = "Filter Schlachtfeld Verlassen/Beitreten",
 		["Filtering"] = "Filtert",
 		["leavejoin_desc"] = "Filtert bzw. entfernt Kanalbeitritts- und -verlassensnachrichten.",
 		["leavejoin_name"] = "Filter Kanal Verlassen/Beitreten",

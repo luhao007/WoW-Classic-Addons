@@ -170,7 +170,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 
 L = {
 	["Paragraph"] = {
-		["adjustlinks_desc"] = "Links anpassen, um die Fähigkeit des Anklickens wiederherzustellen, wenn Text zentriert oder rechtsbündig ist.",
+		["adjustlinks_desc"] = "Passt die Links an, um die Klickbarkeit von zentriertem oder rechtsbündigem Text wiederherzustellen.",
 		["adjustlinks_name"] = "Platzierung von Spieler-/Gegenstandslinks korrigieren",
 		["Center"] = "Mitte",
 		["Chat window paragraph options."] = "Paragraphoptionen in Chatfenstern.",

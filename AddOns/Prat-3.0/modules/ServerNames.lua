@@ -103,7 +103,7 @@ L = {
  
 L = {
 	["ServerNames"] = {
-		["autoabbreviate_desc"] = "Kürze den Server-Namen auf 3 Buchstaben",
+		["autoabbreviate_desc"] = "Kürze den Servernamen auf 3 Buchstaben",
 		["autoabbreviate_name"] = "Automatisch abkürzen",
 		["colon_desc"] = "Hinzufügen eines Doppelpunkts nach dem Ersetzen des Servers ein-/ausschalten.",
 		["colon_name"] = "Doppelpunkt anzeigen",

@@ -399,7 +399,7 @@ L = {
 		["grats_donthave_2"] = "%s님 축하, 난 아직도 그게 필요해요.",
 		["grats_donthave_3"] = "나는 %s님을 원해요, 축하!",
 		["grats_donthave_4"] = "와우 %s님 대단하심.",
-		["grats_donthave_5"] = "난 %s님이 질투나, 추카!",
+		["grats_donthave_5"] = "난 %s님이 질투나, 축하!",
 		["grats_donthave_6"] = "나는 %s님을 위해 그 작업을 해왔어요.",
 		["grats_donthave_7"] = "아직 %s님이 필요함. 축하!",
 		["grats_donthave_8"] = "%s님 업적을 사고싶어요.",
@@ -410,20 +410,17 @@ L = {
 		["grats_have_3"] = "와우 %s님 대단하심.",
 		["grats_have_4"] = "%s님 클럽에 오신 것을 환영합니다.",
 		["grats_have_5"] = "나는 여전히 %s님께 받은 것을 기억할 수 있어요.",
-		--[[Translation missing --]]
-		["grats_have_6"] = "That one is a rite of passge %s",
-		--[[Translation missing --]]
-		["grats_have_7"] = "I worked on that for ages %s, grats!",
-		--[[Translation missing --]]
-		["grats_have_8"] = "I remember doing that, %s, grats!",
+		["grats_have_6"] = "저건 %s님의 통과 의례다.",
+		["grats_have_7"] = "%s님 오랫동안 작업했죠. 축하해요!",
+		["grats_have_8"] = "%s님 나도 기억나요. 축하!",
 		["grats_have_9"] = "%s님 잘하셨어요.",
 		["grats_link"] = "축하한다고 말함",
 		["module_desc"] = "업적 관련 사용자 설정",
 		["module_name"] = "업적",
 		["showCompletedDate_desc"] = "링크 옆에 업적을 완료 한 날짜 표시",
 		["showCompletedDate_name"] = "완료 날짜 표시",
-		["showGratsLink_desc"] = "환영 메시지를 보내는 클릭 가능한 링크 표시",
-		["showGratsLink_name"] = "환영 링크 표시",
+		["showGratsLink_desc"] = "축하 메시지를 보내는 클릭 가능한 링크 표시",
+		["showGratsLink_name"] = "축하 링크 표시",
 	}
 }
 

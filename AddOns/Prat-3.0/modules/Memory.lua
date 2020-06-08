@@ -38,7 +38,7 @@ Prat:AddModuleToLoad(function()
     return
   end
 
-  local module = Prat:NewModule(PRAT_MODULE, "AceHook-3.0", "AceEvent-3.0")
+  local module = Prat:NewModule(PRAT_MODULE, "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
   -- define localized strings
   local PL = module.PL
@@ -242,7 +242,7 @@ L = {
 		["autoload_desc"] = "로그인시 저장된 설정을 자동으로 불러옵니다.",
 		["autoload_name"] = "자동 설정 불러오기",
 		["command_header_name"] = "명령어",
-		["load_desc"] = "마지막 저장에서 채팅 프레임/탭을 불러옴",
+		["load_desc"] = "마지막 저장에서 대화창/탭을 불러옴",
 		["load_name"] = "불러오기 설정",
 		["module_desc"] = "블리자드 채팅 설정을 프로필에 저장하여 모든 캐릭터와 동기화 할 수 있도록 지원",
 		["module_info"] = "|cffff8888이 모듈은 실험적입니다.|r 이 모듈을 사용하면 모든 채팅 설정 및 프레임 모양을 불러오기/저장할 수 있습니다. 이 설정은 모든 캐릭터에서 불러오기 할 수 있습니다.",
@@ -250,7 +250,7 @@ L = {
 		["msg_nosettings"] = "저장된 설정 없음",
 		["msg_settingsloaded"] = "설정 불러옴",
 		["options_header_name"] = "옵션",
-		["save_desc"] = "정확한 채팅 프레임/탭 구성을 저장",
+		["save_desc"] = "정확한 대화창/탭 구성을 저장",
 		["save_name"] = "저장 설정",
 	}
 }
@@ -495,8 +495,8 @@ end
   function module:PLAYER_ENTERING_WORLD()
     self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     self.ready = true
-    if self.needaLoading then
-      self:LoadSettings()
+    if self.needsLoading then
+      self:ScheduleTimer("LoadSettings", 0)
     end
   end
 
@@ -507,7 +507,7 @@ end
       if not self.ready then
         self.needsLoading = true
       else
-        self:LoadSettings()
+        self:ScheduleTimer("LoadSettings", 0)
       end
     end
   end
@@ -550,6 +550,7 @@ end
 
   function module:LoadSettingsForFrame(frameId)
     local db = self.db.profile.frames[frameId]
+    local success = true
 
     -- Restore FloatingChatFrame
     SetChatWindowName(frameId, db.name)
@@ -574,30 +575,42 @@ end
     end
 
     ChatFrame_RemoveAllChannels(f)
-    for _, v in ipairs(db.channels) do
-      ChatFrame_AddChannel(f, v)
+    for i=1,#db.channels-1,2 do
+      if not ChatFrame_AddChannel(f, db.channels[i]) then
+        success = false
+      end
     end
 
     ChatFrame_ReceiveAllPrivateMessages(f)
+
+    return success
   end
 
   function module:LoadSettings()
-    self.needsLoading = nil
     local db = self.db.profile
+    local success = true
 
     if not next(db.frames) then
       self:Output(PL.msg_nosettings)
     end
 
     for k,v in pairs(db.frames) do
-      self:LoadSettingsForFrame(k)
+      if not self:LoadSettingsForFrame(k) then
+        success = false
+      end
     end
 
     for k,v in pairs(db.types) do
       ChangeChatColor(k, v.r, v.g, v.b)
     end
 
-    self:Output(PL.msg_settingsloaded)
+    if success then
+      self.needsLoading = nil
+      self:Output(PL.msg_settingsloaded)
+    else
+      self.needsLoading = true
+      self:ScheduleTimer("LoadSettings", 2)
+    end
   end
 end)
 

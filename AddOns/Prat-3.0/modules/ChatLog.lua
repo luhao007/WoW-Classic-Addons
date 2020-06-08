@@ -190,7 +190,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 
 L = {
 	["ChatLog"] = {
-		["A module to automaticaly enable chat and combat logging."] = "Ein Modul, das automatisch das Speichern des Chat- und Kampflogs aktiviert.",
+		["A module to automaticaly enable chat and combat logging."] = "Ein Modul zum automatischen Aktivieren der Chat- und Kampfprotokollierung.",
 		["Chat log recorded to <WoW Installation>\\Logs\\WoWChatLog.txt only upon logout."] = "Speicherung des Chat-Logs in <WoW Installation>\\Logs\\WoWChatLog.txt nur während des Ausloggens.",
 		["Chat Log: Disabled"] = "Chat-Log: Inaktiv",
 		["Chat Log: Enabled"] = "Chat-Log: Aktiv",

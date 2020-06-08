@@ -154,7 +154,7 @@ L = {
   
 L = {
 	["Sounds"] = {
-		["A module to play sounds on certain chat messages."] = "Ein Modul, um bei bestimmten Mitteilungen, Töne abzuspielen.",
+		["A module to play sounds on certain chat messages."] = "Ein Modul zum Abspielen von Tönen in bestimmten Chat-Nachrichten.",
 		["Add a custom channel"] = "Einen benutzerdefinierten Kanal hinzufügen.",
 		["bn_whisper_desc"] = "Sound für %s Battle.Net-Flüsternachrichten",
 		["bn_whisper_name"] = "Battle.Net-Flüsternachricht",
