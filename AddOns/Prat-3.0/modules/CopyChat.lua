@@ -280,10 +280,8 @@ L = {
 		["Copy text from the active chat window."] = "Text im aktiven Chatfenster kopieren.",
 		["Copy To Editbox"] = "In das Eingabefenster kopieren",
 		["CopyChat"] = "Chat kopieren",
-		--[[Translation missing --]]
-		["copytimestamps_desc"] = "Copy the chat line when you click on the timestamp",
-		--[[Translation missing --]]
-		["copytimestamps_name"] = "Timestamps Copy",
+		["copytimestamps_desc"] = "Kopiert die Chat-Zeile, wenn du auf den Zeitstempel klickst",
+		["copytimestamps_name"] = "Zeitstempel kopieren",
 		["HTML"] = true,
 		["Message From : %s"] = "Mitteilung von: %s",
 		["Plain"] = "Einfach",
@@ -784,6 +782,7 @@ end
 
     for _, v in ipairs(frame.visibleLines) do
       local msg = v.messageInfo
+      msg = msg and msg.message
 
       if msg then
         lines[#lines+1] = stripChatText(msg)

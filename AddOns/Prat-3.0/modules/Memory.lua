@@ -56,18 +56,19 @@ Prat:AddModuleToLoad(function()
   --[===[@debug@
   PL:AddLocale(PRAT_MODULE, "enUS", {
     ["module_name"] = "Memory",
-    ["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+    ["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
     module_info = "|cffff8888THIS MODULE IS EXPERIMENTAL|r \n\n This module allows you to load/save all your chat settings and frame layout. These settings can be loaded on any of your characters",
-    autoload_name =  "Load Settings Automaticallys",
+    autoload_name = "Load Settings Automatically",
     autoload_desc = "Automatically load the saved settings when you log in",
     load_name = "Load Settings",
-    load_desc = "Load tthe chat frame/tabs from the last save",
+    load_desc = "Load the chat frame/tabs from the last save",
     save_name = "Save Settings",
-    save_desc = "Save the currect chat frame/tab configuration",
+    save_desc = "Save the current chat frame/tab configuration",
     msg_nosettings = "No stored settings",
     msg_settingsloaded = "Settings Loaded",
     command_header_name = "Commands",
-    options_header_name = "Options"
+    options_header_name = "Options",
+    msg_loadfailed = "Could not fully restore the chat settings"
   })
   --@end-debug@]===]
 
@@ -83,19 +84,20 @@ do
 L = {
 	["Memory"] = {
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		["command_header_name"] = "Commands",
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		["load_name"] = "Load Settings",
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
  This module allows you to load/save all your chat settings and frame layout. These settings can be loaded on any of your characters]=],
 		["module_name"] = "Memory",
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
 		["msg_nosettings"] = "No stored settings",
 		["msg_settingsloaded"] = "Settings Loaded",
 		["options_header_name"] = "Options",
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		["save_name"] = "Save Settings",
 	}
 }
@@ -109,15 +111,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -125,13 +127,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -146,15 +150,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -162,13 +166,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -183,15 +189,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -199,13 +205,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -225,6 +233,8 @@ L = {
 		["module_desc"] = "Unterstützt das Speichern der Blizzard-Chat Einstellungen in deinem Profil, damit sie für alle deine Charaktere synchronisiert werden können",
 		["module_info"] = "DIESES MODUL IST EXPERIMENTELL = Du kannst deine Chat-Einstellungen in deinem Konto synchronisieren",
 		["module_name"] = "Erinnerung",
+		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
 		["msg_nosettings"] = "Keine gespeicherten Einstellungen",
 		["msg_settingsloaded"] = "Einstellungen geladen",
 		["options_header_name"] = "Optionen",
@@ -247,6 +257,8 @@ L = {
 		["module_desc"] = "블리자드 채팅 설정을 프로필에 저장하여 모든 캐릭터와 동기화 할 수 있도록 지원",
 		["module_info"] = "|cffff8888이 모듈은 실험적입니다.|r 이 모듈을 사용하면 모든 채팅 설정 및 프레임 모양을 불러오기/저장할 수 있습니다. 이 설정은 모든 캐릭터에서 불러오기 할 수 있습니다.",
 		["module_name"] = "메모리",
+		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
 		["msg_nosettings"] = "저장된 설정 없음",
 		["msg_settingsloaded"] = "설정 불러옴",
 		["options_header_name"] = "옵션",
@@ -263,15 +275,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -279,13 +291,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -299,15 +313,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -315,13 +329,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -335,15 +351,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -351,13 +367,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -371,15 +389,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -387,13 +405,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -407,15 +427,15 @@ L = {
 		--[[Translation missing --]]
 		["autoload_desc"] = "Automatically load the saved settings when you log in",
 		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automaticallys",
+		["autoload_name"] = "Load Settings Automatically",
 		--[[Translation missing --]]
 		["command_header_name"] = "Commands",
 		--[[Translation missing --]]
-		["load_desc"] = "Load tthe chat frame/tabs from the last save",
+		["load_desc"] = "Load the chat frame/tabs from the last save",
 		--[[Translation missing --]]
 		["load_name"] = "Load Settings",
 		--[[Translation missing --]]
-		["module_desc"] = "Support saveing the Blizzard chat settings to your profile so they can be synced accross all your charactaers",
+		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
 		--[[Translation missing --]]
 		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
 
@@ -423,13 +443,15 @@ L = {
 		--[[Translation missing --]]
 		["module_name"] = "Memory",
 		--[[Translation missing --]]
+		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		--[[Translation missing --]]
 		["msg_nosettings"] = "No stored settings",
 		--[[Translation missing --]]
 		["msg_settingsloaded"] = "Settings Loaded",
 		--[[Translation missing --]]
 		["options_header_name"] = "Options",
 		--[[Translation missing --]]
-		["save_desc"] = "Save the currect chat frame/tab configuration",
+		["save_desc"] = "Save the current chat frame/tab configuration",
 		--[[Translation missing --]]
 		["save_name"] = "Save Settings",
 	}
@@ -501,32 +523,28 @@ end
   end
 
   function module:OnModuleEnable()
-    self.db.RegisterCallback(self, "OnProfileShutdown")
-
-    if self.db.profile.autoload and next(self.db.profile.frames) then
+    if not self.working and self.db.profile.autoload and next(self.db.profile.frames) then
       if not self.ready then
         self.needsLoading = true
       else
         self:ScheduleTimer("LoadSettings", 0)
       end
     end
-  end
 
-  function module:OnProfileShutdown()
-    -- Some blizzard tables were connected to the profile, but now we need to give the profile its own copy
-    if self.db.profile.types == getmetatable(ChatTypeInfo).__index then
-      self.db.profile.types = CopyTable(self.db.profile.types)
-    end
+    Prat.RegisterChatEvent(self, Prat.Events.PRE_ADDMESSAGE)
   end
 
   function module:SaveSettings()
     local db = self.db.profile
 
-    for i = 1,NUM_CHAT_WINDOWS do
-        self:SaveSettingsForFrame(i)
+    wipe(db.frames)
+
+    for i = 1, NUM_CHAT_WINDOWS do
+      self:SaveSettingsForFrame(i)
     end
 
-    db.types = getmetatable(ChatTypeInfo).__index
+    db.types =  CopyTable(getmetatable(ChatTypeInfo).__index)
+    db.channels = { GetChannelList() }
 
     self:Output("Settings Saved")
   end
@@ -536,8 +554,17 @@ end
 
     local name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable = GetChatWindowInfo(frameId)
     db.name, db.fontSize, db.r, db.g, db.b, db.alpha, db.shown, db.locked, db.docked, db.uninteractable =
-      name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable
+    name, fontSize, r, g, b, alpha, shown, locked, docked, uninteractable
 
+    local f = Chat_GetChatFrame(frameId)
+    db.minimized = f.minimized
+    if f.minFrame then
+      db.minframe = {}
+      for i=1,f.minFrame:GetNumPoints() do
+        local point, relativeTo, relativePoint, xoff, yoff = f.minFrame:GetPoint(i)
+        db.minframe[#db.minframe+1] = { point, (type(relativeTo) == "table") and relativeTo:GetName() or relativeTo, relativePoint, xoff, yoff }
+      end
+    end
     db.messages = { GetChatWindowMessages(frameId) }
     db.channels = { GetChatWindowChannels(frameId) }
 
@@ -545,12 +572,22 @@ end
     local point, xOffset, yOffset = GetChatWindowSavedPosition(frameId)
 
     db.point, db.xOffset, db.yOffset, db.width, db.height =
-      point, xOffset, yOffset, width, height
+    point, xOffset, yOffset, width, height
   end
 
-  function module:LoadSettingsForFrame(frameId)
+  function module:LoadFrameSettingsForFrame(frameId)
     local db = self.db.profile.frames[frameId]
     local success = true
+    local f = Chat_GetChatFrame(frameId)
+
+    if not db.shown and not db.docked then
+      FCF_Close(f)
+      return success
+    end
+
+    if f.minimized then
+      FCF_MaximizeFrame(f)
+    end
 
     -- Restore FloatingChatFrame
     SetChatWindowName(frameId, db.name)
@@ -566,50 +603,231 @@ end
     end
     SetChatWindowShown(frameId, db.shown)
     FloatingChatFrame_Update(frameId, 1)
+    FCF_DockUpdate()
+    FCF_FadeInChatFrame(f)
+
+    if db.minimized then
+      FCF_MinimizeFrame(f, "LEFT")
+      f.minFrame:ClearAllPoints()
+      for i,v in ipairs(db.minframe) do
+        local point, relativeTo, relativePoint, xoff, yoff = unpack(v)
+        f.minFrame:SetPoint(point, relativeTo and _G[relativeTo], relativePoint, xoff, yoff)
+      end
+
+      f.minFrame:SetUserPlaced(true)
+    end
+    return success
+  end
+
+  function module:LoadChatSettingsForFrame(frameId)
+    local db = self.db.profile.frames[frameId]
+    local success = true
+    local f = Chat_GetChatFrame(frameId)
 
     -- Restore ChatFrame
-    local f = Chat_GetChatFrame(frameId)
     ChatFrame_RemoveAllMessageGroups(f)
     for _, v in ipairs(db.messages) do
       ChatFrame_AddMessageGroup(f, v);
     end
 
     ChatFrame_RemoveAllChannels(f)
-    for i=1,#db.channels-1,2 do
-      if not ChatFrame_AddChannel(f, db.channels[i]) then
+    for i = 1, #db.channels, 2 do
+      local chan = ChatFrame_AddChannel(f, db.channels[i])
+      if not chan then
+        dbg("failed to load", db.channels[i], chan)
         success = false
       end
     end
 
     ChatFrame_ReceiveAllPrivateMessages(f)
-
     return success
   end
+  function module:LeaveChannels(...)
+    for i = 1, select("#", ...), 3 do
+      local num, name = select(i, ...);
+      dbg("leave", num, name)
+      LeaveChannelByName(num)
+    end
+  end
 
+  local channelStepDelay = 0.5
+  local function getDelay()
+    return channelStepDelay + module.errorcount
+  end
+
+  function module:LeavePlaceholderChannels(...)
+    dbg("leave placeholders", ...)
+    for i = 1, select("#", ...), 3 do
+      local num, name = select(i, ...);
+      if name:match("^LeaveMe") then
+        dbg("leave", num, name)
+        LeaveChannelByName(num)
+      end
+    end
+
+    self:ScheduleTimer(function() module:CheckChannels(GetChannelList()) end,  getDelay())
+  end
+
+  function module:GetChannelMap(...)
+    local map = {}
+    for i = 1, select("#", ...), 3 do
+      local num, name = select(i, ...);
+      map[name] = num
+      map[num] = name
+    end
+
+    return map
+  end
+
+  function module:CheckChannels(...)
+    dbg("check channels", ...)
+    local db = self.db.profile
+    local map = self:GetChannelMap(unpack(db.channels))
+
+    local correct = true
+    if select("#", ...) ~= #db.channels then
+      correct = "missing"
+    else
+      for i = 1, select("#", ...), 3 do
+        local snum, sname = select(i, ...);
+        local num, name = db.channels[i], db.channels[i + 1];
+        if snum ~= num or sname ~= name then
+          dbg("mismatch", snum, num, sname, name, map[sname])
+          correct = map[sname] and "order" or "wrong"
+        end
+      end
+    end
+
+    dbg("channels correct", correct)
+    if type(correct) == "boolean" or self.errorcount >= 3 then
+      self:ScheduleTimer("LoadSettings", 2)
+    else
+      if correct == "wrong" or correct == "missing" then
+        self.errorcount = self.errorcount + 1
+        self:LeaveChannels(GetChannelList())
+        self:ScheduleTimer("RestoreChannels", getDelay(), unpack(db.channels))
+      elseif correct == "order" then
+        dbg(GetChannelList())
+        for i = 1, select("#", ...), 3 do
+          local snum, sname = select(i, GetChannelList());
+          local curnum = map[sname]
+          dbg("check", snum, curnum)
+          if snum ~= curnum then
+            dbg("swap", snum, curnum)
+            if Prat.IsClassic then
+              SwapChatChannelByLocalID(snum, curnum)
+            else
+              C_ChatInfo.SwapChatChannelsByChannelIndex(snum, curnum)
+            end
+          end
+        end
+
+        self:ScheduleTimer(function() module:CheckChannels(GetChannelList()) end,  getDelay())
+      end
+    end
+  end
+
+  if Prat.IsClassic then
+    function module:RestoreChannels(...)
+      local index = 1
+      for i = 1, select("#", ...), 3 do
+        local num, name = select(i, ...);
+        dbg("restore", name, num)
+        while index < num do
+          JoinTemporaryChannel("LeaveMe" .. index)
+          dbg("join", "LeaveMe" .. index)
+          index = index + 1
+        end
+        dbg("join", name)
+        JoinChannelByName(name)
+        index = index + 1
+      end
+
+      self:ScheduleTimer(function() module:LeavePlaceholderChannels(GetChannelList()) end,  getDelay())
+    end
+  else
+    function module:RestoreChannels(...)
+      local index = 1
+      for i = 1, select("#", ...), 3 do
+        local num, name = select(i, ...);
+        dbg("restore", name, num)
+        while index < num do
+          JoinTemporaryChannel("LeaveMe" .. index)
+          dbg("join", "LeaveMe" .. index)
+          index = index + 1
+        end
+        local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(name);
+        if not clubId or not streamId then
+          dbg("join", name)
+
+          JoinChannelByName(name)
+        else
+          dbg("addclub", clubId, streamId)
+          ChatFrame_AddNewCommunitiesChannel(1, clubId, streamId)
+        end
+        index = index + 1
+      end
+      self:ScheduleTimer(function() module:LeavePlaceholderChannels(GetChannelList()) end,  getDelay())
+    end
+  end
   function module:LoadSettings()
     local db = self.db.profile
     local success = true
-
+  
     if not next(db.frames) then
       self:Output(PL.msg_nosettings)
+      self.needsLoading = nil
+      return
     end
 
-    for k,v in pairs(db.frames) do
-      if not self:LoadSettingsForFrame(k) then
+    for k, v in pairs(db.frames) do
+      if not self:LoadFrameSettingsForFrame(k) then
+        success = false
+      end
+    end
+    FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1)
+  
+    if not self.working and db.channels and #db.channels > 0 then
+      self.errorcount = 0
+      self.working = true
+      if GetChannelList() then
+        self:LeaveChannels(GetChannelList())
+      end
+      self:ScheduleTimer(function() self:RestoreChannels(unpack(db.channels)) end,  getDelay())
+      return
+    end
+
+    for k, v in pairs(db.frames) do
+      if not self:LoadChatSettingsForFrame(k) then
         success = false
       end
     end
 
-    for k,v in pairs(db.types) do
+    for k, v in pairs(db.types) do
       ChangeChatColor(k, v.r, v.g, v.b)
     end
 
     if success then
       self.needsLoading = nil
+      self.working = nil
+      self.errorcount = nil
       self:Output(PL.msg_settingsloaded)
     else
-      self.needsLoading = true
-      self:ScheduleTimer("LoadSettings", 2)
+      self.errorcount = self.errorcount + 1
+
+      if self.errorcount > 10 then
+        self.working = nil
+        self.errorcount = nil
+        self:Output(PL.msg_loadfailed)
+        return
+      end
+      self:ScheduleTimer("LoadSettings", getDelay())
+    end
+  end
+
+  function module:Prat_PreAddMessage(arg, message, frame, event, t, r, g, b)
+    if self.working and ("YOU_CHANGED" == message.NOTICE or "YOU_LEFT" == message.NOTICE) then
+      message.DONOTPROCESS = true
     end
   end
 end)

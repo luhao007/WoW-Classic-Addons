@@ -71,6 +71,8 @@ Prat:AddModuleToLoad(function()
     ["MM:SS"] = true,
     ["Post-Timestamp"] = true,
     ["Pre-Timestamp"] = true,
+    ["Timestamp Text Format"] = true,
+    ["Other Formatting Options"] = true,
   })
   --@end-debug@]===]
 
@@ -96,8 +98,7 @@ L = {
 		["localtime_desc"] = "Toggle using local time on and off.",
 		["localtime_name"] = "Use Local Time",
 		["MM:SS"] = true,
-		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = true,
 		["Post-Timestamp"] = true,
 		["Pre-Timestamp"] = true,
 		["Set the timestamp format"] = true,
@@ -108,8 +109,7 @@ L = {
 		["show_name"] = "Show Timestamp",
 		["space_desc"] = "Toggle adding space after timestamp on and off.",
 		["space_name"] = "Show Space",
-		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = true,
 		["Timestamps"] = true,
 		["Toggle showing timestamp for each window."] = true,
 		["twocolumn_desc"] = "Place the timestamps in a separate column so the text does not wrap underneath them",
@@ -139,7 +139,7 @@ L = {
 		["localtime_name"] = "Utiliser l'heure locale",
 		["MM:SS"] = true,
 		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Other Formatting Options",
 		["Post-Timestamp"] = "Après l'heure",
 		["Pre-Timestamp"] = "Avant l'heure",
 		["Set the timestamp format"] = "Définit le format de l'heure.",
@@ -151,7 +151,7 @@ L = {
 		["space_desc"] = "Active/Désactive l'ajout d'un espace après l'heure.",
 		["space_name"] = "Montrer l'espace",
 		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Timestamp Text Format",
 		["Timestamps"] = "Heure des messages",
 		["Toggle showing timestamp for each window."] = "Active/Désactive l'affiche de l'heure des messages pour chaque fenêtre.",
 		["twocolumn_desc"] = "Place l'heure dans une colonne séparée de manière à ce qu'aucun texte ne s'écrive en dessous de l'heure.",
@@ -179,8 +179,7 @@ L = {
 		["localtime_desc"] = "Verwendung der Ortszeit ein- und ausschalten.",
 		["localtime_name"] = "Ortszeit verwenden",
 		["MM:SS"] = true,
-		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Andere Formatierungsoptionen",
 		["Post-Timestamp"] = "Nach-Zeitstempel",
 		["Pre-Timestamp"] = "Vor-Zeitstempel",
 		["Set the timestamp format"] = "Format für Zeitstempel einstellen",
@@ -191,8 +190,7 @@ L = {
 		["show_name"] = "Zeitstempel anzeigen",
 		["space_desc"] = "Das Einfügen eines Leerzeichens nach dem Zeitstempel ein- und ausschalten.",
 		["space_name"] = "Leerzeichen anzeigen",
-		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Zeitstempel-Textformat",
 		["Timestamps"] = "Zeitstempel",
 		["Toggle showing timestamp for each window."] = "Anzeige des Zeitstempels für jedes Fenster umschalten.",
 		["twocolumn_desc"] = "Platziere die Zeitstempel in einer getrennten Spalte, so dass der Text nicht unterhalb der Zeitstempel dargestellt wird.",
@@ -221,7 +219,7 @@ L = {
 		["localtime_name"] = "컴퓨터 시간 사용",
 		["MM:SS"] = true,
 		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Other Formatting Options",
 		["Post-Timestamp"] = "뒤-시간 표시",
 		["Pre-Timestamp"] = "앞-시간 표시",
 		["Set the timestamp format"] = "시간 표시 형식 설정",
@@ -233,7 +231,7 @@ L = {
 		["space_desc"] = "시간 표시 뒤에 공간을 넣을 지 선택합니다.",
 		["space_name"] = "공간 삽입",
 		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Timestamp Text Format",
 		["Timestamps"] = "시간 표시",
 		["Toggle showing timestamp for each window."] = "각 창 별로 시간 표시 기능을 끄거나 켭니다.",
 		["twocolumn_desc"] = "시간 표시를 분리된 열에 위치시켜 글자가 그 아래쪽을 둘러싸지 않게 합니다",
@@ -275,7 +273,7 @@ L = {
 		--[[Translation missing --]]
 		["MM:SS"] = "MM:SS",
 		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Other Formatting Options",
 		--[[Translation missing --]]
 		["Post-Timestamp"] = "Post-Timestamp",
 		--[[Translation missing --]]
@@ -297,7 +295,7 @@ L = {
 		--[[Translation missing --]]
 		["space_name"] = "Show Space",
 		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Timestamp Text Format",
 		--[[Translation missing --]]
 		["Timestamps"] = "Timestamps",
 		--[[Translation missing --]]
@@ -331,7 +329,7 @@ L = {
 		["localtime_name"] = "Местное время",
 		["MM:SS"] = true,
 		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Other Formatting Options",
 		["Post-Timestamp"] = "Перед-временем",
 		["Pre-Timestamp"] = "После-времени",
 		["Set the timestamp format"] = "Установите формат времени ",
@@ -343,7 +341,7 @@ L = {
 		["space_desc"] = "Вкл/Выкл добавление пробела после времени.",
 		["space_name"] = "Пробел",
 		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Timestamp Text Format",
 		["Timestamps"] = "Отображение времени",
 		["Toggle showing timestamp for each window."] = "Вкл/Выкл отображение времени во всех окнах.",
 		["twocolumn_desc"] = "Помещает время в отдельную колонку, чтобы текст не переносился на строку под ним.",
@@ -413,7 +411,7 @@ L = {
 		["localtime_name"] = "Utilizar Hora Local",
 		["MM:SS"] = true,
 		--[[Translation missing --]]
-		["Other Formatting Options"] = "",
+		["Other Formatting Options"] = "Other Formatting Options",
 		["Post-Timestamp"] = "Post-MáscaraTiempo",
 		["Pre-Timestamp"] = "Pre-MáscaraTiempo",
 		["Set the timestamp format"] = "Establecer el formato de la Máscara de Tiempo",
@@ -425,7 +423,7 @@ L = {
 		["space_desc"] = "Alterna activación de añadir un espacio tras la máscara de tiempo.",
 		["space_name"] = "Mostrar Espacio",
 		--[[Translation missing --]]
-		["Timestamp Text Format"] = "",
+		["Timestamp Text Format"] = "Timestamp Text Format",
 		["Timestamps"] = "Máscara de Tiempo",
 		["Toggle showing timestamp for each window."] = "Alterna mostrar máscara de tiempo para cada ventana.",
 		["twocolumn_desc"] = "Colocar las máscaras de hora en una columna separada por lo que el texto no se ajustará debajo de ellas",
@@ -531,7 +529,7 @@ L = {
         set = "SetSubValue"
       },
       helpheader = {
-        name = "Timestamp Text Format",
+        name = PL["Timestamp Text Format"],
         type = "header",
         order = 129,
       },
@@ -576,7 +574,7 @@ L = {
         order = 171,
       },
       otherheader = {
-        name = "Other Formatting Options",
+        name = PL["Other Formatting Options"],
         type = "header",
         order = 170,
       },
@@ -592,7 +590,7 @@ L = {
     },
   })
 
-  Prat:SetModuleInit(module, function()
+  Prat:SetModuleInit(module, function(self)
     -- Disable blizz timestamps if possible
     if issecurevariable("ChatFrame_MessageEventHandler") then
       local proxy = { CHAT_TIMESTAMP_FORMAT = false } -- nil would defer to __index
@@ -602,40 +600,47 @@ L = {
       -- An addon has modified ChatFrame_MessageEventHandler and likely
       -- replaced / hooked it, so we can't setfenv the original function.
       -- TODO Print a warning
+      self:Output("Could not install hook")
     end
-  end)
 
-  local hookedFrames = {}
-
-  function module:OnModuleEnable()
-    for _, v in pairs(Prat.HookedFrames) do
+    for name, v in pairs(Prat.HookedFrames) do
       self:SecureHook(v, "AddMessage")
-      hookedFrames[v:GetName()] = true
     end
 
     self.secondsDifference = 0
     self.lastMinute = select(2, GetGameTime())
+  end)
 
+  function module:OnModuleEnable()
+    for name, v in pairs(Prat.HookedFrames) do
+      if not self:IsHooked(v, "AddMessage") then
+        self:SecureHook(v, "AddMessage")
+      end
+    end
     Prat.RegisterChatEvent(self, Prat.Events.FRAMES_UPDATED)
     Prat.RegisterChatEvent(self, Prat.Events.FRAMES_REMOVED)
+  end
+
+  function module:OnModuleDisable()
+    for name, v in pairs(Prat.HookedFrames) do
+      if self:IsHooked(v, "AddMessage") then
+        self:Unhook(v, "AddMessage")
+      end
+    end
   end
 
   function module:GetDescription()
     return PL["Chat window timestamp options."]
   end
 
-
-
   function module:Prat_FramesUpdated(info, name, chatFrame, ...)
-    if not hookedFrames[chatFrame:GetName()] then
-      hookedFrames[chatFrame:GetName()] = true
+    if not self:IsHooked(chatFrame, "AddMessage") then
       self:SecureHook(chatFrame, "AddMessage")
     end
   end
 
   function module:Prat_FramesRemoved(info, name, chatFrame)
-    if hookedFrames[chatFrame:GetName()] then
-      hookedFrames[chatFrame:GetName()] = nil
+    if self:IsHooked(chatFrame, "AddMessage") then
       self:Unhook(chatFrame, "AddMessage")
     end
   end
@@ -644,7 +649,7 @@ L = {
       Core Functions
   ------------------------------------------------]] --
   function module:AddMessage(frame, text, ...)
-    if self.db.profile.show and self.db.profile.show[frame:GetName()] and not Prat.loading then
+    if self.db.profile.on and self.db.profile.show and self.db.profile.show[frame:GetName()] and not Prat.loading then
       frame.historyBuffer:GetEntryAtIndex(1).message =
         self:InsertTimeStamp(frame.historyBuffer:GetEntryAtIndex(1).message, frame)
     end

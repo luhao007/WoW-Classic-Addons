@@ -52,6 +52,7 @@ Prat:AddModuleToLoad(function()
     ["Scrollback"] = true,
     ["Store the chat lines between sessions"] = true,
     ["Scrollback Options"] = true,
+    ["Command History Options"] = true,
     divider = "========== End of Scrollback ==========",
     scrollbackduration_name = "Scrollback Duration",
     scrollbackduration_desc = "How many hours to keep the saved messages.",
@@ -78,6 +79,7 @@ L = {
 		["Chat history options."] = true,
 		["Color GMOTD"] = true,
 		["Colors the GMOTD label"] = true,
+		["Command History Options"] = true,
 		["delaygmotd_desc"] = "Delay GMOTD until after all the startup spam",
 		["delaygmotd_name"] = "Delay GMOTD",
 		["divider"] = "========== End of Scrollback ==========",
@@ -117,6 +119,8 @@ L = {
 		["Color GMOTD"] = "Color GMOTD",
 		--[[Translation missing --]]
 		["Colors the GMOTD label"] = "Colors the GMOTD label",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		["delaygmotd_desc"] = "Afficher le message du jour de la guilde après tous les autres messages lors de la connexion.",
 		--[[Translation missing --]]
 		["delaygmotd_name"] = "Delay GMOTD",
@@ -164,6 +168,8 @@ L = {
 		["Chat history options."] = "Optionen zum Chatverlauf.",
 		["Color GMOTD"] = "Farbe der Gildennachricht des Tages",
 		["Colors the GMOTD label"] = "Färbt die GMOTD-Beschriftung",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		["delaygmotd_desc"] = "GMOTD verzögern, bis die Ausgabe aller Mitteilungen nach dem Einloggen vollendet ist.",
 		["delaygmotd_name"] = "GMOTD verzögern",
 		["divider"] = "========== Ende des Zurückblättern ==========",
@@ -200,6 +206,8 @@ L = {
 		["Chat history options."] = "대화 내역 옵션입니다.",
 		["Color GMOTD"] = "오늘의 길드 메시지에 색상입히기",
 		["Colors the GMOTD label"] = "오늘의 길드 메시지 제목에 색상입히기",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		["delaygmotd_desc"] = "모든 시작 스팸이 표시 될때까지 오늘의 길드 메시지 지연시키기",
 		["delaygmotd_name"] = "오늘의 길드 메시지 지연",
 		["divider"] = "========== 이전 대화 목록의 끝 ==========",
@@ -240,6 +248,8 @@ L = {
 		["Color GMOTD"] = "Color GMOTD",
 		--[[Translation missing --]]
 		["Colors the GMOTD label"] = "Colors the GMOTD label",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		--[[Translation missing --]]
 		["delaygmotd_desc"] = "Delay GMOTD until after all the startup spam",
 		--[[Translation missing --]]
@@ -300,6 +310,8 @@ L = {
 		["Chat history options."] = "Настройки истории чата.",
 		["Color GMOTD"] = "Цвет  GMOTD",
 		["Colors the GMOTD label"] = "Цвета названия СДГ",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		["delaygmotd_desc"] = "Задерживать отображение СДГ вплоть до окончания спама при входе в игру",
 		["delaygmotd_name"] = "задержка GMOTD",
 		["divider"] = "========== Конец истории сообщений ==========",
@@ -345,6 +357,8 @@ L = {
 		["Chat history options."] = "历史聊天记录选项",
 		["Color GMOTD"] = "每日公会信息颜色",
 		["Colors the GMOTD label"] = "为每日公会信息标签着色",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		["delaygmotd_desc"] = "延迟每日公会信息直到起始垃圾信息显示完毕为止",
 		["delaygmotd_name"] = "延迟 GMOTD",
 		["divider"] = "========== 回卷结束 ==========",
@@ -392,6 +406,8 @@ L = {
 		["Color GMOTD"] = "Color GMOTD",
 		--[[Translation missing --]]
 		["Colors the GMOTD label"] = "Colors the GMOTD label",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		--[[Translation missing --]]
 		["delaygmotd_desc"] = "Delay GMOTD until after all the startup spam",
 		--[[Translation missing --]]
@@ -444,6 +460,8 @@ L = {
 		["Chat history options."] = "歷史訊息選項。",
 		["Color GMOTD"] = "顏色 GMOTD",
 		["Colors the GMOTD label"] = "顏色 GMOTD 標籤",
+		--[[Translation missing --]]
+		["Command History Options"] = "Command History Options",
 		--[[Translation missing --]]
 		["delaygmotd_desc"] = "Delay GMOTD until after all the startup spam",
 		["delaygmotd_name"] = "延遲 GMOTD",
@@ -529,7 +547,7 @@ L = {
         bigStep = 50,
       },
       cmdhistheader = {
-        name = "Command History Options",
+        name = PL["Command History Options"],
         type = "header",
         order = 130,
       },
@@ -550,18 +568,18 @@ L = {
         type = "toggle",
         order = 131,
       },
-      colorgmotd = {
-        name = PL["Color GMOTD"],
-        desc = PL["Colors the GMOTD label"],
-        type = "toggle",
-        order = 150,
-      },
-      delaygmotd = {
-        name = PL.delaygmotd_name,
-        desc = PL.delaygmotd_desc,
-        type = "toggle",
-        order = 151
-      }
+--      colorgmotd = {
+--        name = PL["Color GMOTD"],
+--        desc = PL["Colors the GMOTD label"],
+--        type = "toggle",
+--        order = 150,
+--      },
+--      delaygmotd = {
+--        name = PL.delaygmotd_name,
+--        desc = PL.delaygmotd_desc,
+--        type = "toggle",
+--        order = 151
+--      }
     }
   })
 
@@ -627,20 +645,20 @@ L = {
 
 
 
-    if IsInGuild() then
-      self.frame = self.frame or CreateFrame("Frame")
-
-      if self.db.profile.delaygmotd then
-        self:DelayGMOTD(self.frame)
-      end
-
-      if self.db.profile.colorgmotd then
-        local a, b = strsplit(":", GUILD_MOTD_TEMPLATE)
-        if a and b then
-          GUILD_MOTD_TEMPLATE = "|cffffffff" .. a .. "|r:" .. b
-        end
-      end
-    end
+--    if IsInGuild() then
+--      self.frame = self.frame or CreateFrame("Frame")
+--
+--      if self.db.profile.delaygmotd then
+--        self:DelayGMOTD(self.frame)
+--      end
+--
+--      if self.db.profile.colorgmotd then
+--        local a, b = strsplit(":", GUILD_MOTD_TEMPLATE)
+--        if a and b then
+--          GUILD_MOTD_TEMPLATE = "|cffffffff" .. a .. "|r:" .. b
+--        end
+--      end
+--    end
   end
 
 
@@ -682,30 +700,30 @@ L = {
   end
 
 
-  function module:DelayGMOTD(frame)
-    local delay = 2.5
-    local maxtime = 60
-    ChatFrame1:UnregisterEvent("GUILD_MOTD")
-    frame:SetScript("OnUpdate", function(this, expired)
-      delay = delay - expired
-      if delay < 0 then
-        local msg = GetGuildRosterMOTD()
-        if maxtime < 0 or (msg and msg:len() > 0) then
-          ChatFrame1:RegisterEvent("GUILD_MOTD")
-
-          for _, f in pairs(Prat.Frames) do
-            if f:IsEventRegistered("GUILD_MOTD") then
-              ChatFrame_SystemEventHandler(f, "GUILD_MOTD", msg)
-            end
-          end
-          this:Hide()
-        else
-          delay = 2.5
-          maxtime = maxtime - 2.5
-        end
-      end
-    end)
-  end
+--  function module:DelayGMOTD(frame)
+--    local delay = 2.5
+--    local maxtime = 60
+--    ChatFrame1:UnregisterEvent("GUILD_MOTD")
+--    frame:SetScript("OnUpdate", function(this, expired)
+--      delay = delay - expired
+--      if delay < 0 then
+--        local msg = GetGuildRosterMOTD()
+--        if maxtime < 0 or (msg and msg:len() > 0) then
+--          ChatFrame1:RegisterEvent("GUILD_MOTD")
+--
+--          for _, f in pairs(Prat.Frames) do
+--            if f:IsEventRegistered("GUILD_MOTD") then
+--              ChatFrame_SystemEventHandler(f, "GUILD_MOTD", msg)
+--            end
+--          end
+--          this:Hide()
+--        else
+--          delay = 2.5
+--          maxtime = maxtime - 2.5
+--        end
+--      end
+--    end)
+--  end
 
 
   --[[------------------------------------------------
