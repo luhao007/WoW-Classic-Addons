@@ -57,9 +57,9 @@ L["onyxiaNpcKilledAlliance"] = "瑪丁雷少校已經被殺了! (奧妮克西婭
 L["nefarianNpcKilledHorde"] = "薩魯法爾大王已經被殺了! (奈法利安增益NPC ).";
 L["nefarianNpcKilledAlliance"] = "艾法希比元帥已經被殺了! (奈法利安增益NPC ).";
 L["onyxiaNpcKilledHordeWithTimer"] = "奧妮克西婭增益NPC (倫薩克) 已經被殺了 %s 時間，之後沒有任何增益紀錄。";
-L["NefarianNpcKilledHordeWithTimer"] = "奈法利安增益NPC (薩魯法爾) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
+L["nefarianNpcKilledHordeWithTimer"] = "奈法利安增益NPC (薩魯法爾) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
 L["onyxiaNpcKilledAllianceWithTimer"] = "奧妮克西婭增益NPC (瑪丁雷) 已經被殺了 %s 時間，之後沒有任何增益紀錄。";
-L["NefarianNpcKilledAllianceWithTimer"] = "奈法利安增益NPC (艾法希比) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
+L["nefarianNpcKilledAllianceWithTimer"] = "奈法利安增益NPC (艾法希比) 以經被殺了 %s 時間，之後沒有任何增益紀錄。";
 L["anyNpcKilledWithTimer"] = "在 %s 以前被殺了"; --Map timers tooltip msg.
 
 ---========---
@@ -95,6 +95,8 @@ L["Sayge's Dark Fortune of Armor"] = "賽吉的護甲黑暗籤詩";
 L["Sayge's Dark Fortune of Resistance"] = "賽吉的抗性黑暗籤詩";
 L["Sayge's Dark Fortune of Damage"] = "賽吉的傷害黑暗籤詩";
 L["dmfBuffCooldownMsg"] = "你的暗月馬戲團增益倒數剩下 %s 。";
+L["dmfBuffCooldownMsg2"] = "你的暗月馬戲團增益倒數剩下 %s 。";
+L["dmfBuffCooldownMsg3"] = "暗月馬戲團增益冷卻時間也在伺服器每周重置時重置。"; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "你的暗月馬戲團增益已經停止倒數。";
 L["dmfBuffReset"] = "你的暗月馬戲團增益冷卻時間已經重置。";
 L["dmfBuffDropped"] = "暗月馬戲團增益 %s 已取得, 您可以使用 /dmf，查詢遊戲內冷卻時間，以再次獲得馬戲團增益。";
@@ -164,7 +166,7 @@ L["Zandalarian Emissary"] = "贊達拉大使";
 L["Whipper Root Tuber"] = "鞭根塊莖";
 L["Night Dragon's Breath"] = "夜龍之息";
 L["Resist Fire"] = "抵抗火焰"; -- LBRS fire resist buff.
-L["Blessing of Blackfathom"] = "Blessing of Blackfathom";
+L["Blessing of Blackfathom"] = "黑暗深淵的祝福";
 
 L["zan"] = "贊達拉";
 L["zanFirstYellMsg"] = "贊達拉之魂，將在30秒後施放。";
@@ -179,11 +181,15 @@ L["North-West of Irontree Woods"] = "鐵木森林西北邊";
 L["South of Irontree Woods"] = "鐵木森林南邊";
 
 L["worldMapBuffsMsg"] = "輸入 /buffs 可以看到你\n所有角色的世界增益。";
-L["cityMapLayerMsgHorde"] = "正確 %s\n選取奧格馬的任何NPC\n用來在傳換區域後更新鏡像。|r";
+L["cityMapLayerMsgHorde"] = "正確 %s\n選取奧格瑪的任何NPC\n用來在傳換區域後更新鏡像。|r";
 L["cityMapLayerMsgAlliance"] = "正確 %s\n選取暴風城的任何NPC\n用來在傳換區域後更新鏡像。|r";
-L["noLayerYetHorde"] = "請點選奧格馬的任何NPC\n去找到你的鏡像。";
+L["noLayerYetHorde"] = "請點選奧格瑪的任何NPC\n去找到你的鏡像。";
 L["noLayerYetAlliance"] = "請點選暴風城的任何NPC\n去找到你的鏡像。";
 L["Reset Data"] = "重置資料"; --A button to Reset buffs window data.
+
+L["layerFrameMsgOne"] = "伺服器重開後舊的鏡像依然會顯示幾個小時。"; --Msg at bottom of layer timers frame.
+L["layerFrameMsgTwo"] = "沒有計時器後的六個小時靜像會消失。"; --Msg at bottom of layer timers frame.
+L["You are currently on"] = "你目前正在"; --You are currently on [Layer 2]
 
 
 -------------
@@ -194,283 +200,311 @@ L["Reset Data"] = "重置資料"; --A button to Reset buffs window data.
 --Desc can be any length.
 
 ---Description at the top---
-L["mainTextDesc"] = "Type /wb to display timers to yourself.\nType /wb <channel> to display timers to the specified channel.\nScroll down for more options.";
+L["mainTextDesc"] = "輸入 /wb 對你顯示計時器視窗。 \n輸入 /wb <頻道名> 隊指定頻道顯示計時器。 \n往下滾動滑鼠有更多選項。";
 
 ---Show Buffs Button
-L["showBuffsTitle"] = "Click To Show Your Current World Buffs";
-L["showBuffsDesc"] = "Show your current world buffs for all your characters, this can also be opened by typing /buffs or clicking on the [WorldBuffs] prefix in chat.";
+L["showBuffsTitle"] = "單擊以顯示您當前的世界增益";
+L["showBuffsDesc"] = "顯示你所有角色當前的世界增益， 這個功能同樣可輸入/buffs 開啟，或點擊聊天頻道開始的 [WorldBuffs] 。";
 
 ---General Options---
-L["generalHeaderDesc"] = "General Options";
+L["generalHeaderDesc"] = "一般選項";
 
-L["showWorldMapMarkersTitle"] = "City Map Timers";
-L["showWorldMapMarkersDesc"] = "Show timer icons on the Orgrimmar/Stormwind world map?";
+L["showWorldMapMarkersTitle"] = "城市計時器";
+L["showWorldMapMarkersDesc"] = "顯示計時圖標在世界地圖上的奧格瑪/暴風城。";
 
-L["receiveGuildDataOnlyTitle"] = "Guild Data Only";
-L["receiveGuildDataOnlyDesc"] = "This will make it so you don't get timer data from anyone outside the guild. You should only enable this if you think someone is spoofing wrong timer data on purpose because it will lower the accuracy of your timers with less people to pull data from. It will make it especially hard to get songflower timers becaus they are so short. Every single person in the guild needs this enabled for it to even work.";
+L["receiveGuildDataOnlyTitle"] = "只接受公會數據";
+L["receiveGuildDataOnlyDesc"] = "這會讓你不向公會以外的任何人取得計時資料。 僅當您認為有人故意製造錯誤的計時器數據時，才應啟用此功能，因為這樣做會降低計時器的準確性，減少了從中提取數據的人員。因為它們很短，所以很難獲得輕歌花計時器。公會中的每個人都需要啟用此功能才能正常工作。";
 
-L["chatColorTitle"] = "Chat Msg Color";
-L["chatColorDesc"] = "What color should the timer msgs in chat be?";
+L["chatColorTitle"] = "聊天訊息顏色";
+L["chatColorDesc"] = "聊天頻道的計時器聊天的顏色。";
 
-L["middleColorTitle"] = "Middle Screen Color";
-L["middleColorDesc"] = "What color should the raid warning style msgs in the middle of the screen be?";
+L["middleColorTitle"] = "警告訊息顏色";
+L["middleColorDesc"] = "在螢幕中的團隊警告訊息的顏色。";
 
-L["resetColorsTitle"] = "Reset Colors";
-L["resetColorsDesc"] = "Reset colors back to default.";
+L["resetColorsTitle"] = "重置顏色";
+L["resetColorsDesc"] = "重置顏色回到預設值。";
 
-L["showTimeStampTitle"] = "Show Time Stamp";
-L["showTimeStampDesc"] = "Show a time stamp (1:23pm) beside the timer msg?";
+L["showTimeStampTitle"] = "顯示時間戳";
+L["showTimeStampDesc"] = "顯示時間戳 (1:23pm) 在計時器訊息旁邊。";
 
-L["timeStampFormatTitle"] = "Time Stamp Format";
-L["timeStampFormatDesc"] = "Set which timestamp format to use, 12 hour (1:23pm) or 24 hour (13:23).";
+L["timeStampFormatTitle"] = "時間戳格式";
+L["timeStampFormatDesc"] = "設置使用的時間戳格式為12小時制（1:23 pm）或24小時制（13:23）。";
 
-L["timeStampZoneTitle"] = "Local Time / Server Time";
-L["timeStampZoneDesc"] = "Use local time or server time for timestamps?";
+L["timeStampZoneTitle"] = "本地時間/伺服器時間";
+L["timeStampZoneDesc"] = "使用本地時間或是伺服器時間當時間戳。";
 
-L["colorizePrefixLinksTitle"] = "Colored Prefix Link";
-L["colorizePrefixLinksDesc"] = "Colorize the prefix [WorldBuffs] in all chat channels? This is the prefix in chat you can click to show all your characters current world buffs.";
+L["colorizePrefixLinksTitle"] = "字首連結的顏色";
+L["colorizePrefixLinksDesc"] = "可以改變字首 [WorldBuffs] 顏色在所有聊天頻道。 這是在聊天頻道的字首你可以點擊顯示你所有角色當前的世界增益。";
 
-L["showAllAltsTitle"] = "Show All Alts";
-L["showAllAltsDesc"] = "Show all alts in the /buffs window even if they don't have an active buff?";
+L["showAllAltsTitle"] = "所有分身";
+L["showAllAltsDesc"] = "在 /buffs 視窗中顯示所有分身，即使它們沒有作用中的增益。";
 
-L["minimapButtonTitle"] = "Show Minimap Button";
-L["minimapButtonDesc"] = "Show the NWB button the minimap?";
+L["minimapButtonTitle"] = "顯示小地圖按鈕";
+L["minimapButtonDesc"] = "顯示NWB的按鈕在小地圖。";
 
 ---Logon Messages---
-L["logonHeaderDesc"] = "Logon Messages";
+L["logonHeaderDesc"] = "登入訊息";
 
-L["logonPrintTitle"] = "Logon Timers";
-L["logonPrintDesc"] = "Show timers in the chat window when you log on, you can disable all logon msgs with this setting.";
+L["logonPrintTitle"] = "登入計時器";
+L["logonPrintDesc"] = "當你登入的時候顯示計時器時間, 你可以用這個選項關掉所有登入訊息。";
 
-L["logonRendTitle"] = "Rend";
-L["logonRendDesc"] = "Show Rend timer in the chat window when you log on.";
+L["logonRendTitle"] = "雷德";
+L["logonRendDesc"] = "在你登入的時候在聊天視窗顯示雷德計時。";
 
-L["logonOnyTitle"] = "Onyxia";
-L["logonOnyDesc"] = "Show Onyxia timer in the chat window when you log on.";
+L["logonOnyTitle"] = "奧妮克西婭";
+L["logonOnyDesc"] = "在你登入的時候在聊天視窗顯示奧妮克西婭計時。";
 
-L["logonNefTitle"] = "Nefarian";
-L["logonNefDesc"] = "Show Nefarian timer in the chat window when you log on.";
+L["logonNefTitle"] = "奈法利安";
+L["logonNefDesc"] = "在你登入的時候在聊天視窗顯示奈法利安計時。";
 
-L["logonDmfSpawnTitle"] = "DMF Spawn";
-L["logonDmfSpawnDesc"] = "Show Darkmoon Faire spawn time, this will only show when there is less than 6 hours left until spawn or despawn.";
+L["logonDmfSpawnTitle"] = "暗月馬戲團重生";
+L["logonDmfSpawnDesc"] = "顯示暗月馬戲團重生時間, 這只有在不到六小時重生時才會顯示。";
 
-L["logonDmfBuffCooldownTitle"] = "DMF Buff Coooldown";
-L["logonDmfBuffCooldownDesc"] = "Show Darkmoon Faire buff 4 hour cooldown, this will only show when you have an ative cooldown and when DMF is up.";
+L["logonDmfBuffCooldownTitle"] = "暗月馬戲團增益冷卻";
+L["logonDmfBuffCooldownDesc"] = "顯示暗月馬戲團增益四小時倒數, 只有當你啟動冷卻時間及獲得按月增益才會顯示。";
 
 ---Chat Window Timer Warnings---
-L["chatWarningHeaderDesc"] = "Chat Window Timer Warnings";
+L["chatWarningHeaderDesc"] = "聊天視窗計時器警告";
 
-L["chat30Title"] = "30 Minutes";
-L["chat30Desc"] = "Print a msg in chat when 30 minutes left.";
+L["chat30Title"] = "30 分";
+L["chat30Desc"] = "在聊天視窗顯示還剩下 30 分。";
 
-L["chat15Title"] = "15 Minutes";
-L["chat15Desc"] = "Print a msg in chat when 15 minutes left.";
+L["chat15Title"] = "15 分";
+L["chat15Desc"] = "在聊天視窗顯示還剩下 15 分。";
 
-L["chat10Title"] = "10 Minutes";
-L["chat10Desc"] = "Print a msg in chat when 10 minutes left.";
+L["chat10Title"] = "10 分";
+L["chat10Desc"] = "在聊天視窗顯示還剩下 10 分。";
 
-L["chat5Title"] = "5 Minutes";
-L["chat5Desc"] = "Print a msg in chat when 5 minutes left.";
+L["chat5Title"] = "5 分";
+L["chat5Desc"] = "在聊天視窗顯示還剩下 5 分。";
 
-L["chat1Title"] = "1 Minute";
-L["chat1Desc"] = "Print a msg in chat when 1 minute left.";
+L["chat1Title"] = "1 分";
+L["chat1Desc"] = "在聊天視窗顯示還剩下 1 分。";
 
-L["chatResetTitle"] = "Buff Has Reset";
-L["chatResetDesc"] = "Print a msg in chat when a buff has reset and a new one can be dropped.";
+L["chatResetTitle"] = "增益重置時間";
+L["chatResetDesc"] = "在增益重置跟可獲得新的時，在聊天視窗顯示提示警告。";
 
-L["chatZanTitle"] = "Zandalar Buff Warning";
-L["chatZanDesc"] = "Print a msg in chat 30 seconds before Zandalar buff will drop when the NPC starts yelling.";
+L["chatZanTitle"] = "贊達拉增益警告";
+L["chatZanDesc"] = "在贊達拉npc開始喊話，在增益施放前30秒，在聊天視窗出現訊息警告。";
 
 ---Middle Of The Screen Timer Warnings---
-L["middleWarningHeaderDesc"] = "Middle Of The Screen Timer Warnings";
+L["middleWarningHeaderDesc"] = "螢幕中間計時器警告";
 
-L["middle30Title"] = "30 Minutes";
-L["middle30Desc"] = "Show a raid warning style msg in the middle of the screen when 30 minutes left.";
+L["middle30Title"] = "30 分";
+L["middle30Desc"] = "在剩30分鐘時，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middle15Title"] = "15 Minutes";
-L["middle15Desc"] = "Show a raid warning style msg in the middle of the screen when 15 minutes left.";
+L["middle15Title"] = "15 分";
+L["middle15Desc"] = "在剩15分鐘時，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middle10Title"] = "10 Minutes";
-L["middle10Desc"] = "Show a raid warning style msg in the middle of the screen when 10 minutes left.";
+L["middle10Title"] = "10 分";
+L["middle10Desc"] = "在剩10分鐘時，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middle5Title"] = "5 Minutes";
-L["middle5Desc"] = "Show a raid warning style msg in the middle of the screen when 5 minutes left.";
+L["middle5Title"] = "5 分";
+L["middle5Desc"] = "在剩5分鐘時，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middle1Title"] = "1 Minute";
-L["middle1Desc"] = "Show a raid warning style msg in the middle of the screen when 1 minute left.";
+L["middle1Title"] = "1 分";
+L["middle1Desc"] = "在剩1分鐘時，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middleResetTitle"] = "Buff Has Reset";
-L["middleResetDesc"] = "Show a raid warning style msg in the middle of the screen when a buff has reset and a new one can be dropped.";
+L["middleResetTitle"] = "增益已經重置";
+L["middleResetDesc"] = "當增益已經重置可施放新的增益的時候，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middleBuffWarningTitle"] = "Buff Drop Warning";
-L["middleBuffWarningDesc"] = "Show a raid warning style msg in the middle of the screen when someone hands in the head for any buff and the NPC yells a few seconds before the buff will drop.";
+L["middleBuffWarningTitle"] = "增益施放警告";
+L["middleBuffWarningDesc"] = "當任何人看到任何增益及增益施放前npc喊話的時候，在螢幕中間出現團隊警告樣式的警告訊息。";
 
-L["middleHideCombatTitle"] = "Hide In Combat";
-L["middleHideCombatDesc"] = "Hide middle of the screen warnings in combat?";
+L["middleHideCombatTitle"] = "在戰鬥中隱藏";
+L["middleHideCombatDesc"] = "在戰鬥中隱藏螢幕警告訊息。";
 
-L["middleHideRaidTitle"] = "Hide In Raid";
-L["middleHideRaidDesc"] = "Hide middle of the screen warnings in raid instances? (Doesn't hide in normal dungeons)";
+L["middleHideRaidTitle"] = "在團隊中隱藏";
+L["middleHideRaidDesc"] = "在團隊副本中隱藏螢幕警告訊息(普通副本不隱藏)";
 
 ---Guild Messages---
-L["guildWarningHeaderDesc"] = "Guild Messages";
+L["guildWarningHeaderDesc"] = "公會訊息";
 
-L["guild10Title"] = "10 Minutes";
-L["guild10Desc"] = "Send a message to guild chat when 10 minutes left.";
+L["guild10Title"] = "10 分";
+L["guild10Desc"] = "當剩下10分鐘時傳送公會訊息。";
 
-L["guild1Title"] = "1 Minute";
-L["guild1Desc"] = "Send a message to guild chat when 1 minute left.";
+L["guild1Title"] = "1 分";
+L["guild1Desc"] = "當剩下1分鐘時傳送公會訊息。";
 
-L["guildNpcDialogueTitle"] = "NPC Dialogue Started";
-L["guildNpcDialogueDesc"] = "Send a message to guild when someone hands in a head and the NPC first yells and you still have time to relog if fast?";
+L["guildNpcDialogueTitle"] = "NPC喊話開始";
+L["guildNpcDialogueDesc"] = "當有人掛頭的時候傳送公會訊息，在NPC第一句喊話時，你仍然有時間去重登如果你夠快。";
 
-L["guildBuffDroppedTitle"] = "New Buff Dropped";
-L["guildBuffDroppedDesc"] = "Send a message to guild when a new buff has been dropped? This msg is sent after the NPC is finished yelling and you get the actual buff a few seconds later. (6 seconds after first yell for rend, 14 seconds for ony, 15 seconds for nef)";
+L["guildBuffDroppedTitle"] = "新的增益施放";
+L["guildBuffDroppedDesc"] = "傳送一個訊息給公會，當施放增益時。 這個訊息會在NPC完成喊話及你時記得到增益的幾秒後。(雷德第一句喊話後6秒, 奧妮14秒, 奈法15秒)";
 
-L["guildZanDialogueTitle"] = "Zandalar Buff Warning";
-L["guildZanDialogueDesc"] = "Send a message to guild when Spirit of Zandalar buff is about to drop? (If you want no guild msgs at all for this buff then everyone in guild needs to disable this).";
+L["guildZanDialogueTitle"] = "ZG增益警告";
+L["guildZanDialogueDesc"] = "傳送一個訊息當贊達拉之魂將要施放時。 (如果你想要沒有顯示這個增益那公會的所有人都需要關閉這個選項)。";
 
-L["guildNpcKilledTitle"] = "NPC Was Killed";
-L["guildNpcKilledDesc"] = "Send a message to guild when one of the buff NPC's were killed in Orgrimmar or Stormwind? (mind control reset).";
+L["guildNpcKilledTitle"] = "NPC被殺了";
+L["guildNpcKilledDesc"] = "傳送一個公會訊息當NPC在奧格瑪或暴風城被殺時。 (心控重置).";
 
-L["guildCommandTitle"] = "Guild Commands";
-L["guildCommandDesc"] = "Reply with timer info to !wb and !dmf commands in guild chat? You should probably leave this enabled to help your guild, if you really want to disable all guild msgs and leave only this command then untick everything else in the guild sectionand don't tick the Disable All Guild Msgs at the top.";
+L["guildCommandTitle"] = "公會指令";
+L["guildCommandDesc"] = "當有人打!wb 及 !dmf 指令時船傳送公會訊息。 你應該開啟這個功能去幫助你的公會, 如果你真的要關閉所有公會訊息只保留此指令，應在公會訊息中選取其他選項，不要在上面打勾 關閉所有公會訊息 選項。 ";
 
-L["disableAllGuildMsgsTitle"] = "Disable All Guild Msgs";
-L["disableAllGuildMsgsDesc"] = "Disable all guild messages including timers and when buffs drop? Note: You can disable all msgs one by one above and just leave certain things enabled to help out your guild if you rather.";
+L["disableAllGuildMsgsTitle"] = "關閉所有公會訊息";
+L["disableAllGuildMsgsDesc"] = "關閉所有公會訊息包刮計時與增益施放。 筆記: 您可以一個一個停用所有訊息，如果願意，可以僅啟用一部分功能來幫助你的公會。";
 
 ---Songflowers---
-L["songflowersHeaderDesc"] = "Songflowers";
+L["songflowersHeaderDesc"] = "輕歌花";
 
-L["guildSongflowerTitle"] = "Tell Guild When Picked";
-L["guildSongflowerDesc"] = "Tell your guild chat when you have picked a songflower with the time of next spawn?";
+L["guildSongflowerTitle"] = "當拾取時告訴公會";
+L["guildSongflowerDesc"] = "當拾取輕歌花時告訴公會與下一個重生時間。";
 
-L["mySongflowerOnlyTitle"] = "Only When I Pick";
-L["mySongflowerOnlyDesc"] = "Only record a new timer when I pick a songflower and not when others pick infront of me? This option is here just incase you have problems with false timers being set from other players. There's currently no way to tell if another players buff is new so a timer may trigger on rare occasions if the game loads the songflower buff on someone else when they logon infront of you beside a songflower.";
+L["mySongflowerOnlyTitle"] = "只有當自己拾取時";
+L["mySongflowerOnlyDesc"] = "只有當自己拾取時紀錄輕歌花的時間。 這個選項只有在你遇別人傳送假的計時才使用。 目前沒有辦法判定其他玩家的增益是否是新的，如果有玩家在你面前登入並帶有輕歌花的增益時，有極少機會造成錯誤的時間。 ";
 
-L["syncFlowersAllTitle"] = "Sync Flowers With All";
-L["syncFlowersAllDesc"] = "Enable this to override the guild only data setting at the top of this config so you can share songflower data outside the guild but keep worldbuff data guild only still.";
+L["syncFlowersAllTitle"] = "跟所有人同步輕歌花的時間";
+L["syncFlowersAllDesc"] = "打開這選項可以跟公會以外的人分享輕歌花的時間，但不會分享其他世界增益。";
 
-L["showNewFlowerTitle"] = "Show New SF Timers";
-L["showNewFlowerDesc"] = "This will show you in chat window when a new flower timer is found from another player not in your guild (guild msgs already show in guild chat when a flower is picked).";
+L["showNewFlowerTitle"] = "顯示新的輕歌花計時器";
+L["showNewFlowerDesc"] = "''當找一個新的計時器在非公會成員身上時，顯示在聊天視窗警告'' (當公會成員取得輕歌花計時已經會出現在公會訊息).";
 
-L["showSongflowerWorldmapMarkersTitle"] = "Songflower Worldmap";
-L["showSongflowerWorldmapMarkersDesc"] = "Show songflower icons on the world map?";
+L["showSongflowerWorldmapMarkersTitle"] = "輕歌花世界地圖";
+L["showSongflowerWorldmapMarkersDesc"] = "在世界地圖顯示輕歌花的圖示。";
 
-L["showSongflowerMinimapMarkersTitle"] = "Songflower Minimap";
-L["showSongflowerMinimapMarkersDesc"] = "Show songflower icons on the mini map?";
+L["showSongflowerMinimapMarkersTitle"] = "輕歌花小地圖";
+L["showSongflowerMinimapMarkersDesc"] = "在小地圖顯示輕歌花。";
 
-L["showTuberWorldmapMarkersTitle"] = "Tuber Worldmap";
-L["showTuberWorldmapMarkersDesc"] = "Show Whipper Root Tuber icons on the world map?";
+L["showTuberWorldmapMarkersTitle"] = "鞭根塊莖世界地圖";
+L["showTuberWorldmapMarkersDesc"] = "在世界地圖顯示鞭根塊莖的圖示。";
 
-L["showTuberMinimapMarkersTitle"] = "Tuber Minimap";
-L["showTuberMinimapMarkersDesc"] = "Show Whipper Root Tuber icons on the mini map?";
+L["showTuberMinimapMarkersTitle"] = "鞭根塊莖小地圖";
+L["showTuberMinimapMarkersDesc"] = "在小地圖顯示輕歌花在。";
 
-L["showDragonWorldmapMarkersTitle"] = "Dragon Worldmap";
-L["showDragonWorldmapMarkersDesc"] = "Show Night Dragon's Breath icons on the world map?";
+L["showDragonWorldmapMarkersTitle"] = "夜龍之息世界地圖";
+L["showDragonWorldmapMarkersDesc"] = "在世界地圖顯示夜龍之息的圖示。";
 
-L["showDragonMinimapMarkersTitle"] = "Dragon Minimap";
-L["showDragonMinimapMarkersDesc"] = "Show Night Dragon's Breath icons on the mini map?";
+L["showDragonMinimapMarkersTitle"] = "夜龍之息";
+L["showDragonMinimapMarkersDesc"] = "在小地圖顯示夜龍之息。";
 
-L["showExpiredTimersTitle"] = "Show Expired Timers";
-L["showExpiredTimersDesc"] = "Show expired timers in Felwood? They will be shown in red text how long ago a timer expired, the default time is 5 minutes (people say songflowers stay cleansed for 5 minutes after spawn?).";
+L["showExpiredTimersTitle"] = "顯示過期計時器";
+L["showExpiredTimersDesc"] = "在費伍德顯示過期計時器。 它們將以紅色文字計時器顯示過期多長時間，默認時間是5分鐘 (有人說重生時會保持五分鐘乾淨的輕歌花。).";
 
-L["expiredTimersDurationTitle"] = "Expired Timers Duraton";
-L["expiredTimersDurationDesc"] = "How long should Felwood timers show for after expiring on the world map?";
+L["expiredTimersDurationTitle"] = "過期計時器長短";
+L["expiredTimersDurationDesc"] = "在廢伍德計時器過期後，顯示多久過期計時器時間。";
 
 ---Darkmoon Faire---
-L["dmfHeaderDesc"] = "Darkmoon Faire";
+L["dmfHeaderDesc"] = "暗月馬戲團";
 
-L["dmfTextDesc"] = "Your DMF damage buff cooldown will also show on the Darkmoon Faire map icon when you hover it, if you have a cooldown and DMF is currently up.";
+L["dmfTextDesc"] = "如果你有暗月馬戲團傷害增益冷卻時間並且暗月馬戲團當前處於活動狀態，則則暗月馬戲團傷害增益冷卻時間也會顯示在暗月馬戲團的地圖。";
 
-L["showDmfWbTitle"] = "Show DMF with /wb";
-L["showDmfWbDesc"] = "Show DMF spawn timer together with /wb command?";
+L["showDmfWbTitle"] = "使用 /wb 顯示按月馬息團時間";
+L["showDmfWbDesc"] = "使用 /wb 指令也一起顯示暗月馬戲團時間。";
 
-L["showDmfBuffWbTitle"] = "DMF Buff Cooldown /wb";
-L["showDmfBuffWbDesc"] = "Show your DMF buff cooldown timer together with /wb command? Only shows when you are on an active cooldown and DMF is currently up.";
+L["showDmfBuffWbTitle"] = "使用 /wb 顯示暗月馬戲團增益倒數";
+L["showDmfBuffWbDesc"] = "使用 /wb 指令也一起顯示暗月馬戲團增益冷卻時間。 只當你有暗月馬戲團增益冷卻狀態時.";
 
-L["showDmfMapTitle"] = "Show Map Marker";
-L["showDmfMapDesc"] = "Show DMF map marker with spawn timer and buff cooldown info in Mulgore and Elwynn Forest world maps (whichever is next spawn). You can also type /dmf map to open the world map strait to this marker.";
+L["showDmfMapTitle"] = "顯示地圖標記";
+L["showDmfMapDesc"] = "在莫高雷及艾爾文森林顯示暗月馬戲團地圖標記及冷卻時間 (下一個重生時間). 你也可以輸入 /dmf map 打開帶有標記的世界地圖。";
 
 ---Guild Chat Filter---
-L["guildChatFilterHeaderDesc"] = "Guild Chat Filter";
+L["guildChatFilterHeaderDesc"] = "公會聊天過濾";
 
-L["guildChatFilterTextDesc"] = "This will block any guild msgs from this addon you choose so you don't see them. It will stop you from seeing your own msgs and msgs from other addon users in guild chat.";
+L["guildChatFilterTextDesc"] = "這將會阻擋所有從這個插件送的公會訊息，你選了所以你看不到它。 這將會停止你自己看到訊息及公會其他人使用這個插件的訊息。";
 
-L["filterYellsTitle"] = "Filter Buff Warning";
-L["filterYellsDesc"] = "Filter the msg when a buff is about to drop in a few seconds (Onyxia will drop in 14 seconds).";
+L["filterYellsTitle"] = "過濾增益警告";
+L["filterYellsDesc"] = "過濾掉這個增益要施放時的訊息 (奧妮克西婭的頭顱已插，閃電將在14秒後施放。)。";
 
-L["filterDropsTitle"] = "Filter Buff Dropped";
-L["filterDropsDesc"] = "Filter the msg when a buff has dropped (Rallying Cry of the Dragonslayer (Onyxia) has dropped).";
+L["filterDropsTitle"] = "過濾增益施放警告";
+L["filterDropsDesc"] = "過濾掉增益施放時的訊息 (屠龍者的咆嘯 (奧妮克西婭) 以施放)。";
 
-L["filterTimersTitle"] = "Filter Timer Msgs";
-L["filterTimersDesc"] = "Filter timer msgs (Onyxia resets in 1 minute).";
+L["filterTimersTitle"] = "過濾計時器訊息";
+L["filterTimersDesc"] = "過濾掉計時器 (奧妮克西婭增益重置在1分鐘)。";
 
-L["filterCommandTitle"] = "Filter !wb command";
-L["filterCommandDesc"] = "Filter the !wb and !dmf in guild chat when typed by players.";
+L["filterCommandTitle"] = "過濾 !wb 命令";
+L["filterCommandDesc"] = "當有公會的人打 !wb 及 !dmf 指令，會被過濾掉。";
 
-L["filterCommandResponseTitle"] = "Filter !wb reply";
-L["filterCommandResponseDesc"] = "Filter the reply msg with timers this addon does when !wb or !!dmf is used.";
+L["filterCommandResponseTitle"] = "過濾 !wb 回復";
+L["filterCommandResponseDesc"] = "當有公會的人打 !wb 及 !dmf 指令，回復的消息會被過濾掉。";
 
-L["filterSongflowersTitle"] = "Filter Songflowers";
-L["filterSongflowersDesc"] = "Filter the msg when a songflower is picked.";
+L["filterSongflowersTitle"] = "過濾輕歌花";
+L["filterSongflowersDesc"] = "過濾當花被拾取的訊息";
 
-L["filterNpcKilledTitle"] = "Filter NPC Killed";
-L["filterNpcKilledDesc"] = "Filter the msg when a buff hand in NPC is killed in your city.";
+L["filterNpcKilledTitle"] = "過濾NPC被殺訊息";
+L["filterNpcKilledDesc"] = "'當你的主城有人殺掉NPC時訊息會被過濾'";
 
 ---Sounds---
-L["soundsHeaderDesc"] = "Sounds";
+L["soundsHeaderDesc"] = "聲音";
 
-L["soundsTextDesc"] = "Set sound to \"None\" to disable.";
+L["soundsTextDesc"] = "將聲音設定成 \"None\" 來停用。";
 
-L["disableAllSoundsTitle"] = "Disable All Sounds";
-L["disableAllSoundsDesc"] = "Disable all sounds from this addon.";
+L["disableAllSoundsTitle"] = "關閉所有聲音";
+L["disableAllSoundsDesc"] = "關閉所以從這個插件來的聲音";
 
-L["extraSoundOptionsTitle"] = "Extra Sound Options";
-L["extraSoundOptionsDesc"] = "Enable this to display all the sounds from all your addons at once in the dropdown lists here.";
+L["extraSoundOptionsTitle"] = "額外聲音選項";
+L["extraSoundOptionsDesc"] = "開啟這個選項在下拉選單顯示所有插件的音效。";
 
-L["soundOnlyInCityTitle"] = "Only In City";
-L["soundOnlyInCityDesc"] = "Only play buff sounds when you are in the main city where the buffs drop (Stranglethorn Vale included for Zandalar buff).";
+L["soundOnlyInCityTitle"] = "只有城市裡";
+L["soundOnlyInCityDesc"] = "只有在你主城(有增益施放的地方)才撥放增益音效(包括贊達拉)。";
 
-L["soundsDisableInInstancesTitle"] = "Disable In Instances";
-L["soundsDisableInInstancesDesc"] = "Disable sounds while in raids and instances.";
+L["soundsDisableInInstancesTitle"] = "出團停用";
+L["soundsDisableInInstancesDesc"] = "在打團隊副本時停用";
 
-L["soundsFirstYellTitle"] = "Buff Coming";
-L["soundsFirstYellDesc"] = "Sound to play when head is handed in and you have a few seconds before buff will drop (First NPC Yell).";
+L["soundsFirstYellTitle"] = "增益準備施放";
+L["soundsFirstYellDesc"] = "當增益準備施放 (第一句NPC的喊話時).";
 
-L["soundsOneMinuteTitle"] = "One Minute Warning";
-L["soundsOneMinuteDesc"] = "Sound to play for 1 minute left timer warning.";
+L["soundsOneMinuteTitle"] = "一分鐘警告";
+L["soundsOneMinuteDesc"] = "音效在剩下一分鐘時警告。";
 
-L["soundsRendDropTitle"] = "Rend Buff Gained";
-L["soundsRendDropDesc"] = "Sound to play for Rend buff drops and you get the buff.";
+L["soundsRendDropTitle"] = "獲得雷德增益";
+L["soundsRendDropDesc"] = "音效在雷德增益施放時及你取得增益時播放。";
 
-L["soundsOnyDropTitle"] = "Ony Buff Gained";
-L["soundsOnyDropDesc"] = "Sound to play for Onyxia buff drops and you get the buff.";
+L["soundsOnyDropTitle"] = "獲得奧妮增益";
+L["soundsOnyDropDesc"] = "音效在奧妮克西婭增益施放時及你取得增益時播放。";
 
-L["soundsNefDropTitle"] = "Nef Buff Gained";
-L["soundsNefDropDesc"] = "Sound to play for Nefarian buff drops and you get the buff.";
+L["soundsNefDropTitle"] = "獲得奈法增益";
+L["soundsNefDropDesc"] = "音效在奈法利安增益施放時及你取得增益時播放。";
 
-L["soundsZanDropTitle"] = "Zandalar Buff Gained";
-L["soundsZanDropDesc"] = "Sound to play for Zandalar buff drops and you get the buff.";
+L["soundsZanDropTitle"] = "獲得贊達拉增益";
+L["soundsZanDropDesc"] = "音效在贊達拉增益施放時及你取得增益時播放。";
 
 ---Flash When Minimized---
-L["flashHeaderDesc"] = "Flash When Minimized";
+L["flashHeaderDesc"] = "當最小化時閃爍";
 
-L["flashOneMinTitle"] = "Flash One Minute";
-L["flashOneMinDesc"] = "Flash the wow client when you have it minimized and 1 minute is left on timer?";
+L["flashOneMinTitle"] = "一分鐘閃爍";
+L["flashOneMinDesc"] = "當你最小化魔獸視窗及剩下一分鐘時閃爍。";
 
-L["flashFirstYellTitle"] = "Flash NPC Yell";
-L["flashFirstYellDesc"] = "Flash the wow client when you have it minimized and the NPC's yells a few seconds before buff drops?";
+L["flashFirstYellTitle"] = "NPC喊話閃爍";
+L["flashFirstYellDesc"] = "當你最小化魔獸視窗及NPC喊話在增益施放前閃爍。";
 
-L["flashFirstYellZanTitle"] = "Flash Zandalar";
-L["flashFirstYellZanDesc"] = "Flash the wow client when you have it minimized and the Zandalar buff is about to go out?";
+L["flashFirstYellZanTitle"] = "閃亮亮贊達拉";
+L["flashFirstYellZanDesc"] = "當你最小化魔獸視窗及贊達拉增益準備出來吃。";
 
 ---Faction/realm specific options---
 
-L["allianceEnableRendTitle"] = "Enable Alliance Rend";
-L["allianceEnableRendDesc"] = "Enable this to track rend as Alliance, for guilds that mind control to get rend buff. If you use this then everyone in the guild with the addon should enable it or guild chat msgs may not work properly (personal timer msgs will still work).";
+L["allianceEnableRendTitle"] = "開啟聯盟雷德";
+L["allianceEnableRendDesc"] = "啟動選項聯盟可以追蹤雷德,為公會心控取得雷德增益。 如果你使用這個功能那公會使用此插件應該開啟，但是公會訊息可能不會顯示。 (個人計時器顯示正常)。";
 
-L["minimapLayerFrameTitle"] = "Show Minimap Layer";
-L["minimapLayerFrameDesc"] = "Show the little frame on the minimap with your current layer while in a capital city?";
+L["minimapLayerFrameTitle"] = "顯示小地圖鏡像";
+L["minimapLayerFrameDesc"] = "當你在主城，顯示一個鏡像框在小地圖上告訴你，你的鏡像。";
 
-L["minimapLayerFrameResetTitle"] = "Reset Minimap Layer";
-L["minimapLayerFrameResetDesc"] = "Reset minimap layer frame back to default position (hold shift to drag the minimap frame).";
+L["minimapLayerFrameResetTitle"] = "重置小地圖鏡像";
+L["minimapLayerFrameResetDesc"] = "重置小地圖鏡像框到預設位置 (按住SHIFT可以拖曳鏡像框).";
+
+L["dispelsHeaderDesc"] = "驅散";
+
+L["dispelsMineTitle"] = "顯示我被驅散";
+L["dispelsMineDesc"] = "當我的增益被驅散時顯示?這將會顯示誰驅散了你什麼增益。";
+
+L["dispelsMineWBOnlyTitle"] = "只顯示我的世界增益";
+L["dispelsMineWBOnlyDesc"] = "只顯示我的世界增益被驅散，一般增益不顯示。";
+
+L["soundsDispelsMineTitle"] = "增益驅散音效";
+L["soundsDispelsMineDesc"] = "我的增益被驅散時要撥放什麼音效";
+
+L["dispelsAllTitle"] = "所有驅散";
+L["dispelsAllDesc"] = "在聊天顯示所有在我身邊被驅散的人? 這個會顯示所有靠近你的人被驅散了什麼增益。";
+
+L["dispelsAllWBOnlyTitle"] = "只顯示世界增益";
+L["dispelsAllWBOnlyDesc"] = "只會顯示在你身邊被驅散的世界增益，不會顯示一般增益。";
+
+L["soundsDispelsAllTitle"] = "其他人的增益驅散音效";
+L["soundsDispelsAllDesc"] = "其他人增益被驅散時要撥放什麼音效";
+
+---New---
+
+L["middleHideBattlegroundsTitle"] = "在戰場時隱藏。";
+L["middleHideBattlegroundsDesc"] = "在戰場時隱藏螢幕中間的警告?";
+
+L["soundsDisableInBattlegroundsTitle"] = "在戰場時關閉。";
+L["soundsDisableInBattlegroundsDesc"] = "在戰場時關閉音效。";

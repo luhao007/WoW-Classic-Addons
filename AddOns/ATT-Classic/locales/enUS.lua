@@ -776,6 +776,8 @@ app.L = {
 
 		[179501] = "Interface\\Icons\\INV_Crate_01",
 
+		[179697] = "Interface\\Icons\\INV_Box_02", 
+
 		[179832] = "Interface\\Icons\\inv_misc_armorkit_06",
 
 		[180327] = "Interface\\Icons\\inv_poison_mindnumbing",

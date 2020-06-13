@@ -76,9 +76,9 @@ L["onyxiaNpcKilledAlliance"] = "Major Mattingly has just been killed (Onyxia buf
 L["nefarianNpcKilledHorde"] = "High Overlord Saurfang has just been killed (Nefarian buff NPC).";
 L["nefarianNpcKilledAlliance"] = "Field Marshal Afrasiabi has just been killed (Nefarian buff NPC).";
 L["onyxiaNpcKilledHordeWithTimer"] = "Onyxia NPC (Runthak) was killed %s ago no buff recorded since.";
-L["NefarianNpcKilledHordeWithTimer"] = "Nefarian NPC (Saurfang) was killed %s ago no buff recorded since.";
+L["nefarianNpcKilledHordeWithTimer"] = "Nefarian NPC (Saurfang) was killed %s ago no buff recorded since.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Onyxia NPC (Mattingly) was killed %s ago no buff recorded since.";
-L["NefarianNpcKilledAllianceWithTimer"] = "Nefarian NPC (Afrasiabi) was killed %s ago no buff recorded since.";
+L["nefarianNpcKilledAllianceWithTimer"] = "Nefarian NPC (Afrasiabi) was killed %s ago no buff recorded since.";
 L["anyNpcKilledWithTimer"] = "NPC was killed %s ago"; --Map timers tooltip msg.
 
 
@@ -96,6 +96,8 @@ L["Sayge's Dark Fortune of Armor"] = "Sayge's Dark Fortune of Armor";
 L["Sayge's Dark Fortune of Resistance"] = "Sayge's Dark Fortune of Resistance";
 L["Sayge's Dark Fortune of Damage"] = "Sayge's Dark Fortune of Damage";
 L["dmfBuffCooldownMsg"] = "Your Darkmoon Faire buff cooldown has %s left.";
+L["dmfBuffCooldownMsg2"] = "Your Darkmoon Faire buff cooldown has %s left.";
+L["dmfBuffCooldownMsg3"] = "DMF Buff cooldown also resets with the weekly server reset."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "Your Darkmoon Faire buff is off cooldown."; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffReset"] = "Your Darkmoon Faire buff cooldown has reset."; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffDropped"] = "Darkmoon Faire buff %s received, to track the 4 hour ingame cooldown for this buff type /buffs.";
@@ -183,6 +185,11 @@ L["Bloodvenom Falls"] = "Bloodvenom Falls";
 L["Jaedenar"] = "Jaedenar";
 L["North-West of Irontree Woods"] = "North-West of Irontree Woods";
 L["South of Irontree Woods"] = "South of Irontree Woods";
+
+---New translations to do---
+L["layerFrameMsgOne"] = "Old layers will still show for a few hours after server restarts."; --Msg at bottom of layer timers frame.
+L["layerFrameMsgTwo"] = "Layers will disappear from here 8 hours after having no timers."; --Msg at bottom of layer timers frame.
+L["You are currently on"] = "You are currently on"; --You are currently on [Layer 2]
 
 
 -------------

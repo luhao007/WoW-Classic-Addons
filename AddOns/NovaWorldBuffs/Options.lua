@@ -339,10 +339,18 @@ NWB.options = {
 			get = "getMiddleHideRaid",
 			set = "setMiddleHideRaid",
 		},
+		middleHideBattlegrounds = {
+			type = "toggle",
+			name = L["middleHideBattlegroundsTitle"],
+			desc = L["middleHideBattlegroundsDesc"],
+			order = 50,
+			get = "getMiddleHideBattlegrounds",
+			set = "setMiddleHideBattlegrounds",
+		},
 		guildWarningHeader = {
 			type = "header",
 			name = L["guildWarningHeaderDesc"],
-			order = 50,
+			order = 52,
 		},
 		guild10 = {
 			type = "toggle",
@@ -661,6 +669,14 @@ NWB.options = {
 			get = "getSoundsDisableInInstances",
 			set = "setSoundsDisableInInstances",
 		},
+		soundsDisableInBattlegrounds = {
+			type = "toggle",
+			name = L["soundsDisableInBattlegroundsTitle"],
+			desc = L["soundsDisableInBattlegroundsDesc"],
+			order = 116,
+			get = "getSoundsDisableInBattlegrounds",
+			set = "setSoundsDisableInBattlegrounds",
+		},
 		soundsFirstYell = {
 			type = "select",
 			name = L["soundsFirstYellTitle"],
@@ -668,7 +684,7 @@ NWB.options = {
 			values = function()
 				return NWB:getSounds();
 			end,
-			order = 116,
+			order = 117,
 			get = "getSoundsFirstYell",
 			set = "setSoundsFirstYell",
 		},
@@ -679,7 +695,7 @@ NWB.options = {
 			values = function()
 				return NWB:getSounds();
 			end,
-			order = 117,
+			order = 118,
 			get = "getSoundsOneMinute",
 			set = "setSoundsOneMinute",
 		},
@@ -756,6 +772,65 @@ NWB.options = {
 			get = "getFlashFirstYellZan",
 			set = "setFlashFirstYellZan",
 		},
+		dispelsHeader = {
+			type = "header",
+			name = L["dispelsHeaderDesc"],
+			order = 140,
+		},
+		dispelsMine = {
+			type = "toggle",
+			name = L["dispelsMineTitle"],
+			desc = L["dispelsMineDesc"],
+			order = 141,
+			get = "getDispelsMine",
+			set = "setDispelsMine",
+		},
+		dispelsMineWBOnly = {
+			type = "toggle",
+			name = L["dispelsMineWBOnlyTitle"],
+			desc = L["dispelsMineWBOnlyDesc"],
+			order = 142,
+			get = "getDispelsMineWBOnly",
+			set = "setDispelsMineWBOnly",
+		},
+		soundsDispelsMine = {
+			type = "select",
+			name = L["soundsDispelsMineTitle"],
+			desc = L["soundsDispelsMineDesc"],
+			values = function()
+				return NWB:getSounds();
+			end,
+			order = 143,
+			get = "getSoundsDispelsMine",
+			set = "setSoundsDispelsMine",
+		},
+		dispelsAll = {
+			type = "toggle",
+			name = L["dispelsAllTitle"],
+			desc = L["dispelsAllDesc"],
+			order = 144,
+			get = "getDispelsAll",
+			set = "setDispelsAll",
+		},
+		dispelsAllWBOnly = {
+			type = "toggle",
+			name = L["dispelsAllWBOnlyTitle"],
+			desc = L["dispelsAllWBOnlyDesc"],
+			order = 145,
+			get = "getDispelsAllWBOnly",
+			set = "setDispelsAllWBOnly",
+		},
+		soundsDispelsAll = {
+			type = "select",
+			name = L["soundsDispelsAllTitle"],
+			desc = L["soundsDispelsAllDesc"],
+			values = function()
+				return NWB:getSounds();
+			end,
+			order = 146,
+			get = "getSoundsDispelsAll",
+			set = "setSoundsDispelsAll",
+		},
 	},
 };
 
@@ -815,6 +890,7 @@ NWB.optionDefaults = {
 		middleBuffWarning = true,
 		middleHideCombat = false,
 		middleHideRaid = false,
+		middleHideBattlegrounds = false,
 		--These are 1/0 instead of true/false to be smaller via addon comms.
 		guild10 = 1,
 		guild1 = 1,
@@ -823,6 +899,7 @@ NWB.optionDefaults = {
 		guildNpcDialogue = 1,
 		guildZanDialogue = 1,
 		guildCommand = 1,
+		guildSongflower = 1,
 		disableAllGuildMsgs = 0,
 		rendRespawnTime = 10800,
 		rendBuffTime = 3600,
@@ -838,7 +915,6 @@ NWB.optionDefaults = {
 		timeStampFormat = 12,
 		timeStampZone = "local",
 		receiveGuildDataOnly = false,
-		guildSongflower = true,
 		mySongflowerOnly = false,
 		syncFlowersAll = true,
 		allianceEnableRend = false,
@@ -891,6 +967,7 @@ NWB.optionDefaults = {
 		extraSoundOptions = false,
 		soundOnlyInCity = false,
 		soundsDisableInInstances = true,
+		soundsDisableInBattlegrounds = false,
 		soundsFirstYell = "NWB - Electronic",
 		soundsOneMinute = "None",
 		soundsRendDrop = "NWB - Zelda",
@@ -904,11 +981,12 @@ NWB.optionDefaults = {
 		flashOneMin = true,
 		flashFirstYell = true,
 		flashFirstYellZan = true,
-		dispellsMine = false,
-		dispellsMineWBOnly = false,
-		dispellsAll = false,
-		dispellsAllWBOnly = false,
-		
+		dispelsMine = true,
+		dispelsMineWBOnly = true,
+		dispelsAll = false,
+		dispelsAllWBOnly = false,
+		soundsDispelsMine = "NWB - Dink",
+		soundsDispelsAll = "None",
 		
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
@@ -1363,6 +1441,15 @@ end
 function NWB:getMiddleHideRaid(info)
 	return self.db.global.middleHideRaid;
 end
+
+--Middle of the screen hide in raid.
+function NWB:setMiddleHideBattlegrounds(info, value)
+	self.db.global.middleHideBattlegrounds = value;
+end
+
+function NWB:getMiddleHideBattlegrounds(info)
+	return self.db.global.middleHideBattlegrounds;
+end
 		
 --Guild 10 minute warning.
 function NWB:setGuild10(info, value)
@@ -1510,11 +1597,20 @@ end
 
 --Guild songflower picked announce.
 function NWB:setGuildSongflower(info, value)
-	self.db.global.guildSongflower = value;
+	if (value) then
+		self.db.global.guildSongflower = 1;
+	else
+		self.db.global.guildSongflower = 0;
+	end
+	NWB:sendSettings("GUILD");
 end
 
 function NWB:getGuildSongflower(info)
-	return self.db.global.guildSongflower;
+	if (self.db.global.guildSongflower == 1) then
+		return true;
+	else
+		return false;
+	end
 end
 
 --Only set songflower timer if I picked it.
@@ -1800,6 +1896,7 @@ local sounds = {
 	["NWB - Clock"] = "Interface\\AddOns\\NovaWorldBuffs\\Media\\Clock.ogg",
 	["NWB - Electronic"] = "Interface\\AddOns\\NovaWorldBuffs\\Media\\Electronic.ogg",
 	["NWB - Pop"] = "Interface\\AddOns\\NovaWorldBuffs\\Media\\Pop.ogg",
+	["NWB - Dink"] = "Interface\\AddOns\\NovaWorldBuffs\\Media\\Dink.ogg",
 }
 function NWB:registerSounds()
 	for k, v in pairs(sounds) do
@@ -1866,6 +1963,15 @@ end
 
 function NWB:getSoundsDisableInInstances(info)
 	return self.db.global.soundsDisableInInstances;
+end
+
+--Only plays sounds in city.
+function NWB:setSoundsDisableInBattlegrounds(info, value)
+	self.db.global.soundsDisableInBattlegrounds = value;
+end
+
+function NWB:getSoundsDisableInBattlegrounds(info)
+	return self.db.global.soundsDisableInBattlegrounds;
 end
 
 --First yell sound.
@@ -1950,4 +2056,62 @@ end
 
 function NWB:getSoundsZanDrop(info)
 	return self.db.global.soundsZanDrop;
+end
+
+--My buffs dispelled.
+function NWB:setSoundsDispelsMine(info, value)
+	self.db.global.soundsDispelsMine = value;
+	local soundFile = NWB.LSM:Fetch("sound", value);
+	PlaySoundFile(soundFile);
+end
+
+function NWB:getSoundsDispelsMine(info)
+	return self.db.global.soundsDispelsMine;
+end
+
+--Others buffs dispelled.
+function NWB:setSoundsDispelsAll(info, value)
+	self.db.global.soundsDispelsAll = value;
+	local soundFile = NWB.LSM:Fetch("sound", value);
+	PlaySoundFile(soundFile);
+end
+
+function NWB:getSoundsDispelsAll(info)
+	return self.db.global.soundsDispelsAll;
+end
+
+--Show my buffs dispelled.
+function NWB:setDispelsMine(info, value)
+	self.db.global.dispelsMine = value;
+end
+
+function NWB:getDispelsMine(info)
+	return self.db.global.dispelsMine;
+end
+
+--Show my buffs dispelled (world buffs only).
+function NWB:setDispelsMineWBOnly(info, value)
+	self.db.global.dispelsMineWBOnly = value;
+end
+
+function NWB:getDispelsMineWBOnly(info)
+	return self.db.global.dispelsMineWBOnly;
+end
+
+--Show all buffs dispelled.
+function NWB:setDispelsAll(info, value)
+	self.db.global.dispelsAll = value;
+end
+
+function NWB:getDispelsAll(info)
+	return self.db.global.dispelsAll;
+end
+
+--Show all buffs dispelled (world buffs only).
+function NWB:setDispelsAllWBOnly(info, value)
+	self.db.global.dispelsAllWBOnly = value;
+end
+
+function NWB:getDispelsAllWBOnly(info)
+	return self.db.global.dispelsAllWBOnly;
 end

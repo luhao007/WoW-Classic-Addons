@@ -76,9 +76,9 @@ L["onyxiaNpcKilledAlliance"] = "Майор Маттингли был убит (N
 L["nefarianNpcKilledHorde"] = "Верховный воевода Саурфанг был убит (NPC, который бафает Нефариана).";
 L["nefarianNpcKilledAlliance"] = "Фельдмаршал Афрасиаби был убит (NPC, который бафает Нефариана).";
 L["onyxiaNpcKilledHordeWithTimer"] = "Рунтак (баф Ониксии) был убит %s назад. С тех пор баф не был зафиксирован.";
-L["NefarianNpcKilledHordeWithTimer"] = "Саурфанг (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
+L["nefarianNpcKilledHordeWithTimer"] = "Саурфанг (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Маттингли (баф Ониксии) был убит %s назад. С тех пор баф не был зафиксирован.";
-L["NefarianNpcKilledAllianceWithTimer"] = "Афрасиаби (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
+L["nefarianNpcKilledAllianceWithTimer"] = "Афрасиаби (баф Нефариана) был убит %s назад. С тех пор баф не был зафиксирован.";
 L["anyNpcKilledWithTimer"] = "был убит %s назад"; --Map timers tooltip msg.
 
 ---==============---
@@ -95,6 +95,8 @@ L["Sayge's Dark Fortune of Armor"] = "Темный жребий Сейджа - �
 L["Sayge's Dark Fortune of Resistance"] = "Темный жребий Сейджа - сопротивление";
 L["Sayge's Dark Fortune of Damage"] = "Темный жребий Сейджа - урон";
 L["dmfBuffCooldownMsg"] = "Баф Ярмарки Новолуния на перезарядке еще %s.";
+L["dmfBuffCooldownMsg2"] = "Баф Ярмарки Новолуния на перезарядке еще %s.";
+L["dmfBuffCooldownMsg3"] = "DMF Buff cooldown also resets with the weekly server reset."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "Баф Ярмарки Новолуния откатился.";
 L["dmfBuffReset"] = "Баф Ярмарки Новолуния откатился.";
 L["dmfBuffDropped"] = "Баф Ярмарки Новолуния %s получен. Отслеживать 5-часовую перезарядку бафа можно с помощью команды /dmf.";
@@ -178,6 +180,11 @@ L["Bloodvenom Falls"] = "Водопад отравленной крови";
 L["Jaedenar"] = "Джеденар";
 L["North-West of Irontree Woods"] = "Железнолесье — Северо-восток";
 L["South of Irontree Woods"] = "Железнолесье — Юг";
+
+---New translations to do---
+L["layerFrameMsgOne"] = "Old layers will still show for a few hours after server restarts."; --Msg at bottom of layer timers frame.
+L["layerFrameMsgTwo"] = "Layers will disappear from here 8 hours after having no timers."; --Msg at bottom of layer timers frame.
+L["You are currently on"] = "You are currently on"; --You are currently on [Layer 2]
 
 
 -------------

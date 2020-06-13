@@ -167,8 +167,8 @@ L = {
 L = {
 	["Timestamps"] = {
 		["Chat window timestamp options."] = "Optionen für Zeitstempel in Chatfenstern.",
-		["colortimestamp_desc"] = "Einfärben des Zeitstempels ein- und ausschalten.",
-		["colortimestamp_name"] = "Zeitstempel einfärben",
+		["colortimestamp_desc"] = "Färbung des Zeitstempels ein- und ausschalten.",
+		["colortimestamp_name"] = "Zeitstempel färben",
 		["Format All Timestamps"] = "Formatiert alle Zeitstempel",
 		["HH:MM (12-hour)"] = "HH:MM (12-Stunden)",
 		["HH:MM (24-hour)"] = "HH:MM (24-Stunden)",
@@ -606,9 +606,6 @@ L = {
     for name, v in pairs(Prat.HookedFrames) do
       self:SecureHook(v, "AddMessage")
     end
-
-    self.secondsDifference = 0
-    self.lastMinute = select(2, GetGameTime())
   end)
 
   function module:OnModuleEnable()
@@ -650,8 +647,10 @@ L = {
   ------------------------------------------------]] --
   function module:AddMessage(frame, text, ...)
     if self.db.profile.on and self.db.profile.show and self.db.profile.show[frame:GetName()] and not Prat.loading then
-      frame.historyBuffer:GetEntryAtIndex(1).message =
-        self:InsertTimeStamp(frame.historyBuffer:GetEntryAtIndex(1).message, frame)
+      local entry = frame.historyBuffer:GetEntryAtIndex(1)
+      if text == entry.message then
+        entry.message = self:InsertTimeStamp(entry.message, frame)
+      end
     end
   end
 
@@ -691,15 +690,7 @@ L = {
     if self.db.profile.localtime then
       return date(format)
     else
-      local tempDate = date("*t")
-      tempDate["hour"], tempDate["min"] = GetGameTime()
-      -- taken from FuBar_ClockFu
-      if self.lastMinute ~= tempDate["min"] then
-        self.lastMinute = select(2, GetGameTime())
-        self.secondsDifference = mod(time(), 60)
-      end
-      tempDate["sec"] = mod(time() - self.secondsDifference, 60)
-      return date(format, time(tempDate))
+      return date(format, GetServerTime())
     end
   end
 

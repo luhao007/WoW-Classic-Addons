@@ -167,9 +167,8 @@ L = {
 		["bnet_removed"] = "<BNET ENTFERNT>",
 		["Chat history options."] = "Optionen zum Chatverlauf.",
 		["Color GMOTD"] = "Farbe der Gildennachricht des Tages",
-		["Colors the GMOTD label"] = "Färbt die GMOTD-Beschriftung",
-		--[[Translation missing --]]
-		["Command History Options"] = "Command History Options",
+		["Colors the GMOTD label"] = "Färbt die Gildennachricht des Tages-Beschriftung",
+		["Command History Options"] = "Befehlsverlaufsoptionen",
 		["delaygmotd_desc"] = "GMOTD verzögern, bis die Ausgabe aller Mitteilungen nach dem Einloggen vollendet ist.",
 		["delaygmotd_name"] = "GMOTD verzögern",
 		["divider"] = "========== Ende des Zurückblättern ==========",
@@ -756,6 +755,8 @@ L = {
     local maxlines = self.db.profile.maxlines
     local cmdhistory = editBox.history_lines or {}
 
+    if cmdhistory[1] == text then return end
+    
     table.insert(cmdhistory, 1, text)
 
     local cmdcount = #cmdhistory - maxlines

@@ -75,9 +75,9 @@ L["onyxiaNpcKilledAlliance"] = "상사 매팅글리가 지금 죽었습니다 (�
 L["nefarianNpcKilledHorde"] = "대군주 사울팽이 지금 죽었습니다 (네파 버프 NPC).";
 L["nefarianNpcKilledAlliance"] = "야전사령관 아프라샤비가 지금 죽었습니다 (네파 버프 NPC).";
 L["onyxiaNpcKilledHordeWithTimer"] = "오닉시아 NPC (룬탁) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
-L["NefarianNpcKilledHordeWithTimer"] = "네파리안 NPC (사울팽) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
+L["nefarianNpcKilledHordeWithTimer"] = "네파리안 NPC (사울팽) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "오닉시아 NPC (매팅글리) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
-L["NefarianNpcKilledAllianceWithTimer"] = "네파리안 NPC (아프라샤비) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
+L["nefarianNpcKilledAllianceWithTimer"] = "네파리안 NPC (아프라샤비) 가 %s 전에 죽었고 이후 버프기록이 없습니다.";
 L["anyNpcKilledWithTimer"] = "NPC 가 %s 전에 죽었다."; --Map timers tooltip msg.
  
  
@@ -95,6 +95,8 @@ L["Sayge's Dark Fortune of Armor"] = "암흑의 세이지 점괘: 방어도";
 L["Sayge's Dark Fortune of Resistance"] = "암흑의 세이지 점괘: 저항력";
 L["Sayge's Dark Fortune of Damage"] = "암흑의 세이지 점괘: 공격력";
 L["dmfBuffCooldownMsg"] = "다크문 축제 버프 쿨다운 %s 남음.";
+L["dmfBuffCooldownMsg2"] = "다크문 축제 버프 쿨다운 %s 남음.";
+L["dmfBuffCooldownMsg3"] = "DMF Buff cooldown also resets with the weekly server reset."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "다크문 축제 버프 가능"; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffReset"] = "다크문 축제 버프 초기화"; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffDropped"] = "다크문 축제 버프 %s 받음, 인게임 4시간 쿨다운. /buffs 로 확인";
@@ -190,6 +192,11 @@ L["cityMapLayerMsgAlliance"] = "현재 위상은 %s 입니다.\n지역변경 후
 L["noLayerYetHorde"] = "오그리마 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
 L["noLayerYetAlliance"] = "스톰윈드 내 아무 NPC를 타겟하면 \n당신의 위상을 특정하고 시간을 가져옵니다.";
 L["Reset Data"] = "기록 리셋"; --A button to Reset buffs window data.
+
+---New translations to do---
+L["layerFrameMsgOne"] = "Old layers will still show for a few hours after server restarts."; --Msg at bottom of layer timers frame.
+L["layerFrameMsgTwo"] = "Layers will disappear from here 8 hours after having no timers."; --Msg at bottom of layer timers frame.
+L["You are currently on"] = "You are currently on"; --You are currently on [Layer 2]
 
 
 -------------

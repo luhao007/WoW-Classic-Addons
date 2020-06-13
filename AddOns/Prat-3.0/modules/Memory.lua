@@ -49,6 +49,7 @@ Prat:AddModuleToLoad(function()
       on = true,
       frames = { ["*"] = {} },
       types = {},
+      cvars = {},
       autoload = false
     }
   })
@@ -233,8 +234,7 @@ L = {
 		["module_desc"] = "Unterstützt das Speichern der Blizzard-Chat Einstellungen in deinem Profil, damit sie für alle deine Charaktere synchronisiert werden können",
 		["module_info"] = "DIESES MODUL IST EXPERIMENTELL = Du kannst deine Chat-Einstellungen in deinem Konto synchronisieren",
 		["module_name"] = "Erinnerung",
-		--[[Translation missing --]]
-		["msg_loadfailed"] = "Could not fully restore the chat settings",
+		["msg_loadfailed"] = "Die Chat-Einstellungen konnten nicht vollständig wiederhergestellt werden",
 		["msg_nosettings"] = "Keine gespeicherten Einstellungen",
 		["msg_settingsloaded"] = "Einstellungen geladen",
 		["options_header_name"] = "Optionen",
@@ -348,36 +348,21 @@ PL:AddLocale(PRAT_MODULE, "ruRU",  L)
 
 L = {
 	["Memory"] = {
-		--[[Translation missing --]]
-		["autoload_desc"] = "Automatically load the saved settings when you log in",
-		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automatically",
-		--[[Translation missing --]]
-		["command_header_name"] = "Commands",
-		--[[Translation missing --]]
-		["load_desc"] = "Load the chat frame/tabs from the last save",
-		--[[Translation missing --]]
-		["load_name"] = "Load Settings",
-		--[[Translation missing --]]
-		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
-		--[[Translation missing --]]
-		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
-
- This module allows you to load/save all your chat settings and frame layout. These settings can be loaded on any of your characters]=],
-		--[[Translation missing --]]
-		["module_name"] = "Memory",
-		--[[Translation missing --]]
-		["msg_loadfailed"] = "Could not fully restore the chat settings",
-		--[[Translation missing --]]
-		["msg_nosettings"] = "No stored settings",
-		--[[Translation missing --]]
-		["msg_settingsloaded"] = "Settings Loaded",
-		--[[Translation missing --]]
-		["options_header_name"] = "Options",
-		--[[Translation missing --]]
-		["save_desc"] = "Save the current chat frame/tab configuration",
-		--[[Translation missing --]]
-		["save_name"] = "Save Settings",
+		["autoload_desc"] = "登录时自动加载保存过的设置",
+		["autoload_name"] = "自动加载设置",
+		["command_header_name"] = "命令",
+		["load_desc"] = "加载上次保存的聊天框/标签",
+		["load_name"] = "加载设置",
+		["module_desc"] = "支持将官方聊天设置保存到你的个人设置中，以便你可以在所有角色之间进行同步。",
+		["module_info"] = [=[|cffff8888此模块是实验性的|r 
+ 该模块允许你加载/保存所有的聊天设置和框体布局。这些设置可以导入到你的其他账号内]=],
+		["module_name"] = "内存",
+		["msg_loadfailed"] = "无法完全恢复聊天设置",
+		["msg_nosettings"] = "没有保存的设置",
+		["msg_settingsloaded"] = "设置已加载",
+		["options_header_name"] = "选项",
+		["save_desc"] = "保存当前的聊天框/标签设置",
+		["save_name"] = "保存设置",
 	}
 }
 
@@ -424,36 +409,21 @@ PL:AddLocale(PRAT_MODULE, "esES",  L)
 
 L = {
 	["Memory"] = {
-		--[[Translation missing --]]
-		["autoload_desc"] = "Automatically load the saved settings when you log in",
-		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automatically",
-		--[[Translation missing --]]
-		["command_header_name"] = "Commands",
-		--[[Translation missing --]]
-		["load_desc"] = "Load the chat frame/tabs from the last save",
-		--[[Translation missing --]]
-		["load_name"] = "Load Settings",
-		--[[Translation missing --]]
-		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
-		--[[Translation missing --]]
-		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
-
- This module allows you to load/save all your chat settings and frame layout. These settings can be loaded on any of your characters]=],
-		--[[Translation missing --]]
-		["module_name"] = "Memory",
-		--[[Translation missing --]]
-		["msg_loadfailed"] = "Could not fully restore the chat settings",
-		--[[Translation missing --]]
-		["msg_nosettings"] = "No stored settings",
-		--[[Translation missing --]]
-		["msg_settingsloaded"] = "Settings Loaded",
-		--[[Translation missing --]]
-		["options_header_name"] = "Options",
-		--[[Translation missing --]]
-		["save_desc"] = "Save the current chat frame/tab configuration",
-		--[[Translation missing --]]
-		["save_name"] = "Save Settings",
+		["autoload_desc"] = "登录时自动加载保存过的设置",
+		["autoload_name"] = "自动加载设置",
+		["command_header_name"] = "命令",
+		["load_desc"] = "加载上次保存的聊天框/标签",
+		["load_name"] = "加载设置",
+		["module_desc"] = "支持将官方聊天设置保存到你的个人设置中，以便你可以在所有角色之间进行同步。",
+		["module_info"] = [=[|cffff8888此模块是实验性的|r 
+ 该模块允许你加载/保存所有的聊天设置和框体布局。这些设置可以导入到你的其他账号内]=],
+		["module_name"] = "内存",
+		["msg_loadfailed"] = "无法完全恢复聊天设置",
+		["msg_nosettings"] = "没有保存的设置",
+		["msg_settingsloaded"] = "设置已加载",
+		["options_header_name"] = "选项",
+		["save_desc"] = "保存当前的聊天框/标签设置",
+		["save_name"] = "保存设置",
 	}
 }
 
@@ -509,6 +479,14 @@ end
     }
   })
 
+  local cvars = {
+    whisperMode = "CVar",
+    chatStyle = "CVar",
+    wholeChatWindowClickable = "CVarBool",
+    whisperMode = "CVar",
+    blockChannelInvites = "CVarBool"
+  }
+
   Prat:SetModuleInit(module.name,
     function(self)
       self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -545,6 +523,10 @@ end
 
     db.types =  CopyTable(getmetatable(ChatTypeInfo).__index)
     db.channels = { GetChannelList() }
+
+    for k,v in pairs(cvars) do
+      db.cvars[k] = _G["Get"..v](k)
+    end
 
     self:Output("Settings Saved")
   end
@@ -604,6 +586,7 @@ end
     SetChatWindowShown(frameId, db.shown)
     FloatingChatFrame_Update(frameId, 1)
     FCF_DockUpdate()
+    ChatEdit_DeactivateChat(f.editBox)
     FCF_FadeInChatFrame(f)
 
     if db.minimized then
@@ -686,7 +669,7 @@ end
 
     local correct = true
     if select("#", ...) ~= #db.channels then
-      correct = "missing"
+      correct = "wrong"
     else
       for i = 1, select("#", ...), 3 do
         local snum, sname = select(i, ...);
@@ -700,12 +683,12 @@ end
 
     dbg("channels correct", correct)
     if type(correct) == "boolean" or self.errorcount >= 3 then
-      self:ScheduleTimer("LoadSettings", 2)
+      self:ScheduleTimer("LoadSettings", 0)
     else
-      if correct == "wrong" or correct == "missing" then
-        self.errorcount = self.errorcount + 1
+      if correct == "wrong" then
         self:LeaveChannels(GetChannelList())
         self:ScheduleTimer("RestoreChannels", getDelay(), unpack(db.channels))
+        self.errorcount = self.errorcount + 1
       elseif correct == "order" then
         dbg(GetChannelList())
         for i = 1, select("#", ...), 3 do
@@ -780,31 +763,57 @@ end
       return
     end
 
-    for k, v in pairs(db.frames) do
-      if not self:LoadFrameSettingsForFrame(k) then
-        success = false
-      end
+    if not self.working then
+      self.working = {}
     end
-    FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1)
-  
-    if not self.working and db.channels and #db.channels > 0 then
-      self.errorcount = 0
-      self.working = true
-      if GetChannelList() then
-        self:LeaveChannels(GetChannelList())
+
+    -- restore CVars
+    if not self.working.cvars then
+      for k, v in pairs(cvars) do
+        local val = db.cvars[k]
+        if val ~= nil then
+          dbg("set cvar", k, val)
+          SetCVar(k, val)
+        end
       end
-      self:ScheduleTimer(function() self:RestoreChannels(unpack(db.channels)) end,  getDelay())
+      self.working.cvars = true
+    end
+
+    -- restore frame appearance and layout
+    if not self.working.frames then
+      for k, v in pairs(db.frames) do
+        if not self:LoadFrameSettingsForFrame(k) then
+          success = false
+        end
+      end
+      FCFDock_SelectWindow(GENERAL_CHAT_DOCK, ChatFrame1)
+      self.working.frames = success
+    end
+
+    -- restore chat channels
+    if not self.working.channels and db.channels and #db.channels > 0 then
+      self.errorcount = 0
+      self:ScheduleTimer("CheckChannels", getDelay(), GetChannelList())
+      self.working.channels = true
       return
     end
 
-    for k, v in pairs(db.frames) do
-      if not self:LoadChatSettingsForFrame(k) then
-        success = false
+    -- restore channels and messages to chatframes
+    if not self.working.chatframes then
+      for k, v in pairs(db.frames) do
+        if not self:LoadChatSettingsForFrame(k) then
+          success = false
+        end
       end
+      self.working.chatframes = success
     end
 
-    for k, v in pairs(db.types) do
-      ChangeChatColor(k, v.r, v.g, v.b)
+    -- restore chat colors
+    if not self.working.colorsa then
+      for k, v in pairs(db.types) do
+        ChangeChatColor(k, v.r, v.g, v.b)
+      end
+      self.working.colorsa = true
     end
 
     if success then

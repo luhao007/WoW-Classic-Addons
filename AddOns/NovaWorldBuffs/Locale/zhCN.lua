@@ -74,10 +74,10 @@ L["onyxiaNpcKilledHorde"] = "伦萨克 刚刚被杀死了. (奥妮克希亚 buff
 L["onyxiaNpcKilledAlliance"] = "玛丁雷少校 刚刚被杀死了. (奥妮克希亚 buff NPC).";
 L["nefarianNpcKilledHorde"] = "萨鲁法尔大王 刚刚被杀死了. (奈法利安 buff NPC).";
 L["nefarianNpcKilledAlliance"] = "艾法希比元帅 刚刚被杀死了 (奈法利安 buff NPC).";
-L["onyxiaNpcKilledHordeWithTimer"] = "奥妮克希亚 NPC (伦萨克) 已于 %s 前被击杀，之后没有buff记录.";
-L["NefarianNpcKilledHordeWithTimer"] = "奈法利安 NPC (萨鲁法尔大王) 已于 %s 前被击杀，之后没有buff记录.";
-L["onyxiaNpcKilledAllianceWithTimer"] = "奥妮克希亚 NPC (玛丁雷少校) 已于 %s 前被击杀，之后没有buff记录.";
-L["NefarianNpcKilledAllianceWithTimer"] = "奈法利安 NPC (艾法希比元帅) 已于 %s 前被击杀，之后没有buff记录.";
+L["onyxiaNpcKilledHordeWithTimer"] = "奥妮克希亚 NPC (伦萨克) 已于 %s 前被击杀,之后没有buff记录.";
+L["nefarianNpcKilledHordeWithTimer"] = "奈法利安 NPC (萨鲁法尔大王) 已于 %s 前被击杀,之后没有buff记录.";
+L["onyxiaNpcKilledAllianceWithTimer"] = "奥妮克希亚 NPC (玛丁雷少校) 已于 %s 前被击杀,之后没有buff记录.";
+L["nefarianNpcKilledAllianceWithTimer"] = "奈法利安 NPC (艾法希比元帅) 已于 %s 前被击杀,之后没有buff记录.";
 L["anyNpcKilledWithTimer"] = "NPC 已于 %s 前被击杀"; --Map timers tooltip msg.
 
 
@@ -95,9 +95,11 @@ L["Sayge's Dark Fortune of Armor"] = "塞格的黑暗塔罗牌：护甲";
 L["Sayge's Dark Fortune of Resistance"] = "塞格的黑暗塔罗牌：抗性";
 L["Sayge's Dark Fortune of Damage"] = "塞格的黑暗塔罗牌：伤害";
 L["dmfBuffCooldownMsg"] = "你的暗月马戏团buff冷却时间还剩 %s .";
+L["dmfBuffCooldownMsg2"] = "你的暗月马戏团buff冷却时间还剩 %s .";
+L["dmfBuffCooldownMsg3"] = "暗夜马戏团buff的冷却时间也会随着每周的服务器重启而重置."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "你的暗月马戏团buff冷却时间已结束."; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffReset"] = "您的暗月马戏团buff冷却时间已重置."; --These 2 buff msgs are slightly different for a reason.
-L["dmfBuffDropped"] = "暗月马戏团 buff %s 已获得, 输入/buffs来查看该buff在游戏内4小时的冷却剩余时间.";
+L["dmfBuffDropped"] = "暗月马戏团 buff %s 已获得,输入/buffs来查看该buff在游戏内4小时的冷却剩余时间.";
 L["dmfSpawns"] = "暗月马戏团将于 %s 后 (%s) 刷新于";
 L["dmfEnds"] = "暗月马戏团将于 %s 后 (%s) 结束";
 L["mulgore"] = "莫高雷";
@@ -184,10 +186,9 @@ L["Jaedenar"] = "加德纳尔";
 L["North-West of Irontree Woods"] = "铁木森林西北部";
 L["South of Irontree Woods"] = "铁木森林南部";
 
-
 L["worldMapBuffsMsg"] = "输入/buffs来查看你所有的\n角色已获得的世界Buffs.";
-L["cityMapLayerMsgHorde"] = "当前位于 %s\n选中奥格瑞玛的任何NPC\n来更新你的位面信息（在切换地区后）.|r";
-L["cityMapLayerMsgAlliance"] = "当前位于 %s\n选中暴风城的任何NPC\n来更新你的位面信息（在切换地区后）.|r";
+L["cityMapLayerMsgHorde"] = "当前位于 %s\n选中奥格瑞玛的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
+L["cityMapLayerMsgAlliance"] = "当前位于 %s\n选中暴风城的任何NPC\n来更新你的位面信息.\n（在切换地区后）|r";
 L["noLayerYetHorde"] = "请选定奥格瑞玛的任何NPC\n来确认你当前所在的位面.";
 L["noLayerYetAlliance"] = "请选定暴风城的任何NPC\n来确认你当前所在的位面.";
 L["Reset Data"] = "重置数据"; --A button to Reset buffs window data.
@@ -249,10 +250,10 @@ L["minimapButtonTitle"] = "显示小地图按钮";
 L["minimapButtonDesc"] = "在小地图上显示NWB按钮.";
 
 ---Logon Messages---
-L["logonHeaderDesc"] = "登录信息";
+L["logonHeaderDesc"] = "登录提示信息";
 
 L["logonPrintTitle"] = "登录计时器";
-L["logonPrintDesc"] = "当你登录游戏时在聊天窗口中显示计时器,可以通过该设置来关闭所有登录信息.";
+L["logonPrintDesc"] = "当你登录游戏时在聊天窗口中显示计时器,可以通过该设置来关闭所有登录提示信息.";
 
 L["logonRendTitle"] = "雷德·黑手";
 L["logonRendDesc"] = "登录时在聊天窗口中显示雷德·黑手计时器.";
@@ -339,7 +340,7 @@ L["guildBuffDroppedTitle"] = "Buff已释放提示";
 L["guildBuffDroppedDesc"] = "当玩家已获得新的世界buff时,在公会频道中发送一条提示信息.这条信息会在NPC喊话已结束,你将在几秒后获得buff时发送(NPC第一次大喊后的时间,雷德·黑手buff6秒后,奥妮克希亚buff14秒后,奈法利安buff15秒后).";
 
 L["guildZanDialogueTitle"] = "赞达拉Buff提示";
-L["guildZanDialogueDesc"] = "当玩家即将获得赞达拉之魂buff时,在公会频道中发送一条提示信息(如果你不想看到这个buff的提示，需要公会所有人都关闭它).";
+L["guildZanDialogueDesc"] = "当玩家即将获得赞达拉之魂buff时,在公会频道中发送一条提示信息(如果你不想看到这个buff的提示,需要公会所有人都关闭它).";
 
 L["guildNpcKilledTitle"] = "NPC被击杀提示";
 L["guildNpcKilledDesc"] = "当奥格瑞玛或暴风城交世界BUFF任务的NPC被击时,在公会频道中发送一条提示信息(通过心灵控制重置).";
@@ -348,7 +349,7 @@ L["guildCommandTitle"] = "公会命令提示";
 L["guildCommandDesc"] = "针对公会聊天频道中的!wb和!dmf命令回复计时器信息.你应该启用此功能来帮助你的公会,如果您确实要禁用所有公会消息并且仅保留此命令,则应在公会信息提示中取消选中其他所有内容,而不是在顶部勾选“关闭所有公会提示信息.";
 
 L["disableAllGuildMsgsTitle"] = "关闭所有公会提示信息";
-L["disableAllGuildMsgsDesc"] = "关闭所有在公会频道发送的计时信息和buff释放信息. 注意:如果你愿意的话,你可以逐一关闭所有的公会提示信息,并且只启用某些功能来帮助你的公会.";
+L["disableAllGuildMsgsDesc"] = "关闭所有在公会频道发送的计时信息和buff释放信息.注意:如果你愿意的话,你可以逐一关闭所有的公会提示信息,并且只启用某些功能来帮助你的公会.";
 
 ---Songflowers---
 L["songflowersHeaderDesc"] = "风歌花";
@@ -357,7 +358,7 @@ L["guildSongflowerTitle"] = "采集后在公会频道通告";
 L["guildSongflowerDesc"] = "当你采集了一个风歌花后,在在公会频道中发送一条带有风歌花下次刷新时间的提示信息.";
 
 L["mySongflowerOnlyTitle"] = "仅当我采集时才计时";
-L["mySongflowerOnlyDesc"] = "只有当我自己采集了风歌花,而不是我之前的其他人采集时,才开始计时. 此选项仅当你因其他玩家的数据而导致计时器错误时才启用.因为目前尚无办法判断其他人的buff是否是新获得的.因此,如果某个玩家带着风歌花buff上线进入游戏时,正好在风歌花旁边,则会罕见地触发计时.";
+L["mySongflowerOnlyDesc"] = "只有当我自己采集了风歌花,而不是我之前的其他人采集时,才开始计时.此选项仅当你因其他玩家的数据而导致计时器错误时才启用.因为目前尚无办法判断其他人的buff是否是新获得的.因此,如果某个玩家带着风歌花buff上线进入游戏时,正好在风歌花旁边,则会罕见地触发计时.";
 
 L["syncFlowersAllTitle"] = "与所有人同步风歌花";
 L["syncFlowersAllDesc"] = "启用此选项会覆盖前面的[仅限公会数据]设置,这样你就可以与公会外玩家同步风歌花BUFF的计时数据,但世界buff数据仍然只会在公会玩家中同步.";
@@ -401,7 +402,7 @@ L["showDmfBuffWbTitle"] = "/wb打开冷却计时";
 L["showDmfBuffWbDesc"] = "随/wb命令一起显示暗月马戏团buff冷却计时器,仅当你处于冷却时间且暗月马戏团当前处于开启状态时才显示.";
 
 L["showDmfMapTitle"] = "显示地图标记";
-L["showDmfMapDesc"] = "在莫高雷和艾尔文森林地图上显示暗月马戏团和BUFF的刷新时间(下一个刷新时间). 你可以输入/dmf map来打开带有标记的世界地图.";
+L["showDmfMapDesc"] = "在莫高雷和艾尔文森林地图上显示暗月马戏团和BUFF的刷新时间(下一个刷新时间).你可以输入/dmf map来打开带有标记的世界地图.";
 
 ---Guild Chat Filter---
 L["guildChatFilterHeaderDesc"] = "公会频道过滤";
@@ -447,7 +448,7 @@ L["soundsDisableInInstancesTitle"] = "在副本中禁用";
 L["soundsDisableInInstancesDesc"] = "当你在副本中时禁用提示音.";
 
 L["soundsFirstYellTitle"] = "Buff即将释放时";
-L["soundsFirstYellDesc"] = "当龙头任务已交时播放提示声,你需要等待几秒钟，buff才会释放（NPC第一次喊话）.";
+L["soundsFirstYellDesc"] = "当龙头任务已交时播放提示声,你需要等待几秒钟,buff才会释放（NPC第一次喊话）.";
 
 L["soundsOneMinuteTitle"] = "1分钟提示";
 L["soundsOneMinuteDesc"] = "当计时器还剩一分钟时,播放提示声.";
@@ -486,3 +487,32 @@ L["minimapLayerFrameDesc"] = "当你位于主城时,在小地图上显示你当�
 
 L["minimapLayerFrameResetTitle"] = "重置小地图位面位置";
 L["minimapLayerFrameResetDesc"] = "重置小地图位面信息的位置(按住shift并拖动来改变小地图位面信息位置).";
+
+---Dispels---
+L["dispelsHeaderDesc"] = "Buff被驱散提示";
+
+L["dispelsMineTitle"] = "我的Buff";
+L["dispelsMineDesc"] = "在聊天频道显示我的Buff被驱散了.这将提示谁驱散了你的什么Buff.";
+
+L["dispelsMineWBOnlyTitle"] = "我的世界Buff";
+L["dispelsMineWBOnlyDesc"] = "仅在聊天频道显示我的世界Buff被驱散了,而忽略其他任何Buff.";
+
+L["soundsDispelsMineTitle"] = "我的Buff被驱散提示音";
+L["soundsDispelsMineDesc"] = "请选择当我的Buff被驱散时,所播放的提示音.";
+
+L["dispelsAllTitle"] = "其他人的Buff";
+L["dispelsAllDesc"] = "在聊天频道显示我周围玩家的Buff被驱散了.这将提示谁驱散了你附近玩家的什么Buff.";
+
+L["dispelsAllWBOnlyTitle"] = "其他人的世界Buff";
+L["dispelsAllWBOnlyDesc"] = "仅在聊天频道显示其他人的世界Buff被驱散了,而忽略其他任何Buff.";
+
+L["soundsDispelsAllTitle"] = "其他人的Buff被驱散提示音";
+L["soundsDispelsAllDesc"] = "请选择当其他人的Buff被驱散时,所播放的提示音.";
+
+---New---
+
+L["middleHideBattlegroundsTitle"] = "战场中隐藏提示信息";
+L["middleHideBattlegroundsDesc"] = "当你在战场中时,隐藏屏幕中央的提示信息.";
+
+L["soundsDisableInBattlegroundsTitle"] = "战场中禁用提示音";
+L["soundsDisableInBattlegroundsDesc"] = "当你在战场中时,禁用提示音.";

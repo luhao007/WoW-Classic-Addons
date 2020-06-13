@@ -31,7 +31,9 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_Settings_Use24HrTime = "使用24小时制";
 	GroupCalendar_Settings_Use24HrTimeTip = "使用24小时制";
 
-	GroupCalendar_cSelfWillAttend = "%s会出席";
+	GroupCalendar_cSelfWillAttend = "参加";
+	CalendarEventEditor_cYes = "是";
+	CalendarEventEditor_cNo = "没有";
 
 	GroupCalendar_cMonthNames = {"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"};
 	GroupCalendar_cDayOfWeekNames = {GroupCalendar_cSunday, GroupCalendar_cMonday, GroupCalendar_cTuesday, GroupCalendar_cWednesday, GroupCalendar_cThursday, GroupCalendar_cFriday, GroupCalendar_cSaturday};
@@ -50,7 +52,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cUseServerDateTime = "使用伺服器日期与时间";
 	GroupCalendar_cUseServerDateTimeDescription = "启动此功能将会以伺服器的日期与时间来显示活动资讯，若关闭此功能则会以您的电脑日期及时间来显示。";
-		
+
 	GroupCalendar_cChannelStatus =
 	{
 		Starting = {mText = "状态: 开始", mColor = {r = 1, g = 1, b = 0.3}},
@@ -277,7 +279,7 @@ if GetLocale() == "zhCN" then
 
 	CalendarEventEditor_cNotTrustedMsg = "由于信任设置而无法创建事件";
 	CalendarEventEditor_cOk = "好的";
-	
+
 
 	CalendarEventEditor_cNotAttending = "不出席";
 	CalendarEventEditor_cConfirmed = "已确定";
@@ -321,7 +323,7 @@ if GetLocale() == "zhCN" then
 -- Tradeskill cooldown items
 
 	GroupCalendar_cHerbalismSkillName = "采药";
-	GroupCalendar_cAlchemySkillName = "炼金";
+	GroupCalendar_cAlchemySkillName = "炼金术";
 	GroupCalendar_cEnchantingSkillName = "附魔";
 	GroupCalendar_cLeatherworkingSkillName = "制革";
 	GroupCalendar_cSkinningSkillName = "剥皮";
@@ -330,17 +332,17 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cBlacksmithingSkillName = "锻造";
 	GroupCalendar_cEngineeringSkillName = "工程学";
 
-	GroupCalendar_cTransmuteMithrilToTruesilver = "转换: 点化秘银";
-	GroupCalendar_cTransmuteIronToGold = "转换: 点铁成金";
-	GroupCalendar_cTransmuteLifeToEarth = "转换: 生命归土";
-	GroupCalendar_cTransmuteWaterToUndeath = "转换: 水转死灵";
-	GroupCalendar_cTransmuteWaterToAir = "转换: 点水成气";
-	GroupCalendar_cTransmuteUndeathToWater = "转换: 死灵化水";
-	GroupCalendar_cTransmuteFireToEarth = "转换: 点火成土";
-	GroupCalendar_cTransmuteEarthToLife = "转换: 土转生命";
-	GroupCalendar_cTransmuteEarthToWater = "转换: 转土成水";
-	GroupCalendar_cTransmuteAirToFire = "转换: 点气成火";
-	GroupCalendar_cTransmuteArcanite = "转换: 合成奥金";
+	GroupCalendar_cTransmuteMithrilToTruesilver = "转化秘银";
+	GroupCalendar_cTransmuteIronToGold = "点铁成金";
+	GroupCalendar_cTransmuteLifeToEarth = "转化：生命归土";
+	GroupCalendar_cTransmuteWaterToUndeath = "转化：水转死灵";
+	GroupCalendar_cTransmuteWaterToAir = "转化：点水成气";
+	GroupCalendar_cTransmuteUndeathToWater = "转化：死灵化水";
+	GroupCalendar_cTransmuteFireToEarth = "转化：点火成土";
+	GroupCalendar_cTransmuteEarthToLife = "转化：土转生命";
+	GroupCalendar_cTransmuteEarthToWater = "转化：转土成水";
+	GroupCalendar_cTransmuteAirToFire = "转化：点气成火";
+	GroupCalendar_cTransmuteArcanite = "转化：奥金";
 	GroupCalendar_cMooncloth = "月布";
 
 	GroupCalendar_cCharactersLabel = "角色:";
@@ -459,7 +461,7 @@ if GetLocale() == "zhCN" then
 
 	GroupCalendar_cChangesDelayedMessage = "团体行事历: 资料将于网络资讯同步化后变更。在资料同步化完成之前，资料不会传送，";
 
-	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?"; 
+	GroupCalendar_cConfirmKillMsg = "您确定要将 %s 建立的活动从网络上强制删除?";
 	GroupCalendar_cKill = "删除";
 
 	GroupCalendar_cNotAnOfficerError = "团体行事历: 只有公会干部成员能执行此动作";

@@ -76,9 +76,9 @@ L["onyxiaNpcKilledAlliance"] = "Major Mattingly a été tué (PNJ Onyxia buff)."
 L["nefarianNpcKilledHorde"] = "Haut seigneur Saurfang a été tué (PNJ Nefarian buff).";
 L["nefarianNpcKilledAlliance"] = "Grand maréchal Afrasiabi a été tué (PNJ Nefarian buff).";
 L["onyxiaNpcKilledHordeWithTimer"] = "Le PNJ d'Onyxia (Runthak) a été tué il y a %s, pas de buff enregistré depuis";
-L["NefarianNpcKilledHordeWithTimer"] = "Le PNJ de Nefarian (Saurfang) a été tué il y a %s, pas de buff enregistré depuis";
+L["nefarianNpcKilledHordeWithTimer"] = "Le PNJ de Nefarian (Saurfang) a été tué il y a %s, pas de buff enregistré depuis";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Le PNJ d'Onyxia (Mattingly) a été tué il y a %s, pas de buff enregistré depuis";
-L["NefarianNpcKilledAllianceWithTimer"] = "Le PNJ de Nefarian (Afrasiabi) a été tué il y a %s, pas de buff enregistré depuis";
+L["nefarianNpcKilledAllianceWithTimer"] = "Le PNJ de Nefarian (Afrasiabi) a été tué il y a %s, pas de buff enregistré depuis";
 L["anyNpcKilledWithTimer"] = "Le PNJ a été tué il y a %s";
 
 ---==============---
@@ -95,6 +95,8 @@ L["Sayge's Dark Fortune of Armor"] = "Sombre prédiction d'Armure de Sayge";
 L["Sayge's Dark Fortune of Resistance"] = "Sombre prédiction de résistance de Sayge";
 L["Sayge's Dark Fortune of Damage"] = "Sombre prédiction de dégâts de Sayge";
 L["dmfBuffCooldownMsg"] = "Votre buff de la Foire de Sombrelune est en cooldown pour encore %s";
+L["dmfBuffCooldownMsg2"] = "Votre buff de la Foire de Sombrelune est en cooldown pour encore %s";
+L["dmfBuffCooldownMsg3"] = "DMF Buff cooldown also resets with the weekly server reset."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "Votre buff de la Foire de Sombrelune est reset";
 L["dmfBuffReset"] = "Votre buff Foire de Sombrelune est de nouveau disponible.";
 L["dmfBuffDropped"] = "Buff Foire de Sombrelune %s reçue. Pour suivre le cooldown de 5heures tapez /dmf";
@@ -179,6 +181,11 @@ L["Bloodvenom Falls"] = "Chutes de la Vénéneuse";
 L["Jaedenar"] = "Jaedenar";
 L["North-West of Irontree Woods"] = "le nord du bois d'Arbrefer";
 L["South of Irontree Woods"] = "le sud du bois d'Arbrefer";
+
+---New translations to do---
+L["layerFrameMsgOne"] = "Old layers will still show for a few hours after server restarts."; --Msg at bottom of layer timers frame.
+L["layerFrameMsgTwo"] = "Layers will disappear from here 8 hours after having no timers."; --Msg at bottom of layer timers frame.
+L["You are currently on"] = "You are currently on"; --You are currently on [Layer 2]
 
 
 -------------

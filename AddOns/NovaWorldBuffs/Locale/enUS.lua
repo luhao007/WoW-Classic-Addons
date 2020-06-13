@@ -16,6 +16,7 @@ L["Flask of Chromatic Resistance"] = "Flask of Chromatic Resistance";
 L["Supreme Power"] = "Supreme Power";
 L["Distilled Wisdom"] = "Distilled Wisdom";
 L["Chromatic Resistance"] = "Chromatic Resistance";
+L["Sap"] = "Sap";
 
 ---=====---
 ---Horde---
@@ -72,9 +73,9 @@ L["onyxiaNpcKilledAlliance"] = "Major Mattingly has just been killed (Onyxia buf
 L["nefarianNpcKilledHorde"] = "High Overlord Saurfang has just been killed (Nefarian buff NPC).";
 L["nefarianNpcKilledAlliance"] = "Field Marshal Afrasiabi has just been killed (Nefarian buff NPC).";
 L["onyxiaNpcKilledHordeWithTimer"] = "Onyxia NPC (Runthak) was killed %s ago no buff recorded since.";
-L["NefarianNpcKilledHordeWithTimer"] = "Nefarian NPC (Saurfang) was killed %s ago no buff recorded since.";
+L["nefarianNpcKilledHordeWithTimer"] = "Nefarian NPC (Saurfang) was killed %s ago no buff recorded since.";
 L["onyxiaNpcKilledAllianceWithTimer"] = "Onyxia NPC (Mattingly) was killed %s ago no buff recorded since.";
-L["NefarianNpcKilledAllianceWithTimer"] = "Nefarian NPC (Afrasiabi) was killed %s ago no buff recorded since.";
+L["nefarianNpcKilledAllianceWithTimer"] = "Nefarian NPC (Afrasiabi) was killed %s ago no buff recorded since.";
 L["anyNpcKilledWithTimer"] = "NPC was killed %s ago"; --Map timers tooltip msg.
 
 
@@ -91,7 +92,9 @@ L["Sayge's Dark Fortune of Strength"] = "Sayge's Dark Fortune of Strength";
 L["Sayge's Dark Fortune of Armor"] = "Sayge's Dark Fortune of Armor";
 L["Sayge's Dark Fortune of Resistance"] = "Sayge's Dark Fortune of Resistance";
 L["Sayge's Dark Fortune of Damage"] = "Sayge's Dark Fortune of Damage";
-L["dmfBuffCooldownMsg"] = "Your Darkmoon Faire buff cooldown has %s left.";
+L["dmfBuffCooldownMsg"] = "Your DMF buff cooldown has %s left.";
+L["dmfBuffCooldownMsg2"] = "Your DMF buff cooldown has %s left."; --/wb frame.
+L["dmfBuffCooldownMsg3"] = "DMF Buff cooldown also resets with the weekly server reset."; --/wb frame 2nd msg.
 L["dmfBuffReady"] = "Your Darkmoon Faire buff is off cooldown."; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffReset"] = "Your Darkmoon Faire buff cooldown has reset."; --These 2 buff msgs are slightly different for a reason.
 L["dmfBuffDropped"] = "Darkmoon Faire buff %s received, to track the 4 hour ingame cooldown for this buff type /buffs.";
@@ -186,11 +189,11 @@ L["noLayerYetHorde"] = "Please target any NPC in Orgrimmar\nto find your current
 L["noLayerYetAlliance"] = "Please target any NPC in Stormwind\nto find your current layer.";
 L["Reset Data"] = "Reset Data"; --A button to Reset buffs window data.
 
-
 ---New translations to do---
 L["layerFrameMsgOne"] = "Old layers will still show for a few hours after server restarts."; --Msg at bottom of layer timers frame.
 L["layerFrameMsgTwo"] = "Layers will disappear from here 6 hours after having no timers."; --Msg at bottom of layer timers frame.
 L["You are currently on"] = "You are currently on"; --You are currently on [Layer 2]
+
 
 -------------
 ---Config---
@@ -480,3 +483,32 @@ L["minimapLayerFrameDesc"] = "Show the little frame on the minimap with your cur
 
 L["minimapLayerFrameResetTitle"] = "Reset Minimap Layer";
 L["minimapLayerFrameResetDesc"] = "Reset minimap layer frame back to default position (hold shift to drag the minimap frame).";
+
+---Dispels---
+L["dispelsHeaderDesc"] = "Dispels";
+
+L["dispelsMineTitle"] = "My Buffs";
+L["dispelsMineDesc"] = "Show in chat my buffs being dispelled? This shows who dispelled you and what buff.";
+
+L["dispelsMineWBOnlyTitle"] = "My Worldbuffs Only";
+L["dispelsMineWBOnlyDesc"] = "Only show my worldbuffs being dispelled and not any other kind of buffs.";
+
+L["soundsDispelsMineTitle"] = "My Buffs Sound";
+L["soundsDispelsMineDesc"] = "Which sound to play for my buffs being dispelled.";
+
+L["dispelsAllTitle"] = "Other Players Buffs";
+L["dispelsAllDesc"] = "Show in chat everyone's buffs being dispelled around me? This shows who dispelled anyone close to you and what buff.";
+
+L["dispelsAllWBOnlyTitle"] = "Others Worldbuffs Only";
+L["dispelsAllWBOnlyDesc"] = "Only show worldbuffs on everyone else being dispelled and not any other kind of buffs.";
+
+L["soundsDispelsAllTitle"] = "Others Players Buffs Sound";
+L["soundsDispelsAllDesc"] = "Which sound to play for other players buffs being dispelled.";
+
+---New---
+
+L["middleHideBattlegroundsTitle"] = "Hide In Battlegrounds";
+L["middleHideBattlegroundsDesc"] = "Hide middle of the screen warnings in Battlegrounds?";
+
+L["soundsDisableInBattlegroundsTitle"] = "Disable In Battleground";
+L["soundsDisableInBattlegroundsDesc"] = "Disable sounds while in Battlegrounds.";
