@@ -1,54 +1,44 @@
-# [2.17.5](https://github.com/WeakAuras/WeakAuras2/tree/2.17.5) (2020-05-04)
+# [2.17.7](https://github.com/WeakAuras/WeakAuras2/tree/2.17.7) (2020-06-09)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.4...2.17.5)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.5...2.17.7)
 
 ## Highlights
 
- - Mostly bug fixes with a few smaller features sprinkled on top 
+ - New Snippet feature! Ever wondered how to get started with custom code or just sick of having to type things over and over again? We got you! You can find the Snippets button in certain custom code editor fields. 
 
 ## Commits
 
-InfusOnWoW (19):
+InfusOnWoW (10):
 
-- Fix Alternate Power staying around after leaving vision
-- Unit Characteristics: Add UnitClassification
-- Text: Add shadow options
-- Text: Remove old workaround for SetText
-- Fix the order in SubRegionOptions
-- Fix UnitIsUnit check for Unit Characteristics
-- Fix specific unit for unit type triggers
-- Conditions External Glow: Fix frame chooser
-- Fix tracking of buffs on bosses
-- Fix some events being handled even while WeakAuras is paused
-- Add new feature strings to various places
-- Set FrameLevel again after setting frame strata
-- Load: Add support for multi zone names
-- Fix spell name and spell id conditions for Cast Trigger
-- Add Attack Power to the Character Stats
-- Custom Trigger: Add fake events for UNIT:unit
-- Add Dead/Ghost and Disconnected filter to various triggers
-- BT2: Add a hostility check for nameplates
-- Enable the ignoreSelf option for nameplates
+- Fix incorrect subevent registration
+- Only allow nameplate units for attaching nameplates
+- Add HasVehicleActionBar to the "Vehicle UI" load option
+- BT2: Fix smart groups by more correctly checking the unit ids
+- Fix tooltip information not being cleared if aura is missing
+- Rename "Filter by Hostility" to "Nameplate Type"
+- Fix boss5 unit
+- Revert "Don't check for state.show in ReplacePlaceHolders"
+- Fix tsu variables with syntax errors breaking the trigger page
+- Fix models on progress bars
 
-Stanzilla (1):
+Stanzilla (3):
 
-- Add a way to overwrite default font and font size (#2169)
+- one more
+- revert a few breaking spelling changes
+- run spellchecker
 
-asaka-wa (2):
+asaka-wa (1):
 
-- Fix anchor (#2175)
-- Update wiki links to new Custom Code Blocks page (#2162)
+- Add snippets (#2176)
 
-mrbuds (5):
+mrbuds (3):
 
-- templates: add Show on Ready Also add condition isNotUsableBlue for basic Show on cooldown & Show on Ready partially fixes #797
-- refactor anchor & glow to unitframe monitoring (#2165)
-- fix default options not loaded for WeakAuras addon fixes #2177 (#2179)
-- DG anchored to Unit Frames: fix #2051 - anchor to hidden frame when can't find a unitframe - handle new LibGetFrame Callback: FRAME_UNIT_REMOVED
-- disable trigger "Crowd Controlled" for classic fixes #2145
+- on import, fix handling of aura's tocversion
+- remove ability to send messages to channels (which is protected) fixes #2200
+- fix nil error fixes #2198
 
 nullKomplex (2):
 
-- Profiling Improvements
-- Fix inconsequential typo.
+- Remove unused slash command code.
+- Fix Profiling pprint command.
 

@@ -295,7 +295,6 @@ local tName, tRealm;
 local tIsDcChange;
 local tOwner;
 function VUHDO_setHealth(aUnit, aMode)
-
 	tInfo = VUHDO_RAID[aUnit];
 
 	tUnitId = VUHDO_getUnitIds();
@@ -333,6 +332,8 @@ function VUHDO_setHealth(aUnit, aMode)
 			tName, tRealm = UnitName(aUnit);
 			tInfo["healthmax"] = UnitHealthMax(aUnit);
 			tInfo["health"] = UnitHealth(aUnit);
+			tInfo["loghealth"] = UnitHealth(aUnit);
+			tInfo["isUpdated"] = 0;
 			tInfo["name"] = tName;
 			tInfo["number"] = VUHDO_getUnitNo(aUnit);
 			tInfo["unit"] = aUnit;
@@ -385,14 +386,22 @@ function VUHDO_setHealth(aUnit, aMode)
 
 			if tIsDcChange then VUHDO_updateBouquetsForEvent(aUnit, 19); end-- VUHDO_UPDATE_DC
 
-			if 2 == aMode then -- VUHDO_UPDATE_HEALTH
-				tNewHealth = UnitHealth(aUnit);
+			if 2 == aMode or 12 == aMode then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
+				if 12 == aMode then -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
+					tNewHealth = tInfo["loghealth"];
+				end
+				if 2 == aMode then
+					if tInfo["isUpdated"] == 1 or UnitIsFeignDeath(aUnit) then
+						tInfo["isUpdated"] = 0;
+						tNewHealth = tInfo["loghealth"];
+					else
+						tNewHealth = UnitHealth(aUnit);
+					end
+				end
 				if not tIsDead and tInfo["health"] > 0 then
 					tInfo["lifeLossPerc"] = tNewHealth / tInfo["health"];
 				end
-
 				tInfo["health"] = tNewHealth;
-
 				if tInfo["dead"] ~= tIsDead then
 					if not tIsDead then
 						tInfo["healthmax"] = UnitHealthMax(aUnit);
@@ -406,6 +415,7 @@ function VUHDO_setHealth(aUnit, aMode)
 				tInfo["dead"] = tIsDead;
 				tInfo["healthmax"] = UnitHealthMax(aUnit);
 				tInfo["sortMaxHp"] = VUHDO_getUnitSortMaxHp(aUnit);
+				tInfo["loghealth"] = UnitHealth(aUnit);
 
 			elseif 6 == aMode then -- VUHDO_UPDATE_AFK
 				tInfo["afk"] = tIsAfk;
@@ -433,9 +443,10 @@ function VUHDO_updateHealth(aUnit, aMode)
 		return;
 	end
 
+
 	tIsPet = VUHDO_RAID[aUnit] and VUHDO_RAID[aUnit]["isPet"];
 
-	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enth„lt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
+	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enthï¿½lt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
 		VUHDO_setHealth(aUnit, aMode);
 		VUHDO_updateHealthBarsFor(aUnit, aMode);
 	end
@@ -450,7 +461,7 @@ function VUHDO_updateHealth(aUnit, aMode)
 	end
 
 	if 1 ~= sCurrentMode -- VUHDO_MODE_NEUTRAL
-		and (2 == aMode or 3 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX
+		and (2 == aMode or 3 == aMode or 12 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX --  VUHDO_UPDATE_HEALTH_COMBAT_LOG
 		-- Remove old emergencies
 		VUHDO_FORCE_RESET = true;
 		for tUnit, _ in pairs(VUHDO_EMERGENCIES) do

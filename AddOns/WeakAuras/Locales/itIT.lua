@@ -266,7 +266,7 @@ L["Combat Log"] = "Registro di combattimento"
 L["Conditions"] = "Condizioni"
 L["Contains"] = "Contiene"
 --[[Translation missing --]]
-L["Continously update Movement Speed"] = "Continously update Movement Speed"
+L["Continuously update Movement Speed"] = "Continuously update Movement Speed"
 --[[Translation missing --]]
 L["Cooldown"] = "Cooldown"
 --[[Translation missing --]]

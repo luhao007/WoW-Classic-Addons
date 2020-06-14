@@ -27,17 +27,19 @@ local tNewHealth;
 local tDeadInfo = { ["dead"] = true };
 local function VUHDO_addUnitHealth(aUnit, aDelta)
 	tInfo = VUHDO_RAID[aUnit] or tDeadInfo;
-
+	if abs(aDelta) > 10000 then
+		aDelta = 0;
+	end
 	if not tInfo["dead"] then
 		tNewHealth = tInfo["health"] + aDelta;
-
 		if tNewHealth < 0 then tNewHealth = 0;
-		elseif tNewHealth > tInfo["healthmax"]  then tNewHealth = tInfo["healthmax"]; end
-
-		if tInfo["health"] ~= tNewHealth then
-			tInfo["health"] = tNewHealth;
-			VUHDO_updateHealth(aUnit, 2); -- VUHDO_UPDATE_HEALTH
-		end
+		elseif tNewHealth > tInfo["healthmax"]  then tNewHealth = tInfo["healthmax"];end
+		
+		tInfo["loghealth"] = tNewHealth;
+		-- if tInfo["health"] ~= tNewHealth then
+			tInfo["isUpdated"] = 1;
+			VUHDO_updateHealth(aUnit, 12); -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
+		-- end
 	end
 end
 
@@ -112,6 +114,7 @@ function VUHDO_parseCombatLogEvent(aMsg, aDstGUID, aMsg1, aMsg2, aMsg4)
 		if tUnit == sCurrentTarget then	VUHDO_addUnitHealth("target", tImpact);	end
 		if tUnit == sCurrentFocus then VUHDO_addUnitHealth("focus", tImpact); end
 	end
+
 end
 
 

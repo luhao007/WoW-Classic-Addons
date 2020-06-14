@@ -32,6 +32,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["%s, offset: %0.2f;%0.2f"] = "%s, offset: %0.2f;%0.2f"
 	--[[Translation missing --]]
+	L["(Right click to rename)"] = "(Right click to rename)"
+	--[[Translation missing --]]
 	L["|c%02x%02x%02x%02xCustom Color|r"] = "|c%02x%02x%02x%02xCustom Color|r"
 	--[[Translation missing --]]
 	L["|cFFFF0000Note:|r The unit '%s' is not a trackable unit."] = "|cFFFF0000Note:|r The unit '%s' is not a trackable unit."
@@ -61,6 +63,8 @@ local L = WeakAuras.L
 	L["Add Option"] = "Ajouter Option"
 	L["Add Overlay"] = "Ajouter un Overlay"
 	L["Add Property Change"] = "Ajouter un Changement de Propriété"
+	--[[Translation missing --]]
+	L["Add Snippet"] = "Add Snippet"
 	L["Add Sub Option"] = "Ajouter un sous-option"
 	L["Add to group %s"] = "Ajouter au groupe %s"
 	L["Add to new Dynamic Group"] = "Ajouter à un nouveau groupe dynamique"
@@ -160,7 +164,6 @@ Si la durée de l'animation est définie à |cFF00CC0010%|r, et le déclencheur 
 	L["Can be a UID (e.g., party1)."] = "Can be a UID (e.g., party1)."
 	L["Cancel"] = "Annuler"
 	L["Center"] = "Centre"
-	L["Channel Number"] = "Numéro de canal"
 	L["Chat Message"] = "Message dans le chat"
 	L["Check On..."] = "Vérifier sur..."
 	L["Children:"] = "Enfant :"
@@ -342,7 +345,7 @@ Ne sautez pas cette version]=]
 	L["Filter by Class"] = "Filter by Class"
 	L["Filter by Group Role"] = "Filtrer par Rôle de Groupe"
 	--[[Translation missing --]]
-	L["Filter by Hostility"] = "Filter by Hostility"
+	L["Filter by Nameplate Type"] = "Filter by Nameplate Type"
 	L["Finish"] = "Finir"
 	L["Fire Orb"] = "Orbe de feu"
 	L["Font"] = "Police"
@@ -576,6 +579,8 @@ Seule une unique valeur peut être choisie]=]
 	L["Position Settings"] = "Paramètres de position"
 	--[[Translation missing --]]
 	L["Preferred Match"] = "Preferred Match"
+	--[[Translation missing --]]
+	L["Premade Snippets"] = "Premade Snippets"
 	L["Preset"] = "Préréglé"
 	--[[Translation missing --]]
 	L["Press Ctrl+C to copy"] = "Press Ctrl+C to copy"
@@ -631,7 +636,8 @@ Seule une unique valeur peut être choisie]=]
 	L["Set Parent to Anchor"] = "Définir Parent à l'Ancrage"
 	L["Set Thumbnail Icon"] = "Définir la miniature"
 	L["Set tooltip description"] = "Définir la description de l'info-bulle"
-	L["Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visiblility and scale."] = "Définit le cadre ancré en tant que parent de l'aura, ce qui lui permet d'hériter des attributs tels que la visibilité et l'échelle."
+	--[[Translation missing --]]
+	L["Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visibility and scale."] = "Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visibility and scale."
 	L["Settings"] = "Paramètres"
 	--[[Translation missing --]]
 	L["Shadow Color"] = "Shadow Color"
@@ -685,6 +691,8 @@ Seule une unique valeur peut être choisie]=]
 	L["Slider Step Size"] = "Slider Step Size"
 	L["Small Icon"] = "Petite icône"
 	L["Smooth Progress"] = "Progrès Doux"
+	--[[Translation missing --]]
+	L["Snippets"] = "Snippets"
 	--[[Translation missing --]]
 	L["Soft Max"] = "Soft Max"
 	--[[Translation missing --]]
@@ -822,6 +830,8 @@ Seule une unique valeur peut être choisie]=]
 	L["Yes"] = "Oui"
 	L["Y-Offset"] = "Décalage Y"
 	L["You are about to delete %d aura(s). |cFFFF0000This cannot be undone!|r Would you like to continue?"] = "Vous êtes sur le point de supprimer %d aura(s). |cFFFF0000Cela ne peut pas être annulé !|r Voulez-vous continuer ?"
+	--[[Translation missing --]]
+	L["Your Saved Snippets"] = "Your Saved Snippets"
 	L["Z Offset"] = "Décalage Z"
 	L["Z Rotation"] = "Rotation Z"
 	L["Zoom"] = "Zoom"

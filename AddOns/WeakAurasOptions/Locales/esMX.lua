@@ -41,6 +41,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["%s, offset: %0.2f;%0.2f"] = "%s, offset: %0.2f;%0.2f"
 	--[[Translation missing --]]
+	L["(Right click to rename)"] = "(Right click to rename)"
+	--[[Translation missing --]]
 	L["|c%02x%02x%02x%02xCustom Color|r"] = "|c%02x%02x%02x%02xCustom Color|r"
 	--[[Translation missing --]]
 	L["|cFFFF0000Note:|r The unit '%s' is not a trackable unit."] = "|cFFFF0000Note:|r The unit '%s' is not a trackable unit."
@@ -83,6 +85,8 @@ local L = WeakAuras.L
 	L["Add Overlay"] = "Add Overlay"
 	--[[Translation missing --]]
 	L["Add Property Change"] = "Add Property Change"
+	--[[Translation missing --]]
+	L["Add Snippet"] = "Add Snippet"
 	--[[Translation missing --]]
 	L["Add Sub Option"] = "Add Sub Option"
 	L["Add to group %s"] = "Agregar al grupo %s"
@@ -208,7 +212,6 @@ Si la duración de la animación es |cFF00CC0010%|r, y el disparador del aura es
 	L["Cancel"] = "Cancelar"
 	--[[Translation missing --]]
 	L["Center"] = "Center"
-	L["Channel Number"] = "Número de canal"
 	L["Chat Message"] = "Mensaje de chat"
 	L["Check On..."] = "Chequear..."
 	L["Children:"] = "Dependientes:"
@@ -416,7 +419,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	--[[Translation missing --]]
 	L["Filter by Group Role"] = "Filter by Group Role"
 	--[[Translation missing --]]
-	L["Filter by Hostility"] = "Filter by Hostility"
+	L["Filter by Nameplate Type"] = "Filter by Nameplate Type"
 	L["Finish"] = "Completar"
 	L["Fire Orb"] = "Orbe de fuego"
 	L["Font"] = "Font"
@@ -715,6 +718,8 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Position Settings"] = "Position Settings"
 	--[[Translation missing --]]
 	L["Preferred Match"] = "Preferred Match"
+	--[[Translation missing --]]
+	L["Premade Snippets"] = "Premade Snippets"
 	L["Preset"] = "Predefinido"
 	--[[Translation missing --]]
 	L["Press Ctrl+C to copy"] = "Press Ctrl+C to copy"
@@ -784,7 +789,7 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Set Thumbnail Icon"] = "Set Thumbnail Icon"
 	L["Set tooltip description"] = "Establecer descripción de texto emergente"
 	--[[Translation missing --]]
-	L["Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visiblility and scale."] = "Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visiblility and scale."
+	L["Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visibility and scale."] = "Sets the anchored frame as the aura's parent, causing the aura to inherit attributes such as visibility and scale."
 	--[[Translation missing --]]
 	L["Settings"] = "Settings"
 	--[[Translation missing --]]
@@ -852,6 +857,8 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Small Icon"] = "Icono pequeño"
 	--[[Translation missing --]]
 	L["Smooth Progress"] = "Smooth Progress"
+	--[[Translation missing --]]
+	L["Snippets"] = "Snippets"
 	--[[Translation missing --]]
 	L["Soft Max"] = "Soft Max"
 	--[[Translation missing --]]
@@ -1028,6 +1035,8 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Y-Offset"] = "Y-Offset"
 	--[[Translation missing --]]
 	L["You are about to delete %d aura(s). |cFFFF0000This cannot be undone!|r Would you like to continue?"] = "You are about to delete %d aura(s). |cFFFF0000This cannot be undone!|r Would you like to continue?"
+	--[[Translation missing --]]
+	L["Your Saved Snippets"] = "Your Saved Snippets"
 	L["Z Offset"] = "Posición de Z"
 	L["Z Rotation"] = "Rotación de Z"
 	L["Zoom"] = "Ampliar"

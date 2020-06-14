@@ -228,7 +228,7 @@ L["Combat Log"] = "Journal de combat"
 L["Conditions"] = "Conditions"
 L["Contains"] = "Contient"
 --[[Translation missing --]]
-L["Continously update Movement Speed"] = "Continously update Movement Speed"
+L["Continuously update Movement Speed"] = "Continuously update Movement Speed"
 L["Cooldown"] = "Temps de recharge"
 L["Cooldown Progress (Equipment Slot)"] = "Progression du temps de recharge (Emplacement d'équipement)"
 L["Cooldown Progress (Item)"] = "Progression du temps de recharge (Objet)"
