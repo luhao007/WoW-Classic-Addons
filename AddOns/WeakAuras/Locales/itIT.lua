@@ -423,11 +423,15 @@ L["Emphasized option checked in BigWigs's spell options"] = "Emphasized option c
 --[[Translation missing --]]
 L["Empty"] = "Empty"
 --[[Translation missing --]]
+L["Enchant Applied"] = "Enchant Applied"
+--[[Translation missing --]]
 L["Enchant Found"] = "Enchant Found"
 --[[Translation missing --]]
 L["Enchant Missing"] = "Enchant Missing"
 --[[Translation missing --]]
 L["Enchant Name or ID"] = "Enchant Name or ID"
+--[[Translation missing --]]
+L["Enchant Removed"] = "Enchant Removed"
 --[[Translation missing --]]
 L["Encounter ID(s)"] = "Encounter ID(s)"
 --[[Translation missing --]]
@@ -1559,6 +1563,8 @@ L["Unit Characteristics"] = "Unit Characteristics"
 L["Unit Destroyed"] = "Unit Destroyed"
 --[[Translation missing --]]
 L["Unit Died"] = "Unit Died"
+--[[Translation missing --]]
+L["Unit Dissipates"] = "Unit Dissipates"
 --[[Translation missing --]]
 L["Unit Frame"] = "Unit Frame"
 --[[Translation missing --]]

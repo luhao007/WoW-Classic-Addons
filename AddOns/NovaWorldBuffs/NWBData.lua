@@ -136,7 +136,7 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		NWB:doFlowerMsg(type, layer);
 	end
 	--Ignore data syncing for some recently out of date versions.
-	if (tonumber(remoteVersion) < 1.64) then
+	if (tonumber(remoteVersion) < 1.65) then
 		if (cmd == "requestData" and distribution == "GUILD") then
 			if (not NWB:getGuildDataStatus()) then
 				NWB:sendSettings("GUILD");
@@ -202,7 +202,7 @@ end
 
 --Send full data.
 NWB.lastDataSent = 0;
-function NWB:sendData(distribution, target, prio)
+function NWB:sendData(distribution, target, prio, noLayerMap)
 	local inInstance, instanceType = IsInInstance();
 	if (distribution == "YELL" and inInstance) then
 		return;
@@ -212,7 +212,7 @@ function NWB:sendData(distribution, target, prio)
 	end
 	local data;
 	if (NWB.isLayered) then
-		data = NWB:createDataLayered(distribution);
+		data = NWB:createDataLayered(distribution, noLayerMap);
 	else
 		data = NWB:createData(distribution);
 	end
@@ -246,11 +246,11 @@ function NWB:getGuildDataStatus()
 	for k, v in NWB:pairsByKeys(onlineMembers) do
 		count = count + 1;
 		if (count > limit) then
-			NWB:debug("Not first in line for guild data");
+			--NWB:debug("Not first in line for guild data");
 			return;
 		end
 		if (k == me) then
-			NWB:debug("First in line for guild data");
+			--NWB:debug("First in line for guild data");
 			return true;
 		end
 	end
@@ -409,7 +409,7 @@ function NWB:createData(distribution)
 end
 
 local lastSendLayerMap = {};
-function NWB:createDataLayered(distribution)
+function NWB:createDataLayered(distribution, noLayerMap)
 	local data = {};
 	if (UnitInBattleground("player") and distribution ~= "GUILD") then
 		return data;
@@ -423,7 +423,7 @@ function NWB:createDataLayered(distribution)
 		sendLayerMapDelay = 1260;
 	end
 	local sendLayerMap, foundTimer;
-	if ((GetServerTime() - lastSendLayerMap[distribution]) > sendLayerMapDelay
+	if (not noLayerMap and (GetServerTime() - lastSendLayerMap[distribution]) > sendLayerMapDelay
 			and distribution ~= "PARTY" and distribution ~= "RAID") then
 		--Layermap data data won't change much except right after a server restart.
 		--So there's no need to use the addon bandwidth every time we send.
@@ -448,9 +448,10 @@ function NWB:createDataLayered(distribution)
 			data.layers[layer]['rendYell'] = NWB.data.layers[layer].rendYell;
 			--data.layers[layer]['rendYell2'] = NWB.data.layers[layer].rendYell2;
 			--data.layers[layer]['rendSource'] = NWB.data.layers[layer].rendSource;
-			--if (NWB.data.layers[layer].GUID) then
-				--data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-			--end
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 			foundTimer = true;
 		end
 		if (NWB.data.layers[layer].onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
@@ -467,9 +468,10 @@ function NWB:createDataLayered(distribution)
 			data.layers[layer]['onyYell'] = NWB.data.layers[layer].onyYell;
 			--data.layers[layer]['onyYell2'] = NWB.data.layers[layer].onyYell2;
 			--data.layers[layer]['onySource'] = NWB.data.layers[layer].onySource;
-			--if (NWB.data.layers[layer].GUID) then
-				--data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-			--end
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 			foundTimer = true;
 		end
 		if (NWB.data.layers[layer].nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
@@ -484,9 +486,10 @@ function NWB:createDataLayered(distribution)
 			data.layers[layer]['nefYell'] = NWB.data.layers[layer].nefYell;
 			--data.layers[layer]['nefYell2'] = NWB.data.layers[layer].nefYell2;
 			--data.layers[layer]['nefSource'] = NWB.data.layers[layer].nefSource;
-			--if (NWB.data.layers[layer].GUID) then
-				--data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-			--end
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 			foundTimer = true;
 		end
 		if ((NWB.data.layers[layer].onyNpcDied > NWB.data.layers[layer].onyTimer) and
@@ -498,9 +501,10 @@ function NWB:createDataLayered(distribution)
 				data.layers[layer] = {};
 			end
 			data.layers[layer]['onyNpcDied'] = NWB.data.layers[layer].onyNpcDied;
-			--if (NWB.data.layers[layer].GUID) then
-				--data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-			--end
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 			foundTimer = true;
 		end
 		if ((NWB.data.layers[layer].nefNpcDied > NWB.data.layers[layer].nefTimer) and
@@ -512,9 +516,10 @@ function NWB:createDataLayered(distribution)
 				data.layers[layer] = {};
 			end
 			data.layers[layer]['nefNpcDied'] = NWB.data.layers[layer].nefNpcDied;
-			--if (NWB.data.layers[layer].GUID) then
-				--data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
-			--end
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 			foundTimer = true;
 		end
 		if (NWB.layeredSongflowers) then
@@ -558,6 +563,10 @@ function NWB:createDataLayered(distribution)
 				data.layers[layer] = {};
 			end
 			data.layers[layer]['lastSeenNPC'] = NWB.data.layers[layer].lastSeenNPC;
+			if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end
 		end
 	end
 	if (not NWB.layeredSongflowers) then
@@ -568,7 +577,7 @@ function NWB:createDataLayered(distribution)
 			end
 		end
 	end
-	--Tubers and dragons arent shared in layered realms anymore, trying to cut down on data.
+	--Tubers and dragons aren't shared in layered realms anymore, trying to cut down on data.
 	--They still work as personal timers for farming, which is really all they are good for anyway.
 	--[[for k, v in pairs(NWB.tubers) do
 		--Add currently active tuber timers.
@@ -599,8 +608,7 @@ end
 function NWB:validateCloseTimestamps(layer, key, timestamp)
 	local offset = 30;
 	if (string.match(key, "flower")) then
-		--Don't try and validate flower timers, they can often be close.
-		return true;
+		offset = 10;
 	end
 	if (not timestamp) then
 		--If no timestamp then we're creating data and just check them against out own timers.
@@ -1023,7 +1031,8 @@ function NWB:receivedData(data, sender, distribution)
 		NWB:debug("new data received", sender, distribution, NWB:isPlayerInGuild(sender));
 		if (distribution ~= "GUILD" and not NWB:isPlayerInGuild(sender)) then
 			NWB:debug("sending new data");
-			NWB:sendData("GUILD");
+			--Don't send layermap when sharing these new timers.
+			NWB:sendData("GUILD", nil, nil, true);
 		end
 	end
 	--If new flower data received and not freshly picked by guild member (that sends a msg to guild chat already)

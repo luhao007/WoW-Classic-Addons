@@ -241,7 +241,7 @@ L["timeStampZoneTitle"] = "本地时间/服务器时间";
 L["timeStampZoneDesc"] = "时间戳使用本地时间还是服务器时间.";
 
 L["colorizePrefixLinksTitle"] = "彩色前缀链接";
-L["colorizePrefixLinksDesc"] = "设定聊天频道[WorldBuffs]前缀链接的颜色.这个前缀会出现在聊天频道中,可点击显示你所有角色当前的世界BUFF计时.";
+L["colorizePrefixLinksDesc"] = "将聊天频道[WorldBuffs]前缀链接着色.这个前缀会出现在聊天频道中,可点击显示你所有角色当前的世界BUFF计时.";
 
 L["showAllAltsTitle"] = "显示所有小号";
 L["showAllAltsDesc"] = "在/buffs窗口中显示你的小号,即使他们没有获得任何buff.";
@@ -509,10 +509,29 @@ L["dispelsAllWBOnlyDesc"] = "仅在聊天频道显示其他人的世界Buff被�
 L["soundsDispelsAllTitle"] = "其他人的Buff被驱散提示音";
 L["soundsDispelsAllDesc"] = "请选择当其他人的Buff被驱散时,所播放的提示音.";
 
----New---
-
 L["middleHideBattlegroundsTitle"] = "战场中隐藏提示信息";
 L["middleHideBattlegroundsDesc"] = "当你在战场中时,隐藏屏幕中央的提示信息.";
 
 L["soundsDisableInBattlegroundsTitle"] = "战场中禁用提示音";
 L["soundsDisableInBattlegroundsDesc"] = "当你在战场中时,禁用提示音.";
+
+L["autoBuffsHeaderDesc"] = "与NPC对话时自动获取Buff";
+
+L["autoDmfBuffTitle"] = "暗夜马戏团Buff";
+L["autoDmfBuffDesc"] = "当你与[塞格]对话时,插件将自动为你选择一个暗夜马戏团Buff.请确认你选择了所希望获取的Buff.";
+
+L["autoDmfBuffTypeTitle"] = "请选择一个暗夜马戏团Buff";
+L["autoDmfBuffTypeDesc"] = "当你与[塞格]对话时,你希望插件自动为你选择哪一个暗夜马戏团Buff.";
+
+L["autoDireMaulBuffTitle"] = "厄运之槌Buff";
+L["autoDireMaulBuffDesc"] = "当你与厄运之槌那三个可以加Buff的[BOSS]对话时,插件将自动为你选择厄运之槌Buff";
+
+L["autoBwlPortalTitle"] = "黑翼之巢自动传送";
+L["autoBwlPortalDesc"] = "当你点击了黑翼之巢门口的[命令宝珠]时,插件会自动选择对话,从而将你传送到黑翼之巢副本内.";
+
+L["showBuffStatsTitle"] = "显示Buff计数器";
+L["showBuffStatsDesc"] = "在/buffs命令出现的窗口中显示你获得的每个世界Buff的次数.";
+
+L["buffResetButtonTooltip"] = "重置所有已记录的Buffs.\nBuff计数器数据不会被重置."; --Reset button tooltip for the /buffs frame.
+L["time"] = "次"; --Singular - This shows how many timers you got a buff. Example: (1 time)
+L["times"] = "次"; --Plural - This shows how many timers you got a buff. Example: (5 times)

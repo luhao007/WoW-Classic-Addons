@@ -45,8 +45,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["|cFFffcc00Anchors:|r Anchored to frame's |cFFFF0000%s|r with offset |cFFFF0000%s/%s|r"] = "|cFFffcc00Anchors:|r Anchored to frame's |cFFFF0000%s|r with offset |cFFFF0000%s/%s|r"
 	L["|cFFffcc00Extra Options:|r"] = "|cFFffcc00추가 옵션:|r"
-	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s"] = "|cFFffcc00글꼴 표시 특성:|r |cFFFF0000%s|r, 좌표 |cFFFF0000%s/%s|r인 그림자 |c%s색상|r%s%s"
-	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s%s"] = "|cFFffcc00글꼴 표시 특성:|r |cFFFF0000%s|r, 좌표 |cFFFF0000%s/%s|r인 그림자 |c%s색상|r%s%s%s"
+	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s"] = "|cFFffcc00글꼴 표시 특성:|r |cFFFF0000%s|r, 그림자 |c%s색상|r (좌표 |cFFFF0000%s/%s|r)%s%s"
+	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s%s"] = "|cFFffcc00글꼴 표시 특성:|r |cFFFF0000%s|r, 그림자 |c%s색상|r (좌표 |cFFFF0000%s/%s|r)%s%s%s"
 	L["1 Match"] = "1개 일치"
 	L["A 20x20 pixels icon"] = "20x20 픽셀 아이콘"
 	L["A 32x32 pixels icon"] = "32x32 픽셀 아이콘"
@@ -135,18 +135,13 @@ local L = WeakAuras.L
 	L["Bar Alpha"] = "바 투명도"
 	L["Bar Color"] = "바 색상"
 	L["Bar Color Settings"] = "바 색상 설정"
-	--[[Translation missing --]]
-	L["Bar Inner"] = "Bar Inner"
+	L["Bar Inner"] = "바 내부"
 	L["Bar Texture"] = "바 텍스쳐"
 	L["Big Icon"] = "큰 아이콘"
-	--[[Translation missing --]]
-	L["Blacklisted Aura Name"] = "Blacklisted Aura Name"
-	--[[Translation missing --]]
-	L["Blacklisted Exact Spell ID(s)"] = "Blacklisted Exact Spell ID(s)"
-	--[[Translation missing --]]
-	L["Blacklisted Name(s)"] = "Blacklisted Name(s)"
-	--[[Translation missing --]]
-	L["Blacklisted Spell ID"] = "Blacklisted Spell ID"
+	L["Blacklisted Aura Name"] = "차단된 효과 이름"
+	L["Blacklisted Exact Spell ID(s)"] = "차단된 정확한 주문 ID(s)"
+	L["Blacklisted Name(s)"] = "차단된 이름(s)"
+	L["Blacklisted Spell ID"] = "차단된 주문 ID"
 	L["Blend Mode"] = "혼합 모드"
 	L["Blue Rune"] = "푸른색 룬"
 	L["Blue Sparkle Orb"] = "푸른 불꽃 구슬"
@@ -461,8 +456,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Ignored"] = "무시됨"
 	L["Import"] = "가져오기"
 	L["Import a display from an encoded string"] = "암호화된 문자열에서 디스플레이 가져오기"
-	--[[Translation missing --]]
-	L["Inner"] = "Inner"
+	L["Inner"] = "내부"
 	L["Invalid Item Name/ID/Link"] = "잘못된 아이템 이름/ID/링크"
 	L["Invalid Spell ID"] = "잘못된 주문 ID"
 	L["Invalid Spell Name/ID/Link"] = "잘못된 주문 이름/ID/링크"
@@ -474,8 +468,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	--[[Translation missing --]]
 	L["Large Input"] = "Large Input"
 	L["Leaf"] = "잎"
-	--[[Translation missing --]]
-	L["Left"] = "Left"
+	L["Left"] = "왼쪽"
 	L["Left 2 HUD position"] = "좌측 2 HUD 위치"
 	L["Left HUD position"] = "좌측 HUD 위치"
 	L["Legacy Aura Trigger"] = "v2.9.0 이전 효과 활성 조건"
@@ -626,8 +619,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	--[[Translation missing --]]
 	L["Reset Entry"] = "Reset Entry"
 	L["Reset to Defaults"] = "기본값으로 재설정"
-	--[[Translation missing --]]
-	L["Right"] = "Right"
+	L["Right"] = "오른쪽"
 	L["Right 2 HUD position"] = "우측 2 HUD 위치"
 	L["Right HUD position"] = "우측 HUD 위치"
 	L["Right-click for more options"] = "우클릭 - 추가 옵션"

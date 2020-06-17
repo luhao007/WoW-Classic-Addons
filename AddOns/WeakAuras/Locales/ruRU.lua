@@ -294,9 +294,13 @@ L["Emphasized"] = "Emphasized"
 --[[Translation missing --]]
 L["Emphasized option checked in BigWigs's spell options"] = "Emphasized option checked in BigWigs's spell options"
 L["Empty"] = "Пустой"
+--[[Translation missing --]]
+L["Enchant Applied"] = "Enchant Applied"
 L["Enchant Found"] = "Чары найдены"
 L["Enchant Missing"] = "Чары отсутствуют"
 L["Enchant Name or ID"] = "Введите название или ID чар для оружия"
+--[[Translation missing --]]
+L["Enchant Removed"] = "Enchant Removed"
 L["Encounter ID(s)"] = "ID энкаунтера"
 L["Energize"] = "Восполнение"
 L["Enrage"] = "Исступление"
@@ -924,6 +928,8 @@ L["Unit"] = "Единица"
 L["Unit Characteristics"] = "Характеристики единицы"
 L["Unit Destroyed"] = "Единица уничтожена"
 L["Unit Died"] = "Единица умерла"
+--[[Translation missing --]]
+L["Unit Dissipates"] = "Unit Dissipates"
 --[[Translation missing --]]
 L["Unit Frame"] = "Unit Frame"
 --[[Translation missing --]]

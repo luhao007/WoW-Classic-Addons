@@ -1,44 +1,22 @@
-# [2.17.7](https://github.com/WeakAuras/WeakAuras2/tree/2.17.7) (2020-06-09)
+# [2.17.8](https://github.com/WeakAuras/WeakAuras2/tree/2.17.8) (2020-06-16)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.5...2.17.7)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.7...2.17.8)
 
 ## Highlights
 
- - New Snippet feature! Ever wondered how to get started with custom code or just sick of having to type things over and over again? We got you! You can find the Snippets button in certain custom code editor fields. 
+ - bug fixes 
 
 ## Commits
 
-InfusOnWoW (10):
+InfusOnWoW (1):
 
-- Fix incorrect subevent registration
-- Only allow nameplate units for attaching nameplates
-- Add HasVehicleActionBar to the "Vehicle UI" load option
-- BT2: Fix smart groups by more correctly checking the unit ids
-- Fix tooltip information not being cleared if aura is missing
-- Rename "Filter by Hostility" to "Nameplate Type"
-- Fix boss5 unit
-- Revert "Don't check for state.show in ReplacePlaceHolders"
-- Fix tsu variables with syntax errors breaking the trigger page
-- Fix models on progress bars
+- Revert even more spell checker changes
 
-Stanzilla (3):
+Stanzilla (1):
 
-- one more
-- revert a few breaking spelling changes
-- run spellchecker
+- Update README.md
 
-asaka-wa (1):
+mrbuds (1):
 
-- Add snippets (#2176)
-
-mrbuds (3):
-
-- on import, fix handling of aura's tocversion
-- remove ability to send messages to channels (which is protected) fixes #2200
-- fix nil error fixes #2198
-
-nullKomplex (2):
-
-- Remove unused slash command code.
-- Fix Profiling pprint command.
+- Add missing CLEU subevent prefix, fixes #2224
 

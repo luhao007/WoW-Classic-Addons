@@ -1,6 +1,6 @@
 ## Interface: 11304
 ## Author: Novaspark-Arugal OCE
-## Version: 1.64
+## Version: 1.65
 ## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs
@@ -12,6 +12,7 @@
 Locale\Locales.xml
 NovaWorldBuffs.lua
 Options.lua
+NWBHelp.lua
 NWBData.lua
 NWBCreatures.lua
 NWBRealms.lua

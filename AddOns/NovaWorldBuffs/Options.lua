@@ -148,6 +148,14 @@ NWB.options = {
 			get = "getMinimapButton",
 			set = "setMinimapButton",
 		},
+		showBuffDtats = {
+			type = "toggle",
+			name = L["showBuffStatsTitle"],
+			desc = L["showBuffStatsDesc"],
+			order = 21,
+			get = "getShowBuffStats",
+			set = "setShowBuffStats",
+		},
 		logonHeader = {
 			type = "header",
 			name = L["logonHeaderDesc"],
@@ -831,6 +839,65 @@ NWB.options = {
 			get = "getSoundsDispelsAll",
 			set = "setSoundsDispelsAll",
 		},
+		autoBuffsHeader = {
+			type = "header",
+			name = L["autoBuffsHeaderDesc"],
+			order = 160,
+		},
+		autoDmfBuff = {
+			type = "toggle",
+			name = L["autoDmfBuffTitle"],
+			desc = L["autoDmfBuffDesc"],
+			order = 164,
+			get = "getAutoDmfBuff",
+			set = "setAutoDmfBuff",
+		},
+		autoDmfBuffType = {
+			type = "select",
+			name = L["autoDmfBuffTypeTitle"],
+			desc = L["autoDmfBuffTypeDesc"],
+			values = {
+				["Damage"] = L["Sayge's Dark Fortune of Damage"],
+				["Agility"] = L["Sayge's Dark Fortune of Agility"],
+				["Intelligence"] = L["Sayge's Dark Fortune of Intelligence"],
+				["Spirit"] = L["Sayge's Dark Fortune of Spirit"],
+				["Stamina"] = L["Sayge's Dark Fortune of Stamina"],
+				["Strength"] = L["Sayge's Dark Fortune of Strength"],
+				["Armor"] = L["Sayge's Dark Fortune of Armor"],
+				["Resistance"] = L["Sayge's Dark Fortune of Resistance"],
+			},
+			sorting = {
+				[1] = "Damage",
+				[2] = "Agility",
+				[3] = "Intelligence",
+				[4] = "Spirit",
+				[5] = "Stamina",
+				[6] = "Strength",
+				[7] = "Armor",
+				[8] = "Resistance",
+			},
+			order = 165,
+			width = "double",
+			--width = 1.6,
+			get = "getAutoDmfBuffType",
+			set = "setAutoDmfBuffType",
+		},
+		autoDireMaulBuff = {
+			type = "toggle",
+			name = L["autoDireMaulBuffTitle"],
+			desc = L["autoDireMaulBuffDesc"],
+			order = 166,
+			get = "getAutoDireMaulBuff",
+			set = "setAutoDireMaulBuff",
+		},
+		autoBwlPortal = {
+			type = "toggle",
+			name = L["autoBwlPortalTitle"],
+			desc = L["autoBwlPortalDesc"],
+			order = 167,
+			get = "getAutoBwlPortal",
+			set = "setAutoBwlPortal",
+		},
 	},
 };
 
@@ -987,6 +1054,11 @@ NWB.optionDefaults = {
 		dispelsAllWBOnly = false,
 		soundsDispelsMine = "NWB - Dink",
 		soundsDispelsAll = "None",
+		autoDmfBuff = false,
+		autoDmfBuffType = "Damage",
+		autoDireMaulBuff = true,
+		autoBwlPortal = true,
+		showBuffStats = false,
 		
 		resetLayers3 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
@@ -1296,6 +1368,16 @@ end
 
 function NWB:getMinimapButton(info)
 	return self.db.global.minimapButton;
+end
+
+--Show buff stats.
+function NWB:setShowBuffStats(info, value)
+	self.db.global.showBuffStats = value;
+	NWB:recalcBuffListFrame();
+end
+
+function NWB:getShowBuffStats(info)
+	return self.db.global.showBuffStats;
 end
 
 --Chat 30 minute warning.
@@ -2114,4 +2196,40 @@ end
 
 function NWB:getDispelsAllWBOnly(info)
 	return self.db.global.dispelsAllWBOnly;
+end
+
+--Auto get DMF buff.
+function NWB:setAutoDmfBuff(info, value)
+	self.db.global.autoDmfBuff = value;
+end
+
+function NWB:getAutoDmfBuff(info)
+	return self.db.global.autoDmfBuff;
+end
+
+--Which DMF buff to get.
+function NWB:setAutoDmfBuffType(info, value)
+	self.db.global.autoDmfBuffType = value;
+end
+
+function NWB:getAutoDmfBuffType(info)
+	return self.db.global.autoDmfBuffType;
+end
+
+--Auto get Dire Maul buff.
+function NWB:setAutoDireMaulBuff(info, value)
+	self.db.global.autoDireMaulBuff = value;
+end
+
+function NWB:getAutoDireMaulBuff(info)
+	return self.db.global.autoDireMaulBuff;
+end
+
+--Auto enter BWL portal.
+function NWB:setAutoBwlPortal(info, value)
+	self.db.global.autoBwlPortal = value;
+end
+
+function NWB:getAutoBwlPortal(info)
+	return self.db.global.autoBwlPortal;
 end
