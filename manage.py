@@ -252,18 +252,19 @@ class Manager(object):
 
             files = ['lib.xml', '{}.xml'.format(lib), '{}.toc'.format(lib)]
             for f in files:
-                if os.path.exists(root / lib / f):
-                    s = '{}{}'.format(
-                        '<Script file="' if f.endswith('.toc') else '',
-                        embed
-                    )
+                for p in [root / f, root / lib / f]:
+                    if os.path.exists(p):
+                        s = '{}{}'.format(
+                            '<Script file="' if f.endswith('.toc') else '',
+                            embed
+                        )
 
-                    process_file(
-                        root / lib / f,
-                        lambda lines: [l for l in lines
-                                       if not any(l.strip().startswith(s)
-                                                  for embed in embeds)]
-                    )
+                        process_file(
+                            p,
+                            lambda lines: [l for l in lines
+                                           if not any(l.strip().startswith(s)
+                                                      for embed in embeds)]
+                        )
 
     ##########################
     # Handle individual addons
