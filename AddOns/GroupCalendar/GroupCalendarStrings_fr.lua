@@ -26,7 +26,9 @@ if GetLocale() == "frFR" then
 	GroupCalendar_Settings_Use24HrTime = "Utiliser le temps de 24 heures";
 	GroupCalendar_Settings_Use24HrTimeTip = "Utiliser le temps de 24 heures";
 
-	GroupCalendar_cSelfWillAttend = "%s sera présent";
+	GroupCalendar_cSelfWillAttend = "Participer";
+	CalendarEventEditor_cYes = "Oui";
+	CalendarEventEditor_cNo = "Non";
 
 	GroupCalendar_cMonthNames = {"Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"};
 	GroupCalendar_cDayOfWeekNames = {GroupCalendar_cSunday, GroupCalendar_cMonday, GroupCalendar_cTuesday, GroupCalendar_cWednesday, GroupCalendar_cThursday, GroupCalendar_cFriday, GroupCalendar_cSaturday};

@@ -244,12 +244,21 @@ function CalendarEventEditor_UpdateControlsFromEvent(pEvent, pExistingValuesOnly
 	end
 
 	-- Get the RSVP/Role selected
-	local vPlayerName, vRSVP = EventDatabase_GetEventRSVP(pEvent);	
+	local vPlayerName, vRSVP = EventDatabase_GetPlayerEventRSVP(pEvent);	
 	
 	if vRSVP then
 		CalendarDropDown_SetSelectedValue(CalendarEventEditorCharacterMenu, vPlayerName);	
-		CalendarDropDown_SetSelectedValue(CalendarEventEditorRoleMenu, EventDatabase_GetRoleByRoleCode(vRSVP.mRole))	
-		CalendarEventEditorSelfAttend:SetChecked(true);
+		CalendarDropDown_SetSelectedValue(CalendarEventEditorRoleMenu, EventDatabase_GetRoleByRoleCode(vRSVP.mRole))
+		if vRSVP.mStatus == "Y" or vRSVP.mStatus == "S" then
+			CalendarEventEditorSelfAttend:SetChecked(true);
+			CalendarEventEditorSelfNotAttend:SetChecked(false);
+		elseif vRSVP.mStatus == "N" then
+			CalendarEventEditorSelfAttend:SetChecked(false);
+			CalendarEventEditorSelfNotAttend:SetChecked(true);
+		else
+			CalendarEventEditorSelfAttend:SetChecked(false);
+			CalendarEventEditorSelfNotAttend:SetChecked(false);
+		end
 	else
 		local playerDB = EventDatabase_GetPlayerDatabase(gGroupCalendar_PlayerName);
 		local defaultRole = "U";
@@ -259,9 +268,10 @@ function CalendarEventEditor_UpdateControlsFromEvent(pEvent, pExistingValuesOnly
 		CalendarDropDown_SetSelectedValue(CalendarEventEditorRoleMenu, EventDatabase_GetRoleByRoleCode(defaultRole)); 
 		CalendarDropDown_SetSelectedValue(CalendarEventEditorCharacterMenu, gGroupCalendar_PlayerName);
 		CalendarEventEditorSelfAttend:SetChecked(false);
+		CalendarEventEditorSelfNotAttend:SetChecked(false);
 	end
 	
-	CalendarEventEditor_SetSelfAttend();
+	CalendarEventEditor_SetSelfAttendDisplay();
 end
 
 function CalendarEventEditor_SaveClassLimits(pLimits)
@@ -453,7 +463,7 @@ function CalendarEventEditor_SetEventType(pEventType)
 		CalendarEventEditorSelfAttend:Hide();		
 	end
 	
-	CalendarEventEditor_SetSelfAttend();
+	CalendarEventEditor_SetSelfAttendDisplay();
 
 	if vTitleWasEventName then
 		CalendarEventTitle:SetText(EventDatabase_GetEventNameByID(pEventType));
@@ -583,7 +593,7 @@ function CalendarEventEditor_SaveRSVP(pEvent)
 	for DBindex, vPlayerDB in pairs (EventDatabase_GetPlayerDatabases()) do		
 		if pCharacter == vPlayerDB.UserName then	
 			
-			local OldRSVP = pEvent.mAttendance[pCharacter];
+			local OldRSVP = pEvent.mAttendance[pCharacter];					
 
 			local RSVP = {};
 			
@@ -597,11 +607,13 @@ function CalendarEventEditor_SaveRSVP(pEvent)
 				else
 					RSVP.mStatus = "Y";
 				end
-
+				
 				-- Save the default for this char
 				vPlayerDB.DefaultRole = pRoleCode;
-			else
+			elseif CalendarEventEditorSelfNotAttend:GetChecked() then
 				RSVP.mStatus = "N";
+			else
+				RSVP.mStatus = "-";
 			end
 
 			if not OldRSVP or not OldRSVP.mOriginalDate then
@@ -617,15 +629,18 @@ function CalendarEventEditor_SaveRSVP(pEvent)
 			RSVP.mLevel = vPlayerDB.PlayerLevel;
 			RSVP.mGuildRank = vPlayerDB.GuildRank			
 
+			if OldRSVP then
+				RSVP.mComment = OldRSVP.mComment;
+			end
+
 			pEvent.mAttendance[pCharacter] = RSVP;
 			CalendarNetwork_SendRSVPUpdate(pEvent, RSVP, "ALERT");
-
-
+			
 
 		elseif CalendarEventEditorSelfAttend:GetChecked() then -- don't change other characters unless we said we were going
 			local RSVP = pEvent.mAttendance[vPlayerDB.UserName];
 			if RSVP and (RSVP.mStatus == "Y" or RSVP.mStatus == "S") then
-				RSVP.mStatus = "N";
+				RSVP.mStatus = "-";
 				RSVP.mDate = vDate;
 				RSVP.mTime = vTime60;
 				CalendarNetwork_SendRSVPUpdate(pEvent, RSVP, "ALERT");
@@ -720,8 +735,25 @@ end
 
 function CalendarEventEditor_SetSelfAttend()	
 	if CalendarEventEditorSelfAttend:GetChecked() and vUsesAttendance then
+		CalendarEventEditorSelfNotAttend:SetChecked(false);
+	end
+
+	CalendarEventEditor_SetSelfAttendDisplay();
+end
+
+function CalendarEventEditor_SetSelfNotAttend()
+	if CalendarEventEditorSelfNotAttend:GetChecked() and vUsesAttendance then
+		CalendarEventEditorSelfAttend:SetChecked(false);
+	end
+
+	CalendarEventEditor_SetSelfAttendDisplay();
+end
+
+function CalendarEventEditor_SetSelfAttendDisplay()
+	if CalendarEventEditorSelfAttend:GetChecked() and vUsesAttendance then
+		CalendarEventEditorSelfNotAttend:SetChecked(false);
 		CalendarEventEditorCharacter:Show();
-		CalendarEventEditorRole:Show();
+		CalendarEventEditorRole:Show();	
 	else
 		CalendarEventEditorCharacter:Hide();
 		CalendarEventEditorRole:Hide();
@@ -748,8 +780,8 @@ function CalendarEventEditor_ShowPanel(pPanelIndex)
 		-- Event panel
 		
 		--CalendarEventEditorSelfAttend:SetChecked(CalendarEventEditor_GetSelfAttend());
-		CalendarEventEditorSelfAttendText:SetText(string.format(GroupCalendar_cSelfWillAttend, gGroupCalendar_PlayerName));
-		
+		CalendarEventEditorSelfAttendText:SetText(CalendarEventEditor_cYes);
+		CalendarEventEditorSelfNotAttendText:SetText(CalendarEventEditor_cNo);
 	elseif pPanelIndex == 2 then
 		-- Attendance panel
 		
@@ -2257,7 +2289,14 @@ function CalendarAddPlayer_Save(pPlayerInfo)
 							vGuildRank,
 							vRoleCode);
 	
-	
+	-- Keep the original signup time if it exists
+	local vRSVP_old = EventDatabase_GetEventRSVP(gCalendarEventEditor_Event, vName)
+
+	if vRSVP_old then
+		vRSVP.mOriginalDate = vRSVP_old.mOriginalDate;
+		vRSVP.mOriginalTime = vRSVP_old.mOriginalTime;
+	end
+
 	gCalendarEventEditor_Event.mAttendance[vName] = vRSVP;
 	
 	CalendarNetwork_SendRSVPUpdate(gCalendarEventEditor_Event, vRSVP, "ALERT");

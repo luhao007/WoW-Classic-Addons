@@ -1,8 +1,13 @@
-0.2.2 Release Notes
+0.2.3 Release Notes
 Contributions made by Crieve:
-* Added the Build Tool for rapidly creating new builds.
-* Appropriate auto-summarizing commit by build type.
-* Cleaned up some quests in Dun Morogh. The Arena Treasure Chest is no longer listed in Rares and uses a more appropriate icon.
-* Added cost for "That's Asking A Lot".
-* Removed the BuffButton_OnClick override that was preventing Rogues and Druids from cancelling their stealth/form.
+* Added cost for a Badlands quest.
+* Removed an unused function.
+* Fixed a bug with the mini and main list scale ratios when customized in the addon.
+* Implemented a DEV ONLY section for code that does NOT go to Live by using the Build Tool!
+* GetDataCache optimization.
+* Updated the Update function to not lag like shit by calling collectgarbage().
+* No longer allowing the mini list to spam refresh on new chunks.
+* Fixed the Profession window to show specialization specific recipes in addition to the base profession.
+* Fixed some unobtainable flags on leatherworking recipes that are available now. Fixed Arathi Basin one-time quests.
+* Added quest information for a quest in Arathi.
 

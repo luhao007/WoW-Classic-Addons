@@ -30,9 +30,10 @@ local L = AceLocale:NewLocale("Atlas_ClassicWoW", "ruRU", false);
 if L then
 L["\"Ambassador\" Dagg'thol"] = "\"Посланник\"Дагг'тол"
 L["3rd Box Opened: Postmaster Malown"] = "3-я коробка открыта: Почтальон Мэлоун"
-L["Abandonded Mole Machine"] = "Брошенная буровая установка"
 --[[Translation missing --]]
---[[ L["Abomination Wing"] = ""--]] 
+--[[ L["Abandonded Mole Machine"] = ""--]] 
+L["Abandoned Mole Machine"] = "Брошенная буровая установка"
+L["Abomination Wing"] = "Квартал мерзости "
 L["Acride <Scarshield Legion>"] = "Секретный агент <Легион Изрубленного Щита>"
 L["Agathelos the Raging"] = "Агателос Свирепый"
 L["Aggem Thorncurse"] = "Аггем Терновое Проклятие"
@@ -49,15 +50,12 @@ L["Ancient Equine Spirit"] = "Дух древнего коня"
 L["Ancient Stone Keeper"] = "Древний Хранитель Камня"
 L["Ancient Treasure"] = "Древнее сокровище"
 L["Andorgos <Brood of Malygos>"] = "Андоргос <Род Малигоса>"
-L["Annora (Master Enchanter)"] = "Аннора (Мастер Наложения Чар)"
+L["Annora <Master Enchanter>"] = "Аннора (Мастер Наложения Чар)"
 L["Antu'sul"] = "Анту'сул"
---[[Translation missing --]]
---[[ L["Anub'Rekhan"] = ""--]] 
---[[Translation missing --]]
---[[ L["Anub'shiah"] = ""--]] 
+L["Anub'Rekhan"] = "Ануб'Рекан"
+L["Anub'shiah"] = "Ануб'шиа"
 L["Aoren Sunglow <The Reliquary>"] = "Аорен Солнечное Сияние <Реликварий>"
 L["AQ"] = "АКУ"
-L["AQ10"] = "АКУ20"
 L["AQ20"] = "РА20"
 L["AQ40"] = "АКУ40"
 L["Arcanist Doan"] = "Чародей Доан"
@@ -65,8 +63,7 @@ L["Archaedas"] = "Аркедас"
 L["Archivist Galford"] = "Архивариус Галфорд"
 L["Archmage Angela Dosantos <Brotherhood of the Light>"] = "Верховный маг Анджела Досантос <Братство Света>"
 L["Archmage Arugal"] = "Верховный маг Аругал"
---[[Translation missing --]]
---[[ L["Archmage Tarsis Kir-Moldir"] = ""--]] 
+L["Archmage Tarsis Kir-Moldir"] = "Верховный маг Тарсис Кир-Молдир"
 L["Argent Guard Thaelrid"] = "Страж Талрид из ордена Серебряного Рассвета"
 L["Arm"] = "Броня"
 L["Armory"] = "Оружейная "
@@ -101,11 +98,18 @@ L["Bijou"] = "Блестяшка"
 L["Bijou's Belongings"] = "Вещи Блестяшки"
 L["Black Guard Swordsmith"] = "Оружейник Черной Стражи"
 L["Blastmaster Emi Shortfuse"] = "Взрывник Ими Фитилюшка"
-L["Blood of Innocents"] = "Кровь невинных"
-L["Bloodmage Thalnos"] = "Волшебник Крови Талнос"
 --[[Translation missing --]]
---[[ L["Boahn"] = ""--]] 
+--[[ L["Blind Hunter"] = ""--]] 
+L["Blood of Innocents"] = "Кровь невинных"
+--[[Translation missing --]]
+--[[ L["Blood Steward of Kirtonos"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Bloodlord Mandokir"] = ""--]] 
+L["Bloodmage Thalnos"] = "Волшебник Крови Талнос"
+L["Boahn"] = "Боан"
 L["Bodley"] = "Бодли"
+--[[Translation missing --]]
+--[[ L["Brainwashed Noble"] = ""--]] 
 L["BRD"] = "ГЧГ"
 L["BRM"] = "ЧГ"
 L["Broodlord Lashlayer"] = "Предводитель драконов Разящий Бич"
@@ -124,6 +128,8 @@ L["Captain Wyrmak"] = "Капитан Змеюк"
 L["Captain Xurrem"] = "Капитан Ксуррем"
 L["Cath"] = "Собор"
 L["Cathedral"] = "Собор "
+--[[Translation missing --]]
+--[[ L["Cavindra"] = ""--]] 
 L["Celebras the Cursed"] = "Селебрас Проклятый"
 L["Celebras the Redeemed"] = "Келебрас Освобожденный"
 L["Charlga Razorflank"] = "Чарлга Остробок"
@@ -153,16 +159,18 @@ L["Cursed Centaur"] = "Проклятый кентавр"
 L["Dark Coffer"] = "Черный ящик"
 L["Dark Iron Ambassador"] = "Посол из клана Черного Железа"
 L["Darkmaster Gandling"] = "Темный магистр Гандлинг"
-L["Death Speaker Jargba"] = "Вестник смерти Джаргба"
 --[[Translation missing --]]
---[[ L["Deathknight Wing"] = ""--]] 
+--[[ L["Darkstone Tablet"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Death Knight Darkreaver"] = ""--]] 
+L["Death Speaker Jargba"] = "Вестник смерти Джаргба"
+L["Deathknight Wing"] = "Военный квартал "
 L["Deathstalker Adamant"] = "Страж смерти Адамант"
 L["Deathsworn Captain"] = "Капитан служителей Смерти"
 L["Defias Gunpowder"] = "Порох Братства Справедливости"
 L["Deviate Faerie Dragon"] = "Загадочный волшебный дракон"
 L["Dextren Ward"] = "Декстрен Вард"
---[[Translation missing --]]
---[[ L["Digmaster Shovelphlange"] = ""--]] 
+L["Digmaster Shovelphlange"] = "Мастер Лопаторук"
 L["Dire Maul Arena"] = "Арена забытого города"
 L["Dire Pool"] = "Забытый остров"
 L["Disciple of Naralex"] = "Послушники Наралекса"
@@ -170,13 +178,19 @@ L["Divination Scryer"] = "Гадальный кристалл"
 L["DM"] = "ЗГ"
 L["Doctor Theolen Krastinov"] = "Доктор Теолен Крастинов"
 L["Doomrigger's Clasp"] = "Пряжка Роковой оснастки"
+--[[Translation missing --]]
+--[[ L["Doomrigger's Coffer"] = ""--]] 
 L["Drakefire Amulet"] = "Амулет Пламени дракона"
 L["Drakkisath's Brand"] = "Клеймо Драккисата"
 L["Dreamscythe"] = "Жнец Снов"
 L["Druid of the Talon"] = "Друид-ворон"
 L["Dustwraith"] = "Пыльный призрак"
+--[[Translation missing --]]
+--[[ L["Earthcaller Halmgar"] = ""--]] 
 L["Ebonroc"] = "Черноскал"
 L["Ebru <Disciple of Naralex>"] = "Эбру <Ученица Наралекса>"
+--[[Translation missing --]]
+--[[ L["Edge of Madness"] = ""--]] 
 L["Edwin VanCleef"] = "Эдвин ван Клиф"
 L["Elder Farwhisper"] = "Старейшина Тихий Шепот"
 L["Elder Mistwalker"] = "Старейшина Странник Туманов "
@@ -189,11 +203,13 @@ L["Elders' Square Postbox"] = "Ключ от почтового ящика на 
 L["Electrocutioner 6000"] = "Электрошокер 6000"
 L["Emperor Dagran Thaurissan"] = "Император Дагран Тауриссан"
 --[[Translation missing --]]
---[[ L["Eric \"The Swift\""] = ""--]] 
+--[[ L["Emperor Vek'lor"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Emperor Vek'nilash"] = ""--]] 
+L["Eric \"The Swift\""] = "Эрик \"Быстрый\""
 L["Essence Font"] = "Купель сущности"
 L["Estulan <The Highborne>"] = "Эстулан <Высокорожденный>"
---[[Translation missing --]]
---[[ L["Eviscerator"] = ""--]] 
+L["Eviscerator"] = "Потрошитель"
 L["Exit"] = "Выход"
 L["Face <S.A.F.E.>"] = "Физий <С.П.А.С.>"
 L["Fallen Champion"] = "Павший воитель"
@@ -212,20 +228,27 @@ L["Fire of Aku'mai"] = "Огонь Аку'майя"
 L["Firemaw"] = "Огнечрев"
 L["Flamegor"] = "Пламегор"
 --[[Translation missing --]]
---[[ L["Four Horsemen Chest"] = ""--]] 
+--[[ L["Foreman Thistlenettle"] = ""--]] 
+L["Four Horsemen Chest"] = "Сундук четырех всадников"
 L["Four Kaldorei Elites"] = "4 Кальдорайских гвардейцев"
+--[[Translation missing --]]
+--[[ L["Franclorn Forgewright"] = ""--]] 
 L["Fras Siabi"] = "Фрас Сиаби"
 L["Fras Siabi's Postbox"] = "Ключ от почтового ящика Фраса Сиаби"
---[[Translation missing --]]
---[[ L["Frostwyrm Lair"] = ""--]] 
+L["Frostwyrm Lair"] = "Логово Сапфирона"
 L["Furgus Warpwood"] = "Фургус Криводрев"
+--[[Translation missing --]]
+--[[ L["Gahz'ranka"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Gahz'rilla"] = ""--]] 
 L["Galamav the Marksman <Kargath Expeditionary Force>"] = "Галамав Стрелок <Каргатский экспедиционный корпус>"
 L["Galgann Firehammer"] = "Галганн Огнемолот"
 L["Garr"] = "Гарр"
---[[Translation missing --]]
---[[ L["Garrett Family Chest"] = ""--]] 
+L["Garrett Family Chest"] = "Сундук семейства Гарретт"
 L["Gehennas"] = "Гееннас"
 L["Gelihast"] = "Гелихаст"
+--[[Translation missing --]]
+--[[ L["Gelk <The Second Kahn>"] = ""--]] 
 L["General Angerforge"] = "Генерал Кузня Гнева"
 L["General Drakkisath"] = "Генерал Драккисат"
 L["General Rajaxx"] = "Генерал Раджакс"
@@ -233,8 +256,7 @@ L["Ghamoo-ra"] = "Гхаму-ра"
 L["Ghok Bashguud"] = "Гок Крепкобив"
 L["Gilnid"] = "Гилнид"
 L["Gizrul the Slavener"] = "Гизрул Поработитель"
---[[Translation missing --]]
---[[ L["Gluth"] = ""--]] 
+L["Gluth"] = "Глут"
 L["Glutton"] = "Обжора"
 L["Gnashjaw"] = "Зубощелк"
 L["Gnome"] = "Гном"
@@ -242,205 +264,181 @@ L["Golem Lord Argelmach"] = "Повелитель големов Аргелма�
 L["Golemagg the Incinerator"] = "Маг-лорд из клана Гордок"
 L["Gomora the Bloodletter"] = "Гомора Кровопускатель"
 --[[Translation missing --]]
---[[ L["Gorosh the Dervish"] = ""--]] 
+--[[ L["Goraluk Anvilcrack"] = ""--]] 
+L["Gorosh the Dervish"] = "Горош Дервиш"
+L["Gothik the Harvester"] = "Готик Жнец"
 --[[Translation missing --]]
---[[ L["Gothik the Harvester"] = ""--]] 
---[[Translation missing --]]
---[[ L["Grand Widow Faerlina"] = ""--]] 
+--[[ L["Grand Crusader Dathrohan"] = ""--]] 
+L["Grand Widow Faerlina"] = "Великая вдова Фарлина"
 L["Graveyard"] = "Кладбище"
+--[[Translation missing --]]
+--[[ L["Gri'lek"] = ""--]] 
 L["Grimlok"] = "Гримлок"
---[[Translation missing --]]
---[[ L["Grizzle"] = ""--]] 
---[[Translation missing --]]
---[[ L["Grobbulus"] = ""--]] 
+L["Grizzle"] = "Гриззл"
+L["Grobbulus"] = "Гроббулус"
 L["Grubbis"] = "Грязнюк"
 L["Guard Fengus"] = "Стражник Фенгус"
 L["Guard Mol'dar"] = "Стражник Мол'дар"
 L["Guard Slip'kik"] = "Стражник Слип'кик"
 L["GY"] = "Кладбище"
 L["Gyth"] = "Гит"
+--[[Translation missing --]]
+--[[ L["Hakkar"] = ""--]] 
 L["Halycon"] = "Халикон"
---[[Translation missing --]]
---[[ L["Hamhock"] = ""--]] 
---[[Translation missing --]]
---[[ L["Hammertoe Grez"] = ""--]] 
+L["Hamhock"] = "Хрупконог"
+L["Hammertoe Grez"] = "Тяжелоступ Грез"
 L["Hann Ibal <S.A.F.E.>"] = "Ганни Бал <С.П.А.С.>"
 --[[Translation missing --]]
---[[ L["Hazzas"] = ""--]] 
+--[[ L["Hazza'rah"] = ""--]] 
+L["Hazzas"] = "Хаззас"
+L["Hearthsinger Forresten"] = "Певчий Форрестен"
+L["Hedrum the Creeper"] = "Хедрум Ползун"
+L["Heigan the Unclean"] = "Хейган Нечистивый"
 --[[Translation missing --]]
---[[ L["Hearthsinger Forresten"] = ""--]] 
---[[Translation missing --]]
---[[ L["Hedrum the Creeper"] = ""--]] 
---[[Translation missing --]]
---[[ L["Heigan the Unclean"] = ""--]] 
+--[[ L["Henry Stern"] = ""--]] 
 L["Heralath Fallowbrook"] = "Гералат Бурый Ручей"
---[[Translation missing --]]
---[[ L["Herod"] = ""--]] 
+L["Herod"] = "Герод"
 L["Hierophant Theodora Mulvadania <Kargath Expeditionary Force>"] = "Верховная Жрица Теодора Мальвадания"
 L["High Examiner Tae'thelan Bloodwatcher <The Reliquary>"] = "Главный дознаватель Тей'телан Кровавый Взор <Реликварий>"
---[[Translation missing --]]
---[[ L["High Inquisitor Fairbanks"] = ""--]] 
---[[Translation missing --]]
---[[ L["High Inquisitor Whitemane"] = ""--]] 
---[[Translation missing --]]
---[[ L["High Interrogator Gerstahn"] = ""--]] 
+L["High Inquisitor Fairbanks"] = "Верховный инквизитор Фэйрбанкс"
+L["High Inquisitor Whitemane"] = "Верховный инквизитор Вайтмейн"
+L["High Interrogator Gerstahn"] = "Верховный дознаватель Герштан"
 L["High Justice Grimstone"] = "Верховный судья Мрачнокамень"
 --[[Translation missing --]]
---[[ L["Highlord Mograine <The Ashbringer>"] = ""--]] 
+--[[ L["High Priest Thekal"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Highlord Omokk"] = ""--]] 
+--[[ L["High Priest Venoxis"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Houndmaster Grebmar"] = ""--]] 
+--[[ L["High Priestess Arlokk"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Houndmaster Loksey"] = ""--]] 
+--[[ L["High Priestess Jeklik"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["High Priestess Mar'li"] = ""--]] 
+L["Highlord Mograine <The Ashbringer>"] = "Верховный лорд Могрейн <Испепелитель>"
+L["Highlord Omokk"] = "Вождь Омокк"
+L["Houndmaster Grebmar"] = "Псарь Гребмар"
+L["Houndmaster Loksey"] = "Псарь Локси"
 L["Human Remains"] = "Человеческие останки"
---[[Translation missing --]]
---[[ L["Hurley Blackbreath"] = ""--]] 
---[[Translation missing --]]
---[[ L["Hydromancer Velratha"] = ""--]] 
---[[Translation missing --]]
---[[ L["Hydrospawn"] = ""--]] 
---[[Translation missing --]]
---[[ L["Illyanna Ravenoak"] = ""--]] 
---[[Translation missing --]]
---[[ L["Immol'thar"] = ""--]] 
---[[Translation missing --]]
---[[ L["Instructor Malicia"] = ""--]] 
---[[Translation missing --]]
---[[ L["Instructor Razuvious"] = ""--]] 
---[[Translation missing --]]
---[[ L["Interrogator Vishas"] = ""--]] 
+L["Hurley Blackbreath"] = "Харли Пьяглдых"
+L["Hydromancer Velratha"] = "Гидромант Велрата"
+L["Hydrospawn"] = "Гидротварь"
+L["Illyanna Ravenoak"] = "Иллиана Воронья Ольха"
+L["Immol'thar"] = "Бессмер'тер"
+L["Instructor Malicia"] = "Инструктор Коварница"
+L["Instructor Razuvious"] = "Инструктор Разувиус"
+L["Interrogator Vishas"] = "Дознаватель Вишас"
 L["Invoker Xorenth"] = "Заклинатель Ксорент"
---[[Translation missing --]]
---[[ L["Ironaya"] = ""--]] 
+L["Ironaya"] = "Иронайя"
 L["Ironbark the Redeemed"] = "Железная Кора - отмщенный"
+L["Ironspine"] = "Железноспин"
 --[[Translation missing --]]
---[[ L["Ironspine"] = ""--]] 
---[[Translation missing --]]
---[[ L["Jade"] = ""--]] 
+--[[ L["Isalien"] = ""--]] 
+L["Jade"] = "Нефрит"
 L["Jalinda Sprig <Morgan's Militia>"] = "Джалинда Тирлипунька"
---[[Translation missing --]]
---[[ L["Jammal'an the Prophet"] = ""--]] 
---[[Translation missing --]]
---[[ L["Jandice Barov"] = ""--]] 
+L["Jammal'an the Prophet"] = "Джаммал'ан Пророк"
+L["Jandice Barov"] = "Джандис Барова"
 L["Jarien"] = "Джариен"
+--[[Translation missing --]]
+--[[ L["Jed Runewatcher"] = ""--]] 
 L["J'eevee's Jar"] = "Флакон Д'жииви"
 L["Je'neu Sancrea <The Earthen Ring>"] = "Дже'неу Санкри <Служители Земли>"
+L["Jergosh the Invoker"] = "Жергош Призыватель Духов"
 --[[Translation missing --]]
---[[ L["Jergosh the Invoker"] = ""--]] 
+--[[ L["Jin'do the Hexxer"] = ""--]] 
 L["Jordan's Hammer"] = "Молот Джордана"
---[[Translation missing --]]
---[[ L["Kam Deepfury"] = ""--]] 
+L["Kam Deepfury"] = "Кам Гневливый"
 L["Kand Sandseeker <Explorer's League>"] = "Канд Искатель Песков <Лига исследователей>"
 L["Kandrostrasz <Brood of Alexstrasza>"] = "Кандострас <Племя Алекстразы>"
---[[Translation missing --]]
---[[ L["Kazkaz the Unholy"] = ""--]] 
---[[Translation missing --]]
---[[ L["Kel'Thuzad"] = ""--]] 
+L["Kazkaz the Unholy"] = "Казказ Нечистый"
+L["Kel'Thuzad"] = "Кел'Тузад"
 L["Kernobee"] = "Керноби"
 L["Kevin Dawson <Morgan's Militia>"] = "Кевин Доусон <Отряд Морганы>"
 L["Kharan Mighthammer"] = "Каран Могучий Молот"
 L["Kherrah"] = "Керра"
---[[Translation missing --]]
---[[ L["King Gordok"] = ""--]] 
+L["King Gordok"] = "Король Гордок"
 L["King's Square Postbox"] = "Ключ от почтового ящика на Королевской площали"
---[[Translation missing --]]
---[[ L["Kirtonos the Herald"] = ""--]] 
+L["Kirtonos the Herald"] = "Киртонос Глашатай"
 L["Knot Thimblejack"] = "Уззл Наперстяк"
+--[[Translation missing --]]
+--[[ L["Kolk <The First Kahn>"] = ""--]] 
 L["Koristrasza"] = "Користраза"
 --[[Translation missing --]]
---[[ L["Kresh"] = ""--]] 
---[[Translation missing --]]
---[[ L["Kri"] = ""--]] 
---[[Translation missing --]]
---[[ L["Krom Stoutarm's Chest"] = ""--]] 
---[[Translation missing --]]
---[[ L["Kurinnaxx"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lady Anacondra"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lady Blaumeux"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lady Illucia Barov"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lady Sarevess"] = ""--]] 
---[[Translation missing --]]
---[[ L["Landslide"] = ""--]] 
+--[[ L["Kormok"] = ""--]] 
+L["Kresh"] = "Криг"
+L["Kri"] = "Лорд Кри"
+L["Krom Stoutarm's Chest"] = "Сундук Крома Крепкорука"
+L["Kurinnaxx"] = "Куриннакс"
+L["Lady Anacondra"] = "Повелительница Анакондра"
+L["Lady Blaumeux"] = "Леди Бломе"
+L["Lady Illucia Barov"] = "Леди Иллюсия Барова"
+L["Lady Sarevess"] = "Леди Саревесс"
+L["Landslide"] = "Сель"
 L["LBRS"] = "НЧГ"
 L["Lead Prospector Durdin <Explorer's League>"] = "Старший геолог Дардин <Лига исследователей>"
 L["Lefty"] = "Левша"
---[[Translation missing --]]
---[[ L["Lethtendris"] = ""--]] 
+L["Lethtendris"] = "Лефтендрис"
 L["Lexlort <Kargath Expeditionary Force>"] = "Лекслорт <Каргатский экспедиционный корпус>"
 L["Lib"] = "Библеотека"
 L["Library"] = "Библиотека "
 L["Lidia Sunglow <The Reliquary>"] = "Лидия Солнечное Сияние <Реликварий>"
 --[[Translation missing --]]
---[[ L["Loatheb"] = ""--]] 
+--[[ L["Lieutenant General Andorov"] = ""--]] 
+L["Loatheb"] = "Лотхиб"
 L["Lokhtos Darkbargainer"] = "Локтос Зловещий Торговец"
 L["Lokhtos Darkbargainer <The Thorium Brotherhood>"] = "Локтос Зловещий Торговец"
---[[Translation missing --]]
---[[ L["Lord Alexei Barov"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lord Cobrahn"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lord Hel'nurath"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lord Incendius"] = ""--]] 
+L["Lord Alexei Barov"] = "Лорд Алексей Баров"
+L["Lord Cobrahn"] = "Лорд Кобран"
+L["Lord Hel'nurath"] = "Лорд Хел'нурат"
+L["Lord Incendius"] = "Лорд Опалитель"
 L["Lord Itharius"] = "Лорд Итар"
 --[[Translation missing --]]
---[[ L["Lord Pythas"] = ""--]] 
+--[[ L["Lord Kri"] = ""--]] 
+L["Lord Pythas"] = "Лорд Питонас"
+L["Lord Roccor"] = "Лорд Роккор"
+L["Lord Serpentis"] = "Лорд Серпентис"
 --[[Translation missing --]]
---[[ L["Lord Roccor"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lord Serpentis"] = ""--]] 
---[[Translation missing --]]
---[[ L["Lord Vyletongue"] = ""--]] 
+--[[ L["Lord Valthalak"] = ""--]] 
+L["Lord Vyletongue"] = "Лорд Злоязыкий"
 L["Lorekeeper Javon"] = " Сказитель Явон"
 L["Lorekeeper Kildrath"] = "Сказитель Килдрат"
 L["Lorekeeper Lydros"] = "Сказитель Лидрос"
 L["Lorekeeper Mykos"] = "Сказительница Микос"
---[[Translation missing --]]
---[[ L["Lorekeeper Polkelt"] = ""--]] 
+L["Lorekeeper Polkelt"] = "Сказитель Полкелт"
 L["Lorgalis Manuscript"] = "Манускрипт Лоргалиса"
---[[Translation missing --]]
---[[ L["Lorgus Jett"] = ""--]] 
+L["Lorgus Jett"] = "Лоргус Джетт"
 L["Lothos Riftwaker"] = "Лотос Хранитель Портала"
 L["Lower"] = "Нижний"
+L["Lucifron"] = "Люцифрон"
+L["Mad Magglish"] = "Безумный Магглиш"
+L["Maexxna"] = "Мексна"
+L["Magister Kalendris"] = "Магистр Календрис"
+L["Magistrate Barthilas"] = "Мировой судья Бартилас"
+L["Magmadar"] = "Магмадар"
+L["Magmus"] = "Магмус"
 --[[Translation missing --]]
---[[ L["Lucifron"] = ""--]] 
---[[Translation missing --]]
---[[ L["Mad Magglish"] = ""--]] 
---[[Translation missing --]]
---[[ L["Maexxna"] = ""--]] 
---[[Translation missing --]]
---[[ L["Magister Kalendris"] = ""--]] 
---[[Translation missing --]]
---[[ L["Magistrate Barthilas"] = ""--]] 
---[[Translation missing --]]
---[[ L["Magmadar"] = ""--]] 
---[[Translation missing --]]
---[[ L["Magmus"] = ""--]] 
---[[Translation missing --]]
---[[ L["Magregan Deepshadow"] = ""--]] 
+--[[ L["Magra <The Third Kahn>"] = ""--]] 
+L["Magregan Deepshadow"] = "Магреган Чернотень"
 L["Mail Box"] = "Почтовый яшик"
 L["Major Pakkon"] = "Майор Паккон"
 L["Major Yeggeth"] = "Майор Йеггет"
---[[Translation missing --]]
---[[ L["Majordomo Executus"] = ""--]] 
---[[Translation missing --]]
---[[ L["Maleki the Pallid"] = ""--]] 
+L["Majordomo Executus"] = "Мажордом Экзекутус"
+L["Maleki the Pallid"] = "Малекай Бледный"
 L["Malgen Longspear"] = "Мальген Длинное Копье"
 L["Malor the Zealous"] = "Малор Ревностный"
 L["Mara"] = "Маро"
-L["Maraudos (The Fourth Khan)"] = "Мародос <Четвертый хан>"
 --[[Translation missing --]]
---[[ L["Marduk Blackpool"] = ""--]] 
+--[[ L["Maraudos (The Fourth Khan)"] = ""--]] 
+L["Maraudos <The Fourth Khan>"] = "Мародос <Четвертый хан>"
+L["Marduk Blackpool"] = "Мардук Блэкпул"
+--[[Translation missing --]]
+--[[ L["Marisa du'Paige"] = ""--]] 
 L["Market Row Postbox"] = "Ключ от почтового ящика в торговом ряду"
 L["Marshal Maxwell <Morgan's Militia>"] = "Маршал Максвелл <Отряд Морганы>"
 L["Marshal Windsor"] = "Маршал Винздор"
 L["Master Craftsman Wilhelm <Brotherhood of the Light>"] = "Мастер-ремесленник Вильгельм <Братство Света>"
 L["Master Elemental Shaper Krixix"] = "Ваятель стихий Криксикс"
+--[[Translation missing --]]
+--[[ L["Matrix Punchograph 3005-A"] = ""--]] 
 L["Matrix Punchograph 3005-B"] = "Матричный перфограф 3005-B"
 L["Matrix Punchograph 3005-C"] = "Матричный перфограф 3005-C"
 L["Matrix Punchograph 3005-D"] = "Матричный перфограф 3005-D"
@@ -449,343 +447,277 @@ L["Mayara Brightwing <Morgan's Militia>"] = "Майра Светлое Крыл�
 L["Mazoga's Spirit"] = "Дух Мазоги"
 L["MC"] = "ОН"
 L["Medallion of Faith"] = "Медальон Веры"
---[[Translation missing --]]
---[[ L["Mekgineer Thermaplugg"] = ""--]] 
+L["Mekgineer Thermaplugg"] = "Мекжинер Термоштепсель"
 L["Merithra of the Dream"] = "Меритра из Сна"
 --[[Translation missing --]]
---[[ L["Miner Johnson"] = ""--]] 
+--[[ L["Meshlok the Harvester"] = ""--]] 
+L["Miner Johnson"] = "Шахтер Джонсон"
 L["Mistress Nagmara"] = "Госпожа Нагмара"
---[[Translation missing --]]
---[[ L["Moam"] = ""--]] 
+L["Moam"] = "Моам"
 L["Monument of Franclorn Forgewright"] = "Монумент Франклорну Искуснику"
---[[Translation missing --]]
---[[ L["Mor Grayhoof"] = ""--]] 
---[[Translation missing --]]
---[[ L["Mordresh Fire Eye"] = ""--]] 
---[[Translation missing --]]
---[[ L["Morphaz"] = ""--]] 
---[[Translation missing --]]
---[[ L["Mother Smolderweb"] = ""--]] 
+L["Mor Grayhoof"] = "Мор Серое Копыто"
+L["Mordresh Fire Eye"] = "Мордреш Огненный Глаз"
+L["Morphaz"] = "Морфаз"
+L["Mother Smolderweb"] = "Мать Дымная Паутина"
 L["Mountaineer Orfus <Morgan's Militia>"] = "Горный пехотинец Орфус <Отряд Морганы>"
---[[Translation missing --]]
---[[ L["Mr. Bigglesworth"] = ""--]] 
+L["Mr. Bigglesworth"] = "Кот Бегемот"
 L["Mr. Smite"] = "Мистер Каюк"
+--[[Translation missing --]]
+--[[ L["Muddy Churning Waters"] = ""--]] 
 L["Murd Doc <S.A.F.E.>"] = "Мерд-Док <С.П.А.С.>"
 --[[Translation missing --]]
---[[ L["Mutanus the Devourer"] = ""--]] 
+--[[ L["Murta Grimgut"] = ""--]] 
+L["Mutanus the Devourer"] = "Мутанус Пожиратель"
 L["Muyoh <Disciple of Naralex>"] = "Муйон <Ученик Наралекса>"
 L["Nalpak <Disciple of Naralex>"] = "Налпак <Ученик Наралекса>"
+--[[Translation missing --]]
+--[[ L["Namdo Bizzfizzle <Engineering Supplies>"] = ""--]] 
 L["Naralex"] = "Наралекс"
---[[Translation missing --]]
---[[ L["Nefarian"] = ""--]] 
---[[Translation missing --]]
---[[ L["Nekrum Gutchewer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Nerub'enkan"] = ""--]] 
---[[Translation missing --]]
---[[ L["Noth the Plaguebringer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Noxxion"] = ""--]] 
+L["Nefarian"] = "Нефариан"
+L["Nekrum Gutchewer"] = "Некрум Кишкожуй"
+L["Nerub'enkan"] = "Неруб'энкан"
+L["Noth the Plaguebringer"] = "Нот Чумной"
+L["Noxxion"] = "Ноксион"
 L["Nurse Lillian"] = "Медсестра Лилиан"
+L["Obsidian Sentinel"] = "Обсидиановый часовой"
+L["Odo the Blindwatcher"] = "Одо Слепой Страж"
+L["Oggleflint"] = "Огглфлинт"
+L["Ogom the Wretched"] = "Огом Презренный"
 --[[Translation missing --]]
---[[ L["Obsidian Sentinel"] = ""--]] 
---[[Translation missing --]]
---[[ L["Odo the Blindwatcher"] = ""--]] 
---[[Translation missing --]]
---[[ L["Oggleflint"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ogom the Wretched"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ok'thor the Breaker"] = ""--]] 
---[[Translation missing --]]
---[[ L["Olaf"] = ""--]] 
+--[[ L["Ohgan"] = ""--]] 
+L["Ok'thor the Breaker"] = "Ок'тор Разрушитель"
+L["Olaf"] = "Олаф"
 L["Old Ironbark"] = "Старик Железной Коры"
---[[Translation missing --]]
---[[ L["Old Serra'kis"] = ""--]] 
+L["Old Serra'kis"] = "Старина Серракис"
+L["Old Treasure Chest"] = "Старый сундук с сокровищами"
 L["Olga Runesworn <Explorer's League>"] = "Ольга Преданная Рунам <Лига исследователей>"
---[[Translation missing --]]
---[[ L["Onyxia"] = ""--]] 
---[[Translation missing --]]
---[[ L["Onyxian Warders"] = ""--]] 
+L["Onyxia"] = "Ониксия"
+L["Onyxian Warders"] = "Хранитель Ониксии"
 L["Oralius <Morgan's Militia>"] = "Орелий"
 L["Orb of Command"] = "Сфера Приказа"
 L["Orb of Domination"] = "Сфера Приказа"
 --[[Translation missing --]]
---[[ L["Ossirian the Unscarred"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ouro"] = ""--]] 
---[[Translation missing --]]
---[[ L["Overlord Ramtusk"] = ""--]] 
---[[Translation missing --]]
---[[ L["Overlord Wyrmthalak"] = ""--]] 
---[[Translation missing --]]
---[[ L["Overmaster Pyron"] = ""--]] 
+--[[ L["Oro Eyegouge"] = ""--]] 
+L["Ossirian the Unscarred"] = "Оссириан Неуязвимый"
+L["Ouro"] = "Оуро"
+L["Overlord Ramtusk"] = "Властитель Таранный Клык"
+L["Overlord Wyrmthalak"] = "Властитель Змейталак"
+L["Overmaster Pyron"] = "Подчинитель Пирон"
 L["Packmaster Stonebruiser <Brotherhood of the Light>"] = "Караванщик Камнетес <Братство Света>"
+L["Panzor the Invincible"] = "Панцер Непобедимый"
+L["Patchwerk"] = "Лоскутик"
+L["Phalanx"] = "Фаланкс"
 --[[Translation missing --]]
---[[ L["Panzor the Invincible"] = ""--]] 
---[[Translation missing --]]
---[[ L["Patchwerk"] = ""--]] 
---[[Translation missing --]]
---[[ L["Phalanx"] = ""--]] 
---[[Translation missing --]]
---[[ L["Plague Wing"] = ""--]] 
---[[Translation missing --]]
---[[ L["Plaguemaw the Rotting"] = ""--]] 
---[[Translation missing --]]
---[[ L["Plugger Spazzring"] = ""--]] 
---[[Translation missing --]]
---[[ L["Postmaster Malown"] = ""--]] 
+--[[ L["Pimgib"] = ""--]] 
+L["Plague Wing"] = "Чумной квартал "
+L["Plaguemaw the Rotting"] = "Чумобрюх Гнилой"
+L["Plugger Spazzring"] = "Штоппор Наливалс"
+L["Postmaster Malown"] = "Почтальон Мэлоун"
 L["Priestess Udum'bra"] = "Жрица Удум'бра"
+L["Prince Tortheldrin"] = "Принц Тортелдрин"
+L["Princess Huhuran"] = "Принцесса Хухуран"
+L["Princess Moira Bronzebeard"] = "Принцесса Мойра Бронзобород"
+L["Princess Theradras"] = "Принцесса Терадрас"
 --[[Translation missing --]]
---[[ L["Prince Tortheldrin"] = ""--]] 
---[[Translation missing --]]
---[[ L["Princess Huhuran"] = ""--]] 
---[[Translation missing --]]
---[[ L["Princess Moira Bronzebeard"] = ""--]] 
---[[Translation missing --]]
---[[ L["Princess Theradras"] = ""--]] 
+--[[ L["Princess Yauj"] = ""--]] 
 L["Private Rocknot"] = "Рядовой Камнеузл"
 L["Prospector Seymour <Morgan's Militia>"] = "Геолог Сеймур <Отряд Морганы>"
---[[Translation missing --]]
---[[ L["Pusillin"] = ""--]] 
+L["Pusillin"] = "Пузиллин"
 L["Pylons"] = "Опоры"
---[[Translation missing --]]
---[[ L["Pyroguard Emberseer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Pyromancer Loregrain"] = ""--]] 
---[[Translation missing --]]
---[[ L["Quartermaster Zigris"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ragglesnout"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ragnaros"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ramstein the Gorger"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ras Frostwhisper"] = ""--]] 
---[[Translation missing --]]
---[[ L["Rattlegore"] = ""--]] 
+L["Pyroguard Emberseer"] = "Пиростраж Углевзор"
+L["Pyromancer Loregrain"] = "Пироман Зерно Мудрости"
+L["Quartermaster Zigris"] = "Интендант Зигрис"
+L["Ragglesnout"] = "Круглорыл"
+L["Ragnaros"] = "Рагнарос"
+L["Ramstein the Gorger"] = "Рамштайн Ненасытный"
+L["Ras Frostwhisper"] = "Рас Ледяной Шепот"
+L["Rattlegore"] = "Громоклин"
 L["Raven"] = "Ворон"
 L["Razal'blade <Kargath Expeditionary Force>"] = "Разал'меч <Каргатский экспедиционный корпус>"
---[[Translation missing --]]
---[[ L["Razorclaw the Butcher"] = ""--]] 
---[[Translation missing --]]
---[[ L["Razorgore the Untamed"] = ""--]] 
---[[Translation missing --]]
---[[ L["Razorlash"] = ""--]] 
+L["Razorclaw the Butcher"] = "Остроклык Мясник"
+L["Razorgore the Untamed"] = "Бритвосмерт Неукротимый"
+L["Razorlash"] = "Бритвохлест"
 L["Remains of a Paladin"] = "Останки паладина"
 --[[Translation missing --]]
---[[ L["Rethilgore"] = ""--]] 
---[[Translation missing --]]
---[[ L["Revelosh"] = ""--]] 
+--[[ L["Renataki"] = ""--]] 
+L["Rethilgore"] = "Ретилгор"
+L["Revelosh"] = "Ревелош"
 L["RFC"] = "ОгП"
 L["RFD"] = "Курганы"
 L["RFK"] = "ЛабИ"
---[[Translation missing --]]
---[[ L["Rhahk'Zor"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ribbly Screwspigot"] = ""--]] 
+L["Rhahk'Zor"] = "Рак'Зор"
+L["Ribbly Screwspigot"] = "Риббли Крутипроб"
 L["Rifle Commander Coe"] = "Командир стрелков Коу"
---[[Translation missing --]]
---[[ L["Ring of Law"] = ""--]] 
---[[Translation missing --]]
---[[ L["Roogug"] = ""--]] 
+L["Ring of Law"] = "Зал Правосудия"
+L["Roogug"] = "Ругуг"
 L["Rotfang"] = "Гнилоклык"
---[[Translation missing --]]
---[[ L["Rotgrip"] = ""--]] 
+L["Rotgrip"] = "Гнилопасть"
 L["Roughshod Pike"] = "Наконечник Грубой силы "
---[[Translation missing --]]
---[[ L["Ruuzlu"] = ""--]] 
+L["Ruuzlu"] = "Руузлу"
 L["Safe Room"] = "Безопасная Комната"
+L["Sandarr Dunereaver"] = "Сандарр Разоритель Барханов"
 --[[Translation missing --]]
---[[ L["Sandarr Dunereaver"] = ""--]] 
---[[Translation missing --]]
---[[ L["Sapphiron"] = ""--]] 
---[[Translation missing --]]
---[[ L["Scarlet Commander Mograine"] = ""--]] 
+--[[ L["Sandfury Executioner"] = ""--]] 
+L["Sapphiron"] = "Сапфирон"
+L["Scarlet Commander Mograine"] = "Командир Алого ордена Могрейн"
 L["Scarshield Quartermaster <Scarshield Legion>"] = "Интендант из легиона Изрубленного Щита <Легион Изрубленного Щита>"
 L["Schematic: Field Repair Bot 74A"] = "Схема: полевой ремонтный робот 74A"
 L["Scholo"] = "Некроситет"
 L["Scout Cage"] = "Scout Cage"
-L["Secret Chest"] = "Секретный сундук"
+--[[Translation missing --]]
+--[[ L["Secret Chest"] = ""--]] 
 L["Sentinel Aluwyn"] = "Часовой Алувин"
---[[Translation missing --]]
---[[ L["Sergeant Bly"] = ""--]] 
+L["Sergeant Bly"] = "Сержант Блай"
 L["SFK"] = "КТК"
---[[Translation missing --]]
---[[ L["Shade of Eranikus"] = ""--]] 
---[[Translation missing --]]
---[[ L["Shadow Charger"] = ""--]] 
---[[Translation missing --]]
---[[ L["Shadow Hunter Vosh'gajin"] = ""--]] 
+L["Shade of Eranikus"] = "Тень Эраникуса"
+L["Shadow Charger"] = "Скакун тени"
+L["Shadow Hunter Vosh'gajin"] = "Темная охотница Вош'гаджин"
 L["Shadowforge Brazier"] = "Жаровня Тенегорна"
 L["Shadowforge Cache"] = "Тайник Кузни Теней"
---[[Translation missing --]]
---[[ L["Shadowpriest Sezz'ziz"] = ""--]] 
---[[Translation missing --]]
---[[ L["Shazzrah"] = ""--]] 
+L["Shadowpriest Sezz'ziz"] = "Темный жрец Шезз'зиз"
+L["Shazzrah"] = "Шаззрах"
 L["Shen'dralar Ancient"] = "Шен'драларский поставщик"
 L["Shen'dralar Provisioner"] = "Шен'драларский поставщик"
 L["Shen'dralar Watcher"] = "Шен'драларский дозорный"
 L["Side"] = "Побочный"
---[[Translation missing --]]
---[[ L["Sir Zeliek"] = ""--]] 
+L["Sir Zeliek"] = "Сэр Зелиек"
 L["Sixth Mosh'aru Tablet"] = "Шестая табличка Мошару"
 L["Skeletal Remains of Kariel Winthalus"] = "Скелет Кариэля Винтхалуса"
---[[Translation missing --]]
---[[ L["Skul"] = ""--]] 
---[[Translation missing --]]
---[[ L["Skum"] = ""--]] 
---[[Translation missing --]]
---[[ L["SM"] = ""--]] 
---[[Translation missing --]]
---[[ L["Sneed"] = ""--]] 
+L["Skul"] = "Череп"
+L["Skum"] = "Шкам"
+L["SM"] = "МА"
+L["Sneed"] = "Снид"
 L["Sneed's Shredder"] = "Крошшер Снида"
+--[[Translation missing --]]
+--[[ L["Solakar Flamewreath"] = ""--]] 
 L["Sorcerer Ashcrombe"] = "Колдун Ашкромб"
 L["Sothos"] = "Сотос"
 L["Spawn of Hakkar"] = "Порождение Хаккара"
+L["Spider Wing"] = "Паучий квартал"
 --[[Translation missing --]]
---[[ L["Spider Wing"] = ""--]] 
+--[[ L["Spirestone Battle Lord"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Spirestone Lord Magus"] = ""--]] 
+--[[ L["Spirestone Butcher"] = ""--]] 
+L["Spirestone Lord Magus"] = "Лорд-волхв из клана Черной Вершины"
 L["Spirit of Agamaggan <Ancient>"] = "Дух Агамаггана <Древний>"
 L["Spoils of Blackfathom"] = "Трофеи Непроглядной Пучины"
+--[[Translation missing --]]
+--[[ L["Sprok <Away Team>"] = ""--]] 
 L["ST"] = "ЗХ"
 L["Stairway"] = "Лестница"
 L["Statue Activation Order"] = "Порядок активации статуи"
 L["Stocks"] = "Тюрьма"
---[[Translation missing --]]
---[[ L["Stomper Kreeg"] = ""--]] 
+L["Stomper Kreeg"] = "Топотун Криг"
 L["Stonemaul Ogre"] = "Огр из клана Каменного Молота"
---[[Translation missing --]]
---[[ L["Stonespine"] = ""--]] 
+L["Stonespine"] = "Каменный Гребень"
 L["Strat"] = "Страт"
 L["Stratholme Courier"] = "Стратхольмский курьер"
---[[Translation missing --]]
---[[ L["Sulfuron Harbinger"] = ""--]] 
+L["Sulfuron Harbinger"] = "Предвестник Сульфурон"
 L["Summoner's Tomb"] = "Могила Призывателей"
---[[Translation missing --]]
---[[ L["Tablet of Ryun'Eh"] = ""--]] 
+L["Tablet of Ryun'Eh"] = "Табличка Рьюн'эха"
 L["Tablet of Will"] = "Табличка Воли"
+L["Taragaman the Hungerer"] = "Тарагаман Ненасытный"
+L["Targorr the Dread"] = "Таргорр Ужасный"
 --[[Translation missing --]]
---[[ L["Taragaman the Hungerer"] = ""--]] 
---[[Translation missing --]]
---[[ L["Targorr the Dread"] = ""--]] 
---[[Translation missing --]]
---[[ L["Tendris Warpwood"] = ""--]] 
---[[Translation missing --]]
---[[ L["Thaddius"] = ""--]] 
+--[[ L["Techbot"] = ""--]] 
+L["Tendris Warpwood"] = "Тендрис Криводрев"
+L["Thaddius"] = "Таддиус"
 L["Thal'trak Proudtusk <Kargath Expeditionary Force>"] = "Тал'трак Гордый Клык <Каргатский экспедиционный корпус>"
---[[Translation missing --]]
---[[ L["Thane Korth'azz"] = ""--]] 
---[[Translation missing --]]
---[[ L["The Beast"] = ""--]] 
+L["Thane Korth'azz"] = "Тан Кортазз"
+L["The Beast"] = "Зверь"
 L["The Behemoth"] = "Чудище"
 L["The Black Anvil"] = "Черная наковальня"
 L["The Black Forge"] = "Черная Кузня"
+--[[Translation missing --]]
+--[[ L["The Bug Family"] = ""--]] 
 L["The Deed to Brill"] = "Документы на Брилл"
 L["The Deed to Caer Darrow"] = "Документы на Каэр Дарроу"
 L["The Deed to Southshore"] = "Документы на Южнобережье"
 L["The Deed to Tarren Mill"] = "Документы на Мельницу Таррен"
 L["The Discs of Norgannon"] = "Диски Норганнона"
---[[Translation missing --]]
---[[ L["The Four Horsemen"] = ""--]] 
+L["The Four Horsemen"] = "Четыре Всадника"
 L["The Grim Guzzler"] = "Мясо вепря из \"Угрюмого обжоры\""
 L["The Lyceum"] = "Лицей"
 L["The Nameless Prophet"] = "Безымянный пророк"
---[[Translation missing --]]
---[[ L["The Prophet Skeram"] = ""--]] 
---[[Translation missing --]]
---[[ L["The Ravenian"] = ""--]] 
+L["The Prophet Skeram"] = "Пророк Скерам"
+L["The Ravenian"] = "Равениан"
 L["The Shadowforge Lock"] = "Замок Тенегорна"
 L["The Sparklematic 5200"] = "Чистер 5200!"
 --[[Translation missing --]]
---[[ L["The Unforgiven"] = ""--]] 
+--[[ L["The Twin Emperors"] = ""--]] 
+L["The Unforgiven"] = "Непрощенный"
 L["The Vault"] = "Подземелье"
---[[Translation missing --]]
---[[ L["Theka the Martyr"] = ""--]] 
+L["Theka the Martyr"] = "Тека Мученик"
 L["Theldren"] = "Телдрен"
 L["Thunderheart <Kargath Expeditionary Force>"] = "Громосерд <Каргатский экспедиционный корпус>"
---[[Translation missing --]]
---[[ L["Timmy the Cruel"] = ""--]] 
+L["Timmy the Cruel"] = "Тимми Жестокий"
 L["Tink Sprocketwhistle <Engineering Supplies>"] = "Звяк Пружиносвист <Инженерные материалы>"
 L["Tinkee Steamboil"] = "Тинки Кипеллер"
---[[Translation missing --]]
---[[ L["Tinkerer Gizlock"] = ""--]] 
+L["Tinkerer Gizlock"] = "Ремонтник Гизлок"
 L["Torben Zapblast <Teleportation Specialist>"] = "Торбен Запрыгуль <Мастер телепортации>"
 L["Torch Lever"] = "Факел Рычаг"
 L["Tran'rek"] = "Тран'рек"
 --[[Translation missing --]]
---[[ L["Trigore the Lasher"] = ""--]] 
+--[[ L["Transpolyporter"] = ""--]] 
+L["Trigore the Lasher"] = "Тригор Хлестун"
 L["Troll Minibosses"] = "Тролли мини-боссы"
---[[Translation missing --]]
---[[ L["Tsu'zee"] = ""--]] 
---[[Translation missing --]]
---[[ L["Tuten'kash"] = ""--]] 
---[[Translation missing --]]
---[[ L["Twilight Lord Kelris"] = ""--]] 
+L["Tsu'zee"] = "Цу'зи"
+L["Tuten'kash"] = "Тутен'каш"
+L["Twilight Lord Kelris"] = "Повелитель сумрака Келрис"
 L["UBRS"] = "ВВЧГ"
 L["Ulda"] = "Ульд"
 L["Unfired Plate Gauntlets"] = "Неопалимые латные рукавицы"
---[[Translation missing --]]
---[[ L["Urok Doomhowl"] = ""--]] 
+L["Urok Doomhowl"] = "Аррок Смертный Вопль"
 L["Urok's Tribute Pile"] = "Груда приношений Арроку"
 L["Vaelan"] = "Ваелан"
---[[Translation missing --]]
---[[ L["Vaelastrasz the Corrupt"] = ""--]] 
+L["Vaelastrasz the Corrupt"] = "Валестраз Порочный"
 L["Va'jashni"] = "Ва'джашни"
 L["Varies"] = "Варьируется"
 L["Various Postbox Keys"] = "Различные ключи от почтового ящика"
 --[[Translation missing --]]
---[[ L["Vectus"] = ""--]] 
+--[[ L["VC"] = ""--]] 
+L["Vectus"] = "Вектус"
+L["Vek'lor"] = "Император Век'лор"
+L["Vek'nilash"] = "Император Век'нилаш"
+L["Vem"] = "Вем"
 --[[Translation missing --]]
---[[ L["Vek'lor"] = ""--]] 
---[[Translation missing --]]
---[[ L["Vek'nilash"] = ""--]] 
---[[Translation missing --]]
---[[ L["Vem"] = ""--]] 
-L["Veng (The Fifth Khan)"] = "Венг <Пятый хан>"
---[[Translation missing --]]
---[[ L["Verdan the Everliving"] = ""--]] 
---[[Translation missing --]]
---[[ L["Verek"] = ""--]] 
+--[[ L["Veng (The Fifth Khan)"] = ""--]] 
+L["Veng <The Fifth Khan>"] = "Венг <Пятый хан>"
+L["Verdan the Everliving"] = "Вердан Бессмертный"
+L["Verek"] = "Верек"
 L["Vethsera <Brood of Ysera>"] = "Ветсера <Род Изеры >"
---[[Translation missing --]]
---[[ L["Viscidus"] = ""--]] 
---[[Translation missing --]]
---[[ L["Viscous Fallout"] = ""--]] 
+L["Viscidus"] = "Нечистотон"
+L["Viscous Fallout"] = "Липкая муть"
 L["Vorrel Sengutz"] = "Воррел Сенгутц"
 L["Walkway"] = "Дорожка"
---[[Translation missing --]]
---[[ L["War Master Voone"] = ""--]] 
---[[Translation missing --]]
---[[ L["Warchief Rend Blackhand"] = ""--]] 
+L["War Master Voone"] = "Воевода Вун"
+L["Warchief Rend Blackhand"] = "Вождь Ренд Чернорук"
 L["Warden Thelwater"] = "Тюремщик Телвотер"
---[[Translation missing --]]
---[[ L["Warder Stilgiss"] = ""--]] 
+L["Warder Stilgiss"] = "Тюремщик Стилгисс"
 L["Warlord Goretooth <Kargath Expeditionary Force>"] = "Полководец Клинозуб <Каргатский экспедиционный корпус>"
 L["Warosh"] = "Варош"
 L["Watchman Doomgrip"] = "Сторож Хватка Смерти"
 L["WC"] = "ПС"
 L["Weaver"] = "Ткачик"
 L["Weegli Blastfuse"] = "Вигиль Фитиль"
---[[Translation missing --]]
---[[ L["Whelp Eggs"] = ""--]] 
+L["Whelp Eggs"] = "Дракончик Ониксии"
 L["Willix the Importer"] = "Импортер Вилликс"
+L["Witch Doctor Zum'rah"] = "Знахарь Зум'рах"
+L["Wolf Master Nandos"] = "Командир воргенов Нандос"
 --[[Translation missing --]]
---[[ L["Witch Doctor Zum'rah"] = ""--]] 
---[[Translation missing --]]
---[[ L["Wolf Master Nandos"] = ""--]] 
---[[Translation missing --]]
---[[ L["Yauj"] = ""--]] 
+--[[ L["Wushoolay"] = ""--]] 
+L["Yauj"] = "Принцесса Яудж"
 L["Ysida Harmon"] = "Исида Хармон"
 L["Yuka Screwspigot <Engineering Supplies>"] = "Юка Крутипроб"
 --[[Translation missing --]]
---[[ L["Zekkis"] = ""--]] 
+--[[ L["Zanza the Restless"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Zerillis"] = ""--]] 
+--[[ L["Zealot Lor'Khan"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Zevrim Thornhoof"] = ""--]] 
+--[[ L["Zealot Zath"] = ""--]] 
+L["Zekkis"] = "Зеккис"
+L["Zerillis"] = "Зериллис"
+L["Zevrim Thornhoof"] = "Зеврим Терновое Копыто"
 L["Zeya"] = "Зейя"
 L["ZF"] = "ЗФ"
 L["Zul'Farrak Dead Hero"] = "Мертвый герой Зул'Фаррака"

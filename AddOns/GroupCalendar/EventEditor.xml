@@ -128,6 +128,15 @@
 								</Anchor>
 							</Anchors>
 						</FontString>
+            <FontString name="CalendarEventEditorAttendingTitle" text="GroupCalendar_cSelfWillAttend" inherits="GameFontNormalLarge">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="5" y="67"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>            
 					</Layer>
 				</Layers>
 				<Frames>
@@ -408,9 +417,9 @@
 							<AbsDimension x="26" y="26"/>
 						</Size>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="CalendarEventDescriptionFrame" relativePoint="BOTTOMLEFT">
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
 								<Offset>
-									<AbsDimension x="-60" y="5"/>
+									<AbsDimension x="10" y="45"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -424,6 +433,27 @@
 							</OnClick>
 						</Scripts>
 					</CheckButton>
+          <CheckButton name="CalendarEventEditorSelfNotAttend" inherits="OptionsCheckButtonTemplate">
+            <Size>
+              <AbsDimension x="26" y="26"/>
+            </Size>
+            <Anchors>
+              <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="10" y="25"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                getglobal(self:GetName().."Text"):SetWidth(140);
+                getglobal(self:GetName().."Text"):SetJustifyH("LEFT");
+              </OnLoad>
+              <OnClick>
+                CalendarEventEditor_SetSelfNotAttend();
+              </OnClick>
+            </Scripts>
+          </CheckButton>
           <Frame name="CalendarEventEditorCharacter" inherits="CalendarCharactersTemplate">
             <Anchors>
               <Anchor point="TOPRIGHT" relativeTo="CalendarEventDescriptionFrame" relativePoint="BOTTOMRIGHT">

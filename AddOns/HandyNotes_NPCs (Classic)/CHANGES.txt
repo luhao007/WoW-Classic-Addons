@@ -1,9 +1,16 @@
 ------------------------------------------------------------------------
-r65 | Caliaha | 2020-03-04 03:56:36 +0000 (Wed, 04 Mar 2020) | 2 lines
+r68 | Caliaha | 2020-06-21 00:47:51 +0000 (Sun, 21 Jun 2020) | 2 lines
 Changed paths:
    M /trunk/data.lua
 
-Marked three vendors as poison vendors
+Changed neutral mailbox to horde
+
+------------------------------------------------------------------------
+r67 | Caliaha | 2020-06-21 00:44:28 +0000 (Sun, 21 Jun 2020) | 2 lines
+Changed paths:
+   M /trunk/HandyNotes_NPCs (Classic).lua
+
+Changed spirit healer icon
 
 ------------------------------------------------------------------------
 

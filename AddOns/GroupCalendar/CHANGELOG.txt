@@ -1,0 +1,8 @@
+v2.0.8
+- Event reset notification now has a delay at login to make sure the text displays after UI load.
+- Added event names to the trade cooldowns to fix issue where they weren't displaying.
+- Events from all characters are now checked.
+- Event editor now saves attending like on the non-trusted tab to avoid setting the user as not attending by default.
+- Comment is preserved when saving on event editor.
+- Fix: Signups now keep their original time when modifying the attendee
+- New: Added a chat message when a cooldown elapses (e.g. Mooncloth)

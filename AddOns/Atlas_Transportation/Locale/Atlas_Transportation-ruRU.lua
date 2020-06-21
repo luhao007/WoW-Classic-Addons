@@ -38,6 +38,10 @@ L["Abandoned Kite"] = "Брошенный воздушный змей"
 L["Airship"] = "Воздушное судно"
 L["Aludane Whitecloud <Flight Master>"] = "Алудан Белое Облако <Распорядитель полетов>"
 L["Blue"] = "Синий"
+L["Boat to Echo Isles, Durotar"] = [=[Корабль на Острова Эха, Дуротар
+]=]
+L["Boat to Stormwind City"] = [=[Корабль в Штормград
+]=]
 L["Camp Taurajo"] = "Лагерь Таурахо"
 L["Class Order Halls"] = "Оплоты классов"
 L["Class Specific Only"] = "Для определённых классов"
@@ -82,8 +86,7 @@ L["South of the path along Lake Elune'ara"] = "Южный путь вдоль О
 L["Special transportation"] = "Особый транспорт"
 L["Talua <Eagle Keeper>"] = "Талуа <Хозяйка орлов>"
 L["Taxi Nodes"] = "Мастера полетов"
---[[Translation missing --]]
---[[ L["Teleport Beacon"] = ""--]] 
+L["Teleport Beacon"] = "Телепортационный маячок"
 L["Teleportation Nexus"] = "Нексус телепортации"
 L["The Barrens"] = "Степи"
 L["The Bogpaddle Bullet"] = "Болотный экспресс"
@@ -91,8 +94,7 @@ L["Transportation Maps"] = "Маршруты полётов"
 L["Transporter"] = "Транспорт"
 L["Transporters by the sea and on the cliff"] = "Транспорт у моря и утёсов"
 L["Two ways portal"] = "Двусторонний портал"
---[[Translation missing --]]
---[[ L["Vindicaar"] = ""--]] 
+L["Vindicaar"] = "Виндикар"
 L["Warning: Drop"] = "Осторожно: упадёте"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "Точка приземления / прыжка воинов (из Небесной Цитадели и обратно)"
 L["West of the path to Timbermaw Hold"] = "Западный путь в Крепость Древобрюхов"

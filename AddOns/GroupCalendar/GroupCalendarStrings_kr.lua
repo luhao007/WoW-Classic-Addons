@@ -30,7 +30,9 @@ if GetLocale() == "koKR" then
 	GroupCalendar_Settings_Use24HrTime = "24 시간 사용";
 	GroupCalendar_Settings_Use24HrTimeTip = "24 시간 사용";
 
-	GroupCalendar_cSelfWillAttend = "%s 출석에 포함";
+	GroupCalendar_cSelfWillAttend = "참석";
+	CalendarEventEditor_cYes = "예";
+	CalendarEventEditor_cNo = "아니";
 
 	GroupCalendar_cMonthNames = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
 	GroupCalendar_cDayOfWeekNames = {GroupCalendar_cSunday, GroupCalendar_cMonday, GroupCalendar_cTuesday, GroupCalendar_cWednesday, GroupCalendar_cThursday, GroupCalendar_cFriday, GroupCalendar_cSaturday};

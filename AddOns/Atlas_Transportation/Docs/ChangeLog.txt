@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 109 2020-01-10 16:18:39Z arith $
+$Id: ChangeLog.txt 121 2020-04-21 16:05:17Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,6 +8,9 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 = Change Log =
 ==============
 
+v1.47.03 (Jun. 20, 2020)
+------------------------
+- ToC update to support WoW 1.13.04
 v1.46.03.11303.00 (Jan. 13, 2020)
 ------------------------
 - Removed Emerald Sanctuary from classic Kalimdor maps

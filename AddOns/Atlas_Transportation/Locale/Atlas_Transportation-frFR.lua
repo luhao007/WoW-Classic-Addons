@@ -34,6 +34,10 @@ L["Abandoned Kite"] = "Cerf-volant abandonné"
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Nuageblanc <Maître de vol>"
 L["Blue"] = "Bleu"
 --[[Translation missing --]]
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Boat to Stormwind City"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 

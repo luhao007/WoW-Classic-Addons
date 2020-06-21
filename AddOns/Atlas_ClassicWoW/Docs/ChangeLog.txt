@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 64 2020-01-19 16:36:32Z arith $
+$Id: ChangeLog.txt 69 2020-06-20 17:53:35Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,14 +8,26 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 = Change Log =
 ==============
 
-v1.47.00.11303.00 (Jan. 20, 2020)
+v1.47.02 (Jun. 20, 2020)
+------------------------
+- Update Atlas_GetBossName to load boss name from local locale files
+- Translation update
+
+v1.47.01 (Jun. 20, 2020)
+------------------------
+- Classic: 
+  - Update to load boss named from locale files
+  - Added NPCs to MaraudonEnt
+  - Added Acronym for Deadmines
+
+v1.47.00 (Jan. 20, 2020)
 ------------------------
 - ToC update to support WoW 8.2.5
 - Classic: 
   - Corrected Wailing Caverns and Razorfen Kraul's location to The Barrens
   - Corrected Ahn'Qiraj's location to Silithus
 
-v1.46.00.11303.00 (Jan. 15, 2020)
+v1.46.00 (Jan. 15, 2020)
 ------------------------
 - Merge with wow classic's database and maps
 - Classic Map revamp / addition: 

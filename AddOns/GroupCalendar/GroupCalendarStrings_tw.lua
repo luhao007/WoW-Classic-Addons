@@ -31,7 +31,9 @@ if GetLocale() == "zhTW" then
 	GroupCalendar_Settings_Use24HrTime = "使用24小時制";
 	GroupCalendar_Settings_Use24HrTimeTip = "使用24小時制";
 
-	GroupCalendar_cSelfWillAttend = "%s會出席";
+	GroupCalendar_cSelfWillAttend = "參加";
+	CalendarEventEditor_cYes = "是";
+	CalendarEventEditor_cNo = "沒有";
 
 	GroupCalendar_cMonthNames = {"1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"};
 	GroupCalendar_cDayOfWeekNames = {GroupCalendar_cSunday, GroupCalendar_cMonday, GroupCalendar_cTuesday, GroupCalendar_cWednesday, GroupCalendar_cThursday, GroupCalendar_cFriday, GroupCalendar_cSaturday};

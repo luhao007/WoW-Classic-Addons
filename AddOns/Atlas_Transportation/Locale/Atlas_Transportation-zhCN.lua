@@ -35,6 +35,10 @@ L["Abandoned Kite"] = "被遗弃的风筝"
 L["Airship"] = "飞船"
 L["Aludane Whitecloud <Flight Master>"] = "奥鲁丹·白云 <飞行管理员>"
 L["Blue"] = "蓝"
+--[[Translation missing --]]
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Boat to Stormwind City"] = ""--]] 
 L["Camp Taurajo"] = "陶拉祖营地"
 L["Class Order Halls"] = "职业大厅"
 L["Class Specific Only"] = "职业特定专用"

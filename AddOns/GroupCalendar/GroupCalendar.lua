@@ -492,12 +492,13 @@ GroupCalendar_cCooldownItemInfo =
 {
 	[15846] = {EventID = "Leatherworking"}, -- Salt Shaker
 	[17716] = {EventID = "Snowmaster"}, -- Snowmaster 9000
-	[18986] = {EventID = "Engineering"}, -- Ultrasafe Transporter: Gadgetzan
+	[18986] = {EventID = "EngineeringGadgetzan"}, -- Ultrasafe Transporter: Gadgetzan
+	[18984] = {EventID = "EngineeringEverlook"}, -- Dimensional Ripper - Everlook
 };
 
 function GroupCalendar_CheckItemCooldowns()	
 	-- Remove the existing saved info	
-	EventDatabase_RemoveSavedInstanceEvents(gGroupCalendar_UserDatabase, vCurrentServerDate, vCurrentServerTime);
+	EventDatabase_RemoveSavedInstanceEvents();
 
 	for vBagIndex = 0, NUM_BAG_SLOTS do
 		local	vNumBagSlots = GetContainerNumSlots(vBagIndex);
@@ -900,7 +901,7 @@ function GroupCalendar_Update(self, pElapsed)
 		gGroupCalendar_ExpiredEventsTime = 0;
 		
 		-- Remove the existing saved info	
-		EventDatabase_RemoveSavedInstanceEvents(gGroupCalendar_UserDatabase);
+		EventDatabase_RemoveSavedInstanceEvents();
 
 	end
 

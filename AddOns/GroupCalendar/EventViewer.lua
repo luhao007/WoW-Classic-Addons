@@ -220,7 +220,7 @@ function CalendarEventViewer_UpdateControlsFromEvent(pEvent, pSkipAttendanceFiel
 	local vPlayerName, vRSVP;
 
 	if EventDatabase_EventTypeUsesAttendance(pEvent.mType) then
-		vPlayerName, vRSVP = EventDatabase_GetEventRSVP(pEvent);
+		vPlayerName, vRSVP = EventDatabase_GetPlayerEventRSVP(pEvent);
 
 		if vPlayerName then
 			gCalendarEventViewer_SelectedPlayerDatabase = EventDatabase_GetPlayerDatabase(vPlayerName);

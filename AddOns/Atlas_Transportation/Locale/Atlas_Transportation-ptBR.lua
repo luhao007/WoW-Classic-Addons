@@ -33,6 +33,10 @@ L["Airship"] = "Dirigível"
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Albanuvem <Mestre de Voo>"
 L["Blue"] = "Azul"
 --[[Translation missing --]]
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Boat to Stormwind City"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Class Order Halls"] = ""--]] 

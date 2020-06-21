@@ -1,4 +1,4 @@
--- $Id: Atlas_Transportation-enUS.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-enUS.lua 115 2020-01-22 16:58:56Z arith $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -98,4 +98,6 @@ if L then
 	L["Gleep Chatterswitch"] = "Gleep Chatterswitch" -- NPC: 71336
 	L["Vindicaar"] = "Vindicaar"
 	L["Teleport Beacon"] = "Teleport Beacon"
+	L["Boat to Stormwind City"] = "Boat to Stormwind City"
+	L["Boat to Echo Isles, Durotar"] = "Boat to Echo Isles, Durotar"
 end

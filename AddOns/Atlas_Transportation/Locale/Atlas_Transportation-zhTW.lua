@@ -33,6 +33,10 @@ L["Airship"] = "飛行器"
 L["Aludane Whitecloud <Flight Master>"] = "艾魯丹·白雲 <飛行管理員>"
 L["Blue"] = "藍"
 --[[Translation missing --]]
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
+--[[Translation missing --]]
+--[[ L["Boat to Stormwind City"] = ""--]] 
+--[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
 L["Class Order Halls"] = "職業大廳"
 L["Class Specific Only"] = "僅限特定職業"

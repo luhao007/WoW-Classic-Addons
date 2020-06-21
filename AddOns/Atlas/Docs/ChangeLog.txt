@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 346 2020-01-06 15:16:04Z arith $
+$Id: ChangeLog.txt 354 2020-06-20 06:50:50Z arith $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
@@ -15,18 +15,23 @@ Known Issues:
 = Change Log =
 ==============
 
-v1.47.00.11303.00 (Jan. 20, 2020)
+v1.47.03 (Jun. 20, 2020)
 ------------------------
-- WoW Classic branch
+- Further fixed Atlas:GetBossName() to load the plugin's locale first and then BabbleBoss; require to pass module name:
+  Atlas:GetBossName(bossname, encounterID, creatureIndex, moduleName)
+
+v1.47.02 (Jun. 20, 2020)
+------------------------
+- Adjusted Atlas:GetBossName() to load the plugin's locale first and then BabbleBoss
+
+v1.47.01 (Feb. 11, 2020)
+------------------------
+- Library update: LibBabble-SubZone
 
 v1.47.00 (Jan. 20, 2020)
 ------------------------
 - ToC update to support WoW 8.3.0
 - Added AreaID table so that we can lookup AreaName via C_Map.GetAreaInfo()
-
-v1.46.04.11303.01 (Jan. 09, 2020)
-------------------------
-- WoW Classic branch
 
 v1.46.04 (Jan. 06, 2020)
 ------------------------
@@ -49,17 +54,9 @@ v1.46.00 (Jan. 01, 2020)
 ------------------------
 - Added BfA map module's support
 
-v1.45.02.11303.01 (Dec. 30, 2019)
-------------------------
-- ToC update to support Classic WoW 1.13.3
-
 v1.45.02 (Dec. 30, 2019)
 ------------------------
 - ToC update to support WoW 8.2.5
-
-v1.45.01.11302 (Sep. 04, 2019)
-------------------------
-- Classic version
 
 v1.45.01 (Sep. 04, 2019)
 ------------------------
