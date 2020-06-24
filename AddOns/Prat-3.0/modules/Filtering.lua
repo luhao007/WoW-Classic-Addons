@@ -36,6 +36,11 @@ Prat:AddModuleToLoad(function()
     return
   end
 
+  local dbg = function() end
+  --[===[@debug@
+--  dbg = function(...) Prat:PrintLiteral(...) end
+  --@end-debug@]===]
+
   local module = Prat:NewModule(PRAT_MODULE, "AceEvent-3.0")
 
   local PL = module.PL
@@ -53,7 +58,11 @@ Prat:AddModuleToLoad(function()
     ["tradespam_name"] = "Throttle Spam",
     ["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
     ["afkdnd_name"] = "Throttle AFK and DND messages.",
-    ["afkdnd_desc"] = "Throttle AFK and DND messages."
+    ["afkdnd_desc"] = "Throttle AFK and DND messages.",
+    ["useai_desc"] = "Use a spam filter based on machine learning",
+    ["useai_name"] = "AI Spam Filter",
+    ["training_desc"] = "Show the AI training UI",
+    ["training_name"] = "AI Training",
   })
   --@end-debug@]===]
 
@@ -80,6 +89,10 @@ L = {
 		["notices_name"] = "Filter Channel Notices",
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		["tradespam_name"] = "Throttle Spam",
+		["training_desc"] = "Show the AI training UI",
+		["training_name"] = "AI Training",
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -113,6 +126,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -146,6 +167,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -171,6 +200,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -193,6 +230,14 @@ L = {
 		["notices_name"] = "Kanal-Meldungen filtern",
 		["tradespam_desc"] = "Unterdrückt Nachrichten, um zu verhindern, dass dieselbe Nachricht mehrmals wiederholt wird",
 		["tradespam_name"] = "Spam begrenzen",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -213,6 +258,14 @@ L = {
 		["notices_name"] = "채널 알림 메시지 필터링",
 		["tradespam_desc"] = "같은 메시지가 여러번 반복되지 않게 방지합니다.",
 		["tradespam_name"] = "스팸 조절",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -244,6 +297,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -263,6 +324,14 @@ L = {
 		["notices_name"] = "Извещения в канале",
 		["tradespam_desc"] = "Скрывать повторяющиеся сообщения",
 		["tradespam_name"] = "Скрывать спам",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -282,6 +351,14 @@ L = {
 		["notices_name"] = "频道通知过滤",
 		["tradespam_desc"] = "节流消息以防止连续多次收到同样的消息",
 		["tradespam_name"] = "屏蔽垃圾",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -305,6 +382,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -328,6 +413,14 @@ L = {
 		["tradespam_desc"] = "Throttle messages to prevent the same message from being repeated multiple times",
 		--[[Translation missing --]]
 		["tradespam_name"] = "Throttle Spam",
+		--[[Translation missing --]]
+		["training_desc"] = "Show the AI training UI",
+		--[[Translation missing --]]
+		["training_name"] = "AI Training",
+		--[[Translation missing --]]
+		["useai_desc"] = "Use a spam filter based on machine learning",
+		--[[Translation missing --]]
+		["useai_name"] = "AI Spam Filter",
 	}
 }
 
@@ -343,7 +436,9 @@ end
       leavejoin = true,
       notices = true,
       tradespam = false,
-      afkdnd = true,
+      afkdnd = false,
+      training = false,
+      useai = true,
     }
   })
 
@@ -375,7 +470,19 @@ end
         desc = PL["afkdnd_desc"],
         type = "toggle",
         order = 115
-      }
+      },
+      useai = {
+        name = PL["useai_name"],
+        desc = PL["useai_desc"],
+        type = "toggle",
+        order = 117
+      },
+      training = {
+        name = PL["training_name"],
+        desc = PL["training_desc"],
+        type = "toggle",
+        order = 118
+      },
 
       --		    bgjoin = {
       --				name = PL["bgjoin_name"],
@@ -424,12 +531,16 @@ end
   --	return false, ...
   --end
 
+
   --[[------------------------------------------------
       Module Event Functions
   ------------------------------------------------]] --
   function module:OnModuleEnable()
+    Prat.RegisterMessageItem("SPAMPROB", "PRE", "after")
+    self.classifier = Prat.GetClassifier(self.db.global)
     self.throttleFrame = self.throttleFrame or CreateFrame("FRAME");
-
+    self.lineTable = {}
+    self.trainTable = {}
     self.throttle = THROTTLE_TIME
 
     self.throttleFrame:SetScript("OnUpdate",
@@ -445,13 +556,17 @@ end
     --    ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", tradeSpamFilter)
 
     Prat.RegisterChatEvent(self, "Prat_FrameMessage")
+    if self.db.profile.training then
+      Prat.RegisterLinkType({ linkid = "pratfilter", linkfunc = module.PratFilter, handler = module }, module.name)
+    end
   end
 
   -- things to do when the module is disabled
   function module:OnModuleDisable()
+    self.lineTable = nil
+    self.trainTable = nil
     --    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CHANNEL", tradeSpamFilter)
     --    ChatFrame_RemoveMessageEventFilter("CHAT_MSG_YELL", tradeSpamFilter)
-
 
     Prat.UnregisterAllChatEvents(self)
   end
@@ -459,6 +574,14 @@ end
   --[[------------------------------------------------
       Core Functions
   ------------------------------------------------]] --
+
+
+  function module:PratFilter(data, frame)
+    local _, id, found = strsplit(":", data)
+    found = tonumber(found) == 1 and true or false
+    self:ToggleLearn(id, found, frame)
+    return false
+  end
 
   function module:GetDescription()
     return PL["A module to provide basic chat filtering."]
@@ -472,10 +595,95 @@ end
     end
   end
 
+  local function string_split(text, sep, pattern)
+    local sep, fields = sep or " ", {}
+    local patt = pattern or ("([^%s]+)"):format(sep)
+    text:gsub(patt, function(c) fields[#fields + 1] = c:lower() end)
+    return fields
+  end
 
+  local function tokenize(msg)
+    return string_split(msg, nil, "([^%s%p%c]+)") -- obfuscations removal
+  end
 
+  function module:Learn(id, found, frame)
+    id = tonumber(id)
+    local text = self.lineTable[id]
+    dbg(text, id)
+    if not text then return end
+    local learned = self.trainTable[id]
+    if learned ~= nil then
+      self:Unlearn(id, learned)
+    end
+    self:Output(frame, "learning " .. text .. " as " .. tostring(found))
+    self.trainTable[id] = found or false
+    self.classifier.learn(tokenize(text), found)
+  end
+
+  function module:Unlearn(id, found, frame)
+    id = tonumber(id)
+    local text = self.lineTable[id]
+    dbg(text, id)
+    if not text then return end
+    local learned = self.trainTable[id]
+    self.trainTable[id] = nil
+    self:Output(frame, "Unlearning " .. text .. " as " .. tostring(found))
+    if learned ~= nil then
+      self:Unlearn(id, learned)
+    end
+    self.classifier.unlearn(tokenize(text), found)
+  end
+
+  function module:ToggleLearn(id, found, frame)
+    id = tonumber(id)
+    dbg("ToggleLearn", id, found)
+    local learned = self.trainTable[id]
+    if learned ~= nil then
+      self:Unlearn(id, learned, frame)
+      return
+    end
+
+    self:Learn(id, found, frame)
+  end
+
+  local SPAM_CUTOFF = 0.90
+  local HAM_CUTOFF = 0.20
+  local CLR = Prat.CLR
+
+  function CLR:Bracket(text) return self:Colorize({
+    r = 0.85,
+    g = 0.85,
+    b = 0.85,
+    a = 1.0
+  }, text)
+  end
+
+  function CLR:Probability(text, prob)
+    local isHam = prob <= HAM_CUTOFF
+    local isSpam = prob >= SPAM_CUTOFF
+
+    local color = isHam and "40ff40" or isSpam and "ff4040" or "a0a0a0"
+    return self:Colorize(color, text)
+  end
 
   function module:Prat_FrameMessage(arg, message, frame, event)
+    if self.db.profile.useai then
+      local msg = tokenize(message.ORG.MESSAGE)
+      local prob = self.classifier.getprob(msg)
+      --    dbg("filter:fraee", prob, msg)
+      local isHam = prob <= HAM_CUTOFF
+      local isSpam = prob >= SPAM_CUTOFF
+      if self.db.profile.training then
+        self.lineTable[message.LINE_ID] = message.ORG.MESSAGE
+        message.SPAMPROB = ("|cff40ff40|Hpratfilter:%d:0|h[--]|h|r" .. CLR:Bracket("[") .. "%s" .. CLR:Bracket("]") .. "|cffff4040|Hpratfilter:%d:1|h[++]|h|r ")
+          :format(message.LINE_ID, CLR:Probability(FormatPercentage(prob), prob), message.LINE_ID)
+      else
+        if isSpam then
+          message.DONOTPROCESS = true
+        end
+      end
+    end
+
     local newEvent = true
     if message.LINE_ID and
       message.LINE_ID == self.lastevent and

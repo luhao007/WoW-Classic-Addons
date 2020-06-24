@@ -278,7 +278,7 @@ class Manager(object):
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'NovaWorldBuffs', 'Recount', 'TitanClassic']
+                       'Recount', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
@@ -465,6 +465,19 @@ class Manager(object):
             'AddOns/honorspy/honorspy.lua',
             ['local addonName = "Honorspy";',
              '			minimapButton = {hide = true},']
+        )
+
+    @classic_only
+    def handle_nwb(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0',
+             'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
+             'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
+             'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
+             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibSharedMedia-3.0', 'LibStub'],
+            'Addons/NovaWorldBuffs/Lib',
+            'Addons/NovaWorldBuffs/embeds.xml',
         )
 
     @retail_only

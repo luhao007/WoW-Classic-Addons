@@ -527,3 +527,7 @@ L["showBuffStatsDesc"] = "在/buff 框架顯示你獲得每個增益的次數?";
 L["buffResetButtonTooltip"] = "這將會重置所有增益\n增益次數資料不會被重置."; --/buff 框架的重置按鈕的提示。
 L["time"] = "次"; --Singular - This shows how many timers you got a buff. Example: (1 time)
 L["times"] = "次"; --Plural - This shows how many timers you got a buff. Example: (5 times)
+L["flowerWarning"] = "輕歌花的鏡像紀錄已啟動，但是你沒有在到達費伍德時先點擊NPC，所以沒有計時器被記錄。";
+
+L["mmColorTitle"] = "小地圖Layer顏色";
+L["mmColorDesc"] = "小地圖的Layer要用什麼色? (Layer 1)";

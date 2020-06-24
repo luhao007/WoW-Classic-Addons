@@ -14,7 +14,8 @@ NWB.realm = GetRealmName();
 NWB.faction = UnitFactionGroup("player");
 NWB.loadTime = 0;
 NWB.limitLayerCount = 99;
-NWB.serializer = LibStub:GetLibrary("AceSerializer-3.0");
+NWB.serializer = LibStub:GetLibrary("LibSerialize");
+NWB.serializerOld = LibStub:GetLibrary("AceSerializer-3.0");
 NWB.libDeflate = LibStub:GetLibrary("LibDeflate");
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
 local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
@@ -31,6 +32,7 @@ function NWB:OnInitialize()
     LibStub("AceConfig-3.0"):RegisterOptionsTable("NovaWorldBuffs", NWB.options);
 	self.NWBOptions = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("NovaWorldBuffs", "NovaWorldBuffs");
 	self.chatColor = "|cff" .. self:RGBToHex(self.db.global.chatColorR, self.db.global.chatColorG, self.db.global.chatColorB);
+	self.mmColor = "|cff" .. self:RGBToHex(self.db.global.mmColorR, self.db.global.mmColorG, self.db.global.mmColorB);
 	self:RegisterComm(self.commPrefix);
 	self:registerSounds();
 	self.loadTime = GetServerTime();
@@ -1185,9 +1187,26 @@ function NWB:combatLogEventUnfiltered(...)
 				NWB:playSound("soundsOnyDrop", "ony");
 			end
 		elseif (((NWB.faction == "Horde" and destNpcID == "14392") or (NWB.faction == "Alliance" and destNpcID == "14394"))
-				and spellName == L["Sap"]) then
-			NWB:debug("Ony NPC sapped by", sourceName);
-			--1591879446.983 SPELL_AURA_APPLIED false Player-4669-005B30C0 Tykot 1297 0 Creature-0-4671-1-73-3115-0000620672 Dustwind Harpy 68168 0 0 Sap 1 DEBUFF
+				and spellName == L["Sap"] and ((GetServerTime() - NWB.data.onyYell2) < 30 or (GetServerTime() - NWB.data.onyYell) < 30)) then
+			--Yell timestamp is only recorded to non-layered data (NWB.data.onyYell) first because there's is no GUID attached.
+			--Then it's copied from there to the right layer once the buff drops in setOnyBuff().
+			--For this reason we just check against the non-layered yell timestamp even for layered realms.
+			--Using destGUID instead of sourceGUID for sap target instead of buff gained from source.
+			local unitType, _, _, _, zoneID, npcID = strsplit("-", destGUID);
+			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+			if ((zone == 1453 or zone == 1454) or not NWB.isLayered) then
+				NWB:debug("Onyxia buff NPC sapped by", sourceName, zoneID, destGUID);
+				if (sourceName) then
+					NWB:print("Onyxia buff NPC sapped by " .. sourceName .. ", setting backup timer.");
+					if (not NWB.data.sapped) then
+						NWB.data.sapped = {};
+					end
+					NWB.data.sapped[sourceName] = GetServerTime();
+				else
+					NWB:print("Onyxia buff NPC sapped, setting backup timer.");
+				end
+				NWB:setOnyBuff("self", UnitName("player"), zoneID, destGUID, true);
+			end
 		elseif (destName == UnitName("player") and (spellName == L["Sayge's Dark Fortune of Agility"]
 				or spellName == L["Sayge's Dark Fortune of Spirit"] or spellName == L["Sayge's Dark Fortune of Stamina"]
 				or spellName == L["Sayge's Dark Fortune of Strength"] or spellName == L["Sayge's Dark Fortune of Armor"]
@@ -1465,7 +1484,7 @@ function NWB:setZanBuff(source, sender, zoneID, GUID)
 	NWB:debug("zoneid drop", zoneID);
 end
 
-function NWB:setOnyBuff(source, sender, zoneID, GUID)
+function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 	--Ony and nef share a last set cooldown to prevent any bugs with both being set at once.
 	if ((GetServerTime() - nefLastSet) < 20) then
 		return;
@@ -1525,11 +1544,11 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID)
 			end
 			--NWB:sendGuildMsg(L["onyxiaBuffDropped"] .. layerMsg, "guildBuffDropped");
 		end
-		if (NWB.isLayered and count > 0) then
+		if (NWB.isLayered and count > 0 and not isSapped) then
 			NWB:sendBuffDropped("GUILD", "ony", nil, count);
 			--NWB:doBuffDropMsg("ony " .. count);
 			NWB:doBuffDropMsg("ony", count);
-		else
+		elseif (not isSapped) then
 			NWB:sendBuffDropped("GUILD", "ony");
 			NWB:doBuffDropMsg("ony");
 		end
@@ -3056,8 +3075,10 @@ end
 
 function NWB:setLayeredSongflowers()
 	--No layered songflowers on the regions with 4+ layers, it's too much data to sync.
-	if (NWB.isLayered and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
-			and not NWB.krRealms[NWB.realm]) then
+	--if (NWB.isLayered and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+	--		and not NWB.krRealms[NWB.realm]) then
+	--Enabled songflowers in all regions now, using better data compression.
+	if (NWB.isLayered) then
 		NWB.layeredSongflowers = true;
 	end
 end
@@ -3156,8 +3177,7 @@ function NWB:songflowerPicked(type, otherPlayer)
 				NWB:sendData("GUILD");
 				NWB:sendData("YELL");
 				if (NWB.isLayered and NWB:GetLayerCount() >= 2 and NWB.layeredSongflowers) then
-					NWB:print("Songflower picked on a realm with layered songflower timers enabled but you haven't targeted a NPC"
-						.. " since arriving in Felwood so no timer could be recorded.")
+					NWB:print(L["flowerWarning"]);
 				end
 			end
 			pickedTime = timestamp;
@@ -5996,8 +6016,10 @@ function NWB:mapCurrentLayer(unit)
 		--if ((GetServerTime() - NWB.lastJoinedGroup) > 180) then
 			for k, v in pairs(NWB.data.layers) do
 				if (v.layerMap and next(v.layerMap)) then
-					for zone, map in pairs(v.layerMap) do
-						if (zone == zoneID) then
+					for zID, map in pairs(v.layerMap) do
+						--if (zone == zoneID) then
+						--Check both zoneid and mapid, so we don't get data from old layers after server restart both must match.
+						if (zID == zoneID and zone == map) then
 							--Also can start mapping if we pickup our current layer from an already known id.
 							NWB:debug("found mapped id");
 							NWB.lastKnownLayerMapID = k;
@@ -6008,7 +6030,6 @@ function NWB:mapCurrentLayer(unit)
 			end
 		--end
 		if (not foundOldID or NWB.lastKnownLayerMapID < 1) then
-			NWB:debug("no known last layer");
 			return;
 		end
 	end
@@ -6086,6 +6107,11 @@ function NWB:validateZoneID(zoneID, layerID, mapID)
 				return;
 			end
 		end
+	end
+	if (NWB.data.layers[zoneID]) then
+		--Found a bug where layer 2 mapped Durotar to org zoneid from layer 1.
+		--Not sure why it happened but now we'll check if the capital city id's already exist.
+		return;
 	end
 	return true;
 end
@@ -6534,13 +6560,13 @@ function NWB:recalcMinimapLayerFrame(zoneID)
 	if (foundLayer or (NWB.faction == "Horde" and zone == 1454)
 			or (NWB.faction == "Alliance" and zone == 1453)) then
 		if (NWB.currentLayer > 0) then
-			MinimapLayerFrame.fs:SetText("Layer " .. NWB.lastKnownLayer);
+			MinimapLayerFrame.fs:SetText(NWB.mmColor .. "Layer " .. NWB.lastKnownLayer);
 			MinimapLayerFrame.fs:SetFont("Fonts\\ARIALN.ttf", 12);
 		elseif (layerNum > 0) then
-			MinimapLayerFrame.fs:SetText("Layer " .. layerNum);
+			MinimapLayerFrame.fs:SetText(NWB.mmColor .. "Layer " .. layerNum);
 			MinimapLayerFrame.fs:SetFont("Fonts\\ARIALN.ttf", 12);
 		else
-			MinimapLayerFrame.fs:SetText("No Layer");
+			MinimapLayerFrame.fs:SetText(NWB.mmColor .. "No Layer");
 			MinimapLayerFrame.fs:SetFont("Fonts\\ARIALN.ttf", 10);
 		end
 		--MinimapLayerFrame:SetWidth(MinimapLayerFrame.fs:GetStringWidth() + 12);

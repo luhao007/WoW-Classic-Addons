@@ -780,8 +780,8 @@ end
     local lines = {}
     local str
 
-    for _, v in ipairs(frame.visibleLines) do
-      local msg = v.messageInfo
+    for i = frame:GetNumVisibleLines(), 1, -1 do
+      local msg = frame.visibleLines[i].messageInfo
       msg = msg and msg.message
 
       if msg then
@@ -859,7 +859,7 @@ end
       local b = _G[name]
       if not b then
         b = CreateFrame("Button", name, cf)
-        b:SetFrameStrata("BACKGROUND")
+        b:SetFrameStrata("LOW")
         b:SetWidth(24)
         b:SetHeight(24)
         b:SetNormalTexture("Interface\\Addons\\Prat-3.0\\textures\\prat-chatcopy2")

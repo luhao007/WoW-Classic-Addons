@@ -531,3 +531,7 @@ L["showBuffStatsDesc"] = "Show how many times you've gotten each world buff in t
 L["buffResetButtonTooltip"] = "This will reset all buffs.\nBuff count data will not be reset."; --Reset button tooltip for the /buffs frame.
 L["time"] = "time"; --Singular - This shows how many timers you got a buff. Example: (1 time)
 L["times"] = "times"; --Plural - This shows how many timers you got a buff. Example: (5 times)
+L["flowerWarning"] = "Songflower picked on a realm with layered songflower timers enabled but you haven't targeted a NPC since arriving in Felwood so no timer could be recorded.";
+
+L["mmColorTitle"] = "Minimap Layer Color";
+L["mmColorDesc"] = "What color should the minimap layer text be? (Layer 1)";

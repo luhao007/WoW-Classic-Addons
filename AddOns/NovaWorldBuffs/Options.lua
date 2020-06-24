@@ -68,11 +68,20 @@ NWB.options = {
 			set = "setChatColor",
 			hasAlpha = false,
 		},
+		mmColor = {
+			type = "color",
+			name = L["mmColorTitle"],
+			desc = L["mmColorDesc"],
+			order = 9,
+			get = "getMmColor",
+			set = "setMmColor",
+			hasAlpha = false,
+		},
 		middleColor = {
 			type = "color",
 			name = L["middleColorTitle"],
 			desc = L["middleColorDesc"],
-			order = 9,
+			order = 10,
 			get = "getMiddleColor",
 			set = "setMiddleColor",
 			hasAlpha = false,
@@ -82,13 +91,13 @@ NWB.options = {
 			name = L["resetColorsTitle"],
 			desc = L["resetColorsDesc"],
 			func = "resetColors",
-			order = 10,
+			order = 11,
 		},
 		showTimeStamp = {
 			type = "toggle",
 			name = L["showTimeStampTitle"],
 			desc = L["showTimeStampDesc"],
-			order = 11,
+			order = 12,
 			get = "getShowTimeStamp",
 			set = "setShowTimeStamp",
 		},
@@ -104,7 +113,7 @@ NWB.options = {
 				[1] = 12,
 				[2] = 24,
 			},
-			order = 12,
+			order = 13,
 			get = "getTimeStampFormat",
 			set = "setTimeStampFormat",
 		},
@@ -120,7 +129,7 @@ NWB.options = {
 				[1] = "local",
 				[2] = "server",
 			},
-			order = 13,
+			order = 14,
 			get = "getTimeStampZone",
 			set = "setTimeStampZone",
 		},
@@ -938,6 +947,7 @@ NWB.optionDefaults = {
 	global = {
 		chatColorR = 255, chatColorG = 255, chatColorB = 0,
 		middleColorR = 1, middleColorG = 0.96, middleColorB = 0.41,
+		mmColorR = 255, mmColorG = 255, mmColorB = 255,
 		logonPrint = true,
 		chatWarning = true,
 		middleScreenWarning = true,
@@ -1284,6 +1294,17 @@ function NWB:getMiddleColor(info)
 	return self.db.global.middleColorR, self.db.global.middleColorG, self.db.global.middleColorB;
 end
 
+--Minimap layer color.
+function NWB:setMmColor(info, r, g, b, a)
+	self.db.global.mmColorR, self.db.global.mmColorG, self.db.global.mmColorB = r, g, b;
+	NWB.mmColor = "|cff" .. NWB:RGBToHex(self.db.global.mmColorR, self.db.global.mmColorG, self.db.global.mmColorB);
+	NWB:recalcMinimapLayerFrame();
+end
+
+function NWB:getMmColor(info)
+	return self.db.global.mmColorR, self.db.global.mmColorG, self.db.global.mmColorB;
+end
+
 --Reset colors.
 function NWB:resetColors(info, r, g, b, a)
 	self.db.global.chatColorR = self.optionDefaults.global.chatColorR;
@@ -1292,7 +1313,12 @@ function NWB:resetColors(info, r, g, b, a)
 	self.db.global.middleColorR = self.optionDefaults.global.middleColorR;
 	self.db.global.middleColorG = self.optionDefaults.global.middleColorG;
 	self.db.global.middleColorB = self.optionDefaults.global.middleColorB;
+	self.db.global.mmColorR = self.optionDefaults.global.mmColorR;
+	self.db.global.mmColorG = self.optionDefaults.global.mmColorG;
+	self.db.global.mmColorB = self.optionDefaults.global.mmColorB;
 	NWB.chatColor = "|cff" .. NWB:RGBToHex(self.db.global.chatColorR, self.db.global.chatColorG, self.db.global.chatColorB);
+	NWB.mmColor = "|cff" .. NWB:RGBToHex(self.db.global.mmColorR, self.db.global.mmColorG, self.db.global.mmColorB);
+	NWB:recalcMinimapLayerFrame();
 end
 
 --Reset colors.

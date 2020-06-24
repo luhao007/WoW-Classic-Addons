@@ -535,3 +535,7 @@ L["showBuffStatsDesc"] = "在/buffs命令出现的窗口中显示你获得的每
 L["buffResetButtonTooltip"] = "重置所有已记录的Buffs.\nBuff计数器数据不会被重置."; --Reset button tooltip for the /buffs frame.
 L["time"] = "次"; --Singular - This shows how many timers you got a buff. Example: (1 time)
 L["times"] = "次"; --Plural - This shows how many timers you got a buff. Example: (5 times)
+L["flowerWarning"] = "你在开启了位面的服务器上采集了风歌花,虽然风歌花计时器已启用,但是自你到达费伍德森林后,尚未选中任何NPC,所以插件无法记录采集时间.";
+
+L["mmColorTitle"] = "小地图位面信息颜色";
+L["mmColorDesc"] = "设置小地图位面信息文本(Layer 1)的颜色";

@@ -67,15 +67,25 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		--Add normalized realm since roster checks use this.
 		sender = sender .. "-" .. GetNormalizedRealmName();
 	end
-	local decoded = NWB.libDeflate:DecodeForWoWAddonChannel(string);
-	local decompressed = NWB.libDeflate:DecompressDeflate(decoded);
-	local args, deserializeResult, deserialized;
-	if (not decompressed) then
-		--NWB:debug("Uncompressed data received from:", sender, distribution);
-		deserializeResult, deserialized = NWB.serializer:Deserialize(string);
+	local decoded;
+	if (distribution == "YELL" or distribution == "SAY") then
+		decoded = NWB.libDeflate:DecodeForWoWChatChannel(string);
 	else
-		--NWB:debug("Compressed data received from:", sender, distribution);
-		deserializeResult, deserialized = NWB.serializer:Deserialize(decompressed);
+		decoded = NWB.libDeflate:DecodeForWoWAddonChannel(string);
+	end
+	if (not decoded) then
+		--NWB:debug("Old version of yell data ignored", sender);
+		return;
+	end
+	local decompressed = NWB.libDeflate:DecompressDeflate(decoded);
+	local deserializeResult, deserialized = NWB.serializer:Deserialize(decompressed);
+	if (not deserializeResult) then
+		--Fall back to old deserializer if it's an old version.
+		if (not decompressed) then
+			--NWB:debug("decompression failed found from", sender);
+			return;
+		end
+		deserializeResult, deserialized = NWB.serializerOld:Deserialize(decompressed);
 	end
 	if (not deserializeResult) then
 		NWB:debug("Error deserializing:", distribution);
@@ -99,9 +109,6 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		NWB:debug("version missing", sender, cmd, data);
 		return;
 	end
-	--if (distribution == "GUILD") then
-	--	NWB:debug("cmd", cmd, sender);
-	--end
 	--Ignore all commands but settings requests for much older versions.
 	if (tonumber(remoteVersion) < 1.50) then
 		--Ignore all commands but settings requests.
@@ -110,6 +117,9 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 				NWB:sendSettings("GUILD");
 			else
 				NWB:sendData("GUILD");
+				--Temporary send old serializer type settings, remove in a week or 2 after enough people update to new serializer.
+				--To avoid duplicate guild msgs.
+				NWB:sendSettings("GUILD");
 			end
 		end
 		return;
@@ -136,12 +146,15 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		NWB:doFlowerMsg(type, layer);
 	end
 	--Ignore data syncing for some recently out of date versions.
-	if (tonumber(remoteVersion) < 1.65) then
+	if (tonumber(remoteVersion) < 1.66) then
 		if (cmd == "requestData" and distribution == "GUILD") then
 			if (not NWB:getGuildDataStatus()) then
 				NWB:sendSettings("GUILD");
 			else
 				NWB:sendData("GUILD");
+				--Temporary send old serializer type settings, remove in a week or 2 after enough people update to new serializer.
+				--To avoid duplicate guild msgs.
+				NWB:sendSettings("GUILD");
 			end
 		end
 		return;
@@ -155,6 +168,9 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 			NWB:sendSettings("GUILD");
 		else
 			NWB:sendData("GUILD");
+			--Temporary send old serializer type settings, remove in a week or 2 after enough people update to new serializer.
+			--To avoid duplicate guild msgs.
+			NWB:sendSettings("GUILD");
 		end
 	elseif (cmd == "requestSettings") then
 		--Only used once per logon.
@@ -165,7 +181,7 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 end
 
 --Send to specified addon channel.
-function NWB:sendComm(distribution, string, target)
+function NWB:sendComm(distribution, string, target, useOldSerializer)
 	--if (NWB.isDebug) then
 	--	return;
 	--end
@@ -187,13 +203,18 @@ function NWB:sendComm(distribution, string, target)
 	elseif (distribution ~= "WHISPER") then
 		target = nil;
 	end
-	local data;
-	local serialized = NWB.serializer:Serialize(string);
-	if (distribution ~= "YELL" and distribution ~= "SAY") then
-		local compressed = NWB.libDeflate:CompressDeflate(serialized, {level = 9});
-		data = NWB.libDeflate:EncodeForWoWAddonChannel(compressed);
+	local data, serialized;
+	if (useOldSerializer) then
+		--For settings to older versions.
+		serialized = NWB.serializerOld:Serialize(string);
 	else
-		data = serialized;
+		serialized = NWB.serializer:Serialize(string);
+	end
+	local compressed = NWB.libDeflate:CompressDeflate(serialized, {level = 9});
+	if (distribution == "YELL" or distribution == "SAY") then
+		data = NWB.libDeflate:EncodeForWoWChatChannel(compressed);
+	else
+		data = NWB.libDeflate:EncodeForWoWAddonChannel(compressed);
 	end
 	--NWB:debug("Serialized length:", string.len(serialized));
 	--NWB:debug("Compressed length:", string.len(compressed));
@@ -224,6 +245,30 @@ function NWB:sendData(distribution, target, prio, noLayerMap)
 	end
 end
 
+--Testing data sizes.
+function NWB:testData()
+	local data, data2;
+	if (NWB.isLayered) then
+		data = NWB:createDataLayered("guild");
+	else
+		data = NWB:createData("guild");
+	end
+	if (next(data) ~= nil) then
+		local d1 = NWB.serializerOld:Serialize(data);
+		local d2 = NWB.serializer:Serialize(data);
+		local c1 = NWB.libDeflate:CompressDeflate(d1, {level = 9});
+		local c2 = NWB.libDeflate:CompressDeflate(d2, {level = 9});
+		local e1 = NWB.libDeflate:EncodeForWoWAddonChannel(c1);
+		local e2 = NWB.libDeflate:EncodeForWoWAddonChannel(c2);
+		print("AceSerializer:", string.len(d1));
+		print(" -LibDeflate:", string.len(c1));
+		--print(" -EncodedForWoWChannel:", string.len(e1));
+		print("LibSerialize:", string.len(d2));
+		print(" -LibDeflate:", string.len(c2));
+		--print(" -EncodedForWoWChannel:", string.len(e2));
+	end
+end
+
 --Check if we should send guild data, first few online only will send data to not spam addon comms.
 function NWB:getGuildDataStatus()
 	if (not IsInGuild()) then
@@ -246,18 +291,18 @@ function NWB:getGuildDataStatus()
 	for k, v in NWB:pairsByKeys(onlineMembers) do
 		count = count + 1;
 		if (count > limit) then
-			--NWB:debug("Not first in line for guild data");
+			NWB:debug("Not first in line for guild data");
 			return;
 		end
 		if (k == me) then
-			--NWB:debug("First in line for guild data");
+			NWB:debug("First in line for guild data");
 			return true;
 		end
 	end
 end
 
 --Send settings only.
-function NWB:sendSettings(distribution, target, prio)
+function NWB:sendSettingsNew(distribution, target, prio)
 	if (UnitInBattleground("player") and distribution ~= "GUILD") then
 		return data;
 	end
@@ -269,6 +314,22 @@ function NWB:sendSettings(distribution, target, prio)
 		data = NWB.serializer:Serialize(data);
 		NWB.lastDataSent = GetServerTime();
 		NWB:sendComm(distribution, "settings " .. version .. " " .. data, target, prio);
+	end
+end
+
+--Temporary send old serializaton type, remove in later version when more people are on the new serializer.
+function NWB:sendSettings(distribution, target, prio)
+	if (UnitInBattleground("player") and distribution ~= "GUILD") then
+		return data;
+	end
+	if (not prio) then
+		prio = "NORMAL";
+	end
+	local data = NWB:createSettings(distribution);
+	if (next(data) ~= nil) then
+		NWB.lastDataSent = GetServerTime();
+		data = NWB.serializerOld:Serialize(data);
+		NWB:sendComm(distribution, "settings " .. version .. " " .. data, target, prio, true);
 	end
 end
 
@@ -328,6 +389,9 @@ function NWB:requestData(distribution, target, prio)
 	data = NWB.serializer:Serialize(data);
 	NWB.lastDataSent = GetServerTime();
 	NWB:sendComm(distribution, "requestData " .. version .. " " .. data, target, prio);
+	--Temporary send old serializer type settings, remove in a week or 2 after enough people update to new serializer.
+	--To avoid duplicate guild msgs.
+	NWB:sendSettings("GUILD");
 end
 
 --Send settings only and also request other users settings back.
@@ -336,9 +400,17 @@ function NWB:requestSettings(distribution, target, prio)
 		prio = "NORMAL";
 	end
 	local data = NWB:createSettings(distribution);
-	data = NWB.serializer:Serialize(data);
-	NWB.lastDataSent = GetServerTime();
-	NWB:sendComm(distribution, "requestSettings " .. version .. " " .. data, target, prio);
+	if (next(data) ~= nil) then
+		local dataNew = NWB.serializer:Serialize(data);
+		NWB.lastDataSent = GetServerTime();
+		NWB:sendComm(distribution, "requestSettings " .. version .. " " .. dataNew, target, prio);
+		--Temorary send both types so less duplicate guikd chat msgs, remove in next version when more people are on the new serializer.
+		local dataOld = NWB.serializerOld:Serialize(data);
+		NWB:sendComm(distribution, "requestSettings " .. version .. " " .. dataOld, target, prio, true);
+	end
+	--data = NWB.serializer:Serialize(data);
+	--NWB.lastDataSent = GetServerTime();
+	--NWB:sendComm(distribution, "requestSettings " .. version .. " " .. data, target, prio);
 end
 
 --Create data table for sending.
@@ -713,17 +785,21 @@ local validKeys = {
 	["lastSeenNPC"] = true,
 };
 
-function NWB:extractSettings(data, sender, distribution)
+function NWB:extractSettings(dataReceived, sender, distribution)
 	if (distribution ~= "GUILD") then
 		return;
 	end
-	if (not data) then
+	if (not dataReceived) then
 		NWB:debug("extractSettings no data received from:", sender);
 		return;
 	end
-	local deserializeResult, data = NWB.serializer:Deserialize(data);
+	local deserializeResult, data = NWB.serializer:Deserialize(dataReceived);
 	if (not deserializeResult) then
-		--NWB:debug("Failed to deserialize extractSettings data.");
+		--Fall back to old deserializer if it's an old version.
+		deserializeResult, data = NWB.serializerOld:Deserialize(dataReceived);
+	end
+	if (not deserializeResult) then
+		NWB:debug("Failed to deserialize extractSettings data.");
 		return;
 	end
 	data = NWB:convertKeys(data, nil, distribution);
@@ -738,8 +814,12 @@ end
 
 --Add received data to our database.
 --This is super ugly for layered stuff, but it's meant to work with all diff versions at once, will be cleaned up later.
-function NWB:receivedData(data, sender, distribution)
-	local deserializeResult, data = NWB.serializer:Deserialize(data);
+function NWB:receivedData(dataReceived, sender, distribution)
+	local deserializeResult, data = NWB.serializer:Deserialize(dataReceived);
+	if (not deserializeResult) then
+		--Fall back to old deserializer if it's an old version.
+		deserializeResult, data = NWB.serializerOld:Deserialize(dataReceived);
+	end
 	if (not deserializeResult) then
 		NWB:debug("Failed to deserialize data.");
 		return;
@@ -1251,11 +1331,15 @@ end
 --Set shorten to true for sending, false to expand after receiving.
 --This shrinks my data by about 45%.
 function NWB:convertKeys(table, shorten, distribution)
+	if (type(table) ~= "table") then
+		NWB:debug("no convertKeys table", table);
+		return;
+	end
 	local keys = shortKeys;
 	if (shorten) then
 		keys = shortKeysReversed;
 	end
-	local data = {}; 
+	local data = {};
 	for k, v in pairs(table) do
 		if (type(v) == "table") then
 			v = NWB:convertKeys(v, shorten, distribution);
@@ -1265,6 +1349,7 @@ function NWB:convertKeys(table, shorten, distribution)
 				---Hashing timestamps will be enabled in the next version once enough people have updated.
 				---This will create errors on older versons.
 				--If yell then convert timestamps to a smaller hash also.
+				---(This should no longer be needed to be enabled in later version, now we have working compression for yell channel).
 				--v = epochToHash(v);
 			elseif (not shorten and hashKeys[keys[k]]) then
 				--Convert back from hash if not shorten and is valid key.

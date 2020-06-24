@@ -1109,7 +1109,8 @@ end
         return match(text, matchopts, mode)
       end,
       type = matchtype,
-      deformat = matchopts.deformat
+      deformat = matchopts.deformat,
+      priority = 46
     }
 
     Prat.RegisterPattern(patterninfo, self.name)
