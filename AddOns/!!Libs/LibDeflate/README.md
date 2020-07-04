@@ -9,7 +9,7 @@
 # LibDeflate
 ## Pure Lua compressor and decompressor with high compression ratio using DEFLATE/zlib format.
 
-Copyright (C) 2018-2019 Haoqian He
+Copyright (C) 2018-2020 Haoqian He
 
 ## Introduction
 LibDeflate is pure Lua compressor and decompressor with high compression ratio,
@@ -38,7 +38,7 @@ for Linux, MaxOS and Windows. Click the Travis CI(Linux/MaxOS) and
 Appveyor(Windows) badge on the top of this README for the test results. Click
 the CodeCov badge to see the test coverage (should be 100%).
 Note at the time of this release, Lua 5.4 final is not released yet.
-For Lua 5.4, This library is tested with its first beta version.
+For Lua 5.4, This library is tested with its rc6 version.
 
 ## Documentation
 [Documentation](https://safeteewow.github.io/LibDeflate/source/LibDeflate.lua.html) is hosted on Github.
@@ -93,30 +93,30 @@ More benchmarks can be viewed in the [documentation](https://safeteewow.github.i
 </tr>
 <tr>
 <td>compress time(ms)</td>
-<td>70</td>
-<td>120</td>
-<td>200</td>
-<td>127</td>
-<td>58</td>
-<td>64</td>
+<td>68</td>
+<td>116</td>
+<td>189</td>
+<td>111</td>
+<td>52</td>
+<td>50</td>
 </tr>
 <tr>
 <td>decompress time(ms)</td>
-<td>35</td>
-<td>32</td>
-<td>32</td>
-<td>62</td>
-<td>36</td>
-<td>62</td>
+<td>48</td>
+<td>30</td>
+<td>27</td>
+<td>55</td>
+<td>26</td>
+<td>59</td>
 </tr>
 <tr>
 <td>compress+decompress time(ms)</td>
-<td>105</td>
-<td>152</td>
-<td>232</td>
-<td>189</td>
-<td>94</td>
-<td>126</td>
+<td>116</td>
+<td>145</td>
+<td>216</td>
+<td>166</td>
+<td>78</td>
+<td>109</td>
 </tr>
 </tbody>
 </table>
@@ -130,9 +130,11 @@ LibDeflate with compression level 1 compresses as fast as LibCompress, but alrea
 [LibDeflate.lua](https://github.com/SafeteeWoW/LibDeflate/blob/master/LibDeflate.lua) is the only file of LibDeflate. Copy the file
 to your LUA_PATH to install it.
 
-+ To download as a World of Warcraft library, goto [LibDeflate Curseforge Page](https://wow.curseforge.com/projects/libdeflate)
++ To download as a World of Warcraft library, goto [LibDeflate Curseforge Page](https://wow.curseforge.com/projects/libdeflate) or [LibDeflate WoWInterface Page](https://www.wowinterface.com/downloads/info25453-LibDeflate.html)
 
 + You can also install via Luarocks using the command "luarocks install libdeflate"
+
++ All packages files can also in downloaded in the [Github Release Page](https://github.com/SafeteeWoW/LibDeflate/releases)
 
 + To use after installation, ```require("LibDeflate")``` (case sensitive) in your Lua interpreter,
 or ```LibStub:GetLibrary("LibDeflate")``` (case sensitive) for World of Warcraft.
@@ -190,7 +192,7 @@ assert(LibDeflate:DecodeForPrint(printable_compressed) == compress_deflate)
 See Full examples in [examples/example.lua](https://github.com/SafeteeWoW/LibDeflate/blob/master/examples/example.lua)
 
 ## License
-LibDeflate is licensed under GNU Lesser General Public License Version 3 or later.
+LibDeflate is licensed under the zlib license. See LICENSE.txt
 
 ## Credits and Disclaimer
 

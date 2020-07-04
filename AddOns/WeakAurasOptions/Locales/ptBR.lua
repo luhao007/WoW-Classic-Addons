@@ -151,6 +151,8 @@ WeakAuras → Opções → Opções ]=]
 	L["Automatic"] = "Automatic"
 	L["Automatic Icon"] = "Ícone automático"
 	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
+	--[[Translation missing --]]
 	L["Backdrop Color"] = "Backdrop Color"
 	--[[Translation missing --]]
 	L["Backdrop in Front"] = "Backdrop in Front"
@@ -388,6 +390,8 @@ WeakAuras → Opções → Opções ]=]
 	--[[Translation missing --]]
 	L["Enter Author Mode"] = "Enter Author Mode"
 	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
+	--[[Translation missing --]]
 	L["Enter User Mode"] = "Enter User Mode"
 	--[[Translation missing --]]
 	L["Enter user mode."] = "Enter user mode."
@@ -614,6 +618,8 @@ WeakAuras → Opções → Opções ]=]
 	--[[Translation missing --]]
 	L["Match Count"] = "Match Count"
 	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
+	--[[Translation missing --]]
 	L["Max"] = "Max"
 	--[[Translation missing --]]
 	L["Max Length"] = "Max Length"
@@ -754,6 +760,8 @@ WeakAuras → Opções → Opções ]=]
 	L["Paste text below"] = "Paste text below"
 	--[[Translation missing --]]
 	L["Paste Trigger Settings"] = "Paste Trigger Settings"
+	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
 	L["Play Sound"] = "Reproduzir som"
 	--[[Translation missing --]]
 	L["Portrait Zoom"] = "Portrait Zoom"
@@ -787,6 +795,10 @@ WeakAuras → Opções → Opções ]=]
 	L["Re-center Y"] = "Recentralizar Y"
 	--[[Translation missing --]]
 	L["Regions of type \"%s\" are not supported."] = "Regions of type \"%s\" are not supported."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	--[[Translation missing --]]
 	L["Remaining Time"] = "Remaining Time"
 	L["Remaining Time Precision"] = "Precisão do tempo restante"
@@ -888,6 +900,8 @@ WeakAuras → Opções → Opções ]=]
 	L["Show Text"] = "Show Text"
 	--[[Translation missing --]]
 	L["Show this group's children"] = "Show this group's children"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	L["Shows a 3D model from the game files"] = "Mostrar um modelo 3D dos arquivos do jogo"
 	--[[Translation missing --]]
 	L["Shows a border"] = "Shows a border"
@@ -1008,6 +1022,12 @@ WeakAuras → Opções → Opções ]=]
 	L["This region of type \"%s\" is not supported."] = "This region of type \"%s\" is not supported."
 	--[[Translation missing --]]
 	L["This setting controls what widget is generated in user mode."] = "This setting controls what widget is generated in user mode."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	--[[Translation missing --]]
 	L["Time in"] = "Time in"
 	--[[Translation missing --]]

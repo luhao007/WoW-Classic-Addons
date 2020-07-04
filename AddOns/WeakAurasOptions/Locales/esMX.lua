@@ -157,6 +157,8 @@ Si la duración de la animación es |cFF00CC0010%|r, y el disparador del aura es
 	--[[Translation missing --]]
 	L["Automatic"] = "Automatic"
 	L["Automatic Icon"] = "Icono automático"
+	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
 	L["Backdrop Color"] = "Color de fondo"
 	--[[Translation missing --]]
 	L["Backdrop in Front"] = "Backdrop in Front"
@@ -381,6 +383,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	--[[Translation missing --]]
 	L["Enter Author Mode"] = "Enter Author Mode"
 	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
+	--[[Translation missing --]]
 	L["Enter User Mode"] = "Enter User Mode"
 	--[[Translation missing --]]
 	L["Enter user mode."] = "Enter user mode."
@@ -590,6 +594,8 @@ Con |cFF00CC00>= 0|r se activará siempre.]=]
 	--[[Translation missing --]]
 	L["Match Count"] = "Match Count"
 	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
+	--[[Translation missing --]]
 	L["Max"] = "Max"
 	--[[Translation missing --]]
 	L["Max Length"] = "Max Length"
@@ -712,6 +718,8 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Paste text below"] = "Pegar texto debajo"
 	--[[Translation missing --]]
 	L["Paste Trigger Settings"] = "Paste Trigger Settings"
+	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
 	L["Play Sound"] = "Reproducir sonido"
 	L["Portrait Zoom"] = "Zoom"
 	--[[Translation missing --]]
@@ -739,6 +747,10 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["Re-center Y"] = "Centrar Y"
 	--[[Translation missing --]]
 	L["Regions of type \"%s\" are not supported."] = "Regions of type \"%s\" are not supported."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	L["Remaining Time"] = "Tiempo restante"
 	L["Remaining Time Precision"] = "Precisión de tiempo restante"
 	--[[Translation missing --]]
@@ -826,6 +838,8 @@ Sólo un valor coincidente puede ser escogido.]=]
 	--[[Translation missing --]]
 	L["Show Text"] = "Show Text"
 	L["Show this group's children"] = "Mostrar los dependientes de este grupo"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	L["Shows a 3D model from the game files"] = "Muestra un modelo 3D de los archivos del juego"
 	--[[Translation missing --]]
 	L["Shows a border"] = "Shows a border"
@@ -928,6 +942,12 @@ Sólo un valor coincidente puede ser escogido.]=]
 	L["This region of type \"%s\" is not supported."] = "No soporta el tipo de región \"%s\"."
 	--[[Translation missing --]]
 	L["This setting controls what widget is generated in user mode."] = "This setting controls what widget is generated in user mode."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	L["Time in"] = "Contar en"
 	L["Tiny Icon"] = "Icono miniatura"
 	L["To Frame's"] = "Al macro"

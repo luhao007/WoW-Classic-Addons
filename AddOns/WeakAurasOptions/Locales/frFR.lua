@@ -121,6 +121,8 @@ Si la durée de l'animation est définie à |cFF00CC0010%|r, et le déclencheur 
 	L["Auto-cloning enabled"] = "Auto-clonage activé"
 	L["Automatic"] = "Automatique"
 	L["Automatic Icon"] = "Icône automatique"
+	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
 	L["Backdrop Color"] = "Couleur de Fond"
 	L["Backdrop in Front"] = "Fond Devant"
 	L["Backdrop Style"] = "Style de Fond"
@@ -315,6 +317,8 @@ Ne sautez pas cette version]=]
 	L["Enter an aura name, partial aura name, or spell id"] = "Entrez un nom d'aura, nom d'aura partiel ou ID de sort"
 	L["Enter an Aura Name, partial Aura Name, or Spell ID. A Spell ID will match any spells with the same name."] = "Entrez un nom d’aura, un nom d’aura partiel ou un identifiant de sort. Un identifiant de sort correspond à tous les sorts de même nom."
 	L["Enter Author Mode"] = "Entrer en Mode Auteur"
+	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
 	L["Enter User Mode"] = "Entrer en Mode Utilisateur."
 	L["Enter user mode."] = "Entrer en Mode Utilisateur."
 	--[[Translation missing --]]
@@ -480,6 +484,8 @@ Si cette case est cochée, ce séparateur inclura du texte. Sinon, ce sera juste
 	L["Manage displays defined by Addons"] = "Gérer les affichages définis par des addons"
 	--[[Translation missing --]]
 	L["Match Count"] = "Match Count"
+	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
 	L["Max"] = "Max"
 	L["Max Length"] = "Longueur max"
 	L["Medium Icon"] = "Icône moyenne"
@@ -574,6 +580,8 @@ Seule une unique valeur peut être choisie]=]
 	L["Paste Settings"] = "Coller Paramètres"
 	L["Paste text below"] = "Coller le texte ci-dessous"
 	L["Paste Trigger Settings"] = "Coller les paramètres de Déclencheurs"
+	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
 	L["Play Sound"] = "Jouer un son"
 	L["Portrait Zoom"] = "Zoom Portrait"
 	L["Position Settings"] = "Paramètres de position"
@@ -597,6 +605,10 @@ Seule une unique valeur peut être choisie]=]
 	L["Re-center X"] = "Recentrer X"
 	L["Re-center Y"] = "Recentrer Y"
 	L["Regions of type \"%s\" are not supported."] = "Les régions de type \"%s\" ne sont pas prises en charge."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	L["Remaining Time"] = "Temps restant"
 	L["Remaining Time Precision"] = "Précision du temps restant"
 	L["Remove"] = "Retirer"
@@ -664,6 +676,8 @@ Seule une unique valeur peut être choisie]=]
 	--[[Translation missing --]]
 	L["Show Text"] = "Show Text"
 	L["Show this group's children"] = "Afficher les enfants de ce groupe"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	L["Shows a 3D model from the game files"] = "Affiche un modèle 3D tiré du jeu"
 	L["Shows a border"] = "Affiche un encadrement"
 	L["Shows a custom texture"] = "Affiche une texture personnalisée"
@@ -751,6 +765,12 @@ Seule une unique valeur peut être choisie]=]
 	L["This display is not currently loaded"] = "Cet affichage n'est pas chargé"
 	L["This region of type \"%s\" is not supported."] = "Cette région de type \"%s\" n'est pas supportée."
 	L["This setting controls what widget is generated in user mode."] = "Ce paramètre contrôle le widget généré en mode utilisateur."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	L["Time in"] = "Temps entrant"
 	L["Tiny Icon"] = "Très petite icône"
 	L["To Frame's"] = "Au cadre de"

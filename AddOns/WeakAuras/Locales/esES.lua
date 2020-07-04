@@ -147,6 +147,12 @@ L["Ascending"] = "Ascendente"
 L["Assigned Role"] = "Assigned Role"
 L["At Least One Enemy"] = "Como Mínimo un Enemigo"
 --[[Translation missing --]]
+L["At missing Value"] = "At missing Value"
+--[[Translation missing --]]
+L["At Percent"] = "At Percent"
+--[[Translation missing --]]
+L["At Value"] = "At Value"
+--[[Translation missing --]]
 L["Attach to End"] = "Attach to End"
 --[[Translation missing --]]
 L["Attach to Start"] = "Attach to Start"
@@ -181,6 +187,8 @@ L["Auto"] = "Auto"
 --[[Translation missing --]]
 L["Autocast Shine"] = "Autocast Shine"
 L["Automatic"] = "Automático"
+--[[Translation missing --]]
+L["Automatic Length"] = "Automatic Length"
 --[[Translation missing --]]
 L["Automatic Repair Confirmation Dialog"] = "Automatic Repair Confirmation Dialog"
 --[[Translation missing --]]
@@ -895,6 +903,8 @@ L["Number Affected"] = "Dependiente de números"
 L["Object"] = "Object"
 L["Officer"] = "Oficial"
 --[[Translation missing --]]
+L["Offset from progress"] = "Offset from progress"
+--[[Translation missing --]]
 L["Offset Timer"] = "Offset Timer"
 --[[Translation missing --]]
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "Older set IDs can be found on websites such as wowhead.com/item-sets"
@@ -956,6 +966,10 @@ L["Pet Spell"] = "Habilidad de mascota"
 L["Phase"] = "Phase"
 --[[Translation missing --]]
 L["Pixel Glow"] = "Pixel Glow"
+--[[Translation missing --]]
+L["Placement"] = "Placement"
+--[[Translation missing --]]
+L["Placement Mode"] = "Placement Mode"
 --[[Translation missing --]]
 L["Play"] = "Play"
 L["Player"] = "Jugador"
@@ -1297,6 +1311,8 @@ L["This is a modified version of your aura, |cff9900FF%s.|r"] = "This is a modif
 --[[Translation missing --]]
 L["This is a modified version of your group, |cff9900FF%s.|r"] = "This is a modified version of your group, |cff9900FF%s.|r"
 L["Threat Situation"] = "Situación de la Amenaza"
+--[[Translation missing --]]
+L["Tick"] = "Tick"
 L["Tier "] = "Tier"
 L["Timed"] = "Temporizado"
 --[[Translation missing --]]

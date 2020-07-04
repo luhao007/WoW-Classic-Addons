@@ -115,6 +115,12 @@ L["Array"] = "Array"
 L["Ascending"] = "Aufsteigend"
 L["Assigned Role"] = "Zugewiesene Rolle"
 L["At Least One Enemy"] = "Zumindest ein Feind"
+--[[Translation missing --]]
+L["At missing Value"] = "At missing Value"
+--[[Translation missing --]]
+L["At Percent"] = "At Percent"
+--[[Translation missing --]]
+L["At Value"] = "At Value"
 L["Attach to End"] = "am Ende befestigen"
 L["Attach to Start"] = "am Anfang befestigen"
 L["Attack Power"] = "Angriffskraft"
@@ -143,6 +149,8 @@ L["Auto"] = "Auto"
 --[[Translation missing --]]
 L["Autocast Shine"] = "Autocast Shine"
 L["Automatic"] = "Automatisch"
+--[[Translation missing --]]
+L["Automatic Length"] = "Automatic Length"
 --[[Translation missing --]]
 L["Automatic Repair Confirmation Dialog"] = "Automatic Repair Confirmation Dialog"
 L["Automatic Rotation"] = "Automatische Rotation"
@@ -728,6 +736,8 @@ L["Number Affected"] = "Betroffene Anzahl"
 L["Object"] = "Objekt"
 L["Officer"] = "Offizier"
 --[[Translation missing --]]
+L["Offset from progress"] = "Offset from progress"
+--[[Translation missing --]]
 L["Offset Timer"] = "Offset Timer"
 --[[Translation missing --]]
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "Older set IDs can be found on websites such as wowhead.com/item-sets"
@@ -780,6 +790,10 @@ L["Pet Spell"] = "Begleiterzauber"
 L["Phase"] = "Phase"
 --[[Translation missing --]]
 L["Pixel Glow"] = "Pixel Glow"
+--[[Translation missing --]]
+L["Placement"] = "Placement"
+--[[Translation missing --]]
+L["Placement Mode"] = "Placement Mode"
 L["Play"] = "Abspielen"
 L["Player"] = "Spieler (Selbst)"
 L["Player Character"] = "Spieler-Charakter (PC)"
@@ -1077,6 +1091,8 @@ L["This is a modified version of your aura, |cff9900FF%s.|r"] = "This is a modif
 --[[Translation missing --]]
 L["This is a modified version of your group, |cff9900FF%s.|r"] = "This is a modified version of your group, |cff9900FF%s.|r"
 L["Threat Situation"] = "Bedrohungssituation"
+--[[Translation missing --]]
+L["Tick"] = "Tick"
 L["Tier "] = "Tier"
 L["Timed"] = "Zeitgesteuert"
 --[[Translation missing --]]

@@ -1,16 +1,18 @@
 ## Interface: 11304
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 5.10.3
+## Version: 6.0.0
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v5.10.3|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.0.0|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
+
+Modules\VersionCheck.lua
 
 embeds.xml
 Libs\HereBeDragons\HereBeDragons-2.0.lua
@@ -25,12 +27,9 @@ Modules\QuestieStream.lua
 
 #Databases
 Database\QuestieDB.lua
-Database\TEMP_questie2events.lua
 Database\questDB.lua
 Database\objectDB.lua
 Database\spawnDB.lua
-Database\zoneDB.lua
-Database\specialspawns.lua
 Database\itemDB.lua
 
 #Corrections
@@ -42,6 +41,13 @@ Database\Corrections\QuestieObjectFixes.lua
 Database\Corrections\QuestieQuestBlacklist.lua
 Database\Corrections\QuestieQuestFixes.lua
 Database\Corrections\QuestieEvent.lua
+
+#Zones
+Database\Zones\zoneDB.lua
+Database\Zones\zoneTables.lua
+
+#Compiler
+Database\compiler.lua
 
 #Localization
 Locale\QuestieLocale.lua
@@ -67,6 +73,7 @@ Modules\Libs\QuestieHash.lua
 ##Modules
 Modules\QuestieTooltips.lua
 Modules\QuestieEventHandler.lua
+Modules\Migration.lua
 
 #Auto
 Modules\Auto\QuestieAuto.lua
@@ -131,6 +138,15 @@ Modules\Options\MapTab\QuestieOptionsMap.lua
 Modules\Options\MinimapTab\QuestieOptionsMinimap.lua
 Modules\Options\NameplateTab\QuestieOptionsNameplate.lua
 Modules\Options\TrackerTab\QuestieOptionsTracker.lua
+
+#Cleanup
+Modules\QuestieCleanup.lua
+
+#Profiler
+Modules\QuestieProfiler.lua
+
+#Debug
+Modules\Debug.lua
 
 #Main
 Questie.lua

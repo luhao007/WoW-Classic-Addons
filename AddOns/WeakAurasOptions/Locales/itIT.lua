@@ -137,6 +137,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Automatic"] = "Automatic"
 	L["Automatic Icon"] = "Icona Automatica"
+	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
 	L["Backdrop Color"] = "Colore Fondale"
 	L["Backdrop in Front"] = "Fondale d'avanti"
 	L["Backdrop Style"] = "Stile Fondale"
@@ -407,6 +409,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Enter Author Mode"] = "Enter Author Mode"
 	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
+	--[[Translation missing --]]
 	L["Enter User Mode"] = "Enter User Mode"
 	--[[Translation missing --]]
 	L["Enter user mode."] = "Enter user mode."
@@ -659,6 +663,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Match Count"] = "Match Count"
 	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
+	--[[Translation missing --]]
 	L["Max"] = "Max"
 	--[[Translation missing --]]
 	L["Max Length"] = "Max Length"
@@ -817,6 +823,8 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Paste Trigger Settings"] = "Paste Trigger Settings"
 	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
+	--[[Translation missing --]]
 	L["Play Sound"] = "Play Sound"
 	--[[Translation missing --]]
 	L["Portrait Zoom"] = "Portrait Zoom"
@@ -854,6 +862,10 @@ local L = WeakAuras.L
 	L["Re-center Y"] = "Re-center Y"
 	--[[Translation missing --]]
 	L["Regions of type \"%s\" are not supported."] = "Regions of type \"%s\" are not supported."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	--[[Translation missing --]]
 	L["Remaining Time"] = "Remaining Time"
 	--[[Translation missing --]]
@@ -966,6 +978,8 @@ local L = WeakAuras.L
 	L["Show Text"] = "Show Text"
 	--[[Translation missing --]]
 	L["Show this group's children"] = "Show this group's children"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	--[[Translation missing --]]
 	L["Shows a 3D model from the game files"] = "Shows a 3D model from the game files"
 	--[[Translation missing --]]
@@ -1110,6 +1124,12 @@ local L = WeakAuras.L
 	L["This region of type \"%s\" is not supported."] = "This region of type \"%s\" is not supported."
 	--[[Translation missing --]]
 	L["This setting controls what widget is generated in user mode."] = "This setting controls what widget is generated in user mode."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	--[[Translation missing --]]
 	L["Time in"] = "Time in"
 	--[[Translation missing --]]

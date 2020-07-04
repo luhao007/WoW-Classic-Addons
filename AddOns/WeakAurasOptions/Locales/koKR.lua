@@ -124,6 +124,8 @@ local L = WeakAuras.L
 	L["Auto-cloning enabled"] = "자동 복제 활성화"
 	L["Automatic"] = "자동"
 	L["Automatic Icon"] = "자동 아이콘"
+	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
 	L["Backdrop Color"] = "배경 색상"
 	--[[Translation missing --]]
 	L["Backdrop in Front"] = "Backdrop in Front"
@@ -238,17 +240,17 @@ local L = WeakAuras.L
 	L["Custom Trigger"] = "사용자 설정 활성 조건"
 	L["Custom trigger event tooltip"] = [=[
 사용자 설정 활성 조건을 확인할 이벤트를 선택하세요.
-콤마와 공백을 사용해 여러 이벤트를 선택할 수 있습니다.
+쉼표나 공백을 사용해 여러 이벤트를 지정할 수 있습니다.
 
 |cFF4444FF예제:|r
-UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
+UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Custom trigger status tooltip"] = [=[
 사용자 설정 활성 조건을 확인할 이벤트를 선택하세요.
-상태 형식 조건이면 특정 이벤트는 독립 변수없이 WeakAuras에 의해 불러와집니다.
-콤마와 공백을 사용해 여러 이벤트를 선택할 수 있습니다.
+이는 상태-유형 활성 조건이므로, 지정된 이벤트는 예상 인수 없이 WeakAuras에 의해 호출될 수 있습니다.
+쉼표나 공백을 사용해 여러 이벤트를 지정할 수 있습니다.
 
 |cFF4444FF예제:|r
-UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
+UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Custom Untrigger"] = "사용자 설정 비활성 조건"
 	L["Custom Variables"] = "사용자 설정 변수"
 	L["Debuff Type"] = "약화 효과 유형"
@@ -318,6 +320,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Enter an Aura Name, partial Aura Name, or Spell ID. A Spell ID will match any spells with the same name."] = "Enter an Aura Name, partial Aura Name, or Spell ID. A Spell ID will match any spells with the same name."
 	--[[Translation missing --]]
 	L["Enter Author Mode"] = "Enter Author Mode"
+	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
 	L["Enter User Mode"] = "사용자 모드 시작"
 	L["Enter user mode."] = "사용자 모드를 시작합니다."
 	L["Entry %i"] = "항목 %i"
@@ -485,6 +489,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Main"] = "메인"
 	L["Manage displays defined by Addons"] = "애드온에 의해 정의된 디스플레이 관리"
 	L["Match Count"] = "일치 횟수"
+	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
 	L["Max"] = "최대"
 	L["Max Length"] = "최대 길이"
 	L["Medium Icon"] = "보통 아이콘"
@@ -519,10 +525,10 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 디스플레이를 불러오는 데 영향을 주지 않습니다]=]
 	L["Multiselect multiple tooltip"] = [=[
 |cFF777777무시|r - |cFF777777단일|r - |cFF00FF00다중|r
-선택한 것중 하나라도 일치할 때 불러옵니다]=]
+일치하는 여러 값을 선택할 수 있습니다]=]
 	L["Multiselect single tooltip"] = [=[
 |cFF777777무시|r - |cFF00FF00단일|r - |cFF777777다중|r
-선택한 한가지만 일치할 때 불러옴]=]
+일치하는 한 값만 선택할 수 있습니다]=]
 	L["Name Info"] = "이름 정보"
 	L["Name Pattern Match"] = "이름 패턴 일치"
 	L["Name(s)"] = "이름(s)"
@@ -560,8 +566,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["or Trigger %s"] = "or Trigger %s"
 	L["Orange Rune"] = "오렌지색 룬"
 	L["Orientation"] = "방향"
-	--[[Translation missing --]]
-	L["Outer"] = "Outer"
+	L["Outer"] = "외부"
 	L["Outline"] = "외곽선"
 	L["Overflow"] = "넘침"
 	L["Overlay %s Info"] = "오버레이 %s 정보"
@@ -579,6 +584,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Paste Settings"] = "붙여넣기 설정"
 	L["Paste text below"] = "아래에 문자를 붙여 넣으세요."
 	L["Paste Trigger Settings"] = "활성 조건 설정 붙여넣기"
+	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
 	L["Play Sound"] = "소리 재생"
 	L["Portrait Zoom"] = "초상화 확대"
 	L["Position Settings"] = "위치 설정"
@@ -587,8 +594,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	--[[Translation missing --]]
 	L["Premade Snippets"] = "Premade Snippets"
 	L["Preset"] = "프리셋"
-	--[[Translation missing --]]
-	L["Press Ctrl+C to copy"] = "Press Ctrl+C to copy"
+	L["Press Ctrl+C to copy"] = "복사하려면 Ctrl+C를 누르세요"
 	--[[Translation missing --]]
 	L["Prevent Merging"] = "Prevent Merging"
 	L["Processed %i chars"] = "%i 문자 복사됨"
@@ -603,6 +609,10 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Re-center Y"] = "내부 Y 좌표"
 	--[[Translation missing --]]
 	L["Regions of type \"%s\" are not supported."] = "Regions of type \"%s\" are not supported."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	L["Remaining Time"] = "남은 시간"
 	L["Remaining Time Precision"] = "남은 시간 정밀도"
 	L["Remove"] = "제거"
@@ -670,6 +680,8 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Show Spark"] = "섬광 표시"
 	L["Show Text"] = "문자 표시"
 	L["Show this group's children"] = "이 그룹의 자식 표시"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	L["Shows a 3D model from the game files"] = "게임 데이터의 3D 모델을 표시합니다"
 	--[[Translation missing --]]
 	L["Shows a border"] = "Shows a border"
@@ -756,6 +768,12 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["This display is not currently loaded"] = "이 디스플레이는 불러오지 않았습니다"
 	L["This region of type \"%s\" is not supported."] = "이 영역은 \"%s\" 유형을 지원하지 않습니다."
 	L["This setting controls what widget is generated in user mode."] = "이 설정은 사용자 모드에서 생성된 위젯을 제어합니다."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	L["Time in"] = "시간 단위"
 	L["Tiny Icon"] = "더 작은 아이콘"
 	L["To Frame's"] = "프레임의 다음 지점:"
@@ -800,8 +818,7 @@ UNIT_POWER, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Update in Group"] = "Update in Group"
 	L["Update this Aura"] = "이 효과 업데이트"
 	L["Use Custom Color"] = "사용자 설정 색상 사용"
-	--[[Translation missing --]]
-	L["Use Display Info Id"] = "Use Display Info Id"
+	L["Use Display Info Id"] = "디스플레이 정보 ID 사용"
 	L["Use Full Scan (High CPU)"] = "전체 스캔 사용 (높은 CPU 이용률)"
 	--[[Translation missing --]]
 	L["Use nth value from tooltip:"] = "Use nth value from tooltip:"

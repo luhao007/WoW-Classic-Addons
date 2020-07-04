@@ -107,6 +107,8 @@ local L = WeakAuras.L
 	L["Auto-cloning enabled"] = "Автоклонирование включено"
 	L["Automatic"] = "Автоматический"
 	L["Automatic Icon"] = "Автоматическая иконка"
+	--[[Translation missing --]]
+	L["Automatic length"] = "Automatic length"
 	L["Backdrop Color"] = "Цвет фона"
 	L["Backdrop in Front"] = "Фон спереди"
 	L["Backdrop Style"] = "Стиль фона"
@@ -285,6 +287,8 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 
 Для получения взаимно однозначного соответствия используйте параметр "ID заклинания"]=]
 	L["Enter Author Mode"] = "Режим автора"
+	--[[Translation missing --]]
+	L["Enter in a value for the tick's placement."] = "Enter in a value for the tick's placement."
 	L["Enter User Mode"] = "Режим пользователя"
 	L["Enter user mode."] = "Перейти в режим пользователя, в котором вы можете настроить параметры, заданные автором индикации."
 	L["Entry %i"] = "Запись %i"
@@ -435,6 +439,8 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 	L["Main"] = "Основная"
 	L["Manage displays defined by Addons"] = "Управление индикациями, определенными аддонами"
 	L["Match Count"] = "Количество совпадений"
+	--[[Translation missing --]]
+	L["Matches the height setting of a horizontal bar or width for a vertical bar."] = "Matches the height setting of a horizontal bar or width for a vertical bar."
 	L["Max"] = "Макс. значение"
 	L["Max Length"] = "Максимальная длина"
 	L["Medium Icon"] = "Средняя иконка"
@@ -523,6 +529,8 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 	L["Paste Settings"] = "Вставить настройки"
 	L["Paste text below"] = "Вставьте текст ниже"
 	L["Paste Trigger Settings"] = "Вставить настройки триггера"
+	--[[Translation missing --]]
+	L["Places a tick on the bar"] = "Places a tick on the bar"
 	L["Play Sound"] = "Воспроизвести звук"
 	L["Portrait Zoom"] = "Увеличить портрет"
 	L["Position Settings"] = "Настройки размера и расположения"
@@ -543,6 +551,10 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 	L["Re-center X"] = "Рецентрировать по X"
 	L["Re-center Y"] = "Рецентрировать по Y"
 	L["Regions of type \"%s\" are not supported."] = "Регионы типа \"%s\" не поддерживаются."
+	--[[Translation missing --]]
+	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
+Absolute mode positions the tick at a fixed value.]=]
 	L["Remaining Time"] = "Оставшееся время"
 	L["Remaining Time Precision"] = "Точность оставшегося времени"
 	L["Remove"] = "Удалить"
@@ -604,6 +616,8 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 	L["Show Spark"] = "Показать вспышку"
 	L["Show Text"] = "Показать текст"
 	L["Show this group's children"] = "Показать индикации этой группы"
+	--[[Translation missing --]]
+	L["Show Tick"] = "Show Tick"
 	L["Shows a 3D model from the game files"] = "Показывает 3D модель из файлов игры"
 	--[[Translation missing --]]
 	L["Shows a border"] = "Shows a border"
@@ -680,6 +694,12 @@ UNIT_POWER  UNIT_AURA, PLAYER_TARGET_CHANGED]=]
 	L["This display is not currently loaded"] = "Эта индикация не загружена"
 	L["This region of type \"%s\" is not supported."] = "Регион типа \"%s\" не поддерживается."
 	L["This setting controls what widget is generated in user mode."] = "Настройка определяет, какой примитив графического интерфейса (виджет) создается для этого параметра в режиме пользователя."
+	--[[Translation missing --]]
+	L["Tick %s"] = "Tick %s"
+	--[[Translation missing --]]
+	L["Tick Mode"] = "Tick Mode"
+	--[[Translation missing --]]
+	L["Tick Placement"] = "Tick Placement"
 	L["Time in"] = "Время"
 	L["Tiny Icon"] = "Крошечная иконка"
 	L["To Frame's"] = "Относительно кадра"

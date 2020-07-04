@@ -1,22 +1,22 @@
-# [2.17.8](https://github.com/WeakAuras/WeakAuras2/tree/2.17.8) (2020-06-16)
+# [2.17.9](https://github.com/WeakAuras/WeakAuras2/tree/2.17.9) (2020-06-23)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.7...2.17.8)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.8...2.17.9)
 
 ## Highlights
 
- - bug fixes 
+ - Tick Subregion 
 
 ## Commits
 
 InfusOnWoW (1):
 
-- Revert even more spell checker changes
+- Make WoWAce Translations happier (#2237)
 
-Stanzilla (1):
+Vardex (1):
 
-- Update README.md
+- Fix weapon enchant pattern
 
-mrbuds (1):
+nullKomplex (1):
 
-- Add missing CLEU subevent prefix, fixes #2224
+- Tick SubRegion (#1923)
 

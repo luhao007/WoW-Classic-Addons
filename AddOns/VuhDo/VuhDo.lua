@@ -393,23 +393,27 @@ function VUHDO_setHealth(aUnit, aMode)
 				if 2 == aMode then
 					if tInfo["isUpdated"] == 1 or UnitIsFeignDeath(aUnit) then
 						tInfo["isUpdated"] = 0;
-						tNewHealth = tInfo["loghealth"];
+						-- tNewHealth = tInfo["loghealth"];
+						do return end;
 					else
-						tNewHealth = UnitHealth(aUnit);
+						if not UnitIsDeadOrGhost(aUnit) and UnitHealth(aUnit) == 0 then
+							-- tNewHealth = tInfo["loghealth"];
+							do return end;
+						else 
+							tNewHealth = UnitHealth(aUnit);
+						end
 					end
 				end
 				if not tIsDead and tInfo["health"] > 0 then
 					tInfo["lifeLossPerc"] = tNewHealth / tInfo["health"];
 				end
 				tInfo["health"] = tNewHealth;
-				if tInfo["dead"] ~= tIsDead then
-					if not tIsDead then
-						tInfo["healthmax"] = UnitHealthMax(aUnit);
-					end
-					tInfo["dead"] = tIsDead;
-					VUHDO_updateHealthBarsFor(aUnit, 10); -- VUHDO_UPDATE_ALIVE
-					VUHDO_updateBouquetsForEvent(aUnit, 10); -- VUHDO_UPDATE_ALIVE
+				if not tIsDead then
+					tInfo["healthmax"] = UnitHealthMax(aUnit);
 				end
+				VUHDO_updateHealthBarsFor(aUnit, 10); -- VUHDO_UPDATE_ALIVE
+				VUHDO_updateBouquetsForEvent(aUnit, 10); -- VUHDO_UPDATE_ALIVE
+
 
 			elseif 3 == aMode then -- VUHDO_UPDATE_HEALTH_MAX
 				tInfo["dead"] = tIsDead;

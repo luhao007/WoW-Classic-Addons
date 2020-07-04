@@ -102,6 +102,12 @@ L["Ascending"] = "Croissant"
 --[[Translation missing --]]
 L["Assigned Role"] = "Assigned Role"
 L["At Least One Enemy"] = "Au moins un ennemi"
+--[[Translation missing --]]
+L["At missing Value"] = "At missing Value"
+--[[Translation missing --]]
+L["At Percent"] = "At Percent"
+--[[Translation missing --]]
+L["At Value"] = "At Value"
 L["Attach to End"] = "Attacher à la Fin"
 L["Attach to Start"] = "Attacher au Début"
 --[[Translation missing --]]
@@ -129,6 +135,8 @@ L["Auto"] = "auto"
 --[[Translation missing --]]
 L["Autocast Shine"] = "Autocast Shine"
 L["Automatic"] = "Automatique"
+--[[Translation missing --]]
+L["Automatic Length"] = "Automatic Length"
 --[[Translation missing --]]
 L["Automatic Repair Confirmation Dialog"] = "Automatic Repair Confirmation Dialog"
 L["Automatic Rotation"] = "Rotation automatique"
@@ -671,6 +679,8 @@ L["Number Affected"] = "Nombre affecté"
 --[[Translation missing --]]
 L["Object"] = "Object"
 L["Officer"] = "Officier"
+--[[Translation missing --]]
+L["Offset from progress"] = "Offset from progress"
 L["Offset Timer"] = "Décalage de la durée"
 L["Older set IDs can be found on websites such as wowhead.com/item-sets"] = "Des ID de jeu plus anciennes peuvent être trouvés sur des sites Web tels que wowhead.com/item-sets"
 L["On Cooldown"] = "En recharge"
@@ -720,6 +730,10 @@ L["Pet Spell"] = "Sort du Familier"
 --[[Translation missing --]]
 L["Phase"] = "Phase"
 L["Pixel Glow"] = "Pixel surbrillant"
+--[[Translation missing --]]
+L["Placement"] = "Placement"
+--[[Translation missing --]]
+L["Placement Mode"] = "Placement Mode"
 L["Play"] = "Jouer"
 L["Player"] = "Joueur"
 L["Player Character"] = "Personnage Joueur"
@@ -993,6 +1007,8 @@ L["This aura was created with the retail version of World of Warcraft."] = "This
 L["This is a modified version of your aura, |cff9900FF%s.|r"] = "Ceci est une version modifiée de votre aura, |cff9900FF%s.|r"
 L["This is a modified version of your group, |cff9900FF%s.|r"] = "Ceci est une version modifiée de votre groupe, |cff9900FF%s.|r"
 L["Threat Situation"] = "Situation de Menace"
+--[[Translation missing --]]
+L["Tick"] = "Tick"
 L["Tier "] = "Pallier"
 L["Timed"] = "Temporisé"
 --[[Translation missing --]]
