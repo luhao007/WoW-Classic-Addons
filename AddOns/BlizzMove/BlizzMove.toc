@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: the-rebel-Mermaid - github.com/the-rebel-Mermaid/BlizzMove/
 ## Version: v2.1.5
 

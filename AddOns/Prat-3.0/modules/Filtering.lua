@@ -230,14 +230,10 @@ L = {
 		["notices_name"] = "Kanal-Meldungen filtern",
 		["tradespam_desc"] = "Unterdrückt Nachrichten, um zu verhindern, dass dieselbe Nachricht mehrmals wiederholt wird",
 		["tradespam_name"] = "Spam begrenzen",
-		--[[Translation missing --]]
-		["training_desc"] = "Show the AI training UI",
-		--[[Translation missing --]]
-		["training_name"] = "AI Training",
-		--[[Translation missing --]]
-		["useai_desc"] = "Use a spam filter based on machine learning",
-		--[[Translation missing --]]
-		["useai_name"] = "AI Spam Filter",
+		["training_desc"] = "Zeigt die Benutzeroberfläche des KI-Trainings",
+		["training_name"] = "KI-Training",
+		["useai_desc"] = "Verwende einen Spamfilter, der auf maschinellem Lernen basiert",
+		["useai_name"] = "KI Spamfilter",
 	}
 }
 
@@ -556,9 +552,7 @@ end
     --    ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", tradeSpamFilter)
 
     Prat.RegisterChatEvent(self, "Prat_FrameMessage")
-    if self.db.profile.training then
-      Prat.RegisterLinkType({ linkid = "pratfilter", linkfunc = module.PratFilter, handler = module }, module.name)
-    end
+    Prat.RegisterLinkType({ linkid = "pratfilter", linkfunc = module.PratFilter, handler = module }, module.name)
   end
 
   -- things to do when the module is disabled
@@ -606,6 +600,22 @@ end
     return string_split(msg, nil, "([^%s%p%c]+)") -- obfuscations removal
   end
 
+  local CLR = Prat.CLR
+
+  function module:AdjustScore(id, frame)
+    id = tonumber(id)
+    local text = self.lineTable[id]
+    local prob = self.classifier.getprob(tokenize(text))
+    for i,v in ipairs(frame.visibleLines) do
+      local mi = v.messageInfo
+      local m = mi.message
+      if m:match(("pratfilter:%d"):format(id)) then
+        mi.message = m:gsub("|c%x-%d+%%%x-|r", CLR:Probability(FormatPercentage(prob), prob):gsub("%%", "%%%%"))
+        break
+      end
+    end
+  end
+
   function module:Learn(id, found, frame)
     id = tonumber(id)
     local text = self.lineTable[id]
@@ -613,11 +623,12 @@ end
     if not text then return end
     local learned = self.trainTable[id]
     if learned ~= nil then
-      self:Unlearn(id, learned)
+      self.classifier.unlearn(tokenize(text), learned)
     end
-    self:Output(frame, "learning " .. text .. " as " .. tostring(found))
+    self:Output(frame, "learning " .. text .. " as " .. CLR:Probability(found and "SPAM" or "NOT SPAM", found and 1 or 0))
     self.trainTable[id] = found or false
     self.classifier.learn(tokenize(text), found)
+    self:AdjustScore(id, frame)
   end
 
   function module:Unlearn(id, found, frame)
@@ -627,11 +638,12 @@ end
     if not text then return end
     local learned = self.trainTable[id]
     self.trainTable[id] = nil
-    self:Output(frame, "Unlearning " .. text .. " as " .. tostring(found))
     if learned ~= nil then
-      self:Unlearn(id, learned)
+      self.classifier.unlearn(tokenize(text), learned)
     end
+    self:Output(frame, "Unlearning " .. text .. " as " .. CLR:Probability(found and "SPAM" or "NOT SPAM", found and 1 or 0))
     self.classifier.unlearn(tokenize(text), found)
+    self:AdjustScore(id, frame)
   end
 
   function module:ToggleLearn(id, found, frame)
@@ -648,7 +660,7 @@ end
 
   local SPAM_CUTOFF = 0.90
   local HAM_CUTOFF = 0.20
-  local CLR = Prat.CLR
+
 
   function CLR:Bracket(text) return self:Colorize({
     r = 0.85,
@@ -666,8 +678,12 @@ end
     return self:Colorize(color, text)
   end
 
+  local eventsToHandle = {
+    CHAT_MSG_CHANNEL = true
+  }
+
   function module:Prat_FrameMessage(arg, message, frame, event)
-    if self.db.profile.useai then
+    if self.db.profile.useai and  eventsToHandle[event] and message.GUID ~= UnitGUID("player") then
       local msg = tokenize(message.ORG.MESSAGE)
       local prob = self.classifier.getprob(msg)
       --    dbg("filter:fraee", prob, msg)

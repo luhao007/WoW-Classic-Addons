@@ -46,6 +46,8 @@ local L = WeakAuras.L
 	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s"] = "|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s"
 	--[[Translation missing --]]
 	L["|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s%s"] = "|cFFffcc00Font Flags:|r |cFFFF0000%s|r and shadow |c%sColor|r with offset |cFFFF0000%s/%s|r%s%s%s"
+	--[[Translation missing --]]
+	L["|cFFffcc00Format Options|r"] = "|cFFffcc00Format Options|r"
 	L["1 Match"] = "1 Correspondance"
 	L["A 20x20 pixels icon"] = "Une icône de 20x20 pixels."
 	L["A 32x32 pixels icon"] = "Une icône de 32x32 pixels."
@@ -350,6 +352,14 @@ Ne sautez pas cette version]=]
 	L["Filter by Group Role"] = "Filtrer par Rôle de Groupe"
 	--[[Translation missing --]]
 	L["Filter by Nameplate Type"] = "Filter by Nameplate Type"
+	--[[Translation missing --]]
+	L[ [=[Filter formats: 'Name', 'Name-Realm', '-Realm'.
+
+Supports multiple entries, separated by commas
+]=] ] = [=[Filter formats: 'Name', 'Name-Realm', '-Realm'.
+
+Supports multiple entries, separated by commas
+]=]
 	L["Finish"] = "Finir"
 	L["Fire Orb"] = "Orbe de feu"
 	L["Font"] = "Police"
@@ -357,6 +367,10 @@ Ne sautez pas cette version]=]
 	L["Foreground"] = "Premier plan"
 	L["Foreground Color"] = "Couleur premier-plan"
 	L["Foreground Texture"] = "Texture premier-plan"
+	--[[Translation missing --]]
+	L["Format"] = "Format"
+	--[[Translation missing --]]
+	L["Format for %s"] = "Format for %s"
 	L["Frame"] = "Cadre"
 	--[[Translation missing --]]
 	L["Frame Selector"] = "Frame Selector"
@@ -449,6 +463,8 @@ Si cette case est cochée, ce séparateur inclura du texte. Sinon, ce sera juste
 	L["Ignore Dead"] = "Ignore Dead"
 	--[[Translation missing --]]
 	L["Ignore Disconnected"] = "Ignore Disconnected"
+	--[[Translation missing --]]
+	L["Ignore out of checking range"] = "Ignore out of checking range"
 	L["Ignore Self"] = "S'ignorer"
 	L["Ignore self"] = "Ignorer soi-même"
 	L["Ignored"] = "Ignoré"
@@ -605,12 +621,7 @@ Seule une unique valeur peut être choisie]=]
 	L["Re-center X"] = "Recentrer X"
 	L["Re-center Y"] = "Recentrer Y"
 	L["Regions of type \"%s\" are not supported."] = "Les régions de type \"%s\" ne sont pas prises en charge."
-	--[[Translation missing --]]
-	L[ [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
-Absolute mode positions the tick at a fixed value.]=] ] = [=[Relative mode positions the tick at the position relative to the total width of the progress bar.
-Absolute mode positions the tick at a fixed value.]=]
 	L["Remaining Time"] = "Temps restant"
-	L["Remaining Time Precision"] = "Précision du temps restant"
 	L["Remove"] = "Retirer"
 	L["Remove this display from its group"] = "Retirer cet affichage de son groupe"
 	L["Remove this property"] = "Retirer cette propriété"
@@ -794,7 +805,6 @@ Absolute mode positions the tick at a fixed value.]=]
 	L["Top Right"] = "Haut droite"
 	--[[Translation missing --]]
 	L["Total Time"] = "Total Time"
-	L["Total Time Precision"] = "Précision Temps total"
 	L["Trigger"] = "Déclencheur"
 	L["Trigger %d"] = "Déclencheur %d"
 	L["Trigger %s"] = "Déclencheur %s"
@@ -808,6 +818,10 @@ Absolute mode positions the tick at a fixed value.]=]
 	--[[Translation missing --]]
 	L["Unit Frame"] = "Unit Frame"
 	L["Unit Frames"] = "Cadre d'unité"
+	--[[Translation missing --]]
+	L["Unit Name Filter"] = "Unit Name Filter"
+	--[[Translation missing --]]
+	L["UnitName Filter"] = "UnitName Filter"
 	L["Unlike the start or finish animations, the main animation will loop over and over until the display is hidden."] = "Contrairement aux animations de début et de fin, l'animation principale bouclera tant que l'affichage est visible."
 	L["Up"] = "Vers le haut"
 	--[[Translation missing --]]
@@ -825,6 +839,8 @@ Absolute mode positions the tick at a fixed value.]=]
 	L["Use Tooltip Information"] = "Utiliser l'information de la boite de dialogue"
 	L["Used in Auras:"] = "Utilisé(e) dans les Auras:"
 	L["Used in auras:"] = "Utilisé dans les auras:"
+	--[[Translation missing --]]
+	L["Uses UnitIsVisible() to check if in range. This is polled every second."] = "Uses UnitIsVisible() to check if in range. This is polled every second."
 	L["Value %i"] = "Valeur %i"
 	L["Values are in normalized rgba format."] = "Les valeurs sont normalisées dans le format rvba"
 	L["Values:"] = "Valeurs:"

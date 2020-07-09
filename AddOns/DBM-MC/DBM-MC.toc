@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMMC_AllSavedVars
@@ -27,6 +27,7 @@ localization.br.lua
 localization.kr.lua
 localization.tw.lua
 localization.cn.lua
+MCTrash.lua
 Lucifron.lua
 Magmadar.lua
 Gehennas.lua

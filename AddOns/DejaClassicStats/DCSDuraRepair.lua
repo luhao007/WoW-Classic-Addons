@@ -493,7 +493,6 @@ local DCS_ShowDuraCheck = CreateFrame("CheckButton", "DCS_ShowDuraCheck", DejaCl
     DCS_ShowDuraCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	DCS_ShowDuraCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowDuraCheck:ClearAllPoints()
-	--DCS_ShowDuraCheck:SetPoint("TOPLEFT", 30, -315)
 	DCS_ShowDuraCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -75)
 	DCS_ShowDuraCheck:SetScale(1)
 	DCS_ShowDuraCheck.tooltipText = L["Displays each equipped item's durability."] --Creates a tooltip on mouseover.
@@ -514,15 +513,15 @@ DCS_ShowDuraCheck:SetScript("OnEvent", function(self, event, ...)
 				v.durability:SetFormattedText("")
 			end
 		end
-	end
-	local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowDuraChecked.ShowDuraSetChecked
-	self:SetChecked(checked)
-	DCS_Set_Dura_Item_Positions()
-	if checked then
-		DCS_Item_DurabilityTop()
-	else
-		for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
-			v.durability:SetFormattedText("")
+		local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowDuraChecked.ShowDuraSetChecked
+		self:SetChecked(checked)
+		DCS_Set_Dura_Item_Positions()
+		if checked then
+			DCS_Item_DurabilityTop()
+		else
+			for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+				v.durability:SetFormattedText("")
+			end
 		end
 	end
 end)
@@ -624,7 +623,6 @@ local DCS_ShowDuraTextureCheck = CreateFrame("CheckButton", "DCS_ShowDuraTexture
     DCS_ShowDuraTextureCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	DCS_ShowDuraTextureCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowDuraTextureCheck:ClearAllPoints()
-	--DCS_ShowDuraTextureCheck:SetPoint("TOPLEFT", 30, -275)
 	DCS_ShowDuraTextureCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -35)
 	DCS_ShowDuraTextureCheck:SetScale(1) 
 	DCS_ShowDuraTextureCheck.tooltipText = L["Displays a durability bar next to each item."] --Creates a tooltip on mouseover.
@@ -650,19 +648,19 @@ DCS_ShowDuraTextureCheck:SetScript("OnEvent", function(self, event, ...)
 			end
 			duraMeanTexture:Hide()
 		end
-	end
-	local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowDuraTextureChecked.ShowDuraTextureSetChecked
-	self:SetChecked(checked)
-	if checked then
-		DCS_Durability_Bar_Textures()
-		DCS_Mean_Durability()
-		DCS_Item_DurabilityTop()
-		duraMeanTexture:Show()
-	else
-		for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
-			v.duratexture:Hide()
+		local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowDuraTextureChecked.ShowDuraTextureSetChecked
+		self:SetChecked(checked)
+		if checked then
+			DCS_Durability_Bar_Textures()
+			DCS_Mean_Durability()
+			DCS_Item_DurabilityTop()
+			duraMeanTexture:Show()
+		else
+			for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+				v.duratexture:Hide()
+			end
+			duraMeanTexture:Hide()
 		end
-		duraMeanTexture:Hide()
 	end
 end)
 
@@ -708,7 +706,6 @@ local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDura
     DCS_ShowAverageDuraCheck:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	DCS_ShowAverageDuraCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowAverageDuraCheck:ClearAllPoints()
-	--DCS_ShowAverageDuraCheck:SetPoint("TOPLEFT", 30, -295)
 	DCS_ShowAverageDuraCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -55)
 	DCS_ShowAverageDuraCheck:SetScale(1)
 	DCS_ShowAverageDuraCheck.tooltipText = L["Displays average item durability on the character shirt slot and durability frames."] --Creates a tooltip on mouseover.
@@ -720,7 +717,6 @@ local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDura
 			self:SetChecked(showavgdur)
 		end
 		--print(..., DurabilityFrame:IsVisible(),DurabilityFrame:IsShown())
-		--if PaperDollFrame:IsVisible() then --introduces bug that DurabilityFrame fontstring(created by us) doesn't get updated unless PaperDollFrame is open
 		if showavgdur and (DurabilityFrame:IsVisible() or PaperDollFrame:IsVisible()) then
 			DCS_Mean_Durability()
 			if addon.duraMean == 100 then --check after calculation
@@ -732,7 +728,6 @@ local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDura
 			duraMeanFS:SetFormattedText("")
 			duraDurabilityFrameFS:Hide()
 		end
-
 	end)
 
 	DCS_ShowAverageDuraCheck:SetScript("OnClick", function(self)
@@ -812,15 +807,15 @@ DCS_ShowItemRepairCheck:SetScript("OnEvent", function(self, event, ...)
 				v.itemrepair:SetFormattedText("")
 			end
 		end
-	end
-	local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowItemRepairChecked.ShowItemRepairSetChecked
-	self:SetChecked(checked)
-	DCS_Set_Dura_Item_Positions()
-	if checked then
-		DCS_Item_RepairCostBottom()
-	else
-		for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
-			v.itemrepair:SetFormattedText("")
+		local checked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowItemRepairChecked.ShowItemRepairSetChecked
+		self:SetChecked(checked)
+		DCS_Set_Dura_Item_Positions()
+		if checked then
+			DCS_Item_RepairCostBottom()
+		else
+			for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
+				v.itemrepair:SetFormattedText("")
+			end
 		end
 	end
 end)
@@ -4006,11 +4001,13 @@ DCS_ShowEnchantCheck:ClearAllPoints()
 	_G[DCS_ShowEnchantCheck:GetName() .. "Text"]:SetText(L["Enchants"])
 	
 DCS_ShowEnchantCheck:SetScript("OnEvent", function(self, event, ...)
-	showenchant = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowEnchantChecked.ShowEnchantSetChecked
-	self:SetChecked(showenchant)
-	DCS_Set_Dura_Item_Positions()
-	DCS_Item_Enchant_GetText() --Shouldn't be needed as there is never a time when the paperdoll wont have to be opened to display this.
+	if event == "PLAYER_LOGIN" then
+		showenchant = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowEnchantChecked.ShowEnchantSetChecked
+		self:SetChecked(showenchant)
+	end
 	if PaperDollFrame:IsVisible() then
+		DCS_Set_Dura_Item_Positions()
+		DCS_Item_Enchant_GetText() --Shouldn't be needed as there is never a time when the paperdoll wont have to be opened to display this.
 		DCS_Set_Item_Quality_Color_Outlines() --Here to update on the events when PaperDoll is open.
 	end
 end)
@@ -4038,11 +4035,13 @@ DCS_AbbrevEnchantsCheck:ClearAllPoints()
 	_G[DCS_AbbrevEnchantsCheck:GetName() .. "Text"]:SetText(L["Abbreviated Enchant Labels"])
 	
 DCS_AbbrevEnchantsCheck:SetScript("OnEvent", function(self, event, ...)
-	abbrevEnchants = gdbprivate.gdb.gdbdefaults.DejaClassicStatsAbbrevEnchantsChecked.AbbrevEnchantsSetChecked
-	self:SetChecked(abbrevEnchants)
-	DCS_Set_Dura_Item_Positions()
-	DCS_Item_Enchant_GetText() --Shouldn't be needed as there is never a time when the paperdoll wont have to be opened to display this.
+	if event == "PLAYER_LOGIN" then
+		abbrevEnchants = gdbprivate.gdb.gdbdefaults.DejaClassicStatsAbbrevEnchantsChecked.AbbrevEnchantsSetChecked
+		self:SetChecked(abbrevEnchants)
+	end
 	if PaperDollFrame:IsVisible() then
+		DCS_Set_Dura_Item_Positions()
+		DCS_Item_Enchant_GetText() --Shouldn't be needed as there is never a time when the paperdoll wont have to be opened to display this.
 		DCS_Set_Item_Quality_Color_Outlines() --Here to update on the events when PaperDoll is open.
 	end
 end)

@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Cybeloras of Aerie Peak
 ## Version: 8.7.5
 ## OptionalDeps: Masque, Ace3, OmniCC, tullaCC, sct, sctd, MikScrollingBattleText, Parrot, DRList-1.0, LibDogTag-3.0, LibDogTag-Unit-3.0, LibDogTag-Stats-3.0, LibSpellRange-1.0, LibOO-1.0, LibRangeCheck-2.0, LibBabble-CreatureType-3.0, LibBabble-Race-3.0, ElvUI, DBM-Core, BigWigs, LibClassicCasterino, LibClasicMobHealth-1.0, RealMobHealth

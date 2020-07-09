@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMAzeroth_AllSavedVars
@@ -19,6 +19,7 @@
 ## X-DBM-Mod-Name-esMX: Azeroth (Clásico)
 ## X-DBM-Mod-Name-frFR: Azeroth (Classique)
 ## X-DBM-Mod-Name-ptBR: Azeroth (Clássico)
+## X-DBM-Mod-Name-ruRU: Азерот (классический)
 ## X-DBM-Mod-Name-koKR: 아제로스 (클래식)
 ## X-DBM-Mod-Name-zhTW: 艾澤拉斯 (經典)
 ## X-DBM-Mod-Name-zhCN: 世界首领 (经典)
@@ -33,6 +34,7 @@ localization.de.lua
 localization.br.lua
 localization.fr.lua
 localization.es.lua
+localization.ru.lua
 localization.kr.lua
 localization.tw.lua
 localization.cn.lua

@@ -6534,15 +6534,13 @@ L["Match whitelisted players"] = "Faire correspondre aux joueurs de la liste bla
 L["Material Name"] = "Nom du matériau"
 L["Materials"] = "Matériaux"
 L["Materials to Gather"] = "Matériaux à rassembler"
---[[Translation missing --]]
 L["MAX"] = "MAX"
 L["Max Buy Price"] = "Prix d'achat max"
 --[[Translation missing --]]
 L["MAX EXPIRES TO BANK"] = "MAX EXPIRES TO BANK"
 L["Max Sell Price"] = "Prix de vente max"
 L["Max Shopping Price"] = "Prix d'achat max"
---[[Translation missing --]]
-L["Maximum amount already posted."] = "Maximum amount already posted."
+L["Maximum amount already posted."] = "Quantité maximale déjà postée."
 --[[Translation missing --]]
 L["Maximum Auction Price (Per Item)"] = "Maximum Auction Price (Per Item)"
 --[[Translation missing --]]
@@ -6731,8 +6729,7 @@ L["Purchased (Total Price)"] = "Acheté (Prix total)"
 L["Purchases"] = "Achats"
 --[[Translation missing --]]
 L["Purchasing Auction"] = "Purchasing Auction"
---[[Translation missing --]]
-L["Qty"] = "Qty"
+L["Qty"] = "Qté"
 L["Quantity Bought:"] = "Quantité Achetée"
 L["Quantity Sold:"] = "quantité vendue :"
 L["Quantity to move:"] = "Quantité à déplacer :"
@@ -6754,8 +6751,7 @@ L["Ready to Cancel"] = "PRÊT À ANNULER"
 L["Realm Data Tooltips"] = "Realm Data Tooltips"
 L["Recent Scans"] = "Scans récents"
 L["Recent Searches"] = "Recherches récentes"
---[[Translation missing --]]
-L["Recently Mailed"] = "Recently Mailed"
+L["Recently Mailed"] = "Posté récemment"
 L["RECIPIENT"] = "DESTINATAIRE"
 --[[Translation missing --]]
 L["Region Avg Daily Sold"] = "Region Avg Daily Sold"
@@ -14620,8 +14616,8 @@ L["Account Syncing"] = "帳戶同步"
 L["Accounting"] = "會計"
 L["Accounting Tooltips"] = "會計工具提示"
 L["Activity Type"] = "活動類型"
-L["ADD %d ITEMS"] = "增加 %d 項目"
-L["Add / Remove Items"] = "增加 / 移除 項目"
+L["ADD %d ITEMS"] = "增加 %d 物品"
+L["Add / Remove Items"] = "增加 / 移除 物品"
 L["ADD NEW CUSTOM PRICE SOURCE"] = "添加新的自定義價格來源"
 L["ADD OPERATION"] = "添加操作"
 L["Add Player"] = "添加播放器"
@@ -14757,8 +14753,7 @@ L["Buyout Sniper Paused"] = "Buyout Sniper Paused"
 L["Buyout Sniper Running"] = "Buyout Sniper Running"
 --[[Translation missing --]]
 L["BUYS"] = "BUYS"
---[[Translation missing --]]
-L["By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."] = "By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."
+L["By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."] = "預設上, 基本群組擺放了未指派給群組的物品. 你無法修改或刪除這個群組."
 --[[Translation missing --]]
 L["Cancel auctions with bids"] = "Cancel auctions with bids"
 --[[Translation missing --]]
@@ -14826,8 +14821,7 @@ L["Clear Selection"] = "消除選擇"
 L["COD"] = "COD"
 --[[Translation missing --]]
 L["Coins (%s)"] = "Coins (%s)"
---[[Translation missing --]]
-L["Collapse All Groups"] = "Collapse All Groups"
+L["Collapse All Groups"] = "折疊所有群組"
 --[[Translation missing --]]
 L["Combine Partial Stacks"] = "Combine Partial Stacks"
 --[[Translation missing --]]
@@ -14943,8 +14937,7 @@ L["Destroying 'DESTROY NEXT' Button"] = "Destroying 'DESTROY NEXT' Button"
 L["Destroying Tooltips"] = "Destroying Tooltips"
 --[[Translation missing --]]
 L["Destroying..."] = "Destroying..."
---[[Translation missing --]]
-L["Details"] = "Details"
+L["Details"] = "細節"
 --[[Translation missing --]]
 L["Did not cancel %s because your cancel to repost threshold (%s) is invalid. Check your settings."] = "Did not cancel %s because your cancel to repost threshold (%s) is invalid. Check your settings."
 --[[Translation missing --]]
@@ -15093,8 +15086,7 @@ L["Estimated Profit:"] = "預計利潤"
 L["Exact Match Only?"] = "Exact Match Only?"
 --[[Translation missing --]]
 L["Exclude crafts with cooldowns"] = "Exclude crafts with cooldowns"
---[[Translation missing --]]
-L["Expand All Groups"] = "Expand All Groups"
+L["Expand All Groups"] = "展開所有群組"
 --[[Translation missing --]]
 L["Expenses"] = "Expenses"
 --[[Translation missing --]]
@@ -15151,7 +15143,7 @@ L["Filter by Keyword"] = "Filter by Keyword"
 L["FILTER BY KEYWORD"] = "FILTER BY KEYWORD"
 --[[Translation missing --]]
 L["Filter group item lists based on the following price source"] = "Filter group item lists based on the following price source"
-L["Filter Items"] = "篩選項目"
+L["Filter Items"] = "篩選物品"
 --[[Translation missing --]]
 L["Filter Shopping"] = "Filter Shopping"
 --[[Translation missing --]]
@@ -15188,8 +15180,7 @@ L["Gold Spent:"] = "Gold Spent:"
 L["GREAT DEALS SEARCH"] = "GREAT DEALS SEARCH"
 --[[Translation missing --]]
 L["Group already exists."] = "Group already exists."
---[[Translation missing --]]
-L["Group Management"] = "Group Management"
+L["Group Management"] = "群組管理"
 L["Group Operations"] = "群組操作"
 --[[Translation missing --]]
 L["Group Settings"] = "Group Settings"
@@ -15256,20 +15247,16 @@ L["Ignored Cooldowns"] = "Ignored Cooldowns"
 L["Ignored Items"] = "Ignored Items"
 L["ilvl"] = "物品等級"
 L["Import"] = "匯入"
---[[Translation missing --]]
-L["IMPORT"] = "IMPORT"
---[[Translation missing --]]
-L["Import %d Items and %s Operations?"] = "Import %d Items and %s Operations?"
---[[Translation missing --]]
-L["Import Groups & Operations"] = "Import Groups & Operations"
+L["IMPORT"] = "匯入"
+L["Import %d Items and %s Operations?"] = "匯入 %d 物品與 %s 操作?"
+L["Import Groups & Operations"] = "匯入群組與操作"
 --[[Translation missing --]]
 L["Imported Items"] = "Imported Items"
 --[[Translation missing --]]
 L["Inbox Settings"] = "Inbox Settings"
 --[[Translation missing --]]
 L["Include Attached Operations"] = "Include Attached Operations"
---[[Translation missing --]]
-L["Include operations?"] = "Include operations?"
+L["Include operations?"] = "包含操作?"
 --[[Translation missing --]]
 L["Include soulbound items"] = "Include soulbound items"
 --[[Translation missing --]]
@@ -15345,8 +15332,7 @@ L["Keep in bank quantity:"] = "Keep in bank quantity:"
 L["Keep posted:"] = "Keep posted:"
 --[[Translation missing --]]
 L["Keep quantity:"] = "Keep quantity:"
---[[Translation missing --]]
-L["Keep this amount in bags:"] = "Keep this amount in bags:"
+L["Keep this amount in bags:"] = "保留在背包裡的數量:"
 --[[Translation missing --]]
 L["Keep this amount:"] = "Keep this amount:"
 --[[Translation missing --]]
@@ -15401,8 +15387,7 @@ L["Mail Disenchantables Max Quality"] = "Mail Disenchantables Max Quality"
 L["MAIL SELECTED GROUPS"] = "MAIL SELECTED GROUPS"
 --[[Translation missing --]]
 L["Mail to %s"] = "Mail to %s"
---[[Translation missing --]]
-L["Mailing"] = "Mailing"
+L["Mailing"] = "郵寄"
 --[[Translation missing --]]
 L["Mailing all to %s."] = "Mailing all to %s."
 --[[Translation missing --]]
@@ -15412,8 +15397,7 @@ L["Mailing up to %d to %s."] = "Mailing up to %d to %s."
 --[[Translation missing --]]
 L["Main Settings"] = "Main Settings"
 L["Make Cash On Delivery?"] = "付款取信"
---[[Translation missing --]]
-L["Management Options"] = "Management Options"
+L["Management Options"] = "管理選項"
 --[[Translation missing --]]
 L["Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."] = "Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."
 --[[Translation missing --]]
@@ -15450,8 +15434,7 @@ L["Max Sell Price"] = "Max Sell Price"
 L["Max Shopping Price"] = "Max Shopping Price"
 --[[Translation missing --]]
 L["Maximum amount already posted."] = "Maximum amount already posted."
---[[Translation missing --]]
-L["Maximum Auction Price (Per Item)"] = "Maximum Auction Price (Per Item)"
+L["Maximum Auction Price (Per Item)"] = "最高拍賣價 (每項)"
 --[[Translation missing --]]
 L["Maximum Destroy Value (Enter '0c' to disable)"] = "Maximum Destroy Value (Enter '0c' to disable)"
 --[[Translation missing --]]
@@ -15505,8 +15488,7 @@ L["Money Transfer"] = "Money Transfer"
 L["Most Profitable Item:"] = "Most Profitable Item:"
 --[[Translation missing --]]
 L["MOVE"] = "MOVE"
---[[Translation missing --]]
-L["Move already grouped items?"] = "Move already grouped items?"
+L["Move already grouped items?"] = "移動已群組的物品?"
 --[[Translation missing --]]
 L["Move Quantity Settings"] = "Move Quantity Settings"
 --[[Translation missing --]]
@@ -15526,7 +15508,7 @@ L["My Auctions 'CANCEL' Button"] = "My Auctions 'CANCEL' Button"
 L["Neat Stacks only?"] = "Neat Stacks only?"
 --[[Translation missing --]]
 L["NEED MATS"] = "NEED MATS"
-L["New Group"] = "新分組"
+L["New Group"] = "新群組"
 --[[Translation missing --]]
 L["New Operation"] = "New Operation"
 --[[Translation missing --]]
@@ -15544,8 +15526,7 @@ L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"] = "No item specifie
 L["NO ITEMS"] = "NO ITEMS"
 --[[Translation missing --]]
 L["No Materials to Gather"] = "No Materials to Gather"
---[[Translation missing --]]
-L["No Operation Selected"] = "No Operation Selected"
+L["No Operation Selected"] = "無已選操作"
 --[[Translation missing --]]
 L["No posting."] = "No posting."
 --[[Translation missing --]]
@@ -15629,10 +15610,8 @@ L["Past Day"] = "Past Day"
 L["Past Month"] = "Past Month"
 --[[Translation missing --]]
 L["Past Year"] = "Past Year"
---[[Translation missing --]]
-L["Paste string here"] = "Paste string here"
---[[Translation missing --]]
-L["Paste your import string in the field below and then press 'IMPORT'. You can import everything from item lists (comma delineated please) to whole group & operation structures."] = "Paste your import string in the field below and then press 'IMPORT'. You can import everything from item lists (comma delineated please) to whole group & operation structures."
+L["Paste string here"] = "將字串貼在這裡"
+L["Paste your import string in the field below and then press 'IMPORT'. You can import everything from item lists (comma delineated please) to whole group & operation structures."] = "在下面的欄位裡貼上你要匯入的字串, 然後按‘匯入’鍵. 你可以從物品列表(請用逗號分割)匯入每個物品到整個群組與操作裡."
 --[[Translation missing --]]
 L["Per Item"] = "Per Item"
 --[[Translation missing --]]
@@ -15780,8 +15759,7 @@ L["Rename Profile"] = "Rename Profile"
 L["REPAIR"] = "修理"
 --[[Translation missing --]]
 L["Repair Bill"] = "Repair Bill"
---[[Translation missing --]]
-L["Replace duplicate operations?"] = "Replace duplicate operations?"
+L["Replace duplicate operations?"] = "取代重複的操作?"
 L["REPLY"] = "回覆"
 L["REPORT SPAM"] = "舉報玩家"
 --[[Translation missing --]]
@@ -15880,11 +15858,9 @@ L["Scroll wheel direction:"] = "Scroll wheel direction:"
 L["Search"] = "Search"
 --[[Translation missing --]]
 L["Search Bags"] = "Search Bags"
---[[Translation missing --]]
-L["Search Groups"] = "Search Groups"
+L["Search Groups"] = "搜尋群組"
 L["Search Inbox"] = "搜索郵箱"
---[[Translation missing --]]
-L["Search Operations"] = "Search Operations"
+L["Search Operations"] = "搜尋操作"
 L["Search Patterns"] = "搜尋品項"
 --[[Translation missing --]]
 L["Search Usable Items Only?"] = "Search Usable Items Only?"
@@ -15904,9 +15880,8 @@ L["Select crafter"] = "Select crafter"
 L["Select custom price sources to include in item tooltips"] = "Select custom price sources to include in item tooltips"
 L["Select Duration"] = "選擇時間"
 L["Select Items to Add"] = "選擇增加項目"
-L["Select Items to Remove"] = "選擇移除項目"
---[[Translation missing --]]
-L["Select Operation"] = "Select Operation"
+L["Select Items to Remove"] = "選擇物品來移除"
+L["Select Operation"] = "選擇操作"
 --[[Translation missing --]]
 L["Select professions"] = "Select professions"
 --[[Translation missing --]]
@@ -15965,8 +15940,7 @@ L["Sending Settings"] = "Sending Settings"
 L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"] = "Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"
 L["SENDING..."] = "發送中..."
 L["Set auction duration to:"] = "設定拍賣週期為"
---[[Translation missing --]]
-L["Set bid as percentage of buyout:"] = "Set bid as percentage of buyout:"
+L["Set bid as percentage of buyout:"] = "設定喊價為直購價的比例:"
 --[[Translation missing --]]
 L["Set keep in bags quantity?"] = "Set keep in bags quantity?"
 --[[Translation missing --]]
@@ -15980,9 +15954,8 @@ L["Set minimum profit?"] = "Set minimum profit?"
 --[[Translation missing --]]
 L["Set move quantity?"] = "Set move quantity?"
 L["Set Normal Price:"] = "設定一般價格"
-L["Set post cap to:"] = "設定發佈上限為"
---[[Translation missing --]]
-L["Set posted stack size to:"] = "Set posted stack size to:"
+L["Set post cap to:"] = "設定發佈上限為:"
+L["Set posted stack size to:"] = "設定發佈的堆疊數量為:"
 --[[Translation missing --]]
 L["Set stack size for restock?"] = "Set stack size for restock?"
 --[[Translation missing --]]
@@ -16007,8 +15980,7 @@ L["Shopping for even stacks with a max price set."] = "Shopping for even stacks 
 L["Shopping Tooltips"] = "Shopping Tooltips"
 --[[Translation missing --]]
 L["SHORTFALL TO BAGS"] = "SHORTFALL TO BAGS"
---[[Translation missing --]]
-L["Show auctions above max price?"] = "Show auctions above max price?"
+L["Show auctions above max price?"] = "顯示高於最高價格的拍賣品?"
 --[[Translation missing --]]
 L["Show confirmation alert if buyout is above the alert price"] = "Show confirmation alert if buyout is above the alert price"
 --[[Translation missing --]]
@@ -16028,8 +16000,7 @@ L["Showing all %d Mails"] = "顯示全部 %d 信件"
 --[[Translation missing --]]
 L["Simple"] = "Simple"
 L["SKIP"] = "略過"
---[[Translation missing --]]
-L["Skip Import confirmation?"] = "Skip Import confirmation?"
+L["Skip Import confirmation?"] = "略過匯入確認?"
 --[[Translation missing --]]
 L["Skipped: No assigned operation"] = "Skipped: No assigned operation"
 L["Slash Commands:"] = "斜線命令列表："

@@ -1,6 +1,6 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Dejablue, Kakjens, loudsoul
-## Version: 1304r002
+## Version: 1305r004
 ## SavedVariables: DCS_ClassSpecDB
 ## SavedVariablesPerCharacter: DejaClassicStatsDBPC
 

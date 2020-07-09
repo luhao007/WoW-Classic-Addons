@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariablesPerCharacter: DBMZG_SavedVars, DBMZG_SavedStats
@@ -15,6 +15,7 @@
 ## X-Part-Of: DBM-Core
 
 localization.en.lua
+localization.de.lua
 localization.es.lua
 localization.fr.lua
 localization.kr.lua
@@ -22,6 +23,7 @@ localization.mx.lua
 localization.br.lua
 localization.ru.lua
 localization.cn.lua
+localization.tw.lua
 Venoxis.lua
 Jeklik.lua
 Marli.lua

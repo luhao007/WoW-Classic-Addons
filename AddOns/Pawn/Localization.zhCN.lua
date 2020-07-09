@@ -3,7 +3,7 @@
 -- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
---
+-- 
 -- Chinese (Simplified) resources
 ------------------------------------------------------------
 
@@ -66,11 +66,11 @@ PawnLocal =
 	["UnusableStatMessage"] = "   -- %s 为无用的, 所以停止.",
 	["Usage"] = [=[Pawn 作者： Vger-Azjol-Nerub
 网址：www.vgermods.com
-
+ 
 /pawn -- 显示或隐藏Pawn的界面
 /pawn debug [ on | off ] -- 调试信息
 /pawn backup -- 备份你的所有属性权重项目数据
-
+ 
 想查看更多关于Pawn的信息，请查看Pawn插件文件夹里的(Readme.htm) 文件。]=],
 	["ValueCalculationMessage"] = "   %g %s x %g each = %g",
 	["VisibleScalesHeader"] = "%s的属性权重",
@@ -295,7 +295,7 @@ PawnLocal =
 		["Haste"] = "^%+?# 急速$",
 		["Haste2"] = "^UNUSED$",
 		["HaventCollectedAppearance"] = "^你尚未收藏过此外观$",
-		["Healing"] = "^%+# 治疗法术$",
+		["Healing"] = "^%+# 治疗量$",
 		["Healing2"] = "^装备： ?提高法术所造成的治疗效果，最多#点。$",
 		["HeirloomLevelRange"] = "^需要等级 %d+ 到 (%d+)",
 		["HeirloomXpBoost"] = "^装备： ?获得的经验值提高",

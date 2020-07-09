@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Funkydude, Nebula
 ## Version: v4-classic
 ## OptionalDeps: Ace3, LibCandyBar-3.0, LibSharedMedia-3.0, LibDDI-1.0, LibChatAnims, LibLatency, LibDurability, LibDialog-1.0, Masque

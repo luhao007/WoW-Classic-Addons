@@ -1,6 +1,6 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Dennis-Florian Herr (dfherr)
-## Version: 2.20
+## Version: 2.22
 ## OptionalDeps: LibStub, AceGUI-3.0, AceConfig-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
 ## SavedVariables: ThreatClassic2DB
 ## SavedVariablesPerCharacter: TC2_Options

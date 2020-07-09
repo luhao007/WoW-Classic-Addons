@@ -1,8 +1,11 @@
 # Changelog
 
-## v2.20
+#v 2.22
+* Small bug fix for the /tc2 version command
+* Update Chinese translations
 
-* Prepared the addon to use the threat api when available (from patch 1.13.5)
-* Added an option to downscale threat to the current numbers (i.e. 1 damage = 1 threat. threat api uses 1 damage = 100 threat). Hidden until api is available.
-* Removed the nameplate feature. It wasn't working correctly. Please install a dedicated nameplate addon, if you need threat colored nameplates.
-* added korean and updated chinese translations
+## v2.21
+
+* LibThreatClassic2 was completely removed from the addon.
+* Added two new warning sounds
+* Added an outdated version announcement for TC2.

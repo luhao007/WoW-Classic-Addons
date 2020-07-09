@@ -1,6 +1,6 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Tandanu and Nitram and MysticalOS
-## Version: 1.13.51
+## Version: 1.13.52
 ## Dependencies: DBM-StatusBarTimers, DBM-DefaultSkin
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
@@ -12,7 +12,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
-## X-Min-Interface: 11304
+## X-Min-Interface: 11305
 ## X-Website: http://www.deadlybossmods.com
 ## X-Curse-Project-ID: 3358
 ## X-WoWI-ID: 24921

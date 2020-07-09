@@ -1,22 +1,14 @@
-# [2.17.9](https://github.com/WeakAuras/WeakAuras2/tree/2.17.9) (2020-06-23)
+# [2.17.11](https://github.com/WeakAuras/WeakAuras2/tree/2.17.11) (2020-07-09)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.8...2.17.9)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.17.10...2.17.11)
 
 ## Highlights
 
- - Tick Subregion 
+ - Fixes the "combine matches per unit" regression 
 
 ## Commits
 
 InfusOnWoW (1):
 
-- Make WoWAce Translations happier (#2237)
-
-Vardex (1):
-
-- Fix weapon enchant pattern
-
-nullKomplex (1):
-
-- Tick SubRegion (#1923)
+- BuffTrigger2: Fix "Combine matches per Unit" regression
 

@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMBWL_AllSavedVars
@@ -21,6 +21,7 @@ localization.en.lua
 localization.de.lua
 localization.es.lua
 localization.mx.lua
+localization.br.lua
 localization.ru.lua
 localization.kr.lua
 localization.tw.lua

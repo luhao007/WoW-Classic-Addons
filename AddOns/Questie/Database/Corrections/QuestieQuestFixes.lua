@@ -189,7 +189,7 @@ function QuestieQuestFixes:Load()
             [questKeys.preQuestSingle] = {455}, -- #809
         },
         [484] = {
-            [questKeys.requiredMinRep] = nil, -- #1501
+            [questKeys.requiredMinRep] = {72,0}, -- #1501
         },
         [510] = {
             [questKeys.startedBy] = {nil,{1740},nil}, -- #1512
@@ -283,6 +283,9 @@ function QuestieQuestFixes:Load()
             [QuestieDB.questKeys.preQuestGroup] = {712,714,},
             [QuestieDB.questKeys.requiredSkill] = {},
         },
+        [717] = {
+            [questKeys.requiredSourceItems] = {4843,4844,4845,},
+        },
         [730] = {
             [questKeys.exclusiveTo] = {729}, -- #1587
             [questKeys.zoneOrSort] = 1657,
@@ -316,6 +319,9 @@ function QuestieQuestFixes:Load()
         },
         [781] = {
             [questKeys.startedBy] = {nil,{3076},{4851,},},
+        },
+        [793] = {
+            [questKeys.requiredSourceItems] = {4843,4844,4845,},
         },
         [819] = {
             [questKeys.startedBy] = {nil,{3238},{4926,},},
@@ -770,6 +776,9 @@ function QuestieQuestFixes:Load()
         },
         [1950] = {
             [questKeys.triggerEnd] = {"Secret phrase found", {[zoneIDs.THOUSAND_NEEDLES]={{79.56,75.65},},},},
+        },
+        [1955] = {
+            [questKeys.triggerEnd] = {"Kill the Demon of the Orb", {[zoneIDs.DUSTWALLOW_MARSH]={{45.6,57,2},},},},
         },
         [2039] = {
             [questKeys.exclusiveTo] = {2038},
@@ -1985,6 +1994,9 @@ function QuestieQuestFixes:Load()
         [8296] = { -- bad race data
             [questKeys.requiredRaces] = 178,
         },
+        [8304] = {
+            [questKeys.objectives] = {{{15171,"Frankal Questioned"},{15170,"Rutgar Questioned"},},nil,nil,nil,},
+        },
         [8314] = {
             [questKeys.specialFlags] = 0, -- #1870
         },
@@ -2326,13 +2338,13 @@ function QuestieQuestFixes:LoadFactionFixes()
             [questKeys.startedBy] = {{3033,12042,},nil,nil,},
         },
         [9330] = {
-            [questKeys.startedBy] = {nil,{183332},{23182,},},
+            [questKeys.startedBy] = {nil,{181332},{23182,},},
         },
         [9331] = {
-            [questKeys.startedBy] = {nil,{183333},{23183,},},
+            [questKeys.startedBy] = {nil,{181333},{23183,},},
         },
         [9332] = {
-            [questKeys.startedBy] = {nil,{183334},{23184,},},
+            [questKeys.startedBy] = {nil,{181334},{23184,},},
         },
         [9388] = {
             [questKeys.startedBy] = {{16818,},nil,nil,},

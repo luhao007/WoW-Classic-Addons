@@ -39,7 +39,7 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Always shows the aura, turns red when out of range."] = "Always shows the aura, turns red when out of range."
 	L["Back"] = "뒤로"
-	L["Basic Show On Cooldown"] = "재사용 대기 시간 표시"
+	L["Basic Show On Cooldown"] = "재사용 대기 중 표시"
 	--[[Translation missing --]]
 	L["Basic Show On Ready"] = "Basic Show On Ready"
 	L["Bloodlust/Heroism"] = "피의 욕망/영웅심"

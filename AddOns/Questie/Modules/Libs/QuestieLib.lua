@@ -176,7 +176,7 @@ function QuestieLib:GetColoredQuestName(id, name, level, showLevel, isComplete, 
         name = name .. " (" .. id .. ")"
     end
 
-    if Questie.db.global.collapseCompletedQuests then
+    if Questie.db.global.collapseCompletedQuests or Questie.db.char.collapsedQuests[id] == true then
         if isComplete == -1 then
             name = name .. " (" .. _G['FAILED'] .. ")"
         elseif isComplete == 1 then
@@ -307,10 +307,11 @@ function QuestieLib:CacheItemNames(questId)
                     item:ContinueOnItemLoad(
                         function()
                             local itemName = item:GetItemName()
-                            -- local itemName = GetItemInfo(objectiveDB.Id)
-                            -- Create an empty item with the name itself but no drops.
-                            QuestieDB.itemDataOverrides[objectiveDB.Id] =
-                                {itemName, {questId}, {}, {}}
+                            if not QuestieDB.itemDataOverrides[objectiveDB.Id] then
+                                QuestieDB.itemDataOverrides[objectiveDB.Id] =  {itemName, {questId}, {}, {}}
+                            else
+                                QuestieDB.itemDataOverrides[objectiveDB.Id][1] = itemName
+                            end
                             Questie:Debug(DEBUG_DEVELOP,
                                           "Created item information for item:",
                                           itemName, ":", objectiveDB.Id)
@@ -336,18 +337,20 @@ function QuestieLib:Remap(value, low1, high1, low2, high2)
 end
 
 local cachedTitle = nil
+local cachedVersion = nil
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo()
-    return 6, 0, 0
+    return 6, 0, 1
 end
---    if (not cachedTitle) then
+--    if (not cachedTitle) or (not cachedVersion) then
 --        local name, title, _, _, reason = GetAddOnInfo("Questie")
---        if (reason == "MISSING") then _, title = GetAddOnInfo("Questie") end
+--        if (reason == "MISSING") then name, title = GetAddOnInfo("Questie") end
 --        cachedTitle = title
+--        cachedVersion = GetAddOnMetadata(name, "Version")
 --    end
+--
 --    -- %d = digit, %p = punctuation character, %x = hexadecimal digits.
---    local major, minor, patch = string.match(cachedTitle,
---                                                     "(%d+)%p(%d+)%p(%d+)")
+--    local major, minor, patch = string.match(cachedVersion, "(%d+)%p(%d+)%p(%d+)")
 --
 --    local buildType = nil
 --

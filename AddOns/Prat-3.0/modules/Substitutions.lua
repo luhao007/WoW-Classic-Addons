@@ -642,7 +642,7 @@ PL:AddLocale(PRAT_MODULE, "frFR", L)
 
 L = {
 	["Substitutions"] = {
-		["%d total user defined substitutions"] = " %d Gesamte vom Benutzer definierte Ersetzungen",
+		["%d total user defined substitutions"] = "%d Benutzerdefinierte Ersetzungen insgesamt",
 		["|cffff0000warning:|r subtitution \"%s\" already defined as \"%s\", overwriting"] = "|cffff0000Warnung:|r Ersetzung \"%s\" wurde bereits definiert als \"%s\", überschreibe",
 		["<noguild>"] = " <keinegilde>",
 		["<notarget>"] = "<keinziel>",

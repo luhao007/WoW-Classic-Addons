@@ -74,7 +74,7 @@ Version = "Prat |cff8080ff3.0|r (|cff8080ff" .. "DEBUG" .. "|r)"
 --@end-debug@]===]
 
 --@non-debug@
-Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.25".."|r)"
+Version = "Prat |cff8080ff3.0|r (|cff8080ff".."3.8.26".."|r)"
 --@end-non-debug@
 
 
@@ -89,7 +89,7 @@ setmetatable(Prat, am)
 
 Prat.Prat3 = true
 Prat.IsClassic = (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC)
-Prat.IsRetail = not Prat.IsClassic
+Prat.IsRetail =  (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE)
 
 
 local function dbg(...) end
@@ -531,7 +531,7 @@ function addon:ChatEdit_ParseText(editBox, send)
   CurrentMessage = m
 
 
-  m.MESSAGE = command
+  m.MESSAGE = command:gsub("^%s*(.-)%s*$", "%1") -- trim whitespace
 
   m.CTYPE = editBox:GetAttribute("chatType")
   m.TARGET = editBox:GetAttribute("tellTarget")

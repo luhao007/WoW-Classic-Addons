@@ -4,7 +4,7 @@ local AceLocale = LibStub("AceLocale-3.0")
 local L = AceLocale:GetLocale("Recount")
 local BossIDs = LibStub("LibBossIDs-1.0")
 
-local revision = tonumber(string.sub("$Revision: 1548 $", 12, -3))
+local revision = tonumber(string.sub("$Revision: 1552 $", 12, -3))
 if Recount.Version < revision then
 	Recount.Version = revision
 end
@@ -1755,9 +1755,18 @@ function Recount:GetPetOwnerFromTooltip(nGUID)
 	if ownerString then
 		for i = 1, GetNumGroupMembers() do
 			local unitName, serverName = UnitName(IsInRaid() and "raid"..i or "party"..i)
-			if GetLocale() == "ruRU" then
-				if Recount:FindNameDeclensions(ownerString, unitName, serverName) then
-					return serverName and unitName.."-"..serverName or unitName
+			if unitName then
+				if GetLocale() == "ruRU" then
+					if Recount:FindNameDeclensions(ownerString, unitName, serverName) then
+						return serverName and unitName.."-"..serverName or unitName
+					else
+						if serverName then
+							unitName = unitName.."-"..serverName
+						end
+						if strfind(ownerString, unitName, nil, true) then
+							return unitName
+						end
+					end
 				else
 					if serverName then
 						unitName = unitName.."-"..serverName
@@ -1765,13 +1774,6 @@ function Recount:GetPetOwnerFromTooltip(nGUID)
 					if strfind(ownerString, unitName, nil, true) then
 						return unitName
 					end
-				end
-			else
-				if serverName then
-					unitName = unitName.."-"..serverName
-				end
-				if strfind(ownerString, unitName, nil, true) then
-					return unitName
 				end
 			end
 		end

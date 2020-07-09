@@ -626,10 +626,15 @@ end
     return success
   end
   function module:LeaveChannels(...)
+    local db = self.db.profile
+    local map = self:GetChannelMap(unpack(db.channels))
     for i = 1, select("#", ...), 3 do
-      local num, name = select(i, ...);
-      dbg("leave", num, name)
-      LeaveChannelByName(num)
+      local snum, sname = select(i, ...);
+      local num, name = map[sname], map[snum];
+      if snum ~= num or sname ~= name then
+        dbg("leave", snum, sname, num, name)
+        LeaveChannelByName(snum)
+      end
     end
   end
 
@@ -717,12 +722,18 @@ end
         local num, name = select(i, ...);
         dbg("restore", name, num)
         while index < num do
-          JoinTemporaryChannel("LeaveMe" .. index)
-          dbg("join", "LeaveMe" .. index)
+          if GetChannelName(index) == 0 then
+            JoinTemporaryChannel("LeaveMe" .. index)
+            dbg("join", "LeaveMe" .. index)
+          end
           index = index + 1
         end
-        dbg("join", name)
-        JoinChannelByName(name)
+        if GetChannelName(index) == 0 then
+          dbg("join", name)
+          JoinChannelByName(name)
+        else
+          dbg("occupied", name, select(2, GetChannelName(index)))
+        end
         index = index + 1
       end
 
@@ -735,18 +746,26 @@ end
         local num, name = select(i, ...);
         dbg("restore", name, num)
         while index < num do
-          JoinTemporaryChannel("LeaveMe" .. index)
-          dbg("join", "LeaveMe" .. index)
+          if GetChannelName(index) == 0 then
+            JoinTemporaryChannel("LeaveMe" .. index)
+            dbg("join", "LeaveMe" .. index)
+          else
+            dbg("skip", index)
+          end
           index = index + 1
         end
-        local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(name);
-        if not clubId or not streamId then
-          dbg("join", name)
+        if GetChannelName(index) == 0 then
+          local clubId, streamId = ChatFrame_GetCommunityAndStreamFromChannel(name);
+          if not clubId or not streamId then
+            dbg("join", name)
 
-          JoinChannelByName(name)
+            JoinChannelByName(name)
+          else
+            dbg("addclub", clubId, streamId)
+            ChatFrame_AddNewCommunitiesChannel(1, clubId, streamId)
+          end
         else
-          dbg("addclub", clubId, streamId)
-          ChatFrame_AddNewCommunitiesChannel(1, clubId, streamId)
+          dbg("occupied", name, select(2, GetChannelName(index)))
         end
         index = index + 1
       end

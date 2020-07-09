@@ -1371,6 +1371,10 @@
 		<Title>导航助手</Title>
 		<Category>探索</Category>
 	</Addon>
+	<Addon name="TradeLog">
+		<Title>交易助手</Title>
+		<Category>物品</Category>
+	</Addon>
 	<Addon name="TradeSkillMaster">
 		<Title>专业助手</Title>
 		<Category>物品</Category>

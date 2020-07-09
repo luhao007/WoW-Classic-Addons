@@ -539,3 +539,12 @@ L["flowerWarning"] = "你在开启了位面的服务器上采集了风歌花,虽
 
 L["mmColorTitle"] = "小地图位面信息颜色";
 L["mmColorDesc"] = "设置小地图位面信息文本(Layer 1)的颜色";
+
+---new---
+L["layerHasBeenDisabled"] = "位面 %s已禁用,此位面仍在数据库中,但是将被忽略,直到你再次启用它或它被检测为是有效的.";
+L["layerHasBeenEnabled"] = "位面 %s已启用,此位面会重新显示计时器和位面计数.";
+L["layerDoesNotExist"] = "位面ID %s 在数据库中不存在.";
+L["enableLayerButton"] = "启用位面";
+L["disableLayerButton"] = "紧用位面";
+L["enableLayerButtonTooltip"] = "单击以重新启用此位面.\n此位面将被重新放回计时器和位面计算中.";
+L["disableLayerButtonTooltip"] = "在服务器重启后,单击以禁用此位面.\n插件将忽略此位面并在稍后将其删除.";

@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
 ## Version: 3.113-classic
 ## Dependencies: VuhDo
