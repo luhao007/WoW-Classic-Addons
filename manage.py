@@ -280,8 +280,8 @@ class Manager(object):
         if self.is_classic:
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
-                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'Recount', 'TradeLog', 'TitanClassic']
+                       'Details_Streamer', 'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'TradeLog', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
@@ -400,6 +400,20 @@ class Manager(object):
             'AddOns/Decursive/embeds.xml',
             lambda lines: [l for l in lines
                            if 'Libs' not in l or 'BugGrabber' in l]
+        )
+
+    def handle_details(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+             'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
+             'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'LibBossIDs-1.0', 'LibClassicCasterino', 'LibCompress',
+             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
+             'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1'],
+            'AddOns/Details/Libs',
+            'AddOns/Details/Libs/libs.xml'
         )
 
     def handle_fb(self):
@@ -638,14 +652,6 @@ class Manager(object):
              'LibSink-2.0', 'LibStub'],
             'AddOns/Rarity/Libs',
             'AddOns/Rarity/Rarity.toc'
-        )
-
-    @classic_only
-    def handle_recount(self):
-        self.change_defaults(
-            'Addons/Recount/Recount.lua',
-            ['				x = 500,',
-             '				w = 250,'],
         )
 
     def handle_scrap(self):
