@@ -43,7 +43,7 @@ local GetTime = GetTime;
 local CheckInteractDistance = CheckInteractDistance;
 local UnitInRange = UnitInRange;
 local IsSpellInRange = IsSpellInRange;
-local VUHDO_unitDetailedThreatSituation = VUHDO_unitDetailedThreatSituation;
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation;
 local UnitIsCharmed = UnitIsCharmed;
 local UnitCanAttack = UnitCanAttack;
 local UnitName = UnitName;
@@ -52,7 +52,7 @@ local UnitIsTrivial = UnitIsTrivial;
 local GetSpellCooldown = GetSpellCooldown;
 local HasFullControl = HasFullControl;
 local pairs = pairs;
-local VUHDO_unitThreatSituation = VUHDO_unitThreatSituation;
+local UnitThreatSituation = UnitThreatSituation;
 local InCombatLockdown = InCombatLockdown;
 local type = type;
 
@@ -198,7 +198,7 @@ local tEmpty = {};
 local function VUHDO_updateThreat(aUnit)
 	tInfo = (VUHDO_RAID or tEmpty)[aUnit];
 	if tInfo then
-		tInfo["threat"] = VUHDO_unitThreatSituation(aUnit) or 0;
+		tInfo["threat"] = UnitThreatSituation(aUnit) or 0;
 
 		if VUHDO_INTERNAL_TOGGLES[17] then -- VUHDO_UPDATE_THREAT_LEVEL
 			VUHDO_updateBouquetsForEvent(aUnit, 17); -- VUHDO_UPDATE_THREAT_LEVEL
@@ -675,7 +675,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 		VUHDO_lateRaidReload();
 ]]
 	--elseif("UPDATE_MACROS" == anEvent) then
-		--VUHDO_timeReloadUI(0.1); -- @WARNING L�dt wg. shield macro alle 8 sec.
+		--VUHDO_timeReloadUI(0.1); -- @WARNING L\E4dt wg. shield macro alle 8 sec.
 
 	elseif "UNIT_FACTION" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then VUHDO_updateBouquetsForEvent(anArg1, VUHDO_UPDATE_MINOR_FLAGS); end
@@ -717,7 +717,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 
 			if ((VUHDO_RAID or tEmptyRaid)[anArg1] ~= nil) then
 				VUHDO_resetTalentScan(anArg1);
-				VUHDO_initDebuffs(); -- Talentabh�ngige Debuff-F�higkeiten neu initialisieren.
+				VUHDO_initDebuffs(); -- Talentabh\E4ngige Debuff-F\E4higkeiten neu initialisieren.
 				VUHDO_timeReloadUI(1);
 			end
 		end
@@ -886,7 +886,7 @@ function VUHDO_slashCmd(aCommand)
 		VUHDO_printAbout();
 
 	elseif aCommand == "?" or strfind(tCommandWord, "help")	or aCommand == "" then
-		local tLines = VUHDO_splitString(VUHDO_I18N_COMMAND_LIST, "�");
+		local tLines = VUHDO_splitString(VUHDO_I18N_COMMAND_LIST, "\A7");
 
 		for _, tCurLine in ipairs(tLines) do 
 			VUHDO_MsgC(tCurLine);
@@ -1052,7 +1052,7 @@ local function VUHDO_updateAllAggro()
 			tTarget = tInfo["targetUnit"];
 			if not UnitIsFriend(tUnit, tTarget) then
 				if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
-					_, _, tThreatPerc = VUHDO_unitDetailedThreatSituation(tUnit, tTarget);
+					_, _, tThreatPerc = UnitDetailedThreatSituation(tUnit, tTarget);
 					tInfo["threatPerc"] = tThreatPerc or 0;
 				end
 
@@ -1060,7 +1060,7 @@ local function VUHDO_updateAllAggro()
 
 				if tAggroUnit then
 					if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
-						_, _, tThreatPerc = VUHDO_unitDetailedThreatSituation(tAggroUnit, tTarget);
+						_, _, tThreatPerc = UnitDetailedThreatSituation(tAggroUnit, tTarget);
 						VUHDO_RAID[tAggroUnit]["threatPerc"] = tThreatPerc or 0;
 					end
 
@@ -1226,7 +1226,7 @@ local function VUHDO_doReloadRoster(anIsQuick)
 			end
 		end
 
-		VUHDO_initDebuffs(); -- Verz�gerung nach Taltentwechsel-Spell?
+		VUHDO_initDebuffs(); -- Verz\F6gerung nach Taltentwechsel-Spell?
 	end
 end
 

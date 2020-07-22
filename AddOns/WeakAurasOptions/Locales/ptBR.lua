@@ -174,14 +174,6 @@ WeakAuras → Opções → Opções ]=]
 	L["Bar Texture"] = "Textura da barra"
 	L["Big Icon"] = "Ícone Grande"
 	--[[Translation missing --]]
-	L["Blacklisted Aura Name"] = "Blacklisted Aura Name"
-	--[[Translation missing --]]
-	L["Blacklisted Exact Spell ID(s)"] = "Blacklisted Exact Spell ID(s)"
-	--[[Translation missing --]]
-	L["Blacklisted Name(s)"] = "Blacklisted Name(s)"
-	--[[Translation missing --]]
-	L["Blacklisted Spell ID"] = "Blacklisted Spell ID"
-	--[[Translation missing --]]
 	L["Blend Mode"] = "Blend Mode"
 	--[[Translation missing --]]
 	L["Blue Rune"] = "Blue Rune"
@@ -583,6 +575,14 @@ Supports multiple entries, separated by commas
 	--[[Translation missing --]]
 	L["Ignore self"] = "Ignore self"
 	L["Ignored"] = "Ignorado"
+	--[[Translation missing --]]
+	L["Ignored Aura Name"] = "Ignored Aura Name"
+	--[[Translation missing --]]
+	L["Ignored Exact Spell ID(s)"] = "Ignored Exact Spell ID(s)"
+	--[[Translation missing --]]
+	L["Ignored Name(s)"] = "Ignored Name(s)"
+	--[[Translation missing --]]
+	L["Ignored Spell ID"] = "Ignored Spell ID"
 	L["Import"] = "Importar"
 	L["Import a display from an encoded string"] = "Importar um display de um string codificado"
 	--[[Translation missing --]]

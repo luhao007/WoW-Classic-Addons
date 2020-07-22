@@ -91,6 +91,8 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="VuhDoUnitButtonDropDown" inherits="UIDropDownMenuTemplate" clampedToScreen="true" id="3" hidden="true" />
+
 	<Frame name="VuhDo" parent="UIParent" frameStrata="LOW" toplevel="true" inherits="SecureFrameTemplate">
 		<Scripts>
 			<OnLoad>

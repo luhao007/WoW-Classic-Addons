@@ -10,7 +10,7 @@ FishingTranslations["frFR"] = {
 	["ALLZOMGPETS"] = "Inclure toutes les mascottes",
 	["AUTHOR"] = "Sutorix (sutorix@hotmail.com)",
 	["BINDING_HEADER_FISHINGBUDDY_BINDINGS"] = "#NOM#",
-	["BINDING_NAME_FISHINGBUDDY_GOFISHING"] = "S'habiller et aller pêcher",
+	["BINDING_NAME_FISHINGBUDDY_GOFISHING"] = "S'habiller et aller à la pêche",
 	["BINDING_NAME_FISHINGBUDDY_SWITCH"] = "Porter l'équipement de pêche",
 	["BINDING_NAME_FISHINGBUDDY_TOGGLE"] = "Activer la fenêtre #NAME#",
 	["BINDING_NAME_TOGGLEFISHINGBUDDY_LOC"] = "Activer le panneau de région #NAME#",
@@ -37,7 +37,7 @@ FishingTranslations["frFR"] = {
 	["CONFIG_ALWAYSHAT_ONOFF"] = "Utiliser les chapeaux",
 	["CONFIG_ALWAYSLURE_INFO"] = "Si activé, applique un appât si aucun n'est déjà présent.",
 	["CONFIG_ALWAYSLURE_ONOFF"] = "Toujours mettre un appât",
-	["CONFIG_AUTOLOOT_INFO"] = "Si activé, fouille automatique du poisson durant la pêche.",
+	["CONFIG_AUTOLOOT_INFO"] = "S'il est activé, la fouille automatique est activé pendant la pêche.",
 	["CONFIG_AUTOLOOT_INFOD"] = "La fouille automatique est désactivée car l'addon Fish Warden est activé.",
 	["CONFIG_AUTOLOOT_ONOFF"] = "Fouille auto",
 	["CONFIG_AUTOOPEN_INFO"] = "Si actif, faire un double-clic pour ouvrir les objets de quête de pêche.",
@@ -90,10 +90,8 @@ FishingTranslations["frFR"] = {
 	--[[ ["CONFIG_FISHINGRAID_INFO"] = "Turn on Fishing Raid features.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_FISHINGRAID_ONOFF"] = "Raid Support",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWARNFISHING_INFO"] = "Warn if we go to a zone where we haven't learned fishing.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWARNFISHING_ONOFF"] = "Skill Check",--]] 
+	["CONFIG_FISHWARNFISHING_INFO"] = "Signale si vous allez dans une zone où vous avez pas appris à pêcher.",
+	["CONFIG_FISHWARNFISHING_ONOFF"] = "Vérification des compétences",
 	["CONFIG_FISHWATCH_INFO"] = "Affiche une zone de texte avec les poissons déjà pêchés dans la zone actuelle.",
 	["CONFIG_FISHWATCH_ONOFF"] = "Archive des poissons",
 	["CONFIG_FISHWATCHCURRENT_INFO"] = "Afficher uniquement les poissons pêchés dans la session en cours.",
@@ -110,21 +108,16 @@ FishingTranslations["frFR"] = {
 	["CONFIG_FISHWATCHSKILL_ONOFF"] = "Niveau actuel",
 	["CONFIG_FISHWATCHTIME_INFO"] = "Afficher le temps écoulé depuis la dernière fois qu'une canne à pêche a été équipée",
 	["CONFIG_FISHWATCHTIME_ONOFF"] = "Afficher le temps écoulé",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHTRASH_INFO"] = "Don't display trash items.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHTRASH_ONOFF"] = "Hide Trash",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHWORLD_INFO"] = "Display available world quests.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHWATCHWORLD_ONOFF"] = "Watch World Quests",--]] 
+	["CONFIG_FISHWATCHTRASH_INFO"] = "N'affiche pas les objets gris",
+	["CONFIG_FISHWATCHTRASH_ONOFF"] = "Cache les objets gris",
+	["CONFIG_FISHWATCHWORLD_INFO"] = "Afficher les quêtes mondiales disponibles.",
+	["CONFIG_FISHWATCHWORLD_ONOFF"] = "Regarder les Quêtes mondiales",
 	["CONFIG_FISHWATCHZONE_INFO"] = "Affiche la zone actuelle dans la zone de texte.",
 	["CONFIG_FISHWATCHZONE_ONOFF"] = "Zone actuelle",
 	["CONFIG_FLYINGCAST_INFO"] = "Si elle est activée, autorisez le lancer en vol.",
 	["CONFIG_FLYINGCAST_ONOFF"] = "En vol",
 	["CONFIG_HANDLEQUESTS_INFO"] = "Si elle est activée, elle gère automatiquement les quêtes de pêche et la réputation,",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_HANDLEQUESTS_ONOFF"] = "Handle quests",--]] 
+	["CONFIG_HANDLEQUESTS_ONOFF"] = "Gérer les quêtes",
 	["CONFIG_KEEPONTRUCKIN_INFO"] = "Si vous pêchez sans canne, continuez à lancer sans la clé de modification",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_KEEPONTRUCKIN_ONOFF"] = "Keep Casting",--]] 
@@ -159,16 +152,14 @@ FishingTranslations["frFR"] = {
 	["CONFIG_RAIDACTION_ONOFF"] = "Bouton d'action",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_RAIDWATCH_INFO"] = "If enabled, the Fish Watcher will show the currency fish for the current raid boss.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_RAIDWATCH_ONOFF"] = "Watch currency",--]] 
+	["CONFIG_RAIDWATCH_ONOFF"] = "Surveillez la monnaie",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SECRET_FISHING_GOGGES_INFO"] = "If enabled, 'Fishing Without A Poel' will use 'Secret Fishing Goggles' first.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SECRET_FISHING_GOGGLES_INFO"] = "If enabled, 'Fishing Without A Pole' will use 'Secret Fishing Goggles' first.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_SHOWBANNER_INFO"] = "If enabled, show the #NAME# banner on login.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SHOWBANNER_ONOFF"] = "Show banner",--]] 
+	["CONFIG_SHOWBANNER_ONOFF"] = "Afficher le bandeau",
 	["CONFIG_SHOWLOCATIONZONES_INFO"] = "Afficher les zones et sous-zones.",
 	["CONFIG_SHOWLOCATIONZONES_ONOFF"] = "Affiche les zones",
 	["CONFIG_SHOWNEWFISHIES_INFO"] = "Affiche un message dans la zone de texte quand un nouveau poisson est pêché.",
@@ -179,10 +170,8 @@ FishingTranslations["frFR"] = {
 	["CONFIG_SORTBYPERCENT_ONOFF"] = "Trie par quantité de poissons",
 	["CONFIG_SPARKLIES_INFO"] = "Si actif, les « scintillement » dans les bancs de pêche seront plus visible durant la pêche.",
 	["CONFIG_SPARKLIES_ONOFF"] = "Bancs améliorés",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SPECIALBOBBERS_INFO"] = "If enabled, apply a randomly selected custom bobber.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_SPECIALBOBBERS_ONOFF"] = "Bobbers",--]] 
+	["CONFIG_SPECIALBOBBERS_INFO"] = "Si elle est activée, appliquez un flotteur personnalisé choisi au hasard.",
+	["CONFIG_SPECIALBOBBERS_ONOFF"] = "Flotteurs",
 	["CONFIG_STVPOOLSONLY_INFO"] = "Si actif, lancé facile possible seulement quand le curseur survol un banc de poissons.",
 	["CONFIG_STVPOOLSONLY_ONOFF"] = "Lancé uniquement sur l'eau",
 	["CONFIG_STVTIMER_INFO"] = "Si actif, un compteur sera affiché indiquant le temps restant avant le début et avant la fin du concours.",
@@ -191,12 +180,10 @@ FishingTranslations["frFR"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "Affiche les infos de pêche en infobulle.",
 	["CONFIG_TOONMACRO_INFO"] = "Créer une macro de pêche par joueur.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Par joueur",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_TRADESKILL_INFO"] = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",--]] 
+	["CONFIG_TRADESKILL_INFO"] = "Si elle est activée, ouvrez la fenêtre TradeSkill pour connaître les niveaux de compétence. Sinon, vous devrez ouvrir manuellement la profession de pêcheur.",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRADESKILL_ONOFF"] = "Setup Skills",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_TRAWLERTOTEM_INFO"] = "If enabled, use the toy.",--]] 
+	["CONFIG_TRAWLERTOTEM_INFO"] = "S'il est activé, utilisez le jouet.",
 	["CONFIG_TURNOFFPVP_INFO"] = "Si actif, le JcJ sera désactivé dès que l'on s'équipe d'une canne à pêche.",
 	["CONFIG_TURNOFFPVP_ONOFF"] = "Désactive le JcJ",
 	["CONFIG_TURNONSOUND_INFO"] = "Si actif, toujours avoir les sons durant la pêche.",
@@ -205,16 +192,12 @@ FishingTranslations["frFR"] = {
 	["CONFIG_USEACTION_INFO"] = "Si actif, #NAME# va chercher à utiliser un bouton de la barre d'action pour le lancé.",
 	["CONFIG_USEACTION_ONOFF"] = "Utiliser Action",
 	["CONFIG_USERAFTS_INFO"] = "Si elle est activée, utilisez le radeau pour la pêche.",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_USERAFTS_INFOD"] = "If you have Pandaren fishing skill, open the Trade Skill window.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_USERAFTS_ONOFF"] = "Use rafts",--]] 
+	["CONFIG_USERAFTS_INFOD"] = "Si vous avez des compétences de pêche Pandaren, ouvrez la fenêtre Compétences commerciales.",
+	["CONFIG_USERAFTS_ONOFF"] = "Utiliser des radeaux",
 	["CONFIG_WATCHBOBBER_INFO"] = "Si actif, #NAME# ne sera pas lancé si le curseur est sur le flotteur de pêche.",
 	["CONFIG_WATCHBOBBER_ONOFF"] = "Surveiller le bouchon",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_WAVEBOARD_INFO"] = "If enabled, use the Gnarlwood Waveboard.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_WAVEBOARD_ONOFF"] = "Use Waveboard",--]] 
+	["CONFIG_WAVEBOARD_INFO"] = "Si elle est activée, utilisez la Planche de surf en bois noueux",
+	["CONFIG_WAVEBOARD_ONOFF"] = "Utiliser la Planche de surf",
 	["COPPER_COIN"] = "Pièce de cuivre",
 	--[[Translation missing --]]
 	--[[ ["COPYRIGHT"] = "(c) 2005-2015 by The Software Cobbler",--]] 
@@ -238,8 +221,7 @@ FishingTranslations["frFR"] = {
 	--[[ ["FISHCAUGHT"] = "%d/%d %s",--]] 
 	--[[Translation missing --]]
 	--[[ ["FISHDATA"] = "fishdata",--]] 
-	--[[Translation missing --]]
-	--[[ ["FISHDATARESET_MSG"] = "Fish location data has been reset.",--]] 
+	["FISHDATARESET_MSG"] = "Les données de localisation des poissons ont été réinitialisées.",
 	--[[Translation missing --]]
 	--[[ ["FISHDATARESETHELP"] = "|c#GREEN#/fb #FISHDATA# #RESET#|r#BRSPCS#Reset the fish database. Must be invoked twice.",--]] 
 	--[[Translation missing --]]

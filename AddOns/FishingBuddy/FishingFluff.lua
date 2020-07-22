@@ -427,7 +427,7 @@ FishingBuddy.SetupSpecialItems = SetupSpecialItems
 
 local function AddFluffOptions(options)
     if FL:IsClassic() then
-        local _, name = FL:GetFishingSkillInfo();
+        local _, name = FL:GetFishingSpellInfo();
         FishingBuddy.OptionsFrame.HandleOptions(name, "Interface\\Icons\\INV_Fishingpole_02", options);
     else
         FishingBuddy.OptionsFrame.HandleOptions(FBConstants.CONFIG_FISHINGFLUFF_ONOFF, "Interface\\Icons\\inv_misc_food_164_fish_seadog", options);

@@ -1,3 +1,48 @@
+Version 3.114-classic  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Buff Watch is not currently fully working (missing many spells)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 1.13.5  
+-- Migrate from LibThreatClassic2 to restored Blizzard APIs  
+  
+  
+--------------------------------------------------------------  
+Version 3.114  
+  
+  
+Known issues:  
+-- BfA stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- In 8.2.0 Blizzard removed the ability to play sounds by file path  
+--   If you have LibSharedMedia installed make sure it is up to date  
+--   You may need to reselect your sound options in VuhDo for debuffs  
+  
+  
+Bugfixes:  
+-- Fixed VUHDO_UPDATE_ALIVE handling on unit dead state change  
+-- Fixed handling of unit dropdown menu under some conditions  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
 Version 3.113-classic  
   
   

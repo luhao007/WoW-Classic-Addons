@@ -142,10 +142,6 @@ local L = WeakAuras.L
 	L["Bar Inner"] = "바 내부"
 	L["Bar Texture"] = "바 텍스쳐"
 	L["Big Icon"] = "큰 아이콘"
-	L["Blacklisted Aura Name"] = "차단된 효과 이름"
-	L["Blacklisted Exact Spell ID(s)"] = "차단된 정확한 주문 ID(s)"
-	L["Blacklisted Name(s)"] = "차단된 이름(s)"
-	L["Blacklisted Spell ID"] = "차단된 주문 ID"
 	L["Blend Mode"] = "혼합 모드"
 	L["Blue Rune"] = "푸른색 룬"
 	L["Blue Sparkle Orb"] = "푸른 불꽃 구슬"
@@ -474,6 +470,14 @@ Supports multiple entries, separated by commas
 	--[[Translation missing --]]
 	L["Ignore self"] = "Ignore self"
 	L["Ignored"] = "무시됨"
+	--[[Translation missing --]]
+	L["Ignored Aura Name"] = "Ignored Aura Name"
+	--[[Translation missing --]]
+	L["Ignored Exact Spell ID(s)"] = "Ignored Exact Spell ID(s)"
+	--[[Translation missing --]]
+	L["Ignored Name(s)"] = "Ignored Name(s)"
+	--[[Translation missing --]]
+	L["Ignored Spell ID"] = "Ignored Spell ID"
 	L["Import"] = "가져오기"
 	L["Import a display from an encoded string"] = "암호화된 문자열에서 디스플레이 가져오기"
 	L["Inner"] = "내부"

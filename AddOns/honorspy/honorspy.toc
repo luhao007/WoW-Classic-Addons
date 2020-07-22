@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: kakysha
-## Version: 1.7.3
+## Version: 1.7.5
 ## OptionalDeps: Ace3
 ## SavedVariables: HonorSpyDB
 
@@ -13,6 +13,7 @@
 ## X-Curse-Project-ID: 348370
 
 Localizations\embeds.xml
+
 honorspy.lua
 GUI.lua
 settings.lua

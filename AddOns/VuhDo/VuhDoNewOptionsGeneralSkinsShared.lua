@@ -2230,7 +2230,7 @@ local VUHDO_TARGET_PROFILE_NAME = nil;
 local function VUHDO_askSaveProfileCallback(aButtonNum)
 	local _, tProfile = VUHDO_getProfileNamedCompressed(VUHDO_TARGET_PROFILE_NAME);
 	if tProfile and aButtonNum == 2 and tProfile["HARDLOCKED"] then
-		VUHDO_Msg("This profile is hardlocked. It has been copied locally.");
+		VUHDO_Msg("这个存档为强制锁定，已建立可用的副本。");
 		aButtonNum = 1;
 	end
 
@@ -2470,7 +2470,7 @@ local function VUHDO_smartLoadFromProfile(aDestArray, aSourceArray, aProfileMode
 				if "table" == type(tDestValue) then
 					aDestArray[tKey] = VUHDO_smartLoadFromProfile(aDestArray[tKey], aSourceArray[tKey], tSubModel, tRootRule or aDerivedRule);
 				else
-					VUHDO_Msg("Data structures incompatible in field: " .. tKey);
+					VUHDO_Msg("栏位中的数据结构不相容：" .. tKey);
 				end
 			else -- Flacher Wert
 				local tRule = tSubModel or tRootRule or aDerivedRule;

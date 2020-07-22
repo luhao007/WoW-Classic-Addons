@@ -1013,6 +1013,11 @@ function MonkeyQuest_Resize()
 	MonkeyQuestTitleButton:SetWidth(MonkeyQuestTitleText:GetWidth());
 	MonkeyQuestTitleButton:SetHeight(MonkeyQuestTitleText:GetHeight());
 
+	local substractPadding = 0
+	if (_G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE) then
+		substractPadding = 10
+	end
+
 	for i = 1, MonkeyQuest.m_iNumQuestButtons, 1 do
 		text = _G["MonkeyQuestButton" .. i .. "Text"];
 		button = _G["MonkeyQuestButton" .. i];
@@ -1020,10 +1025,10 @@ function MonkeyQuest_Resize()
 		if (text:IsVisible()) then
 			text:SetWidth(iTextWidth);
 
-			iHeight = iHeight + text:GetHeight() - 10 + iPadding;
+			iHeight = iHeight + text:GetHeight() - substractPadding + iPadding;
 			
 			button:SetWidth(text:GetWidth());
-			button:SetHeight(text:GetHeight() - 10);
+			button:SetHeight(text:GetHeight() - substractPadding);
 		end
 	end
 

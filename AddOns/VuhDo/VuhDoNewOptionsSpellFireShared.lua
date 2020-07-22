@@ -21,7 +21,7 @@ function VUHDO_activateLayout(aName)
 	end
 
 	VUHDO_SPEC_LAYOUTS["selected"] = aName;
-	VUHDO_Msg("Key layout \"" .. aName .. "\" loaded.");
+	VUHDO_Msg("按键配置  \"" .. aName .. "\" 已载入");
 
 	VUHDO_loadVariables();
 	VUHDO_initAllBurstCaches();

@@ -69,7 +69,6 @@ local VUHDO_REZ_SPELLS_NAMES = {
 
 
 
-local sDropdown;
 local tUnit, tInfo, tIdent;
 local tButtonName;
 local tMacroId, tMacroText;
@@ -108,38 +107,43 @@ local function _VUHDO_setupHealButtonAttributes(aModiKey, aButtonId, anAction, a
 		aButton:SetAttribute(aModiKey .."type" .. aButtonId, "VUHDO_contextMenu");
 
 		VUHDO_contextMenu = function()
-			sDropdown = nil;
-			local tUnit = aButton["raidid"];
-			if tUnit == "player" then
-				sDropdown = PlayerFrameDropDown;
+			tUnit = aButton["raidid"];
+			local tName, tNumber, tMenu;
 
-			elseif UnitIsUnit(tUnit, "target") then
-				sDropdown = TargetFrameDropDown;
-			--[[elseif (UnitIsUnit(tUnit, "focus")) then
-				sDropdown = FocusFrameDropDown;]] -- Problem, wenn Fokus löschen
-			elseif UnitIsUnit(tUnit, "pet") then
-				sDropdown = PetFrameDropDown;
-			else
+			if UnitIsUnit(tUnit, "player") then 
+				tMenu = "SELF"; 
+			elseif UnitIsUnit(tUnit, "vehicle") then 
+				tMenu = "VEHICLE";
+			elseif UnitIsUnit(tUnit, "pet") then 
+				tMenu = "PET"; 
+			elseif UnitIsPlayer(tUnit) then
 				tInfo = VUHDO_RAID[tUnit];
+				
+				tName = tInfo["name"];
+				tNumber = tInfo["number"];
 
-				if tInfo then
-					if (VUHDO_RAID["player"] or tInvalidGroup)["group"] == tInfo["group"] then
-						sDropdown = _G['PartyMemberFrame' .. tInfo["number"] .. 'DropDown']
-					else
-						tIdent = tInfo["number"];
-						FriendsDropDown["name"] = tInfo["name"];
-						FriendsDropDown["id"] = tIdent;
-						FriendsDropDown["unit"] = tUnit;
-						FriendsDropDown["initialize"] = RaidFrameDropDown_Initialize;
-						FriendsDropDown["displayMode"] = "MENU";
-						sDropdown = FriendsDropDown;
-					end
+				if UnitInRaid(tUnit) then
+					tMenu = "RAID_PLAYER";
+				elseif UnitInParty(tUnit) then
+					tMenu = "PARTY";
+				else
+					tMenu = "PLAYER";
 				end
+			else
+				tMenu = "TARGET";
+				tName = RAID_TARGET_ICON;
 			end
 
-			if sDropdown then
-				ToggleDropDownMenu(1, nil, sDropdown, "cursor", 0, 0);
-			end
+			UIDropDownMenu_Initialize(VuhDoUnitButtonDropDown, 
+				function(self) 
+					if tMenu then
+						UnitPopup_ShowMenu(self, tMenu, tUnit, tName, tNumber);
+					end
+				end, 
+				"MENU"
+			);
+			
+			ToggleDropDownMenu(1, nil, VuhDoUnitButtonDropDown, "cursor", 0, 0);
 		end
 
 		aButton["VUHDO_contextMenu"] = VUHDO_contextMenu;

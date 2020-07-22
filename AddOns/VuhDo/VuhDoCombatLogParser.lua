@@ -27,12 +27,14 @@ local tNewHealth;
 local tDeadInfo = { ["dead"] = true };
 local function VUHDO_addUnitHealth(aUnit, aDelta)
 	tInfo = VUHDO_RAID[aUnit] or tDeadInfo;
-	if abs(aDelta) > 10000 then
-		tInfo["isUpdated"] = 0;
+    -- Filter exception data from combat log in classic 
+    -- sometimes combat log get 19000+ damage but it's not correct E.g Ragnaros's Melt Weapon
+	if abs(aDelta) > 10000 then 
 		VUHDO_updateHealth(aUnit, 2); -- VUHDO_UPDATE_HEALTH
 		do return end;
 	end
 	if not tInfo["dead"] then
+        -- Avoid the calculation to be disturbed by the exception data 
 		if tInfo["health"] ~= 0 then
 			tNewHealth = tInfo["health"] + aDelta;
 		else 
@@ -42,7 +44,7 @@ local function VUHDO_addUnitHealth(aUnit, aDelta)
 		elseif tNewHealth > tInfo["healthmax"]  then tNewHealth = tInfo["healthmax"];end
 		
 		tInfo["loghealth"] = tNewHealth;
-		tInfo["isUpdated"] = 1;
+		tInfo["updateTime"] = GetTime();
 		if tInfo["health"] ~= tNewHealth then
 			VUHDO_updateHealth(aUnit, 12); -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
 		end
@@ -61,6 +63,8 @@ local function VUHDO_getTargetHealthImpact(aMsg, aMsg1, aMsg2, aMsg4)
 			return aMsg4;
 		elseif "DAMAGE" == tSuf or "DAMAGE" == tSpec then 
 			return -aMsg4; 
+		elseif "ENERGIZE" == tSuf then
+			return -10001;
 		end
 	elseif "DAMAGE" == tSuf then
 		if "SWING" == tPre then	
@@ -120,7 +124,6 @@ function VUHDO_parseCombatLogEvent(aMsg, aDstGUID, aMsg1, aMsg2, aMsg4)
 		if tUnit == sCurrentTarget then	VUHDO_addUnitHealth("target", tImpact);	end
 		if tUnit == sCurrentFocus then VUHDO_addUnitHealth("focus", tImpact); end
 	end
-
 end
 
 

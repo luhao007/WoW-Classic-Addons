@@ -57,6 +57,8 @@ L["|cffeda55fMiddle-Click|r to toggle the minimap icon on or off."] = "|cffeda55
 --[[Translation missing --]]
 L["|cffeda55fRight-Click|r to toggle performance profiling window."] = "|cffeda55fRight-Click|r to toggle performance profiling window."
 L["|cffeda55fShift-Click|r to pause addon execution."] = "|cffeda55f쉬프트-클릭|r 으로 애드온 실행을 일시 중지합니다."
+--[[Translation missing --]]
+L["|cFFFF0000Not|r Player Name/Realm"] = "|cFFFF0000Not|r Player Name/Realm"
 L["|cFFffcc00Extra Options:|r %s"] = "|cFFffcc00추가 옵션:|r %s"
 L["|cFFffcc00Extra Options:|r None"] = "|cFFffcc00추가 옵션:|r 없음"
 L["10 Man Raid"] = "10인 공격대"
@@ -175,8 +177,6 @@ L["BigWigs Addon"] = "BigWigs 애드온"
 L["BigWigs Message"] = "BigWigs 메시지"
 L["BigWigs Timer"] = "BigWigs 타이머"
 L["Black Wing Lair"] = "검은날개 둥지"
---[[Translation missing --]]
-L["Blacklisted Player Name/Realm"] = "Blacklisted Player Name/Realm"
 L["Blizzard Combat Text"] = "블리자드 전투 문자"
 L["Block"] = "방어함"
 L["Block (%)"] = "막음(%)"

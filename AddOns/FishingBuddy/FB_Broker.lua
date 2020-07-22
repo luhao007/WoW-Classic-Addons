@@ -66,7 +66,7 @@ function dataobj:OnTooltipShow()
 			hint = FBConstants.TOOLTIP_HINTTOGGLE
 		end
 	else
-		local _, fishing = FL:GetFishingSkillInfo()
+		local _, fishing = FL:GetFishingSpellInfo()
 		hint = CHAT_MSG_SKILL.." ("..fishing..")"
 	end
 	self:AddLine(FL:Green(hint))

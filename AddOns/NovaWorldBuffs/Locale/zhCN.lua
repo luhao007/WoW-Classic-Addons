@@ -545,6 +545,6 @@ L["layerHasBeenDisabled"] = "位面 %s已禁用,此位面仍在数据库中,但�
 L["layerHasBeenEnabled"] = "位面 %s已启用,此位面会重新显示计时器和位面计数.";
 L["layerDoesNotExist"] = "位面ID %s 在数据库中不存在.";
 L["enableLayerButton"] = "启用位面";
-L["disableLayerButton"] = "紧用位面";
+L["disableLayerButton"] = "禁用位面";
 L["enableLayerButtonTooltip"] = "单击以重新启用此位面.\n此位面将被重新放回计时器和位面计算中.";
 L["disableLayerButtonTooltip"] = "在服务器重启后,单击以禁用此位面.\n插件将忽略此位面并在稍后将其删除.";

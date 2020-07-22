@@ -1,7 +1,7 @@
 ## Interface: 11305
 ## Author: Dennis-Florian Herr (dfherr)
-## Version: 2.22
-## OptionalDeps: LibStub, AceGUI-3.0, AceConfig-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
+## Version: 2.23
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ac3, LibSharedMedia-3.0
 ## SavedVariables: ThreatClassic2DB
 ## SavedVariablesPerCharacter: TC2_Options
 
@@ -11,7 +11,7 @@
 ## Notes-zhCN: 统计目标仇恨，需队友也开启同样插件才能取得仇恨数据
 
 ## X-Curse-Project-ID: 355497
-## X-Embeds: LibStub, Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
+## X-Embeds: LibStub, CallbackHandler-1.0, AceAddon-3.0, AceComm-3.0, AceConfig-3.0, AceDB-3.0, AceDBOptions-3.0, AceGUI-3.0, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0
 ## X-Category: Combat
 ## X-License: MIT
 ## X-Website: https://github.com/dfherr/ThreatClassic2

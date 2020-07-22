@@ -215,7 +215,7 @@ Inst1Quest11name2 = "Piedracanto de Forjaz"
 
 --Quest 12 Alliance
 Inst1Quest12 = "12. Armonización con el Núcleo" -- 7848
-Inst1Quest12_Aim = "Acércate al portal de entrada del Núcleo de Magma en las Profundidades de Roca Negra y recoge un fragmento del Núcleo. Llévaselo a Lothos Levantagrietas a la Montaña Roca Negra."
+Inst1Quest12_Aim = "Entra en el Núcleo de Magma de las Profundidades de Roca Negra y recoge un fragmento de núcleo. Llévaselo a Lothos Levantagrietas a la Montaña Roca Negra."
 Inst1Quest12_Location = "Lothos Levantagrietas (Montaña Roca Negra; "..YELLOW.."[E] en el mapa de la Entrada"..WHITE..")"
 Inst1Quest12_Note = "Después de completar la misión, puedes usar el portal justo al lado de Lothos Levantagrietas para entrar el Núcleo de Magma.\nEncuentras el Fragmento del Núcleo cerca de "..YELLOW.."[23]"..WHITE.."."
 Inst1Quest12_Prequest = "Ninguno"
@@ -565,7 +565,7 @@ Inst3QAH = "14 Misiones"
 Inst3Quest1 = "1. Las últimas tablillas" -- 4788
 Inst3Quest1_Aim = "Llévale la quinta y sexta tablillas Mosh'aru al prospector Ferrobota, que está en Tanaris."
 Inst3Quest1_Location = "Prospector Ferrobota (Tanaris - Puerto Bonvapor; "..YELLOW.."66,23"..WHITE..")"
-Inst3Quest1_Note = "Encuentras las tablillas cerca de "..YELLOW.."[7]"..WHITE.." y "..YELLOW.."[8]"..WHITE..".\nLas recompensas son para la misión 'La confrontación con Yeh'kinya'. Encuentras a Yeh'kinya cerca del Prospector Ferrobota."
+Inst3Quest1_Note = "Encuentras las tablillas cerca de "..YELLOW.."[7]"..WHITE.." y "..YELLOW.."[9]"..WHITE..".\nLas recompensas son para la misión 'La confrontación con Yeh'kinya'. Encuentras a Yeh'kinya cerca del Prospector Ferrobota."
 Inst3Quest1_Prequest = "Las tablillas perdidas Mosh'aru" -- 5065
 Inst3Quest1_Folgequest = "La confrontación con Yeh'kinya" -- 8181
 -- No Rewards for this quest
@@ -576,7 +576,7 @@ Inst3Quest1name2 = "Manteo Hakkari andrajoso"
 Inst3Quest2 = "2. Las mascotas exóticas de Kibler" -- 4729
 Inst3Quest2_Aim = "Viaja hasta la Cumbre de Roca Negra y encuentra cachorros de huargo Hacha de Sangre. Usa la jaula para transportar a esas feroces fierecillas. Llévale a Kibler 1 cachorro de huargo enjaulado."
 Inst3Quest2_Location = "Kibler (Las Estepas Ardientes - Peñasco Llamarada; "..YELLOW.."65,22"..WHITE..")"
-Inst3Quest2_Note = "Encuentras el cachorro de huargo en "..YELLOW.."[16]"..WHITE.."."
+Inst3Quest2_Note = "Encuentras el cachorro de huargo en "..YELLOW.."[17]"..WHITE.."."
 Inst3Quest2_Prequest = "Ninguno"
 Inst3Quest2_Folgequest = "Ninguno"
 --
@@ -586,7 +586,7 @@ Inst3Quest2name1 = "Lupo porteador"
 Inst3Quest3 = "3. Bestia amaestrada" -- 4862
 Inst3Quest3_Aim = "Viaja a la Cumbre de Roca Negra y reúne 15 huevos de araña de la cumbre para Kibler."
 Inst3Quest3_Location = "Kibler (Las Estepas Ardientes - Peñasco Llamarada; "..YELLOW.."65,22"..WHITE..")"
-Inst3Quest3_Note = "Encuentras los huevos de araña cerca de "..YELLOW.."[11]"..WHITE.."."
+Inst3Quest3_Note = "Encuentras los huevos de araña cerca de "..YELLOW.."[13]"..WHITE.."."
 Inst3Quest3_Prequest = "Ninguno"
 Inst3Quest3_Folgequest = "Ninguno"
 --
@@ -596,7 +596,7 @@ Inst3Quest3name1 = "Portador de Telebrasada"
 Inst3Quest4 = "4. La leche de la madre" -- 4866
 Inst3Quest4_Aim = "En el corazón de la Cumbre de Roca Negra encontrarás a la madre Telabrasada. Provócala para que te envenene. Lo más seguro es que tendrás que matarla también. Vuelve junto a John Andrajoso cuando estés envenenado para que pueda extraer el veneno de ti."
 Inst3Quest4_Location = "John Andrajoso (Las Estepas Ardientes - Peñasco Llamarada; "..YELLOW.."65,23"..WHITE..")"
-Inst3Quest4_Note = "Madre Telebrasada está en "..YELLOW.."[11]"..WHITE..". El efecto de veneno atrapa los jugadores cercanos también. Si está quitado o disipado, fallarás la misión."
+Inst3Quest4_Note = "Madre Telebrasada está en "..YELLOW.."[13]"..WHITE..". El efecto de veneno atrapa los jugadores cercanos también. Si está quitado o disipado, fallarás la misión."
 Inst3Quest4_Prequest = "Ninguno"
 Inst3Quest4_Folgequest = "Ninguno"
 --
@@ -606,7 +606,7 @@ Inst3Quest4name1 = "Copa interminable de John Andrajoso"
 Inst3Quest5 = "5. Acaba con el origen de la amenaza" -- 4701
 Inst3Quest5_Aim = "Viaja hasta la Cumbre de Roca Negra y destruye el origen de la amenaza del huargo. Cuando dejaste a Helendis, gritó un nombre: Halycon. Es la palabra que los orcos usan para referirse al huargo."
 Inst3Quest5_Location = "Helendis Rivacuerno (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."5,47"..WHITE..")"
-Inst3Quest5_Note = "Halycon está en "..YELLOW.."[16]"..WHITE.."."
+Inst3Quest5_Note = "Halycon está en "..YELLOW.."[17]"..WHITE.."."
 Inst3Quest5_Prequest = "Ninguno"
 Inst3Quest5_Folgequest = "Ninguno"
 --
@@ -618,7 +618,7 @@ Inst3Quest5name3 = "Coraza de Luna de jade"
 Inst3Quest6 = "6. Urok Doomhowl" -- 4867
 Inst3Quest6_Aim = "Lee el pergamino de Warosh. Llévale el mojo de Warosh a Warosh."
 Inst3Quest6_Location = "Warosh (Cumbre de Roca Negra Inferior; "..YELLOW.."[2]"..WHITE..")"
-Inst3Quest6_Note = "Invoca y mata a Urok Aullapocalipsis en "..YELLOW.."[13]"..WHITE.." para obtener el Mojo de Warosh. Para invocarlo, necesitas la Pica férrea y la Cabeza de Omokk en "..YELLOW.."[6]"..WHITE..". La Pica férrea está en "..YELLOW.."[4]"..WHITE..". Durante la invocación, aparecerán oleadas de ogros antes de que aparezca Urok Aullasino. Usa la Pica férrea para dañar a los ogros."
+Inst3Quest6_Note = "Invoca y mata a Urok Aullapocalipsis en "..YELLOW.."[15]"..WHITE.." para obtener el Mojo de Warosh. Para invocarlo, necesitas la Pica férrea y la Cabeza de Omokk en "..YELLOW.."[5]"..WHITE..". La Pica férrea está en "..YELLOW.."[3]"..WHITE..". Durante la invocación, aparecerán oleadas de ogros antes de que aparezca Urok Aullasino. Usa la Pica férrea para dañar a los ogros."
 Inst3Quest6_Prequest = "Ninguno"
 Inst3Quest6_Folgequest = "Ninguno"
 --
@@ -627,17 +627,17 @@ Inst3Quest6name1 = "Talismán prismático"
 --Quest 7 Alliance
 Inst3Quest7 = "7. Las pertenencias de Bijou" -- 5001
 Inst3Quest7_Aim = "Encuentra las pertenencias de Bijou y devuélveselas. ¡Suerte!"
-Inst3Quest7_Location = "Bijou (Cumbre de Roca Negra Inferior; "..YELLOW.."[3]"..WHITE..")"
-Inst3Quest7_Note = "Encuentras las pertenencias de Bijou a la ruta a Madre Telebrasadas en "..YELLOW.."[11]"..WHITE..".\nMariscal Maxwell está en (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,58"..WHITE..")."
+Inst3Quest7_Location = "Bijou (Cumbre de Roca Negra Inferior; "..YELLOW.."[8]"..WHITE..")"
+Inst3Quest7_Note = "Encuentras las pertenencias de Bijou a la ruta a Madre Telebrasadas en "..YELLOW.."[10]"..WHITE..".\nMariscal Maxwell está en (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,58"..WHITE..")."
 Inst3Quest7_Prequest = "Ninguno"
 Inst3Quest7_Folgequest = "Un mensaje para Maxwell" -- 5002
 -- No Rewards for this quest
 
 --Quest 8 Alliance
 Inst3Quest8 = "8. La misión de Maxwell" -- 5081
-Inst3Quest8_Aim = "Viaja a la Cumbre de Roca Negra y acaba con el maestro de guerra Voone, el alto señor Omokk y el señor supremo Vermiothalak."
+Inst3Quest8_Aim = "Viaja a la Cumbre de Roca Negra y destruye al maestro de guerra Voone, al alto señor Omokk y al Señor Supremo Vermiothalak."
 Inst3Quest8_Location = "Mariscal Maxwell (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,58"..WHITE..")"
-Inst3Quest8_Note = "Encuentras al Maestro de guerra Voone en "..YELLOW.."[8]"..WHITE..", Alto señor Omokk en "..YELLOW.."[6]"..WHITE.." y Señor supremo Vermiothalak en "..YELLOW.."[17]"..WHITE.."."
+Inst3Quest8_Note = "Encuentras al Maestro de guerra Voone en "..YELLOW.."[9]"..WHITE..", Alto señor Omokk en "..YELLOW.."[5]"..WHITE.." y Señor supremo Vermiothalak en "..YELLOW.."[19]"..WHITE.."."
 Inst3Quest8_Prequest = "Un mensaje para Maxwell" -- 5002
 Inst3Quest8_Folgequest = "Ninguno"
 --
@@ -648,18 +648,17 @@ Inst3Quest8name4 = "Playa de Vosh'gajin"
 Inst3Quest8name5 = "Mandiletes de maña de Voone"
 
 --Quest 9 Alliance
-Inst3Quest9 = "9. El sello de ascensión" -- 4742
 Inst3Quest9_Aim = "Encuentra las 3 gemas del mando: La gema de Espina Ahumada, la gema de Cumbrerroca y la gema de Hacha de Sangre. Llévaselas, junto con el sello de ascensión sin adornar a Vaelan."
 Inst3Quest9_Location = "Vaelan (Cumbre de Roca Negra Inferior; "..YELLOW.."[1]"..WHITE..")"
-Inst3Quest9_Note = "Consigues la Gema de Cumbrerroca del Alto señor Omokk en "..YELLOW.."[6]"..WHITE..", la Gema de Espina Ahumada del Maestro de guerra Voone en "..YELLOW.."[8]"..WHITE.." y la Gema de Hacha de Sangre del Señor supremo Vermiothalak en "..YELLOW.."[17]"..WHITE..". Despoja a cualquier enemigo en la Cumbre de Roca Negra Inferior para obtener el Sello de ascención sin adornar. Obtienes la llave para entrar la Cumbre de Roca Negra Superior si completas la cadena de misiones."
+Inst3Quest9_Note = "Consigues la Gema de Cumbrerroca del Alto señor Omokk en "..YELLOW.."[5]"..WHITE..", la Gema de Espina Ahumada del Maestro de guerra Voone en "..YELLOW.."[9]"..WHITE.." y la Gema de Hacha de Sangre del Señor supremo Vermiothalak en "..YELLOW.."[19]"..WHITE..". Despoja a cualquier enemigo en la Cumbre de Roca Negra Inferior para obtener el Sello de ascención sin adornar. Obtienes la llave para entrar la Cumbre de Roca Negra Superior si completas la cadena de misiones."
 Inst3Quest9_Prequest = "Ninguno"
-Inst3Quest9_Folgequest = "El sello de ascensión" -- 4743
+Inst3Quest9_Folgequest = "El Sello de Ascensión" -- 4743
 -- No Rewards for this quest
 
 --Quest 10 Alliance
 Inst3Quest10 = "10. Orden del general Drakkisath" -- 5089
 Inst3Quest10_Aim = "Llévale la orden del general Drakkisath al mariscal Maxwell en Las Estepas Ardientes."
-Inst3Quest10_Location = "Orden del general Drakkisath (botín del Señor supremo Vermiothalak; "..YELLOW.."[17]"..WHITE..")"
+Inst3Quest10_Location = "Orden del general Drakkisath (botín del Señor supremo Vermiothalak; "..YELLOW.."[19]"..WHITE..")"
 Inst3Quest10_Note = "Mariscal Maxwell está en Las Estepas Ardientes - Vigilia de Morgan; ("..YELLOW.."84,58"..WHITE..")."
 Inst3Quest10_Prequest = "Ninguno"
 Inst3Quest10_Folgequest = "Muerte al general Drakkisath ("..YELLOW.."Cumbre de Roca Negra Superior"..WHITE..")" -- 5102
@@ -669,7 +668,7 @@ Inst3Quest10_Folgequest = "Muerte al general Drakkisath ("..YELLOW.."Cumbre de R
 Inst3Quest11 = "11. La parte izquierda del amuleto de Lord Valthalak" -- 8966
 Inst3Quest11_Aim = "Usa el Blandón de Señalización para invocar al espíritu de Mor Pezuña Gris y mátalo. Vuelve junto a Bodley en el interior de la Montaña Roca Negra con la parte izquierda del amuleto de Lord Valthalak y el Blandón de Señalización."
 Inst3Quest11_Location = "Bodley (Montaña Roca Negra; "..YELLOW.."[D] en el mapa de la Entrada"..WHITE..")"
-Inst3Quest11_Note = "Necesitas el Detector de fantasmas extradimensional para ver a Bodley. Lo consigues de la misión 'Buscando a Anthion'.\n\nInvoca a Mor Pezuña Gris en "..YELLOW.."[8]"..WHITE.."."
+Inst3Quest11_Note = "Necesitas el Detector de fantasmas extradimensional para ver a Bodley. Lo consigues de la misión 'Buscando a Anthion'.\n\nInvoca a Mor Pezuña Gris en "..YELLOW.."[9]"..WHITE.."."
 Inst3Quest11_Prequest = "Componentes importantes" -- 8962
 Inst3Quest11_Folgequest = "En tu destino veo la Isla de Alcaz..." -- 8970
 -- No Rewards for this quest
@@ -678,7 +677,7 @@ Inst3Quest11_Folgequest = "En tu destino veo la Isla de Alcaz..." -- 8970
 Inst3Quest12 = "12. La parte derecha del amuleto de Lord Valthalak" -- 8989
 Inst3Quest12_Aim = "Usa el Blandón de Señalización para invocar al espíritu de Mor Pezuña Gris y mátalo. Vuelve junto a Bodley en el interior de la Montaña Roca Negra con el amuleto de Lord Valthalak recompuesto y el Blandón de Señalización."
 Inst3Quest12_Location = "Bodley (Montaña Roca Negra; "..YELLOW.."[D] en el mapa de la Entrada"..WHITE..")"
-Inst3Quest12_Note = "Necesitas el Detector de fantasmas extradimensional para ver a Bodley. Lo consigues de la misión 'Buscando a Anthion'.\n\nInvoca a Mor Pezuña Gris en "..YELLOW.."[8]"..WHITE.."."
+Inst3Quest12_Note = "Necesitas el Detector de fantasmas extradimensional para ver a Bodley. Lo consigues de la misión 'Buscando a Anthion'.\n\nInvoca a Mor Pezuña Gris en "..YELLOW.."[9]"..WHITE.."."
 Inst3Quest12_Prequest = "Más componentes importantes" -- 8986
 Inst3Quest12_Folgequest = "Últimos preparativos ("..YELLOW.."Cumbre de Roca Negra Superior"..WHITE..")" -- 8994
 -- No Rewards for this quest
@@ -696,8 +695,8 @@ Inst3Quest13name1 = "Diseño: filo del Alba"
 --Quest 14 Alliance
 Inst3Quest14 = "14. Muerte abrasadora" -- 5103
 Inst3Quest14_Aim = "Alguien en este mundo debe de saber qué hacer con estos guanteletes. ¡Suerte!"
-Inst3Quest14_Location = "Restos humanos (Cumbre de Roca Negra Inferior; "..YELLOW.."[9]"..WHITE..")"
-Inst3Quest14_Note = "Misión para Herreros. Coge los Guanteletes de placas sin templar cerca de los restos humanos en "..YELLOW.."[9]"..WHITE..". Devuélveselos a Malyfous Martilloscuro (Cuna del Invierno - Vista Eterna; "..YELLOW.."61,39"..WHITE.."). Las recompensas son para la misión siguiente."
+Inst3Quest14_Location = "Restos humanos (Cumbre de Roca Negra Inferior; "..YELLOW.."[11]"..WHITE..")"
+Inst3Quest14_Note = "Misión para Herreros. Coge los Guanteletes de placas sin templar cerca de los restos humanos en "..YELLOW.."[11]"..WHITE..". Devuélveselos a Malyfous Martilloscuro (Cuna del Invierno - Vista Eterna; "..YELLOW.."61,39"..WHITE.."). Las recompensas son para la misión siguiente."
 Inst3Quest14_Prequest = "Ninguno"
 Inst3Quest14_Folgequest = "Guanteletes de placas ígneas" -- 5124
 --
@@ -772,7 +771,7 @@ Inst3Quest6name1_HORDE = Inst3Quest6name1
 Inst3Quest7_HORDE = "7. La espía Bijou" -- 4981
 Inst3Quest7_HORDE_Aim = "Viaja hasta la Cumbre de Roca Negra y averigua qué le ha ocurrido a Bijou."
 Inst3Quest7_HORDE_Location = "Lexlort (Tierras Inhóspitas - Kargath; "..YELLOW.."5,47"..WHITE..")"
-Inst3Quest7_HORDE_Note = "Encuentras a Bijou en "..YELLOW.."[3]"..WHITE.."."
+Inst3Quest7_HORDE_Note = "Encuentras a Bijou en "..YELLOW.."[8]"..WHITE.."."
 Inst3Quest7_HORDE_Prequest = "Ninguno"
 Inst3Quest7_HORDE_Folgequest = "Las pertenencias de Bijou" -- 4982
 -- No Rewards for this quest
@@ -780,8 +779,8 @@ Inst3Quest7_HORDE_Folgequest = "Las pertenencias de Bijou" -- 4982
 --Quest 8 Horde
 Inst3Quest8_HORDE = "8. Las pertenencias de Bijou" -- 4982
 Inst3Quest8_HORDE_Aim = "Encuentra las pertenencias de Bijou y devuélveselas. Recuerdas que ella mencionó haberlas ocultado en la planta baja de la ciudad."
-Inst3Quest8_HORDE_Location = "Bijou (Cumbre de Roca Negra Inferior; "..YELLOW.."[3]"..WHITE..")"
-Inst3Quest8_HORDE_Note = "Encuentras las pertenencias de Bijou a la ruta a Madre Telebrasadas en "..YELLOW.."[11]"..WHITE..".\nLas recompensas son para la misión 'El informe de reconocimiento de Bijou'."
+Inst3Quest8_HORDE_Location = "Bijou (Cumbre de Roca Negra Inferior; "..YELLOW.."[8]"..WHITE..")"
+Inst3Quest8_HORDE_Note = "Encuentras las pertenencias de Bijou a la ruta a Madre Telebrasadas en "..YELLOW.."[10]"..WHITE..".\nLas recompensas son para la misión 'El informe de reconocimiento de Bijou'."
 Inst3Quest8_HORDE_Prequest = "La espía Bijou" -- 4981
 Inst3Quest8_HORDE_Folgequest = "El informe de reconocimiento de Bijou" -- 4983
 --
@@ -801,7 +800,7 @@ Inst3Quest9_HORDE_Folgequest = Inst3Quest9_Folgequest
 Inst3Quest10_HORDE = "10. La orden del Señor de la Guerra" -- 4903
 Inst3Quest10_HORDE_Aim = "Mata al alto señor Omokk, al maestro de guerra Voone y al señor supremo Vermiothalak. Recupera importantes documentos Roca Negra. Vuelve junto al señor de la guerra Dientegore en Kargath cuando hayas cumplido la misión."
 Inst3Quest10_HORDE_Location = "Señor de la guerra Dientegore (Tierras Inhóspitas - Kargath; "..YELLOW.."65,22"..WHITE..")"
-Inst3Quest10_HORDE_Note = "Es la misión requisita para la cadena de misiones para la armonización con Onyxia.\nEncuentras al Maestro de guerra Voone en "..YELLOW.."[6]"..WHITE..", Alto señor Omokk en "..YELLOW.."[8]"..WHITE.." y Señor supremo Vermiothalak en "..YELLOW.."[17]"..WHITE..". Los Importantes documentos de Roca Negra aparece cerca de uno de los jefes."
+Inst3Quest10_HORDE_Note = "Es la misión requisita para la cadena de misiones para la armonización con Onyxia.\nEncuentras al Maestro de guerra Voone en "..YELLOW.."[9]"..WHITE..", Alto señor Omokk en "..YELLOW.."[5]"..WHITE.." y Señor supremo Vermiothalak en "..YELLOW.."[19]"..WHITE..". Los Importantes documentos de Roca Negra aparece cerca de uno de los jefes."
 Inst3Quest10_HORDE_Prequest = "Ninguno"
 Inst3Quest10_HORDE_Folgequest = "La sabiduría de Eitrigg -> ¡Por la Horda! ("..YELLOW.."Cumbre de Roca Negra Superior"..WHITE..")" -- 4941 -> 4974
 --
@@ -861,8 +860,8 @@ Inst4QAH = "13 Misiones"
 --Quest 1 Alliance
 Inst4Quest1 = "1. El Protectorado de la matrona" -- 5160
 Inst4Quest1_Aim = "Viaja hasta la Cuna del Invierno y encuentra a Haleh. Dale la escama de Awbee."
-Inst4Quest1_Location = "Awbee (Cumbre de Roca Negra Superior; "..YELLOW.."[6]"..WHITE..")"
-Inst4Quest1_Note = "Encuentras a Awbee en la habitación después de la Arena en "..YELLOW.."[6]"..WHITE..".\nHaleh está en la Cuna del Invierno ("..YELLOW.."54,51"..WHITE.."). Usa el portal al fin de la cueva para irte a ella."
+Inst4Quest1_Location = "Awbee (Cumbre de Roca Negra Superior; "..YELLOW.."[7]"..WHITE..")"
+Inst4Quest1_Note = "Encuentras a Awbee en la habitación después de la Arena en "..YELLOW.."[7]"..WHITE..".\nHaleh está en la Cuna del Invierno ("..YELLOW.."54,51"..WHITE.."). Usa el portal al fin de la cueva para irte a ella."
 Inst4Quest1_Prequest = "Ninguno"
 Inst4Quest1_Folgequest = "La cólera del Vuelo Azul" -- 5161
 -- No Rewards for this quest
@@ -870,7 +869,7 @@ Inst4Quest1_Folgequest = "La cólera del Vuelo Azul" -- 5161
 --Quest 2 Alliance
 Inst4Quest2 = "2. ¡Finkle Unicornín, a tu servicio!" -- 5047
 Inst4Quest2_Aim = "Habla con Malyfous Martilloscuro en Vista Eterna."
-Inst4Quest2_Location = "Finkle Einhorn (Cumbre de Roca Negra Superior; "..YELLOW.."[7]"..WHITE..")"
+Inst4Quest2_Location = "Finkle Einhorn (Cumbre de Roca Negra Superior; "..YELLOW.."[8]"..WHITE..")"
 Inst4Quest2_Note = "Finkle Einhorn aparece después de desollar a La Bestia. Encuentras a Malyfous Martilloscuro en (Cuna del Invierno - Vista Eterna; "..YELLOW.."61,38"..WHITE..")."
 Inst4Quest2_Prequest = "Ninguno"
 Inst4Quest2_Folgequest = "Leotardos de Arcana, Almete del Sabio Escarlata, y Coraza Sed de Sangre" -- 5063, 5067, 5068
@@ -878,7 +877,7 @@ Inst4Quest2_Folgequest = "Leotardos de Arcana, Almete del Sabio Escarlata, y Cor
 
 --Quest 3 Alliance
 Inst4Quest3 = "3. Un huevo congelado" -- 4734
-Inst4Quest3_Aim = "Usa el prototipo de ovosciloscopio sobre un huevo de El Grajero, en la Cumbre de Roca Negra."
+Inst4Quest3_Aim = "Usa el prototipo de ovosciloscopio sobre un huevo de El Grajero."
 Inst4Quest3_Location = "Tinkee Vaporio (Las Estepas Ardientes - Peñasco Llamarada; "..YELLOW.."65,24"..WHITE..")"
 Inst4Quest3_Note = "Encuentras los huevos en "..YELLOW.."[2]"..WHITE.."."
 Inst4Quest3_Prequest = "Esencia de cría -> Tinkee Vaporio" -- 4726 -> 4907
@@ -900,7 +899,7 @@ Inst4Quest4_Folgequest = "El Núcleo de Magma" -- 6822
 Inst4Quest5 = "5. Muerte al general Drakkisath" -- 5102
 Inst4Quest5_Aim = "Viaja hasta la Cumbre de Roca Negra y mata al general Drakkisath."
 Inst4Quest5_Location = "Mariscal Maxwell (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."82,68"..WHITE..")"
-Inst4Quest5_Note = "Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.."."
+Inst4Quest5_Note = "Encuentras al General Drakkisath en "..YELLOW.."[9]"..WHITE.."."
 Inst4Quest5_Prequest = "Orden del general Drakkisath ("..YELLOW.."Cumbre de Roca Negra Inferior"..WHITE..")" -- 5089
 Inst4Quest5_Folgequest = "Ninguno"
 --
@@ -912,7 +911,7 @@ Inst4Quest5name3 = "Amplitud de Puño Negro"
 Inst4Quest6 = "6. El Broche de Equipasino" -- 4764
 Inst4Quest6_Aim = "Llévale el broche de Equipasino a Mayara Alasol en Las Estepas Ardientes."
 Inst4Quest6_Location = "Mayara Alasol (Las Estepas Ardientes - Vigilia de Morgan; "..YELLOW.."84,69"..WHITE..")"
-Inst4Quest6_Note = "Obtienes la misión requisita de Conde Remington Bonacresta (Ventormenta - Castillo de Ventormenta; "..YELLOW.."74,30"..WHITE..").\n\nEl broche de Equipasino está en "..YELLOW.."[2]"..WHITE.." dentro de un cofre."
+Inst4Quest6_Note = "Obtienes la misión requisita de Conde Remington Bonacresta (Ventormenta - Castillo de Ventormenta; "..YELLOW.."74,30"..WHITE..").\n\nEl broche de Equipasino está en "..YELLOW.."[3]"..WHITE.." dentro de un cofre."
 Inst4Quest6_Prequest = "Mayara Alasol" -- 4766
 Inst4Quest6_Folgequest = "Entrega a Bonacresta" -- 4765
 --
@@ -922,8 +921,8 @@ Inst4Quest6name2 = "Guardabrazos Golpeguiño"
 --Quest 7 Alliance
 Inst4Quest7 = "7. Orden de Puño Negro" -- 7761
 Inst4Quest7_Aim = "Según la carta, el general Drakkisath guarda la enseña. Quizás deberías investigarlo."
-Inst4Quest7_Location = "Orden de Puño Negro (botín del Intendente del Escudo del Estigma; "..YELLOW.."[1] en el mapa de la Entrada"..WHITE..")"
-Inst4Quest7_Note = "Es la misión para la armonización con Guarida Alanegra. El Intendente del Escudo del Estigma está a la derecha justo antes del portal a la Cumbre de Roca Negra.\n\nGeneral Drakkisath está en "..YELLOW.."[8]"..WHITE..". El orbe está detrás de él."
+Inst4Quest7_Location = "Orden de Puño Negro (botín del Intendente del Escudo del Estigma; "..YELLOW.."[7] en el mapa de la Entrada"..WHITE..")"
+Inst4Quest7_Note = "Es la misión para la armonización con Guarida Alanegra. El Intendente del Escudo del Estigma está a la derecha justo antes del portal a la Cumbre de Roca Negra.\n\nGeneral Drakkisath está en "..YELLOW.."[9]"..WHITE..". El orbe está detrás de él."
 Inst4Quest7_Prequest = "Ninguno"
 Inst4Quest7_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -952,7 +951,7 @@ Inst4Quest9name2 = "Blandón de Invocación: manual"
 Inst4Quest10 = "10. La forja demoníaca" -- 5127
 Inst4Quest10_Aim = "Viaja a la Cumbre de Roca Negra y encuentra a Goraluk Yunquegrieta. Mátale y utiliza el Pica manchada de sangre sobre su cadáver. Cuando hayas absorbido su alma, la pica estará manchada de alma."
 Inst4Quest10_Location = "Lorax (Cuna del Invierno; "..YELLOW.."64,74"..WHITE..")"
-Inst4Quest10_Note = "Misión para Herreros. Goraluk Yunquegrieta está en "..YELLOW.."[4]"..WHITE.."."
+Inst4Quest10_Note = "Misión para Herreros. Goraluk Yunquegrieta está en "..YELLOW.."[5]"..WHITE.."."
 Inst4Quest10_Prequest = "Ninguno"
 Inst4Quest10_Folgequest = "Ninguno"
 --
@@ -974,7 +973,7 @@ Inst4Quest11_Folgequest = "Leonid Barthalomew -> Gambito del Alba ("..YELLOW.."S
 Inst4Quest12 = "12. Amuleto Pirodraco" -- 6502
 Inst4Quest12_Aim = "Tienes que recuperar la sangre de dragón Negro Campeón, la tiene el general Drakkisath. Puedes encontrar a Drakkisath en su sala del trono, tras las Salas de la Ascensión, en la Cumbre de Roca Negra."
 Inst4Quest12_Location = "Haleh (Cuna del Invierno; "..YELLOW.."54,51"..WHITE..")"
-Inst4Quest12_Note = "Es la parte final para la cadena de misiones para la armonización con Onyxia por la Alianza. Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.."."
+Inst4Quest12_Note = "Es la parte final para la cadena de misiones para la armonización con Onyxia por la Alianza. Encuentras al General Drakkisath en "..YELLOW.."[9]"..WHITE.."."
 Inst4Quest12_Prequest = "El Ojo del Dragón" -- 6501
 Inst4Quest12_Folgequest = "Ninguno"
 --
@@ -1031,9 +1030,9 @@ Inst4Quest5name2_HORDE = "Guardabrazos golpeguiño"
 
 --Quest 6 Horde
 Inst4Quest6_HORDE = "6. ¡Por la Horda!" -- 4974
-Inst4Quest6_HORDE_Aim = "Ve a Cumbre de Roca Negra para matar al Jefe de Guerra Rend Puño Negro. Lleva su cabeza a Orgrimmar."
+Inst4Quest6_HORDE_Aim = "Ve a Cumbre de Roca Negra para matar al Jefe de Guerra Rend Puño Negro. Llévale su cabeza a Orgrimmar."
 Inst4Quest6_HORDE_Location = "Thrall (Orgrimmar; "..YELLOW.."31,38"..WHITE..")"
-Inst4Quest6_HORDE_Note = "Es la misión para la armonización con Onyxia. Encuentras al Jefe de Guerra Rend Puño Negro en "..YELLOW.."[5]"..WHITE.."."
+Inst4Quest6_HORDE_Note = "Es la misión para la armonización con Onyxia. Encuentras al Jefe de Guerra Desgarro Puño Negro en "..YELLOW.."[6]"..WHITE.."."
 Inst4Quest6_HORDE_Prequest = "La orden del Señor de la Guerra -> La sabiduría de Eitrigg" -- 4903 -> 4941
 Inst4Quest6_HORDE_Folgequest = "Lo que trae el viento" -- 6566
 --
@@ -1054,7 +1053,7 @@ Inst4Quest7_HORDE_Folgequest = "Brasaliza" -- 6570
 Inst4Quest8_HORDE = "8. La sangre de dragón Negro Campeón" -- 6602
 Inst4Quest8_HORDE_Aim = "Viaja a la Cumbre de Roca Negra y mata al general Drakkisath. Recoge su sangre y llévasela a Rexxar."
 Inst4Quest8_HORDE_Location = "Rexxar (Desolace - Aldea Cazasombras; "..YELLOW.."25,71"..WHITE..")"
-Inst4Quest8_HORDE_Note = "Es la parte final para la misión para la armonización con Onyxia. Encuentras al General Drakkisath en "..YELLOW.."[8]"..WHITE.."."
+Inst4Quest8_HORDE_Note = "Es la parte final para la misión para la armonización con Onyxia. Encuentras al General Drakkisath en "..YELLOW.."[9]"..WHITE.."."
 Inst4Quest8_HORDE_Prequest = "Brasaliza -> El ascenso" -- 6570 -> 6601
 Inst4Quest8_HORDE_Folgequest = "Ninguno"
 --
@@ -1596,12 +1595,12 @@ Inst10Quest2_HORDE_Folgequest = Inst7Quest1_HORDE_Folgequest
 --------------- INST11 - Scholomance ---------------
 
 Inst11Caption = "Scholomance"
-Inst11QAA = "11 Misiones"
+Inst11QAA = "12 Misiones"
 Inst11QAH = "12 Misiones"
 
 --Quest 1 Alliance
-Inst11Quest1 = "1. Crías de dragón apestadas" -- 5529
-Inst11Quest1_Aim = "Mata a 20 crías de dragón apestadas y ve a ver a Betina Bigglezink a la Capilla de la Esperanza de la Luz."
+Inst11Quest1 = "1. Crías infestadas" -- 5529
+Inst11Quest1_Aim = "Mata a 20 crías de dragón infectadas y ve a ver a Betina Bigglezink a la Capilla de la Esperanza de la Luz."
 Inst11Quest1_Location = "Betina Bigglezink (Tierras de la Peste del Este - Capilla de la Esperanza de la Luz; "..YELLOW.."81,59"..WHITE..")"
 Inst11Quest1_Note = "Las crías de dragón apestadas están en la situación antes de encontrar a Traquesangre."
 Inst11Quest1_Prequest = "Ninguno"
@@ -1613,7 +1612,7 @@ Inst11Quest2 = "2. Escama de dragón sana" -- 5582
 Inst11Quest2_Aim = "Lleva la escama de dragón sana a Betina Bigglezink a la Capilla de la Esperanza de la Luz, en las Tierras de la Peste del Este."
 Inst11Quest2_Location = "Escama de dragón sana (botín aleatorio de Scholomance)"
 Inst11Quest2_Note = "Despoja a las crías de dragón apestadas para obtener las Escamas de dragón sana. Encuentras a Betina Bigglezink en las Tierras de la Peste del Este - Capilla de la Esperanza de la Luz ("..YELLOW.."81,59"..WHITE..")."
-Inst11Quest2_Prequest = "Crías de dragón apestadas" -- 5529
+Inst11Quest2_Prequest = "Crías infestadas" -- 5529
 Inst11Quest2_Folgequest = "Ninguno"
 -- No Rewards for this quest
 
@@ -1649,7 +1648,7 @@ Inst11Quest5name2 = "Rosa de Penelope"
 Inst11Quest5name3 = "Canción de Mirah"
 
 --Quest 6 Alliance
-Inst11Quest6 = "6. El exánime, Ras Levescarcha" -- 5466
+Inst11Quest6 = "6. El Lich, Ras Levescarcha" -- 5466
 Inst11Quest6_Aim = "Busca a Ras Levescarcha en Scholomance. Cuando lo hayas encontrado utiliza el Libro de Memorias del Alma sobre su rostro no-muerto. Si consiguieras convertirlo en mortal, derrótale y recupera la Cabeza humana de Ras Levescarcha. Lleva la cabeza al magistrado Marduke."
 Inst11Quest6_Location = "Magistrado Marduke (Tierras de la Peste del Oeste - Castel Darrow; "..YELLOW.."70,73"..WHITE..")"
 Inst11Quest6_Note = "Encuentras a Ras Levescarcha en "..YELLOW.."[7]"..WHITE.."."
@@ -1989,7 +1988,7 @@ Inst14QAH = "19 Misiones"
 
 --Quest 1 Alliance
 Inst14Quest1 = "1. La carne no miente" -- 5212
-Inst14Quest1_Aim = "Recoge 10 muestras de carne apestada de Stratholme y vuelve con Betina Bigglezink. Sospechas que podrías obtener una muestra de cualquier criatura de Stratholme."
+Inst14Quest1_Aim = "Recoge 20 muestras de carne infestada de Stratholme y vuelve con Betina Bigglezink. Sospechas que podrías obtener una muestra de cualquier criatura de Stratholme."
 Inst14Quest1_Location = "Betina Bigglezink (Tierras de la Peste del Este - Capilla de la Esperanza de la Luz; "..YELLOW.."81,59"..WHITE..")"
 Inst14Quest1_Note = "Despoja a cualquier criatura para obtener una muestra de carne apestada."
 Inst14Quest1_Prequest = "Ninguno"
@@ -3273,8 +3272,8 @@ Inst19QAH = "5 Misiones"
 --Quest 1 Alliance
 Inst19Quest1 = "1. Una trampa rota" -- 1193
 Inst19Quest1_Aim = "Repara la trampa."
-Inst19Quest1_Location = "Una trampa rota (La Masacre; "..YELLOW.."Norte"..WHITE..")"
-Inst19Quest1_Note = "Misión repitible. Para reparar la trampa tienes que usar un [Trasto de torio] y un [Aceite de Escarcha]."
+Inst19Quest1_Location = "Trampa rota (La Masacre; "..YELLOW.."Norte"..WHITE..")"
+Inst19Quest1_Note = "Misión repetible. Para reparar la trampa tienes que usar un [Trasto de torio] y un [Aceite de Escarcha]."
 Inst19Quest1_Prequest = "Ninguno"
 Inst19Quest1_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -3283,7 +3282,7 @@ Inst19Quest1_Folgequest = "Ninguno"
 Inst19Quest2 = "2. El disfraz de ogro Gordok" -- 5518
 Inst19Quest2_Aim = "Lleva 4 madejas de paño rúnico, 8 cueros bastos, 2 hilos rúnicos y tanino de ogro a Knot Llavededo. Actualmente está encadenado en el interior del ala Gordok de La Masacre."
 Inst19Quest2_Location = "Knot Llavededo (La Masacre; "..YELLOW.."Norte, [4]"..WHITE..")"
-Inst19Quest2_Note = "Misión repitible. Consigues el Tanino de ogro cerca de "..YELLOW.."[4] (encima)"..WHITE.."."
+Inst19Quest2_Note = "Misión repetible. Consigues el Tanino de ogro cerca de "..YELLOW.."[4] (encima)"..WHITE.."."
 Inst19Quest2_Prequest = "Ninguno"
 Inst19Quest2_Folgequest = "Ninguno"
 --
@@ -3293,7 +3292,7 @@ Inst19Quest2name1 = "Taje ogro de Gordok"
 Inst19Quest3 = "3. ¡Libera a Knot!" -- 5525
 Inst19Quest3_Aim = "Colecciona una Llave de los grilletes de Gordok para Knot Llavededo."
 Inst19Quest3_Location = "Knot Llavededo (La Masacre; "..YELLOW.."Norte, [4]"..WHITE..")"
-Inst19Quest3_Note = "Misión repitible. Despoja a cualquier depositorio para obtener la llave."
+Inst19Quest3_Note = "Misión repetible. Despoja a cualquier depositorio para obtener la llave."
 Inst19Quest3_Prequest = "Ninguno"
 Inst19Quest3_Folgequest = "Ninguno"
 -- No Rewards for this quest
@@ -3394,7 +3393,7 @@ Inst20Quest1_Folgequest = "Ninguno"
 
 --Quest 2 Alliance
 Inst20Quest2 = "2. Locura interior" -- 7461
-Inst20Quest2_Aim = "Debes destruir a los guardianes que rodean las 5 torres que controlan la Prisión de Immol'thar. Una vez desactivadas las torres, el campo de fuerza que rodea a Immol'thar se disipará.\nEntra en la Prisión de Immol'thar y erradica al demonio que hace guardia en su interior. Por último, haz frente al príncipe Tortheldrin en El Athenaeum."
+Inst20Quest2_Aim = "Debes destruir a los guardianes que rodean las 5 torres que controlan la Prisión de Immol'thar. Una vez desactivadas las torres, el campo de fuerza que rodea a Immol'thar se disipará.\n\nEntra en la Prisión de Immol'thar y erradica al demonio que hace guardia en su interior. Por último, haz frente al príncipe Tortheldrin en El Athenaeum."
 Inst20Quest2_Location = "Ancestro Shen'dralar (La Masacre; "..YELLOW.."Oeste, [1] (encima)"..WHITE..")"
 Inst20Quest2_Note = "Las torres están marcadas así como "..BLUE.."[B]"..WHITE..". Immol'thar está en "..YELLOW.."[6]"..WHITE..", Príncipe Tortheldrin está en "..YELLOW.."[7]"..WHITE.."."
 Inst20Quest2_Prequest = "Ninguno"

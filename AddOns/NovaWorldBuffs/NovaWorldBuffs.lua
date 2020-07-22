@@ -41,8 +41,8 @@ function NWB:OnInitialize()
 	self:registerOtherAddons();
 	self:buildRealmFactionData();
 	self:setRegionFont();
-	self:timerCleanup();
 	self:fixAllLayers();
+	self:timerCleanup();
 	self:setSongFlowers();
 	self:createSongflowerMarkers();
 	self:createTuberMarkers();
@@ -1196,6 +1196,7 @@ function NWB:combatLogEventUnfiltered(...)
 			--For this reason we just check against the non-layered yell timestamp even for layered realms.
 			--Using destGUID instead of sourceGUID for sap target instead of buff gained from source.
 			local unitType, _, _, _, zoneID, npcID = strsplit("-", destGUID);
+			zoneID = tonumber(zoneID);
 			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
 			if ((zone == 1453 or zone == 1454) or not NWB.isLayered) then
 				NWB:debug("Onyxia buff NPC sapped by", sourceName, zoneID, destGUID);
@@ -1580,6 +1581,9 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 	NWB:debug("set ony buff", source);
 	--NWB.data.myChars[UnitName("player")].onyCount = NWB.data.myChars[UnitName("player")].onyCount + 1;
 	NWB:debug("zoneid drop", zoneID, count);
+	if (isSapped) then
+		NWB:sendData("YELL");
+	end
 end
 
 function NWB:setNefBuff(source, sender, zoneID, GUID)
@@ -5529,6 +5533,7 @@ function NWB:openLayerFrame()
 end
 
 function NWB:createNewLayer(zoneID, GUID, isFromNpc)
+	zoneID = tonumber(zoneID);
 	local count, remoteCount = 0, 0;
 	for k, v in pairs(NWB.data.layers) do
 		count = count + 1;
@@ -6612,7 +6617,13 @@ end
 
 function NWB:fixAllLayers()
 	for k, v in pairs(NWB.data.layers) do
-		NWB:fixLayer(k);
+		if (type(k) == "number") then
+			NWB:fixLayer(k);
+		else
+			--On very rare occasions the layer id is saved as a string not a number, fix it here.
+			--I found why this happens and fixed it, but this check stays here to fix existing databases.
+			NWB.data.layers[k] = nil;
+		end
 	end
 end
 
@@ -7066,7 +7077,6 @@ function NWB:recalcVersionFrame()
 	end
 end
 
-
 --NPC events
 local f = CreateFrame("Frame");
 f:RegisterEvent("GOSSIP_SHOW");
@@ -7081,93 +7091,183 @@ f:SetScript('OnEvent', function(self, event, ...)
 		if (not g1 or not npcID) then
 			return;
 		end
-		if (npcID == "14822" and NWB.db.global.autoDmfBuff) then --Sayge.
-			--Temporary to make DMG buff for all regions work since you can just spam gossip option 1 safely for this buff.
-			--During next Darkmoon Faire we need to translate the strings for other buffs.
-			--Or make this select options by number instead as it passes through pages and count which dialogue page it's up to.
-			if (NWB.db.global.autoDmfBuffType == "Damage") then
-				SelectGossipOption(1);
-				return;
-			end
-			--
-			if (string.match(g1, "I'd love to get one of those written fortunes you mentioned")) then
-				return
-			end
-			if (string.match(g1, "I am ready to discover where my fortune lies!")) then
-				SelectGossipOption(1);
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Damage") then
-				--Sayge's Dark Fortune of Damage: +10% Damage (1, 1).
-				if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
+		if (npcID == "14822" and NWB.db.global.autoDmfBuff) then --Sayge NPC.
+			--This string check was added first for english clients then the non-string check version further down added later.
+			--I'll keep this string check version for english here anyway though because it's 100% accurate.
+			--The non-string check version is new and in testing, but should work fine.
+			if (GetLocale() == "enUS") then
+				--Make this an option to skip the fortune cookie later.
+				--[[if (string.match(g1, "I'd love to get one of those written fortunes you mentioned")) then
+					return
+				end
+				if (string.match(g1, "I am ready to discover where my fortune lies!")) then
 					SelectGossipOption(1);
-				elseif (string.match(g1, "and do it in such a manner that he suffers painfully before he dies")) then
+					return;
+				end]]
+				if (NWB.db.global.autoDmfBuffType == "Damage") then
+					--Sayge's Dark Fortune of Damage: +10% Damage (1, 1).
+					SelectGossipOption(1);
+					--No need for string checks for dmg, it's 1, 1.
+					--[[if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
+						SelectGossipOption(1);
+					elseif (string.match(g1, "and do it in such a manner that he suffers painfully before he dies")) then
+						SelectGossipOption(1);
+					end]]
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Agility") then
+					--Sayge's Dark Fortune of Agility: +10% Agility (3, 3).
+					if (g3 and string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
+						SelectGossipOption(3);
+					elseif (g3 and string.match(g3, "I would create some surreptitious means to keep my brother out of the order")) then
+						SelectGossipOption(3);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Intelligence") then
+					--Sayge's Dark Fortune of Intelligence: +10% Intelligence (2, 2).
+					if (g2 and string.match(g2, "I turn over the man to my liege for punishment, as he has broken the law of the land")) then
+						SelectGossipOption(2);
+					elseif (g2 and string.match(g2, "ignore the insult, hoping to instill a fear in the ruler that he may have gaffed")) then
+						SelectGossipOption(2);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Spirit") then
+					--Sayge's Dark Fortune of Spirit: +10% Spirit (2, 1).
+					if (g2 and string.match(g2, "I turn over the man to my liege for punishment, as he has broken the law of the land")) then
+						SelectGossipOption(2);
+					elseif (string.match(g1, "I confront the ruler on his malicious behavior, upholding my")) then
+						SelectGossipOption(1);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Stamina") then
+					--Sayge's Dark Fortune of Stamina: +10% Stamina (3, 1).
+					if (g3 and string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
+						SelectGossipOption(3);
+					elseif (string.match(g1, "I would speak against my brother joining the order, rushing a permanent breech")) then
+						SelectGossipOption(1);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Strength") then
+					--Sayge's Dark Fortune of Strength: +10% Strength (3, 2).
+					if (g3 and string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
+						SelectGossipOption(3);
+					elseif (g2 and string.match(g2, "I would speak for my brother joining the order, potentially risking the safety of the order")) then
+						SelectGossipOption(2);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Armor") then
+					--Sayge's Dark Fortune of Armor: +10% Armor (1, 3).
+					if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
+						SelectGossipOption(1);
+					elseif (string.match(g3 and g3, "I risk my own life and free him so that he may prove his innocence")) then
+						SelectGossipOption(3);
+					end
+					return;
+				end
+				if (NWB.db.global.autoDmfBuffType == "Resistance") then
+					--Sayge's Dark Fortune of Resistance: +25 All Resistances (1, 2).
+					if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
+						SelectGossipOption(1);
+					elseif (g2 and string.match(g2, "I execute him as per my liege's instructions, but doing so in as painless")) then
+						SelectGossipOption(2);
+					end
+					return;
+				end
+			else
+				--This should probably be done with a table instead of if statements, but it's small and only ran twice a month so whatever.
+				if (g4) then
+					--First buff selection page has 4 options, if there's 4 it can only be this page.
+					if (NWB.db.global.autoDmfBuffType == "Damage") then
+						--Sayge's Dark Fortune of Damage: +10% Damage (1, 1).
+						SelectGossipOption(1);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Agility") then
+						--Sayge's Dark Fortune of Agility: +10% Agility (3, 3).
+						SelectGossipOption(3);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Intelligence") then
+						--Sayge's Dark Fortune of Intelligence: +10% Intelligence (2, 2).
+						SelectGossipOption(2);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Spirit") then
+						--Sayge's Dark Fortune of Spirit: +10% Spirit (2, 1).
+						SelectGossipOption(2);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Stamina") then
+						--Sayge's Dark Fortune of Stamina: +10% Stamina (3, 1).
+						SelectGossipOption(3);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Strength") then
+						--Sayge's Dark Fortune of Strength: +10% Strength (3, 2).
+						SelectGossipOption(3);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Armor") then
+						--Sayge's Dark Fortune of Armor: +10% Armor (1, 3).
+						SelectGossipOption(1);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Resistance") then
+						--Sayge's Dark Fortune of Resistance: +25 All Resistances (1, 2).
+						SelectGossipOption(1);
+						return;
+					end
+				elseif (g3) then
+					--Second buff selection page has 3 options, if there's 3 it can only be this page.
+					if (NWB.db.global.autoDmfBuffType == "Damage") then
+						--Sayge's Dark Fortune of Damage: +10% Damage (1, 1).
+						SelectGossipOption(1);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Agility") then
+						--Sayge's Dark Fortune of Agility: +10% Agility (3, 3).
+						SelectGossipOption(3);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Intelligence") then
+						SelectGossipOption(2);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Spirit") then
+						--Sayge's Dark Fortune of Spirit: +10% Spirit (2, 1).
+						SelectGossipOption(1);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Stamina") then
+						--Sayge's Dark Fortune of Stamina: +10% Stamina (3, 1).
+						SelectGossipOption(1);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Strength") then
+						--Sayge's Dark Fortune of Strength: +10% Strength (3, 2).
+						SelectGossipOption(2);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Armor") then
+						--Sayge's Dark Fortune of Armor: +10% Armor (1, 3).
+						SelectGossipOption(3);
+						return;
+					end
+					if (NWB.db.global.autoDmfBuffType == "Resistance") then
+						--Sayge's Dark Fortune of Resistance: +25 All Resistances (1, 2).
+						SelectGossipOption(2);
+						return;
+					end
+				elseif (g1 and not g2) then
+					--Pages with only 1 option.
 					SelectGossipOption(1);
 				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Agility") then
-				--Sayge's Dark Fortune of Agility: +10% Agility (3, 3).
-				if (string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
-					SelectGossipOption(3);
-				elseif (string.match(g3, "I would create some surreptitious means to keep my brother out of the order")) then
-					SelectGossipOption(3);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Intelligence") then
-				--Sayge's Dark Fortune of Intelligence: +10% Intelligence (2, 2).
-				if (string.match(g2, "I turn over the man to my liege for punishment, as he has broken the law of the land")) then
-					SelectGossipOption(2);
-				elseif (string.match(g2, "ignore the insult, hoping to instill a fear in the ruler that he may have gaffed")) then
-					SelectGossipOption(2);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Spirit") then
-				--Sayge's Dark Fortune of Spirit: +10% Spirit (2, 1).
-				if (string.match(g2, "I turn over the man to my liege for punishment, as he has broken the law of the land")) then
-					SelectGossipOption(2);
-				elseif (string.match(g1, "I confront the ruler on his malicious behavior, upholding my")) then
-					SelectGossipOption(1);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Stamina") then
-				--Sayge's Dark Fortune of Stamina: +10% Stamina (3, 1).
-				if (string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
-					SelectGossipOption(3);
-				elseif (string.match(g1, "I would speak against my brother joining the order, rushing a permanent breech")) then
-					SelectGossipOption(1);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Strength") then
-				--Sayge's Dark Fortune of Strength: +10% Strength (3, 2).
-				if (string.match(g3, "I confiscate the corn he has stolen, warn him that stealing is a path towards doom")) then
-					SelectGossipOption(3);
-				elseif (string.match(g2, "I would speak for my brother joining the order, potentially risking the safety of the order")) then
-					SelectGossipOption(2);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Armor") then
-				--Sayge's Dark Fortune of Armor: +10% Armor (1, 3).
-				if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
-					SelectGossipOption(1);
-				elseif (string.match(g3, "I risk my own life and free him so that he may prove his innocence")) then
-					SelectGossipOption(3);
-				end
-				return;
-			end
-			if (NWB.db.global.autoDmfBuffType == "Resistance") then
-				--Sayge's Dark Fortune of Resistance: +25 All Resistances (1, 2).
-				if (string.match(g1, "I slay the man on the spot as my liege would expect me to do")) then
-					SelectGossipOption(1);
-				elseif (string.match(g2, "I execute him as per my liege's instructions, but doing so in as painless")) then
-					SelectGossipOption(2);
-				end
-				return;
+				--NWB:print("Auto DMF buff selection only works for English client sorry, other languages coming soon.");
 			end
 		end
 		---I have removed string checks for everything below here to make it work for all regions from the start.

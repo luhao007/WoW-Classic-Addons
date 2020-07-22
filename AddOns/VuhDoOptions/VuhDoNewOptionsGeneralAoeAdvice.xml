@@ -74,7 +74,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						VUHDO_lnfSliderOnLoad(self, "", 5000, 1000000, " " .. VUHDO_I18N_HP, 5000);
+						VUHDO_lnfSliderOnLoad(self, "", 50, 10000, " " .. VUHDO_I18N_HP, 50);
 						VUHDO_lnfSetTooltip(self, VUHDO_I18N_TT.K538);
 					</OnLoad>
 				</Scripts>

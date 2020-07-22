@@ -11,7 +11,7 @@ local function OutfitterSwitch(outfitName)
 	-- this uses a static string of "Fishing" *not* the translation
 	local vOut, vCat, _ = Outfitter:FindOutfitByName(Outfitter.cFishingOutfit);
 	if ( not vOut ) then
-		local _, sname = FL:GetFishingSkillInfo();
+		local _, sname = FL:GetFishingSpellInfo();
 		vOut, vCat, _ = Outfitter:FindOutfitByName(sname);
 	end
 	if ( vOut ) then

@@ -730,7 +730,6 @@ class Manager(object):
         rm_tree('AddOns/UnitFramesPlus_MobHealth')
 
         self.remove_libraries_all('UnitFramesPlus_Cooldown')
-        self.remove_libraries_all('UnitFramesPlus_Threat', 'LibThreatClassic2')
 
     def handle_vuhdo(self):
         self.remove_libraries(

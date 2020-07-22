@@ -34,9 +34,10 @@ Translations:
 English:  Thandrenn
 German:  Guldukat
 Simplified Chinese:  yoke233
-Traditional Chinese:  Woopy
+Traditional Chinese:  
 Russian:  GoodDeath
-Spanish: Woopy
+Korean: LockCole
+Spanish: 
 
 
 

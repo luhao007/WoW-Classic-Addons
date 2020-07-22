@@ -1,3 +1,12 @@
+Version 0.7.3 Beta 7
+- LibTourist classic almost but not quite exactly
+
+Version 0.7.3 Beta 6
+- Fix a bug in fishing mode management
+
+Version 0.7.3 Beta 5
+- Update libraries
+
 Version 0.7.3 Beta 4
 - More fishing level fixes
 

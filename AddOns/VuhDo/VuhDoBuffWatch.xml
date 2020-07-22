@@ -268,7 +268,7 @@
 				</Anchors>
 				<Layers>
 					<Layer>
-						<FontString name="$parentLabel" font="SystemFont_Tiny" text="VuhDo - BuffWatch" justifyH="LEFT">
+						<FontString name="$parentLabel" font="SystemFont_Tiny" text="VuhDo - Buff监控" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="TOPLEFT" />
 								<Anchor point="BOTTOMRIGHT" />

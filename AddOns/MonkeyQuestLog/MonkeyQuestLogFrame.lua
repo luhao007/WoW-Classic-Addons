@@ -69,15 +69,17 @@ function MkQL_RewardItem_OnClick(self, button)
 	MonkeyLib_DebugMsg("self.rewardType: "..self.rewardType);
 	MonkeyLib_DebugMsg("GetQuestItemLink(self.type, self:GetID()): "..GetQuestLogItemLink(self.type, self:GetID()));
 
+	local activeWindow = ChatEdit_GetActiveWindow();
+
 	if ( IsControlKeyDown() ) then
 
 		if ( self.rewardType ~= "spell" ) then
 			
 			DressUpItemLink(GetQuestLogItemLink(self.type, self:GetID()));
 		end
-	elseif ( IsShiftKeyDown() ) then
-		if ( ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:Insert(GetQuestLogItemLink(self.type, self:GetID()));
+	elseif ( IsShiftKeyDown() and activeWindow) then
+		if ( activeWindow:IsVisible() ) then
+			activeWindow:Insert(GetQuestLogItemLink(self.type, self:GetID()));
 		end
 	end
 	

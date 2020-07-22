@@ -87,7 +87,7 @@ VUHDO_AOE_SPELLS = {
 	["ch"] = {
 		--["present"] = false,
 		["id"] = VUHDO_SPELL_ID_CH,
-		["base"] = (5135  + 5865) * 0.5, -- MOP
+		["base"] = (332  + 381) * 0.5, -- classic
 		["divisor"] = 10035,
 		["icon"] = (GetSpellTexture(VUHDO_SPELL_ID_CH)),
 		["name"] = (GetSpellInfo(VUHDO_SPELL_ID_CH)),
@@ -95,7 +95,7 @@ VUHDO_AOE_SPELLS = {
 		["max_targets"] = 4,
 		["degress"] = 0.66,
 		["rangePow"] = 40 * 40,
-		["jumpRangePow"] = 11 * 11,
+		["jumpRangePow"] = 8 * 8,
 		--["isRadial"] = false,
 		["areTargetsRandom"] = false,
 		--["isSourcePlayer"] = false,
@@ -225,7 +225,8 @@ function VUHDO_aoeUpdateSpellAverages()
 			tInfo["avg"] = 80000; -- @TODO
 		else
 			tSpellModi = tInfo["base"] / tInfo["divisor"];
-			tInfo["avg"] = floor((tInfo["base"] + tBonus * tSpellModi) + 0.5);
+			-- tInfo["avg"] = floor((tInfo["base"] + tBonus * tSpellModi) + 0.5);
+			tInfo["avg"] = floor((tInfo["base"] + tBonus * 0.7) + 0.5); -- classic
 		end
 		tInfo["thresh"] = VUHDO_CONFIG["AOE_ADVISOR"]["config"][tName]["thresh"];
 		--print("VUHDO_aoeUpdateSpellAverages(): name = " .. tName .. ", avg = floor((base + bonus * spellMod) + 0.5) | " .. tInfo["avg"] .. " = floor((" .. tInfo["base"] .. " + " .. tBonus .. " * " .. tSpellModi .. ") + 0.5)");

@@ -231,7 +231,7 @@ end
 ---------------------------------------------------------------------------------
 
 function VUHDO_initTextProviderConfig()
-  -- Falls man mal was l�scht oder umbenennt
+  -- Falls man mal was locht oder umbenennt
 	for tIndicatorName, anIndicatorConfig in pairs(VUHDO_INDICATOR_CONFIG["TEXT_INDICATORS"]) do
 		for tIndex, tProviderName in pairs(anIndicatorConfig["TEXT_PROVIDER"]) do
 			if not VUHDO_TEXT_PROVIDERS[tProviderName] then
@@ -247,103 +247,103 @@ end
 
 VUHDO_TEXT_PROVIDERS = {
 	["OVERHEAL_KILO_N_K"] = {
-		["displayName"] = "Overheal: <#n>",
+		["displayName"] = "过量治疗: <#n>",
 		["calculator"] = VUHDO_overhealCalculator,
 		["validator"] = VUHDO_kiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
 	},
 	["OVERHEAL_KILO_PLUS_N_K"] = {
-		["displayName"] = "Overheal: +<#n>",
+		["displayName"] = "过量治疗: +<#n>",
 		["calculator"] = VUHDO_overhealCalculator,
 		["validator"] = VUHDO_plusKiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
 	},
 	["INCOMING_HEAL_NK"] = {
-		["displayName"] = "Incoming Heal: <#n>",
+		["displayName"] = "预治疗: <#n>",
 		["calculator"] = VUHDO_incomingHealCalculator,
 		["validator"] = VUHDO_kiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
 	},
 	["SHIELD_ABSORB_OVERALL_N_K"] = {
-		["displayName"] = "Shield absorb total: <#n>",
+		["displayName"] = "护盾吸收总量: <#n>",
 		["calculator"] = VUHDO_shieldAbsorbCalculator,
 		["validator"] = VUHDO_kiloValidator,
 		["interests"] = { VUHDO_UPDATE_SHIELD },
 	},
 	["THREAT_PERCENT"] = {
-		["displayName"] = "Threat: <#n>%",
+		["displayName"] = "威胁值: <#n>%",
 		["calculator"] = VUHDO_threatCalculator,
 		["validator"] = VUHDO_percentValidator,
 		["interests"] = { VUHDO_UPDATE_THREAT_PERC },
 	},
 	["CHI_N"] = {
-		["displayName"] = "Chi: <#n>",
+		["displayName"] = "真气: <#n>",
 		["calculator"] = VUHDO_chiCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_CHI, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["HOLY_POWER_N"] = {
-		["displayName"] = "Holy Power: <#n>",
+		["displayName"] = "圣能: <#n>",
 		["calculator"] = VUHDO_holyPowerCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_OWN_HOLY_POWER, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["COMBO_POINTS_N"] = {
-		["displayName"] = "Combo Points: <#n>",
+		["displayName"] = "组合点: <#n>",
 		["calculator"] = VUHDO_comboPointsCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_COMBO_POINTS, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["SOUL_SHARDS_N"] = {
-		["displayName"] = "Soul Shards: <#n>",
+		["displayName"] = "灵魂碎片: <#n>",
 		["calculator"] = VUHDO_soulShardsCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_SOUL_SHARDS, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["RUNES_N"] = {
-		["displayName"] = "Runes: <#n>",
+		["displayName"] = "符文: <#n>",
 		["calculator"] = VUHDO_runesCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_RUNES, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["ARCANE_CHARGES_N"] = {
-		["displayName"] = "Arcane Charges: <#n>",
+		["displayName"] = "奥术冲击: <#n>",
 		["calculator"] = VUHDO_arcaneChargesCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_ARCANE_CHARGES, VUHDO_UPDATE_DC, VUHDO_UPDATE_ALIVE },
 	},
 	["MANA_PERCENT"] = {
-		["displayName"] = "Mana: <#n>%",
+		["displayName"] = "法力: <#n>%",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_percentValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },
 	},
 	["MANA_PERCENT_TENTH"] = {
-		["displayName"] = "Mana: <#n/10%>",
+		["displayName"] = "法力: <#n/10%>",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_tenthPercentValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },
 	},
 	["MANA_UNIT_OF_UNIT"] = {
-		["displayName"] = "Mana: <#n>/<#n>",
+		["displayName"] = "法力: <#n>/<#n>",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_unitOfUnitValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },
 	},
 	["MANA_KILO_OF_KILO"] = {
-		["displayName"] = "Mana: <#nk>/<#nk>",
+		["displayName"] = "法力: <#nk>/<#nk>",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_kiloOfKiloValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },
 	},
 	["MANA_N"] = {
-		["displayName"] = "Mana: <#n>",
+		["displayName"] = "法力: <#n>",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_absoluteValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },
 	},
 	["MANA_NK"] = {
-		["displayName"] = "Mana: <#nk>",
+		["displayName"] = "法力: <#nk>",
 		["calculator"] = VUHDO_manaCalculator,
 		["validator"] = VUHDO_kiloValidator,
 		["interests"] = { VUHDO_UPDATE_MANA, VUHDO_UPDATE_DC },

@@ -125,10 +125,6 @@ local L = WeakAuras.L
 	L["Bar Inner"] = "Bar Inner"
 	L["Bar Texture"] = "Текстура полосы"
 	L["Big Icon"] = "Большая иконка"
-	L["Blacklisted Aura Name"] = "Исключаемое название эффекта"
-	L["Blacklisted Exact Spell ID(s)"] = "Исключить ID заклинания"
-	L["Blacklisted Name(s)"] = "Исключить название"
-	L["Blacklisted Spell ID"] = "Исключаемый ID заклинания"
 	L["Blend Mode"] = "Режим наложения"
 	L["Blue Rune"] = "Синяя руна"
 	L["Blue Sparkle Orb"] = "Синий искрящийся шар"
@@ -426,6 +422,14 @@ Supports multiple entries, separated by commas
 	L["Ignore Self"] = "Не учитывать себя"
 	L["Ignore self"] = "Не учитывать себя"
 	L["Ignored"] = "Игнорируется"
+	--[[Translation missing --]]
+	L["Ignored Aura Name"] = "Ignored Aura Name"
+	--[[Translation missing --]]
+	L["Ignored Exact Spell ID(s)"] = "Ignored Exact Spell ID(s)"
+	--[[Translation missing --]]
+	L["Ignored Name(s)"] = "Ignored Name(s)"
+	--[[Translation missing --]]
+	L["Ignored Spell ID"] = "Ignored Spell ID"
 	L["Import"] = "Импорт"
 	L["Import a display from an encoded string"] = "Импортировать индикацию из закодированной строки"
 	L["Inner"] = "Внутри"

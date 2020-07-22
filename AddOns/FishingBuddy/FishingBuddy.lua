@@ -1005,49 +1005,58 @@ local function FishingMode()
 end
 FishingBuddy.FishingMode = FishingMode;
 
+local function SetAutoPoleLocation(clear)
+    local a = autopoleframe
+    if clear then
+        autopoleframe:Hide();
+        ClearLastCastTime();
+        a.x, a.y, a.zone, a.instanceID = nil, nil, nil
+    else
+        a.x, a.y, a.zone, a.instanceID = FL:GetPlayerZoneCoords();
+    end
+end
+
 local function AutoPoleCheck(self, ...)
     if (not CheckCombat() ) then
         if ( not LastCastTime or ReadyForFishing() ) then
-            self:Hide();
-            ClearLastCastTime();
-            self.x, self.y, self.instanceID = nil, nil, nil
+            SetAutoPoleLocation(true)
             return;
         end
         local elapsed = (GetTime() - LastCastTime);
         if ( elapsed > FISHINGSPAN ) then
-            ClearLastCastTime();
-            self.x, self.y, self.instanceID = nil, nil, nil
+            SetAutoPoleLocation(true)
             StopFishingMode();
         elseif ( not FishingBuddy.StartedFishing ) then
             StartFishingMode();
-            self.x, self.y, self.instanceID = HBD:GetPlayerWorldPosition();
-        elseif (self.x) then
+            SetAutoPoleLocation()
+        elseif (self.zone) then
             if (self.moving) then
-                if not FishingBuddy.HaveRafts() then
-                    local x, y, instanceID = HBD:GetPlayerWorldPosition();
-                    local _, distance = HBD:GetWorldVector(instanceID, self.x, self.y, x, y);
-                    if instanceID ~= self.instanceID or distance > 10 then
-                        LastCastTime = GetTime() - FISHINGSPAN - 1
+                local distance = FL:GetDistanceTo(self.zone, self.x, self.y)
+                if distance then
+                    if distance > 50 or (not FishingBuddy.HaveRafts() and distance > 10) then
+                        SetAutoPoleLocation(true)
+                        StopFishingMode();
                     end
                 end
             elseif (self.stopped) then
-                self.x, self.y, self.instanceID = HBD:GetPlayerWorldPosition();
+                SetAutoPoleLocation()
                 self.stopped = nil;
             end
         end
     end
 end
 
-local function AutoPoleEvent(self, event, ...)
+local function AutoPoleEvent(self, event, arg1, arg2, arg3, arg4, arg5)
     self.moving = (event == "PLAYER_STARTED_MOVING")
     self.stopped = (event == "PLAYER_STOPPED_MOVING")
+    -- print(event, arg1, arg2, arg3, arg4, arg5)
 end
 
 autopoleframe:SetScript("OnEvent", AutoPoleEvent)
 autopoleframe:SetScript("OnUpdate", AutoPoleCheck);
 autopoleframe:RegisterEvent("PLAYER_STARTED_MOVING");
 autopoleframe:RegisterEvent("PLAYER_STOPPED_MOVING");
-
+-- autopoleframe:RegisterEvent("VEHICLE_ANGLE_UPDATE");
 
 FishingBuddy.IsSwitchClick = function(setting)
     if ( not setting ) then
@@ -1347,7 +1356,7 @@ FishingBuddy.OnEvent = function(self, event, ...)
             end
         end
     elseif ( event == "VARIABLES_LOADED" ) then
-        local _, name = FL:GetFishingSkillInfo();
+        local _, name = FL:GetFishingSpellInfo();
         PLANS = FishingBuddy.FishingPlans;
         FishingBuddy.Initialize();
         PrepareVolumeSlider()

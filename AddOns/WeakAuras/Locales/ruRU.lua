@@ -55,6 +55,8 @@ L["|cffeda55fLeft-Click|r to toggle showing the main window."] = "|cFFEDA55FЛе
 L["|cffeda55fMiddle-Click|r to toggle the minimap icon on or off."] = "|cFFEDA55FСредняя кнопка мыши|r - скрыть иконку на миникарте."
 L["|cffeda55fRight-Click|r to toggle performance profiling window."] = "|cFFEDA55FПравый клик|r - показать или скрыть окно профилирования."
 L["|cffeda55fShift-Click|r to pause addon execution."] = "|cFFEDA55FShift-клик|r - приостановить выполнение аддона."
+--[[Translation missing --]]
+L["|cFFFF0000Not|r Player Name/Realm"] = "|cFFFF0000Not|r Player Name/Realm"
 L["|cFFffcc00Extra Options:|r %s"] = "|cFFFFCC00Дополнительные параметры:|r %s"
 L["|cFFffcc00Extra Options:|r None"] = "|cFFFFCC00Дополнительные параметры:|r нет"
 L["10 Man Raid"] = "Рейд на 10 человек"
@@ -175,8 +177,6 @@ L["BigWigs Addon"] = "Аддон BigWigs"
 L["BigWigs Message"] = "Сообщение BigWigs"
 L["BigWigs Timer"] = "Таймер BigWigs"
 L["Black Wing Lair"] = "Логово Крыла Тьмы"
---[[Translation missing --]]
-L["Blacklisted Player Name/Realm"] = "Blacklisted Player Name/Realm"
 L["Blizzard Combat Text"] = "Текст боя Blizzard"
 L["Block"] = "Блок"
 L["Block (%)"] = "Блок"

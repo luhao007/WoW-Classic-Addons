@@ -4,7 +4,7 @@
 ## OptionalDeps: aftt_extreme
 ## SavedVariables: MonkeyQuestConfig
 
-## Title: MonkeyQuest v2.10.2
+## Title: MonkeyQuest v2.10.3
 ## Notes: Displays your quests for quick viewing.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFFFFE00AMonkeyQuest|r
 ## Notes-zhCN: 独立任务追踪窗口
