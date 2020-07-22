@@ -410,8 +410,8 @@ class Manager(object):
              'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
              'LibBossIDs-1.0', 'LibClassicCasterino', 'LibCompress',
              'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-             'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-             'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1'],
+             'LibGraph-2.0', 'LibItemUpgradeInfo-1.0', 'LibSharedMedia-3.0',
+             'LibStub', 'LibWindow-1.1'],
             'AddOns/Details/Libs',
             'AddOns/Details/Libs/libs.xml'
         )
