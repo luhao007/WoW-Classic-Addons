@@ -23,6 +23,8 @@ L["Horde Zeppelin"] = "Horde Zeppeline"
 L["Show the Horde Zeppelin locations."] = "Zeigt die positionen von Horde Zeppelinen an."
 L["Note"] = "Notizen"
 L["Show the node's additional notes when it's available."] = "Zeigt zusätzliche Notizen an wenn diese verfügbar sind."
+L["Easy waypoints"] = "Vereinfachte Wegpunkte"
+L["easy_waypoints_desc"] = "Aktiviert die vereinfachte Wegpunkterstellung. \nErlaubt es per Rechtsklick einen Wegpunkt zu setzen und per STRG + Rechtsklick mehr Optionen aufzurufen."
 L["Deeprun Tram"] = "Tiefenbahn"
 L["Show the Deeprun Tram locations in Stormwind and Ironforge."] = "Zeigt die Positionen der Tiefenbahn in Sturmwind und Eisenschmiede an."
 

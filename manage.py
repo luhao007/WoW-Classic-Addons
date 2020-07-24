@@ -280,7 +280,8 @@ class Manager(object):
         if self.is_classic:
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
-                       'Details_Streamer', 'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'Details_Streamer', 'Fizzle', 'GroupCalendar',
+                       'HandyNotes_NPCs (Classic)', 'PallyPower'
                        'TradeLog', 'TitanClassic']
         else:
             addons += ['AllTheThings', 'FasterCamera',

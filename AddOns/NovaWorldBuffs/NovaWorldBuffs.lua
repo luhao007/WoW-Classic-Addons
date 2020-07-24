@@ -14,6 +14,8 @@ NWB.realm = GetRealmName();
 NWB.faction = UnitFactionGroup("player");
 NWB.loadTime = 0;
 NWB.limitLayerCount = 99;
+NWB.sharedLayerBuffs = true;
+NWB.doLayerMsg = false;
 NWB.serializer = LibStub:GetLibrary("LibSerialize");
 NWB.serializerOld = LibStub:GetLibrary("AceSerializer-3.0");
 NWB.libDeflate = LibStub:GetLibrary("LibDeflate");
@@ -23,6 +25,11 @@ NWB.LDBIcon = LibStub("LibDBIcon-1.0");
 local version = GetAddOnMetadata("NovaWorldBuffs", "Version") or 9999;
 NWB.latestRemoteVersion = version;
 NWB.prefixColor = "|cFFFF6900";
+
+--Some notes on the change Blizzard just implemented to make layers share buffs.
+--The buff drop only works on both layers if each layer NPC is reset.
+--If a NPC dies on one layer and drop a buff it breaks thr sync for the rest of the week or until no buffs are dropped for a long time on both.
+--We're still tracking drops for both layers incase a NPC is killed.
 
 function NWB:OnInitialize()
 	self:setLayered();
@@ -173,9 +180,10 @@ function NWB:getShortBuffTimers(channel, layerNum)
 		table.sort(NWB.data.layers);
 		for k, v in NWB:pairsByKeys(NWB.data.layers) do
 			count = count + 1;
-			if (not layerNum and count == 1) then
+			if ((not layerNum and count == 1) or NWB.sharedLayerBuffs) then
 				--Get first layer if no layer specified.
 				layer = k;
+				break;
 			elseif (count == tonumber(layerNum)) then
 				layer = k;
 			end
@@ -238,9 +246,9 @@ function NWB:getShortBuffTimers(channel, layerNum)
 	else
 		msg = msg .. "(" .. L["nefarian"] .. ": " .. L["noTimer"] .. ")";
 	end
-	if (layerNum) then
+	if (layerNum and NWB.doLayerMsg) then
 		return msg .. " (Layer " .. layerNum .. " of " .. count .. ")";
-	elseif (NWB.isLayered) then
+	elseif (NWB.isLayered and NWB.doLayerMsg) then
 		return msg .. " (Layer 1 of " .. count .. ")";
 	end
 	return msg;
@@ -571,7 +579,7 @@ function NWB:doWarning(type, num, secondsLeft, layer)
 	end
 	warningThroddle[type] = GetServerTime();
 	local layerMsg = "";
-	if (layer) then
+	if (layer and NWB.doLayerMsg) then
 		local count = 0;
 		for k, v in NWB:pairsByKeys(NWB.data.layers) do
 			count = count + 1;
@@ -902,7 +910,7 @@ end
 local rendFirstYell, onyFirstYell, nefFirstYell, zanFirstYell = 0, 0, 0, 0;
 function NWB:doFirstYell(type, layer)
 	local layerMsg = "";
-	if (NWB.isLayered and tonumber(layer)) then
+	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (Layer " .. layer .. ")";
 	end
 	NWB:debug("layerMsg", layerMsg);
@@ -976,7 +984,7 @@ end
 local rendDropMsg, onyDropMsg, nefDropMsg = 0, 0, 0;
 function NWB:doBuffDropMsg(type, layer)
 	local layerMsg = "";
-	if (tonumber(layer)) then
+	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (Layer " .. layer .. ")";
 	end
 	if (type == "rend") then
@@ -1006,7 +1014,7 @@ end
 local onyNpcKill, nefNpcKill = 0, 0;
 function NWB:doNpcKilledMsg(type, layer)
 	local layerMsg = "";
-	if (NWB.isLayered and tonumber(layer)) then
+	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (Layer " .. layer .. ")";
 	end
 	if (type == "ony") then
@@ -1473,7 +1481,7 @@ function NWB:setRendBuff(source, sender, zoneID, GUID, isAllianceAndLayered)
 	rendLastSet = GetServerTime();
 	NWB:debug("set rend buff", source);
 	--NWB.data.myChars[UnitName("player")].rendCount = NWB.data.myChars[UnitName("player")].rendCount + 1;
-	NWB:debug("zoneid drop", zoneID, count);
+	NWB:debug("zoneid drop", zoneID, count, GUID);
 end
 
 function NWB:setZanBuff(source, sender, zoneID, GUID)
@@ -1505,7 +1513,7 @@ function NWB:setZanBuff(source, sender, zoneID, GUID)
 	zanLastSet = GetServerTime();
 	NWB:debug("set zan buff", source);]]
 	--NWB.data.myChars[UnitName("player")].zanCount = NWB.data.myChars[UnitName("player")].zanCount + 1;
-	NWB:debug("zoneid drop", zoneID);
+	NWB:debug("zoneid drop", zoneID, GUID);
 end
 
 function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
@@ -1580,7 +1588,7 @@ function NWB:setOnyBuff(source, sender, zoneID, GUID, isSapped)
 	onyLastSet = GetServerTime();
 	NWB:debug("set ony buff", source);
 	--NWB.data.myChars[UnitName("player")].onyCount = NWB.data.myChars[UnitName("player")].onyCount + 1;
-	NWB:debug("zoneid drop", zoneID, count);
+	NWB:debug("zoneid drop", zoneID, count, GUID);
 	if (isSapped) then
 		NWB:sendData("YELL");
 	end
@@ -1658,7 +1666,7 @@ function NWB:setNefBuff(source, sender, zoneID, GUID)
 	nefLastSet = GetServerTime();
 	NWB:debug("set nef buff", source);
 	--NWB.data.myChars[UnitName("player")].nefCount = NWB.data.myChars[UnitName("player")].nefCount + 1;
-	NWB:debug("zoneid drop", zoneID, count);
+	NWB:debug("zoneid drop", zoneID, count, GUID);
 end
 
 --Validate new timer, mostly used for testing blanket fixes for timers.
@@ -3205,8 +3213,10 @@ function NWB:songflowerPicked(type, otherPlayer)
 				if (NWB:validateTimestamp(timestamp)) then
 					NWB:debug("layered songflower picked2", otherPlayer);
 					NWB.data.layers[layer][type] = timestamp;
-					NWB:doFlowerMsg(type, layerNum);
-					NWB:sendFlower("GUILD", type, nil, layerNum);
+					if (NWB.db.global.guildSongflower == true or NWB.db.global.guildSongflower == 1) then
+						NWB:doFlowerMsg(type, layerNum);
+						NWB:sendFlower("GUILD", type, nil, layerNum);
+					end
 					NWB:sendData("GUILD");
 					NWB:sendData("YELL");
 				end
@@ -3231,8 +3241,10 @@ function NWB:songflowerPicked(type, otherPlayer)
 			if (NWB:validateTimestamp(timestamp)) then
 				NWB:debug("songflower picked2", otherPlayer);
 				NWB.data[type] = timestamp;
-				NWB:doFlowerMsg(type, layerNum);
-				NWB:sendFlower("GUILD", type);
+				if (NWB.db.global.guildSongflower == true or NWB.db.global.guildSongflower == 1) then
+					NWB:doFlowerMsg(type, layerNum);
+					NWB:sendFlower("GUILD", type);
+				end
 				NWB:sendData("GUILD");
 				NWB:sendData("YELL");
 				if (NWB.isLayered and NWB:GetLayerCount() >= 2 and NWB.layeredSongflowers) then
@@ -3247,7 +3259,7 @@ end
 local flowerMsg = 0;
 function NWB:doFlowerMsg(type, layer)
 	local layerMsg = "";
-	if (NWB.isLayered and tonumber(layer)) then
+	if (NWB.isLayered and tonumber(layer) and NWB.doLayerMsg) then
 		layerMsg = " (Layer " .. layer .. ")";
 	end
 	if (type and (GetServerTime() - flowerMsg) > 10) then
@@ -4918,7 +4930,7 @@ NWBbuffListFrame:EnableMouse(true);
 tinsert(UISpecialFrames, "NWBbuffListFrame");
 NWBbuffListFrame:SetPoint("CENTER", UIParent, 20, 120);
 NWBbuffListFrame:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8",insets = {top = 0, left = 0, bottom = 0, right = 0}});
-NWBbuffListFrame:SetBackdropColor(0,0,0,.5);
+NWBbuffListFrame:SetBackdropColor(0,0,0,.6);
 NWBbuffListFrame.CharCount:Hide();
 --NWBbuffListFrame:SetFrameLevel(128);
 NWBbuffListFrame:SetFrameStrata("MEDIUM");
@@ -4941,7 +4953,7 @@ NWBbuffListFrame:HookScript("OnUpdate", function(self, arg)
 		buffUpdateTime = GetServerTime();
 	end
 end)
-NWBbuffListFrame.fs = NWBbuffListFrame:CreateFontString("NWBbuffListFrameFS", "HIGH");
+NWBbuffListFrame.fs = NWBbuffListFrame.EditBox:CreateFontString("NWBbuffListFrameFS", "HIGH");
 NWBbuffListFrame.fs:SetPoint("TOP", 0, 0);
 NWBbuffListFrame.fs:SetFont(NWB.regionFont, 14);
 NWBbuffListFrame.fs:SetText("|cffffff00" .. L["Your Current World Buffs"]);
@@ -5167,7 +5179,6 @@ function NWB:recalcBuffListFrame()
 				--else
 				--	coloredFaction = "|cff4954e8" .. k .. "|r";
 				--end
-				--local foundActiveBuff;
 				msg2 = "|cff00ff00[" .. realm .. "]|r\n";
 				--Have to check if the myChars table exists here.
 				--There was a lua error when much older versions upgraded to the buff tracking version.
@@ -5332,11 +5343,11 @@ NWBlayerFrame:HookScript("OnUpdate", function(self, arg)
 		layerFrameUpdateTime = GetServerTime();
 	end
 end)
-NWBlayerFrame.fs = NWBlayerFrame:CreateFontString("NWBlayerFrameFS", "HIGH");
+NWBlayerFrame.fs = NWBlayerFrame.EditBox:CreateFontString("NWBlayerFrameFS", "HIGH");
 NWBlayerFrame.fs:SetPoint("TOP", 0, -0);
 NWBlayerFrame.fs:SetFont(NWB.regionFont, 14);
 NWBlayerFrame.fs:SetText(NWB.prefixColor .. "NovaWorldBuffs v" .. version .. "|r");
-NWBlayerFrame.fs2 = NWBlayerFrame:CreateFontString("NWBlayerFrameFS", "HIGH");
+NWBlayerFrame.fs2 = NWBlayerFrame.EditBox:CreateFontString("NWBlayerFrameFS", "HIGH");
 NWBlayerFrame.fs2:SetPoint("TOPLEFT", 0, -14);
 NWBlayerFrame.fs2:SetFont(NWB.regionFont, 14);
 NWBlayerFrame.fs2:SetText("|cFF9CD6DETarget any NPC to see your current layer.|r");
@@ -6093,10 +6104,13 @@ function NWB:recalclayerFrame()
 	end
 	--Add 2 extra blank lines to you can scroll layer data up past text at bottom of the frame.
 	NWBlayerFrame.EditBox:Insert("\n\n\n");
+	--Set the bottom text position depending on if there's a scrollable area or not.
 	if (NWBlayerFrame.EditBox:GetHeight() > (NWBlayerFrame:GetHeight() - NWBlayerFrame.fs3:GetHeight())) then
 		NWBlayerFrame.fs3:SetPoint("BOTTOM", NWBlayerFrame.EditBox, 0, 2);
+		NWBlayerFrame.fs3:SetParent(NWBlayerFrame.EditBox);
 	else
 		NWBlayerFrame.fs3:SetPoint("BOTTOM", NWBlayerFrame, 0, 2);
+		NWBlayerFrame.fs3:SetParent(NWBlayerFrame);
 	end
 end
 
@@ -6450,7 +6464,7 @@ NWBLayerMapFrame:EnableMouse(true);
 tinsert(UISpecialFrames, "NWBLayerMapFrame");
 NWBLayerMapFrame:SetPoint("CENTER", UIParent, 0, 100);
 NWBLayerMapFrame:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8x8",insets = {top = 0, left = 0, bottom = 0, right = 0}});
-NWBLayerMapFrame:SetBackdropColor(0,0,0,.5);
+NWBLayerMapFrame:SetBackdropColor(0,0,0,.6);
 NWBLayerMapFrame.CharCount:Hide();
 NWBLayerMapFrame:SetFrameStrata("HIGH");
 NWBLayerMapFrame.EditBox:SetAutoFocus(false);

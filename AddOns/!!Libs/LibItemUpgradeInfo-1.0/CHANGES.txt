@@ -1,12 +1,12 @@
-tag 74a4893b4dd1008c1702a98bebcf0080dd1231b3 Release-80000-30
+tag 161271efbeba44d30da77709b437d8740571a714 Release-80200-30
 Author:	Alar of Runetotem <alar@aspide.it>
-Date:	Thu Jul 19 22:46:27 2018 +0200
+Date:	Sun Sep 15 17:18:05 2019 +0200
 
-BFA
+BFA patch 8.2.0
 
-commit bb6dcff130a8f4298c177ef5eb5c055c905eca34
+commit b744789e4938cad573ab4b984146de9fccff6874
 Author: Alar of Runetotem <alar@aspide.it>
-Date:   Thu Jul 19 22:39:53 2018 +0200
+Date:   Sun Sep 15 16:52:49 2019 +0200
 
-    TOC bump
+    Untested toc update
 

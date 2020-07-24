@@ -125,22 +125,22 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		return;
 	end
 	if (cmd == "drop" and not (NWB.db.global.receiveGuildDataOnly and distribution ~= "GUILD")) then
-		NWB:debug("drop inc", sender, data);
+		--NWB:debug("drop inc", sender, data);
 		--Buff drop seen by someone in org.
 		local type, layer = strsplit(" ", data, 2);
 		NWB:doBuffDropMsg(type, layer);
 	elseif ((cmd == "yell" or cmd == "yell2") and not (NWB.db.global.receiveGuildDataOnly and distribution ~= "GUILD")) then
-		NWB:debug("yell inc", sender, data);
+		--NWB:debug("yell inc", sender, data);
 		--Yell msg seen by someone in org.
 		local type, layer = strsplit(" ", data, 2);
 		NWB:doFirstYell(type, layer);
 	elseif ((cmd == "npcKilled" or cmd == "npcKilled2") and not (NWB.db.global.receiveGuildDataOnly and distribution ~= "GUILD")) then
-		NWB:debug("npc killed inc", sender, data);
+		--NWB:debug("npc killed inc", sender, data);
 		--Npc killed seen by someone in org.
 		local type, layer = strsplit(" ", data, 2);
 		NWB:doNpcKilledMsg(type, layer);
 	elseif ((cmd == "flower" or cmd == "flower2") and not (NWB.db.global.receiveGuildDataOnly and distribution ~= "GUILD")) then
-		NWB:debug("flower inc", sender, data);
+		--NWB:debug("flower inc", sender, data);
 		--Flower picked.
 		local type, layer = strsplit(" ", data, 2);
 		NWB:doFlowerMsg(type, layer);
@@ -267,11 +267,11 @@ function NWB:getGuildDataStatus()
 	for k, v in NWB:pairsByKeys(onlineMembers) do
 		count = count + 1;
 		if (count > limit) then
-			NWB:debug("Not first in line for guild data");
+			--NWB:debug("Not first in line for guild data");
 			return;
 		end
 		if (k == me) then
-			NWB:debug("First in line for guild data");
+			--NWB:debug("First in line for guild data");
 			return true;
 		end
 	end
@@ -594,7 +594,7 @@ function NWB:createDataLayered(distribution, noLayerMap)
 				if (not data.layers[layer]) then
 					data.layers[layer] = {};
 				end
-				NWB:debug("sending layer map data", distribution);
+				--NWB:debug("sending layer map data", distribution);
 				data.layers[layer].layerMap = NWB.data.layers[layer].layerMap;
 				--Don't share created time for now.
 				data.layers[layer].layerMap.created = nil;
@@ -655,6 +655,10 @@ end
 --Until I find why I'm going to check for this happening before sending and accepting data.
 --This is not an ideal solution because maybe on rare occasions the same buff may drop on more than 1 layer at the same time.
 function NWB:validateCloseTimestamps(layer, key, timestamp)
+	if (NWB.sharedLayerBuffs) then
+		--If buffs are syncing on both layers then skil this check (hotfix enabled 23/7/2020).
+		return true;
+	end
 	local offset = 30;
 	if (string.match(key, "flower")) then
 		offset = 10;
@@ -861,10 +865,10 @@ function NWB:receivedData(dataReceived, sender, distribution)
 		--There's a lot of ugly shit in this function trying to quick fix timer bugs for this layered stuff...
 		for layer, vv in NWB:pairsByKeys(data.layers) do
 			--Temp fix, this can be removed soon.
-			if (((not vv["rendTimer"] or vv["rendTimer"] == 0) and (not vv["onyTimer"] or vv["onyTimer"] == 0)
+			if (type(vv) ~= "table" or (((not vv["rendTimer"] or vv["rendTimer"] == 0) and (not vv["onyTimer"] or vv["onyTimer"] == 0)
 					 and (not vv["nefTimer"] or vv["nefTimer"] == 0) and (not vv["onyNpcDied"] or vv["onyNpcDied"] == 0)
 					  and (not vv["nefNpcDied"] or vv["nefNpcDied"] == 0) and (not vv["lastSeenNPC"] or vv["lastSeenNPC"] == 0))
-					  or NWB.data.layersDisabled[layer]) then
+					  or NWB.data.layersDisabled[layer])) then
 				--Do nothing if all timers are 0, this is to fix a bug in last version with layerMaps causing old layer data
 				--to bounce back and forth between users, making it so layers with no timers keep being created after server
 				--restart and won't disappear.
@@ -1086,9 +1090,9 @@ function NWB:receivedData(dataReceived, sender, distribution)
 	--If we get newer data from someone outside the guild then share it with the guild.
 	if (hasNewData and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm] and not NWB.krRealms[NWB.realm]) then
 		NWB.data.lastSyncBy = sender;
-		NWB:debug("new data received", sender, distribution, NWB:isPlayerInGuild(sender));
+		--NWB:debug("new data received", sender, distribution, NWB:isPlayerInGuild(sender));
 		if (distribution ~= "GUILD" and not NWB:isPlayerInGuild(sender)) then
-			NWB:debug("sending new data");
+			--NWB:debug("sending new data");
 			--Don't send layermap when sharing these new timers.
 			NWB:sendData("GUILD", nil, nil, true);
 		end

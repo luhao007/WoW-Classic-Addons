@@ -1,5 +1,5 @@
-## v4.9.37 Changes
+## v4.9.38 Changes
 
-* [Classic] TOC bump for 1.13.5
+* [Retail] Fixed issues with buying commodities.
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

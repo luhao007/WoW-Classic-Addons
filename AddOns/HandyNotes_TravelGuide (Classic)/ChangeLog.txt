@@ -1,5 +1,9 @@
 Revision History:
 =================
+* v2.1.7 (July 22, 2020)
+---------------------------
+- new feature: easy waypoints allows you to set a waypoint by right-clicking any POI (point of interest) and access to more options by CTRL + right-clicking (ON by default you can turn it off in the settings)
+
 * v2.1.6 (November 19, 2019)
 ---------------------------
 - Added Brazilian Portuguese localization from D4MM0N1C https://www.curseforge.com/members/d4mm0n1c

@@ -1,0 +1,8 @@
+------------------------------------------------------------------------
+r337 | Dyaxler | 2020-07-20 20:53:49 +0000 (Mon, 20 Jul 2020) | 1 line
+Changed paths:
+   M /trunk/PallyPowerOptions.lua
+
+* Fixed some localization issues reported in some non-English versions
+------------------------------------------------------------------------
+

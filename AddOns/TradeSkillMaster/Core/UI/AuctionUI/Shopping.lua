@@ -1875,6 +1875,9 @@ function private.FSMCreate()
 
 	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
 	Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
+	if not TSM.IsWowClassic() then
+		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
+	end
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
@@ -2230,6 +2233,12 @@ function private.FSMCreate()
 			:AddEvent("EV_CONFIRMED", function(context, isBuy, quantity)
 				return isBuy and "ST_PLACING_BUY" or "ST_PLACING_BID", quantity
 			end)
+			:AddEvent("EV_BUYOUT_SUCCESS", function(context)
+				if not context.findAuction then
+					return
+				end
+				return "ST_CONFIRMING_BUY", true
+			end)
 			:AddEvent("EV_MSG", function(context, msg)
 				if not context.findAuction then
 					return
@@ -2380,4 +2389,8 @@ end
 
 function private.FSMConfirmationCallback(isBuy, quantity)
 	private.fsm:ProcessEvent("EV_CONFIRMED", isBuy, quantity)
+end
+
+function private.FSMBuyoutSuccess()
+	private.fsm:ProcessEvent("EV_BUYOUT_SUCCESS")
 end

@@ -640,6 +640,25 @@
 		<Notes>在角色面板中显示额外的信息，如法术命中等</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="Details">
+		<Title>伤害统计</Title>
+		<Notes>功能强大的伤害统计插件</Notes>
+		<Category>战斗</Category>
+		<SubAddons>
+			<SubAddon name='Details_DataStorage'>
+				<Title>数据存储</Title>
+				<Notes>存储Details的统计数据</Notes>
+			</SubAddon>
+			<SubAddon name='Details_Streamer'>
+				<Title>主播助手</Title>
+				<Notes>在屏幕上显示你的施法队列，帮助你的观众了解你的手法</Notes>
+			</SubAddon>
+			<SubAddon name='Details_TinyThreat'>
+				<Title>仇恨助手</Title>
+				<Notes>显示你的队员的仇恨</Notes>
+			</SubAddon>
+		</SubAddons>
+	</Addon>
 	<Addon name="Dismounter">
 		<Title>自动下马</Title>
 		<Notes>施法时自动下马</Notes>
@@ -1040,6 +1059,11 @@
 				<Title>交易</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="PallyPower">
+		<Title>祝福助手</Title>
+		<Notes>帮助管理圣骑士的祝福等BUFF</Notes>
+		<Category>战斗</Category>
 	</Addon>
 	<Addon name="Pawn">
 		<Title>装备评分</Title>

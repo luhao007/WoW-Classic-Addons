@@ -326,6 +326,9 @@ function private.FSMCreate()
 	}
 	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
 	Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
+	if not TSM.IsWowClassic() then
+		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
+	end
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
@@ -661,6 +664,12 @@ function private.FSMCreate()
 				assert(isBuy == (context.scanType == "buyout"))
 				return "ST_PLACING_BID_BUY", quantity
 			end)
+			:AddEvent("EV_BUYOUT_SUCCESS", function(context)
+				if not context.findAuction then
+					return
+				end
+				return "ST_CONFIRMING_BID_BUY", true
+			end)
 			:AddEvent("EV_MSG", function(context, msg)
 				if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY then
 					-- failed to bid/buy an auction
@@ -772,4 +781,8 @@ end
 
 function private.FSMConfirmationCallback(isBuy, quantity)
 	private.fsm:ProcessEvent("EV_CONFIRMED", isBuy, quantity)
+end
+
+function private.FSMBuyoutSuccess()
+	private.fsm:ProcessEvent("EV_BUYOUT_SUCCESS")
 end
