@@ -2444,6 +2444,8 @@ local function RefreshSkills()
 	-- Store Skill Data
 	local activeSkills = GetTempDataMember("ActiveSkills");
 	wipe(activeSkills);
+	rawset(app.SpellNameToSpellID, 0, nil);
+	app.GetSpellName(0);
 	for index=GetNumSkillLines(),2,-1 do
 		local skillName, header, isExpanded, skillRank, numTempPoints, skillModifier,
 			skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType,
@@ -2453,7 +2455,7 @@ local function RefreshSkills()
 			if spellID then
 				activeSkills[spellID] = { skillRank, skillMaxRank };
 			else
-				--print(skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType, skillDescription);
+				-- print(skillName, header, isExpanded, skillRank, numTempPoints, skillModifier, skillMaxRank, isAbandonable, stepCost, rankCost, minLevel, skillCostType, skillDescription);
 			end
 		end
 	end
@@ -3352,15 +3354,18 @@ app.CreateDeathClass = function()
 			local characters = GetDataMember("Characters");
 			local characterDeaths = {};
 			for guid,deaths in pairs(deathsPerCharacter) do
-				if deaths > 0 then
-					table.insert(characterDeaths, {"  " .. characters[guid], deaths});
+				if deaths and deaths > 0 then
+					local character = {};
+					table.insert(character, characters[guid] or guid);
+					table.insert(character, deaths or 0);
+					table.insert(characterDeaths, character);
 				end
 			end
 			table.sort(characterDeaths, function(a, b)
 				return a[2] >= b[2];
 			end);
 			for i,data in ipairs(characterDeaths) do
-				tooltip:AddDoubleLine(data[1], data[2], 1, 1, 1);
+				tooltip:AddDoubleLine("  " .. data[1], data[2], 1, 1, 1);
 			end
 		else
 			tooltip:AddLine("  No Deaths! Literal god!");
@@ -4478,7 +4483,7 @@ app.BaseRecipe = {
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if IsSpellKnown(t.spellID) or IsPlayerSpell(t.spellID) or IsSpellKnown(t.spellID, true) then
+			if app.IsSpellKnown(t.spellID, t.rank) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -4545,25 +4550,46 @@ app.CraftTypeIDToColor = function(craftTypeID)
 	if craftType then return colors[craftType]; end
 	return nil;
 end
-app.SpellIDToSpellName = setmetatable({}, {
-	__index = function(t, spellID)
-		local spellName = GetSpellInfo(spellID);
-		if spellName then
-			dirty = true;
-			rawset(t, spellID, spellName);
-			rawset(app.SpellNameToSpellID, spellName, spellID);
-			return spellName;
-		end
+app.SpellIDToSpellName = {};
+app.GetSpellName = function(spellID, rank)
+	local spellName = rawget(app.SpellIDToSpellName, spellID);
+	if spellName then return spellName; end
+	if rank then
+		spellName = GetSpellInfo(spellID, rank);
+	else
+		spellName = GetSpellInfo(spellID);
 	end
-});
+	if spellName and spellName ~= "" then
+		if rank then
+			spellName = spellName .. " (Rank " .. rank .. ")";
+		end
+		dirty = true;
+		rawset(app.SpellIDToSpellName, spellID, spellName);
+		rawset(app.SpellNameToSpellID, spellName, spellID);
+		return spellName;
+	end
+end
+app.IsSpellKnown = function(spellID, rank)
+	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
+		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
+		return true;
+	end
+end
 app.SpellNameToSpellID = setmetatable({}, {
 	__index = function(t, key)
-		local cache, spellName = fieldCache["spellID"];
-		for spellID,o in pairs(cache) do
-			spellName = app.SpellIDToSpellName[spellID];
+		local cache = fieldCache["spellID"];
+		for spellID,g in pairs(cache) do
+			local rank;
+			for i,o in ipairs(g) do
+				if o.rank then
+					rank = o.rank;
+					break;
+				end
+			end
+			app.GetSpellName(spellID, rank);
 		end
 		for skillID,spellID in pairs(app.SkillIDToSpellID) do
-			spellName = app.SpellIDToSpellName[spellID];
+			app.GetSpellName(spellID);
 		end
 		if dirty then
 			dirty = false;
@@ -4606,7 +4632,7 @@ app.BaseSpell = {
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if IsSpellKnown(t.spellID) or IsSpellKnown(t.spellID, true) then
+			if app.IsSpellKnown(t.spellID, t.rank) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -5825,7 +5851,7 @@ local function RowOnEnter(self)
 		end
 		if reference.objectID and app.Settings:GetTooltipSetting("objectID") then GameTooltip:AddDoubleLine(L["OBJECT_ID"], tostring(reference.objectID)); end
 		if reference.spellID then
-			if app.Settings:GetTooltipSetting("spellID") then GameTooltip:AddDoubleLine(L["SPELL_ID"], tostring(reference.spellID)); end
+			if app.Settings:GetTooltipSetting("spellID") then GameTooltip:AddDoubleLine(L["SPELL_ID"], tostring(reference.spellID) .. " (" .. (app.GetSpellName(reference.spellID, reference.rank) or "??") .. ")"); end
 			
 			-- If the item is a recipe, then show which characters know this recipe.
 			if not reference.collectible and app.Settings:GetTooltipSetting("KnownBy") then
@@ -7718,6 +7744,109 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 		UpdateWindow(self, true, got);
 	end
 end);
+app:GetWindow("ItemFinder", UIParent, function(self, ...)
+	if self:IsVisible() then
+		if not self.initialized then
+			self.initialized = true;
+			local db = {};
+			db.g = {
+				{
+					['text'] = "Update Now",
+					['icon'] = app.asset("ability_monk_roll"),
+					["description"] = "Click this to update the listing. Doing so shall remove all invalid, grey, or white items.",
+					['visible'] = true,
+					['fails'] = 0,
+					['OnClick'] = function(row, button)
+						self:Update(true);
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = true;
+					end,
+				},
+			};
+			db.blacklist = {
+				[25]=1,
+				[35]=1,
+				[36]=1,
+				[37]=1,
+				[39]=1,
+				[40]=1,
+				[41]=1,
+				[42]=1,
+				[43]=1,
+				[44]=1,
+				[46]=1,
+				[47]=1,
+				[48]=1,
+				[50]=1,
+				[51]=1,
+				[52]=1,
+				[54]=1,
+				[55]=1,
+				[56]=1,
+				[57]=1,
+				[58]=1,
+				[59]=1,
+				[77]=1,
+				[85]=1,
+				[86]=1,
+				[87]=1,
+				[88]=1,
+			};
+			db.OnUpdate = function(db)
+				if self:IsVisible() then
+					local iCache = fieldCache["itemID"];
+					for i=761,23720 do
+						if not iCache[i] then
+							local t = app.CreateItem(i);
+							t.parent = db;
+							t.fails = 0;
+							t.OnUpdate = function(source)
+								local text = source.text;
+								if text and text ~= RETRIEVING_DATA then
+									source.OnUpdate = nil;
+								else
+									source.fails = source.fails + 1;
+									self.shouldFullRefresh = true;
+								end
+							end
+							tinsert(db.g, t);
+						end
+					end
+					db.OnUpdate = function(self)
+						local g = self.g;
+						if g then
+							local count = #g;
+							if count > 0 then
+								for i=count,1,-1 do
+									if g[i].fails > 2 then
+										table.remove(g, i);
+									end
+								end
+							end
+						end
+					end;
+					
+				end
+			end
+			db.text = "Item Finder";
+			db.icon = app.asset("Achievement_Dungeon_GloryoftheRaider");
+			db.description = "This is a contribution debug tool. NOT intended to be used by the majority of the player base.\n\nUsing this tool will lag your WoW every 5 seconds. Not sure why - likely a bad Blizzard Database thing.";
+			db.visible = true;
+			db.expanded = true;
+			db.progress = 0;
+			db.total = 0;
+			db.back = 1;
+			self.data = db;
+		end
+		self.data.progress = 0;
+		self.data.total = 0;
+		UpdateGroups(self.data, self.data.g);
+		UpdateWindow(self, ...);
+		if self.data.OnUpdate then self.data.OnUpdate(self.data); end
+	end
+end);
 app:GetWindow("RaidAssistant", UIParent, function(self)
 	if self:IsVisible() then
 		if not self.initialized then
@@ -8591,6 +8720,8 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 				local reagentCache = app.GetDataMember("Reagents", {});
 				local activeSkills = GetTempDataMember("ActiveSkills");
 				local learned, craftSkillID, tradeSkillID = 0, 0, 0;
+				rawset(app.SpellNameToSpellID, 0, nil);
+				app.GetSpellName(0);
 				
 				-- Crafting Skills (Enchanting Only?)
 				local craftSkillName, craftSkillLevel, craftSkillMaxLevel = GetCraftDisplaySkillLine();
@@ -8708,6 +8839,8 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 								if response then tinsert(cache.g, {text=BUG_CATEGORY2,icon = "Interface/ICONS/INV_Misc_Map_01",g=response});  end
 								response = app:BuildSearchResponse(app.Categories.WorldDrops, "requireSkill", requireSkill);
 								if response then tinsert(cache.g, {text=TRANSMOG_SOURCE_4,icon = "Interface/ICONS/INV_Misc_Map_01",g=response});  end
+								response = app:BuildSearchResponse(app.Categories.Craftables, "requireSkill", requireSkill);
+								if response then tinsert(cache.g, {text=LOOT_JOURNAL_LEGENDARIES_SOURCE_CRAFTED_ITEM,icon = "Interface\\ICONS\\ability_repair",g=response});  end
 							end
 							table.insert(g, cache);
 						end
@@ -8858,7 +8991,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 		return;
 	end
 	if self:IsVisible() then
-		if TSM_API then
+		if TSM_API and TSMAPI_FOUR then
 			if not self.cachedTSMFrame then
 				for i,f in ipairs({UIParent:GetChildren()}) do
 					if f.headerBgCenter then

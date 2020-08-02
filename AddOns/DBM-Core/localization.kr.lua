@@ -577,7 +577,7 @@ L.LAG_FOOTER					= "응답 없음: %s"
 
 --LDB
 L.LDB_TOOLTIP_HELP1	= "클릭으로 " .. L.DBM .. " 열기"
-L.LDB_TOOLTIP_HELP2	= "Alt+클릭으로 조용함 모드 켜고 끄기"
+L.LDB_TOOLTIP_HELP2	= "Alt+우클릭으로 조용함 모드 켜고 끄기"
 L.SILENTMODE_IS                     = "조용함 모드 "
 
 L.LDB_LOAD_MODS		= "보스 모드 로드"

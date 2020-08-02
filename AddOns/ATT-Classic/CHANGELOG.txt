@@ -1,28 +1,15 @@
-0.2.4 Release Notes
+0.2.6 Release Notes
 Contributions made by Crieve:
-* Fixed a source quest loop.
-* High Sorcerer Andromath is now marked as a Breadcrumb quest.
-* Fully implemented Dun Morogh quests.
-* Added the Quest Objective class.
-* Added Seasonal and Unobtainable filtering.
-* Added Darkmooon Faire filter to Seasonal Holiday Unobtainables.
-* Refactored "Never Implemented" unobtainable flag.
-* Refactored "Removed From Game" unobtainable flags.
-* Refactored all "u" fielded properties.
-* Finished implementing Alliance side War Effort quests.
-* Finished implementing Horde side War Effort quests.
-* The Settings Menu now refreshes when opened. (TODO: Look into changing this more.)
-* Corrected the Phase 6 Nature Resist items clarified in the Blue Post.
-* Locking / Unlocking Soft Reserve is now reported to your group chat.
-* Updated TOC version.
-* Updated Phase 5 and Phase 6 Loot for Stratholme and Blackrock Depths.
-* More Phase 5 and Phase 6 loot.
-* Marked Phase 5 and Phase 6 loot for Blackrock Spire.
-* Your Soft Reserve are now pushed to your group and guild when you login or when the master looter is changed automatically. There is now an option for the Master Looter to forcibly Push Soft Reserves to your group. You no longer need to be the Raid Leader.
-* Locking / Unlocking the session now sends an addon message to sync the lock with your group. You can now change your Soft Reserve by clicking on your entry in the Soft Reserve list while the session is not locked. The Master Looter can now change someone else's Soft Reserve by clicking on their entry in the Soft Reserve list while the session is not locked.
-
-Contributions made by TKTalonzor:
-* Added Midsummer festival quests - needs to be checked in game
-* Added Missing Summer festival quests and objectives
-* rearranged the quests
+* Marked some items and quests as Phase 5/6.
+* Adjusted the format of the World Dragons. Added some debug code for SpellIDs.
+* PHASE 5 marked active.
+* Another stab at the Warlock Grimoire fix.
+* Idols and Librams confirmed for Phase 5.
+* We changed how we cache spell names.
+* Added a helper function to determine if a spell ID is learned or not.
+* Working on the Tier 0.5 Sets.
+* More progress on the Tier 0.5 quest chain.
+* Finished the Tier 0.5 quest chain for all classes.
+* The Commendation Signet quests are all repeatable and Blizzard is confusing me.
+* Dirge's Kickin' Chimaerok Chops is now an Unusual Delight.
 

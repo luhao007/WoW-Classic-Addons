@@ -605,4 +605,6 @@ L.WORLD_BUFFS.allianceOny	= "Ciudadanos y aliados de Ventormenta, en el día de 
 L.WORLD_BUFFS.hordeNef		= "NEFARIAN IS SLAIN! People of Orgrimmar"
 L.WORLD_BUFFS.allianceNef	= "¡Ciudadanos de la Alianza, el Señor de Roca Negra está muerto!"
 L.WORLD_BUFFS.zgHeart		= "Ahora, solo un paso más para poder librarnos de la amenaza del Cazador de Almas"
+L.WORLD_BUFFS.zgHeartBooty	= "¡El Dios de la Sangre, el Cazador de Almas, ha sido derrotado! ¡Ya no corremos peligro!"
+L.WORLD_BUFFS.zgHeartYojamba	= "Comiencen el ritual, sirvientes. ¡Debemos desterrar el corazón de Hakkar al vacío!"
 L.WORLD_BUFFS.rendHead		= "¡El falso Jefe de Guerra Rend Puño Negro ha caído!"

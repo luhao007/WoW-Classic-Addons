@@ -53,8 +53,7 @@ L["Attacking Team"] = "Группа штурма"
 L["AV"] = "АД"
 L["Battleground Demolisher"] = "Разрушитель"
 L["Battleground Maps"] = "Карты Полей Сражений"
---[[Translation missing --]]
---[[ L["Bonfire"] = ""--]] 
+L["Bonfire"] = "Костер"
 L["Brogus Thunderbrew <Food & Drink>"] = "Брогус Грозовар <Еда и напитки>"
 L["Broken Temple Graveyard"] = "Кладбище Павшего храма"
 L["Broken Temple Vihecal Workshop"] = "Мастерской в Павшем храме"
@@ -69,8 +68,7 @@ L["Commander Stevens <Baradin's Wardens>"] = "Командир Стивенс <�
 L["Commander Zanoth <Hellscream's Reach>"] = "Командир Занот <Батальон Адского Крика>"
 L["Contested Graveyards"] = "Спорные Кладбища"
 L["Coreiel <Blade Merchant>"] = "Кориэль <Торговец клинками>"
---[[Translation missing --]]
---[[ L["Crash Site"] = ""--]] 
+L["Crash Site"] = "Место аварии"
 L["Defending Team"] = "Группа защиты"
 L["Dragonmaw Clan Compound"] = "Клан Драконьей Пасти"
 L["Drek'Thar <Frostwolf General>"] = "Дрек'Тар <Генерал клана Северного Волка>"
@@ -130,13 +128,11 @@ L["Quartermaster Davian Vaclav"] = "Интендант Дэвиан Ваклав
 L["Quartermaster Jaffrey Noreliqe"] = "Интендант Джеффри Норелик"
 L["Rescued"] = "Спасенный"
 L["Resurrection Point"] = "Точки воскрешения"
---[[Translation missing --]]
---[[ L["Ridge"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ruins"] = ""--]] 
+L["Ridge"] = "Хребет"
+L["Ruins"] = "Руины"
 L["Sergeant Parker <Baradin's Wardens>"] = "Сержант Паркер <Защитники Тол Барада>"
---[[Translation missing --]]
---[[ L["Shipwreck"] = ""--]] 
+L["Shipwreck"] = [=[Обломки корабля
+]=]
 L["Slidore's Beacon"] = "Маяк Макарча"
 L["Smith Regzar"] = "Кузнец Регзар"
 L["SotA"] = "Берег"
@@ -155,27 +151,22 @@ L["Stormpike Stable Master <Stable Master>"] = "Смотритель стойл 
 L["Sunken Ring Graveyard"] = "Кладбище Затопленного Круга"
 L["Sunken Ring Vihecal Workshop"] = "Мастерской в Затопленном Круге"
 L["Svalbrad Farmountain <Trade Goods>"] = "Свальбрад Дальногор <Хозяйственные товары>"
---[[Translation missing --]]
---[[ L["Tar Pits"] = ""--]] 
---[[Translation missing --]]
---[[ L["Temple"] = ""--]] 
+L["Tar Pits"] = "Смоляные ямы"
+L["Temple"] = "Храм"
 L["The Docks"] = "Причал"
 L["The Hangar"] = [=[Ангар	]=]
 L["The Quarry"] = "Каменоломня"
 L["The Refinery"] = "Нефтезавод"
 L["The Silithyst Must Flow"] = "The Silithyst Must Flow"
 L["The Workshop"] = "Мастерская"
---[[Translation missing --]]
---[[ L["Tide Pools"] = ""--]] 
+L["Tide Pools"] = "Приливные бассейны"
 L["Titan Relic"] = "Реликвия титанов"
---[[Translation missing --]]
---[[ L["Tower"] = ""--]] 
+L["Tower"] = "Башня"
 L["Tower Point"] = "Смотровая башня"
 L["Twinspire Graveyard"] = "Кладбище Двух Башен"
 L["Vanndar Stormpike <Stormpike General>"] = "Вандар Грозовая Вершина <Генерал клана Грозовой Вершины>"
 L["Vipore's Beacon"] = "Маяк Сквороца"
---[[Translation missing --]]
---[[ L["Waterfall"] = ""--]] 
+L["Waterfall"] = "Водопад"
 L["West Beacon"] = "Западный Маяк"
 L["West Frostwolf Tower"] = "Западная башня Северного Волка"
 L["Western Crater"] = "Западный Кратер"

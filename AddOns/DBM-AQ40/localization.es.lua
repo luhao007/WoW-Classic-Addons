@@ -114,7 +114,8 @@ L:SetOptionLocalization{
 }
 L:SetMiscLocalization{
 	Eye			= "Ojo de C'Thun",
-	Weakened 	= "está débil!"
+	Weakened 	= "está débil!",
+	NotValid	= "AQ40 parcialmente limpiado. Quedan %s jefes opcionales."
 }
 ----------------
 -- Ouro --
@@ -137,4 +138,12 @@ L:SetOptionLocalization{
 	TimerSubmerge		= "Mostrar temporizador para cuando Ouro se sumerja",
 	WarnEmerge			= "Mostrar aviso cuando Ouro regrese a la superficie",
 	TimerEmerge			= "Mostrar temporizador para cuando Ouro regrese a la superficie"
+}
+----------------
+-- AQ40 Trash --
+----------------
+L = DBM:GetModLocalization("AQ40Trash")
+
+L:SetGeneralLocalization{
+	name = "AQ40: Bichos"
 }
