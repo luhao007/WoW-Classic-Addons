@@ -84,10 +84,10 @@ L:SetGeneralLocalization{
 	name = "Todeskrallenwache"
 }
 L:SetWarningLocalization{
-	WarnVulnerable = "%sanfälligkeit"
+	WarnVulnerable = "%sverwundbarkeit"
 }
 L:SetOptionLocalization{
-	WarnVulnerable = "Zeige Warnung für Zauberanfälligkeiten"
+	WarnVulnerable = "Zeige Warnung für Zauberverwundbarkeit"
 }
 L:SetMiscLocalization{
 	Fire = "Feuer",
@@ -107,25 +107,25 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnBreath = "%s",
-	WarnVulnerable = "%sanfälligkeit"
+	WarnVulnerable = "%sverwundbarkeit"
 }
 L:SetTimerLocalization{
 	TimerBreathCD = "Abklingzeit der %s",
 	TimerBreath = "%s Zauber",
-	TimerVulnCD = "Abklingzeit der Anfälligkeit"
+	TimerVulnCD = "Abklingzeit der Verwundbarkeit"
 }
 L:SetOptionLocalization{
 	WarnBreath = "Zeige Warnung, wenn Chromaggus einen seiner Atem wirkt",
-	WarnVulnerable = "Zeige Warnung für Zauberanfälligkeiten",
+	WarnVulnerable = "Zeige Warnung für Zauberverwundbarkeit",
 	TimerBreathCD = "Abklingzeit des Atem anzeigen",
 	TimerBreath = "Zeige Atem Zauber",
-	TimerVulnCD = "Zeige Abklingzeit der Anfälligkeit"
+	TimerVulnCD = "Zeige Abklingzeit der Verwundbarkeit"
 }
 L:SetMiscLocalization{
 	Breath1 = "Erster Atem",
 	Breath2 = "Zweiter Atem",
 	VulnEmote = "%s weicht zurück, als die Haut schimmert.",
-	Vuln = "Anfälligkeit",
+	Vuln = "Verwundbarkeit",
 	Fire = "Feuer",
 	Nature = "Natur",
 	Frost = "Frost",

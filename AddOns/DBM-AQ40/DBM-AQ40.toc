@@ -19,6 +19,8 @@
 
 localization.en.lua
 localization.de.lua
+localization.br.lua
+localization.fr.lua
 localization.es.lua
 localization.ru.lua
 localization.kr.lua

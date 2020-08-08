@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Mirrored and the WeakAuras Team
-## Version: 2.17.12
+## Version: 2.18.1
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -33,8 +33,14 @@ SubRegionOptions\Tick.lua
 
 Cache.lua
 
+CommonOptions.lua
+GroupOptions.lua
+DisplayOptions.lua
+TriggerOptions.lua
+LoadOptions.lua
 ActionOptions.lua
 AnimationOptions.lua
+
 BuffTrigger.lua
 BuffTrigger2.lua
 GenericTrigger.lua
@@ -69,5 +75,7 @@ AceGUI-Widgets\AceGUIWidget-WeakAurasImportButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasSortedDropDown.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasToolbarButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasTwoColumnDropDown.lua
+AceGUI-Widgets\AceGUIWidget-WeakAurasSnippetButton.lua
 AceGUI-Widgets\AceGUIContainer-WeakAurasTreeGroup.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasSnippetButton.lua
+AceGUI-Widgets\AceGUIContainer-WeakAurasInlineGroup.lua

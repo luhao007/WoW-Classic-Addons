@@ -1,15 +1,16 @@
-0.2.6 Release Notes
+0.2.7 Release Notes
 Contributions made by Crieve:
-* Marked some items and quests as Phase 5/6.
-* Adjusted the format of the World Dragons. Added some debug code for SpellIDs.
-* PHASE 5 marked active.
-* Another stab at the Warlock Grimoire fix.
-* Idols and Librams confirmed for Phase 5.
-* We changed how we cache spell names.
-* Added a helper function to determine if a spell ID is learned or not.
-* Working on the Tier 0.5 Sets.
-* More progress on the Tier 0.5 quest chain.
-* Finished the Tier 0.5 quest chain for all classes.
-* The Commendation Signet quests are all repeatable and Blizzard is confusing me.
-* Dirge's Kickin' Chimaerok Chops is now an Unusual Delight.
+* Fixed the source quest chain for Just Compensation of the Tier 0.5 quests.
+* Updated "Calm Before the Storm".
+* Added the Summon Voidwalker quests for Warlocks.
+* Marked the Horde Commendation Signet quests as Repeatable.
+* Added additional sub-Phase 5 Filters for the War Effort and Gong.
+* Slight modification to the War Effort and the Bang the Gong quest to show the unobtainable information.
+* The quest "Powers of the Void" should now properly disappear if one or either of the quests is completed.
+* Completing one Chromatic Mantle of the Dawn quest should now show completed for all the others as well. (You can only do one... Not sure why Blizzard did this.)
+* The Earth Sapta quest should no longer appear for shamans once they've already completed it.
+* Marked a number of the Tauren starting quests as Tauren only.
+* The quest "Speak with our Quartermaster" is now marked as a Breadcrumb quest.
+* The quest "Trollbane" is now marked as a breadcrumb quest.
+* Implemented some new tech that should also us to use a script in the parser at run time to evaluate things OnUpdate. First test: The Two-Handed Axes and Two-Handed Maces weapon skills should now only appear if you're spec'd into the talent for Shamans.
 

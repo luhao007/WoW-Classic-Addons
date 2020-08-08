@@ -97,19 +97,19 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnEyeTentacle			= "Tentáculo ocular",
-	WarnWeakened			= "C'Thun vulnerable",
-	SpecWarnWeakened		= "¡C'Thun vulnerable!"
+	WarnWeakened			= "C'Thun débil",
+	SpecWarnWeakened		= "¡C'Thun está débil!"
 }
 L:SetTimerLocalization{
 	TimerEyeTentacle		= "Siguiente Tentáculo ocular",
-	TimerWeakened			= "Vulnerabilidad termina"
+	TimerWeakened			= "Debilidad termina"
 }
 L:SetOptionLocalization{
 	WarnEyeTentacle			= "Mostrar aviso cuando aparezca un Tentáculo ocular",
-	WarnWeakened			= "Mostrar aviso cuando C'Thun se vuelva vulnerable",
-	SpecWarnWeakened		= "Mostrar aviso especial cuando C'Thun se vuelva vulnerable",
+	WarnWeakened			= "Mostrar aviso cuando C'Thun se vuelva débil",
+	SpecWarnWeakened		= "Mostrar aviso especial cuando C'Thun se vuelva débil",
 	TimerEyeTentacle		= "Mostrar temporizador para el siguiente Tentáculo ocular",
-	TimerWeakened			= "Mostrar temporizador para la duración de la vulnerabilidad de C'Thun",
+	TimerWeakened			= "Mostrar temporizador para la duración de la debilidad de C'Thun",
 	RangeFrame				= "Mostrar marco de distancia (10 m)"
 }
 L:SetMiscLocalization{
