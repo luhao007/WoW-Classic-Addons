@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0329
+PawnVersion = 2.0330
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.11
@@ -1686,8 +1686,9 @@ function PawnGetInventoryItemValues(UnitName)
 					local ScaleName, Value = Entry[1], Entry[2]
 					PawnAddStatToTable(Total, ScaleName, Value) -- (not actually stats, but the function does what we want)
 				end
-			elseif Slot == 13 or Slot == 14 then
+			elseif Slot == 13 or Slot == 14 or (VgerCore.IsClassic and Slot == 18) then
 				-- Failures to get stats from trinkets is normal, so don't bail out.  See if we can get the item level in a simpler way.
+				-- (Same with the relic slot in WoW Classic.)
 				local ItemLink = GetInventoryItemLink(UnitName, Slot)
 				if ItemLink then
 					local ThisItemLevel = GetDetailedItemLevelInfo(ItemLink)
