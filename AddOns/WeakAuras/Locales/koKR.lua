@@ -1063,8 +1063,7 @@ L["Unit Frame"] = "유닛 프레임"
 L["Unit Frames"] = "유닛 프레임"
 L["Unit is Unit"] = "유닛 유닛"
 L["Unit Name"] = "유닛 이름"
---[[Translation missing --]]
-L["Unit Name/Realm"] = "Unit Name/Realm"
+L["Unit Name/Realm"] = "유닛 이름/서버"
 L["Units Affected"] = "영향 받은 유닛"
 --[[Translation missing --]]
 L["Unlimited"] = "Unlimited"

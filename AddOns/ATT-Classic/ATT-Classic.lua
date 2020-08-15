@@ -2494,6 +2494,15 @@ app.RefreshCollections = RefreshCollections;
 app.OpenMainList = OpenMainList;
 
 -- Tooltip Functions
+local EXTERMINATOR = {
+	["Player-4372-004A0418"] = true,	-- Jubilee
+	["Player-4372-00273DCA"] = true,	-- Havadin
+	["Player-4372-00DED426"] = true,	-- Krieve
+};
+local GOLD_TYCOON = {
+	["Player-4372-004A0418"] = true,	-- Jubilee
+	["Player-4372-00273DCA"] = true,	-- Havadin
+};
 local function AttachTooltipRawSearchResults(self, group)
 	if group then
 		-- If there was info text generated for this search result, then display that first.
@@ -2593,6 +2602,12 @@ local function AttachTooltip(self)
 								else
 									self:AddDoubleLine(L["TITLE"], "Author");
 								end
+							elseif GOLD_TYCOON[target] then
+								local leftSide = _G[self:GetName() .. "TextLeft1"];
+								if leftSide then leftSide:SetText("|cffff8000Gold Tycoon " .. leftSide:GetText() .. "|r"); end
+							elseif EXTERMINATOR[target] then
+								local leftSide = _G[self:GetName() .. "TextLeft1"];
+								if leftSide then leftSide:SetText("|cffa335ee" .. leftSide:GetText() .. " the Exterminator|r"); end
 							end
 						elseif type == "Creature" or type == "Vehicle" then
 							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npcID)); end
@@ -4589,6 +4604,9 @@ app.SpellNameToSpellID = setmetatable({}, {
 			app.GetSpellName(spellID, rank);
 		end
 		for skillID,spellID in pairs(app.SkillIDToSpellID) do
+			app.GetSpellName(spellID);
+		end
+		for specID,spellID in pairs(app.SpecializationSpellIDs) do
 			app.GetSpellName(spellID);
 		end
 		if dirty then
@@ -9422,7 +9440,8 @@ app.events.VARIABLES_LOADED = function()
 		"WaypointFilters",
 		"EnableTomTomWaypointsOnTaxi",
 		"TomTomIgnoreCompletedObjects",
-		"ValidSuffixesPerItemID"
+		"ValidSuffixesPerItemID",
+		"ScarabLordCallToArms"
 	}) do
 		oldsettings[key] = ATTClassicAD[key];
 	end
@@ -9441,6 +9460,27 @@ app.events.VARIABLES_LOADED = function()
 	app.PushSoftReserve(true);
 	app.Settings:Initialize();
 	C_ChatInfo.RegisterAddonMessagePrefix("ATTC");
+	
+	-- If the character is on Atiesh, show the message.
+	if realm == "Atiesh" and not GetDataMember("ScarabLordCallToArms") then
+		StartCoroutine("ScarabLordCallToArms", function()
+			-- While the player is in combat, wait for combat to end.
+			while InCombatLockdown() do coroutine.yield(); end
+			
+			-- Wait 1/2 second. For multiple simultaneous requests, each one will reapply the delay.
+			local countdown = 30;
+			while countdown > 0 do
+				countdown = countdown - 1;
+				coroutine.yield();
+			end
+			
+			-- Show the Scarab Lord Call To Arms
+			app:ShowPopupDialog("We noticed you play on Atiesh... Did you know the |Cffb4b4ff<All The Things>|r guild is here, too?\n\n|CFF40C7EBCongelatore|r is still working on Scarab Lord and could use your help collecting\n\n|TInterface\\Icons\\Inv_misc_monsterscales_13:0|t Silithid Carapace Fragments!\n\nWhisper |Cffff8000Crieve|r or |CFFFFF569Krieve|r to find out more!\n(Click Yes for this to stop popping up.)",
+			function()
+				app.SetDataMember("ScarabLordCallToArms", true);
+			end);
+		end);
+	end
 end
 app.events.PLAYER_LOGIN = function()
 	app:UnregisterEvent("PLAYER_LOGIN");

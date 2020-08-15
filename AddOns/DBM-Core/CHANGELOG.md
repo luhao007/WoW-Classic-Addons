@@ -1,55 +1,23 @@
 # Deadly Boss Mods Core
 
-## [1.13.55](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.55) (2020-08-05)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.54...1.13.55) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
+## [1.13.56](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.56) (2020-08-11)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.55...1.13.56) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
 
-- prepare new classic release with first batch of AQ fixes  
-- Improved submerge event on Ouro  
-    Added missing timers for initial sweep and blast to Ouro on engage and initial timer for sweep and blast after a submerge.  
-    NOTE: Ouro's Submerge does not have a timer. Check for yourselves on Warcraftlogs. I looked through 30 pulls. not a single one of them had submerge at same time. In fact the variance was so massive I can only conclude it truly is random. Some pulls with submerge as early as 70sec from engage and some with it as late as 3 minutes into fight. It's also worth noting that in most kills he didn't even submerge at all (likely because if the submerge window is 1-3 minutes, and kill is 1minute 30 seconds, there is a good change he died before submerge)  
-- Update localization.es.lua (#444)  
-- Update localization.br.lua (#443)  
-- Fix case  
-- Changed speed clear to require Huhuron do to fact that it's skipable and need to make sure it's included in full clear check. as a result of this change, this update will wipe previously recorded speed clears.  
-    Fixed a bug on Cthun where eye tentacle timer didn't cancel on phase 2 push  
-    Deleted whirlwind active timer on sartura. It was actually quite useless and inaccurate.  
-    Fixed Summon images firing two warnings on Skeram  
-    Fixed freeze warning icon on Viscidus to not be a green square  
-- Update localization.cn.lua (#442)  
-- Update koKR (Classic) (#441)  
-- Over deleted  
-- Standard game font will now be applied far more inteligently so that it's always set to correct one even if user swaps languages. Basically, the font itself is no longer saved in the option (when using one of standard game fonts) just a variable that says to apply standardFont font, to whatever it SHOULD be based on clients locales setting this session. So no more ????? warnings/timers when you change your language after DBMs initial setup (well, unless you are using a non standard font that doesn't support new language, can't do too much about that besides telling you to try other non default fonts til one works in your language)  
-- Changed discord urls to non vanity invite link  
-- Send boss name with the BWL enrage warnings (#440)  
-- aq/trash: add warning for cause insanity / mind control (#439)  
-- ported retail Fix for a bug that could cause yell scheduling to schedule invalid yells during a misusage  
-- Update localization.es.lua (#437)  
-- Update localization.fr.lua (#435)  
-    * Update localization.fr.lua  
-    * Update localization.fr.lua  
-    * Update localization.fr.lua  
-    Co-authored-by: QartemisT <63267788+QartemisT@users.noreply.github.com>  
-- Update localization.fr.lua (#436)  
-    * Update localization.fr.lua  
-    * Update localization.fr.lua  
-- aq/anubisath: add explode warning (#434)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- Update localization.cn.lua (#433)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- Fixed a bug where legacy mods calling StartCombat without an event type could throw errors  
-    Fixed a bug with profile drop downs throwing a lua error  
-- Update localization.cn.lua (#432)  
-- Update localization.es.lua (#431)  
-- Update localization.cn.lua (#429)  
-- Let weakened be localized any way localizers want, so long as it works.  
-- Set alpha revision for next cycle  
-- Create localization.br.lua (#421)  
-- Create localization.fr.lua (#422)  
-- Create localization.br.lua (#423)  
-- Update DBM-AQ20.toc (#424)  
-- Update localization.de.lua (#425)  
-    * Update localization.de.lua  
-    * Update localization.de.lua  
-- Create localization.fr.lua (#426)  
-- Update DBM-AQ40.toc (#427)  
-- Update zhTW (#428)  
+- Push a new release. Want to push updates out more often to get AQ fixes/additions out quicker. Frequent releases will slow after initial wave of AQ updates  
+- Tweak dark glare timer  
+- added GTFO for blizzard on Twin Emperors  
+- AQ Updates:  
+     - Reset speed clear data for AQ40 again, since it was missing the patrolling Obsidian Eradicator mob which could be used to start run instead  
+     - Throttle reflect warnings so they aren't spammy as hell  
+     - Changed explode run out warning to off by default. it's not as dangerous in classic as it was in private servers and it's already being ignored by most. That said, it's there for anyone who wants to turn it on  
+- Add Eye beam target scanner to Cthun, needs testing.  
+- Change weakened trigger to fix detection. Closes #449  
+- update this to follow normal rules for events that only have en emote trigger  
+- Update localization.tw.lua (#448)  
+- Update localization.cn.lua (#447)  
+- Attempt fix Frenzy warning bug from #440 (#446)  
+- Cancel  timer on berserk  
+- Couple tweaks  
+- Add this to alpha for now, play it by ear  
+- Remove unneeded calls to SetZone, it's always called in NewMod object, only needs to be called at mod level if it's changed.  
+- Prep classic alpha revision before 21526326 prs come in  

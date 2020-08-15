@@ -147,7 +147,7 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cActivityEventName = "事件";
 
 	GroupCalendar_cAQREventName = "安其拉废墟";
-	GroupCalendar_cAQTEventName = "安其拉神庙";
+	GroupCalendar_cAQTEventName = "安其拉神殿";
 	GroupCalendar_cBFDEventName = "黑暗深渊";
 	GroupCalendar_cBRDEventName = "黑石深渊";
 	GroupCalendar_cUBRSEventName = "黑石塔上层";
@@ -184,7 +184,7 @@ if GetLocale() == "zhCN" then
 	GroupCalendar_cOnyxiaResetEventName = "奥妮克希亚 重置";
 	GroupCalendar_cBWLResetEventName = "黑翼之巢 重置";
 	GroupCalendar_cAQRResetEventName = "安其拉废墟 重置";
-	GroupCalendar_cAQTResetEventName = "安其拉神庙 重置";
+	GroupCalendar_cAQTResetEventName = "安其拉神殿 重置";
 	GroupCalendar_cNaxxResetEventName = "纳克萨玛斯 重置";
 
 	GroupCalendar_cTransmuteCooldownEventName = "转化 就绪";

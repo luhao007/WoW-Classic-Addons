@@ -1,0 +1,15 @@
+## Interface: 11305
+## Author: Mirrored and the WeakAuras Team
+## Version: 2.18.2
+## Dependencies: WeakAuras, WeakAurasOptions
+## LoadOnDemand: 1
+## DefaultState: Enabled
+
+## Title: WeakAuras Model Paths
+## Notes: Model paths for WeakAuras
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF图形提示|r |cFF69CCF0模型路径|r
+
+## X-Category: Interface Enhancements
+## X-Part-Of: WeakAuras
+
+ModelPathsClassic.lua
