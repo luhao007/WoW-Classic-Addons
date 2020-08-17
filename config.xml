@@ -664,6 +664,11 @@
 		<Notes>施法时自动下马</Notes>
 		<Category>物品</Category>
 	</Addon>
+	<Addon name="ExRT">
+		<Title>团队助手</Title>
+		<Notes>提供团队和小队的一些辅助功能</Notes>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="FasterCamera">
 		<Title>视野调整</Title>
 		<Notes>提供调整视野上限，快速缩放视野等功能</Notes>

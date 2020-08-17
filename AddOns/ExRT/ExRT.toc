@@ -1,0 +1,48 @@
+## Interface: 11305
+## Author: ykiigor
+## Version: 4160
+## SavedVariables: VExRT
+
+## Title: Exorsus Raid Tools
+## Notes: Exorsus Raid Tools
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF团队助手|r |cFFFFE00AExRT|r
+## Notes-zhCN: 提供团队和小队的一些辅助功能
+
+
+core.lua
+Functions.lua
+ExLib.lua
+localization\localization.ru.lua
+localization\localization.en.lua
+localization\localization.de.lua
+localization\localization.cn.lua
+localization\localization.tw.lua
+localization\localization.kr.lua
+localization\localization.lua
+BlizzFix.lua
+Options.lua
+ExCD2.lua
+Inspect.lua
+BattleRes.lua
+BossWatcher.lua
+InspectViewer.lua
+Note.lua
+VisNote.lua
+RaidCheck.lua
+InviteTool.lua
+MarksBar.lua
+Marks.lua
+Timers.lua
+Coins.lua
+RaidAttendance.lua
+Encounter.lua
+WhoPulled.lua
+Pets.lua
+AutoLogging.lua
+LootLink.lua
+WAChecker.lua
+Bindings.lua
+Bindings.xml
+Blank.lua
+Profiles.lua
+Changelog.lua

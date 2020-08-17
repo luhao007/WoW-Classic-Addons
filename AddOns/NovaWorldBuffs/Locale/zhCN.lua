@@ -548,3 +548,5 @@ L["enableLayerButton"] = "启用位面";
 L["disableLayerButton"] = "禁用位面";
 L["enableLayerButtonTooltip"] = "单击以重新启用此位面.\n此位面将被重新放回计时器和位面计算中.";
 L["disableLayerButtonTooltip"] = "在服务器重启后,单击以禁用此位面.\n插件将忽略此位面并在稍后将其删除.";
+
+L["Blackrock Mountain"] = "黑石山";
