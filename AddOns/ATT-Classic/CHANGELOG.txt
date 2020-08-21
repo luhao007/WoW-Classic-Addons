@@ -1,9 +1,31 @@
-0.2.8 Release Notes
+0.2.9 Release Notes
 Contributions made by Crieve:
-* Jubilee is now a Gold Tycoon!
-* Attempting to fix an issue with specializations.
-* Havadin is now a Gold Tycoon!
-* Added a filter for the Secrets of the Colossus quests in Silithus. (These are only available during the 10-Hour War!)
-* Added the ATT-exclusive title "<NAME> the Exterminator" for those that assisted in the bug grind on behalf of the <All The Things> guild.
-* Added the Scarab Lord Call To Arms for players on the Atiesh server. (this will be disabled after the War Effort is over)
+* Allysandra is now an Exterminator!
+* Aethbric is now an Exterminator!
+* Naromot is now an Exterminator!
+* Congelatore is now an Exterminator.
+* Fairplay is now an Exterminator.
+* Shadrac is now an Exterminator.
+* Fortress is now an Exterminator!
+* Havachant is now an Exterminator.
+* Villeinia is now an Exterminator.
+* Dizplaced, Amiera, Necrid, and Saitosan are now Exterminators!
+* Macpayn is now a Scarab Lord!
+* Borlemont, Dubsteve, Hewn, Holochops, Intothefray, and Semiha are now Exterminators!
+* Nirv is now an Exterminator.
+* Notloknido is now a Gold Tycoon.
+* Headphones is now a Gold Tycoon.
+* Aivet is now an Exterminator.
+* Rooni is now an Exterminator.
+* ...
+* Hairyplodder is now an Exterminator.
+* Mimico is now an Exterminator.
+* Removed the Call to Arms for Congelatore's Scarab Lord - we finished it! Thanks to the handful of ATT users on Atiesh (outside of guild) that helped contribute!
+* Crieve is now a Completionist. Titles no longer appear for players with special ATT titles.
+* Saitosan is now a Gold Tycoon.
+* Manamontanna is now an Exterminator.
+* Drunkninja is now an Exterminator.
+* Solow is now an Exterminator.
+* Congelatore is now a Scarab Lord!
+* Added a whole bunch of exterminators.
 

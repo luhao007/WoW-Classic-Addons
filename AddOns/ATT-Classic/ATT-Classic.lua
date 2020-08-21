@@ -2495,13 +2495,66 @@ app.OpenMainList = OpenMainList;
 
 -- Tooltip Functions
 local EXTERMINATOR = {
+	["Player-4372-00B131BB"] = true,	-- Aivet
 	["Player-4372-004A0418"] = true,	-- Jubilee
 	["Player-4372-00273DCA"] = true,	-- Havadin
 	["Player-4372-00DED426"] = true,	-- Krieve
+	["Player-4372-00862D32"] = true,	-- Aethbric
+	["Player-4372-0128B376"] = true,	-- Alizewsaur
+	["Player-4372-012A730E"] = true,	-- Allysandra
+	["Player-4372-00FE5CE7"] = true,	-- Amiera
+	["Player-4372-0073B95B"] = true,	-- Amyralynn
+	["Player-4372-0087049A"] = true,	-- Asandra
+	["Player-4372-003159A9"] = true,	-- Astromarus
+	["Player-4372-006A97BA"] = true,	-- Azwel
+	["Player-4372-0014521D"] = true,	-- Bombeon
+	["Player-4372-00E86132"] = true,	-- Borlemont
+	["Player-4372-010B9178"] = true,	-- Braven
+	["Player-4372-0100DF23"] = true,	-- Dizplaced
+	["Player-4372-01230376"] = true,	-- Drixxtwo
+	["Player-4372-002719C4"] = true,	-- Drunkninja
+	["Player-4372-0124174F"] = true,	-- Dubsteve
+	["Player-4372-00BD6CC7"] = true,	-- Enthira
+	["Player-4372-00A3A0FD"] = true,	-- Fairplay
+	["Player-4372-004A7A3F"] = true,	-- Fortress
+	["Player-4372-00CF7821"] = true,	-- Glas
+	["Player-4372-0108DCC1"] = true,	-- Grotesque
+	["Player-4372-00E8CC3C"] = true,	-- Hairyplodder
+	["Player-4372-00D38E94"] = true,	-- Havachant
+	["Player-4372-00312AD9"] = true,	-- Hewn
+	["Player-4372-0046F7E8"] = true,	-- Holochops
+	["Player-4372-007AF4B7"] = true,	-- Intothefray
+	["Player-4372-011C1FE9"] = true,	-- Katalysm
+	["Player-4372-00EBCC07"] = true,	-- Lilithann
+	["Player-4372-0075A187"] = true,	-- Loknido
+	["Player-4372-01390D2A"] = true,	-- Manamontanna
+	["Player-4372-00FE5DA2"] = true,	-- Mimico
+	["Player-4372-00D7B345"] = true,	-- Narom
+	["Player-4372-01353958"] = true,	-- Naromot
+	["Player-4372-01294037"] = true,	-- Necrid
+	["Player-4372-00793732"] = true,	-- Nirv
+	["Player-4372-01250D6D"] = true,	-- Pewpeu
+	["Player-4372-0008B144"] = true,	-- Pixl
+	["Player-4372-00C2F945"] = true,	-- Rooni
+	["Player-4372-0058A418"] = true,	-- Saitosan [Druid]
+	["Player-4372-00F82168"] = true,	-- Semiha
+	["Player-4372-001F92DA"] = true,	-- Shadrac
+	["Player-4372-00732218"] = true,	-- Solow
+	["Player-4372-01091DE4"] = true,	-- Tacolock
+	["Player-4372-00451B8E"] = true,	-- Tinybit
+	["Player-4372-00E5AE25"] = true,	-- Villeinia
+	["Player-4372-00D96703"] = true,	-- Worfin
 };
 local GOLD_TYCOON = {
 	["Player-4372-004A0418"] = true,	-- Jubilee
 	["Player-4372-00273DCA"] = true,	-- Havadin
+	["Player-4372-0068D548"] = true,	-- Headphones
+	["Player-4372-00F2D620"] = true,	-- Notloknido
+	["Player-4372-00FF84F0"] = true,	-- Saitosan [Priest]
+};
+local SCARAB_LORD = {
+	["Player-4372-000B3C4D"] = true,	-- Congelatore
+	["Player-4372-00A64EA0"] = true,	-- Macpayn
 };
 local function AttachTooltipRawSearchResults(self, group)
 	if group then
@@ -2582,15 +2635,15 @@ local function AttachTooltip(self)
 				local target = select(2, self:GetUnit());
 				if target then
 					-- Yes.
-					target = UnitGUID(target);
-					if target then
-						local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",target);
-						-- print(target, type, npcID);
+					local guid = UnitGUID(target);
+					if guid then
+						local type, zero, server_id, instance_id, zone_uid, npcID, spawn_uid = strsplit("-",guid);
+						-- print(guid, type, npcID);
 						if type == "Player" then
-							if target == "Player-4372-0000390A" then
+							if guid == "Player-4372-0000390A" then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
 								if leftSide then
-									leftSide:SetText("|cffff8000" .. leftSide:GetText() .. "|r");
+									leftSide:SetText("|cffff8000" .. UnitName(target) .. " the Completionist|r");
 								end
 								local rightSide = _G[self:GetName() .. "TextRight2"];
 								leftSide = _G[self:GetName() .. "TextLeft2"];
@@ -2602,12 +2655,15 @@ local function AttachTooltip(self)
 								else
 									self:AddDoubleLine(L["TITLE"], "Author");
 								end
-							elseif GOLD_TYCOON[target] then
+							elseif SCARAB_LORD[guid] then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
-								if leftSide then leftSide:SetText("|cffff8000Gold Tycoon " .. leftSide:GetText() .. "|r"); end
-							elseif EXTERMINATOR[target] then
+								if leftSide then leftSide:SetText("|cffff8000Scarab Lord " .. UnitName(target) .. "|r"); end
+							elseif GOLD_TYCOON[guid] then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
-								if leftSide then leftSide:SetText("|cffa335ee" .. leftSide:GetText() .. " the Exterminator|r"); end
+								if leftSide then leftSide:SetText("|cffff8000Gold Tycoon " .. UnitName(target) .. "|r"); end
+							elseif EXTERMINATOR[guid] then
+								local leftSide = _G[self:GetName() .. "TextLeft1"];
+								if leftSide then leftSide:SetText("|cffa335ee" .. UnitName(target) .. " the Exterminator|r"); end
 							end
 						elseif type == "Creature" or type == "Vehicle" then
 							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npcID)); end
@@ -9440,8 +9496,7 @@ app.events.VARIABLES_LOADED = function()
 		"WaypointFilters",
 		"EnableTomTomWaypointsOnTaxi",
 		"TomTomIgnoreCompletedObjects",
-		"ValidSuffixesPerItemID",
-		"ScarabLordCallToArms"
+		"ValidSuffixesPerItemID"
 	}) do
 		oldsettings[key] = ATTClassicAD[key];
 	end
@@ -9460,27 +9515,6 @@ app.events.VARIABLES_LOADED = function()
 	app.PushSoftReserve(true);
 	app.Settings:Initialize();
 	C_ChatInfo.RegisterAddonMessagePrefix("ATTC");
-	
-	-- If the character is on Atiesh, show the message.
-	if realm == "Atiesh" and not GetDataMember("ScarabLordCallToArms") then
-		StartCoroutine("ScarabLordCallToArms", function()
-			-- While the player is in combat, wait for combat to end.
-			while InCombatLockdown() do coroutine.yield(); end
-			
-			-- Wait 1/2 second. For multiple simultaneous requests, each one will reapply the delay.
-			local countdown = 30;
-			while countdown > 0 do
-				countdown = countdown - 1;
-				coroutine.yield();
-			end
-			
-			-- Show the Scarab Lord Call To Arms
-			app:ShowPopupDialog("We noticed you play on Atiesh... Did you know the |Cffb4b4ff<All The Things>|r guild is here, too?\n\n|CFF40C7EBCongelatore|r is still working on Scarab Lord and could use your help collecting\n\n|TInterface\\Icons\\Inv_misc_monsterscales_13:0|t Silithid Carapace Fragments!\n\nWhisper |Cffff8000Crieve|r or |CFFFFF569Krieve|r to find out more!\n(Click Yes for this to stop popping up.)",
-			function()
-				app.SetDataMember("ScarabLordCallToArms", true);
-			end);
-		end);
-	end
 end
 app.events.PLAYER_LOGIN = function()
 	app:UnregisterEvent("PLAYER_LOGIN");

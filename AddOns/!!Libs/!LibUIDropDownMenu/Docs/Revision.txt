@@ -1,6 +1,10 @@
-$Id: Revision.txt 43 2019-09-02 14:14:50Z arith $
+$Id: Revision.txt 49 2020-08-18 17:17:08Z arithmandar $
 Revision History:
 =================
+
+v3.00.9000135522 (2020/08/19)
+-----------------------------
+- Shadowlands support and backward compatibility for both WoW classic and BFA
 
 v2.01.8020031429 (2019/08/12)
 -----------------------------
