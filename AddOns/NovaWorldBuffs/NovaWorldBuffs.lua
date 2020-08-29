@@ -1107,6 +1107,12 @@ function NWB:doNpcKilledMsg(type, layer)
 	end
 end
 
+--Buffs seem to have changed yet again, they no longer land with full duration.
+--Now buffs are missing the lag duration from drop to land depending on aount of people in city.
+--Basically is lands missing 10 or so seconds on my realm.
+local yellOneOffset = 30;
+local yellTwoOffset = 30;
+local buffLag = 15;
 local lastZanBuffGained = 0;
 function NWB:combatLogEventUnfiltered(...)
 	local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
@@ -1198,12 +1204,15 @@ function NWB:combatLogEventUnfiltered(...)
 		zoneID = tonumber(zoneID);
 		if (NWB.isDebug) then
 			local expirationTime = NWB:getBuffDuration(spellName);
-			if (destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"] and expirationTime >= 7199.5) then
+			if (destName == UnitName("player") and (spellName == L["Rallying Cry of the Dragonslayer"] or spellName == L["Warchief's Blessing"])) then
+				NWB:debug("buff", expirationTime, sourceGUID);
+			end
+			if (destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"] and expirationTime >= (7199.5 - buffLag)) then
 				NWB:debug("bufftest", spellName, unitType, zoneID, npcID, GetServerTime() - NWB.data.onyYell, expirationTime);
 				NWB:debug("bufftest2 source", sourceGUID, "dest", destGUID);
 				NWB:debug("ony yell", GetServerTime() - NWB.data.onyYell, "nef yell", GetServerTime() - NWB.data.nefYell);
 			end
-			if (destName == UnitName("player") and spellName == L["Warchief's Blessing"] and expirationTime >= 3599.5) then
+			if (destName == UnitName("player") and spellName == L["Warchief's Blessing"] and expirationTime >= (3599.5 - buffLag)) then
 				NWB:debug("bufftest", spellName, unitType, zoneID, npcID, GetServerTime() - NWB.data.rendYell, expirationTime);
 				NWB:debug("bufftest3 source", sourceGUID, "dest", destGUID);
 				NWB:debug("rend yell", GetServerTime() - NWB.data.rendYell);
@@ -1213,7 +1222,9 @@ function NWB:combatLogEventUnfiltered(...)
 			local expirationTime = NWB:getBuffDuration(L["Warchief's Blessing"], 1);
 			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
 			--If layered then you must be in org to set the right layer id, the barrens is disabled.
-			if (expirationTime >= 3599.5 and (zone == 1454 or not NWB.isLayered) and unitType == "Creature") then
+			--if (expirationTime >= 3599.5 and (zone == 1454 or not NWB.isLayered) and unitType == "Creature") then
+			if (expirationTime >= (3599.5 - buffLag) and (zone == 1454 or not NWB.isLayered) and unitType == "Creature"
+					and ((GetServerTime() - NWB.data.rendYell2) < yellTwoOffset or (GetServerTime() - NWB.data.rendYell) < yellOneOffset)) then
 				NWB:trackNewBuff(spellName, "rend");
 				NWB:playSound("soundsRendDrop", "rend");
 				if (NWB.isLayered and zone ~= 1454) then
@@ -1254,17 +1265,16 @@ function NWB:combatLogEventUnfiltered(...)
 		elseif (((NWB.faction == "Horde" and (npcID == "14720" or npcID == "173758" or NWB.noGUID))
 				or (NWB.faction == "Alliance" and (npcID == "14721" or npcID == "173754" or NWB.noGUID)))
 				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
-				and ((GetServerTime() - NWB.data.nefYell2) < 20 or (GetServerTime() - NWB.data.nefYell) < 30)
+				and ((GetServerTime() - NWB.data.nefYell2) < yellTwoOffset or (GetServerTime() - NWB.data.nefYell) < yellOneOffset)
 				and (unitType == "Creature" or NWB.noGUID)) then
 			--What a shitshow this is now, thanks Blizzard for removing the GUID for no good reason.
 			local expirationTime = NWB:getBuffDuration(L["Rallying Cry of the Dragonslayer"], 2);
 			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
-			if (expirationTime >= 7199.5) then
-				NWB:debug("currentZoneID", NWB.currentZoneID);
+			if (expirationTime >= (7199.5  - buffLag)) then
 				if (((not NWB.noGUID or NWB.currentZoneID > 0) and (zone == 1453 or zone == 1454))
 						or not NWB.isLayered) then
 					if (NWB.noGUID) then
-						--NWB:debug("bufftest4", "self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
+						NWB:debug("bufftest4", "self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
 						NWB:setNefBuff("self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
 					elseif ((GetServerTime() - NWB.lastJoinedGroup) > 180) then
 						NWB:setNefBuff("self", UnitName("player"), zoneID, sourceGUID);
@@ -1281,17 +1291,16 @@ function NWB:combatLogEventUnfiltered(...)
 		elseif (((NWB.faction == "Horde" and (npcID == "14392" or npcID == "173758" or NWB.noGUID))
 				or (NWB.faction == "Alliance" and (npcID == "14394" or npcID == "173754" or NWB.noGUID)))
 				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
-				and ((GetServerTime() - NWB.data.onyYell2) < 20 or (GetServerTime() - NWB.data.onyYell) < 30)
+				and ((GetServerTime() - NWB.data.onyYell2) < yellTwoOffset or (GetServerTime() - NWB.data.onyYell) < yellOneOffset)
 				and ((GetServerTime() - NWB.data.nefYell2) > 30)
 				and (unitType == "Creature" or NWB.noGUID)) then
 			local expirationTime = NWB:getBuffDuration(L["Rallying Cry of the Dragonslayer"], 2);
 			local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
-			if (expirationTime >= 7199.5) then
-				NWB:debug("currentZoneID", NWB.currentZoneID);
+			if (expirationTime >= (7199.5 - buffLag)) then
 				if (((not NWB.noGUID or NWB.currentZoneID > 0) and (zone == 1453 or zone == 1454))
 					or not NWB.isLayered) then
 					if (NWB.noGUID) then
-						--NWB:debug("bufftest4", "self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
+						NWB:debug("bufftest4", "self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
 						NWB:setOnyBuff("self", UnitName("player"), NWB.currentZoneID, "noSourceGUID");
 					elseif ((GetServerTime() - NWB.lastJoinedGroup) > 180) then
 						NWB:setOnyBuff("self", UnitName("player"), zoneID, sourceGUID);
@@ -3525,13 +3534,15 @@ function NWB:songflowerPicked(type, otherPlayer)
 		local layer, layerNum;
 		if (NWB.isLayered and NWB:GetLayerCount() >= 2 and NWB.lastKnownLayerMapID and NWB.lastKnownLayerMapID > 0
 				and NWB.lastKnownLayer and NWB.lastKnownLayer > 0) then
+		--if (NWB.isLayered and NWB:GetLayerCount() >= 2 and NWB.lastKnownLayerMapID and NWB.lastKnownLayerMapID > 0) then
 			layer = NWB.lastKnownLayerMapID;
 			layerNum = NWB.lastKnownLayer;
 		end
+		NWB:debug(NWB.lastKnownLayerMapID, NWB.lastKnownLayer);
 		if (not layer or layer == 0) then
 			layer = NWB.lastKnownLayerMapIDBackup;
 		end
-		NWB:debug(NWB.isLayered, NWB.layeredSongflowers, layer, layerNum, NWB:GetLayerCount());
+		NWB:debug(NWB.isLayered, NWB.layeredSongflowers, layer, layerNum, NWB:GetLayerCount(), NWB.lastKnownLayerMapID, NWB.lastKnownLayer);
 		if (NWB.isLayered and NWB.layeredSongflowers and layer and layer > 0) then
 			if (not layer or layer < 1) then
 				NWB:debug("no known felwood layer");

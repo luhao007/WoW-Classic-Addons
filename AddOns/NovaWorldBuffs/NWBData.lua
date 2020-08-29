@@ -727,7 +727,11 @@ function NWB:createTimerLogData(distribution, entries)
 		for k, v in ipairs(NWB.data.timerLog) do
 			if (not logRendOnly or v.type == "r" or v.type == "q") then
 				count = count + 1;
-			    table.insert(sorted, v)
+				if (v.timestamp and v.timestamp > (GetServerTime() - 86400)) then
+			    	table.insert(sorted, v);
+			    end
+			    --Remove layerNum, it's local only. 
+			    v.layerNum = nil;
 			    --Create a bigger table than we send for sorting by timestamp and getting the last entries from.
 				if (count >= entries * 2) then
 					break;
@@ -1095,7 +1099,7 @@ function NWB:receivedData(dataReceived, sender, distribution)
 								vv['nefNpcDied'] = nil;
 							end
 							for k, v in pairs(vv) do
-								if ((string.match(k, "flower") and NWB.db.global.syncFlowersAll)
+								if (type(k) == "string" and (string.match(k, "flower") and NWB.db.global.syncFlowersAll)
 										or (not NWB.db.global.receiveGuildDataOnly)
 										or (NWB.db.global.receiveGuildDataOnly and distribution == "GUILD")) then
 									if (validKeys[k] and tonumber(v)) then
@@ -1581,6 +1585,9 @@ function NWB:timerLog(type, timestamp, layer, who, forceSend, distribution)
 			if (layer) then
 				t.layerID = layer;
 			end
+			if (NWB:GetLayerCount() > 1) then
+				t.layerNum = NWB:GetLayerNum(layer);
+			end
 			table.insert(NWB.data.timerLog, 1, t);
 			NWB:debug("logging", type, timestamp);
 			if (type == "q") then
@@ -1608,7 +1615,7 @@ function NWB:validateCloseLogEntries(shortKey, timestamp, layer, cooldown)
 				--NWB:debug("unsafe")
 				return false;
 			end
-			if (count >= 10) then
+			if (count >= 20) then
 				break;
 			end
 		end
@@ -1733,6 +1740,7 @@ NWBTimerLogRefreshButton:SetText(L["Refresh"]);
 NWBTimerLogRefreshButton:SetNormalFontObject("GameFontNormalSmall");
 NWBTimerLogRefreshButton:SetScript("OnClick", function(self, arg)
 	NWB:recalcTimerLogFrame();
+	NWBTimerLogFrame:SetVerticalScroll(0);
 	C_Timer.After(0.05, function()
 		NWBTimerLogFrame:SetVerticalScroll(0);
 	end)
@@ -1831,9 +1839,13 @@ function NWB:recalcTimerLogFrame()
 					(NWB.db.global.timerLogShowNef and v.type == "n" and (not logRendOnly or not NWB.isLayered))) then
 				local line = "";
 				local layerText = "";
+				local layerNumText = "";
 				local layerNum = 0;
 				if (NWB.isLayered) then
 					layerNum = NWB:GetLayerNum(v.layerID);
+				end
+				if (layerNum == 0 and v.layerNum) then
+					layerNum = v.layerNum;
 				end
 				local keyText = "unknownTimer";
 				if (v.type == "r") then
@@ -1897,8 +1909,11 @@ function NWB:recalcTimerLogFrame()
 							timeLeftString = " |cFFB0B0B0(Cooldown " .. NWB:getTimeString(timeLeft, true, "short", true) .. ")|r";
 						end
 					end
+					if (v.type == "q") then
+						layerNumText = "|cFF989898(zone " .. v.layerID .. ")|r ";
+					end
 					lineCount = lineCount + 1;
-					line = lineCount .. ") |cFFFFAE42" .. timeText .. space .. "|r " .. layerText .. keyText
+					line = lineCount .. ") |cFFFFAE42" .. timeText .. space .. "|r " .. layerText .. layerNumText .. keyText
 						.. agoText .. timeLeftString .. "\n";
 					text = text .. line;
 					--layers = {};

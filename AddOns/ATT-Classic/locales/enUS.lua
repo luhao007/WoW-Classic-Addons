@@ -880,6 +880,10 @@ app.L = {
 		["Zul'Farrak"] = 219,
 		["Zul'Gurub"] = 337,
 	};
+	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
+		["Ahn'Qiraj"] = 320,
+		["Gates of Ahn'Qiraj"] = 1451,
+	};
 
 	-- Unobtainable Listing
 	["UNOBTAINABLE_ITEM_TEXTURES"] = {

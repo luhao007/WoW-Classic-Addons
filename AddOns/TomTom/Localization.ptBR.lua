@@ -1,5 +1,6 @@
---Localization.enUS.lua
+--Localization.ptBR.lua
 
+if ( GetLocale() == "ptBR" ) then
 TomTomLocals = {
 	["%d yards"] = "%d yards",
 	["%s (%.2f, %.2f)"] = "%s (%.2f, %.2f)",
@@ -225,3 +226,5 @@ TomTomLocals = {
 }
 
 setmetatable(TomTomLocals, {__index=function(t,k) rawset(t, k, k); return k; end})
+
+end

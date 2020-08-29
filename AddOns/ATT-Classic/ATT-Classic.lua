@@ -2510,6 +2510,7 @@ local EXTERMINATOR = {
 	["Player-4372-0014521D"] = true,	-- Bombeon
 	["Player-4372-00E86132"] = true,	-- Borlemont
 	["Player-4372-010B9178"] = true,	-- Braven
+	["Player-4372-0063664F"] = true,	-- Brittbrat
 	["Player-4372-0100DF23"] = true,	-- Dizplaced
 	["Player-4372-01230376"] = true,	-- Drixxtwo
 	["Player-4372-002719C4"] = true,	-- Drunkninja
@@ -2537,6 +2538,7 @@ local EXTERMINATOR = {
 	["Player-4372-0008B144"] = true,	-- Pixl
 	["Player-4372-00C2F945"] = true,	-- Rooni
 	["Player-4372-0058A418"] = true,	-- Saitosan [Druid]
+	["Player-4372-0123A5BE"] = true,	-- Sheisskopf
 	["Player-4372-00F82168"] = true,	-- Semiha
 	["Player-4372-001F92DA"] = true,	-- Shadrac
 	["Player-4372-00732218"] = true,	-- Solow
@@ -3874,6 +3876,13 @@ app.GetCurrentMapID = function()
 		local otherMapID = (real and text_to_mapID[real]) or (zone and text_to_mapID[zone]);
 		if otherMapID then return otherMapID; end
 	end
+	text_to_mapID = app.L["ALT_ZONE_TEXT_TO_MAP_ID"];
+	if text_to_mapID then
+		local real = GetRealZoneText();
+		local zone = GetSubZoneText();
+		local otherMapID = (real and text_to_mapID[real]) or (zone and text_to_mapID[zone]);
+		if otherMapID then return otherMapID; end
+	end
 	return mapID;
 end
 app.GetMapLevel = function(mapID)
@@ -3894,6 +3903,11 @@ app.GetMapName = function(mapID)
 			return info.name;
 		else
 			for name,m in pairs(L["ZONE_TEXT_TO_MAP_ID"]) do
+				if mapID == m then
+					return name;
+				end
+			end
+			for name,m in pairs(L["ALT_ZONE_TEXT_TO_MAP_ID"]) do
 				if mapID == m then
 					return name;
 				end

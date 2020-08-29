@@ -1,31 +1,9 @@
-0.2.9 Release Notes
+0.3.0 Release Notes
 Contributions made by Crieve:
-* Allysandra is now an Exterminator!
-* Aethbric is now an Exterminator!
-* Naromot is now an Exterminator!
-* Congelatore is now an Exterminator.
-* Fairplay is now an Exterminator.
-* Shadrac is now an Exterminator.
-* Fortress is now an Exterminator!
-* Havachant is now an Exterminator.
-* Villeinia is now an Exterminator.
-* Dizplaced, Amiera, Necrid, and Saitosan are now Exterminators!
-* Macpayn is now a Scarab Lord!
-* Borlemont, Dubsteve, Hewn, Holochops, Intothefray, and Semiha are now Exterminators!
-* Nirv is now an Exterminator.
-* Notloknido is now a Gold Tycoon.
-* Headphones is now a Gold Tycoon.
-* Aivet is now an Exterminator.
-* Rooni is now an Exterminator.
-* ...
-* Hairyplodder is now an Exterminator.
-* Mimico is now an Exterminator.
-* Removed the Call to Arms for Congelatore's Scarab Lord - we finished it! Thanks to the handful of ATT users on Atiesh (outside of guild) that helped contribute!
-* Crieve is now a Completionist. Titles no longer appear for players with special ATT titles.
-* Saitosan is now a Gold Tycoon.
-* Manamontanna is now an Exterminator.
-* Drunkninja is now an Exterminator.
-* Solow is now an Exterminator.
-* Congelatore is now a Scarab Lord!
-* Added a whole bunch of exterminators.
+* Brittbrat is now an Exterminator.
+* Some missing quest info.
+* Corrected a Mini List display issue with Temple of Ahn'Qiraj.
+* The Gates of Ahn'Qiraj now show the Silithus mini list.
+* Minor adjustment to some quests in Stonetalon Mountains.
+* Sheiss is now an Exterminator.
 

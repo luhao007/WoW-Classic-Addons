@@ -1,28 +1,28 @@
-lightweight tag a0bcb2dd8a662f2450f6876cf62d1481a819a880 v11305-1.1.3
+lightweight tag a26d35021b22d2f5a782aab35672c90f142203b6 v11305-1.1.4
 Author:	Ludovicus <ludovicus.maior@gmail.com>
-Date:	Sun Jul 12 15:25:47 2020 -0400
+Date:	Tue Aug 25 14:12:16 2020 -0400
 
-commit a0bcb2dd8a662f2450f6876cf62d1481a819a880
+commit a26d35021b22d2f5a782aab35672c90f142203b6
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Sun Jul 12 15:25:47 2020 -0400
+Date:   Tue Aug 25 14:12:16 2020 -0400
 
-    Update classic interface to 11305
+    Set Classic Interface
 
-commit da1801beb474025ce9b53e1ba1f1092afb6af78c
+commit a339a98ca98898f52768a1a6e1a694f39f2a74f8
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Sun Jul 12 15:21:54 2020 -0400
+Date:   Tue Aug 25 14:08:29 2020 -0400
 
-    Ananhaid: Localization.zhCN.lua update
+    Add placeholder ptBR Localization
 
-commit 1e5441c27b2ad32b9ef01ea14632de74d4bf21bc
+commit ecb318fb608dab4c7282c3bb1d99d668da1aa161
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Tue May 5 07:16:09 2020 -0400
+Date:   Tue Aug 25 13:45:11 2020 -0400
 
-    Disable BlockDo not attempt Block hiding during Pet battles in Classic.
+    Use 'Unnamed Map' if the map has no known name.
 
-commit 10970b3b9744a3669a2c7b579208589bb303acc2
+commit c0c585ac83b3fe4db9a5a9387abd1e7323a0ba4e
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Sun May 3 14:35:54 2020 -0400
+Date:   Tue Aug 25 13:44:26 2020 -0400
 
-    Hide coord block as well during pet battles.
+    Update enUS locaization
 
