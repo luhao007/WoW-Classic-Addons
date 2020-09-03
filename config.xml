@@ -1476,6 +1476,10 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="WCLPlayerScore">
+		<Title>WCL评分</Title>
+		<Category>副本</Category>
+	</Addon>
 	<Addon name="WIM">
 		<Title>即时通信</Title>
 		<Category>界面</Category>

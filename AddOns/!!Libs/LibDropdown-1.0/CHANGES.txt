@@ -1,4 +1,12 @@
-Changes since tag 1.0.9
+lightweight tag 16b13dfb1b4e2d2c0b98284954d3319925307a52 1.0.10
+Author:	David Hedbor <david@ookla.com>
+Date:	Thu Sep 3 00:22:54 2020 -0700
+
+commit 16b13dfb1b4e2d2c0b98284954d3319925307a52
+Author: David Hedbor <david@ookla.com>
+Date:   Thu Sep 3 00:22:54 2020 -0700
+
+    Shadowlands fix.
 
 commit 3a893a2de2f46a3bc7fecabfe7f6ba05f33c3429
 Author: David Hedbor <neotron@gmail.com>

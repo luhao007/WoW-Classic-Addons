@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("AQ40Trash", "DBM-AQ40", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200813135210")
+mod:SetRevision("20200828184410")
 mod:SetModelID(15347)-- Anubisath Sentinel
 mod:SetMinSyncRevision(20200810000000)--2020, 8, 10
 
@@ -11,14 +11,14 @@ mod:RegisterEvents(
 	"ENCOUNTER_END",
 	"SPELL_AURA_APPLIED 22997 25698 26079",
 	"SPELL_AURA_REMOVED 22997",
+	"SPELL_DAMAGE",
 	"SPELL_MISSED"
 )
-
-mod:AddRangeFrameOption(10, 22997)
 
 --TODO, meteor those big guys use, maybe some other stuff
 --local specWarnPrimalRampage			= mod:NewSpecialWarningDodge(198379, "Melee", nil, nil, 1, 2)
 
+mod:AddRangeFrameOption(10, 22997)
 mod:AddSpeedClearOption("AQ40", true)
 
 --Speed Clear variables
@@ -28,7 +28,6 @@ mod.vb.requiredBosses = 0
 --Register all damage events on mod load
 local eventsRegistered = true
 mod:RegisterShortTermEvents(
-	"SPELL_DAMAGE",
 	"SWING_DAMAGE",
 	"SWING_MISSED",
 	"SPELL_PERIODIC_DAMAGE",
@@ -37,6 +36,48 @@ mod:RegisterShortTermEvents(
 
 --Request speed clear variables, in case it was already started before mod loaded
 mod:SendSync("IsAQ40Started")
+
+do-- Anubisath Plague/Explode - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash.lua
+	local warnPlague                    = mod:NewTargetNoFilterAnnounce(22997, 2)
+	local warnCauseInsanity             = mod:NewTargetNoFilterAnnounce(26079, 2)
+
+	local specWarnPlague                = mod:NewSpecialWarningMoveAway(22997, nil, nil, nil, 1, 2)
+	local yellPlague                    = mod:NewYell(22997)
+	local specWarnExplode               = mod:NewSpecialWarningRun(25698, "Melee", nil, 3, 4, 2)
+
+	local Plague = DBM:GetSpellInfo(22997)
+	local Explode = DBM:GetSpellInfo(25698)
+	local CauseInsanity = DBM:GetSpellInfo(26079)-- aq40 only mind control - qiraji brainwasher/mindslayer
+
+	-- aura applied didn't seem to catch the reflects and other buffs
+	function mod:SPELL_AURA_APPLIED(args)
+		if args.spellName == Plague then
+			if args:IsPlayer() then
+				specWarnPlague:Show()
+				specWarnPlague:Play("runout")
+				yellPlague:Yell()
+				if self.Options.RangeFrame then
+					DBM.RangeCheck:Show(10)
+				end
+			else
+				warnPlague:Show(args.destName)
+			end
+		elseif args.spellName == Explode then
+			specWarnExplode:Show()
+			specWarnExplode:Play("justrun")
+		elseif args.spellName == CauseInsanity then
+			warnCauseInsanity:CombinedShow(0.75, args.destName)
+		end
+	end
+
+	function mod:SPELL_AURA_REMOVED(args)
+		if args.spellName == Plague then
+			if args:IsPlayer() and self.Options.RangeFrame then
+				DBM.RangeCheck:Hide()
+			end
+		end
+	end
+end
 
 do
 	local startCreatureIds = {
@@ -60,8 +101,36 @@ do
 		end
 	end
 
-	function mod:SPELL_DAMAGE(_, _, _, _, destGUID)
-		checkFirstPull(self, destGUID or 0)
+	-- Anubisath Reflect - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash.lua
+	local specWarnShadowFrostReflect	= mod:NewSpecialWarningReflect(19595, nil, nil, nil, 1, 2)
+	local specWarnFireArcaneReflect		= mod:NewSpecialWarningReflect(13022, nil, nil, nil, 1, 2)
+	local specWarnShadowStorm			= mod:NewSpecialWarningMoveTo(26555, nil, nil, nil, 1, 2)
+
+	-- todo: thorns
+	local playerGUID = UnitGUID("player")
+	local ShadowStorm = DBM:GetSpellInfo(26555)
+	function mod:SPELL_DAMAGE(_, sourceName, _, _, destGUID, _, _, _, _, spellName)
+		if spellName == ShadowStorm and destGUID == playerGUID and self:AntiSpam(3, 3) then
+			specWarnShadowStorm:Show(sourceName)
+			specWarnShadowStorm:Play("findshelter")
+		end
+		if eventsRegistered then-- for AQ40 timer
+			checkFirstPull(self, destGUID or 0)
+		end
+	end
+	function mod:SPELL_MISSED(sourceGUID, _, _, _, destGUID, destName, _, _, _, _, spellSchool, missType)
+		if (missType == "REFLECT" or missType == "DEFLECT") and sourceGUID == playerGUID then
+			if (spellSchool == 32 or spellSchool == 16) and self:AntiSpam(3, 1) then
+				specWarnShadowFrostReflect:Show(destName)
+				specWarnShadowFrostReflect:Play("stopattack")
+			elseif (spellSchool == 4 or spellSchool == 64) and self:AntiSpam(3, 2) then
+				specWarnFireArcaneReflect:Show(destName)
+				specWarnFireArcaneReflect:Play("stopattack")
+			end
+		end
+		if eventsRegistered then-- for AQ40 timer
+			checkFirstPull(self, destGUID or 0)
+		end
 	end
 
 	function mod:SPELL_PERIODIC_DAMAGE(_, _, _, _, destGUID)
@@ -124,73 +193,6 @@ function mod:ENCOUNTER_END(encounterID, _, _, _, success)
 				end
 				self.vb.firstEngageTime = nil
 			end
-		end
-	end
-end
-
-do-- Anubisath Plague/Explode - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash.lua
-	local warnPlague                    = mod:NewTargetNoFilterAnnounce(22997, 2)
-	local specWarnPlague                = mod:NewSpecialWarningMoveAway(22997, nil, nil, nil, 1, 2)
-	local yellPlague                    = mod:NewYell(22997)
-	local specWarnExplode               = mod:NewSpecialWarningRun(25698, false, nil, 2, 4, 2)
-	local warnCauseInsanity             = mod:NewTargetNoFilterAnnounce(26079, 2)
-
-	local Plague = DBM:GetSpellInfo(22997)
-	local Explode = DBM:GetSpellInfo(25698)
-	local CauseInsanity = DBM:GetSpellInfo(26079)-- aq40 only mind control - qiraji brainwasher/mindslayer
-
-	-- aura applied didn't seem to catch the reflects and other buffs
-	function mod:SPELL_AURA_APPLIED(args)
-		if args.spellName == Plague then
-			if args:IsPlayer() then
-				specWarnPlague:Show()
-				specWarnPlague:Play("runout")
-				yellPlague:Yell()
-				if self.Options.RangeFrame then
-					DBM.RangeCheck:Show(10)
-				end
-			else
-				warnPlague:Show(args.destName)
-			end
-		elseif args.spellName == Explode then
-			specWarnExplode:Show()
-			specWarnExplode:Play("justrun")
-		elseif args.spellName == CauseInsanity then
-			warnCauseInsanity:CombinedShow(0.75, args.destName)
-		end
-	end
-
-	function mod:SPELL_AURA_REMOVED(args)
-		if args.spellName == Plague then
-			if args:IsPlayer() and self.Options.RangeFrame then
-				DBM.RangeCheck:Hide()
-			end
-		end
-	end
-end
-
-do-- Anubisath Reflect - keep in sync - AQ40/AQ40Trash.lua AQ20/AQ20Trash.lua
-	local ShadowFrostReflect 			= DBM:GetSpellInfo(19595)
-	local FireArcaneReflect 			= DBM:GetSpellInfo(13022)
-
-	local specWarnShadowFrostReflect    = mod:NewSpecialWarningReflect(19595, nil, nil, nil, 1, 2)
-	local specWarnFireArcaneReflect     = mod:NewSpecialWarningReflect(13022, nil, nil, nil, 1, 2)
-
-	-- todo: thorns, shadow storm
-
-	local playerGUID = UnitGUID("player")
-	function mod:SPELL_MISSED(sourceGUID, _, _, _, destGUID, destName, _, _, _, _, spellSchool, missType)
-		if (missType == "REFLECT" or missType == "DEFLECT") and sourceGUID == playerGUID then
-			if (spellSchool == 32 or spellSchool == 16) and self:AntiSpam(3, 1) then
-				specWarnShadowFrostReflect:Show(destName)
-				specWarnShadowFrostReflect:Play("stopattack")
-			elseif (spellSchool == 4 or spellSchool == 64) and self:AntiSpam(3, 2) then
-				specWarnFireArcaneReflect:Show(destName)
-				specWarnFireArcaneReflect:Play("stopattack")
-			end
-		end
-		if eventsRegistered then-- for AQ40 timer
-			self:SPELL_DAMAGE(nil, nil, nil, nil, destGUID)
 		end
 	end
 end

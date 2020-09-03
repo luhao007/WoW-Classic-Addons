@@ -1,57 +1,105 @@
 # Deadly Boss Mods Core
 
-## [1.13.57](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.57) (2020-08-18)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.56...1.13.57) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
+## [1.13.58](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.58) (2020-08-29)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.57...1.13.58) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
 
-- Update localization.cn.lua (#477)  
-- Prep new classic release  
-- Infoframe should work with option, but the tentacles table needs to be a local variable. mod.vb doesn't support tables yet in sync methods so syncing it would cause errors, also wipe it on pull so lingering tentacles wouldn't show from previous pull after a wipe  
-- cthun/tentacle: fixup a couple errors, still not exposing infoframe (#478)  
-- Update localization.tw.lua (#475)  
-- Fix editbox backdrop (#474)  
-    The editbox already has a backdrop defined as part of InputBoxTemplate, this is causing a 2nd one to overlay on top, but outpositioned.  
-- Update koKR (Classic) (#472)  
-    * Update koKR (Classic)  
-- Fix a typo  
-- Fix checking wrong GUID on birth spell casts, which result in not finding tentacle IDs  
-- Fix tentical removal  
-- Update localization.cn.lua (#470)  
-- Fix incorrect GetShapeshiftFormID ID  
-- Tidy up some  
-- Tentacle Spawn Timer (#469)  
-- core: add tank to arms/ret spec role and check for tank stance in IsTank (#466)  
-- bump all of the tank option versions (#467)  
-- Odd that was missed in the PR, that wasn't something I introduced in last commit.  
-    Also added minsync revision to block syncs from the 2 or so alphas that may include mobname  
-- Few changes to Tentacle Infoframe  
-     - Tentacle name is now localized. Getting name from sender would be problematic if sender played different language from reciever  
-     - Removed unneeded local function. Since it was only called in one spot, didn't need to be split off.  
-     - Saved a few bytes with self over mod usage.  
-     - Put the arg names in OnSync handler and removed unnessesary shadowing of them while still having robust nil checks.  
-     - Moved all moving parts of infoframe into same section. locals are generally declared at top of mod but only if they are used in multiple parts of it (for example if infoframe has updates in multiple places), otherwise they belong with section they are use. Option locals being the exception since finding those at top of mod helps  maintenance/updating of mod options without digging through mod to find all of them. (Not all older mods are good examples of this, as many of them were written over a decade ago and just updated for classic.)  
-- core/IsHealer: allow any druid spec to be a healer but check for form (#468)  
-- AQ40 Add support for Stomach Tentacle health monitoring outside of it (#460)  
-- Remove unused  
-- Update localization.cn.lua (#462)  
-- Improve eye tentacle spawn detection/timers, Closes #463  
-- aq/cthun: delay the eye beam target scanner a little (#459)  
-- Update localization.ru.lua (#458)  
-- Update localization.es.lua (#457)  
-- Update localization.mx.lua (#456)  
-- Update localization.de.lua (#455)  
-- Update localization.fr.lua (#454)  
-- Apply new lower restrictions for max targets announcements can show before they begin target aggregation.  
-     - General announcements changed from 7 target cap to 6 (allowing up to a max of 2 pairs)  
-     - Special announcements changed from 7 target cap to 5 (maxing out on the size of a 5 man party)  
-- because of accuracy issues, cthun eye target features will be restricted to debug mode for dev testing only. Everyone else should not be shown inaccurate information  
-- Fixed PlaySound not having the no sound check  
-- Sync profile change from retail  
-    Changed icon for speed timers from a string to a number, since it's calling timer object directly, api expects it to be a number, not a string. it's only core that expects it to be a string  
-- Update localization.es.lua (#453)  
-- Update localization.mx.lua (#452)  
-- Fixed a bug that caused Whirlwind special warning to never show on Sartura. However, with the bug fixed, it should now be off by default since that's the expected behavior now  
-- Fix name  
-- Added frenzy dispel warning to Huhuran  
-    Removed Frenzy buff active timer.  
-- Update koKR (Classic) (#450)  
-- Explain the teleport timer at least for short term  
+- Prepare new classic release, some stuff needs testing, but to be honest it can't be more broken than the stuff that needed testing in last release.  
+- Localize functions that don't need to be global  
+    Optimized cpu usage by unregistering combat log events infofframe uses, when infoframe is hidden  
+    Fixed a bug where mod was calling hide on infoframe only to IMMEDIATELY reshow it during glob phase.  
+    removed unneeded local varaibles  
+- aq/visc: hit counter (#540)  
+    Co-authored-by: venuatu <venuatu@gmail.com>  
+- Update localization.tw.lua (#539)  
+- Update localization.tw.lua (#538)  
+    * Update localization.tw.lua  
+    * Resolve exclamation mark  
+    These are indeed used in this locale.  
+    Co-authored-by: QartemisT <63267788+QartemisT@users.noreply.github.com>  
+- Update localization.cn.lua (#537)  
+- Update localization.es.lua (#533)  
+- Update localization.fr.lua (#534)  
+- Update localization.br.lua (#535)  
+- Update localization.de.lua (#536)  
+- Further re-arrange AQ40 trash to get Shadow Storm in there  
+- Update localization.es.lua (#531)  
+- Update localization.fr.lua (#532)  
+- Forgot the AQ20 trash cleanup  
+- Some cleanup of unused variables as well as just organizing some things better  
+    Completely redid infoframe on Cthun to not use syncing and instead target scanning on stomach debuffed players. In addition, it'll actually show who's in stomach and their debuff count (assuming classic allows UnitDebuff)  
+    Fixed a bug on Viscious where it had two minsync revisions  
+- Update localization.fr.lua (#530)  
+- Make this actually a count warning  
+- Some reworking on Viscidus.  
+     - Now has a volley timer and announce with count  
+     - Now has better way to cancel the frozen timer/announce that she hs fully shattered (needs some verification, a single log is not ideal verification)  
+- aq/twin: fixup blizzard check (#529)  
+- Disable claw tentacle warning by default. they spawn continously, don't want to derail focus from the more important tentacle spawns. timer can stay though.  
+- re-enable explode warning for melee by default  
+- Update localization.cn.lua (#527)  
+- Update localization.fr.lua (#528)  
+- Update localization.fr.lua (#526)  
+- end  
+- Kill off silent mode from minimap button.  
+- Update koKR (Classic) (#524)  
+- Update localization.cn.lua (#525)  
+- Shorten stomach string  
+- Update localization.fr.lua (#523)  
+- Update localization.br.lua (#522)  
+    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
+- Update localization.es.lua (#521)  
+- Update localization.cn.lua (#520)  
+- Update localization.tw.lua (#519)  
+- Update hotfix revision, but not sync one. sync one should be fine since the sync msg is different.  
+    Added nil checks to sync though and eliminate redundant string conversion  
+- cthun: a new version of a stomach tentacle infoframe (#518)  
+- Actually sync InfoFrame changes PROPERLY (Fixes #516) (#517)  
+- Give movable bars timer icons  
+- Update localization.cn.lua (#515)  
+- Update localization.tw.lua (#514)  
+- Update localization.tw.lua (#513)  
+- Update localization.de.lua (#509)  
+- Update localization.tw.lua (#508)  
+- Update localization.tw.lua (#510)  
+- Increased throttle for Sartura's whirlwind from a 2.5 second CD to 4 second cd  
+- Spawn time Update, and we all forgot timerWeakened (#507)  
+    as title  
+- Update localization.mx.lua (#506)  
+- Update localization.es.lua (#504)  
+- Support partial string find on Pyroguard Emberseer pull (#505)  
+- Sync infoframe changes to classic  
+- Optimize the math with GUI (sync from retail)  
+- Update localization.br.lua (#503)  
+    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
+- Update localization.kr.lua (#502)  
+- Shouldn't change syncing any, but makes them more like other mods  
+- Update localization.tw.lua (#500)  
+- Update localization.es.lua (#492)  
+- Update localization.de.lua (#493)  
+- Update localization.br.lua (#494)  
+- Update localization.mx.lua (#495)  
+- Update localization.es.lua (#496)  
+- Update localization.fr.lua (#497)  
+- Update localization.tw.lua (#498)  
+- Update Tentacles Respawn Timer (#499)  
+    Update Giant Eye Tentacles Respawn Timer  
+- Update localization.br.lua (#491)  
+- Update localization.fr.lua (#489)  
+- Update localization.de.lua (#490)  
+- Update localization.br.lua (#488)  
+- Update localization.br.lua (#487)  
+- Update localization.es.lua (#486)  
+    * Update localization.es.lua  
+    * Update localization.es.lua  
+- Update localization.ru.lua (#485)  
+- just a note fix  
+- Update localization.mx.lua (#484)  
+- Update localization.br.lua (#483)  
+    * Update localization.br.lua  
+    * Update localization.br.lua  
+- Update localization.tw.lua (#481)  
+- Update localization.tw.lua (#480)  
+    * Update localization.tw.lua  
+    * Update localization.tw.lua  
+- Update localization.es.lua (#479)  
+- Change forced update from 1 month to 21 days.  

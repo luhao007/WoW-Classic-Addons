@@ -101,7 +101,7 @@ L:SetGeneralLocalization{
 }
 L:SetWarningLocalization{
 	WarnEyeTentacle			= "眼球触须",
-	WarnClawTentacle		= "利爪触须",
+	WarnClawTentacle2		= "利爪触须",
 	WarnGiantEyeTentacle	= "巨眼触须",
 	WarnGiantClawTentacle	= "巨钩触须",
 	SpecWarnWeakened		= "克苏恩的力量被削弱了！"
@@ -115,7 +115,7 @@ L:SetTimerLocalization{
 }
 L:SetOptionLocalization{
 	WarnEyeTentacle			= "为眼球触须显示警告",
-	WarnClawTentacle		= "为利爪触须显示警告",
+	WarnClawTentacle2		= "为利爪触须显示警告",
 	WarnGiantEyeTentacle	= "为巨眼触须显示警告",
 	WarnGiantClawTentacle	= "为巨钩触须显示警告",
 	WarnWeakened			= "当首领虚弱時显示警告",
@@ -128,7 +128,7 @@ L:SetOptionLocalization{
 	RangeFrame				= "显示距离框架(10码)"
 }
 L:SetMiscLocalization{
-	Stomach		= "克图恩的胃",
+	Stomach		= "内场",
 	Eye			= "克苏恩之眼",
 	FleshTent	= "血肉触须",--Localized so it shows on frame in users language, not senders
 	Weakened 	= "削弱了",
