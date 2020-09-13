@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Math Functions
@@ -12,6 +10,9 @@
 local _, TSM = ...
 local Math = TSM.Init("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
+local NAN = math.huge * 0
+local IS_NAN_GT_INF = NAN > math.huge
+local NAN_STR = tostring(NAN)
 local private = {
 	keysTemp = {},
 }
@@ -21,6 +22,24 @@ local private = {
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+--- Returns NAN.
+-- @treturn number NAN
+function Math.GetNan()
+	return NAN
+end
+
+--- Checks if a value is NAN.
+-- @tparam number value The number to check
+-- @treturn boolean Whether or not the value is NAN
+function Math.IsNan(value)
+	if IS_NAN_GT_INF then
+		-- optimization if NAN > math.huge (which it is in Wow's version of lua)
+		return value > math.huge and tostring(value) == NAN_STR
+	else
+		return tostring(value) == NAN_STR
+	end
+end
 
 --- Rounds a value to a specified significant value.
 -- @tparam number value The number to be rounded
@@ -59,6 +78,15 @@ end
 function Math.Scale(value, fromStart, fromEnd, toStart, toEnd)
 	assert(value >= min(fromStart, fromEnd) and value <= max(fromStart, fromEnd))
 	return toStart + ((value - fromStart) / (fromEnd - fromStart)) * (toEnd - toStart)
+end
+
+--- Bounds a number between a min and max value.
+-- @tparam number value The number to be bounded
+-- @tparam number minValue The min value
+-- @tparam number maxValue The max value
+-- @treturn number The bounded value
+function Math.Bound(value, minValue, maxValue)
+	return min(max(value, minValue), maxValue)
 end
 
 --- Calculates the has of the specified data

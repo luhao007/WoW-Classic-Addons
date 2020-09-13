@@ -1,20 +1,16 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-local _, TSM = ...
+local TSM_NAME, TSM = ...
 local Analytics = TSM.Include("Util.Analytics")
 local Event = TSM.Include("Util.Event")
 local Log = TSM.Include("Util.Log")
 local LibTSMClass = TSM.Include("LibTSMClass")
-TSMAPI_FOUR.Addon = {}
 local private = {
 	eventFrames = {},
-	addonLookup = {},
 	initializeQueue = {},
 	enableQueue = {},
 	disableQueue = {},
@@ -184,15 +180,11 @@ end
 
 
 -- ============================================================================
--- TSMAPI Functions
+-- Initialization Code
 -- ============================================================================
 
-function TSMAPI_FOUR.Addon.New(name, tbl)
-	assert(type(name) == "string" and type(tbl) == "table", "Invalid arguments")
-	assert(not private.addonLookup[tbl], "Addon already created")
-	local addon = LibTSMClass.ConstructWithTable(tbl, Addon, name)
-	private.addonLookup[tbl] = addon
-	return addon
+do
+	LibTSMClass.ConstructWithTable(TSM, Addon, TSM_NAME)
 end
 
 

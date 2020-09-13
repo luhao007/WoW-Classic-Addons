@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Frame UI Element Class.
@@ -13,6 +11,9 @@
 local _, TSM = ...
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
+local Color = TSM.Include("Util.Color")
+local Theme = TSM.Include("Util.Theme")
+local NineSlice = TSM.Include("Util.NineSlice")
 local VALID_LAYOUTS = {
 	NONE = true,
 	HORIZONTAL = true,
@@ -32,6 +33,8 @@ local LAYOUT_CONTEXT = {
 	},
 }
 local Frame = TSM.Include("LibTSMClass").DefineClass("Frame", TSM.UI.Container)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Frame)
 TSM.UI.Frame = Frame
 
 
@@ -41,25 +44,82 @@ TSM.UI.Frame = Frame
 -- ============================================================================
 
 function Frame.__init(self)
-	local frame = CreateFrame("Frame", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "Frame")
 
 	self.__super:__init(frame)
 
-	frame.backgroundTexture = frame:CreateTexture(nil, "BACKGROUND")
-	frame.backgroundTexture:SetAllPoints()
-end
+	self._borderNineSlice = NineSlice.New(frame)
+	self._borderNineSlice:Hide()
 
-function Frame.Acquire(self)
+	self._backgroundNineSlice = NineSlice.New(frame, 1)
+	self._backgroundNineSlice:Hide()
+
 	self._layout = "NONE"
-	self.__super:Acquire()
+	self._backgroundColor = nil
+	self._roundedCorners = false
+	self._borderColor = nil
+	self._borderSize = nil
+	self._expandWidth = false
+	self._strata = nil
+	self._scale = 1
 end
 
 function Frame.Release(self)
+	self._layout = "NONE"
+	self._backgroundColor = nil
+	self._roundedCorners = false
+	self._borderColor = nil
+	self._borderSize = nil
+	self._expandWidth = false
+	self._strata = nil
+	self._scale = 1
+	self._borderNineSlice:Hide()
+	self._backgroundNineSlice:Hide()
 	local frame = self:_GetBaseFrame()
 	frame:RegisterForDrag(nil)
 	frame:EnableMouse(false)
+	frame:SetMovable(false)
+	frame:EnableMouseWheel(false)
 	frame:SetHitRectInsets(0, 0, 0, 0)
 	self.__super:Release()
+end
+
+--- Sets the background of the frame.
+-- @tparam Frame self The frame object
+-- @tparam ?string|Color|nil color The background color as a theme color key, Color object, or nil
+-- @tparam[opt=false] boolean roundedCorners Whether or not the corners should be rounded
+-- @treturn Frame The frame object
+function Frame.SetBackgroundColor(self, color, roundedCorners)
+	assert(color == nil or Color.IsInstance(color) or Theme.GetColor(color))
+	self._backgroundColor = color
+	self._roundedCorners = roundedCorners
+	return self
+end
+
+--- Sets the border color of the frame.
+-- @tparam Frame self The frame object
+-- @tparam ?string|nil color The border color as a theme color key or nil
+-- @tparam[opt=1] ?number borderSize The border size
+-- @treturn Frame The frame object
+function Frame.SetBorderColor(self, color, borderSize)
+	assert(color == nil or Color.IsInstance(color) or Theme.GetColor(color))
+	self._borderColor = color
+	self._borderSize = borderSize or 1
+	return self
+end
+
+--- Sets the width of the frame.
+-- @tparam Frame self The frame object
+-- @tparam ?number|string width The width of the frame, "EXPAND" to set the width to expand to be
+-- as large as possible, or nil to have an undefined width
+-- @treturn Frame The frame object
+function Frame.SetWidth(self, width)
+	if width == "EXPAND" then
+		self._expandWidth = true
+	else
+		self.__super:SetWidth(width)
+	end
+	return self
 end
 
 --- Sets the parent frame.
@@ -80,6 +140,24 @@ function Frame.SetFrameLevel(self, level)
 	return self
 end
 
+--- Sets the strata of the frame.
+-- @tparam Frame self The frame object
+-- @tparam string strata The frame strata
+-- @treturn Frame The frame object
+function Frame.SetStrata(self, strata)
+	self._strata = strata
+	return self
+end
+
+--- Sets the scale of the frame.
+-- @tparam Frame self The frame object
+-- @tparam string scale The frame scale
+-- @treturn Frame The frame object
+function Frame.SetScale(self, scale)
+	self._scale = scale
+	return self
+end
+
 --- Sets the layout of the frame.
 -- @tparam Frame self The frame object
 -- @tparam string layout The frame layout (`NONE`, `HORIZONTAL`, `VERTICAL`, or `FLOW`)
@@ -96,6 +174,15 @@ end
 -- @treturn Frame The frame object
 function Frame.SetMouseEnabled(self, enabled)
 	self:_GetBaseFrame():EnableMouse(enabled)
+	return self
+end
+
+--- Sets whether mouse wheel interaction is enabled.
+-- @tparam Frame self The frame object
+-- @tparam boolean enabled Whether mouse wheel interaction is enabled
+-- @treturn Frame The frame object
+function Frame.SetMouseWheelEnabled(self, enabled)
+	self:_GetBaseFrame():EnableMouseWheel(enabled)
 	return self
 end
 
@@ -128,14 +215,47 @@ function Frame.SetHitRectInsets(self, left, right, top, bottom)
 	return self
 end
 
+--- Makes the element movable and starts moving it.
+-- @tparam Frame self The element object
+function Frame.StartMoving(self)
+	self:_GetBaseFrame():SetMovable(true)
+	self:_GetBaseFrame():StartMoving()
+	return self
+end
+
+--- Stops moving the element, and makes it unmovable.
+-- @tparam Frame self The element object
+function Frame.StopMovingOrSizing(self)
+	self:_GetBaseFrame():StopMovingOrSizing()
+	self:_GetBaseFrame():SetMovable(false)
+	return self
+end
+
 function Frame.Draw(self)
 	local layout = self._layout
 	self.__super.__super:Draw()
-
-	self:_ApplyFrameBackgroundTexture()
 	local frame = self:_GetBaseFrame()
 
-	local strata = self:_GetStyle("strata")
+	if self._backgroundColor then
+		self._backgroundNineSlice:SetStyle(self._roundedCorners and "rounded" or "solid", self._borderColor and self._borderSize or nil)
+		local color = Color.IsInstance(self._backgroundColor) and self._backgroundColor or Theme.GetColor(self._backgroundColor)
+		self._backgroundNineSlice:SetVertexColor(color:GetFractionalRGBA())
+	else
+		assert(not self._borderColor)
+		self._backgroundNineSlice:Hide()
+	end
+	if self._borderColor then
+		assert(self._backgroundColor)
+		self._borderNineSlice:SetStyle(self._roundedCorners and "rounded" or "solid")
+		local color = Color.IsInstance(self._borderColor) and self._borderColor or Theme.GetColor(self._borderColor)
+		self._borderNineSlice:SetVertexColor(color:GetFractionalRGBA())
+	else
+		self._borderNineSlice:Hide()
+	end
+
+	frame:SetScale(self._scale)
+
+	local strata = self._strata
 	if strata then
 		frame:SetFrameStrata(strata)
 	end
@@ -255,9 +375,9 @@ function Frame._GetMinimumDimension(self, dimension)
 	assert(dimension == "WIDTH" or dimension == "HEIGHT")
 	local styleResult = nil
 	if dimension == "WIDTH" then
-		styleResult = self:_GetStyle("width")
+		styleResult = self._width
 	elseif dimension == "HEIGHT" then
-		styleResult = self:_GetStyle("height")
+		styleResult = self._height
 	else
 		error("Invalid dimension: "..tostring(dimension))
 	end
@@ -293,7 +413,7 @@ function Frame._GetMinimumDimension(self, dimension)
 		local parentElement = self:GetParentElement()
 		local parentWidth = parentElement:_GetDimension("WIDTH") - parentElement:_GetPadding("LEFT") - parentElement:_GetPadding("RIGHT")
 		if minWidth > parentWidth then
-			-- we won't fit, so just pretent we're a single row
+			-- we won't fit, so just pretend we're a single row
 			return rowHeight, false
 		end
 
@@ -329,7 +449,7 @@ function Frame._GetMinimumDimension(self, dimension)
 			end
 		end
 		result = result + self:_GetPadding(sides[1]) + self:_GetPadding(sides[2])
-		return result, self:_GetStyle("expandWidth") or canExpand
+		return result, self._expandWidth or canExpand
 	else
 		error(format("Invalid layout (%s)", tostring(layout)))
 	end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -18,6 +16,7 @@ local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	buyThreadId = nil,
 	sellThreadId = nil,
@@ -115,19 +114,19 @@ function private.GetNumToBuy(itemString, operationSettings)
 		:Equal("isBoA", false)
 		:SumAndRelease("quantity") or 0
 	if operationSettings.restockSources.bank then
-		numHave = numHave + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
+		numHave = numHave + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
 	end
 	if operationSettings.restockSources.guild then
-		numHave = numHave + TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString)
+		numHave = numHave + Inventory.GetGuildQuantity(itemString)
 	end
 	if operationSettings.restockSources.ah then
-		numHave = numHave + TSMAPI_FOUR.Inventory.GetAuctionQuantity(itemString)
+		numHave = numHave + Inventory.GetAuctionQuantity(itemString)
 	end
 	if operationSettings.restockSources.mail then
-		numHave = numHave + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString)
+		numHave = numHave + Inventory.GetMailQuantity(itemString)
 	end
 	if operationSettings.restockSources.alts or operationSettings.restockSources.alts_ah then
-		local _, alts, _, altsAH = TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString)
+		local _, alts, _, altsAH = Inventory.GetPlayerTotals(itemString)
 		numHave = numHave + (operationSettings.restockSources.alts and alts or 0) + (operationSettings.restockSources.alts_ah and altsAH or 0)
 	end
 	return max(operationSettings.restockQty - numHave, 0)
@@ -142,19 +141,23 @@ end
 function private.SellThread(groups)
 	private.printedBagsFullMsg = false
 	local totalValue = 0
+	local operationsTemp = Threading.AcquireSafeTempTable()
 	for _, groupPath in ipairs(groups) do
-		for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Vendoring", groupPath) do
-			if operationSettings.enableSell then
-				if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-					-- TODO
-				else
-					for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-						totalValue = totalValue + private.SellItemThreaded(itemString, operationSettings)
-					end
+		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+			wipe(operationsTemp)
+			for _, operationName, operationSettings in TSM.Operations.GroupOperationIterator("Vendoring", groupPath) do
+				if operationSettings.enableSell then
+					tinsert(operationsTemp, operationName)
+				end
+			end
+			for _, operationName in ipairs(operationsTemp) do
+				for _, itemString in TSM.Groups.ItemIterator(groupPath) do
+					totalValue = totalValue + private.SellItemThreaded(itemString, TSM.Operations.GetSettings("Vendoring", operationName))
 				end
 			end
 		end
 	end
+	Threading.ReleaseSafeTempTable(operationsTemp)
 
 	if TSM.db.global.vendoringOptions.displayMoneyCollected then
 		Log.PrintfUser(L["Sold %s worth of items."], Money.ToString(totalValue))

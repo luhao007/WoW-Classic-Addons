@@ -1,37 +1,37 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Dashboard = TSM.MainUI:NewPackage("Dashboard")
 local L = TSM.Include("Locale").GetTable()
+local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
+local Math = TSM.Include("Util.Math")
+local Theme = TSM.Include("Util.Theme")
+local Analytics = TSM.Include("Util.Analytics")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
-	xData = {},
-	yData = {},
-	xDataValue = {},
-	xStep = nil,
-	xInterval = nil,
-	xNumInterval = nil,
-	playerList = {},
-	charGuildList = {},
-	selectedGraphCharacter = L["All Characters and Guilds"],
-	selectedGraphTime = L["Past Year"],
-	selectedSummaryCharacter = nil,
-	selectedSummaryTime = L["Past Year"]
+	settings = nil,
+	characterGuilds = {},
+	tempTimeTable = {},
+	selectedTimeRange = nil,
 }
-local TIMELIST = { halfMonth = L["Past Year"], month = L["Past Month"], sevenDays = L["Past 7 Days"], hour = L["Past Day"] }
-local TIMELISTORDER = { "halfMonth", "month", "sevenDays", "hour" }
-local GOLD_GRAPH_SUFFIX = TSM.IsWowClassic() and "g" or "k"
-local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
-	leftWidth = 300,
+local SECONDS_PER_DAY = 60 * 60 * 24
+local MIN_GRAPH_STEP_SIZE = TSM.IsWowClassic() and COPPER_PER_GOLD or (COPPER_PER_GOLD * 1000)
+local TIME_RANGE_LOOKUP = {
+	["1d"] = SECONDS_PER_DAY,
+	["1w"] = SECONDS_PER_DAY * 7,
+	["1m"] = SECONDS_PER_DAY * 30,
+	["3m"] = SECONDS_PER_DAY * 91,
+	["6m"] = SECONDS_PER_DAY * 183,
+	["1y"] = SECONDS_PER_DAY * 365,
+	["2y"] = SECONDS_PER_DAY * 730,
+	["all"] = -1,
 }
--- TODO: this should eventually go in the saved variables
-private.dividedContainerContext = {}
 
 
 
@@ -40,7 +40,12 @@ private.dividedContainerContext = {}
 -- ============================================================================
 
 function Dashboard.OnInitialize()
-	TSM.MainUI.RegisterTopLevelPage("Dashboard", "iconPack.24x24/Dashboard", private.GetDashboardFrame)
+	private.settings = Settings.NewView()
+		:AddKey("global", "mainUIContext", "dashboardDividedContainer")
+		:AddKey("global", "mainUIContext", "dashboardUnselectedCharacters")
+		:AddKey("global", "mainUIContext", "dashboardTimeRange")
+	private.selectedTimeRange = private.settings.dashboardTimeRange
+	TSM.MainUI.RegisterTopLevelPage(L["Dashboard"], private.GetDashboardFrame)
 end
 
 
@@ -50,451 +55,498 @@ end
 
 function private.GetDashboardFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "dashboard")
-	private.SetGraphSettings()
-	private.PopulateData()
 
-	wipe(private.playerList)
-	tinsert(private.playerList, L["All Characters and Guilds"])
+	private.selectedTimeRange = private.settings.dashboardTimeRange
+	wipe(private.characterGuilds)
+	local prevUnselectedCharacters = TempTable.Acquire()
+	for characterGuild in pairs(private.settings.dashboardUnselectedCharacters) do
+		prevUnselectedCharacters[characterGuild] = true
+	end
+	wipe(private.settings.dashboardUnselectedCharacters)
 	for characterGuild in TSM.Accounting.GoldTracker.CharacterGuildIterator() do
-		tinsert(private.playerList, characterGuild)
+		tinsert(private.characterGuilds, characterGuild)
+		private.settings.dashboardUnselectedCharacters[characterGuild] = prevUnselectedCharacters[characterGuild] or nil
 	end
+	TempTable.Release(prevUnselectedCharacters)
 
-	wipe(private.charGuildList)
-	tinsert(private.charGuildList, L["All Characters and Guilds"])
-	for character in pairs(TSMAPI_FOUR.PlayerInfo.GetCharacters()) do
-		tinsert(private.charGuildList, character)
-	end
-	for guild in pairs(TSMAPI_FOUR.PlayerInfo.GetGuilds()) do
-		tinsert(private.charGuildList, guild)
-	end
-
-	local frame = TSMAPI_FOUR.UI.NewElement("DividedContainer", "dashboard")
-		:SetContextTable(private.dividedContainerContext, DEFAULT_DIVIDED_CONTAINER_CONTEXT)
-		:SetMinWidth(350, 250)
-		:SetLeftChild(TSMAPI_FOUR.UI.NewElement("Frame", "news")
+	local frame = UIElements.New("DividedContainer", "dashboard")
+		:SetSettingsContext(private.settings, "dashboardDividedContainer")
+		:SetMinWidth(200, 407)
+		:SetBackgroundColor("PRIMARY_BG")
+		:SetLeftChild(UIElements.New("Frame", "news")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#171717")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 60)
-				:SetStyle("margin", { top = 37, bottom = 8 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "leftSpacer"))
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "logo")
-					:SetStyle("width", 60)
-					:SetStyle("texturePack", "uiFrames.TSMLogo")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-					:SetStyle("margin", { left = 8 })
-					:SetStyle("autoWidth", true)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 16)
-					:SetText(L["NEWS AND INFORMATION"])
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "rightSpacer"))
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Text", "text")
+				:SetSize("AUTO", 24)
+				:SetMargin(8)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(L["News & Information"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "content")
-				:SetStyle("margin", { top = 16, bottom = 4 })
-				:SetStyle("padding", { left = 16, right = 16 })
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "bannerBg")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("margin", { left = 8, right = 8, bottom = 8 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "left")
-					:SetStyle("texturePack", "uiFrames.PromoTextureLeft")
-					:SetStyle("width", TSM.UI.TexturePacks.GetWidth("uiFrames.PromoTextureLeft"))
-					:SetStyle("height", TSM.UI.TexturePacks.GetHeight("uiFrames.PromoTextureLeft"))
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "middle")
-					:SetStyle("texturePack", "uiFrames.PromoTextureMiddle")
-					:SetStyle("height", TSM.UI.TexturePacks.GetHeight("uiFrames.PromoTextureMiddle"))
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "right")
-					:SetStyle("texturePack", "uiFrames.PromoTextureRight")
-					:SetStyle("width", TSM.UI.TexturePacks.GetWidth("uiFrames.PromoTextureRight"))
-					:SetStyle("height", TSM.UI.TexturePacks.GetHeight("uiFrames.PromoTextureRight"))
-				)
-			)
-			:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Frame", "banner")
-				:SetLayout("VERTICAL")
-				:SetStyle("anchors", { { "TOPLEFT", "bannerBg" }, { "BOTTOMRIGHT", "bannerBg" } })
-				:SetStyle("padding", { left = 59, right = 59, top = 16 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 18)
-					:SetStyle("justifyH", "CENTER")
-					:SetStyle("textColor", "#ffd839")
-					:SetText("TradeSkillMaster.com")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "subTitle")
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 13)
-					:SetStyle("justifyH", "CENTER")
-					:SetText(L["Elevate your gold-making!"])
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
+			:AddChild(UIElements.New("ScrollFrame", "content")
+				:SetPadding(8, 8, 0, 0)
 			)
 		)
-		:SetRightChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+		:SetRightChild(UIElements.New("Frame", "content")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#272727")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "goldHeader")
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG")
+			:SetScript("OnUpdate", private.ContentOnUpdate)
+			:AddChild(UIElements.New("Frame", "goldHeader")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 61)
-				:SetStyle("padding", { top = 31, bottom = 8, left = 8, right = 8 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-					:SetStyle("autoWidth", true)
-					:SetStyle("fontHeight", 16)
+				:SetHeight(24)
+				:AddChild(UIElements.New("Text", "text")
+					:SetWidth("AUTO")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY1_BOLD")
 					:SetText(L["Player Gold"])
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-					:SetStyle("width", 1)
-					:SetStyle("margin", { left = 8, right = 8 })
-					:SetStyle("color", "#80e2e2e2")
+				:AddChild(UIElements.New("MultiselectionDropdown", "playerDropdown")
+					:SetSize(157, 22)
+					:SetItems(private.characterGuilds, private.characterGuilds)
+					:SetUnselectedItemKeys(private.settings.dashboardUnselectedCharacters)
+					:SetSelectionText(L["No Players"], L["%d Players"], L["All Players"])
+					:SetScript("OnSelectionChanged", private.DropdownOnSelectionChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "playerDropdown")
-					:SetStyle("width", 200)
-					:SetStyle("textPadding", 5)
-					:SetStyle("background", "#00000000")
-					:SetStyle("border", "#00000000")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("openFont", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("openFontHeight", 12)
-					:SetItems(private.playerList, L["All Characters and Guilds"])
-					:SetScript("OnSelectionChanged", private.UpdateGraphCharacter)
+				:AddChild(UIElements.New("Spacer"))
+				:AddChild(UIElements.New("Text", "hoverTime")
+					:SetWidth("AUTO")
+					:SetFont("BODY_BODY3_MEDIUM")
+					:SetText("")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "timeDropdown")
-					:SetStyle("width", 150)
-					:SetStyle("textPadding", 5)
-					:SetStyle("background", "#00000000")
-					:SetStyle("border", "#00000000")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("openFont", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("openFontHeight", 12)
-					:SetDictionaryItems(TIMELIST, private.selectedGraphTime, TIMELISTORDER)
-					:SetScript("OnSelectionChanged", private.UpdateGraphTime)
+				:AddChild(UIElements.New("Frame", "timeBtns")
+					:SetLayout("HORIZONTAL")
+					:AddChild(UIElements.New("Button", "1d")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["1d"])
+						:SetText(L["1D"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "1w")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["1w"])
+						:SetText(L["1W"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "1m")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["1m"])
+						:SetText(L["1M"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "3m")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["3m"])
+						:SetText(L["3M"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "6m")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["6m"])
+						:SetText(L["6M"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "1y")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["1y"])
+						:SetText(L["1Y"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "2y")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("ACTIVE_BG_ALT")
+						:SetContext(TIME_RANGE_LOOKUP["2y"])
+						:SetText(L["2Y"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "all")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(20, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("TEXT")
+						:SetContext(TIME_RANGE_LOOKUP["all"])
+						:SetText(ALL)
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
+					:AddChild(UIElements.New("Button", "resetZoom")
+						:SetMargin(8, 0, 0, 0)
+						:SetSize(100, 20)
+						:SetFont("TABLE_TABLE1")
+						:SetTextColor("TEXT")
+						:SetContext(TIME_RANGE_LOOKUP["all"])
+						:SetText(L["Reset Zoom"])
+						:SetScript("OnClick", private.TimeBtnOnClick)
+					)
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
+			:AddChild(UIElements.New("Graph", "goldGraph")
+				:SetMargin(0, 0, 8, 8)
+				:SetAxisStepFunctions(private.GraphXStepFunc, private.GraphYStepFunc)
+				:SetXRange(TSM.Accounting.GoldTracker.GetGraphTimeRange(private.settings.dashboardUnselectedCharacters))
+				:SetYValueFunction(private.GetGraphYValue)
+				:SetFormatFunctions(private.GraphFormatX, private.GraphFormatY)
+				:SetScript("OnZoomChanged", private.GraphOnZoomChanged)
+				:SetScript("OnHoverUpdate", private.GraphOnHoverUpdate)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Graph", "goldGraph")
-				:SetStyle("background", "#404040")
-				:SetAxisStepSize(private.xStep, 1)
-				:SetDataIteratorFunction(private.GraphDataIterator)
-				:SetLabelFunctions(private.GraphGetXLabel, private.GraphGetYLabel)
-				:SetTooltipFunction(private.TooltipLabel)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "summaryHeader")
+			:AddChild(UIElements.New("Frame", "summary")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 40)
-				:SetStyle("padding", { top = 8, bottom = 8, left = 8, right = 8 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-					:SetStyle("autoWidth", true)
-					:SetStyle("fontHeight", 16)
-					:SetText(L["Sales Summary"])
+				:SetHeight(48)
+				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:AddChild(UIElements.New("Frame", "range")
+					:SetLayout("VERTICAL")
+					:SetPadding(8, 8, 2, 2)
+					:AddChild(UIElements.New("Frame", "high")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:SetMargin(0, 0, 0, 4)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["HIGH"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
+					:AddChild(UIElements.New("Frame", "low")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["LOW"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-					:SetStyle("width", 1)
-					:SetStyle("margin", { left = 8, right = 8 })
-					:SetStyle("color", "#80e2e2e2")
+				:AddChild(UIElements.New("Texture", "line1")
+					:SetWidth(1)
+					:SetTexture("ACTIVE_BG")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "playerDropdown")
-					:SetStyle("width", 200)
-					:SetStyle("textPadding", 5)
-					:SetStyle("background", "#00000000")
-					:SetStyle("border", "#00000000")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("openFont", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("openFontHeight", 12)
-					:SetHintText(L["All Characters and Guilds"])
-					:SetItems(private.charGuildList, L["All Characters and Guilds"])
-					:SetScript("OnSelectionChanged", private.UpdateSummaryCharacter)
+				:AddChild(UIElements.New("Frame", "daily")
+					:SetLayout("VERTICAL")
+					:SetPadding(8, 8, 2, 2)
+					:AddChild(UIElements.New("Frame", "sales")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:SetMargin(0, 0, 0, 4)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["DAILY SALES"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
+					:AddChild(UIElements.New("Frame", "purchases")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["DAILY PURCHASES"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer")
+				:AddChild(UIElements.New("Texture", "line2")
+					:SetWidth(1)
+					:SetTexture("ACTIVE_BG")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "timeDropdown")
-					:SetStyle("width", 150)
-					:SetStyle("textPadding", 5)
-					:SetStyle("background", "#00000000")
-					:SetStyle("border", "#00000000")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("openFont", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("openFontHeight", 12)
-					:SetDictionaryItems(TIMELIST, private.selectedGraphTime, TIMELISTORDER)
-					:SetScript("OnSelectionChanged", private.UpdateSummaryTime)
+				:AddChild(UIElements.New("Frame", "top")
+					:SetLayout("VERTICAL")
+					:SetPadding(8, 8, 2, 2)
+					:AddChild(UIElements.New("Frame", "sale")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:SetMargin(0, 0, 0, 4)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["TOP SALE"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
+					:AddChild(UIElements.New("Frame", "expense")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:AddChild(UIElements.New("Text", "label")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetTextColor("ACTIVE_BG_ALT")
+							:SetText(L["TOP PURCHASE"])
+						)
+						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("Text", "value")
+							:SetWidth("AUTO")
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("RIGHT")
+						)
+					)
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "summary")
+			:AddChild(UIElements.New("Frame", "details")
 				:SetLayout("VERTICAL")
-				:SetStyle("height", 309)
-				:SetStyle("background", "#171717")
-				:SetStyle("padding", 12)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "sales")
-					:SetLayout("VERTICAL")
-					:SetStyle("height", 87)
-					:SetStyle("background", "#2e2e2e")
-					:SetStyle("padding", { left = 8, right = 8, top = 6, bottom = 6 })
-					:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\DashboardCellEdgeFrame.blp")
-					:SetStyle("borderSize", 8)
-					:SetStyle("borderInset", 1)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "header")
-						:SetStyle("height", 15)
-						:SetStyle("margin", { bottom = 2 })
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetText(L["SALES"])
+				:SetMargin(0, 0, 8, 0)
+				:SetPadding(8)
+				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:AddChild(UIElements.New("Text", "salesLabel")
+					:SetHeight(20)
+					:SetFont("TABLE_TABLE1")
+					:SetTextColor("ACTIVE_BG_ALT")
+					:SetText(L["SALES"])
+				)
+				:AddChild(UIElements.New("Frame", "salesTotal")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:AddChild(UIElements.New("Text", "text")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Total Gold Earned"]..":")
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "total")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Total Gold Earned:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "totalAmount")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "perDay")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Average Earned Per Day:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayAmount")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Top Item:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "topItem")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
 					)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "expenses")
-					:SetLayout("VERTICAL")
-					:SetStyle("height", 87)
-					:SetStyle("margin", { top = 12, bottom = 12 })
-					:SetStyle("background", "#2e2e2e")
-					:SetStyle("padding", { left = 8, right = 8, top = 6, bottom = 6 })
-					:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\DashboardCellEdgeFrame.blp")
-					:SetStyle("borderSize", 8)
-					:SetStyle("borderInset", 1)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "header")
-						:SetStyle("height", 15)
-						:SetStyle("margin", { bottom = 2 })
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetText(L["EXPENSES"])
+				:AddChild(UIElements.New("Frame", "salesAvg")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Average Earned per Day"]..":")
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "total")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Total Gold Spent:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "totalSpent")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "perDay")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Average Spent Per Day:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayExpense")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Top Item:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "topItem")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
 					)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "balance")
-					:SetLayout("VERTICAL")
-					:SetStyle("height", 87)
-					:SetStyle("background", "#2e2e2e")
-					:SetStyle("padding", { left = 8, right = 8, top = 6, bottom = 6 })
-					:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\DashboardCellEdgeFrame.blp")
-					:SetStyle("borderSize", 8)
-					:SetStyle("borderInset", 1)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "header")
-						:SetStyle("height", 15)
-						:SetStyle("margin", { bottom = 2 })
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetText(L["PROFIT"])
+				:AddChild(UIElements.New("Frame", "salesTop")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Top Item"]..":")
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "total")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Total Profit:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "totalProfit")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Button", "item")
+						:SetWidth("AUTO")
+						:SetFont("ITEM_BODY3")
+						:SetJustifyH("RIGHT")
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "perDay")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Average Profit Per Day:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "perDayProfit")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
+				)
+				:AddChild(UIElements.New("Texture", "line1")
+					:SetHeight(1)
+					:SetMargin(-8, -8, 4, 4)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Text", "expensesLabel")
+					:SetHeight(20)
+					:SetFont("TABLE_TABLE1")
+					:SetTextColor("ACTIVE_BG_ALT")
+					:SetText(L["EXPENSES"])
+				)
+				:AddChild(UIElements.New("Frame", "expensesTotal")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:AddChild(UIElements.New("Text", "text")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Total Gold Spent"]..":")
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
-						:SetLayout("HORIZONTAL")
-						:SetStyle("height", 20)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-							:SetStyle("autoWidth", true)
-							:SetStyle("fontHeight", 12)
-							:SetText(L["Most Profitable Item:"])
-						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "topItem")
-							:SetStyle("autoWidth", true)
-							:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-							:SetStyle("fontHeight", 12)
-							:SetStyle("justifyH", "RIGHT")
-						)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
+					)
+				)
+				:AddChild(UIElements.New("Frame", "expensesAvg")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Average Spent per Day"]..":")
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
+					)
+				)
+				:AddChild(UIElements.New("Frame", "expensesTop")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Top Item"]..":")
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Button", "item")
+						:SetWidth("AUTO")
+						:SetFont("ITEM_BODY3")
+						:SetJustifyH("RIGHT")
+					)
+				)
+				:AddChild(UIElements.New("Texture", "line2")
+					:SetHeight(1)
+					:SetMargin(-8, -8, 4, 4)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Text", "profitLabel")
+					:SetHeight(20)
+					:SetFont("TABLE_TABLE1")
+					:SetTextColor("ACTIVE_BG_ALT")
+					:SetText(L["PROFIT"])
+				)
+				:AddChild(UIElements.New("Frame", "profitTotal")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:AddChild(UIElements.New("Text", "text")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Total Profit"]..":")
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
+					)
+				)
+				:AddChild(UIElements.New("Frame", "profitAvg")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Average Profit per Day"]..":")
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "amount")
+						:SetWidth("AUTO")
+						:SetFont("TABLE_TABLE1")
+						:SetJustifyH("RIGHT")
+					)
+				)
+				:AddChild(UIElements.New("Frame", "profitTop")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:SetMargin(0, 0, 4, 0)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Top Item"]..":")
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Button", "item")
+						:SetWidth("AUTO")
+						:SetFont("ITEM_BODY3")
+						:SetJustifyH("RIGHT")
 					)
 				)
 			)
 		)
+	frame:GetElement("content.goldHeader.timeBtns.resetZoom"):Hide()
+	frame:GetElement("content.goldHeader.hoverTime"):Hide()
 
-	private.PopulateSalesSummary(frame)
 	local newsContent = frame:GetElement("news.content")
-	local newsEntries = TSM:GetAppNews()
+	local newsEntries = TSM.GetAppNews()
 	if newsEntries then
-		for i, info in ipairs(TSM:GetAppNews()) do
-			newsContent:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "news"..i)
+		for i, info in ipairs(newsEntries) do
+			newsContent:AddChild(UIElements.New("Frame", "news"..i)
 				:SetLayout("VERTICAL")
-				:SetStyle("padding", { top = i == 1 and 0 or 24 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 22)
-					:SetStyle("padding", { bottom = 8 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 16)
-						:SetStyle("textColor", "#ffffff")
-						:SetText(info.title)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "date")
-						:SetStyle("width", 65)
-						:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-						:SetStyle("fontHeight", 10)
-						:SetStyle("justifyH", "RIGHT")
-						:SetStyle("textColor", "#ffffff")
-						:SetText(date("%b %d, %Y", info.timestamp))
-					)
+				:SetPadding(0, 0, i == 1 and 6 or 12, 0)
+				:AddChild(UIElements.New("Text", "date")
+					:SetHeight(20)
+					:SetFont("BODY_BODY3")
+					:SetText(date("%b %d, %Y", info.timestamp))
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "content")
-					:SetStyle("height", 48)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("fontSpacing", 4)
-					:SetStyle("textColor", "#ffffff")
+				:AddChild(UIElements.New("Text", "title")
+					:SetHeight(20)
+					:SetFont("BODY_BODY2_BOLD")
+					:SetText(info.title)
+				)
+				:AddChild(UIElements.New("Text", "content")
+					:SetHeight(80)
+					:SetPadding(0, 0, 4, 0)
+					:SetFont("BODY_BODY3")
 					:SetText(info.content)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "readMore")
-					:SetStyle("height", 16)
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("justifyH", "LEFT")
-					:SetStyle("textColor", "#ffd839")
-					:SetContext(info)
+				:AddChild(UIElements.New("Text", "readMore")
+					:SetHeight(20)
+					:SetPadding(0, 0, 4, 0)
+					:SetFont("BODY_BODY3")
+					:SetTextColor("INDICATOR")
 					:SetText(L["Read More"])
 				)
 			)
-			:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "btn")
-				:SetStyle("anchors", { { "TOPLEFT", "news"..i }, { "BOTTOMRIGHT", "news"..i } })
+			:AddChildNoLayout(UIElements.New("Button", "btn")
+				:AddAnchor("TOPLEFT", "news"..i)
+				:AddAnchor("BOTTOMRIGHT", "news"..i)
 				:SetContext(info)
 				:SetScript("OnClick", private.ButtonOnClick)
 			)
-			if time() - info.timestamp < 48 * 60 * 60 then
-				newsContent:GetElement("news"..i..".title"):AddChildBeforeById("text", TSMAPI_FOUR.UI.NewElement("Texture", "icon")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("margin", { right = 4 })
-					:SetStyle("texturePack", "iconPack.18x18/New")
-					:SetStyle("vertexColor", "#ffd839")
-				)
-			end
 		end
 	end
 
@@ -508,42 +560,41 @@ end
 
 function private.ButtonOnClick(button)
 	local info = button:GetContext()
-	button:GetBaseElement():ShowDialogFrame(TSMAPI_FOUR.UI.NewElement("Frame", "frame")
+	Analytics.Action("NEWS_READ_MORE", info.title)
+	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
-		:SetStyle("width", 600)
-		:SetStyle("height", 188)
-		:SetStyle("anchors", { { "CENTER" } })
-		:SetStyle("background", "#2e2e2e")
-		:SetStyle("border", "#e2e2e2")
-		:SetStyle("borderSize", 2)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-			:SetStyle("height", 44)
-			:SetStyle("margin", { top = 24, left = 16, right = 16, bottom = 16 })
-			:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-			:SetStyle("fontHeight", 18)
-			:SetStyle("justifyH", "CENTER")
+		:SetSize(600, 450)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG")
+		:SetBorderColor("ACTIVE_BG")
+		:AddChild(UIElements.New("Text", "title")
+			:SetHeight(44)
+			:SetMargin(16, 16, 16, 8)
+			:SetFont("BODY_BODY1_BOLD")
+			:SetJustifyH("CENTER")
 			:SetText(info.title)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "linkInput")
-			:SetStyle("height", 26)
-			:SetStyle("margin", { left = 16, right = 16, bottom = 25 })
-			:SetStyle("background", "#5c5c5c")
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("justifyH", "LEFT")
-			:SetStyle("textColor", "#ffffff")
-			:SetText(info.link)
-			:SetScript("OnEditFocusGained", private.LinkInputOnEditFocusGained)
+		:AddChild(UIElements.New("Input", "linkInput")
+			:SetHeight(26)
+			:SetMargin(16, 16, 0, 16)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetValidateFunc(private.LinkValidateFunc)
+			:SetContext(info.link)
+			:SetValue(info.link)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
+		:AddChild(UIElements.New("Text", "content")
+			:SetMargin(16, 16, 0, 16)
+			:SetFont("BODY_BODY3")
+			:SetJustifyV("TOP")
+			:SetText(info.content)
+		)
+		:AddChild(UIElements.New("Frame", "buttons")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("margin", { left = 16, right = 16, bottom = 16 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "spacer")
-				-- spacer
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "confirmBtn")
-				:SetStyle("width", 126)
-				:SetStyle("height", 26)
+			:SetHeight(26)
+			:SetMargin(16, 16, 0, 16)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+			:AddChild(UIElements.New("ActionButton", "confirmBtn")
+				:SetWidth(126)
 				:SetText(CLOSE)
 				:SetScript("OnClick", private.DialogCloseBtnOnClick)
 			)
@@ -551,8 +602,8 @@ function private.ButtonOnClick(button)
 	)
 end
 
-function private.LinkInputOnEditFocusGained(input)
-	input:HighlightText()
+function private.LinkValidateFunc(input, value)
+	return value == input:GetContext()
 end
 
 function private.DialogCloseBtnOnClick(button)
@@ -565,124 +616,321 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-local function GraphDataIteratorInternal(_, index)
-	index = index + 1
-	if index > #private.xData then
-		return
-	end
-	return index, private.xData[index], private.yData[index]
-end
-function private.GraphDataIterator()
-	return GraphDataIteratorInternal, nil, 0
-end
-
-function private.GraphGetXLabel(_, xValue)
-	if private.xInterval == "halfMonth" then
-		return strupper(date("%b\n%Y", private.xDataValue[xValue]))
-	elseif private.xInterval == "hour" then
-		local dateFormat = "%a\n"..gsub(date("%I", private.xDataValue[xValue]), "^0?", "").."%p"
-		return strupper(date(dateFormat, private.xDataValue[xValue]))
-	elseif private.xInterval == "month" then
-		return strupper(date("%b\n%d", private.xDataValue[xValue]))
-	elseif private.xInterval == "sevenDays" then
-		return strupper(date("%b\n%d", private.xDataValue[xValue]))
+function private.GraphFormatX(timestamp, suggestedStep)
+	if suggestedStep > SECONDS_PER_DAY * 14 then
+		return date("%b '%y", timestamp)
+	elseif suggestedStep > SECONDS_PER_DAY * 2 then
+		return date("%b %d", timestamp)
+	elseif suggestedStep > SECONDS_PER_DAY / 6 then
+		return date("%a", timestamp)
+	else
+		if GetCVar("timeMgrUseMilitaryTime") == "1" then
+			return date("%H:%M", timestamp)
+		else
+			return strtrim(date("%I %p", timestamp), "0")
+		end
 	end
 end
 
-function private.TooltipLabel(xValue, yValue)
-	local dateFormat
-	if private.xInterval == "halfMonth" then
-		dateFormat = "%b %Y"
-	elseif private.xInterval == "hour" then
-		dateFormat = "%a  "..gsub(date("%I", private.xDataValue[xValue]), "^0?", "").."%p"
-	elseif private.xInterval == "month" then
-		dateFormat = "%b %d"
-	elseif private.xInterval == "sevenDays" then
-		dateFormat = "%b %d "..gsub(date("%I", private.xDataValue[xValue]), "^0?", "").."%p"
+function private.GraphFormatY(value, suggestedStep, isTooltip)
+	if isTooltip then
+		return Money.ToString(value, nil, "OPT_TRIM")
 	end
-
-	return strupper(date(dateFormat, private.xDataValue[xValue])).."\n"..Money.ToString(yValue * (TSM.IsWowClassic() and 1 or 1000) * COPPER_PER_GOLD, nil, "OPT_TRIM")
-end
-
-function private.GraphGetYLabel(_, yValue)
-	return yValue..GOLD_GRAPH_SUFFIX
-end
-
-function private.PopulateData()
-	wipe(private.xData)
-	wipe(private.yData)
-	wipe(private.xDataValue)
-	TSM.Accounting.GoldTracker.PopulateGraphData(private.xData, private.xDataValue, private.yData, private.xInterval, private.xNumInterval, private.selectedGraphCharacter)
-end
-
-function private.UpdateGraphCharacter(self, selectedItem)
-	private.selectedGraphCharacter = selectedItem
-	private.PopulateData()
-	self:GetElement("__parent.__parent.goldGraph"):Draw()
-end
-
-function private.UpdateGraphTime(self, selectedItem)
-	private.selectedGraphTime = selectedItem
-	private.SetGraphSettings()
-	private.PopulateData()
-	self:GetElement("__parent.__parent.goldGraph"):Draw()
-end
-
-function private.SetGraphSettings()
-	if private.selectedGraphTime == L["Past Year"] then
-		private.xInterval = "halfMonth"
-		private.xStep = 2
-		private.xNumInterval = 24
-	elseif private.selectedGraphTime == L["Past Month"] then
-		private.xInterval = "month"
-		private.xStep = 1
-		private.xNumInterval = 30
-	elseif private.selectedGraphTime == L["Past 7 Days"] then
-		private.xInterval = "sevenDays"
-		private.xStep = 4
-		private.xNumInterval = 24
-	elseif private.selectedGraphTime == L["Past Day"] then
-		private.xInterval = "hour"
-		private.xStep = 1
-		private.xNumInterval = 24
+	if TSM.IsWowClassic() and value < COPPER_PER_GOLD * 1000 then
+		-- "###g"
+		return floor(value / COPPER_PER_GOLD)..Money.GetGoldText()
+	elseif TSM.IsWowClassic() and value < COPPER_PER_GOLD * 1000 * 10 then
+		-- "#.##Kg"
+		return format("%.2f", value / (COPPER_PER_GOLD * 1000)).."k"..Money.GetGoldText()
+	elseif value < COPPER_PER_GOLD * 1000 * 1000 then
+		-- "###Kg"
+		return floor(value / (COPPER_PER_GOLD * 1000)).."k"..Money.GetGoldText()
+	elseif value < COPPER_PER_GOLD * 1000 * 1000 * 10 then
+		-- "#.##Mg"
+		return format("%.2f", value / (COPPER_PER_GOLD * 1000 * 1000)).."M"..Money.GetGoldText()
+	else
+		-- "###Mg"
+		return floor(value / (COPPER_PER_GOLD * 1000 * 1000)).."M"..Money.GetGoldText()
 	end
 end
 
-function private.UpdateSummaryCharacter(self, selectedItem)
-	private.selectedSummaryCharacter = selectedItem ~= L["All Characters and Guilds"] and selectedItem or nil
-	private.PopulateSalesSummary(self:GetElement("__parent.__parent.__parent"), true)
+function private.GetGraphYValue(xValue)
+	return TSM.Accounting.GoldTracker.GetGoldAtTime(xValue, private.settings.dashboardUnselectedCharacters)
 end
 
-function private.UpdateSummaryTime(self, selectedItem)
-	private.selectedSummaryTime = selectedItem
-	private.PopulateSalesSummary(self:GetElement("__parent.__parent.__parent"), true)
+function private.ContentOnUpdate(contentFrame)
+	contentFrame:SetScript("OnUpdate", nil)
+	private.UpdateTimeButtons(contentFrame:GetElement("goldHeader.timeBtns"))
+	private.UpdateGraph(contentFrame)
 end
 
-function private.PopulateSalesSummary(frame, redraw)
-	local salesTotal, salesPerDay, salesTopItem = TSM.Accounting.GetSummarySalesInfo(private.selectedSummaryTime, private.selectedSummaryCharacter)
-	local expensesTotal, expensesPerDay, expensesTopItem = TSM.Accounting.GetSummaryExpensesInfo(private.selectedSummaryTime, private.selectedSummaryCharacter)
-	local profitTotal = salesTotal - expensesTotal
-	local profitPerDay = salesPerDay - expensesPerDay
-	local profitTopItem = TSM.Accounting.GetSummaryProfitTopItem(private.selectedSummaryTime, private.selectedSummaryCharacter)
-	local profitPerDayText = Money.ToString(profitPerDay, profitPerDay < 0 and "|cffff0000" or nil)
-	local profitTotalText = Money.ToString(profitTotal, profitTotal < 0 and "|cffff0000" or nil)
-
-	local salesFrame = frame:GetElement("content.summary.sales")
-	salesFrame:GetElement("total.totalAmount"):SetText(Money.ToString(salesTotal))
-	salesFrame:GetElement("perDay.perDayAmount"):SetText(Money.ToString(salesPerDay))
-	salesFrame:GetElement("top.topItem"):SetText(TSM.UI.GetColoredItemName(salesTopItem)):SetTooltip(salesTopItem)
-
-	local expensesFrame = frame:GetElement("content.summary.expenses")
-	expensesFrame:GetElement("total.totalSpent"):SetText(Money.ToString(expensesTotal))
-	expensesFrame:GetElement("perDay.perDayExpense"):SetText(Money.ToString(expensesPerDay))
-	expensesFrame:GetElement("top.topItem"):SetText(TSM.UI.GetColoredItemName(expensesTopItem)):SetTooltip(expensesTopItem)
-
-	local profitFrame = frame:GetElement("content.summary.balance")
-	profitFrame:GetElement("total.totalProfit"):SetText(profitTotalText)
-	profitFrame:GetElement("perDay.perDayProfit"):SetText(profitPerDayText)
-	profitFrame:GetElement("top.topItem"):SetText(TSM.UI.GetColoredItemName(profitTopItem)):SetTooltip(profitTopItem)
-
-	if redraw then
-		frame:Draw()
+function private.DropdownOnSelectionChanged(dropdown)
+	for _, key in ipairs(private.characterGuilds) do
+		private.settings.dashboardUnselectedCharacters[key] = not dropdown:ItemIsSelectedByKey(key) or nil
 	end
+	private.UpdateGraph(dropdown:GetParentElement():GetParentElement())
+end
+
+function private.TimeBtnOnClick(button)
+	local timeRange = button:GetContext()
+	assert(timeRange)
+	private.selectedTimeRange = timeRange
+	private.settings.dashboardTimeRange = timeRange
+	private.UpdateTimeButtons(button:GetParentElement())
+	private.UpdateGraph(button:GetParentElement():GetParentElement():GetParentElement())
+end
+
+function private.UpdateGraph(contentFrame)
+	-- update the graph
+	local minTime, maxTime = TSM.Accounting.GoldTracker.GetGraphTimeRange(private.settings.dashboardUnselectedCharacters)
+	local goldGraph = contentFrame:GetElement("goldGraph")
+	local zoomStart, zoomEnd = goldGraph:GetZoom()
+	if private.selectedTimeRange == TIME_RANGE_LOOKUP["all"] then
+		zoomStart = minTime
+		zoomEnd = maxTime
+	elseif private.selectedTimeRange then
+		zoomStart = max(time() - private.selectedTimeRange, minTime)
+		zoomEnd = time()
+	end
+	goldGraph:SetXRange(minTime, maxTime)
+		:SetZoom(zoomStart, zoomEnd)
+		:Draw()
+	private.PopulateDetails(contentFrame)
+end
+
+function private.GraphOnZoomChanged(graph)
+	private.selectedTimeRange = nil
+	private.settings.dashboardTimeRange = -1
+	private.UpdateTimeButtons(graph:GetElement("__parent.goldHeader.timeBtns"))
+	private.PopulateDetails(graph:GetElement("__parent"))
+end
+
+function private.GraphOnHoverUpdate(graph, hoverTime)
+	local goldHeader = graph:GetElement("__parent.goldHeader")
+	if hoverTime then
+		local timeStr = nil
+		if GetCVar("timeMgrUseMilitaryTime") == "1" then
+			timeStr = date("%H:%M %b %d, %Y", hoverTime)
+		else
+			timeStr = gsub(date("%I:%M %p %b %d, %Y", hoverTime), "^0", "")
+		end
+		goldHeader:GetElement("timeBtns"):Hide()
+		goldHeader:GetElement("hoverTime")
+			:SetText(timeStr)
+			:Show()
+	else
+		goldHeader:GetElement("timeBtns"):Show()
+		goldHeader:GetElement("hoverTime"):Hide()
+		private.UpdateTimeButtons(goldHeader:GetElement("timeBtns"))
+	end
+	goldHeader:Draw()
+end
+
+function private.UpdateTimeButtons(frame)
+	frame:ShowAllChildren()
+	local resetButton = frame:GetElement("resetZoom")
+	if private.selectedTimeRange then
+		for _, button in frame:LayoutChildrenIterator() do
+			if button ~= resetButton then
+				button:SetTextColor(private.selectedTimeRange == button:GetContext() and "TEXT" or "ACTIVE_BG_ALT")
+			end
+		end
+		resetButton:Hide()
+	else
+		for _, button in frame:LayoutChildrenIterator() do
+			button:Hide()
+		end
+		resetButton:Show()
+	end
+	frame:GetParentElement():Draw()
+end
+
+function private.GraphXStepFunc(prevValue, suggestedStep)
+	local year, day, month, hour, min, sec = strsplit(",", date("%Y,%d,%m,%H,%M,%S", prevValue))
+	private.tempTimeTable.year = tonumber(year)
+	private.tempTimeTable.day = tonumber(day)
+	private.tempTimeTable.month = tonumber(month)
+	private.tempTimeTable.hour = tonumber(hour)
+	private.tempTimeTable.min = tonumber(min)
+	private.tempTimeTable.sec = tonumber(sec)
+	if suggestedStep > SECONDS_PER_DAY * 14 then
+		private.tempTimeTable.month = private.tempTimeTable.month + 1
+		private.tempTimeTable.day = 1
+		private.tempTimeTable.hour = 0
+		private.tempTimeTable.min = 0
+		private.tempTimeTable.sec = 0
+	elseif suggestedStep > SECONDS_PER_DAY / 6 then
+		private.tempTimeTable.day = private.tempTimeTable.day + 1
+		if private.tempTimeTable.hour == 23 then
+			-- add an extra hour to avoid DST issues
+			private.tempTimeTable.hour = 1
+		else
+			private.tempTimeTable.hour = 0
+		end
+		private.tempTimeTable.min = 0
+		private.tempTimeTable.sec = 0
+	else
+		private.tempTimeTable.hour = private.tempTimeTable.hour + 1
+		private.tempTimeTable.min = 0
+		private.tempTimeTable.sec = 0
+	end
+	local newValue = time(private.tempTimeTable)
+	assert(newValue > prevValue)
+	return newValue
+end
+
+function private.GraphYStepFunc(mode, ...)
+	if mode == "RANGE" then
+		local yMin, yMax, maxNumSteps = ...
+		-- find the smallest 10^X step size which still looks good
+		local minStep = max((yMax - yMin) / maxNumSteps / 10, yMax / 200)
+		local stepSize = MIN_GRAPH_STEP_SIZE
+		while stepSize < minStep do
+			stepSize = stepSize * 10
+		end
+		yMin = Math.Floor(yMin, stepSize)
+		yMax = Math.Ceil(yMax + stepSize / 3, stepSize)
+		if yMin == yMax then
+			yMax = yMax + stepSize
+		end
+		return yMin, yMax
+	elseif mode == "NEXT" then
+		local prevValue, yMax = ...
+		local stepSize = MIN_GRAPH_STEP_SIZE
+		while stepSize < yMax / 1000 do
+			stepSize = stepSize * 10
+		end
+		return Math.Floor(prevValue, stepSize) + stepSize
+	else
+		error("Invalid mode")
+	end
+end
+
+function private.PopulateDetails(contentFrame)
+	local goldGraph = contentFrame:GetElement("goldGraph")
+	local unselectedCharacters = next(private.settings.dashboardUnselectedCharacters) and private.settings.dashboardUnselectedCharacters or nil
+	local timeFilterStart, timeFilterEnd, numDays = nil, nil, nil
+	if private.selectedTimeRange and private.selectedTimeRange ~= -1 then
+		timeFilterStart = time() - private.selectedTimeRange
+		timeFilterEnd = time()
+		numDays = ceil(private.selectedTimeRange / SECONDS_PER_DAY)
+	elseif not private.selectedTimeRange then
+		timeFilterStart, timeFilterEnd = goldGraph:GetZoom()
+		numDays = ceil((timeFilterEnd - timeFilterStart) / SECONDS_PER_DAY)
+	else
+		local timeStart, timeEnd = goldGraph:GetXRange()
+		numDays = ceil((timeEnd - timeStart) / SECONDS_PER_DAY)
+	end
+	numDays = max(numDays, 1)
+
+	local saleTotal, salePerDay, saleTopItem, saleTopValue, saleTotalQuantity = 0, nil, nil, 0, 0
+	local buyTotal, buyPerDay, buyTopItem, buyTopValue, buyTotalQuantity = 0, nil, nil, 0, 0
+	local profitTopItem = nil
+	local query = TSM.Accounting.GetSummaryQuery(timeFilterStart, timeFilterEnd, unselectedCharacters)
+	local saleNumDays, buyNumDays = 1, 1
+	local saleItemTotals = TempTable.Acquire()
+	local buyItemTotals = TempTable.Acquire()
+	local saleItemNum = TempTable.Acquire()
+	local buyItemNum = TempTable.Acquire()
+	for _, recordType, itemString, price, quantity, timestamp in query:Iterator() do
+		if recordType == "sale" then
+			local daysAgo = floor((time() - timestamp) / (24 * 60 * 60))
+			saleNumDays = max(saleNumDays, daysAgo)
+			saleItemTotals[itemString] = (saleItemTotals[itemString] or 0) + price * quantity
+			saleTopValue = max(saleTopValue, price)
+			saleTotalQuantity = saleTotalQuantity + quantity
+			saleItemNum[itemString] = (saleItemNum[itemString] or 0) + quantity
+		elseif recordType == "buy" then
+			local daysAgo = floor((time() - timestamp) / (24 * 60 * 60))
+			buyNumDays = max(buyNumDays, daysAgo)
+			buyItemTotals[itemString] = (buyItemTotals[itemString] or 0) + price * quantity
+			buyTopValue = max(buyTopValue, price)
+			buyTotalQuantity = buyTotalQuantity + quantity
+			buyItemNum[itemString] = (buyItemNum[itemString] or 0) + quantity
+		else
+			error("Invalid recordType: "..tostring(recordType))
+		end
+	end
+	query:Release()
+
+	local topSaleItemTotal = 0
+	for itemString, itemTotal in pairs(saleItemTotals) do
+		saleTotal = saleTotal + itemTotal
+		if itemTotal > topSaleItemTotal then
+			saleTopItem = itemString
+			topSaleItemTotal = itemTotal
+		end
+	end
+	salePerDay = Math.Round(saleTotal / saleNumDays)
+
+	local topBuyItemTotal = 0
+	for itemString, itemTotal in pairs(buyItemTotals) do
+		buyTotal = buyTotal + itemTotal
+		if itemTotal > topBuyItemTotal then
+			buyTopItem = itemString
+			topBuyItemTotal = itemTotal
+		end
+	end
+	buyPerDay = Math.Round(buyTotal / buyNumDays)
+
+	local topItemProfit = 0
+	for itemString in pairs(saleItemNum) do
+		if buyItemNum[itemString] then
+			local profit = (saleItemTotals[itemString] / saleItemNum[itemString] - buyItemTotals[itemString] / buyItemNum[itemString]) * min(saleItemNum[itemString], buyItemNum[itemString])
+			if profit > topItemProfit then
+				profitTopItem = itemString
+				topItemProfit = profit
+			end
+		end
+	end
+
+	TempTable.Release(saleItemTotals)
+	TempTable.Release(buyItemTotals)
+	TempTable.Release(saleItemNum)
+	TempTable.Release(buyItemNum)
+
+	local profitTotal = saleTotal - buyTotal
+	local profitPerDay = salePerDay - buyPerDay
+
+	local rangeLow, rangeHigh = goldGraph:GetYRange()
+	contentFrame:GetElement("summary.range.low.value")
+		:SetText(Money.ToString(rangeLow, nil, "OPT_TRIM") or "-")
+	contentFrame:GetElement("summary.range.high.value")
+		:SetText(Money.ToString(rangeHigh, nil, "OPT_TRIM") or "-")
+
+	contentFrame:GetElement("summary.daily.sales.value")
+		:SetText(saleTotalQuantity and Math.Round(saleTotalQuantity / numDays) or "-")
+	contentFrame:GetElement("summary.daily.purchases.value")
+		:SetText(buyTotalQuantity and Math.Round(buyTotalQuantity / numDays) or "-")
+
+	contentFrame:GetElement("summary.top.sale.value")
+		:SetText(Money.ToString(Math.Round(saleTopValue, TSM.IsWowClassic() and 1 or COPPER_PER_GOLD), nil, "OPT_TRIM") or "-")
+	contentFrame:GetElement("summary.top.expense.value")
+		:SetText(Money.ToString(Math.Round(buyTopValue, TSM.IsWowClassic() and 1 or COPPER_PER_GOLD), nil, "OPT_TRIM") or "-")
+
+	contentFrame:GetElement("details.salesTotal.amount")
+		:SetText(Money.ToString(saleTotal))
+	contentFrame:GetElement("details.salesAvg.amount")
+		:SetText(Money.ToString(salePerDay))
+	contentFrame:GetElement("details.salesTop.item")
+		:SetText(TSM.UI.GetColoredItemName(saleTopItem) or "-")
+		:SetTooltip(saleTopItem)
+
+	contentFrame:GetElement("details.expensesTotal.amount")
+		:SetText(Money.ToString(buyTotal))
+	contentFrame:GetElement("details.expensesAvg.amount")
+		:SetText(Money.ToString(buyPerDay))
+	contentFrame:GetElement("details.expensesTop.item")
+		:SetText(TSM.UI.GetColoredItemName(buyTopItem) or "-")
+		:SetTooltip(buyTopItem)
+
+	contentFrame:GetElement("details.profitTotal.amount")
+		:SetText(Money.ToString(profitTotal, profitTotal < 0 and Theme.GetFeedbackColor("RED"):GetTextColorPrefix() or nil))
+	contentFrame:GetElement("details.profitAvg.amount")
+		:SetText(Money.ToString(profitPerDay, profitPerDay < 0 and Theme.GetFeedbackColor("RED"):GetTextColorPrefix() or nil))
+	contentFrame:GetElement("details.profitTop.item")
+		:SetText(TSM.UI.GetColoredItemName(profitTopItem) or "-")
+		:SetTooltip(profitTopItem)
+
+	contentFrame:Draw()
 end

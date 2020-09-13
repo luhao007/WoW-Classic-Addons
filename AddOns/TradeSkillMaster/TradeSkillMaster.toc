@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: TradeSkillMaster Team
-## Version: v4.9.38
+## Version: v4.10.3
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -8,7 +8,7 @@
 ## Notes: Auction house and gold making addon.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF专业助手|r |cFFFFE00ATradeSkillMaster|r
 
-## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibCompress, LibRealmInfo
+## X-Embeds: AccurateTime, Ace3, LibDataBroker-1.1, LibDBIcon-1.0, LibRealmInfo, LibDeflate, LibSerialize
 
 # External libraries
 # Our core init file
@@ -21,13 +21,11 @@ External\LibTSMClass\LibTSMClass.lua
 # Locale file
 Locale\Locale.lua
 
-# Fonts
-Core\UI\Fonts.xml
-
 # LibTSM data files
 LibTSM\Data\BonusIds.lua
 LibTSM\Data\ClassicRealms.lua
 LibTSM\Data\DisenchantInfo.lua
+LibTSM\Data\FontPaths.lua
 LibTSM\Data\ItemClass.lua
 LibTSM\Data\Mill.lua
 LibTSM\Data\ProfessionInfo.lua
@@ -49,6 +47,11 @@ LibTSM\Util\TempTable.lua
 LibTSM\Util\Vararg.lua
 LibTSM\Util\Table.lua
 LibTSM\Util\Math.lua
+LibTSM\Util\HSLuv.lua
+LibTSM\Util\Color.lua
+LibTSM\Util\FontObject.lua
+LibTSM\Util\NineSlice.lua
+LibTSM\Util\Theme.lua
 LibTSM\Util\Money.lua
 LibTSM\Util\CSV.lua
 LibTSM\Util\JSON.lua
@@ -61,6 +64,7 @@ LibTSM\Util\FSMClasses\State.lua
 LibTSM\Util\FSMClasses\Machine.lua
 LibTSM\Util\FSM.lua
 LibTSM\Util\DatabaseClasses\Constants.lua
+LibTSM\Util\DatabaseClasses\Util.lua
 LibTSM\Util\DatabaseClasses\QueryResultRow.lua
 LibTSM\Util\DatabaseClasses\QueryClause.lua
 LibTSM\Util\DatabaseClasses\Query.lua
@@ -70,17 +74,28 @@ LibTSM\Util\Database.lua
 LibTSM\Util\ItemString.lua
 LibTSM\Util\Future.lua
 LibTSM\Util\Wow.lua
+LibTSM\Util\ScriptWrapper.lua
 
 # LibTSM service files
 LibTSM\Service\ErrorHandler.lua
-LibTSM\Service\AuctionHouseWrapper.lua
 LibTSM\Service\Threading.lua
 LibTSM\Service\SlashCommands.lua
 LibTSM\Service\Settings.lua
+LibTSM\Service\PlayerInfo.lua
 LibTSM\Service\ItemInfo.lua
+LibTSM\Service\ItemLinked.lua
 LibTSM\Service\ItemFilter.lua
 LibTSM\Service\Conversions.lua
 LibTSM\Service\CustomPrice.lua
+LibTSM\Service\AuctionHouseWrapper.lua
+LibTSM\Service\AuctionScanClasses\Util.lua
+LibTSM\Service\AuctionScanClasses\ResultSubRow.lua
+LibTSM\Service\AuctionScanClasses\ResultRow.lua
+LibTSM\Service\AuctionScanClasses\Scanner.lua
+LibTSM\Service\AuctionScanClasses\Query.lua
+LibTSM\Service\AuctionScanClasses\QueryUtil.lua
+LibTSM\Service\AuctionScanClasses\ScanManager.lua
+LibTSM\Service\AuctionScan.lua
 LibTSM\Service\ItemTooltipClasses\ExtraTip.lua
 LibTSM\Service\ItemTooltipClasses\Builder.lua
 LibTSM\Service\ItemTooltipClasses\Wrapper.lua
@@ -92,12 +107,17 @@ LibTSM\Service\GuildTracking.lua
 LibTSM\Service\AuctionTracking.lua
 LibTSM\Service\MailTracking.lua
 LibTSM\Service\AltTracking.lua
+LibTSM\Service\Inventory.lua
 LibTSM\Service\SyncClasses\Constants.lua
 LibTSM\Service\SyncClasses\Comm.lua
 LibTSM\Service\SyncClasses\Connection.lua
 LibTSM\Service\SyncClasses\RPC.lua
 LibTSM\Service\SyncClasses\Mirror.lua
 LibTSM\Service\Sync.lua
+
+# LibTSM UI files
+LibTSM\UI\Tooltip.lua
+LibTSM\UI\UIElements.lua
 
 # Lib files which only depend on Util files
 Core\Lib\Addon.lua
@@ -106,39 +126,36 @@ Core\Lib\Addon.lua
 TradeSkillMaster.lua
 
 # Lib files which depend on the main addon file being loaded
-Core\Lib\Auction\Core.lua
-Core\Lib\Auction\AuctionFilter.lua
-Core\Lib\Auction\QueryUtil.lua
-Core\Lib\Auction\AuctionScan.lua
-Core\Lib\Inventory\Core.lua
 Core\Lib\Exporter.lua
-Core\Lib\PlayerInfo.lua
 
 # UI files (depend on main addon file being loaded)
 Core\UI\UI.lua
+Core\UI\Scrollbar.lua
+Core\UI\FrameStack.lua
+Core\UI\WhatsNew.lua
 
-Core\UI\Util\__init.lua
-Core\UI\Util\Stylesheet.lua
+Core\UI\Util\Core.lua
+Core\UI\Util\Contacts.lua
 Core\UI\Util\TableRow.lua
 Core\UI\Util\ScrollingTableInfo.lua
 Core\UI\Util\QueryScrollingTableInfo.lua
 
 Core\UI\Elements\Element.lua
+Core\UI\Elements\Text.lua
 Core\UI\Elements\Button.lua
 Core\UI\Elements\ActionButton.lua
 Core\UI\Elements\SecureMacroActionButton.lua
+Core\UI\Elements\GroupSelector.lua
 Core\UI\Elements\Checkbox.lua
-Core\UI\Elements\Dropdown.lua
 Core\UI\Elements\BaseDropdown.lua
 Core\UI\Elements\SelectionDropdown.lua
 Core\UI\Elements\MultiselectionDropdown.lua
 Core\UI\Elements\Graph.lua
+Core\UI\Elements\BaseInput.lua
 Core\UI\Elements\Input.lua
-Core\UI\Elements\InputNumeric.lua
-Core\UI\Elements\SearchInput.lua
+Core\UI\Elements\MultiLineInput.lua
 Core\UI\Elements\ProgressBar.lua
 Core\UI\Elements\Slider.lua
-Core\UI\Elements\Text.lua
 Core\UI\Elements\PlayerGoldText.lua
 Core\UI\Elements\EditableText.lua
 Core\UI\Elements\Texture.lua
@@ -146,7 +163,7 @@ Core\UI\Elements\Spacer.lua
 
 Core\UI\Elements\Container.lua
 Core\UI\Elements\Frame.lua
-Core\UI\Elements\BorderedFrame.lua
+Core\UI\Elements\PopupFrame.lua
 Core\UI\Elements\AlphaAnimatedFrame.lua
 Core\UI\Elements\ApplicationFrame.lua
 Core\UI\Elements\LargeApplicationFrame.lua
@@ -155,54 +172,47 @@ Core\UI\Elements\ScrollFrame.lua
 Core\UI\Elements\Toggle.lua
 Core\UI\Elements\ToggleOnOff.lua
 Core\UI\Elements\DividedContainer.lua
-Core\UI\Elements\MenuDialogFrame.lua
+Core\UI\Elements\CollapsibleContainer.lua
 
-Core\UI\Elements\FastScrollingList.lua
-Core\UI\Elements\ScrollList.lua
-Core\UI\Elements\DropdownList.lua
+Core\UI\Elements\ScrollingTable.lua
 Core\UI\Elements\GroupTree.lua
 Core\UI\Elements\ApplicationGroupTree.lua
 Core\UI\Elements\ManagementGroupTree.lua
 Core\UI\Elements\SelectionGroupTree.lua
-Core\UI\Elements\ItemList.lua
-Core\UI\Elements\CraftingMatList.lua
 Core\UI\Elements\CraftingQueueList.lua
-Core\UI\Elements\OperationTree.lua
 Core\UI\Elements\SearchList.lua
+Core\UI\Elements\DropdownList.lua
 Core\UI\Elements\SelectionList.lua
-Core\UI\Elements\ImportConfirmationList.lua
-Core\UI\Elements\ExportConfirmationList.lua
-Core\UI\Elements\ScrollingTable.lua
+Core\UI\Elements\CommodityList.lua
+Core\UI\Elements\CraftingMatList.lua
+Core\UI\Elements\ItemList.lua
+Core\UI\Elements\OperationTree.lua
 Core\UI\Elements\QueryScrollingTable.lua
+Core\UI\Elements\MyAuctionsScrollingTable.lua
 Core\UI\Elements\SelectionScrollingTable.lua
 Core\UI\Elements\AuctionScrollingTable.lua
-Core\UI\Elements\ShoppingScrollingTable.lua
 Core\UI\Elements\SniperScrollingTable.lua
 Core\UI\Elements\ProfessionScrollingTable.lua
 
 Core\UI\Elements\ViewContainer.lua
-Core\UI\Elements\ButtonGroup.lua
 Core\UI\Elements\SimpleTabGroup.lua
 Core\UI\Elements\TabGroup.lua
-Core\UI\Elements\VerticalNav.lua
 
-Core\UI\Support\Fonts.lua
 Core\UI\Support\TexturePacks.lua
-Core\UI\Support\Stylesheet.lua
 
 Core\UI\AuctionUI\Core.lua
 Core\UI\AuctionUI\BuyUtil.lua
-Core\UI\AuctionUI\MyAuctions.lua
-Core\UI\AuctionUI\Auctioning.lua
 Core\UI\AuctionUI\Shopping.lua
+Core\UI\AuctionUI\Auctioning.lua
 Core\UI\AuctionUI\Sniper.lua
+Core\UI\AuctionUI\MyAuctions.lua
 
 Core\UI\DestroyingUI\Core.lua
 
 Core\UI\CraftingUI\Core.lua
 Core\UI\CraftingUI\Crafting.lua
-Core\UI\CraftingUI\CraftingReports.lua
 Core\UI\CraftingUI\Gathering.lua
+Core\UI\CraftingUI\CraftingReports.lua
 
 Core\UI\MailingUI\Core.lua
 Core\UI\MailingUI\Inbox.lua
@@ -218,7 +228,6 @@ Core\UI\VendoringUI\Groups.lua
 
 Core\UI\MainUI\Core.lua
 Core\UI\MainUI\Dashboard.lua
-Core\UI\MainUI\Groups.lua
 
 Core\UI\MainUI\Ledger\Core.lua
 Core\UI\MainUI\Ledger\Inventory.lua
@@ -231,6 +240,8 @@ Core\UI\MainUI\Ledger\Expenses\Core.lua
 Core\UI\MainUI\Ledger\FailedAuctions\Core.lua
 Core\UI\MainUI\Ledger\Common\Auctions.lua
 
+Core\UI\MainUI\Groups.lua
+
 Core\UI\MainUI\Operations\Core.lua
 Core\UI\MainUI\Operations\Auctioning.lua
 Core\UI\MainUI\Operations\Shopping.lua
@@ -240,11 +251,10 @@ Core\UI\MainUI\Operations\Vendoring.lua
 Core\UI\MainUI\Operations\Mailing.lua
 Core\UI\MainUI\Operations\Warehousing.lua
 
-Core\UI\MainUI\Import.lua
-
 Core\UI\MainUI\Settings\Core.lua
 Core\UI\MainUI\Settings\General.lua
 Core\UI\MainUI\Settings\Accounting.lua
+Core\UI\MainUI\Settings\Appearance.lua
 Core\UI\MainUI\Settings\Auctioning.lua
 Core\UI\MainUI\Settings\Destroying.lua
 Core\UI\MainUI\Settings\Mailing.lua
@@ -253,14 +263,7 @@ Core\UI\MainUI\Settings\Crafting.lua
 Core\UI\MainUI\Settings\Macros.lua
 Core\UI\MainUI\Settings\Shopping.lua
 Core\UI\MainUI\Settings\Vendoring.lua
-Core\UI\MainUI\Settings\Tooltips\Core.lua
-Core\UI\MainUI\Settings\Tooltips\General.lua
-Core\UI\MainUI\Settings\Tooltips\ValueSources.lua
-Core\UI\MainUI\Settings\Tooltips\Accounting.lua
-Core\UI\MainUI\Settings\Tooltips\Auctioning.lua
-Core\UI\MainUI\Settings\Tooltips\Crafting.lua
-Core\UI\MainUI\Settings\Tooltips\Shopping.lua
-Core\UI\MainUI\Settings\Tooltips\Destroying.lua
+Core\UI\MainUI\Settings\Tooltip.lua
 
 Core\UI\TaskListUI\Core.lua
 
@@ -280,7 +283,7 @@ Core\Service\Operations\Warehousing.lua
 Core\Service\Groups\Core.lua
 Core\Service\Groups\Path.lua
 Core\Service\Groups\Sync.lua
-Core\Service\Groups\Import.lua
+Core\Service\Groups\ImportExport.lua
 Core\Service\Accounting\Core.lua
 Core\Service\Accounting\Money.lua
 Core\Service\Accounting\Auctions.lua
@@ -290,6 +293,7 @@ Core\Service\Accounting\Garrison.lua
 Core\Service\Accounting\Mail.lua
 Core\Service\Accounting\Merchant.lua
 Core\Service\Accounting\Trade.lua
+Core\Service\Accounting\Sync.lua
 Core\Service\Auctioning\Core.lua
 Core\Service\Auctioning\CancelScan.lua
 Core\Service\Auctioning\Log.lua
@@ -349,6 +353,7 @@ Core\Service\Tooltip\AuctionDB.lua
 Core\Service\Tooltip\Auctioning.lua
 Core\Service\Tooltip\Crafting.lua
 Core\Service\Tooltip\Shopping.lua
+Core\Service\Tooltip\Sniper.lua
 Core\Service\AuctionDB\Core.lua
 Core\Service\Shopping\Core.lua
 Core\Service\Shopping\DisenchantSearch.lua

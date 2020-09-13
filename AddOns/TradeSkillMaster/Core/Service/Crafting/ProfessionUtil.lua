@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -12,14 +10,18 @@ local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
+local Delay = TSM.Include("Util.Delay")
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	craftQuantity = nil,
 	craftSpellId = nil,
 	craftCallback = nil,
 	craftName = nil,
+	castingTimeout = nil,
+	craftTimeout = nil,
 	preparedSpellId = nil,
 	preparedTime = 0,
 	categoryInfoTemp = {},
@@ -48,8 +50,8 @@ function ProfessionUtil.OnInitialize()
 
 		-- check if we need to update bank quantity manually
 		for _, itemString, quantity in TSM.Crafting.MatIterator(private.craftSpellId) do
-			local bankUsed = quantity - (TSMAPI_FOUR.Inventory.GetBagQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString))
-			if bankUsed > 0 and bankUsed <= TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) then
+			local bankUsed = quantity - (Inventory.GetBagQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString))
+			if bankUsed > 0 and bankUsed <= Inventory.GetBankQuantity(itemString) then
 				Log.Info("Used %d from bank", bankUsed)
 				BagTracking.ForceBankQuantityDeduction(itemString, bankUsed)
 			end
@@ -58,16 +60,10 @@ function ProfessionUtil.OnInitialize()
 		local callback = private.craftCallback
 		assert(callback)
 		private.craftQuantity = private.craftQuantity - 1
-		local isDone = private.craftQuantity == 0
-		if isDone then
-			private.craftQuantity = nil
-			private.craftSpellId = nil
-			private.craftCallback = nil
-			private.craftName = nil
-		end
-		callback(true, isDone)
+		private.DoCraftCallback(true, private.craftQuantity == 0)
 		-- ignore profession updates from crafting something
 		TSM.Crafting.ProfessionScanner.IgnoreNextProfessionUpdates()
+		-- restart the timeout
 	end)
 	local function SpellcastFailedEventHandler(_, unit, _, spellId)
 		if unit ~= "player" then
@@ -76,18 +72,14 @@ function ProfessionUtil.OnInitialize()
 		if (TSM.IsWowClassic() and GetSpellInfo(spellId) ~= private.craftName) or (not TSM.IsWowClassic() and spellId ~= private.craftSpellId) then
 			return
 		end
-		local callback = private.craftCallback
-		assert(callback)
-		private.craftQuantity = nil
-		private.craftSpellId = nil
-		private.craftCallback = nil
-		private.craftName = nil
-		callback(false, true)
+		private.DoCraftCallback(false, true)
 	end
 	local function ClearCraftCast()
 		private.craftQuantity = nil
 		private.craftSpellId = nil
 		private.craftName = nil
+		private.castingTimeout = nil
+		private.craftTimeout = nil
 	end
 	Event.Register("UNIT_SPELLCAST_INTERRUPTED", SpellcastFailedEventHandler)
 	Event.Register("UNIT_SPELLCAST_FAILED", SpellcastFailedEventHandler)
@@ -138,13 +130,13 @@ function ProfessionUtil.GetNumCraftable(spellId)
 	for i = 1, ProfessionUtil.GetNumMats(spellId) do
 		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i)
 		local itemString = ItemString.Get(matItemLink)
-		local totalQuantity = TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString)
+		local totalQuantity = Inventory.GetTotalQuantity(itemString)
 		if not itemString or not quantity or totalQuantity == 0 then
 			return 0, 0
 		end
-		local bagQuantity = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
+		local bagQuantity = Inventory.GetBagQuantity(itemString)
 		if not TSM.IsWowClassic() then
-			bagQuantity = bagQuantity + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString)
+			bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
 		end
 		num = min(num, floor(bagQuantity / quantity))
 		numAll = min(numAll, floor(totalQuantity / quantity))
@@ -155,12 +147,30 @@ function ProfessionUtil.GetNumCraftable(spellId)
 	return num, numAll
 end
 
+function ProfessionUtil.IsCraftable(spellId)
+	for i = 1, ProfessionUtil.GetNumMats(spellId) do
+		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i)
+		local itemString = ItemString.Get(matItemLink)
+		if not itemString or not quantity then
+			return false
+		end
+		local bagQuantity = Inventory.GetBagQuantity(itemString)
+		if not TSM.IsWowClassic() then
+			bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
+		end
+		if floor(bagQuantity / quantity) == 0 then
+			return false
+		end
+	end
+	return true
+end
+
 function ProfessionUtil.GetNumCraftableFromDB(spellId)
 	local num = math.huge
 	for _, itemString, quantity in TSM.Crafting.MatIterator(spellId) do
-		local bagQuantity = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
+		local bagQuantity = Inventory.GetBagQuantity(itemString)
 		if not TSM.IsWowClassic() then
-			bagQuantity = bagQuantity + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString)
+			bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
 		end
 		num = min(num, floor(bagQuantity / quantity))
 	end
@@ -219,7 +229,8 @@ end
 function ProfessionUtil.Craft(spellId, quantity, useVellum, callback)
 	assert(TSM.Crafting.ProfessionScanner.HasSpellId(spellId))
 	if private.craftSpellId then
-		callback(false, true)
+		private.craftCallback = callback
+		private.DoCraftCallback(false, true)
 		return 0
 	end
 	quantity = min(quantity, ProfessionUtil.GetNumCraftable(spellId))
@@ -250,6 +261,9 @@ function ProfessionUtil.Craft(spellId, quantity, useVellum, callback)
 	if useVellum and isEnchant then
 		UseItemByName(ItemInfo.GetName(ProfessionInfo.GetVellumItemString()))
 	end
+	private.castingTimeout = nil
+	private.craftTimeout = nil
+	Delay.AfterTime("PROFESSION_CRAFT_TIMEOUT_MONITOR", 0.5, private.CraftTimeoutMonitor, 0.5)
 	return quantity
 end
 
@@ -360,7 +374,7 @@ function ProfessionUtil.IsGuildProfession()
 end
 
 function ProfessionUtil.GetCategoryInfo(categoryId)
-	local name, numIndents, parentCategoryId = nil, nil, nil
+	local name, numIndents, parentCategoryId, currentSkillLevel, maxSkillLevel = nil, nil, nil, nil, nil
 	if TSM.IsWowClassic() then
 		name = TSM.Crafting.ProfessionState.IsClassicCrafting() and GetCraftDisplaySkillLine() or (categoryId and GetTradeSkillInfo(categoryId) or nil)
 		numIndents = 0
@@ -371,7 +385,80 @@ function ProfessionUtil.GetCategoryInfo(categoryId)
 		name = private.categoryInfoTemp.name
 		numIndents = private.categoryInfoTemp.numIndents
 		parentCategoryId = private.categoryInfoTemp.numIndents ~= 0 and private.categoryInfoTemp.parentCategoryID or nil
+		currentSkillLevel = private.categoryInfoTemp.skillLineCurrentLevel
+		maxSkillLevel = private.categoryInfoTemp.skillLineMaxLevel
 		wipe(private.categoryInfoTemp)
 	end
-	return name, numIndents, parentCategoryId
+	return name, numIndents, parentCategoryId, currentSkillLevel, maxSkillLevel
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.DoCraftCallback(result, isDone)
+	local callback = private.craftCallback
+	assert(callback)
+	-- reset timeouts
+	private.castingTimeout = nil
+	private.craftTimeout = nil
+	if isDone then
+		private.craftQuantity = nil
+		private.craftSpellId = nil
+		private.craftCallback = nil
+		private.craftName = nil
+		Delay.Cancel("PROFESSION_CRAFT_TIMEOUT_MONITOR")
+	end
+	callback(result, isDone)
+end
+
+function private.CraftTimeoutMonitor()
+	if not private.craftSpellId then
+		Log.Info("No longer crafting")
+		private.castingTimeout = nil
+		private.craftTimeout = nil
+		Delay.Cancel("PROFESSION_CRAFT_TIMEOUT_MONITOR")
+		return
+	end
+	local _, _, _, _, castEndTimeMs, _, _, _, spellId = private.GetPlayerCastingInfo()
+	if spellId then
+		private.castingTimeout = nil
+	else
+		private.craftTimeout = nil
+	end
+	if not spellId then
+		-- no active cast
+		if GetTime() > (private.castingTimeout or math.huge) then
+			Log.Err("Craft timed out (%s)", private.craftSpellId)
+			private.DoCraftCallback(false, true)
+			return
+		end
+		-- set the casting timeout to 1 second from now
+		private.castingTimeout = GetTime() + 1
+		return
+	elseif private.craftSpellId ~= spellId then
+		Log.Err("Crafting something else (%s, %s)", private.craftSpellId, spellId)
+		private.castingTimeout = nil
+		private.craftTimeout = nil
+		Delay.Cancel("PROFESSION_CRAFT_TIMEOUT_MONITOR")
+		return
+	end
+
+	if GetTime() > (private.craftTimeout or math.huge) then
+		Log.Err("Craft timed out (%s)", private.craftSpellId)
+		private.DoCraftCallback(false, true)
+		return
+	end
+	-- set the timeout to 1 second after the end time
+	private.craftTimeout = castEndTimeMs / 1000 + 1
+end
+
+function private.GetPlayerCastingInfo()
+	if TSM.IsWowClassic() then
+		return CastingInfo()
+	else
+		return UnitCastingInfo("player")
+	end
 end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Delay Functions
@@ -46,11 +44,12 @@ end)
 -- @tparam number duration The amount of time to delay for
 -- @tparam function callback The function called when the delay is finished
 -- @tparam[opt] number repeatDelay The amount of time to set this delay for once it completes
-function Delay.AfterTime(label, duration, callback, repeatDelay)
+-- @param[opt=nil] context A context value to pass along to the callback (ignored if the delay was previously started)
+function Delay.AfterTime(label, duration, callback, repeatDelay, context)
 	if type(label) == "number" then
 		-- no label specified
 		assert(not repeatDelay)
-		duration, callback, repeatDelay = label, duration, callback
+		duration, callback, repeatDelay, context = label, duration, callback, repeatDelay
 		label = nil
 	end
 	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
@@ -73,6 +72,7 @@ function Delay.AfterTime(label, duration, callback, repeatDelay)
 	delayTbl.callback = callback
 	delayTbl.label = label
 	delayTbl.repeatDelay = repeatDelay
+	delayTbl.context = context
 	tinsert(private.delays, delayTbl)
 end
 
@@ -82,11 +82,12 @@ end
 -- @tparam number duration The number of frames to delay for
 -- @tparam function callback The function called when the delay is finished
 -- @tparam[opt] number repeatDelay The number of frames to set this delay for once it completes
-function Delay.AfterFrame(label, duration, callback, repeatDelay)
+-- @param[opt=nil] context A context value to pass along to the callback (ignored if the delay was previously started)
+function Delay.AfterFrame(label, duration, callback, repeatDelay, context)
 	if type(label) == "number" then
 		-- no label specified
 		assert(not repeatDelay)
-		duration, callback, repeatDelay = label, duration, callback
+		duration, callback, repeatDelay, context = label, duration, callback, repeatDelay
 		label = nil
 	end
 	assert(type(duration) == "number" and type(callback) == "function" and (not repeatDelay or type(repeatDelay) == "number"))
@@ -110,6 +111,7 @@ function Delay.AfterFrame(label, duration, callback, repeatDelay)
 	delayTbl.callback = callback
 	delayTbl.label = label
 	delayTbl.repeatDelay = repeatDelay
+	delayTbl.context = context
 	tinsert(private.delays, delayTbl)
 end
 
@@ -135,12 +137,13 @@ function private.ProcessDelays()
 	private.frameNumber = private.frameNumber + 1
 	-- the delays can change as we do our callbacks, so keep looping through them until there are no more pending
 	while true do
-		local pendingLabel, pendingCallback = nil, nil
+		local pendingLabel, pendingCallback, pendingContext = nil, nil, nil
 		for i, delay in ipairs(private.delays) do
 			assert(delay.endFrame or delay.endTime)
 			if delay.endFrame and delay.endFrame <= private.frameNumber then
 				pendingLabel = delay.label
 				pendingCallback = delay.callback
+				pendingContext = delay.context
 				if delay.repeatDelay then
 					delay.endFrame = private.frameNumber + delay.repeatDelay
 				else
@@ -150,6 +153,7 @@ function private.ProcessDelays()
 			elseif delay.endTime and delay.endTime <= GetTime() then
 				pendingLabel = delay.label
 				pendingCallback = delay.callback
+				pendingContext = delay.context
 				if delay.repeatDelay then
 					delay.endTime = GetTime() + delay.repeatDelay
 				else
@@ -164,7 +168,7 @@ function private.ProcessDelays()
 			break
 		end
 		local startTime = debugprofilestop()
-		pendingCallback()
+		pendingCallback(pendingContext)
 		local timeTaken = debugprofilestop() - startTime
 		if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
 			Log.Warn("Delay callback (%s) took %0.2fms", pendingLabel, timeTaken)

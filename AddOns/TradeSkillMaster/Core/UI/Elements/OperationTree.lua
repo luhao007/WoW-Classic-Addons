@@ -1,23 +1,23 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- OperationTree UI Element Class.
 -- The operation tree is used to display operations grouped by module and allows for adding, duplicating, and deleting
--- them. Only one module is allowed to be expanded at a time. It is a subclass of the @{ScrollList} class.
+-- them. Only one module is allowed to be expanded at a time. It is a subclass of the @{ScrollingTable} class.
 -- @classmod OperationTree
 
 local _, TSM = ...
-local OperationTree = TSM.Include("LibTSMClass").DefineClass("OperationTree", TSM.UI.ScrollList)
+local OperationTree = TSM.Include("LibTSMClass").DefineClass("OperationTree", TSM.UI.ScrollingTable)
+local L = TSM.Include("Locale").GetTable()
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(OperationTree)
 TSM.UI.OperationTree = OperationTree
 local private = {}
-local EXPANDER_PADDING_LEFT = 8
-local SCROLLBAR_WIDTH = 16
-local TEXT_INDENT = 30
 local DATA_SEP = "\001"
 
 
@@ -27,11 +27,11 @@ local DATA_SEP = "\001"
 
 function OperationTree.__init(self)
 	self.__super:__init()
+	self:SetRowHeight(28)
 
 	self._operationNameFilter = ""
 	self._selected = nil
-	self._contextTable = nil
-	self._defaultContextTable = nil
+	self._expandedModule = nil
 	self._selectedOperation = nil
 	self._prevSelectedOperation = nil
 	self._onOperationSelectedHandler = nil
@@ -40,47 +40,37 @@ function OperationTree.__init(self)
 end
 
 function OperationTree.Acquire(self)
-	self._selectedRowFrame = TSMAPI_FOUR.UI.NewElement("Frame", self._id.."_SelectedRowIcons")
-		:SetLayout("HORIZONTAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "duplicateButton")
-			:SetScript("OnClick", private.CopyButtonOnClick)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "deleteButton")
-			:SetScript("OnClick", private.DeleteButtonOnClick)
-		)
-
+	self._backgroundColor = "PRIMARY_BG_ALT"
+	self._headerHidden = true
 	self.__super:Acquire()
+	self:GetScrollingTableInfo()
+		:NewColumn("text")
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetJustifyH("LEFT")
+			:SetTextFunction(private.GetText)
+			:SetExpanderStateFunction(private.GetExpanderState)
+			:SetActionIconInfo(2, 14, private.GetActionIcon)
+			:SetActionIconClickHandler(private.OnActionIconClick)
+			:DisableHiding()
+			:Commit()
+		:Commit()
+	self:UpdateData()
 end
 
 function OperationTree.Release(self)
-	if not self._selected then
-		self._selectedRowFrame:Release()
+	for _, row in ipairs(self._rows) do
+		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
 	end
 	self._selected = nil
 	self._operationNameFilter = ""
-	self._contextTable = nil
-	self._defaultContextTable = nil
+	self._expandedModule = nil
 	self._selectedOperation = nil
 	self._prevSelectedOperation = nil
 	self._onOperationSelectedHandler = nil
 	self._onOperationAddedHandler = nil
 	self._onOperationDeletedHandler = nil
-	self._selectedRowFrame = nil
 	self.__super:Release()
-end
-
---- Sets the context table.
--- This table can be used to preserve the expanded module information across lifecycles of the operation tree and even
--- WoW sessions if it's within the settings DB.
--- @tparam OperationTree self The operation tree object
--- @tparam table tbl The context table
--- @tparam table defaultTbl Default values (required fields: `expandedModule`)
--- @treturn OperationTree The operation tree object
-function OperationTree.SetContextTable(self, tbl, defaultTbl)
-	tbl.expandedModule = tbl.expandedModule or defaultTbl.expandedModule
-	self._contextTable = tbl
-	self._defaultContextTable = defaultTbl
-	return self
+	self:SetRowHeight(28)
 end
 
 --- Sets the operation name filter.
@@ -94,13 +84,13 @@ function OperationTree.SetOperationNameFilter(self, filter)
 		self._prevSelectedOperation = nil
 	elseif filter ~= "" and self._selectedOperation then
 		local _, operationName = self:_SplitOperationKey(self._selectedOperation)
-		if not strmatch(strlower(operationName), filter) then
+		if not operationName or not strmatch(strlower(operationName), filter) then
 			-- save the current selection to restore after the filter is cleared and then clear the current selection
 			self._prevSelectedOperation = self._selectedOperation
 			self:SetSelectedOperation()
 		end
 	end
-	self:Draw()
+	self:UpdateData(true)
 end
 
 --- Registers a script handler.
@@ -131,21 +121,26 @@ end
 function OperationTree.SetSelectedOperation(self, moduleName, operationName)
 	if moduleName and operationName then
 		self._selectedOperation = moduleName..DATA_SEP..operationName
-		self._contextTable.expandedModule = moduleName
+		self._expandedModule = moduleName
+	elseif moduleName then
+		self._selectedOperation = moduleName
+		self._expandedModule = moduleName
 	else
 		self._selectedOperation = nil
+		self._expandedModule = nil
 	end
+	self:UpdateData()
+	self.__super:SetSelection(self._selectedOperation, true)
 	if self._onOperationSelectedHandler then
 		self:_onOperationSelectedHandler(moduleName, operationName)
 	end
-	self:Draw()
+	self:_ForceLastDataUpdate()
+	self:UpdateData(true)
 	return self
 end
 
-function OperationTree.Draw(self)
-	self._selectedRowFrame:GetElement("duplicateButton"):SetStyle("backgroundTexturePack", self:_GetStyle("duplicateBackgroundTexturePack"))
-	self._selectedRowFrame:GetElement("deleteButton"):SetStyle("backgroundTexturePack", self:_GetStyle("deleteBackgroundTexturePack"))
-	self.__super:Draw()
+function OperationTree.SetSelection(self, data)
+	self:SetSelectedOperation(self:_SplitOperationKey(data))
 end
 
 
@@ -154,83 +149,22 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function OperationTree._CreateRow(self)
-	local row = self.__super:_CreateRow()
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "button")
-			:SetStyle("anchors", { { "TOPLEFT" }, { "BOTTOMRIGHT" } })
-			:SetStyle("justifyH", "LEFT")
-			:SetScript("OnClick", private.RowButtonOnClick)
-			:SetScript("OnEnter", private.RowButtonOnEnter)
-			:SetScript("OnLeave", private.RowButtonOnLeave)
-		)
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Texture", "highlight")
-			:SetStyle("anchors", { { "TOPLEFT" }, { "BOTTOMRIGHT" } })
-		)
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Texture", "expander")
-			:SetStyle("anchors", { { "LEFT", EXPANDER_PADDING_LEFT, 0 } })
-		)
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "addBtn")
-			:SetStyle("relativeLevel", 2)
-			:SetStyle("width", 18)
-			:SetStyle("height", 18)
-			:SetStyle("anchors", { { "TOPRIGHT", -SCROLLBAR_WIDTH, 0 }, { "BOTTOMRIGHT", -SCROLLBAR_WIDTH, 0 } })
-			:SetStyle("backgroundTexturePack", self:_GetStyle("plusBackgroundTexturePack"))
-			:SetScript("OnClick", private.AddNewOnClick)
-			:SetScript("OnEnter", private.RowButtonOnEnter)
-			:SetScript("OnLeave", private.RowButtonOnLeave)
-		)
-		:SetScript("OnEnter", private.RowOnEnter)
-		:SetScript("OnLeave", private.RowOnLeave)
-
-	-- hide the highlight
-	row:GetElement("highlight"):Hide()
-	return row
-end
-
-function OperationTree._SetRowHitRectInsets(self, row, top, bottom)
-	row:GetElement("button"):SetHitRectInsets(0, 0, top, bottom)
-	row:GetElement("addBtn"):SetHitRectInsets(0, 0, top, bottom)
-	self.__super:_SetRowHitRectInsets(row, top, bottom)
-end
-
-function OperationTree._DrawRow(self, row, dataIndex)
-	local moduleName, operationName = self:_SplitOperationKey(row:GetContext())
-	local isCollapsed = self._contextTable.expandedModule ~= moduleName
-
-	local expanderSize = self:_GetStyle("expanderSize")
-	row:GetElement("button")
-		:SetStyle("textIndent", TEXT_INDENT)
-		:SetStyle("fontHeight", self:_GetStyle("fontHeight"))
-		:SetStyle("font", self:_GetStyle(operationName and "font" or "headerFont"))
-		:SetStyle("textColor", self:_GetStyle(operationName and "textColor" or "headerTextColor"))
-		:SetText(operationName or moduleName)
-	row:GetElement("expander"):SetStyle("width", expanderSize)
-	row:GetElement("expander"):SetStyle("height", expanderSize)
-	row:GetElement("highlight"):SetStyle("color", self:_GetStyle("highlight"))
-	if operationName then
-		row:GetElement("expander"):SetStyle("texturePack", nil)
-		row:GetElement("addBtn"):Hide()
-	else
-		row:GetElement("expander"):SetStyle("texturePack", self:_GetStyle(isCollapsed and "expanderCollapsedBackgroundTexturePack" or "expanderExpandedBackgroundTexturePack"))
-		row:GetElement("addBtn")
-			:SetStyle("font", self:_GetStyle("headerFont"))
-			:SetStyle("fontHeight", self:_GetStyle("fontHeight"))
-			:Show()
+function OperationTree._GetTableRow(self, isHeader)
+	local row = self.__super:_GetTableRow(isHeader)
+	if not isHeader then
+		ScriptWrapper.Set(row._frame, "OnDoubleClick", private.RowOnDoubleClick, row)
 	end
-	row:Draw()
-
-	self.__super:_DrawRow(row, dataIndex)
+	return row
 end
 
 function OperationTree._IsDataHidden(self, data)
 	local moduleName, operationName = self:_SplitOperationKey(data)
 	if operationName and not strmatch(strlower(operationName), self._operationNameFilter) then
 		return true
-	elseif operationName and moduleName ~= self._contextTable.expandedModule then
+	elseif operationName and moduleName ~= self._expandedModule then
 		return true
-	else
-		return self.__super:_IsDataHidden(data)
 	end
+	return false
 end
 
 function OperationTree._SplitOperationKey(self, data)
@@ -242,57 +176,20 @@ end
 function OperationTree._UpdateData(self)
 	wipe(self._data)
 	for _, moduleName in TSM.Operations.ModuleIterator() do
-		tinsert(self._data, moduleName)
+		if not self:_IsDataHidden(moduleName) then
+			tinsert(self._data, moduleName)
+		end
 		for _, operationName in TSM.Operations.OperationIterator(moduleName) do
-			tinsert(self._data, moduleName..DATA_SEP..operationName)
+			local data = moduleName..DATA_SEP..operationName
+			if not self:_IsDataHidden(data) then
+				tinsert(self._data, data)
+			end
 		end
 	end
 end
 
-function OperationTree._DrawRows(self)
-	self:_UpdateData()
-	self.__super:_DrawRows()
-	self:_UpdateSelectedRowIcons()
-end
-
-function OperationTree._UpdateSelectedRowIcons(self)
-	local selectedRow = nil
-	for _, row in ipairs(self._rows) do
-		local rowData = row:GetContext()
-		if rowData and rowData == self._selectedOperation then
-			selectedRow = row
-			break
-		end
-	end
-	local currentParentRow = self._selectedRowFrame:GetParentElement()
-	if currentParentRow then
-		currentParentRow:RemoveChild(self._selectedRowFrame)
-	end
-	if self._selected then
-		self._selected:GetElement("highlight"):Hide()
-	end
-	if selectedRow then
-		selectedRow:AddChildNoLayout(self._selectedRowFrame)
-		local buttonSize = self:_GetStyle("selectedRowButtonSize")
-		local horizontalPadding = self:_GetStyle("selectedRowIconPadding")
-		self._selectedRowFrame:SetStyle("width", buttonSize * 2 + horizontalPadding)
-		self._selectedRowFrame:SetStyle("height", self:_GetStyle("rowHeight"))
-		self._selectedRowFrame:SetStyle("anchors", { { "TOPRIGHT", -SCROLLBAR_WIDTH, 0 } })
-		self._selectedRowFrame:GetElement("duplicateButton")
-			:SetStyle("height", buttonSize)
-			:SetStyle("width", buttonSize)
-			:SetStyle("margin", { right = horizontalPadding })
-		self._selectedRowFrame:GetElement("deleteButton")
-			:SetStyle("height", buttonSize)
-			:SetStyle("width", buttonSize)
-		self._selectedRowFrame:Show()
-		selectedRow:GetElement("highlight"):Show()
-		self._selected = selectedRow
-		self._selectedRowFrame:Draw()
-	else
-		self._selected = nil
-		self._selectedRowFrame:Hide()
-	end
+function OperationTree._HandleRowClick(self)
+	self:Draw()
 end
 
 
@@ -301,89 +198,91 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.RowButtonOnClick(button)
-	local row = button:GetParentElement()
-	local self = row:GetParentElement()
-	local moduleName, operationName = self:_SplitOperationKey(row:GetContext())
-	if not operationName then
-		if self._contextTable.expandedModule == moduleName then
-			self._contextTable.expandedModule = nil
+function private.GetText(self, data)
+	local moduleName, operationName = self:_SplitOperationKey(data)
+	local color = Theme.GetColor(operationName and "TEXT" or "INDICATOR")
+	return color:ColorText(operationName or moduleName.." "..L["Operations"])
+end
+
+function private.GetExpanderState(self, data)
+	local moduleName, operationName = self:_SplitOperationKey(data)
+	return not operationName, self._expandedModule == moduleName, operationName and 1 or 0
+end
+
+function private.GetActionIcon(self, data, iconIndex, isMouseOver)
+	local _, operationName = self:_SplitOperationKey(data)
+	if iconIndex == 1 then
+		if operationName and data == self._selectedOperation then
+			local texturePack = "iconPack.14x14/Duplicate"
+			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+		elseif operationName then
+			return false, nil
 		else
-			self._contextTable.expandedModule = moduleName
+			local texturePack = "iconPack.14x14/Add/Circle"
+			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+		end
+	elseif iconIndex == 2 then
+		if operationName and data == self._selectedOperation then
+			local texturePack = "iconPack.14x14/Delete"
+			return true, isMouseOver and TSM.UI.TexturePacks.GetColoredKey(texturePack, Theme.GetColor("INDICATOR")) or texturePack
+		else
+			return false, nil
+		end
+	else
+		error("Invalid index: "..tostring(iconIndex))
+	end
+end
+
+function private.OnActionIconClick(self, data, iconIndex)
+	local moduleName, operationName = self:_SplitOperationKey(data)
+	if iconIndex == 1 then
+		if operationName then
+			-- duplicate
+			local num = 1
+			while TSM.Operations.Exists(moduleName, operationName.." "..num) do
+				num = num + 1
+			end
+			local newOperationName = operationName.." "..num
+			self:_onOperationAddedHandler(moduleName, newOperationName, operationName)
+			self:UpdateData()
+			self:SetSelectedOperation(moduleName, newOperationName)
+		else
+			-- add
+			operationName = "New Operation"
+			local num = 1
+			while TSM.Operations.Exists(moduleName, operationName.." "..num) do
+				num = num + 1
+			end
+			operationName = operationName .. " " .. num
+			self._expandedModule = moduleName
+			self:_onOperationAddedHandler(moduleName, operationName)
+			self:UpdateData()
+			self:SetSelectedOperation(moduleName, operationName)
 		end
 		self:Draw()
+	elseif iconIndex == 2 then
+		assert(operationName)
+		-- delete
+		self:_onOperationDeletedHandler(moduleName, operationName)
+		self:UpdateData(true)
+	else
+		error("Invalid index: "..tostring(iconIndex))
+	end
+end
+
+function private.RowOnDoubleClick(row, mouseButton)
+	if mouseButton ~= "LeftButton" then
+		return
+	end
+	local self = row._scrollingTable
+	local data = row:GetData()
+	local moduleName, operationName = self:_SplitOperationKey(data)
+	if operationName then
+		return
+	end
+	if moduleName == self._selectedOperation then
 		self:SetSelectedOperation()
 	else
 		self:SetSelectedOperation(moduleName, operationName)
 	end
-end
-
-function private.AddNewOnClick(button)
-	local row = button:GetParentElement()
-	local self = row:GetParentElement()
-	local moduleName = row:GetContext()
-	local operationName = "New Operation"
-	local num = 1
-	while TSM.Operations.Exists(moduleName, operationName.." "..num) do
-		num = num + 1
-	end
-	operationName = operationName .. " " .. num
-	self:_onOperationAddedHandler(moduleName, operationName)
-	self:Draw()
-	self:SetSelectedOperation(moduleName, operationName)
-end
-
-function private.RowOnEnter(frame)
-	local self = frame:GetParentElement()
-	if self._selected == frame then
-		return
-	end
-	frame:GetElement("highlight"):Show()
-end
-
-function private.RowOnLeave(frame)
-	local self = frame:GetParentElement()
-	if self._selected == frame then
-		return
-	end
-	frame:GetElement("highlight"):Hide()
-end
-
-function private.RowButtonOnEnter(frame)
-	frame = frame:GetParentElement()
-	local self = frame:GetParentElement()
-	if self._selected == frame then
-		return
-	end
-	frame:GetElement("highlight"):Show()
-end
-
-function private.RowButtonOnLeave(frame)
-	frame = frame:GetParentElement()
-	local self = frame:GetParentElement()
-	if self._selected == frame then
-		return
-	end
-	frame:GetElement("highlight"):Hide()
-end
-
-function private.CopyButtonOnClick(button)
-	local row = button:GetParentElement():GetParentElement()
-	local self = row:GetParentElement()
-	local moduleName, operationName = self:_SplitOperationKey(row:GetContext())
-	local num = 1
-	while TSM.Operations.Exists(moduleName, operationName.." "..num) do
-		num = num + 1
-	end
-	local newOperationName = operationName.." "..num
-	self:_onOperationAddedHandler(moduleName, newOperationName, operationName)
-	self:Draw()
-	self:SetSelectedOperation(moduleName, newOperationName)
-end
-
-function private.DeleteButtonOnClick(button)
-	local self = button:GetParentElement():GetParentElement():GetParentElement()
-	self:_onOperationDeletedHandler(self:_SplitOperationKey(self._selectedOperation))
-	self:Draw()
-	self:SetSelectedOperation()
 end

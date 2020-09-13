@@ -158,14 +158,12 @@ L.VOICE_COUNT_MISSING		= "Le compte à rebours de la voix %d se trouve dans un p
 L.BIG_WIGS					= "BigWigs"
 
 L.UPDATEREMINDER_HEADER			= "Votre version de Deadly Boss Mods est périmée.\nLa version %s (%s) est disponible au téléchargement ici:"
-L.UPDATEREMINDER_HEADER_ALPHA	= "Votre version Alpha de DBM-alpha est périmée.\n Vous avez au moins %d versions de test de retard. Il est recommandé au utilisateurs d'utiliser la dernière version alpha ou la dernière version stable. Les versions alpha périmées peuvent mener à des fonctionnalités absentes ou cassées."
 L.UPDATEREMINDER_FOOTER			= "Faites la combinaison " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  " pour copier le lien de téléchargement dans votre presse-papier."
 L.UPDATEREMINDER_FOOTER_GENERIC = "Faites la combinaison " .. (IsMacClient() and "Cmd-C" or "Ctrl-C")  ..  " pour copier le lien dans votre presse-papier."
 L.UPDATEREMINDER_DISABLE        = "ALERTE: Compte tenu que votre version DBM est fortement périmée (%d révisions), DBM a été désactivé jusqu'à ce que vous le mettiez à jour. Ceci, pour éviter que des versions incompatibles de DBM ne cause de mauvaises éxpériences de jeu pour vous et les membres du raid."
 L.UPDATEREMINDER_HOTFIX         = "Votre version de DBM contient des timers et alertes incorrects sur ce boss. Ceci a été corrigé dans la dernière version (ou alpha si la prochaine version n'est pas encore disponible)."
 L.UPDATEREMINDER_HOTFIX_ALPHA	= "La version de DBM sur laquelle vous êtes a des problèmes connus sur ce combat qui sont corrigées dans une future version (ou au moins une version alpha)"
 L.UPDATEREMINDER_MAJORPATCH		= "ATTENTION: Du au fait que votre DBM n'est pas à jour, celui-ci a été désactivé, puisqu'il y a eu une mise à jour majeure du jeu. Ceci pour être sûr que du code incompatible ou trop vieux ne réduise l'expérience de jeu pour vous ou des membres de votre groupe. Téléchargez une nouvelle version sur deadlybossmods.com ou curse dès que possible."
-L.UPDATEREMINDER_TESTVERSION	= "ATTENTION: Vous utilisez une version de DBM qui n'est pas prévue pour jouer avec cette version du jeu. Téléchargez une version appropriée pour votre client de jeu sur deadlybossmods.com ou sur curse."
 L.VEM							= "ATTENTION: Vous utilisez et DBM et Voice Encounter Mods. DBM ne tournera pas dans cette configuration et ne sera donc pas chargé."
 L.OUTDATEDPROFILES				= "ATTENTION: DBM-Profiles n'est pas compatible avec cette version de DBM. Il faut qu'il soit désactivé pour que DBM puisse tourner sans soucis."
 L.OUTDATEDSPELLTIMERS			= "ATTENTION: DBM-SpellTimers casse " .. L.DBM .. "et doit être désactivé pour que " .. L.DBM .. " fonctionne correctement."
@@ -430,31 +428,50 @@ L.AUTO_SPEC_WARN_OPTIONS.gtfo 			= "Afficher une alerte spéciale à sortir du s
 L.AUTO_SPEC_WARN_OPTIONS.adds			= "Afficher une alerte spéciale à changer de cible pour les serviteurs entrants"
 L.AUTO_SPEC_WARN_OPTIONS.addscustom		= "Afficher une alerte spéciale pour les serviteurs entrants"
 L.AUTO_SPEC_WARN_OPTIONS.targetchange	= "Afficher une alerte spéciale pour changements de cible prioritaires"
--- CONTINUE HERE
+
 -- Auto-generated Timer Localizations
 L.AUTO_TIMER_TEXTS.target		= "%s: >%%s<"
-L.AUTO_TIMER_TEXTS.cast		= "%s"
+L.AUTO_TIMER_TEXTS.cast			= "%s"
+L.AUTO_TIMER_TEXTS.castshort	= "%s "--if short timers enabled, cast and next are same timer text, this is a conflict. the space resolves it
+L.AUTO_TIMER_TEXTS.castcount	= "%s (%%s)"
+L.AUTO_TIMER_TEXTS.castcountshort	= "%s (%%s) "--Resolve short timer conflict with next timers
+L.AUTO_TIMER_TEXTS.castsource	= "%s: %%s"
 L.AUTO_TIMER_TEXTS.active		= "%s se termine" --Buff/Debuff/event on boss,
 L.AUTO_TIMER_TEXTS.fades		= "%s se dissipe" --Buff/Debuff on players,
 L.AUTO_TIMER_TEXTS.ai			= "%s AI"
 L.AUTO_TIMER_TEXTS.cd			= "Rech. %s"
+L.AUTO_TIMER_TEXTS.cdshort		= "~%s"
 L.AUTO_TIMER_TEXTS.cdcount		= "Rech. %s (%%s)"
-L.AUTO_TIMER_TEXTS.cdsource	= "Rech. %s: >%%s<"
-L.AUTO_TIMER_TEXTS.cdspecial	= "CD d'abilité spéciale"
-L.AUTO_TIMER_TEXTS.next		= "Proch. %s"
+L.AUTO_TIMER_TEXTS.cdcountshort	= "~%s (%%s)"
+L.AUTO_TIMER_TEXTS.cdsource		= "Rech. %s: >%%s<"
+L.AUTO_TIMER_TEXTS.cdsourceshort	= "~%s: >%%s<"
+L.AUTO_TIMER_TEXTS.cdspecial	= "Rech. d'abilité spéciale"
+L.AUTO_TIMER_TEXTS.cdspecialshort	= "~Spéciale"
+L.AUTO_TIMER_TEXTS.next			= "Proch. %s"
+L.AUTO_TIMER_TEXTS.nextshort	= "%s"
 L.AUTO_TIMER_TEXTS.nextcount	= "Proch. %s (%%s)"
+L.AUTO_TIMER_TEXTS.nextcountshort	= "%s (%%s)"
 L.AUTO_TIMER_TEXTS.nextsource	= "Proch. %s: >%%s<"
+L.AUTO_TIMER_TEXTS.nextsourceshort	= "%s: %%s"
 L.AUTO_TIMER_TEXTS.nextspecial	= "Abilité spéciale suivante"
+L.AUTO_TIMER_TEXTS.nextspecialshort	= "Spéciale"
 L.AUTO_TIMER_TEXTS.achievement	= "%s"
+L.AUTO_TIMER_TEXTS.stageshort	= "Phase"
 L.AUTO_TIMER_TEXTS.stage		= "Phase Suivante"
+L.AUTO_TIMER_TEXTS.adds			= "Serviteurs entrants"
+L.AUTO_TIMER_TEXTS.addscustom	= "Serviteurs entrants (%%s)"
+L.AUTO_TIMER_TEXTS.addscustomshort	= "Serviteurs (%%s)"
+L.AUTO_TIMER_TEXTS.roleplay		= "Jeu de rôle"
 
 L.AUTO_TIMER_OPTIONS.target		= "Durée d'affaiblissement de $spell:%s"
 L.AUTO_TIMER_OPTIONS.cast		= "Durée d'incantation de $spell:%s"
+L.AUTO_TIMER_OPTIONS.castcount	= "Durée d'incantation (avec compte) de $spell:%s cast"
+L.AUTO_TIMER_OPTIONS.castsource	= "Durée d'incantation (avec compte) de $spell:%s cast"
 L.AUTO_TIMER_OPTIONS.active		= "Durée d'activité de $spell:%s"
 L.AUTO_TIMER_OPTIONS.fades		= "Délai avant la dissipation de $spell:%s"
 L.AUTO_TIMER_OPTIONS.ai			= "Afficher le timer IA pour le cooldown de $spell:%s"
 L.AUTO_TIMER_OPTIONS.cd			= "Durée de recharge de $spell:%s"
-L.AUTO_TIMER_OPTIONS.cdcount		= "Durée de recharge de $spell:%s"
+L.AUTO_TIMER_OPTIONS.cdcount	= "Durée de recharge de $spell:%s"
 L.AUTO_TIMER_OPTIONS.cdsource	= "Durée de recharge de $spell:%s"
 L.AUTO_TIMER_OPTIONS.cdspecial	= "Afficher le timer pour le cooldown d'abilité spéciale"
 L.AUTO_TIMER_OPTIONS.next		= "Délai avant le prochain $spell:%s"
@@ -463,37 +480,63 @@ L.AUTO_TIMER_OPTIONS.nextsource	= "Délai avant le prochain $spell:%s"
 L.AUTO_TIMER_OPTIONS.nextspecial	= "Afficher le timer de l'abilité spéciale suivante"
 L.AUTO_TIMER_OPTIONS.achievement	= "Délai pour réussir %s"
 L.AUTO_TIMER_OPTIONS.stage		= "Afficher le timer de la phase suivante"
-L.AUTO_TIMER_OPTIONS.roleplay	= "Afficher le timer de la durée du roleplay"--This does need localizing though.
+L.AUTO_TIMER_OPTIONS.adds		= "Afficher le timer pour les serviteurs entrants"
+L.AUTO_TIMER_OPTIONS.addscustom	= "Afficher le timer pour les serviteurs entrants"
+L.AUTO_TIMER_OPTIONS.roleplay	= "Afficher le timer de la durée du jeu de rôle"--This does need localizing though.
 
-L.AUTO_ICONS_OPTION_TEXT			= "Placer des icônes sur les cibles de $spell:%s"
-L.AUTO_ICONS_OPTION_TEXT2        = "Placer des icônes sur $spell:%s"
-L.AUTO_ARROW_OPTION_TEXT         = "Afficher la flèche DBM en direction de la cible affectée par $spell:%s"
-L.AUTO_ARROW_OPTION_TEXT2        = "Afficher la flèche DBM pour s'éloigner de la cible affectée par $spell:%s"
+L.AUTO_ICONS_OPTION_TEXT		= "Placer des icônes sur les cibles de $spell:%s"
+L.AUTO_ICONS_OPTION_TEXT2       = "Placer des icônes sur $spell:%s"
+L.AUTO_ARROW_OPTION_TEXT        = "Afficher la flèche DBM en direction de la cible affectée par $spell:%s"
+L.AUTO_ARROW_OPTION_TEXT2       = "Afficher la flèche DBM pour s'éloigner de la cible affectée par $spell:%s"
 L.AUTO_ARROW_OPTION_TEXT3		= "Show DBM Arrow to move toward specific location for $spell:%s"
-L.AUTO_VOICE_OPTION_TEXT			= "Play spoken alerts for $spell:%s"
-L.AUTO_VOICE2_OPTION_TEXT		= "Play spoken alerts for phase changes"
-L.AUTO_COUNTDOWN_OPTION_TEXT		= "Compte à rebours sonore pour $spell:%s"
+L.AUTO_VOICE_OPTION_TEXT		= "Alertes vocales pour $spell:%s"
+L.AUTO_VOICE2_OPTION_TEXT		= "Alertes vocales pour changements de phase"
+L.AUTO_VOICE3_OPTION_TEXT		= "Alertes vocales pour serviteurs entrants"
+L.AUTO_VOICE4_OPTION_TEXT		= "Alertes vocales pour s'éloigner de là"
+L.AUTO_COUNTDOWN_OPTION_TEXT	= "Compte à rebours sonore pour $spell:%s"
 L.AUTO_COUNTDOWN_OPTION_TEXT2	= "Compte à rebours sonore pour lorsque $spell:%s se dissipe"
 L.AUTO_COUNTOUT_OPTION_TEXT		= "Compte à rebours sonore pour la durée de $spell:%s"
 
-L.AUTO_YELL_OPTION_TEXT.yell		= "Crie quand vous êtes affecté par $spell:%s"
+L.AUTO_YELL_OPTION_TEXT.yell	= "Crie quand vous êtes affecté par $spell:%s"
 L.AUTO_YELL_OPTION_TEXT.count	= "Crie (avec compte) quand vous êtes affecté par $spell:%s"
-L.AUTO_YELL_OPTION_TEXT.fade		= "Crie (avec compte à rebours) lorsque $spell:%s se dissipe"
+L.AUTO_YELL_OPTION_TEXT.fade	= "Crie (avec compte à rebours) lorsque $spell:%s se dissipe"
+L.AUTO_YELL_OPTION_TEXT.shortfade	= "Crie (avec compte) lorsque $spell:%s se dissipe"
+L.AUTO_YELL_OPTION_TEXT.iconfade	= "Crie (avec compte et icône) lorsque $spell:%s se dissipe"
 L.AUTO_YELL_OPTION_TEXT.position	= "Crie (avec position) quand vous êtes affecté par $spell:%s"
+L.AUTO_YELL_OPTION_TEXT.combo		= "Crie (avec texte personnalisé) quand vous êtes affecté par $spell:%s et d'autres sorts en même temps"
 
+L.AUTO_YELL_ANNOUNCE_TEXT.shortyell	= "%s"
 L.AUTO_YELL_ANNOUNCE_TEXT.yell		= "%s sur " .. UnitName("player") .. "!"
 L.AUTO_YELL_ANNOUNCE_TEXT.count		= "%s sur " .. UnitName("player") .. "! (%%d)"
 L.AUTO_YELL_ANNOUNCE_TEXT.fade		= "%s disparaît dans %%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.shortfade	= "%%d"
+L.AUTO_YELL_ANNOUNCE_TEXT.iconfade	= "{rt%%2$d}%%1$d"
 L.AUTO_YELL_ANNOUNCE_TEXT.position 	= "%s %%s sur {rt%%d}"..UnitName("player").."{rt%%d}"
+L.AUTO_YELL_ANNOUNCE_TEXT.combo		= "%s et %%s"--Spell name (from option, plus spellname given in arg)
+
+L.AUTO_YELL_CUSTOM_POSITION			= "{rt%d}%s{"--Doesn't need translating. Has no strings
+L.AUTO_YELL_CUSTOM_POSITION2		= "{rt%d}%s{rt%d}"--Doesn't need translating. Has no strings
+L.AUTO_YELL_CUSTOM_FADE				= "%s se dissipe"
+L.AUTO_HUD_OPTION_TEXT				= "Afficher la map HUD pour $spell:%s (Retraité)"
+L.AUTO_HUD_OPTION_TEXT_MULTI		= "Afficher la map HUD pour divers mécaniciens (Retraité)"
+L.AUTO_NAMEPLATE_OPTION_TEXT		= "Afficher les auras de la plaque signalétique pour $spell:%s"
+L.AUTO_RANGE_OPTION_TEXT			= "Afficher le cadre de portée (%s) pour $spell:%s"--string used for range so we can use things like "5/2" as a value for that field
+L.AUTO_RANGE_OPTION_TEXT_SHORT		= "Afficher le cadre de portée (%s)"--For when a range frame is just used for more than one thing
+L.AUTO_RRANGE_OPTION_TEXT			= "Afficher le cadre de la portée inversée (%s) for $spell:%s"--Reverse range frame (green when players in range, red when not)
+L.AUTO_RRANGE_OPTION_TEXT_SHORT		= "Afficher le cadre de la portée inversée (%s)"
+L.AUTO_INFO_FRAME_OPTION_TEXT		= "Afficher le cadre d'informations pour for $spell:%s"
+L.AUTO_INFO_FRAME_OPTION_TEXT2		= "Afficher le cadre d'informations pour aperçu du combat"
+L.AUTO_READY_CHECK_OPTION_TEXT		= "Jouez un son de vérification prêt lorsque le boss est tiré (même s'il n'est pas ciblé)"
+L.AUTO_SPEEDCLEAR_OPTION_TEXT		= "Afficher le timer pour un dégagement le plus rapide de %s"
 
 L.AUTO_HUD_OPTION_TEXT			= "Afficher la map HUD pour $spell:%s"
-L.AUTO_HUD_OPTION_TEXT_MULTI		= "Afficher la map HUD pour diverses activités"
-L.AUTO_RANGE_OPTION_TEXT         = "Afficher la fênetre des distances (%s) pour $spell:%s"--string used for range so we can use things like "5/2" as a value for that field
-L.AUTO_RANGE_OPTION_TEXT_SHORT   = "Afficher la fênetre des distances (%s)"--For when a range frame is just used for more than one thing
+L.AUTO_HUD_OPTION_TEXT_MULTI	= "Afficher la map HUD pour diverses activités"
+L.AUTO_RANGE_OPTION_TEXT        = "Afficher la fênetre des distances (%s) pour $spell:%s"--string used for range so we can use things like "5/2" as a value for that field
+L.AUTO_RANGE_OPTION_TEXT_SHORT  = "Afficher la fênetre des distances (%s)"--For when a range frame is just used for more than one thing
 L.AUTO_RRANGE_OPTION_TEXT		= "Afficher la fênetre des distances inversée (%s) pour $spell:%s"--Reverse range frame (green when players in range, red when not)
 L.AUTO_RRANGE_OPTION_TEXT_SHORT	= "Afficher la fênetre des distances inversée (%s)"
-L.AUTO_INFO_FRAME_OPTION_TEXT    = "Afficher la fênetre d'information pour $spell:%s" --What frame is this?
-L.AUTO_READY_CHECK_OPTION_TEXT   = "Jouer le son du ready check lorsque le boss est engagé (même si ce dernier n'est pas la cible)"
+L.AUTO_INFO_FRAME_OPTION_TEXT   = "Afficher la fênetre d'information pour $spell:%s" --What frame is this?
+L.AUTO_READY_CHECK_OPTION_TEXT  = "Jouer le son du vérification lorsque le boss est engagé (même si ce dernier n'est pas la cible)"
 
 -- New special warnings
 L.MOVE_SPECIAL_WARNING_BAR	= "Alerte spéciale mobile"
@@ -502,7 +545,7 @@ L.MOVE_SPECIAL_WARNING_BAR	= "Alertes spéciales mobiles"
 L.MOVE_SPECIAL_WARNING_TEXT	= "Alerte spéciale"
 
 L.HUD_INVALID_TYPE			= "Type de HUD défini invalide"
-L.HUD_INVALID_TARGET			= "Pas de cible valide disponible pour le HUD"
+L.HUD_INVALID_TARGET		= "Pas de cible valide disponible pour le HUD"
 L.HUD_INVALID_SELF			= "Impossible de s'utiliser soi-même comme cible pour le HUD"
 L.HUD_INVALID_ICON			= "Impossible d'utiliser la méthode par icône pour le HUD sans cible avec l'icône"
 L.HUD_SUCCESS				= "Le HUD a démarré correctement avec vos paramètres. Ceci va s'arrêter dans %s, ou en tapant '/dbm hud hide'."
@@ -517,10 +560,12 @@ L.HUD_USAGE	= {
 }
 
 L.ARROW_MOVABLE					= "Flèche mobile"
+L.ARROW_WAY_USAGE				= "/dway <x> <y>: Crée une flèche qui pointe vers un emplacement spécifique (en utilisant les coordonnées de la carte de zone locale)"
+L.ARROW_WAY_SUCCESS				= "Pour masquer la flèche, tapez '/dbm arrow hide' ou atteignez la flèche"
 L.ARROW_ERROR_USAGE	= {
 	"Utilisation de DBM-Arrow:",
 	"-----------------",
-	"/dbm arrow <x> <y>:  crée une flèche qui pointe vers une position spécifique (0 < x/y < 100)",
+	"/dbm arrow <x> <y>:  Crée une flèche qui pointe vers une position spécifique (0 < x/y < 100)",
 	"/dbm arrow map <x> <y>: Crée une flèche qui pointe vers une position spécifique (en utilisant les coordonnées sur la carte)",
 	"/dbm arrow <player>:  Crée une flèche qui pointe vers un joueur spécifique de votre groupe ou raid",
 	"/dbm arrow hide:  Masque la flèche",
@@ -528,30 +573,56 @@ L.ARROW_ERROR_USAGE	= {
 }
 
 L.SPEED_KILL_TIMER_TEXT	= "Record à battre"
-L.SPEED_CLEAR_TIMER_TEXT  = "Meilleur clean"
+L.SPEED_CLEAR_TIMER_TEXT  = "Meilleur dégagement"
 L.COMBAT_RES_TIMER_TEXT	= "Prochaine charge de rez en combat"
 L.TIMER_RESPAWN		= "%s Réapparition"
 
-L.REQ_INSTANCE_ID_PERMISSION		= "%s a demandé à voir vos IDs d'instance actuels ainsi que leurs progressions.\nSouhaitez-vous envoyer cette information à %s ? Il ou elle pourra demander cette information pendant toute votre session actuelle (c'est-à-dire jusqu'à ce que vous vous reconnectez)."
+L.REQ_INSTANCE_ID_PERMISSION	= "%s a demandé à voir vos IDs d'instance actuels ainsi que leurs progressions.\nSouhaitez-vous envoyer cette information à %s ? Il ou elle pourra demander cette information pendant toute votre session actuelle (c'est-à-dire jusqu'à ce que vous vous reconnectez)."
 L.ERROR_NO_RAID					= "Vous devez être dans un groupe de raid pour utiliser cette fonctionnalité."
-L.INSTANCE_INFO_REQUESTED			= "Requête envoyée pour obtenir les information de verrouillage de raid au groupe de raid.\nVeuillez noter que la permission sera demandée aux utilisateurs avant que les données ne vous soient envoyées, il se peut donc que cela prenne du temps pour recevoir toutes les réponses."
-L.INSTANCE_INFO_STATUS_UPDATE		= "Réception des réponses de %d joueurs sur les %d utilisateurs de DBM : %d ont envoyé les données, %d ont refusé la requête. Attente des autres réponses pendant encore %d secondes..."
-L.INSTANCE_INFO_ALL_RESPONSES		= "Réponses reçues de tous les membres du raid"
-L.INSTANCE_INFO_DETAIL_DEBUG		= "Expéditeur: %s TypeRésultat: %s NomInstance: %s IDInstance: %s Difficulté: %d Taille: %d Progression: %s"
-L.INSTANCE_INFO_DETAIL_HEADER		= "%s, difficulté %s :"
+L.INSTANCE_INFO_REQUESTED		= "Requête envoyée pour obtenir les information de verrouillage de raid au groupe de raid.\nVeuillez noter que la permission sera demandée aux utilisateurs avant que les données ne vous soient envoyées, il se peut donc que cela prenne du temps pour recevoir toutes les réponses."
+L.INSTANCE_INFO_STATUS_UPDATE	= "Réception des réponses de %d joueurs sur les %d utilisateurs de DBM : %d ont envoyé les données, %d ont refusé la requête. Attente des autres réponses pendant encore %d secondes..."
+L.INSTANCE_INFO_ALL_RESPONSES	= "Réponses reçues de tous les membres du raid"
+L.INSTANCE_INFO_DETAIL_DEBUG	= "Expéditeur: %s TypeRésultat: %s NomInstance: %s IDInstance: %s Difficulté: %d Taille: %d Progression: %s"
+L.INSTANCE_INFO_DETAIL_HEADER	= "%s, difficulté %s :"
 L.INSTANCE_INFO_DETAIL_INSTANCE	= "    ID %s, progression %d : %s"
 L.INSTANCE_INFO_DETAIL_INSTANCE2	= "    progression %d : %s"
-L.INSTANCE_INFO_NOLOCKOUT			= "Il n'y a pas d'info de verrouillage raid dans votre groupe."
-L.INSTANCE_INFO_STATS_DENIED		= "A refusé la requête : %s"
+L.INSTANCE_INFO_NOLOCKOUT		= "Il n'y a pas d'info de verrouillage raid dans votre groupe."
+L.INSTANCE_INFO_STATS_DENIED	= "A refusé la requête : %s"
 L.INSTANCE_INFO_STATS_AWAY		= "Absent: %s"
 L.INSTANCE_INFO_STATS_NO_RESPONSE	= "Sans une version récente de DBM: %s"
 L.INSTANCE_INFO_RESULTS			= "Résultats de l'analyse des IDs d'instance. Notez que les instances peuvent apparaître plusieurs fois si les joueurs de votre raid ont WoW dans différentes langues."
-L.INSTANCE_INFO_SHOW_RESULTS		= "Joueurs qui doivent encore répondre: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Afficher les résultats maintenant]|r|h"
+--L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Afficher les résultats maintenant]|r|h"
+L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s"
 
-L.LAG_CHECKING               = "Vérification de la latence du raid..."
-L.LAG_HEADER                 = "Deadly Boss Mods - Résultats sur la latence"
-L.LAG_ENTRY                  = "%s: délai monde [%d ms] / délai domicile [%d ms]"
-L.LAG_FOOTER                 = "Pas de réponse: %s"
+L.LAG_CHECKING              = "Vérification de la latence du raid..."
+L.LAG_HEADER                = L.DEADLY_BOSS_MODS .. " - Résultats sur la latence"
+L.LAG_ENTRY                 = "%s: délai monde [%d ms] / délai domicile [%d ms]"
+L.LAG_FOOTER                = "Pas de réponse: %s"
+
+L.DUR_CHECKING				= "Vérification de la durabilité du raid..."
+L.DUR_HEADER				= L.DEADLY_BOSS_MODS .. " - Résultats sur la durabilité"
+L.DUR_ENTRY					= "%s: Durabilité [%d pour cent] / Armure cassée [%s]"
+L.LAG_FOOTER				= "Pas de réponse: %s"
+
+--LDB
+L.LDB_TOOLTIP_HELP1					= "Cliquez pour ouvrir " .. L.DBM
+L.LDB_TOOLTIP_HELP2					= "Alt + clic droit pour basculer en mode silencieux"
+L.SILENTMODE_IS                     = "Mode silencieux est "
+
+L.LDB_LOAD_MODS						= "Charger les mods de boss"
+
+L.LDB_CAT_BFA						= "Battle for Azeroth"
+L.LDB_CAT_LEG						= "Legion"
+L.LDB_CAT_WOD						= "Warlords of Draenor"
+L.LDB_CAT_MOP						= "Mists of Pandaria"
+L.LDB_CAT_CATA						= "Cataclysm"
+L.LDB_CAT_WOTLK						= "Wrath of the Lich King"
+L.LDB_CAT_BC						= "Burning Crusade"
+L.LDB_CAT_CLASSIC 					= EXPANSION_NAME0
+L.LDB_CAT_OTHER						= "Autres mods de boss"
+
+L.LDB_CAT_GENERAL					= "Général"
+L.LDB_ENABLE_BOSS_MOD				= "Activer le mod de boss"
 
 L.WORLD_BUFFS.hordeOny		= "Peuple de la Horde, citoyens d’Orgrimmar, venez, rassemblez-vous et célébrez un héros de la Horde"
 L.WORLD_BUFFS.allianceOny	= "Citoyens et alliés de Stormwind, ce jour est historique."

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Item Info Functions
@@ -15,6 +13,7 @@ local L = TSM.Include("Locale").GetTable()
 local ItemClass = TSM.Include("Data.ItemClass")
 local VendorSell = TSM.Include("Data.VendorSell")
 local ItemString = TSM.Include("Util.ItemString")
+local Analytics = TSM.Include("Util.Analytics")
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
@@ -22,6 +21,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Table = TSM.Include("Util.Table")
 local Settings = TSM.Include("Service.Settings")
 local private = {
 	db = nil,
@@ -33,13 +33,13 @@ local private = {
 	infoChangeCallbacks = {},
 	hasChanged = false,
 }
-local UNKNOWN_ITEM_ITEMSTRING = "i:0"
 local ITEM_MAX_ID = 999999
 local SEP_CHAR = "\002"
 local ITEM_INFO_INTERVAL = 0.05
 local MAX_REQUESTED_ITEM_INFO = 50
 local MAX_REQUESTS_PER_ITEM = 5
 local UNKNOWN_ITEM_NAME = L["Unknown Item"]
+local PLACEHOLDER_ITEM_NAME = L["Example Item"]
 local DB_VERSION = 6
 local ENCODING_NUM_BITS = 6
 local ENCODING_NUM_VALUES = 2 ^ ENCODING_NUM_BITS
@@ -114,6 +114,7 @@ local NON_DISENCHANTABLE_ITEMS = {
 	["i:52487"] = true,
 	["i:52488"] = true,
 	["i:75274"] = true,
+	["i:84661"] = true,
 	["i:97826"] = true,
 	["i:97827"] = true,
 	["i:97828"] = true,
@@ -143,8 +144,25 @@ ItemInfo:OnSettingsLoad(function()
 	end)
 
 	-- load the item info database
+	local names, itemStrings = nil, nil
 	local build, revision = GetBuildInfo()
-	if not TSMItemInfoDB or #TSMItemInfoDB.data % RECORD_DATA_LENGTH_CHARS ~= 0 or TSMItemInfoDB.version ~= DB_VERSION or TSMItemInfoDB.locale ~= GetLocale() or TSMItemInfoDB.build ~= build or TSMItemInfoDB.revision ~= revision then
+	local isValid = true
+	if not TSMItemInfoDB or TSMItemInfoDB.version ~= DB_VERSION or TSMItemInfoDB.locale ~= GetLocale() or TSMItemInfoDB.build ~= build or TSMItemInfoDB.revision ~= revision then
+		isValid = false
+	elseif #TSMItemInfoDB.data % RECORD_DATA_LENGTH_CHARS ~= 0 then
+		Analytics.Action("CORRUPTED_ITEM_INFO", "DATA", #TSMItemInfoDB.data)
+		isValid = false
+	else
+		names = private.LoadLongString(TSMItemInfoDB.names)
+		itemStrings = private.LoadLongString(TSMItemInfoDB.itemStrings)
+		if #names ~= #itemStrings then
+			Analytics.Action("CORRUPTED_ITEM_INFO", "NAMES_ITEM_STRINGS", #names, #itemStrings)
+			isValid = false
+			names = nil
+			itemStrings = nil
+		end
+	end
+	if not isValid then
 		private.isRebuilding = true
 		TSMItemInfoDB = {
 			names = nil,
@@ -164,11 +182,15 @@ ItemInfo:OnSettingsLoad(function()
 		private.settings.vendorItems[itemString] = private.settings.vendorItems[itemString] or cost
 	end
 
-	local names = private.LoadLongString(TSMItemInfoDB.names)
-	local itemStrings = private.LoadLongString(TSMItemInfoDB.itemStrings)
-	assert(#itemStrings == #names)
+	names = names or {}
+	itemStrings = itemStrings or {}
+	assert(#names == #itemStrings)
 	local numItemsLoaded = #names
 	Log.Info("Imported %d items worth of data", numItemsLoaded)
+	if not Table.IsSorted(names, private.NameSortHelper) then
+		-- we'll sort our data on logout to make ItemInfo.MatchItemFilter a bit more efficient
+		private.hasChanged = true
+	end
 
 	-- The following code for populating our database is highly optimized as we're processing an excessive amount of data here
 	private.db = Database.NewSchema("ITEM_INFO")
@@ -185,65 +207,69 @@ ItemInfo:OnSettingsLoad(function()
 		:AddNumberField("quality")
 		:AddNumberField("isBOP")
 		:AddNumberField("isCraftingReagent")
+		:AddTrigramIndex("name")
 		:Commit()
 	private.db:BulkInsertStart()
 	for i = 1, numItemsLoaded do
-		-- load all the fields from the string
-		local dataOffset = (i - 1) * RECORD_DATA_LENGTH_CHARS + 1
-		local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, bExtra = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH_CHARS - 1)
-		assert(b21 and not bExtra)
-
-		-- load the fields
-		local itemLevel = (b0 == ENCODED_NIL_CHAR and b1 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b0] + DECODING_TABLE[b1] * 2 ^ ENCODING_NUM_BITS)
-		local minLevel = (b2 == ENCODED_NIL_CHAR and b3 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b2] + DECODING_TABLE[b3] * 2 ^ ENCODING_NUM_BITS)
-		local vendorSell = nil
-		if b4 == ENCODED_NIL_CHAR and b5 == ENCODED_NIL_CHAR and b6 == ENCODED_NIL_CHAR and b7 == ENCODED_NIL_CHAR and b8 == ENCODED_NIL_CHAR then
-			vendorSell = -1
-		else
-			vendorSell = DECODING_TABLE[b4] + DECODING_TABLE[b5] * 2 ^ ENCODING_NUM_BITS + DECODING_TABLE[b6] * 2 ^ (ENCODING_NUM_BITS * 2) + DECODING_TABLE[b7] * 2 ^ (ENCODING_NUM_BITS * 3) + DECODING_TABLE[b8] * 2 ^ (ENCODING_NUM_BITS * 4)
-		end
-		local maxStack = (b9 == ENCODED_NIL_CHAR and b10 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b9] + DECODING_TABLE[b10] * 2 ^ ENCODING_NUM_BITS)
-		local invSlotId = DECODING_TABLE[b11]
-		if invSlotId == DECODED_NIL_VALUE then
-			invSlotId = -1
-		end
-		local texture = nil
-		if b12 == ENCODED_NIL_CHAR and b13 == ENCODED_NIL_CHAR and b14 == ENCODED_NIL_CHAR and b15 == ENCODED_NIL_CHAR and b16 == ENCODED_NIL_CHAR then
-			texture = -1
-		else
-			texture = DECODING_TABLE[b12] + DECODING_TABLE[b13] * 2 ^ ENCODING_NUM_BITS + DECODING_TABLE[b14] * 2 ^ (ENCODING_NUM_BITS * 2) + DECODING_TABLE[b15] * 2 ^ (ENCODING_NUM_BITS * 3) + DECODING_TABLE[b16] * 2 ^ (ENCODING_NUM_BITS * 4)
-		end
-		local classId = DECODING_TABLE[b17]
-		if classId == DECODED_NIL_VALUE then
-			classId = -1
-		end
-		local subClassId = DECODING_TABLE[b18]
-		if subClassId == DECODED_NIL_VALUE then
-			subClassId = -1
-		end
-		local quality = DECODING_TABLE[b19]
-		if quality == DECODED_NIL_VALUE then
-			quality = -1
-		end
-		local isBOP = DECODING_TABLE[b20]
-		if isBOP == DECODED_NIL_VALUE then
-			isBOP = -1
-		end
-		local isCraftingReagent = DECODING_TABLE[b21]
-		if isCraftingReagent == DECODED_NIL_VALUE then
-			isCraftingReagent = -1
-		end
-
-		-- store in the DB
 		local itemString = itemStrings[i]
-		local name = names[i]
-		private.db:BulkInsertNewRowFast13(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent)
+		-- check the itemString
+		if ItemString.Get(itemString) == itemString then
+			-- load all the fields from the string
+			local dataOffset = (i - 1) * RECORD_DATA_LENGTH_CHARS + 1
+			local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, bExtra = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH_CHARS - 1)
+			assert(b21 and not bExtra)
+
+			-- load the fields
+			local itemLevel = (b0 == ENCODED_NIL_CHAR and b1 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b0] + DECODING_TABLE[b1] * 2 ^ ENCODING_NUM_BITS)
+			local minLevel = (b2 == ENCODED_NIL_CHAR and b3 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b2] + DECODING_TABLE[b3] * 2 ^ ENCODING_NUM_BITS)
+			local vendorSell = nil
+			if b4 == ENCODED_NIL_CHAR and b5 == ENCODED_NIL_CHAR and b6 == ENCODED_NIL_CHAR and b7 == ENCODED_NIL_CHAR and b8 == ENCODED_NIL_CHAR then
+				vendorSell = -1
+			else
+				vendorSell = DECODING_TABLE[b4] + DECODING_TABLE[b5] * 2 ^ ENCODING_NUM_BITS + DECODING_TABLE[b6] * 2 ^ (ENCODING_NUM_BITS * 2) + DECODING_TABLE[b7] * 2 ^ (ENCODING_NUM_BITS * 3) + DECODING_TABLE[b8] * 2 ^ (ENCODING_NUM_BITS * 4)
+			end
+			local maxStack = (b9 == ENCODED_NIL_CHAR and b10 == ENCODED_NIL_CHAR) and -1 or (DECODING_TABLE[b9] + DECODING_TABLE[b10] * 2 ^ ENCODING_NUM_BITS)
+			local invSlotId = DECODING_TABLE[b11]
+			if invSlotId == DECODED_NIL_VALUE then
+				invSlotId = -1
+			end
+			local texture = nil
+			if b12 == ENCODED_NIL_CHAR and b13 == ENCODED_NIL_CHAR and b14 == ENCODED_NIL_CHAR and b15 == ENCODED_NIL_CHAR and b16 == ENCODED_NIL_CHAR then
+				texture = -1
+			else
+				texture = DECODING_TABLE[b12] + DECODING_TABLE[b13] * 2 ^ ENCODING_NUM_BITS + DECODING_TABLE[b14] * 2 ^ (ENCODING_NUM_BITS * 2) + DECODING_TABLE[b15] * 2 ^ (ENCODING_NUM_BITS * 3) + DECODING_TABLE[b16] * 2 ^ (ENCODING_NUM_BITS * 4)
+			end
+			local classId = DECODING_TABLE[b17]
+			if classId == DECODED_NIL_VALUE then
+				classId = -1
+			end
+			local subClassId = DECODING_TABLE[b18]
+			if subClassId == DECODED_NIL_VALUE then
+				subClassId = -1
+			end
+			local quality = DECODING_TABLE[b19]
+			if quality == DECODED_NIL_VALUE then
+				quality = -1
+			end
+			local isBOP = DECODING_TABLE[b20]
+			if isBOP == DECODED_NIL_VALUE then
+				isBOP = -1
+			end
+			local isCraftingReagent = DECODING_TABLE[b21]
+			if isCraftingReagent == DECODED_NIL_VALUE then
+				isCraftingReagent = -1
+			end
+
+			-- store in the DB
+			local name = names[i]
+			private.db:BulkInsertNewRowFast13(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent)
+		end
 	end
 	private.db:BulkInsertEnd()
 	private.DoInfoChangedCallbacks()
 
 	-- process pending item info every 0.05 seconds
-	Delay.AfterTime("processItemInfo", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
+	Delay.AfterTime("PROCESS_ITEM_INFO", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
 	-- scan the merchant when the goods are shown
 	Event.Register("MERCHANT_SHOW", private.ScanMerchant)
 	Event.Register("MERCHANT_UPDATE", private.UpdateMerchant)
@@ -350,6 +376,29 @@ ItemInfo:OnModuleUnload(function()
 			dataParts[i] = nil
 		end
 	end
+	if not Table.IsSorted(names, private.NameSortHelper) then
+		-- sort all the data by the name to make ItemInfo.MatchItemFilter a bit more efficient in the future
+		local lowerNames = {}
+		local sortedIndexes = {}
+		for i = 1, #names do
+			if names[i] ~= nil then
+				tinsert(sortedIndexes, i)
+				lowerNames[i] = strlower(names[i])
+			end
+		end
+		Table.SortWithValueLookup(sortedIndexes, lowerNames)
+		local newNames = {}
+		local newItemStrings = {}
+		local newDataParts = {}
+		for i, oldIndex in ipairs(sortedIndexes) do
+			newNames[i] = names[oldIndex]
+			newItemStrings[i] = itemStrings[oldIndex]
+			newDataParts[i] = dataParts[oldIndex]
+		end
+		names = newNames
+		itemStrings = newItemStrings
+		dataParts = newDataParts
+	end
 	TSMItemInfoDB.names = private.StoreLongString(names)
 	TSMItemInfoDB.itemStrings = private.StoreLongString(itemStrings)
 	TSMItemInfoDB.data = table.concat(dataParts)
@@ -397,7 +446,7 @@ end
 function ItemInfo.StoreItemInfoByLink(itemLink)
 	-- see if we can extract the quality and name from the link
 	local colorHex, name = strmatch(itemLink, "^(\124cff[0-9a-z]+)\124[Hh].+\124h%[(.+)%]\124h\124r$")
-	if name == "" or name == UNKNOWN_ITEM_NAME then
+	if name == "" or name == UNKNOWN_ITEM_NAME or name == PLACEHOLDER_ITEM_NAME then
 		name = nil
 	end
 	local quality = ITEM_QUALITY_BY_HEX_LOOKUP[colorHex]
@@ -426,12 +475,12 @@ function ItemInfo.ItemNameToItemString(name)
 	for _, itemString in query:Iterator() do
 		if not result then
 			result = itemString
-		elseif result ~= UNKNOWN_ITEM_ITEMSTRING then
+		elseif result ~= ItemString.GetUnknown() then
 			-- multiple matching items
 			if ItemString.GetBase(itemString) == ItemString.GetBase(result) then
 				result = ItemString.GetBase(itemString)
 			else
-				result = UNKNOWN_ITEM_ITEMSTRING
+				result = ItemString.GetUnknown()
 			end
 		end
 	end
@@ -449,8 +498,10 @@ end
 function ItemInfo.GetName(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then return end
-	if itemString == UNKNOWN_ITEM_ITEMSTRING then
+	if itemString == ItemString.GetUnknown() then
 		return UNKNOWN_ITEM_NAME
+	elseif itemString == ItemString.GetPlaceholder() then
+		return PLACEHOLDER_ITEM_NAME
 	end
 	local name = private.GetField(itemString, "name")
 	if not name then
@@ -461,7 +512,7 @@ function ItemInfo.GetName(item)
 	if not name then
 		-- if we got passed an item link, we can maybe extract the name from it
 		name = strmatch(item, "^\124cff[0-9a-z]+\124[Hh].+\124h%[(.+)%]\124h\124r$")
-		if name == "" or name == UNKNOWN_ITEM_NAME then
+		if name == "" or name == UNKNOWN_ITEM_NAME or name == PLACEHOLDER_ITEM_NAME then
 			name = nil
 		end
 		if name then
@@ -530,6 +581,11 @@ end
 -- @treturn ?string The quality color string
 function ItemInfo.GetQualityColor(item)
 	local itemString = ItemString.Get(item)
+	if itemString == ItemString.GetUnknown() then
+		return "|cffff0000"
+	elseif itemString == ItemString.GetPlaceholder() then
+		return "|cffffffff"
+	end
 	local quality = ItemInfo.GetQuality(itemString)
 	return ITEM_QUALITY_COLORS[quality] and ITEM_QUALITY_COLORS[quality].hex
 end
@@ -744,7 +800,7 @@ function ItemInfo.IsDisenchantable(item)
 	if not quality or not classId then
 		return nil
 	end
-	return quality >= LE_ITEM_QUALITY_UNCOMMON and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
+	return quality >= (TSM.IsShadowlands() and Enum.ItemQuality.Uncommon or LE_ITEM_QUALITY_UNCOMMON) and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
 end
 
 --- Get whether or not the item is a commodity in WoW 8.3 (and above).
@@ -786,7 +842,9 @@ end
 -- This function can be called ahead of time for items which we know we need to have info cached for.
 -- @tparam ?string item The item
 function ItemInfo.FetchInfo(item)
-	if item == UNKNOWN_ITEM_ITEMSTRING then return end
+	if item == ItemString.GetUnknown() or item == ItemString.GetPlaceholder() then
+		return
+	end
 	local itemString = ItemString.Get(item)
 	if not itemString then return end
 	if ItemString.IsPet(itemString) then
@@ -797,7 +855,7 @@ function ItemInfo.FetchInfo(item)
 	end
 	private.pendingItems[itemString] = PENDING_STATE_NEW
 
-	Delay.AfterTime("processItemInfo", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
+	Delay.AfterTime("PROCESS_ITEM_INFO", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
 end
 
 --- Generalize an item link.
@@ -814,6 +872,63 @@ function ItemInfo.GeneralizeLink(itemLink)
 		end
 	end
 	return ItemInfo.GetLink(itemString)
+end
+
+--- Match an item filter to the item info database.
+-- @tparam ItemFilter itemFilter The itemFilter object to match
+-- @tparam table result The table to populate with results
+function ItemInfo.MatchItemFilter(itemFilter, result)
+	local query = private.db:NewQuery()
+		:Select("itemString")
+		:OrderBy("name", true)
+
+	local str = itemFilter:GetStr()
+	if str then
+		if itemFilter:GetExactOnly() then
+			query:Equal("name", str)
+		else
+			query:Contains("name", str)
+		end
+	end
+	local minQuality = itemFilter:GetMinQuality()
+	if minQuality then
+		query:GreaterThanOrEqual("quality", minQuality)
+	end
+	local maxQuality = itemFilter:GetMaxQuality()
+	if maxQuality then
+		query:LessThanOrEqual("quality", maxQuality)
+	end
+	local minLevel = itemFilter:GetMinLevel()
+	if minLevel then
+		query:GreaterThanOrEqual("minLevel", minLevel)
+	end
+	local maxLevel = itemFilter:GetMaxLevel()
+	if maxLevel then
+		query:LessThanOrEqual("minLevel", maxLevel)
+	end
+	local minItemLevel = itemFilter:GetMinItemLevel()
+	if minItemLevel then
+		query:GreaterThanOrEqual("itemLevel", minItemLevel)
+	end
+	local maxItemLevel = itemFilter:GetMaxItemLevel()
+	if maxItemLevel then
+		query:LessThanOrEqual("itemLevel", maxItemLevel)
+	end
+	local classId = itemFilter:GetClass()
+	if classId then
+		query:Equal("classId", classId)
+	end
+	local subClassId = itemFilter:GetSubClass()
+	if subClassId then
+		query:Equal("subClassId", subClassId)
+	end
+	local invSlotId = itemFilter:GetInvSlotId()
+	if invSlotId then
+		query:Equal("invSlotId", invSlotId)
+	end
+
+	query:AsTable(result)
+	query:Release()
 end
 
 
@@ -896,7 +1011,7 @@ function private.ProcessItemInfo()
 				if not TSM.IsWowClassic() then
 					Log.Err("Giving up on item info for %s", itemString)
 				end
-				if itemId then
+				if itemId and itemString == ItemString.GetBaseFast(itemString) then
 					private.numRequests[itemId] = math.huge
 				end
 			end
@@ -926,7 +1041,7 @@ function private.ProcessItemInfo()
 			Log.PrintUser(L["Done rebuilding item cache."])
 			private.isRebuilding = nil
 		end
-		Delay.Cancel("processItemInfo")
+		Delay.Cancel("PROCESS_ITEM_INFO")
 	end
 
 	private.db:SetQueryUpdatesPaused(false)
@@ -938,14 +1053,17 @@ function private.ScanMerchant()
 		if itemString then
 			local currentValue = private.settings.vendorItems[itemString]
 			local newValue = nil
-			local _, _, price, quantity, _, _, _, extendedCost = GetMerchantItemInfo(i)
-			-- bug with big keech vendor returning extendedCost = true for gold only items so need to check GetMerchantItemCostInfo
-			if price > 0 and (not extendedCost or GetMerchantItemCostInfo(i) == 0) then
-				newValue = Math.Round(price / quantity)
-			end
-			if newValue ~= currentValue then
-				private.settings.vendorItems[itemString] = newValue
-				private.DoInfoChangedCallbacks(itemString)
+			local _, _, price, quantity, numAvailable, _, _, extendedCost = GetMerchantItemInfo(i)
+			-- only store vendor prices for unlimited quantity items
+			if numAvailable == -1 then
+				-- bug with big keech vendor returning extendedCost = true for gold only items so need to check GetMerchantItemCostInfo
+				if price > 0 and (not extendedCost or GetMerchantItemCostInfo(i) == 0) then
+					newValue = Math.Round(price / quantity)
+				end
+				if newValue ~= currentValue then
+					private.settings.vendorItems[itemString] = newValue
+					private.DoInfoChangedCallbacks(itemString)
+				end
 			end
 		end
 	end
@@ -997,11 +1115,11 @@ function private.CreateDBRowIfNotExists(itemString, isBulkInsert)
 end
 
 function private.SetSingleField(itemString, key, value)
-	if key ~= "name" then
-		private.CheckFieldValue(key, value)
-	end
 	if type(value) == "boolean" then
 		value = value and 1 or 0
+	end
+	if key ~= "name" then
+		private.CheckFieldValue(key, value)
 	end
 	if private.db:GetUniqueRowField("itemString", itemString, key) == value then
 		-- no change
@@ -1030,7 +1148,7 @@ end
 function private.StoreGetItemInfoInstant(itemString)
 	local itemStringType, id, extra1, extra2 = strmatch(itemString, "^([pi]):([0-9]+):?([0-9]*):?([0-9]*)")
 	id = tonumber(id)
-	if private.GetField(itemString, "texture") then
+	if private.GetField(itemString, "texture") and private.GetField(itemString, "invSlotId") then
 		-- we already have info cached for this item
 		return
 	end
@@ -1208,6 +1326,10 @@ function private.DoInfoChangedCallbacks(itemString)
 	for _, callback in ipairs(private.infoChangeCallbacks) do
 		callback(itemString)
 	end
+end
+
+function private.NameSortHelper(a, b)
+	return strlower(a) < strlower(b)
 end
 
 function private.LoadLongString(value)

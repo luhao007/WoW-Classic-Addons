@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- SimpleTabGroup UI Element Class.
@@ -13,10 +11,12 @@
 
 local _, TSM = ...
 local SimpleTabGroup = TSM.Include("LibTSMClass").DefineClass("SimpleTabGroup", TSM.UI.ViewContainer)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(SimpleTabGroup)
 TSM.UI.SimpleTabGroup = SimpleTabGroup
 local private = {}
+local BUTTON_HEIGHT = 24
 local BUTTON_PADDING_BOTTOM = 2
-local BUTTON_MARGIN = { bottom = BUTTON_PADDING_BOTTOM, left = 8, right = 8 }
 
 
 
@@ -30,9 +30,10 @@ function SimpleTabGroup.__init(self)
 end
 
 function SimpleTabGroup.Acquire(self)
-	self.__super.__super:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
+	self.__super.__super:AddChildNoLayout(UIElements.New("Frame", "buttons")
 		:SetLayout("HORIZONTAL")
-		:SetStyle("anchors", { { "TOPLEFT" }, { "TOPRIGHT" } })
+		:AddAnchor("TOPLEFT")
+		:AddAnchor("TOPRIGHT")
 	)
 	self.__super:Acquire()
 end
@@ -50,7 +51,7 @@ end
 
 function SimpleTabGroup._GetContentPadding(self, side)
 	if side == "TOP" then
-		return self:_GetStyle("buttonHeight") + BUTTON_PADDING_BOTTOM
+		return BUTTON_HEIGHT + BUTTON_PADDING_BOTTOM
 	end
 	return self.__super:_GetContentPadding(side)
 end
@@ -60,19 +61,20 @@ function SimpleTabGroup.Draw(self)
 
 	local selectedPath = self:GetPath()
 	local buttons = self:GetElement("buttons")
-	buttons:SetStyle("height", self:_GetStyle("buttonHeight") + BUTTON_PADDING_BOTTOM)
+	buttons:SetHeight(BUTTON_HEIGHT + BUTTON_PADDING_BOTTOM)
 	buttons:ReleaseAllChildren()
 	for i, buttonPath in ipairs(self._pathsList) do
 		local isSelected = buttonPath == selectedPath
-		buttons:AddChild(TSMAPI_FOUR.UI.NewElement("Button", self._id.."_Tab"..i)
-			:SetStyle("autoWidth", true)
-			:SetStyle("margin", BUTTON_MARGIN)
-			:SetStyle("justifyH", "Left")
-			:SetStyle("font", self:_GetStyle("font"))
-			:SetStyle("fontHeight", self:_GetStyle("fontHeight"))
-			:SetStyle("textColor", isSelected and self:_GetStyle("selectedTextColor") or nil)
+		buttons:AddChild(UIElements.New("Button", self._id.."_Tab"..i)
+			:SetWidth("AUTO")
+			:SetMargin(8, 8, 0, BUTTON_PADDING_BOTTOM)
+			:SetJustifyH("LEFT")
+			:SetFont("BODY_BODY1_BOLD")
+			:SetTextColor(isSelected and "INDICATOR" or "TEXT_ALT")
 			:SetContext(self)
 			:SetText(buttonPath)
+			:SetScript("OnEnter", not isSelected and private.OnButtonEnter)
+			:SetScript("OnLeave", not isSelected and private.OnButtonLeave)
 			:SetScript("OnClick", private.OnButtonClicked)
 		)
 	end
@@ -85,6 +87,16 @@ end
 -- ============================================================================
 -- Local Script Handlers
 -- ============================================================================
+
+function private.OnButtonEnter(button)
+	button:SetTextColor("TEXT")
+		:Draw()
+end
+
+function private.OnButtonLeave(button)
+	button:SetTextColor("TEXT_ALT")
+		:Draw()
+end
 
 function private.OnButtonClicked(button)
 	local self = button:GetContext()

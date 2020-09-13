@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -12,7 +10,12 @@ local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
 local Log = TSM.Include("Util.Log")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Settings = TSM.Include("Service.Settings")
+local ItemLinked = TSM.Include("Service.ItemLinked")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	topLevelPages = {},
 	frame = nil,
 	hasShown = false,
@@ -21,9 +24,7 @@ local private = {
 	updateCallbacks = {},
 	defaultFrame = nil,
 }
-local HEADER_LINE_TEXT_MARGIN = { right = 8 }
-local HEADER_LINE_MARGIN = { top = 16, bottom = 16 }
-local MIN_FRAME_SIZE = { width = 830, height = 587 }
+local MIN_FRAME_SIZE = { width = 750, height = 450 }
 
 
 
@@ -32,6 +33,9 @@ local MIN_FRAME_SIZE = { width = 830, height = 587 }
 -- ============================================================================
 
 function AuctionUI.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "auctionUIContext", "showDefault")
+		:AddKey("global", "auctionUIContext", "frame")
 	UIParent:UnregisterEvent("AUCTION_HOUSE_SHOW")
 	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionFrameInit)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.HideAuctionFrame)
@@ -40,7 +44,7 @@ function AuctionUI.OnInitialize()
 	else
 		Delay.AfterTime(1, function() LoadAddOn("Blizzard_AuctionHouseUI") end)
 	end
-	TSM.UI.RegisterItemLinkedCallback(private.ItemLinkedCallback)
+	ItemLinked.RegisterCallback(private.ItemLinkedCallback)
 end
 
 function AuctionUI.OnDisable()
@@ -51,26 +55,8 @@ function AuctionUI.OnDisable()
 	end
 end
 
-function AuctionUI.RegisterTopLevelPage(name, texturePack, callback, itemLinkedHandler)
-	tinsert(private.topLevelPages, { name = name, texturePack = texturePack, callback = callback, itemLinkedHandler = itemLinkedHandler })
-end
-
-function AuctionUI.CreateHeadingLine(id, text)
-	return TSMAPI_FOUR.UI.NewElement("Frame", id)
-		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 34)
-		:SetStyle("margin", HEADER_LINE_MARGIN)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-			:SetStyle("textColor", "#79a2ff")
-			:SetStyle("fontHeight", 24)
-			:SetStyle("margin", HEADER_LINE_TEXT_MARGIN)
-			:SetStyle("autoWidth", true)
-			:SetText(text)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "vline")
-			:SetStyle("color", "#e2e2e2")
-			:SetStyle("height", 2)
-		)
+function AuctionUI.RegisterTopLevelPage(name, callback, itemLinkedHandler)
+	tinsert(private.topLevelPages, { name = name, callback = callback, itemLinkedHandler = itemLinkedHandler })
 end
 
 function AuctionUI.StartingScan(pageName)
@@ -146,7 +132,7 @@ function private.AuctionFrameInit()
 		local tab = CreateFrame("Button", "AuctionFrameTab"..tabId, private.defaultFrame, tabTemplateName)
 		tab:Hide()
 		tab:SetID(tabId)
-		tab:SetText("|cff99ffffTSM4|r")
+		tab:SetText(Log.ColorUserAccentText("TSM4"))
 		tab:SetNormalFontObject(GameFontHighlightSmall)
 		if TSM.IsWowClassic() then
 			tab:SetPoint("LEFT", _G["AuctionFrameTab"..tabId - 1], "RIGHT", -8, 0)
@@ -157,11 +143,12 @@ function private.AuctionFrameInit()
 		tab:Show()
 		PanelTemplates_SetNumTabs(private.defaultFrame, tabId)
 		PanelTemplates_EnableTab(private.defaultFrame, tabId)
-		tab:SetScript("OnClick", private.TSMTabOnClick)
+		ScriptWrapper.Set(tab, "OnClick", private.TSMTabOnClick)
 	end
-	if TSM.db.global.internalData.auctionUIFrameContext.showDefault then
+	if private.settings.showDefault then
 		UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
 	else
+		PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN)
 		private.ShowAuctionFrame()
 	end
 end
@@ -191,27 +178,22 @@ end
 
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("auction")
-	local frame = TSMAPI_FOUR.UI.NewElement("LargeApplicationFrame", "base")
+	local frame = UIElements.New("LargeApplicationFrame", "base")
 		:SetParent(UIParent)
+		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
-		:SetContextTable(TSM.db.global.internalData.auctionUIFrameContext, TSM.db:GetDefaultReadOnly("global", "internalData", "auctionUIFrameContext"))
-		:SetStyle("strata", "HIGH")
-		:SetTitle("TSM Auction House")
+		:SetStrata("HIGH")
+		:SetProtected(TSM.db.global.coreOptions.protectAuctionHouse)
+		:AddPlayerGold()
+		:AddAppStatusIcon()
+		:AddSwitchButton(private.SwitchBtnOnClick)
 		:SetScript("OnHide", private.BaseFrameOnHide)
-	frame:GetElement("titleFrame")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "switchBtn")
-			:SetStyle("width", 131)
-			:SetStyle("height", 16)
-			:SetStyle("backgroundTexturePack", "uiFrames.DefaultUIButton")
-			:SetStyle("margin", { left = 8 })
-			:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-			:SetStyle("fontHeight", 10)
-			:SetStyle("textColor", "#2e2e2e")
-			:SetText(L["Switch to WoW UI"])
-			:SetScript("OnClick", private.SwitchBtnOnClick)
-		)
 	for _, info in ipairs(private.topLevelPages) do
-		frame:AddNavButton(info.name, info.texturePack, info.callback)
+		frame:AddNavButton(info.name, info.callback)
+	end
+	local whatsNewDialog = TSM.UI.WhatsNew.GetDialog()
+	if whatsNewDialog then
+		frame:ShowDialogFrame(whatsNewDialog)
 	end
 	return frame
 end
@@ -227,6 +209,7 @@ function private.BaseFrameOnHide(frame)
 	frame:Release()
 	private.frame = nil
 	if not private.isSwitching then
+		PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE)
 		if TSM.IsWowClassic() then
 			CloseAuctionHouse()
 		else
@@ -238,7 +221,7 @@ end
 
 function private.SwitchBtnOnClick(button)
 	private.isSwitching = true
-	TSM.db.global.internalData.auctionUIFrameContext.showDefault = true
+	private.settings.showDefault = true
 	private.HideAuctionFrame()
 	UIParent_OnEvent(UIParent, "AUCTION_HOUSE_SHOW")
 	private.isSwitching = false
@@ -249,7 +232,7 @@ local function NoOp()
 end
 
 function private.TSMTabOnClick()
-	TSM.db.global.internalData.auctionUIFrameContext.showDefault = false
+	private.settings.showDefault = false
 	if TSM.IsWowClassic() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")

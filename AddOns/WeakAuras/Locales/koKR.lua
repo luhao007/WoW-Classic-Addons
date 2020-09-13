@@ -61,7 +61,8 @@ L["20 Man Raid"] = "20인 공격대"
 L["25 Man Raid"] = "25인 공격대"
 L["40 Man Raid"] = "40인 공격대"
 L["5 Man Dungeon"] = "5인 던전"
-L["A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"] = "WeakAura는 금지된 기능을 사용하려고 했지만 막아버렸습니다. 효과를 확인하십시오!"
+--[[Translation missing --]]
+L["A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"] = "A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"
 --[[Translation missing --]]
 L["Abbreviate"] = "Abbreviate"
 --[[Translation missing --]]
@@ -412,7 +413,8 @@ L["Friendly Fire"] = "아군에게 준 피해"
 L["From"] = "출처"
 L["Frost Resistance"] = "냉기 저항"
 L["Full"] = "가득 찼을 때"
-L["Full Scan"] = "전체 스캔"
+--[[Translation missing --]]
+L["Full Scan"] = "Full Scan"
 L["Full/Empty"] = "가득 차거나 비었을 때"
 L["Gahz'ranka"] = "가즈란카"
 L["Gained"] = "획득"
@@ -433,7 +435,8 @@ L["Grand Widow Faerlina"] = "귀부인 팰리나"
 L["Grid"] = "Grid"
 L["Grobbulus"] = "그라불루스"
 L["Group"] = "그룹"
-L["Group %s"] = "%s 그룹"
+--[[Translation missing --]]
+L["Group %s"] = "Group %s"
 L["Group Arrangement"] = "그룹 편성"
 L["Grow"] = "성장"
 L["GTFO Alert"] = "GTFO 경보"
@@ -546,7 +549,8 @@ L["Left to Right"] = "왼쪽에서 오른쪽"
 L["Left, then Down"] = "Left, then Down"
 --[[Translation missing --]]
 L["Left, then Up"] = "Left, then Up"
-L["Legacy Aura"] = "v2.9.0 이전 방식 효과"
+--[[Translation missing --]]
+L["Legacy Aura"] = "Legacy Aura"
 --[[Translation missing --]]
 L["Legacy RGB Gradient"] = "Legacy RGB Gradient"
 --[[Translation missing --]]

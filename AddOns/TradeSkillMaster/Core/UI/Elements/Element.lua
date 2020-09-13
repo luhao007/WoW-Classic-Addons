@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Base UI Element Class.
@@ -12,13 +10,13 @@
 
 local _, TSM = ...
 local Element = TSM.Include("LibTSMClass").DefineClass("Element", nil, "ABSTRACT")
-local Log = TSM.Include("Util.Log")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Tooltip = TSM.Include("UI.Tooltip")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Element)
 TSM.UI.Element = Element
-local private = {
-	elementLookup = {},
-	scriptWrappers = {},
-}
-local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
+local private = {}
+local ANCHOR_REL_PARENT = newproxy()
 
 
 
@@ -29,14 +27,23 @@ local SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 function Element.__init(self, frame)
 	self._tags = {}
 	self._frame = frame
-	self._style = {}
-	self._stylesheet = nil
 	self._scripts = {}
 	self._baseElementCache = nil
 	self._parent = nil
 	self._context = nil
 	self._acquired = nil
 	self._tooltip = nil
+	self._width = nil
+	self._height = nil
+	self._margin = { left = 0, right = 0, top = 0, bottom = 0 }
+	self._padding = { left = 0, right = 0, top = 0, bottom = 0 }
+	self._relativeLevel = nil
+	self._anchors = {}
+end
+
+function Element.__tostring(self)
+	local parentId = self._parent and self._parent._id
+	return self.__class.__name..":"..(parentId and (parentId..".") or "")..(self._id or "?")
 end
 
 function Element.SetId(self, id)
@@ -63,10 +70,20 @@ end
 
 function Element.Release(self)
 	assert(self._acquired)
+	local frame = self:_GetBaseFrame()
+
+	-- clear the OnLeave script before hiding the frame (otherwise it'll get called)
+	if self._scripts.OnLeave then
+		frame:SetScript("OnLeave", nil)
+		self._scripts.OnLeave = nil
+	end
+
+	if self._tooltip and Tooltip.IsVisible(frame) then
+		-- hide the tooltip
+		Tooltip.Hide()
+	end
 
 	self:Hide()
-
-	local frame = self:_GetBaseFrame()
 	frame:ClearAllPoints()
 	frame:SetParent(nil)
 	frame:SetScale(1)
@@ -76,16 +93,26 @@ function Element.Release(self)
 	end
 
 	wipe(self._tags)
-	wipe(self._style)
 	wipe(self._scripts)
-	self._stylesheet = nil
 	self._baseElementCache = nil
 	self._parent = nil
 	self._context = nil
 	self._acquired = nil
 	self._tooltip = nil
+	self._width = nil
+	self._height = nil
+	self._margin.left = 0
+	self._margin.right = 0
+	self._margin.top = 0
+	self._margin.bottom = 0
+	self._padding.left = 0
+	self._padding.right = 0
+	self._padding.top = 0
+	self._padding.bottom = 0
+	self._relativeLevel = nil
+	wipe(self._anchors)
 
-	TSM.UI.RecyleElement(self)
+	UIElements.Recycle(self)
 end
 
 --- Shows the element.
@@ -109,22 +136,125 @@ function Element.IsVisible(self)
 	return self:_GetBaseFrame():IsVisible()
 end
 
---- Sets a style attribute for the element.
+--- Sets the width of the element.
 -- @tparam Element self The element object
--- @tparam string key The style key to set
--- @param value The value to set the style key to
+-- @tparam ?number width The width of the element, or nil to have an undefined width
 -- @treturn Element The element object
-function Element.SetStyle(self, key, value)
-	self._style[key] = value
+function Element.SetWidth(self, width)
+	assert(width == nil or type(width) == "number")
+	self._width = width
 	return self
 end
 
---- Set the @{Stylesheet} for this element.
+--- Sets the height of the element.
 -- @tparam Element self The element object
--- @tparam Stylesheet stylesheet The stylesheet object
+-- @tparam ?number height The height of the element, or nil to have an undefined height
 -- @treturn Element The element object
-function Element.SetStylesheet(self, stylesheet)
-	self._stylesheet = stylesheet
+function Element.SetHeight(self, height)
+	assert(height == nil or type(height) == "number")
+	self._height = height
+	return self
+end
+
+--- Sets the width and height of the element.
+-- @tparam Element self The element object
+-- @tparam ?number width The width of the element, or nil to have an undefined width
+-- @tparam ?number height The height of the element, or nil to have an undefined height
+-- @treturn Element The element object
+function Element.SetSize(self, width, height)
+	self:SetWidth(width)
+	self:SetHeight(height)
+	return self
+end
+
+--- Sets the padding of the element.
+-- @tparam Element self The element object
+-- @tparam number left The left padding value if all arguments are passed or the value of all sides if a single argument is passed
+-- @tparam[opt] number right The right padding value if all arguments are passed
+-- @tparam[opt] number top The top padding value if all arguments are passed
+-- @tparam[opt] number bottom The bottom padding value if all arguments are passed
+-- @treturn Element The element object
+function Element.SetPadding(self, left, right, top, bottom)
+	if not right and not top and not bottom then
+		right = left
+		top = left
+		bottom = left
+	end
+	assert(type(left) == "number" and type(right) == "number" and type(top) == "number" and type(bottom) == "number")
+	self._padding.left = left
+	self._padding.right = right
+	self._padding.top = top
+	self._padding.bottom = bottom
+	return self
+end
+
+--- Sets the margin of the element.
+-- @tparam Element self The element object
+-- @tparam number left The left margin value if all arguments are passed or the value of all sides if a single argument is passed
+-- @tparam[opt] number right The right margin value if all arguments are passed
+-- @tparam[opt] number top The top margin value if all arguments are passed
+-- @tparam[opt] number bottom The bottom margin value if all arguments are passed
+-- @treturn Element The element object
+function Element.SetMargin(self, left, right, top, bottom)
+	if not right and not top and not bottom then
+		right = left
+		top = left
+		bottom = left
+	end
+	assert(type(left) == "number" and type(right) == "number" and type(top) == "number" and type(bottom) == "number")
+	self._margin.left = left
+	self._margin.right = right
+	self._margin.top = top
+	self._margin.bottom = bottom
+	return self
+end
+
+--- Sets the relative level of this element with regards to its parent.
+-- @tparam Element self The element object
+-- @tparam number level The relative level of this element
+-- @treturn Element The element object
+function Element.SetRelativeLevel(self, level)
+	self._relativeLevel = level
+	return self
+end
+
+--- Wipes the element's anchors.
+-- @treturn Element The element object
+function Element.WipeAnchors(self)
+	wipe(self._anchors)
+	return self
+end
+
+--- Adds an anchor to the element.
+-- @tparam Element self The element object
+-- @param ... The anchor arguments (following WoW's SetPoint() arguments)
+-- @treturn Element The element object
+function Element.AddAnchor(self, ...)
+	local numArgs = select("#", ...)
+	local point, relFrame, relPoint, x, y = nil, nil, nil, nil, nil
+	if numArgs == 1 then
+		point = ...
+	elseif numArgs == 2 then
+		point, relFrame = ...
+	elseif numArgs == 3 then
+		local arg2 = select(2, ...)
+		if type(arg2) == "number" then
+			point, x, y = ...
+		else
+			point, relFrame, relPoint = ...
+		end
+	elseif numArgs == 4 then
+		point, relFrame, x, y = ...
+	elseif numArgs == 5 then
+		point, relFrame, relPoint, x, y = ...
+	else
+		error("Invalid anchor")
+	end
+	tinsert(self._anchors, point)
+	tinsert(self._anchors, relFrame or ANCHOR_REL_PARENT)
+	tinsert(self._anchors, relPoint or point)
+	tinsert(self._anchors, x or 0)
+	tinsert(self._anchors, y or 0)
 	return self
 end
 
@@ -143,6 +273,13 @@ function Element.GetBaseElement(self)
 		self._baseElementCache = element
 	end
 	return self._baseElementCache
+end
+
+--- Gets the parent element's base frame.
+-- @tparam Element self The element object
+-- @treturn Element The parent element's base frame
+function Element.GetParent(self)
+	return self:GetParentElement():_GetBaseFrame()
 end
 
 --- Gets the parent element.
@@ -164,17 +301,30 @@ end
 
 --- Sets the tooltip of the element.
 -- @tparam Element self The element object
--- @param tooltip The value passed to @{UI.ShowTooltip} when the user hovers over the element, or nil to clear it
+-- @param tooltip The value passed to @{Tooltip.Show} when the user hovers over the element, or nil to clear it
 -- @treturn Element The element object
 function Element.SetTooltip(self, tooltip)
 	self._tooltip = tooltip
 	if tooltip then
+		-- setting OnEnter/OnLeave will implicitly enable the mouse, so make sure it's previously been enabled
+		assert(self:_GetBaseFrame():IsMouseEnabled())
 		self:SetScript("OnEnter", private.OnEnter)
 		self:SetScript("OnLeave", private.OnLeave)
 	else
 		self:SetScript("OnEnter", nil)
 		self:SetScript("OnLeave", nil)
 	end
+	return self
+end
+
+--- Shows a tooltip on the element.
+-- @tparam Element self The element object
+-- @param tooltip The value passed to @{Tooltip.Show} when the user hovers over the element
+-- @tparam ?boolean noWrapping Disables wrapping of text lines
+-- @tparam[opt=0] number xOffset An extra x offset to apply to the anchor of the tooltip
+-- @treturn Element The element object
+function Element.ShowTooltip(self, tooltip, noWrapping, xOffset)
+	Tooltip.Show(self:_GetBaseFrame(), tooltip, noWrapping, xOffset)
 	return self
 end
 
@@ -202,90 +352,50 @@ end
 -- @treturn Element The element object
 function Element.SetScript(self, script, handler)
 	self._scripts[script] = handler
-	local frame = self:_GetBaseFrame()
-	private.elementLookup[frame] = self
-	if not private.scriptWrappers[script] then
-		private.scriptWrappers[script] = function(...)
-			private.ScriptHandlerCommon(script, ...)
-		end
+	if handler then
+		ScriptWrapper.Set(self:_GetBaseFrame(), script, handler, self)
+	else
+		ScriptWrapper.Clear(self:_GetBaseFrame(), script)
 	end
-	frame:SetScript(script, handler and private.scriptWrappers[script] or nil)
 	return self
 end
 
-function private.ScriptHandlerCommon(script, frame, ...)
-	local self = private.elementLookup[frame]
-	local startTime = debugprofilestop()
-	self._scripts[script](self, ...)
-	local timeTaken = debugprofilestop() - startTime
-	if timeTaken > SCRIPT_CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("Script handler (%s) for frame (%s) took %0.2fms", script, self._id or tostring(self), timeTaken)
-	end
-end
-
---- Propogates a script event to the parent element.
+--- Sets a script to propagate to the parent element.
 -- @tparam Element self The element object
--- @tparam string script The script to propogate
--- @tparam varag ... The script handler arguments
-function Element.PropagateScript(self, script, ...)
-	local parentFrame = self:GetParentElement():_GetBaseFrame()
-	local parentScript = parentFrame:GetScript(script)
-	if not parentScript then
-		return
-	end
-	parentScript(parentFrame, ...)
+-- @tparam string script The script to propagate
+-- @treturn Element The element object
+function Element.PropagateScript(self, script)
+	self._scripts[script] = "__PROPAGATE"
+	ScriptWrapper.SetPropagate(self:_GetBaseFrame(), script, self)
+	return self
 end
 
 function Element.Draw(self)
 	assert(self._acquired)
 	local frame = self:_GetBaseFrame()
-	local scale = self:_GetStyle("scale")
-	if scale then
-		self:_GetBaseFrame():SetScale(scale)
-	end
-	local anchors = self:_GetStyle("anchors")
-	if anchors then
+	local numAnchors = self:_GetNumAnchors()
+	if numAnchors > 0 then
 		frame:ClearAllPoints()
-		for i, anchor in ipairs(anchors) do
-			local point, relativeFrame, relativePoint, x, y = nil, nil, nil, nil, nil
-			if #anchor == 1 then
-				-- point
-				point = unpack(anchor)
-			elseif #anchor == 2 then
-				-- point, relativeFrame
-				point, relativeFrame = unpack(anchor)
-			elseif #anchor == 3 then
-				if type(anchor[2]) == "number" then
-					point, x, y = unpack(anchor)
-				else
-					point, relativeFrame, relativePoint = unpack(anchor)
-				end
-			elseif #anchor == 5 then
-				point, relativeFrame, relativePoint, x, y = unpack(anchor)
-			else
-				error(format("Invalid anchor %d!", i), 1)
-			end
-			-- apply default values to fields which weren't explicitly set
-			relativeFrame = relativeFrame or frame:GetParent()
-			relativePoint = relativePoint or point
-			x = x or 0
-			y = y or 0
-			if type(relativeFrame) == "string" then
+		for i = 1, numAnchors do
+			local point, relFrame, relPoint, x, y = self:_GetAnchor(i)
+			if relFrame == ANCHOR_REL_PARENT then
+				relFrame = frame:GetParent()
+			elseif type(relFrame) == "string" then
 				-- this is a relative element
-				relativeFrame = self:GetParentElement():GetElement(relativeFrame):_GetBaseFrame()
+				relFrame = self:GetParentElement():GetElement(relFrame):_GetBaseFrame()
 			end
-			frame:SetPoint(point, relativeFrame, relativePoint, x, y)
+			frame:SetPoint(point, relFrame, relPoint, x, y)
 		end
 	end
-	local width = self:_GetStyle("width")
+	local width = self._width
 	if width then
 		self:_SetDimension("WIDTH", width)
 	end
-	local height = self:_GetStyle("height")
+	local height = self._height
 	if height then
 		self:_SetDimension("HEIGHT", height)
 	end
-	local relativeLevel = self:_GetStyle("relativeLevel")
+	local relativeLevel = self._relativeLevel
 	if relativeLevel then
 		frame:SetFrameLevel(frame:GetParent():GetFrameLevel() + relativeLevel)
 	end
@@ -297,43 +407,32 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function Element._GetStyle(self, key)
-	-- check if we already have this key set directly or cached
-	local res = self._style[key]
-	if res ~= nil then
-		return res
-	end
+function Element._GetNumAnchors(self)
+	assert(#self._anchors % 5 == 0)
+	return #self._anchors / 5
+end
 
-	-- check if this key is part of a stylesheet
-	local element = self
-	while element do
-		if element._stylesheet then
-			res = element._stylesheet:_GetStyle(self.__class.__name, self._tags, key)
-			if res ~= nil then
-				self._style[key] = res
-				return res
-			end
-		end
-		element = element:GetParentElement()
-	end
-
-	-- use the default style
-	res = TSM.UI.Stylesheet.GetDefaultStyle(self.__class, key)
-	self._style[key] = res
-	return res
+function Element._GetAnchor(self, index)
+	index = (index - 1) * 5 + 1
+	assert(index < #self._anchors)
+	return unpack(self._anchors, index, index + 4)
 end
 
 function Element._SetParentElement(self, parent)
 	self._parent = parent
+	self:_ClearBaseElementCache()
+end
+
+function Element._ClearBaseElementCache(self)
 	self._baseElementCache = nil
 end
 
 function Element._GetMinimumDimension(self, dimension)
 	if dimension == "WIDTH" then
-		local width = self:_GetStyle("width")
+		local width = self._width
 		return width or 0, width == nil
 	elseif dimension == "HEIGHT" then
-		local height = self:_GetStyle("height")
+		local height = self._height
 		return height or 0, height == nil
 	else
 		error("Invalid dimension: " .. tostring(dimension))
@@ -374,21 +473,8 @@ function Element._GetBaseFrame(self)
 	return self._frame
 end
 
-function Element._GetBoxPartSize(self, key, side)
-	side = strlower(side)
-	local value = self:_GetStyle(key.."."..side) or self:_GetStyle(key)
-	if not value then return 0 end
-	if type(value) == "number" then
-		return value or 0
-	elseif type(value) == "table" then
-		return value[side] or 0
-	else
-		error()
-	end
-end
-
 function Element._GetPadding(self, side)
-	return self:_GetBoxPartSize("padding", side)
+	return self._padding[strlower(side)]
 end
 
 function Element._GetPaddingAnchorOffsets(self, anchor)
@@ -399,7 +485,7 @@ function Element._GetPaddingAnchorOffsets(self, anchor)
 end
 
 function Element._GetMargin(self, side)
-	return self:_GetBoxPartSize("margin", side)
+	return self._margin[strlower(side)]
 end
 
 function Element._GetMarginAnchorOffsets(self, anchor)
@@ -407,90 +493,6 @@ function Element._GetMarginAnchorOffsets(self, anchor)
 	local x = xPart and ((xPart == "LEFT" and 1 or -1) * self:_GetMargin(xPart)) or 0
 	local y = yPart and ((yPart == "BOTTOM" and 1 or -1) * self:_GetMargin(yPart)) or 0
 	return x, y
-end
-
-function Element._ApplyFrameBackgroundTexture(self)
-	local texturePack = self:_GetStyle("backgroundTexturePack")
-	local texture = self:_GetStyle("backgroundTexture")
-	local frame = self:_GetBaseFrame()
-	if texture or texturePack then
-		frame:SetBackdrop(nil)
-		frame:SetBackdropColor(0, 0, 0, 0)
-		frame:SetBackdropBorderColor(0, 0, 0, 0)
-		frame.backgroundTexture:ClearAllPoints()
-		if texturePack then
-			frame.backgroundTexture:SetPoint("CENTER")
-			local rotateAngle = self:_GetStyle("backgroundTextureRotation")
-			if rotateAngle then
-				TSM.UI.TexturePacks.SetTextureAndSizeRotated(frame.backgroundTexture, texturePack, rotateAngle)
-			else
-				TSM.UI.TexturePacks.SetTextureAndSize(frame.backgroundTexture, texturePack)
-			end
-		else
-			frame.backgroundTexture:SetAllPoints()
-			frame.backgroundTexture:SetTexture(texture)
-			frame.backgroundTexture:SetTexCoord(0, 1, 0, 1)
-		end
-		frame.backgroundTexture:SetVertexColor(TSM.UI.HexToRGBA(self:_GetStyle("backgroundVertexColor")))
-		frame.backgroundTexture:Show()
-	else
-		frame.backgroundTexture:Hide()
-		self:_ApplyFrameStyle(frame)
-	end
-end
-
-function Element._ApplyFrameStyle(self, frame)
-	-- set the background and border
-	local background = self:_GetStyle("background")
-	local border = self:_GetStyle("border")
-	local borderTexture = self:_GetStyle("borderTexture")
-	if background or border or borderTexture then
-		local borderSize = self:_GetStyle("borderSize")
-		borderSize = borderSize or nil
-		local backdrop = {
-			bgFile = background and "Interface\\Buttons\\WHITE8X8" or nil,
-			edgeFile = borderTexture or (border and "Interface\\Buttons\\WHITE8X8") or nil,
-			edgeSize = borderSize,
-		}
-		local borderInset = self:_GetStyle("borderInset")
-		local borderInsets = self:_GetStyle("borderInsets")
-		if borderInset then
-			backdrop.insets = { left = borderInset, right = borderInset, top = borderInset, bottom = borderInset }
-		elseif borderInsets then
-			backdrop.insets = borderInsets
-		end
-		frame:SetBackdrop(backdrop)
-		if background then
-			frame:SetBackdropColor(TSM.UI.HexToRGBA(background))
-		end
-		if border then
-			frame:SetBackdropBorderColor(TSM.UI.HexToRGBA(border))
-		end
-	else
-		frame:SetBackdrop(nil)
-	end
-end
-
-function Element._ApplyTextStyle(self, text, disabled)
-	-- set the font
-	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	local fontHeight = self:_GetStyle("fontHeight") - 1
-	if self:_GetStyle("font") == "Fonts\\ARKai_C.ttf" then
-		fontHeight = fontHeight + 2
-	end
-
-	text:SetFont(self:_GetStyle("font"), fontHeight)
-
-	-- set the justification
-	text:SetJustifyH(self:_GetStyle("justifyH") or "CENTER")
-	text:SetJustifyV(self:_GetStyle("justifyV") or "MIDDLE")
-
-	-- set the text color
-	if disabled then
-		text:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("disabledTextColor") or "#60ffffff"))
-	else
-		text:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("textColor")))
-	end
 end
 
 
@@ -558,9 +560,9 @@ function private.SplitAnchor(anchor)
 end
 
 function private.OnEnter(element)
-	TSM.UI.ShowTooltip(element:_GetBaseFrame(), element._tooltip)
+	element:ShowTooltip(element._tooltip)
 end
 
 function private.OnLeave(element)
-	TSM.UI.HideTooltip()
+	Tooltip.Hide()
 end

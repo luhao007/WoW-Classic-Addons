@@ -1,105 +1,48 @@
 # Deadly Boss Mods Core
 
-## [1.13.58](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.58) (2020-08-29)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.57...1.13.58) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
+## [1.13.60](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.60) (2020-09-10)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.59...1.13.60) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
 
-- Prepare new classic release, some stuff needs testing, but to be honest it can't be more broken than the stuff that needed testing in last release.  
-- Localize functions that don't need to be global  
-    Optimized cpu usage by unregistering combat log events infofframe uses, when infoframe is hidden  
-    Fixed a bug where mod was calling hide on infoframe only to IMMEDIATELY reshow it during glob phase.  
-    removed unneeded local varaibles  
-- aq/visc: hit counter (#540)  
-    Co-authored-by: venuatu <venuatu@gmail.com>  
-- Update localization.tw.lua (#539)  
-- Update localization.tw.lua (#538)  
-    * Update localization.tw.lua  
-    * Resolve exclamation mark  
-    These are indeed used in this locale.  
+- Prep new release  
+- Update localization.es.lua (#580)  
+- Update localization.cn.lua (#579)  
+- Update localization.tw.lua (#578)  
+- Scrap revision based force disable code. it's been tried 3 different ways and it's always broken in some way. Instead. add a bunch of annoying messages in various places about being out of date (with no disable). exception is force disable will now ALWAYS run if PTR/Beta, because testing that with old mods is just hard no. Or a major patch. These two situations will always automatically disable DBM if it's out of date regardless of revision. All other situations, there will just be a lot of nagging with no disable. If this these chat message nags prove to be ineffective, more aggressive nags will be implimented. The force update by revision code wasn't scrapped because I believe users should ignore updates, I just couldn't get it to work the way i wanted without uglier and uglier hacky code that rarely worked right, so exploring different ways of doing it til something that isn't broken is found that gets the job done (gets users to update mods when important updates are available)  
+- Update localization.es.lua (#577)  
+- Update koKR (Classic) (#576)  
     Co-authored-by: QartemisT <63267788+QartemisT@users.noreply.github.com>  
-- Update localization.cn.lua (#537)  
-- Update localization.es.lua (#533)  
-- Update localization.fr.lua (#534)  
-- Update localization.br.lua (#535)  
-- Update localization.de.lua (#536)  
-- Further re-arrange AQ40 trash to get Shadow Storm in there  
-- Update localization.es.lua (#531)  
-- Update localization.fr.lua (#532)  
-- Forgot the AQ20 trash cleanup  
-- Some cleanup of unused variables as well as just organizing some things better  
-    Completely redid infoframe on Cthun to not use syncing and instead target scanning on stomach debuffed players. In addition, it'll actually show who's in stomach and their debuff count (assuming classic allows UnitDebuff)  
-    Fixed a bug on Viscious where it had two minsync revisions  
-- Update localization.fr.lua (#530)  
-- Make this actually a count warning  
-- Some reworking on Viscidus.  
-     - Now has a volley timer and announce with count  
-     - Now has better way to cancel the frozen timer/announce that she hs fully shattered (needs some verification, a single log is not ideal verification)  
-- aq/twin: fixup blizzard check (#529)  
-- Disable claw tentacle warning by default. they spawn continously, don't want to derail focus from the more important tentacle spawns. timer can stay though.  
-- re-enable explode warning for melee by default  
-- Update localization.cn.lua (#527)  
-- Update localization.fr.lua (#528)  
-- Update localization.fr.lua (#526)  
-- end  
-- Kill off silent mode from minimap button.  
-- Update koKR (Classic) (#524)  
-- Update localization.cn.lua (#525)  
-- Shorten stomach string  
-- Update localization.fr.lua (#523)  
-- Update localization.br.lua (#522)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- Update localization.es.lua (#521)  
-- Update localization.cn.lua (#520)  
-- Update localization.tw.lua (#519)  
-- Update hotfix revision, but not sync one. sync one should be fine since the sync msg is different.  
-    Added nil checks to sync though and eliminate redundant string conversion  
-- cthun: a new version of a stomach tentacle infoframe (#518)  
-- Actually sync InfoFrame changes PROPERLY (Fixes #516) (#517)  
-- Give movable bars timer icons  
-- Update localization.cn.lua (#515)  
-- Update localization.tw.lua (#514)  
-- Update localization.tw.lua (#513)  
-- Update localization.de.lua (#509)  
-- Update localization.tw.lua (#508)  
-- Update localization.tw.lua (#510)  
-- Increased throttle for Sartura's whirlwind from a 2.5 second CD to 4 second cd  
-- Spawn time Update, and we all forgot timerWeakened (#507)  
-    as title  
-- Update localization.mx.lua (#506)  
-- Update localization.es.lua (#504)  
-- Support partial string find on Pyroguard Emberseer pull (#505)  
-- Sync infoframe changes to classic  
-- Optimize the math with GUI (sync from retail)  
-- Update localization.br.lua (#503)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- Update localization.kr.lua (#502)  
-- Shouldn't change syncing any, but makes them more like other mods  
-- Update localization.tw.lua (#500)  
-- Update localization.es.lua (#492)  
-- Update localization.de.lua (#493)  
-- Update localization.br.lua (#494)  
-- Update localization.mx.lua (#495)  
-- Update localization.es.lua (#496)  
-- Update localization.fr.lua (#497)  
-- Update localization.tw.lua (#498)  
-- Update Tentacles Respawn Timer (#499)  
-    Update Giant Eye Tentacles Respawn Timer  
-- Update localization.br.lua (#491)  
-- Update localization.fr.lua (#489)  
-- Update localization.de.lua (#490)  
-- Update localization.br.lua (#488)  
-- Update localization.br.lua (#487)  
-- Update localization.es.lua (#486)  
-    * Update localization.es.lua  
-    * Update localization.es.lua  
-- Update localization.ru.lua (#485)  
-- just a note fix  
-- Update localization.mx.lua (#484)  
-- Update localization.br.lua (#483)  
-    * Update localization.br.lua  
-    * Update localization.br.lua  
-- Update localization.tw.lua (#481)  
-- Update localization.tw.lua (#480)  
-    * Update localization.tw.lua  
-    * Update localization.tw.lua  
-- Update localization.es.lua (#479)  
-- Change forced update from 1 month to 21 days.  
+- Changed nefarian add counts to do every 5 until at 15 THEN switch to every 3.  
+- Update localization.cn.lua (#575)  
+- Update localization.tw.lua (#573)  
+    According to the check sequence of the EN document of classic, the TW localization file comes from the TW localization document of retail  
+- Fixed one of the links  
+- Added guide links to each category panel in options.  
+    Fixed duplicate localization entry for General Options tab  
+- Update koKR (Classic) (#572)  
+    Co-authored-by: QartemisT <63267788+QartemisT@users.noreply.github.com>  
+- Update localization.tw.lua (#571)  
+- Update localization.cn.lua (#570)  
+    * Update localization.cn.lua  
+    * Update localization.cn.lua  
+    Co-authored-by: QartemisT <63267788+QartemisT@users.noreply.github.com>  
+- Fixed regression with CheckNearby when the function was called by mod via bossModPrototype  
+    Also fixed  bug that's existed for quite some time if GetUnitIdFromGUID is called by bossModPrototype. The reason this bug was never caught is because this function is pretty much never used on non boss unitId targets on retail and on classic it probably hasn't been used at all yet.  
+- Fix two missed spots  
+- Update localization.tw.lua (#568)  
+- Sync GUI Re-arrangement and new options to classic from retail. Probably errors until I can do some review and let luacheck run  
+- First batch of Syncs from retail to classic.  
+     - Removed redundant Localizations  
+     - Added Infoframe options plumbing (but not GUI yet)  
+- some AddMsg fixes and some dbm vs self usage fixes  
+- Update koKR (Classic) (#566)  
+- Update localization.cn.lua (#565)  
+- Update localization.tw.lua (#563)  
+- 6 bytes  
+- Scrap old explode bug waring that is spammy and add a smart one that scans nearby nameplates to determine if exploding bug is nearby. if it is, shows a special warning. Explode has 15 range and nameplate range is 20. This is a very smart way to filter it.  
+- Forgot to update option text  
+- Improvments to last  
+- Lower cap of cthun infoframe from 40 down to 9. 9 should still get everything without it triggering column behaviors  
+- Fixed regression on viscidus that caused frost tracker to completely bread  
+    Fixed bug with shoot being counted during melee phase instead of frost  
+- Improve wipe detection for razorgore to prevent declaring a phase 2 wipe as a victory  
+- rep new alpha dev cycle  

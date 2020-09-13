@@ -1,14 +1,13 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Log = TSM.Init("Util.Log")
 local Debug = TSM.Include("Util.Debug")
+local Theme = TSM.Include("Util.Theme")
 local private = {
 	severity = {},
 	location = {},
@@ -17,18 +16,18 @@ local private = {
 	writeIndex = 1,
 	len = 0,
 	temp = {},
-	logToChat = false,
+	logToChat = TSM.__IS_TEST_ENV or false,
 	currentThreadNameFunc = nil,
 	stackLevel = 3,
 	chatFrame = nil,
 }
 local MAX_ROWS = 200
 local MAX_MSG_LEN = 150
-local CHAT_COLORS = {
-	TRACE = "|cff0000ff",
-	INFO = "|cff00ff00",
-	WARN = "|cffffff00",
-	ERR = "|cffff0000",
+local CHAT_LOG_COLOR_KEYS = {
+	TRACE = "BLUE",
+	INFO = "GREEN",
+	WARN = "YELLOW",
+	ERR = "RED",
 }
 
 
@@ -42,6 +41,9 @@ function Log.SetChatFrame(chatFrame)
 end
 
 function Log.SetLoggingToChatEnabled(enabled)
+	if TSM.__IS_TEST_ENV then
+		enabled = true
+	end
 	if private.logToChat == enabled then
 		return
 	end
@@ -78,7 +80,7 @@ function Log.LowerStackLevel()
 	private.stackLevel = private.stackLevel - 1
 end
 
-function Log.StackTrace(self)
+function Log.StackTrace()
 	Log.RaiseStackLevel()
 	Log.Trace("Stack Trace:")
 	local level = 2
@@ -116,11 +118,15 @@ function Log.PrintfUserRaw(...)
 end
 
 function Log.PrintUser(str)
-	Log.PrintUserRaw("|cff33ff99TradeSkillMaster|r: "..str)
+	Log.PrintUserRaw(Theme.GetColor("INDICATOR"):ColorText("TSM")..": "..str)
 end
 
 function Log.PrintfUser(...)
 	Log.PrintUser(format(...))
+end
+
+function Log.ColorUserAccentText(text)
+	return Theme.GetColor("INDICATOR_ALT"):ColorText(text)
 end
 
 
@@ -140,7 +146,7 @@ function private.GetChatFrame()
 end
 
 function private.Log(severity, fmtStr, ...)
-	assert(type(fmtStr) == "string" and CHAT_COLORS[severity])
+	assert(type(fmtStr) == "string" and CHAT_LOG_COLOR_KEYS[severity])
 	wipe(private.temp)
 	for i = 1, select("#", ...) do
 		local arg = select(i, ...)
@@ -179,5 +185,5 @@ function private.Log(severity, fmtStr, ...)
 end
 
 function private.LogToChat(severity, location, timeStr, msg)
-	print(format("%s %s{%s}|r %s", timeStr, CHAT_COLORS[severity], location, msg))
+	print(strjoin(" ", timeStr, Theme.GetFeedbackColor(CHAT_LOG_COLOR_KEYS[severity]):ColorText("{"..location.."}"), msg))
 end

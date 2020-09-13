@@ -61,7 +61,7 @@ L:SetOptionLocalization{
 	SpecWarnPursue	= "Spezialwarnung, wenn du verfolgt wirst"
 }
 L:SetMiscLocalization{
-	PursueEmote 	= "%s behält %s im Blickfeld!"
+	PursueEmote 	= "%s behält %s im Blickfeld!"--MIGHT NOT WORK
 }
 
 -------------

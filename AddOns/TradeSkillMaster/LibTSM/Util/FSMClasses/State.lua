@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- FSMState Class.
@@ -137,21 +135,23 @@ function FSMState._HasEventHandler(self, event)
 end
 
 function FSMState._ProcessEvent(self, event, context, ...)
-	return self._events[event](context, ...)
+	return self:_HandlerHelper(self._events[event], context, ...)
 end
 
 function FSMState._Enter(self, context, ...)
-	if type(self._onEnterHandler) == "function" then
-		return self._onEnterHandler(context, ...)
-	elseif type(self._onEnterHandler) == "string" then
-		return context[self._onEnterHandler](context, ...)
-	end
+	return self:_HandlerHelper(self._onEnterHandler, context, ...)
 end
 
 function FSMState._Exit(self, context)
-	if type(self._onExitHandler) == "function" then
-		return self._onExitHandler(context)
-	elseif type(self._onExitHandler) == "string" then
-		return context[self._onExitHandler](context)
+	return self:_HandlerHelper(self._onExitHandler, context)
+end
+
+function FSMState._HandlerHelper(self, handler, context, ...)
+	if type(handler) == "function" then
+		return handler(context, ...)
+	elseif type(handler) == "string" then
+		return context[handler](context, ...)
+	elseif handler ~= nil then
+		error("Invalid handler: "..tostring(handler))
 	end
 end

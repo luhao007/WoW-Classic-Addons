@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -45,14 +43,24 @@ function Path.IsChild(groupPath, parentPath)
 	return strmatch(groupPath, "^"..String.Escape(parentPath)..TSM.CONST.GROUP_SEP) and true or false
 end
 
-function Path.Format(groupPath, useColor)
+function Path.Format(groupPath)
 	if not groupPath then return end
 	local result = gsub(groupPath, TSM.CONST.GROUP_SEP, "->")
-	if useColor then
-		return "|cff99ffff"..result.."|r"
-	else
-		return result
+	return result
+end
+
+function Path.GetRelative(groupPath, prefixGroupPath)
+	if groupPath == prefixGroupPath then
+		return TSM.CONST.ROOT_GROUP_PATH
 	end
+	local relativePath, numSubs = gsub(groupPath, "^"..String.Escape(prefixGroupPath)..TSM.CONST.GROUP_SEP, "")
+	assert(numSubs == 1 and relativePath)
+	return relativePath
+end
+
+function Path.GetTopLevel(groupPath)
+	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH)
+	return strmatch(groupPath, "^([^"..TSM.CONST.GROUP_SEP.."]+)")
 end
 
 

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -65,7 +63,7 @@ end
 
 function ItemTask.SubTaskIterator(self)
 	assert(#self._itemList > 0)
-	sort(self._itemList)
+	Table.Sort(self._itemList, private.ItemSortHelper)
 	return private.SubTaskIterator, self, 0
 end
 
@@ -103,4 +101,18 @@ function private.SubTaskIterator(self, index)
 		return
 	end
 	return index, format("%s (%d)", ItemInfo.GetLink(itemString), self._itemNum[itemString])
+end
+
+function private.ItemSortHelper(a, b)
+	local aName = ItemInfo.GetName(a)
+	local bName = ItemInfo.GetName(b)
+	if aName == bName then
+		return a < b
+	end
+	if not aName then
+		return false
+	elseif not bName then
+		return true
+	end
+	return aName < bName
 end

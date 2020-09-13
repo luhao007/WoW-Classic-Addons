@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -23,6 +21,15 @@ local OPERATION_INFO = {
 
 function Sniper.OnInitialize()
 	TSM.Operations.Register("Sniper", L["Sniper"], OPERATION_INFO, 1, private.GetOperationInfo)
+end
+
+function Sniper.IsOperationValid(itemString)
+	local _, operationSettings = TSM.Operations.GetFirstOperationByItem("Sniper", itemString)
+	if not operationSettings then
+		return false
+	end
+	local isValid = CustomPrice.Validate(operationSettings.belowPrice)
+	return isValid
 end
 
 function Sniper.HasOperation(itemString)

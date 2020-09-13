@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Debug Functions
@@ -15,9 +13,10 @@ local private = {
 	startSystemTimeMs = floor(GetTime() * 1000),
 	startTimeMs = time() * 1000 + (floor(GetTime() * 1000) % 1000),
 }
-local ADDON_NAME_SHORTERNS = {
-	-- shortern "TradeSkillMaster" to "TSM"
+local ADDON_NAME_SHORTEN_PATTERN = {
+	-- shorten "TradeSkillMaster" to "TSM"
 	[".-lMaster\\"] = "TSM\\",
+	[".-r\\LibTSM"] = "TSM\\LibTSM",
 }
 local IGNORED_STACK_LEVEL_MATCHERS = {
 	-- ignore wrapper code from LibTSMClass
@@ -74,7 +73,7 @@ function Debug.GetStackLevelLocation(targetLevel, thread)
 				targetLevel = targetLevel - 1
 				if targetLevel == 0 then
 					stackLine = gsub(stackLine, "/", "\\")
-					for matchStr, replaceStr in pairs(ADDON_NAME_SHORTERNS) do
+					for matchStr, replaceStr in pairs(ADDON_NAME_SHORTEN_PATTERN) do
 						stackLine = gsub(stackLine, matchStr, replaceStr)
 					end
 					return stackLine

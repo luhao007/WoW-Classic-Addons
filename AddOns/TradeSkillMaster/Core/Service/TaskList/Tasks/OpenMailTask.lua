@@ -1,15 +1,17 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local OpenMailTask = TSM.Include("LibTSMClass").DefineClass("OpenMailTask", TSM.TaskList.ItemTask)
 local L = TSM.Include("Locale").GetTable()
 TSM.TaskList.OpenMailTask = OpenMailTask
+local private = {
+	activeTasks = {},
+	registeredCallbacks = false,
+}
 
 
 
@@ -17,8 +19,22 @@ TSM.TaskList.OpenMailTask = OpenMailTask
 -- Class Meta Methods
 -- ============================================================================
 
+function OpenMailTask.__init(self)
+	self.__super:__init()
+	if not private.registeredCallbacks then
+		TSM.Mailing.RegisterFrameCallback(private.FrameCallback)
+		private.registeredCallbacks = true
+	end
+end
+
 function OpenMailTask.Acquire(self, doneHandler, category)
 	self.__super:Acquire(doneHandler, category, L["Open Mail"])
+	private.activeTasks[self] = true
+end
+
+function OpenMailTask.Release(self)
+	self.__super:Release()
+	private.activeTasks[self] = nil
 end
 
 
@@ -38,9 +54,21 @@ end
 -- ============================================================================
 
 function OpenMailTask._UpdateState(self)
-	if not TSM.UI.MailingUI.IsVisible() then
+	if not TSM.Mailing.IsOpen() then
 		return self:_SetButtonState(false, L["NOT OPEN"])
 	else
-		return self:_SetButtonState(true, L["OPEN"])
+		return self:_SetButtonState(false, L["OPEN"])
+	end
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.FrameCallback()
+	for task in pairs(private.activeTasks) do
+		task:Update()
 	end
 end

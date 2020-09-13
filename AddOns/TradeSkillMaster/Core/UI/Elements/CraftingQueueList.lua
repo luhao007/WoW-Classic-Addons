@@ -1,24 +1,29 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Crafting Queue List UI Element Class.
--- The element used to show the queue in the Crafting UI. It is a subclass of the @{ScrollList} class.
+-- The element used to show the queue in the Crafting UI. It is a subclass of the @{ScrollingTable} class.
 -- @classmod CraftingQueueList
 
 local _, TSM = ...
+local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
+local Money = TSM.Include("Util.Money")
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
-local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.FastScrollingList)
+local Inventory = TSM.Include("Service.Inventory")
+local CraftingQueueList = TSM.Include("LibTSMClass").DefineClass("CraftingQueueList", TSM.UI.ScrollingTable)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(CraftingQueueList)
 TSM.UI.CraftingQueueList = CraftingQueueList
 local private = {
-	queryCraftingQueueListLookup = {},
 	categoryOrder = {},
-	rowFrameLookup = {},
+	sortSelf = nil,
+	sortProfitCache = {},
 }
 local CATEGORY_SEP = "\001"
 
@@ -32,19 +37,53 @@ function CraftingQueueList.__init(self)
 	self.__super:__init()
 	self._collapsed = {}
 	self._query = nil
-	self._onRowClickHandler = nil
+	self._numCraftableCache = {}
+	self._onRowMouseDownHandler = nil
+end
+
+function CraftingQueueList.Acquire(self)
+	self._headerHidden = true
+	self.__super:Acquire()
+	self:SetSelectionDisabled(true)
+	self:GetScrollingTableInfo()
+		:NewColumn("name")
+			:SetFont("ITEM_BODY3")
+			:SetJustifyH("LEFT")
+			:SetIconSize(12)
+			:SetExpanderStateFunction(private.GetExpanderState)
+			:SetIconFunction(private.GetItemIcon)
+			:SetIconHoverEnabled(true)
+			:SetIconClickHandler(private.OnItemIconClick)
+			:SetTextFunction(private.GetItemText)
+			:SetTooltipFunction(private.GetItemTooltip)
+			:SetActionIconInfo(1, 12, private.GetDeleteIcon, true)
+			:SetActionIconClickHandler(private.OnDeleteIconClick)
+			:Commit()
+		:NewColumn("qty")
+			:SetAutoWidth()
+			:SetFont("TABLE_TABLE1")
+			:SetJustifyH("CENTER")
+			:SetTextFunction(private.GetQty)
+			:SetActionIconInfo(1, 12, private.GetEditIcon, true)
+			:SetActionIconClickHandler(private.OnEditIconClick)
+			:Commit()
+		:Commit()
 end
 
 function CraftingQueueList.Release(self)
-	self._onRowClickHandler = nil
+	self._onRowMouseDownHandler = nil
+	wipe(self._numCraftableCache)
 	wipe(self._collapsed)
 	if self._query then
 		self._query:Release()
-		private.queryCraftingQueueListLookup[self._query] = nil
 		self._query = nil
 	end
 	for _, row in ipairs(self._rows) do
-		private.rowFrameLookup[row._frame] = nil
+		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
+		ScriptWrapper.Clear(row._frame, "OnMouseDown")
+		for _, button in pairs(row._buttons) do
+			ScriptWrapper.Clear(button, "OnMouseDown")
+		end
 	end
 	self.__super:Release()
 end
@@ -62,15 +101,15 @@ end
 
 --- Registers a script handler.
 -- @tparam CraftingQueueList self The crafting queue list object
--- @tparam string script The script to register for (supported scripts: `OnValueChanged`)
+-- @tparam string script The script to register for (supported scripts: `OnRowClick`, `OnRowMouseDown`)
 -- @tparam function handler The script handler which will be called with the crafting queue list object followed by any
 -- arguments to the script
 -- @treturn CraftingQueueList The crafting queue list object
 function CraftingQueueList.SetScript(self, script, handler)
-	if script == "OnRowClick" then
-		self._onRowClickHandler = handler
+	if script == "OnRowMouseDown" then
+		self._onRowMouseDownHandler = handler
 	else
-		error("Unknown CraftingQueueList script: "..tostring(script))
+		self.__super:SetScript(script, handler)
 	end
 	return self
 end
@@ -83,17 +122,11 @@ end
 function CraftingQueueList.SetQuery(self, query)
 	if self._query then
 		self._query:Release()
-		private.queryCraftingQueueListLookup[self._query] = nil
 	end
 	self._query = query
-	self._query:SetUpdateCallback(private.QueryUpdateCallback)
-	private.queryCraftingQueueListLookup[query] = self
-	return self
-end
-
-function CraftingQueueList.Draw(self)
+	self._query:SetUpdateCallback(private.QueryUpdateCallback, self)
 	self:_UpdateData()
-	self.__super:Draw()
+	return self
 end
 
 
@@ -102,12 +135,26 @@ end
 -- Private Class Methods
 -- ============================================================================
 
+function CraftingQueueList._GetTableRow(self, isHeader)
+	local row = self.__super:_GetTableRow(isHeader)
+	if not isHeader then
+		ScriptWrapper.Set(row._frame, "OnMouseDown", private.RowOnMouseDown, row)
+		ScriptWrapper.Set(row._frame, "OnDoubleClick", private.RowOnDoubleClick, row)
+		for _, button in pairs(row._buttons) do
+			ScriptWrapper.Set(button, "OnMouseDown", private.RowOnMouseDown, row)
+		end
+	end
+	return row
+end
+
 function CraftingQueueList._UpdateData(self)
 	wipe(self._data)
 	if not self._query then
 		return
 	end
 	local categories = TempTable.Acquire()
+	wipe(self._numCraftableCache)
+	wipe(private.sortProfitCache)
 	for _, row in self._query:Iterator() do
 		local rawCategory = strjoin(CATEGORY_SEP, row:GetFields("profession", "players"))
 		local category = strlower(rawCategory)
@@ -116,6 +163,9 @@ function CraftingQueueList._UpdateData(self)
 		end
 		categories[category] = rawCategory
 		if not self._collapsed[rawCategory] then
+			local spellId = row:GetField("spellId")
+			self._numCraftableCache[row] = TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(spellId)
+			private.sortProfitCache[spellId] = TSM.Crafting.Cost.GetProfitBySpellId(spellId)
 			tinsert(self._data, row)
 		end
 	end
@@ -126,192 +176,33 @@ function CraftingQueueList._UpdateData(self)
 		tinsert(self._data, categories[category])
 	end
 	TempTable.Release(categories)
+	private.sortSelf = self
 	sort(self._data, private.DataSortComparator)
-end
-
-function CraftingQueueList._GetListRow(self)
-	local row = self.__super:_GetListRow()
-	row._frame:SetScript("OnClick", private.RowOnClick)
-	row._frame:SetScript("OnEnter", private.RowOnEnter)
-	row._frame:SetScript("OnLeave", private.RowOnLeave)
-	private.rowFrameLookup[row._frame] = row
-
-	local expander = row:_GetTexture()
-	expander:SetPoint("LEFT", 2, 0)
-	row._icons.expander = expander
-
-	local expanderBtn = row:_GetButton()
-	expanderBtn:SetAllPoints(expander)
-	expanderBtn:SetScript("OnClick", private.ExpanderOnClick)
-	expanderBtn:SetScript("OnEnter", private.ChildBtnOnEnter)
-	expanderBtn:SetScript("OnLeave", private.ChildBtnOnLeave)
-	row._buttons.expander = expanderBtn
-
-	local minus = row:_GetTexture()
-	minus:SetPoint("LEFT", 4, 0)
-	row._icons.minus = minus
-
-	local minusBtn = row:_GetButton()
-	minusBtn:SetAllPoints(minus)
-	minusBtn:SetScript("OnClick", private.MinusBtnOnClick)
-	minusBtn:SetScript("OnEnter", private.ChildBtnOnEnter)
-	minusBtn:SetScript("OnLeave", private.ChildBtnOnLeave)
-	row._buttons.minus = minusBtn
-
-	local plus = row:_GetTexture()
-	plus:SetPoint("LEFT", minus, "RIGHT")
-	row._icons.plus = plus
-
-	local plusBtn = row:_GetButton()
-	plusBtn:SetAllPoints(plus)
-	plusBtn:SetScript("OnClick", private.PlusBtnOnClick)
-	plusBtn:SetScript("OnEnter", private.ChildBtnOnEnter)
-	plusBtn:SetScript("OnLeave", private.ChildBtnOnLeave)
-	row._buttons.plus = plusBtn
-
-	local numText = row:_GetFontString()
-	numText:SetPoint("LEFT", plus, "RIGHT", 4, 0)
-	numText:SetWidth(24)
-	numText:SetHeight(14)
-	numText:SetFont(TSM.UI.Fonts.RobotoRegular, 12)
-	numText:SetJustifyH("RIGHT")
-	numText:SetJustifyV("MIDDLE")
-	row._texts.num = numText
-
-	local itemText = row:_GetFontString()
-	itemText:SetPoint("LEFT", numText, "RIGHT", 4, 0)
-	itemText:SetPoint("TOPRIGHT")
-	itemText:SetPoint("BOTTOMRIGHT")
-	itemText:SetFont(TSM.UI.Fonts.FRIZQT, 12)
-	itemText:SetJustifyH("LEFT")
-	itemText:SetJustifyV("MIDDLE")
-	row._texts.item = itemText
-
-	return row
-end
-
-function CraftingQueueList._SetRowData(self, row, data)
-	if type(data) == "string" then
-		row._icons.expander:Show()
-		row._buttons.expander:Show()
-		row._icons.minus:Hide()
-		row._buttons.minus:Hide()
-		row._icons.plus:Hide()
-		row._buttons.plus:Hide()
-		row._texts.num:Hide()
-		TSM.UI.TexturePacks.SetTextureAndSize(row._icons.expander, self._collapsed[data] and "iconPack.18x18/Carot/Collapsed" or "iconPack.18x18/Carot/Expanded")
-		row._texts.item:SetPoint("LEFT", row._icons.expander, "RIGHT", 2, 0)
-
-		local currentProfession = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
-		local profession, players = strsplit(CATEGORY_SEP, data)
-		if strlower(profession) ~= strlower(currentProfession or "") then
-			profession = "|cfff21319"..profession.."|r"
-		end
-		if not private.PlayersContains(players, UnitName("player")) then
-			players = "|cfff21319("..players..")|r"
-		else
-			players = "("..players..")"
-		end
-		row._texts.item:SetText(profession.." "..players)
-	else
-		row._icons.expander:Hide()
-		row._buttons.expander:Hide()
-		row._icons.minus:Show()
-		row._buttons.minus:Show()
-		row._icons.plus:Show()
-		row._buttons.plus:Show()
-		row._texts.num:Show()
-		TSM.UI.TexturePacks.SetTextureAndSize(row._icons.plus, "iconPack.14x14/Add/Circle")
-		TSM.UI.TexturePacks.SetTextureAndSize(row._icons.minus, "iconPack.14x14/Subtract/Circle")
-		row._texts.item:SetPoint("LEFT", row._texts.num, "RIGHT", 4, 0)
-
-		local spellId = data:GetField("spellId")
-		local numCraftable = TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(spellId)
-		local numQueued = data:GetField("num")
-		local numTextColor = numCraftable >= numQueued and "|cff2cec0d" or numCraftable > 0 and "|cffff6600" or "|cfff21319"
-		row._texts.num:SetText(numTextColor..numQueued.."|r")
-		row._texts.num:Show()
-		local itemString = TSM.Crafting.GetItemString(spellId)
-		row._texts.item:SetText(itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?")
-	end
-
-	self.__super:_SetRowData(row, data)
+	private.sortSelf = nil
 end
 
 function CraftingQueueList._SetCollapsed(self, data, collapsed)
 	self._collapsed[data] = collapsed or nil
 end
 
-
-
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
-
-function private.RowOnClick(frame, mouseButton)
-	local self = private.rowFrameLookup[frame]
-	local data = self:GetData()
-	if type(data) ~= "string" and self._scrollingList._onRowClickHandler then
-		self._scrollingList:_onRowClickHandler(data, mouseButton)
-	end
-end
-
-function private.RowOnEnter(frame)
-	local self = private.rowFrameLookup[frame]
-	local data = self:GetData()
-	if type(data) == "table" then
-		self:SetHighlightState("hover")
-		local spellId = data:GetField("spellId")
-		local numQueued = data:GetField("num")
-		local itemString = TSM.Crafting.GetItemString(spellId)
-		local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
-		local tooltipLines = TempTable.Acquire()
-		tinsert(tooltipLines, name)
-		for _, matItemString, quantity in TSM.Crafting.MatIterator(spellId) do
-			local numHave = TSMAPI_FOUR.Inventory.GetBagQuantity(matItemString)
-			if not TSM.IsWowClassic() then
-				numHave = numHave + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(matItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(matItemString)
+function CraftingQueueList._HandleRowClick(self, data, mouseButton)
+	if type(data) == "string" then
+		self:_SetCollapsed(data, not self._collapsed[data])
+		self:UpdateData(true)
+	else
+		local currentRow
+		for _, row in ipairs(self._rows) do
+			if row:GetData() == data then
+				currentRow = row
+				break
 			end
-			local numNeed = quantity * numQueued
-			local color = numHave >= numNeed and "|cff2cec0d" or "|cfff21319"
-			tinsert(tooltipLines, format("%s%d/%d|r - %s", color, numHave, numNeed, ItemInfo.GetName(matItemString) or "?"))
 		end
-		TSM.UI.ShowTooltip(frame, strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)))
+		if currentRow._texts.qty:IsMouseOver(0, 0, 0, 12) then
+			private.OnEditIconClick(self, data, 1)
+		else
+			self.__super:_HandleRowClick(data, mouseButton)
+		end
 	end
-end
-
-function private.RowOnLeave(frame)
-	local self = private.rowFrameLookup[frame]
-	TSM.UI.HideTooltip()
-	self:SetHighlightState()
-end
-
-function private.ExpanderOnClick(button)
-	local row = private.rowFrameLookup[button:GetParent()]
-	local scrollingList = row._scrollingList
-	scrollingList:_SetCollapsed(row:GetData(), not scrollingList._collapsed[row:GetData()])
-	scrollingList:_UpdateData()
-	scrollingList:Draw()
-end
-
-function private.ChildBtnOnEnter(button)
-	local row = button:GetParent()
-	row:GetScript("OnEnter")(row)
-end
-
-function private.ChildBtnOnLeave(button)
-	local row = button:GetParent()
-	row:GetScript("OnLeave")(row)
-end
-
-function private.MinusBtnOnClick(button)
-	local row = private.rowFrameLookup[button:GetParent()]
-	TSM.Crafting.Queue.Remove(row:GetData():GetField("spellId"), 1)
-end
-
-function private.PlusBtnOnClick(button)
-	local row = private.rowFrameLookup[button:GetParent()]
-	TSM.Crafting.Queue.Add(row:GetData():GetField("spellId"), 1)
 end
 
 
@@ -319,6 +210,198 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.RowOnMouseDown(row, mouseButton)
+	local data = row:GetData()
+	if type(data) == "string" then
+		return
+	end
+	local self = row._scrollingTable
+	if self._onRowMouseDownHandler then
+		self:_onRowMouseDownHandler(data, mouseButton)
+	end
+end
+
+function private.RowOnDoubleClick(row, mouseButton)
+	local self = row._scrollingTable
+	self:_HandleRowClick(row:GetData(), mouseButton)
+end
+
+function private.GetExpanderState(self, data)
+	if type(data) == "string" then
+		return true, not self._collapsed[data], 0
+	else
+		return false, false, 0
+	end
+end
+
+function private.GetItemIcon(self, data)
+	if type(data) == "string" then
+		return
+	end
+	local spellId = data:GetField("spellId")
+	local itemString = TSM.Crafting.GetItemString(spellId)
+	local texture, tooltip = nil, nil
+	if itemString then
+		texture = ItemInfo.GetTexture(itemString)
+		tooltip = itemString
+	else
+		texture = select(3, TSM.Crafting.ProfessionUtil.GetResultInfo(spellId))
+		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
+			tooltip = "craft:"..(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(spellId) or spellId)
+		else
+			tooltip = "enchant:"..spellId
+		end
+		return
+	end
+	return texture, tooltip
+end
+
+function private.OnItemIconClick(self, data, mouseButton)
+	self:_HandleRowClick(data, mouseButton)
+end
+
+function private.GetItemText(self, data)
+	if type(data) == "string" then
+		local profession, players = strsplit(CATEGORY_SEP, data)
+		local isValid = private.PlayersContains(players, UnitName("player")) and strlower(profession) == strlower(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName() or "")
+		local text = Theme.GetColor("INDICATOR"):ColorText(profession.." ("..players..")")
+		if isValid then
+			return text
+		else
+			return text.."  "..TSM.UI.TexturePacks.GetTextureLink("iconPack.12x12/Attention")
+		end
+	else
+		local spellId = data:GetField("spellId")
+		local itemString = TSM.Crafting.GetItemString(spellId)
+		return itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
+	end
+end
+
+function private.GetItemTooltip(self, data)
+	if type(data) == "string" then
+		local profession, players = strsplit(CATEGORY_SEP, data)
+		if not private.PlayersContains(players, UnitName("player")) then
+			return L["You are not on one of the listed characters."]
+		elseif strlower(profession) ~= strlower(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName() or "") then
+			return L["This profession is not open."]
+		end
+		return
+	end
+
+	local spellId = data:GetField("spellId")
+	local numQueued = data:GetField("num")
+	local itemString = TSM.Crafting.GetItemString(spellId)
+	local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
+	local tooltipLines = TempTable.Acquire()
+	tinsert(tooltipLines, name.." (x"..numQueued..")")
+	local numResult = TSM.Crafting.GetNumResult(spellId)
+	local profit = TSM.Crafting.Cost.GetProfitBySpellId(spellId)
+	local profitStr = profit and Money.ToString(profit * numResult, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
+	local totalProfitStr = profit and Money.ToString(profit * numResult * numQueued, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
+	tinsert(tooltipLines, L["Profit (Total)"]..": "..profitStr.." ("..totalProfitStr..")")
+	for _, matItemString, quantity in TSM.Crafting.MatIterator(spellId) do
+		local numHave = Inventory.GetBagQuantity(matItemString)
+		if not TSM.IsWowClassic() then
+			numHave = numHave + Inventory.GetReagentBankQuantity(matItemString) + Inventory.GetBankQuantity(matItemString)
+		end
+		local numNeed = quantity * numQueued
+		local color = Theme.GetFeedbackColor(numHave >= numNeed and "GREEN" or "RED")
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
+	end
+	if TSM.Crafting.ProfessionUtil.GetRemainingCooldown(spellId) then
+		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["On Cooldown"]))
+	end
+	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)), true, true
+end
+
+function private.GetDeleteIcon(self, data, iconIndex)
+	assert(iconIndex == 1)
+	if type(data) == "string" then
+		return false
+	end
+	return true, "iconPack.12x12/Close/Default", true
+end
+
+function private.OnDeleteIconClick(self, data, iconIndex)
+	assert(iconIndex == 1 and type(data) ~= "string")
+	TSM.Crafting.Queue.SetNum(data:GetField("spellId"), 0)
+end
+
+function private.GetEditIcon(self, data, iconIndex)
+	assert(iconIndex == 1)
+	if type(data) == "string" then
+		return false
+	end
+	return true, "iconPack.12x12/Edit", true
+end
+
+function private.OnEditIconClick(self, data, iconIndex)
+	assert(iconIndex == 1 and type(data) ~= "string")
+	local currentRow = nil
+	for _, row in ipairs(self._rows) do
+		if row:GetData() == data then
+			currentRow = row
+			break
+		end
+	end
+	local name = private.GetItemText(self, data)
+	local texture, tooltip = private.GetItemIcon(self, data)
+	local dialogFrame = UIElements.New("Frame", "qty")
+		:SetLayout("HORIZONTAL")
+		:AddAnchor("LEFT", currentRow._frame, Theme.GetColSpacing() / 2, 0)
+		:AddAnchor("RIGHT", currentRow._frame, -Theme.GetColSpacing(), 0)
+		:SetHeight(20)
+		:SetContext(self)
+		:SetBackgroundColor("PRIMARY_BG")
+		:SetScript("OnHide", private.DialogOnHide)
+		:AddChild(UIElements.New("Button", "icon")
+			:SetSize(12, 12)
+			:SetMargin(16, 4, 0, 0)
+			:SetBackground(texture)
+			:SetTooltip(tooltip)
+		)
+		:AddChild(UIElements.New("Text", "name")
+			:SetWidth("AUTO")
+			:SetFont("ITEM_BODY3")
+			:SetText(name)
+		)
+		:AddChild(UIElements.New("Spacer", "spacer"))
+		:AddChild(UIElements.New("Input", "input")
+			:SetWidth(75)
+			:SetBackgroundColor("ACTIVE_BG")
+			:SetJustifyH("CENTER")
+			:SetContext(currentRow:GetData():GetField("spellId"))
+			:SetSubAddEnabled(true)
+			:SetValidateFunc("NUMBER", "1:9999")
+			:SetValue(currentRow:GetData():GetField("num"))
+			:SetScript("OnFocusLost", private.QtyInputOnFocusLost)
+		)
+	local baseFrame = self:GetBaseElement()
+	baseFrame:ShowDialogFrame(dialogFrame)
+	dialogFrame:GetElement("input"):SetFocused(true)
+end
+
+function private.DialogOnHide(frame)
+	local input = frame:GetElement("input")
+	TSM.Crafting.Queue.SetNum(input:GetContext(), tonumber(input:GetValue()))
+	frame:GetContext():Draw()
+end
+
+function private.QtyInputOnFocusLost(input)
+	input:GetBaseElement():HideDialog()
+end
+
+function private.GetQty(self, data)
+	if type(data) == "string" then
+		return ""
+	end
+	local numQueued = data:GetFields("num")
+	local numCraftable = min(self._numCraftableCache[data], numQueued)
+	local onCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(data:GetField("spellId"))
+	local color = Theme.GetFeedbackColor(((numCraftable == 0 or onCooldown) and "RED") or (numCraftable < numQueued and "YELLOW") or "GREEN")
+	return color:ColorText(format("%s / %s", numCraftable, numQueued))
+end
 
 function private.PlayersContains(players, player)
 	players = strlower(players)
@@ -379,8 +462,8 @@ function private.DataSortComparator(a, b)
 	-- sort spells within a category
 	local aSpellId = a:GetField("spellId")
 	local bSpellId = b:GetField("spellId")
-	local aNumCraftable = a:GetField("numCraftable")
-	local bNumCraftable = b:GetField("numCraftable")
+	local aNumCraftable = private.sortSelf._numCraftableCache[a]
+	local bNumCraftable = private.sortSelf._numCraftableCache[b]
 	local aNumQueued = a:GetField("num")
 	local bNumQueued = b:GetField("num")
 	local aCanCraftAll = aNumCraftable >= aNumQueued
@@ -390,13 +473,26 @@ function private.DataSortComparator(a, b)
 	elseif not aCanCraftAll and bCanCraftAll then
 		return false
 	end
-	if aNumCraftable ~= bNumCraftable then
-		return aNumCraftable > bNumCraftable
+	local aCanCraftSome = aNumCraftable > 0
+	local bCanCraftSome = bNumCraftable > 0
+	if aCanCraftSome and not bCanCraftSome then
+		return true
+	elseif not aCanCraftSome and bCanCraftSome then
+		return false
+	end
+	local aProfit = private.sortProfitCache[aSpellId]
+	local bProfit = private.sortProfitCache[bSpellId]
+	if aProfit and not bProfit then
+		return true
+	elseif not aProfit and bProfit then
+		return false
+	end
+	if aProfit ~= bProfit then
+		return aProfit > bProfit
 	end
 	return aSpellId < bSpellId
 end
 
-function private.QueryUpdateCallback(query)
-	local self = private.queryCraftingQueueListLookup[query]
-	self:Draw()
+function private.QueryUpdateCallback(_, _, self)
+	self:UpdateData(true)
 end

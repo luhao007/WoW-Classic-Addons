@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -12,8 +10,12 @@ local L = TSM.Include("Locale").GetTable()
 local Money = TSM.Include("Util.Money")
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
+local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	filterText = "",
 	query = nil,
 }
@@ -25,7 +27,9 @@ local private = {
 -- ============================================================================
 
 function Sell.OnInitialize()
-	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Sell"], "iconPack.24x24/Auctions", private.GetFrame)
+	private.settings = Settings.NewView()
+		:AddKey("global", "vendoringUIContext", "sellScrollingTable")
+	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Sell"], private.GetFrame)
 end
 
 
@@ -43,87 +47,68 @@ function private.GetFrame()
 		private.query = TSM.Vendoring.Sell.CreateBagsQuery()
 	end
 
-	return TSMAPI_FOUR.UI.NewElement("Frame", "sell")
+	return UIElements.New("Frame", "sell")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
+		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#272727")
-			:SetStyle("padding.top", 33)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "ignoreText")
-				:SetStyle("height", 34)
-				:SetStyle("margin.left", 8)
-				:SetStyle("margin.right", 8)
-				:SetStyle("margin.bottom", 8)
-				:SetStyle("fontSpacing", 4)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["|cffffd839Left-Click|r to ignore an item for this session. Hold |cffffd839Shift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."])
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "ignoreText")
+				:SetHeight(36)
+				:SetMargin(0, 0, 0, 8)
+				:SetFont("BODY_BODY3")
+				:SetText(format(L["%sLeft-Click|r to ignore an item for this session. Hold %sShift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."], Theme.GetColor("INDICATOR"):GetTextColorPrefix(), Theme.GetColor("INDICATOR"):GetTextColorPrefix()))
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "filters")
+			:AddChild(UIElements.New("Frame", "filters")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 32)
-				:SetStyle("padding.bottom", 12)
-				:SetStyle("padding.left", 8)
-				:SetStyle("padding.right", 8)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "searchInput")
-					:SetStyle("margin.right", 8)
+				:SetHeight(24)
+				:AddChild(UIElements.New("Input", "searchInput")
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:AllowItemInsert()
 					:SetHintText(L["Search Bags"])
-					:SetScript("OnTextChanged", private.SearchInputOnTextChanged)
+					:SetScript("OnValueChanged", private.InputOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "filterBtn")
-					:SetStyle("autoWidth", true)
-					:SetStyle("margin.right", 4)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 12)
+				:AddChild(UIElements.New("Button", "filterBtn")
+					:SetWidth("AUTO")
+					:SetMargin(8, 8, 0, 0)
+					:SetFont("BODY_BODY3_MEDIUM")
 					:SetText(FILTERS)
 					-- TODO
 					-- :SetScript("OnClick", private.FilterButtonOnClick)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "filterBtnIcon")
-					:SetStyle("width", 14)
-					:SetStyle("height", 14)
-					:SetStyle("backgroundTexturePack", "iconPack.14x14/Filter")
+				:AddChild(UIElements.New("Button", "filterBtnIcon")
+					:SetBackgroundAndSize("iconPack.14x14/Filter")
 					-- TODO
 					-- :SetScript("OnClick", private.FilterButtonOnClick)
 				)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture")
-			:SetStyle("height", 2)
-			:SetStyle("color", "#585858")
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "items")
-			:SetStyle("rowHeight", 20)
-			:SetStyle("headerBackground", "#404040")
-			:SetStyle("headerFont", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("headerFontHeight", 14)
+		:AddChild(UIElements.New("QueryScrollingTable", "items")
+			:SetSettingsContext(private.settings, "sellScrollingTable")
 			:GetScrollingTableInfo()
 				:NewColumn("item")
-					:SetTitles(L["Item"])
+					:SetTitle(L["Item"])
 					:SetIconSize(12)
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("itemString", private.GetItemText)
 					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:SetTooltipLinkingDisabled(true)
+					:DisableHiding()
 					:Commit()
 				:NewColumn("vendorSell")
-					:SetTitles(L["Vendor Sell"])
-					:SetWidth(100)
-					:SetFont(TSM.UI.Fonts.RobotoMedium)
-					:SetFontHeight(12)
+					:SetTitle(L["Vendor Sell"])
+					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
 					:SetTextInfo("vendorSell", private.GetVendorSellText)
 					:SetSortInfo("vendorSell")
 					:Commit()
 				:NewColumn("potential")
-					:SetTitles(L["Potential"])
-					:SetWidth(100)
-					:SetFont(TSM.UI.Fonts.RobotoMedium)
-					:SetFontHeight(12)
+					:SetTitle(L["Potential"])
+					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
 					:SetTextInfo("potentialValue", Money.ToString)
 					:SetSortInfo("potentialValue")
@@ -133,29 +118,32 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 8)
-			:SetStyle("margin.bottom", -2)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "sellTrashBtn")
-				:SetStyle("width", 127)
-				:SetStyle("margin.right", 8)
-				:SetText(L["SELL TRASH"])
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("ActionButton", "sellTrashBtn")
+				:SetWidth(128)
+				:SetMargin(0, 8, 0, 0)
+				:SetText(L["Sell Trash"])
 				:SetScript("OnClick", private.SellTrashBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "sellBOEBtn")
-				:SetStyle("width", 127)
-				:SetStyle("margin.right", 8)
-				:SetText(L["SELL BOES"])
+			:AddChild(UIElements.New("ActionButton", "sellBOEBtn")
+				:SetWidth(128)
+				:SetMargin(0, 8, 0, 0)
+				:SetText(L["Sell BoEs"])
 				:SetScript("OnClick", private.SellBOEBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "sellAllBtn")
-				:SetText(L["SELL ALL"])
+			:AddChild(UIElements.New("ActionButton", "sellAllBtn")
+				:SetText(L["Sell All"])
 				:SetScript("OnClick", private.SellAllBtnOnClick)
 			)
 		)
-		:SetScript("OnUpdate", private.FrameOnUpdate)
 end
 
 function private.GetItemText(itemString)
@@ -172,18 +160,12 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.FrameOnUpdate(frame)
-	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(32)
-end
-
-function private.SearchInputOnTextChanged(input)
-	local text = strtrim(input:GetText())
+function private.InputOnValueChanged(input)
+	local text = input:GetValue()
 	if text == private.filterText then
 		return
 	end
 	private.filterText = text
-	input:SetText(private.filterText)
 
 	TSM.Vendoring.Sell.ResetBagsQuery(private.query)
 	if text ~= "" then
@@ -206,7 +188,7 @@ end
 function private.SellTrashBtnOnClick(button)
 	for _, row in private.query:Iterator() do
 		local itemString, quality = row:GetFields("itemString", "quality")
-		if quality == LE_ITEM_QUALITY_POOR then
+		if quality == (TSM.IsShadowlands() and Enum.ItemQuality.Poor or LE_ITEM_QUALITY_POOR) then
 			TSM.Vendoring.Sell.SellItem(itemString)
 		end
 	end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Threading Functions
@@ -172,7 +170,7 @@ end
 --- Acquire a temp table.
 -- This must be called from a thread context. Any time a thread needs to maintain a temp table across a potential yield,
 -- it should use this API. This API will release the temp tables in the case that the thread gets killed.
--- @see Util.AcquireTempTable
+-- @see TempTable.Acquire
 -- @tparam vararg ... Values to insert into the temp table
 function Threading.AcquireSafeTempTable(...)
 	return private.runningThread:_AcquireSafeTempTable(...)
@@ -181,7 +179,7 @@ end
 --- Release a temp table.
 -- This must be called from a thread context. This is used to release temp tables acquired with
 -- @{Threading.AcquireSafeTempTable}.
--- @see Util.ReleaseTempTable
+-- @see TempTable.Release
 -- @tparam table tbl The temp table to release
 function Threading.ReleaseSafeTempTable(tbl)
 	return private.runningThread:_ReleaseSafeTempTable(tbl)
@@ -190,11 +188,25 @@ end
 --- Release a temp table and returns its contents.
 -- This must be called from a thread context. This is used to release and unpack temp tables acquired with
 -- @{Threading.AcquireSafeTempTable}.
--- @see Util.UnpackAndReleaseTempTable
+-- @see TempTable.UnpackAndRelease
 -- @tparam table tbl The temp table to release and unpack
 -- @return The contents of the temp table
 function Threading.UnpackAndReleaseSafeTempTable(tbl)
 	return private.runningThread:_UnpackAndReleaseSafeTempTable(tbl)
+end
+
+--- Assign ownership of a database query to the thread so that if the thread is killed it'll get released safely.
+-- This must be called from a thread context.
+-- @tparam DatabaseQuery query The query object
+function Threading.GuardDatabaseQuery(query)
+	return private.runningThread:_GuardDatabaseQuery(query)
+end
+
+--- Removes ownership of a database query from the thread.
+-- This must be called from a thread context.
+-- @tparam DatabaseQuery query The query object
+function Threading.UnguardDatabaseQuery(query)
+	return private.runningThread:_UnguardDatabaseQuery(query)
 end
 
 function Threading.GetDebugStr()
@@ -245,6 +257,7 @@ function Thread.__init(self, name, func)
 	self._callback = nil
 	self._returnValue = nil
 	self._safeTempTables = {}
+	self._guardedQueries = {}
 
 	-- debug fields
 	self._startTime = 0
@@ -272,6 +285,7 @@ function Thread._Start(self, ...)
 	self._syncMessageDest = nil
 	assert(not next(self._messages))
 	assert(not next(self._safeTempTables))
+	assert(not next(self._guardedQueries))
 	self._startTime = 0
 	self._cpuTimeUsed = 0
 	self._realTimeUsed = 0
@@ -309,6 +323,10 @@ function Thread._Cleanup(self)
 		TempTable.Release(tbl)
 	end
 	wipe(self._safeTempTables)
+	for query in pairs(self._guardedQueries) do
+		query:Release(true)
+	end
+	wipe(self._guardedQueries)
 	self._waitFunction = nil
 	if self._waitFunctionArgs then
 		TempTable.Release(self._waitFunctionArgs)
@@ -425,7 +443,9 @@ end
 
 function Thread._Run(self, quantum)
 	assert(not Threading.IsThreadContext())
-	if not self:_CanRun() then return 0 end
+	if not self:_CanRun() then
+		return 0
+	end
 	private.runningThread = self
 	self._state = "RUNNING"
 	local startTime = debugprofilestop()
@@ -456,12 +476,12 @@ function Thread._Run(self, quantum)
 	end
 	if self._state == "DEAD" then
 		self:_Cleanup()
-		if self._callback and self._returnValue then
-			self._callback(TempTable.UnpackAndRelease(self._returnValue))
-			self._returnValue = nil
-		elseif self._returnValue then
-			TempTable.Release(self._returnValue)
-			self._returnValue = nil
+		local returnValue = self._returnValue
+		self._returnValue = nil
+		if self._callback and returnValue then
+			self._callback(TempTable.UnpackAndRelease(returnValue))
+		elseif returnValue then
+			TempTable.Release(returnValue)
 		end
 	end
 	return elapsedTime
@@ -535,9 +555,11 @@ function Thread._OnFutureDone(self, future)
 	if future ~= self._waitFuture then
 		return
 	end
-	self._waitFutureResult = self._waitFuture:GetValue()
 	self._waitFutureDone = true
 	self._waitFuture = nil
+	self._waitFutureResult = future:GetValue()
+	self:_UpdateState(0)
+	self:_Run(0)
 end
 
 function Thread._HandleSyncMessage(self, ...)
@@ -684,6 +706,16 @@ function Thread._UnpackAndReleaseSafeTempTable(self, tbl)
 	assert(self._safeTempTables[tbl])
 	self._safeTempTables[tbl] = nil
 	return TempTable.UnpackAndRelease(tbl)
+end
+
+function Thread._GuardDatabaseQuery(self, query)
+	assert(not self._guardedQueries[query])
+	self._guardedQueries[query] = true
+end
+
+function Thread._UnguardDatabaseQuery(self, query)
+	assert(self._guardedQueries[query])
+	self._guardedQueries[query] = nil
 end
 
 function Thread._Exit(self)

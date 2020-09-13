@@ -1,19 +1,21 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Button UI Element Class.
--- A button is a clickable element which has text drawn over top of it. It is a subclass of the @{Element} class.
+-- A button is a clickable element which has text drawn over top of it. It is a subclass of the @{Text} class.
 -- @classmod Button
 
 local _, TSM = ...
-local Button = TSM.Include("LibTSMClass").DefineClass("Button", TSM.UI.Element)
+local Button = TSM.Include("LibTSMClass").DefineClass("Button", TSM.UI.Text)
+local Theme = TSM.Include("Util.Theme")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Button)
 TSM.UI.Button = Button
-local ICON_PADDING = 2
+local ICON_SPACING = 4
 
 
 
@@ -22,7 +24,7 @@ local ICON_PADDING = 2
 -- ============================================================================
 
 function Button.__init(self)
-	local frame = CreateFrame("Button")
+	local frame = UIElements.CreateFrame(self, "Button")
 
 	self.__super:__init(frame)
 
@@ -32,40 +34,82 @@ function Button.__init(self)
 	frame.highlight = frame:CreateTexture(nil, "HIGHLIGHT")
 	frame.highlight:SetAllPoints()
 	frame.highlight:SetBlendMode("BLEND")
-
-	-- create the text
-	frame.text = frame:CreateFontString()
+	frame:SetHighlightTexture(frame.highlight)
 
 	-- create the icon
 	frame.icon = frame:CreateTexture(nil, "ARTWORK")
-	frame.icon:SetPoint("RIGHT", frame.text, "LEFT", -ICON_PADDING, 0)
 
-	self._textStr = ""
+	self._font = "BODY_BODY1"
+	self._justifyH = "CENTER"
+	self._background = nil
+	self._iconTexturePack = nil
+	self._iconPosition = nil
+	self._highlightEnabled = false
 end
 
 function Button.Acquire(self)
-	self._textStr = ""
 	self:_GetBaseFrame():Enable()
 	self:_GetBaseFrame():RegisterForClicks("LeftButtonUp")
 	self:_GetBaseFrame():SetHitRectInsets(0, 0, 0, 0)
 	self.__super:Acquire()
 end
 
---- Set the text shown within the button.
+function Button.Release(self)
+	local frame = self:_GetBaseFrame()
+	frame:UnlockHighlight()
+	self._background = nil
+	self._iconTexturePack = nil
+	self._iconPosition = nil
+	self._highlightEnabled = false
+	self.__super:Release()
+	self._font = "BODY_BODY1"
+	self._justifyH = "CENTER"
+end
+
+--- Sets the background of the button.
 -- @tparam Button self The button object
--- @tparam string text The text to be drawn within the button
+-- @tparam ?string|number|nil background Either a texture pack string, itemString, WoW file id, theme color key, or nil
 -- @treturn Button The button object
-function Button.SetText(self, text)
-	self._textStr = text
+function Button.SetBackground(self, background)
+	assert(background == nil or type(background) == "string" or type(background) == "number")
+	self._background = background
 	return self
 end
 
---- Set the formatted text to be shown within the button.
+--- Sets the background and size of the button based on a texture pack string.
 -- @tparam Button self The button object
--- @tparam vararg ... The format string and arguments
+-- @tparam string texturePack A texture pack string to set the background to and base the size on
 -- @treturn Button The button object
-function Button.SetFormattedText(self, ...)
-	self._textStr = format(...)
+function Button.SetBackgroundAndSize(self, texturePack)
+	self:SetBackground(texturePack)
+	self:SetSize(TSM.UI.TexturePacks.GetSize(texturePack))
+	return self
+end
+
+--- Sets whether or not the highlight is enabled.
+-- @tparam Button self The button object
+-- @tparam boolean enabled Whether or not the highlight is enabled
+-- @treturn Button The button object
+function Button.SetHighlightEnabled(self, enabled)
+	self._highlightEnabled = enabled
+	return self
+end
+
+--- Sets the icon that shows within the button.
+-- @tparam Button self The button object
+-- @tparam[opt=nil] string texturePack A texture pack string to set the icon and its size to
+-- @tparam[opt=nil] string position The positin of the icon
+-- @treturn Button The button object
+function Button.SetIcon(self, texturePack, position)
+	if texturePack or position then
+		assert(TSM.UI.TexturePacks.IsValid(texturePack))
+		assert(position == "LEFT" or position == "LEFT_NO_TEXT" or position == "CENTER" or position == "RIGHT")
+		self._iconTexturePack = texturePack
+		self._iconPosition = position
+	else
+		self._iconTexturePack = nil
+		self._iconPosition = nil
+	end
 	return self
 end
 
@@ -89,35 +133,6 @@ end
 function Button.RegisterForDrag(self, button)
 	self:_GetBaseFrame():RegisterForDrag(button)
 	return self
-end
-
---- Get the button's text.
--- @tparam Button self The button object
--- @treturn string The current text of the button
-function Button.GetText(self)
-	return self._textStr
-end
-
---- Show the button's text.
--- @tparam Button self The button object
-function Button.ShowText(self)
-	self:_GetBaseFrame().text:Show()
-end
-
---- Hide the button's text.
--- @tparam Button self The button object
-function Button.HideText(self)
-	self:_GetBaseFrame().text:Hide()
-end
-
---- Get the width of the button's text string.
--- @tparam Button self The button object
--- @treturn number The width of the text string
-function Button.GetStringWidth(self)
-	local text = self:_GetBaseFrame().text
-	self:_ApplyTextStyle(text)
-	text:SetText(self._textStr)
-	return text:GetStringWidth()
 end
 
 --- Click on the button.
@@ -146,50 +161,112 @@ function Button.SetHitRectInsets(self, left, right, top, bottom)
 	return self
 end
 
-function Button.Draw(self)
-	self.__super:Draw()
-	self:_ApplyFrameBackgroundTexture()
-	local frame = self:_GetBaseFrame()
-	self:_ApplyTextStyle(frame.text)
-
-	-- set the text color
-	local textColor = self:_GetStyle(frame:IsEnabled() and "textColor" or "disabledTextColor")
-	frame.text:SetTextColor(TSM.UI.HexToRGBA(textColor))
-
-	-- set the text
-	frame.text:SetText(self._textStr)
-
-	-- set the highlight texture
-	local highlight = self:_GetStyle("highlight")
-	if highlight then
-		frame.highlight:SetColorTexture(TSM.UI.HexToRGBA(highlight))
-		frame:SetHighlightTexture(frame.highlight)
+--- Set whether or not to lock the button's highlight.
+-- @tparam Button self The action button object
+-- @tparam boolean locked Whether or not to lock the action button's highlight
+-- @treturn Button The action button object
+function Button.SetHighlightLocked(self, locked)
+	if locked then
+		self:_GetBaseFrame():LockHighlight()
 	else
-		frame:SetHighlightTexture(nil)
+		self:_GetBaseFrame():UnlockHighlight()
+	end
+	return self
+end
+
+function Button.Draw(self)
+	local frame = self:_GetBaseFrame()
+	frame.text:Show()
+	self.__super:Draw()
+
+	frame.backgroundTexture:SetTexture(nil)
+	frame.backgroundTexture:SetTexCoord(0, 1, 0, 1)
+	frame.backgroundTexture:SetVertexColor(1, 1, 1, 1)
+
+	if self._background == nil then
+		frame.backgroundTexture:Hide()
+	elseif type(self._background) == "string" and TSM.UI.TexturePacks.IsValid(self._background) then
+		-- this is a texture pack
+		frame.backgroundTexture:Show()
+		frame.backgroundTexture:ClearAllPoints()
+		frame.backgroundTexture:SetPoint("CENTER")
+		TSM.UI.TexturePacks.SetTextureAndSize(frame.backgroundTexture, self._background)
+	elseif type(self._background) == "string" and strmatch(self._background, "^[ip]:%d+") then
+		-- this is an itemString
+		frame.backgroundTexture:Show()
+		frame.backgroundTexture:ClearAllPoints()
+		frame.backgroundTexture:SetAllPoints()
+		frame.backgroundTexture:SetTexture(ItemInfo.GetTexture(self._background))
+	elseif type(self._background) == "string" then
+		-- this is a theme color key
+		frame.backgroundTexture:Show()
+		frame.backgroundTexture:ClearAllPoints()
+		frame.backgroundTexture:SetAllPoints()
+		frame.backgroundTexture:SetColorTexture(Theme.GetColor(self._background):GetFractionalRGBA())
+	elseif type(self._background) == "number" then
+		-- this is a wow file id
+		frame.backgroundTexture:Show()
+		frame.backgroundTexture:ClearAllPoints()
+		frame.backgroundTexture:SetAllPoints()
+		frame.backgroundTexture:SetTexture(self._background)
+	else
+		error("Invalid background: "..tostring(self._background))
 	end
 
-	local iconTexturePack = self:_GetStyle("iconTexturePack")
-	if iconTexturePack then
-		local iconSize = self:_GetStyle("iconSize")
-		if iconSize then
-			frame.icon:SetWidth(iconSize)
-			frame.icon:SetHeight(iconSize)
-			TSM.UI.TexturePacks.SetTexture(frame.icon, iconTexturePack)
-		else
-			TSM.UI.TexturePacks.SetTextureAndSize(frame.icon, iconTexturePack)
-		end
+	-- set the text color
+	local textColor = frame:IsEnabled() and self:_GetTextColor() or Theme.GetColor("ACTIVE_BG_ALT")
+	frame.text:SetTextColor(textColor:GetFractionalRGBA())
+
+	-- set the highlight texture
+	if self._highlightEnabled then
+		frame.highlight:SetColorTexture(Theme.GetColor(self._background):GetTint("+HOVER"):GetFractionalRGBA())
+	else
+		frame.highlight:SetColorTexture(0, 0, 0, 0)
+	end
+
+	if self._iconTexturePack then
+		TSM.UI.TexturePacks.SetTextureAndSize(frame.icon, self._iconTexturePack)
 		frame.icon:Show()
-		frame.icon:SetVertexColor(TSM.UI.HexToRGBA(textColor))
-		local xOffset = ((iconSize or TSM.UI.TexturePacks.GetWidth(iconTexturePack)) + ICON_PADDING) / 2
-		frame.text:ClearAllPoints()
-		frame.text:SetPoint("TOP", xOffset, 0)
-		frame.text:SetPoint("BOTTOM", xOffset, 0)
-		frame.text:SetWidth(frame.text:GetStringWidth())
+		frame.icon:ClearAllPoints()
+		frame.icon:SetVertexColor(textColor:GetFractionalRGBA())
+		local iconWidth = TSM.UI.TexturePacks.GetWidth(self._iconTexturePack) + ICON_SPACING
+		if self._iconPosition == "LEFT" then
+			frame.icon:SetPoint("RIGHT", frame.text, "LEFT", -ICON_SPACING, 0)
+			frame.text:ClearAllPoints()
+			if self._justifyH == "CENTER" then
+				local xOffset = iconWidth / 2
+				frame.text:SetPoint("TOP", xOffset, -self:_GetPadding("TOP"))
+				frame.text:SetPoint("BOTTOM", xOffset, self:_GetPadding("BOTTOM"))
+				frame.text:SetWidth(frame.text:GetStringWidth())
+			elseif self._justifyH == "LEFT" then
+				frame.text:SetPoint("TOPLEFT", iconWidth + self:_GetPadding("LEFT"), -self:_GetPadding("TOP"))
+				frame.text:SetPoint("BOTTOMRIGHT", -self:_GetPadding("RIGHT"), self:_GetPadding("BOTTOM"))
+			else
+				error("Unsupported justifyH: "..tostring(self._justifyH))
+			end
+		elseif self._iconPosition == "LEFT_NO_TEXT" then
+			frame.icon:SetPoint("LEFT", self:_GetPadding("LEFT"), 0)
+			frame.text:ClearAllPoints()
+			frame.text:Hide()
+		elseif self._iconPosition == "CENTER" then
+			frame.icon:SetPoint("CENTER")
+			frame.text:ClearAllPoints()
+			frame.text:Hide()
+		elseif self._iconPosition == "RIGHT" then
+			frame.icon:SetPoint("RIGHT", -self:_GetPadding("RIGHT"), 0)
+			local xOffset = iconWidth
+			frame.text:ClearAllPoints()
+			-- TODO: support non-left-aligned text
+			frame.text:SetPoint("TOPLEFT", self:_GetPadding("LEFT"), -self:_GetPadding("TOP"))
+			frame.text:SetPoint("BOTTOMRIGHT", -xOffset, self:_GetPadding("BOTTOM"))
+		else
+			error("Invalid iconPosition: "..tostring(self._iconPosition))
+		end
 	else
 		frame.icon:Hide()
 		frame.text:ClearAllPoints()
-		frame.text:SetPoint("TOPLEFT", self:_GetStyle("textIndent") or 0, 0)
-		frame.text:SetPoint("BOTTOMRIGHT")
+		frame.text:SetPoint("TOPLEFT", self:_GetPadding("LEFT"), -self:_GetPadding("TOP"))
+		frame.text:SetPoint("BOTTOMRIGHT", -self:_GetPadding("RIGHT"), self:_GetPadding("BOTTOM"))
 	end
 end
 
@@ -200,8 +277,8 @@ end
 -- ============================================================================
 
 function Button._GetMinimumDimension(self, dimension)
-	if dimension == "WIDTH" and self:_GetStyle("autoWidth") then
-		return self:GetStringWidth(), nil
+	if dimension == "WIDTH" and self._autoWidth then
+		return self:GetStringWidth() + (self._iconTexturePack and TSM.UI.TexturePacks.GetWidth(self._iconTexturePack) or 0)
 	else
 		return self.__super:_GetMinimumDimension(dimension)
 	end

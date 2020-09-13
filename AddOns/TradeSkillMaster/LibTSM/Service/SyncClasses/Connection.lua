@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -44,6 +42,7 @@ local HEARTBEAT_TIMEOUT = 10
 
 Connection:OnSettingsLoad(function()
 	Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
+	Event.Register("FRIENDLIST_UPDATE", private.PrepareFriendsInfo)
 	for _ in Settings.SyncAccountIterator() do
 		private.isActive = true
 	end
@@ -91,10 +90,11 @@ function Connection.Establish(targetCharacter)
 		Log.PrintUser(L["TSM is not yet ready to establish a new sync connection. Please try again later."])
 		return false
 	end
+	local wasFriend = C_FriendList.GetFriendInfo(targetCharacter) and true or false
 	if strlower(targetCharacter) == strlower(UnitName("player")) then
 		Log.PrintUser(L["Sync Setup Error: You entered the name of the current character and not the character on the other account."])
 		return false
-	elseif not private.IsOnline(targetCharacter) then
+	elseif not private.IsOnline(targetCharacter) and wasFriend then
 		Log.PrintUser(L["Sync Setup Error: The specified player on the other account is not currently online."])
 		return false
 	end
@@ -129,9 +129,9 @@ end
 
 function Connection.GetStatus(account)
 	if private.connectedCharacter[account] then
-		return "|cff00ff00"..format(L["Connected to %s"], private.connectedCharacter[account]).."|r"
+		return true, private.connectedCharacter[account]
 	else
-		return "|cffff0000"..L["Offline"].."|r"
+		return false
 	end
 end
 
@@ -214,9 +214,12 @@ end
 -- Management Loop / Sync Thread
 -- ============================================================================
 
+function private.RequestFriendsInfo()
+	C_FriendList.ShowFriends()
+end
+
 function private.PrepareFriendsInfo()
 	-- wait for friend info to populate
-	C_FriendList.ShowFriends()
 	local isValid
 	local num = C_FriendList.GetNumFriends()
 	if not num then
@@ -231,20 +234,21 @@ function private.PrepareFriendsInfo()
 		end
 	end
 	if isValid then
-		private.hasFriendsInfo = true
-		if private.isActive then
+		if not private.hasFriendsInfo and private.isActive then
 			-- start the management loop
 			Delay.AfterTime("SYNC_CONNECTION_MANAGEMENT", 1, private.ManagementLoop, 1)
 		end
+		private.hasFriendsInfo = true
 	else
 		-- try again
-		Delay.AfterTime(0.5, private.PrepareFriendsInfo)
+		Log.Err("Missing friends info - will try again")
+		Delay.AfterTime("SYNC_PREPARE_FRIENDS_INFO", 0.5, private.RequestFriendsInfo)
 	end
 end
 
 function private.ManagementLoop()
 	-- continuously spawn connection threads with online players as necessary
-	C_FriendList.ShowFriends()
+	private.RequestFriendsInfo()
 	local hasAccount = false
 	for _, account in Settings.SyncAccountIterator() do
 		hasAccount = true
@@ -262,6 +266,9 @@ function private.ManagementLoop()
 	if not hasAccount then
 		Log.Info("No more sync accounts.")
 		private.isActive = false
+		if not private.newCharacter then
+			Delay.Cancel("SYNC_CONNECTION_MANAGEMENT")
+		end
 	end
 end
 
@@ -290,7 +297,7 @@ function private.ConnectionThreadInner(account, targetCharacter)
 			if GetTime() > timeout then
 				-- timed out on the connection - don't try again for a bit
 				Log.Warn("Timed out")
-				private.suppressThreadTime[account] = time() + RECEIVE_TIMEOUT * 3
+				private.suppressThreadTime[account] = time() + RECEIVE_TIMEOUT
 				return
 			end
 			Threading.Yield(true)
@@ -350,6 +357,8 @@ end
 function private.SendNewAccountWhoAmI()
 	if not private.newCharacter then
 		Delay.Cancel("syncNewAccount")
+	elseif not C_FriendList.GetFriendInfo(private.newCharacter) then
+		Log.Info("Waiting for friends list to update")
 	elseif not private.IsOnline(private.newCharacter) then
 		Delay.Cancel("syncNewAccount")
 		private.newCharacter = nil
@@ -408,6 +417,7 @@ function private.IsOnline(target, noAdd)
 	if not info and not noAdd and not private.invalidCharacters[strlower(target)] and C_FriendList.GetNumFriends() ~= 50 then
 		-- add them as a friend
 		C_FriendList.AddFriend(target)
+		private.RequestFriendsInfo()
 		tinsert(private.addedFriends, target)
 		info = C_FriendList.GetFriendInfo(target)
 	end

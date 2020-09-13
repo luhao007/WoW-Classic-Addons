@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -16,10 +14,12 @@ local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
 local private = {
+	db = nil,
 	itemDB = nil,
-	operationsTemp = {},
 	itemStringMap = nil,
 	itemStringMapReader = nil,
+	baseItemStringItemIteratorQuery = nil,
+	groupListCache = {},
 }
 
 
@@ -29,6 +29,18 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
+	private.db = Database.NewSchema("GROUPS")
+		:AddStringField("groupPath")
+		:AddStringField("orderStr")
+		:AddBooleanField("hasAuctioningOperation")
+		:AddBooleanField("hasCraftingOperation")
+		:AddBooleanField("hasMailingOperation")
+		:AddBooleanField("hasShoppingOperation")
+		:AddBooleanField("hasSniperOperation")
+		:AddBooleanField("hasVendoringOperation")
+		:AddBooleanField("hasWarehousingOperation")
+		:AddIndex("groupPath")
+		:Commit()
 	private.itemDB = Database.NewSchema("GROUP_ITEMS")
 		:AddUniqueStringField("itemString")
 		:AddStringField("groupPath")
@@ -38,9 +50,14 @@ function Groups.OnInitialize()
 		:Commit()
 	private.itemStringMapReader = private.itemStringMap:CreateReader()
 	Groups.RebuildDatabase()
+	private.baseItemStringItemIteratorQuery = private.itemDB:NewQuery()
+		:Select("itemString", "groupPath")
+		:Equal("baseItemString", Database.BoundQueryParam())
 end
 
 function Groups.RebuildDatabase()
+	wipe(private.groupListCache)
+
 	-- convert ignoreRandomEnchants to ignoreItemVariations
 	for _, info in pairs(TSM.db.profile.userData.groups) do
 		if info.ignoreRandomEnchants ~= nil then
@@ -170,6 +187,7 @@ function Groups.RebuildDatabase()
 	for key in private.itemStringMap:Iterator() do
 		private.itemStringMap:ValueChanged(key)
 	end
+	private.RebuildDB()
 	private.itemStringMap:SetCallbacksPaused(false)
 end
 
@@ -185,22 +203,14 @@ function Groups.GetItemDBForJoin()
 	return private.itemDB
 end
 
+function Groups.CreateQuery()
+	return private.db:NewQuery()
+		:OrderBy("orderStr", true)
+end
+
 function Groups.Create(groupPath)
-	assert(not TSM.db.profile.userData.groups[groupPath])
-	local parentPath = TSM.Groups.Path.GetParent(groupPath)
-	assert(parentPath)
-	if parentPath ~= TSM.CONST.ROOT_GROUP_PATH and not TSM.db.profile.userData.groups[parentPath] then
-		-- recursively create the parent group first
-		Groups.Create(parentPath)
-	end
-	TSM.db.profile.userData.groups[groupPath] = {}
-	for _, moduleName in TSM.Operations.ModuleIterator() do
-		TSM.db.profile.userData.groups[groupPath][moduleName] = {}
-		-- assign all parent operations to this group
-		for _, operationName in ipairs(TSM.db.profile.userData.groups[parentPath][moduleName]) do
-			tinsert(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
-		end
-	end
+	private.CreateGroup(groupPath)
+	private.RebuildDB()
 end
 
 function Groups.Move(groupPath, newGroupPath)
@@ -249,6 +259,7 @@ function Groups.Move(groupPath, newGroupPath)
 	end
 
 	TempTable.Release(changes)
+	private.RebuildDB()
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -292,6 +303,7 @@ function Groups.Delete(groupPath)
 	end
 	private.itemStringMap:SetCallbacksPaused(false)
 	TempTable.Release(updateMapItems)
+	private.RebuildDB()
 	private.itemDB:SetQueryUpdatesPaused(false)
 end
 
@@ -340,6 +352,36 @@ function Groups.SetItemGroup(itemString, groupPath)
 	end
 end
 
+function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, moveExistingItems)
+	-- create all the groups
+	assert(not TSM.db.profile.userData.groups[groupName])
+	for relGroupPath in pairs(groups) do
+		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+		if not TSM.db.profile.userData.groups[groupPath] then
+			private.CreateGroup(groupPath)
+		end
+	end
+	for relGroupPath, moduleOperations in pairs(groupOperations) do
+		local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+		for moduleName, operations in pairs(moduleOperations) do
+			if operations.override then
+				TSM.db.profile.userData.groups[groupPath][moduleName] = operations
+				private.UpdateChildGroupOperations(groupPath, moduleName)
+			end
+		end
+	end
+	local numItems = 0
+	for itemString, relGroupPath in pairs(items) do
+		if moveExistingItems or not Groups.IsItemInGroup(itemString) then
+			local groupPath = relGroupPath == "" and groupName or TSM.Groups.Path.Join(groupName, relGroupPath)
+			Groups.SetItemGroup(itemString, groupPath)
+			numItems = numItems + 1
+		end
+	end
+	private.RebuildDB()
+	return numItems
+end
+
 function Groups.GetPathByItem(itemString)
 	itemString = TSM.Groups.TranslateItemString(itemString)
 	assert(itemString)
@@ -352,32 +394,51 @@ function Groups.IsItemInGroup(itemString)
 	return private.itemDB:HasUniqueRow("itemString", itemString)
 end
 
-function Groups.ItemIterator(groupPathFilter, baseItemStringFilter)
+function Groups.ItemByBaseItemStringIterator(baseItemString)
+	private.baseItemStringItemIteratorQuery:BindParams(baseItemString)
+	return private.baseItemStringItemIteratorQuery:Iterator()
+end
+
+function Groups.ItemIterator(groupPathFilter, includeSubGroups)
 	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
 	local query = private.itemDB:NewQuery()
 		:Select("itemString", "groupPath")
 	if groupPathFilter then
-		query:Equal("groupPath", groupPathFilter)
-	end
-	if baseItemStringFilter then
-		query:Equal("baseItemString", baseItemStringFilter)
+		if includeSubGroups then
+			query:StartsWith("groupPath", groupPathFilter)
+			query:Custom(private.GroupPathQueryFilter, groupPathFilter)
+		else
+			query:Equal("groupPath", groupPathFilter)
+		end
 	end
 	return query:IteratorAndRelease()
 end
 
+function private.GroupPathQueryFilter(row, groupPathFilter)
+	return row:GetField("groupPath") == groupPathFilter or strmatch(row:GetField("groupPath"), "^"..String.Escape(groupPathFilter)..TSM.CONST.GROUP_SEP)
+end
+
+function Groups.GetNumItems(groupPathFilter)
+	assert(groupPathFilter ~= TSM.CONST.ROOT_GROUP_PATH)
+	return private.itemDB:NewQuery()
+		:Equal("groupPath", groupPathFilter)
+		:CountAndRelease()
+end
+
 function Groups.GroupIterator()
-	local groups = TempTable.Acquire()
-	for groupPath in pairs(TSM.db.profile.userData.groups) do
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-			tinsert(groups, groupPath)
+	if #private.groupListCache == 0 then
+		for groupPath in pairs(TSM.db.profile.userData.groups) do
+			if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+				tinsert(private.groupListCache, groupPath)
+			end
 		end
+		Groups.SortGroupList(private.groupListCache)
 	end
-	Groups.SortGroupList(groups)
-	return TempTable.Iterator(groups)
+	return ipairs(private.groupListCache)
 end
 
 function Groups.SortGroupList(list)
-	sort(list, private.GroupSortFunction)
+	Table.Sort(list, private.GroupSortFunction)
 end
 
 function Groups.SetOperationOverride(groupPath, moduleName, override)
@@ -396,6 +457,7 @@ function Groups.SetOperationOverride(groupPath, moduleName, override)
 		TSM.db.profile.userData.groups[groupPath][moduleName].override = true
 		private.UpdateChildGroupOperations(groupPath, moduleName)
 	end
+	private.RebuildDB()
 end
 
 function Groups.HasOperationOverride(groupPath, moduleName)
@@ -412,6 +474,7 @@ function Groups.AppendOperation(groupPath, moduleName, operationName)
 	assert(groupOperations.override and #groupOperations < TSM.Operations.GetMaxNumber(moduleName))
 	tinsert(groupOperations, operationName)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
+	private.RebuildDB()
 end
 
 function Groups.RemoveOperation(groupPath, moduleName, operationIndex)
@@ -419,6 +482,7 @@ function Groups.RemoveOperation(groupPath, moduleName, operationIndex)
 	assert(groupOperations.override and groupOperations[operationIndex])
 	tremove(groupOperations, operationIndex)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
+	private.RebuildDB()
 end
 
 function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
@@ -426,6 +490,7 @@ function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
 	assert(groupOperations.override)
 	assert(Table.RemoveByValue(groupOperations, operationName) > 0)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
+	private.RebuildDB()
 end
 
 function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
@@ -434,6 +499,13 @@ function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
 	for _, groupPath in Groups.GroupIterator() do
 		Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
 	end
+	private.RebuildDB()
+end
+
+function Groups.SwapOperation(groupPath, moduleName, fromIndex, toIndex)
+	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
+	groupOperations[fromIndex], groupOperations[toIndex] = groupOperations[toIndex], groupOperations[fromIndex]
+	private.UpdateChildGroupOperations(groupPath, moduleName)
 end
 
 function Groups.OperationRenamed(moduleName, oldName, newName)
@@ -452,6 +524,63 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.RebuildDB()
+	private.db:TruncateAndBulkInsertStart()
+	for groupPath in pairs(TSM.db.profile.userData.groups) do
+		local orderStr = gsub(groupPath, TSM.CONST.GROUP_SEP, "\001")
+		orderStr = strlower(orderStr)
+		local hasAuctioningOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Auctioning", groupPath) do
+			hasAuctioningOperation = true
+		end
+		local hasCraftingOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Crafting", groupPath) do
+			hasCraftingOperation = true
+		end
+		local hasMailingOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Mailing", groupPath) do
+			hasMailingOperation = true
+		end
+		local hasShoppingOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Shopping", groupPath) do
+			hasShoppingOperation = true
+		end
+		local hasSniperOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Sniper", groupPath) do
+			hasSniperOperation = true
+		end
+		local hasVendoringOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Vendoring", groupPath) do
+			hasVendoringOperation = true
+		end
+		local hasWarehousingOperation = false
+		for _ in TSM.Operations.GroupOperationIterator("Warehousing", groupPath) do
+			hasWarehousingOperation = true
+		end
+		private.db:BulkInsertNewRow(groupPath, orderStr, hasAuctioningOperation, hasCraftingOperation, hasMailingOperation, hasShoppingOperation, hasSniperOperation, hasVendoringOperation, hasWarehousingOperation)
+	end
+	private.db:BulkInsertEnd()
+	wipe(private.groupListCache)
+end
+
+function private.CreateGroup(groupPath)
+	assert(not TSM.db.profile.userData.groups[groupPath])
+	local parentPath = TSM.Groups.Path.GetParent(groupPath)
+	assert(parentPath)
+	if parentPath ~= TSM.CONST.ROOT_GROUP_PATH and not TSM.db.profile.userData.groups[parentPath] then
+		-- recursively create the parent group first
+		private.CreateGroup(parentPath)
+	end
+	TSM.db.profile.userData.groups[groupPath] = {}
+	for _, moduleName in TSM.Operations.ModuleIterator() do
+		TSM.db.profile.userData.groups[groupPath][moduleName] = {}
+		-- assign all parent operations to this group
+		for _, operationName in ipairs(TSM.db.profile.userData.groups[parentPath][moduleName]) do
+			tinsert(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
+		end
+	end
+end
 
 function private.GroupSortFunction(a, b)
 	return strlower(gsub(a, TSM.CONST.GROUP_SEP, "\001")) < strlower(gsub(b, TSM.CONST.GROUP_SEP, "\001"))

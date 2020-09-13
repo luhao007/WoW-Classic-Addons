@@ -1,21 +1,30 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local MainUI = TSM:NewPackage("MainUI")
-local private = { topLevelPages = {}, frame = nil }
-local MIN_FRAME_SIZE = { width = 948, height = 757 }
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
+local private = {
+	settings = nil,
+	topLevelPages = {},
+	frame = nil,
+}
+local MIN_FRAME_SIZE = { width = 720, height = 588 }
 
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+function MainUI.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "mainUIContext", "frame")
+end
 
 function MainUI.OnDisable()
 	-- hide the frame
@@ -24,8 +33,8 @@ function MainUI.OnDisable()
 	end
 end
 
-function MainUI.RegisterTopLevelPage(name, texturePack, callback)
-	tinsert(private.topLevelPages, { name = name, texturePack = texturePack, callback = callback })
+function MainUI.RegisterTopLevelPage(name, callback)
+	tinsert(private.topLevelPages, { name = name, callback = callback })
 end
 
 function MainUI.Toggle()
@@ -49,16 +58,21 @@ end
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("main")
 	-- Always show the Dashboard first
-	TSM.db.global.internalData.mainUIFrameContext.page = 1
-	local frame = TSMAPI_FOUR.UI.NewElement("LargeApplicationFrame", "base")
+	private.settings.frame.page = 1
+	local frame = UIElements.New("LargeApplicationFrame", "base")
 		:SetParent(UIParent)
+		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
-		:SetContextTable(TSM.db.global.internalData.mainUIFrameContext, TSM.db:GetDefaultReadOnly("global", "internalData", "mainUIFrameContext"))
-		:SetStyle("strata", "HIGH")
-		:SetTitle("TSM Core")
+		:SetStrata("HIGH")
+		:AddPlayerGold()
+		:AddAppStatusIcon()
 		:SetScript("OnHide", private.BaseFrameOnHide)
 	for _, info in ipairs(private.topLevelPages) do
-		frame:AddNavButton(info.name, info.texturePack, info.callback)
+		frame:AddNavButton(info.name, info.callback)
+	end
+	local whatsNewDialog = TSM.UI.WhatsNew.GetDialog()
+	if whatsNewDialog then
+		frame:ShowDialogFrame(whatsNewDialog)
 	end
 	return frame
 end

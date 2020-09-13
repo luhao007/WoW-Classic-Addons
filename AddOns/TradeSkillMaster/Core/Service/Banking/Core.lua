@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -98,6 +96,7 @@ function Banking.PutByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
+	local filterItemString = ItemString.Get(filterStr)
 	filterStr = String.Escape(strlower(filterStr))
 
 	local items = TempTable.Acquire()
@@ -106,8 +105,7 @@ function Banking.PutByFilter(filterStr)
 	end
 
 	for itemString in pairs(items) do
-		local name = strlower(ItemInfo.GetName(itemString) or "")
-		if not strmatch(ItemString.GetBase(itemString), filterStr) and not strmatch(name, filterStr) then
+		if not private.MatchesFilter(itemString, filterStr, filterItemString) then
 			-- remove this item
 			items[itemString] = nil
 		end
@@ -121,6 +119,7 @@ function Banking.GetByFilter(filterStr)
 	if not private.openFrame then
 		return
 	end
+	local filterItemString = ItemString.Get(filterStr)
 	filterStr = String.Escape(strlower(filterStr))
 
 	local items = TempTable.Acquire()
@@ -129,8 +128,7 @@ function Banking.GetByFilter(filterStr)
 	end
 
 	for itemString in pairs(items) do
-		local name = strlower(ItemInfo.GetName(itemString) or "")
-		if not strmatch(ItemString.GetBase(itemString), filterStr) and not strmatch(name, filterStr) then
+		if not private.MatchesFilter(itemString, filterStr, filterItemString) then
 			-- remove this item
 			items[itemString] = nil
 		end
@@ -235,6 +233,9 @@ end
 -- ============================================================================
 
 function private.BankOpened()
+	if private.openFrame == "BANK" then
+		return
+	end
 	assert(not private.openFrame)
 	private.openFrame = "BANK"
 	for _, callback in ipairs(private.frameCallbacks) do
@@ -243,6 +244,9 @@ function private.BankOpened()
 end
 
 function private.GuildBankOpened()
+	if private.openFrame == "GUILD_BANK" then
+		return
+	end
 	assert(not private.openFrame)
 	private.openFrame = "GUILD_BANK"
 	for _, callback in ipairs(private.frameCallbacks) do
@@ -309,4 +313,9 @@ function private.GetPutCallback(event)
 	if event == "DONE" then
 		Log.PrintUser(DONE)
 	end
+end
+
+function private.MatchesFilter(itemString, filterStr, filterItemString)
+	local name = strlower(ItemInfo.GetName(itemString) or "")
+	return strmatch(ItemString.GetBase(itemString), filterStr) or strmatch(name, filterStr) or (filterItemString and itemString == filterItemString)
 end

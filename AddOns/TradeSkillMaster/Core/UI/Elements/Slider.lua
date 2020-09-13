@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Slider UI Element Class.
@@ -11,16 +9,18 @@
 -- @classmod Slider
 
 local _, TSM = ...
-local Slider = TSM.Include("LibTSMClass").DefineClass("Slider", TSM.UI.Element)
 local Math = TSM.Include("Util.Math")
+local NineSlice = TSM.Include("Util.NineSlice")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Theme = TSM.Include("Util.Theme")
+local Slider = TSM.Include("LibTSMClass").DefineClass("Slider", TSM.UI.Element)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Slider)
 TSM.UI.Slider = Slider
-local private = {
-	frameSliderLookup = {},
-}
+local private = {}
 local THUMB_WIDTH = 8
-local THUMB_TEXT_PADDING = 2
-local INPUT_WIDTH = 70
-local INPUT_AREA_SPACE = 190
+local INPUT_WIDTH = 50
+local INPUT_AREA_SPACE = 128
 
 
 
@@ -29,12 +29,11 @@ local INPUT_AREA_SPACE = 190
 -- ============================================================================
 
 function Slider.__init(self)
-	local frame = CreateFrame("Frame", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "Frame")
 	frame:EnableMouse(true)
-	frame:SetScript("OnMouseDown", private.FrameOnMouseDown)
-	frame:SetScript("OnMouseUp", private.FrameOnMouseUp)
-	frame:SetScript("OnUpdate", private.FrameOnUpdate)
-	private.frameSliderLookup[frame] = self
+	ScriptWrapper.Set(frame, "OnMouseDown", private.FrameOnMouseDown, self)
+	ScriptWrapper.Set(frame, "OnMouseUp", private.FrameOnMouseUp, self)
+	ScriptWrapper.Set(frame, "OnUpdate", private.FrameOnUpdate, self)
 
 	self.__super:__init(frame)
 
@@ -50,12 +49,14 @@ function Slider.__init(self)
 	frame.inputLeft:SetHeight(24)
 	frame.inputLeft:SetAutoFocus(false)
 	frame.inputLeft:SetNumeric(true)
-	frame.inputLeft:SetScript("OnEscapePressed", private.InputOnEscapePressed)
-	frame.inputLeft:SetScript("OnEnterPressed", private.InputOnEnterPressed)
+	ScriptWrapper.Set(frame.inputLeft, "OnEscapePressed", private.InputOnEscapePressed)
+	ScriptWrapper.Set(frame.inputLeft, "OnEnterPressed", private.LeftInputOnEnterPressed, self)
 
-	frame.dash = frame:CreateFontString()
+
+	frame.dash = UIElements.CreateFontString(self, frame)
 	frame.dash:SetJustifyH("CENTER")
-	frame.dash:SetWidth(20)
+	frame.dash:SetJustifyV("MIDDLE")
+	frame.dash:SetWidth(12)
 
 	frame.inputRight = CreateFrame("EditBox", nil, frame, nil)
 	frame.inputRight:SetJustifyH("CENTER")
@@ -63,46 +64,16 @@ function Slider.__init(self)
 	frame.inputRight:SetHeight(24)
 	frame.inputRight:SetNumeric(true)
 	frame.inputRight:SetAutoFocus(false)
-	frame.inputRight:SetScript("OnEscapePressed", private.InputOnEscapePressed)
-	frame.inputRight:SetScript("OnEnterPressed", private.InputOnEnterPressed)
+	ScriptWrapper.Set(frame.inputRight, "OnEscapePressed", private.InputOnEscapePressed)
+	ScriptWrapper.Set(frame.inputRight, "OnEnterPressed", private.RightInputOnEnterPressed, self)
 
-	frame.leftBgLeft = frame:CreateTexture(nil, "BACKGROUND")
-	frame.leftBgLeft:SetPoint("TOPLEFT", frame.inputLeft)
-	frame.leftBgLeft:SetPoint("BOTTOMLEFT")
-
-	frame.leftBgRight = frame:CreateTexture(nil, "BACKGROUND")
-	frame.leftBgRight:SetPoint("TOPRIGHT", frame.inputLeft)
-	frame.leftBgRight:SetPoint("BOTTOMRIGHT")
-
-	frame.leftBgMiddle = frame:CreateTexture(nil, "BACKGROUND")
-	frame.leftBgMiddle:SetPoint("TOPLEFT", frame.leftBgLeft, "TOPRIGHT")
-	frame.leftBgMiddle:SetPoint("BOTTOMRIGHT", frame.leftBgRight, "BOTTOMLEFT")
-
-	frame.rightBgLeft = frame:CreateTexture(nil, "BACKGROUND")
-	frame.rightBgLeft:SetPoint("TOPLEFT", frame.inputRight)
-	frame.rightBgLeft:SetPoint("BOTTOMLEFT")
-
-	frame.rightBgRight = frame:CreateTexture(nil, "BACKGROUND")
-	frame.rightBgRight:SetPoint("TOPRIGHT", frame.inputRight)
-	frame.rightBgRight:SetPoint("BOTTOMRIGHT")
-
-	frame.rightBgMiddle = frame:CreateTexture(nil, "BACKGROUND")
-	frame.rightBgMiddle:SetPoint("TOPLEFT", frame.rightBgLeft, "TOPRIGHT")
-	frame.rightBgMiddle:SetPoint("BOTTOMRIGHT", frame.rightBgRight, "BOTTOMLEFT")
-
+	self._inputLeftNineSlice = NineSlice.New(frame.inputLeft)
+	self._inputRightNineSlice = NineSlice.New(frame.inputRight)
 	self._leftValue = nil
 	self._rightValue = nil
 	self._minValue = nil
 	self._maxValue = nil
 	self._dragging = nil
-end
-
-function Slider.Acquire(self)
-	local frame = self:_GetBaseFrame()
-	frame.dash:Show()
-	frame.inputLeft:Show()
-	frame.inputRight:Show()
-	self.__super:Acquire()
 end
 
 function Slider.Release(self)
@@ -151,57 +122,52 @@ function Slider.Draw(self)
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
 
-	local sliderHeight = self:_GetDimension("HEIGHT") / 2 - THUMB_TEXT_PADDING
+	local inputColor = Theme.GetColor("ACTIVE_BG")
+	self._inputLeftNineSlice:SetStyle("rounded")
+	self._inputRightNineSlice:SetStyle("rounded")
+	self._inputLeftNineSlice:SetVertexColor(inputColor:GetFractionalRGBA())
+	self._inputRightNineSlice:SetVertexColor(inputColor:GetFractionalRGBA())
+
+	local sliderHeight = self:_GetDimension("HEIGHT") / 2
 	local width = self:_GetDimension("WIDTH") - INPUT_AREA_SPACE
 	local leftPos = Math.Scale(self._leftValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
 	local rightPos = Math.Scale(self._rightValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
+	local fontPath, fontHeight = Theme.GetFont("BODY_BODY1"):GetWowFont()
+	local textColor = Theme.GetColor("TEXT")
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	frame.inputRight:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight") - 1)
-	frame.inputRight:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("textColor")))
+	frame.inputRight:SetFont(fontPath, fontHeight)
+	frame.inputRight:SetTextColor(textColor:GetFractionalRGBA())
 	frame.inputRight:SetPoint("RIGHT", 0)
 	frame.inputRight:SetNumber(self._rightValue)
 
-	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	frame.dash:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight") - 1)
-	frame.dash:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("textColor")))
+	frame.dash:SetFont(fontPath, fontHeight)
+	frame.dash:SetTextColor(textColor:GetFractionalRGBA())
 	frame.dash:SetText("-")
-	frame.dash:SetPoint("RIGHT", frame.inputRight, "LEFT", 0)
+	frame.dash:SetPoint("RIGHT", frame.inputRight, "LEFT", 0, 0)
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height
-	frame.inputLeft:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight") - 1)
-	frame.inputLeft:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("textColor")))
+	frame.inputLeft:SetFont(fontPath, fontHeight)
+	frame.inputLeft:SetTextColor(textColor:GetFractionalRGBA())
 	frame.inputLeft:SetPoint("RIGHT", frame.dash, "LEFT", 0)
 	frame.inputLeft:SetNumber(self._leftValue)
 
 	frame.barTexture:ClearAllPoints()
-	frame.barTexture:SetPoint("TOPLEFT", 0, -5)
-	frame.barTexture:SetPoint("RIGHT", frame.inputLeft, "LEFT", -30, 0)
-	frame.barTexture:SetHeight(sliderHeight / 2)
-	frame.barTexture:SetColorTexture(TSM.UI.HexToRGBA("#22979797"))
+	frame.barTexture:SetPoint("LEFT", 0, 0)
+	frame.barTexture:SetPoint("RIGHT", frame.inputLeft, "LEFT", -16, 0)
+	frame.barTexture:SetHeight(sliderHeight / 3)
+	frame.barTexture:SetColorTexture(Theme.GetColor("FRAME_BG"):GetFractionalRGBA())
 
-	frame.thumbTextureLeft:SetHeight(sliderHeight)
-	frame.thumbTextureLeft:SetWidth(THUMB_WIDTH)
-	frame.thumbTextureLeft:SetColorTexture(TSM.UI.HexToRGBA("#ffffff"))
+	TSM.UI.TexturePacks.SetTextureAndSize(frame.thumbTextureLeft, "iconPack.14x14/Circle")
 	frame.thumbTextureLeft:SetPoint("LEFT", frame.barTexture, leftPos, 0)
 
-	frame.thumbTextureRight:SetHeight(sliderHeight)
-	frame.thumbTextureRight:SetWidth(THUMB_WIDTH)
-	frame.thumbTextureRight:SetColorTexture(TSM.UI.HexToRGBA("#ffffff"))
+	TSM.UI.TexturePacks.SetTextureAndSize(frame.thumbTextureRight, "iconPack.14x14/Circle")
 	frame.thumbTextureRight:SetPoint("LEFT", frame.barTexture, rightPos, 0)
 
 	frame.activeBarTexture:SetPoint("LEFT", frame.thumbTextureLeft, "CENTER")
 	frame.activeBarTexture:SetPoint("RIGHT", frame.thumbTextureRight, "CENTER")
-	frame.activeBarTexture:SetHeight(sliderHeight / 2)
-	frame.activeBarTexture:SetColorTexture(TSM.UI.HexToRGBA("#ffffff"))
-
-	TSM.UI.TexturePacks.SetTextureAndWidth(frame.leftBgLeft, "uiFrames.ActiveInputFieldLeft")
-	TSM.UI.TexturePacks.SetTexture(frame.leftBgMiddle, "uiFrames.ActiveInputFieldMiddle")
-	TSM.UI.TexturePacks.SetTextureAndWidth(frame.leftBgRight, "uiFrames.ActiveInputFieldRight")
-
-	TSM.UI.TexturePacks.SetTextureAndWidth(frame.rightBgLeft, "uiFrames.ActiveInputFieldLeft")
-	TSM.UI.TexturePacks.SetTexture(frame.rightBgMiddle, "uiFrames.ActiveInputFieldMiddle")
-	TSM.UI.TexturePacks.SetTextureAndWidth(frame.rightBgRight, "uiFrames.ActiveInputFieldRight")
+	frame.activeBarTexture:SetHeight(sliderHeight / 3)
+	frame.activeBarTexture:SetColorTexture(Theme.GetColor("TEXT"):GetFractionalRGBA())
 end
 
 
@@ -248,23 +214,20 @@ function private.InputOnEscapePressed(input)
 	input:ClearFocus()
 end
 
-function private.InputOnEnterPressed(input)
-	input:ClearFocus()
-	local frame = input:GetParent()
-	local self = private.frameSliderLookup[frame]
-	if input == frame.inputLeft then
-		self:_UpdateLeftValue(input:GetNumber())
-	elseif input == frame.inputRight then
-		self:_UpdateRightValue(input:GetNumber())
-	else
-		error("Unexpected input")
-	end
+function private.LeftInputOnEnterPressed(self)
+	local input = self:_GetBaseFrame().inputLeft
+	self:_UpdateLeftValue(input:GetNumber())
 end
 
-function private.FrameOnMouseDown(frame)
-	local self = private.frameSliderLookup[frame]
-	private.InputOnEscapePressed(frame.inputLeft)
-	private.InputOnEscapePressed(frame.inputRight)
+function private.RightInputOnEnterPressed(self)
+	local input = self:_GetBaseFrame().inputRight
+	self:_UpdateRightValue(input:GetNumber())
+end
+
+function private.FrameOnMouseDown(self)
+	local frame = self:_GetBaseFrame()
+	frame.inputLeft:ClearFocus()
+	frame.inputRight:ClearFocus()
 	local value = self:_GetCursorPositionValue()
 	local leftDiff = abs(value - self._leftValue)
 	local rightDiff = abs(value - self._rightValue)
@@ -285,13 +248,11 @@ function private.FrameOnMouseDown(frame)
 	end
 end
 
-function private.FrameOnMouseUp(frame)
-	local self = private.frameSliderLookup[frame]
+function private.FrameOnMouseUp(self)
 	self._dragging = nil
 end
 
-function private.FrameOnUpdate(frame)
-	local self = private.frameSliderLookup[frame]
+function private.FrameOnUpdate(self)
 	if not self._dragging then
 		return
 	end

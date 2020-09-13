@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -24,7 +22,7 @@ local private = {
 	settings = nil,
 	indexDB = nil,
 	quantityDB = nil,
-	updateQuery = nil,
+	updateQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
 	isAHOpen = false,
 	callbacks = {},
 	expiresCallbacks = {},
@@ -40,6 +38,10 @@ local private = {
 	prevLineResult = nil,
 	origChatFrameOnEvent = nil,
 	pendingFuture = nil,
+	auctionIdToLink = {},
+	auctionIdToItemBuyout = {},
+	prevLogTime = 0,
+	prevLogNum = math.huge,
 }
 local PLAYER_NAME = UnitName("player")
 local SALE_HINT_SEP = "\001"
@@ -136,10 +138,53 @@ AuctionTracking:OnSettingsLoad(function()
 			end
 		end)
 	else
-		hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
-			-- TODO: figure out how to get the info we need
+		Event.Register("ITEM_SEARCH_RESULTS_UPDATED", function(_, itemKey)
+			wipe(private.auctionIdToLink)
+			wipe(private.auctionIdToItemBuyout)
+			for i = 1, C_AuctionHouse.GetNumItemSearchResults(itemKey) do
+				local info = C_AuctionHouse.GetItemSearchResultInfo(itemKey, i)
+				if info.buyoutAmount then
+					private.auctionIdToLink[info.auctionID] = info.itemLink
+					private.auctionIdToItemBuyout[info.auctionID] = info.buyoutAmount
+				end
+			end
 		end)
-		-- TODO: hook C_AuctionHouse.StartCommoditiesPurchase / C_AuctionHouse.ConfirmCommoditiesPurchase
+		hooksecurefunc(C_AuctionHouse, "PlaceBid", function(auctionId, bidPlaced)
+			local link = private.auctionIdToLink[auctionId]
+			local buyout = private.auctionIdToItemBuyout[auctionId]
+			if not link or buyout ~= bidPlaced then
+				return
+			end
+			wipe(private.lastPurchase)
+			private.lastPurchase.name = ItemInfo.GetName(link)
+			private.lastPurchase.link = link
+			private.lastPurchase.stackSize = 1
+			private.lastPurchase.buyout = bidPlaced
+		end)
+		hooksecurefunc(C_AuctionHouse, "ConfirmCommoditiesPurchase", function(itemId, quantity)
+			local link = ItemInfo.GetLink("i:"..itemId)
+			if not link then
+				return
+			end
+			local origQuantity = quantity
+			local buyout = 0
+			for i = 1, C_AuctionHouse.GetNumCommoditySearchResults(itemId) do
+				local info = C_AuctionHouse.GetCommoditySearchResultInfo(itemId, i)
+				local resultQuantity = min(quantity, info.quantity - info.numOwnerItems)
+				buyout = buyout + resultQuantity * info.unitPrice
+				quantity = quantity - resultQuantity
+				if quantity == 0 then
+					break
+				end
+			end
+			if quantity > 0 then
+				return
+			end
+			private.lastPurchase.name = ItemInfo.GetName(link)
+			private.lastPurchase.link = link
+			private.lastPurchase.stackSize = origQuantity
+			private.lastPurchase.buyout = buyout
+		end)
 	end
 end)
 
@@ -266,24 +311,41 @@ function private.AuctionOwnedListUpdateHandler()
 	end
 	wipe(private.indexUpdates.pending)
 	wipe(private.indexUpdates.list)
-	for i = 1, private.GetNumOwnedAuctions() do
+	local numOwned = private.GetNumOwnedAuctions()
+	for i = 1, numOwned do
 		if not private.indexUpdates.pending[i] then
 			private.indexUpdates.pending[i] = true
 			tinsert(private.indexUpdates.list, i)
+		end
+	end
+	if numOwned == 0 and private.settings.expiringAuction[PLAYER_NAME] then
+		private.settings.expiringAuction[PLAYER_NAME] = nil
+		for _, callback in ipairs(private.expiresCallbacks) do
+			callback()
 		end
 	end
 	Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
 end
 
 function private.AuctionCanceledHandler(_, auctionId)
+	if not private.cancelAuctionId or auctionId ~= 0 then
+		-- an auction was bought, so rescan the owned auctions
+		AuctionTracking.QueryOwnedAuctions()
+		return
+	end
 	local row = private.indexDB:NewQuery()
-		:Equal("auctionId", auctionId == 0 and private.cancelAuctionId or auctionId)
+		:Equal("auctionId", private.cancelAuctionId)
 		:GetFirstResultAndRelease()
 	private.cancelAuctionId = nil
 	if not row then
 		return
 	end
 
+	local baseItemString = row:GetField("baseItemString")
+	local stackSize = row:GetField("stackSize")
+	assert(stackSize <= private.settings.auctionQuantity[baseItemString])
+	private.settings.auctionQuantity[baseItemString] = private.settings.auctionQuantity[baseItemString] - stackSize
+	private.RebuildQuantityDB()
 	private.indexDB:DeleteRow(row)
 	row:Release()
 end
@@ -324,6 +386,10 @@ function private.AuctionOwnedListUpdateDelayed()
 	end
 
 	-- scan the auctions
+	local shouldLog = GetTime() - private.prevLogTime > 5
+	if shouldLog then
+		private.prevLogTime = GetTime()
+	end
 	wipe(private.settings.auctionQuantity)
 	private.indexDB:TruncateAndBulkInsertStart()
 	local expire = math.huge
@@ -342,6 +408,10 @@ function private.AuctionOwnedListUpdateDelayed()
 				highBidder = highBidder or ""
 				local itemString = ItemString.Get(link)
 				local currentBid = highBidder ~= "" and bid or minBid
+				if not currentBid and saleStatus == 1 and not TSM.IsWowClassic() then
+					-- sometimes wow doesn't tell us the current bid on sold auctions on retail
+					currentBid = 0
+				end
 				if saleStatus == 0 then
 					if TSM.IsWowClassic() then
 						if duration == 1 then -- 30 min
@@ -365,6 +435,8 @@ function private.AuctionOwnedListUpdateDelayed()
 				private.indexUpdates.pending[index] = nil
 				tremove(private.indexUpdates.list, i)
 				private.indexDB:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus, auctionId)
+			elseif shouldLog then
+				Log.Warn("Missing info (%s, %s, %s, %s)", tostring(link), tostring(name), tostring(texture), tostring(quality))
 			end
 		end
 	end
@@ -378,7 +450,10 @@ function private.AuctionOwnedListUpdateDelayed()
 		end
 	end
 
-	Log.Info("Scanned auctions (left=%d)", #private.indexUpdates.list)
+	if shouldLog or #private.indexUpdates.list ~= private.prevLogNum then
+		Log.Info("Scanned auctions (left=%d)", #private.indexUpdates.list)
+		private.prevLogNum = #private.indexUpdates.list
+	end
 	if #private.indexUpdates.list > 0 then
 		-- some failed to scan so try again
 		Delay.AfterFrame("AUCTION_OWNED_LIST_SCAN", 2, private.AuctionOwnedListUpdateDelayed)
@@ -434,7 +509,7 @@ function private.GetOwnedAuctionInfo(index)
 		end
 		local bid = info.bidAmount or info.buyoutAmount
 		local minBid = bid
-		return info.auctionID, link, nil, nil, info.quantity, nil, minBid, info.buyoutAmount, bid, info.bidder or "", info.status, info.timeLeftSeconds
+		return info.auctionID, link, nil, nil, info.quantity, nil, minBid, info.buyoutAmount or 0, bid, info.bidder or "", info.status, info.timeLeftSeconds
 	end
 end
 
@@ -527,6 +602,7 @@ function private.FilterSystemMsg(_, _, msg, ...)
 			if not price then
 				-- couldn't determine the price, so just replace the link
 				private.prevLineResult = format(ERR_AUCTION_SOLD_S, link)
+				Sound.PlaySound(private.settings.auctionSaleSound)
 				return nil, private.prevLineResult, ...
 			end
 			if numAuctions == 0 then -- this was the last auction

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 if not TSMDEV then return end
@@ -33,7 +31,7 @@ local NODE_PATH_SEP = "`"
 
 --- Starts profiling.
 function Profiling.Start()
-	assert(not private.startTime)
+	assert(not private.startTime, "Profiling already started")
 	private.startTime = debugprofilestop()
 end
 
@@ -50,7 +48,7 @@ function Profiling.StartNode(node)
 	private.nodeStack[nodeStackLen + 1] = node
 	node = table.concat(private.nodeStack, NODE_PATH_SEP)
 	if private.nodeStart[node] then
-		error("Node already started")
+		error("Node already started", 2)
 	end
 	if not private.nodeTotal[node] then
 		tinsert(private.nodes, node)
@@ -60,7 +58,7 @@ function Profiling.StartNode(node)
 		private.nodeMaxTime[node] = 0
 		private.nodeParent[node] = parentNode
 	elseif private.nodeParent[node] ~= parentNode then
-		error("Node changed parents")
+		error("Node changed parents", 2)
 	end
 	private.nodeStart[node] = debugprofilestop()
 end
@@ -74,16 +72,17 @@ function Profiling.EndNode(node, arg)
 		-- profiling is not running
 		return
 	end
+	local endTime = debugprofilestop()
 	local nodeStackLen = #private.nodeStack
 	if node ~= private.nodeStack[nodeStackLen] then
-		error("Node isn't at the top of the stack")
+		error("Node isn't at the top of the stack", 2)
 	end
 	node = table.concat(private.nodeStack, NODE_PATH_SEP)
 	if not private.nodeStart[node] then
-		error("Node hasn't been started")
+		error("Node hasn't been started", 2)
 	end
 	private.nodeStack[nodeStackLen] = nil
-	local nodeTime = debugprofilestop() - private.nodeStart[node]
+	local nodeTime = endTime - private.nodeStart[node]
 	private.nodeRuns[node] = private.nodeRuns[node] + 1
 	private.nodeTotal[node] = private.nodeTotal[node] + nodeTime
 	private.nodeStart[node] = nil
@@ -94,32 +93,35 @@ function Profiling.EndNode(node, arg)
 end
 
 --- Ends profiling and prints the results to chat.
-function Profiling.End()
+-- @tparam[opt=0] number minTotalTime The minimum total time to print the profiling info
+function Profiling.End(minTotalTime)
 	if not private.startTime then
 		-- profiling is not running
 		return
 	end
 	local totalTime = debugprofilestop() - private.startTime
-	print(format("Total: %.03f", Math.Round(totalTime, 0.001)))
-	for _, node in ipairs(private.nodes) do
-		local parentNode = private.nodeParent[node]
-		local parentTotalTime = nil
-		if parentNode then
-			parentTotalTime = private.nodeTotal[parentNode]
-		else
-			parentTotalTime = totalTime
-		end
-		local nodeTotalTime = Math.Round(private.nodeTotal[node], 0.001)
-		local pctTime = Math.Round(nodeTotalTime * 100 / parentTotalTime)
-		local nodeRuns = private.nodeRuns[node]
-		local nodeMaxContext = private.nodeMaxContext[node]
-		local level = private.GetLevel(node)
-		local name = strmatch(node, NODE_PATH_SEP.."?([^"..NODE_PATH_SEP.."]+)$")
-		if nodeMaxContext ~= nil then
-			local nodeMaxTime = private.nodeMaxTime[node]
-			print(format("%s%s | %d%% | %.03f | %d | %.03f | %s", strrep("  ", level), name, pctTime, nodeTotalTime, nodeRuns, nodeMaxTime, tostring(nodeMaxContext)))
-		else
-			print(format("%s%s | %d%% | %.03f | %d", strrep("  ", level), name, pctTime, nodeTotalTime, nodeRuns))
+	if totalTime > (minTotalTime or 0) then
+		print(format("Total: %.03f", Math.Round(totalTime, 0.001)))
+		for _, node in ipairs(private.nodes) do
+			local parentNode = private.nodeParent[node]
+			local parentTotalTime = nil
+			if parentNode then
+				parentTotalTime = private.nodeTotal[parentNode]
+			else
+				parentTotalTime = totalTime
+			end
+			local nodeTotalTime = Math.Round(private.nodeTotal[node], 0.001)
+			local pctTime = Math.Round(nodeTotalTime * 100 / parentTotalTime)
+			local nodeRuns = private.nodeRuns[node]
+			local nodeMaxContext = private.nodeMaxContext[node]
+			local level = private.GetLevel(node)
+			local name = strmatch(node, NODE_PATH_SEP.."?([^"..NODE_PATH_SEP.."]+)$")
+			if nodeMaxContext ~= nil then
+				local nodeMaxTime = private.nodeMaxTime[node]
+				print(format("%s%s | %d%% | %.03f | %d | %.03f | %s", strrep("  ", level), name, pctTime, nodeTotalTime, nodeRuns, nodeMaxTime, tostring(nodeMaxContext)))
+			else
+				print(format("%s%s | %d%% | %.03f | %d", strrep("  ", level), name, pctTime, nodeTotalTime, nodeRuns))
+			end
 		end
 	end
 	private.startTime = nil

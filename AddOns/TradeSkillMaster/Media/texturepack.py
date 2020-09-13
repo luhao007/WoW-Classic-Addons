@@ -12,7 +12,7 @@ with open(sys.argv[1]) as f:
 
 def get_image_name(file_name):
     name, ext = file_name.split(".")
-    assert(ext in ("tga", "png"))
+    assert(ext in ("tga", "svg", "png"))
     return name
 
 assert(info['meta']['scale'] == "1")

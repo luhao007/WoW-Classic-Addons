@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,6 +13,9 @@ local Event = TSM.Include("Util.Event")
 local Table = TSM.Include("Util.Table")
 local Future = TSM.Include("Util.Future")
 local Vararg = TSM.Include("Util.Vararg")
+local Analytics = TSM.Include("Util.Analytics")
+local Math = TSM.Include("Util.Math")
+local Debug = TSM.Include("Util.Debug")
 local APIWrapper = LibTSMClass.DefineClass("APIWrapper")
 local private = {
 	wrappers = {},
@@ -25,125 +26,136 @@ local private = {
 	searchQueryAPITimes = {},
 	isAHOpen = false,
 	lastResponseReceived = 0,
-	totalHookedTime = 0,
+	hookedTime = {},
+	lastAuctionCanceledAuctionId = nil,
+	lastAuctionCanceledTime = 0,
+	auctionIdUpdateCallbacks = {},
 }
 local API_TIMEOUT = 5
+local GET_ALL_TIMEOUT = 30
 local SEARCH_QUERY_THROTTLE_INTERVAL = 60
 local SEARCH_QUERY_THROTTLE_MAX = 100
 local EMPTY_SORTS_TABLE = {}
+local ITEM_KEY_KEYS = {
+	"itemID",
+	"itemLevel",
+	"itemSuffix",
+	"battlePetSpeciesID",
+}
+local SILENT_EVENTS = {
+	AUCTION_ITEM_LIST_UPDATE = true,
+	REPLICATE_ITEM_LIST_UPDATE = true,
+}
 local GENERIC_EVENTS = {
 	CHAT_MSG_SYSTEM = 1,
 	UI_ERROR_MESSAGE = 2,
 }
-local INFO_APIS = {
-	GetExtraBrowseInfo = true,
-	GetItemKeyInfo = true,
-}
 local GENERIC_EVENT_SEP = "/"
-local API_EVENT_INFO = {
-	SendBrowseQuery = {
-		AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
-	},
-	SearchForFavorites = {
-		AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
-	},
-	SearchForItemKeys = {
-		AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
-	},
-	ReplicateItems = {
-		REPLICATE_ITEM_LIST_UPDATE = { result = true },
-	},
-	RequestMoreBrowseResults = {
-		AUCTION_HOUSE_BROWSE_RESULTS_ADDED = { result = true },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
-	},
-	SendSearchQuery = {
-		COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
-		ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
-	},
-	SendSellSearchQuery = {
-		COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
-		ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
-	},
-	RequestMoreCommoditySearchResults = {
-		COMMODITY_SEARCH_RESULTS_ADDED = { result = true },
-	},
-	RequestMoreItemSearchResults = {
-		ITEM_SEARCH_RESULTS_ADDED = { result = true },
-	},
-	RefreshCommoditySearchResults = {
-		COMMODITY_SEARCH_RESULTS_UPDATED = { result = true },
-	},
-	RefreshItemSearchResults = {
-		ITEM_SEARCH_RESULTS_UPDATED = { result = true },
-	},
-	QueryOwnedAuctions = {
-		OWNED_AUCTIONS_UPDATED = { result = true },
-	},
-	QueryBids = {
-		BIDS_UPDATED = { result = true },
-	},
-	GetExtraBrowseInfo = {
-		EXTRA_BROWSE_INFO_RECEIVED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
-	},
-	GetItemKeyInfo = {
-		ITEM_KEY_ITEM_INFO_RECEIVED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
-	},
-	CancelAuction = {
-		AUCTION_CANCELED = { result = true, eventArgIndex = 1, apiArgIndex = 1, compareFunc = function(eventArg, apiArg) return eventArg == 0 or apiArg == eventArg end },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
-	},
-	StartCommoditiesPurchase = {
-		COMMODITY_PRICE_UPDATED = { returnCompare = true, eventArgIndex = 1, apiArgIndex = 3 },
-		COMMODITY_PRICE_UNAVAILABLE = { result = false },
-	},
-	ConfirmCommoditiesPurchase = {
-		COMMODITY_PURCHASE_SUCCEEDED = { result = true },
-		COMMODITY_PURCHASE_FAILED = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_HIGHER_BID] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_OWN] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
-	},
-	PlaceBid = {
-		AUCTION_CANCELED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
-		["CHAT_MSG_SYSTEM"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_PLACED] = { result = true },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_HIGHER_BID] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_OWN] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
-	},
-	PostItem = {
-		AUCTION_HOUSE_AUCTION_CREATED = { result = true, rawFilterFunc = function(apiArgs) return apiArgs[3] <= 1 end },
-		AUCTION_MULTISELL_UPDATE = { result = true, rawFilterFunc = function(apiArgs, createdCount, totalToCreate) return createdCount == totalToCreate end },
-		AUCTION_MULTISELL_FAILURE = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_REPAIR_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_LIMITED_DURATION_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_USED_CHARGES] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_WRAPPED_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BAG] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = nil },
-	},
-	PostCommodity = {
-		AUCTION_HOUSE_AUCTION_CREATED = { result = true },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_REPAIR_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_LIMITED_DURATION_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_USED_CHARGES] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_WRAPPED_ITEM] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BAG] = { result = nil },
-		["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = nil },
-	},
-}
+local API_EVENT_INFO = TSM.IsWowClassic() and
+	{ -- Classic
+		QueryAuctionItems = {
+			AUCTION_ITEM_LIST_UPDATE = { result = true },
+		},
+	} or
+	{ -- Retail
+		SendBrowseQuery = {
+			AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
+		},
+		SearchForFavorites = {
+			AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
+		},
+		SearchForItemKeys = {
+			AUCTION_HOUSE_BROWSE_RESULTS_UPDATED = { result = true },
+		},
+		ReplicateItems = {
+			REPLICATE_ITEM_LIST_UPDATE = { result = true },
+		},
+		RequestMoreBrowseResults = {
+			AUCTION_HOUSE_BROWSE_RESULTS_ADDED = { result = 1 },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
+		},
+		SendSearchQuery = {
+			COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
+			ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
+		},
+		SendSellSearchQuery = {
+			COMMODITY_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1, apiArgKey = "itemID" },
+			ITEM_SEARCH_RESULTS_UPDATED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { timeoutChange = 1 },
+		},
+		RequestMoreCommoditySearchResults = {
+			COMMODITY_SEARCH_RESULTS_ADDED = { result = true },
+		},
+		RequestMoreItemSearchResults = {
+			ITEM_SEARCH_RESULTS_ADDED = { result = true },
+		},
+		RefreshCommoditySearchResults = {
+			COMMODITY_SEARCH_RESULTS_UPDATED = { result = true },
+		},
+		RefreshItemSearchResults = {
+			ITEM_SEARCH_RESULTS_UPDATED = { result = true },
+		},
+		QueryOwnedAuctions = {
+			OWNED_AUCTIONS_UPDATED = { result = true },
+		},
+		QueryBids = {
+			BIDS_UPDATED = { result = true },
+		},
+		CancelAuction = {
+			AUCTION_CANCELED = { result = true, eventArgIndex = 1, apiArgIndex = 1, compareFunc = function(eventArg, apiArg) return eventArg == 0 or apiArg == eventArg end },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
+		},
+		StartCommoditiesPurchase = {
+			COMMODITY_PRICE_UPDATED = { result = 2, rawFilterFunc = function(apiArgs, unitPrice, totalPrice) return Math.Ceil((totalPrice / apiArgs[2]), COPPER_PER_SILVER) == apiArgs[3] and true end },
+			COMMODITY_PRICE_UNAVAILABLE = { result = false },
+		},
+		ConfirmCommoditiesPurchase = {
+			COMMODITY_PURCHASE_SUCCEEDED = { result = true },
+			COMMODITY_PURCHASE_FAILED = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_HIGHER_BID] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_OWN] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
+		},
+		PlaceBid = {
+			AUCTION_CANCELED = { result = true, eventArgIndex = 1, apiArgIndex = 1 },
+			["CHAT_MSG_SYSTEM"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_PLACED] = { result = true },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_HIGHER_BID] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BID_OWN] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_MAX_COUNT] = { result = false },
+		},
+		PostItem = {
+			AUCTION_HOUSE_AUCTION_CREATED = { result = true, rawFilterFunc = function(apiArgs) return apiArgs[3] <= 1 end },
+			AUCTION_MULTISELL_UPDATE = { result = true, rawFilterFunc = function(apiArgs, createdCount, totalToCreate) return createdCount == totalToCreate end },
+			AUCTION_MULTISELL_FAILURE = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_REPAIR_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_LIMITED_DURATION_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_USED_CHARGES] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_WRAPPED_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BAG] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = nil },
+		},
+		PostCommodity = {
+			AUCTION_HOUSE_AUCTION_CREATED = { result = true },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_ITEM_NOT_FOUND] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_DATABASE_ERROR] = { result = false },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_REPAIR_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_LIMITED_DURATION_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_USED_CHARGES] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_WRAPPED_ITEM] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_AUCTION_BAG] = { result = nil },
+			["UI_ERROR_MESSAGE"..GENERIC_EVENT_SEP..ERR_NOT_ENOUGH_MONEY] = { result = nil },
+		},
+	}
 
 
 
@@ -152,10 +164,6 @@ local API_EVENT_INFO = {
 -- ============================================================================
 
 AuctionHouseWrapper:OnModuleLoad(function()
-	if TSM.IsWowClassic() then
-		return
-	end
-
 	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowHandler)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseClosedHandler)
 
@@ -164,24 +172,32 @@ AuctionHouseWrapper:OnModuleLoad(function()
 		private.wrappers[apiName] = APIWrapper(apiName)
 	end
 
-	-- extra hooks to track search query calls since they are limited
-	hooksecurefunc(C_AuctionHouse, "SendSearchQuery", function()
-		tinsert(private.searchQueryAPITimes, GetTime())
-	end)
-	hooksecurefunc(C_AuctionHouse, "SendSellSearchQuery", function()
-		tinsert(private.searchQueryAPITimes, GetTime())
-	end)
+	if not TSM.IsWowClassic() then
+		-- extra hooks to track search query calls since they are limited
+		hooksecurefunc(C_AuctionHouse, "SendSearchQuery", function()
+			tinsert(private.searchQueryAPITimes, GetTime())
+		end)
+		hooksecurefunc(C_AuctionHouse, "SendSellSearchQuery", function()
+			tinsert(private.searchQueryAPITimes, GetTime())
+		end)
 
-	-- general events
-	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED", private.ResponseReceivedHandler)
+		-- events to track auction purchases
+		Event.Register("AUCTION_CANCELED", private.AuctionCanceledHandler)
+		Event.Register("ITEM_SEARCH_RESULTS_UPDATED", private.ItemSearchResultsUpdated)
 
-	-- extra events that are interesting to log
-	Event.Register("AUCTION_HOUSE_NEW_RESULTS_RECEIVED", private.UnusedEventHandler)
-	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED", private.UnusedEventHandler)
-	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED", private.UnusedEventHandler)
-	Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_SENT", private.UnusedEventHandler)
-	Event.Register("AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY", private.UnusedEventHandler)
-	Event.Register("AUCTION_HOUSE_THROTTLED_SYSTEM_READY", private.UnusedEventHandler)
+		-- general events
+		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_RESPONSE_RECEIVED", private.ResponseReceivedHandler)
+
+		-- extra events that are interesting to log
+		Event.Register("AUCTION_HOUSE_NEW_RESULTS_RECEIVED", private.UnusedEventHandler)
+		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_DROPPED", private.UnusedEventHandler)
+		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_QUEUED", private.UnusedEventHandler)
+		Event.Register("AUCTION_HOUSE_THROTTLED_MESSAGE_SENT", private.UnusedEventHandler)
+		if not TSM.IsShadowlands() then
+			Event.Register("AUCTION_HOUSE_THROTTLED_SPECIFIC_SEARCH_READY", private.UnusedEventHandler)
+		end
+		Event.Register("AUCTION_HOUSE_THROTTLED_SYSTEM_READY", private.UnusedEventHandler)
+	end
 end)
 
 
@@ -190,10 +206,25 @@ end)
 -- Module Functions
 -- ============================================================================
 
+function AuctionHouseWrapper.RegisterAuctionIdUpdateCallback(callback)
+	tinsert(private.auctionIdUpdateCallbacks, callback)
+end
+
+function AuctionHouseWrapper.IsOpen()
+	return private.isAHOpen
+end
+
 function AuctionHouseWrapper.GetAndResetTotalHookedTime()
-	local total = private.totalHookedTime
-	private.totalHookedTime = 0
-	return total
+	local total, topTime, topAddon = 0, nil, nil
+	for addon, hookedTime in pairs(private.hookedTime) do
+		total = total + hookedTime
+		if hookedTime > (topTime or 0) then
+			topTime = hookedTime
+			topAddon = addon
+		end
+	end
+	wipe(private.hookedTime)
+	return total, topAddon, topTime
 end
 
 function AuctionHouseWrapper.SendBrowseQuery(query)
@@ -261,16 +292,10 @@ function AuctionHouseWrapper.QueryOwnedAuctions(sorts)
 	return private.wrappers.QueryOwnedAuctions:Start(sorts)
 end
 
-function AuctionHouseWrapper.GetItemKeyInfo(itemKey, restrictQualityToFilter)
-	assert(not TSM.IsWowClassic())
-	if not private.CheckAllIdle() then
-		return
-	end
-	return private.wrappers.GetItemKeyInfo:Start(itemKey, restrictQualityToFilter)
-end
-
 function AuctionHouseWrapper.CancelAuction(auctionId)
 	assert(not TSM.IsWowClassic())
+	-- if QueryOwnedAuctions is pending, just cancel it
+	private.wrappers.QueryOwnedAuctions:CancelIfPending()
 	if not private.CheckAllIdle() then
 		return
 	end
@@ -285,13 +310,12 @@ function AuctionHouseWrapper.StartCommoditiesPurchase(itemId, quantity, itemBuyo
 	return private.wrappers.StartCommoditiesPurchase:Start(itemId, quantity, itemBuyout)
 end
 
-function AuctionHouseWrapper.ConfirmCommoditiesPurchase(itemId, quantity)
+function AuctionHouseWrapper.ConfirmCommoditiesPurchase(itemId, quantity, totalBuyout)
 	assert(not TSM.IsWowClassic())
-	-- TODO: re-enable this once we don't try to start and confirm in the same frame
-	-- if not private.CheckAllIdle() then
-	-- 	return
-	-- end
-	return private.wrappers.ConfirmCommoditiesPurchase:Start(itemId, quantity)
+	if not private.CheckAllIdle() then
+		return
+	end
+	return private.wrappers.ConfirmCommoditiesPurchase:Start(itemId, quantity, totalBuyout)
 end
 
 function AuctionHouseWrapper.PlaceBid(auctionId, bidBuyout)
@@ -318,6 +342,15 @@ function AuctionHouseWrapper.PostCommodity(itemLocation, postTime, stackSize, it
 	return private.wrappers.PostCommodity:Start(itemLocation, postTime, stackSize, itemBuyout)
 end
 
+function AuctionHouseWrapper.QueryAuctionItems(name, minLevel, maxLevel, page, usable, quality, getAll, exact, filterData)
+	assert(TSM.IsWowClassic())
+	local canSendQuery, canSendGetAll = CanSendAuctionQuery()
+	if not canSendQuery or (getAll and not canSendGetAll) or not private.CheckAllIdle() then
+		return
+	end
+	return private.wrappers.QueryAuctionItems:Start(name, minLevel, maxLevel, page, usable, quality, getAll, exact, filterData)
+end
+
 
 
 -- ============================================================================
@@ -328,7 +361,7 @@ function APIWrapper.__init(self, name)
 	self._name = name
 	self._args = {}
 	self._state = "IDLE"
-	self._hookedTime = nil
+	self._callTime = nil
 	self._future = Future.New(self._name.."_FUTURE")
 	self._future:SetScript("OnCleanup", function()
 		if self._state == "PENDING_REQUESTED" then
@@ -344,19 +377,13 @@ function APIWrapper.__init(self, name)
 	end
 
 	-- hook the API
-	hooksecurefunc(C_AuctionHouse, self._name, function(...)
-		-- defer the log for info APIs to only show if they actually issue a request so they aren't so spammy
-		if not INFO_APIS[self._name] then
-			Log.Info("%s(%s)", self._name, private.ArgsToStr(...))
-		end
+	hooksecurefunc(TSM.IsWowClassic() and _G or C_AuctionHouse, self._name, function(...)
+		Log.Info("%s(%s)", self._name, private.ArgsToStr(...))
 		if self:_IsPending() and select("#", ...) == 0 then
 			return
 		end
 		self:CancelIfPending()
 		if self:_HandleAPICall(...) then
-			if INFO_APIS[self._name] then
-				Log.Info("%s(%s)", self._name, private.ArgsToStr(...))
-			end
 			for _, wrapper in pairs(private.wrappers) do
 				if wrapper ~= self and GetTime() ~= private.lastResponseReceived then
 					wrapper:CancelIfPending()
@@ -398,44 +425,30 @@ function APIWrapper._IsPending(self)
 end
 
 function APIWrapper._CallAPI(self, ...)
-	return C_AuctionHouse[self._name](...)
+	return (TSM.IsWowClassic() and _G or C_AuctionHouse)[self._name](...)
 end
 
 function APIWrapper._HandleAPICall(self, ...)
-	if self._state == "CHECK" then
-		-- this is a recursive call to check on the info API return value
-		assert(INFO_APIS[self._name])
-		return false
-	elseif self._state == "IDLE" then
-		if INFO_APIS[self._name] then
-			-- get the return value of the API to check if the info is already available
-			self._state = "CHECK"
-			if self:_CallAPI(...) then
-				self._state = "IDLE"
-				return false
-			end
-		end
+	self._callTime = GetTime()
+	if self._state == "IDLE" then
 		self._state = "PENDING_HOOKED"
-		self._hookedTime = GetTime()
+		self._hookAddon = strmatch(Debug.GetStackLevelLocation(3), "AddOns\\([^\\]+)\\")
 	elseif self._state == "STARTING" then
 		self._future:Start()
-		if INFO_APIS[self._name] then
-			-- get the return value of the API to check if the info is already available
-			self._state = "CHECK"
-			local result = self:_CallAPI(...)
-			self._state = "PENDING_REQUESTED"
-			if result then
-				self:_Done(result)
-				return false
-			end
-		else
-			self._state = "PENDING_REQUESTED"
-		end
+		self._state = "PENDING_REQUESTED"
 	else
 		error("Unexpected state: "..self._state)
 	end
 	Vararg.IntoTable(self._args, ...)
-	Delay.AfterTime(self._name.."_TIMEOUT", private.isAHOpen and API_TIMEOUT or 0, self._timeoutWrapper)
+	local timeout = nil
+	if not private.isAHOpen then
+		timeout = 0
+	elseif self._name == "QueryAuctionItems" and select(7, ...) then
+		timeout = GET_ALL_TIMEOUT
+	else
+		timeout = API_TIMEOUT
+	end
+	Delay.AfterTime(self._name.."_TIMEOUT", timeout, self._timeoutWrapper)
 	return true
 end
 
@@ -465,7 +478,12 @@ function APIWrapper._ValidateEvent(self, eventName, ...)
 		Delay.AfterTime(self._name.."_TIMEOUT", info.timeoutChange, self._timeoutWrapper)
 		return false
 	end
-	local eventIsValid, result = true, info.result
+	local eventIsValid, result = true, nil
+	if type(info.result) == "number" then
+		result = select(info.result, ...)
+	else
+		result = info.result
+	end
 	if info.rawFilterFunc then
 		if not info.rawFilterFunc(self._args, ...) then
 			eventIsValid = false
@@ -480,43 +498,44 @@ function APIWrapper._ValidateEvent(self, eventName, ...)
 		assert(type(eventValue) == type(apiValue))
 		if info.compareFunc then
 			argMatches = info.compareFunc(eventValue, apiValue)
+		elseif private.IsItemKey(eventValue) then
+			argMatches = true
+			for _, key in ipairs(ITEM_KEY_KEYS) do
+				if eventValue[key] ~= apiValue[key] then
+					argMatches = false
+					break
+				end
+			end
 		elseif type(eventValue) == "table" then
 			argMatches = Table.Equal(eventValue, apiValue)
 		else
 			argMatches = eventValue == apiValue
 		end
-		if info.returnCompare then
-			result = argMatches
-		elseif not argMatches then
+		if not argMatches then
 			eventIsValid = false
 		end
-	end
-	if eventIsValid and INFO_APIS[self._name] then
-		-- call the API to get the result
-		local prevState = self._state
-		assert(prevState == "PENDING_REQUESTED" or prevState == "PENDING_HOOKED")
-		self._state = "CHECK"
-		result = self:_CallAPI(unpack(self._args))
-		assert(result)
-		-- go back to the previous state
-		self._state = prevState
 	end
 	return eventIsValid, result
 end
 
 function APIWrapper._Done(self, result)
 	wipe(self._args)
-	local hookedTime = self._hookedTime
-	self._hookedTime = nil
+	local hookAddon = self._hookAddon
+	self._hookAddon = nil
+	local totalTime = Math.Round((GetTime() - (self._callTime or GetTime())) * 1000)
+	self._callTime = nil
 	Delay.Cancel(self._name.."_TIMEOUT")
 	if self._state == "PENDING_REQUESTED" then
+		if totalTime > 0 then
+			Analytics.Action("AH_API_TIME", private.GetAnalyticsRegionRealm(), self._name, result and totalTime or -1)
+		end
 		self._state = "DONE"
 		-- need to do this last as it might trigger another API call or OnCleanup on the future
 		self._future:Done(result)
 	elseif self._state == "PENDING_HOOKED" then
 		self._state = "IDLE"
-		if hookedTime then
-			private.totalHookedTime = private.totalHookedTime + GetTime() - hookedTime
+		if hookAddon then
+			private.hookedTime[hookAddon] = (private.hookedTime[hookAddon] or 0) + totalTime / 1000
 		end
 	else
 		error("Unexpected state: "..self._state)
@@ -538,6 +557,18 @@ function private.AuctionHouseClosedHandler()
 	for _, wrapper in pairs(private.wrappers) do
 		wrapper:CancelIfPending()
 	end
+end
+
+function private.IsItemKey(value)
+	if type(value) ~= "table" then
+		return false
+	end
+	for _, key in ipairs(ITEM_KEY_KEYS) do
+		if not value[key] then
+			return false
+		end
+	end
+	return true
 end
 
 function private.ItemKeyToStr(itemKey)
@@ -573,7 +604,7 @@ end
 function private.ArgToStr(arg)
 	if type(arg) == "table" then
 		local count = Table.Count(arg)
-		if arg.itemID and arg.itemSuffix then
+		if private.IsItemKey(arg) then
 			return private.ItemKeyToStr(arg)
 		elseif arg.searchString then
 			return format("{searchString=\"%s\", sorts=%s, minLevel=%s, maxLevel=%s, filters=%s, itemClassFilters=%s}", arg.searchString, private.SortsToStr(arg.sorts), private.ArgToStr(arg.minLevel), private.ArgToStr(arg.maxLevel), private.ArgToStr(arg.filters), private.ArgToStr(arg.itemClassFilters))
@@ -619,6 +650,15 @@ end
 function private.EventHandler(eventName, ...)
 	-- reduce the log spam of generic events by combining the message with the name and discarding arguments
 	local genericEventArg = nil
+	if eventName == "UI_ERROR_MESSAGE" and select(1, ...) == ERR_AUCTION_DATABASE_ERROR then
+		-- log an analytics event for "Internal Auction Error" messages
+		for apiName, wrapper in pairs(private.wrappers) do
+			if not wrapper:IsIdle() then
+				Analytics.Action("AH_INTERNAL_ERROR", private.GetAnalyticsRegionRealm(), apiName)
+				break
+			end
+		end
+	end
 	if GENERIC_EVENTS[eventName] then
 		genericEventArg = select(GENERIC_EVENTS[eventName], ...)
 		assert(genericEventArg)
@@ -641,7 +681,9 @@ function private.UnusedEventHandler(eventName, ...)
 end
 
 function private.EventHandlerHelper(wrappers, eventName, ...)
-	Log.Info("%s (%s)", eventName, private.ArgsToStr(...))
+	if not SILENT_EVENTS[eventName] then
+		Log.Info("%s (%s)", eventName, private.ArgsToStr(...))
+	end
 	for _, wrapper in ipairs(wrappers) do
 		wrapper:_HandleEvent(eventName, ...)
 	end
@@ -655,4 +697,35 @@ function private.CheckAllIdle()
 		end
 	end
 	return true
+end
+
+function private.AuctionCanceledHandler(_, auctionId)
+	private.lastAuctionCanceledAuctionId = auctionId
+	private.lastAuctionCanceledTime = GetTime()
+end
+
+function private.ItemSearchResultsUpdated(_, itemKey, auctionId)
+	if private.lastAuctionCanceledTime == GetTime() and auctionId then
+		Log.Info("Auction ID changed from %s to %s", tostring(private.lastAuctionCanceledAuctionId), tostring(auctionId))
+		local newResultInfo = nil
+		for i = 1, C_AuctionHouse.GetNumItemSearchResults(itemKey) do
+			local info = C_AuctionHouse.GetItemSearchResultInfo(itemKey, i)
+			if info.auctionID == auctionId then
+				newResultInfo = info
+				break
+			end
+		end
+		if not newResultInfo then
+			Log.Warn("Failed to find new result info")
+		end
+		for _, callback in ipairs(private.auctionIdUpdateCallbacks) do
+			callback(private.lastAuctionCanceledAuctionId, auctionId, newResultInfo)
+		end
+		private.lastAuctionCanceledAuctionId = nil
+		private.lastAuctionCanceledTime = 0
+	end
+end
+
+function private.GetAnalyticsRegionRealm()
+	return TSM.GetRegion().."-"..gsub(GetRealmName(), "\226", "'")
 end

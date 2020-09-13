@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -126,7 +124,7 @@ function private.PopulateTasks()
 	end
 	TempTable.Release(alts)
 
-	if TSM.db.factionrealm.gatheringContext.crafter then
+	if TSM.db.factionrealm.gatheringContext.crafter ~= "" then
 		private.sourceTasks.sendMail:SetTarget(TSM.db.factionrealm.gatheringContext.crafter)
 	end
 	for _, task in pairs(private.sourceTasks) do

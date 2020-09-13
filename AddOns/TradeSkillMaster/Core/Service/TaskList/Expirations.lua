@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,7 +13,6 @@ local ObjectPool = TSM.Include("Util.ObjectPool")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
 local MailTracking = TSM.Include("Service.MailTracking")
 local private = {
-	query = nil,
 	mailTaskPool = ObjectPool.New("EXPIRING_MAIL_TASK", TSM.TaskList.ExpiringMailTask, 0),
 	auctionTaskPool = ObjectPool.New("EXPIRED_AUCTION_TASK", TSM.TaskList.ExpiredAuctionTask, 0),
 	activeTasks = {},

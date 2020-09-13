@@ -1,14 +1,13 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local BankingTask = TSM.Include("LibTSMClass").DefineClass("BankingTask", TSM.TaskList.ItemTask)
 local L = TSM.Include("Locale").GetTable()
+local Inventory = TSM.Include("Service.Inventory")
 TSM.TaskList.BankingTask = BankingTask
 local private = {
 	registeredCallbacks = false,
@@ -76,10 +75,10 @@ function BankingTask._UpdateState(self)
 	end
 	local canMove = false
 	for itemString in pairs(self:GetItems()) do
-		if self._isGuildBank and TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString) > 0 then
+		if self._isGuildBank and Inventory.GetGuildQuantity(itemString) > 0 then
 			canMove = true
 			break
-		elseif not self._isGuildBank and TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString) > 0 then
+		elseif not self._isGuildBank and Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString) > 0 then
 			canMove = true
 			break
 		end

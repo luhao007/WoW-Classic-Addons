@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Money Functions
@@ -18,6 +16,9 @@ local private =  {
 local GOLD_ICON = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"
 local SILVER_ICON = "|TInterface\\MoneyFrame\\UI-SilverIcon:0|t"
 local COPPER_ICON = "|TInterface\\MoneyFrame\\UI-CopperIcon:0|t"
+local GOLD_ICON_DISABLED = "|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:0:0:1:1:0:1:0:1:100:100:100|t"
+local SILVER_ICON_DISABLED = "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:0:0:1:1:0:1:0:1:100:100:100|t"
+local COPPER_ICON_DISABLED = "|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:0:0:1:1:0:1:0:1:100:100:100|t"
 local GOLD_TEXT = "|cffffd70ag|r"
 local SILVER_TEXT = "|cffc7c7cfs|r"
 local COPPER_TEXT = "|cffeda55fc|r"
@@ -67,7 +68,6 @@ function Money.ToString(value, color, ...)
 			error("Invalid option: "..tostring(opt))
 		end
 	end
-	assert(not (isIcon and disabled), "Setting both OPT_ICON and OPT_DISABLE is not allowed")
 
 	local isNegative = value < 0
 	value = abs(value)
@@ -77,11 +77,17 @@ function Money.ToString(value, color, ...)
 	assert(not noCopper or copper == 0)
 	local goldText, silverText, copperText = nil, nil, nil
 	if isIcon then
-		goldText, silverText, copperText = GOLD_ICON, SILVER_ICON, COPPER_ICON
-	elseif disabled then
-		goldText, silverText, copperText = GOLD_TEXT_DISABLED, SILVER_TEXT_DISABLED, COPPER_TEXT_DISABLED
+		if disabled then
+			goldText, silverText, copperText = GOLD_ICON_DISABLED, SILVER_ICON_DISABLED, COPPER_ICON_DISABLED
+		else
+			goldText, silverText, copperText = GOLD_ICON, SILVER_ICON, COPPER_ICON
+		end
 	else
-		goldText, silverText, copperText = GOLD_TEXT, SILVER_TEXT, COPPER_TEXT
+		if disabled then
+			goldText, silverText, copperText = GOLD_TEXT_DISABLED, SILVER_TEXT_DISABLED, COPPER_TEXT_DISABLED
+		else
+			goldText, silverText, copperText = GOLD_TEXT, SILVER_TEXT, COPPER_TEXT
+		end
 	end
 
 	if value == 0 then
@@ -132,6 +138,12 @@ function Money.FromString(value)
 	if strtrim(value) ~= "" then return end
 
 	return ((gold or 0) * COPPER_PER_GOLD) + ((silver or 0) * COPPER_PER_SILVER) + (copper or 0)
+end
+
+--- Returns the colored gold indicator text
+-- @treturn string The colored gold indicator text
+function Money.GetGoldText()
+	return GOLD_TEXT
 end
 
 

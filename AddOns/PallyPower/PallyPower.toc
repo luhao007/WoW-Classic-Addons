@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Aznamir,Dyaxler
-## Version: v1.2.26-classic
+## Version: v1.2.27-classic
 ## Dependencies: 
 ## OptionalDeps: Ace3
 ## SavedVariables: PallyPowerDB, PallyPower_Assignments, PallyPower_NormalAssignments, PallyPower_AuraAssignments, PallyPower_SavedPresets, PallyPower_ChanNames, LCD_Data, LCD_GUIDAccess
@@ -12,7 +12,7 @@
 ## Notes-zhCN: 帮助管理圣骑士的祝福等BUFF
 
 ## X-Category: Paladin
-## X-Embeds: Ace3, LibClassicDurations
+## X-Embeds: Ace3, LibClassicDurations, LibUIDropDownMenu
 
 #@no-lib-strip@
 embeds.xml

@@ -504,7 +504,8 @@ L["Grid"] = "Grid"
 --[[Translation missing --]]
 L["Grobbulus"] = "Grobbulus"
 L["Group"] = "Gruppe"
-L["Group %s"] = "Gruppe %s"
+--[[Translation missing --]]
+L["Group %s"] = "Group %s"
 L["Group Arrangement"] = "Gruppenanordnung"
 L["Grow"] = "Wachsen"
 L["GTFO Alert"] = "GTFO-Warnung"

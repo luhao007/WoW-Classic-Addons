@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,13 +9,19 @@ local Buy = TSM.Vendoring:NewPackage("Buy")
 local Database = TSM.Include("Util.Database")
 local Delay = TSM.Include("Util.Delay")
 local Event = TSM.Include("Util.Event")
-local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
+local TempTable = TSM.Include("Util.TempTable")
+local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	merchantDB = nil,
+	pendingIndex = nil,
+	pendingQuantity = 0,
 }
+local FIRST_BUY_TIMEOUT = 5
+local CONSECUTIVE_BUY_TIMEOUT = 5
 
 
 
@@ -29,14 +33,17 @@ function Buy.OnInitialize()
 	private.merchantDB = Database.NewSchema("MERCHANT")
 		:AddUniqueNumberField("index")
 		:AddStringField("itemString")
+		:AddSmartMapField("baseItemString", ItemString.GetBaseMap(), "itemString")
 		:AddNumberField("price")
-		:AddStringField("costItemString")
+		:AddStringField("costItemsText")
+		:AddStringField("firstCostItemString")
 		:AddNumberField("stackSize")
 		:AddNumberField("numAvailable")
 		:Commit()
 	Event.Register("MERCHANT_SHOW", private.MerchantShowEventHandler)
 	Event.Register("MERCHANT_CLOSED", private.MerchantClosedEventHandler)
 	Event.Register("MERCHANT_UPDATE", private.MerchantUpdateEventHandler)
+	Event.Register("CHAT_MSG_LOOT", private.ChatMsgLootEventHandler)
 end
 
 function Buy.CreateMerchantQuery()
@@ -60,25 +67,82 @@ function Buy.DoRepair()
 	RepairAllItems()
 end
 
+function Buy.GetMaxCanAfford(index)
+	local maxCanAfford = math.huge
+	local _, _, price, stackSize, _, _, _, extendedCost = GetMerchantItemInfo(index)
+	local numAltCurrencies = GetMerchantItemCostInfo(index)
+	-- bug with big keech vendor returning extendedCost = true for gold only items
+	if numAltCurrencies == 0 then
+		extendedCost = false
+	end
+
+	-- check the price
+	if price > 0 then
+		maxCanAfford = min(floor(GetMoney() / price), maxCanAfford)
+	end
+
+	-- check the extended cost
+	if extendedCost then
+		assert(numAltCurrencies > 0)
+		for i = 1, numAltCurrencies do
+			local _, costNum, costItemLink, currencyName = GetMerchantItemCostItem(index, i)
+			local costItemString = ItemString.Get(costItemLink)
+			local costNumHave = nil
+			if costItemString then
+				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
+			elseif currencyName then
+				for j = 1, GetCurrencyListSize() do
+					local name, isHeader, _, _, _, count = GetCurrencyListInfo(j)
+					if not isHeader and name == currencyName then
+						costNumHave = count
+						break
+					end
+				end
+			end
+			if costNumHave then
+				maxCanAfford = min(floor(costNumHave / costNum), maxCanAfford)
+			end
+		end
+	end
+
+	return maxCanAfford * stackSize
+end
+
 function Buy.BuyItem(itemString, quantity)
 	local index = private.GetFirstIndex(itemString)
 	if not index then
 		return
 	end
 	local maxStack = GetMerchantItemMaxStack(index)
-	quantity = min(quantity, private.GetMaxCanAfford(index))
+	quantity = min(quantity, Buy.GetMaxCanAfford(index))
+	if quantity == 0 then
+		return
+	end
+	private.ClearPendingContext()
+	private.pendingIndex = index
+	Delay.AfterTime("VENDORING_BUY_TIMEOUT", FIRST_BUY_TIMEOUT, private.BuyTimeout)
 	while quantity > 0 do
-		BuyMerchantItem(index, min(quantity, maxStack))
-		quantity = quantity - maxStack
+		local buyQuantity = min(quantity, maxStack)
+		BuyMerchantItem(index, buyQuantity)
+		private.pendingQuantity = private.pendingQuantity + buyQuantity
+		quantity = quantity - buyQuantity
 	end
 end
 
 function Buy.BuyItemIndex(index, quantity)
 	local maxStack = GetMerchantItemMaxStack(index)
-	quantity = min(quantity, private.GetMaxCanAfford(index))
+	quantity = min(quantity, Buy.GetMaxCanAfford(index))
+	if quantity == 0 then
+		return
+	end
+	private.ClearPendingContext()
+	private.pendingIndex = index
+	Delay.AfterTime("VENDORING_BUY_TIMEOUT", FIRST_BUY_TIMEOUT, private.BuyTimeout)
 	while quantity > 0 do
-		BuyMerchantItem(index, min(quantity, maxStack))
-		quantity = quantity - maxStack
+		local buyQuantity = min(quantity, maxStack)
+		BuyMerchantItem(index, buyQuantity)
+		private.pendingQuantity = private.pendingQuantity + buyQuantity
+		quantity = quantity - buyQuantity
 	end
 end
 
@@ -98,6 +162,7 @@ function private.MerchantShowEventHandler()
 end
 
 function private.MerchantClosedEventHandler()
+	private.ClearPendingContext()
 	Delay.Cancel("UPDATE_MERCHANT_DB")
 	Delay.Cancel("RESCAN_MERCHANT_DB")
 	private.merchantDB:Truncate()
@@ -121,7 +186,7 @@ function private.UpdateMerchantDB()
 			if numAltCurrencies == 0 then
 				extendedCost = false
 			end
-			local costItemsStr = ""
+			local costItemsText, firstCostItemString = "", ""
 			if extendedCost then
 				assert(numAltCurrencies > 0)
 				local costItems = TempTable.Acquire()
@@ -132,19 +197,24 @@ function private.UpdateMerchantDB()
 					if not costItemLink then
 						needsRetry = true
 					elseif costItemString then
+						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
 						texture = ItemInfo.GetTexture(costItemString)
 					elseif strmatch(costItemLink, "currency:") then
 						local _
 						_, _, texture = GetCurrencyInfo(costItemLink)
+						firstCostItemString = strmatch(costItemLink, "(currency:%d+)")
 					else
 						error(format("Unknown item cost (%d, %d, %s)", i, costNum, tostring(costItemLink)))
 					end
+					if TSM.Vendoring.Buy.GetMaxCanAfford(i) < stackSize then
+						costNum = Theme.GetFeedbackColor("RED"):ColorText(costNum)
+					end
 					tinsert(costItems, costNum.." |T"..(texture or "")..":12|t")
 				end
-				costItemsStr = table.concat(costItems, " ")
+				costItemsText = table.concat(costItems, " ")
 				TempTable.Release(costItems)
 			end
-			private.merchantDB:BulkInsertNewRow(i, itemString, price, costItemsStr, stackSize, numAvailable)
+			private.merchantDB:BulkInsertNewRow(i, itemString, price, costItemsText, firstCostItemString, stackSize, numAvailable)
 		end
 	end
 	private.merchantDB:BulkInsertEnd()
@@ -157,51 +227,66 @@ function private.UpdateMerchantDB()
 	end
 end
 
-function private.GetMaxCanAfford(index)
-	local maxCanAfford = math.huge
-	local _, _, price, _, _, _, _, extendedCost = GetMerchantItemInfo(index)
-	local numAltCurrencies = GetMerchantItemCostInfo(index)
-	-- bug with big keech vendor returning extendedCost = true for gold only items
-	if numAltCurrencies == 0 then
-		extendedCost = false
-	end
-
-	-- check the price
-	if price > 0 then
-		maxCanAfford = min(floor(GetMoney() / price), maxCanAfford)
-	end
-
-	-- check the extended cost
-	if extendedCost then
-		assert(numAltCurrencies > 0)
-		for i = 1, numAltCurrencies do
-			local _, costNum, costItemLink, currencyName = GetMerchantItemCostItem(index, i)
-			local costItemString = ItemString.Get(costItemLink)
-			local costNumHave = nil
-			if costItemString then
-				costNumHave = TSMAPI_FOUR.Inventory.GetBagQuantity(costItemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(costItemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(costItemString)
-			elseif currencyName then
-				for j = 1, GetCurrencyListSize() do
-					local name, isHeader, _, _, _, count = GetCurrencyInfo(j)
-					if not isHeader and name == currencyName then
-						costNumHave = count
-						break
-					end
-				end
-			end
-			if costNumHave then
-				maxCanAfford = min(floor(costNumHave / costNum), maxCanAfford)
-			end
-		end
-	end
-
-	return maxCanAfford
-end
-
 function private.GetFirstIndex(itemString)
-	return Buy.CreateMerchantQuery()
+	local index = Buy.CreateMerchantQuery()
 		:Equal("itemString", itemString)
 		:OrderBy("index", true)
 		:Select("index")
 		:GetFirstResultAndRelease()
+	if not index and ItemString.GetBaseFast(itemString) == itemString then
+		index = Buy.CreateMerchantQuery()
+			:Equal("baseItemString", itemString)
+			:OrderBy("index", true)
+			:Select("index")
+			:GetFirstResultAndRelease()
+	end
+	return index
+end
+
+function private.ChatMsgLootEventHandler(_, msg)
+	if not private.pendingIndex then
+		return
+	end
+	local link = GetMerchantItemLink(private.pendingIndex)
+	if not link then
+		Log.Err("Failed to get link (%s)", private.pendingIndex)
+		private.ClearPendingContext()
+		return
+	end
+	local quantity = nil
+	if msg == format(LOOT_ITEM_PUSHED_SELF, link) then
+		quantity = 1
+	else
+		for i = 1, GetMerchantItemMaxStack(private.pendingIndex) do
+			if msg == format(LOOT_ITEM_PUSHED_SELF_MULTIPLE, link, i) then
+				quantity = i
+				break
+			end
+		end
+	end
+	Log.Info("Got CHAT_MSG_LOOT(%s) with a quantity of %s (%d pending)", msg, tostring(quantity), private.pendingQuantity)
+	if not quantity then
+		return
+	end
+	private.pendingQuantity = private.pendingQuantity - quantity
+	if private.pendingQuantity <= 0 then
+		-- we're done
+		private.ClearPendingContext()
+		return
+	end
+
+	-- reset the timeout
+	Delay.Cancel("VENDORING_BUY_TIMEOUT")
+	Delay.AfterTime("VENDORING_BUY_TIMEOUT", CONSECUTIVE_BUY_TIMEOUT, private.BuyTimeout)
+end
+
+function private.BuyTimeout()
+	Log.Warn("Retrying buying (%d, %d)", private.pendingIndex, private.pendingQuantity)
+	Buy.BuyItemIndex(private.pendingIndex, private.pendingQuantity)
+end
+
+function private.ClearPendingContext()
+	private.pendingIndex = nil
+	private.pendingQuantity = 0
+	Delay.Cancel("VENDORING_BUY_TIMEOUT")
 end

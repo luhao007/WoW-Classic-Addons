@@ -1,19 +1,22 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- EditableText UI Element Class.
--- A text element which has an editing state. It is a subclass of the @{Element} class.
+-- A text element which has an editing state. It is a subclass of the @{Text} class.
 -- @classmod EditableText
 
 local _, TSM = ...
-local private = { frameEditableTextLookup = {} }
-local EditableText = TSM.Include("LibTSMClass").DefineClass("EditableText", TSM.UI.Element)
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local ItemLinked = TSM.Include("Service.ItemLinked")
+local UIElements = TSM.Include("UI.UIElements")
+local EditableText = TSM.Include("LibTSMClass").DefineClass("EditableText", TSM.UI.Text)
+UIElements.Register(EditableText)
 TSM.UI.EditableText = EditableText
+local private = {}
 local STRING_RIGHT_PADDING = 16
 
 
@@ -23,55 +26,47 @@ local STRING_RIGHT_PADDING = 16
 -- ============================================================================
 
 function EditableText.__init(self)
-	local frame = CreateFrame("EditBox", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "EditBox")
 
 	self.__super:__init(frame)
 
 	frame:SetShadowColor(0, 0, 0, 0)
 	frame:SetAutoFocus(false)
-	frame:SetScript("OnEscapePressed", private.OnEscapePressed)
-	frame:SetScript("OnEnterPressed", private.OnEnterPressed)
-	frame:SetScript("OnEditFocusLost", private.OnEditFocusLost)
-	private.frameEditableTextLookup[frame] = self
+	ScriptWrapper.Set(frame, "OnEscapePressed", private.OnEscapePressed, self)
+	ScriptWrapper.Set(frame, "OnEnterPressed", private.OnEnterPressed, self)
+	ScriptWrapper.Set(frame, "OnEditFocusLost", private.OnEditFocusLost, self)
 
-	frame.text = frame:CreateFontString()
+	frame.text = UIElements.CreateFontString(self, frame)
 	frame.text:SetAllPoints()
 
-	self._textStr = ""
+
+	local function ItemLinkedCallback(name, link)
+		if self._allowItemInsert == nil or not self:IsVisible() or not self._editing then
+			return
+		end
+		if self._allowItemInsert == true then
+			frame:Insert(link)
+		else
+			frame:Insert(name)
+		end
+		return true
+	end
+	ItemLinked.RegisterCallback(ItemLinkedCallback, -1)
+
 	self._editing = false
+	self._allowItemInsert = nil
 	self._onValueChangedHandler = nil
 	self._onEditingChangedHandler = nil
-end
-
-function EditableText.Acquire(self)
-	self:_GetBaseFrame():Disable()
-	self.__super:Acquire()
 end
 
 function EditableText.Release(self)
 	self:_GetBaseFrame():ClearFocus()
-	self._textStr = ""
+	self:_GetBaseFrame():Disable()
 	self._editing = false
+	self._allowItemInsert = nil
 	self._onValueChangedHandler = nil
 	self._onEditingChangedHandler = nil
 	self.__super:Release()
-end
-
---- Sets the text string.
--- @tparam EditableText self The editable text object
--- @tparam string text The text string
--- @treturn EditableText The editable text object
-function EditableText.SetText(self, text)
-	assert(text)
-	self._textStr = text
-	return self
-end
-
---- Gets the text string.
--- @tparam EditableText self The editable text object
--- @treturn string The text string
-function EditableText.GetText(self)
-	return self._textStr
 end
 
 --- Registers a script handler.
@@ -102,7 +97,7 @@ function EditableText.SetEditing(self, editing)
 	if self._onEditingChangedHandler then
 		self:_onEditingChangedHandler(editing)
 	end
-	if self:_GetStyle("autoWidth") then
+	if self._autoWidth then
 		self:GetParentElement():Draw()
 	else
 		self:Draw()
@@ -110,23 +105,30 @@ function EditableText.SetEditing(self, editing)
 	return self
 end
 
---- Gets the rendered text string width.
+--- Allows inserting an item into the editable text by linking it while the editable text has focus.
 -- @tparam EditableText self The editable text object
--- @treturn number Text width
-function EditableText.GetStringWidth(self)
-	local text = self:_GetBaseFrame().text
-	self:_ApplyTextStyle(text)
-	text:SetText(self._textStr)
-	return text:GetStringWidth()
+-- @tparam[opt=false] boolean insertLink Insert the link instead of the item name
+-- @treturn EditableText The editable text object
+function EditableText.AllowItemInsert(self, insertLink)
+	assert(insertLink == true or insertLink == false or insertLink == nil)
+	self._allowItemInsert = insertLink or false
+	return self
 end
 
 function EditableText.Draw(self)
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
-	self:_ApplyFrameStyle(frame)
-	self:_ApplyTextStyle(frame)
-	self:_ApplyTextStyle(frame.text)
-	frame.text:SetText(self._textStr)
+
+	-- set the editbox font
+	frame:SetFont(Theme.GetFont(self._font):GetWowFont())
+
+	-- set the justification
+	frame:SetJustifyH(self._justifyH)
+	frame:SetJustifyV(self._justifyV)
+
+	-- set the text color
+	frame:SetTextColor(self:_GetTextColor():GetFractionalRGBA())
+
 	if self._editing then
 		frame:Enable()
 		frame:SetText(self._textStr)
@@ -148,19 +150,11 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function EditableText._GetMinimumDimension(self, dimension)
-	if dimension == "WIDTH" and self:_GetStyle("autoWidth") then
-		return 0, true
-	else
-		return self.__super:_GetMinimumDimension(dimension)
-	end
-end
-
 function EditableText._GetPreferredDimension(self, dimension)
-	if dimension == "WIDTH" and self:_GetStyle("autoWidth") and not self._editing then
+	if dimension == "WIDTH" and self._autoWidth and not self._editing then
 		return self:GetStringWidth() + STRING_RIGHT_PADDING
 	else
-		return self.__super:_GetPreferredDimension(dimension)
+		return self.__super.__super:_GetPreferredDimension(dimension)
 	end
 end
 
@@ -170,19 +164,16 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.OnEscapePressed(frame)
-	local self = private.frameEditableTextLookup[frame]
+function private.OnEscapePressed(self)
 	self:SetEditing(false)
 end
 
-function private.OnEnterPressed(frame)
-	local newText = frame:GetText()
-	local self = private.frameEditableTextLookup[frame]
+function private.OnEnterPressed(self)
+	local newText = self:_GetBaseFrame():GetText()
 	self:SetEditing(false)
 	self:_onValueChangedHandler(newText)
 end
 
-function private.OnEditFocusLost(frame)
-	local self = private.frameEditableTextLookup[frame]
+function private.OnEditFocusLost(self)
 	self:SetEditing(false)
 end

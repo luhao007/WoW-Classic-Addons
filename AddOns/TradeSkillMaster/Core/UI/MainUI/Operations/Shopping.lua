@@ -1,21 +1,19 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Shopping = TSM.MainUI.Operations:NewPackage("Shopping")
 local L = TSM.Include("Locale").GetTable()
-local Math = TSM.Include("Util.Math")
-local Money = TSM.Include("Util.Money")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	currentOperationName = nil,
 }
-local RESTOCK_SOURCES = { bank = BANK, guild = GUILD, alts = L["Alts"], auctions = L["Auctions"] }
-local RESTOCK_SOURCES_ORDER = { "alts", "auctions", "bank", "guild" }
+local RESTOCK_SOURCES = { L["Alts"], L["Auctions"], BANK, GUILD }
+local RESTOCK_SOURCES_KEYS = { "alts", "auctions", "bank", "guild" }
+local BAD_PRICE_SOURCES = { shoppingopmax = true }
 
 
 
@@ -37,130 +35,54 @@ function private.GetShoppingOperationSettings(operationName)
 	TSM.UI.AnalyticsRecordPathChange("main", "operations", "shopping")
 	private.currentOperationName = operationName
 	local operation = TSM.Operations.GetSettings("Shopping", private.currentOperationName)
-	return TSMAPI_FOUR.UI.NewElement("Frame", "content")
-		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-			:SetStyle("color", "#9d9d9d")
-			:SetStyle("height", 2)
-			:SetStyle("margin.top", 24)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "settings")
-			:SetStyle("background", "#1e1e1e")
-			:SetStyle("padding.left", 16)
-			:SetStyle("padding.right", 16)
-			:SetStyle("padding.top", -8)
-			:AddChild(TSM.MainUI.Operations.CreateHeadingLine("generalOptions", L["General Options"]))
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("maxPrice", L["Maximum Auction Price (Per Item)"]))
-			:AddChild(TSMAPI_FOUR.UI.NewElement("BorderedFrame", "maxPrice")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("borderTheme", "roundLight")
-				:SetStyle("margin.bottom", 16)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "scroll")
-					:SetStyle("height", 61)
-					:SetStyle("margin.bottom", 2)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-						:SetStyle("height", 59)
-						:SetStyle("margin", { left = 2, right = 8 })
-						:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-						:SetStyle("fontHeight", 14)
-						:SetStyle("justifyH", "LEFT")
-						:SetText(Money.ToString(operation.maxPrice) or operation.maxPrice)
-						:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "maxPrice"))
-						:SetSettingInfo(operation, "maxPrice", TSM.MainUI.Operations.CheckCustomPrice)
-						:SetSpacing(6)
-						:SetMultiLine(true, true)
-						:SetScript("OnSizeChanged", private.OperationOnSizeChanged)
-						:SetScript("OnCursorChanged", private.OperationOnCursorChanged)
-						:SetScript("OnEnterPressed", private.MaxPriceOnEnterPressed)
-					)
+	return UIElements.New("ScrollFrame", "settings")
+		:SetPadding(8, 8, 8, 0)
+		:SetBackgroundColor("PRIMARY_BG")
+		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Shopping", "generalOptions", L["General Options"], L["Set what items are shown during a Shopping scan."])
+			:AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("maxPrice", L["Maximum auction price"], 124, BAD_PRICE_SOURCES))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("showAboveMaxPrice", L["Show auctions above max price"])
+				:SetLayout("VERTICAL")
+				:SetHeight(48)
+				:SetMargin(0, 0, 12, 12)
+				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+					:SetHeight(18)
+					:SetSettingInfo(operation, "showAboveMaxPrice")
+					:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "showAboveMaxPrice"))
 				)
-				:SetScript("OnMouseUp", private.OperationOnMouseUp)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("showAboveMaxPrice", L["Show auctions above max price?"])
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "showAboveMaxPriceSettingFrame")
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockQuantity", L["Maximum restock quantity"])
+				:SetLayout("VERTICAL")
+				:SetHeight(48)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Frame", "content")
 					:SetLayout("HORIZONTAL")
-					-- move the right by the width of the toggle so this frame gets half the total width
-					:SetStyle("margin.right", -TSM.UI.TexturePacks.GetWidth("uiFrames.ToggleOn"))
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ToggleOnOff", "showAboveMaxPrice")
-						:SetSettingInfo(operation, "showAboveMaxPrice")
+					:SetHeight(24)
+					:AddChild(UIElements.New("Input", "input")
+						:SetMargin(0, 8, 0, 0)
+						:SetBackgroundColor("ACTIVE_BG")
+						:SetValidateFunc("CUSTOM_PRICE")
+						:SetSettingInfo(operation, "restockQuantity")
+						:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockQuantity"))
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-				)
-			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("evenStacks", L["Neat Stacks only?"])
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "evenStacksSettingFrame")
-					:SetLayout("HORIZONTAL")
-					-- move the right by the width of the toggle so this frame gets half the total width
-					:SetStyle("margin.right", -TSM.UI.TexturePacks.GetWidth("uiFrames.ToggleOn"))
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ToggleOnOff", "evenStacks")
-						:SetSettingInfo(operation, "evenStacks")
-						:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "evenStacks"))
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3")
+						:SetTextColor(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockQuantity") and "TEXT_DISABLED" or "TEXT")
+						:SetFormattedText(L["Supported range: %d - %d"], TSM.Operations.Shopping.GetRestockRange())
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockQuantity", L["Maximum restock quantity:"])
-				:SetLayout("HORIZONTAL")
-				:SetStyle("margin.right", -112)
-				:SetStyle("margin.bottom", 16)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "restockInput")
-					:SetStyle("width", 96)
-					:SetStyle("height", 24)
-					:SetStyle("margin.right", 16)
-					:SetStyle("justifyH", "CENTER")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 16)
-					:SetSettingInfo(operation, "restockQuantity")
-					:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockQuantity"))
-					:SetMaxNumber(10000)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "restockLabel")
-					:SetText(L["(min 0 - max 10000)"])
-					:SetStyle("fontHeight", 14)
-				)
-			)
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockSources", L["Sources to include for restock:"])
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "restockSourcesDropdown")
-					:SetMultiselect(true)
-					:SetDictionaryItems(RESTOCK_SOURCES, operation.restockSources, RESTOCK_SOURCES_ORDER)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("restockSources", L["Sources to include for restock"])
+				:SetLayout("VERTICAL")
+				:SetHeight(48)
+				:AddChild(UIElements.New("MultiselectionDropdown", "dropdown")
+					:SetHeight(24)
+					:SetItems(RESTOCK_SOURCES, RESTOCK_SOURCES_KEYS)
 					:SetSettingInfo(operation, "restockSources")
+					:SetSelectionText(L["No Sources"], L["%d Sources"], L["All Sources"])
 					:SetDisabled(TSM.Operations.HasRelationship("Shopping", private.currentOperationName, "restockSources"))
 				)
 			)
-			:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Shopping", private.currentOperationName))
 		)
-end
-
-
-
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
-
-function private.OperationOnSizeChanged(input, width, height)
-	if input:HasFocus() then
-		input:SetText(input:GetText())
-	end
-
-	input:SetStyle("height", height)
-	input:GetParentElement():Draw()
-end
-
-function private.OperationOnCursorChanged(input, _, y)
-	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
-end
-
-function private.OperationOnMouseUp(frame)
-	frame:GetElement("scroll.input"):SetFocused(true)
-end
-
-function private.MaxPriceOnEnterPressed(input)
-	if not TSM.MainUI.Operations.CheckCustomPrice(input:GetText(), true) then
-		local operation = TSM.Operations.GetSettings("Shopping", private.currentOperationName)
-		input:SetText(Money.ToString(operation.maxPrice) or operation.maxPrice)
-		input:SetFocused(true)
-
-		private.OperationOnSizeChanged(input, nil, input:GetHeight())
-	end
+		:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Shopping", private.currentOperationName))
 end

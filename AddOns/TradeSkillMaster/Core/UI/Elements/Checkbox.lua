@@ -1,19 +1,32 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Checkbox UI Element Class.
--- This is a simple checkbox element with an attached description text. It is a subclass of the @{Element} class.
+-- This is a simple checkbox element with an attached description text. It is a subclass of the @{Text} class.
 -- @classmod Checkbox
 
 local _, TSM = ...
-local Checkbox = TSM.Include("LibTSMClass").DefineClass("Checkbox", TSM.UI.Element)
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Theme = TSM.Include("Util.Theme")
+local UIElements = TSM.Include("UI.UIElements")
+local Checkbox = TSM.Include("LibTSMClass").DefineClass("Checkbox", TSM.UI.Text)
+UIElements.Register(Checkbox)
 TSM.UI.Checkbox = Checkbox
-local private = { checkboxLookup = {} }
+local private = {}
+local THEME_TEXTURES = {
+	RADIO = {
+		checked = "iconPack.Misc/Radio/Checked",
+		unchecked = "iconPack.Misc/Radio/Unchecked",
+	},
+	CHECK = {
+		checked = "iconPack.Misc/Checkbox/Checked",
+		unchecked = "iconPack.Misc/Checkbox/Unchecked",
+	},
+}
+local CHECKBOX_SPACING = 4
 
 
 
@@ -22,20 +35,18 @@ local private = { checkboxLookup = {} }
 -- ============================================================================
 
 function Checkbox.__init(self)
-	local frame = CreateFrame("Button", nil, nil, nil)
-
+	local frame = UIElements.CreateFrame(self, "Button")
 	self.__super:__init(frame)
-
-	frame:SetScript("OnClick", private.FrameOnClick)
-	private.checkboxLookup[frame] = self
+	ScriptWrapper.Set(frame, "OnClick", private.FrameOnClick, self)
 
 	-- create the text and check texture
-	frame.text = frame:CreateFontString()
+	frame.text = UIElements.CreateFontString(self, frame)
 	frame.text:SetJustifyV("MIDDLE")
 	frame.check = frame:CreateTexture()
 
-	self._textStr = ""
 	self._position = "LEFT"
+	self._theme = "CHECK"
+	self._font = "BODY_BODY3"
 	self._disabled = false
 	self._value = false
 	self._onValueChangedHandler = nil
@@ -43,19 +54,16 @@ function Checkbox.__init(self)
 	self._settingKey = nil
 end
 
-function Checkbox.Acquire(self)
-	self._textStr = ""
+function Checkbox.Release(self)
 	self._position = "LEFT"
+	self._theme = "CHECK"
 	self._disabled = false
 	self._value = false
-	self.__super:Acquire()
-end
-
-function Checkbox.Release(self)
 	self._onValueChangedHandler = nil
 	self._settingTable = nil
 	self._settingKey = nil
 	self.__super:Release()
+	self._font = "BODY_BODY3"
 end
 
 --- Sets the position of the checkbox relative to the text.
@@ -72,10 +80,20 @@ function Checkbox.SetCheckboxPosition(self, position)
 	return self
 end
 
+--- Sets the checkbox theme
+-- @tparam Checkbox self The checkbox object
+-- @tparam string theme Either "RADIO" or "CHECK"
+-- @treturn Checkbox The checkbox object
+function Checkbox.SetTheme(self, theme)
+	assert(THEME_TEXTURES[theme])
+	self._theme = theme
+	return self
+end
+
 --- Sets whether or not the checkbox is disabled.
--- @tparam Input self The checkbox object
+-- @tparam Checkbox self The checkbox object
 -- @tparam boolean disabled Whether or not the checkbox is disabled
--- @treturn Input The checkbox object
+-- @treturn Checkbox The checkbox object
 function Checkbox.SetDisabled(self, disabled)
 	self._disabled = disabled
 	return self
@@ -157,31 +175,23 @@ function Checkbox.SetScript(self, script, handler)
 	return self
 end
 
---- Get the width of the checkbox's text string.
--- @tparam Checkbox self The checkbox object
--- @treturn number The width of the text string
-function Checkbox.GetStringWidth(self)
-	local text = self:_GetBaseFrame().text
-	self:_ApplyTextStyle(text)
-	text:SetText(self._textStr)
-	return text:GetStringWidth()
-end
-
 function Checkbox.Draw(self)
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
-	self:_ApplyFrameStyle(frame)
-	self:_ApplyTextStyle(frame.text, self._disabled)
 
-	frame.text:SetText(self._textStr)
-	TSM.UI.TexturePacks.SetTextureAndSize(frame.check, self:_GetStyle(self._value and "checkedTexturePack" or "uncheckedTexturePack"))
+	if self._disabled then
+		frame.text:SetTextColor(Theme.GetColor("TEXT_DISABLED"):GetFractionalRGBA())
+	else
+		frame.text:SetTextColor(self:_GetTextColor():GetFractionalRGBA())
+	end
+	TSM.UI.TexturePacks.SetTextureAndSize(frame.check, THEME_TEXTURES[self._theme][self._value and "checked" or "unchecked"])
 
 	frame.text:ClearAllPoints()
 	frame.check:ClearAllPoints()
 	if self._position == "LEFT" then
 		frame.check:SetPoint("LEFT")
 		frame.text:SetJustifyH("LEFT")
-		frame.text:SetPoint("LEFT", frame.check, "RIGHT", self:_GetStyle("checkboxSpacing"), 0)
+		frame.text:SetPoint("LEFT", frame.check, "RIGHT", CHECKBOX_SPACING, 0)
 		frame.text:SetPoint("TOPRIGHT")
 		frame.text:SetPoint("BOTTOMRIGHT")
 	elseif self._position == "RIGHT" then
@@ -189,7 +199,7 @@ function Checkbox.Draw(self)
 		frame.text:SetJustifyH("RIGHT")
 		frame.text:SetPoint("BOTTOMLEFT")
 		frame.text:SetPoint("TOPLEFT")
-		frame.text:SetPoint("RIGHT", frame.check, "LEFT", -self:_GetStyle("checkboxSpacing"), 0)
+		frame.text:SetPoint("RIGHT", frame.check, "LEFT", -CHECKBOX_SPACING, 0)
 	else
 		error("Invalid position: "..tostring(self._position))
 	end
@@ -209,10 +219,9 @@ end
 -- ============================================================================
 
 function Checkbox._GetMinimumDimension(self, dimension)
-	if dimension == "WIDTH" and self:_GetStyle("autoWidth") then
-		local checkboxSpacing = self:_GetStyle("checkboxSpacing")
-		local checkboxWidth = TSM.UI.TexturePacks.GetWidth(self:_GetStyle("checkedTexturePack"))
-		return self:GetStringWidth() + checkboxSpacing + checkboxWidth, nil
+	if dimension == "WIDTH" and self._autoWidth then
+		local checkboxWidth = TSM.UI.TexturePacks.GetWidth(THEME_TEXTURES[self._theme].checked)
+		return self:GetStringWidth() + CHECKBOX_SPACING + checkboxWidth, nil
 	else
 		return self.__super:_GetMinimumDimension(dimension)
 	end
@@ -224,8 +233,7 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.FrameOnClick(frame)
-	local self = private.checkboxLookup[frame]
+function private.FrameOnClick(self)
 	local value = not self._value
 
 	if self._settingTable and self._settingKey then

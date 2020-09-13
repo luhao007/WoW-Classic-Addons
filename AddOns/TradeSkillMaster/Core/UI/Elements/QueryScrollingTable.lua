@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Query Scrolling Table UI ScrollingTable Class.
@@ -15,12 +13,10 @@ local _, TSM = ...
 local QueryScrollingTable = TSM.Include("LibTSMClass").DefineClass("QueryScrollingTable", TSM.UI.ScrollingTable)
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(QueryScrollingTable)
 TSM.UI.QueryScrollingTable = QueryScrollingTable
-local private = {
-	queryQueryScrollingTableLookup = {},
-	frameQueryScrollingTableLookup = {},
-	rowFrameLookup = {},
-}
+local private = {}
 
 
 
@@ -39,7 +35,6 @@ end
 function QueryScrollingTable.Release(self)
 	if self._query then
 		self._query:SetUpdateCallback()
-		private.queryQueryScrollingTableLookup[self._query] = nil
 		if self._autoReleaseQuery then
 			self._query:Release()
 		end
@@ -63,28 +58,13 @@ function QueryScrollingTable.SetQuery(self, query, redraw)
 	end
 	if self._query then
 		self._query:SetUpdateCallback()
-		private.queryQueryScrollingTableLookup[self._query] = nil
 	end
 	self._query = query
-	private.queryQueryScrollingTableLookup[self._query] = self
-	self._query:SetUpdateCallback(private.QueryUpdateCallback)
+	self._query:SetUpdateCallback(private.QueryUpdateCallback, self)
 
-	if self._tableInfo:_IsSortEnabled() then
-		local sortField, sortAscending = self._query:GetFirstOrderBy()
-		if sortField then
-			self._sortCol = self._tableInfo:_GetIdBySortField(sortField)
-			self._sortAscending = sortAscending
-		else
-			self._sortCol = nil
-			self._sortAscending = nil
-		end
-	end
-
-	self:_UpdateData()
-	if redraw then
-		self:Draw()
-	end
-
+	self:_UpdateSortFromQuery()
+	self:_ForceLastDataUpdate()
+	self:UpdateData(redraw)
 	return self
 end
 
@@ -97,11 +77,12 @@ function QueryScrollingTable.SetAutoReleaseQuery(self, autoRelease)
 	return self
 end
 
---- Sets the select record.
+--- Sets the selected record.
 -- @tparam QueryScrollingTable self The query scrolling table object
 -- @param selection The selected record or nil to clear the selection
+-- @tparam[opt=false] bool redraw Whether or not to redraw the scrolling table
 -- @treturn QueryScrollingTable The query scrolling table object
-function QueryScrollingTable.SetSelection(self, selection)
+function QueryScrollingTable.SetSelection(self, selection, redraw)
 	if selection == self._selection then
 		return self
 	elseif selection and self._selectionValidator and not self:_selectionValidator(self._query:GetResultRowByUUID(selection)) then
@@ -112,25 +93,31 @@ function QueryScrollingTable.SetSelection(self, selection)
 		index = Table.KeyByValue(self._data, selection)
 		assert(index)
 	end
+	self:_IgnoreLastDataUpdate()
 	self._selection = selection
 	if selection then
 		-- set the scroll so that the selection is visible if necessary
-		local rowHeight = self:_GetStyle("rowHeight")
-		local firstVisibleIndex = ceil(self._scrollValue / rowHeight) + 1
-		local lastVisibleIndex = floor((self._scrollValue + self:_GetDimension("HEIGHT")) / rowHeight)
+		local rowHeight = self._rowHeight
+		local firstVisibleIndex = ceil(self._vScrollValue / rowHeight) + 1
+		local lastVisibleIndex = floor((self._vScrollValue + self:_GetDimension("HEIGHT")) / rowHeight)
 		if lastVisibleIndex > firstVisibleIndex and (index < firstVisibleIndex or index > lastVisibleIndex) then
 			self:_OnScrollValueChanged(min((index - 1) * rowHeight, self:_GetMaxScroll()))
 		end
 	end
 	for _, row in ipairs(self._rows) do
 		if not row:IsMouseOver() and row:IsVisible() and row:GetData() ~= selection then
-			row:SetHighlightVisible(false)
+			row:SetHighlightState(nil)
+		elseif row:IsMouseOver() and row:IsVisible() then
+			row:SetHighlightState(row:GetData() == selection and "selectedHover" or "hover")
 		elseif row:IsVisible() and row:GetData() == selection then
-			row:SetHighlightVisible(true)
+			row:SetHighlightState("selected")
 		end
 	end
 	if self._onSelectionChangedHandler then
 		self:_onSelectionChangedHandler()
+	end
+	if redraw then
+		self:Draw()
 	end
 	return self
 end
@@ -159,8 +146,11 @@ end
 
 function QueryScrollingTable.Draw(self)
 	self._query:SetUpdatesPaused(true)
-	self._header:SetSort(self._sortCol, self._sortAscending)
+	if self._lastDataUpdate == nil then
+		self:_IgnoreLastDataUpdate()
+	end
 	self.__super:Draw()
+	self._header:SetSort(self._sortCol, self._sortAscending)
 	self._query:SetUpdatesPaused(false)
 end
 
@@ -172,6 +162,19 @@ end
 
 function QueryScrollingTable._CreateScrollingTableInfo(self)
 	return TSM.UI.Util.QueryScrollingTableInfo()
+end
+
+function QueryScrollingTable._UpdateSortFromQuery(self)
+	if self._tableInfo:_IsSortEnabled() then
+		local sortField, sortAscending = self._query:GetLastOrderBy()
+		if sortField then
+			self._sortCol = self._tableInfo:_GetIdBySortField(sortField)
+			self._sortAscending = sortAscending
+		else
+			self._sortCol = nil
+			self._sortAscending = nil
+		end
+	end
 end
 
 function QueryScrollingTable._UpdateData(self)
@@ -206,13 +209,18 @@ function QueryScrollingTable._UpdateData(self)
 	end
 	TempTable.Release(prevRowIndex)
 	TempTable.Release(newRowData)
+	if prevSelection and not self._selection then
+		-- select the first row since we weren't able to find the previously-selected row
+		self:SetSelection(self._data[1])
+	end
 	if self._onDataUpdated then
 		self:_onDataUpdated()
 	end
 end
 
 function QueryScrollingTable._ToggleSort(self, id)
-	if not self._sortCol or not self._query then
+	local sortField = self._tableInfo:_GetSortFieldById(id)
+	if not self._sortCol or not self._query or not sortField then
 		-- sorting disabled so ignore
 		return
 	end
@@ -224,8 +232,7 @@ function QueryScrollingTable._ToggleSort(self, id)
 		self._sortAscending = true
 	end
 
-	self._query:ResetOrderBy()
-	self._query:OrderBy(self._tableInfo:_GetSortFieldById(self._sortCol), self._sortAscending)
+	self._query:UpdateLastOrderBy(sortField, self._sortAscending)
 	self:_UpdateData()
 	self:Draw()
 end
@@ -242,6 +249,10 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.QueryUpdateCallback(query)
-	private.queryQueryScrollingTableLookup[query]:UpdateData(true)
+function private.QueryUpdateCallback(_, uuid, self)
+	self:_SetLastDataUpdate(uuid)
+	if not uuid then
+		self:_UpdateData()
+	end
+	self:Draw()
 end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -16,10 +14,11 @@ local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local Sound = TSM.Include("Util.Sound")
 local CSV = TSM.Include("Util.CSV")
+local Wow = TSM.Include("Util.Wow")
 local private = {
 	context = {},
 	proxies = {},
-	profileWarning = nil,
+	views = {},
 	protectedAccessAllowed = {},
 	cachedConnectedRealms = nil,
 	upgradeContext = nil,
@@ -119,55 +118,168 @@ local DEFAULT_DB = {
 -- [49] added factionrealm.internalData.{mailDisenchantablesChar,mailExcessGoldChar,mailExcessGoldLimit}
 -- [50] added factionrealm.internalData.{csvAuctionDBScan,auctionDBScanTime,auctionDBScanHash}
 -- [51-53] resetting factionrealm.internalData.crafts
+-- [54] removed global.coreOptions.{tsmItemTweetEnabled,auctionSaleEnabled,auctionBuyEnabled}
+-- [55] added global.auctionUIContext.{auctioningSelectionDividedContainer,auctioningBagScrollingTable,auctioningLogScrollingTable,auctioningAuctionScrollingTable,myAuctionsScrollingTable,shoppingSelectionDividedContainer,shoppingAuctionScrollingTable,sniperScrollingTable,frame,showDefault,shoppingSearchesTabGroup}
+--  added global.bankingUIContext.{frame,isOpen,tab}
+--  added global.craftingUIContext.{craftsScrollingTable,matsScrollingTable,gatheringDividedContainer,gatheringScrollingTable,professionScrollingTable,frame,showDefault,professionDividedContainer}
+--  added global.destroyingUIContext.itemsScrollingTable
+--  added global.mailingUIContext.{mailsScrollingTable,frame,showDefault}
+--  added global.mainUIContext.{ledgerDetailScrollingTable,ledgerInventoryScrollingTable,ledgerAuctionsScrollingTable,ledgerOtherScrollingTable,ledgerTransactionsScrollingTable,ledgerResaleScrollingTable,frame,dashboardDividedContainer,groupsDividedContainer,operationsDividedContainer,importExportDividedContainer}
+--  added global.taskListUIContext.{frame,isOpen}
+--  added global.vendoringUIContext.{buyScrollingTable,buybackScrollingTable,sellScrollingTable,frame,showDefault}
+--  added profile.mainUIContext.{groupsManagementGroupTree,importGroupTree,exportGroupTree}
+--  added profile.auctionUIContext.{auctioningTabGroup,auctioningGroupTree,shoppingGroupTree}
+--  added profile.bankingUIContext.{warehousingGroupTree,auctioningGroupTree,mailingGroupTree}
+--  added profile.craftingUIContext.groupTree
+--  added profile.mailingUIContext.groupTree
+--  added profile.vendoringUIContext.groupTree
+--  removed profile.internalData.{auctioningTabGroupContext,auctioningGroupTreeContext,managementGroupTreeContext,shoppingGroupTreeContext,importGroupTreeContext,exportGroupTreeContext,bankingUIFrameContext,craftingUIFrameContext,auctionUIFrameContext,mailingUIFrameContext,vendoringUIFrameContext,destroyingUIFrameContext,mainUIFrameContext,taskListUIFrameContext}
+-- [56] added factionrealm.internalData.isCraftFavorite
+-- [57] updated global.auctionUIContext.auctioningAuctionScrollingTable
+-- [58] updated global.auctionUIContext.sniperScrollingTable
+-- [59] updated global.mainUIContext.{frame,dashboardDividedContainer,ledgerDetailScrollingTable,ledgerInventoryScrollingTable,ledgerAuctionsScrollingTable,ledgerOtherScrollingTable,ledgerTransactionsScrollingTable,ledgerResaleScrollingTable}
+-- [60] updated global.auctionUIContext.{auctioningAuctionScrollingTable,shoppingAuctionScrollingTable,sniperScrollingTable}, global.craftingUIContext.professionScrollingTable
+-- [61] updated global.auctionUIContext.sniperScrollingTable
+-- [62] updated global.mainUIContext.{ledgerTransactionsScrollingTable,ledgerResaleScrollingTable}
+-- [63] removed global.auctioningOptions.roundNormalPrice
+-- [64] removed global.accountingOptions.smartBuyPrice
+-- [65] added global.appearanceOptions.colorSet
+-- [66] added global.auctionUIContext.auctioningSelectionVerticalDividedContainer
+-- [67] updated global.mailingUIContext.mailsScrollingTable
+-- [68] removed profile.internalData.{bankUIBankFramePosition,bankUIGBankFramePosition,shoppingTabGroupContext,bankingWarehousingGroupTreeContext,bankingAuctioningGroupTreeContext,bankingMailingGroupTreeContext,craftingGroupTreeContext,mailingGroupTreeContext,vendoringGroupTreeContext}
+-- [69] updated global.mainUIContext.ledgerInventoryScrollingTable
+-- [70] updated global.auctionUIContext.{auctioningAuctionScrollingTable,shoppingAuctionScrollingTable}
+-- [71] moved profile.auctionUIContext.{auctioningGroupTree,shoppingGroupTree},profile.bankingUIContext.{warehousingGroupTree,auctioningGroupTree,mailingGroupTree},profile.craftingUIContext.groupTree,profile.mailingUIContext.groupTree,profile.mainUIContext.{groupsManagementGroupTree,importGroupTree,exportGroupTree} to char.*
+-- [72] updated global.auctionUIContext.sniperScrollingTable
+-- [73] added profile.vendoringUIContext.groupTree
+-- [74] added sync.internalData.money
+-- [75] updated global.appearanceOptions.colorSet
+-- [76] updated global.mainUIContext.operationsSummaryScrollingTable
+-- [77] added global.coreOptions.protectAuctionHouse
+-- [78] added global.mainUIContext.{dashboardUnselectedCharacters,dashboardTimeRange}
+-- [79] updated global.shoppingOptions.maxDeSearchLvl
+-- [80] updated char.auctionUIContext.{auctioningGroupTree,shoppingGroupTree},char.bankingUIContext.{warehousingGroupTree,auctioningGroupTree,mailingGroupTree},char.craftingUIContext.groupTree,char.mailingUIContext.groupTree,char.vendoringUIContext.groupTree,char.mainUIContext.{importGroupTree,exportGroupTree}
+-- [81] updated global.mailingUIContext.mailsScrollingTable
+-- [82] updated global.craftingUIContext.professionScrollingTable
+-- [83] added sync.internalData.goldLogLastUpdate, factionrealm.internalData.guildGoldLogLastUpdate
+-- [84] added global.auctionUIContext.myAuctionsScrollingTable
+-- [85] removed global.craftingOptions.ignoreCDCraftCost
+-- [86] updated global.craftingUIContext.craftsScrollingTable
+-- [87] added global.craftingUIContext.craftsScrollingTable
+-- [88] added global.shoppingOptions.searchAutoFocus
+-- [89] updated global.craftingOptions.defaultCraftPriceMethod
+-- [90] added global.internalData.lastCharacter
+-- [91] updated global.craftingUIContext.professionScrollingTable
+-- [92] updated global.vendoringUIContext.buyScrollingTable
+-- [93] moved profile.auctionUIContext.auctioningTabGroup to global.auctionUIContext.auctioningTabGroup
+-- [94] added global.internalData.whatsNewVersion
 
 local SETTINGS_INFO = {
-	version = 53,
+	version = 94,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
 		},
 		internalData = {
+			lastCharacter = { type = "string", default = "???", lastModifiedVersion = 90 },
 			vendorItems = { type = "table", default = {}, lastModifiedVersion = 10 },
 			appMessageId = { type = "number", default = 0, lastModifiedVersion = 10 },
 			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 10 },
-			mainUIFrameContext = { type = "table", default = { width = 948, height = 757, centerX = 0, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			auctionUIFrameContext = { type = "table", default = { width = 830, height = 587, centerX = -300, centerY = 100, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			craftingUIFrameContext = { type = "table", default = { width = 820, height = 587, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			destroyingUIFrameContext = { type = "table", default = { width = 296, height = 442, centerX = 0, centerY = 0, scale = 1 }, lastModifiedVersion = 44 },
-			mailingUIFrameContext = { type = "table", default = { width = 560, height = 500, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			vendoringUIFrameContext = { type = "table", default = { width = 560, height = 500, centerX = -200, centerY = 0, page = 1, scale = 1 }, lastModifiedVersion = 44 },
-			bankingUIFrameContext = { type = "table", default = { width = 325, height = 600, centerX = 500, centerY = 0, tab = "Warehousing", isOpen = true, scale = 1 }, lastModifiedVersion = 44 },
-			taskListUIFrameContext = { type = "table", default = { topRightX = -220, topRightY = -10, minimized = false, isOpen = true }, lastModifiedVersion = 33 },
+			whatsNewVersion = { type = "number", default = 0, lastModifiedVersion = 94 },
+		},
+		appearanceOptions = {
+			taskListBackgroundLock = { type = "boolean", default = false, lastModifiedVersion = 87 },
+			colorSet = { type = "string", default = "midnight", lastModifiedVersion = 75 },
+		},
+		auctionUIContext = {
+			frame = { type = "table", default = { width = 830, height = 587, centerX = -300, centerY = 100, scale = 1, page = 1 }, lastModifiedVersion = 55 },
+			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
+			auctioningSelectionDividedContainer = { type = "table", default = { leftWidth = 272 }, lastModifiedVersion = 55 },
+			auctioningSelectionVerticalDividedContainer = { type = "table", default = { leftWidth = 220 }, lastModifiedVersion = 66 },
+			auctioningBagScrollingTable = { type = "table", default = { colWidth = { selected = 16, item = 246, operation = 206 }, colHidden = {} }, lastModifiedVersion = 55 },
+			auctioningLogScrollingTable = { type = "table", default = { colWidth = { index = 14, item = 190, buyout = 110, operation = 108, seller = 90, info = 234 }, colHidden = {} }, lastModifiedVersion = 55 },
+			auctioningAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, timeLeft = 26, seller = TSM.IsWowClassic() and 88 or 136, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 70 },
+			myAuctionsScrollingTable = { type = "table", default = { colWidth = { item = 248, stackSize = 30, timeLeft = 40, highbidder = TSM.IsWowClassic() and 110 or nil, group = TSM.IsWowClassic() and 110 or 228, currentBid = 100, buyout = 100 }, colHidden = {} }, lastModifiedVersion = 84 },
+			shoppingSelectionDividedContainer = { type = "table", default = { leftWidth = 272 }, lastModifiedVersion = 55 },
+			shoppingAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, timeLeft = 26, seller = TSM.IsWowClassic() and 88 or 136, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 70 },
+			sniperScrollingTable = { type = "table", default = { colWidth = { icon = 24, item = 230, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, seller = TSM.IsWowClassic() and 86 or 134, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115,  bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 72 },
+			shoppingSearchesTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 55 },
+			auctioningTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 93 },
+		},
+		bankingUIContext = {
+			frame = { type = "table", default = { width = 325, height = 600, centerX = 500, centerY = 0, scale = 1 }, lastModifiedVersion = 55 },
+			isOpen = { type = "boolean", default = true, lastModifiedVersion = 55 },
+			tab = { type = "string", default = "Warehousing", lastModifiedVersion = 55 },
+		},
+		craftingUIContext = {
+			frame = { type = "table", default = { width = 820, height = 587, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
+			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
+			craftsScrollingTable = { type = "table", default = { colWidth = { queued = 30, craftName = 218, operation = 80, bags = 28, ah = 24, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50,  saleRate = 32 }, colHidden = { profitPct = true } }, lastModifiedVersion = 86 },
+			matsScrollingTable = { type = "table", default = { colWidth = { name = 242, price = 100, professions = 310, num = 100 }, colHidden = {} }, lastModifiedVersion = 55 },
+			gatheringDividedContainer = { type = "table", default = { leftWidth = 284 }, lastModifiedVersion = 55 },
+			gatheringScrollingTable = { type = "table", default = { colWidth = { name = 206, sources = 160, have = 50, need = 50 }, colHidden = {} }, lastModifiedVersion = 55 },
+			professionScrollingTable = { type = "table", default = { colWidth = { name = not TSM.IsWowClassic() and 240 or 288, qty = 54, rank = not TSM.IsWowClassic() and 40 or nil, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50, saleRate = 30 }, colHidden = { craftingCost = true, itemValue = true, profitPct = true }, collapsed = {} }, lastModifiedVersion = 91 },
+			professionDividedContainer = { type = "table", default = { leftWidth = 520 }, lastModifiedVersion = 55 },
+		},
+		destroyingUIContext = {
+			frame = { type = "table", default = { width = 296, height = 442, centerX = 0, centerY = 0, scale = 1 }, lastModifiedVersion = 55 },
+			itemsScrollingTable = { type = "table", default = { colWidth = { item = 214, num = 30 }, colHidden = {} }, lastModifiedVersion = 55 },
+		},
+		mailingUIContext = {
+			frame = { type = "table", default = { width = 620, height = 516, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
+			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
+			mailsScrollingTable = { type = "table", default = { colWidth = { items = 380, sender = 100, expires = 65, money = 115 }, colHidden = { sender = true } }, lastModifiedVersion = 81 },
+		},
+		mainUIContext = {
+			frame = { type = "table", default = { width = 900, height = 700, centerX = 0, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 59 },
+			ledgerDetailScrollingTable = { type = "table", default = { colWidth = { activityType = 91, source = 60, buyerSeller = 100, qty = 45, perItem = 120, totalPrice = 120, time = 110 }, colHidden = {} }, lastModifiedVersion = 59 },
+			ledgerInventoryScrollingTable = { type = "table", default = { colWidth = { item = 160, totalItems = 50, bags = 50, banks = 50, mail = 50, alts = 50, guildVault = 50, auctionHouse = 50, totalValue = 120 }, colHidden = {} }, lastModifiedVersion = 69 },
+			ledgerAuctionsScrollingTable = { type = "table", default = { colWidth = { item = 305, player = 110, stackSize = 55, quantity = 72, time = 120 }, colHidden = {} }, lastModifiedVersion = 59 },
+			ledgerOtherScrollingTable = { type = "table", default = { colWidth = { type = 200, character = 110, otherCharacter = 122, amount = 120, time = 110 }, colHidden = {} }, lastModifiedVersion = 59 },
+			ledgerTransactionsScrollingTable = { type = "table", default = { colWidth = { item = 156, player = 95, type = 50, stack = 55, auctions = 60, perItem = 120, total = 120, time = 110 }, colHidden = { total = true } }, lastModifiedVersion = 62 },
+			ledgerResaleScrollingTable = { type = "table", default = { colWidth = { item = 194, bought = 50, avgBuyPrice = 120, sold = 50, avgSellPrice = 120, avgProfit = 120, totalProfit = 120, profitPct = 80 }, colHidden = { totalProfit = true, profitPct = true } }, lastModifiedVersion = 62 },
+			dashboardDividedContainer = { type = "table", default = { leftWidth = 300 }, lastModifiedVersion = 59 },
+			dashboardUnselectedCharacters = { type = "table", default = {}, lastModifiedVersion = 78 },
+			dashboardTimeRange = { type = "number", default = -1, lastModifiedVersion = 78 },
+			groupsDividedContainer = { type = "table", default = { leftWidth = 300 }, lastModifiedVersion = 55 },
+			operationsDividedContainer = { type = "table", default = { leftWidth = 306 }, lastModifiedVersion = 55 },
+			importExportDividedContainer = { type = "table", default = { leftWidth = 300 }, lastModifiedVersion = 55 },
+			operationsSummaryScrollingTable = { type = "table", default = { colWidth = { selected = 16, name = 248, groups = 130, items = 130 }, colHidden = {} }, lastModifiedVersion = 76 },
+		},
+		taskListUIContext = {
+			frame = { type = "table", default = { topRightX = -220, topRightY = -10, minimized = false, isOpen = true }, lastModifiedVersion = 55 },
+			isOpen = { type = "boolean", default = true, lastModifiedVersion = 55 },
+		},
+		vendoringUIContext = {
+			frame = { type = "table", default = { width = 560, height = 500, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
+			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
+			buyScrollingTable = { type = "table", default = { colWidth = { qty = 40, item = 310, ilvl = 32, cost = 150 }, colHidden = { ilvl = true } }, lastModifiedVersion = 92 },
+			buybackScrollingTable = { type = "table", default = { colWidth = { qty = 40, item = 360, cost = 100 }, colHidden = {} }, lastModifiedVersion = 55 },
+			sellScrollingTable = { type = "table", default = { colWidth = { item = 300, vendorSell = 100, potential = 100 }, colHidden = {} }, lastModifiedVersion = 55 },
 		},
 		coreOptions = {
 			globalOperations = { type = "boolean", default = false, lastModifiedVersion = 10 },
+			protectAuctionHouse = { type = "boolean", default = false, lastModifiedVersion = 77 },
 			chatFrame = { type = "string", default = "", lastModifiedVersion = 10 },
 			auctionSaleSound = { type = "string", default = Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
 			minimapIcon = { type = "table", default = { hide = false, minimapPos = 220, radius = 80 }, lastModifiedVersion = 10 },
 			destroyValueSource = { type = "string", default = "dbmarket", lastModifiedVersion = 10 },
 			groupPriceSource = { type = "string", default = "dbmarket", lastModifiedVersion = 41 },
-			-- TODO: remove these settings when it's safe to bump our version
-			tsmItemTweetEnabled = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			auctionSaleEnabled = { type = "boolean", default = true, lastModifiedVersion = 10 },
-			auctionBuyEnabled = { type = "boolean", default = true, lastModifiedVersion = 10 },
 		},
 		accountingOptions = {
 			trackTrades = { type = "boolean", default = true, lastModifiedVersion = 10 },
 			autoTrackTrades = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			smartBuyPrice = { type = "boolean", default = false, lastModifiedVersion = 10 },
 		},
 		auctioningOptions = {
 			cancelWithBid = { type = "boolean", default = false, lastModifiedVersion = 10 },
 			disableInvalidMsg = { type = "boolean", default = false, lastModifiedVersion = 10 },
-			roundNormalPrice = { type = "boolean", default = false, lastModifiedVersion = 10 },
 			matchWhitelist = { type = "boolean", default = true, lastModifiedVersion = 10 },
 			scanCompleteSound = { type = "string", default = Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
 			confirmCompleteSound = { type = "string", default = Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
 		},
 		craftingOptions = {
-			ignoreCDCraftCost = { type = "boolean", default = true, lastModifiedVersion = 10 },
 			defaultMatCostMethod = { type = "string", default = "min(dbmarket, crafting, vendorbuy, convert(dbmarket))", lastModifiedVersion = 10 },
-			defaultCraftPriceMethod = { type = "string", default = "first(dbminbuyout, dbmarket)", lastModifiedVersion = 10 },
+			defaultCraftPriceMethod = { type = "string", default = "first(dbminbuyout, dbmarket)*0.95", lastModifiedVersion = 89 },
 			ignoreCharacters = { type = "table", default = {}, lastModifiedVersion = 10 },
 			ignoreGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
 		},
@@ -190,11 +302,12 @@ local SETTINGS_INFO = {
 		},
 		shoppingOptions = {
 			minDeSearchLvl = { type = "number", default = 1, lastModifiedVersion = 10 },
-			maxDeSearchLvl = { type = "number", default = 735, lastModifiedVersion = 10 },
+			maxDeSearchLvl = { type = "number", default = 500, lastModifiedVersion = 79 },
 			maxDeSearchPercent = { type = "number", default = 100, lastModifiedVersion = 23 },
-			pctSource  = { type = "string", default = "dbmarket", lastModifiedVersion = 12 },
+			pctSource = { type = "string", default = "dbmarket", lastModifiedVersion = 12 },
 			buyoutConfirm  = { type = "boolean", default = false, lastModifiedVersion = 46 },
 			buyoutAlertSource  = { type = "string", default = "min(100000g, 200% dbmarket)", lastModifiedVersion = 46 },
+			searchAutoFocus = { type = "boolean", default = true, lastModifiedVersion = 88 },
 		},
 		sniperOptions = {
 			sniperSound = { type = "string", default = Sound.GetNoSoundKey(), lastModifiedVersion = 10 },
@@ -233,21 +346,6 @@ local SETTINGS_INFO = {
 	profile = {
 		internalData = {
 			createdDefaultOperations = { type = "boolean", default = false, lastModifiedVersion = 11 },
-			managementGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			auctioningGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			shoppingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 13 },
-			shoppingTabGroupContext = { type = "table", default = {}, lastModifiedVersion = 26 },
-			auctioningTabGroupContext = { type = "table", default = {}, lastModifiedVersion = 26 },
-			bankUIBankFramePosition = { type = "table", default = { 100, 300 }, lastModifiedVersion = 16 },
-			bankUIGBankFramePosition = { type = "table", default = { 100, 300 }, lastModifiedVersion = 16 },
-			bankingWarehousingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			bankingAuctioningGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			bankingMailingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 31 },
-			craftingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			mailingGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			vendoringGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			importGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 39 },
-			exportGroupTreeContext = { type = "table", default = {}, lastModifiedVersion = 48 },
 		},
 		userData = {
 			groups = { type = "table", default = {}, lastModifiedVersion = 10 },
@@ -271,9 +369,11 @@ local SETTINGS_INFO = {
 			crafts = { type = "table", default = {}, lastModifiedVersion = 53 },
 			mats = { type = "table", default = {}, lastModifiedVersion = 10 },
 			guildGoldLog = { type = "table", default = {}, lastModifiedVersion = 25 },
+			guildGoldLogLastUpdate = { type = "table", default = {}, lastModifiedVersion = 83 },
 			csvAuctionDBScan = { type = "string", default = "", lastModifiedVersion = 50 },
 			auctionDBScanTime = { type = "number", default = 0, lastModifiedVersion = 50 },
 			auctionDBScanHash = { type = "number", default = 0, lastModifiedVersion = 50 },
+			isCraftFavorite = { type = "table", default = {}, lastModifiedVersion = 56 },
 		},
 		coreOptions = {
 			ignoreGuilds = { type = "table", default = {}, lastModifiedVersion = 10 },
@@ -311,10 +411,34 @@ local SETTINGS_INFO = {
 			craftingCooldowns = { type = "table", default = {}, lastModifiedVersion = 27 },
 			auctionSaleHints = { type = "table", default = {}, lastModifiedVersion = 45 },
 		},
+		auctionUIContext = {
+			auctioningGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+			shoppingGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
+		bankingUIContext = {
+			warehousingGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+			auctioningGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+			mailingGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
+		craftingUIContext = {
+			groupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
+		mailingUIContext = {
+			groupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
+		vendoringUIContext = {
+			groupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
+		mainUIContext = {
+			groupsManagementGroupTree = { type = "table", default = { collapsed = {} }, lastModifiedVersion = 71 },
+			importGroupTree = { type = "table", default = { collapsed = {}, selected = {} }, lastModifiedVersion = 80 },
+			exportGroupTree = { type = "table", default = { collapsed = {}, unselected = {} }, lastModifiedVersion = 80 },
+		},
 	},
 	sync = {
-		-- NOTE: whenever these are changed, the sync version needs to be increased in Core/Lib/Sync/Core.lua
+		-- NOTE: whenever these are changed, the sync version needs to be increased in LibTSM/Services/SyncClasses/Constants.lua
 		internalData = {
+			money = { type = "number", default = 0, lastModifiedVersion = 74 },
 			classKey = { type = "string", default = "", lastModifiedVersion = 19 },
 			bagQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
 			bankQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
@@ -322,6 +446,7 @@ local SETTINGS_INFO = {
 			auctionQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
 			mailQuantity = { type = "table", default = {}, lastModifiedVersion = 19 },
 			goldLog = { type = "string", default = "", lastModifiedVersion = 25 },
+			goldLogLastUpdate = { type = "number", default = 0, lastModifiedVersion = 83 },
 			playerProfessions = { type = "table", default = {}, lastModifiedVersion = 36 },
 		},
 	},
@@ -463,6 +588,50 @@ Settings:OnSettingsLoad(function()
 			end
 		end
 	end
+	if prevVersion < 64 then
+		for key, value in upgradeObj:RemovedSettingIterator() do
+			local scopeType, _, namespace, settingKey = upgradeObj:GetKeyInfo(key)
+			if scopeType == "global" and namespace == "accountingOptions" and settingKey == "smartBuyPrice" and value then
+				-- show a dialog to inform the user that this was removed
+				StaticPopupDialogs["TSM_ACCOUNTING_SMART_AVG_REMOVED"] = {
+					text = L["The 'use smart average for purchase price' setting has been removed from TSM and replaced with a new 'SmartAvgBuy' price source. Please update your custom prices appropriately."],
+					button1 = OKAY,
+					timeout = 0,
+					whileDead = true,
+				}
+				Wow.ShowStaticPopupDialog("TSM_ACCOUNTING_SMART_AVG_REMOVED")
+			end
+		end
+	end
+	if prevVersion < 82 then
+		for key, value in upgradeObj:RemovedSettingIterator() do
+			local scopeType, scopeKey, namespace, settingKey = upgradeObj:GetKeyInfo(key)
+			if scopeType == "global" and namespace == "craftingUIContext" and settingKey == "professionScrollingTable" then
+				-- preserve the previous values
+				local newTbl = db:Get(scopeType, scopeKey, namespace, settingKey)
+				for col, width in pairs(value.colWidth) do
+					newTbl.colWidth[col] = width
+				end
+				for col, hidden in pairs(value.colHidden) do
+					newTbl.colHidden[col] = hidden
+				end
+				if value.collapsed then
+					for col, collapsed in pairs(value.collapsed) do
+						newTbl.collapsed[col] = collapsed
+					end
+				end
+			end
+		end
+	end
+	if prevVersion < 89 then
+		for key, value in upgradeObj:RemovedSettingIterator() do
+			local scopeType, scopeKey, namespace, settingKey = upgradeObj:GetKeyInfo(key)
+			if scopeType == "global" and namespace == "craftingOptions" and settingKey == "defaultCraftPriceMethod" then
+				-- preserve the previous value
+				db:Set(scopeType, scopeKey, namespace, settingKey, value)
+			end
+		end
+	end
 end)
 
 
@@ -494,8 +663,8 @@ function Settings.GetCurrentSyncAccountKey()
 	return private.db:GetSyncAccountKey()
 end
 
-function Settings.GetSyncScopeKeyByCharacter(character)
-	return private.db:GetSyncScopeKeyByCharacter(character)
+function Settings.GetSyncScopeKeyByCharacter(character, factionrealm)
+	return private.db:GetSyncScopeKeyByCharacter(character, factionrealm)
 end
 
 function Settings.GetCharacterSyncAccountKey(character)
@@ -615,6 +784,10 @@ function Settings.SyncSettingIterator()
 	return TempTable.Iterator(result, 2)
 end
 
+function Settings.FactionrealmCharacterIterator()
+	return private.db:FactionrealmCharacterIterator()
+end
+
 
 
 -- ============================================================================
@@ -679,13 +852,9 @@ function private.Constructor(name, rawSettingsInfo)
 						if k == "type" then
 							assert(VALID_TYPES[info.type], "Invalid type for key: "..key)
 						elseif k == "default" then
-							assert(v == nil or type(v) == info.type, "Invalid default for key: "..key)
-							-- if the default is a table, it must not contain non-empty tables
+							assert(type(v) == info.type, "Invalid default for key: "..key)
 							if type(v) == "table" then
-								for k2, v2 in pairs(v) do
-									assert(type(k2) == "string" or type(k2) == "number")
-									assert(type(v2) ~= "table" or not next(v2), "Default has non-empty table attribute: "..k2)
-								end
+								private.CheckDefaultTable(v)
 							end
 						elseif k == "lastModifiedVersion" then
 							assert(type(v) == "number" and v <= version, "Invalid lastModifiedVersion for key: "..key)
@@ -755,6 +924,35 @@ function private.Constructor(name, rawSettingsInfo)
 		if scopeType ~= "global" and not tContains(db._scopeKeys[scopeType], scopeKey) then
 			tinsert(db._scopeKeys[scopeType], scopeKey)
 			private.SetScopeDefaults(db, settingsInfo, strjoin(KEY_SEP, SCOPE_TYPES[scopeType], String.Escape(scopeKey), ".+", ".+"))
+		end
+	end
+
+	-- set any values which are nil to their default value
+	db._scopeKeys = db._scopeKeys or {
+		profile = {},
+		realm = {},
+		factionrealm = {},
+		char = {},
+		sync = {},
+	}
+	for scopeType, scopeKeys in pairs(db._scopeKeys) do
+		for _, scopeKey in ipairs(scopeKeys) do
+			for namespace, namespaceInfo in pairs(settingsInfo[scopeType]) do
+				for settingKey, info in pairs(namespaceInfo) do
+					local key = strjoin(KEY_SEP, SCOPE_TYPES[scopeType], scopeKey, namespace, settingKey)
+					if db[key] == nil then
+						private.SetDBKeyValue(db, key, private.CopyData(info.default))
+					end
+				end
+			end
+		end
+	end
+	for namespace, namespaceInfo in pairs(settingsInfo.global) do
+		for settingKey, info in pairs(namespaceInfo) do
+			local key = strjoin(KEY_SEP, SCOPE_TYPES.global, GLOBAL_SCOPE_KEY, namespace, settingKey)
+			if db[key] == nil then
+				private.SetDBKeyValue(db, key, private.CopyData(info.default))
+			end
 		end
 	end
 
@@ -1021,8 +1219,20 @@ private.SettingsDBMethods = {
 		Table.RemoveByValue(context.db._scopeKeys[scopeType], scopeKey)
 	end,
 
-	DeleteProfile = function(self, profileName)
+	DeleteProfile = function(self, profileName, defaultNewProfileName)
 		self:DeleteScope("profile", profileName)
+		-- move other characters which were on this profile to another one
+		local context = private.context[self]
+		if not defaultNewProfileName then
+			defaultNewProfileName = context.db._scopeKeys.profile[1]
+		end
+		assert(defaultNewProfileName and tContains(context.db._scopeKeys.profile, defaultNewProfileName))
+		for character, currentProfileName in pairs(context.db._currentProfile) do
+			if currentProfileName == profileName then
+				assert(character ~= SCOPE_KEYS.char)
+				context.db._currentProfile[character] = defaultNewProfileName
+			end
+		end
 	end,
 
 	GetConnectedRealmIterator = function(self, scope)
@@ -1165,10 +1375,23 @@ local NAMESPACE_MT = {
 
 local VIEW_METHODS = {
 	AddKey = function(self, scopeType, namespace, key)
-		local proxyInfo = private.proxies[self]
-		assert(proxyInfo and not proxyInfo.keyProxies[key])
-		proxyInfo.keyProxies[key] = private.context[proxyInfo.settingsDB].namespaceProxies[scopeType..KEY_SEP..namespace]
+		local viewInfo = private.views[self]
+		assert(viewInfo and not viewInfo.keyProxies[key])
+		viewInfo.scopeNamespace[key] = scopeType..KEY_SEP..namespace
+		viewInfo.keyProxies[key] = private.context[viewInfo.settingsDB].namespaceProxies[viewInfo.scopeNamespace[key]]
 		return self
+	end,
+	RegisterCallback = function(self, key, callback)
+		local viewInfo = private.views[self]
+		assert(callback and not viewInfo.callbacks[key])
+		viewInfo.callbacks[key] = callback
+		return self
+	end,
+	GetDefaultReadOnly = function(self, key)
+		local viewInfo = private.views[self]
+		local scope, namespace = strsplit(KEY_SEP, viewInfo.scopeNamespace[key])
+		assert(scope and namespace)
+		return viewInfo.settingsDB:GetDefaultReadOnly(scope, namespace, key)
 	end,
 }
 
@@ -1177,10 +1400,10 @@ local VIEW_MT = {
 		if VIEW_METHODS[key] then
 			return VIEW_METHODS[key]
 		end
-		return private.proxies[self].keyProxies[key][key]
+		return private.views[self].keyProxies[key][key]
 	end,
 	__newindex = function(self, key, value)
-		private.proxies[self].keyProxies[key][key] = value
+		private.views[self].keyProxies[key][key] = value
 	end,
 	__metatable = false,
 }
@@ -1190,6 +1413,15 @@ local VIEW_MT = {
 -- ============================================================================
 -- Helper Functions
 -- ============================================================================
+
+function private.CheckDefaultTable(tbl)
+	for k, v in pairs(tbl) do
+		assert(type(k) == "string" or type(k) == "number")
+		if type(v) == "table" then
+			private.CheckDefaultTable(v)
+		end
+	end
+end
 
 function private.CreateScope(settingsDB, scope)
 	assert(private.context[settingsDB])
@@ -1215,9 +1447,11 @@ end
 function private.CreateView(settingsDB)
 	assert(private.context[settingsDB])
 	local view = setmetatable({}, VIEW_MT)
-	private.proxies[view] = {
+	private.views[view] = {
 		settingsDB = settingsDB,
 		keyProxies = {},
+		scopeNamespace = {},
+		callbacks = {},
 	}
 	return view
 end
@@ -1226,6 +1460,16 @@ function private.SetDBKeyValue(db, key, value)
 	private.protectedAccessAllowed[db] = true
 	db[key] = value
 	private.protectedAccessAllowed[db] = nil
+	local scopeType, _, namespace, settingKey = strsplit(KEY_SEP, key)
+	if not settingKey then
+		return
+	end
+	scopeType = private.ScopeReverseLookup(scopeType)
+	for _, info in pairs(private.views) do
+		if info.callbacks[settingKey] and info.scopeNamespace[settingKey] == scopeType..KEY_SEP..namespace then
+			info.callbacks[settingKey]()
+		end
+	end
 end
 
 function private.CopyData(data)

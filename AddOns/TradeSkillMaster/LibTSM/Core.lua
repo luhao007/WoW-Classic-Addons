@@ -1,19 +1,15 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 -- This is loaded before anything else and simply sets up the addon table
 
 local ADDON_NAME, TSM = ...
-TSMAPI_FOUR = {}
 local VERSION_RAW = GetAddOnMetadata("TradeSkillMaster", "Version")
 local IS_DEV_VERSION = strmatch(VERSION_RAW, "^@tsm%-project%-version@$") and true or false
 local private = {
-	path = {},
 	context = {},
 	initOrder = {},
 	loadOrder = {},
@@ -115,6 +111,10 @@ end
 
 function TSM.IsWowClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+end
+
+function TSM.IsShadowlands()
+	return select(4, GetBuildInfo()) >= 90000
 end
 
 function TSM.DebugLogout()

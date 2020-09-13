@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- SecureMacroActionButton UI Element Class.
@@ -12,7 +10,10 @@
 -- @classmod SecureMacroActionButton
 
 local _, TSM = ...
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local SecureMacroActionButton = TSM.Include("LibTSMClass").DefineClass("SecureMacroActionButton", TSM.UI.ActionButton)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(SecureMacroActionButton)
 TSM.UI.SecureMacroActionButton = SecureMacroActionButton
 
 
@@ -23,13 +24,15 @@ TSM.UI.SecureMacroActionButton = SecureMacroActionButton
 
 function SecureMacroActionButton.__init(self, name)
 	self.__super:__init(name, true)
-	self:_GetBaseFrame():SetAttribute("type1", "macro")
-	self:_GetBaseFrame():SetAttribute("macrotext1", "")
+	local frame = self:_GetBaseFrame()
+	frame:SetAttribute("type1", "macro")
+	frame:SetAttribute("macrotext1", "")
 end
 
 function SecureMacroActionButton.Release(self)
-	self:_GetBaseFrame():SetScript("PreClick", nil)
-	self:_GetBaseFrame():SetAttribute("macrotext1", "")
+	local frame = self:_GetBaseFrame()
+	ScriptWrapper.Clear(frame, "PreClick")
+	frame:SetAttribute("macrotext1", "")
 	self.__super:Release()
 end
 

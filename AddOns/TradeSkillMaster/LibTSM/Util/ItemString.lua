@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Item String functions
@@ -22,7 +20,19 @@ local private = {
 }
 local ITEM_UPGRADE_VALUE_SHIFT = 1000000
 local ITEM_MAX_ID = 999999
-local PET_CAGE_ITEMSTRING = "i:82800"
+local UNKNOWN_ITEM_STRING = "i:0"
+local PLACEHOLDER_ITEM_STRING = "i:1"
+local PET_CAGE_ITEM_STRING = "i:82800"
+local MAX_LEVEL = nil
+do
+	if TSM.IsShadowlands() then
+		MAX_LEVEL = 60
+	else
+		for _, v in pairs(MAX_PLAYER_LEVEL_TABLE) do
+			MAX_LEVEL = max(MAX_LEVEL or 0, v)
+		end
+	end
+end
 
 
 
@@ -41,10 +51,26 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function ItemString.GetPetCageItemString()
-	return PET_CAGE_ITEMSTRING
+--- Gets the constant unknown item string for places where the itemString is not known.
+-- @treturn string The itemString
+function ItemString.GetUnknown()
+	return UNKNOWN_ITEM_STRING
 end
 
+--- Gets the constant placeholder item string.
+-- @treturn string The itemString
+function ItemString.GetPlaceholder()
+	return PLACEHOLDER_ITEM_STRING
+end
+
+--- Gets the battlepet cage item string.
+-- @treturn string The itemString
+function ItemString.GetPetCage()
+	return PET_CAGE_ITEM_STRING
+end
+
+--- Gets the base itemString smart map.
+-- @treturn SmartMap The smart map
 function ItemString.GetBaseMap()
 	return private.baseItemStringMap
 end
@@ -81,7 +107,7 @@ function ItemString.ToId(item)
 end
 
 --- Converts the parameter into a base itemString.
--- @tparam string item An item to get the base itemString of
+-- @tparam string itemString An itemString to get the base itemString of
 -- @treturn string The base itemString
 function ItemString.GetBaseFast(itemString)
 	if not itemString then
@@ -177,17 +203,13 @@ function private.ToItemString(item)
 	end
 
 	-- test if it's already (likely) an item string or battle pet string
-	local result = nil
 	if strmatch(item, "^i:([0-9%-:]+)$") then
 		return private.FixItemString(item)
 	elseif strmatch(item, "^p:([0-9:]+)$") then
-		local p0, p1, p2, p3 = strsplit(":", item)
-		p2 = p2 or "0"
-		p3 = p3 or "0"
-		return strjoin(":", p0, p1, p2, p3)
+		return private.FixPet(item)
 	end
 
-	result = strmatch(item, "^\124cff[0-9a-z]+\124[Hh](.+)\124h%[.+%]\124h\124r$")
+	local result = strmatch(item, "^\124cff[0-9a-z]+\124[Hh](.+)\124h%[.+%]\124h\124r$")
 	if result then
 		-- it was a full item link which we've extracted the itemString from
 		item = result
@@ -202,7 +224,7 @@ function private.ToItemString(item)
 	-- test if it's an old style battle pet string (or if it was a link)
 	result = strjoin(":", strmatch(item, "^battle(p)et:(%d+:%d+:%d+)"))
 	if result then
-		return private.RemoveExtra(result)
+		return private.FixPet(result)
 	end
 	result = strjoin(":", strmatch(item, "^battle(p)et:(%d+)[:]*$"))
 	if result then
@@ -210,7 +232,7 @@ function private.ToItemString(item)
 	end
 	result = strjoin(":", strmatch(item, "^(p):(%d+:%d+:%d+)"))
 	if result then
-		return private.RemoveExtra(result)
+		return private.FixPet(result)
 	end
 
 	-- test if it's a long item string
@@ -230,18 +252,23 @@ function private.RemoveExtra(itemString)
 	local num = 1
 	while num > 0 do
 		itemString, num = gsub(itemString, ":0?$", "")
-		if num > 1 and strmatch(itemString, "^p:") then
-			-- pets shouldn't end in :0
-			return nil
-		end
 	end
 	return itemString
 end
 
 function private.FixItemString(itemString)
-	itemString = gsub(itemString, ":0:", "::")-- remove 0s which are in the middle
+	itemString = gsub(itemString, ":0:", "::") -- remove 0s which are in the middle
 	itemString = private.RemoveExtra(itemString)
 	return private.CheckBonusIds(itemString, strsplit(":", itemString))
+end
+
+function private.FixPet(itemString)
+	itemString = private.RemoveExtra(itemString)
+	local result = strmatch(itemString, "^(p:%d+:%d+:%d+)$")
+	if result then
+		return result
+	end
+	return strmatch(itemString, "^(p:%d+)")
 end
 
 function private.CheckBonusIds(itemString, _, _, _, count, ...)
@@ -255,20 +282,21 @@ function private.CheckBonusIds(itemString, _, _, _, count, ...)
 	local numExtraParts = numParts - count
 	local lastExtraPart = select(numParts, ...)
 	lastExtraPart = tonumber(lastExtraPart)
-	for _ = 1, numExtraParts do
-		itemString = gsub(itemString, ":[0-9]*$", "")
-	end
 
 	-- we might have already applied the upgrade value shift
-	if numExtraParts == 1 and ((lastExtraPart >= 98 and lastExtraPart <= MAX_PLAYER_LEVEL) or (lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT >= 90 and lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT <= MAX_PLAYER_LEVEL)) then
+	if numExtraParts == 1 and ((lastExtraPart >= 98 and lastExtraPart <= MAX_LEVEL) or (lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT >= 90 and lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT <= MAX_LEVEL)) then
 		-- this extra part is likely the upgradeValue which we want to keep so increase it by UPGRADE_VALUE_SHIFT
 		if lastExtraPart < ITEM_UPGRADE_VALUE_SHIFT then
 			lastExtraPart = lastExtraPart + ITEM_UPGRADE_VALUE_SHIFT
+			itemString = gsub(itemString, ":[0-9]*$", ":"..lastExtraPart)
 		end
-		itemString = itemString..":"..lastExtraPart
+	else
+		for _ = 1, numExtraParts do
+			itemString = gsub(itemString, ":[0-9]*$", "")
+		end
+		itemString = private.RemoveExtra(itemString)
 	end
 
-	itemString = private.RemoveExtra(itemString)
 	itemString = BonusIds.FilterAll(itemString)
 	return itemString
 end

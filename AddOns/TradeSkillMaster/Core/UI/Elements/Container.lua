@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Container UI Element Class.
@@ -14,6 +12,8 @@ local _, TSM = ...
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local Container = TSM.Include("LibTSMClass").DefineClass("Container", TSM.UI.Element, "ABSTRACT")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Container)
 TSM.UI.Container = Container
 local private = {}
 
@@ -52,6 +52,20 @@ end
 -- @tparam Element child The child element
 -- @treturn Container The container object
 function Container.AddChild(self, child)
+	self:_AddChildHelper(child, true)
+	return self
+end
+
+--- Add a child element when the required condition is true.
+-- @tparam Container self The container object
+-- @tparam boolean condition The required condition
+-- @tparam Element child The child element
+-- @treturn Container The container object
+function Container.AddChildIf(self, condition, child)
+	if not condition then
+		child:Release()
+		return self
+	end
 	self:_AddChildHelper(child, true)
 	return self
 end
@@ -122,6 +136,16 @@ function Container.LayoutChildrenIterator(self)
 	return TempTable.Iterator(children)
 end
 
+--- Shows all child elements.
+-- @tparam Container self The container object
+function Container.ShowAllChildren(self)
+	for _, child in ipairs(self._layoutChildren) do
+		if not child:IsVisible() then
+			child:Show()
+		end
+	end
+end
+
 function Container.Draw(self)
 	self.__super:Draw()
 	for _, child in ipairs(self._children) do
@@ -146,6 +170,13 @@ function Container._AddChildHelper(self, child, layout, beforeId)
 	end
 	child:_SetParentElement(self)
 	child:Show()
+end
+
+function Container._ClearBaseElementCache(self)
+	self.__super:_ClearBaseElementCache()
+	for _, child in ipairs(self._children) do
+		child:_ClearBaseElementCache()
+	end
 end
 
 

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,32 +13,32 @@ local Table = TSM.Include("Util.Table")
 local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
 local Log = TSM.Include("Util.Log")
-local Math = TSM.Include("Util.Math")
+local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local AuctionScan = TSM.Include("Service.AuctionScan")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	contentPath = "selection",
 	hasLastScan = false,
 	fsm = nil,
 	scanContext = {},
-	scanQuery = nil,
+	auctionScan = nil,
 	groupSearch = "",
 	selectionFrame = nil,
 	logQuery = nil,
-	itemLocation = ItemLocation:CreateEmpty(),
+	perItem = true,
+	canStartNewScan = false,
 }
-local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
-	leftWidth = 272,
-}
-local DEFAULT_TAB_GROUP_CONTEXT = {
-	pathIndex = 1
-}
--- TODO: these should eventually go in the saved variables
-private.dividedContainerContext = {}
+local SECONDS_PER_MIN = 60
+local SECONDS_PER_HOUR = 60 * SECONDS_PER_MIN
+local SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR
 
 
 
@@ -49,7 +47,17 @@ private.dividedContainerContext = {}
 -- ============================================================================
 
 function Auctioning.OnInitialize()
-	TSM.UI.AuctionUI.RegisterTopLevelPage(L["Auctioning"], "iconPack.24x24/Posting", private.GetAuctioningFrame, private.OnItemLinked)
+	private.settings = Settings.NewView()
+		:AddKey("global", "auctionUIContext", "auctioningSelectionDividedContainer")
+		:AddKey("global", "auctionUIContext", "auctioningSelectionVerticalDividedContainer")
+		:AddKey("global", "auctionUIContext", "auctioningBagScrollingTable")
+		:AddKey("global", "auctionUIContext", "auctioningLogScrollingTable")
+		:AddKey("global", "auctionUIContext", "auctioningAuctionScrollingTable")
+		:AddKey("global", "auctionUIContext", "auctioningTabGroup")
+		:AddKey("char", "auctionUIContext", "auctioningGroupTree")
+		:AddKey("global", "auctioningOptions", "scanCompleteSound")
+		:AddKey("global", "auctioningOptions", "confirmCompleteSound")
+	TSM.UI.AuctionUI.RegisterTopLevelPage(L["Auctioning"], private.GetAuctioningFrame, private.OnItemLinked)
 	private.FSMCreate()
 end
 
@@ -64,7 +72,7 @@ function private.GetAuctioningFrame()
 	if not private.hasLastScan then
 		private.contentPath = "selection"
 	end
-	return TSMAPI_FOUR.UI.NewElement("ViewContainer", "auctioning")
+	return UIElements.New("ViewContainer", "auctioning")
 		:SetNavCallback(private.GetAuctioningContentFrame)
 		:AddPath("selection")
 		:AddPath("scan")
@@ -84,158 +92,188 @@ end
 
 function private.GetAuctioningSelectionFrame()
 	TSM.UI.AnalyticsRecordPathChange("auction", "auctioning", "selection")
-	local frame = TSMAPI_FOUR.UI.NewElement("DividedContainer", "selection")
-		:SetStyle("background", "#272727")
-		:SetContextTable(private.dividedContainerContext, DEFAULT_DIVIDED_CONTAINER_CONTEXT)
-		:SetMinWidth(272, 300)
-		:SetLeftChild(TSMAPI_FOUR.UI.NewElement("Frame", "groupSelection")
-			:SetStyle("padding", { top = 33 })
+	local frame = UIElements.New("DividedContainer", "selection")
+		:SetSettingsContext(private.settings, "auctioningSelectionDividedContainer")
+		:SetMinWidth(220, 250)
+		:SetBackgroundColor("PRIMARY_BG")
+		:SetLeftChild(UIElements.New("Frame", "groupSelection")
 			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
+			:SetPadding(0, 0, 8, 0)
+			:AddChild(UIElements.New("Frame", "title")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("margin", { left = 8, right = 8, bottom = 12 })
-				:SetStyle("height", 20)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "search")
-					:SetStyle("margin", { right = 8 })
-					:SetText(private.groupSearch)
+				:SetMargin(0, 0, 0, 8)
+				:SetHeight(24)
+				:AddChild(UIElements.New("Input", "search")
+					:SetMargin(8, 8, 0, 0)
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:AllowItemInsert(true)
 					:SetHintText(L["Search Groups"])
-					:SetScript("OnTextChanged", private.GroupSearchOnTextChanged)
+					:SetValue(private.groupSearch)
+					:SetScript("OnValueChanged", private.GroupSearchOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-					:SetScript("OnClick", private.MoreBtnOnClick)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(0, 4, 0, 0)
+					:SetBackground("iconPack.18x18/Expand All")
+					:SetScript("OnClick", private.ExpandAllGroupsOnClick)
+					:SetTooltip(L["Expand / Collapse All Groups"])
+				)
+				:AddChild(UIElements.New("Button", "selectAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(0, 8, 0, 0)
+					:SetBackground("iconPack.18x18/Select All")
+					:SetScript("OnClick", private.SelectAllGroupsOnClick)
+					:SetTooltip(L["Select / Deselect All Groups"])
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ApplicationGroupTree", "groupTree")
-				:SetGroupListFunc(private.GroupTreeGetList)
-				:SetContextTable(TSM.db.profile.internalData.auctioningGroupTreeContext)
+			:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
+				:SetSettingsContext(private.settings, "auctioningGroupTree")
+				:SetQuery(TSM.Groups.CreateQuery(), "Auctioning")
 				:SetSearchString(private.groupSearch)
 				:SetScript("OnGroupSelectionChanged", private.GroupTreeOnGroupSelectionChanged)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "postScanBtn")
-				:SetStyle("height", 26)
-				:SetStyle("margin", 8)
-				:SetText(L["RUN POST SCAN"])
-				:SetScript("OnClick", private.RunPostButtonOnclick)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "cancelScanBtn")
-				:SetStyle("height", 26)
-				:SetStyle("margin", { left = 8, right = 8, bottom = 8 })
-				:SetText(L["RUN CANCEL SCAN"])
-				:SetScript("OnClick", private.RunCancelButtonOnclick)
-			)
-		)
-		:SetRightChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
-			:SetLayout("VERTICAL")
-			:SetStyle("margin", { top = 43 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("TabGroup", "buttons")
-				:SetNavCallback(private.GetScansElement)
-				:SetContextTable(TSM.db.profile.internalData.auctioningTabGroupContext, DEFAULT_TAB_GROUP_CONTEXT)
-				:AddPath(L["Recent Scans"])
-				:AddPath(L["Favorite Scans"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-				:SetStyle("height", 22)
-				:SetStyle("margin", { top = 8, left = 8, right = 8, bottom = 4 })
-				:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-				:SetStyle("fontHeight", 16)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(L["Items in Bags"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionScrollingTable", "bagScrollingTable")
-				:SetStyle("headerBackground", "#272727")
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitles(L["Item"])
-						:SetHeaderIndent(18)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("LEFT")
-						:SetIconSize(12)
-						:SetTextInfo("autoBaseItemString", TSM.UI.GetColoredItemName)
-						:SetIconInfo("itemTexture")
-						:SetTooltipInfo("autoBaseItemString")
-						:SetSortInfo("name")
-						:Commit()
-					:NewColumn("operation")
-						:SetTitles(L["Auctioning Operation"])
-						:SetWidth(250)
-						:SetFont(TSM.UI.Fonts.MontserratMedium)
-						:SetFontHeight(12)
-						:SetJustifyH("LEFT")
-						:SetTextInfo("firstOperation", private.BagGetOperationText)
-						:SetSortInfo("firstOperation")
-						:Commit()
-					:Commit()
-				:SetQuery(TSM.Auctioning.PostScan.CreateBagsQuery())
-				:SetAutoReleaseQuery(true)
-				:SetSelectionValidator(private.BagScrollingTableIsSelectionEnabled)
-				:SetScript("OnSelectionChanged", private.BagScrollingTableOnSelectionChanged)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttonFrame")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 42)
-				:SetStyle("padding", 8)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "postBagsBtn")
-					:SetStyle("width", 246)
-					:SetStyle("height", 26)
-					:SetStyle("margin", { left = 8, right = 8 })
-					:SetDisabled(true)
-					:SetText(L["POST SELECTED"])
-					:SetScript("OnClick", private.RunPostBagsButtonOnclick)
+			:AddChild(UIElements.New("Frame", "bottom")
+				:SetLayout("VERTICAL")
+				:SetHeight(74)
+				:SetBackgroundColor("PRIMARY_BG_ALT")
+				:AddChild(UIElements.New("Texture", "line")
+					:SetHeight(2)
+					:SetTexture("ACTIVE_BG")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "clearSelectionBtn")
-					:SetStyle("height", 20)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("textColor", "#ffffff")
-					:SetText(L["Clear Selection"])
-					:SetDisabled(true)
-					:SetScript("OnClick", private.RunClearSelectionButtonOnclick)
+				:AddChild(UIElements.New("ActionButton", "postScanBtn")
+					:SetHeight(24)
+					:SetMargin(8)
+					:SetText(L["Run Post Scan"])
+					:SetScript("OnClick", private.RunPostButtonOnclick)
+				)
+				:AddChild(UIElements.New("ActionButton", "cancelScanBtn")
+					:SetHeight(24)
+					:SetMargin(8, 8, 0, 8)
+					:SetText(L["Run Cancel Scan"])
+					:SetScript("OnClick", private.RunCancelButtonOnclick)
 				)
 			)
 		)
-		:SetScript("OnUpdate", private.SelectionOnUpdate)
+		:SetRightChild(UIElements.New("DividedContainer", "content")
+			:SetVertical()
+			:SetMargin(0, 0, 6, 0)
+			:SetSettingsContext(private.settings, "auctioningSelectionVerticalDividedContainer")
+			:SetMinWidth(50, 100)
+			:SetBackgroundColor("PRIMARY_BG")
+			:SetTopChild(UIElements.New("Frame", "content")
+				:SetLayout("VERTICAL")
+				:AddChild(UIElements.New("TabGroup", "buttons")
+					:SetNavCallback(private.GetScansElement)
+					:SetSettingsContext(private.settings, "auctioningTabGroup")
+					:AddPath(L["Recent Scans"])
+					:AddPath(L["Favorite Scans"])
+				)
+			)
+			:SetBottomChild(UIElements.New("Frame", "content")
+				:SetLayout("VERTICAL")
+				:AddChild(UIElements.New("Frame", "bottom")
+					:SetLayout("VERTICAL")
+					:SetHeight(37)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:AddChild(UIElements.New("Text", "label")
+						:SetHeight(24)
+						:SetMargin(4, 0, 6, 6)
+						:SetFont("BODY_BODY1_BOLD")
+						:SetText(L["Post Items from Bags"])
+					)
+				)
+				:AddChild(UIElements.New("SelectionScrollingTable", "bagScrollingTable")
+					:SetSettingsContext(private.settings, "auctioningBagScrollingTable")
+					:GetScrollingTableInfo()
+						:NewColumn("item")
+							:SetTitle(L["Item"])
+							:SetHeaderIndent(18)
+							:SetFont("ITEM_BODY3")
+							:SetJustifyH("LEFT")
+							:SetIconSize(12)
+							:SetTextInfo("autoBaseItemString", TSM.UI.GetColoredItemName)
+							:SetIconInfo("itemTexture")
+							:SetTooltipInfo("autoBaseItemString")
+							:SetSortInfo("name")
+							:DisableHiding()
+							:Commit()
+						:NewColumn("operation")
+							:SetTitle(L["Auctioning Operation"])
+							:SetFont("BODY_BODY3_MEDIUM")
+							:SetJustifyH("LEFT")
+							:SetTextInfo("firstOperation", private.BagGetOperationText)
+							:SetSortInfo("firstOperation")
+							:Commit()
+						:Commit()
+					:SetQuery(TSM.Auctioning.PostScan.CreateBagsQuery())
+					:SetAutoReleaseQuery(true)
+					:SetSelectionValidator(private.BagScrollingTableIsSelectionEnabled)
+					:SetScript("OnSelectionChanged", private.BagOnSelectionChanged)
+				)
+				:AddChild(UIElements.New("Texture", "line")
+					:SetHeight(2)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Frame", "button")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(40)
+					:SetPadding(8)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:AddChild(UIElements.New("ActionButton", "postSelected")
+						:SetHeight(24)
+						:SetMargin(0, 8, 0, 0)
+						:SetDisabled(true)
+						:SetText(L["Post Selected"])
+						:SetScript("OnClick", private.RunPostBagsButtonOnClick)
+					)
+					:AddChild(UIElements.New("Button", "selectAll")
+						:SetSize("AUTO", 20)
+						:SetMargin(0, 8, 0, 0)
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Select All"])
+						:SetScript("OnClick", private.SelectAllOnClick)
+					)
+					:AddChild(UIElements.New("Texture", "line")
+						:SetSize(2, 20)
+						:SetMargin(0, 8, 0, 0)
+						:SetTexture("ACTIVE_BG")
+					)
+					:AddChild(UIElements.New("Button", "clearAll")
+						:SetSize("AUTO", 20)
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetText(L["Clear All"])
+						:SetDisabled(true)
+						:SetScript("OnClick", private.ClearAllOnClick)
+					)
+				)
+			)
+		)
 		:SetScript("OnHide", private.SelectionOnHide)
 	local noGroupSelected = frame:GetElement("groupSelection.groupTree"):IsSelectionCleared(true)
-	frame:GetElement("groupSelection.postScanBtn"):SetDisabled(noGroupSelected)
-	frame:GetElement("groupSelection.cancelScanBtn"):SetDisabled(noGroupSelected)
+	frame:GetElement("groupSelection.bottom.postScanBtn"):SetDisabled(noGroupSelected)
+	frame:GetElement("groupSelection.bottom.cancelScanBtn"):SetDisabled(noGroupSelected)
 	private.selectionFrame = frame
 	return frame
 end
 
 function private.GetScansElement(_, button)
 	if button == L["Recent Scans"] then
-		return TSMAPI_FOUR.UI.NewElement("SearchList", "list")
+		return UIElements.New("SearchList", "list")
 			:SetQuery(TSM.Auctioning.SavedSearches.CreateRecentSearchesQuery())
 			:SetEditButtonHidden(true)
 			:SetScript("OnFavoriteChanged", private.SearchListOnFavoriteChanged)
 			:SetScript("OnDelete", private.SearchListOnDelete)
 			:SetScript("OnRowClick", private.SearchListOnRowClick)
 	elseif button == L["Favorite Scans"] then
-		return TSMAPI_FOUR.UI.NewElement("SearchList", "list")
+		return UIElements.New("SearchList", "list")
 			:SetQuery(TSM.Auctioning.SavedSearches.CreateFavoriteSearchesQuery())
-			:SetEditButtonHidden(true)
 			:SetScript("OnFavoriteChanged", private.SearchListOnFavoriteChanged)
+			:SetScript("OnEditClick", private.SearchListOnEditClick)
 			:SetScript("OnDelete", private.SearchListOnDelete)
 			:SetScript("OnRowClick", private.SearchListOnRowClick)
 	else
@@ -245,227 +283,218 @@ end
 
 function private.GetAuctioningScanFrame()
 	TSM.UI.AnalyticsRecordPathChange("auction", "auctioning", "scan")
-	return TSMAPI_FOUR.UI.NewElement("Frame", "scan")
+	return UIElements.New("Frame", "scan")
 		:SetLayout("VERTICAL")
-		:SetStyle("background", "#272727")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "backFrame")
+		:SetBackgroundColor("PRIMARY_BG")
+		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("margin", { left = 8, top = 6, bottom = 13 })
-			:SetStyle("height", 18)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "backIcon")
-				:SetStyle("width", 18)
-				:SetStyle("backgroundTexturePack", "iconPack.18x18/SideArrow")
-				:SetStyle("backgroundTextureRotation", 180)
-				:SetScript("OnClick", private.ScanBackButtonOnClick)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer"))
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 75)
-			:SetStyle("margin", { left = 10, right = 10, bottom = 12 })
-			:SetStyle("padding", { bottom = 4, left = 10, right = 16 })
-			:SetStyle("background", "#2f2f2f")
-			:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\ItemPreviewEdgeFrame.blp")
-			:SetStyle("borderSize", 8)
-			:SetStyle("borderInset", 1)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "item")
+			:SetPadding(8)
+			:SetHeight(92)
+			:AddChild(UIElements.New("Frame", "back")
 				:SetLayout("VERTICAL")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 32)
-					:SetStyle("margin", { bottom = 6 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "icon")
-						:SetStyle("width", 30)
-						:SetStyle("height", 30)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-						:SetStyle("height", 32)
-						:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-						:SetStyle("fontHeight", 16)
-						:SetStyle("margin", { left = 8 })
-					)
+				:SetWidth(54)
+				:SetHeight(76)
+				:SetMargin(0, 8, 0, 0)
+				:SetPadding(0, 0, 4, 0)
+				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:AddChild(UIElements.New("Button", "backBtn")
+					:SetMargin(0, 0, 2, 0)
+					:SetSize(28, 28)
+					:SetBackground("iconPack.24x24/Close/Default")
+					:SetScript("OnEnter", private.ExitScanButtonOnEnter)
+					:SetScript("OnLeave", private.ExitScanButtonOnLeave)
+					:SetScript("OnClick", private.ExitScanButtonOnClick)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "cost")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 16)
-					:SetStyle("margin", { left = 1 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("textColor", "#e2e2e2")
-						:SetStyle("autoWidth", true)
-						:SetText(L["Deposit Cost"] .. ":")
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-						:SetStyle("margin", { left = 4 })
-						:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("justifyH", "LEFT")
-					)
+				:AddChild(UIElements.New("Text", "text")
+					:SetHeight(18)
+					:SetFont("BODY_BODY3_MEDIUM")
+					:SetJustifyH("CENTER")
+					:SetText(L["Exit"])
 				)
+				:AddChild(UIElements.New("Text", "text")
+					:SetHeight(18)
+					:SetFont("BODY_BODY3_MEDIUM")
+					:SetJustifyH("CENTER")
+					:SetText(L["Scan"])
+				)
+				:SetScript("OnEnter", private.ExitScanFrameOnEnter)
+				:SetScript("OnLeave", private.ExitScanFrameOnLeave)
+				:SetScript("OnMouseUp", private.ExitScanButtonOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "details1")
-				:SetLayout("VERTICAL")
-				:SetStyle("width", 230)
-				:SetStyle("margin", { left = 10, right = 34, top = 0 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "header")
-					:SetStyle("height", 15)
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("textColor", "#ffffff")
-					:SetText(L["AUCTION DETAILS"])
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "bid")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 16)
-					:SetStyle("margin", { bottom = 4, top = 4 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("textColor", "#e2e2e2")
-						:SetStyle("autoWidth", true)
-						:SetText(L["Bid Price"] .. ":")
+			:AddChild(UIElements.New("Frame", "content")
+				:SetLayout("HORIZONTAL")
+				:SetPadding(8, 8, 4, 4)
+				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:AddChild(UIElements.New("Frame", "item")
+					:SetLayout("VERTICAL")
+					:AddChild(UIElements.New("Frame", "content")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(24)
+						:SetMargin(0, 0, 0, 4)
+						:AddChild(UIElements.New("Button", "icon")
+							:SetSize(18, 18)
+						)
+						:AddChild(UIElements.New("Button", "text")
+							:SetMargin(4, 0, 0, 0)
+							:SetFont("ITEM_BODY1")
+							:SetJustifyH("LEFT")
+						)
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("EditableText", "text")
-						:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("justifyH", "RIGHT")
-						:SetContext("bid")
-						:SetScript("OnValueChanged", private.BidBuyoutTextOnValueChanged)
+					:AddChild(UIElements.New("Frame", "cost")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:AddChild(UIElements.New("Text", "desc")
+							:SetWidth("AUTO")
+							:SetFont("BODY_BODY3_MEDIUM")
+							:SetText(L["Deposit Cost"]..":")
+						)
+						:AddChild(UIElements.New("Text", "text")
+							:SetMargin(4, 0, 0, 0)
+							:SetFont("TABLE_TABLE1")
+						)
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "editBtn")
-						:SetStyle("width", 12)
-						:SetStyle("height", 12)
-						:SetStyle("margin", { left = 4 })
-						:SetStyle("backgroundTexturePack", "iconPack.12x12/Edit")
-						:SetScript("OnClick", private.EditBtnOnClick)
-					)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buyout")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 16)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("textColor", "#e2e2e2")
-						:SetStyle("autoWidth", true)
-						:SetText(L["Buyout Price"] .. ":")
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("EditableText", "text")
-						:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("justifyH", "RIGHT")
-						:SetContext("buyout")
-						:SetScript("OnValueChanged", private.BidBuyoutTextOnValueChanged)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "editBtn")
-						:SetStyle("width", 12)
-						:SetStyle("height", 12)
-						:SetStyle("margin", { left = 4 })
-						:SetStyle("backgroundTexturePack", "iconPack.12x12/Edit")
-						:SetScript("OnClick", private.EditBtnOnClick)
+					:AddChild(UIElements.New("Frame", "operation")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(20)
+						:AddChild(UIElements.New("Text", "desc")
+							:SetWidth("AUTO")
+							:SetFont("BODY_BODY3_MEDIUM")
+							:SetText(L["Operation"]..":")
+						)
+						:AddChild(UIElements.New("Text", "text")
+							:SetMargin(4, 0, 0, 0)
+							:SetFont("BODY_BODY3_MEDIUM")
+						)
 					)
 				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "details2")
-				:SetLayout("VERTICAL")
-				:SetStyle("width", 230)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "header")
-					:SetStyle("height", 15)
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("textColor", "#ffffff")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "quantity")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 16)
-					:SetStyle("margin", { bottom = 4, top = 4 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("textColor", "#e2e2e2")
-						:SetStyle("autoWidth", true)
-						:SetText(L["Stack / Quantity"] .. ":")
+				:AddChild(UIElements.New("Frame", "details")
+					:SetLayout("VERTICAL")
+					:SetWidth(371)
+					:SetMargin(16, 0, 0, 0)
+					:AddChild(UIElements.New("Frame", "header")
+						:SetLayout("HORIZONTAL")
+						:SetHeight(24)
+						:AddChild(UIElements.New("Text", "text")
+							:SetMargin(0, 10, 0, 0)
+							:SetSize("AUTO", 16)
+							:SetFont("BODY_BODY1")
+							:SetText(L["Auctioning Details"])
+						)
+						:AddChild(UIElements.New("ActionButton", "editBtn")
+							:SetHeight(16)
+							:SetFont("BODY_BODY3_MEDIUM")
+							:SetText(L["Edit Post"])
+							:SetScript("OnClick", private.EditButtonOnClick)
+						)
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-						:SetStyle("margin.left", 4)
-						:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("justifyH", "RIGHT")
-					)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "duration")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("height", 16)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("textColor", "#e2e2e2")
-						:SetStyle("autoWidth", true)
-						:SetText(L["Auction Duration"] .. ":")
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "dropdown")
-						:SetStyle("width", 100)
-						:SetStyle("textPadding", 4)
-						:SetStyle("background", "#00000000")
-						:SetStyle("border", "#00000000")
-						:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("openFont", TSM.UI.Fonts.RobotoMedium)
-						:SetStyle("openFontHeight", 12)
-						:SetItems(TSM.CONST.AUCTION_DURATIONS)
-						:SetScript("OnSelectionChanged", private.DurationOnSelectionChanged)
+					:AddChild(UIElements.New("Frame", "details")
+						:SetLayout("HORIZONTAL")
+						:SetMargin(0, 0, 4, 0)
+						:AddChild(UIElements.New("Frame", "details1")
+							:SetLayout("VERTICAL")
+							:SetWidth(200)
+							:SetMargin(0, 8, 0, 0)
+							:AddChild(UIElements.New("Frame", "bid")
+								:SetLayout("HORIZONTAL")
+								:SetHeight(20)
+								:AddChild(UIElements.New("Text", "desc")
+									:SetWidth("AUTO")
+									:SetFont("BODY_BODY3_MEDIUM")
+									:SetText(L["Bid Price"]..":")
+								)
+								:AddChild(UIElements.New("Text", "text")
+									:SetMargin(4, 0, 0, 0)
+									:SetFont("TABLE_TABLE1")
+								)
+							)
+							:AddChild(UIElements.New("Frame", "buyout")
+								:SetLayout("HORIZONTAL")
+								:SetHeight(20)
+								:AddChild(UIElements.New("Text", "desc")
+									:SetWidth("AUTO")
+									:SetFont("BODY_BODY3_MEDIUM")
+									:SetText(L["Buyout Price"]..":")
+								)
+								:AddChild(UIElements.New("Text", "text")
+									:SetMargin(4, 0, 0, 0)
+									:SetFont("TABLE_TABLE1")
+								)
+							)
+						)
+						:AddChild(UIElements.New("Frame", "details2")
+							:SetLayout("VERTICAL")
+							:AddChild(UIElements.New("Frame", "quantity")
+								:SetLayout("HORIZONTAL")
+								:SetHeight(20)
+								:AddChild(UIElements.New("Text", "desc")
+									:SetWidth("AUTO")
+									:SetFont("BODY_BODY3_MEDIUM")
+									:SetText((TSM.IsWowClassic() and L["Stack / Quantity"] or L["Quantity"])..":")
+								)
+								:AddChild(UIElements.New("Text", "text")
+									:SetMargin(4, 0, 0, 0)
+									:SetFont("TABLE_TABLE1")
+								)
+							)
+							:AddChild(UIElements.New("Frame", "duration")
+								:SetLayout("HORIZONTAL")
+								:SetHeight(20)
+								:AddChild(UIElements.New("Text", "desc")
+									:SetWidth("AUTO")
+									:SetFont("BODY_BODY3_MEDIUM")
+									:SetText(L["Duration"]..":")
+								)
+								:AddChild(UIElements.New("Text", "text")
+									:SetMargin(4, 0, 0, 0)
+									:SetFont("TABLE_TABLE1")
+								)
+							)
+						)
 					)
 				)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("SimpleTabGroup", "tabs")
+		:AddChild(UIElements.New("SimpleTabGroup", "tabs")
 			:SetNavCallback(private.ScanNavCallback)
 			:AddPath(L["Auctioning Log"], true)
 			:AddPath(L["All Auctions"])
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "bottom")
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "bottom")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 38)
-			:SetStyle("padding.bottom", -2)
-			:SetStyle("padding.top", 6)
-			:SetStyle("background", "#363636")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ProgressBar", "progressBar")
-				:SetStyle("height", 28)
-				:SetStyle("margin.right", 8)
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("ActionButton", "pauseResumeBtn")
+				:SetSize(24, 24)
+				:SetMargin(0, 8, 0, 0)
+				:SetIcon("iconPack.18x18/PlayPause")
+				:SetScript("OnClick", private.PauseResumeBtnOnClick)
+			)
+			:AddChild(UIElements.New("ProgressBar", "progressBar")
+				:SetHeight(24)
+				:SetMargin(0, 8, 0, 0)
 				:SetProgress(0)
 				:SetProgressIconHidden(false)
 				:SetText(L["Starting Scan..."])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewNamedElement("ActionButton", "processBtn", "TSMAuctioningBtn")
-				:SetStyle("width", 107)
-				:SetStyle("height", 26)
-				:SetStyle("margin.right", 8)
-				:SetStyle("iconTexturePack", "iconPack.14x14/Post")
-				:SetText(L["POST"])
+			:AddChild(UIElements.NewNamed("ActionButton", "processBtn", "TSMAuctioningBtn")
+				:SetSize(160, 24)
+				:SetMargin(0, 8, 0, 0)
+				:SetText(L["Post"])
 				:SetDisabled(true)
 				:DisableClickCooldown(true)
 				:SetScript("OnClick", private.ProcessButtonOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "skipBtn")
-				:SetStyle("width", 107)
-				:SetStyle("height", 26)
-				:SetStyle("margin.right", 8)
-				:SetStyle("iconTexturePack", "iconPack.14x14/Skip")
-				:SetText(L["SKIP"])
+			:AddChild(UIElements.New("ActionButton", "skipBtn")
+				:SetSize(160, 24)
+				:SetText(L["Skip"])
 				:SetDisabled(true)
 				:DisableClickCooldown(true)
 				:SetScript("OnClick", private.SkipButtonOnClick)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "stopBtn")
-				:SetStyle("width", 107)
-				:SetStyle("height", 26)
-				:SetStyle("iconTexturePack", "iconPack.14x14/Stop")
-				:SetText(L["STOP"])
-				:SetDisabled(true)
-				:SetScript("OnClick", private.StopButtonOnClick)
 			)
 		)
 		:SetScript("OnUpdate", private.ScanFrameOnUpdate)
@@ -476,28 +505,22 @@ function private.ScanNavCallback(_, path)
 	if path == L["Auctioning Log"] then
 		TSM.UI.AnalyticsRecordPathChange("auction", "auctioning", "scan", "log")
 		private.logQuery = private.logQuery or TSM.Auctioning.Log.CreateQuery()
-		return TSMAPI_FOUR.UI.NewElement("Frame", "logFrame")
+		return UIElements.New("Frame", "logFrame")
 			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("color", "#9d9d9d")
-				:SetStyle("height", 1)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "log")
-				:SetStyle("headerBackground", "#404040")
-				:SetStyle("headerFontHeight", 12)
+			:AddChild(UIElements.New("QueryScrollingTable", "log")
+				:SetSettingsContext(private.settings, "auctioningLogScrollingTable")
 				:GetScrollingTableInfo()
 					:NewColumn("index")
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitleIcon("iconPack.14x14/Attention")
+						:SetIconSize(12)
+						:SetFont("ITEM_BODY3")
 						:SetJustifyH("CENTER")
-						:SetTextInfo("index", private.LogGetIndexText)
+						:SetIconInfo(nil, private.LogGetIndexIcon)
 						:SetSortInfo("index")
-						:SetWidth(20)
 						:Commit()
 					:NewColumn("item")
-						:SetTitles(L["Item"])
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitle(L["Item"])
+						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
 						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
@@ -506,40 +529,32 @@ function private.ScanNavCallback(_, path)
 						:SetSortInfo("name")
 						:Commit()
 					:NewColumn("buyout")
-						:SetTitles(L["Your Buyout"])
-						:SetWidth(110)
-						:SetFont(TSM.UI.Fonts.RobotoMedium)
-						:SetFontHeight(12)
+						:SetTitle(L["Your Buyout"])
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
 						:SetTextInfo("buyout", private.LogGetBuyoutText)
 						:SetSortInfo("buyout")
 						:Commit()
 					:NewColumn("operation")
-						:SetTitles(L["Operation"])
-						:SetWidth(100)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitle(L["Operation"])
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("LEFT")
 						:SetTextInfo("operation")
 						:SetSortInfo("operation")
 						:Commit()
 					:NewColumn("seller")
-						:SetTitles(L["Seller"])
-						:SetWidth(90)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitle(L["Seller"])
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("LEFT")
 						:SetTextInfo("seller")
 						:SetSortInfo("seller")
 						:Commit()
 					:NewColumn("info")
-						:SetTitles(INFO)
-						:SetWidth(222)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitle(INFO)
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("LEFT")
-						:SetTextInfo("info")
-						:SetSortInfo("info")
+						:SetTextInfo(nil, TSM.Auctioning.Log.GetInfoStr)
+						:SetSortInfo("reasonStr")
 						:Commit()
 					:Commit()
 				:SetQuery(private.logQuery)
@@ -547,15 +562,13 @@ function private.ScanNavCallback(_, path)
 			)
 	elseif path == L["All Auctions"] then
 		TSM.UI.AnalyticsRecordPathChange("auction", "auctioning", "scan", "auctions")
-		return TSMAPI_FOUR.UI.NewElement("Frame", "auctionsFrame")
+		return UIElements.New("Frame", "auctionsFrame")
 			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("color", "#9d9d9d")
-				:SetStyle("height", 1)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("AuctionScrollingTable", "auctions")
-				:SetQuery(private.scanQuery)
+			:AddChild(UIElements.New("AuctionScrollingTable", "auctions")
+				:SetSettingsContext(private.settings, "auctioningAuctionScrollingTable")
+				:SetBrowseResultsVisible(true)
 				:SetMarketValueFunction(private.MarketValueFunction)
+				:SetAuctionScan(private.auctionScan)
 			)
 	else
 		error("Unexpected path: "..tostring(path))
@@ -569,20 +582,26 @@ end
 -- ============================================================================
 
 function private.OnItemLinked(_, itemLink)
-	if not private.selectionFrame or not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
-		return false
+	if private.selectionFrame then
+		if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
+			return false
+		end
+		wipe(private.scanContext)
+		private.scanContext.isItems = true
+		tinsert(private.scanContext, TSM.Groups.TranslateItemString(ItemString.Get(itemLink)))
+		private.selectionFrame:GetParentElement():SetPath("scan", true)
+		private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
+		return true
+	else
+		if not private.canStartNewScan then
+			return false
+		end
+		wipe(private.scanContext)
+		private.scanContext.isItems = true
+		tinsert(private.scanContext, TSM.Groups.TranslateItemString(ItemString.Get(itemLink)))
+		private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
+		return true
 	end
-	wipe(private.scanContext)
-	private.scanContext.isItems = true
-	tinsert(private.scanContext, TSM.Groups.TranslateItemString(ItemString.Get(itemLink)))
-	private.selectionFrame:GetParentElement():SetPath("scan", true)
-	private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
-	return true
-end
-
-function private.SelectionOnUpdate(frame)
-	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(nil)
 end
 
 function private.SelectionOnHide(frame)
@@ -590,62 +609,28 @@ function private.SelectionOnHide(frame)
 	private.selectionFrame = nil
 end
 
-function private.GroupSearchOnTextChanged(input)
-	private.groupSearch = strlower(strtrim(input:GetText()))
+function private.GroupSearchOnValueChanged(input)
+	private.groupSearch = strlower(input:GetValue())
 	input:GetElement("__parent.__parent.groupTree")
 		:SetSearchString(private.groupSearch)
 		:Draw()
 end
 
-local function MoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Select All Groups"], private.SelectAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Deselect All Groups"], private.DeselectAllBtnOnClick
-	elseif prevIndex == 2 then
-		return 3, L["Expand All Groups"], private.ExpandAllBtnOnClick
-	elseif prevIndex == 3 then
-		return 4, L["Collapse All Groups"], private.CollapseAllBtnOnClick
-	end
+function private.ExpandAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleExpandAll()
 end
 
-function private.MoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, MoreDialogRowIterator)
-end
-
-function private.SelectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.auctioning.selection.groupSelection.groupTree"):SelectAll()
-	baseFrame:HideDialog()
-end
-
-function private.DeselectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.auctioning.selection.groupSelection.groupTree"):DeselectAll()
-	baseFrame:HideDialog()
-end
-
-function private.ExpandAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.auctioning.selection.groupSelection.groupTree"):ExpandAll()
-	baseFrame:HideDialog()
-end
-
-function private.CollapseAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.auctioning.selection.groupSelection.groupTree"):CollapseAll()
-	baseFrame:HideDialog()
-end
-
-function private.GroupTreeGetList(groups, headerNameLookup)
-	TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, "Auctioning")
+function private.SelectAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleSelectAll()
 end
 
 function private.GroupTreeOnGroupSelectionChanged(groupTree)
-	local postScanBtn = groupTree:GetElement("__parent.postScanBtn")
+	local postScanBtn = groupTree:GetElement("__parent.bottom.postScanBtn")
 	postScanBtn:SetDisabled(groupTree:IsSelectionCleared())
 	postScanBtn:Draw()
-	local cancelScanBtn = groupTree:GetElement("__parent.cancelScanBtn")
+	local cancelScanBtn = groupTree:GetElement("__parent.bottom.cancelScanBtn")
 	cancelScanBtn:SetDisabled(groupTree:IsSelectionCleared())
 	cancelScanBtn:Draw()
 end
@@ -655,10 +640,10 @@ function private.RunPostButtonOnclick(button)
 		return
 	end
 	wipe(private.scanContext)
-	for _, groupPath in button:GetElement("__parent.groupTree"):SelectedGroupsIterator() do
+	for _, groupPath in button:GetElement("__parent.__parent.groupTree"):SelectedGroupsIterator() do
 		tinsert(private.scanContext, groupPath)
 	end
-	button:GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
+	button:GetElement("__parent.__parent.__parent.__parent"):SetPath("scan", true)
 	private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
 end
 
@@ -667,15 +652,67 @@ function private.RunCancelButtonOnclick(button)
 		return
 	end
 	wipe(private.scanContext)
-	for _, groupPath in button:GetElement("__parent.groupTree"):SelectedGroupsIterator() do
+	for _, groupPath in button:GetElement("__parent.__parent.groupTree"):SelectedGroupsIterator() do
 		tinsert(private.scanContext, groupPath)
 	end
-	button:GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
+	button:GetElement("__parent.__parent.__parent.__parent"):SetPath("scan", true)
 	private.fsm:ProcessEvent("EV_START_SCAN", "CANCEL", private.scanContext)
 end
 
 function private.SearchListOnFavoriteChanged(_, dbRow, isFavorite)
 	TSM.Auctioning.SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
+end
+
+function private.SearchListOnEditClick(searchList, dbRow)
+	local dialog = UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(600, 187)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG")
+		:SetBorderColor("ACTIVE_BG")
+		:AddChild(UIElements.New("Text", "title")
+			:SetHeight(44)
+			:SetMargin(16, 16, 24, 16)
+			:SetFont("BODY_BODY1_BOLD")
+			:SetJustifyH("CENTER")
+			:SetText(L["Rename Search"])
+		)
+		:AddChild(UIElements.New("Input", "nameInput")
+			:SetHeight(26)
+			:SetMargin(16, 16, 0, 25)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AllowItemInsert(true)
+			:SetContext(dbRow)
+			:SetValue(dbRow:GetField("name"))
+			:SetScript("OnEnterPressed", private.RenameInputOnEnterPressed)
+		)
+		:AddChild(UIElements.New("Frame", "buttons")
+			:SetLayout("HORIZONTAL")
+			:SetMargin(16, 16, 0, 16)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+			:AddChild(UIElements.New("ActionButton", "closeBtn")
+				:SetSize(126, 26)
+				:SetText(CLOSE)
+				:SetScript("OnClick", private.DialogCloseBtnOnClick)
+			)
+		)
+	searchList:GetBaseElement():ShowDialogFrame(dialog)
+	dialog:GetElement("nameInput"):SetFocused(true)
+end
+
+function private.RenameInputOnEnterPressed(input)
+	local name = input:GetValue()
+	if name == "" then
+		return
+	end
+	local dbRow = input:GetContext()
+	local baseElement = input:GetBaseElement()
+	baseElement:HideDialog()
+	TSM.Auctioning.SavedSearches.RenameSearch(dbRow, name)
+end
+
+function private.DialogCloseBtnOnClick(button)
+	button:GetBaseElement():HideDialog()
 end
 
 function private.SearchListOnDelete(_, dbRow)
@@ -690,8 +727,12 @@ function private.SearchListOnRowClick(searchList, dbRow)
 	wipe(private.scanContext)
 	private.scanContext.isItems = scanType == "postItems" or nil
 	TSM.Auctioning.SavedSearches.FiltersToTable(dbRow, private.scanContext)
-	searchList:GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
+	searchList:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
 	private.fsm:ProcessEvent("EV_START_SCAN", scanType == "cancelGroups" and "CANCEL" or "POST", private.scanContext)
+end
+
+function private.PauseResumeBtnOnClick(button)
+	private.fsm:ProcessEvent("EV_PAUSE_RESUME_CLICKED")
 end
 
 function private.ProcessButtonOnClick(button)
@@ -702,13 +743,8 @@ function private.SkipButtonOnClick(button)
 	private.fsm:ProcessEvent("EV_SKIP_CLICKED")
 end
 
-function private.StopButtonOnClick(button)
-	private.fsm:ProcessEvent("EV_STOP_BUTTON_CLICKED")
-end
-
 function private.ScanFrameOnUpdate(frame)
 	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(38)
 	private.fsm:ProcessEvent("EV_SCAN_FRAME_SHOWN", frame)
 end
 
@@ -716,22 +752,25 @@ function private.ScanFrameOnHide(frame)
 	private.fsm:ProcessEvent("EV_SCAN_FRAME_HIDDEN")
 end
 
-function private.BagScrollingTableOnSelectionChanged(table)
-	local postBagsBtn = table:GetElement("__parent.buttonFrame.postBagsBtn")
-	postBagsBtn:SetDisabled(table:IsSelectionCleared())
-	postBagsBtn:Draw()
-	local clearBtn = table:GetElement("__parent.buttonFrame.clearSelectionBtn")
-	clearBtn:SetDisabled(table:IsSelectionCleared())
-	clearBtn:Draw()
+function private.BagOnSelectionChanged(scrollingTable)
+	local selectionCleared = scrollingTable:IsSelectionCleared()
+	scrollingTable:GetElement("__parent.button.postSelected"):SetDisabled(selectionCleared)
+		:Draw()
+	scrollingTable:GetElement("__parent.button.selectAll"):SetDisabled(scrollingTable:IsAllSelected())
+		:Draw()
+	scrollingTable:GetElement("__parent.button.clearAll"):SetDisabled(selectionCleared)
+		:Draw()
 end
 
-function private.RunClearSelectionButtonOnclick(button)
-	local scrollFrame = button:GetParentElement():GetParentElement():GetElement("bagScrollingTable")
-	scrollFrame:ClearSelection()
-	scrollFrame:Draw()
+function private.SelectAllOnClick(button)
+	button:GetElement("__parent.__parent.bagScrollingTable"):SelectAll()
 end
 
-function private.RunPostBagsButtonOnclick(button)
+function private.ClearAllOnClick(button)
+	button:GetElement("__parent.__parent.bagScrollingTable"):ClearSelection()
+end
+
+function private.RunPostBagsButtonOnClick(button)
 	if not TSM.UI.AuctionUI.StartingScan(L["Auctioning"]) then
 		return
 	end
@@ -743,41 +782,39 @@ function private.RunPostBagsButtonOnclick(button)
 			tinsert(private.scanContext, autoBaseItemString)
 		end
 	end
-	button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
+	button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():SetPath("scan", true)
 	private.fsm:ProcessEvent("EV_START_SCAN", "POST", private.scanContext)
 end
 
-function private.ScanBackButtonOnClick()
+function private.ExitScanButtonOnEnter(button)
+	private.ExitScanFrameOnEnter(button:GetParentElement())
+end
+
+function private.ExitScanButtonOnLeave(button)
+	private.ExitScanFrameOnLeave(button:GetParentElement())
+end
+
+function private.ExitScanFrameOnEnter(frame)
+	frame:SetBackgroundColor("PRIMARY_BG_ALT+HOVER", true)
+		:Draw()
+end
+
+function private.ExitScanFrameOnLeave(frame)
+	frame:SetBackgroundColor("PRIMARY_BG_ALT", true)
+		:Draw()
+end
+
+function private.ExitScanButtonOnClick()
 	if TSM.IsWowClassic() then
 		ClearCursor()
 		ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 		ClearCursor()
 	end
-
 	private.fsm:ProcessEvent("EV_BACK_BUTTON_CLICKED")
 end
 
-function private.EditBtnOnClick(button)
-	button:GetElement("__parent.text"):SetEditing(true)
-end
-
-function private.BidBuyoutTextOnValueChanged(text, value)
-	value = Money.FromString(value)
-	if value then
-		if TSM.IsWowClassic() then
-			value = max(min(value, MAXIMUM_BID_PRICE), 0)
-		else
-			value = max(min(Math.Round(value, COPPER_PER_SILVER), MAXIMUM_BID_PRICE - 99), COPPER_PER_SILVER)
-		end
-		private.fsm:ProcessEvent("EV_POST_DETAIL_CHANGED", text:GetContext(), value)
-	else
-		text:Draw()
-	end
-end
-
-function private.DurationOnSelectionChanged(dropdown, value)
-	local postTime = Table.GetDistinctKey(TSM.CONST.AUCTION_DURATIONS, value)
-	private.fsm:ProcessEvent("EV_POST_DETAIL_CHANGED", "postTime", postTime)
+function private.EditButtonOnClick(button)
+	private.fsm:ProcessEvent("EV_EDIT_BUTTON_CLICKED")
 end
 
 
@@ -788,17 +825,15 @@ end
 
 function private.FSMCreate()
 	local fsmContext = {
-		db = TSMAPI_FOUR.Auction.NewDatabase("AUCTIONING_AUCTIONS"),
 		itemString = nil,
 		scanFrame = nil,
 		scanThreadId = nil,
 		scanType = nil,
 		auctionScan = nil,
-		scanProgress = 0,
-		scanProgressText = L["Starting Scan..."],
+		pausePending = nil,
+		isScanning = false,
 		pendingFuture = nil,
 	}
-	private.scanQuery = fsmContext.db:NewQuery()
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
 		private.fsm:ProcessEvent("EV_AUCTION_HOUSE_CLOSED")
 	end)
@@ -835,14 +870,14 @@ function private.FSMCreate()
 			end
 		end)
 	end
-	local function UpdateDepositCost(context)
+	local fsmPrivate = {}
+	function fsmPrivate.UpdateDepositCost(context)
 		if context.scanType ~= "POST" then
 			return
 		end
 
 		local header = context.scanFrame:GetElement("header")
-		local detailsHeader1 = header:GetElement("details1")
-		local detailsHeader2 = header:GetElement("details2")
+		local detailsHeader1 = header:GetElement("content.details.details.details1")
 
 		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
 		if not currentRow then
@@ -857,7 +892,7 @@ function private.FSMCreate()
 			:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 			:Equal("autoBaseItemString", itemString)
 			:GetFirstResultAndRelease()
-		local postTime = Table.GetDistinctKey(TSM.CONST.AUCTION_DURATIONS, detailsHeader2:GetElement("duration.dropdown"):GetSelection())
+		local postTime = currentRow:GetField("postTime")
 		local stackSize = tonumber(currentRow:GetField("stackSize"))
 		local depositCost = 0
 		if postBag and postSlot then
@@ -873,25 +908,15 @@ function private.FSMCreate()
 				ClickAuctionSellItemButton(AuctionsItemButton, "LeftButton")
 				ClearCursor()
 			else
-				private.itemLocation:Clear()
-				private.itemLocation:SetBagAndSlot(postBag, postSlot)
-				local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
-				if commodityStatus == Enum.ItemCommodityStatus.Item then
-					depositCost = C_AuctionHouse.CalculateItemDeposit(private.itemLocation, postTime, stackSize)
-				elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
-					depositCost = C_AuctionHouse.CalculateCommodityDeposit(ItemString.ToId(itemString), postTime, stackSize)
-				elseif commodityStatus == Enum.ItemCommodityStatus.Unknown then
-					return
-				else
-					error("Unknown commodity status: "..tostring(itemString))
-				end
+				local isCommodity = ItemInfo.IsCommodity(itemString)
+				depositCost = max(floor(0.15 * (ItemInfo.GetVendorSell(itemString) or 0) * (isCommodity and stackSize or 1) * (postTime == 3 and 4 or postTime)), 100) * (isCommodity and 1 or stackSize)
 			end
 		end
 
-		header:GetElement("item.cost.text"):SetText(Money.ToString(depositCost))
+		header:GetElement("content.item.cost.text"):SetText(Money.ToString(depositCost))
 			:Draw()
 	end
-	local function UpdateScanFrame(context)
+	function fsmPrivate.UpdateScanFrame(context)
 		if not context.scanFrame then
 			return
 		end
@@ -901,21 +926,21 @@ function private.FSMCreate()
 		if context.scanType == "POST" then
 			currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
 			numProcessed, numConfirmed, _, totalNum = TSM.Auctioning.PostScan.GetStatus()
-			header:GetElement("item.cost")
+			header:GetElement("content.item.cost")
 				:Show()
 				:Draw()
 		elseif context.scanType == "CANCEL" then
 			currentRow = TSM.Auctioning.CancelScan.GetCurrentRow()
 			numProcessed, numConfirmed, _, totalNum = TSM.Auctioning.CancelScan.GetStatus()
-			header:GetElement("item.cost")
+			header:GetElement("content.item.cost")
 				:Hide()
 				:Draw()
 		else
 			error("Invalid scan type: "..tostring(context.scanType))
 		end
-		local itemContent = header:GetElement("item.content")
-		local detailsHeader1 = header:GetElement("details1")
-		local detailsHeader2 = header:GetElement("details2")
+		local itemContent = header:GetElement("content.item.content")
+		local detailsHeader1 = header:GetElement("content.details.details.details1")
+		local detailsHeader2 = header:GetElement("content.details.details.details2")
 		if currentRow then
 			local selectedRow = nil
 			for _, row in private.logQuery:Iterator() do
@@ -932,114 +957,116 @@ function private.FSMCreate()
 			local itemString = currentRow:GetField("itemString")
 			local rowStacksRemaining = currentRow:GetField("numStacks") - currentRow:GetField("numProcessed")
 			itemContent:GetElement("icon")
-				:SetStyle("backgroundTexture", ItemInfo.GetTexture(itemString))
+				:SetBackground(ItemInfo.GetTexture(itemString))
 				:SetTooltip(itemString)
 				:Draw()
 			itemContent:GetElement("text")
 				:SetText(TSM.UI.GetColoredItemName(itemString))
 				:SetTooltip(itemString)
 				:Draw()
+			header:GetElement("content.item.operation.text")
+				:SetText(currentRow:GetField("operationName"))
+				:Draw()
 			detailsHeader1:GetElement("bid.text")
 				:SetText(Money.ToString(currentRow:GetField(ItemInfo.IsCommodity(itemString) and "itemBuyout" or "bid"), nil, "OPT_83_NO_COPPER"))
-				:SetEditing(false)
 				:Draw()
 			detailsHeader1:GetElement("buyout.text")
 				:SetText(Money.ToString(currentRow:GetField(ItemInfo.IsCommodity(itemString) and "itemBuyout" or "buyout"), nil, "OPT_83_NO_COPPER"))
-				:SetEditing(false)
 				:Draw()
 			detailsHeader2:GetElement("quantity.text")
-				:SetText(format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")))
+				:SetText(TSM.IsWowClassic() and format(L["%d of %d"], rowStacksRemaining, currentRow:GetField("stackSize")) or currentRow:GetField("stackSize"))
 				:Draw()
+			local duration = nil
 			if context.scanType == "POST" then
-				if ItemInfo.IsCommodity(itemString) then
-					detailsHeader1:GetElement("bid.editBtn")
-						:Hide()
-						:Draw()
+				duration = TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")]
+			elseif context.scanType == "CANCEL" then
+				if TSM.IsWowClassic() then
+					duration = _G["AUCTION_TIME_LEFT"..currentRow:GetField("duration")]
 				else
-					detailsHeader1:GetElement("bid.editBtn")
-						:Show()
-						:Draw()
-				end
-				detailsHeader1:GetElement("buyout.editBtn")
-					:Show()
-					:Draw()
-				detailsHeader2:GetElement("duration.dropdown")
-					:SetDisabled(false)
-					:SetSelection(TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")])
-					:Draw()
-
-				if context.itemString ~= itemString then
-					UpdateDepositCost(context)
-					context.itemString = itemString
+					duration = currentRow:GetField("duration") - time()
+					if duration < SECONDS_PER_MIN then
+						duration = duration.."s"
+					elseif duration < SECONDS_PER_HOUR then
+						duration = floor(duration / SECONDS_PER_MIN).."m"
+					elseif duration < SECONDS_PER_DAY then
+						duration = floor(duration / SECONDS_PER_HOUR).."h"
+					else
+						duration = floor(duration / SECONDS_PER_DAY).."d"
+					end
 				end
 			else
-				detailsHeader1:GetElement("bid.editBtn"):Hide()
-				detailsHeader1:GetElement("buyout.editBtn"):Hide()
-				detailsHeader2:GetElement("duration.dropdown"):SetDisabled(true)
+				error("Invalid scanType: "..tostring(context.scanType))
 			end
+			detailsHeader2:GetElement("duration.text")
+				:SetText(duration)
+				:Draw()
+			if context.scanType == "POST" and context.itemString ~= itemString then
+				fsmPrivate.UpdateDepositCost(context)
+				context.itemString = itemString
+			end
+			header:GetElement("content.details.header.editBtn")
+				:SetDisabled(context.scanType ~= "POST")
+				:Draw()
 		else
 			itemContent:GetElement("icon")
-				:SetStyle("backgroundTexture", nil)
+				:SetBackground(nil)
 				:SetTooltip(nil)
 				:Draw()
 			itemContent:GetElement("text")
 				:SetText("-")
 				:SetTooltip(nil)
-			header:GetElement("item.cost.text")
+				:Draw()
+			header:GetElement("content.item.cost.text")
+				:SetText("-")
+				:Draw()
+			header:GetElement("content.item.operation.text")
 				:SetText("-")
 				:Draw()
 			detailsHeader1:GetElement("bid.text")
 				:SetText("-")
 				:Draw()
-			detailsHeader1:GetElement("bid.editBtn")
-				:Hide()
-				:Draw()
 			detailsHeader1:GetElement("buyout.text")
 				:SetText("-")
-				:Draw()
-			detailsHeader1:GetElement("buyout.editBtn")
-				:Hide()
 				:Draw()
 			detailsHeader2:GetElement("quantity.text")
 				:SetText("-")
 				:Draw()
-			detailsHeader2:GetElement("duration.dropdown")
-				:SetSelection("")
-				:Draw()
-			detailsHeader2:GetElement("duration.dropdown")
-				:SetDisabled(true)
+			detailsHeader2:GetElement("duration.text")
+				:SetText("-")
 				:Draw()
 			if context.scanFrame:GetElement("tabs"):GetPath() == L["Auctioning Log"] then
 				context.scanFrame:GetElement("tabs.logFrame.log")
 					:SetSelection(nil)
 					:Draw()
 			end
+			header:GetElement("content.details.header.editBtn")
+				:SetDisabled(true)
+				:Draw()
 		end
 
-		local processText, processIcon = nil, nil
+		local processText = nil
 		if context.scanType == "POST" then
-			processText = L["POST"]
-			processIcon = "iconPack.18x18/Post"
+			processText = L["Post"]
 		elseif context.scanType == "CANCEL" then
-			processText = strupper(CANCEL)
-			processIcon = "iconPack.18x18/Close/Circle"
+			processText = CANCEL
 		else
 			error("Invalid scan type: "..tostring(context.scanType))
 		end
 		local bottom = context.scanFrame:GetElement("bottom")
 		bottom:GetElement("processBtn")
-			:SetStyle("iconTexturePack", processIcon)
 			:SetText(processText)
-		bottom:GetElement("stopBtn"):SetDisabled(context.scanProgress == 1)
-		if context.scanProgress == 1 then
-			-- we're done scanning so start Posting/Canceling
+		local progress, isPaused = context.auctionScan:GetProgress()
+		local scanDone = progress == 1 and not context.isScanning
+		local isPausePending = context.pausePending ~= nil
+		if not isPausePending and (scanDone or isPaused) then
+			-- we're done (or paused) scanning so start Posting/Canceling
 			local doneStr, progressFmtStr = nil, nil
 			if context.scanType == "POST" then
 				doneStr = L["Done Posting"]
-				progressFmtStr = L["Posting %d / %d"]
+				progressFmtStr = (isPaused and (L["Scan Paused"].." | ") or "")..L["Posting %d / %d"]
 			elseif context.scanType == "CANCEL" then
 				doneStr = L["Done Canceling"]
-				progressFmtStr = L["Canceling %d / %d"]
+				progressFmtStr = (isPaused and (L["Scan Paused"].." | ") or "")..L["Canceling %d / %d"]
 			else
 				error("Invalid scan type: "..tostring(context.scanType))
 			end
@@ -1059,46 +1086,274 @@ function private.FSMCreate()
 				:SetProgress(totalNum > 0 and (numProcessed / totalNum) or 1)
 				:SetProgressIconHidden(iconHidden)
 				:SetText(progressText)
-			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (not TSM.IsWowClassic() and context.pendingFuture))
+			local deposit = context.scanType == "POST" and Money.FromString(header:GetElement("content.item.cost.text"):GetText())
+			bottom:GetElement("processBtn"):SetDisabled(numProcessed == totalNum or (deposit and deposit > GetMoney()) or (not TSM.IsWowClassic() and context.pendingFuture))
 			bottom:GetElement("skipBtn"):SetDisabled(numProcessed == totalNum)
+			bottom:GetElement("pauseResumeBtn")
+				:SetDisabled(numProcessed ~= numConfirmed or scanDone)
+				:SetHighlightLocked(false)
 		else
-			-- we're scanning
+			-- we're scanning or pausing
+			local text = nil
+			if isPausePending then
+				text = isPaused and L["Resuming Scan..."] or L["Pausing Scan..."]
+			else
+				local numItems = context.auctionScan:GetNumItems()
+				text = numItems and format(L["Scanning (%d Items)"], numItems) or L["Scanning"]
+			end
 			bottom:GetElement("progressBar")
-				:SetProgress(context.scanProgress)
+				:SetProgress(progress)
 				:SetProgressIconHidden(false)
-				:SetText(context.scanProgressText or "")
+				:SetText(text)
 			bottom:GetElement("processBtn"):SetDisabled(true)
 			bottom:GetElement("skipBtn"):SetDisabled(true)
+			bottom:GetElement("pauseResumeBtn")
+				:SetDisabled(isPausePending or numProcessed == totalNum)
+				:SetHighlightLocked(isPausePending)
 		end
 		bottom:Draw()
 	end
+	function fsmPrivate.ShowEditDialog(context)
+		if context.scanType ~= "POST" then
+			return
+		end
+		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
+		local itemString = currentRow:GetField("itemString")
+		local isCommodity = ItemInfo.IsCommodity(itemString)
+		local bid = currentRow:GetField(isCommodity and "itemBuyout" or "bid")
+		local buyout = currentRow:GetField(isCommodity and "itemBuyout" or "buyout")
+
+		private.perItem = true
+
+		context.scanFrame:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
+			:SetLayout("VERTICAL")
+			:SetSize(328, 328)
+			:SetPadding(12)
+			:AddAnchor("CENTER")
+			:SetBackgroundColor("FRAME_BG", true)
+			:SetMouseEnabled(true)
+			:AddChild(UIElements.New("Frame", "header")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(0, 0, -4, 10)
+				:AddChild(UIElements.New("Spacer", "spacer")
+					:SetWidth(24)
+				)
+				:AddChild(UIElements.New("Text", "title")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetJustifyH("CENTER")
+					:SetText(L["Edit Post"])
+				)
+				:AddChild(UIElements.New("Button", "closeBtn")
+					:SetMargin(0, -4, 0, 0)
+					:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+					:SetScript("OnClick", private.EditDialogCloseBtnOnClick)
+				)
+			)
+			:AddChild(UIElements.New("Frame", "item")
+				:SetLayout("HORIZONTAL")
+				:SetPadding(6)
+				:SetMargin(0, 0, 0, 16)
+				:SetBackgroundColor("PRIMARY_BG_ALT", true)
+				:AddChild(UIElements.New("Button", "icon")
+					:SetSize(36, 36)
+					:SetMargin(0, 8, 0, 0)
+					:SetBackground(ItemInfo.GetTexture(itemString))
+					:SetTooltip(itemString)
+				)
+				:AddChild(UIElements.New("Text", "name")
+					:SetHeight(36)
+					:SetFont("ITEM_BODY1")
+					:SetText(TSM.UI.GetColoredItemName(itemString))
+				)
+			)
+			-- TODO: implement editing stack sizes
+			:AddChild(UIElements.New("Frame", "stacksFrame")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 16)
+				:AddChild(UIElements.New("Text", "stacksText")
+					:SetWidth("AUTO")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Stack(s)"]..":")
+				)
+				:AddChild(UIElements.New("Input", "stacksInput")
+					:SetSize(62, 24)
+					:SetMargin(0, 16, 0, 0)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:SetValidateFunc("NUMBER", "1:5000")
+					:SetDisabled(true)
+					:SetValue(currentRow:GetField("numStacks"))
+				)
+				:AddChild(UIElements.New("Text", "quantityText")
+					:SetWidth("AUTO")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Quantity"]..":")
+				)
+				:AddChild(UIElements.New("Input", "quantityInput")
+					:SetSize(62, 24)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:SetValidateFunc("NUMBER", "1:5000")
+					:SetDisabled(true)
+					:SetValue(currentRow:GetField("stackSize"))
+				)
+			)
+			:AddChild(UIElements.New("Frame", "duration")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 24)
+				:AddChild(UIElements.New("Text", "desc")
+					:SetWidth("AUTO")
+					:SetFont("BODY_BODY2")
+					:SetText(L["Duration"]..":")
+				)
+				:AddChild(UIElements.New("Toggle", "toggle")
+					:SetMargin(0, 48, 0, 0)
+					:AddOption(TSM.CONST.AUCTION_DURATIONS[1])
+					:AddOption(TSM.CONST.AUCTION_DURATIONS[2])
+					:AddOption(TSM.CONST.AUCTION_DURATIONS[3])
+					:SetOption(TSM.CONST.AUCTION_DURATIONS[currentRow:GetField("postTime")])
+				)
+			)
+			:AddChild(UIElements.New("Frame", "per")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 8)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("Button", "item")
+					:SetWidth("AUTO")
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetJustifyH("RIGHT")
+					:SetTextColor("INDICATOR")
+					:SetText(L["Per Item"])
+					:SetScript("OnClick", TSM.IsWowClassic() and private.PerItemOnClick)
+				)
+				:AddChildIf(TSM.IsWowClassic(), UIElements.New("Button", "stack")
+					:SetWidth("AUTO")
+					:SetTextColor("TEXT")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetJustifyH("RIGHT")
+					:SetTextColor("INDICATOR")
+					:SetText(L["Per Stack"])
+					:SetScript("OnClick", TSM.IsWowClassic() and private.PerStackOnClick)
+				)
+			)
+			:AddChild(UIElements.New("Frame", "bid")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 10)
+				:AddChild(UIElements.New("Text", "desc")
+					:SetWidth("AUTO")
+					:SetFont("BODY_BODY2")
+					:SetText(L["Bid Price"]..":")
+				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("Input", "input")
+					:SetWidth(132)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:SetFont("TABLE_TABLE1")
+					:SetValidateFunc(private.BidBuyoutValidateFunc)
+					:SetJustifyH("RIGHT")
+					:SetDisabled(isCommodity)
+					:SetTabPaths("__parent.__parent.buyout.input", "__parent.__parent.buyout.input")
+					:SetContext("bid")
+					:SetValue(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
+					:SetScript("OnValidationChanged", private.BidBuyoutOnValidationChanged)
+					:SetScript("OnValueChanged", private.BidBuyoutInputOnValueChanged)
+					:SetScript("OnEnterPressed", private.BidBuyoutInputOnEnterPressed)
+				)
+			)
+			:AddChild(UIElements.New("Frame", "buyout")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 16)
+				:AddChild(UIElements.New("Text", "desc")
+					:SetWidth("AUTO")
+					:SetFont("BODY_BODY2")
+					:SetText(L["Buyout Price"]..":")
+				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("Input", "input")
+					:SetWidth(132)
+					:SetBackgroundColor("PRIMARY_BG_ALT")
+					:SetFont("TABLE_TABLE1")
+					:SetValidateFunc(private.BidBuyoutValidateFunc)
+					:SetJustifyH("RIGHT")
+					:SetContext(isCommodity and "itemBuyout" or "buyout")
+					:SetTabPaths("__parent.__parent.bid.input", "__parent.__parent.bid.input")
+					:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER"))
+					:SetScript("OnValidationChanged", private.BidBuyoutOnValidationChanged)
+					:SetScript("OnValueChanged", private.BidBuyoutInputOnValueChanged)
+					:SetScript("OnEnterPressed", private.BidBuyoutInputOnEnterPressed)
+				)
+			)
+			:AddChild(UIElements.New("ActionButton", "saveBtn")
+				:SetHeight(24)
+				:SetText(SAVE)
+				:SetContext(context)
+				:SetScript("OnClick", fsmPrivate.EditPostingDetailsSaveOnClick)
+			)
+		)
+	end
+	function fsmPrivate.EditPostingDetailsSaveOnClick(button)
+		local context = button:GetContext()
+		assert(context.scanType == "POST")
+		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
+
+		local buyout = private.ParseBidBuyout(button:GetElement("__parent.buyout.input"):GetValue())
+		local bid = min(private.ParseBidBuyout(button:GetElement("__parent.bid.input"):GetValue()), buyout)
+		if not TSM.IsWowClassic() and ItemInfo.IsCommodity(context.itemString) and bid ~= buyout then
+			Log.PrintUser(L["Did not change prices due to an invalid bid or buyout value."])
+		else
+			local duration = Table.KeyByValue(TSM.CONST.AUCTION_DURATIONS, button:GetElement("__parent.duration.toggle"):GetValue())
+			if duration ~= currentRow:GetField("postTime") then
+				TSM.Auctioning.PostScan.ChangePostDetail("postTime", duration)
+			end
+
+			-- update buyout first since doing so may change the bid
+			if buyout ~= currentRow:GetField("buyout") then
+				TSM.Auctioning.PostScan.ChangePostDetail("buyout", private.perItem and buyout or buyout / currentRow:GetField("stackSize"))
+			end
+
+			if not ItemInfo.IsCommodity(context.itemString) and bid ~= currentRow:GetField("bid") then
+				TSM.Auctioning.PostScan.ChangePostDetail("bid", private.perItem and bid or bid / currentRow:GetField("stackSize"))
+			end
+		end
+
+		fsmPrivate.UpdateDepositCost(context)
+		fsmPrivate.UpdateScanFrame(context)
+		button:GetBaseElement():HideDialog()
+	end
 	private.fsm = FSM.New("AUCTIONING")
 		:AddState(FSM.NewState("ST_INIT")
-			:SetOnEnter(function(context, ...)
+			:SetOnEnter(function(context, scanType, scanContext)
 				private.hasLastScan = false
 				TSM.Auctioning.Log.Truncate()
 				TSM.Auctioning.PostScan.Reset()
 				TSM.Auctioning.CancelScan.Reset()
 
-				context.db:Truncate()
 				if context.scanThreadId then
 					Threading.Kill(context.scanThreadId)
 					context.scanThreadId = nil
 				end
+				context.pausePending = nil
 				context.itemString = nil
-				context.scanProgress = 0
-				context.scanProgressText = L["Starting Scan..."]
+				context.isScanning = false
 				if context.auctionScan then
 					context.auctionScan:Release()
 					context.auctionScan = nil
+					private.auctionScan = context.auctionScan
 				end
 				if context.pendingFuture then
 					context.pendingFuture:Cancel()
 					context.pendingFuture = nil
 				end
 
-				if ... then
-					return "ST_STARTING_SCAN", ...
+				if scanType then
+					return "ST_STARTING_SCAN", scanType, scanContext
 				elseif context.scanFrame then
 					context.scanFrame:GetParentElement():SetPath("selection", true)
 					context.scanFrame = nil
@@ -1109,7 +1364,7 @@ function private.FSMCreate()
 			:AddTransition("ST_STARTING_SCAN")
 		)
 		:AddState(FSM.NewState("ST_STARTING_SCAN")
-			:SetOnEnter(function(context, scanType, ...)
+			:SetOnEnter(function(context, scanType, scanContext)
 				private.hasLastScan = true
 				context.scanType = scanType
 				if context.scanType == "POST" then
@@ -1123,55 +1378,55 @@ function private.FSMCreate()
 				else
 					error("Invalid scan type: "..tostring(context.scanType))
 				end
-				context.auctionScan = TSMAPI_FOUR.Auction.NewAuctionScan(context.db)
+				context.auctionScan = AuctionScan.GetManager()
 					:SetResolveSellers(true)
 					:SetScript("OnProgressUpdate", private.FSMAuctionScanOnProgressUpdate)
-				UpdateScanFrame(context)
+				private.auctionScan = context.auctionScan
+				fsmPrivate.UpdateScanFrame(context)
 				Threading.SetCallback(context.scanThreadId, private.FSMScanCallback)
-				Threading.Start(context.scanThreadId, context.auctionScan, context.db, ...)
+				Threading.Start(context.scanThreadId, context.auctionScan, scanContext)
 				return "ST_SCANNING"
 			end)
 			:AddTransition("ST_SCANNING")
 		)
 		:AddState(FSM.NewState("ST_SCANNING")
-			:AddTransition("ST_UPDATING_SCAN_PROGRESS")
+			:SetOnEnter(function(context)
+				context.isScanning = true
+				fsmPrivate.UpdateScanFrame(context)
+			end)
+			:SetOnExit(function(context)
+				context.isScanning = false
+			end)
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
-			:AddEventTransition("EV_SCAN_PROGRESS_UPDATE", "ST_UPDATING_SCAN_PROGRESS")
-			:AddEvent("EV_SCAN_COMPLETE", function(context)
-				Sound.PlaySound(TSM.db.global.auctioningOptions.scanCompleteSound)
-				return "ST_RESULTS"
-			end)
-			:AddEvent("EV_STOP_BUTTON_CLICKED", function(context)
-				Sound.PlaySound(TSM.db.global.auctioningOptions.scanCompleteSound)
-				return "ST_RESULTS"
-			end)
-		)
-		:AddState(FSM.NewState("ST_UPDATING_SCAN_PROGRESS")
-			:SetOnEnter(function(context)
-				local filtersScanned, numFilters, pagesScanned, numPages = context.auctionScan:GetProgress()
-				local progress, text = nil, nil
-				if filtersScanned == numFilters then
-					progress = 1
-					text = L["Done Scanning"]
-				else
-					if numPages == 0 then
-						progress = filtersScanned / numFilters
-						numPages = 1
-					else
-						progress = (filtersScanned + pagesScanned / numPages) / numFilters
-					end
-					text = format(L["Scanning %d / %d (Page %d / %d)"], filtersScanned + 1, numFilters, pagesScanned < numPages and pagesScanned + 1 or numPages, numPages)
+			:AddEvent("EV_SCAN_PROGRESS_UPDATE", function(context)
+				local _, isPaused = context.auctionScan:GetProgress()
+				if context.pausePending == isPaused then
+					context.pausePending = nil
 				end
-				context.scanProgress = progress
-				context.scanProgressText = text
-				UpdateScanFrame(context)
-				return "ST_SCANNING"
+				if isPaused and context.pausePending == nil then
+					return "ST_RESULTS"
+				else
+					fsmPrivate.UpdateScanFrame(context)
+				end
 			end)
-			:AddTransition("ST_SCANNING")
+			:AddEvent("EV_SCAN_COMPLETE", function(context)
+				Sound.PlaySound(private.settings.scanCompleteSound)
+				return "ST_RESULTS"
+			end)
+			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
+				assert(context.pausePending == nil)
+				context.pausePending = true
+				context.auctionScan:SetPaused(true)
+				fsmPrivate.UpdateScanFrame(context)
+			end)
+			:AddEvent("EV_EDIT_BUTTON_CLICKED", function(context)
+				fsmPrivate.ShowEditDialog(context)
+			end)
 		)
 		:AddState(FSM.NewState("ST_HANDLING_CONFIRM")
 			:SetOnEnter(function(context, success, canRetry)
+				local isDone = false
 				if context.scanType == "POST" then
 					TSM.Auctioning.PostScan.HandleConfirm(success, canRetry)
 					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.PostScan.GetStatus()
@@ -1181,7 +1436,7 @@ function private.FSMCreate()
 							Log.PrintfUser(L["Retrying %d auction(s) which failed."], numFailed)
 							TSM.Auctioning.PostScan.PrepareFailedPosts()
 						else
-							return "ST_DONE"
+							isDone = true
 						end
 					end
 				elseif context.scanType == "CANCEL" then
@@ -1193,28 +1448,44 @@ function private.FSMCreate()
 							Log.PrintfUser(L["Retrying %d auction(s) which failed."], numFailed)
 							TSM.Auctioning.CancelScan.PrepareFailedCancels()
 						else
-							return "ST_DONE"
+							isDone = true
 						end
 					end
 				else
 					error("Invalid scan type: "..tostring(context.scanType))
 				end
-				return "ST_RESULTS"
+				local _, isPaused = context.auctionScan:GetProgress()
+				if not isDone then
+					return "ST_RESULTS"
+				elseif isPaused then
+					-- unpause the scan now that we're done
+					assert(context.pausePending == nil)
+					context.pausePending = false
+					context.auctionScan:SetPaused(false)
+					return "ST_SCANNING"
+				else
+					return "ST_DONE"
+				end
 			end)
+			:AddTransition("ST_SCANNING")
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_DONE")
 		)
 		:AddState(FSM.NewState("ST_RESULTS")
 			:SetOnEnter(function(context)
-				TSM.UI.AuctionUI.EndedScan(L["Auctioning"])
-				Threading.Kill(context.scanThreadId)
-				context.scanProgress = 1
-				context.scanProgressText = L["Done Scanning"]
-				UpdateScanFrame(context)
+				local _, isPaused = context.auctionScan:GetProgress()
+				if not isPaused then
+					TSM.UI.AuctionUI.EndedScan(L["Auctioning"])
+					Threading.Kill(context.scanThreadId)
+				end
+				fsmPrivate.UpdateScanFrame(context)
 			end)
 			:AddTransition("ST_INIT")
 			:AddTransition("ST_HANDLING_CONFIRM")
+			:AddTransition("ST_SCANNING")
+			:AddTransition("ST_DONE")
 			:AddEvent("EV_PROCESS_CLICKED", function(context)
+				context.scanFrame:GetBaseElement():HideDialog()
 				local result, noRetry = nil, nil
 				if context.scanType == "POST" then
 					result, noRetry = TSM.Auctioning.PostScan.DoProcess()
@@ -1230,17 +1501,32 @@ function private.FSMCreate()
 					context.pendingFuture = result
 					context.pendingFuture:SetScript("OnDone", private.FSMPendingFutureOneDone)
 				end
-				UpdateScanFrame(context)
+				fsmPrivate.UpdateScanFrame(context)
 			end)
 			:AddEvent("EV_SKIP_CLICKED", function(context)
+				local isDone = nil
 				if context.scanType == "POST" then
 					TSM.Auctioning.PostScan.DoSkip()
+					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.PostScan.GetStatus()
+					isDone = numConfirmed == totalNum and numFailed == 0
 				elseif context.scanType == "CANCEL" then
 					TSM.Auctioning.CancelScan.DoSkip()
+					local _, numConfirmed, numFailed, totalNum = TSM.Auctioning.CancelScan.GetStatus()
+					isDone = numConfirmed == totalNum and numFailed == 0
 				else
 					error("Invalid scan type: "..tostring(context.scanType))
 				end
-				UpdateScanFrame(context)
+				fsmPrivate.UpdateScanFrame(context)
+				local _, isPaused = context.auctionScan:GetProgress()
+				if isDone and isPaused then
+					-- unpause the scan now that we're done
+					assert(context.pausePending == nil)
+					context.pausePending = false
+					context.auctionScan:SetPaused(false)
+					return "ST_SCANNING"
+				elseif isDone then
+					return "ST_DONE"
+				end
 			end)
 			:AddEvent("EV_PENDING_FUTURE_DONE", function(context)
 				assert(context.pendingFuture:IsDone())
@@ -1266,27 +1552,34 @@ function private.FSMCreate()
 					return "ST_HANDLING_CONFIRM", success, canRetry
 				end
 			end)
-			:AddEvent("EV_POST_DETAIL_CHANGED", function(context, field, value)
-				assert(context.scanType == "POST")
-				TSM.Auctioning.PostScan.ChangePostDetail(field, value)
-				UpdateScanFrame(context)
-				UpdateDepositCost(context)
+			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
+				assert(context.pausePending == nil)
+				context.pausePending = false
+				context.auctionScan:SetPaused(false)
+				return "ST_SCANNING"
+			end)
+			:AddEvent("EV_EDIT_BUTTON_CLICKED", function(context)
+				fsmPrivate.ShowEditDialog(context)
 			end)
 		)
 		:AddState(FSM.NewState("ST_DONE")
 			:SetOnEnter(function(context)
+				private.canStartNewScan = true
 				AuctionTracking.QueryOwnedAuctions()
-				Sound.PlaySound(TSM.db.global.auctioningOptions.confirmCompleteSound)
-				UpdateScanFrame(context)
+				Sound.PlaySound(private.settings.confirmCompleteSound)
+				fsmPrivate.UpdateScanFrame(context)
+			end)
+			:SetOnExit(function(context)
+				private.canStartNewScan = false
 			end)
 			:AddTransition("ST_INIT")
 		)
-		:AddDefaultEvent("EV_START_SCAN", function(context, ...)
-			return "ST_INIT", ...
+		:AddDefaultEvent("EV_START_SCAN", function(context, scanType, scanContext)
+			return "ST_INIT", scanType, scanContext
 		end)
 		:AddDefaultEvent("EV_SCAN_FRAME_SHOWN", function(context, scanFrame)
 			context.scanFrame = scanFrame
-			UpdateScanFrame(context)
+			fsmPrivate.UpdateScanFrame(context)
 		end)
 		:AddDefaultEvent("EV_SCAN_FRAME_HIDDEN", function(context)
 			context.scanFrame = nil
@@ -1326,17 +1619,140 @@ function private.BagScrollingTableIsSelectionEnabled(_, record)
 end
 
 function private.BagGetOperationText(firstOperation)
-	return firstOperation or ("|cfff72d20"..L["Skipped: No assigned operation"].."|r")
+	return firstOperation or Theme.GetFeedbackColor("RED"):ColorText(L["Skipped: No assigned operation"])
 end
 
 function private.LogGetBuyoutText(buyout)
 	return buyout == 0 and "-" or Money.ToString(buyout, nil, "OPT_83_NO_COPPER")
 end
 
-function private.LogGetIndexText(index)
-	return ""
+function private.LogGetIndexIcon(row)
+	if row:GetField("state") == "PENDING" then
+		-- color the circle icon to match the color of the text
+		return TSM.UI.TexturePacks.GetColoredKey("iconPack.12x12/Circle", TSM.Auctioning.Log.GetColorFromReasonKey(row:GetField("reasonKey")))
+	else
+		return "iconPack.12x12/Checkmark/Default"
+	end
 end
 
 function private.MarketValueFunction(row)
-	return CustomPrice.GetValue("dbmarket", row:GetField("itemString"))
+	return CustomPrice.GetValue("dbmarket", row:GetItemString() or row:GetBaseItemString())
+end
+
+function private.EditDialogCloseBtnOnClick(button)
+	button:GetBaseElement():HideDialog()
+end
+
+function private.PerItemOnClick(button)
+	if private.perItem then
+		return
+	end
+
+	private.perItem = true
+	button:GetElement("__parent.stack")
+		:SetTextColor("TEXT")
+		:Draw()
+	button:SetTextColor("INDICATOR")
+		:Draw()
+
+	local row = TSM.Auctioning.PostScan.GetCurrentRow()
+	local bidInput = button:GetElement("__parent.__parent.bid.input")
+	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
+	buyoutInput:SetFocused(false)
+		:SetValue(row:GetField("buyout"))
+		:Draw()
+	bidInput:SetFocused(false)
+		:SetValue(row:GetField("bid"))
+		:Draw()
+end
+
+function private.PerStackOnClick(button)
+	if not private.perItem then
+		return
+	end
+
+	private.perItem = false
+	button:GetElement("__parent.item")
+		:SetTextColor("TEXT")
+		:Draw()
+	button:SetTextColor("INDICATOR")
+		:Draw()
+
+	local row = TSM.Auctioning.PostScan.GetCurrentRow()
+	local stackSize = row:GetField("stackSize")
+	local bidInput = button:GetElement("__parent.__parent.bid.input")
+	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
+	buyoutInput:SetFocused(false)
+		:SetValue(row:GetField("buyout") * stackSize)
+		:Draw()
+	bidInput:SetFocused(false)
+		:SetValue(row:GetField("bid") * stackSize)
+		:Draw()
+end
+
+function private.UpdateSaveButtonState(frame)
+	local bidInput = frame:GetElement("bid.input")
+	local buyoutInput = frame:GetElement("buyout.input")
+	local bid = private.ParseBidBuyout(bidInput:GetValue())
+	local buyout = private.ParseBidBuyout(buyoutInput:GetValue())
+	frame:GetElement("saveBtn")
+		:SetDisabled(bid > buyout or not bidInput:IsValid() or not buyoutInput:IsValid())
+		:Draw()
+end
+
+function private.BidBuyoutOnValidationChanged(input)
+	private.UpdateSaveButtonState(input:GetElement("__parent.__parent"))
+end
+
+function private.BidBuyoutInputOnValueChanged(input)
+	local frame = input:GetElement("__parent.__parent")
+	local context = frame:GetElement("saveBtn"):GetContext()
+	local bidInput = frame:GetElement("bid.input")
+	local buyoutInput = frame:GetElement("buyout.input")
+	local bid = private.ParseBidBuyout(bidInput:GetValue())
+	local buyout = private.ParseBidBuyout(buyoutInput:GetValue())
+	if input == buyoutInput and not TSM.IsWowClassic() and ItemInfo.IsCommodity(context.itemString) then
+		-- update the bid to match
+		bidInput:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER", "OPT_DISABLE"))
+			:Draw()
+	elseif input == bidInput and private.ParseBidBuyout(input:GetValue()) > private.ParseBidBuyout(buyoutInput:GetValue()) then
+		-- update the buyout to match
+		buyoutInput:SetValue(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
+			:Draw()
+	end
+	private.UpdateSaveButtonState(frame)
+end
+
+function private.BidBuyoutInputOnEnterPressed(input)
+	local frame = input:GetElement("__parent.__parent")
+	local bidInput = frame:GetElement("bid.input")
+	local buyoutInput = frame:GetElement("buyout.input")
+	local value = private.ParseBidBuyout(input:GetValue())
+	input:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
+	input:Draw()
+	if input == buyoutInput and private.ParseBidBuyout(buyoutInput:GetValue()) < private.ParseBidBuyout(bidInput:GetValue()) then
+		-- update the bid to match
+		bidInput:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
+			:Draw()
+	end
+	private.UpdateSaveButtonState(frame)
+end
+
+function private.ParseBidBuyout(value)
+	value = Money.FromString(value) or tonumber(value)
+	if not value then
+		return nil
+	end
+	if not TSM.IsWowClassic() and value % COPPER_PER_SILVER ~= 0 then
+		return nil
+	end
+	return (value or 0) > 0 and value <= MAXIMUM_BID_PRICE and value or nil
+end
+
+function private.BidBuyoutValidateFunc(input, value)
+	value = private.ParseBidBuyout(value)
+	if not value then
+		return false, L["Invalid price."]
+	end
+	return true
 end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Selection Dropdown UI Element Class.
@@ -11,8 +9,10 @@
 -- @classmod SelectionDropdown
 
 local _, TSM = ...
-local SelectionDropdown = TSM.Include("LibTSMClass").DefineClass("SelectionDropdown", TSM.UI.BaseDropdown)
 local Table = TSM.Include("Util.Table")
+local SelectionDropdown = TSM.Include("LibTSMClass").DefineClass("SelectionDropdown", TSM.UI.BaseDropdown)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(SelectionDropdown)
 TSM.UI.SelectionDropdown = SelectionDropdown
 
 
@@ -59,7 +59,7 @@ end
 
 --- Set the currently selected item by key.
 -- @tparam SelectionDropdown self The dropdown object
--- @tparam ?string item The key for the selected item or nil if nothing should be selected
+-- @tparam ?string itemKey The key for the selected item or nil if nothing should be selected
 -- @tparam[opt=false] boolean silent Don't call the OnSelectionChanged callback
 -- @treturn SelectionDropdown The dropdown object
 function SelectionDropdown.SetSelectedItemByKey(self, itemKey, silent)
@@ -92,7 +92,9 @@ end
 function SelectionDropdown.SetSettingInfo(self, tbl, key)
 	self._settingTable = tbl
 	self._settingKey = key
-	self:SetSelectedItemByKey(tbl[key])
+	if tbl then
+		self:SetSelectedItemByKey(tbl[key])
+	end
 	return self
 end
 
@@ -102,10 +104,11 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function SelectionDropdown._CreateDropdownList(self)
-	return TSMAPI_FOUR.UI.NewElement("DropdownList", "list")
+function SelectionDropdown._AddDialogChildren(self, frame)
+	frame:AddChild(UIElements.New("DropdownList", "list")
 		:SetMultiselect(false)
 		:SetItems(self._items, self._selectedItem)
+	)
 end
 
 function SelectionDropdown._GetCurrentSelectionString(self)

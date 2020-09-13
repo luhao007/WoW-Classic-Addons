@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -39,7 +37,17 @@ function ShoppingTask.__init(self, searchType)
 end
 
 function ShoppingTask.Acquire(self, doneHandler, category)
-	self.__super:Acquire(doneHandler, category, L["Buy from AH"])
+	local name = nil
+	if self._searchType == "NORMAL" then
+		name = L["Buy from AH"]
+	elseif self._searchType == "DISENCHANT" then
+		name = L["Buy from AH (Disenchant)"]
+	elseif self._searchType == "CRAFTING" then
+		name = L["Buy from AH (Crafting)"]
+	else
+		error("Invalid searchType: "..tostring(self._searchType))
+	end
+	self.__super:Acquire(doneHandler, category, name)
 	private.activeTasks[self] = true
 end
 
@@ -96,6 +104,7 @@ function ShoppingTask._OnSearchStateChanged(self, state)
 	else
 		error("Unexpected state: "..tostring(state))
 	end
+	self:Update()
 end
 
 
@@ -119,7 +128,7 @@ function private.StateCallback(state)
 	local self = private.currentlyScanning
 	assert(self)
 	self:_OnSearchStateChanged(state)
-	TSM.TaskList.OnTaskUpdated()
+	private.UIUpdateCallback()
 end
 
 function private.BuyCallback(itemString, quantity)

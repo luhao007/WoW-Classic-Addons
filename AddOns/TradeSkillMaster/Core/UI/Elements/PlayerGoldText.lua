@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- PlayerGoldText UI Element Class.
@@ -17,6 +15,9 @@ local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Event = TSM.Include("Util.Event")
 local Money = TSM.Include("Util.Money")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(PlayerGoldText)
 TSM.UI.PlayerGoldText = PlayerGoldText
 local private = {
 	registered = false,
@@ -31,11 +32,15 @@ local private = {
 
 function PlayerGoldText.__init(self)
 	self.__super:__init()
+	self:_GetBaseFrame():EnableMouse(true)
 
 	if not private.registered then
 		Event.Register("PLAYER_MONEY", private.MoneyOnUpdate)
 		private.registered = true
 	end
+
+	self._justifyH = "RIGHT"
+	self._font = "TABLE_TABLE1"
 end
 
 function PlayerGoldText.Acquire(self)
@@ -48,6 +53,8 @@ end
 function PlayerGoldText.Release(self)
 	private.elements[self] = nil
 	self.__super:Release()
+	self._justifyH = "RIGHT"
+	self._font = "TABLE_TABLE1"
 end
 
 
@@ -65,11 +72,21 @@ end
 
 function private.MoneyTooltipFunc()
 	local tooltipLines = TempTable.Acquire()
-	tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, L["Player Gold"]..":", Money.ToString(GetMoney())))
+	local playerMoney = TSM.db.sync.internalData.money
+	local total = playerMoney
+	tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, UnitName("player")..":", Money.ToString(playerMoney)))
 	local numPosted, numSold, postedGold, soldGold = TSM.MyAuctions.GetAuctionInfo()
 	if numPosted then
-		tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
-		tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
+		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
+		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
 	end
+	for _, _, character, syncScopeKey in Settings.ConnectedFactionrealmAltCharacterIterator() do
+		local money = Settings.Get("sync", syncScopeKey, "internalData", "money")
+		if money > 0 then
+			tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, character..":", Money.ToString(money)))
+			total = total + money
+		end
+	end
+	tinsert(tooltipLines, 1, strjoin(TSM.CONST.TOOLTIP_SEP, L["Total Gold"]..":", Money.ToString(total)))
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines))
 end

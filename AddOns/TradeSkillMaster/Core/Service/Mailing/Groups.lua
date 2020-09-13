@@ -1,14 +1,17 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Groups = TSM.Mailing:NewPackage("Groups")
+local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
 local Threading = TSM.Include("Service.Threading")
+local Inventory = TSM.Include("Service.Inventory")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
+local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	thread = nil,
 	sendDone = false,
@@ -28,11 +31,11 @@ function Groups.KillThread()
 	Threading.Kill(private.thread)
 end
 
-function Groups.StartSending(callback, groupList, sendRepeat)
+function Groups.StartSending(callback, groupList, sendRepeat, isDryRun)
 	Threading.Kill(private.thread)
 
 	Threading.SetCallback(private.thread, callback)
-	Threading.Start(private.thread, groupList, sendRepeat)
+	Threading.Start(private.thread, groupList, sendRepeat, isDryRun)
 end
 
 
@@ -41,41 +44,55 @@ end
 -- Group Sending Thread
 -- ============================================================================
 
-function private.GroupsMailThread(groupList, sendRepeat)
+function private.GroupsMailThread(groupList, sendRepeat, isDryRun)
 	while true do
 		local targets = Threading.AcquireSafeTempTable()
+		local numMailable = Threading.AcquireSafeTempTable()
 		for _, groupPath in ipairs(groupList) do
-			local reserved = Threading.AcquireSafeTempTable()
-			for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Mailing", groupPath) do
-				if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-					-- TODO
-				else
-					if operationSettings.target ~= "" then
-						if not targets[operationSettings.target] then
-							targets[operationSettings.target] = Threading.AcquireSafeTempTable()
-						end
+			if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+				local used = Threading.AcquireSafeTempTable()
+				local keep = Threading.AcquireSafeTempTable()
+				for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Mailing", groupPath) do
+					local target = operationSettings.target
+					if target ~= "" then
+						local targetItems = targets[target] or Threading.AcquireSafeTempTable()
 						for _, itemString in TSM.Groups.ItemIterator(groupPath) do
 							itemString = TSM.Groups.TranslateItemString(itemString)
-							local quantity = private.GetItemQuantity(itemString, reserved, operationSettings)
-							if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) then
-								reserved[itemString] = quantity
-							elseif quantity > 0 then
-								targets[operationSettings.target][itemString] = quantity
+							used[itemString] = used[itemString] or 0
+							keep[itemString] = max(keep[itemString] or 0, operationSettings.keepQty)
+							numMailable[itemString] = numMailable[itemString] or BagTracking.GetNumMailable(itemString)
+							local numAvailable = numMailable[itemString] - used[itemString] - keep[itemString]
+							local quantity = private.GetItemQuantity(itemString, numAvailable, operationSettings)
+							assert(quantity >= 0)
+							if PlayerInfo.IsPlayer(target) then
+								keep[itemString] = max(keep[itemString], quantity)
+							else
+								used[itemString] = used[itemString] + quantity
+								if quantity > 0 then
+									targetItems[itemString] = quantity
+								end
 							end
+						end
+						if next(targetItems) then
+							targets[target] = targetItems
+						else
+							Threading.ReleaseSafeTempTable(targetItems)
 						end
 					end
 				end
+				Threading.ReleaseSafeTempTable(used)
+				Threading.ReleaseSafeTempTable(keep)
 			end
-
-			Threading.ReleaseSafeTempTable(reserved)
 		end
+		Threading.ReleaseSafeTempTable(numMailable)
 
+		if not next(targets) then
+			Log.PrintUser(L["Nothing to send."])
+		end
 		for name, items in pairs(targets) do
-			if not TSMAPI_FOUR.PlayerInfo.IsPlayer(name) and next(items) then
-				private.SendItems(name, items)
-				Threading.Sleep(0.5)
-			end
+			private.SendItems(name, items, isDryRun)
 			Threading.ReleaseSafeTempTable(items)
+			Threading.Sleep(0.5)
 		end
 
 		Threading.ReleaseSafeTempTable(targets)
@@ -88,9 +105,9 @@ function private.GroupsMailThread(groupList, sendRepeat)
 	end
 end
 
-function private.SendItems(target, items)
+function private.SendItems(target, items, isDryRun)
 	private.sendDone = false
-	TSM.Mailing.Send.StartSending(private.SendCallback, target, "", "", 0, items, true)
+	TSM.Mailing.Send.StartSending(private.SendCallback, target, "", "", 0, items, true, isDryRun)
 	while not private.sendDone do
 		Threading.Yield(true)
 	end
@@ -100,49 +117,43 @@ function private.SendCallback()
 	private.sendDone = true
 end
 
-function private.GetItemQuantity(itemString, reserved, operationSettings)
+function private.GetItemQuantity(itemString, numAvailable, operationSettings)
+	if numAvailable <= 0 then
+		return 0
+	end
 	local numToSend = 0
-	local playerQty = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
-	local reservedQty = reserved[itemString] or 0
-	local numAvailable = playerQty - operationSettings.keepQty - reservedQty
-	if numAvailable > 0 then
-		if operationSettings.maxQtyEnabled then
-			if operationSettings.restock then
-				local targetQty = private.GetTargetQuantity(operationSettings.target, itemString, operationSettings.restockSources)
-				if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) and targetQty <= operationSettings.maxQty then
-					numToSend = numAvailable
-				else
-					numToSend = min(numAvailable, operationSettings.maxQty - targetQty)
-				end
-				if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) then
-					numToSend = numAvailable - (targetQty - operationSettings.maxQty)
-				end
+	local isTargetPlayer = PlayerInfo.IsPlayer(operationSettings.target)
+	if operationSettings.maxQtyEnabled then
+		if operationSettings.restock then
+			local targetQty = private.GetTargetQuantity(operationSettings.target, itemString, operationSettings.restockSources)
+			if isTargetPlayer and targetQty <= operationSettings.maxQty then
+				numToSend = numAvailable
 			else
-				numToSend = min(numAvailable, operationSettings.maxQty)
+				numToSend = min(numAvailable, operationSettings.maxQty - targetQty)
+			end
+			if isTargetPlayer then
+				numToSend = numAvailable - (targetQty - operationSettings.maxQty)
 			end
 		else
-			if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) then
-				numToSend = 0
-			else
-				numToSend = numAvailable
-			end
+			numToSend = min(numAvailable, operationSettings.maxQty)
 		end
+	elseif not isTargetPlayer then
+		numToSend = numAvailable
 	end
-
-	return numToSend
+	return max(numToSend, 0)
 end
 
 function private.GetTargetQuantity(player, itemString, sources)
 	if player then
 		player = strtrim(strmatch(player, "^[^-]+"))
 	end
-	local num = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetAuctionQuantity(itemString, player)
+	local num = Inventory.GetBagQuantity(itemString, player) + Inventory.GetMailQuantity(itemString, player) + Inventory.GetAuctionQuantity(itemString, player)
 	if sources then
 		if sources.guild then
-			num = num + TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(player))
+			num = num + Inventory.GetGuildQuantity(itemString, PlayerInfo.GetPlayerGuild(player))
 		end
 		if sources.bank then
-			num = num + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString, player)
+			num = num + Inventory.GetBankQuantity(itemString, player) + Inventory.GetReagentBankQuantity(itemString, player)
 		end
 	end
 

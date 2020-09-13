@@ -1,15 +1,14 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Settings = TSM.MainUI:NewPackage("Settings")
 local L = TSM.Include("Locale").GetTable()
 local Wow = TSM.Include("Util.Wow")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	settingPages = {
 		top = {},
@@ -18,13 +17,10 @@ local private = {
 	},
 	callback = {},
 	childSettingsPages = {},
-	frame = nil
+	sectionCollapsed = {},
 }
 local SECTIONS = { "top", "middle" }
 local SETTING_PATH_SEP = "`"
-local HEADER_LINE_TEXT_MARGIN = { right = 8 }
-local HEADER_LINE_MARGIN = { top = 16, bottom = 16 }
-local SETTING_LINE_MARGIN = { bottom = 16 }
 local SETTING_LABEL_WIDTH = 400
 
 
@@ -34,7 +30,7 @@ local SETTING_LABEL_WIDTH = 400
 -- ============================================================================
 
 function Settings.OnInitialize()
-	TSM.MainUI.RegisterTopLevelPage("Settings", "iconPack.24x24/Settings", private.GetSettingsFrame)
+	TSM.MainUI.RegisterTopLevelPage(L["Settings"], private.GetSettingsFrame)
 end
 
 function Settings.RegisterSettingPage(name, section, callback)
@@ -50,82 +46,82 @@ function Settings.RegisterChildSettingPage(parentName, childName, callback)
 	private.callback[path] = callback
 end
 
-function Settings.CreateHeadingLine(id, text)
-	return TSMAPI_FOUR.UI.NewElement("Frame", id)
-		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 34)
-		:SetStyle("margin", HEADER_LINE_MARGIN)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-			:SetStyle("textColor", "#79a2ff")
-			:SetStyle("fontHeight", 24)
-			:SetStyle("margin", HEADER_LINE_TEXT_MARGIN)
-			:SetStyle("autoWidth", true)
-			:SetText(text)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "vline")
-			:SetStyle("color", "#e2e2e2")
-			:SetStyle("height", 2)
-		)
-end
-
 function Settings.CreateSettingLine(id, labelText, width)
 	width = width or SETTING_LABEL_WIDTH
 
-	return TSMAPI_FOUR.UI.NewElement("Frame", id)
+	return UIElements.New("Frame", id)
 		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 26)
-		:SetStyle("margin", SETTING_LINE_MARGIN)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-			:SetStyle("width", width)
-			:SetStyle("textColor", "#e2e2e2")
-			:SetStyle("fontHeight", 18)
+		:SetHeight(26)
+		:SetMargin(0, 0, 0, 16)
+		:AddChild(UIElements.New("Text", "label")
+			:SetWidth(width)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetTextColor("TEXT_ALT")
 			:SetText(labelText)
 		)
 end
 
 function Settings.CreateHeading(id, text)
-	return TSMAPI_FOUR.UI.NewElement("Text", id)
-		:SetStyle("height", 19)
-		:SetStyle("margin.bottom", 4)
-		:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-		:SetStyle("fontHeight", 16)
-		:SetStyle("textColor", "#ffffff")
+	return UIElements.New("Text", id)
+		:SetHeight(19)
+		:SetMargin(0, 0, 0, 4)
+		:SetFont("BODY_BODY1_BOLD")
 		:SetText(text)
 end
 
-function Settings.CreateInputWithReset(id, label, context, validationFunction)
+function Settings.CreateInputWithReset(id, label, context, validate)
 	local scope, namespace, key = strsplit(".", context)
-
-	return TSMAPI_FOUR.UI.NewElement("Frame", id)
+	local validateFunc, validateContext = nil, nil
+	if type(validate) == "table" then
+		validateFunc = "CUSTOM_PRICE"
+		validateContext = validate
+	elseif type(validate) == "function" then
+		validateFunc = validate
+	elseif validate == nil then
+		validateFunc = "CUSTOM_PRICE"
+	else
+		error("Invalid validate: "..tostring(validate))
+	end
+	return UIElements.New("Frame", id)
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("textColor", "#e2e2e2")
-			:SetStyle("height", 18)
-			:SetStyle("fontHeight", 14)
-			:SetStyle("margin.bottom", 4)
+		:AddChild(UIElements.New("Text", "label")
+			:SetHeight(18)
+			:SetMargin(0, 0, 0, 4)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetTextColor("TEXT_ALT")
 			:SetText(label)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("textColor", "#ffffff")
-			:SetStyle("background", "#5c5c5c")
-			:SetStyle("height", 32)
-			:SetStyle("fontHeight", 16)
-			:SetStyle("margin.bottom", 8)
-			:SetSettingInfo(TSM.db[scope][namespace], key, validationFunction)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttonFrame")
+		:AddChild(UIElements.New("Frame", "content")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "resetButton")
-				:SetStyle("width", 120)
-				:SetStyle("height", 26)
-				:SetText(L["RESET"])
+			:SetHeight(24)
+			:AddChild(UIElements.New("Input", "input")
+				:SetMargin(0, 8, 0, 0)
+				:SetBackgroundColor("ACTIVE_BG")
+				:SetValidateFunc(validateFunc, validateContext)
+				:SetSettingInfo(TSM.db[scope][namespace], key)
+				:SetScript("OnValueChanged", private.InputOnValueChanged)
+			)
+			:AddChild(UIElements.New("ActionButton", "resetButton")
+				:SetWidth(108)
+				:SetText(L["Reset"])
+				:SetDisabled(TSM.db[scope][namespace][key] == TSM.db:GetDefault(scope, namespace, key))
 				:SetScript("OnClick", private.ResetBtnOnClick)
 				:SetContext(context)
 			)
+		)
+end
+
+function Settings.CreateExpandableSection(pageName, id, text, description, descriptionHeight)
+	return UIElements.New("CollapsibleContainer", id)
+		:SetLayout("VERTICAL")
+		:SetMargin(0, 0, 0, 8)
+		:SetContextTable(private.sectionCollapsed, pageName..text)
+		:SetHeadingText(text)
+		:AddChild(UIElements.New("Text", "description")
+			:SetHeight(descriptionHeight or 20)
+			:SetMargin(0, 0, 0, 12)
+			:SetFont("BODY_BODY3")
+			:SetText(description)
 		)
 end
 
@@ -149,54 +145,51 @@ end
 function private.GetSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings")
 	local defaultPage = private.settingPages.top[1]
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "settings")
+
+	local frame = UIElements.New("Frame", "settings")
 		:SetLayout("HORIZONTAL")
-		:SetStyle("background", "#2e2e2e")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "settingNavigation")
+		:SetBackgroundColor("PRIMARY_BG_ALT")
+		:AddChild(UIElements.New("Frame", "settingNavigation")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#585858")
-			:SetStyle("width", 160)
-			:SetStyle("padding.top", 31)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "top")
+			:SetWidth(160)
+			:SetPadding(12, 12, 1, 9)
+			:AddChild(UIElements.New("Frame", "top")
 				:SetLayout("VERTICAL")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "vline")
-				:SetStyle("color", "#e2e2e2")
-				:SetStyle("height", 1)
-				:SetStyle("margin.left", 16)
-				:SetStyle("margin.right", 24)
-				:SetStyle("margin.top", 12)
-				:SetStyle("margin.bottom", 4)
+			:AddChild(UIElements.New("Texture", "vline")
+				:SetHeight(1)
+				:SetMargin(0, 0, 8, 8)
+				:SetTexture("ACTIVE_BG_ALT")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "middle")
+			:AddChild(UIElements.New("Frame", "middle")
 				:SetLayout("VERTICAL")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer")
+			:AddChild(UIElements.New("Spacer", "spacer")
 				-- make all the navigation align to the top
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "shadow")
-			:SetStyle("width", TSM.UI.TexturePacks.GetWidth("uiFrames.SettingsNavShadow"))
-			:SetStyle("texturePack", "uiFrames.SettingsNavShadow")
+		:AddChild(UIElements.New("Texture", "divider")
+			:SetWidth(2)
+			:SetTexture("ACTIVE_BG")
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "contentFrame")
+		:AddChild(UIElements.New("Frame", "contentFrame")
 			:SetLayout("VERTICAL")
-			:SetStyle("padding.top", 39)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ViewContainer", "content")
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("ViewContainer", "content")
 				:SetNavCallback(private.ContentNavCallback)
 			)
 		)
+
 	local content = frame:GetElement("contentFrame.content")
 	local settingNav = frame:GetElement("settingNavigation")
 	for _, location in ipairs(SECTIONS) do
 		local navFrame = settingNav:GetElement(location)
-	    for _, settingName in ipairs(private.settingPages[location]) do
-			navFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Button", settingName)
-				:SetStyle("height", 20)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("margin.top", 8)
-				:SetStyle("margin.left", 16)
-				:SetStyle("fontHeight", 14)
+		for _, settingName in ipairs(private.settingPages[location]) do
+			navFrame:AddChild(UIElements.New("Button", settingName)
+				:SetHeight(20)
+				:SetMargin(0, 0, 8, 0)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("LEFT")
 				:SetContext(settingName)
 				:SetText(settingName)
 				:SetScript("OnClick", private.NavButtonOnClick)
@@ -205,12 +198,11 @@ function private.GetSettingsFrame()
 			if private.childSettingsPages[settingName] then
 				for _, childSettingName in ipairs(private.childSettingsPages[settingName]) do
 					local path = settingName..SETTING_PATH_SEP..childSettingName
-					navFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Button", path)
-						:SetStyle("height", 20)
-						:SetStyle("justifyH", "LEFT")
-						:SetStyle("margin.top", 4)
-						:SetStyle("margin.left", 24)
-						:SetStyle("fontHeight", 10)
+					navFrame:AddChild(UIElements.New("Button", path)
+						:SetHeight(20)
+						:SetMargin(9, 0, 8, 0)
+						:SetFont("BODY_BODY3_MEDIUM")
+						:SetJustifyH("LEFT")
 						:SetContext(path)
 						:SetText(strupper(childSettingName))
 						:SetScript("OnClick", private.NavButtonOnClick)
@@ -248,13 +240,22 @@ function private.NavButtonOnClick(button)
 	contentFrame:GetElement("content"):SetPath(path, true)
 end
 
+function private.InputOnValueChanged(input)
+	local button = input:GetElement("__parent.resetButton")
+	local scope, namespace, key = strsplit(".", button:GetContext())
+	button:SetDisabled(TSM.db[scope][namespace][key] == TSM.db:GetDefault(scope, namespace, key))
+		:Draw()
+end
+
 function private.ResetBtnOnClick(button)
-    local scope, namespace, key = strsplit(".", button:GetContext())
-    local defaultValue = TSM.db:GetDefault(scope, namespace, key)
-    TSM.db:Set(scope, nil, namespace, key, defaultValue)
-    button:GetElement("__parent.__parent.input")
-        :SetText(defaultValue)
-        :Draw()
+	local scope, namespace, key = strsplit(".", button:GetContext())
+	local defaultValue = TSM.db:GetDefault(scope, namespace, key)
+	TSM.db:Set(scope, nil, namespace, key, defaultValue)
+	button:GetElement("__parent.input")
+		:SetValue(defaultValue)
+		:Draw()
+	button:SetDisabled(true)
+		:Draw()
 end
 
 
@@ -268,15 +269,13 @@ function private.UpdateNavFrame(navFrame, selectedPath)
 	for _, location in ipairs(SECTIONS) do
 		for _, settingName in ipairs(private.settingPages[location]) do
 			navFrame:GetElement(location ..".".. settingName)
-				:SetStyle("font", settingName == selectedSetting and TSM.UI.Fonts.MontserratBold or TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("textColor", settingName == selectedSetting and "#ffffff" or "#e2e2e2")
+				:SetTextColor(settingName == selectedSetting and "TEXT" or "ACTIVE_BG_ALT")
 			if private.childSettingsPages[settingName] then
 				for _, childSettingName in ipairs(private.childSettingsPages[settingName]) do
 					local path = settingName..SETTING_PATH_SEP..childSettingName
 					if settingName == selectedSetting then
 						navFrame:GetElement(location ..".".. path)
-							:SetStyle("font", path == selectedPath and TSM.UI.Fonts.MontserratBold or TSM.UI.Fonts.MontserratBold)
-							:SetStyle("textColor", path == selectedPath and "#ffd839" or "#e2e2e2")
+							:SetTextColor(path == selectedPath and "INDICATOR" or "TEXT")
 							:Show()
 					else
 						navFrame:GetElement(location ..".".. path):Hide()

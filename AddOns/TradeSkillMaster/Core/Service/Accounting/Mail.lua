@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,6 +13,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
 local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	hooks = {},
 }
@@ -68,7 +67,7 @@ function private.RequestSellerInfo()
 	end
 end
 
-function private:CanLootMailIndex(index, copper)
+function private.CanLootMailIndex(index, copper)
 	local currentMoney = GetMoney()
 	assert(currentMoney <= MAXIMUM_BID_PRICE)
 	-- check if this would put them over the gold cap
@@ -86,7 +85,7 @@ function private:CanLootMailIndex(index, copper)
 		local quantity = count or 0
 		local maxUnique = private.GetInboxMaxUnique(index, j)
 		-- dont record unique items that we can't loot
-		local playerQty = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
+		local playerQty = Inventory.GetBagQuantity(itemString) + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
 		if maxUnique > 0 and maxUnique < playerQty + quantity then
 			return
 		end
@@ -170,10 +169,10 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 	if invoiceType == "seller" and buyer and buyer ~= "" then -- AH Sales
 		local saleTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
 		local itemString = ItemInfo.ItemNameToItemString(itemName)
-		if not itemString or itemString == TSM.CONST.UNKNOWN_ITEM_ITEMSTRING then
+		if not itemString or itemString == ItemString.GetUnknown() then
 			itemString = AuctionTracking.GetSaleHintItemString(itemName, quantity, bid)
 		end
-		if private:CanLootMailIndex(index, (bid - ahcut)) then
+		if private.CanLootMailIndex(index, (bid - ahcut)) then
 			if itemString then
 				local copper = floor((bid - ahcut) / quantity + 0.5)
 				TSM.Accounting.Transactions.InsertAuctionSale(itemString, quantity, copper, buyer, saleTime)
@@ -181,16 +180,26 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 			success = true
 		end
 	elseif invoiceType == "buyer" and buyer and buyer ~= "" then -- AH Buys
-		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
+		local copper = floor(bid / quantity + 0.5)
+		if not TSM.IsWowClassic() then
+			if subIndex then
+				quantity = select(4, GetInboxItem(index, subIndex))
+			else
+				quantity = 0
+				for i = 1, ATTACHMENTS_MAX do
+					quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
+				end
+			end
+		end
+		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local itemString = ItemString.Get(link)
-		if itemString and private:CanLootMailIndex(index, 0) then
-			local copper = floor(bid / quantity + 0.5)
+		if itemString and private.CanLootMailIndex(index, 0) then
 			local buyTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
 			TSM.Accounting.Transactions.InsertAuctionBuy(itemString, quantity, copper, buyer, buyTime)
 			success = true
 		end
 	elseif codAmount > 0 then -- COD Buys (only if all attachments are same item)
-		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
+		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local itemString = ItemString.Get(link)
 		if itemString and sender then
 			local name = ItemInfo.GetName(link)
@@ -209,7 +218,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 				end
 			end
 
-			if total ~= 0 and not ignore and private:CanLootMailIndex(index, codAmount) then
+			if total ~= 0 and not ignore and private.CanLootMailIndex(index, codAmount) then
 				local copper = floor(codAmount / total + 0.5)
 				local buyTime = (time() + (daysLeft - 3) * SECONDS_PER_DAY)
 				local maxStack = ItemInfo.GetMaxStack(link)
@@ -232,7 +241,7 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 			str = gsub(subject, gsub(COD_PAYMENT, String.Escape("%s"), ""), "")
 		end
 		local saleTime = (time() + (daysLeft - 31) * SECONDS_PER_DAY)
-		if sender and private:CanLootMailIndex(index, money) then
+		if sender and private.CanLootMailIndex(index, money) then
 			if str and strfind(str, "TSM$") then -- payment for a COD the player sent
 				local codName = strtrim(strmatch(str, "([^%(]+)"))
 				local qty = strmatch(str, "%(([0-9]+)%)")
@@ -259,22 +268,44 @@ function Mail:ScanCollectedMail(oFunc, attempt, index, subIndex)
 		end
 	elseif strfind(subject, EXPIRED_MATCH_TEXT) then -- expired auction
 		local expiredTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
-		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
+		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
-		local qty = count or 0
+		if TSM.IsWowClassic() then
+			quantity = count or 0
+		else
+			if subIndex then
+				quantity = select(4, GetInboxItem(index, subIndex))
+			else
+				quantity = 0
+				for i = 1, ATTACHMENTS_MAX do
+					quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
+				end
+			end
+		end
 		local itemString = ItemString.Get(link)
-		if private:CanLootMailIndex(index, 0) and itemString and qty then
-			TSM.Accounting.Auctions.InsertExpire(itemString, qty, expiredTime)
+		if private.CanLootMailIndex(index, 0) and itemString and quantity then
+			TSM.Accounting.Auctions.InsertExpire(itemString, quantity, expiredTime)
 			success = true
 		end
 	elseif strfind(subject, CANCELLED_MATCH_TEXT) then -- cancelled auction
 		local cancelledTime = (time() + (daysLeft - 30) * SECONDS_PER_DAY)
-		local link = (subIndex or 1) == 1 and private:GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
+		local link = (subIndex or 1) == 1 and private.GetFirstInboxItemLink(index) or GetInboxItemLink(index, subIndex or 1)
 		local _, _, _, count = GetInboxItem(index, subIndex or 1)
-		local qty = count or 0
+		if TSM.IsWowClassic() then
+			quantity = count or 0
+		else
+			if subIndex then
+				quantity = select(4, GetInboxItem(index, subIndex))
+			else
+				quantity = 0
+				for i = 1, ATTACHMENTS_MAX do
+					quantity = quantity + (select(4, GetInboxItem(index, i)) or 0)
+				end
+			end
+		end
 		local itemString = ItemString.Get(link)
-		if private:CanLootMailIndex(index, 0) and itemString and qty then
-			TSM.Accounting.Auctions.InsertCancel(itemString, qty, cancelledTime)
+		if private.CanLootMailIndex(index, 0) and itemString and quantity then
+			TSM.Accounting.Auctions.InsertCancel(itemString, quantity, cancelledTime)
 			success = true
 		end
 	end
@@ -338,7 +369,7 @@ function private.CheckSendMail(destination, currentSubject, ...)
 	end
 end
 
-function private:GetFirstInboxItemLink(index)
+function private.GetFirstInboxItemLink(index)
 	if not TSMAccountingMailTooltip then
 		CreateFrame("GameTooltip", "TSMAccountingMailTooltip", UIParent, "GameTooltipTemplate")
 	end

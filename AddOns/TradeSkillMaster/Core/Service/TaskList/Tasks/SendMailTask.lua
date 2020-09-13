@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -100,7 +98,7 @@ function private.SendCallback()
 	end
 	assert(self._isSending)
 	self._isSending = false
-	private.currentlyMoving = nil
+	private.currentlySending = nil
 	for itemString, quantity in pairs(self:GetItems()) do
 		self:_RemoveItem(itemString, quantity)
 	end

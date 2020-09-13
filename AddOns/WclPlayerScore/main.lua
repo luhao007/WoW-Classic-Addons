@@ -7,13 +7,81 @@ local _G = getfenv(0)
 
 SLASH_WP_Commands1 = "/wcl"
 SlashCmdList["WP_Commands"] = function(msg)
-	print "WCLPlayerScore Version 1.6"
+	print "WCLPlayerScore Version 1.8 Database: 20200906"
+end
+
+local function expand(name)
+
+    local switch = {
+        ["T"] = function()
+            return "TAQ"
+        end,
+        ["B"] = function()
+            return "BWL"
+        end,
+        ["M"] = function()
+            return "MC"
+        end,
+        ["A"] = function()
+            return "|cFFE5CC80"
+        end,
+        ["L"] = function()
+            return "|cFFFF8000"
+        end,
+        ["S"] = function()
+            return "|cFFE26880"
+        end,
+        ["N"] = function()
+            return "|cFFBE8200"
+        end,
+        ["E"] = function()
+            return "|cFFA335EE"
+        end,
+        ["R"] = function()
+            return "|cFF0070FF"
+        end,
+        ["U"] = function()
+            return "|cFF1EFF00"
+        end,
+        ["C"] = function()
+            return "|cFF666666"
+        end,
+        ["%"] = function()
+            return "% "
+        end
+    }
+
+    local out = ""
+	local max = strlen(name)
+    for j=1,max do
+            ts = strsub(name,j,j)
+            local f = switch[ts]
+            if f  then
+                out = out .. f()
+            else
+                out = out .. ts
+            end
+    end
+    return out
+end
+
+
+local function load_data(tname)
+	if WP_Database[tname] then
+		return expand(WP_Database[tname])
+	elseif WP_Database_1[tname] then
+		return expand(WP_Database_1[tname])
+	elseif WP_Database_2[tname] then
+		return expand(WP_Database_2[tname])
+	elseif WP_Database_3[tname] then
+		return expand(WP_Database_3[tname])
+	end
+	return nil
 end
 
 hooksecurefunc("ChatFrame_OnHyperlinkShow", function(chatFrame, link, text, button)
 if (IsModifiedClick("CHATLINK")) then
   if (link and button) then
-
     local args = {};
     for v in string.gmatch(link, "[^:]+") do
       table.insert(args, v);
@@ -22,14 +90,19 @@ if (IsModifiedClick("CHATLINK")) then
 			args[2] = Ambiguate(args[2], "short")
 			WP_TargetName = args[2]
 			if WP_ShowPrintOnClick == true then
-				if WP_Database[WP_TargetName] and WP_Database[WP_TargetName] ~= "" then
-					DEFAULT_CHAT_FRAME:AddMessage('WCL评分 ' .. WP_TargetName .. ': ' .. WP_Database[WP_TargetName], 255, 209, 0)
+				dstr = load_data(WP_TargetName)
+				if dstr then
+					DEFAULT_CHAT_FRAME:AddMessage('WCL评分 ' .. WP_TargetName .. ': ' .. dstr, 255, 209, 0)
 				end
 			end
 		end
 	end
 end
 end)
+
+local function printInfo(self)
+	print("|cFFFFFF00WCL 评分-" .. self.value)
+end
 
 hooksecurefunc("UnitPopup_ShowMenu", function(dropdownMenu, which, unit, name, userData)
 
@@ -38,27 +111,35 @@ hooksecurefunc("UnitPopup_ShowMenu", function(dropdownMenu, which, unit, name, u
 	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
 	return
 	end
-	if WP_Database[WP_TargetName] and WP_Database[WP_TargetName] ~= "" then
+
+	local dstr = load_data(WP_TargetName)
+
+	if dstr and UnitExists(unit) and UnitIsPlayer(unit) then
 		local info = UIDropDownMenu_CreateInfo()
-		info.text = 'WCL评分: ' .. WP_Database[WP_TargetName]
+		local s1,s2,s3 = strsplit(" ",dstr)
+		info.text = 'WCL评分: ' .. s1
 		info.owner = which
 		info.notCheckable = 1
-		info.func = nil
-		info.value = "WP_MenuButton"
+		info.func = printInfo
+		info.value = WP_TargetName .. ": " .. dstr
 		UIDropDownMenu_AddButton(info)
 	end
+
 end)
+
 
 GameTooltip:HookScript("OnTooltipSetUnit", function(self)
     local _, unit = self:GetUnit()
+	local dstr = ""
 
-    if UnitExists(unit) then
+    if UnitExists(unit) and UnitIsPlayer(unit) then
 		WP_MouseoverName = UnitName(unit)
-
-		if WP_Database[WP_MouseoverName] and WP_Database[WP_MouseoverName] ~= "" then
+		local dstr = load_data(WP_MouseoverName)
+		if dstr then
 			GameTooltip:AddLine("                          ")
-			GameTooltip:AddLine("|cFFFFFF00WCL 评分 " .. WP_Database[WP_MouseoverName], 255, 209, 0)
-
+			GameTooltip:AddLine("                          ")
+			GameTooltip:AddLine("                          ")
+			GameTooltip:AddLine("|cFFFFFF00WCL 评分 " .. dstr, 255, 209, 0)
 			GameTooltip:Show()
 		end
 	end
@@ -70,6 +151,10 @@ Addon_EventFrame:SetScript("OnEvent",
 	function(self, event, addon)
 		if addon == "WclPlayerScore" then
 			WP_Database = WP_Database or {}
+			WP_Database_1 = WP_Database_1 or {}
+			WP_Database_2 = WP_Database_2 or {}
+			WP_Database_3 = WP_Database_3 or {}
+
 		end
 end)
 
@@ -82,8 +167,9 @@ Chat_EventFrame:SetScript("OnEvent",
 
 	name = Deformat(message, _G.WHO_LIST_FORMAT)
 	if name then
-		if WP_Database[name] and WP_Database[name] ~= "" then
-			print("|cFFFFFF00WCL 评分 " .. name .. ":" .. WP_Database[name] )
+		dstr = load_data(name)
+		if dstr then
+			print("|cFFFFFF00WCL 评分 " .. name .. ":" .. dstr )
 		end
 	end
 end)

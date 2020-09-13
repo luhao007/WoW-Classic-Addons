@@ -1,21 +1,25 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Input UI Element Class.
--- The input element allows the user to enter text. It is a subclass of the @{Element} class.
+-- The input element allows the user to enter text. It is a subclass of the @{BaseInput} class.
 -- @classmod Input
 
 local _, TSM = ...
-local String = TSM.Include("Util.String")
-local private = { frameInputLookup = {} }
-local Input = TSM.Include("LibTSMClass").DefineClass("Input", TSM.UI.Element)
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local ItemLinked = TSM.Include("Service.ItemLinked")
+local UIElements = TSM.Include("UI.UIElements")
+local Input = TSM.Include("LibTSMClass").DefineClass("Input", TSM.UI.BaseInput)
+UIElements.Register(Input)
 TSM.UI.Input = Input
-local IS_SCRIPT_HOOKED = { OnEscapePressed = true, OnEnterPressed = true, OnEditFocusGained = true, OnEditFocusLost = true }
+local private = {}
+local PADDING_LEFT = 8
+local PADDING_RIGHT = 8
+local PADDING_TOP_BOTTOM = 4
 
 
 
@@ -24,123 +28,106 @@ local IS_SCRIPT_HOOKED = { OnEscapePressed = true, OnEnterPressed = true, OnEdit
 -- ============================================================================
 
 function Input.__init(self)
-	local frame = CreateFrame("EditBox", nil, nil, nil)
-
+	local frame = UIElements.CreateFrame(self, "EditBox")
+	self._editBox = frame
 	self.__super:__init(frame)
 
-	self._textStr = nil
-	self._settingTable = nil
-	self._settingKey = nil
-	self._validation = nil
-	self._clearBtn = nil
-	self._allowEnter = nil
-	self._spacing = nil
-	self._multiLine = nil
-	self._compStart = nil
-	self._userScriptHandlers = {}
+	self._hintText = UIElements.CreateFontString(self, frame)
+	self._hintText:SetFont(Theme.GetFont("BODY_BODY3"):GetWowFont())
+	self._hintText:SetJustifyH("LEFT")
+	self._hintText:SetJustifyV("MIDDLE")
+	self._hintText:SetPoint("TOPLEFT", PADDING_LEFT, 0)
+	self._hintText:SetPoint("BOTTOMRIGHT", -PADDING_RIGHT, 0)
 
-	frame:SetShadowColor(0, 0, 0, 0)
-	frame:SetAutoFocus(false)
-	frame:SetScript("OnSizeChanged", private.OnSizeChanged)
-	frame:SetScript("OnEscapePressed", private.OnEscapePressed)
-	frame:SetScript("OnEnterPressed", private.OnEnterPressed)
-	frame:SetScript("OnEditFocusGained", private.OnEditFocusGained)
-	frame:SetScript("OnEditFocusLost", private.OnEditFocusLost)
-	frame:SetScript("OnChar", private.OnChar)
-	frame:SetScript("OnTabPressed", private.OnTabPressed)
+	self._icon = frame:CreateTexture(nil, "ARTWORK")
+	self._icon:SetPoint("RIGHT", -PADDING_RIGHT / 2, 0)
 
-	frame.bgLeft = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgLeft:SetPoint("TOPLEFT")
-	frame.bgLeft:SetPoint("BOTTOMLEFT")
+	self._clearBtn = CreateFrame("Button", nil, frame)
+	self._clearBtn:SetAllPoints(self._icon)
+	ScriptWrapper.Set(self._clearBtn, "OnClick", private.ClearBtnOnClick, self)
 
-	frame.bgRight = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgRight:SetPoint("TOPRIGHT")
-	frame.bgRight:SetPoint("BOTTOMRIGHT")
+	self._subIcon = frame:CreateTexture(nil, "ARTWORK")
+	self._subIcon:SetPoint("LEFT", PADDING_LEFT / 2, 0)
+	TSM.UI.TexturePacks.SetTextureAndSize(self._subIcon, "iconPack.14x14/Subtract/Default")
 
-	frame.bgMiddle = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgMiddle:SetPoint("TOPLEFT", frame.bgLeft, "TOPRIGHT")
-	frame.bgMiddle:SetPoint("BOTTOMRIGHT", frame.bgRight, "BOTTOMLEFT")
+	self._subBtn = CreateFrame("Button", nil, frame)
+	self._subBtn:SetAllPoints(self._subIcon)
+	ScriptWrapper.Set(self._subBtn, "OnClick", private.SubBtnOnClick, self)
+	ScriptWrapper.SetPropagate(self._subBtn, "OnEnter")
+	ScriptWrapper.SetPropagate(self._subBtn, "OnLeave")
 
-	private.frameInputLookup[frame] = self
-end
+	self._addIcon = frame:CreateTexture(nil, "ARTWORK")
+	self._addIcon:SetPoint("RIGHT", -PADDING_RIGHT / 2, 0)
+	TSM.UI.TexturePacks.SetTextureAndSize(self._addIcon, "iconPack.14x14/Add/Default")
 
-function Input.Acquire(self)
-	self._hintText = TSMAPI_FOUR.UI.NewElement("Text", self._id.."_HintText")
-	self._hintText:_GetBaseFrame():SetParent(self:_GetBaseFrame())
-	self._hintText:_GetBaseFrame():SetPoint("TOPLEFT", 8, 0)
-	self._hintText:_GetBaseFrame():SetPoint("BOTTOMRIGHT", -8, 0)
-	self._clearBtn = TSMAPI_FOUR.UI.NewElement("Button", self._id.."_ClearBtn")
-	self._clearBtn:_SetParentElement(self)
-	self._clearBtn:_GetBaseFrame():SetParent(self:_GetBaseFrame())
-	self._clearBtn:_GetBaseFrame():SetPoint("RIGHT", -5, 0)
-	self._clearBtn:SetScript("OnClick", private.ClearBtnOnClick)
-	self._textStr = ""
-	self:_GetBaseFrame():SetScript("OnEnterPressed", private.OnEnterPressed)
-	self.__super:Acquire()
+	self._addBtn = CreateFrame("Button", nil, frame)
+	self._addBtn:SetAllPoints(self._addIcon)
+	ScriptWrapper.Set(self._addBtn, "OnClick", private.AddBtnOnClick, self)
+	ScriptWrapper.SetPropagate(self._addBtn, "OnEnter")
+	ScriptWrapper.SetPropagate(self._addBtn, "OnLeave")
+
+	ScriptWrapper.Set(frame, "OnEnter", private.OnEnter, self)
+	ScriptWrapper.Set(frame, "OnLeave", private.OnLeave, self)
+
+	local function ItemLinkedCallback(name, link)
+		if self._allowItemInsert == nil or not self:IsVisible() or not self:HasFocus() then
+			return
+		end
+		if self._allowItemInsert == true then
+			self._editBox:Insert(link)
+		else
+			self._editBox:Insert(name)
+		end
+		return true
+	end
+	ItemLinked.RegisterCallback(ItemLinkedCallback, -1)
+
+	self._clearEnabled = false
+	self._subAddEnabled = false
+	self._iconTexture = nil
+	self._autoComplete = nil
+	self._allowItemInsert = nil
+	self._lostFocusOnButton = false
 end
 
 function Input.Release(self)
-	wipe(self._userScriptHandlers)
-	self:_GetBaseFrame():ClearFocus()
-	self:_GetBaseFrame():Enable()
-	self:_GetBaseFrame():EnableMouse(true)
-	self:_GetBaseFrame():EnableKeyboard(true)
-	self:_GetBaseFrame():SetSpacing(0)
-	self:_GetBaseFrame():SetMultiLine(false)
-	self:_GetBaseFrame():SetHitRectInsets(0, 0, 0, 0)
-	self:_GetBaseFrame():SetMaxLetters(2147483647)
-	self._hintText:Release()
-	self._hintText = nil
-	self._clearBtn:Release()
-	self._clearBtn = nil
-	self._allowEnter = nil
-	self._spacing = nil
-	self._multiLine = nil
-	self._compStart = nil
-	self._settingTable = nil
-	self._settingKey = nil
-	self._validation = nil
+	self._clearEnabled = false
+	self._subAddEnabled = false
+	self._iconTexture = nil
+	self._autoComplete = nil
+	self._allowItemInsert = nil
+	self._lostFocusOnButton = false
+	self._hintText:SetText("")
 	self.__super:Release()
 end
 
---- Enables mouse interactivity for the input.
+--- Sets the horizontal justification of the hint text.
 -- @tparam Input self The input object
--- @tparam boolean enable Enable or disable the mouse
+-- @tparam string justifyH The horizontal justification (either "LEFT", "CENTER" or "RIGHT")
 -- @treturn Input The input object
-function Input.EnableMouse(self, enable)
-	self:_GetBaseFrame():EnableMouse(enable)
+function Input.SetHintJustifyH(self, justifyH)
+	assert(justifyH == "LEFT" or justifyH == "CENTER" or justifyH == "RIGHT")
+	self._hintText:SetJustifyH(justifyH)
 	return self
 end
 
---- Enables keyboard interactivity for the input.
+--- Sets the vertical justification of the hint text.
 -- @tparam Input self The input object
--- @tparam boolean enable Enable or disable the keyboard
+-- @tparam string justifyV The vertical justification (either "TOP", "MIDDLE" or "BOTTOM")
 -- @treturn Input The input object
-function Input.EnableKeyboard(self, enable)
-	self:_GetBaseFrame():EnableKeyboard(enable)
+function Input.SetHintJustifyV(self, justifyV)
+	assert(justifyV == "TOP" or justifyV == "MIDDLE" or justifyV == "BOTTOM")
+	self._hintText:SetJustifyV(justifyV)
 	return self
 end
 
---- Set the highlight to all or some of the input's text.
+--- Sets the auto complete table.
 -- @tparam Input self The input object
--- @tparam number the position at which to start the highlight
--- @tparam number the position at which to stop the highlight
+-- @tparam table tbl A list of strings to auto-complete to
 -- @treturn Input The input object
-function Input.HighlightText(self, starting, ending)
-	if starting and ending then
-		self:_GetBaseFrame():HighlightText(starting, ending)
-	else
-		self:_GetBaseFrame():HighlightText()
-	end
-	return self
-end
-
---- Sets the current text.
--- @tparam Input self The input object
--- @tparam string text The current text
--- @treturn Input The input object
-function Input.SetText(self, text)
-	self._textStr = text
+function Input.SetAutoComplete(self, tbl)
+	assert(type(tbl) == "table")
+	self._autoComplete = tbl
 	return self
 end
 
@@ -154,199 +141,163 @@ function Input.SetHintText(self, text)
 	return self
 end
 
-
---- Returns the input's focus state.
+--- Sets whether or not the clear button is enabled.
 -- @tparam Input self The input object
-function Input.HasFocus(self)
-	return self:_GetBaseFrame():HasFocus()
-end
-
---- Sets whether or not this input is focused.
--- @tparam Input self The input object
--- @tparam boolean focused Whether or not this input is focused
+-- @tparam boolean enabled Whether or not the clear button is enabled
 -- @treturn Input The input object
-function Input.SetFocused(self, focused)
-	if focused then
-		self:_GetBaseFrame():SetFocus()
-	else
-		self:_GetBaseFrame():ClearFocus()
-	end
+function Input.SetClearButtonEnabled(self, enabled)
+	assert(type(enabled) == "boolean")
+	assert(not self._subAddEnabled)
+	self._clearEnabled = enabled
 	return self
 end
 
---- Set the maximum number of letters for the input's entered text.
+--- Sets whether or not the sub/add buttons are enabled.
 -- @tparam Input self The input object
--- @tparam number the number of letters for entered text
+-- @tparam boolean enabled Whether or not the sub/add buttons are enabled
 -- @treturn Input The input object
-function Input.SetMaxLetters(self, number)
-	self:_GetBaseFrame():SetMaxLetters(number)
+function Input.SetSubAddEnabled(self, enabled)
+	assert(type(enabled) == "boolean")
+	assert(not self._clearEnabled and not self._iconTexture)
+	self._subAddEnabled = enabled
 	return self
 end
 
---- Sets whether or not this input is multiline
+--- Sets the icon texture.
 -- @tparam Input self The input object
--- @tparam boolean multiLine Whether or not this input is multiline
+-- @tparam[opt=nil] string iconTexture The texture string to use for the icon texture
 -- @treturn Input The input object
-function Input.SetMultiLine(self, multiLine, allowEnter)
-	local frame = self:_GetBaseFrame()
-	self._multiLine = multiLine
-	self._allowEnter = allowEnter
-	frame:SetText("")
-	frame:SetMultiLine(multiLine)
-	if self._multiLine and not self._allowEnter then
-		frame:SetScript("OnEnterPressed", nil)
-	end
-	frame:SetText(self._textStr)
+function Input.SetIconTexture(self, iconTexture)
+	assert(iconTexture == nil or TSM.UI.TexturePacks.IsValid(iconTexture))
+	assert(not self._subAddEnabled)
+	self._iconTexture = iconTexture
 	return self
 end
 
---- Set the hit rectangle insets.
+--- Allows inserting an item into the input by linking it while the input has focus.
 -- @tparam Input self The input object
--- @tparam number left How much the left side of the hit rectangle is inset
--- @tparam number right How much the right side of the hit rectangle is inset
--- @tparam number top How much the top side of the hit rectangle is inset
--- @tparam number bottom How much the bottom side of the hit rectangle is inset
+-- @tparam[opt=false] boolean insertLink Insert the link instead of the item name
 -- @treturn Input The input object
-function Input.SetHitRectInsets(self, left, right, top, bottom)
-	self:_GetBaseFrame():SetHitRectInsets(left, right, top, bottom)
-	return self
-end
-
---- Gets the input height.
--- @tparam Input self The input object
--- @treturn number The input height
-function Input.GetHeight(self)
-	return self:_GetBaseFrame():GetHeight()
-end
-
---- Gets the input text.
--- @tparam Input self The input object
--- @treturn string The input text
-function Input.GetText(self)
-	return self:_GetBaseFrame():GetText()
-end
-
---- Sets the input spacing.
--- @tparam Input self The input object
--- @treturn Input The input object
-function Input.SetSpacing(self, spacing)
-	self._spacing = spacing
-	self:_GetBaseFrame():SetSpacing(spacing)
-	return self
-end
-
-function Input.SetScript(self, script, handler)
-	if IS_SCRIPT_HOOKED[script] then
-		self._userScriptHandlers[script] = handler
-		return self
-	else
-		return self.__super:SetScript(script, handler)
-	end
-end
-
---- Gets the height of the text string.
--- @tparam Input self The input object
--- @treturn number The text string height
-function Input.GetStringHeight(self)
-	-- use the hint text in order to get the string height since EditBox doesn't support it directly
-	local prev = self._hintText:GetText() or ""
-	self._hintText:SetText(self._textStr)
-	local result = self._hintText:GetStringHeight() + self:_GetStyle("textInset") * 2
-	self._hintText:SetText(prev)
-	self._hintText:Draw()
-	return result
-end
-
---- Sets the setting info.
--- This method is used to have the value of the input automatically correspond with the value of a field in a table.
--- This is useful for inputs which are tied directly to settings.
--- @tparam Input self The input object
--- @tparam table tbl The table which the field to set belongs to
--- @tparam string key The key into the table to be set based on the input state
--- @tparam function validation A function which is used to validate the text value before setting it
--- @treturn Input The input object
-function Input.SetSettingInfo(self, tbl, key, validation)
-	self._settingTable = tbl
-	self._settingKey = key
-	self._validation = validation
-	self:SetText(tbl[key])
+function Input.AllowItemInsert(self, insertLink)
+	assert(insertLink == true or insertLink == false or insertLink == nil)
+	self._allowItemInsert = insertLink or false
 	return self
 end
 
 function Input.Draw(self)
 	self.__super:Draw()
-	local frame = self:_GetBaseFrame()
+	self:_UpdateIconsForValue(self._value)
+end
 
-	local inset = self:_GetStyle("textInset")
-	frame:SetTextInsets(inset, inset, inset, inset)
 
-	local texturePacks = self:_GetStyle("backgroundTexturePacks")
-	if texturePacks and not self._multiLine then
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgLeft, texturePacks.."Left")
-		TSM.UI.TexturePacks.SetTexture(frame.bgMiddle, texturePacks.."Middle")
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgRight, texturePacks.."Right")
-		frame.bgLeft:Show()
-		frame.bgMiddle:Show()
-		frame.bgRight:Show()
-		self:SetStyle("background", "#00000000")
-		self:SetStyle("border", "#00000000")
+
+-- ============================================================================
+-- Private Class Methods
+-- ============================================================================
+
+function Input._GetHintTextColor(self)
+	local color = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or self._backgroundColor)
+	if color:IsLight() then
+		return self:_GetTextColor("+HOVER")
 	else
-		frame.bgLeft:Hide()
-		frame.bgMiddle:Hide()
-		frame.bgRight:Hide()
-		if self._multiLine then
-			self:SetStyle("background", "#00000000")
-			self:SetStyle("border", "#00000000")
-		end
+		return self:_GetTextColor("-HOVER")
 	end
-	self:_ApplyFrameStyle(frame)
-	self:_ApplyTextStyle(frame)
+end
 
-	-- set the highlight color
-	frame:SetHighlightColor(TSM.UI.HexToRGBA(self:_GetStyle("highlightColor")))
+function Input._UpdateIconsForValue(self, value)
+	local frame = self:_GetBaseFrame()
+	local leftPadding, rightPadding = PADDING_LEFT, PADDING_RIGHT
 
-	-- set the text
-	frame:SetText(self._textStr)
-
-	if self._textStr == "" and not frame:HasFocus() and self._hintText:GetText() ~= "" then
-		self._hintText:SetStyle("font", self:_GetStyle("font"))
-		self._hintText:SetStyle("fontHeight", self:_GetStyle("fontHeight"))
-		self._hintText:SetStyle("justifyH", self:_GetStyle("hintJustifyH"))
-		self._hintText:SetStyle("justifyV", self:_GetStyle("hintJustifyV"))
-		self._hintText:SetStyle("textColor", self:_GetStyle("hintTextColor"))
+	-- set the hint text
+	if value == "" and self._hintText:GetText() ~= "" then
+		self._hintText:SetFont(Theme.GetFont(self._font):GetWowFont())
+		self._hintText:SetTextColor(self:_GetHintTextColor():GetFractionalRGBA())
 		self._hintText:Show()
-		self._hintText:Draw()
 	else
 		self._hintText:Hide()
 	end
 
-	if self._textStr == "" then
-		self._clearBtn:Hide()
+	local showSubAdd = self._subAddEnabled and (frame:IsMouseOver() or frame:HasFocus())
+	if showSubAdd then
+		self._subIcon:Show()
+		self._subBtn:Show()
+		self._addIcon:Show()
+		self._addBtn:Show()
 	else
-		if self:_GetStyle("clearButton") then
-			self._clearBtn:SetStyle("width", TSM.UI.TexturePacks.GetWidth("iconPack.14x14/Close/Circle"))
-			self._clearBtn:SetStyle("height", TSM.UI.TexturePacks.GetHeight("iconPack.14x14/Close/Circle"))
-			self._clearBtn:SetStyle("backgroundTexturePack", "iconPack.14x14/Close/Circle")
-			self._clearBtn:SetStyle("backgroundVertexColor", self:_GetStyle("textColor"))
-			self._clearBtn:Show()
-			self._clearBtn:Draw()
-		else
-			self._clearBtn:Hide()
-		end
+		self._subIcon:Hide()
+		self._subBtn:Hide()
+		self._addIcon:Hide()
+		self._addBtn:Hide()
+	end
+
+	-- set the icon
+	local iconTexture = nil
+	if self._clearEnabled and value ~= "" then
+		self._clearBtn:Show()
+		iconTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Close/Default", self:_GetTextColor())
+	else
+		self._clearBtn:Hide()
+		iconTexture = not frame:HasFocus() and self._iconTexture and TSM.UI.TexturePacks.GetColoredKey(self._iconTexture, self:_GetTextColor()) or nil
+	end
+	if iconTexture then
+		assert(not showSubAdd)
+		self._icon:Show()
+		TSM.UI.TexturePacks.SetTextureAndSize(self._icon, iconTexture)
+		rightPadding = rightPadding + TSM.UI.TexturePacks.GetWidth(iconTexture)
+	else
+		self._icon:Hide()
+	end
+	frame:SetTextInsets(leftPadding, rightPadding, PADDING_TOP_BOTTOM, PADDING_TOP_BOTTOM)
+	-- for some reason the text insets don't take effect right away, so on the next frame, we call GetTextInsets() which seems to fix things
+	ScriptWrapper.Set(frame, "OnUpdate", private.OnUpdate, self)
+end
+
+function Input._OnTextChanged(self, value)
+	self:_UpdateIconsForValue(value)
+end
+
+function Input._ShouldKeepFocus(self)
+	if not IsMouseButtonDown("LeftButton") then
+		return false
+	end
+	if self._clearBtn:IsVisible() and self._clearBtn:IsMouseOver() then
+		return true
+	elseif self._subBtn:IsVisible() and self._subBtn:IsMouseOver() then
+		return true
+	elseif self._addBtn:IsVisible() and self._addBtn:IsMouseOver() then
+		return true
+	else
+		return false
 	end
 end
 
---- Sets whether or not the input is disabled.
--- @tparam Input self The input object
--- @tparam boolean disabled Whether or not the input is disabled
--- @treturn Input The input object
-function Input.SetDisabled(self, disabled)
-	if disabled then
-		self:_GetBaseFrame():Disable()
-	else
-		self:_GetBaseFrame():Enable()
+
+
+-- ============================================================================
+-- Private Class Methods
+-- ============================================================================
+
+function Input._OnChar(self, c)
+	self.__super:_OnChar(c)
+	if not self._autoComplete then
+		return
 	end
-	return self
+	local frame = self:_GetBaseFrame()
+	local text = frame:GetText()
+	local match = nil
+	for _, k in ipairs(self._autoComplete) do
+		local start, ending = strfind(strlower(k), strlower(text), 1, true)
+		if start == 1 and ending and ending == #text then
+			match = k
+			break
+		end
+	end
+	if match and not IsControlKeyDown() then
+		local compStart = #text
+		frame:SetText(match)
+		self:HighlightText(compStart, #match)
+		frame:GetScript("OnTextChanged")(frame, true)
+	end
 end
 
 
@@ -355,108 +306,46 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.OnSizeChanged(frame)
-	local self = private.frameInputLookup[frame]
-
-	if self._userScriptHandlers.OnSizeChanged then
-		self._userScriptHandlers.OnSizeChanged(self)
-	end
+function private.OnUpdate(self)
+	local frame = self:_GetBaseFrame()
+	ScriptWrapper.Clear(frame, "OnUpdate")
+	frame:GetTextInsets()
 end
 
-function private.OnEscapePressed(frame)
-	frame:ClearFocus()
-	frame:HighlightText(0, 0)
-
-	local self = private.frameInputLookup[frame]
-
-	if self._settingTable and self._settingKey then
-		self:Draw()
-	end
-
-	if self._userScriptHandlers.OnEscapePressed then
-		self._userScriptHandlers.OnEscapePressed(self)
-	end
-end
-
-function private.OnEnterPressed(frame)
-	local self = private.frameInputLookup[frame]
-	local text = self:GetText()
-	frame:ClearFocus()
-	frame:HighlightText(0, 0)
-
-	if self._settingTable and self._settingKey then
-		local value = strtrim(text)
-		if not self._validation or self._validation(value) then
-			self._settingTable[self._settingKey] = value
-			self:SetText(value)
-		end
-	else
-		self:SetText(text)
-	end
+function private.ClearBtnOnClick(self)
+	assert(self:_SetValueHelper(""))
+	self._escValue = ""
+	self._editBox:SetText(self._value)
 	self:Draw()
+end
 
-	if self._userScriptHandlers.OnEnterPressed then
-		self._userScriptHandlers.OnEnterPressed(self)
+function private.SubBtnOnClick(self)
+	local minVal = self._validateContext and strsplit(":", self._validateContext)
+	local value = tostring(max(tonumber(self:GetValue()) - (IsShiftKeyDown() and 10 or 1), minVal or -math.huge))
+	if self:_SetValueHelper(value) then
+		self._escValue = self._value
+		self:_GetBaseFrame():SetText(value)
+		self:_UpdateIconsForValue(value)
 	end
 end
 
-function private.OnEditFocusGained(frame)
-	local self = private.frameInputLookup[frame]
-	self:Draw()
-	if self._userScriptHandlers.OnEditFocusGained then
-		self._userScriptHandlers.OnEditFocusGained(self)
+function private.AddBtnOnClick(self)
+	local _, maxVal = nil, nil
+	if self._validateContext then
+		_, maxVal = strsplit(":", self._validateContext)
+	end
+	local value = tostring(min(tonumber(self:GetValue()) + (IsShiftKeyDown() and 10 or 1), maxVal or math.huge))
+	if self:_SetValueHelper(value) then
+		self._escValue = self._value
+		self:_GetBaseFrame():SetText(value)
+		self:_UpdateIconsForValue(value)
 	end
 end
 
-function private.OnEditFocusLost(frame)
-	local self = private.frameInputLookup[frame]
-	self:Draw()
-	if self._userScriptHandlers.OnEditFocusLost then
-		self._userScriptHandlers.OnEditFocusLost(self)
-	end
+function private.OnEnter(self)
+	self:_UpdateIconsForValue(self._value)
 end
 
-function private.OnChar(frame)
-	local self = private.frameInputLookup[frame]
-	if not self:_GetStyle("autoComplete") then
-		return
-	end
-	local text = self:GetText()
-	local match = nil
-	for k in pairs(self:_GetStyle("autoComplete")) do
-		local start, ending = strfind(strlower(k), "^"..String.Escape(strlower(text)))
-		if start and ending and ending == #text then
-			match = k
-			break
-		end
-	end
-	if match and not IsControlKeyDown() then
-		self._compStart = #text
-		self:SetText(match)
-	else
-		self._compStart = nil
-		self:SetText(text)
-	end
-	self:Draw()
-	if self._userScriptHandlers.OnChar then
-		self._userScriptHandlers.OnChar(self)
-	end
-end
-
-function private.OnTabPressed(frame)
-	local self = private.frameInputLookup[frame]
-	self:Draw()
-	if self._userScriptHandlers.OnTabPressed then
-		self._userScriptHandlers.OnTabPressed(self)
-	end
-end
-
-function private.ClearBtnOnClick(button)
-	local self = button:GetParentElement()
-	self:SetFocused(false)
-	self:SetText("")
-	self:Draw()
-	if self._userScriptHandlers.OnEnterPressed then
-		self._userScriptHandlers.OnEnterPressed(self)
-	end
+function private.OnLeave(self)
+	self:_UpdateIconsForValue(self._value)
 end

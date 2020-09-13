@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,9 +9,11 @@ local Queue = TSM.Crafting:NewPackage("Queue")
 local Database = TSM.Include("Util.Database")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	db = nil,
 }
+local MAX_NUM_QUEUED = 9999
 
 
 
@@ -47,7 +47,7 @@ function Queue.SetNum(spellId, num)
 		Log.Err("Could not find craft: "..spellId)
 		return
 	end
-	craftInfo.queued = max(Math.Round(num or 0), 0)
+	craftInfo.queued = min(max(Math.Round(num or 0), 0), MAX_NUM_QUEUED)
 	local query = private.db:NewQuery()
 		:Equal("spellId", spellId)
 	local row = query:GetFirstResult()
@@ -56,13 +56,13 @@ function Queue.SetNum(spellId, num)
 		private.db:DeleteRow(row)
 	elseif row then
 		-- update this row
-		row:SetField("num", num)
+		row:SetField("num", craftInfo.queued)
 			:Update()
 	elseif craftInfo.queued > 0 then
 		-- insert a new row
 		private.db:NewRow()
 			:SetField("spellId", spellId)
-			:SetField("num", num)
+			:SetField("num", craftInfo.queued)
 			:Create()
 	end
 	query:Release()
@@ -97,8 +97,8 @@ function Queue.GetNumItems()
 	return private.db:NewQuery():CountAndRelease()
 end
 
-function Queue.GetTotalCostAndProfit()
-	local totalCost, totalProfit = nil, nil
+function Queue.GetTotals()
+	local totalCost, totalProfit, totalCastTimeMs, totalNumQueued = nil, nil, nil, 0
 	local query = private.db:NewQuery()
 		:Select("spellId", "num")
 	for _, spellId, numQueued in query:Iterator() do
@@ -110,23 +110,29 @@ function Queue.GetTotalCostAndProfit()
 		if profit then
 			totalProfit = (totalProfit or 0) + profit * numQueued * numResult
 		end
+		local castTime = select(4, GetSpellInfo(spellId))
+		if castTime then
+			totalCastTimeMs = (totalCastTimeMs or 0) + castTime * numQueued
+		end
+		totalNumQueued = totalNumQueued + numQueued
+
 	end
 	query:Release()
-	return totalCost, totalProfit
+	return totalCost, totalProfit, totalCastTimeMs and ceil(totalCastTimeMs / 1000) or nil, totalNumQueued
 end
 
 function Queue.RestockGroups(groups)
 	private.db:SetQueryUpdatesPaused(true)
 	for _, groupPath in ipairs(groups) do
-		if groupPath == TSM.CONST.ROOT_GROUP_PATH then
-			-- TODO
-		else
+		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
 			for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-				local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
-				if isValid then
-					private.RestockItem(itemString)
-				elseif err then
-					Log.PrintUser(err)
+				if TSM.Crafting.CanCraftItem(itemString) then
+					local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
+					if isValid then
+						private.RestockItem(itemString)
+					elseif err then
+						Log.PrintUser(err)
+					end
 				end
 			end
 		end
@@ -141,14 +147,7 @@ end
 -- ============================================================================
 
 function private.RestockItem(itemString)
-	local cheapestSpellId, cheapestCost = nil, nil
-	for _, spellId in TSM.Crafting.GetSpellIdsByItem(itemString, TSM.db.global.craftingOptions.ignoreCDCraftCost) do
-		local cost = TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId)
-		if cost and (not cheapestCost or cost < cheapestCost) then
-			cheapestSpellId = spellId
-			cheapestCost = cost
-		end
-	end
+	local cheapestCost, cheapestSpellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
 	if not cheapestSpellId then
 		-- can't craft this item
 		return
@@ -161,19 +160,19 @@ function private.RestockItem(itemString)
 		return
 	end
 
-	local haveQuantity = TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString)
+	local haveQuantity = Inventory.GetTotalQuantity(itemString)
 	for guild, ignored in pairs(TSM.db.global.craftingOptions.ignoreGuilds) do
 		if ignored then
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, guild)
+			haveQuantity = haveQuantity - Inventory.GetGuildQuantity(itemString, guild)
 		end
 	end
 	for player, ignored in pairs(TSM.db.global.craftingOptions.ignoreCharacters) do
 		if ignored then
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetBagQuantity(itemString, player)
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetBankQuantity(itemString, player)
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString, player)
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetAuctionQuantity(itemString, player)
-			haveQuantity = haveQuantity - TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, player)
+			haveQuantity = haveQuantity - Inventory.GetBagQuantity(itemString, player)
+			haveQuantity = haveQuantity - Inventory.GetBankQuantity(itemString, player)
+			haveQuantity = haveQuantity - Inventory.GetReagentBankQuantity(itemString, player)
+			haveQuantity = haveQuantity - Inventory.GetAuctionQuantity(itemString, player)
+			haveQuantity = haveQuantity - Inventory.GetMailQuantity(itemString, player)
 		end
 	end
 	assert(haveQuantity >= 0)
@@ -182,5 +181,5 @@ function private.RestockItem(itemString)
 		return
 	end
 	-- queue only if it satisfies all operation criteria
-	Queue.SetNum(cheapestSpellId, floor(neededQuantity / TSM.db.factionrealm.internalData.crafts[cheapestSpellId].numResult))
+	Queue.SetNum(cheapestSpellId, floor(neededQuantity / TSM.Crafting.GetNumResult(cheapestSpellId)))
 end

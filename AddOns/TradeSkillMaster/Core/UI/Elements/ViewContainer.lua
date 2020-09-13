@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- ViewContainer UI Element Class.
@@ -13,6 +11,8 @@
 local _, TSM = ...
 local ViewContainer = TSM.Include("LibTSMClass").DefineClass("ViewContainer", TSM.UI.Container)
 local Table = TSM.Include("Util.Table")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(ViewContainer)
 TSM.UI.ViewContainer = ViewContainer
 
 
@@ -22,7 +22,7 @@ TSM.UI.ViewContainer = ViewContainer
 -- ============================================================================
 
 function ViewContainer.__init(self)
-	local frame = CreateFrame("Frame", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "Frame")
 	self.__super:__init(frame)
 	self._pathsList = {}
 	self._contextTable = nil
@@ -177,11 +177,20 @@ end
 -- @tparam table defaultTbl Default values
 -- @treturn ViewContainer The view container object
 function ViewContainer.SetContextTable(self, tbl, defaultTbl)
+	assert(defaultTbl.pathIndex ~= nil)
 	tbl.pathIndex = tbl.pathIndex or defaultTbl.pathIndex
-	assert(tbl.pathIndex ~= nil, "Path index for ViewContainer ContextTable is not set")
 	self._contextTable = tbl
 	self._defaultContextTable = defaultTbl
 	return self
+end
+
+--- Sets the context table from a settings object.
+-- @tparam ViewContainer self The view container object
+-- @tparam Settings settings The settings object
+-- @tparam string key The setting key
+-- @treturn ViewContainer The view container object
+function ViewContainer.SetSettingsContext(self, settings, key)
+	return self:SetContextTable(settings[key], settings:GetDefaultReadOnly(key))
 end
 
 
@@ -192,14 +201,14 @@ end
 
 function ViewContainer._GetMinimumDimension(self, dimension)
 	if dimension == "WIDTH" then
-		local width = self:_GetStyle("width")
+		local width = self._width
 		if width then
 			return width, false
 		else
 			return self:_GetChild():_GetMinimumDimension(dimension)
 		end
 	elseif dimension == "HEIGHT" then
-		local height = self:_GetStyle("height")
+		local height = self._height
 		if height then
 			return height, false
 		else

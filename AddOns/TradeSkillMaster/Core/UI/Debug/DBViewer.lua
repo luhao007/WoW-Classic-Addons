@@ -1,25 +1,27 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local DBViewer = TSM.UI:NewPackage("DBViewer")
 local Database = TSM.Include("Util.Database")
 local Log = TSM.Include("Util.Log")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	frame = nil,
-	frameContext = nil,
-	dividedContainerContext = nil,
+	frameContext = {},
+	dividedContainerContext = {},
 	selectedDBName = nil,
+	structureScrollingTableContext = {},
+	browseScrollingTableContext = {},
+	defaultBrowseScrollingTableContext = { colWidth = {}, colHidden = {} },
 }
 local DEFAULT_FRAME_CONTEXT = {
 	width = 900,
 	height = 600,
-	centerX = 500,
+	centerX = 100,
 	centerY = 0,
 	scale = 1,
 }
@@ -30,17 +32,21 @@ local MIN_FRAME_SIZE = {
 local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
 	leftWidth = 200,
 }
+local DEFAULT_STRUCTURE_SCROLLING_TABLE_CONTEXT = {
+	colWidth = {
+		order = 24,
+		field = 450,
+		type = 60,
+		attributes = 96,
+	},
+	colHidden = {},
+}
 
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
-
-function DBViewer.OnInitialize()
-	private.frameContext = CopyTable(DEFAULT_FRAME_CONTEXT)
-	private.dividedContainerContext = CopyTable(DEFAULT_DIVIDED_CONTAINER_CONTEXT)
-end
 
 function DBViewer.OnDisable()
 	-- hide the frame
@@ -68,22 +74,21 @@ end
 
 function private.CreateMainFrame()
 	private.selectedDBName = nil
-	return TSMAPI_FOUR.UI.NewElement("ApplicationFrame", "base")
-		:SetTextureSet("SMALL", "SMALL")
+	return UIElements.New("ApplicationFrame", "base")
 		:SetParent(UIParent)
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
 		:SetContextTable(private.frameContext, DEFAULT_FRAME_CONTEXT)
-		:SetStyle("strata", "HIGH")
+		:SetStrata("HIGH")
 		:SetTitle("TSM DB Viewer")
 		:SetScript("OnHide", private.FrameOnHide)
-		:SetContentFrame(TSMAPI_FOUR.UI.NewElement("DividedContainer", "container")
-			:SetStyle("background", "#000000")
+		:SetContentFrame(UIElements.New("DividedContainer", "container")
 			:SetContextTable(private.dividedContainerContext, DEFAULT_DIVIDED_CONTAINER_CONTEXT)
+			:SetBackgroundColor("PRIMARY_BG")
 			:SetMinWidth(100, 100)
-			:SetLeftChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "left")
+			:SetLeftChild(UIElements.New("ScrollFrame", "left")
 				:AddChildrenWithFunction(private.AddTableRows)
 			)
-			:SetRightChild(TSMAPI_FOUR.UI.NewElement("Frame", "right")
+			:SetRightChild(UIElements.New("Frame", "right")
 				:SetLayout("VERTICAL")
 			)
 		)
@@ -91,15 +96,14 @@ end
 
 function private.AddTableRows(frame)
 	for _, name in Database.InfoNameIterator() do
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "nav_"..name)
-			:SetStyle("height", 20)
-			:SetStyle("margin", { left = 4, right = 4 })
-			:SetStyle("highlight", "#669d9d9d")
-			:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("justifyH", "LEFT")
-			:SetStyle("textColor", "#ffffff")
+		frame:AddChild(UIElements.New("Button", "nav_"..name)
+			:SetHeight(20)
+			:SetPadding(8, 0, 0, 0)
+			:SetFont("BODY_BODY3")
+			:SetJustifyH("LEFT")
+			:SetHighlightEnabled(true)
 			:SetText(name)
+			:SetBackground("PRIMARY_BG")
 			:SetScript("OnClick", private.NavButtonOnClick)
 		)
 	end
@@ -108,7 +112,8 @@ end
 function private.CreateTableContent()
 	local contentFrame = private.frame:GetElement("container.right")
 	contentFrame:ReleaseAllChildren()
-	contentFrame:AddChild(TSMAPI_FOUR.UI.NewElement("TabGroup", "tabs")
+	contentFrame:AddChild(UIElements.New("TabGroup", "tabs")
+		:SetMargin(0, 0, 4, 0)
 		:SetNavCallback(private.ContentNavCallback)
 		:AddPath("Structure", true)
 		:AddPath("Browse")
@@ -129,62 +134,48 @@ end
 function private.CreateStructureFrame()
 	local query = Database.CreateInfoFieldQuery(private.selectedDBName)
 		:OrderBy("order", true)
-	return TSMAPI_FOUR.UI.NewElement("Frame", "structure")
+	return UIElements.New("Frame", "structure")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "info")
+		:AddChild(UIElements.New("Frame", "info")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:SetStyle("margin", 4)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "numRows")
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("textColor", "#ffffff")
+			:SetHeight(20)
+			:SetMargin(4)
+			:AddChild(UIElements.New("Text", "numRows")
+				:SetFont("BODY_BODY2")
 				:SetText("Total Rows: "..Database.GetNumRows(private.selectedDBName))
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "numRows")
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("justifyH", "LEFT")
-				:SetStyle("textColor", "#ffffff")
+			:AddChild(UIElements.New("Text", "numRows")
+				:SetFont("BODY_BODY2")
 				:SetText("Active Queries: "..Database.GetNumActiveQueries(private.selectedDBName))
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "table")
-			:SetStyle("headerBackground", "#404040")
-			:SetStyle("headerFontHeight", 12)
+		:AddChild(UIElements.New("QueryScrollingTable", "table")
+			:SetContextTable(private.structureScrollingTableContext, DEFAULT_STRUCTURE_SCROLLING_TABLE_CONTEXT)
 			:GetScrollingTableInfo()
 				:NewColumn("order")
-					:SetTitles("#")
-					:SetWidth(20)
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetTitle("#")
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("order")
 					:SetSortInfo("order")
 					:Commit()
 				:NewColumn("field")
-					:SetTitles("Name")
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetTitle("Field")
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("field")
 					:SetSortInfo("field")
 					:Commit()
 				:NewColumn("type")
-					:SetTitles("Type")
-					:SetWidth(60)
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetTitle("Type")
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("type")
 					:SetSortInfo("type")
 					:Commit()
 				:NewColumn("attributes")
-					:SetTitles("Attributes")
-					:SetWidth(80)
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetTitle("Attributes")
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("attributes")
 					:SetSortInfo("attributes")
@@ -198,48 +189,41 @@ end
 
 function private.CreateBrowseFrame()
 	local query = Database.CreateDBQuery(private.selectedDBName)
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "browse")
+	local fieldQuery = Database.CreateInfoFieldQuery(private.selectedDBName)
+		:Select("field")
+		:OrderBy("order", true)
+	wipe(private.defaultBrowseScrollingTableContext.colWidth)
+	for _, field in fieldQuery:Iterator() do
+		private.defaultBrowseScrollingTableContext.colWidth[field] = 100
+	end
+	wipe(private.browseScrollingTableContext)
+
+	local frame = UIElements.New("Frame", "browse")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "queryInput")
-			:SetStyle("height", 26)
-			:SetStyle("margin", 8)
-			:SetStyle("background", "#525252")
-			:SetStyle("border", "#9d9d9d")
-			:SetStyle("borderSize", 2)
-			:SetStyle("fontHeight", 11)
-			:SetStyle("textColor", "#e2e2e2")
-			:SetText("query")
+		:AddChild(UIElements.New("Input", "queryInput")
+			:SetHeight(26)
+			:SetMargin(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetValue("query")
 			:SetScript("OnEnterPressed", private.QueryInputOnEnterPressed)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "table")
-			:SetStyle("headerBackground", "#404040")
-			:SetStyle("headerFontHeight", 8)
-			:SetStyle("colSpacing", 8)
+		:AddChild(UIElements.New("QueryScrollingTable", "table")
+			:SetContextTable(private.browseScrollingTableContext, private.defaultBrowseScrollingTableContext)
 			:SetContext(query)
 			:SetQuery(query)
 			:SetAutoReleaseQuery(true)
 			:SetSelectionDisabled(true)
 		)
 
-	local tableElement = frame:GetElement("table")
-	local stInfo = tableElement:GetScrollingTableInfo()
-	local fieldQuery = Database.CreateInfoFieldQuery(private.selectedDBName)
-		:Select("field")
-		:OrderBy("order", true)
-	local numFields = fieldQuery:Count()
-	local width = (600 - (numFields * 8)) / numFields
-	local isFirst = true
+	local stInfo = frame:GetElement("table"):GetScrollingTableInfo()
 	for _, field in fieldQuery:Iterator() do
 		stInfo:NewColumn(field)
-			:SetTitles(field)
-			:SetWidth(not isFirst and width or nil)
-			:SetFont(TSM.UI.Fonts.FRIZQT)
-			:SetFontHeight(10)
+			:SetTitle(field)
+			:SetFont("ITEM_BODY3")
 			:SetJustifyH("LEFT")
 			:SetTextInfo(field, tostring)
 			:SetTooltipInfo(field, private.TooltipFunc)
 			:Commit()
-		isFirst = false
 	end
 	fieldQuery:Release()
 	stInfo:Commit()
@@ -264,14 +248,14 @@ function private.NavButtonOnClick(button)
 	private.selectedDBName = button:GetText()
 	for _, name in Database.InfoNameIterator() do
 		navFrame:GetElement("nav_"..name)
-			:SetStyle("textColor", name == private.selectedDBName and "#79a2ff" or "#ffffff")
+			:SetTextColor(name == private.selectedDBName and "INDICATOR" or "TEXT")
 			:Draw()
 	end
 	private.CreateTableContent()
 end
 
 function private.QueryInputOnEnterPressed(input)
-	local func, errStr = loadstring(input:GetText())
+	local func, errStr = loadstring(input:GetValue())
 	if not func then
 		Log.PrintfUser("Failed to compile code: "..errStr)
 		return

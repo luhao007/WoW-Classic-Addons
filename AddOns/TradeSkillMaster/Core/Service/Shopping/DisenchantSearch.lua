@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -16,6 +14,7 @@ local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	itemList = {},
 	scanThreadId = nil,
+	searchContext = nil,
 }
 
 
@@ -27,10 +26,11 @@ local private = {
 function DisenchantSearch.OnInitialize()
 	-- initialize thread
 	private.scanThreadId = Threading.New("DISENCHANT_SEARCH", private.ScanThread)
+	private.searchContext = TSM.Shopping.ShoppingSearchContext(private.scanThreadId, private.MarketValueFunction)
 end
 
-function DisenchantSearch.GetScanContext()
-	return private.scanThreadId, private.MarketValueFunction
+function DisenchantSearch.GetSearchContext()
+	return private.searchContext:SetScanContext(L["Disenchant Search"], nil, nil, L["Disenchant Value"])
 end
 
 
@@ -44,9 +44,8 @@ function private.ScanThread(auctionScan)
 		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
-	auctionScan:SetCustomFilterFunc(private.IsItemBuyoutTooHigh)
 
-	-- create the list of items, and add filters for them
+	-- create the list of items
 	wipe(private.itemList)
 	for _, itemString, _, minBuyout in TSM.AuctionDB.LastScanIteratorThreaded() do
 		if minBuyout and private.ShouldInclude(itemString, minBuyout) then
@@ -54,11 +53,16 @@ function private.ScanThread(auctionScan)
 		end
 		Threading.Yield()
 	end
-	auctionScan:AddItemListFiltersThreaded(private.itemList)
 
 	-- run the scan
-	auctionScan:StartScanThreaded()
-	return true
+	auctionScan:AddItemListQueriesThreaded(private.itemList)
+	for _, query in auctionScan:QueryIterator() do
+		query:AddCustomFilter(private.QueryFilter)
+	end
+	if not auctionScan:ScanQueriesThreaded() then
+		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
+	end
+
 end
 
 function private.ShouldInclude(itemString, minBuyout)
@@ -78,11 +82,23 @@ function private.ShouldInclude(itemString, minBuyout)
 	return true
 end
 
-function private.IsItemBuyoutTooHigh(itemString, buyout)
+function private.QueryFilter(_, row)
+	local itemString = row:GetItemString()
+	if not itemString then
+		return false
+	end
+	local _, itemBuyout = row:GetBuyouts()
+	if not itemBuyout then
+		return false
+	end
+	return private.IsItemBuyoutTooHigh(itemString, itemBuyout)
+end
+
+function private.IsItemBuyoutTooHigh(itemString, itemBuyout)
 	local disenchantValue = CustomPrice.GetItemPrice(itemString, "Destroy")
-	return not disenchantValue or buyout > TSM.db.global.shoppingOptions.maxDeSearchPercent / 100 * disenchantValue
+	return not disenchantValue or itemBuyout > TSM.db.global.shoppingOptions.maxDeSearchPercent / 100 * disenchantValue
 end
 
 function private.MarketValueFunction(row)
-	return CustomPrice.GetItemPrice(row:GetField("itemString"), "Destroy")
+	return CustomPrice.GetItemPrice(row:GetItemString() or row:GetBaseItemString(), "Destroy")
 end

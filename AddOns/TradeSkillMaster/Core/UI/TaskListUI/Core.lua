@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,69 +9,16 @@ local TaskListUI = TSM.UI:NewPackage("TaskListUI")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	frame = nil,
 	categoryCollapsed = {},
 	taskCollapsed = {},
 	didAutoShow = false,
 	updateCallbacks = {},
 }
-local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
-	:SetStyleTable("Texture", "HORIZONTAL_LINE", {
-		color = "#9d9d9d",
-		height = 2,
-	})
-	:SetStyleTable("Text", "CATEGORY", {
-		margin = { left = 2, right = 4 },
-		autoWidth = true,
-		font = TSM.UI.Fonts.MontserratBold,
-		fontHeight = 16,
-		textColor = "#79a2ff",
-	})
-	:SetStyleTable("Text", "TASK", {
-		margin = { left = 2, right = 4 },
-		font = TSM.UI.Fonts.FRIZQT,
-		fontHeight = 16,
-		textColor = "#ffd839",
-	})
-	:SetStyleTable("Text", "COUNT", {
-		font = TSM.UI.Fonts.MontserratMedium,
-		fontHeight = 14,
-		textColor = "#ffffff",
-	})
-	:SetStyleTable("Text", "SUB_TASK", {
-		height = 20,
-		margin = { left = 38, right = 8, bottom = 2 },
-		font = TSM.UI.Fonts.MontserratBold,
-		fontHeight = 14,
-		textColor = "#ffffff",
-	})
-	:SetStyleTable("Text", "SUB_TASK_WITH_HIDE", {
-		margin = { left = 2 },
-		font = TSM.UI.Fonts.MontserratBold,
-		fontHeight = 14,
-		textColor = "#ffffff",
-	})
-	:SetStyleTable("Frame", "SUB_TASK_WITH_HIDE", {
-		height = 20,
-		margin = { left = 18, right = 8, bottom = 2 },
-	})
-	:SetStyleTable("Button", "EXPANDER", {
-		width = 18,
-		height = 18,
-	})
-	:SetStyleTable("ActionButton", "TASK", {
-		width = 80,
-		height = 15,
-		font = TSM.UI.Fonts.MontserratBold,
-		fontHeight = 12,
-	})
-	:SetStyleTable("SecureMacroActionButton", "TASK", {
-		width = 80,
-		height = 15,
-		font = TSM.UI.Fonts.MontserratBold,
-		fontHeight = 12,
-	})
 
 
 
@@ -82,8 +27,11 @@ local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
 -- ============================================================================
 
 function TaskListUI.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "taskListUIContext", "frame")
+		:AddKey("global", "taskListUIContext", "isOpen")
 	TSM.TaskList.SetUpdateCallback(private.OnTaskListUpdate)
-	if not TSM.db.global.internalData.taskListUIFrameContext.isOpen then
+	if not private.settings.isOpen then
 		private.didAutoShow = true
 	end
 end
@@ -105,10 +53,10 @@ function TaskListUI.Toggle()
 			Log.PrintUser(L["Your task list is currently empty."])
 			return
 		end
-		TSM.db.global.internalData.taskListUIFrameContext.isOpen = true
+		private.settings.isOpen = true
 		private.frame = private.CreateMainFrame()
+		TaskListUI.UpdateFrame()
 		private.frame:Show()
-		private.frame:Draw()
 	end
 	for _, callback in ipairs(private.updateCallbacks) do
 		callback()
@@ -123,6 +71,13 @@ function TaskListUI.RegisterUpdateCallback(callback)
 	tinsert(private.updateCallbacks, callback)
 end
 
+function TaskListUI.UpdateFrame()
+	local mouseOver = private.frame:_GetBaseFrame():IsMouseOver() and true or false
+	private.frame:SetBackgroundColor((mouseOver or TSM.db.global.appearanceOptions.taskListBackgroundLock) and "FRAME_BG%50" or nil, true)
+	private.frame:SetBorderColor((mouseOver or TSM.db.global.appearanceOptions.taskListBackgroundLock) and "ACTIVE_BG%50" or nil, 2)
+	private.frame:Draw()
+end
+
 
 
 -- ============================================================================
@@ -131,19 +86,23 @@ end
 
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("task_list")
-	local frame = TSMAPI_FOUR.UI.NewElement("OverlayApplicationFrame", "base")
+	local frame = UIElements.New("OverlayApplicationFrame", "base")
 		:SetParent(UIParent)
-		:SetStylesheet(BASE_STYLESHEET)
-		:SetStyle("width", 307)
-		:SetStyle("strata", "HIGH")
-		:SetContextTable(TSM.db.global.internalData.taskListUIFrameContext, TSM.db:GetDefaultReadOnly("global", "internalData", "taskListUIFrameContext"))
+		:SetWidth(307)
+		:SetStrata("HIGH")
+		:SetSettingsContext(private.settings, "frame")
 		:SetTitle(L["TSM TASK LIST"])
 		:SetScript("OnHide", private.BaseFrameOnHide)
-		:SetContentFrame(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+		:SetContentFrame(UIElements.New("Frame", "content")
 			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "hline", "HORIZONTAL_LINE"))
+			:AddChild(UIElements.New("Texture", "hline")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG_ALT")
+			)
 			:AddChildrenWithFunction(private.CreateTaskListElements)
 		)
+		:SetScript("OnEnter", TaskListUI.UpdateFrame)
+		:SetScript("OnLeave", TaskListUI.UpdateFrame)
 	frame:GetElement("closeBtn"):SetScript("OnClick", private.CloseBtnOnClick)
 	return frame
 end
@@ -166,7 +125,7 @@ function private.CreateTaskListElements(frame)
 		local isNewCategory = category ~= lastCategory
 		if isNewCategory then
 			private.CreateCategoryLine(frame, category, categoryCount[category])
-			local categoryFrame = TSMAPI_FOUR.UI.NewElement("Frame", "categoryChildren_"..category)
+			local categoryFrame = UIElements.New("Frame", "categoryChildren_"..category)
 				:SetLayout("VERTICAL")
 			frame:AddChild(categoryFrame)
 			if private.categoryCollapsed[category] then
@@ -180,7 +139,7 @@ function private.CreateTaskListElements(frame)
 
 		private.CreateTaskHeaderLine(currentCategoryFrame, taskDesc, buttonText, buttonEnabled, task)
 		if task:HasSubTasks() then
-			local taskFrame = TSMAPI_FOUR.UI.NewElement("Frame", "taskChildren_"..taskDesc)
+			local taskFrame = UIElements.New("Frame", "taskChildren_"..taskDesc)
 				:SetLayout("VERTICAL")
 			currentCategoryFrame:AddChild(taskFrame)
 			if private.taskCollapsed[taskDesc] then
@@ -205,44 +164,55 @@ function private.CreateTaskListElements(frame)
 end
 
 function private.CreateCategoryLine(frame, category, count)
-	frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "category_"..category)
+	frame:AddChild(UIElements.New("Frame", "category_"..category)
 		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 28)
-		:SetStyle("margin", { left = 4, right = 4, bottom = 2 })
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "expanderBtn", "EXPANDER")
-			:SetStyle("backgroundTexturePack", private.categoryCollapsed[category] and "iconPack.18x18/Carot/Collapsed" or "iconPack.18x18/Carot/Expanded")
+		:SetHeight(28)
+		:SetMargin(4, 4, 0, 2)
+		:AddChild(UIElements.New("Button", "expanderBtn")
+			:SetBackgroundAndSize(private.categoryCollapsed[category] and "iconPack.18x18/Caret/Right" or "iconPack.18x18/Caret/Down")
 			:SetContext(category)
 			:SetScript("OnClick", private.CategoryExpanderOnClick)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc", "CATEGORY")
+		:AddChild(UIElements.New("Text", "desc")
+			:SetWidth("AUTO")
+			:SetMargin(2, 4, 0, 0)
+			:SetFont("BODY_BODY1_BOLD")
+			:SetTextColor("INDICATOR_ALT")
 			:SetText(category)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "count", "COUNT")
+		:AddChild(UIElements.New("Text", "count")
+			:SetFont("BODY_BODY2_MEDIUM")
 			:SetText(format("(%d)", count))
 		)
 	)
 end
 
 function private.CreateTaskHeaderLine(frame, taskText, buttonText, buttonEnabled, task)
-	local button = TSMAPI_FOUR.UI.NewElement(task:IsSecureMacro() and "SecureMacroActionButton" or "ActionButton", "button", "TASK")
+	local button = UIElements.New(task:IsSecureMacro() and "SecureMacroActionButton" or "ActionButton", "button")
+		:SetSize(80, 15)
+		:SetFont("BODY_BODY3_MEDIUM")
 		:SetContext(task)
 		:SetDisabled(not buttonEnabled)
 		:SetText(buttonText)
 	if task:IsSecureMacro() then
 		button:SetMacroText(task:GetSecureMacroText())
 	else
+		button:SetScript("OnMouseDown", private.OnTaskButtonMouseDown)
 		button:SetScript("OnClick", private.OnTaskButtonClicked)
 	end
-	frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "task_"..taskText)
+	frame:AddChild(UIElements.New("Frame", "task_"..taskText)
 		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 26)
-		:SetStyle("padding", { left = 18, right = 8 })
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "expanderBtn", "EXPANDER")
-			:SetStyle("backgroundTexturePack", private.taskCollapsed[taskText] and "iconPack.18x18/Carot/Collapsed" or "iconPack.18x18/Carot/Expanded")
+		:SetHeight(26)
+		:SetPadding(18, 8, 0, 0)
+		:AddChild(UIElements.New("Button", "expanderBtn")
+			:SetBackgroundAndSize(private.taskCollapsed[taskText] and "iconPack.18x18/Caret/Right" or "iconPack.18x18/Caret/Down")
 			:SetContext(taskText)
 			:SetScript("OnClick", private.TaskExpanderOnClick)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc", "TASK")
+		:AddChild(UIElements.New("Text", "desc")
+			:SetMargin(2, 4, 0, 0)
+			:SetFont("ITEM_BODY1")
+			:SetTextColor("INDICATOR")
 			:SetText(taskText)
 		)
 		:AddChild(button)
@@ -254,22 +224,27 @@ end
 
 function private.CreateSubTaskLine(frame, subTask, task, index)
 	if task:CanHideSubTasks() then
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "subTask", "SUB_TASK_WITH_HIDE")
+		frame:AddChild(UIElements.New("Frame", "subTask")
+			:SetHeight(20)
+			:SetMargin(18, 8, 0, 2)
 			:SetLayout("HORIZONTAL")
 			:SetContext(task)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "hideBtn")
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("backgroundTexturePack", "iconPack.18x18/Hide")
+			:AddChild(UIElements.New("Button", "hideBtn")
+				:SetBackgroundAndSize("iconPack.18x18/Visible")
 				:SetContext(index)
 				:SetScript("OnClick", private.HideBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text", "SUB_TASK_WITH_HIDE")
+			:AddChild(UIElements.New("Text", "text")
+				:SetMargin(2, 0, 0, 0)
+				:SetFont("BODY_BODY2_BOLD")
 				:SetText(subTask)
 			)
 		)
 	else
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text", "SUB_TASK")
+		frame:AddChild(UIElements.New("Text", "text")
+			:SetHeight(20)
+			:SetMargin(38, 8, 0, 2)
+			:SetFont("BODY_BODY2_BOLD")
 			:SetText(subTask)
 		)
 	end
@@ -290,7 +265,7 @@ end
 
 function private.CloseBtnOnClick(button)
 	Log.PrintUser(L["Hiding the TSM Task List UI. Type '/tsm tasklist' to reopen it."])
-	TSM.db.global.internalData.taskListUIFrameContext.isOpen = false
+	private.settings.isOpen = false
 	TaskListUI.Toggle()
 end
 
@@ -299,10 +274,10 @@ function private.CategoryExpanderOnClick(button)
 	local category = button:GetContext()
 	private.categoryCollapsed[category] = not private.categoryCollapsed[category]
 	if private.categoryCollapsed[category] then
-		button:SetStyle("backgroundTexturePack", "iconPack.18x18/Carot/Collapsed")
+		button:SetBackgroundAndSize("iconPack.18x18/Caret/Right")
 		contentFrame:GetElement("categoryChildren_"..category):Hide()
 	else
-		button:SetStyle("backgroundTexturePack", "iconPack.18x18/Carot/Expanded")
+		button:SetBackgroundAndSize("iconPack.18x18/Caret/Down")
 		contentFrame:GetElement("categoryChildren_"..category):Show()
 	end
 	contentFrame:GetBaseElement():Draw()
@@ -313,13 +288,18 @@ function private.TaskExpanderOnClick(button)
 	local taskText = button:GetContext()
 	private.taskCollapsed[taskText] = not private.taskCollapsed[taskText]
 	if private.taskCollapsed[taskText] then
-		button:SetStyle("backgroundTexturePack", "iconPack.18x18/Carot/Collapsed")
+		button:SetBackgroundAndSize("iconPack.18x18/Caret/Right")
 		contentFrame:GetElement("taskChildren_"..taskText):Hide()
 	else
-		button:SetStyle("backgroundTexturePack", "iconPack.18x18/Carot/Expanded")
+		button:SetBackgroundAndSize("iconPack.18x18/Caret/Down")
 		contentFrame:GetElement("taskChildren_"..taskText):Show()
 	end
 	contentFrame:GetBaseElement():Draw()
+end
+
+function private.OnTaskButtonMouseDown(button)
+	local task = button:GetContext()
+	task:OnMouseDown()
 end
 
 function private.OnTaskButtonClicked(button)
@@ -349,7 +329,10 @@ function private.OnTaskListUpdate()
 		private.frame:SetTitle(L["TSM TASK LIST"].." ("..numTasks..")")
 		local contentFrame = private.frame:GetElement("content")
 		contentFrame:ReleaseAllChildren()
-		contentFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "hline", "HORIZONTAL_LINE"))
+		contentFrame:AddChild(UIElements.New("Texture", "hline")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG_ALT")
+		)
 		contentFrame:AddChildrenWithFunction(private.CreateTaskListElements)
 		contentFrame:GetParentElement():Draw()
 	elseif not private.didAutoShow and TSM.TaskList.GetNumTasks() > 0 then

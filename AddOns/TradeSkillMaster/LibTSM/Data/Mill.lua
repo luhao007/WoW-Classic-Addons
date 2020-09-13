@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -223,7 +221,7 @@ local DATA = TSM.IsWowClassic() and {} or {
 		["i:152510"] = 0.825,
 	},
 	["i:168662"] = { -- Maroon Pigment
-		["i:168487"] = 0.825,
+		["i:168487"] = 0.6,
 	},
 }
 

@@ -1,42 +1,43 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Resale = TSM.MainUI.Ledger.Revenue:NewPackage("Resale")
 local L = TSM.Include("Locale").GetTable()
 local Table = TSM.Include("Util.Table")
-local String = TSM.Include("Util.String")
 local Money = TSM.Include("Util.Money")
+local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local SECONDS_PER_DAY = 24 * 60 * 60
 local private = {
-	query = nil,
+	settings = nil,
 	summaryQuery = nil,
 	characters = {},
-	characterFilter = ALL,
-	typeFilter = "All",
-	searchFilter = "",
-	groupList = {},
-	groupFilter = ALL,
+	characterFilter = {},
+	typeFilter = {},
 	rarityList = {},
-	rarityListKeys = {},
 	rarityFilter = {},
+	groupFilter = {},
+	searchFilter = "",
 	timeFrameFilter = 30 * SECONDS_PER_DAY
 }
-local TYPE_LIST = { ALL, L["Auction"], COD, TRADE, L["Vendor"] }
-local TYPE_KEYS = { "All", "Auction", "COD", "Trade", "Vendor" }
+local TYPE_LIST = { L["Auction"], COD, TRADE, L["Vendor"] }
+local TYPE_KEYS = { "Auction", "COD", "Trade", "Vendor" }
 do
+	for _, key in ipairs(TYPE_KEYS) do
+		private.typeFilter[key] = true
+	end
 	for i = 1, 4 do
 		tinsert(private.rarityList, _G[format("ITEM_QUALITY%d_DESC", i)])
-		tinsert(private.rarityListKeys, i)
+		private.rarityFilter[i] = true
 	end
 end
-local TIME_LIST = { ALL, L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
+local TIME_LIST = { L["All Time"], L["Last 3 Days"], L["Last 7 Days"], L["Last 14 Days"], L["Last 30 Days"], L["Last 60 Days"] }
 local TIME_KEYS = { 0, 3 * SECONDS_PER_DAY, 7 * SECONDS_PER_DAY, 14 * SECONDS_PER_DAY, 30 * SECONDS_PER_DAY, 60 * SECONDS_PER_DAY }
 
 
@@ -46,6 +47,8 @@ local TIME_KEYS = { 0, 3 * SECONDS_PER_DAY, 7 * SECONDS_PER_DAY, 14 * SECONDS_PE
 -- ============================================================================
 
 function Resale.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "mainUIContext", "ledgerResaleScrollingTable")
 	TSM.MainUI.Ledger.Revenue.RegisterPage(L["Resale"], private.DrawResalePage)
 end
 
@@ -58,190 +61,165 @@ end
 function private.DrawResalePage()
 	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "revenue", "resale")
 	wipe(private.characters)
-	tinsert(private.characters, ALL)
 	TSM.Accounting.Transactions.GetCharacters(private.characters)
-
-	wipe(private.groupList)
-	tinsert(private.groupList, ALL)
-	for _, groupPath in TSM.Groups.GroupIterator() do
-		tinsert(private.groupList, groupPath)
+	for _, character in ipairs(private.characters) do
+		private.characterFilter[character] = true
 	end
 
 	private.summaryQuery = private.summaryQuery or TSM.Accounting.Transactions.CreateSummaryQuery()
 		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:OrderBy("name", true)
-
 	private.UpdateQuery()
+	local totalProfit = 0
+	local numItems = 0
+	for _, row in private.summaryQuery:Iterator() do
+		totalProfit = totalProfit + row:GetField("totalProfit")
+		numItems = numItems + min(row:GetFields("sold", "bought"))
+	end
 
-	return TSMAPI_FOUR.UI.NewElement("Frame", "content")
+	return UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "firstRow")
+		:AddChild(UIElements.New("Frame", "row1")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 14)
-			:SetStyle("padding.left", 8)
-			:SetStyle("padding.right", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "search")
-				:SetStyle("margin.right", 16)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(strupper(SEARCH))
+			:SetHeight(24)
+			:SetMargin(8)
+			:AddChild(UIElements.New("Input", "filter")
+				:SetMargin(0, 8, 0, 0)
+				:SetIconTexture("iconPack.18x18/Search")
+				:SetClearButtonEnabled(true)
+				:AllowItemInsert()
+				:SetHintText(L["Filter by keyword"])
+				:SetValue(private.searchFilter)
+				:SetScript("OnValueChanged", private.SearchFilterChanged)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "group")
-				:SetStyle("margin.right", 16)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(strupper(GROUP))
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "type")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(strupper(TYPE))
+			:AddChild(UIElements.New("GroupSelector", "group")
+				:SetWidth(240)
+				:SetHintText(L["Filter by groups"])
+				:SetScript("OnSelectionChanged", private.GroupFilterChanged)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "firstRowFields")
+		:AddChild(UIElements.New("Frame", "row2")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 4)
-			:SetStyle("margin.bottom", 24)
-			:SetStyle("padding.left", 8)
-			:SetStyle("padding.right", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "searchInput")
-				:SetStyle("margin.right", 16)
-				:SetHintText(L["Filter by Keyword"])
-				:SetStyle("hintTextColor", "#e2e2e2")
-				:SetStyle("hintJustifyH", "LEFT")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetScript("OnEnterPressed", private.SearchFilterChanged)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "groupInput")
-				:SetStyle("margin.right", 16)
-				:SetItems(private.groupList)
-				:SetSelectedItem(private.groupFilter)
-				:SetScript("OnSelectionChanged", private.GroupDropdownOnSelectionChanged)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "typeInput")
+			:SetHeight(24)
+			:SetMargin(8, 8, 0, 8)
+			:AddChild(UIElements.New("MultiselectionDropdown", "type")
+				:SetMargin(0, 8, 0, 0)
 				:SetItems(TYPE_LIST, TYPE_KEYS)
-				:SetSelectedItemByKey(private.typeFilter)
-				:SetScript("OnSelectionChanged", private.TypeDropdownOnSelectionChanged)
+				:SetSettingInfo(private, "typeFilter")
+				:SetSelectionText(L["No Types"], L["%d Types"], L["All Types"])
+				:SetScript("OnSelectionChanged", private.FilterChangedCommon)
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "secondRow")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 14)
-			:SetStyle("padding.left", 8)
-			:SetStyle("padding.right", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "rarity")
-				:SetStyle("margin.right", 16)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(strupper(RARITY))
+			:AddChild(UIElements.New("MultiselectionDropdown", "rarity")
+				:SetMargin(0, 8, 0, 0)
+				:SetItems(private.rarityList)
+				:SetSettingInfo(private, "rarityFilter")
+				:SetSelectionText(L["No Rarities"], L["%d Rarities"], L["All Rarities"])
+				:SetScript("OnSelectionChanged", private.FilterChangedCommon)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "character")
-				:SetStyle("margin.right", 16)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(L["CHARACTER"])
+			:AddChild(UIElements.New("MultiselectionDropdown", "character")
+				:SetMargin(0, 8, 0, 0)
+				:SetItems(private.characters, private.characters)
+				:SetSettingInfo(private, "characterFilter")
+				:SetSelectionText(L["No Characters"], L["%d Characters"], L["All Characters"])
+				:SetScript("OnSelectionChanged", private.FilterChangedCommon)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "timeFrame")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetText(L["TIME FRAME"])
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "secondRowFields")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 4)
-			:SetStyle("margin.bottom", 24)
-			:SetStyle("padding.left", 8)
-			:SetStyle("padding.right", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("MultiselectionDropdown", "rarityInput")
-				:SetStyle("margin.right", 16)
-				:SetScript("OnSelectionChanged", private.RarityDropdownOnSelectionChanged)
-				:SetItems(private.rarityList, private.rarityListKeys)
-				:SetHintText(L["None"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "characterSelect")
-				:SetStyle("margin.right", 16)
-				:SetItems(private.characters)
-				:SetSelectedItem(private.characterFilter)
-				:SetScript("OnSelectionChanged", private.CharacterDropdownOnSelectionChanged)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "timeFrameInput")
+			:AddChild(UIElements.New("SelectionDropdown", "time")
 				:SetItems(TIME_LIST, TIME_KEYS)
 				:SetSelectedItemByKey(private.timeFrameFilter)
-				:SetScript("OnSelectionChanged", private.TimeDropdownOnSelectionChanged)
+				:SetSettingInfo(private, "timeFrameFilter")
+				:SetScript("OnSelectionChanged", private.FilterChangedCommon)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "accountingScrollingTableFrame")
-			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "scrollingTable")
-				:SetStyle("headerBackground", "#404040")
-				:SetStyle("headerFont", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("headerFontHeight", 14)
-				:GetScrollingTableInfo()
-					:NewColumn("item")
-						:SetTitles(L["Item"])
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", ItemInfo.GetLink)
-						:SetSortInfo("name")
-						:SetTooltipInfo("itemString")
-						:Commit()
-					:NewColumn("sold")
-						:SetTitles(L["Sold"])
-						:SetWidth(50)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("LEFT")
-						:SetTextInfo("sold")
-						:SetSortInfo("sold")
-						:Commit()
-					:NewColumn("avgSellPrice")
-						:SetTitles(L["Avg Sell Price"])
-						:SetWidth(140)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("LEFT")
-						:SetTextInfo("avgSellPrice", private.GetMoneyText)
-						:SetSortInfo("avgSellPrice")
-						:Commit()
-					:NewColumn("bought")
-						:SetTitles(L["Bought"])
-						:SetWidth(70)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("RIGHT")
-						:SetTextInfo("bought")
-						:SetSortInfo("bought")
-						:Commit()
-					:NewColumn("avgBuyPrice")
-						:SetTitles(L["Avg Buy Price"])
-						:SetWidth(140)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("RIGHT")
-						:SetTextInfo("avgBuyPrice", private.GetMoneyText)
-						:SetSortInfo("avgBuyPrice")
-						:Commit()
-					:NewColumn("avgResaleProfit")
-						:SetTitles(L["Avg Resale Profit"])
-						:SetWidth(140)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
-						:SetJustifyH("RIGHT")
-						:SetTextInfo("avgResaleProfit", private.GetMoneyText)
-						:SetSortInfo("avgResaleProfit")
-						:Commit()
+		:AddChild(UIElements.New("QueryScrollingTable", "scrollingTable")
+			:SetSettingsContext(private.settings, "ledgerResaleScrollingTable")
+			:GetScrollingTableInfo()
+				:NewColumn("item")
+					:SetTitle(L["Item"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("LEFT")
+					:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+					:SetSortInfo("name")
+					:SetTooltipInfo("itemString")
+					:DisableHiding()
 					:Commit()
-				:SetQuery(private.summaryQuery)
-				:SetScript("OnRowClick", private.TableSelectionChanged)
+				:NewColumn("bought")
+					:SetTitle(L["Bought"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("bought")
+					:SetSortInfo("bought")
+					:Commit()
+				:NewColumn("avgBuyPrice")
+					:SetTitle(L["Avg Buy Price"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("avgBuyPrice", private.GetMoneyText)
+					:SetSortInfo("avgBuyPrice")
+					:Commit()
+				:NewColumn("sold")
+					:SetTitle(L["Sold"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("sold")
+					:SetSortInfo("sold")
+					:Commit()
+				:NewColumn("avgSellPrice")
+					:SetTitle(L["Avg Sell Price"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("avgSellPrice", private.GetMoneyText)
+					:SetSortInfo("avgSellPrice")
+					:Commit()
+				:NewColumn("avgProfit")
+					:SetTitle(L["Avg Profit"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("avgProfit", private.GetColoredMoneyText)
+					:SetSortInfo("avgProfit")
+					:Commit()
+				:NewColumn("totalProfit")
+					:SetTitle(L["Total Profit"])
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("totalProfit", private.GetColoredMoneyText)
+					:SetSortInfo("totalProfit")
+					:Commit()
+				:NewColumn("profitPct")
+					:SetTitle("%")
+					:SetFont("ITEM_BODY3")
+					:SetJustifyH("RIGHT")
+					:SetTextInfo("profitPct", private.GetPctText)
+					:SetSortInfo("profitPct")
+					:Commit()
+				:Commit()
+			:SetQuery(private.summaryQuery)
+			:SetScript("OnRowClick", private.TableSelectionChanged)
+		)
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "footer")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Text", "num")
+				:SetWidth("AUTO")
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(format(L["%s Items Resold"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
 			)
+			:AddChild(UIElements.New("Texture", "line")
+				:SetMargin(4, 8, 0, 0)
+				:SetWidth(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("Text", "profit")
+				:SetWidth("AUTO")
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(format(L["%s Total Profit"], Money.ToString(totalProfit)))
+			)
+			:AddChild(UIElements.New("Spacer", "spacer"))
 		)
 end
 
@@ -251,8 +229,16 @@ end
 -- Scrolling Table Helper Functions
 -- ============================================================================
 
-function private.GetMoneyText(record)
-	return Money.ToString(record)
+function private.GetMoneyText(value)
+	return Money.ToString(value)
+end
+
+function private.GetColoredMoneyText(value)
+	return Money.ToString(value, Theme.GetFeedbackColor(value >= 0 and "GREEN" or "RED"):GetTextColorPrefix())
+end
+
+function private.GetPctText(value)
+	return Theme.GetFeedbackColor(value >= 0 and "GREEN" or "RED"):ColorText(value.."%")
 end
 
 
@@ -261,45 +247,32 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.DropdownChangedCommon(dropdown)
+function private.FilterChangedCommon(dropdown)
 	private.UpdateQuery()
-	dropdown:GetElement("__parent.__parent.accountingScrollingTableFrame.scrollingTable")
-		:UpdateData(true)
-end
-
-function private.TimeDropdownOnSelectionChanged(dropdown)
-	private.timeFrameFilter = dropdown:GetSelectedItemKey()
-	private.DropdownChangedCommon(dropdown)
-end
-
-function private.TypeDropdownOnSelectionChanged(dropdown)
-	private.typeFilter = dropdown:GetSelectedItemKey()
-	private.DropdownChangedCommon(dropdown)
+	local totalProfit = 0
+	local numItems = 0
+	for _, row in private.summaryQuery:Iterator() do
+		totalProfit = totalProfit + row:GetField("totalProfit")
+		numItems = numItems + min(row:GetFields("sold", "bought"))
+	end
+	dropdown:GetElement("__parent.__parent.scrollingTable"):UpdateData(true)
+	local footer = dropdown:GetElement("__parent.__parent.footer")
+	footer:GetElement("num"):SetText(format(L["%s Items Resold"], Theme.GetColor("INDICATOR"):ColorText(FormatLargeNumber(numItems))))
+	footer:GetElement("profit"):SetText(format(L["%s Total Profit"], Money.ToString(totalProfit)))
+	footer:Draw()
 end
 
 function private.SearchFilterChanged(input)
-	private.searchFilter = strtrim(input:GetText())
-	private.DropdownChangedCommon(input)
+	private.searchFilter = input:GetValue()
+	private.FilterChangedCommon(input)
 end
 
-function private.CharacterDropdownOnSelectionChanged(dropdown)
-	private.characterFilter = dropdown:GetSelectedItem()
-	private.DropdownChangedCommon(dropdown)
-end
-
-function private.RarityDropdownOnSelectionChanged(dropdown)
-	wipe(private.rarityFilter)
-	for _, key in ipairs(private.rarityListKeys) do
-		if dropdown:ItemIsSelectedByKey(key) then
-			tinsert(private.rarityFilter, key)
-		end
+function private.GroupFilterChanged(groupSelector)
+	wipe(private.groupFilter)
+	for groupPath in groupSelector:SelectedGroupIterator() do
+		private.groupFilter[groupPath] = true
 	end
-	private.DropdownChangedCommon(dropdown)
-end
-
-function private.GroupDropdownOnSelectionChanged(dropdown)
-	private.groupFilter = dropdown:GetSelectedItem()
-	private.DropdownChangedCommon(dropdown)
+	private.FilterChangedCommon(groupSelector)
 end
 
 
@@ -310,20 +283,17 @@ end
 
 function private.UpdateQuery()
 	private.summaryQuery:ResetFilters()
-	TSM.Accounting.Transactions.UpdateSummaryData(private.groupFilter, private.typeFilter, private.characterFilter, private.timeFrameFilter)
-
-	if private.searchFilter ~= "" then
-		private.summaryQuery:Matches("name", String.Escape(private.searchFilter))
+	local groupFilter = next(private.groupFilter) and private.groupFilter or nil
+	local searchFilter = private.searchFilter ~= "" and private.searchFilter or nil
+	local typeFilter = Table.Count(private.typeFilter) ~= #TYPE_KEYS and private.typeFilter or nil
+	local characterFilter = Table.Count(private.characterFilter) ~= #private.characters and private.characterFilter or nil
+	local minTime = private.timeFrameFilter ~= 0 and (time() - private.timeFrameFilter) or nil
+	TSM.Accounting.Transactions.UpdateSummaryData(groupFilter, searchFilter, typeFilter, characterFilter, minTime)
+	if Table.Count(private.rarityFilter) ~= #private.rarityList then
+		private.summaryQuery:InTable("quality", private.rarityFilter)
 	end
-	if #private.rarityFilter ~= 0 then
-		private.summaryQuery:Custom(private.CompareRarityFilter, private.rarityFilter)
-	end
-end
-
-function private.CompareRarityFilter(row, rarityFilter)
-	return Table.KeyByValue(rarityFilter, row:GetField("quality")) and true or false
 end
 
 function private.TableSelectionChanged(scrollingTable, row)
-	scrollingTable:GetParentElement():GetParentElement():GetParentElement():SetContext(row:GetField("itemString")):SetPath("itemDetail", true)
+	TSM.MainUI.Ledger.ShowItemDetail(scrollingTable:GetParentElement():GetParentElement(), row:GetField("itemString"), "sale")
 end

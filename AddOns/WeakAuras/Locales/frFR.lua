@@ -66,7 +66,8 @@ L["20 Man Raid"] = "Raid 20 Joueurs"
 L["25 Man Raid"] = "Raid 25 Joueurs"
 L["40 Man Raid"] = "Raid 40 Joueurs"
 L["5 Man Dungeon"] = "Donjon 5 joueurs"
-L["A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"] = "WeakAura a juste essayé d'utiliser une fonction interdite, mais a été bloqué. S'il vous plaît vérifiez vos auras!"
+--[[Translation missing --]]
+L["A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"] = "A WeakAura just tried to use a forbidden function but has been blocked from doing so. Please check your auras!"
 --[[Translation missing --]]
 L["Abbreviate"] = "Abbreviate"
 --[[Translation missing --]]
@@ -448,7 +449,8 @@ L["Friendly Fire"] = "Tir ami"
 L["From"] = "De"
 L["Frost Resistance"] = "Résistance au givre"
 L["Full"] = "Plein"
-L["Full Scan"] = "Scan Complet"
+--[[Translation missing --]]
+L["Full Scan"] = "Full Scan"
 L["Full/Empty"] = "Plein/Vide"
 --[[Translation missing --]]
 L["Gahz'ranka"] = "Gahz'ranka"
@@ -478,7 +480,8 @@ L["Grid"] = "Grille"
 --[[Translation missing --]]
 L["Grobbulus"] = "Grobbulus"
 L["Group"] = "Groupe"
-L["Group %s"] = "Groupe %s"
+--[[Translation missing --]]
+L["Group %s"] = "Group %s"
 L["Group Arrangement"] = "Arrangement du Groupe"
 L["Grow"] = "Grandir"
 L["GTFO Alert"] = "Alerte GTFO"
@@ -603,7 +606,8 @@ L["Left"] = "Gauche"
 L["Left to Right"] = "De Gauche à Droite"
 L["Left, then Down"] = "Gauche, puis bas"
 L["Left, then Up"] = "Gauche, puis haut"
-L["Legacy Aura"] = "Aura herité"
+--[[Translation missing --]]
+L["Legacy Aura"] = "Legacy Aura"
 L["Legacy RGB Gradient"] = "Dégradé RVB Hérité"
 L["Legacy RGB Gradient Pulse"] = "Impulsion de Dégradé RVB héritée"
 L["Length"] = "Longueur"

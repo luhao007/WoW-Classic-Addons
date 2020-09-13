@@ -1,26 +1,25 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- GroupTree UI Element Class.
--- A group tree is an abstract element which displays TSM groups. It is a subclass of the @{FastScrollingList} class.
+-- A group tree is an abstract element which displays TSM groups. It is a subclass of the @{ScrollingTable} class.
 -- @classmod GroupTree
 
 local _, TSM = ...
+local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
-local GroupTree = TSM.Include("LibTSMClass").DefineClass("GroupTree", TSM.UI.FastScrollingList, "ABSTRACT")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Theme = TSM.Include("Util.Theme")
+local UIElements = TSM.Include("UI.UIElements")
+local GroupTree = TSM.Include("LibTSMClass").DefineClass("GroupTree", TSM.UI.ScrollingTable, "ABSTRACT")
+UIElements.Register(GroupTree)
 TSM.UI.GroupTree = GroupTree
-local private = { rowFrameLookup = {} }
-local COLOR_WIDTH = 6
-local COLOR_PADDING_LEFT = 2
-local COLOR_PADDING_TOP_BOTTOM = 2
-local EXPANDER_PADDING_LEFT = 4
-local HEADER_INDENT = 8
+local private = {}
+local EXPANDER_SPACING = 2
 
 
 
@@ -30,31 +29,48 @@ local HEADER_INDENT = 8
 
 function GroupTree.__init(self)
 	self.__super:__init()
+	self:SetRowHeight(24)
 
 	self._allData = {}
-	self._defaultContextTbl = { collapsed = {} }
-	self._contextTbl = self._defaultContextTbl
+	self._contextTable = nil
+	self._defaultContextTable = nil
 	self._hasChildrenLookup = {}
-	self._headerNameLookup = {}
-	self._groupFunc = nil
+	self._query = nil
 	self._searchStr = ""
+	self._moduleOperationFilter = nil
+end
+
+function GroupTree.Acquire(self)
+	self._headerHidden = true
+	self.__super:Acquire()
+	self:GetScrollingTableInfo()
+		:NewColumn("group")
+			:SetFont("BODY_BODY2")
+			:SetJustifyH("LEFT")
+			:SetTextFunction(private.GetGroupText)
+			:SetExpanderStateFunction(private.GetExpanderState)
+			:SetFlagStateFunction(private.GetFlagState)
+			:SetTooltipFunction(private.GetTooltip)
+			:Commit()
+		:Commit()
 end
 
 function GroupTree.Release(self)
 	wipe(self._allData)
-	self._groupFunc = nil
+	if self._query then
+		self._query:Release()
+		self._query = nil
+	end
 	self._searchStr = ""
-	wipe(self._defaultContextTbl.collapsed)
-	self._contextTbl = self._defaultContextTbl
+	self._moduleOperationFilter = nil
+	self._contextTable = nil
+	self._defaultContextTable = nil
 	wipe(self._hasChildrenLookup)
-	wipe(self._headerNameLookup)
 	for _, row in ipairs(self._rows) do
-		row._frame:SetScript("OnClick", nil)
-		row._frame:SetScript("OnEnter", nil)
-		row._frame:SetScript("OnLeave", nil)
-		private.rowFrameLookup[row._frame] = nil
+		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
 	end
 	self.__super:Release()
+	self:SetRowHeight(24)
 end
 
 --- Sets the context table.
@@ -62,26 +78,39 @@ end
 -- within the settings DB.
 -- @tparam GroupTree self The group tree object
 -- @tparam table tbl The context table
+-- @tparam table defaultTbl The default table (required fields: `collapsed`)
 -- @treturn GroupTree The group tree object
-function GroupTree.SetContextTable(self, tbl)
-	if tbl then
-		tbl.collapsed = tbl.collapsed or {}
-		self._contextTbl = tbl
-	else
-		self._contextTbl = self._defaultContextTbl
-		wipe(self._contextTbl)
-	end
-	self:_UpdateData()
+function GroupTree.SetContextTable(self, tbl, defaultTbl)
+	assert(type(defaultTbl.collapsed) == "table")
+	tbl.collapsed = tbl.collapsed or CopyTable(defaultTbl.collapsed)
+	self._contextTable = tbl
+	self._defaultContextTable = defaultTbl
 	return self
 end
 
---- Sets the group list function.
+--- Sets the context table from a settings object.
 -- @tparam GroupTree self The group tree object
--- @tparam function groupFunc A function which tables groups table and a headerNameLookup table and populates them
+-- @tparam Settings settings The settings object
+-- @tparam string key The setting key
 -- @treturn GroupTree The group tree object
-function GroupTree.SetGroupListFunc(self, groupFunc)
-	self._groupFunc = groupFunc
-	self:_UpdateData()
+function GroupTree.SetSettingsContext(self, settings, key)
+	return self:SetContextTable(settings[key], settings:GetDefaultReadOnly(key))
+end
+
+--- Sets the query used to populate the group tree.
+-- @tparam GroupTree self The group tree object
+-- @tparam DatabaseQuery query The database query object
+-- @tparam[opt=nil] string moduleName The name of the module to filter visible groups to only ones with operations
+-- @treturn GroupTree The group tree object
+function GroupTree.SetQuery(self, query, moduleName)
+	assert(query)
+	if self._query then
+		self._query:Release()
+	end
+	self._query = query
+	self._query:SetUpdateCallback(private.QueryUpdateCallback, self)
+	self._moduleOperationFilter = moduleName
+	self:UpdateData()
 	return self
 end
 
@@ -98,19 +127,7 @@ end
 -- @treturn GroupTree The group tree object
 function GroupTree.SetSearchString(self, searchStr)
 	self._searchStr = String.Escape(searchStr)
-	self:_UpdateData()
-	return self
-end
-
---- Forces an update of the group data.
--- @tparam GroupTree self The group tree object
--- @tparam[opt=false] bool redraw Whether or not to redraw the group tree
--- @treturn GroupTree The group tree object
-function GroupTree.UpdateData(self, redraw)
-	self:_UpdateData()
-	if redraw then
-		self:Draw()
-	end
+	self:UpdateData()
 	return self
 end
 
@@ -119,18 +136,11 @@ end
 -- @treturn GroupTree The application group tree object
 function GroupTree.ExpandAll(self)
 	for _, groupPath in ipairs(self._allData) do
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] and self._contextTbl.collapsed[groupPath] then
+		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] and self._contextTable.collapsed[groupPath] then
 			self:_SetCollapsed(groupPath, false)
 		end
 	end
-	for _, row in ipairs(self._rows) do
-		local groupPath = row:GetData()
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] then
-			local scrollingList = row._scrollingList
-			scrollingList:_UpdateData()
-			scrollingList:Draw()
-		end
-	end
+	self:UpdateData(true)
 	return self
 end
 
@@ -139,17 +149,24 @@ end
 -- @treturn GroupTree The application group tree object
 function GroupTree.CollapseAll(self)
 	for _, groupPath in ipairs(self._allData) do
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] and not self._contextTbl.collapsed[groupPath] then
+		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] and not self._contextTable.collapsed[groupPath] then
 			self:_SetCollapsed(groupPath, true)
 		end
 	end
-	for _, row in ipairs(self._rows) do
-		local groupPath = row:GetData()
-		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[groupPath] then
-			local scrollingList = row._scrollingList
-			scrollingList:_UpdateData()
-			scrollingList:Draw()
-		end
+	self:UpdateData(true)
+	return self
+end
+
+--- Toggle the expand/collapse all state of the group tree.
+-- @tparam GroupTree self The application group tree object
+-- @treturn GroupTree The application group tree object
+function GroupTree.ToggleExpandAll(self)
+	if next(self._contextTable.collapsed) then
+		-- at least one group is collapsed, so expand everything
+		self:ExpandAll()
+	else
+		-- nothing is collapsed, so collapse everything
+		self:CollapseAll()
 	end
 	return self
 end
@@ -160,112 +177,87 @@ end
 -- Private Class Methods
 -- ============================================================================
 
+function GroupTree._GetTableRow(self, isHeader)
+	local row = self.__super:_GetTableRow(isHeader)
+	if not isHeader then
+		ScriptWrapper.Set(row._frame, "OnDoubleClick", private.RowOnDoubleClick, row)
+	end
+	return row
+end
+
+function GroupTree._CanResizeCols(self)
+	return false
+end
+
 function GroupTree._UpdateData(self)
 	-- update our groups list
 	wipe(self._hasChildrenLookup)
 	wipe(self._allData)
 	wipe(self._data)
 	local groups = TempTable.Acquire()
-	self._groupFunc(groups, self._headerNameLookup)
-
-	for i, groupPath in ipairs(groups) do
-		tinsert(self._allData, groupPath)
-		if not self:_IsGroupHidden(groupPath) then
-			local groupName = TSM.Groups.Path.GetName(groupPath)
-			groupName = self._headerNameLookup[groupPath] or groupName
-			if strmatch(strlower(groupName), self._searchStr) then
-				tinsert(self._data, groupPath)
+	if self._moduleOperationFilter then
+		local shouldKeep = TempTable.Acquire()
+		for _, row in self._query:Iterator() do
+			local groupPath = row:GetField("groupPath")
+			shouldKeep[groupPath] = row:GetField("has"..self._moduleOperationFilter.."Operation")
+			if shouldKeep[groupPath] then
+				shouldKeep[TSM.CONST.ROOT_GROUP_PATH] = true
+				-- add all parent groups to the keep table as well
+				local checkPath = TSM.Groups.Path.GetParent(groupPath)
+				while checkPath and checkPath ~= TSM.CONST.ROOT_GROUP_PATH do
+					shouldKeep[checkPath] = true
+					checkPath = TSM.Groups.Path.GetParent(checkPath)
+				end
 			end
 		end
+		for _, row in self._query:Iterator() do
+			local groupPath = row:GetField("groupPath")
+			if shouldKeep[groupPath] then
+				tinsert(groups, groupPath)
+			end
+		end
+		TempTable.Release(shouldKeep)
+	else
+		for _, row in self._query:Iterator() do
+			tinsert(groups, row:GetField("groupPath"))
+		end
+	end
+
+	-- remove collapsed state for any groups which no longer exist or no longer have children
+	local pathExists = TempTable.Acquire()
+	for i, groupPath in ipairs(groups) do
+		pathExists[groupPath] = true
 		local nextGroupPath = groups[i + 1]
 		self._hasChildrenLookup[groupPath] = nextGroupPath and TSM.Groups.Path.IsChild(nextGroupPath, groupPath) or nil
 	end
-	TempTable.Release(groups)
-end
-
-function GroupTree._GetListRow(self)
-	local row = self.__super:_GetListRow()
-	row._frame:SetScript("OnClick", private.RowOnClick)
-	row._frame:SetScript("OnEnter", private.RowOnEnter)
-	row._frame:SetScript("OnLeave", private.RowOnLeave)
-	private.rowFrameLookup[row._frame] = row
-
-	local text = row:_GetFontString()
-	text:SetPoint("LEFT", 0, 0)
-	text:SetPoint("TOPRIGHT")
-	text:SetPoint("BOTTOMRIGHT")
-	text:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight"))
-	text:SetJustifyH("LEFT")
-	text:SetJustifyV("MIDDLE")
-	row._texts.text = text
-
-	local color = row:_GetTexture()
-	color:SetPoint("TOPLEFT", COLOR_PADDING_LEFT, -COLOR_PADDING_TOP_BOTTOM)
-	color:SetPoint("BOTTOMLEFT", COLOR_PADDING_LEFT, COLOR_PADDING_TOP_BOTTOM)
-	color:SetWidth(COLOR_WIDTH)
-	row._icons.color = color
-
-	local expander = row:_GetTexture()
-	expander:SetDrawLayer("ARTWORK", 2)
-	expander:SetPoint("RIGHT", text, "LEFT")
-	row._icons.expander = expander
-
-	local expanderBtn = row:_GetButton()
-	expanderBtn:SetAllPoints(expander)
-	expanderBtn:SetScript("OnClick", private.ExpanderOnClick)
-	expanderBtn:SetScript("OnEnter", private.ExpanderOnEnter)
-	expanderBtn:SetScript("OnLeave", private.ExpanderOnLeave)
-	row._buttons.expanderBtn = expanderBtn
-	return row
-end
-
-function GroupTree._SetRowData(self, row, data)
-	local color = row._icons.color
-	local text = row._texts.text
-	local indentWidth = nil
-	if data == TSM.CONST.ROOT_GROUP_PATH then
-		indentWidth = HEADER_INDENT
-		color:Hide()
-		text:SetTextColor(1, 1, 1, 1)
-	else
-		local level = select('#', strsplit(TSM.CONST.GROUP_SEP, data))
-		indentWidth = (level - 1) * self:_GetStyle("treeIndentWidth") + COLOR_WIDTH + COLOR_PADDING_LEFT + EXPANDER_PADDING_LEFT + TSM.UI.TexturePacks.GetWidth(self:_GetStyle("expanderCollapsedBackgroundTexturePack"))
-		if self:_IsSelected(data) or row:IsMouseOver() then
-			color:SetColorTexture(TSM.UI.HexToRGBA(TSM.UI.GetGroupLevelColor(level)))
-		else
-			color:SetColorTexture(TSM.UI.HexToRGBA("#2e2e2e"))
+	for groupPath in pairs(self._contextTable.collapsed) do
+		if not pathExists[groupPath] or not self._hasChildrenLookup[groupPath] then
+			self._contextTable.collapsed[groupPath] = nil
 		end
-		color:Show()
-		text:SetTextColor(TSM.UI.HexToRGBA(TSM.UI.GetGroupLevelColor(level)))
 	end
+	TempTable.Release(pathExists)
 
-	local lastPart = TSM.Groups.Path.GetName(data)
-	text:SetText(data == TSM.CONST.ROOT_GROUP_PATH and self._headerNameLookup[data] or lastPart)
-	text:SetPoint("LEFT", indentWidth, 0)
-
-	local expander = row._icons.expander
-	if data ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[data] then
-		TSM.UI.TexturePacks.SetTextureAndSize(expander, self:_GetStyle(self._contextTbl.collapsed[data] and "expanderCollapsedBackgroundTexturePack" or "expanderExpandedBackgroundTexturePack"))
-		expander:Show()
-	else
-		expander:Hide()
+	for _, groupPath in ipairs(groups) do
+		tinsert(self._allData, groupPath)
+		if self._searchStr ~= "" or not self:_IsGroupHidden(groupPath) then
+			local groupName = groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.GetName(groupPath)
+			if strmatch(strlower(groupName), self._searchStr) and (self._searchStr == "" or groupPath ~= TSM.CONST.ROOT_GROUP_PATH) then
+				tinsert(self._data, groupPath)
+			end
+		end
 	end
-
-	self.__super:_SetRowData(row, data)
-	if self:_IsSelected(data) and not row:IsMouseOver() then
-		row:SetHighlightState("selected")
-	end
+	TempTable.Release(groups)
 end
 
 function GroupTree._IsGroupHidden(self, data)
 	if data == TSM.CONST.ROOT_GROUP_PATH then
 		return false
-	elseif self._contextTbl.collapsed[TSM.CONST.ROOT_GROUP_PATH] then
+	elseif self._contextTable.collapsed[TSM.CONST.ROOT_GROUP_PATH] then
 		return true
 	end
 	local parent = TSM.Groups.Path.GetParent(data)
 	while parent and parent ~= TSM.CONST.ROOT_GROUP_PATH do
-		if self._contextTbl.collapsed[parent] then
+		if self._contextTable.collapsed[parent] then
 			return true
 		end
 		parent = TSM.Groups.Path.GetParent(parent)
@@ -274,15 +266,65 @@ function GroupTree._IsGroupHidden(self, data)
 end
 
 function GroupTree._SetCollapsed(self, data, collapsed)
-	self._contextTbl.collapsed[data] = collapsed or nil
+	self._contextTable.collapsed[data] = collapsed or nil
 end
 
 function GroupTree._IsSelected(self, data)
 	return false
 end
 
-function GroupTree._HandleRowClick(self, data)
-	-- this should be overridden
+function GroupTree._HandleRowClick(self, data, mouseButton)
+	if mouseButton == "RightButton" then
+		self:_SetCollapsed(data, not self._contextTable.collapsed[data])
+		self:UpdateData(true)
+	end
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.GetGroupText(self, data)
+	local groupName = data == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.GetName(data)
+	if data ~= TSM.CONST.ROOT_GROUP_PATH then
+		groupName = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, data))):ColorText(groupName)
+	end
+	return groupName
+end
+
+function private.GetExpanderState(self, data)
+	local indentWidth = nil
+	local searchIsActive = self._searchStr ~= ""
+	if data == TSM.CONST.ROOT_GROUP_PATH then
+		indentWidth = -TSM.UI.TexturePacks.GetWidth("iconPack.14x14/Caret/Right") + EXPANDER_SPACING
+	else
+		local level = select('#', strsplit(TSM.CONST.GROUP_SEP, data))
+		indentWidth = (searchIsActive and 0 or (level - 1)) * (TSM.UI.TexturePacks.GetWidth("iconPack.14x14/Caret/Right") + EXPANDER_SPACING)
+	end
+	return not searchIsActive and data ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[data], not self._contextTable.collapsed[data], nil, indentWidth, EXPANDER_SPACING, true
+end
+
+function private.GetFlagState(self, data, isMouseOver)
+	if data == TSM.CONST.ROOT_GROUP_PATH then
+		return false, nil
+	end
+	local level = select('#', strsplit(TSM.CONST.GROUP_SEP, data))
+	local levelColor = Theme.GetGroupColor(level)
+	local color = (self:_IsSelected(data) or isMouseOver) and levelColor or Theme.GetColor("PRIMARY_BG_ALT")
+	return true, color
+end
+
+function private.GetTooltip(self, data)
+	if self._searchStr == "" then
+		return nil
+	end
+	return TSM.Groups.Path.Format(data), true
+end
+
+function private.QueryUpdateCallback(_, _, self)
+	self:UpdateData(true)
 end
 
 
@@ -291,45 +333,11 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.RowOnClick(frame)
-	local self = private.rowFrameLookup[frame]
-	self._scrollingList:_HandleRowClick(self:GetData())
-end
-
-function private.RowOnEnter(frame)
-	local self = private.rowFrameLookup[frame]
-	local groupPath = self:GetData()
-	if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-		local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-		self._icons.color:SetColorTexture(TSM.UI.HexToRGBA(TSM.UI.GetGroupLevelColor(level)))
+function private.RowOnDoubleClick(row, mouseButton)
+	if mouseButton ~= "LeftButton" then
+		return
 	end
-	self:SetHighlightState("hover")
-end
-
-function private.RowOnLeave(frame)
-	local self = private.rowFrameLookup[frame]
-	if self._scrollingList:_IsSelected(self:GetData()) then
-		self:SetHighlightState("selected")
-	else
-		self._icons.color:SetColorTexture(TSM.UI.HexToRGBA("#2e2e2e"))
-		self:SetHighlightState()
-	end
-end
-
-function private.ExpanderOnClick(button)
-	local row = private.rowFrameLookup[button:GetParent()]
-	local scrollingList = row._scrollingList
-	scrollingList:_SetCollapsed(row:GetData(), not scrollingList._contextTbl.collapsed[row:GetData()])
-	scrollingList:_UpdateData()
-	scrollingList:Draw()
-end
-
-function private.ExpanderOnEnter(button)
-	local row = button:GetParent()
-	row:GetScript("OnEnter")(row)
-end
-
-function private.ExpanderOnLeave(button)
-	local row = button:GetParent()
-	row:GetScript("OnLeave")(row)
+	local self = row._scrollingTable
+	self:_SetCollapsed(row:GetData(), not self._contextTable.collapsed[row:GetData()])
+	self:UpdateData(true)
 end

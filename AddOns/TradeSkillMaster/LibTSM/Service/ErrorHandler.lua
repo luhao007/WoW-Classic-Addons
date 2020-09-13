@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 -- TSM's error handler
@@ -25,6 +23,9 @@ local private = {
 	num = 0,
 	localLinesTemp = {},
 	hitInternalError = false,
+	isManual = nil,
+	ignoreErrors = false,
+	globalNameTranslation = {},
 }
 local MAX_ERROR_REPORT_AGE = 7 * 24 * 60 * 60 -- 1 week
 local MAX_STACK_DEPTH = 50
@@ -76,6 +77,7 @@ local OLD_TSM_MODULES = {
 	"TradeSkillMaster_Vendoring",
 	"TradeSkillMaster_Warehousing",
 }
+local PRINT_PREFIX = "|cffff0000TSM:|r "
 
 
 
@@ -153,6 +155,17 @@ function private.ErrorHandler(msg, thread)
 	msg = strsub(msg, strfind(msg, "TradeSkillMaster") or 1)
 	msg = gsub(msg, "TradeSkillMaster([^%.])", "TSM%1")
 
+	-- build our global name translation table
+	wipe(private.globalNameTranslation)
+	pcall(function()
+		local UIElements = TSM.Include("UI.UIElements")
+		local temp = {}
+		UIElements.GetDebugNameTranslation(temp)
+		for k, v in pairs(temp) do
+			private.globalNameTranslation[String.Escape(k)] = v
+		end
+	end)
+
 	-- build stack trace with locals and get addon name
 	local stackInfo = private.GetStackInfo(msg, thread)
 	local addonName = isSilent and "TradeSkillMaster" or nil
@@ -175,7 +188,7 @@ function private.ErrorHandler(msg, thread)
 	if private.errorFrame:IsVisible() then
 		-- already showing an error, so suppress this one and return
 		private.errorSuppressed = true
-		print("|cffff0000TradeSkillMaster:|r "..L["Additional error suppressed"])
+		print(PRINT_PREFIX..L["Additional error suppressed"])
 		return true
 	end
 
@@ -210,12 +223,12 @@ function private.ErrorHandler(msg, thread)
 			end
 		end
 	end
-	errorInfo.objectPoolStr = table.concat(objectPoolLines, "\n")
+	errorInfo.objectPoolStr = status and table.concat(objectPoolLines, "\n") or tostring(objectPoolInfo)
 
 	-- TSM thread info
 	local threadInfoStr = nil
 	status, threadInfoStr = pcall(function() return TSM.Include("Service.Threading").GetDebugStr() end)
-	errorInfo.threadInfoStr = status and threadInfoStr or ""
+	errorInfo.threadInfoStr = tostring(threadInfoStr)
 
 	-- recent debug log entries
 	local entries = {}
@@ -282,7 +295,10 @@ function private.ErrorHandler(msg, thread)
 	private.errorFrame.errorInfo = errorInfo
 	private.errorFrame.isManual = isManual
 	private.errorFrame:Show()
-	print("|cffff0000TradeSkillMaster:|r "..L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."])
+	print(PRINT_PREFIX..L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."])
+	if TSM.__IS_TEST_ENV then
+		print(private.errorFrame.errorStr)
+	end
 
 	private.ignoreErrors = false
 	return true
@@ -382,7 +398,7 @@ function private.ParseLocals(locals, file)
 		return
 	end
 
-	local fileName = strmatch(file, "([A-Za-z]+)%.lua")
+	local fileName = strmatch(file, "([A-Za-z%-_0-9]+)%.lua")
 	local isBlizzardFile = strmatch(file, "Interface\\FrameXML\\")
 	local isPrivateTable, isLocaleTable, isPackageTable, isSelfTable = false, false, false, false
 	wipe(private.localLinesTemp)
@@ -406,6 +422,9 @@ function private.ParseLocals(locals, file)
 			localLine = strrep("  ", level)..strtrim(localLine)
 			localLine = gsub(localLine, "Interface\\[Aa]dd[Oo]ns\\TradeSkillMaster", "TSM")
 			localLine = gsub(localLine, "\124", "\\124")
+			for matchStr, replaceStr in pairs(private.globalNameTranslation) do
+				localLine = gsub(localLine, matchStr, replaceStr)
+			end
 			if level > 0 then
 				if isBlizzardFile then
 					-- for Blizzard stack frames, only include level 0 locals
@@ -421,6 +440,9 @@ function private.ParseLocals(locals, file)
 					shouldIgnoreLine = true
 				elseif (isSelfTable or isPrivateTable) and strmatch(localLine, "^ *[_a-zA-Z0-9]+ = {}") then
 					-- ignore empty tables within objects or the private table
+					shouldIgnoreLine = true
+				elseif strmatch(localLine, "^%s+0 = <userdata>$") then
+					-- remove userdata table entries
 					shouldIgnoreLine = true
 				end
 			end
@@ -469,7 +491,7 @@ function private.IsTSMAddon(str)
 		return "TradeSkillMaster"
 	elseif strfind(str, "ster\\Core\\UI\\") then
 		return "TradeSkillMaster"
-	elseif strfind(str, "ster\\LibTSM\\") then
+	elseif strfind(str, "r\\LibTSM\\") then
 		return "TradeSkillMaster"
 	elseif strfind(str, "^TSM\\") then
 		return "TradeSkillMaster"
@@ -516,7 +538,7 @@ function private.CreateErrorFrame()
 		return
 	end
 	local STEPS_TEXT = "Steps leading up to the error:\n1) List\n2) Steps\n3) Here"
-	local frame = CreateFrame("Frame", nil, UIParent)
+	local frame = CreateFrame("Frame", nil, UIParent, TSM.IsShadowlands() and "BackdropTemplate" or nil)
 	private.errorFrame = frame
 	frame:Hide()
 	frame:SetWidth(500)
@@ -565,7 +587,9 @@ function private.CreateErrorFrame()
 	title:SetTextColor(1, 1, 1, 1)
 	title:SetJustifyH("CENTER")
 	title:SetJustifyV("MIDDLE")
-	title:SetText("TSM Error Window")
+	local status, versionText = pcall(TSM.GetVersion)
+	versionText = status and versionText or "?"
+	title:SetText("TSM Error Window ("..versionText..")")
 
 	local hLine = frame:CreateTexture(nil, "ARTWORK")
 	hLine:SetHeight(2)
@@ -690,12 +714,12 @@ end
 
 do
 	private.origErrorHandler = geterrorhandler()
-	local function ErrorHandlerFunc(errMsg)
+	local function ErrorHandlerFunc(errMsg, isBugGrabber)
 		local tsmErrMsg = strtrim(tostring(errMsg))
 		if private.ignoreErrors then
 			-- we're ignoring errors
 			tsmErrMsg = nil
-		elseif strmatch(tsmErrMsg, "auc%-stat%-wowuction") or strmatch(tsmErrMsg, "TheUndermineJournal%.lua") or strmatch(tsmErrMsg, "\\SavedVariables\\TradeSkillMaster") or strmatch(tsmErrMsg, "AddOn TradeSkillMaster[_a-zA-Z]* attempted") then
+		elseif strmatch(tsmErrMsg, "auc%-stat%-wowuction") or strmatch(tsmErrMsg, "TheUndermineJournal%.lua") or strmatch(tsmErrMsg, "\\SavedVariables\\TradeSkillMaster") or strmatch(tsmErrMsg, "AddOn TradeSkillMaster[_a-zA-Z]* attempted") or (strmatch(tsmErrMsg, "ItemTooltipClasses\\Wrapper%.lua:98") and strmatch(tsmErrMsg, "SetQuest")) then
 			-- explicitly ignore these errors
 			tsmErrMsg = nil
 		end
@@ -708,7 +732,7 @@ do
 					-- ignore errors from old modules
 					return
 				end
-				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") then
+				if not strmatch(stackLine, "^%[C%]:") and not strmatch(stackLine, "%(tail call%):") and not strmatch(stackLine, "^%[string \"[^@]") and not strmatch(stackLine, "lMaster\\External\\[A-Za-z0-9%-_%.]+\\") and not strmatch(stackLine, "SharedXML") and not strmatch(stackLine, "CallbackHandler") and not strmatch(stackLine, "!BugGrabber") and not strmatch(stackLine, "ErrorHandler%.lua") then
 					if not private.IsTSMAddon(stackLine) then
 						tsmErrMsg = nil
 					end
@@ -730,14 +754,16 @@ do
 			-- ignore errors from old modules
 			return
 		end
-		return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
+		if not isBugGrabber then
+			return private.origErrorHandler and private.origErrorHandler(errMsg) or nil
+		end
 	end
 	seterrorhandler(ErrorHandlerFunc)
-	--[[if BugGrabber and BugGrabber.RegisterCallback then
+	if BugGrabber and BugGrabber.RegisterCallback then
 		BugGrabber.RegisterCallback({}, "BugGrabber_BugGrabbed", function(_, errObj)
-			ErrorHandlerFunc(errObj.message)
+			ErrorHandlerFunc(errObj.message, true)
 		end)
-	end--]]
+	end
 	Event.Register("ADDON_ACTION_FORBIDDEN", private.AddonBlockedHandler)
 	Event.Register("ADDON_ACTION_BLOCKED", private.AddonBlockedHandler)
 end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- TempTable Functions
@@ -13,6 +11,7 @@ local _, TSM = ...
 local TempTable = TSM.Init("Util.TempTable")
 local Debug = TSM.Include("Util.Debug")
 local private = {
+	debugLeaks = TSM.__IS_TEST_ENV or false,
 	freeTempTables = {},
 	tempTableState = {},
 }
@@ -25,8 +24,6 @@ local RELEASED_TEMP_TABLE_MT = {
 		error("Attempt to access temp table after release")
 	end,
 }
--- Set this to true to enable better debugging of temp table leaks
-local DEBUG_TEMP_TABLE_LEAKS = true
 
 
 
@@ -43,7 +40,7 @@ function TempTable.Acquire(...)
 	local tbl = tremove(private.freeTempTables, 1)
 	assert(tbl, "Could not acquire temp table")
 	setmetatable(tbl, nil)
-	if DEBUG_TEMP_TABLE_LEAKS then
+	if private.debugLeaks then
 		private.tempTableState[tbl] = (Debug.GetStackLevelLocation(2) or "?").." -> "..(Debug.GetStackLevelLocation(3) or "?")
 	else
 		private.tempTableState[tbl] = true
@@ -80,6 +77,10 @@ end
 -- @return The result of calling `unpack` on the table
 function TempTable.UnpackAndRelease(tbl)
 	return private.TempTableReleaseHelper(tbl, unpack(tbl))
+end
+
+function TempTable.EnableLeakDebug()
+	private.debugLeaks = true
 end
 
 function TempTable.GetDebugInfo()

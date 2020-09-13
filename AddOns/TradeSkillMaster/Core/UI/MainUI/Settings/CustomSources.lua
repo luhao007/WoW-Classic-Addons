@@ -1,22 +1,17 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local CustomSources = TSM.MainUI.Settings:NewPackage("CustomSources")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
-local Log = TSM.Include("Util.Log")
+local Theme = TSM.Include("Util.Theme")
 local CustomPrice = TSM.Include("Service.CustomPrice")
-local private = {
-	selectedRow = nil,
-	isEditing = nil,
-	editingElement = nil,
-}
+local UIElements = TSM.Include("UI.UIElements")
+local private = {}
 
 
 
@@ -36,103 +31,74 @@ end
 
 function private.GetCustomSourcesSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings", "custom_sources")
-	return TSMAPI_FOUR.UI.NewElement("ScrollFrame", "content")
-		:SetStyle("padding.left", 12)
-		:SetStyle("padding.right", 12)
-		:SetScript("OnHide", private.FrameOnHide)
-		:AddChild(TSM.MainUI.Settings.CreateHeading("heading", L["Price Variables"]))
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-			:SetStyle("height", 54)
-			:SetStyle("margin.bottom", 24)
-			:SetStyle("fontHeight", 14)
-			:SetText(L["Price Variables allow you to create more advanced custom prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as 'vendorsell' and 'vendorbuy'."])
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line1")
-			:SetStyle("height", 1)
-			:SetStyle("margin.left", -12)
-			:SetStyle("margin.right", -12)
-			:SetStyle("color", "#585858")
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "tableHeading")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 22)
-			:SetStyle("margin.left", -16)
-			:SetStyle("margin.right", -12)
-			:SetStyle("padding.left", 16)
-			:SetStyle("padding.right", 12)
-			:SetStyle("background", "#404040")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "col1")
-				:SetStyle("width", 192)
-				:SetStyle("margin.right", 8)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(L["Variable Name"])
+	return UIElements.New("ScrollFrame", "content")
+		:SetPadding(8, 8, 8, 0)
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Custom Price", "general", L["Custom Sources"], format(L["Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."], Theme.GetColor("INDICATOR"):ColorText("vendorsell"), Theme.GetColor("INDICATOR"):ColorText("vendorbuy")), 60)
+			:AddChild(UIElements.New("Frame", "tableHeading")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:AddChild(UIElements.New("Text", "col1")
+					:SetWidth(162)
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY3_MEDIUM")
+					:SetText(L["Name"])
+				)
+				:AddChild(UIElements.New("Text", "col2")
+					:SetFont("BODY_BODY3_MEDIUM")
+					:SetText(L["String"])
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "col2")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(L["Custom Price Source"])
+			:AddChild(UIElements.New("Texture", "line1")
+				:SetHeight(1)
+				:SetTexture("ACTIVE_BG")
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line1")
-			:SetStyle("height", 1)
-			:SetStyle("margin.left", -12)
-			:SetStyle("margin.right", -12)
-			:SetStyle("color", "#585858")
-		)
-		:AddChildrenWithFunction(private.AddCustomPriceRows)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "addNewBtn")
-			:SetStyle("margin.top", 24)
-			:SetStyle("height", 20)
-			:SetText(L["ADD NEW CUSTOM PRICE SOURCE"])
-			:SetScript("OnClick", private.AddNewButtonOnClick)
+			:AddChildrenWithFunction(private.AddCustomPriceRows)
+			:AddChild(UIElements.New("ActionButton", "addNewBtn")
+				:SetHeight(24)
+				:SetMargin(0, 0, 32, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Add a new custom source"])
+				:SetScript("OnClick", private.AddNewButtonOnClick)
+			)
 		)
 end
 
 function private.CreateCustomPriceRow(name)
 	local priceString = TSM.db.global.userData.customPriceSources[name]
-	local row = TSMAPI_FOUR.UI.NewElement("Frame", "row_"..name)
+	local row = UIElements.New("Frame", "row_"..name)
 		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 28)
-		:SetStyle("margin.left", -16)
-		:SetStyle("margin.right", -12)
-		:SetStyle("padding.left", 16)
-		:SetStyle("padding.right", 12)
+		:SetHeight(28)
+		:SetMargin(-12, -12, 0, 0)
+		:SetPadding(12, 12, 0, 0)
+		:SetBackgroundColor("PRIMARY_BG_ALT")
 		:SetContext(name)
 		:SetScript("OnEnter", private.CustomPriceRowOnEnter)
 		:SetScript("OnLeave", private.CustomPriceRowOnLeave)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("EditableText", "nameText")
-			:SetStyle("width", 192)
-			:SetStyle("margin.right", 8)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("textColor", "#ffffff")
+		:AddChild(UIElements.New("Text", "nameText")
+			:SetWidth(162)
+			:SetMargin(0, 8, 0, 0)
+			:SetFont("BODY_BODY3_MEDIUM")
 			:SetText(name)
-			:SetScript("OnEnter", TSM.UI.GetPropagateScriptFunc("OnEnter"))
-			:SetScript("OnLeave", TSM.UI.GetPropagateScriptFunc("OnLeave"))
-			:SetScript("OnMouseDown", private.NameValueTextOnClick)
-			:SetScript("OnValueChanged", private.NameOnValueChanged)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("EditableText", "valueText")
-			:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("textColor", "#ffffff")
+		:AddChild(UIElements.New("Text", "valueText")
+			:SetFont("BODY_BODY3")
 			:SetText(priceString)
-			:SetScript("OnEnter", TSM.UI.GetPropagateScriptFunc("OnEnter"))
-			:SetScript("OnLeave", TSM.UI.GetPropagateScriptFunc("OnLeave"))
-			:SetScript("OnMouseDown", private.NameValueTextOnClick)
-			:SetScript("OnValueChanged", private.ValueOnValueChanged)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "deleteBtn")
-			:SetStyle("width", 90)
-			:SetStyle("height", 20)
-			:SetText(strupper(DELETE))
+		:AddChild(UIElements.New("Button", "editBtn")
+			:SetMargin(4, 0, 0, 0)
+			:SetBackgroundAndSize("iconPack.18x18/Edit")
+			:SetScript("OnClick", private.EditCustomPriceOnClick)
+			:PropagateScript("OnEnter")
+			:PropagateScript("OnLeave")
+		)
+		:AddChild(UIElements.New("Button", "deleteBtn")
+			:SetMargin(4, 0, 0, 0)
+			:SetBackgroundAndSize("iconPack.18x18/Delete")
 			:SetScript("OnClick", private.DeleteCustomPriceOnClick)
-			:SetScript("OnEnter", TSM.UI.GetPropagateScriptFunc("OnEnter"))
-			:SetScript("OnLeave", TSM.UI.GetPropagateScriptFunc("OnLeave"))
+			:PropagateScript("OnEnter")
+			:PropagateScript("OnLeave")
 		)
+	row:GetElement("editBtn"):Hide()
 	row:GetElement("deleteBtn"):Hide()
 	return row
 end
@@ -155,81 +121,155 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.FrameOnHide(frame)
-	private.editingElement = nil
-end
-
 function private.CustomPriceRowOnEnter(frame)
+	frame:SetBackgroundColor("FRAME_BG")
+	frame:GetElement("editBtn"):Show()
 	frame:GetElement("deleteBtn"):Show()
 	frame:Draw()
 end
 
 function private.CustomPriceRowOnLeave(frame)
+	frame:SetBackgroundColor("PRIMARY_BG_ALT")
+	frame:GetElement("editBtn"):Hide()
 	frame:GetElement("deleteBtn"):Hide()
 	frame:Draw()
 end
 
-function private.NameValueTextOnClick(text)
-	if private.editingElement then
-		private.editingElement
-			:SetEditing(false)
-			:Draw()
-		private.editingElement = nil
-	end
-	text:SetEditing(true)
-	text:Draw()
-	private.editingElement = text
+function private.EditCustomPriceOnClick(button)
+	private.ShowEditDialog(button)
 end
 
-function private.NameOnValueChanged(text, newName)
-	local oldName = text:GetText()
-	newName = strlower(strtrim(newName))
-	if newName == oldName then
-		return
+function private.ShowEditDialog(editBtn)
+	local dialogFrame = UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(478, 314)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetMouseEnabled(true)
+		:SetBackgroundColor("FRAME_BG", true)
+		:SetContext(editBtn)
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(0, 0, -4, 14)
+			:AddChild(UIElements.New("Spacer", "spacer")
+				:SetWidth(20)
+			)
+			:AddChild(UIElements.New("Text", "title")
+				:SetJustifyH("CENTER")
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(L["Edit Custom Source"])
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetMargin(0, -4, 0, 0)
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.EditPriceCloseBtnOnClick)
+			)
+		)
+		:AddChild(UIElements.New("Text", "name")
+			:SetHeight(20)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetJustifyH("LEFT")
+			:SetText(L["Name"])
+		)
+		:AddChild(UIElements.New("Input", "nameInput")
+			:SetHeight(24)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetValue(editBtn:GetElement("__parent.nameText"):GetText())
+			:SetTabPaths("__parent.valueInput", "__parent.valueInput")
+			:SetValidateFunc(private.NameValidateFunc)
+			:SetScript("OnValidationChanged", private.ConfirmOnValidationChanged)
+		)
+		:AddChild(UIElements.New("Text", "string")
+			:SetHeight(20)
+			:SetMargin(0, 0, 6, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetJustifyH("LEFT")
+			:SetText(L["String"])
+		)
+		:AddChild(UIElements.New("MultiLineInput", "valueInput")
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetValue(editBtn:GetElement("__parent.valueText"):GetText())
+			:SetTabPaths("__parent.nameInput", "__parent.nameInput")
+			:SetValidateFunc(private.ValueValidateFunc)
+			:SetScript("OnValidationChanged", private.ConfirmOnValidationChanged)
+		)
+		:AddChild(UIElements.New("ActionButton", "confirm")
+			:SetHeight(24)
+			:SetMargin(0, 0, 12, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Confirm"])
+			:SetContext(editBtn:GetElement("__parent.__parent"))
+			:SetScript("OnClick", private.ConfirmOnClick)
+		)
+	editBtn:GetBaseElement():ShowDialogFrame(dialogFrame)
+	return dialogFrame
+end
+
+function private.EditPriceCloseBtnOnClick(button)
+	button:GetBaseElement():HideDialog()
+end
+
+function private.NameValidateFunc(input, value)
+	if value == "" then
+		return false
+	elseif gsub(value, "([a-z]+)", "") ~= "" then
+		return false, L["Custom price names can only contain lowercase letters."]
+	elseif value ~= input:GetParentElement():GetContext():GetParentElement():GetContext() then
+		return CustomPrice.ValidateName(value)
 	end
-	if newName == "" then
-		newName = oldName
-	elseif gsub(newName, "([a-z]+)", "") ~= "" then
-		Log.PrintUser(L["The name can ONLY contain letters. No spaces, numbers, or special characters."])
-		newName = oldName
-	elseif not CustomPrice.ValidateName(newName) then
-		Log.PrintfUser(L["Price source with name '%s' already exists."], newName)
-		newName = oldName
-	else
+	return true
+end
+
+function private.ConfirmOnValidationChanged(input)
+	input:GetElement("__parent.confirm")
+		:SetDisabled(not input:IsValid())
+		:Draw()
+end
+
+function private.ValueValidateFunc(input, value)
+	value = strlower(strtrim(value))
+	local isValid, errMsg = CustomPrice.Validate(value)
+	if not isValid and value ~= "" then
+		return false, errMsg
+	end
+	return true
+end
+
+function private.ConfirmOnClick(button)
+	local baseElement = button:GetBaseElement()
+	local oldName = button:GetParentElement():GetContext():GetParentElement():GetContext()
+	local newName = button:GetElement("__parent.nameInput"):GetValue()
+	if oldName ~= newName then
 		CustomPrice.RenameCustomPriceSource(oldName, newName)
-	end
-	text:GetParentElement():SetContext(newName)
-	text:SetText(newName)
-		:Draw()
-end
-
-function private.ValueOnValueChanged(text, newValue)
-	local oldValue = text:GetText()
-	newValue = strlower(strtrim(newValue))
-	local isValid, errText = CustomPrice.Validate(newValue)
-	if not isValid then
-		Log.PrintUser(L["Invalid price source."].." "..errText)
-		newValue = oldValue
+		CustomPrice.SetCustomPriceSource(newName, button:GetElement("__parent.valueInput"):GetValue())
+		local generalContainer = button:GetParentElement():GetContext():GetParentElement():GetParentElement()
+		local rowFrame = button:GetParentElement():GetContext():GetParentElement()
+		generalContainer:AddChildBeforeById("addNewBtn", private.CreateCustomPriceRow(newName))
+		generalContainer:RemoveChild(rowFrame)
+		rowFrame:Release()
+		generalContainer:GetElement("__parent.__parent")
+			:Draw()
 	else
-		CustomPrice.SetCustomPriceSource(text:GetParentElement():GetContext(), newValue)
+		CustomPrice.SetCustomPriceSource(newName, button:GetElement("__parent.valueInput"):GetValue())
+		button:GetParentElement():GetContext():GetElement("__parent.nameText")
+			:SetText(newName)
+			:Draw()
+		button:GetParentElement():GetContext():GetElement("__parent.valueText")
+			:SetText(button:GetElement("__parent.valueInput"):GetValue())
+			:Draw()
 	end
-	text:SetText(newValue)
-		:Draw()
+	baseElement:HideDialog()
 end
 
 function private.DeleteCustomPriceOnClick(button)
-	if private.editingElement then
-		private.editingElement
-			:SetEditing(false)
-			:Draw()
-		private.editingElement = nil
-	end
 	CustomPrice.DeleteCustomPriceSource(button:GetParentElement():GetContext())
 	local rowFrame = button:GetParentElement()
 	local parentFrame = rowFrame:GetParentElement()
 	parentFrame:RemoveChild(rowFrame)
 	rowFrame:Release()
-	parentFrame:Draw()
+	parentFrame:GetElement("__parent.__parent")
+		:Draw()
 end
 
 function private.AddNewButtonOnClick(button)
@@ -250,5 +290,8 @@ function private.AddNewButtonOnClick(button)
 	CustomPrice.CreateCustomPriceSource(newName, "")
 	button:GetParentElement()
 		:AddChildBeforeById("addNewBtn", private.CreateCustomPriceRow(newName))
+	button:GetElement("__parent.__parent.__parent")
 		:Draw()
+	local dialogFrame = private.ShowEditDialog(button:GetElement("__parent.row_"..newName..".editBtn"))
+	dialogFrame:GetElement("valueInput"):SetFocused(true)
 end

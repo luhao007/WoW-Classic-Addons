@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -13,24 +11,28 @@ local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local Future = TSM.Include("Util.Future")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Conversions = TSM.Include("Service.Conversions")
 local BagTracking = TSM.Include("Service.BagTracking")
+local Settings = TSM.Include("Service.Settings")
 local private = {
 	combineThread = nil,
 	destroyThread = nil,
 	destroyThreadRunning = false,
+	settings = nil,
 	canDestroyCache = {},
 	destroyQuantityCache = {},
 	pendingCombines = {},
 	newBagUpdate = false,
 	bagUpdateCallback = nil,
 	pendingSpellId = nil,
-	didAutoShow = false,
 	ignoreDB = nil,
 	destroyInfoDB = nil,
+	combineFuture = Future.New("DESTROYING_COMBINE_FUTURE"),
+	destroyFuture = Future.New("DESTROYING_DESTROY_FUTURE"),
 }
 local SPELL_IDS = {
 	milling = 51005,
@@ -57,8 +59,20 @@ local GEM_CHIPS = {
 
 function Destroying.OnInitialize()
 	private.combineThread = Threading.New("COMBINE_STACKS", private.CombineThread)
+	Threading.SetCallback(private.combineThread, private.CombineThreadDone)
 	private.destroyThread = Threading.New("DESTROY", private.DestroyThread)
+	Threading.SetCallback(private.destroyThread, private.DestroyThreadDone)
 	BagTracking.RegisterCallback(private.UpdateBagDB)
+
+	private.settings = Settings.NewView()
+		:AddKey("global", "internalData", "destroyingHistory")
+		:AddKey("global", "destroyingOptions", "deAbovePrice")
+		:AddKey("global", "destroyingOptions", "deMaxQuality")
+		:AddKey("global", "destroyingOptions", "includeSoulbound")
+		:AddKey("global", "userData", "destroyingIgnore")
+		:RegisterCallback("deAbovePrice", private.UpdateBagDB)
+		:RegisterCallback("deMaxQuality", private.UpdateBagDB)
+		:RegisterCallback("includeSoulbound", private.UpdateBagDB)
 
 	private.ignoreDB = Database.NewSchema("DESTROYING_IGNORE")
 		:AddUniqueStringField("itemString")
@@ -67,7 +81,7 @@ function Destroying.OnInitialize()
 		:Commit()
 	private.ignoreDB:BulkInsertStart()
 	local used = TempTable.Acquire()
-	for itemString in pairs(TSM.db.global.userData.destroyingIgnore) do
+	for itemString in pairs(private.settings.destroyingIgnore) do
 		itemString = ItemString.Get(itemString)
 		if not used[itemString] then
 			used[itemString] = true
@@ -83,10 +97,21 @@ function Destroying.OnInitialize()
 		:AddNumberField("spellId")
 		:Commit()
 
+	Event.Register("LOOT_CLOSED", private.SendEventToThread)
+	Event.Register("BAG_UPDATE_DELAYED", private.SendEventToThread)
 	Event.Register("UNIT_SPELLCAST_START", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
+	Event.Register("UNIT_SPELLCAST_FAILED_QUIET", private.SpellCastEventHandler)
 	Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
 	Event.Register("UNIT_SPELLCAST_SUCCEEDED", private.SpellCastEventHandler)
-	Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
+
+	private.destroyFuture:SetScript("OnCleanup", function()
+		private.destroyThreadRunning = false
+		Threading.Kill(private.destroyThread)
+	end)
+	private.combineFuture:SetScript("OnCleanup", function()
+		Threading.Kill(private.combineThread)
+	end)
 end
 
 function Destroying.SetBagUpdateCallback(callback)
@@ -108,17 +133,19 @@ function Destroying.CanCombine()
 	return #private.pendingCombines > 0
 end
 
-function Destroying.GetCombineThread()
-	return private.combineThread
+function Destroying.StartCombine()
+	private.combineFuture:Start()
+	Threading.Start(private.combineThread)
+	return private.combineFuture
 end
 
-function Destroying.GetDestroyThread()
-	return private.destroyThread
-end
-
-function Destroying.KillDestroyThread()
-	Threading.Kill(private.destroyThread)
-	private.destroyThreadRunning = false
+function Destroying.StartDestroy(button, row, callback)
+	private.destroyFuture:Start()
+	private.destroyThreadRunning = true
+	Threading.Start(private.destroyThread, button, row)
+	-- we need the thread to run now so send it a sync message
+	Threading.SendSyncMessage(private.destroyThread)
+	return private.destroyFuture
 end
 
 function Destroying.IgnoreItemSession(itemString)
@@ -138,8 +165,8 @@ function Destroying.IgnoreItemSession(itemString)
 end
 
 function Destroying.IgnoreItemPermanent(itemString)
-	assert(not TSM.db.global.userData.destroyingIgnore[itemString])
-	TSM.db.global.userData.destroyingIgnore[itemString] = true
+	assert(not private.settings.destroyingIgnore[itemString])
+	private.settings.destroyingIgnore[itemString] = true
 
 	local row = private.ignoreDB:GetUniqueRow("itemString", itemString)
 	if row then
@@ -157,8 +184,8 @@ function Destroying.IgnoreItemPermanent(itemString)
 end
 
 function Destroying.ForgetIgnoreItemPermanent(itemString)
-	assert(TSM.db.global.userData.destroyingIgnore[itemString])
-	TSM.db.global.userData.destroyingIgnore[itemString] = nil
+	assert(private.settings.destroyingIgnore[itemString])
+	private.settings.destroyingIgnore[itemString] = nil
 
 	local row = private.ignoreDB:GetUniqueRow("itemString", itemString)
 	assert(row and row:GetField("ignorePermanent"))
@@ -209,6 +236,10 @@ function private.HasNewBagUpdate()
 	return private.newBagUpdate
 end
 
+function private.CombineThreadDone(result)
+	private.combineFuture:Done(result)
+end
+
 
 
 -- ============================================================================
@@ -216,7 +247,6 @@ end
 -- ============================================================================
 
 function private.DestroyThread(button, row)
-	private.destroyThreadRunning = true
 	-- we get sent a sync message so we run right away
 	Threading.ReceiveMessage()
 
@@ -230,8 +260,7 @@ function private.DestroyThread(button, row)
 	if event ~= "UNIT_SPELLCAST_START" then
 		-- the spell cast failed for some reason
 		ClearCursor()
-		private.destroyThreadRunning = false
-		return
+		return false
 	end
 
 	-- discard any other messages
@@ -244,12 +273,11 @@ function private.DestroyThread(button, row)
 	event = Threading.ReceiveMessage()
 	if event ~= "UNIT_SPELLCAST_SUCCEEDED" then
 		-- the spell cast was interrupted
-		private.destroyThreadRunning = false
-		return
+		return false
 	end
 
 	-- wait for the loot window to open
-	Threading.WaitForEvent("LOOT_OPENED")
+	Threading.WaitForEvent("LOOT_READY")
 
 	-- add to the log
 	local newEntry = {
@@ -266,22 +294,41 @@ function private.DestroyThread(button, row)
 			newEntry.result[lootItemString] = quantity
 		end
 	end
-	TSM.db.global.internalData.destroyingHistory[spellName] = TSM.db.global.internalData.destroyingHistory[spellName] or {}
-	tinsert(TSM.db.global.internalData.destroyingHistory[spellName], newEntry)
+	private.settings.destroyingHistory[spellName] = private.settings.destroyingHistory[spellName] or {}
+	tinsert(private.settings.destroyingHistory[spellName], newEntry)
 
 	-- wait for the loot window to close
-	Threading.WaitForEvent("LOOT_CLOSED")
-	Threading.WaitForEvent("BAG_UPDATE_DELAYED")
+	local hasLootClosed, hasBagUpdateDelayed = false, false
+	while not hasLootClosed or not hasBagUpdateDelayed do
+		event = Threading.ReceiveMessage()
+		if event == "LOOT_CLOSED" then
+			hasLootClosed = true
+		elseif event == "BAG_UPDATE_DELAYED" then
+			hasBagUpdateDelayed = true
+		end
+	end
 
 	-- we're done
-	private.destroyThreadRunning = false
+	return true
 end
 
-function private.SpellCastEventHandler(event, unit, _, spellId)
-	if not private.destroyThreadRunning or unit ~= "player" or spellId ~= private.pendingSpellId then
+function private.SendEventToThread(event)
+	if not private.destroyThreadRunning then
 		return
 	end
 	Threading.SendMessage(private.destroyThread, event)
+end
+
+function private.SpellCastEventHandler(event, unit, _, spellId)
+	if unit ~= "player" or spellId ~= private.pendingSpellId then
+		return
+	end
+	private.SendEventToThread(event)
+end
+
+function private.DestroyThreadDone(result)
+	private.destroyThreadRunning = false
+	private.destroyFuture:Done(result)
 end
 
 
@@ -298,7 +345,7 @@ function private.UpdateBagDB()
 	local query = BagTracking.CreateQueryBags()
 		:OrderBy("slotId", true)
 		:Select("slotId", "itemString", "quantity")
-	if not TSM.db.global.destroyingOptions.includeSoulbound then
+	if not private.settings.includeSoulbound then
 		query:Equal("isBoP", false)
 			:Equal("isBoA", false)
 	end
@@ -344,7 +391,7 @@ function private.ProcessBagItem(itemString)
 	if not spellId then
 		return
 	elseif spellId == SPELL_IDS.disenchant then
-		local deAbovePrice = CustomPrice.GetValue(TSM.db.global.destroyingOptions.deAbovePrice, itemString) or 0
+		local deAbovePrice = CustomPrice.GetValue(private.settings.deAbovePrice, itemString) or 0
 		local deValue = CustomPrice.GetValue("Destroy", itemString) or math.huge
 		if deValue < deAbovePrice then
 			return
@@ -360,7 +407,7 @@ function private.IsDestroyable(itemString)
 
 	-- disenchanting
 	local quality = ItemInfo.GetQuality(itemString)
-	if ItemInfo.IsDisenchantable(itemString) and quality <= TSM.db.global.destroyingOptions.deMaxQuality then
+	if ItemInfo.IsDisenchantable(itemString) and quality <= private.settings.deMaxQuality then
 		private.canDestroyCache[itemString] = IsSpellKnown(SPELL_IDS.disenchant) and SPELL_IDS.disenchant
 		private.destroyQuantityCache[itemString] = 1
 		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]

@@ -1,14 +1,12 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 -- This is the main TSM file that holds the majority of the APIs that modules will use.
 
-local TSM = TSMAPI_FOUR.Addon.New(...)
+local _, TSM = ...
 TSMAPI = {} -- FIXME: this is still needed for AppHelper
 local ClassicRealms = TSM.Include("Data.ClassicRealms")
 local Log = TSM.Include("Util.Log")
@@ -17,6 +15,9 @@ local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
 local Wow = TSM.Include("Util.Wow")
+local Theme = TSM.Include("Util.Theme")
+local TempTable = TSM.Include("Util.TempTable")
+local ObjectPool = TSM.Include("Util.ObjectPool")
 local ErrorHandler = TSM.Include("Service.ErrorHandler")
 local SlashCommands = TSM.Include("Service.SlashCommands")
 local Threading = TSM.Include("Service.Threading")
@@ -24,6 +25,7 @@ local Settings = TSM.Include("Service.Settings")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BlackMarket = TSM.Include("Service.BlackMarket")
+local Inventory = TSM.Include("Service.Inventory")
 local LibRealmInfo = LibStub("LibRealmInfo")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = TSM.Include("Locale").GetTable()
@@ -34,7 +36,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.9.38" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.3" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -48,6 +50,9 @@ end
 function TSM.OnInitialize()
 	-- load settings
 	TSM.db = Settings.GetDB()
+
+	-- set the last character we logged into for display in the app
+	TSM.db.global.internalData.lastCharacter = UnitName("player").." - "..GetRealmName()
 
 	-- configure the logger
 	Log.SetChatFrame(TSM.db.global.coreOptions.chatFrame)
@@ -65,12 +70,14 @@ function TSM.OnInitialize()
 		CustomPrice.OnSourceChange("ItemLevel", itemString)
 		CustomPrice.OnSourceChange("RequiredLevel", itemString)
 	end)
-	CustomPrice.RegisterSource("TradeSkillMaster", "VendorBuy", L["Buy from Vendor"], ItemInfo.GetVendorBuy)
-	CustomPrice.RegisterSource("TradeSkillMaster", "VendorSell", L["Sell to Vendor"], ItemInfo.GetVendorSell)
-	CustomPrice.RegisterSource("TradeSkillMaster", "Destroy", L["Destroy Value"], function(itemString) return CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource) end, nil, nil, true)
-	CustomPrice.RegisterSource("TradeSkillMaster", "ItemQuality", L["Item Quality"], ItemInfo.GetQuality)
-	CustomPrice.RegisterSource("TradeSkillMaster", "ItemLevel", L["Item Level"], ItemInfo.GetItemLevel)
-	CustomPrice.RegisterSource("TradeSkillMaster", "RequiredLevel", L["Required Level"], ItemInfo.GetMinLevel)
+	CustomPrice.RegisterSource("TSM", "VendorBuy", L["Buy from Vendor"], ItemInfo.GetVendorBuy)
+	CustomPrice.RegisterSource("TSM", "VendorSell", L["Sell to Vendor"], ItemInfo.GetVendorSell)
+	CustomPrice.RegisterSource("TSM", "Destroy", L["Destroy Value"], function(itemString) return CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource) end, nil, nil, true)
+	CustomPrice.RegisterSource("TSM", "ItemQuality", L["Item Quality"], ItemInfo.GetQuality)
+	CustomPrice.RegisterSource("TSM", "ItemLevel", L["Item Level"], ItemInfo.GetItemLevel)
+	CustomPrice.RegisterSource("TSM", "RequiredLevel", L["Required Level"], ItemInfo.GetMinLevel)
+
+	CustomPrice.RegisterSource("TSM", "NumInventory", L["Total Inventory Quantity"], Inventory.GetTotalQuantity, nil, nil, true)
 
 	-- Auctioneer price sources
 	if Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
@@ -146,10 +153,12 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("Accounting", "AvgSell", L["Avg Sell Price"], TSM.Accounting.Transactions.GetAverageSalePrice)
 	CustomPrice.RegisterSource("Accounting", "MaxSell", L["Max Sell Price"], TSM.Accounting.Transactions.GetMaxSalePrice)
 	CustomPrice.RegisterSource("Accounting", "MinSell", L["Min Sell Price"], TSM.Accounting.Transactions.GetMinSalePrice)
-	CustomPrice.RegisterSource("Accounting", "AvgBuy", L["Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice)
+	CustomPrice.RegisterSource("Accounting", "AvgBuy", L["Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice, nil, false)
+	CustomPrice.RegisterSource("Accounting", "SmartAvgBuy", L["Smart Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice, nil, true, true)
 	CustomPrice.RegisterSource("Accounting", "MaxBuy", L["Max Buy Price"], TSM.Accounting.Transactions.GetMaxBuyPrice)
 	CustomPrice.RegisterSource("Accounting", "MinBuy", L["Min Buy Price"], TSM.Accounting.Transactions.GetMinBuyPrice)
 	CustomPrice.RegisterSource("Accounting", "NumExpires", L["Expires Since Last Sale"], TSM.Accounting.Auctions.GetNumExpiresSinceSale)
+	CustomPrice.RegisterSource("Accounting", "SaleRate", L["Sale Rate"], TSM.Accounting.GetSaleRate)
 	CustomPrice.RegisterSource("AuctionDB", "DBMarket", L["AuctionDB - Market Value"], TSM.AuctionDB.GetRealmItemData, false, "marketValue")
 	CustomPrice.RegisterSource("AuctionDB", "DBMinBuyout", L["AuctionDB - Minimum Buyout"], TSM.AuctionDB.GetRealmItemData, false, "minBuyout")
 	CustomPrice.RegisterSource("AuctionDB", "DBHistorical", L["AuctionDB - Historical Price (via TSM App)"], TSM.AuctionDB.GetRealmItemData, false, "historical")
@@ -161,6 +170,13 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("AuctionDB", "DBRegionSoldPerDay", L["AuctionDB - Region Sold Per Day (via TSM App)"], TSM.AuctionDB.GetRegionSaleInfo, false, "regionSoldPerDay")
 	CustomPrice.RegisterSource("Crafting", "Crafting", L["Crafting Cost"], TSM.Crafting.Cost.GetLowestCostByItem, nil, nil, true)
 	CustomPrice.RegisterSource("Crafting", "MatPrice", L["Crafting Material Cost"], TSM.Crafting.Cost.GetMatCost, nil, nil, true)
+
+	-- operation-based price sources
+	CustomPrice.RegisterSource("Operations", "auctioningopmin", L["First Auctioning Operation Min Price"], TSM.Operations.Auctioning.GetMinPrice)
+	CustomPrice.RegisterSource("Operations", "auctioningopmax", L["First Auctioning Operation Max Price"], TSM.Operations.Auctioning.GetMaxPrice)
+	CustomPrice.RegisterSource("Operations", "auctioningopnormal", L["First Auctioning Operation Normal Price"], TSM.Operations.Auctioning.GetNormalPrice)
+	CustomPrice.RegisterSource("Operations", "shoppingopmax", L["Shopping Operation Max Price"], TSM.Operations.Shopping.GetMaxPrice)
+	CustomPrice.RegisterSource("Operations", "sniperopmax", L["Sniper Operation Below Price"], TSM.Operations.Sniper.GetBelowPrice)
 
 	-- slash commands
 	SlashCommands.Register("", TSM.MainUI.Toggle, L["Toggles the main TSM window"])
@@ -190,7 +206,7 @@ function TSM.OnInitialize()
 			TSM.MainUI.Toggle()
 		end,
 		OnTooltipShow = function(tooltip)
-			local cs = "|cffffffcc"
+			local cs = Theme.GetColor("INDICATOR_ALT"):GetTextColorPrefix()
 			local ce = "|r"
 			tooltip:AddLine("TradeSkillMaster " .. TSM.GetVersion())
 			tooltip:AddLine(format(L["%sLeft-Click%s to open the main window"], cs, ce))
@@ -281,6 +297,19 @@ function TSM.OnEnable()
 		}
 		Wow.ShowStaticPopupDialog("TSM_APP_DATA_ERROR")
 	end
+
+	if private.appInfo.news then
+		-- clean up the news content strings
+		for _, info in ipairs(private.appInfo.news) do
+			-- for some reason the data is missing a few newlines before bold headings, so add one
+			info.content = gsub(info.content, "(<strong>)", "\n\n%1")
+			info.content = gsub(info.content, "<br%s+/>", "\n")
+			info.content = gsub(info.content, "<strong>(.-)</strong>", "%1")
+			info.content = gsub(info.content, "<a href='.-'>(.-)</a>", "%1")
+			info.content = gsub(info.content, "&#8211;", "-")
+			info.content = gsub(info.content, "&#8216;", "'")
+		end
+	end
 end
 
 function TSM.OnDisable()
@@ -310,29 +339,29 @@ function private.TestPriceSource(price)
 	local _, endIndex, link = strfind(price, "(\124c[0-9a-f]+\124H[^\124]+\124h%[[^%]]+%]\124h\124r)")
 	price = link and strtrim(strsub(price, endIndex + 1))
 	if not price or price == "" then
-		Log.PrintUser(L["Usage: /tsm price <ItemLink> <Price String>"])
+		Log.PrintUser(L["Usage: /tsm price <Item Link> <Custom String>"])
 		return
 	end
 
 	local isValid, err = CustomPrice.Validate(price)
 	if not isValid then
-		Log.PrintfUser(L["%s is not a valid custom price and gave the following error: %s"], "|cff99ffff"..price.."|r", err)
+		Log.PrintfUser(L["%s is not a valid custom price and gave the following error: %s"], Log.ColorUserAccentText(price), err)
 		return
 	end
 
 	local itemString = ItemString.Get(link)
 	if not itemString then
-		Log.PrintfUser(L["%s is a valid custom price but %s is an invalid item."], "|cff99ffff"..price.."|r", link)
+		Log.PrintfUser(L["%s is a valid custom price but %s is an invalid item."], Log.ColorUserAccentText(price), link)
 		return
 	end
 
 	local value = CustomPrice.GetValue(price, itemString)
 	if not value then
-		Log.PrintfUser(L["%s is a valid custom price but did not give a value for %s."], "|cff99ffff"..price.."|r", link)
+		Log.PrintfUser(L["%s is a valid custom price but did not give a value for %s."], Log.ColorUserAccentText(price), link)
 		return
 	end
 
-	Log.PrintfUser(L["A custom price of %s for %s evaluates to %s."], "|cff99ffff"..price.."|r", link, Money.ToString(value))
+	Log.PrintfUser(L["A custom price of %s for %s evaluates to %s."], Log.ColorUserAccentText(price), link, Money.ToString(value))
 end
 
 function private.ChangeProfile(targetProfile)
@@ -356,7 +385,7 @@ end
 
 function private.DebugSlashCommandHandler(arg)
 	if arg == "fstack" then
-		TSM.UI.ToggleFrameStack()
+		TSM.UI.FrameStack.Toggle()
 	elseif arg == "error" then
 		ErrorHandler.ShowManual()
 	elseif arg == "logging" then
@@ -373,19 +402,22 @@ function private.DebugSlashCommandHandler(arg)
 		TSM.AddonTestLogout()
 	elseif arg == "clearitemdb" then
 		ItemInfo.ClearDB()
+	elseif arg == "leaks" then
+		TempTable.EnableLeakDebug()
+		ObjectPool.EnableLeakDebug()
 	end
 end
 
 function private.PrintVersions()
 	Log.PrintUser(L["TSM Version Info:"])
-	Log.PrintfUserRaw("TradeSkillMaster |cff99ffff%s|r", TSM.GetVersion())
+	Log.PrintUserRaw("TradeSkillMaster "..Log.ColorUserAccentText(TSM.GetVersion()))
 	local appHelperVersion = GetAddOnMetadata("TradeSkillMaster_AppHelper", "Version")
 	if appHelperVersion then
 		-- use strmatch so that our sed command doesn't replace this string
 		if strmatch(appHelperVersion, "^@tsm%-project%-version@$") then
 			appHelperVersion = "Dev"
 		end
-		Log.PrintfUserRaw("TradeSkillMaster_AppHelper |cff99ffff%s|r", appHelperVersion)
+		Log.PrintUserRaw("TradeSkillMaster_AppHelper "..Log.ColorUserAccentText(appHelperVersion))
 	end
 end
 
@@ -456,27 +488,13 @@ end
 -- General Module Functions
 -- ============================================================================
 
-function TSM:GetAppNews()
+function TSM.GetAppNews()
 	return private.appInfo and private.appInfo.news
 end
 
-function TSM:GetChatFrame()
-	local chatFrame = DEFAULT_CHAT_FRAME
-	for i = 1, NUM_CHAT_WINDOWS do
-		local name = strlower(GetChatWindowInfo(i) or "")
-		if name ~= "" and (not TSM.db or name == strlower(TSM.db.global.coreOptions.chatFrame)) then
-			chatFrame = _G["ChatFrame" .. i]
-			break
-		end
-	end
-	return chatFrame
+function TSM.GetAppUpdateTime()
+	return private.appInfo and private.appInfo.lastSync or 0
 end
-
-
-
--- ============================================================================
--- General TSMAPI Functions
--- ============================================================================
 
 function TSM.GetRegion()
 	local cVar = GetCVar("Portal")

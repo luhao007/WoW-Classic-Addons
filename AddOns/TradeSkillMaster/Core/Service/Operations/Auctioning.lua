@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -17,34 +15,31 @@ local OPERATION_INFO = {
 	blacklist = { type = "string", default = "" },
 	ignoreLowDuration = { type = "number", default = 0 },
 	-- post
-	postCap = { type = "number", default = 5 },
-	keepQuantity = { type = "number", default = 0 },
-	keepQtySources = { type = "table", default = {} },
-	maxExpires = { type = "number", default = 0 },
+	postCap = { type = "string", default = "5" },
+	keepQuantity = { type = "string", default = "0" },
+	maxExpires = { type = "string", default = "0" },
 	duration = { type = "number", default = 2, customSanitizeFunction = nil },
 	bidPercent = { type = "number", default = 1 },
-	undercut = { type = "string", default = "0c" },
+	undercut = { type = "string", default = "0c", customSanitizeFunction = nil },
 	minPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(0.25*avg(crafting,dbmarket,dbregionmarketavg),1.5*vendorsell))" },
 	maxPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(5*avg(crafting,dbmarket,dbregionmarketavg),30*vendorsell))" },
 	normalPrice = { type = "string", default = "check(first(crafting,dbmarket,dbregionmarketavg),max(2*avg(crafting,dbmarket,dbregionmarketavg),12*vendorsell))" },
 	priceReset = { type = "string", default = "none" },
-	aboveMax = { type = "string", default = "normalPrice" },
+	aboveMax = { type = "string", default = "maxPrice" },
 	-- cancel
 	cancelUndercut = { type = "boolean", default = true },
-	keepPosted = { type = "number", default = 0 },
 	cancelRepost = { type = "boolean", default = true },
 	cancelRepostThreshold = { type = "string", default = "1g" },
 }
 local OPERATION_VALUE_LIMITS = {
-	postCap = { min = 0, max = 5000 },
-	keepQuantity = { min = 0, max = 5000 },
-	maxExpires = { min = 0, max = 5000 },
-	keepPosted = { min = 0, max = 5000 },
+	postCap = { min = 0, max = 50000 },
+	keepQuantity = { min = 0, max = 50000 },
+	maxExpires = { min = 0, max = 50000 },
 }
 if TSM.IsWowClassic() then
 	OPERATION_INFO.undercut.default = "1c"
 	OPERATION_INFO.matchStackSize = { type = "boolean", default = false }
-	OPERATION_INFO.stackSize = { type = "number", default = 1 }
+	OPERATION_INFO.stackSize = { type = "string", default = "1" }
 	OPERATION_INFO.stackSizeIsCap = { type = "boolean", default = false }
 	OPERATION_VALUE_LIMITS.stackSize = { min = 1, max = 200 }
 	OPERATION_VALUE_LIMITS.postCap.max = 200
@@ -58,6 +53,7 @@ end
 
 function Auctioning.OnInitialize()
 	OPERATION_INFO.duration.customSanitizeFunction = private.SanitizeDuration
+	OPERATION_INFO.undercut.customSanitizeFunction = private.SanitizeUndercut
 	TSM.Operations.Register("Auctioning", L["Auctioning"], OPERATION_INFO, 20, private.GetOperationInfo, private.OperationSanitize)
 end
 
@@ -87,9 +83,9 @@ end
 function private.OperationSanitize(operation)
 	if not TSM.IsWowClassic() then
 		if operation.stackSize then
-			operation.postCap = operation.postCap * operation.stackSize
+			operation.postCap = tonumber(operation.postCap) * tonumber(operation.stackSize)
 		end
-		if (type(operation.undercut) == "number" and operation.undercut or Money.FromString(operation.undercut) or math.huge) < 50 then
+		if (type(operation.undercut) == "number" and operation.undercut or Money.FromString(operation.undercut) or math.huge) < COPPER_PER_SILVER then
 			operation.undercut = "0c"
 		end
 	end
@@ -108,13 +104,21 @@ function private.SanitizeDuration(value)
 	end
 end
 
+function private.SanitizeUndercut(value)
+	if not TSM.IsWowClassic() and (Money.FromString(Money.ToString(value) or value) or math.huge) < COPPER_PER_SILVER then
+		return "0c"
+	end
+	return value
+end
+
 function private.GetOperationValueHelper(itemString, key)
+	local origItemString = itemString
 	itemString = TSM.Groups.TranslateItemString(itemString)
 	local operationName, operationSettings = TSM.Operations.GetFirstOperationByItem("Auctioning", itemString)
 	if not operationName then
 		return
 	end
-	return TSM.Auctioning.Util.GetPrice(key, operationSettings, itemString)
+	return TSM.Auctioning.Util.GetPrice(key, operationSettings, origItemString)
 end
 
 function private.GetOperationInfo(operationSettings)
@@ -124,7 +128,11 @@ function private.GetOperationInfo(operationSettings)
 	if operationSettings.postCap == 0 then
 		tinsert(parts, L["No posting."])
 	else
-		tinsert(parts, format(L["Posting %d stack(s) of %d for %d hours."], operationSettings.postCap, operationSettings.stackSize, operationSettings.duration))
+		if TSM.IsWowClassic() then
+			tinsert(parts, format(L["Posting %d stack(s) of %d for %s hours."], operationSettings.postCap, operationSettings.stackSize, strmatch(TSM.CONST.AUCTION_DURATIONS[operationSettings.duration], "%d+")))
+		else
+			tinsert(parts, format(L["Posting %d items for %s hours."], operationSettings.postCap, strmatch(TSM.CONST.AUCTION_DURATIONS[operationSettings.duration], "%d+")))
+		end
 	end
 
 	-- get the cancel string

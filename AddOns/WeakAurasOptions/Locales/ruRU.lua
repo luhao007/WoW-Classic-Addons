@@ -448,7 +448,8 @@ Supports multiple entries, separated by commas
 	L["Left"] = "Слева"
 	L["Left 2 HUD position"] = "Позиция 2-го левого HUD"
 	L["Left HUD position"] = "Позиция левого HUD"
-	L["Legacy Aura Trigger"] = "Триггер устаревшего типа"
+	--[[Translation missing --]]
+	L["Legacy Aura Trigger"] = "Legacy Aura Trigger"
 	L["Length"] = "Длина"
 	--[[Translation missing --]]
 	L["Limit"] = "Limit"
@@ -706,7 +707,8 @@ Supports multiple entries, separated by commas
 	L["Then "] = "Тогда "
 	L["Thickness"] = "Толщина"
 	L["This adds %tooltip, %tooltip1, %tooltip2, %tooltip3 as text replacements."] = "Добавляет строки %tooltip, %tooltip1, %tooltip2 и %tooltip3 к специальным кодам отображения динамической информации в тексте."
-	L["This aura has legacy aura trigger(s). Convert them to the new system to benefit from enhanced performance and features"] = "Индикация содержит триггеры Аура устаревшего (legacy) типа. Преобразуйте их в новую версию, чтобы воспользоваться улучшенной производительностью и расширенными возможностями"
+	--[[Translation missing --]]
+	L["This aura has legacy aura trigger(s). Convert them to the new system to benefit from enhanced performance and features"] = "This aura has legacy aura trigger(s). Convert them to the new system to benefit from enhanced performance and features"
 	L["This display is currently loaded"] = "Эта индикация загружена"
 	L["This display is not currently loaded"] = "Эта индикация не загружена"
 	L["This region of type \"%s\" is not supported."] = "Регион типа \"%s\" не поддерживается."

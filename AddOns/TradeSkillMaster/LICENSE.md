@@ -13,12 +13,14 @@ All rights are reserved by TradeSkillMaster LLC unless explicitly stated below.
 
 ## Embedded Libraries
 
-TradeSkillMaster embeds the following third-party libraries in accordance with their respective licenses:
+TradeSkillMaster embeds the following third-party libraries and code in accordance with their respective licenses:
 
 1. LibStub (https://www.wowace.com/projects/libstub)
 2. CallbackHandler (https://www.curseforge.com/wow/addons/callbackhandler)
 3. LibDataBroker (https://www.wowace.com/projects/libdatabroker-1-1)
 4. LibDBIcon (https://www.wowace.com/projects/libdbicon-1-0)
 5. AceComm, AceSerializer (https://www.wowace.com/projects/ace3)
-6. LibCompress (https://www.wowace.com/projects/libcompress)
+6. LibDeflate (https://github.com/SafeteeWoW/LibDeflate)
 7. LibRealmInfo (https://www.curseforge.com/wow/addons/librealminfo)
+8. hsluv-lua (https://github.com/hsluv/hsluv-lua)
+9. LibSerialize (https://github.com/rossnichols/LibSerialize)

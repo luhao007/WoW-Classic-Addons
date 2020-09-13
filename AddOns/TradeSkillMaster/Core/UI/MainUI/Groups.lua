@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -14,27 +12,45 @@ local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
+local Database = TSM.Include("Util.Database")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local ItemFilter = TSM.Include("Service.ItemFilter")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	currentGroupPath = TSM.CONST.ROOT_GROUP_PATH,
+	moveGroupPath = nil,
 	itemFilter = ItemFilter.New(),
 	groupedItemList = {},
 	ungroupedItemList = { {}, {} },
-	moduleOperationList = {},
-	descriptionShown = {},
 	moduleCollapsed = {},
+	results = { {}, {} },
+	resultsRaw = {},
+	filterText = "",
 	groupSearch = "",
 	itemSearch = "",
+	frame = nil,
+	operationQuery = nil,
+	importExportGroupDB = nil,
+	exportSubGroups = {},
+	importGroupTreeContext = {},
 }
-local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
-	leftWidth = 300,
+local DRAG_SCROLL_SPEED_FACTOR = 12
+local OPERATION_LABELS = {
+	Auctioning = L["Auctioning operations control posting to and canceling from the AH."],
+	Crafting = L["Crafting operations control how queuing profession crafts."],
+	Mailing = L["Mailing operations control mailing to other characters."],
+	Shopping = L["Shopping operations control buyout from the AH."],
+	Sniper = L["Sniper operations control sniping from the AH."],
+	Vendoring = L["Vendoring operations control selling to and buying from a vendor."],
+	Warehousing = L["Warehousing operations control moving in and out of the bank."],
 }
--- TODO: this should eventually go in the saved variables
-private.dividedContainerContext = {}
+local DEFAULT_IMPORT_GROUP_TREE_CONTEXT = { unselected = {}, collapsed = {} }
 
 
 
@@ -43,13 +59,23 @@ private.dividedContainerContext = {}
 -- ============================================================================
 
 function Groups.OnInitialize()
-	TSM.MainUI.RegisterTopLevelPage(L["Groups"], "iconPack.24x24/Groups", private.GetGroupsFrame)
+	private.settings = Settings.NewView()
+		:AddKey("global", "coreOptions", "groupPriceSource")
+		:AddKey("global", "mainUIContext", "groupsDividedContainer")
+		:AddKey("char", "mainUIContext", "groupsManagementGroupTree")
+		:AddKey("profile", "userData", "groups")
+	TSM.MainUI.RegisterTopLevelPage(L["Groups"], private.GetGroupsFrame)
 	private.itemFilter:ParseStr("")
+	private.importExportGroupDB = Database.NewSchema("IMPORT_EXPORT_GROUPS")
+		:AddStringField("groupPath")
+		:AddStringField("orderStr")
+		:AddIndex("groupPath")
+		:Commit()
 end
 
 function Groups.ShowGroupSettings(baseFrame, groupPath)
 	baseFrame:SetSelectedNavButton(L["Groups"], true)
-	baseFrame:GetElement("content.groups.groupSelection.groupTree"):SetSelectedGroup(groupPath)
+	baseFrame:GetElement("content.groups.groupSelection.groupTree"):SetSelectedGroup(groupPath, true)
 end
 
 
@@ -61,234 +87,411 @@ end
 function private.GetGroupsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "groups")
 	private.currentGroupPath = TSM.CONST.ROOT_GROUP_PATH
-	local frame = TSMAPI_FOUR.UI.NewElement("DividedContainer", "groups")
-		:SetStyle("background", "#272727")
-		:SetContextTable(private.dividedContainerContext, DEFAULT_DIVIDED_CONTAINER_CONTEXT)
+	private.moveGroupPath = nil
+	local frame = UIElements.New("DividedContainer", "groups")
+		:SetSettingsContext(private.settings, "groupsDividedContainer")
 		:SetMinWidth(250, 250)
-		:SetLeftChild(TSMAPI_FOUR.UI.NewElement("Frame", "groupSelection")
+		:SetLeftChild(UIElements.New("Frame", "groupSelection")
 			:SetLayout("VERTICAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "search")
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Frame", "search")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 20)
-				:SetStyle("margin", { left = 12, right = 12, top = 35, bottom = 12 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "input")
-					:SetStyle("height", 20)
-					:SetText(private.groupSearch)
+				:SetHeight(24)
+				:SetMargin(8)
+				:AddChild(UIElements.New("Input", "input")
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:AllowItemInsert(true)
+					:SetValue(private.groupSearch)
 					:SetHintText(L["Search Groups"])
-					:SetScript("OnTextChanged", private.GroupSearchOnTextChanged)
+					:SetScript("OnValueChanged", private.GroupSearchOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("margin.left", 8)
-					:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-					:SetScript("OnClick", private.MoreBtnOnClick)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(8, 0, 0, 0)
+					:SetBackground("iconPack.18x18/Expand All")
+					:SetScript("OnClick", private.ExpandAllGroupsOnClick)
+					:SetTooltip(L["Expand / Collapse All Groups"])
+				)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(8, 0, 0, 0)
+					:SetBackground("iconPack.18x18/Import")
+					:SetScript("OnClick", private.ImportGroupBtnOnClick)
+					:SetTooltip(L["Import group"])
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-				:SetStyle("height", 2)
-				:SetStyle("color", "#9d9d9d")
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG_ALT")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ManagementGroupTree", "groupTree")
-				:SetGroupListFunc(private.GroupTreeGetList)
+			:AddChild(UIElements.New("ManagementGroupTree", "groupTree")
+				:SetSettingsContext(private.settings, "groupsManagementGroupTree")
+				:SetQuery(TSM.Groups.CreateQuery())
 				:SetSelectedGroup(private.currentGroupPath)
-				:SetContextTable(TSM.db.profile.internalData.managementGroupTreeContext)
 				:SetSearchString(private.groupSearch)
 				:SetScript("OnGroupSelected", private.GroupTreeOnGroupSelected)
+				:SetScript("OnNewGroup", private.GroupTreeOnNewGroup)
 			)
 		)
-		:SetRightChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
-			:SetLayout("VERTICAL")
-			:SetStyle("padding", { top = 30 })
-			:SetStyle("background", "#272727")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-				:SetLayout("VERTICAL")
-				:SetStyle("height", 32)
-				:SetStyle("expandWidth", true)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
-					:SetLayout("HORIZONTAL")
-					:SetStyle("expandWidth", true)
-					:SetStyle("margin", { left = 16, right = 16 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("EditableText", "text")
-						:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-						:SetStyle("fontHeight", 24)
-						:SetStyle("autoWidth", true)
-						:SetText(L["Base Group"])
-						:SetScript("OnValueChanged", private.TitleOnValueChanged)
-						:SetScript("OnEditingChanged", private.TitleOnEditingChanged)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "editBtn")
-						:SetStyle("width", 18)
-						:SetStyle("height", 18)
-						:SetStyle("backgroundTexturePack", "iconPack.18x18/Edit")
-						:SetScript("OnClick", private.EditBtnOnClick)
-					)
-				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("TabGroup", "buttons")
-				:SetStyle("margin", { top = 16 })
-				:SetNavCallback(private.GetGroupsPage)
-				:AddPath(L["Information"], true)
-				:AddPath(L["Group Operations"])
-			)
+		:SetRightChild(UIElements.New("ViewContainer", "view")
+			:SetNavCallback(private.GetViewContainerContent)
+			:AddPath("content", true)
+			:AddPath("search")
 		)
-	frame:GetElement("content.header.title.editBtn"):Hide()
+	frame:GetElement("view.content.header.title.renameBtn"):Hide()
+	private.frame = frame
 	return frame
 end
 
-function private.GetGroupsPage(self, button)
+function private.GetViewContainerContent(viewContainer, path)
+	if path == "content" then
+		wipe(private.results[1])
+		wipe(private.results[2])
+		return private.GetContentFrame()
+	elseif path == "search" then
+		return private.GetSearchFrame()
+	else
+		error("Unexpected path: "..tostring(path))
+	end
+end
+
+function private.GetContentFrame()
+	local frame = UIElements.New("Frame", "content")
+		:SetLayout("VERTICAL")
+		:SetBackgroundColor("PRIMARY_BG")
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("VERTICAL")
+			:SetSize("EXPAND", 40)
+			:SetPadding(8)
+			:AddChild(UIElements.New("Frame", "title")
+				:SetLayout("HORIZONTAL")
+				:SetWidth("EXPAND")
+				:AddChild(UIElements.New("Texture", "icon")
+					:SetMargin(0, 8, 0, 0)
+					:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
+				)
+				:AddChild(UIElements.New("EditableText", "text")
+					:SetWidth("AUTO")
+					:AllowItemInsert(true)
+					:SetFont("BODY_BODY1_BOLD")
+					:SetText(L["Base Group"])
+					:SetScript("OnValueChanged", private.GroupNameChanged)
+					:SetScript("OnEditingChanged", private.NameOnEditingChanged)
+				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("Button", "renameBtn")
+					:SetMargin(8, 0, 0, 0)
+					:SetBackgroundAndSize("iconPack.18x18/Edit")
+					:SetScript("OnClick", private.RenameBtnOnClick)
+					:SetTooltip(L["Rename this group"])
+				)
+				:AddChild(UIElements.New("Button", "exportBtn")
+					:SetMargin(8, 4, 0, 0)
+					:SetBackgroundAndSize("iconPack.18x18/Export")
+					:SetScript("OnClick", private.ExportBtnOnClick)
+					:SetTooltip(L["Export this group"])
+				)
+			)
+		)
+		:AddChild(UIElements.New("TabGroup", "buttons")
+			:SetMargin(0, 0, 6, 0)
+			:SetNavCallback(private.GetGroupsPage)
+			:AddPath(L["Information"], true)
+			:AddPath(L["Operations"])
+		)
+	frame:GetElement("header.title.renameBtn"):Hide()
+	frame:GetElement("header.title.exportBtn"):Hide()
+	return frame
+end
+
+function private.GetSearchFrame()
+	return UIElements.New("Frame", "content")
+		:SetLayout("VERTICAL")
+		:SetBackgroundColor("PRIMARY_BG")
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(40)
+			:SetPadding(8)
+			:AddChild(UIElements.New("ActionButton", "button")
+				:SetWidth(64)
+				:SetMargin(0, 8, 0, 0)
+				:SetIcon("iconPack.14x14/Chevron/Right@180")
+				:SetText(BACK)
+				:SetScript("OnClick", private.SearchBackButtonOnClick)
+			)
+			:AddChild(UIElements.New("Input", "input")
+				:SetMargin(0, 8, 0, 0)
+				:SetIconTexture("iconPack.18x18/Search")
+				:AllowItemInsert()
+				:SetClearButtonEnabled(true)
+				:SetValidateFunc(private.ValidateBaseSearchValue)
+				:SetValue(private.itemSearch)
+				:SetScript("OnValueChanged", private.BaseSearchOnValueChanged)
+			)
+			:AddChild(UIElements.New("Button", "selectAllBtn")
+				:SetSize(24, 24)
+				:SetBackground("iconPack.18x18/Select All")
+				:SetScript("OnClick", private.SelectAllResultsOnClick)
+				:SetTooltip(L["Select / Deselect All Results"])
+			)
+		)
+		:AddChild(UIElements.New("Frame", "header2")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(30)
+			:SetPadding(8, 8, 5, 5)
+			:AddChild(UIElements.New("Text", "label")
+				:SetFont("BODY_BODY3")
+				:SetText(format(L["%d Results"], 0))
+			)
+			:AddChild(UIElements.New("Checkbox", "ignoreItemVariations")
+				:SetSize("AUTO", 24)
+				:SetFont("BODY_BODY1")
+				:SetCheckboxPosition("LEFT")
+				:SetText(L["Ignore variations"])
+				:SetSettingInfo(private.settings.groups[private.currentGroupPath], "ignoreItemVariations")
+				:SetScript("OnValueChanged", private.IgnoreSearchRandomOnValueChanged)
+			)
+		)
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("ItemList", "itemList")
+			:SetScript("OnSelectionChanged", private.ItemListOnSelectionChanged)
+		)
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "bottom")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("GroupSelector", "group")
+				:SetMargin(0, 8, 0, 0)
+				:SetHintText(L["Select Group"])
+				:SetSingleSelection(true)
+				:AddCreateNew()
+				:SetSelection(private.moveGroupPath)
+				:SetScript("OnSelectionChanged", private.BaseGroupOnSelectionChanged)
+			)
+			:AddChild(UIElements.New("ActionButton", "move")
+				:SetWidth(124)
+				:SetDisabled(true)
+				:SetText(L["Move Item"])
+				:SetScript("OnClick", private.BaseMoveItemOnClick)
+			)
+		)
+end
+
+function private.GetGroupsPage(_, button)
+	private.itemSearch = ""
+	private.itemFilter:ParseStr("")
 	if button == L["Information"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "information")
-		return TSMAPI_FOUR.UI.NewElement("Frame", "items")
+		return UIElements.New("Frame", "items")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#1e1e1e")
-			:SetStyle("padding", { left = 10, right = 10})
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-				:SetStyle("justifyH", "LEFT")
-				:SetText(L["By default, this group houses all items that aren't assigned to a group. You cannot modify or delete this group."])
-				:SetStyle("height", 80)
-				:SetStyle("fontHeight", 15)
+			:SetPadding(0, 0, 9, 0)
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Text", "text")
+				:SetHeight(42)
+				:SetMargin(8, 8, 0, 8)
+				:SetFont("BODY_BODY3")
+				:SetText(L["The Base Group contains all ungrouped items in the game. Use the search and filter controls to find items to add to other groups."])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-	elseif button == L["Add / Remove Items"] then
+			:AddChild(UIElements.New("Frame", "filter")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 8)
+				:AddChild(UIElements.New("Input", "filter")
+					:SetMargin(0, 12, 0, 0)
+					:SetIconTexture("iconPack.18x18/Search")
+					:AllowItemInsert()
+					:SetClearButtonEnabled(true)
+					:SetValidateFunc(private.ValidateBaseSearchValue)
+					:SetHintText(L["Search items"])
+					:SetScript("OnValueChanged", private.InformationSearchOnValueChanged)
+				)
+				:AddChild(UIElements.New("Checkbox", "ignoreItemVariations")
+					:SetSize("AUTO", 24)
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY1")
+					:SetCheckboxPosition("LEFT")
+					:SetText(L["Ignore variations"])
+					:SetSettingInfo(private.settings.groups[private.currentGroupPath], "ignoreItemVariations")
+					:SetScript("OnValueChanged", private.IgnoreBaseRandomOnValueChanged)
+				)
+			)
+			:AddChild(UIElements.New("ItemList", "itemList")
+				:SetItems(private.GetUngroupedBagItemList())
+				:SetFilterFunction(private.ItemListItemIsFiltered)
+				:SetScript("OnSelectionChanged", private.ItemListOnSelectionChanged)
+			)
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("Frame", "bottom")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(40)
+				:SetPadding(8)
+				:SetBackgroundColor("PRIMARY_BG_ALT")
+				:AddChild(UIElements.New("GroupSelector", "group")
+					:SetMargin(0, 8, 0, 0)
+					:SetHintText(L["Select Group"])
+					:SetSingleSelection(true)
+					:AddCreateNew()
+					:SetSelection(private.moveGroupPath)
+					:SetScript("OnSelectionChanged", private.GroupOnSelectionChanged)
+				)
+				:AddChild(UIElements.New("ActionButton", "move")
+					:SetWidth(124)
+					:SetDisabled(true)
+					:SetText(L["Move Item"])
+					:SetScript("OnClick", private.MoveItemOnClick)
+				)
+			)
+	elseif button == L["Items"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "items")
 		assert(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH)
-		return TSMAPI_FOUR.UI.NewElement("Frame", "items")
+		local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
+		parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
+		return UIElements.New("Frame", "items")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#171717")
-			:SetStyle("padding", { left = 8, right = 8, top = 8, bottom = 8 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "filter")
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Frame", "filter")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 24)
-				:SetStyle("margin", { bottom = 8 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "filter")
-					:SetStyle("height", 20)
-					:SetStyle("margin", { right = 16 })
-					:SetHintText(L["Filter Items"])
-					:SetScript("OnTextChanged", private.ItemFilterOnTextChanged)
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 8)
+				:AddChild(UIElements.New("Input", "filter")
+					:SetMargin(0, 12, 0, 0)
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:SetValidateFunc(private.ItemFilterValidateFunc)
+					:SetHintText(L["Search items in group"])
+					:SetScript("OnValueChanged", private.ItemFilterOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "ignoreItemVariations")
-					:SetStyle("width", 220)
-					:SetStyle("height", 24)
-					:SetStyle("margin", { right = -4 })
-					:SetCheckboxPosition("RIGHT")
-					:SetText(L["Ignore item variations?"])
-					:SetSettingInfo(TSM.db.profile.userData.groups[private.currentGroupPath], "ignoreItemVariations")
+				:AddChild(UIElements.New("Checkbox", "ignoreItemVariations")
+					:SetSize("AUTO", 24)
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY1")
+					:SetCheckboxPosition("LEFT")
+					:SetText(L["Ignore variations"])
+					:SetSettingInfo(private.settings.groups[private.currentGroupPath], "ignoreItemVariations")
 					:SetScript("OnValueChanged", private.IgnoreRandomOnValueChanged)
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+			:AddChild(UIElements.New("Frame", "content")
 				:SetLayout("HORIZONTAL")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "ungrouped")
+				:AddChild(UIElements.New("Frame", "ungrouped")
 					:SetLayout("VERTICAL")
-					:SetStyle("margin", { right = 8 })
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+					:SetMargin(0, 8, 0, 0)
+					:AddChild(UIElements.New("Frame", "content")
 						:SetLayout("VERTICAL")
-						:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\ItemPreviewEdgeFrame.blp")
-						:SetStyle("borderSize", 8)
-						:SetStyle("borderInset", 1)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-							:SetLayout("VERTICAL")
-							:SetStyle("background", "#1e1e1e")
-							:SetStyle("borderInsets", { left = 2, right = 2, top = 3 })
-							:SetStyle("height", 33)
-							:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
-								:SetLayout("HORIZONTAL")
-								:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-									:SetStyle("margin", { left = 26, right = 4 })
-									:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-									:SetStyle("fontHeight", 16)
-									:SetStyle("justifyH", "CENTER")
-									:SetText(L["Ungrouped Items"])
-								)
-								:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-									:SetStyle("width", 18)
-									:SetStyle("height", 18)
-									:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-									:SetStyle("backgroundTextureRotation", 0)
-									:SetStyle("margin", { right = 8 })
-									:SetScript("OnClick", private.UngroupedMoreBtnOnClick)
-								)
+						:SetBackgroundColor("PRIMARY_BG_ALT", true)
+						:AddChild(UIElements.New("Frame", "header")
+							:SetLayout("HORIZONTAL")
+							:SetHeight(24)
+							:SetBackgroundColor("FRAME_BG", true)
+							:AddChild(UIElements.New("Text", "text")
+								:SetMargin(8, 0, 4, 4)
+								:SetFont("BODY_BODY2_MEDIUM")
+								:SetText(L["Ungrouped Items"])
 							)
-							:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-								:SetStyle("height", 1)
-								:SetStyle("color", "#585858")
-								:SetStyle("margin", { left = 2, right = 2 })
+							:AddChild(UIElements.New("Button", "selectAllBtn")
+								:SetSize(20, 20)
+								:SetMargin(8, 4, 0, 0)
+								:SetBackground("iconPack.18x18/Select All")
+								:SetScript("OnClick", private.ItemListSelectAllOnClick)
+								:SetTooltip(L["Select / Deselect All Items"])
 							)
 						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("ItemList", "itemList")
-							:SetStyle("margin", { left = 2, right = 2, bottom = 3, top = 1 })
+						-- draw a line along the bottom to hide the rounded corners at the bottom of the header frame
+						:AddChildNoLayout(UIElements.New("Texture", "line")
+							:AddAnchor("BOTTOMLEFT", "header")
+							:AddAnchor("BOTTOMRIGHT", "header")
+							:SetHeight(4)
+							:SetTexture("FRAME_BG")
+						)
+						:AddChild(UIElements.New("ItemList", "itemList")
+							:SetMargin(0, 0, 0, 7)
+							:SetBackgroundColor("PRIMARY_BG_ALT")
 							:SetItems(private.GetUngroupedItemList())
 							:SetFilterFunction(private.ItemListItemIsFiltered)
 							:SetScript("OnSelectionChanged", private.UngroupedItemsOnSelectionChanged)
 						)
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "btn")
-						:SetStyle("height", 26)
-						:SetStyle("margin", { top = 10 })
-						:SetText(L["Select Items to Add"])
+					:AddChild(UIElements.New("ActionButton", "btn")
+						:SetHeight(26)
+						:SetMargin(0, 0, 10, 0)
+						:SetText(L["Add"])
 						:SetDisabled(true)
 						:SetScript("OnClick", private.AddItemsOnClick)
 					)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "grouped")
+				:AddChild(UIElements.New("Frame", "grouped")
 					:SetLayout("VERTICAL")
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+					:AddChild(UIElements.New("Frame", "content")
 						:SetLayout("VERTICAL")
-						:SetStyle("borderTexture", "Interface\\Addons\\TradeSkillMaster\\Media\\ItemPreviewEdgeFrame.blp")
-						:SetStyle("borderSize", 8)
-						:SetStyle("borderInset", 1)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-							:SetLayout("VERTICAL")
-							:SetStyle("background", "#1e1e1e")
-							:SetStyle("borderInsets", { left = 2, right = 2, top = 3 })
-							:SetStyle("height", 33)
-							:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
-								:SetLayout("HORIZONTAL")
-								:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-									:SetStyle("margin", { left = 26, right = 4 })
-									:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-									:SetStyle("fontHeight", 16)
-									:SetStyle("justifyH", "CENTER")
-									:SetText(L["Grouped Items"])
-								)
-								:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-									:SetStyle("width", 18)
-									:SetStyle("height", 18)
-									:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-									:SetStyle("backgroundTextureRotation", 0)
-									:SetStyle("margin", { right = 8 })
-									:SetScript("OnClick", private.GroupedMoreBtnOnClick)
-								)
+						:SetBackgroundColor("PRIMARY_BG_ALT", true)
+						:AddChild(UIElements.New("Frame", "header")
+							:SetLayout("HORIZONTAL")
+							:SetHeight(24)
+							:SetBackgroundColor("FRAME_BG", true)
+							:AddChild(UIElements.New("Text", "text")
+								:SetMargin(8, 0, 4, 4)
+								:SetFont("BODY_BODY2_MEDIUM")
+								:SetText(L["Grouped Items"])
 							)
-							:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-								:SetStyle("height", 1)
-								:SetStyle("color", "#585858")
-								:SetStyle("margin", { left = 2, right = 2 })
+							:AddChild(UIElements.New("Button", "selectAllBtn")
+								:SetSize(20, 20)
+								:SetMargin(8, 4, 0, 0)
+								:SetBackground("iconPack.18x18/Select All")
+								:SetScript("OnClick", private.ItemListSelectAllOnClick)
+								:SetTooltip(L["Select / Deselect All Items"])
 							)
 						)
-						:AddChild(TSMAPI_FOUR.UI.NewElement("ItemList", "itemList")
-							:SetStyle("margin", { left = 2, right = 2, bottom = 3, top = 1 })
+						-- draw a line along the bottom to hide the rounded corners at the bottom of the header frame
+						:AddChildNoLayout(UIElements.New("Texture", "line")
+							:AddAnchor("BOTTOMLEFT", "header")
+							:AddAnchor("BOTTOMRIGHT", "header")
+							:SetHeight(4)
+							:SetTexture("FRAME_BG")
+						)
+						:AddChild(UIElements.New("ItemList", "itemList")
+							:SetMargin(0, 0, 0, 7)
+							:SetBackgroundColor("PRIMARY_BG_ALT")
 							:SetItems(private.GetGroupedItemList())
 							:SetFilterFunction(private.ItemListItemIsFiltered)
 							:SetScript("OnSelectionChanged", private.GroupedItemsOnSelectionChanged)
 						)
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "btn")
-						:SetStyle("height", 26)
-						:SetStyle("margin", { top = 10 })
-						:SetText(L["Select Items to Remove"])
+					:AddChildIf(parentGroup, UIElements.New("ActionButton", "btn")
+						:SetHeight(26)
+						:SetMargin(0, 0, 10, 0)
+						:SetText(L["Remove"])
 						:SetDisabled(true)
+						:SetModifierText(L["Move to Parent Group"], "SHIFT")
 						:SetScript("OnClick", private.RemoveItemsOnClick)
 						:SetTooltip(L["Hold shift to move the items to the parent group instead of removing them."])
 					)
+					:AddChildIf(not parentGroup, UIElements.New("ActionButton", "btn")
+						:SetHeight(26)
+						:SetMargin(0, 0, 10, 0)
+						:SetText(L["Remove"])
+						:SetDisabled(true)
+						:SetScript("OnClick", private.RemoveItemsOnClick)
+					)
 				)
 			)
-	elseif button == L["Group Operations"] then
+	elseif button == L["Operations"] then
 		TSM.UI.AnalyticsRecordPathChange("main", "groups", "operations")
-		return TSMAPI_FOUR.UI.NewElement("ScrollFrame", "operations")
-			:SetStyle("background", "#1e1e1e")
-			:SetStyle("padding.top", 10)
+		return UIElements.New("ScrollFrame", "operations")
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG")
 			:AddChild(private.GetModuleOperationFrame("Auctioning"))
 			:AddChild(private.GetModuleOperationFrame("Crafting"))
 			:AddChild(private.GetModuleOperationFrame("Mailing"))
@@ -302,158 +505,117 @@ function private.GetGroupsPage(self, button)
 end
 
 function private.GetModuleOperationFrame(moduleName)
-	local override = TSM.Groups.HasOperationOverride(private.currentGroupPath, moduleName)
-
-	-- populate our list of operations for this module
-	if not private.moduleOperationList[moduleName] then
-		private.moduleOperationList[moduleName] = {}
-	end
-	wipe(private.moduleOperationList[moduleName])
-	tinsert(private.moduleOperationList[moduleName], "|cffffd839"..L["Create New Operation"].."|r")
-	for _, operationName in TSM.Operations.OperationIterator(moduleName) do
-		tinsert(private.moduleOperationList[moduleName], operationName)
-	end
-
+	local override = TSM.Groups.HasOperationOverride(private.currentGroupPath, moduleName) or private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH
 	local numGroupOperations = 0
 	for _ in TSM.Groups.OperationIterator(private.currentGroupPath, moduleName) do
 		numGroupOperations = numGroupOperations + 1
 	end
 
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "operationInfo"..moduleName)
-		:SetContext(moduleName)
+	return UIElements.New("CollapsibleContainer", "operationInfo"..moduleName)
 		:SetLayout("VERTICAL")
-		:SetStyle("padding", { left = 8, right = 4, top = 4, bottom = 0 })
-
-	frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "moduleTitle")
-		:SetLayout("HORIZONTAL")
-		:SetStyle("height", 24)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "expander")
-			:SetStyle("backgroundTexturePack", private.moduleCollapsed[moduleName] and "iconPack.18x18/Carot/Collapsed" or "iconPack.18x18/Carot/Expanded")
-			:SetStyle("width", TSM.UI.TexturePacks.GetWidth("iconPack.18x18/Carot/Expanded"))
-			:SetStyle("height", TSM.UI.TexturePacks.GetHeight("iconPack.18x18/Carot/Expanded"))
-			:SetScript("OnClick", private.OperationExpanderOnClick)
+		:SetMargin(0, 0, 0, moduleName == "Warehousing" and 0 or 8)
+		:SetContext(moduleName)
+		:SetContextTable(private.moduleCollapsed, moduleName)
+		:SetHeadingText(format(L["%s Operations"], moduleName))
+		:AddChild(UIElements.New("Text", "moduleDesc")
+			:SetSize("AUTO", 20)
+			:SetFont("BODY_BODY3")
+			:SetText(OPERATION_LABELS[moduleName])
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "moduleName")
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 14)
-			:SetStyle("textColor", "#79a2ff")
-			:SetStyle("margin", { left = 4, right = 2 })
-			:SetStyle("autoWidth", true)
-			:SetText(moduleName)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "numGroupOperations")
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 14)
-			:SetStyle("textColor", "#ffffff")
-			:SetStyle("margin", { left = 2 })
-			:SetFormattedText("("..L["%d Operations"]..")", numGroupOperations)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "overrideCheckbox")
-			:SetStyle("height", 24)
-			:SetStyle("margin", { right = 4 })
-			:SetCheckboxPosition("RIGHT")
-			:SetText(L["Override parent operations"])
+		:AddChildIf(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH, UIElements.New("Checkbox", "overrideCheckbox")
+			:SetHeight(20)
+			:SetMargin(0, 0, 6, 0)
+			:SetFont("BODY_BODY2")
+			:SetCheckboxPosition("LEFT")
+			:SetText(L["Override Parent Operations"])
 			:SetChecked(override)
 			:SetScript("OnValueChanged", private.OverrideToggleOnValueChanged)
 		)
-	)
-
-	local moduleTitle = frame:GetElement("moduleTitle")
-	if private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH then
-		moduleTitle:GetElement("overrideCheckbox"):Hide()
-	else
-		moduleTitle:GetElement("numGroupOperations"):SetStyle("autoWidth", true)
-	end
-
-	if private.moduleCollapsed[moduleName] then
-		return frame
-	end
-
-	for i, operationName in TSM.Groups.OperationIterator(private.currentGroupPath, moduleName) do
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "operation"..i)
+		:AddChild(UIElements.New("Frame", "container")
 			:SetLayout("VERTICAL")
-			:SetStyle("margin", { left = 20, right = 8, top = 8 })
-			:SetStyle("padding", 8)
-			:SetStyle("background", "#992e2e2e")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "title")
+			:SetContext(moduleName)
+			:SetHeight(36 * numGroupOperations)
+			:AddChildrenWithFunction(private.AddOperationRows)
+		)
+		:AddChildIf(override and numGroupOperations < TSM.Operations.GetMaxNumber(moduleName), UIElements.New("Frame", "addMore")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+			:AddChild(UIElements.New("Button", "button")
+				:SetWidth("AUTO")
+				:SetMargin(0, 2, 0, 0)
+				:SetFont("BODY_BODY2")
+				:SetTextColor("INDICATOR")
+				:SetText(L["Add More Operations"])
+				:SetContext(moduleName)
+				:SetScript("OnClick", private.AddOperationButtonOnClick)
+			)
+		)
+end
+
+function private.AddOperationRows(container)
+	local moduleName = container:GetContext()
+	local override = TSM.Groups.HasOperationOverride(private.currentGroupPath, moduleName) or private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH
+	for i, operationName in TSM.Groups.OperationIterator(private.currentGroupPath, moduleName) do
+		container:AddChild(UIElements.New("Frame", "operation"..i)
+			:SetLayout("HORIZONTAL")
+			:SetHeight(28)
+			:SetMargin(0, 0, 8, 0)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "operationNum")
+				:SetWidth(20)
+				:SetMargin(2, 8, 0, 0)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(i)
+			)
+			:AddChild(UIElements.New("Frame", "title")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 20)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "name")
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("textColor", "#ffd839")
-					:SetStyle("fontHeight", 14)
-					:SetStyle("autoWidth", true)
+				:SetPadding(0, 8, 0, 0)
+				:SetBackgroundColor("ACTIVE_BG", true)
+				:AddChildNoLayout(UIElements.New("Button", "dragFrame")
+					:SetSize(15, 24)
+					:AddAnchor("LEFT", 1, 0)
+					:SetContext(i)
+					:SetScript("OnMouseDown", override and private.DragButtonOnMouseDown or nil)
+					:SetScript("OnMouseUp", override and private.DragButtonOnMouseUp or nil)
+				)
+				:AddChild(UIElements.New("Frame", "handleBackground")
+					:SetSize(16, 28)
+					:SetBackgroundColor("FRAME_BG", true)
+					-- draw a line along the right to hide the rounded corners at the bottom of the header frame
+					:AddChildNoLayout(UIElements.New("Texture", "line")
+						:AddAnchor("TOPRIGHT")
+						:AddAnchor("BOTTOMRIGHT")
+						:SetWidth(4)
+						:SetTexture("FRAME_BG")
+					)
+					:AddChildNoLayout(UIElements.New("Texture", "texture")
+						:AddAnchor("LEFT")
+						:SetTextureAndSize("iconPack.18x18/Grip")
+					)
+				)
+				:AddChild(UIElements.New("Text", "name")
+					:SetWidth("AUTO")
+					:SetMargin(8, 0, 0, 0)
+					:SetFont("BODY_BODY2")
 					:SetText(operationName)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "descBtn")
-					:SetStyle("margin", { left = 8 })
-					:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-					:SetStyle("fontHeight", 11)
-					:SetStyle("autoWidth", true)
-					:SetContext(operationName)
-					:SetText(private.descriptionShown[operationName] and L["Hide Description"] or L["Show Description"])
-					:SetScript("OnClick", private.DescriptionButtonOnClick)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "spacer"))
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "configBtn")
-					:SetStyle("width", TSM.UI.TexturePacks.GetWidth("iconPack.18x18/Configure"))
-					:SetStyle("backgroundTexturePack", "iconPack.18x18/Configure")
+				:AddChild(UIElements.New("Frame", "spacer"))
+				:AddChild(UIElements.New("Button", "configBtn")
+					:SetBackgroundAndSize("iconPack.18x18/Popout")
 					:SetContext(operationName)
 					:SetScript("OnClick", private.ConfigOperationOnClick)
 				)
+				:AddChildIf(override, UIElements.New("Button", "removeBtn")
+					:SetMargin(4, 0, 0, 0)
+					:SetBackgroundAndSize("iconPack.18x18/Close/Default")
+					:SetContext(i)
+					:SetScript("OnClick", private.RemoveOperationOnClick)
+				)
 			)
 		)
-		if override or private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH then
-			frame:GetElement("operation"..i..".title"):AddChild(TSMAPI_FOUR.UI.NewElement("Button", "removeBtn")
-				:SetStyle("margin", { left = 4 })
-				:SetStyle("width", TSM.UI.TexturePacks.GetWidth("iconPack.18x18/Close/Circle"))
-				:SetStyle("backgroundTexturePack", "iconPack.18x18/Close/Circle")
-				:SetContext(i)
-				:SetScript("OnClick", private.RemoveOperationOnClick)
-			)
-		end
-		if private.descriptionShown[operationName] then
-			frame:GetElement("operation"..i):AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-				:SetStyle("height", 16)
-				:SetStyle("margin", { top = 8, bottom = 4 })
-				:SetStyle("fontHeight", 12)
-				:SetStyle("fontSpacing", 4)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(TSM.Operations.GetDescription(moduleName, operationName))
-			)
-		end
 	end
-
-	if numGroupOperations < TSM.Operations.GetMaxNumber(moduleName) then
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "moduleTitle")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 29)
-			:SetStyle("margin", { top = 6, bottom = 10 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "dropdownDesc")
-				:SetStyle("height", 14)
-				:SetStyle("width", 120)
-				:SetStyle("margin", { left = 24, top = 5, bottom = 4 })
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 12)
-				:SetStyle("textColor", "#e2e2e2")
-				:SetText(L["ADD OPERATION"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Dropdown", "dropdown")
-				:SetStyle("height", 26)
-				:SetStyle("autoWidth", true)
-				:SetStyle("margin", { right = 8, left = -4 })
-				:SetHintText(L["Select Operation"])
-				:SetItems(private.moduleOperationList[moduleName])
-				:SetDisabled(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH and not override)
-				:SetScript("OnSelectionChanged", private.NewOperationSelectionChanged)
-			)
-		)
-	else
-		frame:SetStyle("margin.bottom", 10)
-	end
-
-	return frame
 end
 
 
@@ -462,10 +624,68 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.GroupSearchOnTextChanged(input)
-	local groupsContentFrame = input:GetElement("__parent.__parent.__parent.content")
+function private.DragButtonOnMouseDown(button)
+	local frame = button:GetParentElement()
+	frame:SetRelativeLevel(20)
+	frame:StartMoving()
+	button:SetScript("OnUpdate", private.DragFrameOnUpdate)
+	button:GetElement("__parent.name")
+		:SetTextColor("INDICATOR")
+	frame:SetWidth(250)
+		:Draw()
+end
+
+function private.DragButtonOnMouseUp(button)
+	button:SetScript("OnUpdate", nil)
+	local frame = button:GetParentElement()
+	frame:StopMovingOrSizing()
+	frame:SetRelativeLevel(1)
+	local container = frame:GetParentElement():GetParentElement()
+
+	local moduleName = container:GetParentElement():GetParentElement():GetContext()
+	local index = button:GetContext()
+	-- TODO: refactor
+	for k, v in container:LayoutChildrenIterator() do
+		if k ~= index and v:IsMouseOver() then
+			TSM.Groups.SwapOperation(private.currentGroupPath, moduleName, index, k)
+		end
+	end
+	for i, operationName in TSM.Groups.OperationIterator(private.currentGroupPath, moduleName) do
+		container:GetElement("operation"..i..".title.name"):SetText(operationName)
+	end
+
+	frame:SetWidth(nil)
+	frame:GetElement("name")
+		:SetTextColor("TEXT")
+	frame:GetParentElement():GetParentElement()
+		:Draw()
+end
+
+function private.DragFrameOnUpdate(frame)
+	local scrollFrame = frame:GetElement("__parent.__parent.__parent.__parent.__parent.__parent")
+	local uiScale = UIParent:GetEffectiveScale()
+	local x, y = GetCursorPosition()
+	x = x / uiScale
+	y = y / uiScale
+
+	-- TODO: refactor
+	local top = scrollFrame:_GetBaseFrame():GetTop()
+	local bottom = scrollFrame:_GetBaseFrame():GetBottom()
+	if y > top then
+		scrollFrame._scrollAmount = top - y
+	elseif y < bottom then
+		scrollFrame._scrollAmount = bottom - y
+	else
+		scrollFrame._scrollAmount = 0
+	end
+
+	scrollFrame._scrollbar:SetValue(scrollFrame._scrollbar:GetValue() + scrollFrame._scrollAmount / DRAG_SCROLL_SPEED_FACTOR)
+end
+
+function private.GroupSearchOnValueChanged(input)
+	local groupsContentFrame = input:GetElement("__parent.__parent.__parent.view.content")
 	-- Copy search filter
-	local text = strlower(strtrim(input:GetText()))
+	local text = strlower(input:GetValue())
 
 	if private.groupSearch == text then
 		return
@@ -473,8 +693,27 @@ function private.GroupSearchOnTextChanged(input)
 
 	private.groupSearch = text
 	local searchStr = String.Escape(private.groupSearch)
-	-- Check selection is being filtered out
-	if not strmatch(strlower(private.currentGroupPath), searchStr) then
+	-- Check if the selection is being filtered out
+	if strmatch(strlower(private.currentGroupPath), searchStr) then
+		local titleFrame = groupsContentFrame:GetElement("header.title")
+		local buttonsFrame = groupsContentFrame:GetElement("buttons")
+		input:GetElement("__parent.__parent.groupTree"):SetSelectedGroup(private.currentGroupPath)
+		if private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH then
+			titleFrame:GetElement("text")
+				:SetTextColor("TEXT")
+				:SetText(L["Base Group"])
+		else
+			local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath)))
+			titleFrame:GetElement("text")
+				:SetTextColor(groupColor)
+				:SetText(TSM.Groups.Path.GetName(private.currentGroupPath))
+		end
+		titleFrame:GetElement("renameBtn"):Show()
+		titleFrame:GetElement("exportBtn"):Show()
+		buttonsFrame:Show()
+		buttonsFrame:Draw()
+		titleFrame:Draw()
+	else
 		local titleFrame = groupsContentFrame:GetElement("header.title")
 		local buttonsFrame = groupsContentFrame:GetElement("buttons")
 		input:GetElement("__parent.__parent.groupTree"):SetSelectedGroup(TSM.CONST.ROOT_GROUP_PATH)
@@ -482,7 +721,8 @@ function private.GroupSearchOnTextChanged(input)
 			:SetText(L["No group selected"])
 			:SetEditing(false)
 		-- Hide the content
-		titleFrame:GetElement("editBtn"):Hide()
+		titleFrame:GetElement("renameBtn"):Hide()
+		titleFrame:GetElement("exportBtn"):Hide()
 		buttonsFrame:Hide()
 		buttonsFrame:Draw()
 		titleFrame:Draw()
@@ -492,56 +732,359 @@ function private.GroupSearchOnTextChanged(input)
 		:Draw()
 end
 
-local function MoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Expand All Groups"], private.ExpandAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Collapse All Groups"], private.CollapseAllBtnOnClick
+function private.ExpandAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleExpandAll()
+end
+
+function private.ImportGroupBtnOnClick(button)
+	local dialogFrame = UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(658, 250)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG", true)
+		:SetMouseEnabled(true)
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(20, -4, -4, 12)
+			:AddChild(UIElements.New("Text", "title")
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(L["Import Groups & Operations"])
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.ImportExportCloseBtnOnClick)
+			)
+		)
+		:AddChild(UIElements.New("Text", "desc")
+			:SetHeight(40)
+			:SetMargin(0, 0, 0, 12)
+			:SetFont("BODY_BODY3")
+			:SetText(L["You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"])
+		)
+		:AddChild(UIElements.New("Text", "text")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 8)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Import String"])
+		)
+		:AddChild(UIElements.New("MultiLineInput", "input")
+			:SetMargin(0, 0, 0, 12)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetFocused(true)
+			:SetPasteMode()
+			:SetScript("OnValueChanged", private.ImportInputOnValueChanged)
+		)
+		:SetScript("OnHide", private.ImportOnHide)
+	button:GetBaseElement():ShowDialogFrame(dialogFrame)
+	dialogFrame:Draw()
+end
+
+function private.GetImportSummaryDialog()
+	wipe(private.importGroupTreeContext)
+	local dialogFrame = UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(612, 437)
+		:SetPadding(8)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG", true)
+		:SetMouseEnabled(true)
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(20, -4, -4, 16)
+			:AddChild(UIElements.New("Text", "title")
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(L["Import Summary"])
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.ImportExportCloseBtnOnClick)
+			)
+		)
+		:AddChild(UIElements.New("Frame", "nav")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 16)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+			-- TODO: add the other tabs (and OnClick handlers for these buttons)
+			:AddChild(UIElements.New("Button", "groups")
+				:SetWidth("AUTO")
+				:SetMargin(8, 8, 0, 0)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(format(L["%d Groups"], 0))
+			)
+			:AddChild(UIElements.New("Texture", "line")
+				:SetWidth(2)
+				:SetTexture("ACTIVE_BG_ALT")
+			)
+			:AddChild(UIElements.New("Button", "operations")
+				:SetWidth("AUTO")
+				:SetMargin(8, 8, 0, 0)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(format(L["%d Operations"], 0))
+			)
+			:AddChild(UIElements.New("Texture", "line2")
+				:SetWidth(2)
+				:SetTexture("ACTIVE_BG_ALT")
+			)
+			:AddChild(UIElements.New("Button", "items")
+				:SetWidth("AUTO")
+				:SetMargin(8, 8, 0, 0)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(format(L["%d Items"], 0))
+			)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+		)
+		:AddChild(UIElements.New("Frame", "container")
+			:SetLayout("VERTICAL")
+			:SetPadding(2)
+			:SetMargin(0, 0, 0, 12)
+			:SetBackgroundColor("PRIMARY_BG")
+			:SetBorderColor("ACTIVE_BG")
+			:AddChild(UIElements.New("Frame", "header")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(8)
+				:AddChild(UIElements.New("Input", "input")
+					:AllowItemInsert(true)
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:SetHintText(L["Search Groups"])
+					:SetScript("OnValueChanged", private.ImportFilterOnValueChanged)
+				)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(8, 4, 0, 0)
+					:SetBackground("iconPack.18x18/Expand All")
+					:SetScript("OnClick", private.ImportExpandAllOnClick)
+					:SetTooltip(L["Expand / Collapse All Groups"])
+				)
+				:AddChild(UIElements.New("Button", "selectAllBtn")
+					:SetSize(24, 24)
+					:SetBackground("iconPack.18x18/Select All")
+					:SetScript("OnClick", private.ImportSelectAllOnClick)
+					:SetTooltip(L["Select / Deselect All Groups"])
+				)
+			)
+			:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
+				:SetContextTable(private.importGroupTreeContext, DEFAULT_IMPORT_GROUP_TREE_CONTEXT)
+				:SetQuery(private.CreateImportExportDBQuery())
+				:SetScript("OnGroupSelectionChanged", private.ImportGroupTreeOnGroupSelectionChanged)
+			)
+		)
+		:AddChild(UIElements.New("Frame", "items")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 12)
+			:AddChild(UIElements.New("Checkbox", "moveCheckbox")
+				:SetWidth("AUTO")
+				:SetMargin(0, 8, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetCheckboxPosition("LEFT")
+				:SetChecked(true)
+			)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+		)
+		:AddChild(UIElements.New("Frame", "operations")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 12)
+			:AddChild(UIElements.New("Checkbox", "includeCheckbox")
+				:SetWidth("AUTO")
+				:SetMargin(0, 8, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetCheckboxPosition("LEFT")
+				:SetChecked(true)
+				:SetText(L["Include operations?"])
+				:SetScript("OnValueChanged", private.ImportIncludeOperationsCheckboxOnValueChanged)
+			)
+			:AddChild(UIElements.New("Checkbox", "replaceCheckbox")
+				:SetWidth("AUTO")
+				:SetMargin(0, 8, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetCheckboxPosition("LEFT")
+				:SetChecked(true)
+			)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+		)
+		:AddChild(UIElements.New("ActionButton", "btn")
+			:SetHeight(24)
+			:SetText(L["Import"])
+			:SetScript("OnClick", private.ImportBtnOnClick)
+		)
+		:SetScript("OnHide", private.ImportOnHide)
+	return dialogFrame
+end
+
+function private.ImportInputOnValueChanged(input)
+	local baseFrame = input:GetBaseElement()
+	if not TSM.Groups.ImportExport.ProcessImport(input:GetValue()) then
+		baseFrame:HideDialog()
+		Log.PrintUser(L["The pasted value was not valid. Ensure you are pasting the entire import string."])
+		return
+	end
+
+	-- build the import group DB
+	private.importExportGroupDB:TruncateAndBulkInsertStart()
+	local importGroupName = TSM.Groups.ImportExport.GetPendingImportGroupName()
+	for groupPath in TSM.Groups.ImportExport.PendingImportGroupIterator() do
+		groupPath = groupPath == TSM.CONST.ROOT_GROUP_PATH and importGroupName or TSM.Groups.Path.Join(importGroupName, groupPath)
+		local orderStr = gsub(groupPath, TSM.CONST.GROUP_SEP, "\001")
+		orderStr = strlower(orderStr)
+		private.importExportGroupDB:BulkInsertNewRow(groupPath, orderStr)
+	end
+	private.importExportGroupDB:BulkInsertEnd()
+
+	-- clear the OnHide handler so we don't reset the import context
+	input:GetParentElement():SetScript("OnHide", nil)
+	baseFrame:HideDialog()
+	local dialogFrame = private.GetImportSummaryDialog()
+	baseFrame:ShowDialogFrame(dialogFrame)
+	private.UpdateImportConfirmationDialog(dialogFrame)
+end
+
+function private.UpdateImportConfirmationDialog(dialogFrame)
+	local numItems, numGroups, numExistingItems, numOperations, numExistingOperations, numExistingCustomSources = TSM.Groups.ImportExport.GetImportTotals()
+	dialogFrame:GetElement("nav.groups")
+		:SetText(format(L["%d Groups"], numGroups))
+	dialogFrame:GetElement("nav.operations")
+		:SetText(format(L["%d Operations"], numOperations))
+	dialogFrame:GetElement("nav.items")
+		:SetText(format(L["%d Items"], numItems))
+	if numExistingItems > 0 then
+		dialogFrame:GetElement("items.moveCheckbox")
+			:SetText(format(L["Move %d already grouped items?"], numExistingItems))
+			:SetChecked(true)
+		dialogFrame:GetElement("items"):Show()
+	else
+		dialogFrame:GetElement("items"):Hide()
+	end
+	if numOperations > 0 then
+		dialogFrame:GetElement("operations.includeCheckbox")
+			:SetChecked(true)
+		dialogFrame:GetElement("operations.replaceCheckbox")
+			:SetChecked(true)
+		if numExistingOperations > 0 then
+			if numExistingCustomSources > 0 then
+				dialogFrame:GetElement("operations.replaceCheckbox")
+					:SetText(format(L["Replace %d existing operations and %d existing custom sources?"], numExistingOperations, numExistingCustomSources))
+			else
+				dialogFrame:GetElement("operations.replaceCheckbox")
+					:SetText(format(L["Replace %d existing operations?"], numExistingOperations))
+			end
+			dialogFrame:GetElement("operations.replaceCheckbox"):Show()
+		else
+			dialogFrame:GetElement("operations.replaceCheckbox"):Hide()
+		end
+		dialogFrame:GetElement("operations"):Show()
+	else
+		dialogFrame:GetElement("operations"):Hide()
+	end
+	dialogFrame:Draw()
+end
+
+function private.ImportFilterOnValueChanged(input)
+	input:GetElement("__parent.__parent.groupTree")
+		:SetSearchString(strlower(input:GetValue()))
+		:Draw()
+end
+
+function private.ImportExpandAllOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleExpandAll()
+end
+
+function private.ImportSelectAllOnClick(button)
+	local importGroupName = TSM.Groups.ImportExport.GetPendingImportGroupName()
+	local groupTree = button:GetElement("__parent.__parent.groupTree")
+	groupTree:SetGroupSelected(importGroupName, false)
+	groupTree:ToggleSelectAll()
+end
+
+function private.ImportGroupTreeOnGroupSelectionChanged(groupTree)
+	local importGroupName = TSM.Groups.ImportExport.GetPendingImportGroupName()
+	groupTree:SetGroupSelected(importGroupName, true)
+	-- make sure the parent of any selected groups are also selected
+	for relativeGroupPath in TSM.Groups.ImportExport.PendingImportGroupIterator() do
+		local groupPath = relativeGroupPath == TSM.CONST.ROOT_GROUP_PATH and importGroupName or TSM.Groups.Path.Join(importGroupName, relativeGroupPath)
+		local isSelected = groupTree:IsGroupSelected(groupPath)
+		TSM.Groups.ImportExport.SetGroupFiltered(relativeGroupPath, not isSelected)
+		if isSelected then
+			local tempGroupPath = TSM.Groups.Path.Split(groupPath)
+			while tempGroupPath do
+				groupTree:SetGroupSelected(tempGroupPath, true)
+				tempGroupPath = TSM.Groups.Path.Split(tempGroupPath)
+			end
+		end
+	end
+	for relativeGroupPath in TSM.Groups.ImportExport.PendingImportGroupIterator() do
+		local groupPath = relativeGroupPath == TSM.CONST.ROOT_GROUP_PATH and importGroupName or TSM.Groups.Path.Join(importGroupName, relativeGroupPath)
+		local isSelected = groupTree:IsGroupSelected(groupPath)
+		TSM.Groups.ImportExport.SetGroupFiltered(relativeGroupPath, not isSelected)
+	end
+	private.UpdateImportConfirmationDialog(groupTree:GetParentElement():GetParentElement())
+end
+
+function private.ImportIncludeOperationsCheckboxOnValueChanged(checkbox)
+	if checkbox:IsChecked() then
+		checkbox:GetElement("__parent.replaceCheckbox"):Show()
+	else
+		checkbox:GetElement("__parent.replaceCheckbox"):Hide()
 	end
 end
 
-function private.MoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, MoreDialogRowIterator)
+function private.ImportBtnOnClick(button)
+	local moveExistingItems = button:GetElement("__parent.items.moveCheckbox"):IsChecked()
+	local includeOperations = button:GetElement("__parent.operations.includeCheckbox"):IsChecked()
+	local replaceOperations = button:GetElement("__parent.operations.replaceCheckbox"):IsChecked()
+	TSM.Groups.ImportExport.CommitImport(moveExistingItems, includeOperations, replaceOperations)
+	button:GetBaseElement():HideDialog()
 end
 
-function private.ExpandAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.groupSelection.groupTree"):ExpandAll()
-	baseFrame:HideDialog()
+function private.ImportOnHide()
+	TSM.Groups.ImportExport.ClearImportContext()
 end
 
-function private.CollapseAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.groupSelection.groupTree"):CollapseAll()
-	baseFrame:HideDialog()
-end
-
-function private.GroupTreeGetList(groups, headerNameLookup)
-	for _, groupPath in TSM.Groups.GroupIterator() do
-		tinsert(groups, groupPath)
+function private.GroupTreeOnGroupSelected(groupTree, path)
+	local view = groupTree:GetElement("__parent.__parent.view")
+	if view ~= "content" then
+		view:SetPath("content", true)
 	end
-	tinsert(groups, 1, TSM.CONST.ROOT_GROUP_PATH)
-	headerNameLookup[TSM.CONST.ROOT_GROUP_PATH] = L["Base Group"]
-end
 
-function private.GroupTreeOnGroupSelected(self, path)
 	private.currentGroupPath = path
-	local contentFrame = self:GetElement("__parent.__parent.content")
+	local contentFrame = view:GetElement("content")
 	local titleFrame = contentFrame:GetElement("header.title")
 	local buttonsFrame = contentFrame:GetElement("buttons")
 
 	if path == TSM.CONST.ROOT_GROUP_PATH then
+		titleFrame:GetElement("icon")
+			:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", "TEXT"))
 		titleFrame:GetElement("text")
+			:SetTextColor("TEXT")
 			:SetText(L["Base Group"])
 			:SetEditing(false)
-		titleFrame:GetElement("editBtn"):Hide()
+		titleFrame:GetElement("renameBtn"):Hide()
+		titleFrame:GetElement("exportBtn"):Hide()
 		buttonsFrame:RenamePath(L["Information"], 1)
 	else
+		local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, path)))
+		titleFrame:GetElement("icon")
+			:SetTextureAndSize(TSM.UI.TexturePacks.GetColoredKey("iconPack.18x18/Folder", groupColor))
 		titleFrame:GetElement("text")
+			:SetTextColor(groupColor)
 			:SetText(TSM.Groups.Path.GetName(path))
 			:SetEditing(false)
-		titleFrame:GetElement("editBtn"):Show()
-		buttonsFrame:RenamePath(L["Add / Remove Items"], 1)
+		titleFrame:GetElement("renameBtn"):Show()
+		titleFrame:GetElement("exportBtn"):Show()
+		buttonsFrame:RenamePath(L["Items"], 1)
 	end
 	-- Show the frame in case it is hidden by filter
 	buttonsFrame:Show()
@@ -550,7 +1093,11 @@ function private.GroupTreeOnGroupSelected(self, path)
 	contentFrame:GetElement("buttons"):ReloadContent()
 end
 
-function private.TitleOnValueChanged(text, newValue)
+function private.GroupTreeOnNewGroup(groupTree)
+	groupTree:GetElement("__parent.__parent.view.content.header.title.text"):SetEditing(true)
+end
+
+function private.GroupNameChanged(text, newValue)
 	newValue = strtrim(newValue)
 	local parent = TSM.Groups.Path.GetParent(private.currentGroupPath)
 	local newPath = parent and parent ~= TSM.CONST.ROOT_GROUP_PATH and (parent..TSM.CONST.GROUP_SEP..newValue) or newValue
@@ -566,48 +1113,370 @@ function private.TitleOnValueChanged(text, newValue)
 	else
 		TSM.Groups.Move(private.currentGroupPath, newPath)
 		Analytics.Action("MOVED_GROUP", private.currentGroupPath, newPath)
-		text:GetElement("__parent.__parent.__parent.__parent.groupSelection.groupTree"):SetSelectedGroup(newPath, true)
+		text:GetElement("__parent.__parent.__parent.__parent.__parent.groupSelection.groupTree"):SetSelectedGroup(newPath, true)
 	end
 end
 
-function private.TitleOnEditingChanged(text, editing)
+function private.NameOnEditingChanged(text, editing)
 	if editing then
-		text:GetElement("__parent.editBtn"):Hide()
+		text:GetElement("__parent.renameBtn"):Hide()
+		text:GetElement("__parent.exportBtn"):Hide()
 	else
-		text:GetElement("__parent.editBtn"):Show()
+		text:GetElement("__parent.renameBtn"):Show()
+		text:GetElement("__parent.exportBtn"):Show()
 	end
 end
 
-function private.EditBtnOnClick(button)
-	assert(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH)
+function private.RenameBtnOnClick(button)
 	button:GetElement("__parent.text"):SetEditing(true)
 end
 
-function private.ItemFilterOnTextChanged(self)
-	local text = strtrim(self:GetText())
+function private.ExportBtnOnClick(button)
+	-- build the export DB
+	wipe(private.exportSubGroups)
+	private.importExportGroupDB:TruncateAndBulkInsertStart()
+	for _, groupPath in TSM.Groups.GroupIterator() do
+		local relGroupPath = nil
+		if TSM.Groups.Path.IsChild(groupPath, private.currentGroupPath) then
+			relGroupPath = TSM.Groups.Path.GetRelative(groupPath, private.currentGroupPath)
+		end
+		if relGroupPath then
+			private.exportSubGroups[relGroupPath] = true
+			local orderStr = gsub(relGroupPath, TSM.CONST.GROUP_SEP, "\001")
+			orderStr = strlower(orderStr)
+			private.importExportGroupDB:BulkInsertNewRow(relGroupPath, orderStr)
+		end
+	end
+	private.importExportGroupDB:BulkInsertEnd()
 
+	local str, numItems, numSubGroups, numOperations, numCustomSources = TSM.Groups.ImportExport.GenerateExport(private.currentGroupPath, private.exportSubGroups, false, false)
+	local groupColor = Theme.GetGroupColor(select('#', strsplit(TSM.CONST.GROUP_SEP, private.currentGroupPath)))
+	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(658, 408)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG", true)
+		:SetMouseEnabled(true)
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(20, -4, -4, 12)
+			:AddChild(UIElements.New("Text", "title")
+				:SetFont("BODY_BODY2_BOLD")
+				:SetJustifyH("CENTER")
+				:SetText(L["Export"]..": "..groupColor:ColorText(TSM.Groups.Path.GetName(private.currentGroupPath)))
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.ImportExportCloseBtnOnClick)
+			)
+		)
+		:AddChild(UIElements.New("Text", "desc")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 12)
+			:SetFont("BODY_BODY3")
+			:SetText(L["You can use the export string below to share this group with others."])
+		)
+		:AddChild(UIElements.New("Frame", "options")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 12)
+			:AddChild(UIElements.New("GroupSelector", "subGroups")
+				:SetWidth(240)
+				:SetMargin(0, 12, 0, 0)
+				:SetSelectedText(L["%d subgroups included"])
+				:SetCustomQueryFunc(private.CreateImportExportDBQuery)
+				:SetSelection(private.exportSubGroups)
+				:SetHintText(L["Select included subgroups"])
+				:SetScript("OnSelectionChanged", private.ExportOptionOnValueChanged)
+			)
+			:AddChild(UIElements.New("Checkbox", "excludeOperations")
+				:SetWidth("AUTO")
+				:SetMargin(0, 12, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetCheckboxPosition("LEFT")
+				:SetText(L["Exclude operations?"])
+				:SetScript("OnValueChanged", private.ExportOptionOnValueChanged)
+			)
+			:AddChild(UIElements.New("Checkbox", "excludeCustomSources")
+				:SetWidth("AUTO")
+				:SetMargin(0, 12, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetCheckboxPosition("LEFT")
+				:SetText(L["Exclude custom sources?"])
+				:SetScript("OnValueChanged", private.ExportOptionOnValueChanged)
+			)
+			:AddChild(UIElements.New("Spacer", "spacer"))
+		)
+		:AddChild(UIElements.New("Text", "heading")
+			:SetMargin(0, 0, 0, 8)
+			:SetHeight(20)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Export String"])
+		)
+		:AddChild(UIElements.New("Frame", "content")
+			:SetLayout("VERTICAL")
+			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:AddChild(UIElements.New("MultiLineInput", "input")
+				:SetBackgroundColor("PRIMARY_BG_ALT")
+				:SetValue(str)
+			)
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("Frame", "footer")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(28)
+				:SetPadding(8, 8, 4, 4)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("Text", "items")
+					:SetWidth("AUTO")
+					:SetMargin(8, 8, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["%d Items"], numItems))
+				)
+				:AddChild(UIElements.New("Texture", "line1")
+					:SetWidth(2)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Text", "subGroups")
+					:SetWidth("AUTO")
+					:SetMargin(8, 8, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["%d Sub-Groups"], numSubGroups))
+				)
+				:AddChild(UIElements.New("Texture", "line2")
+					:SetWidth(2)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Text", "operations")
+					:SetWidth("AUTO")
+					:SetMargin(8, 8, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["%d Operations"], numOperations))
+				)
+				:AddChild(UIElements.New("Texture", "line3")
+					:SetWidth(2)
+					:SetTexture("ACTIVE_BG")
+				)
+				:AddChild(UIElements.New("Text", "customSources")
+					:SetWidth("AUTO")
+					:SetMargin(8, 0, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["%d Custom Sources"], numCustomSources))
+				)
+			)
+		)
+	)
+end
+
+function private.CreateImportExportDBQuery()
+	return private.importExportGroupDB:NewQuery()
+		:OrderBy("orderStr", true)
+end
+
+function private.ImportExportCloseBtnOnClick(button)
+	button:GetBaseElement():HideDialog()
+end
+
+function private.ExportOptionOnValueChanged(element)
+	wipe(private.exportSubGroups)
+	for groupPath in element:GetElement("__parent.subGroups"):SelectedGroupIterator() do
+		private.exportSubGroups[groupPath] = true
+	end
+	local excludeOperations = element:GetElement("__parent.excludeOperations"):IsChecked()
+	local excludeCustomSources = element:GetElement("__parent.excludeCustomSources"):IsChecked()
+	local str, numItems, numSubGroups, numOperations, numCustomSources = TSM.Groups.ImportExport.GenerateExport(private.currentGroupPath, private.exportSubGroups, excludeOperations, excludeCustomSources)
+	element:GetElement("__parent.excludeCustomSources")
+		:SetDisabled(excludeOperations)
+		:SetChecked(excludeCustomSources and not excludeOperations, true)
+		:Draw()
+	local content = element:GetElement("__parent.__parent.content")
+	content:GetElement("input"):SetValue(str)
+	content:GetElement("footer.items"):SetText(format(L["%d Items"], numItems))
+	content:GetElement("footer.subGroups"):SetText(format(L["%d Sub-Groups"], numSubGroups))
+	content:GetElement("footer.operations"):SetText(format(L["%d Operations"], numOperations))
+	content:GetElement("footer.customSources"):SetText(format(L["%d Custom Sources"], numCustomSources))
+	content:Draw()
+end
+
+function private.ItemFilterValidateFunc(_, value)
+	return private.itemFilter:ParseStr(value)
+end
+
+function private.ItemFilterOnValueChanged(input)
+	local text = input:GetValue()
 	if private.itemSearch == text then
 		return
 	end
-
 	private.itemSearch = text
 
-	private.itemFilter:ParseStr(self:GetText())
-	self:GetElement("__parent.__parent.content.ungrouped.content.itemList")
+	input:GetElement("__parent.__parent.content.ungrouped.content.itemList")
 		:SetFilterFunction(private.ItemListItemIsFiltered)
 		:Draw()
-	self:GetElement("__parent.__parent.content.grouped.content.itemList")
+	input:GetElement("__parent.__parent.content.grouped.content.itemList")
 		:SetFilterFunction(private.ItemListItemIsFiltered)
 		:Draw()
 end
 
-function private.IgnoreRandomOnValueChanged(self, checked)
+function private.UpdateBaseItemList()
+	wipe(private.results[1])
+	wipe(private.results[2])
+	local addedItems = TempTable.Acquire()
+	for _, itemString in ipairs(private.resultsRaw) do
+		if private.settings.groups[private.currentGroupPath].ignoreItemVariations then
+			itemString = ItemString.GetBase(itemString)
+		else
+			if ItemString.IsPet(itemString) and itemString == ItemString.GetBase(itemString) then
+				addedItems[itemString] = true
+			end
+		end
+		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
+			tinsert(private.results[1], itemString)
+			addedItems[itemString] = true
+		end
+	end
+	TempTable.Release(addedItems)
+	private.results[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Search Results"].."|r")
+end
+
+function private.ValidateBaseSearchValue(_, value)
+	if value == "" then
+		return true
+	elseif #value < 3 then
+		return false, L["The search term must be at least 3 characters."]
+	elseif not private.itemFilter:ParseStr(value) then
+		return false, L["Invalid search term."]
+	elseif private.itemFilter:GetStr() and #private.itemFilter:GetStr() < 3 then
+		return false, L["The name portion of the search term must be at least 3 characters if present."]
+	elseif private.itemFilter:GetMinPrice() or private.itemFilter:GetMaxPrice() then
+		return false, L["Invalid search term. Cannot filter by price here."]
+	end
+	return true
+end
+
+function private.InformationSearchOnValueChanged(input)
+	local value = input:GetValue()
+	if private.itemSearch == value or value == "" then
+		return
+	end
+	private.BaseSearchOnValueChanged(input)
+	private.frame:GetBaseElement():GetElement("content.groups.view.content.header.input")
+		:SetFocused(true)
+		:ClearHighlight()
+end
+
+function private.BaseSearchOnValueChanged(input)
+	local value = input:GetValue()
+	if private.itemSearch == value or value == "" then
+		return
+	end
+	assert(private.itemFilter:ParseStr(value))
+	private.itemSearch = value
+	ItemInfo.MatchItemFilter(private.itemFilter, wipe(private.resultsRaw))
+	private.UpdateBaseItemList()
+	private.frame:GetBaseElement():GetElement("content.groups.view"):SetPath("search", true)
+	private.frame:GetBaseElement():GetElement("content.groups.view.content.itemList"):SetItems(private.results, true)
+	private.frame:GetBaseElement():GetElement("content.groups.view.content.header2.label")
+		:SetText(format(L["%d Results"], #private.results[1]))
+		:Draw()
+end
+
+function private.SelectAllResultsOnClick(button)
+	button:GetElement("__parent.__parent.itemList"):ToggleSelectAll()
+end
+
+function private.IgnoreSearchRandomOnValueChanged(checkbox, checked)
+	private.UpdateBaseItemList()
+	checkbox:GetElement("__parent.__parent.itemList"):SetItems(private.results, true)
+	checkbox:GetElement("__parent.label")
+		:SetText(format(L["%d Results"], #private.results[1]))
+		:Draw()
+end
+
+function private.SearchBackButtonOnClick(button)
+	button:GetBaseElement():GetElement("content.groups.view"):SetPath("content", true)
+end
+
+function private.IgnoreBaseRandomOnValueChanged(checkbox, checked)
+	-- update the base item list
+	checkbox:GetElement("__parent.__parent.itemList"):SetItems(private.GetUngroupedBagItemList(), true)
+end
+
+function private.ItemListOnSelectionChanged(itemList)
+	local selection = itemList:GetElement("__parent.bottom.group"):GetSelection()
+	local button = itemList:GetElement("__parent.bottom.move")
+	local numSelected = itemList:GetNumSelected()
+	button:SetDisabled(not selection or numSelected == 0)
+		:SetText(numSelected == 0 and L["Move Item"] or format(L["Move %d |4Item:Items"], numSelected))
+		:Draw()
+end
+
+function private.BaseMoveItemOnClick(button)
+	assert(private.moveGroupPath)
+	local itemList = button:GetElement("__parent.__parent.itemList")
+	local numAdded = 0
+	for _, itemLink in ipairs(private.results[1]) do
+		if itemList:IsItemSelected(itemLink) then
+			local itemString = ItemString.Get(itemLink)
+			TSM.Groups.SetItemGroup(itemString, private.moveGroupPath)
+			numAdded = numAdded + 1
+		end
+	end
+	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, numAdded)
+	private.UpdateBaseItemList()
+	itemList:SetItems(private.results, true)
+	itemList:GetElement("__parent.header2.label")
+		:SetText(format(L["%d Results"], #private.results[1]))
+		:Draw()
+end
+
+function private.MoveItemOnClick(button)
+	assert(private.moveGroupPath)
+	local itemList = button:GetElement("__parent.__parent.itemList")
+	local numAdded = 0
+	for _, items in ipairs(private.GetUngroupedBagItemList()) do
+		for _, itemLink in ipairs(items) do
+			if itemList:IsItemSelected(itemLink) then
+				local itemString = ItemString.Get(itemLink)
+				TSM.Groups.SetItemGroup(itemString, private.moveGroupPath)
+				numAdded = numAdded + 1
+			end
+		end
+	end
+	Analytics.Action("ADDED_GROUP_ITEMS", private.moveGroupPath, numAdded)
+	itemList:SetItems(private.GetUngroupedBagItemList(), true)
+end
+
+function private.BaseGroupOnSelectionChanged(self)
+	local selection = self:GetSelection()
+	private.moveGroupPath = selection
+	local numSelected = self:GetBaseElement():GetElement("content.groups.view.content.itemList"):GetNumSelected()
+	self:GetBaseElement():GetElement("content.groups.view.content.bottom.move")
+		:SetDisabled(not selection or numSelected == 0)
+		:SetText(numSelected == 0 and L["Move Item"] or format(L["Move %d |4Item:Items"], numSelected))
+		:Draw()
+end
+
+function private.GroupOnSelectionChanged(self)
+	local selection = self:GetSelection()
+	private.moveGroupPath = selection
+	local numSelected = self:GetBaseElement():GetElement("content.groups.view.content.buttons.items.itemList"):GetNumSelected()
+	self:GetBaseElement():GetElement("content.groups.view.content.buttons.items.bottom.move")
+		:SetDisabled(not selection or numSelected == 0)
+		:SetText(numSelected == 0 and L["Move Item"] or format(L["Move %d |4Item:Items"], numSelected))
+		:Draw()
+end
+
+function private.IgnoreRandomOnValueChanged(checkbox, checked)
 	-- update the ungrouped item list
-	self:GetElement("__parent.__parent.content.ungrouped.content.itemList"):SetItems(private.GetUngroupedItemList(), true)
+	checkbox:GetElement("__parent.__parent.content.ungrouped.content.itemList"):SetItems(private.GetUngroupedItemList(), true)
 end
 
-function private.AddItemsOnClick(self)
-	local itemList = self:GetElement("__parent.content.itemList")
+function private.AddItemsOnClick(button)
+	local itemList = button:GetElement("__parent.content.itemList")
 	local numAdded = 0
 	for _, items in ipairs(private.GetUngroupedItemList()) do
 		for _, itemLink in ipairs(items) do
@@ -622,76 +1491,81 @@ function private.AddItemsOnClick(self)
 
 	-- update the item lists
 	itemList:SetItems(private.GetUngroupedItemList(), true)
-	local otherItemList = self:GetElement("__parent.__parent.grouped.content.itemList")
+	local otherItemList = button:GetElement("__parent.__parent.grouped.content.itemList")
 	otherItemList:SetItems(private.GetGroupedItemList(), true)
 end
 
-local function UngroupedMoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Select All Items"], private.UngroupedSelectAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Deselect All Items"], private.UngroupedDeselectAllBtnOnClick
+function private.ItemListSelectAllOnClick(button)
+	button:GetElement("__parent.__parent.itemList"):ToggleSelectAll()
+end
+
+function private.UngroupedItemsOnSelectionChanged(itemList)
+	local button = itemList:GetElement("__parent.__parent.btn")
+	local numSelected = itemList:GetNumSelected()
+	button:SetDisabled(numSelected == 0)
+		:SetText(numSelected == 0 and L["Add"] or format(L["Add %d |4Item:Items"], numSelected))
+		:Draw()
+end
+
+function private.GroupedItemsOnSelectionChanged(itemList)
+	local button = itemList:GetElement("__parent.__parent.btn")
+	local numSelected = itemList:GetNumSelected()
+	local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
+	parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
+	if parentGroup then
+		button:SetModifierText(numSelected == 0 and L["Move to Parent Group"] or format(L["Move %d |4Item:Items"], numSelected), "SHIFT")
 	end
+	button:SetDisabled(numSelected == 0)
+		:SetText(numSelected == 0 and L["Remove"] or format(L["Remove %d |4Item:Items"], numSelected))
+		:Draw()
 end
 
-function private.UngroupedMoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, UngroupedMoreDialogRowIterator)
-end
+function private.RebuildModuleOperations(moduleOperationFrame)
+	local moduleName = moduleOperationFrame:GetContext()
+	local override = TSM.Groups.HasOperationOverride(private.currentGroupPath, moduleName) or private.currentGroupPath == TSM.CONST.ROOT_GROUP_PATH
 
-function private.UngroupedSelectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.content.buttons.items.content.ungrouped.content.itemList"):SelectAll()
-	baseFrame:HideDialog()
-end
-
-function private.UngroupedDeselectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.content.buttons.items.content.ungrouped.content.itemList"):ClearSelection()
-	baseFrame:HideDialog()
-end
-
-function private.UngroupedItemsOnSelectionChanged(self, numSelected)
-	local button = self:GetElement("__parent.__parent.btn")
-	local noneSelected = numSelected == 0
-	button:SetDisabled(noneSelected)
-	button:SetText(noneSelected and L["Select Items to Add"] or format(L["ADD %d ITEMS"], numSelected))
-	button:Draw()
-end
-
-local function GroupedMoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Select All Items"], private.GroupedSelectAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Deselect All Items"], private.GroupedDeselectAllBtnOnClick
+	-- remove the existing operations container and add more row
+	local content = moduleOperationFrame:GetElement("content")
+	local container = content:GetElement("container")
+	content:RemoveChild(container)
+	container:Release()
+	local addMore = content:GetElement("addMore")
+	if addMore then
+		content:RemoveChild(addMore)
+		addMore:Release()
 	end
+
+	local numGroupOperations = 0
+	for _ in TSM.Groups.OperationIterator(private.currentGroupPath, moduleName) do
+		numGroupOperations = numGroupOperations + 1
+	end
+	moduleOperationFrame:AddChild(UIElements.New("Frame", "container")
+		:SetLayout("VERTICAL")
+		:SetContext(moduleName)
+		:SetHeight(36 * numGroupOperations)
+		:AddChildrenWithFunction(private.AddOperationRows)
+	)
+	moduleOperationFrame:AddChildIf(override and numGroupOperations < TSM.Operations.GetMaxNumber(moduleName), UIElements.New("Frame", "addMore")
+		:SetLayout("HORIZONTAL")
+		:SetHeight(24)
+		:SetMargin(0, 0, 8, 0)
+		:AddChild(UIElements.New("Spacer", "spacer"))
+		:AddChild(UIElements.New("Button", "button")
+			:SetWidth("AUTO")
+			:SetMargin(0, 2, 0, 0)
+			:SetFont("BODY_BODY2")
+			:SetTextColor("INDICATOR")
+			:SetText(L["Add More Operations"])
+			:SetContext(moduleName)
+			:SetScript("OnClick", private.AddOperationButtonOnClick)
+		)
+	)
+
+	moduleOperationFrame:GetParentElement():Draw()
 end
 
-function private.GroupedMoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, GroupedMoreDialogRowIterator)
-end
-
-function private.GroupedSelectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.content.buttons.items.content.grouped.content.itemList"):SelectAll()
-	baseFrame:HideDialog()
-end
-
-function private.GroupedDeselectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groups.content.buttons.items.content.grouped.content.itemList"):ClearSelection()
-	baseFrame:HideDialog()
-end
-
-function private.GroupedItemsOnSelectionChanged(self, numSelected)
-	local button = self:GetElement("__parent.__parent.btn")
-	local noneSelected = numSelected == 0
-	button:SetDisabled(noneSelected)
-	button:SetText(noneSelected and L["Select Items to Remove"] or format(L["REMOVE %d |4ITEM:ITEMS;"], numSelected))
-	button:Draw()
-end
-
-function private.RemoveItemsOnClick(self)
-	local itemList = self:GetElement("__parent.content.itemList")
+function private.RemoveItemsOnClick(button)
+	local itemList = button:GetElement("__parent.content.itemList")
 	local numRemoved = 0
 	local parentGroup = TSM.Groups.Path.GetParent(private.currentGroupPath)
 	parentGroup = parentGroup ~= TSM.CONST.ROOT_GROUP_PATH and parentGroup or nil
@@ -706,58 +1580,183 @@ function private.RemoveItemsOnClick(self)
 
 	-- update the item lists
 	itemList:SetItems(private.GetGroupedItemList(), true)
-	local otherItemList = self:GetElement("__parent.__parent.ungrouped.content.itemList")
+	local otherItemList = button:GetElement("__parent.__parent.ungrouped.content.itemList")
 	otherItemList:SetItems(private.GetUngroupedItemList(), true)
 end
 
-function private.OperationExpanderOnClick(button)
-	local moduleOperationFrame = button:GetParentElement():GetParentElement()
-	local moduleName = moduleOperationFrame:GetContext()
-	private.moduleCollapsed[moduleName] = not private.moduleCollapsed[moduleName]
-	moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
-end
-
-function private.OverrideToggleOnValueChanged(self, value)
+function private.OverrideToggleOnValueChanged(checkbox, value)
 	assert(private.currentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH)
-	local moduleOperationFrame = self:GetParentElement():GetParentElement()
+	local moduleOperationFrame = checkbox:GetParentElement():GetParentElement()
 	local moduleName = moduleOperationFrame:GetContext()
 	TSM.Groups.SetOperationOverride(private.currentGroupPath, moduleName, value)
 	Analytics.Action("CHANGED_GROUP_OVERRIDE", private.currentGroupPath, moduleName, value)
-	moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
-end
-
-function private.NewOperationSelectionChanged(self, operationName)
-	local moduleOperationFrame = self:GetParentElement():GetParentElement()
-	local moduleName = moduleOperationFrame:GetContext()
-	if operationName == "|cffffd839"..L["Create New Operation"].."|r" then
-		operationName = L["New Operation"]
-		local extra = ""
-		local num = 0
-		while TSM.Operations.Exists(moduleName, operationName..extra) do
-			num = num + 1
-			extra = " "..num
-		end
-		operationName = operationName..extra
-		TSM.Operations.Create(moduleName, operationName)
-		TSM.Groups.AppendOperation(private.currentGroupPath, moduleName, operationName)
-		Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
-		TSM.MainUI.Operations.ShowOperationSettings(self:GetBaseElement(), moduleName, operationName)
-	else
-		TSM.Groups.AppendOperation(private.currentGroupPath, moduleName, operationName)
-		Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
-		moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
-	end
+	private.RebuildModuleOperations(moduleOperationFrame)
 end
 
 function private.ConfigOperationOnClick(button)
-	local moduleName = button:GetParentElement():GetParentElement():GetParentElement():GetContext()
+	local moduleName = button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetContext()
 	local operationName = button:GetContext()
 	local baseFrame = button:GetBaseElement()
 	TSM.MainUI.Operations.ShowOperationSettings(baseFrame, moduleName, operationName)
 end
 
+function private.AddOperationButtonOnClick(button)
+	local moduleName = button:GetContext()
+	private.operationQuery = private.operationQuery or TSM.Operations.CreateQuery()
+	private.operationQuery:Reset()
+	private.operationQuery
+		:Contains("operationName", private.filterText)
+		:Equal("moduleName", moduleName)
+		:OrderBy("operationName", true)
+	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(464, 318)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG")
+		:SetBorderColor("ACTIVE_BG")
+		:SetMouseEnabled(true)
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(0, 0, -4, 10)
+			:AddChild(UIElements.New("Spacer", "spacer")
+				:SetWidth(24)
+			)
+			:AddChild(UIElements.New("Text", "title")
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetJustifyH("CENTER")
+				:SetText(format(L["Add %s Operation"], moduleName))
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetMargin(0, -4, 0, 0)
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.AddOperationCloseBtnOnClick)
+			)
+		)
+		:AddChild(UIElements.New("Frame", "container")
+			:SetLayout("VERTICAL")
+			:SetPadding(1)
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Frame", "search")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(8, 8, 8, 12)
+				:AddChild(UIElements.New("Input", "input")
+					:SetContext(moduleName)
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:AllowItemInsert(true)
+					:SetHintText(format(L["Search %s operations"], strlower(moduleName)))
+					:SetValue(private.filterText)
+					:SetScript("OnValueChanged", private.OperationSearchOnValueChanged)
+				)
+			)
+			:AddChild(UIElements.New("Button", "createOperation")
+				:SetHeight(24)
+				:SetPadding(8, 0, 0, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetContext(button)
+				:SetTextColor("INDICATOR")
+				:SetJustifyH("LEFT")
+				:SetText(L["Create New Operation"])
+				:SetScript("OnEnter", private.AddOperationCreateBtnOnEnter)
+				:SetScript("OnLeave", private.AddOperationCreateBtnOnLeave)
+				:SetScript("OnClick", private.AddOperationCreateBtnOnClick)
+			)
+			:AddChild(UIElements.New("QueryScrollingTable", "list")
+				:SetContext(moduleName)
+				:SetHeaderHidden(true)
+				:SetQuery(private.operationQuery)
+				:GetScrollingTableInfo()
+					:NewColumn("name")
+						:SetTitle("")
+						:SetFont("BODY_BODY2_MEDIUM")
+						:SetJustifyH("LEFT")
+						:SetTextInfo("operationName")
+						:Commit()
+					:Commit()
+				:SetScript("OnSelectionChanged", private.AddOperationSelectionChanged)
+			)
+		)
+		:AddChild(UIElements.New("ActionButton", "addBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetDisabled(true)
+			:SetContext(button)
+			:SetText(L["Add Operation"])
+			:SetScript("OnClick", private.AddOperationBtnOnClick)
+		)
+	)
+end
+
+function private.AddOperationCloseBtnOnClick(button)
+	button:GetBaseElement():HideDialog()
+end
+
+function private.AddOperationCreateBtnOnEnter(button)
+	button:SetTextColor("TEXT")
+		:Draw()
+end
+
+function private.AddOperationCreateBtnOnLeave(button)
+	button:SetTextColor(Theme.GetGroupColor(1))
+		:Draw()
+end
+
+function private.AddOperationCreateBtnOnClick(button)
+	local scrollingTable = button:GetElement("__parent.list")
+	local moduleName = scrollingTable:GetContext()
+	local operationName = L["New Operation"]
+	local extra = ""
+	local num = 0
+	while TSM.Operations.Exists(moduleName, operationName..extra) do
+		num = num + 1
+		extra = " "..num
+	end
+	operationName = operationName..extra
+	TSM.Operations.Create(moduleName, operationName)
+	TSM.Groups.AppendOperation(private.currentGroupPath, moduleName, operationName)
+	Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
+	TSM.MainUI.Operations.ShowOperationSettings(button:GetBaseElement(), moduleName, operationName)
+end
+
+function private.OperationSearchOnValueChanged(input)
+	local text = strlower(input:GetValue())
+	if text == private.filterText then
+		return
+	end
+	private.filterText = text
+
+	private.operationQuery:SetUpdatesPaused(true)
+	private.operationQuery:ResetFilters()
+		:Contains("operationName", private.filterText)
+		:Equal("moduleName", input:GetContext())
+	private.operationQuery:SetUpdatesPaused(false)
+	input:GetElement("__parent.__parent.list"):UpdateData(true)
+end
+
+function private.AddOperationBtnOnClick(button)
+	local scrollingTable = button:GetElement("__parent.container.list")
+	local moduleName = scrollingTable:GetContext()
+	local operationName = scrollingTable:GetSelection():GetField("operationName")
+	TSM.Groups.AppendOperation(private.currentGroupPath, scrollingTable:GetContext(), operationName)
+	Analytics.Action("ADDED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
+	local moduleOperationFrame = button:GetContext():GetElement("__parent.__parent.__parent")
+	private.RebuildModuleOperations(moduleOperationFrame)
+	moduleOperationFrame:GetBaseElement():HideDialog()
+end
+
+function private.AddOperationSelectionChanged(scrollingTable)
+	if scrollingTable:GetSelection() then
+		scrollingTable:GetElement("__parent.__parent.addBtn")
+			:SetDisabled(false)
+			:Draw()
+	end
+end
+
 function private.RemoveOperationOnClick(button)
-	local moduleOperationFrame = button:GetParentElement():GetParentElement():GetParentElement()
+	local moduleOperationFrame = button:GetElement("__parent.__parent.__parent.__parent.__parent")
 	local moduleName = moduleOperationFrame:GetContext()
 	local operationIndex = button:GetContext()
 	local operationName = nil
@@ -769,13 +1768,7 @@ function private.RemoveOperationOnClick(button)
 	assert(operationName)
 	TSM.Groups.RemoveOperation(private.currentGroupPath, moduleName, operationIndex)
 	Analytics.Action("REMOVED_GROUP_OPERATION", private.currentGroupPath, moduleName, operationName)
-	moduleOperationFrame:GetParentElement():GetParentElement():ReloadContent()
-end
-
-function private.DescriptionButtonOnClick(button)
-	local operationName = button:GetContext()
-	private.descriptionShown[operationName] = not private.descriptionShown[operationName] or nil
-	button:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():ReloadContent()
+	private.RebuildModuleOperations(moduleOperationFrame)
 end
 
 
@@ -786,6 +1779,34 @@ end
 
 function private.ItemSortHelper(a, b)
 	return (ItemInfo.GetName(a) or "") < (ItemInfo.GetName(b) or "")
+end
+
+function private.GetUngroupedBagItemList()
+	wipe(private.ungroupedItemList[1])
+	wipe(private.ungroupedItemList[2])
+
+	-- items in bags
+	local addedItems = TempTable.Acquire()
+	local query = BagTracking.CreateQueryBags()
+		:OrderBy("slotId", true)
+		:Select("itemString")
+		:Equal("isBoP", false)
+	for _, itemString in query:Iterator() do
+		if private.settings.groups[private.currentGroupPath].ignoreItemVariations then
+			itemString = ItemString.GetBase(itemString)
+		end
+		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
+			local itemLink = ItemInfo.GetLink(itemString)
+			tinsert(private.ungroupedItemList[1], itemLink)
+			addedItems[itemString] = true
+		end
+	end
+	query:Release()
+	TempTable.Release(addedItems)
+	private.ungroupedItemList[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"])
+
+	sort(private.ungroupedItemList[1], private.ItemSortHelper)
+	return private.ungroupedItemList
 end
 
 function private.GetUngroupedItemList()
@@ -799,7 +1820,7 @@ function private.GetUngroupedItemList()
 		:Select("itemString")
 		:Equal("isBoP", false)
 	for _, itemString in query:Iterator() do
-		if TSM.db.profile.userData.groups[private.currentGroupPath].ignoreItemVariations then
+		if private.settings.groups[private.currentGroupPath].ignoreItemVariations then
 			itemString = ItemString.GetBase(itemString)
 		end
 		if not TSM.Groups.IsItemInGroup(itemString) and not addedItems[itemString] then
@@ -810,17 +1831,17 @@ function private.GetUngroupedItemList()
 	end
 	query:Release()
 	TempTable.Release(addedItems)
-	private.ungroupedItemList[1].header = "|cff79a2ff" .. L["Ungrouped Items"] .. "|r"
+	private.ungroupedItemList[1].header = Theme.GetColor("INDICATOR"):ColorText(L["Ungrouped Items in Bags"])
 
 	-- items in the parent group
 	local parentGroupPath = TSM.Groups.Path.GetParent(private.currentGroupPath)
-	for _, itemString, path in TSM.Groups.ItemIterator() do
-		if path == parentGroupPath and parentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+	if parentGroupPath ~= TSM.CONST.ROOT_GROUP_PATH then
+		for _, itemString in TSM.Groups.ItemIterator(parentGroupPath) do
 			local itemLink = ItemInfo.GetLink(itemString)
 			tinsert(private.ungroupedItemList[2], itemLink)
 		end
 	end
-	private.ungroupedItemList[2].header = "|cff79a2ff" .. L["Parent Items"] .. "|r"
+	private.ungroupedItemList[2].header = Theme.GetColor("INDICATOR"):ColorText(L["Parent Items"])
 
 	sort(private.ungroupedItemList[1], private.ItemSortHelper)
 	sort(private.ungroupedItemList[2], private.ItemSortHelper)
@@ -832,12 +1853,10 @@ function private.GetGroupedItemList()
 
 	-- items in this group or a subgroup
 	local itemNames = TempTable.Acquire()
-	for _, itemString, path in TSM.Groups.ItemIterator() do
-		if path == private.currentGroupPath or strfind(path, "^"..String.Escape(private.currentGroupPath)..TSM.CONST.GROUP_SEP) then
-			local link = ItemInfo.GetLink(itemString)
-			tinsert(private.groupedItemList, link)
-			itemNames[link] = ItemInfo.GetName(itemString) or ""
-		end
+	for _, itemString in TSM.Groups.ItemIterator(private.currentGroupPath, true) do
+		local link = ItemInfo.GetLink(itemString)
+		tinsert(private.groupedItemList, link)
+		itemNames[link] = ItemInfo.GetName(itemString) or ""
 	end
 
 	Table.SortWithValueLookup(private.groupedItemList, itemNames)
@@ -846,6 +1865,6 @@ function private.GetGroupedItemList()
 end
 
 function private.ItemListItemIsFiltered(itemLink)
-	local basePrice = CustomPrice.GetValue(TSM.db.global.coreOptions.groupPriceSource, itemLink)
+	local basePrice = CustomPrice.GetValue(private.settings.groupPriceSource, itemLink)
 	return not private.itemFilter:Matches(itemLink, basePrice)
 end

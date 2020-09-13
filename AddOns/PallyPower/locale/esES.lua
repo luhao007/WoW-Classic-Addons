@@ -1,5 +1,9 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PallyPower", "esES", false, false)
 if not L then return end
+--[[Translation missing --]]
+L["ALTMENU_LINE1"] = "can be assigned"
+--[[Translation missing --]]
+L["ALTMENU_LINE2"] = "a Normal Blessing from:"
 L["AURA"] = "Botón Aura"
 L["AURA_DESC"] = "[|cffffd200Enable|r / |cffffd200Disable|r] El botón Aura o seleccione el Aura que desea rastrear."
 L["AURABTN"] = "Botón Aura"
@@ -36,6 +40,8 @@ L["BUFFDURATION"] = "Duración del beneficio"
 L["BUFFDURATION_DESC"] = "Si esta opción está desactivada, los botones de Clase y Jugador ignorarán la duración de los beneficios permitiendo que se vuelva a aplicar un beneficio a voluntad. Esto es especialmente útil para los Paladines de Protección cuando envían Bendiciones Mayores para generar más amenaza."
 L["BUTTONS"] = "Botones"
 L["BUTTONS_DESC"] = "Cambiar la configuración del botón"
+--[[Translation missing --]]
+L["CANCEL"] = "Cancel"
 L["CLASSBTN"] = "Botones de clase"
 L["CLASSBTN_DESC"] = "Si esta opción está deshabilitada, también deshabilitará los Botones del jugador y solo podrá pulir usando el botón Auto Buff."
 L["CPBTNS"] = "Botones de clase y jugador"

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -42,24 +40,24 @@ local DATA = {
 	["i:16202"] = {
 		["i:16203"] = 3, -- Lesser Eternal Essence
 	},
-	["i:11175"] = {
+	["i:11175"] = TSM.IsWowClassic() and {
 		["i:11174"] = 1/3, -- Greater Nether Essence
-	},
-	["i:11174"] = {
+	} or nil,
+	["i:11174"] = TSM.IsWowClassic() and {
 		["i:11175"] = 3, -- Lesser Nether Essence
-	},
-	["i:11135"] = {
+	} or nil,
+	["i:11135"] = TSM.IsWowClassic() and {
 		["i:11134"] = 1/3, -- Greater Mystic Essence
-	},
-	["i:11134"] = {
+	} or nil,
+	["i:11134"] = TSM.IsWowClassic() and {
 		["i:11135"] = 3, -- Lesser Mystic Essence
-	},
-	["i:11082"] = {
+	} or nil,
+	["i:11082"] = TSM.IsWowClassic() and {
 		["i:10998"] = 1/3, -- Greater Astral Essence
-	},
-	["i:10998"] = {
+	} or nil,
+	["i:10998"] = TSM.IsWowClassic() and {
 		["i:11082"] = 3, -- Lesser Astral Essence
-	},
+	} or nil,
 	["i:10939"] = {
 		["i:10938"] = 1/3, -- Greater Magic Essence
 	},
@@ -185,13 +183,17 @@ local DATA = {
 	},
 	-- ========================================== Aromatic Fish Oil (BFA) ===========================
 	["i:160711"] = {
-		["i:152545"] = 1, -- Frenzied Fangtooth
-		["i:152547"] = 1, -- Great Sea Catfish
-		["i:152546"] = 1, -- Lane Snapper
-		["i:152549"] = 1, -- Redtail Loach
 		["i:152543"] = 1, -- Sand Shifter
 		["i:152544"] = 1, -- Slimy Mackerel
+		["i:152545"] = 1, -- Frenzied Fangtooth
+		["i:152546"] = 1, -- Lane Snapper
+		["i:152547"] = 1, -- Great Sea Catfish
 		["i:152548"] = 1, -- Tiragarde Perch
+		["i:152549"] = 1, -- Redtail Loach
+		["i:168302"] = 1, -- Viper Fish
+		["i:168646"] = 1, -- Mauve Stinger
+		["i:174327"] = 1, -- Malformed Gnasher
+		["i:174328"] = 1, -- Aberrant Voidfin
 	},
 	-- ========================================== Ore Nuggets =======================================
 	["i:2771"] = {
@@ -253,7 +255,43 @@ local DATA = {
 	},
 	-- =========================================== Herb Parts ======================================
 	["i:2449"] = {
-		["i:108319"] = 0.1, -- Earthroot
+		["i:108319"] = 0.1, -- Earthroot Stem
+	},
+	["i:2453"] = {
+		["i:108322"] = 0.1, -- Bruiseweed Stem
+	},
+	["i:3357"] = {
+		["i:108325"] = 0.1, -- Liferoot Stem
+	},
+	["i:3358"] = {
+		["i:108326"] = 0.1, -- Khadgar's Whisker Stem
+	},
+	["i:3819"] = {
+		["i:108329"] = 0.1, -- Dragon's Teeth Stem
+	},
+	["i:8839"] = {
+		["i:108336"] = 0.1, -- Blindweed Stem
+	},
+	["i:22792"] = {
+		["i:108350"] = 0.1, -- Nightmare Vine Stem
+	},
+	["i:36903"] = {
+		["i:108353"] = 0.1, -- Adder's Tongue Stem
+	},
+	["i:52985"] = {
+		["i:108362"] = 0.1, -- Azshara's Veil Stem
+	},
+	["i:52988"] = {
+		["i:108365"] = 0.1, -- Whiptail Stem
+	},
+	["i:72235"] = {
+		["i:97621"] = 0.1, -- Silkweed Stem
+	},
+	["i:109124"] = {
+		["i:109624"] = 0.1, -- Broken Frostweed Stem
+	},
+	["i:109125"] = {
+		["i:109625"] = 0.1, -- Broken Fireweed Stem
 	},
 }
 

@@ -1,17 +1,14 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Vendoring = TSM.MainUI.Settings:NewPackage("Vendoring")
 local L = TSM.Include("Locale").GetTable()
-local Log = TSM.Include("Util.Log")
 local ItemInfo = TSM.Include("Service.ItemInfo")
-local CustomPrice = TSM.Include("Service.CustomPrice")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {}
 
 
@@ -20,7 +17,7 @@ local private = {}
 -- ============================================================================
 
 function Vendoring.OnInitialize()
-	TSM.MainUI.Settings.RegisterSettingPage("Vendoring", "middle", private.GetVendoringSettingsFrame)
+	TSM.MainUI.Settings.RegisterSettingPage(L["Vendoring"], "middle", private.GetVendoringSettingsFrame)
 end
 
 
@@ -31,54 +28,44 @@ end
 
 function private.GetVendoringSettingsFrame()
 	TSM.UI.AnalyticsRecordPathChange("main", "settings", "vendoring")
-	return TSMAPI_FOUR.UI.NewElement("Frame", "vendoringSettings")
-		:SetLayout("VERTICAL")
-		:SetStyle("padding.left", 12)
-		:SetStyle("padding.right", 12)
-		:AddChild(TSM.MainUI.Settings.CreateHeading("generalOptionsTitle", L["General Options"])
-			:SetStyle("margin.bottom", 15)
+	return UIElements.New("ScrollFrame", "vendoringSettings")
+		:SetPadding(8, 8, 8, 0)
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Vendoring", "general", L["General Options"], "")
+			:AddChild(UIElements.New("Frame", "content")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Checkbox", "checkbox")
+					:SetWidth("AUTO")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetSettingInfo(TSM.db.global.vendoringOptions, "displayMoneyCollected")
+					:SetText(L["Display total money received in chat"])
+				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+			)
+			:AddChild(TSM.MainUI.Settings.CreateInputWithReset("qsMarketValueSourceField", L["Market Value Price Source"], "global.vendoringOptions.qsMarketValue"))
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "checkbox")
-			:SetStyle("height", 28)
-			:SetStyle("margin.left", -5)
-			:SetStyle("margin.bottom", 24)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 12)
-			:SetSettingInfo(TSM.db.global.vendoringOptions, "displayMoneyCollected")
-			:SetText(L["Display total money recieved in chat?"])
-		)
-		:AddChild(TSM.MainUI.Settings.CreateHeading("quicksellOptionsTitle", L["Quick Sell Options"])
-			:SetStyle("margin.bottom", 16)
-		)
-		:AddChild(TSM.MainUI.Settings.CreateInputWithReset("qsMarketValueSourceField", L["Market Value Price Source"], "global.vendoringOptions.qsMarketValue", private.CheckCustomPrice))
-		:AddChild(TSM.MainUI.Settings.CreateHeading("ignoredItemsTitle", L["Ignored Items"])
-			:SetStyle("margin.top", 24)
-			:SetStyle("margin.bottom", 6)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "ignoredItems")
-			:SetStyle("headerFontHeight", 12)
-			:SetStyle("margin.left", -12)
-			:SetStyle("margin.right", -12)
-			:SetStyle("padding.left", 12)
-			:SetStyle("padding.right", 12)
-			:SetStyle("rowHeight", 20)
-			:GetScrollingTableInfo()
-				:NewColumn("item")
-					:SetTitles(L["Item"])
-					:SetFont(TSM.UI.Fonts.MontserratRegular)
-					:SetFontHeight(12)
-					:SetJustifyH("LEFT")
-					:SetIconSize(12)
-					:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-					:SetIconInfo("itemString", ItemInfo.GetTexture)
-					:SetTooltipInfo("itemString")
-					:SetSortInfo("name")
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Vendoring", "ignore", L["Ignored Items"], "Use this list to manage what items you'd like TSM to ignore from vendoring.")
+			:AddChild(UIElements.New("QueryScrollingTable", "items")
+				:SetHeight(326)
+				:GetScrollingTableInfo()
+					:NewColumn("item")
+						:SetTitle(L["Item"])
+						:SetFont("ITEM_BODY3")
+						:SetJustifyH("LEFT")
+						:SetIconSize(12)
+						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
+						:SetIconInfo("itemString", ItemInfo.GetTexture)
+						:SetTooltipInfo("itemString")
+						:SetSortInfo("name")
+						:DisableHiding()
+						:Commit()
 					:Commit()
-				:Commit()
-			:SetQuery(TSM.Vendoring.Sell.CreateIgnoreQuery())
-			:SetAutoReleaseQuery(true)
-			:SetSelectionDisabled(true)
-			:SetScript("OnRowClick", private.IgnoredItemsOnRowClick)
+				:SetQuery(TSM.Vendoring.Sell.CreateIgnoreQuery())
+				:SetAutoReleaseQuery(true)
+				:SetSelectionDisabled(true)
+				:SetScript("OnRowClick", private.IgnoredItemsOnRowClick)
+			)
 		)
 end
 
@@ -87,16 +74,6 @@ end
 -- ============================================================================
 -- Local Script Handlers
 -- ============================================================================
-
-function private.CheckCustomPrice(value)
-	local isValid, err = CustomPrice.Validate(value)
-	if isValid then
-		return true
-	else
-		Log.PrintUser(L["Invalid custom price."].." "..err)
-		return false
-	end
-end
 
 function private.IgnoredItemsOnRowClick(_, row, mouseButton)
 	if mouseButton ~= "LeftButton" then

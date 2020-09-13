@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- LargeApplicationFrame UI Element Class.
@@ -13,14 +11,14 @@
 
 local _, TSM = ...
 local LargeApplicationFrame = TSM.Include("LibTSMClass").DefineClass("LargeApplicationFrame", TSM.UI.ApplicationFrame)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(LargeApplicationFrame)
 TSM.UI.LargeApplicationFrame = LargeApplicationFrame
 local private = {}
-local ICON_SIZE = 22
-local ICON_PADDING = 4
-local NAV_BAR_HEIGHT = 26
+local NAV_BAR_SPACING = 16
+local NAV_BAR_HEIGHT = 24
 local NAV_BAR_RELATIVE_LEVEL = 21
-local NAV_BAR_TOP_OFFSET = -49
-local CONTENT_PADDING = 2
+local NAV_BAR_TOP_OFFSET = -8
 
 
 
@@ -30,13 +28,6 @@ local CONTENT_PADDING = 2
 
 function LargeApplicationFrame.__init(self)
 	self.__super:__init()
-	local frame = self:_GetBaseFrame()
-
-	frame.topEdge = frame:CreateTexture(nil, "BACKGROUND")
-	frame.topEdge:SetPoint("BOTTOMLEFT", frame.innerBorderFrame, "TOPLEFT")
-	frame.topEdge:SetPoint("BOTTOMRIGHT", frame.innerBorderFrame, "TOPRIGHT")
-	frame.topEdge:SetPoint("TOP", frame.headerBgCenter, "BOTTOM")
-	frame.topEdge:SetColorTexture(TSM.UI.HexToRGBA("#363636"))
 
 	self._buttons = {}
 	self._selectedButton = nil
@@ -44,13 +35,11 @@ function LargeApplicationFrame.__init(self)
 end
 
 function LargeApplicationFrame.Acquire(self)
-	self:SetContentFrame(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+	self:SetContentFrame(UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
-		:SetStyle("background", "#363636")
-		:SetStyle("padding", CONTENT_PADDING)
+		:SetBackgroundColor("FRAME_BG")
 	)
 	self.__super:Acquire()
-	self:SetTextureSet("LARGE", "LARGE")
 end
 
 function LargeApplicationFrame.Release(self)
@@ -84,24 +73,20 @@ end
 --- Adds a top-level navigation button.
 -- @tparam LargeApplicationFrame self The large application frame object
 -- @tparam string text The button text
--- @tparam string texturePack The texture pack for the button icon
 -- @tparam function drawCallback The function called when the button is clicked to get the corresponding content
 -- @treturn LargeApplicationFrame The large application frame object
-function LargeApplicationFrame.AddNavButton(self, text, texturePack, drawCallback)
-	local button = TSMAPI_FOUR.UI.NewElement("AlphaAnimatedFrame", "NavBar_"..text)
+function LargeApplicationFrame.AddNavButton(self, text, drawCallback)
+	local button = UIElements.New("AlphaAnimatedFrame", "NavBar_"..text)
 		:SetRange(1, 0.3)
 		:SetDuration(1)
 		:SetLayout("HORIZONTAL")
-		:SetStyle("relativeLevel", NAV_BAR_RELATIVE_LEVEL)
+		:SetRelativeLevel(NAV_BAR_RELATIVE_LEVEL)
 		:SetContext(drawCallback)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "button")
-			:SetStyle("justifyH", "LEFT")
+		:AddChild(UIElements.New("Button", "button")
 			:SetText(text)
+			:SetScript("OnEnter", private.OnNavBarButtonEnter)
+			:SetScript("OnLeave", private.OnNavBarButtonLeave)
 			:SetScript("OnClick", private.OnNavBarButtonClicked)
-		)
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Frame", "icon")
-			:SetStyle("anchors", { { "LEFT" } })
-			:SetContext(texturePack)
 		)
 	self:AddChildNoLayout(button)
 	tinsert(self._buttons, button)
@@ -154,54 +139,23 @@ end
 
 function LargeApplicationFrame.Draw(self)
 	self.__super:Draw()
-	local smallNavArea = self:_GetStyle("smallNavArea")
-	local sidePadding = smallNavArea and 170 or 80
-	local textColor = self:_GetStyle("textColor")
-	local selectedTextColor = self:_GetStyle("selectedTextColor")
-	local extraWidth = self:_GetDimension("WIDTH") - sidePadding * 2
 	for i, buttonFrame in ipairs(self._buttons) do
 		local button = buttonFrame:GetElement("button")
-		local icon = buttonFrame:GetElement("icon")
-		local color = i == self._contextTable.page and selectedTextColor or textColor
-		button:SetStyle("font", self:_GetStyle("buttonFont"))
-		button:SetStyle("fontHeight", self:_GetStyle("buttonFontHeight"))
-		button:SetStyle("textColor", color)
-		button:SetStyle("textIndent", ICON_SIZE + ICON_PADDING)
+		button:SetFont("BODY_BODY1_BOLD")
+		button:SetTextColor(i == self._contextTable.page and "INDICATOR" or "TEXT_ALT")
 		button:Draw()
-		local buttonWidth = ICON_SIZE + button:GetStringWidth() + ICON_PADDING
-		icon:SetStyle("backgroundVertexColor", color)
-		icon:SetStyle("backgroundTexturePack", icon:GetContext())
-		icon:SetStyle("width", ICON_SIZE)
-		icon:SetStyle("height", ICON_SIZE)
-		buttonFrame:SetStyle("height", NAV_BAR_HEIGHT)
-		buttonFrame:SetStyle("width", buttonWidth)
-		extraWidth = extraWidth - buttonWidth
+		buttonFrame:SetSize(button:GetStringWidth(), NAV_BAR_HEIGHT)
 	end
 
-	local spacing = extraWidth / #self._buttons
-	local offsetX = spacing / 2 + sidePadding
+	local offsetX = 104
 	for _, buttonFrame in ipairs(self._buttons) do
-		local buttonWidth = buttonFrame:GetElement("button"):GetStringWidth() + ICON_SIZE + ICON_PADDING
-		buttonFrame:SetStyle("width", buttonWidth)
-		buttonFrame:SetStyle("height", NAV_BAR_HEIGHT)
-		local anchors = buttonFrame:_GetStyle("anchors")
-		if anchors then
-			anchors[1][2] = offsetX
-		else
-			buttonFrame:SetStyle("anchors", { { "TOPLEFT", offsetX, NAV_BAR_TOP_OFFSET } })
-		end
-		offsetX = offsetX + buttonWidth + spacing
+		local buttonWidth = buttonFrame:GetElement("button"):GetStringWidth()
+		buttonFrame:SetSize(buttonWidth, NAV_BAR_HEIGHT)
+		buttonFrame:WipeAnchors()
+		buttonFrame:AddAnchor("TOPLEFT", offsetX, NAV_BAR_TOP_OFFSET)
+		offsetX = offsetX + buttonWidth + NAV_BAR_SPACING
 		-- draw the buttons again now that we know their dimensions
 		buttonFrame:Draw()
-	end
-
-	local frame = self:_GetBaseFrame()
-	if smallNavArea then
-		TSM.UI.TexturePacks.SetTextureAndSize(frame.innerTopRightCorner, "uiFrames.CraftingApplicationInnerFrameTopRightCorner")
-		TSM.UI.TexturePacks.SetTextureAndSize(frame.innerTopLeftCorner, "uiFrames.CraftingApplicationInnerFrameTopLeftCorner")
-	else
-		TSM.UI.TexturePacks.SetTextureAndSize(frame.innerTopRightCorner, "uiFrames.LargeApplicationInnerFrameTopRightCorner")
-		TSM.UI.TexturePacks.SetTextureAndSize(frame.innerTopLeftCorner, "uiFrames.LargeApplicationInnerFrameTopLeftCorner")
 	end
 end
 
@@ -227,6 +181,22 @@ end
 -- ============================================================================
 -- Local Script Handlers
 -- ============================================================================
+
+function private.OnNavBarButtonEnter(button)
+	if button:GetBaseElement():GetSelectedNavButton() == button:GetText() then
+		return
+	end
+	button:SetTextColor("TEXT")
+		:Draw()
+end
+
+function private.OnNavBarButtonLeave(button)
+	if button:GetBaseElement():GetSelectedNavButton() == button:GetText() then
+		return
+	end
+	button:SetTextColor("TEXT_ALT")
+		:Draw()
+end
 
 function private.OnNavBarButtonClicked(button)
 	local self = button:GetParentElement():GetParentElement()

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -50,6 +48,7 @@ function ProfessionScanner.OnInitialize()
 	else
 		Event.Register("TRADE_SKILL_LIST_UPDATE", private.OnTradeSkillUpdateEvent)
 	end
+	Event.Register("CHAT_MSG_SKILL", private.ChatMsgSkillEventHandler)
 end
 
 function ProfessionScanner.SetDisabled(disabled)
@@ -83,7 +82,13 @@ function ProfessionScanner.CreateQuery()
 end
 
 function ProfessionScanner.GetIndexBySpellId(spellId)
+	assert(TSM.IsWowClassic() or private.hasScanned)
 	return private.db:GetUniqueRowField("spellId", spellId, "index")
+end
+
+function ProfessionScanner.GetCategoryIdBySpellId(spellId)
+	assert(private.hasScanned)
+	return private.db:GetUniqueRowField("spellId", spellId, "categoryId")
 end
 
 function ProfessionScanner.GetNameBySpellId(spellId)
@@ -141,6 +146,15 @@ end
 
 function private.OnTradeSkillUpdateEvent()
 	Delay.Cancel("PROFESSION_SCAN_DELAY")
+	private.QueueProfessionScan()
+end
+
+function private.ChatMsgSkillEventHandler(_, msg)
+	local professionName = TSM.Crafting.ProfessionState.GetCurrentProfession()
+	if not professionName or not strmatch(msg, professionName) then
+		return
+	end
+	private.ignoreUpdatesUntil = 0
 	private.QueueProfessionScan()
 end
 
@@ -273,11 +287,16 @@ function private.ScanProfession()
 					prevRecipeIds[spellId] = info.previousRecipeID
 					nextRecipeIds[info.previousRecipeID] = spellId
 				end
+				if info.nextRecipeID then
+					nextRecipeIds[spellId] = info.nextRecipeID
+					prevRecipeIds[info.nextRecipeID] = spellId
+				end
 				recipeLearned[spellId] = info.learned
 				TempTable.Release(info)
 			end
 		end
 		private.db:TruncateAndBulkInsertStart()
+		local inactiveSpellIds = TempTable.Acquire()
 		for index, spellId in ipairs(recipes) do
 			local hasHigherRank = nextRecipeIds[spellId] and recipeLearned[nextRecipeIds[spellId]]
 			-- TODO: show unlearned recipes in the TSM UI
@@ -297,9 +316,16 @@ function private.ScanProfession()
 				local numSkillUps = info.difficulty == "optimal" and info.numSkillUps or 1
 				private.db:BulkInsertNewRow(index, spellId, info.name, info.categoryID, info.difficulty, rank, numSkillUps)
 				TempTable.Release(info)
+			else
+				inactiveSpellIds[spellId] = true
 			end
 		end
 		private.db:BulkInsertEnd()
+		-- remove spells which are not active (i.e. older ranks)
+		if next(inactiveSpellIds) then
+			TSM.Crafting.RemovePlayerSpells(inactiveSpellIds)
+		end
+		TempTable.Release(inactiveSpellIds)
 		TempTable.Release(spellIdIndex)
 		TempTable.Release(recipes)
 		TempTable.Release(prevRecipeIds)

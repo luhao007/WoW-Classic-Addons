@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -26,7 +24,7 @@ local OPERATION_INFO = {
 -- ============================================================================
 
 function Mailing.OnInitialize()
-	TSM.Operations.Register("Mailing", L["Mailing"], OPERATION_INFO, 30, private.GetOperationInfo)
+	TSM.Operations.Register("Mailing", L["Mailing"], OPERATION_INFO, 50, private.GetOperationInfo)
 end
 
 

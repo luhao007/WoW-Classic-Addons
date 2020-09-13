@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- FSMMachine Class.
@@ -44,6 +42,7 @@ function FSMMachine.__init(self, name)
 	self._loggingDisabledCount = 0
 	self._stateObjs = {}
 	self._defaultEvents = {}
+	self._handlingEvent = nil
 end
 
 
@@ -116,7 +115,7 @@ function FSMMachine.ProcessEvent(self, event, ...)
 	assert(self._currentState, "FSM not initialized")
 	if self._handlingEvent then
 		Log.RaiseStackLevel()
-		Log.Warn("[%s] %s (ignored - handling event)", self._name, event)
+		Log.Warn("[%s] %s (ignored - handling event - %s)", self._name, event, self._handlingEvent)
 		Log.LowerStackLevel()
 		return self
 	elseif self._inTransition then
@@ -131,14 +130,14 @@ function FSMMachine.ProcessEvent(self, event, ...)
 		Log.Info("[%s] %s", self._name, event)
 		Log.LowerStackLevel()
 	end
-	self._handlingEvent = true
+	self._handlingEvent = event
 	local currentStateObj = self._stateObjs[self._currentState]
 	if currentStateObj:_HasEventHandler(event) then
 		self:_Transition(TempTable.Acquire(currentStateObj:_ProcessEvent(event, self._context, ...)))
 	elseif self._defaultEvents[event] then
 		self:_Transition(TempTable.Acquire(self._defaultEvents[event](self._context, ...)))
 	end
-	self._handlingEvent = false
+	self._handlingEvent = nil
 	return self
 end
 

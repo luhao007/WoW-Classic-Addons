@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -54,9 +52,18 @@ function MyAuctions.OnInitialize()
 end
 
 function MyAuctions.CreateQuery()
-	return AuctionTracking.CreateQuery()
+	local query = AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
-		:OrderBy("index", not TSM.IsWowClassic())
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("group", "string", private.AuctionsGetGroupText, "itemString")
+	if TSM.IsWowClassic() then
+		query:OrderBy("index", false)
+	else
+		query:OrderBy("saleStatus", false)
+		query:OrderBy("name", true)
+		query:OrderBy("auctionId", true)
+	end
+	return query
 end
 
 function MyAuctions.CancelAuction(auctionId)
@@ -93,20 +100,25 @@ function MyAuctions.CancelAuction(auctionId)
 end
 
 function MyAuctions.CanCancel(index)
-	local query = private.pendingDB:NewQuery()
-		:Equal("isPending", true)
 	if TSM.IsWowClassic() then
-		query:LessThanOrEqual("index", index)
+		local numPending = private.pendingDB:NewQuery()
+			:Equal("isPending", true)
+			:LessThanOrEqual("index", index)
+			:CountAndRelease()
+		return numPending == 0
 	else
-		query:Equal("pendingAuctionId", index)
+		return not private.pendingFuture
 	end
-	return query:CountAndRelease() == 0
 end
 
 function MyAuctions.GetNumPending()
-	return private.pendingDB:NewQuery()
-		:Equal("isPending", true)
-		:CountAndRelease()
+	if TSM.IsWowClassic() then
+		return private.pendingDB:NewQuery()
+			:Equal("isPending", true)
+			:CountAndRelease()
+	else
+		return private.pendingFuture and 1 or 0
+	end
 end
 
 function MyAuctions.GetAuctionInfo()
@@ -165,6 +177,8 @@ function private.PendingFutureOnDone()
 		if private.expectedCounts[hash] then
 			private.expectedCounts[hash] = private.expectedCounts[hash] + 1
 		end
+		private.OnAuctionsUpdated()
+		AuctionTracking.QueryOwnedAuctions()
 	end
 end
 
@@ -172,6 +186,14 @@ function private.GetNumRowsByHash(hash)
 	return private.pendingDB:NewQuery()
 		:Equal("hash", hash)
 		:CountAndRelease()
+end
+
+function private.AuctionsGetGroupText(itemString)
+	local groupPath = TSM.Groups.GetPathByItem(itemString)
+	if not groupPath then
+		return ""
+	end
+	return groupPath
 end
 
 function private.OnAuctionsUpdated()

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -76,6 +74,9 @@ function Task.Update(self)
 	if self:_UpdateState() then
 		TSM.TaskList.OnTaskUpdated()
 	end
+end
+
+function Task.OnMouseDown(self)
 end
 
 function Task.OnButtonClick(self)

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -12,34 +10,14 @@ local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	fsm = nil,
-	currentModule = nil,
 	groupSearch = "",
 }
 local MIN_FRAME_SIZE = { width = 325, height = 600 }
-local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
-	:SetStyleTable("ActionButton", "NAV", {
-		height = 20,
-		margin = { left = 4 },
-		font = TSM.UI.Fonts.MontserratMedium,
-		fontHeight = 10,
-	})
-	:SetStyleTable("ActionButton", "FOOTER_FULL", {
-		height = 26,
-		margin = { top = 8, left = 2, right = 2 },
-		fontHeight = 13,
-	})
-	:SetStyleTable("ActionButton", "FOOTER_LEFT", {
-		height = 26,
-		margin = { top = 8, left = 2, right = 8 },
-		fontHeight = 13,
-	})
-	:SetStyleTable("ActionButton", "FOOTER_RIGHT", {
-		height = 26,
-		margin = { top = 8, right = 2 },
-		fontHeight = 13,
-	})
 local MODULE_LIST = {
 	"Warehousing",
 	"Auctioning",
@@ -58,7 +36,13 @@ local BUTTON_TEXT_LOOKUP = {
 -- ============================================================================
 
 function BankingUI.OnInitialize()
-	private.currentModule = TSM.db.global.internalData.bankingUIFrameContext.tab
+	private.settings = Settings.NewView()
+		:AddKey("global", "bankingUIContext", "frame")
+		:AddKey("global", "bankingUIContext", "isOpen")
+		:AddKey("global", "bankingUIContext", "tab")
+		:AddKey("char", "bankingUIContext", "warehousingGroupTree")
+		:AddKey("char", "bankingUIContext", "auctioningGroupTree")
+		:AddKey("char", "bankingUIContext", "mailingGroupTree")
 	private.FSMCreate()
 end
 
@@ -79,70 +63,80 @@ end
 
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("banking")
-	local frame = TSMAPI_FOUR.UI.NewElement("ApplicationFrame", "base")
-		:SetTextureSet("LARGE", "SMALL")
+	local frame = UIElements.New("ApplicationFrame", "base")
 		:SetParent(UIParent)
+		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
-		:SetContextTable(TSM.db.global.internalData.bankingUIFrameContext, TSM.db:GetDefaultReadOnly("global", "internalData", "bankingUIFrameContext"))
-		:SetStylesheet(BASE_STYLESHEET)
-		:SetStyle("strata", "HIGH")
-		:SetStyle("bottomPadding", 170)
-		:SetTitle(L["TSM Banking"])
+		:SetStrata("HIGH")
+		:SetTitle(L["Banking"])
 		:SetScript("OnHide", private.BaseFrameOnHide)
-		:SetContentFrame(TSMAPI_FOUR.UI.NewElement("Frame", "content")
+		:SetContentFrame(UIElements.New("Frame", "content")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#272727")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "navButtons")
+			:SetBackgroundColor("PRIMARY_BG")
+			:AddChild(UIElements.New("Frame", "navButtons")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 20)
-				:SetStyle("margin", 8)
-				:SetStyle("padding.left", -4) -- account for the left margin of the first button
+				:SetHeight(20)
+				:SetMargin(8)
+				:SetPadding(-4, 0, 0, 0) -- account for the left margin of the first button
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "search")
+			:AddChild(UIElements.New("Frame", "search")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 20)
-				:SetStyle("margin.left", 8)
-				:SetStyle("margin.right", 8)
-				:SetStyle("margin.bottom", 12)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "input")
-					:SetText(private.groupSearch)
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 12)
+				:AddChild(UIElements.New("Input", "input")
+					:SetIconTexture("iconPack.18x18/Search")
+					:AllowItemInsert(true)
+					:SetClearButtonEnabled(true)
+					:SetValue(private.groupSearch)
 					:SetHintText(L["Search Groups"])
-					:SetScript("OnTextChanged", private.GroupSearchOnTextChanged)
+					:SetScript("OnValueChanged", private.GroupSearchOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("margin.left", 8)
-					:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-					:SetScript("OnClick", private.MoreBtnOnClick)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(8, 4, 0, 0)
+					:SetBackground("iconPack.18x18/Expand All")
+					:SetScript("OnClick", private.ExpandAllGroupsOnClick)
+					:SetTooltip(L["Expand / Collapse All Groups"])
+				)
+				:AddChild(UIElements.New("Button", "selectAllBtn")
+					:SetSize(24, 24)
+					:SetBackground("iconPack.18x18/Select All")
+					:SetScript("OnClick", private.SelectAllGroupsOnClick)
+					:SetTooltip(L["Select / Deselect All Groups"])
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ApplicationGroupTree", "groupTree")
-				:SetGroupListFunc(private.GroupTreeGetList)
+			:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
+				:SetSettingsContext(private.settings, private.GetSettingsContextKey())
+				:SetQuery(TSM.Groups.CreateQuery(), private.settings.tab)
 				:SetSearchString(private.groupSearch)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("Frame", "footer")
 				:SetLayout("VERTICAL")
-				:SetStyle("background", "#373737")
-				:SetStyle("height", 170)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("ProgressBar", "progressBar")
-					:SetStyle("margin.top", 6)
-					:SetStyle("height", 26)
-					:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-					:SetStyle("fontHeight", 14)
+				:SetHeight(170)
+				:SetPadding(8)
+				:SetBackgroundColor("PRIMARY_BG_ALT")
+				:AddChild(UIElements.New("ProgressBar", "progressBar")
+					:SetHeight(24)
 					:SetProgress(0)
 					:SetProgressIconHidden(true)
 					:SetText(L["Select Action"])
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "buttons")
+				:AddChild(UIElements.New("Frame", "buttons")
 					:SetLayout("VERTICAL")
 				)
 			)
 		)
-	frame:GetElement("closeBtn"):SetScript("OnClick", private.CloseBtnOnClick)
+	frame:GetElement("titleFrame.closeBtn"):SetScript("OnClick", private.CloseBtnOnClick)
 
 	for _, module in ipairs(MODULE_LIST) do
-		frame:GetElement("content.navButtons"):AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "navBtn_"..module, "NAV")
+		frame:GetElement("content.navButtons"):AddChild(UIElements.New("ActionButton", "navBtn_"..module)
+			:SetHeight(20)
+			:SetMargin(4, 0, 0, 0)
+			:SetFont("BODY_BODY3_MEDIUM")
 			:SetContext(module)
 			:SetText(BUTTON_TEXT_LOOKUP[module])
 			:SetScript("OnClick", private.NavBtnOnClick)
@@ -154,8 +148,16 @@ function private.CreateMainFrame()
 	return frame
 end
 
-function private.GroupTreeGetList(groups, headerNameLookup)
-	TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, private.currentModule)
+function private.GetSettingsContextKey()
+	if private.settings.tab == "Warehousing" then
+		return "warehousingGroupTree"
+	elseif private.settings.tab == "Auctioning" then
+		return "auctioningGroupTree"
+	elseif private.settings.tab == "Mailing" then
+		return "mailingGroupTree"
+	else
+		error("Unexpected tab: "..tostring(private.settings.tab))
+	end
 end
 
 function private.UpdateCurrentModule(frame)
@@ -166,120 +168,153 @@ function private.UpdateCurrentModule(frame)
 	local navButtonsFrame = frame:GetElement("content.navButtons")
 	for _, module in ipairs(MODULE_LIST) do
 		navButtonsFrame:GetElement("navBtn_"..module)
-			:SetPressed(module == private.currentModule)
+			:SetPressed(module == private.settings.tab)
 	end
 	navButtonsFrame:Draw()
 
 	-- update group tree
-	local contextTable = nil
-	if private.currentModule == "Warehousing" then
-		TSM.UI.AnalyticsRecordPathChange("banking", "warehousing")
-		contextTable = TSM.db.profile.internalData.bankingWarehousingGroupTreeContext
-	elseif private.currentModule == "Auctioning" then
-		TSM.UI.AnalyticsRecordPathChange("banking", "auctioning")
-		contextTable = TSM.db.profile.internalData.bankingAuctioningGroupTreeContext
-	elseif private.currentModule == "Mailing" then
-		TSM.UI.AnalyticsRecordPathChange("banking", "mailing")
-		contextTable = TSM.db.profile.internalData.bankingMailingGroupTreeContext
-	else
-		error("Unexpected module: "..tostring(private.currentModule))
-	end
 	frame:GetElement("content.groupTree")
-		:SetContextTable(contextTable)
+		:SetSettingsContext(private.settings, private.GetSettingsContextKey())
+		:UpdateData(true)
 		:Draw()
 
 	-- update footer buttons
 	local footerButtonsFrame = frame:GetElement("content.footer.buttons")
 	footerButtonsFrame:ReleaseAllChildren()
-	if private.currentModule == "Warehousing" then
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row1")
+	if private.settings.tab == "Warehousing" then
+		footerButtonsFrame:AddChild(UIElements.New("Frame", "row1")
 			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "moveBankBtn", "FOOTER_LEFT")
-				:SetText(L["MOVE TO BANK"])
+			:AddChild(UIElements.New("ActionButton", "moveBankBtn")
+				:SetHeight(24)
+				:SetMargin(0, 8, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Move to bank"])
 				:SetContext(TSM.Banking.Warehousing.MoveGroupsToBank)
 				:SetScript("OnClick", private.GroupBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "moveBagsBtn", "FOOTER_RIGHT")
-				:SetText(L["MOVE TO BAGS"])
+			:AddChild(UIElements.New("ActionButton", "moveBagsBtn")
+				:SetHeight(24)
+				:SetMargin(0, 0, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Move to bags"])
 				:SetContext(TSM.Banking.Warehousing.MoveGroupsToBags)
 				:SetScript("OnClick", private.GroupBtnOnClick)
 			)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "restockBagsBtn", "FOOTER_FULL")
-			:SetText(L["RESTOCK BAGS"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "restockBagsBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Restock bags"])
 			:SetContext(TSM.Banking.Warehousing.RestockBags)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "depositReagentsBtn", "FOOTER_FULL")
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "depositReagentsBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
 			:SetDisabled(TSM.IsWowClassic())
-			:SetText(L["DEPOSIT REAGENTS"])
+			:SetText(L["Deposit reagents"])
 			:SetScript("OnClick", private.WarehousingDepositReagentsBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row4")
+		footerButtonsFrame:AddChild(UIElements.New("Frame", "row4")
 			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "emptyBagsBtn", "FOOTER_LEFT")
-				:SetText(L["EMPTY BAGS"])
+			:AddChild(UIElements.New("ActionButton", "emptyBagsBtn")
+				:SetHeight(24)
+				:SetMargin(0, 8, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Empty bags"])
 				:SetContext(TSM.Banking.EmptyBags)
 				:SetScript("OnClick", private.SimpleBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "restoreBagsBtn", "FOOTER_RIGHT")
-				:SetText(L["RESTORE BAGS"])
+			:AddChild(UIElements.New("ActionButton", "restoreBagsBtn")
+				:SetHeight(24)
+				:SetMargin(0, 0, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Restore bags"])
 				:SetContext(TSM.Banking.RestoreBags)
 				:SetScript("OnClick", private.SimpleBtnOnClick)
 			)
 		)
-	elseif private.currentModule == "Auctioning" then
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "moveBankBtn", "FOOTER_FULL")
-			:SetText(L["MOVE TO BANK"])
+	elseif private.settings.tab == "Auctioning" then
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "moveBankBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Move to bank"])
 			:SetContext(TSM.Banking.Auctioning.MoveGroupsToBank)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "postCapBagsBtn", "FOOTER_FULL")
-			:SetText(L["POST CAP TO BAGS"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "postCapBagsBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Post cap to bags"])
 			:SetContext(TSM.Banking.Auctioning.PostCapToBags)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "shortfallBagsBtn", "FOOTER_FULL")
-			:SetText(L["SHORTFALL TO BAGS"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "shortfallBagsBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Shortfall to bags"])
 			:SetContext(TSM.Banking.Auctioning.ShortfallToBags)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "maxExpBankBtn", "FOOTER_FULL")
-			:SetText(L["MAX EXPIRES TO BANK"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "maxExpBankBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Max expires to bank"])
 			:SetContext(TSM.Banking.Auctioning.MaxExpiresToBank)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-	elseif private.currentModule == "Mailing" then
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "moveBankBtn", "FOOTER_FULL")
-			:SetText(L["MOVE TO BANK"])
+	elseif private.settings.tab == "Mailing" then
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "moveBankBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Move to bank"])
 			:SetContext(TSM.Banking.Mailing.MoveGroupsToBank)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "nongroupBankBtn", "FOOTER_FULL")
-			:SetText(L["NONGROUP TO BANK"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "nongroupBankBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Nongroup to bank"])
 			:SetContext(TSM.Banking.Mailing.NongroupToBank)
 			:SetScript("OnClick", private.SimpleBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "targetShortfallBagsBtn", "FOOTER_FULL")
-			:SetText(L["TARGET SHORTFALL TO BAGS"])
+		footerButtonsFrame:AddChild(UIElements.New("ActionButton", "targetShortfallBagsBtn")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Target shortfall to bags"])
 			:SetContext(TSM.Banking.Mailing.TargetShortfallToBags)
 			:SetScript("OnClick", private.GroupBtnOnClick)
 		)
-		footerButtonsFrame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row4")
+		footerButtonsFrame:AddChild(UIElements.New("Frame", "row4")
 			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "emptyBagsBtn", "FOOTER_LEFT")
-				:SetText(L["EMPTY BAGS"])
+			:AddChild(UIElements.New("ActionButton", "emptyBagsBtn")
+				:SetHeight(24)
+				:SetMargin(0, 8, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Empty bags"])
 				:SetContext(TSM.Banking.EmptyBags)
 				:SetScript("OnClick", private.SimpleBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "restoreBagsBtn", "FOOTER_RIGHT")
-				:SetText(L["RESTORE BAGS"])
+			:AddChild(UIElements.New("ActionButton", "restoreBagsBtn")
+				:SetHeight(24)
+				:SetMargin(0, 0, 8, 0)
+				:SetFont("BODY_BODY2_MEDIUM")
+				:SetText(L["Restore bags"])
 				:SetContext(TSM.Banking.RestoreBags)
 				:SetScript("OnClick", private.SimpleBtnOnClick)
 			)
 		)
 	else
-		error("Unexpected module: "..tostring(private.currentModule))
+		error("Unexpected module: "..tostring(private.settings.tab))
 	end
 	footerButtonsFrame:Draw()
 end
@@ -300,56 +335,27 @@ function private.CloseBtnOnClick(button)
 	private.fsm:ProcessEvent("EV_FRAME_HIDDEN")
 end
 
-function private.GroupSearchOnTextChanged(input)
-	private.groupSearch = strlower(strtrim(input:GetText()))
+function private.GroupSearchOnValueChanged(input)
+	private.groupSearch = strlower(input:GetValue())
 	input:GetElement("__parent.__parent.groupTree")
 		:SetSearchString(private.groupSearch)
 		:Draw()
 end
 
 function private.NavBtnOnClick(button)
-	private.currentModule = button:GetContext()
+	private.settings.tab = button:GetContext()
 	private.UpdateCurrentModule(button:GetBaseElement())
 	private.fsm:ProcessEvent("EV_NAV_CHANGED")
 end
 
-local function MoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Select All Groups"], private.SelectAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Deselect All Groups"], private.DeselectAllBtnOnClick
-	elseif prevIndex == 2 then
-		return 3, L["Expand All Groups"], private.ExpandAllBtnOnClick
-	elseif prevIndex == 3 then
-		return 4, L["Collapse All Groups"], private.CollapseAllBtnOnClick
-	end
-end
-function private.MoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, MoreDialogRowIterator)
+function private.ExpandAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleExpandAll()
 end
 
-function private.SelectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groupTree"):SelectAll()
-	baseFrame:HideDialog()
-end
-
-function private.DeselectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groupTree"):DeselectAll()
-	baseFrame:HideDialog()
-end
-
-function private.ExpandAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groupTree"):ExpandAll()
-	baseFrame:HideDialog()
-end
-
-function private.CollapseAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.groupTree"):CollapseAll()
-	baseFrame:HideDialog()
+function private.SelectAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.groupTree")
+		:ToggleSelectAll()
 end
 
 function private.WarehousingDepositReagentsBtnOnClick()
@@ -410,7 +416,7 @@ function private.FSMCreate()
 
 		-- update the action button state
 		local footerButtonsFrame = context.frame:GetElement("content.footer.buttons")
-		if private.currentModule == "Warehousing" then
+		if private.settings.tab == "Warehousing" then
 			footerButtonsFrame:GetElement("row1.moveBankBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("row1.moveBagsBtn")
@@ -423,7 +429,7 @@ function private.FSMCreate()
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("row4.restoreBagsBtn")
 				:SetDisabled(context.progress or not TSM.Banking.CanRestoreBags())
-		elseif private.currentModule == "Auctioning" then
+		elseif private.settings.tab == "Auctioning" then
 			footerButtonsFrame:GetElement("moveBankBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("postCapBagsBtn")
@@ -432,7 +438,7 @@ function private.FSMCreate()
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("maxExpBankBtn")
 				:SetDisabled(context.progress)
-		elseif private.currentModule == "Mailing" then
+		elseif private.settings.tab == "Mailing" then
 			footerButtonsFrame:GetElement("moveBankBtn")
 				:SetDisabled(context.progress)
 			footerButtonsFrame:GetElement("nongroupBankBtn")
@@ -444,7 +450,7 @@ function private.FSMCreate()
 			footerButtonsFrame:GetElement("row4.restoreBagsBtn")
 				:SetDisabled(context.progress or not TSM.Banking.CanRestoreBags())
 		else
-			error("Unexpected module: "..tostring(private.currentModule))
+			error("Unexpected module: "..tostring(private.settings.tab))
 		end
 		footerButtonsFrame:Draw()
 	end
@@ -463,7 +469,7 @@ function private.FSMCreate()
 			:AddTransition("ST_FRAME_HIDDEN")
 			:AddEvent("EV_BANK_OPENED", function(context)
 				assert(not context.frame)
-				if not TSM.db.global.internalData.bankingUIFrameContext.isOpen then
+				if not private.settings.isOpen then
 					return "ST_FRAME_HIDDEN"
 				end
 				return "ST_FRAME_OPEN"
@@ -471,7 +477,7 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_FRAME_HIDDEN")
 			:SetOnEnter(function(context)
-				TSM.db.global.internalData.bankingUIFrameContext.isOpen = false
+				private.settings.isOpen = false
 				if context.frame then
 					context.frame:Hide()
 					context.frame:Release()
@@ -482,7 +488,7 @@ function private.FSMCreate()
 			:AddTransition("ST_FRAME_OPEN")
 			:AddTransition("ST_CLOSED")
 			:AddEvent("EV_TOGGLE", function()
-				TSM.db.global.internalData.bankingUIFrameContext.isOpen = true
+				private.settings.isOpen = true
 				return "ST_FRAME_OPEN"
 			end)
 		)

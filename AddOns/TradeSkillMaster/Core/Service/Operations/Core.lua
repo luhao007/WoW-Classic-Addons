@@ -1,16 +1,16 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Operations = TSM:NewPackage("Operations")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
+local Database = TSM.Include("Util.Database")
 local private = {
+	db = nil,
 	operations = nil,
 	operationInfo = {},
 	operationModules = {},
@@ -32,11 +32,17 @@ local PLAYER_KEY = UnitName("player").." - "..FACTION_REALM
 -- ============================================================================
 
 function Operations.OnInitialize()
+	private.db = Database.NewSchema("OPERATIONS")
+		:AddStringField("moduleName")
+		:AddStringField("operationName")
+		:AddIndex("moduleName")
+		:Commit()
 	if TSM.db.global.coreOptions.globalOperations then
 		private.operations = TSM.db.global.userData.operations
 	else
 		private.operations = TSM.db.profile.userData.operations
 	end
+	private.RebuildDB()
 	private.shouldCreateDefaultOperations = not TSM.db.profile.internalData.createdDefaultOperations
 	TSM.db.profile.internalData.createdDefaultOperations = true
 	TSM.db:RegisterCallback("OnProfileUpdated", private.OnProfileUpdated)
@@ -68,6 +74,15 @@ function Operations.Register(moduleName, localizedName, operationInfo, maxOperat
 		Operations.Create(moduleName, "#Default")
 	end
 	private.ValidateOperations(moduleName)
+	private.RebuildDB()
+end
+
+function Operations.IsCommonKey(key)
+	return COMMON_OPERATION_INFO[key] and true or false
+end
+
+function Operations.IsValidName(operationName)
+	return operationName == strtrim(operationName) and operationName ~= "" and not strmatch(operationName, TSM.CONST.OPERATION_SEP)
 end
 
 function Operations.ModuleIterator()
@@ -112,6 +127,17 @@ function Operations.Create(moduleName, operationName)
 	assert(not private.operations[moduleName][operationName])
 	private.operations[moduleName][operationName] = {}
 	Operations.Reset(moduleName, operationName)
+	private.RebuildDB()
+end
+
+function Operations.BulkCreateFromImport(operations, replaceExisting)
+	for moduleName, moduleOperations in pairs(operations) do
+		for operationName, operationSettings in pairs(moduleOperations) do
+			assert(replaceExisting or not private.operations[moduleName][operationName])
+			private.operations[moduleName][operationName] = operationSettings
+		end
+	end
+	private.RebuildDB()
 end
 
 function Operations.Rename(moduleName, oldName, newName)
@@ -127,6 +153,7 @@ function Operations.Rename(moduleName, oldName, newName)
 		end
 	end
 	TSM.Groups.OperationRenamed(moduleName, oldName, newName)
+	private.RebuildDB()
 end
 
 function Operations.Copy(moduleName, operationName, sourceOperationName)
@@ -136,6 +163,7 @@ function Operations.Copy(moduleName, operationName, sourceOperationName)
 		private.operations[moduleName][operationName][key] = info.type == "table" and CopyTable(sourceValue) or sourceValue
 	end
 	private.RemoveDeadRelationships(moduleName)
+	private.RebuildDB()
 end
 
 function Operations.Delete(moduleName, operationName)
@@ -143,6 +171,17 @@ function Operations.Delete(moduleName, operationName)
 	private.operations[moduleName][operationName] = nil
 	private.RemoveDeadRelationships(moduleName)
 	TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
+	private.RebuildDB()
+end
+
+function Operations.DeleteList(moduleName, operationNames)
+	for _, operationName in ipairs(operationNames) do
+		assert(private.operations[moduleName][operationName])
+		private.operations[moduleName][operationName] = nil
+		private.RemoveDeadRelationships(moduleName)
+		TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
+	end
+	private.RebuildDB()
 end
 
 function Operations.Reset(moduleName, operationName)
@@ -199,6 +238,15 @@ function Operations.GroupOperationIterator(moduleName, groupPath)
 	return private.GroupOperationIteratorHelper, operations, 0
 end
 
+function Operations.GroupHasOperation(moduleName, groupPath, targetOperationName)
+	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
+		if operationName == targetOperationName then
+			return true
+		end
+	end
+	return false
+end
+
 function Operations.GetDescription(moduleName, operationName)
 	local operationSettings = private.operations[moduleName][operationName]
 	assert(operationSettings)
@@ -206,7 +254,8 @@ function Operations.GetDescription(moduleName, operationName)
 	return private.operationInfo[moduleName].infoCallback(operationSettings)
 end
 
-function Operations.SanitizeSettings(moduleName, operationName, operationSettings)
+function Operations.SanitizeSettings(moduleName, operationName, operationSettings, silentMissingCommonKeys)
+	local didReset = false
 	local operationInfo = private.operationInfo[moduleName].info
 	if private.operationInfo[moduleName].customSanitizeFunction then
 		private.operationInfo[moduleName].customSanitizeFunction(operationSettings)
@@ -219,6 +268,7 @@ function Operations.SanitizeSettings(moduleName, operationName, operationSetting
 				-- some custom price settings were potentially stored as numbers previously, so just convert them
 				operationSettings[key] = tostring(value)
 			else
+				didReset = true
 				Log.Err("Resetting operation setting %s,%s,%s (%s)", moduleName, operationName, tostring(key), tostring(value))
 				operationSettings[key] = operationInfo[key].type == "table" and CopyTable(operationInfo[key].default) or operationInfo[key].default
 			end
@@ -233,11 +283,15 @@ function Operations.SanitizeSettings(moduleName, operationName, operationSetting
 				-- we previously stored booleans as nil instead of false
 				operationSettings[key] = false
 			else
-				Log.Err("Resetting missing operation setting %s,%s,%s", moduleName, operationName, tostring(key))
+				if not silentMissingCommonKeys or not Operations.IsCommonKey(key) then
+					didReset = true
+					Log.Err("Resetting missing operation setting %s,%s,%s", moduleName, operationName, tostring(key))
+				end
 				operationSettings[key] = operationInfo[key].type == "table" and CopyTable(operationInfo[key].default) or operationInfo[key].default
 			end
 		end
 	end
+	return didReset
 end
 
 function Operations.HasRelationship(moduleName, operationName, settingKey)
@@ -253,6 +307,22 @@ function Operations.SetRelationship(moduleName, operationName, settingKey, targe
 	assert(targetOperationName == nil or private.operations[moduleName][targetOperationName])
 	assert(private.operationInfo[moduleName].info[settingKey])
 	private.operations[moduleName][operationName].relationships[settingKey] = targetOperationName
+end
+
+function Operations.GetRelationshipColors(operationType, operationName, settingKey, value)
+	local relationshipSet = Operations.HasRelationship(operationType, operationName, settingKey)
+	local linkColor = nil
+	if not value and relationshipSet then
+		linkColor = "INDICATOR_DISABLED"
+	elseif not value then
+		linkColor = "TEXT_DISABLED"
+	elseif relationshipSet then
+		linkColor = "INDICATOR"
+	else
+		linkColor = "TEXT"
+	end
+	local linkTexture = TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Link", linkColor)
+	return relationshipSet, linkTexture, value and not relationshipSet and "TEXT" or "TEXT_DISABLED"
 end
 
 function Operations.IsStoredGlobally()
@@ -280,13 +350,32 @@ function Operations.SetStoredGlobally(storeGlobally)
 	end
 	private.ignoreProfileUpdate = false
 	private.OnProfileUpdated()
-	TSM.Groups.RebuildDatabase()
 end
 
 function Operations.ReplaceProfileOperations(newOperations)
 	for k, v in pairs(newOperations) do
 		TSM.db.profile.userData.operations[k] = v
 	end
+end
+
+function Operations.CreateQuery()
+	return private.db:NewQuery()
+end
+
+function Operations.GroupIterator(moduleName, filterOperationName, overrideOnly)
+	local result = TempTable.Acquire()
+
+	-- check the base group
+	if Operations.GroupHasOperation(moduleName, TSM.CONST.ROOT_GROUP_PATH, filterOperationName) then
+		tinsert(result, TSM.CONST.ROOT_GROUP_PATH)
+	end
+	-- need to filter out the groups without operations
+	for _, groupPath in TSM.Groups.GroupIterator() do
+		if (not overrideOnly or TSM.Groups.HasOperationOverride(groupPath, moduleName)) and Operations.GroupHasOperation(moduleName, groupPath, filterOperationName) then
+			tinsert(result, groupPath)
+		end
+	end
+	return TempTable.Iterator(result)
 end
 
 
@@ -307,6 +396,7 @@ function private.OnProfileUpdated()
 	for _, moduleName in Operations.ModuleIterator() do
 		private.ValidateOperations(moduleName)
 	end
+	private.RebuildDB()
 	TSM.Groups.RebuildDatabase()
 end
 
@@ -318,7 +408,7 @@ function private.ValidateOperations(moduleName)
 		return
 	end
 	for operationName, operationSettings in pairs(private.operations[moduleName]) do
-		if type(operationName) ~= "string" or strmatch(operationName, TSM.CONST.OPERATION_SEP) then
+		if type(operationName) ~= "string" or not Operations.IsValidName(operationName) then
 			Log.Err("Removing %s operation with invalid name: ", moduleName, tostring(operationName))
 			private.operations[moduleName][operationName] = nil
 		else
@@ -357,4 +447,14 @@ function private.RemoveDeadRelationships(moduleName)
 			end
 		end
 	end
+end
+
+function private.RebuildDB()
+	private.db:TruncateAndBulkInsertStart()
+	for moduleName, operations in pairs(private.operations) do
+		for operationName in pairs(operations) do
+			private.db:BulkInsertNewRow(moduleName, operationName)
+		end
+	end
+	private.db:BulkInsertEnd()
 end

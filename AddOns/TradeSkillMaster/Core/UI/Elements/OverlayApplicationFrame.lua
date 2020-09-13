@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- OverlayApplicationFrame UI Element Class.
@@ -11,7 +9,10 @@
 -- @classmod OverlayApplicationFrame
 
 local _, TSM = ...
+local Theme = TSM.Include("Util.Theme")
+local UIElements = TSM.Include("UI.UIElements")
 local OverlayApplicationFrame = TSM.Include("LibTSMClass").DefineClass("OverlayApplicationFrame", TSM.UI.Frame)
+UIElements.Register(OverlayApplicationFrame)
 TSM.UI.OverlayApplicationFrame = OverlayApplicationFrame
 local private = {}
 local TITLE_HEIGHT = 40
@@ -25,10 +26,14 @@ local CONTENT_PADDING_BOTTOM = 16
 
 function OverlayApplicationFrame.__init(self)
 	self.__super:__init()
-	self._mouseOver = nil
 	self._contentFrame = nil
 	self._contextTable = nil
 	self._defaultContextTable = nil
+	Theme.RegisterChangeCallback(function()
+		if self:IsVisible() then
+			self:Draw()
+		end
+	end)
 end
 
 function OverlayApplicationFrame.Acquire(self)
@@ -36,33 +41,24 @@ function OverlayApplicationFrame.Acquire(self)
 	frame:EnableMouse(true)
 	frame:SetMovable(true)
 	frame:RegisterForDrag("LeftButton")
-	self:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "closeBtn")
-		:SetStyle("anchors", { { "TOPRIGHT", -8, -11 } })
-		:SetStyle("width", 18)
-		:SetStyle("height", 18)
-		:SetStyle("backgroundTexturePack", "iconPack.18x18/Close/Circle")
+	self:AddChildNoLayout(UIElements.New("Button", "closeBtn")
+		:AddAnchor("TOPRIGHT", -8, -11)
+		:SetBackgroundAndSize("iconPack.18x18/Close/Circle")
 		:SetScript("OnClick", private.CloseButtonOnClick)
 	)
-	self:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "minimizeBtn")
-		:SetStyle("anchors", { { "TOPRIGHT", -26, -11 } })
-		:SetStyle("width", 18)
-		:SetStyle("height", 18)
-		:SetStyle("backgroundTexturePack", "iconPack.18x18/Subtract/Circle")
+	self:AddChildNoLayout(UIElements.New("Button", "minimizeBtn")
+		:AddAnchor("TOPRIGHT", -26, -11)
+		:SetBackgroundAndSize("iconPack.18x18/Subtract/Circle")
 		:SetScript("OnClick", private.MinimizeBtnOnClick)
 	)
-	self:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Text", "title")
-		:SetStyle("anchors", { { "TOPLEFT", 8, -8 }, { "TOPRIGHT", -52, -8 } })
-		:SetStyle("height", 24)
-		:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-		:SetStyle("fontHeight", 18)
+	self:AddChildNoLayout(UIElements.New("Text", "title")
+		:SetHeight(24)
+		:SetFont("BODY_BODY1_BOLD")
+		:AddAnchor("TOPLEFT", 8, -8)
+		:AddAnchor("TOPRIGHT", -52, -8)
 	)
-	self:SetStyle("borderSize", 8)
-	self:SetStyle("borderInset", 1)
-	self:SetScript("OnUpdate", private.FrameOnUpdate)
 	self:SetScript("OnDragStart", private.FrameOnDragStart)
 	self:SetScript("OnDragStop", private.FrameOnDragStop)
-
-	self._mouseOver = nil
 
 	self.__super:Acquire()
 end
@@ -89,7 +85,9 @@ end
 -- @tparam Element frame The content frame
 -- @treturn OverlayApplicationFrame The overlay application frame object
 function OverlayApplicationFrame.SetContentFrame(self, frame)
-	frame:SetStyle("anchors", { { "TOPLEFT", 0, -TITLE_HEIGHT }, { "BOTTOMRIGHT", 0, CONTENT_PADDING_BOTTOM } })
+	frame:WipeAnchors()
+	frame:AddAnchor("TOPLEFT", 0, -TITLE_HEIGHT)
+	frame:AddAnchor("BOTTOMRIGHT", 0, CONTENT_PADDING_BOTTOM)
 	self._contentFrame = frame
 	self:AddChildNoLayout(frame)
 	return self
@@ -114,18 +112,27 @@ function OverlayApplicationFrame.SetContextTable(self, tbl, defaultTbl)
 	return self
 end
 
+--- Sets the context table from a settings object.
+-- @tparam OverlayApplicationFrame self The overlay application frame object
+-- @tparam Settings settings The settings object
+-- @tparam string key The setting key
+-- @treturn OverlayApplicationFrame The overlay application frame object
+function OverlayApplicationFrame.SetSettingsContext(self, settings, key)
+	return self:SetContextTable(settings[key], settings:GetDefaultReadOnly(key))
+end
+
 function OverlayApplicationFrame.Draw(self)
 	if self._contextTable.minimized then
-		self:GetElement("minimizeBtn"):SetStyle("backgroundTexturePack", "iconPack.18x18/Add/Circle")
+		self:GetElement("minimizeBtn"):SetBackgroundAndSize("iconPack.18x18/Add/Circle")
 		self:GetElement("content"):Hide()
-		self:SetStyle("height", TITLE_HEIGHT)
+		self:SetHeight(TITLE_HEIGHT)
 	else
-		self:GetElement("minimizeBtn"):SetStyle("backgroundTexturePack", "iconPack.18x18/Subtract/Circle")
+		self:GetElement("minimizeBtn"):SetBackgroundAndSize("iconPack.18x18/Subtract/Circle")
 		self:GetElement("content"):Show()
 		-- set the height of the frame based on the height of the children
 		local contentHeight, contentHeightExpandable = self:GetElement("content"):_GetMinimumDimension("HEIGHT")
 		assert(not contentHeightExpandable)
-		self:SetStyle("height", contentHeight + TITLE_HEIGHT + CONTENT_PADDING_BOTTOM)
+		self:SetHeight(contentHeight + TITLE_HEIGHT + CONTENT_PADDING_BOTTOM)
 	end
 
 	-- make sure the frame is on the screen
@@ -133,10 +140,8 @@ function OverlayApplicationFrame.Draw(self)
 	self._contextTable.topRightY = max(min(self._contextTable.topRightY, 0), -UIParent:GetHeight() + 100)
 
 	-- set the frame position from the contextTable
-	local anchors = self:_GetStyle("anchors") or { { "TOPRIGHT" } }
-	anchors[1][2] = self._contextTable.topRightX
-	anchors[1][3] = self._contextTable.topRightY
-	self:SetStyle("anchors", anchors)
+	self:WipeAnchors()
+	self:AddAnchor("TOPRIGHT", self._contextTable.topRightX, self._contextTable.topRightY)
 
 	self.__super:Draw()
 end
@@ -168,16 +173,6 @@ function private.FrameOnDragStop(self)
 	local frame = self:_GetBaseFrame()
 	frame:StopMovingOrSizing()
 	self:_SavePosition()
-end
-
-function private.FrameOnUpdate(self)
-	local mouseOver = self:_GetBaseFrame():IsMouseOver() and true or false
-	if self._mouseOver == nil or mouseOver ~= self._mouseOver then
-		self:SetStyle("background", mouseOver and "#b3363636" or nil)
-		self:SetStyle("borderTexture", mouseOver and "Interface\\Addons\\TradeSkillMaster\\Media\\ItemPreviewEdgeFrame.blp" or nil)
-		self:Draw()
-		self._mouseOver = mouseOver
-	end
 end
 
 function private.CloseButtonOnClick(button)

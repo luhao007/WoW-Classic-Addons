@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- DatabaseTable Class.
@@ -14,6 +12,7 @@
 local _, TSM = ...
 local DBTable = TSM.Init("Util.DatabaseClasses.DBTable")
 local Constants = TSM.Include("Util.DatabaseClasses.Constants")
+local Util = TSM.Include("Util.DatabaseClasses.Util")
 local QueryResultRow = TSM.Include("Util.DatabaseClasses.QueryResultRow")
 local Query = TSM.Include("Util.DatabaseClasses.Query")
 local TempTable = TSM.Include("Util.TempTable")
@@ -24,10 +23,10 @@ local private = {
 	createCallback = nil,
 	-- make the initial UUID a very big negative number so it doesn't conflict with other numbers
 	lastUUID = -1000000,
-	indexListSortValues = nil,
 	bulkInsertTemp = {},
 	smartMapReaderDatabaseLookup = {},
 	smartMapReaderFieldLookup = {},
+	usedTrigramSubStrTemp = {},
 }
 
 
@@ -54,6 +53,8 @@ function DatabaseTable.__init(self, schema)
 	self._queries = {}
 	self._indexLists = {}
 	self._uniques = {}
+	self._trigramIndexField = nil
+	self._trigramIndexLists = {}
 	self._indexOrUniqueFields = {}
 	self._multiFieldIndexFields = {}
 	self._queryUpdatesPaused = 0
@@ -107,15 +108,23 @@ function DatabaseTable.__init(self, schema)
 		tinsert(indexFields, fieldName)
 	end
 
+	-- add trigram index
+	if schema._trigramIndexField then
+		local fieldName = schema._trigramIndexField
+		assert(self._fieldOffsetLookup[fieldName] and self._fieldTypeLookup[fieldName] == "string")
+		self._trigramIndexField = fieldName
+	end
+
 	-- sort the multi-column indexes first since they are more efficient
-	sort(indexFields, private.IndexSortHelper)
+	Table.Sort(indexFields, private.IndexSortHelper)
 
 	-- process the index fields
 	for _, field in ipairs(indexFields) do
 		if strmatch(field, Constants.DB_INDEX_FIELD_SEP) then
 			tinsert(self._multiFieldIndexFields, field)
 			local subField1, subField2, extra = strsplit(Constants.DB_INDEX_FIELD_SEP, field)
-			-- currently just support multi-field indexes consisting of 2 fields
+			-- currently just support multi-field indexes consisting of 2 string fields
+			assert(self._fieldTypeLookup[subField1] == "string" and self._fieldTypeLookup[subField2] == "string")
 			assert(subField1 and subField2 and not extra)
 			self._multiFieldIndexFields[field] = { self._fieldOffsetLookup[subField1], self._fieldOffsetLookup[subField2] }
 		end
@@ -173,18 +182,11 @@ end
 function DatabaseTable.DeleteRowByUUID(self, uuid)
 	assert(not self._bulkInsertContext)
 	assert(self._uuidToDataOffsetLookup[uuid])
-	for indexField, indexList in pairs(self._indexLists) do
-		local indexValue = self:_GetRowIndexValue(uuid, indexField)
-		local deleteIndex = nil
-		local lowIndex, highIndex = self:_GetIndexListMatchingIndexRange(indexField, indexValue)
-		for i = lowIndex, highIndex do
-			if indexList[i] == uuid then
-				deleteIndex = i
-				break
-			end
-		end
-		assert(deleteIndex)
-		tremove(indexList, deleteIndex)
+	for indexField in pairs(self._indexLists) do
+		self:_IndexListRemove(indexField, uuid)
+	end
+	if self._trigramIndexField then
+		self:_TrigramIndexRemove(uuid)
 	end
 	for field, uniqueValues in pairs(self._uniques) do
 		uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
@@ -226,6 +228,67 @@ function DatabaseTable.DeleteRowByUUID(self, uuid)
 	self:_UpdateQueries()
 end
 
+--- Build delete rows from the DB by UUID.
+-- @tparam DatabaseTable self The database object
+-- @tparam table uuids A list of UUIDs of rows to delete
+function DatabaseTable.BulkDelete(self, uuids)
+	assert(not self._trigramIndexField, "Cannot bulk delete on tables with trigram indexes")
+	assert(not self._bulkInsertContext)
+	for _, uuid in ipairs(uuids) do
+		for field, uniqueValues in pairs(self._uniques) do
+			uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
+		end
+
+		-- lookup the index of the row being deleted
+		local uuidIndex = ((self._uuidToDataOffsetLookup[uuid] - 1) / self._numStoredFields) + 1
+		local rowIndex = self._uuidToDataOffsetLookup[uuid]
+		assert(rowIndex)
+
+		-- get the index of the last row
+		local lastUUIDIndex = #self._data / self._numStoredFields
+		local lastRowIndex = #self._data - self._numStoredFields + 1
+		assert(lastRowIndex > 0 and lastUUIDIndex > 0)
+
+		-- remove this row from both lookups
+		self._uuidToDataOffsetLookup[uuid] = nil
+
+		if rowIndex == lastRowIndex then
+			-- this is the last row so just remove it
+			for _ = 1, self._numStoredFields do
+				tremove(self._data)
+			end
+			assert(uuidIndex == #self._uuids)
+			self._uuids[#self._uuids] = nil
+		else
+			-- this row is in the middle, so move the last row into this slot
+			local moveRowUUID = tremove(self._uuids)
+			self._uuids[uuidIndex] = moveRowUUID
+			self._uuidToDataOffsetLookup[moveRowUUID] = rowIndex
+			for i = self._numStoredFields, 1, -1 do
+				local moveDataIndex = lastRowIndex + i - 1
+				assert(moveDataIndex == #self._data)
+				self._data[rowIndex + i - 1] = self._data[moveDataIndex]
+				tremove(self._data)
+			end
+		end
+	end
+
+	-- re-build the indexes
+	for indexField, indexList in pairs(self._indexLists) do
+		wipe(indexList)
+		local indexValues = TempTable.Acquire()
+		for i = 1, #self._uuids do
+			local uuid = self._uuids[i]
+			indexList[i] = uuid
+			indexValues[uuid] = self:_GetRowIndexValue(uuid, indexField)
+		end
+		Table.SortWithValueLookup(indexList, indexValues)
+		TempTable.Release(indexValues)
+	end
+
+	self:_UpdateQueries()
+end
+
 --- Delete a row.
 -- @tparam DatabaseTable self The database object
 -- @tparam DatabaseRow deleteRow The database row object to delete
@@ -243,6 +306,7 @@ function DatabaseTable.Truncate(self)
 	for _, indexList in pairs(self._indexLists) do
 		wipe(indexList)
 	end
+	wipe(self._trigramIndexLists)
 	for _, uniqueValues in pairs(self._uniques) do
 		wipe(uniqueValues)
 	end
@@ -326,8 +390,8 @@ function DatabaseTable.SetUniqueRowField(self, uniqueField, uniqueValue, field, 
 		error(format("Field %s doesn't exist", tostring(field)), 3)
 	elseif fieldType ~= type(value) then
 		error(format("Field %s should be a %s, got %s", tostring(field), tostring(fieldType), type(value)), 3)
-	elseif self:_IsUnique(field) or self:_IsIndex(field) then
-		error(format("Field %s is unique or an index and cannot be updated using this method", field))
+	elseif self:_IsUnique(field) then
+		error(format("Field %s is unique and cannot be updated using this method", field))
 	end
 	local uuid = self:_GetUniqueRow(uniqueField, uniqueValue)
 	assert(uuid)
@@ -338,7 +402,27 @@ function DatabaseTable.SetUniqueRowField(self, uniqueField, uniqueValue, field, 
 	elseif not fieldOffset then
 		error("Invalid field: "..tostring(field))
 	end
+	local prevValue = self._data[dataOffset + fieldOffset - 1]
+	if prevValue == value then
+		-- the value didn't change
+		return
+	end
+	local isIndex = self:_IsIndex(field)
+	if isIndex then
+		-- remove the old value from the index first
+		self:_IndexListRemove(field, uuid)
+	end
+	if self._trigramIndexField == field and #prevValue > 3 then
+		self:_TrigramIndexRemove(uuid)
+	end
 	self._data[dataOffset + fieldOffset - 1] = value
+	if isIndex then
+		-- insert the new value into the index
+		self:_IndexListInsert(field, uuid)
+	end
+	if self._trigramIndexField == field then
+		self:_TrigramIndexInsert(uuid)
+	end
 	self:_UpdateQueries()
 end
 
@@ -390,20 +474,13 @@ function DatabaseTable.BulkInsertStart(self)
 	self._bulkInsertContext = TempTable.Acquire()
 	self._bulkInsertContext.firstDataIndex = nil
 	self._bulkInsertContext.firstUUIDIndex = nil
-	self._bulkInsertContext.indexValues = TempTable.Acquire()
-	for field in pairs(self._indexLists) do
-		self._bulkInsertContext.indexValues[field] = TempTable.Acquire()
-		for i = 1, #self._uuids do
-			local uuid = self._uuids[i]
-			self._bulkInsertContext.indexValues[field][uuid] = self:_GetRowIndexValue(uuid, field)
+	self._bulkInsertContext.partitionUUIDIndex = nil
+	if #self._multiFieldIndexFields == 0 then
+		self._bulkInsertContext.fastNum = self._numStoredFields
+		if Table.Count(self._uniques) == 1 then
+			local uniqueField = next(self._uniques)
+			self._bulkInsertContext.fastUnique = Table.GetDistinctKey(self._storedFieldList, uniqueField)
 		end
-	end
-	if not next(self._uniques) and #self._multiFieldIndexFields == 0 and Table.Count(self._indexLists) == 1 and self._indexLists[self._storedFieldList[1]] then
-		self._bulkInsertContext.fastNum = self._numStoredFields
-		self._bulkInsertContext.fastIndex = true
-	elseif not next(self._indexLists) and #self._multiFieldIndexFields == 0 and Table.Count(self._uniques) == 1 and self._uniques[self._storedFieldList[1]] then
-		self._bulkInsertContext.fastNum = self._numStoredFields
-		self._bulkInsertContext.fastUnique = true
 	end
 	self:SetQueryUpdatesPaused(true)
 end
@@ -421,7 +498,8 @@ end
 --- Inserts a new row as part of the on-going bulk insert.
 -- @tparam DatabaseTable self The database object
 -- @param ... The fields which make up this new row (in `schema.fieldOrder` order)
-function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, extraValue)
+function DatabaseTable.BulkInsertNewRow(self, ...)
+	local v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, extraValue = ...
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
@@ -432,9 +510,6 @@ function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
 		self._bulkInsertContext.firstUUIDIndex = uuidIndex
-		for _, indexList in pairs(self._indexLists) do
-			wipe(indexList)
-		end
 	end
 
 	local tempTbl = private.bulkInsertTemp
@@ -483,27 +558,6 @@ function DatabaseTable.BulkInsertNewRow(self, v1, v2, v3, v4, v5, v6, v7, v8, v9
 			end
 			uniqueValues[value] = uuid
 		end
-		if self._indexLists[field] then
-			self._bulkInsertContext.indexValues[field][uuid] = value
-		end
-		local smartMapFields = self._smartMapInputFields[field]
-		if smartMapFields then
-			for j = 1, #smartMapFields do
-				local smartMapField = smartMapFields[j]
-				if self._indexLists[smartMapField] then
-					self._bulkInsertContext.indexValues[smartMapField][uuid] = self._smartMapReaderLookup[smartMapField][value]
-				end
-			end
-		end
-	end
-
-	-- insert this uuid into each index list and get the multi-field index values
-	for i = 1, #self._multiFieldIndexFields do
-		-- currently just support multi-field indexes consisting of 2 fields
-		local field = self._multiFieldIndexFields[i]
-		local f1 = self._multiFieldIndexFields[field][1]
-		local f2 = self._multiFieldIndexFields[field][2]
-		self._bulkInsertContext.indexValues[field][uuid] = tempTbl[f1]..Constants.DB_INDEX_VALUE_SEP..tempTbl[f2]
 	end
 	return uuid
 end
@@ -521,9 +575,6 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
 		self._bulkInsertContext.firstUUIDIndex = uuidIndex
-		for _, indexList in pairs(self._indexLists) do
-			wipe(indexList)
-		end
 	end
 
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
@@ -536,17 +587,17 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 	self._data[rowIndex + 4] = v5
 	self._data[rowIndex + 5] = v6
 
-	if self._bulkInsertContext.fastIndex then
-		-- the first field is always an index (and the only index)
-		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
-	elseif self._bulkInsertContext.fastUnique then
+	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
 			error("A row with this unique value already exists", 2)
 		end
 		uniqueValues[v1] = uuid
+	elseif self._bulkInsertContext.fastUnique then
+		error("Invalid unique field num")
 	end
+	return uuid
 end
 
 function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v8, extraValue)
@@ -562,9 +613,6 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
 		self._bulkInsertContext.firstUUIDIndex = uuidIndex
-		for _, indexList in pairs(self._indexLists) do
-			wipe(indexList)
-		end
 	end
 
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
@@ -579,17 +627,17 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 	self._data[rowIndex + 6] = v7
 	self._data[rowIndex + 7] = v8
 
-	if self._bulkInsertContext.fastIndex then
-		-- the first field is always an index (and the only index)
-		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
-	elseif self._bulkInsertContext.fastUnique then
+	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
 			error("A row with this unique value already exists", 2)
 		end
 		uniqueValues[v1] = uuid
+	elseif self._bulkInsertContext.fastUnique then
+		error("Invalid unique field num")
 	end
+	return uuid
 end
 
 function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, extraValue)
@@ -605,9 +653,6 @@ function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, 
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
 		self._bulkInsertContext.firstUUIDIndex = uuidIndex
-		for _, indexList in pairs(self._indexLists) do
-			wipe(indexList)
-		end
 	end
 
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
@@ -625,17 +670,17 @@ function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._data[rowIndex + 9] = v10
 	self._data[rowIndex + 10] = v11
 
-	if self._bulkInsertContext.fastIndex then
-		-- the first field is always an index (and the only index)
-		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
-	elseif self._bulkInsertContext.fastUnique then
+	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
 			error("A row with this unique value already exists", 2)
 		end
 		uniqueValues[v1] = uuid
+	elseif self._bulkInsertContext.fastUnique then
+		error("Invalid unique field num")
 	end
+	return uuid
 end
 
 function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, extraValue)
@@ -651,9 +696,6 @@ function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, 
 	elseif not self._bulkInsertContext.firstDataIndex then
 		self._bulkInsertContext.firstDataIndex = rowIndex
 		self._bulkInsertContext.firstUUIDIndex = uuidIndex
-		for _, indexList in pairs(self._indexLists) do
-			wipe(indexList)
-		end
 	end
 
 	self._uuidToDataOffsetLookup[uuid] = rowIndex
@@ -673,17 +715,23 @@ function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._data[rowIndex + 11] = v12
 	self._data[rowIndex + 12] = v13
 
-	if self._bulkInsertContext.fastIndex then
-		-- the first field is always an index (and the only index)
-		self._bulkInsertContext.indexValues[self._storedFieldList[1]][uuid] = v1
-	elseif self._bulkInsertContext.fastUnique then
+	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
 			error("A row with this unique value already exists", 2)
 		end
 		uniqueValues[v1] = uuid
+	elseif self._bulkInsertContext.fastUnique then
+		error("Invalid unique field num")
 	end
+	return uuid
+end
+
+function DatabaseTable.BulkInsertPartition(self)
+	assert(self._bulkInsertContext, "Bulk insert hasn't been started")
+	assert(not self._bulkInsertContext.partitionUUIDIndex)
+	self._bulkInsertContext.partitionUUIDIndex = #self._uuids
 end
 
 function DatabaseTable.BulkInsertUUIDIterator(self)
@@ -699,21 +747,90 @@ end
 function DatabaseTable.BulkInsertEnd(self)
 	assert(self._bulkInsertContext)
 	if self._bulkInsertContext.firstDataIndex then
+		local numNewRows = #self._uuids - self._bulkInsertContext.firstUUIDIndex + 1
+		local newRowRatio = numNewRows / #self._uuids
+		local partitionUUIDIndex = self._bulkInsertContext.partitionUUIDIndex
 		for field, indexList in pairs(self._indexLists) do
-			private.indexListSortValues = self._bulkInsertContext.indexValues[field]
-			for i, uuid in ipairs(self._uuids) do
-				indexList[i] = uuid
-				assert(private.indexListSortValues[uuid] ~= nil)
+			local isSimpleIndex = partitionUUIDIndex and not self._smartMapReaderLookup[field] and not strfind(field, Constants.DB_INDEX_FIELD_SEP)
+			local fieldOffset = self._fieldOffsetLookup[field]
+			if newRowRatio < 0.01 then
+				-- we inserted less than 1% of the rows, so just insert the new index values 1 by 1
+				for i = self._bulkInsertContext.firstUUIDIndex, #self._uuids do
+					local uuid = self._uuids[i]
+					self:_IndexListInsert(field, uuid)
+				end
+			else
+				-- insert the new index values
+				local indexValues = TempTable.Acquire()
+				for i = 1, #self._uuids do
+					local uuid = self._uuids[i]
+					if isSimpleIndex then
+						indexValues[uuid] = Util.ToIndexValue(self._data[self._uuidToDataOffsetLookup[uuid] + fieldOffset - 1])
+					else
+						indexValues[uuid] = self:_GetRowIndexValue(uuid, field)
+					end
+					if i >= self._bulkInsertContext.firstUUIDIndex then
+						indexList[i] = uuid
+					end
+				end
+				if partitionUUIDIndex and Table.IsSortedWithValueLookup(indexList, indexValues, nil, partitionUUIDIndex) and Table.IsSortedWithValueLookup(indexList, indexValues, partitionUUIDIndex + 1, nil) then
+					-- values on either side of the partition are already sorted,
+					-- so we can just merge the two portions instead of sorting the entire index list
+					local part1 = TempTable.Acquire()
+					local part2 = TempTable.Acquire()
+					for i = 1, #indexList do
+						if i <= partitionUUIDIndex then
+							tinsert(part1, indexList[i])
+						else
+							tinsert(part2, indexList[i])
+						end
+					end
+					wipe(indexList)
+					Table.MergeSortedWithValueLookup(part1, part2, indexList, indexValues)
+					TempTable.Release(part1)
+					TempTable.Release(part2)
+				end
+				Table.SortWithValueLookup(indexList, indexValues)
+				TempTable.Release(indexValues)
 			end
-			sort(indexList, private.IndexListSortHelper)
-			private.indexListSortValues = nil
+		end
+		if self._trigramIndexField then
+			if newRowRatio < 0.01 then
+				-- we inserted less than 1% of the rows, so just insert the new index values 1 by 1
+				for i = self._bulkInsertContext.firstUUIDIndex, #self._uuids do
+					self:_TrigramIndexInsert(self._uuids[i])
+				end
+			else
+				local trigramIndexLists = self._trigramIndexLists
+				wipe(trigramIndexLists)
+				local trigramValues = TempTable.Acquire()
+				local usedSubStrTemp = private.usedTrigramSubStrTemp
+				wipe(usedSubStrTemp)
+				for i = 1, #self._uuids do
+					local uuid = self._uuids[i]
+					local value = private.TrigramValueFunc(uuid, self, self._trigramIndexField)
+					trigramValues[uuid] = value
+					for j = 1, #value - 2 do
+						local subStr = strsub(value, j, j + 2)
+						if usedSubStrTemp[subStr] ~= uuid then
+							usedSubStrTemp[subStr] = uuid
+							if not trigramIndexLists[subStr] then
+								trigramIndexLists[subStr] = { uuid }
+							else
+								tinsert(trigramIndexLists[subStr], uuid)
+							end
+						end
+					end
+				end
+				-- sort all the trigram index lists
+				for _, list in pairs(self._trigramIndexLists) do
+					Table.SortWithValueLookup(list, trigramValues)
+				end
+				TempTable.Release(trigramValues)
+			end
 		end
 		self:_UpdateQueries()
 	end
-	for _, tbl in pairs(self._bulkInsertContext.indexValues) do
-		TempTable.Release(tbl)
-	end
-	TempTable.Release(self._bulkInsertContext.indexValues)
 	TempTable.Release(self._bulkInsertContext)
 	self._bulkInsertContext = nil
 	self:SetQueryUpdatesPaused(false)
@@ -747,22 +864,7 @@ function DatabaseTable.BulkInsertAbort(self)
 		for i = #self._data, self._bulkInsertContext.firstDataIndex, -1 do
 			self._data[i] = nil
 		end
-
-		-- rebuild the index lists
-		for field, indexList in pairs(self._indexLists) do
-			private.indexListSortValues = self._bulkInsertContext.indexValues[field]
-			for i, uuid in ipairs(self._uuids) do
-				indexList[i] = uuid
-				assert(private.indexListSortValues[uuid] ~= nil)
-			end
-			sort(indexList, private.IndexListSortHelper)
-			private.indexListSortValues = nil
-		end
 	end
-	for _, tbl in pairs(self._bulkInsertContext.indexValues) do
-		TempTable.Release(tbl)
-	end
-	TempTable.Release(self._bulkInsertContext.indexValues)
 	TempTable.Release(self._bulkInsertContext)
 	self._bulkInsertContext = nil
 	self:SetQueryUpdatesPaused(false)
@@ -797,7 +899,7 @@ end
 -- ============================================================================
 
 function DatabaseTable._UUIDIterator(self)
-	return pairs(self._uuidToDataOffsetLookup)
+	return ipairs(self._uuids)
 end
 
 function DatabaseTable._GetFieldType(self, field)
@@ -806,6 +908,10 @@ end
 
 function DatabaseTable._IsIndex(self, field)
 	return self._indexLists[field] and true or false
+end
+
+function DatabaseTable._GetTrigramIndexField(self)
+	return self._trigramIndexField
 end
 
 function DatabaseTable._IsUnique(self, field)
@@ -888,44 +994,58 @@ function DatabaseTable._UpdateQueries(self, uuid, oldValues)
 		self._queuedQueryUpdate = false
 		-- We need to mark all the queries stale first as an update callback may cause another of the queries to run which may not have yet been marked stale
 		for _, query in ipairs(self._queries) do
-			assert(not query._isIterating)
 			query:_MarkResultStale(oldValues)
 		end
 		for _, query in ipairs(self._queries) do
-			assert(not query._isIterating)
 			query:_DoUpdateCallback(uuid)
 		end
 	end
 end
 
-function DatabaseTable._GetIndexListInsertIndex(self, indexList, indexValue, field)
-	-- binary search for index
-	local index = 1
-	local low, mid, high = 1, 0, #indexList
-	while low <= high do
-		mid = floor((low + high) / 2)
-		local rowValue = self:_GetRowIndexValue(indexList[mid], field)
-		if rowValue == indexValue then
-			-- found a match
-			index = mid
-			break
-		elseif rowValue < indexValue then
-			-- we're too low
-			low = mid + 1
-		else
-			-- we're too high
-			high = mid - 1
-		end
-		index = low
-	end
-	return index
+function DatabaseTable._IndexListInsert(self, field, uuid)
+	Table.InsertSorted(self._indexLists[field], uuid, private.IndexValueFunc, self, field)
 end
 
-function DatabaseTable._IndexListInsert(self, field, uuid)
+function DatabaseTable._IndexListRemove(self, field, uuid)
 	local indexList = self._indexLists[field]
 	local indexValue = self:_GetRowIndexValue(uuid, field)
-	local index = self:_GetIndexListInsertIndex(indexList, indexValue, field)
-	tinsert(indexList, index, uuid)
+	local deleteIndex = nil
+	local lowIndex, highIndex = self:_GetIndexListMatchingIndexRange(field, indexValue)
+	for i = lowIndex, highIndex do
+		if indexList[i] == uuid then
+			deleteIndex = i
+			break
+		end
+	end
+	assert(deleteIndex)
+	tremove(indexList, deleteIndex)
+end
+
+function DatabaseTable._TrigramIndexInsert(self, uuid)
+	local field = self._trigramIndexField
+	local indexValue = private.TrigramValueFunc(uuid, self, field)
+	wipe(private.usedTrigramSubStrTemp)
+	for i = 1, #indexValue - 2 do
+		local subStr = strsub(indexValue, i, i + 2)
+		if not private.usedTrigramSubStrTemp[subStr] then
+			private.usedTrigramSubStrTemp[subStr] = true
+			if not self._trigramIndexLists[subStr] then
+				self._trigramIndexLists[subStr] = {uuid}
+			else
+				Table.InsertSorted(self._trigramIndexLists[subStr], uuid, private.TrigramValueFunc, self, field)
+			end
+		end
+	end
+end
+
+function DatabaseTable._TrigramIndexRemove(self, uuid)
+	for _, list in pairs(self._trigramIndexLists) do
+		for i = #list, 1, -1 do
+			if list[i] == uuid then
+				tremove(list, i)
+			end
+		end
+	end
 end
 
 function DatabaseTable._InsertRow(self, row)
@@ -948,6 +1068,9 @@ function DatabaseTable._InsertRow(self, row)
 	for indexField in pairs(self._indexLists) do
 		self:_IndexListInsert(indexField, uuid)
 	end
+	if self._trigramIndexField then
+		self:_TrigramIndexInsert(uuid)
+	end
 	self:_UpdateQueries()
 	if row == self._newRowTemp then
 		row:_Release()
@@ -961,6 +1084,13 @@ end
 
 function DatabaseTable._UpdateRow(self, row, oldValues)
 	local uuid = row:GetUUID()
+	-- cache the min index within the index lists for the old values ot make removing from the index faster
+	local oldIndexMinIndex = TempTable.Acquire()
+	for indexField in pairs(self._indexLists) do
+		if oldValues[indexField] then
+			oldIndexMinIndex[indexField] = self:_IndexListBinarySearch(indexField, Util.ToIndexValue(oldValues[indexField]), true)
+		end
+	end
 	local index = self._uuidToDataOffsetLookup[uuid]
 	for i = 1, self._numStoredFields do
 		self._data[index + i - 1] = row:GetField(self._storedFieldList[i])
@@ -979,10 +1109,27 @@ function DatabaseTable._UpdateRow(self, row, oldValues)
 		end
 		if didChange then
 			-- remove and re-add row to the index list since the index value changed
-			Table.RemoveByValue(indexList, uuid)
+			if oldIndexMinIndex[indexField] then
+				local deleteIndex = nil
+				for i = oldIndexMinIndex[indexField], #indexList do
+					if indexList[i] == uuid then
+						deleteIndex = i
+						break
+					end
+				end
+				assert(deleteIndex)
+				tremove(indexList, deleteIndex)
+			else
+				Table.RemoveByValue(indexList, uuid)
+			end
 			self:_IndexListInsert(indexField, uuid)
 			changedIndexUnique = true
 		end
+	end
+	TempTable.Release(oldIndexMinIndex)
+	if self._trigramIndexField and oldValues[self._trigramIndexField] then
+		self:_TrigramIndexRemove(uuid)
+		self:_TrigramIndexInsert(uuid)
 	end
 	for field, uniqueValues in pairs(self._uniques) do
 		local oldValue = oldValues[field]
@@ -1006,10 +1153,31 @@ function DatabaseTable._GetRowIndexValue(self, uuid, field)
 	if extraField or not f1 then
 		error("Unsupported number of fields in multi-field index")
 	elseif f2 then
-		return self:GetRowFieldByUUID(uuid, f1)..Constants.DB_INDEX_VALUE_SEP..self:GetRowFieldByUUID(uuid, f2)
+		-- NOTE: multi-indexes must be string fields
+		return Util.ToIndexValue(self:GetRowFieldByUUID(uuid, f1))..Constants.DB_INDEX_VALUE_SEP..Util.ToIndexValue(self:GetRowFieldByUUID(uuid, f2))
 	elseif f1 then
-		return self:GetRowFieldByUUID(uuid, field)
+		return Util.ToIndexValue(self:GetRowFieldByUUID(uuid, field))
 	end
+end
+
+function DatabaseTable._GetTrigramIndexMatchingRows(self, value, result)
+	value = strlower(value)
+	local matchingLists = TempTable.Acquire()
+	wipe(private.usedTrigramSubStrTemp)
+	for i = 1, #value - 2 do
+		local subStr = strsub(value, i, i + 2)
+		if not self._trigramIndexLists[subStr] then
+			-- this value doesn't match anything
+			TempTable.Release(matchingLists)
+			return
+		end
+		if not private.usedTrigramSubStrTemp[subStr] then
+			private.usedTrigramSubStrTemp[subStr] = true
+			tinsert(matchingLists, self._trigramIndexLists[subStr])
+		end
+	end
+	Table.GetCommonValuesSorted(matchingLists, result, private.TrigramValueFunc, self, self._trigramIndexField)
+	TempTable.Release(matchingLists)
 end
 
 
@@ -1020,15 +1188,6 @@ end
 
 function private.IndexSortHelper(a, b)
 	return select(2, gsub(a, Constants.DB_INDEX_FIELD_SEP, "")) > select(2, gsub(b, Constants.DB_INDEX_FIELD_SEP, ""))
-end
-
-function private.IndexListSortHelper(a, b)
-	local aValue = private.indexListSortValues[a]
-	local bValue = private.indexListSortValues[b]
-	if aValue == bValue then
-		return a < b
-	end
-	return aValue < bValue
 end
 
 function private.RawIterator(self, index)
@@ -1042,6 +1201,7 @@ end
 function private.SmartMapReaderCallback(reader, changes)
 	local self = private.smartMapReaderDatabaseLookup[reader]
 	local fieldName = private.smartMapReaderFieldLookup[reader]
+	assert(fieldName ~= self._trigramIndexField)
 	if reader ~= self._smartMapReaderLookup[fieldName] then
 		error("Invalid smart map context")
 	end
@@ -1050,14 +1210,13 @@ function private.SmartMapReaderCallback(reader, changes)
 	if indexList then
 		-- re-build the index
 		wipe(indexList)
-		private.indexListSortValues = TempTable.Acquire()
+		local sortValues = TempTable.Acquire()
 		for i, uuid in ipairs(self._uuids) do
 			indexList[i] = uuid
-			private.indexListSortValues[uuid] = self:_GetRowIndexValue(uuid, fieldName)
+			sortValues[uuid] = self:_GetRowIndexValue(uuid, fieldName)
 		end
-		sort(indexList, private.IndexListSortHelper)
-		TempTable.Release(private.indexListSortValues)
-		private.indexListSortValues = nil
+		Table.SortWithValueLookup(indexList, sortValues)
+		TempTable.Release(sortValues)
 	end
 
 	local uniqueValues = self._uniques[fieldName]
@@ -1076,4 +1235,12 @@ end
 function private.GetNextUUID()
 	private.lastUUID = private.lastUUID - 1
 	return private.lastUUID
+end
+
+function private.IndexValueFunc(uuid, self, field)
+	return self:_GetRowIndexValue(uuid, field)
+end
+
+function private.TrigramValueFunc(uuid, self, field)
+	return strlower(self:GetRowFieldByUUID(uuid, field))
 end

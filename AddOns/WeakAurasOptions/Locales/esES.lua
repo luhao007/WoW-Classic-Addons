@@ -99,11 +99,9 @@ local L = WeakAuras.L
 	L["Add to new Group"] = "Añadir al nuevo Grupo"
 	L["Addon"] = "Addon"
 	L["Addons"] = "Addons"
-	--[[Translation missing --]]
-	L["Advanced"] = "Advanced"
+	L["Advanced"] = "Avanzado"
 	L["Align"] = "Alinear"
-	--[[Translation missing --]]
-	L["Alignment"] = "Alignment"
+	L["Alignment"] = "Alineamiento"
 	--[[Translation missing --]]
 	L["All of"] = "All of"
 	L["Allow Full Rotation"] = "Permitir Rotación Total"

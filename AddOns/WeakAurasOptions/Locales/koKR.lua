@@ -484,7 +484,8 @@ Supports multiple entries, separated by commas
 	L["Left"] = "왼쪽"
 	L["Left 2 HUD position"] = "좌측 2 HUD 위치"
 	L["Left HUD position"] = "좌측 HUD 위치"
-	L["Legacy Aura Trigger"] = "v2.9.0 이전 효과 활성 조건"
+	--[[Translation missing --]]
+	L["Legacy Aura Trigger"] = "Legacy Aura Trigger"
 	L["Length"] = "길이"
 	--[[Translation missing --]]
 	L["Limit"] = "Limit"

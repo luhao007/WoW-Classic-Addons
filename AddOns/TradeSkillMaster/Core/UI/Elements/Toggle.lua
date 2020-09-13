@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Toggle UI Element Class.
@@ -12,8 +10,11 @@
 
 local _, TSM = ...
 local Toggle = TSM.Include("LibTSMClass").DefineClass("Toggle", TSM.UI.Container)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Toggle)
 TSM.UI.Toggle = Toggle
 local private = {}
+local BUTTON_PADDING = 16
 
 
 
@@ -22,7 +23,7 @@ local private = {}
 -- ============================================================================
 
 function Toggle.__init(self)
-	local frame = CreateFrame("Frame", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "Frame")
 
 	self.__super:__init(frame)
 
@@ -30,8 +31,8 @@ function Toggle.__init(self)
 	self._buttons = {}
 	self._onValueChangedHandler = nil
 	self._selectedOption = nil
-	self._booleanTable = nil
 	self._booleanKey = nil
+	self._font = "BODY_BODY3"
 end
 
 function Toggle.Release(self)
@@ -39,8 +40,8 @@ function Toggle.Release(self)
 	wipe(self._buttons)
 	self._onValueChangedHandler = nil
 	self._selectedOption = nil
-	self._booleanTable = nil
 	self._booleanKey = nil
+	self._font = "BODY_BODY3"
 
 	self.__super:Release()
 end
@@ -66,14 +67,22 @@ end
 function Toggle.SetOption(self, option, redraw)
 	if option ~= self._selectedOption then
 		self._selectedOption = option
-		if self._booleanTable and self._booleanKey then
-			assert(option == YES or option == NO)
-			self._booleanTable[self._booleanKey] = option == YES
-		end
 		if self._onValueChangedHandler then
 			self:_onValueChangedHandler(option)
 		end
 	end
+	if redraw then
+		self:Draw()
+	end
+	return self
+end
+
+--- Clears the currently selected option.
+-- @tparam Toggle self The toggle object
+-- @tparam boolean redraw Whether or not to redraw the toggle
+-- @treturn Toggle The toggle object
+function Toggle.ClearOption(self, redraw)
+	self._selectedOption = nil
 	if redraw then
 		self:Draw()
 	end
@@ -104,17 +113,9 @@ function Toggle.SetScript(self, script, handler)
 	return self
 end
 
---- Turns this into a simple Yes/No toggle.
--- @tparam Toggle self The toggle object
--- @tparam table tbl The table containing the field to toggle based on the value of this element
--- @tparam string key The key for the field to set
--- @treturn Toggle The toggle object
-function Toggle.SetBooleanToggle(self, tbl, key)
-	self._booleanTable = tbl
-	self._booleanKey = key
-	return self:AddOption(YES)
-		:AddOption(NO)
-		:SetOption(tbl[key] and YES or NO)
+function Toggle.SetFont(self, font)
+	self._font = font
+	return self
 end
 
 --- Get the selected option.
@@ -129,40 +130,38 @@ function Toggle.Draw(self)
 	-- add new buttons if necessary
 	while #self._buttons < #self._optionsList do
 		local num = #self._buttons + 1
-		local button = TSMAPI_FOUR.UI.NewElement("Button", self._id.."_Button"..num)
-			:SetScript("OnClick", private.ButtonOnClick)
+		local button = UIElements.New("Checkbox", self._id.."_Button"..num)
+			:SetFont(self._font)
+			:SetScript("OnValueChanged", private.ButtonOnClick)
 		self:AddChildNoLayout(button)
 		tinsert(self._buttons, button)
 	end
 
 	local selectedPath = self._selectedOption
 	local height = self:_GetDimension("HEIGHT")
-	local buttonWidth = self:_GetDimension("WIDTH") / #self._buttons
+	local buttonWidth = (self:_GetDimension("WIDTH") / #self._buttons) + BUTTON_PADDING
 	local offsetX = 0
 	for i, button in ipairs(self._buttons) do
+		local buttonPath = self._optionsList[i]
 		if i <= #self._optionsList then
-			local buttonPath = self._optionsList[i]
-			button:SetStyle("font", self:_GetStyle("font"))
-			button:SetStyle("fontHeight", self:_GetStyle("fontHeight"))
-			button:SetStyle("border", self:_GetStyle("border"))
-			button:SetStyle("borderSize", self:_GetStyle("borderSize"))
-			button:SetStyle("background", self:_GetStyle(buttonPath == selectedPath and "selectedBackground" or "background"))
-			local textColor = self:_GetStyle(buttonPath == selectedPath and "selectedTextColor" or "textColor")
-			button:SetStyle("textColor", textColor)
-			button:SetStyle("disabledTextColor", textColor)
+			button:SetFont(self._font)
+			button:SetWidth("AUTO")
+			button:SetTheme("RADIO")
+			button:SetCheckboxPosition("LEFT")
 			button:SetText(buttonPath)
-			button:SetStyle("height", height)
-			button:SetStyle("width", buttonWidth)
+			button:SetSize(buttonWidth, height)
 			button:SetDisabled(self._disabled)
-			local anchors = button:_GetStyle("anchors")
-			if anchors then
-				anchors[1][2] = offsetX
-			else
-				button:SetStyle("anchors", { { "TOPLEFT", offsetX, 0 } })
-			end
+			button:WipeAnchors()
+			button:AddAnchor("TOPLEFT", offsetX, 0)
 			offsetX = offsetX + buttonWidth
 		else
 			button:Hide()
+		end
+
+		if buttonPath == selectedPath then
+			button:SetChecked(true, true)
+		else
+			button:SetChecked(false, true)
 		end
 	end
 
@@ -178,10 +177,4 @@ end
 function private.ButtonOnClick(button)
 	local self = button:GetParentElement()
 	self:SetOption(button:GetText(), true)
-end
-
-function private.BooleanToggleHandler(self, value)
-	assert(self._booleanTable and self._booleanKey)
-	assert(value == YES or value == NO)
-	self._booleanTable[self._booleanKey] = value == YES
 end

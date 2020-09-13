@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -13,6 +11,7 @@ local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
+local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local Vararg = TSM.Include("Util.Vararg")
@@ -21,11 +20,14 @@ local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local Conversions = TSM.Include("Service.Conversions")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	spellDB = nil,
 	matDB = nil,
 	matItemDB = nil,
 	matDBSpellIdQuery = nil,
+	matDBMatsInTableQuery = nil,
+	matDBMatNamesQuery = nil,
 	ignoredCooldownDB = nil,
 }
 local CHARACTER_KEY = UnitName("player").." - "..GetRealmName()
@@ -112,11 +114,15 @@ function Crafting.OnInitialize()
 	private.matDBMatsInTableQuery = private.matDB:NewQuery()
 		:Select("itemString", "quantity")
 		:Equal("spellId", Database.BoundQueryParam())
+	private.matDBMatNamesQuery = private.matDB:NewQuery()
+		:Select("name")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:Equal("spellId", Database.BoundQueryParam())
 
 	private.matItemDB = Database.NewSchema("CRAFTING_MAT_ITEMS")
 		:AddUniqueStringField("itemString")
 		:AddStringField("professions")
-		:AddBooleanField("hasCustomValue")
+		:AddStringField("customValue")
 		:Commit()
 	private.matItemDB:BulkInsertStart()
 	local professionsTemp = TempTable.Acquire()
@@ -129,7 +135,7 @@ function Crafting.OnInitialize()
 		end
 		sort(professionsTemp)
 		local professionsStr = table.concat(professionsTemp)
-		private.matItemDB:BulkInsertNewRow(itemString, professionsStr, info.customValue and true or false)
+		private.matItemDB:BulkInsertNewRow(itemString, professionsStr, info.customValue or "")
 	end
 	TempTable.Release(professionsTemp)
 	private.matItemDB:BulkInsertEnd()
@@ -169,7 +175,12 @@ function Crafting.OnInitialize()
 	private.ignoredCooldownDB:BulkInsertStart()
 	for entry in pairs(TSM.db.factionrealm.userData.craftingCooldownIgnore) do
 		local characterKey, spellId = strsplit(IGNORED_COOLDOWN_SEP, entry)
-		private.ignoredCooldownDB:BulkInsertNewRow(characterKey, tonumber(spellId))
+		spellId = tonumber(spellId)
+		if Crafting.HasSpellId(spellId) then
+			private.ignoredCooldownDB:BulkInsertNewRow(characterKey, spellId)
+		else
+			TSM.db.factionrealm.userData.craftingCooldownIgnore[entry] = nil
+		end
 	end
 	private.ignoredCooldownDB:BulkInsertEnd()
 end
@@ -185,11 +196,12 @@ end
 function Crafting.CreateCraftsQuery()
 	return private.spellDB:NewQuery()
 		:LeftJoin(TSM.Crafting.Queue.GetDBForJoin(), "spellId")
-		:VirtualField("bagQuantity", "number", TSMAPI_FOUR.Inventory.GetBagQuantity, "itemString")
-		:VirtualField("auctionQuantity", "number", TSMAPI_FOUR.Inventory.GetAuctionQuantity, "itemString")
+		:VirtualField("bagQuantity", "number", Inventory.GetBagQuantity, "itemString")
+		:VirtualField("auctionQuantity", "number", Inventory.GetAuctionQuantity, "itemString")
 		:VirtualField("craftingCost", "number", private.CraftingCostVirtualField, "spellId")
 		:VirtualField("itemValue", "number", private.ItemValueVirtualField, "itemString")
 		:VirtualField("profit", "number", private.ProfitVirtualField, "spellId")
+		:VirtualField("profitPct", "number", private.ProfitPctVirtualField, "spellId")
 		:VirtualField("saleRate", "number", private.SaleRateVirtualField, "itemString")
 end
 
@@ -211,7 +223,7 @@ function Crafting.CreateMatItemQuery()
 	return private.matItemDB:NewQuery()
 		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:VirtualField("matCost", "number", private.MatCostVirtualField, "itemString")
-		:VirtualField("totalQuantity", "number", TSMAPI_FOUR.Inventory.GetTotalQuantity, "itemString")
+		:VirtualField("totalQuantity", "number", Inventory.GetTotalQuantity, "itemString")
 end
 
 function Crafting.SpellIterator()
@@ -220,25 +232,19 @@ function Crafting.SpellIterator()
 		:IteratorAndRelease()
 end
 
-function Crafting.GetSpellIdsByItem(itemString, ignoreCD)
+function Crafting.GetSpellIdsByItem(itemString)
 	local query = private.spellDB:NewQuery()
 		:Equal("itemString", itemString)
-
-	if ignoreCD then
-		query:Select("spellId")
-		query:Equal("hasCD", false)
-	else
-		query:Select("spellId", "hasCD")
-	end
+		:Select("spellId", "hasCD")
 
 	return query:IteratorAndRelease()
 end
 
-function Crafting.GetMostProfitableSpellIdByItem(itemString, playerFilter)
+function Crafting.GetMostProfitableSpellIdByItem(itemString, playerFilter, noCD)
 	local maxProfit, bestSpellId = nil, nil
 	local maxProfitCD, bestSpellIdCD = nil, nil
-	for _, spellId, hasCD in Crafting.GetSpellIdsByItem(itemString, TSM.db.global.craftingOptions.ignoreCDCraftCost) do
-		if not playerFilter or Vararg.In(playerFilter, Crafting.GetPlayers(spellId)) then
+	for _, spellId, hasCD in Crafting.GetSpellIdsByItem(itemString) do
+		if not playerFilter or playerFilter == "" or Vararg.In(playerFilter, Crafting.GetPlayers(spellId)) then
 			local profit = TSM.Crafting.Cost.GetProfitBySpellId(spellId)
 			if hasCD then
 				if profit and profit > (maxProfitCD or -math.huge) then
@@ -256,6 +262,10 @@ function Crafting.GetMostProfitableSpellIdByItem(itemString, playerFilter)
 				end
 			end
 		end
+	end
+	if noCD then
+		maxProfitCD = nil
+		bestSpellIdCD = nil
 	end
 	if maxProfit then
 		return bestSpellId, maxProfit
@@ -298,8 +308,9 @@ function Crafting.MatIterator(spellId)
 end
 
 function Crafting.GetMatsAsTable(spellId, tbl)
-	private.matDBMatsInTableQuery:BindParams(spellId)
-	private.matDBMatsInTableQuery:AsTable(tbl)
+	private.matDBMatsInTableQuery
+		:BindParams(spellId)
+		:AsTable(tbl)
 end
 
 function Crafting.RemovePlayers(spellId, playersToRemove)
@@ -347,6 +358,55 @@ function Crafting.RemovePlayers(spellId, playersToRemove)
 	TempTable.Release(removedMats)
 
 	return false
+end
+
+function Crafting.RemovePlayerSpells(inactiveSpellIds)
+	local playerName = UnitName("player")
+	local query = private.spellDB:NewQuery()
+		:InTable("spellId", inactiveSpellIds)
+		:Custom(private.QueryPlayerFilter, playerName)
+	local removedSpellIds = TempTable.Acquire()
+	local toRemove = TempTable.Acquire()
+	private.spellDB:SetQueryUpdatesPaused(true)
+	if query:Count() > 0 then
+		Log.Info("Removing %d inactive spellds", query:Count())
+	end
+	for _, row in query:Iterator() do
+		local players = row:GetField("players")
+		if row:GetField("players") == playerName then
+			-- the current player was the only player, so we'll delete the entire row and all its mats
+			local spellId = row:GetField("spellId")
+			removedSpellIds[spellId] = true
+			TSM.db.factionrealm.internalData.crafts[spellId] = nil
+			tinsert(toRemove, row)
+		else
+			-- remove this player form the row
+			local playersTemp = TempTable.Acquire(strsplit(PLAYER_SEP, players))
+			assert(Table.RemoveByValue(playersTemp, playerName) == 1)
+			row:SetField("players", strjoin(PLAYER_SEP, TempTable.UnpackAndRelease(playersTemp)))
+				:Update()
+		end
+	end
+	for _, row in ipairs(toRemove) do
+		private.spellDB:DeleteRow(row)
+	end
+	TempTable.Release(toRemove)
+	query:Release()
+	private.spellDB:SetQueryUpdatesPaused(false)
+
+	local removedMats = TempTable.Acquire()
+	private.matDB:SetQueryUpdatesPaused(true)
+	local matQuery = private.matDB:NewQuery()
+		:InTable("spellId", removedSpellIds)
+	for _, matRow in matQuery:Iterator() do
+		removedMats[matRow:GetField("itemString")] = true
+		private.matDB:DeleteRow(matRow)
+	end
+	TempTable.Release(removedSpellIds)
+	matQuery:Release()
+	private.matDB:SetQueryUpdatesPaused(false)
+	private.ProcessRemovedMats(removedMats)
+	TempTable.Release(removedMats)
 end
 
 function Crafting.SetSpellDBQueryUpdatesPaused(paused)
@@ -467,7 +527,7 @@ function Crafting.SetMats(spellId, matQuantities)
 				private.matItemDB:NewRow()
 					:SetField("itemString", itemString)
 					:SetField("professions", profession)
-					:SetField("hasCustomValue", TSM.db.factionrealm.internalData.mats[itemString].customValue and true or false)
+					:SetField("customValue", TSM.db.factionrealm.internalData.mats[itemString].customValue or "")
 					:Create()
 			end
 		end
@@ -482,7 +542,7 @@ end
 function Crafting.SetMatCustomValue(itemString, value)
 	TSM.db.factionrealm.internalData.mats[itemString].customValue = value
 	private.matItemDB:GetUniqueRow("itemString", itemString)
-		:SetField("hasCustomValue", value and true or false)
+		:SetField("customValue", value or "")
 		:Update()
 end
 
@@ -534,13 +594,8 @@ function Crafting.RemoveIgnoredCooldown(characterKey, spellId)
 end
 
 function Crafting.GetMatNames(spellId)
-	local query = private.matDB:NewQuery()
-		:Select("name")
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
-		:Equal("spellId", spellId)
-	local result = query:JoinedString("name", "")
-	query:Release()
-	return result
+	return private.matDBMatNamesQuery:BindParams(spellId)
+		:JoinedString("name", "")
 end
 
 
@@ -565,24 +620,29 @@ function private.ProcessRemovedMats(removedMats)
 end
 
 function private.CraftingCostVirtualField(spellId)
-	return TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId) or math.huge * 0
+	return TSM.Crafting.Cost.GetCraftingCostBySpellId(spellId) or Math.GetNan()
 end
 
 function private.ItemValueVirtualField(itemString)
-	return TSM.Crafting.Cost.GetCraftedItemValue(itemString) or math.huge * 0
+	return TSM.Crafting.Cost.GetCraftedItemValue(itemString) or Math.GetNan()
 end
 
 function private.ProfitVirtualField(spellId)
-	return TSM.Crafting.Cost.GetProfitBySpellId(spellId) or math.huge * 0
+	return TSM.Crafting.Cost.GetProfitBySpellId(spellId) or Math.GetNan()
+end
+
+function private.ProfitPctVirtualField(spellId)
+	local craftingCost, _, profit = TSM.Crafting.Cost.GetCostsBySpellId(spellId)
+	return (craftingCost and profit) and floor(profit * 100 / craftingCost) or Math.GetNan()
 end
 
 function private.SaleRateVirtualField(itemString)
 	local saleRate = TSM.AuctionDB.GetRegionItemData(itemString, "regionSalePercent")
-	return saleRate and (saleRate / 100) or math.huge * 0
+	return saleRate and (saleRate / 100) or Math.GetNan()
 end
 
 function private.MatCostVirtualField(itemString)
-	return TSM.Crafting.Cost.GetMatCost(itemString) or math.huge * 0
+	return TSM.Crafting.Cost.GetMatCost(itemString) or Math.GetNan()
 end
 
 function private.GetRestockHelpMessage(itemString)
@@ -609,15 +669,21 @@ function private.GetRestockHelpMessage(itemString)
 	end
 
 	-- check the restock quantity
-	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString))
+	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, Inventory.GetTotalQuantity(itemString))
 	if neededQuantity == 0 then
 		return L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."]
+	end
+
+	-- check if we would actually queue any
+	local cost, spellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
+	local numResult = spellId and TSM.Crafting.GetNumResult(spellId)
+	if neededQuantity < numResult then
+		return format(L["A single craft makes %d and you only need to restock %d."], numResult, neededQuantity)
 	end
 
 	-- check the prices on the item and the min profit
 	local hasMinProfit, minProfit = TSM.Operations.Crafting.GetMinProfit(itemString)
 	if hasMinProfit then
-		local cost = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
 		local craftedValue = TSM.Crafting.Cost.GetCraftedItemValue(itemString)
 		local profit = cost and craftedValue and (craftedValue - cost) or nil
 
@@ -644,4 +710,8 @@ function private.GetRestockHelpMessage(itemString)
 	end
 
 	return L["This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."]
+end
+
+function private.QueryPlayerFilter(row, player)
+	return String.SeparatedContains(row:GetField("players"), ",", player)
 end

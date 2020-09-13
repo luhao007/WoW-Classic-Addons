@@ -1,19 +1,17 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Util = TSM.Auctioning:NewPackage("Util")
 local TempTable = TSM.Include("Util.TempTable")
 local Vararg = TSM.Include("Util.Vararg")
-local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local Math = TSM.Include("Util.Math")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local private = {
 	priceCache = {},
 }
@@ -24,6 +22,18 @@ local VALID_PRICE_KEYS = {
 	maxPrice = true,
 	undercut = true,
 	cancelRepostThreshold = true,
+	priceReset = true,
+	aboveMax = true,
+	postCap = true,
+	stackSize = true,
+	keepQuantity = true,
+	maxExpires = true,
+}
+local IS_GOLD_PRICE_KEY = {
+	minPrice = true,
+	normalPrice = true,
+	maxPrice = true,
+	undercut = TSM.IsWowClassic(),
 	priceReset = true,
 	aboveMax = true,
 }
@@ -42,25 +52,23 @@ function Util.GetPrice(key, operation, itemString)
 		private.priceCache.updateTime = GetTime()
 	end
 	if not private.priceCache[cacheKey] then
-		if key == "normalPrice" then
-			local normalPrice = CustomPrice.GetValue(operation.normalPrice, itemString)
-			if normalPrice and TSM.db.global.auctioningOptions.roundNormalPrice then
-				-- round up to the nearest gold
-				normalPrice = Math.Ceil(normalPrice, COPPER_PER_GOLD)
-			end
-			private.priceCache[cacheKey] = normalPrice
-		elseif key == "aboveMax" or key == "priceReset" then
+		local value = nil
+		if key == "aboveMax" or key == "priceReset" then
 			-- redirect to the selected price (if applicable)
 			local priceKey = operation[key]
 			if VALID_PRICE_KEYS[priceKey] then
-				private.priceCache[cacheKey] = Util.GetPrice(priceKey, operation, itemString)
+				value = Util.GetPrice(priceKey, operation, itemString)
 			end
-		elseif not TSM.IsWowClassic() and key == "undercut" and Money.FromString(Money.ToString(operation[key]) or operation[key]) == 0 then
-			private.priceCache[cacheKey] = 0
 		else
-			private.priceCache[cacheKey] = CustomPrice.GetValue(operation[key], itemString)
+			value = CustomPrice.GetValue(operation[key], itemString, not IS_GOLD_PRICE_KEY[key])
 		end
-		private.priceCache[cacheKey] = private.priceCache[cacheKey] or INVALID_PRICE
+		if not TSM.IsWowClassic() and IS_GOLD_PRICE_KEY[key] then
+			value = value and Math.Ceil(value, COPPER_PER_SILVER) or nil
+		else
+			value = value and Math.Round(value) or nil
+		end
+		local minValue, maxValue = TSM.Operations.Auctioning.GetMinMaxValues(key)
+		private.priceCache[cacheKey] = (value and value >= minValue and value <= maxValue) and value or INVALID_PRICE
 	end
 	if private.priceCache[cacheKey] == INVALID_PRICE then
 		return nil
@@ -68,23 +76,26 @@ function Util.GetPrice(key, operation, itemString)
 	return private.priceCache[cacheKey]
 end
 
-function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
+function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl)
 	if not TSM.IsWowClassic() then
 		local foundLowest = false
-		for _, record in query:Iterator() do
-			if not foundLowest and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
-				local seller = record:GetField("seller")
-				local firstSeller = strsplit(",", seller)
-				resultTbl.buyout = record:GetField("itemBuyout")
-				resultTbl.bid = record:GetField("itemDisplayedBid")
+		for _, subRow in ipairs(subRows) do
+			local _, itemBuyout = subRow:GetBuyouts()
+			local quantity = subRow:GetQuantities()
+			local timeLeft = subRow:GetListingInfo()
+			if not foundLowest and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
+				local ownerStr = subRow:GetOwnerInfo()
+				local _, auctionId = subRow:GetListingInfo()
+				local _, itemMinBid = subRow:GetBidInfo()
+				local firstSeller = strsplit(",", ownerStr)
+				resultTbl.buyout = itemBuyout
+				resultTbl.bid = itemMinBid
 				resultTbl.seller = firstSeller
-				resultTbl.auctionId = record:GetField("auctionId")
+				resultTbl.auctionId = auctionId
 				resultTbl.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(firstSeller)] and true or false
-				resultTbl.isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(firstSeller, true, true, true)
-				for seller2 in String.SplitIterator(seller, ",") do
-					if seller2 == "" or seller2 == "?" then
-						resultTbl.hasInvalidSeller = true
-					end
+				resultTbl.isPlayer = PlayerInfo.IsPlayer(firstSeller, true, true, true)
+				if not subRow:HasOwners() then
+					resultTbl.hasInvalidSeller = true
 				end
 				foundLowest = true
 			end
@@ -95,30 +106,34 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 		local ignoreWhitelist = nil
 		local lowestItemBuyout = nil
 		local lowestAuction = nil
-		for _, record in query:Iterator() do
-			if not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
-				local itemBuyout = record:GetField("itemBuyout")
+		for _, subRow in ipairs(subRows) do
+			local _, itemBuyout = subRow:GetBuyouts()
+			local quantity = subRow:GetQuantities()
+			local timeLeft = subRow:GetListingInfo()
+			if not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
 				assert(itemBuyout and itemBuyout > 0)
 				lowestItemBuyout = lowestItemBuyout or itemBuyout
 				if itemBuyout == lowestItemBuyout then
-					local seller = record:GetField("seller")
+					local ownerStr = subRow:GetOwnerInfo()
+					local _, auctionId = subRow:GetListingInfo()
+					local _, itemMinBid = subRow:GetBidInfo()
 					local temp = TempTable.Acquire()
 					temp.buyout = itemBuyout
-					temp.bid = record:GetField("itemDisplayedBid")
-					temp.seller = seller
-					temp.auctionId = record:GetField("auctionId")
-					temp.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(seller)] and true or false
-					temp.isPlayer = TSMAPI_FOUR.PlayerInfo.IsPlayer(seller, true, true, true)
+					temp.bid = itemMinBid
+					temp.seller = ownerStr
+					temp.auctionId = auctionId
+					temp.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(ownerStr)] and true or false
+					temp.isPlayer = PlayerInfo.IsPlayer(ownerStr, true, true, true)
 					if not temp.isWhitelist and not temp.isPlayer then
 						-- there is a non-whitelisted competitor, so we don't care if a whitelisted competitor also posts at this price
 						ignoreWhitelist = true
 					end
-					if seller == "?" and next(TSM.db.factionrealm.auctioningOptions.whitelist) then
+					if not subRow:HasOwners() and next(TSM.db.factionrealm.auctioningOptions.whitelist) then
 						hasInvalidSeller = true
 					end
 					if operationSettings.blacklist then
 						for _, player in Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
-							if String.SeparatedContains(strlower(seller), ",", strlower(strtrim(player))) then
+							if String.SeparatedContains(strlower(ownerStr), ",", strlower(strtrim(player))) then
 								temp.isBlacklist = true
 							end
 						end
@@ -149,55 +164,75 @@ function Util.GetLowestAuction(query, itemString, operationSettings, resultTbl)
 	end
 end
 
-function Util.GetPlayerAuctionCount(query, itemString, operationSettings, findBid, findBuyout, findStackSize)
-	local quantity = 0
-	for _, record in query:Iterator() do
-		if not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) then
-			local itemDisplayedBid, itemBuyout, stackSize = record:GetFields("itemDisplayedBid", "itemBuyout", "stackSize")
-			if itemDisplayedBid == findBid and itemBuyout == findBuyout and (not TSM.IsWowClassic() or stackSize == findStackSize) then
-				quantity = quantity + private.GetPlayerAuctionCount(record)
+function Util.GetPlayerAuctionCount(subRows, itemString, operationSettings, findBid, findBuyout, findStackSize)
+	local playerQuantity = 0
+	for _, subRow in ipairs(subRows) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft = subRow:GetListingInfo()
+		if not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
+			local _, itemMinBid = subRow:GetBidInfo()
+			if itemMinBid == findBid and itemBuyout == findBuyout and (not TSM.IsWowClassic() or quantity == findStackSize) then
+				local count = private.GetPlayerAuctionCount(subRow)
+				if not TSM.IsWowClassic() and count == 0 and playerQuantity > 0 then
+					-- there's another player's auction after ours, so stop counting
+					break
+				end
+				playerQuantity = playerQuantity + count
 			end
 		end
 	end
-	return quantity
+	return playerQuantity
 end
 
-function Util.GetPlayerLowestBuyout(query, itemString, operationSettings)
+function Util.GetPlayerLowestBuyout(subRows, itemString, operationSettings)
 	local lowestItemBuyout, lowestItemAuctionId = nil, nil
-	for _, record in query:Iterator() do
-		if not lowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) > 0 then
-			lowestItemBuyout, lowestItemAuctionId = record:GetFields("itemBuyout", "auctionId")
+	for _, subRow in ipairs(subRows) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft, auctionId = subRow:GetListingInfo()
+		if not lowestItemBuyout and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and private.GetPlayerAuctionCount(subRow) > 0 then
+			lowestItemBuyout = itemBuyout
+			lowestItemAuctionId = auctionId
 		end
 	end
 	return lowestItemBuyout, lowestItemAuctionId
 end
 
-function Util.GetLowestNonPlayerAuctionId(query, itemString, operationSettings, itemBuyout)
+function Util.GetLowestNonPlayerAuctionId(subRows, itemString, operationSettings, lowestItemBuyout)
 	local lowestItemAuctionId = nil
-	for _, record in query:Iterator() do
-		if not lowestItemAuctionId and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) == 0 and record:GetField("itemBuyout") == itemBuyout then
-			lowestItemAuctionId = record:GetField("auctionId")
+	for _, subRow in ipairs(subRows) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft, auctionId = subRow:GetListingInfo()
+		if not lowestItemAuctionId and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and private.GetPlayerAuctionCount(subRow) == 0 and itemBuyout == lowestItemBuyout then
+			lowestItemAuctionId = auctionId
 		end
 	end
 	return lowestItemAuctionId
 end
 
-function Util.IsPlayerOnlySeller(query, itemString, operationSettings)
+function Util.IsPlayerOnlySeller(subRows, itemString, operationSettings)
 	local isOnly = true
-	for _, record in query:Iterator() do
-		if isOnly and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and private.GetPlayerAuctionCount(record) < (TSM.IsWowClassic() and 1 or record:GetField("stackSize")) then
+	for _, subRow in ipairs(subRows) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft = subRow:GetListingInfo()
+		if isOnly and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and private.GetPlayerAuctionCount(subRow) < (TSM.IsWowClassic() and 1 or quantity) then
 			isOnly = false
 		end
 	end
 	return isOnly
 end
 
-function Util.GetNextLowestItemBuyout(query, itemString, lowestAuction, operationSettings)
+function Util.GetNextLowestItemBuyout(subRows, itemString, lowestAuction, operationSettings)
 	local nextLowestItemBuyout = nil
-	for _, record in query:Iterator() do
-		local itemBuyout, auctionId = record:GetFields("itemBuyout", "auctionId")
+	for _, subRow in ipairs(subRows) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft, auctionId = subRow:GetListingInfo()
 		local isLower = itemBuyout > lowestAuction.buyout or (itemBuyout == lowestAuction.buyout and auctionId < lowestAuction.auctionId)
-		if not nextLowestItemBuyout and not private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings) and isLower then
+		if not nextLowestItemBuyout and not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) and isLower then
 			nextLowestItemBuyout = itemBuyout
 		end
 	end
@@ -218,27 +253,51 @@ function Util.GetQueueStatus(query)
 	return numProcessed, numConfirmed, numFailed, totalNum
 end
 
+function Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft)
+	if timeLeft <= operationSettings.ignoreLowDuration then
+		-- ignoring low duration
+		return true
+	elseif TSM.IsWowClassic() and operationSettings.matchStackSize and quantity ~= Util.GetPrice("stackSize", operationSettings, itemString) then
+		-- matching stack size
+		return true
+	elseif operationSettings.priceReset == "ignore" then
+		local minPrice = Util.GetPrice("minPrice", operationSettings, itemString)
+		local undercut = Util.GetPrice("undercut", operationSettings, itemString)
+		if minPrice and itemBuyout - undercut < minPrice then
+			-- ignoring auctions below threshold
+			return true
+		end
+	end
+	return false
+end
+
+function Util.GetFilteredSubRows(query, itemString, operationSettings, result)
+	for _, subRow in query:ItemSubRowIterator(itemString) do
+		local _, itemBuyout = subRow:GetBuyouts()
+		local quantity = subRow:GetQuantities()
+		local timeLeft = subRow:GetListingInfo()
+		if not Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
+			tinsert(result, subRow)
+		end
+	end
+	sort(result, private.SubRowSortHelper)
+end
+
 
 
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
 
-function private.ShouldIgnoreAuctionRecord(record, itemString, operationSettings)
-	if record:GetField("timeLeft") <= operationSettings.ignoreLowDuration then
-		-- ignoring low duration
-		return true
-	elseif TSM.IsWowClassic() and operationSettings.matchStackSize and record:GetField("stackSize") ~= operationSettings.stackSize then
-		-- matching stack size
-		return true
-	elseif operationSettings.priceReset == "ignore" and record:GetField("itemBuyout") then
-		local minPrice = Util.GetPrice("minPrice", operationSettings, itemString)
-		if minPrice and record:GetField("itemBuyout") <= minPrice then
-			-- ignoring auctions below threshold
-			return true
-		end
+function private.SubRowSortHelper(a, b)
+	local _, aItemBuyout = a:GetBuyouts()
+	local _, bItemBuyout = b:GetBuyouts()
+	if aItemBuyout ~= bItemBuyout then
+		return aItemBuyout < bItemBuyout
 	end
-	return false
+	local _, aAuctionId = a:GetListingInfo()
+	local _, bAuctionId = b:GetListingInfo()
+	return aAuctionId > bAuctionId
 end
 
 function private.LowestAuctionCompare(a, b)
@@ -257,10 +316,11 @@ function private.LowestAuctionCompare(a, b)
 	return tostring(a) < tostring(b)
 end
 
-function private.GetPlayerAuctionCount(row)
+function private.GetPlayerAuctionCount(subRow)
+	local ownerStr, numOwnerItems = subRow:GetOwnerInfo()
 	if TSM.IsWowClassic() then
-		return TSMAPI_FOUR.PlayerInfo.IsPlayer(row:GetField("seller"), true, true, true) and 1 or 0
+		return PlayerInfo.IsPlayer(ownerStr, true, true, true) and select(2, subRow:GetQuantities()) or 0
 	else
-		return row:GetField("numOwnerItems")
+		return numOwnerItems
 	end
 end

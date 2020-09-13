@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -75,7 +73,7 @@ local ROW_PROTOTYPE = {
 
 	GetFields = function(self, ...)
 		local numFields = select("#", ...)
-		local field1, field2, field3, field4, field5, field6, field7, field8 = ...
+		local field1, field2, field3, field4, field5, field6, field7, field8, field9, field10 = ...
 		if numFields == 0 then
 			return
 		elseif numFields == 1 then
@@ -94,8 +92,12 @@ local ROW_PROTOTYPE = {
 			return self[field1], self[field2], self[field3], self[field4], self[field5], self[field6], self[field7]
 		elseif numFields == 8 then
 			return self[field1], self[field2], self[field3], self[field4], self[field5], self[field6], self[field7], self[field8]
+		elseif numFields == 9 then
+			return self[field1], self[field2], self[field3], self[field4], self[field5], self[field6], self[field7], self[field8], self[field9]
+		elseif numFields == 10 then
+			return self[field1], self[field2], self[field3], self[field4], self[field5], self[field6], self[field7], self[field8], self[field9], self[field10]
 		else
-			error("GetFields() only supports up to 8 fields")
+			error("GetFields() only supports up to 10 fields")
 		end
 	end,
 
@@ -246,7 +248,9 @@ local ROW_MT = {
 		error("Table is read-only", 2)
 	end,
 	__eq = function(self, other)
-		return self:GetUUID() == other:GetUUID()
+		local uuid = private.context[self].uuid
+		local uuidOther = private.context[other].uuid
+		return uuid and uuidOther and uuid == uuidOther
 	end,
 	__tostring = function(self)
 		local context = private.context[self]

@@ -1,17 +1,25 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-TSMAPI_FOUR.Exporter = {}
 local _, TSM = ...
+local ExporterModule = TSM:NewPackage("Exporter")
 local TempTable = TSM.Include("Util.TempTable")
 local LibAceSerializer = LibStub("AceSerializer-3.0")
 local Exporter = TSM.Include("LibTSMClass").DefineClass("Exporter")
 local private = {}
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function ExporterModule.New()
+	return Exporter()
+end
 
 
 
@@ -177,14 +185,4 @@ function private.GroupsThenItemsSortFunc(a, b)
 		return a < b
 	end
 	return groupA < groupB
-end
-
-
-
--- ============================================================================
--- New TSMAPI Functions
--- ============================================================================
-
-function TSMAPI_FOUR.Exporter.New()
-	return Exporter()
 end

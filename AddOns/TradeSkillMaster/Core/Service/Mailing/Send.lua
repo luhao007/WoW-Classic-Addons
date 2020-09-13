@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -14,6 +12,7 @@ local Money = TSM.Include("Util.Money")
 local SlotId = TSM.Include("Util.SlotId")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
@@ -41,11 +40,11 @@ function Send.KillThread()
 	Threading.Kill(private.thread)
 end
 
-function Send.StartSending(callback, recipient, subject, body, money, items, isGroup)
+function Send.StartSending(callback, recipient, subject, body, money, items, isGroup, isDryRun)
 	Threading.Kill(private.thread)
 
 	Threading.SetCallback(private.thread, callback)
-	Threading.Start(private.thread, recipient, subject, body, money, items, isGroup)
+	Threading.Start(private.thread, recipient, subject, body, money, items, isGroup, isDryRun)
 end
 
 
@@ -54,30 +53,22 @@ end
 -- Mail Sending Thread
 -- ============================================================================
 
-function private.SendMailThread(recipient, subject, body, money, items, isGroup)
+function private.SendMailThread(recipient, subject, body, money, items, isGroup, isDryRun)
 	if recipient == "" or recipient == PLAYER_NAME or recipient == PLAYER_NAME_REALM then
 		return
 	end
 
-	if not items then
-		if TSM.db.global.mailingOptions.sendMessages then
-			private.PrintMailMessage(money, items, recipient)
-		end
-		private.SendMail(recipient, subject, body, money, true)
+	private.PrintMailMessage(money, items, recipient, isGroup, isDryRun)
+	if isDryRun then
+		return
+	end
 
+	if not items then
+		private.SendMail(recipient, subject, body, money, true)
 		return
 	end
 
 	ClearSendMail()
-
-	if TSM.db.global.mailingOptions.sendMessages then
-		local individually = false
-		if isGroup and TSM.db.global.mailingOptions.sendItemsIndividually then
-			individually = true
-		end
-		private.PrintMailMessage(money, items, recipient, individually)
-	end
-
 	local itemInfo = Threading.AcquireSafeTempTable()
 
 	local query = BagTracking.CreateQueryBags()
@@ -135,7 +126,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 							PickupContainerItem(splitBag, splitSlot)
 							ClickSendMailItemButton()
 
-							if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND or (isGroup and TSM.db.global.mailingOptions.sendItemsIndividually) then
+							if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND then
 								private.SendMail(recipient, subject, body, money)
 							end
 
@@ -148,7 +139,7 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 						PickupContainerItem(info.bag, info.slot)
 						ClickSendMailItemButton()
 
-						if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND or (isGroup and TSM.db.global.mailingOptions.sendItemsIndividually) then
+						if private.GetNumPendingAttachments() == ATTACHMENTS_MAX_SEND then
 							private.SendMail(recipient, subject, body, money)
 						end
 
@@ -156,6 +147,10 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 						info.quantity = 0
 					end
 				end
+			end
+
+			if isGroup and TSM.db.global.mailingOptions.sendItemsIndividually then
+				private.SendMail(recipient, subject, body, money)
 			end
 			Threading.ReleaseSafeTempTable(emptySlotIds)
 		end
@@ -168,7 +163,10 @@ function private.SendMailThread(recipient, subject, body, money, items, isGroup)
 	Threading.ReleaseSafeTempTable(itemInfo)
 end
 
-function private.PrintMailMessage(money, items, target, individually)
+function private.PrintMailMessage(money, items, target, isGroup, isDryRun)
+	if not TSM.db.global.mailingOptions.sendMessages and not isDryRun then
+		return
+	end
 	if money > 0 and not items then
 		Log.PrintfUser(L["Sending %s to %s"], Money.ToString(money), target)
 		return
@@ -186,11 +184,17 @@ function private.PrintMailMessage(money, items, target, individually)
 	itemList = strtrim(itemList, ", ")
 
 	if next(items) and money < 0 then
-		Log.PrintfUser(L["Sending %s to %s with a COD of %s"], itemList, target, Money.ToString(money, "|cffff0000"))
-	elseif next(items) and individually then
-		Log.PrintfUser(L["Sending %s individually to %s"], itemList, target)
+		if isDryRun then
+			Log.PrintfUser(L["Would send %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()))
+		else
+			Log.PrintfUser(L["Sending %s to %s with a COD of %s"], itemList, target, Money.ToString(money, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()))
+		end
 	elseif next(items) then
-		Log.PrintfUser(L["Sending %s to %s"], itemList, target)
+		if isDryRun then
+			Log.PrintfUser(L["Would send %s to %s"], itemList, target)
+		else
+			Log.PrintfUser(L["Sending %s to %s"], itemList, target)
+		end
 	end
 end
 

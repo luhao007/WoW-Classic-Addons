@@ -1,20 +1,20 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- ToggleOnOff UI Element Class.
 -- This is a simple on/off toggle which uses different textures for the different states. It is a subclass of the
--- @{Element} class.
+-- @{Container} class.
 -- @classmod ToggleOnOff
 
 local _, TSM = ...
 local ToggleOnOff = TSM.Include("LibTSMClass").DefineClass("ToggleOnOff", TSM.UI.Container)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(ToggleOnOff)
 TSM.UI.ToggleOnOff = ToggleOnOff
-local private = { buttonToggleOnOffLookup = {} }
+local private = {}
 
 
 
@@ -23,16 +23,9 @@ local private = { buttonToggleOnOffLookup = {} }
 -- ============================================================================
 
 function ToggleOnOff.__init(self)
-	local frame = CreateFrame("Button", nil, nil, nil)
-	private.buttonToggleOnOffLookup[frame] = self
+	local frame = UIElements.CreateFrame(self, "Frame")
 
 	self.__super:__init(frame)
-
-	-- set the click handler
-	frame:SetScript("OnClick", private.OnClickHandler)
-
-	-- create the background
-	frame.backgroundTexture = frame:CreateTexture(nil, "BACKGROUND")
 
 	self._value = false
 	self._disabled = false
@@ -41,13 +34,44 @@ function ToggleOnOff.__init(self)
 	self._onValueChangedHandler = nil
 end
 
+function ToggleOnOff.Acquire(self)
+	local frame = self:_GetBaseFrame()
+	self:AddChildNoLayout(UIElements.New("Frame", "toggle")
+		:SetLayout("HORIZONTAL")
+		:AddAnchor("TOPLEFT", frame)
+		:AddAnchor("BOTTOMRIGHT", frame)
+		:SetContext(self)
+		:AddChild(UIElements.New("Checkbox", "yes")
+			:SetWidth("AUTO")
+			:SetTheme("RADIO")
+			:SetFont("BODY_BODY2")
+			:SetText(YES)
+			:SetCheckboxPosition("LEFT")
+			:SetScript("OnValueChanged", private.OnYesClickHandler)
+		)
+		:AddChild(UIElements.New("Checkbox", "no")
+			:SetWidth("AUTO")
+			:SetTheme("RADIO")
+			:SetFont("BODY_BODY2")
+			:SetMargin(8, 0, 0, 0)
+			:SetText(NO)
+			:SetCheckboxPosition("LEFT")
+			:SetScript("OnValueChanged", private.OnNoClickHandler)
+		)
+		:AddChild(UIElements.New("Spacer", "spacer"))
+	)
+
+	self.__super:Acquire()
+end
+
 function ToggleOnOff.Release(self)
 	self._value = false
 	self._disabled = false
 	self._settingTable = nil
 	self._settingKey = nil
 	self._onValueChangedHandler = nil
-	self:_GetBaseFrame():Enable()
+	--self:_GetBaseFrame():Enable()
+
 	self.__super:Release()
 end
 
@@ -73,9 +97,11 @@ end
 function ToggleOnOff.SetDisabled(self, disabled, redraw)
 	self._disabled = disabled
 	if disabled then
-		self:_GetBaseFrame():Disable()
+		self:GetElement("toggle.yes"):SetDisabled(true)
+		self:GetElement("toggle.no"):SetDisabled(true)
 	else
-		self:_GetBaseFrame():Enable()
+		self:GetElement("toggle.yes"):SetDisabled(false)
+		self:GetElement("toggle.no"):SetDisabled(false)
 	end
 	if redraw then
 		self:Draw()
@@ -127,13 +153,23 @@ function ToggleOnOff.GetValue(self)
 end
 
 function ToggleOnOff.Draw(self)
-	self.__super:Draw()
-	if self:_GetBaseFrame():IsEnabled() then
-		self:SetStyle("backgroundTexturePack", self._value and "uiFrames.ToggleOn" or "uiFrames.ToggleOff")
+	if self._value then
+		self:GetElement("toggle.yes"):SetChecked(true, true)
+		self:GetElement("toggle.no"):SetChecked(false, true)
 	else
-		self:SetStyle("backgroundTexturePack", self._value and "uiFrames.ToggleDisabledOn" or "uiFrames.ToggleDisabledOff")
+		self:GetElement("toggle.yes"):SetChecked(false, true)
+		self:GetElement("toggle.no"):SetChecked(true, true)
 	end
-	self:_ApplyFrameBackgroundTexture()
+
+	if self._disabled then
+		self:GetElement("toggle.yes"):SetDisabled(true)
+		self:GetElement("toggle.no"):SetDisabled(true)
+	else
+		self:GetElement("toggle.yes"):SetDisabled(false)
+		self:GetElement("toggle.no"):SetDisabled(false)
+	end
+
+	self.__super:Draw()
 end
 
 
@@ -142,7 +178,20 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.OnClickHandler(button)
-	local self = private.buttonToggleOnOffLookup[button]
-	self:SetValue(not self._value, true)
+function private.OnYesClickHandler(button)
+	if not button:IsChecked() then
+		button:SetChecked(true, true)
+		return
+	end
+	local self = button:GetParentElement():GetContext()
+	self:SetValue(true, true)
+end
+
+function private.OnNoClickHandler(button)
+	if not button:IsChecked() then
+		button:SetChecked(true, true)
+		return
+	end
+	local self = button:GetParentElement():GetContext()
+	self:SetValue(false, true)
 end

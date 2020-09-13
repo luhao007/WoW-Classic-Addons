@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -48,7 +46,7 @@ local EXTRA_TIP_METHODS = {
 		if changedLines >= numLines then return end
 		for i = changedLines + 1, numLines do
 			local left, right = self.Left[i], self.Right[i]
-			local font = i == 1 and GameFontNormal or GameFontNormalSmall
+			local font = i == 1 and GameTooltipHeader or GameFontNormal
 
 			local r, g, b, a = left:GetTextColor()
 			left:SetFontObject(font)

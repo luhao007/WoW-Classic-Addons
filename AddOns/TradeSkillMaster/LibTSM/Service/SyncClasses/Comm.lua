@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -21,9 +19,8 @@ local private = {
 }
 -- load libraries
 LibStub("AceComm-3.0"):Embed(Comm)
-local AceSerializer = LibStub("AceSerializer-3.0")
-local LibCompress = LibStub("LibCompress")
-local LibCompressAddonEncodeTable = LibCompress:GetAddonEncodeTable()
+local LibSerialize = LibStub("LibSerialize")
+local LibDeflate = LibStub("LibDeflate")
 
 
 
@@ -34,7 +31,6 @@ local LibCompressAddonEncodeTable = LibCompress:GetAddonEncodeTable()
 Comm:OnModuleLoad(function()
 	Comm:RegisterComm("TSMSyncData", private.OnCommReceived)
 end)
-
 
 
 -- ============================================================================
@@ -49,54 +45,21 @@ end
 
 function Comm.SendData(dataType, targetCharacter, data)
 	assert(type(dataType) == "string" and #dataType == 1)
-	local serialized = nil
-	if data then
-		local packet = TempTable.Acquire()
-		packet.dt = dataType
-		packet.sa = Settings.GetCurrentSyncAccountKey()
-		packet.v = Constants.VERSION
-		packet.d = data
-		serialized = AceSerializer:Serialize(packet)
-		TempTable.Release(packet)
-	else
-		-- send a more compact version if there's no data
-		serialized = "\240"..strjoin(";", dataType, Settings.GetCurrentSyncAccountKey(), UnitName("player"), Constants.VERSION)
-	end
-
-	-- We will compress using Huffman, LZW, and no compression separately, validate each one, and pick the shortest valid one.
-	-- This is to deal with a bug in the compression code.
-	local encodedData = TempTable.Acquire()
-	local huffmanCompressed = LibCompress:CompressHuffman(serialized)
-	if huffmanCompressed then
-		huffmanCompressed = LibCompressAddonEncodeTable:Encode(huffmanCompressed)
-		tinsert(encodedData, huffmanCompressed)
-	end
-	local lzwCompressed = LibCompress:CompressLZW(serialized)
-	if lzwCompressed then
-		lzwCompressed = LibCompressAddonEncodeTable:Encode(lzwCompressed)
-		tinsert(encodedData, lzwCompressed)
-	end
-	local uncompressed = LibCompressAddonEncodeTable:Encode("\001"..serialized)
-	tinsert(encodedData, uncompressed)
-	-- verify each compresion and pick the shortest valid one
-	local minIndex = -1
-	local minLen = math.huge
-	for i = #encodedData, 1, -1 do
-		local test = LibCompress:Decompress(LibCompressAddonEncodeTable:Decode(encodedData[i]))
-		if test and test == serialized and #encodedData[i] < minLen then
-			minLen = #encodedData[i]
-			minIndex = i
-		end
-	end
-	local minData = encodedData[minIndex]
-	TempTable.Release(encodedData)
-	assert(minData, "Could not compress packet")
+	local packet = TempTable.Acquire()
+	packet.dt = dataType
+	packet.sa = Settings.GetCurrentSyncAccountKey()
+	packet.v = Constants.VERSION
+	packet.d = data
+	local serialized = LibSerialize:Serialize(packet)
+	TempTable.Release(packet)
+	local compressed = LibDeflate:EncodeForWoWAddonChannel(LibDeflate:CompressDeflate(serialized))
+	assert(LibDeflate:DecompressDeflate(LibDeflate:DecodeForWoWAddonChannel(compressed)) == serialized)
 
 	-- give heartbeats and rpc preambles a higher priority
 	local priority = (dataType == Constants.DATA_TYPES.HEARTBEAT or dataType == Constants.DATA_TYPES.RPC_PREAMBLE) and "ALERT" or nil
 	-- send the message
-	Comm:SendCommMessage("TSMSyncData", minData, "WHISPER", targetCharacter, priority)
-	return #minData
+	Comm:SendCommMessage("TSMSyncData", compressed, "WHISPER", targetCharacter, priority)
+	return #compressed
 end
 
 
@@ -121,7 +84,7 @@ function private.ProcessReceiveQueue()
 	end
 end
 
-function private.ProcessReceivedPacket(packet, sourceCharacter)
+function private.ProcessReceivedPacket(msg, sourceCharacter)
 	-- remove realm name from source player
 	sourceCharacter = strsplit("-", sourceCharacter)
 	sourceCharacter = strtrim(sourceCharacter)
@@ -133,38 +96,22 @@ function private.ProcessReceivedPacket(packet, sourceCharacter)
 	end
 
 	-- decode and decompress
-	packet = LibCompressAddonEncodeTable:Decode(packet)
-	packet = packet and LibCompress:Decompress(packet)
-	if type(packet) ~= "string" then
+	msg = LibDeflate:DecompressDeflate(LibDeflate:DecodeForWoWAddonChannel(msg))
+	if not msg then
 		Log.Err("Invalid packet")
 		return
 	end
-	if strsub(packet, 1, 1) == "\240" then
-		-- original data was a string, so we're done
-		packet = strsub(packet, 2)
-	else
-		-- Deserialize
-		local success
-		success, packet = AceSerializer:Deserialize(packet)
-		if not success or not packet then
-			Log.Err("Invalid packet")
-			return
-		end
+	local success, packet = LibSerialize:Deserialize(msg)
+	if not success then
+		Log.Err("Invalid packet")
+		return
 	end
 
 	-- validate the packet
-	local dataType, sourceAccount, version, data = nil, nil, nil, nil
-	if type(packet) == "string" then
-		-- if it's a string that means there was no data
-		local _
-		dataType, sourceAccount, _, version = (";"):split(packet)
-		version = tonumber(version)
-	else
-		dataType = packet.dt
-		sourceAccount = packet.sa
-		version = packet.v
-		data = packet.d
-	end
+	local dataType = packet.dt
+	local sourceAccount = packet.sa
+	local version = packet.v
+	local data = packet.d
 	if type(dataType) ~= "string" or #dataType > 1 or not sourceAccount or version ~= Constants.VERSION then
 		Log.Info("Invalid message received")
 		return

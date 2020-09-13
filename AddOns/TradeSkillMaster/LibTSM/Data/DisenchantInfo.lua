@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -325,11 +323,11 @@ else
 			maxLevel = 85,
 			sourceInfo = {
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 101, maxItemLevel = 103, matRate = 0.750, minAmount = 1, maxAmount = 8, amountOfMats = 1.556},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 104, maxItemLevel = 106, matRate = 0.750, minAmount = 1, maxAmount = 9, amountOfMats = 2.304},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 107, maxItemLevel = 108, matRate = 0.750, minAmount = 1, maxAmount = 10, amountOfMats = 2.628},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 104, maxItemLevel = 105, matRate = 0.750, minAmount = 1, maxAmount = 9, amountOfMats = 2.304},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 106, maxItemLevel = 107, matRate = 0.750, minAmount = 1, maxAmount = 10, amountOfMats = 2.628},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 101, maxItemLevel = 103, matRate = 0.250, minAmount = 1, maxAmount = 6, amountOfMats = 0.510},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 104, maxItemLevel = 106, matRate = 0.250, minAmount = 1, maxAmount = 9, amountOfMats = 0.767},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 107, maxItemLevel = 108, matRate = 0.250, minAmount = 1, maxAmount = 10, amountOfMats = 0.864},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 104, maxItemLevel = 105, matRate = 0.250, minAmount = 1, maxAmount = 9, amountOfMats = 0.767},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 106, maxItemLevel = 107, matRate = 0.250, minAmount = 1, maxAmount = 10, amountOfMats = 0.864},
 			},
 		},
 		["i:74249"] = { -- Spirit Dust
@@ -358,20 +356,20 @@ else
 			minLevel = 101,
 			maxLevel = 110,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 138, maxItemLevel = 170, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 4.750},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 138, maxItemLevel = 170, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 4.750},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 137, maxItemLevel = 170, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 4.750},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 137, maxItemLevel = 170, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 4.750},
 			},
 		},
 		["i:152875"] = { -- Gloom Dust
 			minLevel = 111,
 			maxLevel = 120,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 172, maxItemLevel = 225, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 4.130},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 226, maxItemLevel = 310, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 5.000},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 172, maxItemLevel = 225, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 3.600},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 226, maxItemLevel = 310, matRate = 1.000, minAmount = 4, maxAmount = 9, amountOfMats = 6.500},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 182, maxItemLevel = 999, matRate = 0.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 300, maxItemLevel = 999, matRate = 0.200, minAmount = 4, maxAmount = 6, amountOfMats = 1.000},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 172, maxItemLevel = 225, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 4.130},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 226, maxItemLevel = 310, matRate = 1.000, minAmount = 4, maxAmount = 6, amountOfMats = 5.000},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 172, maxItemLevel = 225, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 3.600},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 226, maxItemLevel = 310, matRate = 1.000, minAmount = 4, maxAmount = 9, amountOfMats = 6.500},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 182, maxItemLevel = 999, matRate = 1.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 300, maxItemLevel = 999, matRate = 1.200, minAmount = 4, maxAmount = 6, amountOfMats = 1.000},
 			},
@@ -462,8 +460,8 @@ else
 			minLevel = 77,
 			maxLevel = 85,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 104, maxItemLevel = 108, matRate = 0.250, minAmount = 1, maxAmount = 5, amountOfMats = 0.412},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 104, maxItemLevel = 108, matRate = 0.750, minAmount = 1, maxAmount = 5, amountOfMats = 1.157},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 104, maxItemLevel = 107, matRate = 0.250, minAmount = 1, maxAmount = 5, amountOfMats = 0.412},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 104, maxItemLevel = 107, matRate = 0.750, minAmount = 1, maxAmount = 5, amountOfMats = 1.157},
 			},
 		},
 		["i:74250"] = { -- Mysterious Essence
@@ -594,8 +592,8 @@ else
 			minLevel = 101,
 			maxLevel = 110,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 138, maxItemLevel = 180, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 138, maxItemLevel = 180, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 139, maxItemLevel = 180, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 139, maxItemLevel = 180, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 			},
 		},
 		["i:152876"] = { -- Umbra Shard

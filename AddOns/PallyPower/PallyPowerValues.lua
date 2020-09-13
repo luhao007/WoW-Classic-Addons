@@ -121,7 +121,7 @@ PALLYPOWER_OTHER_VALUES = {
 		ShowTooltips = true,
 		ShowWhenSolo = true,
 		skin = "Smooth",
-		SmartBuffs = true
+		SmartBuffs = false
 	}
 }
 
@@ -201,6 +201,7 @@ PallyPower.AuraIcons = {
 
 -- XML Aliases
 PALLYPOWER_NAME = "  " .. L["PP_NAME"] .. " (" .. string.trim(GetAddOnMetadata("PallyPower", "Version")) .. ")"
+PALLYPOWER_KEYCAT = L["PP_NAME"]
 PALLYPOWER_CLEAR = L["PP_CLEAR"]
 PALLYPOWER_CLEAR_DESC = L["PP_CLEAR_DESC"]
 PALLYPOWER_REFRESH = L["PP_REFRESH"]
@@ -263,8 +264,7 @@ PallyPower.GreaterBuffs = {
 	[3] = {{50, 25898}},
 	[4] = {{50, 25895}},
 	[5] = {{50, 25890}},
-	[6] = {{50, 25899}},
-	[7] = {{44, 20729}, {36, 6940}}
+	[6] = {{50, 25899}}
 }
 
 PallyPower.RFSpell = GetSpellInfo(25780) --BS["Righteous Fury"]

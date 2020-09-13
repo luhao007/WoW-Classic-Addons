@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -13,18 +11,18 @@ local Delay = TSM.Include("Util.Delay")
 local Money = TSM.Include("Util.Money")
 local FSM = TSM.Include("Util.FSM")
 local Database = TSM.Include("Util.Database")
-local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local Event = TSM.Include("Util.Event")
 local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local InventoryInfo = TSM.Include("Service.InventoryInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	fsm = nil,
 	frame = nil,
-	contacts = nil,
-	contactList = nil,
 	db = nil,
 	query = nil,
 	recipient = "",
@@ -33,11 +31,10 @@ local private = {
 	money = 0,
 	isMoney = true,
 	isCOD = false,
-	listName = "",
-	listElements = {},
-	listFilter = ""
 }
-local PLAYER_NAME_REALM = string.gsub(UnitName("player").."-"..GetRealmName(), "%s+", "")
+local PLAYER_NAME = UnitName("player")
+local PLAYER_NAME_REALM = gsub(PLAYER_NAME.."-"..GetRealmName(), "%s+", "")
+local MAX_COD_AMOUNT = 10000 * COPPER_PER_GOLD
 
 
 
@@ -47,7 +44,7 @@ local PLAYER_NAME_REALM = string.gsub(UnitName("player").."-"..GetRealmName(), "
 
 function Send.OnInitialize()
 	private.FSMCreate()
-	TSM.UI.MailingUI.RegisterTopLevelPage(L["Send"], "iconPack.24x24/Send Mail", private.GetSendFrame)
+	TSM.UI.MailingUI.RegisterTopLevelPage(L["Send"], private.GetSendFrame)
 
 	private.db = Database.NewSchema("MAILTRACKING_SEND_INFO")
 		:AddStringField("itemString")
@@ -68,242 +65,203 @@ end
 
 function private.GetSendFrame()
 	TSM.UI.AnalyticsRecordPathChange("mailing", "send")
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "send")
+	local frame = UIElements.New("Frame", "send")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "container")
+		:AddChild(UIElements.New("Frame", "container")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#2e2e2e")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "recipient")
-				:SetStyle("margin", { top = 35, left = 10, right = 10, bottom = 4 })
-				:SetStyle("height", 13)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 10)
-				:SetStyle("justifyH", "LEFT")
-				:SetText(L["RECIPIENT"])
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "recipient")
+				:SetMargin(8, 8, 8, 8)
+				:SetHeight(24)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(L["Recipient"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "name")
+			:AddChild(UIElements.New("Frame", "name")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 20)
-				:SetStyle("margin", { left = 10, right = 10, bottom = 9 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-					:SetStyle("height", 20)
-					:SetStyle("clearButton", true)
-					:SetStyle("autoComplete", TSMAPI_FOUR.PlayerInfo.GetAlts())
-					:SetStyle("font", TSM.UI.Fonts.FRIZQT)
-					:SetStyle("fontHeight", 13)
-					:SetText(private.recipient)
-					:SetScript("OnEnterPressed", private.RecipientOnTextChanged)
-					:SetScript("OnTextChanged", private.RecipientOnTextChanged)
-					:SetScript("OnTabPressed", private.RecipientOnTabPressed)
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 8)
+				:AddChild(UIElements.New("Input", "input")
+					:SetHintText(L["Enter recipient name"])
+					:SetAutoComplete(PlayerInfo.GetConnectedAlts())
+					:SetClearButtonEnabled(true)
+					:SetValue(private.recipient)
+					:SetScript("OnValueChanged", private.RecipientOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "contacts")
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("margin.left", 8)
-					:SetStyle("width", 119)
-					:SetStyle("height", 20)
-					:SetStyle("fontHeight", 12)
-					:SetText(L["CONTACTS"])
+				:AddChild(UIElements.New("ActionButton", "contacts")
+					:SetWidth(152)
+					:SetMargin(8, 0, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(L["Contacts"])
 					:SetScript("OnClick", private.ContactsBtnOnClick)
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "opt")
+			:AddChild(UIElements.New("Frame", "subject")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 14)
-				:SetStyle("margin", { left = 10, right = 10, bottom = 15 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "add")
-					:SetStyle("margin.right", 8)
-					:SetStyle("width", 14)
-					:SetStyle("height", 14)
-					:SetStyle("backgroundTexturePack", "iconPack.14x14/Add/Circle")
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 16)
+				:AddChild(UIElements.New("Button", "icon")
+					:SetMargin(4, 4, 0, 0)
+					:SetBackgroundAndSize("iconPack.12x12/Add/Circle")
 					:SetScript("OnClick", private.SubjectBtnOnClick)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "subject")
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("justifyH", "LEFT")
-					:SetText(L["Add Subject / Description (Optional)"])
+				:AddChild(UIElements.New("Button", "text")
+					:SetWidth("AUTO")
+					:SetText(L["Add subject & description (optional)"])
+					:SetFont("BODY_BODY2")
+					:SetScript("OnClick", private.SubjectBtnOnClick)
+				)
+				:AddChild(UIElements.New("Button", "button")
+					:SetWidth("AUTO")
+					:SetMargin(8, 0, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetTextColor("INDICATOR")
+					:SetText(L["Edit"])
+					:SetScript("OnClick", private.SubjectBtnOnClick)
+				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+			)
+			:AddChild(UIElements.New("Frame", "header")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 4)
+				:AddChild(UIElements.New("Text", "items")
+					:SetFont("BODY_BODY1_BOLD")
+					:SetText(L["Select Items to Attach"])
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 13)
-				:SetStyle("margin", { left = 10, right = 10, bottom = 4 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "items")
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("justifyH", "LEFT")
-					:SetText(L["ITEMS"])
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "postage")
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("justifyH", "RIGHT")
-					:SetText(L["POSTAGE"]..": "..Money.ToString(30))
-				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("BorderedFrame", "dragBox")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("borderTheme", "roundDark")
-				:SetStyle("margin", { left = 10, right = 10, bottom = 6 })
+			:AddChild(UIElements.New("Frame", "dragBox")
+				:SetLayout("VERTICAL")
+				:SetBackgroundColor("PRIMARY_BG")
 				:RegisterForDrag("LeftButton")
 				:SetScript("OnReceiveDrag", private.DragBoxOnItemRecieve)
 				:SetScript("OnMouseUp", private.DragBoxOnItemRecieve)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "items")
-					:SetStyle("anchors", { { "TOPLEFT", 2, -2 }, { "BOTTOMRIGHT", -2, 26 } })
-					:SetStyle("hideHeader", true)
-					:SetStyle("headerBackground", "#00000000")
-					:SetStyle("background", "#1b1b1b")
-					:SetStyle("altBackground", "#000000")
-					:SetStyle("highlight", "#30290b")
-					:SetStyle("headerFont", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("headerFontHeight", 14)
-					:SetStyle("margin.bottom", 1)
+				:AddChild(UIElements.New("QueryScrollingTable", "items")
 					:GetScrollingTableInfo()
 						:NewColumn("item")
-							:SetFont(TSM.UI.Fonts.FRIZQT)
-							:SetFontHeight(12)
+							:SetTitle(L["Items"])
+							:SetFont("ITEM_BODY3")
 							:SetJustifyH("LEFT")
+							:SetIconSize(12)
 							:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
 							:SetIconInfo("itemString", ItemInfo.GetTexture)
 							:SetTooltipInfo("itemString")
 							:SetTooltipLinkingDisabled(true)
+							:DisableHiding()
 							:Commit()
 						:NewColumn("quantity")
-							:SetWidth(100)
-							:SetFont(TSM.UI.Fonts.RobotoMedium)
-							:SetFontHeight(12)
-							:SetJustifyH("RIGHT")
+							:SetTitle(L["Amount"])
+							:SetWidth(60)
+							:SetFont("TABLE_TABLE1")
+							:SetJustifyH("LEFT")
 							:SetTextInfo("quantity")
+							:DisableHiding()
 							:Commit()
 						:Commit()
 					:SetQuery(private.query)
 					:SetScript("OnRowClick", private.QueryOnRowClick)
 					:SetScript("OnDataUpdated", private.SendOnDataUpdated)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "dragTextBig")
-					:SetStyle("anchors", { { "CENTER" } })
-					:SetStyle("autoWidth", true)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 24)
-					:SetStyle("justifyH", "CENTER")
-					:SetText(L["Drag Item(s) Into Box"])
+				:AddChild(UIElements.New("Texture", "line")
+					:SetHeight(2)
+					:SetTexture("ACTIVE_BG")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "dragTextSmall")
-					:SetStyle("anchors", { { "BOTTOMLEFT", 8, 5 } })
-					:SetStyle("height", 15)
-					:SetStyle("width", 220)
-					:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-					:SetStyle("fontHeight", 12)
-					:SetStyle("justifyH", "LEFT")
-					:SetFormattedText(L["Drag in Additional Items (%d/%d Items)"], 0, ATTACHMENTS_MAX_SEND)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+				:AddChild(UIElements.New("Frame", "footer")
 					:SetLayout("HORIZONTAL")
-					:SetStyle("anchors", { { "TOPLEFT", 2, -2 }, { "BOTTOMRIGHT", -2, 2 } })
-					:SetStyle("background", "#1b1b1b")
+					:SetHeight(26)
+					:SetPadding(8, 8, 3, 3)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+					:AddChild(UIElements.New("Text", "items")
+						:SetWidth(144)
+						:SetFont("BODY_BODY2_MEDIUM")
+						:SetJustifyH("RIGHT")
+						:Hide()
+					)
+					:AddChild(UIElements.New("Texture", "vline")
+						:SetWidth(1)
+						:SetMargin(8, 8, 3, 3)
+						:SetTexture("ACTIVE_BG_ALT")
+						:Hide()
+					)
+					:AddChild(UIElements.New("Text", "postage")
+						:SetWidth(150)
+						:SetFont("BODY_BODY2_MEDIUM")
+						:SetJustifyH("RIGHT")
+						:SetText(L["Total Postage"]..": "..Money.ToString(30))
+					)
 				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "check")
+			:AddChild(UIElements.New("Texture", "line")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("Frame", "check")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 24)
-				:SetStyle("margin", { left = 6, right = 6 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "sendCheck")
-					:SetStyle("height", 16)
-					:SetStyle("margin.top", 1)
+				:SetHeight(20)
+				:SetMargin(8, 0, 8, 6)
+				:AddChild(UIElements.New("Checkbox", "sendCheck")
+					:SetWidth("AUTO")
+					:SetMargin(0, 0, 1, 0)
+					:SetFont("BODY_BODY2")
 					:SetCheckboxPosition("LEFT")
 					:SetChecked(private.isMoney)
 					:SetText(L["Send Money"])
-					:SetStyle("fontHeight", 12)
-					:SetStyle("checkboxSpacing", 1)
 					:SetScript("OnValueChanged", private.SendOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer")
-					:SetStyle("height", 16)
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer")
-					:SetStyle("height", 16)
-				)
+				:AddChild(UIElements.New("Spacer", "spacer"))
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "checkbox")
+			:AddChild(UIElements.New("Frame", "checkbox")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 24)
-				:SetStyle("margin", { left = 6, right = 6})
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "cod")
-					:SetStyle("height", 16)
-					:SetStyle("margin.top", 1)
+				:SetHeight(24)
+				:SetMargin(8, 8, 0, 8)
+				:AddChild(UIElements.New("Checkbox", "cod")
+					:SetSize("AUTO", 20)
+					:SetFont("BODY_BODY2")
 					:SetCheckboxPosition("LEFT")
 					:SetChecked(private.isCOD)
 					:SetText(L["Make Cash On Delivery?"])
-					:SetStyle("fontHeight", 12)
-					:SetStyle("checkboxSpacing", 1)
 					:SetDisabled(true)
 					:SetScript("OnValueChanged", private.CODOnValueChanged)
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "amountText")
-					:SetStyle("margin", { top = 1, right = 7 })
-					:SetStyle("height", 13)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("justifyH", "RIGHT")
-					:SetText(L["AMOUNT"]..":")
+				:AddChild(UIElements.New("Text", "amountText")
+					:SetHeight(20)
+					:SetMargin(0, 8, 0, 0)
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetJustifyH("RIGHT")
+					:SetText(L["Amount"]..":")
 				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "moneyInput")
-					:SetStyle("margin.right", 4)
-					:SetStyle("width", 169)
-					:SetStyle("height", 20)
-					:SetStyle("justifyH", "RIGHT")
-					:SetText(Money.ToString(private.money))
-					:SetScript("OnTextChanged", private.MoneyOnTextChanged)
-					:SetScript("OnEnterPressed", private.MoneyValueConvert)
-					:SetScript("OnEscapePressed", private.MoneyValueConvert)
-					:SetScript("OnTabPressed", private.MoneyValueConvert)
-					:SetScript("OnEditFocusGained", private.MoneyFocusGained)
+				:AddChild(UIElements.New("Input", "moneyInput")
+					:SetWidth(160)
+					:SetBackgroundColor("ACTIVE_BG")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetValidateFunc(private.MoneyValidateFunc)
+					:SetJustifyH("RIGHT")
+					:SetValue(Money.ToString(private.money))
+					:SetScript("OnValueChanged", private.MoneyOnValueChanged)
 				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer")
-				:SetStyle("height", 8)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 30)
-			:SetStyle("margin", { top = 6 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "money")
-				:SetLayout("VERTICAL")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "text")
-					:SetStyle("margin.bottom", 2)
-					:SetStyle("height", 13)
-					:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-					:SetStyle("fontHeight", 10)
-					:SetStyle("justifyH", "LEFT")
-					:SetText(L["GOLD ON HAND"])
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("PlayerGoldText", "gold")
-					:SetStyle("height", 16)
-					:SetStyle("fontHeight", 12)
-				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer")
-				:SetStyle("height", 0)
-				:SetStyle("width", 170)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "sendMail")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("margin.top", 4)
-				:SetStyle("width", 184)
-				:SetStyle("height", 26)
-				:SetStyle("fontHeight", 14)
-				:SetText(L["SEND MAIL"])
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("ActionButton", "sendMail")
+				:SetHeight(24)
+				:SetText(L["Send Mail"])
 				:SetScript("OnClick", private.SendMail)
-				:SetDisabled(true)
+				:SetDisabled(private.recipient == "")
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "clear")
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("margin", { top = 3, left = 16, right = 10 })
-				:SetStyle("width", 42)
-				:SetStyle("height", 20)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Clear"])
+			:AddChild(UIElements.New("Button", "clear")
+				:SetWidth("AUTO")
+				:SetHeight(24)
+				:SetMargin(16, 10, 0, 0)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetJustifyH("LEFT")
+				:SetText(L["Clear All"])
 				:SetScript("OnClick", private.ClearOnClick)
 			)
 		)
@@ -315,212 +273,88 @@ function private.GetSendFrame()
 	return frame
 end
 
-function private.GetContactsContentFrame(viewContainer, path)
-	if path == "menu" then
-		return private.GetContactsMenuFrame()
-	elseif path == "list" then
-		return private.GetContactListFrame()
-	else
-		error("Unexpected path: "..tostring(path))
-	end
-end
-
-function private.GetContactsMenuFrame()
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-				:SetStyle("margin", { top = 8, bottom = 16 })
-				:SetStyle("height", 18)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("justifyH", "CENTER")
-				:SetText(L["Contacts Menu"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "closeBtn")
-				:SetStyle("margin", { top = -9, left = -18, right = 6 })
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("iconTexturePack", "iconPack.18x18/Close/Default")
-				:SetScript("OnClick", private.CloseDialog)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionList", "list")
-			:SetStyle("width", 248)
-			:SetStyle("height", 152)
-			:SetStyle("border", "#6d6d6d")
-			:SetStyle("borderSize", 1)
-			:SetStyle("rowHeight", 20)
-			:SetStyle("padding", { top = 1, left = 1, right = 1, bottom = 1 })
-			:SetStyle("textColor", "#ffffff")
-			:SetEntries({L["Alts"], L["Recently Mailed"], L["Friends"], L["Guild"]})
-			:SetScript("OnEntrySelected", private.MenuOnEntrySelected)
-		)
-
-	return frame
-end
-
-function private.GetContactListFrame()
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "header")
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "backBtn")
-				:SetStyle("margin", { top = -9, left = 6 })
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("backgroundTexturePack", "iconPack.18x18/SideArrow")
-				:SetStyle("backgroundTextureRotation", 180)
-				:SetScript("OnClick", private.ListBackButtonOnClick)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-				:SetStyle("margin", { top = 8, bottom = 16 })
-				:SetStyle("height", 18)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("justifyH", "CENTER")
-				:SetText(private.listName.." "..L["List"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "closeBtn")
-				:SetStyle("margin", { top = -9, right = 6 })
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("iconTexturePack", "iconPack.18x18/Close/Default")
-				:SetScript("OnClick", private.CloseDialog)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "filterInput")
-			:SetStyle("margin", { top = -9, left = 8, right = 8, bottom = 8 })
-			:SetStyle("height", 20)
-			:SetHintText(L["Search"].." "..private.listName)
-			:SetScript("OnTextChanged", private.FilterSearchInputOnTextChanged)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionList", "list")
-			:SetStyle("width", 248)
-			:SetStyle("height", 133)
-			:SetStyle("border", "#6d6d6d")
-			:SetStyle("borderSize", 1)
-			:SetStyle("rowHeight", 20)
-			:SetStyle("padding", { top = 1, left = 1, right = 1, bottom = 1 })
-			:SetEntries(private.listElements)
-			:SetScript("OnEntrySelected", private.ListOnEntrySelected)
-		)
-
-	private.contactList = frame
-
-	return frame
-end
-
 function private.SubjectBtnOnClick(button)
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
+	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
 		:SetLayout("VERTICAL")
-		:SetStyle("width", 390)
-		:SetStyle("height", 248)
-		:SetStyle("anchors", { { "CENTER" } })
-		:SetStyle("background", "#323232")
-		:SetStyle("border", "#e2e2e2")
-		:SetStyle("borderSize", 1)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "button")
+		:SetSize(478, 314)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetBackgroundColor("FRAME_BG", true)
+		:AddChild(UIElements.New("Frame", "header")
 			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-				:SetStyle("margin", { top = 8, bottom = 11 })
-				:SetStyle("height", 18)
-				:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("justifyH", "CENTER")
+			:SetHeight(24)
+			:SetMargin(0, 0, -4, 14)
+			:AddChild(UIElements.New("Spacer", "spacer")
+				:SetWidth(20)
+			)
+			:AddChild(UIElements.New("Text", "title")
+				:SetFont("BODY_BODY1_BOLD")
+				:SetJustifyH("CENTER")
 				:SetText(L["Add Subject / Description"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "closeBtn")
-				:SetStyle("margin", { top = -9, left = -18, right = 8 })
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("iconTexturePack", "iconPack.18x18/Close/Default")
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetMargin(0, -4, 0, 0)
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
 				:SetScript("OnClick", private.CloseDialog)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "subjectText")
-			:SetStyle("margin", { left = 8, right = 8, bottom = 4 })
-			:SetStyle("height", 13)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 10)
-			:SetStyle("justifyH", "LEFT")
-			:SetText(L["SUBJECT"])
+		:AddChild(UIElements.New("Text", "subjectText")
+			:SetMargin(0, 0, 0, 4)
+			:SetHeight(20)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Subject"])
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "subjectInput")
-			:SetStyle("margin", { left = 8, right = 8, bottom = 12 })
-			:SetStyle("height", 20)
-			:SetStyle("justifyH", "LEFT")
-			:SetStyle("clearButton", true)
-			:SetStyle("font", TSM.UI.Fonts.FRIZQT)
-			:SetStyle("fontHeight", 13)
+		:AddChild(UIElements.New("Input", "subjectInput")
+			:SetHeight(24)
+			:SetMargin(0, 0, 0, 8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
 			:SetMaxLetters(64)
-			:SetText(private.subject)
-			:SetScript("OnTextChanged", private.SubjectOnTextChanged)
+			:SetClearButtonEnabled(true)
+			:SetValue(private.subject)
+			:SetTabPaths("__parent.descriptionInput", "__parent.descriptionInput")
+			:SetScript("OnValueChanged", private.SubjectOnValueChanged)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "recipientText")
-			:SetStyle("margin", { left = 8, right = 8, bottom = 4 })
-			:SetStyle("height", 13)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 10)
-			:SetStyle("justifyH", "LEFT")
-			:SetText(strupper(DESCRIPTION))
+		:AddChild(UIElements.New("Text", "descriptionText")
+			:SetHeight(20)
+			:SetMargin(0, 0, 0, 4)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(DESCRIPTION)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("BorderedFrame", "description")
+		:AddChild(UIElements.New("MultiLineInput", "descriptionInput")
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:SetIgnoreEnter()
+			:SetMaxLetters(500)
+			:SetValue(private.body)
+			:SetTabPaths("__parent.subjectInput", "__parent.subjectInput")
+			:SetScript("OnValueChanged", private.DesciptionOnValueChanged)
+		)
+		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("borderTheme", "roundDark")
-			:SetStyle("margin", { left = 8, right = 8, bottom = 2 })
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "scroll")
-				:SetStyle("height", 93)
-				:SetStyle("margin", { top = 2, left = 2, right = 2, bottom = 2 })
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-					:SetStyle("height", 93)
-					:SetStyle("fontHeight", 13)
-					:SetStyle("justifyH", "LEFT")
-					:SetStyle("font", TSM.UI.Fonts.FRIZQT)
-					:SetMultiLine(true)
-					:SetMaxLetters(500)
-					:SetText(private.body)
-					:SetScript("OnTextChanged", private.DesciptionOnTextChanged)
-					:SetScript("OnSizeChanged", private.DesciptionOnSizeChanged)
-					:SetScript("OnCursorChanged", private.DesciptionOnCursorChanged)
-				)
+			:SetMargin(0, 0, 4, 12)
+			:AddChild(UIElements.New("Text", "title")
+				:SetHeight(20)
+				:SetMargin(0, 4, 0, 0)
+				:SetFont("BODY_BODY3")
+				:SetJustifyH("RIGHT")
+				:SetText(format(L["(%d/500 Characters)"], #private.body))
 			)
-			:SetScript("OnMouseUp", private.DescriptionOnMouseUp)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title")
-				:SetStyle("margin", { left = 8, bottom = 8 })
-				:SetStyle("height", 13)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 10)
-				:SetStyle("justifyH", "RIGHT")
-				:SetFormattedText(L["(%d/500 Characters)"], #private.body)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "clearAll")
-				:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-				:SetStyle("margin", { left = 4, right = 8, bottom = 8 })
-				:SetStyle("width", 44)
-				:SetStyle("height", 10)
-				:SetStyle("fontHeight", 10)
-				:SetStyle("justifyH", "LEFT")
+			:AddChild(UIElements.New("Button", "clearAll")
+				:SetSize("AUTO", 20)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetJustifyH("LEFT")
 				:SetText(L["Clear All"])
+				:SetDisabled(private.subject == "" and private.body == "")
 				:SetScript("OnClick", private.SubjectClearAllBtnOnClick)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "button")
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "addMailBtn")
-				:SetStyle("margin.left", { left = 172, right = 8, bottom = 8 })
-				:SetStyle("width", 201)
-				:SetStyle("height", 20)
-				:SetText(L["ADD TO MAIL"])
-				:SetScript("OnClick", private.AddToMailBtnOnClick)
-			)
+		:AddChild(UIElements.New("ActionButton", "addMailBtn")
+			:SetHeight(24)
+			:SetText(L["Add to Mail"])
+			:SetScript("OnClick", private.CloseDialog)
+			:SetDisabled(private.subject == "" and private.body == "")
 		)
-
-	button:GetBaseElement():ShowDialogFrame(frame)
+		:SetScript("OnHide", private.DialogOnHide)
+	)
 end
 
 
@@ -531,8 +365,6 @@ end
 
 function private.SendFrameOnUpdate(frame)
 	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(36)
-
 	private.fsm:ProcessEvent("EV_FRAME_SHOW", frame)
 end
 
@@ -549,59 +381,16 @@ end
 
 function private.CloseDialog(button)
 	button:GetBaseElement():HideDialog()
+
+	private.fsm:ProcessEvent("EV_DIALOG_HIDDEN")
+end
+
+function private.DialogOnHide(button)
+	private.fsm:ProcessEvent("EV_DIALOG_HIDDEN")
 end
 
 function private.ContactsBtnOnClick(button)
-	button:GetParentElement():GetElement("input"):SetFocused(false)
-		:Draw()
-	local frame = TSMAPI_FOUR.UI.NewElement("Frame", "frame")
-		:SetLayout("VERTICAL")
-		:SetStyle("width", 264)
-		:SetStyle("height", 202)
-		:SetStyle("anchors", { { "CENTER" } })
-		:SetStyle("background", "#2e2e2e")
-		:SetStyle("border", "#e2e2e2")
-		:SetStyle("borderSize", 1)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ViewContainer", "contacts")
-			:SetNavCallback(private.GetContactsContentFrame)
-			:AddPath("menu")
-			:AddPath("list")
-			:SetPath("menu")
-		)
-
-	private.contacts = frame
-
-	button:GetBaseElement():ShowDialogFrame(frame)
-
-	return frame
-end
-
-function private.MenuOnEntrySelected(list, name)
-	private.listName = name
-
-	private.GenerateListElements(private.listName)
-
-	private.contacts:GetElement("contacts"):SetPath("list", true)
-end
-
-function private.ListBackButtonOnClick()
-	private.contacts:GetElement("contacts"):SetPath("menu", true)
-end
-
-function private.FilterSearchInputOnTextChanged(input)
-	local text = strtrim(input:GetText())
-	if text == private.listFilter then
-		return
-	end
-	private.listFilter = text
-
-	private.GenerateListElements(private.listName, private.listFilter)
-end
-
-function private.ListOnEntrySelected(list, name)
-	list:GetBaseElement():HideDialog()
-	private.frame:GetElement("container.name.input"):SetText(name)
-		:Draw()
+	TSM.UI.Util.Contacts.ShowDialog(button, button:GetElement("__parent.input"), private.RecipientOnValueChanged)
 end
 
 function private.DragBoxOnItemRecieve(frame, button)
@@ -654,94 +443,60 @@ function private.SubjectClearAllBtnOnClick(button)
 
 	button:GetElement("__parent.__parent.subjectInput")
 		:SetFocused(false)
-		:SetText(private.subject)
+		:SetValue(private.subject)
 		:Draw()
-	button:GetElement("__parent.__parent.description.scroll.input")
+	button:GetElement("__parent.__parent.descriptionInput")
 		:SetFocused(false)
-		:SetText(private.body)
+		:SetValue(private.body)
 		:Draw()
-
-	button:GetElement("__parent.title"):SetFormattedText(L["(%d/500 Characters)"], 0)
+	button:GetElement("__parent.title")
+		:SetText(format(L["(%d/500 Characters)"], 0))
+		:Draw()
+	button:SetDisabled(true)
+		:Draw()
+	button:GetElement("__parent.__parent.addMailBtn")
+		:SetDisabled(true)
 		:Draw()
 end
 
-function private.AddToMailBtnOnClick(button)
-	private.CloseDialog(button)
-end
-
-function private.RecipientOnTabPressed(input)
-	input:HighlightText(0, 0)
-		:SetFocused(false)
-end
-
-function private.RecipientOnTextChanged(input)
-	local text = strtrim(input:GetText())
-	if input._compStart then
-		if text == private.recipient then
-			input:HighlightText(input._compStart, #text)
-			input._compStart = nil
-		else
-			private.recipient = text
-
-			input:SetText(private.recipient)
-				:Draw()
-
-			private.UpdateSendFrame()
-		end
+function private.RecipientOnValueChanged(input)
+	local value = input:GetValue()
+	if value == private.recipient then
 		return
 	end
-	if text == private.recipient then
-		return
-	end
-	private.recipient = text
-	input:SetText(private.recipient)
-		:Draw()
-
+	private.recipient = value
 	private.UpdateSendFrame()
 end
 
-function private.SubjectOnTextChanged(input)
-	local text = input:GetText()
-	if input:GetText() == private.subject then
+function private.SubjectOnValueChanged(input)
+	local value = input:GetValue()
+	if value == private.subject then
 		return
 	end
-	private.subject = text
-	input:SetText(private.subject)
+	private.subject = value
+	input:GetElement("__parent.footer.clearAll")
+		:SetDisabled(private.subject == "" and private.body == "")
 		:Draw()
-
-	private.UpdateSendFrame()
+	input:GetElement("__parent.addMailBtn")
+		:SetDisabled(private.subject == "" and private.body == "")
+		:Draw()
 end
 
-function private.DesciptionOnTextChanged(input)
-	local text = input:GetText()
-	if input:GetText() == private.body then
+function private.DesciptionOnValueChanged(input)
+	local text = input:GetValue()
+	if text == private.body then
 		return
 	end
 	private.body = text
-	input:SetText(private.body)
-
-	input:GetElement("__parent.__parent.__parent.footer.title"):SetFormattedText(L["(%d/500 Characters)"], #private.body)
+	input:GetElement("__parent.footer.title")
+		:SetText(format(L["(%d/500 Characters)"], #private.body))
 		:Draw()
-end
-
-function private.DescriptionOnMouseUp(frame)
-	frame:GetElement("scroll.input"):SetFocused(true)
-end
-
-function private.DesciptionOnSizeChanged(input, width, height)
-	if not input:HasFocus() then
-		return
-	end
-
-	private.DesciptionOnTextChanged(input)
-
-	input:SetStyle("height", height)
-	input:GetParentElement():Draw()
-end
-
-function private.DesciptionOnCursorChanged(input, _, y)
-	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
+	input:GetElement("__parent.footer.clearAll")
+		:SetDisabled(private.subject == "" and private.body == "")
+		:Draw()
+	input:GetElement("__parent.addMailBtn")
+		:SetDisabled(private.subject == "" and private.body == "")
+		:Draw()
 end
 
 function private.SendOnValueChanged(checkbox)
@@ -761,47 +516,41 @@ function private.CODOnValueChanged(checkbox)
 		checkbox:GetElement("__parent.__parent.check.sendCheck"):SetChecked(false)
 			:Draw()
 
+		local input = checkbox:GetElement("__parent.moneyInput")
+		local value = private.ConvertMoneyValue(input:GetValue())
+		private.money = private.isCOD and min(value, MAX_COD_AMOUNT) or value
+		input:SetValue(Money.ToString(private.money))
+			:Draw()
+
 		private.isMoney = false
 		private.isCOD = true
-
-		local input = checkbox:GetElement("__parent.moneyInput")
-		local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
-		local value = tonumber(text) or Money.FromString(text) or 0
-		private.money = private.isCOD and min(value, 100000000) or value
-		input:SetText(Money.ToString(private.money))
-			:Draw()
 	else
 		private.isCOD = false
 	end
 end
 
-function private.MoneyFocusGained(input)
-	input:HighlightText()
+function private.ConvertMoneyValue(value)
+	value = gsub(value, String.Escape(LARGE_NUMBER_SEPERATOR), "")
+	value = tonumber(value) or Money.FromString(value)
+	if not value then
+		return nil
+	end
+	local maxVal = private.isCOD and MAX_COD_AMOUNT or MAXIMUM_BID_PRICE
+	return value >= 0 and value <= maxVal and value or nil
 end
 
-function private.MoneyOnTextChanged(input)
-	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
-	if text == "" or text == private.money then
+function private.MoneyValidateFunc(_, value)
+	return private.ConvertMoneyValue(value) and true or false
+end
+
+function private.MoneyOnValueChanged(input)
+	local value = private.ConvertMoneyValue(input:GetValue())
+	assert(value)
+	if value == private.money then
 		return
 	end
-
-	if tonumber(text) then
-		private.money = tonumber(text)
-	else
-		private.money = Money.FromString(text) or 0
-	end
-
-	private.UpdateSendFrame()
-end
-
-function private.MoneyValueConvert(input)
-	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
-	local value = min(max(tonumber(text) or Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
-
-	private.money = private.isCOD and min(value, 100000000) or value
-
-	input:SetFocused(false)
-	input:SetText(Money.ToString(private.money))
+	private.money = value
+	input:SetValue(Money.ToString(value))
 		:Draw()
 end
 
@@ -884,72 +633,6 @@ function private.DatabaseNewRow(itemString, stackSize)
 		:Create()
 end
 
-function private.GenerateListElements(category, filterText)
-	private.listElements = {}
-	if category == L["Alts"] then
-		for factionrealm in TSM.db:GetConnectedRealmIterator("realm") do
-			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
-				character = Ambiguate(gsub(strmatch(character, "(.*) "..String.Escape("-")).."-"..gsub(factionrealm, String.Escape("-"), ""), " ", ""), "none")
-				if character ~= UnitName("player") then
-					if filterText and filterText ~= "" then
-						if strfind(strlower(character), filterText) then
-							tinsert(private.listElements, character)
-						end
-					else
-						tinsert(private.listElements, character)
-					end
-				end
-			end
-		end
-	elseif category == L["Recently Mailed"] then
-		for k in pairs(TSM.db.global.mailingOptions.recentlyMailedList) do
-			local character = Ambiguate(k, "none")
-			if filterText and filterText ~= "" then
-				if strfind(strlower(character), filterText) then
-					tinsert(private.listElements, character)
-				end
-			else
-				tinsert(private.listElements, character)
-			end
-		end
-	elseif category == L["Friends"] then
-		for i = 1, C_FriendList.GetNumFriends() do
-			local info = C_FriendList.GetFriendInfoByIndex(i)
-			if info.name ~= PLAYER_NAME_REALM then
-				local character = Ambiguate(info.name, "none")
-				if filterText and filterText ~= "" then
-					if strfind(strlower(character), filterText) then
-						tinsert(private.listElements, character)
-					end
-				else
-					tinsert(private.listElements, character)
-				end
-			end
-		end
-	elseif category == L["Guild"] then
-		for i = 1, GetNumGuildMembers() do
-			local name = GetGuildRosterInfo(i)
-			if name ~= PLAYER_NAME_REALM then
-				local character = Ambiguate(name, "none")
-				if filterText and filterText ~= "" then
-					if strfind(strlower(character), filterText) then
-						tinsert(private.listElements, character)
-					end
-				else
-					tinsert(private.listElements, character)
-				end
-			end
-		end
-	end
-
-	sort(private.listElements)
-
-	if private.contactList and private.contactList:GetElement("list") then
-		private.contactList:GetElement("list"):SetEntries(private.listElements)
-			:Draw()
-	end
-end
-
 
 
 -- ============================================================================
@@ -978,30 +661,49 @@ function private.FSMCreate()
 			return
 		end
 
-		local smallText = context.frame:GetElement("container.dragBox.dragTextSmall")
-		local bigText = context.frame:GetElement("container.dragBox.dragTextBig")
-		local postage = context.frame:GetElement("container.header.postage")
+		local subject = context.frame:GetElement("container.subject")
+		if private.subject == "" and private.body == "" then
+			subject:GetElement("icon")
+				:SetBackgroundAndSize("iconPack.12x12/Add/Circle")
+				:Draw()
+			subject:GetElement("text")
+				:SetText(L["Add subject & description (optional)"])
+				:Draw()
+			subject:GetElement("button")
+				:Hide()
+		else
+			subject:GetElement("icon")
+				:SetBackgroundAndSize("iconPack.12x12/Checkmark/Default")
+				:Draw()
+			subject:GetElement("text")
+				:SetText(L["Subject & Description added"])
+				:Draw()
+			subject:GetElement("button")
+				:Show()
+		end
+		subject:Draw()
+
+		local items = context.frame:GetElement("container.dragBox.footer.items")
+		local line = context.frame:GetElement("container.dragBox.footer.vline")
+		local postage = context.frame:GetElement("container.dragBox.footer.postage")
 		local send = context.frame:GetElement("container.check.sendCheck")
 		local cod = context.frame:GetElement("container.checkbox.cod")
 
 		local size = private.query:Count()
-
 		if size > 0 then
-			postage:SetText(L["POSTAGE"]..": "..Money.ToString(30 * size))
+			postage:SetText(L["Total Postage"]..": "..Money.ToString(30 * size))
 				:Draw()
-
-			bigText:Hide()
-			smallText:SetFormattedText(L["Drag in Additional Items (%d/%d Items)"], size, ATTACHMENTS_MAX_SEND)
+			items:SetText(format(L["%s Items Selected"], Theme.GetFeedbackColor("GREEN"):ColorText(size.."/"..ATTACHMENTS_MAX_SEND)))
+				:Show()
 				:Draw()
-			smallText:Show()
+			line:Show()
 			cod:SetDisabled(false)
 				:Draw()
 		else
-			postage:SetText(L["POSTAGE"]..": "..Money.ToString(30))
+			postage:SetText(L["Total Postage"]..": "..Money.ToString(30))
 				:Draw()
-
-			bigText:Show()
-			smallText:Hide()
+			items:Hide()
+			line:Hide()
 			cod:SetDisabled(true)
 				:Draw()
 			send:SetChecked(true)
@@ -1012,7 +714,7 @@ function private.FSMCreate()
 
 	local function UpdateButton(context)
 		context.frame:GetElement("footer.sendMail")
-			:SetText(context.sending and L["SENDING..."] or L["SEND MAIL"])
+			:SetText(context.sending and L["Sending..."] or L["Send Mail"])
 			:SetPressed(context.sending)
 			:Draw()
 	end
@@ -1050,11 +752,20 @@ function private.FSMCreate()
 		private.db:Truncate()
 
 		if redraw and context.frame then
-			context.frame:GetElement("container.name.input"):SetText(private.recipient)
+			context.frame:GetElement("container.name.input")
+				:SetValue(private.recipient)
 				:Draw()
-			context.frame:GetElement("container.checkbox.moneyInput"):SetText(Money.ToString(private.money))
+			context.frame:GetElement("container.checkbox.moneyInput")
+				:SetValue(Money.ToString(private.money))
 				:Draw()
+			if not keepInfo then
+				context.frame:GetElement("footer.sendMail")
+					:SetDisabled(true)
+					:Draw()
+			end
 		end
+
+		UpdateFrame(context)
 	end
 
 	local function SendMailShowing()
@@ -1083,6 +794,9 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_HIDDEN")
 			:AddTransition("ST_SENDING_START")
+			:AddEvent("EV_DIALOG_HIDDEN", function(context)
+				UpdateFrame(context)
+			end)
 			:AddEvent("EV_MAIL_INFO_UPDATE", function(context)
 				UpdateSendMailInfo(context)
 				UpdateFrame(context)

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,21 +13,26 @@ local CSV = TSM.Include("Util.CSV")
 local Math = TSM.Include("Util.Math")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Table = TSM.Include("Util.Table")
 local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local ItemInfo = TSM.Include("Service.ItemInfo")
+local Inventory = TSM.Include("Service.Inventory")
+local Settings = TSM.Include("Service.Settings")
+local Threading = TSM.Include("Service.Threading")
 local private = {
 	db = nil,
 	dbSummary = nil,
-	characters = {},
 	dataChanged = false,
 	baseStatsQuery = nil,
 	statsQuery = nil,
-	buyStatsCache = {
-		lastUpdate = 0,
-		totalNum = {},
-		smartTotalNum = {},
-		smartTotalPrice = {},
-	},
+	baseStatsMinTimeQuery = nil,
+	statsMinTimeQuery = nil,
+	syncHashesThread = nil,
+	isSyncHashesThreadRunning = false,
+	syncHashDayCache = {},
+	pendingSyncHashCharacters = {},
 }
 local OLD_CSV_KEYS = {
 	sale = { "itemString", "stackSize", "quantity", "price", "buyer", "player", "time", "source" },
@@ -40,6 +43,7 @@ local COMBINE_TIME_THRESHOLD = 300 -- group transactions within 5 minutes togeth
 local MAX_CSV_RECORDS = 55000 -- the max number of records we can store without WoW corrupting the SV file
 local TRIMMED_CSV_RECORDS = 50000 -- how many records to trim to if we're over the limit (so we don't trim every time)
 local SECONDS_PER_DAY = 24 * 60 * 60
+local SYNC_FIELDS = { "type", "itemString", "stackSize", "quantity", "price", "otherPlayer", "time", "source", "saveTime" }
 
 
 
@@ -49,11 +53,11 @@ local SECONDS_PER_DAY = 24 * 60 * 60
 
 function Transactions.OnInitialize()
 	if TSM.db.realm.internalData.accountingTrimmed.sales then
-		Log.PrintfUser(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
+		Log.PrintfUser(L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
 		TSM.db.realm.internalData.accountingTrimmed.sales = nil
 	end
 	if TSM.db.realm.internalData.accountingTrimmed.buys then
-		Log.PrintfUser(L["|cffff0000IMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
+		Log.PrintfUser(L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
 		TSM.db.realm.internalData.accountingTrimmed.buys = nil
 	end
 
@@ -70,6 +74,7 @@ function Transactions.OnInitialize()
 		:AddStringField("source")
 		:AddNumberField("saveTime")
 		:AddIndex("baseItemString")
+		:AddIndex("time")
 		:Commit()
 	private.db:BulkInsertStart()
 	private.LoadData("sale", TSM.db.realm.internalData.csvSales, TSM.db.realm.internalData.saveTimeSales)
@@ -81,7 +86,9 @@ function Transactions.OnInitialize()
 		:AddNumberField("avgSellPrice")
 		:AddNumberField("bought")
 		:AddNumberField("avgBuyPrice")
-		:AddNumberField("avgResaleProfit")
+		:AddNumberField("avgProfit")
+		:AddNumberField("totalProfit")
+		:AddNumberField("profitPct")
 		:Commit()
 	private.baseStatsQuery = private.db:NewQuery()
 		:Select("quantity", "price")
@@ -94,6 +101,20 @@ function Transactions.OnInitialize()
 		:Equal("baseItemString", Database.BoundQueryParam())
 		:Equal("itemString", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
+	private.baseStatsMinTimeQuery = private.db:NewQuery()
+		:Select("quantity", "price")
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:GreaterThanOrEqual("time", Database.BoundQueryParam())
+		:NotEqual("source", "Vendor")
+	private.statsMinTimeQuery = private.db:NewQuery()
+		:Select("quantity", "price")
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:Equal("itemString", Database.BoundQueryParam())
+		:GreaterThanOrEqual("time", Database.BoundQueryParam())
+		:NotEqual("source", "Vendor")
+	private.syncHashesThread = Threading.New("TRANSACTIONS_SYNC_HASHES", private.SyncHashesThread)
 end
 
 function Transactions.OnDisable()
@@ -150,17 +171,26 @@ function Transactions.RemoveOldData(days)
 	private.db:SetQueryUpdatesPaused(false)
 	private.OnItemRecordsChanged("sale")
 	private.OnItemRecordsChanged("buy")
+	TSM.Accounting.Sync.OnTransactionsChanged()
 	return numRecords
 end
 
-function Transactions.GetSaleStats(itemString)
+function Transactions.GetSaleStats(itemString, minTime)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = isBaseItemString and private.baseStatsQuery or private.statsQuery
-	if isBaseItemString then
-		query:BindParams("sale", baseItemString)
+	local query = nil
+	if minTime then
+		if isBaseItemString then
+			query = private.baseStatsMinTimeQuery:BindParams("sale", baseItemString, minTime)
+		else
+			query = private.statsMinTimeQuery:BindParams("sale", baseItemString, itemString, minTime)
+		end
 	else
-		query:BindParams("sale", baseItemString, itemString)
+		if isBaseItemString then
+			query = private.baseStatsQuery:BindParams("sale", baseItemString)
+		else
+			query = private.statsQuery:BindParams("sale", baseItemString, itemString)
+		end
 	end
 	query:ResetOrderBy()
 	local totalPrice = query:SumOfProduct("quantity", "price")
@@ -171,70 +201,57 @@ function Transactions.GetSaleStats(itemString)
 	return totalPrice, totalNum
 end
 
-function Transactions.GetBuyStats(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
+function Transactions.GetBuyStats(itemString, isSmart)
+	local baseItemString = ItemString.GetBaseFast(itemString)
 	local isBaseItemString = itemString == baseItemString
 
-	-- check if we need to clear our cache
-	if private.buyStatsCache.lastUpdate ~= GetTime() then
-		wipe(private.buyStatsCache.totalNum)
-		wipe(private.buyStatsCache.smartTotalNum)
-		wipe(private.buyStatsCache.smartTotalPrice)
-		private.buyStatsCache.lastUpdate = GetTime()
-	end
-	-- check if we have the values cached
-	if private.buyStatsCache.totalNum[itemString] then
-		return private.buyStatsCache.smartTotalPrice[itemString], private.buyStatsCache.smartTotalNum[itemString], private.buyStatsCache.totalNum[itemString]
-	end
-
-	local query = isBaseItemString and private.baseStatsQuery or private.statsQuery
+	local query = nil
 	if isBaseItemString then
-		query:BindParams("buy", baseItemString)
+		query = private.baseStatsQuery:BindParams("buy", baseItemString)
 	else
-		query:BindParams("buy", baseItemString, itemString)
+		query = private.statsQuery:BindParams("buy", baseItemString, itemString)
 	end
 	query:ResetOrderBy()
 
-	local remainingNum = nil
-	if TSM.db.global.accountingOptions.smartBuyPrice then
-		local numHave = TSMAPI_FOUR.Inventory.GetTotalQuantity(itemString)
-		if numHave > 0 then
-			query:OrderBy("time", false)
-			remainingNum = numHave
+	if isSmart then
+		local totalQuantity = Inventory.GetTotalQuantity(itemString)
+		if totalQuantity == 0 then
+			return nil, nil
 		end
-	end
-	local smartTotalPrice, smartTotalNum, totalNum = 0, 0, 0
-	if remainingNum then
-		if query:Count() == 0 then
-			return nil, nil, nil
-		end
+		query:OrderBy("time", false)
+
+		local remainingSmartQuantity = totalQuantity
+		local priceSum, quantitySum = 0, 0
 		for _, quantity, price in query:Iterator() do
-			totalNum = totalNum + quantity
-			quantity = min(quantity, remainingNum)
-			if quantity > 0 then
-				remainingNum = remainingNum - quantity
-				smartTotalPrice = smartTotalPrice + price * quantity
-				smartTotalNum = smartTotalNum + quantity
+			if remainingSmartQuantity > 0 then
+				quantity = min(remainingSmartQuantity, quantity)
+				remainingSmartQuantity = remainingSmartQuantity - quantity
+				priceSum = priceSum + price * quantity
+				quantitySum = quantitySum + quantity
 			end
 		end
-	else
-		smartTotalNum = query:Sum("quantity")
-		if not smartTotalNum then
-			return nil, nil, nil
+		if priceSum == 0 then
+			return nil, nil
 		end
-		totalNum = smartTotalNum
-		smartTotalPrice = query:SumOfProduct("quantity", "price")
+		return priceSum, quantitySum
+	else
+		local quantitySum = query:Sum("quantity")
+		if not quantitySum then
+			return nil, nil
+		end
+		local priceSum = query:SumOfProduct("quantity", "price")
+		if priceSum == 0 then
+			return nil, nil
+		end
+		return priceSum, quantitySum
 	end
-	private.buyStatsCache.totalNum[itemString] = totalNum
-	private.buyStatsCache.smartTotalPrice[itemString] = smartTotalPrice
-	private.buyStatsCache.smartTotalNum[itemString] = smartTotalNum
-	return smartTotalPrice, smartTotalNum, totalNum
 end
 
 function Transactions.GetMaxSalePrice(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("price")
+	local query = private.db:NewQuery()
+		:Select("price")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", false)
@@ -250,7 +267,8 @@ end
 function Transactions.GetMaxBuyPrice(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("price")
+	local query = private.db:NewQuery()
+		:Select("price")
 		:Equal("type", "buy")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", false)
@@ -266,7 +284,8 @@ end
 function Transactions.GetMinSalePrice(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("price")
+	local query = private.db:NewQuery()
+		:Select("price")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", true)
@@ -282,7 +301,8 @@ end
 function Transactions.GetMinBuyPrice(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("price")
+	local query = private.db:NewQuery()
+		:Select("price")
 		:Equal("type", "buy")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", true)
@@ -297,18 +317,15 @@ end
 
 function Transactions.GetAverageSalePrice(itemString)
 	local totalPrice, totalNum = Transactions.GetSaleStats(itemString)
-	if not totalPrice then
+	if not totalPrice or totalPrice == 0 then
 		return
 	end
 	return Math.Round(totalPrice / totalNum), totalNum
 end
 
-function Transactions.GetAverageBuyPrice(itemString)
-	local totalPrice, totalNum = Transactions.GetBuyStats(itemString)
-	if not totalPrice then
-		return
-	end
-	return Math.Round(totalPrice / totalNum), totalNum
+function Transactions.GetAverageBuyPrice(itemString, isSmart)
+	local totalPrice, totalNum = Transactions.GetBuyStats(itemString, isSmart)
+	return totalPrice and Math.Round(totalPrice / totalNum) or nil
 end
 
 function Transactions.GetLastSaleTime(itemString)
@@ -384,7 +401,7 @@ function Transactions.GetAveragePrice(itemString, timeFilter, typeFilter)
 		avgPrice = avgPrice + price * quantity
 		totalQuantity = totalQuantity + quantity
 	end
-	return avgPrice / totalQuantity
+	return Math.Round(avgPrice / totalQuantity)
 end
 
 function Transactions.GetTotalPrice(itemString, timeFilter, typeFilter)
@@ -411,7 +428,7 @@ function Transactions.CreateSummaryQuery()
 	return private.dbSummary:NewQuery()
 end
 
-function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter, timeFrameFilter)
+function Transactions.UpdateSummaryData(groupFilter, searchFilter, typeFilter, characterFilter, minTime)
 	local totalSold = TempTable.Acquire()
 	local totalSellPrice = TempTable.Acquire()
 	local totalBought = TempTable.Acquire()
@@ -420,18 +437,22 @@ function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter
 	local items = private.db:NewQuery()
 		:Select("itemString", "price", "quantity", "type")
 		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
+		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 
-	if groupFilter ~= ALL then
-		items:Equal("groupPath", groupFilter)
+	if groupFilter then
+		items:InTable("groupPath", groupFilter)
 	end
-	if typeFilter ~= "All" then
-		items:Equal("source", typeFilter)
+	if searchFilter then
+		items:Matches("name", String.Escape(searchFilter))
 	end
-	if characterFilter ~= ALL then
-		items:Equal("player", characterFilter)
+	if typeFilter then
+		items:InTable("source", typeFilter)
 	end
-	if timeFrameFilter ~= 0 then
-		items:GreaterThan("time", time() - timeFrameFilter)
+	if characterFilter then
+		items:InTable("player", characterFilter)
+	end
+	if minTime then
+		items:GreaterThan("time", minTime)
 	end
 
 	for _, itemString, price, quantity, recordType in items:IteratorAndRelease() do
@@ -459,7 +480,9 @@ function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter
 			local totalAvgSellPrice = totalSellPrice[itemString] / totalSold[itemString]
 			local totalAvgBuyPrice = totalBoughtPrice[itemString] / totalBought[itemString]
 			local profit = totalAvgSellPrice - totalAvgBuyPrice
-			private.dbSummary:BulkInsertNewRow(itemString, sold, totalAvgSellPrice, totalBought[itemString], totalAvgBuyPrice, profit)
+			local totalProfit = profit * min(totalSold[itemString], totalBought[itemString])
+			local profitPct = Math.Round(profit * 100 / totalAvgBuyPrice)
+			private.dbSummary:BulkInsertNewRow(itemString, sold, totalAvgSellPrice, totalBought[itemString], totalAvgBuyPrice, profit, totalProfit, profitPct)
 		end
 	end
 	private.dbSummary:BulkInsertEnd()
@@ -471,18 +494,112 @@ function Transactions.UpdateSummaryData(groupFilter, typeFilter, characterFilter
 end
 
 function Transactions.GetCharacters(characters)
-	for character in pairs(private.characters) do
-		tinsert(characters, character)
-	end
+	private.db:NewQuery()
+		:Distinct("player")
+		:Select("player")
+		:AsTable(characters)
+		:Release()
 	return characters
+end
+
+function Transactions.CanDeleteByUUID(uuid)
+	return Settings.IsCurrentAccountOwner(private.db:GetRowFieldByUUID(uuid, "player"))
 end
 
 function Transactions.RemoveRowByUUID(uuid)
 	local recordType = private.db:GetRowFieldByUUID(uuid, "type")
 	local itemString = private.db:GetRowFieldByUUID(uuid, "itemString")
+	local player = private.db:GetRowFieldByUUID(uuid, "player")
 	private.db:DeleteRowByUUID(uuid)
+	if private.syncHashDayCache[player] then
+		private.syncHashDayCache[player].isInvalid = true
+	end
 	private.dataChanged = true
 	private.OnItemRecordsChanged(recordType, itemString)
+	TSM.Accounting.Sync.OnTransactionsChanged()
+end
+
+function Transactions.PrepareSyncHashes(player)
+	tinsert(private.pendingSyncHashCharacters, player)
+	if not private.isSyncHashesThreadRunning then
+		private.isSyncHashesThreadRunning = true
+		Threading.Start(private.syncHashesThread)
+	end
+end
+
+function Transactions.GetSyncHash(player)
+	local hashesByDay = Transactions.GetSyncHashByDay(player)
+	if not hashesByDay then
+		return
+	end
+	return Math.CalculateHash(hashesByDay)
+end
+
+function Transactions.GetSyncHashByDay(player)
+	if not private.syncHashDayCache[player] or private.syncHashDayCache[player].isInvalid then
+		return
+	end
+	return private.syncHashDayCache[player]
+end
+
+function Transactions.GetSyncData(player, day, result)
+	local query = private.db:NewQuery()
+		:Equal("player", player)
+		:GreaterThanOrEqual("time", day * SECONDS_PER_DAY)
+		:LessThan("time", (day + 1) * SECONDS_PER_DAY)
+	for _, row in query:Iterator() do
+		Table.Append(result, row:GetFields(unpack(SYNC_FIELDS)))
+	end
+	query:Release()
+end
+
+function Transactions.RemovePlayerDay(player, day)
+	private.dataChanged = true
+	private.db:SetQueryUpdatesPaused(true)
+	local query = private.db:NewQuery()
+		:Equal("player", player)
+		:GreaterThanOrEqual("time", day * SECONDS_PER_DAY)
+		:LessThan("time", (day + 1) * SECONDS_PER_DAY)
+	for _, uuid in query:UUIDIterator() do
+		private.db:DeleteRowByUUID(uuid)
+	end
+	query:Release()
+	if private.syncHashDayCache[player] then
+		private.syncHashDayCache[player].isInvalid = true
+	end
+	private.db:SetQueryUpdatesPaused(false)
+	private.OnItemRecordsChanged("sale")
+	private.OnItemRecordsChanged("buy")
+end
+
+function Transactions.HandleSyncedData(player, day, data)
+	assert(#data % 9 == 0)
+	private.dataChanged = true
+	private.db:SetQueryUpdatesPaused(true)
+
+	-- remove any prior data for the day
+	local query = private.db:NewQuery()
+		:Equal("player", player)
+		:GreaterThanOrEqual("time", day * SECONDS_PER_DAY)
+		:LessThan("time", (day + 1) * SECONDS_PER_DAY)
+	for _, uuid in query:UUIDIterator() do
+		private.db:DeleteRowByUUID(uuid)
+	end
+	query:Release()
+	if private.syncHashDayCache[player] then
+		private.syncHashDayCache[player].isInvalid = true
+	end
+
+	-- insert the new data
+	private.db:BulkInsertStart()
+	for i = 1, #data, 9 do
+		private.BulkInsertNewRowHelper(player, unpack(data, i, i + 8))
+	end
+	private.db:BulkInsertEnd()
+
+	private.db:SetQueryUpdatesPaused(false)
+	private.OnItemRecordsChanged("sale")
+	private.OnItemRecordsChanged("buy")
 end
 
 
@@ -503,28 +620,12 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 
 	local saveTimeIndex = 1
 	for itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source in CSV.DecodeIterator(decodeContext) do
-		itemString = ItemString.Get(itemString)
-		local baseItemString = ItemString.GetBaseFast(itemString)
 		local saveTime = 0
 		if saveTimes and source == "Auction" then
 			saveTime = tonumber(saveTimes[saveTimeIndex])
 			saveTimeIndex = saveTimeIndex + 1
 		end
-		stackSize = tonumber(stackSize)
-		quantity = tonumber(quantity)
-		price = tonumber(price)
-		timestamp = tonumber(timestamp)
-		if itemString and stackSize and quantity and price and otherPlayer and player and timestamp and source then
-			local newTimestamp = floor(timestamp)
-			if newTimestamp ~= timestamp then
-				-- make sure all timestamps are stored as integers
-				private.dataChanged = true
-				timestamp = newTimestamp
-			end
-			private.db:BulkInsertNewRowFast11(baseItemString, recordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime)
-		else
-			private.dataChanged = true
-		end
+		private.BulkInsertNewRowHelper(player, recordType, itemString, stackSize, quantity, price, otherPlayer, timestamp, source, saveTime)
 	end
 
 	if not CSV.DecodeEnd(decodeContext) then
@@ -535,10 +636,36 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 	private.OnItemRecordsChanged(recordType)
 end
 
+function private.BulkInsertNewRowHelper(player, recordType, itemString, stackSize, quantity, price, otherPlayer, timestamp, source, saveTime)
+	itemString = ItemString.Get(itemString)
+	local baseItemString = ItemString.GetBaseFast(itemString)
+	stackSize = tonumber(stackSize)
+	quantity = tonumber(quantity)
+	price = tonumber(price)
+	timestamp = tonumber(timestamp)
+	if itemString and stackSize and quantity and price and otherPlayer and player and timestamp and source then
+		local newTimestamp = floor(timestamp)
+		if newTimestamp ~= timestamp then
+			-- make sure all timestamps are stored as integers
+			private.dataChanged = true
+			timestamp = newTimestamp
+		end
+		local newPrice = floor(price)
+		if newPrice ~= price then
+			-- make sure all prices are stored as integers
+			private.dataChanged = true
+			price = newPrice
+		end
+		private.db:BulkInsertNewRowFast11(baseItemString, recordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime)
+	else
+		private.dataChanged = true
+	end
+end
+
 function private.SaveData(recordType)
 	local numRecords = private.db:NewQuery()
 		:Equal("type", recordType)
-		:Count()
+		:CountAndRelease()
 	if numRecords > MAX_CSV_RECORDS then
 		local query = private.db:NewQuery()
 			:Equal("type", recordType)
@@ -589,6 +716,7 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 	assert(itemString and source and stackSize and price and otherPlayer and timestamp)
 	timestamp = floor(timestamp)
 	local baseItemString = ItemString.GetBase(itemString)
+	local player = UnitName("player")
 	local matchingRow = private.db:NewQuery()
 		:Equal("type", recordType)
 		:Equal("itemString", itemString)
@@ -596,10 +724,11 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 		:Equal("stackSize", stackSize)
 		:Equal("source", source)
 		:Equal("price", price)
-		:Equal("player", UnitName("player"))
+		:Equal("player", player)
 		:Equal("otherPlayer", otherPlayer)
 		:GreaterThan("time", timestamp - COMBINE_TIME_THRESHOLD)
 		:LessThan("time", timestamp + COMBINE_TIME_THRESHOLD)
+		:Equal("saveTime", 0)
 		:GetFirstResultAndRelease()
 	if matchingRow then
 		matchingRow:SetField("quantity", matchingRow:GetField("quantity") + stackSize)
@@ -614,14 +743,18 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 			:SetField("quantity", stackSize)
 			:SetField("price", price)
 			:SetField("otherPlayer", otherPlayer)
-			:SetField("player", UnitName("player"))
+			:SetField("player", player)
 			:SetField("time", timestamp)
 			:SetField("source", source)
 			:SetField("saveTime", 0)
 			:Create()
 	end
+	if private.syncHashDayCache[player] then
+		private.syncHashDayCache[player].isInvalid = true
+	end
 
 	private.OnItemRecordsChanged(recordType, itemString)
+	TSM.Accounting.Sync.OnTransactionsChanged()
 end
 
 function private.OnItemRecordsChanged(recordType, itemString)
@@ -637,4 +770,49 @@ function private.OnItemRecordsChanged(recordType, itemString)
 	else
 		error("Invalid recordType: "..tostring(recordType))
 	end
+end
+
+function private.SyncHashesThread(otherPlayer)
+	private.CalculateSyncHashesThreaded(UnitName("player"))
+	while #private.pendingSyncHashCharacters > 0 do
+		local player = tremove(private.pendingSyncHashCharacters, 1)
+		private.CalculateSyncHashesThreaded(player)
+	end
+	private.isSyncHashesThreadRunning = false
+end
+
+function private.CalculateSyncHashesThreaded(player)
+	if private.syncHashDayCache[player] and not private.syncHashDayCache[player].isInvalid then
+		Log.Info("Sync hashes for player (%s) are already up to date", player)
+		return
+	end
+	private.syncHashDayCache[player] = private.syncHashDayCache[player] or {}
+	local result = private.syncHashDayCache[player]
+	wipe(result)
+	result.isInvalid = true
+	while true do
+		local aborted = false
+		local query = private.db:NewQuery()
+			:Equal("player", player)
+			:OrderBy("time", false)
+			:OrderBy("itemString", true)
+		Threading.GuardDatabaseQuery(query)
+		for _, row in query:Iterator(true) do
+			local rowHash = row:CalculateHash(SYNC_FIELDS)
+			local day = floor(row:GetField("time") / SECONDS_PER_DAY)
+			result[day] = Math.CalculateHash(rowHash, result[day])
+			Threading.Yield()
+			if query:IsIteratorAborted() then
+				Log.Warn("Iterator was aborted for player (%s), will retry", player)
+				aborted = true
+			end
+		end
+		Threading.UnguardDatabaseQuery(query)
+		query:Release()
+		if not aborted then
+			break
+		end
+	end
+	result.isInvalid = nil
+	Log.Info("Updated sync hashes for player (%s)", player)
 end

@@ -1,14 +1,13 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local QueryClause = TSM.Init("Util.DatabaseClasses.QueryClause")
 local Constants = TSM.Include("Util.DatabaseClasses.Constants")
+local Util = TSM.Include("Util.DatabaseClasses.Util")
 local ObjectPool = TSM.Include("Util.ObjectPool")
 local LibTSMClass = TSM.Include("LibTSMClass")
 local DatabaseQueryClause = LibTSMClass.DefineClass("DatabaseQueryClause")
@@ -111,6 +110,14 @@ function DatabaseQueryClause.Matches(self, field, value)
 	return self:_SetComparisonOperation("MATCHES", field, value)
 end
 
+function DatabaseQueryClause.Contains(self, field, value)
+	return self:_SetComparisonOperation("CONTAINS", field, value)
+end
+
+function DatabaseQueryClause.StartsWith(self, field, value)
+	return self:_SetComparisonOperation("STARTS_WITH", field, value)
+end
+
 function DatabaseQueryClause.IsNil(self, field)
 	return self:_SetComparisonOperation("IS_NIL", field)
 end
@@ -129,6 +136,10 @@ end
 
 function DatabaseQueryClause.InTable(self, field, value)
 	return self:_SetComparisonOperation("IN_TABLE", field, value)
+end
+
+function DatabaseQueryClause.NotInTable(self, field, value)
+	return self:_SetComparisonOperation("NOT_IN_TABLE", field, value)
 end
 
 function DatabaseQueryClause.Or(self)
@@ -170,7 +181,11 @@ function DatabaseQueryClause._IsTrue(self, row)
 	elseif operation == "GREATER_OR_EQUAL" then
 		return row[self._field] >= value
 	elseif operation == "MATCHES" then
-		return strmatch(strlower(row[self._field]), value) and true or false
+		return strfind(strlower(row[self._field]), value) and true or false
+	elseif operation == "CONTAINS" then
+		return strfind(strlower(row[self._field]), value, 1, true) and true or false
+	elseif operation == "STARTS_WITH" then
+		return strsub(strlower(row[self._field]), 1, #value) == value
 	elseif operation == "IS_NIL" then
 		return row[self._field] == nil
 	elseif operation == "IS_NOT_NIL" then
@@ -181,6 +196,8 @@ function DatabaseQueryClause._IsTrue(self, row)
 		return row:CalculateHash(self._field) == value
 	elseif operation == "IN_TABLE" then
 		return value[row[self._field]] ~= nil
+	elseif operation == "NOT_IN_TABLE" then
+		return value[row[self._field]] == nil
 	elseif operation == "OR" then
 		for i = 1, #self._subClauses do
 			if self._subClauses[i]:_IsTrue(row) then
@@ -208,9 +225,11 @@ function DatabaseQueryClause._GetIndexValue(self, indexField)
 		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
 			return
 		elseif self._value == Constants.BOUND_QUERY_PARAM then
-			return self._boundValue, self._boundValue
+			local result = Util.ToIndexValue(self._boundValue)
+			return result, result
 		else
-			return self._value, self._value
+			local result = Util.ToIndexValue(self._value)
+			return result, result
 		end
 	elseif self._operation == "LESS_OR_EQUAL" then
 		if self._field ~= indexField then
@@ -219,9 +238,9 @@ function DatabaseQueryClause._GetIndexValue(self, indexField)
 		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
 			return
 		elseif self._value == Constants.BOUND_QUERY_PARAM then
-			return nil, self._boundValue
+			return nil, Util.ToIndexValue(self._boundValue)
 		else
-			return nil, self._value
+			return nil, Util.ToIndexValue(self._value)
 		end
 	elseif self._operation == "GREATER_OR_EQUAL" then
 		if self._field ~= indexField then
@@ -230,10 +249,32 @@ function DatabaseQueryClause._GetIndexValue(self, indexField)
 		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
 			return
 		elseif self._value == Constants.BOUND_QUERY_PARAM then
-			return self._boundValue, nil
+			return Util.ToIndexValue(self._boundValue), nil
 		else
-			return self._value, nil
+			return Util.ToIndexValue(self._value), nil
 		end
+	elseif self._operation == "STARTS_WITH" then
+		if self._field ~= indexField then
+			return
+		end
+		local minValue = nil
+		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
+			return
+		elseif self._value == Constants.BOUND_QUERY_PARAM then
+			minValue = Util.ToIndexValue(self._boundValue)
+		else
+			minValue = Util.ToIndexValue(self._value)
+		end
+		-- calculate the max value
+		assert(gsub(minValue, "\255", "") ~= "")
+		local maxValue = nil
+		for i = #minValue, 1, -1 do
+			if strsub(minValue, i, i) ~= "\255" then
+				maxValue = strsub(minValue, 1, i - 1)..strrep("\255", #minValue - i + 1)
+				break
+			end
+		end
+		return minValue, maxValue
 	elseif self._operation == "OR" then
 		local numSubClauses = #self._subClauses
 		if numSubClauses == 0 then
@@ -264,27 +305,77 @@ function DatabaseQueryClause._GetIndexValue(self, indexField)
 	end
 end
 
+function DatabaseQueryClause._GetTrigramIndexValue(self, indexField)
+	if self._operation == "EQUAL" then
+		if self._field ~= indexField then
+			return
+		end
+		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
+			return
+		elseif self._value == Constants.BOUND_QUERY_PARAM then
+			return self._boundValue
+		else
+			return self._value
+		end
+	elseif self._operation == "CONTAINS" then
+		if self._field ~= indexField then
+			return
+		end
+		if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
+			return
+		elseif self._value == Constants.BOUND_QUERY_PARAM then
+			return self._boundValue
+		else
+			return self._value
+		end
+	elseif self._operation == "OR" then
+		-- all of the subclauses need to support the same trigram value
+		local value = nil
+		for i = 1, #self._subClauses do
+			local subClause = self._subClauses[i]
+			local subClauseValue = subClause:_GetTrigramIndexValue(indexField)
+			if not subClauseValue then
+				return
+			end
+			if i == 1 then
+				value = subClauseValue
+			elseif subClauseValue ~= value then
+				return
+			end
+		end
+		return value
+	elseif self._operation == "AND" then
+		-- at least one of the subclauses need to support the trigram
+		for _, subClause in ipairs(self._subClauses) do
+			local value = subClause:_GetTrigramIndexValue(indexField)
+			if value then
+				return value
+			end
+		end
+	end
+end
+
 function DatabaseQueryClause._IsStrictIndex(self, indexField, indexValueMin, indexValueMax)
 	if self._value == Constants.OTHER_FIELD_QUERY_PARAM then
 		return false
 	end
 	if self._operation == "EQUAL" and self._field == indexField and indexValueMin == indexValueMax then
 		if self._value == Constants.BOUND_QUERY_PARAM then
-			return self._boundValue == indexValueMin
+			return Util.ToIndexValue(self._boundValue) == indexValueMin
 		else
-			return self._value == indexValueMin
+			return Util.ToIndexValue(self._value) == indexValueMin
 		end
 	elseif self._operation == "GREATER_OR_EQUAL" and self._field == indexField then
 		if self._value == Constants.BOUND_QUERY_PARAM then
-			return self._boundValue == indexValueMin
+			return Util.ToIndexValue(self._boundValue) == indexValueMin
 		else
-			return self._value == indexValueMin
+			return Util.ToIndexValue(self._value) == indexValueMin
 		end
 	elseif self._operation == "LESS_OR_EQUAL" and self._field == indexField then
 		if self._value == Constants.BOUND_QUERY_PARAM then
-			return self._boundValue == indexValueMax
+			return Util.ToIndexValue(self._boundValue) == indexValueMax
 		else
-			return self._value == indexValueMax
+			return Util.ToIndexValue(self._value) == indexValueMax
 		end
 	elseif self._operation == "OR" and #self._subClauses == 1 then
 		return self._subClauses[1]:_IsStrictIndex(indexField, indexValueMin, indexValueMax)

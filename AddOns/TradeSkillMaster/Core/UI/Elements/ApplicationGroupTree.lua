@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- ApplicationGroupTree UI Element Class.
@@ -14,7 +12,9 @@
 
 local _, TSM = ...
 local TempTable = TSM.Include("Util.TempTable")
+local UIElements = TSM.Include("UI.UIElements")
 local ApplicationGroupTree = TSM.Include("LibTSMClass").DefineClass("ApplicationGroupTree", TSM.UI.GroupTree)
+UIElements.Register(ApplicationGroupTree)
 TSM.UI.ApplicationGroupTree = ApplicationGroupTree
 
 
@@ -25,14 +25,12 @@ TSM.UI.ApplicationGroupTree = ApplicationGroupTree
 
 function ApplicationGroupTree.__init(self)
 	self.__super:__init()
-	self._defaultContextTbl.selected = {}
 	self._selectedGroupsChangedHandler = nil
 end
 
 function ApplicationGroupTree.Release(self)
 	self._selectedGroupsChangedHandler = nil
 	self.__super:Release()
-	wipe(self._defaultContextTbl.selected)
 end
 
 --- Registers a script handler.
@@ -56,7 +54,7 @@ end
 function ApplicationGroupTree.SelectedGroupsIterator(self)
 	local groups = TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
-		if self._contextTbl.selected[groupPath] then
+		if self:_IsSelected(groupPath) then
 			tinsert(groups, groupPath)
 		end
 	end
@@ -69,12 +67,37 @@ end
 -- @see GroupTree.SetContextTable
 -- @tparam ApplicationGroupTree self The application group tree object
 -- @tparam table tbl The context table
+-- @tparam table defaultTbl The default table (required fields: `unselected` OR `selected`, `collapsed`)
 -- @treturn ApplicationGroupTree The application group tree object
-function ApplicationGroupTree.SetContextTable(self, tbl)
-	if tbl then
-		tbl.selected = tbl.selected or {}
+function ApplicationGroupTree.SetContextTable(self, tbl, defaultTbl)
+	if defaultTbl.unselected then
+		assert(type(defaultTbl.unselected) == "table" and not defaultTbl.selected)
+		tbl.unselected = tbl.unselected or CopyTable(defaultTbl.unselected)
+		tbl.selected = nil
+	else
+		assert(type(defaultTbl.selected) == "table" and not defaultTbl.unselected)
+		tbl.selected = tbl.selected or CopyTable(defaultTbl.selected)
+		tbl.unselected = nil
 	end
-	self.__super:SetContextTable(tbl)
+	self.__super:SetContextTable(tbl, defaultTbl)
+	return self
+end
+
+--- Gets whether or not a group is currently selected.
+-- @tparam ApplicationGroupTree self The application group tree object
+-- @tparam string groupPath The group to check
+-- @treturn boolean Whether or not the group is selected
+function ApplicationGroupTree.IsGroupSelected(self, groupPath)
+	return self:_IsSelected(groupPath)
+end
+
+--- Gets whether or not a group is currently selected.
+-- @tparam ApplicationGroupTree self The application group tree object
+-- @tparam string groupPath The group to set the selected state of
+-- @tparam boolean selected Whether or not the group should be selected
+-- @treturn ApplicationGroupTree The application group tree object
+function ApplicationGroupTree.SetGroupSelected(self, groupPath, selected)
+	self:_SetSelected(groupPath, selected)
 	return self
 end
 
@@ -86,33 +109,25 @@ function ApplicationGroupTree.IsSelectionCleared(self, updateData)
 	if updateData then
 		self:_UpdateData()
 	end
-	return not next(self._contextTbl.selected)
+	for _, groupPath in ipairs(self._searchStr == "" and self._allData or self._data) do
+		if self:_IsSelected(groupPath) then
+			return false
+		end
+	end
+	return true
 end
 
---- Select every group.
+--- Toggle the selection state of the application group tree.
 -- @tparam ApplicationGroupTree self The application group tree object
 -- @treturn ApplicationGroupTree The application group tree object
-function ApplicationGroupTree.SelectAll(self)
-	for _, groupPath in ipairs(self._allData) do
-		self._contextTbl.selected[groupPath] = true
+function ApplicationGroupTree.ToggleSelectAll(self)
+	local isCleared = self:IsSelectionCleared()
+	for _, groupPath in ipairs(self._searchStr == "" and self._allData or self._data) do
+		self:_SetSelected(groupPath, isCleared)
 	end
 	self:Draw()
 	if self._selectedGroupsChangedHandler then
-		self:_selectedGroupsChangedHandler(self._contextTbl.selected)
-	end
-	return self
-end
-
---- Deselect every group.
--- @tparam ApplicationGroupTree self The application group tree object
--- @treturn ApplicationGroupTree The application group tree object
-function ApplicationGroupTree.DeselectAll(self)
-	for _, groupPath in ipairs(self._allData) do
-		self._contextTbl.selected[groupPath] = nil
-	end
-	self:Draw()
-	if self._selectedGroupsChangedHandler then
-		self:_selectedGroupsChangedHandler(self._contextTbl.selected)
+		self:_selectedGroupsChangedHandler()
 	end
 	return self
 end
@@ -125,46 +140,50 @@ end
 
 function ApplicationGroupTree._UpdateData(self)
 	self.__super:_UpdateData()
-	-- remove data which is no longer present from _contextTbl
+	-- remove data which is no longer present from _contextTable
 	local selectedGroups = TempTable.Acquire()
 	for _, groupPath in ipairs(self._allData) do
 		if self:_IsSelected(groupPath) then
 			selectedGroups[groupPath] = true
 		end
 	end
-	wipe(self._contextTbl.selected)
-	for groupPath in pairs(selectedGroups) do
-		self._contextTbl.selected[groupPath] = true
+	wipe(self._contextTable.selected or self._contextTable.unselected)
+	for _, groupPath in ipairs(self._allData) do
+		self:_SetSelected(groupPath, selectedGroups[groupPath])
 	end
 	TempTable.Release(selectedGroups)
 end
 
 function ApplicationGroupTree._IsSelected(self, data)
-	return self._contextTbl.selected[data]
+	if self._contextTable.unselected then
+		return not self._contextTable.unselected[data]
+	else
+		return self._contextTable.selected[data]
+	end
 end
 
-function ApplicationGroupTree._HandleRowClick(self, data)
-	self._contextTbl.selected[data] = not self._contextTbl.selected[data] or nil
+function ApplicationGroupTree._SetSelected(self, data, selected)
+	if self._contextTable.unselected then
+		self._contextTable.unselected[data] = not selected or nil
+	else
+		self._contextTable.selected[data] = selected or nil
+	end
+end
+
+function ApplicationGroupTree._HandleRowClick(self, data, mouseButton)
+	if mouseButton == "RightButton" then
+		self.__super:_HandleRowClick(data, mouseButton)
+		return
+	end
+	self:_SetSelected(data, not self:_IsSelected(data))
 	-- also set the selection for all child groups to the same as this group
 	for _, groupPath in ipairs(self._allData) do
 		if TSM.Groups.Path.IsChild(groupPath, data) and data ~= TSM.CONST.ROOT_GROUP_PATH then
-			self._contextTbl.selected[groupPath] = self._contextTbl.selected[data]
+			self:_SetSelected(groupPath, self:_IsSelected(data))
 		end
 	end
-	for _, row in ipairs(self._rows) do
-		if row._frame:IsVisible() then
-			local groupPath = row:GetData()
-			if self._contextTbl.selected[row:GetData()] or row:IsMouseOver() then
-				local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-				row._icons.color:SetColorTexture(TSM.UI.HexToRGBA(TSM.UI.GetGroupLevelColor(level)))
-				row:SetHighlightState(row:IsMouseOver() and "hover" or "selected")
-			else
-				row._icons.color:SetColorTexture(TSM.UI.HexToRGBA("#2e2e2e"))
-				row:SetHighlightState()
-			end
-		end
-	end
+	self:Draw()
 	if self._selectedGroupsChangedHandler then
-		self:_selectedGroupsChangedHandler(self._contextTbl.selected)
+		self:_selectedGroupsChangedHandler()
 	end
 end

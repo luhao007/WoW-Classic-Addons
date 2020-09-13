@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Public TSM API functions
@@ -14,6 +12,7 @@ local Money = TSM.Include("Util.Money")
 local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local Inventory = TSM.Include("Service.Inventory")
 TSM_API = {}
 local private = {}
 
@@ -264,7 +263,7 @@ function TSM_API.ToItemString(item)
 	return ItemString.Get(item)
 end
 
---- Gets an item's name from a given TSM item string
+--- Gets an item's name from a given TSM item string.
 -- @within Item
 -- @tparam string itemString The TSM item string
 -- @treturn string The name of the item or nil if it couldn't be determined
@@ -274,7 +273,7 @@ function TSM_API.GetItemName(itemString)
 	return ItemInfo.GetName(itemString)
 end
 
---- Gets an item link from a given TSM item string
+--- Gets an item link from a given TSM item string.
 -- @within Item
 -- @tparam string itemString The TSM item string
 -- @treturn string The item link or an "[Unknown Item]" link
@@ -284,6 +283,117 @@ function TSM_API.GetItemLink(itemString)
 	local result = ItemInfo.GetLink(itemString)
 	assert(result)
 	return result
+end
+
+
+
+-- ============================================================================
+-- Inventory
+-- ============================================================================
+
+--- Gets the quantity of an item in a character's bags.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string character The character to get data for (defaults to the current character if not set)
+-- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetBagQuantity(itemString, character, factionrealm)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(character == nil or type(character) == "string")
+	assert(factionrealm == nil or type(factionrealm) == "string")
+	return Inventory.GetBagQuantity(itemString, character, factionrealm)
+end
+
+--- Gets the quantity of an item in a character's bank.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string character The character to get data for (defaults to the current character if not set)
+-- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetBankQuantity(itemString, character, factionrealm)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(character == nil or type(character) == "string")
+	assert(factionrealm == nil or type(factionrealm) == "string")
+	return Inventory.GetBankQuantity(itemString, character, factionrealm)
+end
+
+--- Gets the quantity of an item in a character's reagent bank.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string character The character to get data for (defaults to the current character if not set)
+-- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetReagentBankQuantity(itemString, character, factionrealm)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(character == nil or type(character) == "string")
+	assert(factionrealm == nil or type(factionrealm) == "string")
+	return Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
+end
+
+--- Gets the quantity of an item posted to the auction house by a character.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string character The character to get data for (defaults to the current character if not set)
+-- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetAuctionQuantity(itemString, character, factionrealm)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(character == nil or type(character) == "string")
+	assert(factionrealm == nil or type(factionrealm) == "string")
+	return Inventory.GetAuctionQuantity(itemString, character, factionrealm)
+end
+
+--- Gets the quantity of an item in a character's mailbox.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string character The character to get data for (defaults to the current character if not set)
+-- @tparam ?string factionrealm The factionrealm to get data for (defaults to the current factionrealm if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetMailQuantity(itemString, character, factionrealm)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(character == nil or type(character) == "string")
+	assert(factionrealm == nil or type(factionrealm) == "string")
+	return Inventory.GetMailQuantity(itemString, character, factionrealm)
+end
+
+--- Gets the quantity of an item in a guild's bank.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @tparam ?string guild The guild to get data for (defaults to the current character's guild if not set)
+-- @treturn number The quantity of the specified item
+function TSM_API.GetGuildQuantity(itemString, guild)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	assert(guild == nil or type(guild) == "string")
+	return Inventory.GetGuildQuantity(itemString, guild)
+end
+
+--- Get some total quantities for an item.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @treturn number The total quantity the current player has (bags, bank, reagent bank, and mail)
+-- @treturn number The total quantity alt characters have (bags, bank, reagent bank, and mail)
+-- @treturn number The total quantity the current player has on the auction house
+-- @treturn number The total quantity alt characters have on the auction house
+function TSM_API.GetPlayerTotals(itemString)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	return Inventory.GetPlayerTotals(itemString)
+end
+
+--- Get the total number of items in all tracked guild banks.
+-- @within Inventory
+-- @tparam string itemString The TSM item string (note that inventory data is tracked per base item)
+-- @treturn number The total quantity in all tracked guild banks
+function TSM_API.GetGuildTotal(itemString)
+	private.CheckCallMethod(itemString)
+	itemString = private.ValidateTSMItemString(itemString)
+	return Inventory.GetGuildTotal(itemString)
 end
 
 

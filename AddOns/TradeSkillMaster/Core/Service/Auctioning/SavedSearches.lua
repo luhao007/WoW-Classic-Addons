@@ -1,21 +1,22 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local SavedSearches = TSM.Auctioning:NewPackage("SavedSearches")
 local L = TSM.Include("Locale").GetTable()
+local Log = TSM.Include("Util.Log")
 local String = TSM.Include("Util.String")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
+local Theme = TSM.Include("Util.Theme")
 local private = {
 	db = nil,
 }
 local FILTER_SEP = "\001"
+local MAX_RECENT_SEARCHES = 500
 
 
 
@@ -47,6 +48,23 @@ function SavedSearches.OnInitialize()
 	end
 	TempTable.Release(keepSearch)
 
+	-- remove old recent searches
+	local remainingRecentSearches = MAX_RECENT_SEARCHES
+	local numRemoved = 0
+	for i = #TSM.db.global.userData.savedAuctioningSearches, 1, -1 do
+		if not TSM.db.global.userData.savedAuctioningSearches[i].isFavorite then
+			if remainingRecentSearches > 0 then
+				remainingRecentSearches = remainingRecentSearches - 1
+			else
+				tremove(TSM.db.global.userData.savedAuctioningSearches, i)
+				numRemoved = numRemoved + 1
+			end
+		end
+	end
+	if numRemoved > 0 then
+		Log.Info("Removed %d old recent searches", numRemoved)
+	end
+
 	private.db = Database.NewSchema("AUCTIONING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")
 		:AddNumberField("lastSearch")
@@ -57,9 +75,9 @@ function SavedSearches.OnInitialize()
 		:AddIndex("index")
 		:Commit()
 	private.db:BulkInsertStart()
-	for index, data in pairs(TSM.db.global.userData.savedAuctioningSearches) do
+	for index, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
 		assert(data.searchType == "postItems" or data.searchType == "postGroups" or data.searchType == "cancelGroups")
-		private.db:BulkInsertNewRow(index, data.lastSearch, data.isFavorite and true or false, data.searchType, data.filter, private.GetSearchName(data.filter, data.searchType))
+		private.db:BulkInsertNewRow(index, data.lastSearch, data.isFavorite and true or false, data.searchType, data.filter, data.name or private.GetSearchName(data.filter, data.searchType))
 	end
 	private.db:BulkInsertEnd()
 end
@@ -82,14 +100,20 @@ function SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
 		:Update()
 end
 
+function SavedSearches.RenameSearch(dbRow, newName)
+	TSM.db.global.userData.savedAuctioningSearches[dbRow:GetField("index")].name = newName
+	dbRow:SetField("name", newName)
+		:Update()
+end
+
 function SavedSearches.DeleteSearch(dbRow)
 	local index = dbRow:GetField("index")
 	tremove(TSM.db.global.userData.savedAuctioningSearches, index)
+	private.db:SetQueryUpdatesPaused(true)
 	private.db:DeleteRow(dbRow)
 	-- need to decrement the index fields of all the rows which got shifted up
-	private.db:SetQueryUpdatesPaused(true)
 	local query = private.db:NewQuery()
-		:GreaterThanOrEqual("index", index)
+		:GreaterThan("index", index)
 		:OrderBy("index", true)
 	for _, row in query:Iterator() do
 		row:SetField("index", row:GetField("index") - 1)
@@ -149,11 +173,8 @@ function private.GetSearchName(filter, searchType)
 		for groupPath in gmatch(filter, "[^"..FILTER_SEP.."]+") do
 			local groupName = TSM.Groups.Path.GetName(groupPath)
 			local level = select('#', strsplit(TSM.CONST.GROUP_SEP, groupPath))
-			local color = gsub(TSM.UI.GetGroupLevelColor(level), "#", "|cff")
-			tinsert(filters, color..groupName.."|r")
-			if #filters == 11 then
-				break
-			end
+			local color = Theme.GetGroupColor(level)
+			tinsert(filters, color:ColorText(groupName))
 		end
 		searchTypeStr = searchType == "postGroups" and L["Post Scan"] or L["Cancel Scan"]
 		numFiltersStr = #filters == 1 and L["1 Group"] or format(L["%d Groups"], #filters)
@@ -164,9 +185,6 @@ function private.GetSearchName(filter, searchType)
 			local coloredName = TSM.UI.GetColoredItemName(itemString)
 			if coloredName then
 				tinsert(filters, coloredName)
-				if #filters == 11 then
-					break
-				end
 			end
 		end
 		searchTypeStr = L["Post Scan"]

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -12,6 +10,8 @@ local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Vararg = TSM.Include("Util.Vararg")
 local Log = TSM.Include("Util.Log")
+local Theme = TSM.Include("Util.Theme")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {}
 local MACRO_NAME = "TSMMacro"
 local MACRO_ICON = TSM.IsWowClassic() and "INV_Misc_Flower_01" or "Achievement_Faction_GoldenLotus"
@@ -20,9 +20,10 @@ local BUTTON_MAPPING = {
 	["row1.myauctionsCheckbox"] = "TSMCancelAuctionBtn",
 	["row1.auctioningCheckbox"] = "TSMAuctioningBtn",
 	["row2.shoppingCheckbox"] = "TSMShoppingBuyoutBtn",
-	["row2.sniperCheckbox"] = "TSMSniperBtn",
+	["row2.bidBuyConfirmBtn"] = "TSMBidBuyConfirmBtn",
+	["row3.sniperCheckbox"] = "TSMSniperBtn",
 	["row3.craftingCheckbox"] = "TSMCraftingBtn",
-	["row3.destroyingCheckbox"] = "TSMDestroyBtn",
+	["row4.destroyingCheckbox"] = "TSMDestroyBtn",
 	["row4.vendoringCheckbox"] = "TSMVendoringSellAllButton",
 }
 local CHARACTER_BINDING_SET = 2
@@ -35,7 +36,7 @@ local MAX_MACRO_LENGTH = 255
 -- ============================================================================
 
 function Macros.OnInitialize()
-	TSM.MainUI.Settings.RegisterSettingPage("Macros", "middle", private.GetMacrosSettingsFrame)
+	TSM.MainUI.Settings.RegisterSettingPage(L["Macros"], "middle", private.GetMacrosSettingsFrame)
 end
 
 
@@ -56,138 +57,146 @@ function private.GetMacrosSettingsFrame()
 		shiftEnabled = shiftEnabled or (strfind(binding, "SHIFT-") and true)
 	end
 
-	local frame = TSMAPI_FOUR.UI.NewElement("ScrollFrame", "macroSettings")
-		:SetStyle("padding.left", 12)
-		:SetStyle("padding.right", 12)
-		:AddChild(TSM.MainUI.Settings.CreateHeading("title", L["Macro Setup"]))
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "desc")
-			:SetStyle("height", 36)
-			:SetStyle("margin.bottom", 24)
-			:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-			:SetStyle("fontHeight", 14)
-			:SetStyle("textColor", "#ffffff")
-			:SetText(L["Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."])
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "actionsSubHeading")
-			:SetStyle("height", 19)
-			:SetStyle("margin.bottom", 8)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 16)
-			:SetStyle("textColor", "#ffffff")
-			:SetText(L["Bound Actions"])
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row1")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "myauctionsCheckbox")
-				:SetStyle("width", 240)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["My Auctions 'CANCEL' Button"])
+	local frame = UIElements.New("ScrollFrame", "macroSettings")
+		:SetPadding(8, 8, 8, 0)
+		:AddChild(TSM.MainUI.Settings.CreateExpandableSection("Macro", "setup", L["Macro Setup"], L["Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."], 40)
+			:AddChild(UIElements.New("Text", "actionsSubHeading")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetText(L["Bound Actions"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "auctioningCheckbox")
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Auctioning 'POST'/'CANCEL' Button"])
+			:AddChild(UIElements.New("Frame", "row1")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Checkbox", "myauctionsCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["My Auctions %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Cancel"])))
+				)
+				:AddChild(UIElements.New("Checkbox", "auctioningCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Auctioning %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Post / Cancel"])))
+				)
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row2")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "shoppingCheckbox")
-				:SetStyle("width", 240)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Shopping 'BUYOUT' Button"])
+			:AddChild(UIElements.New("Frame", "row2")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Checkbox", "shoppingCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Shopping %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Buyout"])))
+				)
+				:AddChild(UIElements.New("Checkbox", "bidBuyConfirmBtn")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Confirmation %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Bid / Buyout"])))
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "sniperCheckbox")
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Sniper 'BUYOUT' Button"])
+			:AddChild(UIElements.New("Frame", "row3")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Checkbox", "sniperCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Sniper %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Buyout"])))
+				)
+				:AddChild(UIElements.New("Checkbox", "craftingCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Crafting %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Craft Next"])))
+				)
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row3")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "craftingCheckbox")
-				:SetStyle("width", 240)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Crafting 'CRAFT NEXT' Button"])
+			:AddChild(UIElements.New("Frame", "row4")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 16)
+				:AddChild(UIElements.New("Checkbox", "destroyingCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Destroying %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Destroy Next"])))
+				)
+				:AddChild(UIElements.New("Checkbox", "vendoringCheckbox")
+					:SetFont("BODY_BODY2_MEDIUM")
+					:SetText(format(L["Vendoring %s button"], Theme.GetColor("INDICATOR"):ColorText(L["Sell All"])))
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "destroyingCheckbox")
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Destroying 'DESTROY NEXT' Button"])
+			:AddChild(UIElements.New("Text", "scrollWheelSubHeading")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 12)
+				:SetFont("BODY_BODY2_BOLD")
+				:SetText(L["Scroll Wheel Options"])
 			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "row4")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "vendoringCheckbox")
-				:SetStyle("width", 240)
-				:SetStyle("fontHeight", 12)
-				:SetText(L["Vendoring 'SELL ALL' Button"])
+			:AddChild(UIElements.New("Frame", "direction")
+				:SetLayout("VERTICAL")
+				:SetMargin(0, 0, 0, 14)
+				:AddChild(UIElements.New("Text", "label")
+					:SetHeight(20)
+					:SetMargin(0, 0, 0, 6)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Scroll wheel direction"])
+				)
+				:AddChild(UIElements.New("Frame", "check")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:AddChild(UIElements.New("Checkbox", "up")
+						:SetWidth("AUTO")
+						:SetMargin(0, 16, 0, 0)
+						:SetFont("BODY_BODY2")
+						:SetText(L["Up"])
+						:SetChecked(upEnabled)
+					)
+					:AddChild(UIElements.New("Checkbox", "down")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY2")
+						:SetText(L["Down"])
+						:SetChecked(downEnabled)
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "scrollWheelSubHeading")
-			:SetStyle("height", 19)
-			:SetStyle("margin.top", 16)
-			:SetStyle("margin.bottom", 8)
-			:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("fontHeight", 16)
-			:SetStyle("textColor", "#ffffff")
-			:SetText(L["Configuration Scroll Wheel"])
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "direction")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-				:SetStyle("width", 240)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(L["Scroll wheel direction:"])
+			:AddChild(UIElements.New("Frame", "modifiers")
+				:SetLayout("VERTICAL")
+				:SetMargin(0, 0, 0, 18)
+				:AddChild(UIElements.New("Text", "label")
+					:SetHeight(20)
+					:SetMargin(0, 0, 0, 6)
+					:SetFont("BODY_BODY2")
+					:SetText(L["Modifiers"])
+				)
+				:AddChild(UIElements.New("Frame", "check")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(20)
+					:AddChild(UIElements.New("Checkbox", "alt")
+						:SetWidth("AUTO")
+						:SetMargin(0, 16, 0, 0)
+						:SetFont("BODY_BODY2")
+						:SetText(L["ALT"])
+						:SetChecked(altEnabled)
+					)
+					:AddChild(UIElements.New("Checkbox", "ctrl")
+						:SetWidth("AUTO")
+						:SetMargin(0, 16, 0, 0)
+						:SetFont("BODY_BODY2")
+						:SetText(L["CTRL"])
+						:SetChecked(ctrlEnabled)
+					)
+					:AddChild(UIElements.New("Checkbox", "shift")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY2")
+						:SetText(L["SHIFT"])
+						:SetChecked(shiftEnabled)
+					)
+					:AddChild(UIElements.New("Spacer", "spacer"))
+				)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "upCheckbox")
-				:SetStyle("width", 80)
-				:SetText(L["Up"])
-				:SetChecked(upEnabled)
+			:AddChild(UIElements.New("ActionButton", "createBtn")
+				:SetHeight(24)
+				:SetText(GetMacroInfo(MACRO_NAME) and L["Update existing macro"] or L["Create macro"])
+				:SetScript("OnClick", private.CreateButtonOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "downCheckbox")
-				:SetText(L["DOWN"])
-				:SetChecked(downEnabled)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "modifiers")
-			:SetStyle("height", 28)
-			:SetLayout("HORIZONTAL")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label")
-				:SetStyle("width", 240)
-				:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("textColor", "#ffffff")
-				:SetText(L["Modifiers:"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "altCheckbox")
-				:SetStyle("width", 80)
-				:SetText(ALT_KEY)
-				:SetChecked(altEnabled)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "ctrlCheckbox")
-				:SetStyle("width", 80)
-				:SetText(CTRL_KEY)
-				:SetChecked(ctrlEnabled)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Checkbox", "shiftCheckbox")
-				:SetText(SHIFT_KEY)
-				:SetChecked(shiftEnabled)
-			)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "createBtn")
-			:SetStyle("margin.top", 24)
-			:SetStyle("height", 26)
-			:SetText(GetMacroInfo(MACRO_NAME) and L["UPDATE EXISTING MACRO"] or L["CREATE MACRO"])
-			:SetScript("OnClick", private.CreateButtonOnClick)
 		)
 
 	for path, buttonName in pairs(BUTTON_MAPPING) do
-		frame:GetElement(path):SetChecked(strfind(body, buttonName) and true or false)
+		frame:GetElement("setup.content."..path)
+			:SetChecked(strfind(body, buttonName) and true or false)
 	end
 	return frame
 end
@@ -211,10 +220,10 @@ function private.CreateButtonOnClick(button)
 	end
 
 	-- create the new macro
-	local scrollFrame = button:GetParentElement()
+	local scrollFrame = button:GetParentElement():GetParentElement():GetParentElement()
 	local lines = TempTable.Acquire()
 	for elementPath, buttonName in pairs(BUTTON_MAPPING) do
-		if scrollFrame:GetElement(elementPath):IsChecked() then
+		if scrollFrame:GetElement("setup.content."..elementPath):IsChecked() then
 			tinsert(lines, "/click "..buttonName)
 		end
 	end
@@ -224,23 +233,23 @@ function private.CreateButtonOnClick(button)
 
 	-- create the binding
 	local modifierStr = ""
-	if scrollFrame:GetElement("modifiers.ctrlCheckbox"):IsChecked() then
+	if scrollFrame:GetElement("setup.content.modifiers.check.ctrl"):IsChecked() then
 		modifierStr = modifierStr.."CTRL-"
 	end
-	if scrollFrame:GetElement("modifiers.altCheckbox"):IsChecked() then
+	if scrollFrame:GetElement("setup.content.modifiers.check.alt"):IsChecked() then
 		modifierStr = modifierStr.."ALT-"
 	end
-	if scrollFrame:GetElement("modifiers.shiftCheckbox"):IsChecked() then
+	if scrollFrame:GetElement("setup.content.modifiers.check.shift"):IsChecked() then
 		modifierStr = modifierStr.."SHIFT-"
 	end
 	-- we want to save these bindings to be per-character, so the mode should be 1 / 2 if we're currently on
 	-- per-character bindings or not respectively
 	local bindingMode = (GetCurrentBindingSet() == CHARACTER_BINDING_SET) and 1 or 2
-	if scrollFrame:GetElement("direction.upCheckbox") then
+	if scrollFrame:GetElement("setup.content.direction.check.up") then
 		SetBinding(modifierStr.."MOUSEWHEELUP", nil, bindingMode)
 		SetBinding(modifierStr.."MOUSEWHEELUP", BINDING_NAME, bindingMode)
 	end
-	if scrollFrame:GetElement("direction.downCheckbox") then
+	if scrollFrame:GetElement("setup.content.direction.check.down") then
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", nil, bindingMode)
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", BINDING_NAME, bindingMode)
 	end
@@ -250,6 +259,9 @@ function private.CreateButtonOnClick(button)
 	else
 		SaveBindings(CHARACTER_BINDING_SET)
 	end
+
+	button:SetText(GetMacroInfo(MACRO_NAME) and L["Update existing macro"] or L["Create macro"])
+		:Draw()
 
 	Log.PrintUser(L["Macro created and scroll wheel bound!"])
 	if #macroText > MAX_MACRO_LENGTH then

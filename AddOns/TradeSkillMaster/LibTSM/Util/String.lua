@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- String Functions
@@ -36,7 +34,7 @@ local MAGIC_CHARACTERS = {
 -- separators which are more than one character in length.
 -- @tparam string str The string to be split
 -- @tparam string sep The separator to use to split the string
--- @?tparam[opt=nil] table resultTbl An optional table to store the result in
+-- @tparam[opt=nil] table resultTbl An optional table to store the result in
 -- @treturn table The result as a list of substrings
 function String.SafeSplit(str, sep, resultTbl)
 	resultTbl = resultTbl or {}

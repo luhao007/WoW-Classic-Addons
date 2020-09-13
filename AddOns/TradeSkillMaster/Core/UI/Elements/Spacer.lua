@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Spacer UI Element Class.
@@ -13,7 +11,71 @@
 
 local _, TSM = ...
 local Spacer = TSM.Include("LibTSMClass").DefineClass("Spacer", TSM.UI.Element)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(Spacer)
 TSM.UI.Spacer = Spacer
+
+
+
+-- ============================================================================
+-- Fake Frame Methods
+-- ============================================================================
+
+local FAKE_FRAME_MT = {
+	__index = {
+		SetParent = function(self, parent)
+			self._parent = parent
+		end,
+
+		GetParent = function(self)
+			return self._parent
+		end,
+
+		SetScale = function(self, scale)
+			self._scale = scale
+		end,
+
+		GetScale = function(self)
+			return self._scale
+		end,
+
+		SetWidth = function(self, width)
+			self._width = width
+		end,
+
+		GetWidth = function(self)
+			return self._width
+		end,
+
+		SetHeight = function(self, height)
+			self._height = height
+		end,
+
+		GetHeight = function(self)
+			return self._height
+		end,
+
+		Show = function(self)
+			self._visible = true
+		end,
+
+		Hide = function(self)
+			self._visible = false
+		end,
+
+		IsVisible = function(self)
+			return self._visible
+		end,
+
+		ClearAllPoints = function(self)
+			-- do nothing
+		end,
+
+		SetPoint = function(self, ...)
+			-- do nothing
+		end,
+	},
+}
 
 
 
@@ -23,11 +85,14 @@ TSM.UI.Spacer = Spacer
 
 function Spacer.__init(self)
 	self.__super:__init(self)
-	self._fakeParent = nil
-	self._scale = 1
-	self._width = 0
-	self._height = 0
-	self._visible = false
+	local fakeFrame = {
+		_parent = nil,
+		_scale = 1,
+		_width = 0,
+		_height = 0,
+		_visible = false,
+	}
+	self._fakeFrame = setmetatable(fakeFrame, FAKE_FRAME_MT)
 end
 
 
@@ -37,63 +102,5 @@ end
 -- ============================================================================
 
 function Spacer._GetBaseFrame(self)
-	return self
-end
-
-
-
--- ============================================================================
--- Fake Frame Methods
--- ============================================================================
-
-function Spacer.SetParent(self, parent)
-	self._fakeParent = parent
-end
-
-function Spacer.GetParent(self)
-	return self._fakeParent
-end
-
-function Spacer.SetScale(self, scale)
-	self._scale = scale
-end
-
-function Spacer.GetScale(self)
-	return self._scale
-end
-
-function Spacer.SetWidth(self, width)
-	self._width = width
-end
-
-function Spacer.GetWidth(self)
-	return self._width
-end
-
-function Spacer.SetHeight(self, height)
-	self._height = height
-end
-
-function Spacer.GetHeight(self)
-	return self._height
-end
-
-function Spacer.Show(self)
-	self._visible = true
-end
-
-function Spacer.Hide(self)
-	self._visible = false
-end
-
-function Spacer.IsVisible(self)
-	return self._visible
-end
-
-function Spacer.ClearAllPoints(self)
-	-- do nothing
-end
-
-function Spacer.SetPoint(self, ...)
-	-- do nothing
+	return self._fakeFrame
 end

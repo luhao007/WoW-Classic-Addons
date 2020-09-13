@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,6 +13,7 @@ local String = TSM.Include("Util.String")
 local Money = TSM.Include("Util.Money")
 local Log = TSM.Include("Util.Log")
 local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local MailTracking = TSM.Include("Service.MailTracking")
@@ -24,6 +23,7 @@ local private = {
 	lastCheck = nil,
 	moneyCollected = 0,
 }
+local INBOX_SIZE = TSM.IsWowClassic() and 50 or 100
 local MAIL_REFRESH_TIME = TSM.IsWowClassic() and 60 or 15
 
 
@@ -67,6 +67,7 @@ end
 -- ============================================================================
 
 function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
+	local isLastLoop = false
 	while true do
 		local query = TSM.Mailing.Inbox.CreateQuery()
 		query:ResetOrderBy()
@@ -82,24 +83,21 @@ function private.OpenMailThread(autoRefresh, keepMoney, filterText, filterType)
 		end
 
 		local mails = Threading.AcquireSafeTempTable()
-
 		for _, index in query:Iterator() do
 			tinsert(mails, index)
 		end
-
 		query:Release()
 
 		private.OpenMails(mails, keepMoney, filterType)
-
 		Threading.ReleaseSafeTempTable(mails)
 
-		if not autoRefresh then
+		if not autoRefresh or isLastLoop then
 			break
 		end
 
 		local numLeftMail, totalLeftMail = GetInboxNumItems()
-		if totalLeftMail == numLeftMail or numLeftMail == 50 then
-			break
+		if totalLeftMail == numLeftMail or numLeftMail == INBOX_SIZE then
+			isLastLoop = true
 		end
 
 		CheckInbox()
@@ -120,10 +118,9 @@ function private.OpenMails(mails, keepMoney, filterType)
 		Threading.WaitForFunction(private.CanOpenMail)
 
 		local mailType = MailTracking.GetMailType(index)
-		if (not filterType and mailType) or (filterType and filterType == mailType) then
-			if CalculateTotalNumberOfFreeBagSlots() <= TSM.db.global.mailingOptions.keepMailSpace then
-				return
-			end
+		local matchesFilter = (not filterType and mailType) or (filterType and filterType == mailType)
+		local hasBagSpace = not MailTracking.GetInboxItemLink(index) or CalculateTotalNumberOfFreeBagSlots() > TSM.db.global.mailingOptions.keepMailSpace
+		if matchesFilter and hasBagSpace then
 			local _, _, _, _, money = GetInboxHeaderInfo(index)
 			if not keepMoney or (keepMoney and money <= 0) then
 				-- marks the mail as read
@@ -175,10 +172,10 @@ function private.PrintOpenMailMessage(index)
 		local invoiceType, itemName, playerName, bid, _, _, ahcut, _, _, _, quantity = GetInboxInvoiceInfo(index)
 		playerName = playerName or (invoiceType == "buyer" and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS)
 		if invoiceType == "buyer" then
-			local itemLink =  MailTracking.GetInboxItemLink(index) or itemName
-			Log.PrintfUser(L["Bought %sx%d for %s from %s"], itemLink, quantity, Money.ToString(bid, "|cffff0000"), playerName)
+			local itemLink =  MailTracking.GetInboxItemLink(index) or "["..itemName.."]"
+			Log.PrintfUser(L["Bought %sx%d for %s from %s"], itemLink, quantity, Money.ToString(bid, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()), playerName)
 		elseif invoiceType == "seller" then
-			Log.PrintfUser(L["Sold [%s]x%d for %s to %s"], itemName, quantity, Money.ToString(bid - ahcut, "|cff00ff00"), playerName)
+			Log.PrintfUser(L["Sold [%s]x%d for %s to %s"], itemName, quantity, Money.ToString(bid - ahcut, Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix()), playerName)
 		end
 	elseif hasItem then
 		local itemLink
@@ -203,14 +200,14 @@ function private.PrintOpenMailMessage(index)
 		elseif hasItem == 1 and quantity > 0 and (subject == format(AUCTION_REMOVED_MAIL_SUBJECT.."x%d", itemName, quantity) or subject == format(AUCTION_REMOVED_MAIL_SUBJECT, itemName)) then
 			Log.PrintfUser(L["Cancelled auction of %sx%d"], itemLink, quantity)
 		elseif cod > 0 then
-			Log.PrintfUser(L["%s sent you a COD of %s for %s"], sender, Money.ToString(cod, "|cffff0000"), itemDesc)
+			Log.PrintfUser(L["%s sent you a COD of %s for %s"], sender, Money.ToString(cod, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()), itemDesc)
 		elseif money > 0 then
-			Log.PrintfUser(L["%s sent you %s and %s"], sender, itemDesc, Money.ToString(money, "|cff00ff00"))
+			Log.PrintfUser(L["%s sent you %s and %s"], sender, itemDesc, Money.ToString(money, Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix()))
 		else
 			Log.PrintfUser(L["%s sent you %s"], sender, itemDesc)
 		end
 	elseif money > 0 then
-		Log.PrintfUser(L["%s sent you %s"], sender, Money.ToString(money, "|cff00ff00"))
+		Log.PrintfUser(L["%s sent you %s"], sender, Money.ToString(money, Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix()))
 	elseif subject then
 		Log.PrintfUser(L["%s sent you a message: %s"], sender, subject)
 	end

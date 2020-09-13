@@ -1,41 +1,40 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local AuctionDB = TSM:NewPackage("AuctionDB")
 local L = TSM.Include("Locale").GetTable()
 local Event = TSM.Include("Util.Event")
-local Database = TSM.Include("Util.Database")
 local CSV = TSM.Include("Util.CSV")
 local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
-local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
 local Wow = TSM.Include("Util.Wow")
 local Threading = TSM.Include("Service.Threading")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local CustomPrice = TSM.Include("Service.CustomPrice")
+local AuctionScan = TSM.Include("Service.AuctionScan")
 local private = {
 	region = nil,
-	appRealmData = {},
-	appRealmTime = nil,
+	realmAppData = {
+		scanTime = nil,
+		data = {},
+		itemOffset = {},
+		fieldOffset = {},
+		numFields = nil,
+	},
+	regionData = nil,
+	regionUpdateTime = nil,
 	scanRealmData = {},
 	scanRealmTime = nil,
-	regionData = nil,
-	scanDB = nil,
 	scanThreadId = nil,
 	ahOpen = false,
-	marketValueDB = nil,
-	marketValueQuery = nil,
 	didScan = false,
 	auctionScan = nil,
-	lastProgressUpdateTime = 0,
 	isScanning = false,
 }
 local CSV_KEYS = { "itemString", "minBuyout", "marketValue", "numAuctions", "quantity", "lastScan" }
@@ -48,22 +47,7 @@ local CSV_KEYS = { "itemString", "minBuyout", "marketValue", "numAuctions", "qua
 
 function AuctionDB.OnInitialize()
 	private.scanThreadId = Threading.New("AUCTIONDB_SCAN", private.ScanThread)
-	private.scanDB = TSMAPI_FOUR.Auction.NewDatabase("AUCTIONDB_SCAN")
-	private.marketValueDB = Database.NewSchema("AUCTIONDB_MARKET_VALUE")
-		:AddStringField("itemString")
-		:AddNumberField("itemBuyout")
-		:AddNumberField("index")
-		:AddIndex("itemString")
-		:AddIndex("index")
-		:Commit()
-	private.marketValueQuery = private.marketValueDB:NewQuery()
-		:Equal("itemString", Database.BoundQueryParam())
-		:GreaterThanOrEqual("index", Database.BoundQueryParam())
-		:LessThanOrEqual("index", Database.BoundQueryParam())
-		:GreaterThanOrEqual("itemBuyout", Database.BoundQueryParam())
-		:LessThanOrEqual("itemBuyout", Database.BoundQueryParam())
-		:Select("itemBuyout")
-		:OrderBy("index", true)
+	Threading.SetCallback(private.scanThreadId, private.ScanThreadCleanup)
 	Event.Register("AUCTION_HOUSE_SHOW", private.OnAuctionHouseShow)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.OnAuctionHouseClosed)
 end
@@ -79,11 +63,8 @@ function AuctionDB.OnEnable()
 			local downloadTime = "?"
 			-- try switching around "Classic-[US|EU]" to match the addon's "[US|EU]-Classic" format for classic region data
 			if realm == private.region or gsub(realm, "Classic-%-([A-Z]+)", "%1-Classic") == private.region then
-				local regionData, lastUpdate = private.LoadRegionAppData(data)
-				if regionData then
-					private.regionData = regionData
-					downloadTime = SecondsToTime(time() - lastUpdate).." ago"
-				end
+				private.regionData, private.regionUpdateTime = private.LoadRegionAppData(data)
+				downloadTime = SecondsToTime(time() - private.regionUpdateTime).." ago"
 			elseif TSMAPI.AppHelper:IsCurrentRealm(realm) then
 				realmAppData = private.ProcessRealmAppData(data)
 				downloadTime = SecondsToTime(time() - realmAppData.downloadTime).." ago"
@@ -94,49 +75,43 @@ function AuctionDB.OnEnable()
 
 	-- check if we can load realm data from the app
 	if realmAppData then
-		private.appRealmTime = realmAppData.downloadTime
-		local auctionCounts = {}
-		local baseItems = TempTable.Acquire()
-		local fields = realmAppData.fields
+		private.realmAppData.scanTime = realmAppData.downloadTime
+		for i = 2, #realmAppData.fields do
+			private.realmAppData.fieldOffset[realmAppData.fields[i]] = i - 1
+		end
+		private.realmAppData.numFields = #realmAppData.fields - 1
+		local numRawFields = #realmAppData.fields
+		local nextItmeOffset, nextDataOffset = 0, 1
 		for _, data in ipairs(realmAppData.data) do
-			local itemString = nil
-			for i, key in ipairs(fields) do
+			for i = 1, numRawFields do
+				local value = data[i]
 				if i == 1 then
 					-- item string must be the first field
-					if type(data[i]) == "number" then
-						itemString = "i:"..data[i]
+					local itemString = nil
+					if type(value) == "number" then
+						itemString = "i:"..value
 					else
-						itemString = gsub(data[i], ":0:", "::")
+						itemString = gsub(value, ":0:", "::")
 					end
 					itemString = ItemString.Get(itemString)
-					private.appRealmData[itemString] = {}
+					private.realmAppData.itemOffset[itemString] = nextItmeOffset
+					nextItmeOffset = nextItmeOffset + 1
 				else
-					private.appRealmData[itemString][key] = data[i]
+					private.realmAppData.data[nextDataOffset] = value
+					nextDataOffset = nextDataOffset + 1
 				end
 			end
-			private.appRealmData[itemString].lastScan = realmAppData.downloadTime
-			local baseItemString = ItemString.GetBaseFast(itemString)
-			if baseItemString ~= itemString then
-				baseItems[baseItemString] = true
-			end
 		end
-		for itemString, data in pairs(private.appRealmData) do
-			if not baseItems[itemString] then
-				auctionCounts[itemString] = data.numAuctions
-			end
-		end
-		TempTable.Release(baseItems)
-		TSM.Auction.QueryUtil.SetAuctionCounts(auctionCounts, private.appRealmTime)
 	end
 
-	for itemString in pairs(private.appRealmData) do
+	for itemString in pairs(private.realmAppData.itemOffset) do
 		ItemInfo.FetchInfo(itemString)
 	end
 	if TSM.db.factionrealm.internalData.auctionDBScanTime > 0 then
 		private.LoadSVRealmData()
 	end
-	if not next(private.appRealmData) and not next(private.scanRealmData) then
-		Log.PrintUser(L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from |cff99ffffhttp://tradeskillmaster.com|r to automatically update your AuctionDB data (and auto-backup your TSM settings)."])
+	if not private.realmAppData.numFields and not next(private.scanRealmData) then
+		Log.PrintfUser(L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."], Log.ColorUserAccentText("https://tradeskillmaster.com"))
 	end
 
 	CustomPrice.OnSourceChange("DBMarket")
@@ -164,8 +139,12 @@ function AuctionDB.OnDisable()
 	TSM.db.factionrealm.internalData.auctionDBScanHash = Math.CalculateHash(TSM.db.factionrealm.internalData.csvAuctionDBScan)
 end
 
+function AuctionDB.GetAppDataUpdateTimes()
+	return private.realmAppData.scanTime or 0, private.regionUpdateTime or 0
+end
+
 function AuctionDB.GetLastCompleteScanTime()
-	local result = private.didScan and (private.scanRealmTime or 0) or (private.appRealmTime or 0)
+	local result = private.didScan and (private.scanRealmTime or 0) or (private.realmAppData.scanTime or 0)
 	return result ~= 0 and result or nil
 end
 
@@ -174,18 +153,25 @@ function AuctionDB.LastScanIteratorThreaded()
 	local itemMinBuyout = Threading.AcquireSafeTempTable()
 	local baseItems = Threading.AcquireSafeTempTable()
 
-	local realmData = private.didScan and private.scanRealmData or private.appRealmData
 	local lastScanTime = AuctionDB.GetLastCompleteScanTime()
-	for itemString, data in pairs(realmData) do
-		if data.lastScan >= lastScanTime then
+	for itemString, data in pairs(private.didScan and private.scanRealmData or private.realmAppData.itemOffset) do
+		if not private.didScan or data.lastScan >= lastScanTime then
 			itemString = ItemString.Get(itemString)
-			local baseItemString = ItemString.GetBase(itemString)
+			local baseItemString = ItemString.GetBaseFast(itemString)
 			if baseItemString ~= itemString then
 				baseItems[baseItemString] = true
 			end
-			itemNumAuctions[itemString] = (itemNumAuctions[itemString] or 0) + data.numAuctions
-			if data.minBuyout and data.minBuyout > 0 then
-				itemMinBuyout[itemString] = min(itemMinBuyout[itemString] or math.huge, data.minBuyout)
+			local numAuctions, minBuyout = nil, nil
+			if private.didScan then
+				numAuctions = data.numAuctions
+				minBuyout = data.minBuyout
+			else
+				numAuctions = private.realmAppData.data[data * private.realmAppData.numFields + private.realmAppData.fieldOffset.numAuctions]
+				minBuyout = private.realmAppData.data[data * private.realmAppData.numFields + private.realmAppData.fieldOffset.minBuyout]
+			end
+			itemNumAuctions[itemString] = (itemNumAuctions[itemString] or 0) + numAuctions
+			if minBuyout and minBuyout > 0 then
+				itemMinBuyout[itemString] = min(itemMinBuyout[itemString] or math.huge, minBuyout)
 			end
 		end
 		Threading.Yield()
@@ -213,9 +199,11 @@ function AuctionDB.GetRealmItemData(itemString, key)
 	if private.didScan and (key == "minBuyout" or key == "numAuctions" or key == "lastScan") then
 		-- always use scanRealmData for minBuyout/numAuctions/lastScan if we've done a scan
 		realmData = private.scanRealmData
+	elseif private.realmAppData.numFields then
+		-- use app data
+		return private.GetRealmAppItemDataHelper(private.realmAppData, key, itemString)
 	else
-		-- use appRealmData if available
-		realmData = next(private.appRealmData) and private.appRealmData or private.scanRealmData
+		realmData = private.scanRealmData
 	end
 	return private.GetItemDataHelper(realmData, key, itemString)
 end
@@ -246,6 +234,9 @@ function AuctionDB.RunScan()
 		Log.PrintUser(L["ERROR: A full AH scan has recently been performed and is on cooldown. Log out to reset this cooldown."])
 		return
 	end
+	if not TSM.UI.AuctionUI.StartingScan("FULL_SCAN") then
+		return
+	end
 	Log.PrintUser(L["Starting full AH scan. Please note that this scan may cause your game client to lag or crash. This scan generally takes 1-2 minutes."])
 	Threading.Start(private.scanThreadId)
 	private.isScanning = true
@@ -258,73 +249,77 @@ end
 -- ============================================================================
 
 function private.ScanThread()
-	-- release the previous scan if needed
-	if private.auctionScan then
-		private.auctionScan:Release()
-	end
+	assert(not private.auctionScan)
 
-	-- clear out any prior results
-	private.scanDB:Truncate()
-
-	-- start the new scan
-	private.auctionScan = TSMAPI_FOUR.Auction.NewAuctionScan(private.scanDB)
+	-- run the scan
+	local auctionScan = AuctionScan.GetManager()
 		:SetResolveSellers(false)
-		:SetIgnoreItemLevel(true)
-		:SetScript("OnProgressUpdate", private.OnProgressUpdate)
-		:SetScript("OnFilterDone", private.OnFullScanDone)
-	private.auctionScan:NewAuctionFilter()
+	private.auctionScan = auctionScan
+	local query = auctionScan:NewQuery()
 		:SetGetAll(true)
-	private.auctionScan:StartScanThreaded()
-	private.isScanning = false
-end
-
-function private.OnProgressUpdate()
-	local _, _, page, totalPages = private.auctionScan:GetProgress()
-	if totalPages > 0 and time() - private.lastProgressUpdateTime > 5 then
-		Log.PrintfUser(L["Scanning is %d%% complete"], Math.Round(page * 100 / totalPages))
-		private.lastProgressUpdateTime = time()
+	if not auctionScan:ScanQueriesThreaded() then
+		Log.PrintUser(L["Failed to run full AH scan."])
+		return
 	end
-end
 
-function private.OnFullScanDone()
+	-- process the results
 	Log.PrintfUser(L["Processing scan results..."])
 	wipe(private.scanRealmData)
-	for _, data in pairs(private.scanRealmData) do
-		data.minBuyout = 0
-		data.numAuctions = 0
-		data.quantity = 0
-	end
-	local scannedItems = Threading.AcquireSafeTempTable()
 	private.scanRealmTime = time()
 	TSM.db.factionrealm.internalData.auctionDBScanTime = time()
 	TSM.db.factionrealm.internalData.csvAuctionDBScan = ""
-	private.marketValueDB:TruncateAndBulkInsertStart()
-	local scanQuery = private.scanDB:NewQuery()
-		:Select("baseItemString", "stackSize", "itemBuyout")
-		:OrderBy("itemBuyout", true)
-	for _, baseItemString, stackSize, itemBuyout in scanQuery:Iterator() do
-		private.ProcessScanResultItem(baseItemString, itemBuyout, stackSize)
-		scannedItems[baseItemString] = true
-	end
-	local numScannedAuctions = scanQuery:Count()
-	scanQuery:Release()
-	private.scanDB:Truncate()
-	private.marketValueDB:BulkInsertEnd()
-	Threading.Yield()
+	local numScannedAuctions = 0
+	local subRows = Threading.AcquireSafeTempTable()
+	local subRowSortValue = Threading.AcquireSafeTempTable()
+	local itemBuyouts = Threading.AcquireSafeTempTable()
+	for baseItemString, row in query:BrowseResultsIterator() do
+		wipe(subRows)
+		wipe(subRowSortValue)
+		for _, subRow in row:SubRowIterator() do
+			local _, itemBuyout = subRow:GetBuyouts()
+			tinsert(subRows, subRow)
+			subRowSortValue[subRow] = itemBuyout
+		end
+		Table.SortWithValueLookup(subRows, subRowSortValue, false, true)
 
-	for itemString in pairs(scannedItems) do
-		local data = private.scanRealmData[itemString]
-		data.marketValue = private.CalculateItemMarketValue(itemString, data.quantity)
+		wipe(itemBuyouts)
+		for _, subRow in ipairs(subRows) do
+			local _, itemBuyout = subRow:GetBuyouts()
+			local quantity, numAuctions = subRow:GetQuantities()
+			numScannedAuctions = numScannedAuctions + numAuctions
+			for _ = 1, numAuctions do
+				private.ProcessScanResultItem(baseItemString, itemBuyout, quantity)
+			end
+			if itemBuyout > 0 then
+				for _ = 1, quantity * numAuctions do
+					tinsert(itemBuyouts, itemBuyout)
+				end
+			end
+		end
+
+		local data = private.scanRealmData[baseItemString]
+		data.marketValue = private.CalculateItemMarketValue(itemBuyouts, data.quantity)
 		assert(data.minBuyout == 0 or data.marketValue >= data.minBuyout)
 		Threading.Yield()
 	end
-	private.marketValueDB:Truncate()
-	Threading.ReleaseSafeTempTable(scannedItems)
+	Threading.ReleaseSafeTempTable(subRows)
+	Threading.ReleaseSafeTempTable(subRowSortValue)
+	Threading.ReleaseSafeTempTable(itemBuyouts)
+	Threading.Yield()
 
 	collectgarbage()
 	Log.PrintfUser(L["Completed full AH scan (%d auctions)!"], numScannedAuctions)
 	private.didScan = true
 	CustomPrice.OnSourceChange("DBMinBuyout")
+end
+
+function private.ScanThreadCleanup()
+	private.isScanning = false
+	if private.auctionScan then
+		private.auctionScan:Release()
+		private.auctionScan = nil
+	end
+	TSM.UI.AuctionUI.EndedScan("FULL_SCAN")
 end
 
 function private.ProcessScanResultItem(itemString, itemBuyout, stackSize)
@@ -333,15 +328,13 @@ function private.ProcessScanResultItem(itemString, itemBuyout, stackSize)
 	data.lastScan = time()
 	if itemBuyout > 0 then
 		data.minBuyout = min(data.minBuyout > 0 and data.minBuyout or math.huge, itemBuyout)
-		for _ = 1, stackSize do
-			data.quantity = data.quantity + 1
-			private.marketValueDB:BulkInsertNewRow(itemString, itemBuyout, data.quantity)
-		end
+		data.quantity = data.quantity + stackSize
 	end
 	data.numAuctions = data.numAuctions + 1
 end
 
-function private.CalculateItemMarketValue(itemString, quantity)
+function private.CalculateItemMarketValue(itemBuyouts, quantity)
+	assert(#itemBuyouts == quantity)
 	if quantity == 0 then
 		return 0
 	end
@@ -351,8 +344,8 @@ function private.CalculateItemMarketValue(itemString, quantity)
 	local lowBucketNum = max(floor(quantity * 0.15), 1)
 	local midBucketNum = max(floor(quantity * 0.30), 1)
 	local prevItemBuyout = 0
-	private.marketValueQuery:BindParams(itemString, 1, midBucketNum, 0, math.huge)
-	for _, itemBuyout in private.marketValueQuery:Iterator() do
+	for i = 1, midBucketNum do
+		local itemBuyout = itemBuyouts[i]
 		if num < lowBucketNum or itemBuyout < prevItemBuyout * 1.2 then
 			num = num + 1
 			total = total + itemBuyout
@@ -365,8 +358,8 @@ function private.CalculateItemMarketValue(itemString, quantity)
 	local stdev = nil
 	if num > 1 then
 		local stdevSum = 0
-		private.marketValueQuery:BindParams(itemString, 1, num, 0, math.huge)
-		for _, itemBuyout in private.marketValueQuery:Iterator() do
+		for i = 1, num do
+			local itemBuyout = itemBuyouts[i]
 			stdevSum = stdevSum + (itemBuyout - avg) ^ 2
 		end
 		stdev = sqrt(stdevSum / (num - 1))
@@ -375,8 +368,17 @@ function private.CalculateItemMarketValue(itemString, quantity)
 	end
 
 	-- calculate the market value as the average of all data within 1.5 stdev of our previous average
-	private.marketValueQuery:BindParams(itemString, 1, num, avg - stdev * 1.5, avg + stdev * 1.5)
-	return floor(private.marketValueQuery:Avg("itemBuyout"))
+	local minItemBuyout = avg - stdev * 1.5
+	local maxItemBuyout = avg + stdev * 1.5
+	local avgTotal, avgCount = 0, 0
+	for i = 1, num do
+		local itemBuyout = itemBuyouts[i]
+		if itemBuyout >= minItemBuyout and itemBuyout <= maxItemBuyout then
+			avgTotal = avgTotal + itemBuyout
+			avgCount = avgCount + 1
+		end
+	end
+	return avgTotal > 0 and floor(avgTotal / avgCount) or 0
 end
 
 
@@ -462,29 +464,25 @@ function private.LastScanIteratorCleanup(tbl)
 end
 
 function private.GetItemDataHelper(tbl, key, itemString)
-	if not itemString or not tbl then return end
+	if not itemString or not tbl then
+		return nil
+	end
 	itemString = ItemString.Filter(itemString)
 	local value = nil
-	if tbl[itemString] then
-		value = tbl[itemString][key]
-	else
-		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = ItemInfo.GetItemLevel(itemString)
-		local classId = ItemInfo.GetClassId(itemString)
-		if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR) then
-			if strmatch(itemString, "^i:[0-9]+:[0-9%-]*:") then return end
-		end
-		local baseItemString = ItemString.GetBase(itemString)
-		if not baseItemString then return end
-		value = tbl[baseItemString] and tbl[baseItemString][key]
+	if not tbl[itemString] and not strmatch(itemString, "^[ip]:[0-9]+$") then
+		-- for items with random enchants or for pets, get data for the base item
+		itemString = private.GetBaseItemHelper(itemString)
 	end
-	if not value or value <= 0 then return end
-	return value
+	if not itemString or not tbl[itemString] then
+		return nil
+	end
+	value = tbl[itemString][key]
+	return (value or 0) > 0 and value or nil
 end
 
 function private.GetRegionItemDataHelper(tbl, key, itemString)
 	if not itemString or not tbl then
-		return
+		return nil
 	end
 	itemString = ItemString.Filter(itemString)
 	local fieldIndex = tbl.fieldLookup[key] - 1
@@ -492,20 +490,12 @@ function private.GetRegionItemDataHelper(tbl, key, itemString)
 	local data = tbl.itemLookup[itemString]
 	if not data and not strmatch(itemString, "^[ip]:[0-9]+$") then
 		-- for items with random enchants or for pets, get data for the base item
-		local quality = ItemInfo.GetQuality(itemString)
-		local itemLevel = ItemInfo.GetItemLevel(itemString)
-		local classId = ItemInfo.GetClassId(itemString)
-		if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR) then
-			if strmatch(itemString, "^i:[0-9]+:[0-9%-]*:") then
-				return
-			end
-		end
+		itemString = private.GetBaseItemHelper(itemString)
 		itemString = ItemString.GetBase(itemString)
-		if not itemString then return end
+		if not itemString then
+			return nil
+		end
 		data = tbl.itemLookup[itemString]
-	end
-	if not data then
-		return
 	end
 	if type(data) == "string" then
 		local tblData = {strsplit(",", data)}
@@ -515,11 +505,44 @@ function private.GetRegionItemDataHelper(tbl, key, itemString)
 		tbl.itemLookup[itemString] = tblData
 		data = tblData
 	end
-	local value = data[fieldIndex]
-	if not value or value <= 0 then
-		return
+	if not data then
+		return nil
 	end
-	return value
+	local value = data[fieldIndex]
+	return (value or 0) > 0 and value or nil
+end
+
+function private.GetRealmAppItemDataHelper(appData, key, itemString)
+	if not itemString or not appData.numFields then
+		return nil
+	elseif key == "lastScan" then
+		return appData.scanTime
+	end
+	itemString = ItemString.Filter(itemString)
+	if not appData.itemOffset[itemString] and not strmatch(itemString, "^[ip]:[0-9]+$") then
+		-- for items with random enchants or for pets, get data for the base item
+		itemString = private.GetBaseItemHelper(itemString)
+		if not itemString then
+			return nil
+		end
+	end
+	if not appData.itemOffset[itemString] then
+		return nil
+	end
+	local value = appData.data[appData.itemOffset[itemString] * appData.numFields + appData.fieldOffset[key]]
+	return (value or 0) > 0 and value or nil
+end
+
+function private.GetBaseItemHelper(itemString)
+	local quality = ItemInfo.GetQuality(itemString)
+	local itemLevel = ItemInfo.GetItemLevel(itemString)
+	local classId = ItemInfo.GetClassId(itemString)
+	if quality and quality >= 2 and itemLevel and itemLevel >= TSM.CONST.MIN_BONUS_ID_ITEM_LEVEL and (classId == LE_ITEM_CLASS_WEAPON or classId == LE_ITEM_CLASS_ARMOR) then
+		if strmatch(itemString, "^i:[0-9]+:[0-9%-]*:") then
+			return nil
+		end
+	end
+	return ItemString.GetBaseFast(itemString)
 end
 
 function private.OnAuctionHouseShow()

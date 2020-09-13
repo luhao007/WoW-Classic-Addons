@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -17,457 +15,470 @@ local private = {}
 -- ============================================================================
 
 local DATA = TSM.IsWowClassic() and {} or {
-	-- ======================================== Vanilla Gems =======================================
+	-- ======================================== Uncommon Gems ======================================
 	["i:774"] = { -- Malachite
-		["i:2770"] = 0.1,
+		["i:2770"] = {matRate = 0.5000, minAmount = 1, maxAmount = 1, amountOfMats = 0.1000}, -- Copper Ore
 	},
 	["i:818"] = { -- Tigerseye
-		["i:2770"] = 0.1,
+		["i:2770"] = {matRate = 0.5000, minAmount = 1, maxAmount = 1, amountOfMats = 0.1000}, -- Copper Ore
 	},
 	["i:1210"] = {  -- Shadowgem
-		["i:2771"] = 0.08,
-		["i:2770"] = 0.02,
+		["i:2771"] = {matRate = 0.3800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0800}, -- Tin Ore
+		["i:2770"] = {matRate = 0.1000, minAmount = 1, maxAmount = 1, amountOfMats = 0.0200}, -- Copper Ore
 	},
 	["i:1206"] = { -- Moss Agate
-		["i:2771"] = 0.06,
+		["i:2771"] = {matRate = 0.3800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0800}, -- Tin Ore
 	},
 	["i:1705"] = { -- Lesser Moonstone
-		["i:2771"] = 0.08,
-		["i:2772"] = 0.06,
+		["i:2771"] = {matRate = 0.3800, minAmount = 1, maxAmount = 2, amountOfMats = 0.080}, -- Tin Ore
+		["i:2772"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Iron Ore
 	},
 	["i:1529"] = { -- Jade
-		["i:2772"] = 0.08,
-		["i:2771"] = 0.006,
+		["i:2772"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Iron Ore
+		["i:2771"] = {matRate = 0.0375, minAmount = 1, maxAmount = 1, amountOfMats = 0.0075}, -- Tin Ore
 	},
 	["i:3864"] = { -- Citrine
-		["i:2772"] = 0.08,
-		["i:3858"] = 0.06,
-		["i:2771"] = 0.006,
+		["i:2772"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Iron Ore
+		["i:3858"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Mithril Ore
+		["i:2771"] = {matRate = 0.0375, minAmount = 1, maxAmount = 1, amountOfMats = 0.0075}, -- Tin Ore
 	},
 	["i:7909"] = { -- Aquamarine
-		["i:3858"] = 0.06,
-		["i:2772"] = 0.01,
-		["i:2771"] = 0.006,
+		["i:3858"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Mithril Ore
+		["i:2772"] = {matRate = 0.0500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0100}, -- Iron Ore
+		["i:2771"] = {matRate = 0.0375, minAmount = 1, maxAmount = 1, amountOfMats = 0.0075}, -- Tin Ore
 	},
 	["i:7910"] = { -- Star Ruby
-		["i:3858"] = 0.08,
-		["i:10620"] = 0.02,
-		["i:2772"] = 0.01,
+		[ "i:3858"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0725}, -- Mithril Ore
+		["i:10620"] = {matRate = 0.1550, minAmount = 1, maxAmount = 2, amountOfMats = 0.0320}, -- Thorium Ore
+		[ "i:2772"] = {matRate = 0.0500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0100}, -- Iron Ore
 	},
 	["i:12361"] = { -- Blue Sapphire
-		["i:10620"] = 0.06,
-		["i:3858"] = 0.006,
+		["i:10620"] = {matRate = 0.3100, minAmount = 1, maxAmount = 2, amountOfMats = 0.0660}, -- Thorium Ore
+		[ "i:3858"] = {matRate = 0.0250, minAmount = 1, maxAmount = 1, amountOfMats = 0.0050}, -- Mithril Ore
 	},
 	["i:12799"] = { -- Large Opal
-		["i:10620"] = 0.06,
-		["i:3858"] = 0.006,
+		["i:10620"] = {matRate = 0.3100, minAmount = 1, maxAmount = 2, amountOfMats = 0.0660}, -- Thorium Ore
+		[ "i:3858"] = {matRate = 0.0250, minAmount = 1, maxAmount = 1, amountOfMats = 0.0050}, -- Mithril Ore
 	},
 	["i:12800"] = { -- Azerothian Diamond
-		["i:10620"] = 0.06,
-		["i:3858"] = 0.004,
+		["i:10620"] = {matRate = 0.3100, minAmount = 1, maxAmount = 2, amountOfMats = 0.0660}, -- Thorium Ore
+		[ "i:3858"] = {matRate = 0.0250, minAmount = 1, maxAmount = 1, amountOfMats = 0.0050}, -- Mithril Ore
 	},
 	["i:12364"] = { -- Huge Emerald
-		["i:10620"] = 0.06,
-		["i:3858"] = 0.004,
+		["i:10620"] = {matRate = 0.3100, minAmount = 1, maxAmount = 2, amountOfMats = 0.0660}, -- Thorium Ore
+		[ "i:3858"] = {matRate = 0.0250, minAmount = 1, maxAmount = 1, amountOfMats = 0.0050}, -- Mithril Ore
 	},
-	-- ======================================== Uncommon Gems ======================================
 	["i:23117"] = { -- Azure Moonstone
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.5000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:23077"] = { -- Blood Garnet
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:23079"] = { -- Deep Peridot
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:21929"] = { -- Flame Spessarite
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:23112"] = { -- Golden Draenite
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:23107"] = { -- Shadow Draenite
-		["i:23424"] = 0.04,
-		["i:23425"] = 0.04,
+		["i:23424"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Adamantite Ore
 	},
 	["i:36917"] = { -- Bloodstone
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.05,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:36923"] = { -- Chalcedony
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.05,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:36932"] = { -- Dark Jade
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.05,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:36929"] = { -- Huge Citrine
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.05,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:36926"] = { -- Shadow Crystal
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.05,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:36920"] = { -- Sun Crystal
-		["i:36909"] = 0.05,
-		["i:36912"] = 0.04,
-		["i:36910"] = 0.04,
+		["i:36909"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0525}, -- Titanium Ore
 	},
 	["i:52182"] = { -- Jasper
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:52180"] = { -- Nightstone
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:52178"] = { -- Zephyrite
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:52179"] = { -- Alicite
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:52177"] = { -- Carnelian
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:52181"] = { -- Hessonite
-		["i:53038"] = 0.05,
-		["i:52185"] = 0.04,
-		["i:52183"] = 0.04,
+		["i:53038"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0528}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.1800, minAmount = 1, maxAmount = 2, amountOfMats = 0.0365}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.1650, minAmount = 1, maxAmount = 1, amountOfMats = 0.0330}, -- Pyrite Ore
 	},
 	["i:76130"] = { -- Tiger Opal
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76133"] = { -- Lapis Lazuli
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76134"] = { -- Sunstone
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76135"] = { -- Roguestone
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76136"] = { -- Pandarian Garnet
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76137"] = { -- Alexandrite
-		["i:72092"] = 0.05,
-		["i:72093"] = 0.05,
-		["i:72103"] = 0.04,
-		["i:72094"] = 0.04,
-	},
-	["i:130172"] = { -- Sangrite
-		["i:123918"] = 0.007,
-		["i:123919"] = 0.022,
+		["i:72092"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0485}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.2350, minAmount = 1, maxAmount = 2, amountOfMats = 0.0505}, -- Kyparite
+		["i:72103"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1700, minAmount = 1, maxAmount = 1, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:130173"] = { -- Deep Amber
-		["i:123918"] = 0.011,
-		["i:123919"] = 0.042,
+		["i:123918"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0110}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0600, minAmount = 2, maxAmount = 5, amountOfMats = 0.0420}, -- Felslate
 	},
 	["i:130174"] = { -- Azsunite
-		["i:123918"] = 0.012,
-		["i:123919"] = 0.043,
-	},
-	["i:130175"] = { -- Chaotic Spinel
-		["i:123918"] = 0.006,
-		["i:123919"] = 0.021,
+		["i:123918"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0110}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0600, minAmount = 2, maxAmount = 5, amountOfMats = 0.0420}, -- Felslate
 	},
 	["i:130176"] = { -- Skystone
-		["i:123918"] = 0.012,
-		["i:123919"] = 0.04,
+		["i:123918"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0110}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0600, minAmount = 2, maxAmount = 5, amountOfMats = 0.0420}, -- Felslate
 	},
 	["i:130177"] = { -- Queen's Opal
-		["i:123918"] = 0.012,
-		["i:123919"] = 0.045,
+		["i:123918"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0110}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0600, minAmount = 2, maxAmount = 5, amountOfMats = 0.0420}, -- Felslate
 	},
-	["i:129100"] = { -- Gem Chip - mostly trash but limited use in some professions
-		["i:123918"] = 0.2,
-		["i:123919"] = 0.2,
+	["i:130175"] = { -- Chaotic Spinel
+		["i:123918"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0080}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.2500, minAmount = 2, maxAmount = 5, amountOfMats = 0.0175}, -- Felslate
 	},
-	["i:153700"] = { -- Golden Beryl - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:130172"] = { -- Sangrite
+		["i:123918"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0060}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.3500, minAmount = 2, maxAmount = 5, amountOfMats = 0.0245}, -- Felslate
 	},
-	["i:153701"] = { -- Rubellite - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:153700"] = { -- Golden Beryl
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 	},
-	["i:153702"] = { -- Kubiline - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:153701"] = { -- Rubellite
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 	},
-	["i:153703"] = { -- Solstone - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:153702"] = { -- Kubiline
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 	},
-	["i:153704"] = { -- Viridium - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:153703"] = { -- Solstone
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 	},
-	["i:153705"] = { -- Kyanite - BFA
-		["i:152579"] = 0.06,
-		["i:152512"] = 0.055,
-		["i:152513"] = 0.065,
+	["i:153704"] = { -- Viridium
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
+	},
+	["i:153705"] = { -- Kyanite
+		["i:152512"] = {matRate = 0.1800, minAmount = 1, maxAmount = 4, amountOfMats = 0.0552}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.1950, minAmount = 1, maxAmount = 4, amountOfMats = 0.0603}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 	},
 	-- ========================================== Rare Gems ========================================
 	["i:23440"] = { -- Dawnstone
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:23436"] = { -- Living Ruby
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:23441"] = { -- Nightseye
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:23439"] = { -- Noble Topaz
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:23438"] = { -- Star of Elune
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:23437"] = { -- Talasite
-		["i:23424"] = 0.002,
-		["i:23425"] = 0.008,
+		["i:23424"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Fel Iron Ore
+		["i:23425"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Adamantite Ore
 	},
 	["i:36921"] = { -- Autumn's Glow
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:36933"] = { -- Forest Emerald
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:36930"] = { -- Monarch Topaz
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:36918"] = { -- Scarlet Ruby
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:36924"] = { -- Sky Sapphire
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:36927"] = { -- Twilight Opal
-		["i:36909"] = 0.002,
-		["i:36912"] = 0.008,
-		["i:36910"] = 0.008,
+		["i:36909"] = {matRate = 0.0125, minAmount = 1, maxAmount = 2, amountOfMats = 0.0025}, -- Cobalt Ore
+		["i:36912"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Saronite Ore
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:52192"] = { -- Dream Emerald
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:52193"] = { -- Ember Topaz
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:52190"] = { -- Inferno Ruby
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:52195"] = { -- Amberjewel
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:52194"] = { -- Demonseye
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:52191"] = { -- Ocean Sapphire
-		["i:53038"] = 0.016,
-		["i:52185"] = 0.01,
-		["i:52183"] = 0.008,
+		["i:53038"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Obsidium Ore
+		["i:52185"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0091}, -- Elementium Ore
+		["i:52183"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Pyrite Ore
 	},
 	["i:76131"] = { -- Primordial Ruby
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76138"] = { -- River's Heart
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76139"] = { -- Wild Jade
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76140"] = { -- Vermillion Onyx
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76141"] = { -- Imperial Amethyst
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:76142"] = { -- Sun's Radiance
-		["i:72092"] = 0.008,
-		["i:72093"] = 0.008,
-		["i:72103"] = 0.03,
-		["i:72094"] = 0.03,
-	},
-	["i:130178"] = { -- FuryStone
-		["i:123918"] = 0.001,
-		["i:123919"] = 0.005,
+		["i:72092"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Ghost Iron Ore
+		["i:72093"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Kyparite
+		["i:72103"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- White Trillium Ore
+		["i:72094"] = {matRate = 0.1650, minAmount = 1, maxAmount = 2, amountOfMats = 0.0340}, -- Black Trillium Ore
 	},
 	["i:130179"] = { -- Eye of Prophecy
-		["i:123918"] = 0.002,
-		["i:123919"] = 0.007,
+		["i:123918"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0125, minAmount = 2, maxAmount = 5, amountOfMats = 0.0083}, -- Felslate
 	},
 	["i:130180"] = { -- Dawnlight
-		["i:123918"] = 0.002,
-		["i:123919"] = 0.007,
-	},
-	["i:130181"] = { -- Pandemonite
-		["i:123918"] = 0.001,
-		["i:123919"] = 0.003,
+		["i:123918"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0125, minAmount = 2, maxAmount = 5, amountOfMats = 0.0083}, -- Felslate
 	},
 	["i:130182"] = { -- Maelstrom Sapphire
-		["i:123918"] = 0.002,
-		["i:123919"] = 0.007,
+		["i:123918"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0125, minAmount = 2, maxAmount = 5, amountOfMats = 0.0083}, -- Felslate
 	},
 	["i:130183"] = { -- Shadowruby
-		["i:123918"] = 0.002,
-		["i:123919"] = 0.006,
+		["i:123918"] = {matRate = 0.0125, minAmount = 1, maxAmount = 1, amountOfMats = 0.0025}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0125, minAmount = 2, maxAmount = 5, amountOfMats = 0.0083}, -- Felslate
 	},
-	["i:154120"] = { -- Owlseye - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:130178"] = { -- FuryStone
+		["i:123918"] = {matRate = 0.0050, minAmount = 1, maxAmount = 1, amountOfMats = 0.0010}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0075, minAmount = 2, maxAmount = 5, amountOfMats = 0.0048}, -- Felslate
 	},
-	["i:154121"] = { -- Scarlet Diamond - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:130181"] = { -- Pandemonite
+		["i:123918"] = {matRate = 0.0075, minAmount = 1, maxAmount = 1, amountOfMats = 0.0015}, -- Leystone Ore
+		["i:123919"] = {matRate = 0.0050, minAmount = 2, maxAmount = 5, amountOfMats = 0.0033}, -- Felslate
 	},
-	["i:154122"] = { -- Tidal Amethyst - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:154120"] = { -- Owlseye
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
 	},
-	["i:154123"] = { -- Amberblaze - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:154121"] = { -- Scarlet Diamond
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
 	},
-	["i:154124"] = { -- Laribole - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:154122"] = { -- Tidal Amethyst
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
 	},
-	["i:154125"] = { -- Royal Quartz - BFA
-		["i:152579"] = 0.015,
-		["i:152512"] = 0.0085,
-		["i:152513"] = 0.0235,
+	["i:154123"] = { -- Amberblaze
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
+	},
+	["i:154124"] = { -- Laribole
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
+	},
+	["i:154125"] = { -- Royal Quartz
+		["i:152512"] = {matRate = 0.0450, minAmount = 1, maxAmount = 2, amountOfMats = 0.0092}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0750, minAmount = 1, maxAmount = 2, amountOfMats = 0.0152}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.1150, minAmount = 1, maxAmount = 2, amountOfMats = 0.0237}, -- Platinum Ore
 	},
 	-- ========================================== Epic Gems ========================================
-	["i:151579"] = { -- Labradorite
-		["i:151564"] = 0.0056,
+	["i:36931"] = { -- Ametrine
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
+	},
+	["i:36919"] = { -- Cardinal Ruby
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
+	},
+	["i:36928"] = { -- Dreadstone
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
+	},
+	["i:36934"] = { -- Eye of Zul
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
+	},
+	["i:36922"] = { -- King's Amber
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
+	},
+	["i:36925"] = { -- Majestic Zircon
+		["i:36910"] = {matRate = 0.0500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0100}, -- Titanium Ore
 	},
 	["i:151719"] = { -- Lightsphene
-		["i:151564"] = 0.0064,
-	},
-	["i:151718"] = { -- Argulite
-		["i:151564"] = 0.0060,
+		["i:151564"] = {matRate = 0.0300, minAmount = 1, maxAmount = 1, amountOfMats = 0.0060}, -- Empyrium
 	},
 	["i:151720"] = { -- Chemirine
-		["i:151564"] = 0.0063,
+		["i:151564"] = {matRate = 0.0300, minAmount = 1, maxAmount = 1, amountOfMats = 0.0060}, -- Empyrium
 	},
 	["i:151722"] = { -- Florid Malachite
-		["i:151564"] = 0.0035,
+		["i:151564"] = {matRate = 0.0300, minAmount = 1, maxAmount = 1, amountOfMats = 0.0060}, -- Empyrium
 	},
 	["i:151721"] = { -- Hesselian
-		["i:151564"] = 0.0040,
+		["i:151564"] = {matRate = 0.0300, minAmount = 1, maxAmount = 1, amountOfMats = 0.0060}, -- Empyrium
 	},
-	["i:153706"] = { -- Kraken's Eye - BFA
-		["i:152579"] = 0.0065,
-		["i:152512"] = 0.006,
-		["i:152513"] = 0.0081,
+	["i:151718"] = { -- Argulite
+		["i:151564"] = {matRate = 0.0250, minAmount = 1, maxAmount = 1, amountOfMats = 0.0050}, -- Empyrium
 	},
-	["i:168635"] = { -- Leviathan's Eye - BFA
-		["i:168185"] = 0.032,
+	["i:151579"] = { -- Labradorite
+		["i:151564"] = {matRate = 0.0225, minAmount = 1, maxAmount = 1, amountOfMats = 0.0045}, -- Empyrium
 	},
-	["i:168188"] = { -- Sage Agate - BFA
-		["i:168185"] = 0.012,
+	["i:153706"] = { -- Kraken's Eye
+		["i:152512"] = {matRate = 0.0400, minAmount = 1, maxAmount = 1, amountOfMats = 0.0080}, -- Monelite Ore
+		["i:152579"] = {matRate = 0.0375, minAmount = 1, maxAmount = 1, amountOfMats = 0.0075}, -- Storm Silver Ore
+		["i:152513"] = {matRate = 0.0450, minAmount = 1, maxAmount = 1, amountOfMats = 0.0090}, -- Platinum Ore
 	},
-	["i:168193"] = { -- Azsharine - BFA
-		["i:168185"] = 0.012,
+	["i:168188"] = { -- Sage Agate
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
 	},
-	["i:168189"] = { -- Dark Opal - BFA
-		["i:168185"] = 0.04,
+	["i:168193"] = { -- Azsharine
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
 	},
-	["i:168190"] = { -- Lava Lazuli - BFA
-		["i:168185"] = 0.044,
+	["i:168189"] = { -- Dark Opal
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
 	},
-	["i:168191"] = { -- Sea Currant - BFA
-		["i:168185"] = 0.044,
+	["i:168190"] = { -- Lava Lazuli
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
 	},
-	["i:168192"] = { -- Sand Spinel - BFA
-		["i:168185"] = 0.044,
+	["i:168191"] = { -- Sea Currant
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
+	},
+	["i:168192"] = { -- Sand Spinel
+		["i:168185"] = {matRate = 0.1500, minAmount = 1, maxAmount = 1, amountOfMats = 0.0300}, -- Osmenite Ore
+	},
+	["i:168635"] = { -- Leviathan's Eye
+		["i:168185"] = {matRate = 0.1000, minAmount = 1, maxAmount = 1, amountOfMats = 0.0200}, -- Osmenite Ore
 	},
 }
 
@@ -486,7 +497,7 @@ function Prospect.SourceItemIterator(targetItemString)
 end
 
 function Prospect.GetRate(targetItemString, sourceItemString)
-	return DATA[targetItemString][sourceItemString]
+	return DATA[targetItemString][sourceItemString].amountOfMats, DATA[targetItemString][sourceItemString].matRate, DATA[targetItemString][sourceItemString].minAmount, DATA[targetItemString][sourceItemString].maxAmount
 end
 
 

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -16,6 +14,7 @@ local CustomPrice = TSM.Include("Service.CustomPrice")
 local BagTracking = TSM.Include("Service.BagTracking")
 local private = {
 	ignoreDB = nil,
+	potentialValueDB = nil,
 }
 
 
@@ -112,6 +111,8 @@ function Sell.CreateBagsQuery()
 		:LeftJoin(private.ignoreDB, "itemString")
 		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:LeftJoin(private.potentialValueDB, "itemString")
+		:Equal("isBoP", false)
+		:Equal("isBoA", false)
 	Sell.ResetBagsQuery(query)
 	return query
 end
@@ -122,6 +123,8 @@ function Sell.ResetBagsQuery(query)
 	BagTracking.FilterQueryBags(query)
 	query:NotEqual("ignoreSession", true)
 		:NotEqual("ignorePermanent", true)
+		:Equal("isBoP", false)
+		:Equal("isBoA", false)
 		:GreaterThan("vendorSell", 0)
 		:OrderBy("name", true)
 end

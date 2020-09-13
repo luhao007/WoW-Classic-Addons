@@ -1,27 +1,23 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- ItemList UI Element Class.
--- This element is used for the item lists in the group UI. It is a subclass of the @{FastScrollingList} class.
+-- This element is used for the item lists in the group UI. It is a subclass of the @{ScrollingTable} class.
 -- @classmod ItemList
 
 local _, TSM = ...
+local ItemString = TSM.Include("Util.ItemString")
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
-local ItemList = TSM.Include("LibTSMClass").DefineClass("ItemList", TSM.UI.FastScrollingList)
+local ItemList = TSM.Include("LibTSMClass").DefineClass("ItemList", TSM.UI.ScrollingTable)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(ItemList)
 TSM.UI.ItemList = ItemList
-local private = { rowFrameLookup = {} }
-local EXPANDER_PADDING_LEFT = 7
-local CHECK_PADDING_LEFT = 8
-local TEXT_PADDING_RIGHT = 8
-local ICON_PADDING_LEFT = 29
-local ICON_SIZE = 14
-local CHILD_TEXT_PADDING = 48
-local HEADER_TEXT_PADDING = 29
+local private = {}
 
 
 
@@ -32,26 +28,42 @@ local HEADER_TEXT_PADDING = 29
 function ItemList.__init(self)
 	self.__super:__init()
 
+	self._rightClickToggle = true
 	self._allData = {}
 	self._selectedItems = {}
-	self._header = {}
-	self._headerCollapsed = {}
+	self._category = {}
+	self._categoryCollapsed = {}
 	self._filterFunc = nil
 	self._onSelectionChangedHandler = nil
+end
+
+function ItemList.Acquire(self)
+	self._headerHidden = true
+	self.__super:Acquire()
+	self:SetSelectionDisabled(true)
+	self:GetScrollingTableInfo()
+		:NewColumn("item")
+			:SetFont("ITEM_BODY3")
+			:SetJustifyH("LEFT")
+			:SetIconSize(12)
+			:SetExpanderStateFunction(private.GetExpanderState)
+			:SetCheckStateFunction(private.GetCheckState)
+			:SetIconFunction(private.GetItemIcon)
+			:SetTextFunction(private.GetItemText)
+			:SetTooltipFunction(private.GetItemTooltip)
+			:Commit()
+		:Commit()
 end
 
 function ItemList.Release(self)
 	wipe(self._allData)
 	wipe(self._selectedItems)
-	wipe(self._header)
-	wipe(self._headerCollapsed)
+	wipe(self._category)
+	wipe(self._categoryCollapsed)
 	self._filterFunc = nil
 	self._onSelectionChangedHandler = nil
 	for _, row in ipairs(self._rows) do
-		row._frame:SetScript("OnClick", nil)
-		row._frame:SetScript("OnEnter", nil)
-		row._frame:SetScript("OnLeave", nil)
-		private.rowFrameLookup[row._frame] = nil
+		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
 	end
 	self.__super:Release()
 end
@@ -63,30 +75,32 @@ end
 -- @treturn ItemList The item list object
 function ItemList.SetItems(self, items, redraw)
 	wipe(self._allData)
-	wipe(self._header)
-	wipe(self._headerCollapsed)
+	wipe(self._category)
+	wipe(self._categoryCollapsed)
 
 	for _, item in ipairs(items) do
-		if type(item) == "table" then
+		if type(item) == "table" and next(item) then
 			assert(item.header)
 			tinsert(self._allData, item.header)
 			for _, subItem in ipairs(item) do
 				tinsert(self._allData, subItem)
-				self._header[subItem] = item.header
+				self._category[subItem] = item.header
 			end
-		else
+		elseif type(item) ~= "table" then
 			tinsert(self._allData, item)
-			self._header[item] = ""
+			self._category[item] = ""
 		end
 	end
 	self:_UpdateData()
 
 	wipe(self._selectedItems)
 	if self._onSelectionChangedHandler then
-		self:_onSelectionChangedHandler(0)
+		self:_onSelectionChangedHandler()
 	end
 
 	if redraw then
+		-- scroll up to the top
+		self._vScrollbar:SetValue(0)
 		self:Draw()
 	end
 
@@ -114,15 +128,13 @@ end
 --- Selects all items.
 -- @tparam ItemList self The item list object
 function ItemList.SelectAll(self)
-	local num = 0
 	for _, item in ipairs(self._data) do
-		if self._header[item] then
+		if self._category[item] then
 			self._selectedItems[item] = true
-			num = num + 1
 		end
 	end
 	if self._onSelectionChangedHandler then
-		self:_onSelectionChangedHandler(num)
+		self:_onSelectionChangedHandler()
 	end
 	self:Draw()
 end
@@ -132,9 +144,21 @@ end
 function ItemList.ClearSelection(self)
 	wipe(self._selectedItems)
 	if self._onSelectionChangedHandler then
-		self:_onSelectionChangedHandler(0)
+		self:_onSelectionChangedHandler()
 	end
 	self:Draw()
+end
+
+--- Toggle the selection state of the item list.
+-- @tparam ItemList self The item list object
+-- @treturn ItemList The item list object
+function ItemList.ToggleSelectAll(self)
+	if self:GetNumSelected() == 0 then
+		self:SelectAll()
+	else
+		self:ClearSelection()
+	end
+	return self
 end
 
 --- Registers a script handler.
@@ -150,6 +174,19 @@ function ItemList.SetScript(self, script, handler)
 		error("Unknown ItemList script: "..tostring(script))
 	end
 	return self
+end
+
+--- Gets the number of selected items.
+-- @tparam ItemList self The item list object
+-- @treturn number The number of selected items
+function ItemList.GetNumSelected(self)
+	local num = 0
+	for _, item in ipairs(self._data) do
+		if self._selectedItems[item] then
+			num = num + 1
+		end
+	end
+	return num
 end
 
 
@@ -168,10 +205,10 @@ function ItemList._UpdateData(self)
 end
 
 function ItemList._IsDataHidden(self, data)
-	if not self._header[data] then
+	if not self._category[data] then
 		return false
 	end
-	if self._headerCollapsed[self._header[data]] then
+	if self._categoryCollapsed[self._category[data]] then
 		return true
 	end
 	if self._filterFunc then
@@ -180,88 +217,28 @@ function ItemList._IsDataHidden(self, data)
 	return false
 end
 
-function ItemList._GetListRow(self)
-	local row = self.__super:_GetListRow()
-	row._frame:SetScript("OnClick", private.RowOnClick)
-	row._frame:SetScript("OnEnter", private.RowOnEnter)
-	row._frame:SetScript("OnLeave", private.RowOnLeave)
-	private.rowFrameLookup[row._frame] = row
-
-	local text = row:_GetFontString()
-	text:SetPoint("LEFT", 0, 0)
-	text:SetPoint("TOPRIGHT", -TEXT_PADDING_RIGHT, 0)
-	text:SetPoint("BOTTOMRIGHT", -TEXT_PADDING_RIGHT, 0)
-	text:SetFont(self:_GetStyle("font"), self:_GetStyle("fontHeight"))
-	text:SetJustifyH("LEFT")
-	text:SetJustifyV("MIDDLE")
-	row._texts.text = text
-
-	local icon = row:_GetTexture()
-	icon:SetPoint("LEFT", ICON_PADDING_LEFT, 0)
-	icon:SetWidth(ICON_SIZE)
-	icon:SetHeight(ICON_SIZE)
-	row._icons.icon = icon
-
-	local check = row:_GetTexture()
-	check:SetPoint("LEFT", CHECK_PADDING_LEFT, 0)
-	row._icons.check = check
-
-	local expander = row:_GetTexture()
-	expander:SetDrawLayer("ARTWORK", 2)
-	expander:SetPoint("LEFT", EXPANDER_PADDING_LEFT, 0)
-	row._icons.expander = expander
-
+function ItemList._GetTableRow(self, isHeader)
+	local row = self.__super:_GetTableRow(isHeader)
+	if not isHeader then
+		ScriptWrapper.Set(row._frame, "OnDoubleClick", private.RowOnDoubleClick, row)
+	end
 	return row
 end
 
-function ItemList._SetRowData(self, row, data)
-	local isHeader = not self._header[data]
-	local isCollapsed = isHeader and self._headerCollapsed[data]
-
-	local text = row._texts.text
-	text:SetFont(self:_GetStyle(isHeader and "headerFont" or "regularFont"), self:_GetStyle(isHeader and "headerFontHeight" or "regularFontHeight"))
-	text:SetPoint("LEFT", isHeader and HEADER_TEXT_PADDING or CHILD_TEXT_PADDING, 0)
-	local icon = row._icons.icon
-	local expander = row._icons.expander
-	local check = row._icons.check
-
-	if isHeader then
-		-- count the sub-elements below this header
-		local numChildElements = 0
-		local foundHeader = false
-		for _, item in ipairs(self._allData) do
-			if not self._header[item] then
-				if item == data then
-					foundHeader = true
-				elseif foundHeader then
-					break
-				end
-			elseif foundHeader then
-				if not self._filterFunc or not self._filterFunc(item) then
-					numChildElements = numChildElements + 1
-				end
-			end
-		end
-		text:SetText(data.. " |cffffd839(" .. numChildElements .. ")|r")
-		icon:Hide()
-		check:Hide()
-		local texturePack = self:_GetStyle(isCollapsed and "expanderCollapsedBackgroundTexturePack" or "expanderExpandedBackgroundTexturePack")
-		TSM.UI.TexturePacks.SetTextureAndSize(expander, texturePack)
-		expander:Show()
+function ItemList._HandleRowClick(self, data)
+	if self._category[data] then
+		self._selectedItems[data] = not self._selectedItems[data]
 	else
-		text:SetText(TSM.UI.GetColoredItemName(data))
-		icon:SetTexture(ItemInfo.GetTexture(data))
-		icon:Show()
-		expander:Hide()
-		if not isHeader and self._selectedItems[data] then
-			TSM.UI.TexturePacks.SetTextureAndSize(check, self:_GetStyle("checkTexturePack"))
-			check:Show()
-		else
-			check:Hide()
+		if IsMouseButtonDown("RightButton") then
+			return
 		end
+		self._categoryCollapsed[data] = not self._categoryCollapsed[data]
+		self:_UpdateData()
 	end
-
-	self.__super:_SetRowData(row, data)
+	if self._onSelectionChangedHandler then
+		self:_onSelectionChangedHandler()
+	end
+	self:Draw()
 end
 
 
@@ -270,39 +247,41 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.RowOnClick(frame)
-	local self = private.rowFrameLookup[frame]
-	local data = self:GetData()
-	local scrollingList = self._scrollingList
-	if scrollingList._header[data] then
-		scrollingList._selectedItems[data] = not scrollingList._selectedItems[data]
+function private.GetExpanderState(self, data)
+	local isHeading = not self._category[data]
+	return isHeading, not self._categoryCollapsed[data], isHeading and 0 or 1
+end
+
+function private.GetCheckState(self, data)
+	return self._category[data] and self._selectedItems[data]
+end
+
+function private.GetItemIcon(self, data)
+	if not self._category[data] then
+		return
+	end
+	return ItemInfo.GetTexture(data)
+end
+
+function private.GetItemText(self, data)
+	if self._category[data] then
+		return TSM.UI.GetColoredItemName(data) or Theme.GetFeedbackColor("RED"):ColorText("?")
 	else
-		scrollingList._headerCollapsed[data] = not scrollingList._headerCollapsed[data]
-	end
-	scrollingList:_UpdateData()
-	if scrollingList._onSelectionChangedHandler then
-		local num = 0
-		for _, item in ipairs(scrollingList._data) do
-			if scrollingList._selectedItems[item] then
-				num = num + 1
-			end
-		end
-		scrollingList:_onSelectionChangedHandler(num)
-	end
-	scrollingList:Draw()
-end
-
-function private.RowOnEnter(frame)
-	local self = private.rowFrameLookup[frame]
-	self:SetHighlightState("hover")
-	local data = self:GetData()
-	if self._scrollingList._header[data] then
-		TSM.UI.ShowTooltip(frame, data)
+		return data
 	end
 end
 
-function private.RowOnLeave(frame)
-	local self = private.rowFrameLookup[frame]
-	TSM.UI.HideTooltip()
-	self:SetHighlightState()
+function private.GetItemTooltip(self, data)
+	if not self._category[data] then
+		return nil
+	end
+	return ItemString.Get(data)
+end
+
+function private.RowOnDoubleClick(row, mouseButton)
+	if mouseButton ~= "LeftButton" then
+		return
+	end
+	local self = row._scrollingTable
+	self:_HandleRowClick(row:GetData())
 end

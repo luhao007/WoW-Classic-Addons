@@ -1,14 +1,12 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Constants = TSM.Init("Service.SyncClasses.Constants")
-Constants.VERSION = 6
+Constants.VERSION = 11
 Constants.DATA_TYPES = {
 	-- new connection types (40-49)
 	WHOAMI_ACCOUNT = strchar(40),

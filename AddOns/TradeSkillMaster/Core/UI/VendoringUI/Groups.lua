@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,7 +9,10 @@ local Groups = TSM.UI.VendoringUI:NewPackage("Groups")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local FSM = TSM.Include("Util.FSM")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	groupSearch = "",
 	fsm = nil,
 }
@@ -23,8 +24,10 @@ local private = {
 -- ============================================================================
 
 function Groups.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("char", "vendoringUIContext", "groupTree")
 	private.FSMCreate()
-	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Groups"], "iconPack.24x24/Boxes", private.GetFrame)
+	TSM.UI.VendoringUI.RegisterTopLevelPage(L["Groups"], private.GetFrame)
 end
 
 
@@ -35,82 +38,82 @@ end
 
 function private.GetFrame()
 	TSM.UI.AnalyticsRecordPathChange("vendoring", "groups")
-	return TSMAPI_FOUR.UI.NewElement("Frame", "buy")
+	return UIElements.New("Frame", "buy")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "groupsText")
-			:SetStyle("height", 15)
-			:SetStyle("margin.top", 33)
-			:SetStyle("margin.left", 8)
-			:SetStyle("margin.right", 8)
-			:SetStyle("margin.bottom", 8)
-			:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("textColor", "#ffffff")
-			:SetFormattedText(L["%d |4Group:Groups; Selected (%d |4Item:Items;)"], 0, 0)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "search")
-			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 20)
-			:SetStyle("margin.left", 8)
-			:SetStyle("margin.right", 8)
-			:SetStyle("margin.bottom", 12)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SearchInput", "input")
-				:SetText(private.groupSearch)
-				:SetHintText(L["Search Groups"])
-				:SetScript("OnTextChanged", private.GroupSearchOnTextChanged)
+		:AddChild(UIElements.New("Frame", "container")
+			:SetLayout("VERTICAL")
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "groupsText")
+				:SetHeight(18)
+				:SetMargin(0, 0, 0, 8)
+				:SetFont("BODY_BODY3")
+				:SetFormattedText(L["%d |4Group:Groups; Selected (%d |4Item:Items;)"], 0, 0)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "moreBtn")
-				:SetStyle("width", 18)
-				:SetStyle("height", 18)
-				:SetStyle("margin.left", 8)
-				:SetStyle("backgroundTexturePack", "iconPack.18x18/More")
-				:SetScript("OnClick", private.MoreBtnOnClick)
+			:AddChild(UIElements.New("Frame", "search")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:AddChild(UIElements.New("Input", "input")
+					:SetIconTexture("iconPack.18x18/Search")
+					:SetClearButtonEnabled(true)
+					:AllowItemInsert(true)
+					:SetValue(private.groupSearch)
+					:SetHintText(L["Search Groups"])
+					:SetScript("OnValueChanged", private.GroupSearchOnValueChanged)
+				)
+				:AddChild(UIElements.New("Button", "expandAllBtn")
+					:SetSize(24, 24)
+					:SetMargin(8, 4, 0, 0)
+					:SetBackground("iconPack.18x18/Expand All")
+					:SetScript("OnClick", private.ExpandAllGroupsOnClick)
+					:SetTooltip(L["Expand / Collapse All Groups"])
+				)
+				:AddChild(UIElements.New("Button", "selectAllBtn")
+					:SetSize(24, 24)
+					:SetBackground("iconPack.18x18/Select All")
+					:SetScript("OnClick", private.SelectAllGroupsOnClick)
+					:SetTooltip(L["Select / Deselect All Groups"])
+				)
 			)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ApplicationGroupTree", "groupTree")
-			:SetGroupListFunc(private.GroupTreeGetList)
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("ApplicationGroupTree", "groupTree")
+			:SetSettingsContext(private.settings, "groupTree")
+			:SetQuery(TSM.Groups.CreateQuery(), "Vendoring")
 			:SetSearchString(private.groupSearch)
-			:SetContextTable(TSM.db.profile.internalData.vendoringGroupTreeContext)
 			:SetScript("OnGroupSelectionChanged", private.GroupTreeOnGroupSelectionChanged)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 8)
-			:SetStyle("margin.bottom", -2)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "gold")
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Frame", "gold")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("width", 167)
-				:SetStyle("margin.right", 8)
-				:SetStyle("padding", 4)
-				:SetStyle("background", "#171717")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "icon")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("texturePack", "iconPack.18x18/Coins")
-					:SetStyle("vertexColor", "#ffd839")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("PlayerGoldText", "text")
-					:SetStyle("justifyH", "RIGHT")
-					:SetStyle("fontHeight", 12)
-				)
+				:SetWidth(166)
+				:SetMargin(0, 8, 0, 0)
+				:SetPadding(4)
+				:AddChild(UIElements.New("PlayerGoldText", "text"))
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "buyBtn")
-				:SetStyle("margin.right", 8)
-				:SetText(L["BUY GROUPS"])
+			:AddChild(UIElements.New("ActionButton", "buyBtn")
+				:SetMargin(0, 8, 0, 0)
+				:SetText(L["Buy Groups"])
 				:SetScript("OnClick", private.BuyBtnOnClick)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "sellBtn")
-				:SetText(L["SELL GROUPS"])
+			:AddChild(UIElements.New("ActionButton", "sellBtn")
+				:SetText(L["Sell Groups"])
 				:SetScript("OnClick", private.SellBtnOnClick)
 			)
 		)
 		:SetScript("OnUpdate", private.FrameOnUpdate)
 		:SetScript("OnHide", private.FrameOnHide)
-end
-
-function private.GroupTreeGetList(groups, headerNameLookup)
-	TSM.UI.ApplicationGroupTreeGetGroupList(groups, headerNameLookup, "Vendoring")
 end
 
 
@@ -121,10 +124,7 @@ end
 
 function private.FrameOnUpdate(frame)
 	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(32)
-
 	private.GroupTreeOnGroupSelectionChanged(frame:GetElement("groupTree"))
-
 	private.fsm:ProcessEvent("EV_FRAME_SHOW", frame)
 end
 
@@ -132,56 +132,26 @@ function private.FrameOnHide(frame)
 	private.fsm:ProcessEvent("EV_FRAME_HIDE")
 end
 
-function private.GroupSearchOnTextChanged(input)
-	local text = strlower(strtrim(input:GetText()))
+function private.GroupSearchOnValueChanged(input)
+	local text = strlower(input:GetValue())
 	if text == private.groupSearch then
 		return
 	end
 	private.groupSearch = text
 
-	input:GetElement("__parent.__parent.groupTree")
+	input:GetElement("__parent.__parent.__parent.groupTree")
 		:SetSearchString(private.groupSearch)
 		:Draw()
 end
 
-local function MoreDialogRowIterator(_, prevIndex)
-	if prevIndex == nil then
-		return 1, L["Select All Groups"], private.SelectAllBtnOnClick
-	elseif prevIndex == 1 then
-		return 2, L["Deselect All Groups"], private.DeselectAllBtnOnClick
-	elseif prevIndex == 2 then
-		return 3, L["Expand All Groups"], private.ExpandAllBtnOnClick
-	elseif prevIndex == 3 then
-		return 4, L["Collapse All Groups"], private.CollapseAllBtnOnClick
-	end
+function private.ExpandAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.__parent.groupTree")
+		:ToggleExpandAll()
 end
 
-function private.MoreBtnOnClick(button)
-	button:GetBaseElement():ShowMoreButtonDialog(button, MoreDialogRowIterator)
-end
-
-function private.SelectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.buy.groupTree"):SelectAll()
-	baseFrame:HideDialog()
-end
-
-function private.DeselectAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.buy.groupTree"):DeselectAll()
-	baseFrame:HideDialog()
-end
-
-function private.ExpandAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.buy.groupTree"):ExpandAll()
-	baseFrame:HideDialog()
-end
-
-function private.CollapseAllBtnOnClick(button)
-	local baseFrame = button:GetBaseElement()
-	baseFrame:GetElement("content.buy.groupTree"):CollapseAll()
-	baseFrame:HideDialog()
+function private.SelectAllGroupsOnClick(button)
+	button:GetElement("__parent.__parent.__parent.groupTree")
+		:ToggleSelectAll()
 end
 
 function private.GroupTreeOnGroupSelectionChanged(groupTree)
@@ -203,7 +173,7 @@ function private.GroupTreeOnGroupSelectionChanged(groupTree)
 			end
 		end
 	end
-	groupTree:GetElement("__parent.groupsText")
+	groupTree:GetElement("__parent.container.groupsText")
 		:SetFormattedText(L["%d |4Group:Groups; Selected (%d |4Item:Items;)"], numGroups, numItems)
 		:Draw()
 end

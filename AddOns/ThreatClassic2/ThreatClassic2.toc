@@ -1,7 +1,7 @@
 ## Interface: 11305
 ## Author: Dennis-Florian Herr (dfherr)
-## Version: 2.23
-## OptionalDeps: LibStub, CallbackHandler-1.0, Ac3, LibSharedMedia-3.0
+## Version: 2.24
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibSharedMedia-3.0
 ## SavedVariables: ThreatClassic2DB
 ## SavedVariablesPerCharacter: TC2_Options
 

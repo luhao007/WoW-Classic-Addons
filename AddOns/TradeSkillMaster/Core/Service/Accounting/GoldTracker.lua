@@ -1,30 +1,32 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local GoldTracker = TSM.Accounting:NewPackage("GoldTracker")
-local L = TSM.Include("Locale").GetTable()
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
-local TempTable = TSM.Include("Util.TempTable")
 local CSV = TSM.Include("Util.CSV")
 local Math = TSM.Include("Util.Math")
-local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Table = TSM.Include("Util.Table")
+local TempTable = TSM.Include("Util.TempTable")
+local Settings = TSM.Include("Service.Settings")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local private = {
+	truncateGoldLog = {},
 	characterGoldLog = {},
 	guildGoldLog = {},
 	currentCharacterKey = nil,
-	lastDayTemp = {},
 	playerLogCount = 0,
+	searchValueTemp = {},
 }
 local CSV_KEYS = { "minute", "copper" }
 local CHARACTER_KEY_SEP = " - "
+local SECONDS_PER_MIN = 60
+local SECONDS_PER_DAY = SECONDS_PER_MIN * 60 * 24
 local MAX_COPPER_VALUE = 10 * 1000 * 1000 * COPPER_PER_GOLD - 1
 local ERRONEOUS_ZERO_THRESHOLD = 5 * 1000 * COPPER_PER_GOLD
 
@@ -41,14 +43,25 @@ function GoldTracker.OnInitialize()
 	end
 	Event.Register("PLAYER_MONEY", private.PlayerLogGold)
 
+	-- get a list of known characters / guilds
+	local validCharacterGuilds = TempTable.Acquire()
+	for _, character in Settings.CharacterByFactionrealmIterator() do
+		validCharacterGuilds[character..CHARACTER_KEY_SEP..UnitFactionGroup("player")..CHARACTER_KEY_SEP..GetRealmName()] = true
+		local guild = TSM.db.factionrealm.internalData.characterGuilds[character]
+		if guild then
+			validCharacterGuilds[guild] = true
+		end
+	end
+
 	-- load the gold log data
 	for realm in TSM.db:GetConnectedRealmIterator("realm") do
 		for factionrealm in TSM.db:FactionrealmByRealmIterator(realm) do
 			for _, character in TSM.db:FactionrealmCharacterIterator(factionrealm) do
 				local data = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm), "internalData", "goldLog")
 				if data then
+					local lastUpdate = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm), "internalData", "goldLogLastUpdate") or 0
 					local characterKey = character..CHARACTER_KEY_SEP..factionrealm
-					private.LoadCharacterGoldLog(characterKey, data)
+					private.LoadCharacterGoldLog(characterKey, data, validCharacterGuilds, lastUpdate)
 				end
 			end
 			local guildData = TSM.db:Get("factionrealm", factionrealm, "internalData", "guildGoldLog")
@@ -63,10 +76,17 @@ function GoldTracker.OnInitialize()
 						CSV.DecodeEnd(decodeContext)
 					end
 					private.guildGoldLog[guild] = entries
+					local lastEntryTime = #entries > 0 and entries[#entries].minute * SECONDS_PER_MIN or math.huge
+					local lastUpdate = TSM.db:Get("factionrealm", factionrealm, "internalData", "guildGoldLogLastUpdate")
+					if not validCharacterGuilds[guild] and max(lastEntryTime, lastUpdate and lastUpdate[guild] or 0) < time() - 30 * SECONDS_PER_DAY then
+						-- this guild may not be valid and the last entry is over 30 days old, so truncate the data
+						private.truncateGoldLog[guild] = lastEntryTime
+					end
 				end
 			end
 		end
 	end
+	TempTable.Release(validCharacterGuilds)
 	private.currentCharacterKey = UnitName("player")..CHARACTER_KEY_SEP..UnitFactionGroup("player")..CHARACTER_KEY_SEP..GetRealmName()
 	assert(private.characterGoldLog[private.currentCharacterKey])
 end
@@ -78,13 +98,12 @@ end
 
 function GoldTracker.OnDisable()
 	private.PlayerLogGold()
-	if not TSM.IsWowClassic() then
-		private.GuildLogGold()
-	end
 	TSM.db.sync.internalData.goldLog = CSV.Encode(CSV_KEYS, private.characterGoldLog[private.currentCharacterKey])
-	local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(UnitName("player"))
+	TSM.db.sync.internalData.goldLogLastUpdate = private.characterGoldLog[private.currentCharacterKey].lastUpdate
+	local guild = PlayerInfo.GetPlayerGuild(UnitName("player"))
 	if guild and private.guildGoldLog[guild] then
 		TSM.db.factionrealm.internalData.guildGoldLog[guild] = CSV.Encode(CSV_KEYS, private.guildGoldLog[guild])
+		TSM.db.factionrealm.internalData.guildGoldLogLastUpdate[guild] = private.guildGoldLog[guild].lastUpdate
 	end
 end
 
@@ -92,65 +111,34 @@ function GoldTracker.CharacterGuildIterator()
 	return private.CharacterGuildIteratorHelper
 end
 
-function GoldTracker.PopulateGraphData(xData, xDataValue, yData, xUnit, numXUnits, selectedCharacterGuild)
-	local timeTable = TempTable.Acquire()
-	local numPoints = numXUnits
-	if xUnit == "halfMonth" then
-		assert(numXUnits % 24 == 0)
-		timeTable.year = tonumber(date("%Y")) - numXUnits / 24
-		timeTable.month = tonumber(date("%m"))
-		timeTable.day = tonumber(date("%d")) >= 15 and 15 or 1
-		private.AddXUnit(timeTable, xUnit)
-		if timeTable.day == 15 then
-			-- need to start on the first day of a month, so add another point
-			private.AddXUnit(timeTable, xUnit)
-			numPoints = numPoints - 1
-		end
-	elseif xUnit == "month" then
-		assert(numXUnits % 30 == 0)
-		timeTable.year = tonumber(date("%Y"))
-		timeTable.month = tonumber(date("%m")) - numXUnits / 30
-		timeTable.day = tonumber(date("%d")) + 1
-		private.AddXUnit(timeTable, xUnit)
-	elseif xUnit == "sevenDays" then
-		assert(numXUnits % 24 == 0)
-		timeTable.year = tonumber(date("%Y"))
-		timeTable.month = tonumber(date("%m"))
-		timeTable.day = tonumber(date("%d")) - 6
-		timeTable.hour = tonumber(date("%H")) - numXUnits / 24
-		private.AddXUnit(timeTable, xUnit)
-	elseif xUnit == "hour" then
-		assert(numXUnits % 24 == 0)
-		timeTable.year = tonumber(date("%Y"))
-		timeTable.month = tonumber(date("%m"))
-		timeTable.day = tonumber(date("%d")) - numXUnits / 24
-		timeTable.hour = tonumber(date("%H")) + 1
-		private.AddXUnit(timeTable, xUnit)
-	else
-		error("Invalid xUnit: "..tostring(xUnit))
-	end
-	for i = 1, numPoints do
-		tinsert(xData, i)
-		tinsert(xDataValue, time(timeTable))
-		tinsert(yData, 0)
-		private.AddXUnit(timeTable, xUnit)
-	end
-	TempTable.Release(timeTable)
-
+function GoldTracker.GetGoldAtTime(timestamp, ignoredCharactersGuilds)
+	local value = 0
 	for character, logEntries in pairs(private.characterGoldLog) do
-		if strmatch(character, "^"..String.Escape(selectedCharacterGuild)) or selectedCharacterGuild == L["All Characters and Guilds"] then
-			for i, timestamp in ipairs(xDataValue) do
-				yData[i] = yData[i] + private.GetGoldValueAtTime(logEntries, timestamp)
-			end
+		if #logEntries > 0 and not ignoredCharactersGuilds[character] and (private.truncateGoldLog[character] or math.huge) > timestamp then
+			value = value + private.GetValueAtTime(logEntries, timestamp)
 		end
 	end
 	for guild, logEntries in pairs(private.guildGoldLog) do
-		if selectedCharacterGuild == guild or selectedCharacterGuild == L["All Characters and Guilds"] then
-			for i, timestamp in ipairs(xDataValue) do
-				yData[i] = yData[i] + private.GetGoldValueAtTime(logEntries, timestamp)
-			end
+		if #logEntries > 0 and not ignoredCharactersGuilds[guild] and (private.truncateGoldLog[guild] or math.huge) > timestamp then
+			value = value + private.GetValueAtTime(logEntries, timestamp)
 		end
 	end
+	return value
+end
+
+function GoldTracker.GetGraphTimeRange(ignoredCharactersGuilds)
+	local minTime = Math.Floor(time(), SECONDS_PER_MIN)
+	for character, logEntries in pairs(private.characterGoldLog) do
+		if #logEntries > 0 and not ignoredCharactersGuilds[character] then
+			minTime = min(minTime, logEntries[1].minute * SECONDS_PER_MIN)
+		end
+	end
+	for guild, logEntries in pairs(private.guildGoldLog) do
+		if #logEntries > 0 and not ignoredCharactersGuilds[guild] then
+			minTime = min(minTime, logEntries[1].minute * SECONDS_PER_MIN)
+		end
+	end
+	return minTime, Math.Floor(time(), SECONDS_PER_MIN), SECONDS_PER_MIN
 end
 
 
@@ -159,7 +147,7 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.LoadCharacterGoldLog(characterKey, data)
+function private.LoadCharacterGoldLog(characterKey, data, validCharacterGuilds, lastUpdate)
 	assert(not private.characterGoldLog[characterKey])
 	local decodeContext = CSV.DecodeStart(data, CSV_KEYS)
 	if not decodeContext then
@@ -200,12 +188,20 @@ function private.LoadCharacterGoldLog(characterKey, data)
 	end
 
 	private.characterGoldLog[characterKey] = entries
+	local lastEntryTime = #entries > 0 and entries[#entries].minute * SECONDS_PER_MIN or math.huge
+	if not validCharacterGuilds[characterKey] and max(lastEntryTime, lastUpdate) < time() - 30 * SECONDS_PER_DAY then
+		-- this character may not be valid and the last entry is over 30 days old, so truncate the data
+		private.truncateGoldLog[characterKey] = lastEntryTime
+	end
 end
 
 function private.UpdateGoldLog(goldLog, copper)
 	copper = Math.Round(copper, COPPER_PER_GOLD * (TSM.IsWowClassic() and 1 or 1000))
-	local currentMinute = floor(time() / 60)
+	local currentMinute = floor(time() / SECONDS_PER_MIN)
 	local prevRecord = goldLog[#goldLog]
+
+	-- store the last update time
+	goldLog.lastUpdate = time()
 
 	if prevRecord and copper == prevRecord.copper then
 		-- amount of gold hasn't changed, so nothing to do
@@ -229,7 +225,17 @@ end
 
 function private.GuildLogGold()
 	local guildName = GetGuildInfo("player")
-	if guildName and IsGuildLeader() then
+	local isGuildLeader = IsGuildLeader()
+	if guildName and not isGuildLeader then
+		-- check if our alt is the guild leader
+		for i = 1, GetNumGuildMembers() do
+			local name, _, rankIndex = GetGuildRosterInfo(i)
+			if name and rankIndex == 0 and PlayerInfo.IsPlayer(gsub(name, "%-", " - "), true) then
+				isGuildLeader = true
+			end
+		end
+	end
+	if guildName and isGuildLeader then
 		if not private.guildGoldLog[guildName] then
 			private.guildGoldLog[guildName] = {}
 		end
@@ -247,96 +253,39 @@ function private.PlayerLogGold()
 	end
 	private.playerLogCount = 0
 	private.UpdateGoldLog(private.characterGoldLog[private.currentCharacterKey], money)
+	TSM.db.sync.internalData.money = money
 end
 
-function private.AddXUnit(timeTable, xUnit)
-	if xUnit == "halfMonth" then
-		if timeTable.day == 1 then
-			timeTable.day = 15
-		else
-			timeTable.day = 1
-			if timeTable.month == 12 then
-				timeTable.month = 1
-				timeTable.year = timeTable.year + 1
-			else
-				timeTable.month = timeTable.month + 1
-			end
-		end
-	elseif xUnit == "month" then
-		if timeTable.day == private.GetMonthLastDay(timeTable) then
-			timeTable.day = 1
-			if timeTable.month == 12 then
-				timeTable.month = 1
-				timeTable.year = timeTable.year + 1
-			else
-				timeTable.month = timeTable.month + 1
-			end
-		else
-			timeTable.day = timeTable.day + 1
-		end
-	elseif xUnit == "sevenDays" then
-		if timeTable.hour == 23 then
-			timeTable.hour = 0
-			if timeTable.day == private.GetMonthLastDay(timeTable) then
-				timeTable.day = 1
-				if timeTable.month == 12 then
-					timeTable.month = 1
-					timeTable.year = timeTable.year + 1
-				else
-					timeTable.month = timeTable.month + 1
-				end
-			else
-				timeTable.day = timeTable.day + 1
-			end
-		else
-			timeTable.hour = timeTable.hour + 6
-		end
-	elseif xUnit == "hour" then
-		if timeTable.hour == 23 then
-			timeTable.hour = 0
-			timeTable.day = timeTable.day + 1
-		else
-			timeTable.hour = timeTable.hour + 1
-		end
-	end
-end
-
-function private.GetMonthLastDay(timeTable)
-	private.lastDayTemp.year = timeTable.year
-	private.lastDayTemp.month = timeTable.month + 1
-	private.lastDayTemp.day = 0
-	return tonumber(date("%d", time(private.lastDayTemp)))
-end
-
-function private.GetGoldValueAtTime(logEntries, timestamp)
-	if #logEntries == 0 then
+function private.GetValueAtTime(logEntries, timestamp)
+	local minute = floor(timestamp / SECONDS_PER_MIN)
+	if logEntries[1].minute > minute then
 		-- timestamp is before we had any data
 		return 0
 	end
-	local minuteTimestamp = floor(timestamp / 60)
-	for i = 1, #logEntries do
-		if logEntries[i].minute > minuteTimestamp then
-			if i == 1 then
-				-- timestamp is before we had any data
-				return 0
-			end
-			return Math.Round(logEntries[i-1].copper / (COPPER_PER_GOLD * (TSM.IsWowClassic() and 1 or 1000)))
-		end
-	end
-	-- we're on the most recent entry
-	return Math.Round(logEntries[#logEntries].copper / (COPPER_PER_GOLD * (TSM.IsWowClassic() and 1 or 1000)))
+	private.searchValueTemp.minute = minute
+	local index, insertIndex = Table.BinarySearch(logEntries, private.searchValueTemp, private.GetEntryMinute)
+	-- if we didn't find an exact match, the index is the previous one (compared to the insert index)
+	-- as that point's gold value is true up until the next point
+	index = index or (insertIndex - 1)
+	return logEntries[index].copper
+end
+
+function private.GetEntryMinute(entry)
+	return entry.minute
 end
 
 function private.CharacterGuildIteratorHelper(_, lastKey)
-	local result = nil
+	local result, isGuild = nil, nil
 	if not lastKey or private.characterGoldLog[lastKey] then
 		result = next(private.characterGoldLog, lastKey)
+		isGuild = false
 		if not result then
 			lastKey = nil
 		end
 	end
 	if not result then
 		result = next(private.guildGoldLog, lastKey)
+		isGuild = result and true or false
 	end
-	return result
+	return result, isGuild
 end

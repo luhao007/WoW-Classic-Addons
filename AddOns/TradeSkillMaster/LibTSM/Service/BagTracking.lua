@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -37,7 +35,7 @@ local private = {
 	},
 	bankOpen = false,
 	isFirstBankOpen = true,
-	callbackQuery = nil,
+	callbackQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
 	callbacks = {},
 }
 local BANK_BAG_SLOTS = {}
@@ -87,7 +85,6 @@ BagTracking:OnSettingsLoad(function()
 		:AddNumberField("quantity")
 		:AddBooleanField("isBoP")
 		:AddBooleanField("isBoA")
-		:AddBooleanField("usedCharges")
 		:AddIndex("slotId")
 		:AddIndex("bag")
 		:AddIndex("itemString")
@@ -215,7 +212,7 @@ function BagTracking.CreateQueryBagsAuctionable()
 	return BagTracking.CreateQueryBags()
 		:Equal("isBoP", false)
 		:Equal("isBoA", false)
-		:Equal("usedCharges", false)
+		:Custom(private.NoUsedChargesQueryFilter)
 end
 
 function BagTracking.CreateQueryBagsItem(itemString)
@@ -232,7 +229,13 @@ function BagTracking.CreateQueryBagsItemAuctionable(itemString)
 	return BagTracking.CreateQueryBagsItem(itemString)
 		:Equal("isBoP", false)
 		:Equal("isBoA", false)
-		:Equal("usedCharges", false)
+		:Custom(private.NoUsedChargesQueryFilter)
+end
+
+function BagTracking.GetNumMailable(itemString)
+	return BagTracking.CreateQueryBagsItem(itemString)
+		:Equal("isBoP", false)
+		:SumAndRelease("quantity") or 0
 end
 
 function BagTracking.CreateQueryBank()
@@ -476,6 +479,10 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.NoUsedChargesQueryFilter(row)
+	return not InventoryInfo.HasUsedCharges(row:GetFields("bag", "slot"))
+end
+
 function private.RemoveExtraSlots(bag, numSlots)
 	-- the number of slots of this bag may have changed, in which case we should remove any higher ones from our DB
 	local query = private.slotDB:NewQuery()
@@ -536,7 +543,6 @@ function private.ScanBagSlot(bag, slot)
 			:SetField("quantity", quantity)
 			:SetField("isBoP", isBoP)
 			:SetField("isBoA", isBoA)
-			:SetField("usedCharges", InventoryInfo.HasUsedCharges(bag, slot))
 			:CreateOrUpdateAndRelease()
 		-- add to the item totals
 		private.ChangeBagItemTotal(bag, baseItemString, quantity)

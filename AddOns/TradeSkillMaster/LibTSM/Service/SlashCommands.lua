@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -14,6 +12,7 @@ local private = {
 	commandInfo = {},
 	commandOrder = {},
 }
+local CALLBACK_TIME_WARNING_MS = 20
 
 
 
@@ -67,10 +66,16 @@ end
 -- ============================================================================
 
 function private.OnChatCommand(input)
-	local cmd, args = strmatch(strtrim(input), "^([^ ]*) ?(.*)$")
+	input = strtrim(input)
+	local cmd, args = strmatch(input, "^([^ ]*) ?(.*)$")
 	cmd = strlower(cmd)
 	if private.commandInfo[cmd] then
+		local startTime = debugprofilestop()
 		private.commandInfo[cmd].callback(args)
+		local timeTaken = debugprofilestop() - startTime
+		if timeTaken > CALLBACK_TIME_WARNING_MS then
+			Log.Warn("Handler for slash command (/tsm%s) took %0.2fms", input ~= "" and " "..input or input, timeTaken)
+		end
 	else
 		-- We weren't able to handle this command so print out the help
 		SlashCommands.PrintHelp()

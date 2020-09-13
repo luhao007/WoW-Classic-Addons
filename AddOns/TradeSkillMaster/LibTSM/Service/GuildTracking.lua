@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -19,8 +17,8 @@ local Settings = TSM.Include("Service.Settings")
 local private = {
 	settings = nil,
 	slotDB = nil,
+	quantityDB = nil,
 	isOpen = nil,
-	lastUpdate = 0,
 	pendingPetSlotIds = {},
 }
 local PLAYER_NAME = UnitName("player")
@@ -167,7 +165,6 @@ function private.GuildBankFrameClosedHandler()
 end
 
 function private.GuildBankBagSlotsChangedHandler()
-	private.lastUpdate = GetTime()
 	Delay.AfterFrame("guildBankScan", 2, private.GuildBankChangedDelayed)
 end
 
@@ -197,7 +194,7 @@ function private.ScanGuildBank()
 				if itemLink then
 					local slotId = SlotId.Join(tab, slot)
 					local baseItemString = ItemString.GetBase(itemLink)
-					if baseItemString == ItemString.GetPetCageItemString() then
+					if baseItemString == ItemString.GetPetCage() then
 						private.pendingPetSlotIds[slotId] = true
 						baseItemString = nil
 					end
@@ -232,12 +229,18 @@ function private.ScanGuildBank()
 end
 
 function private.ScanPetsDeferred()
+	if not TSMScanTooltip then
+		CreateFrame("GameTooltip", "TSMScanTooltip", UIParent, "GameTooltipTemplate")
+	end
+	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	TSMScanTooltip:ClearLines()
+
 	local numPetSlotIdsScanned = 0
 	local toRemove = TempTable.Acquire()
 	private.slotDB:BulkInsertStart()
 	for slotId in pairs(private.pendingPetSlotIds) do
 		local tab, slot = SlotId.Split(slotId)
-		local speciesId, level, rarity = GameTooltip:SetGuildBankItem(tab, slot)
+		local speciesId, level, rarity = TSMScanTooltip:SetGuildBankItem(tab, slot)
 		if speciesId and level and rarity then
 			local itemString = "p:"..speciesId..":"..level..":"..rarity
 			if itemString then

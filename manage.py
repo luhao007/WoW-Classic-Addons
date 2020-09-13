@@ -720,14 +720,6 @@ class Manager(object):
         rm_tree('AddOns/TradeSkillMaster/External/EmbeddedLibs/')
 
         process_file(
-            'AddOns/TradeSkillMaster/Core/UI/Support/Fonts.lua',
-            lambda lines: [re.sub(r'".+ttf"',
-                                  r'"Fonts\\\\ARKai_T.ttf"',
-                                  l)
-                           for l in lines]
-        )
-
-        process_file(
             'AddOns/TradeSkillMaster/TradeSkillMaster.toc',
             lambda lines: [l for l in lines if 'EmbeddedLibs' not in l]
         )

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- AlphaAnimatedFrame UI Element Class.
@@ -12,6 +10,8 @@
 
 local _, TSM = ...
 local AlphaAnimatedFrame = TSM.Include("LibTSMClass").DefineClass("AlphaAnimatedFrame", TSM.UI.Frame)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(AlphaAnimatedFrame)
 TSM.UI.AlphaAnimatedFrame = AlphaAnimatedFrame
 
 
@@ -63,7 +63,7 @@ end
 
 --- Sets whether or not the animation is playing.
 -- @tparam AlphaAnimatedFrame self The alpha animated frame object
--- @tparam boolean playing Whether the animation should be playing or not
+-- @tparam boolean play Whether the animation should be playing or not
 -- @treturn AlphaAnimatedFrame The alpha animated frame object
 function AlphaAnimatedFrame.SetPlaying(self, play)
 	if play then

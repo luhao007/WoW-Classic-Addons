@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,6 +13,7 @@ local Transform = TSM.Include("Data.Transform")
 local VendorTrade = TSM.Include("Data.VendorTrade")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemString = TSM.Include("Util.ItemString")
+local Table = TSM.Include("Util.Table")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 Conversions.METHOD = {
 	DISENCHANT = newproxy(),
@@ -39,31 +38,32 @@ local EMPTY_CONVERSION = newproxy()
 -- ============================================================================
 
 Conversions:OnModuleLoad(function()
+	Table.SetReadOnly(Conversions.METHOD)
 	for itemString in DisenchantInfo.TargetItemIterator() do
 		ItemInfo.FetchInfo(itemString)
 	end
 	for targetItemString in Mill.TargetItemIterator() do
 		for sourceItemString in Mill.SourceItemIterator(targetItemString) do
 			local rate = Mill.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, rate, Conversions.METHOD.MILL)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.MILL, rate)
 		end
 	end
 	for targetItemString in Prospect.TargetItemIterator() do
 		for sourceItemString in Prospect.SourceItemIterator(targetItemString) do
-			local rate = Prospect.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, rate, Conversions.METHOD.PROSPECT)
+			local rate, amount, minAmount, maxAmount = Prospect.GetRate(targetItemString, sourceItemString)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.PROSPECT, rate, amount, minAmount, maxAmount)
 		end
 	end
 	for targetItemString in Transform.TargetItemIterator() do
 		for sourceItemString in Transform.SourceItemIterator(targetItemString) do
 			local rate = Transform.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, rate, Conversions.METHOD.TRANSFORM)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.TRANSFORM, rate)
 		end
 	end
 	for targetItemString in VendorTrade.TargetItemIterator() do
 		for sourceItemString in VendorTrade.SourceItemIterator(targetItemString) do
 			local rate = VendorTrade.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, rate, Conversions.METHOD.VENDOR_TRADE)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.VENDOR_TRADE, rate)
 		end
 	end
 end)
@@ -75,7 +75,7 @@ end)
 -- ============================================================================
 
 function Conversions.AddCraft(targetItemString, sourceItemString, rate)
-	private.Add(targetItemString, sourceItemString, rate, Conversions.METHOD.CRAFT)
+	private.Add(targetItemString, sourceItemString, Conversions.METHOD.CRAFT, rate)
 end
 
 function Conversions.TargetItemsByMethodIterator(sourceItemString, method)
@@ -125,7 +125,7 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.Add(targetItemString, sourceItemString, rate, method)
+function private.Add(targetItemString, sourceItemString, method, rate, amount, minAmount, maxAmount)
 	targetItemString = ItemString.GetBase(targetItemString)
 	sourceItemString = ItemString.GetBase(sourceItemString)
 	assert(targetItemString and sourceItemString)
@@ -141,8 +141,11 @@ function private.Add(targetItemString, sourceItemString, rate, method)
 	end
 
 	private.data[targetItemString][sourceItemString] = {
-		rate = rate,
 		method = method,
+		rate = rate,
+		amount = amount,
+		minAmount = minAmount,
+		maxAmount = maxAmount,
 	}
 	ItemInfo.FetchInfo(targetItemString)
 	ItemInfo.FetchInfo(sourceItemString)
@@ -173,7 +176,7 @@ function private.TargetItemsByMethodIteratorHelper(context, index)
 		end
 		local info = items[context.sourceItemString]
 		if info and ((not context.method and info.method ~= Conversions.METHOD.CRAFT) or info.method == context.method) then
-			return index, info.rate
+			return index, info.rate, info.amount, info.minAmount, info.maxAmount
 		end
 	end
 end

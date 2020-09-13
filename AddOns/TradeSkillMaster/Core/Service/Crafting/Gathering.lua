@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -17,9 +15,11 @@ local TempTable = TSM.Include("Util.TempTable")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Conversions = TSM.Include("Service.Conversions")
 local BagTracking = TSM.Include("Service.BagTracking")
+local Inventory = TSM.Include("Service.Inventory")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local private = {
 	db = nil,
-	queuedCraftsUpdateQuery = nil,
+	queuedCraftsUpdateQuery = nil, -- luacheck: ignore 1004 - just stored for GC reasons
 	crafterList = {},
 	professionList = {},
 	contextChangedCallback = nil,
@@ -66,6 +66,7 @@ function Gathering.SetCrafter(crafter)
 		return
 	end
 	TSM.db.factionrealm.gatheringContext.crafter = crafter
+	wipe(TSM.db.factionrealm.gatheringContext.professions)
 	private.UpdateProfessionList()
 	private.UpdateDB()
 end
@@ -98,7 +99,7 @@ function Gathering.GetCrafterList()
 end
 
 function Gathering.GetCrafter()
-	return TSM.db.factionrealm.gatheringContext.crafter
+	return TSM.db.factionrealm.gatheringContext.crafter ~= "" and TSM.db.factionrealm.gatheringContext.crafter or nil
 end
 
 function Gathering.GetProfessionList()
@@ -141,14 +142,14 @@ function private.UpdateCrafterList()
 	end
 	query:Release()
 
-	if TSM.db.factionrealm.gatheringContext.crafter and not private.crafterList[TSM.db.factionrealm.gatheringContext.crafter] then
+	if TSM.db.factionrealm.gatheringContext.crafter ~= "" and not private.crafterList[TSM.db.factionrealm.gatheringContext.crafter] then
 		-- the crafter which was selected no longer exists, so clear the selection
-		TSM.db.factionrealm.gatheringContext.crafter = nil
+		TSM.db.factionrealm.gatheringContext.crafter = ""
 	elseif #private.crafterList == 1 then
 		-- there is only one crafter in the list, so select it
 		TSM.db.factionrealm.gatheringContext.crafter = private.crafterList[1]
 	end
-	if not TSM.db.factionrealm.gatheringContext.crafter then
+	if TSM.db.factionrealm.gatheringContext.crafter == "" then
 		wipe(TSM.db.factionrealm.gatheringContext.professions)
 	end
 end
@@ -156,7 +157,7 @@ end
 function private.UpdateProfessionList()
 	-- update the professionList
 	wipe(private.professionList)
-	if TSM.db.factionrealm.gatheringContext.crafter then
+	if TSM.db.factionrealm.gatheringContext.crafter ~= "" then
 		-- populate the list of professions
 		local query = TSM.Crafting.CreateQueuedCraftsQuery()
 			:Select("profession")
@@ -176,9 +177,11 @@ function private.UpdateProfessionList()
 		end
 	end
 
-	-- if there's a single profession in the list, select it
-	if #private.professionList == 1 then
-		TSM.db.factionrealm.gatheringContext.professions[private.professionList[1]] = true
+	-- select all professions by default
+	if not next(TSM.db.factionrealm.gatheringContext.professions) then
+		for _, profession in ipairs(private.professionList) do
+			TSM.db.factionrealm.gatheringContext.professions[profession] = true
+		end
 	end
 end
 
@@ -196,7 +199,7 @@ function private.UpdateDB()
 		return
 	end
 	local crafter = TSM.db.factionrealm.gatheringContext.crafter
-	if not crafter or not next(TSM.db.factionrealm.gatheringContext.professions) then
+	if crafter == "" or not next(TSM.db.factionrealm.gatheringContext.professions) then
 		private.db:Truncate()
 		return
 	end
@@ -249,7 +252,7 @@ function private.UpdateDB()
 			local ignoreSource = false
 			if isCraftSource then
 				-- check if we are already crafting some materials of this craft so shouldn't craft this item
-				local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter)
+				local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
 				if spellId then
 					for _, matItemString in TSM.Crafting.MatIterator(spellId) do
 						if not ignoreSource and matSourceList[matItemString] and strmatch(matSourceList[matItemString], "craft[a-zA-Z]+/[^,]+/") then
@@ -268,7 +271,7 @@ function private.UpdateDB()
 				if numNeed == 0 then
 					if isCraftSource then
 						-- we are crafting these, so add the necessary mats
-						local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter)
+						local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
 						assert(spellId)
 						local numToCraft = ceil(prevNumNeed / TSM.Crafting.GetNumResult(spellId))
 						for _, intMatItemString, intMatQuantity in TSM.Crafting.MatIterator(spellId) do
@@ -321,7 +324,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 	local crafter = TSM.db.factionrealm.gatheringContext.crafter
 	local playerName = UnitName("player")
 	if source == "openMail" then
-		local crafterMailQuantity = TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, crafter)
+		local crafterMailQuantity = Inventory.GetMailQuantity(itemString, crafter)
 		if crafterMailQuantity > 0 then
 			crafterMailQuantity = min(crafterMailQuantity, numNeed)
 			if crafter == playerName then
@@ -338,8 +341,8 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return 0
 		end
 	elseif source == "guildBank" then
-		local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(crafter)
-		local guildBankQuantity = guild and TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, guild) or 0
+		local guild = PlayerInfo.GetPlayerGuild(crafter)
+		local guildBankQuantity = guild and Inventory.GetGuildQuantity(itemString, guild) or 0
 		if guildBankQuantity > 0 then
 			guildBankQuantity = min(guildBankQuantity, numNeed)
 			if crafter == playerName then
@@ -358,9 +361,9 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		end
 		if crafter ~= playerName then
 			-- we are on the alt, so see if we can gather items from this character
-			local bagQuantity = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
-			local bankQuantity = TSMAPI_FOUR.Inventory.GetBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString)
-			local mailQuantity = TSMAPI_FOUR.Inventory.GetMailQuantity(itemString)
+			local bagQuantity = Inventory.GetBagQuantity(itemString)
+			local bankQuantity = Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
+			local mailQuantity = Inventory.GetMailQuantity(itemString)
 
 			if bagQuantity > 0 then
 				bagQuantity = min(numNeed, bagQuantity)
@@ -401,10 +404,10 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 				end
 				if characterKey ~= crafter and characterKey ~= playerName then
 					local num = 0
-					num = num + TSMAPI_FOUR.Inventory.GetBagQuantity(itemString, character, factionrealm)
-					num = num + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString, character, factionrealm)
-					num = num + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
-					num = num + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, character, factionrealm)
+					num = num + Inventory.GetBagQuantity(itemString, character, factionrealm)
+					num = num + Inventory.GetBankQuantity(itemString, character, factionrealm)
+					num = num + Inventory.GetReagentBankQuantity(itemString, character, factionrealm)
+					num = num + Inventory.GetMailQuantity(itemString, character, factionrealm)
 					if num > 0 then
 						tinsert(altCharacters, characterKey)
 						altNum = altNum + num
@@ -421,10 +424,10 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - altNum
 		end
 	elseif source == "altGuildBank" then
-		local currentGuild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(playerName)
+		local currentGuild = PlayerInfo.GetPlayerGuild(playerName)
 		if currentGuild and crafter ~= playerName then
 			-- we are on an alt, so see if we can gather items from this character's guild bank
-			local guildBankQuantity = TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString)
+			local guildBankQuantity = Inventory.GetGuildQuantity(itemString)
 			if guildBankQuantity > 0 then
 				guildBankQuantity = min(numNeed, guildBankQuantity)
 				tinsert(sourceList, "guildBank/"..guildBankQuantity.."/")
@@ -438,10 +441,10 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 		-- check alts
 		local totalGuildBankQuantity = 0
 		local altCharacters = TempTable.Acquire()
-		for _, character in TSMAPI_FOUR.PlayerInfo.CharacterIterator(true) do
-			local guild = TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(character)
+		for _, character in PlayerInfo.CharacterIterator(true) do
+			local guild = PlayerInfo.GetPlayerGuild(character)
 			if guild and guild ~= currentGuild then
-				local guildBankQuantity = TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, guild)
+				local guildBankQuantity = Inventory.GetGuildQuantity(itemString, guild)
 				if guildBankQuantity > 0 then
 					tinsert(altCharacters, character)
 					totalGuildBankQuantity = totalGuildBankQuantity + guildBankQuantity
@@ -456,7 +459,7 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - totalGuildBankQuantity
 		end
 	elseif source == "craftProfit" or source == "craftNoProfit" then
-		local spellId, maxProfit = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter)
+		local spellId, maxProfit = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
 		if spellId and (source == "craftNoProfit" or (maxProfit and maxProfit > 0)) then
 			-- assume we can craft all we need
 			local numToCraft = ceil(numNeed / TSM.Crafting.GetNumResult(spellId))
@@ -507,7 +510,7 @@ end
 
 function private.GetCrafterInventoryQuantity(itemString)
 	local crafter = TSM.db.factionrealm.gatheringContext.crafter
-	return TSMAPI_FOUR.Inventory.GetBagQuantity(itemString, crafter) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString, crafter) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString, crafter)
+	return Inventory.GetBagQuantity(itemString, crafter) + Inventory.GetReagentBankQuantity(itemString, crafter) + Inventory.GetBankQuantity(itemString, crafter)
 end
 
 function private.HandleNumHave(itemString, numNeed, numHave)

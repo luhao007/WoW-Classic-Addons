@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -56,6 +54,7 @@ function DatabaseSchema.__init(self)
 	self._isUnique = {}
 	self._smartMapLookup = {}
 	self._smartMapInputLookup = {}
+	self._trigramIndexField = nil
 end
 
 function DatabaseSchema._Acquire(self, name)
@@ -71,6 +70,7 @@ function DatabaseSchema._Release(self)
 	wipe(self._isUnique)
 	wipe(self._smartMapLookup)
 	wipe(self._smartMapInputLookup)
+	self._trigramIndexField = nil
 end
 
 
@@ -127,6 +127,12 @@ function DatabaseSchema.AddIndex(self, ...)
 		assert(self._fieldTypeLookup[fieldName])
 	end
 	self._isIndex[strjoin(Constants.DB_INDEX_FIELD_SEP, ...)] = true
+	return self
+end
+
+function DatabaseSchema.AddTrigramIndex(self, fieldName)
+	assert(not self._trigramIndexField)
+	self._trigramIndexField = fieldName
 	return self
 end
 

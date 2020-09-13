@@ -1476,7 +1476,7 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
-	<Addon name="WCLPlayerScore">
+	<Addon name="WclPlayerScore">
 		<Title>WCL评分</Title>
 		<Category>副本</Category>
 	</Addon>

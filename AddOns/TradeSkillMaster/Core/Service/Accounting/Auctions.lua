@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -18,9 +16,11 @@ local private = {
 	db = nil,
 	numExpiresQuery = nil,
 	dataChanged = false,
+	statsQuery = nil,
+	statsTemp = {},
 }
 local COMBINE_TIME_THRESHOLD = 300 -- group expenses within 5 minutes together
-local REMOVE_OLD_THRESHOLD = 365 * 24 * 60 * 60 -- remove records over 1 year old
+local REMOVE_OLD_THRESHOLD = 180 * 24 * 60 * 60 -- remove records over 6 months old
 local SECONDS_PER_DAY = 24 * 60 * 60
 local CSV_KEYS = { "itemString", "stackSize", "quantity", "player", "time" }
 
@@ -41,10 +41,15 @@ function Auctions.OnInitialize()
 		:AddNumberField("time")
 		:AddNumberField("saveTime")
 		:AddIndex("baseItemString")
+		:AddIndex("time")
 		:Commit()
 	private.numExpiresQuery = private.db:NewQuery()
 		:Select("quantity")
 		:Equal("type", "expire")
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:GreaterThanOrEqual("time", Database.BoundQueryParam())
+	private.statsQuery = private.db:NewQuery()
+		:Select("type", "quantity")
 		:Equal("baseItemString", Database.BoundQueryParam())
 		:GreaterThanOrEqual("time", Database.BoundQueryParam())
 
@@ -63,7 +68,11 @@ function Auctions.OnDisable()
 	local cancelSaveTimes, expireSaveTimes = {}, {}
 	local cancelEncodeContext = CSV.EncodeStart(CSV_KEYS)
 	local expireEncodeContext = CSV.EncodeStart(CSV_KEYS)
-	for _, _, recordType, itemString, stackSize, quantity, player, timestamp, saveTime in private.db:RawIterator() do
+	-- order by time to speed up loading
+	local query = private.db:NewQuery()
+		:Select("type", "itemString", "stackSize", "quantity", "player", "time", "saveTime")
+		:OrderBy("time", true)
+	for _, recordType, itemString, stackSize, quantity, player, timestamp, saveTime in query:Iterator() do
 		local saveTimes, encodeContext = nil, nil
 		if recordType == "cancel" then
 			saveTimes = cancelSaveTimes
@@ -79,6 +88,7 @@ function Auctions.OnDisable()
 		-- add to our list of CSV lines
 		CSV.EncodeAddRowDataRaw(encodeContext, itemString, stackSize, quantity, player, timestamp)
 	end
+	query:Release()
 	TSM.db.realm.internalData.csvCancelled = CSV.EncodeEnd(cancelEncodeContext)
 	TSM.db.realm.internalData.saveTimeCancels = table.concat(cancelSaveTimes, ",")
 	TSM.db.realm.internalData.csvExpired = CSV.EncodeEnd(expireEncodeContext)
@@ -94,25 +104,12 @@ function Auctions.InsertExpire(itemString, stackSize, timestamp)
 end
 
 function Auctions.GetStats(itemString, minTime)
-	local query = private.db:NewQuery()
-		:Equal("baseItemString", ItemString.GetBase(itemString))
-	if minTime then
-		query:GreaterThanOrEqual("time", minTime)
-	end
-	local cancel, expire, total = 0, 0, 0
-	for _, row in query:Iterator() do
-		local recordType = row:GetField("type")
-		local quantity = row:GetField("quantity")
-		total = total + quantity
-		if recordType == "cancel" then
-			cancel = cancel + quantity
-		elseif recordType == "expire" then
-			expire = expire + quantity
-		else
-			error("Invalid recordType: "..tostring(recordType))
-		end
-	end
-	query:Release()
+	private.statsQuery:BindParams(ItemString.GetBase(itemString), minTime or 0)
+	wipe(private.statsTemp)
+	private.statsQuery:GroupedSum("type", "quantity", private.statsTemp)
+	local cancel = private.statsTemp.cancel or 0
+	local expire = private.statsTemp.expire or 0
+	local total = cancel + expire
 	return cancel, expire, total
 end
 
@@ -165,6 +162,7 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 
 	local removeTime = time() - REMOVE_OLD_THRESHOLD
 	local index = 1
+	local prevTimestamp = 0
 	for itemString, stackSize, quantity, player, timestamp in CSV.DecodeIterator(decodeContext) do
 		itemString = ItemString.Get(itemString)
 		local baseItemString = ItemString.GetBaseFast(itemString)
@@ -179,6 +177,11 @@ function private.LoadData(recordType, csvRecords, csvSaveTimes)
 				private.dataChanged = true
 				timestamp = newTimestamp
 			end
+			if timestamp < prevTimestamp then
+				-- not ordered by timestamp
+				private.dataChanged = true
+			end
+			prevTimestamp = timestamp
 			private.db:BulkInsertNewRowFast8(baseItemString, recordType, itemString, stackSize, quantity, player, timestamp, saveTime)
 		else
 			private.dataChanged = true
@@ -207,6 +210,7 @@ function private.InsertRecord(recordType, itemString, stackSize, timestamp)
 		:Equal("player", UnitName("player"))
 		:GreaterThan("time", timestamp - COMBINE_TIME_THRESHOLD)
 		:LessThan("time", timestamp + COMBINE_TIME_THRESHOLD)
+		:Equal("saveTime", 0)
 		:GetFirstResultAndRelease()
 	if matchingRow then
 		matchingRow:SetField("quantity", matchingRow:GetField("quantity") + stackSize)

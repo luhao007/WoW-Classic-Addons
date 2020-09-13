@@ -1,14 +1,13 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local ItemTooltip = TSM.Init("Service.ItemTooltip")
 local Builder = TSM.Include("Service.ItemTooltipClasses.Builder")
+local Wrapper = TSM.Include("Service.ItemTooltipClasses.Wrapper")
 
 
 
@@ -16,6 +15,10 @@ local Builder = TSM.Include("Service.ItemTooltipClasses.Builder")
 -- Module Functions
 -- ============================================================================
 
-function ItemTooltip.RegisterCallback(callback, headingTextLeft, context)
-	Builder.RegisterInfo(callback, headingTextLeft, context)
+function ItemTooltip.CreateBuilder()
+	return Builder.Create()
+end
+
+function ItemTooltip.SetWrapperPopulateFunction(func)
+	Wrapper.SetPopulateFunction(func)
 end

@@ -1,21 +1,22 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Crafting Mat List UI Element Class.
--- The element used to show the mats for a specific craft in the Crafting UI. It is a subclass of the @{ScrollList} class.
+-- The element used to show the mats for a specific craft in the Crafting UI. It is a subclass of the @{ScrollingTable} class.
 -- @classmod CraftingMatList
 
 local _, TSM = ...
-local CraftingMatList = TSM.Include("LibTSMClass").DefineClass("CraftingMatList", TSM.UI.ScrollList)
+local CraftingMatList = TSM.Include("LibTSMClass").DefineClass("CraftingMatList", TSM.UI.ScrollingTable)
 local ItemString = TSM.Include("Util.ItemString")
-local Wow = TSM.Include("Util.Wow")
-local private = {}
+local Theme = TSM.Include("Util.Theme")
+local Inventory = TSM.Include("Service.Inventory")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(CraftingMatList)
 TSM.UI.CraftingMatList = CraftingMatList
+local private = {}
 
 
 
@@ -26,6 +27,34 @@ TSM.UI.CraftingMatList = CraftingMatList
 function CraftingMatList.__init(self)
 	self.__super:__init()
 	self._spellId = nil
+	self._rowHoverEnabled = false
+end
+
+function CraftingMatList.Acquire(self)
+	self._headerHidden = true
+	self.__super:Acquire()
+	self:SetSelectionDisabled(true)
+	self:GetScrollingTableInfo()
+		:NewColumn("check")
+			:SetWidth(14)
+			:SetIconSize(14)
+			:SetIconFunction(private.GetCheck)
+			:Commit()
+		:NewColumn("item")
+			:SetFont("ITEM_BODY3")
+			:SetJustifyH("LEFT")
+			:SetIconSize(12)
+			:SetIconFunction(private.GetItemIcon)
+			:SetTextFunction(private.GetItemText)
+			:SetTooltipFunction(private.GetItemTooltip)
+			:Commit()
+		:NewColumn("qty")
+			:SetAutoWidth()
+			:SetFont("TABLE_TABLE1")
+			:SetJustifyH("CENTER")
+			:SetTextFunction(private.GetQty)
+			:Commit()
+		:Commit()
 end
 
 function CraftingMatList.Release(self)
@@ -48,17 +77,6 @@ function CraftingMatList.SetRecipe(self, spellId)
 	return self
 end
 
---- Updates the crafting material display.
--- @tparam CraftingMatList self The crafting mat list object
--- @treturn CraftingMatList The crafting mat list object
-function CraftingMatList.UpdateData(self, redraw)
-	self:_UpdateData()
-	if redraw then
-		self:Draw()
-	end
-	return self
-end
-
 
 
 -- ============================================================================
@@ -75,60 +93,49 @@ function CraftingMatList._UpdateData(self)
 	end
 end
 
-function CraftingMatList._CreateRow(self)
-	return self.__super:_CreateRow()
-		:SetLayout("HORIZONTAL")
-		:SetStyle("margin.left", 2)
-		:SetStyle("margin.right", 2)
-		:SetStyle("margin.top", 2)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "qty")
-			:SetStyle("margin.right", 8)
-			:SetStyle("width", 60)
-			:SetStyle("font", TSM.UI.Fonts.RobotoMedium)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("justifyH", "RIGHT")
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "icon")
-			:SetStyle("width", 12)
-			:SetStyle("height", 12)
-			:SetStyle("margin.right", 4)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Button", "item")
-			:SetStyle("textColor", "#ffffff")
-			:SetStyle("font", TSM.UI.Fonts.FRIZQT)
-			:SetStyle("fontHeight", 12)
-			:SetStyle("justifyH", "LEFT")
-			:SetScript("OnClick", private.ItemOnClick)
-		)
-end
 
-function CraftingMatList._DrawRow(self, row, dataIndex)
-	local index = row:GetContext()
-	local itemLink, _, texture, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.GetCheck(self, index)
+	local itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
 	local itemString = ItemString.Get(itemLink)
-	local bagQuantity = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString)
+	local bagQuantity = Inventory.GetBagQuantity(itemString)
 	if not TSM.IsWowClassic() then
-		bagQuantity = bagQuantity + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString) + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString)
+		bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
 	end
-	local color = bagQuantity >= quantity and "|cff2cec0d" or "|cfff21319"
-	row:GetElement("qty"):SetText(format("%s%s / %d|r", color, bagQuantity > 999 and "*" or bagQuantity, quantity))
-	row:GetElement("icon"):SetStyle("texture", texture)
-	row:GetElement("item")
-		:SetText(TSM.UI.GetColoredItemName(itemString) or "|cffd50000?|r")
-		:SetTooltip(itemString)
-
-	self.__super:_DrawRow(row, dataIndex)
+	if bagQuantity >= quantity then
+		return TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Checkmark/Default", Theme.GetFeedbackColor("GREEN"))
+	else
+		return TSM.UI.TexturePacks.GetColoredKey("iconPack.14x14/Close/Default", Theme.GetFeedbackColor("RED"))
+	end
 end
 
+function private.GetItemIcon(self, index)
+	local _, _, texture = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	return texture
+end
 
+function private.GetItemText(self, index)
+	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	local itemString = ItemString.Get(itemLink)
+	return TSM.UI.GetColoredItemName(itemString) or Theme.GetFeedbackColor("RED"):ColorText("?")
+end
 
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
+function private.GetItemTooltip(self, index)
+	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	return ItemString.Get(itemLink)
+end
 
-function private.ItemOnClick(button)
-	local spellId = button:GetElement("__parent.__parent"):GetContext()
-	local index = button:GetParentElement():GetContext()
-	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(spellId, index)
-	Wow.SafeItemRef(itemLink)
+function private.GetQty(self, index)
+	local itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	local itemString = ItemString.Get(itemLink)
+	local bagQuantity = Inventory.GetBagQuantity(itemString)
+	if not TSM.IsWowClassic() then
+		bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
+	end
+	local color = bagQuantity >= quantity and Theme.GetFeedbackColor("GREEN") or Theme.GetFeedbackColor("RED")
+	return color:ColorText(format("%d / %d", bagQuantity, quantity))
 end

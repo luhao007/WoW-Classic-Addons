@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Custom Price Functions
@@ -19,6 +17,7 @@ local Math = TSM.Include("Util.Math")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
+local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
 local SmartMap = TSM.Include("Util.SmartMap")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -32,16 +31,17 @@ local private = {
 	proxyData = {},
 	settings = nil,
 	sanitizeCache = {},
+	customSourceCallbacks = {},
 }
 local ITEM_STRING_PATTERN = "[ip]:[0-9:%-]+"
 local MONEY_PATTERNS = {
-	"([0-9]+g[ ]*[0-9]+s[ ]*[0-9]+c)", -- g/s/c
-	"([0-9]+g[ ]*[0-9]+s)", -- g/s
-	"([0-9]+g[ ]*[0-9]+c)", -- g/c
-	"([0-9]+s[ ]*[0-9]+c)", -- s/c
-	"([0-9]+g)", -- g
-	"([0-9]+s)", -- s
-	"([0-9]+c)", -- c
+	"[^%.]([0-9]+g[ ]*[0-9]+s[ ]*[0-9]+c)", -- g/s/c
+	"[^%.]([0-9]+g[ ]*[0-9]+s)", -- g/s
+	"[^%.]([0-9]+g[ ]*[0-9]+c)", -- g/c
+	"[^%.]([0-9]+s[ ]*[0-9]+c)", -- s/c
+	"[^%.]([0-9]+g)", -- g
+	"[^%.]([0-9]+s)", -- s
+	"[^%.]([0-9]+c)", -- c
 }
 local MATH_FUNCTIONS = {
 	["avg"] = "self._avg",
@@ -86,14 +86,12 @@ local CUSTOM_PRICE_FUNC_TEMPLATE = [[
 		return result
 	end
 ]]
-local NAN = math.huge * 0
-local NAN_STR = tostring(NAN)
 local function IsInvalid(num)
 	-- We want to treat math.huge/-math.huge/NAN as invalid.
-	return num == math.huge or num == -math.huge or tostring(num) == NAN_STR
+	return num == math.huge or num == -math.huge or Math.IsNan(num)
 end
 -- Make sure our IsInvalid function continues to work as expected
-assert(IsInvalid(NAN) and IsInvalid(math.huge) and IsInvalid(math.huge) and not IsInvalid(0) and not IsInvalid(1000))
+assert(IsInvalid(Math.GetNan()) and IsInvalid(math.huge) and IsInvalid(math.huge) and not IsInvalid(0) and not IsInvalid(1000))
 local COMPARISONS = {
 	["gt"] = 1,
 	["gte"] = 2,
@@ -134,6 +132,15 @@ end)
 -- Module Functions
 -- ============================================================================
 
+function CustomPrice.OnEnable()
+	for name in pairs(TSM.db.global.userData.customPriceSources) do
+		if not CustomPrice.ValidateName(name, true) then
+			Log.PrintfUser(L["Removed custom price source (%s) which has an invalid name."], name)
+			CustomPrice.DeleteCustomPriceSource(name)
+		end
+	end
+end
+
 --- Register a built-in price source.
 -- @tparam string moduleName The name of the module which provides this source
 -- @tparam string key The key for this price source (i.e. DBMarket)
@@ -152,7 +159,12 @@ function CustomPrice.RegisterSource(moduleName, key, label, callback, fullLink, 
 		takeItemString = not fullLink,
 		arg = arg,
 		isVolatile = isVolatile,
+		cache = {},
 	}
+end
+
+function CustomPrice.RegisterCustomSourceCallback(callback)
+	tinsert(private.customSourceCallbacks, callback)
 end
 
 --- Create a new custom price source.
@@ -170,6 +182,7 @@ function CustomPrice.CreateCustomPriceSource(name, value)
 		end
 	end
 	wipe(private.customPriceCache)
+	private.CallCustomSourceCallbacks()
 end
 
 --- Rename a custom price source.
@@ -192,6 +205,7 @@ function CustomPrice.RenameCustomPriceSource(oldName, newName)
 	wipe(private.customPriceCache)
 	CustomPrice.OnSourceChange(oldName)
 	CustomPrice.OnSourceChange(newName)
+	private.CallCustomSourceCallbacks()
 end
 
 --- Delete a custom price source.
@@ -204,6 +218,7 @@ function CustomPrice.DeleteCustomPriceSource(name)
 	end
 	wipe(private.customPriceCache)
 	CustomPrice.OnSourceChange(name)
+	private.CallCustomSourceCallbacks()
 end
 
 --- Sets the value of a custom price source.
@@ -220,9 +235,21 @@ function CustomPrice.SetCustomPriceSource(name, value)
 	CustomPrice.OnSourceChange(name)
 end
 
+function CustomPrice.BulkCreateCustomPriceSourcesFromImport(customSources, replaceExisting)
+	for name, value in pairs(customSources) do
+		value = private.SanitizeCustomPriceString(value)
+		assert(not private.settings.customPriceSources[name] or replaceExisting)
+		if private.settings.customPriceSources[name] then
+			CustomPrice.SetCustomPriceSource(name, value)
+		else
+			CustomPrice.CreateCustomPriceSource(name, value)
+		end
+	end
+end
+
 --- Print built-in price sources to chat.
 function CustomPrice.PrintSources()
-	Log.PrintfUser(L["Below are your currently available price sources organized by module. The %skey|r is what you would type into a custom price box."], "|cff99ffff")
+	Log.PrintUser(L["Below is a list of all available price sources, along with a brief description of what they represent."])
 	local moduleList = TempTable.Acquire()
 
 	for _, info in pairs(private.priceSourceInfo) do
@@ -237,7 +264,7 @@ function CustomPrice.PrintSources()
 		local lines = TempTable.Acquire()
 		for _, info in pairs(private.priceSourceInfo) do
 			if info.moduleName == module then
-				tinsert(lines, format("  %s%s|r (%s)", "|cff99ffff", info.key, info.label))
+				tinsert(lines, format("  %s (%s)", Log.ColorUserAccentText(info.key), info.label))
 			end
 		end
 		sort(lines)
@@ -262,28 +289,28 @@ end
 function CustomPrice.ValidateName(customPriceName, ignoreExistingCustomPriceSources)
 	-- custom price names must be lowercase
 	if strlower(customPriceName) ~= customPriceName then
-		return false
+		return false, L["Custom price names can only contain lowercase letters."]
 	end
 	-- User defined price sources
 	if not ignoreExistingCustomPriceSources and private.settings.customPriceSources[customPriceName] then
-		return false
+		return false, format(L["Custom price name %s already exists."], Theme.GetColor("INDICATOR"):ColorText(customPriceName))
 	end
 	-- TSM defined price sources
 	for source in CustomPrice.Iterator() do
 		if strlower(source) == strlower(customPriceName) then
-			return false
+			return false, format(L["Custom price name %s is a reserved word which cannot be used."], Theme.GetColor("INDICATOR"):ColorText(customPriceName))
 		end
 	end
 	-- Math Functions
 	for mathFunction in pairs(MATH_FUNCTIONS) do
 		if strlower(mathFunction) == strlower(customPriceName) then
-			return false
+			return false, format(L["Custom price name %s is a reserved word which cannot be used."], Theme.GetColor("INDICATOR"):ColorText(customPriceName))
 		end
 	end
 	-- Comparisons
 	for comparison in pairs(COMPARISONS) do
 		if strlower(comparison) == strlower(customPriceName) then
-			return false
+			return false, format(L["Custom price name %s is a reserved word which cannot be used."], Theme.GetColor("INDICATOR"):ColorText(customPriceName))
 		end
 	end
 	return true
@@ -302,9 +329,10 @@ end
 --- Evaulates a custom price source for an item.
 -- @tparam string customPriceStr The custom price string
 -- @tparam string itemString The item to evalulate the custom price string for
+-- @tparam[opt=false] boolean allowZero If true, allows the result to be 0
 -- @treturn ?number The resulting value or nil if the custom price string is invalid
 -- @treturn ?string The error message if the custom price string was invalid
-function CustomPrice.GetValue(customPriceStr, itemString)
+function CustomPrice.GetValue(customPriceStr, itemString, allowZero)
 	local proxy, err = private.ParseCustomPrice(customPriceStr)
 	if not proxy then
 		return nil, err
@@ -316,7 +344,10 @@ function CustomPrice.GetValue(customPriceStr, itemString)
 	else
 		value = proxy(itemString)
 	end
-	return (value or 0) > 0 and value or nil
+	if not value or value < 0 or (not allowZero and value == 0) then
+		return nil, L["No value was returned by the custom price for the specified item."]
+	end
+	return value
 end
 
 --- Gets a built-in price source's value for an item.
@@ -325,17 +356,32 @@ end
 -- @treturn ?number The resulting value or nil if no price was found for the item
 function CustomPrice.GetItemPrice(itemString, key)
 	itemString = ItemString.Get(itemString)
-	if not itemString then return end
+	if not itemString then
+		return
+	end
 
 	local info = private.priceSourceInfo[strlower(key)]
-	if not info then return end
+	if not info then
+		return
+	end
+	local cachedValue = info.cache[itemString]
+	if cachedValue ~= nil then
+		assert(not info.isVolatile)
+		return cachedValue or nil
+	end
 	if not info.takeItemString then
 		-- this price source does not take an itemString, so pass it an itemLink instead
 		itemString = ItemInfo.GetLink(itemString)
-		if not itemString then return end
+		if not itemString then
+			return
+		end
 	end
 	local value = info.callback(itemString, info.arg)
-	return type(value) == "number" and value or nil
+	value = type(value) == "number" and value or nil
+	if not info.isVolatile then
+		info.cache[itemString] = value or false
+	end
+	return value
 end
 
 function CustomPrice.GetConversionsValue(sourceItemString, customPrice, method)
@@ -391,9 +437,16 @@ end
 
 --- Should be called when the value of a registered source changes.
 -- @tparam string key The key of the price source
--- @?tparam[opt=nil] string itemString The item which the source changed for or nil if it changed for all items
+-- @tparam[opt=nil] string itemString The item which the source changed for or nil if it changed for all items
 function CustomPrice.OnSourceChange(key, itemString)
 	key = strlower(key)
+	if private.priceSourceInfo[key] then
+		if itemString then
+			private.priceSourceInfo[key].cache[itemString] = nil
+		else
+			wipe(private.priceSourceInfo[key].cache)
+		end
+	end
 	local isSpecificItem = itemString ~= ItemString.GetBase(itemString) or not ItemString.HasNonBase(itemString)
 	for _, data in pairs(private.proxyData) do
 		if data.map then
@@ -461,6 +514,21 @@ function CustomPrice.OnSourceChange(key, itemString)
 	end
 end
 
+function CustomPrice.DependantCustomSourceIterator(str)
+	local result = TempTable.Acquire()
+	local proxy = private.ParseCustomPrice(str)
+	if proxy then
+		local data = private.proxyData[proxy]
+		for name, customSourceStr in pairs(TSM.db.global.userData.customPriceSources) do
+			if data.dependantPriceSources[name] then
+				tinsert(result, name)
+				tinsert(result, customSourceStr)
+			end
+		end
+	end
+	return TempTable.Iterator(result, 2)
+end
+
 
 
 -- ============================================================================
@@ -470,7 +538,7 @@ end
 private.customPriceFunctions = {
 	IsInvalid = IsInvalid,
 	loopError = function(str)
-		Log.PrintfUser("%s |cff99ffff%s|r", L["Loop detected in the following custom price:"], str)
+		Log.PrintUser(L["Loop detected in the following custom price:"].." "..Log.ColorUserAccentText(str))
 	end,
 	_avg = function(...)
 		local total, count = 0, 0
@@ -481,27 +549,27 @@ private.customPriceFunctions = {
 				count = count + 1
 			end
 		end
-		return count == 0 and NAN or (total / count)
+		return count == 0 and Math.GetNan() or (total / count)
 	end,
 	_min = function(...)
-		local minVal
+		local minVal = nil
 		for i = 1, select('#', ...) do
 			local num = select(i, ...)
 			if type(num) == "number" and not IsInvalid(num) and (not minVal or num < minVal) then
 				minVal = num
 			end
 		end
-		return minVal or NAN
+		return minVal or Math.GetNan()
 	end,
 	_max = function(...)
-		local maxVal
+		local maxVal = nil
 		for i = 1, select('#', ...) do
 			local num = select(i, ...)
 			if type(num) == "number" and not IsInvalid(num) and (not maxVal or num > maxVal) then
 				maxVal = num
 			end
 		end
-		return maxVal or NAN
+		return maxVal or Math.GetNan()
 	end,
 	_first = function(...)
 		for i = 1, select('#', ...) do
@@ -510,7 +578,7 @@ private.customPriceFunctions = {
 				return num
 			end
 		end
-		return NAN
+		return Math.GetNan()
 	end,
 	_check = function(check, ...)
 		return private.RunComparison(COMPARISONS.gt, check, 0, ...)
@@ -531,26 +599,26 @@ private.customPriceFunctions = {
 		return private.RunComparison(COMPARISONS.eq, ...)
 	end,
 	_round = function(...)
-		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
+		if select('#', ...) < 1 or select('#', ...) > 2 then return Math.GetNan() end
 		return Math.Round(...)
 	end,
 	_roundup = function(...)
-		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
+		if select('#', ...) < 1 or select('#', ...) > 2 then return Math.GetNan() end
 		return Math.Ceil(...)
 	end,
 	_rounddown = function(...)
-		if select('#', ...) < 1 or select('#', ...) > 2 then return NAN end
+		if select('#', ...) < 1 or select('#', ...) > 2 then return Math.GetNan() end
 		return Math.Floor(...)
 	end,
 	_priceHelper = function(itemString, key, extraParam)
 		itemString = ItemString.Get(itemString)
 		if not itemString then
-			return NAN
+			return Math.GetNan()
 		end
 		if key == "convert" then
 			local conversions = Conversions.GetSourceItems(itemString)
 			if not conversions then
-				return NAN
+				return Math.GetNan()
 			end
 			local minPrice = nil
 			for sourceItemString, rate in pairs(conversions) do
@@ -560,20 +628,20 @@ private.customPriceFunctions = {
 					minPrice = min(minPrice or price, price)
 				end
 			end
-			return minPrice or NAN
+			return minPrice or Math.GetNan()
 		elseif extraParam == "custom" then
 			local customPriceSourceStr = private.settings.customPriceSources[key]
 			if not customPriceSourceStr then
 				-- custom price source has since been deleted
-				return NAN
+				return Math.GetNan()
 			end
-			return CustomPrice.GetValue(customPriceSourceStr, itemString) or NAN
+			return CustomPrice.GetValue(customPriceSourceStr, itemString) or Math.GetNan()
 		else
-			return CustomPrice.GetItemPrice(itemString, key) or NAN
+			return CustomPrice.GetItemPrice(itemString, key) or Math.GetNan()
 		end
 	end,
 }
-private.proxyMT = {
+local PROXY_MT = {
 	__index = function(self, index)
 		local data = private.proxyData[self]
 		if private.customPriceFunctions[index] then
@@ -605,16 +673,16 @@ private.proxyMT = {
 }
 
 function private.RunComparison(comparison, ...)
-	if select('#', ...) > 4 then return NAN end
+	if select('#', ...) > 4 then return Math.GetNan() end
 
 	local leftCheck, rightCheck, ifValue, elseValue = ...
-	leftCheck = leftCheck or NAN
-	rightCheck = rightCheck or NAN
-	ifValue = ifValue or NAN
-	elseValue = elseValue or NAN
+	leftCheck = leftCheck or Math.GetNan()
+	rightCheck = rightCheck or Math.GetNan()
+	ifValue = ifValue or Math.GetNan()
+	elseValue = elseValue or Math.GetNan()
 
 	if IsInvalid(leftCheck) or IsInvalid(rightCheck) then
-		return NAN
+		return Math.GetNan()
 	elseif comparison == COMPARISONS.gt then
 		return leftCheck > rightCheck and ifValue or elseValue
 	elseif comparison == COMPARISONS.gte then
@@ -649,7 +717,7 @@ function private.CreateCustomPriceObj(func, origStr, dependantPriceSources, canC
 		mapReader = nil,
 	}
 	local mt = getmetatable(proxy)
-	for key, value in pairs(private.proxyMT) do
+	for key, value in pairs(PROXY_MT) do
 		mt[key] = value
 	end
 	if canCache then
@@ -662,7 +730,7 @@ end
 
 function private.ParsePriceString(str, badPriceSources)
 	if tonumber(str) then
-		return private.CreateCustomPriceObj(function() return tonumber(str) end, str, {}, true)
+		return private.CreateCustomPriceObj(function() return Math.Round(tonumber(str)) end, str, {}, true)
 	end
 
 	local origStr = str
@@ -687,8 +755,8 @@ function private.ParsePriceString(str, badPriceSources)
 		local minFindStart, minFindEnd, minFindSub = nil, nil, nil
 		for _, pattern in ipairs(MONEY_PATTERNS) do
 			local s, e, sub = strfind(str, pattern, start)
-			if s and (not minFindStart or minFindStart > s) then
-				minFindStart = s
+			if s and (not minFindStart or minFindStart > s + 1) then
+				minFindStart = s + 1
 				minFindEnd = e
 				minFindSub = sub
 			end
@@ -943,9 +1011,9 @@ function private.ParseCustomPrice(customPriceStr, badPriceSources)
 end
 
 function private.ModuleSortFunc(a, b)
-	if a == "TradeSkillMaster" then
+	if a == "TSM" then
 		return true
-	elseif b == "TradeSkillMaster" then
+	elseif b == "TSM" then
 		return false
 	else
 		return a < b
@@ -961,4 +1029,10 @@ function private.SanitizeCustomPriceString(customPriceStr)
 		private.sanitizeCache[customPriceStr] = result
 	end
 	return result
+end
+
+function private.CallCustomSourceCallbacks()
+	for _, callback in ipairs(private.customSourceCallbacks) do
+		callback()
+	end
 end

@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,16 +9,13 @@ local Gathering = TSM.UI.CraftingUI:NewPackage("Gathering")
 local L = TSM.Include("Locale").GetTable()
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
-local String = TSM.Include("Util.String")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	frame = nil,
 	query = nil,
-}
--- TODO: move to TSM.db
-private.dividedContainerContext = {}
-local DEFAULT_DIVIDED_CONTAINER_CONTEXT = {
-	leftWidth = 272
 }
 local SOURCE_LIST = {
 	"vendor",
@@ -38,7 +33,7 @@ local SOURCE_TEXT_LIST = {
 	L["Guild Bank"],
 	L["Alts"],
 	L["Alt Guild Bank"],
-	L["Craft (When Profitable)"],
+	L["Craft (Profitable)"],
 	L["Craft (Unprofitable)"],
 	L["AH"],
 	L["AH (Disenchanting)"],
@@ -51,44 +46,6 @@ if TSM.IsWowClassic() then
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
 end
 assert(#SOURCE_LIST == #SOURCE_TEXT_LIST)
-local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
-	:SetStyleTable("Text", "TITLE", {
-		height = 22,
-		font = TSM.UI.Fonts.MontserratRegular,
-		fontHeight = 16,
-		textColor = "#e2e2e2",
-	})
-	:SetStyleTable("Text", "CATEGORY", {
-		height = 14,
-		font = TSM.UI.Fonts.MontserratMedium,
-		fontHeight = 10,
-		textColor = "#ffd839",
-	})
-	:SetStyleTable("Text", "DESC", {
-		font = TSM.UI.Fonts.MontserratRegular,
-		fontHeight = 10,
-		fontSpacing = 2,
-		textColor = "#e2e2e2",
-	})
-	:SetStyleTable("Text", "SOURCE_LABEL", {
-		width = 65,
-		font = TSM.UI.Fonts.MontserratMedium,
-		fontHeight = 10,
-		textColor = "#ffffff",
-	})
-	:SetStyleTable("Text", "MATS_HEADER", {
-		font = TSM.UI.Fonts.MontserratMedium,
-		fontHeight = 12,
-		textColor = "#e2e2e2",
-	})
-	:SetStyleTable("Texture", "HORIZONTAL_LINE_HEADER", {
-		height = 2,
-		color = "#585858",
-	})
-	:SetStyleTable("Texture", "HORIZONTAL_LINE", {
-		height = 2,
-		color = "#9d9d9d",
-	})
 
 
 
@@ -97,7 +54,11 @@ local BASE_STYLESHEET = TSM.UI.Util.Stylesheet()
 -- ============================================================================
 
 function Gathering.OnInitialize()
-	TSM.UI.CraftingUI.RegisterTopLevelPage("Gathering", "iconPack.24x24/Boxes", private.GetGatheringFrame)
+	private.settings = Settings.NewView()
+		:AddKey("global", "craftingUIContext", "gatheringDividedContainer")
+		:AddKey("global", "craftingUIContext", "gatheringScrollingTable")
+		:AddKey("profile", "gatheringOptions", "sources")
+	TSM.UI.CraftingUI.RegisterTopLevelPage(L["Gathering"], private.GetGatheringFrame)
 	TSM.Crafting.Gathering.SetContextChangedCallback(private.ContextChangedCallback)
 	TSM.UI.TaskListUI.RegisterUpdateCallback(private.UpdateButtonState)
 end
@@ -113,99 +74,103 @@ function private.GetGatheringFrame()
 	assert(not private.query)
 	private.query = TSM.Crafting.Gathering.CreateQuery()
 		:SetUpdateCallback(private.UpdateButtonState)
-	local frame = TSMAPI_FOUR.UI.NewElement("DividedContainer", "gathering")
-		:SetStylesheet(BASE_STYLESHEET)
-		:SetMinWidth(270, 200)
-		:SetContextTable(private.dividedContainerContext, DEFAULT_DIVIDED_CONTAINER_CONTEXT)
-		:SetLeftChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "setup")
-			:SetStyle("background", "#171717")
-			:SetStyle("padding.top", 6)
-			:SetStyle("padding.left", 8)
-			:SetStyle("padding.right", 8)
-			:SetStyle("padding.bottom", 6)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title", "TITLE")
-				:SetText(L["Setup"])
+	local frame = UIElements.New("DividedContainer", "gathering")
+		:SetMinWidth(284, 200)
+		:SetBackgroundColor("PRIMARY_BG")
+		:SetSettingsContext(private.settings, "gatheringDividedContainer")
+		:SetLeftChild(UIElements.New("ScrollFrame", "setup")
+			:SetPadding(12)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "title")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 8)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(L["Gathering Setup"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "crafterDropdownLabel", "CATEGORY")
-				:SetStyle("margin.top", 8)
-				:SetStyle("margin.bottom", 4)
-				:SetText(L["CRAFTER"])
+			:AddChild(UIElements.New("Text", "crafterDropdownLabel")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 2)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetTextColor("INDICATOR")
+				:SetText(L["Crafter"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "crafterDropdown")
-				:SetStyle("height", 26)
+			:AddChild(UIElements.New("SelectionDropdown", "crafterDropdown")
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 8)
 				:SetHintText(L["Select crafter"])
 				:SetScript("OnSelectionChanged", private.CrafterDropdownOnSelectionChanged)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "professionDropdownLabel", "CATEGORY")
-				:SetStyle("margin.top", 8)
-				:SetStyle("margin.bottom", 4)
-				:SetText(L["PROFESSION"])
+			:AddChild(UIElements.New("Text", "professionDropdownLabel")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 2)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetTextColor("INDICATOR")
+				:SetText(L["Profession"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("MultiselectionDropdown", "professionDropdown")
-				:SetStyle("height", 26)
+			:AddChild(UIElements.New("MultiselectionDropdown", "professionDropdown")
+				:SetHeight(24)
+				:SetMargin(0, 0, 0, 24)
 				:SetHintText(L["Select professions"])
+				:SetSelectionText(L["No Professions"], L["%d Professions"], L["All Professions"])
 				:SetScript("OnSelectionChanged", private.ProfessionDropdownOnSelectionChanged)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "sourcesCategoryText", "CATEGORY")
-				:SetStyle("margin.top", 12)
-				:SetText(L["SOURCES"])
+			:AddChild(UIElements.New("Text", "sourcesCategoryText")
+				:SetHeight(20)
+				:SetMargin(0, 0, 0, 2)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetTextColor("INDICATOR")
+				:SetText(L["Sources"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "sourcesDesc", "DESC")
-				:SetStyle("height", 28)
-				:SetStyle("margin.bottom", -2)
+			:AddChild(UIElements.New("Text", "sourcesDesc")
+				:SetHeight(28)
+				:SetMargin(0, 0, 0, 4)
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetTextColor("TEXT_ALT")
 				:SetText(L["Define what priority Gathering gives certain sources."])
 			)
 			:AddChildrenWithFunction(private.CreateSourceRows)
 		)
-		:SetRightChild(TSMAPI_FOUR.UI.NewElement("Frame", "mats")
+		:SetRightChild(UIElements.New("Frame", "mats")
 			:SetLayout("VERTICAL")
-			:SetStyle("background", "#272727")
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "title", "TITLE")
-				:SetStyle("margin.top", 24)
-				:SetStyle("margin.bottm", 8)
-				:SetStyle("justifyH", "CENTER")
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Text", "title")
+				:SetHeight(20)
+				:SetMargin(0, 0, 8, 8)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetJustifyH("CENTER")
 				:SetText(L["Materials to Gather"])
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "headerTopLine", "HORIZONTAL_LINE_HEADER"))
-			:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "table")
-				:SetStyle("background", "#171717")
-				:SetStyle("headerBackground", "#404040")
-				:SetStyle("headerFontHeight", 12)
+			:AddChild(UIElements.New("QueryScrollingTable", "table")
+				:SetSettingsContext(private.settings, "gatheringScrollingTable")
 				:GetScrollingTableInfo()
 					:NewColumn("name")
-						:SetTitles(NAME)
-						:SetFont(TSM.UI.Fonts.FRIZQT)
-						:SetFontHeight(12)
+						:SetTitle(NAME)
+						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
 						:SetIconSize(12)
 						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
 						:SetIconInfo("itemString", ItemInfo.GetTexture)
 						:SetTooltipInfo("itemString")
 						:SetSortInfo("name")
+						:DisableHiding()
 						:Commit()
 					:NewColumn("sources")
-						:SetTitles(L["Sources"])
-						:SetWidth(160)
-						:SetFont(TSM.UI.Fonts.MontserratRegular)
-						:SetFontHeight(12)
+						:SetTitle(L["Sources"])
+						:SetFont("BODY_BODY3")
 						:SetJustifyH("LEFT")
 						:SetTextInfo("sourcesStr", private.MatsGetSourcesStrText)
 						:SetSortInfo("sourcesStr")
 						:Commit()
 					:NewColumn("have")
-						:SetTitles(L["Have"])
-						:SetWidth(50)
-						:SetFont(TSM.UI.Fonts.RobotoMedium)
-						:SetFontHeight(12)
+						:SetTitle(L["Have"])
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
 						:SetTextInfo("numHave")
 						:SetSortInfo("numHave")
 						:Commit()
 					:NewColumn("need")
-						:SetTitles(NEED)
-						:SetWidth(50)
-						:SetFont(TSM.UI.Fonts.RobotoMedium)
-						:SetFontHeight(12)
+						:SetTitle(NEED)
+						:SetFont("TABLE_TABLE1")
 						:SetJustifyH("RIGHT")
 						:SetTextInfo("numNeed")
 						:SetSortInfo("numNeed")
@@ -215,20 +180,22 @@ function private.GetGatheringFrame()
 					:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 					:OrderBy("name", true)
 				)
+				:SetSelectionDisabled(true)
 				:SetAutoReleaseQuery(true)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "headerTopLine", "HORIZONTAL_LINE_HEADER"))
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "openTaskListBtn")
-				:SetStyle("height", 26)
-				:SetStyle("margin", 8)
-				:SetStyle("width", 350)
+			:AddChild(UIElements.New("Texture", "headerTopLine")
+				:SetHeight(2)
+				:SetTexture("ACTIVE_BG")
+			)
+			:AddChild(UIElements.New("ActionButton", "openTaskListBtn")
+				:SetHeight(26)
+				:SetMargin(8)
 				:SetScript("OnClick", TSM.UI.TaskListUI.Toggle)
 			)
 		)
 		:SetScript("OnUpdate", private.FrameOnUpdate)
 		:SetScript("OnHide", private.FrameOnHide)
 	private.frame = frame
-	private.UpdateButtonState()
 	return frame
 end
 
@@ -242,14 +209,17 @@ end
 
 function private.CreateSourceRows(frame)
 	for i = 1, #SOURCE_LIST do
-		frame:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "sourceFrame"..i)
+		frame:AddChild(UIElements.New("Frame", "sourceFrame"..i)
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 8)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "label", "SOURCE_LABEL")
+			:SetHeight(24)
+			:SetMargin(0, 0, 8, 0)
+			:AddChild(UIElements.New("Text", "label")
+				:SetFont("BODY_BODY3_MEDIUM")
+				:SetTextColor((i > #private.settings.sources + 1) and "TEXT_ALT+DISABLED" or "TEXT_ALT")
 				:SetFormattedText(L["SOURCE %d"], i)
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("SelectionDropdown", "dropdown")
+			:AddChild(UIElements.New("SelectionDropdown", "dropdown")
+				:SetWidth(188)
 				:SetContext(i)
 				:SetHintText(L["Select a Source"])
 				:SetScript("OnSelectionChanged", private.SourceDropdownOnSelectionChanged)
@@ -261,8 +231,8 @@ end
 
 function private.UpdateSourceRows(setupFrame)
 	if TSM.IsWowClassic() then
-		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "guildBank")
-		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "altGuildBank")
+		Table.RemoveByValue(private.settings.sources, "guildBank")
+		Table.RemoveByValue(private.settings.sources, "altGuildBank")
 	end
 	local texts = TempTable.Acquire()
 	local sources = TempTable.Acquire()
@@ -270,21 +240,23 @@ function private.UpdateSourceRows(setupFrame)
 		wipe(texts)
 		wipe(sources)
 		for j = 1, #SOURCE_LIST do
-			local index = Table.KeyByValue(TSM.db.profile.gatheringOptions.sources, SOURCE_LIST[j])
+			local index = Table.KeyByValue(private.settings.sources, SOURCE_LIST[j])
 			if not index or index >= i then
 				tinsert(texts, SOURCE_TEXT_LIST[j])
 				tinsert(sources, SOURCE_LIST[j])
 			end
 		end
-		if i <= #TSM.db.profile.gatheringOptions.sources then
+		if i <= #private.settings.sources then
 			tinsert(texts, "<"..strupper(REMOVE)..">")
 			tinsert(sources, "")
 		end
+		setupFrame:GetElement("sourceFrame"..i..".label")
+			:SetTextColor((i > #private.settings.sources + 1) and "TEXT_ALT+DISABLED" or "TEXT_ALT")
 		setupFrame:GetElement("sourceFrame"..i..".dropdown")
 			:SetItems(texts, sources)
-			:SetDisabled(i > #TSM.db.profile.gatheringOptions.sources + 1)
+			:SetDisabled(i > #private.settings.sources + 1)
 			:SetHintText(L["Select a Source"])
-			:SetSelectedItemByKey(TSM.db.profile.gatheringOptions.sources[i], true)
+			:SetSelectedItemByKey(private.settings.sources[i], true)
 	end
 	TempTable.Release(texts)
 	TempTable.Release(sources)
@@ -297,6 +269,7 @@ end
 -- ============================================================================
 
 function private.FrameOnUpdate(frame)
+	private.UpdateButtonState()
 	frame:SetScript("OnUpdate", nil)
 	private.ContextChangedCallback()
 end
@@ -309,7 +282,7 @@ function private.FrameOnHide(frame)
 end
 
 function private.CrafterDropdownOnSelectionChanged(dropdown)
-	TSM.Crafting.Gathering.SetCrafter(dropdown:GetSelectedItem())
+	TSM.Crafting.Gathering.SetCrafter(dropdown:GetSelectedItem() or "")
 	dropdown:GetElement("__parent.professionDropdown")
 		:SetItems(TSM.Crafting.Gathering.GetProfessionList())
 		:SetSelectedItems(TSM.Crafting.Gathering.GetProfessions())
@@ -318,11 +291,7 @@ end
 
 function private.ProfessionDropdownOnSelectionChanged(dropdown)
 	local professions = TempTable.Acquire()
-	for _, profession in ipairs(TSM.Crafting.Gathering.GetProfessionList()) do
-		if dropdown:ItemIsSelected(profession) then
-			tinsert(professions, profession)
-		end
-	end
+	dropdown:GetSelectedItems(professions)
 	TSM.Crafting.Gathering.SetProfessions(professions)
 	TempTable.Release(professions)
 end
@@ -331,12 +300,12 @@ function private.SourceDropdownOnSelectionChanged(dropdown)
 	local index = dropdown:GetContext()
 	local source = dropdown:GetSelectedItemKey()
 	if source == "" then
-		tremove(TSM.db.profile.gatheringOptions.sources, index)
+		tremove(private.settings.sources, index)
 	else
-		TSM.db.profile.gatheringOptions.sources[index] = source
-		for i = #TSM.db.profile.gatheringOptions.sources, index + 1, -1 do
-			if TSM.db.profile.gatheringOptions.sources[i] == source then
-				tremove(TSM.db.profile.gatheringOptions.sources, i)
+		private.settings.sources[index] = source
+		for i = #private.settings.sources, index + 1, -1 do
+			if private.settings.sources[i] == source then
+				tremove(private.settings.sources, i)
 			end
 		end
 	end
@@ -382,8 +351,4 @@ function private.UpdateButtonState()
 		button:SetDisabled(false)
 	end
 	button:Draw()
-end
-
-function private.QueryPlayerFilter(row, player)
-	return String.SeparatedContains(row:GetField("players"), ",", player)
 end

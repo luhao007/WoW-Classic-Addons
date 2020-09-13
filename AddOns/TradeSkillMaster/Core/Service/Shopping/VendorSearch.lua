@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -15,6 +13,7 @@ local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	itemList = {},
 	scanThreadId = nil,
+	searchContext = nil,
 }
 
 
@@ -26,10 +25,11 @@ local private = {
 function VendorSearch.OnInitialize()
 	-- initialize thread
 	private.scanThreadId = Threading.New("VENDOR_SEARCH", private.ScanThread)
+	private.searchContext = TSM.Shopping.ShoppingSearchContext(private.scanThreadId, private.MarketValueFunction)
 end
 
-function VendorSearch.GetScanContext()
-	return private.scanThreadId, private.MarketValueFunction
+function VendorSearch.GetSearchContext()
+	return private.searchContext:SetScanContext(L["Vendor Search"], nil, nil, L["Vendor Sell Price"])
 end
 
 
@@ -43,9 +43,8 @@ function private.ScanThread(auctionScan)
 		Log.PrintUser(L["No recent AuctionDB scan data found."])
 		return false
 	end
-	auctionScan:SetCustomFilterFunc(private.ScanFilter)
 
-	-- create the list of items, and add filters for them
+	-- create the list of items
 	wipe(private.itemList)
 	for _, itemString, _, minBuyout in TSM.AuctionDB.LastScanIteratorThreaded() do
 		local vendorSell = ItemInfo.GetVendorSell(itemString) or 0
@@ -54,18 +53,31 @@ function private.ScanThread(auctionScan)
 		end
 		Threading.Yield()
 	end
-	auctionScan:AddItemListFiltersThreaded(private.itemList)
 
 	-- run the scan
-	auctionScan:StartScanThreaded()
+	auctionScan:AddItemListQueriesThreaded(private.itemList)
+	for _, query in auctionScan:QueryIterator() do
+		query:AddCustomFilter(private.QueryFilter)
+	end
+	if not auctionScan:ScanQueriesThreaded() then
+		Log.PrintUser(L["TSM failed to scan some auctions. Please rerun the scan."])
+	end
 	return true
 end
 
-function private.ScanFilter(itemString, itemBuyout)
+function private.QueryFilter(_, row)
+	local itemString = row:GetItemString()
+	if not itemString then
+		return false
+	end
+	local _, itemBuyout = row:GetBuyouts()
+	if not itemBuyout then
+		return false
+	end
 	local vendorSell = ItemInfo.GetVendorSell(itemString)
 	return not vendorSell or itemBuyout == 0 or itemBuyout >= vendorSell
 end
 
 function private.MarketValueFunction(row)
-	return ItemInfo.GetVendorSell(row:GetField("itemString"))
+	return ItemInfo.GetVendorSell(row:GetItemString() or row:GetBaseItemString())
 end

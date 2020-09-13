@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -44,7 +42,7 @@ function CraftingTask.Acquire(self, doneHandler, category, profession)
 	self.__super:Acquire(doneHandler, category, format(L["%s Crafts"], profession))
 	self._profession = profession
 	for _, _, prof, skillId in TSM.Crafting.PlayerProfessions.Iterator() do
-		if not self._skillId and prof == profession then
+		if prof == profession and (not self._skillId or (self._skillId == -1 and skillId ~= -1)) then
 			self._skillId = skillId
 		end
 	end
@@ -86,6 +84,15 @@ end
 function CraftingTask.AddSpellId(self, spellId, quantity)
 	tinsert(self._spellIds, spellId)
 	self._spellQuantity[spellId] = quantity
+end
+
+function CraftingTask.OnMouseDown(self)
+	if self._buttonText == L["CRAFT"] then
+		local spellId = self._spellIds[1]
+		local quantity = self._spellQuantity[spellId]
+		Log.Info("Preparing %d (%d)", spellId, quantity)
+		TSM.Crafting.ProfessionUtil.PrepareToCraft(spellId, quantity)
+	end
 end
 
 function CraftingTask.OnButtonClick(self)

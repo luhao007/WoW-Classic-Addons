@@ -1,20 +1,27 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Base Dropdown UI Element Class.
 -- The base dropdown class is an abstract class which provides shared functionality between the @{SelectionDropdown} and
--- @{MultiselectionDropdown} classes. It is a subclass of the @{Element} class.
+-- @{MultiselectionDropdown} classes. It is a subclass of the @{Text} class.
 -- @classmod BaseDropdown
 
 local _, TSM = ...
-local BaseDropdown = TSM.Include("LibTSMClass").DefineClass("BaseDropdown", TSM.UI.Element, "ABSTRACT")
+local NineSlice = TSM.Include("Util.NineSlice")
+local Color = TSM.Include("Util.Color")
+local Theme = TSM.Include("Util.Theme")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local BaseDropdown = TSM.Include("LibTSMClass").DefineClass("BaseDropdown", TSM.UI.Text, "ABSTRACT")
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(BaseDropdown)
 TSM.UI.BaseDropdown = BaseDropdown
-local private = { dropdownLookup = {}, dialogDropdownLookup = {} }
+local private = {}
+local EXPANDER_SIZE = 18
+local TEXT_PADDING = 8
+local EXPANDER_PADDING = 8
 
 
 
@@ -23,52 +30,37 @@ local private = { dropdownLookup = {}, dialogDropdownLookup = {} }
 -- ============================================================================
 
 function BaseDropdown.__init(self)
-	local frame = CreateFrame("Button", nil, nil, nil)
+	local frame = UIElements.CreateFrame(self, "Button", nil, nil, nil)
 
 	self.__super:__init(frame)
 
-	frame.bgLeft = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgLeft:SetPoint("TOPLEFT")
-	frame.bgLeft:SetPoint("BOTTOMLEFT")
+	self._nineSlice = NineSlice.New(frame)
 
-	frame.bgRight = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgRight:SetPoint("TOPRIGHT")
-	frame.bgRight:SetPoint("BOTTOMRIGHT")
+	ScriptWrapper.Set(frame, "OnClick", private.FrameOnClick, self)
+	frame.arrow = frame:CreateTexture(nil, "ARTWORK")
 
-	frame.bgMiddle = frame:CreateTexture(nil, "BACKGROUND")
-	frame.bgMiddle:SetPoint("TOPLEFT", frame.bgLeft, "TOPRIGHT")
-	frame.bgMiddle:SetPoint("BOTTOMRIGHT", frame.bgRight, "BOTTOMLEFT")
+	self._widthText = UIElements.CreateFontString(self, frame)
+	self._widthText:Hide()
 
-	frame:SetScript("OnClick", private.FrameOnClick)
-	private.dropdownLookup[frame] = self
-	frame.text = frame:CreateFontString()
-	frame.arrow = frame:CreateTexture()
-
+	self._font = "BODY_BODY2"
 	self._hintText = ""
 	self._items = {}
 	self._itemKeyLookup = {}
-	self._settingTable = nil
-	self._settingKey = nil
 	self._disabled = false
 	self._isOpen = false
 	self._onSelectionChangedHandler = nil
-end
-
-function BaseDropdown.Acquire(self)
-	self:_GetBaseFrame():Enable()
-	self.__super:Acquire()
 end
 
 function BaseDropdown.Release(self)
 	self._hintText = ""
 	wipe(self._items)
 	wipe(self._itemKeyLookup)
-	self._settingTable = nil
-	self._settingKey = nil
 	self._disabled = false
 	self._isOpen = false
 	self._onSelectionChangedHandler = nil
+	self:_GetBaseFrame():Enable()
 	self.__super:Release()
+	self._font = "BODY_BODY2"
 end
 
 
@@ -152,35 +144,17 @@ function BaseDropdown.SetOpen(self, open)
 	end
 	self._isOpen = open
 	if open then
-		local dialogFrame = TSMAPI_FOUR.UI.NewElement("Frame", "dropdown")
+		local width, height = self:_GetDialogSize()
+		local dialogFrame = UIElements.New("Frame", "dropdown")
 			:SetLayout("VERTICAL")
-			:SetStyle("anchors", { { "TOPLEFT", self:_GetBaseFrame() }, { "TOPRIGHT", self:_GetBaseFrame() } })
-			:SetStyle("height", 26 + min(8, #self._items) * 20)
-			:SetStyle("border", self:_GetStyle("openBorder"))
-			:SetStyle("borderSize", self:_GetStyle("openBorderSize"))
-			:SetStyle("background", self:_GetStyle("openBackground"))
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "topRow")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("height", 26)
-				:SetStyle("margin.left", 8)
-				:SetScript("OnMouseUp", private.ListTopRowOnClick)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "current")
-					:SetStyle("font", self:_GetStyle("openFont"))
-					:SetStyle("fontHeight", self:_GetStyle("openFontHeight"))
-					:SetText(self:_GetCurrentSelectionString())
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "icon")
-					:SetStyle("width", self:_GetStyle("expanderSize"))
-					:SetStyle("height", self:_GetStyle("expanderSize"))
-					:SetStyle("margin.right", self:_GetStyle("expanderPadding"))
-					:SetStyle("backgroundTexturePack", self:_GetStyle("expanderBackgroundTexturePack"))
-				)
-			)
-			:AddChild(self:_CreateDropdownList()
-				:SetScript("OnSelectionChanged", private.ListOnSelectionChanged)
-			)
+			:SetContext(self)
+			:AddAnchor("TOPLEFT", self:_GetBaseFrame(), "BOTTOMLEFT", 0, -4)
+			:SetPadding(0, 0, 4, 4)
+			:SetBackgroundColor("ACTIVE_BG", true)
+			:SetSize(max(width, self:_GetDimension("WIDTH")), height)
 			:SetScript("OnHide", private.DialogOnHide)
-		private.dialogDropdownLookup[dialogFrame] = self
+		self:_AddDialogChildren(dialogFrame)
+		dialogFrame:GetElement("list"):SetScript("OnSelectionChanged", private.ListOnSelectionChanged)
 		self:GetBaseElement():ShowDialogFrame(dialogFrame)
 	else
 		self:GetBaseElement():HideDialog()
@@ -188,37 +162,65 @@ function BaseDropdown.SetOpen(self, open)
 	return self
 end
 
+function BaseDropdown.SetText(self)
+	error("BaseDropdown does not support this method")
+end
+
+function BaseDropdown.SetTextColor(self, color)
+	error("BaseDropdown does not support this method")
+end
+
 function BaseDropdown.Draw(self)
+	self.__super:SetText(self:_GetCurrentSelectionString())
 	self.__super:Draw()
 	local frame = self:_GetBaseFrame()
-	self:_ApplyFrameStyle(frame)
-	self:_ApplyTextStyle(frame.text)
-	frame.text:SetText(self:_GetCurrentSelectionString())
-	local expanderSize = self:_GetStyle("expanderSize")
+	TSM.UI.TexturePacks.SetTexture(frame.arrow, "iconPack.18x18/Chevron/Down")
 	local frameHeight = frame:GetHeight()
-	local paddingX = self:_GetStyle("expanderPadding")
-	local paddingY = (frameHeight - expanderSize) / 2
+	local paddingX = EXPANDER_PADDING
+	local paddingY = (frameHeight - EXPANDER_SIZE) / 2
 	frame.text:ClearAllPoints()
+	frame.text:SetPoint("TOPLEFT", TEXT_PADDING, 0)
+	frame.text:SetPoint("BOTTOMRIGHT", -EXPANDER_SIZE, 0)
 	frame.arrow:ClearAllPoints()
-	frame.text:SetPoint("TOPLEFT", self:_GetStyle("textPadding"), 0)
-	frame.text:SetPoint("BOTTOMRIGHT", -expanderSize, 0)
 	frame.arrow:SetPoint("BOTTOMLEFT", frame.text, "BOTTOMRIGHT", -paddingX, paddingY)
 	frame.arrow:SetPoint("TOPRIGHT", -paddingX, -paddingY)
 
 	-- set textures and text color depending on the state
-	if self._disabled then
-		frame.text:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("inactiveTextColor")))
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgLeft, "uiFrames.RegularInactiveDropdownLeft")
-		TSM.UI.TexturePacks.SetTexture(frame.bgMiddle, "uiFrames.RegularInactiveDropdownMiddle")
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgRight, "uiFrames.RegularInactiveDropdownRight")
-		TSM.UI.TexturePacks.SetTexture(frame.arrow, self:_GetStyle("inactiveExpanderBackgroundTexturePack"))
+	self._nineSlice:SetStyle("rounded")
+	local textColor = self:_GetTextColor()
+	frame.text:SetTextColor(textColor:GetFractionalRGBA())
+	self._nineSlice:SetVertexColor(Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG"):GetFractionalRGBA())
+	frame.arrow:SetVertexColor(textColor:GetFractionalRGBA())
+end
+
+
+
+-- ============================================================================
+-- Private Class Methods
+-- ============================================================================
+
+function BaseDropdown._GetTextColor(self)
+	local color = Theme.GetColor(self._disabled and "PRIMARY_BG_ALT" or "ACTIVE_BG")
+	-- the text color should have maximum contrast with the dropdown color, so set it to white/black based on the dropdown color
+	if color:IsLight() then
+		-- the dropdown is light, so set the text to black
+		return Color.GetFullBlack():GetTint(self._disabled and "-DISABLED" or 0)
 	else
-		frame.text:SetTextColor(TSM.UI.HexToRGBA(self:_GetStyle("textColor")))
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgLeft, "uiFrames.RegularActiveDropdownLeft")
-		TSM.UI.TexturePacks.SetTexture(frame.bgMiddle, "uiFrames.RegularActiveDropdownMiddle")
-		TSM.UI.TexturePacks.SetTextureAndWidth(frame.bgRight, "uiFrames.RegularActiveDropdownRight")
-		TSM.UI.TexturePacks.SetTexture(frame.arrow, self:_GetStyle("expanderBackgroundTexturePack"))
+		-- the dropdown is dark, so set the text to white
+		return Color.GetFullWhite():GetTint(self._disabled and "+DISABLED" or 0)
 	end
+end
+
+function BaseDropdown._GetDialogSize(self)
+	local maxStringWidth = 100 -- no smaller than 100
+	self._widthText:Show()
+	self._widthText:SetFont(Theme.GetFont(self._font):GetWowFont())
+	for _, item in ipairs(self._items) do
+		self._widthText:SetText(item)
+		maxStringWidth = max(maxStringWidth, self._widthText:GetUnboundedStringWidth())
+	end
+	self._widthText:Hide()
+	return maxStringWidth + Theme.GetColSpacing() * 2, 8 + max(16, min(8, #self._items) * 20)
 end
 
 
@@ -227,23 +229,17 @@ end
 -- Local Script Handlers
 -- ============================================================================
 
-function private.FrameOnClick(frame)
-	local self = private.dropdownLookup[frame]
+function private.FrameOnClick(self)
 	self:SetOpen(true)
 end
 
-function private.ListTopRowOnClick(frame)
-	frame:GetBaseElement():HideDialog()
-end
-
 function private.ListOnSelectionChanged(dropdownList, selection)
-	local self = private.dialogDropdownLookup[dropdownList:GetParentElement()]
+	local self = dropdownList:GetParentElement():GetContext()
 	self:_OnListSelectionChanged(dropdownList, selection)
 	self:Draw()
 end
 
 function private.DialogOnHide(frame)
-	local self = private.dialogDropdownLookup[frame]
-	private.dialogDropdownLookup[frame] = nil
+	local self = frame:GetContext()
 	self._isOpen = false
 end

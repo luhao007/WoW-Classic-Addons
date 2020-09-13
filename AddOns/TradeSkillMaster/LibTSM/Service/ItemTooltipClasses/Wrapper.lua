@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -22,8 +20,8 @@ local private = {
 	tooltipMethodPosthooks = {},
 	lastMailTooltipUpdate = nil,
 	lastMailTooltipIndex = nil,
+	populateFunc = nil,
 }
-local TEXT_COLOR = { r = 130 / 255, g = 130 / 255, b = 250 / 255 }
 
 
 
@@ -53,6 +51,17 @@ Wrapper:OnSettingsLoad(function()
 		end
 	end
 end)
+
+
+
+-- ============================================================================
+-- Module Functions
+-- ============================================================================
+
+function Wrapper.SetPopulateFunction(func)
+	assert(type(func) == "function" and not private.populateFunc)
+	private.populateFunc = func
+end
 
 
 
@@ -176,7 +185,11 @@ function private.SetTooltipItem(tooltip, link)
 
 	local reg = private.tooltipRegistry[tooltip]
 	local quantity = max(IsShiftKeyDown() and reg.quantity or 1, 1)
-	private.builder:_Populate(itemString, quantity)
+	local isCached = private.builder:_Prepare(itemString, quantity)
+	if not isCached then
+		-- populate all the lines
+		private.populateFunc(private.builder, itemString)
+	end
 	if private.builder:_IsEmpty() then
 		return
 	end
@@ -192,11 +205,13 @@ function private.SetTooltipItem(tooltip, link)
 
 	-- add all the lines
 	local targetTip = useExtraTip and reg.extraTip or tooltip
-	for _, left, right in private.builder:_LineIterator() do
+	targetTip:AddLine(" ")
+	for _, left, right, lineColor in private.builder:_LineIterator() do
+		local r, g, b = lineColor:GetFractionalRGBA()
 		if right then
-			targetTip:AddDoubleLine(left, right, TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b, TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b)
+			targetTip:AddDoubleLine(left, right, r, g, b, r, g, b)
 		else
-			targetTip:AddLine(left, TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b)
+			targetTip:AddLine(left, r, g, b)
 		end
 	end
 

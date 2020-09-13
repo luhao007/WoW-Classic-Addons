@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- Database Query Class.
@@ -14,6 +12,7 @@
 local _, TSM = ...
 local Query = TSM.Init("Util.DatabaseClasses.Query")
 local Constants = TSM.Include("Util.DatabaseClasses.Constants")
+local Util = TSM.Include("Util.DatabaseClasses.Util")
 local QueryResultRow = TSM.Include("Util.DatabaseClasses.QueryResultRow")
 local QueryClause = TSM.Include("Util.DatabaseClasses.QueryClause")
 local ObjectPool = TSM.Include("Util.ObjectPool")
@@ -22,9 +21,9 @@ local Table = TSM.Include("Util.Table")
 local Math = TSM.Include("Util.Math")
 local LibTSMClass = TSM.Include("LibTSMClass")
 local DatabaseQuery = LibTSMClass.DefineClass("DatabaseQuery")
-local private = {}
-local NAN = math.huge * 0
-local NAN_STR = tostring(NAN)
+local private = {
+	objectPool = nil,
+}
 
 
 
@@ -66,13 +65,13 @@ function DatabaseQuery.__init(self)
 	self._updatesPaused = 0
 	self._queuedUpdate = false
 	self._select = {}
-	self._isIterating = false
+	self._iteratorState = "IDLE"
 	self._result = {}
 	self._resultRowLookup = {}
 	self._iterDistinctUsed = {}
 	self._tempResultRow = nil
 	self._tempVirtualResultRow = nil
-	self._autoRelease = nil
+	self._autoRelease = false
 	self._resultIsStale = false
 	self._joinTypes = {}
 	self._joinDBs = {}
@@ -84,7 +83,10 @@ function DatabaseQuery.__init(self)
 		return private.DatabaseQuerySortGeneric(self, a, b)
 	end
 	self._singleSortWrapper = function(a, b)
-		return private.DatabaseQuerySortSingle(self, a, b)
+		return private.DatabaseQuerySortSingle(self, a, b, self._orderByAscending[1])
+	end
+	self._secondarySortWrapper = function(a, b)
+		return private.DatabaseQuerySortSingle(self, a, b, self._orderByAscending[2])
 	end
 	self._sortValueCache = {}
 	self._resultDependencies = {}
@@ -102,7 +104,7 @@ function DatabaseQuery._Acquire(self, db)
 end
 
 function DatabaseQuery._Release(self)
-	assert(not self._isIterating)
+	assert(self._iteratorState == "IDLE")
 	-- remove from the database
 	self._db:_RemoveQuery(self)
 	self._db = nil
@@ -120,7 +122,7 @@ function DatabaseQuery._Release(self)
 		self._tempVirtualResultRow:Release()
 		self._tempVirtualResultRow = nil
 	end
-	self._autoRelease = nil
+	self._autoRelease = false
 	self:_WipeResults()
 	self:ResetOrderBy()
 	self:ResetDistinct()
@@ -140,17 +142,13 @@ end
 --- Releases the database query.
 -- The database query object will be recycled and must not be accessed after calling this method.
 -- @tparam DatabaseQuery self The database query object
-function DatabaseQuery.Release(self)
+-- @tparam[opt=false] boolean abortIterator Abort any in-progress iterator
+function DatabaseQuery.Release(self, abortIterator)
+	if abortIterator then
+		self._iteratorState = "IDLE"
+	end
 	self:_Release()
 	private.objectPool:Recycle(self)
-end
-
---- Whether or not the database has the field.
--- @tparam DatabaseQuery self The database query object
--- @tparam string field The name of the field
--- @treturn boolean Whether or not the query has the specified field
-function DatabaseQuery.HasField(self, field)
-	return self:_GetFieldType(field) and true or false
 end
 
 --- Adds a virtual field to the query.
@@ -158,21 +156,22 @@ end
 -- @tparam string field The name of the new virtual field
 -- @tparam string fieldType The type of the virtual field
 -- @tparam function func A function which takes a row and returns the value of the virtual field
--- @?tparam[opt=nil] string argField The field to pass into the function (otherwise passes the entire row)
+-- @tparam[opt=nil] string argField The field to pass into the function (otherwise passes the entire row)
 -- @treturn DatabaseQuery The database query object
 function DatabaseQuery.VirtualField(self, field, fieldType, func, argField)
-	if self:HasField(field) or self._virtualFieldFunc[field] then
+	if self:_GetFieldType(field) or self._virtualFieldFunc[field] then
 		error("Field already exists: "..tostring(field))
 	elseif type(func) ~= "function" then
 		error("Invalid func: "..tostring(func))
 	elseif fieldType ~= "number" and fieldType ~= "string" and fieldType ~= "boolean" then
 		error("Field type must be string, number, or boolean")
-	elseif argField and not self:HasField(argField) then
+	elseif argField and not self:_GetFieldType(argField) then
 		error("Arg field doesn't exist: "..tostring(argField))
 	end
 	self._virtualFieldFunc[field] = func
 	self._virtualFieldArgField[field] = argField
 	self._virtualFieldType[field] = fieldType
+	self._resultIsStale = true
 	return self
 end
 
@@ -297,6 +296,32 @@ function DatabaseQuery.Matches(self, field, value)
 	return self
 end
 
+--- Where a string field contains a substring.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string field The name of the field
+-- @tparam string value The substring to match
+-- @treturn DatabaseQuery The database query object
+function DatabaseQuery.Contains(self, field, value)
+	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
+	assert(self:_GetFieldType(field) == "string" and type(value) == "string")
+	self:_NewClause()
+		:Contains(field, strlower(value))
+	return self
+end
+
+--- Where a string field starts with a substring.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string field The name of the field
+-- @tparam string value The substring to match
+-- @treturn DatabaseQuery The database query object
+function DatabaseQuery.StartsWith(self, field, value)
+	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
+	assert(self:_GetFieldType(field) == "string" and type(value) == "string")
+	self:_NewClause()
+		:StartsWith(field, strlower(value))
+	return self
+end
+
 --- Where a foreign field (obtained via a left join) is nil.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The name of the field
@@ -366,6 +391,19 @@ function DatabaseQuery.InTable(self, field, value)
 	return self
 end
 
+--- Where a field does not exists as a key within a table
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string field The name of the field
+-- @tparam table value The table to check against
+-- @treturn DatabaseQuery The database query object
+function DatabaseQuery.NotInTable(self, field, value)
+	assert(value ~= Constants.BOUND_QUERY_PARAM, "This method does not support bound values")
+	assert(type(value) == "table")
+	self:_NewClause()
+		:NotInTable(field, value)
+	return self
+end
+
 --- Starts a nested AND clause.
 -- All of the clauses following this (until the matching @{DatabaseQuery.End}) must be true for the OR clause to be true.
 -- @tparam DatabaseQuery self The database query object
@@ -424,6 +462,7 @@ function DatabaseQuery.OrderBy(self, field, ascending)
 	end
 	tinsert(self._orderBy, field)
 	tinsert(self._orderByAscending, ascending)
+	self._resultIsStale = true
 	return self
 end
 
@@ -435,6 +474,7 @@ end
 function DatabaseQuery.Distinct(self, field)
 	assert(self:_GetFieldType(field), format("Field %s doesn't exist within local DB", tostring(field)))
 	self._distinct = field
+	self._resultIsStale = true
 	return self
 end
 
@@ -446,12 +486,13 @@ function DatabaseQuery.Select(self, ...)
 	assert(#self._select == 0)
 	local numFields = select("#", ...)
 	assert(numFields > 0, "Must select at least 1 field")
-	-- DatabaseRow.GetFields() only supports 8 fields, so we can only support 8 here as well
-	assert(numFields <= 8, "Select() only supports up to 8 fields")
+	-- DatabaseRow.GetFields() only supports 10 fields, so we can only support 10 here as well
+	assert(numFields <= 10, "Select() only supports up to 10 fields")
 	for i = 1, numFields do
 		local field = select(i, ...)
 		tinsert(self._select, field)
 	end
+	self._resultIsStale = true
 	return self
 end
 
@@ -463,6 +504,7 @@ end
 function DatabaseQuery.BindParams(self, ...)
 	local numFields = select("#", ...)
 	assert(self._rootClause:_BindParams(...) == numFields, "Invalid number of bound parameters")
+	self._resultIsStale = true
 	return self
 end
 
@@ -470,7 +512,7 @@ end
 -- This callback gets called whenever any rows in the underlying database change.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam function func The callback function which is called with (self, changedUUID, context)
--- @?param[opt=nil] context A context argument which is passed as the third argument to the callback function
+-- @param[opt=nil] context A context argument which is passed as the third argument to the callback function
 -- @treturn DatabaseQuery The database query object
 function DatabaseQuery.SetUpdateCallback(self, func, context)
 	self._updateCallback = func
@@ -494,12 +536,15 @@ end
 --- Results iterator.
 -- Note that the iterator must run to completion (don't use `break` or `return` to escape it early).
 -- @tparam DatabaseQuery self The database query object
+-- @tparam boolean canAbort Allow the iterator to be aborted if the underlying data is updated which must
+-- be handled by the caller by calling `IsIteratorAborted()` at the end of each iteration loop
 -- @return An iterator for the results of the query
-function DatabaseQuery.Iterator(self)
+function DatabaseQuery.Iterator(self, canAbort)
 	self:_Execute()
 	assert(self._rootClause and self._currentClause == self._rootClause, "Did not end sub-clause")
-	assert(not self._isIterating)
-	self._isIterating = true
+	assert(self._iteratorState == "IDLE")
+	assert(not canAbort or not self._updateCallback)
+	self._iteratorState = canAbort and "IN_PROGRESS_CAN_ABORT" or "IN_PROGRESS"
 	self._autoRelease = false
 	return private.QueryResultIterator, self, 0
 end
@@ -510,8 +555,8 @@ end
 function DatabaseQuery.UUIDIterator(self)
 	self:_Execute()
 	assert(self._rootClause and self._currentClause == self._rootClause, "Did not end sub-clause")
-	assert(not self._isIterating)
-	self._isIterating = true
+	assert(self._iteratorState == "IDLE")
+	self._iteratorState = "IN_PROGRESS"
 	self._autoRelease = false
 	return private.QueryResultAsUUIDIterator, self, 0
 end
@@ -523,10 +568,24 @@ end
 function DatabaseQuery.IteratorAndRelease(self)
 	self:_Execute()
 	assert(self._rootClause and self._currentClause == self._rootClause, "Did not end sub-clause")
-	assert(not self._isIterating)
-	self._isIterating = true
+	assert(self._iteratorState == "IDLE")
+	self._iteratorState = "IN_PROGRESS"
 	self._autoRelease = true
 	return private.QueryResultIterator, self, 0
+end
+
+--- Check if the abortable iterator has been aborted.
+-- @tparam DatabaseQuery self The database query object
+-- @treturn boolean Whether or not the iterator has been aborted
+function DatabaseQuery.IsIteratorAborted(self)
+	if self._iteratorState == "IN_PROGRESS_CAN_ABORT" then
+		return false
+	elseif self._iteratorState == "PENDING_ABORT" then
+		self._iteratorState = "ABORTED"
+		return true
+	else
+		error("Invalid iterator state: "..tostring(self._iteratorState))
+	end
 end
 
 --- Populates a table with the results.
@@ -538,18 +597,23 @@ end
 function DatabaseQuery.AsTable(self, tbl)
 	self:_Execute()
 	if #self._select == 1 then
+		local field = unpack(self._select)
 		for _, uuid in ipairs(self._result) do
-			tinsert(tbl, self:_GetResultRowData(uuid, self._select[1]))
+			tinsert(tbl, self:_GetResultRowData(uuid, field))
 		end
 	elseif #self._select == 2 then
+		local field1, field2 = unpack(self._select)
 		for _, uuid in ipairs(self._result) do
-			local key = self:_GetResultRowData(uuid, self._select[1])
-			assert(key ~= nil and not tbl[key])
-			tbl[key] = self:_GetResultRowData(uuid, self._select[2])
+			local key = self:_GetResultRowData(uuid, field1)
+			if key == nil or tbl[key] then
+				error("Key is nil or not distinct")
+			end
+			tbl[key] = self:_GetResultRowData(uuid, field2)
 		end
 	else
 		error("Invalid select clause")
 	end
+	return self
 end
 
 --- Get the number of resulting rows.
@@ -597,7 +661,7 @@ end
 -- @return The result row or the selected fields
 function DatabaseQuery.GetFirstResult(self)
 	self:_Execute()
-	assert(not self._isIterating)
+	assert(self._iteratorState == "IDLE")
 	if self:Count() == 0 then
 		return
 	end
@@ -619,7 +683,7 @@ end
 -- @return The result row or the selected fields
 function DatabaseQuery.GetFirstResultAndRelease(self)
 	self:_Execute()
-	assert(not self._isIterating)
+	assert(self._iteratorState == "IDLE")
 	if self:Count() == 0 then
 		self:Release()
 		return
@@ -641,7 +705,7 @@ end
 --- Gets the minimum value of a specific field within the query results.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @?treturn number The minimum value or nil if there are no results
+-- @treturn ?number The minimum value or nil if there are no results
 function DatabaseQuery.Min(self, field)
 	self:_Execute()
 	local result = nil
@@ -655,7 +719,7 @@ end
 --- Gets the maximum value of a specific field within the query results.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @?treturn number The maximum value or nil if there are no results
+-- @treturn ?number The maximum value or nil if there are no results
 function DatabaseQuery.Max(self, field)
 	self:_Execute()
 	local result = nil
@@ -669,7 +733,7 @@ end
 --- Gets the summed value of a specific field within the query results.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @?treturn number The summed value or nil if there are no results
+-- @treturn ?number The summed value or nil if there are no results
 function DatabaseQuery.Sum(self, field)
 	self:_Execute()
 	local result = nil
@@ -680,10 +744,24 @@ function DatabaseQuery.Sum(self, field)
 	return result
 end
 
+--- Gets the summed value of a specific field for each group within the query results.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string groupField The field to group by
+-- @tparam string sumField The field to sum
+-- @tparam table result The results table
+function DatabaseQuery.GroupedSum(self, groupField, sumField, result)
+	self:_Execute()
+	for _, uuid in ipairs(self._result) do
+		local group = self:_GetResultRowData(uuid, groupField)
+		local value = self:_GetResultRowData(uuid, sumField)
+		result[group] = (result[group] or 0) + value
+	end
+end
+
 --- Gets the summed value of a specific field within the query results and releases the query.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @?treturn number The summed value or nil if there are no results
+-- @treturn ?number The summed value or nil if there are no results
 function DatabaseQuery.SumAndRelease(self, field)
 	self:_Execute()
 	local result = nil
@@ -698,7 +776,7 @@ end
 --- Gets the average value of a specific field within the query results.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @?treturn number The average value or nil if there are no results
+-- @treturn ?number The average value or nil if there are no results
 function DatabaseQuery.Avg(self, field)
 	local sum = self:Sum(field)
 	local num = self:Count()
@@ -709,7 +787,7 @@ end
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field1 The first field within the results
 -- @tparam string field2 The second field within the results
--- @?treturn number The summed value or nil if there are no results
+-- @treturn ?number The summed value or nil if there are no results
 function DatabaseQuery.SumOfProduct(self, field1, field2)
 	self:_Execute()
 	local result = nil
@@ -738,62 +816,73 @@ function DatabaseQuery.JoinedString(self, field, sep)
 end
 
 --- Calculates the hash of the query results.
--- Note that the query must have a select colum with at most 2 fields.
+-- Note that either `fields` must be specified or the query must have a select colum with at most 2 fields.
 -- @tparam DatabaseQuery self The database query object
--- @?treturn number The hash value or nil if there are no results
-function DatabaseQuery.Hash(self)
+-- @tparam[opt=nil] table fields The fields from each row to hash (ottherwise uses the selected fields)
+-- @treturn ?number The hash value or nil if there are no results
+function DatabaseQuery.Hash(self, fields)
 	self:_Execute()
-	local keyField, valueField, extra = unpack(self._select)
-	assert(keyField and not extra)
-	local hashContext = TempTable.Acquire()
-	for _, uuid in ipairs(self._result) do
-		tinsert(hashContext, self:_GetResultRowData(uuid, keyField))
-		if valueField then
-			tinsert(hashContext, self:_GetResultRowData(uuid, valueField))
-		end
-	end
-	sort(hashContext)
 	local result = nil
-	for _, value in ipairs(hashContext) do
-		result = Math.CalculateHash(value, result)
+	if fields then
+		for _, uuid in ipairs(self._result) do
+			for _, field in ipairs(fields) do
+				result = Math.CalculateHash(self:_GetResultRowData(uuid, field), result)
+			end
+		end
+	else
+		local keyField, valueField, extra = unpack(self._select)
+		assert(keyField and not extra)
+		local hashContext = TempTable.Acquire()
+		for _, uuid in ipairs(self._result) do
+			tinsert(hashContext, self:_GetResultRowData(uuid, keyField))
+			if valueField then
+				tinsert(hashContext, self:_GetResultRowData(uuid, valueField))
+			end
+		end
+		Table.Sort(hashContext)
+		for _, value in ipairs(hashContext) do
+			result = Math.CalculateHash(value, result)
+		end
+		TempTable.Release(hashContext)
 	end
-	TempTable.Release(hashContext)
 	return result
 end
 
---- Calculates the hash of the query results and release.
--- Note that the query must have a select colum with at most 2 fields.
+--- Calculates the hash of the query results, grouping by a field.
 -- @tparam DatabaseQuery self The database query object
--- @?treturn number The hash value or nil if there are no results
-function DatabaseQuery.HashAndRelease(self)
+-- @tparam table fields The fields from each row to hash
+-- @tparam string groupField The field to group by
+-- @tparam table result The result table
+function DatabaseQuery.GroupedHash(self, fields, groupField, result)
 	self:_Execute()
-	local keyField, valueField, extra = unpack(self._select)
-	assert(keyField and not extra)
-	local hashContext = TempTable.Acquire()
-	for _, uuid in ipairs(self._result) do
-		tinsert(hashContext, self:_GetResultRowData(uuid, keyField))
-		if valueField then
-			tinsert(hashContext, self:_GetResultRowData(uuid, valueField))
+	for i = 1, #self._result do
+		local uuid = self._result[i]
+		local groupValue = self:_GetResultRowData(uuid, groupField)
+		local rowHash = nil
+		for j = 1, #fields do
+			rowHash = Math.CalculateHash(self:_GetResultRowData(uuid, fields[j]), rowHash)
 		end
+		result[groupValue] = Math.CalculateHash(rowHash, result[groupValue])
 	end
-	sort(hashContext)
-	local result = nil
-	for _, value in ipairs(hashContext) do
-		result = Math.CalculateHash(value, result)
-	end
-	TempTable.Release(hashContext)
+end
+
+--- Calculates the hash of the query results and release.
+-- Note that either `fields` must be specified or the query must have a select colum with at most 2 fields.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam[opt=nil] table fields The fields from each row to hash (ottherwise uses the selected fields)
+-- @treturn ?number The hash value or nil if there are no results
+function DatabaseQuery.HashAndRelease(self, fields)
+	local result = self:Hash(fields)
 	self:Release()
 	return result
 end
 
 --- Deletes all the result rows from the database and releases the query.
 -- @tparam DatabaseQuery self The database query object
--- @?treturn number The number of rows deleted (equal to `:Count()`)
+-- @treturn ?number The number of rows deleted (equal to `:Count()`)
 function DatabaseQuery.DeleteAndRelease(self)
 	local count = self:Count()
-	for _, uuid in ipairs(self._result) do
-		self._db:DeleteRowByUUID(uuid)
-	end
+	self._db:BulkDelete(self._result)
 	self:Release()
 	return count
 end
@@ -874,15 +963,39 @@ end
 -- @treturn DatabaseQuery The database query object
 function DatabaseQuery.ResetSelect(self)
 	wipe(self._select)
+	self._resultIsStale = true
 	return self
 end
 
---- Gets info on the first order by clause.
+--- Gets info on a specific order by clause.
 -- @tparam DatabaseQuery self The database query object
--- @?treturn string The field name
--- @?treturn boolean Whether or not the sort is ascending
-function DatabaseQuery.GetFirstOrderBy(self)
-	return self._orderBy[1], self._orderByAscending[1]
+-- @tparam number index The index of the order by clause
+-- @treturn ?string The field name
+-- @treturn ?boolean Whether or not the sort is ascending
+function DatabaseQuery.GetOrderBy(self, index)
+	assert(self._orderBy[index])
+	return self._orderBy[index], self._orderByAscending[index]
+end
+
+--- Gets info on the last order by clause.
+-- @tparam DatabaseQuery self The database query object
+-- @treturn ?string The field name
+-- @treturn ?boolean Whether or not the sort is ascending
+function DatabaseQuery.GetLastOrderBy(self)
+	return self._orderBy[#self._orderBy], self._orderByAscending[#self._orderByAscending]
+end
+
+--- Updates the last order by clause.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string field The name of the field to order by
+-- @tparam boolean ascending Whether to order in ascending order (descending otherwise)
+-- @treturn DatabaseQuery The database query object
+function DatabaseQuery.UpdateLastOrderBy(self, field, ascending)
+	assert(#self._orderBy > 0)
+	tremove(self._orderBy)
+	tremove(self._orderByAscending)
+	self:OrderBy(field, ascending)
+	return self
 end
 
 --- Get a result row by its UUID.
@@ -924,6 +1037,7 @@ function DatabaseQuery._GetFieldType(self, field)
 end
 
 function DatabaseQuery._MarkResultStale(self, changedFields)
+	assert(self._iteratorState == "IDLE" or self._iteratorState == "IN_PROGRESS_CAN_ABORT" or self._iteratorState == "PENDING_ABORT")
 	if self._resultIsStale then
 		-- already marked stale
 		return
@@ -932,6 +1046,9 @@ function DatabaseQuery._MarkResultStale(self, changedFields)
 	if self._resultDependencies._all or not changedFields then
 		-- either the result depends on all fields or we weren't given a table of changed fields
 		self._resultIsStale = true
+		if self._iteratorState == "IN_PROGRESS_CAN_ABORT" then
+			self._iteratorState = "PENDING_ABORT"
+		end
 		return
 	end
 
@@ -939,6 +1056,9 @@ function DatabaseQuery._MarkResultStale(self, changedFields)
 	for field in pairs(changedFields) do
 		if self._resultDependencies[field] then
 			self._resultIsStale = true
+			if self._iteratorState == "IN_PROGRESS_CAN_ABORT" then
+				self._iteratorState = "PENDING_ABORT"
+			end
 			return
 		end
 	end
@@ -951,12 +1071,18 @@ function DatabaseQuery._MarkResultStale(self, changedFields)
 			end
 		end
 	end
+	if self._iteratorState == "IN_PROGRESS_CAN_ABORT" then
+		self._iteratorState = "PENDING_ABORT"
+	end
 end
 
 function DatabaseQuery._DoUpdateCallback(self, uuid)
 	if not self._updateCallback then
+		assert(self._iteratorState == "IDLE" or self._iteratorState == "PENDING_ABORT")
 		return
 	end
+	-- can't have an update callback on an abortable iterator
+	assert(self._iteratorState == "IDLE")
 	if self._updatesPaused > 0 then
 		self._queuedUpdate = true
 	else
@@ -981,12 +1107,12 @@ function DatabaseQuery._DoUpdateCallback(self, uuid)
 					if self._db:_IsUnique(joinField) then
 						localUUID = self._db:_GetUniqueRow(joinField, joinValue)
 					elseif self._db:_IsIndex(joinField) then
-						local lowIndex, highIndex = self._db:_GetIndexListMatchingIndexRange(joinField, joinValue)
+						local lowIndex, highIndex = self._db:_GetIndexListMatchingIndexRange(joinField, Util.ToIndexValue(joinValue))
 						if not lowIndex or not highIndex or lowIndex ~= highIndex then
 							-- can't use this index to find a single local UUID
 							break
 						end
-						localUUID = self._db:_GetRowIndexValue(uuid, joinField)
+						localUUID = self._db:_GetAllRowsByIndex(joinField)[lowIndex]
 					end
 				end
 			end
@@ -996,6 +1122,7 @@ function DatabaseQuery._DoUpdateCallback(self, uuid)
 end
 
 function DatabaseQuery._NewClause(self)
+	self._resultIsStale = true
 	local newClause = QueryClause.Get(self, self._currentClause)
 	self._currentClause:_InsertSubClause(newClause)
 	return newClause
@@ -1016,7 +1143,7 @@ function DatabaseQuery._Execute(self, force)
 		return
 	end
 	assert(self._rootClause and self._currentClause == self._rootClause, "Did not end sub-clause")
-	assert(not self._isIterating)
+	assert(self._iteratorState == "IDLE")
 	assert(not next(self._iterDistinctUsed))
 
 	-- clear the current result
@@ -1024,6 +1151,7 @@ function DatabaseQuery._Execute(self, force)
 
 	-- get all the rows which we need to iterate over
 	local firstOrderBy = self._orderBy[1]
+	local skipFirstOrderBy = false
 	local sortNeeded = firstOrderBy and true or false
 	local indexType, indexField, indexArg1, indexArg2, indexArg3 = self:_GetQueryIndexInfo()
 	self._result._queryOptimizationResult = indexType
@@ -1046,6 +1174,7 @@ function DatabaseQuery._Execute(self, force)
 		if firstOrderBy and indexField == firstOrderBy then
 			-- we're also ordering by this field so can skip the first OrderBy field
 			self._result._queryOptimizationResult = "INDEX_AND_ORDER_BY"
+			skipFirstOrderBy = true
 			sortNeeded = #self._orderBy > 1
 			isAscending = self._orderByAscending[1]
 		end
@@ -1056,6 +1185,7 @@ function DatabaseQuery._Execute(self, force)
 			-- we're ordering on an index, so use that index to iterate through all the rows in order to skip the first OrderBy field
 			self._result._queryOptimizationResult = "ORDER_BY"
 			self._result._queryOptimizationField = firstOrderBy
+			skipFirstOrderBy = true
 			sortNeeded = #self._orderBy > 1
 			local isAscending = self._orderByAscending[1]
 			local indexList = self._db:_GetAllRowsByIndex(firstOrderBy)
@@ -1064,6 +1194,12 @@ function DatabaseQuery._Execute(self, force)
 			-- no optimizations
 			self:_AddResultRowsCheckAll()
 		end
+	elseif indexType == "TRIGRAM" then
+		local indexValue = indexArg1
+		local uuids = TempTable.Acquire()
+		self._db:_GetTrigramIndexMatchingRows(indexValue, uuids)
+		self:_AddResultRowsFromIndex(uuids, false, 1, #uuids, true)
+		TempTable.Release(uuids)
 	else
 		error("Invalid index type: "..tostring(indexType))
 	end
@@ -1072,25 +1208,55 @@ function DatabaseQuery._Execute(self, force)
 	-- sort the results if necessary
 	if sortNeeded then
 		if #self._orderBy == 1 then
+			assert(not skipFirstOrderBy)
 			assert(not next(self._sortValueCache))
 			for _, uuid in ipairs(self._result) do
-				local value = self:_GetResultRowData(uuid, self._orderBy[1])
-				local fieldType = self:_GetFieldType(self._orderBy[1])
-				if value ~= nil then
-					if fieldType == "string" then
-						value = strlower(value)
-					elseif fieldType == "boolean" then
-						value = value and 1 or 0
-					elseif fieldType == "number" and tostring(value) == NAN_STR then
-						value = nil
-					end
-				end
-				self._sortValueCache[uuid] = value
+				self._sortValueCache[uuid] = Util.ToIndexValue(self:_GetResultRowData(uuid, self._orderBy[1]))
 			end
-			sort(self._result, self._singleSortWrapper)
+			Table.Sort(self._result, self._singleSortWrapper)
+			wipe(self._sortValueCache)
+		elseif skipFirstOrderBy and #self._orderBy == 2 then
+			-- the result is already ordered by the first orderBy field, so iterate through it
+			-- and sort each group of results where the first orderBy field is the same
+			assert(not next(self._sortValueCache))
+			local group = TempTable.Acquire()
+			local subsetLen = 0
+			local currentSortValue = nil
+			for i = 1, #self._result do
+				local uuid = self._result[i]
+				local sortValue = Util.ToIndexValue(self:_GetResultRowData(uuid, self._orderBy[1]))
+				self._sortValueCache[uuid] = Util.ToIndexValue(self:_GetResultRowData(uuid, self._orderBy[2]))
+				if sortValue ~= currentSortValue then
+					-- the first sort value changed, so we're now in a new group
+					if subsetLen > 1 then
+						-- sort the previous group
+						Table.Sort(group, self._secondarySortWrapper)
+						-- update the corresponding results
+						local offset = i - subsetLen - 1
+						for j = 1, subsetLen do
+							self._result[offset + j] = group[j]
+						end
+					end
+					subsetLen = 0
+					wipe(group)
+					currentSortValue = sortValue
+				end
+				subsetLen = subsetLen + 1
+				group[subsetLen] = uuid
+			end
+			if subsetLen > 1 then
+				-- sort the previous group
+				Table.Sort(group, self._secondarySortWrapper)
+				-- update the corresponding results
+				local offset = #self._result - subsetLen
+				for i = 1, subsetLen do
+					self._result[offset + i] = group[i]
+				end
+			end
+			TempTable.Release(group)
 			wipe(self._sortValueCache)
 		else
-			sort(self._result, self._genericSortWrapper)
+			Table.Sort(self._result, self._genericSortWrapper)
 		end
 	end
 
@@ -1141,7 +1307,8 @@ function DatabaseQuery._GetQueryIndexInfo(self)
 				-- there are no results within this index, so this is as good as it gets
 				return "EMPTY", field
 			else
-				local isStrict = self._rootClause:_IsStrictIndex(field, valueMin, valueMax)
+				-- NOTE: string indexes can't be strict since they are case-insensitive
+				local isStrict = type(valueMin) ~= "string" and type(valueMax) ~= "string" and self._rootClause:_IsStrictIndex(field, valueMin, valueMax)
 				if isStrict then
 					-- rough estimate that being able to skip the query makes each row cost 1/4 as much
 					indexDiff = floor(indexDiff / 4)
@@ -1159,6 +1326,14 @@ function DatabaseQuery._GetQueryIndexInfo(self)
 	end
 	if indexField then
 		return "INDEX", indexField, indexFirstIndex, indexLastIndex, indexIsStrict
+	end
+	-- try the trigram index
+	local trigramIndexField = self._db:_GetTrigramIndexField()
+	if trigramIndexField then
+		local trigramIndexValue = self._rootClause:_GetTrigramIndexValue(trigramIndexField)
+		if trigramIndexValue then
+			return "TRIGRAM", trigramIndexField, trigramIndexValue
+		end
 	end
 	return "NONE"
 end
@@ -1190,7 +1365,7 @@ function DatabaseQuery._AddResultRowsCheckAll(self)
 	local result = self._result
 	local resultIndex = #self._result + 1
 	local resultRowLookup = self._resultRowLookup
-	for uuid in self._db:_UUIDIterator() do
+	for _, uuid in self._db:_UUIDIterator() do
 		if self:_ResultShouldIncludeRow(uuid, false, numJoinDBs, distinct) then
 			result[resultIndex] = uuid
 			resultIndex = resultIndex + 1
@@ -1331,6 +1506,7 @@ function DatabaseQuery._JoinHelper(self, db, field, joinType)
 	tinsert(self._joinTypes, joinType)
 	tinsert(self._joinDBs, db)
 	tinsert(self._joinFields, field)
+	self._resultIsStale = true
 end
 
 
@@ -1339,19 +1515,19 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.DatabaseQuerySortSingle(self, aUUID, bUUID)
+function private.DatabaseQuerySortSingle(self, aUUID, bUUID, isAscending)
 	local aValue = self._sortValueCache[aUUID]
 	local bValue = self._sortValueCache[bUUID]
 	if aValue == bValue then
 		-- make the sort stable
-		return aUUID < bUUID
+		return aUUID > bUUID
 	elseif aValue == nil then
 		-- sort nil to the end
 		return false
 	elseif bValue == nil then
 		-- sort nil to the end
 		return true
-	elseif self._orderByAscending[1] then
+	elseif isAscending then
 		return aValue < bValue
 	else
 		return aValue > bValue
@@ -1361,44 +1537,32 @@ end
 function private.DatabaseQuerySortGeneric(self, aUUID, bUUID)
 	for i = 1, #self._orderBy do
 		local orderByField = self._orderBy[i]
-		local aValue = self:_GetResultRowData(aUUID, orderByField)
-		local bValue = self:_GetResultRowData(bUUID, orderByField)
-		if (aValue == nil and bValue == nil) or (tostring(aValue) == NAN_STR and tostring(bValue) == NAN_STR) then
+		local aValue = Util.ToIndexValue(self:_GetResultRowData(aUUID, orderByField))
+		local bValue = Util.ToIndexValue(self:_GetResultRowData(bUUID, orderByField))
+		if aValue == bValue then
 			-- continue looping
-		elseif aValue == nil or tostring(aValue) == NAN_STR then
-			-- sort nil/NAN to the end
+		elseif aValue == nil then
+			-- sort nil to the end
 			return false
-		elseif bValue == nil or tostring(bValue) == NAN_STR then
+		elseif bValue == nil then
 			-- sort nil to the end
 			return true
+		elseif self._orderByAscending[i] then
+			return aValue < bValue
 		else
-			local fieldType = self:_GetFieldType(orderByField)
-			if fieldType == "string" then
-				aValue = strlower(aValue)
-				bValue = strlower(bValue)
-			elseif fieldType == "boolean" then
-				aValue = aValue and 1 or 0
-				bValue = bValue and 1 or 0
-			end
-			if aValue == bValue then
-				-- continue looping
-			elseif self._orderByAscending[i] then
-				return aValue < bValue
-			else
-				return aValue > bValue
-			end
+			return aValue > bValue
 		end
 	end
 	-- make the sort stable
-	return aUUID < bUUID
+	return aUUID > bUUID
 end
 
 function private.QueryResultAsUUIDIterator(self, index)
 	index = index + 1
 	local uuid = self._result[index]
 	if not uuid then
-		assert(self._isIterating)
-		self._isIterating = false
+		assert(self._iteratorState == "IN_PROGRESS")
+		self._iteratorState = "IDLE"
 		if self._autoRelease then
 			self:Release()
 		end
@@ -1410,9 +1574,14 @@ end
 function private.QueryResultIterator(self, index)
 	index = index + 1
 	local uuid = self._result[index]
+	if self._iteratorState == "ABORTED" then
+		uuid = nil
+	elseif self._iteratorState ~= "IN_PROGRESS" and self._iteratorState ~= "IN_PROGRESS_CAN_ABORT" then
+		error("Invalid iteratorState: "..tostring(self._iteratorState))
+	end
 	if not uuid then
-		assert(self._isIterating)
-		self._isIterating = false
+		assert(self._iteratorState == "IN_PROGRESS" or self._iteratorState == "IN_PROGRESS_CAN_ABORT" or self._iteratorState == "ABORTED")
+		self._iteratorState = "IDLE"
 		if self._autoRelease then
 			self:Release()
 		end
@@ -1425,12 +1594,18 @@ function private.QueryResultIterator(self, index)
 			row = self:_CreateResultRow(uuid)
 		end
 		return index, row
-	elseif #self._joinDBs == 0 and numSelectFields <= 2 then
+	elseif #self._joinDBs == 0 and numSelectFields <= 5 then
 		-- as an optimization, we don't need to create a result row
 		if numSelectFields == 1 then
 			return index, self:_GetResultRowData(uuid, self._select[1])
 		elseif numSelectFields == 2 then
 			return index, self:_GetResultRowData(uuid, self._select[1]), self:_GetResultRowData(uuid, self._select[2])
+		elseif numSelectFields == 3 then
+			return index, self:_GetResultRowData(uuid, self._select[1]), self:_GetResultRowData(uuid, self._select[2]), self:_GetResultRowData(uuid, self._select[3])
+		elseif numSelectFields == 4 then
+			return index, self:_GetResultRowData(uuid, self._select[1]), self:_GetResultRowData(uuid, self._select[2]), self:_GetResultRowData(uuid, self._select[3]), self:_GetResultRowData(uuid, self._select[4])
+		elseif numSelectFields == 5 then
+			return index, self:_GetResultRowData(uuid, self._select[1]), self:_GetResultRowData(uuid, self._select[2]), self:_GetResultRowData(uuid, self._select[3]), self:_GetResultRowData(uuid, self._select[4]), self:_GetResultRowData(uuid, self._select[5])
 		else
 			error("Invalid numSelectFields: "..tostring(numSelectFields))
 		end

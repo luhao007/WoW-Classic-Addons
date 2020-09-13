@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("CThun", "DBM-AQ40", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200828175100")
+mod:SetRevision("20200907165533")
 mod:SetCreatureID(15589, 15727)
 mod:SetEncounterID(717)
 mod:SetHotfixNoticeRev(20200823000000)--2020, 8, 23
@@ -32,7 +32,7 @@ local specWarnEyeBeam			= mod:NewSpecialWarningYou(26134, nil, nil, nil, 1, 2)
 local yellEyeBeam				= mod:NewYell(26134)
 
 local timerDarkGlareCD			= mod:NewNextTimer(86, 26029)
-local timerDarkGlare			= mod:NewBuffActiveTimer(37, 26029)
+local timerDarkGlare			= mod:NewBuffActiveTimer(39, 26029)
 local timerEyeTentacle			= mod:NewTimer(45, "TimerEyeTentacle", 126, nil, nil, 1)
 local timerGiantEyeTentacle		= mod:NewTimer(60, "TimerGiantEyeTentacle", 126, nil, nil, 1)
 local timerClawTentacle			= mod:NewTimer(8, "TimerClawTentacle", 26391, nil, nil, 1) -- every 8 seconds
@@ -118,8 +118,12 @@ function mod:OnCombatEnd(wipe, isSecondRun)
 end
 
 function mod:DarkGlare()
-	specWarnDarkGlare:Show()
-	specWarnDarkGlare:Play("laserrun")--Or "watchstep" ?
+	--ghost check, because if someone releases during encounter, this loop continues until they zone back in
+	--We don't want to spam dark glare warnings while they are a ghost outside running back on a wipe
+	if not UnitIsDeadOrGhost("player") then
+		specWarnDarkGlare:Show()
+		specWarnDarkGlare:Play("laserrun")--Or "watchstep" ?
+	end
 	timerDarkGlare:Start()
 	timerDarkGlareCD:Start()
 	self:ScheduleMethod(86, "DarkGlare")
@@ -187,7 +191,8 @@ do
 			end
 			if self.Options.InfoFrame and not DBM.InfoFrame:IsShown() then
 				DBM.InfoFrame:SetHeader(L.Stomach)
-				DBM.InfoFrame:Show(5, "function", updateInfoFrame, false, false)
+				DBM.InfoFrame:Show(42, "function", updateInfoFrame, false, false)
+				DBM.InfoFrame:SetColumns(1)
 			end
 		end
 	end

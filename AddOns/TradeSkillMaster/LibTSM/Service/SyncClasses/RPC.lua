@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -20,6 +18,7 @@ local private = {
 	rpcSeqNum = 0,
 }
 local RPC_EXTRA_TIMEOUT = 15
+local CALLBACK_TIME_WARNING_THRESHOLD_MS = 20
 
 
 
@@ -96,7 +95,13 @@ function private.HandleCall(dataType, _, sourcePlayer, data)
 		return
 	end
 	local responseData = TempTable.Acquire()
+
+	local startTime = debugprofilestop()
 	responseData.result = TempTable.Acquire(private.rpcFunctions[data.name](unpack(data.args)))
+	local timeTaken = debugprofilestop() - startTime
+	if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
+		Log.Warn("RPC (%s) took %0.2fms", tostring(data.name), timeTaken)
+	end
 	responseData.seq = data.seq
 	local numBytes = Comm.SendData(Constants.DATA_TYPES.RPC_RETURN, sourcePlayer, responseData)
 	TempTable.Release(responseData.result)
@@ -120,7 +125,12 @@ function private.HandleReturn(dataType, _, _, data)
 	elseif not private.pendingRPC[data.seq] then
 		return
 	end
+	local startTime = debugprofilestop()
 	private.pendingRPC[data.seq].handler(unpack(data.result))
+	local timeTaken = debugprofilestop() - startTime
+	if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
+		Log.Warn("RPC (%s) result handler took %0.2fms", tostring(private.pendingRPC[data.seq].name), timeTaken)
+	end
 	TempTable.Release(private.pendingRPC[data.seq])
 	private.pendingRPC[data.seq] = nil
 end

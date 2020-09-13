@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,7 +9,11 @@ local CraftingUI = TSM.UI:NewPackage("CraftingUI")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local Event = TSM.Include("Util.Event")
+local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	topLevelPages = {},
 	fsm = nil,
 	craftOpen = nil,
@@ -19,14 +21,15 @@ local private = {
 	defaultUISwitchBtn = nil,
 	isVisible = false,
 }
-local MIN_FRAME_SIZE = { width = 820, height = 587 }
+local MIN_FRAME_SIZE = { width = 650, height = 587 }
 local BEAST_TRAINING_DE = "Bestienausbildung"
 local BEAST_TRAINING_ES = "Entrenamiento de bestias"
 local BEAST_TRAINING_RUS = "Воспитание питомца"
 local IGNORED_PROFESSIONS = {
 	[53428] = true,  -- Runeforging
 	[158756] = true, -- Skinning Skills
-	[193290] = true  -- Herbalism Skills
+	[193290] = true,  -- Herbalism Skills
+	[7620] = true, -- Fishing Skills (shows up as Fishing)
 }
 
 
@@ -36,8 +39,11 @@ local IGNORED_PROFESSIONS = {
 -- ============================================================================
 
 function CraftingUI.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "craftingUIContext", "showDefault")
+		:AddKey("global", "craftingUIContext", "frame")
 	private.FSMCreate()
-	TSM.Crafting.ProfessionScanner.SetDisabled(TSM.db.global.internalData.craftingUIFrameContext.showDefault)
+	TSM.Crafting.ProfessionScanner.SetDisabled(private.settings.showDefault)
 end
 
 function CraftingUI.OnDisable()
@@ -48,12 +54,12 @@ function CraftingUI.OnDisable()
 	end
 end
 
-function CraftingUI.RegisterTopLevelPage(name, textureInfo, callback)
-	tinsert(private.topLevelPages, { name = name, textureInfo = textureInfo, callback = callback })
+function CraftingUI.RegisterTopLevelPage(name, callback)
+	tinsert(private.topLevelPages, { name = name, callback = callback })
 end
 
 function CraftingUI.Toggle()
-	TSM.db.global.internalData.craftingUIFrameContext.showDefault = false
+	private.settings.showDefault = false
 	TSM.Crafting.ProfessionScanner.SetDisabled(false)
 	private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
 end
@@ -90,18 +96,18 @@ end
 
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("crafting")
-	local frame = TSMAPI_FOUR.UI.NewElement("LargeApplicationFrame", "base")
+	local frame = UIElements.New("LargeApplicationFrame", "base")
 		:SetParent(UIParent)
+		:SetSettingsContext(private.settings, "frame")
 		:SetMinResize(MIN_FRAME_SIZE.width, MIN_FRAME_SIZE.height)
-		:SetContextTable(TSM.db.global.internalData.craftingUIFrameContext, TSM.db:GetDefaultReadOnly("global", "internalData", "craftingUIFrameContext"))
-		:SetStyle("smallNavArea", true)
-		:SetStyle("strata", "HIGH")
-		:SetTitle(L["TSM Crafting"])
+		:SetStrata("HIGH")
+		:AddPlayerGold()
+		:AddAppStatusIcon()
 		:AddSwitchButton(private.SwitchBtnOnClick)
 		:SetScript("OnHide", private.BaseFrameOnHide)
 
 	for _, info in ipairs(private.topLevelPages) do
-		frame:AddNavButton(info.name, info.textureInfo, info.callback)
+		frame:AddNavButton(info.name, info.callback)
 	end
 
 	return frame
@@ -118,14 +124,20 @@ function private.BaseFrameOnHide()
 	private.fsm:ProcessEvent("EV_FRAME_HIDE")
 end
 
-function private.GetNavFrame(_, path)
-	return private.topLevelPages.callback[path]()
+function private.SwitchBtnOnClick(button)
+	private.settings.showDefault = button ~= private.defaultUISwitchBtn
+	TSM.Crafting.ProfessionScanner.SetDisabled(private.settings.showDefault)
+	private.fsm:ProcessEvent("EV_SWITCH_BTN_CLICKED")
 end
 
-function private.SwitchBtnOnClick(button)
-	TSM.db.global.internalData.craftingUIFrameContext.showDefault = button ~= private.defaultUISwitchBtn
-	TSM.Crafting.ProfessionScanner.SetDisabled(TSM.db.global.internalData.craftingUIFrameContext.showDefault)
-	private.fsm:ProcessEvent("EV_SWITCH_BTN_CLICKED")
+function private.SwitchButtonOnEnter(button)
+	button:SetTextColor("TEXT")
+		:Draw()
+end
+
+function private.SwitchButtonOnLeave(button)
+	button:SetTextColor("TEXT_ALT")
+		:Draw()
 end
 
 
@@ -192,16 +204,16 @@ function private.FSMCreate()
 			:AddTransition("ST_DEFAULT_OPEN")
 			:AddTransition("ST_FRAME_OPEN")
 			:AddEvent("EV_FRAME_TOGGLE", function(context)
-				assert(not TSM.db.global.internalData.craftingUIFrameContext.showDefault)
+				assert(not private.settings.showDefault)
 				TSM.Crafting.ProfessionScanner.SetDisabled(false)
 				return "ST_FRAME_OPEN"
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
-				TSM.Crafting.ProfessionScanner.SetDisabled(TSM.db.global.internalData.craftingUIFrameContext.showDefault)
+				TSM.Crafting.ProfessionScanner.SetDisabled(private.settings.showDefault)
 				local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
 				if CraftingUI.IsProfessionIgnored(name) then
 					return "ST_DEFAULT_OPEN", true
-				elseif TSM.db.global.internalData.craftingUIFrameContext.showDefault then
+				elseif private.settings.showDefault then
 					return "ST_DEFAULT_OPEN"
 				else
 					return "ST_FRAME_OPEN"
@@ -217,16 +229,17 @@ function private.FSMCreate()
 					UIParent_OnEvent(UIParent, "TRADE_SKILL_SHOW")
 				end
 				if not private.defaultUISwitchBtn then
-					private.defaultUISwitchBtn = TSMAPI_FOUR.UI.NewElement("ActionButton", "switchBtn")
-						:SetStyle("width", 60)
-						:SetStyle("height", TSM.IsWowClassic() and 16 or 15)
-						:SetStyle("anchors", { { "TOPRIGHT", TSM.IsWowClassic() and -60 or -27, TSM.IsWowClassic() and -16 or -4 } })
-						:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-						:SetStyle("fontHeight", 12)
-						:SetStyle("relativeLevel", 3)
+					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
+						:SetSize(60, TSM.IsWowClassic() and 16 or 15)
+						:AddAnchor("TOPRIGHT", TSM.IsWowClassic() and -60 or -27, TSM.IsWowClassic() and -16 or -4)
+						:SetRelativeLevel(3)
 						:DisableClickCooldown()
+						:SetFont("BODY_BODY3_MEDIUM")
 						:SetText(L["TSM4"])
 						:SetScript("OnClick", private.SwitchBtnOnClick)
+						:SetScript("OnEnter", private.SwitchButtonOnEnter)
+						:SetScript("OnLeave", private.SwitchButtonOnLeave)
+					private.defaultUISwitchBtn:_GetBaseFrame():SetParent(TradeSkillFrame)
 				end
 				private.defaultUISwitchBtn:_GetBaseFrame():SetParent(private.craftOpen and CraftFrame or TradeSkillFrame)
 				if isIgnored then
@@ -237,9 +250,9 @@ function private.FSMCreate()
 					private.defaultUISwitchBtn:Draw()
 				end
 				if private.craftOpen then
-					CraftFrame:SetScript("OnHide", DefaultFrameOnHide)
+					ScriptWrapper.Set(CraftFrame, "OnHide", DefaultFrameOnHide)
 				else
-					TradeSkillFrame:SetScript("OnHide", DefaultFrameOnHide)
+					ScriptWrapper.Set(TradeSkillFrame, "OnHide", DefaultFrameOnHide)
 				end
 				if not TSM.IsWowClassic() then
 					local linked, linkedName = TSM.Crafting.ProfessionUtil.IsLinkedProfession()
@@ -252,12 +265,12 @@ function private.FSMCreate()
 			:SetOnExit(function(context)
 				if private.craftOpen then
 					if CraftFrame then
-						CraftFrame:SetScript("OnHide", nil)
+						ScriptWrapper.Clear(CraftFrame, "OnHide")
 						HideUIPanel(CraftFrame)
 					end
 				else
 					if TradeSkillFrame then
-						TradeSkillFrame:SetScript("OnHide", nil)
+						ScriptWrapper.Clear(TradeSkillFrame, "OnHide")
 						HideUIPanel(TradeSkillFrame)
 					end
 				end
@@ -273,10 +286,10 @@ function private.FSMCreate()
 				if CraftingUI.IsProfessionIgnored(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()) then
 					return "ST_DEFAULT_OPEN", true
 				else
-					if TSM.db.global.internalData.craftingUIFrameContext.showDefault then
+					if private.settings.showDefault then
 						return "ST_DEFAULT_OPEN"
 					else
-						TSM.Crafting.ProfessionScanner.SetDisabled(TSM.db.global.internalData.craftingUIFrameContext.showDefault)
+						TSM.Crafting.ProfessionScanner.SetDisabled(private.settings.showDefault)
 						return "ST_FRAME_OPEN"
 					end
 				end

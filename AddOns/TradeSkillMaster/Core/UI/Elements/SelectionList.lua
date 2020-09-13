@@ -1,18 +1,19 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 --- SelectionList UI Element Class.
 -- A selection list is a scrollable list of entries which allows selecting a single one. It is a subclass of the
--- @{ScrollList} class.
+-- @{ScrollingTable} class.
 -- @classmod SelectionList
 
 local _, TSM = ...
-local SelectionList = TSM.Include("LibTSMClass").DefineClass("SelectionList", TSM.UI.ScrollList)
+local Theme = TSM.Include("Util.Theme")
+local SelectionList = TSM.Include("LibTSMClass").DefineClass("SelectionList", TSM.UI.ScrollingTable)
+local UIElements = TSM.Include("UI.UIElements")
+UIElements.Register(SelectionList)
 TSM.UI.SelectionList = SelectionList
 local private = {}
 
@@ -26,6 +27,20 @@ function SelectionList.__init(self)
 	self.__super:__init()
 	self._selectedEntry = nil
 	self._onEntrySelectedHandler = nil
+end
+
+function SelectionList.Acquire(self)
+	self._headerHidden = true
+	self.__super:Acquire()
+	self:SetSelectionDisabled(true)
+	self:GetScrollingTableInfo()
+		:NewColumn("text")
+			:SetFont("BODY_BODY2")
+			:SetJustifyH("LEFT")
+			:SetTextFunction(private.GetText)
+			:DisableHiding()
+			:Commit()
+		:Commit()
 end
 
 function SelectionList.Release(self)
@@ -69,69 +84,18 @@ end
 -- Private Class Methods
 -- ============================================================================
 
-function SelectionList._CreateRow(self)
-	local color = self:_GetStyle("textColor") or "#e2e2e2"
-	local row = self.__super:_CreateRow()
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Texture", "highlight")
-			:SetStyle("anchors", { { "TOPLEFT" }, { "BOTTOMRIGHT" } })
-			:SetStyle("color", "#30290b")
-		)
-
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Button", "button")
-			:SetStyle("anchors", { { "TOPLEFT" }, { "BOTTOMRIGHT" } })
-			:SetScript("OnEnter", private.RowOnEnter)
-			:SetScript("OnLeave", private.RowOnLeave)
-			:SetScript("OnClick", private.RowOnClick)
-		)
-
-		:AddChildNoLayout(TSMAPI_FOUR.UI.NewElement("Text", "text")
-			:SetStyle("fontHeight", 12)
-			:SetStyle("textColor", color)
-			:SetStyle("anchors", { { "TOPLEFT", 8, 0 }, { "BOTTOMRIGHT", -8, 0 } })
-		)
-
-	row:GetElement("highlight"):Hide()
-
-	return row
-end
-
-function SelectionList._SetRowHitRectInsets(self, row, top, bottom)
-	row:GetElement("button"):SetHitRectInsets(0, 0, top, bottom)
-	self.__super:_SetRowHitRectInsets(row, top, bottom)
-end
-
-function SelectionList._DrawRow(self, row, dataIndex)
-	local operationName = row:GetContext()
-	local isSelected = operationName == self._selectedEntry
-
-	local color = self:_GetStyle("textColor") or "#e2e2e2"
-
-	row:GetElement("text")
-		:SetStyle("textColor", isSelected and "#ffd839" or color)
-		:SetStyle("font", isSelected and TSM.UI.Fonts.bold or TSM.UI.Fonts.MontserratRegular)
-		:SetText(operationName)
-
-	self.__super:_DrawRow(row, dataIndex)
-end
-
-
-
--- ============================================================================
--- Local Script Handlers
--- ============================================================================
-
-function private.RowOnEnter(button)
-	button:GetParentElement():GetElement("highlight"):Show()
-end
-
-function private.RowOnLeave(button)
-	button:GetParentElement():GetElement("highlight"):Hide()
-end
-
-function private.RowOnClick(button)
-	local row = button:GetParentElement()
-	local self = row:GetParentElement()
+function SelectionList._HandleRowClick(self, data)
 	if self._onEntrySelectedHandler then
-		self:_onEntrySelectedHandler(row:GetContext())
+		self:_onEntrySelectedHandler(data)
 	end
+end
+
+
+
+-- ============================================================================
+-- Private Helper Functions
+-- ============================================================================
+
+function private.GetText(self, data)
+	return Theme.GetColor(data == self._selectedEntry and "INDICATOR" or "TEXT"):ColorText(data)
 end

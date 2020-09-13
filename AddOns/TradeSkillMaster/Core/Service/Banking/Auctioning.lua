@@ -1,16 +1,14 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Auctioning = TSM.Banking:NewPackage("Auctioning")
 local TempTable = TSM.Include("Util.TempTable")
 local BagTracking = TSM.Include("Service.BagTracking")
-local GuildTracking = TSM.Include("Service.GuildTracking")
+local Inventory = TSM.Include("Service.Inventory")
 local private = {}
 
 
@@ -43,7 +41,7 @@ end
 function Auctioning.MaxExpiresToBank(callback, groups)
 	local items = TempTable.Acquire()
 	TSM.Banking.Util.PopulateGroupItemsFromBags(items, groups, private.MaxExpiresGetNumToMoveToBank)
-	TSM.Banking.MoveToBag(items, callback)
+	TSM.Banking.MoveToBank(items, callback)
 	TempTable.Release(items)
 end
 
@@ -66,43 +64,23 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 		:Equal("autoBaseItemString", itemString)
 		:SumAndRelease("quantity") or 0
 	if includeAH then
-		numInBags = numInBags + select(3, TSMAPI_FOUR.Inventory.GetPlayerTotals(itemString)) + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString)
+		numInBags = numInBags + select(3, Inventory.GetPlayerTotals(itemString)) + Inventory.GetMailQuantity(itemString)
 	end
 
 	for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", TSM.Groups.GetPathByItem(itemString)) do
+		local maxExpires = TSM.Auctioning.Util.GetPrice("maxExpires", operationSettings, itemString)
 		local operationHasExpired = false
-		if operationSettings.maxExpires > 0 then
+		if maxExpires and maxExpires > 0 then
 			local numExpires = TSM.Accounting.Auctions.GetNumExpiresSinceSale(itemString)
-			if numExpires and numExpires > operationSettings.maxExpires then
+			if numExpires and numExpires > maxExpires then
 				operationHasExpired = true
 			end
 		end
 
-		if not operationHasExpired then
-			-- subtract the keep quantity
-			if operationSettings.keepQuantity > 0 then
-				if TSM.Banking.IsGuildBankOpen() and operationSettings.keepQtySources.guild then
-					local numInBank = 0
-					if operationSettings.keepQtySources.bank then
-						numInBank = BagTracking.CreateQueryBankItem(itemString)
-							:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
-							:Equal("autoBaseItemString", itemString)
-							:SumAndRelease("quantity") or 0
-					end
-					numAvailable = numAvailable - max(operationSettings.keepQuantity - numInBank, 0)
-				elseif not TSM.Banking.IsGuildBankOpen() and operationSettings.keepQtySources.bank then
-					local numInBank = 0
-					if operationSettings.keepQtySources.guild then
-						numInBank = GuildTracking.CreateQueryItem(itemString)
-							:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
-							:Equal("autoBaseItemString", itemString)
-							:SumAndRelease("quantity") or 0
-					end
-					numAvailable = numAvailable - max(operationSettings.keepQuantity - numInBank, 0)
-				end
-			end
-
-			local numNeeded = (TSM.IsWowClassic() and operationSettings.stackSize or 1) * operationSettings.postCap
+		local postCap = TSM.Auctioning.Util.GetPrice("postCap", operationSettings, itemString)
+		local stackSize = (TSM.IsWowClassic() and TSM.Auctioning.Util.GetPrice("stackSize", operationSettings, itemString)) or (not TSM.IsWowClassic() and 1)
+		if not operationHasExpired and postCap and stackSize then
+			local numNeeded = stackSize * postCap
 			if numInBags > numNeeded then
 				-- we can satisfy this operation from the bags
 				numInBags = numInBags - numNeeded
@@ -127,15 +105,18 @@ end
 function private.MaxExpiresGetNumToMoveToBank(itemString, numHave)
 	local numToKeepInBags = 0
 	for _, _, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", TSM.Groups.GetPathByItem(itemString)) do
+		local maxExpires = TSM.Auctioning.Util.GetPrice("maxExpires", operationSettings, itemString)
 		local operationHasExpired = false
-		if operationSettings.maxExpires > 0 then
+		if maxExpires and maxExpires > 0 then
 			local numExpires = TSM.Accounting.Auctions.GetNumExpiresSinceSale(itemString)
-			if numExpires and numExpires > operationSettings.maxExpires then
+			if numExpires and numExpires > maxExpires then
 				operationHasExpired = true
 			end
 		end
-		if not operationHasExpired then
-			numToKeepInBags = numToKeepInBags + (TSM.IsWowClassic() and operationSettings.stackSize or 1) * operationSettings.postCap
+		local postCap = TSM.Auctioning.Util.GetPrice("postCap", operationSettings, itemString)
+		local stackSize = (TSM.IsWowClassic() and TSM.Auctioning.Util.GetPrice("stackSize", operationSettings, itemString)) or (not TSM.IsWowClassic() and 1)
+		if not operationHasExpired and postCap and stackSize then
+			numToKeepInBags = numToKeepInBags + stackSize * postCap
 		end
 	end
 	return max(numHave - numToKeepInBags, 0)

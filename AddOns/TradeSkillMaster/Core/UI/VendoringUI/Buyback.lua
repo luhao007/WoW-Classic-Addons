@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -11,7 +9,10 @@ local Buyback = TSM.UI.VendoringUI:NewPackage("Buyback")
 local L = TSM.Include("Locale").GetTable()
 local Money = TSM.Include("Util.Money")
 local ItemInfo = TSM.Include("Service.ItemInfo")
+local Settings = TSM.Include("Service.Settings")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
+	settings = nil,
 	query = nil,
 }
 
@@ -22,7 +23,9 @@ local private = {
 -- ============================================================================
 
 function Buyback.OnInitialize()
-	TSM.UI.VendoringUI.RegisterTopLevelPage(BUYBACK, "iconPack.24x24/Buyout", private.GetFrame)
+	private.settings = Settings.NewView()
+		:AddKey("global", "vendoringUIContext", "buybackScrollingTable")
+	TSM.UI.VendoringUI.RegisterTopLevelPage(BUYBACK, private.GetFrame)
 end
 
 
@@ -37,45 +40,34 @@ function private.GetFrame()
 	private.query:ResetOrderBy()
 	private.query:OrderBy("name", true)
 
-	return TSMAPI_FOUR.UI.NewElement("Frame", "buy")
+	return UIElements.New("Frame", "buy")
 		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-			:SetStyle("margin.top", 33)
-			:SetStyle("height", 2)
-			:SetStyle("color", "#585858")
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("QueryScrollingTable", "items")
-			:SetStyle("rowHeight", 20)
-			:SetStyle("headerBackground", "#404040")
-			:SetStyle("headerFont", TSM.UI.Fonts.MontserratMedium)
-			:SetStyle("headerFontHeight", 14)
+		:AddChild(UIElements.New("QueryScrollingTable", "items")
+			:SetMargin(0, 0, -2, 0)
+			:SetSettingsContext(private.settings, "buybackScrollingTable")
 			:GetScrollingTableInfo()
 				:NewColumn("qty")
-					:SetTitles(L["Qty"])
-					:SetWidth(40)
-					:SetFont(TSM.UI.Fonts.RobotoMedium)
-					:SetFontHeight(12)
+					:SetTitle(L["Qty"])
+					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
 					:SetTextInfo("quantity")
 					:SetSortInfo("quantity")
 					:Commit()
 				:NewColumn("item")
-					:SetTitles(L["Item"])
+					:SetTitle(L["Item"])
 					:SetIconSize(12)
-					:SetFont(TSM.UI.Fonts.FRIZQT)
-					:SetFontHeight(12)
+					:SetFont("ITEM_BODY3")
 					:SetJustifyH("LEFT")
 					:SetTextInfo("itemString", private.GetItemText)
 					:SetIconInfo("itemString", ItemInfo.GetTexture)
 					:SetTooltipInfo("itemString")
 					:SetSortInfo("name")
 					:SetTooltipLinkingDisabled(true)
+					:DisableHiding()
 					:Commit()
 				:NewColumn("cost")
-					:SetTitles(L["Cost"])
-					:SetWidth(100)
-					:SetFont(TSM.UI.Fonts.RobotoMedium)
-					:SetFontHeight(12)
+					:SetTitle(L["Cost"])
+					:SetFont("TABLE_TABLE1")
 					:SetJustifyH("RIGHT")
 					:SetTextInfo("price", Money.ToString)
 					:SetSortInfo("price")
@@ -85,34 +77,27 @@ function private.GetFrame()
 			:SetQuery(private.query)
 			:SetScript("OnRowClick", private.RowOnClick)
 		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "footer")
+		:AddChild(UIElements.New("Texture", "line")
+			:SetHeight(2)
+			:SetTexture("ACTIVE_BG")
+		)
+		:AddChild(UIElements.New("Frame", "footer")
 			:SetLayout("HORIZONTAL")
-			:SetStyle("height", 26)
-			:SetStyle("margin.top", 8)
-			:SetStyle("margin.bottom", -2)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "gold")
+			:SetHeight(40)
+			:SetPadding(8)
+			:SetBackgroundColor("PRIMARY_BG_ALT")
+			:AddChild(UIElements.New("Frame", "gold")
 				:SetLayout("HORIZONTAL")
-				:SetStyle("width", 167)
-				:SetStyle("margin.right", 8)
-				:SetStyle("padding", 4)
-				:SetStyle("background", "#171717")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "icon")
-					:SetStyle("width", 18)
-					:SetStyle("height", 18)
-					:SetStyle("texturePack", "iconPack.18x18/Coins")
-					:SetStyle("vertexColor", "#ffd839")
-				)
-				:AddChild(TSMAPI_FOUR.UI.NewElement("PlayerGoldText", "text")
-					:SetStyle("justifyH", "RIGHT")
-					:SetStyle("fontHeight", 12)
-				)
+				:SetWidth(166)
+				:SetMargin(0, 8, 0, 0)
+				:SetPadding(4)
+				:AddChild(UIElements.New("PlayerGoldText", "text"))
 			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("ActionButton", "buybackAllBtn")
-				:SetText(L["BUYBACK ALL"])
+			:AddChild(UIElements.New("ActionButton", "buybackAllBtn")
+				:SetText(L["Buyback All"])
 				:SetScript("OnClick", private.BuybackAllBtnOnClick)
 			)
 		)
-		:SetScript("OnUpdate", private.FrameOnUpdate)
 end
 
 function private.GetItemText(itemString)
@@ -124,11 +109,6 @@ end
 -- ============================================================================
 -- Local Script Handlers
 -- ============================================================================
-
-function private.FrameOnUpdate(frame)
-	frame:SetScript("OnUpdate", nil)
-	frame:GetBaseElement():SetBottomPadding(32)
-end
 
 function private.RowOnClick(_, row, mouseButton)
 	if mouseButton == "RightButton" then

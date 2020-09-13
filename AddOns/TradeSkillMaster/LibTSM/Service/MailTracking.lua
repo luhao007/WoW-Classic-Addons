@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -21,6 +19,7 @@ local private = {
 	settings = nil,
 	mailDB = nil,
 	itemDB = nil,
+	quantityDB = nil,
 	isOpen = false,
 	tooltip = nil,
 	expiresCallbacks = {},
@@ -69,6 +68,7 @@ MailTracking:OnSettingsLoad(function()
 	private.mailDB = Database.NewSchema("MAIL_TRACKING_INBOX_INFO")
 		:AddUniqueNumberField("index")
 		:AddStringField("icon")
+		:AddStringField("sender")
 		:AddStringField("subject")
 		:AddStringField("itemString")
 		:AddNumberField("itemCount")
@@ -211,6 +211,10 @@ function MailTracking.GetQuantityByBaseItemString(baseItemString)
 end
 
 function MailTracking.RecordAuctionBuyout(baseItemString, stackSize)
+	if TSM.IsWowClassic() then
+		-- on classic, we'll handle auction buys via a direct hook
+		return
+	end
 	private.ChangePendingMailQuantity(baseItemString, stackSize)
 end
 
@@ -247,7 +251,7 @@ function private.MailInboxUpdateDelayed()
 	private.itemDB:TruncateAndBulkInsertStart()
 	local expiration = math.huge
 	for i = 1, GetInboxNumItems() do
-		local _, _, _, subject, money, cod, daysLeft, itemCount = GetInboxHeaderInfo(i)
+		local _, _, sender, subject, money, cod, daysLeft, itemCount = GetInboxHeaderInfo(i)
 		if itemCount and itemCount > 0 and money and money > 0 then
 			expiration = min(expiration, time() + (daysLeft * 24 * 60 * 60))
 		end
@@ -260,10 +264,11 @@ function private.MailInboxUpdateDelayed()
 		for j = 1, ATTACHMENTS_MAX do
 			local _, _, _, quantity = GetInboxItem(i, j)
 			local itemLink = quantity and quantity > 0 and private.GetInboxItemLink(i, j) or nil
-			local itemString = itemLink and ItemString.GetBase(itemLink) or nil
+			local itemString = itemLink and ItemString.Get(itemLink) or nil
 			if itemString then
 				firstItemString = firstItemString or itemString
-				private.settings.mailQuantity[itemString] = (private.settings.mailQuantity[itemString] or 0) + quantity
+				local baseItemString = ItemString.GetBaseFast(itemString)
+				private.settings.mailQuantity[baseItemString] = (private.settings.mailQuantity[baseItemString] or 0) + quantity
 				private.itemDB:BulkInsertNewRow(i, j, itemLink, quantity)
 			end
 		end
@@ -274,7 +279,7 @@ function private.MailInboxUpdateDelayed()
 			cod = bid
 		end
 
-		private.mailDB:BulkInsertNewRow(i, mailType, subject or "--", firstItemString or "", itemCount or 0, money or 0, cod or 0, daysLeft)
+		private.mailDB:BulkInsertNewRow(i, mailType, sender or UNKNOWN, subject or "--", firstItemString or "", itemCount or 0, money or 0, cod or 0, daysLeft)
 	end
 	private.quantityDB:TruncateAndBulkInsertStart()
 	for itemString, quantity in pairs(private.settings.mailQuantity) do
@@ -342,7 +347,7 @@ end
 
 function private.GetInboxItemLink(index, num)
 	local link = GetInboxItemLink(index, num)
-	if ItemString.GetBase(link) ~= ItemString.GetPetCageItemString() then
+	if ItemString.GetBase(link) ~= ItemString.GetPetCage() then
 		return link
 	end
 
@@ -351,21 +356,19 @@ function private.GetInboxItemLink(index, num)
 	private.tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	private.tooltip:ClearLines()
 
-	local _, speciesId, level, breedQuality, maxHealth, power, speed = private.tooltip:SetInboxItem(index, num)
+	local _, speciesId, level, breedQuality = private.tooltip:SetInboxItem(index, num)
 	assert(speciesId and speciesId > 0)
 	private.tooltip:Hide()
-	return ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality, maxHealth, power, speed))
+	return ItemInfo.GetLink(strjoin(":", "p", speciesId, level, breedQuality))
 end
 
 function private.GetMailType(index, firstItemString)
 	local _, _, _, subject, money, cod, _, numItems, _, _, _, _, isGM = GetInboxHeaderInfo(index)
-
 	if isGM or (cod and cod > 0) or (money == 0 and (not numItems or numItems == 0)) then
 		return nil
 	end
 
 	local info = GetInboxInvoiceInfo(index)
-
 	if money and money > 0 and info == "seller" then
 		return "SALE"
 	elseif numItems and numItems > 0 and info == "buyer" then
@@ -380,5 +383,5 @@ function private.GetMailType(index, firstItemString)
 		end
 	end
 
-	return ""
+	return "OTHER"
 end

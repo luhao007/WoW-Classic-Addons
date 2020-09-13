@@ -1,14 +1,14 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Mailing = TSM.Banking:NewPackage("Mailing")
 local TempTable = TSM.Include("Util.TempTable")
+local Inventory = TSM.Include("Service.Inventory")
+local PlayerInfo = TSM.Include("Service.PlayerInfo")
 local private = {}
 
 
@@ -66,12 +66,12 @@ function private.TargetShortfallGetNumToBags(itemString, numHave)
 			if operationSettings.maxQtyEnabled then
 				if operationSettings.restock then
 					local targetQty = private.GetTargetQuantity(operationSettings.target, itemString, operationSettings.restockSources)
-					if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) and targetQty <= operationSettings.maxQty then
+					if PlayerInfo.IsPlayer(operationSettings.target) and targetQty <= operationSettings.maxQty then
 						numToSend = numAvailable
 					else
 						numToSend = min(numAvailable, operationSettings.maxQty - targetQty)
 					end
-					if TSMAPI_FOUR.PlayerInfo.IsPlayer(operationSettings.target) then
+					if PlayerInfo.IsPlayer(operationSettings.target) then
 						-- if using restock and target == player ensure that subsequent operations don't take reserved bag inventory
 						numHave = numHave - max((numAvailable - (targetQty - operationSettings.maxQty)), 0)
 					end
@@ -92,13 +92,13 @@ function private.GetTargetQuantity(player, itemString, sources)
 	if player then
 		player = strtrim(strmatch(player, "^[^-]+"))
 	end
-	local num = TSMAPI_FOUR.Inventory.GetBagQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetMailQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetAuctionQuantity(itemString, player)
+	local num = Inventory.GetBagQuantity(itemString, player) + Inventory.GetMailQuantity(itemString, player) + Inventory.GetAuctionQuantity(itemString, player)
 	if sources then
 		if sources.guild then
-			num = num + TSMAPI_FOUR.Inventory.GetGuildQuantity(itemString, TSMAPI_FOUR.PlayerInfo.GetPlayerGuild(player))
+			num = num + Inventory.GetGuildQuantity(itemString, PlayerInfo.GetPlayerGuild(player))
 		end
 		if sources.bank then
-			num = num + TSMAPI_FOUR.Inventory.GetBankQuantity(itemString, player) + TSMAPI_FOUR.Inventory.GetReagentBankQuantity(itemString, player)
+			num = num + Inventory.GetBankQuantity(itemString, player) + Inventory.GetReagentBankQuantity(itemString, player)
 		end
 	end
 	return num

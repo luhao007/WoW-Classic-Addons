@@ -1,19 +1,13 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
 local Crafting = TSM.MainUI.Operations:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
-local Math = TSM.Include("Util.Math")
-local Money = TSM.Include("Util.Money")
-local String = TSM.Include("Util.String")
-local Log = TSM.Include("Util.Log")
-local CustomPrice = TSM.Include("Service.CustomPrice")
+local UIElements = TSM.Include("UI.UIElements")
 local private = {
 	currentOperationName = nil,
 }
@@ -41,125 +35,88 @@ function private.GetCraftingOperationSettings(operationName)
 	TSM.UI.AnalyticsRecordPathChange("main", "operations", "crafting")
 	private.currentOperationName = operationName
 	local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-	return TSMAPI_FOUR.UI.NewElement("Frame", "content")
-		:SetLayout("VERTICAL")
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Texture", "line")
-			:SetStyle("color", "#9d9d9d")
-			:SetStyle("height", 2)
-			:SetStyle("margin.top", 24)
-		)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "settings")
-			:SetStyle("background", "#1e1e1e")
-			:SetStyle("padding.left", 16)
-			:SetStyle("padding.right", 16)
-			:SetStyle("padding.top", -8)
-			:AddChild(TSM.MainUI.Operations.CreateHeadingLine("restockQuantity", L["Restock Quantity Settings"]))
-			:AddChild(private.CreateNumericInputLine("minRestock", L["Minimum restock quantity:"], 1, 2000))
-			:AddChild(private.CreateNumericInputLine("maxRestock", L["Maximum restock quantity:"], 1, 2000))
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("minProfit", L["Set minimum profit?"])
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "minProfitEnabledFrame")
-					:SetLayout("HORIZONTAL")
-					-- move the right by the width of the toggle so this frame gets half the total width
-					:SetStyle("margin.right", -TSM.UI.TexturePacks.GetWidth("uiFrames.ToggleOn"))
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ToggleOnOff", "toggle")
-						:SetValue(operation.minProfit ~= "")
-						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minProfit"))
-						:SetScript("OnValueChanged", private.MinProfitToggleOnValueChanged)
-					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "minProfitInputFrame")
+	local frame = UIElements.New("ScrollFrame", "settings")
+		:SetPadding(8, 8, 8, 0)
+		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Crafting", "restockQuantity", L["Restock Options"], L["Adjust how crafted items are restocked."])
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("minRestock", L["Min restock quantity"])
 				:SetLayout("VERTICAL")
-				:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("minProfit", L["Minimum profit:"], operation.minProfit == "")
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-						:SetStyle("background", "#5c5c5c")
-						:SetStyle("font", TSM.UI.Fonts.MontserratMedium)
-						:SetStyle("fontHeight", 16)
-						:SetStyle("justifyH", "LEFT")
-						:SetStyle("textColor", "#ffffff")
-						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minProfit") or operation.minProfit == "")
-						:SetSettingInfo(operation, "minProfit", TSM.MainUI.Operations.CheckCustomPrice)
-						:SetText(Money.ToString(Money.FromString(operation.minProfit)) or Money.ToString(operation.minProfit) or operation.minProfit)
-						:SetScript("OnEnterPressed", private.MinProfitOnChanged)
-						:SetScript("OnTabPressed", private.MinProfitOnChanged)
-					)
-				)
-			)
-			:AddChild(TSM.MainUI.Operations.CreateHeadingLine("priceSettings", L["Price Settings"]))
-			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("craftPriceMethod", L["Override default craft value method?"])
-				:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", "craftPriceOverrideFrame")
+				:SetHeight(48)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Frame", "content")
 					:SetLayout("HORIZONTAL")
-					-- move the right by the width of the toggle so this frame gets half the total width
-					:SetStyle("margin.right", -TSM.UI.TexturePacks.GetWidth("uiFrames.ToggleOn"))
-					:AddChild(TSMAPI_FOUR.UI.NewElement("ToggleOnOff", "toggle")
-						:SetValue(operation.craftPriceMethod ~= "")
-						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "craftPriceMethod"))
-						:SetScript("OnValueChanged", private.CraftPriceToggleOnValueChanged)
+					:SetHeight(24)
+					:AddChild(UIElements.New("Input", "input")
+						:SetMargin(0, 8, 0, 0)
+						:SetBackgroundColor("ACTIVE_BG")
+						:SetValidateFunc("CUSTOM_PRICE")
+						:SetSettingInfo(operation, "minRestock")
+						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minRestock"))
 					)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Spacer", "spacer"))
-				)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "craftPriceLabel")
-				:SetStyle("height", 26)
-				:SetStyle("fontHeight", 14)
-				:SetStyle("textColor", (TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "craftPriceMethod") or operation.craftPriceMethod == "") and "#424242" or "#e2e2e2")
-				:SetText(L["Craft value method:"])
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("BorderedFrame", "craftPrice")
-				:SetLayout("HORIZONTAL")
-				:SetStyle("borderTheme", "roundLight")
-				:AddChild(TSMAPI_FOUR.UI.NewElement("ScrollFrame", "scroll")
-					:SetStyle("height", 99)
-					:SetStyle("margin.bottom", 2)
-					:AddChild(TSMAPI_FOUR.UI.NewElement("Input", "input")
-						:SetStyle("height", 97)
-						:SetStyle("margin", { left = 2, right = 8 })
-						:SetStyle("font", TSM.UI.Fonts.MontserratRegular)
-						:SetStyle("textColor", operation.craftPriceMethod == "" and "#757575" or "#ffffff")
-						:SetStyle("fontHeight", 14)
-						:SetStyle("justifyH", "LEFT")
-						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "craftPriceMethod") or operation.craftPriceMethod == "")
-						:SetSettingInfo(operation, "craftPriceMethod", private.CheckCraftValue)
-						:SetText(operation.craftPriceMethod ~= "" and operation.craftPriceMethod or TSM.db.global.craftingOptions.defaultCraftPriceMethod)
-						:SetSpacing(6)
-						:SetMultiLine(true, true)
-						:SetScript("OnSizeChanged", private.CraftPriceOnSizeChanged)
-						:SetScript("OnCursorChanged", private.CraftPriceOnCursorChanged)
-						:SetScript("OnEnterPressed", private.CraftPriceOnEnterPressed)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3")
+						:SetTextColor(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minRestock") and "TEXT_DISABLED" or "TEXT")
+						:SetFormattedText(L["Supported range: %d - %d"], TSM.Operations.Crafting.GetRestockRange())
 					)
 				)
-				:SetScript("OnMouseUp", private.CraftPriceOnMouseUp)
 			)
-			:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Crafting", private.currentOperationName))
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("maxRestock", L["Max restock quantity"])
+				:SetLayout("VERTICAL")
+				:SetHeight(48)
+				:SetMargin(0, 0, 0, 12)
+				:AddChild(UIElements.New("Frame", "content")
+					:SetLayout("HORIZONTAL")
+					:SetHeight(24)
+					:AddChild(UIElements.New("Input", "input")
+						:SetMargin(0, 8, 0, 0)
+						:SetBackgroundColor("ACTIVE_BG")
+						:SetValidateFunc("CUSTOM_PRICE")
+						:SetSettingInfo(operation, "maxRestock")
+						:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "maxRestock"))
+					)
+					:AddChild(UIElements.New("Text", "label")
+						:SetWidth("AUTO")
+						:SetFont("BODY_BODY3")
+						:SetTextColor(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "maxRestock") and "TEXT_DISABLED" or "TEXT")
+						:SetFormattedText(L["Supported range: %d - %d"], TSM.Operations.Crafting.GetRestockRange())
+					)
+				)
+			)
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("minProfit", L["Set min profit"], nil, "minProfitToggle")
+				:SetLayout("VERTICAL")
+				:SetHeight(42)
+				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+					:SetHeight(18)
+					:SetValue(operation.minProfit ~= "")
+					:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "minProfit"))
+					:SetScript("OnValueChanged", private.MinProfitToggleOnValueChanged)
+				)
+			)
 		)
-end
+		:AddChild(TSM.MainUI.Operations.CreateExpandableSection("Crafting", "priceSettings", L["Crafting Value"], L["Adjust how TSM values crafted items when calculating profit."])
+			:AddChild(TSM.MainUI.Operations.CreateLinkedSettingLine("craftPriceMethod", L["Override default craft value"], nil, "craftPriceMethodToggle")
+				:SetLayout("VERTICAL")
+				:SetHeight(42)
+				:AddChild(UIElements.New("ToggleOnOff", "toggle")
+					:SetHeight(18)
+					:SetValue(operation.craftPriceMethod ~= "")
+					:SetDisabled(TSM.Operations.HasRelationship("Crafting", private.currentOperationName, "craftPriceMethod"))
+					:SetScript("OnValueChanged", private.CraftPriceToggleOnValueChanged)
+				)
+			)
+		)
+		:AddChild(TSM.MainUI.Operations.GetOperationManagementElements("Crafting", private.currentOperationName))
 
-function private.CreateNumericInputLine(key, label, minValue, maxValue)
-	local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-	local hasRelationship = TSM.Operations.HasRelationship("Crafting", private.currentOperationName, key)
-	return TSM.MainUI.Operations.CreateLinkedSettingLine(key, label)
-		:AddChild(TSMAPI_FOUR.UI.NewElement("Frame", key.."Frame")
-			:SetLayout("HORIZONTAL")
-			-- move the right by the width of the input box so this frame gets half the total width
-			:SetStyle("margin.right", -112)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("InputNumeric", "input")
-				:SetStyle("width", 96)
-				:SetStyle("height", 24)
-				:SetStyle("margin.right", 16)
-				:SetStyle("justifyH", "CENTER")
-				:SetStyle("font", TSM.UI.Fonts.MontserratBold)
-				:SetStyle("fontHeight", 16)
-				:SetDisabled(hasRelationship)
-				:SetSettingInfo(operation, key)
-				:SetMaxNumber(maxValue)
-			)
-			:AddChild(TSMAPI_FOUR.UI.NewElement("Text", "maxLabel")
-				:SetStyle("fontHeight", 12)
-				:SetText(format(L["(min %d - max %d)"], minValue, maxValue))
-				:SetStyle("textColor", hasRelationship and "#424242" or "#e2e2e2")
-			)
-		)
+	if operation.minProfit ~= "" then
+		frame:GetElement("restockQuantity.content.minProfitToggle"):SetMargin(0, 0, 0, 12)
+		frame:GetElement("restockQuantity"):AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minProfit", L["Min profit amount"], 80))
+	end
+	if operation.craftPriceMethod ~= "" then
+		frame:GetElement("priceSettings.content.craftPriceMethodToggle"):SetMargin(0, 0, 0, 12)
+		frame:GetElement("priceSettings"):AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("craftPriceMethod", L["Craft Value"], 80, BAD_CRAFT_VALUE_PRICE_SOURCES, TSM.db.global.craftingOptions.defaultCraftPriceMethod))
+	end
+
+	return frame
 end
 
 
@@ -170,95 +127,33 @@ end
 
 function private.MinProfitToggleOnValueChanged(toggle, value)
 	local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-	operation.minProfit = value and TSM.Operations.GetSettingDefault("Crafting", "minProfit") or ""
-	local settingsFrame = toggle:GetParentElement():GetParentElement():GetParentElement()
-	settingsFrame:GetElement("minProfitInputFrame.minProfit.left.linkBtn")
-		:SetStyle("backgroundVertexColor", value and "#ffffff" or "#424242")
-		:SetDisabled(not value)
-	settingsFrame:GetElement("minProfitInputFrame.minProfit.left.label")
-		:SetStyle("textColor", value and "#e2e2e2" or "#424242")
-	settingsFrame:GetElement("minProfitInputFrame.minProfit.input")
-		:SetDisabled(not value)
-		:SetText(Money.ToString(Money.FromString(operation.minProfit)) or operation.minProfit)
-	settingsFrame:Draw()
+	local defaultValue = TSM.Operations.GetSettingDefault("Crafting", "minProfit")
+	operation.minProfit = value and defaultValue or ""
+	local settingsFrame = toggle:GetParentElement():GetParentElement()
+	if value then
+		settingsFrame:GetElement("minProfitToggle"):SetMargin(0, 0, 0, 12)
+		settingsFrame:GetParentElement():AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("minProfit", L["Min profit amount"], 80))
+	else
+		settingsFrame:GetElement("minProfitToggle"):SetMargin(0, 0, 0, 0)
+		local linkedPriceLine = settingsFrame:GetElement("minProfit")
+		settingsFrame:RemoveChild(linkedPriceLine)
+		linkedPriceLine:Release()
+	end
+	settingsFrame:GetParentElement():GetParentElement():Draw()
 end
 
 function private.CraftPriceToggleOnValueChanged(toggle, value)
 	local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
 	operation.craftPriceMethod = value and TSM.db.global.craftingOptions.defaultCraftPriceMethod or ""
-	local settingsFrame = toggle:GetParentElement():GetParentElement():GetParentElement()
-	settingsFrame:GetElement("craftPriceLabel")
-		:SetStyle("textColor", value and "#e2e2e2" or "#424242")
-	settingsFrame:GetElement("craftPrice.scroll.input")
-		:SetDisabled(not value)
-		:SetStyle("textColor", value and "#ffffff" or "#757575")
-		:SetText(operation.craftPriceMethod ~= "" and operation.craftPriceMethod or TSM.db.global.craftingOptions.defaultCraftPriceMethod)
-	settingsFrame:Draw()
-end
-
-function private.MoneyValueConvert(input)
-	local text = gsub(strtrim(input:GetText()), String.Escape(LARGE_NUMBER_SEPERATOR), "")
-	local value = min(max(tonumber(text) or Money.FromString(text) or 0, 0), MAXIMUM_BID_PRICE)
-
-	input:SetFocused(false)
-	input:SetText(Money.ToString(value))
-		:Draw()
-end
-
-function private.MinProfitOnChanged(input)
-	local text = input:GetText()
-	if not TSM.MainUI.Operations.CheckCustomPrice(text, true) then
-		local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-		input:SetText(Money.ToString(Money.FromString(operation.minProfit)) or Money.ToString(operation.minProfit) or operation.minProfit)
+	local settingsFrame = toggle:GetParentElement():GetParentElement()
+	if value then
+		settingsFrame:GetElement("craftPriceMethodToggle"):SetMargin(0, 0, 0, 12)
+		settingsFrame:GetParentElement():AddChild(TSM.MainUI.Operations.CreateLinkedPriceInput("craftPriceMethod", L["Craft Value"], 80, BAD_CRAFT_VALUE_PRICE_SOURCES, TSM.db.global.craftingOptions.defaultCraftPriceMethod))
 	else
-		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
-			:Draw()
+		settingsFrame:GetElement("craftPriceMethodToggle"):SetMargin(0, 0, 0, 0)
+		local linkedPriceLine = settingsFrame:GetElement("craftPriceMethod")
+		settingsFrame:RemoveChild(linkedPriceLine)
+		linkedPriceLine:Release()
 	end
-end
-
-function private.CraftPriceOnSizeChanged(input, width, height)
-	if input:HasFocus() then
-		input:SetText(input:GetText())
-	end
-
-	input:SetStyle("height", height)
-	input:GetParentElement():Draw()
-end
-
-function private.CraftPriceOnCursorChanged(input, _, y)
-	local scrollFrame = input:GetParentElement()
-	scrollFrame._scrollbar:SetValue(Math.Round(abs(y) / (input:_GetStyle("height") - 22) * scrollFrame:_GetMaxScroll()))
-end
-
-function private.CraftPriceOnMouseUp(frame)
-	frame:GetElement("scroll.input"):SetFocused(true)
-end
-
-function private.CraftPriceOnEnterPressed(input)
-	local text = input:GetText()
-	if not TSM.MainUI.Operations.CheckCustomPrice(text, true) then
-		local operation = TSM.Operations.GetSettings("Crafting", private.currentOperationName)
-		input:SetText(Money.ToString(operation.craftPriceMethod) or operation.craftPriceMethod)
-		input:SetFocused(true)
-
-		private.CraftPriceOnSizeChanged(input, nil, input:GetHeight())
-	else
-		input:SetText(Money.ToString(Money.FromString(text)) or Money.ToString(text) or text)
-			:Draw()
-	end
-end
-
-
-
--- ============================================================================
--- Private Helper Functions
--- ============================================================================
-
-function private.CheckCraftValue(value)
-	local isValid, err = CustomPrice.Validate(value, BAD_CRAFT_VALUE_PRICE_SOURCES)
-	if isValid then
-		return true
-	else
-		Log.PrintUser(L["Invalid custom price."].." "..err)
-	end
+	settingsFrame:GetParentElement():GetParentElement():Draw()
 end

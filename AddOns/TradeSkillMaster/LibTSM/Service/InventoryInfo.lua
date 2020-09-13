@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---                http://www.curse.com/addons/wow/tradeskill-master               --
---                                                                                --
---             A TradeSkillMaster Addon (http://tradeskillmaster.com)             --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -83,7 +81,7 @@ function InventoryInfo.IsSoulbound(bag, slot)
 	TSMScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	TSMScanTooltip:ClearLines()
 
-	if GetContainerItemID(bag, slot) == ItemString.ToId(ItemString.GetPetCageItemString()) then
+	if GetContainerItemID(bag, slot) == ItemString.ToId(ItemString.GetPetCage()) then
 		-- battle pets are never BoP or BoA
 		private.slotIdSoulboundCached[slotId] = true
 		private.slotIdIsBoP[slotId] = false
@@ -128,7 +126,7 @@ end
 function InventoryInfo.HasUsedCharges(bag, slot)
 	-- figure out if this item has a max number of charges
 	local itemId = GetContainerItemID(bag, slot)
-	if not itemId or itemId == ItemString.ToId(ItemString.GetPetCageItemString()) then
+	if not itemId or itemId == ItemString.ToId(ItemString.GetPetCage()) then
 		return false
 	end
 	if not TSMScanTooltip then

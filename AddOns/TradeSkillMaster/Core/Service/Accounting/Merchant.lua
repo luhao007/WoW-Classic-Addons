@@ -1,9 +1,7 @@
 -- ------------------------------------------------------------------------------ --
 --                                TradeSkillMaster                                --
---             https://www.curseforge.com/wow/addons/tradeskill-master            --
---                                                                                --
---             A TradeSkillMaster Addon (https://tradeskillmaster.com)            --
---    All Rights Reserved* - Detailed license information included with addon.    --
+--                          https://tradeskillmaster.com                          --
+--    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
 local _, TSM = ...
@@ -16,7 +14,6 @@ local private = {
 	repairMoney = 0,
 	couldRepair = nil,
 	repairCost = 0,
-	canRepair = nil,
 	pendingSales = {
 		itemString = {},
 		quantity = {},
@@ -52,9 +49,7 @@ function private.SetupRepairCost()
 	private.couldRepair = CanMerchantRepair()
 	-- if merchant can repair set up variables so we can track repairs
 	if private.couldRepair then
-		local cost, canRepair = GetRepairAllCost()
-		private.repairCost = cost
-		private.canRepair = canRepair
+		private.repairCost = GetRepairAllCost()
 	end
 end
 
@@ -83,7 +78,7 @@ function private.AddRepairCosts()
 			-- reset money as this might have been a single item repair
 			private.repairMoney = cash
 			-- reset the repair cost for the next repair
-			private.repairCost, private.canRepair = GetRepairAllCost()
+			private.repairCost = GetRepairAllCost()
 		end
 	end
 end
