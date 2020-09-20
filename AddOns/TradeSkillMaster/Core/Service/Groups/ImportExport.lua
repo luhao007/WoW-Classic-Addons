@@ -669,7 +669,7 @@ function private.ValidateOperationsTable(operations, strict)
 				return nil
 			end
 			-- sanitize the operation settings
-			if TSM.Operations.SanitizeSettings(moduleName, operationName, operationSettings, true) then
+			if TSM.Operations.SanitizeSettings(moduleName, operationName, operationSettings, true, true) then
 				numChangedOperations = numChangedOperations + 1
 			end
 		end

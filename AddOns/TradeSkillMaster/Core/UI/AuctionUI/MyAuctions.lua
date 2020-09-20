@@ -394,7 +394,9 @@ function private.AuctionsOnDataUpdated()
 		return
 	end
 
+	private.fsm:SetLoggingEnabled(false)
 	private.fsm:ProcessEvent("EV_DATA_UPDATED")
+	private.fsm:SetLoggingEnabled(true)
 end
 
 function private.CancelButtonOnClick(button)

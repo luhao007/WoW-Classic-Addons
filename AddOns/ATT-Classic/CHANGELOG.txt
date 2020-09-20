@@ -1,9 +1,22 @@
-0.3.0 Release Notes
+0.3.1 Release Notes
 Contributions made by Crieve:
-* Brittbrat is now an Exterminator.
-* Some missing quest info.
-* Corrected a Mini List display issue with Temple of Ahn'Qiraj.
-* The Gates of Ahn'Qiraj now show the Silithus mini list.
-* Minor adjustment to some quests in Stonetalon Mountains.
-* Sheiss is now an Exterminator.
+* Fixed the coordinate for an ashenvale quest.
+* Fixed a bug involving the total deaths list if you have a character that has the exact same number of deaths as another.
+* For situations like these, it is preferable to mark them as "Never Implemented" rather than without information in ATT. That way, when the item is introduced, User Reports can be triggered to get the most accurate release date.
+* The Battlegear quests are now repeatable.
+* Added a quest item to AV.
+* Added some random missing quest items.
+* Added the Silithyst Must Flow PVP World Event.
+* Added the missing AQ enchants to the Enchanting Profession section.
+* Vivian Lagrave and the Darkstone Tablet is now marked as a Breadcrumb quest. Added some random low level quest items.
+
+Contributions made by Chanizu:
+* Blacksmith
+* Merge pull request #86 from DFortun81/Blacksmithing-fixes
+* Another Blacksmithing fix
+* Merge branch 'Blacksmithing-fixes'
+
+Contributions made by TKTalonzor:
+* Added Desperate Prayer quests (priests only)
+* Added Arcane Feedback priest quests
 

@@ -20,7 +20,7 @@ local private = {
 	pendingIndex = nil,
 	pendingQuantity = 0,
 }
-local FIRST_BUY_TIMEOUT = 5
+local FIRST_BUY_TIMEOUT_PER_STACK = 1
 local CONSECUTIVE_BUY_TIMEOUT = 5
 
 
@@ -113,37 +113,11 @@ function Buy.BuyItem(itemString, quantity)
 	if not index then
 		return
 	end
-	local maxStack = GetMerchantItemMaxStack(index)
-	quantity = min(quantity, Buy.GetMaxCanAfford(index))
-	if quantity == 0 then
-		return
-	end
-	private.ClearPendingContext()
-	private.pendingIndex = index
-	Delay.AfterTime("VENDORING_BUY_TIMEOUT", FIRST_BUY_TIMEOUT, private.BuyTimeout)
-	while quantity > 0 do
-		local buyQuantity = min(quantity, maxStack)
-		BuyMerchantItem(index, buyQuantity)
-		private.pendingQuantity = private.pendingQuantity + buyQuantity
-		quantity = quantity - buyQuantity
-	end
+	private.BuyIndex(index, quantity)
 end
 
 function Buy.BuyItemIndex(index, quantity)
-	local maxStack = GetMerchantItemMaxStack(index)
-	quantity = min(quantity, Buy.GetMaxCanAfford(index))
-	if quantity == 0 then
-		return
-	end
-	private.ClearPendingContext()
-	private.pendingIndex = index
-	Delay.AfterTime("VENDORING_BUY_TIMEOUT", FIRST_BUY_TIMEOUT, private.BuyTimeout)
-	while quantity > 0 do
-		local buyQuantity = min(quantity, maxStack)
-		BuyMerchantItem(index, buyQuantity)
-		private.pendingQuantity = private.pendingQuantity + buyQuantity
-		quantity = quantity - buyQuantity
-	end
+	private.BuyIndex(index, quantity)
 end
 
 function Buy.CanBuyItem(itemString)
@@ -241,6 +215,26 @@ function private.GetFirstIndex(itemString)
 			:GetFirstResultAndRelease()
 	end
 	return index
+end
+
+function private.BuyIndex(index, quantity)
+	local maxStack = GetMerchantItemMaxStack(index)
+	quantity = min(quantity, Buy.GetMaxCanAfford(index))
+	if quantity == 0 then
+		return
+	end
+	private.ClearPendingContext()
+	private.pendingIndex = index
+	local numStacks = 0
+	while quantity > 0 do
+		local buyQuantity = min(quantity, maxStack)
+		BuyMerchantItem(index, buyQuantity)
+		private.pendingQuantity = private.pendingQuantity + buyQuantity
+		quantity = quantity - buyQuantity
+		numStacks = numStacks + 1
+	end
+	Log.Info("Buying %d of %d (%d stacks)", private.pendingQuantity, index, numStacks)
+	Delay.AfterTime("VENDORING_BUY_TIMEOUT", numStacks * FIRST_BUY_TIMEOUT_PER_STACK, private.BuyTimeout)
 end
 
 function private.ChatMsgLootEventHandler(_, msg)

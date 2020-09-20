@@ -231,7 +231,7 @@ function GroupTree._UpdateData(self)
 		self._hasChildrenLookup[groupPath] = nextGroupPath and TSM.Groups.Path.IsChild(nextGroupPath, groupPath) or nil
 	end
 	for groupPath in pairs(self._contextTable.collapsed) do
-		if not pathExists[groupPath] or not self._hasChildrenLookup[groupPath] then
+		if groupPath == TSM.CONST.ROOT_GROUP_PATH or not pathExists[groupPath] or not self._hasChildrenLookup[groupPath] then
 			self._contextTable.collapsed[groupPath] = nil
 		end
 	end
@@ -274,7 +274,7 @@ function GroupTree._IsSelected(self, data)
 end
 
 function GroupTree._HandleRowClick(self, data, mouseButton)
-	if mouseButton == "RightButton" then
+	if mouseButton == "RightButton" and self._searchStr == "" and data ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[data] then
 		self:_SetCollapsed(data, not self._contextTable.collapsed[data])
 		self:UpdateData(true)
 	end
@@ -308,7 +308,7 @@ end
 
 function private.GetFlagState(self, data, isMouseOver)
 	if data == TSM.CONST.ROOT_GROUP_PATH then
-		return false, nil
+		return true, Theme.GetColor("TEXT")
 	end
 	local level = select('#', strsplit(TSM.CONST.GROUP_SEP, data))
 	local levelColor = Theme.GetGroupColor(level)
@@ -337,7 +337,9 @@ function private.RowOnDoubleClick(row, mouseButton)
 	if mouseButton ~= "LeftButton" then
 		return
 	end
+	local data = row:GetData()
 	local self = row._scrollingTable
-	self:_SetCollapsed(row:GetData(), not self._contextTable.collapsed[row:GetData()])
+	assert(self._searchStr == "" and data ~= TSM.CONST.ROOT_GROUP_PATH and self._hasChildrenLookup[data])
+	self:_SetCollapsed(data, not self._contextTable.collapsed[data])
 	self:UpdateData(true)
 end

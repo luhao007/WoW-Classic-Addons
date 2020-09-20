@@ -646,6 +646,7 @@ end
 function private.RemoveAccountSyncOnClick(button)
 	Sync.RemoveAccount(button:GetParentElement():GetContext())
 	button:GetBaseElement():GetElement("content.settings.contentFrame.content"):ReloadContent()
+	Tooltip.Hide()
 	Log.PrintUser(L["Account sync removed. Please delete the account sync from the other account as well."])
 end
 
@@ -660,7 +661,7 @@ function private.RemoveAccountOnLeave(button)
 end
 
 function private.NewAccountSyncInputOnEnterPressed(input)
-	local character = input:GetValue()
+	local character = Ambiguate(input:GetValue(), "none")
 	if Sync.EstablishConnection(character) then
 		Log.PrintfUser(L["Establishing connection to %s. Make sure that you've entered this character's name on the other account."], character)
 		private.SyncConnectionChangedCallback()
