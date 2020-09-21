@@ -175,6 +175,7 @@ function private.UpdateCurrentModule(frame)
 	-- update group tree
 	frame:GetElement("content.groupTree")
 		:SetSettingsContext(private.settings, private.GetSettingsContextKey())
+		:SetQuery(TSM.Groups.CreateQuery(), private.settings.tab)
 		:UpdateData(true)
 		:Draw()
 

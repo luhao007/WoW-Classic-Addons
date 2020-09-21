@@ -162,10 +162,10 @@ if TSM.IsWowClassic() then
 			sourceInfo = {
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 16, maxItemLevel = 20, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 21, maxItemLevel = 25, matRate = 0.100, minAmount = 1, maxAmount = 1, amountOfMats = 0.100},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 11, maxItemLevel = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 16, maxItemLevel = 20, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 21, maxItemLevel = 25, matRate = 0.100, minAmount = 1, maxAmount = 1, amountOfMats = 0.100},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 11, maxItemLevel = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 			},
 		},
 		["i:11084"] = { -- Large Glimmering Shard
@@ -269,11 +269,11 @@ else
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 5, maxItemLevel = 15, matRate = 0.800, minAmount = 1, maxAmount = 6, amountOfMats = 1.222},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 16, maxItemLevel = 20, matRate = 0.800, minAmount = 2, maxAmount = 8, amountOfMats = 2.025},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 21, maxItemLevel = 25, matRate = 1.000, minAmount = 4, maxAmount = 10, amountOfMats = 5.008},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 16, maxItemLevel = 25, matRate = 0.030, minAmount = 3, maxAmount = 6, amountOfMats = 0.127},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 0.030, minAmount = 3, maxAmount = 6, amountOfMats = 0.127},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 5, maxItemLevel = 15, matRate = 0.200, minAmount = 1, maxAmount = 4, amountOfMats = 0.302},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 16, maxItemLevel = 20, matRate = 0.200, minAmount = 2, maxAmount = 6, amountOfMats = 0.507},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 21, maxItemLevel = 25, matRate = 0.150, minAmount = 4, maxAmount = 8, amountOfMats = 0.753},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 16, maxItemLevel = 25, matRate = 0.030, minAmount = 3, maxAmount = 6, amountOfMats = 0.127},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 0.030, minAmount = 3, maxAmount = 6, amountOfMats = 0.127},
 			},
 		},
 		["i:16204"] = { -- Light Illusion Dust
@@ -389,9 +389,9 @@ else
 			maxLevel = 25,
 			sourceInfo = {
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 16, maxItemLevel = 25, matRate = 0.200, minAmount = 1, maxAmount = 5, amountOfMats = 0.307},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 16, maxItemLevel = 25, matRate = 1.000, minAmount = 2, maxAmount = 2, amountOfMats = 2.000},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 1.000, minAmount = 2, maxAmount = 2, amountOfMats = 2.000},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 16, maxItemLevel = 25, matRate = 0.200, minAmount = 1, maxAmount = 4, amountOfMats = 1.217},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 16, maxItemLevel = 25, matRate = 1.000, minAmount = 2, maxAmount = 2, amountOfMats = 2.000},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 5, maxItemLevel = 25, matRate = 1.000, minAmount = 2, maxAmount = 2, amountOfMats = 2.000},
 			},
 		},
 		["i:16202"] = { -- Lesser Eternal Essence
@@ -612,8 +612,8 @@ else
 			minLevel = 70,
 			maxLevel = 70,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 73, maxItemLevel = 94, matRate = 1.000, minAmount = 1, maxAmount = 3, amountOfMats = 1.530},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 73, maxItemLevel = 94, matRate = 1.000, minAmount = 1, maxAmount = 3, amountOfMats = 1.530},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 66, maxItemLevel = 94, matRate = 1.000, minAmount = 1, maxAmount = 3, amountOfMats = 1.530},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 66, maxItemLevel = 94, matRate = 1.000, minAmount = 1, maxAmount = 3, amountOfMats = 1.530},
 			},
 		},
 		["i:34057"] = { -- Abyss Crystal

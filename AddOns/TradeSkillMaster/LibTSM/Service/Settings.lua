@@ -173,9 +173,11 @@ local DEFAULT_DB = {
 -- [92] updated global.vendoringUIContext.buyScrollingTable
 -- [93] moved profile.auctionUIContext.auctioningTabGroup to global.auctionUIContext.auctioningTabGroup
 -- [94] added global.internalData.whatsNewVersion
+-- [95] added global.appearanceOptions.showTotalMoney
+-- [96] updated global.userData.{savedShoppingSearches,savedAuctioningSearches}
 
 local SETTINGS_INFO = {
-	version = 94,
+	version = 96,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
@@ -189,6 +191,7 @@ local SETTINGS_INFO = {
 		},
 		appearanceOptions = {
 			taskListBackgroundLock = { type = "boolean", default = false, lastModifiedVersion = 87 },
+			showTotalMoney = { type = "boolean", default = false, lastModifiedVersion = 95 },
 			colorSet = { type = "string", default = "midnight", lastModifiedVersion = 75 },
 		},
 		auctionUIContext = {
@@ -338,9 +341,9 @@ local SETTINGS_INFO = {
 			operations = { type = "table", default = {}, lastModifiedVersion = 10 },
 			customPriceSources = { type = "table", default = {}, lastModifiedVersion = 10 },
 			destroyingIgnore = { type = "table", default = {}, lastModifiedVersion = 10 },
-			savedShoppingSearches = { type = "table", default = {}, lastModifiedVersion = 10 },
+			savedShoppingSearches = { type = "table", default = { filters = {}, name = {}, isFavorite = {} }, lastModifiedVersion = 96 },
 			vendoringIgnore = { type = "table", default = {}, lastModifiedVersion = 10 },
-			savedAuctioningSearches = { type = "table", default = {}, lastModifiedVersion = 14 },
+			savedAuctioningSearches = { type = "table", default = { filters = {}, searchTypes = {}, name = {}, isFavorite = {} }, lastModifiedVersion = 96 },
 		},
 	},
 	profile = {
@@ -632,6 +635,39 @@ Settings:OnSettingsLoad(function()
 			end
 		end
 	end
+	if prevVersion < 96 then
+		for key, value in upgradeObj:RemovedSettingIterator() do
+			local scopeType, scopeKey, namespace, settingKey = upgradeObj:GetKeyInfo(key)
+			if scopeType == "global" and namespace == "userData" and settingKey == "savedShoppingSearches" then
+				-- convert how they are stored
+				local newTbl = db:Get(scopeType, scopeKey, namespace, settingKey)
+				for i, searchInfo in ipairs(value) do
+					local filter = searchInfo.filter
+					if searchInfo.name ~= filter then
+						newTbl.name[filter] = searchInfo.name
+					end
+					if searchInfo.isFavorite then
+						newTbl.isFavorite[filter] = true
+					end
+					newTbl.filters[i] = filter
+				end
+			elseif scopeType == "global" and namespace == "userData" and settingKey == "savedAuctioningSearches" then
+				-- convert how they are stored
+				local newTbl = db:Get(scopeType, scopeKey, namespace, settingKey)
+				for i, searchInfo in ipairs(value) do
+					local filter = searchInfo.filter
+					if searchInfo.name ~= filter then
+						newTbl.name[filter] = searchInfo.name
+					end
+					if searchInfo.isFavorite then
+						newTbl.isFavorite[filter] = true
+					end
+					newTbl.filters[i] = filter
+					newTbl.searchTypes[i] = searchInfo.searchType
+				end
+			end
+		end
+	end
 end)
 
 
@@ -907,7 +943,7 @@ function private.Constructor(name, rawSettingsInfo)
 		db._scopeKeys.sync = {}
 	end
 
-	-- make sure we have sync acocunt keys for every factionrealm
+	-- make sure we have sync account keys for every factionrealm
 	for _, factionrealm in ipairs(db._scopeKeys.factionrealm) do
 		db._syncAccountKey[factionrealm] = db._syncAccountKey[factionrealm] or strjoin(SCOPE_KEY_SEP, factionrealm, random(time()))
 	end

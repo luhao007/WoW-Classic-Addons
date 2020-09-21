@@ -46,7 +46,7 @@ end
 function PlayerGoldText.Acquire(self)
 	private.elements[self] = true
 	self.__super:Acquire()
-	self:SetText(Money.ToString(GetMoney()))
+	self:SetText(Money.ToString(TSM.db.global.appearanceOptions.showTotalMoney and private.GetTotalMoney() or GetMoney()))
 	self:SetTooltip(private.MoneyTooltipFunc)
 end
 
@@ -65,7 +65,7 @@ end
 
 function private.MoneyOnUpdate()
 	for element in pairs(private.elements) do
-		element:SetText(Money.ToString(GetMoney()))
+		element:SetText(Money.ToString(TSM.db.global.appearanceOptions.showTotalMoney and private.GetTotalMoney() or GetMoney()))
 		element:Draw()
 	end
 end
@@ -89,4 +89,15 @@ function private.MoneyTooltipFunc()
 	end
 	tinsert(tooltipLines, 1, strjoin(TSM.CONST.TOOLTIP_SEP, L["Total Gold"]..":", Money.ToString(total)))
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines))
+end
+
+function private.GetTotalMoney()
+	local total = TSM.db.sync.internalData.money
+	for _, _, _, syncScopeKey in Settings.ConnectedFactionrealmAltCharacterIterator() do
+		local money = Settings.Get("sync", syncScopeKey, "internalData", "money")
+		if money > 0 then
+			total = total + money
+		end
+	end
+	return total
 end

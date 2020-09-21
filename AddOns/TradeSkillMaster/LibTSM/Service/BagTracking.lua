@@ -175,7 +175,7 @@ BagTracking:OnGameDataLoad(function()
 	for slot = 1, GetContainerNumSlots(BANK_CONTAINER) do
 		private.BankSlotChangedHandler(nil, slot)
 	end
-	if not TSM.IsWowClassic() then
+	if not TSM.IsWowClassic() and IsReagentBankUnlocked() then
 		for slot = 1, GetContainerNumSlots(REAGENTBANK_CONTAINER) do
 			private.ReagentBankSlotChangedHandler(nil, slot)
 		end

@@ -75,12 +75,12 @@ function private.QueryFilter(_, subRow)
 		-- no Shopping operation applies to this item, so filter it out
 		return true
 	end
-	local _, itemBuyout, minItemBuyout = subRow:GetBuyouts()
+	local auctionBuyout, itemBuyout, minItemBuyout = subRow:GetBuyouts()
 	itemBuyout = itemBuyout or minItemBuyout
 	if not itemBuyout then
 		-- don't have buyout info yet, so don't filter
 		return false
-	elseif itemBuyout == 0 then
+	elseif auctionBuyout == 0 then
 		-- no buyout, so filter it out
 		return true
 	elseif itemString then

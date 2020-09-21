@@ -20,6 +20,7 @@ local private = {
 	pendingIndex = nil,
 	pendingQuantity = 0,
 }
+local FIRST_BUY_TIMEOUT = 5
 local FIRST_BUY_TIMEOUT_PER_STACK = 1
 local CONSECUTIVE_BUY_TIMEOUT = 5
 
@@ -234,7 +235,7 @@ function private.BuyIndex(index, quantity)
 		numStacks = numStacks + 1
 	end
 	Log.Info("Buying %d of %d (%d stacks)", private.pendingQuantity, index, numStacks)
-	Delay.AfterTime("VENDORING_BUY_TIMEOUT", numStacks * FIRST_BUY_TIMEOUT_PER_STACK, private.BuyTimeout)
+	Delay.AfterTime("VENDORING_BUY_TIMEOUT", numStacks * FIRST_BUY_TIMEOUT_PER_STACK + FIRST_BUY_TIMEOUT, private.BuyTimeout)
 end
 
 function private.ChatMsgLootEventHandler(_, msg)

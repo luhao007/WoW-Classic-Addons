@@ -1114,6 +1114,7 @@ do
 		L["Show destroying frame automatically"] = "Show destroying frame automatically"
 		L["Show on modifier"] = "Show on modifier"
 		L["Show only auctions with bids"] = "Show only auctions with bids"
+		L["Show total gold in header"] = "Show total gold in header"
 		L["Showing %s Mail"] = "Showing %s Mail"
 		L["Showing %s of %d Mail"] = "Showing %s of %d Mail"
 		L["Showing %s of %d Mails"] = "Showing %s of %d Mails"
@@ -5954,17 +5955,14 @@ L["%d Faction-Realms"] = "%d Faction-Realms"
 --[[Translation missing --]]
 L["%d groups"] = "%d groups"
 L["%d Groups"] = "%d Grupos"
---[[Translation missing --]]
-L["%d Groups Selected"] = "%d Groups Selected"
+L["%d Groups Selected"] = "%d Grupos Seleccionados"
 --[[Translation missing --]]
 L["%d groups were created and %d items were added from the table."] = "%d groups were created and %d items were added from the table."
---[[Translation missing --]]
-L["%d Guilds"] = "%d Guilds"
+L["%d Guilds"] = "%d Hermandades"
 L["%d Items"] = "%d Objetos"
 L["%d of %d"] = "%d de %d"
 L["%d Operations"] = "%d Operaciones"
---[[Translation missing --]]
-L["%d Players"] = "%d Players"
+L["%d Players"] = "%d Jugadores"
 L["%d Posted Auctions"] = "%d Subastas publicadas"
 --[[Translation missing --]]
 L["%d Professions"] = "%d Professions"
@@ -17963,29 +17961,21 @@ L["Below you can ignore this operation on certain characters or realms."] = "Н�
 L["Bid %d / %d"] = "Ставка %d / %d"
 L["Bid (item)"] = "Ставка (шт)"
 L["Bid (stack)"] = "Ставка (стак)"
---[[Translation missing --]]
-L["Bid (total)"] = "Bid (total)"
---[[Translation missing --]]
-L["Bid / Buyout"] = "Bid / Buyout"
---[[Translation missing --]]
-L["Bid Auction"] = "Bid Auction"
---[[Translation missing --]]
-L["Bid percent must be between 0 and 100."] = "Bid percent must be between 0 and 100."
+L["Bid (total)"] = "Ставка (всего)"
+L["Bid / Buyout"] = "Ставка / Выкуп"
+L["Bid Auction"] = "Ставка на аукционе"
+L["Bid percent must be between 0 and 100."] = "Процент ставки должен быть от 0 до 100."
 L["Bid Price"] = "Цена ставки"
 L["Bid Sniper Paused"] = "Ставка «Снайпер» на паузе"
 L["Bid Sniper Running"] = "Запущен «Снайпер» по ставкам"
---[[Translation missing --]]
-L["Bidding Auction"] = "Bidding Auction"
---[[Translation missing --]]
-L["Blacklisted players"] = "Blacklisted players"
+L["Bidding Auction"] = "Торги на аукционе"
+L["Blacklisted players"] = "Игроки в черном списке"
 L["Bought"] = "Купил"
 L["Bought %d of %s from %s for %s"] = "Куплено %d %s у %s за %s"
 L["Bought %sx%d for %s from %s"] = "Купил %sx%d для %s от %s"
 L["Bound Actions"] = "Связанные действия"
---[[Translation missing --]]
-L["Browse"] = "Browse"
---[[Translation missing --]]
-L["Browse / Sniper"] = "Browse / Sniper"
+L["Browse"] = "Просмотр"
+L["Browse / Sniper"] = "Просмотр / Sniper"
 L["BUSY"] = "Занят"
 L["BUY"] = "Купить"
 L["Buy"] = "Купить"
@@ -18249,17 +18239,14 @@ L["Did not post %s because your maximum price (%s) is lower than your minimum pr
 L["Did not post %s because your minimum price (%s) is invalid. Check your settings."] = "Лот %s не выставлен. Ваша минимальная цена (%s) не верна. Проверьте настройки."
 L["Did not post %s because your normal price (%s) is invalid. Check your settings."] = "Лот %s не выставлен. Ваша нормальная цена (%s) не верна. Проверьте настройки."
 L["Did not post %s because your normal price (%s) is lower than your minimum price (%s). Check your settings."] = "Лот %s не выставлен. Ваша нормальная цена (%s) ниже, вашей минимальной цены (%s). Проверьте настройки."
---[[Translation missing --]]
-L["Did not post %s because your post cap (%s) is invalid. Check your settings."] = "Did not post %s because your post cap (%s) is invalid. Check your settings."
---[[Translation missing --]]
-L["Did not post %s because your stack size (%s) is invalid. Check your settings."] = "Did not post %s because your stack size (%s) is invalid. Check your settings."
+L["Did not post %s because your post cap (%s) is invalid. Check your settings."] = "Не опубликован %s, потому что ваше ограничение на количество сообщений (%s) недействительно. Проверьте свои настройки."
+L["Did not post %s because your stack size (%s) is invalid. Check your settings."] = "Не опубликован %s, потому что ваше ограничение на размер стака (%s) недействительно. Проверьте свои настройки."
 L["Did not post %s because your undercut (%s) is invalid. Check your settings."] = "Лот %s не выставлен. Ваша цена сбития (%s) не верна. Проверьте настройки."
 L["Disable invalid price warnings"] = "Отключить предупреждения о неверной цене"
 L["Disenchant Search"] = "Поиск для распыления"
 L["Disenchant Search Options"] = "Настройки поиска предметов для распыления"
 L["Disenchant Value"] = "Стоимость распыления"
---[[Translation missing --]]
-L["Disenchant value"] = "Disenchant value"
+L["Disenchant value"] = "Стоимость распыления"
 L["Disenchanting Options"] = "Настройки распыления"
 --[[Translation missing --]]
 L["Display total money received in chat"] = "Display total money received in chat"
@@ -18310,19 +18297,14 @@ L["Enchant"] = "Enchant"
 L["Enchant Vellum"] = "Материал для свитка наложения чар"
 --[[Translation missing --]]
 L["Ensure both characters are online and try again."] = "Ensure both characters are online and try again."
---[[Translation missing --]]
-L["Enter a value from %d - %d"] = "Enter a value from %d - %d"
---[[Translation missing --]]
-L["Enter a value from %d - %d%%"] = "Enter a value from %d - %d%%"
+L["Enter a value from %d - %d"] = "Введите значение из %d - %d"
+L["Enter a value from %d - %d%%"] = "Введите значение из %d - %d%%"
 L["Enter Filter"] = "Строка поиска"
 L["Enter Keyword"] = "Поиск"
---[[Translation missing --]]
-L["Enter name of logged-in character on other account"] = "Enter name of logged-in character on other account"
+L["Enter name of logged-in character on other account"] = "Введите имя персонажа, выполнившего вход в другую учетную запись"
 L["Enter player name"] = "Введите имя игрока"
---[[Translation missing --]]
-L["Enter profile name"] = "Enter profile name"
---[[Translation missing --]]
-L["Enter recipient name"] = "Enter recipient name"
+L["Enter profile name"] = "Введите имя профиля"
+L["Enter recipient name"] = "Введите имя получателя"
 --[[Translation missing --]]
 L["ERROR: A full AH scan has recently been performed and is on cooldown. Log out to reset this cooldown."] = "ERROR: A full AH scan has recently been performed and is on cooldown. Log out to reset this cooldown."
 --[[Translation missing --]]
@@ -18435,8 +18417,7 @@ L["General Options"] = "Основные настройки"
 L["General Settings"] = "General Settings"
 L["Get from Bank"] = "Забрать из банка"
 L["Get from Guild Bank"] = "Забрать из банка гильдии"
---[[Translation missing --]]
-L["Gets items from the bank or guild bank matching the item or partial text entered."] = "Gets items from the bank or guild bank matching the item or partial text entered."
+L["Gets items from the bank or guild bank matching the item or partial text entered."] = "Получает товары из банка или банка гильдии, соответствующие введенному предмету или частичному тексту."
 L["Gold"] = "Золото"
 --[[Translation missing --]]
 L["Great Deals Search"] = "Great Deals Search"
@@ -18666,12 +18647,10 @@ L["Materials to Gather"] = "Материалы для сбора"
 --[[Translation missing --]]
 L["Max"] = "Max"
 L["Max Buy Price"] = "Макс цена Покупки"
---[[Translation missing --]]
-L["Max destroy value (Enter '0c' to disable)"] = "Max destroy value (Enter '0c' to disable)"
+L["Max destroy value (Enter '0c' to disable)"] = "Максимальное значение уничтожения (Введите '0c', чтобы отключить)"
 --[[Translation missing --]]
 L["Max expires to bank"] = "Max expires to bank"
---[[Translation missing --]]
-L["Max market value (Enter '0c' to disable)"] = "Max market value (Enter '0c' to disable)"
+L["Max market value (Enter '0c' to disable)"] = "Максимальная рыночная стоимость (Введите '0c', чтобы выключить)"
 --[[Translation missing --]]
 L["Max Price"] = "Max Price"
 --[[Translation missing --]]
@@ -18849,10 +18828,8 @@ L["Number Owned"] = "Имеется"
 L["Offline"] = "Оффлайн"
 L["On Cooldown"] = "Восстанавливается"
 L["Only show craftable"] = "Есть материалы"
---[[Translation missing --]]
-L["Only show items with disenchant values above this price"] = "Only show items with disenchant values above this price"
---[[Translation missing --]]
-L["Only show sold auctions"] = "Only show sold auctions"
+L["Only show items with disenchant values above this price"] = "Показывать только те предметы, стоимость которых выше этой цены."
+L["Only show sold auctions"] = "Показывать только проданные аукционы"
 L["OPEN"] = "Открыть"
 L["Open All Mail"] = "Открыть все письма"
 L["Open All Mail Without Money"] = "Открыть всю почту без золота"
@@ -18976,8 +18953,7 @@ L["Purchased (Total Price)"] = "Куплено (Общая цена)"
 L["Purchases"] = "Покупки"
 --[[Translation missing --]]
 L["Purchasing Auction"] = "Purchasing Auction"
---[[Translation missing --]]
-L["Puts items matching the item or partial text entered into the bank or guild bank."] = "Puts items matching the item or partial text entered into the bank or guild bank."
+L["Puts items matching the item or partial text entered into the bank or guild bank."] = "Помещает предметы, соответствующие предмету или частично введенному тексту, в банк или банк гильдии."
 L["Qty"] = "Кол."
 --[[Translation missing --]]
 L["Quantity"] = "Quantity"
@@ -19258,10 +19234,8 @@ L["Set stack size for restock"] = "Set stack size for restock"
 L["Set what is bought from a vendor."] = "Set what is bought from a vendor."
 --[[Translation missing --]]
 L["Set what is sold to a vendor."] = "Set what is sold to a vendor."
---[[Translation missing --]]
-L["Set what items are shown during a Shopping scan."] = "Set what items are shown during a Shopping scan."
---[[Translation missing --]]
-L["Set what items are shown during a Sniper scan."] = "Set what items are shown during a Sniper scan."
+L["Set what items are shown during a Shopping scan."] = "Установите, какие элементы будут отображаться при сканировании покупок."
+L["Set what items are shown during a Sniper scan."] = "Установите, какие элементы будут отображаться во время сканирования \"Sniper\"."
 --[[Translation missing --]]
 L["Set your active profile or create a new one."] = "Set your active profile or create a new one."
 --[[Translation missing --]]
@@ -19283,24 +19257,15 @@ L["Shopping Operation Max Price"] = "Shopping Operation Max Price"
 L["Shopping operations control buyout from the AH."] = "Shopping operations control buyout from the AH."
 --[[Translation missing --]]
 L["Shortfall to bags"] = "Shortfall to bags"
---[[Translation missing --]]
-L["Show auctions above max price"] = "Show auctions above max price"
---[[Translation missing --]]
-L["Show confirmation alert if buyout is above the alert price"] = "Show confirmation alert if buyout is above the alert price"
---[[Translation missing --]]
-L["Show destroying frame automatically"] = "Show destroying frame automatically"
---[[Translation missing --]]
-L["Show on modifier"] = "Show on modifier"
---[[Translation missing --]]
-L["Show only auctions with bids"] = "Show only auctions with bids"
---[[Translation missing --]]
-L["Showing %s Mail"] = "Showing %s Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mail"] = "Showing %s of %d Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mails"] = "Showing %s of %d Mails"
---[[Translation missing --]]
-L["Showing all %s Mails"] = "Showing all %s Mails"
+L["Show auctions above max price"] = "Показать аукционы выше максимальной цены"
+L["Show confirmation alert if buyout is above the alert price"] = "Показать подтверждение оповещения, если выкуп находится выше цены оповещения"
+L["Show destroying frame automatically"] = "Автоматически показывать окно уничтожения"
+L["Show on modifier"] = "Показать модификации"
+L["Show only auctions with bids"] = "Показывать только аукционы со ставками"
+L["Showing %s Mail"] = "Показано %s писем"
+L["Showing %s of %d Mail"] = "Показано %s из %d писем"
+L["Showing %s of %d Mails"] = "Показаны %s из %d писем"
+L["Showing all %s Mails"] = "Показаны все %s письма"
 --[[Translation missing --]]
 L["Simple inventory"] = "Simple inventory"
 --[[Translation missing --]]
@@ -19588,8 +19553,7 @@ L["Upgrades Only"] = "Upgrades Only"
 L["Usable Only"] = "Usable Only"
 --[[Translation missing --]]
 L["Usage: /tsm price <Item Link> <Custom String>"] = "Usage: /tsm price <Item Link> <Custom String>"
---[[Translation missing --]]
-L["Use the settings below to control which lines are shown in tooltips."] = "Use the settings below to control which lines are shown in tooltips."
+L["Use the settings below to control which lines are shown in tooltips."] = "Используйте настройки ниже, чтобы указать, какие строки будут отображаться во всплывающих подсказках."
 --[[Translation missing --]]
 L["Use this list to manage what cooldowns you'd like TSM to ignore from crafting."] = "Use this list to manage what cooldowns you'd like TSM to ignore from crafting."
 --[[Translation missing --]]
@@ -21675,7 +21639,7 @@ L["%d Custom Sources"] = "%d Custom Sources"
 --[[Translation missing --]]
 L["%d Faction-Realms"] = "%d Faction-Realms"
 L["%d groups"] = "%d 群組"
-L["%d Groups"] = "%d 分組"
+L["%d Groups"] = "%d 群組"
 --[[Translation missing --]]
 L["%d Groups Selected"] = "%d Groups Selected"
 --[[Translation missing --]]
@@ -21685,8 +21649,7 @@ L["%d Guilds"] = "%d Guilds"
 L["%d Items"] = "%d 物品"
 L["%d of %d"] = "發佈 %d 堆，每堆 %d 個"
 L["%d Operations"] = "%d 作業"
---[[Translation missing --]]
-L["%d Players"] = "%d Players"
+L["%d Players"] = "%d 玩家"
 L["%d Posted Auctions"] = "已發布%d個拍賣"
 --[[Translation missing --]]
 L["%d Professions"] = "%d Professions"
@@ -21813,7 +21776,7 @@ L["Activity Type"] = "活動類型"
 L["Add"] = "Add"
 --[[Translation missing --]]
 L["Add %d |4Item:Items"] = "Add %d |4Item:Items"
-L["Add %s Operation"] = "Add %s 作業"
+L["Add %s Operation"] = "增加 %s 作業"
 --[[Translation missing --]]
 L["Add a new custom source"] = "Add a new custom source"
 --[[Translation missing --]]
@@ -21912,7 +21875,7 @@ L["Apply operation to group"] = "套用作業到群組"
 L["Are you sure you want to clear old accounting data?"] = "您確定要清除舊的會計數據嗎？"
 --[[Translation missing --]]
 L["Are you sure you want to delete the selected operations?"] = "Are you sure you want to delete the selected operations?"
-L["Are you sure you want to delete this operation?"] = "你確定要取消這個動作?"
+L["Are you sure you want to delete this operation?"] = "你確定要刪除這個作業嗎?"
 L["At above max price and not undercut."] = "以高於最高價的價格購買，並且不能削價。"
 L["At normal price and not undercut."] = "價格正常且不削價。"
 --[[Translation missing --]]
@@ -21960,7 +21923,7 @@ L["Auctioning %s button"] = "Auctioning %s button"
 --[[Translation missing --]]
 L["Auctioning Details"] = "Auctioning Details"
 L["Auctioning Log"] = "拍賣日誌"
-L["Auctioning Operation"] = "拍賣業務"
+L["Auctioning Operation"] = "拍賣作業"
 L["Auctioning operation"] = "拍賣作業"
 --[[Translation missing --]]
 L["Auctioning operations control posting to and canceling from the AH."] = "Auctioning operations control posting to and canceling from the AH."
@@ -22159,8 +22122,7 @@ L["Contacts"] = "聯絡簿"
 L["Contains auctions above your alert threshold!"] = "Contains auctions above your alert threshold!"
 L["Cooldown"] = "倒數"
 L["Cooldowns"] = "倒數時間"
---[[Translation missing --]]
-L["Copy Letter"] = "Copy Letter"
+L["Copy Letter"] = "複製信件"
 L["Cost"] = "成本"
 --[[Translation missing --]]
 L["Could not create macro as you already have too many. Delete one of your existing macros and try again."] = "Could not create macro as you already have too many. Delete one of your existing macros and try again."
@@ -22168,15 +22130,14 @@ L["Could not create macro as you already have too many. Delete one of your exist
 L["Could not find profile '%s'. Possible profiles: '%s'"] = "Could not find profile '%s'. Possible profiles: '%s'"
 --[[Translation missing --]]
 L["Could not sell items due to not having free bag space available to split a stack of items."] = "Could not sell items due to not having free bag space available to split a stack of items."
-L["Craft"] = "製造數量"
+L["Craft"] = "製造"
 L["CRAFT"] = "製造"
 --[[Translation missing --]]
 L["Craft (Profitable)"] = "Craft (Profitable)"
 --[[Translation missing --]]
 L["Craft (Unprofitable)"] = "Craft (Unprofitable)"
 L["Craft All"] = "全部製造"
---[[Translation missing --]]
-L["Craft Next"] = "Craft Next"
+L["Craft Next"] = "製造下一項"
 --[[Translation missing --]]
 L["Craft Value"] = "Craft Value"
 --[[Translation missing --]]
@@ -22498,12 +22459,10 @@ L["Favorited Patterns"] = "Favorited Patterns"
 L["Filter by duration"] = "Filter by duration"
 L["Filter by groups"] = "以群組篩選"
 L["Filter by keyword"] = "以關鍵字篩選"
---[[Translation missing --]]
-L["Filter by Keyword"] = "Filter by Keyword"
+L["Filter by Keyword"] = "以關鍵字篩選"
 --[[Translation missing --]]
 L["Filter by Price Source"] = "Filter by Price Source"
---[[Translation missing --]]
-L["Filter by Profession"] = "Filter by Profession"
+L["Filter by Profession"] = "以專業篩選"
 --[[Translation missing --]]
 L["Filter group item lists based on the following price source"] = "Filter group item lists based on the following price source"
 --[[Translation missing --]]
@@ -22571,8 +22530,7 @@ L["Have Skill Ups"] = "Have Skill Ups"
 L["Here you can add/remove what groups this operation is attached to."] = "Here you can add/remove what groups this operation is attached to."
 --[[Translation missing --]]
 L["Hide auctions with bids"] = "Hide auctions with bids"
---[[Translation missing --]]
-L["Hide Columns"] = "Hide Columns"
+L["Hide Columns"] = "隱藏直欄"
 --[[Translation missing --]]
 L["Hide minimap icon"] = "Hide minimap icon"
 --[[Translation missing --]]
@@ -22702,8 +22660,7 @@ L["Item Selection"] = "Item Selection"
 L["Item Slot"] = "Item Slot"
 --[[Translation missing --]]
 L["Item Subclass"] = "Item Subclass"
---[[Translation missing --]]
-L["Item Value"] = "Item Value"
+L["Item Value"] = "物品價值"
 --[[Translation missing --]]
 L["Item/Group is invalid (see chat)."] = "Item/Group is invalid (see chat)."
 L["Items"] = "物品"
@@ -22741,8 +22698,7 @@ L["Limit"] = "Limit"
 L["Link to Another Operation"] = "連接到另一個作業"
 --[[Translation missing --]]
 L["Loading..."] = "Loading..."
---[[Translation missing --]]
-L["Lock Column Width"] = "Lock Column Width"
+L["Lock Column Width"] = "鎖定直欄寬度"
 --[[Translation missing --]]
 L["Lock task list's background"] = "Lock task list's background"
 L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."] = "看起來TradeSkillMaster似乎發生了一個錯誤。請按照下列指示協助作者修正此問題。"
@@ -22805,8 +22761,7 @@ L["Match whitelisted players"] = "Match whitelisted players"
 L["Material Cost"] = "Material Cost"
 --[[Translation missing --]]
 L["Material Price"] = "Material Price"
---[[Translation missing --]]
-L["Materials"] = "Materials"
+L["Materials"] = "原料"
 --[[Translation missing --]]
 L["Materials to Gather"] = "Materials to Gather"
 --[[Translation missing --]]
@@ -22926,8 +22881,7 @@ L["Must be between %d and %s."] = "Must be between %d and %s."
 L["My Auctions"] = "我的拍賣"
 --[[Translation missing --]]
 L["My Auctions %s button"] = "My Auctions %s button"
---[[Translation missing --]]
-L["Name"] = "Name"
+L["Name"] = "名稱"
 --[[Translation missing --]]
 L["NEED MATS"] = "NEED MATS"
 --[[Translation missing --]]
@@ -23032,19 +22986,16 @@ L["Number Owned"] = "Number Owned"
 L["Offline"] = "Offline"
 --[[Translation missing --]]
 L["On Cooldown"] = "On Cooldown"
---[[Translation missing --]]
-L["Only show craftable"] = "Only show craftable"
+L["Only show craftable"] = "只顯示可製造物品"
 --[[Translation missing --]]
 L["Only show items with disenchant values above this price"] = "Only show items with disenchant values above this price"
 --[[Translation missing --]]
 L["Only show sold auctions"] = "Only show sold auctions"
---[[Translation missing --]]
-L["OPEN"] = "OPEN"
+L["OPEN"] = "開啟"
 L["Open All Mail"] = "開啟全部郵件"
 --[[Translation missing --]]
 L["Open All Mail Without Money"] = "Open All Mail Without Money"
---[[Translation missing --]]
-L["Open Mail"] = "Open Mail"
+L["Open Mail"] = "開啟郵件"
 --[[Translation missing --]]
 L["Open mail complete sound"] = "Open mail complete sound"
 --[[Translation missing --]]
@@ -23275,12 +23226,10 @@ L["Repair from Guild Bank"] = "Repair from Guild Bank"
 --[[Translation missing --]]
 L["Replace %d existing operations and %d existing custom sources?"] = "Replace %d existing operations and %d existing custom sources?"
 L["Replace %d existing operations?"] = "替代 %d 存在的作業?"
---[[Translation missing --]]
-L["Reply"] = "Reply"
+L["Reply"] = "回覆"
 --[[Translation missing --]]
 L["Report Spam"] = "Report Spam"
---[[Translation missing --]]
-L["Reports"] = "Reports"
+L["Reports"] = "報告"
 --[[Translation missing --]]
 L["Repost threshold"] = "Repost threshold"
 --[[Translation missing --]]
@@ -23529,8 +23478,7 @@ L["Show destroying frame automatically"] = "Show destroying frame automatically"
 L["Show on modifier"] = "Show on modifier"
 --[[Translation missing --]]
 L["Show only auctions with bids"] = "Show only auctions with bids"
---[[Translation missing --]]
-L["Showing %s Mail"] = "Showing %s Mail"
+L["Showing %s Mail"] = "顯示 %s 郵件"
 --[[Translation missing --]]
 L["Showing %s of %d Mail"] = "Showing %s of %d Mail"
 --[[Translation missing --]]

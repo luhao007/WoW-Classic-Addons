@@ -51,7 +51,7 @@ function InventoryInfo.ItemWillGoInBag(link, bag)
 	if bag == BACKPACK_CONTAINER or bag == BANK_CONTAINER then
 		return true
 	elseif bag == REAGENTBANK_CONTAINER then
-		return ItemInfo.IsCraftingReagent(link)
+		return IsReagentBankUnlocked() and ItemInfo.IsCraftingReagent(link)
 	end
 	local itemFamily = GetItemFamily(link) or 0
 	if ItemInfo.GetClassId(link) == LE_ITEM_CLASS_CONTAINER then

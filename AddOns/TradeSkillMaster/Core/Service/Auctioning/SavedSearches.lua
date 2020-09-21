@@ -12,7 +12,9 @@ local String = TSM.Include("Util.String")
 local Database = TSM.Include("Util.Database")
 local TempTable = TSM.Include("Util.TempTable")
 local Theme = TSM.Include("Util.Theme")
+local Settings = TSM.Include("Service.Settings")
 local private = {
+	settings = nil,
 	db = nil,
 }
 local FILTER_SEP = "\001"
@@ -25,38 +27,37 @@ local MAX_RECENT_SEARCHES = 500
 -- ============================================================================
 
 function SavedSearches.OnInitialize()
+	private.settings = Settings.NewView()
+		:AddKey("global", "userData", "savedAuctioningSearches")
+
 	-- remove duplicates
-	local keepSearch = TempTable.Acquire()
-	for _, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
-		local filter = data.filter
-		if not keepSearch[filter] then
-			keepSearch[filter] = data
+	local seen = TempTable.Acquire()
+	for i = #private.settings.savedAuctioningSearches.filters, 1, -1 do
+		local filter = private.settings.savedAuctioningSearches.filters[i]
+		if seen[filter] then
+			tremove(private.settings.savedAuctioningSearches.filters, i)
+			tremove(private.settings.savedAuctioningSearches.searchTypes, i)
+			private.settings.savedAuctioningSearches.name[filter] = nil
+			private.settings.savedAuctioningSearches.isFavorite[filter] = nil
 		else
-			if data.isFavorite == keepSearch[filter].isFavorite then
-				if data.lastSearch > keepSearch[filter].lastSearch then
-					keepSearch[filter] = data
-				end
-			elseif data.isFavorite then
-				keepSearch[filter] = data
-			end
+			seen[filter] = true
 		end
 	end
-	for i = #TSM.db.global.userData.savedAuctioningSearches, 1, -1 do
-		if not keepSearch[TSM.db.global.userData.savedAuctioningSearches[i].filter] then
-			tremove(TSM.db.global.userData.savedAuctioningSearches, i)
-		end
-	end
-	TempTable.Release(keepSearch)
+	TempTable.Release(seen)
 
 	-- remove old recent searches
 	local remainingRecentSearches = MAX_RECENT_SEARCHES
 	local numRemoved = 0
-	for i = #TSM.db.global.userData.savedAuctioningSearches, 1, -1 do
-		if not TSM.db.global.userData.savedAuctioningSearches[i].isFavorite then
+	for i = #private.settings.savedAuctioningSearches.filters, 1, -1 do
+		local filter = private.settings.savedAuctioningSearches.filters
+		if not private.settings.savedAuctioningSearches.isFavorite[filter] then
 			if remainingRecentSearches > 0 then
 				remainingRecentSearches = remainingRecentSearches - 1
 			else
-				tremove(TSM.db.global.userData.savedAuctioningSearches, i)
+				tremove(private.settings.savedAuctioningSearches.filters, i)
+				tremove(private.settings.savedAuctioningSearches.searchTypes, i)
+				private.settings.savedAuctioningSearches.name[filter] = nil
+				private.settings.savedAuctioningSearches.isFavorite[filter] = nil
 				numRemoved = numRemoved + 1
 			end
 		end
@@ -67,89 +68,76 @@ function SavedSearches.OnInitialize()
 
 	private.db = Database.NewSchema("AUCTIONING_SAVED_SEARCHES")
 		:AddUniqueNumberField("index")
-		:AddNumberField("lastSearch")
 		:AddBooleanField("isFavorite")
 		:AddStringField("searchType")
 		:AddStringField("filter")
 		:AddStringField("name")
 		:AddIndex("index")
 		:Commit()
-	private.db:BulkInsertStart()
-	for index, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
-		assert(data.searchType == "postItems" or data.searchType == "postGroups" or data.searchType == "cancelGroups")
-		private.db:BulkInsertNewRow(index, data.lastSearch, data.isFavorite and true or false, data.searchType, data.filter, data.name or private.GetSearchName(data.filter, data.searchType))
-	end
-	private.db:BulkInsertEnd()
+	private.RebuildDB()
 end
 
 function SavedSearches.CreateRecentSearchesQuery()
 	return private.db:NewQuery()
-		:OrderBy("lastSearch", false)
+		:OrderBy("index", false)
 end
 
 function SavedSearches.CreateFavoriteSearchesQuery()
 	return private.db:NewQuery()
 		:Equal("isFavorite", true)
-		:OrderBy("lastSearch", false)
+		:OrderBy("name", true)
 end
 
 function SavedSearches.SetSearchIsFavorite(dbRow, isFavorite)
-	local data = TSM.db.global.userData.savedAuctioningSearches[dbRow:GetField("index")]
-	data.isFavorite = isFavorite or nil
-	dbRow:SetField("isFavorite",  isFavorite)
+	local filter = dbRow:GetField("filter")
+	private.settings.savedAuctioningSearches.isFavorite[filter] = isFavorite or nil
+	dbRow:SetField("isFavorite", isFavorite)
 		:Update()
 end
 
 function SavedSearches.RenameSearch(dbRow, newName)
-	TSM.db.global.userData.savedAuctioningSearches[dbRow:GetField("index")].name = newName
+	local filter = dbRow:GetField("filter")
+	private.settings.savedAuctioningSearches.name[filter] = newName
 	dbRow:SetField("name", newName)
 		:Update()
 end
 
 function SavedSearches.DeleteSearch(dbRow)
-	local index = dbRow:GetField("index")
-	tremove(TSM.db.global.userData.savedAuctioningSearches, index)
-	private.db:SetQueryUpdatesPaused(true)
-	private.db:DeleteRow(dbRow)
-	-- need to decrement the index fields of all the rows which got shifted up
-	local query = private.db:NewQuery()
-		:GreaterThan("index", index)
-		:OrderBy("index", true)
-	for _, row in query:Iterator() do
-		row:SetField("index", row:GetField("index") - 1)
-			:Update()
-	end
-	query:Release()
-	private.db:SetQueryUpdatesPaused(false)
+	local index, filter = dbRow:GetFields("index", "filter")
+	tremove(private.settings.savedAuctioningSearches.filters, index)
+	tremove(private.settings.savedAuctioningSearches.searchTypes, index)
+	private.settings.savedAuctioningSearches.name[filter] = nil
+	private.settings.savedAuctioningSearches.isFavorite[filter] = nil
+	private.RebuildDB()
 end
 
 function SavedSearches.RecordSearch(searchList, searchType)
 	assert(searchType == "postItems" or searchType == "postGroups" or searchType == "cancelGroups")
 	local filter = table.concat(searchList, FILTER_SEP)
-	for i, data in ipairs(TSM.db.global.userData.savedAuctioningSearches) do
-		if data.filter == filter and data.searchType == searchType then
-			data.lastSearch = time()
-			local row = private.db:GetUniqueRow("index", i)
-			row:SetField("lastSearch", data.lastSearch)
-				:Update()
-			row:Release()
+	for i, existingFilter in ipairs(private.settings.savedAuctioningSearches.filters) do
+		local existingSearchType = private.settings.savedAuctioningSearches.searchTypes[i]
+		if filter == existingFilter and searchType == existingSearchType then
+			-- move this to the end of the list and rebuild the DB
+			-- insert the existing filter so we don't need to update the isFavorite and name tables
+			tremove(private.settings.savedAuctioningSearches.filters, i)
+			tinsert(private.settings.savedAuctioningSearches.filters, existingFilter)
+			tremove(private.settings.savedAuctioningSearches.searchTypes, i)
+			tinsert(private.settings.savedAuctioningSearches.searchTypes, existingSearchType)
+			private.RebuildDB()
 			return
 		end
 	end
-	local data = {
-		filter = filter,
-		lastSearch = time(),
-		searchType = searchType,
-		isFavorite = nil,
-	}
-	tinsert(TSM.db.global.userData.savedAuctioningSearches, data)
+
+	-- didn't find an existing entry, so add a new one
+	tinsert(private.settings.savedAuctioningSearches.filters, filter)
+	tinsert(private.settings.savedAuctioningSearches.searchTypes, searchType)
+	assert(#private.settings.savedAuctioningSearches.filters == #private.settings.savedAuctioningSearches.searchTypes)
 	private.db:NewRow()
-		:SetField("index", #TSM.db.global.userData.savedAuctioningSearches)
-		:SetField("lastSearch", data.lastSearch)
-		:SetField("isFavorite", data.isFavorite and true or false)
-		:SetField("searchType", data.searchType)
-		:SetField("filter", data.filter)
-		:SetField("name", private.GetSearchName(data.filter, data.searchType))
+		:SetField("index", #private.settings.savedAuctioningSearches.filters)
+		:SetField("isFavorite", false)
+		:SetField("searchType", searchType)
+		:SetField("filter", filter)
+		:SetField("name", private.GetSearchName(filter, searchType))
 		:Create()
 end
 
@@ -162,6 +150,19 @@ end
 -- ============================================================================
 -- Private Helper Functions
 -- ============================================================================
+
+function private.RebuildDB()
+	assert(#private.settings.savedAuctioningSearches.filters == #private.settings.savedAuctioningSearches.searchTypes)
+	private.db:TruncateAndBulkInsertStart()
+	for index, filter in ipairs(private.settings.savedAuctioningSearches.filters) do
+		local searchType = private.settings.savedAuctioningSearches.searchTypes[index]
+		assert(searchType == "postItems" or searchType == "postGroups" or searchType == "cancelGroups")
+		local name = private.settings.savedAuctioningSearches.name[filter] or private.GetSearchName(filter, searchType)
+		local isFavorite = private.settings.savedAuctioningSearches.isFavorite[filter] and true or false
+		private.db:BulkInsertNewRow(index, isFavorite, searchType, filter, name)
+	end
+	private.db:BulkInsertEnd()
+end
 
 function private.GetSearchName(filter, searchType)
 	local filters = TempTable.Acquire()
