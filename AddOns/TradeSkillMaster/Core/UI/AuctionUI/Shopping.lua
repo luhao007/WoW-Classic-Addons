@@ -450,7 +450,7 @@ function private.GetAdvancedFrame()
 							:AddChild(UIElements.New("Text", "label")
 								:SetWidth(100)
 								:SetFont("BODY_BODY3_MEDIUM")
-								:SetFormattedText(L["(%d - %d)"], 0, 2000)
+								:SetFormattedText("(%d - %d)", 0, 2000)
 							)
 						)
 					)
@@ -2468,6 +2468,18 @@ function private.FSMCreate()
 				end
 				context.findAuction:UpdateResultInfo(newAuctionId, newResultInfo)
 				context.findHash = context.findAuction:GetHashes()
+			end)
+			:AddEvent("EV_BAG_UPDATE_DELAYED", function(context)
+				local postContext = context.searchContext:GetPostContext()
+				local prevDisabled = context.postDisabled
+				context.postDisabled = not postContext or private.GetBagQuantity(postContext.itemString) == 0
+				context.scanFrame:GetElement("bottom.postBtn")
+					:SetDisabled(context.postDisabled)
+					:Draw()
+				if not prevDisabled and context.postDisabled then
+					-- hide any visible dialog in case the post dialog is visible
+					context.scanFrame:GetBaseElement():HideDialog()
+				end
 			end)
 		)
 		:AddState(FSM.NewState("ST_BUY_CONFIRMATION")

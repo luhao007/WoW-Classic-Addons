@@ -455,15 +455,15 @@ do -- macro: name
 			end
 		end
 	end
-	local function check(name, pri, ...)
-		local _, usable, state, icon, caption, count, cdLeft, cdLength = nil, ...
+	local function check(name, pri, usable, state, icon, caption, count, cd1, cd2, tf, ta, ext, _stext, ...)
+		local _
 		if usable == nil then
 			if not icon then
 				_, icon = GetMacroInfo(name)
 			end
-			return icon and 10 or false, sm[name] ~= nil, state or 0, icon, caption or name, count or 0, cdLeft or 0, cdLength or 0, select(8, ...)
+			return icon and 10 or false, sm[name] ~= nil, state or 0, icon, caption or name, count or 0, cd1 or 0, cd2 or 0, tf, ta, ext, name, ...
 		end
-		return pri, ...
+		return pri, usable, state, icon, caption, count, cd1, cd2, tf, ta, ext, name, ...
 	end
 	local function tail(_, ...)
 		return ...
@@ -490,7 +490,7 @@ do -- macro: name
 end
 if MODERN then -- battlepet: pet ID
 	local petAction, special = {}, {}
-	local function tip(self, id)
+	local function SetBattlePetByID(self, id)
 		local sid, cname, lvl, _, _, _, _, name, _, ptype, _, _, _, _, cb = C_PetJournal.GetPetInfoByPetID(id)
 		if not sid then return false end
 		local hp, mhp, ap, spd, rarity = C_PetJournal.GetPetStats(id)
@@ -507,7 +507,7 @@ if MODERN then -- battlepet: pet ID
 		local cdLeft = (cooldown or 0) > 0 and (enabled ~= 0) and (cooldown + duration - GetTime())
 		local active = C_PetJournal.GetSummonedPetGUID()
 		local state = (active and active:upper()) == pid and 1 or 0
-		return sid and not cdLeft and not C_PetJournal.PetIsRevoked(pid), state, tex, cn or n or "", 0, cdLeft or 0, duration or 0, tip, pid
+		return sid and not cdLeft and not C_PetJournal.PetIsRevoked(pid), state, tex, cn or n or "", 0, cdLeft or 0, duration or 0, SetBattlePetByID, pid
 	end
 	do -- random favorite pet
 		local rname, _, ricon = GetSpellInfo(243819)
@@ -540,7 +540,7 @@ if MODERN then -- battlepet: pet ID
 		local ok, sid, cn, lvl, _, _, _, _, n, tex = pcall(C_PetJournal.GetPetInfoByPetID, pid)
 		if not (ok and sid) then return L"Battle Pet", "?" end
 		if (cn or n) and ((lvl or 0) > 1) then cn = "[" .. lvl .. "] " .. (cn or n) end
-		return L"Battle Pet", cn or n or ("#" .. tostring(pid)), tex, nil, tip, pid
+		return L"Battle Pet", cn or n or ("#" .. tostring(pid)), tex, nil, SetBattlePetByID, pid
 	end
 	AB:RegisterActionType("battlepet", createBattlePet, describeBattlePet)
 	RW:SetCommandHint(SLASH_SUMMON_BATTLE_PET1, 60, function(_, _, clause)
@@ -805,11 +805,12 @@ do -- petspell: spell ID
 		end
 	end
 end
-if MODERN then -- toybox: item ID
+if MODERN then -- toy: item ID, forceShow
 	local map, lastUsability, uq, whinedAboutGIIR = {}, {}, {}
 	local IGNORE_TOY_USABILITY = {
 		[129149]=1, [129279]=1, [129367]=1, [130157]="[in:broken isles]", [130158]=1, [130170]=1,
 		[130191]=1, [130199]=1, [130232]=1, [131812]=1, [131814]=1, [140325]=1, [147708]=1,
+		[165021]=1,
 		[153039]=1, [119421]=1, [128462]="[alliance]", [128471]="[horde]", [95589]="[alliance]", [95590]="[horde]",
 		[89222]=1, [63141]="[alliance]", [64997]="[horde]", [66888]=1, [89869]=1, [90175]=1,
 		[103685]=1, [115468]="[horde]", [115472]="[alliance]", [119160]="[horde]", [119182]="[alliance]",
@@ -820,7 +821,9 @@ if MODERN then -- toybox: item ID
 		local _, name, icon = C_ToyBox.GetToyInfo(iid)
 		local cdStart, cdLength = GetItemCooldown(iid)
 		local ignUse, usable = IGNORE_TOY_USABILITY[iid]
-		if ignUse == nil then
+		if not PlayerHasToy(iid) then
+			usable = false
+		elseif ignUse == nil then
 			usable = C_ToyBox.IsToyUsable(iid) ~= false
 		else
 			usable = ignUse == 1 or (not not KR:EvaluateCmdOptions(ignUse))
@@ -846,9 +849,9 @@ if MODERN then -- toybox: item ID
 			return "conditional", cnd, ...
 		end
 	end
-	local function createToy(id)
+	local function createToy(id, forceShow)
 		local mid, ignUse = map[id], IGNORE_TOY_USABILITY[id]
-		if not (mid or ignUse or type(id) == "number") or not PlayerHasToy(id) then
+		if not (mid or ignUse or type(id) == "number") or not (forceShow or PlayerHasToy(id)) then
 			return
 		end
 		local isUsable = ignUse or C_ToyBox.IsToyUsable(id)
@@ -858,7 +861,7 @@ if MODERN then -- toybox: item ID
 		elseif not ignUse then
 			lastUsability[id] = isUsable
 		end
-		if not isUsable then
+		if not (forceShow or isUsable) then
 			mid = nil
 		elseif mid == nil then
 			mid = AB:CreateActionSlot(toyHint, id, wrapCondition(ignUse, "attribute", "type","toy", "toy",id))
@@ -871,7 +874,7 @@ if MODERN then -- toybox: item ID
 		local _, name, tex = C_ToyBox.GetToyInfo(id)
 		return L"Toy", name, tex, nil, GameTooltip.SetToyByItemID, id
 	end
-	AB:RegisterActionType("toy", createToy, describeToy)
+	AB:RegisterActionType("toy", createToy, describeToy, {"forceShow"})
 	RW:SetCommandHint(SLASH_USE_TOY1, 60, function(_, _, clause, target)
 		if clause and clause ~= "" then
 			local _, link = GetItemInfo(clause)

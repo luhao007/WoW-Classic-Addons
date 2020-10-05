@@ -1110,7 +1110,7 @@ function private.FSMCreate()
 						:Draw()
 					private.filterText = ""
 				end
-				if context.selectedRecipeSpellId then
+				if context.selectedRecipeSpellId and context.page == "profession" then
 					local recipeList = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
 					recipeList:SetQuery(context.recipeQuery)
 					if TSM.Crafting.ProfessionScanner.GetIndexBySpellId(context.selectedRecipeSpellId) then

@@ -400,6 +400,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["NormalizationEnchant"] = "^Incantato: (.*)$",
 		["Parry"] = "^%+?# [Ii]ndice di [Pp]arata$",
 		["Parry2"] = "UNUSED",
+		["ParryPercent"] = "UNUSED",
 		["Plate"] = "^Piastre$",
 		["Polearm"] = "^Arma ad asta$",
 		["PvPPower"] = "^%+?# Potenza PvP$",
@@ -431,6 +432,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["SpellDamage2"] = "^Equip: Increases damage and healing done by magical spells and effects by up to #%.$",
 		--[[Translation missing --]]
 		["SpellDamage3"] = "^UNUSED$",
+		["SpellDamage4"] = "^UNUSED$",
 		["SpellHit"] = "^Equip: Improves your chance to hit with spells by #%%%.$",
 		["SpellPower"] = "^%+?# Potenza [Mm]agica$",
 		["Spirit"] = "^%+?# Spirito$",

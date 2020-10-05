@@ -8,7 +8,7 @@ local WclPlayerScore = _G.LibStub("AceAddon-3.0"):NewAddon("WclPlayerScore", "Ac
 
 SLASH_WP_Commands1 = "/wcl"
 SlashCmdList["WP_Commands"] = function(msg)
-	print "WCLPlayerScore Version: 1.8.8 Date:20200921 "
+	print "WCLPlayerScore Version: 1.8.24 Date:20201005 "
 end
 
 local function expand(name)
@@ -66,8 +66,25 @@ local function expand(name)
     return out
 end
 
+local function cut_str(str)
+	if str ~= nil then
+		local s1,s2,s3 = strsplit("%",str);
+		if s1 ~= nil then
+			s1 = s1 .. "%"
+			if s2 ~= nil then
+				s1 = s1 .. s2 .. "%"
+			end
+			return s1
+		end
+	end
+	return nil
+end
+
 
 local function load_data(tname)
+	if type(WP_Database) ~= "table" then
+		return nil
+	end
 	if WP_Database[tname] then
 		return expand(WP_Database[tname])
 	elseif WP_Database_1[tname] then
@@ -79,6 +96,47 @@ local function load_data(tname)
 	end
 	return nil
 end
+
+local function load_stopg(tname)
+	if type(CTOPG_Database) == "table" then
+		sname = tname .. "_" .. GetRealmName()
+		if CTOPG_Database[sname] then
+			return CTOPG_Database[sname]
+		end
+	end
+
+	if type(STOPG_Database) == "table" then
+		if STOPG_Database[tname] then
+			return STOPG_Database[tname]
+		end
+	end
+
+	return nil
+end
+
+local function load_stop(tname)
+	if type(STOP_Database) ~= "table" then
+		return nil
+	end
+	if STOP_Database[tname] then
+		return STOP_Database[tname]
+	else
+		return nil
+	end
+end
+
+local function load_ctop(tname)
+	if type(CTOP_Database) ~= "table" then
+		return nil
+	end
+	tname = tname .. "_" .. GetRealmName()
+	if CTOP_Database[tname] then
+		return CTOP_Database[tname]
+	else
+		return nil
+	end
+end
+
 
 hooksecurefunc("ChatFrame_OnHyperlinkShow", function(chatFrame, link, text, button)
 if (IsModifiedClick("CHATLINK")) then
@@ -102,7 +160,7 @@ end
 end)
 
 local function printInfo(self)
-	print("|cFFFFFF00WCL 评分-" .. self.value)
+	print("|cFFFFFF00WCL评分-" .. self.value)
 end
 
 hooksecurefunc("UnitPopup_ShowMenu", function(dropdownMenu, which, unit, name, userData)
@@ -134,11 +192,26 @@ function WclPlayerScore:InitCode()
 		local dstr = ""
 		if UnitExists(unit) and UnitIsPlayer(unit) then
 			WP_MouseoverName = UnitName(unit)
-			local dstr = load_data(WP_MouseoverName)
+			local guildName = GetGuildInfo(WP_MouseoverName)
+			if (guildName ~= nil and guildName ~= "") then
+				dstr = load_stopg(guildName)
+				if dstr then
+					GameTooltip:AddLine(dstr, 255, 209, 0)
+				end
+			end
+			dstr = load_ctop(WP_MouseoverName)
 			if dstr then
 				GameTooltip:AddLine(dstr, 255, 209, 0)
-				GameTooltip:Show()
 			end
+			dstr = load_stop(WP_MouseoverName)
+			if dstr then
+				GameTooltip:AddLine("本服" .. dstr, 255, 209, 0)
+			end
+			dstr = cut_str(load_data(WP_MouseoverName))
+			if dstr then
+				GameTooltip:AddLine(dstr, 255, 209, 0)
+			end
+			GameTooltip:Show()
 		end
 	end)
 end

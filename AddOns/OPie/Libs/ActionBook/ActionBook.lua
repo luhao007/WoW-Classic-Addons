@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 23, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 25, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -127,21 +127,23 @@ local actionCallbacks, core, coreEnv = {}, CreateFrame("Frame", nil, nil, "Secur
 		actInfo, busy, idle, _NIL, sidCastID = newtable(), newtable(), newtable(), newtable(), 30 + math.random(9)
 		actInfo[sidCastID] = newtable("attribute", 6, "spell",nil, "target",nil, "type","spell")
 		for _, c in pairs(self:GetChildList(newtable())) do idle[c] = c:GetName() end
-		KR, colStack, idxStack, ecStack, outCount = self:GetFrameRef("KR"), newtable(), newtable(), newtable(), newtable()
+		KR, colStack, idxStack, ecStack, onStack, outCount = self:GetFrameRef("KR"), newtable(), newtable(), newtable(), newtable(), newtable()
 	]=])
 	coreEnv = GetManagedEnvironment(core)
 end
 core:SetAttribute("GetCollectionContent", [[-- AB:GetCollectionContent(slot)
 	local i, ret, root, col, idx, aid, ecol = 1, "", tonumber((...)) or 0
-	wipe(outCount)
-	colStack[i], idxStack[i], ecStack[i] = root, 1, col
+	wipe(outCount) wipe(onStack)
+	colStack[i], idxStack[i], ecStack[i] = root, 1, nil
 	repeat
 		col, idx, ecol = colStack[i], idxStack[i], ecStack[i]
 		if idx == 1 and not outCount[col] then
 			if outCount[col] == nil then
 				self:CallMethod("notifyCollectionOpen", col)
 			end
-			outCount[col] = not ecol and 0
+			if not ecol then
+				onStack[col], outCount[col] = true, 0
+			end
 		end
 		aid, idxStack[i] = collections[col][idx], idx + 1
 		if aid then
@@ -165,7 +167,7 @@ core:SetAttribute("GetCollectionContent", [[-- AB:GetCollectionContent(slot)
 					end
 				elseif isCollection and not outCount[aid] then
 					i, idxStack[i], colStack[i+1], idxStack[i+1], ecStack[i+1] = i + 1, idx, aid, 1, false
-				elseif (outCount[aid] or 1) > 0 then
+				elseif (outCount[aid] or 1) > 0 or onStack[aid] then
 					local col = ecol or col
 					local nid = outCount[col] + 1
 					ret = ret .. "\n" .. col .. " " .. nid .. " " .. aid .. " " .. tok
@@ -173,13 +175,17 @@ core:SetAttribute("GetCollectionContent", [[-- AB:GetCollectionContent(slot)
 				end
 			end
 		else
-			i = i - 1
-			if colStack[i] == ecol then
-				ecol = nil
+			if not ecol then
+				onStack[col] = nil
+				local openAction = (i == 1 or (outCount[col] or 0) > 0) and metadata["openAction-" .. col]
+				if openAction then
+					ret = ret .. "\n" .. col .. " 0 " .. openAction .. " AOOA::" .. col
+				end
 			end
+			i = i - 1
 		end
 	until i == 0
-	return ret, metadata["openAction-" .. root]
+	return ret, metadata["openAction-" .. root] -- 2nd return is deprecated; use idx 0 actions in ret
 ]])
 core:SetAttribute("UseAction", [[-- AB:UseAction(slot[, ...])
 	local at = actInfo[...]
@@ -474,7 +480,7 @@ function AB:NotifyObservers(ident, data)
 	assert(type(ident) == "string", 'Syntax: ActionBook:NotifyObservers("identifier"[, data])')
 	assert(actionCreators[ident] or observers[ident] ~= nil, "Identifier %q is not registered", ident)
 	notifyCount = (notifyCount + 1) % 4503599627370495
-	for i=1,ident == "*" or not observers[ident] and 1 or 2 do
+	for i=ident == "*" or not observers[ident] and 1 or 2, 1, -1 do
 		for k,v in pairs(observers[i == 1 and "*" or ident]) do
 			securecall(k, v, ident, data)
 		end
@@ -525,7 +531,7 @@ function AB:locale(getWritableHandle)
 	if getWritableHandle then
 		local r = LW
 		LW = nil
-		return assert(r, "A writable handle has already been returned once")
+		return assert(r, "A writable locale handle has already been returned")
 	end
 	return L
 end

@@ -11,6 +11,7 @@
 local _, TSM = ...
 local Element = TSM.Include("LibTSMClass").DefineClass("Element", nil, "ABSTRACT")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
+local Analytics = TSM.Include("Util.Analytics")
 local Tooltip = TSM.Include("UI.Tooltip")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(Element)
@@ -295,8 +296,14 @@ end
 -- @tparam string path The relative path to the element
 -- @treturn Element The desired element
 function Element.GetElement(self, path)
-	-- First try to find the element as a child of self, then try from the base element
-	return private.GetElementHelper(self, path) or private.GetElementHelper(self:GetBaseElement(), path)
+	-- First try to find the element as a child of self
+	local result = private.GetElementHelper(self, path)
+	if not result then
+		Analytics.Action("GET_ELEMENT_FAIL", tostring(self), path)
+	end
+	-- TODO: is this needed?
+	result = result or private.GetElementHelper(self:GetBaseElement(), path)
+	return result
 end
 
 --- Sets the tooltip of the element.

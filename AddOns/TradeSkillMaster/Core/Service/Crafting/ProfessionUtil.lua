@@ -15,6 +15,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local BagTracking = TSM.Include("Service.BagTracking")
 local Inventory = TSM.Include("Service.Inventory")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	craftQuantity = nil,
 	craftSpellId = nil,
@@ -130,7 +131,7 @@ function ProfessionUtil.GetNumCraftable(spellId)
 	for i = 1, ProfessionUtil.GetNumMats(spellId) do
 		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i)
 		local itemString = ItemString.Get(matItemLink)
-		local totalQuantity = Inventory.GetTotalQuantity(itemString)
+		local totalQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
 		if not itemString or not quantity or totalQuantity == 0 then
 			return 0, 0
 		end

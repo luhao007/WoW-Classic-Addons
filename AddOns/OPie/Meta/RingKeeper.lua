@@ -1,5 +1,5 @@
 local RingKeeper, _, T = {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, SV = {}, {}, 2, 49, T.Evie
+local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, SV = {}, {}, 2, 50, T.Evie
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 
@@ -9,7 +9,7 @@ end
 
 local AB = assert(T.ActionBook:compatible(2,19), "A compatible version of ActionBook is required")
 local RW = assert(T.ActionBook:compatible("Rewire", 1,10), "A compatible version of Rewire is required")
-local ORI = OneRingLib.ext.OPieUI
+local ORI = OPie.UI
 local CLASS, FULLNAME, FACTION
 
 local RK_ParseMacro, RK_QuantizeMacro do -- +RingKeeper:SetMountPreference(groundSpellID, airSpellID)
@@ -314,17 +314,60 @@ local serialize, unserialize do
 		end
 		return t
 	end
+	local function tenc(t, rt)
+		local u, ua = {}, {}
+		for i=1,#t do
+			local k = t[i]
+			if #k < 4 then
+			elseif u[k] then
+				u[k] = u[k] + 1
+			else
+				ua[#ua+1], u[k] = k, 1
+			end
+		end
+		local freeSlot = 5
+		while rt[freeSlot] ~= nil do
+			freeSlot = freeSlot + 1
+		end
+		table.sort(ua, function(a, b)
+			return (#a-2)*(u[a]-1) > (#b-2)*(u[b]-1)
+		end)
+		for i=math.max(1, sigN-freeSlot+1), #ua do
+			u[ua[i]], ua[i] = nil
+		end
+		for i=1,#t do
+			local uk = u[t[i]]
+			if uk == nil then
+			elseif type(uk) == "string" then
+				t[i] = uk
+			elseif freeSlot < sigN and uk > 1 then
+				u[t[i]], t[i] = sigT[1] .. sigT[freeSlot], t[i] .. sigT[2] .. sigT[freeSlot]
+				freeSlot = freeSlot + 1
+			end
+		end
+		return t
+	end
 
 	local ops = {"local ops, sigT, sigN, s, r, pri = {}, ...\nlocal cdec, ndec = function(c, l) return string.char(sigT[c]*(sigN-1) + sigT[l]) end, function(s) local r = 0 for i=1,#s do r = r * sigN + sigT[s:sub(i,i)] end return r end",
-		"s[d+1], d, pos = r[sigT[pri:sub(pos,pos)]], d + 1, pos + 1", "r[sigT[pri:sub(pos,pos)]], pos = s[d], pos + 1",
-		"local t, n = {}, sigT[pri:sub(pos,pos)]\nfor i=1,n do t[i] = s[d-i+1] end\ns[d - n + 1], d, pos = t, d - n + 1, pos + 1", "s[d-2][s[d]], d = s[d-1], d - 2",
-		"s[d+1], d, pos = ndec(pri:sub(pos, pos + 3)) - 1000000, d + 1, pos + 4", "d, s[d+1], pos = d + 1, pri:match('^(.-)9()', pos)\ns[d] = s[d]:gsub('([0-4])(.)', cdec)",
-		"s[d-1], d = s[d-1]+s[d], d - 1", "s[d-1], d = s[d-1]*s[d], d - 1", "s[d-1], d = s[d-1]/s[d], d - 1", "function ops.bind(...) s, r, pri = ... end\nreturn ops"}
-	for i=2,#ops-1 do ops[i] = ("ops[%q] = function(d, pos)\n %s\n return d, pos\nend"):format(sigT[i-1], ops[i]) end
+		"s[d+1], d, pos = r[sigT[pri:sub(pos,pos)]], d + 1, pos + 1",
+		"r[sigT[pri:sub(pos,pos)]], pos = s[d], pos + 1",
+		"local t, n = {}, sigT[pri:sub(pos,pos)]\nfor i=1,n do t[i] = s[d-i+1] end\ns[d - n + 1], d, pos = t, d - n + 1, pos + 1",
+		"s[d-2][s[d]], d = s[d-1], d - 2",
+		"s[d+1], d, pos = ndec(pri:sub(pos, pos + 3)) - 1000000, d + 1, pos + 4",
+		"d, s[d+1], pos = d + 1, pri:match('^(.-)9()', pos)\ns[d] = s[d]:gsub('([0-4])(.)', cdec)",
+		"s[d-1], d = s[d-1]+s[d], d - 1",
+		"s[d-1], d = s[d-1]*s[d], d - 1",
+		"s[d-1], d = s[d-1]/s[d], d - 1",
+		"function ops.bind(...) s, r, pri = ... end\nreturn ops"
+	}
+	for i=2,#ops-1 do
+		ops[i] = ("ops[%q] = function(d, pos)\n %s\n return d, pos\nend"):format(sigT[i-1], ops[i])
+	end
 	ops = loadstring(table.concat(ops, "\n"))(sigT, sigN)
 
 	function serialize(t, sign, regGhost)
-		local payload = table.concat(venc(t, {}, setmetatable({},regGhost)), "")
+		local rt = setmetatable({}, regGhost)
+		local payload = table.concat(tenc(venc(t, {}, rt), rt), "")
 		return ((sign .. nenc(checksum(sign .. payload), 7) .. payload):gsub("(.......)", "%1 "):gsub(" ?$", ".", 1))
 	end
 	function unserialize(s, sign, regGhost)

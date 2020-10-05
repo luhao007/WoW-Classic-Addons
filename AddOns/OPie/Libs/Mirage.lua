@@ -120,8 +120,13 @@ function indicatorAPI:SetOverlayIcon(texture, w, h, ...)
 		self.overIcon:SetSize(w, h)
 		if ... then
 			self.overIcon:SetTexCoord(...)
+		else
+			self.overIcon:SetTexCoord(0,1, 0,1)
 		end
 	end
+end
+function indicatorAPI:SetOverlayIconVertexColor(...)
+	self.overIcon:SetVertexColor(...)
 end
 function indicatorAPI:SetCount(count)
 	self.count:SetText(count or "")
@@ -176,6 +181,9 @@ function indicatorAPI:SetEquipState(isInContainer, isInInventory)
 		end
 		s:SetVertexColor(r, g, b)
 	end
+end
+function indicatorAPI:SetShortLabel(text)
+	self.label:SetText(text)
 end
 
 local CreateCooldown do
@@ -302,7 +310,7 @@ local CreateIndicator do
 	function CreateIndicator(name, parent, size, nested)
 		local e = cc("SetSize", CreateFrame("Frame", name, parent), size, size)
 		local cd = CreateCooldown(e, size)
-		return setmetatable({[0]=e, cd=cd, cdText=cd.cdText,
+		local r = setmetatable({[0]=e, cd=cd, cdText=cd.cdText,
 			edge = cc("SetAllPoints", cc("SetTexture", e:CreateTexture(nil, "OVERLAY"), gfxBase .. "borderlo")),
 			hiEdge = cc("SetAllPoints", cc("SetTexture", e:CreateTexture(nil, "OVERLAY", nil, 1), gfxBase .. "borderhi")),
 			oglow = cc("SetShown", CreateQuadTexture("BACKGROUND", size*2, gfxBase .. "oglow", e), false),
@@ -311,11 +319,23 @@ local CreateIndicator do
 			veil = cc("SetColorTexture", cc("SetPoint", cc("SetSize", e:CreateTexture(nil, "ARTWORK", nil, 2), 60*size/64, 60*size/64), "CENTER"), 0, 0, 0),
 			ribbon = cc("SetShown", cc("SetTexture", cc("SetAllPoints", e:CreateTexture(nil, "ARTWORK", nil, 3)), gfxBase .. "ribbon"), false),
 			overIcon = cc("SetPoint", e:CreateTexture(nil, "ARTWORK", nil, 4), "BOTTOMLEFT", e, "BOTTOMLEFT", 4, 4),
-			count = cc("SetPoint", cc("SetJustifyH", e:CreateFontString(nil, "OVERLAY", "NumberFontNormalLarge"), "RIGHT"), "BOTTOMRIGHT", -4, 4),
+			count = cc("SetPoint", cc("SetJustifyH", e:CreateFontString(nil, "OVERLAY", "NumberFontNormal"), "RIGHT"), "BOTTOMRIGHT", -2, 4),
 			key = cc("SetPoint", cc("SetJustifyH", e:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray"), "RIGHT"), "TOPRIGHT", -1, -4),
 			equipBanner = cc("SetPoint", cc("SetTexCoord", cc("SetTexture", cc("SetSize", e:CreateTexture(nil, "ARTWORK", nil, 2), size/5, size/4), "Interface\\GuildFrame\\GuildDifficulty"), 0, 42/128, 6/64, 52/64), "TOPLEFT", 6*size/64, -3*size/64),
+			label = cc("SetPoint", cc("SetMaxLines", cc("SetJustifyV", cc("SetJustifyH", cc("SetSize", e:CreateFontString(nil, "OVERLAY", "TextStatusBarText", -1), size-4, 12), "CENTER"), "BOTTOM"), 1), "BOTTOMLEFT", 3, 4)
 		}, apimeta)
+		r.label:SetPoint("BOTTOMRIGHT", r.count, "BOTTOMLEFT", 2, 0)
+		return r
 	end
 end
 
-T.Mirage = {CreateIndicator=CreateIndicator, _api=indicatorAPI, _CreateQuadTexture=CreateQuadTexture}
+T.Mirage = {
+	name="OPie",
+	apiLevel=1,
+	CreateIndicator=CreateIndicator,
+
+	supportsCooldownNumbers=true,
+	supportsShortLabels=true,
+
+	_CreateQuadTexture=CreateQuadTexture,
+}

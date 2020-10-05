@@ -46,12 +46,12 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 	if type(data) == "number" then
 		GameTooltip:SetHyperlink("item:"..data)
 		showCompare = true
-	elseif type(data) == "string" and strfind(data, "craft:") then
+	elseif type(data) == "string" and strfind(data, "^craft:") then
 		data = strmatch(data, "craft:(%d+)")
 		GameTooltip:SetCraftSpell(tonumber(data))
-	elseif type(data) == "string" and strfind(data, "enchant:") then
+	elseif type(data) == "string" and strfind(data, "^enchant:") then
 		GameTooltip:SetHyperlink(data)
-	elseif type(data) == "string" and strfind(data, "currency:") then
+	elseif type(data) == "string" and strfind(data, "^currency:") then
 		GameTooltip:SetCurrencyByID(strmatch(data, "currency:(%d+)"))
 	elseif type(data) == "string" and (strfind(data, "\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))

@@ -30,13 +30,14 @@ local LibRealmInfo = LibStub("LibRealmInfo")
 local LibDBIcon = LibStub("LibDBIcon-1.0")
 local L = TSM.Include("Locale").GetTable()
 local private = {
-	appInfo = nil
+	settings = nil,
+	appInfo = nil,
 }
 local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.6" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.7" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -50,17 +51,26 @@ end
 function TSM.OnInitialize()
 	-- load settings
 	TSM.db = Settings.GetDB()
+	private.settings = Settings.NewView()
+		:AddKey("global", "coreOptions", "chatFrame")
+		:AddKey("global", "coreOptions", "destroyValueSource")
+		:AddKey("global", "coreOptions", "minimapIcon")
+		:AddKey("global", "debug", "chatLoggingEnabled")
+		:AddKey("global", "internalData", "appMessageId")
+		:AddKey("global", "internalData", "lastCharacter")
+		:AddKey("sync", "internalData", "classKey")
+		:RegisterCallback("destroyValueSource", private.DestroyValueUpdated)
 
 	-- set the last character we logged into for display in the app
-	TSM.db.global.internalData.lastCharacter = UnitName("player").." - "..GetRealmName()
+	private.settings.lastCharacter = UnitName("player").." - "..GetRealmName()
 
 	-- configure the logger
-	Log.SetChatFrame(TSM.db.global.coreOptions.chatFrame)
-	Log.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
+	Log.SetChatFrame(private.settings.chatFrame)
+	Log.SetLoggingToChatEnabled(private.settings.chatLoggingEnabled)
 	Log.SetCurrentThreadNameFunction(Threading.GetCurrentThreadName)
 
 	-- store the class of this character
-	TSM.db.sync.internalData.classKey = select(2, UnitClass("player"))
+	private.settings.classKey = select(2, UnitClass("player"))
 
 	-- core price sources
 	ItemInfo.RegisterInfoChangeCallback(function(itemString)
@@ -72,12 +82,14 @@ function TSM.OnInitialize()
 	end)
 	CustomPrice.RegisterSource("TSM", "VendorBuy", L["Buy from Vendor"], ItemInfo.GetVendorBuy)
 	CustomPrice.RegisterSource("TSM", "VendorSell", L["Sell to Vendor"], ItemInfo.GetVendorSell)
-	CustomPrice.RegisterSource("TSM", "Destroy", L["Destroy Value"], function(itemString) return CustomPrice.GetConversionsValue(itemString, TSM.db.global.coreOptions.destroyValueSource) end, nil, nil, true)
+	local function GetDestroyValue(itemString)
+		return CustomPrice.GetConversionsValue(itemString, private.settings.destroyValueSource)
+	end
+	CustomPrice.RegisterSource("TSM", "Destroy", L["Destroy Value"], GetDestroyValue)
 	CustomPrice.RegisterSource("TSM", "ItemQuality", L["Item Quality"], ItemInfo.GetQuality)
 	CustomPrice.RegisterSource("TSM", "ItemLevel", L["Item Level"], ItemInfo.GetItemLevel)
 	CustomPrice.RegisterSource("TSM", "RequiredLevel", L["Required Level"], ItemInfo.GetMinLevel)
-
-	CustomPrice.RegisterSource("TSM", "NumInventory", L["Total Inventory Quantity"], Inventory.GetTotalQuantity, nil, nil, true)
+	CustomPrice.RegisterSource("TSM", "NumInventory", L["Total Inventory Quantity"], Inventory.GetTotalQuantity)
 
 	-- Auctioneer price sources
 	if Wow.IsAddonEnabled("Auc-Advanced") and AucAdvanced then
@@ -107,8 +119,18 @@ function TSM.OnInitialize()
 	end
 
 	-- Auctionator price sources
-	if Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout and Atr_RegisterFor_DBupdated then
-		Atr_RegisterFor_DBupdated(function(...)
+	if Wow.IsAddonEnabled("Auctionator") and Auctionator and Auctionator.Database and Auctionator.Database.ProcessScan and Auctionator.API and Auctionator.API.v1 then
+		-- retail version
+		hooksecurefunc(Auctionator.Database, "ProcessScan", function()
+			CustomPrice.OnSourceChange("AtrValue")
+		end)
+		local function GetAuctionatorPrice(itemLink)
+			return Auctionator.API.v1.GetAuctionPriceByItemLink("TradeSkillMaster", itemLink)
+		end
+		CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], GetAuctionatorPrice, true)
+	elseif Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout and Atr_RegisterFor_DBupdated then
+		-- classic version
+		Atr_RegisterFor_DBupdated(function()
 			CustomPrice.OnSourceChange("AtrValue")
 		end)
 		CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], Atr_GetAuctionBuyout, true)
@@ -137,7 +159,7 @@ function TSM.OnInitialize()
 
 	-- AHDB price sources
 	if Wow.IsAddonEnabled("AuctionDB") and AuctionDB and AuctionDB.AHGetAuctionInfoByLink then
-		hooksecurefunc(AuctionDB, "AHendOfScanCB", function(...)
+		hooksecurefunc(AuctionDB, "AHendOfScanCB", function()
 			CustomPrice.OnSourceChange("AHDBMinBuyout")
 			CustomPrice.OnSourceChange("AHDBMinBid")
 		end)
@@ -154,7 +176,7 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("Accounting", "MaxSell", L["Max Sell Price"], TSM.Accounting.Transactions.GetMaxSalePrice)
 	CustomPrice.RegisterSource("Accounting", "MinSell", L["Min Sell Price"], TSM.Accounting.Transactions.GetMinSalePrice)
 	CustomPrice.RegisterSource("Accounting", "AvgBuy", L["Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice, nil, false)
-	CustomPrice.RegisterSource("Accounting", "SmartAvgBuy", L["Smart Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice, nil, true, true)
+	CustomPrice.RegisterSource("Accounting", "SmartAvgBuy", L["Smart Avg Buy Price"], TSM.Accounting.Transactions.GetAverageBuyPrice, nil, true)
 	CustomPrice.RegisterSource("Accounting", "MaxBuy", L["Max Buy Price"], TSM.Accounting.Transactions.GetMaxBuyPrice)
 	CustomPrice.RegisterSource("Accounting", "MinBuy", L["Min Buy Price"], TSM.Accounting.Transactions.GetMinBuyPrice)
 	CustomPrice.RegisterSource("Accounting", "NumExpires", L["Expires Since Last Sale"], TSM.Accounting.Auctions.GetNumExpiresSinceSale)
@@ -213,7 +235,7 @@ function TSM.OnInitialize()
 			tooltip:AddLine(format(L["%sDrag%s to move this button"], cs, ce))
 		end,
 	})
-	LibDBIcon:Register("TradeSkillMaster", dataObj, TSM.db.global.coreOptions.minimapIcon)
+	LibDBIcon:Register("TradeSkillMaster", dataObj, private.settings.minimapIcon)
 
 	-- cache battle pet names
 	if not TSM.IsWowClassic() then
@@ -276,9 +298,9 @@ function TSM.OnEnable()
 		assert(private.appInfo[key])
 	end
 
-	if private.appInfo.message and private.appInfo.message.id > TSM.db.global.internalData.appMessageId then
+	if private.appInfo.message and private.appInfo.message.id > private.settings.appMessageId then
 		-- show the message from the app
-		TSM.db.global.internalData.appMessageId = private.appInfo.message.id
+		private.settings.appMessageId = private.appInfo.message.id
 		StaticPopupDialogs["TSM_APP_MESSAGE"] = {
 			text = private.appInfo.message.msg,
 			button1 = OKAY,
@@ -389,9 +411,9 @@ function private.DebugSlashCommandHandler(arg)
 	elseif arg == "error" then
 		ErrorHandler.ShowManual()
 	elseif arg == "logging" then
-		TSM.db.global.debug.chatLoggingEnabled = not TSM.db.global.debug.chatLoggingEnabled
-		Log.SetLoggingToChatEnabled(TSM.db.global.debug.chatLoggingEnabled)
-		if TSM.db.global.debug.chatLoggingEnabled then
+		private.settings.chatLoggingEnabled = not private.settings.chatLoggingEnabled
+		Log.SetLoggingToChatEnabled(private.settings.chatLoggingEnabled)
+		if private.settings.chatLoggingEnabled then
 			Log.PrintfUser("Logging to chat enabled")
 		else
 			Log.PrintfUser("Logging to chat disabled")
@@ -480,6 +502,10 @@ function private.SaveAppData()
 
 	-- save analytics
 	Analytics.Save(appDB)
+end
+
+function private.DestroyValueUpdated()
+	CustomPrice.OnSourceChange("Destroy")
 end
 
 

@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: TradeSkillMaster Team
-## Version: v4.10.6
+## Version: v4.10.7
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
@@ -102,18 +102,18 @@ LibTSM\Service\ItemTooltipClasses\Wrapper.lua
 LibTSM\Service\ItemTooltip.lua
 LibTSM\Service\BlackMarket.lua
 LibTSM\Service\InventoryInfo.lua
-LibTSM\Service\BagTracking.lua
-LibTSM\Service\GuildTracking.lua
-LibTSM\Service\AuctionTracking.lua
-LibTSM\Service\MailTracking.lua
-LibTSM\Service\AltTracking.lua
-LibTSM\Service\Inventory.lua
 LibTSM\Service\SyncClasses\Constants.lua
 LibTSM\Service\SyncClasses\Comm.lua
 LibTSM\Service\SyncClasses\Connection.lua
 LibTSM\Service\SyncClasses\RPC.lua
 LibTSM\Service\SyncClasses\Mirror.lua
 LibTSM\Service\Sync.lua
+LibTSM\Service\BagTracking.lua
+LibTSM\Service\GuildTracking.lua
+LibTSM\Service\AuctionTracking.lua
+LibTSM\Service\MailTracking.lua
+LibTSM\Service\AltTracking.lua
+LibTSM\Service\Inventory.lua
 
 # LibTSM UI files
 LibTSM\UI\Tooltip.lua

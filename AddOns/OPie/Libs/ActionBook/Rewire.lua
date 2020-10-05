@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 16, ...
+local RW, MAJ, REV, _, T = {}, 1, 17, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -258,7 +258,8 @@ do -- core:setMute
 		f:SetShown(mute)
 	end
 	f:SetScript("OnUpdate", function()
-		assert(core:setMute(false), "Muted state persisted after macro execution")
+		core:setMute(false)
+		error("Muted state persisted after macro execution")
 	end)
 	f:Hide()
 end
@@ -320,6 +321,20 @@ local setCommandHinter, getMacroHint, getCommandHint, getCommandHintRaw, metaFil
 			if doReplace then
 				ht[6], ht[7] = cdLeft, cdLength
 				return fillToSize(7, 5)
+			end
+		end
+		function metaFilterTypes:replaceCount(...)
+			local doReplace, count = self(...)
+			if doReplace then
+				ht[5] = count
+				return fillToSize(5, 4)
+			end
+		end
+		function metaFilterTypes:replaceLabel(...)
+			local doReplace, stext = self(...)
+			if doReplace then
+				ht[11] = stext
+				return fillToSize(11, 10)
 			end
 		end
 		function metaFilterTypes:replaceHint(...)
@@ -506,6 +521,13 @@ local function init()
 	end})
 	RW:SetMetaHintFilter("icon", "replaceIcon", true, function(_meta, value, _target)
 		return true, iconReplCache[value]
+	end)
+	RW:SetMetaHintFilter("count", "replaceCount", true, function(_meta, value, _target)
+		local c = value == "none" and 0 or (value and GetItemCount(value))
+		return not not c, c
+	end)
+	RW:SetMetaHintFilter("label", "replaceLabel", true, function(_meta, value, _target)
+		return not not value, value or ""
 	end)
 
 	AB = assert(T.ActionBook:compatible(2, 22), "A compatible version of ActionBook is required.")

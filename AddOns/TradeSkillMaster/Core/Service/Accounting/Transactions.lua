@@ -32,6 +32,7 @@ local private = {
 	syncHashesThread = nil,
 	isSyncHashesThreadRunning = false,
 	syncHashDayCache = {},
+	syncHashDayCacheIsInvalid = {},
 	pendingSyncHashCharacters = {},
 }
 local OLD_CSV_KEYS = {
@@ -53,11 +54,11 @@ local SYNC_FIELDS = { "type", "itemString", "stackSize", "quantity", "price", "o
 
 function Transactions.OnInitialize()
 	if TSM.db.realm.internalData.accountingTrimmed.sales then
-		Log.PrintfUser(L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
+		Log.PrintfUser(L["%sIMPORTANT:|r When Accounting data was last saved for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of sale data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.sales))
 		TSM.db.realm.internalData.accountingTrimmed.sales = nil
 	end
 	if TSM.db.realm.internalData.accountingTrimmed.buys then
-		Log.PrintfUser(L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
+		Log.PrintfUser(L["%sIMPORTANT:|r When Accounting data was last saved for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."], Theme.GetFeedbackColor("RED"):GetTextColorPrefix(), SecondsToTime(time() - TSM.db.realm.internalData.accountingTrimmed.buys))
 		TSM.db.realm.internalData.accountingTrimmed.buys = nil
 	end
 
@@ -115,6 +116,8 @@ function Transactions.OnInitialize()
 		:GreaterThanOrEqual("time", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
 	private.syncHashesThread = Threading.New("TRANSACTIONS_SYNC_HASHES", private.SyncHashesThread)
+
+	Inventory.RegisterCallback(private.InventoryCallback)
 end
 
 function Transactions.OnDisable()
@@ -214,7 +217,7 @@ function Transactions.GetBuyStats(itemString, isSmart)
 	query:ResetOrderBy()
 
 	if isSmart then
-		local totalQuantity = Inventory.GetTotalQuantity(itemString)
+		local totalQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
 		if totalQuantity == 0 then
 			return nil, nil
 		end
@@ -512,7 +515,7 @@ function Transactions.RemoveRowByUUID(uuid)
 	local player = private.db:GetRowFieldByUUID(uuid, "player")
 	private.db:DeleteRowByUUID(uuid)
 	if private.syncHashDayCache[player] then
-		private.syncHashDayCache[player].isInvalid = true
+		private.syncHashDayCacheIsInvalid[player] = true
 	end
 	private.dataChanged = true
 	private.OnItemRecordsChanged(recordType, itemString)
@@ -536,7 +539,7 @@ function Transactions.GetSyncHash(player)
 end
 
 function Transactions.GetSyncHashByDay(player)
-	if not private.syncHashDayCache[player] or private.syncHashDayCache[player].isInvalid then
+	if not private.syncHashDayCache[player] or private.syncHashDayCacheIsInvalid[player] then
 		return
 	end
 	return private.syncHashDayCache[player]
@@ -565,7 +568,7 @@ function Transactions.RemovePlayerDay(player, day)
 	end
 	query:Release()
 	if private.syncHashDayCache[player] then
-		private.syncHashDayCache[player].isInvalid = true
+		private.syncHashDayCacheIsInvalid[player] = true
 	end
 	private.db:SetQueryUpdatesPaused(false)
 	private.OnItemRecordsChanged("sale")
@@ -587,7 +590,7 @@ function Transactions.HandleSyncedData(player, day, data)
 	end
 	query:Release()
 	if private.syncHashDayCache[player] then
-		private.syncHashDayCache[player].isInvalid = true
+		private.syncHashDayCacheIsInvalid[player] = true
 	end
 
 	-- insert the new data
@@ -750,7 +753,7 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 			:Create()
 	end
 	if private.syncHashDayCache[player] then
-		private.syncHashDayCache[player].isInvalid = true
+		private.syncHashDayCacheIsInvalid[player] = true
 	end
 
 	private.OnItemRecordsChanged(recordType, itemString)
@@ -782,14 +785,14 @@ function private.SyncHashesThread(otherPlayer)
 end
 
 function private.CalculateSyncHashesThreaded(player)
-	if private.syncHashDayCache[player] and not private.syncHashDayCache[player].isInvalid then
+	if private.syncHashDayCache[player] and not private.syncHashDayCacheIsInvalid[player] then
 		Log.Info("Sync hashes for player (%s) are already up to date", player)
 		return
 	end
 	private.syncHashDayCache[player] = private.syncHashDayCache[player] or {}
 	local result = private.syncHashDayCache[player]
 	wipe(result)
-	result.isInvalid = true
+	private.syncHashDayCacheIsInvalid[player] = true
 	while true do
 		local aborted = false
 		local query = private.db:NewQuery()
@@ -813,6 +816,10 @@ function private.CalculateSyncHashesThreaded(player)
 			break
 		end
 	end
-	result.isInvalid = nil
+	private.syncHashDayCacheIsInvalid[player] = nil
 	Log.Info("Updated sync hashes for player (%s)", player)
+end
+
+function private.InventoryCallback()
+	CustomPrice.OnSourceChange("SmartAvgBuy")
 end

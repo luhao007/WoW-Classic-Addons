@@ -8,8 +8,14 @@ local _, TSM = ...
 local Inventory = TSM.Init("Service.Inventory")
 local ItemString = TSM.Include("Util.ItemString")
 local Settings = TSM.Include("Service.Settings")
+local CustomPrice = TSM.Include("Service.CustomPrice")
+local BagTracking = TSM.Include("Service.BagTracking")
+local AuctionTracking = TSM.Include("Service.AuctionTracking")
+local MailTracking = TSM.Include("Service.MailTracking")
+local Sync = TSM.Include("Service.Sync")
 local private = {
 	settings = nil,
+	callbacks = {},
 }
 local PLAYER_NAME = UnitName("player")
 
@@ -24,6 +30,10 @@ Inventory:OnSettingsLoad(function()
 		:AddKey("factionrealm", "internalData", "pendingMail")
 		:AddKey("factionrealm", "coreOptions", "ignoreGuilds")
 		:AddKey("factionrealm", "internalData", "guildVaults")
+	BagTracking.RegisterCallback(private.QuantityChangedCallback)
+	AuctionTracking.RegisterCallback(private.QuantityChangedCallback)
+	MailTracking.RegisterCallback(private.QuantityChangedCallback)
+	Sync.RegisterMirrorCallback(private.QuantityChangedCallback)
 end)
 
 
@@ -31,6 +41,10 @@ end)
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+function Inventory.RegisterCallback(callback)
+	tinsert(private.callbacks, callback)
+end
 
 function Inventory.GetBagQuantity(itemString, character, factionrealm)
 	return private.InventoryQuantityHelper(itemString, "bagQuantity", character, factionrealm)
@@ -125,4 +139,11 @@ function private.InventoryQuantityHelper(itemString, settingKey, character, fact
 	end
 	local tbl = private.GetCharacterInventoryData(settingKey, character, factionrealm)
 	return tbl and tbl[itemString] or 0
+end
+
+function private.QuantityChangedCallback()
+	CustomPrice.OnSourceChange("NumInventory")
+	for _, callback in ipairs(private.callbacks) do
+		callback()
+	end
 end

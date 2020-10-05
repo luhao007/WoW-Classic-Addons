@@ -163,7 +163,7 @@ function Table.IsSorted(tbl, sortFunc, firstIndex, lastIndex)
 	local prevValue = tbl[firstIndex]
 	for i = firstIndex + 1, lastIndex do
 		local value = tbl[i]
-		if sortFunc(tbl[i], prevValue) then
+		if sortFunc(value, prevValue) then
 			return false
 		end
 		prevValue = value

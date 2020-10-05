@@ -17,6 +17,7 @@ local Connection = TSM.Include("Service.SyncClasses.Connection")
 local private = {
 	numConnected = 0,
 	accountStatus = {},
+	callbacks = {},
 }
 local BROADCAST_INTERVAL = 3
 
@@ -52,6 +53,10 @@ function Mirror.GetStatus(account)
 	else
 		error("Invalid status: "..tostring(status))
 	end
+end
+
+function Mirror.RegisterCallback(callback)
+	tinsert(private.callbacks, callback)
 end
 
 
@@ -228,6 +233,9 @@ function private.CharacterSettingDataResponseHandler(dataType, sourceAccount, so
 		end
 	else
 		Settings.Set("sync", Settings.GetSyncScopeKeyByCharacter(data.character), data.namespace, data.settingKey, data.data)
+	end
+	for _, callback in ipairs(private.callbacks) do
+		callback()
 	end
 end
 

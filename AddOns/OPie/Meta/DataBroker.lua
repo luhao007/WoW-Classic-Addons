@@ -64,4 +64,4 @@ do -- category
 		end
 	end
 end
-AB._CreateSimpleEditorPanel("opie.databroker.launcher", {"clickUsingRightButton", clickUsingRightButton=L"Simulate a right-click"})
+T.ActionBook._CreateSimpleEditorPanel("opie.databroker.launcher", {"clickUsingRightButton", clickUsingRightButton=L"Simulate a right-click"})

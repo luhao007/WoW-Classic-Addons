@@ -77,8 +77,8 @@ function private.MoneyTooltipFunc()
 	tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, UnitName("player")..":", Money.ToString(playerMoney)))
 	local numPosted, numSold, postedGold, soldGold = TSM.MyAuctions.GetAuctionInfo()
 	if numPosted then
-		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
-		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%d Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
+		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%s Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
+		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%s Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
 	end
 	for _, _, character, syncScopeKey in Settings.ConnectedFactionrealmAltCharacterIterator() do
 		local money = Settings.Get("sync", syncScopeKey, "internalData", "money")

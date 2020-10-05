@@ -149,18 +149,23 @@ function Crafting.OnInitialize()
 		:Equal("spellId", Database.BoundQueryParam())
 
 	-- register 1:1 crafting conversions
+	local addedConversion = false
 	local query = private.spellDB:NewQuery()
 		:Select("spellId", "itemString", "numResult")
 		:Equal("hasCD", false)
 	for _, spellId, itemString, numResult in query:Iterator() do
 		if not ProfessionInfo.IsMassMill(spellId) and matSpellCount[spellId] == 1 then
 			Conversions.AddCraft(itemString, matFirstItemString[spellId], numResult / matFirstQuantity[spellId])
+			addedConversion = true
 		end
 	end
 	query:Release()
 	TempTable.Release(matSpellCount)
 	TempTable.Release(matFirstItemString)
 	TempTable.Release(matFirstQuantity)
+	if addedConversion then
+		CustomPrice.OnSourceChange("Destroy")
+	end
 
 	local isValid, err = CustomPrice.Validate(TSM.db.global.craftingOptions.defaultCraftPriceMethod, BAD_CRAFTING_PRICE_SOURCES)
 	if not isValid then
@@ -223,7 +228,7 @@ function Crafting.CreateMatItemQuery()
 	return private.matItemDB:NewQuery()
 		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:VirtualField("matCost", "number", private.MatCostVirtualField, "itemString")
-		:VirtualField("totalQuantity", "number", Inventory.GetTotalQuantity, "itemString")
+		:VirtualField("totalQuantity", "number", private.GetTotalQuantity, "itemString")
 end
 
 function Crafting.SpellIterator()
@@ -669,7 +674,7 @@ function private.GetRestockHelpMessage(itemString)
 	end
 
 	-- check the restock quantity
-	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, Inventory.GetTotalQuantity(itemString))
+	local neededQuantity = TSM.Operations.Crafting.GetRestockQuantity(itemString, private.GetTotalQuantity(itemString))
 	if neededQuantity == 0 then
 		return L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."]
 	end
@@ -714,4 +719,8 @@ end
 
 function private.QueryPlayerFilter(row, player)
 	return String.SeparatedContains(row:GetField("players"), ",", player)
+end
+
+function private.GetTotalQuantity(itemString)
+	return CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
 end

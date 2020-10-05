@@ -10,6 +10,7 @@ local Database = TSM.Include("Util.Database")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local Inventory = TSM.Include("Service.Inventory")
+local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	db = nil,
 }
@@ -160,7 +161,7 @@ function private.RestockItem(itemString)
 		return
 	end
 
-	local haveQuantity = Inventory.GetTotalQuantity(itemString)
+	local haveQuantity = CustomPrice.GetItemPrice(itemString, "NumInventory") or 0
 	for guild, ignored in pairs(TSM.db.global.craftingOptions.ignoreGuilds) do
 		if ignored then
 			haveQuantity = haveQuantity - Inventory.GetGuildQuantity(itemString, guild)

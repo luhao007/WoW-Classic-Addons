@@ -22,6 +22,7 @@ local private = {
 	quantityDB = nil,
 	isOpen = false,
 	tooltip = nil,
+	callbacks = {},
 	expiresCallbacks = {},
 	cancelAuctionQuery = nil,
 }
@@ -180,6 +181,10 @@ end)
 -- Module Functions
 -- ============================================================================
 
+function MailTracking.RegisterCallback(callback)
+	tinsert(private.callbacks, callback)
+end
+
 function MailTracking.RegisterExpiresCallback(callback)
 	tinsert(private.expiresCallbacks, callback)
 end
@@ -293,6 +298,9 @@ function private.MailInboxUpdateDelayed()
 	for _, callback in ipairs(private.expiresCallbacks) do
 		callback()
 	end
+	for _, callback in ipairs(private.callbacks) do
+		callback()
+	end
 end
 
 
@@ -323,6 +331,9 @@ function private.ChangePendingMailQuantity(itemString, quantity)
 				:Update()
 		end
 		row:Release()
+	end
+	for _, callback in ipairs(private.callbacks) do
+		callback()
 	end
 end
 

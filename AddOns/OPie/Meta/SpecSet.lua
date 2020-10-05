@@ -98,7 +98,7 @@ do -- AB/specset
 end
 do -- EditorUI
 	local bg = CreateFrame("Frame")
-	local drop = CreateFrame("Frame", "OPie_SS_Drop", bg, "UIDropDownMenuTemplate")
+	local drop = CreateFrame("Frame", "OPie_SSDrop", bg, "UIDropDownMenuTemplate")
 	local lab = drop:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	local myPlayerMap, mySpecID, mySpecName
 	lab:SetPoint("LEFT", bg, "TOPLEFT", 0, -18)

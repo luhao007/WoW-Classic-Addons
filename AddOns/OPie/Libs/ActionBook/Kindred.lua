@@ -1,4 +1,4 @@
-local KR, MAJ, REV, execQueue, _, T = {}, 1, 14, {}, ...
+local KR, MAJ, REV, execQueue, _, T = {}, 1, 15, {}, ...
 if T.ActionBook then return end
 
 local function assert(condition, err, ...)
@@ -47,10 +47,20 @@ core:Execute([==[-- Kindred.Init
 						else
 							local cvalparsed, mark, wname, inv, name, col, cval = nil, m:match("^([+]?)((n?o?)([^:=]*))([:=]?)(.-)%s*$")
 							if inv ~= "no" then inv, name = "", wname end
-							cval, name = col == ":" and cval and ("/" .. cval .. "/"):gsub("%s*/%s*", "/"):match("/(.+)/") or nil, col == ":" and name or (name .. col .. cval)
+							cval, name = col == ":" and cval and ("/" .. cval .. "/"):gsub("%s*/%s*", "/"):sub(2,-2) or nil, col == ":" and name or (name .. col .. cval)
 							if cval and cval ~= "" then
 								cvalparsed = newtable()
-								for s in cval:gmatch("[^/]+") do cvalparsed[#cvalparsed+1] = s end
+								for s in cval:gmatch("[^/]+") do
+									local int = (name == "form" or name == "stance") and s:match("^%-?%s*%d+")
+									if int then
+										if int+0 < 1 then
+											cvalparsed[0], s = true, nil
+										else
+											s = int
+										end
+									end
+									cvalparsed[#cvalparsed+1] = s
+								end
 							end
 							cct = newtable(name, cvalparsed, inv ~= "no", mark, cval)
 							ct[#ct+1], cct[0] = cct, m
@@ -115,13 +125,14 @@ core:Execute([==[-- Kindred.Init
 							local cs, cval = cndState[name]
 							if argp == nil then
 								cval = cs and cs["*"] or false
-							elseif cs then
-								for k=1,#argp do
+							else
+								for k=1,cs and #argp or 0 do
 									if cs[argp[k]] then
 										cval = true
 										break
 									end
 								end
+								cval = cval or (argp[0] and not (cs and cs["*"]))
 							end
 							cres = (not not cval) == goal
 						elseif ctype == "gt" then

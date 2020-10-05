@@ -112,6 +112,15 @@ function Container.RemoveChild(self, child)
 	child:_SetParentElement(nil)
 end
 
+function Container.HasChildById(self, childId)
+	for _, child in ipairs(self._children) do
+		if child._id == childId then
+			return true
+		end
+	end
+	return false
+end
+
 --- Gets the number of child elements involved in layout.
 -- @tparam Container self The container object
 -- @treturn number The number of elements

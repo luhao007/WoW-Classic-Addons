@@ -262,6 +262,7 @@ function bindSet:set(owner, scope)
 	if owner.refresh then owner:refresh(scope) end
 	updatePanelContent()
 	CloseDropDownMenus()
+	frame.resetOnHide = nil
 end
 
 function frame.localize()
@@ -295,5 +296,18 @@ function frame.okay()
 end
 frame.cancel = frame.okay
 frame:SetScript("OnShow", frame.refresh)
+frame:SetScript("OnHide", function()
+	if frame.resetOnHide then
+		frame.resetOnHide = nil
+		currentOwner, currentBase = ringBindings,0
+	end
+end)
 
-config.AddSlashSuffix(function() config.open(frame) end, "bind", "binding", "bindings")
+T.AddSlashSuffix(function() config.open(frame) end, "bind", "binding", "bindings")
+
+function T.ShowSliceBindingPanel(ringKey)
+	config.open(frame)
+	bindSet.set(nil, subBindings, ringKey)
+	frame.resetOnHide = true
+	config.pulseDropdown(bindSet)
+end

@@ -148,7 +148,7 @@ function private.OnChatMsg(_, msg)
 					end,
 				}
 			end
-			StaticPopupDialogs["TSMAccountingOnTrade"].text = format(L["TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"], insertInfo.name, gaveText, gotText)
+			StaticPopupDialogs["TSMAccountingOnTrade"].text = format(L["TSM detected that you just traded %s to %s in return for %s. Would you like Accounting to store a record of this trade?"], gaveText, insertInfo.name, gotText)
 			Wow.ShowStaticPopupDialog("TSMAccountingOnTrade")
 		end
 	end

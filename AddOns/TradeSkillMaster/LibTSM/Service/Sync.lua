@@ -40,6 +40,10 @@ function Sync.GetMirrorStatus(account)
 	return Mirror.GetStatus(account)
 end
 
+function Sync.RegisterMirrorCallback(callback)
+	Mirror.RegisterCallback(callback)
+end
+
 function Sync.EstablishConnection(character)
 	return Connection.Establish(character)
 end

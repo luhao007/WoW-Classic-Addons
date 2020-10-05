@@ -814,16 +814,17 @@ function DatabaseTable.BulkInsertEnd(self)
 						local subStr = strsub(value, j, j + 2)
 						if usedSubStrTemp[subStr] ~= uuid then
 							usedSubStrTemp[subStr] = uuid
-							if not trigramIndexLists[subStr] then
+							local list = trigramIndexLists[subStr]
+							if not list then
 								trigramIndexLists[subStr] = { uuid }
 							else
-								tinsert(trigramIndexLists[subStr], uuid)
+								list[#list + 1] = uuid
 							end
 						end
 					end
 				end
 				-- sort all the trigram index lists
-				for _, list in pairs(self._trigramIndexLists) do
+				for _, list in pairs(trigramIndexLists) do
 					Table.SortWithValueLookup(list, trigramValues)
 				end
 				TempTable.Release(trigramValues)
@@ -1030,7 +1031,7 @@ function DatabaseTable._TrigramIndexInsert(self, uuid)
 		if not private.usedTrigramSubStrTemp[subStr] then
 			private.usedTrigramSubStrTemp[subStr] = true
 			if not self._trigramIndexLists[subStr] then
-				self._trigramIndexLists[subStr] = {uuid}
+				self._trigramIndexLists[subStr] = { uuid }
 			else
 				Table.InsertSorted(self._trigramIndexLists[subStr], uuid, private.TrigramValueFunc, self, field)
 			end

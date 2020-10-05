@@ -4,6 +4,49 @@ local AB = assert(T.ActionBook:compatible(2, 23), "A compatible version of Actio
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 local L = AB:locale()
 
+local CreateEdge do
+	local edgeSlices = {
+		{"TOPLEFT", 0, -1, "BOTTOMRIGHT", "BOTTOMLEFT", 1, 1}, -- L
+		{"TOPRIGHT", 0, -1, "BOTTOMLEFT", "BOTTOMRIGHT", -1, 1}, -- R
+		{"TOPLEFT", 1, 0, "BOTTOMRIGHT", "TOPRIGHT", -1, -1, ccw=true}, -- T
+		{"BOTTOMLEFT", 1, 0, "TOPRIGHT", "BOTTOMRIGHT", -1, 1, ccw=true}, -- B
+		{"TOPLEFT", 0, 0, "BOTTOMRIGHT", "TOPLEFT", 1, -1},
+		{"TOPRIGHT", 0, 0, "BOTTOMLEFT", "TOPRIGHT", -1, -1},
+		{"BOTTOMLEFT", 0, 0, "TOPRIGHT", "BOTTOMLEFT", 1, 1},
+		{"BOTTOMRIGHT", 0, 0, "TOPLEFT", "BOTTOMRIGHT", -1, 1}
+	}
+	function CreateEdge(f, info, bgColor, edgeColor)
+		local insets = info.insets
+		local es = info.edgeFile and (info.edgeSize or 39) or 0
+		if info.bgFile then
+			local bg = f:CreateTexture(nil, "BACKGROUND", nil, -7)
+			local tileBackground = not not info.tile
+			bg:SetTexture(info.bgFile, tileBackground, tileBackground)
+			bg:SetPoint("TOPLEFT", (insets and insets.left or 0), -(insets and insets.top or 0))
+			bg:SetPoint("BOTTOMRIGHT", -(insets and insets.right or 0), (insets and insets.bottom or 0))
+			local n = bgColor or 0xffffff
+			bg:SetVertexColor((n - n % 2^16) / 2^16 % 256 / 255, (n - n % 2^8) / 2^8 % 256 / 255, n % 256 / 255, n >= 2^24 and (n - n % 2^24) / 2^24 % 256 / 255 or 1)
+		end
+		if info.edgeFile then
+			local n = edgeColor or 0xffffff
+			local r,g,b,a = (n - n % 2^16) / 2^16 % 256 / 255, (n - n % 2^8) / 2^8 % 256 / 255, n % 256 / 255, n >= 2^24 and (n - n % 2^24) / 2^24 % 256 / 255 or 1
+			for i=1,#edgeSlices do
+				local t, s = f:CreateTexture(nil, "BORDER", nil, -7), edgeSlices[i]
+				t:SetTexture(info.edgeFile)
+				t:SetPoint(s[1], s[2]*es, s[3]*es)
+				t:SetPoint(s[4], f, s[5], s[6]*es, s[7]*es)
+				local x1, x2, y1, y2 = 1/128+(i-1)/8, i/8-1/128, 0.0625, 1-0.0625
+				if s.ccw then
+					t:SetTexCoord(x1,y2, x2,y2, x1,y1, x2,y1)
+				else
+					t:SetTexCoord(x1, x2, y1, y2)
+				end
+				t:SetVertexColor(r,g,b,a)
+			end
+		end
+	end
+end
+
 local multilineInput do
 	local function onNavigate(self, _x,y, _w,h)
 		local scroller = self.scroll
@@ -42,9 +85,7 @@ end
 
 do -- .macrotext
 	local bg = CreateFrame("Frame")
-	bg:SetBackdrop({edgeFile="Interface/Tooltips/UI-Tooltip-Border", bgFile="Interface/DialogFrame/UI-DialogBox-Background-Dark", tile=true, edgeSize=16, tileSize=16, insets={left=4,right=4,bottom=4,top=4}})
-	bg:SetBackdropBorderColor(0.7,0.7,0.7)
-	bg:SetBackdropColor(0,0,0,0.7)
+	CreateEdge(bg, {edgeFile="Interface/Tooltips/UI-Tooltip-Border", bgFile="Interface/DialogFrame/UI-DialogBox-Background-Dark", tile=true, edgeSize=16, tileSize=16, insets={left=4,right=4,bottom=4,top=4}}, 0xb2000000, 0xb2b2b2)
 	bg:Hide()
 	local eb, scroll = multilineInput("ABE_MacroInput", bg, 511)
 	eb:SetScript("OnEscapePressed", eb.ClearFocus)
@@ -66,6 +107,43 @@ do -- .macrotext
 			self:SetCursorPosition(pos + #text)
 		end
 		self:SetFocus()
+	end)
+	local function removeEditorLinks(text)
+		return (text:gsub("|c%x+|Hrk%d+:([%a:%d/]+)|h.-|h|r", "{{%1}}"))
+	end
+	local function GetHighlightText(editBox)
+		local text, curPos = editBox:GetText(), editBox:GetCursorPosition()
+		editBox:Insert("")
+		local text2, selStart = editBox:GetText(), editBox:GetCursorPosition()
+		local selEnd = selStart + #text - #text2
+		if text ~= text2 then
+			editBox:SetText(text)
+			editBox:SetCursorPosition(curPos)
+			editBox:HighlightText(selStart, selEnd)
+		end
+		return text:sub(selStart+1, selEnd), selStart
+	end
+	local function ReplaceSelection(editBox, newSelText)
+		editBox:Insert(newSelText)
+		local cur = editBox:GetCursorPosition()
+		editBox:HighlightText(cur-#newSelText, cur)
+	end
+	eb:SetScript("OnKeyDown", function(self, key)
+		if (key == "C" or key == "X") and IsControlKeyDown() then
+			local stext = GetHighlightText(self)
+			if stext:match("[^|]|H.+|h.*|h") then
+				ReplaceSelection(self, removeEditorLinks(stext))
+				if key == "C" then
+					self._rsText = stext
+				end
+			end
+		end
+	end)
+	eb:SetScript("OnUpdate", function(self)
+		if self._rsText then
+			ReplaceSelection(self, self._rsText)
+			self._rsText = nil
+		end
 	end)
 	
 	local decodeSpellLink do
@@ -104,8 +182,7 @@ do -- .macrotext
 		))
 	end
 	function bg:GetAction(into)
-		local text = eb:GetText():gsub("|c%x+|Hrk%d+:([%a:%d/]+)|h.-|h|r", "{{%1}}")
-		into[1], into[2] = "macrotext", text
+		into[1], into[2] = "macrotext", removeEditorLinks(eb:GetText())
 	end
 	function bg:Release(owner)
 		if bg:IsOwned(owner) then
@@ -224,6 +301,9 @@ if MODERN then
 	RegisterSimpleOptionsPanel("extrabutton", {"forceShow",
 		forceShow=L"Show a placeholder when unavailable",
 	})
+	RegisterSimpleOptionsPanel("toy", {"forceShow",
+		forceShow=L"Show a placeholder when unavailable",
+	})
 else
 	RegisterSimpleOptionsPanel("spell", {"upRank",
 		upRank=L"Use the highest known rank",
@@ -237,13 +317,9 @@ else
 end
 
 
---[[ This API is not covered by the usual warranty.
-     1. This is an internal convenience method; its signature may change.
-        It's being exported (solely) because OPie's DataBroker bridge
-        is implemented elsewhere and has a single option checkbox.
-     2. Writing directly to the AB handle is a terrible idea.
-        This may get renamed or moved to a separate :compatible() handle in
-        the future.
-    (3. It's self-less.)
+--[[ These functions are not covered by the usual API warranty; do not rely on
+     them to exist or behave the way they do now in the future.
+     Writing directly to this table is also terrible.
 --]]
-AB._CreateSimpleEditorPanel = RegisterSimpleOptionsPanel
+T.ActionBook._CreateSimpleEditorPanel = RegisterSimpleOptionsPanel
+T.ActionBook._CreateEdge = CreateEdge

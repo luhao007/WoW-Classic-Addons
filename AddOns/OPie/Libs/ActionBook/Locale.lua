@@ -5,7 +5,7 @@ local L, C = AB:locale(true), GetLocale()
 
 local z, K, V = nil
 V =
-	C == "deDE" and { -- 29/29 (100%)
+	 C == "deDE" and { -- 29/29 (100%)
 		"Fähigkeiten", "Auch Gegenstände mit gleichem Namen nutzen", "Kampfhaustier", "Kampfhaustiere", "Eigenes Makro", "Ausrüstungsset", "Ausrüstungssets", "Zusätzlicher Aktionsbutton", "Flugreittier", "Bodenreittier",
 		"Gegenstand", "Gegenstände", "Makro", "Makros", "Verschiedenes", "Reittier", "Reittiere", "Neues Makro", "Zeige nur wenn angelegt", "Begleiterfähigkeit",
 		"Begleiterfähigkeiten", "Zielmarkierungssymbol", "Weltmarkierung", "Markierungssymbole", "Zeige einen Platzhalter wenn nicht verfügbar", "Zauber", "Spielzeug", "Spielzeuge", "Benutze den höchsten bekannten Rang",
@@ -35,10 +35,10 @@ V =
 		"Предмет", "Предметы", "Макрос", "Макросы", "Разное", "Средство передвижения", "Средства передвижения", z, "Показывать только если надет", z,
 		"Способности питомцев", "Рейдовая метка", z, "Рейдовые метки", "Всегда показывать этот фрагмент", "Заклинание", "Игрушки", z, z,
 	}
-	or C == "zhCN" and { -- 25/29 (86%)
-		"技能", "同样使用具有相同名字的物品", "战宠", "战宠们", "自定义宏", "套装设定", "成套的设备", "额外动作按钮", "飞行坐骑", "陆地坐骑",
-		"物品", "物品", "宏", "宏", "杂项", "坐骑", "坐骑", z, "仅在装备时显示", z,
-		"宠物技能", "团队标记", "团队世界标记", "团队标记", "始终显示此环", "技能", "玩具", z, z,
+	or C == "zhCN" and { -- 29/29 (100%)
+		"技能", "同样使用具有相同名字的物品", "战斗宠物", "战斗宠物", "自定义宏", "套装方案", "套装方案", "额外动作按钮", "飞行坐骑", "地面坐骑",
+		"物品", "物品", "宏", "宏", "杂项", "坐骑", "坐骑", "新建宏", "仅在已装备时显示", "宠物技能",
+		"宠物技能", "团队标记", "团队世界标记", "团队标记", "不可用时显示占位符", "法术", "玩具", "玩具", "使用已知的最高等级技能",
 	}
 	or C == "zhTW" and { -- 29/29 (100%)
 		"技能", "同時使用名稱相同的物品", "戰寵", "戰寵", "自訂巨集", "套裝", "套裝", "額外動作按鈕", "飛行坐騎", "地面坐騎",

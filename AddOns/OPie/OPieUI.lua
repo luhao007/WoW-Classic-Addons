@@ -1,8 +1,12 @@
 local configCache, _, T = {}, ...
+local api, iapi = {}, {}
 local max, min, abs, floor, sin, cos, atan2 = math.max, math.min, math.abs, math.floor, sin, cos, atan2
 local function cc(m, f, ...)
 	f[m](f, ...)
 	return f
+end
+local function assert(condition, text, level)
+	return (not condition) and error(text, level or 2) or condition
 end
 
 local triggerFrame = nil
@@ -86,14 +90,19 @@ local GhostIndication = {} do
 		if activeGroup ~= ret then GhostIndication:Deactivate() end
 		if ret.incident ~= incidentAngle or ret.count ~= count then
 			local baseSize = 48 + 48*configCache.MIButtonMargin
-			local radius, angleStep = CalculateRingRadius(count, baseSize*mainScale, baseSize*0.80, 30, incidentAngle-180)/0.80, 360/count
-			local angle = 90 + incidentAngle + angleStep
+			local radius, angleStep = CalculateRingRadius(count, baseSize*mainScale, 48*0.80, 30, incidentAngle-180)/0.80, 360/count
+			local angle = incidentAngle - angleStep + 90
 			for i=2,count do
 				local cell = ret[i] or next(spareSlices) or CreateIndicator(nil, ret, 48, true)
 				cell:SetParent(ret)
 				SetAngle(cell, angle, radius)
 				cell:SetShown(true)
-				ret[i], angle, spareSlices[cell] = cell, angle + angleStep
+				ret[i], angle, spareSlices[cell] = cell, angle - angleStep
+			end
+			for i=count+1,ret.count or 0 do
+				local cell = ret[i]
+				cell:SetShown(false)
+				spareSlices[cell], ret[i] = cell, nil
 			end
 			ret.incident, ret.count = incidentAngle, count
 			ret:SetPoint("CENTER", (mainRadius/0.80+radius)*cos(incidentAngle), (mainRadius/0.80+radius)*sin(incidentAngle))
@@ -119,17 +128,82 @@ local GhostIndication = {} do
 		end
 		activeGroup = nil
 	end
-	function GhostIndication:Wipe()
-		GhostIndication:Reset()
-		wipe(spareSlices)
+	function GhostIndication:SwitchSparePool(pool)
+		self:Reset()
+		spareSlices = pool
+	end
+end
+
+local IndicatorFactories, ActiveIndicatorFactory, LastRegisteredIndicatorFactory = {}
+local SwitchIndicatorFactory, ValidateIndicator do
+	local CURRENT_API_LEVEL = 1
+	local RequiredIndicatorMethods = {
+		SetPoint=0, SetScale=0, GetScale=0, SetShown=0, SetParent=0,
+		SetIcon=0, SetIconTexCoord=0, SetIconVertexColor=0, SetDominantColor=0,
+		SetOverlayIcon=0, SetOverlayIconVertexColor=1,
+		SetUsable=0, SetCount=0, SetBinding=0,
+		SetCooldown=0, SetCooldownTextShown="supportsCooldownNumbers", SetShortLabel="supportsShortLabels",
+		SetEquipState=0, SetHighlighted=0, SetActive=0, SetOuterGlow=0,
+	}
+	function ValidateIndicator(apiLevel, info, errorLevel)
+		if apiLevel < 0 or (info.reqAPILevel or apiLevel) > CURRENT_API_LEVEL then
+			error("API level " .. apiLevel .. " is not supported (current is " .. CURRENT_API_LEVEL .. ")", errorLevel)
+		end
+		local f = info.CreateIndicator(nil, mainFrame, 48)
+		for k,v in pairs(RequiredIndicatorMethods) do
+			local tv = type(v)
+			if type(f[k]) ~= "function" and ((tv == "number" and apiLevel >= v) or (tv == "string" and info[v])) then
+				return error(("Expected a function for indicator key %q, got %s."):format(k, type(f[k])), errorLevel)
+			end
+		end
+		return {[f]=true}
+	end
+	function SwitchIndicatorFactory(iakey)
+		local iakey = (iakey == nil or iakey == "_") and LastRegisteredIndicatorFactory or iakey
+		local finfo = IndicatorFactories[iakey] or IndicatorFactories.mirage
+		if finfo ~= ActiveIndicatorFactory then
+			local oldPool = ActiveIndicatorFactory and ActiveIndicatorFactory.mainPool
+			for k,v in pairs(Slices) do
+				oldPool[v], Slices[k] = true, nil
+				v:SetShown(false)
+			end
+			mainFrame:Hide()
+			CreateIndicator, ActiveIndicatorFactory = finfo.CreateIndicator, finfo
+			GhostIndication:SwitchSparePool(finfo.ghostPool)
+		end
+	end
+	local function nextRIC(_, key)
+		if key == "_" then return end
+		local nk, nv = next(IndicatorFactories, key)
+		if nk then
+			return nk, nv.name, nv.apiLevel < CURRENT_API_LEVEL
+		end
+		return "_", IndicatorFactories[LastRegisteredIndicatorFactory].name, false
+	end
+	function iapi:EnumerateRegisteredIndicatorConstructors()
+		return nextRIC
+	end
+	function iapi:DoesIndicatorConstructorSupport(key, feature)
+		if key == nil or key == "_" then key = LastRegisteredIndicatorFactory end
+		if not IndicatorFactories[key] then key = LastRegisteredIndicatorFactory or "mirage" end
+		return not not IndicatorFactories[key]["supports" .. feature]
+	end
+	function iapi:GetIndicatorConstructorName(key)
+		if key == nil or key == "_" then key = LastRegisteredIndicatorFactory end
+		local ic = IndicatorFactories[key]
+		return ic and ic.name
+	end
+	function iapi:HasMultipleIndicatorConstructors()
+		return nil ~= next(IndicatorFactories, (next(IndicatorFactories)))
 	end
 end
 
 local tokenR, tokenG, tokenB, tokenCaption, tokenIcon, tokenQuest = {}, {}, {}, {}, {}, {}
 local getSliceColor do
 	local col, pal = T.Niji._tex, T.Niji._palette
-	function getSliceColor(token, icon)
+	function getSliceColor(token, icon, token2)
 		if tokenR[token] then return tokenR[token], tokenG[token], tokenB[token] end
+		if tokenR[token2] then return tokenR[token2], tokenG[token2], tokenB[token2] end
 		local li = col[icon] or -3
 		return pal[li] or 0.7, pal[li+1] or 1, pal[li+2] or 0.6
 	end
@@ -207,22 +281,45 @@ local function updateCentralElements(self, si)
 	end
 	self.oldSlice = si
 end
-local function updateSlice(self, selected, tok, usable, state, icon, _, count, cd, cd2, _tf, _ta, ext)
-	state, icon, ext, usable = state or 0, tokenIcon[tok] or icon or "Interface/Icons/INV_Misc_QuestionMark", not tokenIcon[tok] and ext or nil, usable or (state and usable ~= false) or false
-	local active, overlay, faded, usableCharge, r,g,b = state % 2 > 0, state % 4 > 1, not usable, usable or (state % 128 >= 64)
+local function updateSlice(self, originAngle, selected, tok, usable, state, icon, _, count, cd, cd2, _tf, _ta, ext, stext)
+	local isJump, origJumpIcon, jumpOtherTok = false, icon
+	state, usable, ext = state or 0, usable or (state and usable ~= false) or false, not tokenIcon[tok] and ext or nil
+	if state % 8192 >= 4096 then
+		icon, jumpOtherTok, isJump, count = 188515, count, true, 0
+	end
+	icon = tokenIcon[tok] or icon or "Interface/Icons/INV_Misc_QuestionMark"
+	local active, overlay, faded, usableCharge, r,g,b = state % 2 >= 1, state % 4 >= 2, not usable, usable or (state % 128 >= 64)
 	self:SetIcon(icon)
 	if ext then
 		self:SetIconTexCoord(securecall(extractAux, ext, "coord"))
 		r, g, b = securecall(extractAux, ext, "color")
 	end
-	self:SetUsable(usable, usableCharge, cd and cd > 0, state % 16 > 7, state % 32 > 15)
+	local dr, dg, db = getSliceColor(tok, isJump and icon == 188515 and origJumpIcon or icon, jumpOtherTok)
+	self:SetUsable(usable, usableCharge, cd and cd > 0, state % 16 >= 8, state % 32 >= 16)
 	self:SetIconVertexColor(r or 1, g or 1, b or 1)
-	self:SetDominantColor(getSliceColor(tok, icon))
+	self:SetDominantColor(dr, dg, db)
 	self:SetOuterGlow(overlay)
-	self:SetOverlayIcon((tokenQuest[tok] or ((state or 0) % 64 >= 32)) and "Interface\\MINIMAP\\TRACKING\\OBJECTICONS", 21, 28, 40/256, 64/256, 32/64, 1)
+	if isJump and icon == 188515 then
+		local cx, cy, cr = 128/256, 45/256, 0.53 * 0.45 -- l, r, t, b = 97/256, 159/256, 14/256, 76/256
+		local a1, x1,x2,x3,x4, y1,y2,y3,y4 = 135-originAngle
+		x1,y1 = cx + cr*cos(a1), cy - cr*sin(a1)
+		x2,y2 = cx + cr*cos(a1+ 90), cy - cr*sin(a1+ 90)
+		x3,y3 = cx + cr*cos(a1+180), cy - cr*sin(a1+180)
+		x4,y4 = cx + cr*cos(a1+270), cy - cr*sin(a1+270)
+		self:SetOverlayIcon(gfxBase .. "pointer", 40, 40, x2,y2, x3,y3, x1,y1, x4,y4)
+		if ActiveIndicatorFactory.apiLevel >= 1 then
+			self:SetOverlayIconVertexColor(dr, dg, db)
+		end
+	else
+		self:SetOverlayIcon((tokenQuest[tok] or ((state or 0) % 64 >= 32)) and "Interface\\MINIMAP\\TRACKING\\OBJECTICONS", 21, 28, 40/256, 64/256, 32/64, 1)
+	end
+	if ActiveIndicatorFactory.supportsShortLabels then
+		self:SetShortLabel(stext or "")
+	end
 	self:SetCooldown(cd, cd2, usableCharge)
 	self:SetEquipState(state % 256 >= 128, state % 512 >= 256)
-	self:SetCount((count or 0) > 0 and count)
+	local ct = configCache.ShowOneCount and 0 or 1
+	self:SetCount((count or 0) > ct and count)
 	self:SetActive(active)
 	self:SetHighlighted(selected and not faded)
 end
@@ -268,16 +365,18 @@ local function OnUpdate_Main(self, elapsed)
 	else
 		self.omState, self.schedMultiUpdate = cmState, -0.05
 		for i=1,count do
-			updateSlice(Slices[i], si == i, OneRingLib:GetOpenRingSliceAction(i))
+			updateSlice(Slices[i], 90 - (i-1)*360/count - offset, si == i, OneRingLib:GetOpenRingSliceAction(i))
 		end
 		if configCache.GhostMIRings then
-			local _, _, _, nestedCount = OneRingLib:GetOpenRingSlice(si or 0)
+			local _, _, _, nestedCount, atype = OneRingLib:GetOpenRingSlice(si or 0)
 			if (nestedCount or 0) == 0 then
 				GhostIndication:Deactivate()
 			else
-				local group = GhostIndication:ActivateGroup(si, nestedCount, 90 - 360/count*(si-1) - offset, self.radius*(configCache.MIScale and 1.10 or 1), 1.10)
-				for i=2,nestedCount do
-					updateSlice(group[i], false, OneRingLib:GetOpenRingSliceAction(si, i))
+				local jump1 = atype == "jump" and 1 or 0
+				local originAngle = 90 - 360/count*(si-1) - offset
+				local group = GhostIndication:ActivateGroup(si, nestedCount + jump1, originAngle, self.radius*(configCache.MIScale and 1.10 or 1), 1.10)
+				for i=2-jump1, nestedCount do
+					updateSlice(group[i+jump1], 90, false, OneRingLib:GetOpenRingSliceAction(si, i))
 				end
 			end
 		end
@@ -328,9 +427,10 @@ mainFrame:SetScript("OnHide", function(self)
 	end
 end)
 
-local api, iapi = {}, {}
 function iapi:Show(_, fcSlice, fastOpen, reFrame)
 	triggerFrame, _, mainFrame.count, mainFrame.offset = reFrame, OneRingLib:GetOpenRing(configCache)
+	SwitchIndicatorFactory(configCache.IndicatorFactory)
+
 	local baseSize = 48 + 48*configCache.MIButtonMargin
 	mainFrame.radius = CalculateRingRadius(mainFrame.count or 3, baseSize, baseSize, 100, 90-(mainFrame.offset or 0))
 	mainFrame:SetScript("OnUpdate", OnUpdate_ZoomIn)
@@ -340,10 +440,13 @@ function iapi:Show(_, fcSlice, fastOpen, reFrame)
 
 	local astep, radius, usedMI = mainFrame.count == 0 and 0 or -360/mainFrame.count, mainFrame.radius, mainFrame.count
 	for i=1, usedMI do
-		local indic, _, _, sliceBind = Slices[i] or rawset(Slices, i, CreateIndicator(nil, mainFrame, 48))[i], OneRingLib:GetOpenRingSlice(i)
+		local indic, _, _, sliceBind = Slices[i] or rawset(Slices, i, next(ActiveIndicatorFactory.mainPool) or CreateIndicator(nil, mainFrame, 48))[i], OneRingLib:GetOpenRingSlice(i)
+		ActiveIndicatorFactory.mainPool[indic] = nil
 		indic:SetBinding(configCache.ShowKeys and sliceBind or nil)
 		SetAngle(indic, (i - 1) * astep - mainFrame.offset, radius)
-		indic:SetCooldownTextShown(configCache.ShowCooldowns, configCache.ShowRecharge)
+		if ActiveIndicatorFactory.supportsCooldownNumbers then
+			indic:SetCooldownTextShown(configCache.ShowCooldowns, configCache.ShowRecharge)
+		end
 		indic:SetShown(true)
 		indic:SetScale(1)
 	end
@@ -353,7 +456,8 @@ function iapi:Show(_, fcSlice, fastOpen, reFrame)
 
 	configCache.RingScale = max(0.1, configCache.RingScale)
 	mainFrame:SetScale(configCache.RingScale)
-	if configCache.RingAtMouse then
+	if fastOpen == "inplace-switch" then
+	elseif configCache.RingAtMouse then
 		local cx, cy = GetCursorPosition()
 		anchorFrame:SetPoint("CENTER", nil, "BOTTOMLEFT", cx + configCache.IndicationOffsetX, cy - configCache.IndicationOffsetY)
 	else
@@ -369,6 +473,7 @@ function iapi:Hide()
 		GameTooltip:Hide()
 	end
 end
+
 function api:SetDisplayOptions(token, icon, caption, r,g,b)
 	if type(r) ~= "number" or type(g) ~= "number" or type(b) ~= "number" then r,g,b = nil end
 	tokenR[token], tokenG[token], tokenB[token], tokenCaption[token], tokenIcon[token] = r,g,b, caption, icon
@@ -379,28 +484,57 @@ end
 function api:GetTexColor(icon)
 	return getSliceColor(nil, icon)
 end
-function api:SetIndicatorConstructor(func)
-	if func then
-		local s = func(nil, mainFrame, 48)
-		for k,v in pairs(T.Mirage._api) do
-			local tk, te = type(s[k]), type(v)
-			if tk ~= te then
-				return error(("Expected %s for indicator key %q, got %s."):format(te, k, tk), 2)
-			end
-		end
-	end
-	CreateIndicator = func or T.Mirage.CreateIndicator
-	GhostIndication:Wipe()
-	for k,v in pairs(Slices) do
-		Slices[k] = nil
-		v:SetShown(false)
-	end
-	mainFrame:Hide()
+
+local ricErrorOffset = 0
+function api:RegisterIndicatorConstructor(key, info)
+	local errorLevel = 3 + ricErrorOffset
+	ricErrorOffset = 0
+	assert(type(key) == "string" and type(info) == "table", 'Syntax: OPieUI:RegisterIndicatorConstructor("key", infoTable)', errorLevel)
+	local func, apiLevel = info.CreateIndicator, info.apiLevel
+	assert(IndicatorFactories[key] == nil or key == "legacy", 'RegisterIndicatorConstructor: an indicator constructor with the specified key is already registered', errorLevel)
+	assert(type(func) == "function", 'RegisterIndicatorConstructor: info.CreateIndicator must be a function', errorLevel)
+	assert(type(apiLevel) == "number" and apiLevel < math.huge, 'RegisterIndicatorConstructor: info.apiLevel must be a finite number', errorLevel)
+	assert(type(info.name) == "string", 'RegisterIndicatorConstructor: info.name must be a string', errorLevel)
+	assert(type(info.reqAPILevel) == "number" or info.reqAPILevel == nil, 'RegisterIndicatorConstructor: info.reqAPILevel, if set, must be a number', errorLevel)
+
+	local mainPool = ValidateIndicator(apiLevel, info, 1+errorLevel)
+	LastRegisteredIndicatorFactory, IndicatorFactories[key] = key, {
+		name = info.name:gsub("|", ""),
+		apiLevel = apiLevel,
+		CreateIndicator = func,
+		mainPool = mainPool,
+		ghostPool = {},
+		supportsCooldownNumbers = not not info.supportsCooldownNumbers,
+		supportsShortLabels = not not info.supportsShortLabels,
+	}
 end
 
-for k,v in pairs({ShowCooldowns=false, ShowRecharge=false, UseGameTooltip=true, ShowKeys=true,
+for k,v in pairs({ShowCooldowns=false, ShowRecharge=false, UseGameTooltip=true, ShowKeys=true, ShowOneCount=false,
 	MIScale=true, MISpinOnHide=true, MIButtonMargin=0.1, GhostMIRings=true,
+	IndicatorFactory="_",
 	XTPointerSpeed=0, XTScaleSpeed=0, XTZoomTime=0.3, XTRotationPeriod=4, GhostShowDelay=0.25}) do
 	OneRingLib:RegisterOption(k,v)
 end
-OneRingLib.ext.OPieUI, T.OPieUI = api, iapi
+api:RegisterIndicatorConstructor("mirage", T.Mirage)
+
+T.OPieUI, OPie.UI = iapi, api
+
+local dapi = {}
+-- DEPRECATED: call RegisterIndicatorConstructor (once); OPie will switch (or not) based on user prefs.
+function dapi:SetIndicatorConstructor(func)
+	if func then
+		ricErrorOffset = 1
+		return api:RegisterIndicatorConstructor("legacy", {
+			CreateIndicator=func,
+			apiLevel=0,
+			name="Legacy",
+		})
+	else
+		LastRegisteredIndicatorFactory = "mirage"
+	end
+end
+-- Moved; alias for a bit longer
+dapi.SetQuestHint = api.SetQuestHint
+dapi.SetDisplayOptions = api.SetDisplayOptions
+
+OneRingLib.ext.OPieUI = dapi
