@@ -1529,8 +1529,8 @@ function private.RebuildModuleOperations(moduleOperationFrame)
 	local container = content:GetElement("container")
 	content:RemoveChild(container)
 	container:Release()
-	local addMore = content:GetElement("addMore")
-	if addMore then
+	if content:HasChildById("addMore") then
+		local addMore = content:GetElement("addMore")
 		content:RemoveChild(addMore)
 		addMore:Release()
 	end

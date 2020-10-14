@@ -1,28 +1,34 @@
-lightweight tag a26d35021b22d2f5a782aab35672c90f142203b6 v11305-1.1.4
+lightweight tag 6f144767707fa65d7bef162c0d8061f3d004febf v11305-1.1.5
 Author:	Ludovicus <ludovicus.maior@gmail.com>
-Date:	Tue Aug 25 14:12:16 2020 -0400
+Date:	Tue Oct 13 19:37:01 2020 -0400
 
-commit a26d35021b22d2f5a782aab35672c90f142203b6
+commit 6f144767707fa65d7bef162c0d8061f3d004febf
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Tue Aug 25 14:12:16 2020 -0400
+Date:   Tue Oct 13 19:37:01 2020 -0400
 
     Set Classic Interface
 
-commit a339a98ca98898f52768a1a6e1a694f39f2a74f8
+commit ab70f50ea9eac2ee736094556749fb1ad51e5a61
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Tue Aug 25 14:08:29 2020 -0400
+Date:   Tue Oct 13 08:50:34 2020 -0400
 
-    Add placeholder ptBR Localization
+    Update HereBeDragons to 2.04
 
-commit ecb318fb608dab4c7282c3bb1d99d668da1aa161
+commit 33ff0148ed4e2128a0de785574adc190e30b8275
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Tue Aug 25 13:45:11 2020 -0400
+Date:   Tue Oct 13 08:47:10 2020 -0400
 
-    Use 'Unnamed Map' if the map has no known name.
+    Update ACE3 to r1241
 
-commit c0c585ac83b3fe4db9a5a9387abd1e7323a0ba4e
+commit 532e20c239b4e00abcc3c0a6d42b49bc51c94764
 Author: Ludovicus <ludovicus.maior@gmail.com>
-Date:   Tue Aug 25 13:44:26 2020 -0400
+Date:   Tue Oct 13 08:39:10 2020 -0400
 
-    Update enUS locaization
+    Update zhTW localixation.
+
+commit 3dec19c2362a5e68364532df02eb9dc530fb29b6
+Author: Ludovicus <ludovicus.maior@gmail.com>
+Date:   Tue Oct 13 08:38:47 2020 -0400
+
+    Update zhCN localixation.
 

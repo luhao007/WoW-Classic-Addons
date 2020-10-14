@@ -1,14 +1,427 @@
-# [2.18.4](https://github.com/WeakAuras/WeakAuras2/tree/2.18.4) (2020-09-04)
+# [3.0.0](https://github.com/WeakAuras/WeakAuras2/tree/3.0.0) (2020-10-13)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.18.3...2.18.4)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/2.18.4...3.0.0)
 
 ## Highlights
 
- - Update lib 
+ Welcome to the Shadowlands Pre-Patch!
+
+Please read our blog post about all the great things that went into release: https://www.patreon.com/posts/weakauras-is-for-42674883 
 
 ## Commits
 
-Stanzilla (1):
+Causese (1):
 
-- Ignore .DS_Store
+- adds bleed icon (#2461)
+
+InfusOnWoW (327):
+
+- StopMotion: Move texture meta data to WeakAuras for now
+- Add support for "Charged Combo Points". As used by Kyrian Rogues
+- ConditionOptions: Fix nil error on using Name/Realm option
+- Add a "Bonus Id" trigger/load option
+- Add a Item Type load and trigger option
+- Conditions: Fix renaming auras
+- Fix template icons vanishing sometimes
+- Fix Spell Cost overlay for Cast Trigger
+- Fix Modernize for group_role
+- Fix BarModels sometimes being incorrectly clipped
+- Refactor Delete/Rename code in Options
+- Make Group Role a multi-selection
+- Fix small issue with multi-selection
+- Bufftrigger 2: Remove confussing text
+- Add a dummy loaded table to WeakAuras
+- Make Display/Trigger options pages a bit faster
+- Options: Pause and Resume dynamic groups in more places
+- Fix Animations division by 0
+- PvP Talent trigger: Fix error
+- Fix conditions not showing comboboxes for some conditionsFix conditions not showing comboboxes for some conditions
+- Weapon Enchant trigger: Fix error on using a remaining time check
+- Templates: Races
+- Templates: Remove Gladiator's Medallion
+- Templates: DK
+- Templates: DH
+- Templates: Druid
+- Templates: Monk
+- Templates: Warlock
+- Templates: Mage
+- Templates: Shaman
+- Templates: Priest Update
+- Templates: Update Rogue
+- Add Hunter Templates
+- Add Paladin templates
+- Templates: Warrior
+- Templates: Make the sections a bit more visible
+- Templates: Remove items section
+- Character Stats also have to recheck on UNIT_AURA events
+- Fix typo
+- Make GetData accessible again
+- Add a helper function IsAuraLoaded
+- Fix Omnicc overwriting our draw edge configuration
+- Show errors for OPTIONS event for newly created auras
+- Progress Bars: Default to no icon
+- Tweak trigger/conditions page by defaulting to collapsed if necessary
+- Fix "Add to New Group" showing a error
+- Fix UnitExists check for Immereus
+- Fix Tips being shown on close/open with e.g. texteditor visible
+- Fix FrameTick regression
+- Adjust text of every frame update to include (High CPU usage)
+- Fix Borders not being duplicatable
+- Make SetRegion public again
+- Fix Alternate Power trigger
+- Fix New Aura using old data
+- Update TENCH trigger for Shadowlands
+- Remove dead code and simplify Resume
+- Models are available on classic now too.
+- Move UpdateFakeStatesFor to Private
+- Remove unused SetDynamicIconCache/GetDynamicIconCache
+- Move WeakAuras.frameLevels to Private
+- Move GetFrameLevel to local
+- Move SetFrameLevel to local
+- Move FixGroupChildrenOrderForGroup into Private
+- Remove unused WeakAuras.GetSpellTooltipText
+- Move UpdateMouseoverTooltip into local
+- Move CanShowStackInfo into legacy BuffTrigger
+- Move CanShowNameInfo to legacy BuffTrigger
+- Move WeakAuras.CreateFallbackState into local
+- Move WeakAuras.GetTriggerSystem to local
+- move WeakAuras.dyngroup_unitframe_monitor to Private
+- Move EnsureClone to local
+- Move SetRegion to Private
+- Move LastUpgrade to local
+- Move RepairDatabase to local
+- Move UnloadAll into local
+- Move WeakAuras.FinishLoadUnload into Private
+- Move WeakAuras.(Un)LoadDisplays into Private
+- Move LoadEncounterInitScripts into Private
+- Move WeakAuras.CreateEncounterTable into local
+- Move WeakAuras.DestroyEncounterTable into local
+- Move WeakAuras.StoreBossGUIDs to local
+- Move ScanAll to local
+- move ValidateUiqueDataIds to private
+- Move SyncParentChildRelationships into Private
+- Move WeakAuras.UpdateCurrentInstanceType into Private
+- Move RegisterForLoadEvents to Private
+- Move CheckForPreviousEncounter to local
+- Move CreatePvPTalentCache into local
+- Move WeakAuras.CreateTalentCache to local
+- Move ConstructFunction into local
+- Move NeedToRepairDatabase to Private
+- Move IsDefinedByAddon to Private
+- Move ResolveCollisions to Private
+- Move Login to Private
+- Move WeakAuras.OpenArchive to Private
+- Move WeakAuras.addons to Private
+- Move WeakAuras.collisions to Private
+- Move ApplyToDataOrChildData to Private
+- Move LoginMessage to Private
+- Move spec_types to Private
+- Move usage of transmitCache, which is never written
+- Move DataToString into Private
+- Move WeakAuras.MatchInfo into local
+- Move WeakAuras.ShowDisplayTooltip into Private
+- Move WeakAuras.Update into local
+- Move WeakAuras.diff to local
+- Move RefereshTooltipButtons into Private
+- Move InitializeEncounterAndZoneLists into Private
+- Move ProfileRenameAura into Private
+- Make WeakAuras.table_to_string local
+- Remove WeakAuras.profileData
+- Move Set/GetMigrationSnapshot to Private
+- Move RestoreHistory to Private
+- Add missing RemoveHistory call to Delete
+- Move GetHistory to local
+- Move WeakAuras.SetHistory to Private
+- Move WeakAuras.CleanHistory to Private
+- Move (Un)registerEveryFrameUpdate into Private
+- Move EveryFrameUpdateRename to Private
+- Move UnregisterAllEveryFrameUpdate to Private
+- Move various Cooldown tracking functions to Private
+- Move ActivateEvent to Private
+- Move EndEvent to Private
+- Move GetGlobalConditionState into Private
+- Move (Can)ConvertBuffTrigger2 to Private
+- Move function_strings into Private
+- Move SerializeTable into Private
+- Move UpdatedTriggerState into Private
+- Move ParseNumber to Private
+- Move UIDtoID to Private
+- Move Start/StopProfileUID to Private
+- Move anim_function_strings into Private
+- Move ReplacePlaceHolders into Private
+- Move RunCustomTextFunc into Private
+- Move ContainsAnyPlaceHolders to Private
+- Move PerformActions into Private
+- Remove two empty lines
+- Move FrameTick to local
+- Move RegisterForFrameTick/UnregisterForFrameTick to local
+- Move ApplyFrameLevel into Private
+- Move CreateFormatters into Private
+- Move AnchorFrame into Private
+- Move TimerTick into local
+- Move HandleGlowAction into Private
+- Move HandleChatAction into Private
+- Move maxTimerDuration into Private
+- Move SquelchingActions into Private
+- Move Start/StopProfileAura into Private
+- Move PreShowModels into Private
+- Move StopProfileSystem into Private
+- Move StartProfileSystem to Private
+- Move HideTooltip into Private
+- Move ShowMouseoverTooltip into Private
+- Move ParseTextStr into Private
+- Move MoveCollapseDataDown into OptionsPrivate
+- Make collapsedOptions local
+- Remove unused WeakAuras.ShowCloneDialog
+- Move AddDisplayButton to OptionsPrivate
+- Remove WeakAuras.afterScanForLoads
+- Move Convert to Private
+- Move GetPickedDisplay to OptionsPrivate
+- Remove unused function GetSubOptions
+- Move UpdateOptions into OptionsPrivate
+- Remove strange code that interfers with Fake States
+- Move EnsureDisplayButton to local
+- Move WeakAuras.GetSortedOptionsLists to local
+- Move LayoutDisplayButtons to local
+- Move SetFakeStates to Private
+- Move WeakAura.Pause to Private
+- Move CollapseAllClones into Private
+- Remove WeakAuras.transmitCache
+- Move WeakAuras.ConstructOptions and load_prototype to Private
+- Move IsCLEUSubEvent into Private
+- Move subRegionOptions into Private
+- Move subRegionTypes to Private
+- Move GetProperties into Private
+- Move GetGlobalConditions into private
+- Move GetTriggerConditions into Private
+- Move ContainsPlaceHolders into Private
+- Move event_prototypes into Private
+- Move triggerTypes to Private
+- Move OpenTextEditor into OptionsPrivate
+- Move pauseOptionsProcessing into Private
+- Move EnsureOptions into OptionsPrivate
+- Move dynFrame into Private
+- Move AddTriggerMetaFunctions into OptionsPrivate
+- Move ResetCollapsed to OptionsPrivate
+- Move RemoveCollapsed to OptionsPrivate
+- Move InsertCollapsed to OptionsPrivate
+- Move MoveCollapseDataUp to OptionsPrivate
+- Move anim_presets to Private
+- Actions: On Hide: Fix FrameChooser
+- Fix bug with moving Ticks up/down
+- Move GetAnchorsForData to Private
+- Move DuplicateSubRegion to OptionsPrivate
+- Move OpenModelPicker to OptionsPrivate
+- Move AddTextFormatOptions to OptionsPrivate
+- Move ReplaceLocalizedRaidMarkers to Private
+- Move GetAdditionalProperties to Private
+- Move ContainsCustomPlaceHolders to private
+- Move MoveSubRegion to OptionsPrivate
+- Move GetOverlayInfo to Private
+- Move commonOptions to OptionsPrivate
+- Remove code that hid the DBM/GTFO trigger if the addons were not enabled
+- Move most of Types.lua to the Private namespace
+- Get rid of WeakAuras.editor
+- Remove WeakAuras.debug
+- Move ClearOptions into OptionsPrivate
+- Move CreateImportButtons into Private
+- Move options creater functions into OptionsPrivate
+- Move ImportFromString into OptionsPrivate
+- Move ModelPicker/ImportExport/TextEditor to OptionsPrivate
+- Move IconPicker to OptionsPrivate
+- Move TexturePicker to OptionsPrivate
+- Move Resume into Private
+- Move ReloadAll into Private
+- Remove even more tutorials code
+- Move ClearFakeStates into Private
+- Masque: Remove compability code for old Masque versions
+- Move WeakAuras.CreateFrame into OptionsPrivate
+- Move aceOptions into local variable
+- Move savedVars into OptionsPrivate
+- Move tempGroup into OptionsPrivate
+- Move loaded into Private
+- Move MoverSizer into OptionsPrivate
+- Move CancelAnimation into Private
+- Move StartFrameChooser/StopFrameChooser to OptionsPrivate
+- Move valueFromPath and valueToPath into OptionsPrivate
+- Move WeakAuras.CodeReview to OptionsPrivate
+- Move expanderAnchors and expanderButtons into OptionsPrivate
+- mouseFrame into OptionsPrivate
+- Move personalRessourceDisplayFrame into OptionsPrivate
+- Move FakeStatesFor into Private
+- Move SetCollapsed into OptionsPrivate
+- Move UpdateButtonsScroll into OptionsPrivate
+- Move MultipleDisplayTooltipDesc into OptionsPrivate
+- Remove unused UpdateCloneConfig
+- Move CanHaveClones to Private
+- Move GetTriggerDescription to Private
+- Move ExportToTable to OptionsPrivate
+- Move ExportToString to OptionsPrivate
+- Move ConvertDisplay into OptionsPrivate
+- Move SetDragging to OptionsPrivate
+- Move HandleRename into OptionsPrivate
+- Move DuplicateAura into OptionsPrivate
+- Move PickDisplayMultiple into OptionsPrivate
+- Move WeakAuras.Animate into Private
+- Move Ungroup into OptionsPrivate
+- Move PickAndEditDisplay into OptionsPrivate
+- Move ConfirmDelete into OptionsPrivate
+- Move ResetMoverSizer into OptionsPrivate
+- Move SetGrouping to OptionsPrivate
+- Move MultipleDisplayTooltipMenu into OptionsPrivate
+- Move IsPickedMultiple into OptionsPrivate
+- Move PickDisplayMultipleShift into OptionsPrivate
+- Move ClearPick(s) into OptionsPrivate
+- Move IsDisplayPicked to OptionsPrivate
+- Move ObfuscateName out of WeakAuras
+- Move WeakAuras.DropIndicator to PrivateOptions
+- Move ScanForLoads to private
+- Remove WeakAuras.DeepCopy
+- Add more functions to the block list
+- Fix custom variables with spaces and quotes in them
+- Add ignoreSelf to group type unit triggers, e.g. Health/Power
+- Add a simple formatter for strings
+- SubText: Fix anchoring of anchors yellow background
+- Tweak Magnetic Align button styling
+- Fix link to custom check
+- Fix warning about overwriting _ in Cast Trigger
+- BuffTrigger: Fix a nil error
+- Warn about accessing forbidden functions/objects via the AuraWarnings
+- Move AuraEnvironment helper methods to the Private namespace
+- Refactor legacy BuffTrigger warning
+- Add PrivateOptions to a few files
+- Add a PvP Talent selected trigger
+- Fix Else if Conditions if the second condition has no check
+- DynamicGroup: Abort earlier if the user gives us the wrong kind of data
+- Add a method to get the active state for triggers
+- Fix regression in aura_env for animations
+- Fix clonePool (#2370)
+- Fix the DropIndicator in the options
+- Fix indentation in WeakAurasDisplayButton
+- Dynamic Group: Make custom grow function a bit more resilent
+- Condition's custom checks: Rename Events to Additional Events
+- Remove outdated comments
+- Add a "Else If" to Conditions
+- Remove IsAnimating function
+- Remove id dependency from Core Animation code
+- Extract Conditions code
+- Add to Animations.lua
+- Move CorrectSpellName/CorrectItemName to where they are used
+- Move Animation related code to Animations.lua
+- Move Modernize code into its own file
+- Remove Modernize code for ancient versions
+- Move a few more auxilary functions to Private
+- Replace our filterInput with the default blizzard search widget
+- Add a bit of space around the toolbar
+- Add a Footer to the main window that contains several useful links
+- Remove more Tutorials code
+- Get rid of one set of borders on the right side.
+- Disable the Legacy Bufftrigger
+- Move a few globals out of WeakAuras
+- Fix global conditions
+- Move Private.IsLoginFinished() back to WeakAuras
+- Reorder tabs
+- Simplify PowerAuras path code
+- Add Information Tab to the Options
+- Consistenly use WeakAuras.prettyPrint
+- Remove no longer used code for tutorials
+- Introduce Private space for things we don't want to have exposed
+- Remove deprecated function calls
+- Remove C_LootJournal depencency of Item Sets trigger
+- Fix globe warnings
+- Fix default texture Wrap Mode
+- Custom Condition checks
+- Fix Condition options not always correctly updating
+- TexturePicker: Split up data and parentData
+- Move Stopmotion region type into WeakAuras
+- Fix Health trigger
+- Icon: Include a glow sub element in the default setup
+- Icon: Add missing cooldown = false to defaults
+- Fix SetBackdrop calls in our code
+- Fix anchoring to unit frames on group join
+- Use the right anchorPoint
+- Fix getting the width and height of text regions for Group layouts
+- Fix MoverSizer trying to attach to restricted regions
+- Sanitize additional progress values somewhat
+
+Stanzilla (30):
+
+- Update README.md
+- Update Actions
+- Actions: Spelling
+- clean up actions
+- Update Actions (#2457)
+- Fix a few typos
+- Temp: Don't use normal CI for beta tags
+- Update beta CI for beta tags
+- strip keys from highlights section in changelog
+- Set actions fetch depth to 0 to grab all branches
+- Revert "temporarily disable spellcache building"
+- fix GH actions tag specifier
+- Clean up a few warnings
+- Update GitHub Actions
+- Add new beta build script
+- Remove restart reminder message
+- Don't push alpha tags
+- Fix TOC version
+- Sync TOC author infos
+- Renames: WowAce to CurseForge, Twitch to CurseForge
+- Update TOC and addon name for Shadowlands
+- Update issue rules
+- Try yet another action
+- Use my fork of the GitHub Action
+- Switch to different action
+- Update issues.yml
+- Create issues.yml
+- Update issuecomplete.yml
+- Create issuecomplete.yml
+- Add support for Custom Class Colors
+
+asaka-wa (2):
+
+- add player xp trigger (#2408)
+- Update "The Pencil" (#2346)
+
+asakawa (1):
+
+- Add SetTextureOrAtlas to the relevant functions in an Icon region
+
+emptyrivers (10):
+
+- adjust nameSource when (re)moving children around
+- clear all points on frameChooserBox first
+- guard against div/0 (#2358)
+- defend against silly user errors more
+- fix pvp talents
+- add fullCircle option
+- ensure that edgeSize on borders is not zero
+- temporarily disable spellcache building
+- bump toc
+- drop "old" new feature indicators
+
+keaganr (1):
+
+- Add a confirmation pop when deleting trigger
+
+mrbuds (14):
+
+- Cast trigger condition typo
+- prevent potential nil error in ParseNameCheck
+- Swing Timer: add remaining time option fixes #2505
+- use PRD for nameplates when options are open and no frame found
+- add .release to .gitignore
+- Item Count trigger: make %n return name of item
+- add "Faction Reputation" trigger
+- re-enable model region for classic (#2379)
+- templates: priests spells update
+- templates: fix nil error when changing talents
+- templates: remove azurite stuff
+- missed one
+- better backdrop template fix
+- Make BackdropTemplateMixin changes backward compatible
+
+nullKomplex (2):
+
+- Tick improvements (#2313)
+- Merge pull request #2289 from nullKomplex/IconStaticCD
 

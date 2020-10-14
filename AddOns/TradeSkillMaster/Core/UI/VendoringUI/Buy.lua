@@ -319,6 +319,7 @@ function private.RowOnClick(scrollingTable, row, mouseButton)
 				:SetHeight(24)
 				:SetMargin(0, 0, 0, 16)
 				:AddChild(UIElements.New("Text", "text")
+					:SetWidth("AUTO")
 					:SetFont("BODY_BODY2_MEDIUM")
 					:SetText(L["Quantity"]..":")
 				)
@@ -464,8 +465,11 @@ function private.GetItemAltCostText(row, quantity)
 			if costItemString then
 				texture = ItemInfo.GetTexture(costItemString)
 			elseif not TSM.IsWowClassic() and strmatch(costItemLink, "currency:") then
-				local _
-				_, _, texture = GetCurrencyInfo(costItemLink)
+				if TSM.IsShadowlands() then
+					texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
+				else
+					_, _, texture = GetCurrencyInfo(costItemLink)
+				end
 			else
 				error(format("Unknown item cost (%d, %d, %s)", index, costNum, tostring(costItemLink)))
 			end
@@ -488,7 +492,15 @@ end
 
 function private.GetCurrencyText()
 	local name, amount, texturePath = "", nil, nil
-	if not TSM.IsWowClassic() then
+	if TSM.IsShadowlands() then
+		local firstCurrency = GetMerchantCurrencies()
+		if firstCurrency then
+			local info = C_CurrencyInfo.GetCurrencyInfo(firstCurrency)
+			name = info.name
+			amount = info.quantity
+			texturePath = info.iconFileID
+		end
+	elseif not TSM.IsWowClassic() then
 		name, amount, texturePath = GetCurrencyInfo(GetMerchantCurrencies() or "")
 	end
 	local text = ""

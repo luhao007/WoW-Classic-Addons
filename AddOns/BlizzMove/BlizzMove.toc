@@ -1,13 +1,23 @@
 ## Interface: 11305
 ## Author: the-rebel-Mermaid - github.com/the-rebel-Mermaid/BlizzMove/
-## Version: 2.1.6
+## Version: v3.0.0
+## OptionalDeps: Ace3
+## SavedVariables: BlizzMoveDB
 
 ## Title: BlizzMove
-## Notes: Move those blizzard windows
+## Notes: Makes blizzard frames movable
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF窗口移动|r |cFFFFE00ABlizzMove|r
 ## Notes-zhCN: 移动内置的各种窗口
 
 ## X-WoWI-ID: 23875
+## X-Embeds: Ace3
 
-Handle.lua
+# Libraries
+Libs\Libs.xml
+
+# Add-On
 BlizzMove.lua
+BlizzMoveAPI.lua
+BlizzMoveConfig.lua
+Frames.lua
+

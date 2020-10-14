@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Stanzilla, Semlar
-## Version: 1.3.4
+## Version: 1.4.0
 ## LoadOnDemand: 0
 ## SavedVariables: AdvancedInterfaceOptionsSaved
 ## DefaultState: Enabled

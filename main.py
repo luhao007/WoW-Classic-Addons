@@ -9,12 +9,13 @@ from manage import Manager
 class Context(object):
 
     def __init__(self):
-        if '_classic_' in os.getcwd():
-            self.game_flavour = 'classic'
-        else:
-            self.game_flavour = 'retail'
+        self.game_flavour = 'classic' if self.is_classic() else 'retail'
         self.manager = InstawowManager(self.game_flavour, False)
         self.manager_lib = InstawowManager(self.game_flavour, True)
+        self.manager_lib_classic = InstawowManager('classic', True, True)
+
+    def is_classic(self):
+        return '_classic_' in os.getcwd()
 
     def manage(self):
         print('Modifying addons to fit each other...', end='')
@@ -61,6 +62,18 @@ def install_lib(obj, libs):
 
 
 @main.command()
+@click.argument('libs', required=True, nargs=-1)
+@click.pass_obj
+def install_lib_classic(obj, libs):
+    """Install libraries"""
+    if not obj.is_classic():
+        raise RuntimeError('Cannot manage classic libs in retail game folder')
+    obj.manager_lib_classic.install(libs)
+    obj.manager_lib_classic.export()
+    Manager().process_libs()
+
+
+@main.command()
 @click.pass_obj
 def update(obj):
     """Update all addons"""
@@ -88,6 +101,17 @@ def remove_lib(obj, libs):
 
 
 @main.command()
+@click.argument('libs', required=True, nargs=-1)
+@click.pass_obj
+def remove_lib_classic(obj, libs):
+    """Install libraries"""
+    if not obj.is_classic():
+        raise RuntimeError('Cannot manage classic libs in retail game folder')
+    obj.manager_lib_classic.remove(libs)
+    obj.manager_lib_classic.export()
+
+
+@main.command()
 @click.pass_obj
 def show(obj):
     """Show all addons"""
@@ -99,6 +123,15 @@ def show(obj):
 def show_libs(obj):
     """Show all libraries"""
     obj.manager_lib.show()
+
+
+@main.command()
+@click.pass_obj
+def show_libs_classic(obj):
+    """Install libraries"""
+    if not obj.is_classic():
+        raise RuntimeError('Cannot manage classic libs in retail game folder')
+    obj.manager_lib_classic.show()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Cladhaire
-## Version: v11305-1.1.4
+## Version: v11305-1.1.5
 ## OptionalDeps: HereBeDragons-2.0
 ## SavedVariables: TomTomDB, TomTomWaypoints, TomTomWaypointsM
 

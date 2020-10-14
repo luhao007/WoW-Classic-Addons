@@ -1453,7 +1453,7 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 		end
 		local value = self._virtualFieldFunc[field](argValue)
 		if type(value) ~= self._virtualFieldType[field] then
-			error("Virtual field value not the correct type")
+			error(format("Virtual field value not the correct type (%s, %s)", tostring(argValue), tostring(value)))
 		end
 		return value
 	elseif #self._joinDBs == 0 or self._db:_GetFieldType(field) then

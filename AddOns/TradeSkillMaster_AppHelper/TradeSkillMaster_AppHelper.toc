@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: TSM Team
-## Version: v4.0.8
+## Version: v4.0.9
 ## SavedVariables: TradeSkillMaster_AppHelperDB
 
 ## Title: |cff00ff00TradeSkillMaster_AppHelper|r

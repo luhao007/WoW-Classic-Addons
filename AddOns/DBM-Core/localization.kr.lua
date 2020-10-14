@@ -82,6 +82,7 @@ L.MPROFILE_DELETE_SELF_ERROR	= "사용중에는 모드를 삭제할 수 없습�
 L.MPROFILE_DELETE_S_ERROR	= "원본이 손상되었습니다. 설정이 삭제되지 않거나 일부만 삭제됩니다. 삭제에 실패했습니다."
 
 L.NOTE_SHARE_SUCCESS			= "%s|1이;가; %s에 대한 메모를 공유했습니다."
+L.NOTE_SHARE_LINK			= "메모를 확인하려면 여기를 클릭하세요"
 L.NOTE_SHARE_FAIL			= "%s|1이;가; %s에 대한 메모 공유를 시도했습니다. 하지만 해당 보스 스킬에 관련된 모드를 설치하지 않았거나 로딩하지 않은 상태입니다. 이 메모가 필요하다면 해당 모드를 로딩했는지 확인 후 공유를 다시 요청하세요."
 
 L.NOTEHEADER					= "%s에 대한 메모를 여기에 입력하세요. 캐릭터명을 >< 로 감싸면 직업 색상으로 표시됩니다. 여러번 알림이 필요한 경우 '/'로 메모를 구분해서 작성하세요."
@@ -167,11 +168,12 @@ L.VICTORYSOUND						= "경고: DBM-VictorySound가 이 버전의 " .. L.DBM .. "
 L.DPMCORE						= "경고: Deadly PvP 모드는 더이상 개발되지 않으며 이 버전의 " .. L.DBM .. "과 호환되지 않습니다. 반드시 삭제해야 " .. L.DBM .. "이 정상 작동합니다."
 L.DBMLDB							= "경고: DBM-LDB는 이제 DBM-Core에 편입되었습니다. 같이 사용해도 문제가 생기는건 아니지만 가급적 애드온 폴더에서 'DBM-LDB' 폴더를 삭제하는걸 권장합니다"
 L.UPDATE_REQUIRES_RELAUNCH		= "경고: 지금 업데이트한 " .. L.DBM .. "은 게임 클라이언트를 완전히 재시작하기 전까진 정상 작동하지 않습니다. 이 업데이트엔 새 파일이 포함되어 있거나 UI 재시작으로는 로딩할 수 없는 .toc 파일의 변경 사항이 있습니다. 클라이언트 재시작 없이 사용할 경우 오류가 발생하거나 작동하지 않을 수 있습니다."
-L.OUT_OF_DATE_NAG				= "현재 사용중인 " .. L.DEADLY_BOSS_MODS .. " 버전이 오래되었습니다. 업데이트를 해야 이 전투의 중요한 알림이나 타이머 그리고 공격대원 모두가 보는 외침 등이 빠지지 않게 나옵니다."
+L.OUT_OF_DATE_NAG				= "현재 사용중인 " .. L.DBM .. " 버전이 오래되었습니다. 이 전투에 대응하는 모듈은 새로운 기능을 탑재했거나 버그가 수정된 상태입니다. 향상된 레이드 경험을 누리고 싶다면 업데이트를 권장합니다."
 L.CLASSIC_ONLY					= "경고: 이 " .. L.DBM .. "은 월드 오브 워크래프트: 클래식 전용 버전입니다. 삭제하시고 최신 WoW 버전용 " .. L.DBM .. "을 설치하세요."
 L.MOVABLE_BAR				= "드래그 하세요!"
 
-L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h님이 당신에게 " .. L.DBM .. " 타이머를 전송했습니다"
+L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h님이 당신에게 " .. L.DBM .. " 타이머를 전송했습니다: '%2$s'\n|HDBM:cancel:%2$s:nil|h|cff3588ff[타이머 취소]|r|h  |HDBM:ignore:%2$s:%1$s|h|cff3588ff[%1$s의 타이머 무시]|r|h"
+--L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h님이 당신에게 " .. L.DBM .. " 타이머를 전송했습니다"
 L.PIZZA_CONFIRM_IGNORE			= "정말 %s의 " .. L.DBM .. " 타이머를 차단하시겠습니까? 이 공격대에 있는 동안에만 적용됩니다."
 L.PIZZA_ERROR_USAGE				= "사용법: /dbm [broadcast] timer <시간> <텍스트>. <시간>은 1초 이상이어야 합니다."
 
@@ -562,7 +564,8 @@ L.INSTANCE_INFO_STATS_DENIED		= "확인 요청 거부: %s"
 L.INSTANCE_INFO_STATS_AWAY		= "자리 비움: %s"
 L.INSTANCE_INFO_STATS_NO_RESPONSE	= "최근 버전 " .. L.DBM .. " 미설치: %s"
 L.INSTANCE_INFO_RESULTS			= "인스턴스 ID 검사가 끝났습니다. 다른 언어의 WoW 클라이언트를 사용 중인 공격대원이 있다면 같은 인스턴스가 여러개 보일 수 있습니다."
-L.INSTANCE_INFO_SHOW_RESULTS		= "응답 안한 플레이어: %s"
+L.INSTANCE_INFO_SHOW_RESULTS		= "응답 안한 플레이어: %s\n|HDBM:showRaidIdResults|h|cff3588ff[결과 보기]|r|h"
+--L.INSTANCE_INFO_SHOW_RESULTS		= "응답 안한 플레이어: %s"
 
 L.LAG_CHECKING				= "공격대의 지연시간 확인중..."
 L.LAG_HEADER					= L.DEADLY_BOSS_MODS .. " - 지연시간 확인 결과"

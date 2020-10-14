@@ -1185,7 +1185,7 @@ function private.StoreGetItemInfoInstant(itemString)
 		local classId = LE_ITEM_CLASS_BATTLEPET
 		local subClassId = petTypeId - 1
 		local invSlotId = 0
-		local minLevel = 0
+		local minLevel = extra1 or 0
 		local itemLevel = extra1 or 0
 		local quality = extra2 or 0
 		local maxStack = 1
@@ -1196,6 +1196,7 @@ function private.StoreGetItemInfoInstant(itemString)
 		private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
 		local baseItemString = ItemString.GetBase(itemString)
 		if baseItemString ~= itemString then
+			minLevel = 0
 			itemLevel = 0
 			quality = 0
 			private.SetItemInfoInstantFields(baseItemString, texture, classId, subClassId, invSlotId)

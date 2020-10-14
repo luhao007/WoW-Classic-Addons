@@ -80,6 +80,7 @@ L.MPROFILE_DELETE_SELF_ERROR	= "Невозможно удалить настро
 L.MPROFILE_DELETE_S_ERROR	= "Источник поврежден. Настройки не удалены или удалены частично. Удалить не удалось."
 
 L.NOTE_SHARE_SUCCESS			= "%s поделился своей заметкой для %s"
+L.NOTE_SHARE_LINK					= "Нажмите здесь, чтобы открыть заметку"
 L.NOTE_SHARE_FAIL			= "%s попытался поделиться с вами заметкой для %s. Однако модуль, связанный с этой способностью не установлен или не загружен. Если вам нужна эта заметка, убедитесь что модуль, для которого они делятся заметкой загружен и попросите поделиться снова"
 
 L.NOTEHEADER					= "Вставьте текст вашей заметки здесь. Поместив имя игрока между >< окрасит его в цвет класса. Для предупреждений с несколькими заметками, разделите заметки с помощью '/'"
@@ -169,8 +170,8 @@ L.OUT_OF_DATE_NAG				= "Ваша версия Deadly Boss Mods устарела 
 
 L.MOVABLE_BAR				= "Перетащите!"
 
---L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует DBM Timer: '%2$s'\n|HDBM:cancel:%2$s:nil|h|cff3588ff[Отменить этот DBM Timer]|r|h  |HDBM:ignore:%2$s:%1$s|h|cff3588ff[Игнорировать DBM Timer от %1$s]|r|h"
-L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует вам таймер DBM"
+L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует DBM Timer: '%2$s'\n|HDBM:cancel:%2$s:nil|h|cff3588ff[Отменить этот DBM Timer]|r|h  |HDBM:ignore:%2$s:%1$s|h|cff3588ff[Игнорировать DBM Timer от %1$s]|r|h"
+--L.PIZZA_SYNC_INFO					= "|Hplayer:%1$s|h[%1$s]|h транслирует вам таймер DBM"
 L.PIZZA_CONFIRM_IGNORE			= "Игнорировать DBM таймеры от %s на время текущего сеанса?"
 L.PIZZA_ERROR_USAGE				= "Использование: /dbm [broadcast] timer <time> <text>. <time> должно быть больше 1."
 
@@ -561,8 +562,8 @@ L.INSTANCE_INFO_STATS_DENIED		= "Отклонили запрос: %s"
 L.INSTANCE_INFO_STATS_AWAY		= "Отошли от компьютера: %s"
 L.INSTANCE_INFO_STATS_NO_RESPONSE	= "Установлена устаревшая версия DBM: %s"
 L.INSTANCE_INFO_RESULTS			= "Результаты сканирования сохранений. Обратите внимание, что инстансы могут появляться более одного раза, если в вашем рейде есть игроки с локализованными клиентами WoW."
---L.INSTANCE_INFO_SHOW_RESULTS		= "Игроки, которые еще не ответили: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Показать текущие результаты]|r|h"
-L.INSTANCE_INFO_SHOW_RESULTS		= "Игроки, которые еще не ответили: %s"
+L.INSTANCE_INFO_SHOW_RESULTS		= "Игроки, которые еще не ответили: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Показать текущие результаты]|r|h"
+--L.INSTANCE_INFO_SHOW_RESULTS		= "Игроки, которые еще не ответили: %s"
 
 L.LAG_CHECKING				= "Проверка задержки у рейда..."
 L.LAG_HEADER					= "Deadly Boss Mods - Результаты проверки задержки"

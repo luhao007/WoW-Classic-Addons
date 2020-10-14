@@ -189,10 +189,17 @@ function ProfessionUtil.IsEnchant(spellId)
 	if not strfind(C_TradeSkillUI.GetRecipeItemLink(spellId), "enchant:") then
 		return false
 	end
-	local recipeInfo = TempTable.Acquire()
-	assert(C_TradeSkillUI.GetRecipeInfo(spellId, recipeInfo) == recipeInfo)
+	local recipeInfo = nil
+	if not TSM.IsShadowlands() then
+		recipeInfo = TempTable.Acquire()
+		assert(C_TradeSkillUI.GetRecipeInfo(spellId, recipeInfo) == recipeInfo)
+	else
+		recipeInfo = C_TradeSkillUI.GetRecipeInfo(spellId)
+	end
 	local altVerb = recipeInfo.alternateVerb
-	TempTable.Release(recipeInfo)
+	if not TSM.IsShadowlands() then
+		TempTable.Release(recipeInfo)
+	end
 	return altVerb and true or false
 end
 
@@ -391,6 +398,14 @@ function ProfessionUtil.GetCategoryInfo(categoryId)
 		wipe(private.categoryInfoTemp)
 	end
 	return name, numIndents, parentCategoryId, currentSkillLevel, maxSkillLevel
+end
+
+function ProfessionUtil.StoreOptionalMatText(matList, text)
+	TSM.db.global.internalData.optionalMatTextLookup[matList] = TSM.db.global.internalData.optionalMatTextLookup[matList] or text
+end
+
+function ProfessionUtil.GetOptionalMatText(matList)
+	return TSM.db.global.internalData.optionalMatTextLookup[matList]
 end
 
 

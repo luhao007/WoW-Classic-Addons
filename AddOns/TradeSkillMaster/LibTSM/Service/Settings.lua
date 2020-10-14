@@ -175,9 +175,10 @@ local DEFAULT_DB = {
 -- [94] added global.internalData.whatsNewVersion
 -- [95] added global.appearanceOptions.showTotalMoney
 -- [96] updated global.userData.{savedShoppingSearches,savedAuctioningSearches}
+-- [97] added global.internalData.{optionalMatBonusIdLookup,optionalMatTextLookup}
 
 local SETTINGS_INFO = {
-	version = 96,
+	version = 97,
 	global = {
 		debug = {
 			chatLoggingEnabled = { type = "boolean", default = false, lastModifiedVersion = 19 },
@@ -188,6 +189,8 @@ local SETTINGS_INFO = {
 			appMessageId = { type = "number", default = 0, lastModifiedVersion = 10 },
 			destroyingHistory = { type = "table", default = {}, lastModifiedVersion = 10 },
 			whatsNewVersion = { type = "number", default = 0, lastModifiedVersion = 94 },
+			optionalMatBonusIdLookup = { type = "table", default = {}, lastModifiedVersion = 97 },
+			optionalMatTextLookup = { type = "table", default = {}, lastModifiedVersion = 97 },
 		},
 		appearanceOptions = {
 			taskListBackgroundLock = { type = "boolean", default = false, lastModifiedVersion = 87 },

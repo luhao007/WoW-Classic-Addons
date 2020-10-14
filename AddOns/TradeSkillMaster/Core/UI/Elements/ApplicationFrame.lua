@@ -624,8 +624,8 @@ end
 
 function private.MenuDialogRowDefaultOnEnter(button)
 	local frame = button:GetParentElement():GetParentElement()
-	local subFrame = frame:GetElement("subFrame")
-	if subFrame then
+	if frame:HasChildById("subFrame") then
+		local subFrame = frame:GetElement("subFrame")
 		local prevRow = frame:GetContext()
 		frame:SetContext(nil)
 		if prevRow then

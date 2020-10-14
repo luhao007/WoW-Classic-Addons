@@ -313,7 +313,7 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 			local mail = Inventory.GetMailQuantity(itemString, character, factionrealm)
 			local playerTotal = bag + bank + reagentBank + auction + mail
 			if playerTotal > 0 then
-				local classColor = RAID_CLASS_COLORS[TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character), "internalData", "classKey")]
+				local classColor = RAID_CLASS_COLORS[TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(character, factionrealm), "internalData", "classKey")]
 				local rightText = private.RightTextFormatHelper(tooltip, L["%s (%s bags, %s bank, %s AH, %s mail)"], playerTotal, bag, bank + reagentBank, auction, mail)
 				if classColor then
 					tooltip:AddLine("|c"..classColor.colorStr..character..realm.."|r", rightText)

@@ -3,14 +3,14 @@ Name: DRList-1.0
 Description: Diminishing returns database. Fork of DRData-1.0.
 Website: https://www.curseforge.com/wow/addons/drlist-1-0
 Documentation: https://wardz.github.io/DRList-1.0/
-Version: v1.1.2
+Version: 1.1.3
 Dependencies: LibStub
 License: MIT
 ]]
 
 --- DRList-1.0
 -- @module DRList-1.0
-local MAJOR, MINOR = "DRList-1.0", 10
+local MAJOR, MINOR = "DRList-1.0", 11
 local Lib = assert(LibStub, MAJOR .. " requires LibStub."):NewLibrary(MAJOR, MINOR)
 if not Lib then return end -- already loaded
 
@@ -140,15 +140,11 @@ Lib.gameExpansion = select(4, GetBuildInfo()) < 80000 and "classic" or "retail"
 -- How long it takes for a DR to expire
 Lib.resetTimes = {
     retail = {
-        ["default"] = 18.3, -- Always 18s after patch 6.1. (We add extra 0.3s to account for latency)
-        ["knockback"] = 10.3, -- Knockbacks are immediately immune and only DRs for 10s
+        ["default"] = 18.5,
+        ["knockback"] = 10.5, -- Knockbacks are immediately immune and only DRs for 10s
     },
 
     classic = {
-        -- In classic this is between 15s and 20s, (first server tick after 15s have passed)
-        -- We use 18.5 as an average reset time, 20s reset should only be in worst case scenarios.
-        -- Note: This is how it worked in Vanilla, but I haven't confirmed yet if it still work this way
-        -- on Classic.
         ["default"] = 18.5,
     },
 }
@@ -174,7 +170,7 @@ Lib.categoryNames = {
         ["stun"] = L.STUNS, -- controlled stun
         ["root"] = L.ROOTS, -- controlled root
         ["random_stun"] = L.RANDOM_STUNS, -- random proc stun, usually short (<3s)
-        ["random_root"] = L.RANDOM_ROOTS, -- May be removed in the future!
+        ["random_root"] = L.RANDOM_ROOTS,
         ["fear"] = L.FEARS,
         ["mind_control"] = L.MIND_CONTROL,
         ["frost_shock"] = L.FROST_SHOCK,

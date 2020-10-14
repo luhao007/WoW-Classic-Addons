@@ -10,15 +10,20 @@ from instawow.exceptions import PkgUpToDate
 
 class InstawowManager(object):
 
-    def __init__(self, game_flavour, lib=False):
+    def __init__(self, game_flavour, lib=False, classic_only_lib=False):
         self.config = game_flavour + ('_lib' if lib else '')
+        if classic_only_lib:
+            self.config += '_classic_only'
         config_root = Path(click.get_app_dir('instawow')) / self.config
         os.environ['INSTAWOW_CONFIG_DIR'] = str(config_root)
 
         addon_dir = Path(os.getcwd()) / 'Addons/'
         if lib:
             addon_dir /= '!!Libs'
-            game_flavour = 'retail'
+            if classic_only_lib:
+                game_flavour = 'classic'
+            else:
+                game_flavour = 'retail'
         config = Config(addon_dir=addon_dir, game_flavour=game_flavour)
         config.write()
 

@@ -1,4 +1,5 @@
 ## Interface: 11305
+## Author: The WeakAuras Team
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasArchive

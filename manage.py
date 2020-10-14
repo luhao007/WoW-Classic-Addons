@@ -1,6 +1,5 @@
 import functools
 import os
-import re
 import shutil
 import logging
 from pathlib import Path
@@ -175,7 +174,8 @@ class Manager(object):
             def process(lines):
                 toc = TOC(lines)
 
-                toc.tags['Interface'] = CLASSIC_VER if self.is_classic else RETAIL_VER
+                toc.tags['Interface'] = (CLASSIC_VER
+                                         if self.is_classic else RETAIL_VER)
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
                 ns = {'x': 'https://www.github.com/luhao007'}

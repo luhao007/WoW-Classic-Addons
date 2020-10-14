@@ -1,6 +1,6 @@
 ## Interface: 11305
-## Author: Mirrored and the WeakAuras Team
-## Version: 2.18.4
+## Author: The WeakAuras Team
+## Version: 3.0.0
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -23,6 +23,7 @@ RegionOptions\Icon.lua
 RegionOptions\Text.lua
 RegionOptions\Group.lua
 RegionOptions\DynamicGroup.lua
+RegionOptions\StopMotion.lua
 RegionOptions\Model.lua
 RegionOptions\ProgressTexture.lua
 
@@ -42,6 +43,7 @@ TriggerOptions.lua
 LoadOptions.lua
 ActionOptions.lua
 AnimationOptions.lua
+InformationOptions.lua
 
 BuffTrigger.lua
 BuffTrigger2.lua
@@ -64,6 +66,8 @@ OptionsFrames\TexturePicker.lua
 OptionsFrames\MoverSizer.lua
 OptionsFrames\FrameChooser.lua
 
+Legendaries.lua
+
 AceGUI-Widgets\AceGUIWidget-WeakAurasExpand.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasExpandSmall.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasIcon.lua
@@ -82,3 +86,4 @@ AceGUI-Widgets\AceGUIWidget-WeakAurasSnippetButton.lua
 AceGUI-Widgets\AceGUIContainer-WeakAurasTreeGroup.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasSnippetButton.lua
 AceGUI-Widgets\AceGUIContainer-WeakAurasInlineGroup.lua
+AceGUI-Widgets\AceGUIWidget-WeakAurasExpandAnchor.lua

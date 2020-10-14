@@ -85,6 +85,7 @@ L.MPROFILE_DELETE_SELF_ERROR = "Impossible de supprimer les paramètres du mod a
 L.MPROFILE_DELETE_S_ERROR	= "La source est corrompue. Les paramètres n'ont pas été supprimés ou supprimés partiellement. Echec de la suppression."
 
 L.NOTE_SHARE_SUCCESS		= "%s a partagé sa note pour %s"
+L.NOTE_SHARE_LINK			= "Cliquez ici pour ouvrir les notes"
 L.NOTE_SHARE_FAIL			= "%s a essayé de partager un texte de note pour %s. Malheureusement, le mod associé avec cette note n'est pas installé ou activé. Si vous avez besoin de celle-ci, Assurez vous d'avoir activé le mod pour lequel cette note est destinée."
 
 L.NOTEHEADER				= "Entrez votre texte de note ici pour %s. Entourer le nom d'un joueur avec >< affichera la couleur associée. Pour les alertes vaec des notes multiples, séparez les par '/'"
@@ -177,8 +178,8 @@ L.CLASSIC_ONLY					= "ATTENTION: Cette version de " .. L.DBM .. " est uniquement
 
 L.MOVABLE_BAR					= "Bougez-moi !"
 
---L.PIZZA_SYNC_INFO				= "|Hplayer:%1$s|h[%1$s]|h vous a envoyé un délai DBM: '%2$s'\n|HDBM:cancel:%2$s:nil|h|cff3588ff[Annuler ce délais]|r|h  |HDBM:ignore:%2$s:%1$s|h|cff3588ff[Ignorer les délais de %1$s]|r|h"
-L.PIZZA_SYNC_INFO				= "|Hplayer:%1$s|h[%1$s]|h vous a envoyé un délai DBM"
+L.PIZZA_SYNC_INFO				= "|Hplayer:%1$s|h[%1$s]|h vous a envoyé un délai DBM: '%2$s'\n|HDBM:cancel:%2$s:nil|h|cff3588ff[Annuler ce délais]|r|h  |HDBM:ignore:%2$s:%1$s|h|cff3588ff[Ignorer les délais de %1$s]|r|h"
+--L.PIZZA_SYNC_INFO				= "|Hplayer:%1$s|h[%1$s]|h vous a envoyé un délai DBM"
 L.PIZZA_CONFIRM_IGNORE			= "Voulez-vous réellement ignorer les délais DBM de %s durant cette session ?"
 L.PIZZA_ERROR_USAGE				= "Utilisation: /dbm [broadcast] timer <durée> <texte>"
 
@@ -591,8 +592,8 @@ L.INSTANCE_INFO_STATS_DENIED	= "A refusé la requête : %s"
 L.INSTANCE_INFO_STATS_AWAY		= "Absent: %s"
 L.INSTANCE_INFO_STATS_NO_RESPONSE	= "Sans une version récente de DBM: %s"
 L.INSTANCE_INFO_RESULTS			= "Résultats de l'analyse des IDs d'instance. Notez que les instances peuvent apparaître plusieurs fois si les joueurs de votre raid ont WoW dans différentes langues."
---L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Afficher les résultats maintenant]|r|h"
-L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s"
+L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s\n|HDBM:showRaidIdResults|h|cff3588ff[Afficher les résultats maintenant]|r|h"
+--L.INSTANCE_INFO_SHOW_RESULTS	= "Joueurs qui doivent encore répondre: %s"
 
 L.LAG_CHECKING              = "Vérification de la latence du raid..."
 L.LAG_HEADER                = L.DEADLY_BOSS_MODS .. " - Résultats sur la latence"

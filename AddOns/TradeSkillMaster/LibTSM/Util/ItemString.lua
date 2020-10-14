@@ -162,11 +162,11 @@ function ItemString.ToWow(itemString)
 end
 
 function ItemString.IsItem(itemString)
-	return strmatch(itemString, "^i:") and true or false
+	return strmatch(itemString, "^i:[%-:0-9]+$") and true or false
 end
 
 function ItemString.IsPet(itemString)
-	return strmatch(itemString, "^p:") and true or false
+	return strmatch(itemString, "^p:[%-:0-9]+$") and true or false
 end
 
 

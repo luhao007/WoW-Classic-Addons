@@ -47,7 +47,7 @@ function Inbox.OnInitialize()
 end
 
 function Inbox.IsMailOpened()
-	if not private.view or not private.view:GetElement("view") then
+	if not private.view or not private.view:HasChildById("view") then
 		return
 	end
 
@@ -962,11 +962,10 @@ function private.FSMCreate()
 	}
 
 	Event.Register("PLAYER_REPORT_SUBMITTED", function()
-		if not private.view or not private.view:GetElement("view") then
+		if not private.view or not private.view:HasChildById("view") then
 			return
 		end
-		private.view:GetElement("view")
-			:SetPath("mails", true)
+		private.view:GetElement("view"):SetPath("mails", true)
 	end)
 
 	local function UpdateText(context, filterText)
@@ -1008,7 +1007,7 @@ function private.FSMCreate()
 	end
 
 	local function UpdateButtons(context)
-		if not context.frame or not context.frame:GetElement("top.filterInput") then
+		if not context.frame or not context.frame:HasChildById("top.filterInput") then
 			return
 		end
 

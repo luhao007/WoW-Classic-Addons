@@ -304,7 +304,10 @@ function AuctionQuery.Browse(self, forceNoScan)
 					itemId = ItemString.ToId(itemString)
 					battlePetSpeciesId = 0
 				end
-				tinsert(itemKeys, C_AuctionHouse.MakeItemKey(itemId, 0, 0, battlePetSpeciesId))
+				local itemKey = C_AuctionHouse.MakeItemKey(itemId, 0, 0, battlePetSpeciesId)
+				-- FIX for 9.0.1 bug where MakeItemKey randomly adds an itemLevel which breaks scanning
+				itemKey.itemLevel = 0
+				tinsert(itemKeys, itemKey)
 			end
 		end
 		local future = Scanner.BrowseNoScan(self, itemKeys, self._browseResults, self._callback)
@@ -543,7 +546,7 @@ function AuctionQuery._IsFiltered(self, row, isSubRow, itemKey)
 		end
 	end
 	if self._minLevel ~= -math.huge or self._maxLevel ~= math.huge then
-		local minLevel = ItemInfo.GetMinLevel(baseItemString)
+		local minLevel = TSM.IsShadowlands() and ItemString.IsPet(baseItemString) and (itemLevel or maxItemLevel) or ItemInfo.GetMinLevel(baseItemString)
 		if minLevel < self._minLevel or minLevel > self._maxLevel then
 			return true
 		end

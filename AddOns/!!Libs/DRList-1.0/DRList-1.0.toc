@@ -1,8 +1,9 @@
-## Interface: 80300
+## Interface: 90001
 ## Title: Lib: Diminishing Returns Database
-## Version: v1.1.2
+## Version: 1.1.3
 ## X-Category: Library
 ## X-Curse-Project-ID: 315757
 
+libs\LibStub\LibStub.lua
 
 DRList-1.0.xml

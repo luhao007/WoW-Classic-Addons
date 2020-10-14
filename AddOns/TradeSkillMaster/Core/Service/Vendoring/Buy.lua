@@ -92,11 +92,21 @@ function Buy.GetMaxCanAfford(index)
 			if costItemString then
 				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
 			elseif currencyName then
-				for j = 1, GetCurrencyListSize() do
-					local name, isHeader, _, _, _, count = GetCurrencyListInfo(j)
-					if not isHeader and name == currencyName then
-						costNumHave = count
-						break
+				if TSM.IsShadowlands() then
+					for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
+						local info = C_CurrencyInfo.GetCurrencyListInfo(j)
+						if not info.isHeader and info.name == currencyName then
+							costNumHave = info.quantity
+							break
+						end
+					end
+				else
+					for j = 1, GetCurrencyListSize() do
+						local name, isHeader, _, _, _, count = GetCurrencyListInfo(j)
+						if not isHeader and name == currencyName then
+							costNumHave = count
+							break
+						end
 					end
 				end
 			end
@@ -175,8 +185,11 @@ function private.UpdateMerchantDB()
 						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
 						texture = ItemInfo.GetTexture(costItemString)
 					elseif strmatch(costItemLink, "currency:") then
-						local _
-						_, _, texture = GetCurrencyInfo(costItemLink)
+						if TSM.IsShadowlands() then
+							texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
+						else
+							_, _, texture = GetCurrencyInfo(costItemLink)
+						end
 						firstCostItemString = strmatch(costItemLink, "(currency:%d+)")
 					else
 						error(format("Unknown item cost (%d, %d, %s)", i, costNum, tostring(costItemLink)))

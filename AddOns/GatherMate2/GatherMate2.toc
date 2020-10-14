@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: kagaro, xinhuan, nevcairiel
-## Version: 1.45.5
+## Version: 1.45.6-classic
 ## OptionalDeps: Ace3, LibDataBroker-1.1, HereBeDragons
 ## LoadManagers: AddonLoader
 ## SavedVariables: GatherMate2DB, GatherMate2HerbDB, GatherMate2MineDB, GatherMate2FishDB, GatherMate2GasDB, GatherMate2TreasureDB, GatherMate2ArchaeologyDB, GatherMate2LoggingDB
@@ -15,8 +15,7 @@
 ## X-Category: Map
 ## X-License: ARR
 ## X-LoadOn-Always: delayed
-## X-Curse-Project-ID: 26120
-## X-WoWI-ID: 21293
+## X-Curse-Project-ID: 405809
 
 Locales\GatherMate2-enUS.lua
 Locales\GatherMate2-esES.lua
@@ -29,9 +28,11 @@ Locales\GatherMate2-zhTW.lua
 Locales\GatherMate2-ruRU.lua
 Locales\GatherMate2-ptBR.lua
 Locales\GatherMate2-itIT.lua
+
 GatherMate2.lua
 Collector.lua
 Display.lua
 Constants.lua
 Config.lua
+
 GatherMate2.xml
