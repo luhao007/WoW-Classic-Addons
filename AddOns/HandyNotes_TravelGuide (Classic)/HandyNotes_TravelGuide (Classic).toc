@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Dathwada
-## Version: v2.1.7
+## Version: v2.2.0
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_TravelGuideClassicDB
 ## DefaultState: enabled
@@ -10,7 +10,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0旅行指南|r
 ## Notes-zhCN: 在世界地图和小地图上显示船和飞艇的位置.
 
-## X-Date: 2020-07-22
+## X-Date: 2020-10-14
 ## X-Category: Map
 ## X-Part-Of: HandyNotes
 
@@ -28,15 +28,14 @@
 # ## Notes-ptBR: Mostrar as localizações dos barcos e zepelins no Mapa-múndi e no Minimapa.
 #@end-debug@
 
-Locale\Locales.xml
-Locale\deDE.lua
-Locale\enUS.lua
-Locale\ruRU.lua
-Locale\koKR.lua
-Locale\zhCN.lua
-Locale\frFR.lua
-Locale\ptBR.lua
-Core\Constants.lua
-Core\Handler.lua
-Core\Config.lua
-Data\DB.lua
+# LOCALIZATION FILES
+localization\locales.xml
+
+# CORE FILES
+core\constants.lua
+core\handler.lua
+core\config.lua
+core\dev.lua
+
+# DATABASE
+data\DB.lua

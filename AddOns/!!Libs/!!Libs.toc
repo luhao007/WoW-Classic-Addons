@@ -73,6 +73,7 @@ LibDogTag-3.0\lib.xml
 LibDogTag-Unit-3.0\lib.xml
 LibDropdown-1.0\LibDropdown-1.0\lib.xml
 LibDurability\LibDurability\LibDurability.xml
+LibGetFrame-1.0\LibGetFrame-1.0.xml
 LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
 LibItemUpgradeInfo-1.0\LibItemUpgradeInfo-1.0.xml
 LibLatency\LibLatency\LibLatency.xml

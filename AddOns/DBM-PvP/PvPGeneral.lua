@@ -4,8 +4,8 @@ local L		= mod:GetLocalizedStrings()
 local GetPlayerFactionGroup = GetPlayerFactionGroup or UnitFactionGroup -- Classic Compat fix
 local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
-mod:SetRevision("20200916002535")
-mod:SetZone(DBM_DISABLE_ZONE_DETECTION)
+mod:SetRevision("20201014230650")
+mod:SetZone()
 mod:RegisterEvents(
 	"ZONE_CHANGED_NEW_AREA",
 	"PLAYER_ENTERING_WORLD",

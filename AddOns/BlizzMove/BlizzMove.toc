@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: the-rebel-Mermaid - github.com/the-rebel-Mermaid/BlizzMove/
-## Version: v3.0.0
+## Version: v3.0.0b
 ## OptionalDeps: Ace3
 ## SavedVariables: BlizzMoveDB
 

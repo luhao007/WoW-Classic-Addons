@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with CustomTutorials. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 9)
+local Lib = LibStub:NewLibrary('CustomTutorials-2.1', 11)
 if Lib then
 	Lib.NewFrame, Lib.NewButton, Lib.UpdateFrame = nil
 	Lib.numFrames = Lib.numFrames or 1
@@ -122,7 +122,7 @@ local function NewButton(frame, name, direction)
 	return button
 end
 
-local function NewFrame(data)
+local function NewFrame()
 	local frame = CreateFrame('Frame', 'CustomTutorials'..Lib.numFrames, UIParent, 'ButtonFrameTemplate')
 	frame.Inset:SetPoint('TOPLEFT', 4, -23)
 	frame.Inset.Bg:SetColorTexture(0,0,0)
@@ -146,7 +146,7 @@ local function NewFrame(data)
 	local text = frame:CreateFontString(nil, nil, 'GameFontHighlight')
 	text:SetJustifyH('LEFT')
 
-	local shine = CreateFrame('Frame')
+	local shine = CreateFrame('Frame', nil, nil, BackdropTemplateMixin and 'BackdropTemplate')
 	shine:SetBackdrop({edgeFile = 'Interface\\TutorialFrame\\UI-TutorialFrame-CalloutGlow', edgeSize = 16})
 
 	local flash = shine:CreateAnimationGroup()
@@ -165,7 +165,6 @@ local function NewFrame(data)
 	frame.prev = NewButton(frame, 'Prev', -1)
 	frame.next = NewButton(frame, 'Next', 1)
 	frame.images = {}
-	frame.data = data
 
 	Lib.numFrames = Lib.numFrames + 1
 	return frame
@@ -179,8 +178,10 @@ function Lib:RegisterTutorials(data)
 	assert(self, 'RegisterTutorials: 1st arg was not provided', 2)
 
 	if not Lib.frames[self] then
-		Lib.frames[self] = NewFrame(data)
+		Lib.frames[self] = NewFrame()
 	end
+
+	Lib.frames[self].data = data
 end
 
 function Lib:TriggerTutorial(index, maxAdvance)

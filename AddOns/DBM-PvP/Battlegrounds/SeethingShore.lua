@@ -3,8 +3,8 @@ if WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
 end
 local mod	= DBM:NewMod("z1803", "DBM-PvP")
 
-mod:SetRevision("20200612120231")
-mod:SetZone(DBM_DISABLE_ZONE_DETECTION)
+mod:SetRevision("20201014230650")
+mod:SetZone()
 mod:RegisterEvents("ZONE_CHANGED_NEW_AREA")
 
 do

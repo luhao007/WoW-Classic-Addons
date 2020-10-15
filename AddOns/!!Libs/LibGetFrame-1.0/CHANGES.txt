@@ -1,0 +1,10 @@
+lightweight tag fbf871a4dd2015075d3531d8af7c57fdc28f4adc 1.5.4
+Author:	Buds <mrbouyou@gmail.com>
+Date:	Sat Sep 26 01:55:43 2020 +0200
+
+commit fbf871a4dd2015075d3531d8af7c57fdc28f4adc
+Author: Buds <mrbouyou@gmail.com>
+Date:   Sat Sep 26 01:55:43 2020 +0200
+
+    ignore elvui'focustarget frame
+
