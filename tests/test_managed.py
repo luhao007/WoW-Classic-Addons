@@ -71,9 +71,11 @@ class CheckManagedAddOns(unittest.TestCase):
                 head = k
                 tail = ''
                 while head:
-                    paths.append(tail)
                     head, tail = os.path.split(head)
+                    paths.append(tail)
 
-                addon = paths[-1]
+                print(paths)
+
+                addon = paths[-2]
                 if addon not in whitelist:
                     self.fail('Found duplicated libraries in {}'.format(addon))
