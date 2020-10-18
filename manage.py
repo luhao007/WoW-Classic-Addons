@@ -750,9 +750,12 @@ class Manager(object):
             'Addons/VuhDo/Libs/Libs.xml'
         )
 
-        rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
-        self.remove_libs_in_file('Addons/Vuhdo/Libs/!LibTotemInfo/embeds.xml',
-                                 ['LibStub'])
+        if self.is_classic:
+            rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
+            self.remove_libs_in_file(
+                'Addons/Vuhdo/Libs/!LibTotemInfo/embeds.xml',
+                ['LibStub']
+            )
         rm_tree('Addons/Vuhdo/Libs/LibBase64-1.0/LibStub')
 
     def handle_wa(self):
