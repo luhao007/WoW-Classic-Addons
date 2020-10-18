@@ -15,7 +15,6 @@
 ## X-Embeds: Ace3, LibClassicDurations, LibUIDropDownMenu
 
 #@no-lib-strip@
-embeds.xml
 #@end-no-lib-strip@
 
 locale\enUS.lua

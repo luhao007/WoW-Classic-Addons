@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
   <!--@non-retail@-->
-  <Script file="Libs\LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/>
   <!--@end-non-retail@-->
   <Include file="Libs\Archivist\Archivist.xml"/>
 </Ui>
