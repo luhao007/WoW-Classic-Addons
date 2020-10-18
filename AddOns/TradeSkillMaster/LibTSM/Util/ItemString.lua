@@ -17,22 +17,16 @@ local private = {
 	baseItemStringMap = nil,
 	baseItemStringReader = nil,
 	hasNonBaseItemStrings = {},
+	bonusIdsTemp = {},
+	modifiersTemp = {},
 }
-local ITEM_UPGRADE_VALUE_SHIFT = 1000000
 local ITEM_MAX_ID = 999999
 local UNKNOWN_ITEM_STRING = "i:0"
 local PLACEHOLDER_ITEM_STRING = "i:1"
 local PET_CAGE_ITEM_STRING = "i:82800"
-local MAX_LEVEL = nil
-do
-	if TSM.IsShadowlands() then
-		MAX_LEVEL = 60
-	else
-		for _, v in pairs(MAX_PLAYER_LEVEL_TABLE) do
-			MAX_LEVEL = max(MAX_LEVEL or 0, v)
-		end
-	end
-end
+local IMPORTANT_MODIFIER_TYPES = {
+	[9] = true,
+}
 
 
 
@@ -90,7 +84,7 @@ end
 
 function ItemString.Filter(itemString)
 	if not private.filteredItemStringCache[itemString] then
-		private.filteredItemStringCache[itemString] = BonusIds.FilterImportant(itemString)
+		private.filteredItemStringCache[itemString] = private.FilterBonusIdsAndModifiers(itemString, true, strsplit(":", itemString))
 	end
 	return private.filteredItemStringCache[itemString]
 end
@@ -148,17 +142,12 @@ end
 -- @tparam string itemString An itemString to get the WoW itemString of
 -- @treturn number The WoW itemString
 function ItemString.ToWow(itemString)
-	local _, itemId, rand, numBonus = strsplit(":", itemString)
+	local _, itemId, rand, extra = strsplit(":", itemString)
 	local level = UnitLevel("player")
 	local spec = not TSM.IsWowClassic() and GetSpecialization() or nil
 	spec = spec and GetSpecializationInfo(spec) or ""
-	local upgradeValue = private.GetUpgradeValue(itemString)
-	local bonusIds = upgradeValue and numBonus and strmatch(itemString, "i:[0-9]+:[0-9%-]*:[0-9]+:(.+):"..upgradeValue.."$")
-	if bonusIds then
-		upgradeValue = upgradeValue - ITEM_UPGRADE_VALUE_SHIFT
-		return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":512::"..numBonus..":"..bonusIds..":"..upgradeValue..":::"
-	end
-	return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":::"..(numBonus and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.*)") or "")..":::"
+	local extraPart = extra and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.+)") or ""
+	return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":::"..extraPart..":::"
 end
 
 function ItemString.IsItem(itemString)
@@ -259,7 +248,7 @@ end
 function private.FixItemString(itemString)
 	itemString = gsub(itemString, ":0:", "::") -- remove 0s which are in the middle
 	itemString = private.RemoveExtra(itemString)
-	return private.CheckBonusIds(itemString, strsplit(":", itemString))
+	return private.FilterBonusIdsAndModifiers(itemString, false, strsplit(":", itemString))
 end
 
 function private.FixPet(itemString)
@@ -271,45 +260,59 @@ function private.FixPet(itemString)
 	return strmatch(itemString, "^(p:%d+)")
 end
 
-function private.CheckBonusIds(itemString, _, _, _, count, ...)
-	if not count then
+function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, itemType, itemId, rand, numBonusIds, ...)
+	numBonusIds = tonumber(numBonusIds) or 0
+	local numParts = select("#", ...)
+	if numParts == 0 then
 		return itemString
 	end
 
-	-- make sure we have the correct number of bonusIds
-	count = tonumber(count) or 0
-	local numParts = select("#", ...)
-	local numExtraParts = numParts - count
-	local lastExtraPart = select(numParts, ...)
-	lastExtraPart = tonumber(lastExtraPart)
-
-	-- we might have already applied the upgrade value shift
-	if numExtraParts == 1 and ((lastExtraPart >= 98 and lastExtraPart <= MAX_LEVEL) or (lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT >= 90 and lastExtraPart - ITEM_UPGRADE_VALUE_SHIFT <= MAX_LEVEL)) then
-		-- this extra part is likely the upgradeValue which we want to keep so increase it by UPGRADE_VALUE_SHIFT
-		if lastExtraPart < ITEM_UPGRADE_VALUE_SHIFT then
-			lastExtraPart = lastExtraPart + ITEM_UPGRADE_VALUE_SHIFT
-			itemString = gsub(itemString, ":[0-9]*$", ":"..lastExtraPart)
+	-- grab the modifiers and filter them
+	local numModifiers = numParts - numBonusIds
+	local modifiersStr = (numModifiers > 0 and numModifiers > 1 and numModifiers % 2 == 1) and strjoin(":", select(numBonusIds + 1, ...)) or ""
+	if modifiersStr ~= "" then
+		wipe(private.modifiersTemp)
+		local num, modifierType = nil, nil
+		for modifier in gmatch(modifiersStr, "[0-9]+") do
+			modifier = tonumber(modifier)
+			if not num then
+				num = modifier
+			elseif not modifierType then
+				modifierType = modifier
+			else
+				if IMPORTANT_MODIFIER_TYPES[modifierType] then
+					tinsert(private.modifiersTemp, modifierType)
+					tinsert(private.modifiersTemp, modifier)
+				end
+				modifierType = nil
+			end
 		end
-	else
-		for _ = 1, numExtraParts do
-			itemString = gsub(itemString, ":[0-9]*$", "")
-		end
-		itemString = private.RemoveExtra(itemString)
-	end
-
-	itemString = BonusIds.FilterAll(itemString)
-	return itemString
-end
-
-function private.GetUpgradeValue(itemString)
-	local bonusIds = strmatch(itemString, "i:[0-9]+:[0-9%-]*:[0-9]*:(.+)$")
-	if not bonusIds then return end
-	for id in gmatch(bonusIds, "[0-9]+") do
-		id = tonumber(id)
-		if id > ITEM_UPGRADE_VALUE_SHIFT then
-			return id
+		if #private.modifiersTemp > 0 then
+			assert(#private.modifiersTemp % 2 == 0)
+			tinsert(private.modifiersTemp, 1, #private.modifiersTemp / 2)
+			modifiersStr = table.concat(private.modifiersTemp, ":")
 		end
 	end
+
+	-- filter the bonusIds
+	local bonusIdsStr = ""
+	if numBonusIds > 0 then
+		-- get the list of bonusIds and filter them
+		wipe(private.bonusIdsTemp)
+		for i = 1, numBonusIds do
+			private.bonusIdsTemp[i] = select(i, ...)
+		end
+		if importantBonusIdsOnly then
+			bonusIdsStr = BonusIds.FilterImportant(table.concat(private.bonusIdsTemp, ":"))
+		else
+			bonusIdsStr = BonusIds.FilterAll(table.concat(private.bonusIdsTemp, ":"))
+		end
+	end
+
+	-- rebuild the itemString
+	itemString = strjoin(":", itemType, itemId, rand, bonusIdsStr, modifiersStr)
+	itemString = gsub(itemString, ":0:", "::") -- remove 0s which are in the middle
+	return private.RemoveExtra(itemString)
 end
 
 function private.ToBaseItemString(itemString)

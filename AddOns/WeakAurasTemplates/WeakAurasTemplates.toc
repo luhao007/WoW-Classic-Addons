@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: The WeakAuras Team
-## Version: 3.0.1
+## Version: 3.0.2
 ## Dependencies: WeakAuras, WeakAurasOptions
 ## LoadOnDemand: 1
 ## DefaultState: Enabled

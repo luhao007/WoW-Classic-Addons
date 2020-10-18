@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Jaliborc (JoÃ£o Cardoso)
-## Version: 9.0.0
+## Version: 9.0.1
 ## OptionalDeps: WoWUnit, TestPoncho
 ## SavedVariables: Scrap_Sets
 ## SavedVariablesPerCharacter: Scrap_CharSets

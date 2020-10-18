@@ -7,5 +7,4 @@
 ## X-Category: Library
 ## X-License: zlib
 
-LibStub\LibStub.lua
 lib.xml

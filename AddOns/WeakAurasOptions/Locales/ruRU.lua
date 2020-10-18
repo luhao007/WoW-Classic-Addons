@@ -651,7 +651,7 @@ Supports multiple entries, separated by commas
 	L["Repeat After"] = "Повторять после"
 	L["Repeat every"] = "Повторять каждые"
 	--[[Translation missing --]]
-	L["Report bugs our our issue tracker."] = "Report bugs our our issue tracker."
+	L["Report bugs on our issue tracker."] = "Report bugs on our issue tracker."
 	--[[Translation missing --]]
 	L["Require unit from trigger"] = "Require unit from trigger"
 	L["Required for Activation"] = "Необходимо для активации"

@@ -5,6 +5,8 @@
 --Novaspark-Arugal OCE (classic).
 --https://www.curseforge.com/members/venomisto/projects
 
+local addonName, addon = ...;
+local NWB = addon.a;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
 
 NWB.options = {
@@ -30,24 +32,40 @@ NWB.options = {
 			fontSize = "medium",
 			order = 3,
 		},
+		ignoreKillData = {
+			type = "toggle",
+			name = L["ignoreKillDataTitle"],
+			desc = L["ignoreKillDataDesc"],
+			order = 4,
+			get = "getIgnoreKillData",
+			set = "setIgnoreKillData",
+		},
+		noOverwrite = {
+			type = "toggle",
+			name = L["noOverwriteTitle"],
+			desc = L["noOverwriteDesc"],
+			order = 5,
+			get = "getNoOverwrite",
+			set = "setNoOverwrite",
+		},
 		showBuffs = {
 			type = "execute",
 			name = L["showBuffsTitle"],
 			desc = L["showBuffsDesc"],
 			func = "openBuffListFrame",
-			order = 4,
+			order = 6,
 			width = 1.7,
 		},
 		generalHeader = {
 			type = "header",
 			name = L["generalHeaderDesc"],
-			order = 5,
+			order = 10,
 		},
 		showWorldMapMarkers = {
 			type = "toggle",
 			name = L["showWorldMapMarkersTitle"],
 			desc = L["showWorldMapMarkersDesc"],
-			order = 6,
+			order = 11,
 			get = "getShowWorldMapMarkers",
 			set = "setShowWorldMapMarkers",
 		},
@@ -55,7 +73,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["receiveGuildDataOnlyTitle"],
 			desc = L["receiveGuildDataOnlyDesc"],
-			order = 7,
+			order = 12,
 			get = "getReceiveGuildDataOnly",
 			set = "setReceiveGuildDataOnly",
 		},
@@ -63,7 +81,7 @@ NWB.options = {
 			type = "color",
 			name = L["chatColorTitle"],
 			desc = L["chatColorDesc"],
-			order = 8,
+			order = 13,
 			get = "getChatColor",
 			set = "setChatColor",
 			hasAlpha = false,
@@ -72,7 +90,7 @@ NWB.options = {
 			type = "color",
 			name = L["mmColorTitle"],
 			desc = L["mmColorDesc"],
-			order = 9,
+			order = 14,
 			get = "getMmColor",
 			set = "setMmColor",
 			hasAlpha = false,
@@ -81,7 +99,7 @@ NWB.options = {
 			type = "color",
 			name = L["middleColorTitle"],
 			desc = L["middleColorDesc"],
-			order = 10,
+			order = 15,
 			get = "getMiddleColor",
 			set = "setMiddleColor",
 			hasAlpha = false,
@@ -91,13 +109,13 @@ NWB.options = {
 			name = L["resetColorsTitle"],
 			desc = L["resetColorsDesc"],
 			func = "resetColors",
-			order = 11,
+			order = 16,
 		},
 		showTimeStamp = {
 			type = "toggle",
 			name = L["showTimeStampTitle"],
 			desc = L["showTimeStampDesc"],
-			order = 12,
+			order = 17,
 			get = "getShowTimeStamp",
 			set = "setShowTimeStamp",
 		},
@@ -113,7 +131,7 @@ NWB.options = {
 				[1] = 12,
 				[2] = 24,
 			},
-			order = 13,
+			order = 18,
 			get = "getTimeStampFormat",
 			set = "setTimeStampFormat",
 		},
@@ -129,7 +147,7 @@ NWB.options = {
 				[1] = "local",
 				[2] = "server",
 			},
-			order = 14,
+			order = 19,
 			get = "getTimeStampZone",
 			set = "setTimeStampZone",
 		},
@@ -137,7 +155,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["colorizePrefixLinksTitle"],
 			desc = L["colorizePrefixLinksDesc"],
-			order = 15,
+			order = 20,
 			get = "getColorizePrefixLinks",
 			set = "setColorizePrefixLinks",
 		},
@@ -145,7 +163,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["minimapButtonTitle"],
 			desc = L["minimapButtonDesc"],
-			order = 16,
+			order = 21,
 			get = "getMinimapButton",
 			set = "setMinimapButton",
 		},
@@ -153,7 +171,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["minimapLayerHoverTitle"],
 			desc = L["minimapLayerHoverDesc"],
-			order = 17,
+			order = 22,
 			get = "getMinimapLayerHover",
 			set = "setMinimapLayerHover",
 		},
@@ -161,7 +179,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["showBuffStatsTitle"],
 			desc = L["showBuffStatsDesc"],
-			order = 18,
+			order = 23,
 			get = "getShowBuffStats",
 			set = "setShowBuffStats",
 		},
@@ -169,7 +187,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["showAllAltsTitle"],
 			desc = L["showAllAltsDesc"],
-			order = 19,
+			order = 24,
 			get = "getShowAllAlts",
 			set = "setShowAllAlts",
 		},
@@ -177,7 +195,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["showUnbuffedAltsTitle"],
 			desc = L["showUnbuffedAltsDesc"],
-			order = 20,
+			order = 25,
 			get = "getShowUnbuffedAlts",
 			set = "setShowUnbuffedAlts",
 		},
@@ -185,7 +203,7 @@ NWB.options = {
 			type = "range",
 			name = L["timerWindowWidthTitle"],
 			desc = L["timerWindowWidthDesc"],
-			order = 21,
+			order = 26,
 			get = "getTimerWindowWidth",
 			set = "setTimerWindowWidth",
 			min = 350,
@@ -199,7 +217,7 @@ NWB.options = {
 			type = "range",
 			name = L["timerWindowHeightTitle"],
 			desc = L["timerWindowHeightDesc"],
-			order = 22,
+			order = 27,
 			get = "getTimerWindowHeight",
 			set = "setTimerWindowHeight",
 			min = 150,
@@ -213,7 +231,7 @@ NWB.options = {
 			type = "range",
 			name = L["buffWindowWidthTitle"],
 			desc = L["buffWindowWidthDesc"],
-			order = 23,
+			order = 28,
 			get = "getBuffWindowWidth",
 			set = "setBuffWindowWidth",
 			min = 350,
@@ -227,7 +245,7 @@ NWB.options = {
 			type = "range",
 			name = L["buffWindowHeightTitle"],
 			desc = L["buffWindowHeightDesc"],
-			order = 24,
+			order = 29,
 			get = "getBuffWindowHeight",
 			set = "setBuffWindowHeight",
 			min = 150,
@@ -962,7 +980,7 @@ NWB.options = {
 		},
 		autoBuffsText = {
 			type = "description",
-			name = "|cFFFF0000NOTE: |cFF9CD6DEDarkmoon Faire buff type is now a character specific setting, changing buff type will only change it for this character.",
+			name = "|cFFFF0000" .. L["note"] .. " |cFF9CD6DE" .. L["dmfConfigWarning"],
 			fontSize = "medium",
 			order = 301,
 		},
@@ -1267,9 +1285,12 @@ NWB.optionDefaults = {
 		timerWindowHeight = 300,
 		buffWindowWidth = 475,
 		buffWindowHeight = 300,
+		ignoreKillData = false,
+		noOverwrite = false,
 		resetLayers4 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = true, --Enable features being tested on occasion.
+		resetTimerData1 = true,
 		resetLayerMaps = true,
 		convertSettings = true,
 		wipeSingleLayer = true,
@@ -2597,6 +2618,21 @@ function NWB:getBuffWindowHeight(info)
 	return self.db.global.buffWindowHeight;
 end
 
+function NWB:setIgnoreKillData(info, value)
+	self.db.global.ignoreKillData = value;
+end
+
+function NWB:getIgnoreKillData(info)
+	return self.db.global.ignoreKillData;
+end
+
+function NWB:setNoOverwrite(info, value)
+	self.db.global.noOverwrite = value;
+end
+
+function NWB:getNoOverwrite(info)
+	return self.db.global.noOverwrite;
+end
 
 --DMF settings list frame.
 local NWBDMFListFrame = CreateFrame("ScrollFrame", "NWBDMFListFrame", UIParent, "InputScrollFrameTemplate");

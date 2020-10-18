@@ -10,7 +10,6 @@ local private = {
 	bonusIdCache = {},
 	bonusIdTemp = {},
 }
-local ITEM_UPGRADE_VALUE_SHIFT = 1000000
 
 
 
@@ -2744,12 +2743,23 @@ local ALL_BONUS_ID_MAP = {
 	[5261] = 5261,
 	[5803] = 5803,
 	[5804] = 5804,
+	[5847] = 5847,
+	[5849] = 5849,
 	[5850] = 5850,
+	[5851] = 5851,
+	[5852] = 5852,
+	[5853] = 5853,
 	[5855] = 5855,
+	[5857] = 5857,
+	[5858] = 5858,
 	[5860] = 5860,
+	[5862] = 5862,
 	[5865] = 5865,
+	[5867] = 5867,
 	[5870] = 5870,
+	[5872] = 5872,
 	[5875] = 5875,
+	[5877] = 5877,
 	[5880] = 5880,
 	[5885] = 5885,
 	[5890] = 5890,
@@ -2830,6 +2840,44 @@ local ALL_BONUS_ID_MAP = {
 	[6612] = 6612,
 	[6613] = 6613,
 	[6614] = 6614,
+	[6654] = 6654,
+	[6655] = 6655,
+	[6827] = 6827,
+	[6844] = 6844,
+	[6854] = 6854,
+	[6855] = 6855,
+	[6856] = 6856,
+	[6857] = 6857,
+	[6858] = 6858,
+	[6859] = 6859,
+	[6860] = 6860,
+	[6861] = 6861,
+	[6862] = 6862,
+	[6863] = 6863,
+	[6864] = 6864,
+	[6865] = 6865,
+	[6866] = 6866,
+	[6867] = 6867,
+	[6868] = 6868,
+	[6869] = 6869,
+	[6870] = 6870,
+	[6871] = 6871,
+	[6873] = 6873,
+	[6874] = 6874,
+	[6875] = 6875,
+	[6876] = 6876,
+	[6877] = 6877,
+	[6878] = 6878,
+	[6879] = 6879,
+	[6880] = 6880,
+	[6881] = 6881,
+	[6882] = 6882,
+	[6883] = 6883,
+	[7175] = 7175,
+	[7176] = 7176,
+	[7177] = 7177,
+	[7178] = 7178,
+	[7179] = 7179,
 }
 local IMPORTANT_BONUS_ID_MAP = {
 	[40] = 40,
@@ -2840,11 +2888,22 @@ local IMPORTANT_BONUS_ID_MAP = {
 	[1462] = 1462,
 	[1467] = 1467,
 	[1472] = 1472,
+	[1474] = 1474,
+	[1476] = 1476,
 	[1477] = 1477,
+	[1478] = 1478,
+	[1480] = 1480,
 	[1482] = 1482,
+	[1484] = 1484,
+	[1485] = 1485,
+	[1486] = 1486,
 	[1487] = 1487,
+	[1488] = 1488,
+	[1490] = 1490,
 	[1492] = 1492,
+	[1494] = 1494,
 	[1497] = 1497,
+	[1500] = 1500,
 	[1502] = 1502,
 	[1507] = 1507,
 	[1512] = 1512,
@@ -3007,12 +3066,23 @@ local IMPORTANT_BONUS_ID_MAP = {
 	[4928] = 4928,
 	[5803] = 5803,
 	[5804] = 5804,
+	[5847] = 5847,
+	[5849] = 5849,
 	[5850] = 5850,
+	[5851] = 5851,
+	[5852] = 5852,
+	[5853] = 5853,
 	[5855] = 5855,
+	[5857] = 5857,
+	[5858] = 5858,
 	[5860] = 5860,
+	[5862] = 5862,
 	[5865] = 5865,
+	[5867] = 5867,
 	[5870] = 5870,
+	[5872] = 5872,
 	[5875] = 5875,
+	[5877] = 5877,
 	[5880] = 5880,
 	[5885] = 5885,
 	[5890] = 5890,
@@ -3093,6 +3163,44 @@ local IMPORTANT_BONUS_ID_MAP = {
 	[6612] = 6612,
 	[6613] = 6613,
 	[6614] = 6614,
+	[6654] = 6654,
+	[6655] = 6655,
+	[6827] = 6827,
+	[6844] = 6844,
+	[6854] = 6854,
+	[6855] = 6855,
+	[6856] = 6856,
+	[6857] = 6857,
+	[6858] = 6858,
+	[6859] = 6859,
+	[6860] = 6860,
+	[6861] = 6861,
+	[6862] = 6862,
+	[6863] = 6863,
+	[6864] = 6864,
+	[6865] = 6865,
+	[6866] = 6866,
+	[6867] = 6867,
+	[6868] = 6868,
+	[6869] = 6869,
+	[6870] = 6870,
+	[6871] = 6871,
+	[6873] = 6873,
+	[6874] = 6874,
+	[6875] = 6875,
+	[6876] = 6876,
+	[6877] = 6877,
+	[6878] = 6878,
+	[6879] = 6879,
+	[6880] = 6880,
+	[6881] = 6881,
+	[6882] = 6882,
+	[6883] = 6883,
+	[7175] = 7175,
+	[7176] = 7176,
+	[7177] = 7177,
+	[7178] = 7178,
+	[7179] = 7179,
 }
 
 
@@ -3101,12 +3209,12 @@ local IMPORTANT_BONUS_ID_MAP = {
 -- Module Functions
 -- ============================================================================
 
-function BonusIds.FilterImportant(itemString)
-	return private.FilterBonusIds(itemString, IMPORTANT_BONUS_ID_MAP)
+function BonusIds.FilterImportant(bonusIds)
+	return private.FilterBonusIds(bonusIds, IMPORTANT_BONUS_ID_MAP)
 end
 
-function BonusIds.FilterAll(itemString)
-	return private.FilterBonusIds(itemString, ALL_BONUS_ID_MAP)
+function BonusIds.FilterAll(bonusIds)
+	return private.FilterBonusIds(bonusIds, ALL_BONUS_ID_MAP)
 end
 
 
@@ -3115,47 +3223,24 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.FilterBonusIds(itemString, map)
-	local itemStringPrefix, bonusIds = strmatch(itemString, "(i:[0-9]+:[0-9%-]*):[0-9]*:(.+)$")
-	if not bonusIds then
-		return itemString
-	end
+function private.FilterBonusIds(bonusIds, map)
 	private.bonusIdCache[map] = private.bonusIdCache[map] or {}
 	private.bonusIdCache[map][bonusIds] = private.bonusIdCache[map][bonusIds] or {}
 	local cache = private.bonusIdCache[map][bonusIds]
 	if not cache.num then
 		wipe(private.bonusIdTemp)
 		local adjust = 0
-		for id in gmatch(bonusIds, "[0-9]+") do
-			id = tonumber(id)
-			if id > ITEM_UPGRADE_VALUE_SHIFT then
-				if not tContains(private.bonusIdTemp, id) then
-					tinsert(private.bonusIdTemp, id)
-					adjust = adjust + 1
-				end
-			else
-				id = map[id]
-				if id and not tContains(private.bonusIdTemp, id) then
-					tinsert(private.bonusIdTemp, id)
-				end
+		for idStr in gmatch(bonusIds, "[0-9]+") do
+			local id = tonumber(idStr)
+			id = id and map[id]
+			if id and not private.bonusIdTemp[idStr] then
+				tinsert(private.bonusIdTemp, id)
 			end
 		end
 		sort(private.bonusIdTemp)
 		cache.num = #private.bonusIdTemp - adjust
 		cache.bonusIds = table.concat(private.bonusIdTemp, ":")
-		cache.value = strjoin(":", "", cache.num, cache.bonusIds)
+		cache.value = strjoin(":", cache.num, cache.bonusIds)
 	end
-	if cache.num == 0 then
-		local baseItemString, rand = strmatch(itemString, "(i:[0-9]+)(:[0-9%-]*)")
-		rand = rand and rand ~= "" and rand ~= ":" and tonumber(rand) or 0
-		if rand == 0 then
-			return baseItemString
-		else
-			return baseItemString..rand
-		end
-	elseif cache.bonusIds == bonusIds then
-		return itemString
-	else
-		return itemStringPrefix..cache.value
-	end
+	return cache.value
 end

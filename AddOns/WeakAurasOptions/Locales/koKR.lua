@@ -92,8 +92,7 @@ local L = WeakAuras.L
 	L["Add to group %s"] = "그룹 %s에 추가"
 	L["Add to new Dynamic Group"] = "새 유동적 그룹에 추가"
 	L["Add to new Group"] = "새 그룹에 추가"
-	--[[Translation missing --]]
-	L["Add Trigger"] = "Add Trigger"
+	L["Add Trigger"] = "활성 조건 추가"
 	--[[Translation missing --]]
 	L["Additional Events"] = "Additional Events"
 	L["Addon"] = "애드온"
@@ -692,7 +691,7 @@ Supports multiple entries, separated by commas
 	L["Repeat After"] = "반복 횟수"
 	L["Repeat every"] = "매번 반복"
 	--[[Translation missing --]]
-	L["Report bugs our our issue tracker."] = "Report bugs our our issue tracker."
+	L["Report bugs on our issue tracker."] = "Report bugs on our issue tracker."
 	--[[Translation missing --]]
 	L["Require unit from trigger"] = "Require unit from trigger"
 	L["Required for Activation"] = "활성화에 필요"

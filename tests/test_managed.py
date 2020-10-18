@@ -23,7 +23,7 @@ class CheckManagedAddOns(unittest.TestCase):
 
         # Check every lib folder exists in the toc
         for lib in os.listdir(root):
-            if '.toc' not in lib:
+            if '.toc' not in lib and lib != 'FrameXML':
                 self.assertTrue(
                     any(lib in l for l in toc.contents),
                     '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
@@ -64,8 +64,7 @@ class CheckManagedAddOns(unittest.TestCase):
             pprint(duplicates)
 
             # Ignore these embedded liraries, as they have customized versions
-            whitelist = ['Questie', 'MeetingHorn', 'VuhDo', 'WeakAuras',
-                         'GoodLeader']
+            whitelist = ['Questie', 'MeetingHorn', 'GoodLeader']
 
             for k in duplicates:
                 paths = []

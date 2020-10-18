@@ -699,7 +699,7 @@ Seule une unique valeur peut être choisie]=]
 	L["Repeat After"] = "Répéter Après"
 	L["Repeat every"] = "Répéter tous les"
 	--[[Translation missing --]]
-	L["Report bugs our our issue tracker."] = "Report bugs our our issue tracker."
+	L["Report bugs on our issue tracker."] = "Report bugs on our issue tracker."
 	--[[Translation missing --]]
 	L["Require unit from trigger"] = "Require unit from trigger"
 	L["Required for Activation"] = "Requis pour l'activation"

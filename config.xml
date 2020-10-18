@@ -645,17 +645,49 @@
 		<Notes>功能强大的伤害统计插件</Notes>
 		<Category>战斗</Category>
 		<SubAddons>
+			<SubAddon name='Details_ChartViewer'>
+				<Title>插件</Title>
+				<TitleExtra>图表查看器</TitleExtra>
+				<Notes>使用简单的线条图表查看Details!收集的数据</Notes>
+			</SubAddon>
 			<SubAddon name='Details_DataStorage'>
 				<Title>数据存储</Title>
-				<Notes>存储Details的统计数据</Notes>
+				<Notes>存储Details!的统计数据</Notes>
+			</SubAddon>
+			<SubAddon name='Details_DeathGraphs'>
+				<Title>插件</Title>
+				<TitleExtra>高级死亡记录</TitleExtra>
+				<Notes>统计整个副本中的死亡情况，并建立时间线</Notes>
+			</SubAddon>
+			<SubAddon name='Details_EncounterDetails'>
+				<Title>插件</Title>
+				<TitleExtra>首领详情</TitleExtra>
+				<Notes>显示打断、驱散等数据，并且支持对于该首领一键生成WA</Notes>
+			</SubAddon>
+			<SubAddon name='Details_RaidCheck'>
+				<Title>插件</Title>
+				<TitleExtra>团队检查</TitleExtra>
+				<Notes>在团队副本中时显示一个合剂、药水等使用状况的图标</Notes>
 			</SubAddon>
 			<SubAddon name='Details_Streamer'>
-				<Title>主播助手</Title>
+				<Title>插件</Title>
+				<TitleExtra>施法序列</TitleExtra>
 				<Notes>在屏幕上显示你的施法队列，帮助你的观众了解你的手法</Notes>
 			</SubAddon>
+			<SubAddon name='Details_TimeLine'>
+				<Title>插件</Title>
+				<TitleExtra>时间线</TitleExtra>
+				<Notes>在时间线中显示团队技能的冷却，首领技能使用等一系列情况</Notes>
+			</SubAddon>
 			<SubAddon name='Details_TinyThreat'>
-				<Title>仇恨助手</Title>
+				<Title>插件</Title>
+				<TitleExtra>仇恨助手</TitleExtra>
 				<Notes>显示你的队员的仇恨</Notes>
+			</SubAddon>
+			<SubAddon name='Details_Vanguard'>
+				<Title>插件</Title>
+				<TitleExtra>坦克守护</TitleExtra>
+				<Notes>显示坦克的减益，同时显示受到的治疗以及上一次伤害</Notes>
 			</SubAddon>
 		</SubAddons>
 	</Addon>

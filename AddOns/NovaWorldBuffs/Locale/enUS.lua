@@ -625,3 +625,18 @@ L["buffWindowHeghtDesc"] = "How high should the buff window be.";
 
 L["dmfSettingsListTitle"] = "DMF Buffs List";
 L["dmfSettingsListDesc"] = "Click this to show a list of your alts DMF buff type settings.";
+
+L["ignoreKillDataTitle"] = "Ignore NPC Killed Data";
+L["ignoreKillDataDesc"] = "Ignore any NPC killed data from being recorded.";
+			
+L["noOverwriteTitle"] = "Dont Overwrite Timers";
+L["noOverwriteDesc"] = "You can enable this so if you have a valid timer already running you will ignore any new data for that timer until the timer ends.";
+
+L["layerMsg1"] = "You are on a layered realm.";
+L["layerMsg2"] = "Click here to view current timers.";
+L["layerMsg3"] = "Target any NPC to see your current layer.";
+L["layerMsg4"] = "Target any NPC in %s to see your current layer."; --Target any NPC in Orgrimmar to see your current layer.
+
+--NOTE: Darkmoon Faire buff type is now a character specific setting, changing buff type will only change it for this character.
+L["note"] = "NOTE:";
+L["dmfConfigWarning"] = "Darkmoon Faire buff type is now a character specific setting, changing buff type will only change it for this character.";

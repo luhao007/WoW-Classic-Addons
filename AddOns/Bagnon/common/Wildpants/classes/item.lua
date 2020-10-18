@@ -99,6 +99,12 @@ function Item:GetBlizzard(id)
 end
 
 function Item:Bind(frame)
+	for k in pairs(frame) do
+		if self[k] then
+			frame[k] = nil
+		end
+	end
+
 	local class = self
 	while class do
 		for k,v in pairs(class) do
@@ -254,7 +260,7 @@ function Item:UpdateBorder()
 	self.NewItemTexture:SetAtlas(quality and NEW_ITEM_ATLAS_BY_QUALITY[quality] or 'bags-glow-white')
 	self.NewItemTexture:SetShown(new and not paid)
 
-	self.JunkIcon:SetShown(Addon.sets.glowPoor and quality == LE_ITEM_QUALITY_POOR and not self.info.worthless)
+	self.JunkIcon:SetShown(Addon.sets.glowPoor and quality == 0 and not self.info.worthless)
 	self.BattlepayItemTexture:SetShown(new and paid)
 	self.QuestBorder:SetShown(questID)
 	self.IconOverlay:SetShown(overlay)

@@ -958,7 +958,7 @@ Supports multiple entries, separated by commas
 	--[[Translation missing --]]
 	L["Repeat every"] = "Repeat every"
 	--[[Translation missing --]]
-	L["Report bugs our our issue tracker."] = "Report bugs our our issue tracker."
+	L["Report bugs on our issue tracker."] = "Report bugs on our issue tracker."
 	--[[Translation missing --]]
 	L["Require unit from trigger"] = "Require unit from trigger"
 	--[[Translation missing --]]

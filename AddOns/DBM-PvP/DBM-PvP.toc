@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: Nitram/Tandanu/Arta
-## Version: r96
+## Version: r97
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars
