@@ -332,6 +332,17 @@ class Manager(object):
              '		["Auto:MiniList"] = false,']
         )
 
+    def handle_atlas(self):
+        self.change_defaults(
+            'AddOns/Atlas/Core/Atlas.lua',
+            'addon.LocName = "Atlas"',
+        )
+
+        self.change_defaults(
+            'Addons/Atlas/Data/Constants.lua',
+            '			hide = true,'
+        )
+
     def handle_atlasloot(self):
         if not self.is_classic:
             self.remove_libraries(
@@ -365,12 +376,6 @@ class Manager(object):
             lambda lines: [l for l in lines if 'Libs' not in l]
         )
 
-    def handle_atlas(self):
-        self.change_defaults(
-            'AddOns/Atlas/Core/Atlas.lua',
-            'addon.LocName = "Atlas"',
-        )
-
     def handle_bagnon(self):
         rm_tree('AddOns/Bagnon/common/LibDataBroker-1.1')
         process_file(
@@ -384,6 +389,24 @@ class Manager(object):
             'AddOns/Bagnon/common/Wildpants/libs',
             'AddOns/Bagnon/common/Wildpants/libs/libs.xml'
         )
+
+    @retail_only
+    def handle_btwquest(self):
+        def f(lines):
+            ret = []
+            minimap = False
+            for line in lines:
+                if 'minimapShown' in line:
+                    minimap = True
+
+                if minimap and 'default' in line:
+                    ret.append('            default = false,\n')
+                    minimap = False
+                else:
+                    ret.append(line)
+            return ret
+
+        process_file('Addons/BtWQuests/BtWQuests.lua', f)
 
     def handle_dcs(self):
         def f(lines):
@@ -419,11 +442,11 @@ class Manager(object):
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
              'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
              'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-             'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
+             'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0', 'DF',
              'LibBossIDs-1.0', 'LibClassicCasterino', 'LibCompress',
              'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
              'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-             'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1'],
+             'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0'],
             'AddOns/Details/Libs',
             'AddOns/Details/Libs/libs.xml'
         )
@@ -596,6 +619,19 @@ class Manager(object):
             ) for l in lines]
         )
 
+    def handle_plater(self):
+        self.remove_libraries(
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+             'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
+             'AceTimer-3.0', 'CallbackHandler-1.0', 'DF', 'LibCompress',
+             'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
+             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub'],
+            'Addons/Plater/libs',
+            'Addons/Plater/libs/libs.xml'
+        )
+
     @retail_only
     def handle_pt(self):
         self.remove_libraries(
@@ -669,9 +705,8 @@ class Manager(object):
              'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
              'HereBeDragons-2.0', 'LibBabble-Boss-3.0',
              'LibBabble-CreatureType-3.0', 'LibBabble-SubZone-3.0',
-             'LibBars-1.0', 'LibCompress', 'LibDBIcon-1.0',
-             'LibDataBroker-1.1', 'LibQTip-1.0', 'LibSharedMedia-3.0',
-             'LibSink-2.0', 'LibStub'],
+             'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
+             'LibQTip-1.0', 'LibSharedMedia-3.0', 'LibSink-2.0', 'LibStub'],
             'AddOns/Rarity/Libs',
             'AddOns/Rarity/Rarity.toc'
         )
@@ -692,6 +727,14 @@ class Manager(object):
             'Addons/Simulationcraft/Simulationcraft.toc',
             lambda lines: [l for l in lines
                            if not l.lower().startswith('libs\\')]
+        )
+
+    @retail_only
+    def handle_talentsm(self):
+        self.remove_libraries(
+            ['CallBackHandler', 'LibDataBroker', 'LibStub'],
+            'AddOns/TalentSetManager/libs',
+            'AddOns/TalentSetManager/libs/libs.xml'
         )
 
     @classic_only
@@ -745,7 +788,7 @@ class Manager(object):
              'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
              'LibClassicDurations', 'LibCompress', 'LibCustomGlow-1.0',
              'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibSharedMedia-3.0',
-             'LibStub', 'LibThreatClassic2', 'UTF8'],
+             'LibStub', 'LibThreatClassic2', 'NickTag-1.0', 'UTF8'],
             'Addons/VuhDo/Libs',
             'Addons/VuhDo/Libs/Libs.xml'
         )

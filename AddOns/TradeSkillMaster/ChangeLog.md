@@ -1,5 +1,5 @@
-## v4.10.10 Changes
+## v4.10.13 Changes
 
-* [Retail] Added new bonusIds for 4.10.10 to porperly track different levels of weapons / armor
+* [Retail] Fixed issue with some items causing My Auctions to not load properly
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

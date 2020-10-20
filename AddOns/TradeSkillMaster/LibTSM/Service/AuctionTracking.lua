@@ -15,6 +15,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local TempTable = TSM.Include("Util.TempTable")
 local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
+local Analytics = TSM.Include("Util.Analytics")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
 local AuctionHouseWrapper = TSM.Include("Service.AuctionHouseWrapper")
@@ -48,7 +49,7 @@ local SALE_HINT_SEP = "\001"
 local SALE_HINT_EXPIRE_TIME = 33 * 24 * 60 * 60
 local SORT_ORDER = not TSM.IsWowClassic() and {
 	{ sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false },
-	{ sortOrder = Enum.AuctionHouseSortOrder.Buyout, reverseSort = false },
+	{ sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
 }
 local AUCTIONABLE_WOW_TOKEN_ITEM_ID = 122270
 
@@ -436,7 +437,10 @@ function private.AuctionOwnedListUpdateDelayed()
 				tremove(private.indexUpdates.list, i)
 				private.indexDB:BulkInsertNewRow(index, itemString, link, texture, name, quality, duration, highBidder, currentBid, buyout, stackSize, saleStatus, auctionId)
 			elseif shouldLog then
-				Log.Warn("Missing info (%s, %s, %s, %s)", tostring(link), tostring(name), tostring(texture), tostring(quality))
+				Log.Warn("Missing info (%s, %s, %s, %s)", gsub(tostring(link), "\124", "\\124"), tostring(name), tostring(texture), tostring(quality))
+				if link and strmatch(link, "item:") and not TSM.IsWowClassic() then
+					Analytics.Action("AUCTION_TRACKING_MISSING_INFO", link)
+				end
 			end
 		end
 	end

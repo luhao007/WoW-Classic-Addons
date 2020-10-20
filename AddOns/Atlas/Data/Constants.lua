@@ -224,7 +224,7 @@ ATLAS_TAXI_TCOORDS = {
 constants.defaults = {
 	profile = {
 		minimap = {
-			hide = false,
+			hide = true,
 			minimapPos = 190,
 		},
 		dropdowns = {

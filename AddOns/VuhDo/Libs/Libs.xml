@@ -4,7 +4,6 @@
 
 
 	<Script file="LibBase64-1.0\LibBase64-1.0.lua" />
-	<Include file="NickTag-1.0\NickTag-1.0.xml" />
 
 	<Include file="!LibTotemInfo\embeds.xml" />
 	<Include file="LibHealComm-4.0\LibHealComm-4.0.xml" />

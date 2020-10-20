@@ -613,6 +613,9 @@ function private.ArgToStr(arg)
 		elseif count == 0 then
 			return "{}"
 		elseif count == #arg then
+			if type(arg[1]) == "table" and arg[1].sortOrder then
+				return format("{sorts=%s}", private.SortsToStr(arg))
+			end
 			return format("{<%d items>}", count)
 		else
 			return "{...}"
