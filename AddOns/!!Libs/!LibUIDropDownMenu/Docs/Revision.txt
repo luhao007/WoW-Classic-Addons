@@ -1,6 +1,15 @@
-$Id: Revision.txt 53 2020-09-07 14:17:48Z arithmandar $
+$Id: Revision.txt 57 2020-10-20 13:44:40Z arithmandar $
 Revision History:
 =================
+
+v3.02.9000136272.01 (2020/10/20)
+-----------------------------
+- Fixed version detection while setting ColorSwatch's backdrop template. It should now be correctly detecting the retail (as well as ShadowLands) version
+
+v3.02.9000136272 (2020/10/18)
+-----------------------------
+- Update to sync with 9.0.1 build 36272
+- ToC update to support WoW 9.0.1
 
 v3.01.9000135522 (2020/09/07)
 -----------------------------

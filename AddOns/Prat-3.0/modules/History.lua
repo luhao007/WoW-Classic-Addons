@@ -304,43 +304,33 @@ L = {
 
 L = {
 	["History"] = {
-		--[[Translation missing --]]
-		["bnet_removed"] = "<BNET REMOVED>",
+		["bnet_removed"] = "<BNET УДАЛЕН>",
 		["Chat history options."] = "Настройки истории чата.",
 		["Color GMOTD"] = "Цвет  GMOTD",
 		["Colors the GMOTD label"] = "Цвета названия СДГ",
-		--[[Translation missing --]]
-		["Command History Options"] = "Command History Options",
+		["Command History Options"] = "Параметры истории команд",
 		["delaygmotd_desc"] = "Задерживать отображение СДГ вплоть до окончания спама при входе в игру",
 		["delaygmotd_name"] = "задержка GMOTD",
 		["divider"] = "========== Конец истории сообщений ==========",
 		["History"] = "История",
 		["Maximum number of lines of command history to save."] = "Максимальное число строк сохранённых в истории команд.",
-		--[[Translation missing --]]
-		["removespam_desc"] = "Remove addon spam messages when restoring the chat history",
-		--[[Translation missing --]]
-		["removespam_name"] = "Remove Spam",
+		["removespam_desc"] = "Удалять спам-сообщения аддона при восстановлении истории чата",
+		["removespam_name"] = "Удалить спам",
 		["Save Command History"] = "Сохранять историю команд",
 		["Saves command history between sessions (for use with alt+up arrow or just the up arrow)"] = "Сохранять историю команд между сеансами (для использования используйте alt+ стрелка вверх или просто стрелку вверх)",
 		["Scrollback"] = "История сообщений",
 		["Scrollback Options"] = "Вернуть опции",
-		--[[Translation missing --]]
-		["scrollbackduration_desc"] = "How many hours to keep the saved messages.",
-		--[[Translation missing --]]
-		["scrollbackduration_name"] = "Scrollback Duration",
+		["scrollbackduration_desc"] = "Сколько часов хранить сохраненные сообщения.",
+		["scrollbackduration_name"] = "Длительность прокрутки",
 		["scrollbacklen_desc"] = "Количество строк чата, которое надо сохранять в буфере истории сообщений.",
 		["scrollbacklen_name"] = "Длина истории сообщений",
 		["Set Chat Lines"] = "Задать число строк чата",
 		["Set Command History"] = "История команд",
 		["Set the number of lines of chat history for each window."] = "Установите число строк истории чата для всех окон чата.",
-		--[[Translation missing --]]
-		["storage_char"] = "Character",
-		--[[Translation missing --]]
-		["storage_desc"] = "Which location should the history be saved to.",
-		--[[Translation missing --]]
-		["storage_name"] = "Save To",
-		--[[Translation missing --]]
-		["storage_server"] = "Server",
+		["storage_char"] = "Персонаж",
+		["storage_desc"] = "В какое место следует сохранять историю.",
+		["storage_name"] = "Сохранить В",
+		["storage_server"] = "Сервер ",
 		["Store the chat lines between sessions"] = "Сохранять строки чата между сессиями",
 	}
 }

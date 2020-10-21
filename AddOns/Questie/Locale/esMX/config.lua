@@ -1,5 +1,5 @@
 QuestieLocale.locale['esMX'] = {
-    -- Config Windows
+    -- General tab
     ['GENERAL_TAB'] = "Opciones",
     ['GENERAL_OPTIONS_HEADER'] = "Opciones de Questie",
     ['ENABLE_ICONS'] = "Habilitar Iconos",
@@ -89,6 +89,7 @@ QuestieLocale.locale['esMX'] = {
 
     -- Map tab
     ['MAP_TAB'] = "Opciones de mapa",
+    ['MAP_OPTIONS_HEADER'] = "Opciones de mapa",
     ['ENABLE_MAP_BUTTON'] = "Mostrar el botón de Questie en el mapa",
     ['ENABLE_MAP_BUTTON_DESC'] = "Habilita o deshabilita el botón de mostrar/ocultar Questie en el mapa (Puede solucionar algunas interacciones con Addons de mapas)",
     ['MAP_NOTES'] = "Opciones de las notas de mapa",
@@ -193,6 +194,8 @@ QuestieLocale.locale['esMX'] = {
     ['RESET_QUESTIE_BTN_DESC'] = "Reinicia Questie a todos los valores por defecto.",
     ['RECOMPILE_DATABASE_BTN'] = "Recompilar base de datos",
     ['RECOMPILE_DATABASE_BTN_DESC'] = "Fuerza una recompilación de la base de datos Questie. Esto también volverá a cargar la interfaz de usuario.",
+    ['SHOW_PROFILER_BTN'] = "Abrir perfilador",
+    ['SHOW_PROFILER_BTN_DESC'] = "Abre el perfilador de Questie, esto es útil para rastrear la fuente de picos de latencia.",
     ['QUESTIE_DEV_MESSAGE'] = "Questie está bajo desarrollo activo para World of Warcraft: Classic. Por favor ve a Github para las versiones alfa o para reportar problemas. O únete a nuestro Discord! (( https://github.com/AeroScripts/QuestieDev/ ))",
 
     -- UI Elements
@@ -202,7 +205,7 @@ QuestieLocale.locale['esMX'] = {
     ['ICON_LEFT_CLICK_HOLD'] = "Clic izquierdo + Mantener",
     ['ICON_DRAG_LOCKED'] = "Arrastra mientras está bloqueado",
     ['ICON_TOGGLE'] = "Mostrar opciones",
-    ['ICON_SHIFTLEFT_CLICK'] = "Shift + Clic izq.",
+    ['ICON_SHIFTLEFT_CLICK'] = "Ctrl + Shift + Clic izq.",
     ['ICON_TOGGLE_QUESTIE'] = "Mostrar Questie",
     ['ICON_CTRLRIGHT_CLICK'] = "Ctrl + Clic der.",
     ['ICON_CTRLLEFT_CLICK'] = "Ctrl + Clic izq.",
@@ -222,6 +225,8 @@ QuestieLocale.locale['esMX'] = {
     ['TOOLTIP_QUEST_REPEATABLE'] = "(Repetible)",
     ['TOOLTIP_QUEST_EVENT'] = "(Evento)",
     ['XP'] = "xp";
+    ['COMPLETE'] = "Complete";
+    ['FAILED'] = "Failed";
 
     -- Slash Commands
     ['SLASH_INVALID'] = "Comando inválido. Para una lista de comandos escribe: ",
@@ -374,6 +379,8 @@ QuestieLocale.locale['esMX'] = {
     ['JOURNEY_SELECT_HEAD'] = "Selecciona tu continente y zona",
     ['JOURNEY_SELECT_CONT'] = "Selecciona tu continente",
     ['JOURNEY_SELECT_ZONE'] = "Selecciona tu zona",
+    ['JOURNEY_SELECT_PROFESSION'] = "Select Your Profession",
+    ['JOURNEY_NO_QUESTS_FOUND'] = "No Quests found",
     ['JOURNEY_QUESTS'] = "Misiones de zona",
     ['JOURNEY_QUESTINFO'] = "Información de la misión",
     ['JOURNEY_START_NPC'] = "Información PNJ que empieza misión",
@@ -402,7 +409,7 @@ QuestieLocale.locale['esMX'] = {
     ['JOURNEY_NOTE_DESC'] = "Crea una nueva entrada en el tu viaje para recordar un momento especifico. Simplemente proporciona un titulo y una descripción y Questie lo recordará por ti",
     ['JOURNEY_NOTE_TITLE'] = "Nueva nota para: %s",
     ['JOURNEY_NOTE_ENTRY_TITLE'] = "Título",
-    ['JOUNREY_NOTE_ENTRY_BODY'] = "Entrada de viaje",
+    ['JOURNEY_NOTE_ENTRY_BODY'] = "Entrada de viaje",
     ['JOURNEY_NOTE_SUBMIT_BTN'] = "Añadir entrada",
     ['JOURNEY_ERR_NOTITLE'] = "No has introducido un título. Tienes que introducir uno antes de crear tu nota.",
     ['JOURNEY_ERR_NONOTE'] = "No has introducido una nota. Tienes que introducir uno antes de crear tu nota.",
@@ -422,6 +429,10 @@ QuestieLocale.locale['esMX'] = {
     ['JOURNEY_SEARCH_EXE'] = "Buscar",
     ['JOURNEY_SEARCH_RESULTS'] = "Resultados de la búsqueda",
     ['JOURNEY_SEARCH_NOMATCH'] = "No hay resultados para tu búsqueda: %s",
+    ['JOURNEY_SEARCH_QUESTS'] = "Misiones",
+    ['JOURNEY_SEARCH_NPCS'] = "PNJs",
+    ['JOURNEY_SEARCH_OBJECTS'] = "Objetos",
+    ['JOURNEY_SEARCH_ITEMS'] = "Items",
 
     -- Debug Messages
     ['DEBUG_LOWLEVEL'] = "Misiones grises puestas a:",
@@ -449,6 +460,46 @@ QuestieLocale.locale['esMX'] = {
     ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000Questie ERROR:|r Intento de aceptar misión nula! Puede que tengas /questie reload",
     ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000ADVERTENCIA!|r Has actualizado Questie sin reiniciar el juego, esto probablemente causará problemas. Reinicia el juego antes de continuar.",
 
+    -- Townsfolk related strings
+    ["Repair"] = "Reparación",
+    ["Auctioneer"] = "Subastador",
+    ["Banker"] = "Banquero",
+    ["Battlemaster"] = "Maestro de batalla",
+    ["Flight Master"] = "Maestro de vuelo",
+    ["Innkeeper"] = "Tabernero",
+    ["Weapon Master"] = "Maestro armero",
+    ["Reagents"] = "Componentes",
+    ["Class Trainer"] = "Instructor de clase",
+    ["Stable Master"] = "Maestro de establos",
+    ["Mailbox"] = "Buzón",
+    ["Spirit Healer"] = "Ángel de la Resurrección",
+    ["Available Quest"] = "Misión disponible",
+    ["Trivial Quest"] = "Misiones menores",
+    ["Objective"] = "Objetivos",
+    ["Vendor"] = "Vendedor",
+    ["Profession Trainer"] = "Instructores de profesiones",
+    ["Questie Options"] = "Opciones de Questie",
+    ["Ammo"] = "Munición",
+    ["Pet Food"] = "Alimentar mascota",
+    ["Portal Trainer"] = "Instructor de portal",
+    ["Bags"] = "Bolsas", 	
+    ["Trade Goods"] = "Objetos comerciables",
+    ["Food"] = "Comida",
+    ["Drink"] = "Bebida",
+    -- professions use their ID as the key for a much cleaner implementation. Translations for these are alerady in QuestieProfessions.lua
+    ["129"] = "Primeros auxilios",
+    ["164"] = "Herrería",
+    ["165"] = "Peletería",
+    ["171"] = "Alquimia",
+    ["182"] = "Herboristería",
+    ["185"] = "Cocina",
+    ["186"] = "Minería",
+    ["197"] = "Sastrería",
+    ["202"] = "Ingeniería",
+    ["333"] = "Encantamiento",
+    ["356"] = "Pesca",
+    ["393"] = "Desuello",
+
     -- TODO finally switch all keys to this style for code readability:
     ['Show on Map'] = "Mostrar en mapa",
     ['Remove from Map'] = "Quitar de mapa",
@@ -456,6 +507,8 @@ QuestieLocale.locale['esMX'] = {
     ['Ends the following quests:'] = "Termina las siguientes misiones:",
     ['No quests to list.'] = "No hay misiones para enumerar.",
     ['No spawn data available.'] = "No hay datos de spawn disponibles.",
+    ['The database needs to be updated to change language. Press reload to apply the new language'] = "Es necesario actualizar la base de datos para cambiar el idioma. Presiona recargar para aplicar el nuevo idioma",
+    ['Reload UI'] = "Recargar IU",
     ["\124cFFAAEEFFQuestie DB has updated!\124r\124cFFFF6F22 Data is being processed, this may take a few moments and cause some lag..."] = "\124cFFAAEEFF¡Questie DB se ha actualizado!\124r\124cFFFF6F22 Los datos se están procesando, esto puede demorar unos minutos y causar latencia...",
     ["\124cFF4DDBFF [1/4] Updating NPCs..."] = "\124cFF4DDBFF [1/4] Actualizando PNJs...",
     ["\124cFF4DDBFF [2/4] Updating objects..."] = "\124cFF4DDBFF [2/4] Actualizando objetos...",  

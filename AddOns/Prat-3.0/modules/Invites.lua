@@ -390,7 +390,7 @@ L = {
 
     local enabled = self.db.profile.linkinvite
 
-    if enabled and CanGroupInvite() then
+    if enabled and C_PartyInfo.CanInvite() then
       if Prat.CurrentMessage then
         if EVENTS_FOR_INVITE[Prat.CurrentMessage.EVENT] then
           return self:InviteLink(text, name)

@@ -1,25 +1,22 @@
-# [3.0.2](https://github.com/WeakAuras/WeakAuras2/tree/3.0.2) (2020-10-16)
+# [3.0.4](https://github.com/WeakAuras/WeakAuras2/tree/3.0.4) (2020-10-19)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.0.1...3.0.2)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.0.3...3.0.4)
 
 ## Highlights
 
- - bug fixes! 
+ - bug fixes 
 
 ## Commits
 
-InfusOnWoW (2):
+InfusOnWoW (1):
 
-- Fix regression in Weapon Enchant trigger for %s
-- Fix timed conditions not firing for clones
+- Fix texture picker for ticks
 
-Stanzilla (3):
+Stanzilla (1):
 
-- CI: Add luacheck annotations
-- Fix typo in bug report text
-- Update "Found a Bug?" URL to include the issue template
+- Revert back to upstream LibSpellRange
 
-nullKomplex (1):
+mrbuds (1):
 
-- Fix ticks not updating properly on size changes.
+- Fix error with old versions of OmniCC
 

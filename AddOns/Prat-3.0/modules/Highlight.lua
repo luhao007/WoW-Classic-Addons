@@ -201,17 +201,13 @@ PL:AddLocale(PRAT_MODULE, "esMX",  L)
 
 L = {
 	["Highlight"] = {
-		--[[Translation missing --]]
-		["guild_desc"] = "Highlight things which looks like guild names",
-		--[[Translation missing --]]
-		["guild_name"] = "Highlight Guilds",
+		["guild_desc"] = "Выделите вещи, похожие на названия гильдий",
+		["guild_name"] = "Выделить гильдии",
 		["module_desc"] = "Выделите свое имя и другой текст",
 		["module_name"] = [=[Основной момент
 ]=],
-		--[[Translation missing --]]
-		["player_desc"] = "Highlight you own name in a special color",
-		--[[Translation missing --]]
-		["player_name"] = "Highlight Self",
+		["player_desc"] = "Выделите свое имя специальным цветом",
+		["player_name"] = "Выделить себя",
 	}
 }
 

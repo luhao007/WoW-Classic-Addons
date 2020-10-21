@@ -1,5 +1,5 @@
 QuestieLocale.locale['ruRU'] = {
-    -- Config Windows
+    -- General tab
     ['GENERAL_TAB'] = "Общее",
     ['GENERAL_OPTIONS_HEADER'] = "Общие настройки",
     ['ENABLE_ICONS'] = "Значки Questie",
@@ -31,10 +31,6 @@ QuestieLocale.locale['ruRU'] = {
     ['ENABLE_TURNINS_DESC'] = "Показать/скрыть местоположения выполненных заданий на карте мира и миникарте",
     ['ENABLE_AVAILABLE'] = "Значки доступных заданий",
     ['ENABLE_AVAILABLE_DESC'] = "Показать/скрыть местоположения доступных заданий на карте мира и миникарте",
-    ['ENABLE_TOOLTIPS'] = "Отображение в подсказках",
-    ['ENABLE_TOOLTIPS_DESC'] = "Показать/скрыть информацию о заданиях в соответствующих всплывающих подсказках",
-    ['ENABLE_TOOLTIPS_QUEST_LEVEL'] = "Уровень заданий в подсказках",
-    ['ENABLE_TOOLTIPS_QUEST_LEVEL_DESC'] = "Показать/скрыть уровень заданий во всплывающих подсказках",
     ['ICON_TYPE_HEADER'] = "Типы значков",
     ['ENABLE_MAP_ICONS'] = "Значки на карте мира",
     ['ENABLE_MAP_ICONS_DESC'] = "Показать/скрыть все значки на карте мира",
@@ -167,6 +163,16 @@ QuestieLocale.locale['ruRU'] = {
     ['TARGET_RESET_BTN'] = "Сброс настроек",
     ['TARGET_RESET_BTN_DESC'] = "Сбросить настройки значков целей заданий на рамке выбранной цели к значениям по умолчанию",
 
+    -- Tooltip tab
+    ['TOOLTIP_TAB'] = "Подсказки",
+    ['TOOLTIP_OPTIONS_HEADER'] = "Настройки всплывающих подсказок",
+    ['ENABLE_TOOLTIPS'] = "Отображение в подсказках",
+    ['ENABLE_TOOLTIPS_DESC'] = "Показать/скрыть информацию о заданиях в соответствующих всплывающих подсказках",
+    ['ENABLE_TOOLTIPS_QUEST_LEVEL'] = "Уровень заданий в подсказках",
+    ['ENABLE_TOOLTIPS_QUEST_LEVEL_DESC'] = "Показать/скрыть уровень заданий во всплывающих подсказках",
+    ['SHARED_TOOLTIP_PARTY_ONLY'] = "Только от игроков группы",
+    ['SHARED_TOOLTIP_PARTY_ONLY_DESC'] = "Когда включено, информация о таком же, как у вас, задании будет отображаться только от членов группы",
+
     -- Advanced tab
     ['ADVANCED_TAB'] = "Дополнительно",
     ['ADVANCED_OPTIONS_HEADER'] = "Расширенные настройки",
@@ -197,7 +203,7 @@ QuestieLocale.locale['ruRU'] = {
     ['ICON_LEFT_CLICK_HOLD'] = "Зажать ЛКМ",
     ['ICON_DRAG_LOCKED'] = "Перетаскивать, если заблокирован",
     ['ICON_TOGGLE'] = "Открыть/закрыть настройки",
-    ['ICON_SHIFTLEFT_CLICK'] = "Shift + ЛКМ",
+    ['ICON_SHIFTLEFT_CLICK'] = "Ctrl + Shift + ЛКМ",
     ['ICON_TOGGLE_QUESTIE'] = "Показать/скрыть значки",
     ['ICON_CTRLRIGHT_CLICK'] = "Ctrl + ПКМ",
     ['ICON_CTRLLEFT_CLICK'] = "Ctrl + ЛКМ",
@@ -217,6 +223,8 @@ QuestieLocale.locale['ruRU'] = {
     ['TOOLTIP_QUEST_REPEATABLE'] = "(Повторяемое)",
     ['TOOLTIP_QUEST_EVENT'] = "(Игровое событие)",
     ['XP'] = " ед. опыта";
+    ['COMPLETE'] = "Complete";
+    ['FAILED'] = "Failed";
 
     -- Slash Commands
     ['SLASH_INVALID'] = "Неверная команда. Для отображения списка команд наберите: ",
@@ -358,7 +366,7 @@ QuestieLocale.locale['ruRU'] = {
 
     -- Journey Window
     ['JOURNEY_TITLE'] = "Путешествие персонажа %s",
-	['JOUNREY_TAB'] = "Путешествие",
+    ['JOUNREY_TAB'] = "Путешествие",
     ['JOURNEY_ZONE_TAB'] = "Задания по игровым зонам",
     ['JOURNEY_SEARCH_TAB'] = "Расширенный поиск",
     ['JOURNEY_AVAILABLE_TITLE'] = "Доступные задания",
@@ -369,6 +377,8 @@ QuestieLocale.locale['ruRU'] = {
     ['JOURNEY_SELECT_HEAD'] = "Выберите континент и игровую зону",
     ['JOURNEY_SELECT_CONT'] = "Выберите континент",
     ['JOURNEY_SELECT_ZONE'] = "Выберите игровую зону",
+    ['JOURNEY_SELECT_PROFESSION'] = "Выберите профессию",
+    ['JOURNEY_NO_QUESTS_FOUND'] = "Задания не найдены",
     ['JOURNEY_QUESTS'] = "Задания выбранной игровой зоны",
     ['JOURNEY_QUESTINFO'] = "Информация о задании",
     ['JOURNEY_START_NPC'] = "Информация о начинающем задание NPC:",
@@ -397,7 +407,7 @@ QuestieLocale.locale['ruRU'] = {
     ['JOURNEY_NOTE_DESC'] = "Создает запись в журнале, чтобы запомнить определенный момент. Просто введите название и описание, и Questie запомнит это для вас!",
     ['JOURNEY_NOTE_TITLE'] = "Новая заметка для: %s",
     ['JOURNEY_NOTE_ENTRY_TITLE'] = "Название",
-    ['JOUNREY_NOTE_ENTRY_BODY'] = "Запись в журнале",
+    ['JOURNEY_NOTE_ENTRY_BODY'] = "Запись в журнале",
     ['JOURNEY_NOTE_SUBMIT_BTN'] = "Добавить запись",
     ['JOURNEY_ERR_NOTITLE'] = "Вы не ввели название. Введите название перед добавлением заметки",
     ['JOURNEY_ERR_NONOTE'] = "Вы не ввели заметку. Вы должны ввести заметку перед добавлением",
@@ -417,6 +427,10 @@ QuestieLocale.locale['ruRU'] = {
     ['JOURNEY_SEARCH_EXE'] = "Поиск",
     ['JOURNEY_SEARCH_RESULTS'] = "Результаты поиска",
     ['JOURNEY_SEARCH_NOMATCH'] = "Нет совпадений для результатов поиска: %s",
+    ['JOURNEY_SEARCH_QUESTS'] = "заданий",
+    ['JOURNEY_SEARCH_NPCS'] = "NPC",
+    ['JOURNEY_SEARCH_OBJECTS'] = "объектов",
+    ['JOURNEY_SEARCH_ITEMS'] = "предметов",
 
     -- Debug Messages
     ['DEBUG_LOWLEVEL'] = "Отображение низкоуровневых заданий:",
@@ -444,6 +458,47 @@ QuestieLocale.locale['ruRU'] = {
     ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000Questie ERROR:|r Попытка принять нулевой задание! Вам может понадобиться запустить команду \"/questie reload\"",
     ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000WARNING!|r Вы обновили Questie без перезапуска игры, это может вызвать проблемы. Пожалуйста, перезапустите игру, прежде чем продолжить",
 
+    -- Townsfolk related strings
+    ["Repair"] = "Ремонт",
+    ["Auctioneer"] = "Аукционер",
+    ["Banker"] = "Банкир",
+    ["Battlemaster"] = "Военачальник",
+    ["Flight Master"] = "Распорядитель полетов",
+    ["Innkeeper"] = "Хозяин таверны",
+    ["Weapon Master"] = "Эксперт по оружию",
+    ["Reagents"] = "Реагенты",
+    ["Class Trainer"] = "Учитель классовых навыков",
+    ["Stable Master"] = "Смотритель стойл",
+    ["Mailbox"] = "Почтовый ящик",
+    ["Spirit Healer"] = "Целитель душ",
+    ["Available Quest"] = "Доступные задания",
+    ["Trivial Quest"] = "Простые задания",
+    ["Objective"] = "Цели",
+    ["Vendor"] = "Торговец",
+    ["Profession Trainer"] = "Учитель профессий",
+    ["Questie Options"] = "Настройки Questie",
+    ["Ammo"] = "Боеприпасы",
+    ["Pet Food"] = "Еда для питомца",
+    ["Portal Trainer"] = "Изучение порталов",
+    ["Bags"] = "Сумки", 	
+    ["Trade Goods"] = "Хозяйственные товары",
+    ["Food"] = "Еда",
+    ["Drink"] = "Напитки",
+	
+    -- professions use their ID as the key for a much cleaner implementation. Translations for these are alerady in QuestieProfessions.lua
+    ["129"] = "Первая помощь",
+    ["164"] = "Кузнечное дело",
+    ["165"] = "Кожевничество",
+    ["171"] = "Алхимия",
+    ["182"] = "Травничество",
+    ["185"] = "Кулинария",
+    ["186"] = "Горное дело",
+    ["197"] = "Портняжное дело",
+    ["202"] = "Инженерное дело",
+    ["333"] = "Наложение чар",
+    ["356"] = "Рыбная ловля",
+    ["393"] = "Снятие шкур",
+
     -- TODO finally switch all keys to this style for code readability:
     ['Show on Map'] = "Показать на карте",
     ['Remove from Map'] = "Удалить с карты",
@@ -451,7 +506,7 @@ QuestieLocale.locale['ruRU'] = {
     ['Ends the following quests:'] = "Завершает следующие задания:",
     ['No quests to list.'] = "Этого задания нет в списке",
     ['No spawn data available.'] = "Нет данных о появлении",
-	['The database needs to be updated to change language. Press reload to apply the new language'] = "После изменения языка база данных должна обновиться. Нажмите \"Reload UI\" для перезагрузки пользовательского интерфейса",
+    ['The database needs to be updated to change language. Press reload to apply the new language'] = "После изменения языка база данных должна обновиться. Нажмите \"Reload UI\" для перезагрузки пользовательского интерфейса",
     ['Reload UI'] = "Reload UI",
     ["\124cFFAAEEFFQuestie DB has updated!\124r\124cFFFF6F22 Data is being processed, this may take a few moments and cause some lag..."] = "\124cFFAAEEFFБаза данных Questie обновляется!\124r\124cFFFF6F22 Данные обрабатываются, это может занять некоторое время и явиться причиной зависаний...",
     ["\124cFF4DDBFF [1/4] Updating NPCs..."] = "\124cFF4DDBFF [1/4] Обновление NPC...",

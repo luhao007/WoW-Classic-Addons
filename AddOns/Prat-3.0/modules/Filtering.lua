@@ -320,14 +320,10 @@ L = {
 		["notices_name"] = "Извещения в канале",
 		["tradespam_desc"] = "Скрывать повторяющиеся сообщения",
 		["tradespam_name"] = "Скрывать спам",
-		--[[Translation missing --]]
-		["training_desc"] = "Show the AI training UI",
-		--[[Translation missing --]]
-		["training_name"] = "AI Training",
-		--[[Translation missing --]]
-		["useai_desc"] = "Use a spam filter based on machine learning",
-		--[[Translation missing --]]
-		["useai_name"] = "AI Spam Filter",
+		["training_desc"] = "Показать интерфейс обучения AI",
+		["training_name"] = "Обучение AI",
+		["useai_desc"] = "Используйте спам-фильтр на основе машинного обучения",
+		["useai_name"] = "Спам-фильтр AI",
 	}
 }
 

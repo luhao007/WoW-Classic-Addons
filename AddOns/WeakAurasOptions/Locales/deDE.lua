@@ -759,6 +759,8 @@ Nur ein Wert kann ausgewählt werden.]=]
 	L["Preset"] = "Voreinstellung"
 	L["Press Ctrl+C to copy"] = "Drücke Strg+C zum kopieren"
 	--[[Translation missing --]]
+	L["Press Ctrl+C to copy the URL"] = "Press Ctrl+C to copy the URL"
+	--[[Translation missing --]]
 	L["Prevent Merging"] = "Prevent Merging"
 	--[[Translation missing --]]
 	L["Processed %i chars"] = "Processed %i chars"

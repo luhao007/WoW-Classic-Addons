@@ -1,7 +1,7 @@
 --[[
     This file is part of Decursive.
 
-    Decursive (v 2.7.7) add-on for World of Warcraft UI
+    Decursive (v 2.7.7.1) add-on for World of Warcraft UI
     Copyright (C) 2006-2019 John Wellesz (Decursive AT 2072productions.com) ( http://www.2072productions.com/to/decursive.php )
 
     Decursive is free software: you can redistribute it and/or modify
@@ -76,13 +76,16 @@ end
 local L = LibStub("AceLocale-3.0"):NewLocale("Decursive", "ptBR");
 
 if not L then
-    T._LoadedFiles["ptBR.lua"] = "2.7.7";
+    T._LoadedFiles["ptBR.lua"] = "2.7.7.1";
     return;
 end
 
 L["ABOLISH_CHECK"] = "Verifique se há \"Abolir\" antes de curar"
+L["ABOUT_AUTHOREMAIL"] = "E-mail do autor"
+L["ABOUT_CREDITS"] = "CRÉDITOS"
 L["ABOUT_LICENSE"] = "Licensa"
 L["ABOUT_OFFICIALWEBSITE"] = "WEBSITE OFFICIAL"
+L["ABOUT_SHAREDLIBS"] = "BIBLIOTECAS COMPARTILHADAS"
 L["ABSENT"] = "Faltando (%s)"
 L["AFFLICTEDBY"] = "%s Afligido"
 L["ALT"] = "Alt"
@@ -104,7 +107,9 @@ L["BLACK_LENGTH"] = "Segundos na lista negra"
 L["BLACKLISTED"] = "Lista negra"
 L["CHARM"] = "Encantar"
 L["CLASS_HUNTER"] = "Caçador"
-L["COLORCHRONOS"] = "Cronometros"
+L["CLEAR_PRIO"] = "C"
+L["CLEAR_SKIP"] = "C"
+L["COLORCHRONOS"] = "Contador central"
 L["CTRL"] = "Ctrl"
 L["CURSE"] = "Maldição"
 L["GLOR1"] = "Em memoria de Glorfindal"
@@ -112,7 +117,7 @@ L["GLOR2"] = [=[Decursive é dedicado a memoria de Bertrand que nós deixou muit
 Ele sempre sera lembrado.]=]
 L["GLOR3"] = [=[Em memoria de Bertrand Sense
 1969-2007]=]
-L["HIDESHOW_BUTTONS"] = "Mostrar/Esconder Buttoes"
+L["HIDESHOW_BUTTONS"] = "Ocultar/Mostrar botões e bloquear/desbloquear a barra \"Decursive\""
 L["OPT_NOSTARTMESSAGES"] = "Desativar mensagens de iniciar"
 L["SHIFT"] = "Shift"
 L["SHOW_MSG"] = "Para amostrar a janela do Decursive, escreve /dcrshow"
@@ -123,5 +128,5 @@ L["STR_DCR_PRIO"] = "Prioridade do Decursive"
 
 
 
-T._LoadedFiles["ptBR.lua"] = "2.7.7";
+T._LoadedFiles["ptBR.lua"] = "2.7.7.1";
 

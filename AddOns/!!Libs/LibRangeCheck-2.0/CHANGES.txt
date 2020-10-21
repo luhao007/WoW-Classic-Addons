@@ -1,9 +1,8 @@
 ------------------------------------------------------------------------
-r204 | mitch0 | 2019-11-03 12:34:30 +0000 (Sun, 03 Nov 2019) | 2 lines
+r206 | mitch0 | 2020-10-18 18:27:55 +0000 (Sun, 18 Oct 2020) | 1 line
 Changed paths:
-   M /trunk/LibRangeCheck-2.0/LibRangeCheck-2.0.lua
+   M /trunk/LibRangeCheck-2.0.toc
 
-use GET_ITEM_INFO_RECEIVED to throttle item queries
-
+toc bump for WoW 9.0
 ------------------------------------------------------------------------
 

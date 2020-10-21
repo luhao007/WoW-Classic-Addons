@@ -1,17 +1,37 @@
 # Prat 3.0
 
-## [3.8.26](https://github.com/sylvanaar/prat-3-0/tree/3.8.26) (2020-07-08)
-[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.8.25...3.8.26) 
+## [3.9.0](https://github.com/sylvanaar/prat-3-0/tree/3.9.0) (2020-10-19)
+[Full Changelog](https://github.com/sylvanaar/prat-3-0/compare/3.8.26...3.9.0) 
 
-- Memory: Fix spelling error  
-- Memory: Smarter channel leaving behavior - only leave channels that are incorrect.  Prevents most instances of #114  
-- Core: Better implementation of IsrRetail  
-- Core: Trim whitespaces from all chat messages  
-- Filtering: Change AI filtering from blacklist to whitelist. Improve feedback messges  
-- Filtering: Improve the training UI a bilt by re-scoring the line after clicking the ++  or -- links  
-- Filtering: Do not allow the API to filter our the player's own messages  
-- Scrollback: Handle nil battletag case #107  
-- Customfilters: Remove tristate options- too confusing  
-- Customfilters: Another implementation of the option to apply a filter to specific channels #101  
-- Revert "Revert "CustomFilters: Support filtering by channel #101""  
-- Filtering: Support for ignoring certain chat types from AI filtering  
+- Core: TOC 90000  
+- Merge pull request #133 from amakinen/editbox-fixes  
+    Editbox fixes  
+- Merge pull request #135 from Thrayl/patch-1  
+    Updated for new guild roster namespace  
+- Merge pull request #137 from Thrayl/patch-2  
+    Updated deprecated API  
+- Merge pull request #142 from Vashidu/master  
+    Apply fixes for prepatch  
+- Update Invites.lua  
+- Merge pull request #1 from Vashidu/9.0.1  
+    Fix for prepatch  
+- update guildroster to new guildroster namespace, update toc for 90001  
+- Revert "update guildroster to new guildroster namespace, update toc for 90001"  
+    This reverts commit cf45cd97  
+- update guildroster to new guildroster namespace, update toc for 90001  
+- update guildroster to new guildroster namespace, update toc for 90001  
+- Updated deprecated API  
+- Updated for new guild roster namespace  
+- Editbox: Account for chatframe scrollbar width  
+- Editbox: Use less generic key when adding our frame to Blizz frame  
+- Editbox: Restore Blizz position on disable  
+- Editbox: Restore Blizz focus texture on disable  
+    Hide it with alpha instead of removing the texture file  
+- Editbox: Reposition temporary frames' editbox on creation  
+- Editbox: Include temporary chat frames when looping  
+- Editbox: Create Prat editbox frames for temporary chat frames too  
+- Merge pull request #126 from Thrayl/master  
+    Added Mixin for 9.0 / SL changes  
+    Thanks for the PR!  
+- Update Editbox.lua  
+- Scrollback: Add existence check for the scrollback buffer  

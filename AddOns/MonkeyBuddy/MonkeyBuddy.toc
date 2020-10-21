@@ -4,7 +4,7 @@
 ## OptionalDeps: MonkeyQuest, MonkeySpeed, MonkeyClock, myAddOns
 ## SavedVariables: MonkeyBuddyConfig
 
-## Title: MonkeyBuddy v2.10.0
+## Title: MonkeyBuddy v2.11.0c
 ## Notes: Helps you configure your MonkeyMods.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFF69CCF0伴侣|r
 ## Notes-zhCN: 在小地图旁提供一个猴子图标，可修改MonkeyQeust的设置

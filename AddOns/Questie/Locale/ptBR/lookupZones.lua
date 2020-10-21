@@ -3,6 +3,9 @@ LangContinentLookup['prBR']= {
     [2] = "Kalimdor",
     [3] = "Masmorras",
     [4] = "Campos de Batalha",
+    [5] = "Classe",
+    [6] = "Profissões",
+    [7] = "Eventos",
 }
 
 LangZoneLookup['ptBR']= {
@@ -1170,5 +1173,40 @@ LangZoneCategoryLookup['ptBR']= {
         [2597] = "Vale Alterac",
         [3277] = "Ravina Brado Guerreiro",
         [3358] = "Bacia Arathi"
+    },
+    [5] = {
+        [-61] = "Bruxo",
+        [-81] = "Guerreiro",
+        [-82] = "Xamã",
+        [-141] = "Paladino",
+        [-161] = "Mago",
+        [-162] = "Ladino",
+        [-261] = "Caçador",
+        [-262] = "Sacerdote",
+        [-263] = "Druida",
+    },
+    [6] = {
+        [-24] = "Herborismo",
+        [-101] = "Pesca",
+        [-121] = "Ferraria",
+        [-181] = "Alchimie",
+        [-182] = "Couraria",
+        [-201] = "Engenharia",
+        [-264] = "Alfaiataria",
+        [-304] = "Culinária",
+        [-324] = "Primeiros Socorros",
+    },
+    [7] = {
+        [-364] = "Feira de Negraluna",
+        [-366] = "Festival da Lua",
+        [-369] = "Solstício",
+        -- Below are dummy IDs to not interfere with other IDs
+        -- These are needed because the events are listed as "seasonal" or "special",
+        -- not with a separate ID
+        [-400] = "O Amor Está no Ar",
+        [-401] = "A Semana das Crianças",
+        [-402] = "Festival da Colheita",
+        [-403] = "Noturnália",
+        [-404] = "Véu de Inverno",
     },
 }

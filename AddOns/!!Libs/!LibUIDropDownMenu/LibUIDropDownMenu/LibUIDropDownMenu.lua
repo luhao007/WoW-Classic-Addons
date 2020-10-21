@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 53 2020-09-07 14:17:48Z arithmandar $
+-- $Id: LibUIDropDownMenu.lua 57 2020-10-20 13:44:40Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -14,24 +14,22 @@ local GetBuildInfo = _G.GetBuildInfo
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-3.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 53 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 57 $"):match("%d+"))
 
 local LibStub = _G.LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then return end
 -- Determine WoW TOC Version
-local WoWClassic, WoWRetail, WoWShadowlands
+local WoWClassic, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
 if wowtocversion < 19999 then
 	WoWClassic = true
-elseif wowtocversion > 19999 and wowtocversion < 90000 then 
-	WoWRetail = true
 else
-	WoWShadowlands = true
+	WoWRetail = true
 end
 
-if WoWClassic or WoWRetail then
+if WoWClassic then
 	--
 else -- Shadowlands
 	--
@@ -129,10 +127,10 @@ local function create_UIDropDownMenuButton(name, parent)
 	f.Icon:Hide()
 	
 	-- ColorSwatch
-	local fcw = CreateFrame("Button", name.."ColorSwatch", f, WoWShadowlands and "ColorSwatchTemplate" or nil)
+	local fcw = CreateFrame("Button", name.."ColorSwatch", f, BackdropTemplateMixin and "ColorSwatchTemplate" or nil)
 	fcw:SetPoint("RIGHT", f, -6, 0)
 	fcw:Hide()
-	if WoWClassic or WoWRetail then
+	if WoWClassic then
 		fcw:SetSize(16, 16)
 		fcw.SwatchBg = fcw:CreateTexture(name.."ColorSwatchSwatchBg", "BACKGROUND")
 		fcw.SwatchBg:SetVertexColor(1, 1, 1)
@@ -235,9 +233,10 @@ local function creatre_UIDropDownList(name, parent)
 	f:SetFrameStrata("DIALOG")
 	f:EnableMouse(true)
 	
-	f.Border = _G[name.."Border"] or CreateFrame("Frame", name.."Border", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
-	f.Border:SetAllPoints()
-	f.Border:SetBackdrop({
+	--local fbd = _G[name.."Border"] or CreateFrame("Frame", name.."Border", f, BackdropTemplateMixin and "DialogBorderDarkTemplate" or nil)
+	local fbd = _G[name.."Border"] or CreateFrame("Frame", name.."Border", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	fbd:SetAllPoints()
+	fbd:SetBackdrop({
 		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
 		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
 		tile = true,
@@ -245,10 +244,12 @@ local function creatre_UIDropDownList(name, parent)
 		edgeSize = 32,
 		insets = { left = 11, right = 12, top = 12, bottom = 9, },
 	})
+	f.Border = fbd
 	
-	f.MenuBackdrop= _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
-	f.MenuBackdrop:SetAllPoints()
-	f.MenuBackdrop:SetBackdrop({
+	--local fmb = _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "TooltipBackdropTemplate" or nil)
+	local fmb = _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	fmb:SetAllPoints()
+	fmb:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
 		tile = true,
@@ -256,8 +257,9 @@ local function creatre_UIDropDownList(name, parent)
 		edgeSize = 16,
 		insets = { left = 5, right = 4, top = 4, bottom = 4, },
 	})
-	f.MenuBackdrop:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
-	f.MenuBackdrop:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+	fmb:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
+	fmb:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b)
+	f.MenuBackdrop = fmb
 	
 	f.Button1 = _G[name.."Button1"] or create_UIDropDownMenuButton(name.."Button1", f)
 	f.Button1:SetID(1)
@@ -496,7 +498,7 @@ function L_UIDropDownMenuButtonInvisibleButton_OnEnter(self)
 	if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
 		if ( parent.tooltipOnButton ) then
 			local tooltip
-			if WoWClassic or WoWRetail then
+			if WoWClassic then
 				tooltip = GameTooltip
 			else
 				tooltip = GetAppropriateTooltip()
@@ -519,7 +521,7 @@ end
 
 function L_UIDropDownMenuButtonInvisibleButton_OnLeave(self)
 	local tooltip
-	if WoWClassic or WoWRetail then
+	if WoWClassic then
 		tooltip = GameTooltip
 	else
 		tooltip = GetAppropriateTooltip()
@@ -541,7 +543,7 @@ function L_UIDropDownMenuButton_OnEnter(self)
 	if ( self.tooltipTitle and not self.noTooltipWhileEnabled ) then
 		if ( self.tooltipOnButton ) then
 			local tooltip
-			if WoWClassic or WoWRetail then
+			if WoWClassic then
 				tooltip = GameTooltip
 			else
 				tooltip = GetAppropriateTooltip()
@@ -559,14 +561,14 @@ function L_UIDropDownMenuButton_OnEnter(self)
 		self.Icon:SetTexture(self.mouseOverIcon);
 		self.Icon:Show();
 	end
-	if WoWShadowlands then
-	GetValueOrCallFunction(self, "funcOnEnter", self);
+	if WoWRetail then
+		GetValueOrCallFunction(self, "funcOnEnter", self);
 	end
 end
 
 function L_UIDropDownMenuButton_OnLeave(self)
 	local tooltip
-	if WoWClassic or WoWRetail then
+	if WoWClassic then
 		tooltip = GameTooltip
 	else
 		tooltip = GetAppropriateTooltip()
@@ -582,8 +584,8 @@ function L_UIDropDownMenuButton_OnLeave(self)
 		end
 	end
 
-	if WoWShadowlands then
-	GetValueOrCallFunction(self, "funcOnLeave", self);
+	if WoWRetail then
+		GetValueOrCallFunction(self, "funcOnLeave", self);
 	end
 end
 
@@ -984,10 +986,10 @@ function L_UIDropDownMenu_AddButton(info, level)
 	-- If has a colorswatch, show it and vertex color it
 	local colorSwatch = _G[listFrameName.."Button"..index.."ColorSwatch"];
 	if ( info.hasColorSwatch ) then
-		if WoWClassic or WoWRetail then
+		if WoWClassic then
 			_G["L_DropDownList"..level.."Button"..index.."ColorSwatch".."NormalTexture"]:SetVertexColor(info.r, info.g, info.b);
 		else
-		_G["L_DropDownList"..level.."Button"..index.."ColorSwatch"].Color:SetVertexColor(info.r, info.g, info.b);
+			_G["L_DropDownList"..level.."Button"..index.."ColorSwatch"].Color:SetVertexColor(info.r, info.g, info.b);
 		end
 		button.r = info.r;
 		button.g = info.g;

@@ -156,8 +156,7 @@ Usage:
 
 L = {
 	["Search"] = {
-		--[[Translation missing --]]
-		["bnet_removed"] = "<BNET REMOVED>",
+		["bnet_removed"] = "<BNET УДАЛЕН>",
 		["err_notfound"] = "Не Найденно",
 		["err_tooshort"] = "Критерий поиска слишком короток",
 		["find_results"] = "Найти Результаты:",

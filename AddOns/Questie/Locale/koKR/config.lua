@@ -64,6 +64,8 @@ QuestieLocale.locale['koKR'] = {
     ['ENABLE_ACCEPT_TRIVIAL_DESC'] = "When this is enabled trivial (gray) quests will be auto accepted as well.",
     ['AUTO_MODIFIER'] = "Auto Modifier",
     ['AUTO_MODIFIER_DESC'] = "The modifier to NOT auto-accept/-complete quests when either option is enabled and you interact with a quest NPC.",
+    ['ENABLE_YELL'] = "Share quest progress with nearby players",
+    ['ENABLE_YELL_DESC'] = "Your quest progress will be periodically sent to nearby players. Disabling this doesn't affect sharing progress with party members.",
 
     -- Minimap tab
     ['MINIMAP_TAB'] = "미니맵",
@@ -192,6 +194,8 @@ QuestieLocale.locale['koKR'] = {
     ['RESET_QUESTIE_BTN_DESC'] = "모든 Questie 설정을 기본값으로 초기화합니다.",
     ['RECOMPILE_DATABASE_BTN'] = "Recompile Database",
     ['RECOMPILE_DATABASE_BTN_DESC'] = "Forces a recompile of the Questie database. This will also reload the UI.",
+    ['SHOW_PROFILER_BTN'] = "Open Profiler",
+    ['SHOW_PROFILER_BTN_DESC'] = "Open the Questie profiler, this is useful for tracking down the source of lag / frame spikes.",
     ['QUESTIE_DEV_MESSAGE'] = "Questie는 월드 오브 워크래프트:클래식을 위해 활발히 개발 중입니다. 최신 알파 빌드 또는 보고된 문제들을 확인하시려면 GitHub을 확인해주세요. 또는 저희 디스코드에 참여하세요! (( https://github.com/AeroScripts/QuestieDev/ ))",
 
     -- UI Elements
@@ -201,7 +205,7 @@ QuestieLocale.locale['koKR'] = {
     ['ICON_LEFT_CLICK_HOLD'] = "왼쪽 클릭 + 보류",
     ['ICON_DRAG_LOCKED'] = "잠금 상태에서 드래그",
     ['ICON_TOGGLE'] = "설정 열기",
-    ['ICON_SHIFTLEFT_CLICK'] = "Shift + 왼쪽 클릭",
+    ['ICON_SHIFTLEFT_CLICK'] = "Ctrl + Shift + 왼쪽 클릭",
     ['ICON_TOGGLE_QUESTIE'] = "Questie 표시",
     ['ICON_CTRLRIGHT_CLICK'] = "Ctrl + 오른쪽 클릭",
     ['ICON_CTRLLEFT_CLICK'] = "Ctrl + 왼쪽 클릭",
@@ -221,6 +225,8 @@ QuestieLocale.locale['koKR'] = {
     ['TOOLTIP_QUEST_REPEATABLE'] = "(반복가능)",
     ['TOOLTIP_QUEST_EVENT'] = "(이벤트)",
     ['XP'] = "xp";
+    ['COMPLETE'] = "Complete";
+    ['FAILED'] = "Failed";
 
     -- Slash Commands
     ['SLASH_INVALID'] = "존재하지 않는 명령어입니다. 전체 명령어를 확인하시려면 다음과 같이 입력해주세요: ",
@@ -373,6 +379,8 @@ QuestieLocale.locale['koKR'] = {
     ['JOURNEY_SELECT_HEAD'] = "대륙과 지역을 선택해주세요",
     ['JOURNEY_SELECT_CONT'] = "대륙 선택",
     ['JOURNEY_SELECT_ZONE'] = "지역 선택",
+    ['JOURNEY_SELECT_PROFESSION'] = "Select Your Profession",
+    ['JOURNEY_NO_QUESTS_FOUND'] = "No Quests found",
     ['JOURNEY_QUESTS'] = "지역 퀘스트",
     ['JOURNEY_QUESTINFO'] = "퀘스트 정보",
     ['JOURNEY_START_NPC'] = "퀘스트 시작 NPC 정보",
@@ -401,7 +409,7 @@ QuestieLocale.locale['koKR'] = {
     ['JOURNEY_NOTE_DESC'] = "여정 내역에 메모를 남겨 특별한 순간을 기억해보세요. 간단하게 제목과 내용을 입력하면 Questie가 당신을 위해 기억해드립니다!",
     ['JOURNEY_NOTE_TITLE'] = "새로운 메모: %s",
     ['JOURNEY_NOTE_ENTRY_TITLE'] = "제목",
-    ['JOUNREY_NOTE_ENTRY_BODY'] = "내용",
+    ['JOURNEY_NOTE_ENTRY_BODY'] = "내용",
     ['JOURNEY_NOTE_SUBMIT_BTN'] = "메모 추가",
     ['JOURNEY_ERR_NOTITLE'] = "제목이 입력되지 않았습니다. 메모를 추가하려면 제목을 입력해주세요.",
     ['JOURNEY_ERR_NONOTE'] = "내용이 입력되지 않았습니다. 메모를 추가하려면 내용을 입력해주세요.",
@@ -421,6 +429,10 @@ QuestieLocale.locale['koKR'] = {
     ['JOURNEY_SEARCH_EXE'] = "검색",
     ['JOURNEY_SEARCH_RESULTS'] = "검색 결과",
     ['JOURNEY_SEARCH_NOMATCH'] = "검색 결과가 없습니다: %s",
+    ['JOURNEY_SEARCH_QUESTS'] = "Quests",
+    ['JOURNEY_SEARCH_NPCS'] = "NPCs",
+    ['JOURNEY_SEARCH_OBJECTS'] = "Objects",
+    ['JOURNEY_SEARCH_ITEMS'] = "Items",
 
     -- Debug Messages
     ['DEBUG_LOWLEVEL'] = "Gray Quests toggled to:",
@@ -448,6 +460,46 @@ QuestieLocale.locale['koKR'] = {
     ['QUESTIE_ACCEPT_NIL'] = "|cFFFF0000Questie 오류:|r 유효하지 않은 퀘스트를 수락했습니다! /questie reload 를 시도해보세요",
     ['QUESTIE_UPDATED_RESTART'] = "|cFFFF0000경고!|r 게임을 재실행하지 않고 Questie를 업데이트했습니다. 이로 인해 문제가 발생할 수 있습니다. 계속하시기 전에 게임을 재실행해주세요.",
 
+    -- Townsfolk related strings
+    ["Repair"] = "장비 수리",
+    ["Auctioneer"] = "경매인",
+    ["Banker"] = "은행원",
+    ["Battlemaster"] = "전투모병관",
+    ["Flight Master"] = "비행 조련사",
+    ["Innkeeper"] = "여관주인",
+    ["Weapon Master"] = "무기 전문가",
+    ["Reagents"] = "마법 재료 상인",
+    ["Class Trainer"] = "직업 상급자",
+    ["Stable Master"] = "야수 관리인",
+    ["Mailbox"] = "우체통",
+    ["Spirit Healer"] = "영혼의 치유사",
+    ["Available Quest"] = "수행 가능한 퀘스트",
+    ["Trivial Quest"] = "기타 퀘스트",
+    ["Objective"] = "목표",
+    ["Vendor"] = "상인",
+    ["Profession Trainer"] = "기술 전문가",
+    ["Questie Options"] = "Questie 설정",
+    ["Ammo"] = "탄약 상인",
+    ["Pet Food"] = "먹이주기",
+    ["Portal Trainer"] = "순간이동 전문 마법사",
+    ["Bags"] = "가방", 	
+    ["Trade Goods"] = "직업용품",
+    ["Food"] = "음식",
+    ["Drink"] = "음료",
+    -- professions use their ID as the key for a much cleaner implementation. Translations for these are alerady in QuestieProfessions.lua
+    ["129"] = "응급치료",
+    ["164"] = "대장기술",
+    ["165"] = "가죽세공",
+    ["171"] = "연금술",
+    ["182"] = "약초채집",
+    ["185"] = "요리",
+    ["186"] = "채광",
+    ["197"] = "재봉술",
+    ["202"] = "기계공학",
+    ["333"] = "마법부여",
+    ["356"] = "낚시",
+    ["393"] = "무두질",
+
     -- TODO finally switch all keys to this style for code readability:
     ['Show on Map'] = "지도에 표시",
     ['Remove from Map'] = "지도에서 제거",
@@ -455,4 +507,13 @@ QuestieLocale.locale['koKR'] = {
     ['Ends the following quests:'] = "다음의 퀘스트를 완료할 수 있습니다:",
     ['No quests to list.'] = "표시할 퀘스트가 없습니다.",
     ['No spawn data available.'] = "출현 정보가 없습니다.",
+    ['The database needs to be updated to change language. Press reload to apply the new language'] = "The database needs to be updated to change language. Press reload to apply the new language",
+    ['Reload UI'] = "Reload UI",
+    ["\124cFFAAEEFFQuestie DB has updated!\124r\124cFFFF6F22 Data is being processed, this may take a few moments and cause some lag..."] = "\124cFFAAEEFFQuestie DB has updated!\124r\124cFFFF6F22 Data is being processed, this may take a few moments and cause some lag...",
+    ["\124cFF4DDBFF [1/4] Updating NPCs..."] = "\124cFF4DDBFF [1/4] Updating NPCs...",
+    ["\124cFF4DDBFF [2/4] Updating objects..."] = "\124cFF4DDBFF [2/4] Updating objects...",
+    ["\124cFF4DDBFF [3/4] Updating quests..."] = "\124cFF4DDBFF [3/4] Updating quests...",
+    ["\124cFF4DDBFF [4/4] Updating items..."] = "\124cFF4DDBFF [4/4] Updating items...",
+    ["\124cFFAAEEFFQuestie DB update complete!"] = "\124cFFAAEEFFQuestie DB update complete!",
+    ["Nearby"] = "Nearby",
 };

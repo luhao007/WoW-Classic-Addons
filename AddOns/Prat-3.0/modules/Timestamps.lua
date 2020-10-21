@@ -320,16 +320,14 @@ L = {
 		["Format All Timestamps"] = "Формат всего времени",
 		["HH:MM (12-hour)"] = "HH:MM (12-ч)",
 		["HH:MM (24-hour)"] = "HH:MM (24-ч)",
-		--[[Translation missing --]]
-		["HH:MM AM (12-hour)"] = "HH:MM AM (12-hour)",
+		["HH:MM AM (12-hour)"] = "HH:MM AM (12-ч)",
 		["HH:MM:SS (12-hour)"] = "HH:MM:SS (12-ч)",
 		["HH:MM:SS (24-hour)"] = "HH:MM:SS (24-ч)",
 		["HH:MM:SS AM (12-hour)"] = "HH:MM:SS AM (12-ч)",
 		["localtime_desc"] = "Вкл/Выкл использование местного времени.",
 		["localtime_name"] = "Местное время",
 		["MM:SS"] = true,
-		--[[Translation missing --]]
-		["Other Formatting Options"] = "Other Formatting Options",
+		["Other Formatting Options"] = "Другие параметры форматирования",
 		["Post-Timestamp"] = "Перед-временем",
 		["Pre-Timestamp"] = "После-времени",
 		["Set the timestamp format"] = "Установите формат времени ",
@@ -340,8 +338,7 @@ L = {
 		["show_name"] = "Показывать время",
 		["space_desc"] = "Вкл/Выкл добавление пробела после времени.",
 		["space_name"] = "Пробел",
-		--[[Translation missing --]]
-		["Timestamp Text Format"] = "Timestamp Text Format",
+		["Timestamp Text Format"] = "Текстовый формат метки времени",
 		["Timestamps"] = "Отображение времени",
 		["Toggle showing timestamp for each window."] = "Вкл/Выкл отображение времени во всех окнах.",
 		["twocolumn_desc"] = "Помещает время в отдельную колонку, чтобы текст не переносился на строку под ним.",

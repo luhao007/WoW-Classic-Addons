@@ -171,7 +171,7 @@ L = {
 		["Outgoing Sounds"] = "Ausgehende Töne",
 		["party_desc"] = "Klang für %s Gruppenmitteilungen",
 		["party_name"] = "Gruppe",
-		["Play a sound for a certain channel name (can be a substring)"] = "Einen Klang für einen bestimmten Kanalnamen abspielen (kann ein Substring sein).",
+		["Play a sound for a certain channel name (can be a substring)"] = "Einen Ton für einen bestimmten Kanalnamen abspielen (kann eine Unterzeichenfolge sein)",
 		["raid_desc"] = "Klang für %s Gruppen- und Führermitteilungen in Schlachtzügen oder Schlachtfeldern",
 		["raid_name"] = "Schlachtzug",
 		["Remove a custom channel"] = "Entfernt einen benutzerdefinierten Kanal",
@@ -179,7 +179,7 @@ L = {
 		["Restore default settings and resets custom channel list"] = "Stellt die Standardeinstellungen wieder her und setzt die benutzerdefinierte Kanalliste zurück",
 		["Sound selection for incoming chat messages"] = "Tonauswahl für eingehende Chat-Nachrichten",
 		["Sound selection for outgoing (from you) chat messages"] = "Tonauswahl für ausgehende (von dir) Chat-Nachrichten",
-		["Sounds"] = "Klänge",
+		["Sounds"] = "Töne",
 		["whisper_desc"] = "Klang für %s Flüstermitteilungen",
 		["whisper_name"] = "Flüstern",
 	}

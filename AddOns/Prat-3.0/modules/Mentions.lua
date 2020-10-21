@@ -163,12 +163,9 @@ PL:AddLocale(PRAT_MODULE, "esMX",  L)
 
 L = {
 	["Mentions"] = {
-		--[[Translation missing --]]
-		["module_desc"] = "Support mentioning other players in chat",
-		--[[Translation missing --]]
-		["module_info"] = "THIS MODULE IS EXPERIMENTAL= It adds the ability to @mention people in chat to alert them>",
-		--[[Translation missing --]]
-		["module_name"] = "Mentions",
+		["module_desc"] = "Поддержка упоминания других игроков в чате",
+		["module_info"] = "ЭТОТ МОДУЛЬ ЯВЛЯЕТСЯ ЭКСПЕРИМЕНТАЛЬНЫМ = Он добавляет возможность @ упоминать людей в чате, чтобы предупредить их >",
+		["module_name"] = "Упоминание",
 	}
 }
 

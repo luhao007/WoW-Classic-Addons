@@ -920,6 +920,8 @@ Supports multiple entries, separated by commas
 	--[[Translation missing --]]
 	L["Press Ctrl+C to copy"] = "Press Ctrl+C to copy"
 	--[[Translation missing --]]
+	L["Press Ctrl+C to copy the URL"] = "Press Ctrl+C to copy the URL"
+	--[[Translation missing --]]
 	L["Prevent Merging"] = "Prevent Merging"
 	--[[Translation missing --]]
 	L["Processed %i chars"] = "Processed %i chars"

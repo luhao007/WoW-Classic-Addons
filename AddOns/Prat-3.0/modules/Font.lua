@@ -254,7 +254,7 @@ PL:AddLocale(PRAT_MODULE, "frFR",L)
 L = {
 	["Font"] = {
 		["Auto Restore Font Size"] = "Schriftgröße automatisch wiederherstellen",
-		["Chat window font options."] = "Optionen für Schrifttyp in Chatfenstern.",
+		["Chat window font options."] = "Optionen für die Schriftart des Chatfensters.",
 		["Font"] = "Schrifttyp",
 		["monochrome_desc"] = "Einfarbige Einfärbung der Schrift umschalten.",
 		["monochrome_name"] = "Einfarbigkeit ein- und ausschalten",

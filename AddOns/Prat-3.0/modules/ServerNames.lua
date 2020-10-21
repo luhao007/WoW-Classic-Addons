@@ -177,10 +177,8 @@ L = {
 		["autoabbreviate_name"] = "Авто-сокращение",
 		["colon_desc"] = "Вкл/Выкл добавление двоеточия после замещения сервера.",
 		["colon_name"] = "Показывать двоеточие",
-		--[[Translation missing --]]
-		["hide_desc"] = "Never display the server name",
-		--[[Translation missing --]]
-		["hide_name"] = "Hide Server",
+		["hide_desc"] = "Никогда не отображать имя сервера",
+		["hide_name"] = "Скрыть сервер",
 		["randomclr_desc"] = "Использовать случайные цвета для всех серверов.",
 		["randomclr_name"] = "Случайные цвета",
 		["Server name abbreviation options."] = "Настройки сокращений имен серверов.",

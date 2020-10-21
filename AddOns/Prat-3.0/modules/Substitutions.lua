@@ -674,8 +674,8 @@ L = {
 		["MapYPos"] = "KarteYPos",
 		["MapZone"] = "KarteZone",
 		["module:buildUserSubsIndex(): warning: module patterns not defined!"] = true,
-		["MouseoverTargetName"] = true,
-		["NO MATCHFUNC FOUND"] = true,
+		["MouseoverTargetName"] = "Maus über Zielnamen fahren",
+		["NO MATCHFUNC FOUND"] = "KEINE ÜBEREINSTIMMUNGSFUNKTION GEFUNDEN",
 		["no substitution name given"] = "kein Ersetzungsname vergeben",
 		["no substitution name supplied for deletion"] = "kein Ersetzungsname für Löschung geliefert",
 		["no user defined subs found"] = "keine benutzerdefinierten Ersetzungen gefunden",
@@ -717,7 +717,7 @@ L = {
 		["user defined substition \"%s\" not found"] = "Benutzerdefinierte Ersetzung \"%s\" nicht gefunden",
 		["User defined substitutions"] = "Benutzerdefinierte Ersetzungen",
 		["user substitutions index (usersubs_idx) doesn't exist! oh dear."] = "Ersetzungsindex des Benutzers (usersubs_idx) existiert nicht! Oh weh!",
-		["usersub_"] = [=[ 	 	usersub_]=],
+		["usersub_"] = "Benutzerersatz_",
 	}
 }
 

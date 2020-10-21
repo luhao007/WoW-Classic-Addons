@@ -1,16 +1,19 @@
-lightweight tag 2d220034c2c5ab2b8aa3edcdc8729c1b0737dd82 1.0.14
+lightweight tag efca98aefc0b260fd70aba718d4b8f4582c7295b 1.0.15
 Author:	Andrew Scott <ascott18@gmail.com>
-Date:	Thu Oct 15 19:53:52 2020 -0700
+Date:	Sun Oct 18 13:55:48 2020 -0700
 
-commit 2d220034c2c5ab2b8aa3edcdc8729c1b0737dd82
+commit efca98aefc0b260fd70aba718d4b8f4582c7295b
 Author: Andrew Scott <ascott18@gmail.com>
-Date:   Thu Oct 15 19:22:05 2020 -0700
+Date:   Sun Oct 18 13:55:48 2020 -0700
 
     Version bump
 
-commit bc1ce0ab66fabc46c3e34a258b25ab360e5b63c8
-Author: Andrew Scott <ascott18@gmail.com>
-Date:   Sat Feb 23 09:58:31 2019 -0800
+commit 78fb517a73d6dce2a74cc7e316a56608cb2e2444
+Author: InfusOnWoW <infus@squorn.de>
+Date:   Sun Oct 18 22:47:18 2020 +0200
 
-    Create README.md
+    Consider all enabled spell book tabs (#1)
+    
+    Don't hardcode the number of spell tabs, but instead iterate over all
+    spell tabs and check the spec id for each tab.
 

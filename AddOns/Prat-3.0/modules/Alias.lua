@@ -408,8 +408,8 @@ L = {
 		["tried to show value for alias \"%s\" but undefined in module.Aliases!"] = "Versuche einen Wert für Alias von \"%s\" anzuzeigen, ist aber nicht definiert im Modul \"Alias\"!",
 		["unalias"] = "Alias aufheben",
 		["verbose"] = "verlängern",
-		["warnUser() called with nil argument!"] = "warnUser() mit nil-Paramter aufgerufen!",
-		["warnUser() called with zero length string!"] = "warnt Benutzer() mit leerem String aufgerufen!",
+		["warnUser() called with nil argument!"] = "Benutzerwarnung() wird mit dem Argument Null aufgerufen!",
+		["warnUser() called with zero length string!"] = "Benutzerwarnung() wird mit der Zeichenfolge mit der Länge Null aufgerufen!",
 	}
 }
 

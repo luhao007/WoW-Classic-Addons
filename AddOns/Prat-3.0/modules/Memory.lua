@@ -310,36 +310,20 @@ PL:AddLocale(PRAT_MODULE, "esMX",  L)
 
 L = {
 	["Memory"] = {
-		--[[Translation missing --]]
-		["autoload_desc"] = "Automatically load the saved settings when you log in",
-		--[[Translation missing --]]
-		["autoload_name"] = "Load Settings Automatically",
-		--[[Translation missing --]]
-		["command_header_name"] = "Commands",
-		--[[Translation missing --]]
-		["load_desc"] = "Load the chat frame/tabs from the last save",
-		--[[Translation missing --]]
-		["load_name"] = "Load Settings",
-		--[[Translation missing --]]
-		["module_desc"] = "Support saving the Blizzard chat settings to your profile so they can be synced across all your characters",
-		--[[Translation missing --]]
-		["module_info"] = [=[|cffff8888THIS MODULE IS EXPERIMENTAL|r 
-
- This module allows you to load/save all your chat settings and frame layout. These settings can be loaded on any of your characters]=],
-		--[[Translation missing --]]
-		["module_name"] = "Memory",
-		--[[Translation missing --]]
-		["msg_loadfailed"] = "Could not fully restore the chat settings",
-		--[[Translation missing --]]
-		["msg_nosettings"] = "No stored settings",
-		--[[Translation missing --]]
-		["msg_settingsloaded"] = "Settings Loaded",
-		--[[Translation missing --]]
-		["options_header_name"] = "Options",
-		--[[Translation missing --]]
-		["save_desc"] = "Save the current chat frame/tab configuration",
-		--[[Translation missing --]]
-		["save_name"] = "Save Settings",
+		["autoload_desc"] = "Автоматически загружать сохраненные настройки при входе в систему",
+		["autoload_name"] = "Загружать настройки автоматически",
+		["command_header_name"] = "Команды ",
+		["load_desc"] = "Загрузить фрейм/вкладки чата из последнего сохранения",
+		["load_name"] = "Загрузить настройки",
+		["module_desc"] = "Поддержите сохранение настроек чата Blizzard в вашем профиле, чтобы их можно было синхронизировать со всеми вашими персонажами.",
+		["module_info"] = "|cffff8888 ЭТОТ МОДУЛЬ ЯВЛЯЕТСЯ ЭКСПЕРИМЕНТАЛЬНЫМ|r Этот модуль позволяет загружать/сохранять все настройки чата и разметки. Эти настройки можно загрузить на любого из ваших персонажей.",
+		["module_name"] = "Память",
+		["msg_loadfailed"] = "Не удалось полностью восстановить настройки чата",
+		["msg_nosettings"] = "Нет сохраненных настроек",
+		["msg_settingsloaded"] = "Настройки загружены",
+		["options_header_name"] = "Параметры ",
+		["save_desc"] = "Сохраните текущую конфигурацию фрейма/вкладки чата",
+		["save_name"] = "Сохранить настройки",
 	}
 }
 
