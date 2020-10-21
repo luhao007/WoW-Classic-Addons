@@ -2034,7 +2034,7 @@ function StreamOverlay:OnEvent (_, event, ...)
 					arrow_anchor_x = 0,
 					arrow_anchor_y = 0,
 					
-					minimap = {hide = false, radius = 160, minimapPos = 160},
+					minimap = {hide = true, radius = 160, minimapPos = 160},
 					
 					use_spark = true,
 					

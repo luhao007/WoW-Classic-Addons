@@ -529,7 +529,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	["LOCK_PANELS"] = false,
 	["LOCK_CLICKS_THROUGH"] = false,
 	["LOCK_IN_FIGHT"] = true,
-	["SHOW_MINIMAP"] = true,
+	["SHOW_MINIMAP"] = false,
 	["PARSE_COMBAT_LOG"] = true,
 	["HIDE_EMPTY_BUTTONS"] = false,
 

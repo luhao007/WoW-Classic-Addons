@@ -79,6 +79,8 @@ def update(obj):
     """Update all addons"""
     obj.manager.update()
     obj.manager_lib.update()
+    if obj.is_classic():
+        obj.manager_lib_classic.update()
     obj.manage()
 
 

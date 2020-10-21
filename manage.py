@@ -301,7 +301,7 @@ class Manager(object):
                        'HandyNotes_TimelessIsleChests',
                        'HandyNotes_VisionsOfNZoth',
                        'HandyNotes_WarfrontRares', 'NPCScan', 'Omen',
-                       'RelicInspector', 'Titan']
+                       'RelicInspector', 'SimulatinCraft', 'Titan']
 
         for addon in addons:
             self.remove_libraries_all(addon)
@@ -409,20 +409,14 @@ class Manager(object):
         process_file('Addons/BtWQuests/BtWQuests.lua', f)
 
     def handle_dcs(self):
-        def f(lines):
-            # Change thest defaults value to false
-            defaults = ['ShowDuraSetChecked', 'ShowItemRepairSetChecked',
-                        'ShowItemLevelSetChecked', 'ShowEnchantSetChecked']
-            ret = []
-            for line in lines:
-                if line.split(' = ')[0].strip() in defaults:
-                    ret.append(line.replace('true', 'false'))
-                else:
-                    ret.append(line)
-            return ret
-        path = 'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
-            'Classic' if self.is_classic else 'Character')
-        process_file(path, f)
+        self.change_defaults(
+            'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
+                'Classic' if self.is_classic else 'Character'),
+            ['	ShowDuraSetChecked = false,',
+             '	ShowItemRepairSetChecked = false,',
+             '	ShowItemLevelSetChecked = false,',
+             '	ShowEnchantSetChecked = false,']
+        )
 
     def handle_decursive(self):
         for lib in os.listdir('AddOns/Decursive/Libs'):
@@ -449,6 +443,17 @@ class Manager(object):
              'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0'],
             'AddOns/Details/Libs',
             'AddOns/Details/Libs/libs.xml'
+        )
+
+        self.change_defaults(
+            'Addons/Details/functions/profiles.lua',
+            ('		minimap = {hide = true, radius = 160, minimapPos = 220, '
+             'onclick_what_todo = 1, text_type = 1, text_format = 3},'),
+        )
+
+        self.change_defaults(
+            'Addons/Details_Streamer/Details_Streamer.lua',
+            '					minimap = {hide = true, radius = 160, minimapPos = 160},',
         )
 
     def handle_fb(self):
@@ -548,6 +553,11 @@ class Manager(object):
             'Addons/MeetingStone/Libs/Embeds.xml'
         )
 
+        self.change_defaults(
+            'Addons/MeetingStone/Profile.lua',
+            '            minimap = { hide = true,'
+        )
+
     @classic_only
     def handle_meetinghorn(self):
         self.remove_libraries(
@@ -583,6 +593,11 @@ class Manager(object):
             'Addons/MogIt/Libs/Embeds.xml'
         )
 
+        self.change_defaults(
+            'Addons/Mogit/Core/Core.lua',
+            '		minimap = { hide = true },'
+        )
+
     def handle_monkeyspeed(self):
         process_file(
             'AddOns/MonkeySpeed/MonkeySpeedInit.lua',
@@ -601,6 +616,13 @@ class Manager(object):
                 Path('AddOns/OmniCC/') / xml_path,
                 lambda lines: [l for l in lines if 'libs' not in l]
             )
+
+    @retail_only
+    def handle_omen(self):
+        self.change_defaults(
+            'Addons/Omen/Omen.lua',
+            '			hide = true,'
+        )
 
     @retail_only
     def handle_oa(self):
@@ -721,12 +743,9 @@ class Manager(object):
 
     @retail_only
     def handle_sc(self):
-        # We need the embeds.xml
-        rm_tree('Addons/Simulationcraft/libs')
-        process_file(
-            'Addons/Simulationcraft/Simulationcraft.toc',
-            lambda lines: [l for l in lines
-                           if not l.lower().startswith('libs\\')]
+        self.change_defaults(
+            'Addons/Simulationcraft/core.lua',
+            '        hide = true,'
         )
 
     @retail_only
@@ -801,6 +820,11 @@ class Manager(object):
             )
         rm_tree('Addons/Vuhdo/Libs/LibBase64-1.0/LibStub')
 
+        self.change_defaults(
+            'Addons/VuhDo/VuhDoDefaults.lua',
+            '	["SHOW_MINIMAP"] = false,'
+        )
+
     def handle_wa(self):
         self.remove_libraries(
             ['AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0', 'AceEvent-3.0',
@@ -816,6 +840,11 @@ class Manager(object):
         )
 
         self.remove_libraries_all('WeakAuras/Libs/Archivist')
+
+        self.change_defaults(
+            'Addons/WeakAuras/WeakAuras.lua',
+            '      db.minimap = db.minimap or { hide = true };'
+        )
 
     def handle_wim(self):
         self.remove_libraries(
