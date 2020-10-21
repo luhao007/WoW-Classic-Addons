@@ -1,9 +1,13 @@
 ## Interface: 11305
-## Title: Plater
-## Notes: Nameplate addon designed for advanced users.
+## Version: Plater-1.13.5.91-Classic
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
-## Version: Plater-1.13.5.91-Classic
+
+## Title: Plater
+## Notes: Nameplate addon designed for advanced users.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF血条增强|r |cFFFFE00APlater|r
+## Notes-zhCN: 自定义血条显示
+
 
 #@no-lib-strip@
 libs\libs.xml

@@ -722,7 +722,7 @@
 	<Addon name="GarrisonMissionManager">
 		<Title>要塞任务管理</Title>
 		<Notes>协助管理要塞随从任务</Notes>
-		<Category>物品</Category>
+		<Category>任务</Category>
 	</Addon>
 	<Addon name="GatherMate2">
 		<Title>采集助手</Title>
@@ -1121,6 +1121,11 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="Plater">
+		<Title>血条增强</Title>
+		<Notes>自定义血条显示</Notes>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="Prat-3.0">
 		<Title>聊天增强</Title>
 		<Title-en>Prat</Title-en>
@@ -1246,6 +1251,11 @@
 	<Addon name="Skada">
 		<Title>伤害统计</Title>
 		<Notes>伤害统计窗口</Notes>
+		<Category>战斗</Category>
+	</Addon>
+	<Addon name="TalentSetManager">
+		<Title>天赋设置</Title>
+		<Notes>存储和载入天赋设置</Notes>
 		<Category>战斗</Category>
 	</Addon>
 	<Addon name="TellMeWhen">
@@ -1505,6 +1515,10 @@
 			</SubAddon>
 			<SubAddon name="WeakAurasTemplates">
 				<Title>模板</Title>
+			</SubAddon>
+			<SubAddon name="WeakAurasCompanion">
+				<Title>伴侣</Title>
+				<Notes>同步更新WAGO上下载的WA</Notes>
 			</SubAddon>
 		</SubAddons>
 	</Addon>
