@@ -178,13 +178,13 @@ Falls die Dauer der Animation auf |cFF00CC0010%|r gesetzt wurde und für die Anz
 	--[[Translation missing --]]
 	L["Background"] = "Background"
 	L["Background Color"] = "Hintergrundfarbe"
+	--[[Translation missing --]]
+	L["Background Inner"] = "Background Inner"
 	L["Background Offset"] = "Hintergrundversatz"
 	L["Background Texture"] = "Hintergrundtextur"
-	L["Bar"] = "Leiste"
 	L["Bar Alpha"] = "Balkentransparenz"
 	L["Bar Color"] = "Balkenfarbe"
 	L["Bar Color Settings"] = "Balkenfarbeneinstellungen"
-	L["Bar Inner"] = "Innere Leiste"
 	L["Bar Texture"] = "Balkentextur"
 	L["Big Icon"] = "Großes Symbol"
 	L["Blend Mode"] = "Blendmodus"

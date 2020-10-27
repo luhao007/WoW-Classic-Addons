@@ -1039,10 +1039,16 @@ function module.options:Load()
 							local t = data[j]
 							local icon = line.items[j]
 							if t and t ~= 0 then
-								t = (j-1)*3+t
-								local _,_,spellTexture = GetTalentInfoByID( data.talentsIDs[j] )
-								icon.texture:SetTexture(spellTexture)
-								icon.link = GetTalentLink( data.talentsIDs[j] )
+								if t > 10 then
+									t = (j-1)*3+t
+									local _,_,spellTexture = GetTalentInfoByID( data.talentsIDs[j] )
+									icon.texture:SetTexture(spellTexture)
+									icon.link = GetTalentLink( data.talentsIDs[j] )
+								else
+									local _,_,spellTexture = GetSpellInfo(t)
+									icon.texture:SetTexture(spellTexture)
+									icon.link = GetSpellLink(t)
+								end
 								icon.sid = nil
 								icon:Show()
 							end

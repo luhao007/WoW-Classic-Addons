@@ -8,6 +8,35 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 		
+			{1603571275,  "Backend Changes", "October 22nd, 2020", "Adding 'upper range' execute ranges. (e.g. 100% to 80%). Useably via 'Plater.SetExecuteRange (isExecuteEnabled, healthAmountLower, healthAmountUpper)'"},
+			
+			{1603571275,  "Bug Fix", "October 20th, 2020", "Fixing issue with no-combat alpha and coloring."},
+			{1603571275,  "Bug Fix", "October 19th, 2020", "Fixing an issue with scripts/mods not being re-compiled properly."},
+
+			{1603571275,  "Bug Fix", "October 18th, 2020", "Execute Glow effect now scales properly with healthbar size."},
+			{1603571275,  "Bug Fix", "October 17th, 2020", "Fixing an issue with overwritten modTable/scriptTable for mods/scripts with the same name."},
+			{1603571275,  "Bug Fix", "October 17th, 2020", "Destructor Hooks now are called again."},
+			{1603571275,  "Bug Fix", "October 15th, 2020", "Selecting Profile Import text box is now easier."},
+			{1603571275,  "Bug Fix", "October 15th, 2020", "Fixing an issue with importing profiles."},
+			
+			{1603571275,  "Bug Fix", "October 14th, 2020", "Fixing issue with plate sizes not updating properly when entering combat."},
+			{1603571275,  "Bug Fix", "October 14th, 2020", "Fixing npc title recognition."},
+			
+			{1603571275,  "Options Changes", "October 13th, 2020", "New global nameplate width and height options for easier setup."},
+			{1603571275,  "Backend Changes", "October 13th, 2020", "New option for 'In Combat' config to apply according to combat state of the unit."},
+			
+			{1603571275,  "Bug Fix", "October 7th, 2020", "Fixing Health % 'Out of Combat' option."},
+		
+			{1603571275,  "Bug Fix", "September 22nd, 2020", "Fixing a re-scaling issue with the target highlight glows."},
+			{1603571275,  "Bug Fix", "September 15th, 2020", "Cast bar alpha will not be changed for range/target when already fading."},
+			{1603571275,  "Backend Changes", "September 14th, 2020", "'Stacking' and 'Friendly' nameplates auto toggle (Auto tab) now apply in PVP zones as well."},
+		
+			{1603571275,  "Bug Fix", "August 21st, 2020", "Units should now be added to NPC list more consistently."},
+		
+			{1603571275,  "Backend Changes", "August 16th, 2020", "Configuration for minor and pet nameplates should now prefer minor over pet."},
+			{1603571275,  "Bug Fix", "August 11th, 2020", "Bugfix to 'Cast Bar Icon Config' mod."},
+		
+			
 			{1596791967,  "Bug Fix", "August 7th, 2020", "Buff Frame Anchors behave consistent with grow direction and anchor position now."},
 			
 			{1596672621,  "New Feature", "August 6th, 2020", "New Mod added: 'Cast Bar Icon Settings [P]', this is a new mod to deal with the cast bar icon at ease. It can be enabled at the Modding tab."},

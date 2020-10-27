@@ -161,13 +161,13 @@ Si la durée de l'animation est définie à |cFF00CC0010%|r, et le déclencheur 
 	--[[Translation missing --]]
 	L["Background"] = "Background"
 	L["Background Color"] = "Couleur de fond"
+	--[[Translation missing --]]
+	L["Background Inner"] = "Background Inner"
 	L["Background Offset"] = "Décalage du Fond "
 	L["Background Texture"] = "Texture d'arrière plan"
-	L["Bar"] = "Barre"
 	L["Bar Alpha"] = "Opacité de la barre"
 	L["Bar Color"] = "Couleur de barre"
 	L["Bar Color Settings"] = "Paramètres de la barre de couleur"
-	L["Bar Inner"] = "Barre intérieure"
 	L["Bar Texture"] = "Texture de barre"
 	L["Big Icon"] = "Grande icône"
 	L["Blend Mode"] = "Mode du fusion"

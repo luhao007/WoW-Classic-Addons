@@ -169,6 +169,11 @@ function Plater.OpenOptionsPanel()
 	DF:ApplyStandardBackdrop (f)
 	f:ClearAllPoints()
 	DFPixelUtil.SetPoint (f, "center", UIParent, "center", 2, 2, 1, 1)
+	
+	-- version text
+	local versionText = DF:CreateLabel (f, Plater.versionString, 11, "white")
+	versionText:SetPoint ("topright", frame, "topright", -25, -7)
+	versionText:SetAlpha(0.75)
 
 	local profile = Plater.db.profile
 	
@@ -584,6 +589,26 @@ function Plater.OpenOptionsPanel()
 					end
 				end
 				
+				-- cleanup NPC cache/colors
+				local cache = Plater.db.profile.npc_cache
+				local cacheTemp = DetailsFramework.table.copy({},cache)
+				for n, v in pairs(cacheTemp) do
+					if tonumber(n) then 
+						cache[n] = nil
+						cache[tonumber(n)] = v 
+					end
+				end
+				
+				local colors = Plater.db.profile.npc_colors
+				local colorsTemp = DetailsFramework.table.copy({},colors)
+				for n, v in pairs(colorsTemp) do
+					if tonumber(n) then 
+						colors[n] = nil
+						colors[tonumber(n)] = v 
+					end
+				end
+				
+				
 				--automatically reload the user UI
 				ReloadUI()
 			end
@@ -809,6 +834,14 @@ function Plater.OpenOptionsPanel()
 			importStringField:Hide()
 			profilesFrame.ImportStringField = importStringField
 			DF:ReskinSlider (importStringField.scroll)
+			
+			local block_mouse_frame = CreateFrame ("frame", nil, importStringField)
+			--block_mouse_frame:SetFrameLevel (block_mouse_frame:GetFrameLevel()-5)
+			block_mouse_frame:SetAllPoints()
+			block_mouse_frame:SetScript ("OnMouseDown", function()
+				importStringField:SetFocus (true)
+				importStringField.editbox:HighlightText()
+			end)
 			
 			--import button
 			local okayButton = DF:CreateButton (importStringField, function() profilesFrame.ConfirmImportProfile(false) end, buttons_size[1], buttons_size[2], L["OPTIONS_OKAY"], -1, nil, nil, nil, nil, nil, DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate ("font", "PLATER_BUTTON"))
@@ -1062,7 +1095,7 @@ local interface_options = {
 				end
 			end,
 			name = "Always Show Nameplates" .. CVarIcon,
-			desc = "Show nameplates for all units near you. If disabled on show relevant units when you are in combat." .. CVarDesc,
+			desc = "Show nameplates for all units near you. If disabled only show relevant units when you are in combat." .. CVarDesc,
 			nocombat = true,
 		},
 		
@@ -1488,6 +1521,36 @@ local alpha_major_options = {
 		desc = "When the unit is out of range and isn't your target, alpha is greatly reduced.",
 		id = "transparency_division",
 	},
+	{
+		type = "range",
+		get = function() return tonumber (GetCVar ("nameplateOccludedAlphaMult")) end,
+		set = function (self, fixedparam, value) 
+			if (not InCombatLockdown()) then
+				SetCVar ("nameplateOccludedAlphaMult", value)
+			else
+				Plater:Msg (L["OPTIONS_ERROR_CVARMODIFY"])
+			end
+		end,
+		min = 0,
+		max = 1,
+		step = 0.1,
+		thumbscale = 1.7,
+		usedecimals = true,
+		name = "Occluded Alpha Multiplier" .. CVarIcon,
+		desc = "Alpha multiplyer for 'occluded' plates (when they are not in line of sight)." .. CVarDesc,
+		nocombat = true,
+	},
+	{
+		type = "toggle",
+		get = function() return Plater.db.profile.honor_blizzard_plate_alpha end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.honor_blizzard_plate_alpha = value
+			Plater.UpdateAllPlates()
+		end,
+		name = "Honor Blizzard Alpha",
+		desc = "Honor 'occluded' and 'personal bar alpha' blizzard settings. This setting only works with 'Use custom strata channels' enabled.",
+		id = "transparency_blizzard_alpha",
+	},
 	
 	{type = "blank"},
 }
@@ -1570,6 +1633,12 @@ if (Plater.db.profile.transparency_behavior == 0x3) then
 	checkBoxDivisionByTwo:Enable()
 else
 	checkBoxDivisionByTwo:Disable()
+end
+local checkBoxBlizzPlateAlpha = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_blizzard_alpha")
+if (Plater.db.profile.use_ui_parent) then
+	checkBoxBlizzPlateAlpha:Enable()
+else
+	checkBoxBlizzPlateAlpha:Disable()
 end
 
 
@@ -1789,6 +1858,16 @@ local debuff_options = {
 		end,
 		name = "Stack Similar Auras",
 		desc = "Auras with the same name (e.g. warlock's unstable affliction debuff) get stacked together.",
+	},
+	{
+		type = "toggle",
+		get = function() return Plater.db.profile.aura_sort end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.aura_sort = value
+			Plater.UpdateAllPlates()
+		end,
+		name = "Sort Auras",
+		desc = "Auras are sorted by time remaining (default).",
 	},
 	
 	{type = "blank"},
@@ -2391,7 +2470,9 @@ local debuff_options = {
 
 }
 
-DF:BuildMenu (auraOptionsFrame, debuff_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+_G.C_Timer.After(0.850, function() --~delay
+	DF:BuildMenu (auraOptionsFrame, debuff_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+end)
 
 auraOptionsFrame.AuraTesting = {
 	DEBUFF = {
@@ -4659,7 +4740,9 @@ Plater.CreateAuraTesting()
 		
 		local fff = CreateFrame ("frame", "$parentExtraIconsSettings", auraSpecialFrame)
 		fff:SetAllPoints()
-		DF:BuildMenu (fff, especial_aura_settings, 330, startY - 27, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+		_G.C_Timer.After(0.6, function() --~delay
+			DF:BuildMenu (fff, especial_aura_settings, 330, startY - 27, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+		end)
 
 		--when the profile has changed
 		function auraSpecialFrame:RefreshOptions()
@@ -5851,7 +5934,9 @@ do
 			
 	}
 
-	--DF:BuildMenu (personalPlayerFrame, options_personal, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	--_G.C_Timer.After(1.3, function() --~delay
+		--DF:BuildMenu (personalPlayerFrame, options_personal, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	--end)
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -6243,7 +6328,9 @@ local targetOptions = {
 
 }
 
-DF:BuildMenu (targetFrame, targetOptions, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+_G.C_Timer.After(1.20, function() --~delay
+	DF:BuildMenu (targetFrame, targetOptions, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+end)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -6374,6 +6461,7 @@ local relevance_options = {
 			desc = "Pet Icon",
 		},
 		
+--[[
 		{
 			type = "toggle",
 			get = function() return Plater.db.profile.health_cutoff end,
@@ -6384,7 +6472,7 @@ local relevance_options = {
 			name = "Execute Range",
 			desc = "Show an indicator when the unit is in execute range.\n\nPlater auto detects execute range for:\n\n|cFFFFFF00Hunter|r: Beast Master spec with Killer Instinct talent.\n\n|cFFFFFF00Warrior|r: Arms and Fury specs.\n\n|cFFFFFF00Priest|r: Shadow spec with Shadow Word: Death talent.\n\n|cFFFFFF00Mage|r: Fire spec with Searing Touch talent.",
 		},
-
+--]]
 		
 		{
 			type = "toggle",
@@ -6688,6 +6776,68 @@ local relevance_options = {
 		},
 
 		{type = "breakline"},
+		
+		{ --global healthbar width
+			type = "range",
+			get = function() return Plater.db.profile.plate_config.enemynpc.health[1] end,
+			set = function (self, fixedparam, value) 
+
+				local plateConfig = Plater.db.profile.plate_config
+
+				plateConfig.friendlyplayer.health[1] = value
+				plateConfig.friendlyplayer.health_incombat[1] = value
+
+				plateConfig.enemyplayer.health[1] = value
+				plateConfig.enemyplayer.health_incombat[1] = value
+
+				plateConfig.friendlynpc.health[1] = value
+				plateConfig.friendlynpc.health_incombat[1] = value
+
+				plateConfig.enemynpc.health[1] = value
+				plateConfig.enemynpc.health_incombat[1] = value
+
+				Plater.RefreshDBUpvalues()
+				Plater.UpdateAllPlates(nil, true)
+				PlaterOptionsPanelFrame.RefreshOptionsFrame()
+			end,
+			min = 50,
+			max = 300,
+			step = 1,
+			name = "Health Bar Width",
+			desc = "Change the width of Enemy and Friendly nameplates for players and npcs in combat and out of combat.\n\nEach one of these options can be changed individually on Enemy Npc, Enemy Player tabs.",
+		},
+
+		{ --global healthbar height
+			type = "range",
+			get = function() return Plater.db.profile.plate_config.enemynpc.health[2] end,
+			set = function (self, fixedparam, value) 
+
+				local plateConfig = Plater.db.profile.plate_config
+
+				plateConfig.friendlyplayer.health[2] = value
+				plateConfig.friendlyplayer.health_incombat[2] = value
+
+				plateConfig.enemyplayer.health[2] = value
+				plateConfig.enemyplayer.health_incombat[2] = value
+
+				plateConfig.friendlynpc.health[2] = value
+				plateConfig.friendlynpc.health_incombat[2] = value
+
+				plateConfig.enemynpc.health[2] = value
+				plateConfig.enemynpc.health_incombat[2] = value
+
+				Plater.RefreshDBUpvalues()
+				Plater.UpdateAllPlates(nil, true)
+				PlaterOptionsPanelFrame.RefreshOptionsFrame()
+			end,
+			min = 1,
+			max = 100,
+			step = 1,
+			name = "Health Bar Height",
+			desc = "Change the height of Enemy and Friendly nameplates for players and npcs in combat and out of combat.\n\nEach one of these options can be changed individually on Enemy Npc, Enemy Player tabs.",
+		},
+		
+		{type = "blank"},
 		
 		{type = "label", get = function() return "Cast Bar Colors:" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
 		
@@ -7844,7 +7994,9 @@ local relevance_options = {
 		
 
 	}
-	DF:BuildMenu (friendlyPCsFrame, options_table3, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	_G.C_Timer.After(1.420, function() --~delay
+		DF:BuildMenu (friendlyPCsFrame, options_table3, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	end)
 
 --------------------------------
 --Enemy Player painel de op��es ~enemy
@@ -8700,7 +8852,9 @@ local relevance_options = {
 		},		
 
 	}
-	DF:BuildMenu (enemyPCsFrame, options_table4, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	_G.C_Timer.After(0.720, function() --~delay
+		DF:BuildMenu (enemyPCsFrame, options_table4, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	end)
 
 -----------------------------------------------	
 --Friendly NPC painel de op��es ~friendly
@@ -9438,9 +9592,9 @@ local relevance_options = {
 		--out of combat
 		{
 			type = "toggle",
-			get = function() return Plater.db.profile.plate_config.friendlyplayer.percent_text_ooc end,
+			get = function() return Plater.db.profile.plate_config.friendlynpc.percent_text_ooc end,
 			set = function (self, fixedparam, value) 
-				Plater.db.profile.plate_config.friendlyplayer.percent_text_ooc = value
+				Plater.db.profile.plate_config.friendlynpc.percent_text_ooc = value
 				
 				Plater.UpdateAllPlates()
 			end,
@@ -9717,8 +9871,9 @@ local relevance_options = {
 		},
 		
 	}
-	
-	DF:BuildMenu (friendlyNPCsFrame, friendly_npc_options_table, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	_G.C_Timer.After(0.780, function() --~delay
+		DF:BuildMenu (friendlyNPCsFrame, friendly_npc_options_table, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	end)
 
 -----------------------------------------------	
 --Enemy NPC painel de op��es ~enemy
@@ -10731,7 +10886,9 @@ local relevance_options = {
 			},
 
 		}
-		DF:BuildMenu (enemyNPCsFrame, options_table2, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+		_G.C_Timer.After(0.900, function() --~delay
+			DF:BuildMenu (enemyNPCsFrame, options_table2, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+		end)
 	end
 	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -10956,8 +11113,9 @@ local relevance_options = {
 		},
 	}
 
-	
-	DF:BuildMenu (uiParentFeatureFrame, experimental_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)	
+	_G.C_Timer.After(1.5, function() --~delay
+		DF:BuildMenu (uiParentFeatureFrame, experimental_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)	
+	end)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> ~auto ~�uto
@@ -11102,8 +11260,9 @@ local relevance_options = {
 		},
 		
 	}
-	
-	DF:BuildMenu (autoFrame, auto_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)	
+	_G.C_Timer.After(1.2, function() --~delay
+		DF:BuildMenu (autoFrame, auto_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)	
+	end)
 	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> credits
@@ -11415,8 +11574,9 @@ local relevance_options = {
 		},
 		
 	}
-	
-	DF:BuildMenu (threatFrame, thread_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	_G.C_Timer.After(0.990, function() --~delay
+		DF:BuildMenu (threatFrame, thread_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	end)
 	
 	
 	
@@ -11732,7 +11892,7 @@ local relevance_options = {
 				end
 			end,
 			name = "Show Friendly Totems" .. CVarIcon,
-			desc = "Show enemy totems" .. CVarDesc,
+			desc = "Show friendly totems" .. CVarDesc,
 			nocombat = true,
 		},
 
@@ -11936,6 +12096,7 @@ local relevance_options = {
 			desc = "Show an extra bar for shields (e.g. Power Word: Shield from priests) absorption.",
 		},
 --]]
+--[[
 		{
 			type = "toggle",
 			get = function() return Plater.db.profile.health_cutoff_extra_glow end,
@@ -11946,7 +12107,7 @@ local relevance_options = {
 			name = "Add Extra Glow to Execute Range",
 			desc = "Add Extra Glow to Execute Range",
 		},
-		
+--]]		
 		{
 			type = "toggle",
 			get = function() return Plater.db.profile.enable_masque_support end,
@@ -11956,6 +12117,16 @@ local relevance_options = {
 			end,
 			name = "Masque Support",
 			desc = "If the Masque addon is installed, enabling this will make Plater to use Masque borders.\n\n|cFFFFFF00Important|r: require /reload after changing this setting.",
+		},
+		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.use_player_combat_state end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.use_player_combat_state = value
+			end,
+			name = "In/Out of Combat Settings: Use Player Combat State",
+			desc = "Use the players combat state instead of the units when applying settings for In/Out of Combat.",
 		},
 		
 			--=[ --removed top and bottom constrain options
@@ -12167,8 +12338,9 @@ local relevance_options = {
 		},
 		
 	}
-	
-	DF:BuildMenu (advancedFrame, advanced_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	_G.C_Timer.After(1.4, function() --~delay
+		DF:BuildMenu (advancedFrame, advanced_options, startX, startY, heightSize, true, options_text_template, options_dropdown_template, options_switch_template, true, options_slider_template, options_button_template, globalCallback)
+	end)
 
 
 	--~search panel

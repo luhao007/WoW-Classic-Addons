@@ -184,7 +184,6 @@ L["Ayamiss the Hunter"] = "Ayamiss the Hunter"
 L["Back and Forth"] = "Vor und zurück"
 L["Background"] = "Hintergrund"
 L["Background Color"] = "Hintergrundfarbe"
-L["Bar"] = "Leiste"
 L["Bar Color"] = "Balkenfarbe"
 --[[Translation missing --]]
 L["Baron Geddon"] = "Baron Geddon"
@@ -499,6 +498,8 @@ L["Friendly Fire"] = "Eigenbeschuss"
 L["From"] = "Von"
 L["Frost Resistance"] = "Frostwiderstand"
 L["Full"] = "Voll"
+--[[Translation missing --]]
+L["Full Bar"] = "Full Bar"
 L["Full/Empty"] = "Voll/Leer"
 --[[Translation missing --]]
 L["Gahz'ranka"] = "Gahz'ranka"
@@ -886,6 +887,8 @@ L["Play"] = "Abspielen"
 L["Player"] = "Spieler (Selbst)"
 L["Player Character"] = "Spieler-Charakter (PC)"
 L["Player Class"] = "Spielerklasse"
+--[[Translation missing --]]
+L["Player Covenant"] = "Player Covenant"
 --[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]

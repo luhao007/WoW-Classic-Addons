@@ -1,6 +1,6 @@
 ## Interface: 11305
 ## Author: ykiigor
-## Version: 4360
+## Version: 4370
 ## SavedVariables: VExRT
 
 ## Title: Exorsus Raid Tools

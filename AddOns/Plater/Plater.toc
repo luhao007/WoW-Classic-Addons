@@ -1,5 +1,5 @@
 ## Interface: 11305
-## Version: Plater-1.13.5.91-Classic
+## Version: Plater-1.13.5.93-Classic
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 

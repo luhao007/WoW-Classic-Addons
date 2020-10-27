@@ -192,16 +192,14 @@ WeakAuras → Opções → Opções ]=]
 	--[[Translation missing --]]
 	L["Background"] = "Background"
 	L["Background Color"] = "Cor de fundo"
+	--[[Translation missing --]]
+	L["Background Inner"] = "Background Inner"
 	L["Background Offset"] = "Posicionamento do fundo"
 	L["Background Texture"] = "Textura do fundo"
-	--[[Translation missing --]]
-	L["Bar"] = "Bar"
 	L["Bar Alpha"] = "Transparência da barra"
 	L["Bar Color"] = "Cor da barra"
 	--[[Translation missing --]]
 	L["Bar Color Settings"] = "Bar Color Settings"
-	--[[Translation missing --]]
-	L["Bar Inner"] = "Bar Inner"
 	L["Bar Texture"] = "Textura da barra"
 	L["Big Icon"] = "Ícone Grande"
 	--[[Translation missing --]]

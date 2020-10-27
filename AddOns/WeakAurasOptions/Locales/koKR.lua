@@ -89,8 +89,7 @@ local L = WeakAuras.L
 	L["Add to new Dynamic Group"] = "새 유동적 그룹에 추가"
 	L["Add to new Group"] = "새 그룹에 추가"
 	L["Add Trigger"] = "활성 조건 추가"
-	--[[Translation missing --]]
-	L["Additional Events"] = "Additional Events"
+	L["Additional Events"] = "추가 이벤트"
 	L["Addon"] = "애드온"
 	L["Addons"] = "애드온"
 	L["Advanced"] = "고급"
@@ -151,13 +150,13 @@ local L = WeakAuras.L
 	L["Backdrop Style"] = "배경 스타일"
 	L["Background"] = "배경"
 	L["Background Color"] = "배경 색상"
+	--[[Translation missing --]]
+	L["Background Inner"] = "Background Inner"
 	L["Background Offset"] = "배경 위치"
 	L["Background Texture"] = "배경 텍스쳐"
-	L["Bar"] = "바"
 	L["Bar Alpha"] = "바 투명도"
 	L["Bar Color"] = "바 색상"
 	L["Bar Color Settings"] = "바 색상 설정"
-	L["Bar Inner"] = "바 내부"
 	L["Bar Texture"] = "바 텍스쳐"
 	L["Big Icon"] = "큰 아이콘"
 	L["Blend Mode"] = "혼합 모드"
@@ -178,8 +177,7 @@ local L = WeakAuras.L
 	L["Bottom Left"] = "왼쪽 아래"
 	L["Bottom Right"] = "오른쪽 아래"
 	L["Bracket Matching"] = "괄호 맞춤"
-	--[[Translation missing --]]
-	L["Browse Wago, the largest collection of auras."] = "Browse Wago, the largest collection of auras."
+	L["Browse Wago, the largest collection of auras."] = "가장 큰 효과 컬렉션인 Wago를 둘러봅니다."
 	L["Can be a Name or a Unit ID (e.g. party1). A name only works on friendly players in your group."] = "이름 또는 유닛 ID(예. party1)일 수 있습니다. 이름은 같은 파티의 우호적 플레이어에게만 작동합니다."
 	--[[Translation missing --]]
 	L["Can be a UID (e.g., party1)."] = "Can be a UID (e.g., party1)."
@@ -202,8 +200,7 @@ local L = WeakAuras.L
 	L["Collapse"] = "접기"
 	L["Collapse all loaded displays"] = "불러온 모든 디스플레이 접기"
 	L["Collapse all non-loaded displays"] = "불러오지 않은 모든 디스플레이 접기"
-	--[[Translation missing --]]
-	L["Collapsible Group"] = "Collapsible Group"
+	L["Collapsible Group"] = "접을 수 있는 그룹"
 	L["color"] = "색상"
 	L["Color"] = "색상"
 	L["Column Height"] = "열 높이"
@@ -297,8 +294,7 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["Distribute Horizontally"] = "가로로 퍼뜨리기"
 	L["Distribute Vertically"] = "세로로 퍼뜨리기"
 	L["Do not group this display"] = "이 디스플레이 그룹하지 않기"
-	--[[Translation missing --]]
-	L["Documentation"] = "Documentation"
+	L["Documentation"] = "문서화"
 	L["Done"] = "완료"
 	L["Don't skip this Version"] = "이 버전을 건너뛰지 마십시오."
 	L["Drag to move"] = "끌기 - 이동"
@@ -509,8 +505,7 @@ Supports multiple entries, separated by commas
 	L["Is Stealable"] = "훔치기 가능할 때"
 	L["Justify"] = "정렬"
 	L["Keep Aspect Ratio"] = "종횡비 유지"
-	--[[Translation missing --]]
-	L["Keep your Wago imports up to date with the Companion App."] = "Keep your Wago imports up to date with the Companion App."
+	L["Keep your Wago imports up to date with the Companion App."] = "컴패니언 앱으로 Wago 가져오기를 최신으로 유지합니다."
 	L["Large Input"] = "큰 입력"
 	L["Leaf"] = "잎"
 	L["Left"] = "왼쪽"
@@ -545,17 +540,13 @@ Supports multiple entries, separated by commas
 	L["Model"] = "모델"
 	L["Model %s"] = "모델 %s"
 	L["Model Settings"] = "모델 설정"
-	--[[Translation missing --]]
-	L["Move Above Group"] = "Move Above Group"
-	--[[Translation missing --]]
-	L["Move Below Group"] = "Move Below Group"
+	L["Move Above Group"] = "그룹 위로 이동"
+	L["Move Below Group"] = "그룹 아래로 이동"
 	L["Move Down"] = "아래로 이동"
 	L["Move Entry Down"] = "항목 아래로 이동"
 	L["Move Entry Up"] = "항목 위로 이동"
-	--[[Translation missing --]]
-	L["Move Into Above Group"] = "Move Into Above Group"
-	--[[Translation missing --]]
-	L["Move Into Below Group"] = "Move Into Below Group"
+	L["Move Into Above Group"] = "윗 그룹으로 이동"
+	L["Move Into Below Group"] = "아래 그룹으로 이동"
 	L["Move this display down in its group's order"] = "이 디스플레이를 그룹 내 순서에서 아래로 이동"
 	L["Move this display up in its group's order"] = "이 디스플레이를 그룹 내 순서에서 위로 이동"
 	L["Move Up"] = "위로 이동"
@@ -657,10 +648,8 @@ Supports multiple entries, separated by commas
 	L["Rename"] = "이름 변경"
 	L["Repeat After"] = "반복 횟수"
 	L["Repeat every"] = "매번 반복"
-	--[[Translation missing --]]
-	L["Report bugs on our issue tracker."] = "Report bugs on our issue tracker."
-	--[[Translation missing --]]
-	L["Require unit from trigger"] = "Require unit from trigger"
+	L["Report bugs on our issue tracker."] = "이슈 트래커에 버그를 알립니다."
+	L["Require unit from trigger"] = "활성 조건에서 유닛 필요"
 	L["Required for Activation"] = "활성화에 필요"
 	L["Reset all options to their default values."] = "모든 옵션을 기본값으로 재설정하십시오."
 	--[[Translation missing --]]

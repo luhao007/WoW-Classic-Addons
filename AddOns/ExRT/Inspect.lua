@@ -1121,7 +1121,9 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 		if subPrefix == "R" then
 			local str = ...
 			local senderFull = sender
-			sender = strsplit("-",sender)
+			if select(2,strsplit("-",sender)) == ExRT.SDB.realmKey then
+				sender = strsplit("-",sender)
+			end
 			while str do
 				local main,next = strsplit("^",str,2)
 				str = next
@@ -1129,7 +1131,6 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 				local key = main:sub(1,1)
 				if key == "E" then
 					cooldownsModule:ClearSessionDataReason(sender,"essence")
-					cooldownsModule:ClearSessionDataReason(senderFull,"essence")
 
 					local essencePowers = module:GetEssenceDataByKey()
 
@@ -1148,20 +1149,20 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 								for l=tier,1,-1 do
 									local ess = e[l]
 									cooldownsModule.db.session_gGUIDs[sender] = {ess.spellID,"essence"}
-									cooldownsModule.db.session_gGUIDs[senderFull] = {ess.spellID,"essence"}
 								end
 							end
 							for l=tier,1,-1 do
 								local ess = e[l*(-1)]
 								cooldownsModule.db.session_gGUIDs[sender] = {ess.spellID,"essence"}
-								cooldownsModule.db.session_gGUIDs[senderFull] = {ess.spellID,"essence"}
 							end
 							--print(sender,'added essence',e.id,e.name)
 						end
 					end
 				elseif key == "T" then
 					cooldownsModule:ClearSessionDataReason(sender,"talent")
-					cooldownsModule:ClearSessionDataReason(senderFull,"talent")
+
+					local inspectData = module.db.inspectDB[sender]
+					local row = 0
 
 					local _,list = strsplit(":",main,2)
 					while list do
@@ -1169,16 +1170,23 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						list = on
 
 						spellID = tonumber(spellID or "?")
-						if spellID and spellID ~= 0 then
-							cooldownsModule.db.session_gGUIDs[sender] = {spellID,"talent"}
-							cooldownsModule.db.session_gGUIDs[senderFull] = {spellID,"talent"}
-							cooldownsModule.db.spell_isTalent[spellID] = true
-							--print(sender,'added talent',spellID)
+						if spellID then
+							if spellID ~= 0 then
+								cooldownsModule.db.session_gGUIDs[sender] = {spellID,"talent"}
+								cooldownsModule.db.spell_isTalent[spellID] = true
+								--print(sender,'added talent',spellID)
+							end
+							row = row + 1
+							if inspectData then
+								if spellID == 0 then
+									spellID = nil
+								end
+								inspectData[row] = spellID
+							end
 						end
 					end
 				elseif key == "A" then
 					cooldownsModule:ClearSessionDataReason(sender,"azerite")
-					cooldownsModule:ClearSessionDataReason(senderFull,"azerite")
 
 					local _,list = strsplit(":",main,2)
 					while list do
@@ -1191,7 +1199,6 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 							if powerData then
 								local spellID = powerData.spellID
 								cooldownsModule.db.session_gGUIDs[sender] = {spellID,"azerite"}
-								cooldownsModule.db.session_gGUIDs[senderFull] = {spellID,"azerite"}
 								cooldownsModule.db.spell_isAzeriteTalent[spellID] = true
 								--print(sender,'added azerite',powerID)
 							end
@@ -1199,12 +1206,17 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 					end
 				elseif key == "S" then
 					cooldownsModule:ClearSessionDataReason(sender,"soulbind")
-					cooldownsModule:ClearSessionDataReason(senderFull,"soulbind")
+
+					local inspectData = module.db.inspectDB[sender]
+					if inspectData then
+						inspectData.soulbinds = inspectData.soulbinds or {}	
+						inspectData = inspectData.soulbinds
+						wipe(inspectData)
+					end
 
 					local _,covenantID,soulbindID,tree = strsplit(":",main,4)
 					covenantID = tonumber(covenantID)
 					cooldownsModule:AddCovenant(sender,covenantID)
-					cooldownsModule:AddCovenant(senderFull,covenantID)
 					while tree do
 						local powerStr,on = strsplit(":",tree,2)
 						tree = on
@@ -1212,7 +1224,9 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						local spellID = tonumber(powerStr)
 						if spellID then
 							cooldownsModule.db.session_gGUIDs[sender] = {spellID,"soulbind"}
-							cooldownsModule.db.session_gGUIDs[senderFull] = {spellID,"soulbind"}
+							if inspectData then
+								inspectData[spellID] = 1
+							end
 						else
 							local conduitID,conduitRank,conduitType = strsplit("-",powerStr,3)
 
@@ -1222,9 +1236,10 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 								spellID = C_Soulbinds.GetConduitSpellID(conduitID,conduitRank)
 
 								cooldownsModule.db.session_gGUIDs[sender] = {spellID,"soulbind"}
-								cooldownsModule.db.session_gGUIDs[senderFull] = {spellID,"soulbind"}
 								cooldownsModule:SetSoulbindRank(sender,spellID,conduitRank)
-								cooldownsModule:SetSoulbindRank(senderFull,spellID,conduitRank)
+								if inspectData then
+									inspectData[spellID] = conduitRank
+								end
 							end
 						end
 					end
@@ -1241,7 +1256,6 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 					VExRT.Inspect.Soulbinds[senderFull] = time()..main:sub(2)
 				elseif key == "t" and ExRT.isClassic then
 					cooldownsModule:ClearSessionDataReason(sender,"talent")
-					cooldownsModule:ClearSessionDataReason(senderFull,"talent")
 
 					local _,list = strsplit(":",main,2)
 					while list do
@@ -1251,7 +1265,6 @@ function module:addonMessage(sender, prefix, subPrefix, ...)
 						spellID = tonumber(spellID or "?")
 						if spellID and spellID ~= 0 then
 							cooldownsModule.db.session_gGUIDs[sender] = {spellID,"talent"}
-							cooldownsModule.db.session_gGUIDs[senderFull] = {spellID,"talent"}
 							--cooldownsModule.db.spell_isTalent[spellID] = true
 						end
 					end

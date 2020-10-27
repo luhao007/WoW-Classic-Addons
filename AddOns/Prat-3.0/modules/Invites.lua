@@ -269,6 +269,23 @@ L = {
     end
   end
 
+  -- This function is a wrapper for the Blizzard invite function, to account for the differences between Retail and Classic
+  function module:InviteUnit(...)
+    if Prat.IsRetail then
+      return C_PartyInfo.InviteUnit(...)
+    else
+      return InviteUnit(...)
+    end
+  end
+
+  -- This function is a wrapper for the Blizzard invite function, to account for the differences between Retail and Classic
+  function module:CanInvite(...)
+    if Prat.IsRetail then
+      return C_PartyInfo.CanInvite(...)
+    else
+      return CanGroupInvite(...)
+    end
+  end
 
   function module:SetAltInvite()
     if (self.db.profile.altinvite) then
@@ -349,7 +366,7 @@ L = {
           name = strsub(name, begin + 1);
         end
 
-        InviteUnit(name);
+        self:InviteUnit(name);
       end
     end
 
@@ -371,7 +388,7 @@ L = {
           name = strsub(name, begin, nend);
         end
         if (IsAltKeyDown()) then
-          InviteUnit(name);
+          self:InviteUnit(name);
           if ChatEdit_GetActiveWindow() then
             ChatEdit_OnEscapePressed(ChatEdit_GetActiveWindow())
           end
@@ -390,7 +407,7 @@ L = {
 
     local enabled = self.db.profile.linkinvite
 
-    if enabled and C_PartyInfo.CanInvite() then
+    if enabled and self.CanInvite() then
       if Prat.CurrentMessage then
         if EVENTS_FOR_INVITE[Prat.CurrentMessage.EVENT] then
           return self:InviteLink(text, name)

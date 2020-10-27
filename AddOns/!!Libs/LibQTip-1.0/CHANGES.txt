@@ -1,21 +1,10 @@
-------------------------------------------------------------------------
-r188 | Torhal | 2018-07-21 06:14:41 +0000 (Sat, 21 Jul 2018) | 1 line
-Changed paths:
-   M /trunk/LibQTip-1.0.toc
+lightweight tag 5f307596c9a7618e36d529b7af3c331e4808be9f 9.0.1.2
+Author:	James D. Callahan III <darkenelf@gmail.com>
+Date:	Sun Oct 25 17:33:10 2020 -0500
 
-Updating ToC Interface to 80000
-------------------------------------------------------------------------
-r187 | Torhal | 2018-07-21 06:13:54 +0000 (Sat, 21 Jul 2018) | 1 line
-Changed paths:
-   A /trunk/LibStub
-   A /trunk/LibStub/LibStub.lua
+commit 5f307596c9a7618e36d529b7af3c331e4808be9f
+Author: James D. Callahan III <darkenelf@gmail.com>
+Date:   Sun Oct 25 17:33:10 2020 -0500
 
-Hard-embed LibStub, to stop the WoW 8.x client from complaining about being unable to load it under a dev environment.
-------------------------------------------------------------------------
-r186 | Torhal | 2018-07-21 06:13:15 +0000 (Sat, 21 Jul 2018) | 1 line
-Changed paths:
-   M /trunk/.pkgmeta
-
-Hard-embed LibStub, to stop the WoW 8.x client from complaining about being unable to load it under a dev environment.
-------------------------------------------------------------------------
+    Update ToC Interface for the WoW 9.0.1 version.
 

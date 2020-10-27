@@ -12,7 +12,13 @@ from utils import process_file, rm_tree
 logger = logging.getLogger('manager')
 
 CLASSIC_VER = '11305'
-RETAIL_VER = '90100'
+RETAIL_VER = '90001'
+NOT_WORKING = ['ItemRack', 'GarrisonMissionManager'
+               'MasterPlan', 'HandyNotes_DraenorTreasures',
+               'HandyNotes_LegionRaresTreasures',
+               'HandyNotes_HallowsEnd', 'UnitFramesPlus',
+               'ButtonForge', 'NPCScan', 'HPetBattleAny',
+               'Overachiever', 'Details_TimeLine']
 
 
 def classic_only(func):
@@ -32,6 +38,7 @@ def retail_only(func):
 class Manager(object):
 
     def __init__(self):
+        """Addon manager."""
         self.is_classic = '_classic_' in os.getcwd()
         self.config = ElementTree.parse('config.xml')
 
@@ -61,7 +68,7 @@ class Manager(object):
         process_file(path, f)
 
     def remove_libraries_all(self, addon, lib_path=None):
-        """Remove all embedded libraries"""
+        """Remove all embedded libraries."""
         if not lib_path:
             for p in ['libs', 'lib']:
                 path = Path('Addons') / addon / p
@@ -187,8 +194,12 @@ class Manager(object):
             def process(lines):
                 toc = TOC(lines)
 
-                toc.tags['Interface'] = (CLASSIC_VER
-                                         if self.is_classic else RETAIL_VER)
+                if self.is_classic:
+                    toc.tags['Interface'] = CLASSIC_VER
+                elif addon in NOT_WORKING:
+                    toc.tags['Interface'] = '80300'
+                else:
+                    toc.tags['Interface'] = RETAIL_VER
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
                 ns = {'x': 'https://www.github.com/luhao007'}
@@ -345,6 +356,7 @@ class Manager(object):
             '			hide = true,'
         )
 
+    @classic_only
     def handle_atlasloot(self):
         if not self.is_classic:
             self.remove_libraries(
@@ -356,8 +368,7 @@ class Manager(object):
                 'AddOns/AtlasLoot/embeds.xml'
             )
         self.change_defaults(
-            'Addons/AtlasLoot{}/db.lua'.format(
-                'Classic' if self.is_classic else ''),
+            'Addons/AtlasLootClassic/db.lua',
             '		shown = true,'
         )
 
@@ -860,17 +871,4 @@ class Manager(object):
         self.change_defaults(
             'Addons/+Wowhead_Looter/Wowhead_Looter.lua',
             'wlSetting = {minimap=false};'
-        )
-
-    @retail_only
-    def handle_wqt(self):
-        self.remove_libraries(
-            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0',
-             'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0', 'AceGUI-3.0',
-             'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
-             'CallbackHandler-1.0', 'HereBeDragons', 'LibDBIcon-1.0',
-             'LibDataBroker-1.1', 'LibDeflate', 'LG', 'LibSharedMedia-3.0',
-             'LibStub', 'LibWindow-1.1'],
-            'Addons/WorldQuestTracker/libs',
-            'Addons/WorldQuestTracker/libs/libs.xml'
         )

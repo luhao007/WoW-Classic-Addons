@@ -204,8 +204,6 @@ L["Back and Forth"] = "Back and Forth"
 L["Background"] = "Background"
 --[[Translation missing --]]
 L["Background Color"] = "Background Color"
---[[Translation missing --]]
-L["Bar"] = "Bar"
 L["Bar Color"] = "Cor da Barra"
 --[[Translation missing --]]
 L["Baron Geddon"] = "Baron Geddon"
@@ -608,6 +606,8 @@ L["From"] = "From"
 L["Frost Resistance"] = "Frost Resistance"
 --[[Translation missing --]]
 L["Full"] = "Full"
+--[[Translation missing --]]
+L["Full Bar"] = "Full Bar"
 --[[Translation missing --]]
 L["Full/Empty"] = "Full/Empty"
 --[[Translation missing --]]
@@ -1114,6 +1114,8 @@ L["Play"] = "Play"
 L["Player"] = "Jogador"
 L["Player Character"] = "Personagem do jogador"
 L["Player Class"] = "Classe do jogador"
+--[[Translation missing --]]
+L["Player Covenant"] = "Player Covenant"
 --[[Translation missing --]]
 L["Player Effective Level"] = "Player Effective Level"
 --[[Translation missing --]]

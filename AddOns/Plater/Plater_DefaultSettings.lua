@@ -506,10 +506,13 @@ PLATER_DEFAULT_SETTINGS = {
 		transparency_behavior = 0x1,
 		transparency_behavior_use_division = false,
 		non_targeted_alpha_enabled = false,
+		honor_blizzard_plate_alpha = false,
 		
 		quick_hide = false, --hide the nameplate when the unit hits 0 health points | making disabled by default, this maybe is bugging hunters FD
 		
 		enable_masque_support = false,
+		
+		use_player_combat_state = true,
 		
 		last_news_time = 0,
 		disable_omnicc_on_auras = false,

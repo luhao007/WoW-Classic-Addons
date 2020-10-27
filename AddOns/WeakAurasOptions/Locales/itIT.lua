@@ -176,15 +176,13 @@ local L = WeakAuras.L
 	--[[Translation missing --]]
 	L["Background"] = "Background"
 	L["Background Color"] = "Colore Sfondo"
+	--[[Translation missing --]]
+	L["Background Inner"] = "Background Inner"
 	L["Background Offset"] = "Offset Sfondo"
 	L["Background Texture"] = "Texture dello Sfondo"
-	--[[Translation missing --]]
-	L["Bar"] = "Bar"
 	L["Bar Alpha"] = "Alfa della Barra"
 	L["Bar Color"] = "Colore Barra"
 	L["Bar Color Settings"] = "Impostazioni Colore Barra"
-	--[[Translation missing --]]
-	L["Bar Inner"] = "Bar Inner"
 	L["Bar Texture"] = "Texture della Barra"
 	L["Big Icon"] = "Icone Grandi"
 	L["Blend Mode"] = "Modalità di Fusione"

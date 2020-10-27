@@ -168,7 +168,7 @@ module.db.minFoodLevelToActual = {
 	[125] = 14,
 }
 
-if UnitLevel'player' > 50 then
+if not ExRT.isClassic and UnitLevel'player' > 50 then
 	module.db.tableFood = {
 	--Haste		Mastery		Crit		Versa		Int		Str 		Agi		Stam		Stam		Special
 	[308488]=30,	[308506]=30,	[308434]=30,	[308514]=30,							[308525]=30,			[308637]=30,

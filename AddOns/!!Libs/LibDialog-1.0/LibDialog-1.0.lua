@@ -31,7 +31,7 @@ if not lib then
     return
 end -- No upgrade needed
 
-local dialog_prototype = _G.CreateFrame("Frame", nil, _G.UIParent)
+local dialog_prototype = _G.CreateFrame("Frame", nil, _G.UIParent, _G.BackdropTemplateMixin and "BackdropTemplate")
 local dialog_meta = {
     __index = dialog_prototype
 }

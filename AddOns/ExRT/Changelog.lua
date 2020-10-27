@@ -1,6 +1,13 @@
 local GlobalAddonName, ExRT = ...
 
 ExRT.Options.Changelog = [=[
+v.4370
+* Minor fixes
+
+v.4370-Classic
+* Fixed consumables check for raid check windows
+* Minor fixes
+
 v.4360
 * Added import/export profiles
 * Visual Note: popup window now saves its state (size and position)

@@ -1670,7 +1670,12 @@ L = {
   function module:AutoImportGuildAlts(b)
     if b then
       self:RegisterEvent("GUILD_ROSTER_UPDATE", function() module:importGuildAlts(nil, true) end)
-      C_GuildInfo.GuildRoster()
+      -- Different functions for retail versus classic
+	  if Prat.IsRetail then
+        C_GuildInfo.GuildRoster()
+      else
+        GuildRoster()
+      end
     else
       self:UnregisterEvent("GUILD_ROSTER_UPDATE")
     end
