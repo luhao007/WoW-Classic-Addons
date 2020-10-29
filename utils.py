@@ -14,7 +14,7 @@ def process_file(path, func):
     :param function func: A function with the input of lines of the file
                           and returns the output lines after processing.
     """
-    logger.info('Processing {}...'.format(path))
+    logger.info('Processing %s...', path)
 
     with open(path, 'rb') as f:
         detect = chardet.detect(f.read())

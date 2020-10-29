@@ -8,9 +8,15 @@ from instawow.models import Pkg
 from instawow.exceptions import PkgUpToDate
 
 
-class InstawowManager(object):
+class InstawowManager:
 
-    def __init__(self, game_flavour, lib=False, classic_only_lib=False):
+    def __init__(self, ctx, game_flavour, lib=False, classic_only_lib=False):
+        """Interface between instawow and main program.
+
+        :param game_flavor str: 'classic' or 'retail'
+        :param lib bool: Whether hanlding libraries.
+        :param lib classic_only_lib: Whether hanlding classic-only libs
+        """
         self.config = game_flavour + ('_lib' if lib else '')
         if classic_only_lib:
             self.config += '_classic_only'
@@ -27,10 +33,10 @@ class InstawowManager(object):
         config = Config(addon_dir=addon_dir, game_flavour=game_flavour)
         config.write()
 
-        self.manager = instawow.cli.ManagerWrapper(debug=False).m
+        self.manager = instawow.cli.ManagerWrapper(ctx).m
 
     def get_addons(self):
-        query = self.manager.db_session.query(Pkg)
+        query = self.manager.database.query(Pkg)
         return query.order_by(Pkg.source, Pkg.name).all()
 
     def reinstall(self):
@@ -42,7 +48,7 @@ class InstawowManager(object):
 
     def update(self):
         addons = [p.to_defn() for p in self.get_addons()]
-        results = self.manager.run(self.manager.update(addons))
+        results = self.manager.run(self.manager.update(addons, False))
         report = instawow.cli.Report(results,
                                      lambda r: not isinstance(r, PkgUpToDate))
         if str(report):

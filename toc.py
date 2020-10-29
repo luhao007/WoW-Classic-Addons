@@ -1,6 +1,10 @@
-class TOC(object):
+class TOC:
 
     def __init__(self, lines):
+        """TOC Handler.
+
+        :param lines [str]: lines of the TOC file.
+        """
         self.tags = {}
         for l in lines:
             if l.startswith('## ') and ':' in l:
