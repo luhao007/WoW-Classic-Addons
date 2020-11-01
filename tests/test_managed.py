@@ -25,7 +25,7 @@ class CheckManagedAddOns(unittest.TestCase):
         for lib in os.listdir(root):
             if '.toc' not in lib and lib != 'FrameXML':
                 self.assertTrue(
-                    any(lib in l for l in toc.contents),
+                    any(lib in line for line in toc.contents),
                     '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
                 )
 

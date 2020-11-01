@@ -6,12 +6,12 @@ class TOC:
         :param lines [str]: lines of the TOC file.
         """
         self.tags = {}
-        for l in lines:
-            if l.startswith('## ') and ':' in l:
-                k, v = l[3:].split(':', 1)
+        for line in lines:
+            if line.startswith('## ') and ':' in line:
+                k, v = line[3:].split(':', 1)
                 self.tags[k.strip()] = v.strip()
 
-        self.contents = [l for l in lines if not l.startswith('## ')]
+        self.contents = [line for line in lines if not line.startswith('## ')]
         for i, e in enumerate(self.contents):
             if e != '\n':
                 self.contents = self.contents[i:]
