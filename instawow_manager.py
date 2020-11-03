@@ -20,8 +20,6 @@ class InstawowManager:
         self.profile = game_flavour + ('_lib' if lib else '')
         if classic_only_lib:
             self.profile += '_classic_only'
-        # config_root = Path(click.get_app_dir('instawow')) / self.config
-        # os.environ['INSTAWOW_CONFIG_DIR'] = str(config_root)
         ctx.params['profile'] = self.profile
 
         addon_dir = Path(os.getcwd()) / 'Addons/'
@@ -62,12 +60,12 @@ class InstawowManager:
     def install(self, addons):
         addons = instawow.cli.parse_into_defn(self.manager, addons)
         results = self.manager.run(self.manager.install(addons, replace=False))
-        print(instawow.cli.Report(results))
+        print(instawow.cli.Report(results.items()))
 
     def remove(self, addons):
         addons = instawow.cli.parse_into_defn(self.manager, addons)
         results = self.manager.run(self.manager.remove(addons))
-        print(instawow.cli.Report(results))
+        print(instawow.cli.Report(results.items()))
 
     def show(self):
         for addon in self.get_addons():

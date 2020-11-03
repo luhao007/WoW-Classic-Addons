@@ -2092,6 +2092,32 @@
   },
   {
     "source": "curse",
+    "id": "338706",
+    "slug": "alatalentemu",
+    "name": "alaTalentEmu",
+    "description": "An enhanced talent emulator supporting different classed, import, export, apply,inspect",
+    "url": "https://www.curseforge.com/wow/addons/alatalentemu",
+    "download_url": "https://edge.forgecdn.net/files/3051/432/alaTalentEmu-113r.200902.zip",
+    "date_published": "2020-09-07T06:30:07.653000+00:00",
+    "version": "113r.200902",
+    "folders": [
+      {
+        "name": "alaTalentEmu"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "113r.200902",
+        "install_time": "2020-11-03T13:23:48+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "26753",
     "slug": "tullarange",
     "name": "tullaRange",
