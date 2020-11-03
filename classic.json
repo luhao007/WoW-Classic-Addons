@@ -1188,32 +1188,6 @@
   },
   {
     "source": "curse",
-    "id": "348370",
-    "slug": "honorspy",
-    "name": "HonorSpy",
-    "description": "Addon helps players estimate their PvP next week rank and shows other players honor data",
-    "url": "https://www.curseforge.com/wow/addons/honorspy",
-    "download_url": "https://edge.forgecdn.net/files/3021/906/honorspy-1.7.7-classic.zip",
-    "date_published": "2020-08-02T22:49:00.717000+00:00",
-    "version": "1.7.7-classic",
-    "folders": [
-      {
-        "name": "honorspy"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "1.7.7-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "340903",
     "slug": "itemrack-classic",
     "name": "ItemRack Classic",
