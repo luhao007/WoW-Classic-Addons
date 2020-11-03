@@ -48,13 +48,18 @@ function Crafting.OnInitialize()
 	local used = TempTable.Acquire()
 	for _, craftInfo in pairs(TSM.db.factionrealm.internalData.crafts) do
 		for itemString in pairs(craftInfo.mats) do
-			used[itemString] = true
-			if not TSM.db.factionrealm.internalData.mats[itemString] then
-				TSM.db.factionrealm.internalData.mats[itemString] = {}
+			if strmatch(itemString, "^o:") then
+				local _, _, matList = strsplit(":", itemString)
+				for matItemId in String.SplitIterator(matList, ",") do
+					used["i:"..matItemId] = true
+				end
+			else
+				used[itemString] = true
 			end
-			-- clear the old name field
-			TSM.db.factionrealm.internalData.mats[itemString].name = nil
 		end
+	end
+	for itemString in pairs(used) do
+		TSM.db.factionrealm.internalData.mats[itemString] = TSM.db.factionrealm.internalData.mats[itemString] or {}
 	end
 	for itemString in pairs(TSM.db.factionrealm.internalData.mats) do
 		if not used[itemString] then
@@ -101,11 +106,19 @@ function Crafting.OnInitialize()
 		for matItemString, matQuantity in pairs(craftInfo.mats) do
 			private.matDB:BulkInsertNewRow(spellId, matItemString, matQuantity)
 			professionItems[craftInfo.profession] = professionItems[craftInfo.profession] or TempTable.Acquire()
-			professionItems[craftInfo.profession][matItemString] = true
 			matSpellCount[spellId] = (matSpellCount[spellId] or 0) + 1
 			if matQuantity > 0 then
 				matFirstItemString[spellId] = matItemString
 				matFirstQuantity[spellId] = matQuantity
+			end
+			if strmatch(matItemString, "^o:") then
+				local _, _, matList = strsplit(":", matItemString)
+				for matItemId in String.SplitIterator(matList, ",") do
+					local optionalMatItemString = "i:"..matItemId
+					professionItems[craftInfo.profession][optionalMatItemString] = true
+				end
+			else
+				professionItems[craftInfo.profession][matItemString] = true
 			end
 		end
 	end

@@ -16,49 +16,49 @@ local private = {}
 
 local DATA = TSM.IsWowClassic() and {} or {
 	["i:37101"] = {
-		["i:129032"] = 1, -- Ivory Ink
+		["i:173058"] = 1, -- Ivory Ink
 	},
 	["i:39469"] = {
-		["i:129032"] = 1, -- Moonglow Ink
+		["i:173058"] = 1, -- Moonglow Ink
 	},
 	["i:39774"] = {
-		["i:129032"] = 1, -- Midnight Ink
+		["i:173058"] = 1, -- Midnight Ink
 	},
 	["i:43116"] = {
-		["i:129032"] = 1, -- Lion's Ink
+		["i:173058"] = 1, -- Lion's Ink
 	},
 	["i:43118"] = {
-		["i:129032"] = 1, -- Jadefire Ink
+		["i:173058"] = 1, -- Jadefire Ink
 	},
 	["i:43120"] = {
-		["i:129032"] = 1, -- Celestial Ink
+		["i:173058"] = 1, -- Celestial Ink
 	},
 	["i:43122"] = {
-		["i:129032"] = 1, -- Shimmering Ink
+		["i:173058"] = 1, -- Shimmering Ink
 	},
 	["i:43124"] = {
-		["i:129032"] = 1, -- Ethereal Ink
+		["i:173058"] = 1, -- Ethereal Ink
 	},
 	["i:43126"] = {
-		["i:129032"] = 1, -- Ink of the Sea
+		["i:173058"] = 1, -- Ink of the Sea
 	},
 	["i:43127"] = {
-		["i:129032"] = 0.1, -- Snowfall Ink
+		["i:173058"] = 0.1, -- Snowfall Ink
 	},
 	["i:61978"] = {
-		["i:129032"] = 1, -- Blackfallow Ink
+		["i:173058"] = 1, -- Blackfallow Ink
 	},
 	["i:61981"] = {
-		["i:129032"] = 0.1, -- Inferno Ink
+		["i:173058"] = 0.1, -- Inferno Ink
 	},
 	["i:79254"] = {
-		["i:129032"] = 1, -- Ink of Dreams
+		["i:173058"] = 1, -- Ink of Dreams
 	},
 	["i:79255"] = {
-		["i:129032"] = 0.1, -- Starlight Ink
+		["i:173058"] = 0.1, -- Starlight Ink
 	},
 	["i:113111"] = {
-		["i:129032"] = 1, -- Warbinder's Ink
+		["i:173058"] = 1, -- Warbinder's Ink
 	},
 }
 

@@ -37,7 +37,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.13" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.14" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -463,29 +463,28 @@ function private.SaveAppData()
 		return value and value > 0 and value or nil
 	end
 
-	-- save TSM_Shopping max prices in the app DB
+	-- save TSM_Shopping max prices in the app DB for the current profile
 	appDB.shoppingMaxPrices = {}
-	for profile in TSM.GetTSMProfileIterator() do
-		local profileGroupData = {}
-		for _, itemString, groupPath in TSM.Groups.ItemIterator() do
-			local itemId = tonumber(strmatch(itemString, "^i:([0-9]+)$"))
-			if itemId then
-				local maxPrice = GetShoppingMaxPrice(itemString)
-				if maxPrice then
-					if not profileGroupData[groupPath] then
-						profileGroupData[groupPath] = {}
-					end
-					tinsert(profileGroupData[groupPath], "["..table.concat({itemId, maxPrice}, ",").."]")
+	local profile = TSM.db:GetCurrentProfile()
+	local profileGroupData = {}
+	for _, itemString, groupPath in TSM.Groups.ItemIterator() do
+		local itemId = tonumber(strmatch(itemString, "^i:([0-9]+)$"))
+		if itemId then
+			local maxPrice = GetShoppingMaxPrice(itemString)
+			if maxPrice then
+				if not profileGroupData[groupPath] then
+					profileGroupData[groupPath] = {}
 				end
+				tinsert(profileGroupData[groupPath], "["..table.concat({itemId, maxPrice}, ",").."]")
 			end
 		end
-		if next(profileGroupData) then
-			appDB.shoppingMaxPrices[profile] = {}
-			for groupPath, data in pairs(profileGroupData) do
-				appDB.shoppingMaxPrices[profile][groupPath] = "["..table.concat(data, ",").."]"
-			end
-			appDB.shoppingMaxPrices[profile].updateTime = time()
+	end
+	if next(profileGroupData) then
+		appDB.shoppingMaxPrices[profile] = {}
+		for groupPath, data in pairs(profileGroupData) do
+			appDB.shoppingMaxPrices[profile][groupPath] = "["..table.concat(data, ",").."]"
 		end
+		appDB.shoppingMaxPrices[profile].updateTime = time()
 	end
 
 	-- save black market data

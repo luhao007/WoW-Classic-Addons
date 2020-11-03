@@ -24,6 +24,7 @@ local ITEM_MAX_ID = 999999
 local UNKNOWN_ITEM_STRING = "i:0"
 local PLACEHOLDER_ITEM_STRING = "i:1"
 local PET_CAGE_ITEM_STRING = "i:82800"
+local MINIMUM_VARIANT_ITEM_ID = 152632
 local IMPORTANT_MODIFIER_TYPES = {
 	[9] = true,
 }
@@ -303,7 +304,10 @@ function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, i
 			private.bonusIdsTemp[i] = select(i, ...)
 		end
 		if importantBonusIdsOnly then
-			bonusIdsStr = BonusIds.FilterImportant(table.concat(private.bonusIdsTemp, ":"))
+			-- Only track bonusIds if the itemId is above our minimum
+			if tonumber(itemId) >= MINIMUM_VARIANT_ITEM_ID then
+				bonusIdsStr = BonusIds.FilterImportant(table.concat(private.bonusIdsTemp, ":"))
+			end
 		else
 			bonusIdsStr = BonusIds.FilterAll(table.concat(private.bonusIdsTemp, ":"))
 		end

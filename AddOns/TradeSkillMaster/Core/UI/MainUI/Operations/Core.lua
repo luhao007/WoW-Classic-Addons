@@ -558,7 +558,12 @@ function private.OperationSearchOnValueChanged(input)
 	input:GetElement("__parent.operationTree"):SetOperationNameFilter(filter)
 end
 
-function private.OperationTreeOnOperationAdded(_, moduleName, operationName, copyOperationName)
+function private.OperationTreeOnOperationAdded(operationTree, moduleName, operationName, copyOperationName)
+	-- clear the filter
+	operationTree:GetElement("__parent.search")
+		:SetValue("")
+		:Draw()
+	operationTree:SetOperationNameFilter("")
 	TSM.Operations.Create(moduleName, operationName)
 	if copyOperationName then
 		TSM.Operations.Copy(moduleName, operationName, copyOperationName)

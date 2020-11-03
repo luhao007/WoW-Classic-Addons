@@ -12,6 +12,7 @@ local TempTable = TSM.Include("Util.TempTable")
 local String = TSM.Include("Util.String")
 local Log = TSM.Include("Util.Log")
 local Math = TSM.Include("Util.Math")
+local ItemString = TSM.Include("Util.ItemString")
 local Threading = TSM.Include("Service.Threading")
 local ItemFilter = TSM.Include("Service.ItemFilter")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -146,6 +147,7 @@ function private.ScanThread(auctionScan, filterStr)
 					auctionScan:AddResultsUpdateCallback(private.ResultsUpdated)
 					auctionScan:SetScript("OnQueryDone", private.OnQueryDone)
 				elseif itemFilter:GetDisenchant() then
+					local queryOffset = auctionScan:GetNumQueries()
 					local targetItem = Conversions.GetTargetItemByName(itemFilter:GetStr())
 					assert(targetItem)
 					-- generate queries for groups of items that d/e into the target item
@@ -161,7 +163,6 @@ function private.ScanThread(auctionScan, filterStr)
 					wipe(private.itemList)
 					tinsert(private.itemList, targetItem)
 					private.targetItem[targetItem] = targetItem
-					local queryOffset = auctionScan:GetNumQueries()
 					auctionScan:AddItemListQueriesThreaded(private.itemList)
 					-- add our filter to each query and generate a lookup from query to target item
 					local maxQuantity = itemFilter:GetMaxQuantity()
@@ -331,7 +332,7 @@ function private.GetTargetItemRate(targetItemString, itemString)
 	end
 	if DisenchantInfo.IsTargetItem(targetItemString) then
 		local classId = ItemInfo.GetClassId(itemString)
-		local ilvl = ItemInfo.GetItemLevel(itemString)
+		local ilvl = ItemInfo.GetItemLevel(ItemString.GetBaseFast(itemString))
 		local quality = ItemInfo.GetQuality(itemString)
 		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
 		if amountOfMats then
@@ -349,9 +350,9 @@ function private.GetTargetItemRate(targetItemString, itemString)
 	return conversionInfo and conversionInfo[itemString] or 0, conversionChunkSize
 end
 
-function private.TargetItemQueryFilter(_, row)
+function private.TargetItemQueryFilter(query, row)
 	local itemString = row:GetItemString()
-	local targetItemString = private.targetItem[itemString]
+	local targetItemString = private.targetItem[itemString] or private.targetItem[query]
 	return itemString and targetItemString and private.GetTargetItemRate(targetItemString, itemString) == 0
 end
 

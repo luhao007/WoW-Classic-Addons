@@ -53,10 +53,10 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 		GameTooltip:SetHyperlink(data)
 	elseif type(data) == "string" and strfind(data, "^currency:") then
 		GameTooltip:SetCurrencyByID(strmatch(data, "currency:(%d+)"))
-	elseif type(data) == "string" and (strfind(data, "\124Hitem:") or ItemString.IsItem(data)) then
+	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))
 		showCompare = true
-	elseif type(data) == "string" and (strfind(data, "\124Hbattlepet:") or ItemString.IsPet(data)) then
+	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hbattlepet:") or ItemString.IsPet(data)) then
 		if strmatch(data, "p:") then
 			data = ItemInfo.GetLink(data)
 		end
