@@ -1,21 +1,19 @@
 ## Interface: 11305
-## Title: ala's Talent Emu
-## SavedVariablesPerCharacter: 
-## SavedVariables: alaTalentEmuSV
-## Notes: ala's Talent Emu
-## Dependencies: 
-## OptionalDependencies: 
-## LoadOnDemand: 0
-## DefaultState: enabled
 ## Author: |cff00ff00ALA|r @ |cffff0000163UI|r
-## Author-zhCN: |cff00ff00ALA|r @ |cffff0000网易有爱|r
-## Author-zhTW: |cff00ff00ALA|r @ |cffff0000网易有爱|r
 ## Version: 113r.200902
+## Dependencies: 
+## LoadOnDemand: 0
+## SavedVariables: alaTalentEmuSV
+## SavedVariablesPerCharacter: 
+## DefaultState: enabled
+
+## Title: ala's Talent Emu
+## Notes: ala's Talent Emu
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF天赋模拟器|r |cFFFFE00AalaTalentEmu|r
+## Notes-zhCN: 天赋模拟器，可以模拟天赋、导出代码、导入代码、观察其他玩家天赋、应用模拟器天赋等。
+
+## X-Vendor: NetEase
+## X-163UI-Version: 20200521143713
 
 alaTalentEmu.xml
 
-
-## Title-zhCN: |cff880303[有爱]|r ala 天赋模拟器
-## Notes-zhCN: 天赋模拟器，可以模拟天赋、导出代码、导入代码、观察其他玩家天赋、应用模拟器天赋等。
-## X-Vendor: NetEase
-## X-163UI-Version: 20200521143713

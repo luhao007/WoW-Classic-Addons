@@ -15,6 +15,10 @@
 		<Title>插件管理</Title>
 		<Category>基础库</Category>
 	</Addon>
+	<Addon name="alaTalentEmu">
+		<Title>天赋模拟器</Title>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="ATT-Classic">
 		<Title>收集控助手</Title>
 		<Notes>追踪账号完成度，提示诸如任务、飞行点、配方等各个分类的收集和完成情况</Notes>
