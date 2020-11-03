@@ -1,4 +1,17 @@
-0.3.4 Release Notes
+0.3.5 Release Notes
 Contributions made by Crieve:
-* Fixed a terrible bug.
+* The Dread Citadel - Naxxramas [Honored] only costs 5 Arcanite Bars.
+* Minor adjustment to Naxx patterns.
+* Minor quest adjustments.
+* Minor quest item adjustments.
+* Fixed the First Aid manuals.
+* Expert First Aid - Under Wraps no longer shows up perpetually.
+* Added Fel Moss for the Woodland Protector quest.
+* Finished sourcing Teldrassil.
+* Updated the source quest requirement for a Scholo quest.
+* Export Soft Reserves Button!
+* Multiline export button support.
+
+Contributions made by TKTalonzor:
+* Added some missing Hallow's End quests
 

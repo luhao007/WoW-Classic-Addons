@@ -288,28 +288,63 @@ and Pawn.</p>
 		addon that does that.</li>
 	</ul>
 	</li>
-	<li>Undermine Journal<ul>
-		<li>May prevent you from selecting scales in the Pawn UI.</li>
-	</ul>
-	</li>
-	<li>ElvUI + Bagnon (likely other bag addons)
-	<ul>
-		<li>When these bag addons support the game's built-in green arrows 
-		feature, they should work with Pawn, too.&nbsp; (Pawn doesn't add those 
-		arrow icons to your items; it just changes when the game displays them.)</li>
-	</ul>
-	</li>
 	<li>Combat Numbers Separator + Titan Panel Artifact Power<ul>
 		<li>These addons change the way that numbers are displayed on tooltips, 
 		which causes Pawn to misread item stats.&nbsp; Right now I don't have 
 		any way or plan to support them.</li>
 	</ul>
 	</li>
+	<li>Undermine Journal</li>
 	<li>TipTac</li>
 	<li>TradeSkillMaster</li>
 </ul>
 
 <h2>Updates</h2>
+<h3>Version 2.4.4</h3>
+<ul>
+	<li>Pawn's bag icons should now cooperate with Can I Mog It?'s bag icons 
+	again. Special thanks to the author of that addon, who inspired a much 
+	simpler solution that what I had come up with.</li>
+</ul>
+<h3>Version 2.4.3</h3>
+<ul>
+	<li>Pawn now has a more complete set of gem recommendations, including new 
+	gems from the Shadowlands. For example, for resto shamans on an ilvl 100 
+	item, Pawn will suggest five different +4 crit gems from different 
+	expansions, so you can buy the one that's cheapest.<ul>
+		<li>This is just new recommendations, not a new feature—there still 
+		isn't a way to further customize gem quality levels to your exact 
+		tastes, but that's still on the to-do list.</li>
+	</ul>
+	</li>
+	<li>Pawn was a little overzealous in resetting data that might have been 
+	affected by the level squish, so I've changed the way it works to be less 
+	annoying for people who have a lot of alts.</li>
+</ul>
+<h3>Version 2.4.2</h3>
+<ul>
+	<li><b>Pawn's bag arrows integration will no longer work by default with 
+	custom bag addons.</b><ul>
+		<li>The game no longer allows customizing that functionality while in 
+		combat, so before this change, Pawn's bag arrow integration caused 
+		errors while performing certain actions in combat, such as swapping 
+		weapons from the character sheet. Disabling support for custom bag 
+		addons is unfortunately the only way I can work around this.<li>To work around this, custom bag addons that call 
+			IsContainerItemAnUpgrade directly can use 
+			PawnIsContainerItemAnUpgrade when available instead, falling back to 
+			IsContainerItemAnUpgrade if it's nil. Then Pawn will control the bag 
+		arrows like it did before.</li>
+		</li>
+	</ul>
+	</li>
+	<li>Pawn will now show two-handed weapons as potential upgrades for 
+	two-handed Frost Death Knights. If you're all about the dual-wielding life 
+	and want to turn this back off, you can go to Pawn's Values tab, select 
+	"Axe: 2H" (or any other 2H type) under "Weapon types", and then select 
+	"Don't show upgrades for 2H items."</li>
+	<li>You should no longer see a warning message about addon compatibility 
+	when playing on Russian WoW 9.0.</li>
+</ul>
 <h3>Version 2.4.1</h3>
 <ul>
 	<li>WoW Classic: Hopefully fixed an error that occurred when turning in a 

@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0401
+PawnVersion = 2.0404
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.12
@@ -399,8 +399,9 @@ function PawnInitialize()
 
 	-- In-bag upgrade icons
 	if ContainerFrame_UpdateItemUpgradeIcons then
+
 		PawnOriginalIsContainerItemAnUpgrade = IsContainerItemAnUpgrade
-		IsContainerItemAnUpgrade = function(bagID, slot, ...)
+		PawnIsContainerItemAnUpgrade = function(bagID, slot, ...)
 			if PawnCommon.ShowBagUpgradeAdvisor then
 				local _, Count, _, _, _, _, ItemLink = GetContainerItemInfo(bagID, slot)
 				if not Count then return false end -- If the stack count is 0, it's clearly not an upgrade
@@ -409,8 +410,24 @@ function PawnInitialize()
 			else
 				return PawnOriginalIsContainerItemAnUpgrade(bagID, slot, ...)
 			end
-			-- FUTURE: Consider hooking ContainerFrameItemButton_UpdateItemUpgradeIcon / ContainerFrame_UpdateItemUpgradeIcons instead, but then Pawn would need its own "retry when not enough information is available" logic.  And Pawn also would no longer automatically integrate with other bag addons.
 		end
+
+		-- Changing IsContainerItemAnUpgrade now causes taint errors, and replacing this function with a copy of itself
+		-- works on its own, but breaks other addons that hook this function like CanIMogIt. So, our best option appears to
+		-- be to just let the default version run, and then change its results immediately after.
+		hooksecurefunc("ContainerFrameItemButton_UpdateItemUpgradeIcon", function(self)
+			if self.isExtended then return end
+			local IsUpgrade = PawnIsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+
+			if IsUpgrade == nil then
+				self.UpgradeIcon:SetShown(false)
+				self:SetScript("OnUpdate", ContainerFrameItemButton_TryUpdateItemUpgradeIcon)
+			else
+				self.UpgradeIcon:SetShown(IsUpgrade)
+				self:SetScript("OnUpdate", nil)
+			end
+		end)
+
 	end
 
 	-- We're now effectively initialized.  Just the last steps of scale initialization remain.
@@ -434,7 +451,7 @@ function PawnInitialize()
 		-- The separator strings are completely wrong on French WoW Classic.  :(
 		if (LARGE_NUMBER_SEPERATOR and PawnLocal.ThousandsSeparator ~= LARGE_NUMBER_SEPERATOR) or
 		(DECIMAL_SEPERATOR and PawnLocal.DecimalSeparator ~= DECIMAL_SEPERATOR) then
-			VgerCore.Fail("Pawn may provide incorrect advice due to a potential addon conflict: Pawn is not compatible with Combat Numbers Separator, Titan Panel Artifact Power, or other addons that change the way that numbers appear.")
+			VgerCore.Fail("Pawn may provide incorrect advice due to a potential addon conflict: Pawn is not compatible with Combat Numbers Separator, Titan Panel Artifact Power, or other addons that change the way that numbers appear. Or, if you're seeing this right after a patch, please let Vger know which language you're playing in.")
 		end
 	end
 
@@ -642,11 +659,21 @@ function PawnInitializeOptions()
 			PawnCommon.ShowItemLevelUpgrades = true
 		end
 	end
-	if PawnOptions.LastVersion < 2.0400 then
-		-- Pawn 2.4 came out with patch 9.0 and the level squish, so reset everything for this character.
-		PawnClearCache()
+	if PawnCommon.LastVersion < 2.0403 then
+		-- Pawn 2.4 came out with patch 9.0 and the level squish, so reset everything.
+		-- Pawn 2.4.3 improved this behavior, so do it one last time.
 		PawnInvalidateBestItems()
+	end
+	if PawnOptions.LastVersion < 2.0400 then
+		-- The best item level data is still per-character, so we have to wait until first logon for that character.
+		-- If we already did that back in 2.4.0 we don't need to do this part again.
 		PawnClearBestItemLevelData()
+	end
+	if PawnCommon.LastVersion < 2.0402 and not VgerCore.IsClassic then
+		-- Frost death knights can fully use 2H weapons again, but the setting to hide 2H upgrades is persistent.
+		-- Clear it this one time; people can go back to hiding them if they want.
+		local FrostDK = PawnCommon.Scales["\"MrRobot\":DEATHKNIGHT2"]
+		if FrostDK then FrostDK.DoNotShow2HUpgrades = false end
 	end
 	if ((not VgerCore.IsClassic) and PawnCommon.LastVersion < PawnMrRobotLastUpdatedVersion) or
 		(VgerCore.IsClassic and PawnCommon.LastVersion < PawnClassicLastUpdatedVersion) then

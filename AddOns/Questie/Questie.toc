@@ -1,16 +1,17 @@
 ## Interface: 11305
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 6.1.0
+## Version: 6.2.0
 ## RequiredDeps: 
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.1.0|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.2.0|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
+## X-Curse-Project-ID: 334372
 
 Modules\VersionCheck.lua
 
@@ -84,6 +85,7 @@ Modules\QuestieAnnounce.lua
 ##Tooltips
 Modules\Tooltips\Tooltip.lua
 Modules\Tooltips\TooltipHandler.lua
+Modules\Tooltips\ChatFilter.lua
 Modules\Tooltips\Link.lua
 
 #Auto

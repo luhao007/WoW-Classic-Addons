@@ -10,7 +10,6 @@ class Context:
 
     def __init__(self, ctx, verbose: bool):
         """Basic content for CLI."""
-        ctx.params['profile'] = '__default__'
         ctx.params['log_level'] = verbose
         self.game_flavour = 'classic' if self.is_classic else 'retail'
         self.manager = InstawowManager(ctx, self.game_flavour, False)
@@ -79,6 +78,16 @@ def install_lib_classic(obj, libs):
 
 @main.command()
 @click.pass_obj
+def reinstall(obj):
+    obj.manager.reinstall()
+    obj.manager_lib.reinstall()
+    if obj.is_classic:
+        obj.manager_lib_classic.reinstall()
+    _manage()
+
+
+@main.command()
+@click.pass_obj
 def update(obj):
     """Update all addons."""
     obj.manager.update()
@@ -122,6 +131,7 @@ def remove_lib_classic(obj, libs):
 def show(obj):
     """Show all addons."""
     obj.manager.show()
+    obj.manager.export()
 
 
 @main.command()
@@ -129,6 +139,7 @@ def show(obj):
 def show_libs(obj):
     """Show all libraries."""
     obj.manager_lib.show()
+    obj.manager_lib.export()
 
 
 @main.command()
@@ -138,6 +149,7 @@ def show_libs_classic(obj):
     if not obj.is_classic:
         raise RuntimeError('Cannot manage classic libs in retail game folder')
     obj.manager_lib_classic.show()
+    obj.manager_lib_classic.export()
 
 
 if __name__ == "__main__":
