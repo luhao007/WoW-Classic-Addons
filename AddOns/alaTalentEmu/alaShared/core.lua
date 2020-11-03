@@ -154,7 +154,7 @@ local ADDON_MSG_CONTROL_CODE_LEN = __ala_meta__.ADDON_MSG_CONTROL_CODE_LEN;
 				--	old version compatibility
 				ADDON_MSG_QUERY_EQUIPMENTS_ = "_queeq",
 				ADDON_MSG_REPLY_EQUIPMENTS_ = "_repeq",
-				ADDON_MSG_REPLY_ADDON_PACK_ = "_reppk",	
+				ADDON_MSG_REPLY_ADDON_PACK_ = "_reppk",
 				__table_sub = function(T, index, index2)
 					return T[index];
 				end,
@@ -429,37 +429,37 @@ local ADDON_MSG_CONTROL_CODE_LEN = __ala_meta__.ADDON_MSG_CONTROL_CODE_LEN;
 				local name = Ambiguate(sender, 'none');
 				local control_code = strsub(msg, 1, ADDON_MSG_CONTROL_CODE_LEN);
 				local now = GetTime();
-				if control_code == __emu_meta.ADDON_MSG_QUERY_TALENTS then
-					local prev = __REPLY_TALENTS_TIME[name];
-					if prev == nil or now - prev > 0.05 then
-						__REPLY_TALENTS_TIME[name] = now;
-						if channel == "INSTANCE_CHAT" then
-							local target = strsub(msg, ADDON_MSG_CONTROL_CODE_LEN + 2, - 1);
-							if target ~= __ns.playerFullName then
-								return;
-							end
-						end
-						local code = __ns.GetEncodedPlayerTalentData(60);
-						if code then
-							if channel == "INSTANCE_CHAT" then
-								SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_ADDON_PACK .. __ns.GetAddonPackData(), "INSTANCE_CHAT");
-								SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS .. code .. "#" .. sender, "INSTANCE_CHAT");
-							else--if channel == "WHISPER" then
-								SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_ADDON_PACK .. __ns.GetAddonPackData(), "WHISPER", sender);
-								SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS .. code, "WHISPER", sender);
-							end
-						end
-					end
-				elseif control_code == __emu_meta.ADDON_MSG_QUERY_TALENTS_ then
-					local prev = __REPLY_TALENTS_TIME[name];
-					if prev == nil or now - prev > 0.05 then
-						__REPLY_TALENTS_TIME[name] = now;
-						local code = __ns.GetEncodedPlayerTalentData(60);
-						if code then
-							SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS_ .. code, "WHISPER", sender);
-						end
-					end
-				elseif control_code == __emu_meta.ADDON_MSG_QUERY_EQUIPMENTS then
+				-- if control_code == __emu_meta.ADDON_MSG_QUERY_TALENTS then
+				-- 	local prev = __REPLY_TALENTS_TIME[name];
+				-- 	if prev == nil or now - prev > 0.05 then
+				-- 		__REPLY_TALENTS_TIME[name] = now;
+				-- 		if channel == "INSTANCE_CHAT" then
+				-- 			local target = strsub(msg, ADDON_MSG_CONTROL_CODE_LEN + 2, - 1);
+				-- 			if target ~= __ns.playerFullName then
+				-- 				return;
+				-- 			end
+				-- 		end
+				-- 		local code = __ns.GetEncodedPlayerTalentData(60);
+				-- 		if code then
+				-- 			if channel == "INSTANCE_CHAT" then
+				-- 				SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_ADDON_PACK .. __ns.GetAddonPackData(), "INSTANCE_CHAT");
+				-- 				SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS .. code .. "#" .. sender, "INSTANCE_CHAT");
+				-- 			else--if channel == "WHISPER" then
+				-- 				SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_ADDON_PACK .. __ns.GetAddonPackData(), "WHISPER", sender);
+				-- 				SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS .. code, "WHISPER", sender);
+				-- 			end
+				-- 		end
+				-- 	end
+				-- elseif control_code == __emu_meta.ADDON_MSG_QUERY_TALENTS_ then
+				-- 	local prev = __REPLY_TALENTS_TIME[name];
+				-- 	if prev == nil or now - prev > 0.05 then
+				-- 		__REPLY_TALENTS_TIME[name] = now;
+				-- 		local code = __ns.GetEncodedPlayerTalentData(60);
+				-- 		if code then
+				-- 			SendAddonMessage(prefix, __emu_meta.ADDON_MSG_REPLY_TALENTS_ .. code, "WHISPER", sender);
+				-- 		end
+				-- 	end
+				if control_code == __emu_meta.ADDON_MSG_QUERY_EQUIPMENTS then
 					local prev = __REPLY_EQUIPMENTS_TIME[name];
 					if prev == nil or now - prev >= 0.05 then
 						__REPLY_EQUIPMENTS_TIME[name] = now;
@@ -816,7 +816,7 @@ local ADDON_MSG_CONTROL_CODE_LEN = __ala_meta__.ADDON_MSG_CONTROL_CODE_LEN;
 			function __inst_meta.COMBAT_LOG_EVENT_UNFILTERED()
 				local timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, _12, _13, _14, _15 = CombatLogGetCurrentEventInfo();
 				if strsub(sourceGUID, 1, 8) == "Creature" then
-					-- --	1	1594694500.953, "SPELL_AURA_APPLIED", false, "Creature-0-4956-1-338-4949-0000063A25", "未知目标", 2600, 0, "Player-4521-010827EA", "战氏", 1297, 0, 
+					-- --	1	1594694500.953, "SPELL_AURA_APPLIED", false, "Creature-0-4956-1-338-4949-0000063A25", "未知目标", 2600, 0, "Player-4521-010827EA", "战氏", 1297, 0,
 					-- --	12	0, "酋长的祝福", 1, "BUFF",
 					-- --	SPELL_AURA	15th ~= "BUFF"
 					-- if strsub(destGUID, 1, 6) == "Player" and strsub(event, 1, 10) == "SPELL_AURA" and _15 == "BUFF" then		--	skip world buff		--	check this by instanceID now

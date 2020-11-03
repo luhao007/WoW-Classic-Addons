@@ -18,7 +18,6 @@
     <script file = "alaTalentEmu.lua" />
 
     <include file = "Bindings.xml" />
-    
+
 
 </Ui>
-
