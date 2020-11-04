@@ -4,7 +4,8 @@ import os
 import re
 import shutil
 from pathlib import Path
-from xml.etree import ElementTree
+
+from defusedxml import ElementTree
 
 from toc import TOC
 from utils import process_file, rm_tree
@@ -296,7 +297,7 @@ class Manager:
                   'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
         if self.is_classic:
-            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
+            addons += ['alaTalentEmu', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Details_Streamer', 'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'PallyPower',
@@ -534,15 +535,15 @@ class Manager:
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
-    @classic_only
-    def handle_honorspy(self):
-        self.remove_libraries_all('honorspy')
+    # @classic_only
+    # def handle_honorspy(self):
+    #     self.remove_libraries_all('honorspy')
 
-        self.change_defaults(
-            'AddOns/honorspy/honorspy.lua',
-            ['local addonName = "Honorspy";',
-             '			minimapButton = {hide = true},']
-        )
+    #     self.change_defaults(
+    #         'AddOns/honorspy/honorspy.lua',
+    #         ['local addonName = "Honorspy";',
+    #          '			minimapButton = {hide = true},']
+    #     )
 
     @classic_only
     def handle_nwb(self):
