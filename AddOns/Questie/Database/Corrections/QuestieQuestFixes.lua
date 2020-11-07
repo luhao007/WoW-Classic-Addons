@@ -517,7 +517,12 @@ function QuestieQuestFixes:Load()
             [questKeys.parentQuest] = 100, -- #1658
         },
         [1106] = {
-            [questKeys.preQuestGroup] = {1104, 1105},
+            [questKeys.preQuestSingle] = {},
+            [questKeys.preQuestGroup] = {1104,1105},
+        },
+        [1107] = {
+            [questKeys.preQuestSingle] = {},
+            [questKeys.preQuestGroup] = {1104,1105,} -- #2444
         },
         [1118] = {
             [questKeys.inGroupWith] = {}, -- #886
@@ -544,7 +549,7 @@ function QuestieQuestFixes:Load()
         },
         [1148] = {
             [questKeys.preQuestSingle] = {1146},
-            [questKeys.startedBy] = {{4130,4131,4133,},nil,{5877,},},
+            [questKeys.startedBy] = {{4132,},nil,{5877,},},
         },
         [1173] = {
             [questKeys.triggerEnd] = {"Drive Overlord Mok'Morokk from Brackenwall Village", {[zoneIDs.DUSTWALLOW_MARSH]={{36.41,31.43},},},},
@@ -840,6 +845,7 @@ function QuestieQuestFixes:Load()
         },
         [2201] = {
             [questKeys.childQuests] = {3375},
+            [questKeys.requiredLevel] = 37, -- #2447
         },
         [2205] = {
             [questKeys.exclusiveTo] = {}, -- #1466
