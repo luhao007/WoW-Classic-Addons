@@ -1,6 +1,6 @@
-local versionMajor, versionRev, L, ADDON, T, ORI = 3, 102, newproxy(true), ...
+local versionMajor, versionRev, ADDON, T, ORI = 3, 104, ...
 local MODERN = select(4,GetBuildInfo()) >= 8e4
-local api, OR_Rings, OR_ModifierLockState, TL, EV, OR_LoadedState = {ext={ActionBook=T.ActionBook},lang=L}, {}, nil, T.L, T.Evie, 1
+local api, OR_Rings, OR_ModifierLockState, TL, EV, OR_LoadedState = {ext={ActionBook=T.ActionBook}}, {}, nil, T.L, T.Evie, 1
 local defaultConfig = {
 	ClickActivation=false, ClickPriority=true, CloseOnRelease=false, NoClose=false, NoCloseOnSlice=false,
 	IndicationOffsetX=0, IndicationOffsetY=0, RingAtMouse=false, RingScale=1,
@@ -9,11 +9,16 @@ local defaultConfig = {
 	SliceBinding=false, SliceBindingString="1 2 3 4 5 6 7 8 9 0", SelectedSliceBind="",
 	UseDefaultBindings=true, PrimaryButton="BUTTON4", SecondaryButton="BUTTON5",
 	OpenNestedRingButton="BUTTON3", ScrollNestedRingUpButton="", ScrollNestedRingDownButton="",
+	PadSupportMode="freelook", PSSwitchOnOpen=true, PSRestoreOnClose=true, PSThawHold=0.75, PSThawDuration=4,
 }
 local configRoot, configInstance, activeProfile, PersistentStorageInfo, optionValidators, optionsMeta = {}, nil, nil, {}, {}, {__index=defaultConfig}
 local charId, internalFreeId = ("%s-%s"):format(GetRealmName(), UnitName("player")), 424
 
-getmetatable(L).__call, T.L = TL and function(_,k) return TL[k] or k end or function(_,k) return k end, L
+local L do
+	T.L = newproxy(true)
+	L = T.L
+	getmetatable(L).__call = TL and function(_,k) return TL[k] or k end or function(_,k) return k end
+end
 
 local AB, KR = T.ActionBook:compatible(2,24), T.ActionBook:compatible("Kindred", 1,11) do
 	local function createRingAction(name)
@@ -76,6 +81,7 @@ end
 local OR_SecCore = CreateFrame("Button", ("OPieRT-%08x-%04x"):format(time() % 2^30, math.random(2^16)-1), UIParent, "SecureActionButtonTemplate,SecureHandlerAttributeTemplate,SecureHandlerMouseWheelTemplate")
 local OR_OpenProxy = CreateFrame("Button", "ORLOpen", nil, "SecureActionButtonTemplate")
 local OR_SecEnv, OR_ActiveRingName, OR_ActiveCollectionID, OR_ActiveSliceCount
+local OR_PadRestoreState = {}
 OR_SecCore:SetSize(2^15, 2^15)
 OR_SecCore:SetFrameStrata("FULLSCREEN_DIALOG")
 OR_SecCore:RegisterForClicks("AnyUp", "AnyDown")
@@ -100,6 +106,7 @@ do -- Click dispatcher
 	OR_SecCore:SetFrameRef("bindProxy", bindProxy)
 	OR_SecCore:SetFrameRef("sliceBindProxy", CreateFrame("Frame", "ORL_BindProxySlice", nil, "SecureFrameTemplate"))
 	OR_SecCore:SetFrameRef("overBindProxy", CreateFrame("Frame", "ORL_BindProxyOverride", nil, "SecureFrameTemplate"))
+	OR_SecCore:SetFrameRef("screen", CreateFrame("Frame", nil, nil, "SecureFrameTemplate"))
 	OR_SecCore:Execute([=[-- OR_SecCore
 		ORL_GlobalOptions, ORL_RingData, ORL_RingDataN = newtable(), newtable(), newtable()
 		ORL_KnownCollections, ORL_StoredCA = newtable(), newtable()
@@ -115,7 +122,8 @@ do -- Click dispatcher
 		AIP_Action, AI_LeftAction, AI_RightAction = nil
 		AIP_OnDown, AI_LeftOnDown, AI_RightOnDown = nil
 		ORL_GlobalBindingMap = newtable("OpenNestedRingBinding","mwin", "ScrollNestedRingUpBinding","mwup", "ScrollNestedRingDownBinding","mwdown")
-		AB, KR = self:GetFrameRef("AB"), self:GetFrameRef("KR")
+		AB, KR, SCREEN = self:GetFrameRef("AB"), self:GetFrameRef("KR"), self:GetFrameRef("screen")
+		SCREEN:SetAllPoints(); SCREEN:Hide()
 
 		ORL_PrepareCollection = [==[-- ORL_PrepareCollection
 			wipe(collections) wipe(ctokens)
@@ -235,7 +243,10 @@ do -- Click dispatcher
 				AIP_Action, AIP_AltAction, AI_LeftAction, AI_RightAction = "close", nil, ring.NoClose and "usenow" or "use", "close"
 				AIP_OnDown, AI_LeftOnDown, AI_RightOnDown = true, false, true
 			end
-			modState = (not AIP_Action and "") or (fastSwitch and modState) or ((IsAltKeyDown() and "A" or "") .. (IsControlKeyDown() and "C" or "") .. (IsShiftKeyDown() and "S" or ""))
+			local stickyPrimaryMods = AIP_Action and AIP_Action ~= "close"
+			modState = (not stickyPrimaryMods and "") or (fastSwitch and modState) or ((IsAltKeyDown() and "A" or "") .. (IsControlKeyDown() and "C" or "") .. (IsShiftKeyDown() and "S" or "") .. (IsModifiedClick("META-X") and "M" or ""))
+			local bind = stickyPrimaryMods and AIP_Binding or ""
+			modLockState = (modState:match("A") or bind:match("ALT%-") and "a" or "-") .. (modState:match("S") or bind:match("SHIFT%-") and "s" or "-") .. (modState:match("C") or bind:match("CTRL%-") and "c" or "-") .. (modState:match("M") or bind:match("META%-") and "m" or "-")
 
 			local cid = ring.action
 			local openAction, firstFC = owner:Run(ORL_PrepareCollection, cid)
@@ -254,7 +265,7 @@ do -- Click dispatcher
 				owner:Show()
 			end
 
-			owner:CallMethod("NotifyState", "open", ring.name, ring.action, fastClick, fastSwitch or fastSwitch2, modState)
+			owner:CallMethod("NotifyState", "open", ring.name, ring.action, fastClick, fastSwitch or fastSwitch2, modLockState)
 			return owner:RunFor(self, ORL_PerformAB, openAction)
 		]==]
 		ORL_SwitchRing = [==[-- ORL_SwitchRing
@@ -283,6 +294,22 @@ do -- Click dispatcher
 		]==]
 		ORL_GetCursorSlice = [[-- ORL_GetCursorSlice
 			if not openCollection[1] then return nil end
+			local psm = IsGamePadEnabled and IsGamePadEnabled() and ORL_GlobalOptions.PadSupportMode
+			if psm == "freelook" and SCREEN:GetMousePosition() == 0.5 then
+				local ms = GetGamePadState()
+				local st = ms and ms.sticks
+				st = st and st[2]
+				if st then
+					local radius, angle = 10000*st.len, math.deg(math.atan2(st.y, st.x))
+					if radius > 2500 then
+						local segAngle = 360/#openCollection
+						return floor(((90 - angle + segAngle/2 - activeRing.ofsDeg) % 360) / segAngle) + 1, false
+					elseif radius < 100 then
+						return fastClick, true
+					end
+				end
+			end
+
 			local x, y = owner:GetMousePosition()
 			x, y = x - 0.5, y - 0.5
 			local radius, segAngle = (x*x*sizeSq + y*y*sizeSq)^0.5, 360/#openCollection
@@ -700,15 +727,90 @@ local OR_FindFinalAction do
 			end
 		end
 	end
+	end
+local OR_CameraStickOverride = {} do
+	local hasStoredState, storedYaw, storedPitch = false
+	local isThawing, thawFrame, thawEnd, thawL, thawH = false, CreateFrame("Frame")
+	thawFrame:Hide()
+	thawFrame:SetScript("OnUpdate", function(s, e)
+		local t = GetTime()
+		if t >= thawEnd or not isThawing then
+			if isThawing then
+				SetCVar("GamePadCameraYawSpeed", storedYaw)
+				SetCVar("GamePadCameraPitchSpeed", storedPitch)
+				isThawing, hasStoredState = false, false
+			end
+			s:Hide()
+			return
+		end
+		local ms = C_GamePad.GetDeviceMappedState()
+		local st = ms and ms.sticks
+		st = st and st[2]
+		if st and st.len == 0 then
+			thawEnd = t-1
+			return s:GetScript("OnUpdate")(s, e)
+		end
+		local r = (thawEnd-t)/thawL
+		local p = r >= thawH and 0 or (1-r/(1-thawH))
+		p = p < 0 and 0 or p > 1 and 1 or p
+		if p > 0 then
+			local s = p*p
+			SetCVar("GamePadCameraYawSpeed", storedYaw*s)
+			SetCVar("GamePadCameraPitchSpeed", storedPitch*s)
+		end
+	end)
+	function OR_CameraStickOverride:Lock()
+		if not hasStoredState then
+			hasStoredState, storedYaw, storedPitch = true, GetCVar("GamePadCameraYawSpeed"), GetCVar("GamePadCameraPitchSpeed")
+		end
+		SetCVar("GamePadCameraYawSpeed", 0)
+		SetCVar("GamePadCameraPitchSpeed", 0)
+		isThawing = false
+	end
+	function OR_CameraStickOverride:Release()
+		if hasStoredState and not isThawing then
+			isThawing, thawL, thawH = true, OR_GetRingOption(nil, "PSThawDuration"), OR_GetRingOption(nil, "PSThawHold")
+			thawEnd = thawL + GetTime()
+			thawFrame:Show()
+		end
+	end
+	function EV:PLAYER_LOGOUT()
+		if hasStoredState then
+			SetCVar("GamePadCameraYawSpeed", storedYaw)
+			SetCVar("GamePadCameraPitchSpeed", storedPitch)
+		end
+	end
 end
 function OR_SecCore:NotifyState(state, _ringName, collection, ...)
 	if state == "open" then
 		MouselookStop()
-		local bind, fastClick, fastOpen, ms = OR_SecEnv.AIP_Binding or "", ...
-		OR_ModifierLockState = (ms:match("A") or bind:match("ALT%-") and "a" or "-") .. (ms:match("S") or bind:match("SHIFT%-") and "s" or "-") .. (ms:match("C") or bind:match("CTRL%-") and "c" or "-")
-		OR_ActiveCollectionID, OR_ActiveRingName, OR_ActiveSliceCount = collection, OR_SecEnv.activeRing.name, #OR_SecEnv.openCollection
+		local fastClick, fastOpen, ms = ...
+		OR_ActiveCollectionID, OR_ActiveRingName, OR_ActiveSliceCount, OR_ModifierLockState = collection, OR_SecEnv.activeRing.name, #OR_SecEnv.openCollection, ms
 		if ORI then
 			securecall(ORI.Show, ORI, collection, fastClick, fastOpen, self)
+		end
+		local psm = MODERN and C_GamePad.IsEnabled() and OR_SecEnv.ORL_GlobalOptions.PadSupportMode
+		if psm == "freelook" then
+			if not OR_PadRestoreState.saved then
+				OR_PadRestoreState.InFreeLook = IsGamePadFreelookEnabled()
+				OR_PadRestoreState.InCursorControl = IsGamePadCursorControlEnabled()
+				OR_PadRestoreState.saved = true
+			end
+			if OR_GetRingOption(nil, "PSSwitchOnOpen") then
+				SetGamePadFreeLook(true)
+				SetGamePadCursorControl(false)
+				OR_CameraStickOverride:Lock()
+			end
+		elseif psm == "cursor" then
+			if not OR_PadRestoreState.saved then
+				OR_PadRestoreState.InFreeLook = IsGamePadFreelookEnabled()
+				OR_PadRestoreState.InCursorControl = IsGamePadCursorControlEnabled()
+				OR_PadRestoreState.saved = true
+			end
+			if OR_GetRingOption(nil, "PSSwitchOnOpen") then
+				SetGamePadFreeLook(false)
+				SetGamePadCursorControl(true)
+			end
 		end
 	elseif state == "switch" then
 		OR_ActiveCollectionID, OR_ActiveSliceCount = collection, #OR_SecEnv.openCollection
@@ -720,6 +822,14 @@ function OR_SecCore:NotifyState(state, _ringName, collection, ...)
 			securecall(ORI.Hide, ORI, ...)
 		end
 		OR_ActiveSliceCount, OR_ActiveCollectionID, OR_ActiveRingName = 0
+		OR_CameraStickOverride:Release()
+		if OR_PadRestoreState.saved then
+			if OR_GetRingOption(nil, "PSRestoreOnClose") then
+				SetGamePadFreeLook(OR_PadRestoreState.InFreeLook)
+				SetGamePadCursorControl(OR_PadRestoreState.InCursorControl)
+			end
+			OR_PadRestoreState.saved = nil
+		end
 	end
 end
 
@@ -740,7 +850,12 @@ local function OR_ForceResync(filter)
 	if (filter or true) == true then
 		OR_DeferExecute([[-- SyncGlobalOptions
 			ORL_GlobalOptions.OpenNestedRingBinding, ORL_GlobalOptions.ScrollNestedRingUpBinding, ORL_GlobalOptions.ScrollNestedRingDownBinding = %s, %s, %s
-		]], safequote(OR_GetRingOption(nil, "OpenNestedRingButton")), safequote(OR_GetRingOption(nil, "ScrollNestedRingUpButton")), safequote(OR_GetRingOption(nil, "ScrollNestedRingDownButton")))
+			ORL_GlobalOptions.PadSupportMode = %s]],
+			safequote(OR_GetRingOption(nil, "OpenNestedRingButton")),
+			safequote(OR_GetRingOption(nil, "ScrollNestedRingUpButton")),
+			safequote(OR_GetRingOption(nil, "ScrollNestedRingDownButton")),
+			safequote(MODERN and OR_GetRingOption(nil, "PadSupportMode") or "none")
+		)
 	end
 end
 local function OR_CheckBindings()
@@ -777,10 +892,6 @@ local function OR_InitConfigState()
 			configRoot[k] = v
 		end
 	end
-	if GetCVarBool("enableWowMouse") then
-		defaultConfig.PrimaryButton, defaultConfig.SecondaryButton = "BUTTON12", "BUTTON13"
-	end
-
 	for t in ("CharProfiles PersistentStorage ProfileStorage"):gmatch("%S+") do
 		if type(configRoot[t]) ~= "table" then configRoot[t] = {} end
 	end
@@ -891,6 +1002,39 @@ local function cmpRingProps(a, b)
 		ac, bc = (a.name or a.internalName), (b.name or b.internalName)
 	end
 	return ac < bc
+end
+
+local private = {}
+function private:GetActivePointerStick()
+	local stick = 2
+	if OR_SecEnv.ORL_GlobalOptions.PadSupportMode == "freelook" and C_GamePad.IsEnabled() and IsGamePadFreelookEnabled() and not IsGamePadCursorControlEnabled() then
+		local ms = C_GamePad.GetDeviceMappedState()
+		local st = ms and ms.sticks
+		st = st and st[stick]
+		if st then
+			return stick, st.x, st.y, st.len
+		end
+	end
+end
+function private:GetSVState()
+	return OR_LoadedState
+end
+function private:RegisterOption(name, default, validator)
+	assert(type(name) == "string" and default ~= nil and (validator == nil or type(validator) == "function"), 'Syntax: api:RegisterOption("name", defaultValue[, validatorFunc])', 2)
+	assert(defaultConfig[name] == nil and PersistentStorageInfo[name] == nil, "Option %q has a conflicting name", 2, name)
+	defaultConfig[name], optionValidators[name] = default, validator or false
+end
+function private:RegisterPVar(name, into, notifier, perProfile)
+	assert(type(name) == "string" and (into == nil or type(into) == "table") and (notifier == nil or type(notifier) == "function"), 'Syntax: api:RegisterPVar("name"[, storageTable[, notifierFunc[, perProfile]]])', 2)
+	assert(PersistentStorageInfo[name] == nil and defaultConfig[name] == nil, "Persistent variable %q already declared.", 2, name)
+	assert(name:match("^%a"), "%q is not a valid persistent variable name", 2, name)
+	local store, into = ((perProfile == true) and configInstance or configRoot.PersistentStorage), into or {}
+	PersistentStorageInfo[name] = {t=into, f=notifier, perProfile=perProfile == true}
+	if configInstance then
+		if store and store[name] then copy(store[name], into) end
+		OR_NotifyPVars("LOADED", into)
+	end
+	return into
 end
 
 -- Public API
@@ -1101,26 +1245,5 @@ function api:GetOpenRingSliceAction(id, id2)
 	end
 	return tok, false, 0, [[Interface\Icons\INV_Misc_QuestionMark]], "Unknown Slice", 0, 0, 0
 end
-function api:RegisterOption(name, default, validator)
-	assert(type(name) == "string" and default ~= nil and (validator == nil or type(validator) == "function"), 'Syntax: api:RegisterOption("name", defaultValue[, validatorFunc])', 2)
-	assert(defaultConfig[name] == nil and PersistentStorageInfo[name] == nil, "Option %q has a conflicting name", 2, name)
-	defaultConfig[name], optionValidators[name] = default, validator or false
-end
-function api:RegisterPVar(name, into, notifier, perProfile)
-	-- DEPRECATED: OPie-managed storage for external addons will be going away
-	assert(type(name) == "string" and (into == nil or type(into) == "table") and (notifier == nil or type(notifier) == "function"), 'Syntax: api:RegisterPVar("name"[, storageTable[, notifierFunc[, perProfile]]])', 2)
-	assert(PersistentStorageInfo[name] == nil and defaultConfig[name] == nil, "Persistent variable %q already declared.", 2, name)
-	assert(name:match("^%a"), "%q is not a valid persistent variable name", 2, name)
-	local store, into = ((perProfile == true) and configInstance or configRoot.PersistentStorage), into or {}
-	PersistentStorageInfo[name] = {t=into, f=notifier, perProfile=perProfile == true}
-	if configInstance then
-		if store and store[name] then copy(store[name], into) end
-		OR_NotifyPVars("LOADED", into)
-	end
-	return into
-end
-function api:GetSVState()
-	return OR_LoadedState
-end
 
-_G.OneRingLib, _G.OPie = api, {}
+_G.OneRingLib, _G.OPie, T.OPieCore = api, {}, private

@@ -1,5 +1,5 @@
-local api, L, RK, conf, ORI, _, T = {}, OneRingLib.lang, OneRingLib.ext.RingKeeper, OneRingLib.ext.config, OPie.UI, ...
-local MODERN = select(4,GetBuildInfo()) >= 8e4
+local api, RK, conf, ORI, _, T = {}, OneRingLib.ext.RingKeeper, OneRingLib.ext.config, OPie.UI, ...
+local L, MODERN = T.L, select(4,GetBuildInfo()) >= 8e4
 local AB = assert(T.ActionBook:compatible(2,23), "A compatible version of ActionBook is required")
 local gfxBase, EV = [[Interface\AddOns\OPie\gfx\]], T.Evie
 local CreateEdge = T.ActionBook._CreateEdge
@@ -441,12 +441,12 @@ ringDetail = CreateFrame("Frame", nil, ringContainer) do
 
 	ringDetail.editBindings = CreateButton(ringDetail, 210)
 	ringDetail.editBindings:SetPoint("TOPLEFT", ringDetail, "TOPLEFT", 292, -214)
-	ringDetail.editBindings:SetText(L"Edit slice bindings")
+	ringDetail.editBindings:SetText(L"Customize bindings")
 	ringDetail.editBindings:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.showExternalEditor("slice-binding") end)
 
 	ringDetail.editOptions = CreateButton(ringDetail, 210)
 	ringDetail.editOptions:SetPoint("TOPLEFT", ringDetail.editBindings, "BOTTOMLEFT", 0, -2)
-	ringDetail.editOptions:SetText(L"Edit OPie options")
+	ringDetail.editOptions:SetText(L"Customize options")
 	ringDetail.editOptions:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON) api.showExternalEditor("opie-options") end)
 
 	ringDetail.shareLabel = ringDetail:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -523,22 +523,13 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		c:SetScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_TOP")
 			GameTooltip:AddLine(L"Conditional Visibility")
-			GameTooltip:AddLine((L"If this macro conditional evaluates to %shide|r, or if none of its clauses apply, this slice will be hidden."):format(GREEN_FONT_COLOR_CODE), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
-			GameTooltip:AddLine((L"You may use extended macro conditionals; see |cff33DDFF%s|r for details."):format("https://townlong-yak.com/opie/extended-conditionals"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine((L"If this macro conditional evaluates to %s, or if none of its clauses apply, this slice will be hidden."):format(GREEN_FONT_COLOR_CODE .. "hide" .. "|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine((L"You may use extended macro conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[nocombat][mod]|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[combat,@target,noexists] hide; show|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:Show()
 		end)
 		c:SetScript("OnLeave", conf.ui.HideTooltip)
-	end
-	sliceDetail.caption = conf.ui.lineInput(sliceDetail, true, 260) do
-		local c = sliceDetail.caption
-		c:SetPoint("TOPLEFT", 274, -oy)
-		oy = oy + 23
-		c.label = c:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		c.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -96)
-		c.label:SetText(L"Caption:")
-		prepEditBox(c, function(self) api.setSliceProperty("caption", self:GetText()) end)
 	end
 	sliceDetail.color = conf.ui.lineInput(sliceDetail, true, 85) do
 		local c = sliceDetail.color
@@ -557,7 +548,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 			end
 		end)
 		c.label = c:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		c.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -119)
+		c.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -96)
 		c.label:SetText(L"Color:")
 		c.placeholder = c:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		c.placeholder:SetPoint("LEFT", 18, 0)
@@ -602,14 +593,14 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 	sliceDetail.icon = CreateFrame("Button", nil, sliceDetail) do
 		local f = sliceDetail.icon
 		f:SetHitRectInsets(0,-280,0,0) f:SetSize(18, 18)
-		f:SetPoint("TOPLEFT", 270, -oy)
+		f:SetPoint("TOPLEFT", 270, -oy-2)
 		oy = oy + 23
 		f:SetHighlightTexture("Interface/Buttons/ButtonHilight-Square")
 		f:SetNormalFontObject(GameFontHighlight) f:SetHighlightFontObject(GameFontGreen) f:SetPushedTextOffset(3/4, -3/4)
 		f:SetText(" ") f:GetFontString():ClearAllPoints() f:GetFontString():SetPoint("LEFT", f, "RIGHT", 4, 0)
 		f.icon = f:CreateTexture() f.icon:SetAllPoints()
 		f.label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		f.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -142)
+		f.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -119)
 		f.label:SetText(L"Icon:")
 		
 		local frame = CreateFrame("Frame", nil, f)
@@ -736,7 +727,7 @@ sliceDetail = CreateFrame("Frame", nil, ringContainer) do
 		e:SetScript("OnLeave", conf.ui.HideTooltip)
 		e.Text:SetText(L"Allow as quick action")
 		e.label = sliceDetail:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		e.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -165)
+		e.label:SetPoint("TOPLEFT", sliceDetail, "TOPLEFT", 10, -142)
 		e.label:SetText(L"Options:")
 		oy = oy + 21
 	end
@@ -1527,7 +1518,7 @@ end
 function api.updateSliceDisplay(_id, desc)
 	local stype, sname, sicon, icoext = getSliceInfo(desc)
 	if sname ~= "" then
-		sliceDetail.desc:SetFormattedText("%s: |cffffffff%s|r", L(stype or "?"), L(sname or "?"))
+		sliceDetail.desc:SetFormattedText("%s: |cffffffff%s|r", stype or "?", sname or "?")
 	else
 		sliceDetail.desc:SetText(stype or "?")
 	end
@@ -1537,7 +1528,6 @@ function api.updateSliceDisplay(_id, desc)
 	sliceDetail.color:SetColor(getSliceColor(desc, sicon))
 	sliceDetail.skipSpecs:SetValue(skipSpecs)
 	sliceDetail.showConditional:SetText(showConditional or desc.show or "")
-	sliceDetail.caption:SetText(desc.caption or "")
 	api.updateSliceOptions(desc)
 	local ep = AB:GetEditorPanel(desc[1])
 	local desc2 = ep and shallowCopyArrayAndKeys(desc, {}, AB:GetActionOptions(desc[1])) or nil

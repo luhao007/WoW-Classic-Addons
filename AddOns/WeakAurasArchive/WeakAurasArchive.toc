@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: The WeakAuras Team
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1

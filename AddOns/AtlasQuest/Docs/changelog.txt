@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 4.11.67  (for WoW Classic)  November 11, 2020
+
+- Updates to Spanish and German localizations.
+
+
+
 Version 4.11.66  (for WoW Classic)  July 17, 2020
 
 - Added new Korean localization from LockCole.

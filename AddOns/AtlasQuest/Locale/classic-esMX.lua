@@ -4581,7 +4581,7 @@ Inst28Quest1name1 = "Quel'Serrar"
 
 --Quest 2 Alliance
 Inst28Quest2 = "2. Victoria para la Alianza" -- 7495
-Inst28Quest2_Aim = "Lleva la cabeza de Onyxia al alto señor Bolvar Fordragón en Ventormenta."
+Inst28Quest2_Aim = "Llévale la cabeza de Onyxia al alto señor Bolvar Fordragón en Ventormenta."
 Inst28Quest2_Location = "Cabeza de Onyxia (botín de Onyxia; "..YELLOW.."[3]"..WHITE..")"
 Inst28Quest2_Note = "Alto señor Bolvar Fordragón está en (Ventormenta - Castillo de Ventormenta; "..YELLOW.."78,20"..WHITE.."). Sólo un jugador en la banda puede conseguir la cabeza.\n\nLas recompensas son para la misión siguiente."
 Inst28Quest2_Prequest = "Ninguno"

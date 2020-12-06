@@ -41,6 +41,28 @@ function TSM_API.IsUIVisible(uiName)
 	end
 end
 
+--- Registers a callback function to be called when a TSM UI is shown or hidden
+-- @within UI
+-- @tparam string uiName A string which represents the UI (currently only "CRAFTING" is supported)
+-- @tparam string addonTag An arbitrary string which uniquely identifies the addon making this call and its usage (i.e. "MyAddon:CraftingButton")
+-- @tparam function func The function to call - passed `false` when hidden, and `true, frame` when shown
+function TSM_API.RegisterUICallback(uiName, addonTag, func)
+	private.CheckCallMethod(uiName)
+	if type(addonTag) ~= "string" then
+		error("Invalid `addonTag` argument type (must be a string): "..tostring(addonTag), 2)
+	elseif addonTag == "" then
+		error("Invalid `addonTag` argument (cannot be an empty string)", 2)
+	end
+	if type(func) ~= "function" then
+		error("Invalid `func` argument type (must be a function): "..tostring(func), 2)
+	end
+	if uiName == "CRAFTING" then
+		TSM.UI.CraftingUI.RegisterApiCallback(addonTag, func)
+	else
+		error("Invalid uiName: "..tostring(uiName), 2)
+	end
+end
+
 
 
 -- ============================================================================

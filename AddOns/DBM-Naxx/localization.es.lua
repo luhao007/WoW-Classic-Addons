@@ -1,4 +1,4 @@
-if GetLocale() ~= "esES" and GetLocale() ~= "esMX" then return end
+if GetLocale() ~= "esES" then return end
 local L
 
 -----------------
@@ -105,7 +105,10 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "¡Muere, intruso!"
+	Pull				= "¡Muere, intruso!",
+	AddsYell			= "¡Levantaos, soldados míos! ¡Levantaos y luchad una vez más!",
+	Adds				= "invoca a guerreros esqueletos!",
+	AddsTwo				= "alza más esqueletos!"
 })
 
 ----------------------
@@ -220,10 +223,6 @@ L:SetOptionLocalization({
 L:SetWarningLocalization({
 	WarningChargeChanged	= "Polaridad cambiada a %s",
 	WarningChargeNotChanged	= "Tu polaridad no ha cambiado"
-})
-
-L:SetOptionCatLocalization({
-	Arrows	= "Flechas"
 })
 
 --------------------------

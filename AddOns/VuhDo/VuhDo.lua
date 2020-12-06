@@ -399,8 +399,7 @@ function VUHDO_setHealth(aUnit, aMode)
                     -- Filter exception health data from UnitHealth API
                     -- UnitHealth will return 0 if the hunter cast FeignDeath 
                     -- Sometimes UnitIsDeadOrGhost return false and UnitHealth return 0 before UnitIsFeignDeath return true
-					-- elseif UnitIsFeignDeath(aUnit) or not UnitIsDeadOrGhost(aUnit) and UnitHealth(aUnit) == 0 then
-					elseif UnitIsFeignDeath(aUnit) and UnitHealth(aUnit) == 0 then
+					elseif UnitIsFeignDeath(aUnit)  or not UnitIsDeadOrGhost(aUnit) and UnitHealth(aUnit) == 0 then
 						return;
 					else 
 						tNewHealth = UnitHealth(aUnit);

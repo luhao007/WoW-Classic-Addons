@@ -1040,9 +1040,9 @@ inspectScantip:SetOwner(UIParent, "ANCHOR_NONE")
 do
 	local KitSlots = {
 		5,	--INVSLOT_CHEST
-		7,	--INVSLOT_LEGS
-		10,	--INVSLOT_HAND
-		8,	--INVSLOT_FEET
+		--7,	--INVSLOT_LEGS
+		--10,	--INVSLOT_HAND
+		--8,	--INVSLOT_FEET
 	}
 	local L_EncName = "^"..L.RaidCheckReinforced
 	if ExRT.locale == "koKR" then
@@ -1052,7 +1052,7 @@ do
 	end
 
 	function module:KitCheck()
-		local kitNow, kitMax = 0, 4
+		local kitNow, kitMax = 0, 1
 		for _,itemSlotID in pairs(KitSlots) do
 			inspectScantip:SetInventoryItem("player", itemSlotID)
 

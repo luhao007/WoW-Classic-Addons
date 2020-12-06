@@ -43,7 +43,7 @@ local MAX_PLOT_POINTS = 300
 -- ============================================================================
 
 function Graph.__init(self)
-	local frame = UIElements.CreateFrame(self, "Frame", nil, nil, TSM.IsShadowlands() and "BackdropTemplate" or nil)
+	local frame = UIElements.CreateFrame(self, "Frame", nil, nil, BackdropTemplateMixin and "BackdropTemplate" or nil)
 
 	self.__super:__init(frame)
 

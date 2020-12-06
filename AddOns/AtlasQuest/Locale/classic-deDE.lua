@@ -3947,7 +3947,7 @@ Inst22Quest5_HORDE_Folgequest = "Nein"
 
 --------------- INST23 - Razorfen Downs ---------------
 
-Inst23Caption = "Die Hügel der Razorfen"
+Inst23Caption = "Die Hügel von Razorfen"
 Inst23QAA = "3 Quests"
 Inst23QAH = "4 Quests"
 
@@ -4028,7 +4028,7 @@ Inst23Quest4name2_HORDE = Inst23Quest3name2
 
 --------------- INST24 - Razorfen Kraul ---------------
 
-Inst24Caption = "Der Kral der Razorfen"
+Inst24Caption = "Der Kral von Razorfen"
 Inst24QAA = "5 Quests"
 Inst24QAH = "5 Quests"
 

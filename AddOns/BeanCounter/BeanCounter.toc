@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Norganna's AddOns
 ## Version: 8.2.6434 (SwimmingSeadragon)
 ## Dependencies: Stubby
@@ -18,4 +18,3 @@
 
 libs\Load.xml
 Embed.xml
-

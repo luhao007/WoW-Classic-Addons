@@ -73,7 +73,7 @@ function VUHDO_parseAddonMessage(aPrefix, aMessage, aUnitName)
 		if VUHDO_parseVuhDoMessage then
 			VUHDO_parseVuhDoMessage(aUnitName, aMessage);
 		elseif not tHasShownError then
-			VUHDO_Msg("VuhDo 设定选项模组没有载入：无法接收来自其他玩家的数据。", 1, 0.4, 0.4);
+			VUHDO_Msg("VuhDo Options module not loaded: You cannot receive data from other players.", 1, 0.4, 0.4);
 			tHasShownError = true;
 		end
 
@@ -191,7 +191,7 @@ function VUHDO_initCliqueSupport()
 	if not VUHDO_CONFIG["IS_CLIQUE_COMPAT_MODE"] then return; end
 
 	if not IsAddOnLoaded("Clique") then
-		VUHDO_Msg("警告：Clique 相容模式已经启用，但似乎没有载入 Clique!", 1, 0.4, 0.4);
+		VUHDO_Msg("WARNING: Clique compatibility mode is enabled but clique doesn't seem to be loaded!", 1, 0.4, 0.4);
 	end
 
 	ClickCastFrames = ClickCastFrames or {};

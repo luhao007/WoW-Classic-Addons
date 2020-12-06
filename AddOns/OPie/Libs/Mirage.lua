@@ -15,8 +15,7 @@ local darken do
 	end
 end
 local function shortBindName(bind)
-	local a, s, c, k = bind:match("ALT%-"), bind:match("SHIFT%-"), bind:match("CTRL%-"), bind:match("[^-]*.$"):gsub("^(.).-(%d+)$","%1%2")
-	return (a and "A" or "") .. (s and "S" or "") .. (c and "C" or "") .. k
+	return GetBindingText(bind, 1)
 end
 local CreateQuadTexture do
 	local function qf(f)
@@ -207,8 +206,8 @@ local CreateCooldown do
 					self[4+i]:SetShown(i > pos or (i == pos and not sp))
 					if i > pos then
 						self[i]:SetSize(24, 24)
-						local L, T = i > 2, i == 1 or i == 4
-						self[i]:SetTexCoord(L and 0 or 0.5, L and 0.5 or 1, T and 0 or 0.5, T and 0.5 or 1)
+						local l, t = i > 2, i == 1 or i == 4
+						self[i]:SetTexCoord(l and 0 or 0.5, l and 0.5 or 1, t and 0 or 0.5, t and 0.5 or 1)
 						self[4+i]:SetSize(21*scale, 21*scale)
 					end
 				end

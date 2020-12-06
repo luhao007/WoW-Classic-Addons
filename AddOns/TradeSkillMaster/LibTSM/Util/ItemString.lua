@@ -27,6 +27,9 @@ local PET_CAGE_ITEM_STRING = "i:82800"
 local MINIMUM_VARIANT_ITEM_ID = 152632
 local IMPORTANT_MODIFIER_TYPES = {
 	[9] = true,
+	[28] = true,
+	[29] = true,
+	[30] = true,
 }
 
 

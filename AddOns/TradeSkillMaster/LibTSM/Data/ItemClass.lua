@@ -86,7 +86,7 @@ do
 	end
 	sort(STATIC_DATA.classes, function(a, b) return STATIC_DATA.classIdLookup[strlower(a)] < STATIC_DATA.classIdLookup[strlower(b)] end)
 
-	if TSM.IsShadowlands() then
+	if not TSM.IsWowClassic() then
 		for _, id in pairs(Enum.InventoryType) do
 			local invType = GetItemInventorySlotInfo(id)
 			if invType then

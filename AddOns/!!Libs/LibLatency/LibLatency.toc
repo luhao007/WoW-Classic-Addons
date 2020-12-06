@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 90002
 ## Title: Lib: Latency
 ## Notes: A library for transmitting and receiving latency information of players.
 ## Author: Funkydude
@@ -7,4 +7,3 @@
 ## X-License: CC BY-NC-SA 3.0
 
 LibLatency\LibLatency.xml
-

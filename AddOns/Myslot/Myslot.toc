@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Boshi Lian(farmer1992@gmail.com)
 ## Version: v5.3.4-classic
 ## SavedVariables: MyslotExports

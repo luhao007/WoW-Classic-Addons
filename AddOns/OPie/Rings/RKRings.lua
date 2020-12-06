@@ -44,7 +44,7 @@ R:SetRing("DruidShift", {
 	{c="c74cff", id=24858, _u="k"}, -- Moonkin
 	{c="fff04d", id=768, _u="c"}, -- Cat
 	{c="ff0000", id=5487, _u="b"}, -- Bear
-	name=L"Shapeshifts", hotkey="PRIMARY", limit="DRUID", _u="OPCDS"
+	name=L"Shapeshifts", hotkey="BUTTON4", limit="DRUID", _u="OPCDS"
 })
 R:SetRing("DruidUtility", {
 	{id="/cast [combat][mod,nomod:alt] {{spell:20484}}; [@target,nodead,group,nomod] {{spell:212040}}; {{spell:50769}}", _u="r"}, -- rebirth/revit/revive
@@ -53,7 +53,7 @@ R:SetRing("DruidUtility", {
 	{id="/cast {{spell:33891/102560}}", _u="i"}, -- Incarnation
 	{id="/cast [mod][+cleanse] {{spell:88423/2782}}; {{spell:18960/193753}}", _u="p"}, -- moonglade/cleanse
 	{id=29166, _u="v"}, -- innervate
-	name=L"Utility", hotkey="[noform:bear/cat] SECONDARY; ALT-SECONDARY", limit="DRUID", _u="OPCDU"
+	name=L"Utility", hotkey="[noform:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDU"
 })
 R:SetRing("DruidFeral", {
 	{id=106951, _u="k"}, -- berserk
@@ -65,7 +65,7 @@ R:SetRing("DruidFeral", {
 	{id=102401, _u="c"}, -- feral charge
 	{id="/cast {{spell:102543/102558}}", _u="n"}, -- Incarnation
 	{id="/cast [nomod,@player][mod,@none] {{spell:8936}}", show="[spec:102/104/105] hide;", _u="h"}, -- Regrowth
-	name=L"Feral", hotkey="[form:bear/cat] SECONDARY; ALT-SECONDARY", limit="DRUID", _u="OPCDF"
+	name=L"Feral", hotkey="[form:bear/cat] BUTTON5; ALT-BUTTON5", limit="DRUID", _u="OPCDF"
 })
 
 do -- Hunter Pets
@@ -86,13 +86,13 @@ R:SetRing("HunterAspects", {
 	{id=5384, _u="g"}, -- feign
 	{"ring", "HunterPets", onlyNonEmpty=true, _u="e", show="[nospec:2][notalent:15.1]"},
 	{id=147362, _u="i"}, -- counter
-	name=L"Aspects", hotkey="PRIMARY", limit="HUNTER", _u="OPCHA"
+	name=L"Aspects", hotkey="BUTTON4", limit="HUNTER", _u="OPCHA"
 })
 R:SetRing("HunterTraps", {
 	{id=191433, _u="e"}, -- explosive
 	{id=187650, _u="f"}, -- freezing
 	{id=187698, _u="t"}, -- tar/caltrops
-	name=L"Traps", hotkey="[spec:3] SECONDARY", limit="HUNTER", _u="OPCHT"
+	name=L"Traps", hotkey="[spec:3] BUTTON5", limit="HUNTER", _u="OPCHT"
 })
 
 R:SetRing("MageCombat", {
@@ -105,7 +105,7 @@ R:SetRing("MageCombat", {
 	{id=80353, _u="t"}, -- time warp
 	{id=11426, _u="i"}, -- ice barrier
 	{id=190319, _u="c"}, -- combustion
-	name=L"Combat", limit="MAGE", hotkey="PRIMARY", _u="OPCMC"
+	name=L"Combat", limit="MAGE", hotkey="BUTTON4", _u="OPCMC"
 })
 R:SetRing("MageTools", {
 	{id=42955, _u="f"}, -- food
@@ -113,7 +113,7 @@ R:SetRing("MageTools", {
 	{"ring", "MagePolymorph", onlyNonEmpty=true, _u="t"},
 	{id=130, _u="s"}, -- slow fall
 	{id=1459, _u="n"}, -- intellect
-	name=L"Utility", limit="MAGE", hotkey="SECONDARY", _u="OPCMT"
+	name=L"Utility", limit="MAGE", hotkey="BUTTON5", _u="OPCMT"
 })
 R:SetRing("MagePolymorph", {
 	{id=118, _u="s"}, -- sheep
@@ -164,7 +164,7 @@ R:SetRing("PaladinAuras", {
 	{id=1022, _u="t"}, -- hand of protection
 	{id=1044, _u="e"}, -- hand of freedom
 	{id=25780, _u="f"}, -- righteous fury
-	name=L"Paladin Buffs", hotkey="PRIMARY", limit="PALADIN", _u="OPCPA"
+	name=L"Paladin Buffs", hotkey="BUTTON4", limit="PALADIN", _u="OPCPA"
 })
 R:SetRing("PaladinBlessing", {
 	{id=203538, _u="k"}, -- kings
@@ -179,7 +179,7 @@ R:SetRing("PaladinTools", {
 	{id=26573, _u="c"}, -- consecration
 	{id=183218, _u="i"}, -- hand of hindrance
 	{id=213644, _c="l"}, -- cleanse
-	name=L"Utility", limit="PALADIN", hotkey="SECONDARY", _u="OPCPT"
+	name=L"Utility", limit="PALADIN", hotkey="BUTTON5", _u="OPCPT"
 })
 R:SetRing("WarlockLTS", {
 	{"ring", "WarlockDemons", _u="d"},
@@ -188,7 +188,7 @@ R:SetRing("WarlockLTS", {
 	{id=111771, _u="w"}, -- gateway
 	{"ring", "WarlockGuardians", _u="g"},
 	{id="/cast [flyable,nocombat,nomod] {{mount:air}}; [outdoors,nocombat,nomod:alt] {{mount:ground}}; {{spell:126}}", _u="e"}, -- mount/eye
-	name=L"Warlock General", hotkey="PRIMARY", limit="WARLOCK", _u="OPCLS"
+	name=L"Warlock General", hotkey="BUTTON4", limit="WARLOCK", _u="OPCLS"
 })
 R:SetRing("WarlockCombat", {
 	{id="/cast [nomod] {{spell:48018}}; {{spell:48020}}", _u="t"}, -- demonic circle
@@ -197,7 +197,7 @@ R:SetRing("WarlockCombat", {
 	{id="/cast {{spell:111400}}; {{spell:111397}}; {{spell:108482}}", _u="m"}, -- tier 4 talents [combat-ish]
 	{id=5782, _u="f"}, -- fear
 	{id=5484, _u="h"}, -- howl
-	name=L"Warlock Combat", hotkey="SECONDARY", limit="WARLOCK", _u="OPCLO"
+	name=L"Warlock Combat", hotkey="BUTTON5", limit="WARLOCK", _u="OPCLO"
 })
 R:SetRing("WarlockDemons", {
 	{id=30146, _u="f"}, -- felguard
@@ -221,7 +221,7 @@ R:SetRing("DKCombat", {
 	{c="b31500", id=55233, _u="b"}, -- blood
 	{c="aef1ff", id=51271, _u="p"}, -- pillar of frost
 	{c="d0d0d0", id=49039, _u="l"}, -- lich
-	name=L"Combat", hotkey="SECONDARY", limit="DEATHKNIGHT", _u="OPCDC"
+	name=L"Combat", hotkey="BUTTON5", limit="DEATHKNIGHT", _u="OPCDC"
 })
 
 R:SetRing("WorldMarkers", {

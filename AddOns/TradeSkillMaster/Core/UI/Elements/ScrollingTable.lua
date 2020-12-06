@@ -37,7 +37,7 @@ local SCROLL_TO_DATA_TOTAL_TIME_S = 0.1
 -- ============================================================================
 
 function ScrollingTable.__init(self)
-	local frame = UIElements.CreateFrame(self, "Frame", nil, nil, TSM.IsShadowlands() and "BackdropTemplate" or nil)
+	local frame = UIElements.CreateFrame(self, "Frame", nil, nil, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	self.__super:__init(frame)
 
 	frame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })

@@ -10,7 +10,7 @@ end
 -- default "constants" like #define in C :)
 MONKEYQUEST_DELAY							= 0.3;
 MONKEYQUEST_PADDING							= 25;
-MONKEYQUEST_MAX_BUTTONS						= 50;
+MONKEYQUEST_MAX_BUTTONS						= 60;
 
 -- default settings
 MONKEYQUEST_DEFAULT_CRASHCOLOUR				= { r = 1.0, g = 0.6901960784313725, b = 0.0 };

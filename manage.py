@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 from pathlib import Path
+from typing import Optional
 
 from defusedxml import ElementTree
 
@@ -12,14 +13,10 @@ from utils import process_file, rm_tree
 
 logger = logging.getLogger('manager')
 
-CLASSIC_VER = '11305'
-RETAIL_VER = '90001'
-NOT_WORKING = ['ItemRack', 'GarrisonMissionManager'
-               'MasterPlan', 'HandyNotes_DraenorTreasures',
-               'HandyNotes_LegionRaresTreasures',
-               'HandyNotes_HallowsEnd', 'UnitFramesPlus',
-               'ButtonForge', 'NPCScan', 'HPetBattleAny',
-               'Overachiever', 'Details_TimeLine']
+CLASSIC_VER = '11306'
+RETAIL_VER = '90002'
+NOT_WORKING = ['ItemRack', 'HandyNotes_DraenorTreasures', 'HandyNotes_LegionRaresTreasures',
+               'HPetBattleAny', 'Details_TimeLine']
 
 
 def classic_only(func):
@@ -68,13 +65,13 @@ class Manager:
 
         process_file(path, f)
 
-    def remove_libraries_all(self, addon, lib_path=None):
+    def remove_libraries_all(self, addon, lib_path: Optional[str] = None):
         """Remove all embedded libraries."""
         if not lib_path:
             for p in ['libs', 'lib']:
                 path = Path('Addons') / addon / p
                 if os.path.exists(path):
-                    lib_path = p
+                    lib_path = str(p)
                     break
             else:
                 return
@@ -260,13 +257,12 @@ class Manager:
                                 dirs_exist_ok=True)
                 shutil.rmtree(root/lib)
 
-    def handle_lib_in_libs(self):
-        root = Path('AddOns/!!Libs')
+    def _handle_lib_in_libs(self, root):
         for lib in os.listdir(root):
             if not os.path.isdir(root/lib) or lib == 'Ace3':
                 continue
 
-            embeds = ['CallbackHandler-1.0', 'LibStub', 'LibStub-1.0']
+            embeds = ['CallbackHandler-1.0', 'LibStub', 'LibStub-1.0', 'HereBeDragons']
             for p in ['libs', 'lib']:
                 if os.path.exists(root / lib / p):
                     embeds.append(p)
@@ -286,6 +282,10 @@ class Manager:
                     if os.path.exists(p):
                         self.remove_libs_in_file(p, embeds)
 
+    def handle_lib_in_libs(self):
+        self._handle_lib_in_libs(Path('AddOns/!!Libs'))
+        self._handle_lib_in_libs(Path('AddOns/!!Libs/LibBabble'))
+
     ##########################
     # Handle individual addons
     ##########################
@@ -303,18 +303,21 @@ class Manager:
                        'HandyNotes_NPCs (Classic)', 'PallyPower',
                        'TradeLog', 'TitanClassic', 'WclPlayerScore']
         else:
-            addons += ['AllTheThings', 'Details_ChartViewer',
+            addons += ['AllTheThings', 'Details', 'Details_ChartViewer',
                        'Details_DeathGraphs', 'Details_EncounterDetails',
                        'Details_RaidCheck', 'Details_TimeLine',
                        'Details_Vanguard', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
                        'HandyNotes_Argus', 'HandyNotes_BrokenShore',
+                       'HandyNotes_BattleForAzeroth',
+                       'HandyNotes_Draenor',
                        'HandyNotes_DraenorTreasures',
                        'HandyNotes_LegionRaresTreasures',
+                       'HandyNotes_Shadowlands',
                        'HandyNotes_SuramarShalAranTelemancy',
                        'HandyNotes_TimelessIsleChests',
                        'HandyNotes_VisionsOfNZoth',
-                       'HandyNotes_WarfrontRares', 'NPCScan', 'Omen',
+                       'NPCScan', 'Omen',
                        'RelicInspector', 'Simulationcraft', 'Titan']
 
         for addon in addons:
@@ -449,19 +452,6 @@ class Manager:
         )
 
     def handle_details(self):
-        self.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-             'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-             'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0', 'DF',
-             'LibBossIDs-1.0', 'LibClassicCasterino', 'LibCompress',
-             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-             'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-             'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0'],
-            'AddOns/Details/Libs',
-            'AddOns/Details/Libs/libs.xml'
-        )
-
         self.change_defaults(
             'Addons/Details/functions/profiles.lua',
             ('		minimap = {hide = true, radius = 160, minimapPos = 220, '
@@ -814,11 +804,28 @@ class Manager:
                            if 'EmbeddedLibs' not in line]
         )
 
-    @classic_only
     def handle_ufp(self):
-        rm_tree('AddOns/UnitFramesPlus_MobHealth')
+        if self.is_classic:
+            rm_tree('AddOns/UnitFramesPlus_MobHealth')
 
-        self.remove_libraries_all('UnitFramesPlus_Cooldown')
+            self.remove_libraries_all('UnitFramesPlus_Cooldown')
+
+        def f(lines):
+            ret = []
+            minimap = False
+            for line in lines:
+                if 'minimap = {' in line:
+                    minimap = True
+
+                if minimap and 'button' in line:
+                    ret.append('        button = 0,\n')
+                    minimap = False
+                else:
+                    ret.append(line)
+            return ret
+
+        process_file('Addons/UnitFramesPlus/UnitFramesPlus.lua', f)
+
 
     def handle_vuhdo(self):
         self.remove_libraries(
@@ -866,6 +873,7 @@ class Manager:
             '      db.minimap = db.minimap or { hide = true };'
         )
 
+    @classic_only
     def handle_wim(self):
         self.remove_libraries(
             ['CallbackHandler-1.0', 'ChatThrottleLib', 'LibChatAnims',

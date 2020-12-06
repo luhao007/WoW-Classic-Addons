@@ -1,5 +1,5 @@
 local RingKeeper, _, T = {}, ...
-local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, SV = {}, {}, 2, 50, T.Evie
+local RK_RingDesc, RK_CollectionIDs, RK_Version, RK_Rev, EV, PC, SV = {}, {}, 2, 50, T.Evie, T.OPieCore
 local unlocked, queue, RK_DeletedRings, RK_FlagStore, sharedCollection = false, {}, {}, {}, {}
 local MODERN = select(4,GetBuildInfo()) >= 8e4
 
@@ -729,5 +729,5 @@ function RingKeeper:QuantizeMacro(macrotext)
 	return RK_QuantizeMacro(macrotext)
 end
 
-SV, OneRingLib.ext.RingKeeper = OneRingLib:RegisterPVar("RingKeeper", SV, svInitializer), RingKeeper
+SV, OneRingLib.ext.RingKeeper = PC:RegisterPVar("RingKeeper", SV, svInitializer), RingKeeper
 AB:AddObserver("internal.collection.preopen", abPreOpen)

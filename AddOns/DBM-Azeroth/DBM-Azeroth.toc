@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMAzeroth_AllSavedVars

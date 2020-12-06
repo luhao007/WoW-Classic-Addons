@@ -1,6 +1,6 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: mystadio
-## Version: 11304
+## Version: 11306
 ## LoadOnDemand: 0
 ## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
 ## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded

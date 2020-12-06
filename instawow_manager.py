@@ -39,13 +39,13 @@ class InstawowManager:
         return query.order_by(Pkg.source, Pkg.name).all()
 
     def reinstall(self):
-        addons = instawow.cli.parse_into_defn_from_json_file(
+        addons = list(instawow.cli.parse_into_defn_from_json_file(
             self.manager,
-            f'{self.profile}.json'
-        )
+            Path(f'{self.profile}.json')
+        ))
 
         results = self.manager.run(self.manager.install(addons, replace=False))
-        print(instawow.cli.Report(results))
+        print(instawow.cli.Report(results.items()))
 
     def update(self):
         addons = [Defn.from_pkg(p) for p in self.get_addons()]
@@ -59,12 +59,16 @@ class InstawowManager:
 
     def install(self, addons):
         addons = instawow.cli.parse_into_defn(self.manager, addons)
+        if isinstance(addons, Defn):
+            addons = [addons]
         results = self.manager.run(self.manager.install(addons, replace=False))
         print(instawow.cli.Report(results.items()))
 
     def remove(self, addons):
         addons = instawow.cli.parse_into_defn(self.manager, addons)
-        results = self.manager.run(self.manager.remove(addons))
+        if isinstance(addons, Defn):
+            addons = [addons]
+        results = self.manager.run(self.manager.remove(addons, False))
         print(instawow.cli.Report(results.items()))
 
     def show(self):

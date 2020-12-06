@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Trentin, Jim-Bim
 ## Dependencies: MonkeyLibrary
 ## OptionalDeps: MonkeyQuest, MonkeySpeed, MonkeyClock, myAddOns

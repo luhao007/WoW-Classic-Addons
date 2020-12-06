@@ -41,8 +41,6 @@ L["ICON_SIZE"] = "Tamaño del Icono"
 L["ICON_SIZE_TOOLTIP"] = "Establece el tamaño del icono de hechizo de la barra de lanzamiento."
 L["IGNORE_PARENT_ALPHA"] = "Ignorar alfa del marco primario"
 L["IGNORE_PARENT_ALPHA_TOOLTIP"] = "Ignora la transparencia/valor alfa heredado del marco primario de barras de lanzamiento."
-L["LSM_TEXTURE_NOTE"] = [=[
-Nota: Si usa una textura / fuente de terceros personalizada y la elimina más adelante de su ordenador, deberá restablecer manualmente la textura o fuente aquí para que el complemento continúe funcionando.]=]
 L["NAMEPLATE"] = "Placa identificativa"
 L["PARTY"] = "Grupo"
 L["PER_CHARACTER"] = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0:0:0:-1|tConfiguraciones Específicas de Personaje"
@@ -64,12 +62,6 @@ L["STATUS_UNINTERRUPTIBLE_COLOR"] = "Seleccionar Color de Relleno Ininterrumpibl
 L["TARGET"] = "Objetivo"
 L["TEST"] = "Alternar Probando"
 L["TEST_MODE_DRAG"] = "Modo de Prueba - Arrastre para Mover"
-L["TEST_PLATE_TOOLTIP"] = [=[Muestra la barra de lanzamiento de la placa identificativa para la prueba. Puedes arrastrar la barra de lanzamiento para moverla.
-Tendrá que apuntar a alguien y hacer que la placa identificativa esté visible para ver la barra de lanzamiento de prueba.
-]=]
-L["TEST_TARGET_TOOLTIP"] = [=[Muestra la barra de lanzamiento del marco del objetivo para la prueba. Puedes arrastrar la barra de lanzamiento para moverla.
-Tendrá que apuntar a alguien primero para ver la barra de lanzamiento de prueba.
-]=]
 L["TEXT_COLOR"] = "Seleccionar Color de Texto"
 L["TEXT_POINT"] = "Alineación del texto"
 L["TEXT_POS_X"] = "Posición de Texto X"

@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Dejablue, Kakjens, loudsoul
 ## Version: 1305r004
 ## SavedVariables: DCS_ClassSpecDB

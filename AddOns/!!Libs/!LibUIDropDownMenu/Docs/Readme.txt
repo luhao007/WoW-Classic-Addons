@@ -1,3 +1,5 @@
+$Id: Readme.txt 64 2020-11-18 13:13:15Z arithmandar $
+
 == About ==
 Standard UIDropDownMenu global functions using protected frames and causing taints 
 when used by third-party addons. But it is possible to avoid taints by using same 
@@ -11,11 +13,61 @@ and functions renamed to:
 * functions: "L_" added at the start
 
 == How to use it (for addon developer) ==
-* Embed LibUIDropDownMenu to your addon, you can specify to the folder to 
-  LibUIDropDownMenu\LibUIDropDownMenu if you feel this keep the folder cleaner.
-* Add LibUIDropDownMenu.xml to your toc or your embeds.xml / libs.xml. 
-* If your addon doesn't embed LibStub, you will need it.
-* Like ordinal code for UIDropDownMenu with "L_" instead.
+=== Initial Preparation ===
+Assuming your addon is using all the UIDropDownMenu functions from the WoW's 
+built in function calls, then it is suggested that you have below preparation 
+in your lua codes:
+    local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
+=== Function Call Replacement ===
+Depends on which UIDropDownMenu's function calls you have used in your addon, 
+you will need below similar replacement:
+
+    UIDropDownMenu_Initialize => LibDD:UIDropDownMenu_Initialize
+    UIDropDownMenu_CreateInfo => LibDD:UIDropDownMenu_CreateInfo
+    UIDropDownMenu_AddButton => LibDD:UIDropDownMenu_AddButton
+
+    UIDropDownMenu_AddSeparator => LibDD:UIDropDownMenu_AddSeparator
+    UIDropDownMenu_AddSpace=> LibDD:UIDropDownMenu_AddSpace
+
+    UIDropDownMenu_SetSelectedValue => LibDD:UIDropDownMenu_SetSelectedValue
+    UIDropDownMenu_SetSelectedName=> LibDD:UIDropDownMenu_SetSelectedName
+
+    UIDropDownMenu_SetSelectedID => LibDD:UIDropDownMenu_SetSelectedID
+    UIDropDownMenu_SetWidth => LibDD:UIDropDownMenu_SetWidth
+
+    CloseDropDownMenus => LibDD:CloseDropDownMenus
+
+=== Creating new UIDropDownMenu ===
+Traditionally you will either create a new frame in your lua codes or with 
+XML by setting the frame to inherit from "UIDropDownMenuTemplate".
+
+By using this library, you will need to create your menu from like below:
+    local frame = LibDD:Create_UIDropDownMenu("MyDropDownMenu", parent_frame)
+
+== Button Name ==
+As you (the developers) might be aware that at some point you might need to 
+manipulate the dropdowns by accessing the button names. For example, you have 
+multiple levels of menus and you would like to hide or show some level's menu 
+button. In that case, you need to make sure you also revise the button name 
+used in your original codes when you are migrating to use LibUIDropDownMenu.
+
+    "L_DropDownList"..i
+
+Example:
+
+	for i = 1, L_UIDROPDOWNMENU_MAXLEVELS, 1 do
+		dropDownList = _G["L_DropDownList"..i];
+		if ( i >= L_UIDROPDOWNMENU_MENU_LEVEL or frame ~= L_UIDROPDOWNMENU_OPEN_MENU ) then
+			dropDownList.numButtons = 0;
+			dropDownList.maxWidth = 0;
+			for j=1, L_UIDROPDOWNMENU_MAXBUTTONS, 1 do
+				button = _G["L_DropDownList"..i.."Button"..j];
+				button:Hide();
+			end
+			dropDownList:Hide();
+		end
+	end
 
 == Constants ==
 * L_UIDROPDOWNMENU_MINBUTTONS
@@ -32,60 +84,60 @@ and functions renamed to:
 * L_OPEN_DROPDOWNMENUS
 
 == Functions ==
-* L_EasyMenu
-* L_EasyMenu_Initialize
+* lib:EasyMenu
+* lib:EasyMenu_Initialize
 
-* L_UIDropDownMenuDelegate_OnAttributeChanged
-* L_UIDropDownMenu_InitializeHelper
-* L_UIDropDownMenu_Initialize
-* L_UIDropDownMenu_SetInitializeFunction
-* L_UIDropDownMenu_RefreshDropDownSize
-* L_UIDropDownMenu_OnUpdate
-* L_UIDropDownMenu_StartCounting
-* L_UIDropDownMenu_StopCounting
-* L_UIDropDownMenu_CheckAddCustomFrame
-* L_UIDropDownMenu_CreateInfo
-* L_UIDropDownMenu_CreateFrames
-* L_UIDropDownMenu_AddSeparator
-* L_UIDropDownMenu_AddButton
-* L_UIDropDownMenu_AddSeparator
-* L_UIDropDownMenu_GetMaxButtonWidth
-* L_UIDropDownMenu_GetButtonWidth
-* L_UIDropDownMenu_Refresh
-* L_UIDropDownMenu_RefreshAll
-* L_UIDropDownMenu_RegisterCustomFrame
-* L_UIDropDownMenu_SetIconImage
-* L_UIDropDownMenu_SetSelectedName
-* L_UIDropDownMenu_SetSelectedValue
-* L_UIDropDownMenu_SetSelectedID
-* L_UIDropDownMenu_GetSelectedName
-* L_UIDropDownMenu_GetSelectedID
-* L_UIDropDownMenu_GetSelectedValue
-* L_UIDropDownMenuButton_OnClick
-* L_HideDropDownMenu
-* L_ToggleDropDownMenu
-* L_CloseDropDownMenus
-* L_UIDropDownMenu_OnHide
-* L_UIDropDownMenu_SetWidth
-* L_UIDropDownMenu_SetButtonWidth
-* L_UIDropDownMenu_SetText
-* L_UIDropDownMenu_GetText
-* L_UIDropDownMenu_ClearAll
-* L_UIDropDownMenu_JustifyText
-* L_UIDropDownMenu_SetAnchor
-* L_UIDropDownMenu_GetCurrentDropDown
-* L_UIDropDownMenuButton_GetChecked
-* L_UIDropDownMenuButton_GetName
-* L_UIDropDownMenuButton_OpenColorPicker
-* L_UIDropDownMenu_DisableButton
-* L_UIDropDownMenu_EnableButton
-* L_UIDropDownMenu_SetButtonText
-* L_UIDropDownMenu_SetButtonNotClickable
-* L_UIDropDownMenu_SetButtonClickable
-* L_UIDropDownMenu_DisableDropDown
-* L_UIDropDownMenu_EnableDropDown
-* L_UIDropDownMenu_IsEnabled
-* L_UIDropDownMenu_GetValue
+* lib:UIDropDownMenuDelegate_OnAttributeChanged
+* lib:UIDropDownMenu_InitializeHelper
+* lib:UIDropDownMenu_Initialize
+* lib:UIDropDownMenu_SetInitializeFunction
+* lib:UIDropDownMenu_RefreshDropDownSize
+* lib:UIDropDownMenu_OnUpdate
+* lib:UIDropDownMenu_StartCounting
+* lib:UIDropDownMenu_StopCounting
+* lib:UIDropDownMenu_CheckAddCustomFrame
+* lib:UIDropDownMenu_CreateInfo
+* lib:UIDropDownMenu_CreateFrames
+* lib:UIDropDownMenu_AddSeparator
+* lib:UIDropDownMenu_AddButton
+* lib:UIDropDownMenu_AddSeparator
+* lib:UIDropDownMenu_GetMaxButtonWidth
+* lib:UIDropDownMenu_GetButtonWidth
+* lib:UIDropDownMenu_Refresh
+* lib:UIDropDownMenu_RefreshAll
+* lib:UIDropDownMenu_RegisterCustomFrame
+* lib:UIDropDownMenu_SetIconImage
+* lib:UIDropDownMenu_SetSelectedName
+* lib:UIDropDownMenu_SetSelectedValue
+* lib:UIDropDownMenu_SetSelectedID
+* lib:UIDropDownMenu_GetSelectedName
+* lib:UIDropDownMenu_GetSelectedID
+* lib:UIDropDownMenu_GetSelectedValue
+* lib:UIDropDownMenuButton_OnClick
+* lib:HideDropDownMenu
+* lib:ToggleDropDownMenu
+* lib:CloseDropDownMenus
+* lib:UIDropDownMenu_OnHide
+* lib:UIDropDownMenu_SetWidth
+* lib:UIDropDownMenu_SetButtonWidth
+* lib:UIDropDownMenu_SetText
+* lib:UIDropDownMenu_GetText
+* lib:UIDropDownMenu_ClearAll
+* lib:UIDropDownMenu_JustifyText
+* lib:UIDropDownMenu_SetAnchor
+* lib:UIDropDownMenu_GetCurrentDropDown
+* lib:UIDropDownMenuButton_GetChecked
+* lib:UIDropDownMenuButton_GetName
+* lib:UIDropDownMenuButton_OpenColorPicker
+* lib:UIDropDownMenu_DisableButton
+* lib:UIDropDownMenu_EnableButton
+* lib:UIDropDownMenu_SetButtonText
+* lib:UIDropDownMenu_SetButtonNotClickable
+* lib:UIDropDownMenu_SetButtonClickable
+* lib:UIDropDownMenu_DisableDropDown
+* lib:UIDropDownMenu_EnableDropDown
+* lib:UIDropDownMenu_IsEnabled
+* lib:UIDropDownMenu_GetValue
 
 == List of button attributes ==
 * info.text = [STRING]  --  The text of the button

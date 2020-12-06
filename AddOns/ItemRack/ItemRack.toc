@@ -1,5 +1,6 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Gello - Updated for Classic by Rottenbeer
+## OptionalDeps: Masque
 ## SavedVariables: ItemRackSettings, ItemRackItems, ItemRackEvents
 ## SavedVariablesPerCharacter: ItemRackUser
 
@@ -7,6 +8,9 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF一键换装|r |cFFFFE00AItemRack|r
 
 ## X-Curse-Project-ID: 340903
+
+# Libraries
+Libs\Libs.xml
 
 ItemRack.lua
 ItemRack.xml

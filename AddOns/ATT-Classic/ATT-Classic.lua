@@ -2816,9 +2816,19 @@ local SoftReserveUnitOnClick = function(self, button)
 				elseif IsGUIDInGroup(guid) then
 					app.print("You must be the Master Looter to do that.");
 					return true;
+				else
+					-- You can do whatever you want to non-group members.
+					app:ShowPopupDialog((self.ref.text or RETRIEVING_DATA) .. "\n \nAre you sure you want to delete this?",
+					function()
+						app:UpdateSoftReserveInternal(guid, nil);
+						app:RefreshSoftReserveWindow();
+					end);
 				end
 			end
 		elseif button == "LeftButton" then
+			if IsShiftKeyDown() or IsControlKeyDown() then
+				return false;
+			end
 			if app.IsMasterLooter() then
 				-- Master Looters can do whatever they want.
 				if self.ref.itemID then
@@ -3502,7 +3512,7 @@ app.BaseFaction = {
 			else
 				if GetTempDataSubMember("CollectedFactions", t.factionID) then return 1; end
 			end
-			if t.standing == 8 then
+			if t.standing >= t.maxstanding then
 				SetTempDataSubMember("CollectedFactions", t.factionID, 1);
 				SetDataSubMember("CollectedFactions", t.factionID, 1);
 				return 1;
@@ -3513,6 +3523,8 @@ app.BaseFaction = {
 			return nil;	-- TODO: Add a faction icon?
 		elseif key == "standing" then
 			return select(3, GetFactionInfoByID(t.factionID)) or 4;
+		elseif key == "maxstanding" then
+			return 8;
 		elseif key == "description" then
 			return select(2, GetFactionInfoByID(t.factionID)) or "Not all reputations can be viewed on a single character. IE: Warsong Outriders cannot be viewed by an Alliance Player and Silverwing Sentinels cannot be viewed by a Horde Player.";
 		elseif key == "name" then
@@ -6939,7 +6951,7 @@ app:GetWindow("Attuned", UIParent, function(self)
 		if not self.initialized then
 			self.initialized = true;
 			
-			-- Soft Reserves
+			-- Attunements
 			local instances, instanceSelector, selectedInstance, attunements;
 			instances = {
 				['text'] = 'Instances',
@@ -7021,7 +7033,7 @@ app:GetWindow("Attuned", UIParent, function(self)
 					app.CreateMap(162, {	-- Naxxramas
 						['icon'] = "Interface\\Icons\\INV_Trinket_Naxxramas03",
 						['description'] = "These are players attuned to Naxxramas.\n\nPeople can whisper you '!naxx' to mark themselves attuned.",
-						['questID'] = 9121,	-- The Dread Citadel - Naxxramas [Honored]
+						['questID'] = 9378,	-- Attunement [HIDDEN QUEST TRIGGER]
 						['visible'] = true,
 						["isRaid"] = true,
 						['back'] = 0.5,
@@ -7034,7 +7046,7 @@ app:GetWindow("Attuned", UIParent, function(self)
 					}),
 				},
 			};
-			selectedInstance = instances.options[2];
+			selectedInstance = instances.options[5];
 			selectedQuest = app.CreateQuest(971);
 			instanceSelector = app.CreateMap(1455, {
 				['visible'] = true,
@@ -7061,27 +7073,48 @@ app:GetWindow("Attuned", UIParent, function(self)
 					wipe(data.g);
 					
 					-- Assign the Selected Instance.
+					instanceSelector.locks = nil;
+					data.questID = selectedInstance.questID;
 					instanceSelector.mapID = selectedInstance.mapID;
 					instanceSelector.icon = selectedInstance.icon;
 					instanceSelector.text = selectedInstance.text;
 					instanceSelector.description = selectedInstance.description;
 					instanceSelector.questID = selectedInstance.questID;
-					selectedQuest.questID = selectedInstance.questID;
-					data.questID = selectedInstance.questID;
 					table.insert(data.g, data.queryGroupMembers);
 					table.insert(data.g, data.queryGuildMembers);
 					table.insert(data.g, instanceSelector);
 					table.insert(data.g, selectedQuest);
-					local searchResults = SearchForField("questID", data.questID);
-					if searchResults and #searchResults > 0 then
-						wipe(selectedQuest);
-						for i,questData in ipairs(searchResults) do
-							for key,value in pairs(questData) do
-								selectedQuest[key] = value;
+					if data.questID == 9378 then	-- Naxx Attunement needs to be handled different, display-wise.
+						-- Based on current Argent Dawn rep, show a different quest. (still querying for the hidden attunement quest)
+						local currentStanding = app.CreateFaction(529).standing or 6;
+						local specificQuestID = (currentStanding == 8 and 9123) or (currentStanding == 7 and 9122) or 9121;
+						local searchResults = SearchForField("questID", specificQuestID);
+						if searchResults and #searchResults > 0 then
+							wipe(selectedQuest);
+							for i,questData in ipairs(searchResults) do
+								if questData.questID == specificQuestID then
+									for key,value in pairs(questData) do
+										selectedQuest[key] = value;
+									end
+								end
 							end
+							selectedQuest.OnUpdate = app.AlwaysShowUpdate;
 						end
-						selectedQuest.OnUpdate = app.AlwaysShowUpdate;
+						selectedQuest.text = "The Dread Citadel - Naxxramas";
+					else
+						local searchResults = SearchForField("questID", data.questID);
+						if searchResults and #searchResults > 0 then
+							wipe(selectedQuest);
+							for i,questData in ipairs(searchResults) do
+								for key,value in pairs(questData) do
+									selectedQuest[key] = value;
+								end
+							end
+							selectedQuest.OnUpdate = app.AlwaysShowUpdate;
+						end
 					end
+					selectedQuest.questID = selectedInstance.questID;
+					
 					
 					local nameToGUID = {};
 					local groupMembers = {};
@@ -7105,25 +7138,59 @@ app:GetWindow("Attuned", UIParent, function(self)
 					end
 					
 					-- Insert Guild Members
-					local guildMembers = data.guildMembersHeader.g;
-					wipe(guildMembers);
-					local count = GetNumGuildMembers();
-					if count > 0 then
-						for guildIndex = 1, count, 1 do
-							local guid = select(17, GetGuildRosterInfo(guildIndex));
-							if guid then
-								local unit = app.CreateQuestUnit(guid);
-								local name = unit.name;
-								if name then nameToGUID[name] = guid; end
-								if not (UnitInParty(name) or UnitInRaid(name)) then
-									table.insert(guildMembers, unit);
+					local guildRanks = data.guildMembersHeader.g;
+					if #guildRanks < 1 then
+						local numRanks = GuildControlGetNumRanks();
+						if numRanks > 0 then
+							local tempRanks = {};
+							for rankIndex = 1, numRanks, 1 do
+								table.insert(tempRanks, {
+									["text"] = GuildControlGetRankName(rankIndex),
+									["icon"] = format("%s%02d","Interface\\PvPRankBadges\\PvPRank", (15 - rankIndex)),
+									["OnUpdate"] = app.AlwaysShowUpdate,
+									["visible"] = true,
+									["g"] = {}
+								});
+							end
+							for rankIndex = 1, min(#tempRanks, #guildRanks), 1 do
+								if guildRanks[rankIndex].expanded then
+									tempRanks[rankIndex].expanded = true;
+								end
+							end
+							data.guildMembersHeader.g = tempRanks;
+							guildRanks = tempRanks;
+							
+							local debugMode = app.Settings:Get("DebugMode");
+							local count = GetNumGuildMembers();
+							if count > 0 then
+								for guildIndex = 1, count, 1 do
+									local name, _, rankIndex, level, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(guildIndex);
+									if guid and level > 54 then
+										local yearsOffline, monthsOffline, daysOffline, hoursOffline = GetGuildRosterLastOnline(guildIndex);
+										if (((yearsOffline or 0) * 12) + (monthsOffline or 0)) < 3 or debugMode then
+											local unit = app.CreateQuestUnit(guid);
+											local name = unit.name;
+											if name then nameToGUID[name] = guid; end
+											local a = guildRanks[rankIndex + 1];
+											if a then table.insert(a.g, unit); end
+										end
+									end
+								end
+								
+								local any = false;
+								for rankIndex = 1, numRanks, 1 do
+									if #guildRanks[rankIndex].g > 0 then
+										table.sort(guildRanks[rankIndex].g, data.Sort);
+										any = true;
+									end
+								end
+								if any then
+									table.insert(data.g, data.guildMembersHeader);
 								end
 							end
 						end
-						if #guildMembers > 0 then
-							table.sort(guildMembers, data.Sort);
-							table.insert(data.g, data.guildMembersHeader);
-						end
+					else
+						table.insert(data.g, data.guildMembersHeader);
 					end
 					
 					-- Process Addon Messages
@@ -7151,19 +7218,24 @@ app:GetWindow("Attuned", UIParent, function(self)
 				['guildMembersHeader'] = {
 					['text'] = "Guild Members",
 					['icon'] = "Interface\\Icons\\Ability_Warrior_BattleShout",
-					['description'] = "These players are in your guild.",
+					['description'] = "These active characters are in your guild.\n\nOnly showing level 55+. (2 months)",
 					['visible'] = true,
+					['dirty'] = true,
 					['g'] = {},
 				},
 				['queryGroupMembers'] = {
 					['text'] = "Query Group Members",
 					['icon'] = "Interface\\Icons\\INV_Wand_05",
-					['description'] = "Press this button to send an addon message to your Group Members if they are attuned for this instance.",
+					['description'] = "Press this button to send an addon message to your Group Members if they are attuned for all of these instances.",
 					['visible'] = true,
 					['back'] = 0.5,
 					['g'] = {},
 					['OnClick'] = function(row, button)
-						SendGroupMessage("?\tq\t" .. selectedQuest.questID);
+						local message = "?\tq";
+						for i,instance in ipairs(instances) do
+							message = message .. "\t" .. instance.questID;
+						end
+						SendGroupMessage(message);
 						self:Reset();
 						return true;
 					end,
@@ -7174,12 +7246,16 @@ app:GetWindow("Attuned", UIParent, function(self)
 				['queryGuildMembers'] = {
 					['text'] = "Query Guild Members",
 					['icon'] = "Interface\\Icons\\INV_Wand_04",
-					['description'] = "Press this button to send an addon message to your Guild Members if they are attuned for this instance.",
+					['description'] = "Press this button to send an addon message to your Guild Members if they are attuned for all of these instances.",
 					['visible'] = true,
 					['back'] = 0.5,
 					['g'] = {},
 					['OnClick'] = function(row, button)
-						SendGuildMessage("?\tq\t" .. selectedQuest.questID);
+						local message = "?\tq";
+						for i,instance in ipairs(instances.options) do
+							message = message .. "\t" .. instance.questID;
+						end
+						SendGuildMessage(message);
 						self:Reset();
 						return true;
 					end,
@@ -7196,10 +7272,12 @@ app:GetWindow("Attuned", UIParent, function(self)
 			end
 			
 			-- Setup Event Handlers and register for events
-			self:SetScript("OnEvent", function(self, e, ...) self:Update(); end);
+			self:SetScript("OnEvent", function(self, e, ...)
+				self.dirty = true;
+				self:Update();
+			end);
 			self:RegisterEvent("CHAT_MSG_SYSTEM");
 			self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-			self:RegisterEvent("GUILD_ROSTER_UPDATE");
 			self:RegisterEvent("GROUP_ROSTER_UPDATE");
 			self:Reset();
 		end
@@ -8511,6 +8589,7 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 	if self:IsVisible() then
 		if not self.initialized then
 			self.initialized = true;
+			self.dirty = true;
 			
 			-- Soft Reserves
 			local softReserves = {
@@ -8521,9 +8600,11 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 				['expanded'] = true,
 				['back'] = 1,
 				['OnUpdate'] = function(data)
+					if not self.dirty then return nil; end
+					self.dirty = nil;
+					
 					local g = {};
 					local groupMembers = {};
-					groupMembers[app.GUID] = true;	-- Prevent the player's 
 					local count = GetNumGroupMembers();
 					if count > 0 then
 						for raidIndex = 1, 40, 1 do
@@ -8554,22 +8635,70 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 					table.insert(g, 1, data.exportSoftReserves);
 					data.g = g;
 					
-					-- Show non-group members.
-					local nonGroupMembers = {};
-					local softReserves = GetDataMember("SoftReserves");
-					for guid,reserve in pairs(softReserves) do
-						if not groupMembers[guid] then
-							groupMembers[guid] = true;
-							table.insert(nonGroupMembers, app.CreateSoftReserveUnit(guid));
+					-- Insert Guild Members
+					local guildRanks = data.guildMembersHeader.g;
+					if #guildRanks < 1 then
+						local numRanks = GuildControlGetNumRanks();
+						if numRanks > 0 then
+							local tempRanks = {};
+							for rankIndex = 1, numRanks, 1 do
+								table.insert(tempRanks, {
+									["text"] = GuildControlGetRankName(rankIndex),
+									["icon"] = format("%s%02d","Interface\\PvPRankBadges\\PvPRank", (15 - rankIndex)),
+									["OnUpdate"] = app.AlwaysShowUpdate,
+									["visible"] = true,
+									["g"] = {}
+								});
+							end
+							for rankIndex = 1, min(#tempRanks, #guildRanks), 1 do
+								if guildRanks[rankIndex].expanded then
+									tempRanks[rankIndex].expanded = true;
+								end
+							end
+							data.guildMembersHeader.g = tempRanks;
+							guildRanks = tempRanks;
+							
+							local debugMode = app.Settings:Get("DebugMode");
+							local count = GetNumGuildMembers();
+							if count > 0 then
+								for guildIndex = 1, count, 1 do
+									local _, _, rankIndex, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(guildIndex);
+									if guid then
+										if not groupMembers[guid] then
+											groupMembers[guid] = true;
+											local yearsOffline, monthsOffline, daysOffline, hoursOffline = GetGuildRosterLastOnline(guildIndex);
+											if (((yearsOffline or 0) * 12) + (monthsOffline or 0)) < 3 or debugMode then
+												local a = guildRanks[rankIndex + 1];
+												if a then table.insert(a.g, app.CreateSoftReserveUnit(guid)); end
+											end
+										end
+									end
+								end
+								
+								local any = false;
+								for rankIndex = 1, numRanks, 1 do
+									if #guildRanks[rankIndex].g > 0 then
+										table.sort(guildRanks[rankIndex].g, data.Sort);
+										any = true;
+									end
+								end
+								if any then
+									table.insert(data.g, data.guildMembersHeader);
+								end
+							end
 						end
-					end
-					if #nonGroupMembers > 0 then
-						data.nonGroupMembersHeader.g = nonGroupMembers;
-						table.sort(nonGroupMembers, data.Sort);
-						table.insert(data.g, data.nonGroupMembersHeader);
+					else
+						table.insert(data.g, data.guildMembersHeader);
 					end
 				end,
 				['g'] = {},
+				['guildMembersHeader'] = {
+					['text'] = "Guild Members",
+					['icon'] = "Interface\\Icons\\Ability_Warrior_BattleShout",
+					['description'] = "These active characters are in your guild.\n\nOnly showing characters logged in the last 2 months.",
+					['visible'] = true,
+					['g'] = {},
+				},
 				['exportSoftReserves'] = {
 					['text'] = "Export Soft Reserves",
 					['icon'] = "Interface\\Icons\\Spell_Shadow_LifeDrain02",
@@ -8585,6 +8714,20 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 								end
 								s = s .. o.name .. "\\t" .. o.itemName;
 								count = count + 1;
+								--[[
+							elseif o.g then
+								for i,o in ipairs(o.g) do
+									if o.guid then
+										if count > 0 then
+											s = s .. "\n";
+										end
+										s = s .. o.name .. "\\t" .. o.itemName;
+										count = count + 1;
+									else
+										
+									end
+								end
+								]]--
 							end
 						end
 						
@@ -8803,7 +8946,10 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 			end
 			
 			-- Setup Event Handlers and register for events
-			self:SetScript("OnEvent", function(self, e, ...) self:Update(); end);
+			self:SetScript("OnEvent", function(self, e, ...)
+				self.dirty = true;
+				self:Update();
+			end);
 			self:RegisterEvent("CHAT_MSG_SYSTEM");
 			self:RegisterEvent("GROUP_ROSTER_UPDATE");
 			self:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");

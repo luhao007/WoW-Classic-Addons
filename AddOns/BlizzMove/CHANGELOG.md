@@ -1,8 +1,6 @@
 # BlizzMove
 
-## [v3.0.1](https://github.com/the-rebel-Mermaid/BlizzMove/tree/v3.0.1) (2020-10-16)
-[Full Changelog](https://github.com/the-rebel-Mermaid/BlizzMove/commits/v3.0.1) [Previous Releases](https://github.com/the-rebel-Mermaid/BlizzMove/releases)
+## [v3.0.6](https://github.com/Kiatra/BlizzMove/tree/v3.0.6) (2020-12-05)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/commits/v3.0.6) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
 
-- childframe mousewheel support (#40)  
-    implemented NonDraggable option  
-    better scrollwheel support  
+- fixed typo  

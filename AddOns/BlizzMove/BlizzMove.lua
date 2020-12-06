@@ -216,6 +216,31 @@ function BlizzMove:GetFrameFromName(frameName)
 	return frameTable;
 end
 
+function BlizzMove:ResetPointStorage()
+	self.DB.points = {}
+end
+
+function BlizzMove:SetupPointStorage(frame)
+	if not frame or not frame.frameData or not frame.frameData.storage or not frame.frameData.storage.frameName then return false end
+
+	if self.DB.savePosStrategy ~= "permanent" then
+		if not frame.frameData.storage.points then
+			frame.frameData.storage.points = {}
+		end
+		return true
+	end
+
+	local frameName = frame.frameData.storage.frameName
+
+	if frame.frameData.storage.points and frame.frameData.storage.points == self.DB.points[frameName] then return true end
+	if self.DB.points[frameName] == nil then
+		self.DB.points[frameName] = {};
+	end
+	frame.frameData.storage.points = self.DB.points[frameName]
+
+	return true
+end
+
 local buildVersion, buildNumber, buildDate, gameVersion = GetBuildInfo();
 
 BlizzMove.gameBuild   = tonumber(buildNumber);
@@ -314,19 +339,16 @@ local function SetFrameScaleSubs(frame, oldScale, newScale)
 					if subFrameData.ManuallyScaleWithParent and not subFrameData.storage.detached then
 
 						subFrame:SetScale((subFrame:GetScale() / oldScale) * newScale)
-						BlizzMove:DebugPrint("SetSubFrameScale:", subFrameData.storage.frameName, string.format("%.2f %.2f %.2f %.2f", oldScale, newScale, subFrame:GetScale(), GetFrameScale(subFrame)))
+						BlizzMove:DebugPrint("SetSubFrameScale:", subFrameName, string.format("%.2f %.2f %.2f %.2f", oldScale, newScale, subFrame:GetScale(), GetFrameScale(subFrame)))
 
 					elseif not subFrameData.ManuallyScaleWithParent and subFrameData.storage.detached then
 
 						subFrame:SetScale((oldScale * subFrame:GetScale()) / newScale);
-						BlizzMove:DebugPrint("SetSubFrameScale:", subFrameData.storage.frameName, string.format("%.2f %.2f %.2f %.2f", oldScale, newScale, subFrame:GetScale(), GetFrameScale(subFrame)))
+						BlizzMove:DebugPrint("SetSubFrameScale:", subFrameName, string.format("%.2f %.2f %.2f %.2f", oldScale, newScale, subFrame:GetScale(), GetFrameScale(subFrame)))
 
+					else
+						SetFrameScaleSubs(subFrame, oldScale, newScale);
 					end
-
-				else
-
-					SetFrameScaleSubs(subFrame, oldScale, newScale);
-
 				end
 			end
 		end
@@ -408,7 +430,7 @@ local function OnMouseDown(frame, button)
 
 		if IsAltKeyDown() and frameData.Detachable and not frameData.storage.detached then
 
-			frameData.storage.detachPoints = GetFramePoints(frame);
+			frameData.storage.points.detachPoints = GetFramePoints(frame);
 			frameData.storage.detached = true;
 			returnValue = true;
 
@@ -442,6 +464,7 @@ local function OnMouseUp(frame, button)
 	local returnValue = false;
 	local parentReturnValue = false;
 	local frameData = frame.frameData;
+	BlizzMove:SetupPointStorage(frame)
 
 	BlizzMove:DebugPrint("OnMouseUp:", frameData.storage.frameName, button);
 
@@ -455,8 +478,8 @@ local function OnMouseUp(frame, button)
 
 			frame:StopMovingOrSizing();
 
-			frameData.storage.dragPoints = GetFramePoints(frame);
-			frameData.storage.dragged = true;
+			frameData.storage.points.dragPoints = GetFramePoints(frame);
+			frameData.storage.points.dragged = true;
 			returnValue = true;
 
 		elseif button == "RightButton" then
@@ -465,9 +488,9 @@ local function OnMouseUp(frame, button)
 
 			if IsAltKeyDown() and frameData.storage.detached then
 
-				if SetFramePoints(frame, frameData.storage.detachPoints) then
+				if SetFramePoints(frame, frameData.storage.points.detachPoints) then
 
-					frameData.storage.detachPoints = nil;
+					frameData.storage.points.detachPoints = nil;
 					frameData.storage.detached = nil;
 					returnValue = true;
 					fullReset = true;
@@ -486,8 +509,8 @@ local function OnMouseUp(frame, button)
 
 			if IsShiftKeyDown() or fullReset then
 
-				frameData.storage.dragPoints = nil;
-				frameData.storage.dragged = nil;
+				frameData.storage.points.dragPoints = nil;
+				frameData.storage.points.dragged = nil;
 				returnValue = true;
 
 				UpdateUIPanelPositions(frame);
@@ -572,10 +595,14 @@ end
 local function OnSetPoint(frame, anchorPoint, relativeFrame, relativePoint, offX, offY)
 	if not frame.frameData or not frame.frameData.storage or frame.frameData.storage.disabled then return end
 
+	if BlizzMove.DB.savePosStrategy == "off" then return end
+
 	if frame.ignoreSetPointHook then return end
 
-	if frame.frameData.storage.dragged then
-		SetFramePoints(frame, frame.frameData.storage.dragPoints);
+	BlizzMove:SetupPointStorage(frame);
+
+	if frame.frameData.storage.points.dragged then
+		SetFramePoints(frame, frame.frameData.storage.points.dragPoints);
 	end
 end
 
@@ -763,6 +790,7 @@ function BlizzMove:OnInitialize()
 
 	BlizzMoveDB = BlizzMoveDB or {}
 	self.DB = BlizzMoveDB
+	self:InitDefaults()
 
 	self.Config:Initialize()
 
@@ -771,6 +799,20 @@ function BlizzMove:OnInitialize()
 	self:RegisterChatCommand('bm', function() InterfaceOptionsFrame_OpenToCategory('BlizzMove'); InterfaceOptionsFrame_OpenToCategory('BlizzMove') end);
 
 	self:ProcessFrames(self.name)
+
+end
+
+function BlizzMove:InitDefaults()
+	local defaults = {
+		savePosStrategy = "session",
+		points = {},
+	}
+
+	for property, value in pairs(defaults) do
+		if self.DB[property] == nil then
+			self.DB[property] = value
+		end
+	end
 
 end
 

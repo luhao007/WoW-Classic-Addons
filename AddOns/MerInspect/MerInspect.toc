@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: M(Mermaid)
 ## Version: 1.0.2
 ## SavedVariables: MerInspectDB
@@ -20,4 +20,3 @@ InspectUnit.lua
 InspectUnitGemAndEnchant.lua
 InspectUnitSpecialization.lua
 InspectUnitStats.lua
-

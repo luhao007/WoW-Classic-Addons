@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: arith, Dynaletik, dubcat
 ## Version: v1.47.00.11303.00
 ## RequiredDeps: Atlas

@@ -1,6 +1,6 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Crieve-Sargeras
-## Version: 0.3.6
+## Version: 0.3.9
 ## SavedVariables: ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 

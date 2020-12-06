@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 90002
 ## LoadOnDemand: 1
 ## Title: Lib: LibCandyBar-3.0
 ## Notes: Timer bars with that extra sweetness.
@@ -7,4 +7,3 @@
 ## X-Category: Library
 
 LibCandyBar-3.0\lib.xml
-

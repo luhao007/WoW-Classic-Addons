@@ -1,11 +1,11 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: phyber
-## Version: 80300-1
+## Version: 90002-2
 ## OptionalDeps: Ace3, Voyeur
 ## SavedVariablesPerCharacter: FizzleDB
 
 ## Title: Fizzle
-## Notes: Show item durability and quality in the character frame.
+## Notes: Show item ilevel, durability, and quality in the character frame.
 ## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF装备着色|r |cFFFFE00AFizzle|r
 ## Notes-zhCN: 在人物装备栏中显示物品品质与耐久度。
 

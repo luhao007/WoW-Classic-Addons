@@ -92,21 +92,11 @@ function Buy.GetMaxCanAfford(index)
 			if costItemString then
 				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
 			elseif currencyName then
-				if TSM.IsShadowlands() then
-					for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
-						local info = C_CurrencyInfo.GetCurrencyListInfo(j)
-						if not info.isHeader and info.name == currencyName then
-							costNumHave = info.quantity
-							break
-						end
-					end
-				else
-					for j = 1, GetCurrencyListSize() do
-						local name, isHeader, _, _, _, count = GetCurrencyListInfo(j)
-						if not isHeader and name == currencyName then
-							costNumHave = count
-							break
-						end
+				for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
+					local info = C_CurrencyInfo.GetCurrencyListInfo(j)
+					if not info.isHeader and info.name == currencyName then
+						costNumHave = info.quantity
+						break
 					end
 				end
 			end
@@ -185,11 +175,7 @@ function private.UpdateMerchantDB()
 						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
 						texture = ItemInfo.GetTexture(costItemString)
 					elseif strmatch(costItemLink, "currency:") then
-						if TSM.IsShadowlands() then
-							texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
-						else
-							_, _, texture = GetCurrencyInfo(costItemLink)
-						end
+						texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
 						firstCostItemString = strmatch(costItemLink, "(currency:%d+)")
 					else
 						error(format("Unknown item cost (%d, %d, %s)", i, costNum, tostring(costItemLink)))
@@ -261,21 +247,24 @@ function private.ChatMsgLootEventHandler(_, msg)
 		private.ClearPendingContext()
 		return
 	end
-	local quantity = nil
-	if msg == format(LOOT_ITEM_PUSHED_SELF, link) then
-		quantity = 1
-	else
-		for i = 1, GetMerchantItemMaxStack(private.pendingIndex) do
-			if msg == format(LOOT_ITEM_PUSHED_SELF_MULTIPLE, link, i) then
-				quantity = i
-				break
-			end
+	local msgItemLink, quantity = nil, nil
+	for i = 1, GetMerchantItemMaxStack(private.pendingIndex) do
+		local itemLink = private.ExtractFormatValue(msg, format(LOOT_ITEM_PUSHED_SELF_MULTIPLE, "%s", i))
+		if itemLink then
+			msgItemLink = itemLink
+			quantity = i
+			break
 		end
 	end
-	Log.Info("Got CHAT_MSG_LOOT(%s) with a quantity of %s (%d pending)", msg, tostring(quantity), private.pendingQuantity)
-	if not quantity then
+	if not msgItemLink then
+		msgItemLink = private.ExtractFormatValue(msg, LOOT_ITEM_PUSHED_SELF)
+		quantity = 1
+	end
+	if not msgItemLink or ItemString.GetBase(msgItemLink) ~= ItemString.GetBase(link) then
+		Log.Info("Unknown item link (%s, %s, %s)", msg, tostring(msgItemLink), link)
 		return
 	end
+	Log.Info("Got CHAT_MSG_LOOT(%s) with a quantity of %s (%d pending)", msg, tostring(quantity), private.pendingQuantity)
 	private.pendingQuantity = private.pendingQuantity - quantity
 	if private.pendingQuantity <= 0 then
 		-- we're done
@@ -286,6 +275,12 @@ function private.ChatMsgLootEventHandler(_, msg)
 	-- reset the timeout
 	Delay.Cancel("VENDORING_BUY_TIMEOUT")
 	Delay.AfterTime("VENDORING_BUY_TIMEOUT", CONSECUTIVE_BUY_TIMEOUT, private.BuyTimeout)
+end
+
+function private.ExtractFormatValue(str, fmtStr)
+	assert(not strmatch(fmtStr, "\001"))
+	local part1, part2 = strsplit("\001", format(fmtStr, "\001"))
+	return strmatch(str, "^"..part1.."(.+)"..part2.."$")
 end
 
 function private.BuyTimeout()

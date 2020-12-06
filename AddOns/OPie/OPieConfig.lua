@@ -1,6 +1,6 @@
-local L, config, _, T, KR = OneRingLib.lang, {}, ...
-local MODERN = select(4,GetBuildInfo()) >= 8e4
-OneRingLib.ext.config, KR = config, T.ActionBook:compatible("Kindred",1,0)
+local config, _, T, KR, PC = {}, ...
+local L, MODERN = T.L, select(4,GetBuildInfo()) >= 8e4
+OneRingLib.ext.config, KR, PC = config, T.ActionBook:compatible("Kindred",1,0), T.OPieCore
 local CreateEdge = T.ActionBook._CreateEdge
 
 function config.createPanel(name, parent)
@@ -333,6 +333,10 @@ do -- ext.config.ui
 					end
 					return
 				end
+				local baseName = "DropDownList" .. level
+				local host = _G[baseName]
+				local n1 = (host.numButtons+1)
+				local nX = MAX_VISIBLE_ENTRIES+n1-1
 				local minWidth = math.max(120, level == 1 and UIDROPDOWNMENU_OPEN_MENU:GetWidth()-40 or 0)
 				for i=skipFirst+1,#dataList do
 					local text = entryFormatter(dataList[i], dataList)
@@ -340,11 +344,10 @@ do -- ext.config.ui
 					minWidth = math.max(minWidth, 60 + buttons[1]:GetFontString():GetStringWidth())
 				end
 				local info = {notClickable=true, notCheckable=true, minWidth=minWidth}
-				for i=1,MAX_VISIBLE_ENTRIES do
+				for i=n1,nX do
 					UIDropDownMenu_AddButton(info, level)
 				end
-				local baseName = "DropDownList" .. level
-				local host, b1, bX = _G[baseName], _G[baseName .. "Button1"], _G[baseName .. "Button" .. MAX_VISIBLE_ENTRIES]
+				local b1, bX = _G[baseName .. "Button" .. n1], _G[baseName .. "Button" .. nX]
 				scrollingDropdown.parent = host
 				scrollingDropdown:SetParent(host)
 				scrollingDropdown:SetPoint("TOPLEFT", b1)
@@ -380,7 +383,7 @@ do -- ext.config.bind
 			GameTooltip:SetPoint("TOP", self, "BOTTOM")
 			GameTooltip:AddLine(L"Conditional Bindings", NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:AddLine(L"The binding will update to reflect the value of this macro conditional.", HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
-			GameTooltip:AddLine((L"You may use extended macro conditionals; see |cff33DDFF%s|r for details."):format("https://townlong-yak.com/opie/extended-conditionals"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
+			GameTooltip:AddLine((L"You may use extended macro conditionals; see %s for details."):format("|cff33DDFFhttps://townlong-yak.com/addons/opie/extended-conditionals|r"), HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, 1)
 			GameTooltip:AddLine((L"Example: %s."):format(GREEN_FONT_COLOR_CODE .. "[combat] ALT-C; [nomounted] CTRL-F|r"), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 			GameTooltip:Show()
 		end)
@@ -421,6 +424,9 @@ do -- ext.config.bind
 		self:UnlockHighlight()
 		self:EnableKeyboard(false)
 		self:SetScript("OnKeyDown", nil)
+		if MODERN then
+			self:SetScript("OnGamePadButtonDown", nil)
+		end
 		self:SetScript("OnHide", nil)
 		captureFrame:Hide()
 		activeCaptureButton = activeCaptureButton ~= self and activeCaptureButton or nil
@@ -429,14 +435,23 @@ do -- ext.config.bind
 		end
 		return self
 	end
+	local unbindableKeys = {
+		UNKNOWN=1, ESCAPE=1, ALT=1, SHIFT=1, META=1,
+		LALT=1, LCTRL=1, LSHIFT=1, LMETA=1,
+		RALT=1, RCTRL=1, RSHIFT=1, RMETA=1,
+		PADRSTICKUP=1, PADRSTICKDOWN=1, PADRSTICKLEFT=1, PADRSTICKRIGHT=1,
+		PADLSTICKUP=1, PADLSTICKDOWN=1, PADLSTICKLEFT=1, PADLSTICKRIGHT=1,
+	}
 	local function SetBind(self, bind)
-		if not (bind and (bind:match("^[LR]?ALT$") or bind:match("^[LR]?CTRL$") or bind:match("^[LR]?SHIFT$") or bind == "UNKNOWN")) then
-			Deactivate(self)
-			if bind == "ESCAPE" then return end
-			local bind, p = bind and ((IsAltKeyDown() and "ALT-" or "") ..  (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "") .. bind), self:GetParent()
-			if p and type(p.SetBinding) == "function" then
-				p.SetBinding(self, bind)
-			end
+		if bind == "ESCAPE" then
+			return Deactivate(self)
+		elseif unbindableKeys[bind] then
+			return
+		end
+		Deactivate(self)
+		local bind, p = bind and ((IsAltKeyDown() and "ALT-" or "") ..  (IsControlKeyDown() and "CTRL-" or "") .. (IsShiftKeyDown() and "SHIFT-" or "") .. (MODERN and IsMetaKeyDown() and "META-" or "") .. bind), self:GetParent()
+		if p and type(p.SetBinding) == "function" then
+			p.SetBinding(self, bind)
 		end
 	end
 	local function OnClick(self, button)
@@ -456,6 +471,9 @@ do -- ext.config.bind
 		self:LockHighlight()
 		self:EnableKeyboard(true)
 		self:SetScript("OnKeyDown", SetBind)
+		if MODERN then
+			self:SetScript("OnGamePadButtonDown", SetBind)
+		end
 		self:SetScript("OnHide", Deactivate)
 		if parent then
 			captureFrame:SetParent(parent.bindingContainerFrame or parent)
@@ -487,8 +505,8 @@ do -- ext.config.bind
 		return activeCaptureButton == self
 	end
 	local specialSymbolMap = {OPEN="[", CLOSE="]", SEMICOLON=";"}
-	local function bindNameLookup(capture)
-		return specialSymbolMap[capture] or _G["KEY_" .. capture]
+	local function bindNameLookup(key)
+		return GetBindingText(specialSymbolMap[key] or key)
 	end
 	local function bindFormat(bind)
 		return bind and bind ~= "" and bind:gsub("[^%-]+$", bindNameLookup) or L"Not bound"
@@ -733,7 +751,7 @@ function config.undo.saveProfile(noData)
 end
 
 function config.checkSVState(frame)
-	if not OneRingLib:GetSVState() then
+	if not PC:GetSVState() then
 		config.alert(frame, L"Changes will not be saved", L"World of Warcraft could not load OPie's saved variables due to a lack of memory. Try disabling other addons.\n\nAny changes you make now will not be saved.", L"Understood; edit anyway")
 	end
 end
@@ -756,15 +774,13 @@ local OPC_OptionSets = {
 		{"bool", "ShowKeys", caption=L"Per-slice bindings", depOn="SliceBinding", depValue=true, otherwise=false},
 		{"bool", "ShowCooldowns", caption=L"Show cooldown numbers", depIndicatorFeature="CooldownNumbers"},
 		{"bool", "ShowRecharge", caption=L"Show recharge numbers", depIndicatorFeature="CooldownNumbers"},
+		{"bool", "ShowShortLabels", caption=L"Show slice labels"},
 		{"bool", "UseGameTooltip", caption=L"Show tooltips"},
 		{"bool", "HideStanceBar", caption=L"Hide stance bar", global=true},
 	}, { L"Animation",
 		{"bool", "MIScale", caption=L"Enlarge selected slice"},
 		{"bool", "MISpinOnHide", caption=L"Outward spiral on hide"},
-		{"range", "XTScaleSpeed", -4, 4, 0.2, caption=L"Scale animation speed"},
-		{"range", "XTPointerSpeed", -4, 4, 0.2, caption=L"Pointer rotation speed"},
 		{"range", "XTZoomTime", 0, 1, 0.1, caption=L"Zoom-in/out time", suffix=L"(%.1f sec)"},
-		{"range", "XTRotationPeriod", 1, 10, 0.2, caption=L"Rotation period", suffix=L"(%.1f sec)"}
 	}
 }
 
@@ -1083,7 +1099,7 @@ local function addSuffix(func, word, ...)
 		addSuffix(func, ...)
 	end
 end
- T.AddSlashSuffix = addSuffix
+T.AddSlashSuffix = addSuffix
 
 SLASH_OPIE1, SLASH_OPIE2 = "/opie", "/op"
 SlashCmdList["OPIE"] = function(args, ...)

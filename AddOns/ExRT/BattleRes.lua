@@ -162,7 +162,7 @@ function module:timer(elapsed)
 end
 
 do
-	local frame = CreateFrame("Frame",nil,UIParent)
+	local frame = CreateFrame("Frame","ExRTBattleRes",UIParent)
 	module.frame = frame
 	frame:SetSize(64,64)
 	frame:SetPoint("TOP", 0,-200)

@@ -145,7 +145,7 @@ Private.format_types = {
         name = L["Max Char "],
         width = WeakAuras.normalWidth,
         min = 1,
-        max = 20,
+        softMax = 20,
         hidden = hidden,
         step = 1,
         disabled = function()
@@ -777,6 +777,7 @@ end
 
 if not WeakAuras.IsClassic() then
   Private.covenant_types = {}
+  Private.covenant_types[0] = L["None"]
   for i = 1, 4 do
     Private.covenant_types[i] = C_Covenants.GetCovenantData(i).name
   end
@@ -1957,11 +1958,18 @@ Private.difficulty_types = {
   challenge = PLAYER_DIFFICULTY5
 }
 
-Private.role_types = {
-  TANK = INLINE_TANK_ICON.." "..TANK,
-  DAMAGER = INLINE_DAMAGER_ICON.." "..DAMAGER,
-  HEALER = INLINE_HEALER_ICON.." "..HEALER
-}
+if WeakAuras.IsClassic() then
+  Private.raid_role_types = {
+    MAINTANK = "|TInterface\\GroupFrame\\UI-Group-maintankIcon:16:16|t "..MAINTANK,
+    MAINASSIST = "|TInterface\\GroupFrame\\UI-Group-mainassistIcon:16:16|t "..MAINASSIST
+  }
+else
+  Private.role_types = {
+    TANK = INLINE_TANK_ICON.." "..TANK,
+    DAMAGER = INLINE_DAMAGER_ICON.." "..DAMAGER,
+    HEALER = INLINE_HEALER_ICON.." "..HEALER
+  }
+end
 
 Private.classification_types = {
   worldboss = L["World Boss"],
@@ -2052,7 +2060,8 @@ Private.send_chat_message_types = {
   RAID_WARNING = L["Raid Warning"],
   INSTANCE_CHAT = L["Instance"],
   COMBAT = L["Blizzard Combat Text"],
-  PRINT = L["Chat Frame"]
+  PRINT = L["Chat Frame"],
+  ERROR = L["Error Frame"]
 }
 
 Private.group_aura_name_info_types = {
@@ -2519,6 +2528,7 @@ WeakAuras.data_stub = {
   conditions = {},
   config = {},
   authorOptions = {},
+  information = {},
 }
 
 Private.author_option_classes = {

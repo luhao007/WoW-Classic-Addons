@@ -1,5 +1,5 @@
 local configCache, _, T = {}, ...
-local api, iapi = {}, {}
+local PC, api, iapi, MODERN = T.OPieCore, {}, {}, select(4, GetBuildInfo()) > 9e4
 local max, min, abs, floor, sin, cos, atan2 = math.max, math.min, math.abs, math.floor, sin, cos, atan2
 local function cc(m, f, ...)
 	f[m](f, ...)
@@ -314,7 +314,7 @@ local function updateSlice(self, originAngle, selected, tok, usable, state, icon
 		self:SetOverlayIcon((tokenQuest[tok] or ((state or 0) % 64 >= 32)) and "Interface\\MINIMAP\\TRACKING\\OBJECTICONS", 21, 28, 40/256, 64/256, 32/64, 1)
 	end
 	if ActiveIndicatorFactory.supportsShortLabels then
-		self:SetShortLabel(stext or "")
+		self:SetShortLabel(configCache.ShowShortLabels and stext or "")
 	end
 	self:SetCooldown(cd, cd2, usableCharge)
 	self:SetEquipState(state % 256 >= 128, state % 512 >= 256)
@@ -324,6 +324,7 @@ local function updateSlice(self, originAngle, selected, tok, usable, state, icon
 	self:SetHighlighted(selected and not faded)
 end
 
+local lastConAngle = nil
 local function OnUpdate_Main(self, elapsed)
 	local aframe = triggerFrame or self
 	local count, offset = self.count, self.offset
@@ -332,9 +333,16 @@ local function OnUpdate_Main(self, elapsed)
 	local dx, dy = (x / scale) - (l + w / 2), (y / scale) - (b + h / 2)
 	local radius2 = dx*dx+dy*dy
 
-	local angle, isInFastClick = atan2(dy, dx) % 360, configCache.CenterAction and radius2 <= 400 and self.fastClickSlice > 0 and self.fastClickSlice <= self.count
+	local angle, isInFastClick = atan2(dy, dx) % 360, configCache.CenterAction and self.fastClickSlice > 0 and self.fastClickSlice <= self.count
+	local stick, stx, sty, stl = PC:GetActivePointerStick()
+	if stick then
+		angle = stl < 0.25 and lastConAngle or atan2(sty, stx) % 360
+		lastConAngle, radius2 = angle, stl < 0.01 and 200 or stl < 0.25 and 1000 or 1600
+	end
+
+	isInFastClick = isInFastClick and radius2 <= 400
 	if isInFastClick then
-		angle = (offset + 90 - (self.fastClickSlice-1)*360/count) % 360
+		angle = (90 - offset - (self.fastClickSlice-1)*360/count) % 360
 	end
 
 	local oangle = (not isInFastClick) and self.angle or angle
@@ -352,14 +360,14 @@ local function OnUpdate_Main(self, elapsed)
 	centerPointer:SetRotation(self.angle/180*3.1415926535898 - 90/180*3.1415926535898)
 
 	local si = isInFastClick and self.fastClickSlice or (count <= 0 and 0) or (radius2 < 1600 and 0) or
-		(floor(((atan2(dx, dy) - offset) * count/360 + 0.5) % count) + 1)
+		(floor(((90-angle - offset) * count/360 + 0.5) % count) + 1)
 	updateCentralElements(self, si)
 
 	if count == 0 then
 		return
 	end
 
-	local cmState, mut = (IsShiftKeyDown() and 1 or 0) + (IsControlKeyDown() and 2 or 0) + (IsAltKeyDown() and 4 or 0), self.schedMultiUpdate or 0
+	local cmState, mut = (IsShiftKeyDown() and 1 or 0) + (IsControlKeyDown() and 2 or 0) + (IsAltKeyDown() and 4 or 0) + (MODERN and IsMetaKeyDown() and 8 or 0), self.schedMultiUpdate or 0
 	if self.omState == cmState and mut < 0  then
 		self.schedMultiUpdate = mut + elapsed
 	else
@@ -428,7 +436,7 @@ mainFrame:SetScript("OnHide", function(self)
 end)
 
 function iapi:Show(_, fcSlice, fastOpen, reFrame)
-	triggerFrame, _, mainFrame.count, mainFrame.offset = reFrame, OneRingLib:GetOpenRing(configCache)
+	triggerFrame, lastConAngle, _, mainFrame.count, mainFrame.offset = reFrame, nil, OneRingLib:GetOpenRing(configCache)
 	SwitchIndicatorFactory(configCache.IndicatorFactory)
 
 	local baseSize = 48 + 48*configCache.MIButtonMargin
@@ -509,11 +517,11 @@ function api:RegisterIndicatorConstructor(key, info)
 	}
 end
 
-for k,v in pairs({ShowCooldowns=false, ShowRecharge=false, UseGameTooltip=true, ShowKeys=true, ShowOneCount=false,
+for k,v in pairs({ShowCooldowns=false, ShowRecharge=false, UseGameTooltip=true, ShowKeys=true, ShowOneCount=false, ShowShortLabels=true,
 	MIScale=true, MISpinOnHide=true, MIButtonMargin=0.1, GhostMIRings=true,
 	IndicatorFactory="_",
 	XTPointerSpeed=0, XTScaleSpeed=0, XTZoomTime=0.3, XTRotationPeriod=4, GhostShowDelay=0.25}) do
-	OneRingLib:RegisterOption(k,v)
+	PC:RegisterOption(k,v)
 end
 api:RegisterIndicatorConstructor("mirage", T.Mirage)
 

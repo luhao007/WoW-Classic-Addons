@@ -11,6 +11,9 @@ Plater.db.profile.bossmod_icons_anchor = {side = 8, x = 0, y = 40}
 
 local DF = _G ["DetailsFramework"]
 local Plater = _G.Plater
+local C_Timer = _G.C_Timer
+local C_NamePlate = _G.C_NamePlate
+local GetTime = _G.GetTime
 
 local UNIT_BOSS_MOD_AURAS_ACTIVE = {} --contains for each [GUID] a list of {texture, duration, desaturate}
 local UNIT_BOSS_MOD_AURAS_TO_BE_REMOVED = {} --contains for each [GUID] a list of texture-ids to be removed
@@ -231,10 +234,46 @@ function Plater.RegisterBossModAuras()
 end
 
 
+function Plater.GetBossModsEventTimeLeft(spell) -- more or less deprecated, need to know how to get this information from bigwigs
+	if (_G.DBM) then
+		for bar, _ in _G.DBM.Bars:GetBarIterator() do
+			if (not bar.dead and bar.frame:IsShown()) then
+				if (bar.id:find(spell)) then
+					return bar.timer, bar.totalTime, bar.id, _G[bar.frame:GetName() .. "BarName"]:GetText()
+				end
+			end
+		end
+	end
+
+	if (BigWigsLoader) then
+		
+
+
+	end
+end
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> spell prediction
 
-function Plater.SetAltCastBar(plateFrame, configTable, timer)
+function Plater.GetAltCastBarAltId(plateFrame)
+	--check if the nameplate is valid
+	if (not plateFrame or not plateFrame.unitFrame) then
+		return
+	end
+	return plateFrame.unitFrame.castBar2.altCastId
+end
+
+function Plater.ClearAltCastBar(plateFrame)
+	--check if the nameplate is valid
+	if (not plateFrame or not plateFrame.unitFrame) then
+		return
+	end
+	local castBar2 = plateFrame.unitFrame.castBar2
+	castBar2.altCastId = nil
+	castBar2:Hide()
+end
+
+function Plater.SetAltCastBar(plateFrame, configTable, timer, startedAt, altCastId)
 
 	--check if the nameplate is valid
 	if (not plateFrame or not plateFrame.unitFrame) then
@@ -242,7 +281,6 @@ function Plater.SetAltCastBar(plateFrame, configTable, timer)
 	end
 
 	local castBar = plateFrame.unitFrame.castBar2
-	
 	castBar.CastBarEvents = {}
 	
 	--> just update the current value since it wasn't running its tick function during the hide state
@@ -270,10 +308,27 @@ function Plater.SetAltCastBar(plateFrame, configTable, timer)
 		end
 	end
 	
+	--reset the castbar
+	castBar.Icon:ClearAllPoints()
+	castBar.Icon:SetPoint("right", castBar, "left", -1, 0)
+
+	castBar:ClearAllPoints()
+	castBar:SetPoint("topleft", plateFrame.unitFrame.castBar, "bottomleft", 0, -2)
+	castBar:SetPoint("topright", plateFrame.unitFrame.castBar, "bottomright", 0, -2)
+
+	castBar.percentText:ClearAllPoints()
+	castBar.percentText:SetPoint ("right", castBar, "right", -2, 0)
+
+	castBar.Text:ClearAllPoints()
+	castBar.Text:SetPoint ("left", castBar, "left", 2, 0)
+
+
+	--set the unit
 	castBar:SetUnit(plateFrame.unitFrame.unit)
-
+	castBar.altCastId = altCastId
+	--set spell name
 	castBar.Text:SetText(configTable.text)
-
+	--set texture
 	castBar.Icon:SetTexture(configTable.iconTexture or "")
 	if (configTable.iconTexcoord) then
 		castBar.Icon:SetTexCoord(unpack(configTable.iconTexcoord))
@@ -286,10 +341,37 @@ function Plater.SetAltCastBar(plateFrame, configTable, timer)
 
 	castBar.percentText:Show()
 	castBar:SetHeight(configTable.height or 12)
-	castBar.Icon:SetSize(castBar:GetHeight(), castBar:GetHeight())
+
+	if (configTable.iconSize) then
+		castBar.Icon:SetSize(configTable.iconSize, configTable.iconSize)
+	else
+		castBar.Icon:SetSize(castBar:GetHeight(), castBar:GetHeight())
+	end
+
 	castBar.Spark:Show()
 
-	local startTime = _G.GetTime()
+	if (configTable.spellNameAnchor) then
+		Plater.SetAnchor(castBar.Text, configTable.spellNameAnchor)
+	end
+
+	if (configTable.timerAnchor) then
+		Plater.SetAnchor(castBar.percentText, configTable.timerAnchor)
+	end
+
+	if (configTable.iconAnchor) then
+		Plater.SetAnchor(castBar.Icon, configTable.iconAnchor)
+	end
+
+	DF:SetFontSize(castBar.Text, configTable.textSize or 10)
+	DF:SetFontSize(castBar.percentText, configTable.textSize or 10)
+
+	local startTime
+	if (startedAt) then
+		startTime = startedAt
+	else
+		startTime = GetTime()
+	end
+
 	local endTime = startTime + timer
 
 	if (configTable.isChanneling) then
@@ -349,6 +431,7 @@ function Plater.StopAltCastBar(plateFrame)
 	
 	castBar.CastBarEvents = {}
 	castBar:SetUnit(nil)
+	castBar.altCastId = nil
 
 	castBar.Text:SetText("")
 
@@ -438,73 +521,70 @@ local triggerCastBar = function(timerObject)
 	DF:SetFontSize(plateFrame.unitFrame.castBar2.Text, 10)
 end
 
---this table will store all bars created by the boss mods which is used by Plater
-Plater.BossModsTimeBar = {}
 
---need to investigate
---there no bar information for Timer267409cd	Creature-0-3881-1861-3977-134635-00002F0387
---there no bar information for Timer272506cdcount	11
---there no bar information for Timer272506cdcount	9
---there no bar information for Timer263235cdcount	3
+function Plater.GetBossTimer(spellId)
+	for id, barInfo in pairs (Plater.BossModsTimeBarDBM) do
+		if ( (type(id) == "string" and id:find(spellId)) or (id == spellId)) then
+			return DF.table.copy({}, barInfo)
+		end
+	end
+	for id, barInfo in pairs (Plater.BossModsTimeBarBW) do
+		if (id == spellId) then
+			return DF.table.copy({}, barInfo)
+		end
+	end
+end
 
-function Plater.InitializeSpellPrediction()
+function Plater.RegisterBossModsBars()
 	local DBM = _G.DBM
 
-	--check if Deadly Boss Mods are installed
+	--check if Deadly Boss Mods is installed
 	if (DBM) then
-		local timerStartCallback = function (bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid, arg1, arg2)
-
-			--check if spell prediction is enabled
-			if (not Plater.db.profile.spell_prediction.enabled) then
-				return
+		--timer start
+		local timerStartCallback = function(bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid, arg1, arg2)
+			if (id) then
+				Plater.BossModsTimeBarDBM[id] = {
+					name = msg,
+					id = id,
+					timer =  timer,
+					start = GetTime(),
+					icon = icon,
+					spellId = spellId,
+				}
 			end
-
-			local spellsDB = Plater.db.profile.captured_spells
-			local spellInfoFromDB = spellsDB[spellId]
-
-			--print("DBM:",bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid)
-
-			--check if Plater know this spell
-			if (spellInfoFromDB) then
-				--check if is the caster of this spell has a valid npcId
-				local npcId = spellInfoFromDB.npcID
-				if (npcId and npcId > 1) then
-					Plater.BossModsTimeBar[id] = {bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid, arg1, arg2}
-					local newTimer = C_Timer.NewTimer(timer - prediction_time_to_show, triggerCastBar)
-					newTimer.timerId = id
-					newTimer.findUnitBySpellId = true
-					--print("NewTimer:", 1)
-
-				else
-					--Plater know the spell but there's no npcId attached to it
-					Plater.BossModsTimeBar[id] = {bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid, arg1, arg2}
-					local newTimer = C_Timer.NewTimer(timer - prediction_time_to_show, triggerCastBar)
-					newTimer.timerId = id
-					newTimer.attachToCurrentTarget = true
-					--print("NewTimer:", 2)
-				end
-			
-			else
-				--Plater doesn't know the spell
-				Plater.BossModsTimeBar[id] = {bar_type, id, msg, timer, icon, bartype, spellId, colorId, modid, arg1, arg2}
-				local newTimer = C_Timer.NewTimer(timer - prediction_time_to_show, triggerCastBar)
-				newTimer.timerId = id
-				newTimer.attachToCurrentTarget = true
-				--print("NewTimer:", 3)
-			end
-
-			--DB_CAPTURED_SPELLS [spellID] = {event = token, source = sourceName, npcID = Plater:GetNpcIdFromGuid (sourceGUID or ""), encounterID = Plater.CurrentEncounterID}
---			local spell = tostring (spellId)
---			if (spell and not current_table_dbm [spell]) then
---			current_table_dbm [spell] = {spell, id, msg, timer, icon, bartype, spellId, colorId, modid}
 		end
-
-		DBM:RegisterCallback ("DBM_TimerStart", timerStartCallback)
+		DBM:RegisterCallback("DBM_TimerStart", timerStartCallback)
 
 		--timer stop
 		local timerEndCallback = function (bar_type, id)
-			Plater.BossModsTimeBar[id] = nil
+			Plater.BossModsTimeBarDBM[id] = nil
 		end
-		DBM:RegisterCallback ("DBM_TimerStop", timerEndCallback)
+		DBM:RegisterCallback("DBM_TimerStop", timerEndCallback)
+	end
+
+	--check if BigWigs is installed
+	if (_G.BigWigsLoader) then
+		function Plater:BigWigs_BarCreated(...)
+			local event, self, bar, module, key, text, time, icon, isApprox = ...
+			if (event == "BigWigs_BarCreated") then
+				if (key) then
+					Plater.BossModsTimeBarBW[key] = {
+						name = text,
+						id = key,
+						timer =  time,
+						start = GetTime(),
+						icon = icon,
+						spellId = key,
+					}
+				end
+			end
+		end
+		
+        if (_G.BigWigsLoader.RegisterMessage) then
+            --BigWigsLoader.RegisterMessage (Plater, "BigWigs_Message")
+            _G.BigWigsLoader.RegisterMessage (Plater, "BigWigs_BarCreated")
+        end
 	end
 end
+
+Plater.RegisterBossModsBars()

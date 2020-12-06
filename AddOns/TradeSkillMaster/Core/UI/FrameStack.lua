@@ -94,7 +94,7 @@ local ELEMENT_STYLE_KEYS = {
 function FrameStack.Toggle()
 	if not TSMFrameStackTooltip then
 		CreateFrame("GameTooltip", "TSMFrameStackTooltip", UIParent, "GameTooltipTemplate")
-		TSMFrameStackTooltip.highlightFrame = CreateFrame("Frame", nil, nil, TSM.IsShadowlands() and "BackdropTemplate" or nil)
+		TSMFrameStackTooltip.highlightFrame = CreateFrame("Frame", nil, nil, BackdropTemplateMixin and "BackdropTemplate" or nil)
 		TSMFrameStackTooltip.highlightFrame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
 		TSMFrameStackTooltip.highlightFrame:SetBackdropColor(1, 0, 0, 0.3)
 		TSMFrameStackTooltip:Hide()

@@ -40,9 +40,11 @@
 <Script file="Locale/global-koKR.lua" />
 <Script file="Locale/classic-koKR.lua" />
 
-<!--  SPANISH LOCALIZATION -->
+<!--  SPANISH-MEXICAN LOCALIZATION -->
 <Script file="Locale/global-esMX.lua" />
 <Script file="Locale/classic-esMX.lua" />
+
+<!--  SPANISH LOCALIZATION -->
 <Script file="Locale/global-esES.lua" />
 <Script file="Locale/classic-esES.lua" />
 

@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Dependencies: ItemRack, Blizzard_MacroUI
 ## LoadOnDemand: 1
 
@@ -8,6 +8,9 @@
 
 ## X-Curse-Project-ID: 340903
 ## X-Part-Of: ItemRack
+
+# Libraries
+Libs\Libs.xml
 
 ItemRackOptions.lua
 ItemRackOptions.xml

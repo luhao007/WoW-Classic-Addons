@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Dathwada
 ## Version: v2.2.0
 ## RequiredDeps: HandyNotes

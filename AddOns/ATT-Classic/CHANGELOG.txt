@@ -1,5 +1,6 @@
-0.3.6 Release Notes
+0.3.9 Release Notes
 Contributions made by Crieve:
-* Some minor quest adjustments.
-* Added a Phase 5 Catch-Up Gear filter.
+* The Scourge Invasion is now in its own separate category under Phase 6.
+* Some fixes for the Scourge Invasion.
+* Added a bit more information for the Scourge Invasion quests.
 

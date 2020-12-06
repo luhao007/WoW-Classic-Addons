@@ -1,5 +1,6 @@
-local config, L, _, T = OneRingLib.ext.config, OneRingLib.lang, ...
+local config, _, T = OneRingLib.ext.config, ...
 local KR = OneRingLib.ext.ActionBook:compatible("Kindred", 1, 0)
+local L = T.L
 
 local frame = config.createPanel("Bindings", "OPie")
 local OBC_Profile = CreateFrame("Frame", "OBC_Profile", frame, "UIDropDownMenuTemplate")
@@ -114,24 +115,14 @@ function ringBindings:altClick() -- self is the binding button
 	self:ToggleAlternateEditor(OneRingLib:GetRingBinding(ringBindings.map[self:GetID()]))
 end
 
-local sysBindings = {count=5, name=L"Other Bindings", caption=L"Action", allowWheel=function(s) return s:GetID() > 3 end,
-	options={"PrimaryButton", "SecondaryButton", "OpenNestedRingButton", "ScrollNestedRingUpButton", "ScrollNestedRingDownButton"},
-	optionNames={L"Primary default binding button", L"Secondary default binding button", L"Open nested ring", L"Scroll nested ring (up)", L"Scroll nested ring (down)"}}
-function sysBindings:get(id)
-	local value, setting = OneRingLib:GetOption(self.options[id])
-	return value, self.optionNames[id], setting and "|cffffffff" or nil
+local subBindings = { name=L"In-Ring Bindings", caption=L"Action",
+	options={"ScrollNestedRingUpButton", "ScrollNestedRingDownButton", "OpenNestedRingButton", "SelectedSliceBind"},
+	optionNames={L"Scroll nested ring (up)", L"Scroll nested ring (down)", L"Open nested ring", L"Selected slice (keep ring open)"},
+	count=0, t={},
+}
+function subBindings.allowWheel(btn)
+	return btn:GetID() <= 2 and not subBindings.scope
 end
-function sysBindings:set(id, bind)
-	config.undo.saveProfile()
-	OneRingLib:SetOption(self.options[id], bind == false and "" or bind)
-end
-function sysBindings:default()
-	for _,v in pairs(self.options) do
-		OneRingLib:SetOption(v, nil)
-	end
-end
-
-local subBindings = {count=0, name=L"Slice Bindings", caption=L"Slice", t={}}
 function subBindings:refresh(scope)
 	self.scope, self.nameSuffix = scope, scope and (" (|cffacd7e6" ..  (OneRingLib:GetRingInfo(scope or 1) or "") .. "|r)") or (" (" .. L"Defaults" .. ")")
 	local t, ni = self.t, 1
@@ -139,23 +130,28 @@ function subBindings:refresh(scope)
 		t[ni], ni = s, ni + 1
 	end
 	for i=#t,ni,-1 do t[i] = nil end
-	subBindings.count = ni+1
+	subBindings.count = ni+(scope and 1 or 4)
 end
 function subBindings:get(id)
-	if id == 1 then
-		return OneRingLib:GetOption("SelectedSliceBind", self.scope), "Selected slice (keep ring open)"
+	local firstListSize = self.scope and 1 or 4
+	if id <= firstListSize then
+		id = (self.scope and 3 or 0) + id
+		local value, setting = OneRingLib:GetOption(self.options[id], self.scope)
+		return value, self.optionNames[id], setting and "|cffffffff" or nil
 	else
-		id = id - 1
+		id = id - firstListSize
 	end
 	return self.t[id] == "false" and "" or self.t[id], (L"Slice #%d"):format(id)
 end
 function subBindings:set(id, bind)
-	if id == 1 then
+	local firstListSize = self.scope and 1 or 4
+	if id <= firstListSize then
+		id = (self.scope and 3 or 0) + id
 		config.undo.saveProfile()
-		OneRingLib:SetOption("SelectedSliceBind", bind or "", self.scope)
+		OneRingLib:SetOption(self.options[id], bind == false and "" or bind, self.scope)
 		return
 	else
-		id = id - 1
+		id = id - firstListSize
 	end
 	if bind == nil then
 		local i, s, s2 = 1, select(self.scope == nil and 5 or 4, OneRingLib:GetOption("SliceBindingString", self.scope))
@@ -190,7 +186,7 @@ end
 local function subBindings_ScopeFormat(key, list)
 	return list[key], list[0] and (key or nil) == subBindings.scope
 end
-function subBindings:scopes(_info, level, checked)
+function subBindings:scopes(level, checked)
 	local list = subBindings_List
 	wipe(list) -- Reusing the table to maintain the scroll position key
 	list[0], list[1], list[false] = checked, false, L"Defaults for all rings"
@@ -202,16 +198,16 @@ function subBindings:scopes(_info, level, checked)
 	config.ui.scrollingDropdown:Display(level, list, subBindings_ScopeFormat, subBindings_ScopeClick)
 end
 function subBindings:default()
-	OneRingLib:SetOption("SliceBindingString", nil)
-	OneRingLib:SetOption("SelectedSliceBind", nil)
-	if self.scope then
-		OneRingLib:SetOption("SliceBindingString", nil, self.scope)
-		OneRingLib:SetOption("SelectedSliceBind", nil, self.scope)
+	for i=0,#self.options do
+		local on = i == 0 and "SliceBindingString" or self.options[i]
+		OneRingLib:SetOption(on, nil)
+		if self.scope then
+			OneRingLib:SetOption(on, nil, self.scope)
+		end
 	end
 end
 
-
-local currentOwner, currentBase, bindingTypes = ringBindings,0, {ringBindings, subBindings, sysBindings}
+local currentOwner, currentBase, bindingTypes = ringBindings,0, {ringBindings, subBindings}
 local function updatePanelContent()
 	local m = currentOwner.count
 	for i=1,#bindLines do
@@ -247,14 +243,20 @@ local function scroll(self)
 end
 btnDown:SetScript("OnClick", scroll) btnUp:SetScript("OnClick", scroll)
 
-function bindSet:initialize(level, menuList)
-	local info = {func=bindSet.set, minWidth=level == 1 and (bindSet:GetWidth()-40) or nil}
-	if level == 2 and menuList then
-		return menuList:scopes(info, level, menuList == currentOwner)
-	end
-	for _, v in ipairs(bindingTypes) do
-		info.text, info.arg1, info.checked, info.hasArrow, info.menuList = v.name, v, v == currentOwner, v.scopes, v.scopes and v
-		UIDropDownMenu_AddButton(info, level)
+function bindSet:initialize(level)
+	local info = {func=bindSet.set, minWidth=bindSet:GetWidth()-40}
+	for i=1,#bindingTypes do
+		local v = bindingTypes[i]
+		if v.scopes then
+			UIDropDownMenu_AddSeparator(level)
+			info.text, info.isTitle, info.notCheckable, info.justifyH = v.name, true, true, "CENTER"
+			UIDropDownMenu_AddButton(info, level)
+			v:scopes(level, currentOwner == v)
+		else
+			info.notCheckable, info.isTitle, info.justifyH = nil
+			info.text, info.arg1, info.checked = v.name, v, v == currentOwner
+			UIDropDownMenu_AddButton(info, level)
+		end
 	end
 end
 function bindSet:set(owner, scope)

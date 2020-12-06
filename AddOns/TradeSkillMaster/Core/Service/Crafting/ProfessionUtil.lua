@@ -8,7 +8,6 @@ local _, TSM = ...
 local ProfessionUtil = TSM.Crafting:NewPackage("ProfessionUtil")
 local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Event = TSM.Include("Util.Event")
-local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Delay = TSM.Include("Util.Delay")
 local ItemString = TSM.Include("Util.ItemString")
@@ -189,17 +188,8 @@ function ProfessionUtil.IsEnchant(spellId)
 	if not strfind(C_TradeSkillUI.GetRecipeItemLink(spellId), "enchant:") then
 		return false
 	end
-	local recipeInfo = nil
-	if not TSM.IsShadowlands() then
-		recipeInfo = TempTable.Acquire()
-		assert(C_TradeSkillUI.GetRecipeInfo(spellId, recipeInfo) == recipeInfo)
-	else
-		recipeInfo = C_TradeSkillUI.GetRecipeInfo(spellId)
-	end
+	local recipeInfo = C_TradeSkillUI.GetRecipeInfo(spellId)
 	local altVerb = recipeInfo.alternateVerb
-	if not TSM.IsShadowlands() then
-		TempTable.Release(recipeInfo)
-	end
 	return altVerb and true or false
 end
 

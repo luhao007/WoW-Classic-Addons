@@ -283,13 +283,7 @@ function private.ScanProfession()
 			-- There's a Blizzard bug where First Aid duplicates spellIds, so check that we haven't seen this before
 			if not spellIdIndex[spellId] then
 				spellIdIndex[spellId] = index
-				local info = nil
-				if not TSM.IsShadowlands() then
-					info = TempTable.Acquire()
-					assert(C_TradeSkillUI.GetRecipeInfo(spellId, info) == info)
-				else
-					info = C_TradeSkillUI.GetRecipeInfo(spellId)
-				end
+				local info = C_TradeSkillUI.GetRecipeInfo(spellId)
 				if info.previousRecipeID then
 					prevRecipeIds[spellId] = info.previousRecipeID
 					nextRecipeIds[info.previousRecipeID] = spellId
@@ -299,9 +293,6 @@ function private.ScanProfession()
 					prevRecipeIds[info.nextRecipeID] = spellId
 				end
 				recipeLearned[spellId] = info.learned
-				if not TSM.IsShadowlands() then
-					TempTable.Release(info)
-				end
 			end
 		end
 		private.db:TruncateAndBulkInsertStart()
@@ -311,13 +302,7 @@ function private.ScanProfession()
 			-- TODO: show unlearned recipes in the TSM UI
 			-- There's a Blizzard bug where First Aid duplicates spellIds, so check that this is the right index
 			if spellIdIndex[spellId] == index and recipeLearned[spellId] and not hasHigherRank then
-				local info = nil
-				if not TSM.IsShadowlands() then
-					info = TempTable.Acquire()
-					assert(C_TradeSkillUI.GetRecipeInfo(spellId, info) == info)
-				else
-					info = C_TradeSkillUI.GetRecipeInfo(spellId)
-				end
+				local info = C_TradeSkillUI.GetRecipeInfo(spellId)
 				local rank = -1
 				if prevRecipeIds[spellId] or nextRecipeIds[spellId] then
 					rank = 1
@@ -329,9 +314,6 @@ function private.ScanProfession()
 				end
 				local numSkillUps = info.difficulty == "optimal" and info.numSkillUps or 1
 				private.db:BulkInsertNewRow(index, spellId, info.name, info.categoryID, info.difficulty, rank, numSkillUps)
-				if not TSM.IsShadowlands() then
-					TempTable.Release(info)
-				end
 			else
 				inactiveSpellIds[spellId] = true
 			end

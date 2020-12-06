@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Jaliborc (JoÃ£o Cardoso)
 ## Version: 9.0.1
 ## OptionalDeps: WoWUnit, TestPoncho

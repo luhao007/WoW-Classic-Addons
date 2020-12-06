@@ -1,9 +1,9 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Trentin, Jim-Bim
 ## Dependencies: MonkeyLibrary, MonkeyQuest
 ## SavedVariables: mkql_Saved
 
-## Title: MonkeyQuestLog v0.10.3
+## Title: MonkeyQuestLog v0.11.0c
 ## Notes: Replacement Quest Log.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF任务追踪|r |cFF69CCF0任务窗口|r
 ## Notes-zhCN: 独立任务窗口

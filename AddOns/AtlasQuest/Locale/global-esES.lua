@@ -66,7 +66,7 @@ AQShowLeft = "Muestra el panel de AtlasQuest al lado "..RED.."izquierdo"..GREEN.
 
 -- Colour Check
 AQOptionsCCTEXT = ""..WHITE.."Colorea las misiones dependiendo de sus niveles.";
-AQCCON = "AtlasQuest coloreará las misiones depeiendo de sus niveles."
+AQCCON = "AtlasQuest coloreará las misiones dependiendo de sus niveles."
 AQCCOFF = "AtlasQuest no coloreará las misiones."
 
 
@@ -162,7 +162,7 @@ AQITEM_RING = "Dedo"
 AQITEM_KEY = "Llave"
 AQITEM_QUIVER = "Carcaj"
 AQITEM_AMMOPOUCH = "Bolsa de munición"
-AQITEM_ENCHANT = "Encanta"
+AQITEM_ENCHANT = "Encantamiento"
 AQITEM_SPELL = "Hechizo"
 
 

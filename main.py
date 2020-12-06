@@ -22,7 +22,7 @@ class Context:
 
 
 def _manage():
-    print('Modifying addons to fit each other...', end='')
+    print('Modifying addons to fit each other...')
     Manager().process()
     print('Done!')
 

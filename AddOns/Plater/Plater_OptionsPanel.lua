@@ -1315,6 +1315,8 @@ local alpha_major_options = {
 			checkBoxAll:SetValue(false)
 			local checkBoxNone = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_none")
 			checkBoxNone:SetValue(false)
+			local checkBoxFocusTargetAlpha = smallFrameForAlphaMajorOptions:GetWidgetById("focus_target_alpha")
+			checkBoxFocusTargetAlpha:Disable()
 			local checkBoxDivisionByTwo = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_division")
 			checkBoxDivisionByTwo:Disable()
 			Plater.RefreshDBUpvalues()
@@ -1345,7 +1347,9 @@ local alpha_major_options = {
 			local checkBoxAll = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_both")
 			checkBoxAll:SetValue(false)		
 			local checkBoxNone = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_none")
-			checkBoxNone:SetValue(false)	
+			checkBoxNone:SetValue(false)
+			local checkBoxFocusTargetAlpha = smallFrameForAlphaMajorOptions:GetWidgetById("focus_target_alpha")
+			checkBoxFocusTargetAlpha:Disable()
 			local checkBoxDivisionByTwo = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_division")
 			checkBoxDivisionByTwo:Disable()
 			Plater.RefreshDBUpvalues()
@@ -1377,6 +1381,8 @@ local alpha_major_options = {
 			checkBoxNonTargets:SetValue(false)
 			local checkBoxNone = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_none")
 			checkBoxNone:SetValue(false)
+			local checkBoxFocusTargetAlpha = smallFrameForAlphaMajorOptions:GetWidgetById("focus_target_alpha")
+			checkBoxFocusTargetAlpha:Disable()
 			local checkBoxDivisionByTwo = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_division")
 			checkBoxDivisionByTwo:Enable()
 			Plater.RefreshDBUpvalues()
@@ -1407,6 +1413,8 @@ local alpha_major_options = {
 			checkBoxNonTargets:SetValue(false)
 			local checkBoxAll = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_both")
 			checkBoxAll:SetValue(false)	
+			local checkBoxFocusTargetAlpha = smallFrameForAlphaMajorOptions:GetWidgetById("focus_target_alpha")
+			checkBoxFocusTargetAlpha:Disable()
 			local checkBoxDivisionByTwo = smallFrameForAlphaMajorOptions:GetWidgetById("transparency_division")
 			checkBoxDivisionByTwo:Disable()
 			Plater.RefreshDBUpvalues()
@@ -1509,7 +1517,18 @@ local alpha_major_options = {
 		desc = "Frame alpha for targets or in-range units.",
 		usedecimals = true,
 	},
-	
+		
+	{
+		type = "toggle",
+		get = function() return Plater.db.profile.focus_as_target_alpha end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.focus_as_target_alpha = value
+			Plater.UpdateAllPlates()
+		end,
+		name = "Focus Target Alpha",
+		desc = "Use 'target alpha' for focus targets as well.",
+		id = "focus_target_alpha",
+	},
 	{
 		type = "toggle",
 		get = function() return Plater.db.profile.transparency_behavior_use_division end,
@@ -1641,6 +1660,11 @@ else
 	checkBoxBlizzPlateAlpha:Disable()
 end
 
+frontPageFrame.RefreshOptionsOrig = frontPageFrame.RefreshOptionsOrig or frontPageFrame.RefreshOptions
+frontPageFrame.RefreshOptions = function ()
+	frontPageFrame:RefreshOptionsOrig()
+	generalOptionsAnchor:RefreshOptions()
+end
 
 
 --go to frames
@@ -2336,7 +2360,7 @@ local debuff_options = {
 			Plater.UpdateAllPlates()
 		end,
 		name = "Show Dispellable Buffs",
-		desc = "Show auras which can be dispelled or stealed.",
+		desc = "Show auras which can be dispelled or stolen.",
 	},
 	{
 		type = "color",
@@ -3378,13 +3402,13 @@ Plater.CreateAuraTesting()
 				
 					for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
 						if (plateFrame.unitFrame.colorSelectionDropdown) then
-							if (Plater.ZoneInstanceType ~= "party" and Plater.ZoneInstanceType ~= "raid") then
-								plateFrame.unitFrame.colorSelectionDropdown:Hide()
-							else
+							--if (Plater.ZoneInstanceType ~= "party" and Plater.ZoneInstanceType ~= "raid") then
+							--	plateFrame.unitFrame.colorSelectionDropdown:Hide()
+							--else
 								local npcID = plateFrame.unitFrame.colorSelectionDropdown:GetParent() [MEMBER_NPCID]
 								plateFrame.unitFrame.colorSelectionDropdown:Select (DB_NPCID_COLORS [npcID] and DB_NPCID_COLORS [npcID][1] and DB_NPCID_COLORS [npcID][3] or "white")
 								plateFrame.unitFrame.colorSelectionDropdown:Show()
-							end
+							--end
 						end
 					end
 				end
@@ -3515,7 +3539,7 @@ Plater.CreateAuraTesting()
 					dropdown:Select (DB_NPCID_COLORS [npcID] and DB_NPCID_COLORS [npcID][1] and DB_NPCID_COLORS [npcID][3] or "white")
 					
 					if (Plater.ZoneInstanceType ~= "party" and Plater.ZoneInstanceType ~= "raid") then
-						dropdown:Hide()
+						--dropdown:Hide()
 					end
 					
 					--reset button
@@ -3573,7 +3597,7 @@ Plater.CreateAuraTesting()
 					elseif (event == "NAME_PLATE_UNIT_ADDED") then
 					
 						if (Plater.ZoneInstanceType ~= "party" and Plater.ZoneInstanceType ~= "raid") then
-							return
+							--return
 						end
 					
 						local dropdown = plateFrame.unitFrame.colorSelectionDropdown
@@ -6795,6 +6819,19 @@ local relevance_options = {
 
 				plateConfig.enemynpc.health[1] = value
 				plateConfig.enemynpc.health_incombat[1] = value
+				
+				--change the castbars
+				plateConfig.friendlyplayer.cast[1] = value
+				plateConfig.friendlyplayer.cast_incombat[1] = value
+
+				plateConfig.enemyplayer.cast[1] = value
+				plateConfig.enemyplayer.cast_incombat[1] = value
+
+				plateConfig.friendlynpc.cast[1] = value
+				plateConfig.friendlynpc.cast_incombat[1] = value
+
+				plateConfig.enemynpc.cast[1] = value
+				plateConfig.enemynpc.cast_incombat[1] = value
 
 				Plater.RefreshDBUpvalues()
 				Plater.UpdateAllPlates(nil, true)
@@ -6931,6 +6968,18 @@ local relevance_options = {
 			name = "Show Target Name",
 			desc = "Show who is the target of the current cast (if the target exists)",
 		},
+		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.castbar_target_notank end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.castbar_target_notank = value
+				Plater.RefreshDBUpvalues()
+			end,
+			name = "[Tank] Don't Show Your Name",
+			desc = "If you are a tank and the cast is on you, it won't show your name.",
+		},
+		
 		{
 			type = "range",
 			get = function() return Plater.db.profile.castbar_target_text_size end,
@@ -8106,7 +8155,35 @@ local relevance_options = {
 			usedecimals = true,
 			name = L["OPTIONS_YOFFSET"],
 			desc = "Adjust the position on the Y axis.\n\n|cFFFFFF00Important|r: right click to type the value.",
-		},			
+		},
+		
+		{type = "label", get = function() return "Player Name Text Colors" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
+		--player name color
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.plate_config.enemyplayer.actorname_use_class_color end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.plate_config.enemyplayer.actorname_use_class_color = value
+				Plater.UpdateAllPlates()
+			end,
+			name = "Use Class Colors",
+			desc = "Player name text uses the class color instead of the selected color.",
+		},
+		--player name color
+		{
+			type = "color",
+			get = function()
+				local color = Plater.db.profile.plate_config.enemyplayer.actorname_text_color
+				return {color[1], color[2], color[3], color[4]}
+			end,
+			set = function (self, r, g, b, a) 
+				local color = Plater.db.profile.plate_config.enemyplayer.actorname_text_color
+				color[1], color[2], color[3], color[4] = r, g, b, a
+				Plater.UpdateAllPlates()
+			end,
+			name = L["OPTIONS_COLOR"],
+			desc = "The color of the text.",
+		},
 		
 		{type = "breakline"},
 	
@@ -8252,21 +8329,6 @@ local relevance_options = {
 			values = function() return DF:BuildDropDownFontList (on_select_enemy_playername_font) end,
 			name = L["OPTIONS_FONT"],
 			desc = "Font of the text.",
-		},
-		--player name color
-		{
-			type = "color",
-			get = function()
-				local color = Plater.db.profile.plate_config.enemyplayer.actorname_text_color
-				return {color[1], color[2], color[3], color[4]}
-			end,
-			set = function (self, r, g, b, a) 
-				local color = Plater.db.profile.plate_config.enemyplayer.actorname_text_color
-				color[1], color[2], color[3], color[4] = r, g, b, a
-				Plater.UpdateAllPlates()
-			end,
-			name = L["OPTIONS_COLOR"],
-			desc = "The color of the text.",
 		},
 		
 		--text outline options
@@ -11457,6 +11519,29 @@ local relevance_options = {
 			name = L["OPTIONS_THREAT_AGGROSTATE_NOAGGRO"],
 			desc = L["OPTIONS_THREAT_COLOR_DPS_NOAGGRO_DESC"],
 		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.dps.use_aggro_solo end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.dps.use_aggro_solo = value
+			end,
+			name = "Use 'Solo' color",
+			desc = "Use the 'Solo' color when not in a group.",
+		},
+		
+		{
+			type = "color",
+			get = function()
+				local color = Plater.db.profile.dps.colors.solo
+				return {color[1], color[2], color[3], color[4]}
+			end,
+			set = function (self, r, g, b, a) 
+				local color = Plater.db.profile.dps.colors.solo
+				color[1], color[2], color[3], color[4] = r, g, b, a
+			end,
+			name = "Solo",
+			desc = "If enabled, always use this color when not in a group.",
+		},
 		
 		{type = "blank"},
 		{
@@ -11571,6 +11656,29 @@ local relevance_options = {
 			end,
 			name = L["OPTIONS_FRIENDLY"],
 			desc = L["OPTIONS_FRIENDLY"],
+		},
+		
+		{type = "blank"},
+		
+		{type = "label", get = function() return "Misc" .. ":" end, text_template = DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE")},
+		
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.show_aggro_flash end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.show_aggro_flash = value
+			end,
+			name = "Enable aggro flash",
+			desc = "Enables the -AGGRO- flash animation on the nameplates when gaining aggro as dps.",
+		},
+		{
+			type = "toggle",
+			get = function() return Plater.db.profile.show_aggro_glow end,
+			set = function (self, fixedparam, value) 
+				Plater.db.profile.show_aggro_glow = value
+			end,
+			name = "Enable aggro glow",
+			desc = "Enables the healthbar glow on the nameplates when gaining aggro as dps or losing aggro as tank.",
 		},
 		
 	}

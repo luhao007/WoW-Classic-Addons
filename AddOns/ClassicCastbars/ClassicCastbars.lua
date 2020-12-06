@@ -210,6 +210,11 @@ function addon:StoreCast(unitGUID, spellName, spellID, iconTexturePath, castTime
         local _, _, _, _, _, npcID = strsplit("-", unitGUID)
         if npcID then
             cast.isUninterruptible = npcCastUninterruptibleCache[npcID .. spellName]
+            -- HACK: force show 2s cast time for Kel'Thuzad's Frostbolt
+            if npcID == "15990" and cast.spellID == 28478 then
+                cast.maxValue = 2
+                cast.endTime = currTime + 2
+            end
         end
     end
 
@@ -380,7 +385,9 @@ function addon:PLAYER_LOGIN()
 
     -- Delete some old invalid settings
     if ClassicCastbarsDB.version and tonumber(ClassicCastbarsDB.version) <= 19 then
-        ClassicCastbarsDB.party.position = nil
+        if ClassicCastbarsDB.party then
+            ClassicCastbarsDB.party.position = nil
+        end
         ClassicCastbarsDB.player = nil
         ClassicCastbarsDB.npcCastUninterruptibleCache = {}
     end

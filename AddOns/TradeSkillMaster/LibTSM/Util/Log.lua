@@ -22,7 +22,7 @@ local private = {
 	chatFrame = nil,
 }
 local MAX_ROWS = 200
-local MAX_MSG_LEN = 150
+local MAX_MSG_LEN = 200
 local CHAT_LOG_COLOR_KEYS = {
 	TRACE = "BLUE",
 	INFO = "GREEN",

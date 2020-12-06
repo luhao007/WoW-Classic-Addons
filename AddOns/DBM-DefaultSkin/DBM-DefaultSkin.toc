@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## RequiredDeps: DBM-Core, DBM-StatusBarTimers
 ## LoadOnDemand: 0
 

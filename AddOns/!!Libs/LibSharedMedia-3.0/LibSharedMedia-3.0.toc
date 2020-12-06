@@ -1,16 +1,15 @@
-## Interface: 80200
+## Interface: 90002
 ## LoadOnDemand: 1
 
 ## Title: Lib: SharedMedia-3.0
 ## Notes: Shared handling of media data (fonts, sounds, textures, ...) between addons.
 ## Author: Elkano
-## Version: 3.0-113
+## Version: 3.0-115
 ## X-Website: http://www.wowace.com/projects/libsharedmedia-3-0/
 ## X-Category: Library
 
-## X-Revision: 113
-## X-Date: 2019-07-14T17:20:43Z
+## X-Revision: 115
+## X-Date: 2020-11-23T17:12:53Z
 
 
 LibSharedMedia-3.0\lib.xml
-

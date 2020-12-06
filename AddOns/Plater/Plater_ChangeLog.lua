@@ -8,6 +8,37 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 		
+			{1605864094,  "Backend Changes", "November 20th, 2020", "Switching mod/script code shadowing to DF."},
+			{1605864094,  "Bug Fix", "November 4th, 2020", "Fixing script priority slider position."},
+			
+			{1605864094,  "Options Changes", "November 10th, 2020", "Adding 'auras per row' overwrite option. (not UI)"},
+			{1605864094,  "Backend Changes", "November 10th, 2020", "Make aura rows grow in the proper directions according to the selected anchor position."},
+			{1605864094,  "Backend Changes", "November 10th, 2020", "Enable tooltips on buff special."},
+			{1605864094,  "Backend Changes", "November 10th, 2020", "Supress blizzard timers on buff special."},
+			{1605864094,  "Backend Changes", "November 10th, 2020", "Adding font options for buff special timer, stack and caster texts. (not UI)"},
+			
+			{1605864094,  "Options Changes", "November 5th, 2020", "Nameplate color dropdown now works on any map."},
+			{1605864094,  "Options Changes", "November 5th, 2020", "Added class color option to Enemy Player."},
+			{1605864094,  "Bug Fix", "November 5th, 2020", "Fixed aura show animation not playing at the right times + scale reset."},
+			{1605864094,  "Options Changes", "November 5th, 2020", "Global health bar resizer now also resize the cast bar width."},
+			{1605864094,  "Options Changes", "November 5th, 2020", "Adding an option to not show the cast target if the player is a tank."},
+			
+			{1605864094,  "Bug Fix", "November 2nd, 2020", "Execute range indicator overlay is back to its lower alpha value."},
+			{1605864094,  "Bachend Changes", "November 2nd, 2020", "Sorting consolidated auras properly."},
+			{1605864094,  "Options Changes", "November 1st, 2020", "Adding option to use target alpha settings for focus target as well."},
+			{1605864094,  "Options Changes", "November 1st, 2020", "Adding option to disable Aggro-Glow."},
+			{1605864094,  "Bachend Changes", "October 31st, 2020", "Shortening names should now work properly on all non-latin charsets."},
+			
+			{1605864094,  "New Feature", "October 30th, 2020", "New function to duplicate or copy mod/script options to other mods/scripts."},
+			{1605864094,  "Options Changes", "October 27th, 2020", "Adding an option to disable the '-AGGRO-' flash (off by default)."},
+			{1605864094,  "Bug Fix", "October 26th, 2020", "Ensure mods/scripts are saved properly before exporting a profile."},
+			{1605864094,  "Bachend Changes", "October 25th, 2020", "'IsSelf' is now more consistent across the members."},
+			{1605864094,  "Bachend Changes", "October 25th, 2020", "Proper alpha checks for the personal bar."},
+			{1605864094,  "Bachend Changes", "October 25th, 2020", "Refresh settings tab when selecting it."},
+			{1605864094,  "Bug Fix", "October 25th, 2020", "Stopping nameplate flash animations on nameplate removal."},
+			{1605864094,  "Bug Fix", "October 24th, 2020", "Fixing an issue with internal aura sorting making auras too 'jumpy'."},
+			{1605864094,  "Bug Fix", "October 24th, 2020", "Fixing an issue with LibCustomGlow implementation not recognizing the key properly in certain cases."},
+			
 			{1603571275,  "Backend Changes", "October 22nd, 2020", "Adding 'upper range' execute ranges. (e.g. 100% to 80%). Useably via 'Plater.SetExecuteRange (isExecuteEnabled, healthAmountLower, healthAmountUpper)'"},
 			
 			{1603571275,  "Bug Fix", "October 20th, 2020", "Fixing issue with no-combat alpha and coloring."},

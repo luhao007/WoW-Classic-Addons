@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: kagaro, xinhuan, nevcairiel
 ## Version: 1.45.6-classic
 ## OptionalDeps: Ace3, LibDataBroker-1.1, HereBeDragons

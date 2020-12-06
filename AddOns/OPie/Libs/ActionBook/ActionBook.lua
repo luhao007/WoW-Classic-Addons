@@ -1,4 +1,4 @@
-local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 25, ...
+local apiV, AB, MAJ, REV, ext, T = {}, {}, 2, 26, ...
 if T.ActionBook then return end
 apiV[MAJ], ext, T.Kindred, T.Rewire = AB, {Kindred=T.Kindred, Rewire=T.Rewire, ActionBook={}}
 
@@ -85,12 +85,12 @@ local istore do
 end
 
 local LW, L do
-	local LT = {}
+	local LT, LR = {}
 	local function lookup(_, k)
 		return LT[k] or k
 	end
-	L, LW = newproxy(true), newproxy(true)
-	local LM, LWM = getmetatable(L), getmetatable(LW)
+	LR, LW = newproxy(true), newproxy(true)
+	local LM, LWM = getmetatable(LR), getmetatable(LW)
 	LM.__index, LM.__call = lookup, lookup
 	function LWM:__newindex(k, v)
 		if type(k) ~= "string" or (v ~= nil and type(v) ~= "string") then
@@ -98,6 +98,7 @@ local LW, L do
 		end
 		LT[k] = v
 	end
+	ext.ActionBook.L = LR
 end
 
 local actionCallbacks, core, coreEnv = {}, CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate") do
@@ -125,7 +126,7 @@ local actionCallbacks, core, coreEnv = {}, CreateFrame("Frame", nil, nil, "Secur
 	core:Execute([=[-- AB_Init
 		collections, tokens, metadata, actConditionals, tokConditionals = newtable(), newtable(), newtable(), newtable(), newtable()
 		actInfo, busy, idle, _NIL, sidCastID = newtable(), newtable(), newtable(), newtable(), 30 + math.random(9)
-		actInfo[sidCastID] = newtable("attribute", 6, "spell",nil, "target",nil, "type","spell")
+		actInfo[sidCastID] = newtable("attribute", 6, "spell",nil, "unit",nil, "type","spell")
 		for _, c in pairs(self:GetChildList(newtable())) do idle[c] = c:GetName() end
 		KR, colStack, idxStack, ecStack, onStack, outCount = self:GetFrameRef("KR"), newtable(), newtable(), newtable(), newtable(), newtable()
 	]=])
@@ -562,3 +563,4 @@ apiV[1] = {uniq=AB.CreateToken, get=AB.GetActionSlot, describe=AB.GetActionDescr
 end
 
 T.ActionBook, ext.ActionBook.compatible = ext.ActionBook, AB.compatible
+L = T.ActionBook.L -- TODO: Remove this when write tracing works

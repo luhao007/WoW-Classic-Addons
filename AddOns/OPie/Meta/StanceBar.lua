@@ -14,7 +14,7 @@ local function SetStanceBarVisibility(_, hidden, id)
 	end
 end
 
-OneRingLib:RegisterOption("HideStanceBar", false, SetStanceBarVisibility)
+T.OPieCore:RegisterOption("HideStanceBar", false, SetStanceBarVisibility)
 function EV:PLAYER_REGEN_ENABLED()
 	if pendingValue ~= nil then
 		SetStanceBarVisibility("HideStanceBar", pendingValue)

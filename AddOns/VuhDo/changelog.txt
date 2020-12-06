@@ -12,6 +12,8 @@ Known issues:
   
   
 Bugfixes:  
+-- Fixed combat log event based health updates  
+-- Fixed Buff Watch for Mage 'Arcane Intellect'  
   
   
 Improvements:  
@@ -40,6 +42,7 @@ Bugfixes:
   
   
 Improvements:  
+-- Improved localization for zhCN  
   
   
 --------------------------------------------------------------  

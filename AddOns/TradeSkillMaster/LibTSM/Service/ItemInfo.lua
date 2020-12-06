@@ -796,7 +796,7 @@ end
 -- @treturn ?boolean Whether or not the item is disenchantable (nil means we don't know)
 function ItemInfo.IsDisenchantable(item)
 	local itemString = ItemString.Get(item)
-	if not itemString or NON_DISENCHANTABLE_ITEMS[itemString] then
+	if not itemString or ItemInfo.GetInvSlotId(item) == (TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexTabardType) or NON_DISENCHANTABLE_ITEMS[itemString] then
 		return nil
 	end
 	local quality = ItemInfo.GetQuality(itemString)
@@ -804,7 +804,7 @@ function ItemInfo.IsDisenchantable(item)
 	if not quality or not classId then
 		return nil
 	end
-	return quality >= (TSM.IsShadowlands() and Enum.ItemQuality.Uncommon or LE_ITEM_QUALITY_UNCOMMON) and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
+	return quality >= (TSM.IsWowClassic() and LE_ITEM_QUALITY_UNCOMMON or Enum.ItemQuality.Uncommon) and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
 end
 
 --- Get whether or not the item is a commodity in WoW 8.3 (and above).

@@ -538,7 +538,7 @@ function private.CreateErrorFrame()
 		return
 	end
 	local STEPS_TEXT = "Steps leading up to the error:\n1) List\n2) Steps\n3) Here"
-	local frame = CreateFrame("Frame", nil, UIParent, TSM.IsShadowlands() and "BackdropTemplate" or nil)
+	local frame = CreateFrame("Frame", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	private.errorFrame = frame
 	frame:Hide()
 	frame:SetWidth(500)

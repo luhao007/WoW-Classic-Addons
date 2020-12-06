@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## RequiredDeps: Details
 ## OptionalDeps: Ace3
 ## SavedVariables: Details_TinyThreatDB

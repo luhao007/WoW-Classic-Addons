@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
 ## RequiredDeps: Bagnon
 ## LoadOnDemand: 1

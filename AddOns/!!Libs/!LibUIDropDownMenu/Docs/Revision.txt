@@ -1,6 +1,20 @@
-$Id: Revision.txt 57 2020-10-20 13:44:40Z arithmandar $
+$Id: Revision.txt 66 2020-11-22 15:25:00Z arithmandar $
+
 Revision History:
 =================
+
+v4.00.9000236639 (2020/11/22)
+-----------------------------
+- Toc update to suppport WoW 9.0.2
+- LibUIDropDownMenu
+  - Set major version to 4.0
+  - Migrate all global functions to be under library tables
+  - Insert "L_DropDownList1" and "L_DropDownList2" to global UIMenus
+  - UIDropDownMenu_HandleGlobalMouseEvent (thanks to SLOKnightFall)
+- LibEasyMenu
+  - Move function calls to under LibUIDropDownMenu and under library tables
+- LibUIDropDownMenuTemplates
+  - Move codes to under LibUIDropDownMenu so that thet can de under one single library
 
 v3.02.9000136272.01 (2020/10/20)
 -----------------------------

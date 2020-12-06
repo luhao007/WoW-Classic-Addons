@@ -1,4 +1,4 @@
-﻿--变量
+--变量
 local print = print;
 local floor = math.floor;
 local tonumber = tonumber;
@@ -171,7 +171,7 @@ UnitFramesPlusDefaultDB = {
     },
 
     minimap = {             --地图按钮
-        button = 1,
+        button = 0,
         radius = 78,
         position = 348,
     },
@@ -428,7 +428,7 @@ function UnitFramesPlus_GetRGB(minv, maxv, reverse)
     if g < 0 then g = 0 end
     if r > 1 then r = 1 end
     if g > 1 then g = 1 end
-    if reverse and reverse == 1 then 
+    if reverse and reverse == 1 then
         return g, r, b;
     else
         return r, g, b;

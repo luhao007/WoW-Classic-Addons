@@ -425,7 +425,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			-- SWING_DAMAGE - the amount of damage is the 12th arg
 			-- ENVIRONMENTAL_DAMAGE - the amount of damage is the 13th arg
 			-- for all other events with the _DAMAGE suffix the amount of damage is the 15th arg
-			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15);
+			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15, anArg4);
 
 			if VUHDO_INTERNAL_TOGGLES[36] then -- VUHDO_UPDATE_SHIELD
 				-- for SPELL events with _AURA suffixes the amount healed is the 16th arg
@@ -675,7 +675,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 		VUHDO_lateRaidReload();
 ]]
 	--elseif("UPDATE_MACROS" == anEvent) then
-		--VUHDO_timeReloadUI(0.1); -- @WARNING L\E4dt wg. shield macro alle 8 sec.
+		--VUHDO_timeReloadUI(0.1); -- @WARNING Lädt wg. shield macro alle 8 sec.
 
 	elseif "UNIT_FACTION" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then VUHDO_updateBouquetsForEvent(anArg1, VUHDO_UPDATE_MINOR_FLAGS); end
@@ -717,7 +717,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 
 			if ((VUHDO_RAID or tEmptyRaid)[anArg1] ~= nil) then
 				VUHDO_resetTalentScan(anArg1);
-				VUHDO_initDebuffs(); -- Talentabh\E4ngige Debuff-F\E4higkeiten neu initialisieren.
+				VUHDO_initDebuffs(); -- Talentabhängige Debuff-Fähigkeiten neu initialisieren.
 				VUHDO_timeReloadUI(1);
 			end
 		end
@@ -886,7 +886,7 @@ function VUHDO_slashCmd(aCommand)
 		VUHDO_printAbout();
 
 	elseif aCommand == "?" or strfind(tCommandWord, "help")	or aCommand == "" then
-		local tLines = VUHDO_splitString(VUHDO_I18N_COMMAND_LIST, "\A7");
+		local tLines = VUHDO_splitString(VUHDO_I18N_COMMAND_LIST, "§");
 
 		for _, tCurLine in ipairs(tLines) do 
 			VUHDO_MsgC(tCurLine);
@@ -1050,7 +1050,7 @@ local function VUHDO_updateAllAggro()
 				tInfo["aggro"] = true;
 			end
 			tTarget = tInfo["targetUnit"];
-			if not UnitIsFriend(tUnit, tTarget) then
+			if tTarget and UnitExists(tTarget) and not UnitIsFriend(tUnit, tTarget) then
 				if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
 					_, _, tThreatPerc = UnitDetailedThreatSituation(tUnit, tTarget);
 					tInfo["threatPerc"] = tThreatPerc or 0;
@@ -1058,7 +1058,7 @@ local function VUHDO_updateAllAggro()
 
 				tAggroUnit = VUHDO_RAID_NAMES[UnitName(tTarget .. "target")];
 
-				if tAggroUnit then
+				if tAggroUnit and UnitExists(tAggroUnit) then
 					if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
 						_, _, tThreatPerc = UnitDetailedThreatSituation(tAggroUnit, tTarget);
 						VUHDO_RAID[tAggroUnit]["threatPerc"] = tThreatPerc or 0;
@@ -1226,7 +1226,7 @@ local function VUHDO_doReloadRoster(anIsQuick)
 			end
 		end
 
-		VUHDO_initDebuffs(); -- Verz\F6gerung nach Taltentwechsel-Spell?
+		VUHDO_initDebuffs(); -- Verzögerung nach Taltentwechsel-Spell?
 	end
 end
 

@@ -465,11 +465,7 @@ function private.GetItemAltCostText(row, quantity)
 			if costItemString then
 				texture = ItemInfo.GetTexture(costItemString)
 			elseif not TSM.IsWowClassic() and strmatch(costItemLink, "currency:") then
-				if TSM.IsShadowlands() then
-					texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
-				else
-					_, _, texture = GetCurrencyInfo(costItemLink)
-				end
+				texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
 			else
 				error(format("Unknown item cost (%d, %d, %s)", index, costNum, tostring(costItemLink)))
 			end
@@ -492,7 +488,7 @@ end
 
 function private.GetCurrencyText()
 	local name, amount, texturePath = "", nil, nil
-	if TSM.IsShadowlands() then
+	if not TSM.IsWowClassic() then
 		local firstCurrency = GetMerchantCurrencies()
 		if firstCurrency then
 			local info = C_CurrencyInfo.GetCurrencyInfo(firstCurrency)
@@ -500,8 +496,6 @@ function private.GetCurrencyText()
 			amount = info.quantity
 			texturePath = info.iconFileID
 		end
-	elseif not TSM.IsWowClassic() then
-		name, amount, texturePath = GetCurrencyInfo(GetMerchantCurrencies() or "")
 	end
 	local text = ""
 	if name ~= "" and amount and texturePath then

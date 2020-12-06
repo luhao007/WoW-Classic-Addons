@@ -2651,9 +2651,6 @@ function QuestieNPCFixes:Load()
         [16361] = { 
             [npcKeys.spawns] = {[zoneIDs.EASTERN_PLAGUELANDS] = {{80.91,60.40},},},
         },
-        [16376] = {
-            [npcKeys.npcFlags] = {-npcFlags.REPAIR} -- Added in Phase 6
-        }, 
         [16479] = {
             [npcKeys.name] = "Polymorph Clone",
             [npcKeys.zoneID] = zoneIDs.AZSHARA,
@@ -2718,7 +2715,7 @@ function QuestieNPCFixes:Load()
         [19210] = {
             [QuestieDB.npcKeys.name]="Eastern Plaguelands, Blackwood Lake",
             [QuestieDB.npcKeys.friendlyToFaction]="AH",
-            [QuestieDB.npcKeys.spawns]={[139]={{42.837,39.315}}},
+            [QuestieDB.npcKeys.spawns]={[139]={{47.25,44.647}}},
         },
         [19211] = {
             [QuestieDB.npcKeys.name]="Silithus, Cenarion Hold",
@@ -2903,7 +2900,7 @@ function QuestieNPCFixes:Load()
         [19248] = {
             [QuestieDB.npcKeys.name]="Tirisfal Glades, Undercity",
             [QuestieDB.npcKeys.friendlyToFaction]="H",
-            [QuestieDB.npcKeys.spawns]={[85]={{62.376,66.884}}},
+            [QuestieDB.npcKeys.spawns]={[85]={{62.22,68.295}}},
         },
         [19249] = {
             [QuestieDB.npcKeys.name]="Dun Morogh, Anvilmar",
@@ -2928,7 +2925,7 @@ function QuestieNPCFixes:Load()
         [19253] = {
             [QuestieDB.npcKeys.name]="Eastern Plaguelands, Light's Hope Chapel",
             [QuestieDB.npcKeys.friendlyToFaction]="AH",
-            [QuestieDB.npcKeys.spawns]={[139]={{74.414,59.065}}},
+            [QuestieDB.npcKeys.spawns]={[139]={{80.136,65.209}}},
         },
         [19254] = {
             [QuestieDB.npcKeys.name]="Searing Gorge, Thorium Point",
@@ -3027,7 +3024,7 @@ function QuestieNPCFixes:Load()
         },
         [19276] = {
             [QuestieDB.npcKeys.name]="Ashenvale, Kargathia",
-            [QuestieDB.npcKeys.friendlyToFaction]="A",
+            [QuestieDB.npcKeys.friendlyToFaction]="AH",
             [QuestieDB.npcKeys.spawns]={[331]={{80.698,58.567}}},
         },
         [19279] = {
@@ -3039,6 +3036,11 @@ function QuestieNPCFixes:Load()
             [QuestieDB.npcKeys.name]="Durotar, Northern Durotar",
             [QuestieDB.npcKeys.friendlyToFaction]="H",
             [QuestieDB.npcKeys.spawns]={[14]={{47.314,17.888}}},
+        },
+        [19281] = {
+            [QuestieDB.npcKeys.name]="Teldrassil, Rut'theran Village",
+            [QuestieDB.npcKeys.friendlyToFaction]="H",
+            [QuestieDB.npcKeys.spawns]={[141]={{55.97,92.09}}},
         },
         [19282] = {
             [QuestieDB.npcKeys.name]="Blasted Lands, Dreadmaul Hold",

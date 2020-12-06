@@ -9,6 +9,7 @@ local CraftingUI = TSM.UI:NewPackage("CraftingUI")
 local L = TSM.Include("Locale").GetTable()
 local FSM = TSM.Include("Util.FSM")
 local Event = TSM.Include("Util.Event")
+local Log = TSM.Include("Util.Log")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
@@ -20,6 +21,7 @@ local private = {
 	tradeSkillOpen = nil,
 	defaultUISwitchBtn = nil,
 	isVisible = false,
+	apiCallbacks = {},
 }
 local MIN_FRAME_SIZE = { width = 650, height = 587 }
 local BEAST_TRAINING_DE = "Bestienausbildung"
@@ -86,6 +88,13 @@ end
 
 function CraftingUI.IsVisible()
 	return private.isVisible
+end
+
+function CraftingUI.RegisterApiCallback(addonTag, func)
+	if private.apiCallbacks[addonTag] then
+		error("Callback already registered for addonTag: "..tostring(addonTag), 3)
+	end
+	private.apiCallbacks[addonTag] = func
 end
 
 
@@ -309,6 +318,11 @@ function private.FSMCreate()
 				end
 				context.frame:Draw()
 				private.isVisible = true
+				for addonTag, func in pairs(private.apiCallbacks) do
+					local apiFuncStartTime = debugprofilestop()
+					func(true, context.frame:_GetBaseFrame())
+					Log.Info("API function (%s) took %d ms", addonTag, floor(debugprofilestop() - apiFuncStartTime + 0.5))
+				end
 			end)
 			:SetOnExit(function(context)
 				context.frame:Hide()
@@ -317,6 +331,11 @@ function private.FSMCreate()
 				private.isVisible = false
 				if TSM.IsWowClassic() then
 					UpdateDefaultCraftButton()
+				end
+				for addonTag, func in pairs(private.apiCallbacks) do
+					local apiFuncStartTime = debugprofilestop()
+					func(false)
+					Log.Info("API function (%s) took %d ms", addonTag, floor(debugprofilestop() - apiFuncStartTime + 0.5))
 				end
 			end)
 			:AddTransition("ST_CLOSED")

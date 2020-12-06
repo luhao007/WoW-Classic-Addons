@@ -183,6 +183,7 @@ PLATER_DEFAULT_SETTINGS = {
 				actorname_text_spacing = 12,
 				actorname_text_size = 12,
 				actorname_text_font = "Arial Narrow",
+				actorname_use_class_color = false,
 				actorname_text_color = {1, 1, 1, 1},
 				actorname_text_outline = "NONE",
 				actorname_text_shadow_color = {0, 0, 0, 1},
@@ -496,7 +497,7 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		login_counter = 0,
 		
-		spell_prediction = {
+		spell_prediction = { --not being used at the moment
 			enabled = false,
 			castbar_height = 12,
 
@@ -507,6 +508,7 @@ PLATER_DEFAULT_SETTINGS = {
 		transparency_behavior_use_division = false,
 		non_targeted_alpha_enabled = false,
 		honor_blizzard_plate_alpha = false,
+		focus_as_target_alpha = false,
 		
 		quick_hide = false, --hide the nameplate when the unit hits 0 health points | making disabled by default, this maybe is bugging hunters FD
 		
@@ -577,6 +579,7 @@ PLATER_DEFAULT_SETTINGS = {
 		no_spellname_length_limit = false,
 		
 		castbar_target_show = false,
+		castbar_target_notank = false,
 		castbar_target_anchor = {side = 5, x = 0, y = 0},
 		castbar_target_text_size = 10,
 		castbar_target_outline = "OUTLINE",
@@ -634,6 +637,8 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_height = 16,
 		aura_width2 = 26,
 		aura_height2 = 16,
+		auras_per_row_auto = true,
+		auras_per_row_amount = 10,
 		
 		--> aura frame 1
 		--aura_x_offset = 0,
@@ -673,14 +678,23 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_stack_shadow_color_offset = {1, -1},
 		aura_stack_color = {1, 1, 1, 1},
 		
-		extra_icon_anchor = {side = 6, x = -4, y = 4},
+		extra_icon_anchor = {side = 6, x = -4, y = 0},
 		extra_icon_show_timer = true,
+		extra_icon_timer_font = "Arial Narrow",
+		extra_icon_timer_size = 12,
+		extra_icon_timer_outline = "NONE",
 		extra_icon_width = 30,
 		extra_icon_height = 18,
 		extra_icon_wide_icon = true,
 		extra_icon_use_blizzard_border_color = true,
 		extra_icon_caster_name = true,
+		extra_icon_caster_font = "Arial Narrow",
+		extra_icon_caster_size = 7,
+		extra_icon_caster_outline = "NONE",
 		extra_icon_show_stacks = true,
+		extra_icon_stack_font = "Arial Narrow",
+		extra_icon_stack_size = 10,
+		extra_icon_stack_outline = "NONE",
 		extra_icon_backdrop_color = {0, 0, 0, 0.612853},
 		extra_icon_border_color = {0, 0, 0, 1},
 		
@@ -2446,6 +2460,9 @@ PLATER_DEFAULT_SETTINGS = {
 		aggro_can_check_notank = false,
 		tank_threat_colors = false,
 		
+		show_aggro_flash = false,
+		show_aggro_glow = true,
+		
 		tank = {
 			colors = {
 				aggro = {.5, .5, 1},
@@ -2460,10 +2477,12 @@ PLATER_DEFAULT_SETTINGS = {
 		dps = {
 			colors = {
 				aggro = {1, 0.109803, 0},
+				solo = {.5, .5, 1},
 				noaggro = {.5, .5, 1},
 				pulling = {1, .8, 0},
 				notontank = {.5, .5, 1}, --color inside dungeon when the mob is not in the tank aggro and not on the player
 			},
+			use_aggro_solo = false,
 		},
 		
 		news_frame = {},

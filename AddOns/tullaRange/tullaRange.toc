@@ -1,6 +1,6 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Tuller
-## Version: 9.0.1
+## Version: 9.0.2
 ## SavedVariables: TULLARANGE_COLORS
 
 ## Title: tullaRange

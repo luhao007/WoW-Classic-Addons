@@ -1007,7 +1007,7 @@ function private.FSMCreate()
 	end
 
 	local function UpdateButtons(context)
-		if not context.frame or not context.frame:HasChildById("top.filterInput") then
+		if not context.frame or not context.frame:HasChildById("top") then
 			return
 		end
 

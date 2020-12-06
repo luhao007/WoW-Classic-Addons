@@ -1,4 +1,4 @@
-## Interface: 11305
+## Interface: 11306
 ## Author: Isler
 ## Version: 1.36.5
 ## RequiredDeps: UnitFramesPlus

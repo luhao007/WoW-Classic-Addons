@@ -1,4 +1,4 @@
-local RW, MAJ, REV, _, T = {}, 1, 17, ...
+local RW, MAJ, REV, _, T = {}, 1, 18, ...
 if T.ActionBook then return end
 local AB, KR = nil, assert(T.Kindred:compatible(1,8), "A compatible version of Kindred is required.")
 local MODERN = select(4,GetBuildInfo()) >= 8e4
@@ -61,6 +61,7 @@ local core, coreEnv = CreateFrame("Frame", nil, nil, "SecureHandlerBaseTemplate"
 		until GetClickFrame(bn) == nil
 		core:WrapScript(CreateFrame("Button", bn, core, "SecureActionButtonTemplate"), "OnClick",
 		[=[-- Rewire:OnClick_Pre
+			if ns == 0 then return false end
 			idle[self], numIdle, numActive, ns = nil, numIdle - 1, numActive + 1, ns - 1
 			self:SetAttribute("macrotext", owner:RunAttribute("RunMacro", nil))
 			return nil, 1
