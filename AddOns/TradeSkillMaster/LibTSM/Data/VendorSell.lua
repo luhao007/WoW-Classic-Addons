@@ -201,7 +201,26 @@ local VENDOR_SELL_PRICES = TSM.IsWowClassic() and {
 		["i:160710"] = 25000, -- Wild Berries
 		["i:160712"] = 25000, -- Powdered Sugar
 		["i:161131"] = 300000000, -- Barely Stable Azerite Reactor
+		["i:163203"] = 50000000, -- Hypersensitive Azeritometer Sensor
 		["i:163569"] = 100, -- Insulated Wiring
+		["i:172056"] = 50000, -- Medley of Transplanar Spices
+		["i:172057"] = 37500, -- Inconceivably Aged Vinegar
+		["i:172058"] = 45000, -- Smuggled Azerothian Produce
+		["i:172059"] = 42500, -- Rich Grazer Milk
+		["i:173060"] = 5000, -- Aerated Water
+		["i:173168"] = 10000, -- Laestrite Setting
+		["i:175886"] = 5000, -- Dark Parchment
+		["i:177062"] = 50000, -- Penumbra Thread
+		["i:178786"] = 35000, -- Lusterwheat Flour
+		["i:178787"] = 1250000, -- Orboreal Shard
+		["i:180732"] = 10000, -- Rune Etched Vial
+		["i:180733"] = 50000, -- Luminous Flux
+		["i:183950"] = 50000, -- Distilled Death Extract
+		["i:183951"] = 50000, -- Immortal Shard
+		["i:183952"] = 50000, -- Machinist's Oil
+		["i:183953"] = 50000, -- Sealing Wax
+		["i:183954"] = 50000, -- Malleable Wire
+
 	}
 
 

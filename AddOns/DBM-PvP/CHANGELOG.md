@@ -1,8 +1,23 @@
 # <DBM> PvP
 
-## [r99](https://github.com/DeadlyBossMods/DBM-PvP/tree/r99) (2020-11-17)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r98...r99) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
+## [r100](https://github.com/DeadlyBossMods/DBM-PvP/tree/r100) (2020-12-16)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r99...r100) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
 
-- bump toc  
-- Shorten string for 30 second matching to something that should be more reliable  
-    Subscribe neutral messages in assaults so the BG starting emotes are actually listened to in other battlegrounds too  
+- Arty3 (#46)  
+    * Implement #33  
+- Arty3 (#45)  
+    * Add shadowlands arena ID  
+    * Fix some silvershard mine issues  
+    * Fix #34  
+    * Might as well clean up some locales  
+- Arty3 (#44)  
+    * Add shadowlands arena ID  
+    * Fix some silvershard mine issues  
+- Add shadowlands arena ID (#43)  
+- Update CI  
+- Update README.md  
+- Delete .travis.yml  
+- Update ci.yml  
+- Create ci.yml  
+- Classic batch syncs, knock off an extra 1.5 seconds (#41)  
+- custom classic rule  

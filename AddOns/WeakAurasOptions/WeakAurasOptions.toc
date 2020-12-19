@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: The WeakAuras Team
-## Version: 3.1.2
+## Version: 3.1.4
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -65,8 +65,6 @@ OptionsFrames\TexturePicker.lua
 # -- misc Frames
 OptionsFrames\MoverSizer.lua
 OptionsFrames\FrameChooser.lua
-
-Legendaries.lua
 
 AceGUI-Widgets\AceGUIWidget-WeakAurasExpand.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasExpandSmall.lua

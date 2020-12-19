@@ -66,7 +66,7 @@ ATLAS_DROPDOWN_TYPES = {}
 ATLAS_GAMETOOLTIP_ORIGINAL_SCALE = GameTooltip:GetScale()
 
 -- Only update this version number when the options have been revised and a force update is needed.
-ATLAS_OLDEST_VERSION_SAME_SETTINGS = "1.24.00" 
+ATLAS_OLDEST_VERSION_SAME_SETTINGS = "1.24.00"
 
 -- Turn ON / OFF Atlas debug mode
 ATLAS_DEBUGMODE = false
@@ -113,10 +113,10 @@ Column	Field 		Type 		Notes
 # Structure of LFGDungeons.dbc
 Column	Field 		Type 		Notes
 ------	-------------	--------	----------------------------------------------------------------------------------------------
-1 	ID 		Integer 		
+1 	ID 		Integer
 2	Map Name	String		Dungeon Name
-3	level_min 	Integer 	Minimum level to participate. 
-4 	level_max 	Integer 	Maximum level when this dungeon becomes trivial. 
+3	level_min 	Integer 	Minimum level to participate.
+4 	level_max 	Integer 	Maximum level when this dungeon becomes trivial.
 5	rec_level	Integer
 6	rec_minlevel	Integer
 7	rec_maxlevel	Integer
@@ -129,7 +129,7 @@ Column	Field 		Type 		Notes
 
 AtlasMaps = {
 --[[
-Syntax: 
+Syntax:
 	MapName = {
 		ZoneName = { "Map name" },
 		Location = { "Location of this map" },
@@ -143,7 +143,7 @@ Syntax:
 		DungeonHeoricID = LFGDungeon ID for Heroic mode,
 		DungeonMythicID = LFGDungeon ID for Mythic mode,
 		WorldMapID = uiMapID,
-		DungeonLevel = level number of the dungeon map series, 
+		DungeonLevel = level number of the dungeon map series,
 		Module = "map module name",
 		LargeMap = "large map's prefix name",
 		PrevMap = "previous map name",
@@ -158,7 +158,7 @@ Syntax:
 
 AtlasMaps_NPC_DB = {
 --[[
-Syntax: 
+Syntax:
 	MapName = {
 		{ number, EJ_BossID, X coordinate, Y coordinate };
 		{ 2, 193,339, 435 };
@@ -305,7 +305,6 @@ constants.deprecatedList = {
 	{ "Atlas_Arena", 		"1.07.02", "r80" },
 	{ "Atlas_WorldEvents", 		"3.24", "r107" },
 	{ "AtlasLoot", 			"v8.03.02", "r4615" },
-	{ "AtlasMajorCitiesEnhanced", 	"v1.15" }, 	
+	{ "AtlasMajorCitiesEnhanced", 	"v1.15" },
 	--{ "AtlasWorld", 		"3.3.5.25" }, 	-- updated July 14, 2010 -- comment out because this plugin is no longer maintained
 }
-

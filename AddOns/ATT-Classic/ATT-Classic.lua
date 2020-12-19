@@ -2460,6 +2460,11 @@ local function RefreshSkills()
 		end
 	end
 	
+	-- Hunter Only
+	if app.ClassIndex == 3 then
+		activeSkills[5149] = { 1, 1 };
+	end
+	
 	-- Clone the data for the specializations.
 	for specID,spellID in pairs(app.SpecializationSpellIDs) do
 		local baseSpell = activeSkills[spellID];
@@ -2666,6 +2671,9 @@ local function AttachTooltip(self)
 							elseif EXTERMINATOR[guid] then
 								local leftSide = _G[self:GetName() .. "TextLeft1"];
 								if leftSide then leftSide:SetText("|cffa335ee" .. UnitName(target) .. " the Exterminator|r"); end
+							elseif guid == "Player-4372-00006B41" then
+								local leftSide = _G[self:GetName() .. "TextLeft1"];
+								if leftSide then leftSide:SetText("|cffF58CBA" .. UnitName(target) .. " the Huggler|r"); end
 							end
 						elseif type == "Creature" or type == "Vehicle" then
 							if app.Settings:GetTooltipSetting("creatureID") then self:AddDoubleLine(L["CREATURE_ID"], tostring(npcID)); end
@@ -8605,6 +8613,7 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 					
 					local g = {};
 					local groupMembers = {};
+					groupMembers[app.GUID] = true;
 					local count = GetNumGroupMembers();
 					if count > 0 then
 						for raidIndex = 1, 40, 1 do

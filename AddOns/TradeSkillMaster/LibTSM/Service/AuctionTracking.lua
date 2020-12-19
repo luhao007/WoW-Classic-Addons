@@ -595,7 +595,7 @@ function private.FilterSystemMsg(_, _, msg, ...)
 		private.prevLineId = lineID
 		private.prevLineResult = nil
 		local link = private.settings.auctionMessages and private.settings.auctionMessages[msg]
-		if private.lastPurchase.name and msg == format(ERR_AUCTION_WON_S, private.lastPurchase.name) then
+		if private.lastPurchase.name and (msg == format(ERR_AUCTION_WON_S, private.lastPurchase.name) or (not TSM.IsWowClassic() and msg == format(ERR_AUCTION_COMMODITY_WON_S, private.lastPurchase.name, private.lastPurchase.stackSize))) then
 			-- we just bought an auction
 			private.prevLineResult = format(L["You won an auction for %sx%d for %s"], private.lastPurchase.link, private.lastPurchase.stackSize, Money.ToString(private.lastPurchase.buyout, "|cffffffff"))
 			return nil, private.prevLineResult, ...

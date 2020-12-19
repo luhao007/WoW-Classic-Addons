@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: TradeSkillMaster Team
-## Version: v4.10.19
+## Version: v4.10.25
 ## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 

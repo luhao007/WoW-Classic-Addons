@@ -192,9 +192,9 @@
     "name": "LibCandyBar-3.0",
     "description": "Timer bars with that extra sweetness.",
     "url": "https://www.curseforge.com/wow/addons/libcandybar-3-0",
-    "download_url": "https://edge.forgecdn.net/files/2730/359/LibCandyBar-3.0-r138-release.zip",
-    "date_published": "2019-06-26T02:45:14.993000+00:00",
-    "version": "r138-release",
+    "download_url": "https://edge.forgecdn.net/files/3120/874/LibCandyBar-3.0-r142-release.zip",
+    "date_published": "2020-11-23T17:10:28.473000+00:00",
+    "version": "r142-release",
     "folders": [
       {
         "name": "LibCandyBar-3.0"
@@ -205,6 +205,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r142-release",
+        "install_time": "2020-11-24T11:19:36+00:00"
+      },
       {
         "version": "r138-release",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -218,9 +222,9 @@
     "name": "LibChatAnims",
     "description": "UIFrameFlash to Animation conversion library for Floating Chat Frame functions.",
     "url": "https://www.curseforge.com/wow/addons/libchatanims",
-    "download_url": "https://edge.forgecdn.net/files/2752/649/LibChatAnims-r37-release.zip",
-    "date_published": "2019-08-01T14:58:37.547000+00:00",
-    "version": "r37-release",
+    "download_url": "https://edge.forgecdn.net/files/3120/915/LibChatAnims-r39-release.zip",
+    "date_published": "2020-11-23T17:39:44.720000+00:00",
+    "version": "r39-release",
     "folders": [
       {
         "name": "LibChatAnims"
@@ -231,6 +235,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r39-release",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "r37-release",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -296,9 +304,9 @@
     "name": "LibDBIcon-1.0",
     "description": "Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.",
     "url": "https://www.curseforge.com/wow/addons/libdbicon-1-0",
-    "download_url": "https://edge.forgecdn.net/files/2730/364/LibDBIcon-1.0-v8.2.0.zip",
-    "date_published": "2019-06-26T02:47:46.947000+00:00",
-    "version": "v8.2.0",
+    "download_url": "https://edge.forgecdn.net/files/3120/916/LibDBIcon-1.0-v9.0.1.zip",
+    "date_published": "2020-11-23T17:40:35.803000+00:00",
+    "version": "v9.0.1",
     "folders": [
       {
         "name": "LibDBIcon-1.0"
@@ -309,6 +317,14 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.0.1",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
+      {
+        "version": "v9.0.0",
+        "install_time": "2020-11-10T10:27:17+00:00"
+      },
       {
         "version": "v8.2.0",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -322,9 +338,9 @@
     "name": "LibDDI-1.0",
     "description": "Simple AceGUI3 dropdown item classes for font/statusbar/sound/etc.",
     "url": "https://www.curseforge.com/wow/addons/libddi-1-0",
-    "download_url": "https://edge.forgecdn.net/files/2730/368/LibDDI-1.0-r46-release.zip",
-    "date_published": "2019-06-26T02:50:18.143000+00:00",
-    "version": "r46-release",
+    "download_url": "https://edge.forgecdn.net/files/3120/917/LibDDI-1.0-r48-release.zip",
+    "date_published": "2020-11-23T17:41:23.240000+00:00",
+    "version": "r48-release",
     "folders": [
       {
         "name": "LibDDI-1.0"
@@ -335,6 +351,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r48-release",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "r46-release",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -400,9 +420,9 @@
     "name": "LibDogTag-3.0",
     "description": "A library to provide a markup syntax",
     "url": "https://www.curseforge.com/wow/addons/libdogtag-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3078/134/LibDogTag-3.0-v90000.1.zip",
-    "date_published": "2020-10-13T01:10:28.203000+00:00",
-    "version": "v90000.1",
+    "download_url": "https://edge.forgecdn.net/files/3126/515/LibDogTag-3.0-v90000.2.zip",
+    "date_published": "2020-11-29T17:55:11.393000+00:00",
+    "version": "v90000.2",
     "folders": [
       {
         "name": "LibDogTag-3.0"
@@ -413,6 +433,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v90000.2",
+        "install_time": "2020-12-03T12:07:56+00:00"
+      },
       {
         "version": "v90000.1",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -426,9 +450,9 @@
     "name": "LibDogTag-Unit-3.0",
     "description": "A library to provide unit-oriented tags to LibDogTag-3.0",
     "url": "https://www.curseforge.com/wow/addons/libdogtag-unit-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3078/139/LibDogTag-Unit-3.0-v90000.1.zip",
-    "date_published": "2020-10-13T01:10:56.313000+00:00",
-    "version": "v90000.1",
+    "download_url": "https://edge.forgecdn.net/files/3126/525/LibDogTag-Unit-3.0-v90000.2.zip",
+    "date_published": "2020-11-29T18:04:45.287000+00:00",
+    "version": "v90000.2",
     "folders": [
       {
         "name": "LibDogTag-Unit-3.0"
@@ -439,6 +463,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v90000.2",
+        "install_time": "2020-12-03T12:07:56+00:00"
+      },
       {
         "version": "v90000.1",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -452,9 +480,9 @@
     "name": "LibDropdown-1.0",
     "description": "Dropdown library for Ace3 options, extensible to other options formats. Works ok.",
     "url": "https://www.curseforge.com/wow/addons/libdropdown-1-0",
-    "download_url": "https://edge.forgecdn.net/files/3048/728/LibDropdown-1.0-1.0.10.zip",
-    "date_published": "2020-09-03T07:24:45.353000+00:00",
-    "version": "1.0.10",
+    "download_url": "https://edge.forgecdn.net/files/3121/33/LibDropdown-1.0-9.0.2.zip",
+    "date_published": "2020-11-23T19:07:45.287000+00:00",
+    "version": "9.0.2",
     "folders": [
       {
         "name": "LibDropdown-1.0"
@@ -465,6 +493,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.0.2",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "1.0.10",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -478,9 +510,9 @@
     "name": "LibDurability",
     "description": "A library for transmitting and receiving durability information of players in your group.",
     "url": "https://www.curseforge.com/wow/addons/libdurability",
-    "download_url": "https://edge.forgecdn.net/files/2730/370/LibDurability-r18-release.zip",
-    "date_published": "2019-06-26T02:51:15.687000+00:00",
-    "version": "r18-release",
+    "download_url": "https://edge.forgecdn.net/files/3120/919/LibDurability-r20-release.zip",
+    "date_published": "2020-11-23T17:42:10.680000+00:00",
+    "version": "r20-release",
     "folders": [
       {
         "name": "LibDurability"
@@ -491,6 +523,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r20-release",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "r18-release",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -582,9 +618,9 @@
     "name": "LibLatency",
     "description": "A library for transmitting and receiving latency information of players.",
     "url": "https://www.curseforge.com/wow/addons/liblatency",
-    "download_url": "https://edge.forgecdn.net/files/2730/371/LibLatency-r23-release.zip",
-    "date_published": "2019-06-26T02:52:08.250000+00:00",
-    "version": "r23-release",
+    "download_url": "https://edge.forgecdn.net/files/3120/922/LibLatency-r25-release.zip",
+    "date_published": "2020-11-23T17:42:58.907000+00:00",
+    "version": "r25-release",
     "folders": [
       {
         "name": "LibLatency"
@@ -595,6 +631,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "r25-release",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "r23-release",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -712,9 +752,9 @@
     "name": "LibSharedMedia-3.0",
     "description": "Shared handling of media data (fonts, sounds, textures, ...) between addons.",
     "url": "https://www.curseforge.com/wow/addons/libsharedmedia-3-0",
-    "download_url": "https://edge.forgecdn.net/files/2741/269/LibSharedMedia-3.0-r113-alpha.zip",
-    "date_published": "2019-07-14T17:20:51.290000+00:00",
-    "version": "8.2.0 v2 - r113",
+    "download_url": "https://edge.forgecdn.net/files/3120/925/LibSharedMedia-3.0-v9.0.0.zip",
+    "date_published": "2020-11-23T17:44:32.690000+00:00",
+    "version": "v9.0.0",
     "folders": [
       {
         "name": "LibSharedMedia-3.0"
@@ -725,6 +765,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.0.0",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "8.2.0 v2 - r113",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -738,9 +782,9 @@
     "name": "LibSink-2.0",
     "description": "Library that handles chat output.",
     "url": "https://www.curseforge.com/wow/addons/libsink-2-0",
-    "download_url": "https://edge.forgecdn.net/files/2836/745/LibSink-2.0-v8.2.2.zip",
-    "date_published": "2019-12-04T19:53:09.930000+00:00",
-    "version": "v8.2.2",
+    "download_url": "https://edge.forgecdn.net/files/3120/928/LibSink-2.0-v9.0.0.zip",
+    "date_published": "2020-11-23T17:45:18.677000+00:00",
+    "version": "v9.0.0",
     "folders": [
       {
         "name": "LibSink-2.0"
@@ -751,6 +795,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v9.0.0",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
       {
         "version": "v8.2.2",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -790,9 +838,9 @@
     "name": "LibUIDropDownMenu",
     "description": "A Replacement for standard UIDropDownMenu",
     "url": "https://www.curseforge.com/wow/addons/libuidropdownmenu",
-    "download_url": "https://edge.forgecdn.net/files/3087/543/!LibUIDropDownMenu-v3.02.9000136272.01.zip",
-    "date_published": "2020-10-20T13:45:05.713000+00:00",
-    "version": "v3.02.9000136272.01",
+    "download_url": "https://edge.forgecdn.net/files/3119/777/!LibUIDropDownMenu-v4.00.9000236639.zip",
+    "date_published": "2020-11-22T15:25:54.030000+00:00",
+    "version": "v4.00.9000236639",
     "folders": [
       {
         "name": "!LibUIDropDownMenu"
@@ -804,33 +852,11 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "v4.00.9000236639",
+        "install_time": "2020-11-24T11:19:37+00:00"
+      },
+      {
         "version": "v3.02.9000136272.01",
-        "install_time": "2020-11-03T05:33:05+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "16386",
-    "slug": "libwindow-1-1",
-    "name": "LibWindow-1.1",
-    "description": "A library that handles the basics of \"window\" style frames",
-    "url": "https://www.curseforge.com/wow/addons/libwindow-1-1",
-    "download_url": "https://edge.forgecdn.net/files/925/188/LibWindow-1.1-r15-70000.zip",
-    "date_published": "2016-07-19T06:39:09.957000+00:00",
-    "version": "r15-70000",
-    "folders": [
-      {
-        "name": "LibWindow-1.1"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "r15-70000",
         "install_time": "2020-11-03T05:33:05+00:00"
       }
     ]

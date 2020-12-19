@@ -302,10 +302,10 @@ else
 			minLevel = 24,
 			maxLevel = 27,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 30, maxItemLevel = 31, matRate = 0.750, minAmount = 2, maxAmount = 7, amountOfMats = 1.933},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 32, maxItemLevel = 33, matRate = 0.750, minAmount = 2, maxAmount = 9, amountOfMats = 2.655},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 30, maxItemLevel = 31, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 32, maxItemLevel = 33, matRate = 0.220, minAmount = 2, maxAmount = 7, amountOfMats = 0.787},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 30, maxItemLevel = 30, matRate = 0.750, minAmount = 2, maxAmount = 7, amountOfMats = 1.933},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 31, maxItemLevel = 31, matRate = 0.750, minAmount = 2, maxAmount = 9, amountOfMats = 2.655},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 30, maxItemLevel = 30, matRate = 0.220, minAmount = 2, maxAmount = 5, amountOfMats = 0.750},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 31, maxItemLevel = 31, matRate = 0.220, minAmount = 2, maxAmount = 7, amountOfMats = 0.787},
 			},
 		},
 		["i:34054"] = { -- Infinite Dust
@@ -362,12 +362,22 @@ else
 			sourceInfo = {
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 49, maxItemLevel = 52, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 3.600},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 53, maxItemLevel = 58, matRate = 1.000, minAmount = 4, maxAmount = 9, amountOfMats = 6.500},
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 0.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 0.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 0.200, minAmount = 4, maxAmount = 6, amountOfMats = 1.000},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 49, maxItemLevel = 52, matRate = 1.000, minAmount = 1, maxAmount = 6, amountOfMats = 3.600},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 53, maxItemLevel = 58, matRate = 1.000, minAmount = 4, maxAmount = 9, amountOfMats = 6.500},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 1.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 1.950, minAmount = 1, maxAmount = 2, amountOfMats = 1.425},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 1.200, minAmount = 4, maxAmount = 6, amountOfMats = 1.000},
+			},
+		},
+		["i:172230"] = { -- Soul Dust
+			minLevel = 50,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 2, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 2.500},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.400},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 2, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 2, maxAmount = 4, amountOfMats = 2.500},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.400},
 			},
 		},
 
@@ -598,10 +608,20 @@ else
 			minLevel = 45,
 			maxLevel = 50,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 0.400, minAmount = 1, maxAmount = 2, amountOfMats = 0.600},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 0.400, minAmount = 1, maxAmount = 2, amountOfMats = 0.600},
+			},
+		},
+		["i:172231"] = { -- Sacred Shard
+			minLevel = 50,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 101, maxItemLevel = 999, matRate = 0.350, minAmount = 1, maxAmount = 1, amountOfMats = 0.350},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 85, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 2, amountOfMats = 1.500},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 101, maxItemLevel = 999, matRate = 0.350, minAmount = 1, maxAmount = 1, amountOfMats = 0.350},
 			},
 		},
 
@@ -670,10 +690,18 @@ else
 			minLevel = 45,
 			maxLevel = 50,
 			sourceInfo = {
-				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
 				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
-				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 100, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 3, minItemLevel = 51, maxItemLevel = 84, matRate = 0.050, minAmount = 1, maxAmount = 1, amountOfMats = 0.050},
 				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 58, maxItemLevel = 100, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+			},
+		},
+		["i:172232"] = { -- Eternal Crystal
+			minLevel = 50,
+			maxLevel = 60,
+			sourceInfo = {
+				{classId = LE_ITEM_CLASS_ARMOR, quality = 4, minItemLevel = 101, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
+				{classId = LE_ITEM_CLASS_WEAPON, quality = 4, minItemLevel = 101, maxItemLevel = 999, matRate = 1.000, minAmount = 1, maxAmount = 1, amountOfMats = 1.000},
 			},
 		},
 	}

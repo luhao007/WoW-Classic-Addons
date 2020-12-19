@@ -2,7 +2,7 @@
 local mod	= DBM:NewMod("Thaddius", "DBM-Naxx", 2)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201024205158")
+mod:SetRevision("20201204044610")
 mod:SetCreatureID(15928)
 mod:SetEncounterID(1120)
 mod:SetModelID(16137)
@@ -14,7 +14,8 @@ mod:RegisterEventsInCombat(
 	"UNIT_AURA player"
 )
 
-local warnShiftSoon			= mod:NewPreWarnAnnounce(28089, 5, 3)
+--TODO, UNIT_AURA might not work in classic? I didn't see any warnings on stream. May have to just do UnitDebuff() on self when cast finishes
+local warnShiftSoon			= mod:NewSoonAnnounce(28089, 5, 3)
 local warnShiftCasting		= mod:NewCastAnnounce(28089, 4)
 local warnChargeChanged		= mod:NewSpecialWarning("WarningChargeChanged")
 local warnChargeNotChanged	= mod:NewSpecialWarning("WarningChargeNotChanged", false)
@@ -57,7 +58,7 @@ do
 			timerNextShift:Start()
 			timerShiftCast:Start()
 			warnShiftCasting:Show()
-			warnShiftSoon:Schedule(25)
+			warnShiftSoon:Schedule(20)
 			lastShift = GetTime()
 		end
 	end

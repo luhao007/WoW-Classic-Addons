@@ -1,5 +1,5 @@
 ## Interface: 11306
-## Version: 2.4.7
+## Version: 2.4.8
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 

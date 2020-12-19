@@ -327,10 +327,6 @@
 				<Title>争霸艾泽拉斯</Title>
 				<Notes>BtWQuests 争霸艾泽拉斯模块</Notes>
 			</SubAddon>
-			<SubAddon name="BtWQuestsBattleForAzerothPrologue">
-				<Title>争霸艾泽拉斯前夕</Title>
-				<Notes>BtWQuests 争霸艾泽拉斯前夕模块</Notes>
-			</SubAddon>
 			<SubAddon name="BtWQuestsCataclysm">
 				<Title>大灾变</Title>
 				<Notes>BtWQuests 大灾变模块</Notes>
@@ -350,10 +346,6 @@
 			<SubAddon name="BtWQuestsShadowlands">
 				<Title>暗影国度</Title>
 				<Notes>BtWQuests 暗影国度模块</Notes>
-			</SubAddon>
-			<SubAddon name="BtWQuestsShadowlandsPrologue">
-				<Title>暗影国度前夕</Title>
-				<Notes>BtWQuests 暗影国度前夕</Notes>
 			</SubAddon>
 			<SubAddon name="BtWQuestsTheBurningCrusade">
 				<Title>燃烧的远征</Title>
@@ -880,6 +872,11 @@
 		<Notes>在团队或朋友间同步显示事件</Notes>
 		<Category>界面</Category>
 	</Addon>
+	<Addon name="GTFO">
+		<Title>伤害警报</Title>
+		<Notes>当你站在错误的位置时发出警报</Notes>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="HandyNotes">
 		<Title>地图标记</Title>
 		<Notes>可以在地图上添加标记</Notes>
@@ -936,6 +933,10 @@
 			</SubAddon>
 			<SubAddon name="HandyNotes_NPCs (Classic)">
 				<Title>NPC</Title>
+			</SubAddon>
+			<SubAddon name="Handynotes_Pandaria">
+				<Title>宝藏/稀有</Title>
+				<TitleExtra>潘达利亚</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_Shadowlands">
 				<Title>宝藏/稀有</Title>

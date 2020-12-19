@@ -37,7 +37,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.19" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.25" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -119,9 +119,9 @@ function TSM.OnInitialize()
 	end
 
 	-- Auctionator price sources
-	if Wow.IsAddonEnabled("Auctionator") and Auctionator and Auctionator.Database and Auctionator.Database.ProcessScan and Auctionator.API and Auctionator.API.v1 then
+	if Wow.IsAddonEnabled("Auctionator") and Auctionator and Auctionator.API and Auctionator.API.v1 and Auctionator.API.v1.RegisterForDBUpdate then
 		-- retail version
-		hooksecurefunc(Auctionator.Database, "ProcessScan", function()
+		Auctionator.API.v1.RegisterForDBUpdate("TradeSkillMaster", function()
 			CustomPrice.OnSourceChange("AtrValue")
 		end)
 		local function GetAuctionatorPrice(itemLink)

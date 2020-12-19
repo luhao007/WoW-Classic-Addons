@@ -153,7 +153,7 @@ function ApplicationFrame.AddAppStatusIcon(self)
 	if appUpdateAge >= 2 * SECONDS_PER_DAY or auctionDBRealmAge > 2 * SECONDS_PER_DAY or auctionDBRegionAge > 2 * SECONDS_PER_DAY then
 		color = "RED"
 		texture = "iconPack.14x14/Attention"
-	elseif appUpdateAge >= 2 * SECONDS_PER_HOUR or auctionDBRealmAge >= 4 * SECONDS_PER_HOUR then
+	elseif appUpdateAge >= SECONDS_PER_HOUR or auctionDBRealmAge >= 4 * SECONDS_PER_HOUR then
 		color = "YELLOW"
 		texture = "iconPack.14x14/Attention"
 	else
@@ -654,7 +654,7 @@ function private.GetAppStatusTooltip()
 	tinsert(tooltipLines, format(L["TSM Desktop App Status (%s)"], TSM.GetRegion().."-"..GetRealmName()))
 
 	local appUpdateAge = time() - TSM.GetAppUpdateTime()
-	if appUpdateAge < 2 * SECONDS_PER_HOUR then
+	if appUpdateAge < SECONDS_PER_HOUR then
 		tinsert(tooltipLines, Theme.GetFeedbackColor("GREEN"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))
 	elseif appUpdateAge < 2 * SECONDS_PER_DAY then
 		tinsert(tooltipLines, Theme.GetFeedbackColor("YELLOW"):ColorText(format(L["App Synced %s Ago"], SecondsToTime(appUpdateAge))))

@@ -7,8 +7,7 @@ end
 local L = WeakAuras.L
 
 -- WeakAuras/Templates
-	--[[Translation missing --]]
-	L[" Debuff"] = " Debuff"
+	L[" Debuff"] = "약화 효과"
 	L["<70% Mana"] = "<70% 마나"
 	L[">70% Mana"] = ">70% 마나"
 	L["Abilities"] = "능력"
@@ -68,15 +67,13 @@ local L = WeakAuras.L
 	L["Charge Tracking"] = "충전량 추적"
 	--[[Translation missing --]]
 	L["Combustion Ready"] = "Combustion Ready"
-	--[[Translation missing --]]
-	L["Conduits"] = "Conduits"
+	L["Conduits"] = "도관"
 	--[[Translation missing --]]
 	L["Cooldown"] = "Cooldown"
 	L["cooldown"] = "재사용 대기시간"
 	L["Cooldown Tracking"] = "재사용 대기시간 추적"
 	L["Create Auras"] = "효과 생성"
-	--[[Translation missing --]]
-	L["Debuff"] = "Debuff"
+	L["Debuff"] = "약화 효과"
 	L["debuff"] = "약화 효과"
 	L["Debuffs"] = "약화 효과"
 	--[[Translation missing --]]

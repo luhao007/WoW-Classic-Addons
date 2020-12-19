@@ -60,6 +60,24 @@ local DATA = TSM.IsWowClassic() and {} or {
 	["i:113111"] = {
 		["i:173058"] = 1, -- Warbinder's Ink
 	},
+	["i:129034"] = {
+		["i:173058"] = 1, -- Sallow Pigment
+	},
+	["i:129032"] = {
+		["i:173058"] = 1, -- Roseate Pigment
+	},
+	["i:168663"] = {
+		["i:173058"] = 1, -- Maroon Ink
+	},
+	["i:158187"] = {
+		["i:173058"] = 1, -- Ultramarine Ink
+	},
+	["i:158188"] = {
+		["i:173058"] = 1, -- Crimson Ink
+	},
+	["i:158189"] = {
+		["i:173058"] = 0.1, -- Viridescent Ink
+	},
 }
 
 

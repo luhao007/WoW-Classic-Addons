@@ -15,8 +15,6 @@ logger = logging.getLogger('manager')
 
 CLASSIC_VER = '11306'
 RETAIL_VER = '90002'
-NOT_WORKING = ['ItemRack', 'HandyNotes_DraenorTreasures', 'HandyNotes_LegionRaresTreasures',
-               'HPetBattleAny', 'Details_TimeLine']
 
 
 def classic_only(func):
@@ -194,8 +192,6 @@ class Manager:
 
                 if self.is_classic:
                     toc.tags['Interface'] = CLASSIC_VER
-                elif addon in NOT_WORKING:
-                    toc.tags['Interface'] = '80300'
                 else:
                     toc.tags['Interface'] = RETAIL_VER
                 toc.tags['Title-zhCN'] = self.get_title(addon)
