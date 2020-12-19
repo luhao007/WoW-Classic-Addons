@@ -909,6 +909,32 @@
   },
   {
     "source": "curse",
+    "id": "20697",
+    "slug": "gtfo",
+    "name": "GTFO",
+    "description": "GTFO warns you when you're standing in fire or other bad stuff.",
+    "url": "https://www.curseforge.com/wow/addons/gtfo",
+    "download_url": "https://edge.forgecdn.net/files/3139/200/GTFO-4.57.1-Classic.zip",
+    "date_published": "2020-12-15T07:12:20.623000+00:00",
+    "version": "4.57.1-classic",
+    "folders": [
+      {
+        "name": "GTFO"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "4.57.1-classic",
+        "install_time": "2020-12-19T15:21:54+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "405809",
     "slug": "gathermate2-classic",
     "name": "GatherMate2 Classic",

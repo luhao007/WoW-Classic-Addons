@@ -10,8 +10,6 @@
 ## X-Curse-Project-ID: 340903
 
 # Libraries
-Libs\Libs.xml
-
 ItemRack.lua
 ItemRack.xml
 ItemRackButtons.lua

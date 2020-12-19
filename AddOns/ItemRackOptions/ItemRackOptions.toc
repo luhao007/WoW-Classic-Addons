@@ -10,7 +10,5 @@
 ## X-Part-Of: ItemRack
 
 # Libraries
-Libs\Libs.xml
-
 ItemRackOptions.lua
 ItemRackOptions.xml
