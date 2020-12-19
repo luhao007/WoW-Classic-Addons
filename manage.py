@@ -449,6 +449,18 @@ class Manager:
         )
 
     def handle_details(self):
+        if self.is_classic:
+            self.remove_libraries(
+                ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+                 'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+                 'AceGUI-3.0', 'AceHook-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
+                 'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
+                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
+                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
+                 'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0'],
+                'Addons/Details/Libs',
+                'Addons/Details/Libs/libs.xml'
+            )
         self.change_defaults(
             'Addons/Details/functions/profiles.lua',
             ('		minimap = {hide = true, radius = 160, minimapPos = 220, '
@@ -646,17 +658,17 @@ class Manager:
         )
 
     def handle_plater(self):
-        self.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-             'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
-             'AceTimer-3.0', 'CallbackHandler-1.0', 'DF', 'LibCompress',
-             'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
-             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-             'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit-1.0'],
-            'Addons/Plater/libs',
-            'Addons/Plater/libs/libs.xml'
-        )
+        libs = ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+                'AceGUI-3.0', 'AceLocale-3.0', 'AceSerializer-3.0',
+                'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
+                'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
+                'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit-1.0']
+        if not self.is_classic:
+            libs += ['DF']
+
+        self.remove_libraries(libs, 'Addons/Plater/libs', 'Addons/Plater/libs/libs.xml')
 
     @retail_only
     def handle_pt(self):

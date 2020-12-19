@@ -224,7 +224,7 @@ do
 			_detalhes.cache_npc_ids = {}
 		--> cache de specs
 			_detalhes.cached_specs = {}
-			_detalhes.cached_s = {}
+			_detalhes.cached_talents = {}
 		--> ignored pets
 			_detalhes.pets_ignored = {}
 			_detalhes.pets_no_owner = {}

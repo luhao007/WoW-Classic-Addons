@@ -109,32 +109,6 @@
   },
   {
     "source": "curse",
-    "id": "97288",
-    "slug": "libdframework",
-    "name": "Details!: Framework (library)",
-    "description": "A colection of tools of addon development",
-    "url": "https://www.curseforge.com/wow/addons/libdframework",
-    "download_url": "https://edge.forgecdn.net/files/3121/78/LibDFramework-1.0-v9.0.1.220.zip",
-    "date_published": "2020-11-23T19:41:24.637000+00:00",
-    "version": "v9.0.1.220",
-    "folders": [
-      {
-        "name": "LibDFramework-1.0"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v9.0.1.220",
-        "install_time": "2020-12-19T15:39:38+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "94348",
     "slug": "herebedragons",
     "name": "HereBeDragons",
