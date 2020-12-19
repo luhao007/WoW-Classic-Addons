@@ -1,5 +1,6 @@
 # WoW-Classic-Addons
 ![CI](https://github.com/luhao007/WoW-Classic-Addons/workflows/CI/badge.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5e8ef7c7df61433f836df9e296d3731d)](https://app.codacy.com/gh/luhao007/WoW-Classic-Addons?utm_source=github.com&utm_medium=referral&utm_content=luhao007/WoW-Classic-Addons&utm_campaign=Badge_Grade_Settings)
 [![](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/download/)
 
 WoW native style addons set! Have all the necessary addons and still keep the original looking of WoW!
