@@ -1,4 +1,4 @@
-## Interface: 80100
+## Interface: 90002
 ## LoadOnDemand: 1
 ## Title: Lib: Babble-Faction-3.0
 ## Notes: A library to help with localization of factions.
@@ -14,4 +14,3 @@
 ## X-License: MIT
 
 lib.xml
-

@@ -1,7 +1,8 @@
 ------------------------------------------------------------------------
-r154 | mysticalos | 2016-07-19 14:15:08 +0000 (Tue, 19 Jul 2016) | 1 line
+r173 | nevcairiel | 2020-11-22 22:36:07 +0000 (Sun, 22 Nov 2020) | 1 line
 Changed paths:
-   M /trunk/LibWho-2.0.toc
+   M /trunk/LibBabble-CreatureType-3.0.toc
 
-toc
+Update for WoW 9.0.2
 ------------------------------------------------------------------------
+

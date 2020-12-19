@@ -1,13 +1,8 @@
 ------------------------------------------------------------------------
-r204 | arith | 2017-03-07 03:26:15 -0600 (Tue, 07 Mar 2017) | 1 line
+r233 | arithmandar | 2020-10-26 15:11:35 +0000 (Mon, 26 Oct 2020) | 1 line
 Changed paths:
    M /trunk/LibBabble-SubZone-3.0.lua
-
-prepare for 7.1-release3; translation updated to 7.1.5.23420
-------------------------------------------------------------------------
-r203 | arith | 2017-03-07 03:22:29 -0600 (Tue, 07 Mar 2017) | 1 line
-Changed paths:
-   M /trunk/LibBabble-SubZone-3.0.lua
+   M /trunk/LibBabble-SubZone-3.0.toc
    M /trunk/LibBabble-SubZone-3.0_deDE.lua
    M /trunk/LibBabble-SubZone-3.0_esES.lua
    M /trunk/LibBabble-SubZone-3.0_esMX.lua
@@ -19,28 +14,6 @@ Changed paths:
    M /trunk/LibBabble-SubZone-3.0_zhCN.lua
    M /trunk/LibBabble-SubZone-3.0_zhTW.lua
 
-translation updated to 7.1.5.23420
-------------------------------------------------------------------------
-r202 | arith | 2017-03-07 03:12:31 -0600 (Tue, 07 Mar 2017) | 1 line
-Changed paths:
-   M /trunk/LibBabble-SubZone-3.0.lua
-
-temporary arrangement for enUS and waiting for CF to properly export translation; still DO NOT use this revision
-------------------------------------------------------------------------
-r201 | arith | 2017-03-07 02:51:22 -0600 (Tue, 07 Mar 2017) | 1 line
-Changed paths:
-   M /trunk/LibBabble-SubZone-3.0.lua
-   M /trunk/LibBabble-SubZone-3.0_deDE.lua
-   M /trunk/LibBabble-SubZone-3.0_esES.lua
-   M /trunk/LibBabble-SubZone-3.0_esMX.lua
-   M /trunk/LibBabble-SubZone-3.0_frFR.lua
-   M /trunk/LibBabble-SubZone-3.0_itIT.lua
-   M /trunk/LibBabble-SubZone-3.0_koKR.lua
-   M /trunk/LibBabble-SubZone-3.0_ptBR.lua
-   M /trunk/LibBabble-SubZone-3.0_ruRU.lua
-   M /trunk/LibBabble-SubZone-3.0_zhCN.lua
-   M /trunk/LibBabble-SubZone-3.0_zhTW.lua
-
-to trigger database export, DO NOT USE this revision
+Added zones and translation for 9.0.1.36372
 ------------------------------------------------------------------------
 

@@ -19,12 +19,6 @@ local UnitGroupRolesAssigned = DetailsFramework.UnitGroupRolesAssigned
 local cleanfunction = function() end
 local APIFrameFunctions
 
-local CastingInfo
-local ChannelInfo
-
---classic
-local UnitHasVehicleUI = function() return false end
-
 do
 	local metaPrototype = {
 		WidgetType = "panel",
@@ -660,7 +654,7 @@ function DF:NewPanel (parent, container, name, member, w, h, backdrop, backdropc
 		PanelObject.container = container
 		PanelObject.rightButtonClose = false
 	
-	PanelObject.frame = CreateFrame ("frame", name, parent)
+	PanelObject.frame = CreateFrame ("frame", name, parent,"BackdropTemplate")
 	PanelObject.frame:SetSize (100, 100)
 	PanelObject.frame.Gradient = {
 					["OnEnter"] = {0.3, 0.3, 0.3, 0.5},
@@ -779,7 +773,8 @@ local align_rows = function (self)
 	end
 
 	local cur_width = 0
-	local row_width = self._width / rows_shown
+	local row_width = self._width / max (rows_shown, 0.0001)
+	
 
 	local sindex = 1
 	
@@ -1080,13 +1075,11 @@ local create_panel_entry = function (self, row)
 			pcall (editbox.onleave_func, editbox)
 		end
 	end)
-	
-	editbox:SetBackdrop ({bgFile = [[Interface\DialogFrame\UI-DialogBox-Background]], edgeFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeSize = 1})
-	editbox:SetBackdropColor (1, 1, 1, 0.1)
-	editbox:SetBackdropBorderColor (1, 1, 1, 0.1)
+
 	editbox.editbox.current_bordercolor = {1, 1, 1, 0.1}
 	
 	editbox:SetTemplate (DF:GetTemplate ("dropdown", "OPTIONS_DROPDOWN_TEMPLATE"))
+	editbox:SetBackdropColor (.2, .2, .2, 0.7)
 	
 	tinsert (row.entry_available, editbox)
 end
@@ -1097,7 +1090,6 @@ local create_panel_checkbox = function (self, row)
 
 	local switch = DF:NewSwitch (row, nil, "$parentCheckBox" .. row.checkbox_total, nil, 20, 20, nil, nil, false)
 	switch:SetAsCheckBox()
-
 	switch:SetTemplate(DF:GetTemplate ("switch", "OPTIONS_CHECKBOX_TEMPLATE"))
 
 	tinsert (row.checkbox_available, switch)
@@ -1128,7 +1120,6 @@ end
 local create_panel_icon = function (self, row)
 	row.icon_total = row.icon_total + 1
 	local iconbutton = DF:NewButton (row, nil, "$parentIconButton" .. row.icon_total, "iconbutton", 22, 20)
-	iconbutton:InstallCustomTexture()
 	
 	iconbutton:SetHook ("OnEnter", button_on_enter)
 	iconbutton:SetHook ("OnLeave", button_on_leave)
@@ -1331,7 +1322,8 @@ function DF:NewFillPanel (parent, rows, name, member, w, h, total_lines, fill_ro
 								if (type (results [index]) == "string") then
 									local result = results [index]:gsub (".-%\\", "")
 									iconwidget._icon.texture = results [index]
-
+									iconwidget._icon:SetTexCoord (0.1, .9, 0.1, .9)
+								
 								elseif (type (results [index]) == "table") then
 									iconwidget._icon:SetTexture (results [index].texture)
 
@@ -1339,7 +1331,7 @@ function DF:NewFillPanel (parent, rows, name, member, w, h, total_lines, fill_ro
 									if (textCoord) then
 										iconwidget._icon:SetTexCoord (unpack(textCoord))
 									else
-										iconwidget._icon:SetTexCoord (0, 1, 0, 1)
+										iconwidget._icon:SetTexCoord (0.1, .9, 0.1, .9)
 									end
 									
 									local color = results [index].color
@@ -1351,6 +1343,7 @@ function DF:NewFillPanel (parent, rows, name, member, w, h, total_lines, fill_ro
 									end
 								else
 									iconwidget._icon:SetTexture (results [index])
+									iconwidget._icon:SetTexCoord (0.1, .9, 0.1, .9)
 								end
 								
 								iconwidget:Show()
@@ -1415,7 +1408,7 @@ function DF:NewFillPanel (parent, rows, name, member, w, h, total_lines, fill_ro
 		panel.scrollframe:Show()
 	end
 	
-	local scrollframe = CreateFrame ("scrollframe", name .. "Scroll", panel.widget, "FauxScrollFrameTemplate")
+	local scrollframe = CreateFrame ("scrollframe", name .. "Scroll", panel.widget, "FauxScrollFrameTemplate", "BackdropTemplate")
 	scrollframe:SetScript ("OnVerticalScroll", function (self, offset) FauxScrollFrame_OnVerticalScroll (self, offset, 20, panel.Refresh) end)
 	scrollframe:SetPoint ("topleft", panel.widget, "topleft", 0, -21)
 	scrollframe:SetPoint ("topright", panel.widget, "topright", -23, -21)
@@ -1433,7 +1426,7 @@ function DF:NewFillPanel (parent, rows, name, member, w, h, total_lines, fill_ro
 		local amount = math.floor (((panel._height-21) / size))
 
 		for i = #scrollframe.lines+1, amount do
-			local row = CreateFrame ("frame", panel:GetName() .. "Row_" .. i, panel.widget)
+			local row = CreateFrame ("frame", panel:GetName() .. "Row_" .. i, panel.widget,"BackdropTemplate")
 			row:SetSize (1, size)
 			row.color = {1, 1, 1, .2}
 			
@@ -1525,7 +1518,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 	
 		local string_lower = string.lower
 	
-		DF.IconPickFrame = CreateFrame ("frame", "DetailsFrameworkIconPickFrame", UIParent)
+		DF.IconPickFrame = CreateFrame ("frame", "DetailsFrameworkIconPickFrame", UIParent, "BackdropTemplate")
 		tinsert (UISpecialFrames, "DetailsFrameworkIconPickFrame")
 		DF.IconPickFrame:SetFrameStrata ("TOOLTIP")
 		
@@ -1560,7 +1553,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 		DF.IconPickFrame.emptyFunction = function() end
 		DF.IconPickFrame.callback = DF.IconPickFrame.emptyFunction
 		
-		DF.IconPickFrame.preview =  CreateFrame ("frame", nil, UIParent)
+		DF.IconPickFrame.preview =  CreateFrame ("frame", nil, UIParent, "BackdropTemplate")
 		DF.IconPickFrame.preview:SetFrameStrata ("tooltip")
 		DF.IconPickFrame.preview:SetFrameLevel (6001)
 		DF.IconPickFrame.preview:SetSize (76, 76)
@@ -1619,7 +1612,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 		end)
 		
 		--> close button
-		local close_button = CreateFrame ("button", nil, DF.IconPickFrame, "UIPanelCloseButton")
+		local close_button = CreateFrame ("button", nil, DF.IconPickFrame, "UIPanelCloseButton", "BackdropTemplate")
 		close_button:SetWidth (32)
 		close_button:SetHeight (32)
 		close_button:SetPoint ("TOPRIGHT", DF.IconPickFrame, "TOPRIGHT", -8, -7)
@@ -1658,8 +1651,9 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 				for j = offset, tabEnd - 1 do
 					--to get spell info by slot, you have to pass in a pet argument
 					local spellType, ID = GetSpellBookItemInfo (j, "player")
-					if (spellType ~= "FUTURESPELL") then
+					if (spellType ~= "FLYOUT") then
 						MACRO_ICON_FILENAMES [index] = GetSpellBookItemTexture (j, "player") or 0
+						SPELLNAMES_CACHE [index] = GetSpellInfo (ID)
 						index = index + 1
 						
 					elseif (spellType == "FLYOUT") then
@@ -1669,6 +1663,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 								local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo (ID, k)
 								if (isKnown) then
 									MACRO_ICON_FILENAMES [index] = GetSpellTexture (spellID) or 0
+									SPELLNAMES_CACHE [index] = GetSpellInfo (spellID)
 									index = index + 1
 								end
 							end
@@ -1691,6 +1686,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 		
 		DF.IconPickFrame:SetScript ("OnHide", function()
 			wipe (MACRO_ICON_FILENAMES)
+			wipe (SPELLNAMES_CACHE)
 			DF.IconPickFrame.preview:Hide()
 			collectgarbage()
 		end)
@@ -1717,11 +1713,11 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			self.icon:SetBlendMode ("BLEND")
 		end
 		
-		local backdrop = {bgFile = DF.folder .. "background", tile = true, tileSize = 16,
-		insets = {left = 0, right = 0, top = 0, bottom = 0}, edgeFile = [[Interface\DialogFrame\UI-DialogBox-Border]], edgeSize = 10}
+		local backdrop = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tile = true, tileSize = 16,
+		insets = {left = 0, right = 0, top = 0, bottom = 0}, edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1}
 		
 		for i = 0, 9 do 
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..(i+1), DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..(i+1), DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..(i+1).."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1738,7 +1734,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		for i = 11, 20 do
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..i.."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1755,7 +1751,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		for i = 21, 30 do 
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..i.."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1772,7 +1768,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		for i = 31, 40 do 
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..i.."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1789,7 +1785,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		for i = 41, 50 do 
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..i.."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1806,7 +1802,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		for i = 51, 60 do 
-			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame)
+			local newcheck = CreateFrame ("Button", "DetailsFrameworkIconPickFrameButton"..i, DF.IconPickFrame, "BackdropTemplate")
 			local image = newcheck:CreateTexture ("DetailsFrameworkIconPickFrameButton"..i.."Icon", "overlay")
 			newcheck.icon = image
 			image:SetPoint ("topleft", newcheck, "topleft", 2, -2) image:SetPoint ("bottomright", newcheck, "bottomright", -2, 2)
@@ -1823,7 +1819,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			newcheck:SetScript ("OnLeave", onleave)
 		end
 		
-		local scroll = CreateFrame ("ScrollFrame", "DetailsFrameworkIconPickFrameScroll", DF.IconPickFrame, "ListScrollFrameTemplate")
+		local scroll = CreateFrame ("ScrollFrame", "DetailsFrameworkIconPickFrameScroll", DF.IconPickFrame, "ListScrollFrameTemplate", "BackdropTemplate")
 		DF:ReskinSlider (scroll)
 
 		local ChecksFrame_Update = function (self)
@@ -1843,23 +1839,10 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 			local shown = 0
 			
 			if (filter and filter ~= "") then
-				if (#SPELLNAMES_CACHE == 0) then
-					--build name cache
-					local GetSpellInfo = GetSpellInfo
-					for i = 1, #MACRO_ICON_FILENAMES do
-						local spellName = GetSpellInfo (MACRO_ICON_FILENAMES [i])
-						if (spellName) then
-							SPELLNAMES_CACHE [i] = spellName
-						else
-							SPELLNAMES_CACHE [i] = MACRO_ICON_FILENAMES [i]
-						end
-					end
-				end
-				
 				--do the filter
 				pool = {}
 				for i = 1, #SPELLNAMES_CACHE do
-					if (SPELLNAMES_CACHE [i]:find (filter)) then
+					if (SPELLNAMES_CACHE [i] and SPELLNAMES_CACHE [i]:lower():find (filter)) then
 						pool [#pool+1] = MACRO_ICON_FILENAMES [i]
 						shown = shown + 1
 					end
@@ -1924,7 +1907,7 @@ end
 
 function DF:ShowPanicWarning (text)
 	if (not DF.PanicWarningWindow) then
-		DF.PanicWarningWindow = CreateFrame ("frame", "DetailsFrameworkPanicWarningWindow", UIParent)
+		DF.PanicWarningWindow = CreateFrame ("frame", "DetailsFrameworkPanicWarningWindow", UIParent, "BackdropTemplate")
 		DF.PanicWarningWindow:SetHeight (80)
 		DF.PanicWarningWindow:SetBackdrop ({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true})
 		DF.PanicWarningWindow:SetBackdropColor (1, 0, 0, 0.2)
@@ -2022,7 +2005,7 @@ function DF:CreateSimplePanel (parent, w, h, title, name, panel_options, db)
 	
 	panel_options = panel_options or no_options
 	
-	local f = CreateFrame ("frame", name, UIParent)
+	local f = CreateFrame ("frame", name, UIParent,"BackdropTemplate")
 	f:SetSize (w or 400, h or 250)
 	f:SetPoint ("center", UIParent, "center", 0, 0)
 	f:SetFrameStrata ("FULLSCREEN")
@@ -2038,7 +2021,7 @@ function DF:CreateSimplePanel (parent, w, h, title, name, panel_options, db)
 		tinsert (UISpecialFrames, name)
 	end
 	
-	local title_bar = CreateFrame ("frame", name .. "TitleBar", f)
+	local title_bar = CreateFrame ("frame", name .. "TitleBar", f,"BackdropTemplate")
 	title_bar:SetPoint ("topleft", f, "topleft", 2, -3)
 	title_bar:SetPoint ("topright", f, "topright", -2, -3)
 	title_bar:SetHeight (20)
@@ -2050,12 +2033,14 @@ function DF:CreateSimplePanel (parent, w, h, title, name, panel_options, db)
 	local close = CreateFrame ("button", name and name .. "CloseButton", title_bar)
 	close:SetFrameLevel (DF.FRAMELEVEL_OVERLAY)
 	close:SetSize (16, 16)
-	close:SetNormalTexture (DF.folder .. "icons")
-	close:SetHighlightTexture (DF.folder .. "icons")
-	close:SetPushedTexture (DF.folder .. "icons")
-	close:GetNormalTexture():SetTexCoord (0, 16/128, 0, 1)
-	close:GetHighlightTexture():SetTexCoord (0, 16/128, 0, 1)
-	close:GetPushedTexture():SetTexCoord (0, 16/128, 0, 1)
+
+	close:SetNormalTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:SetHighlightTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:SetPushedTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:GetNormalTexture():SetDesaturated(true)
+	close:GetHighlightTexture():SetDesaturated(true)
+	close:GetPushedTexture():SetDesaturated(true)
+
 	close:SetAlpha (0.7)
 	close:SetScript ("OnClick", simple_panel_close_click)
 	f.Close = close
@@ -2082,7 +2067,7 @@ function DF:CreateSimplePanel (parent, w, h, title, name, panel_options, db)
 end
 
 local Panel1PxBackdrop = {bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 64,
-edgeFile = DF.folder .. "border_3", edgeSize = 9, insets = {left = 2, right = 2, top = 3, bottom = 3}}
+edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, insets = {left = 2, right = 2, top = 3, bottom = 3}}
 
 local Panel1PxOnClickClose = function (self)
 	self:GetParent():Hide()
@@ -2092,9 +2077,9 @@ local Panel1PxOnToggleLock = function (self)
 		self.IsLocked = false
 		self:SetMovable (true)
 		self:EnableMouse (true)
-		self.Lock:GetNormalTexture():SetTexCoord (32/128, 48/128, 0, 1)
-		self.Lock:GetHighlightTexture():SetTexCoord (32/128, 48/128, 0, 1)
-		self.Lock:GetPushedTexture():SetTexCoord (32/128, 48/128, 0, 1)
+		self.Lock:GetNormalTexture():SetTexCoord (16/64, 32/64, 0, 1)
+		self.Lock:GetHighlightTexture():SetTexCoord (16/32, 32/64, 0, 1)
+		self.Lock:GetPushedTexture():SetTexCoord (16/64, 32/64, 0, 1)
 		if (self.OnUnlock) then
 			self:OnUnlock()
 		end
@@ -2105,9 +2090,9 @@ local Panel1PxOnToggleLock = function (self)
 		self.IsLocked = true
 		self:SetMovable (false)
 		self:EnableMouse (false)
-		self.Lock:GetNormalTexture():SetTexCoord (16/128, 32/128, 0, 1)
-		self.Lock:GetHighlightTexture():SetTexCoord (16/128, 32/128, 0, 1)
-		self.Lock:GetPushedTexture():SetTexCoord (16/128, 32/128, 0, 1)
+		self.Lock:GetNormalTexture():SetTexCoord (0/64, 16/64, 0, 1)
+		self.Lock:GetHighlightTexture():SetTexCoord (0/64, 16/64, 0, 1)
+		self.Lock:GetPushedTexture():SetTexCoord (0/64, 16/64, 0, 1)
 		if (self.OnLock) then
 			self:OnLock()
 		end
@@ -2197,7 +2182,7 @@ local Panel1PxHasPosition = function (self)
 end
 
 function DF:Create1PxPanel (parent, w, h, title, name, config, title_anchor, no_special_frame)
-	local f = CreateFrame ("frame", name, parent or UIParent)
+	local f = CreateFrame ("frame", name, parent or UIParent, "BackdropTemplate")
 	f:SetSize (w or 100, h or 75)
 	f:SetPoint ("center", UIParent, "center")
 	
@@ -2220,24 +2205,30 @@ function DF:Create1PxPanel (parent, w, h, title, name, config, title_anchor, no_
 	--print (config.position.x, config.position.x)
 	Panel1PxReadConfig (f)
 	
-	local close = CreateFrame ("button", name and name .. "CloseButton", f)
+	local close = CreateFrame ("button", name and name .. "CloseButton", f, "BackdropTemplate")
 	close:SetSize (16, 16)
-	close:SetNormalTexture (DF.folder .. "icons")
-	close:SetHighlightTexture (DF.folder .. "icons")
-	close:SetPushedTexture (DF.folder .. "icons")
-	close:GetNormalTexture():SetTexCoord (0, 16/128, 0, 1)
-	close:GetHighlightTexture():SetTexCoord (0, 16/128, 0, 1)
-	close:GetPushedTexture():SetTexCoord (0, 16/128, 0, 1)
+	close:SetNormalTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:SetHighlightTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:SetPushedTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	close:GetNormalTexture():SetDesaturated(true)
+	close:GetHighlightTexture():SetDesaturated(true)
+	close:GetPushedTexture():SetDesaturated(true)
 	close:SetAlpha (0.7)
 	
-	local lock = CreateFrame ("button", name and name .. "LockButton", f)
+	local lock = CreateFrame ("button", name and name .. "LockButton", f, "BackdropTemplate")
 	lock:SetSize (16, 16)
-	lock:SetNormalTexture (DF.folder .. "icons")
-	lock:SetHighlightTexture (DF.folder .. "icons")
-	lock:SetPushedTexture (DF.folder .. "icons")
-	lock:GetNormalTexture():SetTexCoord (32/128, 48/128, 0, 1)
-	lock:GetHighlightTexture():SetTexCoord (32/128, 48/128, 0, 1)
-	lock:GetPushedTexture():SetTexCoord (32/128, 48/128, 0, 1)
+	lock:SetNormalTexture ([[Interface\GLUES\CharacterSelect\Glues-AddOn-Icons]])
+	lock:SetHighlightTexture ([[Interface\GLUES\CharacterSelect\Glues-AddOn-Icons]])
+	lock:SetPushedTexture ([[Interface\GLUES\CharacterSelect\Glues-AddOn-Icons]])
+	lock:GetNormalTexture():SetDesaturated(true)
+	lock:GetHighlightTexture():SetDesaturated(true)
+	lock:GetPushedTexture():SetDesaturated(true)
+	--lock:GetNormalTexture():SetBlendMode("ADD")
+	--lock:GetHighlightTexture():SetBlendMode("ADD")
+	--lock:GetPushedTexture():SetBlendMode("ADD")
+	--lock:GetNormalTexture():SetTexCoord(73/256, 105/256, 64/128, 110/)
+	--lock:GetHighlightTexture():SetTexCoord(73/256, 105/256, 64/128, 110/)
+	--lock:GetPushedTexture():SetTexCoord(73/256, 105/256, 64/128, 110/)
 	lock:SetAlpha (0.7)
 	
 	close:SetPoint ("topright", f, "topright", -3, -3)
@@ -2279,7 +2270,7 @@ end
 function DF:ShowPromptPanel (message, func_true, func_false, no_repeated, width)
 	
 	if (not DetailsFrameworkPromptSimple) then
-		local f = CreateFrame ("frame", "DetailsFrameworkPromptSimple", UIParent) 
+		local f = CreateFrame ("frame", "DetailsFrameworkPromptSimple", UIParent, "BackdropTemplate") 
 		f:SetSize (400, 80)
 		f:SetFrameStrata ("DIALOG")
 		f:SetPoint ("center", UIParent, "center", 0, 300)
@@ -2380,7 +2371,7 @@ function DF:ShowTextPromptPanel (message, callback)
 	
 	if (not DF.text_prompt_panel) then
 		
-		local f = CreateFrame ("frame", "DetailsFrameworkPrompt", UIParent) 
+		local f = CreateFrame ("frame", "DetailsFrameworkPrompt", UIParent, "BackdropTemplate") 
 		f:SetSize (400, 120)
 		f:SetFrameStrata ("FULLSCREEN")
 		f:SetPoint ("center", UIParent, "center", 0, 100)
@@ -2453,14 +2444,14 @@ end
 --> options button -- ~options
 function DF:CreateOptionsButton (parent, callback, name)
 	
-	local b = CreateFrame ("button", name, parent)
+	local b = CreateFrame ("button", name, parent, "BackdropTemplate")
 	b:SetSize (14, 14)
-	b:SetNormalTexture (DF.folder .. "icons")
-	b:SetHighlightTexture (DF.folder .. "icons")
-	b:SetPushedTexture (DF.folder .. "icons")
-	b:GetNormalTexture():SetTexCoord (48/128, 64/128, 0, 1)
-	b:GetHighlightTexture():SetTexCoord (48/128, 64/128, 0, 1)
-	b:GetPushedTexture():SetTexCoord (48/128, 64/128, 0, 1)
+	b:SetNormalTexture ([[Interface\GossipFrame\BinderGossipIcon]])
+	b:SetHighlightTexture ([[Interface\GossipFrame\BinderGossipIcon]])
+	b:SetPushedTexture ([[Interface\GossipFrame\BinderGossipIcon]])
+	b:GetNormalTexture():SetDesaturated(true)
+	b:GetHighlightTexture():SetDesaturated(true)
+	b:GetPushedTexture():SetDesaturated(true)
 	b:SetAlpha (0.7)
 	
 	b:SetScript ("OnClick", callback)
@@ -2481,12 +2472,8 @@ end
 --> feedback panel -- ~feedback
 
 function DF:CreateFeedbackButton (parent, callback, name)
-	local b = CreateFrame ("button", name, parent)
+	local b = CreateFrame ("button", name, parent, "BackdropTemplate")
 	b:SetSize (12, 13)
-	b:SetNormalTexture (DF.folder .. "mail")
-	b:SetPushedTexture (DF.folder .. "mail")
-	b:SetHighlightTexture (DF.folder .. "mail")
-	
 	b:SetScript ("OnClick", callback)
 	b:SetScript ("OnEnter", function (self) 
 		GameCooltip2:Reset()
@@ -2496,12 +2483,14 @@ function DF:CreateFeedbackButton (parent, callback, name)
 	b:SetScript ("OnLeave", function (self) 
 		GameCooltip2:Hide()
 	end)
+
+	print("Framework:CreateFeedbackButton() is deprecated.")
 	
 	return b
 end
 
-local backdrop_fb_line = {bgFile = DF.folder .. "background", edgeFile = DF.folder .. "border_3", 
-tile = true, tileSize = 64, edgeSize = 8, insets = {left = 2, right = 2, top = 2, bottom = 2}}
+local backdrop_fb_line = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, 
+tile = true, tileSize = 64, insets = {left = 2, right = 2, top = 2, bottom = 2}}
 
 local on_enter_feedback = function (self)
 	self:SetBackdropColor (1, 1, 0, 0.5)
@@ -2550,7 +2539,7 @@ local feedback_get_fb_line = function (self)
 
 	local line = self.feedback_lines [self.next_feedback]
 	if (not line) then
-		line = CreateFrame ("frame", "AddonFeedbackPanelFB" .. self.next_feedback, self)
+		line = CreateFrame ("frame", "AddonFeedbackPanelFB" .. self.next_feedback, self, "BackdropTemplate")
 		line:SetBackdrop (backdrop_fb_line)
 		line:SetBackdropColor (0, 0, 0, 0.3)
 		line:SetSize (390, 42)
@@ -2671,7 +2660,7 @@ local feedback_get_addons_line = function (self)
 	local line = self.addons_lines [self.next_addons]
 	if (not line) then
 	
-		line = CreateFrame ("frame", "AddonFeedbackPanelSA" .. self.next_addons, self)
+		line = CreateFrame ("frame", "AddonFeedbackPanelSA" .. self.next_addons, self, "BackdropTemplate")
 		line:SetSize (128, 64)
 
 		if (self.next_addons == 1) then
@@ -2984,7 +2973,7 @@ local create_box = function (self, next_box)
 	thisbox.check = checktexture
 	thisbox.enabled = true
 
-	local button = CreateFrame ("button", nil, self.Graphic)
+	local button = CreateFrame ("button", nil, self.Graphic, "BackdropTemplate")
 	button:SetSize (20, 20)
 	button:SetScript ("OnClick", function()
 		chart_panel_enable_line (self, thisbox)
@@ -3482,7 +3471,7 @@ function DF:CreateChartPanel (parent, w, h, name)
 	w = w or 800
 	h = h or 500
 
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	f:SetSize (w or 500, h or 400)
 	f:EnableMouse (true)
 	f:SetMovable (true)
@@ -3493,7 +3482,7 @@ function DF:CreateChartPanel (parent, w, h, name)
 	f:SetBackdrop (chart_panel_backdrop)
 	f:SetBackdropColor (.3, .3, .3, .3)
 
-	local c = CreateFrame ("Button", nil, f, "UIPanelCloseButton")
+	local c = CreateFrame ("Button", nil, f, "UIPanelCloseButton", "BackdropTemplate")
 	c:SetWidth (32)
 	c:SetHeight (32)
 	c:SetPoint ("TOPRIGHT",  f, "TOPRIGHT", -3, -7)
@@ -3632,7 +3621,7 @@ end
 local gframe_create_line = function (self)
 	local index = #self._lines+1
 	
-	local f = CreateFrame ("frame", nil, self)
+	local f = CreateFrame ("frame", nil, self, "BackdropTemplate")
 	self._lines [index] = f
 	f.id = index
 	f:SetScript ("OnEnter", gframe_on_enter_line)
@@ -3660,7 +3649,7 @@ local gframe_create_line = function (self)
 	b:SetTexture ([[Interface\COMMON\Indicator-Yellow]])
 	b:SetSize (16, 16)
 	f.ball = b
-	local anchor = CreateFrame ("frame", nil, f)
+	local anchor = CreateFrame ("frame", nil, f, "BackdropTemplate")
 	anchor:SetAllPoints (b)
 	b.tooltip_anchor = anchor
 	
@@ -3767,7 +3756,7 @@ local gframe_update = function (self, lines)
 end
 
 function DF:CreateGFrame (parent, w, h, linewidth, onenter, onleave, member, name)
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	f:SetSize (w or 450, h or 150)
 	--f.CustomLine = [[Interface\AddOns\Details\Libs\LibGraph-2.0\line]]
 	
@@ -3798,7 +3787,7 @@ end
 -- ~buttoncontainer
 
 function DF:CreateButtonContainer (parent, name)
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame ("frame", name, parent, "BackdropTemplate")
 --	f.
 end
 
@@ -3894,6 +3883,9 @@ DF.TabContainerFunctions.SelectIndex = function (self, fixedParam, menuIndex)
 	end
 	
 	mainFrame.AllFrames[menuIndex]:Show()
+	if mainFrame.AllFrames[menuIndex].RefreshOptions then
+		mainFrame.AllFrames[menuIndex]:RefreshOptions()
+	end
 	if (mainFrame.ButtonSelectedBorderColor) then
 		mainFrame.AllButtons[menuIndex]:SetBackdropBorderColor (unpack (mainFrame.ButtonSelectedBorderColor))
 	end
@@ -3930,7 +3922,7 @@ function DF:CreateTabContainer (parent, title, frame_name, frame_list, options_t
 	local button_anchor_y = options_table.button_y or -32
 	local button_text_size = options_table.button_text_size or 10
 	
-	local mainFrame = CreateFrame ("frame", frame_name, parent.widget or parent)
+	local mainFrame = CreateFrame ("frame", frame_name, parent.widget or parent, "BackdropTemplate")
 	mainFrame:SetAllPoints()
 	DF:Mixin (mainFrame, DF.TabContainerFunctions)
 	
@@ -3953,7 +3945,7 @@ function DF:CreateTabContainer (parent, title, frame_name, frame_list, options_t
 	end
 	
 	for i, frame in ipairs (frame_list) do
-		local f = CreateFrame ("frame", "$parent" .. frame.name, mainFrame)
+		local f = CreateFrame ("frame", "$parent" .. frame.name, mainFrame, "BackdropTemplate")
 		f:SetAllPoints()
 		f:SetFrameLevel (210)
 		f:Hide()
@@ -3962,7 +3954,7 @@ function DF:CreateTabContainer (parent, title, frame_name, frame_list, options_t
 		title:SetPoint ("topleft", mainTitle, "bottomleft", 0, 0)
 		
 		local tabButton = DF:CreateButton (mainFrame, DF.TabContainerFunctions.SelectIndex, button_width, button_height, frame.title, i, nil, nil, nil, nil, false, button_tab_template)
-		DFPixelUtil.SetSize (tabButton, button_width, button_height)
+		PixelUtil.SetSize (tabButton, button_width, button_height)
 		tabButton:SetFrameLevel (220)
 		tabButton.textsize = button_text_size
 		tabButton.mainFrame = mainFrame
@@ -4007,7 +3999,7 @@ function DF:CreateTabContainer (parent, title, frame_name, frame_list, options_t
 	
 	for i = 2, #mainFrame.AllButtons do
 		local button = mainFrame.AllButtons [i]
-		DFPixelUtil.SetPoint (button, "topleft", mainTitle, "topleft", x, y)
+		PixelUtil.SetPoint (button, "topleft", mainTitle, "topleft", x, y)
 		x = x + button_width + 2
 		
 		if (i % amount_buttons_per_row == 0) then
@@ -4170,7 +4162,7 @@ local simple_list_box_SetData = function (self, t)
 end
 
 function DF:CreateSimpleListBox (parent, name, title, empty_text, list_table, onclick, options)
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	
 	f.ResetWidgets = simple_list_box_ResetWidgets
 	f.GetOrCreateWidget = simple_list_box_GetOrCreateWidget
@@ -4387,7 +4379,7 @@ DF.ScrollBoxFunctions.OnSizeChanged = function (self)
 end
 
 function DF:CreateScrollBox (parent, name, refresh_func, data, width, height, line_amount, line_height, create_line_func, auto_amount, no_scroll)
-	local scroll = CreateFrame ("scrollframe", name, parent, "FauxScrollFrameTemplate")
+	local scroll = CreateFrame ("scrollframe", name, parent, "FauxScrollFrameTemplate,BackdropTemplate")
 	
 	DF:ApplyStandardBackdrop (scroll)
 	
@@ -4420,8 +4412,8 @@ function DF:CreateResizeGrips (parent)
 	if (parent) then
 		local parentName = parent:GetName()
 		
-		local leftResizer = CreateFrame ("button", parentName and parentName .. "LeftResizer" or nil, parent)
-		local rightResizer = CreateFrame ("button", parentName and parentName .. "RightResizer" or nil, parent)
+		local leftResizer = CreateFrame ("button", parentName and parentName .. "LeftResizer" or nil, parent, "BackdropTemplate")
+		local rightResizer = CreateFrame ("button", parentName and parentName .. "RightResizer" or nil, parent, "BackdropTemplate")
 		
 		leftResizer:SetPoint ("bottomleft", parent, "bottomleft")
 		rightResizer:SetPoint ("bottomright", parent, "bottomright")
@@ -4516,11 +4508,11 @@ function DF:CreateKeybindBox (parent, name, data, callback, width, height, line_
 	local SCROLL_ROLL_AMOUNT = line_amount
 	
 	--keybind set frame
-	local new_keybind_frame = CreateFrame ("frame", name, parent)
+	local new_keybind_frame = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	new_keybind_frame:SetSize (width, height)
 	
 	-- keybind scrollframe
-	local keybindScroll = CreateFrame ("scrollframe", "$parentScrollFrame", new_keybind_frame, "FauxScrollFrameTemplate")
+	local keybindScroll = CreateFrame ("scrollframe", "$parentScrollFrame", new_keybind_frame, "FauxScrollFrameTemplate, BackdropTemplate")
 	keybindScroll:SetSize (1019, 348)
 	keybindScroll.Frames = {}
 	new_keybind_frame.keybindScroll = keybindScroll
@@ -4614,7 +4606,7 @@ function DF:CreateKeybindBox (parent, name, data, callback, width, height, line_
 		spec4:SetPoint ("topleft", specsTitle, "bottomleft", 0, -70)
 	end
 	
-	local enter_the_key = CreateFrame ("frame", nil, new_keybind_frame)
+	local enter_the_key = CreateFrame ("frame", nil, new_keybind_frame, "BackdropTemplate")
 	enter_the_key:SetFrameStrata ("tooltip")
 	enter_the_key:SetSize (200, 60)
 	enter_the_key:SetBackdrop ({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16, edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
@@ -4824,7 +4816,7 @@ function DF:CreateKeybindBox (parent, name, data, callback, width, height, line_
 	local font = "GameFontHighlightSmall"
 	
 	for i = 1, SCROLL_ROLL_AMOUNT do
-		local f = CreateFrame ("frame", "$KeyBindFrame" .. i, keybindScroll)
+		local f = CreateFrame ("frame", "$KeyBindFrame" .. i, keybindScroll, "BackdropTemplate")
 		f:SetSize (1009, 20)
 		f:SetPoint ("topleft", keybindScroll, "topleft", 0, -(i-1)*29)
 		f:SetBackdrop ({bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true})
@@ -4873,7 +4865,7 @@ function DF:CreateKeybindBox (parent, name, data, callback, width, height, line_
 		f.ActionText:SetAsAutoComplete ("WordList")
 	end
 	
-	local header = CreateFrame ("frame", "$parentOptionsPanelFrameHeader", keybindScroll)
+	local header = CreateFrame ("frame", "$parentOptionsPanelFrameHeader", keybindScroll, "BackdropTemplate")
 	header:SetPoint ("bottomleft", keybindScroll, "topleft", 0, 2)
 	header:SetPoint ("bottomright", keybindScroll, "topright", 0, 2)
 	header:SetHeight (16)
@@ -5016,6 +5008,10 @@ end
 function DF:ApplyStandardBackdrop (f, darkTheme, alphaScale)
 	alphaScale = alphaScale or 1.0
 
+	if(not f.SetBackdrop)then
+		print(debugstack(1,2,1))
+	end
+
 	if (darkTheme) then
 		f:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\Cooldown\cooldown2]], tileSize = 32, tile = true})
 		f:SetBackdropBorderColor (0, 0, 0, 1)
@@ -5065,7 +5061,7 @@ DF.TitleFunctions = {
 
 function DF:CreateTitleBar (f, titleText)
 
-	local titleBar = CreateFrame ("frame", f:GetName() and f:GetName() .. "TitleBar" or nil, f)
+	local titleBar = CreateFrame ("frame", f:GetName() and f:GetName() .. "TitleBar" or nil, f,"BackdropTemplate")
 	titleBar:SetPoint ("topleft", f, "topleft", 2, -3)
 	titleBar:SetPoint ("topright", f, "topright", -2, -3)
 	titleBar:SetHeight (20)
@@ -5073,14 +5069,16 @@ function DF:CreateTitleBar (f, titleText)
 	titleBar:SetBackdropColor (.2, .2, .2, 1)
 	titleBar:SetBackdropBorderColor (0, 0, 0, 1)
 	
-	local closeButton = CreateFrame ("button", titleBar:GetName() and titleBar:GetName() .. "CloseButton" or nil, titleBar)
+	local closeButton = CreateFrame ("button", titleBar:GetName() and titleBar:GetName() .. "CloseButton" or nil, titleBar, "BackdropTemplate")
 	closeButton:SetSize (16, 16)
-	closeButton:SetNormalTexture (DF.folder .. "icons")
-	closeButton:SetHighlightTexture (DF.folder .. "icons")
-	closeButton:SetPushedTexture (DF.folder .. "icons")
-	closeButton:GetNormalTexture():SetTexCoord (0, 16/128, 0, 1)
-	closeButton:GetHighlightTexture():SetTexCoord (0, 16/128, 0, 1)
-	closeButton:GetPushedTexture():SetTexCoord (0, 16/128, 0, 1)
+
+	closeButton:SetNormalTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	closeButton:SetHighlightTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	closeButton:SetPushedTexture ([[Interface\GLUES\LOGIN\Glues-CheckBox-Check]])
+	closeButton:GetNormalTexture():SetDesaturated(true)
+	closeButton:GetHighlightTexture():SetDesaturated(true)
+	closeButton:GetPushedTexture():SetDesaturated(true)
+
 	closeButton:SetAlpha (0.7)
 	closeButton:SetScript ("OnClick", simple_panel_close_click) --upvalue from this file
 	
@@ -5097,6 +5095,9 @@ function DF:CreateTitleBar (f, titleText)
 	f.CloseButton = closeButton
 	f.TitleLabel = titleLabel
 	
+	titleBar.CloseButton = closeButton
+	titleBar.Text = titleLabel
+	
 	DF:Mixin (f, DF.TitleFunctions)
 	
 	return titleBar
@@ -5112,11 +5113,11 @@ DF.IconRowFunctions = {
 		local iconFrame = self.IconPool [self.NextIcon]
 		
 		if (not iconFrame) then
-			local newIconFrame = CreateFrame ("frame", "$parentIcon" .. self.NextIcon, self)
+			local newIconFrame = CreateFrame ("frame", "$parentIcon" .. self.NextIcon, self, "BackdropTemplate")
 			
 			newIconFrame.Texture = newIconFrame:CreateTexture (nil, "artwork")
-			DFPixelUtil.SetPoint (newIconFrame.Texture, "topleft", newIconFrame, "topleft", 1, -1)
-			DFPixelUtil.SetPoint (newIconFrame.Texture, "bottomright", newIconFrame, "bottomright", -1, 1)
+			PixelUtil.SetPoint (newIconFrame.Texture, "topleft", newIconFrame, "topleft", 1, -1)
+			PixelUtil.SetPoint (newIconFrame.Texture, "bottomright", newIconFrame, "bottomright", -1, 1)
 			
 			newIconFrame.Border = newIconFrame:CreateTexture (nil, "background")
 			newIconFrame.Border:SetAllPoints()
@@ -5126,10 +5127,11 @@ DF.IconRowFunctions = {
 			newIconFrame:SetBackdropBorderColor (0, 0, 0, 0)
 			newIconFrame:EnableMouse (false)
 			
-			local cooldownFrame = CreateFrame ("cooldown", "$parentIconCooldown" .. self.NextIcon, newIconFrame, "CooldownFrameTemplate")
+			local cooldownFrame = CreateFrame ("cooldown", "$parentIconCooldown" .. self.NextIcon, newIconFrame, "CooldownFrameTemplate, BackdropTemplate")
 			cooldownFrame:SetAllPoints()
 			cooldownFrame:EnableMouse (false)
 			cooldownFrame:SetFrameLevel (newIconFrame:GetFrameLevel()+1)
+			cooldownFrame:SetHideCountdownNumbers (self.options.surpress_blizzard_cd_timer)
 			cooldownFrame.noCooldownCount = self.options.surpress_tulla_omni_cc
 			
 			newIconFrame.CountdownText = cooldownFrame:CreateFontString (nil, "overlay", "GameFontNormal")
@@ -5162,16 +5164,16 @@ DF.IconRowFunctions = {
 
 		if (growDirection == 1) then --grow to right
 			if (self.NextIcon == 1) then
-				DFPixelUtil.SetPoint (iconFrame, "left", anchorTo, "left", xPadding, 0)
+				PixelUtil.SetPoint (iconFrame, "left", anchorTo, "left", xPadding, 0)
 			else
-				DFPixelUtil.SetPoint (iconFrame, "left", anchorTo, "right", xPadding, 0)
+				PixelUtil.SetPoint (iconFrame, "left", anchorTo, "right", xPadding, 0)
 			end
 			
 		elseif (growDirection == 2) then --grow to left
 			if (self.NextIcon == 1) then
-				DFPixelUtil.SetPoint (iconFrame, "right", anchorTo, "right", xPadding, 0)
+				PixelUtil.SetPoint (iconFrame, "right", anchorTo, "right", xPadding, 0)
 			else
-				DFPixelUtil.SetPoint (iconFrame, "right", anchorTo, "left", xPadding, 0)
+				PixelUtil.SetPoint (iconFrame, "right", anchorTo, "left", xPadding, 0)
 			end
 			
 		end
@@ -5223,12 +5225,15 @@ DF.IconRowFunctions = {
 					
 					iconFrame.CountdownText:SetPoint (self.options.text_anchor or "center", iconFrame, self.options.text_rel_anchor or "center", self.options.text_x_offset or 0, self.options.text_y_offset or 0)
 					DF:SetFontSize (iconFrame.CountdownText, self.options.text_size)
+					DF:SetFontFace (iconFrame.CountdownText, self.options.text_font)
+					DF:SetFontOutline (iconFrame.CountdownText, self.options.text_outline)
 					iconFrame.CountdownText:SetText (formattedTime)
-					iconFrame.Cooldown:SetHideCountdownNumbers (true)
+					
 				else
 					iconFrame.CountdownText:Hide()
-					iconFrame.Cooldown:SetHideCountdownNumbers (false)
 				end
+				
+				iconFrame.Cooldown:SetHideCountdownNumbers (self.options.surpress_blizzard_cd_timer)
 			else
 				iconFrame.CountdownText:Hide()
 			end
@@ -5239,6 +5244,8 @@ DF.IconRowFunctions = {
 				iconFrame.Desc:SetTextColor (DF:ParseColors (descText.text_color or self.options.desc_text_color))
 				iconFrame.Desc:SetPoint(self.options.desc_text_anchor or "bottom", iconFrame, self.options.desc_text_rel_anchor or "top", self.options.desc_text_x_offset or 0, self.options.desc_text_y_offset or 2)
 				DF:SetFontSize (iconFrame.Desc, descText.text_size or self.options.desc_text_size)
+				DF:SetFontFace (iconFrame.Desc, self.options.desc_text_font)
+				DF:SetFontOutline (iconFrame.Desc, self.options.desc_text_outline)
 			else
 				iconFrame.Desc:Hide()
 			end
@@ -5249,12 +5256,13 @@ DF.IconRowFunctions = {
 				iconFrame.StackText:SetTextColor (DF:ParseColors (self.options.desc_text_color))
 				iconFrame.StackText:SetPoint (self.options.stack_text_anchor or "center", iconFrame, self.options.stack_text_rel_anchor or "bottomright", self.options.stack_text_x_offset or 0, self.options.stack_text_y_offset or 0)
 				DF:SetFontSize (iconFrame.StackText, self.options.stack_text_size)
+				DF:SetFontFace (iconFrame.StackText, self.options.stack_text_font)
+				DF:SetFontOutline (iconFrame.StackText, self.options.stack_text_outline)
 			else
 				iconFrame.StackText:Hide()
 			end
 			
-			
-			DFPixelUtil.SetSize (iconFrame, self.options.icon_width, self.options.icon_height)
+			PixelUtil.SetSize (iconFrame, self.options.icon_width, self.options.icon_height)
 			iconFrame:Show()
 			
 			--> update the size of the frame
@@ -5330,6 +5338,8 @@ local default_icon_row_options = {
 	show_text = true,
 	text_color = {1, 1, 1, 1},
 	text_size = 12,
+	text_font = "Arial Narrow",
+	text_outline = "NONE",
 	text_anchor = "center",
 	text_rel_anchor = "center",
 	text_x_offset = 0,
@@ -5337,6 +5347,8 @@ local default_icon_row_options = {
 	desc_text = true,
 	desc_text_color = {1, 1, 1, 1},
 	desc_text_size = 7,
+	desc_text_font = "Arial Narrow",
+	desc_text_outline = "NONE",
 	desc_text_anchor = "bottom",
 	desc_text_rel_anchor = "top",
 	desc_text_x_offset = 0,
@@ -5344,6 +5356,8 @@ local default_icon_row_options = {
 	stack_text = true,
 	stack_text_color = {1, 1, 1, 1},
 	stack_text_size = 10,
+	stack_text_font = "Arial Narrow",
+	stack_text_outline = "NONE",
 	stack_text_anchor = "center",
 	stack_text_rel_anchor = "bottomright",
 	stack_text_x_offset = 0,
@@ -5356,11 +5370,12 @@ local default_icon_row_options = {
 	backdrop_border_color = {0, 0, 0, 1},
 	anchor = {side = 6, x = 2, y = 0},
 	grow_direction = 1, --1 = to right 2 = to left
+	surpress_blizzard_cd_timer = false,
 	surpress_tulla_omni_cc = false,
 }
 
 function DF:CreateIconRow (parent, name, options)
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame("frame", name, parent, "BackdropTemplate")
 	f.IconPool = {}
 	f.NextIcon = 1
 	
@@ -5382,225 +5397,354 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> ~header
 
+--mixed functions
 DF.HeaderFunctions = {
 	AddFrameToHeaderAlignment = function (self, frame)
 		self.FramesToAlign = self.FramesToAlign or {}
 		tinsert (self.FramesToAlign, frame)
 	end,
 
+	--@self: an object like a line
+	--@headerFrame: the main header frame
+	--@anchor: which side the columnHeaders are attach
 	AlignWithHeader = function (self, headerFrame, anchor)
-		local headerFrames = headerFrame.HeadersCreated
+		local columnHeaderFrames = headerFrame.columnHeadersCreated
 		anchor = anchor or "topleft"
 		
 		for i = 1, #self.FramesToAlign do
 			local frame = self.FramesToAlign [i]
 			frame:ClearAllPoints()
 			
-			local headerFrame = headerFrames [i]
+			local columnHeader = columnHeaderFrames [i]
 			local offset = 0
 			
-			if (headerFrame.columnAlign == "right") then
-				offset = headerFrame:GetWidth()
+			if (columnHeader.columnAlign == "right") then
+				offset = columnHeader:GetWidth()
 				if (frame:GetObjectType() == "FontString") then
 					frame:SetJustifyH ("right")
 				end
 			end
 			
-			frame:SetPoint (headerFrame.columnAlign, self, anchor, headerFrame.XPosition + headerFrame.columnOffset + offset, 0)
+			frame:SetPoint (columnHeader.columnAlign, self, anchor, columnHeader.XPosition + columnHeader.columnOffset + offset, 0)
+		end
+	end,
+
+	--@self: column header button
+	OnClick = function (self, buttonClicked)
+		
+		--get the header main frame
+		local headerFrame = self:GetParent()		
+
+		--if this header does not have a clickable header, just ignore
+		if (not headerFrame.columnSelected) then
+			return
+		end
+
+		--get the latest column header selected
+		local previousColumnHeader = headerFrame.columnHeadersCreated [headerFrame.columnSelected]
+		previousColumnHeader.Arrow:Hide()
+		headerFrame:ResetColumnHeaderBackdrop (previousColumnHeader)
+		headerFrame:SetBackdropColorForSelectedColumnHeader (self)
+
+		if (headerFrame.columnSelected == self.columnIndex) then
+			self.order = self.order ~= "ASC" and "ASC" or "DESC"
+		end
+		headerFrame.columnOrder = self.order
+
+		--set the new column header selected
+		headerFrame.columnSelected = self.columnIndex
+
+		headerFrame:UpdateSortArrow (self)
+
+		if (headerFrame.options.header_click_callback) then
+			--callback with the main header frame, column header, column index and column order as payload
+			local okay, errortext = pcall (headerFrame.options.header_click_callback, headerFrame, self, self.columnIndex, self.order)
+			if (not okay) then
+				print ("DF: Header onClick callback error:", errortext)
+			end
 		end
 	end,
 }
 
 DF.HeaderCoreFunctions = {
 	SetHeaderTable = function (self, newTable)
-		self.HeadersCreated = self.HeadersCreated or {}
+		self.columnHeadersCreated = self.columnHeadersCreated or {}
 		self.HeaderTable = newTable
 		self.NextHeader = 1
 		self.HeaderWidth = 0
 		self.HeaderHeight = 0
 		self:Refresh()
 	end,
+
+	--return which header is current selected and the the order ASC DESC
+	GetSelectedColumn = function (self)
+		return self.columnSelected, self.columnHeadersCreated [self.columnSelected or 1].order
+	end,
 	
+	--clean up and rebuild the header following the header options
+	--@self: main header frame
 	Refresh = function (self)
-	
 		--> refresh background frame
 		self:SetBackdrop (self.options.backdrop)
 		self:SetBackdropColor (unpack (self.options.backdrop_color))
 		self:SetBackdropBorderColor (unpack (self.options.backdrop_border_color))
 	
 		--> reset all header frames
-		for i = 1, #self.HeadersCreated do
-			self.HeadersCreated [i].InUse = false
-			self.HeadersCreated [i]:Hide()
+		for i = 1, #self.columnHeadersCreated do
+			local columnHeader = self.columnHeadersCreated [i]
+			columnHeader.InUse = false
+			columnHeader:Hide()
 		end
 	
-		local previousHeaderFrame
+		local previousColumnHeader
 		local growDirection = string.lower (self.options.grow_direction)
 	
 		--> update header frames
 		local headerSize = #self.HeaderTable
 		for i = 1, headerSize do
-			local headerFrame = self:GetNextHeader()
-			self:UpdateHeaderFrame (headerFrame, i)
+
+			--> get the header button, a new one is created if it doesn't exists yet
+			local columnHeader = self:GetNextHeader()
+			self:UpdateColumnHeader (columnHeader, i)
 			
 			--> grow direction
-			if (not previousHeaderFrame) then
-				headerFrame:SetPoint ("topleft", self, "topleft", 0, 0)
+			if (not previousColumnHeader) then
+				columnHeader:SetPoint ("topleft", self, "topleft", 0, 0)
 				
 				if (growDirection == "right") then
 					if (self.options.use_line_separators) then
-						headerFrame.Separator:Show()
-						headerFrame.Separator:SetWidth (self.options.line_separator_width)
-						headerFrame.Separator:SetColorTexture (unpack (self.options.line_separator_color))
+						columnHeader.Separator:Show()
+						columnHeader.Separator:SetWidth (self.options.line_separator_width)
+						columnHeader.Separator:SetColorTexture (unpack (self.options.line_separator_color))
 						
-						headerFrame.Separator:ClearAllPoints()
+						columnHeader.Separator:ClearAllPoints()
 						if (self.options.line_separator_gap_align) then
-							headerFrame.Separator:SetPoint ("topleft", headerFrame, "topright", 0, 0)
+							columnHeader.Separator:SetPoint ("topleft", columnHeader, "topright", 0, 0)
 						else
-							headerFrame.Separator:SetPoint ("topright", headerFrame, "topright", 0, 0)
+							columnHeader.Separator:SetPoint ("topright", columnHeader, "topright", 0, 0)
 						end
-						headerFrame.Separator:SetHeight (self.options.line_separator_height)
+						columnHeader.Separator:SetHeight (self.options.line_separator_height)
 					end
 				end
 				
 			else
 				if (growDirection == "right") then
-					headerFrame:SetPoint ("topleft", previousHeaderFrame, "topright", self.options.padding, 0)
+					columnHeader:SetPoint ("topleft", previousColumnHeader, "topright", self.options.padding, 0)
 
 					if (self.options.use_line_separators) then
-						headerFrame.Separator:Show()
-						headerFrame.Separator:SetWidth (self.options.line_separator_width)
-						headerFrame.Separator:SetColorTexture (unpack (self.options.line_separator_color))
+						columnHeader.Separator:Show()
+						columnHeader.Separator:SetWidth (self.options.line_separator_width)
+						columnHeader.Separator:SetColorTexture (unpack (self.options.line_separator_color))
 						
-						headerFrame.Separator:ClearAllPoints()
+						columnHeader.Separator:ClearAllPoints()
 						if (self.options.line_separator_gap_align) then
-							headerFrame.Separator:SetPoint ("topleft", headerFrame, "topright", 0, 0)
+							columnHeader.Separator:SetPoint ("topleft", columnHeader, "topright", 0, 0)
 						else
-							headerFrame.Separator:SetPoint ("topleft", headerFrame, "topright", 0, 0)
+							columnHeader.Separator:SetPoint ("topleft", columnHeader, "topright", 0, 0)
 						end
-						headerFrame.Separator:SetHeight (self.options.line_separator_height)
+						columnHeader.Separator:SetHeight (self.options.line_separator_height)
 						
 						if (headerSize == i) then
-							headerFrame.Separator:Hide()
+							columnHeader.Separator:Hide()
 						end
 					end
 					
 				elseif (growDirection == "left") then
-					headerFrame:SetPoint ("topright", previousHeaderFrame, "topleft", -self.options.padding, 0)
+					columnHeader:SetPoint ("topright", previousColumnHeader, "topleft", -self.options.padding, 0)
 					
 				elseif (growDirection == "bottom") then
-					headerFrame:SetPoint ("topleft", previousHeaderFrame, "bottomleft", 0, -self.options.padding)
+					columnHeader:SetPoint ("topleft", previousColumnHeader, "bottomleft", 0, -self.options.padding)
 					
 				elseif (growDirection == "top") then
-					headerFrame:SetPoint ("bottomleft", previousHeaderFrame, "topleft", 0, self.options.padding)
+					columnHeader:SetPoint ("bottomleft", previousColumnHeader, "topleft", 0, self.options.padding)
 				end
 			end
 			
-			previousHeaderFrame = headerFrame
+			previousColumnHeader = columnHeader
 		end
 		
 		self:SetSize (self.HeaderWidth, self.HeaderHeight)
 
 	end,
 	
-	UpdateHeaderFrame = function (self, headerFrame, headerIndex)
+	--@self: main header frame
+	UpdateSortArrow = function (self, columnHeader, defaultShown, defaultOrder)
+
+		local options = self.options
+		local order = defaultOrder or columnHeader.order
+		local arrowIcon = columnHeader.Arrow
+		
+		if (type (defaultShown) ~= "boolean") then
+			arrowIcon:Show()
+		else
+			arrowIcon:SetShown (defaultShown)
+			if (defaultShown) then
+				self:SetBackdropColorForSelectedColumnHeader (columnHeader)
+			end
+		end
+
+		arrowIcon:SetAlpha (options.arrow_alpha)
+
+		if (order == "ASC") then
+			arrowIcon:SetTexture (options.arrow_up_texture)
+			arrowIcon:SetTexCoord (unpack (options.arrow_up_texture_coords))
+			arrowIcon:SetSize (unpack (options.arrow_up_size))
+
+		elseif (order == "DESC") then
+			arrowIcon:SetTexture (options.arrow_down_texture)
+			arrowIcon:SetTexCoord (unpack (options.arrow_down_texture_coords))
+			arrowIcon:SetSize (unpack (options.arrow_down_size))
+		end
+
+	end,
+
+	--@self: main header frame
+	UpdateColumnHeader = function (self, columnHeader, headerIndex)
 		local headerData = self.HeaderTable [headerIndex]
 		
 		if (headerData.icon) then
-			headerFrame.Icon:SetTexture (headerData.icon)
+			columnHeader.Icon:SetTexture (headerData.icon)
 			
 			if (headerData.texcoord) then
-				headerFrame.Icon:SetTexCoord (unpack (headerData.texcoord))
+				columnHeader.Icon:SetTexCoord (unpack (headerData.texcoord))
 			else
-				headerFrame.Icon:SetTexCoord (0, 1, 0, 1)
+				columnHeader.Icon:SetTexCoord (0, 1, 0, 1)
 			end
 			
-			headerFrame.Icon:SetPoint ("left", headerFrame, "left", self.options.padding, 0)
-			headerFrame.Icon:Show()
+			columnHeader.Icon:SetPoint ("left", columnHeader, "left", self.options.padding, 0)
+			columnHeader.Icon:Show()
 		end
 		
 		if (headerData.text) then
-			headerFrame.Text:SetText (headerData.text)
+			columnHeader.Text:SetText (headerData.text)
 			
 			--> text options
-			DF:SetFontColor (headerFrame.Text, self.options.text_color)
-			DF:SetFontSize (headerFrame.Text, self.options.text_size)
-			DF:SetFontOutline (headerFrame.Text, self.options.text_shadow)
+			DF:SetFontColor (columnHeader.Text, self.options.text_color)
+			DF:SetFontSize (columnHeader.Text, self.options.text_size)
+			DF:SetFontOutline (columnHeader.Text, self.options.text_shadow)
 			
 			--> point
 			if (not headerData.icon) then
-				headerFrame.Text:SetPoint ("left", headerFrame, "left", self.options.padding, 0)
+				columnHeader.Text:SetPoint ("left", columnHeader, "left", self.options.padding, 0)
 			else
-				headerFrame.Text:SetPoint ("left", headerFrame.Icon, "right", self.options.padding, 0)
+				columnHeader.Text:SetPoint ("left", columnHeader.Icon, "right", self.options.padding, 0)
 			end
 			
-			headerFrame.Text:Show()
+			columnHeader.Text:Show()
+		end
+
+		--column header index
+		columnHeader.columnIndex = headerIndex
+
+		if (headerData.canSort) then
+			columnHeader.order = "DESC"
+			columnHeader.Arrow:SetTexture (self.options.arrow_up_texture)
+		else
+			columnHeader.Arrow:Hide()
+		end
+
+		if (headerData.selected) then
+			columnHeader.Arrow:Show()
+			columnHeader.Arrow:SetAlpha (.843)
+			self:UpdateSortArrow (columnHeader, true, columnHeader.order)
+			self.columnSelected = headerIndex
+		else
+			if (headerData.canSort) then
+				self:UpdateSortArrow (columnHeader, false, columnHeader.order)
+			end
 		end
 		
 		--> size
 		if (headerData.width) then
-			headerFrame:SetWidth (headerData.width)
+			columnHeader:SetWidth (headerData.width)
 		end
 		if (headerData.height) then
-			headerFrame:SetHeight (headerData.height)
+			columnHeader:SetHeight (headerData.height)
 		end
 		
-		headerFrame.XPosition = self.HeaderWidth-- + self.options.padding
-		headerFrame.YPosition = self.HeaderHeight-- + self.options.padding
+		columnHeader.XPosition = self.HeaderWidth-- + self.options.padding
+		columnHeader.YPosition = self.HeaderHeight-- + self.options.padding
 		
-		headerFrame.columnAlign = headerData.align or "left"
-		headerFrame.columnOffset = headerData.offset or 0
+		columnHeader.columnAlign = headerData.align or "left"
+		columnHeader.columnOffset = headerData.offset or 0
 		
 		--> add the header piece size to the total header size
 		local growDirection = string.lower (self.options.grow_direction)
 		
 		if (growDirection == "right" or growDirection == "left") then
-			self.HeaderWidth = self.HeaderWidth + headerFrame:GetWidth() + self.options.padding
-			self.HeaderHeight = math.max (self.HeaderHeight, headerFrame:GetHeight())
+			self.HeaderWidth = self.HeaderWidth + columnHeader:GetWidth() + self.options.padding
+			self.HeaderHeight = math.max (self.HeaderHeight, columnHeader:GetHeight())
 			
 		elseif (growDirection == "top" or growDirection == "bottom") then
-			self.HeaderWidth =  math.max (self.HeaderWidth, headerFrame:GetWidth())
-			self.HeaderHeight = self.HeaderHeight + headerFrame:GetHeight() + self.options.padding
+			self.HeaderWidth =  math.max (self.HeaderWidth, columnHeader:GetWidth())
+			self.HeaderHeight = self.HeaderHeight + columnHeader:GetHeight() + self.options.padding
 		end
 
-		headerFrame:Show()
-		headerFrame.InUse = true
+		columnHeader:Show()
+		columnHeader.InUse = true
 	end,
 	
-	RefreshHeader = function (self, headerFrame)
-		headerFrame:SetSize (self.options.header_width, self.options.header_height)
-		headerFrame:SetBackdrop (self.options.header_backdrop)
-		headerFrame:SetBackdropColor (unpack (self.options.header_backdrop_color))
-		headerFrame:SetBackdropBorderColor (unpack (self.options.header_backdrop_border_color))
+	--reset column header backdrop
+	--@self: main header frame
+	ResetColumnHeaderBackdrop = function (self, columnHeader)
+		columnHeader:SetBackdrop (self.options.header_backdrop)
+		columnHeader:SetBackdropColor (unpack (self.options.header_backdrop_color))
+		columnHeader:SetBackdropBorderColor (unpack (self.options.header_backdrop_border_color))
+	end,
+
+	--@self: main header frame
+	SetBackdropColorForSelectedColumnHeader = function (self, columnHeader)
+		columnHeader:SetBackdropColor (unpack (self.options.header_backdrop_color_selected))
+	end,
+
+	--clear the column header
+	--@self: main header frame
+	ClearColumnHeader = function (self, columnHeader)
+		columnHeader:SetSize (self.options.header_width, self.options.header_height)
+		self:ResetColumnHeaderBackdrop (columnHeader)
 		
-		headerFrame:ClearAllPoints()
+		columnHeader:ClearAllPoints()
 		
-		headerFrame.Icon:SetTexture ("")
-		headerFrame.Icon:Hide()
-		headerFrame.Text:SetText ("")
-		headerFrame.Text:Hide()
+		columnHeader.Icon:SetTexture ("")
+		columnHeader.Icon:Hide()
+		columnHeader.Text:SetText ("")
+		columnHeader.Text:Hide()
 	end,
 	
+	--get the next column header, create one if doesn't exists
+	--@self: main header frame
 	GetNextHeader = function (self)
 		local nextHeader = self.NextHeader
-		local headerFrame = self.HeadersCreated [nextHeader]
+		local columnHeader = self.columnHeadersCreated [nextHeader]
 		
-		if (not headerFrame) then
-			local newHeader = CreateFrame ("button", "$parentHeaderIndex" .. nextHeader, self)
-			
+		if (not columnHeader) then
+			--create a new column header
+			local newHeader = CreateFrame ("button", "$parentHeaderIndex" .. nextHeader, self,"BackdropTemplate")
+			newHeader:SetScript ("OnClick", DF.HeaderFunctions.OnClick)
+
+			--header icon
 			DF:CreateImage (newHeader, "", self.options.header_height, self.options.header_height, "ARTWORK", nil, "Icon", "$parentIcon")
+			--header separator
 			DF:CreateImage (newHeader, "", 1, 1, "ARTWORK", nil, "Separator", "$parentSeparator")
+			--header name text
 			DF:CreateLabel (newHeader, "", self.options.text_size, self.options.text_color, "GameFontNormal", "Text", "$parentText", "ARTWORK")
-			
+			--header selected and order icon
+			DF:CreateImage (newHeader, self.options.arrow_up_texture, 12, 12, "ARTWORK", nil, "Arrow", "$parentArrow")
+
+			newHeader.Arrow:SetPoint ("right", newHeader, "right", -1, 0)
+
 			newHeader.Separator:Hide()
+			newHeader.Arrow:Hide()
+
+			self:UpdateSortArrow (newHeader, false, "DESC")
 			
-			tinsert (self.HeadersCreated, newHeader)
-			headerFrame = newHeader
+			tinsert (self.columnHeadersCreated, newHeader)
+			columnHeader = newHeader
 		end
 		
-		self:RefreshHeader (headerFrame)
+		self:ClearColumnHeader (columnHeader)
 		self.NextHeader = self.NextHeader + 1
-		return headerFrame
+		return columnHeader
 	end,
 	
 	NextHeader = 1,
@@ -5622,10 +5766,19 @@ local default_header_options = {
 	--each piece of the header
 	header_backdrop = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tileSize = 64, tile = true},
 	header_backdrop_color = {0, 0, 0, 0.5},
+	header_backdrop_color_selected = {0.3, 0.3, 0.3, 0.5},
 	header_backdrop_border_color = {0, 0, 0, 0},
 	header_width = 120,
 	header_height = 20,
-	
+
+	arrow_up_texture = [[Interface\Buttons\Arrow-Up-Down]],
+	arrow_up_texture_coords = {0, 1, 6/16, 1},
+	arrow_up_size = {12, 11},
+	arrow_down_texture = [[Interface\Buttons\Arrow-Down-Down]],
+	arrow_down_texture_coords = {0, 1, 0, 11/16},
+	arrow_down_size = {12, 11},
+	arrow_alpha = 0.659,
+
 	use_line_separators = false,
 	line_separator_color = {.1, .1, .1, .6},
 	line_separator_width = 1,
@@ -5633,8 +5786,8 @@ local default_header_options = {
 	line_separator_gap_align = false,
 }
 
-function DF:CreateHeader (parent, headerTable, options)
-	local f = CreateFrame ("frame", "$parentHeaderLine", parent)
+function DF:CreateHeader (parent, headerTable, options, frameName)
+	local f = CreateFrame ("frame", frameName or "$parentHeaderLine", parent,"BackdropTemplate")
 	
 	DF:Mixin (f, DF.OptionsFunctions)
 	DF:Mixin (f, DF.HeaderCoreFunctions)
@@ -5646,7 +5799,7 @@ function DF:CreateHeader (parent, headerTable, options)
 	f:SetBackdropBorderColor (unpack (f.options.backdrop_border_color))
 	
 	f:SetHeaderTable (headerTable)
-	
+
 	return f
 end
 
@@ -5799,7 +5952,7 @@ DF.RadioGroupCoreFunctions = {
 	anchorOptions: override options for default_framelayout_options table
 --]=]
 function DF:CreateRadionGroup (parent, radioOptions, name, options, anchorOptions)
-	local f = CreateFrame ("frame", name, parent)
+	local f = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	
 	DF:Mixin (f, DF.OptionsFunctions)
 	DF:Mixin (f, DF.RadioGroupCoreFunctions)
@@ -5851,17 +6004,13 @@ local default_load_conditions_frame_options = {
 function DF:CreateLoadFilterParser (callback)
 	local f = CreateFrame ("frame")
 	f:RegisterEvent ("PLAYER_ENTERING_WORLD")
+	f:RegisterEvent ("PLAYER_SPECIALIZATION_CHANGED")
+	f:RegisterEvent ("PLAYER_TALENT_UPDATE")
+	f:RegisterEvent ("PLAYER_ROLES_ASSIGNED")
 	f:RegisterEvent ("ZONE_CHANGED_NEW_AREA")
+	f:RegisterEvent ("CHALLENGE_MODE_START")
 	f:RegisterEvent ("ENCOUNTER_START")
 	f:RegisterEvent ("PLAYER_REGEN_ENABLED")
-	
-	--events not existant in classic
-	if (not DF.IsClassicWow()) then
-		f:RegisterEvent ("PLAYER_SPECIALIZATION_CHANGED")
-		f:RegisterEvent ("PLAYER_TALENT_UPDATE")
-		f:RegisterEvent ("PLAYER_ROLES_ASSIGNED")
-		f:RegisterEvent ("CHALLENGE_MODE_START")
-	end
 	
 	f:SetScript ("OnEvent", function (self, event, ...)
 		if (event == "ENCOUNTER_START") then
@@ -5920,8 +6069,6 @@ function DF:PassLoadFilters (loadTable, encounterID)
 	end
 	
 	--spec
-	-- todo classic: specs - ignore for now
-	--[[
 	if (loadTable.spec.Enabled) then
 		local canCheckTalents = true
 		
@@ -5946,15 +6093,13 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			if (specIndex) then
 				local specID = DetailsFramework.GetSpecializationInfo (specIndex)
 				if (not loadTable.spec [specID]) then
-					-- todo classic: specs - ignore for now
-					--return false
+					return false
 				end
 			else
 				return false
 			end
 		end
 	end
-	--]]
 	
 	--race
 	if (loadTable.race.Enabled) then
@@ -5965,8 +6110,6 @@ function DF:PassLoadFilters (loadTable, encounterID)
 	end
 	
 	--talents
-	-- todo classic: talents
-	--[[
 	if (loadTable.talent.Enabled) then
 		local talentsInUse = DF:GetCharacterTalents (false, true)
 		local hasTalent
@@ -5980,11 +6123,8 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			return false
 		end
 	end
-	--]]
 	
 	--pvptalent
-	-- not in classic
-	--[[
 	if (loadTable.pvptalent.Enabled) then
 		local talentsInUse = DF:GetCharacterPvPTalents (false, true)
 		local hasTalent
@@ -5998,7 +6138,6 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			return false
 		end
 	end
-	--]]
 	
 	--group
 	if (loadTable.group.Enabled) then
@@ -6009,8 +6148,6 @@ function DF:PassLoadFilters (loadTable, encounterID)
 	end
 	
 	--role
-	-- todo classic: role - just ignore now
-	--[[
 	if (loadTable.role.Enabled) then
 		local assignedRole = UnitGroupRolesAssigned ("player")
 		if (assignedRole == "NONE") then
@@ -6023,12 +6160,9 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			return false
 		end
 	end
-	--]]
 	
 	--affix
-	-- not in classic
-	--[[
-	if (loadTable.affix.Enabled and false) then --dont need to run on classic
+	if (loadTable.affix.Enabled) then
 		local isInMythicDungeon = C_ChallengeMode.IsChallengeModeActive()
 		if (not isInMythicDungeon) then
 			return false
@@ -6047,7 +6181,6 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			return false
 		end
 	end
-	--]]
 	
 	--encounter id
 	if (loadTable.encounter_ids.Enabled) then
@@ -6123,8 +6256,8 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			pvptalent = {x2StartAt, -70},
 			group = {x2StartAt, -210},
 			affix = {x2StartAt, -270},
-			encounter_ids = {x2StartAt, -360},
-			map_ids = {x2StartAt, -400},
+			encounter_ids = {x2StartAt, -400},
+			map_ids = {x2StartAt, -440},
 		}
 		
 		local editingLabel = DF:CreateLabel (f, "Load Conditions For:")
@@ -6176,8 +6309,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			tinsert (f.AllRadioGroups, classGroup)
 		
 		--create the radio group for character spec
-		-- not in classic...
-		--[[
 			local specs = {}
 			for _, specID in ipairs (DF:GetClassSpecIDs (select (2, UnitClass ("player")))) do
 				local specID, specName, specDescription, specIcon, specBackground, specRole, specClass = DetailsFramework.GetSpecializationInfoByID (specID)
@@ -6193,7 +6324,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			specGroup:SetPoint ("topleft", f, "topleft", anchorPositions.spec [1], anchorPositions.spec [2])
 			specGroup.DBKey = "spec"
 			tinsert (f.AllRadioGroups, specGroup)
-			--]]
 			
 		--create radio group for character races
 			local raceList = {}
@@ -6212,7 +6342,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			
 		--create radio group for talents
 			local talentList = {}
-			-- todo: classic talents
 			for _, talentTable in ipairs (DF:GetCharacterTalents()) do
 				tinsert (talentList, {
 					name = talentTable.Name, 
@@ -6230,7 +6359,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			
 			do
 				--create a frame to show talents selected in other specs or characters
-				local otherTalents = CreateFrame ("frame", nil, f)
+				local otherTalents = CreateFrame ("frame", nil, f, "BackdropTemplate")
 				otherTalents:SetSize (26, 26)
 				otherTalents:SetPoint ("left", talentGroup.Title.widget, "right", 10, -2)
 				otherTalents.Texture = DF:CreateImage (otherTalents, [[Interface\BUTTONS\AdventureGuideMicrobuttonAlert]], 24, 24)
@@ -6284,7 +6413,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 						
 						GameCooltip2:SetColor (1, 0.5, 0.5, 0.5, 0)
 						
-						local preset2_backdrop = {bgFile = DF.folder .. "background", edgeFile = [[Interface\Buttons\WHITE8X8]], tile = true, edgeSize = 1, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
+						local preset2_backdrop = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], edgeFile = [[Interface\Buttons\WHITE8X8]], tile = true, edgeSize = 1, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
 						local gray_table = {0.37, 0.37, 0.37, 0.95}
 						local black_table = {0.2, 0.2, 0.2, 1}
 						GameCooltip2:SetBackdrop (1, preset2_backdrop, gray_table, black_table)
@@ -6311,8 +6440,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			
 		--create radio group for pvp talents
 			local pvpTalentList = {}
-			-- not in classic:
-			--[[
 			for _, talentTable in ipairs (DF:GetCharacterPvPTalents()) do
 				tinsert (pvpTalentList, {
 					name = talentTable.Name, 
@@ -6322,7 +6449,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 					texture = talentTable.Texture,
 				})
 			end
-			--]]
 			local pvpTalentGroup = DF:CreateRadionGroup (f, pvpTalentList, name, {width = 200, height = 200, title = "Characer PvP Talents"}, {offset_x = 150, amount_per_line = 3})
 			pvpTalentGroup:SetPoint ("topleft", f, "topleft", anchorPositions.pvptalent [1], anchorPositions.pvptalent [2])
 			pvpTalentGroup.DBKey = "pvptalent"
@@ -6331,7 +6457,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			
 			do
 				--create a frame to show talents selected in other specs or characters
-				local otherTalents = CreateFrame ("frame", nil, f)
+				local otherTalents = CreateFrame ("frame", nil, f, "BackdropTemplate")
 				otherTalents:SetSize (26, 26)
 				otherTalents:SetPoint ("left", pvpTalentGroup.Title.widget, "right", 10, -2)
 				otherTalents.Texture = DF:CreateImage (otherTalents, [[Interface\BUTTONS\AdventureGuideMicrobuttonAlert]], 24, 24)
@@ -6385,7 +6511,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 						
 						GameCooltip2:SetColor (1, 0.5, 0.5, 0.5, 0)
 						
-						local preset2_backdrop = {bgFile = DF.folder .. "background", edgeFile = [[Interface\Buttons\WHITE8X8]], tile = true, edgeSize = 1, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
+						local preset2_backdrop = {edgeFile = [[Interface\Buttons\WHITE8X8]], edgeFile = [[Interface\Buttons\WHITE8X8]], tile = true, edgeSize = 1, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
 						local gray_table = {0.37, 0.37, 0.37, 0.95}
 						local black_table = {0.2, 0.2, 0.2, 1}
 						GameCooltip2:SetBackdrop (1, preset2_backdrop, gray_table, black_table)
@@ -6426,8 +6552,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			tinsert (f.AllRadioGroups, groupTypesGroup)
 		
 		--create radio for character roles
-		-- not in classic
-		--[[
 			local roleTypes = {}
 			for _, roleTable in ipairs (DF:GetRoleTypes()) do
 				tinsert (roleTypes, {
@@ -6441,11 +6565,8 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			roleTypesGroup:SetPoint ("topleft", f, "topleft", anchorPositions.role [1], anchorPositions.role [2])
 			roleTypesGroup.DBKey = "role"
 			tinsert (f.AllRadioGroups, roleTypesGroup)
-			--]]
 		
 		--create radio group for mythic+ affixes
-		-- not in classic:
-		--[[
 			local affixes = {}
 			for i = 2, 1000 do
 				local affixName, desc, texture = C_ChallengeMode.GetAffixInfo (i)
@@ -6463,7 +6584,6 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			affixTypesGroup:SetPoint ("topleft", f, "topleft", anchorPositions.affix [1], anchorPositions.affix [2])
 			affixTypesGroup.DBKey = "affix"
 			tinsert (f.AllRadioGroups, affixTypesGroup)
-			--]]
 		
 		--text entries functions
 			local textEntryRefresh = function (self)
@@ -6616,7 +6736,7 @@ DF.DataScrollFunctions = {
 	
 	CreateLine = function (self, index)
 		--create a new line
-		local line = CreateFrame ("button", "$parentLine" .. index, self)
+		local line = CreateFrame ("button", "$parentLine" .. index, self, "BackdropTemplate")
 		line.Update = self.options.update_line_func
 		
 		--set its parameters
@@ -6748,7 +6868,7 @@ function DF:CreateDataScrollFrame (parent, name, options)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
---> what's new window
+--> "WHAT's NEW" window
 
 local default_newsframe_options = {
 	width = 400,
@@ -6837,9 +6957,17 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> statusbar info
 
-function DF:BuildStatusbarAuthorInfo (f)
-	
-	local authorName = DF:CreateLabel (f, "An addon by |cFFFFFFFFTerciob|r")
+--[[
+	authorTable = {
+		{
+			authorName = "author name 1",
+			link = "twitter.com/author1Handle",
+		}
+	}
+]]
+
+function DF:BuildStatusbarAuthorInfo (f, addonBy, authorsNameString)
+	local authorName = DF:CreateLabel (f, "" .. (addonBy or "An addon by") .. "|cFFFFFFFF" .. (authorsNameString or "Terciob") .. "|r")
 	authorName.textcolor = "silver"
 	local discordLabel = DF:CreateLabel (f, "Discord: ")
 	discordLabel.textcolor = "silver"
@@ -6862,8 +6990,39 @@ function DF:BuildStatusbarAuthorInfo (f)
 	discordTextEntry:SetHook ("OnEditFocusGained", function()
 		discordTextEntry:HighlightText()
 	end)
+
+	f.authorName = authorName
+	f.discordLabel = discordLabel
+	f.discordTextEntry = discordTextEntry
 end
 
+local statusbar_default_options = {
+	attach = "bottom", --bottomleft from statusbar attach to bottomleft of the frame | other option is "top": topleft attach to bottomleft
+}
+
+function DF:CreateStatusBar(f, options)
+	local statusBar = CreateFrame ("frame", nil, f, "BackdropTemplate")
+	
+	DF:Mixin (statusBar, DF.OptionsFunctions)
+	DF:Mixin (statusBar, DF.LayoutFrame)
+
+	statusBar:BuildOptionsTable (statusbar_default_options, options)
+
+	if (statusBar.options.attach == "bottom") then
+		statusBar:SetPoint ("bottomleft", f, "bottomleft")
+		statusBar:SetPoint ("bottomright", f, "bottomright")
+
+	else
+		statusBar:SetPoint ("topleft", f, "bottomleft")
+		statusBar:SetPoint ("topright", f, "bottomright")
+	end
+
+	statusBar:SetHeight (20)
+	DF:ApplyStandardBackdrop (statusBar)
+	statusBar:SetAlpha (0.8)
+
+	return statusBar
+end
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -6917,67 +7076,101 @@ DF.StatusBarFunctions = {
 	healthBar:SetTexture (texture)
 --]=]
 
-local debugPerformance = {
-	eventCall = {},
-	unitCall = {},
-	functionCall = {},
-	CPUUsageByFunction = {},
-}
+--debug performance isn't placed anywhere
+--how to use debug performance: I don't remember
 
-local function CalcPerformance (type, data)
-	if (type == "event") then
-		debugPerformance.eventCall [data] = (debugPerformance.eventCall [data] or 0) + 1
+	--Details:Dump (debugPerformance)
+
+	local debugPerformance = {
+		eventCall = {},
+		unitCall = {},
+		functionCall = {},
+		CPUUsageByFunction = {},
+	}
+
+	local function CalcPerformance (type, data)
+		if (type == "event") then
+			debugPerformance.eventCall [data] = (debugPerformance.eventCall [data] or 0) + 1
+			
+		elseif (type == "unit") then
+			debugPerformance.unitCall [data] = (debugPerformance.unitCall [data] or 0) + 1
 		
-	elseif (type == "unit") then
-		debugPerformance.unitCall [data] = (debugPerformance.unitCall [data] or 0) + 1
-	
-	elseif (type == "call") then
-		debugPerformance.functionCall [data] = (debugPerformance.functionCall [data] or 0) + 1
-		
+		elseif (type == "call") then
+			debugPerformance.functionCall [data] = (debugPerformance.functionCall [data] or 0) + 1
+			
+		end
 	end
-end
 
-function DF_CalcCpuUsage (name)
-	local cpu = debugPerformance.CPUUsageByFunction [name] or {usage = 0, last = 0, active = false}
-	debugPerformance.CPUUsageByFunction [name] = cpu
-	
-	if (cpu.active) then
-		cpu.active = false
-		local diff = debugprofilestop() - cpu.last
-		cpu.usage = cpu.usage + diff
+	function DF_CalcCpuUsage (name)
+		local cpu = debugPerformance.CPUUsageByFunction [name] or {usage = 0, last = 0, active = false}
+		debugPerformance.CPUUsageByFunction [name] = cpu
+		
+		if (cpu.active) then
+			cpu.active = false
+			local diff = debugprofilestop() - cpu.last
+			cpu.usage = cpu.usage + diff
+		else
+			cpu.active = true
+			cpu.last = debugprofilestop()
+		end
+	end
+
+	function UnitFrameStats()
+		for functionName, functionTable in pairs (debugPerformance.CPUUsageByFunction) do
+			debugPerformance.CPUUsageByFunction [functionName] = floor (functionTable.usage)
+		end
+		
+		for functionName, functionTable in pairs (debugPerformance.CPUUsageByFunction) do
+			debugPerformance.CPUUsageByFunction [functionName] = {usage = 0, last = 0, active = false}
+		end
+	end
+--end of performance calcs
+
+--healthBar meta prototype
+	local healthBarMetaPrototype = {
+		WidgetType = "healthBar",
+		SetHook = DF.SetHook,
+		RunHooksForWidget = DF.RunHooksForWidget,
+
+		dversion = DF.dversion,
+	}
+
+	--check if there's a metaPrototype already existing
+	if (_G[DF.GlobalWidgetControlNames["healthBar"]]) then
+		--get the already existing metaPrototype
+		local oldMetaPrototype = _G[DF.GlobalWidgetControlNames ["healthBar"]]
+		--check if is older
+		if ( (not oldMetaPrototype.dversion) or (oldMetaPrototype.dversion < DF.dversion) ) then
+			--the version is older them the currently loading one
+			--copy the new values into the old metatable
+			for funcName, _ in pairs(healthBarMetaPrototype) do
+				oldMetaPrototype[funcName] = healthBarMetaPrototype[funcName]
+			end
+		end
 	else
-		cpu.active = true
-		cpu.last = debugprofilestop()
-	end
-end
-
-function UnitFrameStats()
-	for functionName, functionTable in pairs (debugPerformance.CPUUsageByFunction) do
-		debugPerformance.CPUUsageByFunction [functionName] = floor (functionTable.usage)
+		--first time loading the framework
+		_G[DF.GlobalWidgetControlNames ["healthBar"]] = healthBarMetaPrototype
 	end
 
-	Details:Dump (debugPerformance)
-	
-	for functionName, functionTable in pairs (debugPerformance.CPUUsageByFunction) do
-		debugPerformance.CPUUsageByFunction [functionName] = {usage = 0, last = 0, active = false}
-	end
-end
+	local healthBarMetaFunctions = _G[DF.GlobalWidgetControlNames ["healthBar"]]
 
-
---CalcPerformance ("unit", data)
-
-DF.HealthFrameFunctions = {
-
-	WidgetType = "healthBar",
-	SetHook = DF.SetHook,
-	RunHooksForWidget = DF.RunHooksForWidget,
-	
-	HookList = {
+--hook list
+	local defaultHooksForHealthBar = {
 		OnHide = {}, 
-		OnShow = {},
-	},
+		OnShow = {}, 
+		OnHealthChange = {}, 
+		OnHealthMaxChange = {},
+	}
 
-	Settings = {
+	--use the hook already existing
+	healthBarMetaFunctions.HookList = healthBarMetaFunctions.HookList or defaultHooksForHealthBar
+	--copy the non existing values from a new version to the already existing hook table
+	DF.table.deploy (healthBarMetaFunctions.HookList, defaultHooksForHealthBar)
+	
+--> Health Bar Meta Functions
+
+	--health bar settings
+	healthBarMetaFunctions.Settings = {
 		CanTick = false, --> if true calls the method 'OnTick' every tick, the function needs to be overloaded, it receives self and deltaTime as parameters
 		ShowHealingPrediction = true, --> when casting a healing pass, show the amount of health that spell will heal
 		ShowShields = true, --> indicator of the amount of damage absortion the unit has
@@ -6992,32 +7185,29 @@ DF.HealthFrameFunctions = {
 		--default size
 		Width = 100,
 		Height = 20,
-	},
+	}
 	
-	HealthBarEvents = {
+	healthBarMetaFunctions.HealthBarEvents = {
 		{"PLAYER_ENTERING_WORLD"},
-		--{"UNIT_HEALTH", true},
+		{"UNIT_HEALTH", true},
 		{"UNIT_MAXHEALTH", true},
-		{"UNIT_HEALTH_FREQUENT", true},
-	},
+		--{"UNIT_HEALTH_FREQUENT", true},
+		{"UNIT_HEAL_PREDICTION", true},
+		{"UNIT_ABSORB_AMOUNT_CHANGED", true},
+		{"UNIT_HEAL_ABSORB_AMOUNT_CHANGED", true},
+	}
 	
 	--> setup the castbar to be used by another unit
-	SetUnit = function (self, unit, displayedUnit)
+	healthBarMetaFunctions.SetUnit = function (self, unit, displayedUnit)
 		if (self.unit ~= unit or self.displayedUnit ~= displayedUnit or unit == nil) then
-		
-			CalcPerformance ("call", "SetUnit")
 		
 			self.unit = unit
 			self.displayedUnit = displayedUnit or unit
 
 			--> register events
 			if (unit) then
-				if RealMobHealth then
-					self.currentHealth, self.currentHealthMax = RealMobHealth.GetUnitHealth(unit)
-				else
-					self.currentHealth = UnitHealth (unit) or 0
-					self.currentHealthMax = UnitHealthMax (unit) or 0
-				end
+				self.currentHealth = UnitHealth (unit) or 0
+				self.currentHealthMax = UnitHealthMax (unit) or 0
 				
 				for _, eventTable in ipairs (self.HealthBarEvents) do
 					local event = eventTable [1]
@@ -7031,13 +7221,13 @@ DF.HealthFrameFunctions = {
 				
 				--> check for settings and update some events
 				if (not self.Settings.ShowHealingPrediction) then
-					--self:UnregisterEvent ("UNIT_HEAL_PREDICTION")
-					--self:UnregisterEvent ("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
+					self:UnregisterEvent ("UNIT_HEAL_PREDICTION")
+					self:UnregisterEvent ("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 					self.incomingHealIndicator:Hide()
 					self.healAbsorbIndicator:Hide()
 				end
 				if (not self.Settings.ShowShields) then
-					--self:UnregisterEvent ("UNIT_ABSORB_AMOUNT_CHANGED")
+					self:UnregisterEvent ("UNIT_ABSORB_AMOUNT_CHANGED")
 					self.shieldAbsorbIndicator:Hide()
 					self.shieldAbsorbGlow:Hide()
 				end
@@ -7063,11 +7253,11 @@ DF.HealthFrameFunctions = {
 				self:Hide()
 			end
 		end
-	end,
+	end
 	
-	Initialize = function (self)
-		DFPixelUtil.SetWidth (self, self.Settings.Width, 1)
-		DFPixelUtil.SetHeight (self, self.Settings.Height, 1)
+	healthBarMetaFunctions.Initialize = function (self)
+		PixelUtil.SetWidth (self, self.Settings.Width, 1)
+		PixelUtil.SetHeight (self, self.Settings.Height, 1)
 		
 		self:SetTexture (self.Settings.Texture)
 		
@@ -7088,55 +7278,44 @@ DF.HealthFrameFunctions = {
 		self.shieldAbsorbGlow:Hide()
 		
 		self:SetUnit (nil)
-		
-		CalcPerformance ("call", "HealthBar-Initialize")
-	end,
+	end
 	
-	--> call every tick
-	OnTick = function (self, deltaTime) end, --if overrided, set 'CanTick' to true on the settings table
+	--call every tick
+	healthBarMetaFunctions.OnTick = function (self, deltaTime) end --if overrided, set 'CanTick' to true on the settings table
 
-	--> when an event happen for this unit, send it to the apropriate function
-	OnEvent = function (self, event, ...)
-		CalcPerformance ("unit", self.unit)
-		CalcPerformance ("event", event)
-		CalcPerformance ("call", "HealthBar-OnEvent")
-	
-		DF_CalcCpuUsage ("healthBar-OnEvent")
+	--when an event happen for this unit, send it to the apropriate function
+	healthBarMetaFunctions.OnEvent = function (self, event, ...)
 		local eventFunc = self [event]
 		if (eventFunc) then
 			--the function doesn't receive which event was, only 'self' and the parameters
 			eventFunc (self, ...)
 		end
-		DF_CalcCpuUsage ("healthBar-OnEvent")
-	end,
+	end
 
-	--colocar mais coisas aqui, um member dizendo quanto de health e o health max da unit
-	UpdateMaxHealth = function (self)
-			local maxHealth, _ = 0
-			if RealMobHealth then
-				_,  maxHealth = RealMobHealth.GetUnitHealth(self.displayedUnit)
-			else
-				maxHealth, _ = UnitHealthMax (self.displayedUnit)
-			end
-			self:SetMinMaxValues (0, maxHealth)
-			self.currentHealthMax = maxHealth
-	end,
+	--when the unit max health is changed
+	healthBarMetaFunctions.UpdateMaxHealth = function (self)
+		local maxHealth = UnitHealthMax (self.displayedUnit)
+		self:SetMinMaxValues (0, maxHealth)
+		self.currentHealthMax = maxHealth
 
-	UpdateHealth = function (self)
-		local health = 0
-		if RealMobHealth then
-			health, maxHealth = RealMobHealth.GetUnitHealth(self.displayedUnit)
-			self:SetMinMaxValues (0, maxHealth)
-			self.currentHealthMax = maxHealth
-		else
-			health = UnitHealth (self.displayedUnit)
-		end
+		self:RunHooksForWidget ("OnHealthMaxChange", self, self.displayedUnit)
+	end
+
+	healthBarMetaFunctions.UpdateHealth = function (self)
+		-- update max health regardless to avoid weird wrong values on UpdateMaxHealth sometimes
+		-- local maxHealth = UnitHealthMax (self.displayedUnit)
+		-- self:SetMinMaxValues (0, maxHealth)
+		-- self.currentHealthMax = maxHealth
+		
+		local health = UnitHealth (self.displayedUnit)
 		self.currentHealth = health
-		DFPixelUtil.SetStatusBarValue (self, health)
-	end,
+		PixelUtil.SetStatusBarValue (self, health)
+
+		self:RunHooksForWidget ("OnHealthChange", self, self.displayedUnit)
+	end
 	
-	--isso aqui vai ser complicado!
-	UpdateHealPrediction = function (self)
+	--health and absorbs prediction
+	healthBarMetaFunctions.UpdateHealPrediction = function (self)
 		local currentHealth = self.currentHealth
 		local currentHealthMax = self.currentHealthMax
 		local healthPercent = currentHealth / currentHealthMax
@@ -7150,9 +7329,9 @@ DF.HealthFrameFunctions = {
 		
 		if (self.Settings.ShowHealingPrediction) then
 			--incoming heal on the unit from all sources
-			local unitHealIncoming = UnitGetIncomingHeals (self.displayedUnit) or 0
+			local unitHealIncoming = self.displayedUnit and UnitGetIncomingHeals (self.displayedUnit) or 0
 			--heal absorbs
-			local unitHealAbsorb = UnitGetTotalHealAbsorbs (self.displayedUnit) or 0
+			local unitHealAbsorb = self.displayedUnit and UnitGetTotalHealAbsorbs (self.displayedUnit) or 0
 		
 			if (unitHealIncoming > 0) then
 				--calculate what is the percent of health incoming based on the max health the player has
@@ -7178,7 +7357,7 @@ DF.HealthFrameFunctions = {
 		
 		if (self.Settings.ShowShields) then
 			--damage absorbs
-			local unitDamageAbsorb = UnitGetTotalAbsorbs (self.displayedUnit) or 0
+			local unitDamageAbsorb = self.displayedUnit and UnitGetTotalAbsorbs (self.displayedUnit) or 0
 		
 			if (unitDamageAbsorb > 0) then
 				local damageAbsorbPercent = unitDamageAbsorb / currentHealthMax
@@ -7203,57 +7382,57 @@ DF.HealthFrameFunctions = {
 			self.shieldAbsorbIndicator:Hide()
 			self.shieldAbsorbGlow:Hide()
 		end
-		
-		DF_CalcCpuUsage ("HealthBar-UpdateHealPrediction")
-	end,
+	end
 
-	PLAYER_ENTERING_WORLD = function (self, ...) 
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
-	
-	--> health events
-	UNIT_HEALTH = function (self, ...) 
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-		
-		local unitName = UnitName (self.unit)
-		CalcPerformance ("call", "HealthBar-UNIT_HEALTH-" .. unitName)
-	end,
-	UNIT_HEALTH_FREQUENT = function (self, ...)
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
-	UNIT_MAXHEALTH = function (self, ...)
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
+	--> Health Events
+		healthBarMetaFunctions.PLAYER_ENTERING_WORLD = function (self, ...) 
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
 
-	UNIT_HEAL_PREDICTION = function (self, ...)
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
-	UNIT_ABSORB_AMOUNT_CHANGED = function (self, ...)
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
-	UNIT_HEAL_ABSORB_AMOUNT_CHANGED = function (self, ...)
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateHealPrediction()
-	end,
-}
+		healthBarMetaFunctions.UNIT_HEALTH = function (self, ...) 
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
+		healthBarMetaFunctions.UNIT_HEALTH_FREQUENT = function (self, ...)
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
+		healthBarMetaFunctions.UNIT_MAXHEALTH = function (self, ...)
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
+
+		healthBarMetaFunctions.UNIT_HEAL_PREDICTION = function (self, ...)
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
+		healthBarMetaFunctions.UNIT_ABSORB_AMOUNT_CHANGED = function (self, ...)
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
+		healthBarMetaFunctions.UNIT_HEAL_ABSORB_AMOUNT_CHANGED = function (self, ...)
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+			self:UpdateHealPrediction()
+		end
+
 
 -- ~healthbar
 function DF:CreateHealthBar (parent, name, settingsOverride)
 
 	assert (name or parent:GetName(), "DetailsFramework:CreateHealthBar parameter 'name' omitted and parent has no name.")
 
-	local healthBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "HealthBar"), parent)
+	local healthBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "HealthBar"), parent, "BackdropTemplate")
 		do --layers
 			--background
 			healthBar.background = healthBar:CreateTexture (nil, "background")
@@ -7278,18 +7457,18 @@ function DF:CreateHealthBar (parent, name, settingsOverride)
 		end
 
 	--> mixins
-	DF:Mixin (healthBar, DF.HealthFrameFunctions)
+	DF:Mixin (healthBar, healthBarMetaFunctions)
 	DF:Mixin (healthBar, DF.StatusBarFunctions)
 	
 	--> settings and hooks
-	local settings = DF.table.copy ({}, DF.HealthFrameFunctions.Settings)
+	local settings = DF.table.copy ({}, healthBarMetaFunctions.Settings)
 	if (settingsOverride) then
 		DF.table.copy (settings, settingsOverride)
 	end
 	healthBar.Settings = settings
-	
-	local hookList = DF.table.copy ({}, DF.HealthFrameFunctions.HookList)
-	healthBar.HookList = hookList
+
+	--> hook list
+	healthBar.HookList = DF.table.copy ({}, healthBarMetaFunctions.HookList)
 	
 	--> initialize the cast bar
 	healthBar:Initialize()
@@ -7338,8 +7517,8 @@ DF.PowerFrameFunctions = {
 	PowerBarEvents = {
 		{"PLAYER_ENTERING_WORLD"},
 		{"UNIT_DISPLAYPOWER", true},
-		--{"UNIT_POWER_BAR_SHOW", true},
-		--{"UNIT_POWER_BAR_HIDE", true},
+		{"UNIT_POWER_BAR_SHOW", true},
+		{"UNIT_POWER_BAR_HIDE", true},
 		{"UNIT_MAXPOWER", true},
 		{"UNIT_POWER_UPDATE", true},
 		{"UNIT_POWER_FREQUENT", true},
@@ -7389,8 +7568,8 @@ DF.PowerFrameFunctions = {
 	end,
 	
 	Initialize = function (self)
-		DFPixelUtil.SetWidth (self, self.Settings.Width)
-		DFPixelUtil.SetHeight (self, self.Settings.Height)
+		PixelUtil.SetWidth (self, self.Settings.Width)
+		PixelUtil.SetHeight (self, self.Settings.Height)
 		
 		self:SetTexture (self.Settings.Texture)
 		
@@ -7399,7 +7578,7 @@ DF.PowerFrameFunctions = {
 		
 		if (self.Settings.ShowPercentText) then
 			self.percentText:Show()
-			DFPixelUtil.SetPoint (self.percentText, "center", self, "center", 0, 0)
+			PixelUtil.SetPoint (self.percentText, "center", self, "center", 0, 0)
 			
 			DF:SetFontSize (self.percentText, 9)
 			DF:SetFontColor (self.percentText, "white")
@@ -7416,13 +7595,11 @@ DF.PowerFrameFunctions = {
 
 	--> when an event happen for this unit, send it to the apropriate function
 	OnEvent = function (self, event, ...)
-		DF_CalcCpuUsage ("Powerbar-OnEvent")
 		local eventFunc = self [event]
 		if (eventFunc) then
 			--the function doesn't receive which event was, only 'self' and the parameters
 			eventFunc (self, ...)
 		end
-		DF_CalcCpuUsage ("Powerbar-OnEvent")
 	end,
 	
 	UpdatePowerBar = function (self)
@@ -7442,32 +7619,30 @@ DF.PowerFrameFunctions = {
 		end
 	end,
 	UpdatePower = function (self)
-		DF_CalcCpuUsage ("Powerbar-UpdatePower")
 		self.currentPower = UnitPower (self.displayedUnit, self.powerType)
-		DFPixelUtil.SetStatusBarValue (self, self.currentPower)
+		PixelUtil.SetStatusBarValue (self, self.currentPower)
 		
 		if (self.Settings.ShowPercentText) then
 			self.percentText:SetText (floor (self.currentPower / self.currentPowerMax * 100) .. "%")
 		end
-		DF_CalcCpuUsage ("Powerbar-UpdatePower")
 	end,
 	
 	--> when a event different from unit_power_update is triggered, update which type of power the unit should show
 	UpdatePowerInfo = function (self)
-		DF_CalcCpuUsage ("Powerbar-UpdatePowerInfo")
 		if (self.Settings.ShowAlternatePower) then
-			local _, minPower, _, _, _, _, showOnRaid = UnitAlternatePowerInfo (self.displayedUnit)
-			if (showOnRaid and IsInGroup()) then
+			local barID = UnitPowerBarID(self.displayedUnit)
+			local barInfo = GetUnitPowerBarInfoByID(barID)
+			--local name, tooltip, cost = GetUnitPowerBarStringsByID(barID);
+			--barInfo.barType,barInfo.minPower, barInfo.startInset, barInfo.endInset, barInfo.smooth, barInfo.hideFromOthers, barInfo.showOnRaid, barInfo.opaqueSpark, barInfo.opaqueFlash, barInfo.anchorTop, name, tooltip, cost, barInfo.ID, barInfo.forcePercentage, barInfo.sparkUnderFrame;
+			if (barInfo and barInfo.showOnRaid and IsInGroup()) then
 				self.powerType = ALTERNATE_POWER_INDEX
-				self.minPower = minPower
-				DF_CalcCpuUsage ("Powerbar-UpdatePowerInfo")
+				self.minPower = barInfo.minPower
 				return
 			end
 		end
 		
 		self.powerType = UnitPowerType (self.displayedUnit)
 		self.minPower = 0
-		DF_CalcCpuUsage ("Powerbar-UpdatePowerInfo")
 	end,
 	
 	--> tint the bar with the color of the power, e.g. blue for a mana bar
@@ -7531,7 +7706,7 @@ function DF:CreatePowerBar (parent, name, settingsOverride)
 
 	assert (name or parent:GetName(), "DetailsFramework:CreatePowerBar parameter 'name' omitted and parent has no name.")
 
-	local powerBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "PowerBar"), parent)
+	local powerBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "PowerBar"), parent, "BackdropTemplate")
 		do --layers
 			--background
 			powerBar.background = powerBar:CreateTexture (nil, "background")
@@ -7596,8 +7771,8 @@ DF.CastFrameFunctions = {
 		{"UNIT_SPELLCAST_CHANNEL_START"},
 		{"UNIT_SPELLCAST_CHANNEL_UPDATE"},
 		{"UNIT_SPELLCAST_CHANNEL_STOP"},
-		--{"UNIT_SPELLCAST_INTERRUPTIBLE"},
-		--{"UNIT_SPELLCAST_NOT_INTERRUPTIBLE"},
+		{"UNIT_SPELLCAST_INTERRUPTIBLE"},
+		{"UNIT_SPELLCAST_NOT_INTERRUPTIBLE"},
 		{"PLAYER_ENTERING_WORLD"},
 		{"UNIT_SPELLCAST_START", true},
 		{"UNIT_SPELLCAST_STOP", true},
@@ -7652,8 +7827,8 @@ DF.CastFrameFunctions = {
 		self.Colors = self.Settings.Colors
 		
 		self:SetUnit (nil)
-		DFPixelUtil.SetWidth (self, self.Settings.Width)
-		DFPixelUtil.SetHeight (self, self.Settings.Height)
+		PixelUtil.SetWidth (self, self.Settings.Width)
+		PixelUtil.SetHeight (self, self.Settings.Height)
 		
 		self.background:SetColorTexture (self.Settings.BackgroundColor:GetColor())
 		self.background:SetAllPoints()		
@@ -7901,7 +8076,7 @@ DF.CastFrameFunctions = {
 		
 		if (self.unit) then
 			if (self.casting) then
-				local name, text, texture, startTime = CastingInfo (self.unit)
+				local name, text, texture, startTime = UnitCastingInfo (self.unit)
 				if (name) then
 					self.value = GetTime() - self.spellStartTime
 				end
@@ -7909,7 +8084,7 @@ DF.CastFrameFunctions = {
 				self:RunHooksForWidget ("OnShow", self, self.unit)
 				
 			elseif (self.channeling) then
-					local name, text, texture, endTime = ChannelInfo (self.unit)
+				local name, text, texture, endTime = UnitChannelInfo (self.unit)
 				if (name) then
 					self.value = self.spellEndTime - GetTime()
 				end
@@ -7921,7 +8096,6 @@ DF.CastFrameFunctions = {
 	
 	--it's triggering several events since it's not registered for the unit with RegisterUnitEvent
 	OnEvent = function (self, event, ...)
-
 		local arg1 = ...
 		local unit = self.unit
 
@@ -8004,10 +8178,8 @@ DF.CastFrameFunctions = {
 	end,
 	
 	OnTick = function (self, deltaTime)
-		DF_CalcCpuUsage ("CastBar-OnTick")
 		if (self.casting) then
 			if (not self:OnTick_Casting (deltaTime)) then
-				DF_CalcCpuUsage ("CastBar-OnTick")
 				return
 			end
 
@@ -8020,7 +8192,6 @@ DF.CastFrameFunctions = {
 			
 		elseif (self.channeling) then
 			if (not self:OnTick_Channeling (deltaTime)) then
-				DF_CalcCpuUsage ("CastBar-OnTick")
 				return
 			end
 			
@@ -8031,7 +8202,6 @@ DF.CastFrameFunctions = {
 				self.lazyUpdateCooldown = self.Settings.LazyUpdateCooldown
 			end
 		end
-		DF_CalcCpuUsage ("CastBar-OnTick")
 	end,
 	
 	--> animation start script
@@ -8104,9 +8274,8 @@ DF.CastFrameFunctions = {
 	end,
 	
 	PLAYER_ENTERING_WORLD = function (self, unit, arg1)
-		local isChannel = ChannelInfo (unit)
-		local isChannel = false
-		local isRegularCast = CastingInfo (unit)
+		local isChannel = UnitChannelInfo (unit)
+		local isRegularCast = UnitCastingInfo (unit)
 		
 		if (isChannel) then
 			self.channeling = true
@@ -8129,16 +8298,10 @@ DF.CastFrameFunctions = {
 	
 	UNIT_SPELLCAST_START = function (self, unit)
 
-		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = CastingInfo (unit)
-
-		if (not name) then
-			--print (unit, name, text, texture, "no name, bye", type (unit))
-			return
-		end
-
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo (unit)
+		
 		--> is valid?
 		if (not self:IsValid (unit, name, isTradeSkill, true)) then
-			print ("not valid, bye")
 			return
 		end
 		
@@ -8163,7 +8326,7 @@ DF.CastFrameFunctions = {
 			self:SetAlpha (1)
 			self.Icon:SetTexture (texture)
 			self.Icon:Show()
-			self.Text:SetText (name)
+			self.Text:SetText (text)
 			
 			if (self.Settings.ShowCastTime and self.Settings.CanLazyTick) then
 				self.percentText:Show()
@@ -8171,7 +8334,7 @@ DF.CastFrameFunctions = {
 			
 			self.flashTexture:Hide()
 			self:Animation_StopAllAnimations()
-			
+
 			self:SetAlpha (1)
 			
 			--> set the statusbar color
@@ -8183,7 +8346,7 @@ DF.CastFrameFunctions = {
 			
 			self.Spark:Show()
 			self:Show()
-		
+
 		--> update the interrupt cast border
 		self:UpdateInterruptState()
 		
@@ -8191,7 +8354,7 @@ DF.CastFrameFunctions = {
 	end,
 	
 	UNIT_SPELLCAST_CHANNEL_START = function (self, unit, ...)
-		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = ChannelInfo (unit)
+		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo (unit)
 
 		--> is valid?
 		if (not self:IsValid (unit, name, isTradeSkill, true)) then
@@ -8220,7 +8383,7 @@ DF.CastFrameFunctions = {
 			self:SetAlpha (1)
 			self.Icon:SetTexture (texture)
 			self.Icon:Show()
-			self.Text:SetText (name)
+			self.Text:SetText (text)
 			
 			if (self.Settings.ShowCastTime and self.Settings.CanLazyTick) then
 				self.percentText:Show()
@@ -8233,14 +8396,14 @@ DF.CastFrameFunctions = {
 			
 			--> set the statusbar color
 			self:UpdateCastColor()
-			
+
 			if (not self:IsShown()) then
 				self:Animation_FadeIn()
 			end
 			
 			self.Spark:Show()
 			self:Show()
-		
+			
 		--> update the interrupt cast border
 		self:UpdateInterruptState()
 
@@ -8353,7 +8516,7 @@ DF.CastFrameFunctions = {
 	end,
 
 	UNIT_SPELLCAST_DELAYED = function (self, unit, ...)
-		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = CastingInfo (unit)
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo (unit)
 		
 		if (not self:IsValid (unit, name, isTradeSkill)) then
 			return
@@ -8363,14 +8526,12 @@ DF.CastFrameFunctions = {
 		self.spellStartTime = startTime / 1000
 		self.spellEndTime = endTime / 1000
 		self.value = GetTime() - self.spellStartTime
-		if self.value < 0 then self.value = 0 end
 		self.maxValue = self.spellEndTime - self.spellStartTime
 		self:SetMinMaxValues (0, self.maxValue)
-		self:SetValue (self.value)
 	end,
 
 	UNIT_SPELLCAST_CHANNEL_UPDATE = function (self, unit, ...)
-		local name, text, texture, startTime, endTime, isTradeSkill = ChannelInfo (unit)
+		local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo (unit)
 		
 		if (not self:IsValid (unit, name, isTradeSkill)) then
 			return
@@ -8380,6 +8541,11 @@ DF.CastFrameFunctions = {
 		self.spellStartTime = startTime / 1000
 		self.spellEndTime = endTime / 1000
 		self.value = self.spellEndTime - GetTime()
+
+		if (self.value < 0) then 
+			self.value = 0 
+		end
+
 		self.maxValue = self.spellEndTime - self.spellStartTime
 		self:SetMinMaxValues (0, self.maxValue)
 		self:SetValue (self.value)
@@ -8401,95 +8567,13 @@ DF.CastFrameFunctions = {
 
 }
 
-local fCast = CreateFrame("frame")
-
-local getCastBar = function (unitId)
-	local plateFrame = C_NamePlate.GetNamePlateForUnit (unitId)
-	if (not plateFrame) then
-		return
-	end
-
-	local castBar = plateFrame.unitFrame and plateFrame.unitFrame.castBar
-	if (not castBar) then
-		return
-	end
-
-	return castBar
-end
-
-local triggerCastEvent = function (castBar, event, unitId, ...)
-	if (castBar) then
-		DF.CastFrameFunctions.OnEvent (castBar, event, unitId)
-	end
-end
-
-local funcCast = function (event, unitId, ...)
-	local castBar = getCastBar (unitId)
-	if (castBar) then
-		triggerCastEvent (castBar, event, unitId)
-	end
-end
-
-fCast.UNIT_SPELLCAST_START = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_STOP = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_DELAYED = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_FAILED = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_INTERRUPTED = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_CHANNEL_START = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_CHANNEL_UPDATE = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-fCast.UNIT_SPELLCAST_CHANNEL_STOP = function (self, event, unitId, ...)
-	triggerCastEvent (getCastBar (unitId), event, unitId)
-end
-
-local LibCC = LibStub ("LibClassicCasterino", true)
-
-if LibCC then
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_START", funcCast)
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_DELAYED", funcCast) -- only for player
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_STOP", funcCast)
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_FAILED", funcCast)
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_INTERRUPTED", funcCast)
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_START", funcCast)
-    LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_UPDATE", funcCast) -- only for player
-	LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_STOP", funcCast)
-
-    CastingInfo = function(unit)
-        return LibCC:UnitCastingInfo (unit)
-	end	
-
-    ChannelInfo = function(unit)
-        return LibCC:UnitChannelInfo (unit)
-    end	
-end
-
 -- ~castbar
 
 function DF:CreateCastBar (parent, name, settingsOverride)
 	
 	assert (name or parent:GetName(), "DetailsFramework:CreateCastBar parameter 'name' omitted and parent has no name.")
 	
-	local castBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "CastBar"), parent)
+	local castBar = CreateFrame ("StatusBar", name or (parent:GetName() .. "CastBar"), parent, "BackdropTemplate")
 	
 		do --layers
 		
@@ -8593,10 +8677,10 @@ DF.BorderFunctions = {
 	end,
 	
 	SetBorderThickness = function (self, newThickness)
-		DFPixelUtil.SetWidth (self.leftBorder, newThickness, newThickness)
-		DFPixelUtil.SetWidth (self.rightBorder, newThickness, newThickness)
-		DFPixelUtil.SetHeight (self.topBorder, newThickness, newThickness)
-		DFPixelUtil.SetHeight (self.bottomBorder, newThickness, newThickness)
+		PixelUtil.SetWidth (self.leftBorder, newThickness, newThickness)
+		PixelUtil.SetWidth (self.rightBorder, newThickness, newThickness)
+		PixelUtil.SetHeight (self.topBorder, newThickness, newThickness)
+		PixelUtil.SetHeight (self.bottomBorder, newThickness, newThickness)
 	end,
 	
 	WidgetType = "border",
@@ -8607,7 +8691,7 @@ function DF:CreateBorderFrame (parent, name)
 
 	local parentName = name or "DetailsFrameworkBorderFrame" .. tostring (math.random (1, 100000000))
 
-	local f = CreateFrame ("frame", parentName, parent)
+	local f = CreateFrame ("frame", parentName, parent, "BackdropTemplate")
 	f:SetFrameLevel (f:GetFrameLevel()+1)
 	f:SetAllPoints()
 	
@@ -8621,9 +8705,9 @@ function DF:CreateBorderFrame (parent, name)
 		leftBorder:SetColorTexture (1, 1, 1, 1)
 		tinsert (f.allTextures, leftBorder)
 		f.leftBorder = leftBorder
-		DFPixelUtil.SetPoint (leftBorder, "topright", f, "topleft", 0, 1, 0, 1)
-		DFPixelUtil.SetPoint (leftBorder, "bottomright", f, "bottomleft", 0, -1, 0, -1)
-		DFPixelUtil.SetWidth (leftBorder, 1, 1)
+		PixelUtil.SetPoint (leftBorder, "topright", f, "topleft", 0, 1, 0, 1)
+		PixelUtil.SetPoint (leftBorder, "bottomright", f, "bottomleft", 0, -1, 0, -1)
+		PixelUtil.SetWidth (leftBorder, 1, 1)
 
 	--> create right border
 		local rightBorder = f:CreateTexture (nil, "overlay")
@@ -8631,9 +8715,9 @@ function DF:CreateBorderFrame (parent, name)
 		rightBorder:SetColorTexture (1, 1, 1, 1)
 		tinsert (f.allTextures, rightBorder)
 		f.rightBorder = rightBorder
-		DFPixelUtil.SetPoint (rightBorder, "topleft", f, "topright", 0, 1, 0, 1)
-		DFPixelUtil.SetPoint (rightBorder, "bottomleft", f, "bottomright", 0, -1, 0, -1)
-		DFPixelUtil.SetWidth (rightBorder, 1, 1)
+		PixelUtil.SetPoint (rightBorder, "topleft", f, "topright", 0, 1, 0, 1)
+		PixelUtil.SetPoint (rightBorder, "bottomleft", f, "bottomright", 0, -1, 0, -1)
+		PixelUtil.SetWidth (rightBorder, 1, 1)
 	
 	--> create top border
 		local topBorder = f:CreateTexture (nil, "overlay")
@@ -8641,9 +8725,9 @@ function DF:CreateBorderFrame (parent, name)
 		topBorder:SetColorTexture (1, 1, 1, 1)
 		tinsert (f.allTextures, topBorder)
 		f.topBorder = topBorder
-		DFPixelUtil.SetPoint (topBorder, "bottomleft", f, "topleft", 0, 0, 0, 0)
-		DFPixelUtil.SetPoint (topBorder, "bottomright", f, "topright", 0, 0, 0, 0)
-		DFPixelUtil.SetHeight (topBorder, 1, 1)
+		PixelUtil.SetPoint (topBorder, "bottomleft", f, "topleft", 0, 0, 0, 0)
+		PixelUtil.SetPoint (topBorder, "bottomright", f, "topright", 0, 0, 0, 0)
+		PixelUtil.SetHeight (topBorder, 1, 1)
 	
 	--> create  border
 		local bottomBorder = f:CreateTexture (nil, "overlay")
@@ -8651,9 +8735,9 @@ function DF:CreateBorderFrame (parent, name)
 		bottomBorder:SetColorTexture (1, 1, 1, 1)
 		tinsert (f.allTextures, bottomBorder)
 		f.bottomBorder = bottomBorder
-		DFPixelUtil.SetPoint (bottomBorder, "topleft", f, "bottomleft", 0, 0, 0, 0)
-		DFPixelUtil.SetPoint (bottomBorder, "topright", f, "bottomright", 0, 0, 0, 0)
-		DFPixelUtil.SetHeight (bottomBorder, 1, 1)
+		PixelUtil.SetPoint (bottomBorder, "topleft", f, "bottomleft", 0, 0, 0, 0)
+		PixelUtil.SetPoint (bottomBorder, "topright", f, "bottomright", 0, 0, 0, 0)
+		PixelUtil.SetHeight (bottomBorder, 1, 1)
 		
 	return f
 end
@@ -8724,36 +8808,36 @@ end
 			--> run for one unit
 			{"UNIT_NAME_UPDATE", true},
 			{"UNIT_CONNECTION", true},
-			--{"UNIT_ENTERED_VEHICLE", true},
-			--{"UNIT_EXITED_VEHICLE", true},
+			{"UNIT_ENTERED_VEHICLE", true},
+			{"UNIT_EXITED_VEHICLE", true},
 			{"UNIT_PET", true},
-			--{"UNIT_THREAT_LIST_UPDATE", true},
+			{"UNIT_THREAT_LIST_UPDATE", true},
 		},
 
 		--> used when a event is triggered to quickly check if is a unit event
 		IsUnitEvent = {
 			["UNIT_NAME_UPDATE"] = true,
 			["UNIT_CONNECTION"] = true,
-			--["UNIT_ENTERED_VEHICLE"] = true,
-			--["UNIT_EXITED_VEHICLE"] = true,
+			["UNIT_ENTERED_VEHICLE"] = true,
+			["UNIT_EXITED_VEHICLE"] = true,
 			["UNIT_PET"] = true,
-			--["UNIT_THREAT_LIST_UPDATE"] = true,
+			["UNIT_THREAT_LIST_UPDATE"] = true,
 		},
 		
 		Initialize = function (self)
 			self.border:SetBorderColor (self.Settings.BorderColor)
 			
-			DFPixelUtil.SetWidth (self, self.Settings.Width, 1)
-			DFPixelUtil.SetHeight (self, self.Settings.Height, 1)
+			PixelUtil.SetWidth (self, self.Settings.Width, 1)
+			PixelUtil.SetHeight (self, self.Settings.Height, 1)
 
-			DFPixelUtil.SetPoint (self.powerBar, "bottomleft", self, "bottomleft", 0, 0, 1, 1)
-			DFPixelUtil.SetPoint (self.powerBar, "bottomright", self, "bottomright", 0, 0, 1, 1)
-			DFPixelUtil.SetHeight (self.powerBar, self.Settings.PowerBarHeight, 1)
+			PixelUtil.SetPoint (self.powerBar, "bottomleft", self, "bottomleft", 0, 0, 1, 1)
+			PixelUtil.SetPoint (self.powerBar, "bottomright", self, "bottomright", 0, 0, 1, 1)
+			PixelUtil.SetHeight (self.powerBar, self.Settings.PowerBarHeight, 1)
 			
 			--make the castbar overlap the powerbar
-			DFPixelUtil.SetPoint (self.castBar, "bottomleft", self, "bottomleft", 0, 0, 1, 1)
-			DFPixelUtil.SetPoint (self.castBar, "bottomright", self, "bottomright", 0, 0, 1, 1)
-			DFPixelUtil.SetHeight (self.castBar, self.Settings.CastBarHeight, 1)
+			PixelUtil.SetPoint (self.castBar, "bottomleft", self, "bottomleft", 0, 0, 1, 1)
+			PixelUtil.SetPoint (self.castBar, "bottomright", self, "bottomright", 0, 0, 1, 1)
+			PixelUtil.SetHeight (self.castBar, self.Settings.CastBarHeight, 1)
 		end,
 		
 		SetHealthBarColor = function (self, r, g, b, a)
@@ -8774,7 +8858,7 @@ end
 			
 			--> check settings and unregister events for disabled features
 			if (not self.Settings.ColorByAggro) then
-				--self:UnregisterEvent ("UNIT_THREAT_LIST_UPDATE")
+				self:UnregisterEvent ("UNIT_THREAT_LIST_UPDATE")
 			end
 			
 			--> set scripts
@@ -8804,7 +8888,6 @@ end
 		--> when an event happen for this unit, send it to the apropriate function
 		OnEvent = function (self, event, ...)
 			--> run the function for this event
-			DF_CalcCpuUsage ("unitFrame-OnEvent")
 			local eventFunc = self [event]
 			if (eventFunc) then
 				--> is this event an unit event?
@@ -8818,7 +8901,6 @@ end
 					eventFunc (self, ...)
 				end
 			end
-			DF_CalcCpuUsage ("unitFrame-OnEvent")
 		end,
 		
 		OnHide = function (self)
@@ -9114,7 +9196,7 @@ function DF:CreateUnitFrame (parent, name, unitFrameSettingsOverride, healthBarS
 	local parentName = name or ("DetailsFrameworkUnitFrame" .. tostring (math.random (1, 100000000)))
 	
 	--> create the main unit frame
-	local f = CreateFrame ("button", parentName, parent)
+	local f = CreateFrame ("button", parentName, parent, "BackdropTemplate")
 	
 	--> base level
 	local baseFrameLevel = f:GetFrameLevel()
@@ -9140,7 +9222,7 @@ function DF:CreateUnitFrame (parent, name, unitFrameSettingsOverride, healthBarS
 	f.border = borderFrame
 	
 	--> overlay frame (widgets that need to stay above the unit frame)
-	local overlayFrame = CreateFrame ("frame", "$parentOverlayFrame", f)
+	local overlayFrame = CreateFrame ("frame", "$parentOverlayFrame", f, "BackdropTemplate")
 	borderFrame:SetFrameLevel (f:GetFrameLevel() + 6)
 	f.overlayFrame = overlayFrame
 	
@@ -9148,7 +9230,7 @@ function DF:CreateUnitFrame (parent, name, unitFrameSettingsOverride, healthBarS
 		do
 			--artwork
 			f.unitName = f:CreateFontString (nil, "artwork", "GameFontHighlightSmall")
-			DFPixelUtil.SetPoint (f.unitName, "topleft", healthBar, "topleft", 2, -2, 1, 1)
+			PixelUtil.SetPoint (f.unitName, "topleft", healthBar, "topleft", 2, -2, 1, 1)
 
 			--target overlay - it's parented in the healthbar so other widgets won't get the overlay
 			f.targetOverlay = overlayFrame:CreateTexture (nil, "artwork")
@@ -9314,7 +9396,7 @@ DF.TimeLineElapsedTimeFunctions = {
 
 --creates a frame to show the elapsed time in a row
 function DF:CreateElapsedTimeFrame (parent, name, options)
-	local elapsedTimeFrame = CreateFrame ("frame", name, parent)
+	local elapsedTimeFrame = CreateFrame ("frame", name, parent, "BackdropTemplate")
 	
 	DF:Mixin (elapsedTimeFrame, DF.OptionsFunctions)
 	DF:Mixin (elapsedTimeFrame, DF.LayoutFrame)
@@ -9381,7 +9463,7 @@ DF.TimeLineBlockFunctions = {
 		else
 			self.icon:SetTexture (nil)
 			self.text:SetText (lineData.text or "")
-			text:SetPoint ("left", self, "left", 2, 0)
+			self.text:SetPoint ("left", self, "left", 2, 0)
 		end
 		
 		if (self.dataIndex % 2 == 1) then
@@ -9391,12 +9473,14 @@ DF.TimeLineBlockFunctions = {
 			self:SetBackdropColor (r, g, b, a)
 		end
 		
-		self:SetWidth (5000)
+		self:SetWidth(5000)
 		
 		local timelineData = lineData.timeline
 		local spellId = lineData.spellId
 		local useIconOnBlock = data.useIconOnBlocks
 		
+		local baseFrameLevel = parent:GetFrameLevel() + 10
+
 		for i = 1, #timelineData do
 			local blockInfo = timelineData [i]
 			
@@ -9405,6 +9489,8 @@ DF.TimeLineBlockFunctions = {
 			local isAura = blockInfo [3]
 			local auraDuration = blockInfo [4]
 
+			local payload = blockInfo.payload
+
 			local xOffset = pixelPerSecond * time
 			local width = pixelPerSecond * length
 			
@@ -9412,13 +9498,16 @@ DF.TimeLineBlockFunctions = {
 				xOffset = xOffset / 2.5
 			end
 			
-			local block = self:GetBlock (i)
+			local block = self:GetBlock(i)
 			block:Show()
-			DFPixelUtil.SetPoint (block, "left", self, "left", xOffset + headerWidth, 0)
+			block:SetFrameLevel(baseFrameLevel + i)
+
+			PixelUtil.SetPoint(block, "left", self, "left", xOffset + headerWidth, 0)
 
 			block.info.spellId = spellId
 			block.info.time = time
 			block.info.duration = auraDuration
+			block.info.payload = payload
 			
 			if (useIconOnBlock) then
 				block.icon:SetTexture (lineData.icon)
@@ -9432,7 +9521,7 @@ DF.TimeLineBlockFunctions = {
 					block.icon:SetDesaturated (false)
 				end
 				
-				DFPixelUtil.SetSize (block, self:GetHeight(), self:GetHeight())
+				PixelUtil.SetSize (block, self:GetHeight(), self:GetHeight())
 				
 				if (isAura) then
 					block.auraLength:Show()
@@ -9445,7 +9534,7 @@ DF.TimeLineBlockFunctions = {
 				block.background:SetVertexColor (0, 0, 0, 0)
 			else
 				block.background:SetVertexColor (unpack (color))
-				DFPixelUtil.SetSize (block, max (width, 16), self:GetHeight())
+				PixelUtil.SetSize (block, max (width, 16), self:GetHeight())
 				block.auraLength:Hide()
 			end
 		end
@@ -9454,7 +9543,7 @@ DF.TimeLineBlockFunctions = {
 	GetBlock = function (self, index)
 		local block = self.blocks [index]
 		if (not block) then
-			block = CreateFrame ("frame", nil, self)
+			block = CreateFrame ("frame", nil, self, "BackdropTemplate")
 			self.blocks [index] = block
 			
 			local background = block:CreateTexture (nil, "background")
@@ -9501,7 +9590,7 @@ DF.TimeLineFunctions = {
 		local line = self.lines [index]
 		if (not line) then
 			--create a new line
-			line = CreateFrame ("frame", "$parentLine" .. index, self.body)
+			line = CreateFrame ("frame", "$parentLine" .. index, self.body, "BackdropTemplate")
 			DF:Mixin (line, DF.TimeLineBlockFunctions)
 			self.lines [index] = line
 			
@@ -9632,7 +9721,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 	local scrollWidth = 800 --placeholder until the timeline receives data
 	local scrollHeight = 800 --placeholder until the timeline receives data
 
-	local frameCanvas = CreateFrame ("scrollframe", name, parent)
+	local frameCanvas = CreateFrame ("scrollframe", name, parent, "BackdropTemplate")
 	DF:Mixin (frameCanvas, DF.TimeLineFunctions)
 	
 	frameCanvas.data = {}
@@ -9645,7 +9734,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 			insets = {left = 1, right = 1, top = 0, bottom = 1},})
 	frameCanvas:SetBackdropColor (.1, .1, .1, .3)
 
-	local frameBody = CreateFrame ("frame", nil, frameCanvas)
+	local frameBody = CreateFrame ("frame", nil, frameCanvas, "BackdropTemplate")
 	frameBody:SetSize (scrollWidth, scrollHeight)
 	
 	frameCanvas:SetScrollChild (frameBody)
@@ -9660,7 +9749,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 	frameCanvas.elapsedTimeFrame = DF:CreateElapsedTimeFrame (frameBody, frameCanvas:GetName() and frameCanvas:GetName() .. "ElapsedTimeFrame", timelineOptions)
 	
 	--create horizontal slider
-		local horizontalSlider = CreateFrame ("slider", nil, parent)
+		local horizontalSlider = CreateFrame ("slider", nil, parent, "BackdropTemplate")
 		horizontalSlider.bg = horizontalSlider:CreateTexture (nil, "background")
 		horizontalSlider.bg:SetAllPoints (true)
 		horizontalSlider.bg:SetTexture (0, 0, 0, 0.5)
@@ -9683,7 +9772,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 		horizontalSlider:SetValue (0)
 		horizontalSlider:SetScript ("OnValueChanged", function (self)
 			local _, maxValue = horizontalSlider:GetMinMaxValues()
-			local stepValue = ceil (ceil(self:GetValue() * maxValue)/maxValue)
+			local stepValue = ceil (ceil(self:GetValue() * maxValue) / max(maxValue, SMALL_FLOAT))
 			if (stepValue ~= horizontalSlider.currentValue) then
 				horizontalSlider.currentValue = stepValue
 				frameCanvas:SetHorizontalScroll (stepValue)
@@ -9693,7 +9782,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 		frameCanvas.horizontalSlider = horizontalSlider
 	
 	--create scale slider
-		local scaleSlider = CreateFrame ("slider", nil, parent)
+		local scaleSlider = CreateFrame ("slider", nil, parent, "BackdropTemplate")
 		scaleSlider.bg = scaleSlider:CreateTexture (nil, "background")
 		scaleSlider.bg:SetAllPoints (true)
 		scaleSlider.bg:SetTexture (0, 0, 0, 0.5)
@@ -9727,7 +9816,7 @@ function DF:CreateTimeLineFrame (parent, name, options, timelineOptions)
 		end)
 
 	--create vertical slider
-		local verticalSlider = CreateFrame ("slider", nil, parent)
+		local verticalSlider = CreateFrame ("slider", nil, parent, "BackdropTemplate")
 		verticalSlider.bg = verticalSlider:CreateTexture (nil, "background")
 		verticalSlider.bg:SetAllPoints (true)
 		verticalSlider.bg:SetTexture (0, 0, 0, 0.5)
@@ -9842,7 +9931,7 @@ f:Hide()
 function DF:ShowErrorMessage (errorMessage, titleText)
 	
 	if (not DF.ErrorMessagePanel) then
-		local f = CreateFrame ("frame", "DetailsFrameworkErrorMessagePanel", UIParent) 
+		local f = CreateFrame ("frame", "DetailsFrameworkErrorMessagePanel", UIParent, "BackdropTemplate") 
 		f:SetSize (400, 120)
 		f:SetFrameStrata ("FULLSCREEN")
 		f:SetPoint ("center", UIParent, "center", 0, 100)

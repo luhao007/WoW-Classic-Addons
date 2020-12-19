@@ -16,7 +16,7 @@ assert(LibStub, "LibWho-2.0 requires LibStub")
 
 
 local major_version = 'LibWho-2.0'
-local minor_version = tonumber("171") or 99999
+local minor_version = tonumber(("2.0.179"):match("%d+%.%d+%.(%d+)")) or 99999
 
 local lib = LibStub:NewLibrary(major_version, minor_version)
 
@@ -25,6 +25,7 @@ if not lib then
 	return	-- already loaded and no upgrade necessary
 end
 
+-- todo: localizations
 lib.callbacks = lib.callbacks or LibStub("CallbackHandler-1.0"):New(lib)
 local callbacks = lib.callbacks
 
@@ -336,13 +337,14 @@ end
 
 function lib:CancelPendingWhoNext()
 	lib['frame']:Hide()
+	lib.readyForNext = false
 end
 
 lib['frame']:SetScript("OnUpdate", function(frame, elapsed)
 	lib.Timeout_time = lib.Timeout_time - elapsed
 	if lib.Timeout_time <= 0 then
 		lib['frame']:Hide()
-		lib:AskWhoNext()
+		lib.readyForNext = true
 	end -- if
 end);
 
@@ -407,11 +409,11 @@ end
 lib.queue_bounds = queue_bounds
 
 function lib:AskWhoNext()
-	if lib.frame:IsShown() then 
-		dbg("Already waiting")
+	if lib.frame:IsShown() or not self.readyForNext then
+		dbg("Already waiting or not processing")
 		return 
 	end
-
+	self.readyForNext = false
 	self:CancelPendingWhoNext()
 
 	if self.WhoInProgress then
@@ -477,7 +479,7 @@ function lib:AskWhoNext()
 		end
 
 		dbg("QUERY: "..args.query)
-		--self.hooked.SendWho(args.query)
+		self.hooked.SendWho(args.query)
 	else
 		self.Args = nil
 		self.WhoInProgress = false
@@ -495,8 +497,8 @@ function lib:AskWho(args)
 	tinsert(self.Queue[args.queue], args)
 	dbg('[' .. args.queue .. '] added "' .. args.query .. '", queues=' .. #self.Queue[1] .. '/'.. #self.Queue[2] .. '/'.. #self.Queue[3])
 	self:TriggerEvent('WHOLIB_QUERY_ADDED')
-	
-	self:AskWhoNext()
+
+	self.readyForNext = true
 end
 
 function lib:ReturnWho()
@@ -755,19 +757,19 @@ end
 --- slash commands
 ---
 
---SlashCmdList['WHO'] = function(msg)
---	dbg("console /who: "..msg)
---	-- new /who function
---	--local self = lib
---	
---	if(msg == '')then
---		lib:GuiWho(WhoFrame_GetDefaultWhoCommand())
---	elseif(WhoFrame:IsVisible())then
---		lib:GuiWho(msg)
---	else
---		lib:ConsoleWho(msg)
---	end
---end
+SlashCmdList['WHO'] = function(msg)
+	dbg("console /who: "..msg)
+	-- new /who function
+	--local self = lib
+	
+	if(msg == '')then
+		lib:GuiWho(WhoFrame_GetDefaultWhoCommand())
+	elseif(WhoFrame:IsVisible())then
+		lib:GuiWho(msg)
+	else
+		lib:ConsoleWho(msg)
+	end
+end
 	
 SlashCmdList['WHOLIB_DEBUG'] = function()
 	-- /wholibdebug: toggle debug on/off
@@ -785,7 +787,7 @@ SLASH_WHOLIB_DEBUG1 = '/wholibdebug'
 
 -- functions to hook
 local hooks = {
---	'WhoFrameEditBox_OnEnterPressed',
+	'WhoFrameEditBox_OnEnterPressed',
 --	'FriendsFrame_OnEvent',
 }
 
@@ -802,7 +804,7 @@ end -- for
 
 -- C_FriendList functions to hook
 local CFL_hooks = {
---	'SendWho',
+	'SendWho',
 	'SetWhoToUi',
 }
 
@@ -918,8 +920,8 @@ FriendsFrame:UnregisterEvent("WHO_LIST_UPDATE")
 
 function lib:WHO_LIST_UPDATE()
     if not lib.Quiet then
-      WhoList_Update()
-      FriendsFrame_Update()
+		WhoList_Update()		
+        FriendsFrame_Update()
     end
 
     lib:ProcessWhoResults()

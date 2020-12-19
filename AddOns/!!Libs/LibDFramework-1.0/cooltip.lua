@@ -272,7 +272,7 @@ function DF:CreateCoolTip()
 		--> main frame
 		local frame1
 		if (not GameCooltipFrame1) then
-			frame1 = CreateFrame ("Frame", "GameCooltipFrame1", UIParent)
+			frame1 = CreateFrame ("Frame", "GameCooltipFrame1", UIParent,"TooltipBackdropTemplate")
 			
 			tinsert (UISpecialFrames, "GameCooltipFrame1")
 			DF:CreateFlashAnimation (frame1)
@@ -289,17 +289,18 @@ function DF:CreateCoolTip()
 		--> build widgets for frame
 		build_main_frame (frame1)
 		
-		GameCooltipFrame1_FrameBackgroundCenter:SetTexture (DF.folder .. "cooltip_background")
+		--is this still in use?
+		GameCooltipFrame1_FrameBackgroundCenter:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame1_FrameBackgroundCenter:SetTexCoord (0.10546875, 0.89453125, 0, 1)
-		GameCooltipFrame1_FrameBackgroundLeft:SetTexture (DF.folder .. "cooltip_background")
+		GameCooltipFrame1_FrameBackgroundLeft:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame1_FrameBackgroundLeft:SetTexCoord (0, 0.103515625, 0, 1)
-		GameCooltipFrame1_FrameBackgroundRight:SetTexture (DF.folder .. "cooltip_background")
+		GameCooltipFrame1_FrameBackgroundRight:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame1_FrameBackgroundRight:SetTexCoord (0.896484375, 1, 0, 1)
 		
 		--> secondary frame
 		local frame2
 		if (not GameCooltipFrame2) then
-			frame2 = CreateFrame ("Frame", "GameCooltipFrame2", UIParent)
+			frame2 = CreateFrame ("Frame", "GameCooltipFrame2", UIParent,"TooltipBackdropTemplate")
 			
 			tinsert (UISpecialFrames, "GameCooltipFrame2")
 			DF:CreateFlashAnimation (frame2)
@@ -319,11 +320,12 @@ function DF:CreateCoolTip()
 
 		frame2:SetPoint ("bottomleft", frame1, "bottomright", 4, 0)
 		
-		GameCooltipFrame2_FrameBackgroundCenter:SetTexture (DF.folder .. "cooltip_background")
+		--is this still in use?
+		GameCooltipFrame2_FrameBackgroundCenter:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame2_FrameBackgroundCenter:SetTexCoord (0.10546875, 0.89453125, 0, 1)
-		GameCooltipFrame2_FrameBackgroundLeft:SetTexture (DF.folder .. "cooltip_background")
+		GameCooltipFrame2_FrameBackgroundLeft:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame2_FrameBackgroundLeft:SetTexCoord (0, 0.103515625, 0, 1)
-		GameCooltipFrame2_FrameBackgroundRight:SetTexture (DF.folder .. "cooltip_background")
+		GameCooltipFrame2_FrameBackgroundRight:SetTexture ([[Interface\Tooltips\UI-Tooltip-Background]])
 		GameCooltipFrame2_FrameBackgroundRight:SetTexCoord (0.896484375, 1, 0, 1)
 	
 		CoolTip.frame1 = frame1
@@ -1652,9 +1654,9 @@ function DF:CreateCoolTip()
 			if (CoolTip.Type == 2) then --> with bars
 				if (CoolTip.OptionsTable.MinWidth) then
 					local w = frame1.w + 34
-					DFPixelUtil.SetWidth (frame1, math.max (w, CoolTip.OptionsTable.MinWidth))
+					PixelUtil.SetWidth (frame1, math.max (w, CoolTip.OptionsTable.MinWidth))
 				else
-					DFPixelUtil.SetWidth (frame1, frame1.w + 34)
+					PixelUtil.SetWidth (frame1, frame1.w + 34)
 				end
 			else
 				--> width stability check
@@ -1666,24 +1668,24 @@ function DF:CreateCoolTip()
 				end
 				
 				if (CoolTip.OptionsTable.MinWidth) then
-					DFPixelUtil.SetWidth (frame1, math.max (width, CoolTip.OptionsTable.MinWidth))
+					PixelUtil.SetWidth (frame1, math.max (width, CoolTip.OptionsTable.MinWidth))
 				else
-					DFPixelUtil.SetWidth (frame1, width)
+					PixelUtil.SetWidth (frame1, width)
 				end
 			end
 		end
 		
 		if (CoolTip.OptionsTable.FixedHeight) then
-			DFPixelUtil.SetHeight (frame1, CoolTip.OptionsTable.FixedHeight)
+			PixelUtil.SetHeight (frame1, CoolTip.OptionsTable.FixedHeight)
 		else
 			if (CoolTip.OptionsTable.AlignAsBlizzTooltip) then
-				DFPixelUtil.SetHeight (frame1, ((temp-10) * -1) + (CoolTip.OptionsTable.AlignAsBlizzTooltipFrameHeightOffset or 0))
+				PixelUtil.SetHeight (frame1, ((temp-10) * -1) + (CoolTip.OptionsTable.AlignAsBlizzTooltipFrameHeightOffset or 0))
 				
 			elseif (CoolTip.OptionsTable.IgnoreButtonAutoHeight) then
-				DFPixelUtil.SetHeight (frame1, (temp+spacing) * -1)
+				PixelUtil.SetHeight (frame1, (temp+spacing) * -1)
 				
 			else
-				DFPixelUtil.SetHeight (frame1, _math_max ( (frame1.hHeight * CoolTip.Indexes) + 8 + ((CoolTip.OptionsTable.ButtonsYMod or 0)*-1), 22 ))
+				PixelUtil.SetHeight (frame1, _math_max ( (frame1.hHeight * CoolTip.Indexes) + 8 + ((CoolTip.OptionsTable.ButtonsYMod or 0)*-1), 22 ))
 			end
 		end
 
@@ -1925,7 +1927,7 @@ function DF:CreateCoolTip()
 		local anchor = CoolTip.OptionsTable.Anchor or CoolTip.Host
 		
 		--frame1:SetPoint (CoolTip.OptionsTable.MyAnchor, anchor, CoolTip.OptionsTable.RelativeAnchor, 0 + moveX + CoolTip.OptionsTable.WidthAnchorMod, 10 + CoolTip.OptionsTable.HeightAnchorMod + moveY)
-		DFPixelUtil.SetPoint (frame1, CoolTip.OptionsTable.MyAnchor, anchor, CoolTip.OptionsTable.RelativeAnchor, 0 + moveX + CoolTip.OptionsTable.WidthAnchorMod, 10 + CoolTip.OptionsTable.HeightAnchorMod + moveY)
+		PixelUtil.SetPoint (frame1, CoolTip.OptionsTable.MyAnchor, anchor, CoolTip.OptionsTable.RelativeAnchor, 0 + moveX + CoolTip.OptionsTable.WidthAnchorMod, 10 + CoolTip.OptionsTable.HeightAnchorMod + moveY)
 		
 		if (not x_mod) then
 			--> check if cooltip is out of screen bounds
@@ -3341,14 +3343,17 @@ function DF:CreateCoolTip()
 	--> all done
 	CoolTip:ClearAllOptions()
 
---	local preset2_backdrop = {bgFile = [[Interface\DialogFrame\UI-DialogBox-Background-Dark]], edgeFile = DF.folder .. "border_3", tile=true,
---	edgeSize = 16, tileSize = 64, insets = {left = 3, right = 3, top = 4, bottom = 4}}
-
-	local preset2_backdrop = {bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", edgeFile = [[Interface\Buttons\WHITE8X8]], tile = true,
-	edgeSize = 1, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
+	local preset2_backdrop = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1,
+	tile = true, tileSize = 16, insets = {left = 0, right = 0, top = 0, bottom = 0}}
+	local default_backdrop_color = {0.09019, 0.09019, 0.18823, 0.8}
+	local default_backdropborder_color = {1, 1, 1, 1}
 	
-	local gray_table = {0.17, 0.17, 0.17, 1}
+	local gray_table = {0.37, 0.37, 0.37, 0.95}
+	local white_table = {1, 1, 1, 1}
 	local black_table = {0.2, 0.2, 0.2, 1}
+
+	local backdropColorPreset2 = {.2, .2, .2, 1}
+	local borderColorPreset2 = {.2, .2, .2, 1}	
 	
 	function CoolTip:Preset (number)
 		self:Reset()
@@ -3370,11 +3375,10 @@ function DF:CreateCoolTip()
 			self:SetOption ("ButtonsYMod", -4)
 			self:SetOption ("YSpacingMod", -4)
 			self:SetOption ("IgnoreButtonAutoHeight", true)
+			self:SetColor (1, 0.5, 0.5, 0.5, 0)
 			
-			self:SetColor (1, 0.2, 0.2, 0.2, 1)
-			
-			self:SetBackdrop (1, preset2_backdrop, gray_table, black_table)
-			self:SetBackdrop (2, preset2_backdrop, gray_table, black_table)
+			self:SetBackdrop (1, preset2_backdrop, backdropColorPreset2, borderColorPreset2)
+			self:SetBackdrop (2, preset2_backdrop, backdropColorPreset2, borderColorPreset2)
 		end
 	end
 	

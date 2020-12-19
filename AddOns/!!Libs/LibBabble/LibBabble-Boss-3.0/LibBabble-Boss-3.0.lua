@@ -1,6 +1,6 @@
 --[[
 Name: LibBabble-Boss-3.0
-Revision: $Rev: 455 $
+Revision: $Rev: 459 $
 Maintainers: ckknight, nevcairiel, Ackis
 Website: http://www.wowace.com/projects/libbabble-boss-3-0/
 Dependencies: None
@@ -8,7 +8,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibBabble-Boss-3.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 455 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 459 $"):match("%d+"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib = LibStub("LibBabble-3.0"):New(MAJOR_VERSION, MINOR_VERSION)
@@ -4681,8 +4681,7 @@ elseif GAME_LOCALE == "koKR" then
 	["The Windreaver"] = "칼날바람",
 	["Theka the Martyr"] = "순교자 데카",
 	["Theralion"] = "테랄리온",
-	--[[Translation missing --]]
-	--[[ ["Theralion and Variona"] = "Theralion and Variona",--]] 
+	["Theralion and Variona"] = "테랄리온 과  발리오나",
 	["Thok the Bloodthirsty"] = "피에 굶주린 토크",
 	["Thorim"] = "토림",
 	["Thorngrin the Tender"] = "감시인 쏜그린",
@@ -4749,8 +4748,7 @@ elseif GAME_LOCALE == "koKR" then
 	["Warder Stilgiss"] = "문지기 스틸기스",
 	["Warlord Kalithresh"] = "장군 칼리스레쉬",
 	["Warlord Parjesh"] = "전쟁군주 파르제쉬",
-	--[[Translation missing --]]
-	--[[ ["Warlord Ramtusk"] = "Warlord Ramtusk",--]] 
+	["Warlord Ramtusk"] = "장군 램터스크",
 	["Warlord Zaela"] = "전쟁군주 잴라",
 	["Warlord Zon'ozz"] = "장군 존오즈",
 	["Warmaster Blackhorn"] = "전투대장 블랙혼",
@@ -5026,7 +5024,7 @@ elseif GAME_LOCALE == "esES" then
 	["Commander Vo'jak"] = "Comandante Vo'jak",
 	["Conclave of Wind"] = "Cónclave del Viento",
 	["Constructor & Controller"] = "Constructor y Controlador",
-	["Cookie"] = "El Chef",
+	["Cookie"] = "Cocinitas",
 	["Corborus"] = "Corborus",
 	--[[Translation missing --]]
 	--[[ ["Cordana Felsong"] = "Cordana Felsong",--]] 
@@ -5570,7 +5568,7 @@ elseif GAME_LOCALE == "esES" then
 	["Lucifron"] = "Lucifron",
 	["Lu'lin"] = "Lu'lin",
 	["Mad Magglish"] = "Magglish el Loco",
-	["Madness of Deathwing"] = "Locura de Alamurte",
+	["Madness of Deathwing"] = "Locura de Alamuerte",
 	["Maexxna"] = "Maexxna",
 	["Mage-Lord Urom"] = "Señor de la Magia Urom",
 	["Magister Kalendris"] = "Magister Kalendris",
@@ -5844,7 +5842,7 @@ elseif GAME_LOCALE == "esES" then
 	["Romulo"] = "Romulo",
 	["Romulo & Julianne"] = "Romeo y Julieta",
 	["Roogug"] = "Roogug",
-	["Rook Stonetoe"] = "Rook Mano Dura",
+	["Rook Stonetoe"] = "Rook Dedo Dura",
 	["Ro'shak"] = "Ro'shak",
 	["Rotface"] = "Carapútrea",
 	["Rotgrip"] = "Escamapodrida",
@@ -5861,7 +5859,7 @@ elseif GAME_LOCALE == "esES" then
 	--[[Translation missing --]]
 	--[[ ["Sael'orn"] = "Sael'orn",--]] 
 	["Salramm the Fleshcrafter"] = "Salramm el Modelador de carne",
-	["Salyis's Warband"] = "banda guerrera de Salyis",
+	["Salyis's Warband"] = "Banda guerrera de Salyis",
 	["Sanctum Sentry"] = "Centinela del sagrario",
 	["Sandarr Dunereaver"] = "Sandarr Asaltadunas",
 	["Sandfury Executioner"] = "Ejecutor Furiarena",
@@ -6191,8 +6189,7 @@ elseif GAME_LOCALE == "esES" then
 }
 elseif GAME_LOCALE == "esMX" then
 	lib:SetCurrentTranslations {
-	--[[Translation missing --]]
-	--[[ ["\"Captain\" Cookie"] = "\"Captain\" Cookie",--]] 
+	["\"Captain\" Cookie"] = "\"Capitán\" Cocinitas ",
 	["Acidmaw"] = "Fauceácida",
 	--[[Translation missing --]]
 	--[[ ["Adarogg"] = "Adarogg",--]] 
@@ -6207,8 +6204,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Aeonus"] = "Aeonus",
 	["Aerial Command Unit"] = "Unidad de mando aérea",
 	["Agathelos the Raging"] = "Agathelos el Furioso",
-	--[[Translation missing --]]
-	--[[ ["Aggem Thorncurse"] = "Aggem Thorncurse",--]] 
+	["Aggem Thorncurse"] = "Aggem Malespina",
 	--[[Translation missing --]]
 	--[[ ["Agronox"] = "Agronox",--]] 
 	--[[Translation missing --]]
@@ -6218,8 +6214,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Aknor Steelbringer"] = "Aknor Steelbringer",--]] 
 	["Aku'mai"] = "Aku'mai",
-	--[[Translation missing --]]
-	--[[ ["Al'Akir"] = "Al'Akir",--]] 
+	["Al'Akir"] = "Al'Akir",
 	["Al'ar"] = "Al'ar",
 	["Algalon the Observer"] = "Algalon el Observador",
 	--[[Translation missing --]]
@@ -6250,7 +6245,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Ana-Mouz"] = "Ana-Mouz",--]] 
 	--[[Translation missing --]]
 	--[[ ["Ancient Protectors"] = "Ancient Protectors",--]] 
-	["Ancient Stone Keeper"] = "Vigilante pétreo anciano",
+	["Ancient Stone Keeper"] = "Vigilante de piedra anciano",
 	["Anetheron"] = "Anetheron",
 	["Anger'rel"] = "Anger'rel",
 	["Anomalus"] = "Anomalus",
@@ -6343,7 +6338,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Balnazzar"] = "Balnazzar",
 	--[[Translation missing --]]
 	--[[ ["Baltharus the Warborn"] = "Baltharus the Warborn",--]] 
-	["Bannok Grimaxe"] = "Bannok Hachamacabra",
+	["Bannok Grimaxe"] = "Bannok Hacha Macabra",
 	["Baron Aquanis"] = "Barón Aquanis",
 	--[[Translation missing --]]
 	--[[ ["Baron Ashbury"] = "Baron Ashbury",--]] 
@@ -6379,7 +6374,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Blood Guard Porung"] = "Guardia de sangre Porung",
 	["Blood Prince Council"] = "Consejo de Príncipes de Sangre",
 	["Blood Princes"] = "Príncipes de Sangre",
-	["Blood Steward of Kirtonos"] = "Administrador de sangre de Kirtonos",
+	["Blood Steward of Kirtonos"] = "Administradora de sangre de Kirtonos",
 	["Bloodlord Mandokir"] = "Señor sangriento Mandokir",
 	["Bloodmage Thalnos"] = "Mago sangriento Thalnos",
 	--[[Translation missing --]]
@@ -6398,7 +6393,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Broggok"] = "Broggok",
 	["Brokentoe"] = "Dedorroto",
 	["Bronjahm"] = "Bronjahm",
-	["Broodlord Lashlayer"] = "Señor de prole Capazote",
+	["Broodlord Lashlayer"] = "Señor de linaje Capazote",
 	--[[Translation missing --]]
 	--[[ ["Brother Korloff"] = "Brother Korloff",--]] 
 	["Bruegal Ironknuckle"] = "Bruegal Nudoferro",
@@ -6410,8 +6405,8 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Cache of the Legion"] = "Cache of the Legion",--]] 
 	--[[Translation missing --]]
 	--[[ ["Calamir"] = "Calamir",--]] 
-	["Cannon Master Willey"] = "Cañonero Jefe Willey",
-	["Captain Greenskin"] = "Capitán Verdepel",
+	["Cannon Master Willey"] = "Maestro cañonero Willey",
+	["Captain Greenskin"] = "Capitán Verdetez",
 	--[[Translation missing --]]
 	--[[ ["Captain Hring"] = "Captain Hring",--]] 
 	["Captain Kromcrush"] = "Capitán Kromcrush",
@@ -6448,8 +6443,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Commander Durand"] = "Commander Durand",--]] 
 	["Commander Kolurg"] = "Comandante Kolurg",
-	--[[Translation missing --]]
-	--[[ ["Commander Malor"] = "Commander Malor",--]] 
+	["Commander Malor"] = "Comandante Malor",
 	--[[Translation missing --]]
 	--[[ ["Commander Ri'mok"] = "Commander Ri'mok",--]] 
 	["Commander Sarannis"] = "Comandante Sarannis",
@@ -6464,7 +6458,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Conclave of Wind"] = "Conclave of Wind",--]] 
 	["Constructor & Controller"] = "Constructor & Controlador",
-	["Cookie"] = "El Chef",
+	["Cookie"] = "Cocinitas",
 	--[[Translation missing --]]
 	--[[ ["Corborus"] = "Corborus",--]] 
 	--[[Translation missing --]]
@@ -6477,10 +6471,10 @@ elseif GAME_LOCALE == "esMX" then
 	["Cosmic Infuser"] = "Infusor cósmico",
 	["Council of Elders"] = "Concejo de Ancianos",
 	["Crimson Hammersmith"] = "Forjamartillos Carmesí",
-	["Crowd Pummeler 9-60"] = "Gopleamasa 9-60",
+	["Crowd Pummeler 9-60"] = "Golpeamasa 9-60",
 	--[[Translation missing --]]
 	--[[ ["Cruelfang"] = "Cruelfang",--]] 
-	["Crystal Fang"] = "Colmillor de cristal",
+	["Crystal Fang"] = "Colmillo de cristal",
 	["C'Thun"] = "C'Thun",
 	["Cyanigosa"] = "Cyanigosa",
 	--[[Translation missing --]]
@@ -6502,7 +6496,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Darkweaver Syth"] = "Tejeoscuro Syth",
 	["Death Knight Darkreaver"] = "Caballero de la Muerte Atracoscuro",
 	["Death Knight Understudy"] = "Suplente Caballero de la Muerte",
-	["Death Speaker Jargba"] = "Médium Jargba",
+	["Death Speaker Jargba"] = "Portavoz de la muerte Jargba",
 	["Deathbound Ward"] = "Depositario vinculado a la muerte",
 	["Deathbringer Saurfang"] = "Libramorte Colmillosauro",
 	["Deathspeaker High Priest"] = "Sumo sacerdote portavoz de la muerte",
@@ -6511,9 +6505,9 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Demonic Inquisition"] = "Demonic Inquisition",--]] 
 	["Devastation"] = "Devastación",
-	["Deviate Faerie Dragon"] = "Dragón férico descarriado",
+	["Deviate Faerie Dragon"] = "Dragón feérico descarriado",
 	["Devourer of Souls"] = "Devorador de Almas",
-	["Dextren Ward"] = "Dextren Tutor",
+	["Dextren Ward"] = "Dextren Ward",
 	--[[Translation missing --]]
 	--[[ ["Dia Darkwhisper"] = "Dia Darkwhisper",--]] 
 	["Digmaster Shovelphlange"] = "Maestro de excavación Palatiro",
@@ -6538,7 +6532,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Dreadscale"] = "Aterraescama",
 	--[[Translation missing --]]
 	--[[ ["Dreadwing"] = "Dreadwing",--]] 
-	["Dreamscythe"] = "Guadañasueños",
+	["Dreamscythe"] = "Segasueños",
 	--[[Translation missing --]]
 	--[[ ["Dresaron"] = "Dresaron",--]] 
 	--[[Translation missing --]]
@@ -6557,7 +6551,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Earthrager Ptah"] = "Earthrager Ptah",--]] 
 	--[[Translation missing --]]
 	--[[ ["Earthshaper Telu"] = "Earthshaper Telu",--]] 
-	["Ebonroc"] = "Ebonroc",
+	["Ebonroc"] = "Ebanorroca",
 	--[[Translation missing --]]
 	--[[ ["Echo of Baine"] = "Echo of Baine",--]] 
 	--[[Translation missing --]]
@@ -6587,7 +6581,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Elerethe Renferal"] = "Elerethe Renferal",--]] 
 	--[[Translation missing --]]
 	--[[ ["Elisande"] = "Elisande",--]] 
-	["Emalon the Storm Watcher"] = "Emalon e Vigía de la Tormenta",
+	["Emalon the Storm Watcher"] = "Emalon el Vigía de la Tormenta",
 	["Emeriss"] = "Emeriss",
 	["Emperor Dagran Thaurissan"] = "Emperador Dagran Thaurissan",
 	["Emperor Vek'lor"] = "Emperador Vek'lor",
@@ -6601,10 +6595,8 @@ elseif GAME_LOCALE == "esMX" then
 	["Epoch Hunter"] = "Cazador de eras",
 	["Erekem"] = "Erekem",
 	["Eressea Dawnsinger"] = "Eressea Cantoalba",
-	--[[Translation missing --]]
-	--[[ ["Eric \"The Swift\""] = "Eric \"The Swift\"",--]] 
-	--[[Translation missing --]]
-	--[[ ["Erudax"] = "Erudax",--]] 
+	["Eric \"The Swift\""] = "Eric \"el Veloz\"",
+	["Erudax"] = "Erudax",
 	--[[Translation missing --]]
 	--[[ ["Erunak Stonespeaker"] = "Erunak Stonespeaker",--]] 
 	["Essence of Anger"] = "Esencia de Cólera",
@@ -6694,7 +6686,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Gekkan"] = "Gekkan",--]] 
 	["Gelihast"] = "Gelihast",
 	["Gelk"] = "Gelk",
-	["General Angerforge"] = "General Forjira",
+	["General Angerforge"] = "General Forjainquina",
 	["General Bjarngrim"] = "General Bjarngrim",
 	["General Drakkisath"] = "General Drakkisath",
 	--[[Translation missing --]]
@@ -6717,14 +6709,14 @@ elseif GAME_LOCALE == "esMX" then
 	["Gizrul the Slavener"] = "Gizrul el Esclavista",
 	--[[Translation missing --]]
 	--[[ ["Glazer"] = "Glazer",--]] 
-	["Gloom'rel"] = "Gloom'rel",
+	["Gloom'rel"] = "Penumbra'rel",
 	--[[Translation missing --]]
 	--[[ ["Glubtok"] = "Glubtok",--]] 
 	["Gluth"] = "Gluth",
 	["Glutton"] = "Glotón",
 	--[[Translation missing --]]
 	--[[ ["God-King Skovald"] = "God-King Skovald",--]] 
-	["Golem Lord Argelmach"] = "Señor Golem Argelmach",
+	["Golem Lord Argelmach"] = "Señor Gólem Argelmach",
 	["Golemagg the Incinerator"] = "Golemagg el Incinerador",
 	["Goraluk Anvilcrack"] = "Goraluk Yunquegrieta",
 	--[[Translation missing --]]
@@ -6737,8 +6729,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Gothik the Harvester"] = "Gothik el Cosechador",
 	["Grand Astromancer Capernian"] = "Gran astromántica Capernian",
 	["Grand Champions"] = "Grandes Campeones",
-	--[[Translation missing --]]
-	--[[ ["Grand Crusader Dathrohan"] = "Grand Crusader Dathrohan",--]] 
+	["Grand Crusader Dathrohan"] = "Gran cruzado Dathrohan",
 	--[[Translation missing --]]
 	--[[ ["Grand Empress Shek'zeer"] = "Grand Empress Shek'zeer",--]] 
 	--[[Translation missing --]]
@@ -6756,7 +6747,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Grimlok"] = "Grimlok",
 	--[[Translation missing --]]
 	--[[ ["Grimrail Enforcers"] = "Grimrail Enforcers",--]] 
-	["Grizzle"] = [=[	Grisez]=],
+	["Grizzle"] = "Grisez",
 	["Grobbulus"] = "Grobbulus",
 	["Grubbis"] = "Grubbis",
 	--[[Translation missing --]]
@@ -6825,9 +6816,9 @@ elseif GAME_LOCALE == "esMX" then
 	["High Botanist Freywinn"] = "Gran botánico Freywinn",
 	--[[Translation missing --]]
 	--[[ ["High Botanist Tel'arn"] = "High Botanist Tel'arn",--]] 
-	["High Inquisitor Fairbanks"] = "Alto Inquisidor Ribalimpia",
-	["High Inquisitor Whitemane"] = "Alta Inquisidora Melenablanca",
-	["High Interrogator Gerstahn"] = "Alto Interrogador Gerstahn",
+	["High Inquisitor Fairbanks"] = "Alto inquisidor Ribalimpia",
+	["High Inquisitor Whitemane"] = "Alta inquisidora Melenablanca",
+	["High Interrogator Gerstahn"] = "Alta interrogadora Gerstahn",
 	["High King Maulgar"] = "Su majestad Maulgar",
 	["High Marshal Whirlaxis"] = "High Marshal Whirlaxis",
 	["High Nethermancer Zerevor"] = "High Nethermancer Zerevor",
@@ -6847,8 +6838,8 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["High Sage Viryx"] = "High Sage Viryx",--]] 
 	["High Warlord Naj'entus"] = "Gran Señor de la Guerra Naj'entus",
-	["Highlord Mograine"] = "Alto Señor Mograine",
-	["Highlord Omokk"] = "Alto Señor Omokk",
+	["Highlord Mograine"] = "Alto señor Mograine",
+	["Highlord Omokk"] = "Alto señor Omokk",
 	["Hisek the Swarmkeeper"] = "Hisek el Guardaenjambres",
 	["Hodir"] = "Hodir",
 	--[[Translation missing --]]
@@ -6906,7 +6897,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Instructor Chillheart"] = "Instructor Chillheart",--]] 
 	--[[Translation missing --]]
 	--[[ ["Instructor Galford"] = "Instructor Galford",--]] 
-	["Instructor Malicia"] = "Instructor Malicia",
+	["Instructor Malicia"] = "Instructora Malicia",
 	["Instructor Razuvious"] = "Instructor Razuvious",
 	["Interrogator Vishas"] = "Interrogador Vishas",
 	["Ionar"] = "Ionar",
@@ -6934,7 +6925,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Jan-xi"] = "Jan-xi",--]] 
 	--[[Translation missing --]]
 	--[[ ["Jasper Guardian"] = "Jasper Guardian",--]] 
-	["Jed Runewatcher"] = "Jed vigía de las runas",
+	["Jed Runewatcher"] = "Jed Vigía de las Runas",
 	["Jedoga Shadowseeker"] = "Jedoga Buscasombras",
 	["Jergosh the Invoker"] = "Jergosh el Convocador",
 	["Ji-Kun"] = "Ji-Kun",
@@ -7079,7 +7070,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Loro"] = "Loro",
 	["Lucifron"] = "Lucifron",
 	["Lu'lin"] = "Lu'lin",
-	["Mad Magglish"] = "Magglish el Loco",
+	["Mad Magglish"] = "Loco Magglish",
 	--[[Translation missing --]]
 	--[[ ["Madness of Deathwing"] = "Madness of Deathwing",--]] 
 	["Maexxna"] = "Maexxna",
@@ -7163,7 +7154,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Moontalon"] = "Moontalon",--]] 
 	["Moorabi"] = "Moorabi",
-	["Mor Grayhoof"] = "Mor Grayhoof",
+	["Mor Grayhoof"] = "Mor Pezuña Gris",
 	["Moragg"] = "Moragg",
 	--[[Translation missing --]]
 	--[[ ["Morchok"] = "Morchok",--]] 
@@ -7173,7 +7164,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Morphaz"] = "Morphaz",
 	["Mother Shahraz"] = "Madre Shahraz",
 	["Mother Smolderweb"] = "Madre Telabrasada",
-	["Mr. Smite"] = "Sr. Golpin",
+	["Mr. Smite"] = "Don Mamporro",
 	["Muradin Bronzebeard"] = "Muradin Barbabronce",
 	["Murkblood Twin"] = "Gemelo Sangreoscura",
 	["Murkblood Twins"] = "Gemelos Sangreoscura",
@@ -7230,11 +7221,10 @@ elseif GAME_LOCALE == "esMX" then
 	["Obsidian Sentinel"] = "Centinela Obsidiano",
 	--[[Translation missing --]]
 	--[[ ["Occu'thar"] = "Occu'thar",--]] 
-	["Odo the Blindwatcher"] = "Odo el vigía ciego",
+	["Odo the Blindwatcher"] = "Odo el Vigía Ciego",
 	--[[Translation missing --]]
 	--[[ ["Odyn"] = "Odyn",--]] 
-	--[[Translation missing --]]
-	--[[ ["Oggleflint"] = "Oggleflint",--]] 
+	["Oggleflint"] = "Ogglesílex",
 	["Ogom the Wretched"] = "Ogom el Desdichado",
 	--[[Translation missing --]]
 	--[[ ["Ohgan"] = "Ohgan",--]] 
@@ -7269,8 +7259,8 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Oshir"] = "Oshir",--]] 
 	["Ossirian the Unscarred"] = "Osirio el Sinmarcas",
 	["Ouro"] = "Ouro",
-	["Overlord Ramtusk"] = "Señor Supremo Colmicarnero",
-	["Overlord Wyrmthalak"] = "Señor Supremo Vermiothalak",
+	["Overlord Ramtusk"] = "Señor supremo Colmicarnero",
+	["Overlord Wyrmthalak"] = "Señor supremo Vermiothalak",
 	["Overmaster Pyron"] = "Maestro Supremo Pyron",
 	["Overseer Tidewrath"] = "Avizor Aleta de Cólera",
 	--[[Translation missing --]]
@@ -7291,7 +7281,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Phemos"] = "Phemos",--]] 
 	["Pimgib"] = "Pimgib",
-	["Plaguemaw the Rotting"] = "Fauzpeste el Putrefacto",
+	["Plaguemaw the Rotting"] = "Faucepeste el Podrido",
 	["Plugger Spazzring"] = "Plugger Aropatoso",
 	--[[Translation missing --]]
 	--[[ ["Pol"] = "Pol",--]] 
@@ -7319,8 +7309,8 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Protectors of the Endless"] = "Protectors of the Endless",--]] 
 	["Pure Spawn of Hydross"] = "Engendro puro de Hydross",
 	["Pusillin"] = "Pusillín",
-	["Pyroguard Emberseer"] = "Piroguardián Brasadivino",
-	["Pyromancer Loregrain"] = "Piromántico Cultugrano",
+	["Pyroguard Emberseer"] = "Piroguardia Brasadivino",
+	["Pyromancer Loregrain"] = "Piromántico Fruto del Saber",
 	--[[Translation missing --]]
 	--[[ ["Qiang the Merciless"] = "Qiang the Merciless",--]] 
 	["Qin-xi"] = "Qin-xi",
@@ -7347,7 +7337,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Randolph Moloch"] = "Randolph Moloch",--]] 
 	--[[Translation missing --]]
 	--[[ ["Ranjit"] = "Ranjit",--]] 
-	["Ras Frostwhisper"] = "Ras Levescarcha",
+	["Ras Frostwhisper"] = "Ras Murmuhielo",
 	["Rattlegore"] = "Traquesangre",
 	["Razorclaw the Butcher"] = "Zarpador el Carnicero",
 	["Razorgore the Untamed"] = "Sangrevaja el Indomable",
@@ -7370,8 +7360,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Ribbly Screwspigot"] = "Ribbly Llavenrosca",
 	["Right Arm"] = "Brazo Derecho",
 	["Rik'kal the Dissector"] = "Rik'kal el Disector",
-	--[[Translation missing --]]
-	--[[ ["Ring of Law"] = "Ring of Law",--]] 
+	["Ring of Law"] = "Círculo de la Ley",
 	--[[Translation missing --]]
 	--[[ ["Risen Hammersmith"] = "Risen Hammersmith",--]] 
 	["Roar"] = "Rugido",
@@ -7443,7 +7432,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Shade of Xavius"] = "Shade of Xavius",--]] 
 	["Shadikith the Glider"] = "Shadikith the Glider",
-	["Shadow Hunter Vosh'gajin"] = "Cazador de las Sombras Vosh'gajin",
+	["Shadow Hunter Vosh'gajin"] = "Cazadora de las Sombras Vosh'gajin",
 	["Shadow of Leotheras"] = "Sombra de Leotheras",
 	--[[Translation missing --]]
 	--[[ ["Shadow-Lord Iskar"] = "Shadow-Lord Iskar",--]] 
@@ -7543,7 +7532,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Talon King Ikiss"] = "Rey Garra Ikiss",
 	["Taragaman the Hungerer"] = "Taragaman el Hambriento",
 	["Taran Zhu"] = "Taran Zhu",
-	["Targorr the Dread"] = "Targor el Pavoroso",
+	["Targorr the Dread"] = "Targorr el Pavoroso",
 	--[[Translation missing --]]
 	--[[ ["Tarlna the Ageless"] = "Tarlna the Ageless",--]] 
 	["Tavarok"] = "Tavarok",
@@ -7553,7 +7542,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["Temple Guardian Anhuur"] = "Temple Guardian Anhuur",--]] 
 	["Temporus"] = "Temporus",
-	["Tendris Warpwood"] = "Tendris Madeguerra",
+	["Tendris Warpwood"] = "Tendris Alabeo",
 	["Tenebron"] = "Tenebron",
 	["Terestian Illhoof"] = "Terestian Pezuña Enferma",
 	["Teron Gorefiend"] = "Teron Sanguino",
@@ -7582,7 +7571,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[Translation missing --]]
 	--[[ ["The Desolate Host"] = "The Desolate Host",--]] 
 	["The Eredar Twins"] = "Los Gemelos Eredar",
-	["The Fallen Protectors"] = "Protectores Caidos",
+	["The Fallen Protectors"] = "Los Protectores Caídos",
 	["The Four Horsemen"] = "Los Cuatro Jinetes",
 	["The Illidari Council"] = "El concilio Illidari",
 	["The Iron Council"] = "Asamblea de Hierro",
@@ -7653,7 +7642,7 @@ elseif GAME_LOCALE == "esMX" then
 	--[[ ["Ularogg Cragshaper"] = "Ularogg Cragshaper",--]] 
 	--[[Translation missing --]]
 	--[[ ["Ultraxion"] = "Ultraxion",--]] 
-	["Urok Doomhowl"] = "Urok Aullapocalipsis",
+	["Urok Doomhowl"] = "Urok Aullasino",
 	--[[Translation missing --]]
 	--[[ ["Ursoc"] = "Ursoc",--]] 
 	["Vaelastrasz the Corrupt"] = "Vaelastrasz el Corrupto",
@@ -7692,9 +7681,9 @@ elseif GAME_LOCALE == "esMX" then
 	["Warbringer O'mrogg"] = "Belisario O'mrogg",
 	["Warchief Blackhand Piece"] = "Jefe de Guerra Mano Negra",
 	["Warchief Kargath Bladefist"] = "Jefe de Guerra Kargath Garrafilada",
-	["Warchief Rend Blackhand"] = "Jefe de Guerra Desgarro Puño Negro",
+	["Warchief Rend Blackhand"] = "Jefe de Guerra Rend Puño Negro",
 	["Warden Mellichar"] = "Celador Mellichar",
-	["Warder Stilgiss"] = "Guarda Stilgiss",
+	["Warder Stilgiss"] = "Depositario Stilgiss",
 	["Warlord Kalithresh"] = "Señor de la Guerra Kalithresh",
 	--[[Translation missing --]]
 	--[[ ["Warlord Parjesh"] = "Warlord Parjesh",--]] 
@@ -7873,7 +7862,7 @@ elseif GAME_LOCALE == "ptBR" then
 	--[[ ["Ash'golm"] = "Ash'golm",--]] 
 	["Asim al Akir"] = "Asim al Akir",
 	["Asira Dawnslayer"] = "Asira Raiamorte",
-	["Assault Bot"] = "Robô de Assalto",
+	["Assault Bot"] = "Robô de Assalto1",
 	["Assembly of Iron"] = "Assembléia de Ferro",
 	["Atal'alarion"] = "Atal'alarion",
 	["Atramedes"] = "Atramedes",
@@ -8504,7 +8493,7 @@ elseif GAME_LOCALE == "ptBR" then
 	["Leviathan Mk II"] = "Leviatã Mk II",
 	["Ley-Guardian Eregos"] = "Guardião de Meridianos Éregos",
 	["Lieutenant Drake"] = "Tenente Drake",
-	["Lieutenant General Andorov"] = "Lethon",
+	["Lieutenant General Andorov"] = "Tenente-general Andorov",
 	--[[Translation missing --]]
 	--[[ ["Life Warden Gola"] = "Life Warden Gola",--]] 
 	["Lilian Voss"] = "Lilian Voss",
@@ -9173,8 +9162,7 @@ elseif GAME_LOCALE == "itIT" then
 	["Aerial Command Unit"] = "Unità Aerea di Comando",
 	["Agathelos the Raging"] = "Agathelos il Rabbioso",
 	["Aggem Thorncurse"] = "Aggem Malaspina",
-	--[[Translation missing --]]
-	--[[ ["Agronox"] = "Agronox",--]] 
+	["Agronox"] = "Agronox",
 	["Ahri'ok Dugru"] = "Ahri'ok Dugru",
 	["Ahune"] = "Ahune",
 	["Akil'zon"] = "Akil'zon",
@@ -9214,8 +9202,7 @@ elseif GAME_LOCALE == "itIT" then
 	["Anub'Rekhan"] = "Anub'Rekhan",
 	["Anub'shiah"] = "Anub'shiah",
 	["Anzu"] = "Anzu",
-	--[[Translation missing --]]
-	--[[ ["Apocron"] = "Apocron",--]] 
+	["Apocron"] = "Apocron",
 	["Apothecary Baxter"] = "Speziale Baxter",
 	["Apothecary Frye"] = "Speziale Frye",
 	["Apothecary Hummel"] = "Speziale Hummel",
@@ -9248,8 +9235,7 @@ elseif GAME_LOCALE == "itIT" then
 	["Assembly of Iron"] = "Adunanza del Ferro",
 	["Atal'alarion"] = "Atal'alarion",
 	["Atramedes"] = "Atramedes",
-	--[[Translation missing --]]
-	--[[ ["Atrigan"] = "Atrigan",--]] 
+	["Atrigan"] = " Atrigan",
 	["Attumen the Huntsman"] = "Attumen il Predatore",
 	["Auriaya"] = "Auriaya",
 	["Avalanchion"] = "Avalanchion",
@@ -9279,8 +9265,7 @@ elseif GAME_LOCALE == "itIT" then
 	["Bazzalan"] = "Bazzalan",
 	["Beastlord Darmac"] = "Signore delle Bestie Darmac",
 	["Beauty"] = "Bella",
-	--[[Translation missing --]]
-	--[[ ["Belac"] = "Belac",--]] 
+	["Belac"] = "Belac",
 	["Beth'tilac"] = "Beth'tilac",
 	["Black Guard Swordsmith"] = "Fabbro della Guardia Nera",
 	["Blackhand"] = "Manonera",
@@ -9319,14 +9304,11 @@ elseif GAME_LOCALE == "itIT" then
 	["Calamir"] = "Calamir",
 	["Cannon Master Willey"] = "Maestro Cannoniere Willey",
 	["Captain Greenskin"] = "Capitano Pelleverde",
-	["Captain Hring"] = [=[
-
-Capitano Hring]=],
+	["Captain Hring"] = "Capitano Hring",
 	["Captain Kromcrush"] = "Capitano Kromcrush",
 	["Captain Skarloc"] = "Capitano Skarloc",
 	["Captain Varo'then"] = "Capitano Varo'then",
-	--[[Translation missing --]]
-	--[[ ["Captain Yathae Moonstrike"] = "Captain Yathae Moonstrike",--]] 
+	["Captain Yathae Moonstrike"] = "Capitano Yathae Predastelle",
 	["Celebras the Cursed"] = "Celebras il Maledetto",
 	["Cenarius"] = "Cenarius",
 	["Charlga Razorflank"] = "Charlga Fiancospino",
@@ -9382,8 +9364,7 @@ Capitano Hring]=],
 	["Dark Iron Ambassador"] = "Ambasciatore Ferroscuro",
 	["Dark Shaman Koranthal"] = "Koranthal lo Sciamano Oscuro",
 	["Darkmaster Gandling"] = "Maestro Oscuro Gandling",
-	--[[Translation missing --]]
-	--[[ ["Darkscale Taskmaster"] = "Darkscale Taskmaster",--]] 
+	["Darkscale Taskmaster"] = "Coordinatore Scagliascura",
 	["Darkweaver Syth"] = "Syth il Mistico Oscuro",
 	["Death Knight Darkreaver"] = "Death Knight Darkreaver",
 	["Death Knight Understudy"] = "Cavalieri della Morte Sostituti",
@@ -9393,8 +9374,7 @@ Capitano Hring]=],
 	["Deathspeaker High Priest"] = "Sacerdote Necroratore",
 	["Deathstalker Visceri"] = "Inseguitore della Morte Visceri",
 	["Deathsworn Captain"] = "Capitano Linguamorta",
-	--[[Translation missing --]]
-	--[[ ["Demonic Inquisition"] = "Demonic Inquisition",--]] 
+	["Demonic Inquisition"] = "Inquisizione Demoniaca",
 	["Devastation"] = "Devastazione",
 	["Deviate Faerie Dragon"] = "Drago Fatato Deviato",
 	["Devourer of Souls"] = "Divoratore di Anime",
@@ -9402,16 +9382,13 @@ Capitano Hring]=],
 	["Dia Darkwhisper"] = "Dia Mormoscuro",
 	["Digmaster Shovelphlange"] = "Digmaster Shovelphlange",
 	["Doctor Theolen Krastinov"] = "Doctor Theolen Krastinov",
-	--[[Translation missing --]]
-	--[[ ["Domatrax"] = "Domatrax",--]] 
+	["Domatrax"] = "Domatrax",
 	["Doom Lord Kazzak"] = "Sire Oscuro Kazzak",
 	["Doom'rel"] = "Teneb'rel",
 	["Doomwalker"] = "Camminatoreoscuro",
 	["Dope'rel"] = "Celen'rel",
 	["Dorothee"] = "Dorothee",
-	["Dragons of Nightmare"] = [=[
-
-Draghi di Nightmare]=],
+	["Dragons of Nightmare"] = "Draghi di Nightmare",
 	["Drahga Shadowburner"] = "Drahga Strinaombre",
 	["Drahga Shodowburner"] = "Drahga Strinaombre",
 	["Drakkari Colossus"] = "Colosso Drakkari",
@@ -9457,8 +9434,7 @@ Draghi di Nightmare]=],
 	["Emperor Vek'lor"] = "Imperatore Vek'lor",
 	["Emperor Vek'nilash"] = "Imperatore Vek'nilash",
 	["Enforcer Sorka"] = "Sovrintendente Sorka",
-	--[[Translation missing --]]
-	--[[ ["Engine of Souls"] = "Engine of Souls",--]] 
+	["Engine of Souls"] = "Congegno delle Anime",
 	["Entropius"] = "Entropius",
 	["Eonar's Gift"] = "Dono di Eonar",
 	["Epoch Hunter"] = "Cacciatore delle Ere",
@@ -9472,14 +9448,12 @@ Draghi di Nightmare]=],
 	["Essence of Suffering"] = "Essenza della Sofferenza",
 	["Eviscerator"] = "Svisceratore",
 	["Exarch Maladaar"] = "Esarca Maladaar",
-	--[[Translation missing --]]
-	--[[ ["Expedient Elemental"] = "Expedient Elemental",--]] 
+	["Expedient Elemental"] = "Elementale Tempestivo",
 	["Expedition Commander"] = "Comandante Spedizione",
 	["Eydis Darkbane"] = "Eydis Iranera",
 	["Eye of C'Thun"] = "Occhio di C'Thun",
 	["Faction Champions"] = "Campioni della Fazione ",
-	--[[Translation missing --]]
-	--[[ ["Fallen Avatar"] = "Fallen Avatar",--]] 
+	["Fallen Avatar"] = "Avatar Caduto",
 	["Fallen Champion"] = "Campione Caduto",
 	["Falric"] = "Falric",
 	["Falric and Marwyn"] = "Falric e Marwyn",
@@ -9563,16 +9537,14 @@ Draghi di Nightmare]=],
 	["Gorefiend"] = "Malacarne",
 	["Gormok the Impaler"] = "Gormok l'Impalatore",
 	["Gorosh the Dervish"] = "Gorosh il Derviscio",
-	--[[Translation missing --]]
-	--[[ ["Goroth"] = "Goroth",--]] 
+	["Goroth"] = "Goroth",
 	["Gortok Palehoof"] = "Gortok Torochiaro",
 	["Gothik the Harvester"] = "Gothik il Falciatore",
 	["Grand Astromancer Capernian"] = "Gran Astromante Capernian",
 	["Grand Champions"] = "Gran Campioni",
 	["Grand Crusader Dathrohan"] = "Gran Crociato Dathrohan",
 	["Grand Empress Shek'zeer"] = "Grande Imperatrice Shek'zeer",
-	--[[Translation missing --]]
-	--[[ ["Grand Magistrix Elisande"] = "Grand Magistrix Elisande",--]] 
+	["Grand Magistrix Elisande"] = "Gran Magistra Elisande",
 	["Grand Magus Telestra"] = "Gran Magus Telestra",
 	["Grand Vizier Ertan"] = "Gran Visir Ertan",
 	["Grand Warlock Alythess"] = "Gran Strega Alythess",
@@ -9611,8 +9583,7 @@ Draghi di Nightmare]=],
 	["Hans'gar and Franzok"] = "Hans'gar e Franzok",
 	["Harbaron"] = "Harbaron",
 	["Harbinger Skyriss"] = "Araldo Skyriss",
-	--[[Translation missing --]]
-	--[[ ["Harjatan"] = "Harjatan",--]] 
+	["Harjatan"] = "Harjatan",
 	["Hate'rel"] = "Odien'rel",
 	["Hazza'rah"] = "Hazza'rah",
 	["Hazzas"] = "Hazzas",
@@ -9666,8 +9637,7 @@ Draghi di Nightmare]=],
 	["Hukku"] = "Hukku",
 	["Humongris"] = "Humongris",
 	["Hungarfen"] = "Fungilor",
-	--[[Translation missing --]]
-	--[[ ["Huntress Kasparian"] = "Huntress Kasparian",--]] 
+	["Huntress Kasparian"] = "Cacciatrice Kasparian",
 	["Hurley Blackbreath"] = "Hurley Fiatonero",
 	["Hyakiss the Lurker"] = "Hyakiss the Lurker",
 	["Hydromancer Thespia"] = "Idromante Thespia",
@@ -9687,7 +9657,7 @@ Draghi di Nightmare]=],
 	["Illidan Stormrage"] = "Illidan Grantempesta",
 	["Illidari Council"] = "Concilio Illidariano",
 	["Illyanna Ravenoak"] = "Illyanna Quercianera",
-	["Illysanna Ravencrest"] = "Illysanna Ravencrest",
+	["Illysanna Ravencrest"] = "Illysanna Crinocorvo",
 	["Immerseus"] = "Immerseus",
 	["Immol'thar"] = "Immol'thar",
 	["Imperator Mar'gok"] = "Imperatore Mar'gok",
@@ -9748,7 +9718,7 @@ Draghi di Nightmare]=],
 	["Kil'rek"] = "Kil'rek",
 	["Kilrogg Deadeye"] = "Kilrogg Occhiotetro",
 	["Kil'ruk the Wind-Reaver"] = "Kil'ruk il Razziatore del Vento",
-	["King Deepbeard"] = "Re Deepbeard",
+	["King Deepbeard"] = "Re Barbafonda",
 	["King Dred"] = "Terrosauro",
 	["King Gordok"] = "Re Gordok",
 	["King Llane Piece"] = "Pezzo Re Llane",
@@ -9849,10 +9819,8 @@ Draghi di Nightmare]=],
 	["Magra"] = "Magra",
 	["Magtheridon"] = "Magtheridon",
 	["Maiden of Grief"] = "Ancella della Pena",
-	--[[Translation missing --]]
-	--[[ ["Maiden of Valor"] = "Maiden of Valor",--]] 
-	--[[Translation missing --]]
-	--[[ ["Maiden of Vigilance"] = "Maiden of Vigilance",--]] 
+	["Maiden of Valor"] = "Ancella del Valore",
+	["Maiden of Vigilance"] = "Ancella della Vigilanza",
 	["Maiden of Virtue"] = "Ancella della Virtù",
 	["Majordomo Executus"] = "Maggiordomo Executus",
 	["Majordomo Staghelm"] = "Maggiordomo Elmocervo",
@@ -9861,8 +9829,7 @@ Draghi di Nightmare]=],
 	["Maleki the Pallid"] = "Maleki il Pallido",
 	["Malfurion Stormrage"] = "Malfurion Grantempesta",
 	["Mal'Ganis"] = "Mal'Ganis",
-	--[[Translation missing --]]
-	--[[ ["Malificus"] = "Malificus",--]] 
+	["Malificus"] = " Malificus",
 	["Malkorok"] = "Malkorok",
 	["Maloriak"] = "Maloriak",
 	["Malygos"] = "Malygos",
@@ -9883,25 +9850,22 @@ Draghi di Nightmare]=],
 	["Mekgineer Thermaplugg"] = "Mekgeniere Termospin",
 	["Meng the Demented"] = "Meng il Delirante",
 	["Mennu the Betrayer"] = "Mennu il Traditore",
-	--[[Translation missing --]]
-	--[[ ["Mephistroth"] = "Mephistroth",--]] 
+	["Mephistroth"] = "Mephistroth",
 	["Meshlok the Harvester"] = "Meshlok il Raccogliatore",
 	["Midnight"] = "Mezzanotte",
 	["Mijan"] = "Mijan",
-	["Millificent Manastorm"] = "Millificent Tempesta di mana",
+	["Millificent Manastorm"] = "Millefica Manalampo",
 	["Mimiron"] = "Mimiron",
 	["Mindbender Ghur'sha"] = "Ghur'sha il Plagiamente",
-	["Mindflayer Kaahrj"] = "Mindflay è Kaahrj",
+	["Mindflayer Kaahrj"] = "Scorticatore di Menti Kaahrj",
 	["Miner Johnson"] = "Minatore Johnson",
 	["Ming the Cunning"] = "Ming lo Scaltro",
 	["Mistress of Pain"] = "Signora della Sofferenza",
-	--[[Translation missing --]]
-	--[[ ["Mistress Sassz'ine"] = "Mistress Sassz'ine",--]] 
+	["Mistress Sassz'ine"] = "Signora Sassz'ine",
 	["Moam"] = "Moam",
 	["Mogor"] = "Mogor",
 	["Mokra the Skullcrusher"] = "Mokra lo Spaccacrani",
-	--[[Translation missing --]]
-	--[[ ["Moontalon"] = "Moontalon",--]] 
+	["Moontalon"] = "Lunartiglio",
 	["Moorabi"] = "Moorabi",
 	["Mor Grayhoof"] = "Mor Zoccologrigio",
 	["Moragg"] = "Moragg",
@@ -9926,12 +9890,8 @@ Draghi di Nightmare]=],
 	["Nalorakk"] = "Nalorakk",
 	["Nal'tira"] = "Nal'tira",
 	["Naraxas"] = "Naraxas",
-	["Naturalist Tel'arn"] = [=[
-
-Naturalista Tel'anor]=],
-	["Na'zak the Fiend"] = [=[
-
-Na'zak il Fiend]=],
+	["Naturalist Tel'arn"] = "Naturalista Tel'anor",
+	["Na'zak the Fiend"] = "Na'zak il Demonio",
 	["Nazan"] = "Nazan",
 	["Neesa \"Hightower\" Nox"] = "Neesa \"La Torre\" Nox",
 	["Nefarian"] = "Nefarian",
@@ -9995,7 +9955,7 @@ Na'zak il Fiend]=],
 	["Paragons of the Klaxxi"] = "Eletti dei Klaxxi",
 	["Patchwerk"] = "Pezzacarne",
 	["Pathaleon the Calculator"] = "Pathaleon il Calcolatore",
-	["Patrol Captain Gerdo"] = "Patrol capitano Gerdo",
+	["Patrol Captain Gerdo"] = "Capitano di Pattuglia Gerdo",
 	["Peroth'arn"] = "Peroth'arn",
 	["Phalanx"] = "Falange",
 	["Phaseshift Bulwark"] = "Scudo Barricata Fuorifase",
@@ -10006,8 +9966,7 @@ Na'zak il Fiend]=],
 	["Pol"] = "Poli",
 	["Postmaster Malown"] = "Postino Malown",
 	["Priestess Delrissa"] = "Sacerdotessa Delrissa",
-	--[[Translation missing --]]
-	--[[ ["Priestess Lunaspyre"] = "Priestess Lunaspyre",--]] 
+	["Priestess Lunaspyre"] = "Sacerdotessa Spiraluna",
 	["Primordius"] = "Primordius",
 	["Prince Keleseth"] = "Principe Keleseth",
 	["Prince Malchezaar"] = "Principe Malchazaar",
@@ -10050,15 +10009,12 @@ Na'zak il Fiend]=],
 	["Rattlegore"] = "Scuotiossa",
 	["Razorclaw the Butcher"] = "Artiglioaffilato il Macellaio",
 	["Razorgore the Untamed"] = "Alafurion l'Indomabile",
-	--[[Translation missing --]]
-	--[[ ["Razorjaw Gladiator"] = "Razorjaw Gladiator",--]] 
-	--[[Translation missing --]]
-	--[[ ["Razorjaw Wavemender"] = "Razorjaw Wavemender",--]] 
+	["Razorjaw Gladiator"] = "Gladiatore Zannefini",
+	["Razorjaw Wavemender"] = "Curaonde Zannefini",
 	["Razorlash"] = "Ramospino",
 	["Razorscale"] = "Scagliafusa",
-	["Reaver Jdorn"] = "Reaver Jdorn",
-	--[[Translation missing --]]
-	--[[ ["Recursive Elemental"] = "Recursive Elemental",--]] 
+	["Reaver Jdorn"] = "Razziatore Jdorn",
+	["Recursive Elemental"] = "Elementale Ricorsivo",
 	["Reliquary of Souls"] = "Reliquia delle Anime",
 	["Renataki"] = "Renataki",
 	["Restless Skeleton"] = "Scheletro Inquieto",
@@ -10139,10 +10095,8 @@ Na'zak il Fiend]=],
 	["Sindragosa"] = "Sindragosa",
 	["Sinestra"] = "Sinestra",
 	["Sir Zeliek"] = "Ser Zeliek",
-	--[[Translation missing --]]
-	--[[ ["Sisters of the Moon"] = "Sisters of the Moon",--]] 
-	--[[Translation missing --]]
-	--[[ ["Si'vash"] = "Si'vash",--]] 
+	["Sisters of the Moon"] = "Sorelle della Luna",
+	["Si'vash"] = "Si'vash",
 	["Sjonnir The Ironshaper"] = "Sjonnir il Plasmaferro",
 	["Skadi the Ruthless"] = "Skadi lo Spietato",
 	["Skarr the Unbreakable"] = "Skarr l'Infrangibile",
@@ -10163,17 +10117,13 @@ Na'zak il Fiend]=],
 	["Sneed's Shredder"] = "Sneed's Shredder",
 	["Socrethar the Eternal"] = "Socrethar l'Eterno",
 	["Solakar Flamewreath"] = "Solakar Aurardente",
-	--[[Translation missing --]]
-	--[[ ["Solarist Tel'arn"] = "Solarist Tel'arn",--]] 
+	["Solarist Tel'arn"] = "Solarista Tel'arn",
 	["Solarium Agent"] = "Agente del Solarium",
 	["Solarium Priest"] = "Prete del Solarium",
-	--[[Translation missing --]]
-	--[[ ["Soul Queen Dejahna"] = "Soul Queen Dejahna",--]] 
+	["Soul Queen Dejahna"] = "Regina delle Anime Dejahna",
 	["Soulbinder Nyami"] = "Vincolatrice d'Anime Nyami",
-	--[[Translation missing --]]
-	--[[ ["Soultrapper Mevra"] = "Soultrapper Mevra",--]] 
-	--[[Translation missing --]]
-	--[[ ["Spellblade Aluriel"] = "Spellblade Aluriel",--]] 
+	["Soultrapper Mevra"] = "Cacciatrice d'Anime Mevra",
+	["Spellblade Aluriel"] = "Aluriel la Lama Incantata",
 	["Spine of Deathwing"] = "Spina Dorsale di Alamorte",
 	["Spirestone Battle Lord"] = "Signore della Battaglia Spiraroccia",
 	["Spirestone Butcher"] = "Macellaio Spiraroccia",
@@ -10181,8 +10131,7 @@ Na'zak il Fiend]=],
 	["Spoils of Pandaria"] = "Spoglie di Pandaria",
 	["Staff of Disintegration"] = "Bastone della Disintegrazione",
 	["Stalagg"] = "Stalagg",
-	--[[Translation missing --]]
-	--[[ ["Star Augur Etraeus"] = "Star Augur Etraeus",--]] 
+	["Star Augur Etraeus"] = "Astromante Etraeus",
 	["Steelbreaker"] = "Spaccacciaio",
 	["Stomper Kreeg"] = "Kreeg il Pestatore",
 	["Stonespine"] = "Stonespine",
@@ -10231,8 +10180,7 @@ Na'zak il Fiend]=],
 	["The Butcher"] = "Il Macellaio",
 	["The Crone"] = "La Strega",
 	["The Curator"] = "Curatore",
-	--[[Translation missing --]]
-	--[[ ["The Desolate Host"] = "The Desolate Host",--]] 
+	["The Desolate Host"] = "Ospite della Disperazione",
 	["The Eredar Twins"] = "Gemelli Eredar",
 	["The Fallen Protectors"] = "Protettori Caduti",
 	["The Four Horsemen"] = "Cavalieri dell'Apocalisse",
@@ -10249,8 +10197,7 @@ Na'zak il Fiend]=],
 	["The Razza"] = "The Razza",
 	["The Seven Dwarves"] = "Sette Re",
 	["The Skybreaker"] = "Spaccacieli",
-	--[[Translation missing --]]
-	--[[ ["The Soultakers"] = "The Soultakers",--]] 
+	["The Soultakers"] = "I Ladri d'Anime",
 	["The Spirit Kings"] = "Reggenti Spirituali",
 	["The Stone Guard"] = "Guardia di Pietra",
 	["The Tribunal of Ages"] = "Tribunale delle Ere",
@@ -10260,13 +10207,11 @@ Na'zak il Fiend]=],
 	["The Windreaver"] = "The Windreaver",
 	["Theka the Martyr"] = "Theka il Martire",
 	["Theralion"] = "Theralion",
-	--[[Translation missing --]]
-	--[[ ["Theralion and Variona"] = "Theralion and Variona",--]] 
+	["Theralion and Variona"] = "Theralion e Variona",
 	["Thok the Bloodthirsty"] = "Thok il Sanguinario",
 	["Thorim"] = "Thorim",
 	["Thorngrin the Tender"] = "Ghignospino il Venerato",
-	--[[Translation missing --]]
-	--[[ ["Thrashbite the Scornful"] = "Thrashbite the Scornful",--]] 
+	["Thrashbite the Scornful"] = "Falciamorsi lo Sprezzante",
 	["Tichondrius"] = "Tichondrius",
 	["Tidewalker Lurker"] = "Cavalcaonde Furtivo",
 	["Timmy the Cruel"] = "Timmy il Crudele",
@@ -10289,7 +10234,7 @@ Na'zak il Fiend]=],
 	["Twin Consorts"] = "Consorti Gemelle",
 	["Twin Ogron"] = "Ogron Gemelli",
 	["Tyrant Velhari"] = "Velhari la Despota",
-	["Ularogg Cragshaper"] = "Ularogg Cragshaper",
+	["Ularogg Cragshaper"] = "Ularogg Plasmarupi",
 	["Ultraxion"] = "Ultraxion",
 	["Urok Doomhowl"] = "Urok Urlonero",
 	["Ursoc"] = "Ursoc",
@@ -10329,8 +10274,7 @@ Na'zak il Fiend]=],
 	["Warder Stilgiss"] = "Custode Stilgiss",
 	["Warlord Kalithresh"] = "Signore della Guerra Kalithresh",
 	["Warlord Parjesh"] = "Signore della Guerra Parjesh",
-	--[[Translation missing --]]
-	--[[ ["Warlord Ramtusk"] = "Warlord Ramtusk",--]] 
+	["Warlord Ramtusk"] = "Signore della Guerra Zannaspina",
 	["Warlord Zaela"] = "Signora della Guerra Zaela",
 	["Warlord Zon'ozz"] = "Zon'ozz il Signore della Guerra",
 	["Warmaster Blackhorn"] = "Maestro di Guerra Corno Nero",

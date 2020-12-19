@@ -86,11 +86,10 @@ LibLatency\LibLatency\LibLatency.xml
 LibOO-1.0\lib.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
-LibRealmID\LibRealmID.lua
 LibRealmInfo\LibRealmInfo.lua
 LibSink-2.0\LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
-LibWho-2.0\LibWho-2.0.lua
+LibWho-2.0\LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
 
 # Ohter shared libs

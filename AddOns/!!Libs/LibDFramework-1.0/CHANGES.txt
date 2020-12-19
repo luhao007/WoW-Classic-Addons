@@ -1,0 +1,70 @@
+lightweight tag d3dc9bf255d9cdbd30b4dce3e1f3c21ab2960cba v9.0.1.220
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Mon Nov 23 16:40:20 2020 -0300
+
+commit d3dc9bf255d9cdbd30b4dce3e1f3c21ab2960cba
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Mon Nov 23 16:40:20 2020 -0300
+
+    Toc Update
+
+commit 8928ca080197428d0bd0bdfca9f7f4c045a7f8a5
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Mon Nov 23 16:38:53 2020 -0300
+
+    Some fixes for normal_bar
+
+commit bfb05f34a9b7cdf906ab4b894b0a1d6c950ce945
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sun Nov 22 20:38:58 2020 -0300
+
+    pcall replaced with xpcall
+
+commit f8d1e5687183d46841fa585ab88f5495811a9e11
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sun Nov 22 18:34:30 2020 -0300
+
+    Using xpcall under CoreDispatcher
+
+commit f8d1e5687183d46841fa585ab88f5495811a9e11
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Sun Nov 22 18:34:30 2020 -0300
+
+    Using xpcall under CoreDispatcher
+
+commit 6c4cfc3d7072f0be81dff73d02dfe2e073272d6d
+Author: Continuity <continuity@gmx.net>
+Date:   Tue Nov 17 23:52:24 2020 +0100
+
+    - adding option to use given environment on SetEnvironment
+
+commit aecb6db08a344f52b016a0c582211496103519c3
+Author: Continuity <continuity@gmx.net>
+Date:   Tue Nov 10 14:54:39 2020 +0100
+
+    - adding icon row config option to surpress blizzard timers
+
+commit c103cab125a0121ff1a4d58b4d1aee5155939cf6
+Author: Continuity <continuity@gmx.net>
+Date:   Tue Nov 10 13:49:28 2020 +0100
+
+    - adding missing outline options
+
+commit 142aec093302b8ca5e0e5a4190442e3d6d8f192e
+Author: Continuity <continuity@gmx.net>
+Date:   Tue Nov 10 13:03:54 2020 +0100
+
+    - adding font options to icon row
+
+commit 3f4537da67a4a56c7bca07720da411f000b3dc67
+Author: Continuity <continuity@gmx.net>
+Date:   Thu Nov 5 12:29:50 2020 +0100
+
+    - refression fix for truncation of UTF8 strings
+
+commit cf6b9a027ad3ad119bb1bebaf58b62cb88437a45
+Author: Continuity <continuity@gmx.net>
+Date:   Sun Nov 1 20:17:24 2020 +0100
+
+    - ensure clean UTF8 truncated text
+

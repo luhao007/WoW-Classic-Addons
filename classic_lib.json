@@ -109,6 +109,32 @@
   },
   {
     "source": "curse",
+    "id": "97288",
+    "slug": "libdframework",
+    "name": "Details!: Framework (library)",
+    "description": "A colection of tools of addon development",
+    "url": "https://www.curseforge.com/wow/addons/libdframework",
+    "download_url": "https://edge.forgecdn.net/files/3121/78/LibDFramework-1.0-v9.0.1.220.zip",
+    "date_published": "2020-11-23T19:41:24.637000+00:00",
+    "version": "v9.0.1.220",
+    "folders": [
+      {
+        "name": "LibDFramework-1.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v9.0.1.220",
+        "install_time": "2020-12-19T15:39:38+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "94348",
     "slug": "herebedragons",
     "name": "HereBeDragons",
@@ -156,6 +182,136 @@
       {
         "version": "2.0.1",
         "install_time": "2020-11-03T05:33:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "14262",
+    "slug": "libbabble-boss-3-0",
+    "name": "LibBabble-Boss-3.0",
+    "description": "A library to help with localization of bosses.",
+    "url": "https://www.curseforge.com/wow/addons/libbabble-boss-3-0",
+    "download_url": "https://edge.forgecdn.net/files/3120/160/LibBabble-Boss-3.0-9.0-release6.zip",
+    "date_published": "2020-11-22T22:43:35.253000+00:00",
+    "version": "9.0-release6",
+    "folders": [
+      {
+        "name": "LibBabble-Boss-3.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0-release6",
+        "install_time": "2020-12-19T15:48:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "14264",
+    "slug": "libbabble-creaturetype-3-0",
+    "name": "LibBabble-CreatureType-3.0",
+    "description": "A library to help with localization of the output of UnitCreatureType.",
+    "url": "https://www.curseforge.com/wow/addons/libbabble-creaturetype-3-0",
+    "download_url": "https://edge.forgecdn.net/files/3120/161/LibBabble-CreatureType-3.0-9.0-release6.zip",
+    "date_published": "2020-11-22T22:43:37.947000+00:00",
+    "version": "9.0-release6",
+    "folders": [
+      {
+        "name": "LibBabble-CreatureType-3.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0-release6",
+        "install_time": "2020-12-19T15:48:25+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "14265",
+    "slug": "libbabble-faction-3-0",
+    "name": "LibBabble-Faction-3.0",
+    "description": "A library to help with localization of factions.",
+    "url": "https://www.curseforge.com/wow/addons/libbabble-faction-3-0",
+    "download_url": "https://edge.forgecdn.net/files/3120/209/LibBabble-Faction-3.0-9.0-release7.zip",
+    "date_published": "2020-11-22T23:33:22.310000+00:00",
+    "version": "9.0-release7",
+    "folders": [
+      {
+        "name": "LibBabble-Faction-3.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0-release7",
+        "install_time": "2020-12-19T15:48:38+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "16748",
+    "slug": "libbabble-race-3-0",
+    "name": "LibBabble-Race-3.0",
+    "description": "A library to help with localization of races.",
+    "url": "https://www.curseforge.com/wow/addons/libbabble-race-3-0",
+    "download_url": "https://edge.forgecdn.net/files/3120/163/LibBabble-Race-3.0-9.0-release6.zip",
+    "date_published": "2020-11-22T22:43:45.207000+00:00",
+    "version": "9.0-release6",
+    "folders": [
+      {
+        "name": "LibBabble-Race-3.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0-release6",
+        "install_time": "2020-12-19T15:48:49+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "24454",
+    "slug": "libbabble-subzone-3-0",
+    "name": "LibBabble-SubZone-3.0",
+    "description": "A library to help with localization of in-game subzone names.",
+    "url": "https://www.curseforge.com/wow/addons/libbabble-subzone-3-0",
+    "download_url": "https://edge.forgecdn.net/files/3093/364/LibBabble-SubZone-3.0-9.0-release1.zip",
+    "date_published": "2020-10-26T15:12:25.337000+00:00",
+    "version": "9.0-release1",
+    "folders": [
+      {
+        "name": "LibBabble-SubZone-3.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "9.0-release1",
+        "install_time": "2020-12-19T15:49:06+00:00"
       }
     ]
   },
@@ -910,6 +1066,32 @@
       {
         "version": "v1.1",
         "install_time": "2020-11-03T05:33:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "14897",
+    "slug": "wholib",
+    "name": "WhoLib",
+    "description": "Queing of /who and SendWho() queries and a much better interface (see docs), with gurantee to be executed & callback.",
+    "url": "https://www.curseforge.com/wow/addons/wholib",
+    "download_url": "https://edge.forgecdn.net/files/2975/226/LibWho-2.0-2.0.179.zip",
+    "date_published": "2020-06-08T07:22:53.803000+00:00",
+    "version": "2.0.179",
+    "folders": [
+      {
+        "name": "LibWho-2.0"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "2.0.179",
+        "install_time": "2020-12-19T15:45:31+00:00"
       }
     ]
   }
