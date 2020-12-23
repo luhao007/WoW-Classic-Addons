@@ -184,21 +184,21 @@ local DATA = TSM.IsWowClassic() and {} or {
 		["i:13467"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Icecap
 	},
 	["i:43108"] = { -- Ebon Pigment (Darkflame Ink)
-		["i:22785"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Felweed
-		["i:22786"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Dreaming Glory
-		["i:22787"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Ragveil
-		["i:22789"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Terocone
+		["i:22785"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Felweed
+		["i:22786"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Dreaming Glory
+		["i:22787"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Ragveil
+		["i:22789"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Terocone
 		["i:22790"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Ancient Lichen
 		["i:22791"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Netherbloom
 		["i:22792"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Nightmare Vine
 		["i:22793"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Mana Thistle
 	},
 	["i:43109"] = { -- Icy Pigment (Snowfall Ink)
-		["i:36904"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Tiger Lily
-		["i:36907"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Talandra's Rose
-		["i:36901"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Goldclover
-		["i:39970"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Fire Leaf
-		["i:37921"] = {matRate = 0.0000, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Deadnettle
+		["i:36904"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Tiger Lily
+		["i:36907"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Talandra's Rose
+		["i:36901"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Goldclover
+		["i:39970"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Fire Leaf
+		["i:37921"] = {matRate = 0.3300, minAmount = 1, maxAmount = 3, amountOfMats = 0.0705}, -- Deadnettle
 		["i:36903"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Adder's Tongue
 		["i:36905"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Lichbloom
 		["i:36906"] = {matRate = 0.5000, minAmount = 1, maxAmount = 3, amountOfMats = 0.1075}, -- Icethorn

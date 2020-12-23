@@ -507,7 +507,7 @@ local DATA = TSM.IsWowClassic() and {} or {
 	-- ========================================== Essences =========================================
 	["i:173170"] = { -- Essence of Rebirth
 		["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
-		["i:171830"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Oxxein Ore
+		["i:171831"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Phaedrum Ore
 		["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
 	},
 	["i:173171"] = { -- Essence of Torment
@@ -517,7 +517,7 @@ local DATA = TSM.IsWowClassic() and {} or {
 	},
 	["i:173172"] = { -- Essence of Servitude
 		["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
-		["i:171831"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Phaedrum Ore
+		["i:171830"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Oxxein Ore
 		["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
 	},
 	["i:173173"] = { -- Essence of Valor

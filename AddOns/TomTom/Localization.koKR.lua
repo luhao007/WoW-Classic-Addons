@@ -1,4 +1,4 @@
---Localization.koKR.lua by friends
+﻿--Localization.koKR.lua by friends
 
 if ( GetLocale() == "koKR" ) then
 

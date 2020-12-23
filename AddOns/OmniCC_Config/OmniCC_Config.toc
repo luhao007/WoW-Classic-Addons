@@ -10,4 +10,8 @@
 
 ## X-Part-Of: OmniCC
 
-..\OmniCC\config\config.xml
+localization\localization.xml
+preview.lua
+themes.lua
+rules.lua
+options.lua

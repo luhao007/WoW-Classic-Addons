@@ -289,7 +289,8 @@ class Manager:
     def handle_dup_libraries(self):
         addons = ['Atlas', 'BlizzMove', 'DBM-Core', 'Details_Streamer',
                   'Details_TinyThreat', 'ExRT', 'GatherMate2', 'GTFO',
-                  'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter', 'Quartz', 'RangeDisplay',
+                  'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
+                  'OmniCC_Config', 'Quartz', 'RangeDisplay',
                   'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
         if self.is_classic:
@@ -627,11 +628,10 @@ class Manager:
     def handle_omnicc(self):
         rm_tree('AddOns/OmniCC/libs')
 
-        for xml_path in ['main/main.xml', 'config/config.xml']:
-            process_file(
-                Path('AddOns/OmniCC/') / xml_path,
-                lambda lines: [line for line in lines if 'libs' not in line]
-            )
+        process_file(
+            'AddOns/OmniCC/core/core.xml',
+            lambda lines: [line for line in lines if 'libs' not in line]
+        )
 
     @retail_only
     def handle_omen(self):

@@ -19,6 +19,7 @@ local private = {
 	hasNonBaseItemStrings = {},
 	bonusIdsTemp = {},
 	modifiersTemp = {},
+	modifiersValueTemp = {},
 }
 local ITEM_MAX_ID = 999999
 local UNKNOWN_ITEM_STRING = "i:0"
@@ -276,6 +277,7 @@ function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, i
 	local modifiersStr = (numModifiers > 0 and numModifiers > 1 and numModifiers % 2 == 1) and strjoin(":", select(numBonusIds + 1, ...)) or ""
 	if modifiersStr ~= "" then
 		wipe(private.modifiersTemp)
+		wipe(private.modifiersValueTemp)
 		local num, modifierType = nil, nil
 		for modifier in gmatch(modifiersStr, "[0-9]+") do
 			modifier = tonumber(modifier)
@@ -286,13 +288,18 @@ function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, i
 			else
 				if IMPORTANT_MODIFIER_TYPES[modifierType] then
 					tinsert(private.modifiersTemp, modifierType)
-					tinsert(private.modifiersTemp, modifier)
+					assert(not private.modifiersValueTemp[modifierType])
+					private.modifiersValueTemp[modifierType] = modifier
 				end
 				modifierType = nil
 			end
 		end
 		if #private.modifiersTemp > 0 then
-			assert(#private.modifiersTemp % 2 == 0)
+			sort(private.modifiersTemp)
+			-- insert the values into modifiersTemp
+			for i = #private.modifiersTemp, 1, -1 do
+				tinsert(private.modifiersTemp, i + 1, private.modifiersValueTemp[private.modifiersTemp[i]])
+			end
 			tinsert(private.modifiersTemp, 1, #private.modifiersTemp / 2)
 			modifiersStr = table.concat(private.modifiersTemp, ":")
 		end

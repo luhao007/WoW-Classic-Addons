@@ -1568,4 +1568,10 @@ Change Log:
 * Added SL spells for Sanguine Depths
 * Added Classic spells from Naxxramas 40
 
-
+4.57.2
+* Fixed SL spells for Sanguine Depths
+* Fixed SL spells for Spires of Ascension
+* Added Shadowlands spells (world)
+* Added SL spells for Castle Nathria
+* Added SL spells for Torghast
+* Added Classic spells from Naxxramas 40
