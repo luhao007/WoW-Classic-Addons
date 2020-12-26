@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: zwj@oldgun
-## Version: 1.8.97
+## Version: 1.8.100
 ## DefaultState: enabled
 
 ## Title: WclPlayerScore
