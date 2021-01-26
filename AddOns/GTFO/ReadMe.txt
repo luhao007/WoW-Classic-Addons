@@ -1575,3 +1575,21 @@ Change Log:
 * Added SL spells for Castle Nathria
 * Added SL spells for Torghast
 * Added Classic spells from Naxxramas 40
+
+4.57.3
+* Added Shadowlands spells (world)
+* Added SL spells for Castle Nathria
+* Added SL spells for Theater of Pain
+* Added SL spells for De Other Side
+
+4.57.4
+* Fixed SL spells for Castle Nathria
+* Added Shadowlands spells (world)
+
+4.58
+* Updated ToC for WoW Classic 1.13.6 (again)
+* Updated LibUIDropDownMenu to 4.00.9000236639
+
+4.59
+* Fixed dropdown library issues with Classic
+* Added SL spells for Castle Nathria

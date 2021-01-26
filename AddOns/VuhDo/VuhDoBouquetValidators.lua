@@ -13,19 +13,6 @@ VUHDO_FORCE_RESET = false;
 local floor = floor;
 local select = select;
 local twipe = table.wipe;
-local GetRaidTargetIndex = GetRaidTargetIndex;
-local UnitPower = UnitPower;
-local UnitPowerMax = UnitPowerMax;
-local UnitIsFriend = UnitIsFriend;
-local UnitIsEnemy = UnitIsEnemy;
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost;
-local UnitIsPlayer = UnitIsPlayer;
-local UnitIsTapped = UnitIsTapped;
-local UnitIsTappedByPlayer = UnitIsTappedByPlayer;
-local GetTexCoordsForRole = GetTexCoordsForRole;
-local UnitIsPVP = UnitIsPVP;
-local UnitFactionGroup = UnitFactionGroup;
-local UnitHasIncomingResurrection = UnitHasIncomingResurrection;
 local _;
 
 local VUHDO_RAID = { };
@@ -1073,6 +1060,16 @@ local function VUHDO_pvpIconValidator(anInfo, _)
 	end
 end
 
+--
+local function VUHDO_friendValidator(anInfo, _)
+  return UnitIsFriend("player", anInfo["unit"]), nil, -1, -1, -1;
+end
+
+--
+local function VUHDO_foeValidator(anInfo, _)
+  return not UnitIsFriend("player", anInfo["unit"]), nil, -1, -1, -1;
+end
+
 
 
 --
@@ -1156,23 +1153,38 @@ local VUHDO_OVERRIDE_FUNCTIONS = { };
 
 local VUHDO_BLOCKED_FUNCTIONS = {
 	-- Lua functions that may allow breaking out of the environment
-	getfenv = true,
-	setfenv = true,
-	loadstring = true,
-	pcall = true,
+	getfenv = true, 
+	setfenv = true, 
+	loadstring = true, 
+	pcall = true, 
+	xpcall = true, 
 	-- blocked WoW API
-	SendMail = true,
-	SetTradeMoney = true,
-	AddTradeMoney = true,
-	PickupTradeMoney = true,
-	PickupPlayerMoney = true,
-	TradeFrame = true,
-	MailFrame = true,
-	EnumerateFrames = true,
-	RunScript = true,
-	AcceptTrade = true,
-	SetSendMailMoney = true,
-	EditMacro = true
+	SendMail = true, 
+	SetTradeMoney = true, 
+	AddTradeMoney = true, 
+	PickupTradeMoney = true, 
+	PickupPlayerMoney = true, 
+	TradeFrame = true, 
+	MailFrame = true, 
+	EnumerateFrames = true, 
+	RunScript = true, 
+	AcceptTrade = true, 
+	SetSendMailMoney = true, 
+	EditMacro = true, 
+	DevTools_DumpCommand = true, 
+	hash_SlashCmdList = true, 
+	CreateMacro = true, 
+	SetBindingMacro = true, 
+	GuildDisband = true, 
+	GuildUninvite = true, 
+	securecall = true
+};
+
+local VUHDO_BLOCKED_TABLES = {
+	SlashCmdList = true, 
+	SendMailMailButton = true, 
+	SendMailMoneyGold = true, 
+	MailFrameTab2 = true
 };
 
 
@@ -1185,20 +1197,32 @@ end
 
 
 local env_getglobal;
-local exec_env = setmetatable({}, { __index =
-	function(t, k)
-		if k == "_G" then
-			return t
-		elseif k == "getglobal" then
-			return env_getglobal
-		elseif VUHDO_BLOCKED_FUNCTIONS[k] then
-			return VUHDO_blockedFunction
-		elseif VUHDO_OVERRIDE_FUNCTIONS[k] then
-			return VUHDO_OVERRIDE_FUNCTIONS[k]
-		else
-			return _G[k]
-		end
-	end
+local exec_env = setmetatable({}, { 
+	__index =
+		function(t, k)
+			if k == "_G" then
+				return t
+			elseif k == "getglobal" then
+				return env_getglobal
+			elseif VUHDO_BLOCKED_FUNCTIONS[k] then
+				VUHDO_blockedFunction()
+
+				return function() end
+			elseif VUHDO_BLOCKED_TABLES[k] then 
+				VUHDO_blockedFunction()
+
+				return {}
+			elseif VUHDO_OVERRIDE_FUNCTIONS[k] then
+				return VUHDO_OVERRIDE_FUNCTIONS[k]
+			else
+				return _G[k]
+			end
+		end, 
+	__newindex = 
+		function(t, k, v) 
+			VUHDO_blockedFunction()
+		end,
+	__metatable = false
 });
 
 
@@ -1891,6 +1915,18 @@ VUHDO_BOUQUET_BUFFS_SPECIAL = {
 		["displayName"] = VUHDO_I18N_DEF_PVP_STATUS,
 		["validator"] = VUHDO_pvpIconValidator,
 		["interests"] = { VUHDO_UPDATE_MINOR_FLAGS },
+	},
+
+	["FRIEND"] = {
+		["displayName"] = VUHDO_I18N_FRIEND_STATUS,
+		["validator"] = VUHDO_friendValidator,
+		["interests"] = { },
+	},
+
+	["FOE"] = {
+		["displayName"] = VUHDO_I18N_FOE_STATUS,
+		["validator"] = VUHDO_foeValidator,
+		["interests"] = { },
 	},
 
 	["OVERFLOW_COUNTER"] = {

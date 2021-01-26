@@ -1,18 +1,18 @@
 if (GetLocale() ~= "frFR") then
 	return;
 end
--- à = \195\160
--- â = \195\162
--- æ = \195\166
--- ç = \195\167
--- è = \195\168
--- é = \195\169
--- ê = \195\170
--- ï = \195\175
--- ô = \195\180
--- ù = \195\185
--- Œ = \197\146
--- œ = \197\147
+-- Ã  = \195\160
+-- Ã¢ = \195\162
+-- Ã¦ = \195\166
+-- Ã§ = \195\167
+-- Ã¨ = \195\168
+-- Ã© = \195\169
+-- Ã¨ = \195\170
+-- Ã¯ = \195\175
+-- Ã´ = \195\180
+-- Ã¹ = \195\185
+-- Å’ = \197\146
+-- Å“ = \197\147
 -- @EXACT = true: Translation has to be the exact(!) match in the clients language,
 --                beacause it carries technical semantics
 -- @EXACT = false: Translation can be done freely, because text is only descriptive
@@ -127,7 +127,7 @@ VUHDO_I18N_BUFFC_SKIN = "Peau";
 -- Mage
 VUHDO_I18N_BUFFC_ARMOR_MAGE = "Armure";
 -- Death Knight
-VUHDO_BUFFC_PRESENCE    = "Présence";
+VUHDO_BUFFC_PRESENCE    = "Pr\195\169sence";
 -- Warrior
 VUHDO_I18N_BUFFC_SHOUT = "Cri";
 -- Hunter
@@ -256,6 +256,7 @@ VUHDO_I18N_BOUQUET_STATUS_THREAT = "Statusbar: Threat %";
 VUHDO_I18N_BOUQUET_NEW_ITEM_NAME = "-- enter (de)buff here --";
 VUHDO_I18N_DEF_BOUQUET_TANK_COOLDOWNS = "Tank Cooldowns";
 VUHDO_I18N_DEF_BOUQUET_PW_S_WEAKENED_SOUL = "PW:S & Weakened Soul";
+VUHDO_I18N_DEF_BOUQUET_MONK_STAGGER = "Report du moine";
 VUHDO_I18N_DEF_BOUQUET_BORDER_MULTI_AGGRO = "Border: Multi + Aggro";
 VUHDO_I18N_DEF_BOUQUET_BORDER_MULTI = "Border: Multi";
 VUHDO_I18N_DEF_BOUQUET_BORDER_SIMPLE = "Border: Simple";
@@ -372,6 +373,8 @@ VUHDO_I18N_DEF_ROLE_ICON = "Role Icon";
 VUHDO_I18N_DEF_BOUQUET_TARGET_HEALTH = "Health (generic, target)";
 VUHDO_I18N_TAPPED_COLOR = "Flag: Tapped";
 VUHDO_I18N_ENEMY_STATE_COLOR = "Color: Friend/Foe";
+VUHDO_I18N_FRIEND_STATUS = "Flag: Ami";
+VUHDO_I18N_FOE_STATUS = "Flag: Ennemi";
 VUHDO_I18N_BOUQUET_STATUS_ALWAYS_FULL = "Statusbar: always full";
 VUHDO_I18N_BOUQUET_STATUS_FULL_IF_ACTIVE = "Statusbar: full if active";
 VUHDO_I18N_AOE_ADVICE = "Icon: AOE Advice";

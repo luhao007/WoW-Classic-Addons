@@ -334,6 +334,7 @@ function VUHDO_setHealth(aUnit, aMode)
 			tInfo["healthmax"] = UnitHealthMax(aUnit);
 			tInfo["health"] = UnitHealth(aUnit);
 			tInfo["loghealth"] = UnitHealth(aUnit);
+			tInfo["updateTime"] = GetTime();
 			tInfo["name"] = tName;
 			tInfo["number"] = VUHDO_getUnitNo(aUnit);
 			tInfo["unit"] = aUnit;
@@ -394,12 +395,12 @@ function VUHDO_setHealth(aUnit, aMode)
 				if 2 == aMode then
                     -- Filter exception UNIT_HEALTH_FREQUENT event in classic
                     -- Sometimes there is a UNIT_HEALTH_FREQUENT event in the interim period  
-					if tInfo["updateTime"] ==  GetTime() then
+					if tInfo["updateTime"] and abs(tonumber(tInfo["updateTime"]) - tonumber(GetTime())) < 0.4 then
 						return;
                     -- Filter exception health data from UnitHealth API
                     -- UnitHealth will return 0 if the hunter cast FeignDeath 
                     -- Sometimes UnitIsDeadOrGhost return false and UnitHealth return 0 before UnitIsFeignDeath return true
-					elseif UnitIsFeignDeath(aUnit)  or not UnitIsDeadOrGhost(aUnit) and UnitHealth(aUnit) == 0 then
+					elseif (UnitIsFeignDeath(aUnit)  or not UnitIsDeadOrGhost(aUnit)) and UnitHealth(aUnit) == 0 then
 						return;
 					else 
 						tNewHealth = UnitHealth(aUnit);
@@ -425,6 +426,10 @@ function VUHDO_setHealth(aUnit, aMode)
 				tInfo["healthmax"] = UnitHealthMax(aUnit);
 				tInfo["sortMaxHp"] = VUHDO_getUnitSortMaxHp(aUnit);
 				tInfo["loghealth"] = UnitHealth(aUnit);
+				if  UnitHealth(aUnit) ~= 0 then
+					tInfo["health"] = UnitHealth(aUnit);
+				end
+				tInfo["updateTime"] = GetTime();
 
 			elseif 6 == aMode then -- VUHDO_UPDATE_AFK
 				tInfo["afk"] = tIsAfk;

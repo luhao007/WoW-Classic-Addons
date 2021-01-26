@@ -20,6 +20,7 @@ local private = {
 	bonusIdsTemp = {},
 	modifiersTemp = {},
 	modifiersValueTemp = {},
+	extraStatModifiersTemp = {},
 }
 local ITEM_MAX_ID = 999999
 local UNKNOWN_ITEM_STRING = "i:0"
@@ -28,7 +29,8 @@ local PET_CAGE_ITEM_STRING = "i:82800"
 local MINIMUM_VARIANT_ITEM_ID = 152632
 local IMPORTANT_MODIFIER_TYPES = {
 	[9] = true,
-	[28] = true,
+}
+local EXTRA_STAT_MODIFIER_TYPES = {
 	[29] = true,
 	[30] = true,
 }
@@ -278,6 +280,7 @@ function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, i
 	if modifiersStr ~= "" then
 		wipe(private.modifiersTemp)
 		wipe(private.modifiersValueTemp)
+		wipe(private.extraStatModifiersTemp)
 		local num, modifierType = nil, nil
 		for modifier in gmatch(modifiersStr, "[0-9]+") do
 			modifier = tonumber(modifier)
@@ -290,18 +293,33 @@ function private.FilterBonusIdsAndModifiers(itemString, importantBonusIdsOnly, i
 					tinsert(private.modifiersTemp, modifierType)
 					assert(not private.modifiersValueTemp[modifierType])
 					private.modifiersValueTemp[modifierType] = modifier
+				elseif not importantBonusIdsOnly and EXTRA_STAT_MODIFIER_TYPES[modifierType] then
+					tinsert(private.modifiersTemp, modifierType)
+					tinsert(private.extraStatModifiersTemp, modifier)
 				end
 				modifierType = nil
 			end
 		end
 		if #private.modifiersTemp > 0 then
 			sort(private.modifiersTemp)
+			sort(private.extraStatModifiersTemp)
 			-- insert the values into modifiersTemp
 			for i = #private.modifiersTemp, 1, -1 do
-				tinsert(private.modifiersTemp, i + 1, private.modifiersValueTemp[private.modifiersTemp[i]])
+				local tempModifierType = private.modifiersTemp[i]
+				local modifier = nil
+				if EXTRA_STAT_MODIFIER_TYPES[tempModifierType] then
+					assert(not importantBonusIdsOnly)
+					modifier = tremove(private.extraStatModifiersTemp)
+				else
+					modifier = private.modifiersValueTemp[tempModifierType]
+				end
+				assert(modifier)
+				tinsert(private.modifiersTemp, i + 1, modifier)
 			end
 			tinsert(private.modifiersTemp, 1, #private.modifiersTemp / 2)
 			modifiersStr = table.concat(private.modifiersTemp, ":")
+		else
+			modifiersStr = ""
 		end
 	end
 

@@ -791,6 +791,14 @@ local function SetPortraitIcon(self, data, x)
 		return true;
 	end
 end
+local function GetBestMapForGroup(group)
+	if group then
+		if group.mapID then return group.mapID; end
+		if group.maps then return group.maps[1]; end
+		if group.coords then return group.coords[1][3]; end
+		if group.parent then return GetBestMapForGroup(group.parent); end
+	end
+end
 local function GetRelativeMap(group, currentMapID)
 	if group then
 		if group.mapID then return group.mapID; end
@@ -1747,6 +1755,8 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 						for i,item in ipairs(entries) do
 							left = item.group.text or RETRIEVING_DATA;
 							if left == RETRIEVING_DATA or left:find("%[]") then working = true; end
+							local mapID = GetBestMapForGroup(item.group);
+							if mapID and mapID ~= app.GetCurrentMapID() then left = left .. " (" .. app.GetMapName(mapID) .. ")"; end
 							if item.group.icon then item.prefix = item.prefix .. "|T" .. item.group.icon .. ":0|t "; end
 							tinsert(info, { left = item.prefix .. left, right = item.right });
 						end
@@ -1755,6 +1765,8 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 							local item = entries[i];
 							left = item.group.text or RETRIEVING_DATA;
 							if left == RETRIEVING_DATA or left:find("%[]") then working = true; end
+							local mapID = GetBestMapForGroup(item.group);
+							if mapID and mapID ~= app.GetCurrentMapID() then left = left .. " (" .. app.GetMapName(mapID) .. ")"; end
 							if item.group.icon then item.prefix = item.prefix .. "|T" .. item.group.icon .. ":0|t "; end
 							tinsert(info, { left = item.prefix .. left, right = item.right });
 						end
@@ -1920,7 +1932,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 		if #info > 0 then
 			local uniques, dupes, _ = {}, {};
 			for i,item in ipairs(info) do
-				_ = item.left;
+				_ = item.hash or item.left;
 				if not _ then
 					tinsert(uniques, item);
 				else
@@ -2516,6 +2528,7 @@ local EXTERMINATOR = {
 	["Player-4372-00E86132"] = true,	-- Borlemont
 	["Player-4372-010B9178"] = true,	-- Braven
 	["Player-4372-0063664F"] = true,	-- Brittbrat
+	["Player-4372-001BA8B1"] = true,	-- Darkirontank
 	["Player-4372-0100DF23"] = true,	-- Dizplaced
 	["Player-4372-01230376"] = true,	-- Drixxtwo
 	["Player-4372-002719C4"] = true,	-- Drunkninja
@@ -4597,7 +4610,11 @@ app.BaseRecipe = {
 			return select(3, GetSpellInfo(t.spellID)) or (t.requireSkill and select(3, GetSpellInfo(t.requireSkill)));
 		elseif key == "link" then
 			if t.itemID then return select(2, GetItemInfo(t.itemID)); end
-			return "spell:" .. t.spellID;
+			if GetRelativeValue(t, "requireSkill") == 333 then
+				return "|cffffffff|Henchant:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			else
+				return "|cffffffff|Hspell:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			end
 		elseif key == "collectible" then
 			return app.CollectibleRecipes;
 		elseif key == "collected" then
@@ -4671,6 +4688,7 @@ app.CraftTypeIDToColor = function(craftTypeID)
 	if craftType then return colors[craftType]; end
 	return nil;
 end
+app.MaxSpellRankPerSpellName = {};
 app.SpellIDToSpellName = {};
 app.GetSpellName = function(spellID, rank)
 	local spellName = rawget(app.SpellIDToSpellName, spellID);
@@ -4682,7 +4700,10 @@ app.GetSpellName = function(spellID, rank)
 	end
 	if spellName and spellName ~= "" then
 		if rank then
-			spellName = spellName .. " (Rank " .. rank .. ")";
+			if (rawget(app.MaxSpellRankPerSpellName, spellName) or 0) < rank then
+				rawset(app.MaxSpellRankPerSpellName, spellName, rank);
+			end
+			spellName = spellName .. " (" .. RANK .. " " .. rank .. ")";
 		end
 		dirty = true;
 		rawset(app.SpellIDToSpellName, spellID, spellName);
@@ -4694,6 +4715,22 @@ app.IsSpellKnown = function(spellID, rank)
 	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
 		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
 		return true;
+	end
+	if rank then
+		local spellName = GetSpellInfo(spellID);
+		if spellName then
+			local maxRank = rawget(app.MaxSpellRankPerSpellName, spellName);
+			if maxRank and maxRank > rank then
+				spellName = spellName .. " (" .. RANK .. " ";
+				for i=maxRank,rank,-1 do
+					spellID = app.SpellNameToSpellID[spellName .. i .. ")"];
+					if spellID and (IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
+						or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true)) then
+						return true;
+					end
+				end
+			end
+		end
 	end
 end
 app.SpellNameToSpellID = setmetatable({}, {
@@ -4749,7 +4786,11 @@ app.BaseSpell = {
 					return link;
 				end
 			end
-			return "spell:" .. t.spellID;
+			if GetRelativeValue(t, "requireSkill") == 333 then
+				return "|cffffffff|Henchant:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			else
+				return "|cffffffff|Hspell:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			end
 		elseif key == "collectible" then
 			return false;
 		elseif key == "collected" then

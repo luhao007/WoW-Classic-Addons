@@ -492,6 +492,8 @@ local function VUHDO_getMissingBuffs(aBuffInfo, someUnits, aCategSpec)
 			tIsWatchUnit = false;
 		elseif "player" == tUnit then
 			tIsWatchUnit = true;
+		elseif tInfo["powertype"] ~= VUHDO_UNIT_POWER_MANA and (tCategName == VUHDO_SPELL_ID.BUFF_DIVINE_SPIRIT or tCategName == VUHDO_SPELL_ID.BUFF_ARCANE_BRILLIANCE or tCategName == VUHDO_SPELL_ID.BUFF_GREATER_BLESSING_OF_WISDOM) then
+			tIsWatchUnit = false; --don't track mana-related buffs on units without mana
 		elseif VUHDO_isInSameZone(tUnit) and (tInfo["visible"] or tIsNotInBattleground) then
 			tIsWatchUnit = true;
 		else

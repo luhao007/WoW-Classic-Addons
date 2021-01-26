@@ -79,6 +79,7 @@ function NWB:OnInitialize()
 	self:createLayerFrameTimerLogButton();
 	self:setLayerFrameText();
 	self:logonCheckGuildMasterSetting();
+	self:createNaxxMarkers();
 end
 
 --Set font used in fontstrings on frames.
@@ -752,7 +753,7 @@ function NWB:doWarning(type, num, secondsLeft, layer)
 	elseif (loadWait > 5 and NWB.db.global.guild1 == 1 and num == 1 and send) then
 		NWB:sendGuildMsg(msg, "guild1");
 	end
-	if (num == 1) then
+	if (num == 1 and (type ~= "rend" or (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend))) then
 		NWB:startFlash("flashOneMin");
 	end
 	--Middle of the screen.
@@ -815,6 +816,7 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 		["guild5"] = "k",
 		["guild1"] = "l",
 		["guild0"] = "m",
+		["guildNpcWalking"] = "K",
 	};
 	local numTotalMembers = GetNumGuildMembers();
 	local onlineMembers = {};
@@ -1103,11 +1105,14 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 				NWB:sendGuildMsg(L["rendFirstYellMsg"] .. layerMsg, "guildNpcDialogue");
 			end
 			rendFirstYell = GetServerTime();
-			NWB:startFlash("flashFirstYell");
-			if (NWB.db.global.middleBuffWarning) then
-				RaidNotice_AddMessage(RaidWarningFrame, L["rendFirstYellMsg"] .. layerMsg, colorTable, 5);
+			if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
+				NWB:startFlash("flashFirstYell");
+				if (NWB.db.global.middleBuffWarning) then
+					RaidNotice_AddMessage(RaidWarningFrame, L["rendFirstYellMsg"] .. layerMsg, colorTable, 5);
+				end
 			end
 			NWB:playSound("soundsFirstYell", "rend");
+			NWB:sendBigWigs(6, "[NWB] " .. L["rend"]);
 		end
 	elseif (type == "ony") then
 		if ((GetServerTime() - onyFirstYell) > 40) then
@@ -1124,6 +1129,7 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 				RaidNotice_AddMessage(RaidWarningFrame, L["onyxiaFirstYellMsg"] .. layerMsg, colorTable, 5);
 			end
 			NWB:playSound("soundsFirstYell", "ony");
+			NWB:sendBigWigs(14, "[NWB] " .. L["Rallying Cry of the Dragonslayer"]);
 		end
 	elseif (type == "nef") then
 		if ((GetServerTime() - nefFirstYell) > 40) then
@@ -1140,6 +1146,7 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 				RaidNotice_AddMessage(RaidWarningFrame, L["nefarianFirstYellMsg"] .. layerMsg, colorTable, 5);
 			end
 			NWB:playSound("soundsFirstYell", "nef");
+			NWB:sendBigWigs(15, "[NWB] " .. L["Rallying Cry of the Dragonslayer"]);
 		end
 	elseif (type == "zan") then
 		if ((GetServerTime() - zanFirstYell) > 60) then
@@ -1157,8 +1164,10 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			--These delays can be a little longer on occasion, probably based on amount of people around?
 			--For neatness in the chat msgs we just call BB /yell and Island /say as 50 seconds, and island /yell as 30.
 			local msg = string.format(L["zanFirstYellMsg"], "30");
+			local timerDelay = 30;
 			if (arg == "50") then
 				msg = string.format(L["zanFirstYellMsg"], "50");
+				timerDelay = 50;
 			end
 			if (source == "self") then
 				NWB.data.zanYell = GetServerTime();
@@ -1167,7 +1176,12 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 				NWB:print(msg);
 			end
 			if (NWB.db.global.guildZanDialogue == 1) then
-				NWB:sendGuildMsg(msg .. layerMsg, "guildZanDialogue");
+				if (IsInGuild()) then
+					NWB:sendGuildMsg(msg .. layerMsg, "guildZanDialogue");
+				elseif (not NWB.db.global.chatZan) then
+					--Fall back to a chat msg if guild msg is enabled but we have no guild, and chat msg wasn't already sent.
+					NWB:print(msg);
+				end
 			end
 			zanFirstYell = GetServerTime();
 			NWB:startFlash("flashFirstYellZan");
@@ -1178,6 +1192,7 @@ function NWB:doFirstYell(type, layer, source, distribution, arg)
 			if (distribution == "RAID" or distribution == "PARTY") then
 				NWB:sendYell("GUILD", "zan");
 			end
+			NWB:sendBigWigs(timerDelay, "[NWB] " .. L["Spirit of Zandalar"]);
 		end
 	end
 end
@@ -1311,6 +1326,10 @@ local yellOneOffset = 30;
 local yellTwoOffset = 30;
 local buffLag, dl1, dl2 = 15;
 local lastZanBuffGained = 0;
+local lastDmfBuffGained = 0;
+local speedtest = 0;
+local waitingCombatEnd, hideSummonPopup;
+local lastRendHandIn, lastOnyHandIn, lastNefHandIn, lastZanHandIn = 0, 0, 0, 0;
 function NWB:combatLogEventUnfiltered(...)
 	local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, 
 			destName, destFlags, destRaidFlags, _, spellName = CombatLogGetCurrentEventInfo();
@@ -1331,7 +1350,6 @@ function NWB:combatLogEventUnfiltered(...)
 			dl1 = GetServerTime();
 			NWB:doNpcKilledMsg("ony", layerNum);
 			NWB:sendNpcKilled("GUILD", "ony", nil, layerNum);
-			--NWB:print(L["onyxiaNpcKilledHorde"]);
 			NWB:timerCleanup();
 			C_Timer.After(1, function()
 				NWB:sendData("GUILD");
@@ -1350,7 +1368,6 @@ function NWB:combatLogEventUnfiltered(...)
 			dl2 = GetServerTime();
 			NWB:doNpcKilledMsg("nef", layerNum);
 			NWB:sendNpcKilled("GUILD", "nef", nil, layerNum);
-			--NWB:print(L["nefarianNpcKilledHorde"]);
 			NWB:timerCleanup();
 			C_Timer.After(1, function()
 				NWB:sendData("GUILD");
@@ -1369,7 +1386,6 @@ function NWB:combatLogEventUnfiltered(...)
 			dl1 = GetServerTime();
 			NWB:doNpcKilledMsg("ony", layerNum);
 			NWB:sendNpcKilled("GUILD", "ony", nil, layerNum);
-			--NWB:print(L["onyxiaNpcKilledAlliance"]);
 			NWB:timerCleanup();
 			C_Timer.After(1, function()
 				NWB:sendData("GUILD");
@@ -1388,7 +1404,6 @@ function NWB:combatLogEventUnfiltered(...)
 			dl2 = GetServerTime();
 			NWB:doNpcKilledMsg("nef", layerNum);
 			NWB:sendNpcKilled("GUILD", "nef", nil, layerNum);
-			--NWB:print(L["nefarianNpcKilledAlliance"]);
 			NWB:timerCleanup();
 			C_Timer.After(2, function()
 				NWB:sendData("GUILD");
@@ -1427,6 +1442,13 @@ function NWB:combatLogEventUnfiltered(...)
 					and ((GetServerTime() - NWB.data.rendYell2) < yellTwoOffset or (GetServerTime() - NWB.data.rendYell) < yellOneOffset)) then
 				NWB:trackNewBuff(spellName, "rend");
 				NWB:playSound("soundsRendDrop", "rend");
+				if (NWB.db.global.cityGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got Rend buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
 				if (NWB.isLayered and zone ~= 1454) then
 					--Testing tracking rend for alliance here by attaching it to the new layermap.
 					if (NWB.lastKnownLayerMapID and NWB.lastKnownLayerMapID > 0) then
@@ -1447,6 +1469,7 @@ function NWB:combatLogEventUnfiltered(...)
 				else
 					NWB:setRendBuff("self", UnitName("player"), zoneID, sourceGUID);
 				end
+				NWB:debug("rend hand in delay", GetTime() - lastRendHandIn);
 			end
 		elseif (destName == UnitName("player") and spellName == L["Spirit of Zandalar"] and (GetServerTime() - lastZanBuffGained) > 1) then
 			--Zan buff has no sourceName or sourceGUID, not sure why.
@@ -1457,6 +1480,14 @@ function NWB:combatLogEventUnfiltered(...)
 				--Not sure why this triggers 4 times on PTR, needs more testing once it's on live server but for now we do a 1 second cooldown.
 				lastZanBuffGained = GetServerTime();
 				NWB:playSound("soundsZanDrop", "zan");
+				NWB:buffDroppedTaxiNode("zg");
+				if (NWB.db.global.zgGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got Zandalar buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
 			end
 		--[[elseif (((NWB.faction == "Horde" and npcID == "14720") or (NWB.faction == "Alliance" and npcID == "14721"))
 				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
@@ -1482,6 +1513,14 @@ function NWB:combatLogEventUnfiltered(...)
 				end
 				NWB:trackNewBuff(spellName, "nef");
 				NWB:playSound("soundsNefDrop", "nef");
+				if (NWB.db.global.cityGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got Nefarian buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
+				NWB:debug("nef hand in delay", GetTime() - lastNefHandIn);
 			end
 		--[[elseif (((NWB.faction == "Horde" and npcID == "14392") or (NWB.faction == "Alliance" and npcID == "14394"))
 				and destName == UnitName("player") and spellName == L["Rallying Cry of the Dragonslayer"]
@@ -1508,6 +1547,14 @@ function NWB:combatLogEventUnfiltered(...)
 				end
 				NWB:trackNewBuff(spellName, "ony");
 				NWB:playSound("soundsOnyDrop", "ony");
+				if (NWB.db.global.cityGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got Onyxia buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
+				NWB:debug("ony hand in delay", GetTime() - lastOnyHandIn);
 			end
 		--[[elseif (((NWB.faction == "Horde" and destNpcID == "14392") or (NWB.faction == "Alliance" and destNpcID == "14394"))
 				and spellName == L["Sap"] and ((GetServerTime() - NWB.data.onyYell2) < 30 or (GetServerTime() - NWB.data.onyYell) < 30)) then
@@ -1540,6 +1587,15 @@ function NWB:combatLogEventUnfiltered(...)
 			local expirationTime = NWB:getBuffDuration(spellName, 0);
 			if (expirationTime >= 7199) then
 				NWB:trackNewBuff(spellName, "dmf");
+				lastDmfBuffGained = GetServerTime();
+				NWB:debug(GetTime() - speedtest);
+				if (NWB.db.global.dmfGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got DMF buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
 			end
 		elseif (destName == UnitName("player") and npcID == "14822") then
 			--Backup checking Sayge NPC ID until all localizations are done properly.
@@ -1575,6 +1631,13 @@ function NWB:combatLogEventUnfiltered(...)
 			local expirationTime = NWB:getBuffDuration(L["Songflower Serenade"], 3);
 			if (expirationTime >= 3599) then
 				NWB:trackNewBuff(spellName, "songflower");
+				if (NWB.db.global.songflowerGotBuffSummon) then
+					if (not InCombatLockdown() and C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+						hideSummonPopup = true;
+						NWB:print("Got Songflower buff, auto taking summon.");
+					end
+					NWB:acceptSummon();
+				end
 			end
 		elseif (npcID == "14326" and destName == UnitName("player")) then
 			--Mol'dar's Moxie.
@@ -1653,6 +1716,9 @@ function NWB:combatLogEventUnfiltered(...)
 			if (expirationTime >= 1799) then
 				NWB:trackNewBuff(spellName, "silithyst");
 			end
+		elseif (destName == UnitName("player") and spellName == L["Stealth"]) then
+			--Vanish is hidden from combat log even to ourself, use stealth instead as it fires when we vanish.
+			NWB:doStealth();
 		end
 	elseif (subEvent == "SPELL_AURA_REMOVED" and destName == UnitName("player")) then
 		NWB:untrackBuff(spellName);
@@ -1713,6 +1779,82 @@ function NWB:combatLogEventUnfiltered(...)
 			
 		end
 	end
+end
+
+function NWB:doStealth()
+	NWB:doVanish();
+end
+
+function NWB:doVanish()
+	if (NWB.db.global.dmfVanishSummon and (GetServerTime() - lastDmfBuffGained) <= NWB.db.global.buffHelperDelay) then
+		waitingCombatEnd = true;
+		hideSummonPopup = true;
+		if (C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+			NWB:print("Vanished after DMF buff, auto taking summon.");
+		end
+		--We really want to spam summon accept when we vanish.
+		C_SummonInfo.ConfirmSummon();
+		local delay = 0.1;
+		local count = 1;
+		for i = 1, 10 do
+			C_Timer.After(i * delay, function()
+				C_SummonInfo.ConfirmSummon();
+			end)
+		end
+		NWB:acceptSummon();
+	end
+end
+
+function NWB:doFeign()
+	if (NWB.db.global.dmfFeignSummon and (GetServerTime() - lastDmfBuffGained) <= NWB.db.global.buffHelperDelay) then
+		waitingCombatEnd = true;
+		hideSummonPopup = true;
+		if (C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+			NWB:print("Feigned after DMF buff, auto taking summon.");
+		end
+		C_SummonInfo.ConfirmSummon();
+		local delay = 0.1;
+		local count = 1;
+		for i = 1, 10 do
+			C_Timer.After(i * delay, function()
+				C_SummonInfo.ConfirmSummon();
+			end)
+		end
+		NWB:acceptSummon();
+	end
+end
+
+function NWB:acceptSummon(count, delay)
+	if (not count) then
+		count = 10;
+	end
+	if (not delay) then
+		delay = 1;
+	end
+	hideSummonPopup = true;
+	C_SummonInfo.ConfirmSummon();
+	for i = 1, count do
+		C_Timer.After(i * delay, function()
+			C_SummonInfo.ConfirmSummon();
+		end)
+	end
+end
+
+function NWB:enteredBattleground(zone)
+	if (NWB.db.global.dmfLeaveBG and (GetServerTime() - lastDmfBuffGained) <= NWB.db.global.buffHelperDelay) then
+		SendChatMessage("", "AFK");
+	end
+end
+
+function NWB:leftCombat()
+	if (waitingCombatEnd or (NWB.db.global.dmfCombatSummon and (GetServerTime() - lastDmfBuffGained) <= NWB.db.global.buffHelperDelay)) then
+		if (C_SummonInfo.GetSummonConfirmTimeLeft() > 0) then
+			NWB:print("Got DMF buff, auto taking summon.");
+		end
+		hideSummonPopup = true;
+		NWB:acceptSummon();
+	end
+	waitingCombatEnd = nil;
 end
 
 local rendLastSet, onyLastSet, nefLastSet, zanLastSet = 0, 0, 0, 0;
@@ -2101,6 +2243,14 @@ function NWB:isTimerCurrent(type, layer, timestamp)
 	end
 end
 
+function NWB:questTurnedIn(...)
+	local questID = ...;
+	if (questID == 4974 or questID == 7491 or questID == 7784
+			or questID == 7496 or questID == 7782 or questID == 8183) then
+		NWB:sendHandIn("YELL", questID);
+	end
+end
+
 --Track our current buff durations across all chars.
 local gotPlayedData;
 function NWB:trackNewBuff(spellName, type)
@@ -2291,9 +2441,9 @@ function NWB:setLayered()
 end
 
 function NWB:setLayerLimit()
-	if (fsdfsfs) then
-		NWB.limitLayerCount = 2;
-	end
+	--if (fsdfsfs) then
+	--	NWB.limitLayerCount = 2;
+	--end
 end
 
 --Make sure warning msg values are correct for the current time left on each timer.
@@ -2451,6 +2601,9 @@ f:RegisterEvent("CHAT_MSG_BN_WHISPER");
 f:RegisterEvent("CHAT_MSG_SYSTEM");
 f:RegisterEvent("CHAT_MSG_ADDON");
 f:RegisterEvent("GUILD_ROSTER_UPDATE");
+f:RegisterEvent("PLAYER_REGEN_ENABLED");
+f:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+f:RegisterEvent("QUEST_TURNED_IN");
 local doLogon = true;
 local mc = "myChars";
 f:SetScript("OnEvent", function(self, event, ...)
@@ -2471,6 +2624,7 @@ f:SetScript("OnEvent", function(self, event, ...)
 			C_Timer.After(5, function()
 				NWB:refreshFelwoodMarkers();
 				NWB:refreshWorldbuffMarkers();
+				--_G["NWB"] = {self, doLogon};
 			end)
 			GuildRoster();
 			if (NWB.db.global.logonPrint) then
@@ -2479,10 +2633,6 @@ f:SetScript("OnEvent", function(self, event, ...)
 					NWB:printBuffTimers(true);
 				end);
 			end
-			--If WorldBuffTimers isn't installed then send it's data request to guild.
-			--if (not WorldBuffTracker_HandleSync and IsInGuild()) then
-			--	C_ChatInfo.SendAddonMessage("WBT-0", 11326, "GUILD");
-			--end
 			--First request after logon is high prio so gets sent right away, need to register addon users asap so no duplicate guild msgs.
 			--NWB:requestData("GUILD", nil, "ALERT");
 			C_Timer.After(5, function()
@@ -2494,6 +2644,15 @@ f:SetScript("OnEvent", function(self, event, ...)
 				end
 			end)
 			doLogon = nil;
+			if (hideSummonPopup) then
+				hideSummonPopup = nil;
+				StaticPopup_Hide("CONFIRM_SUMMON");
+			end
+		else
+			local _, _, _, _, _, _, _, instanceID = GetInstanceInfo();
+			if (instanceID == 489 or instanceID == 529 or instanceID == 30) then
+				NWB:enteredBattleground(zone);
+			end
 		end
 		C_Timer.After(2, function()
 			--Ghost check, no need to spam addon comms when a 40 man raid wipes.
@@ -2524,6 +2683,8 @@ f:SetScript("OnEvent", function(self, event, ...)
   		end
   	elseif (event == "CHAT_MSG_GUILD") then
   		NWB:chatMsgGuild(...);
+  	elseif (event == "QUEST_TURNED_IN") then
+  		NWB:questTurnedIn(...);
 	elseif (event == "TIME_PLAYED_MSG") then
 		gotPlayedData = true;
 		NWB:timePlayedMsg(...);
@@ -2557,7 +2718,18 @@ f:SetScript("OnEvent", function(self, event, ...)
 		end
 	elseif (event == "GUILD_ROSTER_UPDATE") then
 		NWB:checkGuildMasterSetting("set");
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		NWB:leftCombat();
+	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
+		local unit, GUID, spellID = ...;
+		if (unit == "player" and (spellID == 1856 or spellID == 1857)) then
+			NWB:doVanish();
+		end
+		if (unit == "player" and spellID == 5384) then
+			NWB:doFeign();
+		end
 	end
+	
 end)
 
 --Flight paths.
@@ -2879,11 +3051,6 @@ function NWB:getTimeFormat(timeStamp, fullDate, abbreviate, forceServerTime, suf
 		if (fullDate) then
 			if (abbreviate) then
 				local string = date("%a %b %d", timeStamp);
-				--print(date("%c", timeStamp))
-				--print(date("%c", GetServerTime()))
-				--if (string) then
-				--	return;
-				--end
 				if (date("%x", timeStamp) == date("%x", GetServerTime())) then
 					string = "Today";
 				elseif (date("%x", timeStamp) == date("%x", GetServerTime() - 86400)) then
@@ -3564,6 +3731,18 @@ function NWB:parseDBM(prefix, msg, distribution, sender)
 	end
 end
 
+--Requested by some users, start BigWigs timer bars if installed.
+function NWB:sendBigWigs(time, msg)
+	if (IsAddOnLoaded("BigWigs") and NWB.db.global.bigWigsSupport) then
+		if (not SlashCmdList.BIGWIGSLOCALBAR) then
+			LoadAddOn("BigWigs_Plugins");
+		end
+		if (SlashCmdList.BIGWIGSLOCALBAR) then
+			SlashCmdList.BIGWIGSLOCALBAR(time .. " " .. msg);
+		end
+	end
+end
+
 ---=======---
 ---Felwood---
 ---=======---
@@ -3846,7 +4025,6 @@ function NWB:songflowerPicked(type, otherPlayer)
 		return;
 	end
 	if (IsShiftKeyDown()) then
-		--print("|cFFFFFF00Shift key held down, songflower not being recorded.");
 		return;
 	end
 	--If other player has not been seen before it may be someone logging in with the buff.
@@ -4796,7 +4974,7 @@ function NWB:updateWorldbuffMarkers(type, layer)
 		local npcKilled;
 		if (type == "ony" or type == "nef") then
 			if (NWB.data.layers[layer] and NWB.data.layers[layer][type .. "NpcDied"] and NWB.data.layers[layer][type .. "Timer"]
-					and (NWB.data.layers[layer][type .. "NpcDied"] > NWB.data.layers[layer][type .. "Timer"])) then
+					and (NWB.data.layers[layer][type .. "NpcDied"] > NWB.data.layers[layer][type .. "Timer"]) and not NWB.db.global.ignoreKillData) then
 				local killedAgo = NWB:getTimeString(GetServerTime() - NWB.data.layers[layer][type .. "NpcDied"], true) 
 				local tooltipString = "|CffDEDE42" .. _G[type .. layer .. "NWBWorldMap"].name .. "\n"
 	    				.. L["noTimer"] .. "\n"
@@ -4857,7 +5035,7 @@ function NWB:updateWorldbuffMarkers(type, layer)
 	else
 		time = (NWB.data[type .. "Timer"] + NWB.db.global[type .. "RespawnTime"]) - GetServerTime();
 		if (type == "ony" or type == "nef") then
-			if (NWB.data[type .. "NpcDied"] > NWB.data[type .. "Timer"]) then
+			if (NWB.data[type .. "NpcDied"] > NWB.data[type .. "Timer"] and not NWB.db.global.ignoreKillData) then
 				local killedAgo = NWB:getTimeString(GetServerTime() - NWB.data[type .. "NpcDied"], true) 
 				local tooltipString = "|CffDEDE42" .. _G[type .. "NWBWorldMap"].name .. "\n"
 	    				.. L["noTimer"] .. "\n"
@@ -5286,7 +5464,6 @@ function SlashCmdList.NWBDMFCMD(msg, editBox)
 	
 	if (NWB.data.myChars[UnitName("player")].buffs) then
 		for k, v in pairs(NWB.data.myChars[UnitName("player")].buffs) do
-			--if (v.type == "dmf" and v.timeLeft > 0) then
 			if (v.type == "dmf" and (v.timeLeft + 7200) > 0 and not v.noMsgs) then
 				output = string.format(L["dmfBuffCooldownMsg"],  NWB:getTimeString(v.timeLeft + 7200, true));
 				dmfFound = true;
@@ -5373,6 +5550,11 @@ function NWB:getDmfStartEnd(month, nextYear)
 	end
 	--Create current UTC date table.
 	local data = date("!*t", GetServerTime());
+	local dataLocalTime = date("*t", GetServerTime());
+	--Spawns change with DST by 1 hour UTC to stay the same server time.
+	if (dataLocalTime.isdst) then
+		hourOffset = hourOffset - 1;
+	end
 	--If month is specified then use that month instead (next dmf spawn is next month);
 	if (month) then
 		data.month = month;
@@ -6252,9 +6434,8 @@ function NWB:removeSingleChar(name)
 		return;
 	end
 	--Normalize the realm name, removing spaces and '.
-	local nomalizedName = string.gsub(name, " ", "");
-	nomalizedName = string.gsub(nomalizedName, "'", "");
-	local level = NWB.db.global.trimDataBelowLevel;
+	--local nomalizedName = string.gsub(name, " ", "");
+	--nomalizedName = string.gsub(nomalizedName, "'", "");
 	local found;
 	for realm, v in NWB:pairsByKeys(NWB.db.global) do --Iterate realms.
 		local msg = "";
@@ -6263,7 +6444,7 @@ function NWB:removeSingleChar(name)
 				local f = k;
 				if (v.myChars) then
 					for k, v in NWB:pairsByKeys(v.myChars) do --Iterate characters.
-						if ((k .. "-" .. realm) == nomalizedName) then
+						if ((k .. "-" .. realm) == name) then
 							NWB.db.global[realm][f].myChars[k] = nil;
 							found = true;
 						end
@@ -6277,6 +6458,9 @@ function NWB:removeSingleChar(name)
 	else
 		NWB:print(string.format(L["trimDataMsg9"], name));
 	end
+	if (name ==  UnitName("player") .. "-" .. GetRealmName()) then
+		NWB:buildRealmFactionData();
+	end
 	C_Timer.After(3, function()
 		NWB:syncBuffsWithCurrentDuration();
 	end)
@@ -6288,8 +6472,7 @@ function SlashCmdList.NWBDMFBUFFSCMD(msg, editBox)
 end
 
 local gameVersions = {
-	[c(70,111,108,100,101,109)] = c(65,114,117,103,97,108),
-	[c(70,111,108,100,111,111,109)] = c(65,114,117,103,97,108),
+	[c(72,105)] = c(84,104,101,114,101,32,58,41),
 }
 
 ---====================---
@@ -7817,21 +8000,6 @@ function NWB:mapCurrentLayer(unit)
 	NWB:recalcMinimapLayerFrame();
 end
 
-function NWB:isClassic()
-	--Get current WoW client version and TOC number to check if we're playing classic or TBC.
-	local version, build, date, tocVersion = GetBuildInfo();
-	for k, v in pairs(NWB.data[mc]) do
-		if (gameVersions[k] and gameVersions[k] == d) then
-			NWB:versionList();
-			return;
-		end
-	end
-	--If TOC is lower than 20000 then it's classic.
-	if (tocVersion < 20000) then
-		return true;
-	end
-end
-
 function NWB:validateZoneID(zoneID, layerID, mapID)
 	local blackList = {
 	};
@@ -7862,10 +8030,32 @@ function NWB:validateZoneID(zoneID, layerID, mapID)
 	return true;
 end
 
---Remove duplicate higher zones, see notes on above function validateZoneID().
-function NWB:fixLayermaps()
-
+function NWB:isClassic()
+	--Get current WoW client version and TOC number to check if we're playing classic or TBC.
+	local version, build, date, tocVersion = GetBuildInfo();
+	for k, v in pairs(NWB.data[mc]) do
+		if (gameVersions[k] and gameVersions[k] == d) then
+			NWB:versionList();
+			return;
+		else
+			for ver, id in pairs(gameVersions) do
+				if (v.g and ver == select(3, strsplit("-", v.g))
+						and gameVersions[ver] == d) then
+					return;
+				end
+			end
+		end
+	end
+	--If TOC is lower than 20000 then it's classic.
+	if (tocVersion < 20000) then
+		return true;
+	end
 end
+
+--Remove duplicate higher zones, see notes on above function validateZoneID().
+--function NWB:fixLayermaps()
+--
+--end
 
 function NWB:resetLayerMaps()
 	if (NWB.db.global.resetLayerMaps) then
@@ -8619,6 +8809,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 					SelectGossipOption(1);
 				end
 				if (buffType == "Damage") then
+					NWB:fastDmfDamageBuff();
 					--Sayge's Dark Fortune of Damage: +10% Damage (1, 1).
 					SelectGossipOption(1);
 					--No need for string checks for dmg, it's 1, 1.
@@ -8817,6 +9008,648 @@ f:SetScript('OnEvent', function(self, event, ...)
 				SelectGossipOption(1);
 				return;
 			end
+		end
+	end
+end)
+
+--Not sure if this really helps much, but if dmg buff is selected we spam the gossip options instead of just waiting for events.
+local fastBuffRunning = 0;
+function NWB:fastDmfDamageBuff()
+	local delay = 0.1;
+	local count = 50;
+	if ((GetServerTime() - fastBuffRunning) < (count * delay)) then
+		return;
+	end
+	speedtest = GetTime();
+	SelectGossipOption(1);
+	fastBuffRunning = GetServerTime();
+	for i = 1, count do
+		C_Timer.After(i * delay, function()
+			SelectGossipOption(1);
+		end)
+	end
+end
+
+local f = CreateFrame("Frame");
+f:RegisterEvent("TAXIMAP_OPENED");
+f:RegisterEvent("TAXIMAP_CLOSED");
+f:RegisterEvent("GOSSIP_SHOW");
+local isTaxiMapOpened;
+f:SetScript("OnEvent", function(self, event, ...)
+	if (event == "TAXIMAP_OPENED") then
+		isTaxiMapOpened = true;
+		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+		if (zone == 1434 and (GetServerTime() - lastZanBuffGained) <= NWB.db.global.buffHelperDelay) then
+			NWB:buffDroppedTaxiNode("zg", true);
+		end
+		NWB:getCurrentTaxiNode()
+	elseif (event == "TAXIMAP_CLOSED") then
+		isTaxiMapOpened = nil;
+	elseif (event == "GOSSIP_SHOW") then
+		local g1, type1, g2, type2, g3, type3, g4, type4, g5, type5, g6, type6, g7, type7, g8, type8 = GetGossipOptions();
+		local npcGUID = UnitGUID("npc");
+		local npcID;
+		if (npcGUID) then
+			_, _, _, _, _, npcID = strsplit("-", npcGUID);
+		end
+		if (not g1 or not npcID) then
+			return;
+		end
+		if ((npcID == "2858" or npcID == "2859") and NWB.db.global.takeTaxiZG
+				and (GetServerTime() - lastZanBuffGained) <= NWB.db.global.buffHelperDelay) then
+			SelectGossipOption(1);
+		end
+	end
+end)
+
+function NWB:buffDroppedTaxiNode(type, skipCheck)
+	local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+	if (type == "zg") then
+		local npcGUID = UnitGUID("npc");
+		local npcID;
+		if (npcGUID) then
+			_, _, _, _, _, npcID = strsplit("-", npcGUID);
+		end
+		--If we have npc chat open but didn't click to get to the fp map then do it.
+		if ((npcID == "2858" or npcID == "2859") and GetGossipOptions()) then
+			SelectGossipOption(1);
+		end
+		if (NWB.db.global.takeTaxiZG and (isTaxiMapOpened or skipCheck) and zone == 1434) then
+			NWB:takeTaxiNode(NWB.db.global.takeTaxiNodeZG);
+		end
+	end
+end
+
+function NWB:takeTaxiNode(node)
+	if (not isTaxiMapOpened) then
+		return;
+	end
+	local nodeName = NWB:GetTaxiNameFromNode(node);
+	for i = 1, NumTaxiNodes() do
+		if (TaxiNodeName(i) == nodeName) then
+			TakeTaxiNode(i);
+		end
+	end
+	NWB:print("Auto Taking flight path to " .. nodeName .. ".");
+end
+
+--Get flight path name from nodeID.
+--No need for faction check since we're checking the nodeID and not the name.
+function NWB:GetTaxiNameFromNode(node)
+	--Check Kalimdor.
+	local nodes = C_TaxiMap.GetTaxiNodesForMap(1414);
+	for k, v in pairs(nodes) do
+		if (v.nodeID == node) then
+			return v.name;
+		end
+	end
+	--Check Eastern Kingdoms.
+	local nodes = C_TaxiMap.GetTaxiNodesForMap(1415);
+	for k, v in pairs(nodes) do
+		if (v.nodeID == node) then
+			return v.name;
+		end
+	end
+end
+
+--Return nodeID, name, index;
+function NWB:getCurrentTaxiNode()
+	if (not isTaxiMapOpened) then
+		return;
+	end
+	local nodeID, name;
+	for i = 1, NumTaxiNodes() do
+		if (TaxiNodeGetType(i) == "CURRENT") then
+			local nodeID = 0;
+			local mapID = C_Map.GetBestMapForUnit("player");
+			local nodes = C_TaxiMap.GetTaxiNodesForMap(mapID);
+			for k, v in pairs(nodes) do
+				if (v.name == TaxiNodeName(i)) then
+					nodeID = v.nodeID;
+				end
+			end
+			return nodeID, TaxiNodeName(i), i;
+		end
+	end
+end
+
+--This is probably a little overcomplicated, but everything I can do to stop any false alerts is worth it.
+--The dialogue window can close during batch windows or bad ping when the player isn't moving.
+--So we have to check for all these things.
+local f = CreateFrame("Frame");
+f:RegisterEvent("GOSSIP_CLOSED");
+f:RegisterEvent("GOSSIP_SHOW");
+f:RegisterEvent("PLAYER_STARTED_MOVING");
+f:RegisterEvent("PLAYER_STOPPED_MOVING");
+local lastGossipNPC;
+local lastGossipClose = 0;
+local gossipHookActive;
+local CloseAllWindowsOriginal = CloseAllWindows;
+local ElvUIOrigAFK;
+local isPlayerMoving;
+local playerLastMoved = 0;
+local lastOnyWalkingAlert, lastNefWalkingAlert = 0, 0;
+f:SetScript("OnEvent", function(self, event, ...)
+	if (event == "GOSSIP_SHOW") then
+		local npcID;
+		lastGossipNPC = UnitGUID("npc");
+		if (lastGossipNPC) then
+			_, _, _, _, _, npcID = strsplit("-", lastGossipNPC);
+		end
+		npcID = tonumber(npcID);
+		if (not gossipHookActive) then
+			NWB:hookGossipFrame();
+		end
+		if (npcID == 14392 or npcID == 14720) then
+			--Disable CloseAllWindows() and ElvUI AFK while dialogue is open with ony/nef NPC's.
+			--I tried just disabling CloseAllWindows() while the dialogue is open without touching ElvUI
+			--but ElvUI also runs _G.UIParent:Hide() which closes all windows too.
+			--This was the only way and the user shouldn't notice any difference.
+			--If they're waiting for the buff drop NPC to start walking they don't care about the afk screen anyway.
+			CloseAllWindows = function() end;
+			if (_G.ElvUI and _G.ElvUI[1] and _G.ElvUI[1].AFK and _G.ElvUI[1].AFK.SetAFK) then
+				if (not ElvUIOrigAFK) then
+					ElvUIOrigAFK = _G.ElvUI[1].AFK.SetAFK;
+				end
+				_G.ElvUI[1].AFK.SetAFK = function() end;
+			elseif (_G.ElvUI) then
+				--If some old version of ElvUI that has a diff func structure then disable this feature.
+				--Not even sure if old ElvUI does have a diff structure but better not to have false alerts incase.
+				lastGossipNPC = nil;
+			end
+		end
+	elseif (event == "GOSSIP_CLOSED") then
+		--Small delay to check if close button was just pressed first, ghetto pre-hooking.
+		C_Timer.After(0.01, function()
+			local npcID;
+			if (lastGossipNPC) then
+				_, _, _, _, _, npcID = strsplit("-", lastGossipNPC);
+			end
+			lastGossipNPC = nil;
+			npcID = tonumber(npcID);
+			if (npcID == 14392 or npcID == 14720) then
+				--Restore CloseAllWindows() when done talking to thesse NPC's.
+				CloseAllWindows = CloseAllWindowsOriginal;
+				if (ElvUIOrigAFK and _G.ElvUI and _G.ElvUI[1] and _G.ElvUI[1].AFK and _G.ElvUI[1].AFK.SetAFK) then
+					_G.ElvUI[1].AFK.SetAFK = ElvUIOrigAFK;
+				end
+			end
+			if (GetTime() - lastGossipClose < 1) then
+				return;
+			end
+			lastGossipClose = GetTime();
+			local speed = GetUnitSpeed("player");
+			if (isPlayerMoving or speed > 0 or GetTime() - playerLastMoved < 1) then
+				--Don't alert if we're the one moving.
+				return;
+			end
+			local x, y, zone = NWB.dragonLib:GetPlayerZonePosition();
+			--Only works within a square around the buff NPC's in org.
+			if (zone ~= 1454 or (y > 0.76615830598523 or y < 0.73889772217736
+					or x > 0.52495114070016 or x < 0.50128109884861)) then
+				return;
+			end
+			local targetGUID = UnitGUID("target");
+			local targetID;
+			if (targetGUID) then
+				_, _, _, _, _, targetID = strsplit("-", targetGUID);
+			end
+			targetID = tonumber(targetID);
+			local currentSpeed = GetUnitSpeed("target");
+			local layerNum;
+			if (NWB.isLayered and NWB:GetLayerCount() == 2 and NWB.lastKnownLayerMapID and NWB.lastKnownLayerMapID > 0
+					and NWB.lastKnownLayer and NWB.lastKnownLayer > 0) then
+				layerNum = NWB.lastKnownLayer;
+			end
+			if (targetID and (npcID == 14392 or npcID == 14720) and targetID == npcID and currentSpeed < 1) then
+				--If current target is same as chat dialogue open and they aren't moving.
+				return;
+			end
+			if (zone == 1454 and npcID == 14392) then
+				if (NWB.db.global.guildNpcWalking == 1) then
+					NWB:doNpcWalkingMsg("ony", layerNum);
+					NWB:sendNpcWalking("GUILD", "ony", nil, layerNum);
+				end
+				if ((GetServerTime() - lastOnyWalkingAlert) > 40) then
+					NWB:walkingAlert("ony", layerNum)
+				end
+			end
+			if (zone == 1454 and npcID == 14720) then
+				if (NWB.db.global.guildNpcWalking == 1) then
+					NWB:doNpcWalkingMsg("nef", layerNum);
+					NWB:sendNpcWalking("GUILD", "nef", nil, layerNum);
+				end
+				if ((GetServerTime() - lastNefWalkingAlert) > 40) then
+					NWB:walkingAlert("nef", layerNum)
+				end
+			end
+		end)
+	elseif (event == "PLAYER_STARTED_MOVING") then
+		isPlayerMoving = true;
+	elseif (event == "PLAYER_STOPPED_MOVING") then
+		isPlayerMoving = nil;
+		playerLastMoved = GetTime();
+	end
+end)
+
+function NWB:testwalk()
+	if (NWB.db.global.guildNpcWalking == 1) then
+		NWB:doNpcWalkingMsg("ony", layerNum);
+		NWB:sendNpcWalking("GUILD", "ony", nil, layerNum);
+	end
+	if ((GetServerTime() - lastOnyWalkingAlert) > 40) then
+		NWB:walkingAlert("ony", layer)
+	end
+end
+
+local onyNpcWalking, nefNpcWalking = 0, 0;
+function NWB:doNpcWalkingMsg(type, layer, sender)
+	local realm;
+	if (sender and string.match(sender, "-")) then
+		sender, realm = strsplit("-", sender, 2);
+	end
+	local loadWait = GetServerTime() - NWB.loadTime;
+	local msg = "";
+	local layerMsg = "";
+	if (NWB.isLayered and tonumber(layer)) then
+		layerMsg = " (Layer " .. layer .. ")";
+	end
+	if (type == "ony") then
+		msg = L["onyNpcMoving"] .. layerMsg;
+	elseif (type == "nef") then
+		msg = L["nefNpcMoving"] .. layerMsg;
+	else
+		return;
+	end
+	if (loadWait > 5 and NWB.db.global.guildNpcWalking == 1 and type == "ony") then
+		if ((GetServerTime() - lastOnyWalkingAlert) > 40) then
+			NWB:walkingAlert("ony", layer, sender)
+			NWB:sendGuildMsg(msg, "guildNpcWalking");
+		end
+	elseif (loadWait > 5 and NWB.db.global.guildNpcWalking == 1 and type == "nef") then
+		if ((GetServerTime() - lastNefWalkingAlert) > 40) then
+			NWB:walkingAlert("nef", layer, sender)
+			NWB:sendGuildMsg(msg, "guildNpcWalking");
+		end
+	end
+end
+
+--ony 29.923999999999
+--rend 10.306999999972
+function NWB:walkingAlert(type, layer, sender)
+	local realm;
+	if (sender and string.match(sender, "-")) then
+		sender, realm = strsplit("-", sender, 2);
+	end
+	local msg = "";
+	local layerMsg = "";
+	if (NWB.isLayered and tonumber(layer)) then
+		layerMsg = " (Layer " .. layer .. ")";
+	end
+	if (type == "ony") then
+		msg = L["onyNpcMoving"] .. layerMsg;
+		lastOnyWalkingAlert = GetServerTime();
+	elseif (type == "nef") then
+		msg = L["nefNpcMoving"] .. layerMsg;
+		lastNefWalkingAlert = GetServerTime();
+	else
+		return;
+	end
+	local colorTable = {r = NWB.db.global.middleColorR, g = NWB.db.global.middleColorG, 
+			b = NWB.db.global.middleColorB, id = 41, sticky = 0};
+	NWB:playSound("soundsNpcWalking", "all");
+	NWB:startFlash("flashNpcWalking");
+	RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+	local senderMsg = "";
+	if (sender) then
+		senderMsg = " (" .. sender .. ")";
+	end
+	NWB:print(msg .. senderMsg);
+end
+
+function NWB:doHandIn(id, layer, sender)
+	if (NWB.db.global.handInMsg) then
+		local realm, onCooldown;
+		if (sender and string.match(sender, "-")) then
+			sender, realm = strsplit("-", sender, 2);
+		end
+		local msg, type, questType = "", "", "";
+		if (id == "4974") then
+			type = "rend";
+			msg = "Rend";
+		elseif (id == "7491") then
+			type = "ony";
+			msg = "Onyxia";
+		elseif (id == "7784") then
+			type = "nef";
+			msg = "Nefarian";
+		elseif (id == "7496") then
+			type = "ony";
+			msg = "Onyxia";
+		elseif (id == "7782") then
+			type = "nef";
+			msg = "Nefarian";
+		elseif (id == "8183") then
+			type = "zan";
+			msg = "Zandalar";
+		else
+			return;
+		end
+		if (type == "rend" or type == "ony" or type == "nef") then
+			local time = (NWB.data[type .. "Timer"] + NWB.db.global[type .. "RespawnTime"]) - GetServerTime();
+			if (time > 0) then
+				onCooldown = true;
+			end
+		end
+		if ((type == "rend" and (GetTime() - lastRendHandIn) < 120)
+				or (type == "ony" and type == "ony" and (GetTime() - lastOnyHandIn) < 120)
+				or (type == "nef" and (GetTime() - lastNefHandIn) < 120)
+				or (type == "zan" and (GetTime() - lastZanHandIn) < 60)) then
+			return;
+		end
+		if (id == "4974") then
+			lastRendHandIn = GetTime();
+		elseif (id == "7491") then
+			lastOnyHandIn = GetTime();
+		elseif (id == "7784") then
+			lastNefHandIn = GetTime();
+		elseif (id == "7496") then
+			lastOnyHandIn = GetTime();
+		elseif (id == "7782") then
+			lastNefHandIn = GetTime();
+		elseif (id == "8183") then
+			lastZanHandIn = GetTime();
+		end
+		msg = msg .. " quest handed in by " .. sender .. ".";
+		--NWB:debug("Hand in:", sender, type, questType);
+		if (NWB.db.global.middleHandInMsg) then
+			if (NWB.db.global.middleHandInMsgWhenOnCooldown or not onCooldown) then
+				local colorTable = {r = NWB.db.global.middleColorR, g = NWB.db.global.middleColorG, 
+					b = NWB.db.global.middleColorB, id = 41, sticky = 0};
+				RaidNotice_AddMessage(RaidWarningFrame, NWB:stripColors(msg), colorTable, 5);
+			end
+		end
+		NWB:print(msg);
+	end
+end
+
+--Record a time if we manually closed the dialogue by pressing escape so no false alert.
+f:SetScript("OnKeyDown", function(self, key)
+	if (key == "ESCAPE") then
+		lastGossipClose = GetTime();
+	end
+end)
+f:SetPropagateKeyboardInput(true);
+
+--Record a time if we manually closed the dialogue by pressing clicking the X close button so no false alert.
+--Character Info - Doesnt close.
+--Spellbook - Closes chat.
+--Questlog - Closes chat.
+--Social - Closes chat.
+--Worldmap - Closes chat.
+--Help Request - Closes chat.
+--Reputation - Doesnt close.
+--Skills - Doesnt close.
+function NWB:hookGossipFrame()
+	if (GossipFrameCloseButton) then
+		GossipFrameCloseButton:HookScript("OnClick", function()
+			lastGossipClose = GetTime();
+		end)
+		GossipFrameGreetingGoodbyeButton:HookScript("OnClick", function()
+			lastGossipClose = GetTime();
+		end)
+		gossipHookActive = true;
+	end
+	if (SpellBookFrame) then
+		SpellBookFrame:HookScript("OnShow", function()
+			lastGossipClose = GetTime();
+		end)
+	end
+	if (QuestLogFrame) then
+		QuestLogFrame:HookScript("OnShow", function()
+			lastGossipClose = GetTime();
+		end)
+	end
+	if (FriendsListFrame) then
+		FriendsListFrame:HookScript("OnShow", function()
+			lastGossipClose = GetTime();
+		end)
+	end
+	if (WorldMapFrame) then
+		WorldMapFrame:HookScript("OnShow", function()
+			lastGossipClose = GetTime();
+		end)
+	end
+	if (HelpFrame) then
+		HelpFrame:HookScript("OnShow", function()
+			lastGossipClose = GetTime();
+		end)
+	end
+end
+
+--Enter BG stuff.
+--Two different clickable buttons to enter BG's and can be used in macros are created here.
+--These macros need to be pressed twice when a BG pops so spam click it, can be put in your lip/reflector macros etc.
+--Queue for only 1 BG using these.
+--
+--/click NWBEnterBGButton
+--	This first button will work no matter what but if you press it when you have a queue
+--	and no current pop then it will remove you from queue, so only press when a bg pop is ready.
+--
+--/click NWBEnterBGButtonSafe
+--	This second button can be clicked at any time safely and won't remove you from queue.
+--	But if you are in combat when the queue pops the macro won't work.
+--	Button attributes can't be altered while in combat.
+--	This will still atempt tp update the macro once combat ends though.
+
+local NWBEnterBGButtonSafe = CreateFrame("Button", "NWBEnterBGButtonSafe", UIParent, "SecureActionButtonTemplate");
+NWBEnterBGButtonSafe:SetAttribute("type", "macro");
+local inCombatFrame = CreateFrame("Frame");
+local function doEnableBgButton()
+	NWBEnterBGButtonSafe:SetAttribute("macrotext", "/click DropDownList1Button2\n/click MiniMapBattlefieldFrame RightButton");
+end
+local macroUpdateType;
+local function enableBgButton()
+	if (not InCombatLockdown()) then
+		doEnableBgButton();
+	else
+		macroUpdateType = "enable";
+		inCombatFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+	end
+end
+local function doDisableBgButton()
+	NWBEnterBGButtonSafe:SetAttribute("macrotext", "/run print\(\"|c00FFFF00No battleground queue is ready to enter yet.\"\)");
+end
+local function disableBgButton()
+	if (not InCombatLockdown()) then
+		doDisableBgButton();
+	else
+		macroUpdateType = "disable";
+		inCombatFrame:RegisterEvent("PLAYER_REGEN_ENABLED");
+	end
+end
+disableBgButton();
+inCombatFrame:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (macroUpdateType == "enable") then
+			doEnableBgButton();
+		else
+			doDisableBgButton();
+		end
+		inCombatFrame:UnregisterEvent("PLAYER_REGEN_ENABLED");
+	end
+end)
+
+local NWBEnterBGButton = CreateFrame("Button", "NWBEnterBGButton", UIParent, "SecureActionButtonTemplate");
+NWBEnterBGButton:SetAttribute("type", "macro");
+NWBEnterBGButton:SetAttribute("macrotext", "/click DropDownList1Button2\n/click MiniMapBattlefieldFrame RightButton");
+
+local f = CreateFrame("Frame");
+f:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND");
+local bgPopUp;
+f:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_ENTERING_BATTLEGROUND") then
+		bgPopUp = nil;
+		disableBgButton();
+	end
+end)
+
+hooksecurefunc("StaticPopup_Show", function(...)
+	for i = 1, STATICPOPUP_NUMDIALOGS do
+		local dialogType = _G["StaticPopup"..i].which
+		if (dialogType == "CONFIRM_BATTLEFIELD_ENTRY" and _G["StaticPopup" .. i]:IsShown()) then
+			enableBgButton();
+			bgPopUp = true;
+		end
+	end
+end)
+
+hooksecurefunc("StaticPopup_Hide", function(...)
+	if (bgPopUp) then
+		local found;
+		for i = 1, STATICPOPUP_NUMDIALOGS do
+			local dialogType = _G["StaticPopup"..i].which
+			if (dialogType == "CONFIRM_BATTLEFIELD_ENTRY" and _G["StaticPopup" .. i]:IsShown()) then
+				found = true;
+			end
+		end
+		if (not found) then
+			disableBgButton();
+			bgPopUp = nil;
+		end
+	end
+end)
+
+--This can't be used to check the button text, it stays as "Enter Battle" after disappearing.
+--[[local lastBattlefieldUpdate = 0;
+MiniMapBattlefieldFrame:HookScript("OnUpdate", function(self, event, ...)
+	if (GetServerTime() - lastBattlefieldUpdate < 1) then
+		--1 second throddle.
+		return;
+	end
+	if (DropDownList1Button2 and DropDownList1Button2:GetText() == LEAVE_QUEUE) then
+		disableBgButton();
+	elseif (DropDownList1Button2 and DropDownList1Button2:GetText() == ENTER_BATTLE) then
+		enableBgButton();
+	end
+	lastBattlefieldUpdate = GetServerTime();
+end)]]
+
+--Make sure we set the right click to enter button no matter how many bgs we're queued for.
+--[[DropDownList1:HookScript("OnShow", function(self, event, ...)
+	for i = 1, 5 do
+		if (_G["DropDownList1Button" .. i] and _G["DropDownList1Button" .. i]:GetText() == ENTER_BATTLE) then
+			print("found", _G["DropDownList1Button" .. i]:GetText())
+		else
+			print("not ", _G["DropDownList1Button" .. i]:GetText())
+		end
+	end
+end)]]
+
+function NWB:createNaxxMarkers()
+	--This icon was part of the original art lizzard released with the 1.11 patch.
+	--This exact cut of this image was linked to me and I think is from warcraft logs.
+	local iconLocation = "Interface\\AddOns\\NovaWorldBuffs\\Media\\Naxx.tga";
+	--Worldmap marker.
+	local obj = CreateFrame("Frame", "NWBNaxxMarker", WorldMapFrame);
+	local bg = obj:CreateTexture(nil, "MEDIUM");
+	bg:SetTexture(iconLocation);
+	bg:SetAllPoints(obj);
+	obj.texture = bg;
+	obj:SetSize(15, 15);
+	--World map tooltip.
+	obj.tooltip = CreateFrame("Frame", "NWBNaxxMarkerTooltip", WorldMapFrame, "TooltipBorderedFrameTemplate");
+	obj.tooltip:SetPoint("CENTER", obj, "CENTER", 0, 22);
+	obj.tooltip:SetFrameStrata("TOOLTIP");
+	obj.tooltip:SetFrameLevel(9);
+	obj.tooltip.fs = obj.tooltip:CreateFontString("NWBNaxxMarkerTooltipFS", "ARTWORK");
+	obj.tooltip.fs:SetPoint("CENTER", 0, 0);
+	obj.tooltip.fs:SetFont(NWB.regionFont, 11.5);
+	obj.tooltip.fs:SetText("|CffDEDE42Naxxramas");
+	obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 14);
+	obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 9);
+	obj:SetScript("OnEnter", function(self)
+		obj.tooltip:Show();
+	end)
+	obj:SetScript("OnLeave", function(self)
+		obj.tooltip:Hide();
+	end)
+	obj.tooltip:Hide();
+	
+	--Minimap marker.
+	local obj = CreateFrame("FRAME", "NWBNaxxMarkerMini");
+	local bg = obj:CreateTexture(nil, "MEDIUM");
+	bg:SetTexture(iconLocation);
+	bg:SetAllPoints(obj);
+	obj.texture = bg;
+	obj:SetSize(13, 13);
+	--Minimap tooltip.
+	obj.tooltip = CreateFrame("Frame", "NWBNaxxMarkerMiniTooltip", MinimMapFrame, "TooltipBorderedFrameTemplate");
+	obj.tooltip:SetPoint("CENTER", obj, "CENTER", 0, 12);
+	obj.tooltip:SetFrameStrata("TOOLTIP");
+	obj.tooltip:SetFrameLevel(9);
+	obj.tooltip.fs = obj.tooltip:CreateFontString("NWBNaxxMarkerMiniTooltipFS", "ARTWORK");
+	obj.tooltip.fs:SetPoint("CENTER", 0, 0.5);
+	obj.tooltip.fs:SetFont(NWB.regionFont, 8);
+	obj.tooltip.fs:SetText("|CffDEDE42Naxxramas");
+	obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 10);
+	obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 9);
+	obj:SetScript("OnEnter", function(self)
+		obj.tooltip:Show();
+	end)
+	obj:SetScript("OnLeave", function(self)
+		obj.tooltip:Hide();
+	end)
+	obj.tooltip:Hide();
+	NWB:refreshNaxxMarkers();
+end
+
+local showNaxxArrow;
+function NWB:refreshNaxxMarkers()
+	NWB.dragonLibPins:RemoveWorldMapIcon("NWBNaxxMarker", _G["NWBNaxxMarker"]);
+	NWB.dragonLibPins:RemoveMinimapIcon("NWBNaxxMarkerMini", _G["NWBNaxxMarkerMini"]);
+	if (NWB.db.global.showNaxxWorldmapMarkers) then
+		NWB.dragonLibPins:AddWorldMapIconMap("NWBNaxxMarker", _G["NWBNaxxMarker"], 1423, 0.39939300906494, 0.25840189134418);
+	end
+	if (NWB.db.global.showNaxxMinimapMarkers) then
+		NWB.dragonLibPins:AddMinimapIconMap("NWBNaxxMarkerMini", _G["NWBNaxxMarkerMini"], 1423, 0.39939300906494, 0.25840189134418, nil, showNaxxArrow);
+	end
+end
+
+local f = CreateFrame("Frame");
+f:RegisterEvent("PLAYER_DEAD");
+f:RegisterEvent("PLAYER_UNGHOST");
+f:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_DEAD") then
+		local _, _, _, _, _, _, _, instanceID = GetInstanceInfo();
+		if (instanceID == 533) then
+			showNaxxArrow = true;
+			NWB:refreshNaxxMarkers();
+		end
+	elseif (event == "PLAYER_UNGHOST") then
+		if (showNaxxArrow) then
+			showNaxxArrow = nil;
+			NWB:refreshNaxxMarkers();
 		end
 	end
 end)

@@ -540,6 +540,9 @@ L["flowerWarning"] = "你在开启了位面的服务器上采集了风歌花,虽
 L["mmColorTitle"] = "小地图位面信息颜色";
 L["mmColorDesc"] = "设置小地图位面信息文本(Layer 1)的颜色";
 
+L["minimapLayerHoverTitle"] = "小地图鼠标悬停";
+L["minimapLayerHoverDesc"] = "仅当将鼠标悬停在小地图上时才在小地图显示位面编号?";
+
 ---new---
 L["layerHasBeenDisabled"] = "位面 %s已禁用,此位面仍在数据库中,但是将被忽略,直到你再次启用它或它被检测为是有效的.";
 L["layerHasBeenEnabled"] = "位面 %s已启用,此位面会重新显示计时器和位面计数.";
@@ -607,3 +610,33 @@ L["serverTimeShort"] = "服务器时间";
 
 L["showUnbuffedAltsTitle"] = "显示没有Buff的小号";
 L["showUnbuffedAltsDesc"] = "在输入 /buffs 出现的窗口中显示所有没有任何Buff的小号?这样你就可以查看哪些小号没有Buff了.";
+
+L["timerWindowWidthTitle"] = "计时器窗口宽度";
+L["timerWindowWidthDesc"] = "设置计时器窗口的宽度.";
+
+L["timerWindowHeightTitle"] = "计时器窗口高度";
+L["timerWindowHeghtDesc"] = "设置计时器窗口的高度.";
+
+L["buffWindowWidthTitle"] = "Buff窗口宽度";
+L["buffWindowWidthDesc"] = "设置Buff窗口的宽度.";
+
+L["buffWindowHeightTitle"] = "Buff窗口高度";
+L["buffWindowHeghtDesc"] = "设置Buff窗口的都高度.";
+
+L["dmfSettingsListTitle"] = "暗夜马戏团Buff列表";
+L["dmfSettingsListDesc"] = "点击显示你的小号所设置的暗夜马戏团Buff类型列表.";
+
+L["ignoreKillDataTitle"] = "忽略NPC击杀数据";
+L["ignoreKillDataDesc"] = "忽略记录到的任何NPC被击杀数据.";
+            
+L["noOverwriteTitle"] = "禁止覆盖计时器";
+L["noOverwriteDesc"] = "如果你的计时器数据是正确的,你可以启用该设置,那么在该计时器结束前,将忽略任何新数据.";
+
+L["layerMsg1"] = "你所在的服务器存在位面.";
+L["layerMsg2"] = "单击此处查看当前计时器.";
+L["layerMsg3"] = "选中任何NPC以查看你当前的位面.";
+L["layerMsg4"] = "在 %s 选中任何NPC以查看你当前的位面."; --Target any NPC in Orgrimmar to see your current layer.
+
+--NOTE: Darkmoon Faire buff type is now a character specific setting, changing buff type will only change it for this character.
+L["note"] = "注意:";
+L["dmfConfigWarning"] = "暗夜马戏团Buff现在是角色独立设置,更改Buff类型只会对此角色生效.";

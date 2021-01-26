@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Horsemen", "DBM-Naxx", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201207042019")
+mod:SetRevision("20210106174331")
 mod:SetCreatureID(16062, 16063, 16064, 16065)--30549
 mod:SetEncounterID(1121)
 mod:SetModelID(10729)
@@ -25,14 +25,17 @@ local specWarnMarkOnPlayer		= mod:NewSpecialWarning("SpecialWarningMarkOnPlayer"
 local specWarnVoidZone			= mod:NewSpecialWarningYou(28863, nil, nil, nil, 1, 2)
 local yellVoidZone				= mod:NewYell(28863)
 
-local timerMarkCD				= mod:NewCDTimer(12.9, 28835, nil, nil, nil, 3)-- 12.9
+local timerMarkCD				= mod:NewCDCountTimer(12.9, 28835, nil, nil, nil, 3)-- 12.9
 local timerMeteorCD				= mod:NewCDTimer(12.9, 28884, nil, nil, nil, 3)-- 12.9-14.6
 local timerVoidZoneCD			= mod:NewCDTimer(12.9, 28863, nil, nil, nil, 3)-- 12.9-16
 local timerHolyWrathCD			= mod:NewCDTimer(11.3, 28883, nil, nil, nil, 3)-- 11.3-14.5
 
+mod.vb.markCount = 0
+
 function mod:OnCombatStart(delay)
+	self.vb.markCount = 0
 	timerVoidZoneCD:Start(14.5 - delay)--14.5-16.1
-	timerMarkCD:Start(20.9 - delay)-- 20.98-21.44
+	timerMarkCD:Start(20.9 - delay, 1)-- 20.98-21.44
 	timerMeteorCD:Start(20.9 - delay)
 	timerHolyWrathCD:Start(20.9 - delay)
 	warnMarkSoon:Schedule(16 - delay)
@@ -44,7 +47,8 @@ do
 	function mod:SPELL_CAST_SUCCESS(args)
 		--if args:IsSpellID(28832, 28833, 28834, 28835) and self:AntiSpam(5) then
 		if (args.spellName == MarkofKorthazz or args.spellName == MarkofBlaumeux or args.spellName == MarkofMorgraine or args.spellName == MarkofZeliek) and self:AntiSpam(5) then
-			timerMarkCD:Start()
+			self.vb.markCount = self.vb.markCount + 1
+			timerMarkCD:Start(nil, self.vb.markCount+1)
 			warnMarkSoon:Schedule(8)
 		elseif args.spellName == voidZone then
 			timerVoidZoneCD:Start()

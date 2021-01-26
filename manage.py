@@ -294,7 +294,7 @@ class Manager:
                   'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
         if self.is_classic:
-            addons += ['alaTalentEmu', 'AtlasLootClassic', 'AtlasLootClassic_Options',
+            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar',
                        'HandyNotes_NPCs (Classic)', 'PallyPower',
@@ -339,6 +339,10 @@ class Manager:
             return ret
 
         process_file('Addons/ACP/ACP.xml', handle)
+
+    def handle_ate(self):
+        pass
+        # self.remove_libraries_all()
 
     def handle_att(self):
         self.change_defaults(

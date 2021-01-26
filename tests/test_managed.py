@@ -15,6 +15,7 @@ class CheckManagedAddOns(unittest.TestCase):
                             '{0}.toc not existed!'.format(addon))
 
     def test_check_libs(self):
+        """Test for !!Libs.toc"""
         root = Path('AddOns/!!Libs')
         with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -29,7 +30,7 @@ class CheckManagedAddOns(unittest.TestCase):
                     '{0} in !!Libs, but not used in !!Libs.toc'.format(lib)
                 )
 
-        # Check every .lua or .xml file in the toc exists
+        # Check every file in the toc exists
         for line in toc.contents:
             if line.startswith('#') or line == '\n':
                 continue

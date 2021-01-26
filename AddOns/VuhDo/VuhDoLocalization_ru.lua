@@ -295,6 +295,7 @@ VUHDO_I18N_BOUQUET_NEW_ITEM_NAME = "-- введите сюда (де)баф --";
 
 VUHDO_I18N_DEF_BOUQUET_TANK_COOLDOWNS = "Откаты танка";
 VUHDO_I18N_DEF_BOUQUET_PW_S_WEAKENED_SOUL = "СС:Щ и Ослабленная душа";
+VUHDO_I18N_DEF_BOUQUET_MONK_STAGGER = "Монах Пошатывание";
 VUHDO_I18N_DEF_BOUQUET_BORDER_MULTI_AGGRO = "Границы: Комплексная + угроза";
 VUHDO_I18N_DEF_BOUQUET_BORDER_MULTI = "Границы: Комплексная";
 VUHDO_I18N_DEF_BOUQUET_BORDER_SIMPLE = "Границы: Простая";
@@ -437,6 +438,8 @@ VUHDO_I18N_DEF_ROLE_ICON = "Иконка роли";
 VUHDO_I18N_DEF_BOUQUET_TARGET_HEALTH = "Здоровье (общее, цель)";
 VUHDO_I18N_TAPPED_COLOR = "Флаг: Присоединенный";
 VUHDO_I18N_ENEMY_STATE_COLOR = "Цвет: Союзник/Враг";
+VUHDO_I18N_FRIEND_STATUS = "Флаг: Союзник";
+VUHDO_I18N_FOE_STATUS = "Флаг: Враг";
 VUHDO_I18N_BOUQUET_STATUS_ALWAYS_FULL = "Полоса состояния: всегда полная";
 VUHDO_I18N_BOUQUET_STATUS_FULL_IF_ACTIVE = "Полоса состояния: полная при активности";
 VUHDO_I18N_AOE_ADVICE = "Иконка: AOE Советник";

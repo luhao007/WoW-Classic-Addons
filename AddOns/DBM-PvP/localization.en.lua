@@ -50,7 +50,15 @@ L:SetMiscLocalization({
 	ExprFlagCaptured	= "(.+) captured the (%w+) flag!",
 	ExprFlagReturn		= "The (%w+) .lag was returned to its base by (.+)!", -- Unused
 	Vulnerable1			= "The flag carriers have become vulnerable to attack!",
-	Vulnerable2			= "The flag carriers have become increasingly vulnerable to attack!"
+	Vulnerable2			= "The flag carriers have become increasingly vulnerable to attack!",
+	-- Alterac/IsleOfConquest bosses
+	InfoFrameHeader		= "Boss Health",
+	HordeBoss			= "Horde Boss",
+	AllianceBoss		= "Alliance Boss",
+	Galvangar			= "Galvangar",
+	Balinda				= "Balinda",
+	Ivus				= "Ivus",
+	Lokholar			= "Lokholar"
 })
 
 ----------------------
@@ -72,7 +80,8 @@ L:SetTimerLocalization({
 })
 
 L:SetOptionLocalization({
-	AutoTurnIn	= "Automatically turn-in quests"
+	AutoTurnIn	= "Automatically turn-in quests",
+	TimerBoss	= "Show boss remaining timer"
 })
 
 L:SetMiscLocalization({
@@ -134,7 +143,7 @@ L:SetTimerLocalization({
 })
 
 L:SetOptionLocalization({
-	TimerResapwn	= "Show cart respawn timer",
+	TimerRespawn	= "Show cart respawn timer",
 	TimerCart		= "Show cart cap timer"
 })
 

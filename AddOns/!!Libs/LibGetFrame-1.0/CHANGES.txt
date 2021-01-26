@@ -1,22 +1,16 @@
-lightweight tag fe34d2db5f5fa42f667de0485dc6367487591f27 1.5.5
-Author:	GitHub <noreply@github.com>
-Date:	Sun Oct 18 04:18:55 2020 +0200
+lightweight tag 92782ffb5be341bd296b7fe4fed9364c48ea2c05 1.5.6
+Author:	Buds <mrbouyou@gmail.com>
+Date:	Sat Jan 9 17:53:32 2021 +0100
 
-commit fe34d2db5f5fa42f667de0485dc6367487591f27
+commit 92782ffb5be341bd296b7fe4fed9364c48ea2c05
 Author: Buds <mrbouyou@gmail.com>
-Date:   Sun Oct 18 04:18:55 2020 +0200
+Date:   Sat Jan 9 17:53:32 2021 +0100
 
-    Update README.md
+    listen INSTANCE_ENCOUNTER_ENGAGE_UNIT event for new boss units
 
-commit 4a5a187bfcece3cd2387d6b3863dec86daac6b24
+commit 3182bb377160c00b417affaaf2a02216f5e33979
 Author: Buds <mrbouyou@gmail.com>
-Date:   Sun Oct 18 04:15:02 2020 +0200
+Date:   Mon Jan 4 23:17:35 2021 +0100
 
-    add support for Plexus addon (grid fork)
-
-commit 371d60a10ee1293144e68d49a5bf54f73b62fc65
-Author: Buds <mrbouyou@gmail.com>
-Date:   Wed Oct 14 22:12:22 2020 +0200
-
-    update toc for 9.1
+    make GetUnitFrames more resilient to bad input
 

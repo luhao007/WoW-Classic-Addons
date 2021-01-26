@@ -48,7 +48,7 @@ local function VUHDO_addUnitHealth(aUnit, aDelta, aSrcGUID)
 		end
 
 		-- avoid the calculation to be disturbed by the exception data
-		if tInfo["health"] ~= 0 then
+		if UnitHealth(aUnit) ~= 0 or tInfo["health"] ~= 0 then
 			tNewHealth = tInfo["health"] + aDelta;
 		else 
 			tNewHealth = tInfo["loghealth"] + aDelta;

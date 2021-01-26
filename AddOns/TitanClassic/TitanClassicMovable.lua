@@ -550,6 +550,9 @@ local MData = {
 			end
 			end,
 		addonAdj = false, },
+	[12] = {frameName = "UIWidgetTopCenterContainerFrame", 
+		move = function (force) MoveFrame("UIWidgetTopCenterContainerFrame", 0, TITAN_PANEL_PLACE_TOP, force) end, 
+		addonAdj = false, },
 }
 
 --[[ Titan

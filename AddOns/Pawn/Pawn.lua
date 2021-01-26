@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0409
+PawnVersion = 2.0410
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.12
@@ -235,28 +235,8 @@ function PawnInitialize()
 	hooksecurefunc(GameTooltip, "SetLootItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetLootItem", ...) end)
 	hooksecurefunc(GameTooltip, "SetLootRollItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetLootRollItem", ...) end)
 	hooksecurefunc(GameTooltip, "SetMerchantItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetMerchantItem", ...) end)
-	hooksecurefunc(GameTooltip, "SetQuestItem",
-		function(self, ...)
-			-- BUG IN WoW 6.2: This item will come through with an item ID of 0 and we'll fail to get stats from it normally.
-			-- Special thanks to Phanx for suggesting this workaround!
-			local ItemLink = GetQuestItemLink(...)
-			if ItemLink then
-				PawnUpdateTooltip("GameTooltip", "SetHyperlink", ItemLink)
-			else
-				PawnUpdateTooltip("GameTooltip", "SetQuestItem", ...)
-			end
-		end)
-	hooksecurefunc(GameTooltip, "SetQuestLogItem",
-		function(self, ...)
-			-- BUG IN WoW 6.2: This item will come through with an item ID of 0 and we'll fail to get stats from it normally.
-			-- Special thanks to Phanx for suggesting this workaround!
-			local ItemLink = GetQuestLogItemLink(...)
-			if ItemLink then
-				PawnUpdateTooltip("GameTooltip", "SetHyperlink", ItemLink)
-			else
-				PawnUpdateTooltip("GameTooltip", "SetQuestLogItem", ...)
-			end
-		end)
+	hooksecurefunc(GameTooltip, "SetQuestItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetQuestItem", ...) end)
+	hooksecurefunc(GameTooltip, "SetQuestLogItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetQuestLogItem", ...) end)
 	hooksecurefunc(GameTooltip, "SetSendMailItem", function(self, ...) PawnUpdateTooltip("GameTooltip", "SetSendMailItem", ...) end)
 	if GameTooltip.SetSocketGem then
 		-- Gems don't exist in Classic.
@@ -312,7 +292,7 @@ function PawnInitialize()
 		function(object, button)
 			if button == "RightButton" then
 				local _, ItemLink = ItemRefTooltip:GetItem()
-				PawnUI_SetCompareItemAndShow(2, ItemLink)
+				if ItemLink then PawnUI_SetCompareItemAndShow(2, ItemLink) end
 			end
 		end)
 	
@@ -1092,8 +1072,8 @@ function PawnGetItemData(ItemLink)
 	-- If we have an item link, we can extract basic data from it from the user's WoW cache (not the Pawn item cache).
 	-- We get a new, normalized version of ItemLink so that items don't end up in the cache multiple times if they're requested
 	-- using different styles of links that all point to the same item.
-	local ItemID = GetItemInfoInstant(ItemLink)
-	local ItemName, NewItemLink, ItemRarity, ItemLevel, _, _, _, _, InvType, ItemTexture = GetItemInfo(ItemLink)
+	local ItemID, _, _, InvType, ItemTexture = GetItemInfoInstant(ItemLink)
+	local ItemName, NewItemLink, ItemRarity, ItemLevel = GetItemInfo(ItemLink)
 	if NewItemLink then
 		ItemLink = NewItemLink
 	else
@@ -2629,7 +2609,10 @@ end
 -- Returns a nice-looking string that shows the item IDs for an item, its enchantments, and its gems.
 function PawnGetItemIDsForDisplay(ItemLink, Formatted)
 	local Pos, _, ItemID, MoreInfo = strfind(ItemLink, "^|%x+|Hitem:(%-?%d+)([^|]+)|")
-	if not Pos then return end
+	if not Pos then
+		Pos, _, ItemID, MoreInfo = strfind(ItemLink, "^item:(%-?%d+)([%d%-:]+)")
+		if not Pos then return end
+	end
 	if Formatted == nil then Formatted = true end
 
 	if MoreInfo and MoreInfo ~= "" then
@@ -3757,10 +3740,12 @@ function PawnFindInterestingItems(List)
 		elseif (not DoNotVendor) and Info.RewardType == "choice" then
 			-- If we haven't already found a choice item upgrade, and this is a choice item, see
 			-- if it's the best thing to vendor.
-			local _, _, _, _, _, _, _, _, _, _, Value = GetItemInfo(Info.Item.Link)
-			if Value and Value > HighestValue then
-				HighestValue = Value
-				HighestValueInfo = Info
+			if Info.Item.Link then
+				local _, _, _, _, _, _, _, _, _, _, Value = GetItemInfo(Info.Item.Link)
+				if Value and Value > HighestValue then
+					HighestValue = Value
+					HighestValueInfo = Info
+				end
 			end
 		end
 	end

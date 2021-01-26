@@ -1,14 +1,14 @@
-# [3.1.4](https://github.com/WeakAuras/WeakAuras2/tree/3.1.4) (2020-12-09)
+# [3.1.8](https://github.com/WeakAuras/WeakAuras2/tree/3.1.8) (2021-01-07)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.1.3...3.1.4)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.1.7...3.1.8)
 
 ## Highlights
 
- Bug fix 
+ Fix a regression 
 
 ## Commits
 
-nullKomplex (1):
+mrbuds (1):
 
-- Nil-check Bonus Id trigger (#2799)
+- fix regression in TestForLongString
 

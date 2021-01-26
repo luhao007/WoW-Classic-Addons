@@ -37,7 +37,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.26" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.28" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -121,13 +121,15 @@ function TSM.OnInitialize()
 	-- Auctionator price sources
 	if Wow.IsAddonEnabled("Auctionator") and Auctionator and Auctionator.API and Auctionator.API.v1 and Auctionator.API.v1.RegisterForDBUpdate then
 		-- retail version
-		Auctionator.API.v1.RegisterForDBUpdate("TradeSkillMaster", function()
-			CustomPrice.OnSourceChange("AtrValue")
+		local ok = pcall(function()
+			Auctionator.API.v1.RegisterForDBUpdate("TradeSkillMaster", function() CustomPrice.OnSourceChange("AtrValue") end)
 		end)
-		local function GetAuctionatorPrice(itemLink)
-			return Auctionator.API.v1.GetAuctionPriceByItemLink("TradeSkillMaster", itemLink)
+		if ok then
+			local function GetAuctionatorPrice(itemLink)
+				return Auctionator.API.v1.GetAuctionPriceByItemLink("TradeSkillMaster", itemLink)
+			end
+			CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], GetAuctionatorPrice, true)
 		end
-		CustomPrice.RegisterSource("External", "AtrValue", L["Auctionator - Auction Value"], GetAuctionatorPrice, true)
 	elseif Wow.IsAddonEnabled("Auctionator") and Atr_GetAuctionBuyout and Atr_RegisterFor_DBupdated then
 		-- classic version
 		Atr_RegisterFor_DBupdated(function()
@@ -194,11 +196,11 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("Crafting", "MatPrice", L["Crafting Material Cost"], TSM.Crafting.Cost.GetMatCost, nil, nil, true)
 
 	-- operation-based price sources
-	CustomPrice.RegisterSource("Operations", "auctioningopmin", L["First Auctioning Operation Min Price"], TSM.Operations.Auctioning.GetMinPrice)
-	CustomPrice.RegisterSource("Operations", "auctioningopmax", L["First Auctioning Operation Max Price"], TSM.Operations.Auctioning.GetMaxPrice)
-	CustomPrice.RegisterSource("Operations", "auctioningopnormal", L["First Auctioning Operation Normal Price"], TSM.Operations.Auctioning.GetNormalPrice)
-	CustomPrice.RegisterSource("Operations", "shoppingopmax", L["Shopping Operation Max Price"], TSM.Operations.Shopping.GetMaxPrice)
-	CustomPrice.RegisterSource("Operations", "sniperopmax", L["Sniper Operation Below Price"], TSM.Operations.Sniper.GetBelowPrice)
+	CustomPrice.RegisterSource("Operations", "auctioningopmin", L["First Auctioning Operation Min Price"], TSM.Operations.Auctioning.GetMinPrice, nil, nil, true)
+	CustomPrice.RegisterSource("Operations", "auctioningopmax", L["First Auctioning Operation Max Price"], TSM.Operations.Auctioning.GetMaxPrice, nil, nil, true)
+	CustomPrice.RegisterSource("Operations", "auctioningopnormal", L["First Auctioning Operation Normal Price"], TSM.Operations.Auctioning.GetNormalPrice, nil, nil, true)
+	CustomPrice.RegisterSource("Operations", "shoppingopmax", L["Shopping Operation Max Price"], TSM.Operations.Shopping.GetMaxPrice, nil, nil, true)
+	CustomPrice.RegisterSource("Operations", "sniperopmax", L["Sniper Operation Below Price"], TSM.Operations.Sniper.GetBelowPrice, nil, nil, true)
 
 	-- slash commands
 	SlashCommands.Register("", TSM.MainUI.Toggle, L["Toggles the main TSM window"])

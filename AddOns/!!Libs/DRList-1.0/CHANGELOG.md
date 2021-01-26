@@ -1,8 +1,6 @@
 # Lib: Diminishing Returns Database
 
-## [v1.1.5](https://github.com/wardz/DRList-1.0/tree/v1.1.5) (2020-12-21)
-[Full Changelog](https://github.com/wardz/DRList-1.0/compare/v1.1.4...v1.1.5) [Previous Releases](https://github.com/wardz/DRList-1.0/releases)
+## [v1.1.10](https://github.com/wardz/DRList-1.0/tree/v1.1.10) (2021-01-24)
+[Full Changelog](https://github.com/wardz/DRList-1.0/compare/v1.1.9...v1.1.10) [Previous Releases](https://github.com/wardz/DRList-1.0/releases)
 
-- bump toc version for classic  
-- [Retail] Add Agent of Chaos disorient  
-- bump toc version for shadowlands  
+- [Retail] Move Absolute Zero from root to stun category  

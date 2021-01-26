@@ -4,7 +4,7 @@ from pathlib import Path
 import instawow.cli
 from instawow.config import Config
 from instawow.models import Pkg
-from instawow.exceptions import PkgUpToDate
+from instawow.results import PkgUpToDate
 from instawow.resolvers import Defn, MultiPkgModel
 
 
