@@ -631,13 +631,30 @@ end
 function private.ProcessRemovedMats(removedMats)
 	private.matItemDB:SetQueryUpdatesPaused(true)
 	for itemString in pairs(removedMats) do
-		local numSpells = private.matDB:NewQuery()
-			:Equal("itemString", itemString)
-			:CountAndRelease()
-		if numSpells == 0 then
-			local matItemRow = private.matItemDB:GetUniqueRow("itemString", itemString)
-			private.matItemDB:DeleteRow(matItemRow)
-			matItemRow:Release()
+		if strmatch(itemString, "^o:") then
+			local _, _, matList = strsplit(":", itemString)
+			for matItemId in String.SplitIterator(matList, ",") do
+				local numSpells = private.matDB:NewQuery()
+					:Or()
+						:Matches("itemString", "[:,]"..matItemId.."$")
+						:Matches("itemString", "[:,]"..matItemId..",")
+					:End()
+					:CountAndRelease()
+				if numSpells == 0 then
+					local matItemRow = private.matItemDB:GetUniqueRow("itemString", "i:"..matItemId)
+					private.matItemDB:DeleteRow(matItemRow)
+					matItemRow:Release()
+				end
+			end
+		else
+			local numSpells = private.matDB:NewQuery()
+				:Equal("itemString", itemString)
+				:CountAndRelease()
+			if numSpells == 0 then
+				local matItemRow = private.matItemDB:GetUniqueRow("itemString", itemString)
+				private.matItemDB:DeleteRow(matItemRow)
+				matItemRow:Release()
+			end
 		end
 	end
 	private.matItemDB:SetQueryUpdatesPaused(false)

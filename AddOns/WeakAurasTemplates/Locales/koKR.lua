@@ -11,8 +11,7 @@ local L = WeakAuras.L
 	L["<70% Mana"] = "<70% 마나"
 	L[">70% Mana"] = ">70% 마나"
 	L["Abilities"] = "능력"
-	--[[Translation missing --]]
-	L["Ability"] = "Ability"
+	L["Ability"] = "능력"
 	L["Add Triggers"] = "활성 조건 추가"
 	L["Always Active"] = "항상 활성화"
 	L["Always Show"] = "항상 표시"
@@ -72,10 +71,8 @@ local L = WeakAuras.L
 	L["Debuffs"] = "약화 효과"
 	--[[Translation missing --]]
 	L["Empowered Buff"] = "Empowered Buff"
-	--[[Translation missing --]]
-	L["Fire"] = "Fire"
-	--[[Translation missing --]]
-	L["Frost"] = "Frost"
+	L["Fire"] = "화염"
+	L["Frost"] = "냉기"
 	L["General"] = "일반"
 	L["Health"] = "생명력"
 	L["Highlight while active, red when out of range."] = "활성화 된 동안 강조, 사정거리를 벗어나면 붉은색으로 표시"
@@ -87,12 +84,10 @@ local L = WeakAuras.L
 	L["Highlight while spell is active."] = "주문이 활성화 되어 있는 동안 강조"
 	L["Hold CTRL to create multiple auras at once"] = "한 번에 여러 효과를 만드려면 CTRL 키를 누르세요"
 	L["Keeps existing triggers intact"] = "활성 조건 그대로 유지"
-	--[[Translation missing --]]
-	L["Legendaries"] = "Legendaries"
+	L["Legendaries"] = "전설"
 	--[[Translation missing --]]
 	L["Meteor Ready"] = "Meteor Ready"
-	--[[Translation missing --]]
-	L["Nature"] = "Nature"
+	L["Nature"] = "자연"
 	L["Next"] = "다음"
 	L["Only show the aura if the target has the debuff."] = "대상에 약화 효과가 있는 경우 그 효과만 표시합니다."
 	L["Only show the aura when the item is on cooldown."] = "아이템이 재사용 대기 중일 때 그 효과만 표시합니다."

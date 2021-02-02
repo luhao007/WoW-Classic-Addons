@@ -281,6 +281,7 @@ function private.FSMCreate()
 		lastBuyQuantity = 0,
 		numConfirmed = 0,
 		searchContext = nil,
+		scanPaused = false,
 		scanDone = false,
 	}
 	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
@@ -321,7 +322,7 @@ function private.FSMCreate()
 			auctionList:SetSelection(context.findAuction)
 		end
 		local title = context.scanFrame:GetElement("header.title")
-		if context.scanPausing or auctionList:GetSelection() then
+		if context.scanPaused or auctionList:GetSelection() then
 			if context.searchContext:IsBuyoutScan() then
 				title:SetText(L["Buyout Sniper Paused"])
 			elseif context.searchContext:IsBidScan() then
@@ -355,6 +356,7 @@ function private.FSMCreate()
 				end
 				context.progress = 0
 				context.progressText = L["Running Sniper Scan"]
+				context.scanPaused = false
 				context.buttonsDisabled = true
 				context.findHash = nil
 				context.findAuction = nil
@@ -410,11 +412,13 @@ function private.FSMCreate()
 				Delay.Cancel("sniperPhaseDetect")
 			end)
 			:AddTransition("ST_RESULTS")
-			:AddTransition("ST_WAITING_FOR_PAUSE")
+			:AddTransition("ST_PAUSED_SCAN")
 			:AddTransition("ST_FINDING_AUCTION")
 			:AddTransition("ST_INIT")
 			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
-				return "ST_WAITING_FOR_PAUSE"
+				context.scanPaused = true
+				context.auctionScan:SetPaused(true)
+				return "ST_PAUSED_SCAN"
 			end)
 			:AddEvent("EV_SCAN_COMPLETE", function(context)
 				local selection = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelection()
@@ -443,14 +447,14 @@ function private.FSMCreate()
 						return "ST_RESULTS"
 					else
 						-- the user selected something, so cancel the current scan
+						context.scanPaused = true
 						context.auctionScan:Cancel()
 					end
 				end
 			end)
 		)
-		:AddState(FSM.NewState("ST_WAITING_FOR_PAUSE")
+		:AddState(FSM.NewState("ST_PAUSED_SCAN")
 			:SetOnEnter(function(context)
-				context.scanPausing = true
 				context.progressText = L["Scan Paused"]
 				if context.scanFrame then
 					context.scanFrame:GetElement("bottom.progressBar"):SetProgressIconHidden(true)
@@ -458,16 +462,27 @@ function private.FSMCreate()
 				UpdateScanFrame(context)
 			end)
 			:SetOnExit(function(context)
-				context.scanPausing = false
 				context.progressText = L["Running Sniper Scan"]
 				if context.scanFrame then
 					context.scanFrame:GetElement("bottom.progressBar"):SetProgressIconHidden(false)
 				end
 				UpdateScanFrame(context)
 			end)
+			:AddEvent("EV_AUCTION_SELECTION_CHANGED", function(context)
+				assert(context.scanFrame)
+				local selection = context.scanFrame and context.scanFrame:GetElement("auctions"):GetSelection()
+				if selection and selection:IsSubRow() then
+					return "ST_FINDING_AUCTION"
+				else
+					return "ST_RESULTS"
+				end
+			end)
 			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
+				context.scanPaused = false
+				context.auctionScan:SetPaused(false)
 				return "ST_RESULTS"
 			end)
+			:AddTransition("ST_FINDING_AUCTION")
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
 		)
@@ -557,6 +572,7 @@ function private.FSMCreate()
 				if TSM.IsWowClassic() then
 					context.findResult = result
 					context.numFound = #result
+					context.maxQuantity = #result
 				else
 					local maxCommodity = context.findAuction:IsCommodity() and context.findAuction:GetResultRow():GetMaxQuantities()
 					local numCanBuy = maxCommodity or result
@@ -655,6 +671,8 @@ function private.FSMCreate()
 			:AddTransition("ST_INIT")
 			:AddEvent("EV_PAUSE_RESUME_CLICKED", function(context)
 				context.scanFrame:GetElement("auctions"):SetSelection(nil)
+				context.scanPaused = false
+				context.auctionScan:SetPaused(false)
 				return "ST_RESULTS"
 			end)
 			:AddEventTransition("EV_AUCTION_SELECTION_CHANGED", "ST_RESULTS")
@@ -761,6 +779,11 @@ function private.FSMCreate()
 		)
 		:AddDefaultEvent("EV_SCAN_FRAME_SHOWN", function(context, scanFrame)
 			context.scanFrame = scanFrame
+			if context.scanPaused then
+				context.progressText = L["Scan Paused"]
+				context.buttonsDisabled = true
+				context.scanFrame:GetElement("bottom.progressBar"):SetProgressIconHidden(context.scanPaused)
+			end
 			UpdateScanFrame(context)
 		end)
 		:AddDefaultEvent("EV_SCAN_FRAME_HIDDEN", function(context)

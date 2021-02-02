@@ -84,9 +84,9 @@
     "name": "DRList-1.0 (Diminishing Returns Data)",
     "description": "Library for crowd control diminishing return data.",
     "url": "https://www.curseforge.com/wow/addons/drlist-1-0",
-    "download_url": "https://edge.forgecdn.net/files/3082/796/DRList-1.0-v1.1.4.zip",
-    "date_published": "2020-10-16T09:56:21.850000+00:00",
-    "version": "v1.1.4",
+    "download_url": "https://edge.forgecdn.net/files/3179/640/DRList-1.0-v1.1.10.zip",
+    "date_published": "2021-01-24T14:56:15.923000+00:00",
+    "version": "v1.1.10",
     "folders": [
       {
         "name": "DRList-1.0"
@@ -95,12 +95,28 @@
     "options": {
       "strategy": "default"
     },
-    "deps": [
-      {
-        "id": "14328"
-      }
-    ],
+    "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.1.10",
+        "install_time": "2021-01-24T18:02:26+00:00"
+      },
+      {
+        "version": "v1.1.9",
+        "install_time": "2021-01-09T08:44:19+00:00"
+      },
+      {
+        "version": "v1.1.8",
+        "install_time": "2021-01-06T04:28:12+00:00"
+      },
+      {
+        "version": "v1.1.6",
+        "install_time": "2021-01-01T15:22:46+00:00"
+      },
+      {
+        "version": "v1.1.5",
+        "install_time": "2020-12-23T09:23:26+00:00"
+      },
       {
         "version": "v1.1.4",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -670,9 +686,9 @@
     "name": "LibGetFrame",
     "description": "Return unit frame for a given unit",
     "url": "https://www.curseforge.com/wow/addons/libgetframe",
-    "download_url": "https://edge.forgecdn.net/files/3084/870/LibGetFrame-1.0-1.5.5.zip",
-    "date_published": "2020-10-18T02:19:56.477000+00:00",
-    "version": "1.5.5",
+    "download_url": "https://edge.forgecdn.net/files/3163/386/LibGetFrame-1.0-1.5.6.zip",
+    "date_published": "2021-01-09T16:58:24.793000+00:00",
+    "version": "1.5.6",
     "folders": [
       {
         "name": "LibGetFrame-1.0"
@@ -683,6 +699,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.5.6",
+        "install_time": "2021-01-11T05:47:00+00:00"
+      },
       {
         "version": "1.5.5",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -856,9 +876,9 @@
     "name": "LibRealmInfo",
     "description": "Library to provide information about realms.",
     "url": "https://www.curseforge.com/wow/addons/librealminfo",
-    "download_url": "https://edge.forgecdn.net/files/2655/144/LibRealmInfo-14.zip",
-    "date_published": "2019-01-02T10:49:36.860000+00:00",
-    "version": "14",
+    "download_url": "https://edge.forgecdn.net/files/3175/669/LibRealmInfo.zip",
+    "date_published": "2021-01-21T02:48:37.100000+00:00",
+    "version": "17",
     "folders": [
       {
         "name": "LibRealmInfo"
@@ -869,6 +889,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "17",
+        "install_time": "2021-01-22T11:53:37+00:00"
+      },
       {
         "version": "14",
         "install_time": "2020-11-03T05:33:05+00:00"
@@ -993,32 +1017,6 @@
   },
   {
     "source": "curse",
-    "id": "64293",
-    "slug": "nicktag",
-    "name": "NickTag-1.0",
-    "description": "Tool used by others addons for share nicknames with your guild mates.",
-    "url": "https://www.curseforge.com/wow/addons/nicktag",
-    "download_url": "https://edge.forgecdn.net/files/3079/695/NickTag-1.0-v9.0.1.zip",
-    "date_published": "2020-10-14T01:47:32.077000+00:00",
-    "version": "v9.0.1",
-    "folders": [
-      {
-        "name": "NickTag-1.0"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v9.0.1",
-        "install_time": "2020-11-03T05:33:05+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "32855",
     "slug": "utf8",
     "name": "UTF8",
@@ -1040,32 +1038,6 @@
       {
         "version": "v1.1",
         "install_time": "2020-11-03T05:33:05+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "14897",
-    "slug": "wholib",
-    "name": "WhoLib",
-    "description": "Queing of /who and SendWho() queries and a much better interface (see docs), with gurantee to be executed & callback.",
-    "url": "https://www.curseforge.com/wow/addons/wholib",
-    "download_url": "https://edge.forgecdn.net/files/2975/226/LibWho-2.0-2.0.179.zip",
-    "date_published": "2020-06-08T07:22:53.803000+00:00",
-    "version": "2.0.179",
-    "folders": [
-      {
-        "name": "LibWho-2.0"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "2.0.179",
-        "install_time": "2020-12-19T15:45:31+00:00"
       }
     ]
   }

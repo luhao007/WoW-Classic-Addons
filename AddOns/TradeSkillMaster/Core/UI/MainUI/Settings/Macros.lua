@@ -51,7 +51,7 @@ function private.GetMacrosSettingsFrame()
 	local upEnabled, downEnabled, altEnabled, ctrlEnabled, shiftEnabled = false, false, false, false, false
 	for _, binding in Vararg.Iterator(GetBindingKey(BINDING_NAME)) do
 		upEnabled = upEnabled or (strfind(binding, "MOUSEWHEELUP") and true)
-		downEnabled = upEnabled or (strfind(binding, "MOUSEWHEELDOWN") and true)
+		downEnabled = downEnabled or (strfind(binding, "MOUSEWHEELDOWN") and true)
 		altEnabled = altEnabled or (strfind(binding, "ALT-") and true)
 		ctrlEnabled = ctrlEnabled or (strfind(binding, "CTRL-") and true)
 		shiftEnabled = shiftEnabled or (strfind(binding, "SHIFT-") and true)
@@ -245,11 +245,11 @@ function private.CreateButtonOnClick(button)
 	-- we want to save these bindings to be per-character, so the mode should be 1 / 2 if we're currently on
 	-- per-character bindings or not respectively
 	local bindingMode = (GetCurrentBindingSet() == CHARACTER_BINDING_SET) and 1 or 2
-	if scrollFrame:GetElement("setup.content.direction.check.up") then
+	if scrollFrame:GetElement("setup.content.direction.check.up"):IsChecked() then
 		SetBinding(modifierStr.."MOUSEWHEELUP", nil, bindingMode)
 		SetBinding(modifierStr.."MOUSEWHEELUP", BINDING_NAME, bindingMode)
 	end
-	if scrollFrame:GetElement("setup.content.direction.check.down") then
+	if scrollFrame:GetElement("setup.content.direction.check.down"):IsChecked() then
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", nil, bindingMode)
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", BINDING_NAME, bindingMode)
 	end

@@ -1224,7 +1224,7 @@ function private.RowOnLeave(self)
 		end
 	end
 	ScriptWrapper.Clear(self._frame, "OnUpdate")
-	if self:IsVisible() then
+	if self:GetData() and self:IsVisible() then
 		if self._scrollingTable:_IsSelected(self:GetData()) then
 			self:SetHighlightState("selected")
 		else

@@ -333,8 +333,10 @@ end
 
 function AuctionScanManager._ProcessQuery(self, query)
 	local prevMaxBrowseId = 0
-	for _, row in query:BrowseResultsIterator() do
-		prevMaxBrowseId = max(prevMaxBrowseId, row:GetMinBrowseId())
+	if TSM.IsWowClassic() then
+		for _, row in query:BrowseResultsIterator() do
+			prevMaxBrowseId = max(prevMaxBrowseId, row:GetMinBrowseId())
+		end
 	end
 
 	-- run the browse query

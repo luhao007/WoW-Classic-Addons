@@ -460,9 +460,9 @@ class Manager:
                 'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-                'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0']
+                'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1']
         if not self.is_classic:
-            libs += ['DF', 'LibTranslit-1.0']
+            libs += ['DF', 'LibTranslit-1.0', 'NickTag-1.0']
 
         self.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
 
@@ -629,6 +629,13 @@ class Manager:
                            for line in lines]
         )
 
+    def handle_myslot(self):
+        self.remove_libraries(
+            ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibStub'],
+            'Addons/Myslot/libs',
+            'Addons/Myslot/Myslot.toc'
+        )
+
     def handle_omnicc(self):
         process_file(
             'AddOns/OmniCC/core/core.xml',
@@ -775,20 +782,6 @@ class Manager:
             'AddOns/TalentSetManager/libs',
             'AddOns/TalentSetManager/libs/libs.xml'
         )
-
-    @classic_only
-    def handle_tc2(self):
-        path = 'Addons/ThreatClassic2/Libs/LibThreatClassic2'
-        if os.path.exists(path):
-            dst = 'Addons/!!Libs/LibThreatClassic2'
-            rm_tree(dst)
-            shutil.copytree(path, dst)
-        rm_tree('AddOns/ThreatClassic2/Libs')
-
-        def f(lines):
-            return [line for line in lines if 'Libs' not in line]
-        path = 'AddOns/ThreatClassic2/ThreatClassic2.xml'
-        process_file(path, f)
 
     def handle_titan(self):
         path = 'Addons/Titan{0}Location/Titan{0}Location.lua'.format(
