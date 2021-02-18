@@ -106,7 +106,7 @@ app.L = {
 	["FILTER_ID_TYPES"] = {
 		-- Armor
 		[1] = INVTYPE_HOLDABLE, 								-- Held in Off-Hand
-		[2] = GetItemSubClassInfo(4,5),							-- Cosmetic
+		[2] = "Cosmetic",										-- Cosmetic
 		[3] = INVTYPE_CLOAK,									-- Cloaks
 		[4] = GetItemSubClassInfo(4,1),							-- Cloth
 		[5] = GetItemSubClassInfo(4,2),							-- Leather
@@ -138,10 +138,13 @@ app.L = {
 		[51] = INVTYPE_NECK,									-- Neck
 		[52] = INVTYPE_FINGER,									-- Finger
 		[53] = INVTYPE_TRINKET,									-- Trinket
+		[54] = INVTYPE_RELIC,									-- Relic / Libram / Idols
+		[55] = AUCTION_CATEGORY_CONSUMABLES,					-- Consumable
 		[57] = GetItemSubClassInfo(2,20),						-- Fishing Poles
 
 		-- Non-Equipment
-		[100] = GetItemSubClassInfo(15,5),						-- Mounts
+		[100] = MOUNTS,											-- Mounts
+		[104] = AUCTION_CATEGORY_QUEST_ITEMS, 					-- Quest Items
 		[113] = INVTYPE_BAG, 									-- Bags
 		[200] = AUCTION_CATEGORY_RECIPES,						-- Recipes
 	};
@@ -267,6 +270,7 @@ app.L = {
 		[-20] = "Silithid Royalty",												-- Silithid Royalty
 		[-21] = "Captains",
 		[-22] = "Atal'ai Defenders",											-- Atal'ai Defenders
+		[-23] = "The Four Horsemen",											-- The Four Horsemen
 		[-27] = "Lower",														-- Lower (Blackrock Spire)
 		[-28] = "Upper",														-- Upper (Blackrock Spire)
 		[-30] = FACTION_ALLIANCE,												-- Alliance

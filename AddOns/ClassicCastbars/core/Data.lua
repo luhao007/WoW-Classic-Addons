@@ -403,6 +403,7 @@ local castSpellIDs = {
     16028, -- Freeze Rookery Egg - Prototype
     11836, -- Freeze Solid
     19755, -- Frightalon
+    28524, -- Frost Breath (Sapphiron version, has different name on Chinese clients)
     3131, -- Frost Breath
     23187, -- Frost Burn
     22594, -- Frost Mantle of the Dawn
@@ -1143,7 +1144,8 @@ local castSpellIDs = {
     24420, -- Zandalar Signet of Serenity
     1050, -- Sacrifice
     22651, -- Sacrifice 2 (On German client this is named Opfern but other Sacrifice is named Opferung)
-    10181, -- Frostbolt (needs to be last for chinese clients, see issue #16)
+    28478, -- Frostbolt 2 (Has different spelling on Chinese clients)
+    10181, -- Frostbolt (Needs to be last for chinese clients, see issue #16)
 
     -- Channeled casts in random order. These are used to retrieve spell icon later on (namespace.channeledSpells only stores spell name)
     -- Commented out IDs are duplicates that also has a normal cast already listed above.
@@ -2124,6 +2126,7 @@ namespace.defaultConfig.npcCastUninterruptibleCache = {
     ["16146" .. GetSpellInfo(17473)] = true, -- Death Knight Raise Dead
     ["16368" .. GetSpellInfo(9081)] = true, -- Necropolis Acolyte Shadow Bolt Volley
     ["15956" .. GetSpellInfo(28783)] = true, -- Anub'Rekhan Impale
+    ["15956" .. GetSpellInfo(28786)] = true, -- Anub'Rekhan Locust Swarm
     ["16022" .. GetSpellInfo(16568)] = true, -- Surgical Assistant Mind Flay
     ["16021" .. GetSpellInfo(1397)] = true, -- Living Monstrosity Fear
     ["16021" .. GetSpellInfo(1339)] = true, -- Living Monstrosity Chain Lightning
@@ -2131,4 +2134,6 @@ namespace.defaultConfig.npcCastUninterruptibleCache = {
     ["16215" .. GetSpellInfo(1467)] = true, -- Unholy Staff Arcane Explosion
     ["16452" .. GetSpellInfo(1467)] = true, -- Necro Knight Guardian Arcane Explosion
     ["16452" .. GetSpellInfo(11829)] = true, -- Necro Knight Guardian Flamestrike
+    ["16165" .. GetSpellInfo(1467)] = true, -- Necro Knight Arcane Explosion
+    ["16165" .. GetSpellInfo(11829)] = true, -- Necro Knight Flamestrike
 }

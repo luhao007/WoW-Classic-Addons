@@ -1,3 +1,16 @@
+v1.3.20:
+- Minor hacky fix for player castbar color conflict with other addons.
+
+
+v1.3.19:
+- Fix Sapphiron's Frost Breath not being tracked for non-english clients.
+
+
+v1.3.18:
+- Hopefully fix Kel'Thuzad's Frostbolt not being tracked for Chinese clients.
+- Minor improvements for cast data in Naxxramas.
+
+
 v1.3.17:
 - Add option for basic font outlines. (#45)
 - Improvements for cast data in Naxxramas.

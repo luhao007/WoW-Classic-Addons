@@ -88,6 +88,7 @@ local GeneralSettingsBase = {
 		["AccountWide:Reputations"] = true,
 		["Thing:Deaths"] = true,
 		["Thing:FlightPaths"] = true,
+		["Thing:Loot"] = false,
 		["Thing:Quests"] = true,
 		["Thing:Recipes"] = true,
 		["Thing:Reputations"] = true,
@@ -410,6 +411,7 @@ settings.UpdateMode = function(self)
 		app.AccountWideReputations = true;
 
 		app.CollectibleFlightPaths = true;
+		app.CollectibleLoot = true;
 		app.CollectibleQuests = true;
 		app.CollectibleRecipes = true;
 		app.CollectibleReputations = true;
@@ -428,6 +430,7 @@ settings.UpdateMode = function(self)
 		app.AccountWideReputations = self:Get("AccountWide:Reputations");
 
 		app.CollectibleFlightPaths = self:Get("Thing:FlightPaths");
+		app.CollectibleLoot = self:Get("Thing:Loot");
 		app.CollectibleQuests = self:Get("Thing:Quests");
 		app.CollectibleRecipes = self:Get("Thing:Recipes");
 		app.CollectibleReputations = self:Get("Thing:Reputations");
@@ -723,6 +726,25 @@ end);
 FlightPathsAccountWideCheckBox:SetATTTooltip("Flight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?");
 FlightPathsAccountWideCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "TOPLEFT", 220, 0);
 
+local LootCheckBox = settings:CreateCheckBox("Loot / Drops / Items",
+function(self)
+	self:SetChecked(settings:Get("Thing:Loot"));
+	if settings:Get("DebugMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:Set("Thing:Loot", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
+LootCheckBox:SetATTTooltip("Enable this option to track loot.\n\nLoot being any item you can get from a mob, quest, or container. Loot that qualifies for one of the other filters will still appear in ATT if this filter is turned off.\n\nYou can change which sort of loot displays for you based on the Filters tab.\n\nDefault: Class Defaults, Disabled.");
+LootCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "BOTTOMLEFT", 0, 4);
+
 local QuestsCheckBox = settings:CreateCheckBox("Quests",
 function(self)
 	self:SetChecked(settings:Get("Thing:Quests"));
@@ -740,7 +762,7 @@ function(self)
 	app:RefreshData();
 end);
 QuestsCheckBox:SetATTTooltip("Enable this option to track quests.\n\nYou can right click any quest in the lists to pop out their full quest chain to show your progress and any prerequisite or breadcrumb quests.\n\nNOTE: Quests are not permanently tracked due to the nature of how Daily, Weekly, Yearly, and Repeatable Quests are tracked in the Blizzard Database.");
-QuestsCheckBox:SetPoint("TOPLEFT", FlightPathsCheckBox, "BOTTOMLEFT", 0, 4);
+QuestsCheckBox:SetPoint("TOPLEFT", LootCheckBox, "BOTTOMLEFT", 0, 4);
 
 local QuestsAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
 function(self)
@@ -1048,7 +1070,7 @@ local ItemFilterOnRefresh = function(self)
 		self:SetAlpha(0.2);
 	end
 end;
-for i,filterID in ipairs({ 4, 5, 6, 7 }) do
+for i,filterID in ipairs({ 2, 4, 5, 6, 7 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.filterID = filterID;
@@ -1058,7 +1080,17 @@ end
 
 -- Weapons
 yoffset = -4;
-for i,filterID in ipairs({ 20, 29, 28  }) do
+for i,filterID in ipairs({ 20, 34, 29, 8, 28  }) do
+	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
+	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
+	filter.filterID = filterID;
+	last = filter;
+	yoffset = 6;
+end
+
+-- Ranged Weapons
+yoffset = -4;
+for i,filterID in ipairs({ 33, 32, 31, 27  }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.filterID = filterID;
@@ -1068,17 +1100,7 @@ end
 
 -- Big Ole Boys
 yoffset = -4;
-for i,filterID in ipairs({ 21, 22, 23, 24, 25, 26, 1, 8 }) do
-	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
-	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
-	filter.filterID = filterID;
-	last = filter;
-	yoffset = 6;
-end
-
--- Weird Boys
-yoffset = -4;
-for i,filterID in ipairs({ 50, 57, 34, 27 }) do
+for i,filterID in ipairs({ 21, 22, 23, 24, 25, 26 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.filterID = filterID;
@@ -1088,12 +1110,32 @@ end
 
 -- Secondary Armor Classes
 last, xoffset, yoffset = ItemFiltersLabel, 120, -4;
-for i,filterID in ipairs({ 2, 10, 9, 33, 32, 31 }) do
+for i,filterID in ipairs({ 10, 9, 51, 52, 53 }) do
 	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", xoffset, yoffset);
 	filter.filterID = filterID;
 	last = filter;
 	xoffset = 0;
+	yoffset = 6;
+end
+
+-- Secondary Weapon Classes
+yoffset = -4;
+for i,filterID in ipairs({ 50, 57, 100, 54, 1 }) do
+	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
+	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
+	filter.filterID = filterID;
+	last = filter;
+	yoffset = 6;
+end
+
+-- Miscellaneous
+yoffset = -4;
+for i,filterID in ipairs({ 113, 55, 104, 200 }) do
+	local filter = settings:CreateCheckBox(itemFilterNames[filterID] or tostring(filterID), ItemFilterOnRefresh, ItemFilterOnClick);
+	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
+	filter.filterID = filterID;
+	last = filter;
 	yoffset = 6;
 end
 
@@ -1179,14 +1221,14 @@ local UnobtainableOnRefresh = function(self)
 	end
 end;
 local LegacyFiltersLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
-LegacyFiltersLabel:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -120, -8);
+LegacyFiltersLabel:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -110, -8);
 LegacyFiltersLabel:SetJustifyH("LEFT");
 LegacyFiltersLabel:SetText("Seasonal & Unobtainable Filters");
 LegacyFiltersLabel:Show();
 table.insert(settings.MostRecentTab.objects, LegacyFiltersLabel);
 
 local SeasonalHolidayFiltersLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-SeasonalHolidayFiltersLabel:SetPoint("TOPLEFT", LegacyFiltersLabel, "BOTTOMLEFT", 0, -8);
+SeasonalHolidayFiltersLabel:SetPoint("TOPLEFT", LegacyFiltersLabel, "BOTTOMLEFT", 4, -8);
 SeasonalHolidayFiltersLabel:SetJustifyH("LEFT");
 SeasonalHolidayFiltersLabel:SetText("|CFFAAAAFFSeasonal Holiday Filters|r");
 SeasonalHolidayFiltersLabel:Show();
@@ -1224,7 +1266,7 @@ for i,u in ipairs({ 1, 2, 3  }) do
 end
 
 local FutureContentReleasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-FutureContentReleasesLabel:SetPoint("RIGHT", line, "RIGHT", -10, 0);
+FutureContentReleasesLabel:SetPoint("RIGHT", line, "RIGHT", -20, 0);
 FutureContentReleasesLabel:SetPoint("TOP", LegacyFiltersLabel, "BOTTOM", 0, -8);
 FutureContentReleasesLabel:SetJustifyH("LEFT");
 FutureContentReleasesLabel:SetText("|CFFAAFFAAFuture Content Releases|r");
@@ -1899,7 +1941,7 @@ local AboutText = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
 AboutText:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 8, -8);
 AboutText:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -8, -8);
 AboutText:SetJustifyH("LEFT");
-AboutText:SetText(L["TITLE"] .. " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve (DFortun81 on GitHub)|CFFFFFFFF\n\nIf you wish to play with us, we're on Atiesh (Alliance) in the <All The Things> guild! (Currently need all!)\n\nAlso... NO, we do NOT work for the phone company.\n\nWebsite for comparing Collections coming Soonâ„¢.|r\n\n\nContributors working on Classic:\n |CFFFFFFFF\nPr3vention, Avella, Mogwai, Crieve and Talonzor |r\n\n\n\nIf we're missing something, please let us know!\n\nStill lots of things to add, but thankfully there is a finite number of things in WoW Classic, so we should eventually get it all!");
+AboutText:SetText(L["TITLE"] .. " |CFFFFFFFFis a collection tracking addon that shows you where and how to get everything in the game! We have a large community of users on our Discord (link at the bottom) where you can ask questions, submit suggestions as well as report bugs or missing items. If you find something collectible or a quest that isn't documented, you can tell us on the Discord, or for the more technical savvy, we have a Git that you may contribute directly to.\n\nWhile we do strive for completion, there's a lot of stuff getting added into the game each patch, so if we're missing something, please understand that we're a small team trying to keep up with changes as well as collect things ourselves. :D\n\nFeel free to ask me questions when I'm streaming and I'll try my best to answer it, even if it's not directly related to ATT (general WoW addon programming as well).\n\n- |r|Cffff8000Crieve (DFortun81 on GitHub)|CFFFFFFFF\n\nIf you wish to play with us, we're on Atiesh (Alliance) in the <All The Things> guild!|r\n\n\nContributors working on Classic:\n |CFFFFFFFF\nPr3vention, Avella, Mogwai, Crieve and Talonzor |r\n\n\n\nIf we're missing something, please let us know!\n\nStill lots of things to add, but thankfully there is a finite number of things in WoW Classic and TBC Classic, so we should eventually get it all!");
 AboutText:Show();
 table.insert(settings.MostRecentTab.objects, AboutText);
 end)();

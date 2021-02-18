@@ -1,13 +1,13 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2021 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0410
+PawnVersion = 2.0414
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.12
@@ -1129,7 +1129,7 @@ function PawnGetItemData(ItemLink)
 			-- Robes are just really long chest armor.
 			InvType = "INVTYPE_CHEST"
 			Item.InvType = InvType
-		end	
+		end
 
 		-- Then, the unenchanted stats.  But, we only need to do this if the item is enchanted or socketed.  PawnUnenchantItemLink
 		-- will return nil if the item isn't enchanted, so we can skip that process.
@@ -1183,6 +1183,18 @@ function PawnGetItemData(ItemLink)
 				VgerCore.Message("Not caching because the item didn't have any stats: " .. tostring(ItemLink))
 			end
 			return
+		end
+
+		-- Fix a bug where in Spanish, off-hand holdable items are getting treated as off-hand weapons because they're translated the same.
+		if Item.InvType == "INVTYPE_HOLDABLE" then
+			if Item.Stats then
+				Item.Stats.IsOffHand = nil
+				Item.Stats.IsFrill = 1
+			end
+			if Item.UnenchantedStats then
+				Item.UnenchantedStats.IsOffHand = nil
+				Item.UnenchantedStats.IsFrill = 1
+			end
 		end
 
 		-- Determine if this item could ever be equipped by this class.
@@ -1408,7 +1420,7 @@ function PawnUpdateTooltip(TooltipName, MethodName, Param1, ...)
 		
 		-- If this is the main GameTooltip, remember the item that was hovered over.
 		-- AtlasLoot compatibility: enable hover comparison for AtlasLoot tooltips too.
-		if ItemLink and TooltipName == "GameTooltip" or TooltipName == "AtlasLootTooltip" or TooltipName == "WorldMapTooltipTooltip" then -- "TooltipTooltip" isn't a typo; it's an embedded tooltip
+		if ItemLink and TooltipName == "GameTooltip" or TooltipName == "AtlasLootTooltip" or TooltipName == "GameTooltipTooltip" then -- "TooltipTooltip" isn't a typo; it's an embedded tooltip
 			PawnLastHoveredItem = Item.Link
 		end
 	elseif IsRelic then
@@ -2054,7 +2066,10 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 		-- Shields aren't off-hand weapons.
 		Stats["IsOffHand"] = nil
 	end
-	if Stats["IsOffHand"] then
+	if Stats["IsOffHand"] and Stats["Dps"] then
+		-- Spanish translates INVTYPE_WEAPONOFFHAND and INVTYPE_HOLDABLE the same, but holdable off-hand frill
+		-- items aren't weapons. So only add these stats if the item has DPS, which should be true for all weapons and no off-hand frill items.
+		-- (We don't have access to the INVTYPE here.)
 		PawnAddStatToTable(Stats, "OffHandDps", Stats["Dps"])
 		PawnAddStatToTable(Stats, "OffHandSpeed", Stats["Speed"])
 		PawnAddStatToTable(Stats, "OffHandMinDamage", Stats["MinDamage"])

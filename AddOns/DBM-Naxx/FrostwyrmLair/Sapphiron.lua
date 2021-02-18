@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Sapphiron", "DBM-Naxx", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201104234746")
+mod:SetRevision("20210216221244")
 mod:SetCreatureID(15989)
 mod:SetEncounterID(1119)
 --mod:SetModelID(16033)--Scales incorrectly
@@ -36,12 +36,17 @@ local timerIceBlast		= mod:NewTimer(7, "TimerIceBlast", 15876, nil, nil, 2, DBM_
 
 local berserkTimer		= mod:NewBerserkTimer(900)
 
+mod:AddRangeFrameOption(10, 28522)
+
 local noTargetTime = 0
 mod.vb.isFlying = false
 local UnitAffectingCombat = UnitAffectingCombat
 
 local function resetIsFlying(self)
 	self.vb.isFlying = false
+	if self.Options.RangeFrame then
+		DBM.RangeCheck:Hide()
+	end
 end
 
 local function Landing()
@@ -82,8 +87,17 @@ function mod:OnCombatStart(delay)
 			timerAirPhase:Cancel()
 			warnAirPhaseNow:Show()
 			timerLanding:Start()--28.5 (seems mostly right)
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Show(10)
+			end
 		end
 	end, 0.2)
+end
+
+function mod:OnCombatEnd()
+	if self.Options.RangeFrame then
+		DBM.RangeCheck:Hide()
+	end
 end
 
 do

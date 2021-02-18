@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2020 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2021 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 --
 -- Ask Mr. Robot scales
@@ -8,7 +8,7 @@
 
 local ScaleProviderName = "MrRobot"
 
-PawnMrRobotLastUpdatedVersion = 2.0245
+PawnMrRobotLastUpdatedVersion = 2.0413
 
 
 function PawnMrRobotScaleProvider_AddScales()
@@ -18,252 +18,252 @@ PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	6, -- Death Knight
 	1, -- Blood
-	{ Armor=28.19, Avoidance=15.08, CritRating=29.85, HasteRating=24.80, Indestructible=0.01, Leech=11.40, MasteryRating=27.44, MaxDamage=0.01, MinDamage=0.01, MovementSpeed=0.01, Stamina=25.61, Strength=19.44, Versatility=51.16 }
+	{ Armor=49.60, Avoidance=0.02, CritRating=20.77, HasteRating=21.45, Indestructible=0.01, Leech=2.89, MasteryRating=23.25, MaxDamage=6.21, MinDamage=6.21, MovementSpeed=0.01, Stamina=63.09, Strength=56.23, Versatility=41.33 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	6, -- Death Knight
 	2, -- Frost
-	{ Avoidance=0.02, CritRating=1.69, HasteRating=1.35, Indestructible=0.01, Leech=0.01, MasteryRating=1.85, MaxDamage=1.18, MinDamage=1.18, MovementSpeed=0.03, Strength=1.87, Versatility=1.46 }
+	{ Avoidance=0.02, CritRating=1.40, HasteRating=0.82, Indestructible=0.01, Leech=0.01, MasteryRating=1.23, MaxDamage=2.03, MinDamage=2.03, MovementSpeed=0.03, Strength=2.76, Versatility=0.96 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	6, -- Death Knight
 	3, -- Unholy
-	{ Avoidance=0.02, CritRating=1.67, HasteRating=1.75, Indestructible=0.01, Leech=0.01, MasteryRating=1.40, MaxDamage=1.30, MinDamage=1.30, MovementSpeed=0.03, Strength=1.82, Versatility=1.49 }
+	{ Avoidance=0.02, CritRating=1.17, HasteRating=1.34, Indestructible=0.01, Leech=0.01, MasteryRating=1.39, MaxDamage=2.27, MinDamage=2.27, MovementSpeed=0.03, Strength=3.14, Versatility=1.10 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	12, -- Demon Hunter
 	1, -- Havoc
-	{ Agility=1.82, Avoidance=0.02, CritRating=1.49, HasteRating=1.70, Indestructible=0.01, Leech=0.01, MasteryRating=1.05, MaxDamage=1.62, MinDamage=1.62, MovementSpeed=0.03, Versatility=1.47 }
+	{ Agility=2.63, Avoidance=0.02, CritRating=0.87, HasteRating=0.85, Indestructible=0.01, Leech=0.01, MasteryRating=0.76, MaxDamage=2.31, MinDamage=2.31, MovementSpeed=0.03, Versatility=0.91 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	12, -- Demon Hunter
 	2, -- Vengeance
-	{ Agility=9.90, Armor=46.73, Avoidance=0.02, CritRating=21.90, HasteRating=23.62, Indestructible=0.01, Leech=18.11, MasteryRating=4.11, MaxDamage=0.02, MinDamage=0.02, MovementSpeed=0.01, Stamina=17.20, Versatility=35.21 }
+	{ Agility=78.20, Armor=192.99, Avoidance=30.74, CritRating=36.32, HasteRating=48.72, Indestructible=0.01, Leech=3.16, MasteryRating=28.97, MaxDamage=77.87, MinDamage=77.87, MovementSpeed=0.01, Stamina=119.99, Versatility=76.74 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	11, -- Druid
 	1, -- Balance
-	{ Avoidance=0.03, CritRating=1.79, HasteRating=2.20, Indestructible=0.01, Intellect=1.97, Leech=0.01, MasteryRating=2.14, MovementSpeed=0.02, Versatility=1.62 }
+	{ Avoidance=0.03, CritRating=1.06, HasteRating=1.15, Indestructible=0.01, Intellect=2.81, Leech=0.01, MasteryRating=1.18, MovementSpeed=0.02, Versatility=1.01 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	11, -- Druid
 	2, -- Feral
-	{ Agility=1.89, Avoidance=0.02, CritRating=2.15, HasteRating=1.67, Indestructible=0.01, Leech=0.01, MasteryRating=1.91, MaxDamage=1.47, MinDamage=1.47, MovementSpeed=0.03, Versatility=1.60 }
+	{ Agility=2.66, Avoidance=0.02, CritRating=1.21, HasteRating=0.91, Indestructible=0.01, Leech=0.01, MasteryRating=1.20, MaxDamage=1.97, MinDamage=1.97, MovementSpeed=0.03, Versatility=0.95 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	11, -- Druid
 	3, -- Guardian
-	{ Agility=7.85, Armor=27.72, Avoidance=5.96, CritRating=14.08, HasteRating=11.49, Indestructible=0.01, Leech=9.52, MasteryRating=17.48, MaxDamage=4.71, MinDamage=4.71, MovementSpeed=0.01, Stamina=9.83, Versatility=18.72 }
+	{ Agility=32.93, Armor=126.38, Avoidance=1.64, CritRating=15.92, HasteRating=0.01, Indestructible=0.01, Leech=15.48, MasteryRating=26.07, MaxDamage=0.01, MinDamage=0.01, MovementSpeed=0.01, Stamina=68.06, Versatility=30.52 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	11, -- Druid
 	4, -- Restoration
-	{ Avoidance=0.02, CritRating=3.18, HasteRating=3.42, Indestructible=0.01, Intellect=3.45, Leech=4.31, MasteryRating=3.62, MovementSpeed=0.01, Versatility=3.44 }
+	{ Avoidance=0.02, CritRating=0.92, HasteRating=1.15, Indestructible=0.01, Intellect=2.67, Leech=0.51, MasteryRating=0.87, MovementSpeed=0.01, Versatility=0.97 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	3, -- Hunter
 	1, -- Beast Mastery
-	{ Agility=1.95, Avoidance=0.03, CritRating=1.58, HasteRating=1.62, Indestructible=0.01, Leech=0.01, MasteryRating=1.64, MaxDamage=1.06, MinDamage=1.06, MovementSpeed=0.02, Versatility=1.48 }
+	{ Agility=2.82, Avoidance=0.03, CritRating=0.96, HasteRating=1.15, Indestructible=0.01, Leech=0.01, MasteryRating=0.78, MaxDamage=1.86, MinDamage=1.86, MovementSpeed=0.02, Versatility=0.91 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	3, -- Hunter
 	2, -- Marksmanship
-	{ Agility=1.80, Avoidance=0.03, CritRating=1.53, HasteRating=1.67, Indestructible=0.01, Leech=0.01, MasteryRating=1.82, MaxDamage=1.71, MinDamage=1.71, MovementSpeed=0.02, Versatility=1.41 }
+	{ Agility=2.60, Avoidance=0.03, CritRating=1.09, HasteRating=0.93, Indestructible=0.01, Leech=0.01, MasteryRating=1.19, MaxDamage=2.54, MinDamage=2.54, MovementSpeed=0.02, Versatility=0.92 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	3, -- Hunter
 	3, -- Survival
-	{ Agility=1.89, Avoidance=0.02, CritRating=1.63, HasteRating=2.09, Indestructible=0.01, Leech=0.01, MasteryRating=1.33, MaxDamage=1.15, MinDamage=1.15, MovementSpeed=0.03, Versatility=1.53 }
+	{ Agility=2.42, Avoidance=0.02, CritRating=0.85, HasteRating=1.06, Indestructible=0.01, Leech=0.01, MasteryRating=0.65, MaxDamage=1.55, MinDamage=1.55, MovementSpeed=0.03, Versatility=0.81 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	8, -- Mage
 	1, -- Arcane
-	{ Avoidance=0.03, CritRating=1.76, HasteRating=1.68, Indestructible=0.01, Intellect=1.91, Leech=0.01, MasteryRating=1.45, MovementSpeed=0.02, Versatility=1.58 }
+	{ Avoidance=0.03, CritRating=1.06, HasteRating=0.78, Indestructible=0.01, Intellect=2.76, Leech=0.01, MasteryRating=1.22, MovementSpeed=0.02, Versatility=0.99 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	8, -- Mage
 	2, -- Fire
-	{ Avoidance=0.03, CritRating=1.68, HasteRating=1.71, Indestructible=0.01, Intellect=1.80, Leech=0.01, MasteryRating=1.50, MovementSpeed=0.02, Versatility=1.45 }
+	{ Avoidance=0.03, CritRating=1.08, HasteRating=1.03, Indestructible=0.01, Intellect=2.67, Leech=0.01, MasteryRating=0.80, MovementSpeed=0.02, Versatility=0.94 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	8, -- Mage
 	3, -- Frost
-	{ Avoidance=0.03, CritRating=1.49, HasteRating=1.69, Indestructible=0.01, Intellect=1.76, Leech=0.01, MasteryRating=1.77, MovementSpeed=0.02, Versatility=1.48 }
+	{ Avoidance=0.03, CritRating=0.89, HasteRating=1.16, Indestructible=0.01, Intellect=2.95, Leech=0.01, MasteryRating=1.00, MovementSpeed=0.02, Versatility=1.05 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	10, -- Monk
 	1, -- Brewmaster
-	{ Agility=14.18, Armor=28.67, Avoidance=9.05, CritRating=3.38, HasteRating=11.36, Indestructible=0.01, Leech=12.35, MasteryRating=27.22, MaxDamage=10.07, MinDamage=10.07, MovementSpeed=0.01, Stamina=12.64, Versatility=14.85 }
+	{ Agility=84.63, Armor=76.10, Avoidance=0.02, CritRating=17.32, HasteRating=6.52, Indestructible=0.01, Leech=11.93, MasteryRating=36.27, MaxDamage=14.55, MinDamage=14.55, MovementSpeed=0.01, Stamina=69.94, Versatility=42.41 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	10, -- Monk
 	2, -- Mistweaver
-	{ Avoidance=0.02, CritRating=2.79, HasteRating=0.03, Indestructible=0.01, Intellect=3.11, Leech=3.42, MasteryRating=2.30, MovementSpeed=0.01, Versatility=2.97 }
+	{ Avoidance=0.02, CritRating=0.94, HasteRating=0.90, Indestructible=0.01, Intellect=2.54, Leech=0.41, MasteryRating=0.45, MovementSpeed=0.01, Versatility=0.93 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	10, -- Monk
 	3, -- Windwalker
-	{ Agility=1.55, Avoidance=0.02, CritRating=1.38, HasteRating=1.05, Indestructible=0.01, Leech=0.01, MasteryRating=1.32, MaxDamage=1.41, MinDamage=1.41, MovementSpeed=0.03, Stamina=0.21, Versatility=1.47 }
+	{ Agility=2.32, Avoidance=0.02, CritRating=0.88, HasteRating=0.68, Indestructible=0.01, Leech=0.01, MasteryRating=0.81, MaxDamage=1.81, MinDamage=1.81, MovementSpeed=0.03, Stamina=0.14, Versatility=0.90 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	2, -- Paladin
 	1, -- Holy
-	{ Avoidance=0.02, CritRating=1.91, HasteRating=0.19, Indestructible=0.01, Intellect=2.36, Leech=1.40, MasteryRating=2.68, MovementSpeed=0.01, Versatility=2.06 }
+	{ Avoidance=0.02, CritRating=1.02, HasteRating=0.78, Indestructible=0.01, Intellect=3.11, Leech=0.68, MasteryRating=1.44, MovementSpeed=0.01, Versatility=1.10 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	2, -- Paladin
 	2, -- Protection
-	{ Armor=17.06, Avoidance=5.51, CritRating=13.12, HasteRating=7.56, Indestructible=0.01, Leech=10.00, MasteryRating=27.19, MaxDamage=11.70, MinDamage=11.70, MovementSpeed=0.01, Stamina=13.28, Strength=7.54, Versatility=19.08 }
+	{ Armor=42.73, Avoidance=5.48, CritRating=22.96, HasteRating=18.46, Indestructible=0.01, Leech=45.00, MasteryRating=51.79, MaxDamage=59.80, MinDamage=59.80, MovementSpeed=0.01, Stamina=68.56, Strength=48.67, Versatility=39.99 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	2, -- Paladin
 	3, -- Retribution
-	{ Avoidance=0.02, CritRating=1.53, HasteRating=1.77, Indestructible=0.01, Leech=0.01, MasteryRating=1.60, MaxDamage=1.39, MinDamage=1.39, MovementSpeed=0.03, Strength=1.79, Versatility=1.50 }
+	{ Avoidance=0.02, CritRating=0.98, HasteRating=1.04, Indestructible=0.01, Leech=0.01, MasteryRating=0.95, MaxDamage=2.11, MinDamage=2.11, MovementSpeed=0.03, Strength=2.54, Versatility=0.96 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	5, -- Priest
 	1, -- Discipline
-	{ Avoidance=0.02, CritRating=2.16, HasteRating=2.71, Indestructible=0.01, Intellect=2.52, Leech=1.30, MasteryRating=1.72, MovementSpeed=0.01, Versatility=2.37 }
+	{ Avoidance=0.02, CritRating=0.72, HasteRating=0.16, Indestructible=0.01, Intellect=2.03, Leech=0.40, MasteryRating=0.60, MovementSpeed=0.01, Versatility=0.79 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	5, -- Priest
 	2, -- Holy
-	{ Avoidance=0.02, CritRating=3.10, HasteRating=0.26, Indestructible=0.01, Intellect=3.52, Leech=3.48, MasteryRating=3.94, MovementSpeed=0.01, Versatility=3.19 }
+	{ Avoidance=0.02, CritRating=1.09, HasteRating=0.60, Indestructible=0.01, Intellect=3.28, Leech=0.65, MasteryRating=1.13, MovementSpeed=0.01, Versatility=1.07 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	5, -- Priest
 	3, -- Shadow
-	{ Avoidance=0.03, CritRating=1.79, HasteRating=2.16, Indestructible=0.01, Intellect=1.81, Leech=0.01, MasteryRating=1.66, MovementSpeed=0.02, Versatility=1.48 }
+	{ Avoidance=0.03, CritRating=1.12, HasteRating=1.31, Indestructible=0.01, Intellect=2.92, Leech=0.01, MasteryRating=1.28, MovementSpeed=0.02, Versatility=1.02 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	4, -- Rogue
 	1, -- Assassination
-	{ Agility=1.76, Avoidance=0.02, CritRating=1.75, HasteRating=1.81, Indestructible=0.01, Leech=0.01, MasteryRating=1.65, MaxDamage=2.45, MinDamage=2.45, MovementSpeed=0.03, Versatility=1.42 }
+	{ Agility=2.73, Avoidance=0.02, CritRating=1.04, HasteRating=1.15, Indestructible=0.01, Leech=0.01, MasteryRating=0.84, MaxDamage=4.17, MinDamage=4.17, MovementSpeed=0.03, Versatility=0.95 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	4, -- Rogue
 	2, -- Outlaw
-	{ Agility=1.75, Avoidance=0.02, CritRating=1.51, HasteRating=1.47, Indestructible=0.01, Leech=0.01, MasteryRating=1.41, MaxDamage=1.63, MinDamage=1.63, MovementSpeed=0.03, Versatility=1.39 }
+	{ Agility=2.31, Avoidance=0.02, CritRating=0.75, HasteRating=0.79, Indestructible=0.01, Leech=0.01, MasteryRating=0.69, MaxDamage=2.23, MinDamage=2.23, MovementSpeed=0.03, Versatility=0.77 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	4, -- Rogue
 	3, -- Subtlety
-	{ Agility=1.79, Avoidance=0.02, CritRating=1.57, HasteRating=1.35, Indestructible=0.01, Leech=0.01, MasteryRating=1.41, MaxDamage=2.53, MinDamage=2.53, MovementSpeed=0.03, Versatility=1.43 }
+	{ Agility=2.99, Avoidance=0.02, CritRating=1.07, HasteRating=0.94, Indestructible=0.01, Leech=0.01, MasteryRating=0.79, MaxDamage=4.20, MinDamage=4.20, MovementSpeed=0.03, Versatility=0.99 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	7, -- Shaman
 	1, -- Elemental
-	{ Avoidance=0.03, CritRating=1.68, HasteRating=1.69, Indestructible=0.01, Intellect=1.80, Leech=0.01, MasteryRating=1.09, MovementSpeed=0.02, Versatility=1.50 }
+	{ Avoidance=0.03, CritRating=1.02, HasteRating=0.90, Indestructible=0.01, Intellect=2.94, Leech=0.01, MasteryRating=1.19, MovementSpeed=0.02, Versatility=1.04 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	7, -- Shaman
 	2, -- Enhancement
-	{ Agility=1.86, Avoidance=0.02, CritRating=1.66, HasteRating=2.00, Indestructible=0.01, Leech=0.01, MasteryRating=1.51, MaxDamage=1.46, MinDamage=1.46, MovementSpeed=0.03, Versatility=1.49 }
+	{ Agility=2.62, Avoidance=0.02, CritRating=0.92, HasteRating=1.02, Indestructible=0.01, Leech=0.01, MasteryRating=0.78, MaxDamage=2.29, MinDamage=2.29, MovementSpeed=0.03, Versatility=0.90 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	7, -- Shaman
 	3, -- Restoration
-	{ Avoidance=0.02, CritRating=4.28, HasteRating=0.50, Indestructible=0.01, Intellect=3.18, Leech=3.88, MasteryRating=3.27, MovementSpeed=0.01, Versatility=2.96 }
+	{ Avoidance=0.02, CritRating=1.08, HasteRating=0.38, Indestructible=0.01, Intellect=2.71, Leech=0.73, MasteryRating=1.02, MovementSpeed=0.01, Versatility=0.98 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	9, -- Warlock
 	1, -- Affliction
-	{ Avoidance=0.03, CritRating=1.53, HasteRating=1.79, Indestructible=0.01, Intellect=1.70, Leech=0.01, MasteryRating=1.82, MovementSpeed=0.02, Versatility=1.34 }
+	{ Avoidance=0.03, CritRating=1.02, HasteRating=1.24, Indestructible=0.01, Intellect=2.78, Leech=0.01, MasteryRating=1.38, MovementSpeed=0.02, Versatility=1.00 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	9, -- Warlock
 	2, -- Demonology
-	{ Avoidance=0.03, CritRating=1.83, HasteRating=2.06, Indestructible=0.01, Intellect=2.03, Leech=0.01, MasteryRating=2.00, MovementSpeed=0.02, Versatility=1.68 }
+	{ Avoidance=0.03, CritRating=1.06, HasteRating=1.08, Indestructible=0.01, Intellect=2.96, Leech=0.01, MasteryRating=1.04, MovementSpeed=0.02, Versatility=1.00 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	9, -- Warlock
 	3, -- Destruction
-	{ Avoidance=0.03, CritRating=1.73, HasteRating=1.92, Indestructible=0.01, Intellect=1.86, Leech=0.01, MasteryRating=1.80, MovementSpeed=0.02, Versatility=1.52 }
+	{ Avoidance=0.03, CritRating=1.05, HasteRating=1.26, Indestructible=0.01, Intellect=2.84, Leech=0.01, MasteryRating=1.10, MovementSpeed=0.02, Versatility=0.95 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	1, -- Warrior
 	1, -- Arms
-	{ Avoidance=0.02, CritRating=1.74, HasteRating=1.71, Indestructible=0.01, Leech=0.01, MasteryRating=1.40, MaxDamage=1.35, MinDamage=1.35, MovementSpeed=0.03, Strength=1.68, Versatility=1.37 }
+	{ Avoidance=0.02, CritRating=1.30, HasteRating=1.01, Indestructible=0.01, Leech=0.01, MasteryRating=1.14, MaxDamage=2.25, MinDamage=2.25, MovementSpeed=0.03, Strength=2.84, Versatility=0.99 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	1, -- Warrior
 	2, -- Fury
-	{ Avoidance=0.02, CritRating=1.53, HasteRating=1.89, Indestructible=0.01, Leech=0.01, MasteryRating=1.62, MaxDamage=0.86, MinDamage=0.86, MovementSpeed=0.03, Strength=1.61, Versatility=1.37 }
+	{ Avoidance=0.02, CritRating=1.02, HasteRating=1.07, Indestructible=0.01, Leech=0.01, MasteryRating=1.10, MaxDamage=1.45, MinDamage=1.45, MovementSpeed=0.03, Strength=2.67, Versatility=0.95 }
 )
 
 PawnAddPluginScaleFromTemplate(
 	ScaleProviderName,
 	1, -- Warrior
 	3, -- Protection
-	{ Armor=17.04, Avoidance=7.36, CritRating=13.47, HasteRating=15.18, Indestructible=0.01, Leech=11.24, MasteryRating=20.61, MaxDamage=2.74, MinDamage=2.74, MovementSpeed=0.01, Stamina=15.24, Strength=19.32, Versatility=26.25 }
+	{ Armor=54.48, Avoidance=18.82, CritRating=26.05, HasteRating=29.92, Indestructible=0.01, Leech=26.51, MasteryRating=39.00, MaxDamage=17.20, MinDamage=17.20, MovementSpeed=0.01, Stamina=87.38, Strength=101.76, Versatility=60.51 }
 )
 
 

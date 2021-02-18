@@ -3148,42 +3148,28 @@ L["You've been phased which has caused the AH to stop working due to a bug on Bl
 L["You've been undercut."] = "Du wurdest unterboten."
 	elseif locale == "esES" then
 L = L or {}
-L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Grupo:Grupos; Seleccionados (%d |4Artículo:Artículos;)"
+L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Grupo:Grupos; Seleccionado (%d |4Artículo:Artículos;)"
 L["%d auctions"] = "%d subastas"
---[[Translation missing --]]
-L["%d Characters"] = "%d Characters"
---[[Translation missing --]]
-L["%d Custom Sources"] = "%d Custom Sources"
---[[Translation missing --]]
-L["%d Faction-Realms"] = "%d Faction-Realms"
---[[Translation missing --]]
-L["%d groups"] = "%d groups"
+L["%d Characters"] = "%d Personajes"
+L["%d Custom Sources"] = "%d Procedencia personalizada"
+L["%d Faction-Realms"] = "%d Facción-Reinos"
+L["%d groups"] = "%d grupos"
 L["%d Groups"] = "%d Grupos"
---[[Translation missing --]]
-L["%d Groups Selected"] = "%d Groups Selected"
---[[Translation missing --]]
-L["%d groups were created and %d items were added from the table."] = "%d groups were created and %d items were added from the table."
---[[Translation missing --]]
-L["%d Guilds"] = "%d Guilds"
+L["%d Groups Selected"] = "%d Grupos seleccionados"
+L["%d groups were created and %d items were added from the table."] = "%d grupos que fueron creados %d artículos que fueron añadidos desde la tabla."
+L["%d Guilds"] = "%d Hermandades"
 L["%d Items"] = "%d Artículos"
 L["%d of %d"] = "%d de %d"
 L["%d Operations"] = "%d Operaciones"
---[[Translation missing --]]
-L["%d Players"] = "%d Players"
+L["%d Players"] = "%d Jugadores"
 L["%d Posted Auctions"] = "%d Subastas publicadas"
---[[Translation missing --]]
-L["%d Professions"] = "%d Professions"
---[[Translation missing --]]
-L["%d Rarities"] = "%d Rarities"
---[[Translation missing --]]
-L["%d Results"] = "%d Results"
---[[Translation missing --]]
-L["%d Selected"] = "%d Selected"
+L["%d Professions"] = "%d Profesiones"
+L["%d Rarities"] = "%d Rareza"
+L["%d Results"] = "%d Resultados"
+L["%d Selected"] = "%d Seleccionado"
 L["%d Sold Auctions"] = "%d Subastas vendidas"
---[[Translation missing --]]
-L["%d Sources"] = "%d Sources"
---[[Translation missing --]]
-L["%d Sub-Groups"] = "%d Sub-Groups"
+L["%d Sources"] = "%d Procedencia"
+L["%d Sub-Groups"] = "%d Sub-grupos"
 --[[Translation missing --]]
 L["%d subgroups included"] = "%d subgroups included"
 --[[Translation missing --]]
@@ -3256,7 +3242,6 @@ L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too
 L["%sLeft-Click%s to open the main window"] = "%sLeft-Click%s para abrir la ventana principal"
 --[[Translation missing --]]
 L["%sLeft-Click|r to ignore an item for this session. Hold %sShift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."] = "%sLeft-Click|r to ignore an item for this session. Hold %sShift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."
---[[Translation missing --]]
 L["(%d - %d)"] = "(%d - %d)"
 L["(%d/500 Characters)"] = "(%d/500 caracteres)"
 --[[Translation missing --]]

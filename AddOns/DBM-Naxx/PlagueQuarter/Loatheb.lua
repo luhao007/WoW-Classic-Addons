@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Loatheb", "DBM-Naxx", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210124171359")
+mod:SetRevision("20210212012838")
 mod:SetCreatureID(16011)
 mod:SetEncounterID(1115)
 mod:SetModelID(16110)
@@ -90,6 +90,12 @@ function mod:OnCombatStart(delay)
 		DBM.InfoFrame:SetHeader(DBM:GetSpellInfo(29184))
 		DBM.InfoFrame:Show(40, "function", updateInfoFrame, false, false)
 		DBM.InfoFrame:SetColumns(2)
+	end
+end
+
+function mod:OnCombatEnd()
+	if DBM.InfoFrame:IsShown() then
+		DBM.InfoFrame:Hide()
 	end
 end
 

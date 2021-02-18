@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Zensunim of Dragonblight/Myzrael
-## Version: 4.59
+## Version: 4.60
 ## SavedVariables: GTFOData
 ## DefaultState: Enabled
 

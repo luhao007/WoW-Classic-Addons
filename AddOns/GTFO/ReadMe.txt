@@ -17,7 +17,6 @@ Special thanks:
 		Andyca, and BNSSNB (Traditional Chinese Translations)
 		Phalk and Omukeka (Brazilian Portuguese Translations)
 		Asixandur (Italian Translations)
-		Arith (LibUIDropDownMenu)
 
 Change Log:
 
@@ -1592,4 +1591,16 @@ Change Log:
 
 4.59
 * Fixed dropdown library issues with Classic
+* Added SL spells for Castle Nathria
+
+4.59.1
+* Renamed files for CurseForge updater
+* Added SL spells for Torghast
+
+4.59.2
+* Added Shadowlands spells (world)
+* Added SL spells for Castle Nathria
+
+4.60
+* Removed LibStub and LibUIDropDownMenu and replaced the sound channel selector with a slider
 * Added SL spells for Castle Nathria

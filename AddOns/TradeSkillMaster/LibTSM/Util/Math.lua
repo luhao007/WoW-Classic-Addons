@@ -10,8 +10,14 @@
 local _, TSM = ...
 local Math = TSM.Init("Util.Math")
 local TempTable = TSM.Include("Util.TempTable")
-local NAN = math.huge * 0
-local IS_NAN_GT_INF = NAN > math.huge
+local NAN = nil
+if IsTestBuild() then
+	-- We can't calculate NAN on a test build (crashes the client), so just expect that there will be errors and inform the user.
+	message("TradeSkillMaster is no longer compatible with PTR/Beta/Alpha versions of the game, unless it's a release build, due to changes Blizzard made to test builds of the game client. Errors and to be expected.")
+else
+	NAN = math.huge * 0
+end
+local IS_NAN_GT_INF = (NAN or 0) > math.huge
 local NAN_STR = tostring(NAN)
 local private = {
 	keysTemp = {},
@@ -26,6 +32,7 @@ local private = {
 --- Returns NAN.
 -- @treturn number NAN
 function Math.GetNan()
+	assert(NAN)
 	return NAN
 end
 
@@ -33,6 +40,7 @@ end
 -- @tparam number value The number to check
 -- @treturn boolean Whether or not the value is NAN
 function Math.IsNan(value)
+	assert(NAN)
 	if IS_NAN_GT_INF then
 		-- optimization if NAN > math.huge (which it is in Wow's version of lua)
 		return value > math.huge and tostring(value) == NAN_STR

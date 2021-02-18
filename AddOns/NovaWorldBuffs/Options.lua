@@ -551,7 +551,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["guildCommandTitle"],
 			desc = L["guildCommandDesc"],
-			order = 117,
+			order = 118,
 			get = "getGuildCommand",
 			set = "setGuildCommand",
 		},
@@ -559,7 +559,7 @@ NWB.options = {
 			type = "toggle",
 			name = L["disableAllGuildMsgsTitle"],
 			desc = L["disableAllGuildMsgsDesc"],
-			order = 118,
+			order = 119,
 			get = "getDisableAllGuildMsgs",
 			set = "setDisableAllGuildMsgs",
 		},
@@ -1297,6 +1297,14 @@ function NWB:loadSpecificOptions()
 			get = "getSoundsNpcKilled",
 			set = "setSoundsNpcKilled",
 		};
+		NWB.options.args["guildNpcWalking"] = {
+			type = "toggle",
+			name = L["guildNpcWalkingTitle"],
+			desc = L["guildNpcWalkingDesc"],
+			order = 117,
+			get = "getGuildNpcWalking",
+			set = "setGuildNpcWalking",
+		};
 	end
 	if (NWB.isLayered) then
 		NWB.options.args["minimapLayerFrame"] = {
@@ -1362,7 +1370,7 @@ NWB.optionDefaults = {
 		guildCommand = 1,
 		guildSongflower = 0,
 		disableAllGuildMsgs = 0,
-		guildNpcWalking = 0,
+		guildNpcWalking = 1,
 		handInMsg = false,
 		flashNpcWalking = true,
 		rendRespawnTime = 10800,
@@ -1491,6 +1499,7 @@ NWB.optionDefaults = {
 		showNaxxWorldmapMarkers = true,
 		showNaxxMinimapMarkers = true,
 		bigWigsSupport = true,
+		earlyRendScan = true,
 		resetLayers4 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = false, --Enable features being tested on occasion.
@@ -1588,6 +1597,7 @@ function NWB:buildRealmFactionData()
 	self.db.global[NWB.realm][NWB.faction].myChars[UnitName("player")].level = UnitLevel("player");
 	self.db.global[NWB.realm][NWB.faction].myChars[UnitName("player")].race = UnitRace("player");
 	self.db.global[NWB.realm][NWB.faction].myChars[UnitName("player")].g = UnitGUID("player");
+	self.db.global[NWB.realm][NWB.faction].myChars[UnitName("player")].faction = UnitFactionGroup("player");
 	for k, v in pairs(defaults) do
 		if (not self.db.global[NWB.realm][NWB.faction][k]) then
 			--Add default values if no value is already set.
@@ -3205,4 +3215,22 @@ end
 
 function NWB:getCityGotBuffSummon(info)
 	return self.db.global.cityGotBuffSummon;
+end
+
+--Guild NPC walking.
+function NWB:setGuildNpcWalking(info, value)
+	if (value) then
+		self.db.global.guildNpcWalking = 1;
+	else
+		self.db.global.guildNpcWalking = 0;
+	end
+	NWB:sendSettings("GUILD");
+end
+
+function NWB:getGuildNpcWalking(info)
+	if (self.db.global.guildNpcWalking == 1) then
+		return true;
+	else
+		return false;
+	end
 end

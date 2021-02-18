@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Maexxna", "DBM-Naxx", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210121020132")
+mod:SetRevision("20210214203725")
 mod:SetCreatureID(15952)
 mod:SetEncounterID(1116)
 mod:SetModelID(15928)
@@ -9,7 +9,7 @@ mod:RegisterCombat("combat")
 
 mod:RegisterEventsInCombat(
 	"SPELL_AURA_APPLIED 28622",
-	"SPELL_CAST_SUCCESS 29484 54125"
+	"SPELL_CAST_SUCCESS 29484"--54125
 )
 
 local warnWebWrap		= mod:NewTargetAnnounce(28622, 2)

@@ -218,6 +218,17 @@ GTFO.SpellID["332655"] = {
   sound = 3;
 };
 
+GTFO.SpellID["343520"] = {
+  --desc = "Storming";
+  sound = 3;
+};
+
+GTFO.SpellID["342494"] = {
+  --desc = "Belligerent Boast (Manifestation of Pride)";
+  applicationOnly = true;
+  sound = 3;
+};
+
 
 --- **********************
 --- * Halls of Atonement *
@@ -890,6 +901,11 @@ GTFO.SpellID["321662"] = {
   sound = 3;
 };
 
+GTFO.SpellID["330813"] = {
+  --desc = "Aerial Strikes (Observer Zelgar)";
+  sound = 3;
+};
+
 --- ******************
 --- * Castle Nathria *
 --- ******************
@@ -925,12 +941,6 @@ GTFO.SpellID["345425"] = {
 GTFO.SpellID["341441"] = {
   --desc = "Ground Smash (Hulking Gargon)";
   sound = 3;
-};
-
-GTFO.SpellID["341304"] = {
-  --desc = "Mastercrafted Gamesman's Snare (Nathrian Gargon Rider)";
-  sound = 3;
-  test = true;
 };
 
 GTFO.SpellID["326455"] = {
@@ -1043,6 +1053,10 @@ GTFO.SpellID["327464"] = {
   sound = 3;
 };
 
+GTFO.SpellID["336162"] = {
+  --desc = "Crescendo (Crimson Cabalist)";
+  sound = 3;
+};
 
 end
 

@@ -699,3 +699,9 @@ L["songflowerGotBuffSummonDesc"] = "Auto accept any pending summon when you get 
 L["buffHelpersTextDesc5"] = "Ony/Rend Buff";
 L["cityGotBuffSummonTitle"] = "Ony/Rend Summon";
 L["cityGotBuffSummonDesc"] = "Auto accept any pending summon when you get a Ony/Nef/Rend buff.";
+
+L["heraldFoundCrossroads"] = "Herald Found! Crossroads Rend will drop in 20 seconds.";
+L["heraldFoundTimerMsg"] = "Crossroads Rend"; --DBM/Bigwigs timer bar text.
+
+L["guildNpcWalkingTitle"] = "NPC Walking";
+L["guildNpcWalkingDesc"] = "Send a message to guild and play a sound when you trigger or receive a NPC walking alert? (Open chat dialogue with Ony/Nef NPC's in Orgrimmar and wait for someone to hand the head in to trigger this early alert).";

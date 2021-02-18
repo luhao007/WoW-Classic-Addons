@@ -1,8 +1,9 @@
 # <DBM> PvP
 
-## [r114](https://github.com/DeadlyBossMods/DBM-PvP/tree/r114) (2021-01-28)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r113...r114) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
+## [r115](https://github.com/DeadlyBossMods/DBM-PvP/tree/r115) (2021-02-04)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r114...r115) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
 
-- Debug on START\_TIMER to check for invalid values. (#77)  
-    * Debug on START\_TIMER to check for invalid values.  
-    Also give remainingTimer a better default value of 120 than 0  
+- Add Arathi final value (#79)  
+    Also fixed a major longstanding bug... We calculate in "resources per second", but blizzard awards them per tick (every 2 seconds). All the values had to be halved.  
+    This may also make classic scores a little "more in line", and could possibly be removed in the future?  
+- Update localization.en.lua (#78)  

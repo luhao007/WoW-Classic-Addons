@@ -1823,8 +1823,8 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 						tinsert(info, { left = "Used in Recipes:" });
 						if #entries < 25 then
 							table.sort(entries, function(a, b)
-								if a.group.name then
-									if b.group.name then
+								if a and a.group.name then
+									if b and b.group.name then
 										return a.group.name <= b.group.name;
 									end
 									return true;
@@ -2808,10 +2808,6 @@ local classIcons = {
 	[11] = app.asset("ClassIcon_Druid"),
 };
 local SoftReserveUnitOnClick = function(self, button)
-	if app.Settings:GetTooltipSetting("SoftReservesLocked") then
-		app.print("You can't do that while the session is locked.");
-		return true;
-	end
 	local guid = self.ref.guid or self.ref.unit;
 	if guid then
 		if button == "RightButton" then
@@ -2828,6 +2824,10 @@ local SoftReserveUnitOnClick = function(self, button)
 						app:RefreshSoftReserveWindow();
 					end);
 				elseif UnitGUID("player") == guid then
+					if app.Settings:GetTooltipSetting("SoftReservesLocked") then
+						app.print("You can't do that while the session is locked.");
+						return true;
+					end
 					-- A player can change their own, so long as it isn't locked.
 					app:ShowPopupDialog("Your Soft Reserve is currently set to:\n \n" .. (self.ref.itemText or RETRIEVING_DATA) .. "\n \nDo you want to delete it?",
 					function()
@@ -2868,6 +2868,10 @@ local SoftReserveUnitOnClick = function(self, button)
 					end);
 				end
 			elseif UnitGUID("player") == guid then
+				if app.Settings:GetTooltipSetting("SoftReservesLocked") then
+					app.print("You can't do that while the session is locked.");
+					return true;
+				end
 				-- A player can change their own, so long as it isn't locked.
 				if self.ref.itemID then
 					app:ShowPopupDialogWithEditBox("Your Soft Reserve is set to:\n \n" .. (self.ref.itemText or RETRIEVING_DATA) .. "\n \nEnter a new Item ID or an Item Link.", "", function(cmd)
@@ -2892,6 +2896,36 @@ local SoftReserveUnitOnClick = function(self, button)
 	end
 	return true;
 end
+local guildCheckCooldown = 0;
+app.PlayerGUIDFromInfo = setmetatable({}, { __index = function(t, info)
+	-- Let WoW parse it.
+	local guid = UnitGUID(info);
+	if guid then
+		rawset(t, info, guid);
+		return guid;
+	end
+	if string.match(info, "Player-") then
+		-- Already a GUID!
+		rawset(t, info, info);
+		return info;
+	end
+	
+	-- Only check the guild once every 10 seconds.
+	if guildCheckCooldown <= time() then
+		local count = GetNumGuildMembers();
+		if count > 0 then
+			for guildIndex = 1, count, 1 do
+				local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(guildIndex);
+				if name and guid then
+					rawset(t, strsplit('-', name), guid);
+				end
+			end
+		end
+		guildCheckCooldown = time() + 10;
+		return rawget(t, info);
+	end
+end });
+
 app.GetClassIDFromClassFile = function(classFile)
 	for i,icon in pairs(classIcons) do
 		if C_CreatureInfo.GetClassInfo(i).classFile == classFile then
@@ -2996,12 +3030,17 @@ app.BaseSoftReserveUnit = {
 			if itemID then
 				local itemName, itemLink,_,_,_,_,_,_,_,icon = GetItemInfo(itemID);
 				if itemLink then
-					return (icon and ("|T" .. icon .. ":0|t") or "") .. itemLink;
+					return (icon and ("|T" .. icon .. ":0|t") or "") .. itemLink .. (t.mapText or "");
 				else
 					return RETRIEVING_DATA;
 				end
 			else
 				return "No Soft Reserve Selected";
+			end
+		elseif key == "mapText" then
+			local mapID = t.internalMapID;
+			if mapID and mapID ~= app.GetCurrentMapID() then
+				return " (" .. app.GetMapName(mapID) .. ")";
 			end
 		elseif key == "text" then
 			local name = t.unitText;
@@ -3025,6 +3064,28 @@ app.BaseSoftReserveUnit = {
 					return type(reserve) == 'number' and reserve or reserve[1];
 				end
 			end
+		elseif key == "persistence" then
+			local guid = t.guid;
+			if guid then
+				local reserve = rawget(GetDataMember("SoftReserves"), guid);
+				if reserve then
+					local itemID = type(reserve) == 'number' and reserve or reserve[1];
+					if itemID then
+						local persistence = rawget(GetDataMember("SoftReservePersistence"), guid);
+						if persistence then return persistence[itemID]; end
+						return 0;
+					end
+				end
+			end
+		elseif key == "roll" then
+			if app.Settings:GetTooltipSetting("SoftReservePersistence") then
+				local persistence = t.persistence;
+				if persistence and persistence > 0 then
+					return 100 + (persistence * 10);
+				else
+					return 100;
+				end
+			end
 		elseif key == "preview" then
 			return t.itemID and select(5, GetItemInfoInstant(t.itemID)) or "Interface\\Icons\\INV_Misc_QuestionMark";
 		elseif key == "link" then
@@ -3034,12 +3095,16 @@ app.BaseSoftReserveUnit = {
 		elseif key == "tooltipText" then
 			local text = t.unitText;
 			local guid = t.guid;
+			local roll = t.roll;
 			local icon = t.icon;
 			if icon then text = "|T" .. icon .. ":0|t " .. text; end
+			if roll and app.Settings:GetTooltipSetting("SoftReservePersistence") then text = text .. " (" .. roll .. ")"; end
 			if guid and not IsGUIDInGroup(guid) then
 				text = text .. " |CFFFFFFFF(Not in Group)|r";
 			end
 			return text;
+		elseif key == "summary" then
+			return t.roll;
 		elseif key == "OnClick" then
 			return SoftReserveUnitOnClick;
 		elseif key == "itemName" then
@@ -3053,6 +3118,52 @@ app.BaseSoftReserveUnit = {
 				end
 			else
 				return "No Soft Reserve Selected";
+			end
+		elseif key == "crs" then
+			local itemID = t.itemID;
+			if itemID then
+				local searchResults = app.SearchForField("itemID", itemID);
+				if searchResults and #searchResults > 0 then
+					for i,o in ipairs(searchResults) do
+						if o.itemID then
+							if o.crs then
+								return o.crs;
+							end
+							if o.qgs then
+								return o.qgs;
+							end
+							if o.parent then
+								if o.parent.npcID and o.parent.npcID > 0 then
+									return { o.parent.npcID };
+								end
+								if o.parent.cr then
+									return { o.parent.cr };
+								end
+								if o.parent.crs then
+									return o.parent.crs;
+								end
+								if o.parent.qgs then
+									return o.parent.qgs;
+								end
+							end
+						end
+					end
+				end
+			end
+		elseif key == "internalMapID" then
+			local itemID = t.itemID;
+			if itemID then
+				local searchResults = app.SearchForField("itemID", itemID);
+				if searchResults and #searchResults > 0 then
+					for i,o in ipairs(searchResults) do
+						if o.itemID then
+							local mapID = GetRelativeValue(o, "mapID");
+							if mapID then
+								return mapID;
+							end
+						end
+					end
+				end
 			end
 		else
 			-- Something that isn't dynamic.
@@ -3305,7 +3416,7 @@ app.UpdateSoftReserveInternal = function(app, guid, itemID, timeStamp, isCurrent
 	end
 end
 app.UpdateSoftReserve = function(app, guid, itemID, timeStamp, silentMode, isCurrentPlayer)
-	if IsInGroup() and GetDataMember("SoftReserves")[guid] and app.Settings:GetTooltipSetting("SoftReservesLocked") then
+	if IsInGroup() and GetDataMember("SoftReserves")[guid] and not app.IsMasterLooter() and app.Settings:GetTooltipSetting("SoftReservesLocked") then
 		if not silentMode then
 			SendGUIDWhisper("The Soft Reserve is currently locked by your Master Looter. Please make sure to update your Soft Reserve before raid next time!", guid);
 		end
@@ -3322,6 +3433,9 @@ app.UpdateSoftReserve = function(app, guid, itemID, timeStamp, silentMode, isCur
 					end
 					if app.IsMasterLooter() then
 						C_ChatInfo.SendAddonMessage("ATTC", "!\tsrml\t" .. guid .. "\t" .. itemID, app.GetGroupType());
+						if app.Settings:GetTooltipSetting("SoftReservesLocked") then
+							SendGroupChatMessage("Updated " .. (app:GetWindow("SoftReserves").GUIDToName(guid) or UnitName(guid) or guid) .. " to " .. (searchResults[1].link or select(1, GetItemInfo(itemID)) or ("itemid:" .. itemID)));
+						end
 					end
 				end
 			else
@@ -3751,6 +3865,33 @@ local BestWeightPerItemID = setmetatable({}, { __index = function(t, id)
 		return weight;
 	end
 end });
+app.ParseItemID = function(itemName)
+	if type(itemName) == "number" then
+		return itemName;
+	else
+		local itemID = tonumber(itemName);
+		if string.match(tostring(itemID), itemName) then
+			-- This was actually an item ID.
+			return itemID;
+		else
+			-- The itemID given was actually the name or a link.
+			itemID = select(1, GetItemInfoInstant(itemName));
+			if itemID then
+				-- Oh good, it was cached by WoW.
+				return itemID;
+			else
+				-- Oh no, gonna need to work for it.
+				local iCache = fieldCache["itemID"];
+				for id,_ in pairs(iCache) do
+					local text = BestItemLinkPerItemID[id];
+					if text and string.match(text, itemName) then
+						return id;
+					end
+				end
+			end
+		end
+	end
+end
 app.ClearItemCache = function()
 	wipe(BestSuffixPerItemID);
 	wipe(BestItemLinkPerItemID);
@@ -3761,13 +3902,8 @@ app.BaseItem = {
 		if key == "key" then
 			return "itemID";
 		elseif key == "collectible" then
-			return (t.questID and app.CollectibleQuests and not t.repeatable and not t.isBreadcrumb) or (t.factionID and app.CollectibleReputations); -- (t.weight and t.weight > 0) or 
+			return (t.questID and app.CollectibleQuests and not t.repeatable and not t.isBreadcrumb) or (t.factionID and app.CollectibleReputations);
 		elseif key == "collected" then
-			--[[
-			if t.weight and t.weight > 0 then
-				return false;
-			end
-			]]--
 			if t.factionID then
 				-- This is used by reputation tokens. (turn in items)
 				if app.AccountWideReputations then
@@ -3807,6 +3943,12 @@ app.BaseItem = {
 			return BestWeightPerItemID[t.itemID];
 		elseif key == "b" then
 			return 2;
+		elseif key == "f" then
+			if t.questID then return 104; end
+			for i,o in ipairs(SearchForField("itemID", t.itemID)) do
+				if o.questID then return 104; end
+			end
+			if not t.g then return 50; end
 		else
 			-- Something that isn't dynamic.
 			return table[key];
@@ -4507,6 +4649,8 @@ app.BaseQuest = {
 			return t.isDaily or t.isWeekly or t.isYearly;
 		elseif key == "saved" then
 			return IsQuestFlaggedCompletedForObject(t);
+		elseif key == "f" then
+			if t.itemID then return 104; end
 		else
 			-- Something that isn't dynamic.
 			return table[key];
@@ -4636,6 +4780,8 @@ app.BaseRecipe = {
 			return t.requireSkill;
 		elseif key == "b" then
 			return t.itemID and app.AccountWideRecipes and 2;
+		elseif key == "f" then
+			return t.itemID and 200;
 		else
 			-- Something that isn't dynamic.
 			return table[key];
@@ -4711,7 +4857,7 @@ app.GetSpellName = function(spellID, rank)
 		return spellName;
 	end
 end
-app.IsSpellKnown = function(spellID, rank)
+app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
 	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
 		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
 		return true;
@@ -4719,8 +4865,8 @@ app.IsSpellKnown = function(spellID, rank)
 	if rank then
 		local spellName = GetSpellInfo(spellID);
 		if spellName then
-			local maxRank = rawget(app.MaxSpellRankPerSpellName, spellName);
-			if maxRank and maxRank > rank then
+			local maxRank = ignoreHigherRanks and rank or  rawget(app.MaxSpellRankPerSpellName, spellName);
+			if maxRank then
 				spellName = spellName .. " (" .. RANK .. " ";
 				for i=maxRank,rank,-1 do
 					spellID = app.SpellNameToSpellID[spellName .. i .. ")"];
@@ -4792,12 +4938,12 @@ app.BaseSpell = {
 				return "|cffffffff|Hspell:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
 			end
 		elseif key == "collectible" then
-			return false;
+			return app.CollectibleRecipes;
 		elseif key == "collected" then
 			if app.RecipeChecker("CollectedSpells", t.spellID) then
 				return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
 			end
-			if app.IsSpellKnown(t.spellID, t.rank) then
+			if app.IsSpellKnown(t.spellID, t.rank, GetRelativeValue(t, "requireSkill") == 261) then
 				SetTempDataSubMember("CollectedSpells", t.spellID, 1);
 				SetDataSubMember("CollectedSpells", t.spellID, 1);
 				return 1;
@@ -4831,7 +4977,26 @@ function app.NoFilter()
 	return true;
 end
 function app.FilterGroupsByLevel(group)
-	return app.Level >= (group.lvl or 0);
+	-- after 9.0, transition to a req lvl range, either min, or min + max
+    if group.lvl then
+        local minlvl, maxlvl;
+        if type(group.lvl) == "table" then
+            minlvl = group.lvl[1];
+            maxlvl = group.lvl[2];
+        else
+            minlvl = group.lvl;
+        end
+
+        if maxlvl then
+            -- min and max provided
+            return app.Level >= minlvl and app.Level <= maxlvl;
+        elseif minlvl then
+            -- only min provided
+            return app.Level >= minlvl;
+        end
+    end
+    -- no level requirement on the group, have to include it
+    return true;
 end
 function app.FilterGroupsByCompletion(group)
 	return group.progress < group.total;
@@ -4948,6 +5113,8 @@ end
 -- Processing Functions (Coroutines)
 local UpdateGroup, UpdateGroups;
 UpdateGroup = function(parent, group)
+	local visible = false;
+	
 	-- Determine if this user can enter the instance or acquire the item.
 	if app.GroupRequirementsFilter(group) then
 		-- Check if this is a group
@@ -4964,7 +5131,7 @@ UpdateGroup = function(parent, group)
 			end
 			
 			-- Update the subgroups recursively...
-			UpdateGroups(group, group.g);
+			visible = UpdateGroups(group, group.g);
 			
 			-- If the 'can equip' filter says true
 			if app.GroupFilter(group) then
@@ -4974,15 +5141,14 @@ UpdateGroup = function(parent, group)
 				
 				-- If this group is trackable, then we should show it.
 				if group.total > 0 and app.GroupVisibilityFilter(group) then
-					group.visible = true;
-				elseif app.ShowIncompleteThings(group) then
-					group.visible = not group.saved;
-				else
-					group.visible = false;
+					visible = true;
+				elseif app.ShowIncompleteThings(group) and not group.saved then
+					visible = true;
+				elseif group.itemID and app.CollectibleLoot and group.f then
+					visible = true;
 				end
 			else
-				-- Hide this group. We aren't filtering for it.
-				group.visible = false;
+				visible = false;
 			end
 		else
 			-- If the 'can equip' filter says true
@@ -4993,44 +5159,47 @@ UpdateGroup = function(parent, group)
 					
 					-- If we've collected the item, use the "Show Collected Items" filter.
 					if group.collected then
-						group.visible = app.CollectedItemVisibilityFilter(group);
 						parent.progress = (parent.progress or 0) + 1;
+						if app.CollectedItemVisibilityFilter(group) then
+							visible = true;
+						end
 					else
-						group.visible = true;
+						visible = true;
 					end
 				elseif group.trackable then
 					-- If this group is trackable, then we should show it.
-					if app.ShowIncompleteThings(group) then
-						group.visible = not group.saved;
-					else
-						-- Hide this group. We aren't filtering for it.
-						group.visible = false;
+					if app.ShowIncompleteThings(group) and not group.saved then
+						visible = true;
 					end
-				else
-					-- Hide this group.
-					group.visible = false;
+				elseif group.itemID and app.CollectibleLoot and group.f then
+					visible = true;
 				end
 			else
-				-- Hide this group. We aren't filtering for it.
-				group.visible = false;
+				visible = false;
 			end
 		end
-	else
-		-- This group doesn't meet requirements.
-		group.visible = false;
 	end
-
+	
+	-- Set the visibility
+	group.visible = visible;
 	if group.OnUpdate then group:OnUpdate(); end
+	return group.visible;
 end
 UpdateGroups = function(parent, g)
 	if g then
+		local visible = false;
 		for key, group in ipairs(g) do
-			UpdateGroup(parent, group);
+			if UpdateGroup(parent, group) then
+				visible = true;
+			end
 		end
+		return visible;
 	end
 end
 local function UpdateParentProgress(group)
-	group.progress = group.progress + 1;
+	if group.collectible then
+		group.progress = group.progress + 1;
+	end
 	
 	-- Continue on to this object's parent.
 	if group.parent then
@@ -5451,11 +5620,7 @@ local function CreateMiniListForGroup(group)
 		else
 			-- This is a standalone item
 			group.visible = true;
-			popout.data = {
-				["text"] = "Standalone Item",
-				["icon"] = "Interface\\Icons\\Achievement_Garrison_blueprint_medium.blp",
-				["g"] = { group },
-			};
+			popout.data = group;
 		end
 		
 		-- Clone the data and then insert it into the Raw Data table.
@@ -5560,7 +5725,7 @@ local function SetRowData(self, row, data)
 			relative = "RIGHT";
 			x = 4;
 		end
-		local summary = GetProgressTextForRow(data);
+		local summary = GetProgressTextForRow(data) or data.summary;
 		if not summary then
 			if data.g and not data.expanded and #data.g > 0 then
 				summary = "+++";
@@ -5974,8 +6139,22 @@ local function RowOnEnter(self)
 		elseif reference.retries then
 			GameTooltip:AddLine("Failed to acquire information. This quest may have been removed from the game. " .. tostring(reference.retries), 1, 1, 1);
 		end
-		local lvl = reference.lvl or 0;
-		if lvl > 1 then GameTooltip:AddDoubleLine(L["REQUIRES_LEVEL"], tostring(lvl)); end
+		if reference.lvl then
+			local minlvl, maxlvl;
+			if type(reference.lvl) == "table" then
+				minlvl = reference.lvl[1] or 0;
+				maxlvl = reference.lvl[2] or 0;
+			else
+				minlvl = reference.lvl;
+			end
+			-- i suppose a maxlvl of 1 might exist?
+			if maxlvl and maxlvl > 0 then
+				GameTooltip:AddDoubleLine(L["REQUIRES_LEVEL"], tostring(minlvl) .. " to " .. tostring(maxlvl));
+			-- no point to show 'requires lvl 1'
+			elseif minlvl and minlvl > 1 then
+				GameTooltip:AddDoubleLine(L["REQUIRES_LEVEL"], tostring(minlvl));
+			end
+		end
 		if reference.b and app.Settings:GetTooltipSetting("binding") then GameTooltip:AddDoubleLine("Binding", tostring(reference.b)); end
 		if reference.requireSkill then GameTooltip:AddDoubleLine(L["REQUIRES"], GetSpellInfo(app.SkillIDToSpellID[reference.requireSkill] or 0) or RETRIEVING_DATA); end
 		if reference.f and reference.f > 0 and app.Settings:GetTooltipSetting("filterID") then GameTooltip:AddDoubleLine(L["FILTER_ID"], tostring(L["FILTER_ID_TYPES"][reference.f])); end
@@ -7975,6 +8154,107 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 		UpdateWindow(self, true, got);
 	end
 end);
+app:GetWindow("ItemFilter", UIParent, function(self)
+	if self:IsVisible() then
+		if not self.initialized then
+			self.initialized = true;
+			self.dirty = true;
+			
+			-- Item Filter
+			local actions = {
+				['text'] = "Item Filters",
+				['icon'] = app.asset("Achievement_Dungeon_HEROIC_GloryoftheRaider"), 
+				["description"] = "You can search the ATT Database by using a item filter.",
+				['visible'] = true, 
+				['expanded'] = true,
+				['back'] = 1,
+				['OnUpdate'] = function(data)
+					if not self.dirty then return nil; end
+					self.dirty = nil;
+					
+					local g = {};
+					table.insert(g, 1, data.setItemFilter);
+					if #data.results > 0 then
+						for i,result in ipairs(data.results) do
+							table.insert(g, result);
+						end
+					end
+					data.g = g;
+					if #g > 0 then
+						for i,entry in ipairs(g) do
+							entry.indent = nil;
+						end
+						data.indent = 0;
+						data.visible = true;
+						BuildGroups(data, data.g);
+						app.UpdateGroups(data, data.g);
+						if not data.expanded then
+							data.expanded = true;
+							ExpandGroupsRecursively(data, true);
+						end
+					end
+				end,
+				['g'] = {},
+				['results'] = {},
+				['setItemFilter'] = {
+					['text'] = "Set Item Filter",
+					['icon'] = "Interface\\Icons\\INV_MISC_KEY_12",
+					['description'] = "Click this to change the item filter you want to search for within ATT.",
+					['visible'] = true,
+					['OnClick'] = function(row, button)
+						app:ShowPopupDialogWithEditBox("Which Item Filter would you like to search for?", "", function(text)
+							text = string.lower(text);
+							local filterID = tonumber(text);
+							if tostring(filterID) ~= text then
+								-- The string form did not match, the filter must have been by name.
+								for id,filter in pairs(L["FILTER_ID_TYPES"]) do
+									if string.find(string.lower(filter), text) then
+										filterID = tonumber(id);
+										break;
+									end
+								end
+							end
+							if filterID then
+								self.data.results = app:BuildSearchResponse(app:GetWindow("Prime").data.g, "f", filterID);
+								self.dirty = true;
+							end
+							wipe(searchCache);
+							self:Update();
+						end);
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = true;
+					end,
+				},
+			};
+			
+			self.Reset = function()
+				self.data = actions;
+			end
+			
+			-- Setup Event Handlers and register for events
+			self:SetScript("OnEvent", function(self, e, ...)
+				self.dirty = true;
+				self:Update();
+			end);
+			self:Reset();
+		end
+		
+		-- Update the window and all of its row data
+		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
+		for i,g in ipairs(self.data.g) do
+			if g.OnUpdate then g.OnUpdate(g, self); end
+		end
+		
+		-- Update the groups without forcing Debug Mode.
+		local visibilityFilter = app.VisibilityFilter;
+		app.VisibilityFilter = app.ObjectVisibilityFilter;
+		BuildGroups(self.data, self.data.g);
+		UpdateWindow(self, true);
+		app.VisibilityFilter = visibilityFilter;
+	end
+end);
 app:GetWindow("ItemFinder", UIParent, function(self, ...)
 	if self:IsVisible() then
 		if not self.initialized then
@@ -8675,14 +8955,16 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 					
 					-- Insert Control Methods
 					table.insert(g, 1, app.CreateSoftReserveUnit(app.GUID));
+					table.insert(g, 1, data.exportSoftReserves);
 					table.insert(g, 1, data.queryMasterLooter);
 					table.insert(g, 1, data.queryGuildMembers);
 					table.insert(g, 1, data.queryGroupMembers);
 					table.insert(g, 1, data.pushSoftReserve);
 					table.insert(g, 1, data.pushGroupMembers);
+					table.insert(g, 1, data.importPersistence);
+					table.insert(g, 1, data.usePersistence);
 					table.insert(g, 1, data.lockSoftReserves);
 					table.insert(g, 1, data.lootMethodReminder);
-					table.insert(g, 1, data.exportSoftReserves);
 					data.g = g;
 					
 					-- Insert Guild Members
@@ -8752,7 +9034,7 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 				['exportSoftReserves'] = {
 					['text'] = "Export Soft Reserves",
 					['icon'] = "Interface\\Icons\\Spell_Shadow_LifeDrain02",
-					['description'] = "Press this button to open an edit box containing the full content of your raid's Soft Reserve list.",
+					['description'] = "Press this button to open an edit box containing the full content of your raid's Soft Reserve list in the format expected by the Persistence importer.\n\nYou can give this string to your raid members for them to import the full persistence list for the session.",
 					['visible'] = true,
 					['g'] = {},
 					['OnClick'] = function(row, button)
@@ -8762,22 +9044,8 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 								if count > 0 then
 									s = s .. "\n";
 								end
-								s = s .. o.name .. "\\t" .. o.itemName;
+								s = s .. o.guid .. "\\t" .. (o.itemID or 0) .. "\\t" .. (o.persistence or 0) .. "\\t" .. o.name .. "\\t" .. o.itemName;
 								count = count + 1;
-								--[[
-							elseif o.g then
-								for i,o in ipairs(o.g) do
-									if o.guid then
-										if count > 0 then
-											s = s .. "\n";
-										end
-										s = s .. o.name .. "\\t" .. o.itemName;
-										count = count + 1;
-									else
-										
-									end
-								end
-								]]--
 							end
 						end
 						
@@ -8986,6 +9254,145 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 					end,
 					['back'] = 0.5,
 				},
+				['importPersistence'] = {
+					['text'] = "Import Persistence",
+					['icon'] = "Interface\\Icons\\INV_MISC_KEY_12",
+					['description'] = "Click this to import Persistence from a CSV document.\n\nFORMAT:\nPLAYER NAME/GUID \\t ITEM NAME/ID \\t PERSISTENCE\n\nNOTE: There's an issue with Blizzard not finding player GUIDs that aren't in your raid and items that you personally have never encountered. For best performance, import Player GUIDs, Item IDs, and Persistence values.\n\nPersistence is stored locally and not sent to your group.",
+					['visible'] = true,
+					['OnClick'] = function(row, button)
+						app:ShowPopupDialogWithMultiLineEditBox("FORMAT: PLAYER NAME\\tITEM NAME/ID\\tPERSISTENCE\n\n", function(text)
+							text = string.gsub(text, "    ", "\t");	-- The WoW UI converts tab characters into 4 spaces in the English Client.
+							local u, pers, g, word, l, esc, c = "", {}, {}, "", string.len(text), false;
+							for i=1,l,1 do
+								c = string.sub(text, i, i);
+								if c == "\\" then
+									esc = true;
+								elseif esc then
+									esc = false;
+									if c == "t" then
+										c = tab;
+									elseif c == "n" or c == "r" then
+										c = nl;
+									else
+										-- Add back the backslash.
+										word = word .. "\\";
+									end
+								end
+								
+								if c == "\t" then
+									if string.len(word) > 0 then
+										if #g < 1 then
+											u = word;
+										end
+										tinsert(g, word);
+										word = "";
+									else
+										if #g < 1 and string.len(u) > 0 then
+											tinsert(g, u);
+										end
+									end
+								elseif c == "\n" or c == "\r" then
+									if string.len(word) > 0 then
+										tinsert(g, word);
+										word = "";
+									end
+									if #g > 2 then
+										if not string.match(g[1], "FORMAT: ") then
+											tinsert(pers, g);
+										end
+										g = {};
+									end
+								else
+									word = word .. c;
+								end
+							end
+							if string.len(word) > 0 then
+								tinsert(g, word);
+							end
+							if #g > 2 and not string.match(g[1], "FORMAT: ") then tinsert(pers, g); end
+							if #pers > 0 then
+								local success = 0;
+								local allpersistence, allsrs = GetDataMember("SoftReservePersistence"), GetDataMember("SoftReserves");
+								for i,g in ipairs(pers) do
+									local guid, itemID = app.PlayerGUIDFromInfo[g[1]], app.ParseItemID(g[2]);
+									if guid and itemID then
+										local persistence = rawget(allpersistence, guid);
+										if not persistence then
+											persistence = {};
+											allpersistence[guid] = persistence;
+										end
+										persistence[itemID] = tonumber(g[3]);
+										success = success + 1;
+										-- app.print(g[1] .. ": " .. (select(2, GetItemInfo(itemID)) or g[2]) .. " [+" .. g[3] .. "]");
+									else
+										app.print("FAILED TO IMPORT: ", g[1], g[2], guid, itemID);
+									end
+								end
+								if success > 0 then
+									app.print("Successfully imported " .. success .. " Persistence entries.");
+								end
+							end
+						end);
+						wipe(searchCache);
+						self:Update();
+						return true;
+					end,
+					['OnUpdate'] = function(data)
+						data.visible = true;
+					end,
+				},
+				['usePersistence'] = setmetatable({
+					['text'] = "Use Persistence",
+					['icon'] = "Interface\\Icons\\INV_MISC_KEY_13",
+					['description_ML'] = "Click to toggle Persistence for this raid.\n\nIf Persistence is active, each member of the raid with a persistence value on their Soft Reserved item gets a +10 to the top end of their roll for each Persistence they have on the item.\n\nYou may import Persistence from a CSV document.\n\nPersistence is stored locally and not sent to your group.",
+					['description_PLEB'] = "Your Master Looter controls whether Persistence is active or not.",
+					['description_SOLO'] = "Click to toggle Persistence for viewing the list outside of raid.\n\nThis state will change when you join a group whose Persistence is inactive.",
+					['visible'] = true,
+					['OnClick'] = function(row, button)
+						if app.IsMasterLooter() or not IsInGroup() then
+							local persistence = not app.Settings:GetTooltipSetting("SoftReservePersistence");
+							app.Settings:SetTooltipSetting("SoftReservePersistence", persistence);
+							SendGroupMessage("!\tsrpersistence\t" .. (persistence and 1 or 0));
+							wipe(searchCache);
+							self:Update();
+							return true;
+						else
+							app.print("You must be the Master Looter to modify Persistence.");
+						end
+					end,
+					['OnUpdate'] = function(data)
+						if IsInGroup() then
+							if GetLootMethod() == "master" then
+								data.visible = true;
+								if app.IsMasterLooter() then
+									data.description = data.description_ML;
+								else
+									data.description = data.description_PLEB;
+								end
+							else
+								data.visible = app.Settings:GetTooltipSetting("SoftReservePersistence");
+								data.description = data.description_PLEB;
+							end
+						else
+							data.visible = true;
+							data.description = data.description_SOLO;
+						end
+					end,
+				}, {
+					__index = function(t, key)
+						if key == "title" then
+							if t.saved then return "Persistence Active"; end
+						elseif key == "saved" then
+							if app.Settings:GetTooltipSetting("SoftReservePersistence") then
+								return 1;
+							end
+						elseif key == "trackable" then
+							return true;
+						else
+							return table[key];
+						end
+					end
+				}),
 				['Sort'] = function(a, b)
 					return b.text > a.text;
 				end,
@@ -8993,6 +9400,17 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 			
 			self.Reset = function()
 				self.data = softReserves;
+			end
+			self.GUIDToName = function(guid)
+				local count = GetNumGroupMembers();
+				if count > 0 then
+					for raidIndex = 1, 40, 1 do
+						local name = select(1, GetRaidRosterInfo(raidIndex));
+						if name and UnitGUID(name) == guid then
+							return name;
+						end
+					end
+				end
 			end
 			
 			-- Setup Event Handlers and register for events
@@ -9059,108 +9477,128 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 				rawset(app.SpellNameToSpellID, 0, nil);
 				app.GetSpellName(0);
 				
-				-- Crafting Skills (Enchanting Only?)
-				local craftSkillName, craftSkillLevel, craftSkillMaxLevel = GetCraftDisplaySkillLine();
-				if craftSkillName and craftSkillName ~= "UNKNOWN" then
-					local shouldShowSpellRanks = craftSkillLevel and craftSkillLevel ~= math.max(300, craftSkillMaxLevel);
-					craftSkillID = app.SpellNameToSpellID[craftSkillName] or 0;
-					if craftSkillID == 0 then
-						app.print("Could not find spellID for", craftSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+				if CraftFrame and CraftFrame:IsVisible() then
+					-- Crafting Skills (Enchanting and Beast Training Only)
+					local craftSkillName, craftSkillLevel, craftSkillMaxLevel = GetCraftDisplaySkillLine();
+					if craftSkillName and craftSkillName ~= "UNKNOWN" then
+						local shouldShowSpellRanks = craftSkillLevel and craftSkillLevel ~= math.max(300, craftSkillMaxLevel);
+						craftSkillID = app.SpellNameToSpellID[craftSkillName] or 0;
+						if craftSkillID == 0 then
+							app.print("Could not find spellID for", craftSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+						end
+					elseif CraftFrameTitleText then
+						craftSkillName = CraftFrameTitleText:GetText();
+						craftSkillID = app.SpellNameToSpellID[craftSkillName] or 0;
+						if craftSkillID == 0 then
+							app.print("Could not find spellID for", craftSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+						end
+					else
+						craftSkillID = 0;
 					end
 					
-					local numberOfCrafts = GetNumCrafts();
-					for craftIndex = 1,numberOfCrafts do
-						local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
-						if craftType ~= "header" and craftType ~= "none" then
-							local spellID = craftSubSpellName and select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName];
-							if spellID then
-								SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil);
-								SetTempDataSubMember("CollectedSpells", spellID, 1);
-								if not GetDataSubMember("CollectedSpells", spellID) then
-									SetDataSubMember("CollectedSpells", spellID, 1);
-									learned = learned + 1;
+					if craftSkillID ~= 0 then
+						local numberOfCrafts, spellID = GetNumCrafts();
+						for craftIndex = 1,numberOfCrafts do
+							spellID = 0;
+							local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
+							if craftType ~= "header" then
+								spellID = craftSubSpellName and (select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName .. " (" .. craftSubSpellName .. ")"]) or app.SpellNameToSpellID[craftName];
+								if spellID then
+									SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil);
+									SetTempDataSubMember("CollectedSpells", spellID, 1);
+									if not GetDataSubMember("CollectedSpells", spellID) then
+										SetDataSubMember("CollectedSpells", spellID, 1);
+										learned = learned + 1;
+									end
+									if not skillCache[spellID] then
+										app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+										skillCache[spellID] = { {} };
+									end
+								else
+									app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
 								end
-								if not skillCache[spellID] then
-									app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
-									skillCache[spellID] = { {} };
-								end
-							else
-								app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
-							end
-							NPCHarvester:SetCraftSpell(craftIndex);
-							local link, craftedItemID = select(2, NPCHarvester:GetItem());
-							if link then craftedItemID = GetItemInfoInstant(link); end
-							
-							-- Cache the Reagents used to make this item.
-							for i=1,GetCraftNumReagents(craftIndex) do
-								local name, texturePath, reagentCount = GetCraftReagentInfo(craftIndex, i);
-								local itemID = GetItemInfoInstant(GetCraftReagentItemLink(craftIndex, i));
 								
-								-- Make sure a cache table exists for this item.
-								-- Index 1: The Recipe Skill IDs
-								-- Index 2: The Crafted Item IDs
-								if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
-								if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
-								if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+								if craftType ~= "none" then
+									-- Attempt to harvest the item associated with this craft.
+									NPCHarvester:SetCraftSpell(craftIndex);
+									local link, craftedItemID = select(2, NPCHarvester:GetItem());
+									if link then craftedItemID = GetItemInfoInstant(link); end
+									
+									-- Cache the Reagents used to make this item.
+									for i=1,GetCraftNumReagents(craftIndex) do
+										local itemID = GetItemInfoInstant(GetCraftReagentItemLink(craftIndex, i));
+										if itemID then
+											-- Make sure a cache table exists for this item.
+											local _, _, reagentCount = GetCraftReagentInfo(craftIndex, i);
+											if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+											
+											-- Index 1: The Recipe Skill IDs
+											if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+											
+											-- Index 2: The Crafted Item IDs
+											if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+										end
+									end
+								end
 							end
 						end
 					end
-				else
-					craftSkillID = 0;
 				end
 				
-				-- Trade Skills (Non-Enchanting)
-				local tradeSkillName, tradeSkillLevel, tradeSkillMaxLevel = GetTradeSkillLine();
-				if tradeSkillName and tradeSkillName ~= "UNKNOWN" then
-					local shouldShowSpellRanks = tradeSkillLevel and tradeSkillLevel ~= math.max(300, tradeSkillMaxLevel);
-					tradeSkillID = app.SpellNameToSpellID[tradeSkillName] or 0;
-					if tradeSkillID == 0 then
-						app.print("Could not find spellID for", tradeSkillName, GetLocale(), "! Please report this to the ATT Discord!");
-					elseif tradeSkillID == 2656 then	-- Smelting, point this to Mining.
-						tradeSkillID = 2575;
-					end
-					
-					local numTradeSkills = GetNumTradeSkills();
-					for skillIndex = 1,numTradeSkills do
-						local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
-						if skillType ~= "header" then
-							local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
-							local spellID = app.SpellNameToSpellID[skillName];
-							if spellID then
-								SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil);
-								SetTempDataSubMember("CollectedSpells", spellID, 1);
-								if not GetDataSubMember("CollectedSpells", spellID) then
-									SetDataSubMember("CollectedSpells", spellID, 1);
-									learned = learned + 1;
+				if TradeSkillFrame and TradeSkillFrame:IsVisible() then
+					-- Trade Skills (Non-Enchanting)
+					local tradeSkillName, tradeSkillLevel, tradeSkillMaxLevel = GetTradeSkillLine();
+					if tradeSkillName and tradeSkillName ~= "UNKNOWN" then
+						local shouldShowSpellRanks = tradeSkillLevel and tradeSkillLevel ~= math.max(300, tradeSkillMaxLevel);
+						tradeSkillID = app.SpellNameToSpellID[tradeSkillName] or 0;
+						if tradeSkillID == 2656 then	-- Smelting, point this to Mining.
+							tradeSkillID = 2575;
+						elseif tradeSkillID == 0 then
+							app.print("Could not find spellID for", tradeSkillName, GetLocale(), "! Please report this to the ATT Discord!");
+						end
+						
+						local numTradeSkills = GetNumTradeSkills();
+						for skillIndex = 1,numTradeSkills do
+							local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
+							if skillType ~= "header" then
+								local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
+								local spellID = app.SpellNameToSpellID[skillName];
+								if spellID then
+									SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil);
+									SetTempDataSubMember("CollectedSpells", spellID, 1);
+									if not GetDataSubMember("CollectedSpells", spellID) then
+										SetDataSubMember("CollectedSpells", spellID, 1);
+										learned = learned + 1;
+									end
+									if not skillCache[spellID] then
+										app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+										skillCache[spellID] = { {} };
+									end
+								else
+									app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
 								end
-								if not skillCache[spellID] then
-									app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
-									skillCache[spellID] = { {} };
-								end
-							else
-								app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
-							end
-							
-							-- Cache the Reagents used to make this item.
-							for i=1,GetTradeSkillNumReagents(skillIndex) do
-								local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
-								local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
 								
-								-- Make sure a cache table exists for this item.
-								-- Index 1: The Recipe Skill IDs
-								-- Index 2: The Crafted Item IDs
-								if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
-								if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
-								if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+								-- Cache the Reagents used to make this item.
+								for i=1,GetTradeSkillNumReagents(skillIndex) do
+									local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
+									local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
+									
+									-- Make sure a cache table exists for this item.
+									-- Index 1: The Recipe Skill IDs
+									-- Index 2: The Crafted Item IDs
+									if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+									if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+									if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+								end
 							end
 						end
+					else
+						tradeSkillID = 0;
 					end
-				else
-					tradeSkillID = 0;
 				end
 				
 				-- Open the Tradeskill list for this Profession
-				if app.Categories.Professions then
+				if app.Categories.Professions and (craftSkillID ~= 0 or tradeSkillID ~= 0) then
 					local g = {};
 					for i,group in ipairs(app.Categories.Professions) do
 						if group.spellID == craftSkillID or group.spellID == tradeSkillID then
@@ -9603,6 +10041,7 @@ app.events.VARIABLES_LOADED = function()
 	
 	-- Check the format of the Soft Reserve Cache
 	local reserves = GetDataMember("SoftReserves", {});
+	local persistence = GetDataMember("SoftReservePersistence", {});
 	local reservesByItemID = GetTempDataMember("SoftReservesByItemID", {});
 	for guid,reserve in pairs(reserves) do
 		if type(reserve) == 'number' then
@@ -9754,6 +10193,7 @@ app.events.VARIABLES_LOADED = function()
 		"RandomSearchFilter",
 		"Reagents",
 		"SoftReserves",
+		"SoftReservePersistence",
 		"SpellRanksPerCharacter",
 		"WaypointFilters",
 		"EnableTomTomWaypointsOnTaxi",
@@ -9782,6 +10222,7 @@ app.events.VARIABLES_LOADED = function()
 	if IsInGroup() then
 		if not app.IsMasterLooter() then
 			SendGroupMessage("?\tsrlock");
+			SendGroupMessage("?\tsrpersistence");
 		end
 	else
 		-- Unlock the Soft Reserves when not in a group
@@ -10308,6 +10749,12 @@ app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zone
 						else
 							response = "srlock\t" .. (app.Settings:GetTooltipSetting("SoftReservesLocked") and 1 or 0);
 						end
+					elseif a == "srpersistence" then
+						if target == UnitName("player") then
+							return false;
+						else
+							response = "srpersistence\t" .. (app.Settings:GetTooltipSetting("SoftReservePersistence") and 1 or 0);
+						end
 					end
 				else
 					local data = app:GetWindow("Prime").data;
@@ -10342,6 +10789,14 @@ app.events.CHAT_MSG_ADDON = function(prefix, text, channel, sender, target, zone
 							return false;
 						else
 							app.Settings:SetTooltipSetting("SoftReservesLocked", tonumber(args[3]) == 1);
+							wipe(searchCache);
+							app:RefreshSoftReserveWindow(true);
+						end
+					elseif a == "srpersistence" then
+						if target == UnitName("player") then
+							return false;
+						else
+							app.Settings:SetTooltipSetting("SoftReservePersistence", tonumber(args[3]) == 1);
 							wipe(searchCache);
 							app:RefreshSoftReserveWindow(true);
 						end

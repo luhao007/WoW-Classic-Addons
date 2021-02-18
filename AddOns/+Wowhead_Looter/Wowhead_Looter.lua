@@ -67,12 +67,12 @@ local WL_SPELL_BLACKLIST = {
     [135373] = true, -- Entrapment
 };
 local WL_LOOT_TOAST_BOSS = {
-	[244164] = 121818,	-- kazzak
-	[244165] = 121820,	-- azuregos
-	[244166] = 121911,	-- taerar
-	[244182] = 121913,	-- emeriss
-	[244184] = 121821,	-- lethon
-	[244183] = 121912,	-- ysondre
+    [244164] = 121818, -- kazzak
+    [244165] = 121820, -- azuregos
+    [244166] = 121911, -- taerar
+    [244182] = 121913, -- emeriss
+    [244184] = 121821, -- lethon
+    [244183] = 121912, -- ysondre
 };
 local WL_LOOT_TOAST_BAGS = {
     [142397] = 98134,     -- Heroic Cache of Treasures
@@ -1683,7 +1683,7 @@ end
 function wlGetQuestRewardCurrencies()
 
     if (not GetNumRewardCurrencies or not GetQuestCurrencyID) then
-	return;
+        return;
     end
 
     local nCurrencies = GetNumRewardCurrencies();
@@ -2287,9 +2287,9 @@ function wlGetLockedID()
         end
     end
     if wlLockedID ~= nil then
-	local ret = wlLockedID;
-	wlLockedID = nil;
-	return ret;
+        local ret = wlLockedID;
+        wlLockedID = nil;
+        return ret;
     end
     return nil;
 end
@@ -2593,14 +2593,14 @@ end
 function wlEvent_ITEM_LOCK_CHANGED(self, bag, slot)
 
     if not bag or not slot or not wlTracker.spell or not wlTracker.spell.id then
-	return;
+        return;
     end
 
     local itemLink = GetContainerItemLink(bag, slot);
     local itemID = wlParseItemLink(itemLink);
 
     if select(3, GetContainerItemInfo(bag, slot)) and wlTracker.spell.id == itemID then
-	wlLockedID = itemID;
+        wlLockedID = itemID;
     end
 
 end

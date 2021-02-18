@@ -23,6 +23,7 @@
 
 local addonName, addon = ...;
 local NWB = addon.a;
+local c = addon.c;
 local version = GetAddOnMetadata("NovaWorldBuffs", "Version") or 9999;
 local L = LibStub("AceLocale-3.0"):GetLocale("NovaWorldBuffs");
 local time, elapsed = 0, 0;
@@ -194,18 +195,23 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 		local type, layer = strsplit(" ", data, 2);
 		NWB:doHandIn(type, layer, sender);
 	end
-	NWB:versionCheck(remoteVersion);
+	NWB:versionCheck(remoteVersion, distribution, sender);
 end
 
 local version2 = version;
-function NWB:versionCheck(remoteVersion)
-	local lastVersionMsg = NWB.db.global.lastVersionMsg;
-	if (tonumber(remoteVersion) > tonumber(version) and (GetServerTime() - lastVersionMsg) > 14400) then
-		print(NWB.prefixColor .. L["versionOutOfDate"]);
-		NWB.db.global.lastVersionMsg = GetServerTime();
+function NWB:versionCheck(remoteVersion, distribution, sender)
+	if (not NWB:isValidPlayer(sender)) then
+		return;
 	end
-	if (tonumber(remoteVersion) > tonumber(version)) then
-		NWB.latestRemoteVersion = remoteVersion;
+	if (distribution == "GUILD" or distribution == "PARTY" or distribution == "RAID") then
+		local lastVersionMsg = NWB.db.global.lastVersionMsg;
+		if (tonumber(remoteVersion) > tonumber(version) and (GetServerTime() - lastVersionMsg) > 14400) then
+			print(NWB.prefixColor .. L["versionOutOfDate"]);
+			NWB.db.global.lastVersionMsg = GetServerTime();
+		end
+		if (tonumber(remoteVersion) > tonumber(version)) then
+			NWB.latestRemoteVersion = remoteVersion;
+		end
 	end
 end
 
@@ -274,7 +280,6 @@ function NWB:sendData(distribution, target, prio, noLayerMap, noLogs)
 	else
 		data = NWB:createData(distribution, noLogs);
 	end
-	--NWB:debug(data);
 	if (next(data) ~= nil and NWB:isClassic()) then
 		data = NWB.serializer:Serialize(data);
 		NWB.lastDataSent = GetServerTime();
@@ -357,7 +362,7 @@ function NWB:sendSettings(distribution, target, prio)
 	end
 	--Temorary send both types so less duplicate guild chat msgs, remove in next version when more people are on the new serializer.
 	--This should be able to be disabled soon, I think the vast majority have upgraded by now.
-	NWB:sendSettingsOld(distribution, target, prio);
+	--NWB:sendSettingsOld(distribution, target, prio);
 end
 
 --Temporary send old serializaton type, remove in later version when more people are on the new serializer.
@@ -381,10 +386,10 @@ end
 function NWB:sendBuffDropped(distribution, type, target, layer)
 	if (tonumber(layer) and NWB:isClassic()) then
 		NWB:sendComm(distribution, "drop " .. version .. " " .. self.k() .. " " .. type .. " " .. layer, target);
-		NWB:sendComm(distribution, "drop " .. version2 .. " " .. type .. " " .. layer, target);
+		--NWB:sendComm(distribution, "drop " .. version2 .. " " .. type .. " " .. layer, target);
 	elseif (NWB:isClassic()) then
 		NWB:sendComm(distribution, "drop " .. version .. " " .. self.k() .. " " .. type, target);
-		NWB:sendComm(distribution, "drop " .. version2 .. "  " .. type, target);
+		--NWB:sendComm(distribution, "drop " .. version2 .. "  " .. type, target);
 	end
 end
 
@@ -397,17 +402,17 @@ function NWB:sendYell(distribution, type, target, layer, arg)
 		if (arg) then
 			if (tonumber(layer)) then
 				NWB:sendComm(distribution, "yell " .. version .. " " .. self.k() .. " " .. type .. " " .. layer .. " " .. arg, target);
-				NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " " .. layer .. " " .. arg, target);
+				--NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " " .. layer .. " " .. arg, target);
 			else
 				NWB:sendComm(distribution, "yell " .. version .. " " .. self.k() .. " " .. type .. " 0 " .. arg, target);
-				NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " 0 " .. arg, target);
+				--NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " 0 " .. arg, target);
 			end
 		elseif (tonumber(layer)) then
 			NWB:sendComm(distribution, "yell " .. version .. " " .. self.k() .. " " .. type .. " " .. layer, target);
-			NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " " .. layer, target);
+			--NWB:sendComm(distribution, "yell " .. version2 .. " " .. type .. " " .. layer, target);
 		else
 			NWB:sendComm(distribution, "yell " .. version .. " " .. self.k() .. " " .. type, target);
-			NWB:sendComm(distribution, "yell " .. version2 .. " " .. type, target);
+			--NWB:sendComm(distribution, "yell " .. version2 .. " " .. type, target);
 		end
 	end
 end
@@ -423,7 +428,6 @@ end
 
 --Send flower msg.
 function NWB:sendFlower(distribution, type, target, layer)
-	NWB:debug("sending flower", type, layer);
 	if (tonumber(layer) and NWB:isClassic()) then
 		NWB:sendComm(distribution, "flower " .. version .. " " .. self.k() .. " " .. type .. " " .. layer, target);
 	elseif (NWB:isClassic()) then
@@ -433,7 +437,6 @@ end
 
 --Testing hand in earlier warnings.
 function NWB:sendHandIn(distribution, type, target, layer)
-	NWB:debug("sending handin", type, layer);
 	if (tonumber(layer) and NWB:isClassic()) then
 		NWB:sendComm(distribution, "handIn " .. version .. " " .. self.k() .. " " .. type .. " " .. layer, target);
 	elseif (NWB:isClassic()) then
@@ -448,6 +451,24 @@ function NWB:sendNpcWalking(distribution, type, target, layer)
 	elseif (NWB:isClassic()) then
 		NWB:sendComm(distribution, "npcWalking " .. version .. " " .. self.k() .. " " .. type, target);
 	end
+end
+
+--Ignore data from players known to mess with the addon.
+--Feel free to report potential problems from your realm to me via curse.
+local lst = {
+	--[c(73,103,110,111,114,101)] = c(76,105,115,116),
+}
+
+function NWB:isValidPlayer(s)
+	local w, r = strsplit("-", s, 2);
+	if (w and r) then
+		for k, v in pairs(lst) do
+			if (k == w and v == r) then
+				return;
+			end
+		end
+	end
+	return true;
 end
 
 --Send full data and also request other users data back, used at logon time.
@@ -473,7 +494,7 @@ function NWB:requestData(distribution, target, prio)
 	end
 	--Temporary send old serializer type settings, remove in a week or 2 after enough people update to new serializer.
 	--To avoid duplicate guild msgs.
-	NWB:sendSettingsOld(distribution, target, prio);
+	--NWB:sendSettingsOld(distribution, target, prio);
 end
 
 --Send settings only and also request other users settings back.
@@ -487,7 +508,7 @@ function NWB:requestSettings(distribution, target, prio)
 		NWB.lastDataSent = GetServerTime();
 		NWB:sendComm(distribution, "requestSettings " .. version .. " " .. self.k() .. " " .. dataNew, target, prio);
 		--Temorary send both types so less duplicate guild chat msgs, remove in next version when more people are on the new serializer.
-		NWB:sendSettingsOld(distribution, target, prio);
+		--NWB:sendSettingsOld(distribution, target, prio);
 	end
 	--data = NWB.serializer:Serialize(data);
 	--NWB.lastDataSent = GetServerTime();
@@ -566,7 +587,7 @@ function NWB:createData(distribution, noLogs)
 	data = NWB:convertKeys(data, true, distribution);
 	--NWB:debug("After key convert:", string.len(NWB.serializer:Serialize(data)));
 	--NWB:debug(data);
-	if (NWB.tar("player") == nil) then
+	if (NWB.tar("player") == nil and distribution ~= "GUILD") then
 		data = {};
 	end
 	return data;
@@ -1010,6 +1031,9 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 		NWB:debug("invalid data received.");
 		return;
 	end
+	if (not NWB:isValidPlayer(sender)) then
+		return;
+	end
 	if (data.rendTimer and tonumber(data.rendTimer) and (not data.rendYell or data.rendTimer < NWB.data.rendTimer or
 			data.rendYell < (data.rendTimer - 120) or data.rendYell > (data.rendTimer + 120))) then
 		--NWB:debug("invalid rend timer from", sender, "npcyell:", data.rendYell, "buffdropped:", data.rendTimer);
@@ -1039,7 +1063,7 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 	end
 	local hasNewData, newFlowerData;
 	--Insert our layered data here.
-	if (NWB.isLayered and data.layers) then
+	if (NWB.isLayered and data.layers and self.j(elapsed)) then
 		--There's a lot of ugly shit in this function trying to quick fix timer bugs for this layered stuff...
 		for layer, vv in NWB:pairsByKeys(data.layers) do
 			--Temp fix, this can be removed soon.

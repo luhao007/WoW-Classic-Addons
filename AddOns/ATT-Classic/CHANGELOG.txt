@@ -1,11 +1,16 @@
-0.4.3 Release Notes
+0.4.6 Release Notes
 Contributions made by Crieve:
-* Moved the Scourge Invasions bosses to the Scourge Invasion list. (for ease of access of information)
-* Missed one.
-* Tooltips now show the name of the map for things listed in the tooltip. (for example: the Runecloth quest turn ins now show which ones are still not finished.)
-* Darkirontank is now an Exterminator.
-* Pattern: Red Whelp Gloves is not sold by Jennabink Powerseam.
-* Another possible fix for Spell Ranks and Grimoires.
-* Enchanting Spell Links now work in chat.
-* The game doesn't like colors in posted text.
+* Beast Training now appears in the Profession Minilist. (someone from non-enUS locale please test this for me!)
+* Fixed a number of other issues with Beast Training.
+* You no longer get invalid collection credit for pet spell ranks.
+* Mature Blue Dragon Sinew should now show in the mini list for Hunters in Winterspring.
+* Frozen Rune is no longer listed as a Common Boss Drop, the information on WoWHead is inaccurate.
+* Assigned the Mount filter type to items that are mounts, rather than Invalid/Ignored.
+* Assigned the Relic Filter ID to Idols, Librams, and Totems.
+* Rearranged the Filters section to account for a couple of different loot types.
+* You can now filter for Consumable, Miscellaneous, and Recipe items. (or turn them off)
+* You can now use this command to search for specific item filters in the ATT Hierarchy:    /script ATTC:GetWindow("ItemFilter"):Toggle()
+* Fixed the issue involving recipes not appearing in the mini list. Blizzard sucks at maintaining APIS.
+* You can now hide all of the loot you aren't filtering for. (It's faaancy!)
+* Temporarily disabling 'Expert Cook' until I have a fix for it.
 
