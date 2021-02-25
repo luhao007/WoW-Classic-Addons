@@ -290,15 +290,14 @@ class Manager:
         addons = ['Atlas', 'BlizzMove', 'DBM-Core', 'Details_Streamer',
                   'Details_TinyThreat', 'ExRT', 'GatherMate2', 'GTFO',
                   'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
-                  'OmniCC', 'OmniCC_Config', 'Quartz', 'RangeDisplay',
-                  'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
+                  'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
+                  'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
         if self.is_classic:
             addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
-                       'Fizzle', 'GroupCalendar',
-                       'HandyNotes_NPCs (Classic)', 'PallyPower',
-                       'TradeLog', 'TitanClassic', 'WclPlayerScore']
+                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'PallyPower', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
         else:
             addons += ['AllTheThings', 'Details_ChartViewer',
                        'Details_DeathGraphs', 'Details_EncounterDetails',

@@ -1,0 +1,18 @@
+## Interface: 11306
+## Author: Mikord
+## Dependencies: MikScrollingBattleText
+## LoadOnDemand: 1
+
+## Title: MSBT [|cffffff80Options|r]
+## Notes: Load on demand options for Mik's Scrolling Battle Text.
+## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF浮动战斗信息|r |cFF0055FF设置|r
+
+## X-Child-Of: MikScrollingBattleText
+## X-Part-Of: MikScrollingBattleText
+
+Localization\localization.xml
+
+MSBTOptionsControls.lua
+MSBTOptionsPopups.lua
+MSBTOptionsMain.lua
+MSBTOptionsTabs.lua

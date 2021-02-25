@@ -13,7 +13,9 @@ L:SetTimerLocalization({
 	TimerCap		= "%s",
 	TimerFlag		= "Flag respawn",
 	TimerInvite		= "%s",
-	TimerRemaining	= "Starting in",
+	TimerRemaining	= "Remaining",
+	TimerWin		= "Victory in",
+	TimerStarting	= "Starting in",
 	TimerShadow		= "Shadow Sight"
 })
 
