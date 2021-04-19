@@ -1,16 +1,22 @@
-lightweight tag 9eddd5a5cdd0dca4af244af65a5197520b5df092 v1.1.1
+lightweight tag 0348a1a23f170bc2e617625c0f4aae45e3df37aa v1.1.2
 Author:	VallanTV <vallantv@protonmail.com>
-Date:	Sat May 2 11:47:41 2020 -0700
+Date:	Thu Mar 4 07:13:56 2021 -0800
 
-commit 9eddd5a5cdd0dca4af244af65a5197520b5df092
+commit 0348a1a23f170bc2e617625c0f4aae45e3df37aa
 Author: VallanTV <vallantv@protonmail.com>
-Date:   Sat May 2 11:40:07 2020 -0700
+Date:   Thu Mar 4 07:13:56 2021 -0800
 
-    Fix localization file extensions. bump version
+    bump version
 
-commit 36b8c1ed4c3ba8d6e1efbaf730b75e7655557907
+commit 9796ad426c2f73c50120e06a9119d809cee3cd52
 Author: VallanTV <vallantv@protonmail.com>
-Date:   Sat May 2 11:39:36 2020 -0700
+Date:   Thu Mar 4 07:06:55 2021 -0800
 
-    remove legacy CHANGES file
+    Add tom tom map overlay to exclude list
+
+commit 7c8262ce071fbdf91dbcb48474d2ea355c7af471
+Author: sipertruk <sipertruk@users.noreply.github.com>
+Date:   Wed Feb 24 21:11:02 2021 +0100
+
+    Fix performance with Minimap children iteration
 

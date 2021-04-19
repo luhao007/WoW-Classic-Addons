@@ -3,6 +3,10 @@ if GetLocale() ~= "frFR" then return; end
 local app = select(2, ...);
 local L = app.L;
 
+--TODO: L.FACTION_MODE_TOOLTIP = "Turn this setting on if you want to see Account Mode data only for races and classes of your current faction.";
+
+--TODO: L.TOGGLE_FACTION_MODE = "Toggle Faction Mode";
+
 -- TODO
 L.SAVED_TO_DJ_INSTANCES["Temple noir"] = "Le Temple noir";
 L.SAVED_TO_DJ_INSTANCES["Le Puits de soleil"] = "Plateau du Puits de soleil";
@@ -31,7 +35,37 @@ L.ZONE_TEXT_TO_MAP_ID["Uldaman"] = 230;	-- ULDA
 L.ZONE_TEXT_TO_MAP_ID["Cavernes des lamentations"] = 279;	-- WC
 L.ZONE_TEXT_TO_MAP_ID["Zul'Farrak"] = 219;	-- ZF
 
-local a = L.NPC_ID_NAMES;
+L.ZONE_TEXT_TO_MAP_ID["Magister's Terrace"] = 348;	-- MGT
+L.ZONE_TEXT_TO_MAP_ID["Karazhan"] = 350;	-- KARA
+L.ZONE_TEXT_TO_MAP_ID["Gruul's Lair"] = 330;	-- GRUL
+L.ZONE_TEXT_TO_MAP_ID["Magtheridon's Lair"] = 331;	-- MAG
+L.ZONE_TEXT_TO_MAP_ID["Serpentshrine Cavern"] = 332;	-- SSC
+L.ZONE_TEXT_TO_MAP_ID["Donjon de la Tempête"] = 334;	-- TK
+L.ZONE_TEXT_TO_MAP_ID["The Battle for Mount Hyjal"] = 329;	-- HYJAL
+L.ZONE_TEXT_TO_MAP_ID["The Black Temple"] = 340;	-- BT
+L.ZONE_TEXT_TO_MAP_ID["Sunwell Plataeu"] = 335;	-- SWP
+L.ZONE_TEXT_TO_MAP_ID["Zul'Aman"] = 333;	-- ZA
+
+L.ALT_ZONE_TEXT_TO_MAP_ID["Cryptes Auchenaï"] = 256;	-- CRYPTS
+L.ALT_ZONE_TEXT_TO_MAP_ID["Tombes-mana"] = 272;	-- MT
+L.ALT_ZONE_TEXT_TO_MAP_ID["Les salles des Sethekk"] = 258;	-- SETH
+L.ALT_ZONE_TEXT_TO_MAP_ID["Labyrinthe des Ombres"] = 260;	-- SLABS
+L.ALT_ZONE_TEXT_TO_MAP_ID["Le Noir marécage"] = 273;	-- BLKM
+L.ALT_ZONE_TEXT_TO_MAP_ID["Contreforts de Hautebrande d’antan"] = 274;	-- OHF
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Slave Pens"] = 265;	-- SPENS
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Steamvault"] = 263;	-- SVALT
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Underbog"] = 262;	-- UNBOG
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Blood Furnace"] = 261;	-- BF
+L.ALT_ZONE_TEXT_TO_MAP_ID["Hellfire Ramparts"] = 347;	-- RAMPS
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Shattered Halls"] = 246;	-- SHALLS
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Arcatraz"] = 269;	-- ARCA
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Botanica"] = 266;	-- BOT
+L.ALT_ZONE_TEXT_TO_MAP_ID["The Mechanar"] = 267;	-- MECH
+
+-- Professions
+L.ALT_PROFESSION_TEXT_TO_ID["Ingénierie"] = 4036;	-- Engineering
+
+local a = L.HEADER_NAMES;
 for key,value in pairs({
 	-- Enter translated NPCID's here
 })

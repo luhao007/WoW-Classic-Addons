@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 --                        A L L   T H E   T H I N G S                         --
 --------------------------------------------------------------------------------
---				Copyright 2017-2019 Dylan Fortune (Crieve-Sargeras)           --
+--				Copyright 2017-2021 Dylan Fortune (Crieve-Sargeras)           --
 --------------------------------------------------------------------------------
 local app = select(2, ...);
 local L = app.L;
@@ -10,6 +10,7 @@ local L = app.L;
 BINDING_HEADER_ATTC = L["TITLE"];
 BINDING_NAME_ATTC_TOGGLEACCOUNTMODE = L["TOGGLE_ACCOUNT_MODE"];
 BINDING_NAME_ATTC_TOGGLEDEBUGMODE = L["TOGGLE_DEBUG_MODE"];
+BINDING_NAME_ATTC_TOGGLEFACTIONMODE = L["TOGGLE_FACTION_MODE"];
 
 BINDING_HEADER_ATTC_PREFERENCES = L["PREFERENCES"];
 BINDING_NAME_ATTC_TOGGLECOMPLETEDTHINGS = L["TOGGLE_COMPLETEDTHINGS"];
@@ -27,9 +28,9 @@ BINDING_NAME_ATTC_TOGGLERANDOM = L["TOGGLE_RANDOM"];
 BINDING_NAME_ATTC_REROLL_RANDOM = L["REROLL_RANDOM"];
 
 -- The Settings Frame
-local settings = CreateFrame("FRAME", app:GetName() .. "-Settings", UIParent );
+local settings = CreateFrame("FRAME", app:GetName() .. "-Settings", UIParent, BackdropTemplateMixin and "BackdropTemplate");
 app.Settings = settings;
-settings.name = "ATT-Classic";
+settings.name = app:GetName();
 settings.MostRecentTab = nil;
 settings:Hide();
 settings.Tabs = {};
@@ -81,14 +82,19 @@ local GeneralSettingsBase = {
 	__index = {
 		["AccountMode"] = false,
 		["DebugMode"] = false,
+		["FactionMode"] = false,
 		["AccountWide:Deaths"] = true,
+		["AccountWide:Exploration"] = false,
 		["AccountWide:FlightPaths"] = true,
+		["AccountWide:PVPRanks"] = false,
 		["AccountWide:Quests"] = false,
 		["AccountWide:Recipes"] = true,
 		["AccountWide:Reputations"] = true,
 		["Thing:Deaths"] = true,
+		["Thing:Exploration"] = true,
 		["Thing:FlightPaths"] = true,
 		["Thing:Loot"] = false,
+		["Thing:PVPRanks"] = false,
 		["Thing:Quests"] = true,
 		["Thing:Recipes"] = true,
 		["Thing:Reputations"] = true,
@@ -108,28 +114,33 @@ local TooltipSettingsBase = {
 		["Celebrate"] = true,
 		["Channel"] = "master",
 		["ClassRequirements"] = true,
+		["Coordinates"] = true,
 		["Descriptions"] = true,
 		["DisplayInCombat"] = true,
 		["Enabled"] = true,
-		["MinimapButton"] = false,
-		["MinimapSize"] = 36,
-		["MinimapStyle"] = true,
-		["Models"] = true,
+		["KnownBy"] = true,
 		["Locations"] = 5,
 		["MainListScale"] = 1,
 		["MiniListScale"] = 1,
+		["MinimapButton"] = false,
+		["MinimapSize"] = 36,
+		["MinimapStyle"] = false,
+		["Models"] = true,
+		["Objectives"] = true,
 		["PlayDeathSound"] = false,
 		["Precision"] = 2,
 		["Progress"] = true,
 		["QuestGivers"] = true,
 		["RaceRequirements"] = true,
 		["Report:Collected"] = true,
+		["Report:CompletedQuests"] = false,
 		["ShowIconOnly"] = false,
 		["Show:CraftedItems"] = false,
 		["Show:Recipes"] = false,
 		["Show:Remaining"] = false,
 		["Show:SpellRanks"] = true,
 		["SoftReserves"] = true,
+		["SoftReservePersistence"] = false,
 		["SourceLocations"] = true,
 		["SourceLocations:Completed"] = true,
 		["SourceLocations:Creatures"] = true,
@@ -146,6 +157,7 @@ local UnobtainableSettingsBase = {
 
 		-- Future Content Releases
 		[11] = 2,		-- Phase 1
+		[1101] = true,	-- Dire Maul
 		[12] = true,	-- Phase 2
 		[13] = true,	-- Phase 3
 		[14] = true,	-- Phase 4
@@ -239,7 +251,11 @@ settings.GetModeString = function(self)
 		mode = "Debug " .. mode;
 	else
 		if self:Get("AccountMode") then
-			mode = "Account " .. mode;
+			if self:Get("FactionMode") then
+				mode = FACTION .. " " .. mode;
+			else
+				mode = "Account " .. mode;
+			end
 		end
 
 		local things = {};
@@ -362,6 +378,15 @@ end
 settings.ToggleDebugMode = function(self)
 	self:SetDebugMode(not self:Get("DebugMode"));
 end
+settings.SetFactionMode = function(self, factionMode)
+	self:Set("FactionMode", factionMode);
+	self:UpdateMode();
+	if factionMode then app.RefreshCollections(); end
+	app:RefreshData();
+end
+settings.ToggleFactionMode = function(self)
+	self:SetFactionMode(not self:Get("FactionMode"));
+end
 settings.SetCompletedThings = function(self, checked)
 	self:Set("Show:CompletedGroups", checked);
 	self:Set("Show:CollectedThings", checked);
@@ -405,13 +430,18 @@ settings.UpdateMode = function(self)
 		app.SeasonalItemFilter = app.NoFilter;
 		app.VisibilityFilter = app.NoFilter;
 
+		app.AccountWideDeaths = true;
+		app.AccountWideExploration = true;
 		app.AccountWideFlightPaths = true;
+		app.AccountWidePVPRanks = true;
 		app.AccountWideQuests = true;
 		app.AccountWideRecipes = true;
 		app.AccountWideReputations = true;
 
+		app.CollectibleExploration = true;
 		app.CollectibleFlightPaths = true;
 		app.CollectibleLoot = true;
+		app.CollectiblePVPRanks = true;
 		app.CollectibleQuests = true;
 		app.CollectibleRecipes = true;
 		app.CollectibleReputations = true;
@@ -424,27 +454,37 @@ settings.UpdateMode = function(self)
 			app.SeasonalItemFilter = app.NoFilter;
 		end
 
+		app.AccountWideDeaths = self:Get("AccountWide:Deaths");
+		app.AccountWideExploration = self:Get("AccountWide:Exploration");
 		app.AccountWideFlightPaths = self:Get("AccountWide:FlightPaths");
+		app.AccountWidePVPRanks = self:Get("AccountWide:PVPRanks");
 		app.AccountWideQuests = self:Get("AccountWide:Quests");
 		app.AccountWideRecipes = self:Get("AccountWide:Recipes");
 		app.AccountWideReputations = self:Get("AccountWide:Reputations");
 
+		app.CollectibleExploration = self:Get("Thing:Exploration");
 		app.CollectibleFlightPaths = self:Get("Thing:FlightPaths");
 		app.CollectibleLoot = self:Get("Thing:Loot");
+		app.CollectiblePVPRanks = self:Get("Thing:PVPRanks");
 		app.CollectibleQuests = self:Get("Thing:Quests");
 		app.CollectibleRecipes = self:Get("Thing:Recipes");
 		app.CollectibleReputations = self:Get("Thing:Reputations");
-	end
-	if self:Get("AccountMode") then
-		app.ItemTypeFilter = app.NoFilter;
-		app.ClassRequirementFilter = app.NoFilter;
-		app.RaceRequirementFilter = app.NoFilter;
-		app.RequiredSkillFilter = app.NoFilter;
-	else
-		app.ItemTypeFilter = app.FilterItemClass_RequireItemFilter;
-		app.ClassRequirementFilter = app.FilterItemClass_RequireClasses;
-		app.RaceRequirementFilter = app.FilterItemClass_RequireRaces;
-		app.RequiredSkillFilter = app.FilterItemClass_RequiredSkill;
+
+		if self:Get("AccountMode") then
+			app.ItemTypeFilter = app.NoFilter;
+			app.ClassRequirementFilter = app.NoFilter;
+			app.RequiredSkillFilter = app.NoFilter;
+			if self:Get("FactionMode") then
+				app.RaceRequirementFilter = app.FilterItemClass_RequireRacesCurrentFaction;
+			else
+				app.RaceRequirementFilter = app.NoFilter;
+			end
+		else
+			app.ItemTypeFilter = app.FilterItemClass_RequireItemFilter;
+			app.ClassRequirementFilter = app.FilterItemClass_RequireClasses;
+			app.RaceRequirementFilter = app.FilterItemClass_RequireRaces;
+			app.RequiredSkillFilter = app.FilterItemClass_RequiredSkill;
+		end
 	end
 	if self:Get("Show:CompletedGroups") or self:Get("DebugMode") then
 		app.GroupVisibilityFilter = app.NoFilter;
@@ -466,7 +506,6 @@ settings.UpdateMode = function(self)
 	else
 		app.RecipeChecker = app.GetTempDataSubMember;
 	end
-
 	if self:Get("Filter:BoEs") then
 		app.ItemBindFilter = app.FilterItemBind;
 	else
@@ -478,7 +517,7 @@ settings.UpdateMode = function(self)
 		app.RequireBindingFilter = app.NoFilter;
 	end
 	app:UnregisterEvent("PLAYER_LEVEL_UP");
-	if self:Get("Filter:ByLevel") then
+	if self:Get("Filter:ByLevel") and not self:Get("DebugMode") then
 		app:RegisterEvent("PLAYER_LEVEL_UP");
 		app.GroupRequirementsFilter = app.FilterGroupsByLevel;
 	else
@@ -568,7 +607,7 @@ end);
 DebugModeCheckBox:SetATTTooltip("Quite literally... ALL THE THINGS IN THE GAME. PERIOD. DOT. YEAH, ALL OF IT. Even Uncollectible things like bags, consumables, reagents, etc will appear in the lists. (Even yourself! No, really. Look.)\n\nThis is for Debugging purposes only. Not intended to be used for completion tracking.\n\nThis mode bypasses all filters, including Unobtainables.");
 DebugModeCheckBox:SetPoint("TOPLEFT", ModeLabel, "BOTTOMLEFT", 0, -8);
 
-local AccountModeCheckBox = settings:CreateCheckBox("|Cff00ab00Account Mode|r (All Characters)",
+local AccountModeCheckBox = settings:CreateCheckBox("|Cff00ab00Account Mode|r",
 function(self)
 	self:SetChecked(settings:Get("AccountMode"));
 	if settings:Get("DebugMode") then
@@ -585,7 +624,22 @@ end);
 AccountModeCheckBox:SetATTTooltip("Turn this setting on if you want to track all of the Things for all of your characters regardless of class and race filters.\n\nUnobtainable filters still apply.");
 AccountModeCheckBox:SetPoint("TOPLEFT", DebugModeCheckBox, "BOTTOMLEFT", 0, 4);
 
-
+local FactionModeCheckBox = settings:CreateCheckBox("Only Current Faction",
+function(self)
+	self:SetChecked(settings:Get("FactionMode"));
+	if settings:Get("DebugMode") or not settings:Get("AccountMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetFactionMode(self:GetChecked());
+end);
+FactionModeCheckBox:SetATTTooltip(L["FACTION_MODE_TOOLTIP"]);
+FactionModeCheckBox:SetPoint("TOPLEFT", AccountModeCheckBox, "TOPLEFT", 140, 0);
 
 -- This creates the "Precision" slider.
 local PrecisionSlider = CreateFrame("Slider", "ATTPrecisionSlider", settings, "OptionsSliderTemplate");
@@ -680,13 +734,60 @@ DeathsCheckBox:SetPoint("TOPLEFT", ThingsLabel, "BOTTOMLEFT", 0, -8);
 
 local DeathsAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
 function(self)
-	self:SetChecked(true);
-	self:Disable();
-	self:SetAlpha(0.2);
+	self:SetChecked(settings:Get("AccountWide:Deaths"));
+	if settings:Get("DebugMode") or not settings:Get("Thing:Deaths") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
 end,
-nil);
+function(self)
+	settings:Set("AccountWide:Deaths", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
 DeathsAccountWideCheckBox:SetATTTooltip("Most people keep this setting turned on. It may be considered insane to turn it off!");
 DeathsAccountWideCheckBox:SetPoint("TOPLEFT", DeathsCheckBox, "TOPLEFT", 220, 0);
+
+local ExplorationCheckBox = settings:CreateCheckBox("Exploration / Map Completion",
+function(self)
+	self:SetChecked(settings:Get("Thing:Exploration"));
+	if settings:Get("DebugMode") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:Set("Thing:Exploration", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
+ExplorationCheckBox:SetATTTooltip("Enable this option to track exploration completion for outdoor maps. If you want the Explorer title, completing this in preparation for Wrath Classic will greatly help you!");
+ExplorationCheckBox:SetPoint("TOPLEFT", DeathsCheckBox, "BOTTOMLEFT", 0, 4);
+
+local ExplorationAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
+function(self)
+	self:SetChecked(settings:Get("AccountWide:Exploration"));
+	if settings:Get("DebugMode") or not settings:Get("Thing:Exploration") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:Set("AccountWide:Exploration", self:GetChecked());
+	settings:UpdateMode();
+	app:RefreshData();
+end);
+ExplorationAccountWideCheckBox:SetATTTooltip("Flight Paths tracking is only really useful per character, but do you really want to collect them all on all 50 of your characters?");
+ExplorationAccountWideCheckBox:SetPoint("TOPLEFT", ExplorationCheckBox, "TOPLEFT", 220, 0);
 
 local FlightPathsCheckBox = settings:CreateCheckBox("Flight Paths / Ferry Stations",
 function(self)
@@ -705,7 +806,7 @@ function(self)
 	app:RefreshData();
 end);
 FlightPathsCheckBox:SetATTTooltip("Enable this option to track flight paths and ferry stations.\n\nTo collect these, open the dialog with the flight / ferry master in each continent.\n\NOTE: Due to phasing technology, you may have to phase to the other versions of a zone to get credit for those points of interest.");
-FlightPathsCheckBox:SetPoint("TOPLEFT", DeathsCheckBox, "BOTTOMLEFT", 0, 4);
+FlightPathsCheckBox:SetPoint("TOPLEFT", ExplorationCheckBox, "BOTTOMLEFT", 0, 4);
 
 local FlightPathsAccountWideCheckBox = settings:CreateCheckBox("Account Wide",
 function(self)
@@ -1276,7 +1377,7 @@ table.insert(settings.MostRecentTab.objects, FutureContentReleasesLabel);
 -- Future Content Releases
 yoffset = -4;
 last = FutureContentReleasesLabel;
-for i,o in ipairs({ { 11, 0 }, { 12, 0 }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, 4 }, { 1502, 0 }, { 1503, 0 }, { 1504, 0 }, { 16, -4 }, { 1601, 4 }, { 1602, 0 }, }) do
+for i,o in ipairs({ { 11, 0 }, {1101, 4 }, { 12, -4 }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, 4 }, { 1502, 0 }, { 1503, 0 }, { 1504, 0 }, { 16, -4 }, { 1601, 4 }, { 1602, 0 }, { 1603, 0 }, }) do
 	local u = o[1];
 	local filter = settings:CreateCheckBox(L["UNOBTAINABLE_ITEM_REASONS"][u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
 	filter:SetATTTooltip(L["UNOBTAINABLE_ITEM_REASONS"][u][2] .. (L["UNOBTAINABLE_ITEM_REASONS"][u][5] or ""));
@@ -1655,12 +1756,14 @@ DebuggingLabel:SetText("Debugging");
 DebuggingLabel:Show();
 table.insert(settings.MostRecentTab.objects, DebuggingLabel);
 local ids = {
+	["artID"] = "Art ID",
 	["creatureID"] = "Creature ID",
 	["creatures"] = "Creatures List",
 	["Coordinates"] = "Coordinates",
 	["currencyID"] = "Currency ID",
 	["Descriptions"] = "Descriptions",
 	["displayID"] = "Display ID",
+	["explorationID"] = "Exploration ID",
 	["factionID"] = "Faction ID",
 	["filterID"] = "Filter ID",
 	["flightPathID"] = "Flight Path ID",
@@ -1675,7 +1778,7 @@ local ids = {
 	["spellID"] = "Spell ID",
 };
 local last = nil;
-for _,id in pairs({"creatureID","creatures","Coordinates","currencyID","Descriptions","displayID","factionID","filterID","flightPathID"}) do
+for _,id in pairs({"artID", "creatureID","creatures","Coordinates","currencyID","Descriptions","displayID","explorationID","factionID","filterID","flightPathID"}) do
 	local filter = settings:CreateCheckBox(ids[id],
 	function(self)
 		self:SetChecked(settings:GetTooltipSetting(id));

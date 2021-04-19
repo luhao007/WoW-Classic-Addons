@@ -705,3 +705,7 @@ L["heraldFoundTimerMsg"] = "Crossroads Rend"; --DBM/Bigwigs timer bar text.
 
 L["guildNpcWalkingTitle"] = "NPC Walking";
 L["guildNpcWalkingDesc"] = "Send a message to guild and play a sound when you trigger or receive a NPC walking alert? (Open chat dialogue with Ony/Nef NPC's in Orgrimmar and wait for someone to hand the head in to trigger this early alert).";
+
+L["buffHelpersTextDesc6"] = "Darkmoon Faire Helper Window";
+L["dmfFrameTitle"] = "DMF Helper Window";
+L["dmfFrameDesc"] = "A window that pops up when you go near Sayge at DMF while a ghost on pvp servers, helps with Blizzard stuck features.";

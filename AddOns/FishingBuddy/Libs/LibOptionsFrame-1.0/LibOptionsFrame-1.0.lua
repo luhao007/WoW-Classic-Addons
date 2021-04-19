@@ -795,7 +795,7 @@ function OptionsLib:Embed(target, onclick, onshow, reference)
     end
     OptionsLib.previousClients[f] = true;
     f.name = n;
-    f.reference = reference or f;
+    f.reference = reference or f:GetParent();
     f.onclick = onclick;
     f.onshow = onshow;
 

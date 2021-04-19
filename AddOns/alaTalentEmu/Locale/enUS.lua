@@ -1,4 +1,4 @@
---[[--
+﻿--[[--
 	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
@@ -57,6 +57,8 @@ L.nextRank = "Next Rank";
 L.maxRank = "Top Rank";
 L.reqPoints = "%d/%d in %s";
 
+L.level_60 = "Lv60 Talents. |cffff0000And ReloadUI.|r";
+L.level_70 = "Lv60 Talents. |cffff0000And ReloadUI.|r";
 L.resizable_border_TRUE = "Enable Draging border to resize";
 L.resizable_border_FALSE = "Disable dragging border to resize";
 L.SetWinStyle_BLZ = "Make it blz style";
@@ -171,3 +173,26 @@ L.SLOT = {
 };
 L.EMTPY_SLOT = "\124cffff0000Empty\124r";
 L.MISS_ENCHANT = "\124cffff0000Miss enchant\124r";
+
+
+
+
+
+
+L.POWERTYPE = {
+	[-2] = "health",
+	[0] = "mana",
+	[1] = "rage",
+	[2] = "focus",
+	[3] = "enery",
+};
+L.POWERPERCENT = "%d%% of %s";
+L.POWERPOINT = "%d %s";
+L.POWERPOINTPERSECOND = "%d %s per sec";
+L.RANGEYARD = "%d yrd";
+L.RANGEYARD2 = "%d to %d yrd";
+L.RANGE0 = "melee";
+L.CASTINGTIME = "%d sec cast";
+L.CASTINGTIMEINSTANT = "instant";
+L.CDSECOND = "%d sec cd";
+L.CDMINUTE = "%d min cd";

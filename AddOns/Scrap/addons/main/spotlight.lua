@@ -1,5 +1,5 @@
 --[[
-Copyright 2008-2020 João Cardoso
+Copyright 2008-2021 João Cardoso
 Scrap is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this addon do not give permission to
 redistribute and/or modify it.
@@ -49,10 +49,9 @@ function Spotlight:UpdateContainer(frame)
   local name = frame:GetName()
   local size = frame.size
 
-	for i = 1, size do
-		local slot = size - i + 1
-    local button = _G[name .. 'Item' .. slot]
-		local id = GetContainerItemID(bag, i)
+	for slot = 1, size do
+    local button = _G[name .. 'Item' .. (size - slot + 1)]
+		local id = GetContainerItemID(bag, slot)
 
 		local isJunk = id and Scrap:IsJunk(id, bag, slot)
 		local glow = self.Glows[button] or self:NewGlow(button)

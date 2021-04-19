@@ -1,13 +1,13 @@
-## Interface: 90002
+## Interface: 90005
 ## LoadOnDemand: 1
 ## Title: Lib: DogTag-3.0
 ## Notes: A library to provide a markup syntax
-## Author: ckknight
-## eMail: ckknight@gmail.com
+## Author: ckknight, Parnic, cybeloras
+## eMail: ckknight@gmail.com, parnic@parnic.com
 ## Version: 1.0
 ## X-Category: Library
-## X-Credit: Shefki, Parnic, Andrew Scott
-## X-Compatible-With: 11305
+## X-Credit: Shefki, Parnic, cybeloras
+## X-Curse-Project-ID: 14280
 ## OptionalDeps:
 
 lib.xml

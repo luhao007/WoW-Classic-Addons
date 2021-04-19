@@ -163,6 +163,9 @@ local ADDON_MSG_CONTROL_CODE_LEN = __ala_meta__.ADDON_MSG_CONTROL_CODE_LEN;
 			-->		Talent
 				--	return 			UPPER_CLASS, data, level
 				function __ns.GetPlayerTalentData(DEFAULT_LEVEL)
+					if GetNumTalents == nil then
+						return nil;
+					end
 					local data = "";
 					local len = 0;
 					for specIndex = 1, 3 do
@@ -240,6 +243,9 @@ local ADDON_MSG_CONTROL_CODE_LEN = __ala_meta__.ADDON_MSG_CONTROL_CODE_LEN;
 					local data, len = nil, nil;
 					if classIndex == 'player' then
 						classIndex, data, level, len = __ns.GetPlayerTalentData(level);
+						if classIndex == nil then
+							return nil;
+						end
 					else
 						if type(classIndex) == 'string' then
 							classIndex = __ns.classHash[classIndex];

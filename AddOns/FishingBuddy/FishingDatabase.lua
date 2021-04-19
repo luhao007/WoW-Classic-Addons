@@ -156,6 +156,8 @@ local function initmappings()
 	end
 end
 
+-- map an old map number to a new mapId for internal data
+-- tables in Classic
 local oldToNewMapId = {
 	[4] = 1,
 	[9] = 7,
@@ -464,19 +466,10 @@ local oldToNewMapId = {
 local function GetNewMapId(mapId)
 	return oldToNewMapId[mapId] or mapId
 end
-FishingBuddy.GetNewMapId = GetNewMapId
 
-local GetCurrentMapIdInfo
-if select(4, GetBuildInfo()) < 80000 then
-	GetCurrentMapIdInfo = function()
-		local mapId, subzone = FL:GetZoneInfo()
-		return GetNewMapId(mapId) or mapId, subzone
-	end
-else
-	GetCurrentMapIdInfo = function()
-		local mapId, subzone = FL:GetZoneInfo()
-		return mapId, subzone
-	end
+local function GetCurrentMapIdInfo()
+	local mapId, subzone = FL:GetZoneInfo()
+	return GetNewMapId(mapId) or mapId, subzone
 end
 FishingBuddy.GetCurrentMapIdInfo = GetCurrentMapIdInfo
 

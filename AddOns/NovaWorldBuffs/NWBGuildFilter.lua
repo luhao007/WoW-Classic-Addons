@@ -184,6 +184,18 @@ local filterTypeLocales = {
 	},
 };
 
+function NWB:compSide(flags)
+	if (not flags) then
+		return true;
+	end
+	local p = GetZonePVPInfo();
+	if (bit.band(flags, COMBATLOG_OBJECT_REACTION_HOSTILE) == COMBATLOG_OBJECT_REACTION_HOSTILE
+			and p == "contested") then
+		return;
+	end
+	return true;
+end
+
 function NWB.guildChatFilter(self, event, msg, author, ...)
 	if (NWB.loaded) then
 		for type, locales in pairs(filterTypeLocales) do

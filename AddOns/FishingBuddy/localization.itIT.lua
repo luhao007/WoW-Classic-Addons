@@ -1,7 +1,7 @@
 -- Italian translation by Impaler on CurseForge
 
 FishingTranslations["itIT"] = {
-	["ABOUT_TAB"] = "Informazioni...",
+	["ABOUT_TAB"] = "Informazioni",
 	["ADDFISHINFOMSG"] = "'%s' aggiunto nel luogo %s.",
 	["ALLZOMGPETS"] = "Includi tutte le mascotte",
 	--[[Translation missing --]]
@@ -376,14 +376,11 @@ FishingTranslations["itIT"] = {
 	--[[ ["UPDATEDB"] = "updatedb",--]] 
 	["UPDATEDB_HELP"] = "|c#GREEN#/fb #UPDATEDB# [#FORCE#]|r#BRSPCS#Prova a cercare i nomi di tutti i pesci sconosciuti..#BRSPCS#Viene fatto Un tentativo per saltare i pesci 'rari' che potrebbero disconnetterti#BRSPCS#dal server -- usa l'opzione '#FORCE#' per evitare il controllo.",
 	["UPDATEDB_MSG"] = "Aggiornato %d nomi di pesci.",
-	--[[Translation missing --]]
-	--[[ ["WATCHER"] = "watcher",--]] 
-	["WATCHER_HELP"] = "|c#GREEN#/fb #WATCHER#|r [|c#GREEN##WATCHER_LOCK#|r o |c#GREEN##WATCHER_UNLOCK#|r o |c#GREEN##RESET#|r]#BRSPCS#Sblocca l'osservatore per muovere la finestra,#BRSPCS#blocca per fermarla, reset per resettarla.",
-	--[[Translation missing --]]
-	--[[ ["WATCHER_LOCK"] = "lock",--]] 
-	["WATCHER_TAB"] = "Osservatore",
-	--[[Translation missing --]]
-	--[[ ["WATCHER_UNLOCK"] = "unlock",--]] 
+	["WATCHER"] = "Assistente",
+	["WATCHER_HELP"] = "|c#GREEN#/fb #WATCHER#|r [|c#GREEN##WATCHER_LOCK#|r o |c#GREEN##WATCHER_UNLOCK#|r o |c#GREEN##RESET#|r]#BRSPCS#Sblocca l'assistente per muovere la finestra,#BRSPCS#blocca per fermarla, reset per resettarla.",
+	["WATCHER_LOCK"] = "Blocca Assistente",
+	["WATCHER_TAB"] = "Assistente",
+	["WATCHER_UNLOCK"] = "Sblocca Assistente",
 	--[[Translation missing --]]
 	--[[ ["WATCHERCLICKHELP"] = [=[#LEFTCLICKTODRAG#
 #RIGHTCLICKFORMENU#]=],--]] 

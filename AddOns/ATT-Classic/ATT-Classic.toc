@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Crieve-Sargeras
-## Version: 0.4.6
+## Version: 0.4.9
 ## SavedVariables: ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
@@ -13,7 +13,6 @@
 
 src\base.lua
 locales\enUS.lua
-locales\enGB.lua
 locales\esES.lua
 locales\esMX.lua
 locales\deDE.lua
@@ -26,7 +25,6 @@ locales\zhCN.lua
 db\Presets.lua
 Settings.lua
 ATT-Classic.lua
-db\FactionDB.lua
 db\FlightPathDB.lua
 db\RaceDB.lua
 db\Categories.lua

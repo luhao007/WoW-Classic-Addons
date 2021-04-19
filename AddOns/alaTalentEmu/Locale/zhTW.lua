@@ -1,4 +1,4 @@
---[[--
+﻿--[[--
 	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
@@ -27,6 +27,8 @@ L.curPointsReqLevel = "等級";
 L.message = "信息: ";
 L.me = "我";
 
+L.level_60 = "切换到60级天赋 |cffff0000自动重载插件|r";
+L.level_70 = "切换到70级天赋 |cffff0000自动重载插件|r";
 L.resizable_border_TRUE = "拖動窗口邊緣改變大小";
 L.resizable_border_FALSE = "禁止拖動窗口邊緣改變大小";
 L.readOnly = "\124cffff0000只讀\124r";
@@ -171,3 +173,26 @@ L.SLOT = {
 };
 L.EMTPY_SLOT = "\124cffff0000未裝備\124r";
 L.MISS_ENCHANT = "\124cffff0000缺少附魔\124r";
+
+
+
+
+
+
+L.POWERTYPE = {
+	[-2] = "health",
+	[0] = "mana",
+	[1] = "rage",
+	[2] = "focus",
+	[3] = "enery",
+};
+L.POWERPERCENT = "%d%% of %s";
+L.POWERPOINT = "%d %s";
+L.POWERPOINTPERSECOND = "%d %s per sec";
+L.RANGEYARD = "%d yrd";
+L.RANGEYARD2 = "%d to %d yrd";
+L.RANGE0 = "melee";
+L.CASTINGTIME = "%d sec cast";
+L.CASTINGTIMEINSTANT = "instant";
+L.CDSECOND = "%d sec cd";
+L.CDMINUTE = "%d min cd";

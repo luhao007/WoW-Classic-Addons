@@ -32,6 +32,7 @@ local IGNORED_PROFESSIONS = {
 	[158756] = true, -- Skinning Skills
 	[193290] = true,  -- Herbalism Skills
 	[7620] = true, -- Fishing Skills (shows up as Fishing)
+	[278910] = true, -- Archaeology
 }
 
 

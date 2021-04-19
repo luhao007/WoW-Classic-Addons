@@ -770,7 +770,7 @@ function private.GraphXStepFunc(prevValue, suggestedStep)
 		private.tempTimeTable.min = 0
 		private.tempTimeTable.sec = 0
 	else
-		private.tempTimeTable.hour = private.tempTimeTable.hour + 1
+		private.tempTimeTable.hour = private.tempTimeTable.hour + 2
 		private.tempTimeTable.min = 0
 		private.tempTimeTable.sec = 0
 	end

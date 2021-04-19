@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Xinhuan
-## Version: v1.6.1
+## Version: v1.6.2
 ## OptionalDeps: Ace3, TomTom, HereBeDragons
 ## LoadManagers: AddonLoader
 ## SavedVariables: HandyNotesDB, HandyNotes_HandyNotesDB

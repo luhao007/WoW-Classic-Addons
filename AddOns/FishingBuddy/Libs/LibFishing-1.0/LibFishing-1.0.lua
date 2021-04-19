@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101072
+local MINOR_VERSION = 101078
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -84,6 +84,11 @@ FishLib.registered = FishLib.registered or CBH:New(FishLib, nil, nil, false)
 local SABUTTONNAME = "LibFishingSAButton";
 FishLib.UNKNOWN = "UNKNOWN";
 
+function FishLib:GetFishingProfession()
+    local fishing, _ = self:GetFishingSpellInfo();
+    return fishing
+end
+
 -- support finding the fishing skill
 local function FindSpellID(thisone)
     local id = 1;
@@ -104,7 +109,7 @@ function FishLib:GetFishingSpellInfo()
         local name, _, _ = GetSpellInfo(spell);
         return spell, name;
     end
-    return 0, PROFESSIONS_FISHING;
+    return 9, PROFESSIONS_FISHING;
 end
 
 local DEFAULT_SKILL = { ["max"] = 300, ["skillid"] = 356, ["cat"] = 1100, ["rank"] = 0 }
@@ -119,6 +124,19 @@ FishLib.continent_fishing = {
     { ["max"] = 100, ["skillid"] = 2586, ["cat"] = 1112, ["rank"] = 0 },	-- Legion Fishing
     { ["max"] = 175, ["skillid"] = 2585, ["cat"] = 1114, ["rank"] = 0 },	-- Kul Tiras Fishing
     { ["max"] = 175, ["skillid"] = 2585, ["cat"] = 1114, ["rank"] = 0 },	-- Zandalar Fishing
+    { ["max"] = 200, ["skillid"] = 2754, ["cat"] = 1391, ["rank"] = 0 },	-- Shadowlands Fishing
+}
+
+local FISHING_LEVELS = {
+    300,        -- Classic
+    75,         -- Outland
+    75,         -- Northrend
+    75,         -- Cataclsym
+    75,         -- Pandaria
+    100,        -- Draenor
+    100,        -- Legion
+    175,        -- BfA
+    200,        -- Shadowlands
 }
 
 
@@ -141,8 +159,8 @@ function FishLib:QueueUpdateFishingSkillData() end;
 DEFAULT_SKILL.max = 75
 
 function FishLib:UpdateFishingSkill()
-    local fishing, _ = self:GetFishingSpellInfo();
-    if (fishing and self.havedata) then
+    local fishing = self:GetFishingProfession();
+    if (fishing) then
         local continent, _ = self:GetCurrentMapContinent();
         local info = FishLib.continent_fishing[continent];
         if (info) then
@@ -150,6 +168,9 @@ function FishLib:UpdateFishingSkill()
             skill = skill or 0
             if (info.rank < skill) then
                 info.rank = skill
+            end
+            if skill then
+                self.registered:Fire(FishLib.PLAYER_SKILL_READY)
             end
         end
     end
@@ -169,11 +190,11 @@ function FishLib:GetContinentSkill(continent)
     end
     if self.lastSkillIndex then
         local name, _, _, rank, _, mods, maxrank = GetSkillLineInfo(self.lastSkillIndex);
-            local _, lure = self:GetPoleBonus();
-            return rank, mods, maxrank, lure or 0;
-         end
-         return 0, 0, 0, 0
-     end
+        local _, lure = self:GetPoleBonus();
+        return rank, mods, maxrank, lure or 0;
+    end
+    return 0, 0, 0, 0
+end
 
 -- get our current fishing skill level
 function FishLib:GetCurrentSkill()
@@ -648,6 +669,7 @@ if ( not fishlibframe) then
     fishlibframe:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
     fishlibframe:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
     fishlibframe:RegisterEvent("ITEM_LOCK_CHANGED");
+	fishlibframe:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 end
 
 fishlibframe.fl = FishLib;
@@ -686,6 +708,8 @@ fishlibframe:SetScript("OnEvent", function(self, event, ...)
         self:UnregisterEvent("SPELLS_CHANGED")
     elseif (event == "TRADE_SKILL_DATA_SOURCE_CHANGED" or event == "TRADE_SKILL_LIST_UPDATE") then
         self.fl:QueueUpdateFishingSkillData();
+    elseif (event == "ACTIONBAR_SLOT_CHANGED") then
+        self.fl:GetFishingActionBarID(true)
     end
 end);
 fishlibframe:Show();
@@ -1167,6 +1191,9 @@ function FishLib:IsFishingPool(text)
     -- return nil;
 end
 
+function FishLib:IsHyperCompressedOcean(text)
+end
+
 function FishLib:AddSchoolName(name)
     tinsert(self.SCHOOLS, { name = name, kind = SCHOOL_FISH });
 end
@@ -1388,60 +1415,77 @@ function FishLib:GetDistanceTo(zone, x, y)
     return dist
 end
 
+FishLib.KALIMDOR = 1
+FishLib.EASTERN_KINDOMS = 2
+FishLib.OUTLAND = 3
+FishLib.NORTHREND = 4
+FishLib.THE_MAELSTROM = 5
+FishLib.PANDARIA = 6
+FishLib.DRAENOR = 7
+FishLib.BROKEN_ISLES = 8
+FishLib.KUL_TIRAS = 9
+FishLib.ZANDALAR = 10
+FishLib.SHADOWLANDS = 11
+
 -- Darkmoon Island is it's own continent?
 local continent_map = {
-    [12] = 1,		-- Kalimdor
-    [13] = 2,		-- Eastern Kingons
-    [101] = 3,		-- Outland
-    [113] = 4,		-- Northrend
-    [276] = 5,      -- The Maelstrom
-    [424] = 6,		-- Pandaria
-    [572] = 7,		-- Draenor
-    [619] = 8,		-- Broken Isles
-    [876] = 9,		-- Kul Tiras
-    [875] = 10,     -- Zandalar
-    [1355] = 9,     -- Nazjatar
-    [407] = 5,		-- Darkmoon Island
+    [12] = FishLib.KALIMDOR,            -- Kalimdor
+    [13] = FishLib.EASTERN_KINDOMS,     -- Eastern Kingons
+    [101] = FishLib.OUTLAND,            -- Outland
+    [113] = FishLib.NORTHREND,          -- Northrend
+    [276] = FishLib.THE_MAELSTROM,      -- The Maelstrom
+    [424] = FishLib.PANDARIA,           -- Pandaria
+    [572] = FishLib.DRAENOR,            -- Draenor
+    [619] = FishLib.BROKEN_ISLES,       -- Broken Isles
+    [876] = FishLib.KUL_TIRAS,          -- Kul Tiras
+    [875] = FishLib.ZANDALAR,           -- Zandalar
+    [1355] = FishLib.KUL_TIRAS,         -- Nazjatar
+    [407] = FishLib.THE_MAELSTROM,      -- Darkmoon Island
+    [1550] = FishLib.SHADOWLANDS,       -- Shadowlands
 }
 
 local special_maps = {
-    [244] = 5,
-    [245] = 5,		-- Tol Barad
-    [201] = 5,		-- Vashj'ir
-    [198] = 5,		-- Hyjal
-    [249] = 5,		-- Uldum
-    [241] = 5,		-- Twilight Highlands
-    [207] = 5,		-- Deepholm
-    [338] = 5,		-- Molten Front
-    [51] = 5,		-- Swamp of Sorrows
-    [122] = 3,		-- Isle of Quel'Danas
+    [244] = FishLib.THE_MAELSTROM,
+    [245] = FishLib.THE_MAELSTROM,		-- Tol Barad
+    [201] = FishLib.THE_MAELSTROM,		-- Vashj'ir
+    [198] = FishLib.THE_MAELSTROM,		-- Hyjal
+    [249] = FishLib.THE_MAELSTROM,		-- Uldum
+    [241] = FishLib.THE_MAELSTROM,		-- Twilight Highlands
+    [207] = FishLib.THE_MAELSTROM,		-- Deepholm
+    [338] = FishLib.THE_MAELSTROM,		-- Molten Front
+    [51] = FishLib.THE_MAELSTROM,		-- Swamp of Sorrows
+    [122] = FishLib.OUTLAND,		    -- Isle of Quel'Danas
 }
 
 -- Continents
 -- Pandaria, 6, 424
 -- Draenor, 7, 572
 -- Broken Isles, 8, 619
-function FishLib:GetMapContinent(mapId)
+function FishLib:GetMapContinent(mapId, debug)
     if HBD.mapData[mapId] and mapId then
         local cMapId = mapId;
         local parent = HBD.mapData[cMapId].parent;
         while (parent ~= 946 and parent ~= 947 and HBD.mapData[parent]) do
+            if (debug) then
+                print(cMapId, parent)
+            end
+            lastMapId = cMapId;
             cMapId = parent;
             parent = HBD.mapData[cMapId].parent;
         end
         if special_maps[mapId] then
-            return special_maps[mapId], cMapId;
+            return special_maps[mapId], cMapId, lastMapId;
         else
-            return continent_map[cMapId] or -1, cMapId;
+            return continent_map[cMapId] or -1, cMapId, lastMapId;
         end
     else
         return -1, -1;
     end
 end
 
-function FishLib:GetCurrentMapContinent()
+function FishLib:GetCurrentMapContinent(debug)
     local mapId = self:GetCurrentMapId();
-    return self:GetMapContinent(mapId)
+    return self:GetMapContinent(mapId, debug)
 end
 
 function FishLib:GetCurrentMapId()
@@ -1536,10 +1580,14 @@ local subzoneskills = {
     ["Binan Village"] = 750,	-- seems to be higher here, for some reason
 };
 
+
 -- this should be something useful for BfA
 function FishLib:GetCurrentFishingLevel()
     local mapID = self:GetCurrentMapId()
-    local current_max = LT:GetFishingLevel(mapID)
+    local current_max = 0
+    if LT.GetFishinglevel then
+        current_max = LT:GetFishingLevel(mapID)
+    end
     local continent, _ = self:GetCurrentMapContinent()
     if current_max == 0 then
         -- Let's just go with continent level skill for now, since
@@ -1908,7 +1956,7 @@ function FishLib:InvokeFishing(useaction)
     if ( not btn ) then
         return;
     end
-    local _, name = self:GetFishingSpellInfo();
+    local id, name = self:GetFishingSpellInfo();
     local findid = self:GetFishingActionBarID();
     if ( not useaction or not findid ) then
         btn:SetAttribute("type", "spell");
@@ -1945,6 +1993,7 @@ function FishLib:InvokeLuring(id, itemtype, targetslot)
     end
     btn:SetAttribute("spell", nil);
     btn:SetAttribute("action", nil);
+    btn:SetAttribute("macrotext", nil);
     -- btn.postclick = nil;
 end
 
@@ -1965,6 +2014,7 @@ function FishLib:InvokeMacro(macrotext)
     btn:SetAttribute("target-slot", nil);
     btn:SetAttribute("spell", nil);
     btn:SetAttribute("action", nil);
+    btn:SetAttribute("unit", nil)
     -- btn.postclick = nil;
 end
 
@@ -2514,6 +2564,7 @@ FishLib.SCHOOL_OIL = 5;
 FishLib.SCHOOL_CHURNING = 6;
 FishLib.SCHOOL_FLOTSAM = 7;
 FishLib.SCHOOL_FIRE = 8;
+FishLib.COMPRESSED_OCEAN = 9;
 
 local FLTrans = {};
 
@@ -2533,7 +2584,6 @@ function FLTrans:Setup(lang, school, lurename, ...)
     -- add in the fish we know are in schools
     self[lang].SCHOOLS = schools;
 end
-
 FLTrans:Setup("enUS", "school", "Fishing Lure",
     "Floating Wreckage", FishLib.SCHOOL_WRECKAGE,
     "Patch of Elemental Water", FishLib.SCHOOL_WATER,
@@ -2544,7 +2594,8 @@ FLTrans:Setup("enUS", "school", "Fishing Lure",
     "Pure Water", FishLib.SCHOOL_WATER,
     "Steam Pump Flotsam", FishLib.SCHOOL_FLOTSAM,
     "School of Tastyfish", FishLib.SCHOOL_TASTY,
-    "Pool of Fire", FishLib.SCHOOL_FIRE);
+    "Pool of Fire", FishLib.SCHOOL_FIRE,
+    "Hyper-Compressed Ocean", FishLib.COMPRESSED_OCEAN);
 
 FLTrans:Setup("koKR", "떼", "낚시용 미끼",
     "표류하는 잔해", FishLib.SCHOOL_WRECKAGE, --	 Floating Wreckage
@@ -2554,7 +2605,8 @@ FLTrans:Setup("koKR", "떼", "낚시용 미끼",
     "거품이는 진흙탕물", FishLib.SCHOOL_CHURNING, --	Muddy Churning Water
     "깨끗한 물", FishLib.SCHOOL_WATER, --  Pure Water
     "증기 양수기 표류물", FishLib.SCHOOL_FLOTSAM, --	Steam Pump Flotsam
-    "맛둥어 떼", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "맛둥어 떼", FishLib.SCHOOL_TASTY, -- School of Tastyfish
+    "초압축 바다", FishLib.COMPRESSED_OCEAN);
 
 FLTrans:Setup("deDE", "schwarm", "Angelköder",
     "Treibende Wrackteile", FishLib.SCHOOL_WRECKAGE, --  Floating Wreckage
@@ -2564,7 +2616,8 @@ FLTrans:Setup("deDE", "schwarm", "Angelköder",
     "Schlammiges aufgewühltes Gewässer", FishLib.SCHOOL_CHURNING, --	Muddy Churning Water
     "Reines Wasser", FishLib.SCHOOL_WATER, --	 Pure Water
     "Treibgut der Dampfpumpe", FishLib.SCHOOL_FLOTSAM, --	 Steam Pump Flotsam
-    "Leckerfischschwarm", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "Leckerfischschwarm", FishLib.SCHOOL_TASTY, -- School of Tastyfish
+    "Hyperkomprimierter Ozean", FishLib.COMPRESSED_OCEAN);
 
 FLTrans:Setup("frFR", "banc", "Appât de pêche",
     "Débris flottants", FishLib.SCHOOL_WRECKAGE, --	 Floating Wreckage
@@ -2574,7 +2627,8 @@ FLTrans:Setup("frFR", "banc", "Appât de pêche",
     "Eaux troubles et agitées", FishLib.SCHOOL_CHURNING, --	Muddy Churning Water
     "Eau pure", FishLib.SCHOOL_WATER, --  Pure Water
     "Détritus de la pompe à vapeur", FishLib.SCHOOL_FLOTSAM, --	 Steam Pump Flotsam
-    "Banc de courbine", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "Banc de courbine", FishLib.SCHOOL_TASTY, -- School of Tastyfish
+    "Océan hyper-comprimé", FishLib.COMPRESSED_OCEAN);
 
 FLTrans:Setup("esES", "banco", "Cebo de pesca",
     "Restos de un naufragio", FishLib.SCHOOL_WRECKAGE,	  --	Floating Wreckage
@@ -2582,7 +2636,8 @@ FLTrans:Setup("esES", "banco", "Cebo de pesca",
     "Vertido de petr\195\179leo", FishLib.SCHOOL_OIL,	 --  Oil Spill
     "Agua pura", FishLib.SCHOOL_WATER, --	Pure Water
     "Restos flotantes de bomba de vapor", FishLib.SCHOOL_FLOTSAM, --	Steam Pump Flotsam
-    "Banco de pezricos", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "Banco de pezricos", FishLib.SCHOOL_TASTY, -- School of Tastyfish
+    "Océano hipercomprimido", FishLib.COMPRESSED_OCEAN);
 
 FLTrans:Setup("zhCN", "鱼群", "鱼饵",
     "漂浮的残骸", FishLib.SCHOOL_WRECKAGE, --  Floating Wreckage
@@ -2593,7 +2648,7 @@ FLTrans:Setup("zhCN", "鱼群", "鱼饵",
     "混浊的水", FishLib.SCHOOL_CHURNING, --	 Muddy Churning Water
     "纯水", FishLib.SCHOOL_WATER,				 --  Pure Water
     "蒸汽泵废料", FishLib.SCHOOL_FLOTSAM, --	 Steam Pump Flotsam
-    "可口鱼", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "可口鱼", FishLib.SCHOOL_TASTY);
 
 FLTrans:Setup("zhTW", "群", "鱼饵",
     "漂浮的殘骸", FishLib.SCHOOL_WRECKAGE, --  Floating Wreckage
@@ -2603,7 +2658,7 @@ FLTrans:Setup("zhTW", "群", "鱼饵",
     "混濁的水", FishLib.SCHOOL_CHURNING, --	 Muddy Churning Water
     "純水", FishLib.SCHOOL_WATER,				 --  Pure Water
     "蒸汽幫浦漂浮殘骸", FishLib.SCHOOL_FLOTSAM,	 --  Steam Pump Flotsam
-    "斑點可口魚魚群", FishLib.SCHOOL_TASTY); -- School of Tastyfish
+    "斑點可口魚魚群", FishLib.SCHOOL_TASTY);
 
 FishLib:Translate("LibFishing", FLTrans, FishLib);
 FLTrans = nil;

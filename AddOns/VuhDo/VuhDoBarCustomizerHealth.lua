@@ -516,7 +516,7 @@ local VUHDO_customizeText = VUHDO_customizeText;
 local tScaling;
 local function VUHDO_customizeDamageFlash(aButton, anInfo)
 	tScaling = VUHDO_PANEL_SETUP[VUHDO_BUTTON_CACHE[aButton]]["SCALING"];
-	if tScaling["isDamFlash"] and tScaling["damFlashFactor"] >= (anInfo["lifeLossPerc"] or -1) then
+	if tScaling["isDamFlash"] and anInfo["lifeLossPerc"] and tScaling["damFlashFactor"] >= (anInfo["lifeLossPerc"] or -1) then
 		VUHDO_UIFrameFlash(_G[aButton:GetName() .. "BgBarIcBarHlBarFlBar"], 0.05, 0.15, 0.25, false, 0.05, 0);
 	end
 end

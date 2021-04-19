@@ -65,7 +65,7 @@ end
 
 MinimapEvents["VARIABLES_LOADED"] = function()
 	local _, info;
-	
+
 	if ( not FishingBuddy_Player["MinimapData"] ) then
 		FishingBuddy_Player["MinimapData"] = { hide=true };
 	end
@@ -80,7 +80,7 @@ MinimapEvents["VARIABLES_LOADED"] = function()
 				icon = "Interface\\Icons\\Trade_Fishing",
 				OnClick = Minimap_OnClick,
 			};
-		
+
 		icon:Register(FBConstants.NAME, data, FishingBuddy_Player["MinimapData"]);
 	end
 end

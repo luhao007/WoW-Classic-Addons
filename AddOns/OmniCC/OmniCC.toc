@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Tuller
-## Version: 9.0.5
+## Version: 9.0.8
 ## SavedVariables: OmniCCDB, OmniCC4Config
 
 ## Title: OmniCC

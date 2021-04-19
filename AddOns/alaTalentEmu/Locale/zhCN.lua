@@ -1,4 +1,4 @@
---[[--
+﻿--[[--
 	alex@0
 --]]--
 ----------------------------------------------------------------------------------------------------
@@ -57,6 +57,8 @@ L.nextRank = "下一等级";
 L.maxRank = "最高等级";
 L.reqPoints = "%d/%d点%s";
 
+L.level_60 = "切换到60级天赋 |cffff0000自动重载插件|r";
+L.level_70 = "切换到70级天赋 |cffff0000自动重载插件|r";
 L.resizable_border_TRUE = "拖动窗口边缘可改变大小";
 L.resizable_border_FALSE = "禁止拖动窗口边缘来改变大小";
 L.SetWinStyle_BLZ = "设置窗口为暴雪风格";
@@ -171,3 +173,26 @@ L.SLOT = {
 };
 L.EMTPY_SLOT = "\124cffff0000未装备\124r";
 L.MISS_ENCHANT = "\124cffff0000缺少附魔\124r";
+
+
+
+
+
+
+L.POWERTYPE = {
+	[-2] = "生命值",
+	[0] = "法力值",
+	[1] = "怒气",
+	[2] = "集中值",
+	[3] = "能量",
+};
+L.POWERPERCENT = "%d%%基础%s";
+L.POWERPOINT = "%d点%s";
+L.POWERPOINTPERSECOND = "%d点%s每秒";
+L.RANGEYARD = "%d码";
+L.RANGEYARD2 = "%d至%d码";
+L.RANGE0 = "近战范围";
+L.CASTINGTIME = "%d秒施法时间";
+L.CASTINGTIMEINSTANT = "瞬发技能";
+L.CDSECOND = "%d秒冷却时间";
+L.CDMINUTE = "%d分钟冷却时间";

@@ -15,7 +15,7 @@ FishingTranslations["Inject"] = {
     DASH = " -- ",
 
     AUTHOR = "Sutorix (sutorix@hotmail.com)",
-    COPYRIGHT = "(c) 2005-2019 by The Software Cobbler",
+    COPYRIGHT = "(c) 2005-2021 by The Software Cobbler",
 
     WEEKLY = "weekly",
     HOURLY = "hourly",

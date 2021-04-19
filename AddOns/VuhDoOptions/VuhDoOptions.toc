@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.116-classic
+## Version: 3.117-classic
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## SavedVariables: VUHDO_OPTIONS_SETTINGS

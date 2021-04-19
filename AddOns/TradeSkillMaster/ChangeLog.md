@@ -1,5 +1,5 @@
-## v4.10.30 Changes
+## v4.10.32 Changes
 
-* TradeSkillMaster is no longer compatible with PTR/Beta/Alpha versions of the game, unless it's a release build, due to changes Blizzard made to test builds of the game client.
+* Fixed error some users were getting when opening the Dashboard
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

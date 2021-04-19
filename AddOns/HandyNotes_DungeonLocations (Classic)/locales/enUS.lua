@@ -64,3 +64,4 @@ L["Zone Alpha"] = true
 L["Zone Scale"] = true
 L["Zul'Farrak"] = true
 L["Zul'Gurub"] = true
+L["Naxxramas"] = true

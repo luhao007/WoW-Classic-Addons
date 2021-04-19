@@ -1,5 +1,5 @@
 --[[
-Copyright 2008-2020 João Cardoso
+Copyright 2008-2021 João Cardoso
 Scrap is distributed under the terms of the GNU General Public License (Version 3).
 As a special exception, the copyright holders of this addon do not give permission to
 redistribute and/or modify it.
@@ -27,6 +27,9 @@ local CAN_TRADE = BIND_TRADE_TIME_REMAINING:format('.*')
 local CAN_REFUND = REFUND_TIME_REMAINING:format('.*')
 local MATCH_CLASS = ITEM_CLASSES_ALLOWED:format('')
 local IN_SET = EQUIPMENT_SETS:format('.*')
+
+local SHOULDER_BREAKPOINT = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and 15 or 25
+local INTRO_BREAKPOINT = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and 5 or 15
 
 local POOR, COMMON, UNCOMMON, RARE, EPIC = 0,1,2,3,4
 local ACTUAL_SLOTS = {
@@ -65,26 +68,6 @@ function Scrap:OnSettings()
 
 	self.sets, self.charsets = Scrap_Sets, Scrap_CharSets
 	self.junk = setmetatable(self.charsets.share and self.sets.list or self.charsets.list, self.baseList)
-
-	if Scrap_Version then -- remove in a couple of versions
-		self.sets.list = Scrap_SharedJunk
-		self.sets.sell = Scrap_Sell
-		self.sets.repair = Scrap_AutoRepair
-		self.sets.guild = Scrap_GuildRepair
-		self.sets.learn = Scrap_Learn
-		self.sets.safe = Scrap_Safe
-		self.sets.icons = Scrap_Icons
-		self.sets.glow = Scrap_Glow
-		self.sets.tutorial = Scrap_Tut
-
-		self.charsets.list = Scrap_Junk
-		self.charsets.ml = Scrap_AI
-		self.charsets.equip = Scrap_LowEquip
-		self.charsets.consumable = Scrap_LowConsume
-		self.charsets.unusable = Scrap_Unusable
-		self.charsets.share = Scrap_ShareList
-	end
-
 	self:SendSignal('LIST_CHANGED')
 end
 
@@ -149,9 +132,10 @@ end
 
 --[[ Filters ]]--
 
-function Scrap:IsFiltered(...)
-	local _, link, quality, _,_,_,_,_, slot, _, value, class, subclass = GetItemInfo(...)
-	local level = GetDetailedItemLevelInfo(...) or 0
+function Scrap:IsFiltered(id, ...)
+	local location = self:GuessLocation(id, ...)
+	local _, link, quality, level,_,_,_,_, slot, _, value, class, subclass = GetItemInfo(id)
+	local level = location and C_Item.GetCurrentItemLevel(location) or level or 0
 
 	if not value or value == 0 then
 		return
@@ -159,14 +143,13 @@ function Scrap:IsFiltered(...)
 	elseif class == ARMOR or class == WEAPON then
 		if value and self:IsCombatItem(class, subclass, slot) then
 			if self:IsGray(quality) then
-				return (slot ~= 'INVTYPE_SHOULDER' and level > 15) or level > 25
+				return (slot ~= 'INVTYPE_SHOULDER' and level > INTRO_BREAKPOINT) or level > SHOULDER_BREAKPOINT
 			elseif self:IsStandardQuality(quality) then
-				local bag, position = self:ScanBagSlot(...)
-				self:LoadTip(link, bag, position)
+				self:LoadTip(link, location and location.bagID, location and location.slotIndex)
 
-				if not self:BelongsToSet() and self:IsSoulbound(bag, position) then
+				if not self:BelongsToSet() and location and C_Item.IsBound(location) then
 					local unusable = self.charsets.unusable and (Unfit:IsClassUnusable(class, subclass, slot) or self:IsOtherClass())
-					return unusable or self:IsLowEquip(slot, level, quality)
+					return unusable or self:IsLowEquip(slot, level)
 				end
 			end
 		end
@@ -194,11 +177,10 @@ function Scrap:IsCombatItem(class, subclass, slot)
 	return slot ~= 'INVTYPE_TABARD' and slot ~= 'INVTYPE_BODY' and subclass ~= FISHING_POLE
 end
 
-function Scrap:IsLowEquip(slot, level, quality)
+function Scrap:IsLowEquip(slot, level)
 	if self.charsets.equip and slot ~= ''  then
-		local slot1, slot2 = gsub(ACTUAL_SLOTS[slot] or slot, 'INVTYPE', 'INVSLOT')
-		local value = self:GetEquipValue(level or 0, quality)
-		local double
+		local slot1 = gsub(ACTUAL_SLOTS[slot] or slot, 'INVTYPE', 'INVSLOT')
+		local slot2, double
 
 		if slot1 == 'INVSLOT_WEAPON' or slot1 == 'INVSLOT_2HWEAPON' then
 			if slot1 == 'INVSLOT_2HWEAPON' then
@@ -208,45 +190,47 @@ function Scrap:IsLowEquip(slot, level, quality)
 			slot1, slot2 = 'INVSLOT_MAINHAND', 'INVSLOT_OFFHAND'
 		elseif slot1 == 'INVSLOT_FINGER' then
 			slot1, slot2 = 'INVSLOT_FINGER1', 'INVSLOT_FINGER2'
+		elseif slot1 == 'INVSLOT_TRINKET' then
+			slot1, slot2 = 'INVSLOT_TRINKET1', 'INVSLOT_TRINKET2'
 		end
 
-		return self:IsBetterEquip(slot1, value) and (not slot2 or self:IsBetterEquip(slot2, value, double))
+		return self:IsBetterEquip(slot1, level) and (not slot2 or self:IsBetterEquip(slot2, level, double))
 	end
 end
 
-function Scrap:IsBetterEquip(slot, value, empty)
-	local item = GetInventoryItemID('player', _G[slot])
-	if item then
-		local level = GetDetailedItemLevelInfo(item) or 0
-		local _,_, quality = GetItemInfo(item)
-		return self:GetEquipValue(level, quality) / value > 1.1
+function Scrap:IsBetterEquip(slot, level, empty)
+	local item = ItemLocation:CreateFromEquipmentSlot(_G[slot])
+	if C_Item.DoesItemExist(item) then
+		return (C_Item.GetCurrentItemLevel(item) or 0) >= (level + 10)
 	elseif empty then
 		return true
-	end
-end
-
-function Scrap:GetEquipValue(level, quality)
-	if quality == EPIC then
-		return (level + 344.36) / 106.29
-	elseif quality == RARE then
-		return (level + 287.14) / 97.632
-	else
-		return (level + 292.23) / 101.18
 	end
 end
 
 
 --[[ Data Retrieval ]]--
 
-function Scrap:IsSoulbound(bag, slot)
-	local lastLine = self:ScanLine(self.numLines)
-	local soulbound = bag and slot and ITEM_SOULBOUND or ITEM_BIND_ON_PICKUP
+function Scrap:GuessLocation(...)
+	local bag, slot = self:GuessBagSlot(...)
+	if bag and slot then
+		local location = ItemLocation:CreateFromBagAndSlot(bag, slot)
+		if C_Item.DoesItemExist(location) then
+			return location
+		end
+	end
+end
 
-	if not lastLine:find(CAN_TRADE) and not lastLine:find(CAN_REFUND) then
-		for i = 2,7 do
-			if self:ScanLine(i) == soulbound then
-				self.limit = i
-				return true
+function Scrap:GuessBagSlot(id, bag, slot)
+	if bag and slot then
+		if bag >= BACKPACK_CONTAINER and bag < NUM_BAG_FRAMES then
+			return bag, slot
+		end
+	elseif GetItemCount(id) > 0 then
+		for bag = BACKPACK_CONTAINER, NUM_BAG_FRAMES do
+		  	 for slot = 1, GetContainerNumSlots(bag) do
+		  	 	if id == GetContainerItemID(bag, slot) then
+		  	 		return bag, slot
+		  	 	end
 			end
 		end
 	end
@@ -285,20 +269,6 @@ end
 function Scrap:ScanLine(i)
 	local line = _G[self.tip:GetName() .. 'TextLeft' .. i]
 	return line and line:GetText() or ''
-end
-
-function Scrap:ScanBagSlot(id, bag, slot)
-	if bag and slot then
-		return bag, slot
-	elseif GetItemCount(id) > 0 then
-		for bag = BACKPACK_CONTAINER, NUM_BAG_FRAMES do
-		  	 for slot = 1, GetContainerNumSlots(bag) do
-		  	 	if id == GetContainerItemID(bag, slot) then
-		  	 		return bag, slot
-		  	 	end
-			end
-		end
-	end
 end
 
 

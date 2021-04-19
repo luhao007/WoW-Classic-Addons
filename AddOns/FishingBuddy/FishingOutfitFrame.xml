@@ -11,7 +11,7 @@
 	<GameTooltip name="FishingOutfitTooltip" frameStrata="TOOLTIP" hidden="true" inherits="GameTooltipTemplate">
 		<Scripts>
 			<OnLoad>
-				self:SetOwner(WorldFrame, "ANCHOR_NONE");
+				self:SetOwner(UIParent, "ANCHOR_NONE");
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>

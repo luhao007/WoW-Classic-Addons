@@ -1,16 +1,18 @@
-0.4.6 Release Notes
+0.4.9 Release Notes
 Contributions made by Crieve:
-* Beast Training now appears in the Profession Minilist. (someone from non-enUS locale please test this for me!)
-* Fixed a number of other issues with Beast Training.
-* You no longer get invalid collection credit for pet spell ranks.
-* Mature Blue Dragon Sinew should now show in the mini list for Hunters in Winterspring.
-* Frozen Rune is no longer listed as a Common Boss Drop, the information on WoWHead is inaccurate.
-* Assigned the Mount filter type to items that are mounts, rather than Invalid/Ignored.
-* Assigned the Relic Filter ID to Idols, Librams, and Totems.
-* Rearranged the Filters section to account for a couple of different loot types.
-* You can now filter for Consumable, Miscellaneous, and Recipe items. (or turn them off)
-* You can now use this command to search for specific item filters in the ATT Hierarchy:    /script ATTC:GetWindow("ItemFilter"):Toggle()
-* Fixed the issue involving recipes not appearing in the mini list. Blizzard sucks at maintaining APIS.
-* You can now hide all of the loot you aren't filtering for. (It's faaancy!)
-* Temporarily disabling 'Expert Cook' until I have a fix for it.
+* Updated the exclude database function.
+* Common Boss Drops are now always after Zone Drops for some OCD reason.
+* Quests in the database now need to use "name" instead of "title" as part of an optimization.
+* AltQuestID has been purged from the addon. Optimized the Source Quest List in the Tooltips. (still need to refactor them in the pop out, but one thing at a time!) Optimized the Quest object type.
+* Added full support for "isMonthly" in Classic.
+* Added helper functions used in Burning Crusade zones.
+* Added some extra data for the Outland files I have already.
+* Saved and Collected are 2 different things.
+* Reverted the collectible as cost modification other than for quests themselves until we can find an appropriate fix.
+* Added Tarot Decks and Tarrot Cards.
+* Spell cooldowns (such as Mooncloth CD) will now show a saved checkmark.
+* Fixed the issue with quest items relative to the quest they help complete.
+* Optimized the Recipe and Spell object types. As a distinction: Spells are for Headers and are naturally uncollectible. Recipes are simply collectible spells.
+* Items that start quests now properly cache themselves using "itemIDAsCost".
+* Fixed a bug with the recipes.
 

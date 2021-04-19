@@ -170,7 +170,7 @@ function FWF:ColorInfoString(info, name, count)
         local color = FL:GetThresholdHexColor(count, info.limit, info.limit / 5);
         name = name.." ("..count.."/"..info.limit..")"
         name = FL:Colorize(color, name);
-    elseif (not info.quest or IsUnitOnQuest(info.quest, "player")) then
+    elseif (not info.quest or C_QuestLog.IsUnitOnQuest("player", info.quest)) then
         name = FL:Green(name);
     else
         name = FL:Red(name);
@@ -724,7 +724,6 @@ end
 
 local function UpdateZoneLine()
     if ( GSB("WatchCurrentZone") ) then
-        local skill, mods, skillmax = FL:GetCurrentSkill();
         local zoneskill, _ = FL:GetFishingSkillLine(false, true);
         return zoneskill
     end

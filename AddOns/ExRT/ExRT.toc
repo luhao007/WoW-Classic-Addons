@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: ykiigor
-## Version: 4460
+## Version: 4520
 ## SavedVariables: VExRT
 
 ## Title: Exorsus Raid Tools
@@ -34,7 +34,6 @@ MarksBar.lua
 Marks.lua
 BattleRes.lua
 Timers.lua
-Coins.lua
 RaidAttendance.lua
 Encounter.lua
 LootHistory.lua

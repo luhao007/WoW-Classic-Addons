@@ -34,13 +34,27 @@ local FluffEvents = {};
 local unTrack = nil;
 local resetPVP = nil;
 
+local function FishTrackingEnable(enabled)
+    local findid = FL:GetFindFishID();
+    if ( findid ) then
+        if enabled then
+            local _, _, active, _ = GetTrackingInfo(findid);
+            if (not active) then
+                unTrack = true;
+                SetTracking(findid, true);
+            end
+        elseif unTrack then
+            unTrack = false;
+            SetTracking(findid, false);
+        end
+    end
+end
+FishingBuddy.FishTrackingEnable = FishTrackingEnable
+
 
 local function Untrack(yes)
     if ( yes ) then
-        local findid = FL:GetFindFishID();
-        if ( findid ) then
-            SetTracking(findid, false);
-        end
+        FishTrackingEnable(false);
     end
 end
 
@@ -91,7 +105,7 @@ local function IsQuestFishing(item)
     -- Check for hookshot
     if (GetItemCount(116755) > 0) then
         -- Better Nat's quest checking by Bodar (Curse)
-        local questLogIndex = GetQuestLogIndexByID(36611);
+        local questLogIndex = C_QuestLog.GetLogIndexForQuestID(36611);
         if (questLogIndex > 0) then
             local currentMapID = FL:GetCurrentMapId();
             local numObjectives = GetNumQuestLeaderBoards(questLogIndex);

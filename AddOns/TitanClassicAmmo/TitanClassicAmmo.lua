@@ -50,7 +50,8 @@ local rangedSlotID = GetInventorySlotInfo("RangedSlot")
 local ammo_count = 0;
 local ammo_type  = "";
 local ammo_name  = ""
-local ammo_link  = "";
+local weapon  = "";
+local weapon_type  = "";
 local ammo_show  = false -- show plugin based on class
 
 local L = LibStub("AceLocale-3.0"):GetLocale("TitanClassic", true)
@@ -59,7 +60,6 @@ local function ClrAmmoInfo()
 	ammo_count = 0;
 	ammo_type  = L["TITAN_AMMO_BUTTON_NOAMMO"];
 	ammo_name  = L["TITAN_AMMO_BUTTON_NOAMMO"]
-	ammo_link  = "";
 	ammo_show  = false
 end
 local function GetItemLink(rangedSlotID)
@@ -79,24 +79,50 @@ local function IsAmmo(loc)
 	end
 	return res
 end
-local function GetAmmoItemInfo(rangedSlotID)
+local function GetWeaponInfo()
 	local loc = "";
-	local itemlink = GetItemLink(rangedSlotID)
+	local w = "--";
+	local wt = "--";
 
-	if itemlink then
-		loc = select(9, GetItemInfo(itemlink))
-	end
-	return itemlink, loc
-end
-local function GetAmmoCount(ammo_type)
-	if IsThrown(ammo_type) then
-		ammo_count = GetInventoryItemCount("player", rangedSlotID) or ammo_count
-		ammo_name = select(1, GetItemInfo(GetInventoryItemID("player", rangedSlotID))) or _G["UNKNOWN"]
-	elseif IsAmmo(ammo_type) then --and GetInventoryItemLink("player", ammoSlotID) 
-		ammo_count = GetInventoryItemCount("player", ammoSlotID) or ammo_count
-		ammo_name = select(1, GetItemInfo(GetInventoryItemID("player", ammoSlotID))) or _G["UNKNOWN"]
+	local weap = GetInventoryItemID("player", rangedSlotID)
+	if weap == nil then
 	else
-		ClrAmmoInfo()
+		local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount,
+		itemEquipLoc, itemTexture, sellPrice, classID, subclassID, bindType, expacID, setID, isCraftingReagent
+		   = GetItemInfo(GetInventoryItemID("player", rangedSlotID)) 
+		w = itemName
+		wt = itemSubType
+		loc = itemEquipLoc
+	end
+
+--[[
+print("GetWeaponInfo"
+.." '"..tostring(weap).."'"
+.." '"..tostring(w).."'"
+.." '"..tostring(wt).."'"
+.." '"..tostring(loc).."'"
+)
+--]]
+	return w, wt, loc
+end
+
+local function GetAmmoCount()
+	weapon, weapon_type, ammo_type = GetWeaponInfo(rangedSlotID)
+
+	if IsThrown(ammo_type) then
+		ammo_name = select(1, GetItemInfo(GetInventoryItemID("player", rangedSlotID))) or _G["UNKNOWN"]
+		if ammo_name == _G["UNKNOWN"] then
+			ammo_count = 0
+		else
+			ammo_count = GetInventoryItemCount("player", rangedSlotID) or ammo_count
+		end
+	else 
+		ammo_name = select(1, GetItemInfo(GetInventoryItemID("player", ammoSlotID))) or _G["UNKNOWN"]
+		if ammo_name == _G["UNKNOWN"] then
+			ammo_count = 0
+		else
+			ammo_count = GetInventoryItemCount("player", ammoSlotID) or ammo_count
+		end
 	end
 end
 
@@ -158,19 +184,8 @@ function TitanPanelAmmoButton_PLAYER_LOGIN()
 	end
 
 	ammo_show = true
-	local itemlink, loc = GetAmmoItemInfo(rangedSlotID)
-	ammo_link = itemlink;
-	ammo_type = loc
-	GetAmmoCount(ammo_type)
---[[
-TitanDebug("TitanPanelAmmoButton_PLAYER_LOGIN"
-.." "..tostring(ammo_type)
-.." "..tostring(ammo_count)
-.." "..tostring(IsThrown(ammo_type))
-.." "..tostring(IsAmmo(ammo_type))
-.." "..tostring(TITAN_AMMO_THRESHOLD_TABLE[ammo_type].Values[1])
-)
---]]
+	GetAmmoCount()
+
 	if IsThrown(ammo_type) then
 		TitanPanelAmmoButton:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	elseif IsAmmo(ammo_type) then
@@ -185,19 +200,15 @@ end
 function TitanPanelAmmoButton_UNIT_INVENTORY_CHANGED(arg1, ...)
 	if arg1 == "player" then
 		TitanPanelAmmoUpdateDisplay(); 	
-		GetAmmoCount(ammo_type)
-		TitanPanelButton_UpdateButton(TITAN_AMMO_ID);
 	end
 end
 
 function TitanPanelAmmoButton_UPDATE_INVENTORY_DURABILITY()
-	ammo_count = GetInventoryItemCount("player", rangedSlotID) or ammo_count    -- GetInventoryItemDurability(rangedSlotID) or ammo_count
-	TitanPanelButton_UpdateButton(TITAN_AMMO_ID);
+	TitanPanelAmmoUpdateDisplay(); 	
 end
 
 function TitanPanelAmmoButton_MERCHANT_CLOSED() 
-	GetAmmoCount(ammo_type)
-	TitanPanelButton_UpdateButton(TITAN_AMMO_ID);
+	TitanPanelAmmoUpdateDisplay(); 	
 end
 
 function TitanPanelAmmoButton_ACTIONBAR_HIDEGRID()
@@ -206,24 +217,14 @@ function TitanPanelAmmoButton_ACTIONBAR_HIDEGRID()
 		prev = prev + e
 		if prev > 2 then
 			TitanPanelAmmoButton:SetScript("OnUpdate", nil)
-			ammo_count = GetInventoryItemCount("player", ammoSlotID) or ammo_count
-			TitanPanelButton_UpdateButton(TITAN_AMMO_ID);
+			TitanPanelAmmoUpdateDisplay(); 	
 		end
 	end)
 end
 
 function TitanPanelAmmoUpdateDisplay()
 	-- Manual Display update in case the rangedSlot it switched
-	local itemlink, loc = GetAmmoItemInfo(rangedSlotID)
-
-	if itemlink == ammo_link then
-		return
-	else
-		ammo_link = itemlink
-	end
-
-	ammo_type = loc
-	GetAmmoCount(ammo_type)
+	GetAmmoCount()
 	
 	-- Setup the events based on ammo type
 	if IsThrown(ammo_type) then
@@ -265,18 +266,21 @@ function TitanPanelAmmoButton_GetButtonText(id)
 		if TitanGetVar(TITAN_AMMO_ID, "ShowAmmoName") and ammo_name ~= "" then
 			ammoText = ammoText.."|cffffff9a".." ("..ammo_name..")".."|r"
 		end
-	elseif (IsAmmo(ammo_type)) then          
+	else   
 		labelText = L["TITAN_AMMO_BUTTON_LABEL_AMMO"];
 		ammoText = format(L["TITAN_AMMO_FORMAT"], ammo_count);
 		if TitanGetVar(TITAN_AMMO_ID, "ShowAmmoName") and ammo_name ~= "" then
 			ammoText = ammoText.."|cffffff9a".." ("..ammo_name..")".."|r"
 		end
-	else
-		ClrAmmoInfo();
-		labelText = L["TITAN_AMMO_BUTTON_LABEL_AMMO_THROWN"];
-		ammoText = L["TITAN_AMMO_BUTTON_NOAMMO"];
 	end
 
+	labelText = weapon_type.." : "
+--[[
+print("_GetButtonText"
+.." '"..tostring(weapon_type).."'"
+.." '"..tostring(ammo_type).."'"
+)
+--]]
 	if (TitanGetVar(TITAN_AMMO_ID, "ShowColoredText")) then     
 		color = TitanUtils_GetThresholdColor(TITAN_AMMO_THRESHOLD_TABLE[ammo_type], ammo_count);
 		ammoRichText = TitanUtils_GetColoredText(ammoText, color);
@@ -311,13 +315,14 @@ end
 
 function TitanPanelAmmoButton_GetTooltipText()
 	local txt = ""
-	local atype = {INVTYPE_RANGED = L["TITAN_AMMO_BOW"],
-		INVTYPE_RANGEDRIGHT = L["TITAN_AMMO_GUN"],
-		INVTYPE_THROWN = L["TITAN_AMMO_THROWN"],
-		}
+	if IsThrown(ammo_type) then
 	txt = txt
-		.."Type: "..(atype[ammo_type] or "--").."\n"
-		.."Name: "..(ammo_name or "--")
+		..tostring(weapon)..""
+	else
+		txt = txt
+			..tostring(weapon).."\n"
+			..tostring(ammo_name)..""
+	end
 	return txt
 end
 

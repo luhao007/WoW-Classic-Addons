@@ -1,13 +1,12 @@
 --[[
 Name: LibDogTag-3.0
-Revision: $Rev$
-Author: Cameron Kenneth Knight (ckknight@gmail.com)
-Website: http://www.wowace.com/
+Revision: 258
+Website: https://www.wowace.com/projects/libdogtag-3-0
 Description: A library to provide a markup syntax
 ]]
 
 local MAJOR_VERSION = "LibDogTag-3.0"
-local MINOR_VERSION = 90000 + (tonumber(("2016052752106"):match("%d+")) or 33333333333333)
+local MINOR_VERSION = 90000 + (tonumber(("20210323023721"):match("%d+")) or 33333333333333)
 
 if MINOR_VERSION > _G.DogTag_MINOR_VERSION then
 	_G.DogTag_MINOR_VERSION = MINOR_VERSION
@@ -430,6 +429,7 @@ function DogTag:AddFontString(fs, frame, code, nsList, kwargs)
 	if codeToEventList_nsList_kwargTypes_code then
 		for event, arg in pairs(codeToEventList_nsList_kwargTypes_code) do
 			eventData[event][fs] = arg
+			DogTag.eventUsed(event)
 		end
 	end
 	

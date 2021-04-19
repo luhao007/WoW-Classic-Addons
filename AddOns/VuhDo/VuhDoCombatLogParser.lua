@@ -32,7 +32,7 @@ local function VUHDO_addUnitHealth(aUnit, aDelta, aSrcGUID)
 	if not tInfo["dead"] then
 	        -- filter exception data from combat log in classic
 		-- sometimes combat log shows 19000+ damage but it's not correct e.g Ragnaros's Melt Weapon
-		if abs(aDelta) > 10000 then
+		if aSrcGUID and abs(aDelta) > 10000 then
 			local tSrc, _, _, _, _, tNpcId = strsplit("-", aSrcGUID);
 
 			-- 11502 - Ragnaros

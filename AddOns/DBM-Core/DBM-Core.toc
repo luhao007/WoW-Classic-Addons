@@ -1,7 +1,7 @@
 ## Interface: 11306
 ## Author: Tandanu and Nitram and MysticalOS
-## Version: 1.13.69
-## Dependencies: DBM-StatusBarTimers, DBM-DefaultSkin
+## Version: 1.13.71
+## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
 ## SavedVariablesPerCharacter: DBM_UsedProfile, DBM_UseDualProfile, DBM_CharSavedRevision
@@ -16,6 +16,7 @@
 ## X-Website: http://www.deadlybossmods.com
 ## X-Curse-Project-ID: 3358
 ## X-WoWI-ID: 24921
+## X-Wago-ID: qv633o6b
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

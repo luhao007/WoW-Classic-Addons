@@ -1,4 +1,23 @@
-local Lib = LibStub:NewLibrary('Poncho-2.0', 1)
+--[[
+Copyright 2011-2021 João Cardoso
+Poncho is distributed under the terms of the GNU General Public License (or the Lesser GPL).
+This file is part of Poncho.
+
+Poncho is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Poncho is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Poncho. If not, see <http://www.gnu.org/licenses/>.
+--]]
+
+local Lib = LibStub:NewLibrary('Poncho-2.0', 2)
 if not Lib then return end
 
 local setmetatable, getmetatable, tinsert, tremove, type = setmetatable, getmetatable, tinsert, tremove, type
@@ -163,4 +182,5 @@ Lib.Types = Lib.Types or {
   Button = getmetatable(GameMenuButtonContinue).__index,
   CheckButton = getmetatable(AddonListForceLoad).__index,
   EditBox = getmetatable(ChatFrame1EditBox).__index,
+  GameTooltip = getmetatable(GameTooltip).__index,
 }

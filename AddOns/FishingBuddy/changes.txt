@@ -1,3 +1,13 @@
+Version 0.7.3 Beta 10
+- Fixed the Retail secure button change that breaks Classic secure buttons
+
+Version 0.7.3 Beta 9
+- Fix debugging that leaked from retail
+- Clicking is broken again, sigh.
+
+Version 0.7.3 Beta 8
+- Update fishing library
+
 Version 0.7.3 Beta 7
 - LibTourist classic almost but not quite exactly
 

@@ -1,4 +1,4 @@
---[[--
+﻿--[[--
 	by ALA @ 163UI
 	DATA FROM WEB SOURCE CODE OF WOWHEAD
 	数据来源于wowhead网页源代码
@@ -68,7 +68,7 @@ local curPhase = 6;
 	local GetRegisteredAddonMessagePrefixes = GetRegisteredAddonMessagePrefixes or C_ChatInfo.GetRegisteredAddonMessagePrefixes;
 	local SendAddonMessage = SendAddonMessage or C_ChatInfo.SendAddonMessage;
 	local SendAddonMessageLogged = SendAddonMessageLogged or C_ChatInfo.SendAddonMessageLogged;
-	local MAX_NUM_TALENTS = MAX_NUM_TALENTS or 20;
+	local MAX_NUM_TALENTS = nil;
 	local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 	local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS;
 ----------------------------------------------------------------------------------------------------
@@ -101,14 +101,14 @@ local curPhase = 6;
 	NS.ARTWORK_PATH = ARTWORK_PATH;
 	local LOCALE = GetLocale();
 	--------------------------------------------------
-	local MAX_NUM_TIER = 7;
-	local MAX_NUM_COL = 4;
-	local MAX_NUM_ICONS_PER_SPEC = MAX_NUM_TIER * MAX_NUM_COL;
+	local MAX_LEVEL = nil;
+	local MAX_NUM_TIER = nil;
+	local MAX_NUM_COL = nil;
+	local MAX_NUM_ICONS_PER_SPEC = nil;
 	local NUM_POINTS_NEXT_TIER = 5;
 	local DATA_VALIDITY = 30;
 	--------------------------------------------------
-	local ui_style =
-	{
+	local ui_style = {
 		mainFrameBackdrop = {
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -285,19 +285,10 @@ local curPhase = 6;
 		color_iconToolTipMaxRank = { 1.0, 0.5, 0.0, 1.0, },
 
 	};
-	ui_style.talentFrameXSizeSingle = ui_style.talentIconSize * MAX_NUM_COL + ui_style.talentIconXGap * (MAX_NUM_COL - 1) + ui_style.talentIconXToBorder * 2;
-	ui_style.talentFrameXSizeTriple = ui_style.talentFrameXSizeSingle * 3;
-	ui_style.talentFrameYSize = ui_style.talentFrameHeaderYSize + ui_style.talentIconYToTop + ui_style.talentIconSize * MAX_NUM_TIER + ui_style.talentIconYGap * (MAX_NUM_TIER - 1) + ui_style.talentIconYToBottom+ ui_style.talentFrameFooterYSize;
-	ui_style.mainFrameXSizeDefault_Style1 = ui_style.talentFrameXSizeTriple + ui_style.talentFrameXToBorder * 2;
-	ui_style.mainFrameYSizeDefault_Style1 = ui_style.talentFrameYSize + ui_style.talentFrameYToBorder * 2 + ui_style.mainFrameHeaderYSize + ui_style.mainFrameFooterYSize;
-	ui_style.mainFrameXSizeDefault_Style2 = ui_style.talentFrameXSizeSingle + ui_style.talentFrameXToBorder * 2;
-	ui_style.mainFrameYSizeDefault_Style2 = ui_style.talentFrameYSize + ui_style.talentFrameYToBorder * 2 + ui_style.mainFrameHeaderYSize + ui_style.mainFrameFooterYSize;
-	ui_style.equipmentContainerYSize = ui_style.equipmentFrameButtonYToBorder + ui_style.equipmentFrameButtonSize * 10 + ui_style.equipmentFrameButtonGap * 11 + ui_style.equipmentFrameArmorWeaponGap + ui_style.equipmentFrameButtonYToBorder;
 	if LOCALE == 'zhCN' or LOCALE == 'zhTW' then
 		ui_style.frameFontSizeSmall = ui_style.frameFontSizeMid;
 	end
-	local TEXTURE_SET =
-	{
+	local TEXTURE_SET = {
 		LIBDBICON = ARTWORK_PATH .. "ICON",		--	"interface\\buttons\\ui-microbutton-talents-up",
 		UNK = "Interface\\Icons\\inv_misc_questionmark",
 		SQUARE_HIGHLIGHT = ARTWORK_PATH .. "CheckButtonHilight",
@@ -405,17 +396,19 @@ local curPhase = 6;
 		};
 	};
 	--------------------------------------------------
-	local _talentDB = NS._talentDB;
+	local _talentDB = nil;
 	local _indexToClass = __rt.classList;
 	local _classToIndex = __rt.classHash;
-	local _classTalent = NS._classTalent;
+	local _classTab = NS._classTab;
 	local _talentTabIcon = NS._talentTabIcon;
 	local _BG0 = NS._BG0;
 	local _BG1 = NS._BG1;
 	local _preset_talent = NS._preset_talent;
 	local _PRESET = {  };
+	local _talentSpellData = nil;
+	local _talentStr = nil;
 	--------------------------------------------------
-	local _spellDB = NS._spellDB_P;
+	local _spellDB = nil;
 	local _spellLevelHash = {  };
 	--------------------------------------------------
 	--[[
@@ -479,7 +472,6 @@ Mixin(NS, {
 	custom_event_meta = {  },
 	callback = {  },
 	chatfilter = {  },
-	DEFAULT_LEVEL = 60,
 	INSPECT_WAIT_TIME = 10,
 	TOOLTIP_UPDATE_DELAY = 0.02,
 });
@@ -667,7 +659,7 @@ end
 			if class and data then
 				class = strupper(class);
 				local DB = _talentDB[class];
-				local classTalent = _classTalent[class];
+				local classTalent = _classTab[class];
 				if DB and classTalent then
 					--(%d*)[%-]*(%d*)[%-]*(%d*)
 					local _, _, d1, d2, d3 = strfind(data, "(%d*)[%-]?(%d*)[%-]?(%d*)");
@@ -714,7 +706,7 @@ end
 			if class and temp then
 				class = strupper(class);
 				local DB = _talentDB[class];
-				local classTalent = _classTalent[class];
+				local classTalent = _classTab[class];
 				if DB then
 					local data = "";
 					for i = 1, 3 do
@@ -740,7 +732,7 @@ end
 		function extern.export.wowhead(mainFrame)
 			local talentFrames = mainFrame.talentFrames;
 			local DB = _talentDB[mainFrame.class];
-			local classTalent = _classTalent[mainFrame.class];
+			local classTalent = _classTab[mainFrame.class];
 			local data = "";
 			for i = 3, 1, -1 do
 				local talentSet = talentFrames[i].talentSet;
@@ -783,7 +775,7 @@ end
 		function extern.export.nfu(mainFrame)
 			local talentFrames = mainFrame.talentFrames;
 			local DB = _talentDB[mainFrame.class];
-			local classTalent = _classTalent[mainFrame.class];
+			local classTalent = _classTab[mainFrame.class];
 			local data = "";
 			for i = 1, 3 do
 				local talentSet = talentFrames[i].talentSet;
@@ -796,7 +788,7 @@ end
 		function extern.export.yxrank(mainFrame)
 			local talentFrames = mainFrame.talentFrames;
 			local DB = _talentDB[mainFrame.class];
-			local classTalent = _classTalent[mainFrame.class];
+			local classTalent = _classTab[mainFrame.class];
 			local ofs = 0;
 			local temp = {  };
 			for i = 1, 3 do
@@ -917,6 +909,9 @@ end
 			NS.UpdateApplying(nil);
 		end
 		function NS.processApplyTalents(mainFrame)
+			if SET.level ~= NS.defaultLevel then
+				return;
+			end
 			NS.UpdateApplying(mainFrame);
 			NS.applyingSpecIndex = 1;
 			NS.applyingTalentIndex = 1;
@@ -933,7 +928,7 @@ end
 		end
 		function NS.EmuCore_StatPoints(data, class)
 			local DB = _talentDB[class];
-			local talentRef = _classTalent[class];
+			local talentRef = _classTab[class];
 			local pos = 1;
 			local len = #data;
 			local stat = { 0, 0, 0, };
@@ -952,7 +947,7 @@ end
 			return stat[1], stat[2], stat[3];
 		end
 		function NS.EmuSub_GenerateTitle(class, stats, uncolored)
-			local talentRef = _classTalent[class];
+			local talentRef = _classTab[class];
 			local title = nil;
 			if uncolored then
 				title = L.DATA[class];
@@ -1003,7 +998,7 @@ end
 					return class, data, level;
 				end
 			end
-			return __rt.DecodeTalentData(code, not useCodeLevel and NS.DEFAULT_LEVEL)
+			return __rt.DecodeTalentData(code, not useCodeLevel and MAX_LEVEL)
 		end
 		-- arg			[mainFrame] or [class, data, level]
 		-- return		code
@@ -1039,12 +1034,12 @@ end
 				end
 				if type(data) == 'string' then
 					local DB = _talentDB[class];
-					__rt.EncodeTalentData(classIndex, (level and tonumber(level)) or NS.DEFAULT_LEVEL,
+					__rt.EncodeTalentData(classIndex, (level and tonumber(level)) or MAX_LEVEL,
 								data,
 								#DB[classTalent[1]], #DB[classTalent[2]], #DB[classTalent[3]]);
 				elseif type(data) == 'table' and type(data[1]) == 'table' and type(data[2]) == 'table' and type(data[3]) == 'table' then
 					local DB = _talentDB[class];
-					__rt.EncodeTalentData(classIndex, (level and tonumber(level)) or NS.DEFAULT_LEVEL,
+					__rt.EncodeTalentData(classIndex, (level and tonumber(level)) or MAX_LEVEL,
 								data[1], data[2], data[3],
 								#DB[classTalent[1]], #DB[classTalent[2]], #DB[classTalent[3]]);
 				else
@@ -1102,9 +1097,9 @@ end
 		end
 		function NS.EmuCore_SetLevel(mainFrame, level)			-- LEVEL CHANGED HERE ONLY
 			if level == nil then
-				mainFrame.level = NS.DEFAULT_LEVEL;
+				mainFrame.level = MAX_LEVEL;
 				mainFrame.totalUsedPoints = 0;
-				mainFrame.totalAvailablePoints = NS.GetLevelAvailablePoints(NS.DEFAULT_LEVEL);
+				mainFrame.totalAvailablePoints = NS.GetLevelAvailablePoints(MAX_LEVEL);
 			else
 				if type(level) == 'string' then
 					level = tonumber(level);
@@ -1159,7 +1154,7 @@ end
 				end
 
 				class = strupper(class);
-				local talentRef = _classTalent[class];
+				local talentRef = _classTab[class];
 				if not talentRef then
 					_log_("EmuCore_SetClass", class, 7, class);
 					return false;
@@ -1197,16 +1192,32 @@ end
 							local icon = talentIcons[data[10]];
 							icon.dbIndex = dbIndex;
 							icon:Show();
-							local texture = select(3,GetSpellInfo(data[8][1]));
-							if texture then
-								icon:SetNormalTexture(texture);
-								icon:SetPushedTexture(texture);
-							elseif data[9] then
-								icon:SetNormalTexture(data[9]);
-								icon:SetPushedTexture(data[9]);
+							if NS._innerStr then
+								if data[9] then
+									icon:SetNormalTexture("Interface\\AddOns\\alaTalentEmu\\ExternalIcons\\" .. data[9]);
+									icon:SetPushedTexture("Interface\\AddOns\\alaTalentEmu\\ExternalIcons\\" .. data[9]);
+								else
+									local texture = select(3, GetSpellInfo(data[8][1]));
+									if texture then
+										icon:SetNormalTexture(texture);
+										icon:SetPushedTexture(texture);
+									else
+										icon:SetNormalTexture(TEXTURE_SET.UNK);
+										icon:SetPushedTexture(TEXTURE_SET.UNK);
+									end
+								end
 							else
-								icon:SetNormalTexture(TEXTURE_SET.UNK);
-								icon:SetPushedTexture(TEXTURE_SET.UNK);
+								local texture = select(3, GetSpellInfo(data[8][1]));
+								if texture then
+									icon:SetNormalTexture(texture);
+									icon:SetPushedTexture(texture);
+								elseif data[9] then
+									icon:SetNormalTexture(data[9]);
+									icon:SetPushedTexture(data[9]);
+								else
+									icon:SetNormalTexture(TEXTURE_SET.UNK);
+									icon:SetPushedTexture(TEXTURE_SET.UNK);
+								end
 							end
 							icon.maxVal:SetText(data[4]);
 							icon.curVal:SetText("0");
@@ -1647,6 +1658,127 @@ end
 			end
 		end
 
+		function NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip, id, notnew, addid)
+			--[==[
+				name			subText
+				power			range
+				castingTime		cooldown
+			]==]
+			--	_talentSpellData
+			--[==[
+				1	=	PowerType				--	aj
+				2	=	PowerPercent			--	gn
+				3	=	Power					--	ak
+				4	=	PowerPerLevel			--	al
+				5	=	PowerPerSecond			--	am
+				6	=	PowerPerSecondPerLevel	--	an
+				7	=	MinRange	*index		--	ao
+				8	=	MaxRange	*index		--	ao
+				9	=	BaseCastingTime		*index	--	w
+				10	=	CastingTimePerLevel		*index	--	w
+				11	=	MinCastingTime		*index	--	w
+				12	=	RecoveryTime			--	x
+				13	=	CategoryRecoveryTime	--	y
+				14	=	Usable Spell
+				15, 16, 17	=	trigger spell	--	dm, 3
+			]==]
+			--	_talentStr
+			--[==[
+				1	=	name,
+				2	=	subText,
+				3	=	desc,
+				4	=	auraDesc,
+			]==]
+			local data = _talentSpellData[id];
+			local str = _talentStr[id];
+			if data ~= nil and data[18] and data[15] ~= nil then
+				NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip, data[15], notnew, true);
+				if data[16] ~= nil then
+					tooltip:AddLine(" ");
+					NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip, data[16], true, true);
+					if data[17] ~= nil then
+						tooltip:AddLine(" ");
+						NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip, data[17], true, true);
+					end
+				end
+				notnew = true;
+			end
+			if data ~= nil and str ~= nil then
+				if notnew then
+					if str[2] ~= nil then
+						tooltip:AddDoubleLine(str[1], str[2], 1.0, 1.0, 1.0, 0.5, 0.5, 0.5);
+					else
+						tooltip:AddLine(str[1], 1.0, 1.0, 1.0);
+					end
+				else
+					tooltip:SetText(str[1], 1.0, 1.0, 1.0);
+					if str[2] ~= nil then
+						tooltip.TextRight1:SetText(str[2]);
+						tooltip.TextRight1:SetVertexColor(0.5, 0.5, 0.5);
+						tooltip.TextRight1:Show();
+					end
+				end
+				local L2L, L2R = nil, nil;
+				if data[2] > 0 or data[3] > 0 or data[5] > 0 then
+					local powerType = L.POWERTYPE[data[1]] or L.POWERTYPE[0];
+					L2L = (data[2] > 0 and (format(L.POWERPERCENT, data[2], powerType)) or "")
+							.. ((data[2] > 0 and data[3] > 0) and "+" or "")
+							.. (data[3] > 0 and format(L.POWERPOINT, data[3], powerType) or "")
+							.. (((data[2] > 0 or data[3] > 0) and data[5] > 0) and " + " or "")
+							.. (data[5] > 0 and format(L.POWERPOINTPERSECOND, data[5], powerType) or "");
+				end
+				if data[14] then
+					if data[7] ~= data[8] and data[7] > 0 and data[8] > 0 then
+						L2R = format(L.RANGEYARD2, data[7], data[8]);
+					elseif data[7] > 0 then
+						L2R = format(L.RANGEYARD, data[7]);
+					elseif data[8] > 0 then
+						L2R = format(L.RANGEYARD, data[8]);
+					else
+						L2R = L.RANGE0;
+					end
+				end
+				if L2L ~= nil and L2R ~= nil then
+					tooltip:AddDoubleLine(L2L, L2R, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75);
+				elseif L2L ~= nil then
+					tooltip:AddLine(L2L, 0.75, 0.75, 0.75);
+				elseif L2R ~= nil then
+					tooltip:AddLine(L2R, 0.75, 0.75, 0.75);
+				end
+				if data[14] then
+					local L3L, L3R = nil, nil;
+					if data[9] > 0 then
+						L3L = format(L.CASTINGTIME, data[9] / 1000);
+					else
+						L3L = L.CASTINGTIMEINSTANT;
+					end
+					local cd = max(data[12], data[13]);
+					if cd > 0 then
+						cd = cd / 1000;
+						if cd < 60 then
+							L3R = format(L.CDSECOND, cd - cd % 0.1);
+						else
+							cd = cd / 60;
+							L3R = format(L.CDMINUTE, cd - cd % 0.1);
+						end
+					end
+					if L3L ~= nil and L3R ~= nil then
+						tooltip:AddDoubleLine(L3L, L3R, 0.75, 0.75, 0.75, 0.75, 0.75, 0.75);
+					elseif L3L ~= nil then
+						tooltip:AddLine(L3L, 0.75, 0.75, 0.75);
+					elseif L3R ~= nil then
+						tooltip:AddLine(L3R, 0.75, 0.75, 0.75);
+					end
+				end
+				if str[3] ~= nil then
+					tooltip:AddLine(str[3], 1.0, 0.8, 0.0, 1);
+				end
+			end
+			if addid then
+				tooltip:AddDoubleLine("id", id, 0.25, 0.5, 1.0, 0.25, 0.5, 1.0);
+			end
+			tooltip:Show();
+		end
 		function NS.EmuSub_TooltipSetTalent(tooltipFrame, icon, specId, reqPts, pts, spellTable, curRank, maxRank)
 			local fontString1h1 = tooltipFrame.fontString1h1;
 			local fontString1h2 = tooltipFrame.fontString1h2;
@@ -1692,7 +1824,11 @@ end
 				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
-				tooltip1:SetSpellByID(spellTable[1]);
+				if NS._innerStr then
+					NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip1, spellTable[1]);
+				else
+					tooltip1:SetSpellByID(spellTable[1]);
+				end
 				fontString1f2:SetText(tostring(spellTable[1]));
 				tooltip1:SetAlpha(0.0);
 
@@ -1731,7 +1867,11 @@ end
 				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
-				tooltip1:SetSpellByID(spellTable[maxRank]);
+				if NS._innerStr then
+					NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip1, spellTable[maxRank]);
+				else
+					tooltip1:SetSpellByID(spellTable[maxRank]);
+				end
 				fontString1f2:SetText(tostring(spellTable[maxRank]));
 				tooltip1:SetAlpha(0.0);
 
@@ -1769,7 +1909,11 @@ end
 				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
-				tooltip1:SetSpellByID(spellTable[curRank]);
+				if NS._innerStr then
+					NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip1, spellTable[curRank]);
+				else
+					tooltip1:SetSpellByID(spellTable[curRank]);
+				end
 				fontString1f2:SetText(tostring(spellTable[curRank]));
 				tooltip1:SetAlpha(0.0);
 
@@ -1784,7 +1928,11 @@ end
 				tooltip2:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip2:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip2:SetPoint("TOPLEFT", fontString2h1, "BOTTOMLEFT", 0, 6);
-				tooltip2:SetSpellByID(spellTable[curRank + 1]);
+				if NS._innerStr then
+					NS.EmuSub_TooltipSetSpellByID_InnerStr(tooltip2, spellTable[curRank + 1]);
+				else
+					tooltip2:SetSpellByID(spellTable[curRank + 1]);
+				end
 				fontString2f2:SetText(tostring(spellTable[curRank + 1]));
 				tooltip2:SetAlpha(0.0);
 
@@ -1821,31 +1969,33 @@ end
 			if search == "" then search = nil; end
 			local talentFrames = spellTabFrame.mainFrame.talentFrames;
 			local S = _spellDB[class];
-			for _, s in next, S do
-				if not s.talent or talentFrames[s.requireSpecIndex].talentSet[s.requireIndex] > 0 then
-					for i = 1, #s do
-						local v = s[i];
-						if not search or strfind(GetSpellInfo(v[2]), search) or strfind(tostring(v[2]), search) then
-							if v[1] <= level then
-								if showAll then
-									tinsert(list, v);
-								elseif i == #s then
-									tinsert(list, v);
-								end
-							else
-								if not showAll then
-									if i > 1 then
-										tinsert(list, s[i - 1]);
+			if S ~= nil then
+				for _, s in next, S do
+					if not s.talent or talentFrames[s.requireSpecIndex].talentSet[s.requireIndex] > 0 then
+						for i = 1, #s do
+							local v = s[i];
+							if not search or strfind(GetSpellInfo(v[2]), search) or strfind(tostring(v[2]), search) then
+								if v[1] <= level then
+									if showAll then
+										tinsert(list, v);
+									elseif i == #s then
+										tinsert(list, v);
 									end
+								else
+									if not showAll then
+										if i > 1 then
+											tinsert(list, s[i - 1]);
+										end
+									end
+									break;
 								end
-								break;
 							end
 						end
 					end
 				end
+				spellTabFrame.scroll:SetNumValue(#list);
+				spellTabFrame.scroll:Update();
 			end
-			spellTabFrame.scroll:SetNumValue(#list);
-			spellTabFrame.scroll:Update();
 		end
 
 		function NS.EmuSub_TalentDataRecv(name)
@@ -1859,12 +2009,12 @@ end
 					local specializedMainFrame = NS.specializedMainFrameInspect[name];
 					if specializedMainFrame then
 						if specializedMainFrame[2]:IsShown() and specializedMainFrame[1] - GetTime() <= NS.INSPECT_WAIT_TIME then
-							NS.Emu_Set(specializedMainFrame[2], cache.class, cache.data, 60, readOnly, name);
+							NS.Emu_Set(specializedMainFrame[2], cache.class, cache.data, MAX_LEVEL, readOnly, name);
 						else
-							NS.Emu_Create(nil, cache.class, cache.data, 60, false, readOnly, name);
+							NS.Emu_Create(nil, cache.class, cache.data, MAX_LEVEL, false, readOnly, name);
 						end
 					else
-						NS.Emu_Create(nil, cache.class, cache.data, 60, false, readOnly, name);
+						NS.Emu_Create(nil, cache.class, cache.data, MAX_LEVEL, false, readOnly, name);
 					end
 				end
 				NS.POPUP_ON_RECV[name] = nil;
@@ -2008,7 +2158,7 @@ end
 							return;
 						end
 					end
-					local code = __rt.GetEncodedPlayerTalentData(NS.DEFAULT_LEVEL);
+					local code = __rt.GetEncodedPlayerTalentData(MAX_LEVEL);
 					if code then
 						if channel == "INSTANCE_CHAT" then
 							SendAddonMessage(ADDON_PREFIX, ADDON_MSG_REPLY_ADDON_PACK .. __rt.GetAddonPackData(), "INSTANCE_CHAT");
@@ -2223,7 +2373,7 @@ end
 		function NS.Emu_ResetToEmu(mainFrame)
 			NS.EmuCore_SetName(mainFrame, nil);
 			NS.EmuCore_SetData(mainFrame, nil);
-			NS.EmuCore_SetLevel(mainFrame, NS.DEFAULT_LEVEL);
+			NS.EmuCore_SetLevel(mainFrame, MAX_LEVEL);
 			NS.EmuCore_SetReadOnly(mainFrame, false);
 		end
 		function NS.Emu_ResetToSet(mainFrame)
@@ -2291,14 +2441,14 @@ end
 			mainFrame:Show();
 			if SET.singleFrame then
 				if class and class ~= "" then
-					if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or 60, readOnly, name, free_edit) then
+					if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or MAX_LEVEL, readOnly, name, free_edit) then
 						mainFrame:Hide();
 						return nil;
 					end
 				end
 				if not mainFrame.initialized then
 					class = NS.playerClassUpper;
-					if not NS.Emu_Set(mainFrame, class, nil, 60, nil, nil) then
+					if not NS.Emu_Set(mainFrame, class, nil, MAX_LEVEL, nil, nil) then
 						mainFrame:Hide();
 						return nil;
 					end
@@ -2307,7 +2457,7 @@ end
 				if not class or class == "" then
 					class = NS.playerClassUpper;
 				end
-				if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or 60, readOnly, name, free_edit) then
+				if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or MAX_LEVEL, readOnly, name, free_edit) then
 					mainFrame:Hide();
 					return nil;
 				end
@@ -2433,6 +2583,25 @@ end
 		function NS.Emu_Menu(parent, mainFrame)
 			if ALADROP then
 				local drop_menu_table = { handler = _noop_, elements = {  }, };
+				if SET.level == 60 then
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								NS.emu_set_config("level", 70);
+							end,
+							para = {  },
+							text = L.level_70,
+						}
+					);
+				else
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								NS.emu_set_config("level", 60);
+							end,
+							para = {  },
+							text = L.level_60,
+						}
+					);
+				end
 				if SET.resizable_border then
 					tinsert(drop_menu_table.elements, {
 							handler = function(button)
@@ -3376,8 +3545,13 @@ end
 			fontString1h1:SetPoint("TOPLEFT", 6, -6);
 			local fontString1h2 = tooltipFrame:CreateFontString(nil, "ARTWORK", "GameTooltipHeaderText");
 			fontString1h2:SetPoint("TOPRIGHT", -6, -6);
-			local tooltip1 = CreateFrame("GAMETOOLTIP", "emu_tooltip1" .. (time() + 1) .. random(1000000, 10000000), UIParent, "GameTooltipTemplate");
+			local name1 = "emu_tooltip1" .. (time() + 1) .. random(1000000, 10000000);
+			local tooltip1 = CreateFrame("GAMETOOLTIP", name1, UIParent, "GameTooltipTemplate");
 			tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
+			tooltip1.TextLeft1 = tooltip1.TextLeft1 or _G[name1 .. "TextLeft1"];
+			tooltip1.TextRight1 = tooltip1.TextRight1 or _G[name1 .. "TextRight1"];
+			tooltip1.TextLeft2 = tooltip1.TextLeft2 or _G[name1 .. "TextLeft2"];
+			tooltip1.TextRight2 = tooltip1.TextRight2 or _G[name1 .. "TextRight2"];
 
 			local fontString1f1 = tooltipFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText");
 			fontString1f1:SetPoint("TOPLEFT", tooltip1, "BOTTOMLEFT", 12, 6);
@@ -3386,8 +3560,13 @@ end
 
 			local fontString2h1 = tooltipFrame:CreateFontString(nil, "ARTWORK", "GameTooltipHeaderText");
 			fontString2h1:SetPoint("TOPLEFT", fontString1f1, "BOTTOMLEFT", -12, -4);
-			local tooltip2 = CreateFrame("GAMETOOLTIP", "emu_tooltip2" .. (time() + 100) .. random(1000000, 10000000), UIParent, "GameTooltipTemplate");
+			local name2 = "emu_tooltip2" .. (time() + 100) .. random(1000000, 10000000);
+			local tooltip2 = CreateFrame("GAMETOOLTIP", name2, UIParent, "GameTooltipTemplate");
 			tooltip2:SetPoint("TOPLEFT", fontString2h1, "BOTTOMLEFT", 0, 6);
+			tooltip2.TextLeft1 = tooltip2.TextLeft1 or _G[name2 .. "TextLeft1"];
+			tooltip2.TextRight1 = tooltip2.TextRight1 or _G[name2 .. "TextRight1"];
+			tooltip2.TextLeft2 = tooltip2.TextLeft2 or _G[name2 .. "TextLeft2"];
+			tooltip2.TextRight2 = tooltip2.TextRight2 or _G[name2 .. "TextRight2"];
 
 			local fontString2f1 = tooltipFrame:CreateFontString(nil, "ARTWORK", "GameTooltipText");
 			fontString2f1:SetPoint("TOPLEFT", tooltip2, "BOTTOMLEFT", 12, 6);
@@ -3700,7 +3879,7 @@ end
 				if preset and #preset > 0 then
 					local menu = {
 						handler = function(button, code)
-							NS.Emu_Set(self.mainFrame, self.class, code, 60, false);
+							NS.Emu_Set(self.mainFrame, self.class, code, MAX_LEVEL, false);
 						end;
 						elements = {  },
 					};
@@ -4264,6 +4443,9 @@ end
 					applyTalentsButton.information = L.applyTalentsButton;
 					applyTalentsButton.mainFrame = mainFrame;
 					mainFrame.applyTalentsButton = applyTalentsButton;
+					if NS.defaultLevel ~= SET.level then
+						applyTalentsButton:Hide();
+					end
 
 					local editBox = CreateFrame("EDITBOX", nil, mainFrame);
 					editBox:SetSize(ui_style.editBoxXSize, ui_style.editBoxYSize);
@@ -5517,7 +5699,7 @@ do	-- raid_tool
 				if cache.data then
 					local stats = { NS.EmuCore_StatPoints(cache.data, class) };
 					local specs = button.specs;
-					local talentRef = _classTalent[class];
+					local talentRef = _classTab[class];
 					for specIndex = 1, 3 do
 						local spec = specs[specIndex];
 						local specId = talentRef[specIndex];
@@ -5861,7 +6043,7 @@ do	--	tooltip unit talents
 			if data and class then
 				local line = "";
 				local stats = { NS.EmuCore_StatPoints(data, class) };
-				local talentRef = _classTalent[class];
+				local talentRef = _classTab[class];
 				local cap = -1;
 				if stats[1] ~= stats[2] or stats[1] ~= stats[3] then
 					cap = max(stats[1], stats[2], stats[3]);
@@ -6023,7 +6205,7 @@ do	-- initialize
 				if v.talent then
 					local rid = v.require or v[1][2];
 					local DB = _talentDB[class];
-					local talentRef = _classTalent[class];
+					local talentRef = _classTab[class];
 					for specIndex = 1, 3 do
 						local spec = talentRef[specIndex];
 						local db = DB[spec];
@@ -6056,6 +6238,27 @@ do	-- initialize
 	end
 
 	local function init()
+		NS._innerStr = NS.defaultLevel ~= (SET.level or 60);
+		local DATA = NS[SET.level or 60];
+		MAX_NUM_TIER = DATA.MAX_NUM_TIER;
+		MAX_NUM_COL = DATA.MAX_NUM_COL;
+		MAX_NUM_TALENTS = DATA.MAX_NUM_TALENTS;
+		MAX_LEVEL = DATA.MAX_LEVEL;
+		MAX_NUM_ICONS_PER_SPEC = MAX_NUM_TIER * MAX_NUM_COL;
+		_talentDB = DATA._talentDB;
+		_spellDB = DATA._spellDB_P;
+		_talentSpellData = DATA._talentSpellData;
+		_talentStr = DATA._talentStr;
+		ui_style.talentFrameXSizeSingle = ui_style.talentIconSize * MAX_NUM_COL + ui_style.talentIconXGap * (MAX_NUM_COL - 1) + ui_style.talentIconXToBorder * 2;
+		ui_style.talentFrameXSizeTriple = ui_style.talentFrameXSizeSingle * 3;
+		ui_style.talentFrameYSize = ui_style.talentFrameHeaderYSize + ui_style.talentIconYToTop + ui_style.talentIconSize * MAX_NUM_TIER + ui_style.talentIconYGap * (MAX_NUM_TIER - 1) + ui_style.talentIconYToBottom+ ui_style.talentFrameFooterYSize;
+		ui_style.mainFrameXSizeDefault_Style1 = ui_style.talentFrameXSizeTriple + ui_style.talentFrameXToBorder * 2;
+		ui_style.mainFrameYSizeDefault_Style1 = ui_style.talentFrameYSize + ui_style.talentFrameYToBorder * 2 + ui_style.mainFrameHeaderYSize + ui_style.mainFrameFooterYSize;
+		ui_style.mainFrameXSizeDefault_Style2 = ui_style.talentFrameXSizeSingle + ui_style.talentFrameXToBorder * 2;
+		ui_style.mainFrameYSizeDefault_Style2 = ui_style.talentFrameYSize + ui_style.talentFrameYToBorder * 2 + ui_style.mainFrameHeaderYSize + ui_style.mainFrameFooterYSize;
+		ui_style.equipmentContainerYSize = ui_style.equipmentFrameButtonYToBorder + ui_style.equipmentFrameButtonSize * 10 + ui_style.equipmentFrameButtonGap * 11 + ui_style.equipmentFrameArmorWeaponGap + ui_style.equipmentFrameButtonYToBorder;
+
+
 		NS.DB_PreProc(_talentDB);
 
 		NS.EmuCore_InitAddonMessage();
@@ -6149,10 +6352,16 @@ do	-- initialize
 		if __ala_meta__.initpublic then __ala_meta__.initpublic(); end
 
 		C_Timer.After(8.0, function() NS.DB_PreLoad(_talentDB); end);
+		-- C_Timer.After(2.0, function()
+		-- 	if GetLocale() == 'zhCN' or GetLocale() == 'zhTW' then
+		-- 		print([[|cff00ff00alaTalentEmu|r增加70级天赋预览，点击左上角|TInterface\AddOns\alaTalentEmu\ARTWORK\minimap_shield_elite:24|t切换70级预览版本【将自动重载界面】]]);
+		-- 	else
+		-- 		print([[Preview talents of tbc in |cff00ff00alaTalentEmu|r! Click the |TInterface\AddOns\alaTalentEmu\ARTWORK\minimap_shield_elite:24|t icon on the topleft]]);
+		-- 	end
+		-- end);
 	end
 
-	local default_set =
-	{
+	local default_set = {
 		resizable_border = false,
 		singleFrame = true,
 		win_style = 'ala',
@@ -6187,10 +6396,21 @@ do	-- initialize
 				alaTalentEmuSV.set.savedTalent = nil;
 				alaTalentEmuSV._version = 200615.0;
 			end
+			if alaTalentEmuSV._version < 210313.1 then
+				alaTalentEmuSV.set.level = NS.defaultLevel;
+				alaTalentEmuSV._version = 210313.1;
+			end
 		else
-			_G.alaTalentEmuSV = { set = {  }, var = { savedTalent = {  }, }, };
+			_G.alaTalentEmuSV = {
+				set = {
+					level = NS.defaultLevel,
+				},
+				var = {
+					savedTalent = {  },
+				},
+			};
 		end
-		alaTalentEmuSV._version = 200615.0;
+		alaTalentEmuSV._version = 210313.1;
 		SET = setmetatable(alaTalentEmuSV.set, { __index = default_set, });
 		VAR = alaTalentEmuSV.var;
 	end
@@ -6202,6 +6422,7 @@ do	-- initialize
 	function NS.PLAYER_ENTERING_WORLD()
 		_EventHandler:UnregEvent("PLAYER_ENTERING_WORLD");
 		if not NS.initialized then
+			NS.defaultLevel = GetMaxLevelForExpansionLevel(GetExpansionLevel()) or 60;
 			modify_saved_var();
 			local _, tag = BNGetInfo();
 			SET.supreme = not not __ala_meta__.supreme[tag];
@@ -6228,6 +6449,15 @@ do	-- SLASH and _G
 	_G.SLASH_ALATALENTEMU4 = "/emu";
 	local acceptedCommandSeq = { "\ ", "\,", "\;", "\:", "\-", "\+", "\_", "\=", "\/", "\\", "\"", "\'", "\|", "\，", "\。", "\；", "\：", "\、", "\’", "\“", };
 	SlashCmdList["ALATALENTEMU"] = function(msg)
+		if strlower(strsub(msg, 1, 3)) == "set" then
+			for _, seq in next, acceptedCommandSeq do
+				if strfind(msg, seq) then
+					NS.emu_set_config(select(2, strsplit(seq, msg)));
+					return;
+				end
+			end
+			return;
+		end
 		for _, seq in next, acceptedCommandSeq do
 			if strfind(msg, seq) then
 				NS.Emu_Create(nil, strsplit(seq, msg));
@@ -6267,13 +6497,16 @@ do	-- SLASH and _G
 		SET.style = style;
 	end
 	ALATEMU.QueryRawInfoFromDB = function(spellId, class, specIndex)	--	should be rewritten, if use
+		if _talentDB == nil then
+			return;
+		end
 		spellId = tonumber(spellId);
 		if not spellId then
 			return nil;
 		end
 		class = class and strupper(class) or nil;
 		if class then
-			local talentRef = _classTalent[class];
+			local talentRef = _classTab[class];
 			local DB = _talentDB[class];
 			if DB then
 				if specIndex then
@@ -6315,7 +6548,7 @@ do	-- SLASH and _G
 		end
 		for c, DB in next, _talentDB do
 			if c ~= class then
-				local talentRef = _classTalent[c];
+				local talentRef = _classTab[c];
 				for specIndex = 1, 3 do
 					local specId = talentRef[specIndex];
 					local db = DB[specId];
@@ -6350,7 +6583,7 @@ do	-- SLASH and _G
 				local DB = _talentDB[class];
 				if DB then
 					if specIndex then
-						local index = _classTalent[class][specIndex];
+						local index = _classTab[class][specIndex];
 						if DB[index] then
 							local data = DB[index][id];
 							if data then
@@ -6370,7 +6603,17 @@ end
 
 -->		<misc
 	function NS.emu_set_config(key, value)
-		SET[key] = value;
+		if key == "level" then
+			value = tonumber(value);
+			if value ~= nil and NS[value] then
+				SET[key] = value;
+				ReloadUI();
+			else
+				print("|cffff0000Invalid Param");
+			end
+		else
+			SET[key] = value;
+		end
 		local func = NS.callback[key];
 		if func then
 			func(value);

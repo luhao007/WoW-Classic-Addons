@@ -1,5 +1,11 @@
 ------------------------------------------------------------------------
-r19 | funkehdude | 2020-11-23 17:12:17 +0000 (Mon, 23 Nov 2020) | 1 line
+r22 | funkehdude | 2021-03-21 23:02:41 +0000 (Sun, 21 Mar 2021) | 1 line
+Changed paths:
+   M /trunk/LibDurability/LibDurability.lua
+
+Fix division by 0 error when removing all gear with durability
+------------------------------------------------------------------------
+r21 | funkehdude | 2021-03-09 20:21:42 +0000 (Tue, 09 Mar 2021) | 1 line
 Changed paths:
    M /trunk/LibDurability.toc
 

@@ -5,20 +5,18 @@
 -- e acute 195.169
 
 FishingTranslations["frFR"] = {
-	["ABOUT_TAB"] = "A propos",
+	["ABOUT_TAB"] = "À propos",
 	["ADDFISHINFOMSG"] = "Ajout de '%s' au lieu %s.",
 	["ALLZOMGPETS"] = "Inclure toutes les mascottes",
 	["AUTHOR"] = "Sutorix (sutorix@hotmail.com)",
-	["BINDING_HEADER_FISHINGBUDDY_BINDINGS"] = "#NOM#",
+	["BINDING_HEADER_FISHINGBUDDY_BINDINGS"] = "#NAME#",
 	["BINDING_NAME_FISHINGBUDDY_GOFISHING"] = "S'habiller et aller à la pêche",
 	["BINDING_NAME_FISHINGBUDDY_SWITCH"] = "Porter l'équipement de pêche",
 	["BINDING_NAME_FISHINGBUDDY_TOGGLE"] = "Activer la fenêtre #NAME#",
 	["BINDING_NAME_TOGGLEFISHINGBUDDY_LOC"] = "Activer le panneau de région #NAME#",
 	["BINDING_NAME_TOGGLEFISHINGBUDDY_OPT"] = "Activer le panneau d'options #NAME#",
 	["BOBBER_NAME"] = "Bouchon",
-	--[[Translation missing --]]
-	--[[ ["BR"] = [=[
-]=],--]] 
+	["BR"] = "BR",
 	--[[Translation missing --]]
 	--[[ ["BRSPCS"] = [=[
     ]=],--]] 
@@ -64,10 +62,8 @@ FishingTranslations["frFR"] = {
 	["CONFIG_DRAENORBAITMAINTAIN_ONOFF"] = "Ne conserver que les appâts",
 	["CONFIG_DRINKHEAVILY_INFO"] = "Si actif, boire une #LAGER# chaque fois que vous pêchez et redevenez « sobre ».",
 	["CONFIG_DRINKHEAVILY_ONOFF"] = "Boire une bière",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_DROWNEDMANA_INFO"] = "If enabled, turn in Drowned Mana for reputation",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_DROWNEDMANA_ONOFF"] = "Margoss reputation",--]] 
+	["CONFIG_DROWNEDMANA_INFO"] = "Si actif, rendre le Mana englouti pour la réputation",
+	["CONFIG_DROWNEDMANA_ONOFF"] = "Réputation avec Margoss",
 	["CONFIG_EASYCAST_INFO"] = "Active le lancer de bouchon par double-clic-droit.",
 	["CONFIG_EASYCAST_INFOD"] = "Le lancé facile est désactivé car  l'addon Fishing Ace! est activé.",
 	["CONFIG_EASYCAST_ONOFF"] = "Lancer le bouchon facilement",
@@ -86,10 +82,8 @@ FishingTranslations["frFR"] = {
 	["CONFIG_FISHINGFLUFF_INFO"] = "Activer toutes sortes de plaisir alors que vous pêchez.",
 	["CONFIG_FISHINGFLUFF_ONOFF"] = "Pêche amusante",
 	["CONFIG_FISHINGRAFT_INFO"] = "Si activé, utilise le Radeau de pêche des Hameçonneurs.",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHINGRAID_INFO"] = "Turn on Fishing Raid features.",--]] 
-	--[[Translation missing --]]
-	--[[ ["CONFIG_FISHINGRAID_ONOFF"] = "Raid Support",--]] 
+	["CONFIG_FISHINGRAID_INFO"] = "Activer les fonctionnalités de pêche en raid",
+	["CONFIG_FISHINGRAID_ONOFF"] = "Utilisation en raid",
 	["CONFIG_FISHWARNFISHING_INFO"] = "Signale si vous allez dans une zone où vous avez pas appris à pêcher.",
 	["CONFIG_FISHWARNFISHING_ONOFF"] = "Vérification des compétences",
 	["CONFIG_FISHWATCH_INFO"] = "Affiche une zone de texte avec les poissons déjà pêchés dans la zone actuelle.",
@@ -119,13 +113,11 @@ FishingTranslations["frFR"] = {
 	["CONFIG_HANDLEQUESTS_INFO"] = "Si elle est activée, elle gère automatiquement les quêtes de pêche et la réputation,",
 	["CONFIG_HANDLEQUESTS_ONOFF"] = "Gérer les quêtes",
 	["CONFIG_KEEPONTRUCKIN_INFO"] = "Si vous pêchez sans canne, continuez à lancer sans la clé de modification",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_KEEPONTRUCKIN_ONOFF"] = "Keep Casting",--]] 
+	["CONFIG_KEEPONTRUCKIN_ONOFF"] = "Maintenir la canalisation",
 	["CONFIG_LASTRESORT_INFO"] = "Si actif, ajoute le plus grand appât même si l'on n'a pas 100 % de chances de ferrer du poisson.",
 	["CONFIG_LASTRESORT_ONOFF"] = "Appât en dernier recours",
-	["CONFIG_LUNKERQUESTS_INFO"] = "Renvoyer automatiquement les quêtes de lunker",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_LUNKERQUESTS_ONOFF"] = "Turn in lunkers",--]] 
+	["CONFIG_LUNKERQUESTS_INFO"] = "Rendre automatiquement les quêtes des esturgeons",
+	["CONFIG_LUNKERQUESTS_ONOFF"] = "Rendre les esturgeons",
 	["CONFIG_MAINTAINBERG_INFO"] = "Si activé, ne pas utiliser le Bloc de glace branlant de Bipsi, seulement maintenir son utilisation.",
 	["CONFIG_MAINTAINRAFT_INFO"] = "Si activé, ne pas utiliser le Radeau de pêche des Hameçonneurs, seulement maintenir son utilisation.",
 	["CONFIG_MAINTAINRAFTBERG_ONOFF"] = "Maintenir seulement",
@@ -181,8 +173,7 @@ FishingTranslations["frFR"] = {
 	["CONFIG_TOONMACRO_INFO"] = "Créer une macro de pêche par joueur.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Par joueur",
 	["CONFIG_TRADESKILL_INFO"] = "Si elle est activée, ouvrez la fenêtre TradeSkill pour connaître les niveaux de compétence. Sinon, vous devrez ouvrir manuellement la profession de pêcheur.",
-	--[[Translation missing --]]
-	--[[ ["CONFIG_TRADESKILL_ONOFF"] = "Setup Skills",--]] 
+	["CONFIG_TRADESKILL_ONOFF"] = "Compétences de configuration",
 	["CONFIG_TRAWLERTOTEM_INFO"] = "S'il est activé, utilisez le jouet.",
 	["CONFIG_TURNOFFPVP_INFO"] = "Si actif, le JcJ sera désactivé dès que l'on s'équipe d'une canne à pêche.",
 	["CONFIG_TURNOFFPVP_ONOFF"] = "Désactive le JcJ",
@@ -199,12 +190,10 @@ FishingTranslations["frFR"] = {
 	["CONFIG_WAVEBOARD_INFO"] = "Si elle est activée, utilisez la Planche de surf en bois noueux",
 	["CONFIG_WAVEBOARD_ONOFF"] = "Utiliser la Planche de surf",
 	["COPPER_COIN"] = "Pièce de cuivre",
-	--[[Translation missing --]]
-	--[[ ["COPYRIGHT"] = "(c) 2005-2015 by The Software Cobbler",--]] 
+	["COPYRIGHT"] = "(c) 2005-2015 by The Software Cobbler",
 	["CURRENT"] = "actuel",
 	["CURRENT_HELP"] = "|c#GREEN#/fb #CURRENT# #RESET#|r#BRSPCS#Remet a zéro les poissons pris au cours de cette session.",
-	--[[Translation missing --]]
-	--[[ ["DASH"] = " -- ",--]] 
+	["DASH"] = "--",
 	["DERBY"] = "Match",
 	["DESCRIPTION"] = "#DESCRIPTION1# #DESCRIPTION2#",
 	["DESCRIPTION1"] = "Se souvient des poissons pris et",
@@ -217,8 +206,7 @@ FishingTranslations["frFR"] = {
 	["FATLADYSINGS"] = "|c#RED#%s est fait|r (%d:%02d restant)",
 	["FBMACRO_HELP"] = "Exécuter le macro pour la pêche",
 	["FISH"] = "Poisson",
-	--[[Translation missing --]]
-	--[[ ["FISHCAUGHT"] = "%d/%d %s",--]] 
+	["FISHCAUGHT"] = "%d/%d %s",
 	--[[Translation missing --]]
 	--[[ ["FISHDATA"] = "fishdata",--]] 
 	["FISHDATARESET_MSG"] = "Les données de localisation des poissons ont été réinitialisées.",
@@ -316,10 +304,7 @@ FishingTranslations["frFR"] = {
 	["WATCHER_LOCK"] = "verrouiller",
 	["WATCHER_TAB"] = "Observateur",
 	["WATCHER_UNLOCK"] = "Déverrouiler",
-	--[[Translation missing --]]
-	--[[ ["WATCHERCLICKHELP"] = [=[#LEFTCLICKTODRAG#
-#RIGHTCLICKFORMENU#]=],--]] 
+	["WATCHERCLICKHELP"] = "#LEFTCLICKTODRAG# #RIGHTCLICKFORMENU#",
 	["WEEKLY"] = "hebdomadaire",
-	--[[Translation missing --]]
-	--[[ ["WINDOW_TITLE"] = "#NAME# v#VERSION#",--]]
+	["WINDOW_TITLE"] = "#NAME# v#VERSION#"
 }

@@ -128,6 +128,13 @@ credits[FBConstants.ROLE_HELP_BUGS] = {
 	["Zwixx"] = { "Help with Classic skill fix" },
 	["PierrotIV"] = { "Help with Classic skill fix" },
 	["TheSpanishinq"] = { "SubZone fishing skill update" },
+	["MisterFox9"] = { "Play nicely with other mouse watchers!" },
+	["iWolf1976"] = { "Frame backdrop fix" },
+	["javier_himura"] = { "Frame backdrop fix" },
+	["Dakhran"] = { "Frame backdrop fix" },
+	["RatiaSnowFur"] = { "Fix for Fishing skill lookup" },
+	["CptTibas"] = { "Gossip options fix" },
+	["hanzo79"] = { "Auto-interact value fix" },
 };
 
 -- Ideas and suggestions

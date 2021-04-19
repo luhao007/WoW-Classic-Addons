@@ -142,7 +142,9 @@ local function ODF_PickupInventoryItem(slot)
 end
 
 local function GetDisplaySource(slotID)
-	local baseSourceID, _, appliedSourceID, _, _, _, hasPendingUndo = C_Transmog.GetSlotVisualInfo(slotID, LE_TRANSMOG_TYPE_APPEARANCE)
+	local infoslot = FL:GetInfoSlot()
+	local transmogLocation = TransmogUtil.GetTransmogLocation(infoslot[slotID].name, Enum.TransmogType.Appearance, Enum.TransmogModification.None);
+	local baseSourceID, _, appliedSourceID, _, _, _, _, _, hasPendingUndo, _ = C_Transmog.GetSlotVisualInfo(transmogLocation);
 	if ( hasPendingUndo or appliedSourceID == NO_TRANSMOG_SOURCE_ID ) then
 		return baseSourceID;
 	else

@@ -3676,11 +3676,11 @@ function Plater.OnInit() --private ~oninit
 				end
 
 				for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
+					local castBar = plateFrame.unitFrame.castBar
 					local textString = castBar.FrameOverlay.TargetName
 					textString:Show()
 					textString:SetText("Target Name")
 					
-					local castBar = plateFrame.unitFrame.castBar
 					if (castBar.finished and not castBar.playedFinishedTest) then
 						Plater.CastBarOnEvent_Hook (castBar, "UNIT_SPELLCAST_STOP", plateFrame.unitFrame.unit, plateFrame.unitFrame.unit)
 						castBar.playedFinishedTest = true
@@ -8633,8 +8633,9 @@ end
 		plateFrame.unitFrame.QuestAmountTotal = nil
 		
 		local useQuestie = false
+		local QuestieTooltips = QuestieLoader and QuestieLoader._modules["QuestieTooltips"]
 		if QuestieTooltips then
-			ScanQuestTextCache = QuestieTooltips:GetTooltip("u_"..plateFrame [MEMBER_NAME])
+			ScanQuestTextCache = QuestieTooltips:GetTooltip("m_"..plateFrame [MEMBER_NPCID])
 			if not ScanQuestTextCache then
 				ScanQuestTextCache = {}
 			end

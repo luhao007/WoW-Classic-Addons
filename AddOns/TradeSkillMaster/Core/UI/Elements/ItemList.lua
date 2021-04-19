@@ -225,8 +225,11 @@ function ItemList._GetTableRow(self, isHeader)
 	return row
 end
 
-function ItemList._HandleRowClick(self, data)
+function ItemList._HandleRowClick(self, data, button)
 	if self._category[data] then
+		if button ~= "LeftButton" then
+			return
+		end
 		self._selectedItems[data] = not self._selectedItems[data]
 	else
 		if IsMouseButtonDown("RightButton") then

@@ -1268,6 +1268,20 @@ NWB.options = {
 			get = "getCityGotBuffSummon",
 			set = "setCityGotBuffSummon",
 		},
+		cityHelpersText6 = {
+			type = "description",
+			name = "|CffDEDE42" .. L["buffHelpersTextDesc6"],
+			fontSize = "medium",
+			order = 420,
+		},
+		dmfFrame = {
+			type = "toggle",
+			name = L["dmfFrameTitle"],
+			desc = L["dmfFrameDesc"],
+			order = 421,
+			get = "getDmfFrame",
+			set = "setDmfFrame",
+		},
 	},
 };
 
@@ -1500,6 +1514,10 @@ NWB.optionDefaults = {
 		showNaxxMinimapMarkers = true,
 		bigWigsSupport = true,
 		earlyRendScan = true,
+		dmfFrame = true,
+		dmfAutoRes = false,
+		dmfAutoResTime = 3,
+		dmfChatCountdown = true,
 		resetLayers4 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
 		experimental = false, --Enable features being tested on occasion.
@@ -3233,4 +3251,16 @@ function NWB:getGuildNpcWalking(info)
 	else
 		return false;
 	end
+end
+
+--City got buff summon.
+function NWB:setDmfFrame(info, value)
+	self.db.global.dmfFrame = value;
+	if (not value) then
+		_G["NWBDmfFrame"]:Hide();
+	end
+end
+
+function NWB:getDmfFrame(info)
+	return self.db.global.dmfFrame;
 end

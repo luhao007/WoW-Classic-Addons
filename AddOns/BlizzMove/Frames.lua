@@ -205,6 +205,10 @@ BlizzMoveAPI:RegisterFrames(
 			{
 				MinVersion = 20000,
 			},
+			["LFGListFrame.ApplicationViewer.UnempoweredCover"] =
+			{
+				MinVersion = 20000,
+			},
 			["LFGListSearchPanelScrollFrame"] =
 			{
 				MinVersion = 20000,
@@ -543,7 +547,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 	{
 		["CraftFrame"] =
 		{
-			MaxVersion = 70300, -- When was this renamed to TradeSkillFrame?
+			MaxVersion = 11305,
 		},
 	},
 	["Blizzard_DeathRecap"] =
@@ -874,11 +878,18 @@ BlizzMoveAPI:RegisterAddOnFrames(
 			MinVersion = 20000, -- Added when?
 		},
 	},
+	["Blizzard_TorghastLevelPicker"] =
+	{
+		["TorghastLevelPickerFrame"] =
+		{
+			MinVersion = 90000,
+		},
+	},
 	["Blizzard_TradeSkillUI"] =
 	{
 		["TradeSkillFrame"] =
 		{
-			MinVersion = 20000, -- Was previously CraftFrame.
+			MinVersion = 11306,
 			SubFrames =
 			{
 				["TradeSkillFrame.RecipeList"] =

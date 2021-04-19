@@ -1,6 +1,6 @@
 ## Interface: 11306
 ## Author: Nitram/Tandanu/Arta
-## Version: r116
+## Version: r120
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars
@@ -26,6 +26,7 @@
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-Sort: 1500
 ## X-Curse-Project-ID: 61882
+## X-Wago-ID: Xb6Xe0Kp
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

@@ -132,7 +132,7 @@ function Slider.Draw(self)
 	local width = self:_GetDimension("WIDTH") - INPUT_AREA_SPACE
 	local leftPos = Math.Scale(self._leftValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
 	local rightPos = Math.Scale(self._rightValue, self._minValue, self._maxValue, 0, width - THUMB_WIDTH)
-	local fontPath, fontHeight = Theme.GetFont("BODY_BODY1"):GetWowFont()
+	local fontPath, fontHeight = Theme.GetFont("BODY_BODY2"):GetWowFont()
 	local textColor = Theme.GetColor("TEXT")
 
 	-- wow renders the font slightly bigger than the designs would indicate, so subtract one from the font height

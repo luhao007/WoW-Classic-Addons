@@ -249,12 +249,12 @@ BlizzMove.gameVersion = tonumber(gameVersion);
 function BlizzMove:MatchesCurrentBuild(frameData)
 
 	-- Compare versus current build version.
-	if frameData.MinBuild and frameData.MinBuild >= self.gameBuild then return false; end
-	if frameData.MaxBuild and frameData.MaxBuild < self.gameBuild then return false; end
+	if frameData.MinBuild and frameData.MinBuild > self.gameBuild then return false; end
+	if frameData.MaxBuild and frameData.MaxBuild <= self.gameBuild then return false; end
 
 	-- Compare versus current interface version.
-	if frameData.MinVersion and frameData.MinVersion >= self.gameVersion then return false; end
-	if frameData.MaxVersion and frameData.MaxVersion < self.gameVersion then return false; end
+	if frameData.MinVersion and frameData.MinVersion > self.gameVersion then return false; end
+	if frameData.MaxVersion and frameData.MaxVersion <= self.gameVersion then return false; end
 
 	return true;
 end
@@ -826,7 +826,7 @@ function BlizzMove:OnEnable()
 
 	self.enabled = true;
 
-    for addOnName, frameName in pairs(self.Frames) do
+	for addOnName, frameName in pairs(self.Frames) do
 
 		if addOnName ~= self.name and IsAddOnLoaded(addOnName) then
 
