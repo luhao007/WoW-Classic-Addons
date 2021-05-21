@@ -102,6 +102,14 @@ Tooltips are now updated periodically when hovering.
       wagoSemver = [=[1.0.24-25]=],
       versionNote = [=[很多改动]=],
     },
+    ["VWoreWgtk"] = {
+      name = [=[Nameplate Target (Takkero)]=],
+      author = [=[Takkero]=],
+      encoded = [=[!fR1cZPTow4)lmtNLmtkfijTPDU37meE0qMeilYPz3PZ1GWwaAJXMXwUj0Tx(TFphj5NG5vA3TUtmwsN3sF6OJTzntdtYCtITjjWKuVsTlQCb(e0QxOWH7Ymj9FW42U9ABs(gZpG75A2RUjrWEru7EpURWKCvFdJ(3nO7NVgiBQJ3Zglxa0noui8C7du5qxAsEIXw0iybZsmGk4EMJbrk4wpTSvOp2Gl2csTSh2CGotsTkvRutlToEUcc)7mZE1(a0KNvS(uR2zvpZK8m3wmZS3zxO4ttphpFWs6vt()6Y)EM8VNJ)f0CRWaH3CdG7pSWMkaLouFhmmMVl15lX285k1OEBx6yhMnQL0qHN5vWGTGra3HB2C0ucaXIS3ZZX27zxqZahYvA7WK8gluaO6Zq244rLEC05iJhHocUKdipCObbYE5UtDan7Xgdg0T)GKHf3YvkkcqFuE2egWg6YqF6y8rHpF6uq(k3dm4qxDtknp5bOho0WcigIbeB24Wjtub4RBF79DE4wPI7401wB1bHJbb5kU3NnH)IjHCF7BVnYxBsMe6AH(OYbcWthC6QrYrd3rjb3QuPYjRUz1i1fFIEaRg97)(QrLESXWEnUR9932WO9WM32N0UvPvJeZyUj0eDnXZhyaq4Qr1agFE1vJS9wFyrxoEwuhLAiPPKlDodmCbReQviRkKwunFaiS9l8arqzKhNSAe11w1CtQBdHGA9u5skpzjT9Esr6E(RMdn4Zz(vAmbMywgwvami2vcC5rg9PgWkPGkelQBB0JfuUe6QgQ8vnEyGY1rsjBMR9jflBO317mtJzhrHbTuQXd96AmSrRwYWM0)O837JRkM)yCTa(NYmtZ)ys3S3wh6)8dDBjd9OIGpuoNGtBGQbV9OhfIidzUFRcm33Nz)vKM)ukHSAvb6JG6pLjIhFLkLERQPs79mr1437Pzi1XknGNnHpTsaZzsQau3a8VPJozLXiFMi0hUl8dzfmjQa7fxWjT2YL(J3e8BLo5tWs45urzuI9GoJmNt2plrPU3lv0d1teDvOobirnrWz5(mhOYTxoLDpcfeAQzv)3JWUWFC6(tx8Ae8hhaDXWQky(9MUj(rkAZHOx(EeqUYNzI4h645lNrkxREaCEHV3uFwqaUBMcWh9NCRshapWuaUMBROhNWFa0AnJ6oLzFmKgmZ75dHU)6vbY7eW2fI(G231)l5X0)5G1QhVCUUKGmZ63i0SESBFHUCqvI9KtOGzURrNpKTdpxADQGTco29pC5ohYEZ5JFDgGbWhUVfeblTJif0jM7HArptG)UCb7j66jsP0a6OqTzDUM(Tum9TRVHJyMVNq4SZiOm)ofmKEghh22zbL7huoNN7KTN6xAByF2x)vohDhS5y22FtwYXNgWwNa))U0ckW)8ZmnHI8BV20gYF9ljnI9c8zNxhLpAVGy31LcuntMiVwMTBe6D6e36(a7LwCKPKTZ5ohyQAfDDSPWv01XMAxrx)6s5RORFgPcw01RjfXIUEfPow4e3dmLYIU(RFXWwrzJ(QaGoSC)2oxoEeN9YU36GoWk0Kzl4BGUsQwhjCISADdB2GymKy0yGHjr2tawHX1k62QrBSOoR3S(Kbz6iPinRgLotuTenjxZOoIzMeeWlQyQY6houil9O0ZhvRwvtr1x0AgZ6PigjR9j1sW)gZqvsZ78SzM9EBTQYYCI1JDpQt8K4spxVQjzz)jtcycZEvv9ysAyzblWDfyYj3d4i4dwlbj7YNRQTnwpwkxExPUUEyT1T11(oYSyyjKdKvrfYcqS)dFc3LhmBVhpkai9nDb8B2UNr7bMKqFhtYmHyrWNE37EMo1Rc37DF5ri)5hNkE6D1tviEts7xwGiMpJ12)LuEeaUBMNF)fr1bxxF5agcEJfbxxM(ArQ6mg1glTmYBtYpS6a)RA1oDA0R519hSAePTHr3EFM8JbGAdHNyB0Mfy5ZLckMR1tZhKlvR2W1AgEqHfOXga4X(m9rhaNeaLcXnFC5RnpaZD9h(PI3K5mBE4CuWNHcor3XzMjsPth8LiGzdNswiNEITuPrAxDuGWHzPQkFlWiWxcW3OoHmT)s)gvKwJ6NRgDB7ogOse3G69TatrJcF9UWKOg17nj6E)GjXO)9M9UuEpIlFu)KAqc0toHg6iqwiqwMXsLMqCPW3OD8)vLpFKOxKQUHWrSH(EtP1kxw(cO2vHzUbEte3bRrr0b4XX8PqKBbmPgFfuZt6qoUeQsgtEn5Fbh(vUWafTYJ5J7vSM3nA9tUaX7)fRF)79v)wUM(HWNqaks)QNs7KIAdkN8xX6w90lzvkw0X(ZOZzuRuRxulSIPirXQiDDxMateHVKytrGrJJalqk(yQz91JOv4nv(s3s75E)eBR7OpXWuMOZPUaKcK7ifx9pfG4Jx1p1ZZUVgDks9Wxrhew2TO6o11dXPquAn)u)mItJLCQ2M4uWcQL0U5tNPehAXxRE8kC1QphFhMpkPtPs1)5WOuV0ZO33z9CBYqTI2zGWXxTOrYw35QzJ64ty(K3e3JAfTKL5pD1xRPoWvjfit6u3)A9mDHajz6(SmDlrwY0)56(v2qMUUq31A8896owNBFq3daJLP9ltAFnU9XK(IzO0ZSPkZKmZlF(XdA0TfKaxdcKNx)B7pG81sKRBCxJELu8VjorMjZiQC1kvpD1OQvo)C5Tl)Wj6ugT9gQJyxLjtLOWyUQDQrITZ3yf9X8YQH6s8OreLkvEZlUpeA)I1iD5wiDzAsRMqA848ztb32NimHkTHYRNE9MMl(11kHz0w()5PBHdP8dNEKck7gZPQ14jB16u(HYAx5PXEnvmgNyT6M1I0jjzgfQtpKXrR)r9chu68KLGxJxlpcC3(KSJWKaIH0Li5PbrVkvEMigp5zpF7h9PlGZNe)ljIJkb1o(8VVA0)mKAdjbtxnYWioHFitDU7C5jn62J0Tv7eyR22tLBme9mMxxlEqY38Hmw0bdzQVccsZbTB3d2Is6BvTP2vrkSOpxKRsPB6Jsaz)qDwmJk3t6)aor(KL6SGKFAj4rhSuyRKg4NAIIdMK3ag639axo6zJtjVJdDAqQpxh50kIanEPe053Ai1T34g3qx8RxHu7SloR(Lsa(KpEMXP)ezs9PBK77Zi)I9T(2ecW3TFq2vN6JJR75pWLMBeXiAe4Q3sBOy4rNVvpUShcwIDfhdY7TS2JtbYFHz)OEpsm1QOngXV4ioW84mp)hGoAiRIRwI7XzmdroC(3D9V5Jp6m3EAmLByYAkaHKnwHJdrf4b(yQVXNVbm(86qGhpjx3wMK4tYb9A(3p]=],
+      wagoVersion = [=[2]=],
+      wagoSemver = [=[1.0.1-2]=],
+      versionNote = [=[]=],
+    },
   },
   uids = {
     ["x8HJQpTrqz6"] = [=[Yh9Uk3kOz]=],
@@ -116,6 +124,7 @@ Tooltips are now updated periodically when hovering.
     ["4thFP74WtuV"] = [=[iUPPFxuga]=],
     ["9C(7ZdjvzLd"] = [=[sekirowa]=],
     ["4wHDN3rxw6Z"] = [=[1dCaw_u8A]=],
+    ["4znrJ9Wlmdg"] = [=[VWoreWgtk]=],
   },
   ids = {
     ["1哨兵-治疗 "] = [=[Yh9Uk3kOz]=],
@@ -546,6 +555,7 @@ Tooltips are now updated periodically when hovering.
     ["不死斩背景"] = [=[sekirowa]=],
     ["治1"] = [=[sekirowa]=],
     ["团队框架高亮-上墙"] = [=[1dCaw_u8A]=],
+    ["姓名版显示仇恨目标"] = [=[VWoreWgtk]=],
   },
   stash = {
   },

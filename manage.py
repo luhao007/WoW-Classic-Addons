@@ -94,9 +94,9 @@ class Manager:
             if os.path.exists(path):
                 os.remove(path)
 
-        for ext in ['toc', 'xml']:
+        for p in ['.xml', '.toc', '-Classic.toc', '-BCC.toc', '-Mainline.toc']:
             path = Path('AddOns') / addon
-            path /= '{}.{}'.format(addon.split('/')[-1], ext)
+            path /= '{}{}'.format(addon.split('/')[-1], p)
             if os.path.exists(str(path)):
                 self.remove_libs_in_file(path, libs + [lib_path])
 
