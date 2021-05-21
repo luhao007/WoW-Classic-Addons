@@ -12,6 +12,8 @@ AL["Always marks items as favourite for every profile if enabled."] = "Siempre m
 AL["Always marks items as favourite for profile |cff00ff00%s|r if enabled."] = "Siempre marcar como favorito para perfil |cff00ff00%s|r si está activado."
 AL["Background"] = "Fondo"
 AL["Background color/alpha"] = "Color/alfa del fondo"
+--[[Translation missing --]]
+--[[ AL["Class Filter"] = "Class Filter"--]] 
 AL["Clear list"] = "Limpiar lista"
 AL["Content"] = "Contenido"
 AL["Content bottom bar"] = "Barra inferior de contenido"
@@ -28,7 +30,6 @@ AL["Font size"] = "Tamaño del fuente"
 AL["Icon"] = "Icono"
 AL["Import item list"] = "Importar lista de objetos"
 AL["Lock minimap button."] = "Bloquear botón del minimapa."
-AL["Main"] = "Principal"
 AL["Minimap Button"] = "Botón de Minimapa"
 AL["Remove |cffff0000%d|r items from list."] = "Quitar |cffff0000%d|r objetos de la lista."
 AL["Replace existing items"] = "Reemplazar objetos existentes"

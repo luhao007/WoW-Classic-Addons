@@ -1,3 +1,24 @@
+Version 3.118-classic  
+  
+  
+Known issues:  
+-- Spells by rank can be specified using a rank suffix:  
+--  Example: Lesser Heal(Rank 1)  
+-- Buff Watch is not currently fully working (missing many spells)  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+-- Shield bar is not working due to unavailable Blizzard APIs  
+-- Spell trace only works for known spells in the player's spellbook  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Bump TOC interface for 1.13.7  
+  
+  
+--------------------------------------------------------------  
 Version 3.117-classic  
   
   

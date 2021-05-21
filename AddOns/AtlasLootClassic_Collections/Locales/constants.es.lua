@@ -16,6 +16,10 @@ AL["Box of Chocolates"] = "Caja de bombones"
 AL["Brightly Colored Egg"] = "Huevo de colores vivos"
 AL["Childrens Week"] = "Semana de los Niños"
 AL["Crimson Templar"] = "Templario Carmesí"
+--[[Translation missing --]]
+--[[ AL["Dungeon Set %s"] = "Dungeon Set %s"--]] 
+--[[Translation missing --]]
+--[[ AL["Dungeon Sets"] = "Dungeon Sets"--]] 
 AL["Earthen Templar"] = "Templario terráneo"
 AL["Elemental Invasions"] = "Invasión elemental"
 AL["Equip"] = "Armadura"
@@ -51,7 +55,6 @@ AL["Revanchion"] = "Revanchion"
 AL["Scarlet Monastery - Graveyard"] = "Monasterio Escarlata - Cementerio"
 AL["Scorn"] = "Desdén"
 AL["Scourge Invasion"] = "Invasión de la Plaga"
-AL["Sets"] = "Conjuntos"
 AL["Silithus Abyssal"] = "Abisal Silithus"
 AL["Smokywood Pastures"] = "Pastos de Bosquehumeante"
 AL["Smokywood Pastures Special Gift"] = "Obsequio especial de Pastos de Bosquehumeante"

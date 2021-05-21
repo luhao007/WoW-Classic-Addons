@@ -2,21 +2,19 @@
 local QuestieJourney = QuestieLoader:CreateModule("QuestieJourney")
 local _QuestieJourney = QuestieJourney.private
 _QuestieJourney.questsByZone = {}
--------------------------
---Import modules.
--------------------------
+
 ---@type QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
 ---@type QuestieLib
 local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
----@type QuestieProfessions
-local QuestieProfessions = QuestieLoader:ImportModule("QuestieProfessions")
 ---@type QuestieReputation
 local QuestieReputation = QuestieLoader:ImportModule("QuestieReputation")
 ---@type QuestieCorrections
 local QuestieCorrections = QuestieLoader:ImportModule("QuestieCorrections")
 ---@type QuestieEvent
 local QuestieEvent = QuestieLoader:ImportModule("QuestieEvent")
+---@type l10n
+local l10n = QuestieLoader:ImportModule("l10n")
 
 local AceGUI = LibStub("AceGUI-3.0")
 local zoneTreeFrame
@@ -84,7 +82,7 @@ function _QuestieJourney.questsByZone:ManageTree(container, zoneTree)
 end
 
 ---Get all the available/completed/repeatable/unavailable quests
----@param zoneId number @The zone ID (Check `LangZoneLookup`)
+---@param zoneId number @The zone ID (Check `l10n.zoneLookup`)
 ---@return table<number,any> @The zoneTree table which represents the list of all the different quests
 function _QuestieJourney.questsByZone:CollectZoneQuests(zoneId)
     local quests = QuestieJourney.zoneMap[zoneId]--QuestieDB:GetQuestsByZoneId(zoneId)
@@ -97,27 +95,27 @@ function _QuestieJourney.questsByZone:CollectZoneQuests(zoneId)
     local zoneTree = {
         [1] = {
             value = "a",
-            text = QuestieLocale:GetUIString('JOURNEY_AVAILABLE_TITLE'),
+            text = l10n('Available Quests'),
             children = {}
         },
         [2] = {
             value = "p",
-            text = QuestieLocale:GetUIString('JOURNEY_PREQUEST_TITLE'),
+            text = l10n('Missing Pre Quest'),
             children = {}
         },
         [3] = {
             value = "c",
-            text = QuestieLocale:GetUIString('JOURNEY_COMPLETE_TITLE'),
+            text = l10n('Completed Quests'),
             children = {}
         },
         [4] = {
             value = "r",
-            text = QuestieLocale:GetUIString('JOURNEY_REPEATABLE_TITLE'),
+            text = l10n('Repeatable Quests'),
             children = {},
         },
         [5] = {
             value = "u",
-            text = QuestieLocale:GetUIString('JOURNEY_UNOBTAINABLE_TITLE'),
+            text = l10n('Unobtainable Quests'),
             children = {},
         }
     }
@@ -136,60 +134,55 @@ function _QuestieJourney.questsByZone:CollectZoneQuests(zoneId)
     local temp = {}
     for _, levelAndQuest in pairs(sortedQuestByLevel) do
         ---@type QuestId
-        local qId = levelAndQuest[2]
+        local questId = levelAndQuest[2]
         -- Only show quests which are not hidden
-        if QuestieCorrections.hiddenQuests and ((not QuestieCorrections.hiddenQuests[qId]) or QuestieEvent:IsEventQuest(qId)) and QuestieDB.QuestPointers[qId] then
-            temp.value = qId
-            temp.text = QuestieDB:GetColoredQuestName(qId)
+        if QuestieCorrections.hiddenQuests and ((not QuestieCorrections.hiddenQuests[questId]) or QuestieEvent:IsEventQuest(questId)) and QuestieDB.QuestPointers[questId] then
+            temp.value = questId
+            temp.text = QuestieLib:GetColoredQuestName(questId, Questie.db.global.enableTooltipsQuestLevel, false, true)
 
             -- Completed quests
-            if Questie.db.char.complete[qId] then
+            if Questie.db.char.complete[questId] then
                 tinsert(zoneTree[3].children, temp)
                 completedCounter = completedCounter + 1
             else
                 local queryResult = QuestieDB.QueryQuest(
-                        qId,
+                        questId,
                         "exclusiveTo",
+                        "nextQuestInChain",
                         "parentQuest",
                         "preQuestSingle",
                         "preQuestGroup",
-                        "requiredSkill",
                         "requiredMinRep",
                         "requiredMaxRep"
                 ) or {}
                 local exclusiveTo = queryResult[1]
-                local parentQuest = queryResult[2]
-                local preQuestSingle = queryResult[3]
-                local preQuestGroup = queryResult[4]
-                local requiredSkill = queryResult[5]
+                local nextQuestInChain = queryResult[2]
+                local parentQuest = queryResult[3]
+                local preQuestSingle = queryResult[4]
+                local preQuestGroup = queryResult[5]
                 local requiredMinRep = queryResult[6]
                 local requiredMaxRep = queryResult[7]
 
-                -- Exclusive quests will never be available since another quests permantly blocks them.
+                -- Exclusive quests will never be available since another quests permanently blocks them.
                 -- Marking them as complete should be the most satisfying solution for user
-                if exclusiveTo and QuestieDB:IsExclusiveQuestInQuestLogOrComplete(exclusiveTo) then
+                if (nextQuestInChain and Questie.db.char.complete[nextQuestInChain]) or (exclusiveTo and QuestieDB:IsExclusiveQuestInQuestLogOrComplete(exclusiveTo)) then
                     tinsert(zoneTree[3].children, temp)
                     completedCounter = completedCounter + 1
                 -- The parent quest has been completed
                 elseif parentQuest and Questie.db.char.complete[parentQuest] then
                     tinsert(zoneTree[3].children, temp)
                     completedCounter = completedCounter + 1
-                -- Unoptainable profession quests
-                elseif not QuestieProfessions:HasProfessionAndSkillLevel(requiredSkill) then
-                    tinsert(zoneTree[5].children, temp)
-                    unobtainableQuestIds[qId] = true
-                    unobtainableCounter = unobtainableCounter + 1
                 -- Unoptainable reputation quests
                 elseif not QuestieReputation:HasReputation(requiredMinRep, requiredMaxRep) then
                     tinsert(zoneTree[5].children, temp)
-                    unobtainableQuestIds[qId] = true
+                    unobtainableQuestIds[questId] = true
                     unobtainableCounter = unobtainableCounter + 1
                 -- A single pre Quest is missing
                 elseif not QuestieDB:IsPreQuestSingleFulfilled(preQuestSingle) then
                     -- The pre Quest is unobtainable therefore this quest is it as well
                     if unobtainableQuestIds[preQuestSingle] ~= nil then
                         tinsert(zoneTree[5].children, temp)
-                        unobtainableQuestIds[qId] = true
+                        unobtainableQuestIds[questId] = true
                         unobtainableCounter = unobtainableCounter + 1
                     else
                         tinsert(zoneTree[2].children, temp)
@@ -201,7 +194,7 @@ function _QuestieJourney.questsByZone:CollectZoneQuests(zoneId)
                     for _, preQuestId in pairs(preQuestGroup) do
                         if unobtainableQuestIds[preQuestId] ~= nil then
                             tinsert(zoneTree[5].children, temp)
-                            unobtainableQuestIds[qId] = true
+                            unobtainableQuestIds[questId] = true
                             unobtainableCounter = unobtainableCounter + 1
                             hasUnobtainablePreQuest = true
                             break
@@ -213,7 +206,7 @@ function _QuestieJourney.questsByZone:CollectZoneQuests(zoneId)
                         prequestMissingCounter = prequestMissingCounter + 1
                     end
                 -- Repeatable quests
-                elseif QuestieDB:IsRepeatable(qId) then
+                elseif QuestieDB:IsRepeatable(questId) then
                     tinsert(zoneTree[4].children, temp)
                     repeatableCounter = repeatableCounter + 1
                 -- Available quests

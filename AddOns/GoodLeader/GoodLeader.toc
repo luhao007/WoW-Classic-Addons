@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: NetEase
 ## Version: 0.0.13
 ## SavedVariables: GOODLEADER_DB

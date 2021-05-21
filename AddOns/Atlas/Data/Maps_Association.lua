@@ -1,10 +1,10 @@
--- $Id: Maps_Association.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Maps_Association.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 

@@ -1,8 +1,8 @@
--- $Id: Data.lua 68 2020-06-20 08:47:23Z arith $
+-- $Id: Data.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -41,13 +41,21 @@ local ALIL = Atlas_IngameLocales
 local Atlas = LibStub("AceAddon-3.0"):GetAddon("Atlas")
 local addon = Atlas:GetModule(private.module_name)
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
 
 local function Atlas_GetBossName(bossname, encounterID, creatureIndex)
 	return Atlas:GetBossName(bossname, encounterID, creatureIndex, private.module_name)
 end
 
-if (not WoWClassic) then
+if (WoWRetail) then
 	local db = {}
 	addon.db = db
 

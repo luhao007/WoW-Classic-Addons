@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 65 2020-11-18 14:13:49Z arithmandar $
+-- $Id: LibUIDropDownMenu.lua 73 2021-05-18 17:04:17Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -18,7 +18,8 @@ local GameTooltip_SetTitle, GameTooltip_AddInstructionLine, GameTooltip_AddNorma
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-4.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 65 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 73 $"):match("%d+"))
+
 
 local LibStub = _G.LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -28,7 +29,7 @@ if not lib then return end
 -- Determine WoW TOC Version
 local WoWClassic, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
-if wowtocversion < 19999 then
+if wowtocversion < 30000 then
 	WoWClassic = true
 else
 	WoWRetail = true
@@ -133,7 +134,12 @@ local function create_MenuButton(name, parent)
 	f.Icon:Hide()
 	
 	-- ColorSwatch
-	local fcw = CreateFrame("Button", name.."ColorSwatch", f, BackdropTemplateMixin and "ColorSwatchTemplate" or nil)
+	local fcw
+	if WoWClassic then
+		fcw = CreateFrame("Button", name.."ColorSwatch", f)
+	else
+		fcw = CreateFrame("Button", name.."ColorSwatch", f, BackdropTemplateMixin and "ColorSwatchTemplate" or nil)
+	end
 	fcw:SetPoint("RIGHT", f, -6, 0)
 	fcw:Hide()
 	if WoWClassic then
@@ -551,8 +557,14 @@ local function create_DropDownButtons()
 	L_DropDownList2:SetSize(180, 10)
 
 	-- UIParent integration; since we customize the name of DropDownList, we need to add it to golbal UIMenus table.
-	tinsert(UIMenus, "L_DropDownList1");
-	tinsert(UIMenus, "L_DropDownList2");
+	--tinsert(UIMenus, "L_DropDownList1");
+	--tinsert(UIMenus, "L_DropDownList2");
+	
+	-- Alternative by Dahk Celes (DDC) that avoids tainting UIMenus and CloseMenus()
+	hooksecurefunc("CloseMenus", function()
+		L_DropDownList1:Hide()
+		L_DropDownList2:Hide()
+	end)
 end
 
 do
@@ -1582,7 +1594,7 @@ end
 
 -- hooking UIDropDownMenu_HandleGlobalMouseEvent
 do
-	if lib then
+	if lib and WoWRetail then
 		hooksecurefunc("UIDropDownMenu_HandleGlobalMouseEvent", function(button, event) 
 			lib:UIDropDownMenu_HandleGlobalMouseEvent(button, event) 
 		end)

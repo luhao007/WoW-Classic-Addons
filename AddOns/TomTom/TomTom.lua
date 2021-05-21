@@ -18,7 +18,7 @@ addon.CLASSIC = math.floor(select(4, GetBuildInfo() ) / 100) == 113
 -- Local definitions
 local GetCurrentCursorPosition
 local WorldMap_OnUpdate
-local Block_OnClick,Block_OnUpdate,Block_OnEnter,Block_OnLeave
+local Block_OnClick,Block_OnUpdate,Block_OnEnter,Block_OnLeave,Block_OnEvent
 local Block_OnDragStart,Block_OnDragStop
 local callbackTbl
 local RoundCoords
@@ -199,7 +199,7 @@ function TomTom:Initialize(event, addon)
 end
 
 function TomTom:Enable(addon)
-    if not TomTom.CLASSIC then
+    if (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
         self:EnableDisablePOIIntegration()
     end
     self:ReloadWaypoints()
@@ -504,7 +504,7 @@ local function WaypointCallback(event, arg1, arg2, arg3)
         if arg3 then
             tooltip:SetText(L["TomTom waypoint"])
             tooltip:AddLine(string.format(L["%s yards away"], math.floor(arg2)), 1, 1 ,1)
-            tooltip:AddLine(string.format(L["From: %s"], data.from or "?"))
+            tooltip:AddLine(string.format(L["From: %s"], arg1.from or "?"))
             tooltip:Show()
         else
             tooltip.lines[2]:SetFormattedText(L["%s yards away"], math.floor(arg2), 1, 1, 1)
@@ -1130,9 +1130,10 @@ function TomTom:DebugListAllWaypoints()
 end
 
 local function usage()
-    ChatFrame1:AddMessage(L["|cffffff78TomTom |r/way /tway /tomtomway /cway /tomtom |cffffff78Usage:|r"])
+    ChatFrame1:AddMessage(L["|cffffff78TomTom |r/way /tway /tomtomway /cway /wayb /wayback/tomtom |cffffff78Usage:|r"])
     ChatFrame1:AddMessage(L["|cffffff78/tomtom |r - Open the TomTom options panel"])
     ChatFrame1:AddMessage(L["|cffffff78/cway |r - Activate the closest waypoint"])
+    ChatFrame1:AddMessage(L["|cffffff78/wayb [desc] |r - Save the current position with optional description"])
     ChatFrame1:AddMessage(L["|cffffff78/way /tway /tomtomway |r - Commands to set a waypoint: one should work."])
     ChatFrame1:AddMessage(L["|cffffff78/way <x> <y> [desc]|r - Adds a waypoint at x,y with descrtiption desc"])
     ChatFrame1:AddMessage(L["|cffffff78/way <zone> <x> <y> [desc]|r - Adds a waypoint at x,y in zone with description desc"])

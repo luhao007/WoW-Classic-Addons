@@ -28,7 +28,7 @@ BINDING_NAME_ATTC_TOGGLERANDOM = L["TOGGLE_RANDOM"];
 BINDING_NAME_ATTC_REROLL_RANDOM = L["REROLL_RANDOM"];
 
 -- The Settings Frame
-local settings = CreateFrame("FRAME", app:GetName() .. "-Settings", UIParent, BackdropTemplateMixin and "BackdropTemplate");
+local settings = CreateFrame("FRAME", app:GetName() .. "-Settings", InterfaceOptionsFramePanelContainer or UIParent, BackdropTemplateMixin and "BackdropTemplate");
 app.Settings = settings;
 settings.name = app:GetName();
 settings.MostRecentTab = nil;
@@ -136,6 +136,7 @@ local TooltipSettingsBase = {
 		["Report:CompletedQuests"] = false,
 		["ShowIconOnly"] = false,
 		["Show:CraftedItems"] = false,
+		["Show:OtherCharacterQuests"] = false,
 		["Show:Recipes"] = false,
 		["Show:Remaining"] = false,
 		["Show:SpellRanks"] = true,
@@ -153,18 +154,6 @@ local UnobtainableSettingsBase = {
 	__index = {
 		[1] = false,	-- Never Implemented
 		[2] = false,	-- Removed From Game
-		[3] = false,	-- Future Releases [TODO: Convert these, you dummy!]
-
-		-- Future Content Releases
-		[11] = 2,		-- Phase 1
-		[1101] = true,	-- Dire Maul
-		[12] = true,	-- Phase 2
-		[13] = true,	-- Phase 3
-		[14] = true,	-- Phase 4
-		[15] = true,	-- Phase 5
-		[16] = true,	-- Phase 6
-		[1601] = true,	-- Scourge Invasion
-		[1602] = true,	-- Silithyst
 
 		-- Seasonal Filters
 		[1000] = false,	-- Brewfest
@@ -500,11 +489,6 @@ settings.UpdateMode = function(self)
 		app.ShowIncompleteThings = app.FilterItemTrackable;
 	else
 		app.ShowIncompleteThings = app.Filter;
-	end
-	if self:Get("AccountWide:Recipes") then
-		app.RecipeChecker = app.GetDataSubMember;
-	else
-		app.RecipeChecker = app.GetTempDataSubMember;
 	end
 	if self:Get("Filter:BoEs") then
 		app.ItemBindFilter = app.FilterItemBind;
@@ -1303,7 +1287,22 @@ f.OnRefresh = function(self)
 	end
 end;
 table.insert(settings.MostRecentTab.objects, f);
+end)();
 
+------------------------------------------
+-- The "Phases" Tab.					--
+------------------------------------------
+(function()
+local tab = settings:CreateTab("Phases");
+local currentBuild = select(4, GetBuildInfo());
+local reasons = L["UNOBTAINABLE_ITEM_REASONS"];
+tab.OnRefresh = function(self)
+	if settings:Get("DebugMode") then
+		PanelTemplates_DisableTab(settings, self:GetID());
+	else
+		PanelTemplates_EnableTab(settings, self:GetID());
+	end
+end;
 local UnobtainableFilterOnClick = function(self)
 	settings:SetUnobtainableFilter(self.u, self:GetChecked());
 end;
@@ -1311,36 +1310,91 @@ local UnobtainableOnRefresh = function(self)
 	if settings:Get("DebugMode") then
 		self:Disable();
 		self:SetAlpha(0.2);
-	elseif UnobtainableSettingsBase.__index[self.u] ~= 2 then
-		self:SetChecked(settings:GetUnobtainableFilter(self.u));
-		self:Enable();
-		self:SetAlpha(1);
 	else
-		self:SetChecked(true);
-		self:Disable();
-		self:SetAlpha(0.2);
+		self:SetChecked(settings:GetUnobtainableFilter(self.u));
+
+		local minimumBuild = reasons[self.u][4];
+		if minimumBuild and minimumBuild > currentBuild then
+			self:Disable();
+			self:SetAlpha(0.2);
+		else
+			self:Enable();
+			self:SetAlpha(1);
+		end
 	end
 end;
-local LegacyFiltersLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
-LegacyFiltersLabel:SetPoint("TOPRIGHT", line, "BOTTOMRIGHT", -110, -8);
-LegacyFiltersLabel:SetJustifyH("LEFT");
-LegacyFiltersLabel:SetText("Seasonal & Unobtainable Filters");
-LegacyFiltersLabel:Show();
-table.insert(settings.MostRecentTab.objects, LegacyFiltersLabel);
+
+-- Update the default unobtainable states based on build version.
+for u,reason in pairs(reasons) do
+	if reason[4] then
+		if currentBuild >= reason[4] then
+			if reason[5] and currentBuild >= reason[5] then
+				UnobtainableSettingsBase.__index[u] = true;
+			else
+				UnobtainableSettingsBase.__index[u] = false;
+			end
+		else
+			UnobtainableSettingsBase.__index[u] = false;
+		end
+	end
+end
+UnobtainableSettingsBase.__index[11] = true;
+
+local ClassicPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
+ClassicPhasesLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 8, -8);
+ClassicPhasesLabel:SetJustifyH("LEFT");
+ClassicPhasesLabel:SetText("|CFFAAFFAAClassic Phases|r");
+ClassicPhasesLabel:Show();
+table.insert(settings.MostRecentTab.objects, ClassicPhasesLabel);
+
+-- Classic Phases
+local last, xoffset, yoffset, offset, spacing, vspacing = ClassicPhasesLabel, 0, -4, 0, 8, 1;
+for i,o in ipairs({ { 11, 0, 0 }, {1101, spacing, -vspacing }, { 12, -spacing, -vspacing }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, spacing, -vspacing }, { 1502, 0 }, { 1503, 0 }, { 1504, 0 }, { 16, -spacing, -vspacing }, { 1601, spacing, -vspacing }, { 1602, 0 }, { 1603, 0 }, }) do
+	local u = o[1];
+	offset = offset + o[2];
+	yoffset = o[3] or 6;
+	local reason = reasons[u];
+	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
+	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", o[2], yoffset);
+	filter:SetScale(offset > 0 and 0.8 or 1);
+	filter.u = u;
+	last = filter;
+end
+
+local TBCPhasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
+TBCPhasesLabel:SetPoint("TOPLEFT", line, "BOTTOMLEFT", 148, -8);
+TBCPhasesLabel:SetJustifyH("LEFT");
+TBCPhasesLabel:SetText("|CFFAAFFAATBC Phases|r");
+TBCPhasesLabel:Show();
+table.insert(settings.MostRecentTab.objects, TBCPhasesLabel);
+
+last, xoffset, yoffset, offset = TBCPhasesLabel, 0, -4, 0;
+for i,o in ipairs({ { 17, 0, 0 }, {1701, spacing, -vspacing }, { 18, -spacing, -vspacing }, { 19, 0 }, { 20, 0 }, { 21, 0 }, }) do
+	local u = o[1];
+	offset = offset + o[2];
+	yoffset = o[3] or 6;
+	local reason = reasons[u];
+	local filter = settings:CreateCheckBox(reason[3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reason[2] .. (reason[6] or ""));
+	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", o[2], yoffset);
+	filter:SetScale(offset > 0 and 0.8 or 1);
+	filter.u = u;
+	last = filter;
+end
 
 local SeasonalHolidayFiltersLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-SeasonalHolidayFiltersLabel:SetPoint("TOPLEFT", LegacyFiltersLabel, "BOTTOMLEFT", 4, -8);
+SeasonalHolidayFiltersLabel:SetPoint("TOPLEFT", line, "BOTTOMRIGHT", -200, -8);
 SeasonalHolidayFiltersLabel:SetJustifyH("LEFT");
 SeasonalHolidayFiltersLabel:SetText("|CFFAAAAFFSeasonal Holiday Filters|r");
 SeasonalHolidayFiltersLabel:Show();
 table.insert(settings.MostRecentTab.objects, SeasonalHolidayFiltersLabel);
 
 -- Seasonal Filters
-yoffset = -4;
-last = SeasonalHolidayFiltersLabel;
+last, xoffset, yoffset = SeasonalHolidayFiltersLabel, 0, -4;
 for i,u in ipairs({ 1000, 1001, 1002, 1012, 1003, 1004, 1005, 1006, 1007, 1008, 1010, 1011 }) do
-	local filter = settings:CreateCheckBox(L["UNOBTAINABLE_ITEM_REASONS"][u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
-	filter:SetATTTooltip(L["UNOBTAINABLE_ITEM_REASONS"][u][2]);
+	local filter = settings:CreateCheckBox(reasons[u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reasons[u][2]);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.u = u;
 	last = filter;
@@ -1357,49 +1411,15 @@ table.insert(settings.MostRecentTab.objects, GeneralUnobtainableFiltersLabel);
 -- General Unobtainable Filters
 yoffset = -4;
 last = GeneralUnobtainableFiltersLabel;
-for i,u in ipairs({ 1, 2, 3  }) do
-	local filter = settings:CreateCheckBox(L["UNOBTAINABLE_ITEM_REASONS"][u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
-	filter:SetATTTooltip(L["UNOBTAINABLE_ITEM_REASONS"][u][2]);
+for i,u in ipairs({ 1, 2  }) do
+	local filter = settings:CreateCheckBox(reasons[u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
+	filter:SetATTTooltip(reasons[u][2]);
 	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", 0, yoffset);
 	filter.u = u;
 	last = filter;
 	yoffset = 6;
 end
-
-local FutureContentReleasesLabel = settings:CreateFontString(nil, "ARTWORK", "GameFontNormal");
-FutureContentReleasesLabel:SetPoint("RIGHT", line, "RIGHT", -20, 0);
-FutureContentReleasesLabel:SetPoint("TOP", LegacyFiltersLabel, "BOTTOM", 0, -8);
-FutureContentReleasesLabel:SetJustifyH("LEFT");
-FutureContentReleasesLabel:SetText("|CFFAAFFAAFuture Content Releases|r");
-FutureContentReleasesLabel:Show();
-table.insert(settings.MostRecentTab.objects, FutureContentReleasesLabel);
-
--- Future Content Releases
-yoffset = -4;
-last = FutureContentReleasesLabel;
-for i,o in ipairs({ { 11, 0 }, {1101, 4 }, { 12, -4 }, { 13, 0 }, { 14, 0 }, { 15, 0 }, { 1501, 4 }, { 1502, 0 }, { 1503, 0 }, { 1504, 0 }, { 16, -4 }, { 1601, 4 }, { 1602, 0 }, { 1603, 0 }, }) do
-	local u = o[1];
-	local filter = settings:CreateCheckBox(L["UNOBTAINABLE_ITEM_REASONS"][u][3] or tostring(u), UnobtainableOnRefresh, UnobtainableFilterOnClick);
-	filter:SetATTTooltip(L["UNOBTAINABLE_ITEM_REASONS"][u][2] .. (L["UNOBTAINABLE_ITEM_REASONS"][u][5] or ""));
-	filter:SetPoint("TOPLEFT", last, "BOTTOMLEFT", o[2], yoffset);
-	filter.u = u;
-	last = filter;
-	yoffset = 6;
-end
 end)();
-
-------------------------------------------
--- The "Social" Tab.					--
-------------------------------------------
---[[
-(function()
-local tab = settings:CreateTab("Social");
-tab.OnRefresh = function(self)
-	-- We aren't ready yet. :(
-	PanelTemplates_DisableTab(settings, self:GetID());
-end;
-end)();
---]]
 
 ------------------------------------------
 -- The "Interface" Tab.					--
@@ -1613,6 +1633,23 @@ end);
 ShowModelsCheckBox:SetATTTooltip("Enable this option to show models within a preview instead of the icon on the tooltip.\n\nThis option may assist you in identifying what a Rare Spawn or Vendor looks like. It might be a good idea to keep this turned on for that reason.");
 ShowModelsCheckBox:SetPoint("TOPLEFT", ShowKnownByCheckBox, "BOTTOMLEFT", 0, 4);
 
+local ShowOtherCharactersCheckBox = settings:CreateCheckBox("Show Other Characters",
+function(self)
+	self:SetChecked(settings:GetTooltipSetting("Show:OtherCharacterQuests"));
+	if not settings:GetTooltipSetting("Enabled") then
+		self:Disable();
+		self:SetAlpha(0.2);
+	else
+		self:Enable();
+		self:SetAlpha(1);
+	end
+end,
+function(self)
+	settings:SetTooltipSetting("Show:OtherCharacterQuests", self:GetChecked());
+end);
+ShowOtherCharactersCheckBox:SetATTTooltip("Enable this option if you want to see all of the characters on your account that still need to complete a quest in its tooltip.\n\nIE: You can look at a quest item and see that it may still be useful to a different character before getting rid of it.");
+ShowOtherCharactersCheckBox:SetPoint("TOPLEFT", ShowModelsCheckBox, "BOTTOMLEFT", 0, 4);
+
 local ShowClassRequirementsCheckBox = settings:CreateCheckBox("Show Class Requirements",
 function(self)
 	self:SetChecked(settings:GetTooltipSetting("ClassRequirements"));
@@ -1628,7 +1665,7 @@ function(self)
 	settings:SetTooltipSetting("ClassRequirements", self:GetChecked());
 end);
 ShowClassRequirementsCheckBox:SetATTTooltip("Enable this option if you want to see the full list of class requirements in the tooltip.");
-ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowModelsCheckBox, "BOTTOMLEFT", 0, 4);
+ShowClassRequirementsCheckBox:SetPoint("TOPLEFT", ShowOtherCharactersCheckBox, "BOTTOMLEFT", 0, 4);
 
 local ShowRaceRequirementsCheckBox = settings:CreateCheckBox("Show Race Requirements",
 function(self)

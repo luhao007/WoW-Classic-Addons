@@ -3193,6 +3193,9 @@
 				</Frames>
 				<Scripts>
 					<OnLoad>
+						if BackdropTemplateMixin then
+							Mixin(self, BackdropTemplateMixin)
+						end
 						self:SetBackdropColor(.1,.1,.1,1)
 					</OnLoad>
 				</Scripts>

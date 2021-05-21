@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMAzeroth_AllSavedVars
@@ -23,7 +23,7 @@
 ## X-DBM-Mod-Name-koKR: 아제로스 (클래식)
 ## X-DBM-Mod-Name-zhTW: 艾澤拉斯 (經典)
 ## X-DBM-Mod-Name-zhCN: 世界首领 (经典)
-## X-DBM-Mod-Sort: 1107
+## X-DBM-Mod-Sort: 1106
 ## X-DBM-Mod-MapID: 0, 1
 ## X-DBM-Mod-LoadCID: 14889,14888,14887,14890,12397,6109
 ## X-DBM-Mod-MinCoreRevision: 12473

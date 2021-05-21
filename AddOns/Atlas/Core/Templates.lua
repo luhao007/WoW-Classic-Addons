@@ -1,10 +1,10 @@
--- $Id: Templates.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Templates.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -36,13 +36,17 @@ local _G = getfenv(0)
 -- ----------------------------------------------------------------------------
 local FOLDER_NAME, private = ...
 
+local LibStub = _G.LibStub
+-- UIDropDownMenu
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
 local Templates = {}
 private.Templates = Templates
 
 -- //////////////////////////////////////////
 -- AtlasFrameDropDownTypeTemplate
 function Templates.CreateFrameDropDownType(name, parent)
-	local f = _G[name] or L_Create_UIDropDownMenu(name, parent)
+	local f = _G[name] or LibDD:Create_UIDropDownMenu(name, parent)
 	
 	f:SetPoint("TOPLEFT", parent, 60, -50)
 	
@@ -56,7 +60,7 @@ end
 -- //////////////////////////////////////////
 -- AtlasFrameDropDownTemplate
 function Templates.CreateFrameDropDown(name, parent)
-	local f = _G[name] or L_Create_UIDropDownMenu(name, parent)
+	local f = _G[name] or LibDD:Create_UIDropDownMenu(name, parent)
 	
 	local ref = parent and parent:GetName().."DropDownType" or nil
 	

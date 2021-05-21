@@ -1,10 +1,10 @@
--- $Id: AtlasFrame.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: AtlasFrame.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -36,10 +36,16 @@ local pairs, select, wipe = _G.pairs, _G.select, _G.wipe
 local string = _G.string
 local table = _G.table
 local getn, tinsert, tsort = table.getn, table.insert, table.sort
-local UIDropDownMenu_AddButton, UIDropDownMenu_Initialize, UIDropDownMenu_SetSelectedID, UIDropDownMenu_SetWidth, UIDropDownMenu_CreateInfo, ToggleDropDownMenu = L_UIDropDownMenu_AddButton, L_UIDropDownMenu_Initialize, L_UIDropDownMenu_SetSelectedID, L_UIDropDownMenu_SetWidth, L_UIDropDownMenu_CreateInfo, L_ToggleDropDownMenu
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
-
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
 -- ----------------------------------------------------------------------------
 -- AddOn namespace
 -- ----------------------------------------------------------------------------
@@ -47,6 +53,8 @@ local FOLDER_NAME, private = ...
 local LibStub = _G.LibStub
 local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
+-- UIDropDownMenu
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 -- Simple function to toggle the Atlas frame's lock status and update it's appearance
 function addon:ToggleLock()
@@ -153,7 +161,7 @@ function addon:ToggleLegendPanel()
 end
 
 function AtlasEntry_OnUpdate(self)
-	if (not WoWClassic) then
+	if (WoWRetail) then
 		if( AtlasEJLootFrame:IsShown() ) then return; end
 	end
 	if (MouseIsOver(self)) then
@@ -260,24 +268,24 @@ function AtlasFrameDropDownType_Initialize()
 	end
 	
 	for k = 1, #ATLAS_DROPDOWN_TYPES do
-		UIDropDownMenu_AddButton(ATLAS_DROPDOWN_TYPES[k])
+		LibDD:UIDropDownMenu_AddButton(ATLAS_DROPDOWN_TYPES[k])
 	end
 end
 
 -- Called whenever the map type dropdown menu is shown
 function AtlasFrameDropDownType_OnShow()
 	local id = addon.db.profile.options.dropdowns.module or 1
-	UIDropDownMenu_Initialize(AtlasFrameDropDownType, AtlasFrameDropDownType_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameDropDownType, id)
-	UIDropDownMenu_SetWidth(AtlasFrameDropDownType, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameDropDownType, AtlasFrameDropDownType_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameDropDownType, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameDropDownType, ATLAS_DROPDOWN_WIDTH)
 
-	UIDropDownMenu_Initialize(AtlasFrameLargeDropDownType, AtlasFrameDropDownType_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDownType, id)
-	UIDropDownMenu_SetWidth(AtlasFrameLargeDropDownType, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameLargeDropDownType, AtlasFrameDropDownType_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDownType, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameLargeDropDownType, ATLAS_DROPDOWN_WIDTH)
 
-	UIDropDownMenu_Initialize(AtlasFrameSmallDropDownType, AtlasFrameDropDownType_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDownType, id)
-	UIDropDownMenu_SetWidth(AtlasFrameSmallDropDownType, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameSmallDropDownType, AtlasFrameDropDownType_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDownType, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameSmallDropDownType, ATLAS_DROPDOWN_WIDTH)
 end
 
 -- Called whenever an item in the map type dropdown menu is clicked
@@ -288,9 +296,9 @@ function AtlasFrameDropDownType_OnClick(self)
 	local catName = addon.dropdowns.DropDownLayouts_Order[profile.options.dropdowns.menuType]
 	local subcatOrder = addon.dropdowns.DropDownLayouts_Order[catName]
 
-	UIDropDownMenu_SetSelectedID(AtlasFrameDropDownType, typeID)
-	UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDownType, typeID)
-	UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDownType, typeID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameDropDownType, typeID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDownType, typeID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDownType, typeID)
 
 	profile.options.dropdowns.module = typeID
 	local dropdowns_catKey = self:GetText()
@@ -311,7 +319,7 @@ function AtlasFrameDropDown_Initialize()
 		for k, v in pairs(ATLAS_DROPDOWNS[addon.db.profile.options.dropdowns.module]) do
 			--if (not AtlasMaps[v]) then return end
 			local colortag
-			local info = UIDropDownMenu_CreateInfo()
+			local info = LibDD:UIDropDownMenu_CreateInfo()
 			local level = 1
 			
 			if (addon.db.profile.options.dropdowns.color and AtlasMaps[v].DungeonID) then
@@ -480,7 +488,7 @@ function AtlasFrameDropDown_Initialize()
 				tooltipText = tooltipText,
 				tooltipOnButton = true,
 			}
-			UIDropDownMenu_AddButton(info)
+			LibDD:UIDropDownMenu_AddButton(info)
 		end
 	end
 end
@@ -488,17 +496,17 @@ end
 -- Called whenever the main dropdown menu is shown
 function AtlasFrameDropDown_OnShow()
 	local id = addon.db.profile.options.dropdowns.zone or 1
-	UIDropDownMenu_Initialize(AtlasFrameDropDown, AtlasFrameDropDown_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameDropDown, id)
-	UIDropDownMenu_SetWidth(AtlasFrameDropDown, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameDropDown, AtlasFrameDropDown_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameDropDown, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameDropDown, ATLAS_DROPDOWN_WIDTH)
 
-	UIDropDownMenu_Initialize(AtlasFrameLargeDropDown, AtlasFrameDropDown_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDown, id)
-	UIDropDownMenu_SetWidth(AtlasFrameLargeDropDown, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameLargeDropDown, AtlasFrameDropDown_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDown, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameLargeDropDown, ATLAS_DROPDOWN_WIDTH)
 
-	UIDropDownMenu_Initialize(AtlasFrameSmallDropDown, AtlasFrameDropDown_Initialize)
-	UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDown, id)
-	UIDropDownMenu_SetWidth(AtlasFrameSmallDropDown, ATLAS_DROPDOWN_WIDTH)
+	LibDD:UIDropDownMenu_Initialize(AtlasFrameSmallDropDown, AtlasFrameDropDown_Initialize)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDown, id)
+	LibDD:UIDropDownMenu_SetWidth(AtlasFrameSmallDropDown, ATLAS_DROPDOWN_WIDTH)
 end
 
 -- Called whenever an item in the main dropdown menu is clicked
@@ -507,9 +515,9 @@ function AtlasFrameDropDown_OnClick(self)
 	local mapID = self:GetID()
 	local profile = addon.db.profile
 	local typeID = profile.options.dropdowns.module
-	UIDropDownMenu_SetSelectedID(AtlasFrameDropDown, mapID)
-	UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDown, mapID)
-	UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDown, mapID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameDropDown, mapID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameLargeDropDown, mapID)
+	LibDD:UIDropDownMenu_SetSelectedID(AtlasFrameSmallDropDown, mapID)
 
 	profile.options.dropdowns.zone = mapID
 	profile.dropdowns[ATLAS_DROPDOWN_TYPES[typeID].text] = mapID
@@ -525,18 +533,18 @@ function AtlasSwitchButton_OnClick()
 		AtlasSwitchDD_Set(1)
 	else
 		-- More than one link, so it's dropdown menu time
-		ToggleDropDownMenu(1, nil, AtlasSwitchDD, "AtlasSwitchButton", 0, 0)
+		LibDD:ToggleDropDownMenu(1, nil, AtlasSwitchDD, "AtlasSwitchButton", 0, 0)
 	end
 end
 
 function AtlasSwitchDD_OnLoad()
 	for k, v in pairs(ATLAS_INST_ENT_DROPDOWN) do
-		local info = UIDropDownMenu_CreateInfo()
+		local info = LibDD:UIDropDownMenu_CreateInfo()
 		info = {
 			text = AtlasMaps[v].ZoneName[1],
 			func = AtlasSwitchDD_OnClick,
 		}
-		UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 	end
 end
 

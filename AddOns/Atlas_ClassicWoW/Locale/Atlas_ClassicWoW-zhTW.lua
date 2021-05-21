@@ -1,10 +1,10 @@
--- $Id: Atlas_ClassicWoW-zhTW.lua 68 2020-06-20 08:47:23Z arith $
+-- $Id: Atlas_ClassicWoW-zhTW.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -282,9 +282,9 @@ L["High Interrogator Gerstahn"] = "高階審問者格斯塔恩"
 L["High Justice Grimstone"] = "裁決者格里斯通"
 L["High Priest Thekal"] = "高階祭司塞卡爾"
 L["High Priest Venoxis"] = "高階祭司溫諾希斯"
-L["High Priestess Arlokk"] = "哈卡萊先知"
+L["High Priestess Arlokk"] = "高階祭司阿洛克"
 L["High Priestess Jeklik"] = "高階祭司耶克里克"
-L["High Priestess Mar'li"] = "哈卡萊安魂者"
+L["High Priestess Mar'li"] = "高階祭司瑪俐"
 L["Highlord Mograine <The Ashbringer>"] = "大領主莫格萊尼 <灰燼使者>"
 L["Highlord Omokk"] = "歐莫克大王"
 L["Houndmaster Grebmar"] = "馴犬者格雷布瑪爾"
@@ -585,7 +585,7 @@ L["The Prophet Skeram"] = "預言者斯克拉姆"
 L["The Ravenian"] = "拉文尼亞"
 L["The Shadowforge Lock"] = "暗爐之鎖"
 L["The Sparklematic 5200"] = "超級清潔器5200型！"
-L["The Twin Emperors"] = "雙子皇帝"
+L["The Twin Emperors"] = "雙子帝王"
 L["The Unforgiven"] = "不可寬恕者"
 L["The Vault"] = "地窖"
 L["Theka the Martyr"] = "『殉教者』塞卡"

@@ -90,7 +90,7 @@ AL["Dire Maul West"] = "La Masacre Oeste"
 AL["Doan's Strongbox"] = "Caja fuerte de Doan"
 AL["Doctor Theolen Krastinov"] = "Doctor Theolen Krastinov"
 AL["Dreamscythe"] = "Segasueños"
-AL["Dungeons"] = "Calabozos"
+AL["Dungeons"] = "Mazmorras"
 AL["Dustwraith"] = "Ánima de polvo"
 AL["Earthcaller Halmgar"] = "Clamatierras Halmgar"
 AL["Ebonroc"] = "Ebanorroca"
@@ -358,3 +358,7 @@ AL["Wushoolay"] = "Wushoolay"
 AL["Ysondre"] = "Ysondre"
 AL["Zerillis"] = "Zerillis"
 AL["Zevrim Thornhoof"] = "Zevrim Pezuñahendida"
+
+if _G.AtlasLoot:GetGameVersion() < 2 then return end
+-- DungeonsAndRaidsTBC
+AL["Raid"] = "Banda"

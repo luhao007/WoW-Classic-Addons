@@ -20,6 +20,14 @@ L["Flask of Chromatic Resistance"] = "Настой всецветного соп
 L["Supreme Power"] = "Превосходная мощь";
 L["Distilled Wisdom"] = "Очищенная мудрость";
 L["Chromatic Resistance"] = "Всецветное сопротивление";
+L["Sap"] = "Sap";
+L["Fire Festival Fortitude"] = "Fire Festival Fortitude";
+L["Fire Festival Fury"] = "Fire Festival Fury";
+L["Ribbon Dance"] = "Ribbon Dance";
+L["Traces of Silithyst"] = "Traces of Silithyst";
+L["Slip'kik's Savvy"] = "Смекалка Слип'кика";
+L["Fengus' Ferocity"] = "Свирепость Фенгуса";
+L["Mol'dar's Moxie"] = "Дерзость Мол'дара";
 
 ---=====---
 ---Horde---
@@ -600,3 +608,46 @@ L["trimDataMsg9"] = "Удален %s из базы данных.";
 
 L["heraldFoundCrossroads"] = "Глашатай найден! Ренд в Перекрестке будет бафнут через 20 секунд.";
 L["heraldFoundTimerMsg"] = "Ренд в Перекрестке";
+
+L["Sheen of Zanza"] = "Блеск Занзы";
+L["Spirit of Zanza"] = "Дух Занзы";
+L["Swiftness of Zanza"] = "Скорость Занзы";
+
+L["Mind Control"] = "Контроль над разумом";
+L["Gnomish Mind Control Cap"] = "Гномья шапка контроля над разумом";
+
+L["Flask of Fortification"] = "Flask of Fortification";
+L["Flask of Pure Death"] = "Flask of Pure Death";
+L["Flask of Relentless Assault"] = "Flask of Relentless Assault";
+L["Flask of Blinding Light"] = "Flask of Blinding Light";
+L["Flask of Mighty Restoration"] = "Flask of Mighty Restoration";
+L["Flask of Chromatic Wonder"] = "Flask of Chromatic Wonder";
+L["Fortification of Shattrath"] = "Fortification of Shattrath";
+L["Pure Death of Shattrath"] = "Pure Death of Shattrath";
+L["Relentless Assault of Shattrath"] = "Relentless Assault of Shattrath";
+L["Blinding Light of Shattrath"] = "Blinding Light of Shattrath";
+L["Mighty Restoration of Shattrath"] = "Mighty Restoration of Shattrath";
+L["Supreme Power of Shattrath"] = "Supreme Power of Shattrath";
+L["Unstable Flask of the Beast"] = "Unstable Flask of the Beast";
+L["Unstable Flask of the Sorcerer"] = "Unstable Flask of the Sorcerer";
+L["Unstable Flask of the Bandit"] = "Unstable Flask of the Bandit";
+L["Unstable Flask of the Elder"] = "Unstable Flask of the Elder";
+L["Unstable Flask of the Physician"] = "Unstable Flask of the Physician";
+L["Unstable Flask of the Soldier"] = "Unstable Flask of the Soldier";
+
+L["Chronoboon Displacer"] = "Chronoboon Displacer";
+
+L["Silithyst"] = "Силитист";
+
+L["Gold"] = "Gold";
+L["level"] = "Level";
+L["realmGold"] = "Realm gold for";
+L["total"] = "Total";
+L["guild"] = "Guild";
+L["bagSlots"] = "Bag slots";
+L["durability"] = "Durability";
+L["items"] = "Items";
+L["ammunition"] = "Ammo";
+L["attunements"] = "Attunements";
+L["currentRaidLockouts"] = "Current Raid Lockouts";
+L["none"] = "None.";

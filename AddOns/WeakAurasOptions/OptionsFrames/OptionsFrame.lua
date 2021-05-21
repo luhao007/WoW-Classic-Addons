@@ -20,7 +20,6 @@ local L = WeakAuras.L
 local displayButtons = WeakAuras.displayButtons
 local regionOptions = WeakAuras.regionOptions
 local tempGroup = OptionsPrivate.tempGroup
-local prettyPrint = WeakAuras.prettyPrint
 local aceOptions = {}
 
 local function CreateDecoration(frame)
@@ -708,6 +707,53 @@ function OptionsPrivate.CreateFrame()
     frame.addonsButton = addonsButton
   end
 
+  -- Ready to Install section
+  local pendingInstallButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
+  pendingInstallButton:SetText(L["Ready for Install"])
+  pendingInstallButton:Disable()
+  pendingInstallButton:EnableExpand()
+  pendingInstallButton.frame.view:Hide()
+  if odb.pendingImportCollapse then
+    pendingInstallButton:Collapse()
+  else
+    pendingInstallButton:Expand()
+  end
+  pendingInstallButton:SetOnExpandCollapse(function()
+    if pendingInstallButton:GetExpanded() then
+      odb.pendingImportCollapse = nil
+    else
+      odb.pendingImportCollapse = true
+    end
+    WeakAuras.SortDisplayButtons()
+  end)
+  pendingInstallButton:SetExpandDescription(L["Expand all pending Import"])
+  pendingInstallButton:SetCollapseDescription(L["Collapse all pending Import"])
+  frame.pendingInstallButton = pendingInstallButton
+
+  -- Ready for update section
+  local pendingUpdateButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
+  pendingUpdateButton:SetText(L["Ready for Update"])
+  pendingUpdateButton:Disable()
+  pendingUpdateButton:EnableExpand()
+  pendingUpdateButton.frame.view:Hide()
+  if odb.pendingUpdateCollapse then
+    pendingUpdateButton:Collapse()
+  else
+    pendingUpdateButton:Expand()
+  end
+  pendingUpdateButton:SetOnExpandCollapse(function()
+    if pendingUpdateButton:GetExpanded() then
+      odb.pendingUpdateCollapse = nil
+    else
+      odb.pendingUpdateCollapse = true
+    end
+    WeakAuras.SortDisplayButtons()
+  end)
+  pendingUpdateButton:SetExpandDescription(L["Expand all pending Import"])
+  pendingUpdateButton:SetCollapseDescription(L["Collapse all pending Import"])
+  frame.pendingUpdateButton = pendingUpdateButton
+
+  -- Loaded section
   local loadedButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   loadedButton:SetText(L["Loaded"])
   loadedButton:Disable()
@@ -767,6 +813,7 @@ function OptionsPrivate.CreateFrame()
   loadedButton:SetViewDescription(L["Toggle the visibility of all loaded displays"])
   frame.loadedButton = loadedButton
 
+  -- Not Loaded section
   local unloadedButton = AceGUI:Create("WeakAurasLoadedHeaderButton")
   unloadedButton:SetText(L["Not Loaded"])
   unloadedButton:Disable()
@@ -835,8 +882,8 @@ function OptionsPrivate.CreateFrame()
       if data and data.parent then
         frame:ClearOptions(data.parent)
       end
-      for _, tmpId in ipairs(tempGroup.controlledChildren) do
-        if (id == tmpId) then
+      for child in OptionsPrivate.Private.TraverseAllChildren(tempGroup) do
+        if (id == child.id) then
           frame:ClearOptions(tempGroup.id)
         end
       end
@@ -854,10 +901,8 @@ function OptionsPrivate.CreateFrame()
         data = tempGroup
       end
 
-      if data.controlledChildren then
-        for _, id in ipairs(data.controlledChildren) do
-          frame:ClearOptions(id)
-        end
+      for child in OptionsPrivate.Private.TraverseAllChildren(data) do
+        frame:ClearOptions(child.id)
       end
     end
     if (type(self.pickedDisplay) == "string" and self.pickedDisplay == id)
@@ -1230,10 +1275,8 @@ function OptionsPrivate.CreateFrame()
       self.buttonsScroll:SetScrollPos(yOffset, yOffset - 32)
     end
 
-    if data.controlledChildren then
-      for index, childId in pairs(data.controlledChildren) do
-        displayButtons[childId]:PriorityShow(1)
-      end
+    for child in OptionsPrivate.Private.TraverseAllChildren(data) do
+      displayButtons[child.id]:PriorityShow(1)
     end
 
     if data.controlledChildren and #data.controlledChildren == 0 then
@@ -1284,15 +1327,13 @@ function OptionsPrivate.CreateFrame()
   end
 
   frame.PickDisplayBatch = function(self, batchSelection)
+    local alreadySelected = {}
+    for child in OptionsPrivate.Private.TraverseAllChildren(tempGroup) do
+      alreadySelected[child.id] = true
+    end
+
     for index, id in ipairs(batchSelection) do
-      local alreadySelected = false
-      for _, v in pairs(tempGroup.controlledChildren) do
-        if v == id then
-          alreadySelected = true
-          break
-        end
-      end
-      if not alreadySelected then
+      if not alreadySelected[id] then
         displayButtons[id]:Pick()
         tinsert(tempGroup.controlledChildren, id)
       end

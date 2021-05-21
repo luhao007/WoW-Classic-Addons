@@ -6,7 +6,7 @@
 local app = select(2, ...);
 local L = app.L;
 
--- Performance Cache 
+-- Performance Cache
 -- While this may seem silly, caching references to commonly used APIs is actually a performance gain...
 local SetPortraitTexture = _G["SetPortraitTexture"];
 local SetPortraitTextureFromDisplayID = _G["SetPortraitTextureFromCreatureDisplayID"];
@@ -63,7 +63,7 @@ local function Push(self, name, method)
 	if not self.__stack then
 		self.__stack = {};
 		self:SetScript("OnUpdate", OnUpdate);
-	elseif #self.__stack < 1 then 
+	elseif #self.__stack < 1 then
 		self:SetScript("OnUpdate", OnUpdate);
 	end
 	--print("Push->" .. name);
@@ -80,7 +80,7 @@ local function StartCoroutine(name, method)
 				if ok then return true;	-- This means more work is required.
 				else
 					-- Show the error. Returning nothing is the same as canceling the work.
-					print(err);
+					error(err,2);
 				end
 			end
 			app.refreshing[name] = nil;
@@ -157,7 +157,7 @@ local function SetDataSubMember(member, submember, data)
 end
 local function GetDataSubMember(member, submember, default)
 	attData = rawget(ATTClassicAD,member);
-	if attData then 
+	if attData then
 		attData = rawget(attData, submember);
 		if attData == nil then
 			rawset(rawget(ATTClassicAD,member), submember, default);
@@ -184,7 +184,7 @@ local function SetTempDataSubMember(member, submember, data)
 end
 local function GetTempDataSubMember(member, submember, default)
 	attData = rawget(ATTCTempData,member);
-	if attData then 
+	if attData then
 		attData = rawget(attData, submember);
 		if attData == nil then
 			rawset(rawget(ATTCTempData,member), submember, default);
@@ -207,9 +207,9 @@ app.GetTempDataMember = GetTempDataMember;
 app.GetTempDataSubMember = GetTempDataSubMember;
 
 local backdrop = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-	tile = true, tileSize = 16, edgeSize = 16, 
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+	tile = true, tileSize = 16, edgeSize = 16,
 	insets = { left = 4, right = 4, top = 4, bottom = 4 }
 };
 
@@ -427,7 +427,8 @@ GameTooltipModel.TrySetModel = function(self, reference)
 end
 GameTooltipModel:Hide();
 
-app.AlwaysShowUpdate = function(data) data.visible = true; end
+app.AlwaysShowUpdate = function(data) data.visible = true; return true; end
+app.AlwaysShowUpdateWithoutReturn = function(data) data.visible = true; end
 app.print = function(...)
 	print(L["TITLE"], ...);
 end
@@ -482,9 +483,9 @@ local function HexToRGB(hex)
 	return tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6));
 end
 local function RGBToHex(r, g, b)
-	return string.format("ff%02x%02x%02x", 
-		r <= 255 and r >= 0 and r or 0, 
-		g <= 255 and g >= 0 and g or 0, 
+	return string.format("ff%02x%02x%02x",
+		r <= 255 and r >= 0 and r or 0,
+		g <= 255 and g >= 0 and g or 0,
 		b <= 255 and b >= 0 and b or 0);
 end
 local function ConvertColorRgbToHsv(r, g, b)
@@ -653,7 +654,7 @@ end
 local function BuildSourceText(group, l)
 	local parent = group.parent;
 	if parent then
-		if not group.itemID and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and group.categoryID)) 
+		if not group.itemID and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and group.categoryID))
 			and ((parent.headerID == -2 or parent.headerID == -17 or parent.headerID == -7) or (parent.parent and parent.parent.parent)))) then
 			return BuildSourceText(parent.parent, 5) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA) .. " (" .. (parent.text or RETRIEVING_DATA) .. ")";
 		end
@@ -847,8 +848,8 @@ local CompletedQuests = setmetatable({}, {__newindex = function (t, key, value)
 	if value then
 		rawset(t, key, value);
 		rawset(DirtyQuests, key, true);
-		SetDataSubMember("CollectedQuests", key, 1);
-		SetTempDataSubMember("CollectedQuests", key, 1);
+		app.CurrentCharacter.Quests[key] = 1;
+		ATTAccountWideData.Quests[key] = 1;
 		if app.Settings:GetTooltipSetting("Report:CompletedQuests") then
 			local searchResults = app.SearchForField("questID", key);
 			if searchResults and #searchResults > 0 then
@@ -885,7 +886,7 @@ end
 local IsQuestFlaggedCompletedForObject = function(t)
 	if IsQuestFlaggedCompleted(t.questID) then return 1; end
 	if app.AccountWideQuests and not t.repeatable then
-		if t.questID and GetDataSubMember("CollectedQuests", t.questID) then
+		if t.questID and ATTAccountWideData.Quests[t.questID] then
 			return 2;
 		end
 	end
@@ -897,7 +898,7 @@ local IsQuestFlaggedCompletedForObject = function(t)
 		end
 		if app.AccountWideQuests then
 			for i,questID in ipairs(t.altQuests) do
-				if GetDataSubMember("CollectedQuests", questID) then
+				if  ATTAccountWideData.Quests[questID] then
 					return 2;
 				end
 			end
@@ -1371,7 +1372,7 @@ local function BuildContainsInfo(groups, entries, paramA, paramB, indent, layer)
 				local o = { prefix = indent, group = group, right = right };
 				if group.u then
 					local reason = L["UNOBTAINABLE_ITEM_REASONS"][group.u];
-					if reason and not reason[4] then
+					if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
 						o.prefix = string.sub(o.prefix, 4) .. "|T" .. L["UNOBTAINABLE_ITEM_TEXTURES"][reason[1]] .. ":0|t ";
 					end
 				end
@@ -1529,7 +1530,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 					if app.Settings:GetTooltipSetting("itemString") then tinsert(info, { left = itemString }); end
 					local itemID2 = select(2, strsplit(":", itemString));
 					if itemID2 then
-						itemID = tonumber(itemID2); 
+						itemID = tonumber(itemID2);
 						paramA = "itemID";
 						paramB = itemID;
 					end
@@ -1559,7 +1560,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 					if j.itemID == itemID then
 						if j.u and (not j.crs or paramA == "itemID") then
 							local reason = L["UNOBTAINABLE_ITEM_REASONS"][j.u];
-							if reason and not reason[4] then
+							if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
 								tinsert(info, { left = reason[2] });
 							end
 							break;
@@ -1592,7 +1593,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 							for i,o in ipairs(searchResults) do
 								if not o.itemID and o.cost then
 									-- Reagent for something that crafts a thing required for something else.
-									MergeObject(group, CreateObject({ ["itemID"] = craftedItemID, ["count"] = count, ["g"] = { CreateObject(o) } })); 
+									MergeObject(group, CreateObject({ ["itemID"] = craftedItemID, ["count"] = count, ["g"] = { CreateObject(o) } }));
 								end
 							end
 						end
@@ -1628,7 +1629,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 					local didthing = false;
 					if j.u then
 						local reason = L["UNOBTAINABLE_ITEM_REASONS"][j.u];
-						if reason and not reason[4] then
+						if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
 							tinsert(unfiltered, text .. " |T" .. L["UNOBTAINABLE_ITEM_TEXTURES"][reason[1]] .. ":0|t");
 							didthing = true;
 						end
@@ -1766,12 +1767,14 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 			tinsert(info, 1, { left = L.LIMITED_QUANTITY, wrap = true, color = "ff66ccff" });
 		end
 		
+		local showOtherCharacterQuests = app.Settings:GetTooltipSetting("Show:OtherCharacterQuests");
 		if app.Settings:GetTooltipSetting("SummarizeThings") then
 			-- Contents
 			if group.g and #group.g > 0 then
-				local entries, left, right = {};
+				local entries = {};
 				BuildContainsInfo(group.g, entries, paramA, paramB, "  ", app.noDepth and 99 or 1);
 				if #entries > 0 then
+					local realmName, left, right = GetRealmName();
 					tinsert(info, { left = "Contains:" });
 					if #entries < 25 then
 						for i,item in ipairs(entries) do
@@ -1781,6 +1784,28 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 							if mapID and mapID ~= app.CurrentMapID then left = left .. " (" .. app.GetMapName(mapID) .. ")"; end
 							if item.group.icon then item.prefix = item.prefix .. "|T" .. item.group.icon .. ":0|t "; end
 							tinsert(info, { left = item.prefix .. left, right = item.right });
+							
+							if item.group.questID and not item.group.repeatable and showOtherCharacterQuests then
+								local incompletes = {};
+								for guid,character in pairs(ATTCharacterData) do
+									if character.realm == realmName
+										and (not item.group.r or (character.factionID and item.group.r == character.factionID))
+										and (not item.group.races or (character.raceID and contains(item.group.races, character.raceID)))
+										and (not item.group.c or (character.classID and contains(item.group.c, character.classID)))
+										and (character.Quests and not character.Quests[item.group.questID]) then
+										incompletes[guid] = character;
+									end
+								end
+								local desc, j = "", 0;
+								for guid,character in pairs(incompletes) do
+									if j > 0 then desc = desc .. ", "; end
+									desc = desc .. (character.text or guid);
+									j = j + 1;
+								end
+								if j > 0 then
+									tinsert(info, { left = " ", right = string.gsub(desc, "-" .. realmName, ""), hash = "HASH" .. item.group.questID });
+								end
+							end
 						end
 					else
 						for i=1,math.min(25, #entries) do
@@ -1791,6 +1816,22 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 							if mapID and mapID ~= app.CurrentMapID then left = left .. " (" .. app.GetMapName(mapID) .. ")"; end
 							if item.group.icon then item.prefix = item.prefix .. "|T" .. item.group.icon .. ":0|t "; end
 							tinsert(info, { left = item.prefix .. left, right = item.right });
+							
+							if item.group.questID and not item.group.repeatable and showOtherCharacterQuests then
+								local incompletes = {};
+								for guid,character in pairs(ATTCharacterData) do
+									if character.realm == realmName and character.Quests and not character.Quests[item.group.questID] then
+										incompletes[guid] = character;
+									end
+								end
+								local desc, j = "", 0;
+								for guid,character in pairs(incompletes) do
+									if j > 0 then desc = desc .. ", "; end
+									desc = desc .. (character.text or guid);
+									j = j + 1;
+								end
+								tinsert(info, { left = " ", right = string.gsub(desc, "-" .. realmName, ""), hash = "HASH" .. item.group.questID });
+							end
 						end
 						local more = #entries - 25;
 						if more > 0 then tinsert(info, { left = "And " .. more .. " more..." }); end
@@ -1801,9 +1842,10 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 			-- Crafted Items
 			if crafted and #crafted > 0 then
 				if app.Settings:GetTooltipSetting("Show:CraftedItems") then
-					local entries, left, right = {};
+					local entries = {};
 					BuildContainsInfo(crafted, entries, paramA, paramB, "  ", app.noDepth and 99 or 1);
 					if #entries > 0 then
+						local left, right;
 						tinsert(info, { left = "Used to Craft:" });
 						if #entries < 25 then
 							table.sort(entries, function(a, b)
@@ -1879,7 +1921,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 						-- Show only the current character
 						local nonTrivialRecipes = {};
 						for i, o in pairs(recipes) do
-							local craftTypeID = GetTempDataSubMember("SpellRanks", o.spellID);
+							local craftTypeID = app.CurrentCharacter.SpellRanks[o.spellID];
 							if craftTypeID and craftTypeID > 0 then
 								o.craftTypeID = craftTypeID;
 								tinsert(nonTrivialRecipes, o);
@@ -1927,19 +1969,20 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 		
 		-- If the item is a recipe, then show which characters know this recipe.
 		if group.collectible and group.spellID and group.filterID ~= 100 and app.Settings:GetTooltipSetting("KnownBy") then
-			local recipes, knownBy = GetDataMember("CollectedSpellsPerCharacter"), {};
-			for key,value in pairs(recipes) do
-				if value[group.spellID] then
-					table.insert(knownBy, key);
+			local knownBy = {};
+			for guid,character in pairs(ATTCharacterData) do
+				if character.Spells and character.Spells[group.spellID] then
+					table.insert(knownBy, character);
 				end
 			end
 			if #knownBy > 0 then
-				table.sort(knownBy);
+				table.sort(knownBy, function(a, b)
+					return a.text < b.text;
+				end);
 				local desc = "Known by ";
-				local characters = GetDataMember("Characters");
-				for i,key in ipairs(knownBy) do
+				for i,character in ipairs(knownBy) do
 					if i > 1 then desc = desc .. ", "; end
-					desc = desc .. (characters[key] or key);
+					desc = desc .. (character.text or "???");
 				end
 				tinsert(info, { left = string.gsub(desc, "-" .. GetRealmName(), ""), wrap = true, color = "ff66ccff" });
 			end
@@ -2031,6 +2074,7 @@ end
 -- These are the fields we store.
 fieldCache["creatureID"] = {};
 fieldCache["currencyID"] = {};
+fieldCache["factionID"] = {};
 fieldCache["flightPathID"] = {};
 fieldCache["headerID"] = {};
 fieldCache["itemID"] = {};
@@ -2051,6 +2095,9 @@ fieldConverters = {
 	end,
 	["currencyID"] = function(group, value)
 		CacheField(group, "currencyID", value);
+	end,
+	["factionID"] = function(group, value)
+		CacheField(group, "factionID", value);
 	end,
 	["flightPathID"] = function(group, value)
 		CacheField(group, "flightPathID", value);
@@ -2403,6 +2450,21 @@ local function RefreshSaves()
 	-- While the player is still logging in, wait.
 	while not app.GUID do coroutine.yield(); end
 	
+	-- Cache the lockouts across your account.
+	local serverTime = GetServerTime();
+	
+	-- Check to make sure that the old instance data has expired
+	for guid,character in pairs(ATTCharacterData) do
+		local locks = character.Lockouts;
+		if locks then
+			for name,lock in pairs(locks) do
+				if serverTime >= lock.reset then
+					locks[name] = nil;
+				end
+			end
+		end
+	end
+	
 	-- While the player is still waiting for information, wait.
 	-- NOTE: Usually, this is only 1 wait.
 	local counter = 0;
@@ -2415,30 +2477,9 @@ local function RefreshSaves()
 		end
 	end
 	
-	-- Cache the lockouts across your account.
-	local serverTime = GetServerTime();
-	local lockouts = GetDataMember("lockouts");
-	local myLockouts = GetTempDataMember("lockouts");
-	
-	-- Check to make sure that the old instance data has expired
-	for character,locks in pairs(lockouts) do
-		local lockCount = 0;
-		for name,lock in pairs(locks) do
-			if serverTime >= lock.reset then
-				-- Clean this up.
-				lock[name] = nil;
-			else
-				lockCount = lockCount + 1;
-			end
-		end
-		if lockCount == 0 then
-			-- Clean this up.
-			lockouts[character] = nil;
-		end
-	end
-	
 	-- Update Saved Instances
 	local converter = L["SAVED_TO_DJ_INSTANCES"];
+	local myLockouts = app.CurrentCharacter.Lockouts;
 	for instanceIter=1,GetNumSavedInstances() do
 		local name, id, reset, difficulty, locked, _, _, isRaid, _, _, numEncounters = GetSavedInstanceInfo(instanceIter);
 		if locked then
@@ -2468,7 +2509,7 @@ local function RefreshSaves()
 end
 local function RefreshSkills()
 	-- Store Skill Data
-	local activeSkills = GetTempDataMember("ActiveSkills");
+	local activeSkills = app.CurrentCharacter.ActiveSkills;
 	wipe(activeSkills);
 	rawset(app.SpellNameToSpellID, 0, nil);
 	app.GetSpellName(0);
@@ -2494,7 +2535,7 @@ local function RefreshSkills()
 	-- Clone the data for the specializations.
 	for specID,spellID in pairs(app.SpecializationSpellIDs) do
 		local baseSpell = activeSkills[spellID];
-		if baseSpell and (app.GetTempDataSubMember("CollectedSpells", specID) or IsSpellKnown(specID)) then
+		if baseSpell and (app.CurrentCharacter.Spells[specID] or IsSpellKnown(specID)) then
 			activeSkills[specID] = baseSpell;
 		end
 	end
@@ -3521,7 +3562,7 @@ local fields = {
 		return app.NoFilter;
 	end,
 	["OnUpdate"] = function(t)
-		return app.AlwaysShowUpdate;
+		return app.AlwaysShowUpdateWithoutReturn;
 	end,
 	["saved"] = function(t)
 		local questID = GetRelativeValue(t, "questID");
@@ -3531,7 +3572,7 @@ local fields = {
 				if guid == app.GUID then
 					return IsQuestFlaggedCompleted(questID);
 				else
-					local questsForGUID = GetDataMember("GroupQuestsByGUID")[guid] or GetDataMember("CollectedQuestsPerCharacter")[guid];
+					local questsForGUID = GetDataMember("GroupQuestsByGUID")[guid] or (ATTCharacterData[guid] and ATTCharacterData[guid].Quests);
 					return questsForGUID and questsForGUID[questID];
 				end
 			end
@@ -3614,6 +3655,16 @@ end)();
 
 -- Death Tracker Lib
 (function()
+local OnUpdateForDeathTrackerLib = function(t)
+	if app.Settings:Get("Thing:Deaths") then
+		t.visible = app.GroupVisibilityFilter(t);
+		t.parent.progress = t.parent.progress + t.progress;
+		t.parent.total = t.parent.total + t.total;
+	else
+		t.visible = false;
+	end
+	return true;
+end
 local fields = {
 	["key"] = function(t)
 		return "deaths";
@@ -3625,53 +3676,34 @@ local fields = {
 		return app.asset("Category_Deaths");
 	end,
 	["progress"] = function(t)
-		if t.visible then
-			return math.min(1000, (not app.AccountWideDeaths and (app.GUID and GetDataMember("DeathsPerCharacter")[app.GUID])) or GetDataMember("Deaths", 0));
-		else
-			return 0;
-		end
+		return math.min(1000, app.AccountWideDeaths and ATTAccountWideData.Deaths or app.CurrentCharacter.Deaths);
 	end,
 	["total"] = function(t)
-		if t.visible then
-			return 1000;
-		else
-			return 0;
-		end
+		return 1000;
 	end,
 	["description"] = function(t)
 		return "The ATT Gods must be sated. Go forth and attempt to level, mortal!\n\n 'Live! Die! Live Again!'\n";
 	end,
 	["OnTooltip"] = function(t)
 		local c = {};
-		local deathsPerCharacter = GetDataMember("DeathsPerCharacter");
-		if deathsPerCharacter then
-			local characters = GetDataMember("Characters");
-			for guid,deaths in pairs(deathsPerCharacter) do
-				if guid and deaths and deaths > 0 then
-					table.insert(c, {
-						["name"] = characters[guid] or guid or "???",
-						["deaths"] = deaths or 0
-					});
-				end
+		for _,character in pairs(ATTCharacterData) do
+			if character and character.Deaths and character.Deaths > 0 then
+				table.insert(c, character);
 			end
 		end
 		if #c > 0 then
 			GameTooltip:AddLine(" ");
 			GameTooltip:AddLine("Deaths Per Character:");
 			table.sort(c, function(a, b)
-				return a.deaths > b.deaths;
+				return a.Deaths > b.Deaths;
 			end);
-			for i,data in ipairs(c) do
-				GameTooltip:AddDoubleLine("  " .. data.name, data.deaths, 1, 1, 1);
+			for i,character in ipairs(c) do
+				GameTooltip:AddDoubleLine("  " .. string.gsub(character.text, "-" .. GetRealmName(), ""), character.Deaths, 1, 1, 1);
 			end
 		end
 	end,
 	["OnUpdate"] = function(t)
-		t.visible = app.Settings:Get("Thing:Deaths");
-		if t.visible then
-			t.parent.progress = t.parent.progress + t.progress;
-			t.parent.total = t.parent.total + t.total;
-		end
+		return OnUpdateForDeathTrackerLib;
 	end,
 };
 app.BaseDeathClass = app.BaseObjectFields(fields);
@@ -3847,13 +3879,13 @@ local fields = {
 		return app.CollectibleReputations;
 	end,
 	["saved"] = function(t)
-		if GetTempDataSubMember("CollectedFactions", t.factionID) then return 1; end
+		if app.CurrentCharacter.Factions[t.factionID] then return 1; end
 		if t.standing >= t.maxstanding then
-			SetTempDataSubMember("CollectedFactions", t.factionID, 1);
-			SetDataSubMember("CollectedFactions", t.factionID, 1);
+			app.CurrentCharacter.Factions[t.factionID] = 1;
+			ATTAccountWideData.Factions[t.factionID] = 1;
 			return 1;
 		end
-		if app.AccountWideReputations and GetDataSubMember("CollectedFactions", t.factionID) then return 2; end
+		if app.AccountWideReputations and ATTAccountWideData.Factions[t.factionID] then return 2; end
 		
 		-- If your reputation is higher than the maximum for a different faction, return partial completion.
 		if t.maxReputation and t.maxReputation[1] ~= t.factionID and (select(3, GetFactionInfoByID(t.maxReputation[1])) or 4) >= app.GetFactionStanding(t.maxReputation[2]) then
@@ -3898,6 +3930,16 @@ app.BaseFaction = app.BaseObjectFields(fields);
 app.CreateFaction = function(id, t)
 	return setmetatable(constructor(id, t, "factionID"), app.BaseFaction);
 end
+app.OnUpdateReputationRequired = function(t)
+	if app.Settings:Get("DebugMode") or app.Settings:Get("AccountMode") then
+		t.visible = true;
+		return false;
+	else
+		local reputationID = t.minReputation[1];
+		t.visible = (select(3, GetFactionInfoByID(reputationID)) or 1) >= 4;
+		return true;
+	end
+end
 end)();
 
 -- Filter Lib
@@ -3938,44 +3980,59 @@ local arrOfNodes = {
 	--896,	-- Drustvar (All of Kul Tiras)
 };
 app.CacheFlightPathData = function()
-	local newNodes = {};
+	local newNodes, anyNew = {}, false;
 	for i,mapID in ipairs(arrOfNodes) do
 		local allNodeData = C_TaxiMap.GetTaxiNodesForMap(mapID);
 		if allNodeData then
 			for j,nodeData in ipairs(allNodeData) do
-				if nodeData.name then 
-					local node = app.FlightPathDB[nodeData.nodeID];
+				if nodeData.name then
+					local node = ATTClassicAD.LocalizedFlightPathDB[nodeData.nodeID];
 					if node then
-						node.name = nodeData.name;
-					elseif true then	-- Turn this off when you're done harvesting.
+						-- Update the name of the node for this flight path.
+						if node.name ~= nodeData.name then
+							node.name = nodeData.name;
+							ATTClassicAD.LocalizedFlightPathDB[nodeData.nodeID] = node;
+						end
+					else
 						node = {};
-						node.name = "*NEW* " .. nodeData.name;
-						if nodeData.faction then
-							node.faction = nodeData.faction;
+						node.name = nodeData.name;
+						ATTClassicAD.LocalizedFlightPathDB[nodeData.nodeID] = node;
+					end
+					if not fieldCache.flightPathID[nodeData.nodeID] then
+						if nodeData.faction and nodeData.faction > 0 then
+							node.r = nodeData.faction;
 						elseif nodeData.atlasName then
 							if nodeData.atlasName == "TaxiNode_Alliance" then
-								node.faction = 2;
+								node.r = Enum.FlightPathFaction.Alliance;
 							elseif nodeData.atlasName == "TaxiNode_Horde" then
-								node.faction = 1;
+								node.r = Enum.FlightPathFaction.Horde;
 							end
 						end
-						app.FlightPathDB[nodeData.nodeID] = node;
 						newNodes[nodeData.nodeID] = node;
-						SetDataMember("NewFlightPathData", newNodes);
+						anyNew = true;
 					end
 				end
 			end
 		end
 	end
+	if anyNew then
+		print("Found new flight path data:");
+		for i,node in pairs(newNodes) do
+			print(i, node.name);
+		end
+		SetDataMember("NewFlightPathData", newNodes);
+	end
 end
 app.CacheFlightPathDataForMap = function(mapID, nodes)
 	local count = 0;
 	local temp = {};
-	for nodeID,node in pairs(app.FlightPathDB) do
-		if node.mapID == mapID and not node.u then
-			if not node.faction or node.faction < 1 or node.faction == app.FactionID then
-				temp[nodeID] = true;
-				count = count + 1;
+	for nodeID,_ in pairs(fieldCache.flightPathID) do
+		for i,node in ipairs(_) do
+			if not node.u and node.coords and node.coords[1][3] == mapID then
+				if not node.r or node.r == app.FactionID then
+					temp[nodeID] = node;
+					count = count + 1;
+				end
 			end
 		end
 	end
@@ -3989,11 +4046,11 @@ app.CacheFlightPathDataForMap = function(mapID, nodes)
 				py = py * 100;
 				
 				-- Select the best flight path node.
-				for nodeID,_ in pairs(temp) do
-					local node = app.FlightPathDB[nodeID];
-					if node.coord then
+				for nodeID,node in pairs(temp) do
+					local coord = node.coords and node.coords[1];
+					if coord then
 						-- Allow for a little bit of leeway.
-						if math.sqrt((node.coord[1] - px)^2 + (node.coord[2] - py)^2) < 0.6 then
+						if math.sqrt((coord[1] - px)^2 + (coord[2] - py)^2) < 0.6 then
 							nodes[nodeID] = true;
 						end
 					end
@@ -4032,21 +4089,12 @@ local fields = {
 	["key"] = function(t)
 		return "flightPathID";
 	end,
-	["info"] = function(t)
-		local info = app.FlightPathDB[t.flightPathID];
-		if info then
-			rawset(t, "info", info);
-			if info.mapID then CacheField(t, "mapID", info.mapID); end
-			if info.qg then CacheField(t, "creatureID", info.qg); end
-			return info;
-		end
-		return {};
-	end,
 	["text"] = function(t)
 		return t.name;
 	end,
 	["name"] = function(t)
-		return t.info.name or "Visit the Flight Master to cache.";
+		local info = ATTClassicAD.LocalizedFlightPathDB[t.flightPathID];
+		return info and info.name or "Visit the Flight Master to cache.";
 	end,
 	["icon"] = function(t)
 		local r = t.r;
@@ -4060,16 +4108,14 @@ local fields = {
 		return app.asset("fp_neutral");
 	end,
 	["description"] = function(t)
-		local description = t.info.description;
-		return (description and (description .."\n\n") or "")
-			.. "Flight paths are cached when you look at the flight master at each location.\n  - Crieve";
+		return "Flight paths are cached when you look at the flight master at each location.\n  - Crieve";
 	end,
 	["collectible"] = function(t)
 		return app.CollectibleFlightPaths;
 	end,
 	["collected"] = function(t)
-		if GetTempDataSubMember("CollectedFlightPaths", t.flightPathID) then return 1; end
-		if app.AccountWideFlightPaths and GetDataSubMember("CollectedFlightPaths", t.flightPathID) then return 2; end
+		if app.CurrentCharacter.FlightPaths[t.flightPathID] then return 1; end
+		if app.AccountWideFlightPaths and ATTAccountWideData.FlightPaths[t.flightPathID] then return 2; end
 		if t.altQuests then
 			for i,questID in ipairs(t.altQuests) do
 				if IsQuestFlaggedCompleted(questID) then
@@ -4077,27 +4123,6 @@ local fields = {
 				end
 			end
 		end
-	end,
-	["coord"] = function(t)
-		return t.info.coord;
-	end,
-	["c"] = function(t)
-		return t.info.c;
-	end,
-	["r"] = function(t)
-		local faction = t.info.faction;
-		if faction and faction > 0 then
-			return faction;
-		end
-	end,
-	["u"] = function(t)
-		return t.info.u;
-	end,
-	["crs"] = function(t)
-		return t.info.qg and { t.info.qg };
-	end,
-	["mapID"] = function(t)
-		return t.info.mapID;
 	end,
 	["nmc"] = function(t)
 		local c = t.c;
@@ -4122,9 +4147,9 @@ app.events.GOSSIP_SHOW = function()
 	if app.CacheFlightPathDataForTarget(knownNodeIDs) > 0 then
 		for nodeID,_ in pairs(knownNodeIDs) do
 			nodeID = tonumber(nodeID);
-			if not GetTempDataSubMember("CollectedFlightPaths", nodeID) then
-				SetDataSubMember("CollectedFlightPaths", nodeID, 1);
-				SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
+			if not app.CurrentCharacter.FlightPaths[nodeID] then
+				ATTAccountWideData.FlightPaths[nodeID] = 1;
+				app.CurrentCharacter.FlightPaths[nodeID] = 1;
 				UpdateSearchResults(SearchForField("flightPathID", nodeID));
 			end
 		end
@@ -4156,9 +4181,9 @@ app.events.TAXIMAP_OPENED = function()
 	
 	for nodeID,_ in pairs(knownNodeIDs) do
 		nodeID = tonumber(nodeID);
-		if not GetTempDataSubMember("CollectedFlightPaths", nodeID) then
-			SetDataSubMember("CollectedFlightPaths", nodeID, 1);
-			SetTempDataSubMember("CollectedFlightPaths", nodeID, 1);
+		if not app.CurrentCharacter.FlightPaths[nodeID] then
+			ATTAccountWideData.FlightPaths[nodeID] = 1;
+			app.CurrentCharacter.FlightPaths[nodeID] = 1;
 			UpdateSearchResults(SearchForField("flightPathID", nodeID));
 		end
 	end
@@ -4436,11 +4461,11 @@ local itemFields = {
 	["collectedAsFactionOnly"] = function(t)
 		if t.factionID then
 			-- This is used by reputation tokens. (turn in items)
-			if GetTempDataSubMember("CollectedFactions", t.factionID) then return 1; end
-			if app.AccountWideReputations and GetDataSubMember("CollectedFactions", t.factionID) then return 2; end
+			if app.CurrentCharacter.Factions[t.factionID] then return 1; end
+			if app.AccountWideReputations and ATTAccountWideData.Factions[t.factionID] then return 2; end
 			if select(3, GetFactionInfoByID(t.factionID)) == 8 then
-				SetTempDataSubMember("CollectedFactions", t.factionID, 1);
-				SetDataSubMember("CollectedFactions", t.factionID, 1);
+				app.CurrentCharacter.Factions[t.factionID] = 1;
+				ATTAccountWideData.Factions[t.factionID] = 1;
 				return 1;
 			end
 		end
@@ -4660,7 +4685,7 @@ app.GetMapName = function(mapID)
 end
 
 -- NOTE: Get these values by dumping C_MapExplorationInfo_GetExploredMapTextures(mapID)
--- This is now a table of hash,subAreaID (explorationID in ATT)
+-- This is now a table of maphash,subAreaID (explorationID in ATT)
 -- The commented sections are areas associated with the map, but not collectible. (afaik, they might add them later)
 -- /script for areaID=1,5000,1 do if C_Map.GetAreaInfo(areaID) == "Undercity" then print("Area ID: ", areaID); end end
 local EXPLORATION_ID_META = { __index = function(t, artID)
@@ -4668,1029 +4693,7 @@ local EXPLORATION_ID_META = { __index = function(t, artID)
 	rawset(t, artID, exploration);
 	return exploration;
 end };
-local EXPLORATION_ID_MAP = setmetatable({ 
-	-- Kalimdor
-	[1248] = {	-- Ashenvale
-		["128:195:131:137"] = 441,	-- Lake Falathim
-		["146:200:856:151"] = 438,	-- Bough Shadow
-		["155:150:260:373"] = 418,	-- The Ruins of Stardust
-		["165:175:189:324"] = 417,	-- Fire Scar Shrine
-		["180:245:520:238"] = 426,	-- Raynewood Retreat
-		["200:160:796:311"] = 437,	-- Warsong Lumber Camp
-		["200:205:392:218"] = 424,	-- Iris Lake
-		["205:185:272:251"] = 415,	-- Astranaar
-		["210:185:463:141"] = 419,	-- The Howling Vale
-		["215:305:205:38"] = 413,	-- Maestra's Post
-		["220:195:104:259"] = 416,	-- The Shrine of Aessina
-		["225:255:597:258"] = 428,	-- Night Run
-		["235:205:547:426"] = 422,	-- Fallen Sky Lake
-		["245:245:19:28"] = 414,	-- The Zoram Strand
-		["245:255:713:344"] = 434,	-- Felfire Hill
-		["255:195:203:158"] = 2301,	-- Thistlefur Village
-		["275:240:356:347"] = 421,	-- Mystral Lake
-		["285:185:694:225"] = 430,	-- Satyrnaar
-		--[[
-		[411] = 1,                               -- Bathran's Haunt
-		[412] = 2,                               -- The Ruins of Ordil'Aran
-		[420] = 10,                              -- Silverwind Refuge
-		[425] = 14,                              -- Moonwell
-		[427] = 16,                              -- The Shady Nook
-		[429] = 18,                              -- Xavian
-		[431] = 20,                              -- Splintertree Post
-		[432] = 21,                              -- The Dor'Danil Barrow Den
-		[433] = 22,                              -- Falfarren River
-		[435] = 24,                              -- Demon Fall Canyon
-		[436] = 25,                              -- Demon Fall Ridge
-		[879] = 29,                              -- Southfury River
-		[1276] = 30,                             -- The Talondeep Path
-		[2325] = 32,                             -- The Veiled Sea
-		[2357] = 33,                             -- Bloodtooth Camp
-		[2358] = 34,                             -- Forest Song
-		[2359] = 35,                             -- Greenpaw Village
-		[2360] = 36,                             -- Silverwing Outpost
-		[2457] = 37,                             -- Nightsong Woods
-		[2637] = 38,                             -- Kargathia Keep
-		[2797] = 39,                             -- Blackfathom Deeps
-		[2897] = 40,                             -- Zoram'gar Outpost
-		[3177] = 41,                             -- Warsong Labor Camp
-		[3319] = 42,                             -- Silverwing Grove
-		]]--
-	},
-	[1259] = {	-- Azshara
-		["120:155:818:107"] = 1229,	-- Tower of Eldara
-		["145:215:422:95"] = 1225,	-- Ursolan
-		["160:210:404:194"] = 1228,	-- The Shattered Strand
-		["190:200:681:153"] = 1226,	-- Temple of Arkkoran
-		["200:150:77:331"] = 1236,	-- Haldarr Encampment
-		["215:175:84:229"] = 1237,	-- Valormok
-		["220:255:191:369"] = 1233,	-- Forlorn Ridge
-		["225:180:35:422"] = 1235,	-- Shadowsong Shrine
-		["235:140:478:44"] = 1219,	-- Legash Encampment
-		["235:270:250:106"] = 1216,	-- Timbermaw Hold
-		["240:125:552:499"] = 1232,	-- Ravencrest Monument
-		["240:155:499:119"] = 1220,	-- Thalassian Base Camp
-		["245:185:644:40"] = 2497,	-- Bitter Reaches
-		["265:280:238:221"] = 1221,	-- Ruins of Eldarath
-		["270:300:479:201"] = 1227,	-- Bay of Storms
-		["315:200:296:429"] = 1234,	-- Lake Mennar
-		["370:220:389:353"] = 1231,	-- Southridge Beach
-		["395:128:396:540"] = 1256,	-- The Ruined Reaches
-		["570:170:366:0"] = 1230,	-- Jagged Reef
-		--[[
-		[878] = 1,                               -- Southfury River
-		[1217] = 3,                              -- Vanndir Encampment
-		[1218] = 4,                              -- TESTAzshara
-		[1222] = 8,                              -- Hetaera's Clutch
-		[1223] = 9,                              -- Temple of Zin-Malor
-		[1224] = 10,                             -- Bear's Head
-		[2321] = 25,                             -- The Great Sea
-		[3137] = 27,                             -- Talrendis Point
-		[3138] = 28,                             -- Rethress Sanctum
-		[3140] = 29,                             -- Scalebeard's Cave
-		]]--
-	},
-	[1247] = {	-- Darkshore
-		["150:215:318:162"] = 442,	-- Auberdine
-		["170:195:468:85"] = 444,	-- Tower of Althalaxx
-		["175:158:329:510"] = 449,	-- The Master's Glaive
-		["175:183:229:485"] = 450,	-- Remtravel's Excavation
-		["180:195:365:181"] = 446,	-- Bashal'Aran
-		["190:205:324:306"] = 447,	-- Ameth'Aran
-		["195:215:510:0"] = 443,	-- Ruins of Mathystra
-		["200:170:305:412"] = 448,	-- Grove of the Ancients
-		["230:190:375:94"] = 456,	-- Cliffspring River
-		--[[
-		[445] = 4,                               -- Cliffspring Falls
-		[452] = 10,                              -- Mist's Edge
-		[453] = 11,                              -- The Long Wash
-		[454] = 12,                              -- Wildbend River
-		[455] = 13,                              -- Blackwood Den
-		[2077] = 15,                             -- Twilight Vale
-		[2078] = 16,                             -- Twilight Shore
-		[2326] = 17,                             -- The Veiled Sea
-		]]--
-	},
-	[1251] = {	-- Desolace
-		["100:100:241:6"] = 2406,	-- Ranazjar Isle
-		["170:160:555:181"] = 2407,	-- Kormek's Hut
-		["190:220:447:102"] = 599,	-- Thunder Axe Fortress
-		["195:242:293:426"] = 606,	-- Gelkis Village
-		["200:250:554:0"] = 608,	-- Nijel's Point
-		["205:145:431:0"] = 2404,	-- Tethris Aran
-		["205:195:690:444"] = 2198,	-- Shadowbreak Ravine
-		["205:250:311:61"] = 2405,	-- Ethel Rethor
-		["205:285:590:365"] = 604,	-- Magram Village
-		["220:220:607:215"] = 609,	-- Kolkar Village
-		["230:230:167:389"] = 2408,	-- Shadowprey Village
-		["245:285:212:215"] = 607,	-- Valley of Spears
-		["275:250:387:244"] = 596,	-- Kodo Graveyard
-		["285:245:625:33"] = 603,	-- Sargeron
-		["285:280:399:380"] = 602,	-- Mannoroc Coven
-		--[[
-		[597] = 2,                               -- Ghost Walker Post
-		[598] = 3,                               -- Sar'theris Strand
-		[600] = 5,                               -- Bolgan's Hole
-		[2217] = 14,                             -- Broken Spear Village
-		[2324] = 15,                             -- The Veiled Sea
-		[2617] = 21,                             -- Scrabblescrew's Camp
-		[2657] = 22,                             -- Valley of Bones
-		]]--
-	},
-	[1194] = {	-- Durotar
-		["128:110:464:33"] = 817,	-- Skull Rock
-		["160:120:413:476"] = 366,	-- Kolkar Crag
-		["160:190:474:384"] = 367,	-- Sen'jin Village
-		["190:180:462:286"] = 372,	-- Tiragarde Keep
-		["190:200:327:60"] = 369,	-- Thunder Ridge
-		["200:240:549:427"] = 368,	-- Echo Isles
-		["210:160:427:78"] = 370,	-- Drygulch Ravine
-		["215:215:355:320"] = 363,	-- Valley of Trials
-		["220:230:432:170"] = 362,	-- Razor Hill
-		["230:230:301:189"] = 816,	-- Razormane Grounds
-		["445:160:244:0"] = 1637,	-- Orgrimmar
-		--[[
-		[364] = 3,                               -- The Den
-		[365] = 4,                               -- Burning Blade Coven
-		[371] = 10,                              -- Dustwind Cave
-		[373] = 12,                              -- Scuttle Coast
-		[374] = 13,                              -- Bladefist Bay
-		[375] = 14,                              -- Deadeye Shore
-		[393] = 15,                              -- Darkspear Strand
-		[410] = 17,                              -- Razorwind Canyon
-		[638] = 18,                              -- Hidden Path
-		[639] = 19,                              -- Spirit Rock
-		[640] = 20,                              -- Shrine of the Dormant Flame
-		[814] = 21,                              -- Southfury River
-		[1296] = 24,                             -- Rocktusk Farm
-		[1297] = 25,                             -- Jaggedswine Farm
-		[2320] = 26,                             -- The Great Sea
-		[2337] = 27,                             -- Razor Hill Barracks
-		[2979] = 28,                             -- Tor'kren Farm
-		]]--
-	},
-	[1253] = {	-- Dustwallow Marsh
-		["200:195:660:21"] = 2079,	-- Alcaz Island
-		["230:205:534:224"] = 513,	-- Theramore Isle
-		["250:315:422:0"] = 502,	-- Witch Hill
-		["255:250:257:313"] = 509,	-- The Den of Flame
-		["280:270:230:0"] = 496,	-- Brackenwall Village
-		["285:240:367:381"] = 511,	-- Wyrmbog
-		["400:255:239:189"] = 2302,	-- The Quagmire
-		--[[
-		[403] = 1,                               -- Shady Rest Inn
-		[497] = 3,                               -- Swamplight Manor
-		[498] = 4,                               -- Bloodfen Burrow
-		[499] = 5,                               -- Darkmist Cavern
-		[500] = 6,                               -- Moggle Point
-		[501] = 7,                               -- Beezil's Wreck
-		[503] = 9,                               -- Sentry Point
-		[504] = 10,                              -- North Point Tower
-		[505] = 11,                              -- West Point Tower
-		[506] = 12,                              -- Lost Point
-		[507] = 13,                              -- Bluefen
-		[508] = 14,                              -- Stonemaul Ruins
-		[510] = 16,                              -- The Dragonmurk
-		[514] = 20,                              -- Foothold Citadel
-		[515] = 21,                              -- Ironclad Prison
-		[516] = 22,                              -- Dustwallow Bay
-		[517] = 23,                              -- Tidefury Cove
-		[518] = 24,                              -- Dreadmurk Shore
-		[2158] = 26,                             -- Emberstrife's Den
-		[2318] = 28,                             -- The Great Sea
-		]]--
-	},
-	[1260] = {	-- Felwood
-		["145:159:496:509"] = 2478,	-- Morlos'Aran
-		["160:145:548:90"] = 1998,	-- Talonbranch Glade
-		["165:155:332:465"] = 2480,	-- Jadefire Glen
-		["175:135:408:533"] = 1761,	-- Deadwood Village
-		["185:160:405:429"] = 2479,	-- Emerald Sanctuary
-		["195:170:330:29"] = 2618,	-- Jadefire Run
-		["215:215:420:54"] = 1767,	-- Irontree Woods
-		["235:145:292:263"] = 1765,	-- Bloodvenom Falls
-		["235:155:297:381"] = 2481,	-- Ruins of Constellas
-		["235:200:307:123"] = 1766,	-- Shatter Scar Vale
-		["240:145:483:0"] = 1762,	-- Felpaw Village
-		["245:128:271:331"] = 1763,	-- Jaedenar
-		--[[
-		[1764] = 4,                              -- Bloodvenom River
-		[1768] = 8,                              -- Irontree Cavern
-		[1769] = 9,                              -- Timbermaw Hold
-		[1770] = 10,                             -- Shadow Hold
-		[1771] = 11,                             -- Shrine of the Deceiver
-		[1997] = 12,                             -- Bloodvenom Post
-		]]--
-	},
-	[1252] = {	-- Feralas
-		["110:110:493:70"] = 1113,	-- Oneiros
-		["110:170:478:386"] = 1106,	-- Frayfeather Highlands
-		["115:115:486:329"] = 1105,	-- Feral Scar Vale
-		["120:195:623:167"] = 1100,	-- Grimtotem Compound
-		["140:165:690:141"] = 1103,	-- Gordunni Outpost
-		["145:320:404:256"] = 1108,	-- The Forgotten Coast
-		["150:125:454:0"] = 1111,	-- Dream Bough
-		["155:160:689:233"] = 1099,	-- Camp Mojache
-		["180:180:208:234"] = 1120,	-- Sardor Isle
-		["190:155:305:0"] = 1114,	-- Ruins of Ravenwind
-		["190:250:540:320"] = 2522,	-- Ruins of Isildien
-		["215:293:192:375"] = 1121,	-- Isle of Dread
-		["225:180:751:198"] = 1137,	-- Lower Wilds
-		["230:195:454:201"] = 2577,	-- Dire Maul
-		["240:220:618:298"] = 1101,	-- The Writhing Deep
-		["285:245:319:75"] = 1119,	-- The Twin Colossals
-		--[[
-		[489] = 1,                               -- Thalanaar
-		[1102] = 5,                              -- Wildwind Lake
-		[1104] = 7,                              -- Mok'Gordun
-		[1107] = 10,                             -- Idlewind Lake
-		[1109] = 12,                             -- East Pillar
-		[1110] = 13,                             -- West Pillar
-		[1112] = 15,                             -- Jademir Lake
-		[1115] = 18,                             -- Rage Scar Hold
-		[1116] = 19,                             -- Feathermoon Stronghold
-		[1117] = 20,                             -- Ruins of Solarsal
-		[1136] = 25,                             -- High Wilderness
-		[2323] = 27,                             -- The Veiled Sea
-		[2518] = 28,                             -- Lariss Pavilion
-		[2519] = 29,                             -- Woodpaw Hills
-		[2520] = 30,                             -- Woodpaw Den
-		[2521] = 31,                             -- Verdantis River
-		[3117] = 34,                             -- Shalzaru's Lair
-		]]--
-	},
-	[1263] = {	-- Moonglade
-		["555:510:244:89"] = 656,	-- Lake Elune'ara
-		--[[
-		[2361] = 2,                              -- Nighthaven
-		[2362] = 3,                              -- Shrine of Remulos
-		[2363] = 4,                              -- Stormrage Barrow Dens
-		]]--
-	},
-	[1200] = {	-- Mulgore
-		["128:120:473:260"] = 224,	-- Ravaged Caravan
-		["128:155:379:242"] = 397,	-- Thunderhorn Water Well
-		["128:205:303:307"] = 818,	-- Palemane Rock
-		["170:128:458:369"] = 396,	-- Winterhoof Water Well
-		["185:128:291:0"] = 398,	-- Wildmane Water Well
-		["205:128:395:0"] = 819,	-- Windfury Ridge
-		["205:230:502:16"] = 225,	-- Red Rocks
-		["210:180:255:214"] = 404,	-- Bael'dun Digsite
-		["215:240:428:80"] = 820,	-- The Golden Plains
-		["225:235:532:238"] = 360,	-- The Venture Co. Mine
-		["256:190:523:356"] = 821,	-- The Rolling Plains
-		["256:200:367:303"] = 222,	-- Bloodhoof Village
-		["280:240:249:59"] = 1638,	-- Thunder Bluff
-		["470:243:270:425"] = 220,	-- Red Cloud Mesa
-		--[[
-		[221] = 2,                               -- Camp Narache
-		[223] = 4,                               -- Stonebull Lake
-		[358] = 7,                               -- Brambleblade Ravine
-		[399] = 12,                              -- Skyline Ridge
-		[471] = 15,                              -- Brave Wind Mesa
-		[472] = 16,                              -- Fire Stone Mesa
-		[473] = 17,                              -- Mantle Rock
-		[637] = 21,                              -- Kodo Rock
-		]]--
-	},
-	[1264] = {	-- Silithus
-		["288:256:116:413"] = 2737,	-- The Scarab Wall
-		["320:256:344:197"] = 3425,	-- Cenarion Hold
-		["320:289:104:24"] = 2740,	-- The Crystal Vale
-		["384:384:500:65"] = 2738,	-- Southwind Village
-		["384:512:97:144"] = 2743,	-- Hive'Zora
-		["512:320:265:12"] = 2742,	-- Hive'Ashi
-		["512:384:245:285"] = 2744,	-- Hive'Regal
-		--[[
-		[2477] = 1,                              -- The Veiled Sea
-		[2739] = 4,                              -- Twilight Base Camp
-		[2741] = 6,                              -- The Scarab Dais
-		[3077] = 10,                             -- Valor's Rest
-		[3097] = 11,                             -- The Swarming Pillar
-		[3098] = 12,                             -- Twilight Post
-		[3099] = 13,                             -- Twilight Outpost
-		[3100] = 14,                             -- Ravaged Twilight Camp
-		[3257] = 15,                             -- Bones of Grakkarond
-		[3426] = 17,                             -- Staghelm Point
-		[3427] = 18,                             -- Bronzebeard Encampment
-		[3446] = 19,                             -- Twilight's Run
-		[3447] = 20,                             -- Ortell's Hideout
-		[3454] = 21,                             -- Ruins of Ahn'Qiraj
-		]]--
-	},
-	[1250] = {	-- Stonetalon Mountains
-		["125:125:475:433"] = 2541,	-- Sishir Canyon
-		["125:86:663:582"] = 2539,	-- Malaka'jin
-		["145:107:572:561"] = 2540,	-- Boulderslide Ravine
-		["150:150:389:320"] = 460,	-- Sun Rock Retreat
-		["190:97:718:571"] = 2538,	-- Camp Aparaje
-		["200:215:390:145"] = 464,	-- Mirkfallon Lake
-		["225:120:668:515"] = 2537,	-- Grimtotem Post
-		["230:355:210:234"] = 465,	-- The Charred Vale
-		["270:205:247:0"] = 467,	-- Stonetalon Peak
-		["288:355:457:282"] = 1076,	-- Webwinder Path
-		["320:275:553:197"] = 461,	-- Windshear Crag
-		--[[
-		[463] = 3,                               -- Cragpool Lake
-		[466] = 6,                               -- Valley of the Bloodfuries
-		[468] = 8,                               -- The Talon Den
-		[469] = 9,                               -- Greatwood Vale
-		[636] = 10,                              -- Blackwolf River
-		[1277] = 12,                             -- The Talondeep Path
-		[2160] = 13,                             -- Windshear Mine
-		[3157] = 19,                             -- Boulderslide Cavern
-		]]--
-	},
-	[1254] = {	-- Tanaris
-		["110:140:611:147"] = 986,	-- Zalashji's Den
-		["110:180:473:234"] = 1938,	-- Broken Pillar
-		["120:135:533:104"] = 1937,	-- Noonshade Ruins
-		["150:160:291:434"] = 990,	-- Valley of the Watchers
-		["155:150:561:256"] = 2300,	-- Caverns of Time
-		["155:150:592:75"] = 977,	-- Steamwheedle Port
-		["160:150:395:346"] = 984,	-- Eastmoon Ruins
-		["160:190:629:220"] = 1336,	-- Lost Rigger Cove
-		["165:180:509:168"] = 985,	-- Waterspring Field
-		["175:165:421:91"] = 976,	-- Gadgetzan
-		["180:200:252:199"] = 982,	-- The Noxious Lair
-		["185:250:203:286"] = 980,	-- Thistleshrub Valley
-		["195:175:299:100"] = 979,	-- Sandsorrow Watch
-		["195:210:323:359"] = 992,	-- Southmoon Ruins
-		["205:145:325:289"] = 983,	-- Dunemaul Compound
-		["205:157:445:511"] = 987,	-- Land's End Beach
-		["210:175:254:0"] = 978,	-- Zul'Farrak
-		["215:175:499:293"] = 1940,	-- Southbreak Shore
-		["215:180:363:194"] = 1939,	-- Abyssal Sands
-		["220:210:449:372"] = 981,	-- The Gaping Chasm
-		--[[
-		[988] = 13,                              -- Wavestrider Beach
-		[989] = 14,                              -- Uldum
-		[991] = 16,                              -- Gunstan's Post
-		[2317] = 24,                             -- South Seas
-		[2857] = 25,                             -- The Rumble Cage
-		]]--
-	},
-	[1244] = {	-- Teldrassil
-		["128:100:494:548"] = 702,	-- Rut'theran Village
-		["128:190:335:313"] = 478,	-- Pools of Arlithrien
-		["160:210:382:281"] = 736,	-- Ban'ethil Hollow
-		["170:240:272:127"] = 264,	-- The Oracle Glade
-		["180:256:377:93"] = 266,	-- Wellspring Lake
-		["185:128:368:443"] = 261,	-- Gnarlpine Hold
-		["190:128:462:323"] = 186,	-- Dolanaar
-		["200:200:561:292"] = 260,	-- Starbreeze Village
-		["225:225:491:153"] = 188,	-- Shadowglen
-		["256:185:436:380"] = 259,	-- Lake Al'Ameth
-		["315:256:101:247"] = 1657,	-- Darnassus
-		--[[
-		[256] = 4,                               -- Aldrassil
-		[257] = 5,                               -- Shadowthread Cave
-		[258] = 6,                               -- Fel Rock
-		[262] = 10,                              -- Ban'ethil Barrow Den
-		[263] = 11,                              -- The Cleft
-		[265] = 13,                              -- Wellspring River
-		[2322] = 24,                             -- The Veiled Sea
-		]]
-	},
-	[1202] = {	-- The Barrens
-		["100:165:564:52"] = 379,	-- Far Watch Post
-		["115:110:507:294"] = 1697,	-- Raptor Grounds
-		["120:110:555:0"] = 381,	-- Boulder Lode Mine
-		["120:125:384:115"] = 386,	-- The Forgotten Pools
-		["125:115:492:63"] = 1704,	-- Grol'dom Farm
-		["125:125:556:189"] = 392,	-- Ratchet
-		["125:165:442:298"] = 1698,	-- Bramblescar
-		["128:100:412:0"] = 1703,	-- The Mor'shan Rampart
-		["128:105:419:63"] = 384,	-- Dreadmist Peak
-		["128:128:306:130"] = 1702,	-- Honor's Stand
-		["128:128:341:537"] = 1717,	-- Razorfen Kraul
-		["128:128:431:479"] = 359,	-- Bael Modan
-		["140:128:498:119"] = 1699,	-- Thorn Hill
-		["145:125:365:350"] = 378,	-- Camp Taurajo
-		["150:120:527:307"] = 385,	-- Northwatch Hold
-		["155:115:407:553"] = 1316,	-- Razorfen Downs
-		["155:128:335:462"] = 1701,	-- Blackthorn Ridge
-		["155:128:481:211"] = 388,	-- The Stagnant Oasis
-		["155:155:431:118"] = 380,	-- The Crossroads
-		["170:120:456:0"] = 382,	-- The Sludge Fen
-		["175:185:365:177"] = 387,	-- Lushwater Oasis
-		["200:145:317:29"] = 383,	-- The Dry Hills
-		["200:185:340:234"] = 1700,	-- Agama'gor
-		["210:150:355:402"] = 390,	-- Field of Giants
-		["95:100:581:247"] = 391,	-- The Merchant Coast
-		--[[
-		[401] = 16,                              -- The Tidus Stair
-		[458] = 17,                              -- Gold Road
-		[720] = 18,                              -- Fray Island
-		[815] = 19,                              -- Southfury River
-		[1156] = 21,                             -- Southern Barrens
-		[1157] = 22,                             -- Southern Gold Road
-		[1599] = 26,                             -- Mor'shan Base Camp
-		[1718] = 40,                             -- The Great Lift
-		[2138] = 41,                             -- Dreadmist Den
-		[2157] = 42,                             -- Bael'dun Keep
-		[2319] = 43,                             -- The Great Sea
-		[2757] = 44,                             -- Shrine of the Fallen Warrior
-		]]--
-	},
-	[1249] = {	-- Thousand Needles
-		["190:190:31:155"] = 482,	-- Highperch
-		["205:195:259:131"] = 2097,	-- Darkcloud Pinnacle
-		["210:180:205:70"] = 485,	-- The Great Lift
-		["210:190:357:264"] = 484,	-- Freewind Post
-		["210:195:391:192"] = 481,	-- Splithoof Crag
-		["240:220:492:250"] = 2303,	-- Windbreak Canyon
-		["250:240:179:200"] = 483,	-- The Screeching Canyon
-		["305:310:0:0"] = 480,		-- Camp E'thok
-		["320:365:610:300"] = 439,	-- The Shimmering Flats
-		--[[
-		[479] = 2,                               -- The Rustmaul Dig Site
-		[486] = 9,                               -- Galak Hold
-		[487] = 10,                              -- Roguefeather Den/
-		[488] = 11,                              -- The Weathered Nook
-		[1557] = 12,                             -- Splithoof Hold
-		[2237] = 14,                             -- Whitereach Post
-		[2238] = 15,                             -- Gornia
-		[2239] = 16,                             -- Zane's Eye Crater
-		[2240] = 17,                             -- Mirage Raceway
-		[3037] = 19,                             -- Ironstone Camp
-		[3038] = 20,                             -- Weazel's Crater
-		[3039] = 21,                             -- Tahonda Ruins
-		]]
-	},
-	[1261] = {	-- Un'Goro Crater
-		["285:285:582:67"] = 1943,	-- Ironstone Plateau
-		["295:270:367:178"] = 537,	-- Fire Plume Ridge
-		["310:355:560:240"] = 1942,	-- The Marshlands
-		["315:345:121:151"] = 543,	-- Golakka Hot Springs
-		["345:285:158:368"] = 539,	-- Terror Run
-		["345:285:367:380"] = 540,	-- The Slithering Scar
-		["570:265:160:6"] = 538,	-- Lakkari Tar Pits
-		--[[
-		[541] = 5,                               -- Marshal's Refuge
-		[542] = 6,                               -- Fungal Rock
-		]]--
-	},
-	[1266] = {	-- Winterspring
-		["125:165:611:242"] = 2247,	-- Ice Thistle Hills
-		["145:125:617:158"] = 2244,	-- Winterfall Village
-		["165:140:593:340"] = 2250,	-- Owl Wing Thicket
-		["165:200:509:107"] = 2255,	-- Everlook
-		["175:185:555:27"] = 2242,	-- The Hidden Grove
-		["185:160:392:137"] = 2253,	-- Starfall Village
-		["185:180:493:258"] = 2245,	-- Mazthoril
-		["200:160:523:376"] = 2249,	-- Frostwhisper Gorge
-		["215:185:401:198"] = 2251,	-- Lake Kel'Theril
-		["230:120:229:243"] = 2243,	-- Timbermaw Post
-		["240:140:222:172"] = 2246,	-- Frostfire Hot Springs
-		["250:180:368:7"] = 2241,	-- Frostsaber Rock
-		["255:205:447:441"] = 2256,	-- Darkwhisper Gorge
-		--[[
-		[2248] = 8,                              -- Dun Mandarr
-		[2252] = 12,                             -- The Ruins of Kel'Theril
-		[2254] = 14,                             -- Ban'Thallow Barrow Den
-		[3139] = 17,                             -- Moon Horror Den
-		]]--
-	},
-	
-	-- Eastern Kingdoms
-	[1205] = {	-- Alterac Mountains
-		["160:175:225:478"] = 1677,	-- Gavin's Naze
-		["165:197:314:471"] = 1680,	-- The Headland
-		["190:170:317:372"] = 1683,	-- Growless Cave
-		["195:288:399:380"] = 1679,	-- Corrahn's Dagger
-		["200:200:406:279"] = 1357,	-- Gallows' Corner
-		["220:280:196:131"] = 1681,	-- Misty Shore
-		["235:200:462:77"] = 284,	-- The Uplands
-		["255:255:270:197"] = 281,	-- Ruins of Alterac
-		["255:320:462:307"] = 1678,	-- Sofera's Naze
-		["280:240:334:162"] = 282,	-- Crushridge Hold
-		["285:230:276:0"] = 1682,	-- Dandred's Fold
-		["300:300:26:262"] = 279,	-- Dalaran
-		["330:265:44:403"] = 278,	-- Lordamere Internment Camp
-		["350:370:626:253"] = 1684,	-- Chillwind Point
-		["370:300:549:105"] = 280,	-- Strahnbrad
-		--[[
-		[277] = 1,                               -- The Foothill Caverns
-		[283] = 7,                               -- Slaughter Hollow
-		[1339] = 9,                              -- Lordamere Lake
-		[2839] = 19,                             -- Alterac Valley
-		[3486] = 20,                             -- Ravenholdt Manor
-		]]--
-	},
-	[1206] = {	-- Arathi Highlands
-		["160:230:558:112"] = 333,	-- Circle of East Binding
-		["170:155:419:293"] = 336,	-- Circle of Outer Binding
-		["175:225:370:186"] = 320,	-- Refuge Pointe
-		["180:210:472:165"] = 315,	-- Dabyrie's Farmstead
-		["190:210:138:54"] = 334,	-- Circle of West Binding
-		["190:240:87:138"] = 1857,	-- Thoradin's Wall
-		["200:220:355:412"] = 880,	-- Thandol Span
-		["205:250:655:120"] = 321,	-- Hammerfall
-		["210:185:286:310"] = 335,	-- Circle of Inner Binding
-		["215:210:559:333"] = 317,	-- Witherbark Village
-		["215:235:432:362"] = 316,	-- Boulderfist Hall
-		["230:195:531:276"] = 314,	-- Go'Shek Farm
-		["230:240:192:90"] = 313,	-- Northfold Manor
-		["240:230:108:287"] = 324,	-- Stromgarde Keep
-		["245:245:232:145"] = 1858,	-- Boulder'gor
-		["256:215:171:424"] = 327,	-- Faldir's Cove
-		--[[
-		[318] = 6,                               -- Drywhisker Gorge
-		[322] = 9,                               -- Blackwater Shipwrecks
-		[323] = 10,                              -- O'Breen's Camp
-		[325] = 12,                              -- The Tower of Arathor
-		[326] = 13,                              -- The Sanctum
-		[328] = 15,                              -- The Drowned Reef
-		[1837] = 21,                             -- Witherbark Caverns
-		[2401] = 24,                             -- The Forbidding Sea
-		]]--
-	},
-	[1207] = {	-- Badlands
-		["195:200:325:148"] = 338,	-- Angor Fortress
-		["200:195:445:120"] = 346,	-- Hammertoe's Digsite
-		["220:220:551:48"] = 341,	-- Camp Kosh
-		["230:230:349:256"] = 1877,	-- Valley of Fangs
-		["240:255:0:148"] = 340,	-- Kargath
-		["245:205:389:7"] = 1897,	-- The Maker's Terrace
-		["245:205:498:209"] = 1898,	-- Dustwind Gulch
-		["255:205:17:310"] = 337,	-- Apocryphan's Rest
-		["255:220:12:428"] = 344,	-- Camp Cagg
-		["255:280:501:341"] = 342,	-- Camp Boff
-		["265:270:345:389"] = 345,	-- Agmond's End
-		["270:275:159:199"] = 1878,	-- The Dustbowl
-		["285:240:148:384"] = 1879,	-- Mirage Flats
-		["370:455:611:110"] = 339,	-- Lethlor Ravine
-		--[[
-		[343] = 7,                               -- Camp Wurg
-		[347] = 11,                              -- Dustbelch Grotto
-		[1517] = 12,                             -- Uldaman
-		]]--
-	},
-	[1209] = {	-- Blasted Lands
-		["170:145:405:123"] = 2517,	-- Rise of the Defiler
-		["170:200:472:9"] = 1457,	-- Garrison Armory
-		["185:155:310:133"] = 1441,	-- Altar of Storms
-		["185:190:559:30"] = 1438,	-- Nethergarde Keep
-		["195:180:361:15"] = 1437,	-- Dreadmaul Hold
-		["225:170:501:140"] = 1440,	-- Serpent's Coil
-		["245:195:361:195"] = 1439,	-- Dreadmaul Post
-		["265:220:453:259"] = 72,	-- The Dark Portal
-		["384:450:212:178"] = 73,	-- The Tainted Scar
-	},
-	[1224] = {	-- Burning Steppes
-		["220:225:707:168"] = 249,	-- Dreadmaul Rock
-		["225:220:36:109"] = 255,	-- Altar of Storms
-		["245:265:334:114"] = 252,	-- Blackrock Stronghold
-		["256:280:173:101"] = 254,	-- Blackrock Mountain
-		["270:285:513:99"] = 250,	-- Ruins of Thaurissan
-		["270:310:589:279"] = 2417,	-- Blackrock Pass
-		["280:355:722:46"] = 2420,	-- Terror Wing Path
-		["294:270:708:311"] = 2418,	-- Morgan's Vigil
-		["320:270:377:285"] = 253,	-- The Pillar of Ash
-		["415:315:56:258"] = 2421,	-- Draco'dar
-		--[[
-		[251] = 3,                               -- Flame Crest
-		[2419] = 10,                             -- Slither Rock
-		]]--
-	},
-	[1233] = {	-- Deadwind Pass
-		["270:270:426:299"] = 2561,	-- The Vice
-		["300:245:269:337"] = 2562,	-- Karazhan
-		["380:365:249:76"] = 2697,	-- Deadman's Crossing
-		--[[
-		[2558] = 1,                              -- Deadwind Ravine
-		[2559] = 2,                              -- Diamondhead River
-		[2560] = 3,                              -- Ariden's Camp
-		[2563] = 6,                              -- Morgan's Plot
-		[2837] = 8,                              -- The Master's Cellar
-		[2937] = 9,                              -- Grosh'gok Compound
-		[2938] = 10,                             -- Sleeping Gorge
-		]]--
-	},
-	[1216] = {	-- Dun Morogh
-		["115:115:252:249"] = 137,	-- Brewnall Village
-		["125:125:217:287"] = 135,	-- Frostmane Hold
-		["128:120:792:279"] = 806,	-- South Gate Outpost
-		["128:128:573:280"] = 803,	-- Amberstill Ranch
-		["128:165:502:221"] = 138,	-- Misty Pine Refuge
-		["128:165:759:173"] = 808,	-- North Gate Outpost
-		["128:180:281:167"] = 211,	-- Iceflow Lake
-		["128:190:347:163"] = 802,	-- Shimmer Ridge
-		["150:128:295:385"] = 800,	-- Coldridge Pass
-		["155:128:522:322"] = 804,	-- The Tundrid Hills
-		["155:170:694:273"] = 212,	-- Helm's Bed Lake
-		["165:165:608:291"] = 134,	-- Gol'Bolar Quarry
-		["180:128:274:296"] = 801,	-- Chill Breeze Valley
-		["180:165:166:184"] = 133,	-- Gnomeregan
-		["200:185:314:311"] = 136,	-- The Grizzled Den
-		["200:200:386:294"] = 131,	-- Kharanos
-		["240:185:155:403"] = 132,	-- Coldridge Valley
-		["315:200:397:163"] = 809,	-- Gates of Ironforge
-		--[[
-		[77] = 1,                                -- Anvilmar
-		[189] = 10,                              -- Steelgrill's Depot
-		[716] = 13,                              -- Ironband's Compound
-		[805] = 19,                              -- South Gate Pass
-		[807] = 21,                              -- North Gate Pass
-		[2102] = 24,                             -- Thunderbrew Distillery
-		]]--
-	},
-	[1235] = {	-- Duskwood
-		["160:330:19:132"] = 1097,	-- The Hushed Bank
-		["195:145:102:302"] = 94,	-- Raven Hill
-		["200:175:653:120"] = 1098,	-- Manor Mistmantle
-		["220:220:690:353"] = 121,	-- Tranquil Gardens Cemetery
-		["220:340:504:117"] = 242,	-- Brightwood Grove
-		["235:250:390:382"] = 245,	-- The Yorgen Farmstead
-		["250:230:539:369"] = 241,	-- The Rotting Orchard
-		["255:285:243:348"] = 93,	-- Vul'Gol Ogre Mound
-		["275:250:55:342"] = 536,	-- Addle's Stead
-		["315:280:631:162"] = 42,	-- Darkshire
-		["350:300:85:149"] = 492,	-- Raven Hill Cemetery
-		["360:420:298:79"] = 856,	-- Twilight Grove
-		["910:210:89:31"] = 799,	-- The Darkened Bank
-		--[[
-		[13] = 1,                                -- The World Tree
-		[32] = 2,                                -- The Cemetary
-		[243] = 9,                               -- Forlorn Rowe
-		[244] = 10,                              -- The Whipple Estate
-		[576] = 14,                              -- Beggar's Haunt
-		[2098] = 19,                             -- Dawning Wood Catacombs
-		[2161] = 20,                             -- Roland's Doom
-		]]--
-	},
-	[1213] = {	-- Eastern Plaguelands
-		["165:160:537:367"] = 2264,	-- Corin's Crossing
-		["175:245:716:299"] = 2268,	-- Light's Hope Chapel
-		["180:160:592:241"] = 2271,	-- Eastwall Tower
-		["185:150:172:477"] = 2261,	-- The Undercroft
-		["190:205:620:128"] = 2272,	-- Northdale
-		["190:205:79:98"] = 2627,	-- Terrordale
-		["195:275:620:291"] = 2622,	-- Pestilent Scar
-		["200:205:156:360"] = 2260,	-- The Marris Stead
-		["205:165:291:401"] = 2263,	-- Crown Guard Tower
-		["205:165:614:30"] = 2273,	-- Zul'Mashar
-		["205:250:409:345"] = 2623,	-- The Infectis Scar
-		["210:179:309:489"] = 2262,	-- Darrowshire
-		["210:210:271:261"] = 2258,	-- The Fungal Vale
-		["220:360:7:231"] = 2619,	-- Thondroril River
-		["225:215:722:166"] = 2270,	-- The Noxious Glade
-		["230:150:422:36"] = 2276,	-- Quel'Lithien Lodge
-		["230:235:442:199"] = 2624,	-- Blackwood Lake
-		["240:195:457:109"] = 2275,	-- Northpass Tower
-		["240:200:194:9"] = 2279,	-- Stratholme
-		["245:170:717:471"] = 2266,	-- Tyr's Hand
-		["250:175:537:463"] = 2621,	-- Lake Mereldar
-		["360:270:169:83"] = 2277,	-- Plaguewood
-		--[[
-		[1019] = 1,                              -- The Green Belt
-		[2265] = 9,                              -- Scarlet Base Camp
-		[2267] = 11,                             -- The Scarlet Basilica
-		[2269] = 13,                             -- Browman Mill
-		[2274] = 18,                             -- Mazra'Alor
-		[2278] = 22,                             -- Scourgehold
-		[2299] = 24,                             -- Darrowmere Lake
-		[2625] = 30,                             -- Eastwall Gate
-		[2626] = 31,                             -- Terrorweb Tunnel
-		]]--
-	},
-	[1228] = {	-- Elwynn Forest
-		["225:220:422:332"] = 18,	-- Crystal Lake
-		["240:220:250:270"] = 87,	-- Goldshire
-		["255:250:551:292"] = 91,	-- Tower of Azora
-		["256:210:704:330"] = 88,	-- Eastvale Logging Camp
-		["256:237:425:431"] = 797,	-- Jerod's Landing
-		["256:240:238:428"] = 57,	-- Fargodeep Mine
-		["256:249:577:419"] = 62,	-- Brackwell Pumpkin Patch
-		["256:256:381:147"] = 9,	-- Northshire Valley
-		["256:341:124:327"] = 60,	-- Forest's Edge
-		["306:233:696:435"] = 798,	-- Ridgepoint Tower
-		["310:256:587:190"] = 86,	-- Stone Cairn Lake
-		["485:405:0:0"] = 1519,	-- Stormwind City
-		--[[
-		[23] = 3,                                -- Northshire River
-		[24] = 4,                                -- Northshire Abbey
-		[34] = 5,                                -- Echo Ridge Mine
-		[53] = 6,                                -- Thieves Camp
-		[54] = 7,                                -- Jasperlode Mine
-		[56] = 9,                                -- Heroes' Vigil
-		[59] = 11,                               -- Northshire Vineyards
-		[61] = 13,                               -- Thunder Falls
-		[63] = 15,                               -- The Stonefield Farm
-		[64] = 16,                               -- The Maclure Vineyards
-		[80] = 17,                               -- Stormwind Mountains
-		[89] = 21,                               -- Mirror Lake Orchard
-		[92] = 23,                               -- Mirror Lake
-		[120] = 24,                              -- Westbrook Garrison
-		]]--
-	},
-	[1214] = {	-- Hillsbrad Forest
-		["125:100:109:482"] = 896,	-- Purgation Isle
-		["165:200:175:275"] = 288,	-- Azurelode Mine
-		["205:155:414:154"] = 1056,	-- Darrow Hill
-		["215:240:541:236"] = 289,	-- Nethander Stead
-		["220:310:509:0"] = 272,	-- Tarren Mill
-		["230:320:524:339"] = 294,	-- Eastern Strand
-		["235:270:418:201"] = 271,	-- Southshore
-		["240:275:637:294"] = 290,	-- Dun Garok
-		["285:155:208:368"] = 295,	-- Western Strand
-		["288:225:2:192"] = 285,	-- Southpoint Tower
-		["305:275:198:155"] = 286,	-- Hillsbrad Fields
-		["384:365:605:75"] = 275,	-- Durnholde Keep
-		--[[
-		[287] = 6,                               -- Hillsbrad
-		[1057] = 14,                             -- Thoradin's Wall
-		[2397] = 15,                             -- The Great Sea
-		]]--
-	},
-	[1236] = {	-- Loch Modan
-		["195:250:109:370"] = 924,	-- Valley of Kings
-		["230:300:125:12"] = 838,	-- North Gate Pass
-		["235:270:229:11"] = 149,	-- Silver Stream Mine
-		["255:285:215:348"] = 923,	-- Stonesplinter Valley
-		["256:230:217:203"] = 144,	-- Thelsamar
-		["290:175:339:11"] = 146,	-- Stonewrought Dam
-		["295:358:309:310"] = 936,	-- Grizzlepaw Ridge
-		["315:235:542:48"] = 143,	-- Mo'grosh Stronghold
-		["320:410:352:87"] = 556,	-- The Loch
-		["345:256:482:321"] = 142,	-- Ironband's Excavation Site
-		["370:295:546:199"] = 147,	-- The Farstrider Lodge
-		--[[
-		[145] = 4,                               -- Algaz Gate
-		[837] = 9,                               -- Dun Algaz
-		[839] = 11,                              -- South Gate Pass
-		[925] = 14,                              -- Algaz Station
-		[2101] = 16,                             -- Stoutlager Inn
-		]]--
-	},
-	[1237] = {	-- Redridge Mountains
-		["235:270:399:129"] = 97,	-- Alther's Mill
-		["250:250:654:161"] = 1000,	-- Galardell Valley
-		["255:300:500:215"] = 70,	-- Stonewatch
-		["275:256:277:0"] = 996,	-- Render's Camp
-		["320:210:595:320"] = 71,	-- Stonewatch Falls
-		["340:195:83:197"] = 69,	-- Lakeshire
-		["365:245:121:72"] = 95,	-- Redridge Canyons
-		["365:350:0:284"] = 1002,	-- Three Corners
-		["430:290:187:333"] = 1001,	-- Lakeridge Highway
-		["465:255:484:361"] = 997,	-- Render's Valley
-		["535:275:133:240"] = 68,	-- Lake Everstill
-		--[[
-		[96] = 6,                                -- Tower of Ilgalar
-		[98] = 8,                                -- Rethban Caverns
-		[998] = 11,                              -- Render's Rock
-		[999] = 12,                              -- Stonewatch Tower
-		[2099] = 16,                             -- Stonewatch Keep
-		]]--
-	},
-	[1220] = {	-- Searing Gorge
-		["275:235:77:366"] = 1957,	-- Blackchar Cave
-		["305:220:494:300"] = 247,	-- Grimesilt Dig Site
-		["305:230:545:407"] = 1958,	-- Tanner Camp
-		["360:280:247:388"] = 1444,	-- The Sea of Cinders
-		["405:430:85:30"] = 1442,	-- Firewatch Ridge
-		["425:325:250:170"] = 246,	-- The Cauldron
-		["460:365:422:8"] = 1959,	-- Dustfire Valley
-		--[[
-		[1443] = 4,                              -- The Slag Pit
-		[1445] = 6,                              -- Blackrock Mountain
-		[1446] = 7,                              -- Thorium Point
-		[2838] = 11,                             -- Stonewrought Pass
-		]]--
-	},
-	[1211] = {	-- Silverpine Forest
-		["140:125:391:446"] = 204,	-- Pyrewood Village
-		["160:170:470:261"] = 213,	-- Deep Elem Mine
-		["165:185:382:252"] = 229,	-- Olsen's Farthing
-		["175:165:402:65"] = 240,	-- The Dead Field
-		["180:128:323:128"] = 928,	-- North Tide's Hollow
-		["180:185:457:144"] = 237,	-- The Decrepit Ferry
-		["185:165:286:37"] = 226,	-- The Skittering Dark
-		["210:160:352:168"] = 228,	-- The Sepulcher
-		["210:215:379:447"] = 230,	-- The Greymane Wall
-		["220:160:364:359"] = 236,	-- Shadowfang Keep
-		["240:180:491:417"] = 231,	-- Beren's Peril
-		["240:240:494:262"] = 233,	-- Ambermill
-		["250:215:593:74"] = 172,	-- Fenris Isle
-		["256:160:465:0"] = 238,	-- Malden's Orchard
-		["256:220:459:13"] = 927,	-- The Shining Strand
-		--[[
-		[235] = 1,                               -- Fenris Keep
-		[227] = 5,                               -- Valgan's Field
-		[232] = 10,                              -- The Dawning Isles
-		[239] = 16,                              -- The Ivar Patch
-		[305] = 18,                              -- North Tide's Run
-		[306] = 19,                              -- South Tide's Run
-		[926] = 20,                              -- Bucklebree Farm
-		[1338] = 23,                             -- Lordamere Lake
-		[2398] = 24,                             -- The Great Sea
-		]]--
-	},
-	[1238] = {	-- Stranglethorn Vale
-		["105:110:311:131"] = 129,	-- Mizjah Ruins
-		["105:125:387:64"] = 1740,	-- Venture Co. Base Camp
-		["110:105:260:132"] = 117,	-- Grom'gol Base Camp
-		["110:110:306:301"] = 477,	-- Ruins of Jubuwal
-		["110:140:371:129"] = 127,	-- Balia'mah Ruins
-		["115:115:156:42"] = 122,	-- Zuuldaia Ruins
-		["120:120:345:276"] = 310,	-- Crystalvein Mine
-		["125:120:314:493"] = 297,	-- Jaguero Isle
-		["125:125:280:368"] = 1737,	-- Mistvale Valley
-		["125:140:196:3"] = 102,	-- Ruins of Zul'Kunda
-		["128:125:331:59"] = 37,	-- Lake Nazferiti
-		["128:125:364:231"] = 128,	-- Ziata'jai Ruins
-		["128:175:432:94"] = 105,	-- Mosh'Ogg Ogre Mound
-		["140:110:269:26"] = 100,	-- Nesingwary's Expedition
-		["145:128:203:433"] = 35,	-- Booty Bay
-		["155:150:388:0"] = 101,	-- Kurzen's Compound
-		["165:175:194:284"] = 1739,	-- Bloodsail Compound
-		["165:190:229:422"] = 43,	-- Wild Shore
-		["170:125:394:212"] = 103,	-- Ruins of Zul'Mamwe
-		["170:90:284:0"] = 99,		-- Rebel Camp
-		["190:175:152:90"] = 104,	-- The Vile Reef
-		["200:185:235:189"] = 1741,	-- Gurubashi Arena
-		["245:220:483:8"] = 19,		-- Zul'Gurub
-		["90:115:211:359"] = 1738,	-- Nek'mani Wellspring
-		["90:80:241:92"] = 123,		-- Bal'lal Ruins
-		["95:95:299:88"] = 125,		-- Kal'ai Ruins
-		["95:95:350:335"] = 311,	-- Ruins of Aboraz
-		--[[
-		[7] = 1,                                 -- Blackwater Cove
-		[106] = 13,                              -- The Stockpile
-		[126] = 18,                              -- Tkashi Ruins
-		[301] = 23,                              -- The Savage Coast
-		[302] = 24,                              -- The Crystal Shore
-		[303] = 25,                              -- Shell Beach
-		[312] = 28,                              -- Janeiro's Point
-		[1577] = 30,                             -- The Cape of Stranglethorn
-		[1578] = 31,                             -- Southern Savage Coast
-		[1742] = 37,                             -- Spirit Den
-		[1757] = 38,                             -- The Crimson Veil
-		[1758] = 39,                             -- The Riptide
-		[1759] = 40,                             -- The Damsel's Luck
-		[1760] = 41,                             -- Venture Co. Operations Center
-		[2177] = 42,                             -- Battle Ring
-		[2338] = 43,                             -- South Seas
-		[2339] = 44,                             -- The Great Sea
-		[3357] = 45,                             -- Yojamba Isle
-		]]--
-	},
-	[1239] = {	-- Swamp of Sorrows
-		["215:365:724:120"] = 1778,	-- Sorrowmurk
-		["235:205:171:145"] = 657,	-- The Harborage
-		["240:245:0:262"] = 1777,	-- Itharius's Cave
-		["245:305:0:140"] = 116,	-- Misty Valley
-		["256:668:746:0"] = 300,	-- Misty Reed Strand
-		["275:240:129:236"] = 1780,	-- Splinterspear Junction
-		["300:275:565:218"] = 74,	-- Pool of Tears
-		["315:235:286:110"] = 1798,	-- The Shifting Mire
-		["345:250:552:378"] = 1797,	-- Stagalbog
-		["360:315:279:237"] = 75,	-- Stonard
-		["365:305:492:0"] = 76,		-- Fallow Sanctuary
-		--[[
-		[1779] = 9,                              -- Draenil'dur Village
-		[1817] = 13,                             -- Stagalbog Cave
-		[1978] = 14,                             -- Misty Reed Post
-		[2403] = 15,                             -- The Forbidding Sea
-		]]--
-	},
-	[1215] = {	-- The Hinterlands
-		["145:220:158:149"] = 1882,	-- Plaguemist Ravine
-		["160:145:512:232"] = 351,	-- Skulk Rock
-		["170:170:319:302"] = 1883,	-- Valorwind Lake
-		["170:310:693:303"] = 307,	-- The Overlook Cliffs
-		["180:170:408:260"] = 1886,	-- The Creeping Ruin
-		["185:195:237:185"] = 350,	-- Quel'Danil Lodge
-		["195:185:240:387"] = 353,	-- Shadra'Alor
-		["200:165:373:365"] = 355,	-- The Altar of Zul
-		["205:195:374:164"] = 1884,	-- Agol'watha
-		["225:200:171:306"] = 1885,	-- Hiri'watha
-		["235:285:505:333"] = 354,	-- Jintha'Alor
-		["255:205:13:245"] = 348,	-- Aerie Peak
-		["275:275:509:19"] = 356,	-- Seradane
-		["280:205:571:239"] = 1917,	-- Shaol'watha
-		--[[
-		[349] = 3,                               -- Wildhammer Keep
-		[352] = 6,                               -- Zun'watha
-		[1880] = 11,                             -- Featherbeard's Hovel
-		[1881] = 12,                             -- Shindigger's Camp
-		[1887] = 18,                             -- Bogen's Ledge
-		[2400] = 20,                             -- The Forbidding Sea
-		[3317] = 21,                             -- Revantusk Village
-		]]--
-	},
-	[1210] = {	-- Tirisfal Glades
-		["128:158:537:299"] = 159,	-- Brill
-		["150:128:474:327"] = 166,	-- Cold Hearth Manor
-		["173:128:694:289"] = 167,	-- Crusader Outpost
-		["174:220:497:145"] = 164,	-- Garren's Haunt
-		["175:247:689:104"] = 459,	-- Scarlet Watch Post
-		["186:128:395:277"] = 810,	-- Stillwater Pond
-		["201:288:587:139"] = 162,	-- Brightwater Lake
-		["211:189:746:125"] = 160,	-- Whispering Gardens
-		["216:179:630:326"] = 165,	-- Balnir Farmstead
-		["230:205:698:362"] = 152,	-- The Bulwark
-		["237:214:757:205"] = 812,	-- Venomweb Vale
-		["243:199:363:349"] = 811,	-- Nightmare Vale
-		["245:205:227:328"] = 154,	-- Deathknell
-		["256:156:239:250"] = 156,	-- Solliden Farmstead
-		["256:210:335:139"] = 157,	-- Agamand Mills
-		["315:235:463:361"] = 1497,	-- Undercity
-		--[[
-		[153] = 2,                               -- Ruins of Lordaeron
-		[155] = 4,                               -- Night Web's Hollow
-		[158] = 7,                               -- Agamand Family Crypt
-		[161] = 10,                              -- Terrace of Repose
-		[163] = 12,                              -- Gunther's Retreat
-		[168] = 17,                              -- The North Coast
-		[169] = 18,                              -- Whispering Shore
-		[173] = 19,                              -- Faol's Rest
-		[2117] = 24,                             -- Shadow Grave
-		[2118] = 25,                             -- Brill Town Hall
-		[2119] = 26,                             -- Gallows' End Tavern
-		[2399] = 27,                             -- The Great Sea
-		]]--
-	},
-	[1212] = {	-- Western Plaguelands
-		["160:125:300:311"] = 199,	-- Felstone Field
-		["160:200:566:198"] = 198,	-- The Weeping Cave
-		["170:165:600:412"] = 2298,	-- Caer Darrow
-		["170:190:451:323"] = 202,	-- The Writhing Haunt
-		["180:205:520:250"] = 201,	-- Gahrron's Withering
-		["205:340:590:86"] = 2620,	-- Thondroril River
-		["220:150:381:265"] = 200,	-- Dalson's Tears
-		["220:180:382:164"] = 192,	-- Northridge Lumber Camp
-		["225:185:137:293"] = 813,	-- The Bulwark
-		["285:230:260:355"] = 193,	-- Ruins of Andorhal
-		["300:206:355:462"] = 197,	-- Sorrow Hill
-		["340:288:307:16"] = 190,	-- Hearthglen
-		["370:270:504:343"] = 2297,	-- Darrowmere Lake
-		--[[
-		[195] = 4,                               -- School of Necromancy
-		[196] = 5,                               -- Uther's Tomb
-		[203] = 12,                              -- Mardenholde Keep
-		[3197] = 17,                             -- Chillwind Camp
-		]]--
-	},
-	[1240] = {	-- Westfall
-		["165:200:488:0"] = 916,	-- The Jansen Stead
-		["195:240:442:241"] = 108,	-- Sentinel Hill
-		["200:185:208:375"] = 921,	-- Demont's Place
-		["200:240:524:252"] = 917,	-- The Dead Acre
-		["210:215:387:11"] = 109,	-- Furlbrow's Pumpkin Farm
-		["215:215:307:29"] = 111,	-- Jangolode Mine
-		["220:200:317:331"] = 20,	-- Moonbrook
-		["225:205:328:148"] = 918,	-- The Molsen Farm
-		["225:210:459:105"] = 107,	-- Saldean's Farm
-		["225:256:220:102"] = 113,	-- Gold Coast Quarry
-		["256:175:339:418"] = 920,	-- The Dagger Hills
-		["280:190:205:467"] = 115,	-- Westfall Lighthouse
-		["288:235:523:377"] = 922,	-- The Dust Plains
-		["305:210:204:260"] = 219,	-- Alexston Farmstead
-		--[[
-		[2] = 1,                                 -- Longshore
-		[26] = 3,                                -- Lighthouse
-		[919] = 14,                              -- Stendel's Pond
-		[2364] = 19,                             -- The Great Sea
-		]]--
-	},
-	[1243] = {	-- Wetlands
-		["175:128:13:314"] = 150,	-- Menethil Harbor
-		["185:240:456:125"] = 1025,	-- The Green Belt
-		["190:160:628:176"] = 1017,	-- Raptor Ridge
-		["195:185:247:205"] = 118,	-- Whelgar's Excavation Site
-		["200:185:349:115"] = 309,	-- Ironbeard's Tomb
-		["200:240:237:41"] = 1023,	-- Saltspray Glen
-		["205:180:401:21"] = 205,	-- Dun Modr
-		["205:245:527:264"] = 1020,	-- Mosshide Fen
-		["225:185:347:218"] = 1036,	-- Angerfang Encampment
-		["225:190:89:142"] = 1022,	-- Bluegill Marsh
-		["230:190:470:371"] = 1021,	-- Thelgen Rock
-		["240:175:77:245"] = 1018,	-- Black Channel Marsh
-		["256:250:507:115"] = 1016,	-- Direforge Hill
-		["300:240:92:82"] = 1024,	-- Sundown Marsh
-		["350:360:611:230"] = 1038,	-- Dragonmaw Gates
-		--[[
-		[298] = 4,                               -- Baradin Bay
-		[299] = 5,                               -- Menethil Bay
-		[836] = 7,                               -- Dun Algaz
-		[881] = 8,                               -- Thandol Span
-		[1037] = 19,                             -- Grim Batol
-		[1039] = 21,                             -- The Lost Fleet
-		[2103] = 22,                             -- Menethil Keep
-		[2104] = 23,                             -- Deepwater Tavern
-		[2365] = 24,                             -- The Great Sea
-		[2402] = 25,                             -- The Forbidding Sea
-		]]--
-	},
-	
-	-- Battlegrounds
-	[1273] = {	-- Alterac Valley
-		["235:290:399:375"] = 2978,	-- Frostwolf Keep
-		["270:240:348:13"] = 2959,	-- Dun Baldar
-		["300:300:335:172"] = 3057,	-- Field of Strife
-	},
-}, EXPLORATION_ID_META);
+local EXPLORATION_ID_MAP = setmetatable({}, EXPLORATION_ID_META);
 
 local ExploredMapDataByIDMeta = { __index = function(t, mapID)
 	local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(mapID);
@@ -5701,12 +4704,12 @@ local ExploredMapDataByIDMeta = { __index = function(t, mapID)
 		rawset(t, mapID, explorationByID);
 		for _,info in ipairs(exploredMapTextures) do
 			if info.textureWidth > 0 and info.textureHeight > 0 then
-				local hash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
-				local remappedExplorationID = EXPLORATION_ID_MAP[artID][hash];
+				local maphash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
+				local remappedExplorationID = EXPLORATION_ID_MAP[artID][maphash];
 				if remappedExplorationID then
 					rawset(explorationByID, remappedExplorationID, true);
 				else
-					table.insert(missingHashes, hash);
+					table.insert(missingHashes, maphash);
 				end
 			end
 		end
@@ -5722,12 +4725,12 @@ local ExploredMapDataByIDMeta = { __index = function(t, mapID)
 				table.insert(missingExplorationGroup.g, missingExplorationGroup.map);
 			end
 			missingExplorationGroup.map.g = {};
-			for i,hash in ipairs(missingHashes) do
+			for i,maphash in ipairs(missingHashes) do
 				local exploration = app.CreateExploration(-1);
 				exploration.parent = missingExplorationGroup.map;
-				exploration.hash = hash;
+				exploration.maphash = maphash;
 				table.insert(missingExplorationGroup.map.g, exploration);
-				print("Missing Exploration ID for ", hash, " for mapID ", mapID);
+				print("Missing Exploration ID for ", maphash, " for mapID ", mapID);
 			end
 			app.CreateMiniListForGroup(missingExplorationGroup);
 		end
@@ -5747,23 +4750,21 @@ local fields = {
 		return "explorationID";
 	end,
 	["text"] = function(t)
-		return C_Map.GetAreaInfo(t.explorationID) or t.hash;
+		return C_Map.GetAreaInfo(t.explorationID) or t.maphash;
+	end,
+	["title"] = function(t)
+		return t.maphash;
 	end,
 	["icon"] = function(t)
 		return app.asset("INV_Misc_Map02");
 	end,
 	["preview"] = function(t)
-		local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(t.mapID)
-		if exploredMapTextures then
-			for _,info in ipairs(exploredMapTextures) do
-				local hash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
-				if hash == t.hash then
-					local texture = info.fileDataIDs[1];
-					if texture then
-						rawset(t, "preview", texture);
-						return texture;
-					end
-				end
+		local exploredMapTextureInfo = t.exploredMapTextureInfo;
+		if exploredMapTextureInfo then
+			local texture = exploredMapTextureInfo.fileDataIDs[1];
+			if texture then
+				rawset(t, "preview", texture);
+				return texture;
 			end
 		end
 	end,
@@ -5777,25 +4778,37 @@ local fields = {
 		return app.CollectibleExploration;
 	end,
 	["collected"] = function(t)
-		return ExploredSubMapsByID[t.mapID][t.explorationID];
+		return t.exploredMapTextureInfo and 1;
 	end,
-	["hash"] = function(t)
+	["exploredMapTextureInfo"] = function(t)
+		local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(t.mapID)
+		if exploredMapTextures then
+			for i,info in ipairs(exploredMapTextures) do
+				local maphash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
+				if maphash == t.maphash then
+					rawset(t, "exploredMapTextureInfo", info);
+					return info;
+				end
+			end
+		end
+	end,
+	["maphash"] = function(t)
 		local artID = t.artID;
 		if artID then
-			for hash,explorationID in pairs(EXPLORATION_ID_MAP[artID]) do
+			for maphash,explorationID in pairs(EXPLORATION_ID_MAP[artID]) do
 				if explorationID == t.explorationID then
-					return hash;
+					return maphash;
 				end
 			end
 		end
 	end,
 	["coords"] = function(t)
-		local hash = t.hash;
-		if hash then
+		local maphash = t.maphash;
+		if maphash then
 			local layers = C_Map.GetMapArtLayers(t.mapID);
 			if layers and layers[1] then
 				local coords = {};
-				local width, height, offsetX, offsetY = strsplit(":", hash);
+				local width, height, offsetX, offsetY = strsplit(":", maphash);
 				tinsert(coords, {((offsetX + (width * 0.5)) * 100) / layers[1].layerWidth, ((offsetY + (height * 0.5)) * 100) / layers[1].layerHeight, t.mapID});
 				return coords;
 			end
@@ -5832,7 +4845,7 @@ local fields = {
 		return select(1, C_Map_GetMapLevels(t.mapID));
 	end,
 	["locks"] = function(t)
-		local locks = GetTempDataSubMember("lockouts", t.name);
+		local locks = app.CurrentCharacter.Lockouts[t.name];
 		if locks then
 			rawset(t, "locks", locks);
 			return locks;
@@ -5848,21 +4861,48 @@ app.CreateMap = function(id, t)
 	local artID = map.artID;
 	if artID and map.g then
 		local exploration = EXPLORATION_ID_MAP[artID];
+		local explorationHeader = nil;
+		for i,o in ipairs(map.g) do
+			if o.key == "headerID" and o.headerID == -15 then
+				explorationHeader = o;
+				if o.g then
+					for j,e in ipairs(o.g) do
+						exploration[e.maphash] = e.explorationID;
+					end
+				end
+				break;
+			end
+		end
+		
+		local newExplorationObjects = {};
 		local explored = C_MapExplorationInfo_GetExploredMapTextures(id);
 		if explored then
 			for i,info in pairs(explored) do
-				local hash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
-				if not exploration[hash] then
-					exploration[hash] = -i;
+				local maphash = info.textureWidth..":"..info.textureHeight..":"..info.offsetX..":"..info.offsetY;
+				if not exploration[maphash] then
+					exploration[maphash] = -i;
+					tinsert(newExplorationObjects, app.CreateExploration(-i, {artID=artID,maphash=maphash}));
 				end
 			end
 		end
-		local explorationObjects = {};
-		for hash,explorationID in pairs(exploration) do
-			tinsert(explorationObjects, app.CreateExploration(explorationID, {artID=artID,hash=hash}));
+		if ExploredMapDataByID[id] then
+			-- Do nothing.
 		end
-		if #explorationObjects > 0 then
-			table.sort(explorationObjects, function(a, b)
+		if #newExplorationObjects > 0 then
+			if explorationHeader then
+				if not explorationHeader.g then
+					explorationHeader.g = {};
+				end
+				for i,o in ipairs(newExplorationObjects) do
+					table.insert(explorationHeader.g, o);
+				end
+			else
+				explorationHeader = app.CreateNPC(-15, newExplorationObjects);
+				tinsert(map.g, 1, explorationHeader);
+			end
+		end
+		if explorationHeader and explorationHeader.g then
+			table.sort(explorationHeader.g, function(a, b)
 				if a and a.text then
 					if b and b.text then
 						return a.text <= b.text;
@@ -5871,16 +4911,19 @@ app.CreateMap = function(id, t)
 				end
 				return false;
 			end);
-			tinsert(map.g, 1, app.CreateNPC(-15, explorationObjects));
 		end
 	end
 	return map;
 end
 
 app.events.MAP_EXPLORATION_UPDATED = function(...)
-	print("MAP_EXPLORATION_UPDATED", ...);
 	wipe(ExploredMapDataByID);
+	wipe(ExploredSubMapsByID);
 	app.CurrentMapID = app.GetCurrentMapID();
+	if ExploredMapDataByID[app.CurrentMapID] then
+		-- Do nothing.
+	end
+	app:RefreshData(true, true);
 end
 app.events.ZONE_CHANGED = function()
 	app.CurrentMapID = app.GetCurrentMapID();
@@ -5981,12 +5024,26 @@ local headerFields = {
 	["description"] = function(t)
 		return L["HEADER_DESCRIPTIONS"][t.headerID];
 	end,
+	["savedAsQuest"] = function(t)
+		return IsQuestFlaggedCompletedForObject(t) == 1;
+	end,
+	["trackableAsQuest"] = function(t)
+		return true;
+	end,
 };
 app.BaseHeader = app.BaseObjectFields(headerFields);
+local fields = RawCloneData(headerFields);
+fields.saved = headerFields.savedAsQuest;
+fields.trackable = headerFields.trackableAsQuest;
+app.BaseHeaderWithQuest = app.BaseObjectFields(fields);
 app.CreateNPC = function(id, t)
 	if t then
 		if id < 1 then
-			return setmetatable(constructor(id, t, "headerID"), app.BaseHeader);
+			if rawget(t, "questID") then
+				return setmetatable(constructor(id, t, "headerID"), app.BaseHeaderWithQuest);
+			else
+				return setmetatable(constructor(id, t, "headerID"), app.BaseHeader);
+			end
 		else
 			if rawget(t, "questID") then
 				return setmetatable(constructor(id, t, "npcID"), app.BaseNPCWithQuest);
@@ -6103,6 +5160,24 @@ app.SpecializationSpellIDs = setmetatable({
 	[10660] = 2108,	-- Tribal Leatherworking
 }, {__index = function(t,k) return k; end})
 
+local BLACKSMITHING = ATTC.SkillIDToSpellID[164];
+local LEATHERWORKING = ATTC.SkillIDToSpellID[165];
+local TAILORING = ATTC.SkillIDToSpellID[197];
+app.OnUpdateForOmarionsHandbook = function(t)
+	t.visible = true;
+	rawset(t, "collectible", nil);
+	if app.Settings:Get("DebugMode") or app.Settings:Get("AccountMode") or CompletedQuests[9233] then
+		return false;
+	else
+		for spellID,skills in pairs(app.CurrentCharacter.ActiveSkills) do
+			if (spellID == BLACKSMITHING or spellID == LEATHERWORKING or spellID == TAILORING) and skills[1] > 290 then
+				rawset(t, "collectible", false);
+				t.visible = false;
+				return true;
+			end
+		end
+	end
+end;
 local fields = {
 	["key"] = function(t)
 		return "professionID";
@@ -6244,7 +5319,7 @@ local questFields = {
 	end,
 	
 	["collectibleAsReputation"] = function(t)
-		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID)) or (app.CollectibleReputations and t.maxReputation);
+		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID) or (app.CollectibleReputations and t.maxReputation));
 	end,
 	["collectedAsReputation"] = function(t)
 		if app.CollectibleReputations and t.maxReputation and (select(6, GetFactionInfoByID(t.maxReputation[1])) or 0) >= t.maxReputation[2] then
@@ -6496,7 +5571,7 @@ local spellFields = {
 		return "Interface\\ICONS\\INV_Scroll_04";
 	end,
 	["craftTypeID"] = function(t)
-		return GetTempDataSubMember("SpellRanks", t.spellID);
+		return app.CurrentCharacter.SpellRanks[t.spellID];
 	end,
 	["trackable"] = function(t)
 		return true;
@@ -6515,12 +5590,11 @@ local spellFields = {
 		return app.CollectibleRecipes;
 	end,
 	["collectedAsSpell"] = function(t)
-		if app.RecipeChecker("CollectedSpells", t.spellID) then
-			return GetTempDataSubMember("CollectedSpells", t.spellID) and 1 or 2;
-		end
+		if app.CurrentCharacter.Spells[t.spellID] then return 1; end
+		if app.AccountWideRecipes and ATTAccountWideData.Spells[t.spellID] then return 2; end
 		if app.IsSpellKnown(t.spellID, t.rank, GetRelativeValue(t, "requireSkill") == 261) then
-			SetTempDataSubMember("CollectedSpells", t.spellID, 1);
-			SetDataSubMember("CollectedSpells", t.spellID, 1);
+			app.CurrentCharacter.Spells[t.spellID] = 1;
+			ATTAccountWideData.Spells[t.spellID] = 1;
 			return 1;
 		end
 	end,
@@ -6659,6 +5733,112 @@ end)();
 	end
 end)();
 
+-- Title Lib
+(function()
+local fields = {
+	["key"] = function(t)
+		return "titleID";
+	end,
+	["filterID"] = function(t)
+		return 110;
+	end,
+	["icon"] = function(t)
+		return "Interface\\Icons\\INV_Misc_Horn_01";
+	end,
+	["description"] = function(t)
+		return L["TITLES_DESC"];
+	end,
+	["text"] = function(t)
+		local name = t.playerTitle;
+		if name then
+			name = "|cff00ccff" .. name .. "|r";
+			rawset(t, "name", name);
+			return name;
+		end
+	end,
+	["playerTitle"] = function(t)
+		local name = GetTitleName(t.titleID);
+		if name then
+			local style = t.style;
+			if style == 0 then
+				-- Prefix
+				return name .. UnitName("player");
+			elseif style == 1 then
+				-- Player Name First
+				return UnitName("player") .. name;
+			elseif style == 2 then
+				-- Player Name First (with space)
+				return UnitName("player") .. " " .. name;
+			elseif style == 3 then
+				-- Comma Separated
+				return UnitName("player") .. ", " .. name;
+			end
+		end
+	end,
+	["style"] = function(t)
+		local name = GetTitleName(t.titleID);
+		if name then
+			local first = string.sub(name, 1, 1);
+			if first == " " then
+				-- Suffix
+				first = string.sub(name, 2, 2);
+				if first == string.upper(first) then
+					-- Comma Separated
+					return 3;
+				end
+
+				-- Player Name First
+				return 1;
+			else
+				local last = string.sub(name, -1);
+				if last == " " then
+					-- Prefix
+					return 0;
+				end
+
+				-- Suffix
+				if first == string.lower(first) then
+					-- Player Name First with a space
+					return 2;
+				end
+
+				-- Comma Separated
+				return 3;
+			end
+		end
+
+		return 1;	-- Player Name First
+	end,
+	["collectible"] = function(t)
+		return app.CollectibleTitles;
+	end,
+	["trackable"] = function(t)
+		return true;
+	end,
+	["collected"] = function(t)
+		if app.CurrentCharacter.Titles[t.titleID] then return 1; end
+		if app.AccountWideTitles and ATTAccountWideData.Titles[t.titleID] then return 2; end
+		if IsTitleKnown(t.titleID) then
+			app.CurrentCharacter.Titles[t.titleID] = 1;
+			ATTAccountWideData.Titles[t.titleID] = 1;
+			return 1;
+		end
+	end,
+	["saved"] = function(t)
+		if app.CurrentCharacter.Titles[t.titleID] then return true; end
+		if IsTitleKnown(t.titleID) then
+			app.CurrentCharacter.Titles[t.titleID] = 1;
+			ATTAccountWideData.Titles[t.titleID] = 1;
+			return true;
+		end
+	end,
+};
+app.BaseTitle = app.BaseObjectFields(fields);
+app.CreateTitle = function(id, t)
+	return setmetatable(constructor(id, t, "titleID"), app.BaseTitle);
+end
+end)();
+
 -- Filtering
 function app.Filter()
 	-- Meaning "Don't display."
@@ -6768,7 +5948,7 @@ function app.FilterItemClass_RequiredSkill(item)
 	local requireSkill = item.requireSkill;
 	if requireSkill and (not item.professionID or not GetRelativeValue(item, "DontEnforceSkillRequirements") or item.b == 1) then
 		requireSkill = app.SkillIDToSpellID[requireSkill];
-		return requireSkill and GetTempDataMember("ActiveSkills")[requireSkill];
+		return requireSkill and app.CurrentCharacter.ActiveSkills[requireSkill];
 	else
 		return true;
 	end
@@ -6909,14 +6089,21 @@ UpdateGroup = function(parent, group)
 	
 	-- Set the visibility
 	group.visible = visible;
-	if group.OnUpdate then group:OnUpdate(); end
-	return group.visible;
+	return visible;
 end
 UpdateGroups = function(parent, g)
 	if g then
 		local visible = false;
 		for key, group in ipairs(g) do
-			if UpdateGroup(parent, group) then
+			if group.OnUpdate then
+				if not group:OnUpdate() then
+					if UpdateGroup(parent, group) then
+						visible = true;
+					end
+				elseif group.visible then
+					visible = true;
+				end
+			elseif UpdateGroup(parent, group) then
 				visible = true;
 			end
 		end
@@ -7001,9 +6188,6 @@ function app.QuestCompletionHelper(questID)
 				end
 			end
 		end
-		
-		-- Don't force a full refresh.
-		app:RefreshData(true, true);
 	end
 end
 
@@ -7035,7 +6219,7 @@ local function MinimapButtonOnEnter(self)
 	GameTooltipIcon.icon:SetTexture(reference.preview or reference.icon);
 	GameTooltipIcon:ClearAllPoints();
 	GameTooltipIcon:SetPoint("TOPRIGHT", GameTooltip, "TOPLEFT", 0, 0);
-	local texcoord = reference.previewtexcoord or reference.texcoord;
+	local texcoord = reference.texcoord;
 	if texcoord then
 		GameTooltipIcon.icon:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4]);
 	else
@@ -7103,9 +6287,49 @@ local function CreateMinimapButton()
 	button:UpdateStyle();
 	
 	-- Button Configuration
+	local radius = 78;
+	local rounding = 10;
+	local MinimapShapes = {
+		-- quadrant booleans (same order as SetTexCoord)
+		-- {bottom-right, bottom-left, top-right, top-left}
+		-- true = rounded, false = squared
+		["ROUND"] 			= {true,  true,  true,  true },
+		["SQUARE"] 			= {false, false, false, false},
+		["CORNER-TOPLEFT"] 		= {false, false, false, true },
+		["CORNER-TOPRIGHT"] 		= {false, false, true,  false},
+		["CORNER-BOTTOMLEFT"] 		= {false, true,  false, false},
+		["CORNER-BOTTOMRIGHT"]	 	= {true,  false, false, false},
+		["SIDE-LEFT"] 			= {false, true,  false, true },
+		["SIDE-RIGHT"] 			= {true,  false, true,  false},
+		["SIDE-TOP"] 			= {false, false, true,  true },
+		["SIDE-BOTTOM"] 		= {true,  true,  false, false},
+		["TRICORNER-TOPLEFT"] 		= {false, true,  true,  true },
+		["TRICORNER-TOPRIGHT"] 		= {true,  false, true,  true },
+		["TRICORNER-BOTTOMLEFT"] 	= {true,  true,  false, true },
+		["TRICORNER-BOTTOMRIGHT"] 	= {true,  true,  true,  false},
+	};
 	button.update = function(self)
 		local position = GetDataMember("Position", -10.31);
-		self:SetPoint("CENTER", "Minimap", "CENTER", -78 * cos(position), 78 * sin(position));
+		local angle = math.rad(position) -- determine position on your own
+		local x, y
+		local cos = math.cos(angle)
+		local sin = math.sin(angle)
+		local q = 1;
+		if cos < 0 then
+			q = q + 1;	-- lower
+		end
+		if sin > 0 then
+			q = q + 2;	-- right
+		end
+		if MinimapShapes[GetMinimapShape and GetMinimapShape() or "ROUND"][q] then
+			x = cos*radius;
+			y = sin*radius;
+		else
+			local diagRadius = math.sqrt(2*(radius)^2)-rounding
+			x = math.max(-radius, math.min(cos*diagRadius, radius))
+			y = math.max(-radius, math.min(sin*diagRadius, radius))
+		end
+		self:SetPoint("CENTER", "Minimap", "CENTER", -x, y);
 	end
 	local update = function(self)
 		local w, x = GetCursorPosition();
@@ -7406,7 +6630,7 @@ local function SetRowData(self, row, data)
 		end
 		if data.u then
 			local reason = L["UNOBTAINABLE_ITEM_REASONS"][data.u];
-			if reason and not reason[4] then
+			if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then
 				local texture = L["UNOBTAINABLE_ITEM_TEXTURES"][reason[1]];
 				if texture then
 					row.Indicator:SetTexture(texture);
@@ -7812,8 +7036,8 @@ local function RowOnEnter(self)
 				else
 					GameTooltip:AddLine("Item #" .. reference.itemID);
 					if reference and reference.u then
-						local d = L["UNOBTAINABLE_ITEM_REASONS"][reference.u];
-						if d and not d[4] then GameTooltip:AddLine(d[2], 1, 1, 1, true); end
+						local reason = L["UNOBTAINABLE_ITEM_REASONS"][reference.u];
+						if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then GameTooltip:AddLine(reason[2], 1, 1, 1, true); end
 					end
 					AttachTooltipSearchResults(GameTooltip, "itemID:" .. reference.itemID, SearchForField, "itemID", reference.itemID);
 				end
@@ -7922,19 +7146,21 @@ local function RowOnEnter(self)
 			
 			-- If the item is a recipe, then show which characters know this recipe.
 			if not reference.collectible and app.Settings:GetTooltipSetting("KnownBy") then
-				local activeSkills, knownBy = GetDataMember("ActiveSkillsPerCharacter"), {};
-				for key,value in pairs(activeSkills) do
-					local skills = value[reference.spellID];
-					if skills then table.insert(knownBy, { key, skills[1], skills[2] }); end
+				local knownBy = {};
+				for _,character in pairs(ATTCharacterData) do
+					if character.ActiveSkills then
+						local skills = character.ActiveSkills[reference.spellID];
+						if skills then table.insert(knownBy, { character, skills[1], skills[2] }); end
+					end
 				end
 				if #knownBy > 0 then
 					table.sort(knownBy, function(a, b)
 						return a[2] > b[2];
 					end);
 					GameTooltip:AddLine("|cff66ccffKnown by:|r");
-					local characters = GetDataMember("Characters");
 					for i,data in ipairs(knownBy) do
-						GameTooltip:AddDoubleLine("  " .. string.gsub(characters[data[1]] or data[1], "-" .. GetRealmName(), ""), data[2] .. " / " .. data[3]);
+						local character = data[1];
+						GameTooltip:AddDoubleLine("  " .. string.gsub(character and character.text or "???", "-" .. GetRealmName(), ""), data[2] .. " / " .. data[3]);
 					end
 					
 				end
@@ -7946,22 +7172,26 @@ local function RowOnEnter(self)
 		if reference.artID and app.Settings:GetTooltipSetting("artID") then GameTooltip:AddDoubleLine(L["ART_ID"], tostring(reference.artID)); end
 		--if reference.hash then GameTooltip:AddDoubleLine("Hash", tostring(reference.hash)); end
 		if reference.coords and app.Settings:GetTooltipSetting("Coordinates") then
-			local currentMapID, j, str = app.CurrentMapID, 0;
-			for i,coord in ipairs(reference.coords) do
-				local x, y = coord[1], coord[2];
-				local mapID = coord[3] or currentMapID;
-				if mapID ~= currentMapID then
-					str = app.GetMapName(mapID) or "??";
-					if app.Settings:GetTooltipSetting("mapID") then
-						str = str .. " (" .. mapID .. ")";
+			if #reference.coords > 8 then
+				GameTooltip:AddDoubleLine("Coordinates", "Literally everywhere.", 1, 1, 1, 1, 1, 1);
+			else
+				local currentMapID, j, str = app.CurrentMapID, 0;
+				for i,coord in ipairs(reference.coords) do
+					local x, y = coord[1], coord[2];
+					local mapID = coord[3] or currentMapID;
+					if mapID ~= currentMapID then
+						str = app.GetMapName(mapID) or "??";
+						if app.Settings:GetTooltipSetting("mapID") then
+							str = str .. " (" .. mapID .. ")";
+						end
+						str = str .. ": ";
+					else
+						str = "";
 					end
-					str = str .. ": ";
-				else
-					str = "";
+					GameTooltip:AddDoubleLine(j == 0 and "Coordinates" or " ", 
+						str.. GetNumberWithZeros(math.floor(x * 10) * 0.1, 1) .. ", " .. GetNumberWithZeros(math.floor(y * 10) * 0.1, 1), 1, 1, 1, 1, 1, 1);
+					j = j + 1;
 				end
-				GameTooltip:AddDoubleLine(j == 0 and "Coordinates" or " ", 
-					str.. GetNumberWithZeros(math.floor(x * 10) * 0.1, 1) .. ", " .. GetNumberWithZeros(math.floor(y * 10) * 0.1, 1), 1, 1, 1, 1, 1, 1);
-				j = j + 1;
 			end
 		end
 		if reference.coord and app.Settings:GetTooltipSetting("Coordinates") then
@@ -8027,9 +7257,14 @@ local function RowOnEnter(self)
 				end
 			end
 			if reference.u then
-				local d = L["UNOBTAINABLE_ITEM_REASONS"][reference.u];
-				if d and not d[4] then GameTooltip:AddLine(d[2], 1, 1, 1, true); end
+				local reason = L["UNOBTAINABLE_ITEM_REASONS"][reference.u];
+				if reason and (not reason[5] or select(4, GetBuildInfo()) < reason[5]) then GameTooltip:AddLine(reason[2], 1, 1, 1, true); end
 			end
+		end
+		if reference.titleID then
+			if app.Settings:GetTooltipSetting("titleID") then GameTooltip:AddDoubleLine(L["TITLE_ID"], tostring(reference.titleID)); end
+			GameTooltip:AddDoubleLine(" ", L[IsTitleKnown(reference.titleID) and "KNOWN_ON_CHARACTER" or "UNKNOWN_ON_CHARACTER"]);
+			AttachTooltipSearchResults(GameTooltip, "titleID:" .. reference.titleID, SearchForField, "titleID", reference.titleID);
 		end
 		if reference.questID and app.Settings:GetTooltipSetting("questID") then GameTooltip:AddDoubleLine(L["QUEST_ID"], tostring(reference.questID)); end
 		if reference.qgs and app.Settings:GetTooltipSetting("QuestGivers") then
@@ -8088,14 +7323,14 @@ local function RowOnEnter(self)
 		if not GameTooltipModel:TrySetModel(reference) then
 			local texture = reference.preview or reference.icon;
 			if texture then
-				if reference.explorationID and reference.hash and reference.preview then
-					local width, height, offsetX, offsetY = strsplit(":", reference.hash);
+				if reference.explorationID and reference.maphash and reference.preview then
+					local width, height, offsetX, offsetY = strsplit(":", reference.maphash);
 					GameTooltipIcon:SetSize(tonumber(width) or 72,tonumber(height) or 72);
 				else
 					GameTooltipIcon:SetSize(72,72);
 				end
 				GameTooltipIcon.icon:SetTexture(texture);
-				local texcoord = reference.previewtexcoord or reference.texcoord;
+				local texcoord = reference.texcoord;
 				if texcoord then
 					GameTooltipIcon.icon:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4]);
 				else
@@ -8204,7 +7439,7 @@ local function RowOnEnter(self)
 							end
 						end
 					else
-						table.insert(prereqs, app.CreateQuest(questID));
+						table.insert(prereqs, app.CreateQuest(sourceQuestID));
 					end
 				end
 			end
@@ -8461,9 +7696,8 @@ function app:GetDataCache()
 			end
 		});
 		allData.expanded = true;
-		allData.icon = app.asset("content");
-		allData.texcoord = {429 / 512, (429 + 36) / 512, 217 / 256, (217 + 36) / 256};
-		allData.previewtexcoord = {1 / 512, (1 + 72) / 512, 75 / 256, (75 + 72) / 256};
+		allData.icon = app.asset("logo_32x32");
+		allData.preview = app.asset("Discord_2_128");
 		allData.text = L["TITLE"];
 		allData.description = L["DESCRIPTION"];
 		allData.visible = true;
@@ -8497,15 +7731,6 @@ function app:GetDataCache()
 			db.text = TRANSMOG_SOURCE_4;
 			db.icon = app.asset("Category_WorldDrops");
 			db.g = app.Categories.WorldDrops;
-			table.insert(g, db);
-		end
-
-		-- Factions
-		if app.Categories.Factions then
-			db = {};
-			db.text = "Factions";
-			db.icon = app.asset("Category_Factions");
-			db.g = app.Categories.Factions;
 			table.insert(g, db);
 		end
 
@@ -8564,28 +7789,21 @@ function app:GetDataCache()
 		table.insert(g, db);
 		]]--
 		
+		-- Factions (Dynamic)
+		local factionsCategory = app.CreateNPC(-8, {});
+		factionsCategory.g = {};
+		factionsCategory.factions = {};
+		factionsCategory.expanded = false;
+		table.insert(g, factionsCategory);
+		
 		-- Flight Paths (Dynamic)
-		db = {};
-		db.g = {};
-		db.fps = {};
-		app.CacheFlightPathData();
-		db.OnUpdate = function(self)
-			for i,fp in pairs(app.FlightPathDB) do
-				if not self.fps[i] then
-					local fp = app.CreateFlightPath(tonumber(i));
-					self.fps[i] = fp;
-					tinsert(self.g, fp);
-				end
-			end
-			table.sort(self.g, function(a, b)
-				return a.text < b.text;
-			end);
-		end;
-		db.OnUpdate(db);
-		db.expanded = false;
-		db.icon = app.asset("Category_FlightPaths");
-		db.text = "Flight Paths";
-		table.insert(g, db);
+		local flightPathsCategory = {};
+		flightPathsCategory.g = {};
+		flightPathsCategory.fps = {};
+		flightPathsCategory.expanded = false;
+		flightPathsCategory.icon = app.asset("Category_FlightPaths");
+		flightPathsCategory.text = "Flight Paths";
+		table.insert(g, flightPathsCategory);
 		
 		-- Professions
 		if app.Categories.Professions then
@@ -8727,9 +7945,8 @@ function app:GetDataCache()
 		-- Now build the hidden "Unsorted" Window's Data
 		allData = {};
 		allData.expanded = true;
-		allData.icon = app.asset("content");
-		allData.texcoord = {429 / 512, (429 + 36) / 512, 217 / 256, (217 + 36) / 256};
-		allData.previewtexcoord = {1 / 512, (1 + 72) / 512, 75 / 256, (75 + 72) / 256};
+		allData.icon = app.asset("logo_32x32");
+		allData.preview = app.asset("Discord_2_128");
 		allData.font = "GameFontNormalLarge";
 		allData.text = L["TITLE"];
 		allData.title = "Unsorted";
@@ -8761,6 +7978,68 @@ function app:GetDataCache()
 		BuildGroups(allData, allData.g);
 		app:GetWindow("Unsorted").data = allData;
 		CacheFields(allData);
+		
+		-- Update Faction data.
+		factionsCategory.OnUpdate = function(self)
+			for i,_ in pairs(fieldCache["factionID"]) do
+				if not self.factions[i] then
+					local faction = app.CreateFaction(tonumber(i));
+					for j,o in ipairs(_) do
+						if o.key == "factionID" then
+							for key,value in pairs(o) do rawset(faction, key, value); end
+						end
+					end
+					self.factions[i] = faction;
+					if not faction.u or faction.u ~= 1 then
+						faction.progress = nil;
+						faction.total = nil;
+						faction.g = nil;
+						faction.parent = self;
+						tinsert(self.g, faction);
+					end
+				end
+			end
+			table.sort(self.g, function(a, b)
+				return a.text < b.text;
+			end);
+		end
+		factionsCategory:OnUpdate();
+		
+		-- Update Flight Path data.
+		app.CacheFlightPathData();
+		flightPathsCategory.OnUpdate = function(self)
+			for i,_ in pairs(fieldCache.flightPathID) do
+				if not self.fps[i] then
+					local fp = app.CreateFlightPath(tonumber(i));
+					for j,o in ipairs(_) do
+						for key,value in pairs(o) do rawset(fp, key, value); end
+					end
+					self.fps[i] = fp;
+					if not fp.u or fp.u ~= 1 then
+						fp.g = nil;
+						fp.maps = nil;
+						fp.parent = self;
+						tinsert(self.g, fp);
+					end
+				end
+			end
+			for i,_ in pairs(ATTClassicAD.LocalizedFlightPathDB) do
+				if not self.fps[i] then
+					local fp = app.CreateFlightPath(tonumber(i));
+					self.fps[i] = fp;
+					if not _.u or _.u ~= 1 then
+						fp.r = _.r;
+						fp.u = _.u;
+						fp.parent = self;
+						tinsert(self.g, fp);
+					end
+				end
+			end
+			table.sort(self.g, function(a, b)
+				return a.text < b.text;
+			end);
+		end;
+		flightPathsCategory:OnUpdate();
 		
 		-- Check for Vendors missing Coordinates
 		--[[
@@ -9188,7 +8467,6 @@ app:GetWindow("Attuned", UIParent, function(self)
 								table.insert(tempRanks, {
 									["text"] = GuildControlGetRankName(rankIndex),
 									["icon"] = format("%s%02d","Interface\\PvPRankBadges\\PvPRank", (15 - rankIndex)),
-									["OnUpdate"] = app.AlwaysShowUpdate,
 									["visible"] = true,
 									["g"] = {}
 								});
@@ -9247,8 +8525,6 @@ app:GetWindow("Attuned", UIParent, function(self)
 								else
 									table.insert(unprocessedMessages, message);
 								end
-							else
-								table.insert(unprocessedMessages, message);
 							end
 						end
 						SetDataMember("AddonMessageProcessor", unprocessedMessages);
@@ -9348,7 +8624,6 @@ app:GetWindow("CosmicInfuser", UIParent, function(self)
 				["description"] = "This window helps debug when we're missing map IDs in the addon.",
 				['visible'] = true, 
 				['expanded'] = true,
-				['OnUpdate'] = app.AlwaysShowUpdate,
 				['g'] = {
 					{
 						['text'] = "Check for missing maps now!",
@@ -9473,7 +8748,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 		-- Setup Event Handlers and register for events
 		self:SetScript("OnEvent", function(self, e, ...)
 			--print(e, ...);
-			if e == "PLAYER_LOGIN" then
+			if e == "VARIABLES_LOADED" then
 				if not ATTClassicDebugData then
 					ATTClassicDebugData = app.GetDataMember("Debugger", {});
 					app.SetDataMember("Debugger", nil);
@@ -9625,7 +8900,7 @@ app:GetWindow("Debugger", UIParent, function(self)
 				end
 			end
 		end);
-		self:RegisterEvent("PLAYER_LOGIN");
+		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("GOSSIP_SHOW");
 		self:RegisterEvent("QUEST_DETAIL");
 		self:RegisterEvent("TRADE_SKILL_LIST_UPDATE");
@@ -9707,8 +8982,24 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 			local results = SearchForField("mapID", self.mapID);
 			if results then
 				-- Simplify the returned groups
-				local groups, holiday = {}, {};
+				local groups = {};
 				local header = app.CreateMap(self.mapID, { g = groups });
+				local explorationHeader = app.CreateNPC(-15, { ["g"] = {} });
+				table.insert(groups, explorationHeader);
+				local factionsHeader = app.CreateNPC(-8, { ["g"] = {} });
+				table.insert(groups, factionsHeader);
+				local flightPathsHeader = app.CreateNPC(-6, { ["g"] = {} });
+				table.insert(groups, flightPathsHeader);
+				local holidaysHeader = app.CreateNPC(-5, { ["g"] = {} });
+				table.insert(groups, holidaysHeader);
+				local questsHeader = app.CreateNPC(-17, { ["g"] = {} });
+				table.insert(groups, questsHeader);
+				local raresHeader = app.CreateNPC(-16, { ["g"] = {} });
+				table.insert(groups, raresHeader);
+				local vendorsHeader = app.CreateNPC(-2, { ["g"] = {} });
+				table.insert(groups, vendorsHeader);
+				local zoneDropsHeader = app.CreateNPC(0, { ["g"] = {} });
+				table.insert(groups, zoneDropsHeader);
 				for i, group in ipairs(results) do
 					local clone = {};
 					for key,value in pairs(group) do
@@ -9745,72 +9036,30 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 							if group.headerID ~= -17 then clone = app.CreateNPC(-17, { g = { clone } }); end
 						end
 						if holidayID then clone = app.CreateHoliday(holidayID, { g = { clone } }); end
-						MergeObject(holiday, clone);
+						MergeObject(holidaysHeader.g, clone);
 					elseif group.key == "mapID" then
 						header.key = group.key;
 						header[group.key] = group[group.key];
 						MergeObject({header}, clone);
 					elseif group.key == "npcID" then
 						if GetRelativeField(group, "headerID", -2) or GetRelativeField(group, "headerID", -173) then	-- It's a Vendor. (or a timewaking vendor)
-							MergeObject(groups, app.CreateNPC(-2, { g = { clone } }), 1);
+							MergeObject(vendorsHeader.g, clone, 1);
 						elseif GetRelativeField(group, "headerID", -17) then	-- It's a Quest.
-							MergeObject(groups, app.CreateNPC(-17, { g = { clone } }), 1);
+							MergeObject(questsHeader.g, clone, 1);
 						else
 							MergeObject(groups, clone);
 						end
 					elseif group.key == "questID" then
-						MergeObject(groups, app.CreateNPC(-17, { g = { clone } }), 1);
+						MergeObject(questsHeader.g, clone, 1);
+					elseif group.key == "factionID" then
+						MergeObject(factionsHeader.g, clone);
+					elseif group.key == "explorationID" then
+						MergeObject(explorationHeader.g, clone);
+					elseif group.key == "flightPathID" then
+						MergeObject(flightPathsHeader.g, clone);
 					else
 						MergeObject(groups, clone);
 					end
-				end
-				
-				if #holiday > 0 then
-					-- Search for Holiday entries that are not within a holidayID and attempt to find the appropriate group for them.
-					local holidays, unlinked = {}, {};
-					for i=#holiday,1,-1 do
-						local group = holiday[i];
-						if group.holidayID then
-							if group.u then holidays[group.u] = group; end
-						elseif group.u then
-							local temp = unlinked[group.u];
-							if not temp then
-								temp = {};
-								unlinked[group.u] = temp;
-							end
-							table.insert(temp, group);
-							table.remove(holiday, i);
-						end
-					end
-					for u,temp in pairs(unlinked) do
-						local h = holidays[u];
-						if h then
-							for i,data in ipairs(temp) do
-								MergeObject(h.g, data);
-							end
-						else
-							-- Attempt to scan for the main holiday header.
-							local done = false;
-							for j,o in ipairs(SearchForField("headerID", -5)) do
-								if o.g and #o.g > 5 and o.g[1].holidayID then
-									for k,group in ipairs(o.g) do
-										if group.holidayID and group.u == u then
-											MergeObject(holiday, app.CreateHoliday(group.holidayID, { g = temp, u = u }));
-											done = true;
-										end
-									end
-									break;
-								end
-							end
-							if not done then
-								for i,data in ipairs(temp) do
-									MergeObject(holiday, data);
-								end
-							end
-						end
-					end
-					
-					tinsert(groups, 1, app.CreateNPC(-5, { g = holiday, description = "A specific holiday may need to be active for you to complete the referenced Things within this section." }));
 				end
 				
 				-- Swap out the map data for the header.
@@ -9835,15 +9084,30 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 					self.data.classID and app.BaseCharacterClass
 					or app.BaseMap);
 				
-				-- If we have determined that we want to expand this section, then do it
+				-- Move all "isRaid" entries to the top of the list.
 				if results.g then
 					local bottom = {};
 					local top = {};
 					for i=#results.g,1,-1 do
 						local o = results.g[i];
-						if o.isRaid or o.flightPathID then
+						if o.key == "factionID" then
+							table.remove(results.g, i);
+							MergeObject(factionsHeader.g, o, 1);
+						elseif o.key == "flightPathID" then
+							table.remove(results.g, i);
+							MergeObject(flightPathsHeader.g, o, 1);
+						elseif o.key == "questID" then
+							table.remove(results.g, i);
+							MergeObject(questsHeader.g, o, 1);
+						end
+					end
+					for i=#results.g,1,-1 do
+						local o = results.g[i];
+						if o.isRaid then
 							table.remove(results.g, i);
 							table.insert(top, o);
+						elseif o.g and #o.g < 1 and o.key == "headerID" then
+							table.remove(results.g, i);
 						end
 					end
 					for i,o in ipairs(top) do
@@ -9948,7 +9212,6 @@ app:GetWindow("CurrentInstance", UIParent, function(self, force, got)
 		self:SetScript("OnEvent", function(self, e, ...)
 			RefreshLocation();
 		end);
-		self:RegisterEvent("PLAYER_LOGIN");
 		self:RegisterEvent("ZONE_CHANGED");
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	end
@@ -10006,6 +9269,13 @@ app:GetWindow("ItemFilter", UIParent, function(self)
 							ExpandGroupsRecursively(data, true);
 						end
 					end
+					
+					-- Update the groups without forcing Debug Mode.
+					local visibilityFilter = app.VisibilityFilter;
+					app.VisibilityFilter = app.ObjectVisibilityFilter;
+					BuildGroups(self.data, self.data.g);
+					UpdateWindow(self, true);
+					app.VisibilityFilter = visibilityFilter;
 				end,
 				['g'] = {},
 				['results'] = {},
@@ -10021,14 +9291,15 @@ app:GetWindow("ItemFilter", UIParent, function(self)
 							if tostring(f) ~= text then
 								-- The string form did not match, the filter must have been by name.
 								for id,filter in pairs(L["FILTER_ID_TYPES"]) do
-									if string.find(string.lower(filter), text) then
-										filter = tonumber(id);
+									if string.match(string.lower(filter), text) then
+										f = tonumber(id);
 										break;
 									end
 								end
 							end
 							if f then
 								self.data.results = app:BuildSearchResponse(app:GetWindow("Prime").data.g, "f", f);
+								row.ref.f = f;
 								self.dirty = true;
 							end
 							wipe(searchCache);
@@ -10036,9 +9307,7 @@ app:GetWindow("ItemFilter", UIParent, function(self)
 						end);
 						return true;
 					end,
-					['OnUpdate'] = function(data)
-						data.visible = true;
-					end,
+					['OnUpdate'] = app.AlwaysShowUpdate,
 				},
 			};
 			
@@ -10056,16 +9325,7 @@ app:GetWindow("ItemFilter", UIParent, function(self)
 		
 		-- Update the window and all of its row data
 		if self.data.OnUpdate then self.data.OnUpdate(self.data, self); end
-		for i,g in ipairs(self.data.g) do
-			if g.OnUpdate then g.OnUpdate(g, self); end
-		end
-		
-		-- Update the groups without forcing Debug Mode.
-		local visibilityFilter = app.VisibilityFilter;
-		app.VisibilityFilter = app.ObjectVisibilityFilter;
-		BuildGroups(self.data, self.data.g);
 		UpdateWindow(self, true);
-		app.VisibilityFilter = visibilityFilter;
 	end
 end);
 app:GetWindow("ItemFinder", UIParent, function(self, ...)
@@ -10084,9 +9344,7 @@ app:GetWindow("ItemFinder", UIParent, function(self, ...)
 						self:Update(true);
 						return true;
 					end,
-					['OnUpdate'] = function(data)
-						data.visible = true;
-					end,
+					['OnUpdate'] = app.AlwaysShowUpdate,
 				},
 			};
 			db.blacklist = {
@@ -10240,7 +9498,7 @@ app:GetWindow("RaidAssistant", UIParent, function(self)
 				['g'] = {},
 			};
 			lootthreshold = {
-				['text'] = LOOT_TRESHOLD,
+				['text'] = "Loot Threshold",
 				['icon'] = "Interface\\Icons\\INV_Misc_Coin_01.blp",
 				["description"] = "Select a new loot threshold.",
 				['OnClick'] = function(row, button)
@@ -10467,6 +9725,21 @@ app:GetWindow("Random", UIParent, function(self)
 					return temp;
 				end
 			end
+			function self:SelectQuest()
+				if searchCache["randomquest"] then
+					return searchCache["randomquest"];
+				else
+					local searchResults, dict, temp = {}, {} , {};
+					SearchRecursively(app:GetWindow("Prime").data, "questID", searchResults);
+					for i,o in pairs(searchResults) do
+						if not (o.saved or o.collected) and o.collectible then
+							tinsert(temp, o);
+						end
+					end
+					searchCache["randomquest"] = temp;
+					return temp;
+				end
+			end
 			function self:SelectInstance()
 				if searchCache["randominstance"] then
 					return searchCache["randominstance"];
@@ -10550,7 +9823,6 @@ app:GetWindow("Random", UIParent, function(self)
 				["description"] = "Please select a search filter option.",
 				['visible'] = true,
 				['expanded'] = true,
-				['OnUpdate'] = app.AlwaysShowUpdate,
 				['back'] = 1,
 				['g'] = {
 					setmetatable({
@@ -10564,7 +9836,7 @@ app:GetWindow("Random", UIParent, function(self)
 						end,
 						['OnUpdate'] = app.AlwaysShowUpdate,
 					}, { __index = function(t, key)
-						if key == "text" or key == "icon" or key == "preview" or key == "texcoord" or key == "previewtexcoord" then
+						if key == "text" or key == "icon" or key == "preview" or key == "texcoord" then
 							return app:GetWindow("Prime").data[key];
 						end
 					end}),
@@ -10575,6 +9847,19 @@ app:GetWindow("Random", UIParent, function(self)
 						['visible'] = true,
 						['OnClick'] = function(row, button)
 							app.SetDataMember("RandomSearchFilter", "Item");
+							self.data = mainHeader;
+							self:Reroll();
+							return true;
+						end,
+						['OnUpdate'] = app.AlwaysShowUpdate,
+					},
+					{
+						['text'] = "Quest",
+						['icon'] = "Interface\\GossipFrame\\AvailableQuestIcon",
+						['description'] = "Click this button to select a random quest based on what you're missing.",
+						['visible'] = true,
+						['OnClick'] = function(row, button)
+							app.SetDataMember("RandomSearchFilter", "Quest");
 							self.data = mainHeader;
 							self:Reroll();
 							return true;
@@ -10641,7 +9926,6 @@ app:GetWindow("Random", UIParent, function(self)
 				["description"] = "This window allows you to randomly select a place or item to get. Go get 'em!",
 				['visible'] = true, 
 				['expanded'] = true,
-				['OnUpdate'] = app.AlwaysShowUpdate,
 				['back'] = 1,
 				["indent"] = 0,
 				['options'] = {
@@ -11150,9 +10434,7 @@ app:GetWindow("SoftReserves", UIParent, function(self)
 						self:Update();
 						return true;
 					end,
-					['OnUpdate'] = function(data)
-						data.visible = true;
-					end,
+					['OnUpdate'] = app.AlwaysShowUpdate,
 				},
 				['usePersistence'] = setmetatable({
 					['text'] = "Use Persistence",
@@ -11279,13 +10561,14 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			['g'] = { },
 		};
 		self.data = self.header;
+		self.previousCraftSkillID = 0;
+		self.previousTradeSkillID = 0;
 		self.CacheRecipes = function(self)
 			-- Cache Learned Spells
 			local skillCache = fieldCache["spellID"];
 			if skillCache then
 				-- Cache learned recipes and reagents
 				local reagentCache = app.GetDataMember("Reagents", {});
-				local activeSkills = GetTempDataMember("ActiveSkills");
 				local learned, craftSkillID, tradeSkillID = 0, 0, 0;
 				rawset(app.SpellNameToSpellID, 0, nil);
 				app.GetSpellName(0);
@@ -11317,10 +10600,10 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 							if craftType ~= "header" then
 								spellID = craftSubSpellName and (select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName .. " (" .. craftSubSpellName .. ")"]) or app.SpellNameToSpellID[craftName];
 								if spellID then
-									SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil);
-									SetTempDataSubMember("CollectedSpells", spellID, 1);
-									if not GetDataSubMember("CollectedSpells", spellID) then
-										SetDataSubMember("CollectedSpells", spellID, 1);
+									app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil;
+									app.CurrentCharacter.Spells[spellID] = 1;
+									if not ATTAccountWideData.Spells[spellID] then
+										ATTAccountWideData.Spells[spellID] = 1;
 										learned = learned + 1;
 									end
 									if not skillCache[spellID] then
@@ -11374,13 +10657,12 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						for skillIndex = 1,numTradeSkills do
 							local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
 							if skillType ~= "header" then
-								local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
 								local spellID = app.SpellNameToSpellID[skillName];
 								if spellID then
-									SetTempDataSubMember("SpellRanks", spellID, shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil);
-									SetTempDataSubMember("CollectedSpells", spellID, 1);
-									if not GetDataSubMember("CollectedSpells", spellID) then
-										SetDataSubMember("CollectedSpells", spellID, 1);
+									app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil;
+									app.CurrentCharacter.Spells[spellID] = 1;
+									if not ATTAccountWideData.Spells[spellID] then
+										ATTAccountWideData.Spells[spellID] = 1;
 										learned = learned + 1;
 									end
 									if not skillCache[spellID] then
@@ -11392,6 +10674,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 								end
 								
 								-- Cache the Reagents used to make this item.
+								local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
 								for i=1,GetTradeSkillNumReagents(skillIndex) do
 									local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
 									local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
@@ -11411,7 +10694,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 				end
 				
 				-- Open the Tradeskill list for this Profession
-				if app.Categories.Professions and (craftSkillID ~= 0 or tradeSkillID ~= 0) then
+				if app.Categories.Professions and (craftSkillID ~= 0 or tradeSkillID ~= 0) and (craftSkillID ~= self.previousCraftSkillID or tradeSkillID ~= self.previousTradeSkillID) then
+					self.previousCraftSkillID = craftSkillID;
+					self.previousTradeSkillID = tradeSkillID;
 					local g = {};
 					for i,group in ipairs(app.Categories.Professions) do
 						if group.spellID == craftSkillID or group.spellID == tradeSkillID then
@@ -11470,7 +10755,12 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						self.wait = self.wait - 1;
 						coroutine.yield();
 					end
+					while not self:IsVisible() do
+						coroutine.yield();
+					end
 					self:CacheRecipes();
+					self:Update();
+					wipe(searchCache);
 				end);
 			end
 		end
@@ -11538,8 +10828,6 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 		self:SetScript("OnEvent", function(self, e, ...)
 			if e == "TRADE_SKILL_LIST_UPDATE" or e == "SKILL_LINES_CHANGED" then
 				self:RefreshRecipes();
-				self:Update();
-				wipe(searchCache);
 			elseif e == "TRADE_SKILL_SHOW" or e == "CRAFT_SHOW" then
 				if self.TSMCraftingVisible == nil then
 					self:SetTSMCraftingVisible(false);
@@ -11552,23 +10840,20 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			elseif e == "NEW_RECIPE_LEARNED" or e == "LEARNED_SPELL_IN_TAB" then
 				local spellID = ...;
 				if spellID then
-					local previousState = GetDataSubMember("CollectedSpells", spellID);
-					SetDataSubMember("CollectedSpells", spellID, 1);
-					if not GetTempDataSubMember("CollectedSpells", spellID) then
-						SetTempDataSubMember("CollectedSpells", spellID, 1);
+					local previousState = ATTAccountWideData.Spells[spellID];
+					ATTAccountWideData.Spells[spellID] = 1;
+					if not app.CurrentCharacter.Spells[spellID] then
+						app.CurrentCharacter.Spells[spellID] = 1;
 						app:RefreshData(true, true);
 						if not previousState or not app.Settings:Get("AccountWide:Recipes") then
 							app:PlayFanfare();
 						end
 					end
 					self:RefreshRecipes();
-					self:Update();
-					wipe(searchCache);
 				end
 			elseif e == "TRADE_SKILL_CLOSE" or e == "CRAFT_CLOSE" then
 				StartCoroutine("TSMWHY3", function()
 					self:RefreshRecipes();
-					self:Update();
 					if not self:UpdateFrameVisibility() then
 						self:SetVisible(false);
 					end
@@ -11798,7 +11083,6 @@ app:RegisterEvent("BOSS_KILL");
 app:RegisterEvent("CHAT_MSG_ADDON");
 app:RegisterEvent("CHAT_MSG_WHISPER")
 app:RegisterEvent("PLAYER_DEAD");
-app:RegisterEvent("PLAYER_LOGIN");
 app:RegisterEvent("VARIABLES_LOADED");
 app:RegisterEvent("PARTY_LOOT_METHOD_CHANGED");
 
@@ -11811,6 +11095,17 @@ app.events.VARIABLES_LOADED = function()
 		_G["ATTClassicAD"] = ATTClassicAD;
 	end
 	app:UpdateWindowColors();
+	LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(L["TITLE"], {
+		type = "launcher",
+		icon = app.asset("logo_32x32"),
+		OnClick = MinimapButtonOnClick,
+		OnEnter = MinimapButtonOnEnter,
+		OnLeave = MinimapButtonOnLeave,
+	});
+	
+	-- Cache the Localized Flight Path Data
+	ATTClassicAD.LocalizedFlightPathDB = setmetatable(ATTClassicAD.LocalizedFlightPathDB or {}, { __index = app.FlightPathDB });
+	app.FlightPathDB = nil;
 	
 	-- Cache information about the player.
 	local _, class, classIndex = UnitClass("player");
@@ -11840,12 +11135,180 @@ app.events.VARIABLES_LOADED = function()
 		app.FactionID = 0;
 	end
 	
+	-- Character Data Storage
+	local characterData = ATTCharacterData;
+	if not characterData then
+		characterData = {};
+		ATTCharacterData = characterData;
+	end
+	local currentCharacter = characterData[app.GUID];
+	if not currentCharacter then
+		currentCharacter = {};
+		characterData[app.GUID] = currentCharacter;
+	end
+	if not currentCharacter.text then currentCharacter.text = app.Me; end
+	if not currentCharacter.name and name then currentCharacter.name = name; end
+	if not currentCharacter.realm and realm then currentCharacter.realm = realm; end
+	if not currentCharacter.guid and app.GUID then currentCharacter.guid = app.GUID; end
+	if not currentCharacter.lvl and app.Level then currentCharacter.lvl = app.Level; end
+	if not currentCharacter.factionID and app.FactionID then currentCharacter.factionID = app.FactionID; end
+	if not currentCharacter.classID and app.ClassIndex then currentCharacter.classID = app.ClassIndex; end
+	if not currentCharacter.raceID and app.RaceIndex then currentCharacter.raceID = app.RaceIndex; end
+	if not currentCharacter.class and class then currentCharacter.class = class; end
+	if not currentCharacter.race and race then currentCharacter.race = race; end
+	if not currentCharacter.Deaths then currentCharacter.Deaths = 0; end
+	if not currentCharacter.ActiveSkills then currentCharacter.ActiveSkills = {}; end
+	if not currentCharacter.Factions then currentCharacter.Factions = {}; end
+	if not currentCharacter.FlightPaths then currentCharacter.FlightPaths = {}; end
+	if not currentCharacter.Lockouts then currentCharacter.Lockouts = {}; end
+	if not currentCharacter.Quests then currentCharacter.Quests = {}; end
+	if not currentCharacter.Spells then currentCharacter.Spells = {}; end
+	if not currentCharacter.SpellRanks then currentCharacter.SpellRanks = {}; end
+	if not currentCharacter.Titles then currentCharacter.Titles = {}; end
+	currentCharacter.lastPlayed = time();
+	app.CurrentCharacter = currentCharacter;
+	
+	-- Convert over the deprecated Characters table.
+	local characters = GetDataMember("Characters");
+	if characters then
+		for guid,text in pairs(characters) do
+			if not characterData[guid] then
+				characterData[guid] = { ["text"] = text };
+			end
+		end
+	end
+	
+	-- Convert over the deprecated DeathsPerCharacter table.
+	local deathsPerCharacter = GetDataMember("DeathsPerCharacter");
+	if deathsPerCharacter then
+		for guid,deaths in pairs(deathsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.Deaths = deaths;
+		end
+	end
+	
+	-- Convert over the deprecated ActiveSkillsPerCharacter table.
+	local activeSkillsPerCharacter = GetDataMember("ActiveSkillsPerCharacter");
+	if activeSkillsPerCharacter then
+		for guid,skills in pairs(activeSkillsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.ActiveSkills = skills;
+		end
+	end
+	
+	-- Convert over the deprecated CollectedFlightPathsPerCharacter table.
+	local collectedFlightPathsPerCharacter = GetDataMember("CollectedFlightPathsPerCharacter");
+	if collectedFlightPathsPerCharacter then
+		for guid,flightPaths in pairs(collectedFlightPathsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.FlightPaths = flightPaths;
+		end
+	end
+	
+	-- Convert over the deprecated CollectedFactionsPerCharacter table.
+	local collectedFactionsPerCharacter = GetDataMember("CollectedFactionsPerCharacter");
+	if collectedFactionsPerCharacter then
+		for guid,factions in pairs(collectedFactionsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.Factions = factions;
+		end
+	end
+	
+	-- Convert over the deprecated lockouts table.
+	local lockouts = GetDataMember("lockouts");
+	if lockouts then
+		for guid,locks in pairs(lockouts) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.Lockouts = locks;
+		end
+	end
+	
+	-- Convert over the deprecated CollectedQuestsPerCharacter table.
+	local collectedQuestsPerCharacter = GetDataMember("CollectedQuestsPerCharacter");
+	if collectedQuestsPerCharacter then
+		for guid,quests in pairs(collectedQuestsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.Quests = quests;
+		end
+	end
+	
+	-- Convert over the deprecated CollectedSpellsPerCharacter table.
+	local collectedSpellsPerCharacter = GetDataMember("CollectedSpellsPerCharacter");
+	if collectedSpellsPerCharacter then
+		for guid,spells in pairs(collectedSpellsPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.Spells = spells;
+		end
+	end
+	
+	-- Convert over the deprecated SpellRanksPerCharacter table.
+	local spellRanksPerCharacter = GetDataMember("SpellRanksPerCharacter");
+	if spellRanksPerCharacter then
+		for guid,ranks in pairs(spellRanksPerCharacter) do
+			local character = characterData[guid];
+			if not character then
+				character = { ["guid"] = guid };
+				characterData[guid] = character;
+			end
+			character.SpellRanks = ranks;
+		end
+	end
+	
+	-- Account Wide Data Storage
+	local accountWideData = ATTAccountWideData;
+	if not accountWideData then
+		accountWideData = {};
+		ATTAccountWideData = accountWideData;
+	end
+	if not accountWideData.Deaths then accountWideData.Deaths = 0; end
+	if not accountWideData.Factions then accountWideData.Factions = {}; end
+	if not accountWideData.FlightPaths then accountWideData.FlightPaths = {}; end
+	if not accountWideData.Quests then accountWideData.Quests = {}; end
+	if not accountWideData.Spells then accountWideData.Spells = {}; end
+	if not accountWideData.Titles then accountWideData.Titles = {}; end
+	
+	-- Convert over the deprecated account wide tables.
+	local data = GetDataMember("Deaths");
+	if data then accountWideData.Deaths = data; end
+	data = GetDataMember("CollectedFactions");
+	if data then accountWideData.Factions = data; end
+	data = GetDataMember("CollectedFlightPaths");
+	if data then accountWideData.FlightPaths = data; end
+	data = GetDataMember("CollectedQuests");
+	if data then accountWideData.Quests = data; end
+	data = GetDataMember("CollectedSpells");
+	if data then accountWideData.Spells = data; end
+	
+	
 	-- Check to see if we have a leftover ItemDB cache
-	GetDataMember("CollectedFactions", {});
-	GetDataMember("CollectedFlightPaths", {});
-	GetDataMember("CollectedQuests", {});
-	GetDataMember("CollectedSpells", {});
-	GetDataMember("WaypointFilters", {});
 	GetDataMember("GroupQuestsByGUID", {});
 	GetDataMember("AddonMessageProcessor", {});
 	GetDataMember("ValidSuffixesPerItemID", {});
@@ -11868,148 +11331,18 @@ app.events.VARIABLES_LOADED = function()
 		table.insert(reservesForItem, guid);
 	end
 	
-	-- Cache your character's deaths.
-	local totalDeaths = GetDataMember("Deaths", 0);
-	local deaths = GetDataMember("DeathsPerCharacter", {});
-	deaths[app.GUID] = deaths[app.GUID] or 0;
-	
-	-- Cache your character's lockouts.
-	local lockouts = GetDataMember("lockouts", {});
-	local myLockouts = GetTempDataMember("lockouts", lockouts[app.GUID]);
-	if not myLockouts then
-		myLockouts = {};
-		lockouts[app.GUID] = myLockouts;
-		SetTempDataMember("lockouts", myLockouts);
-	end
-	
-	-- Cache your character's skill data.
-	local skills = GetDataMember("ActiveSkillsPerCharacter", {});
-	local mySkills = GetTempDataMember("ActiveSkills", skills[app.GUID]);
-	if not mySkills then
-		mySkills = {};
-		skills[app.GUID] = mySkills;
-		SetTempDataMember("ActiveSkills", mySkills);
-	end
-	
-	-- Cache your character's spell ranks. (triviality of their recipes)
-	local spellRanks = GetDataMember("SpellRanksPerCharacter", {});
-	local mySpellRanks = GetTempDataMember("SpellRanks", spellRanks[app.GUID]);
-	if not mySpellRanks then
-		mySpellRanks = {};
-		spellRanks[app.GUID] = mySpellRanks;
-		SetTempDataMember("SpellRanks", mySpellRanks);
-	end
-	
-	-- Cache your character's profession data.
-	local recipes = GetDataMember("CollectedSpellsPerCharacter", {});
-	local myRecipes = GetTempDataMember("CollectedSpells", recipes[app.GUID]);
-	if not myRecipes then
-		myRecipes = {};
-		recipes[app.GUID] = myRecipes;
-		SetTempDataMember("CollectedSpells", myRecipes);
-	end
-	
-	-- Cache your character's faction data.
-	local factions = GetDataMember("CollectedFactionsPerCharacter", {});
-	local myfactions = GetTempDataMember("CollectedFactions", factions[app.GUID]);
-	if not myfactions then
-		myfactions = {};
-		factions[app.GUID] = myfactions;
-		SetTempDataMember("CollectedFactions", myfactions);
-	end
-	
-	-- Cache your character's flight path data.
-	local flightPaths = GetDataMember("CollectedFlightPathsPerCharacter", {});
-	local myFlightPaths = GetTempDataMember("CollectedFlightPaths", flightPaths[app.GUID]);
-	if not myFlightPaths then
-		myFlightPaths = {};
-		flightPaths[app.GUID] = myFlightPaths;
-		SetTempDataMember("CollectedFlightPaths", myFlightPaths);
-	end
-	
-	-- Migrate Flight Path data to the new containers.
-	if ATTClassicAD.FlightPaths then
-		for key,value in pairs(ATTClassicAD.FlightPaths) do
-			SetDataSubMember("CollectedFlightPaths", key, value);
-		end
-	end
-	if ATTCPCD and ATTCPCD.FlightPaths then
-		for key,value in pairs(ATTCPCD.FlightPaths) do
-			if value then
-				myFlightPaths[key] = value;
-				SetDataSubMember("CollectedFlightPaths", key, value);
-			end
-		end
-	end
-	
-	-- Cache your character's quest data.
-	local quests = GetDataMember("CollectedQuestsPerCharacter", {});
-	local myQuests = GetTempDataMember("CollectedQuests", quests[app.GUID]);
-	if not myQuests then
-		myQuests = {};
-		quests[app.GUID] = myQuests;
-		SetTempDataMember("CollectedQuests", myQuests);
-	end
-	
-	-- GUID to Character Name cache
-	local characters = GetDataMember("Characters", {});
-	if not characters[app.GUID] or true then -- Temporary
-		-- Convert old-style "ME" data entries to "GUID" entries.
-		local nameF = name .. "%-" .. (realm or GetRealmName());
-		local CleanData = function(t, t2)
-			for key,data in pairs(t) do
-				if string.match(key, nameF) then
-					for id,state in pairs(data) do
-						t2[id] = state;
-					end
-					t[key] = nil;
-				elseif key ~= app.GUID then
-					local isEmpty = true;
-					for id,state in pairs(data) do
-						isEmpty = false;
-						break;
-					end
-					if isEmpty then
-						t[key] = nil;
-					end
-				end
-			end
-		end
-		CleanData(factions, myfactions);
-		CleanData(lockouts, myLockouts);
-		CleanData(recipes, myRecipes);
-		characters[app.GUID] = app.Me;
-	end
-	
 	-- Clean up settings
 	local oldsettings = {};
 	for i,key in ipairs({
 		"AddonMessageProcessor",
-		"ActiveSkills",
-		"ActiveSkillsPerCharacter",
-		"Characters",
-		"CollectedFactions",
-		"CollectedFactionsPerCharacter",
-		"CollectedFlightPaths",
-		"CollectedFlightPathsPerCharacter",
-		"CollectedQuests",
-		"CollectedQuestsPerCharacter",
-		"CollectedSpells",
-		"CollectedSpellsPerCharacter",
-		"Deaths",
-		"DeathsPerCharacter",
 		"GroupQuestsByGUID",
-		"lockouts",
+		"LocalizedFlightPathDB",
 		"Position",
 		"RandomSearchFilter",
 		"Reagents",
 		"SoftReserves",
 		"SoftReservePersistence",
-		"SpellRanksPerCharacter",
-		"WaypointFilters",
-		"EnableTomTomWaypointsOnTaxi",
-		"TomTomIgnoreCompletedObjects",
-		"ValidSuffixesPerItemID"
+		"ValidSuffixesPerItemID",
 	}) do
 		oldsettings[key] = ATTClassicAD[key];
 	end
@@ -12023,8 +11356,6 @@ app.events.VARIABLES_LOADED = function()
 	ATTClassicAuctionData = nil;
 	
 	-- Tooltip Settings
-	GetDataMember("EnableTomTomWaypointsOnTaxi", false);
-	GetDataMember("TomTomIgnoreCompletedObjects", true);
 	app.Settings:Initialize();
 	app.PushSoftReserve(true);
 	C_ChatInfo.RegisterAddonMessagePrefix("ATTC");
@@ -12044,9 +11375,6 @@ app.events.VARIABLES_LOADED = function()
 		end
 	end
 	
-end
-app.events.PLAYER_LOGIN = function()
-	app:UnregisterEvent("PLAYER_LOGIN");
 	app.CurrentMapID = app.GetCurrentMapID();
 	app:GetDataCache();
 	
@@ -12059,18 +11387,11 @@ app.events.PLAYER_LOGIN = function()
 	app:RegisterEvent("SKILL_LINES_CHANGED");
 	StartCoroutine("RefreshSaves", RefreshSaves);
 	app:RefreshData(false);
-	LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject(L["TITLE"], {
-		type = "launcher",
-		icon = app.asset("logo_32x32"),
-		OnClick = MinimapButtonOnClick,
-		OnEnter = MinimapButtonOnEnter,
-		OnLeave = MinimapButtonOnLeave,
-	});
+	app:RefreshLocation();
 end
 app.events.PLAYER_DEAD = function()
-	SetDataMember("Deaths", GetDataMember("Deaths", 0) + 1);
-	local deathsPerCharacter = GetDataMember("DeathsPerCharacter");
-	deathsPerCharacter[app.GUID] = (deathsPerCharacter[app.GUID] or 0) + 1;
+	ATTAccountWideData.Deaths = ATTAccountWideData.Deaths + 1;
+	app.CurrentCharacter.Deaths = app.CurrentCharacter.Deaths + 1;
 	app.refreshDataForce = true;
 	app:RefreshData(true, true);
 	app:PlayDeathSound();
@@ -12721,14 +12042,18 @@ app.events.UPDATE_INSTANCE_INFO = function()
 end
 app.events.QUEST_ACCEPTED = function(questID)
 	wipe(searchCache);
+	app:RefreshData(true, true);
 end
 app.events.QUEST_TURNED_IN = function(questID)
-	CompletedQuests[questID] = true;
-	for questID,completed in pairs(DirtyQuests) do
-		app.QuestCompletionHelper(tonumber(questID));
+	if fieldCache.questID[questID] and not fieldCache.questID[questID][1].repeatable then
+		CompletedQuests[questID] = true;
+		for questID,completed in pairs(DirtyQuests) do
+			app.QuestCompletionHelper(tonumber(questID));
+		end
+		wipe(DirtyQuests);
+		wipe(searchCache);
 	end
-	wipe(DirtyQuests);
-	wipe(searchCache);
+	app:RefreshData(true, true);
 end
 app.events.QUEST_LOG_UPDATE = function()
 	GetQuestsCompleted(CompletedQuests);
@@ -12737,5 +12062,6 @@ app.events.QUEST_LOG_UPDATE = function()
 	end
 	wipe(DirtyQuests);
 	wipe(searchCache);
+	app:RefreshData(true, true);
 	app:UnregisterEvent("QUEST_LOG_UPDATE");
 end

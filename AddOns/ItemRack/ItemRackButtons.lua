@@ -222,7 +222,8 @@ end
 -- while buttons drag, this function periodically lights up docking possibilities
 function ItemRack.ButtonsDocking()
 
-	local button,dock = ItemRack.ButtonMoving
+	local button = ItemRack.ButtonMoving
+	local dock = nil
 	local buttonID = button:GetID()
 	local near = ItemRack.Near
 	if not button then
@@ -567,7 +568,7 @@ function ItemRack.WriteButtonCooldowns()
 end
 
 function ItemRack.UpdateButtonLocks()
-	local isLocked
+	local isLocked, alreadyLocked
 	for i in pairs(ItemRackUser.Buttons) do
 		if i<20 then
 			isLocked = IsInventoryItemLocked(i)

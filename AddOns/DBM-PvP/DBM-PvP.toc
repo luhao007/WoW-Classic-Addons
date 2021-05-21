@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Nitram/Tandanu/Arta
-## Version: r120
+## Version: r123
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars

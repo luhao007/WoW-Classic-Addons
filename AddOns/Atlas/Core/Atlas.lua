@@ -1,10 +1,10 @@
--- $Id: Atlas.lua 340 2020-01-04 16:21:56Z arith $
+-- $Id: Atlas.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -38,11 +38,26 @@ local strlen, strgfind = string.len, string.gfind
 local strtrim = strtrim
 local floor, fmod = math.floor, math.fmod
 local getn, tinsert, tsort = table.getn, table.insert, table.sort
-local GetAddOnInfo, GetAddOnEnableState = _G.GetAddOnInfo, _G.GetAddOnEnableState
+local GetAddOnInfo, GetAddOnEnableState, UnitLevel = _G.GetAddOnInfo, _G.GetAddOnEnableState, _G.UnitLevel
 local hooksecurefunc = hooksecurefunc
-local UIDropDownMenu_Initialize = L_UIDropDownMenu_Initialize
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
+
+local GetQuestGreenRange, UnitQuestTrivialLevelRange
+if (WoWClassicEra or WoWClassicTBC) then
+	GetQuestGreenRange = _G.GetQuestGreenRange
+else
+	UnitQuestTrivialLevelRange = _G.UnitQuestTrivialLevelRange
+end
+
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
@@ -65,6 +80,8 @@ local BZ = Atlas_GetLocaleLibBabble("LibBabble-SubZone-3.0")
 local BB = Atlas_GetLocaleLibBabble("LibBabble-Boss-3.0")
 local LibDialog = LibStub("LibDialog-1.0")
 local AceDB = LibStub("AceDB-3.0")
+-- UIDropDownMenu
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 local profile
 
@@ -269,7 +286,7 @@ local function bossButtonCleanUp(button)
 end
 
 local function bossButtonUpdate(button, encounterID, instanceID, b_iconImage, moduleData)
-	if WoWClassic then
+	if (WoWClassicEra or WoWClassicTBC) then
 		return
 	end
 
@@ -706,18 +723,25 @@ function addon:GetDungeonDifficultyColor(minRecLevel)
 		return color
 	end
 
+	local greenLevel
+	if (WoWClassicEra or WoWClassicTBC) then
+		greenLevel = GetQuestGreenRange()
+	else
+		greenLevel = UnitQuestTrivialLevelRange('player')
+	end
+
 	local lDiff = minRecLevel - UnitLevel("player")
 	if (lDiff >= 0) then
 		for i= 1.00, 0.10, -0.10 do
 			color = {r = 1.00, g = i, b = 0.00}
 			if ((i/0.10)==(10-lDiff)) then return color; end
 		end
-	elseif ( -lDiff < GetQuestGreenRange() ) then
+	elseif ( -lDiff < greenLevel ) then
 		for i= 0.90, 0.10, -0.10 do
 			color = {r = i, g = 1.00, b = 0.00}
 			if ((9-i/0.10)==(-1*lDiff)) then return color; end
 		end
-	elseif ( -lDiff == GetQuestGreenRange() ) then
+	elseif ( -lDiff == greenLevel ) then
 		color = {r = 0.50, g = 1.00, b = 0.50}
 	else
 		--color = {r = 0.75, g = 0.75, b = 0.75}
@@ -1226,7 +1250,7 @@ function Atlas_MapRefresh(mapID)
 	AtlasText_LevelRange_Text:SetText(tLR)
 
 	-- Map's Recommended Level Range
-	if (not WoWClassic) then
+	if (WoWRetail) then
 		local tRLR = ""
 		if (minRecLevel or minRecLevelH or minRecLevelM) then
 			local tmp_RLR = L["ATLAS_STRING_RECLEVELRANGE"]..L["Colon"]
@@ -1373,7 +1397,7 @@ function Atlas_MapRefresh(mapID)
 		AtlasFrame.AdventureJournal.instanceID = base.JournalInstanceID
 		AtlasFrameLarge.AdventureJournal.instanceID = base.JournalInstanceID
 		AtlasFrameSmall.AdventureJournal.instanceID = base.JournalInstanceID
-		if not WoWClassic then
+		if WoWRetail then
 			AtlasFrameAdventureJournalButton:Show()
 			AtlasFrameLargeAdventureJournalButton:Show()
 			AtlasFrameSmallAdventureJournalButton:Show()
@@ -1391,7 +1415,7 @@ function Atlas_MapRefresh(mapID)
 		AtlasFrame.AdventureJournalMap.mapID = base.WorldMapID
 		AtlasFrameLarge.AdventureJournalMap.mapID = base.WorldMapID
 		AtlasFrameSmall.AdventureJournalMap.mapID = base.WorldMapID
-		if not WoWClassic then
+		if WoWRetail then
 			AtlasFrameAdventureJournalMapButton:Show()
 			AtlasFrameLargeAdventureJournalMapButton:Show()
 			AtlasFrameSmallAdventureJournalMapButton:Show()
@@ -1530,7 +1554,7 @@ function Atlas_Refresh(mapID)
 		end
 	end
 
-	if not WoWClassic then
+	if WoWRetail then
 		if (AtlasEJLootFrame:IsShown()) then
 			AtlasEJLootFrame:Hide()
 		end
@@ -1617,7 +1641,7 @@ function Atlas_Refresh(mapID)
 			AtlasSwitchButton:SetText(ATLAS_INSTANCE_BUTTON)
 		end
 		AtlasSwitchButton:Show()
-		UIDropDownMenu_Initialize(AtlasSwitchDD, AtlasSwitchDD_OnLoad)
+		LibDD:UIDropDownMenu_Initialize(AtlasSwitchDD, AtlasSwitchDD_OnLoad)
 	else
 		AtlasSwitchButton:Hide()
 	end
@@ -1779,7 +1803,7 @@ function Atlas_AutoSelect()
 end
 
 function addon:DungeonMinGearLevelToolTip(self)
-	if (WoWClassic) then return end
+	if (WoWClassicEra or WoWClassicTBC) then return end
 	local currGearLevel = GetAverageItemLevel()
 	local str = format(ITEM_LEVEL, currGearLevel)
 

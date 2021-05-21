@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 
 -- 
@@ -72,7 +72,7 @@ www.vgermods.com
 /pawn -- show or hide the Pawn UI
 /pawn debug [ on | off ] -- spam debug messages to the console
 /pawn backup -- backup all of your scales to scale tags
-/pawn compare [ left item [ right ]] item -- compare items
+/pawn compare [ left | right ] ItemID | ItemLink -- compare items
  
 For more information on customizing Pawn, please see the help file (Readme.htm) that comes with the mod.
 ]=],
@@ -97,6 +97,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["DefenseInfo"] = "Defense skill.  Decreases the chance that you'll be hit by boss attacks.",
 		["DodgeInfo"] = "Dodge.  Increases the chance that you'll dodge attacks entirely.",
 		["DpsInfo"] = "Weapon damage per second.  (If you want to value DPS differently for different types of weapons, see the \"Special weapon stats\" section.)",
+		["ExpertiseInfo"] = "Expertise. Negates your enemy's chances to dodge and parry.",
 		["FeralApInfo"] = "Feral Attack Power.  Increases the damage of druid attacks when in feral forms.  Does not include attack power gained from strength and agility.",
 		["FireResistInfo"] = "Fire Resistance.  Reduces the damage taken from fire-based attacks.",
 		["FireSpellDamage"] = "Fire Damage",
@@ -121,9 +122,9 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["MailInfo"] = "Points to be assigned if the item is mail.",
 		["MasteryInfo"] = "Mastery.  Improves the unique bonus of your class specialization.",
 		["MinorStats"] = "Minor stats",
+		["MovementSpeedInfo"] = "Movement speed.  Causes your character to run faster.",
 		["Mp5"] = "Mana per 5",
 		["Mp5Info"] = "Mana regeneration per 5 seconds.  Affects your mana regeneration even when in combat.",
-		["MovementSpeedInfo"] = "Movement speed.  Causes your character to run faster.",
 		["NatureResistInfo"] = "Nature Resistance.  Reduces the damage taken from nature-based attacks.",
 		["NatureSpellDamage"] = "Nature Damage",
 		["NatureSpellDamageInfo"] = "Nature damage.  Increases the damage dealt by your nature spells.",
@@ -131,6 +132,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Plate"] = "Plate",
 		["PlateInfo"] = "Points to be assigned if the item is plate.",
 		["RapInfo"] = "Ranged Attack Power.  Increases the damage of ranged physical attacks.  Does not include attack power gained from agility.",
+		["ResilienceInfo"] = "Resilience. Reduces the chance that you'll be critically hit, and decreases the damage of critical hits that you do take.",
 		["ShadowResistInfo"] = "Shadow Resistance.  Reduces the damage taken from shadow-based attacks.",
 		["ShadowSpellDamage"] = "Shadow Damage",
 		["ShadowSpellDamageInfo"] = "Shadow damage.  Increases the damage dealt by your shadow spells.",
@@ -147,6 +149,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["SpellDamage"] = "Spell Damage",
 		["SpellDamageInfo"] = "Spell damage.  Increases the damage dealt by your offensive spells.",
 		["SpellHitInfo"] = "Spell Hit.  Increases the chance that your damaging spells hit the target, especially bosses.",
+		["SpellPenetrationInfo"] = "Spell Penetration. Negates an enemy's resistances to your spells.",
 		["SpiritInfo"] = "Spirit.  Affects your out-of-combat mana regeneration.",
 		["StaminaInfo"] = "Stamina.  Increases your health.",
 		["StrengthInfo"] = "Strength.  Increases the power of some classes' abilities.",
@@ -238,13 +241,14 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["WeaponTypeWand"] = "Wand",
 		["WeaponTypeWandInfo"] = "Points to be assigned if the item is a wand.",
 		["WeaponTypeWarglaive"] = "Warglaive",
-		["WeaponTypeWarglaiveInfo"] = "Points to be assigned if the item is a warglaive."
+		["WeaponTypeWarglaiveInfo"] = "Points to be assigned if the item is a warglaive.",
 	},
 	["TooltipParsing"] = {
 		["Agility"] = "^%+?# Agility$",
 		["AllStats"] = "^%+?# [Aa]ll [Ss]tats$",
 		["Ap"] = "^%+?# Attack Power$",
 		["Ap2"] = "^Equip: %+# Attack Power%.$",
+		["Ap3"] = "^Equip: Increases attack power by #%.$",
 		["ArcaneResist"] = "^%+?# Arcane Resistance$",
 		["ArcaneSpellDamage"] = "^%+# Arcane Spell Damage$",
 		["ArcaneSpellDamage2"] = "^Equip: Increases damage done by Arcane spells and effects by up to #%.$",
@@ -255,6 +259,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["BagSlots"] = "^%d+ Slot .+$",
 		["Block"] = "^%+?# Block$",
 		["BlockPercent"] = "^Equip: Increases your chance to block attacks with a shield by #%%%.$",
+		["BlockRating"] = "^Equip: Increases your block rating by #%.$",
 		["BlockValue"] = "^Equip: Increases the block value of your shield by #%.$",
 		["Bow"] = "^Bow$",
 		["ChanceOnHit"] = "Chance on hit:",
@@ -265,8 +270,12 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Crit"] = "^%+?# Critical [Ss]trike%.?$",
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^Equip: Improves your chance to get a critical strike by #%%%.$",
+		["CritRating"] = "^Equip: Increases your critical strike rating by #%.$",
+		["CritRatingShort"] = "^%+?# Critical Strike Rating$",
 		["Crossbow"] = "^Crossbow$",
 		["Dagger"] = "^Dagger$",
+		["DefenseRating"] = "^Equip: Increases defense rating by #%.$",
+		["DefenseRatingSimple"] = "^%+?# Defense Rating$",
 		["DefenseSkill"] = "^Equip: Increased Defense %+#%.$",
 		["DefenseSkillSimple"] = "^%+?# Defense$",
 		["DisenchantingRequires"] = "^Disenchanting requires",
@@ -274,6 +283,8 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Dodge2"] = "^UNUSED$",
 		["Dodge3"] = "^UNUSED$",
 		["DodgePercent"] = "^Equip: Increases your chance to dodge an attack by #%%%.$",
+		["DodgeRating"] = "^Equip: Increases your dodge rating by #%.$",
+		["DodgeRatingShort"] = "^%+?#%%? Dodge Rating$",
 		["Dps"] = "^%(# damage per second%)$",
 		["DpsAdd"] = "^Adds # damage per second$",
 		["Duration"] = "^Duration:",
@@ -287,6 +298,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["EnchantmentPyriumWeaponChain"] = "^Pyrium Weapon Chain$",
 		["EnchantmentTitaniumWeaponChain"] = "^Titanium Weapon Chain$",
 		["Equip"] = "Equip:",
+		["ExpertiseRating"] = "^Equip: Increases your expertise rating by #%.$",
 		["FeralAp"] = "^Equip: %+# Attack Power in Cat, Bear, and Dire Bear forms only%.$",
 		["FireResist"] = "^%+?# Fire Resistance$",
 		["FireSpellDamage"] = "^%+# Fire Spell Damage$",
@@ -299,6 +311,8 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Gun"] = "^Gun$",
 		["Haste"] = "^%+?# Haste$",
 		["Haste2"] = "^UNUSED$",
+		["HasteRating"] = "^Equip: Improves haste rating by #%.$",
+		["HasteRatingShort"] = "^%+?# Haste Rating$",
 		["HaventCollectedAppearance"] = "^You haven't collected this appearance$",
 		["Healing"] = "^%+# Healing Spells$",
 		["Healing2"] = "^Equip: Increases healing done by spells and effects by up to #%.$",
@@ -311,6 +325,9 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["HeroicWarforged"] = "^Heroic Warforged$",
 		["Hit"] = "^Equip: Improves your chance to hit by #%%%.$",
 		["Hit2"] = "^UNUSED$",
+		["HitRating"] = "^Equip: Improves hit rating by #%.$",
+		["HitRating2"] = "^Equip: Increases your hit rating by #%.$",
+		["HitRatingShort"] = "^%+?# Hit Rating$",
 		["HolySpellDamage"] = "^%+# Holy Spell Damage$",
 		["HolySpellDamage2"] = "^Equip: Increases damage done by Holy spells and effects by up to #%.$",
 		["Hp5"] = "^Equip: Restores # health every 5 sec%.$",
@@ -328,6 +345,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["MovementSpeed"] = "^%+# Speed$",
 		["Mp5"] = "^Equip: Restores # mana per 5 sec%.$",
 		["Mp52"] = "^%+?# mana every 5 sec%.$",
+		["Mp53"] = "^%+?# Mana per 5 sec%.$",
 		["MultiStatHeading"] = "^Multiple Stats$",
 		["MultiStatSeparator1"] = "and",
 		["Multistrike"] = "^%+# Multistrike$",
@@ -338,6 +356,8 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Parry"] = "^%+?# Parry$",
 		["Parry2"] = "^UNUSED$",
 		["ParryPercent"] = "^Equip: Increases your chance to parry an attack by #%%%.$",
+		["ParryRating"] = "^Equip: Increases your parry rating by #%.$",
+		["ParryRatingShort"] = "^%+?# Parry Rating$",
 		["Plate"] = "^Plate$",
 		["Polearm"] = "^Polearm$",
 		["PvPPower"] = "^%+?# PvP Power$",
@@ -346,6 +366,8 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Requires2"] = "^UNUSED$",
 		["Resilience"] = "^%+?# PvP Resilience$",
 		["Resilience2"] = "^UNUSED$",
+		["ResilienceRating"] = "^Equip: Improves your resilience rating by #%.$",
+		["ResilienceRatingShort"] = "^%+?# Resilience Rating$",
 		["Scope"] = "^Scope %(%+# Damage%)$",
 		["ScopeCrit"] = "^Scope %(%+# Critical Strike%)$",
 		["ScopeRangedCrit"] = "^%+?# Ranged Critical Strike$",
@@ -358,11 +380,20 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["Speed"] = "^Speed #$",
 		["Speed2"] = "^UNUSED$",
 		["SpellCrit"] = "^Equip: Improves your chance to get a critical strike with spells by #%%%.$",
-		["SpellHit"] = "^Equip: Improves your chance to hit with spells by #%%%.$",
+		["SpellCritRating"] = "^Equip: Increases your spell critical strike rating by #%.$",
+		["SpellCritRatingShort"] = "^%+?# Spell Critical Rating$",
 		["SpellDamage"] = "^%+# Damage and Healing Spells$",
 		["SpellDamage2"] = "^Equip: Increases damage and healing done by magical spells and effects by up to #%.$",
 		["SpellDamage3"] = "^UNUSED$",
 		["SpellDamage4"] = "^UNUSED$",
+		["SpellDamageAndHealing"] = "^Equip: Increases healing done by up to # and damage done by up to # for all magical spells and effects%.$",
+		["SpellHasteRating"] = "^Equip: Improves spell haste rating by #%.$",
+		["SpellHasteRatingShort"] = "^%+?# Spell Haste Rating$",
+		["SpellHit"] = "^Equip: Improves your chance to hit with spells by #%%%.$",
+		["SpellHitRating"] = "^Equip: Increases your spell hit rating by #%.$",
+		["SpellHitRatingShort"] = "^%+?# Spell Hit Rating$",
+		["SpellPenetration"] = "^Equip: Increases your spell penetration by #%.$",
+		["SpellPenetrationShort"] = "^%+?# Spell Penetration$",
 		["SpellPower"] = "^%+?# Spell Power$",
 		["Spirit"] = "^%+?# Spirit$",
 		["Staff"] = "^Staff$",
@@ -396,7 +427,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["WeaponDamageNature"] = "^%+?# %- # Nature Damage$",
 		["WeaponDamageNatureExact"] = "^%+?# Nature Damage$",
 		["WeaponDamageShadow"] = "^%+?# %- # Shadow Damage$",
-		["WeaponDamageShadowExact"] = "^%+?# Shadow Damage$"
+		["WeaponDamageShadowExact"] = "^%+?# Shadow Damage$",
 	},
 	["UI"] = {
 		["AboutHeader"] = "About Pawn",
@@ -519,14 +550,14 @@ Every item in World of Warcraft has an ID number associated with it.  This infor
 		["OptionsOtherHeader"] = "Other options",
 		["OptionsQuestUpgradeAdvisor"] = "Show quest upgrade advisor",
 		["OptionsQuestUpgradeAdvisorTooltip"] = "In your quest log and when talking to NPCs, if one of the quest reward choices is an upgrade for your current gear, Pawn will show a green arrow icon on that item.  If none of the items is an upgrade, Pawn will show a pile of coins on the item that is worth the most when sold to a vendor.",
-		["OptionsShowItemLevelUpgrades"] = "Show item level upgrades",
-		["OptionsShowItemLevelUpgradesTooltip"] = "Pawn will show you items that are of a higher item level than what you've previously equipped in that slot in addition to normal upgrades.",
-		["OptionsShowRelicUpgrades"] = "Show relic upgrades",
-		["OptionsShowRelicUpgradesTooltip"] = "Pawn will show you when a relic would increase the item level of one of your artifact weapons.  (This works differently from other upgrade features, since it's based on item level, not stats.)",
 		["OptionsResetUpgrades"] = "Re-scan gear",
 		["OptionsResetUpgradesTooltip"] = [=[Pawn will forget what it knows about the best items you've ever equipped and re-scan your gear in order to provide more up-to-date upgrade information in the future.
 
 Use this feature if you find that Pawn is making poor upgrade suggestions as a result of items that you've vendored, destroyed, or otherwise do not use anymore.  This will affect all of your characters that use Pawn.]=],
+		["OptionsShowItemLevelUpgrades"] = "Show item level upgrades",
+		["OptionsShowItemLevelUpgradesTooltip"] = "Pawn will show you items that are of a higher item level than what you've previously equipped in that slot in addition to normal upgrades.",
+		["OptionsShowRelicUpgrades"] = "Show relic upgrades",
+		["OptionsShowRelicUpgradesTooltip"] = "Pawn will show you when a relic would increase the item level of one of your artifact weapons.  (This works differently from other upgrade features, since it's based on item level, not stats.)",
 		["OptionsSocketingAdvisor"] = "Show socketing advisor",
 		["OptionsSocketingAdvisorTooltip"] = "When adding gems to an item, Pawn will show a popup suggesting gems that you can add to the item that will maximize its power.  (To see the full list of gem suggestions for each color, see the Gems tab, where you can also customize the quality of gems to use.)",
 		["OptionsTab"] = "Options",
@@ -626,7 +657,7 @@ For more information on this setting, see the readme file.]=],
 		["ValuesTab"] = "Weights",
 		["ValuesWelcome"] = "You can customize the weights that are assigned to each stat for this scale.  To manage your scales and add new ones, use Manual mode on the Scale tab.",
 		["ValuesWelcomeNoScales"] = "You have no scale selected.  To get started, go to the Scale tab and start a new scale or paste one from the internet.",
-		["ValuesWelcomeReadOnly"] = "This built-in scale can't be changed.  If you'd like to customize these weights, go to the Scale tab, enable Manual mode, and make a copy of this scale."
+		["ValuesWelcomeReadOnly"] = "This built-in scale can't be changed.  If you'd like to customize these weights, go to the Scale tab, enable Manual mode, and make a copy of this scale.",
 	}
 }
 

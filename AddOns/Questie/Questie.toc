@@ -1,12 +1,12 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
-## Version: 6.2.5
+## Version: 6.3.11
 ## RequiredDeps: 
-## OptionalDeps: Ace3, LibDataBroker-1.1, LibCompress
+## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibCompress, LibDataBroker-1.1, LibDBIcon-1.0, LibQuestXP, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
 
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.2.5|r
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.3.11 (Beta 4)|r
 ## Notes: A standalone Classic QuestHelper
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
@@ -16,6 +16,7 @@
 Modules\VersionCheck.lua
 
 embeds.xml
+Libs\LibUIDropDownMenu\LibUIDropDownMenu.lua
 Libs\HereBeDragons\HereBeDragons-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
 Libs\HereBeDragons\HereBeDragons-Migrate.lua
@@ -31,45 +32,52 @@ Database\Zones\zoneDB.lua
 Database\Zones\zoneTables.lua
 
 #Databases
+Database\Classic\classicItemDB.lua
+Database\Classic\classicNpcDB.lua
+Database\Classic\classicObjectDB.lua
+Database\Classic\classicQuestDB.lua
 Database\QuestieDB.lua
 Database\questDB.lua
 Database\objectDB.lua
-Database\spawnDB.lua
+Database\npcDB.lua
 Database\itemDB.lua
 Database\Constants.lua
 
-#Corrections
+# Corrections
 Database\Corrections\AutoTableUpdates.lua
 Database\Corrections\QuestieCorrections.lua
 Database\Corrections\QuestieItemBlacklist.lua
-Database\Corrections\QuestieItemFixes.lua
 Database\Corrections\QuestieNPCBlacklist.lua
-Database\Corrections\QuestieNPCFixes.lua
-Database\Corrections\QuestieObjectFixes.lua
 Database\Corrections\QuestieQuestBlacklist.lua
-Database\Corrections\QuestieQuestFixes.lua
 Database\Corrections\QuestieEvent.lua
+
+Database\Corrections\Classic\classicQuestFixes.lua
+Database\Corrections\Classic\classicNPCFixes.lua
+Database\Corrections\Classic\classicItemFixes.lua
+Database\Corrections\Classic\classicObjectFixes.lua
+
+Database\Corrections\TBC\tbcQuestFixes.lua
+Database\Corrections\TBC\tbcNPCFixes.lua
+Database\Corrections\TBC\tbcItemFixes.lua
+Database\Corrections\TBC\tbcObjectFixes.lua
 
 #Compiler
 Database\compiler.lua
 
 #Localization
-Locale\QuestieLocale.lua
-Locale\enUS\locale.xml
-Locale\esES\locale.xml
-Locale\esMX\locale.xml
-Locale\deDE\locale.xml
-Locale\zhCN\locale.xml
-Locale\zhTW\locale.xml
-Locale\frFR\locale.xml
-Locale\koKR\locale.xml
-Locale\ptBR\locale.xml
-Locale\ruRU\locale.xml
+Localization\l10n.lua
+Localization\Translations\Translations.xml
+
+Localization\lookups\lookupQuestCategories\lookupQuestCategories.xml
+Localization\lookups\lookupZones\lookupZones.xml
+Localization\lookups\Classic\lookupItems\lookupItems.xml
+Localization\lookups\Classic\lookupNpcs\lookupNpcs.xml
+Localization\lookups\Classic\lookupObjects\lookupObjects.xml
+Localization\lookups\Classic\lookupQuests\lookupQuests.xml
 
 ##Libs
 Modules\Libs\QuestieLib.lua
 #Modules\Libs\QuestieCompress.lua
-Modules\Libs\QuestiePlayer.lua
 Modules\Libs\QuestieSerializer.lua
 Modules\Libs\QuestieCombatQueue.lua
 Modules\Libs\QuestieHash.lua
@@ -81,6 +89,8 @@ Modules\QuestieEventHandler.lua
 Modules\Migration.lua
 Modules\QuestieMenu.lua
 Modules\QuestieAnnounce.lua
+Modules\TaskQueue.lua
+Modules\QuestiePlayer.lua
 
 ##Tooltips
 Modules\Tooltips\Tooltip.lua

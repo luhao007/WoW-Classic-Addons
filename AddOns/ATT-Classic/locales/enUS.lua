@@ -79,6 +79,7 @@ app.L = {
 	["OBJECT_ID"] = "Object ID";
 	["QUEST_ID"] = "Quest ID";
 	["SPELL_ID"] = "Spell ID";
+	["TITLE_ID"] = "Title ID";
 
 	-- Icons and Collection Text
 	["LOGO_SMALL"] = "Interface\\Addons\\ATT-Classic\\assets\\logo_tiny";		-- Winner of the Logo Contest (Used to be "Interface\\Icons\\INV_Axe_106.blp")
@@ -221,7 +222,9 @@ app.L = {
 		[-2] = "Interface\\Icons\\INV_Misc_Coin_02", 										-- Vendors
 		[-4] = "Interface\\Icons\\INV_Misc_Food_62", 										-- Free Festival Food
 		[-5] = app.asset("Category_Holidays"), 												-- Holiday
+		[-6] = app.asset("Category_FlightPaths"),											-- Flight Paths
 		[-7] = "Interface\\Addons\\ATT-Classic\\assets\\Inv_offhand_1h_artifactskulloferedar_d_05",	-- World Bosses
+		[-8] = app.asset("Category_Factions"),												-- Factions
 		[-12] = "Interface\\Icons\\Spell_Shadow_SummonImp", 								-- East entrance demons
 		[-13] = "Interface\\Icons\\inv_axe_10", 											-- North entrance ogres
 		[-14] = "Interface\\Icons\\INV_Misc_Head_Elf_02", 									-- West entrace elves
@@ -251,6 +254,11 @@ app.L = {
 		[-70] = "Interface\\Icons\\INV_Misc_Gem_Opal_01",									-- Orange
 		[-71] = "Interface\\Icons\\INV_Misc_Gem_Amethyst_02",								-- Purple
 		[-77] = "Interface\\Icons\\inv_sword_40",											-- Special (ZF)
+		[-78] = "Interface\\Icons\\INV_Misc_Bag_08",										-- Timed Event
+		[-79] = "Interface\\Icons\\INV_Misc_Bag_09",										-- First Chest
+		[-80] = "Interface\\Icons\\INV_Misc_Bag_10",										-- Second Chest
+		[-81] = "Interface\\Icons\\INV_Misc_Bag_11",										-- Third Chest
+		[-82] = "Interface\\Icons\\INV_Box_01",												-- Final Chest
 		[-85] = "Interface\\Icons\\inv_spear_01",											-- Graveyard (SM)
 		[-86] = "Interface\\Icons\\INV_Misc_Book_13",										-- Library (SM)
 		[-87] = "Interface\\Icons\\inv_helmet_25",											-- Armory (SM)
@@ -283,6 +291,7 @@ app.L = {
 		[-539] = "Interface\\Icons\\Inv_hammer_25",									-- The Scepter of the Shifting Sands
 		[-540] = "Interface\\Icons\\inv_stone_02",									-- The Scourge Invasion
 		[-541] = "Interface\\Icons\\spell_holiday_tow_spicecloud",					-- The Silithyst Must Flow
+		[-542] = "Interface\\Icons\\achievement_dungeon_outland_dungeonmaster",		-- The Opening of the Dark Portal
 	};
 	["HEADER_NAMES"] = {
 		[0] = ZONE.." "..BATTLE_PET_SOURCE_1, 									-- Zone Drop
@@ -290,7 +299,9 @@ app.L = {
 		[-2] = BATTLE_PET_SOURCE_3, 											-- Vendor
 		[-4] = "Free Festival Food", 											-- Free Festival Food
 		[-5] = "Holiday", 														-- Holiday
+		[-6] = "Flight Paths",													-- Flight Paths
 		[-7] = WORLD.." "..RAID_BOSSES, 										-- World Bosses
+		[-8] = "Factions",														-- Factions
 		[-12] = DUNGEON_FLOOR_DIREMAUL5.." (East)",								-- Warpwood Quarter
 		[-13] = DUNGEON_FLOOR_DIREMAUL1.." (North)",							-- Gordok Commons
 		[-14] = DUNGEON_FLOOR_DIREMAUL2.." (West)",								-- Capital Gardens
@@ -325,6 +336,12 @@ app.L = {
 		[-70] = "Foulspore Cavern [Orange]",									-- Foulspore Cavern [Orange]
 		[-71] = "The Wicked Grotto [Purple]",									-- The Wicked Grotto [Purple]
 		[-77] = SPECIAL, 														-- Special
+		[-78] = "Timed Event",
+		[-79] = "First Chest",
+		[-80] = "Second Chest",
+		[-81] = "Third Chest",
+		[-82] = "Final Chest",
+		
 		[-85] = "Graveyard",
 		[-86] = "Library",
 		[-87] = "Armory",
@@ -359,10 +376,12 @@ app.L = {
 		[-539] = "The Scepter of the Shifting Sands",
 		[-540] = "The Scourge Invasion",
 		[-541] = "The Silithyst Must Flow",
+		[-542] = "The Opening of the Dark Portal",
 -- Factions / Cities
 		[-10066] = "Legendary",
 	},
 	["HEADER_DESCRIPTIONS"] = {
+		[-5] = "A specific holiday may need to be active for you to complete the referenced Things within this section.",
 	};
 	
 	["OBJECT_ID_ICONS"] = {
@@ -749,6 +768,7 @@ app.L = {
 		[181335] = "Flame of the Undercity",
 		[181336] = "Flame of Orgrimmar",
 		[181337] = "Flame of Thunder Bluff",
+		[181638] = "Wanted Poster",
 		[181643] = "Featherbeard's Remains",
 		[181649] = "Featherbeard's Journal",
 		[181748] = "Blood Crystal",
@@ -758,6 +778,7 @@ app.L = {
 		[182115] = "Wanted Poster",
 		[182165] = "Wanted Poster",
 		[182392] = "Garadar Bulletin Board",
+		[182393] = "Telaar Bulletin Board",
 		[182549] = "Fel Orc Plans",
 		[182587] = "Wanted Poster",
 		[182588] = "Wanted Poster",
@@ -776,6 +797,7 @@ app.L = {
 		[185035] = "Wanted Poster",
 		[185126] = "Crystal Prison",
 		[185165] = "Legion Communicator",
+		[185166] = "Wanted Poster",
 		[185168] = "Reinforced Fel Iron Chest",
 		[185927] = "Fel Crystal Prism",
 		[186426] = "Wanted Poster",
@@ -1031,12 +1053,10 @@ app.L = {
 		["Blackfathom Deeps"] = 221,
 		["Blackrock Depths"] = 242,
 		["Blackwing Lair"] = 287,
-		["Blackrock Mountain"] = 35,
+		["Blackrock Mountain"] = 33,
 		["Blackrock Spire"] = 250,
 		[DUNGEON_FLOOR_TANARIS18] = 75,	-- Caverns of Time
 		["Dire Maul"] = 234,
-		["Deadmines"] = 291,
-		["The Deadmines"] = 291,
 		["Deeprun Tram"] = 499,
 		["Gnomeregan"] = 226,
 		["Maraudon"] = 280,
@@ -1051,7 +1071,9 @@ app.L = {
 		["Scholomance"] = 476,
 		["Shadowfang Keep"] = 310,
 		["Stratholme"] = 317,
+		["Sunstrider Isle"] = 467,
 		["Temple of Ahn'Qiraj"] = 320,
+		["The Deadmines"] = 291,
 		["The Temple of Atal'hakkar"] = 220,
 		["The Temple of Atal'Hakkar"] = 220,
 		["The Stockade"] = 225,
@@ -1061,39 +1083,42 @@ app.L = {
 		["Zul'Gurub"] = 337,
 
 		-- TBC
+		["Auchenai Crypts"] = 256,
 		["Karazhan"] = 350,
 		["Gruul's Lair"] = 330,
-		["Magtheridon's Lair"] = 331,
-		["Serpentshrine Cavern"] = 332,
-		["Tempest Keep"] = 334,
-		["The Battle for Mount Hyjal"] = 329,
-		["The Black Temple"] = 340,
-		["Sunwell Plataeu"] = 335,
-		["Zul'Aman"] = 333,
+		["Hellfire Ramparts"] = 347,
+		["Hyjal Summit"] = 329,
 		["Magister's Terrace"] = 348,
-	};
-	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
-		-- Classic
-		["Ahn'Qiraj"] = 320,
-		["Gates of Ahn'Qiraj"] = 1451,
-
-		-- TBC
-		["The Eye"] = 334,
-		["Auchenai Crypts"] = 256,
+		["Magtheridon's Lair"] = 331,
 		["Mana Tombs"] = 272,
+		["Old Hillsbrad Foothills"] = 274,
+		["Serpentshrine Cavern"] = 332,
 		["Sethekk Halls"] = 258,
 		["Shadow Labyrinth"] = 260,
+		["Tempest Keep"] = 334,
+		["The Arcatraz"] = 269,
 		["The Black Morass"] = 273,
-		["Old Hillsbrad Foothills"] = 274,
+		["The Black Temple"] = 340,
+		["The Blood Furnace"] = 261,
+		["The Botanica"] = 266,
+		["The Mechanar"] = 267,
+		["The Shattered Halls"] = 246,
 		["The Slave Pens"] = 265,
 		["The Steamvault"] = 263,
 		["The Underbog"] = 262,
-		["The Blood Furnace"] = 261,
-		["Hellfire Ramparts"] = 347,
-		["The Shattered Halls"] = 246,
-		["The Arcatraz"] = 269,
-		["The Botanica"] = 266,
-		["The Mechanar"] = 267,
+		["Sunwell Plataeu"] = 335,
+		["Zul'Aman"] = 333,
+	};
+	
+	-- These are alternative map names that we don't want to display, but used for mapID calculations.
+	-- If there is a name provided in the table above, it will prefer that name association.
+	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
+		-- Classic
+		["Ahn'Qiraj"] = 320,
+		["Deadmines"] = 291,
+		["Gates of Ahn'Qiraj"] = 1451,
+		["The Battle for Mount Hyjal"] = 329,
+		["The Eye"] = 334,
 	};
 	
 	-- This is necessary because sometimes the names of spells do not match for different languages.
@@ -1111,20 +1136,27 @@ app.L = {
 		[3] = {1, "|CFFFF0000This is not available until a later Phase of Release in WoW Classic.|r", "Future Releases"}, -- No Hope -- 3
 
 		-- Future Content Releases
-		[11] = {2, "|CFFAAFFAAThis will not be available until Phase 1 of WoW Classic.|r", "Phase 1", true },
-		[1101] = {2, "|CFFAAFFAAThis became available with the Dire Maul Phase Release of WoW Classic.|r", "Dire Maul", true },
-		[12] = {2, "|CFFAAFFAAThis will not be available until Phase 2 of WoW Classic.|r", "Phase 2", true },
-		[13] = {2, "|CFFAAFFAAThis will not be available until Phase 3 of WoW Classic.|r", "Phase 3", true },
-		[14] = {2, "|CFFAAFFAAThis will not be available until Phase 4 of WoW Classic.|r", "Phase 4", true },
-		[15] = {2, "|CFFAAFFAAThis will not be available until Phase 5 of WoW Classic.|r", "Phase 5", true },
-		[1501] = {2, "|CFFAAFFAAThis was only available during the Ahn'Qiraj War Effort.|r", "AQ War Effort", nil, "\n \n|CFFFFAAAAIf the War Effort has been completed on your server, simply turn this off.|r" },
-		[1502] = {2, "|CFFAAFFAAThis was only available up until the Scarab Lords on your server have rung the gong.|r", "Gates Unopened", nil, "\n \n|CFFFFAAAAIf the Gates of Anh'Qiraj have been opened on your server, simply turn this off.|r" },
-		[1503] = {2, "|CFFAAFFAAThis was only available during the 10 Hour War after the Scarab Lord(s) bang the gong.|r", "10-Hour War", nil, "\n \n|CFFFFAAAAIf the Gates of Anh'Qiraj have been opened on your server, simply turn this off.|r" },
-		[1504] = {2, "|CFFAAFFAAThis became available near the end of Phase 5 in order to provide Catch-Up Nature Resist gear for those still working on AQ40.|r", "Catch-Up", true, "\n \n|CFFFFAAAAIf the Catch-Up Gear is available, simply turn this on.|r" },
-		[16] = {2, "|CFFAAFFAAThis will not be available until Phase 6 of WoW Classic.|r", "Phase 6", true },
-		[1601] = {2, "|CFFAAFFAAThis was only available during the Scourge Invasion.|r", "Scourge Invasion", nil, "\n \n|CFFFFAAAAIf the Scourge Invasion has been completed on your server, simply turn this off.|r" },
-		[1602] = {2, "|CFFAAFFAAThis was only available during the Silithyst Must Flow World PVP Event.|r", "Silithyst", true, "\n \n|CFFFFAAAAIf the World PVP Event is available, simply turn this on.|r" },
-		[1603] = {2, "|CFFAAFFAAThis was only available after the start of Classic Era.|r", "Classic Era", nil, "\n \n|CFFFFAAAAIf the Classic Era has begun, simply turn this on.|r" },
+		[11] = {2, "|CFFAAFFAAThis was not available until Phase 1 of WoW Classic.|r", "Phase 1", 1130100, 11301 },
+		[1101] = {2, "|CFFAAFFAAThis became available with the Dire Maul Phase Release of WoW Classic.|r", "Dire Maul", 11301, 11301 },
+		[12] = {2, "|CFFAAFFAAThis was not available until Phase 2 of WoW Classic.|r", "Phase 2", 11301, 11302 },
+		[13] = {2, "|CFFAAFFAAThis was not available until Phase 3 of WoW Classic.|r", "Phase 3", 11301, 11303 },
+		[14] = {2, "|CFFAAFFAAThis was not available until Phase 4 of WoW Classic.|r", "Phase 4", 11301, 11304 },
+		[15] = {2, "|CFFAAFFAAThis was not available until Phase 5 of WoW Classic.|r", "Phase 5", 11301, 11305 },
+		[1501] = {2, "|CFFAAFFAAThis was only available during the Ahn'Qiraj War Effort.|r", "AQ War Effort", 11301, nil, "\n \n|CFFFFAAAAIf the War Effort has been completed on your server, simply turn this off.|r" },
+		[1502] = {2, "|CFFAAFFAAThis was only available up until the Scarab Lords on your server have rung the gong.|r", "Gates Unopened", 11301, nil, "\n \n|CFFFFAAAAIf the Gates of Anh'Qiraj have been opened on your server, simply turn this off.|r" },
+		[1503] = {2, "|CFFAAFFAAThis was only available during the 10 Hour War after the Scarab Lord(s) bang the gong.|r", "10-Hour War", 11301, nil, "\n \n|CFFFFAAAAIf the Gates of Anh'Qiraj have been opened on your server, simply turn this off.|r" },
+		[1504] = {2, "|CFFAAFFAAThis became available near the end of Phase 5 in order to provide Catch-Up Nature Resist gear for those still working on AQ40.|r", "Catch-Up", 11301, 11306, "\n \n|CFFFFAAAAIf the Catch-Up Gear is available, simply turn this on.|r" },
+		[16] = {2, "|CFFAAFFAAThis was not available until Phase 6 of WoW Classic.|r", "Phase 6", 11301, 11306 },
+		[1601] = {2, "|CFFAAFFAAThis was only available during the Scourge Invasion.|r", "Scourge Invasion", 11301, nil, "\n \n|CFFFFAAAAIf the Scourge Invasion has been completed on your server, simply turn this off.|r" },
+		[1602] = {2, "|CFFAAFFAAThis was only available during the Silithyst Must Flow World PVP Event.|r", "Silithyst", 11301, 11306, "\n \n|CFFFFAAAAIf the World PVP Event is available, simply turn this on.|r" },
+		[1603] = {2, "|CFFAAFFAAThis was only available after the start of Classic Era.|r", "Classic Era", 11301, 11307, "\n \n|CFFFFAAAAIf the Classic Era has begun, simply turn this on.|r" },
+
+		[17] = {2, "|CFFAAFFAAThis was not available until Phase 1 of TBC Classic.|r", "Phase 1", 20501, 20501 },
+		[1701] = {2, "|CFFAAFFAAThis was only available during the Opening of the Dark Portal event before the launch of TBC.|r", "Dark Portal Opens", 20501, nil, "\n \n|CFFFFAAAAIf the Dark Portal has been opened on your server, simply turn this off.|r" },
+		[18] = {2, "|CFFAAFFAAThis was not available until Phase 2 of TBC Classic.|r", "Phase 2", 20501, 20502 },
+		[19] = {2, "|CFFAAFFAAThis was not available until Phase 3 of TBC Classic.|r", "Phase 3", 20501, 20503 },
+		[20] = {2, "|CFFAAFFAAThis was not available until Phase 4 of TBC Classic.|r", "Phase 4", 20501, 20504 },
+		[21] = {2, "|CFFAAFFAAThis was not available until Phase 5 of TBC Classic.|r", "Phase 5", 20501, 20505 },
 
 		-- Seasonal Filters
 		[1000] = {3, "|CFFAAAAFFThis requires the Brewfest Holiday to be Active.|r", "Brewfest" },

@@ -1,10 +1,10 @@
--- $Id: Atlas-koKR.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Atlas-koKR.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -86,6 +86,7 @@ L["ATLAS_DDL_EXPANSION_LEGION1"] = "군단 던전"
 L["ATLAS_DDL_EXPANSION_LEGION2"] = "군단 공격대"
 L["ATLAS_DDL_EXPANSION_MOP"] = "판다리아의 안개 인스턴스"
 L["ATLAS_DDL_EXPANSION_OLD"] = "구세계 인스턴스"
+L["ATLAS_DDL_EXPANSION_SHADOWLANDS"] = "어둠땅 인스턴스"
 L["ATLAS_DDL_EXPANSION_WOD"] = "드레노어의 군주 인스턴스"
 L["ATLAS_DDL_EXPANSION_WOTLK"] = "리치왕의 분노 인스턴스"
 L["ATLAS_DDL_LEVEL"] = "레벨"
@@ -97,6 +98,7 @@ L["ATLAS_DDL_LEVEL_120PLUS"] = "인스턴스 레벨 120+"
 L["ATLAS_DDL_LEVEL_120TO130"] = "인스턴스 레벨 120-130"
 L["ATLAS_DDL_LEVEL_130PLUS"] = "인스턴스 레벨 130+"
 L["ATLAS_DDL_LEVEL_45TO60"] = "인스턴스 레벨 45-60"
+L["ATLAS_DDL_LEVEL_60PLUS"] = "인스턴스 레벨 60+"
 L["ATLAS_DDL_LEVEL_60TO70"] = "인스턴스 레벨 60-70"
 L["ATLAS_DDL_LEVEL_70TO80"] = "인스턴스 레벨 70-80"
 L["ATLAS_DDL_LEVEL_80TO85"] = "인스턴스 레벨 80-85"

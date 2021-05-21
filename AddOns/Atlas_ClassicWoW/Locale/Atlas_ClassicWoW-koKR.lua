@@ -1,10 +1,10 @@
--- $Id: Atlas_ClassicWoW-koKR.lua 55 2020-01-14 15:00:30Z arith $
+-- $Id: Atlas_ClassicWoW-koKR.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -179,7 +179,7 @@ L["Dustwraith"] = "더스트레이스"
 L["Earthcaller Halmgar"] = "대지의주술사 함가르"
 L["Ebonroc"] = "에본로크"
 L["Ebru <Disciple of Naralex>"] = "에브루 <나랄렉스의 신도>"
-L["Edge of Madness"] = "광기의 가장자리"
+L["Edge of Madness"] = "광란의 경계"
 L["Edwin VanCleef"] = "에드윈 밴클리프"
 L["Elder Farwhisper"] = "장로 파위스퍼"
 L["Elder Mistwalker"] = "장로 미스트워커"

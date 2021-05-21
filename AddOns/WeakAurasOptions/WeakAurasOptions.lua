@@ -418,6 +418,26 @@ StaticPopupDialogs["WEAKAURAS_CONFIRM_DELETE"] = {
   preferredindex = STATICPOPUP_NUMDIALOGS,
 }
 
+StaticPopupDialogs["WEAKAURAS_CONFIRM_IGNORE_UPDATES"] = {
+  text = L["Do you want to ignore all future updates for this aura"],
+  button1 = L["Yes"],
+  button2 = L["Cancel"],
+  OnAccept = function(self)
+    if self.data then
+      local auraData = WeakAuras.GetData(self.data)
+      if auraData then
+        for child in OptionsPrivate.Private.TraverseAll(auraData) do
+          child.ignoreWagoUpdate = true
+        end
+      end
+      WeakAuras.SortDisplayButtons(nil, true)
+    end
+  end,
+  OnCancel = function(self) end,
+  whileDead = true,
+  preferredindex = STATICPOPUP_NUMDIALOGS,
+}
+
 function OptionsPrivate.ConfirmDelete(toDelete, parents)
   if toDelete then
     local warningForm = L["You are about to delete %d aura(s). |cFFFF0000This cannot be undone!|r Would you like to continue?"]
@@ -625,6 +645,10 @@ local function LayoutDisplayButtons(msg)
   --if(frame.addonsButton) then
   --  frame.buttonsScroll:AddChild(frame.addonsButton);
   --end
+  if WeakAurasCompanion then
+    frame.buttonsScroll:AddChild(frame.pendingInstallButton);
+    frame.buttonsScroll:AddChild(frame.pendingUpdateButton);
+  end
   frame.buttonsScroll:AddChild(frame.loadedButton);
   frame.buttonsScroll:AddChild(frame.unloadedButton);
 
@@ -660,10 +684,6 @@ local function LayoutDisplayButtons(msg)
       for id, button in pairs(displayButtons) do
         if(OptionsPrivate.Private.loaded[id] ~= nil) then
           button:PriorityShow(1);
-        end
-        if WeakAurasCompanion and not button.data.parent then
-          -- initialize update icons on top level buttons
-          button:RefreshUpdate()
         end
       end
     end
@@ -870,6 +890,8 @@ function OptionsPrivate.UpdateButtonsScroll()
 end
 
 local previousFilter;
+local pendingUpdateButtons = {}
+local pendingInstallButtons = {}
 function WeakAuras.SortDisplayButtons(filter, overrideReset, id)
   if (OptionsPrivate.Private.IsOptionsProcessingPaused()) then
     return;
@@ -887,10 +909,120 @@ function WeakAuras.SortDisplayButtons(filter, overrideReset, id)
   filter = filter:lower();
 
   wipe(frame.buttonsScroll.children);
-  --tinsert(frame.buttonsScroll.children, frame.newButton);
-  --if(frame.addonsButton) then
-  --  tinsert(frame.buttonsScroll.children, frame.addonsButton);
-  --end
+
+  local pendingInstallButtonShown = false
+  local CompanionData = WeakAurasCompanion and WeakAurasCompanion.WeakAuras or WeakAurasCompanion
+  if CompanionData and CompanionData.stash then
+    for id, companionData in pairs(CompanionData.stash) do
+      if not pendingInstallButtonShown then
+        tinsert(frame.buttonsScroll.children, frame.pendingInstallButton)
+        pendingInstallButtonShown = true
+      end
+      local child = pendingInstallButtons[id]
+      if frame.pendingInstallButton:GetExpanded() then
+        if not child then
+          child = AceGUI:Create("WeakAurasPendingInstallButton")
+          pendingInstallButtons[id] = child
+          child:Initialize(id, companionData)
+          if companionData.logo then
+            child:SetLogo(companionData.logo)
+          end
+          if companionData.refreshLogo then
+            child:SetRefreshLogo(companionData.refreshLogo)
+          end
+          child.frame:Show()
+          child:AcquireThumbnail()
+          frame.buttonsScroll:AddChild(child)
+        end
+        if not child.frame:IsShown() then
+          child.frame:Show()
+          child:AcquireThumbnail()
+        end
+        tinsert(frame.buttonsScroll.children, child)
+      elseif child then
+        child.frame:Hide()
+        if child.ReleaseThumbnail then
+          child:ReleaseThumbnail()
+        end
+      end
+    end
+  end
+  if not pendingInstallButtonShown and frame.pendingInstallButton then
+    frame.pendingInstallButton.frame:Hide()
+  end
+
+  local pendingUpdateButtonShown = false
+  if CompanionData then
+    local buttonsShown = {}
+    for _, button in pairs(pendingUpdateButtons) do
+      button:ResetLinkedAuras()
+    end
+    for id, aura in pairs(WeakAurasSaved.displays) do
+      if not aura.ignoreWagoUpdate and aura.url and aura.url ~= "" then
+        local slug, version = aura.url:match("wago.io/([^/]+)/([0-9]+)")
+        if not slug and not version then
+          slug = aura.url:match("wago.io/([^/]+)$")
+          version = 1
+        end
+        if slug and version then
+          local auraData = CompanionData.slugs and CompanionData.slugs[slug]
+          if auraData and auraData.wagoVersion then
+            if tonumber(auraData.wagoVersion) > tonumber(version) then
+              -- there is an update for this aura
+              if not pendingUpdateButtonShown then
+                tinsert(frame.buttonsScroll.children, frame.pendingUpdateButton)
+                pendingUpdateButtonShown = true
+              end
+              if frame.pendingUpdateButton:GetExpanded() then
+                local child = pendingUpdateButtons[slug]
+                if not child then
+                  child = AceGUI:Create("WeakAurasPendingUpdateButton")
+                  pendingUpdateButtons[slug] = child
+                  child:Initialize(slug, auraData)
+                  if auraData.logo then
+                    child:SetLogo(auraData.logo)
+                  end
+                  if auraData.refreshLogo then
+                    child:SetRefreshLogo(auraData.refreshLogo)
+                  end
+                  child.frame:Show()
+                  child:AcquireThumbnail()
+                  frame.buttonsScroll:AddChild(child)
+                end
+                if not child.frame:IsShown() then
+                  child.frame:Show()
+                  child:AcquireThumbnail()
+                end
+                if not buttonsShown[slug] then
+                  tinsert(frame.buttonsScroll.children, child)
+                  buttonsShown[slug] = true
+                end
+                child:MarkLinkedAura(id)
+                for childData in OptionsPrivate.Private.TraverseAllChildren(aura) do
+                  child:MarkLinkedChildren(childData.id)
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    -- hide all buttons not marked as shown
+    for slug, button in pairs(pendingUpdateButtons) do
+      if not buttonsShown[slug] then
+        if button and button.frame:IsShown() then
+          button.frame:Hide()
+          if button.ReleaseThumbnail then
+            button:ReleaseThumbnail()
+          end
+        end
+      end
+    end
+  end
+  if not pendingUpdateButtonShown and frame.pendingUpdateButton then
+    frame.pendingUpdateButton.frame:Hide()
+  end
+
   tinsert(frame.buttonsScroll.children, frame.loadedButton);
   local numLoaded = 0;
   local to_sort = {};
@@ -1266,9 +1398,6 @@ function WeakAuras.UpdateDisplayButton(data)
   local button = displayButtons[id];
   if (button) then
     button:UpdateThumbnail()
-    if WeakAurasCompanion and button:IsGroup() then
-      button:RefreshUpdate()
-    end
   end
 end
 
@@ -1575,7 +1704,6 @@ function OptionsPrivate.DuplicateCollapseData(id, namespace, path)
     local tmp = collapsedOptions[id][namespace]
     local lastKey = tremove(path)
     for _, key in ipairs(path) do
-      print(" key: ", key)
       tmp[key] = tmp[key] or {}
       tmp = tmp[key]
     end

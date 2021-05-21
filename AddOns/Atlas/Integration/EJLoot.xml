@@ -1,10 +1,10 @@
-<!-- $Id: EJLoot.xml 337 2020-01-01 14:49:58Z arith $ -->
+<!-- $Id: EJLoot.xml 368 2021-05-20 15:03:14Z arithmandar $ -->
 <!--
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -422,11 +422,12 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self.lootScroll.difficultyDD = L_Create_UIDropDownMenu("AtlasEJLootFrameDifficultyDD", AtlasEJLootFrameLootScrollFrame)
-				L_UIDropDownMenu_Initialize(self.lootScroll.difficultyDD, Atlas_EncounterJournal_DifficultyInit, "MENU")
+				local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+				self.lootScroll.difficultyDD = LibDD:Create_UIDropDownMenu("AtlasEJLootFrameDifficultyDD", AtlasEJLootFrameLootScrollFrame)
+				LibDD:UIDropDownMenu_Initialize(self.lootScroll.difficultyDD, Atlas_EncounterJournal_DifficultyInit, "MENU")
 				
-				self.lootScroll.lootFilter = L_Create_UIDropDownMenu("AtlasEJLootFrameLootFilter", AtlasEJLootFrameLootScrollFrame)
-				self.lootScroll.lootSlotFilter = L_Create_UIDropDownMenu("AtlasEJLootFrameLootSlotFilter", AtlasEJLootFrameLootScrollFrame)
+				self.lootScroll.lootFilter = LibDD:Create_UIDropDownMenu("AtlasEJLootFrameLootFilter", AtlasEJLootFrameLootScrollFrame)
+				self.lootScroll.lootSlotFilter = LibDD:Create_UIDropDownMenu("AtlasEJLootFrameLootSlotFilter", AtlasEJLootFrameLootScrollFrame)
 				Atlas_EncounterJournal_OnLoad(self, encounterID);
 				-- HybridScrollFrame_CreateButtons(self.lootScroll, "AtlasEncounterItemTemplate", 0, 0);
 			</OnLoad>

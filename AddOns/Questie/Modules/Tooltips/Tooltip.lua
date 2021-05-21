@@ -10,8 +10,8 @@ local QuestieComms = QuestieLoader:ImportModule("QuestieComms");
 local QuestieLib = QuestieLoader:ImportModule("QuestieLib");
 ---@type QuestiePlayer
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer");
----@type QuestieDB
-local QuestieDB = QuestieLoader:ImportModule("QuestieDB");
+---@type l10n
+local l10n = QuestieLoader:ImportModule("l10n")
 
 local tinsert = table.insert
 QuestieTooltips.lastGametooltip = ""
@@ -28,14 +28,8 @@ QuestieTooltips.lookupKeysByQuestId = {
 
 local _InitObjectiveTexts
 
--- key format:
---  The key is the string name of the object the tooltip is relevant to,
---  started with a small flag that specifies the type:
---        units: u_
---        items: i_
---      objects: o_
 ---@param questId number
----@param key string
+---@param key string monster: m_, items: i_, objects: o_ + string name of the objective
 ---@param objective table
 function QuestieTooltips:RegisterObjectiveTooltip(questId, key, objective)
     if QuestieTooltips.lookupByKey[key] == nil then
@@ -75,8 +69,24 @@ function QuestieTooltips:RemoveQuest(questId)
         return
     end
 
-    for _, key in pairs(QuestieTooltips.lookupKeysByQuestId[questId]) do
-        QuestieTooltips.lookupByKey[key] = nil
+    for _, key in pairs(QuestieTooltips.lookupKeysByQuestId[questId] or {}) do
+        --Count to see if we should remove the main object
+        local totalCount = 0
+        local totalRemoved = 0
+        for _, tooltipData in pairs(QuestieTooltips.lookupByKey[key] or {}) do
+            --Remove specific quest
+            if(tooltipData.questId == questId and tooltipData.objective) then
+                QuestieTooltips.lookupByKey[key][tostring(tooltipData.questId) .. " " .. tooltipData.objective.Index] = nil
+                totalRemoved = totalRemoved + 1
+            elseif(tooltipData.questId == questId and tooltipData.npc) then
+                QuestieTooltips.lookupByKey[key][tostring(tooltipData.questId) .. " " .. tooltipData.npc.name] = nil
+                totalRemoved = totalRemoved + 1
+            end
+            totalCount = totalCount + 1
+        end
+        if(totalCount == totalRemoved) then
+            QuestieTooltips.lookupByKey[key] = nil
+        end
     end
 
     QuestieTooltips.lookupKeysByQuestId[questId] = {}
@@ -113,8 +123,7 @@ function QuestieTooltips:GetTooltip(key)
         for k, tooltip in pairs(QuestieTooltips.lookupByKey[key]) do
             if tooltip.npc then
                 if Questie.db.char.showQuestsInNpcTooltip then
-                    local questName, level = unpack(QuestieDB.QueryQuest(tooltip.questId, "name", "questLevel"))
-                    local questString = QuestieLib:GetColoredQuestName(tooltip.questId, questName, level, Questie.db.global.enableTooltipsQuestLevel, true, true)
+                    local questString = QuestieLib:GetColoredQuestName(tooltip.questId, Questie.db.global.enableTooltipsQuestLevel, true, true)
                     table.insert(npcTooltip, questString)
                 end
             else
@@ -127,8 +136,9 @@ function QuestieTooltips:GetTooltip(key)
                 local questId = tooltip.questId
                 local objectiveIndex = objective.Index;
                 if (not tooltipData[questId]) then
-                    tooltipData[questId] = {}
-                    tooltipData[questId].title = objective.QuestData:GetColoredQuestName();
+                    tooltipData[questId] = {
+                        title = QuestieLib:GetColoredQuestName(questId, Questie.db.global.enableTooltipsQuestLevel, true, true)
+                    }
                 end
 
                 if not QuestiePlayer.currentQuestlog[questId] then
@@ -165,12 +175,9 @@ function QuestieTooltips:GetTooltip(key)
         local tooltipDataExternal = QuestieComms.data:GetTooltip(key);
         for questId, playerList in pairs(tooltipDataExternal) do
             if (not tooltipData[questId]) then
-                local questName, level = unpack(QuestieDB.QueryQuest(questId, "name", "questLevel"))
-                local quest = QuestieDB:GetQuest(questId);
-                if quest then
-                    tooltipData[questId] = {}
-                    tooltipData[questId].title = QuestieLib:GetColoredQuestName(questId, questName, level, Questie.db.global.enableTooltipsQuestLevel, true, true)
-                end
+                tooltipData[questId] = {
+                    title = QuestieLib:GetColoredQuestName(questId, Questie.db.global.enableTooltipsQuestLevel, true, true)
+                }
             end
             for playerName, _ in pairs(playerList) do
                 local playerInfo = QuestiePlayer:GetPartyMemberByName(playerName);
@@ -190,12 +197,9 @@ function QuestieTooltips:GetTooltip(key)
         local tooltipDataExternal = QuestieComms.data:GetTooltip(key);
         for questId, playerList in pairs(tooltipDataExternal) do
             if (not tooltipData[questId]) then
-                local questName, level = unpack(QuestieDB.QueryQuest(questId, "name", "questLevel"))
-                local quest = QuestieDB:GetQuest(questId);
-                if quest then
-                    tooltipData[questId] = {}
-                    tooltipData[questId].title = QuestieLib:GetColoredQuestName(questId, questName, level, Questie.db.global.enableTooltipsQuestLevel, true, true)
-                end
+                tooltipData[questId] = {
+                    title = QuestieLib:GetColoredQuestName(questId, Questie.db.global.enableTooltipsQuestLevel, true, true)
+                }
             end
             for playerName, objectives in pairs(playerList) do
                 local playerInfo = QuestiePlayer:GetPartyMemberByName(playerName);
@@ -245,7 +249,7 @@ function QuestieTooltips:GetTooltip(key)
                     playerColor = QuestieComms.remotePlayerClasses[playerName]
                     if playerColor then
                         playerColor = Questie:GetClassColor(playerColor)
-                        playerType = " ("..QuestieLocale:GetUIString("Nearby")..")"
+                        playerType = " (".. l10n("Nearby")..")"
                     end
                 end
                 if objectivePlayerName == playerName and anotherPlayer then -- why did we have this case

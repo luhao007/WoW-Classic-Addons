@@ -3,15 +3,15 @@
 --     W o w h e a d   L o o t e r     --
 --                                     --
 --                                     --
---    Patch: 1.13.6                    --
---    Updated: December 2, 2020        --
+--    Patch: 1.13.7                    --
+--    Updated: April 21, 2021          --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
 
 
 local WL_NAME = "|cffffff7fWowhead Looter|r";
-local WL_VERSION = 11306;
+local WL_VERSION = 11307;
 local WL_VERSION_PATCH = 0;
 local WL_ADDONNAME, WL_ADDONTABLE = ...
 

@@ -1371,22 +1371,22 @@ L["%d Custom Sources"] = "%d Benutzerdefinierte Quellen"
 L["%d Faction-Realms"] = "%d Fraktions-Realms"
 L["%d groups"] = "%d Gruppen"
 L["%d Groups"] = "%d Gruppen"
-L["%d Groups Selected"] = "%d Gruppen Markiert"
-L["%d groups were created and %d items were added from the table."] = "%d Gruppen wurden erstellt und %d Items wurden zur Tabelle hinzugefügt."
+L["%d Groups Selected"] = "%d Ausgewählte Gruppen"
+L["%d groups were created and %d items were added from the table."] = "%d Gruppen wurden erstellt und %d Items wurden aus der Tabelle hinzugefügt."
 L["%d Guilds"] = "%d Gilden"
 L["%d Items"] = "%d Items"
 L["%d of %d"] = "%d von %d"
 L["%d Operations"] = "%d Operationen"
 L["%d Players"] = "%d Spieler"
-L["%d Posted Auctions"] = "%d gelistete Auktionen"
+L["%d Posted Auctions"] = "%d Gelistete Auktionen"
 L["%d Professions"] = "%d Berufe"
 L["%d Rarities"] = "%d Raritäten"
 L["%d Results"] = "%d Ergebnisse"
-L["%d Selected"] = "%d Markiert"
-L["%d Sold Auctions"] = "%d verkaufte Auktionen"
+L["%d Selected"] = "%d Ausgewählt"
+L["%d Sold Auctions"] = "%d Verkaufte Auktionen"
 L["%d Sources"] = "%d Quellen"
-L["%d Sub-Groups"] = "%d Unter-Gruppe"
-L["%d subgroups included"] = "%d Untergruppen beinhaltet"
+L["%d Sub-Groups"] = "%d Untergruppen"
+L["%d subgroups included"] = "%d Beinhaltet Untergruppen"
 L["%d Types"] = "%d Arten"
 L["%s - %s has been reset to default values."] = "%s - %s wurde auf den Standardwert zurückgesetzt."
 L["%s %s Operations"] = "%s %s Operationen"
@@ -1473,8 +1473,7 @@ L["Add account"] = "Konto hinzufügen"
 L["Add More Operations"] = "Mehr Operationen hinzufügen"
 L["Add Operation"] = "Operation hinzufügen"
 L["Add operation to groups"] = "Operation zu Gruppen hinzufügen"
---[[Translation missing --]]
-L["Add subject & description (optional)"] = "Add subject & description (optional)"
+L["Add subject & description (optional)"] = "Betreff & Beschreibung hinzufügen (optional)"
 L["Add Subject / Description"] = "Betreff / Beschreibung hinzufügen"
 L["Add to Mail"] = "Zur Post hinzufügen"
 L["Added '%s' profile which was received from %s."] = "'%s' Profil hinzugefügt. Erhalten von %s."
@@ -3135,24 +3134,17 @@ L["%s is a valid custom price but did not give a value for %s."] = "%s es un pre
 --[[Translation missing --]]
 L["'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."] = "'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."
 L["%s is not a valid custom price and gave the following error: %s"] = "%s es un precio personalizado no válido que provocó el siguiente error: %s"
---[[Translation missing --]]
-L["%s Items Bought"] = "%s Items Bought"
---[[Translation missing --]]
-L["%s Items Cancelled"] = "%s Items Cancelled"
---[[Translation missing --]]
-L["%s Items Expired"] = "%s Items Expired"
+L["%s Items Bought"] = "%s Artículos Adquiridos"
+L["%s Items Cancelled"] = "%s Artículos Cancelados"
+L["%s Items Expired"] = "%s Artículos Caducados"
 --[[Translation missing --]]
 L["%s Items Resold"] = "%s Items Resold"
---[[Translation missing --]]
-L["%s Items Selected"] = "%s Items Selected"
---[[Translation missing --]]
-L["%s Items Sold"] = "%s Items Sold"
+L["%s Items Selected"] = "%s Artículos Seleccionados"
+L["%s Items Sold"] = "%s Artículos Vendidos"
 --[[Translation missing --]]
 L["%s Items Total"] = "%s Items Total"
---[[Translation missing --]]
-L["%s operation"] = "%s operation"
---[[Translation missing --]]
-L["%s operations"] = "%s operations"
+L["%s operation"] = "%s operación"
+L["%s operations"] = "%s operaciones"
 L["%s Operations"] = "%s Operaciones"
 --[[Translation missing --]]
 L["%s Posted Auctions"] = "%s Posted Auctions"
@@ -3169,11 +3161,9 @@ L["%s sent you a message: %s"] = "%s te ha enviado un mensaje: %s"
 L["%s Sold Auctions"] = "%s Sold Auctions"
 --[[Translation missing --]]
 L["%s Sold Auctions (Filtered)"] = "%s Sold Auctions (Filtered)"
---[[Translation missing --]]
 L["%s Total"] = "%s Total"
 L["%s total"] = "%s total"
---[[Translation missing --]]
-L["%s Total Profit"] = "%s Total Profit"
+L["%s Total Profit"] = "%s Total Beneficio"
 L["%sDrag%s to move this button"] = "%sDrag%s para mover este botón"
 --[[Translation missing --]]
 L["%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."] = "%sIMPORTANT:|r When TSM_Accounting last saved data for this realm, it was too big for WoW to handle, so old data was automatically trimmed in order to avoid corruption of the saved variables. The last %s of purchase data has been preserved."
@@ -3188,28 +3178,19 @@ L["(%d/500 Characters)"] = "(%d/500 caracteres)"
 L["(minimum 0 - maximum %d)"] = "(minimum 0 - maximum %d)"
 L["1 Group"] = "1 Grupo"
 L["1 Item"] = "1 artículo"
---[[Translation missing --]]
 L["1D"] = "1D"
---[[Translation missing --]]
 L["1M"] = "1M"
---[[Translation missing --]]
-L["1W"] = "1W"
---[[Translation missing --]]
-L["1Y"] = "1Y"
---[[Translation missing --]]
-L["2Y"] = "2Y"
---[[Translation missing --]]
+L["1W"] = "1S"
+L["1Y"] = "1A"
+L["2Y"] = "2A"
 L["3M"] = "3M"
---[[Translation missing --]]
 L["6M"] = "6M"
---[[Translation missing --]]
-L["A brand new and improved user interface."] = "A brand new and improved user interface."
+L["A brand new and improved user interface."] = "Una nueva y mejorada interfaz de usuario."
 L["A custom price of %s for %s evaluates to %s."] = "Un precio personalizado de %s para %s se estima en %s."
 L["A maximum of 1 convert() function is allowed."] = "Sólo se permite una única función convert()."
 L["A profile with that name already exists on the target account. Rename it first and try again."] = "Ya existe un perfil con ese nombre en la cuenta de destino. Cámbiale el nombre primero e inténtalo nuevamente."
 L["A profile with this name already exists."] = "Ya existe un perfil con este nombre."
---[[Translation missing --]]
-L["A scan is already in progress. Please stop that scan before starting another one."] = "A scan is already in progress. Please stop that scan before starting another one."
+L["A scan is already in progress. Please stop that scan before starting another one."] = "Ya hay un escaneo en curso. Por favor detenlo antes de empezar uno nuevo."
 --[[Translation missing --]]
 L["A single craft makes %d and you only need to restock %d."] = "A single craft makes %d and you only need to restock %d."
 --[[Translation missing --]]
@@ -3237,20 +3218,17 @@ L["Add %d |4Item:Items"] = "Add %d |4Item:Items"
 L["Add %s Operation"] = "Add %s Operation"
 --[[Translation missing --]]
 L["Add a new custom source"] = "Add a new custom source"
---[[Translation missing --]]
-L["Add account"] = "Add account"
+L["Add account"] = "Agregar cuenta"
 --[[Translation missing --]]
 L["Add More Operations"] = "Add More Operations"
---[[Translation missing --]]
-L["Add Operation"] = "Add Operation"
+L["Add Operation"] = "Agregar operación"
 --[[Translation missing --]]
 L["Add operation to groups"] = "Add operation to groups"
 --[[Translation missing --]]
 L["Add subject & description (optional)"] = "Add subject & description (optional)"
 --[[Translation missing --]]
 L["Add Subject / Description"] = "Add Subject / Description"
---[[Translation missing --]]
-L["Add to Mail"] = "Add to Mail"
+L["Add to Mail"] = "Agregar al Correo"
 --[[Translation missing --]]
 L["Added '%s' profile which was received from %s."] = "Added '%s' profile which was received from %s."
 --[[Translation missing --]]
@@ -3258,8 +3236,7 @@ L["Added %s to %s."] = "Added %s to %s."
 L["Additional error suppressed"] = "Error adicional suprimido"
 --[[Translation missing --]]
 L["Adjust how crafted items are restocked."] = "Adjust how crafted items are restocked."
---[[Translation missing --]]
-L["Adjust how items are mailed."] = "Adjust how items are mailed."
+L["Adjust how items are mailed."] = "Ajustar como se envían los artículos por correo."
 --[[Translation missing --]]
 L["Adjust how TSM values crafted items when calculating profit."] = "Adjust how TSM values crafted items when calculating profit."
 --[[Translation missing --]]
@@ -3284,13 +3261,10 @@ L["Alarm Clock"] = "Alarma"
 --[[Translation missing --]]
 L["All"] = "All"
 L["All Auctions"] = "Todas las subastas"
---[[Translation missing --]]
-L["All Bought"] = "All Bought"
---[[Translation missing --]]
-L["All Cancelled"] = "All Cancelled"
+L["All Bought"] = "Todo Comprado"
+L["All Cancelled"] = "Todo Cancelado"
 L["All Characters"] = "Todos los Personajes"
---[[Translation missing --]]
-L["All Expired"] = "All Expired"
+L["All Expired"] = "Todo Caducado"
 --[[Translation missing --]]
 L["All Faction-Realms"] = "All Faction-Realms"
 --[[Translation missing --]]
@@ -5576,8 +5550,7 @@ L["%d Sources"] = "%d Fuentes"
 L["%d Sub-Groups"] = "%d Sub-Grupos"
 L["%d subgroups included"] = "%d subgrupos incluídos"
 L["%d Types"] = "%d Tipos"
---[[Translation missing --]]
-L["%s - %s has been reset to default values."] = "%s - %s has been reset to default values."
+L["%s - %s has been reset to default values."] = "%s - %s ha sido restaurado a valores por defecto."
 L["%s %s Operations"] = "%s %s Operaciones"
 L["%s (%s bags, %s bank, %s AH, %s mail)"] = "%s (%s Bolsas, %s Banco, %s Casa de subastas, %s Correo)"
 L["%s (%s player, %s alts, %s AH)"] = "%s (%s jugador, %s alts, %s Casa de Subastas)"
@@ -5590,8 +5563,7 @@ L["%s group updated with %d items and %d materials."] = "Grupo %s actualizado co
 L["%s in guild vault"] = "%s en cámara de la Hermandad"
 L["%s is a valid custom price but %s is an invalid item."] = "%s es un precio válido, pero %s no es un objeto válido."
 L["%s is a valid custom price but did not give a value for %s."] = "%s es un precio válido pero no dio un valor para %s."
---[[Translation missing --]]
-L["'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."] = "'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."
+L["'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."] = "'%s' es una operación inválida. El reabastecimiento mínimo de %d es mayor que el reabastecimiento máximo de %d por %s."
 L["%s is not a valid custom price and gave the following error: %s"] = "%s no es un precio válido y dio el siguiente error: %s"
 L["%s Items Bought"] = "%s Objetos Comprados"
 L["%s Items Cancelled"] = "%s Objetos Cancelados"
@@ -5599,14 +5571,12 @@ L["%s Items Expired"] = "%s Objetos Expirados"
 L["%s Items Resold"] = "%s Objetos Revendidos"
 L["%s Items Selected"] = "%s Objetos Seleccionados"
 L["%s Items Sold"] = "%s Objetos Vendidos"
-L["%s Items Total"] = "%s Objetos en Total"
+L["%s Items Total"] = "%s objetos en Total"
 L["%s operation"] = "%s operación"
 L["%s operations"] = "%s operaciones"
 L["%s Operations"] = "%s Operaciones"
---[[Translation missing --]]
-L["%s Posted Auctions"] = "%s Posted Auctions"
---[[Translation missing --]]
-L["%s Posted Auctions (Filtered)"] = "%s Posted Auctions (Filtered)"
+L["%s Posted Auctions"] = "%s Subastas Publicadas"
+L["%s Posted Auctions (Filtered)"] = "%s Subastas Publicadas (Filtrado)"
 L["%s previously had the max number of operations, so removed %s."] = "%s anteriormente tenía el número máximo de operaciones, por lo que se eliminó %s."
 L["%s removed."] = "%s eliminado."
 L["%s sent you %s"] = "%s enviado a ti %s"
@@ -5627,9 +5597,8 @@ L["%sLeft-Click%s to open the main window"] = "%sClick Izquierdo%s para abrir la
 L["%sLeft-Click|r to ignore an item for this session. Hold %sShift|r to ignore permanently. You can remove items from permanent ignore in the Vendoring settings."] = "%sClic Derecho|r para ignorar un objeto por esta sesión. Mantén %sShift|r para ignorar permanentemente. Puedes remover objetos de la lista de ignorados permanentes en los ajustes de Venta."
 --[[Translation missing --]]
 L["(%d - %d)"] = "(%d - %d)"
-L["(%d/500 Characters)"] = "(%d/500 Personajes)"
---[[Translation missing --]]
-L["(minimum 0 - maximum %d)"] = "(minimum 0 - maximum %d)"
+L["(%d/500 Characters)"] = "(%d/500 caracteres)"
+L["(minimum 0 - maximum %d)"] = "(mínimo 0 - máximo %d)"
 L["1 Group"] = "1 Grupo"
 L["1 Item"] = "1 Objeto"
 --[[Translation missing --]]
@@ -5656,37 +5625,26 @@ L["Above max price. Not posting."] = "Sobre precio máximo. No se publica."
 L["Above max price. Posting at max."] = "Sobre el precio máximo. Publicando al máximo"
 L["Above max price. Posting at min."] = "Sobre el precio máximo. Publicando al mínimo."
 L["Above max price. Posting at normal."] = "Sobre el precio máximo. Publicando al precio normal."
---[[Translation missing --]]
-L["Accept COD?"] = "Accept COD?"
---[[Translation missing --]]
-L["Accepting this item will cost: %s"] = "Accepting this item will cost: %s"
+L["Accept COD?"] = "¿Aceptar C.R.?"
+L["Accepting this item will cost: %s"] = "Aceptar este objeto costará: %s"
 --[[Translation missing --]]
 L["Account sync removed. Please delete the account sync from the other account as well."] = "Account sync removed. Please delete the account sync from the other account as well."
 L["Account Syncing"] = "Sincronizar Cuentas"
 L["Accounting"] = "Contabilidad"
 L["Activity Type"] = "Tipo de Actividad"
---[[Translation missing --]]
-L["Add"] = "Add"
+L["Add"] = "Agregar"
 --[[Translation missing --]]
 L["Add %d |4Item:Items"] = "Add %d |4Item:Items"
 --[[Translation missing --]]
 L["Add %s Operation"] = "Add %s Operation"
---[[Translation missing --]]
-L["Add a new custom source"] = "Add a new custom source"
---[[Translation missing --]]
-L["Add account"] = "Add account"
---[[Translation missing --]]
-L["Add More Operations"] = "Add More Operations"
---[[Translation missing --]]
-L["Add Operation"] = "Add Operation"
---[[Translation missing --]]
-L["Add operation to groups"] = "Add operation to groups"
---[[Translation missing --]]
-L["Add subject & description (optional)"] = "Add subject & description (optional)"
---[[Translation missing --]]
-L["Add Subject / Description"] = "Add Subject / Description"
---[[Translation missing --]]
-L["Add to Mail"] = "Add to Mail"
+L["Add a new custom source"] = "Agregar un origen personalizado"
+L["Add account"] = "Agregar cuenta"
+L["Add More Operations"] = "Agregar Más Operaciones"
+L["Add Operation"] = "Agregar Operación"
+L["Add operation to groups"] = "Agregar operación a grupos"
+L["Add subject & description (optional)"] = "Agregar asunto y descripción (opcional)"
+L["Add Subject / Description"] = "Agregar Asunto / Descripción"
+L["Add to Mail"] = "Agregar a Mensaje"
 --[[Translation missing --]]
 L["Added '%s' profile which was received from %s."] = "Added '%s' profile which was received from %s."
 --[[Translation missing --]]
@@ -5694,8 +5652,7 @@ L["Added %s to %s."] = "Added %s to %s."
 L["Additional error suppressed"] = "Error Adicional Suprimido"
 --[[Translation missing --]]
 L["Adjust how crafted items are restocked."] = "Adjust how crafted items are restocked."
---[[Translation missing --]]
-L["Adjust how items are mailed."] = "Adjust how items are mailed."
+L["Adjust how items are mailed."] = "Ajustar cómo son enviados objetos por mensaje."
 --[[Translation missing --]]
 L["Adjust how TSM values crafted items when calculating profit."] = "Adjust how TSM values crafted items when calculating profit."
 --[[Translation missing --]]
@@ -5706,8 +5663,7 @@ L["Adjust the settings below to set how groups attached to this operation will b
 L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "Adjust the settings below to set how groups attached to this operation will be cancelled."
 --[[Translation missing --]]
 L["Adjust the settings below to set how groups attached to this operation will be priced."] = "Adjust the settings below to set how groups attached to this operation will be priced."
---[[Translation missing --]]
-L["Advanced Item Search"] = "Advanced Item Search"
+L["Advanced Item Search"] = "Búsqueda Avanzada de Objetos"
 L["AH"] = "Casa de Subastas"
 L["AH (Crafting)"] = "Casa de Subastas (Fabricar)"
 L["AH (Disenchanting)"] = "Casa de subastas (Desencantando)"
@@ -5720,22 +5676,18 @@ L["Alarm Clock"] = "Alarma"
 --[[Translation missing --]]
 L["All"] = "All"
 L["All Auctions"] = "Todas las subastas"
---[[Translation missing --]]
-L["All Bought"] = "All Bought"
---[[Translation missing --]]
-L["All Cancelled"] = "All Cancelled"
+L["All Bought"] = "Todos Comprados"
+L["All Cancelled"] = "Todos Cancelados"
 --[[Translation missing --]]
 L["All Characters"] = "All Characters"
---[[Translation missing --]]
-L["All Expired"] = "All Expired"
+L["All Expired"] = "Todos Expirados"
 --[[Translation missing --]]
 L["All Faction-Realms"] = "All Faction-Realms"
 --[[Translation missing --]]
 L["All Guilds"] = "All Guilds"
 --[[Translation missing --]]
 L["All Item Classes"] = "All Item Classes"
---[[Translation missing --]]
-L["All Other"] = "All Other"
+L["All Other"] = "Todos Otros"
 --[[Translation missing --]]
 L["All Players"] = "All Players"
 L["All Professions"] = "Todas las profesiones"
@@ -5747,8 +5699,7 @@ L["All Rarities"] = "All Rarities"
 L["All Selected"] = "All Selected"
 --[[Translation missing --]]
 L["All Slots"] = "All Slots"
---[[Translation missing --]]
-L["All Sold"] = "All Sold"
+L["All Sold"] = "Todos Vendidos"
 --[[Translation missing --]]
 L["All Sources"] = "All Sources"
 --[[Translation missing --]]
@@ -5793,12 +5744,11 @@ L["Are you sure you want to delete this operation?"] = "¿Seguro que quieres eli
 L["At above max price and not undercut."] = "At above max price and not undercut."
 --[[Translation missing --]]
 L["At normal price and not undercut."] = "At normal price and not undercut."
---[[Translation missing --]]
-L["Attachments"] = "Attachments"
+L["Attachments"] = "Adjuntos"
 L["Auction"] = "Subasta"
 L["Auction duration"] = "Duración de subasta"
 L["Auction has been bid on."] = "La subasta ha sido pujada."
-L["Auction House Cut"] = "Depósito de la Casa de Subastas"
+L["Auction House Cut"] = "Comisión de la Casa de Subastas"
 L["Auction House Sounds"] = "Sonidos de la Casa de Subastas"
 L["Auction sale sound"] = "Sonido de venta de Subasta"
 L["Auction Window Close"] = "Cerrar Ventana de Subasta"
@@ -5842,14 +5792,11 @@ L["Auctions"] = "Subastas"
 L["Auto Quest Complete"] = "Auto misión Completa"
 --[[Translation missing --]]
 L["Auto-focus browse search input"] = "Auto-focus browse search input"
---[[Translation missing --]]
-L["Average Earned per Day"] = "Average Earned per Day"
+L["Average Earned per Day"] = "Ingreso promedio por día"
 --[[Translation missing --]]
 L["Average Prices:"] = "Average Prices:"
---[[Translation missing --]]
-L["Average Profit per Day"] = "Average Profit per Day"
---[[Translation missing --]]
-L["Average Spent per Day"] = "Average Spent per Day"
+L["Average Profit per Day"] = "Ganancia promedio por día"
+L["Average Spent per Day"] = "Gasto promedio por día"
 L["Avg Buy Price"] = "Precio medio de compra"
 --[[Translation missing --]]
 L["Avg Profit"] = "Avg Profit"
@@ -5905,8 +5852,7 @@ L["Bid Sniper Running"] = "Bid Sniper Running"
 L["Bidding Auction"] = "Bidding Auction"
 --[[Translation missing --]]
 L["Blacklisted players"] = "Blacklisted players"
---[[Translation missing --]]
-L["Bought"] = "Bought"
+L["Bought"] = "Comprado"
 --[[Translation missing --]]
 L["Bought %d of %s from %s for %s"] = "Bought %d of %s from %s for %s"
 --[[Translation missing --]]
@@ -6027,8 +5973,7 @@ L["Clear Old Data?"] = "Clear Old Data?"
 L["Click and drag to resize this window."] = "Click and drag to resize this window."
 --[[Translation missing --]]
 L["Click to hide this item for the current session. Hold shift to hide this item permanently."] = "Click to hide this item for the current session. Hold shift to hide this item permanently."
---[[Translation missing --]]
-L["COD"] = "COD"
+L["COD"] = "Pago contra reembolso"
 L["Coins (%s)"] = "Monedas (%s)"
 --[[Translation missing --]]
 L["Combine Partial Stacks"] = "Combine Partial Stacks"
@@ -6042,16 +5987,14 @@ L["Confirmation %s button"] = "Confirmation %s button"
 L["Confirming %d / %d"] = "Confirmando %d / %d"
 L["Connected to %s"] = "Conectado a %s"
 L["Connecting to %s"] = "Conectando a %s"
---[[Translation missing --]]
-L["Contacts"] = "Contacts"
+L["Contacts"] = "Contactos"
 --[[Translation missing --]]
 L["Contains auctions above your alert threshold!"] = "Contains auctions above your alert threshold!"
 --[[Translation missing --]]
 L["Cooldown"] = "Cooldown"
 --[[Translation missing --]]
 L["Cooldowns"] = "Cooldowns"
---[[Translation missing --]]
-L["Copy Letter"] = "Copy Letter"
+L["Copy Letter"] = "Copiar carta"
 --[[Translation missing --]]
 L["Cost"] = "Cost"
 --[[Translation missing --]]
@@ -6174,8 +6117,7 @@ L["Delete Record?"] = "Delete Record?"
 L["Delete the profile"] = "Delete the profile"
 --[[Translation missing --]]
 L["Deleting this group (%s) will also remove any sub-groups attached to this group."] = "Deleting this group (%s) will also remove any sub-groups attached to this group."
---[[Translation missing --]]
-L["Deposit"] = "Deposit"
+L["Deposit"] = "Depósito"
 --[[Translation missing --]]
 L["Deposit Cost"] = "Deposit Cost"
 --[[Translation missing --]]
@@ -6330,8 +6272,7 @@ L["Enter name of logged-in character on other account"] = "Enter name of logged-
 L["Enter player name"] = "Enter player name"
 --[[Translation missing --]]
 L["Enter profile name"] = "Enter profile name"
---[[Translation missing --]]
-L["Enter recipient name"] = "Enter recipient name"
+L["Enter recipient name"] = "Ingresa el nombre del destinatario"
 --[[Translation missing --]]
 L["ERROR: A full AH scan has recently been performed and is on cooldown. Log out to reset this cooldown."] = "ERROR: A full AH scan has recently been performed and is on cooldown. Log out to reset this cooldown."
 --[[Translation missing --]]
@@ -6361,8 +6302,7 @@ L["Exclude custom sources?"] = "Exclude custom sources?"
 L["Exclude operations?"] = "Exclude operations?"
 --[[Translation missing --]]
 L["Exit"] = "Exit"
---[[Translation missing --]]
-L["Expand / Collapse All Groups"] = "Expand / Collapse All Groups"
+L["Expand / Collapse All Groups"] = "Expandir / Contraer Todos los Grupos"
 L["Expenses"] = "Gastos"
 L["EXPENSES"] = "GASTOS"
 --[[Translation missing --]]
@@ -6374,8 +6314,7 @@ L["Expired Auctions"] = "Expired Auctions"
 L["Expired information"] = "Expired information"
 --[[Translation missing --]]
 L["Expired Since Last Sale"] = "Expired Since Last Sale"
---[[Translation missing --]]
-L["Expires"] = "Expires"
+L["Expires"] = "Expira en"
 --[[Translation missing --]]
 L["Expires Since Last Sale"] = "Expires Since Last Sale"
 --[[Translation missing --]]
@@ -6416,17 +6355,13 @@ L["Favorite Scans"] = "Favorite Scans"
 L["Favorite Searches"] = "Favorite Searches"
 --[[Translation missing --]]
 L["Favorited Patterns"] = "Favorited Patterns"
---[[Translation missing --]]
-L["Filter by duration"] = "Filter by duration"
---[[Translation missing --]]
-L["Filter by groups"] = "Filter by groups"
---[[Translation missing --]]
-L["Filter by keyword"] = "Filter by keyword"
+L["Filter by duration"] = "Filtrar por duración"
+L["Filter by groups"] = "Filtrar por grupos"
+L["Filter by keyword"] = "Filtrar por palabra clave"
 L["Filter by Keyword"] = "Filtrar por Palabra clave"
 --[[Translation missing --]]
 L["Filter by Price Source"] = "Filter by Price Source"
---[[Translation missing --]]
-L["Filter by Profession"] = "Filter by Profession"
+L["Filter by Profession"] = "Filtrar por profesión"
 L["Filter group item lists based on the following price source"] = "Filtrar las listas de grupos según la siguiente fuente de precios"
 --[[Translation missing --]]
 L["Finding Selected Auction"] = "Finding Selected Auction"
@@ -6655,8 +6590,7 @@ L["Last Sold"] = "Última venta"
 L["LEAST GROUPS"] = "LEAST GROUPS"
 --[[Translation missing --]]
 L["LEAST ITEMS"] = "LEAST ITEMS"
---[[Translation missing --]]
-L["Ledger"] = "Ledger"
+L["Ledger"] = "Contabilidad"
 L["Level Up"] = "Subida de Nivel"
 --[[Translation missing --]]
 L["Limit"] = "Limit"
@@ -6678,32 +6612,21 @@ L["Macro Setup"] = "Configuración de macro."
 --[[Translation missing --]]
 L["Macros"] = "Macros"
 L["Mail"] = "Correo"
---[[Translation missing --]]
-L["Mail Disenchantables"] = "Mail Disenchantables"
---[[Translation missing --]]
-L["Mail disenchantables max quality"] = "Mail disenchantables max quality"
---[[Translation missing --]]
-L["Mail Selected Groups"] = "Mail Selected Groups"
---[[Translation missing --]]
-L["Mail Selected Groups (Auto Resend)"] = "Mail Selected Groups (Auto Resend)"
---[[Translation missing --]]
-L["Mail Selected Groups (Dry Run + Auto Resend)"] = "Mail Selected Groups (Dry Run + Auto Resend)"
---[[Translation missing --]]
-L["Mail Selected Groups (Dry Run)"] = "Mail Selected Groups (Dry Run)"
---[[Translation missing --]]
-L["Mail to %s"] = "Mail to %s"
---[[Translation missing --]]
-L["Mailing"] = "Mailing"
---[[Translation missing --]]
-L["Mailing all to %s."] = "Mailing all to %s."
+L["Mail Disenchantables"] = "Enviar desencantables"
+L["Mail disenchantables max quality"] = "Calidad máx. de desencantables a enviar"
+L["Mail Selected Groups"] = "Enviar los grupos seleccionados"
+L["Mail Selected Groups (Auto Resend)"] = "Enviar los grupos seleccionados (Reenvío automático)"
+L["Mail Selected Groups (Dry Run + Auto Resend)"] = "Enviar los grupos seleccionados (Ejecución en Seco + Reenvío automático)"
+L["Mail Selected Groups (Dry Run)"] = "Enviar los grupos seleccionados (Ejecución en Seco)"
+L["Mail to %s"] = "Enviar mensaje a %s"
+L["Mailing"] = "Envío de mensajes"
+L["Mailing all to %s."] = "Enviando todo a %s."
 --[[Translation missing --]]
 L["Mailing operation"] = "Mailing operation"
 --[[Translation missing --]]
 L["Mailing operations control mailing to other characters."] = "Mailing operations control mailing to other characters."
---[[Translation missing --]]
-L["Mailing up to %d to %s."] = "Mailing up to %d to %s."
---[[Translation missing --]]
-L["Make Cash On Delivery?"] = "Make Cash On Delivery?"
+L["Mailing up to %d to %s."] = "Enviando hasta %d a %s"
+L["Make Cash On Delivery?"] = "¿Convertir en Pago Contra Reembolso?"
 --[[Translation missing --]]
 L["Make Operations Global?"] = "Make Operations Global?"
 L["Management Options"] = "Opciones de Manejo"
@@ -6826,8 +6749,7 @@ L["MOVE"] = "MOVER"
 L["Move %d |4Item:Items"] = "Move %d |4Item:Items"
 --[[Translation missing --]]
 L["Move %d already grouped items?"] = "Move %d already grouped items?"
---[[Translation missing --]]
-L["Move all to Bags"] = "Move all to Bags"
+L["Move all to Bags"] = "Mover todo al inventario"
 --[[Translation missing --]]
 L["Move Item"] = "Move Item"
 --[[Translation missing --]]
@@ -6862,8 +6784,7 @@ L["New Operation"] = "Nueva Operación"
 L["New price sources."] = "New price sources."
 --[[Translation missing --]]
 L["News & Information"] = "News & Information"
---[[Translation missing --]]
-L["No Attachments"] = "No Attachments"
+L["No Attachments"] = "No hay adjuntos"
 --[[Translation missing --]]
 L["No AuctionDB Realm Data"] = "No AuctionDB Realm Data"
 --[[Translation missing --]]
@@ -6957,18 +6878,12 @@ L["Only show items with disenchant values above this price"] = "Only show items 
 --[[Translation missing --]]
 L["Only show sold auctions"] = "Only show sold auctions"
 L["OPEN"] = "ABRIR"
---[[Translation missing --]]
-L["Open All Mail"] = "Open All Mail"
---[[Translation missing --]]
-L["Open All Mail Without Money"] = "Open All Mail Without Money"
---[[Translation missing --]]
-L["Open Mail"] = "Open Mail"
---[[Translation missing --]]
-L["Open mail complete sound"] = "Open mail complete sound"
---[[Translation missing --]]
-L["Open Mail Without Money"] = "Open Mail Without Money"
---[[Translation missing --]]
-L["Open Task List"] = "Open Task List"
+L["Open All Mail"] = "Abrir todos los mensajes"
+L["Open All Mail Without Money"] = "Abrir todos los mensajes sin dinero"
+L["Open Mail"] = "Abrir correo"
+L["Open mail complete sound"] = "Sonido al abrir todos los mensajes"
+L["Open Mail Without Money"] = "Abrir correo sin dinero"
+L["Open Task List"] = "Abrir Lista de Tareas"
 --[[Translation missing --]]
 L["Opens the Destroying frame if there's stuff in your bags to be destroyed."] = "Opens the Destroying frame if there's stuff in your bags to be destroyed."
 L["Operation"] = "Operacion"
@@ -6995,8 +6910,7 @@ L["Per Item"] = "Por Objeto"
 L["Per Stack"] = "Per Stack"
 --[[Translation missing --]]
 L["Per-Character group selections."] = "Per-Character group selections."
---[[Translation missing --]]
-L["Performing a dry-run of your Mailing operations for the selected groups."] = "Performing a dry-run of your Mailing operations for the selected groups."
+L["Performing a dry-run of your Mailing operations for the selected groups."] = "Ejecutando una ejecución en seco de tus operaciones de envío para los grupos seleccionados."
 --[[Translation missing --]]
 L["Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."] = "Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."
 L["Player Gold"] = "Oro del Personaje"
@@ -7123,10 +7037,8 @@ L["Quest Completed"] = "Misión Completada"
 L["Quest Objectives Complete"] = "Objetivos de misión completados."
 --[[Translation missing --]]
 L["Queue"] = "Queue"
---[[Translation missing --]]
-L["Quickly mail all excess disenchantable items to a character"] = "Quickly mail all excess disenchantable items to a character"
---[[Translation missing --]]
-L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Quickly mail all excess gold (limited to a certain amount) to a character"
+L["Quickly mail all excess disenchantable items to a character"] = "Enviar rápidamente el exceso de objetos desencantables a un personaje"
+L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Envía rápidamente el exceso de oro (limitado a cierta cantidad) a un personaje"
 L["Raid Warning"] = "Alerta de Banda"
 L["Read More"] = "Seguir leyendo"
 L["Ready Check"] = "Comprobación de listo"
@@ -7140,8 +7052,7 @@ L["Recent Scans"] = "Recent Scans"
 L["Recent Searches"] = "Recent Searches"
 --[[Translation missing --]]
 L["Recipe Name"] = "Recipe Name"
---[[Translation missing --]]
-L["Recipient"] = "Recipient"
+L["Recipient"] = "Destinatario"
 --[[Translation missing --]]
 L["Region avg daily sold"] = "Region avg daily sold"
 --[[Translation missing --]]
@@ -7203,8 +7114,7 @@ L["Repair from Guild Bank"] = "Repair from Guild Bank"
 L["Replace %d existing operations and %d existing custom sources?"] = "Replace %d existing operations and %d existing custom sources?"
 --[[Translation missing --]]
 L["Replace %d existing operations?"] = "Replace %d existing operations?"
---[[Translation missing --]]
-L["Reply"] = "Reply"
+L["Reply"] = "Responder"
 --[[Translation missing --]]
 L["Report Spam"] = "Report Spam"
 --[[Translation missing --]]
@@ -7289,8 +7199,7 @@ L["Sale"] = "Sale"
 L["Sale Data"] = "Sale Data"
 --[[Translation missing --]]
 L["Sale information"] = "Sale information"
---[[Translation missing --]]
-L["Sale Price"] = "Sale Price"
+L["Sale Price"] = "Precio de venta"
 L["Sale Rate"] = "Tasa de Venta"
 --[[Translation missing --]]
 L["Sale rate"] = "Sale rate"
@@ -7329,23 +7238,18 @@ L["Search Groups"] = "Buscar en Grupos"
 L["Search items"] = "Search items"
 --[[Translation missing --]]
 L["Search items in group"] = "Search items in group"
---[[Translation missing --]]
-L["Search items in mailbox"] = "Search items in mailbox"
+L["Search items in mailbox"] = "Buscar objetos en bandeja de entrada"
 L["Search Operations"] = "Buscar Operaciones"
 --[[Translation missing --]]
 L["Search Patterns"] = "Search Patterns"
 --[[Translation missing --]]
 L["Search Results"] = "Search Results"
---[[Translation missing --]]
-L["Search the auction house"] = "Search the auction house"
+L["Search the auction house"] = "Buscar en la casa de subastas"
 --[[Translation missing --]]
 L["Search Vendor"] = "Search Vendor"
---[[Translation missing --]]
-L["Select / Deselect All Groups"] = "Select / Deselect All Groups"
---[[Translation missing --]]
-L["Select / Deselect All Items"] = "Select / Deselect All Items"
---[[Translation missing --]]
-L["Select / Deselect All Results"] = "Select / Deselect All Results"
+L["Select / Deselect All Groups"] = "Seleccionar / Deseleccionar Todos los Grupos"
+L["Select / Deselect All Items"] = "Seleccionar / Deseleccionar Todos los Objetos"
+L["Select / Deselect All Results"] = "Seleccionar / Deseleccionar Todos los Resultados"
 --[[Translation missing --]]
 L["Select a Source"] = "Select a Source"
 --[[Translation missing --]]
@@ -7358,12 +7262,10 @@ L["Select an Auction to Buy"] = "Select an Auction to Buy"
 L["Select Auction to Cancel"] = "Select Auction to Cancel"
 --[[Translation missing --]]
 L["Select crafter"] = "Select crafter"
---[[Translation missing --]]
-L["Select Group"] = "Select Group"
+L["Select Group"] = "Seleccionar grupo"
 --[[Translation missing --]]
 L["Select included subgroups"] = "Select included subgroups"
---[[Translation missing --]]
-L["Select Items to Attach"] = "Select Items to Attach"
+L["Select Items to Attach"] = "Selecciona objetos a adjuntar"
 --[[Translation missing --]]
 L["Select professions"] = "Select professions"
 --[[Translation missing --]]
@@ -7385,18 +7287,13 @@ L["Sell Trash"] = "Sell Trash"
 L["Seller"] = "Seller"
 --[[Translation missing --]]
 L["Selling soulbound items."] = "Selling soulbound items."
---[[Translation missing --]]
-L["Send"] = "Send"
---[[Translation missing --]]
-L["Send Disenchantables"] = "Send Disenchantables"
---[[Translation missing --]]
-L["Send Excess Gold to Banker"] = "Send Excess Gold to Banker"
---[[Translation missing --]]
-L["Send Gold"] = "Send Gold"
+L["Send"] = "Enviar"
+L["Send Disenchantables"] = "Enviar desencantables"
+L["Send Excess Gold to Banker"] = "Enviar exceso de oro a banquero"
+L["Send Gold"] = "Enviar Oro"
 --[[Translation missing --]]
 L["Send grouped items individually"] = "Send grouped items individually"
---[[Translation missing --]]
-L["Send Mail"] = "Send Mail"
+L["Send Mail"] = "Enviar Mensaje"
 --[[Translation missing --]]
 L["Send Money"] = "Send Money"
 --[[Translation missing --]]
@@ -7445,8 +7342,7 @@ L["Set what items are shown during a Shopping scan."] = "Set what items are show
 L["Set what items are shown during a Sniper scan."] = "Set what items are shown during a Sniper scan."
 --[[Translation missing --]]
 L["Set your active profile or create a new one."] = "Set your active profile or create a new one."
---[[Translation missing --]]
-L["Settings"] = "Settings"
+L["Settings"] = "Ajustes"
 --[[Translation missing --]]
 L["Setup various sounds that play when doing Auctioning scans."] = "Setup various sounds that play when doing Auctioning scans."
 --[[Translation missing --]]
@@ -7477,22 +7373,15 @@ L["Show destroying frame automatically"] = "Show destroying frame automatically"
 L["Show on modifier"] = "Show on modifier"
 --[[Translation missing --]]
 L["Show only auctions with bids"] = "Show only auctions with bids"
---[[Translation missing --]]
-L["Showing %s Mail"] = "Showing %s Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mail"] = "Showing %s of %d Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mails"] = "Showing %s of %d Mails"
---[[Translation missing --]]
-L["Showing all %s Mails"] = "Showing all %s Mails"
+L["Showing %s Mail"] = "Listando %s mensaje(s)"
+L["Showing %s of %d Mail"] = "Listando %s de %d mensaje(s)"
+L["Showing %s of %d Mails"] = "Listando %s de %d mensaje(s)"
+L["Showing all %s Mails"] = "Listando todos los %s mensaje(s)"
 --[[Translation missing --]]
 L["Simple inventory"] = "Simple inventory"
---[[Translation missing --]]
-L["Skip"] = "Skip"
---[[Translation missing --]]
-L["Skipped:"] = "Skipped:"
---[[Translation missing --]]
-L["Skipped: No assigned operation"] = "Skipped: No assigned operation"
+L["Skip"] = "Omitir"
+L["Skipped:"] = "Omitido:"
+L["Skipped: No assigned operation"] = "Omitido: Sin operación asignada"
 L["Slash Commands:"] = "Comandos de Diagonal:"
 --[[Translation missing --]]
 L["Smart Avg Buy Price"] = "Smart Avg Buy Price"
@@ -7512,19 +7401,15 @@ L["Sniper operations control sniping from the AH."] = "Sniper operations control
 L["Sniper Options"] = "Sniper Options"
 --[[Translation missing --]]
 L["Sniping items below a max price"] = "Sniping items below a max price"
---[[Translation missing --]]
-L["Sold"] = "Sold"
+L["Sold"] = "Vendido"
 --[[Translation missing --]]
 L["Sold %d of %s to %s for %s"] = "Sold %d of %s to %s for %s"
 --[[Translation missing --]]
 L["Sold %s worth of items."] = "Sold %s worth of items."
 L["Sold (Min/Avg/Max Price)"] = "Vendido (Min/Prom/Precio Max)"
---[[Translation missing --]]
-L["Sold (Total Price)"] = "Sold (Total Price)"
---[[Translation missing --]]
-L["Sold [%s]x%d for %s to %s"] = "Sold [%s]x%d for %s to %s"
---[[Translation missing --]]
-L["Sold for:"] = "Sold for:"
+L["Sold (Total Price)"] = "Vendido (Precio Total)"
+L["Sold [%s]x%d for %s to %s"] = "Vendido [%s]x%d por %s a %s"
+L["Sold for:"] = "Vendido por:"
 --[[Translation missing --]]
 L["Some general Accounting options are below."] = "Some general Accounting options are below."
 --[[Translation missing --]]
@@ -7567,10 +7452,8 @@ L["Store operations globally"] = "Almacenar operaciones globalmente"
 L["Stormwind"] = "Stormwind"
 --[[Translation missing --]]
 L["String"] = "String"
---[[Translation missing --]]
-L["Subject"] = "Subject"
---[[Translation missing --]]
-L["Subject & Description added"] = "Subject & Description added"
+L["Subject"] = "Asunto"
+L["Subject & Description added"] = "Asunto y Descripción agregados"
 --[[Translation missing --]]
 L["Successfully sent your '%s' profile to %s!"] = "Successfully sent your '%s' profile to %s!"
 --[[Translation missing --]]
@@ -7667,7 +7550,7 @@ L["This will permanently delete the '%s' profile."] = "This will permanently del
 L["This will reset all groups and operations (if not stored globally) to be wiped from '%s'."] = "This will reset all groups and operations (if not stored globally) to be wiped from '%s'."
 --[[Translation missing --]]
 L["Time"] = "Time"
-L["Time Frame"] = "Per. de Tiempo"
+L["Time Frame"] = "Periodo de Tiempo"
 --[[Translation missing --]]
 L["Time to Craft:"] = "Time to Craft:"
 --[[Translation missing --]]
@@ -7690,8 +7573,7 @@ L["Tooltip price format"] = "Tooltip price format"
 L["Tooltip Settings"] = "Tooltip Settings"
 --[[Translation missing --]]
 L["Top Buyers"] = "Top Buyers"
---[[Translation missing --]]
-L["Top Item"] = "Top Item"
+L["Top Item"] = "Mejor objeto"
 --[[Translation missing --]]
 L["TOP PURCHASE"] = "TOP PURCHASE"
 --[[Translation missing --]]
@@ -7699,14 +7581,10 @@ L["TOP SALE"] = "TOP SALE"
 --[[Translation missing --]]
 L["Top Sellers"] = "Top Sellers"
 L["Total"] = "Total"
---[[Translation missing --]]
-L["Total Gold"] = "Total Gold"
---[[Translation missing --]]
-L["Total Gold Collected: %s"] = "Total Gold Collected: %s"
---[[Translation missing --]]
-L["Total Gold Earned"] = "Total Gold Earned"
---[[Translation missing --]]
-L["Total Gold Spent"] = "Total Gold Spent"
+L["Total Gold"] = "Oro total"
+L["Total Gold Collected: %s"] = "Oro Total Recolectado: %s"
+L["Total Gold Earned"] = "Total de oro ingresado"
+L["Total Gold Spent"] = "Total de Oro Gastado"
 --[[Translation missing --]]
 L["Total Inventory Quantity"] = "Total Inventory Quantity"
 --[[Translation missing --]]
@@ -9327,18 +9205,18 @@ L["%s is a valid custom price but %s is an invalid item."] = "%s è un valido pr
 L["%s is a valid custom price but did not give a value for %s."] = "%s è un valido prezzo personalizzato ma non ha dato un valore per %s."
 L["'%s' is an invalid operation. Min restock of %d is higher than max restock of %d for %s."] = "'%s' è un'operazione non valida. Il rifornimento minimale di %d è più alto che il rifornimento massimo di %d  per %s."
 L["%s is not a valid custom price and gave the following error: %s"] = "%s non è un valido prezzo personalizzato ed ha restituito il seguente errore: %s"
-L["%s Items Bought"] = "%s Oggetti comprati"
-L["%s Items Cancelled"] = "%s oggetti annulati"
-L["%s Items Expired"] = "%s oggetti scaduti"
+L["%s Items Bought"] = "%s Oggetti Acquistati"
+L["%s Items Cancelled"] = "%s Oggetti Annulati"
+L["%s Items Expired"] = "%s Oggetti Scaduti"
 L["%s Items Resold"] = "%s Oggetti Rivenduti"
 L["%s Items Selected"] = "%s Oggetti Selezionati"
 L["%s Items Sold"] = "%s Oggetti Venduti"
 L["%s Items Total"] = "%s Oggetti Totali"
 L["%s operation"] = "%s Operazione"
-L["%s operations"] = "%s operazioni"
+L["%s operations"] = "%s Operazioni"
 L["%s Operations"] = "%s Operazioni"
-L["%s Posted Auctions"] = "%s Aste Postate"
-L["%s Posted Auctions (Filtered)"] = "%s Aste Postate (filtrate)"
+L["%s Posted Auctions"] = "%s Aste Avviate"
+L["%s Posted Auctions (Filtered)"] = "%s Aste Avviate (Filtrate)"
 L["%s previously had the max number of operations, so removed %s."] = "%s in precedenza aveva il numero massimo di operazioni, quindi rimosso %s."
 L["%s removed."] = "%s rimosso."
 L["%s sent you %s"] = "%s ti ha mandato %s"
@@ -9375,10 +9253,10 @@ L["A profile with this name already exists."] = "Esiste già un profilo con ques
 L["A scan is already in progress. Please stop that scan before starting another one."] = "Una scansione è già in corso. Interrompere la scansione prima di avviarne un'altra."
 L["A single craft makes %d and you only need to restock %d."] = "Un singolo craft crea %d e hai bisogno soltanto di rifarne %d"
 L["Above max expires."] = "Sopra la massima scadenza."
-L["Above max price. Not posting."] = "Sopra il prezzo massimo Non creare."
-L["Above max price. Posting at max."] = "Sopra il prezzo massimo. Creo al massimo."
-L["Above max price. Posting at min."] = "Sopra il prezzo massimo. Creo al minimo."
-L["Above max price. Posting at normal."] = "Sopra il prezzo massimo. Creo al normale."
+L["Above max price. Not posting."] = "Sopra il prezzo massimo Non pubblicare."
+L["Above max price. Posting at max."] = "Sopra il prezzo massimo. Pubblica al prezzo massimo."
+L["Above max price. Posting at min."] = "Sopra il prezzo massimo. Pubblico al prezzo minimo."
+L["Above max price. Posting at normal."] = "Sopra il prezzo massimo. Pubblico al prezzo normale."
 L["Accept COD?"] = "Accetta PC?"
 L["Accepting this item will cost: %s"] = "Accettando questo oggetto costerà: %s"
 L["Account sync removed. Please delete the account sync from the other account as well."] = "Sincronizzazione account rimossa. Sei pregato di cancellare la sincronizzazione account anche dall'altro account."
@@ -9418,8 +9296,8 @@ L["AHDB Minimum Buyout"] = "AHDB Minimum Buyout"
 L["Alarm Clock"] = "Sveglia"
 L["All"] = "Tutto"
 L["All Auctions"] = "Tutte le Aste"
-L["All Bought"] = "Tutte gli acquisti"
-L["All Cancelled"] = "Tutte le cancellate"
+L["All Bought"] = "Tutti gli acquisti"
+L["All Cancelled"] = "Tutte le Annullate"
 L["All Characters"] = "Tutti i personaggi"
 L["All Expired"] = "Tutte le scadute"
 L["All Faction-Realms"] = "Tutte le Fazioni-Reami"
@@ -9519,15 +9397,12 @@ L["Avg Buy Price"] = "Avg Buy Price"
 L["Avg Profit"] = "Profitto Medio"
 --[[Translation missing --]]
 L["Avg Sell Price"] = "Avg Sell Price"
---[[Translation missing --]]
-L["Back"] = "Back"
---[[Translation missing --]]
-L["Bag"] = "Bag"
+L["Back"] = "Indietro"
+L["Bag"] = "Borsa"
 L["Bags"] = "Borse"
 --[[Translation missing --]]
 L["Banking"] = "Banking"
---[[Translation missing --]]
-L["Banks"] = "Banks"
+L["Banks"] = "Banche"
 L["Base Group"] = "Gruppo Base"
 L["Base Item"] = "Oggetto Base"
 --[[Translation missing --]]
@@ -9572,51 +9447,35 @@ L["Browse"] = "Browse"
 --[[Translation missing --]]
 L["Browse / Sniper"] = "Browse / Sniper"
 L["BUSY"] = "OCCUPATO"
---[[Translation missing --]]
-L["BUY"] = "BUY"
---[[Translation missing --]]
-L["Buy"] = "Buy"
---[[Translation missing --]]
-L["Buy %d / %d"] = "Buy %d / %d"
---[[Translation missing --]]
-L["Buy %d / %d (Confirming %d / %d)"] = "Buy %d / %d (Confirming %d / %d)"
---[[Translation missing --]]
-L["Buy Auction"] = "Buy Auction"
---[[Translation missing --]]
-L["Buy Commodity"] = "Buy Commodity"
---[[Translation missing --]]
-L["Buy from AH"] = "Buy from AH"
---[[Translation missing --]]
-L["Buy from AH (Crafting)"] = "Buy from AH (Crafting)"
---[[Translation missing --]]
-L["Buy from AH (Disenchant)"] = "Buy from AH (Disenchant)"
+L["BUY"] = "COMPRA"
+L["Buy"] = "Compra"
+L["Buy %d / %d"] = "Compra %d / %d"
+L["Buy %d / %d (Confirming %d / %d)"] = "Compra %d / %d (Confirming %d / %d)"
+L["Buy Auction"] = "Compra Asta"
+L["Buy Commodity"] = "Compra Merce"
+L["Buy from AH"] = "Compra dalla CdA"
+L["Buy from AH (Crafting)"] = "Compra dalla CdA (Creazione)"
+L["Buy from AH (Disenchant)"] = "Compra dalla CdA (Disincantamento)"
 L["Buy from Vendor"] = "Compra dal Mercante"
---[[Translation missing --]]
-L["Buy Groups"] = "Buy Groups"
---[[Translation missing --]]
-L["Buy Options"] = "Buy Options"
---[[Translation missing --]]
-L["Buyback All"] = "Buyback All"
---[[Translation missing --]]
-L["Buyer/Seller"] = "Buyer/Seller"
+L["Buy Groups"] = "Compra Gruppi"
+L["Buy Options"] = "Compra Opzioni"
+L["Buyback All"] = "Ricompra Tutto"
+L["Buyer/Seller"] = "Compratore/Venditore"
 L["Buyout"] = "Acquisto"
 L["Buyout (item)"] = "Acquisto (oggetto)"
 L["Buyout (stack)"] = "Acquisto (pila)"
 L["Buyout (total)"] = "Acquisto (totale)"
---[[Translation missing --]]
-L["Buyout confirmation alert"] = "Buyout confirmation alert"
+L["Buyout confirmation alert"] = "Avviso di conferma dell'acquisto"
 L["Buyout Price"] = "Prezzo d'Acquisto"
---[[Translation missing --]]
-L["Buyout Sniper Paused"] = "Buyout Sniper Paused"
---[[Translation missing --]]
-L["Buyout Sniper Running"] = "Buyout Sniper Running"
+L["Buyout Sniper Paused"] = "Acquisto dallo Sniper in pausa"
+L["Buyout Sniper Running"] = "Acquisto dallo Sniper running"
 L["Cancel"] = "Annulla"
 L["Cancel %d / %d"] = "Annulla %d / %d"
 L["Cancel Auction"] = "Annulla Asta"
 L["Cancel auctions with bids"] = "Annulla aste con offerte"
 L["Cancel or Post"] = "Annulla o Pubblica"
 L["Cancel Scan"] = "Scansione di Annullamento"
-L["Cancel to repost higher"] = "Annulla per rimettere ad un prezzo maggiore"
+L["Cancel to repost higher"] = "Annulla per ripubblicare ad un prezzo maggiore"
 L["Cancel undercut auctions"] = "Annulla aste undercuttate"
 L["Canceled information"] = "Informazioni annullate"
 L["Canceling"] = "Annullamento"
@@ -9626,10 +9485,9 @@ L["Canceling auction you've undercut."] = "Annullamento dell'asta in cui sei sta
 L["Canceling disabled."] = "Annullamento disattivato."
 L["Canceling Options"] = "Opzioni di Annullamento"
 L["Canceling to repost at higher price."] = "Annullando per rimettere ad un prezzo maggiore"
-L["Canceling to repost at reset price."] = "Annullando per rimettere ad un prezzo di reset"
-L["Canceling to repost higher."] = "Annullando per rimettere ad un prezzo maggiore"
---[[Translation missing --]]
-L["Canceling undercut auctions and to repost higher."] = "Canceling undercut auctions and to repost higher."
+L["Canceling to repost at reset price."] = "Annullando per ripubblicare ad un prezzo di reset"
+L["Canceling to repost higher."] = "Annulla per ripubblicare ad un prezzo maggiore."
+L["Canceling undercut auctions and to repost higher."] = "Annulla le aste undercuttate e ripubblica ad un prezzo più alto."
 L["Canceling undercut auctions."] = "Annullamento aste undercuttate."
 L["Cancelled"] = "Annullato"
 L["Cancelled auction of %sx%d"] = "Asta annullata di %sx%d"
@@ -9666,61 +9524,37 @@ L["Connected to %s"] = "Collegato a %s"
 L["Connecting to %s"] = "Connessione a %s"
 L["Contacts"] = "Contatti"
 L["Contains auctions above your alert threshold!"] = "Contiene aste al di sopra della tua soglia di avviso!"
---[[Translation missing --]]
-L["Cooldown"] = "Cooldown"
---[[Translation missing --]]
-L["Cooldowns"] = "Cooldowns"
+L["Cooldown"] = "Tempo di recupero"
+L["Cooldowns"] = "Tempi di recupero"
 L["Copy Letter"] = "Copia Lettera"
 L["Cost"] = "Costo"
 L["Could not create macro as you already have too many. Delete one of your existing macros and try again."] = "Impossibile creare macro perché ne hai già troppe. Elimina una delle tue macro esistenti e riprova."
 L["Could not find profile '%s'. Possible profiles: '%s'"] = "Impossibile trovare il profilo '%s'. Possibile profilo: '%s'"
 L["Could not sell items due to not having free bag space available to split a stack of items."] = "Impossibile vendere oggetti perché non c'è spazio libero nella borsa per dividere una pila di articoli."
---[[Translation missing --]]
-L["Craft"] = "Craft"
---[[Translation missing --]]
-L["CRAFT"] = "CRAFT"
---[[Translation missing --]]
-L["Craft (Profitable)"] = "Craft (Profitable)"
---[[Translation missing --]]
-L["Craft (Unprofitable)"] = "Craft (Unprofitable)"
---[[Translation missing --]]
-L["Craft All"] = "Craft All"
---[[Translation missing --]]
-L["Craft Next"] = "Craft Next"
---[[Translation missing --]]
-L["Craft Value"] = "Craft Value"
---[[Translation missing --]]
-L["Crafted Items"] = "Crafted Items"
---[[Translation missing --]]
-L["Crafter"] = "Crafter"
---[[Translation missing --]]
-L["Crafting"] = "Crafting"
---[[Translation missing --]]
-L["CRAFTING"] = "CRAFTING"
---[[Translation missing --]]
-L["Crafting %s button"] = "Crafting %s button"
---[[Translation missing --]]
-L["Crafting cost"] = "Crafting cost"
---[[Translation missing --]]
-L["Crafting Cost"] = "Crafting Cost"
---[[Translation missing --]]
-L["Crafting List"] = "Crafting List"
---[[Translation missing --]]
-L["Crafting Material Cost"] = "Crafting Material Cost"
---[[Translation missing --]]
-L["Crafting Mode"] = "Crafting Mode"
---[[Translation missing --]]
-L["Crafting operation"] = "Crafting operation"
+L["Craft"] = "Creazione?"
+L["CRAFT"] = "CREAZIONE"
+L["Craft (Profitable)"] = "Creazione (Redditizia)"
+L["Craft (Unprofitable)"] = "Creazione (Non redditizia)"
+L["Craft All"] = "Crea Tutto"
+L["Craft Next"] = "Creazione Successiva"
+L["Craft Value"] = "Valore della Creazione"
+L["Crafted Items"] = "Oggetti Creati"
+L["Crafter"] = "Creatore"
+L["Crafting"] = "Creando"
+L["CRAFTING"] = "CREANDO"
+L["Crafting %s button"] = "Creando %s button"
+L["Crafting cost"] = "Costo della creazione"
+L["Crafting Cost"] = "Costo della creazione"
+L["Crafting List"] = "Lista delle creazioni"
+L["Crafting Material Cost"] = "Costo dei materiali delle creazioni"
+L["Crafting Mode"] = "Modalità Creazione"
+L["Crafting operation"] = "Operazioni di Creazione"
 --[[Translation missing --]]
 L["Crafting operations control how queuing profession crafts."] = "Crafting operations control how queuing profession crafts."
---[[Translation missing --]]
-L["Crafting Queue (%d)"] = "Crafting Queue (%d)"
---[[Translation missing --]]
-L["Crafting Value"] = "Crafting Value"
---[[Translation missing --]]
-L["Crafts"] = "Crafts"
---[[Translation missing --]]
-L["Crafts %d"] = "Crafts %d"
+L["Crafting Queue (%d)"] = "Coda delle Creazioni (%d)"
+L["Crafting Value"] = "Valore delle creazioni"
+L["Crafts"] = "Creazioni"
+L["Crafts %d"] = "Creazioni %d"
 L["Create Groups from Table"] = "Crea Gruppi dalla Tabella"
 L["Create macro"] = "Crea macro"
 L["Create New"] = "Crea Nuovo"
@@ -9728,19 +9562,15 @@ L["Create New Group"] = "Crea Nuovo Gruppo"
 L["Create New Operation"] = "Crea Nuova Operazione"
 L["Create new profile"] = "Crea nuovo profilo"
 L["Create Profession Groups"] = "Crea Gruppo di Professione"
---[[Translation missing --]]
 L["CTRL"] = "CTRL"
 L["Current Price"] = "Prezzo Corrente"
 L["Custom Price"] = "Prezzo Personalizzato"
 L["Custom price name %s already exists."] = "Il nome del prezzo Personalizzato %s esiste già."
 L["Custom price name %s is a reserved word which cannot be used."] = "Il nome del prezzo Personalizzato %s è una parola riservata che non può essere utilizzata."
 L["Custom price names can only contain lowercase letters."] = "I nomi dei prezzi personalizzati possono contenere solo lettere minuscole."
---[[Translation missing --]]
-L["Custom Source"] = "Custom Source"
---[[Translation missing --]]
-L["Custom source (%s)"] = "Custom source (%s)"
---[[Translation missing --]]
-L["Custom Sources"] = "Custom Sources"
+L["Custom Source"] = "Fonte Personalizzata"
+L["Custom source (%s)"] = "Fonte Personalizzata (%s)"
+L["Custom Sources"] = "Fonti Personalizzate"
 --[[Translation missing --]]
 L["Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."] = "Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."
 L["DAILY PURCHASES"] = "ACQUISTI GIORNALIERI"
@@ -9761,32 +9591,22 @@ L["Delete Operation?"] = "Elimina Operazione?"
 L["Delete Operations"] = "Elimina Operazioni"
 L["Delete Operations?"] = "Elimina Operazioni?"
 L["Delete Profile?"] = "Elimina Profilo?"
---[[Translation missing --]]
-L["Delete Record?"] = "Delete Record?"
+L["Delete Record?"] = "Cancella Registrazione?"
 L["Delete the profile"] = "Elimina il profilo"
---[[Translation missing --]]
-L["Deleting this group (%s) will also remove any sub-groups attached to this group."] = "Deleting this group (%s) will also remove any sub-groups attached to this group."
+L["Deleting this group (%s) will also remove any sub-groups attached to this group."] = "L'eliminazione di questo gruppo (%s) rimuoverà anche tutti i sottogruppi collegati a questo gruppo."
 L["Deposit"] = "Deposito"
 L["Deposit Cost"] = "Costo di Deposito"
 L["Deposit reagents"] = "Deposito reagenti"
 L["Deselect All"] = "Deseleziona Tutto"
 L["Destroy Next"] = "Distruggi il Prossimo"
---[[Translation missing --]]
-L["Destroy Value"] = "Destroy Value"
---[[Translation missing --]]
-L["Destroy value"] = "Destroy value"
---[[Translation missing --]]
-L["Destroy value source"] = "Destroy value source"
---[[Translation missing --]]
-L["Destroying"] = "Destroying"
---[[Translation missing --]]
-L["Destroying %s button"] = "Destroying %s button"
---[[Translation missing --]]
-L["Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."] = "Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."
---[[Translation missing --]]
-L["Destroying will ignore %s until you log out."] = "Destroying will ignore %s until you log out."
---[[Translation missing --]]
-L["Destroying..."] = "Destroying..."
+L["Destroy Value"] = "Valore Distruzione"
+L["Destroy value"] = "valore Distruzione"
+L["Destroy value source"] = "Fonte del valore di Distruzione"
+L["Destroying"] = "Distruggendo"
+L["Destroying %s button"] = "Distruggendo %s button"
+L["Destroying will ignore %s permanently. You can remove it from the ignored list in the settings."] = "La distruzione ignorerà %s in modo permanente. Puoi rimuoverlo dall'elenco degli ignorati nelle impostazioni."
+L["Destroying will ignore %s until you log out."] = "La distruzione ignorerà %s finché non ti disconnetti."
+L["Destroying..."] = "Distruggendo..."
 --[[Translation missing --]]
 L["Detailed crafting cost"] = "Detailed crafting cost"
 --[[Translation missing --]]
@@ -9856,8 +9676,7 @@ L["Duskwood"] = "Boscovespro"
 L["Edit"] = "Modifica"
 L["Edit Custom Source"] = "Modifica Fonte Personalizzata"
 L["Edit Material Price"] = "Modifica Prezzo Materiale"
---[[Translation missing --]]
-L["Edit Post"] = "Edit Post"
+L["Edit Post"] = "Modifica Post"
 --[[Translation missing --]]
 L["Embed TSM tooltip"] = "Embed TSM tooltip"
 L["Empty bags"] = "Borse Vuote"
@@ -9923,12 +9742,10 @@ L["Failed to post %sx%d as the item no longer exists in your bags."] = "Impossib
 L["Failed to run full AH scan."] = "Impossibile eseguire la scansione completa della C.A."
 L["Failed to send profile."] = "Impossibile inviare il profilo."
 L["Failed to send profile. Ensure both characters are online and try again."] = "Impossibile inviare il profilo. Assicurati che entrambi i personaggi siano online e riprova."
---[[Translation missing --]]
-L["Failed to start sniper. No groups have a Sniper operation applied."] = "Failed to start sniper. No groups have a Sniper operation applied."
+L["Failed to start sniper. No groups have a Sniper operation applied."] = "Impossibile avviare lo sniper. Nessun gruppo ha un'operazione di Sniper applicata."
 L["Favorite Scans"] = "Scansioni Preferite"
 L["Favorite Searches"] = "Ricerche Preferite"
---[[Translation missing --]]
-L["Favorited Patterns"] = "Favorited Patterns"
+L["Favorited Patterns"] = "Ricette Preferite"
 L["Filter by duration"] = "Filtra per durata"
 L["Filter by groups"] = "Filtra per gruppi"
 L["Filter by keyword"] = "Filtra per parole chiave"
@@ -9945,8 +9762,7 @@ L["First Auctioning Operation Min Price"] = "First Auctioning Operation Min Pric
 L["First Auctioning Operation Normal Price"] = "First Auctioning Operation Normal Price"
 --[[Translation missing --]]
 L["Fishing Reel In"] = "Fishing Reel In"
---[[Translation missing --]]
-L["For more info, visit %s. For help, join us in Discord: %s."] = "For more info, visit %s. For help, join us in Discord: %s."
+L["For more info, visit %s. For help, join us in Discord: %s."] = "Per ulteriori informazioni, visita %s. Per assistenza, unisciti a noi in Discord: %s."
 L["Forget Character"] = "Dimentica Personaggio"
 L["Found auction sound"] = "Trova suono d'asta"
 L["Friends"] = "Amici"
@@ -9985,14 +9801,12 @@ L["Here you can add/remove what groups this operation is attached to."] = "Qui p
 L["Hide auctions with bids"] = "Nascondi aste con offerte"
 L["Hide Columns"] = "Nascondi Colonne"
 L["Hide minimap icon"] = "Nascondi l'icona della minimappa"
---[[Translation missing --]]
-L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."] = "Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."
+L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."] = "Nascondi l'IU TSM della Banca. Digita '/tsm bankui' per riaprirla."
 --[[Translation missing --]]
 L["Hiding the TSM Task List UI. Type '/tsm tasklist' to reopen it."] = "Hiding the TSM Task List UI. Type '/tsm tasklist' to reopen it."
 --[[Translation missing --]]
 L["HIGH"] = "HIGH"
---[[Translation missing --]]
-L["High Bidder"] = "High Bidder"
+L["High Bidder"] = "Offerente più Alto"
 L["Historical Price"] = "Storico Prezzi"
 L["Historical price"] = "Storico prezzi"
 L["Hold ALT to repair from the guild bank."] = "Tieni premuto ALT per riparare dalla banca della gilda."
@@ -10007,15 +9821,14 @@ L["Hold SHIFT while dragging to scale the window instead."] = "Tieni premuto SHI
 L["Hr"] = "Ora"
 L["Hrs"] = "Ore"
 L["If you have multiple profiles set up with operations, enabling this will cause all but the current profile's operations to be irreversibly lost."] = "Se si dispone di più profili impostati con le operazioni, abilitarlo causerà la perdita irreversibile di tutte le operazioni tranne quelle del profilo corrente."
---[[Translation missing --]]
-L["Ignore Auctions Below Min"] = "Ignore Auctions Below Min"
+L["Ignore Auctions Below Min"] = "Ignora Aste al di sotto del Minimo"
 L["Ignore auctions by duration"] = "Ignora le aste in base alla durata"
 L["Ignore Characters"] = "Ignora Personaggi"
 L["Ignore Guilds"] = "Ignora Gilde"
 L["Ignore operation on characters"] = "Ignora l'operazione sui personaggi"
 L["Ignore operation on faction-realms"] = "Ignora l'operazione su fazione-reami"
 L["Ignore variations"] = "Ignora le variazioni"
-L["Ignored Cooldowns"] = "Ricariche Ignorate"
+L["Ignored Cooldowns"] = "Tempi di recupero Ignorati"
 L["Ignored Items"] = "Oggetti Ignorati"
 L["ilvl"] = "ilvl"
 L["Import"] = "Importare"
@@ -10042,8 +9855,7 @@ L["Invalid operation name."] = "Nome dell'operazione non valido."
 L["Invalid operator at end of custom price."] = "Invalid operator at end of custom price."
 L["Invalid parameter to price source."] = "Parametro non valido per la fonte di prezzo."
 L["Invalid player name."] = "Nome del giocatore non valido."
---[[Translation missing --]]
-L["Invalid price source in convert."] = "Invalid price source in convert."
+L["Invalid price source in convert."] = "Fonte del prezzo non valida nella conversione."
 L["Invalid price."] = "Prezzo non valido."
 L["Invalid Quantity"] = "Quantità non valida."
 L["Invalid search filter (%s)."] = "Filtro di ricerca non valido (%s)."
@@ -10053,98 +9865,57 @@ L["Invalid seller data returned by server."] = "Dati del venditore non validi re
 L["Invalid undercut. To post below the cheapest auction without a significant undercut, set your undercut to 0c."] = "Undercut non valido. Per pubblicare sotto l'asta più economica senza un undercut significativo, imposta il tuo undercut su 0c."
 L["Invalid word: '%s'"] = "Parola non valida: '%s'"
 L["Inventory"] = "Inventario"
---[[Translation missing --]]
-L["Inventory / Gold Graph"] = "Inventory / Gold Graph"
+L["Inventory / Gold Graph"] = "Inventario / Grafico dell'Oro"
 L["Inventory Options"] = "Opzioni dell'Inventario"
---[[Translation missing --]]
-L["It appears that you've manually copied your saved variables between accounts which will cause TSM's automatic sync'ing to not work. You'll need to undo this, and/or delete the TradeSkillMaster saved variables files on both accounts (with WoW closed) in order to fix this."] = "It appears that you've manually copied your saved variables between accounts which will cause TSM's automatic sync'ing to not work. You'll need to undo this, and/or delete the TradeSkillMaster saved variables files on both accounts (with WoW closed) in order to fix this."
---[[Translation missing --]]
-L["It looks like you're trying to reference an old global price source which no longer exists."] = "It looks like you're trying to reference an old global price source which no longer exists."
---[[Translation missing --]]
-L["Item"] = "Item"
+L["It appears that you've manually copied your saved variables between accounts which will cause TSM's automatic sync'ing to not work. You'll need to undo this, and/or delete the TradeSkillMaster saved variables files on both accounts (with WoW closed) in order to fix this."] = "Sembra che tu abbia copiato manualmente le variabili salvate tra gli account, il che farà sì che la sincronizzazione automatica di TSM non funzioni. Dovrai annullare questa operazione e / o eliminare i file delle variabili salvati da TradeSkillMaster su entrambi gli account (con WoW chiuso) per risolvere il problema."
+L["It looks like you're trying to reference an old global price source which no longer exists."] = "Sembra che tu stia cercando di fare riferimento a una vecchia fonte di prezzo globale che non esiste più."
+L["Item"] = "Oggetto"
 --[[Translation missing --]]
 L["Item Class"] = "Item Class"
---[[Translation missing --]]
-L["Item Level"] = "Item Level"
---[[Translation missing --]]
-L["Item Level Range"] = "Item Level Range"
---[[Translation missing --]]
-L["Item links may only be used as parameters to price sources."] = "Item links may only be used as parameters to price sources."
---[[Translation missing --]]
-L["Item Name"] = "Item Name"
---[[Translation missing --]]
-L["Item Quality"] = "Item Quality"
---[[Translation missing --]]
-L["Item Selection"] = "Item Selection"
---[[Translation missing --]]
-L["Item Slot"] = "Item Slot"
---[[Translation missing --]]
-L["Item Subclass"] = "Item Subclass"
---[[Translation missing --]]
-L["Item Value"] = "Item Value"
---[[Translation missing --]]
-L["Item/Group is invalid (see chat)."] = "Item/Group is invalid (see chat)."
---[[Translation missing --]]
-L["Items"] = "Items"
---[[Translation missing --]]
-L["Items Using"] = "Items Using"
+L["Item Level"] = "Livello dell'Oggetto"
+L["Item Level Range"] = "Intervallo del livello dell'Oggetto"
+L["Item links may only be used as parameters to price sources."] = "I collegamenti agli oggetti possono essere utilizzati solo come parametri per le fonti di prezzo."
+L["Item Name"] = "Nome dell'Oggetto"
+L["Item Quality"] = "Quantità dell'Oggetto"
+L["Item Selection"] = "Selezione Oggetto"
+L["Item Slot"] = "Slot Oggetto"
+L["Item Subclass"] = "Sottoclasse Oggetto"
+L["Item Value"] = "Valore dell'Oggetto"
+L["Item/Group is invalid (see chat)."] = "Oggetto/Gruppo non è valido (guarda chat)."
+L["Items"] = "Oggetti"
+L["Items Using"] = "Oggetti in utilizzo"
 --[[Translation missing --]]
 L["Keep in bags quantity"] = "Keep in bags quantity"
 --[[Translation missing --]]
 L["Keep in bank quantity"] = "Keep in bank quantity"
---[[Translation missing --]]
-L["Keep quantity"] = "Keep quantity"
---[[Translation missing --]]
-L["Keep this amount"] = "Keep this amount"
---[[Translation missing --]]
-L["Keeping %d."] = "Keeping %d."
---[[Translation missing --]]
-L["Keeping undercut auctions posted."] = "Keeping undercut auctions posted."
---[[Translation missing --]]
-L["Last 14 Days"] = "Last 14 Days"
---[[Translation missing --]]
-L["Last 3 Days"] = "Last 3 Days"
---[[Translation missing --]]
-L["Last 30 Days"] = "Last 30 Days"
---[[Translation missing --]]
-L["Last 60 Days"] = "Last 60 Days"
---[[Translation missing --]]
-L["Last 7 Days"] = "Last 7 Days"
---[[Translation missing --]]
-L["Last Purchased"] = "Last Purchased"
---[[Translation missing --]]
-L["Last Sold"] = "Last Sold"
---[[Translation missing --]]
-L["LEAST GROUPS"] = "LEAST GROUPS"
---[[Translation missing --]]
-L["LEAST ITEMS"] = "LEAST ITEMS"
---[[Translation missing --]]
-L["Ledger"] = "Ledger"
---[[Translation missing --]]
-L["Level Up"] = "Level Up"
+L["Keep quantity"] = "Mantieni la quantità"
+L["Keep this amount"] = "Conserva questa quantità"
+L["Keeping %d."] = "Mantenere %d."
+L["Keeping undercut auctions posted."] = "Mantieni pubblicate le aste undercuttate."
+L["Last 14 Days"] = "Ultimi 14 Giorni"
+L["Last 3 Days"] = "Ultimi 3 Giorni"
+L["Last 30 Days"] = "Ultimi 30 Giorni"
+L["Last 60 Days"] = "Ultimi 60 Giorni"
+L["Last 7 Days"] = "Ultimi 7 Giorni"
+L["Last Purchased"] = "Ultimo Acquisto"
+L["Last Sold"] = "Ultima Vendita"
+L["LEAST GROUPS"] = "MINIMO GRUPPI"
+L["LEAST ITEMS"] = "MENO ARTICOLI"
+L["Ledger"] = "Registro"
+L["Level Up"] = "Sali di Livello"
 --[[Translation missing --]]
 L["Limit"] = "Limit"
---[[Translation missing --]]
-L["Link to Another Operation"] = "Link to Another Operation"
---[[Translation missing --]]
-L["Loading..."] = "Loading..."
---[[Translation missing --]]
-L["Lock Column Width"] = "Lock Column Width"
---[[Translation missing --]]
-L["Lock task list's background"] = "Lock task list's background"
+L["Link to Another Operation"] = "Collegamento a un'altra operazione"
+L["Loading..."] = "Caricamente..."
+L["Lock Column Width"] = "Blocca Larghezza Colonna"
+L["Lock task list's background"] = "Blocca lo sfondo dell'elenco delle attività"
 L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."] = "Sembra che TradeSkillMaster abbia riscontrato un errore. Aiuta l'autore a riparare l'errore seguendo le istruzioni mostrate."
---[[Translation missing --]]
-L["Loop detected in the following custom price:"] = "Loop detected in the following custom price:"
---[[Translation missing --]]
-L["LOW"] = "LOW"
---[[Translation missing --]]
-L["Lowest auction by whitelisted player."] = "Lowest auction by whitelisted player."
---[[Translation missing --]]
-L["Macro created and scroll wheel bound!"] = "Macro created and scroll wheel bound!"
---[[Translation missing --]]
-L["Macro Setup"] = "Macro Setup"
---[[Translation missing --]]
-L["Macros"] = "Macros"
+L["Loop detected in the following custom price:"] = "Loop rilevato nel seguente prezzo personalizzato:"
+L["LOW"] = "BASSO"
+L["Lowest auction by whitelisted player."] = "Asta più bassa per giocatore autorizzato."
+L["Macro created and scroll wheel bound!"] = "Macro creata e rotella di scorrimento assegnata!"
+L["Macro Setup"] = "Configurazione Macro"
+L["Macros"] = "Macro"
 --[[Translation missing --]]
 L["Mail"] = "Mail"
 --[[Translation missing --]]
@@ -10159,12 +9930,9 @@ L["Mail Selected Groups (Auto Resend)"] = "Mail Selected Groups (Auto Resend)"
 L["Mail Selected Groups (Dry Run + Auto Resend)"] = "Mail Selected Groups (Dry Run + Auto Resend)"
 --[[Translation missing --]]
 L["Mail Selected Groups (Dry Run)"] = "Mail Selected Groups (Dry Run)"
---[[Translation missing --]]
-L["Mail to %s"] = "Mail to %s"
---[[Translation missing --]]
-L["Mailing"] = "Mailing"
---[[Translation missing --]]
-L["Mailing all to %s."] = "Mailing all to %s."
+L["Mail to %s"] = "Invia a %s"
+L["Mailing"] = "Inviando"
+L["Mailing all to %s."] = "Invio di tutto a %s."
 --[[Translation missing --]]
 L["Mailing operation"] = "Mailing operation"
 --[[Translation missing --]]
@@ -10173,42 +9941,25 @@ L["Mailing operations control mailing to other characters."] = "Mailing operatio
 L["Mailing up to %d to %s."] = "Mailing up to %d to %s."
 --[[Translation missing --]]
 L["Make Cash On Delivery?"] = "Make Cash On Delivery?"
---[[Translation missing --]]
-L["Make Operations Global?"] = "Make Operations Global?"
---[[Translation missing --]]
-L["Management Options"] = "Management Options"
---[[Translation missing --]]
-L["Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."] = "Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."
+L["Make Operations Global?"] = "Rendere le Operazioni Globali?"
+L["Management Options"] = "Opzioni di Gestioni"
+L["Many commonly-used actions in TSM can be added to a macro and bound to your scroll wheel. Use the options below to setup this macro and scroll wheel binding."] = "Molte azioni di uso comune in TSM possono essere aggiunte a una macro e associate alla rotella di scorrimento. Utilizzare le opzioni seguenti per impostare questa macro e l'associazione con la rotellina di scorrimento."
 --[[Translation missing --]]
 L["Map Ping"] = "Map Ping"
---[[Translation missing --]]
-L["Market Value"] = "Market Value"
---[[Translation missing --]]
-L["Market value"] = "Market value"
---[[Translation missing --]]
-L["Market value price source"] = "Market value price source"
---[[Translation missing --]]
-L["Market Value Price Source"] = "Market Value Price Source"
---[[Translation missing --]]
-L["Mat cost"] = "Mat cost"
---[[Translation missing --]]
-L["Mat Price"] = "Mat Price"
---[[Translation missing --]]
-L["Match stack size"] = "Match stack size"
---[[Translation missing --]]
-L["Match whitelisted players"] = "Match whitelisted players"
---[[Translation missing --]]
-L["Material Cost"] = "Material Cost"
---[[Translation missing --]]
-L["Material Price"] = "Material Price"
---[[Translation missing --]]
-L["Materials"] = "Materials"
---[[Translation missing --]]
-L["Materials to Gather"] = "Materials to Gather"
---[[Translation missing --]]
+L["Market Value"] = "Valore di Mercato"
+L["Market value"] = "Valore di mercato"
+L["Market value price source"] = "Fonte di prezzo del valore di mercato"
+L["Market Value Price Source"] = "Fonte di Prezzo del Valore di Mercato"
+L["Mat cost"] = "Costo dei Materiali"
+L["Mat Price"] = "Prezzo dei Materiali"
+L["Match stack size"] = "Abbina le dimensioni della stack"
+L["Match whitelisted players"] = "Abbina i giocatori autorizzati"
+L["Material Cost"] = "Costo del Materiale"
+L["Material Price"] = "Prezzo del Materiale"
+L["Materials"] = "Materiali"
+L["Materials to Gather"] = "Materiali da Raccogliere"
 L["Max"] = "Max"
---[[Translation missing --]]
-L["Max Buy Price"] = "Max Buy Price"
+L["Max Buy Price"] = "Prezzo di Acquisto Massimo"
 --[[Translation missing --]]
 L["Max destroy value (Enter '0c' to disable)"] = "Max destroy value (Enter '0c' to disable)"
 --[[Translation missing --]]
@@ -10217,45 +9968,25 @@ L["Max expires to bank"] = "Max expires to bank"
 L["Max market value (Enter '0c' to disable)"] = "Max market value (Enter '0c' to disable)"
 --[[Translation missing --]]
 L["Max Price"] = "Max Price"
---[[Translation missing --]]
-L["Max quantity"] = "Max quantity"
---[[Translation missing --]]
-L["Max restock quantity"] = "Max restock quantity"
---[[Translation missing --]]
-L["Max Sell Price"] = "Max Sell Price"
---[[Translation missing --]]
-L["Max Shopping Price"] = "Max Shopping Price"
---[[Translation missing --]]
-L["Max shopping price"] = "Max shopping price"
---[[Translation missing --]]
-L["Max sniper price"] = "Max sniper price"
---[[Translation missing --]]
-L["Maximum amount already posted."] = "Maximum amount already posted."
---[[Translation missing --]]
-L["Maximum auction price"] = "Maximum auction price"
---[[Translation missing --]]
-L["Maximum disenchant level"] = "Maximum disenchant level"
---[[Translation missing --]]
-L["Maximum disenchant quality"] = "Maximum disenchant quality"
---[[Translation missing --]]
-L["Maximum disenchant search percent"] = "Maximum disenchant search percent"
---[[Translation missing --]]
-L["Maximum price"] = "Maximum price"
---[[Translation missing --]]
-L["Maximum Quantity to Buy"] = "Maximum Quantity to Buy"
---[[Translation missing --]]
-L["Maximum restock quantity"] = "Maximum restock quantity"
---[[Translation missing --]]
-L["Midnight"] = "Midnight"
---[[Translation missing --]]
-L["Mill value"] = "Mill value"
---[[Translation missing --]]
-L["Mill Value"] = "Mill Value"
---[[Translation missing --]]
+L["Max quantity"] = "Quantità Massima"
+L["Max restock quantity"] = "Quantità Massima di Rifornimento"
+L["Max Sell Price"] = "Prezzo di Vendita Massimo"
+L["Max Shopping Price"] = "Prezzo Massimo di Acquisto"
+L["Max shopping price"] = "Prezzo massimo di acquisto"
+L["Max sniper price"] = "Prezzo massimo di sniper"
+L["Maximum amount already posted."] = "Quantità massima già pubblicata."
+L["Maximum auction price"] = "Prezzo massimo d'asta"
+L["Maximum disenchant level"] = "Livello massimo di disincantamento"
+L["Maximum disenchant quality"] = "Massima qualità di disincantamento"
+L["Maximum disenchant search percent"] = "Percentuale di ricerca di disincantamento massima"
+L["Maximum price"] = "Prezzo Massimo"
+L["Maximum Quantity to Buy"] = "Quantità massima da comprare"
+L["Maximum restock quantity"] = "Quantità massima di rifornimento"
+L["Midnight"] = "Mezzanotte"
+L["Mill value"] = "Valore pestatura"
+L["Mill Value"] = "Valore Pestatura"
 L["Min"] = "Min"
---[[Translation missing --]]
 L["Min 0 - Max 20"] = "Min 0 - Max 20"
---[[Translation missing --]]
 L["Min 0.5 - Max 10"] = "Min 0.5 - Max 10"
 --[[Translation missing --]]
 L["Min Buy Price"] = "Min Buy Price"
@@ -10263,380 +9994,211 @@ L["Min Buy Price"] = "Min Buy Price"
 L["Min Buyout"] = "Min Buyout"
 --[[Translation missing --]]
 L["Min buyout"] = "Min buyout"
---[[Translation missing --]]
-L["Min number of expires"] = "Min number of expires"
---[[Translation missing --]]
-L["Min profit amount"] = "Min profit amount"
---[[Translation missing --]]
-L["Min restock quantity"] = "Min restock quantity"
+L["Min number of expires"] = "Numero minimo di scadenze"
+L["Min profit amount"] = "Importo del profitto minimo"
+L["Min restock quantity"] = "Quantità minima di rifornimento"
 L["Min Sell Price"] = "Prezzo minimo di vendita"
 L["Min/Normal/Max price"] = "Prezzo Minimo/Normale/Massimo"
 L["Min/Normal/Max Prices"] = "Prezzi Minimi/Normali/Massimi"
 L["Minimum disenchant level"] = "Livello minimo di disincantamento"
 L["Minimum price"] = "Prezzo minimo"
 L["Minimum Rarity"] = "Rarità minima"
---[[Translation missing --]]
-L["Misplaced comma"] = "Misplaced comma"
---[[Translation missing --]]
-L["Missing Materials"] = "Missing Materials"
+L["Misplaced comma"] = "Virgola fuori posto"
+L["Missing Materials"] = "Materiali Mancanti"
 --[[Translation missing --]]
 L["Missing operator between sets of parenthesis"] = "Missing operator between sets of parenthesis"
 L["Modifiers"] = "Modificatori"
 L["Money Frame Open"] = "Riquadro Monete Aperto"
 L["Money Transfer"] = "Trasferimento Denaro"
---[[Translation missing --]]
-L["MOST GROUPS"] = "MOST GROUPS"
---[[Translation missing --]]
-L["MOST ITEMS"] = "MOST ITEMS"
---[[Translation missing --]]
-L["MOVE"] = "MOVE"
---[[Translation missing --]]
-L["Move %d |4Item:Items"] = "Move %d |4Item:Items"
---[[Translation missing --]]
-L["Move %d already grouped items?"] = "Move %d already grouped items?"
---[[Translation missing --]]
-L["Move all to Bags"] = "Move all to Bags"
---[[Translation missing --]]
-L["Move Item"] = "Move Item"
---[[Translation missing --]]
-L["Move Quantity Options"] = "Move Quantity Options"
---[[Translation missing --]]
-L["Move to bags"] = "Move to bags"
---[[Translation missing --]]
-L["Move to bank"] = "Move to bank"
---[[Translation missing --]]
-L["Move to Parent Group"] = "Move to Parent Group"
---[[Translation missing --]]
-L["MOVING"] = "MOVING"
---[[Translation missing --]]
-L["Moving"] = "Moving"
+L["MOST GROUPS"] = "MAGGIOR PARTE DEI GRUPPI"
+L["MOST ITEMS"] = "MAGGIOR PARTE DEGLI OGGETTI"
+L["MOVE"] = "SPOSTA"
+L["Move %d |4Item:Items"] = "Sposta %d |4Item:Items"
+L["Move %d already grouped items?"] = "Spostare %d oggetti già raggruppati?"
+L["Move all to Bags"] = "Sposta tutto nelle Borse"
+L["Move Item"] = "Sposta Oggetto"
+L["Move Quantity Options"] = "Sposta Opzioni di Quantità"
+L["Move to bags"] = "Sposta nelle borse"
+L["Move to bank"] = "Sposta nella banca"
+L["Move to Parent Group"] = "Sposta nel Gruppo Padre"
+L["MOVING"] = "SPOSTANDO"
+L["Moving"] = "Spostando"
 L["Multiple Items"] = "Oggetti Multipli"
---[[Translation missing --]]
-L["Must be between %d and %s."] = "Must be between %d and %s."
---[[Translation missing --]]
-L["My Auctions"] = "My Auctions"
---[[Translation missing --]]
-L["My Auctions %s button"] = "My Auctions %s button"
---[[Translation missing --]]
-L["Name"] = "Name"
---[[Translation missing --]]
-L["NEED MATS"] = "NEED MATS"
---[[Translation missing --]]
-L["New Base Group search."] = "New Base Group search."
---[[Translation missing --]]
-L["New Group"] = "New Group"
---[[Translation missing --]]
-L["New Operation"] = "New Operation"
---[[Translation missing --]]
-L["New price sources."] = "New price sources."
---[[Translation missing --]]
-L["News & Information"] = "News & Information"
---[[Translation missing --]]
-L["No Attachments"] = "No Attachments"
+L["Must be between %d and %s."] = "Deve essere compreso tra %d e %s."
+L["My Auctions"] = "Le mie Aste"
+L["My Auctions %s button"] = "Le mie aste %s bottone"
+L["Name"] = "Nome"
+L["NEED MATS"] = "BISOGNO DI MATERIALI"
+L["New Base Group search."] = "Nuova ricerca del Gruppo Base."
+L["New Group"] = "Nuovo Gruppo"
+L["New Operation"] = "Nuova Operazione"
+L["New price sources."] = "Nuove fonti di prezzo."
+L["News & Information"] = "Novità & Informazioni"
+L["No Attachments"] = "Nessun Allegato"
 --[[Translation missing --]]
 L["No AuctionDB Realm Data"] = "No AuctionDB Realm Data"
 --[[Translation missing --]]
 L["No AuctionDB Region Data"] = "No AuctionDB Region Data"
---[[Translation missing --]]
-L["No Characters"] = "No Characters"
---[[Translation missing --]]
-L["No Crafts"] = "No Crafts"
---[[Translation missing --]]
-L["No Faction-Realms"] = "No Faction-Realms"
---[[Translation missing --]]
-L["No group selected"] = "No group selected"
---[[Translation missing --]]
-L["No Guilds"] = "No Guilds"
+L["No Characters"] = "Nessun Personaggio"
+L["No Crafts"] = "Nessuna Creazione"
+L["No Faction-Realms"] = "Nessuna Fazione-Reami"
+L["No group selected"] = "Nessun gruppo selezionato"
+L["No Guilds"] = "Nessuna Gilda"
 --[[Translation missing --]]
 L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"] = "No item specified. Usage: /tsm restock_help [ITEM_LINK]"
---[[Translation missing --]]
-L["NO ITEMS"] = "NO ITEMS"
---[[Translation missing --]]
-L["No Materials to Gather"] = "No Materials to Gather"
---[[Translation missing --]]
-L["No Operation Selected"] = "No Operation Selected"
---[[Translation missing --]]
-L["No Players"] = "No Players"
---[[Translation missing --]]
-L["No posting."] = "No posting."
---[[Translation missing --]]
-L["No Profession Opened"] = "No Profession Opened"
---[[Translation missing --]]
-L["No Profession Selected"] = "No Profession Selected"
---[[Translation missing --]]
-L["No Professions"] = "No Professions"
---[[Translation missing --]]
-L["No profile specified. Possible profiles: '%s'"] = "No profile specified. Possible profiles: '%s'"
---[[Translation missing --]]
-L["No Rarities"] = "No Rarities"
---[[Translation missing --]]
-L["No receipe selected"] = "No receipe selected"
---[[Translation missing --]]
-L["No recent AuctionDB scan data found."] = "No recent AuctionDB scan data found."
---[[Translation missing --]]
-L["No Sound"] = "No Sound"
---[[Translation missing --]]
-L["No Sources"] = "No Sources"
---[[Translation missing --]]
-L["No Types"] = "No Types"
---[[Translation missing --]]
-L["No value was returned by the custom price for the specified item."] = "No value was returned by the custom price for the specified item."
---[[Translation missing --]]
-L["None"] = "None"
---[[Translation missing --]]
-L["None (Always Show)"] = "None (Always Show)"
---[[Translation missing --]]
-L["None Selected"] = "None Selected"
+L["NO ITEMS"] = "NESSUN OGGETTO"
+L["No Materials to Gather"] = "Nessun Materiale da Raccogliere"
+L["No Operation Selected"] = "Nessuna Operazione Selezionata"
+L["No Players"] = "Nessun Giocatore"
+L["No posting."] = "Nessuna pubblicazione."
+L["No Profession Opened"] = "Nessuna Professione Aperta"
+L["No Profession Selected"] = "Nessuna Professione Selezionata"
+L["No Professions"] = "Nessuna Professione"
+L["No profile specified. Possible profiles: '%s'"] = "Nessun profilo specificato. Possibili profili: '%s'"
+L["No Rarities"] = "Nessuna Rarità"
+L["No receipe selected"] = "Nessuna ricetta selezionata"
+L["No recent AuctionDB scan data found."] = "Nessun dato di scansione AuctionDB recente trovato."
+L["No Sound"] = "Nessuna Suono"
+L["No Sources"] = "Nessuna Fonte"
+L["No Types"] = "Nessuna Tipologia"
+L["No value was returned by the custom price for the specified item."] = "Nessun valore è stato restituito dal prezzo personalizzato per l'oggetto specificato."
+L["None"] = "Nessuna"
+L["None (Always Show)"] = "Nessuno (Mostra Sempre)"
+L["None Selected"] = "Nessuno Selezionato"
 --[[Translation missing --]]
 L["Nongroup to bank"] = "Nongroup to bank"
---[[Translation missing --]]
-L["Normal price"] = "Normal price"
---[[Translation missing --]]
-L["Not canceling auction at reset price."] = "Not canceling auction at reset price."
---[[Translation missing --]]
-L["Not canceling auction below min price."] = "Not canceling auction below min price."
+L["Normal price"] = "Prezzo Normale?"
+L["Not canceling auction at reset price."] = "Non annullare l'asta al prezzo di reset."
+L["Not canceling auction below min price."] = "Non annullare l'asta al di sotto del prezzo minimo."
 --[[Translation missing --]]
 L["Not canceling."] = "Not canceling."
---[[Translation missing --]]
-L["Not Connected"] = "Not Connected"
---[[Translation missing --]]
-L["Not enough items in bags."] = "Not enough items in bags."
---[[Translation missing --]]
-L["Not Enough Money"] = "Not Enough Money"
---[[Translation missing --]]
-L["Not enough money to cancel."] = "Not enough money to cancel."
---[[Translation missing --]]
-L["NOT OPEN"] = "NOT OPEN"
---[[Translation missing --]]
-L["Not Scanned"] = "Not Scanned"
---[[Translation missing --]]
-L["NOTE: The import contained %d invalid items which were ignored."] = "NOTE: The import contained %d invalid items which were ignored."
---[[Translation missing --]]
-L["NOTE: The import contained %d operations with at least one invalid setting which was reset."] = "NOTE: The import contained %d operations with at least one invalid setting which was reset."
---[[Translation missing --]]
-L["Nothing to move."] = "Nothing to move."
---[[Translation missing --]]
-L["Nothing to send."] = "Nothing to send."
---[[Translation missing --]]
-L["Now embedded within the Groups tab of the main TSM window with dedicated buttons to help with both importing and exporting."] = "Now embedded within the Groups tab of the main TSM window with dedicated buttons to help with both importing and exporting."
---[[Translation missing --]]
-L["NPC"] = "NPC"
---[[Translation missing --]]
-L["Number Owned"] = "Number Owned"
---[[Translation missing --]]
+L["Not Connected"] = "Non Connesso."
+L["Not enough items in bags."] = "Non abbastanza oggetti nelle borse."
+L["Not Enough Money"] = "Non Abbastanza Soldi"
+L["Not enough money to cancel."] = "Non abbastanza soldi per annullare."
+L["NOT OPEN"] = "NON APERTO"
+L["Not Scanned"] = "Non Scansionato"
+L["NOTE: The import contained %d invalid items which were ignored."] = "NOTA: l'importazione conteneva %d elementi non validi che sono stati ignorati."
+L["NOTE: The import contained %d operations with at least one invalid setting which was reset."] = "NOTA: l'importazione conteneva %d operazioni con almeno un'impostazione non valida che è stata reimpostata."
+L["Nothing to move."] = "Niente da muovere."
+L["Nothing to send."] = "Nulla da mandare."
+L["Now embedded within the Groups tab of the main TSM window with dedicated buttons to help with both importing and exporting."] = "Ora incorporato nella scheda Gruppi della finestra principale di TSM con pulsanti dedicati per facilitare sia l'importazione che l'esportazione."
+L["NPC"] = "PNG"
+L["Number Owned"] = "Numero di proprietà??? Numero posseduto"
 L["Offline"] = "Offline"
---[[Translation missing --]]
-L["On Cooldown"] = "On Cooldown"
---[[Translation missing --]]
-L["Only show craftable"] = "Only show craftable"
---[[Translation missing --]]
-L["Only show items with disenchant values above this price"] = "Only show items with disenchant values above this price"
---[[Translation missing --]]
-L["Only show sold auctions"] = "Only show sold auctions"
---[[Translation missing --]]
-L["OPEN"] = "OPEN"
---[[Translation missing --]]
-L["Open All Mail"] = "Open All Mail"
---[[Translation missing --]]
-L["Open All Mail Without Money"] = "Open All Mail Without Money"
---[[Translation missing --]]
-L["Open Mail"] = "Open Mail"
+L["On Cooldown"] = "On Tempi di Recupero??"
+L["Only show craftable"] = "Mostra solo i creabili?"
+L["Only show items with disenchant values above this price"] = "Mostra solo gli oggetti con valore di disincantamento al di sopra di questo prezzo"
+L["Only show sold auctions"] = "Mostra solo le aste vendute"
+L["OPEN"] = "APERTO"
+L["Open All Mail"] = "Apri Tutta la Posta"
+L["Open All Mail Without Money"] = "Apri Tutta la Posta Senza Soldi"
+L["Open Mail"] = "Apri Posta"
 --[[Translation missing --]]
 L["Open mail complete sound"] = "Open mail complete sound"
---[[Translation missing --]]
-L["Open Mail Without Money"] = "Open Mail Without Money"
---[[Translation missing --]]
-L["Open Task List"] = "Open Task List"
+L["Open Mail Without Money"] = "Apri Posta Senza Soldi"
+L["Open Task List"] = "Apri Elenco Attività"
 --[[Translation missing --]]
 L["Opens the Destroying frame if there's stuff in your bags to be destroyed."] = "Opens the Destroying frame if there's stuff in your bags to be destroyed."
---[[Translation missing --]]
-L["Operation"] = "Operation"
---[[Translation missing --]]
-L["Operations"] = "Operations"
---[[Translation missing --]]
-L["Options specific to Sniper are below."] = "Options specific to Sniper are below."
---[[Translation missing --]]
-L["Order Confirmation"] = "Order Confirmation"
---[[Translation missing --]]
+L["Operation"] = "Operazione"
+L["Operations"] = "Operazioni"
+L["Options specific to Sniper are below."] = "Di seguito sono riportate le opzioni specifiche di Sniper."
+L["Order Confirmation"] = "Conferma dell'Ordine"
 L["Orgrimmar"] = "Orgrimmar"
---[[Translation missing --]]
-L["Other"] = "Other"
---[[Translation missing --]]
-L["Other Character"] = "Other Character"
---[[Translation missing --]]
-L["Override default craft value"] = "Override default craft value"
---[[Translation missing --]]
-L["Override Parent Operations"] = "Override Parent Operations"
---[[Translation missing --]]
-L["Parent Items"] = "Parent Items"
---[[Translation missing --]]
-L["Pausing Scan..."] = "Pausing Scan..."
---[[Translation missing --]]
-L["Per Item"] = "Per Item"
---[[Translation missing --]]
-L["Per Stack"] = "Per Stack"
---[[Translation missing --]]
-L["Per-Character group selections."] = "Per-Character group selections."
+L["Other"] = "Altro"
+L["Other Character"] = "Altro Personaggio"
+L["Override default craft value"] = "Sovrascrivi il valore predefinito della creazione"
+L["Override Parent Operations"] = "Sovrascrivi Operazioni Parenti(?)"
+L["Parent Items"] = "Oggetti Parentali"
+L["Pausing Scan..."] = "Pausa della Scansione"
+L["Per Item"] = "Per Oggetto"
+L["Per Stack"] = "Per Pila"
+L["Per-Character group selections."] = "Selezioni del gruppo Per-Personaggio."
 --[[Translation missing --]]
 L["Performing a dry-run of your Mailing operations for the selected groups."] = "Performing a dry-run of your Mailing operations for the selected groups."
 --[[Translation missing --]]
 L["Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."] = "Performs a full, manual scan of the AH to populate some AuctionDB data if none is otherwise available."
---[[Translation missing --]]
-L["Player Gold"] = "Player Gold"
---[[Translation missing --]]
-L["Player Invite Accept"] = "Player Invite Accept"
---[[Translation missing --]]
-L["Post"] = "Post"
---[[Translation missing --]]
-L["Post / Cancel"] = "Post / Cancel"
---[[Translation missing --]]
-L["Post at Maximum Price"] = "Post at Maximum Price"
---[[Translation missing --]]
-L["Post at Minimum Price"] = "Post at Minimum Price"
---[[Translation missing --]]
-L["Post at Normal Price"] = "Post at Normal Price"
---[[Translation missing --]]
-L["Post Auction"] = "Post Auction"
---[[Translation missing --]]
-L["Post cap"] = "Post cap"
---[[Translation missing --]]
-L["Post cap to bags"] = "Post cap to bags"
---[[Translation missing --]]
-L["Post from Shopping Scan"] = "Post from Shopping Scan"
---[[Translation missing --]]
-L["Post Items from Bags"] = "Post Items from Bags"
---[[Translation missing --]]
-L["Post Quantity"] = "Post Quantity"
---[[Translation missing --]]
-L["Post Scan"] = "Post Scan"
---[[Translation missing --]]
-L["Post Selected"] = "Post Selected"
---[[Translation missing --]]
-L["Postage"] = "Postage"
---[[Translation missing --]]
-L["Posted at whitelisted player's price."] = "Posted at whitelisted player's price."
---[[Translation missing --]]
-L["Posted:"] = "Posted:"
---[[Translation missing --]]
-L["Posting"] = "Posting"
---[[Translation missing --]]
-L["Posting %d / %d"] = "Posting %d / %d"
---[[Translation missing --]]
-L["Posting %d items for %s hours."] = "Posting %d items for %s hours."
---[[Translation missing --]]
-L["Posting %d stack(s) of %d for %s hours."] = "Posting %d stack(s) of %d for %s hours."
---[[Translation missing --]]
-L["Posting at normal price."] = "Posting at normal price."
---[[Translation missing --]]
-L["Posting at whitelisted player's price."] = "Posting at whitelisted player's price."
---[[Translation missing --]]
-L["Posting at your current price."] = "Posting at your current price."
---[[Translation missing --]]
-L["Posting disabled."] = "Posting disabled."
---[[Translation missing --]]
-L["Posting Options"] = "Posting Options"
---[[Translation missing --]]
-L["Posting Price"] = "Posting Price"
+L["Player Gold"] = "Oro del Giocatore"
+L["Player Invite Accept"] = "Accetta Invito Giocatore"
+L["Post"] = "Pubblica"
+L["Post / Cancel"] = "Pubblica / Annulla"
+L["Post at Maximum Price"] = "Pubblico al Prezzo Massimo"
+L["Post at Minimum Price"] = "Pubblica al Prezzo Minimo"
+L["Post at Normal Price"] = "Pubblica al Prezzo Normale"
+L["Post Auction"] = "Pubblica Asta"
+L["Post cap"] = "Limite Pubblicazione"
+L["Post cap to bags"] = "Limite Pubblicazione alle borse"
+L["Post from Shopping Scan"] = "Pubblica dalla Scansione di Shopping"
+L["Post Items from Bags"] = "Pubblica gli Oggetti dalle Borse"
+L["Post Quantity"] = "Quantità di Pubblicazione"
+L["Post Scan"] = "Scan di Pubblicazione"
+L["Post Selected"] = "Pubblica le Selezionate"
+L["Postage"] = "Costo di Deposito"
+L["Posted at whitelisted player's price."] = "Pubblicato al prezzo del giocatore autorizzato."
+L["Posted:"] = "Pubblicate:"
+L["Posting"] = "Pubblicando Pubblicazione"
+L["Posting %d / %d"] = "Pubblicazione %d / %d"
+L["Posting %d items for %s hours."] = "Pubblicazione %d oggetti per %s ore."
+L["Posting %d stack(s) of %d for %s hours."] = "Pubblicazione %d pila(e) di %d per %s ore."
+L["Posting at normal price."] = "Pubblicazione al prezzo normale"
+L["Posting at whitelisted player's price."] = "Pubblicazione al prezzo del giocatore autorizzato."
+L["Posting at your current price."] = "Pubblicazione al tuo prezzo corrente."
+L["Posting disabled."] = "Pubblicazione disabilitata."
+L["Posting Options"] = "Opzioni di Pubblicazione"
+L["Posting Price"] = "Prezzo di Pubblicazione"
 --[[Translation missing --]]
 L["Posts"] = "Posts"
---[[Translation missing --]]
-L["Potential"] = "Potential"
---[[Translation missing --]]
-L["Prepare Bid"] = "Prepare Bid"
---[[Translation missing --]]
-L["Prepare Buy"] = "Prepare Buy"
---[[Translation missing --]]
-L["Preparing..."] = "Preparing..."
---[[Translation missing --]]
-L["Prevent closing the Auction House with the esc key"] = "Prevent closing the Auction House with the esc key"
---[[Translation missing --]]
-L["Prints out the available price sources for use in custom prices"] = "Prints out the available price sources for use in custom prices"
---[[Translation missing --]]
-L["Prints out the version numbers of all installed modules"] = "Prints out the version numbers of all installed modules"
+L["Potential"] = "Potenziale"
+L["Prepare Bid"] = "Prepara l'Offerta"
+L["Prepare Buy"] = "Prepara l'Acquisto"
+L["Preparing..."] = "Preparazione..."
+L["Prevent closing the Auction House with the esc key"] = "Impedire la chiusura della Casa d'Aste con il tasto esc"
+L["Prints out the available price sources for use in custom prices"] = "Pubblica le fonti di prezzo disponibili da utilizzare nei prezzi personalizzati"
+L["Prints out the version numbers of all installed modules"] = "Pubblica i numeri di versione di tutti i moduli installati"
 --[[Translation missing --]]
 L["Prints the slash command help listing"] = "Prints the slash command help listing"
---[[Translation missing --]]
-L["Processing scan results..."] = "Processing scan results..."
---[[Translation missing --]]
-L["Profession"] = "Profession"
---[[Translation missing --]]
-L["Profession Info"] = "Profession Info"
---[[Translation missing --]]
-L["Professions Used In"] = "Professions Used In"
---[[Translation missing --]]
-L["Profile changed to '%s'."] = "Profile changed to '%s'."
---[[Translation missing --]]
-L["Profiles"] = "Profiles"
---[[Translation missing --]]
-L["Profit"] = "Profit"
---[[Translation missing --]]
-L["PROFIT"] = "PROFIT"
---[[Translation missing --]]
-L["Profit (Total)"] = "Profit (Total)"
---[[Translation missing --]]
-L["Prospect value"] = "Prospect value"
---[[Translation missing --]]
-L["Prospect Value"] = "Prospect Value"
---[[Translation missing --]]
-L["Purchase"] = "Purchase"
---[[Translation missing --]]
-L["Purchase / Sale Info"] = "Purchase / Sale Info"
---[[Translation missing --]]
-L["Purchase Data"] = "Purchase Data"
---[[Translation missing --]]
-L["Purchase information"] = "Purchase information"
---[[Translation missing --]]
-L["Purchase Item"] = "Purchase Item"
---[[Translation missing --]]
-L["Purchased (Min/Avg/Max Price)"] = "Purchased (Min/Avg/Max Price)"
---[[Translation missing --]]
-L["Purchased (Total Price)"] = "Purchased (Total Price)"
---[[Translation missing --]]
-L["Purchases"] = "Purchases"
---[[Translation missing --]]
-L["Purchasing Auction"] = "Purchasing Auction"
---[[Translation missing --]]
-L["Puts items matching the item or partial text entered into the bank or guild bank."] = "Puts items matching the item or partial text entered into the bank or guild bank."
---[[Translation missing --]]
-L["Qty"] = "Qty"
---[[Translation missing --]]
-L["Quantity"] = "Quantity"
---[[Translation missing --]]
-L["Quantity Purchased:"] = "Quantity Purchased:"
---[[Translation missing --]]
-L["Quantity Sold:"] = "Quantity Sold:"
---[[Translation missing --]]
-L["Quantity to move"] = "Quantity to move"
---[[Translation missing --]]
-L["Quest Added"] = "Quest Added"
---[[Translation missing --]]
-L["Quest Completed"] = "Quest Completed"
---[[Translation missing --]]
-L["Quest Objectives Complete"] = "Quest Objectives Complete"
---[[Translation missing --]]
-L["Queue"] = "Queue"
---[[Translation missing --]]
-L["Quickly mail all excess disenchantable items to a character"] = "Quickly mail all excess disenchantable items to a character"
---[[Translation missing --]]
-L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Quickly mail all excess gold (limited to a certain amount) to a character"
---[[Translation missing --]]
-L["Raid Warning"] = "Raid Warning"
---[[Translation missing --]]
-L["Read More"] = "Read More"
+L["Processing scan results..."] = "Elaborazione dei risultati della scansione in corso..."
+L["Profession"] = "Professione"
+L["Profession Info"] = "Informazioni Professione"
+L["Professions Used In"] = "Professioni Utilizzate"
+L["Profile changed to '%s'."] = "Il profilo è cambiato in '%s'."
+L["Profiles"] = "Profili"
+L["Profit"] = "Profitto"
+L["PROFIT"] = "PROFITTO"
+L["Profit (Total)"] = "Profitto (Totale)"
+L["Prospect value"] = "Valore Prospezione"
+L["Prospect Value"] = "Valore Prospezione"
+L["Purchase"] = "Acquista"
+L["Purchase / Sale Info"] = "Acquisto / Informazioni Vendita"
+L["Purchase Data"] = "Dati di Acquisto"
+L["Purchase information"] = "Informazioni di Acquisto"
+L["Purchase Item"] = "Acquista Oggetto"
+L["Purchased (Min/Avg/Max Price)"] = "Acquistato (Min/Avg/Max Price)"
+L["Purchased (Total Price)"] = "Acquistato (Prezzo Totale)"
+L["Purchases"] = "Acquisti"
+L["Purchasing Auction"] = "Acquistando Asta"
+L["Puts items matching the item or partial text entered into the bank or guild bank."] = "Mette gli oggetti che corrispondono all'oggetto o al testo parziale inserito nella banca o nella banca della gilda."
+L["Qty"] = "Qtà"
+L["Quantity"] = "Quantità"
+L["Quantity Purchased:"] = "Quantità Acquistata:"
+L["Quantity Sold:"] = "Quantità Venduta:"
+L["Quantity to move"] = "Quantità da spostare"
+L["Quest Added"] = "Missione Aggiunta"
+L["Quest Completed"] = "Missione Completata"
+L["Quest Objectives Complete"] = "Obiettivi di Missione Completati"
+L["Queue"] = "Coda"
+L["Quickly mail all excess disenchantable items to a character"] = "Spedisci rapidamente tutti gli oggetti disincantabili in eccesso a un personaggio."
+L["Quickly mail all excess gold (limited to a certain amount) to a character"] = "Invia rapidamente tutto l'oro in eccesso (limitato a una certa quantità) a un personaggio"
+L["Raid Warning"] = "Avviso di Incursione"
+L["Read More"] = "Per saperne di più"
 --[[Translation missing --]]
 L["Ready Check"] = "Ready Check"
---[[Translation missing --]]
-L["Ready to Cancel"] = "Ready to Cancel"
---[[Translation missing --]]
-L["Recent"] = "Recent"
---[[Translation missing --]]
-L["Recent Scans"] = "Recent Scans"
---[[Translation missing --]]
-L["Recent Searches"] = "Recent Searches"
---[[Translation missing --]]
-L["Recipe Name"] = "Recipe Name"
---[[Translation missing --]]
-L["Recipient"] = "Recipient"
+L["Ready to Cancel"] = "Pronto per l'Annullamento"
+L["Recent"] = "Recente"
+L["Recent Scans"] = "Scansioni Recenti"
+L["Recent Searches"] = "Ricerche Recenti"
+L["Recipe Name"] = "Nome Ricetta"
+L["Recipient"] = "Destinatario"
 --[[Translation missing --]]
 L["Region avg daily sold"] = "Region avg daily sold"
 --[[Translation missing --]]
@@ -10661,60 +10223,35 @@ L["Region Sale Avg"] = "Region Sale Avg"
 L["Region Sale Rate"] = "Region Sale Rate"
 --[[Translation missing --]]
 L["Region sale rate"] = "Region sale rate"
---[[Translation missing --]]
-L["Reload"] = "Reload"
---[[Translation missing --]]
-L["Reload UI (%02d)"] = "Reload UI (%02d)"
---[[Translation missing --]]
-L["Reload UI (%d)"] = "Reload UI (%d)"
---[[Translation missing --]]
-L["Remove"] = "Remove"
---[[Translation missing --]]
-L["Remove %d |4Item:Items"] = "Remove %d |4Item:Items"
---[[Translation missing --]]
-L["Remove Data Older Than (Days)"] = "Remove Data Older Than (Days)"
---[[Translation missing --]]
-L["Remove this account sync and all synced data from this account"] = "Remove this account sync and all synced data from this account"
+L["Reload"] = "Ricarica"
+L["Reload UI (%02d)"] = "Ricarica IU (%02d)"
+L["Reload UI (%d)"] = "Ricarica IU (%d)"
+L["Remove"] = "Rimuovi"
+L["Remove %d |4Item:Items"] = "Rimuovi %d |4Item:Items"
+L["Remove Data Older Than (Days)"] = "Rimuovi Dati Più Vecchi Di (Giorni)"
+L["Remove this account sync and all synced data from this account"] = "Rimuovi questa sincronizzazione dell'account e tutti i dati sincronizzati da questo account."
 --[[Translation missing --]]
 L["Removed a total of %s old records."] = "Removed a total of %s old records."
---[[Translation missing --]]
-L["Removed custom price source (%s) which has an invalid name."] = "Removed custom price source (%s) which has an invalid name."
---[[Translation missing --]]
-L["Rename"] = "Rename"
---[[Translation missing --]]
-L["Rename Profile"] = "Rename Profile"
---[[Translation missing --]]
-L["Rename Search"] = "Rename Search"
---[[Translation missing --]]
-L["Rename the profile"] = "Rename the profile"
---[[Translation missing --]]
-L["Rename this group"] = "Rename this group"
---[[Translation missing --]]
-L["Repair"] = "Repair"
+L["Removed custom price source (%s) which has an invalid name."] = "Rimossa la fonte del prezzo personalizzato (%s) con un nome non valido."
+L["Rename"] = "Rinomina"
+L["Rename Profile"] = "Rinomina Profilo"
+L["Rename Search"] = "Rinomina Ricerca"
+L["Rename the profile"] = "Rinomina il profilo"
+L["Rename this group"] = "Rinomina questo gruppo"
+L["Repair"] = "Ripara"
 --[[Translation missing --]]
 L["Repair Bill"] = "Repair Bill"
---[[Translation missing --]]
-L["Repair from Guild Bank"] = "Repair from Guild Bank"
---[[Translation missing --]]
-L["Replace %d existing operations and %d existing custom sources?"] = "Replace %d existing operations and %d existing custom sources?"
---[[Translation missing --]]
-L["Replace %d existing operations?"] = "Replace %d existing operations?"
---[[Translation missing --]]
-L["Reply"] = "Reply"
---[[Translation missing --]]
-L["Report Spam"] = "Report Spam"
---[[Translation missing --]]
-L["Reports"] = "Reports"
---[[Translation missing --]]
-L["Repost threshold"] = "Repost threshold"
---[[Translation missing --]]
-L["Required Level"] = "Required Level"
---[[Translation missing --]]
-L["Required Level Range"] = "Required Level Range"
---[[Translation missing --]]
-L["Resale"] = "Resale"
---[[Translation missing --]]
-L["Rescan"] = "Rescan"
+L["Repair from Guild Bank"] = "Ripara dalla Banca di Gilda"
+L["Replace %d existing operations and %d existing custom sources?"] = "Sostituire %d operazioni esistenti e %d fonti personalizzate esistenti?"
+L["Replace %d existing operations?"] = "Sostituire %d operazioni esistenti?"
+L["Reply"] = "Rispondere"
+L["Report Spam"] = "Segnala come Spam"
+L["Reports"] = "Rapporti"
+L["Repost threshold"] = "Soglia di Ripubblicazione"
+L["Required Level"] = "Livello Richiesto"
+L["Required Level Range"] = "Range di Livello Richiesto"
+L["Resale"] = "Rivendita"
+L["Rescan"] = "Riesegui la Scansione"
 L["Reset"] = "Reset"
 L["Reset All Filters"] = "Reset di tutti i filtri"
 L["Reset Filters"] = "Reset dei Filtri"
@@ -10722,524 +10259,278 @@ L["Reset Operation?"] = "Reset dell'Operazione?"
 L["Reset Profile?"] = "Reset del Profilo?"
 L["Reset Table"] = "Reset della Tabella?"
 L["Reset the current profile to default settings"] = "Reset del profilo corrente alle impostazioni di default"
---[[Translation missing --]]
-L["Reset to Default"] = "Reset to Default"
+L["Reset to Default"] = "Riporta alle Condizioni Originali"
 L["Reset Zoom"] = "Reset dello Zoom"
---[[Translation missing --]]
-L["Resetting the operation will return all inputs back to default and cannot be unddone. Click confirm to reset."] = "Resetting the operation will return all inputs back to default and cannot be unddone. Click confirm to reset."
---[[Translation missing --]]
-L["Restart"] = "Restart"
---[[Translation missing --]]
-L["Restart delay (minutes)"] = "Restart delay (minutes)"
---[[Translation missing --]]
-L["Restock bags"] = "Restock bags"
---[[Translation missing --]]
-L["Restock help for %s: %s"] = "Restock help for %s: %s"
---[[Translation missing --]]
-L["Restock Options"] = "Restock Options"
---[[Translation missing --]]
-L["Restock quantity"] = "Restock quantity"
---[[Translation missing --]]
-L["Restock Selected Groups"] = "Restock Selected Groups"
---[[Translation missing --]]
-L["Restock target to max quantity"] = "Restock target to max quantity"
---[[Translation missing --]]
-L["Restocking to %d."] = "Restocking to %d."
---[[Translation missing --]]
-L["Restocking with a min profit."] = "Restocking with a min profit."
---[[Translation missing --]]
-L["Restocking with no min profit."] = "Restocking with no min profit."
---[[Translation missing --]]
-L["Restore bags"] = "Restore bags"
---[[Translation missing --]]
-L["Resuming Scan..."] = "Resuming Scan..."
+L["Resetting the operation will return all inputs back to default and cannot be unddone. Click confirm to reset."] = "Il ripristino dell'operazione riporterà tutti gli input ai valori predefiniti e non può essere annullato. Fare clic su conferma per ripristinare."
+L["Restart"] = "Ricomincia"
+L["Restart delay (minutes)"] = "Ritardo riavvio (minuti)"
+L["Restock bags"] = "Rifornire le borse"
+L["Restock help for %s: %s"] = "Rifornisci aiuto per %s: %s"
+L["Restock Options"] = "Opzioni di Rifornimento"
+L["Restock quantity"] = "Quantità di Rifornimento"
+L["Restock Selected Groups"] = "Rifornisci Gruppi Selezionati"
+L["Restock target to max quantity"] = "Rifornisci l'obiettivo alla quantità massima"
+L["Restocking to %d."] = "Rifornimento di %d."
+L["Restocking with a min profit."] = "Rifornimento con un profitto minimo."
+L["Restocking with no min profit."] = "Rifornimento senza profitto minimo."
+L["Restore bags"] = "Ripristina borse"
+L["Resuming Scan..."] = "Ripresa Scansione..."
 --[[Translation missing --]]
 L["Retrying %d auction(s) which failed."] = "Retrying %d auction(s) which failed."
---[[Translation missing --]]
-L["Revenue"] = "Revenue"
---[[Translation missing --]]
-L["Right-Click to reset the window size, scale, and position to their defaults."] = "Right-Click to reset the window size, scale, and position to their defaults."
---[[Translation missing --]]
-L["Run Advanced Item Search"] = "Run Advanced Item Search"
---[[Translation missing --]]
-L["Run Bid Sniper"] = "Run Bid Sniper"
---[[Translation missing --]]
-L["Run Buyout Sniper"] = "Run Buyout Sniper"
---[[Translation missing --]]
-L["Run Cancel Scan"] = "Run Cancel Scan"
---[[Translation missing --]]
-L["Run Post Scan"] = "Run Post Scan"
---[[Translation missing --]]
-L["Run Shopping Scan"] = "Run Shopping Scan"
---[[Translation missing --]]
-L["Running Sniper Scan"] = "Running Sniper Scan"
---[[Translation missing --]]
-L["Sale"] = "Sale"
---[[Translation missing --]]
-L["Sale Data"] = "Sale Data"
---[[Translation missing --]]
-L["Sale information"] = "Sale information"
---[[Translation missing --]]
-L["Sale Price"] = "Sale Price"
---[[Translation missing --]]
-L["Sale Rate"] = "Sale Rate"
---[[Translation missing --]]
-L["Sale rate"] = "Sale rate"
---[[Translation missing --]]
-L["Sales"] = "Sales"
---[[Translation missing --]]
-L["SALES"] = "SALES"
---[[Translation missing --]]
-L["Save"] = "Save"
---[[Translation missing --]]
-L["Scan"] = "Scan"
---[[Translation missing --]]
-L["SCAN ALL"] = "SCAN ALL"
---[[Translation missing --]]
-L["Scan complete sound"] = "Scan complete sound"
---[[Translation missing --]]
-L["Scan Paused"] = "Scan Paused"
---[[Translation missing --]]
-L["Scan was slowed down by %s seconds by other AH addons (%s seconds by %s)."] = "Scan was slowed down by %s seconds by other AH addons (%s seconds by %s)."
---[[Translation missing --]]
-L["Scanning"] = "Scanning"
---[[Translation missing --]]
-L["SCANNING"] = "SCANNING"
---[[Translation missing --]]
-L["Scanning (%d Items)"] = "Scanning (%d Items)"
---[[Translation missing --]]
-L["Scroll wheel direction"] = "Scroll wheel direction"
---[[Translation missing --]]
-L["Scroll Wheel Options"] = "Scroll Wheel Options"
---[[Translation missing --]]
-L["Search"] = "Search"
---[[Translation missing --]]
-L["Search %s operations"] = "Search %s operations"
---[[Translation missing --]]
-L["Search Bags"] = "Search Bags"
---[[Translation missing --]]
-L["Search Groups"] = "Search Groups"
---[[Translation missing --]]
-L["Search items"] = "Search items"
---[[Translation missing --]]
-L["Search items in group"] = "Search items in group"
---[[Translation missing --]]
-L["Search items in mailbox"] = "Search items in mailbox"
---[[Translation missing --]]
-L["Search Operations"] = "Search Operations"
---[[Translation missing --]]
-L["Search Patterns"] = "Search Patterns"
---[[Translation missing --]]
-L["Search Results"] = "Search Results"
---[[Translation missing --]]
-L["Search the auction house"] = "Search the auction house"
---[[Translation missing --]]
-L["Search Vendor"] = "Search Vendor"
---[[Translation missing --]]
-L["Select / Deselect All Groups"] = "Select / Deselect All Groups"
---[[Translation missing --]]
-L["Select / Deselect All Items"] = "Select / Deselect All Items"
---[[Translation missing --]]
-L["Select / Deselect All Results"] = "Select / Deselect All Results"
---[[Translation missing --]]
-L["Select a Source"] = "Select a Source"
---[[Translation missing --]]
-L["Select Action"] = "Select Action"
---[[Translation missing --]]
-L["Select All"] = "Select All"
---[[Translation missing --]]
-L["Select an Auction to Buy"] = "Select an Auction to Buy"
---[[Translation missing --]]
-L["Select Auction to Cancel"] = "Select Auction to Cancel"
---[[Translation missing --]]
-L["Select crafter"] = "Select crafter"
---[[Translation missing --]]
-L["Select Group"] = "Select Group"
---[[Translation missing --]]
-L["Select included subgroups"] = "Select included subgroups"
---[[Translation missing --]]
-L["Select Items to Attach"] = "Select Items to Attach"
---[[Translation missing --]]
-L["Select professions"] = "Select professions"
---[[Translation missing --]]
-L["Sell"] = "Sell"
---[[Translation missing --]]
-L["Sell All"] = "Sell All"
---[[Translation missing --]]
-L["Sell BoEs"] = "Sell BoEs"
---[[Translation missing --]]
-L["Sell Groups"] = "Sell Groups"
---[[Translation missing --]]
-L["Sell Options"] = "Sell Options"
---[[Translation missing --]]
-L["Sell soulbound items"] = "Sell soulbound items"
---[[Translation missing --]]
-L["Sell to Vendor"] = "Sell to Vendor"
---[[Translation missing --]]
-L["Sell Trash"] = "Sell Trash"
---[[Translation missing --]]
-L["Seller"] = "Seller"
---[[Translation missing --]]
-L["Selling soulbound items."] = "Selling soulbound items."
---[[Translation missing --]]
-L["Send"] = "Send"
---[[Translation missing --]]
-L["Send Disenchantables"] = "Send Disenchantables"
---[[Translation missing --]]
-L["Send Excess Gold to Banker"] = "Send Excess Gold to Banker"
---[[Translation missing --]]
-L["Send Gold"] = "Send Gold"
---[[Translation missing --]]
-L["Send grouped items individually"] = "Send grouped items individually"
---[[Translation missing --]]
-L["Send Mail"] = "Send Mail"
---[[Translation missing --]]
-L["Send Money"] = "Send Money"
---[[Translation missing --]]
-L["Send your active profile to this synced account"] = "Send your active profile to this synced account"
---[[Translation missing --]]
-L["Sender"] = "Sender"
---[[Translation missing --]]
-L["SENDING"] = "SENDING"
---[[Translation missing --]]
-L["Sending %s to %s"] = "Sending %s to %s"
---[[Translation missing --]]
-L["Sending %s to %s with a COD of %s"] = "Sending %s to %s with a COD of %s"
---[[Translation missing --]]
-L["Sending Settings"] = "Sending Settings"
---[[Translation missing --]]
-L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"] = "Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"
---[[Translation missing --]]
-L["Sending..."] = "Sending..."
---[[Translation missing --]]
-L["Set bid as percentage of buyout"] = "Set bid as percentage of buyout"
---[[Translation missing --]]
-L["Set how items are moved out of the bank."] = "Set how items are moved out of the bank."
---[[Translation missing --]]
-L["Set how items are restocked from the bank."] = "Set how items are restocked from the bank."
---[[Translation missing --]]
-L["Set keep in bags quantity"] = "Set keep in bags quantity"
---[[Translation missing --]]
-L["Set keep in bank quantity"] = "Set keep in bank quantity"
---[[Translation missing --]]
-L["Set max quantity"] = "Set max quantity"
---[[Translation missing --]]
-L["Set min profit"] = "Set min profit"
---[[Translation missing --]]
-L["Set move quantity"] = "Set move quantity"
---[[Translation missing --]]
-L["Set stack size"] = "Set stack size"
---[[Translation missing --]]
-L["Set stack size for restock"] = "Set stack size for restock"
---[[Translation missing --]]
-L["Set what is bought from a vendor."] = "Set what is bought from a vendor."
---[[Translation missing --]]
-L["Set what is sold to a vendor."] = "Set what is sold to a vendor."
---[[Translation missing --]]
-L["Set what items are shown during a Shopping scan."] = "Set what items are shown during a Shopping scan."
---[[Translation missing --]]
-L["Set what items are shown during a Sniper scan."] = "Set what items are shown during a Sniper scan."
---[[Translation missing --]]
-L["Set your active profile or create a new one."] = "Set your active profile or create a new one."
---[[Translation missing --]]
-L["Settings"] = "Settings"
---[[Translation missing --]]
-L["Setup various sounds that play when doing Auctioning scans."] = "Setup various sounds that play when doing Auctioning scans."
---[[Translation missing --]]
+L["Revenue"] = "Entrate"
+L["Right-Click to reset the window size, scale, and position to their defaults."] = "Fare clic con il pulsante destro del mouse per ripristinare le dimensioni, la scala e la posizione della finestra sui valori predefiniti."
+L["Run Advanced Item Search"] = "Esegui la Ricerca Avanzata degli Oggetti"
+L["Run Bid Sniper"] = "Esegui Sniper Offerte"
+L["Run Buyout Sniper"] = "Esegui Sniper d'Acquisto"
+L["Run Cancel Scan"] = "Esegui Scansione Annullamento"
+L["Run Post Scan"] = "Esegui Scansione Pubblicazione"
+L["Run Shopping Scan"] = "Esegui Scansione Shopping"
+L["Running Sniper Scan"] = "Esecuzione Scansione di Sniper"
+L["Sale"] = "Vendita"
+L["Sale Data"] = "Dati Vendita"
+L["Sale information"] = "Informazioni Vendita"
+L["Sale Price"] = "Prezzo di Vendita"
+L["Sale Rate"] = "Tasso di Vendita"
+L["Sale rate"] = "Tasso di Vendita"
+L["Sales"] = "Vendite"
+L["SALES"] = "VENDITE"
+L["Save"] = "Salva"
+L["Scan"] = "Scansione"
+L["SCAN ALL"] = "SCANSIONA TUTTO"
+L["Scan complete sound"] = "Suono di Scansione Completata"
+L["Scan Paused"] = "Scansione in Pausa"
+L["Scan was slowed down by %s seconds by other AH addons (%s seconds by %s)."] = "La scansione è stata rallentata di %s secondi da altri addon della CdA (%s secondi da %s)."
+L["Scanning"] = "Scansionando"
+L["SCANNING"] = "SCANSIONANDO"
+L["Scanning (%d Items)"] = "Scansionando (%d Oggetti)"
+L["Scroll wheel direction"] = "Direzione della rotella di scorrimento"
+L["Scroll Wheel Options"] = "Opzioni della Rotella di Scorrimento"
+L["Search"] = "Ricerca"
+L["Search %s operations"] = "Cerca %s operazioni"
+L["Search Bags"] = "Ricerca Borse"
+L["Search Groups"] = "Ricerca Gruppi"
+L["Search items"] = "Ricerca oggetti"
+L["Search items in group"] = "Ricerca oggetti nel gruppo"
+L["Search items in mailbox"] = "Ricerca oggetti nella casella di posta"
+L["Search Operations"] = "Ricerca Operazioni"
+L["Search Patterns"] = "Ricerca Ricette"
+L["Search Results"] = "Ricerca Risultati"
+L["Search the auction house"] = "Ricerca nella casa delle aste"
+L["Search Vendor"] = "Ricerca Mercante"
+L["Select / Deselect All Groups"] = "Seleziona / Deseleziona Tutti i Gruppi"
+L["Select / Deselect All Items"] = "Seleziona / Deseleziona Tutti gli Oggetti"
+L["Select / Deselect All Results"] = "Seleziona / Deseleziona tutti i Risultati"
+L["Select a Source"] = "Seleziona una Fonte"
+L["Select Action"] = "Seleziona Azione"
+L["Select All"] = "Seleziona Tutto"
+L["Select an Auction to Buy"] = "Seleziona un'Asta da Comprare"
+L["Select Auction to Cancel"] = "Seleziona un'Asta da Annullare"
+L["Select crafter"] = "Seleziona creatore"
+L["Select Group"] = "Seleziona Gruppo"
+L["Select included subgroups"] = "Seleziona i sottogruppi inclusi"
+L["Select Items to Attach"] = "Seleziona gli Oggetti da Allegare"
+L["Select professions"] = "Seleziona professioni"
+L["Sell"] = "Vendi"
+L["Sell All"] = "Vendi Tutto"
+L["Sell BoEs"] = "Vendi BoEs"
+L["Sell Groups"] = "Vendi Gruppi"
+L["Sell Options"] = "Vendi Opzioni"
+L["Sell soulbound items"] = "Vendi oggetti vincolati"
+L["Sell to Vendor"] = "Vendi al Mercante"
+L["Sell Trash"] = "Vendi Spazzatura"
+L["Seller"] = "Venditore"
+L["Selling soulbound items."] = "Vendendo oggetti vincolati."
+L["Send"] = "Inviare"
+L["Send Disenchantables"] = "Invia Disincantabili"
+L["Send Excess Gold to Banker"] = "manda Oro in Eccesso al Banchiere"
+L["Send Gold"] = "Invia Oro"
+L["Send grouped items individually"] = "Invia oggetti raggruppati singolarmente"
+L["Send Mail"] = "Invia Mail"
+L["Send Money"] = "Invia Soldi"
+L["Send your active profile to this synced account"] = "Invia il tuo profilo attivo a questo account sincronizzato"
+L["Sender"] = "Mittente"
+L["SENDING"] = "INVIANDO"
+L["Sending %s to %s"] = "Inviando %s a %s"
+L["Sending %s to %s with a COD of %s"] = "Inviando %s a %s con un P.C. di %s"
+L["Sending Settings"] = "Invio delle Impostazioni"
+L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"] = "Invio del tuo profilo '%s' a %s. Tieni entrambi i personaggi online fino al termine. Questo richiederà circa: %s"
+L["Sending..."] = "Inviando..."
+L["Set bid as percentage of buyout"] = "Imposta l'offerta come percentuale di acquisto"
+L["Set how items are moved out of the bank."] = "Imposta il modo in cui gli oggetti vengono spostati fuori dalla banca."
+L["Set how items are restocked from the bank."] = "Imposta la modalità di rifornimento degli oggetti dalla banca."
+L["Set keep in bags quantity"] = "Imposta quantità da tenere nelle borse"
+L["Set keep in bank quantity"] = "Imposta quantità da tenere nella banca"
+L["Set max quantity"] = "Imposta quantità massima"
+L["Set min profit"] = "Imposta profit minimo"
+L["Set move quantity"] = "Imposta la quantità di movimenti"
+L["Set stack size"] = "Imposta la dimensione della stack"
+L["Set stack size for restock"] = "Imposta la dimensione dello stack per il rifornimento"
+L["Set what is bought from a vendor."] = "Imposta ciò che viene acquistato da un mercante."
+L["Set what is sold to a vendor."] = "Imposta cosa viene venduto ad un mercante."
+L["Set what items are shown during a Shopping scan."] = "Imposta gli oggetti da mostrare durante una scansione di Shopping."
+L["Set what items are shown during a Sniper scan."] = "Imposta gli oggetti da mostrare durante una scansione di Sniper."
+L["Set your active profile or create a new one."] = "Imposta il tuo profilo attivo o creane uno nuovo."
+L["Settings"] = "Impostazioni"
+L["Setup various sounds that play when doing Auctioning scans."] = "Imposta vari suoni che vengono riprodotti durante le scansioni di aste."
 L["SHIFT"] = "SHIFT"
 L["Shopping"] = "Shopping"
---[[Translation missing --]]
-L["Shopping %s button"] = "Shopping %s button"
---[[Translation missing --]]
-L["Shopping for auctions including those above the max price."] = "Shopping for auctions including those above the max price."
---[[Translation missing --]]
-L["Shopping for auctions with a max price set."] = "Shopping for auctions with a max price set."
+L["Shopping %s button"] = "Pulsante %s Shopping"
+L["Shopping for auctions including those above the max price."] = "Acquisti per aste comprese quelle al di sopra del prezzo massimo."
+L["Shopping for auctions with a max price set."] = "Shopping per le aste con un prezzo massimo impostato."
 L["Shopping operation"] = "Operazione di Shopping"
 L["Shopping Operation Max Price"] = "Prezzo Massimo Operazione di Shopping"
---[[Translation missing --]]
-L["Shopping operations control buyout from the AH."] = "Shopping operations control buyout from the AH."
---[[Translation missing --]]
-L["Shortfall to bags"] = "Shortfall to bags"
---[[Translation missing --]]
-L["Show auctions above max price"] = "Show auctions above max price"
---[[Translation missing --]]
-L["Show confirmation alert if buyout is above the alert price"] = "Show confirmation alert if buyout is above the alert price"
+L["Shopping operations control buyout from the AH."] = "Le operazioni di Shopping controllano il prezzo d'acquisto dalla CdA."
+L["Shortfall to bags"] = "Mancanza di borse"
+L["Show auctions above max price"] = "Mostra le aste al di sopra del prezzo massimo"
+L["Show confirmation alert if buyout is above the alert price"] = "Mostra l'avviso di conferma se il prezzo d'acquisto è superiore al prezzo di avviso"
 --[[Translation missing --]]
 L["Show destroying frame automatically"] = "Show destroying frame automatically"
---[[Translation missing --]]
-L["Show on modifier"] = "Show on modifier"
---[[Translation missing --]]
-L["Show only auctions with bids"] = "Show only auctions with bids"
---[[Translation missing --]]
-L["Showing %s Mail"] = "Showing %s Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mail"] = "Showing %s of %d Mail"
---[[Translation missing --]]
-L["Showing %s of %d Mails"] = "Showing %s of %d Mails"
---[[Translation missing --]]
-L["Showing all %s Mails"] = "Showing all %s Mails"
---[[Translation missing --]]
-L["Simple inventory"] = "Simple inventory"
---[[Translation missing --]]
-L["Skip"] = "Skip"
+L["Show on modifier"] = "Mostra sul modificatore"
+L["Show only auctions with bids"] = "Mostra solo aste con offerte"
+L["Showing %s Mail"] = "Visualizza %s Mail"
+L["Showing %s of %d Mail"] = "Visualizza %s di %d Mail"
+L["Showing %s of %d Mails"] = "Visualizzazione %s di %d Mails"
+L["Showing all %s Mails"] = "Visualizza tutte le %s Mails"
+L["Simple inventory"] = "Inventario semplice"
+L["Skip"] = "Salta"
 L["Skipped:"] = "Saltato:"
---[[Translation missing --]]
-L["Skipped: No assigned operation"] = "Skipped: No assigned operation"
+L["Skipped: No assigned operation"] = "Saltato: Nessuna operazione assegnata"
 L["Slash Commands:"] = "Comandi Slash:"
 --[[Translation missing --]]
 L["Smart Avg Buy Price"] = "Smart Avg Buy Price"
-L["Sniper"] = "Cecchino"
---[[Translation missing --]]
-L["Sniper %s button"] = "Sniper %s button"
---[[Translation missing --]]
-L["Sniper Below Price"] = "Sniper Below Price"
---[[Translation missing --]]
-L["Sniper operation"] = "Sniper operation"
---[[Translation missing --]]
-L["Sniper Operation Below Price"] = "Sniper Operation Below Price"
---[[Translation missing --]]
-L["Sniper operations control sniping from the AH."] = "Sniper operations control sniping from the AH."
---[[Translation missing --]]
-L["Sniper Options"] = "Sniper Options"
---[[Translation missing --]]
-L["Sniping items below a max price"] = "Sniping items below a max price"
---[[Translation missing --]]
-L["Sold"] = "Sold"
---[[Translation missing --]]
-L["Sold %d of %s to %s for %s"] = "Sold %d of %s to %s for %s"
---[[Translation missing --]]
-L["Sold %s worth of items."] = "Sold %s worth of items."
---[[Translation missing --]]
-L["Sold (Min/Avg/Max Price)"] = "Sold (Min/Avg/Max Price)"
---[[Translation missing --]]
-L["Sold (Total Price)"] = "Sold (Total Price)"
---[[Translation missing --]]
-L["Sold [%s]x%d for %s to %s"] = "Sold [%s]x%d for %s to %s"
+L["Sniper"] = "Sniper"
+L["Sniper %s button"] = "Sniper %s pulsante"
+L["Sniper Below Price"] = "Sniper al di Sotto del Prezzo"
+L["Sniper operation"] = "Operazione di Sniper"
+L["Sniper Operation Below Price"] = "Operazione di Sniper al di sotto del Prezzo"
+L["Sniper operations control sniping from the AH."] = "Operazione di Sniper controllano lo sniping dalla CdA"
+L["Sniper Options"] = "Opzioni di Sniper"
+L["Sniping items below a max price"] = "Sniping di oggetti al di sotto del prezzo massimo"
+L["Sold"] = "Venduto"
+L["Sold %d of %s to %s for %s"] = "Venduto %d di %s a %s per %s"
+L["Sold %s worth of items."] = "Oggetti venduti per un valore di %s."
+L["Sold (Min/Avg/Max Price)"] = "Venduto (Min/Avg/Max Price)"
+L["Sold (Total Price)"] = "Venduto (Prezzo Totale)"
+L["Sold [%s]x%d for %s to %s"] = "Venduto [%s]x%d per %s a %s"
 L["Sold for:"] = "Venduto per:"
---[[Translation missing --]]
-L["Some general Accounting options are below."] = "Some general Accounting options are below."
---[[Translation missing --]]
-L["Some general appearance options are below."] = "Some general appearance options are below."
---[[Translation missing --]]
-L["Some general Auctioning options are below."] = "Some general Auctioning options are below."
---[[Translation missing --]]
-L["Some general Browse/Sniper options are below."] = "Some general Browse/Sniper options are below."
---[[Translation missing --]]
-L["Some general options for the TSM tooltip information are below."] = "Some general options for the TSM tooltip information are below."
---[[Translation missing --]]
-L["Some general TSM options are below."] = "Some general TSM options are below."
---[[Translation missing --]]
-L["Some options for the Disenchant Search are below."] = "Some options for the Disenchant Search are below."
---[[Translation missing --]]
-L["Source"] = "Source"
---[[Translation missing --]]
-L["SOURCE %d"] = "SOURCE %d"
---[[Translation missing --]]
-L["Sources"] = "Sources"
---[[Translation missing --]]
-L["Sources to include for restock"] = "Sources to include for restock"
---[[Translation missing --]]
-L["Stack"] = "Stack"
---[[Translation missing --]]
-L["Stack / Quantity"] = "Stack / Quantity"
---[[Translation missing --]]
-L["Stack size"] = "Stack size"
---[[Translation missing --]]
-L["Stack size multiple"] = "Stack size multiple"
---[[Translation missing --]]
-L["Stack(s)"] = "Stack(s)"
---[[Translation missing --]]
-L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."] = "Start either a 'Buyout' or 'Bid' sniper using the buttons above."
---[[Translation missing --]]
-L["Starting full AH scan. Please note that this scan may cause your game client to lag or crash. This scan generally takes 1-2 minutes."] = "Starting full AH scan. Please note that this scan may cause your game client to lag or crash. This scan generally takes 1-2 minutes."
---[[Translation missing --]]
-L["Starting Scan..."] = "Starting Scan..."
---[[Translation missing --]]
-L["Store operations globally"] = "Store operations globally"
---[[Translation missing --]]
-L["Stormwind"] = "Stormwind"
---[[Translation missing --]]
-L["String"] = "String"
---[[Translation missing --]]
-L["Subject"] = "Subject"
---[[Translation missing --]]
-L["Subject & Description added"] = "Subject & Description added"
---[[Translation missing --]]
-L["Successfully sent your '%s' profile to %s!"] = "Successfully sent your '%s' profile to %s!"
---[[Translation missing --]]
-L["Supported range: %d - %d"] = "Supported range: %d - %d"
---[[Translation missing --]]
-L["Supported value range: %d - %d"] = "Supported value range: %d - %d"
---[[Translation missing --]]
-L["Swamp of Sorrows"] = "Swamp of Sorrows"
---[[Translation missing --]]
-L["Switch to %s"] = "Switch to %s"
---[[Translation missing --]]
-L["Sync Setup Error: The specified player on the other account is not currently online."] = "Sync Setup Error: The specified player on the other account is not currently online."
---[[Translation missing --]]
-L["Sync Setup Error: This character is already part of a known account."] = "Sync Setup Error: This character is already part of a known account."
---[[Translation missing --]]
-L["Sync Setup Error: You entered the name of the current character and not the character on the other account."] = "Sync Setup Error: You entered the name of the current character and not the character on the other account."
---[[Translation missing --]]
-L["Sync Status"] = "Sync Status"
---[[Translation missing --]]
-L["Target character"] = "Target character"
---[[Translation missing --]]
-L["Target shortfall to bags"] = "Target shortfall to bags"
---[[Translation missing --]]
-L["Tasks Added to Task List"] = "Tasks Added to Task List"
---[[Translation missing --]]
-L["Tells you why a specific item is not being restocked and added to the queue."] = "Tells you why a specific item is not being restocked and added to the queue."
---[[Translation missing --]]
-L["Text (%s)"] = "Text (%s)"
---[[Translation missing --]]
-L["The '%s' custom price source is invalid."] = "The '%s' custom price source is invalid."
---[[Translation missing --]]
-L["The Base Group contains all ungrouped items in the game. Use the search and filter controls to find items to add to other groups."] = "The Base Group contains all ungrouped items in the game. Use the search and filter controls to find items to add to other groups."
---[[Translation missing --]]
-L["The buyout price for %s would be above the maximum allowed price. Skipping this item."] = "The buyout price for %s would be above the maximum allowed price. Skipping this item."
---[[Translation missing --]]
-L["The canlearn filter was ignored because the CanIMogIt addon was not found."] = "The canlearn filter was ignored because the CanIMogIt addon was not found."
---[[Translation missing --]]
-L["The 'Craft Value Method' did not return a value for this item."] = "The 'Craft Value Method' did not return a value for this item."
---[[Translation missing --]]
-L["The entirety of the addon has been redesigned from the ground up. Highlights include: a more modern UI that maximizes on available space, new appearances that allow you to change the theme, updated Dashboard, more powerful tables and much, much more."] = "The entirety of the addon has been redesigned from the ground up. Highlights include: a more modern UI that maximizes on available space, new appearances that allow you to change the theme, updated Dashboard, more powerful tables and much, much more."
---[[Translation missing --]]
-L["The max quantity cannot be zero."] = "The max quantity cannot be zero."
---[[Translation missing --]]
-L["The min profit did not evalulate to a valid value for this item."] = "The min profit did not evalulate to a valid value for this item."
---[[Translation missing --]]
-L["The name portion of the search term must be at least 3 characters if present."] = "The name portion of the search term must be at least 3 characters if present."
---[[Translation missing --]]
-L["The pasted value was not valid. Ensure you are pasting the entire import string."] = "The pasted value was not valid. Ensure you are pasting the entire import string."
---[[Translation missing --]]
-L["The player \"%s\" is already on your whitelist."] = "The player \"%s\" is already on your whitelist."
---[[Translation missing --]]
-L["The profit of this item (%s) is below the min profit (%s)."] = "The profit of this item (%s) is below the min profit (%s)."
---[[Translation missing --]]
-L["The same filter was specified multiple times."] = "The same filter was specified multiple times."
---[[Translation missing --]]
-L["The search term must be at least 3 characters."] = "The search term must be at least 3 characters."
---[[Translation missing --]]
-L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."] = "The seller name of the lowest auction for %s was not given by the server. Skipping this item."
---[[Translation missing --]]
-L["The specified filter was empty."] = "The specified filter was empty."
---[[Translation missing --]]
-L["The specified item is not supported for crafting searches."] = "The specified item is not supported for crafting searches."
---[[Translation missing --]]
-L["The specified item is not supported for disenchant searches."] = "The specified item is not supported for disenchant searches."
---[[Translation missing --]]
-L["The specified item was not found."] = "The specified item was not found."
---[[Translation missing --]]
-L["The TradeSkillMaster_AppHelper addon is installed, but not enabled. TSM has enabled it and requires a reload."] = "The TradeSkillMaster_AppHelper addon is installed, but not enabled. TSM has enabled it and requires a reload."
---[[Translation missing --]]
-L["The unlearned filter was ignored because the CanIMogIt addon was not found."] = "The unlearned filter was ignored because the CanIMogIt addon was not found."
+L["Some general Accounting options are below."] = "Di seguito sono riportate alcune opzioni Contabili generali."
+L["Some general appearance options are below."] = "Di seguito sono riportate alcune opzioni generali di aspetto."
+L["Some general Auctioning options are below."] = "Di seguito sono riportate alcune opzioni generali di vendita all'asta."
+L["Some general Browse/Sniper options are below."] = "Di seguito sono riportate alcune opzioni generali di Browse/Sniper."
+L["Some general options for the TSM tooltip information are below."] = "Di seguito sono riportate alcune opzioni generali per le informazioni sui suggerimenti di TSM."
+L["Some general TSM options are below."] = "Di seguito sono riportate alcune opzioni di TSM generali."
+L["Some options for the Disenchant Search are below."] = "Di seguito sono riportate alcune opzioni per la Ricerca di Disincantamento."
+L["Source"] = "Fonte"
+L["SOURCE %d"] = "FONTE %d"
+L["Sources"] = "Fonti"
+L["Sources to include for restock"] = "Fonti da includere per il rifornimento"
+L["Stack"] = "Pila"
+L["Stack / Quantity"] = "Pila / Quantità"
+L["Stack size"] = "Dimensiona pila"
+L["Stack size multiple"] = "Dimensione pila multipla"
+L["Stack(s)"] = "Pila(e)"
+L["Start either a 'Buyout' or 'Bid' sniper using the buttons above."] = "Avvia uno sniper \"Acquisto\" o \"Offerta\" utilizzando i pulsanti sopra."
+L["Starting full AH scan. Please note that this scan may cause your game client to lag or crash. This scan generally takes 1-2 minutes."] = "Avvio della scansione completa della CdA. Tieni presente che questa scansione potrebbe causare ritardi o arresti anomali del tuo client di gioco. Questa scansione richiede generalmente 1-2 minuti."
+L["Starting Scan..."] = "Avvio Scansione..."
+L["Store operations globally"] = "Archivia le operazioni a livello globale"
+L["Stormwind"] = "Roccavento"
+L["String"] = "Stringa"
+L["Subject"] = "Soggetto"
+L["Subject & Description added"] = "Soggetto & Descrizione aggiunta"
+L["Successfully sent your '%s' profile to %s!"] = "Inviato con successo il tuo profilo '%s' a %s!"
+L["Supported range: %d - %d"] = "Intervallo supportato: %d - %d"
+L["Supported value range: %d - %d"] = "Intervallo di valori supportato: %d - %d"
+L["Swamp of Sorrows"] = "Palude del Dolore"
+L["Switch to %s"] = "Passa a %s"
+L["Sync Setup Error: The specified player on the other account is not currently online."] = "Errore di configurazione della sincronizzazione: il giocatore specificato sull'altro account non è attualmente online."
+L["Sync Setup Error: This character is already part of a known account."] = "Errore di configurazione della sincronizzazione: questo personaggio fa già parte di un account noto."
+L["Sync Setup Error: You entered the name of the current character and not the character on the other account."] = "Errore di configurazione della sincronizzazione: hai inserito il nome del personaggio corrente e non il personaggio sull'altro account."
+L["Sync Status"] = "Stato Sincronizzazione"
+L["Target character"] = "Bersaglia personaggio"
+L["Target shortfall to bags"] = "Obiettivo deficit di borse"
+L["Tasks Added to Task List"] = "Attività Aggiunte all'Elenco delle Attività"
+L["Tells you why a specific item is not being restocked and added to the queue."] = "Ti dice perché un articolo specifico non viene rifornito e aggiunto alla coda."
+L["Text (%s)"] = "Testo (%s)"
+L["The '%s' custom price source is invalid."] = "Il '%s' origine del prezzo personalizzato non è valida."
+L["The Base Group contains all ungrouped items in the game. Use the search and filter controls to find items to add to other groups."] = "Il Gruppo Base contiene tutti gli oggetti non raggruppati nel gioco. Utilizza la ricerca e i fltri di controllo per trovare oggetti da aggiungere ad altri gruppi."
+L["The buyout price for %s would be above the maximum allowed price. Skipping this item."] = "Il prezzo di acquisto di %s sarebbe superiore al prezzo massimo consentito. Saltando questo oggetto."
+L["The canlearn filter was ignored because the CanIMogIt addon was not found."] = "Il filtro canlearn è stato ignorato perché il componente aggiuntivo CanIMogIt non è stato trovato."
+L["The 'Craft Value Method' did not return a value for this item."] = "Il \"Craft Value Method\" non ha restituito un valore per questo articolo."
+L["The entirety of the addon has been redesigned from the ground up. Highlights include: a more modern UI that maximizes on available space, new appearances that allow you to change the theme, updated Dashboard, more powerful tables and much, much more."] = "L'intero addon è stato ridisegnato da zero. I punti salienti includono: un'UI più moderna che massimizza lo spazio disponibile, nuovi aspetti che ti consentono di cambiare il tema, dashboard aggiornata, tabelle più potenti e molto, molto altro ancora."
+L["The max quantity cannot be zero."] = "La quantità massima non può essere zero."
+L["The min profit did not evalulate to a valid value for this item."] = "Il profitto minimo non è stato valutato a un valore valido per questo oggetto."
+L["The name portion of the search term must be at least 3 characters if present."] = "La parte del nome del termine di ricerca deve contenere almeno 3 caratteri, se presenti."
+L["The pasted value was not valid. Ensure you are pasting the entire import string."] = "Il valore incollato non era valido. Assicurati di incollare l'intera stringa di importazione."
+L["The player \"%s\" is already on your whitelist."] = "Il giocatore \"%s\" è già sulla tua whitelist."
+L["The profit of this item (%s) is below the min profit (%s)."] = "Il profitto di questo oggetto (%s) è al di sotto del profit minimo (%s)."
+L["The same filter was specified multiple times."] = "Lo stesso filtro è stato specificato più volte."
+L["The search term must be at least 3 characters."] = "Il termine di ricerca deve contenere almeno 3 caratteri."
+L["The seller name of the lowest auction for %s was not given by the server. Skipping this item."] = "Il nome del venditore dell'asta più bassa per %s non è stato fornito dal server. Saltando questo oggetto."
+L["The specified filter was empty."] = "Il filtro specificato era vuoto."
+L["The specified item is not supported for crafting searches."] = "L'oggetto specificato non è supportato per la ricerca di crafting."
+L["The specified item is not supported for disenchant searches."] = "L'oggetto specificato non è supportato per le ricerche di disincantamento."
+L["The specified item was not found."] = "L'oggetto specificato non è stato trovato."
+L["The TradeSkillMaster_AppHelper addon is installed, but not enabled. TSM has enabled it and requires a reload."] = "Il componente aggiuntivo TradeSkillMaster_AppHelper è installato, ma non abilitato. TSM lo ha abilitato e richiede una ricarica."
+L["The unlearned filter was ignored because the CanIMogIt addon was not found."] = "Il filtro non appreso è stato ignorato perché l'addon CanIMogIt non è stato trovato."
 --[[Translation missing --]]
 L["The 'use smart average for purchase price' setting has been removed from TSM and replaced with a new 'SmartAvgBuy' price source. Please update your custom prices appropriately."] = "The 'use smart average for purchase price' setting has been removed from TSM and replaced with a new 'SmartAvgBuy' price source. Please update your custom prices appropriately."
---[[Translation missing --]]
-L["Themes"] = "Themes"
---[[Translation missing --]]
-L["There is currently no profession open, so cannot create profession groups."] = "There is currently no profession open, so cannot create profession groups."
---[[Translation missing --]]
-L["There is no Crafting operation applied to this item's TSM group (%s)."] = "There is no Crafting operation applied to this item's TSM group (%s)."
---[[Translation missing --]]
-L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."] = "This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."
---[[Translation missing --]]
-L["This item does not have a crafting cost. Check that all of its mats have mat prices."] = "This item does not have a crafting cost. Check that all of its mats have mat prices."
---[[Translation missing --]]
-L["This item is not in a TSM group."] = "This item is not in a TSM group."
---[[Translation missing --]]
-L["This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."] = "This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."
---[[Translation missing --]]
-L["This looks like an exported operation and not a custom price."] = "This looks like an exported operation and not a custom price."
---[[Translation missing --]]
-L["This operation is applied to the base group which includes every item not in another group."] = "This operation is applied to the base group which includes every item not in another group."
---[[Translation missing --]]
-L["This price is above your confirmation alert threshold."] = "This price is above your confirmation alert threshold."
---[[Translation missing --]]
-L["This profession is not open."] = "This profession is not open."
---[[Translation missing --]]
-L["This record belongs to another account and can only be deleted on that account."] = "This record belongs to another account and can only be deleted on that account."
---[[Translation missing --]]
-L["This will permanently delete the '%s' profile."] = "This will permanently delete the '%s' profile."
---[[Translation missing --]]
-L["This will reset all groups and operations (if not stored globally) to be wiped from '%s'."] = "This will reset all groups and operations (if not stored globally) to be wiped from '%s'."
---[[Translation missing --]]
-L["Time"] = "Time"
---[[Translation missing --]]
-L["Time Frame"] = "Time Frame"
---[[Translation missing --]]
-L["Time to Craft:"] = "Time to Craft:"
+L["Themes"] = "Temi"
+L["There is currently no profession open, so cannot create profession groups."] = "Al momento non ci sono professioni aperte, quindi non è possibile creare gruppi di professione."
+L["There is no Crafting operation applied to this item's TSM group (%s)."] = "Non c'è nessuna operazione di crafting applicata al gruppo TSM di questo oggetto (%s)."
+L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."] = "Questo non è un nome di profilo valido. I nomi dei profili devono essere lunghi almeno un carattere e non possono contenere caratteri '@'."
+L["This item does not have a crafting cost. Check that all of its mats have mat prices."] = "Questo oggetto non ha un costo di creazione. Controlla che tutti materiali abbiano prezzi il prezzo dei materiali."
+L["This item is not in a TSM group."] = "Questo oggetto non è in gruppo di TSM."
+L["This item will be added to the queue when you restock its group. If this isn't happening, please visit http://support.tradeskillmaster.com for further assistance."] = "Questo oggetto verrà aggiunto alla coda quando rifornirai il suo gruppo. Se ciò non accade, visita http://support.tradeskillmaster.com per ulteriore assistenza."
+L["This looks like an exported operation and not a custom price."] = "Sembra un'operazione esportata e non un prezzo personalizzato."
+L["This operation is applied to the base group which includes every item not in another group."] = "Questa operazione viene applicata al gruppo base che include tutti gli oggetti non in un altro gruppo."
+L["This price is above your confirmation alert threshold."] = "Questo prezzo è superiore alla soglia di avviso di conferma."
+L["This profession is not open."] = "Questa professione non è aperta."
+L["This record belongs to another account and can only be deleted on that account."] = "Questo registrazione appartiene a un altro account e può essere eliminato solo su quell'account."
+L["This will permanently delete the '%s' profile."] = "Questo eliminerà definitivamente il profilo \"%s\"."
+L["This will reset all groups and operations (if not stored globally) to be wiped from '%s'."] = "Questo reimposterà tutti i gruppi e le operazioni (se non sono archiviati globalmente) per essere cancellati da '%s'."
+L["Time"] = "Tempo"
+L["Time Frame"] = "Lasso di Tempo"
+L["Time to Craft:"] = "Tempo di Craft:"
 --[[Translation missing --]]
 L["Tinker"] = "Tinker"
---[[Translation missing --]]
-L["To make it easier to use TSM across different characters, the groups you have selected in various UIs will now be persistent on a per-character basis and selected by default."] = "To make it easier to use TSM across different characters, the groups you have selected in various UIs will now be persistent on a per-character basis and selected by default."
---[[Translation missing --]]
-L["Toggles the main TSM window"] = "Toggles the main TSM window"
---[[Translation missing --]]
-L["Toggles the TSM Banking UI if either the bank or guild bank is currently open."] = "Toggles the TSM Banking UI if either the bank or guild bank is currently open."
---[[Translation missing --]]
-L["Toggles the TSM Crafting UI."] = "Toggles the TSM Crafting UI."
---[[Translation missing --]]
-L["Toggles the TSM Task List UI"] = "Toggles the TSM Task List UI"
---[[Translation missing --]]
-L["Tooltip Options"] = "Tooltip Options"
+L["To make it easier to use TSM across different characters, the groups you have selected in various UIs will now be persistent on a per-character basis and selected by default."] = "Per rendere più facile l'utilizzo di TSM su diversi personaggi, i gruppi selezionati in varie interfacce utente saranno ora persistenti per carattere e selezionati per impostazione predefinita."
+L["Toggles the main TSM window"] = "Attiva o disattiva la finestra principale di TSM"
+L["Toggles the TSM Banking UI if either the bank or guild bank is currently open."] = "Attiva / disattiva l'IU di TSM Banking se la banca o la banca della gilda sono attualmente aperte."
+L["Toggles the TSM Crafting UI."] = "Attiva / disattiva l'IU utente di TSM Crafting."
+L["Toggles the TSM Task List UI"] = "Attiva / disattiva l'IU dell'elenco attività TSM"
+L["Tooltip Options"] = "Opzioni Suggerimenti"
 --[[Translation missing --]]
 L["Tooltip price format"] = "Tooltip price format"
---[[Translation missing --]]
-L["Tooltip Settings"] = "Tooltip Settings"
---[[Translation missing --]]
-L["Top Buyers"] = "Top Buyers"
---[[Translation missing --]]
-L["Top Item"] = "Top Item"
---[[Translation missing --]]
-L["TOP PURCHASE"] = "TOP PURCHASE"
---[[Translation missing --]]
-L["TOP SALE"] = "TOP SALE"
---[[Translation missing --]]
-L["Top Sellers"] = "Top Sellers"
---[[Translation missing --]]
-L["Total"] = "Total"
---[[Translation missing --]]
-L["Total Gold"] = "Total Gold"
---[[Translation missing --]]
-L["Total Gold Collected: %s"] = "Total Gold Collected: %s"
---[[Translation missing --]]
-L["Total Gold Earned"] = "Total Gold Earned"
---[[Translation missing --]]
-L["Total Gold Spent"] = "Total Gold Spent"
---[[Translation missing --]]
-L["Total Inventory Quantity"] = "Total Inventory Quantity"
---[[Translation missing --]]
-L["Total Items"] = "Total Items"
---[[Translation missing --]]
-L["Total Postage"] = "Total Postage"
---[[Translation missing --]]
-L["Total Price"] = "Total Price"
---[[Translation missing --]]
-L["Total Prices:"] = "Total Prices:"
---[[Translation missing --]]
-L["Total Profit"] = "Total Profit"
---[[Translation missing --]]
-L["Total Value"] = "Total Value"
---[[Translation missing --]]
-L["Track Sales / Purchases via trade"] = "Track Sales / Purchases via trade"
---[[Translation missing --]]
-L["Transform Value"] = "Transform Value"
---[[Translation missing --]]
-L["Transform value"] = "Transform value"
---[[Translation missing --]]
-L["Trouble making groups? You can now search any item in the game from within the base group and easily add them to existing groups or simply create a new group for them."] = "Trouble making groups? You can now search any item in the game from within the base group and easily add them to existing groups or simply create a new group for them."
---[[Translation missing --]]
-L["TSM 4.10: What's new"] = "TSM 4.10: What's new"
+L["Tooltip Settings"] = "Impostazioni Suggerimenti"
+L["Top Buyers"] = "Migliori Acquirenti"
+L["Top Item"] = "Migliori Oggetti"
+L["TOP PURCHASE"] = "MIGLIOR ACQUISTO"
+L["TOP SALE"] = "MIGLIOR VENDITA"
+L["Top Sellers"] = "Migliori Venditori"
+L["Total"] = "Totale"
+L["Total Gold"] = "Oro Totale"
+L["Total Gold Collected: %s"] = "Oro Totale Raccolto: %s"
+L["Total Gold Earned"] = "Oro Totale Guadagnato"
+L["Total Gold Spent"] = "Oro Totale Speso"
+L["Total Inventory Quantity"] = "Quantità Totale di Inventario"
+L["Total Items"] = "Oggetti Totali"
+L["Total Postage"] = "Pubblicazioni Totali"
+L["Total Price"] = "Prezzo Totale"
+L["Total Prices:"] = "Prezzi Totali:"
+L["Total Profit"] = "Profitto Totale"
+L["Total Value"] = "Valore Totale"
+L["Track Sales / Purchases via trade"] = "Traccia delle vendite / Acquisti tramite scambio"
+L["Transform Value"] = "Trasforma Valore"
+L["Transform value"] = "Trasforma valore"
+L["Trouble making groups? You can now search any item in the game from within the base group and easily add them to existing groups or simply create a new group for them."] = "Problemi a creare gruppi? Ora puoi cercare qualsiasi oggetto nel gioco all'interno del gruppo di base e aggiungerlo facilmente a gruppi esistenti o semplicemente creare un nuovo gruppo per loro."
+L["TSM 4.10: What's new"] = "TSM 4.10: Cosa c'è di nuovo"
 --[[Translation missing --]]
 L["TSM Accounting"] = "TSM Accounting"
 --[[Translation missing --]]
 L["TSM AuctionDB"] = "TSM AuctionDB"
 --[[Translation missing --]]
 L["TSM Auctioning"] = "TSM Auctioning"
---[[Translation missing --]]
-L["TSM can automatically sync data between multiple WoW accounts."] = "TSM can automatically sync data between multiple WoW accounts."
+L["TSM can automatically sync data between multiple WoW accounts."] = "TSM può sincronizzare automaticamente i dati tra più account WoW."
 --[[Translation missing --]]
 L["TSM Crafting"] = "TSM Crafting"
 --[[Translation missing --]]
@@ -11248,87 +10539,51 @@ L["TSM Desktop App Status (%s)"] = "TSM Desktop App Status (%s)"
 L["TSM does not have recent AuctionDB data. Would you like to run a full AH scan?"] = "TSM does not have recent AuctionDB data. Would you like to run a full AH scan?"
 --[[Translation missing --]]
 L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."] = "TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."
---[[Translation missing --]]
-L["TSM failed to scan some auctions. Please rerun the scan."] = "TSM failed to scan some auctions. Please rerun the scan."
---[[Translation missing --]]
-L["TSM General Info"] = "TSM General Info"
+L["TSM failed to scan some auctions. Please rerun the scan."] = "TSM non è riuscito a scansionare alcune aste. Si prega di rieseguire la scansione."
+L["TSM General Info"] = "TSM Info Generali"
 L["TSM Groups"] = "Gruppi di TSM"
---[[Translation missing --]]
-L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."] = "TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."
---[[Translation missing --]]
-L["TSM is missing important information from the TSM Desktop Application. Please ensure the TSM Desktop Application is running and is properly configured."] = "TSM is missing important information from the TSM Desktop Application. Please ensure the TSM Desktop Application is running and is properly configured."
---[[Translation missing --]]
-L["TSM is not yet ready to establish a new sync connection. Please try again later."] = "TSM is not yet ready to establish a new sync connection. Please try again later."
---[[Translation missing --]]
+L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."] = "TSM sta attualmente ricostruendo la cache degli elementi, il che potrebbe causare cali di FPS e causare il mancato funzionamento completo di TSM fino al completamento del processo. Ciò è normale e in genere richiede meno di un minuto."
+L["TSM is missing important information from the TSM Desktop Application. Please ensure the TSM Desktop Application is running and is properly configured."] = "In TSM mancano informazioni importanti dall'applicazione desktop TSM. Verificare che l'applicazione desktop TSM sia in esecuzione e configurata correttamente."
+L["TSM is not yet ready to establish a new sync connection. Please try again later."] = "TSM non è ancora pronto per stabilire una nuova connessione di sincronizzazione. Per favore riprova più tardi."
 L["TSM Shopping"] = "TSM Shopping"
 L["TSM Sniper"] = "Cecchino di TSM"
---[[Translation missing --]]
-L["TSM TASK LIST"] = "TSM TASK LIST"
+L["TSM TASK LIST"] = "ELENCO ATTIVITÀ TSM"
 L["TSM Version Info:"] = "Info sulla Versione di TSM:"
---[[Translation missing --]]
-L["TSM will not undercut any players you add to your whitelist."] = "TSM will not undercut any players you add to your whitelist."
+L["TSM will not undercut any players you add to your whitelist."] = "TSM non undercutterà nessun giocatore che hai aggiunto alla whitelist."
 --[[Translation missing --]]
 L["TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"] = "TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"
---[[Translation missing --]]
 L["TSM4"] = "TSM4"
---[[Translation missing --]]
-L["TUJ 14-Day Price"] = "TUJ 14-Day Price"
---[[Translation missing --]]
-L["TUJ 3-Day Price"] = "TUJ 3-Day Price"
+L["TUJ 14-Day Price"] = "TUJ Prezzo 14 Giorni"
+L["TUJ 3-Day Price"] = "TUJ Prezzo 3 Giorni"
 --[[Translation missing --]]
 L["TUJ Global Mean"] = "TUJ Global Mean"
---[[Translation missing --]]
-L["TUJ Global Median"] = "TUJ Global Median"
+L["TUJ Global Median"] = "TUJ Media Globale"
 L["Type"] = "Tipo"
---[[Translation missing --]]
-L["Unbalanced parentheses."] = "Unbalanced parentheses."
+L["Unbalanced parentheses."] = "Parentesi sbilanciate."
 L["Uncollected Only"] = "Soltanto non collezionati"
---[[Translation missing --]]
-L["Undercut amount"] = "Undercut amount"
---[[Translation missing --]]
-L["Undercut by whitelisted player."] = "Undercut by whitelisted player."
---[[Translation missing --]]
-L["Undercutting blacklisted player."] = "Undercutting blacklisted player."
---[[Translation missing --]]
-L["Undercutting competition."] = "Undercutting competition."
---[[Translation missing --]]
-L["Ungrouped Items"] = "Ungrouped Items"
---[[Translation missing --]]
-L["Ungrouped Items in Bags"] = "Ungrouped Items in Bags"
---[[Translation missing --]]
-L["Unit Price"] = "Unit Price"
---[[Translation missing --]]
-L["Unknown Item"] = "Unknown Item"
---[[Translation missing --]]
-L["Unknown word (%s)."] = "Unknown word (%s)."
---[[Translation missing --]]
-L["Unlock Column Width"] = "Unlock Column Width"
---[[Translation missing --]]
-L["Unwrap Gift"] = "Unwrap Gift"
---[[Translation missing --]]
-L["Up"] = "Up"
---[[Translation missing --]]
-L["Up to date"] = "Up to date"
---[[Translation missing --]]
-L["Update existing macro"] = "Update existing macro"
---[[Translation missing --]]
-L["Updating"] = "Updating"
---[[Translation missing --]]
-L["Upgrades Only"] = "Upgrades Only"
---[[Translation missing --]]
-L["Usable Only"] = "Usable Only"
---[[Translation missing --]]
-L["Usage: /tsm price <Item Link> <Custom String>"] = "Usage: /tsm price <Item Link> <Custom String>"
---[[Translation missing --]]
-L["Use the settings below to control which lines are shown in tooltips."] = "Use the settings below to control which lines are shown in tooltips."
---[[Translation missing --]]
-L["Use this list to manage what cooldowns you'd like TSM to ignore from crafting."] = "Use this list to manage what cooldowns you'd like TSM to ignore from crafting."
---[[Translation missing --]]
-L["Use this list to manage what items you'd like TSM to ignore from destroying."] = "Use this list to manage what items you'd like TSM to ignore from destroying."
---[[Translation missing --]]
-L["Value"] = "Value"
---[[Translation missing --]]
-L["Value must be between %d and %d."] = "Value must be between %d and %d."
+L["Undercut amount"] = "Importo di Undercut"
+L["Undercut by whitelisted player."] = "Undercut da giocatore whitelistato."
+L["Undercutting blacklisted player."] = "Undercuttando giocatore blacklistato."
+L["Undercutting competition."] = "Competizione di Undercut."
+L["Ungrouped Items"] = "Oggetti non gruppati"
+L["Ungrouped Items in Bags"] = "Oggetti non gruppati nelle Borse"
+L["Unit Price"] = "Prezzo Unitario"
+L["Unknown Item"] = "Oggetto Sconosciuto"
+L["Unknown word (%s)."] = "Parola Sconosciuta (%s)."
+L["Unlock Column Width"] = "Sblocca Larghezza Colonna"
+L["Unwrap Gift"] = "Scartare il Regalo"
+L["Up"] = "Sopra"
+L["Up to date"] = "Aggiornato"
+L["Update existing macro"] = "Aggiorna macro esistente"
+L["Updating"] = "In aggiornamento"
+L["Upgrades Only"] = "Solo Upgrade"
+L["Usable Only"] = "Solo Utilizzabile"
+L["Usage: /tsm price <Item Link> <Custom String>"] = "Uso: /tsm price <Link Oggetto> <Stringa Personalizzata>"
+L["Use the settings below to control which lines are shown in tooltips."] = "Utilizzare le impostazioni seguenti per controllare quali linee vengono visualizzate nei suggerimenti."
+L["Use this list to manage what cooldowns you'd like TSM to ignore from crafting."] = "Usa questo elenco per gestire i tempi di recupero che desideri che TSM ignori dalla creazione."
+L["Use this list to manage what items you'd like TSM to ignore from destroying."] = "Usa questo elenco per gestire quali elementi desideri che TSM ignori dalla distruzione."
+L["Value"] = "Valore"
+L["Value must be between %d and %d."] = "Il valore deve essere compresso tra %d e %d."
 --[[Translation missing --]]
 L["Value Price Source"] = "Value Price Source"
 L["Values"] = "Valori"
@@ -11340,20 +10595,13 @@ L["Vendor Search"] = "Ricerca del venditore"
 L["Vendor Sell"] = "Vendor Sell"
 L["Vendor Sell Price"] = "Prezzo di vendita del venditore"
 L["Vendor sell price"] = "Prezzo di vendita del venditore"
---[[Translation missing --]]
-L["Vendoring"] = "Vendoring"
---[[Translation missing --]]
-L["Vendoring %s button"] = "Vendoring %s button"
---[[Translation missing --]]
-L["Vendoring operation"] = "Vendoring operation"
---[[Translation missing --]]
-L["Vendoring operations control selling to and buying from a vendor."] = "Vendoring operations control selling to and buying from a vendor."
---[[Translation missing --]]
-L["Warehousing"] = "Warehousing"
---[[Translation missing --]]
-L["Warehousing operation"] = "Warehousing operation"
---[[Translation missing --]]
-L["Warehousing operations control moving in and out of the bank."] = "Warehousing operations control moving in and out of the bank."
+L["Vendoring"] = "Vendita"
+L["Vendoring %s button"] = "Pulsante di vendita %s"
+L["Vendoring operation"] = "Operazione di vendita"
+L["Vendoring operations control selling to and buying from a vendor."] = "Le operazioni di vendita controllano la vendita e l'acquisto da un fornitore."
+L["Warehousing"] = "Magazzinaggio"
+L["Warehousing operation"] = "Operazione di magazzino"
+L["Warehousing operations control moving in and out of the bank."] = "Le operazioni di magazzino controllano l'entrata e l'uscita dalla banca."
 --[[Translation missing --]]
 L["Warehousing will move a max of %d of each item in this group keeping %d of each item back when bags > bank/gbank, %d of each item back when bank/gbank > bags."] = "Warehousing will move a max of %d of each item in this group keeping %d of each item back when bags > bank/gbank, %d of each item back when bank/gbank > bags."
 --[[Translation missing --]]
@@ -11386,10 +10634,8 @@ L["Warehousing will move all of the items in this group keeping %d of each item 
 L["Warehousing will move all of the items in this group."] = "Warehousing will move all of the items in this group."
 --[[Translation missing --]]
 L["Warehousing will move all of the items in this group. Restock will maintain %d items in your bags."] = "Warehousing will move all of the items in this group. Restock will maintain %d items in your bags."
---[[Translation missing --]]
-L["WARNING: The macro was too long, so was truncated to fit by WoW."] = "WARNING: The macro was too long, so was truncated to fit by WoW."
---[[Translation missing --]]
-L["WARNING: Your minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."] = "WARNING: Your minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."
+L["WARNING: The macro was too long, so was truncated to fit by WoW."] = "ATTENZIONE: La macro era troppo lunga, quindi è stata troncata per adattarsi da WoW."
+L["WARNING: Your minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."] = "ATTENZIONE: Il prezzo minimo per %s è inferiore al prezzo di vendita del venditore (tenendo conto del taglio AH). Considera l'idea di aumentare il prezzo minimo o di vendere l'articolo."
 --[[Translation missing --]]
 L["We've added new price sources to give you even more flexibility in how you use TSM to manage your gold making. You can now reference NumInventory, SaleRate, and much more throughout the addon. SmartAvgBuy has also been moved from an option to its own separate price source."] = "We've added new price sources to give you even more flexibility in how you use TSM to manage your gold making. You can now reference NumInventory, SaleRate, and much more throughout the addon. SmartAvgBuy has also been moved from an option to its own separate price source."
 L["When above maximum:"] = "Quando sopra il massimo:"
@@ -11406,8 +10652,7 @@ L["You can clear old Accounting data below to keep things running smoothly."] = 
 L["You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"] = "Puoi importare i gruppi incollando una stringa di import nel box sottostante. Le stringhe di import dei gruppi sono disponibili su: https://tradeskillmaster.com/group-maker/all"
 L["You can use the export string below to share this group with others."] = "Puoi usare la stringa di export di seguito per condividere questo gruppo con altri."
 L["You cannot use %s as part of this custom price."] = "Non puoi usare %s come prezzo personalizzato."
---[[Translation missing --]]
-L["You cannot use %s within convert() as part of this custom price."] = "You cannot use %s within convert() as part of this custom price."
+L["You cannot use %s within convert() as part of this custom price."] = "Non puoi utilizzare %s all'interno di convert() come parte di questo prezzo personalizzato?"
 L["You do not need to add \"%s\", alts are whitelisted automatically."] = "Non è necessario aggiungere \"%s\", gli alts vengono inseriti automaticamente nella whitelist."
 L["You don't know how to craft this item."] = "Non conosci come creare questo oggetto."
 L["You either already have at least your max restock quantity of this item or the number which would be queued is less than the min restock quantity."] = "Hai già almeno la quantità massima di rifornimento di questo oggetto o il numero che verrebbe messo in coda è inferiore alla quantità minima di rifornimento."
@@ -11416,7 +10661,7 @@ L["You won an auction for %sx%d for %s"] = "Hai vinto un'asta per %sx %d per %s"
 L["Your auction has not been undercut."] = "La tua asta non è stata undercuttata."
 L["Your auction of %s expired"] = "La tua asta di %s è scaduta"
 L["Your auction of %s has sold for %s!"] = "La tua asta di %s è stata venduta per %s!"
-L["Your Buyout"] = "Il tuo Acquisto"
+L["Your Buyout"] = "Il tuo prezzo d'Acquisto"
 L["Your craft value method for '%s' was invalid so it has been returned to the default. Details: %s"] = "Il tuo metodo di creazione del valore per '%s' non era valido, quindi è stato ripristinato il valore predefinito. Dettagli: %s"
 L["Your default craft value method was invalid so it has been returned to the default. Details: %s"] = "Il metodo predefinito del valore di creazione non era valido, quindi è stato ripristinato il valore predefinito. Dettagli: %s"
 L["Your max restock (%s) is invalid for %s."] = "Il tuo rifornimento massimo (%s) non è valido per %s."
@@ -11729,8 +10974,7 @@ L["Blacklisted players"] = "블랙리스트된 플레이어"
 L["Bought"] = "Bought"
 --[[Translation missing --]]
 L["Bought %d of %s from %s for %s"] = "Bought %d of %s from %s for %s"
---[[Translation missing --]]
-L["Bought %sx%d for %s from %s"] = "Bought %sx%d for %s from %s"
+L["Bought %sx%d for %s from %s"] = "%sx%d 아이템을 가격 %s 으로 %s 님으로부터 구매하였습니다."
 --[[Translation missing --]]
 L["Bound Actions"] = "Bound Actions"
 L["Browse"] = "경매 참관"
@@ -16697,7 +15941,7 @@ L["Custom price name %s is a reserved word which cannot be used."] = "Custom pri
 --[[Translation missing --]]
 L["Custom price names can only contain lowercase letters."] = "Custom price names can only contain lowercase letters."
 L["Custom Source"] = "自订来源"
-L["Custom source (%s)"] = "自订来源 (%s)"
+L["Custom source (%s)"] = "自定义源 (%s)"
 L["Custom Sources"] = "自定义源"
 --[[Translation missing --]]
 L["Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."] = "Custom sources allow you to create more advanced prices for use throughout the addon. You'll be able to use these new variables in the same way you can use the built-in price sources such as %s and %s."
@@ -18186,7 +17430,7 @@ L["Adjust some general settings."] = "Adjust some general settings."
 L["Adjust the settings below to set how groups attached to this operation will be auctioned."] = "調整以下設置以設置如何拍賣與該操作關聯的群組。"
 L["Adjust the settings below to set how groups attached to this operation will be cancelled."] = "調整以下設置以設置如何取消此操作的群組。"
 L["Adjust the settings below to set how groups attached to this operation will be priced."] = "調整以下設置以設置該操作附加群組的定價方式。"
-L["Advanced Item Search"] = "進階項目搜索"
+L["Advanced Item Search"] = "進階物品搜尋"
 L["AH"] = "拍賣場"
 --[[Translation missing --]]
 L["AH (Crafting)"] = "AH (Crafting)"
@@ -18217,7 +17461,7 @@ L["All Item Classes"] = "所有物品類別"
 --[[Translation missing --]]
 L["All Other"] = "All Other"
 L["All Players"] = "所有玩家"
-L["All Professions"] = "所有專業"
+L["All Professions"] = "所有專業技能"
 --[[Translation missing --]]
 L["All Rarites"] = "All Rarites"
 --[[Translation missing --]]
@@ -18737,14 +17981,12 @@ L["Enchant"] = "Enchant"
 L["Enchant Vellum"] = "附魔皮紙"
 --[[Translation missing --]]
 L["Ensure both characters are online and try again."] = "Ensure both characters are online and try again."
---[[Translation missing --]]
-L["Enter a value from %d - %d"] = "Enter a value from %d - %d"
+L["Enter a value from %d - %d"] = "輸入%d - %d的值"
 --[[Translation missing --]]
 L["Enter a value from %d - %d%%"] = "Enter a value from %d - %d%%"
 --[[Translation missing --]]
 L["Enter Filter"] = "Enter Filter"
---[[Translation missing --]]
-L["Enter Keyword"] = "Enter Keyword"
+L["Enter Keyword"] = "輸入關鍵字"
 --[[Translation missing --]]
 L["Enter name of logged-in character on other account"] = "Enter name of logged-in character on other account"
 --[[Translation missing --]]
@@ -18837,7 +18079,7 @@ L["Filter by keyword"] = "以關鍵字篩選"
 L["Filter by Keyword"] = "以關鍵字篩選"
 --[[Translation missing --]]
 L["Filter by Price Source"] = "Filter by Price Source"
-L["Filter by Profession"] = "以專業篩選"
+L["Filter by Profession"] = "以專業技能篩選"
 L["Filter group item lists based on the following price source"] = "以下列價格來源篩選群組物品清單"
 --[[Translation missing --]]
 L["Finding Selected Auction"] = "Finding Selected Auction"
@@ -18864,8 +18106,7 @@ L["Garrison"] = "Garrison"
 L["Gathering"] = "採集"
 --[[Translation missing --]]
 L["Gathering Search"] = "Gathering Search"
---[[Translation missing --]]
-L["Gathering Setup"] = "Gathering Setup"
+L["Gathering Setup"] = "採集設定"
 L["General Options"] = "常規選項"
 L["General Settings"] = "一般設定"
 --[[Translation missing --]]
@@ -19231,10 +18472,8 @@ L["Move all to Bags"] = "搬移全部到背包"
 L["Move Item"] = "移動物品"
 --[[Translation missing --]]
 L["Move Quantity Options"] = "Move Quantity Options"
---[[Translation missing --]]
-L["Move to bags"] = "Move to bags"
---[[Translation missing --]]
-L["Move to bank"] = "Move to bank"
+L["Move to bags"] = "移到背包"
+L["Move to bank"] = "移到銀行"
 --[[Translation missing --]]
 L["Move to Parent Group"] = "Move to Parent Group"
 --[[Translation missing --]]
@@ -19351,8 +18590,7 @@ L["NPC"] = "NPC"
 L["Number Owned"] = "Number Owned"
 --[[Translation missing --]]
 L["Offline"] = "Offline"
---[[Translation missing --]]
-L["On Cooldown"] = "On Cooldown"
+L["On Cooldown"] = "冷卻中"
 L["Only show craftable"] = "只顯示可製造物品"
 --[[Translation missing --]]
 L["Only show items with disenchant values above this price"] = "Only show items with disenchant values above this price"
@@ -19375,8 +18613,7 @@ L["Operation"] = "作業"
 L["Operations"] = "作業"
 --[[Translation missing --]]
 L["Options specific to Sniper are below."] = "Options specific to Sniper are below."
---[[Translation missing --]]
-L["Order Confirmation"] = "Order Confirmation"
+L["Order Confirmation"] = "訂單確認"
 --[[Translation missing --]]
 L["Orgrimmar"] = "Orgrimmar"
 --[[Translation missing --]]
@@ -19448,8 +18685,7 @@ L["Posts"] = "Posts"
 L["Potential"] = "Potential"
 --[[Translation missing --]]
 L["Prepare Bid"] = "Prepare Bid"
---[[Translation missing --]]
-L["Prepare Buy"] = "Prepare Buy"
+L["Prepare Buy"] = "準備購買"
 --[[Translation missing --]]
 L["Preparing..."] = "Preparing..."
 --[[Translation missing --]]
@@ -19462,8 +18698,7 @@ L["Prints out the version numbers of all installed modules"] = "Prints out the v
 L["Prints the slash command help listing"] = "Prints the slash command help listing"
 --[[Translation missing --]]
 L["Processing scan results..."] = "Processing scan results..."
---[[Translation missing --]]
-L["Profession"] = "Profession"
+L["Profession"] = "專業技能"
 --[[Translation missing --]]
 L["Profession Info"] = "Profession Info"
 --[[Translation missing --]]
@@ -19694,8 +18929,7 @@ L["Scanning (%d Items)"] = "Scanning (%d Items)"
 L["Scroll wheel direction"] = "Scroll wheel direction"
 --[[Translation missing --]]
 L["Scroll Wheel Options"] = "Scroll Wheel Options"
---[[Translation missing --]]
-L["Search"] = "Search"
+L["Search"] = "搜尋"
 L["Search %s operations"] = "搜尋 %s 作業"
 --[[Translation missing --]]
 L["Search Bags"] = "Search Bags"
@@ -19707,8 +18941,7 @@ L["Search Operations"] = "搜尋作業"
 L["Search Patterns"] = "搜尋品項"
 --[[Translation missing --]]
 L["Search Results"] = "Search Results"
---[[Translation missing --]]
-L["Search the auction house"] = "Search the auction house"
+L["Search the auction house"] = "搜尋拍賣場"
 L["Search Vendor"] = "搜尋賣主"
 --[[Translation missing --]]
 L["Select / Deselect All Groups"] = "Select / Deselect All Groups"
@@ -19922,8 +19155,7 @@ L["Subject"] = "主題"
 L["Subject & Description added"] = "Subject & Description added"
 --[[Translation missing --]]
 L["Successfully sent your '%s' profile to %s!"] = "Successfully sent your '%s' profile to %s!"
---[[Translation missing --]]
-L["Supported range: %d - %d"] = "Supported range: %d - %d"
+L["Supported range: %d - %d"] = "支援範圍: %d - %d"
 L["Supported value range: %d - %d"] = "支援數值範圍: %d - %d"
 --[[Translation missing --]]
 L["Swamp of Sorrows"] = "Swamp of Sorrows"
@@ -20060,8 +19292,7 @@ L["Total Inventory Quantity"] = "Total Inventory Quantity"
 --[[Translation missing --]]
 L["Total Items"] = "Total Items"
 L["Total Postage"] = "郵資"
---[[Translation missing --]]
-L["Total Price"] = "Total Price"
+L["Total Price"] = "總價"
 --[[Translation missing --]]
 L["Total Prices:"] = "Total Prices:"
 --[[Translation missing --]]
@@ -20095,8 +19326,7 @@ L["TSM does not have recent AuctionDB data. Would you like to run a full AH scan
 L["TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."] = "TSM doesn't currently have any AuctionDB pricing data for your realm. We recommend you download the TSM Desktop Application from %s to automatically update your AuctionDB data (and auto-backup your TSM settings)."
 --[[Translation missing --]]
 L["TSM failed to scan some auctions. Please rerun the scan."] = "TSM failed to scan some auctions. Please rerun the scan."
---[[Translation missing --]]
-L["TSM General Info"] = "TSM General Info"
+L["TSM General Info"] = "TSM 一般資訊"
 L["TSM Groups"] = "TSM 群組"
 --[[Translation missing --]]
 L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."] = "TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."
@@ -20137,8 +19367,7 @@ L["Undercutting blacklisted player."] = "Undercutting blacklisted player."
 L["Undercutting competition."] = "削價競爭"
 L["Ungrouped Items"] = "未被群組的物品"
 L["Ungrouped Items in Bags"] = "背包裡未被群組的物品"
---[[Translation missing --]]
-L["Unit Price"] = "Unit Price"
+L["Unit Price"] = "單價"
 --[[Translation missing --]]
 L["Unknown Item"] = "Unknown Item"
 --[[Translation missing --]]
@@ -20178,8 +19407,7 @@ L["Vendor"] = "供應商"
 L["Vendor Buy Price"] = "買價"
 --[[Translation missing --]]
 L["Vendor buy price"] = "Vendor buy price"
---[[Translation missing --]]
-L["Vendor Search"] = "Vendor Search"
+L["Vendor Search"] = "供應商搜尋"
 --[[Translation missing --]]
 L["Vendor Sell"] = "Vendor Sell"
 L["Vendor Sell Price"] = "賣價"

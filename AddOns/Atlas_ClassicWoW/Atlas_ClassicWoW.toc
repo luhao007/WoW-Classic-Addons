@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.47.02.11304.00
+## Version: v1.49.00
 ## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Classic WoW]|r
@@ -8,7 +8,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0经典旧世|r
 ## Notes-zhCN: 经典旧世副本地图
 
-## X-Date: 2020-06-20T17:53:35Z
+## X-Date: 2021-05-20T15:17:09Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail dot com
 ## X-Website: http://www.atlasmod.com

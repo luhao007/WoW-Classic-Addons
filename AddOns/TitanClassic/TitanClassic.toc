@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Titan Panel Development Team
 ## Version: 1.2.8.11306
 ## OptionalDeps: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu

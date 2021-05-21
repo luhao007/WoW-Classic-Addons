@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Kiatra - github.com/Kiatra/BlizzMove/
-## Version: v3.0.12
+## Version: v3.0.18
 ## OptionalDeps: Ace3
 ## SavedVariables: BlizzMoveDB
 
@@ -10,9 +10,12 @@
 ## Notes-zhCN: 移动内置的各种窗口
 
 ## X-WoWI-ID: 23875
+## X-Curse-Project-ID: 17809
 ## X-Embeds: Ace3
 
 # Libraries
+TaintLess.xml
+
 # Add-On
 BlizzMove.lua
 BlizzMoveAPI.lua

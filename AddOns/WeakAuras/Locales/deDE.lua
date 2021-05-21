@@ -588,6 +588,8 @@ L["HasPet"] = "mit aktivem Begleiter"
 L["Haste (%)"] = "Tempo (%)"
 L["Haste Rating"] = "Tempowertung"
 L["Heal"] = "Heilen"
+--[[Translation missing --]]
+L["Heal Absorbed"] = "Heal Absorbed"
 L["Health"] = "Lebenspunkte"
 L["Health (%)"] = "Lebenspunkte (%)"
 --[[Translation missing --]]
@@ -927,6 +929,8 @@ L["Orientation"] = "Ausrichtung"
 --[[Translation missing --]]
 L["Ossirian the Unscarred"] = "Ossirian the Unscarred"
 --[[Translation missing --]]
+L["Other"] = "Other"
+--[[Translation missing --]]
 L["Other Addons"] = "Other Addons"
 --[[Translation missing --]]
 L["Other Events"] = "Other Events"
@@ -1165,6 +1169,8 @@ L["Separator"] = "Separator"
 --[[Translation missing --]]
 L["Set IDs can be found on websites such as classic.wowhead.com/item-sets"] = "Set IDs can be found on websites such as classic.wowhead.com/item-sets"
 --[[Translation missing --]]
+L["Set IDs can be found on websites such as tbc.wowhead.com/item-sets"] = "Set IDs can be found on websites such as tbc.wowhead.com/item-sets"
+--[[Translation missing --]]
 L["Set IDs can be found on websites such as wowhead.com/item-sets"] = "Set IDs can be found on websites such as wowhead.com/item-sets"
 L["Set Maximum Progress"] = "Max. Fortschritt"
 L["Set Minimum Progress"] = "Min. Fortschritt"
@@ -1238,7 +1244,6 @@ L["Source Reaction"] = "Source Reaction"
 L["Source Unit"] = "Quelleinheit"
 --[[Translation missing --]]
 L["Source Unit Name/Realm"] = "Source Unit Name/Realm"
-L["Source: "] = "Quelle:"
 --[[Translation missing --]]
 L["Space"] = "Space"
 L["Spacing"] = "Abstand"

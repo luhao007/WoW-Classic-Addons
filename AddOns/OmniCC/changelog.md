@@ -1,5 +1,13 @@
 # OmniCC Changelog
 
+## 9.0.10
+
+* Update TOCs for Burning Crusade Classic
+
+## 9.0.9
+
+* Update TOCs for 1.13.7
+
 ## 9.0.8
 
 * The cooldown opacity setting is now only applied when set at an opacity value under 100%

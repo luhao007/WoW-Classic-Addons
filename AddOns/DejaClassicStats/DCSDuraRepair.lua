@@ -32,7 +32,7 @@ local DCSITEM_SLOT_NECK_BACK_SHIRT = {
 local DCSITEM_TWO_HANDED_WEAPONS = {
 	"Bows","Crossbows","Guns","Fishing Poles","Polearms","Staves","Two-Handed Axes","Two-Handed Maces","Two-Handed Swords",
 }
-	
+
 --local duraMean
 local duraTotal
 local duraMaxTotal
@@ -46,13 +46,13 @@ local duraMeanFS = DCS_CharacterShirtSlot:CreateFontString("FontString","OVERLAY
 	duraMeanFS:SetFont("Fonts\\FRIZQT__.TTF", 15, "THINOUTLINE")
 	duraMeanFS:SetFormattedText("")
 
-local duraMeanTexture = DCS_CharacterShirtSlot:CreateTexture(nil,"ARTWORK") --bar for average durability on shirt 
+local duraMeanTexture = DCS_CharacterShirtSlot:CreateTexture(nil,"ARTWORK") --bar for average durability on shirt
 
 local duraDurabilityFrameFS = DurabilityFrame:CreateFontString("FontString","OVERLAY","GameTooltipText")
 	duraDurabilityFrameFS:SetPoint("CENTER",DurabilityFrame,"CENTER",0,0)
 	duraDurabilityFrameFS:SetFont("Fonts\\FRIZQT__.TTF", 16, "THINOUTLINE")
 	duraDurabilityFrameFS:SetFormattedText("")
-	
+
 for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
 	v.duratexture = v:CreateTexture(nil,"ARTWORK")
 
@@ -61,13 +61,13 @@ for _, v in ipairs(DCSITEM_SLOT_FRAMES) do
 
     v.itemrepair = v:CreateFontString("FontString","OVERLAY","GameTooltipText")
     v.itemrepair:SetFormattedText("")
-	
+
     v.ilevel = v:CreateFontString("FontString","OVERLAY","GameTooltipText")
     v.ilevel:SetFormattedText("")
 
     v.enchant = v:CreateFontString("FontString","OVERLAY","GameTooltipText")
 	v.enchant:SetFormattedText("")
-	
+
 	v.itemcolor = v:CreateTexture(nil,"ARTWORK")
 	v.itemcolor:SetAllPoints(v)
 
@@ -92,7 +92,7 @@ local function DCS_Set_Item_Quality_Color_Outlines()
 		else
 			local qualityBordersChecked = gdbprivate.gdb.gdbdefaults.DejaClassicStatsItemQualityBorders.ItemQualityBordersChecked
 			local qualityBordersAlpha
-			if qualityBordersChecked then 
+			if qualityBordersChecked then
 				qualityBordersAlpha = gdbprivate.gdb.gdbdefaults.QCOA_SetSliderValue.QCOA_SliderValue
 			else
 				qualityBordersAlpha = 0
@@ -106,7 +106,7 @@ local function DCS_Set_Item_Quality_Color_Outlines()
 	end
 end
 
-	
+
 gdbprivate.gdbdefaults.gdbdefaults.QCOA_SetSliderValue = {
 	QCOA_SliderValue = 0.75,
 }
@@ -119,7 +119,7 @@ local QCOA_Slider = CreateFrame("Slider", "QCOA_Slider", DejaClassicStatsPanel, 
 	QCOA_Slider:SetHeight(10)
 	QCOA_Slider:SetOrientation('HORIZONTAL')
 	QCOA_Slider:SetMinMaxValues(0.25, 1.0)
-	QCOA_Slider.minValue, QCOA_Slider.maxValue = QCOA_Slider:GetMinMaxValues() 
+	QCOA_Slider.minValue, QCOA_Slider.maxValue = QCOA_Slider:GetMinMaxValues()
 	QCOA_Slider:SetValueStep(0.05)
 	QCOA_Slider:SetObeyStepOnDrag(true)
 
@@ -129,7 +129,7 @@ local QCOA_Slider = CreateFrame("Slider", "QCOA_Slider", DejaClassicStatsPanel, 
 	getglobal(QCOA_Slider:GetName() .. 'High'):SetText(QCOA_Slider.maxValue); --Sets the right-side slider text (default is "High").
 
 	QCOA_Slider:Show()
-			
+
 	QCOA_Slider:SetScript("OnEvent", function(self, event, arg1)
 		if event == "PLAYER_LOGIN" then
 		local slideValue = gdbprivate.gdb.gdbdefaults.QCOA_SetSliderValue.QCOA_SliderValue
@@ -138,8 +138,8 @@ local QCOA_Slider = CreateFrame("Slider", "QCOA_Slider", DejaClassicStatsPanel, 
 		end
 	end)
 
-	QCOA_Slider:SetScript("OnValueChanged", function(self, value) 
-	local slideValue = QCOA_Slider:GetValue()			
+	QCOA_Slider:SetScript("OnValueChanged", function(self, value)
+	local slideValue = QCOA_Slider:GetValue()
 		getglobal(QCOA_Slider:GetName() .. 'Text'):SetFormattedText(L["Item Quality Glow"].." = (%.2f)", (slideValue)); --Sets the "title" text (top-centre of slider).
 		gdbprivate.gdb.gdbdefaults.QCOA_SetSliderValue.QCOA_SliderValue = slideValue
 		if PaperDollFrame:IsVisible() then
@@ -316,7 +316,7 @@ local function DCS_Set_Dura_Item_Positions()
 		v.ilevel:ClearAllPoints()
 		v.enchant:ClearAllPoints()
 		if showitemlevel then
-			if showdura then 
+			if showdura then
 				if showrepair then
 					puttop(v.durability,v,11)
 					putbottom(v.itemrepair,v,11)
@@ -346,7 +346,7 @@ local function DCS_Set_Dura_Item_Positions()
 				end
 			end
 		else
-			if showdura then 
+			if showdura then
 				if showrepair then
 					puttop(v.durability,v,11)
 					putbottom(v.itemrepair,v,11)
@@ -388,16 +388,16 @@ function DCS_Mean_DurabilityCalc()
 		-- --------------------------
 		if durCur == nil then durCur = 0 end
 		if durMax == nil then durMax = 0 end
-		
+
 		duraTotal = duraTotal + durCur
 		duraMaxTotal = duraMaxTotal + durMax
 	end
-	if duraMaxTotal == 0 then 
+	if duraMaxTotal == 0 then
 		duraMaxTotal = 1
 		duraTotal = 1 --if nothing to break then durability should be 100%
 	end --puting outside of for loop
 	addon.duraMean = ((duraTotal/duraMaxTotal)*100)
-end		
+end
 
 -----------------------------------
 -- Durability Frame Mean Display --
@@ -486,7 +486,7 @@ end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowDuraChecked = {
 	ShowDuraSetChecked = false,
-}	
+}
 
 local DCS_ShowDuraCheck = CreateFrame("CheckButton", "DCS_ShowDuraCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowDuraCheck:RegisterEvent("PLAYER_LOGIN")
@@ -586,13 +586,13 @@ local function DCS_Durability_Bar_Textures()
 		    v.duratexture:Show()
 		end
 	end
-	if duraMaxTotal == 0 then 
+	if duraMaxTotal == 0 then
 		duraMaxTotal = 1
 		duraTotal = 1 --if nothing to break then durability should be 100%
 	end
 	local duraMean = duraTotal/duraMaxTotal
 	duraMeanTexture:SetSize(4, 31*duraMean)
-	if duraMean == 1 then 
+	if duraMean == 1 then
 		duraMeanTexture:SetColorTexture(0, 0, 0, 0)
 	elseif duraMean < 0.10 then
 		--duraMeanTexture:SetColorTexture(1, 0, 0)
@@ -607,7 +607,7 @@ local function DCS_Durability_Bar_Textures()
 		duraMeanTexture:SetColorTexture(0.753, 0.753, 0.753)
 	end
 	duraMeanTexture:ClearAllPoints()
-	if duraMean > 0.10 then 
+	if duraMean > 0.10 then
 		duraMeanTexture:SetPoint("BOTTOMLEFT",DCS_CharacterShirtSlot,"BOTTOMRIGHT",1,3)
 	else --if duraMean <= 0.10 then -- no need to check, can remain as comment for easier understanding
 		duraMeanTexture:SetAllPoints(DCS_CharacterShirtSlot)
@@ -616,7 +616,7 @@ end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowDuraTextureChecked = {
 	ShowDuraTextureSetChecked = true,
-}	
+}
 
 local DCS_ShowDuraTextureCheck = CreateFrame("CheckButton", "DCS_ShowDuraTextureCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowDuraTextureCheck:RegisterEvent("PLAYER_LOGIN")
@@ -624,10 +624,10 @@ local DCS_ShowDuraTextureCheck = CreateFrame("CheckButton", "DCS_ShowDuraTexture
 	DCS_ShowDuraTextureCheck:RegisterEvent("PLAYER_EQUIPMENT_CHANGED") --seems like UPDATE_INVENTORY_DURABILITY doesn't get triggered by equipping an item with the same name
 	DCS_ShowDuraTextureCheck:ClearAllPoints()
 	DCS_ShowDuraTextureCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -35)
-	DCS_ShowDuraTextureCheck:SetScale(1) 
+	DCS_ShowDuraTextureCheck:SetScale(1)
 	DCS_ShowDuraTextureCheck.tooltipText = L["Displays a durability bar next to each item."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowDuraTextureCheck:GetName() .. "Text"]:SetText(L["Durability Bars"])
-	
+
 DCS_ShowDuraTextureCheck:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		showtextures = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowDuraTextureChecked.ShowDuraTextureSetChecked
@@ -699,7 +699,7 @@ end)
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowAverageRepairChecked = {
 	ShowAverageRepairSetChecked = true,
-}	
+}
 
 local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDuraCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowAverageDuraCheck:RegisterEvent("PLAYER_LOGIN")
@@ -710,7 +710,7 @@ local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDura
 	DCS_ShowAverageDuraCheck:SetScale(1)
 	DCS_ShowAverageDuraCheck.tooltipText = L["Displays average item durability on the character shirt slot and durability frames."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowAverageDuraCheck:GetName() .. "Text"]:SetText(L["Average Durability"])
-	
+
 	DCS_ShowAverageDuraCheck:SetScript("OnEvent", function(self, event, ...)
 		if event == "PLAYER_LOGIN" then
 			showavgdur = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowAverageRepairChecked.ShowAverageRepairSetChecked
@@ -745,7 +745,7 @@ local DCS_ShowAverageDuraCheck = CreateFrame("CheckButton", "DCS_ShowAverageDura
 			duraDurabilityFrameFS:Hide()
 		end
 	end)
-	
+
 ----------------------
 -- Item Repair Cost --
 ----------------------
@@ -776,7 +776,7 @@ end
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowItemRepairChecked = {
 	ShowItemRepairSetChecked = false,
-}	
+}
 
 local DCS_ShowItemRepairCheck = CreateFrame("CheckButton", "DCS_ShowItemRepairCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
 	DCS_ShowItemRepairCheck:RegisterEvent("PLAYER_LOGIN")
@@ -789,7 +789,7 @@ local DCS_ShowItemRepairCheck = CreateFrame("CheckButton", "DCS_ShowItemRepairCh
 	DCS_ShowItemRepairCheck:SetScale(1)
 	DCS_ShowItemRepairCheck.tooltipText = L["Displays each equipped item's repair cost."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowItemRepairCheck:GetName() .. "Text"]:SetText(L["Item Repair Cost"])
-	
+
 DCS_ShowItemRepairCheck:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		-- print(self:GetChecked())
@@ -877,7 +877,7 @@ local DCS_ShowItemLevelCheck = CreateFrame("CheckButton", "DCS_ShowItemLevelChec
 	DCS_ShowItemLevelCheck:SetScale(1)
 	DCS_ShowItemLevelCheck.tooltipText = L["Displays the item level of each equipped item. Caveat; Item level is relatively meaningless in Classic."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowItemLevelCheck:GetName() .. "Text"]:SetText(L["Item Level"])
-	
+
 DCS_ShowItemLevelCheck:SetScript("OnEvent", function(self, event, ...)
 	showitemlevel = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowItemLevelChecked.ShowItemLevelSetChecked
 	self:SetChecked(showitemlevel)
@@ -900,7 +900,7 @@ end)
 
 local DCS_ShowItemLevelChange = CreateFrame("Frame", "DCS_ShowItemLevelChange", UIParent)
 	DCS_ShowItemLevelChange:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	
+
 DCS_ShowItemLevelChange:SetScript("OnEvent", function(self, event, ...)
 	if PaperDollFrame:IsVisible() then
 		--print("PaperDollFrame:IsVisible")
@@ -981,7 +981,7 @@ end)
 
 -- local DCS_SimpleItemColor = CreateFrame("Frame", "DCS_SimpleItemColor", UIParent) --Needed? Doesn't seem so.
 -- 	DCS_SimpleItemColor:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	
+
 -- 	DCS_SimpleItemColor:SetScript("OnEvent", function(self, event, ...)
 -- 		if PaperDollFrame:IsVisible() then
 -- 			paintblack()
@@ -2462,7 +2462,7 @@ local DCS_ENCHANT_IDS = {
 	[2823] = "+$i Critical Strike",
 	[2825] = "+$i Attack Power",
 	[2826] = "+$i Block",
-	[3726] = "+$i Haste",		
+	[3726] = "+$i Haste",
 }
 
 local DCS_ABBREV_ENCHANT_IDS = {
@@ -3939,7 +3939,7 @@ local DCS_ABBREV_ENCHANT_IDS = {
 	[2823] = "+$i Crit",
 	[2825] = "+$i AP",
 	[2826] = "+$i Block",
-	[3726] = "+$i Haste",		
+	[3726] = "+$i Haste",
 }
 
 --------------------------
@@ -3964,7 +3964,7 @@ local function DCS_Item_Enchant_GetText()
 				"|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
 				-- print(Enchant) --Enchant ID...because, ya know, let's not be logical, Blizzard...
 				-- if (slot == CharacterHandsSlot) then
-				-- 	if 
+				-- 	if
 				if (Enchant == "2523") then
 					addon.hasBiznicks = true
 				end
@@ -3999,7 +3999,7 @@ DCS_ShowEnchantCheck:ClearAllPoints()
 	DCS_ShowEnchantCheck:SetScale(1)
 	DCS_ShowEnchantCheck.tooltipText = L["Displays each equipped item's enchantment."].."\n\n\"Enchantment? Enchantment!\" -Sandal Feddic" --Creates a tooltip on mouseover.
 	_G[DCS_ShowEnchantCheck:GetName() .. "Text"]:SetText(L["Enchants"])
-	
+
 DCS_ShowEnchantCheck:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		showenchant = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowEnchantChecked.ShowEnchantSetChecked
@@ -4033,7 +4033,7 @@ DCS_AbbrevEnchantsCheck:ClearAllPoints()
 	DCS_AbbrevEnchantsCheck:SetScale(1)
 	DCS_AbbrevEnchantsCheck.tooltipText = L["Displays an abbreviated label of each equipped item's enchantment."] --Creates a tooltip on mouseover.
 	_G[DCS_AbbrevEnchantsCheck:GetName() .. "Text"]:SetText(L["Abbreviated Enchant Labels"])
-	
+
 DCS_AbbrevEnchantsCheck:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		abbrevEnchants = gdbprivate.gdb.gdbdefaults.DejaClassicStatsAbbrevEnchantsChecked.AbbrevEnchantsSetChecked
@@ -4123,7 +4123,7 @@ end)
 -- itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType,
 -- itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice =
 -- 	GetItemInfo(itemID or "itemString" or "itemName" or "itemLink")
-	
+
 -- local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
 -- print()
 -- local duration = tempEnchantID[mainHandEnchantID] or 3600

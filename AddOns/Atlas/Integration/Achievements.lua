@@ -1,10 +1,10 @@
--- $Id: Achievements.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Achievements.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -34,7 +34,15 @@ local bit, string = _G.bit, _G.string
 local format = string.format
 local GetAchievementInfo, GetAchievementNumCriteria, GetAchievementCriteriaInfo, GetAchievementLink = _G.GetAchievementInfo, _G.GetAchievementNumCriteria, _G.GetAchievementCriteriaInfo, _G.GetAchievementLink
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
 
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
@@ -45,7 +53,7 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 
 function addon:AchievementButtonUpdate(button, achievementID)
-	if WoWClassic then return end
+	if (WoWClassicEra or WoWClassicTBC) then return end
 	button.achievementID = achievementID;
 	button.link = GetAchievementLink(achievementID) or nil;
 	-- id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID or categoryID, index)
@@ -93,7 +101,7 @@ function addon:AchievementButtonUpdate(button, achievementID)
 end
 
 function addon:OpenAchievement(achievementID)
-	if WoWClassic then return end
+	if (WoWClassicEra or WoWClassicTBC) then return end
 	if not achievementID then return end
 	
 	if not IsAddOnLoaded("Blizzard_AchievementUI") then

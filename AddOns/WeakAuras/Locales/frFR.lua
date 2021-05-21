@@ -532,6 +532,8 @@ L["HasPet"] = "Avoir un familier (vivant)"
 L["Haste (%)"] = "Hâte (%)"
 L["Haste Rating"] = "Score de hâte"
 L["Heal"] = "Soin"
+--[[Translation missing --]]
+L["Heal Absorbed"] = "Heal Absorbed"
 L["Health"] = "Vie"
 L["Health (%)"] = "Vie (%)"
 --[[Translation missing --]]
@@ -832,6 +834,8 @@ L["Orbit"] = "Orbite"
 L["Orientation"] = "Orientation"
 --[[Translation missing --]]
 L["Ossirian the Unscarred"] = "Ossirian the Unscarred"
+--[[Translation missing --]]
+L["Other"] = "Other"
 L["Other Addons"] = "Autre Addons"
 L["Other Events"] = "Autre Événements"
 --[[Translation missing --]]
@@ -1040,6 +1044,8 @@ L["Separator"] = "Séparateur"
 --[[Translation missing --]]
 L["Set IDs can be found on websites such as classic.wowhead.com/item-sets"] = "Set IDs can be found on websites such as classic.wowhead.com/item-sets"
 --[[Translation missing --]]
+L["Set IDs can be found on websites such as tbc.wowhead.com/item-sets"] = "Set IDs can be found on websites such as tbc.wowhead.com/item-sets"
+--[[Translation missing --]]
 L["Set IDs can be found on websites such as wowhead.com/item-sets"] = "Set IDs can be found on websites such as wowhead.com/item-sets"
 L["Set Maximum Progress"] = "Progression maximale"
 L["Set Minimum Progress"] = "Progression minimum"
@@ -1108,7 +1114,6 @@ L["Source Reaction"] = "Source Reaction"
 L["Source Unit"] = "Unité source"
 --[[Translation missing --]]
 L["Source Unit Name/Realm"] = "Source Unit Name/Realm"
-L["Source: "] = "Source :"
 L["Space"] = "Ecart"
 L["Spacing"] = "Ecartement"
 L["Spark"] = "Étincelle"

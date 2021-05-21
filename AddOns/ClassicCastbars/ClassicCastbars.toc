@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Wardz
-## Version: v1.3.21
+## Version: v1.3.23
 ## SavedVariables: ClassicCastbarsDB
 ## SavedVariablesPerCharacter: ClassicCastbarsCharDB
 
@@ -11,6 +11,7 @@
 
 ## X-Curse-Project-ID: 322865
 ## X-WoWI-ID: 24925
+## X-Wago-ID: vEGPdkG1
 
 core/PoolManager.lua
 core/AnchorManager.lua

@@ -254,7 +254,7 @@ function private.CreateButtonOnClick(button)
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", BINDING_NAME, bindingMode)
 	end
 
-	if TSM.IsWowClassic() then
+	if TSM.IsWowVanillaClassic() then
 		AttemptToSaveBindings(CHARACTER_BINDING_SET)
 	else
 		SaveBindings(CHARACTER_BINDING_SET)

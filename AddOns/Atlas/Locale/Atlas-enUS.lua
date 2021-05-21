@@ -1,10 +1,10 @@
--- $Id: Atlas-enUS.lua 342 2020-01-05 14:09:32Z arith $
+-- $Id: Atlas-enUS.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -86,6 +86,7 @@ L["ATLAS_DDL_EXPANSION_LEGION1"] = "Legion Dungeons"
 L["ATLAS_DDL_EXPANSION_LEGION2"] = "Legion Raids"
 L["ATLAS_DDL_EXPANSION_MOP"] = "Mists of Pandaria Instances"
 L["ATLAS_DDL_EXPANSION_OLD"] = "Old World Instances"
+L["ATLAS_DDL_EXPANSION_SHADOWLANDS"] = "Shadowlands Instances"
 L["ATLAS_DDL_EXPANSION_WOD"] = "Warlords of Draenor Instances"
 L["ATLAS_DDL_EXPANSION_WOTLK"] = "Wrath of the Lich King Instances"
 L["ATLAS_DDL_LEVEL"] = "Level"
@@ -97,6 +98,7 @@ L["ATLAS_DDL_LEVEL_120PLUS"] = "Instances Level 120+"
 L["ATLAS_DDL_LEVEL_120TO130"] = "Instances Level 120-130"
 L["ATLAS_DDL_LEVEL_130PLUS"] = "Instances Level 130+"
 L["ATLAS_DDL_LEVEL_45TO60"] = "Instances Level 45-60"
+L["ATLAS_DDL_LEVEL_60PLUS"] = "Instances Level 60+"
 L["ATLAS_DDL_LEVEL_60TO70"] = "Instances Level 60-70"
 L["ATLAS_DDL_LEVEL_70TO80"] = "Instances Level 70-80"
 L["ATLAS_DDL_LEVEL_80TO85"] = "Instances Level 80-85"

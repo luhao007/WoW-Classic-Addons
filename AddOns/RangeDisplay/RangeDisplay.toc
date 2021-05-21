@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: mitch0
 ## Version: v4.9.3
 ## OptionalDeps: LibStub, CallbackHandler-1.0, LibRangeCheck-2.0, Ace3, LibSharedMedia-3.0, LibDualSpec-1.0

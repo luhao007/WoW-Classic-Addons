@@ -1,10 +1,10 @@
--- $Id: Atlas_ClassicWoW-deDE.lua 55 2020-01-14 15:00:30Z arith $
+-- $Id: Atlas_ClassicWoW-deDE.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -179,7 +179,7 @@ L["Dustwraith"] = "Karaburan"
 L["Earthcaller Halmgar"] = "Erdenrufer Halmgar"
 L["Ebonroc"] = "Schattenschwinge"
 L["Ebru <Disciple of Naralex>"] = "Ebru <Jüngerin von Naralex>"
-L["Edge of Madness"] = "Abgrund des Wahnsinns"
+L["Edge of Madness"] = "Rand des Wahnsinns"
 L["Edwin VanCleef"] = "Edwin VanCleef"
 L["Elder Farwhisper"] = "Urahne Fernwisper"
 L["Elder Mistwalker"] = "Urahnin Nebelgänger"
@@ -217,7 +217,7 @@ L["Flamegor"] = "Flammenmaul"
 L["Foreman Thistlenettle"] = "Großknecht Thistlenettle"
 L["Four Horsemen Chest"] = "Truhe der Vier Reiter"
 L["Four Kaldorei Elites"] = "Vier Elitesoldaten der Kaldorei"
-L["Franclorn Forgewright"] = "Franclorn Schmiedevater"
+L["Franclorn Forgewright"] = "Franclorn Forgewright"
 L["Fras Siabi"] = "Fras Siabi"
 L["Fras Siabi's Postbox"] = "Fras Siabis Briefkasten"
 L["Frostwyrm Lair"] = "Frostwyrm Hort"
@@ -248,7 +248,7 @@ L["Gomora the Bloodletter"] = "Gomora der Blutvergießer"
 L["Goraluk Anvilcrack"] = "Goraluk Hammerbruch"
 L["Gorosh the Dervish"] = "Gorosh der Derwisch"
 L["Gothik the Harvester"] = "Gothik der Seelenjäger"
-L["Grand Crusader Dathrohan"] = "Oberster Kreuzfahrer Dathrohan"
+L["Grand Crusader Dathrohan"] = "Oberster Kreuzzügler Dathrohan"
 L["Grand Widow Faerlina"] = "Großwitwe Faerlina"
 L["Graveyard"] = "Friedhof"
 L["Gri'lek"] = "Gri'lek"
@@ -426,7 +426,7 @@ L["Murta Grimgut"] = "Murta Bauchgrimm"
 L["Mutanus the Devourer"] = "Mutanus der Verschlinger"
 L["Muyoh <Disciple of Naralex>"] = "Muyoh <Jünger von Naralex>"
 L["Nalpak <Disciple of Naralex>"] = "Nalpak <Jünger von Naralex>"
-L["Namdo Bizzfizzle <Engineering Supplies>"] = "Namdo Blitzzischel <Ingenieursbedarf>"
+L["Namdo Bizzfizzle <Engineering Supplies>"] = "Namdo Bizzfizzle <Ingenieursbedarf>"
 L["Naralex"] = "Naralex"
 L["Nefarian"] = "Nefarian"
 L["Nekrum Gutchewer"] = "Nekrum der Ausweider"
@@ -506,14 +506,14 @@ L["Roughshod Pike"] = "Beschlagene Pike"
 L["Ruuzlu"] = "Ruuzlu"
 L["Safe Room"] = "Sicherer Raum"
 L["Sandarr Dunereaver"] = "Sandarr der Wüstenräuber"
-L["Sandfury Executioner"] = "Henker der Sandwüter"
+L["Sandfury Executioner"] = "Henker der Sandfury"
 L["Sapphiron"] = "Saphiron"
 L["Scarlet Commander Mograine"] = "Scharlachroter Kommandant Mograine"
 L["Scarshield Quartermaster <Scarshield Legion>"] = "Rüstmeister der Schmetterschilde <Schmetterschildlegion>"
 L["Schematic: Field Repair Bot 74A"] = "Bauplan: Feldreparaturbot 74A"
 L["Scholo"] = "Scholo"
 L["Scout Cage"] = "Späherkäfig"
-L["Secret Chest"] = "Geheime Truhe"
+L["Secret Chest"] = "Alte Schatztruhe"
 L["Sentinel Aluwyn"] = "Schildwache Aluwyn"
 L["Sergeant Bly"] = "Sergeant Bly"
 L["SFK"] = "BSF"

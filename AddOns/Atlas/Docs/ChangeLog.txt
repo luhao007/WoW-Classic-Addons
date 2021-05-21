@@ -1,8 +1,8 @@
-$Id: ChangeLog.txt 354 2020-06-20 06:50:50Z arith $
+$Id: ChangeLog.txt 368 2021-05-20 15:03:14Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 ==============
 Known Issues:
@@ -14,6 +14,33 @@ Known Issues:
 ==============
 = Change Log =
 ==============
+
+v1.49.00 (May 20, 2021)
+------------------------
+- TOC update to support WoW 9.0.5
+- AreaIDs updated to sync with WoW 9.1.0; WoW Classic TBC 2.5.1
+
+v1.48.03 (Dec. 06, 2020)
+------------------------
+- TOC update to support WoW 9.0.2 (Shadowlands)
+- Library update: LibUIDropDownMenu
+
+v1.48.02 (Oct. 26, 2020)
+------------------------
+- Library update: LibBabble-SubZone
+
+v1.48.01 (Oct. 18, 2020)
+------------------------
+- Library update: LibUIDropDownMenu
+
+v1.48.00 (Oct. 18, 2020)
+------------------------
+- Codes and TOC update to support WoW 9.0 (Shadowlands)
+- Updated AreaID to sync with Shadowlands
+
+v1.47.04 (Jul. 26, 2020)
+------------------------
+- Library update: LibBabble-SubZone
 
 v1.47.03 (Jun. 20, 2020)
 ------------------------

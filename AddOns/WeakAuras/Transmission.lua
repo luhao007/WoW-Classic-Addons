@@ -229,6 +229,15 @@ showCodeButton:SetPoint("BOTTOMLEFT", 8, 8)
 showCodeButton:SetText(L["Show Code"])
 showCodeButton:SetWidth(90)
 
+local urlEditBox = CreateFrame("EDITBOX", "WeakAurasTooltipUrlEditBox", buttonAnchor)
+urlEditBox:SetWidth(250)
+urlEditBox:SetHeight(34)
+urlEditBox:SetFont(STANDARD_TEXT_FONT, 12)
+urlEditBox:SetPoint("TOPLEFT", 8, -57)
+urlEditBox:SetScript("OnMouseUp", function() urlEditBox:HighlightText() end)
+urlEditBox:SetScript("OnChar", function() urlEditBox:SetText(urlEditBox.text) urlEditBox:HighlightText() end)
+urlEditBox:SetAutoFocus(false)
+
 local checkButtons, radioButtons, keyToButton, pendingData = {}, {}, {}, {}
 
 for _, key in pairs(Private.internal_fields) do
@@ -742,6 +751,7 @@ function StringToTable(inString, fromChat)
   end
   return deserialized
 end
+Private.StringToTable = StringToTable
 
 function WeakAuras.DisplayToString(id, forChat)
   local data = WeakAuras.GetData(id);
@@ -841,6 +851,15 @@ function Private.RefreshTooltipButtons()
     showCodeButton:Hide()
   else
     showCodeButton:Show()
+  end
+  urlEditBox:Enable()
+  if pendingData.url then
+    urlEditBox:Show()
+    urlEditBox.text = pendingData.url
+    urlEditBox:SetText(pendingData.url)
+    urlEditBox:HighlightText(0, 0)
+  else
+    urlEditBox:Hide()
   end
   if InCombatLockdown() then
     importButton:SetText(L["In Combat"])
@@ -947,19 +966,23 @@ function ShowTooltip(lines, linesFromTop, activeCategories)
   end
 end
 
+local function notEmptyString(str)
+  return str and str ~= "" and string.find(str, "%S")
+end
+
 -- TODO: Should savedvariables data ever be refactored, then shunting the custom scripts
 -- into their own special subtable will allow us to simplify the scam check significantly.
 local function checkTrigger(codes, id, trigger, untrigger)
   if (not trigger) then return end;
   local t = {};
-  if (trigger.custom) then
+  if notEmptyString(trigger.custom) then
     t.text = L["%s Trigger Function"]:format(id);
     t.value = t.text;
     t.code = trigger.custom;
     tinsert(codes, t);
   end
 
-  if (untrigger and untrigger.custom) then
+  if untrigger and notEmptyString(untrigger.custom) then
     t = {}
     t.text = L["%s Untrigger Function"]:format(id);
     t.value = t.text;
@@ -967,7 +990,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
     tinsert(codes, t);
   end
 
-  if (trigger.customDuration) then
+  if notEmptyString(trigger.customDuration) then
     t = {}
     t.text = L["%s Duration Function"]:format(id);
     t.value = t.text;
@@ -975,7 +998,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
     tinsert(codes, t);
   end
 
-  if (trigger.customName) then
+  if notEmptyString(trigger.customName) then
     t = {}
     t.text = L["%s Name Function"]:format(id);
     t.value = t.text;
@@ -983,7 +1006,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
     tinsert(codes, t);
   end
 
-  if (trigger.customIcon) then
+  if notEmptyString(trigger.customIcon) then
     t = {}
     t.text = L["%s Icon Function"]:format(id);
     t.value = t.text;
@@ -991,7 +1014,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
     tinsert(codes, t);
   end
 
-  if (trigger.customTexture) then
+  if notEmptyString(trigger.customTexture) then
     t = {}
     t.text = L["%s Texture Function"]:format(id);
     t.value = t.text;
@@ -999,7 +1022,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
     tinsert(codes, t);
   end
 
-  if (trigger.customStacks) then
+  if notEmptyString(trigger.customStacks) then
     t = {}
     t.text = L["%s Stacks Function"]:format(id);
     t.value = t.text;
@@ -1009,8 +1032,7 @@ local function checkTrigger(codes, id, trigger, untrigger)
 end
 
 local function checkCustom(codes, id, base)
-  if (not base) then return end
-  if (base.custom) then
+  if base and notEmptyString(base.custom) then
     local t = {};
     t.text = id;
     t.value = id;
@@ -1020,8 +1042,7 @@ local function checkCustom(codes, id, base)
 end
 
 local function checkActionCustomText(codes, id, base)
-  if (not base) then return end
-  if (base.do_message and base.message_custom) then
+  if base and base.do_message and notEmptyString(base.message_custom) then
     local t = {};
     t.text = id;
     t.value = id;
@@ -1032,7 +1053,7 @@ end
 
 local function checkAnimation(codes, id, a)
   if (not a) then return end
-  if (a.alphaType == "custom" and a.use_alpha and a.alphaFunc) then
+  if a.alphaType == "custom" and a.use_alpha and notEmptyString(a.alphaFunc) then
     local t = {};
     t.text = L["%s - Alpha Animation"]:format(id);
     t.value = t.text;
@@ -1040,7 +1061,7 @@ local function checkAnimation(codes, id, a)
     tinsert(codes, t);
   end
 
-  if (a.translateType == "custom" and a.use_translate and a.translateFunc) then
+  if a.translateType == "custom" and a.use_translate and notEmptyString(a.translateFunc) then
     local t = {};
     t.text = L["%s - Translate Animation"]:format(id);
     t.value = t.text;
@@ -1048,7 +1069,7 @@ local function checkAnimation(codes, id, a)
     tinsert(codes, t);
   end
 
-  if (a.scaleType == "custom" and a.use_scale and a.scaleFunc) then
+  if a.scaleType == "custom" and a.use_scale and notEmptyString(a.scaleFunc) then
     local t = {};
     t.text = L["%s - Scale Animation"]:format(id);
     t.value = t.text;
@@ -1056,7 +1077,7 @@ local function checkAnimation(codes, id, a)
     tinsert(codes, t);
   end
 
-  if (a.rotateType == "custom" and a.use_rotate and a.rotateFunc) then
+  if a.rotateType == "custom" and a.use_rotate and notEmptyString(a.rotateFunc) then
     local t = {};
     t.text = L["%s - Rotate Animation"]:format(id);
     t.value = t.text;
@@ -1064,7 +1085,7 @@ local function checkAnimation(codes, id, a)
     tinsert(codes, t);
   end
 
-  if (a.colorType == "custom" and a.use_color and a.colorFunc) then
+  if a.colorType == "custom" and a.use_color and notEmptyString(a.colorFunc) then
     local t = {};
     t.text = L["%s - Color Animation"]:format(id);
     t.value = t.text;
@@ -1074,30 +1095,33 @@ local function checkAnimation(codes, id, a)
 end
 
 local function checkTriggerLogic(codes, id, logic)
-  if (not logic) then return end
-  local t = {};
-  t.text = id;
-  t.value = id;
-  t.code = logic;
-  tinsert(codes, t);
+  if notEmptyString(logic) then
+    local t = {};
+    t.text = id;
+    t.value = id;
+    t.code = logic;
+    tinsert(codes, t);
+  end
 end
 
 local function checkText(codes, id, customText)
-  if (not customText) then return end
-  local t = {};
-  t.text = id;
-  t.value = id;
-  t.code = customText;
-  tinsert(codes, t);
+  if notEmptyString(customText) then
+    local t = {};
+    t.text = id;
+    t.value = id;
+    t.code = customText;
+    tinsert(codes, t);
+  end
 end
 
 local function checkCustomCondition(codes, id, customText)
-  if (not customText) then return end
-  local t = {};
-  t.text = id;
-  t.value = id;
-  t.code = customText;
-  tinsert(codes, t);
+  if notEmptyString(customText) then
+    local t = {};
+    t.text = id;
+    t.value = id;
+    t.code = customText;
+    tinsert(codes, t);
+  end
 end
 
 local function scamCheck(codes, data)
@@ -1119,7 +1143,7 @@ local function scamCheck(codes, data)
     checkAnimation(codes, L["%s - Finish"]:format(data.id), data.animation.finish);
   end
 
-  if(data.triggers.customTriggerLogic) then
+  if(data.triggers.disjunctive == "custom") then
     checkTriggerLogic(codes,  L["%s - Trigger Logic"]:format(data.id), data.triggers.customTriggerLogic);
   end
 
@@ -1447,6 +1471,7 @@ local function ShowDisplayTooltip(data, children, matchInfo, icon, icons, import
   local highestVersion = data.internalVersion or 1;
   local hasDescription = data.desc and data.desc ~= "";
   local hasUrl = data.url and data.url ~= "";
+  pendingData.url = hasUrl and data.url
   local hasVersion = (data.semver and data.semver ~= "") or (data.version and data.version ~= "");
   local tocversion = data.tocversion;
 
@@ -1454,12 +1479,12 @@ local function ShowDisplayTooltip(data, children, matchInfo, icon, icons, import
     tinsert(tooltip, {1, " "});
   end
 
-  if hasDescription then
-    tinsert(tooltip, {1, "\""..data.desc.."\"", 1, 0.82, 0, 1});
+  if hasUrl then
+    tinsert(tooltip, {1, " "});
   end
 
-  if hasUrl then
-    tinsert(tooltip, {1, L["Source: "] .. data.url, 1, 0.82, 0, 1});
+  if hasDescription then
+    tinsert(tooltip, {1, "\""..data.desc.."\"", 1, 0.82, 0, 1});
   end
 
   if hasVersion then

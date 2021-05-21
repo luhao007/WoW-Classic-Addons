@@ -37,7 +37,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.32" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.39" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -526,10 +526,14 @@ end
 function TSM.GetRegion()
 	local cVar = GetCVar("Portal")
 	local region = nil
-	if TSM.IsWowClassic() then
+	if TSM.IsWowVanillaClassic() then
 		local currentRealmName = gsub(GetRealmName(), "\226", "'")
 		region = ClassicRealms.GetRegion(currentRealmName) or (cVar ~= "public-test" and cVar) or "PTR"
 		region = region.."-Classic"
+	elseif TSM.IsWowBCClassic() then
+		local currentRealmName = gsub(GetRealmName(), "\226", "'")
+		region = ClassicRealms.GetRegion(currentRealmName) or (cVar ~= "public-test" and cVar) or "PTR"
+		region = region.."-BCC"
 	else
 		region = LibRealmInfo:GetCurrentRegion() or (cVar ~= "public-test" and cVar) or "PTR"
 	end

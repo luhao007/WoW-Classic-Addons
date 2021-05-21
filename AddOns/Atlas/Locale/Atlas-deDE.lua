@@ -1,10 +1,10 @@
--- $Id: Atlas-deDE.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Atlas-deDE.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -91,6 +91,7 @@ L["ATLAS_DDL_EXPANSION_LEGION1"] = "Dungeons aus Legion"
 L["ATLAS_DDL_EXPANSION_LEGION2"] = "Schlachtzüge aus Legion"
 L["ATLAS_DDL_EXPANSION_MOP"] = "Instanzen aus Mists of Pandaria"
 L["ATLAS_DDL_EXPANSION_OLD"] = "Instanzen der alten Welt"
+L["ATLAS_DDL_EXPANSION_SHADOWLANDS"] = "Instanzen aus Shadowlands"
 L["ATLAS_DDL_EXPANSION_WOD"] = "Instanzen aus Warlords of Draenor"
 L["ATLAS_DDL_EXPANSION_WOTLK"] = "Instanzen aus Wrath of the Lich King"
 L["ATLAS_DDL_LEVEL"] = "Stufe"
@@ -102,6 +103,7 @@ L["ATLAS_DDL_LEVEL_120PLUS"] = "Instanzen Stufe 120+"
 L["ATLAS_DDL_LEVEL_120TO130"] = "Instanzen Stufe 120–130"
 L["ATLAS_DDL_LEVEL_130PLUS"] = "Instanzen Stufe 130+"
 L["ATLAS_DDL_LEVEL_45TO60"] = "Instanzen Stufe 45–60"
+L["ATLAS_DDL_LEVEL_60PLUS"] = "Instanzen Stufe 60+"
 L["ATLAS_DDL_LEVEL_60TO70"] = "Instanzen Stufe 60–70"
 L["ATLAS_DDL_LEVEL_70TO80"] = "Instanzen Stufe 70–80"
 L["ATLAS_DDL_LEVEL_80TO85"] = "Instanzen Stufe 80–85"

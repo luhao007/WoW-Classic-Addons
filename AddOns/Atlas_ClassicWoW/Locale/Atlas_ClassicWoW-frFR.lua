@@ -1,10 +1,10 @@
--- $Id: Atlas_ClassicWoW-frFR.lua 55 2020-01-14 15:00:30Z arith $
+-- $Id: Atlas_ClassicWoW-frFR.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -179,7 +179,7 @@ L["Dustwraith"] = "Ame en peine poudreuse"
 L["Earthcaller Halmgar"] = "Implorateur de la terre Halmgar"
 L["Ebonroc"] = "Rochébène"
 L["Ebru <Disciple of Naralex>"] = "Ebru <Disciple de Naralex>"
-L["Edge of Madness"] = "Frontières de la folie"
+L["Edge of Madness"] = "Frontière de la folie"
 L["Edwin VanCleef"] = "Edwin VanCleef"
 L["Elder Farwhisper"] = "Ancien Murmeloin"
 L["Elder Mistwalker"] = "Ancienne Marche-brume"
@@ -348,7 +348,7 @@ L["Lib"] = "Bib"
 L["Library"] = "Bibliothèque"
 L["Lidia Sunglow <The Reliquary>"] = "Lidia Soléclat <Le Reliquaire>"
 L["Lieutenant General Andorov"] = "Général de division Andorov"
-L["Loatheb"] = "Loatheb"
+L["Loatheb"] = "Horreb"
 L["Lokhtos Darkbargainer"] = "Lokhtos Darkbargainer"
 L["Lokhtos Darkbargainer <The Thorium Brotherhood>"] = "Lokhtos Sombrescompte <La Confrérie du thorium>"
 L["Lord Alexei Barov"] = "Seigneur Alexei Barov"

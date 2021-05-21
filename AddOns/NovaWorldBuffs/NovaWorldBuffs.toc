@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Novaspark-Arugal OCE
-## Version: 1.91
+## Version: 2.02
 ## SavedVariables: NWBdatabase
 
 ## Title: Nova World Buffs

@@ -71,9 +71,9 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20210330160413"),
-	DisplayVersion = "1.13.71", -- the string that is shown as version
-	ReleaseRevision = releaseDate(2021, 3, 30) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	Revision = parseCurseDate("20210421144744"),
+	DisplayVersion = "1.13.72", -- the string that is shown as version
+	ReleaseRevision = releaseDate(2021, 4, 21) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 }
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -779,9 +779,8 @@ do
 	local argsMT = {__index = {}}
 	local args = setmetatable({}, argsMT)
 
-	function argsMT.__index:IsSpellID(a1, a2, a3, a4, a5)
-		local v = self.spellId
-		return v == a1 or v == a2 or v == a3 or v == a4 or v == a5
+	function argsMT.__index:IsSpellID(...)
+		return tIndexOf({...}, self.spellId) ~= nil
 	end
 
 	function argsMT.__index:IsPlayer()
@@ -1395,7 +1394,7 @@ do
 			end
 			onLoadCallbacks = nil
 			loadOptions(self)
-			if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+			if WOW_PROJECT_ID ~= (WOW_PROJECT_CLASSIC or 2) then
 				self:Disable(true)
 				self:Schedule(15, infniteLoopNotice, self, L.CLASSIC_ONLY)
 				return
@@ -3929,7 +3928,7 @@ do
 		if not self.Options.SpecialWarningFont or (self.Options.SpecialWarningFont == "Fonts\\2002.TTF" or self.Options.SpecialWarningFont == "Fonts\\ARKai_T.ttf" or self.Options.SpecialWarningFont == "Fonts\\blei00d.TTF" or self.Options.SpecialWarningFont == "Fonts\\FRIZQT___CYR.TTF" or self.Options.SpecialWarningFont == "Fonts\\FRIZQT__.TTF") then
 			self.Options.SpecialWarningFont = "standardFont"
 		end
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then return end--Don't do sound migration in a situation user is loading wrong DBM version, to avoid sound path corruption
+		if WOW_PROJECT_ID ~= (WOW_PROJECT_CLASSIC or 2) then return end--Don't do sound migration in a situation user is loading wrong DBM version, to avoid sound path corruption
 		--Migrate user sound options to soundkit Ids if selected media doesn't exist in Interface\\AddOns
 		local migrated = false
 		if type(self.Options.RaidWarningSound) == "string" and self.Options.RaidWarningSound ~= "" then
@@ -11820,7 +11819,7 @@ end
 
 function bossModPrototype:SetRevision(revision)
 	revision = parseCurseDate(revision or "")
-	if not revision or revision == "20210330160413" then
+	if not revision or revision == "20210421144744" then
 		-- bad revision: either forgot the svn keyword or using github
 		revision = DBM.Revision
 	end

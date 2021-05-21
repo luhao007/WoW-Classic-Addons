@@ -13,7 +13,7 @@ from utils import process_file, rm_tree
 
 logger = logging.getLogger('manager')
 
-CLASSIC_VER = '11306'
+CLASSIC_VER = '11307'
 RETAIL_VER = '90002'
 
 
@@ -537,16 +537,6 @@ class Manager:
                 (self.is_classic and
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
-
-    # @classic_only
-    # def handle_honorspy(self):
-    #     self.remove_libraries_all('honorspy')
-
-    #     self.change_defaults(
-    #         'AddOns/honorspy/honorspy.lua',
-    #         ['local addonName = "Honorspy";',
-    #          '			minimapButton = {hide = true},']
-    #     )
 
     @classic_only
     def handle_nwb(self):

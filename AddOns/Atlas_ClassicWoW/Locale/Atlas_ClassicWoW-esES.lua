@@ -1,10 +1,10 @@
--- $Id: Atlas_ClassicWoW-esES.lua 55 2020-01-14 15:00:30Z arith $
+-- $Id: Atlas_ClassicWoW-esES.lua 73 2021-05-20 15:17:09Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -163,7 +163,7 @@ L["Defias Gunpowder"] = "Pólvora de los Defias"
 L["Deviate Faerie Dragon"] = "Dragón feérico descarriado"
 L["Dextren Ward"] = "Dextren Tutor"
 L["Digmaster Shovelphlange"] = "Maestro de excavación Palatiro"
-L["Dire Maul Arena"] = "Arena de La Masacre"
+L["Dire Maul Arena"] = "La Marra"
 L["Dire Pool"] = "Estanque Funesto"
 L["Disciple of Naralex"] = "Discípulo de Naralex"
 L["Divination Scryer"] = "Cristal de adivinación"

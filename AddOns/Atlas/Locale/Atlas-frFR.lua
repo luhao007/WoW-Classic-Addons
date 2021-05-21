@@ -1,10 +1,10 @@
--- $Id: Atlas-frFR.lua 337 2020-01-01 14:49:58Z arith $
+-- $Id: Atlas-frFR.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -45,6 +45,8 @@ end
 
 
 if L then
+L[" 1/2"] = "1/2"
+L[" 2/2"] = "2/2"
 L["Adult"] = "Adulte"
 L["AKA"] = "AKA"
 L["Alexston Chrome <Tavern of Time>"] = "Alexston Chrome <Gargotte du temps>"
@@ -56,19 +58,29 @@ L["Arcane Container"] = "Récipient arcanique"
 L["Arms Warrior"] = "Guerrier Armes"
 L["ATLAS_BUTTON_CLOSE"] = "Fermer"
 L["ATLAS_CLICK_TO_OPEN"] = "Cliquez pour ouvrir la fenêtre de carte Atlas."
+L["ATLAS_CLOSE_ATLASLOOT_WINDOW"] = "Clic-droit pour fermer la fenêtre AtlasLoot."
+L["ATLAS_COLLAPSE_BUTTON"] = "Clic pour fermer le panneau Atlas'legend."
 L["ATLAS_DDL_CONTINENT"] = "Continent"
 L["ATLAS_DDL_CONTINENT_BROKENISLES"] = "Instances Îles Brisées"
+L["ATLAS_DDL_CONTINENT_BROKENISLES1"] = "Donjons des Îles Brisées."
+L["ATLAS_DDL_CONTINENT_BROKENISLES2"] = "Raids des Îles Brisées."
 L["ATLAS_DDL_CONTINENT_DEEPHOLM"] = "Instances du Tréfonds"
 L["ATLAS_DDL_CONTINENT_DRAENOR"] = "Instances de Draenor"
 L["ATLAS_DDL_CONTINENT_EASTERN"] = "Instances des Royaumes de l'Est"
 L["ATLAS_DDL_CONTINENT_KALIMDOR"] = "Instances de Kalimdor"
+L["ATLAS_DDL_CONTINENT_KULTIRAS"] = "Instances de Kul Tiras."
+L["ATLAS_DDL_CONTINENT_NAZJATAR"] = "Instances de Nazjatar"
 L["ATLAS_DDL_CONTINENT_NORTHREND"] = "Instances de Norfendre"
 L["ATLAS_DDL_CONTINENT_OUTLAND"] = "Instances de l'Outreterre"
 L["ATLAS_DDL_CONTINENT_PANDARIA"] = "Instances de Pandarie"
+L["ATLAS_DDL_CONTINENT_ZANDALAR"] = "Instances de Zandalar"
 L["ATLAS_DDL_EXPANSION"] = "Extension"
 L["ATLAS_DDL_EXPANSION_BC"] = "Instances Burning Crusade"
+L["ATLAS_DDL_EXPANSION_BFA"] = "Instances de Bataille pour Azeroth."
 L["ATLAS_DDL_EXPANSION_CATA"] = "Instances Cataclysm"
 L["ATLAS_DDL_EXPANSION_LEGION"] = "Instances Légion"
+L["ATLAS_DDL_EXPANSION_LEGION1"] = "Donjons de Légion."
+L["ATLAS_DDL_EXPANSION_LEGION2"] = "Raids de Légions."
 L["ATLAS_DDL_EXPANSION_MOP"] = "Instances Mists of Pandaria"
 L["ATLAS_DDL_EXPANSION_OLD"] = "Instances du Vieux Monde"
 L["ATLAS_DDL_EXPANSION_WOD"] = "Instances Warlords of Draenor"

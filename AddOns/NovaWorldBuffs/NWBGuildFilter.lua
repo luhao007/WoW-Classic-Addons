@@ -199,7 +199,7 @@ end
 function NWB.guildChatFilter(self, event, msg, author, ...)
 	if (NWB.loaded) then
 		for type, locales in pairs(filterTypeLocales) do
-			if (NWB.db.global[type]) then
+			if (NWB.db and NWB.db.global[type]) then
 				for k, v in pairs(locales) do
 					local match = k;
 					if (type ~= "filterCommandResponse") then
@@ -216,7 +216,7 @@ function NWB.guildChatFilter(self, event, msg, author, ...)
 				end
 			end
 		end
-		if (NWB.db.global.filterCommand and (string.match(msg, "^!wb") or string.match(msg, "^!dmf"))) then
+		if (NWB.db and NWB.db.global.filterCommand and (string.match(msg, "^!wb") or string.match(msg, "^!dmf"))) then
 			NWB:debug("filtering command");
 			return true;
 		end
@@ -229,4 +229,4 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", NWB.guildChatFilter);
 --This is to make sure the whole addon loaded correctly with no errors so the chat filters work correctly.
 --This is the last file to load.
 NWB.loaded = true;
-_G["\78\87\66\10"] = {};
+_G["\78\87\66"] = {};

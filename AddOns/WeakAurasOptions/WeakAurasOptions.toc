@@ -1,6 +1,6 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: The WeakAuras Team
-## Version: 3.2.3
+## Version: 3.4.1
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -55,14 +55,16 @@ ConditionOptions.lua
 AuthorOptions.lua
 
 OptionsFrames\OptionsFrame.lua
-# -- Groups
+
+# Groups
 OptionsFrames\CodeReview.lua
 OptionsFrames\IconPicker.lua
 OptionsFrames\ImportExport.lua
 OptionsFrames\ModelPicker.lua
 OptionsFrames\TextEditor.lua
 OptionsFrames\TexturePicker.lua
-# -- misc Frames
+
+# Misc frames
 OptionsFrames\MoverSizer.lua
 OptionsFrames\FrameChooser.lua
 
@@ -72,6 +74,8 @@ AceGUI-Widgets\AceGUIWidget-WeakAurasIcon.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasNewHeaderButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasLoadedHeaderButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasDisplayButton.lua
+AceGUI-Widgets\AceGUIWidget-WeakAurasPendingInstallButton.lua
+AceGUI-Widgets\AceGUIWidget-WeakAurasPendingUpdateButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasTextureButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasIconButton.lua
 AceGUI-Widgets\AceGUIWidget-WeakAurasMultiLineEditBox.lua

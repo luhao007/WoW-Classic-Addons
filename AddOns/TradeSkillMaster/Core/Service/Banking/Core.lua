@@ -35,7 +35,7 @@ function Banking.OnInitialize()
 
 	Event.Register("BANKFRAME_OPENED", private.BankOpened)
 	Event.Register("BANKFRAME_CLOSED", private.BankClosed)
-	if not TSM.IsWowClassic() then
+	if not TSM.IsWowVanillaClassic() then
 		Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankOpened)
 		Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankClosed)
 	end

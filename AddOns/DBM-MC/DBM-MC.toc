@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMMC_AllSavedVars
@@ -13,7 +13,7 @@
 ## X-DBM-Mod-Category: Classic
 ## X-DBM-StatTypes: normal
 ## X-DBM-Mod-MapID: 409
-## X-DBM-Mod-Sort: 13
+## X-DBM-Mod-Sort: 1107
 ## X-DBM-Mod-MinCoreRevision: 14565
 ## X-DBM-Mod-MinExpansion: 0
 ## X-Part-Of: DBM-Core

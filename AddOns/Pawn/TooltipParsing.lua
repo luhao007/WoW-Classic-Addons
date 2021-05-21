@@ -1,6 +1,6 @@
 ﻿-- Pawn by Vger-Azjol-Nerub
 -- www.vgermods.com
--- © 2006-2021 Green Eclipse.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
+-- © 2006-2021 Travis Spomer.  This mod is released under the Creative Commons Attribution-NonCommercial-NoDerivs 3.0 license.
 -- See Readme.htm for more information.
 -- 
 -- Tooltip parsing strings
@@ -194,33 +194,61 @@ PawnRegexes =
 	{L.Dodge, "DodgeRating"}, -- /pawn compare item:789::::::1754, or Classic arcanum and enchantment: /pawn compare item:19386:2622 /pawn compare item:21693:2545
 	{L.Dodge2, "DodgeRating"}, -- unused in English
 	{L.Dodge3, "DodgeRating"}, -- unused in English
-	{L.DodgePercent, "DodgeRating"}, -- /pawn compare 11755
+	{L.DodgePercent, "DodgeRating"}, -- Classic, /pawn compare 11755
+	{L.DodgeRating, "DodgeRating"}, -- Burning Crusade Classic, /pawn compare 11755
+	{L.DodgeRatingShort, "DodgeRating"}, -- Burning Crusade Classic, /pawn compare item:789::::::1754
 	{L.Parry, "ParryRating"},
 	{L.Parry2, "ParryRating"}, -- unused in English
 	{L.ParryPercent, "ParryRating"}, -- Classic, /pawn compare 19351
-	{L.DefenseSkill, "DefenseRating"}, -- /pawn compare 19867
-	{L.DefenseSkillSimple, "DefenseRating"}, -- /pawn compare item:789::::::89
-	{L.BlockPercent, "BlockRating"}, -- /pawn compare 18499
-	{L.Block, "BlockValue"}, -- /pawn compare 18499
-	{L.BlockValue, "BlockValue"}, -- /pawn compare 18499
+	{L.ParryRating, "ParryRating"}, -- Burning Crusade Classic, /pawn compare 19351
+	{L.ParryRatingShort, "ParryRating"}, -- Burning Crusade Classic, /pawn compare 24036
+	{L.DefenseRating, "DefenseRating"}, -- Burning Crusade, /pawn compare 19867
+	{L.DefenseRatingSimple, "DefenseRating"}, -- Burning Crusade, /pawn compare item:789::::::89
+	{L.DefenseSkill, "DefenseRating"}, -- Classic, /pawn compare 19867
+	{L.DefenseSkillSimple, "DefenseRating"}, -- Classic, /pawn compare item:789::::::89
+	{L.BlockPercent, "BlockRating"}, -- Classic, /pawn compare 18499
+	{L.BlockRating, "BlockRating"}, -- Burning Crusade, /pawn compare 18499
+	{L.Block, "BlockValue"}, -- Classic, /pawn compare 18499
+	{L.BlockValue, "BlockValue"}, -- Classic, /pawn compare 18499
 	{L.Dps}, -- Ignore this; DPS is calculated manually
 	{L.DpsAdd, "Dps"},
 	{L.EnchantmentFieryWeapon, "Dps", 4, PawnMultipleStatsFixed}, -- weapon enchantment
 	{L.Crit, "CritRating"},
 	{L.Crit2, "CritRating"},
-	{L.CritPercent, "CritRating"}, -- /pawn compare 15062
+	{L.CritPercent, "CritRating"}, -- Classic, /pawn compare 15062
+	{L.CritRating, "CritRating"}, -- Burning Crusade, /pawn compare 15062
+	{L.CritRatingShort, "CritRating"}, -- Burning Crusade, /pawn compare item:789::::::78
 	{L.ScopeCrit, "CritRating"},
 	{L.ScopeRangedCrit, "CritRating"}, -- Heartseeker Scope
-	{L.SpellCrit, "SpellCritRating"}, -- /pawn compare 16947
-	{L.Hit, "HitRating"}, -- /pawn compare 16947
+	{L.SpellCrit, "SpellCritRating"}, -- Classic, /pawn compare 16947
+	{L.SpellCritRating, "SpellCritRating"}, -- Burning Crusade, /pawn compare 16947
+	{L.SpellCritRatingShort, "SpellCritRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24050/gleaming-dawnstone
+	{L.Hit, "HitRating"}, -- Classic, /pawn compare 16947
 	{L.Hit2, "HitRating"}, -- unused in English
+	{L.HitRating, "HitRating"}, -- Burning Crusade, /pawn compare 28182
+	{L.HitRating2, "HitRating"}, -- Burning Crusade, /pawn compare 18500
+	{L.HitRatingShort, "HitRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24051/rigid-dawnstone
 	{L.SpellHit, "SpellHitRating"}, -- /pawn compare 16795
-	{L.Resilience, "Stamina"}, -- Mystic Dawnstone
-	{L.Resilience2, "Stamina"}, -- unused in English
+	{L.SpellHitRating, "SpellHitRating"}, -- Burning Crusade, /pawn compare 16795
+	{L.SpellHitRatingShort, "SpellHitRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=31861/great-dawnstone
+	{L.ExpertiseRating, "ExpertiseRating"}, -- Burning Crusade, /pawn compare 19351
+	-- {L.ExpertiseRatingShort, "ExpertiseRating"}, -- Wrath, /pawn compare 39910
+	-- {L.ArmorPenetration, "ArmorPenetration"}, -- Wrath, /pawn compare 21563
+	-- {L.ArmorPenetrationShort, "ArmorPenetration"}, -- Wrath, Fractured Scarlet Ruby
+	{L.Resilience, "ResilienceRating"}, -- Mystic Dawnstone
+	{L.Resilience2, "ResilienceRating"}, -- unused in English
+	{L.ResilienceRating, "ResilienceRating"}, -- /pawn compare 29181
+	{L.ResilienceRatingShort, "ResilienceRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24053/mystic-dawnstone
 	{L.PvPPower, "Stamina"}, -- Stormy Chalcedony
 	{L.EnchantmentCounterweight, "HasteRating"}, -- won't work on classic since the live string includes the word "haste" and it's worded differently in classic
 	{L.Haste, "HasteRating"}, -- Leggings of the Betrayed
 	{L.Haste2, "HasteRating"}, -- unused in English
+	{L.HasteRating, "HasteRating"}, -- Burning Crusade, /pawn compare 32570
+	{L.HasteRatingShort, "HasteRating"}, -- Wrath, Quick Sun Crystal / Burning Crusade, random-stat items only
+	{L.SpellHasteRating, "SpellHasteRating"}, -- /pawn compare 34360
+	{L.SpellHasteRatingShort, "SpellHasteRating"}, -- https://tbc.wowhead.com/item=35315/quick-dawnstone
+	{L.SpellPenetration, "SpellPenetration"}, -- Burning Crusade, /pawn compare 21563
+	{L.SpellPenetrationShort, "SpellPenetration"}, -- Burning Crusade, https://tbc.wowhead.com/item=24039/stormy-star-of-elune
 	{L.Mastery, "MasteryRating"}, -- Zen Dream Emerald
 	{L.Mastery2, "MasteryRating"}, -- unused in English
 	{L.Versatility, "Versatility"}, -- http://wod.wowhead.com/item=100945
@@ -230,13 +258,15 @@ PawnRegexes =
 	{L.MovementSpeed, "MovementSpeed"}, -- http://wod.wowhead.com/item=100945
 	{L.Ap, "Ap"}, -- /pawn compare item:789::::::1547
 	{L.Ap2, "Ap"}, -- /pawn compare 15062
+	{L.Ap3, "Ap"}, -- /pawn compare 18821
 	{L.Rap, "Rap"}, -- /pawn compare 18473
 	{L.FeralAp, "FeralAp"}, -- /pawn compare 22988
 	{L.Mp5, "Mp5"}, -- /pawn compare 22988
 	{L.Mp52, "Mp5"}, -- /pawn compare item:789::::::2074
+	{L.Mp53, "Mp5"}, -- Burning Crusade Classic, socket bonus on /pawn compare 34360
 	{L.Hp5, "Hp5"}, -- (on live, we used to count 1 HP5 = 3 Stamina)
 	{L.Hp52, "Hp5"}, -- Demon's Blood
-	{L.Hp53, "Hp5"}, -- Aquamarine Signet of Regeneration
+	{L.Hp53, "Hp5"}, -- Aquamarine Signet of Regeneration or /pawn compare item:789::::::2110
 	{L.Hp54, "Hp5"}, -- Lifestone
 	{L.EnchantmentHealth, "Stamina", 1/12.5, PawnSingleStatMultiplier}, -- +100 health head/leg enchantment (counting 1 HP = 1/12.5 Stamina)
 	{L.EnchantmentHealth2, "Stamina", 1/12.5, PawnSingleStatMultiplier}, -- +150 health enchantment (counting 1 HP = 1/12.5 Stamina)
@@ -252,6 +282,7 @@ PawnRegexes =
 	{L.SpellDamage2, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- /pawn compare 16947
 	{L.SpellDamage3, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- French on Classic uses two different wordings:  /pawn compare 20641 vs. /pawn compare 10041
 	{L.SpellDamage4, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Simplified Chinese on Classic uses many different wordings:  /pawn compare 16923 vs. /pawn compare 18608
+	{L.SpellDamageAndHealing, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 34360
 	{L.FireSpellDamage, "FireSpellDamage"}, -- /pawn compare item:789::::::1878
 	{L.FireSpellDamage2, "FireSpellDamage"}, -- /pawn compare 944
 	{L.ShadowSpellDamage, "ShadowSpellDamage"}, -- /pawn compare item:789::::::1841
@@ -268,6 +299,10 @@ PawnRegexes =
 	{L.Healing, "Healing"}, -- /pawn compare item:789::::::2028
 	{L.Healing2, "Healing"}, -- /pawn compare 16947
 	{L.SpellPower, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- enchantments
+	{PawnGameConstant(EMPTY_SOCKET_RED), "RedSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_YELLOW), "YellowSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_BLUE), "BlueSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_COGWHEEL), "CogwheelSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_PRISMATIC), "PrismaticSocket", 1, PawnMultipleStatsFixed},
 
 	-- In WoW Classic, crossbows, guns, and wands don't show "Ranged" and instead show the weapon type on the left.

@@ -1,9 +1,18 @@
-local name = ...;
+-- upvalue the globals
+local _G = getfenv(0);
+local LibStub = _G.LibStub;
+local pairs = _G.pairs;
+local GetAddOnMetadata = _G.GetAddOnMetadata;
+local ReloadUI = _G.ReloadUI;
+local string__match = _G.string.match;
+
+local name = ... or "BlizzMove";
 local BlizzMove = LibStub("AceAddon-3.0"):GetAddon(name);
 if not BlizzMove then return; end
 
 BlizzMove.Config = BlizzMove.Config or {};
 local Config = BlizzMove.Config;
+local BlizzMoveAPI = _G.BlizzMoveAPI;
 
 Config.version = GetAddOnMetadata(name, "Version") or "";
 
@@ -61,8 +70,19 @@ Addon authors can enable support for their own custom frames by utilizing the Bl
 				get = function(info) return Config:GetConfig(info[#info]); end,
 				set = function(info, value) return Config:SetConfig(info[#info], value); end,
 				args = {
-					savePosStrategy = {
+					requireMoveModifier = {
 						order = 1,
+						name = "Require move modifier.",
+						desc = "If enabled BlizzMove requires to hold shift to move frames.",
+						type = "toggle",
+					},
+					newline1 = {
+						order = 2,
+						type = "description",
+						name = "",
+					},
+					savePosStrategy = {
+						order = 3,
 						name = "How should frame positions be remembered?",
 						desc = [[Do not remember >> frame positions are reset when you close and reopen them
 
@@ -75,21 +95,18 @@ Remember Permanently >> frame positions are remembered until you switch to anoth
 							session = "In Session, until you reload",
 							permanent = "Remember permanently",
 						},
-						sorting = {
-							"off", "session", "permanent"
-						},
 						confirm = function(_, value)
 							if value ~= "permanent" then return false end
 							return "Permanently saving frame positions is not fully supported, use at your own risk, and expect there to be bugs!"
 						end,
 					},
-					newline = {
-						order = 2,
+					newline2 = {
+						order = 4,
 						type = "description",
 						name = "",
 					},
 					resetPositions = {
-						order = 3,
+						order = 5,
 						name = "Reset Permanent Positions",
 						desc = "Reset permanently stored positions",
 						type = "execute",
@@ -111,7 +128,7 @@ function Config:GetDisableFramesTable()
 			type = "group",
 			order = function(info)
 				if info[#info] == name then return 0; end
-				if string.match(info[#info], "Blizzard_") then return 5; end
+				if string__match(info[#info], "Blizzard_") then return 5; end
 				return 1;
 			end,
 			args = {

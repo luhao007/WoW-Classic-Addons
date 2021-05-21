@@ -1,7 +1,7 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: Crieve-Sargeras
-## Version: 0.4.9
-## SavedVariables: ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
+## Version: 0.5.2
+## SavedVariables: ATTCharacterData, ATTAccountWideData, ATTClassicSettings, ATTClassicAD, ATTClassicAuctionData, ATTClassicDebugData
 ## SavedVariablesPerCharacter: ATTClassicSettingsPerCharacter
 
 ## Title: ATT-Classic
@@ -11,10 +11,12 @@
 
 ## X-Curse-Project-ID: 267285
 
+db\Presets.lua
+db\FlightPathDB.lua
+db\RaceDB.lua
 src\base.lua
 locales\enUS.lua
 locales\esES.lua
-locales\esMX.lua
 locales\deDE.lua
 locales\frFR.lua
 locales\itIT.lua
@@ -22,9 +24,6 @@ locales\koKR.lua
 locales\ptBR.lua
 locales\ruRU.lua
 locales\zhCN.lua
-db\Presets.lua
 Settings.lua
 ATT-Classic.lua
-db\FlightPathDB.lua
-db\RaceDB.lua
 db\Categories.lua

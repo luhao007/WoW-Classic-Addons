@@ -1,10 +1,10 @@
--- $Id: Atlas_GlobalStrings.lua 348 2020-01-19 16:18:50Z arith $
+-- $Id: Atlas_GlobalStrings.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -29,7 +29,7 @@ local LibStub = _G.LibStub
 local L = LibStub("AceLocale-3.0"):GetLocale("Atlas")
 local format = string.format
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassic = select(4, GetBuildInfo()) < 30000
 
 -- Expansion Icons
 local icon_E0 = "Interface\\ICONS\\expansionicon_classic" -- Classic
@@ -195,6 +195,7 @@ else
 	ATLAS_DDL_EXPANSION_LEGION1	= format("|T%s:0:0|t %s", icon_E6, L["ATLAS_DDL_EXPANSION_LEGION1"])
 	ATLAS_DDL_EXPANSION_LEGION2	= format("|T%s:0:0|t %s", icon_E6, L["ATLAS_DDL_EXPANSION_LEGION2"])
 	ATLAS_DDL_EXPANSION_BFA		= format("|T%s:0:0|t %s", icon_E7, L["ATLAS_DDL_EXPANSION_BFA"])
+	ATLAS_DDL_EXPANSION_SHADOWLANDS = L["ATLAS_DDL_EXPANSION_SHADOWLANDS"]
 end
 ATLAS_DDL_TYPE			= L["ATLAS_DDL_TYPE"]
 ATLAS_DDL_TYPE_INSTANCE		= L["ATLAS_DDL_TYPE_INSTANCE"]

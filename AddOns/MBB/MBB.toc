@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11307
 ## Author: karlsnyder, vallantv
 ## Version: 1.1.2
 ## SavedVariablesPerCharacter: MBB_Exclude, MBB_Options

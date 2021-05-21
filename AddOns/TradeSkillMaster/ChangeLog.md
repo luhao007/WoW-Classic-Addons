@@ -1,5 +1,5 @@
-## v4.10.32 Changes
+## v4.10.39 Changes
 
-* Fixed error some users were getting when opening the Dashboard
+* [BCC] Fixed error when creating/updating the TSM macro
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

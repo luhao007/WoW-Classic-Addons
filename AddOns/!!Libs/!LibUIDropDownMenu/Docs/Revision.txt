@@ -1,7 +1,19 @@
-$Id: Revision.txt 66 2020-11-22 15:25:00Z arithmandar $
+$Id: Revision.txt 73 2021-05-18 17:04:17Z arithmandar $
 
 Revision History:
 =================
+
+v4.03.9000538556 (2021/05/19)
+-----------------------------
+- Added codes for fixing Tainting UIMenus and CloseMenus() (thanks to DahkCeles)
+
+v4.02.9000538556 (2021/05/19)
+-----------------------------
+- Supported WoW Classic 2.5.1 (38707)
+
+v4.01.9000236639 (2020/12/14)
+-----------------------------
+- Fixed issues that classic server doesn't have UIDropDownMenu_HandleGlobalMouseEvent()
 
 v4.00.9000236639 (2020/11/22)
 -----------------------------

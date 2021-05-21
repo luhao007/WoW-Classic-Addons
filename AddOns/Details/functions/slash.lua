@@ -385,7 +385,7 @@ function SlashCmdList.DETAILS (msg, editbox)
 		
 		_detalhes.tabela_historico:adicionar (combat)
 	
-		_detalhes:InstanciaCallFunction (_detalhes.gump.Fade, "in", nil, "barras")
+		_detalhes:InstanciaCallFunction (_detalhes.Details.FadeHandler.Fader, "in", nil, "barras")
 		_detalhes:InstanciaCallFunction (_detalhes.AtualizaSegmentos) -- atualiza o instancia.showing para as novas tabelas criadas
 		_detalhes:InstanciaCallFunction (_detalhes.AtualizaSoloMode_AfertReset) -- verifica se precisa zerar as tabela da janela solo mode
 		_detalhes:InstanciaCallFunction (_detalhes.ResetaGump) --_detalhes:ResetaGump ("de todas as instancias")
@@ -1488,7 +1488,7 @@ Damage Update Status: @INSTANCEDAMAGESTATUS
 		--> clear memory
 		collectgarbage()		
 
-		_detalhes:InstanciaCallFunction (_detalhes.gump.Fade, "in", nil, "barras")
+		_detalhes:InstanciaCallFunction (_detalhes.Details.FadeHandler.Fader, "in", nil, "barras")
 		_detalhes:InstanciaCallFunction (_detalhes.AtualizaSegmentos)
 		_detalhes:InstanciaCallFunction (_detalhes.AtualizaSoloMode_AfertReset)
 		_detalhes:InstanciaCallFunction (_detalhes.ResetaGump)
@@ -1703,7 +1703,9 @@ Damage Update Status: @INSTANCEDAMAGESTATUS
 
 		local v = _detalhes.game_version .. "." .. (_detalhes.build_counter >= _detalhes.alpha_build_counter and _detalhes.build_counter or _detalhes.alpha_build_counter)
 		print (Loc ["STRING_DETAILS1"] .. "|cFFFFFF00DETAILS! VERSION|r: |cFFFFAA00C" .. (_detalhes.build_counter >= _detalhes.alpha_build_counter and _detalhes.build_counter or _detalhes.alpha_build_counter))
-		print (Loc ["STRING_DETAILS1"] .. "|cFFFFFF00GAME VERSION|r: |cFFFFAA00" .. _detalhes.game_version)
+
+		local version, build, date, tocversion = GetBuildInfo()
+		print (Loc ["STRING_DETAILS1"] .. "|cFFFFFF00GAME VERSION|r: |cFFFFAA00" .. version)
 
 	end
 end

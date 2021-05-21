@@ -37,8 +37,8 @@ The description is whatever is after the y coordinate.
 ### /cway
 Set the active waypoint to be the closest one.
 
-# /wayb
-Drop a waypoint at your current location.
+# /wayb [description]
+Drop a waypoint at your current location with an optional description.
 
 ### /tomtom
 Open the TomTom Interface options.

@@ -1,18 +1,103 @@
-0.4.9 Release Notes
+0.5.2 Release Notes
 Contributions made by Crieve:
-* Updated the exclude database function.
-* Common Boss Drops are now always after Zone Drops for some OCD reason.
-* Quests in the database now need to use "name" instead of "title" as part of an optimization.
-* AltQuestID has been purged from the addon. Optimized the Source Quest List in the Tooltips. (still need to refactor them in the pop out, but one thing at a time!) Optimized the Quest object type.
-* Added full support for "isMonthly" in Classic.
-* Added helper functions used in Burning Crusade zones.
-* Added some extra data for the Outland files I have already.
-* Saved and Collected are 2 different things.
-* Reverted the collectible as cost modification other than for quests themselves until we can find an appropriate fix.
-* Added Tarot Decks and Tarrot Cards.
-* Spell cooldowns (such as Mooncloth CD) will now show a saved checkmark.
-* Fixed the issue with quest items relative to the quest they help complete.
-* Optimized the Recipe and Spell object types. As a distinction: Spells are for Headers and are naturally uncollectible. Recipes are simply collectible spells.
-* Items that start quests now properly cache themselves using "itemIDAsCost".
-* Fixed a bug with the recipes.
+* Due to an annoying race condition involving PLAYER_LOGIN, I've refactored the event into VARIABLES_LOADED.
+* Updated the ATT requirements for the Wildhammer Clan to cap out at Revered.
+* The map for Karazhan, while in ATT-Classic, will now map to Deadwind Pass.
+* Moved "Kodo Hide Bag" to the Leatherworking Quests section.
+* Leatherworking itself has a level requirement of 5. Not sure where anyone got a level requirement of 4 from...
+* Added a French localization fix for First Aid.
+* Repeatable quests no longer get explicitly marked collected until a reload. Added various reputation recovery repeatable quests.
+* Added localization data for First Aid, Leatherworking, and Engineering.
+* Updated the Korean dungeon and raid localizations.
+* Updated the German dungeon and raid localizations.
+* Updated the French dungeon and raid localizations. Also corrected a bug that allowed unlocalized English text to be selected instead of localized text. (this fix needs to be applied to other locales still)
+* Updated the Spanish dungeon and raid localizations. Deleted the esMX localization file.
+* Updated the Chinese dungeon and raid localizations.
+* Finished the remaining localizations for dungeons and raids.
+* Ravenholdt is no longer Rogue Only. (sorry fellas!)
+* Junkboxes Needed now appears in the mini list if you are filtering for Reputations and are not Exalted with Ravenholdt.
+* Frostsaber Provisions quest actually remains available until Exalted.
+* When you explore an area, ATT now automatically updates the exploration cache.
+* The Mini List now always comes up after a reload if you have it turned on.
+* Added a dynamic Factions section. The Flight Paths dynamic section now fills itself with cached metadata.
+* Added the Flight Paths header.
+* Updated icons.
+* The Mini List now sorts things more appropriately based on their categorical clasification.
+* Moved all of the Factions inside of a Factions header for their respective zone for consistency.
+* Started migrating the data present in FlightPathDB over to Flight Path data files in the zones themselves. (This is because there are techniques that we can make use of within the DB that we can't do in the raw flight path DB.)
+* Added Flight Paths to Arathi and Stranglethorn Vale.
+* Added Flight Paths to all of the zones. The Flight DB is now only for name acquisition and unobtainable flagging. Localized names for Flight Paths are now stored in your saved variables in order to display the names of the flight paths in your native language once encountered.
+* ...
+* Fixed the harvester's ability to acquire new flight path data.
+* Added a number of unobtainable flight paths to NYI in order to prevent them from appearing in the dynamic list.
+* ...
+* Added race filtering for Hellfire Peninsula flight masters.
+* Added missing flight master data to Hellfire Peninsula.
+* Removed some unnecessary explicit color definitions from various descriptions.
+* ...
+* Added Thrown weapons and Gruul's Lair.
+* Added Magtheridon's Lair.
+* Added Tempest Keep and SSC.
+* Added Hyjal Summit.
+* Added Hyjal Summit quests.
+* Made some progress on Black Temple.
+* Updated parser to allow for "u" and "timeline" resolution.
+* Added Zul'Aman!
+* Made use of the lvlsquish helper function instead of inline preprocessor commands.
+* Added Sunwell Plateau.
+* Updated Onyxia's Lair and its associated quests.
+* Updated Molten Core and associated quests to Classic's future timelines. (these files now match between ATT-Clasic and AllTheThings!)
+* Updated Blackwing Lair and associated quests to Classic's future timelines. (these files now match between ATT-Clasic and AllTheThings!)
+* Added the Paladin and Shaman Tier 0.5 quests.
+* Updated Ruins of Ahn'Qiraj and associated quests to Classic's future timelines. (these files now match between ATT-Clasic and AllTheThings!)
+* Accounting for timeline changes.
+* Thori'dal, the Stars' Fury achievement is now Warrior, Rogue, Hunter only.
+* Added the quest for the Opening of the Dark Portal world event.
+* Added where you can buy Stormwind Seasoning Herbs.
+* Added the quest items for "A Noble Brew".
+* Updated some Duskwood quest items.
+* Optimized the Professions List to not stutter as much for potato computers.
+* Fixed a bug with QUEST_TURNED_IN.
+* Added Eversong Woods and Sunstrider Isle.
+* No longer accidentally marking Sense Undead as a TBC Phase One required spell.
+* Fixed a bug with the lockout tracker.
+* Explicitly marked the spellIDs associated with the recipes in Black Temple so that they can be collected.
+* Added Silvermoon City and the Ghostlands. (first draft)
+* Finished Silvermoon City.
+* Added some extra quest info and zone drops unique to Eversong Woods.
+* Added the Ghostlands.
+* Changed how we do Exploration so that we can handle expansion changes to the map data.
+* Added Exploration for Eversong Woods.
+* Added Area IDs for the Ghostlands. (now to explore and match them to texture coordinates!)
+* Added Ghostlands Exploration data. The ZA flight path confirmed not implemented until Phase 4.
+* Fixed some old world exploration that got modified with the prepatch.
+* Some Ghostlands prereqs were wrong.
+* Added Exploration data for Terokkar Forest for TBC.
+* Initial formatting for Azuremyst, Bloodmyst, and the Exodar for timeline manipulation. (not including quest changes yet)
+* Updated the .editorconfig file to match expected file format standards. No spaces to indent in file format and no extra line at the end.
+* First pass of editor config updates.
+* Editor Config purge pass 2.
+* The great whitespace war has ended.
+* Added the ability to toggle TBC Phases of/off in the settings menu. (only available on TBC Clients)
+* Added Exploration data for Shadowmoon Valley.
+* Added Exploration data for Nagrand.
+* Added Exploration data for Zangarmarsh.
+* Added Exploration data for Blade's Edge Mountains.
+* Added Exploration data for Netherstorm.
+* Added Exploration data for Hellfire Peninsula.
+* Added Exploration data for Azuremyst Isle.
+* Added Exploration data for Bloodmyst Isle.
+* Added creatures to Blades Edge Flight Path data.
+* Applied the TBC Phase 1 requirement to Hellfire Peninsula.
+* Marked Nagrand as TBC Phase One, dirtily butchered the pointless Faction headers.
+* Unobtainable icons now appear correctly.
+* Added the OnUpdateReputationRequired function that objects may subscribe to in order to enforce visibility requirements for non-player faction requirements. (Scryers & Aldor)
+* Added support for Titles. Added the Scarab Lord title to TBC Phase One.
+* Marked all of the Outland zones as TBC Phase One required. The Isle of Quel'Danas has a TBC Phase 5 Requirement. Removed all faction headers and dirtily smashed the quests and vendors into the places they should have been ages ago. (This will need to be touched up significantly before TBC Launch, apologies users for the temporary lack of organization, Prepatch is here and I'm out of time.) Updated information on Mr. Pinchy.
+* Added the Rebel Camp, Stranglethorn flight path.
+* Added the Alliance Ashenvale flight path in Forest Song.
+* ...
+* Added the neutral Flight Path in Emerald Sanctuary, Felwood. Added a number of new missing Alliance Ashenvale quests made available with TBC Prepatch.
+* Added the flight path at Mudsprocket, Dustwallow Marsh. Added a bunch of new Alliance quests to Dustwallow Marsh for Prepatch.
+* Warden's Scroll Case wasn't added until 6.1.0.19508.
 

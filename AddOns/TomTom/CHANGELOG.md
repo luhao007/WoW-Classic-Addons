@@ -1,10 +1,6 @@
 # TomTom
 
-## v11306-1.2.0 (2020-12-03)
- 
+## [v3.0.1](https://github.com/jnwhiteh/TomTom/tree/v3.0.1) (2021-05-19)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.0.0...v3.0.1) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
-- Set Classic Interface  
-- Allow larger ranges for playeroffset and cursoroffset.  
-- Make RemoveWaypoint return on nil, because race conditions.  
-- Override MapType for Lunarfall/Frostwall so it can be named.  
-- Accept World or Cosmic map parents for Shadowlands.  
+- Add interface versions for all three game versions  

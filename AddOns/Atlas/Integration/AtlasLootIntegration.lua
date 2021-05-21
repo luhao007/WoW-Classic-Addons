@@ -1,10 +1,10 @@
--- $Id: AtlasLootIntegration.lua 346 2020-01-06 15:16:04Z arith $
+-- $Id: AtlasLootIntegration.lua 368 2021-05-20 15:03:14Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -34,6 +34,16 @@ local select = _G.select
 local type = _G.type
 local tonumber = _G.tonumber
 -- Libraries
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
+
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -43,16 +53,28 @@ local addon = LibStub("AceAddon-3.0"):GetAddon(private.addon_name)
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name);
 
 -- Atlas to AtlasLoot's module mapping
-local modules = {
-	Atlas_ClassicWoW		= "AtlasLoot_Classic",
-	Atlas_BurningCrusade		= "AtlasLoot_BurningCrusade",
-	Atlas_WrathoftheLichKing	= "AtlasLoot_WrathoftheLichKing",	
-	Atlas_Cataclysm			= "AtlasLoot_Cataclysm",
-	Atlas_MistsofPandaria		= "AtlasLoot_MistsofPandaria",
-	Atlas_WarlordsofDraenor		= "AtlasLoot_WarlordsofDraenor",
-	Atlas_Legion			= "AtlasLoot_Legion",
-	Atlas_BattleforAzeroth		= "AtlasLoot_BattleforAzeroth",
-};
+local modules = {}
+if WoWClassicEra then
+	modules = {
+		Atlas_ClassicWoW		= "AtlasLoot_Classic",
+	}
+elseif WoWClassicTBC then
+	modules = {
+		Atlas_ClassicWoW		= "AtlasLoot_Classic",
+		Atlas_BurningCrusade		= "AtlasLoot_BurningCrusade",
+	}
+else
+	modules = {
+		Atlas_ClassicWoW		= "AtlasLoot_Classic",
+		Atlas_BurningCrusade		= "AtlasLoot_BurningCrusade",
+		Atlas_WrathoftheLichKing	= "AtlasLoot_WrathoftheLichKing",	
+		Atlas_Cataclysm			= "AtlasLoot_Cataclysm",
+		Atlas_MistsofPandaria		= "AtlasLoot_MistsofPandaria",
+		Atlas_WarlordsofDraenor		= "AtlasLoot_WarlordsofDraenor",
+		Atlas_Legion			= "AtlasLoot_Legion",
+		Atlas_BattleforAzeroth		= "AtlasLoot_BattleforAzeroth",
+	}
+end
 
 function addon:EnableAtlasLootButton(base, zoneID)
 	if (addon:CheckAddonStatus("AtlasLoot")) then 
