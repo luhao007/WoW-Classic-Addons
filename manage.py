@@ -195,8 +195,6 @@ class Manager:
                 logger.warning('%s not found!', addon)
                 continue
 
-            path = os.path.join('AddOns', addon, '{}.toc'.format(addon))
-
             def process(config, addon, lines):
                 toc = TOC(lines)
 
@@ -223,7 +221,10 @@ class Manager:
 
                 return toc.to_lines()
 
-            process_file(path, functools.partial(process, config, addon))
+            for postfix in ['', '-Classic', '-BCC', '-Mainline']:
+                path = os.path.join('AddOns', addon, f'{addon}{postfix}.toc')
+                if os.path.exists(path):
+                    process_file(path, functools.partial(process, config, addon))
 
     ###########################
     # Handle embedded libraries

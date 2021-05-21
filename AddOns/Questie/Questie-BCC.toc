@@ -1,12 +1,16 @@
 ## Interface: 20501
-## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.3.11 (Beta 4)|r
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
-## Notes: A standalone Classic QuestHelper
 ## Version: 6.3.11
-## RequiredDeps:
+## RequiredDeps: 
 ## OptionalDeps: Ace3, CallbackHandler-1.0, HereBeDragons, LibCompress, LibDataBroker-1.1, LibDBIcon-1.0, LibQuestXP, LibSharedMedia-3.0, LibStub, LibUIDropDownMenu
 ## SavedVariables: QuestieConfig
 ## SavedVariablesPerCharacter: QuestieConfigCharacter
+
+## Title: |cFFFFFFFFQuestie|r|cFF00FF00 v6.3.11 (Beta 4)|r
+## Notes: A standalone Classic QuestHelper
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
+## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
+
 ## X-Curse-Project-ID: 334372
 
 Modules\VersionCheck.lua
@@ -52,13 +56,11 @@ Database\Corrections\QuestieQuestBlacklist.lua
 Database\Corrections\QuestieEvent.lua
 Database\Corrections\QuestieDatabaseUnification.lua
 
-## Classic Corrections
 Database\Corrections\Classic\classicQuestFixes.lua
 Database\Corrections\Classic\classicNPCFixes.lua
 Database\Corrections\Classic\classicItemFixes.lua
 Database\Corrections\Classic\classicObjectFixes.lua
 
-## TBC Corrections
 Database\Corrections\TBC\tbcQuestFixes.lua
 Database\Corrections\TBC\tbcNPCFixes.lua
 Database\Corrections\TBC\tbcItemFixes.lua
