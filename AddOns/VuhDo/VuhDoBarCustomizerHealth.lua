@@ -49,6 +49,7 @@ local UnitIsUnit = UnitIsUnit;
 local pairs = pairs;
 local twipe = table.wipe;
 local format = format;
+local min = math.min;
 local sIsOverhealText;
 local sIsAggroText;
 local sIsInvertGrowth;
@@ -111,6 +112,7 @@ end
 
 local tIncColor = { ["useBackground"] = true };
 local tShieldColor = { ["useBackground"] = true };
+local tOvershieldColor = { ["useBackground"] = true };
 
 
 
@@ -130,6 +132,22 @@ local function VUHDO_setStatusBarColor(aBar, aColor)
 
 	if aColor["useBackground"] then	aBar:SetStatusBarColor(aColor["R"], aColor["G"], aColor["B"], tOpacity);
 	elseif tOpacity then aBar:SetAlpha(tOpacity); end
+end
+
+
+
+--
+local tOpacity;
+local function VUHDO_setTextureColor(aTexture, aColor)
+
+	tOpacity = aColor["useOpacity"] and aColor["O"] or nil;
+
+	if aColor["useBackground"] then	
+		aTexture:SetVertexColor(aColor["R"], aColor["G"], aColor["B"], tOpacity);
+	elseif tOpacity then 
+		aTexture:SetAlpha(tOpacity); 
+	end
+
 end
 
 
@@ -166,12 +184,16 @@ end
 --
 local tInfo;
 local tAllButtons;
-local tAbsorbAmount;
-local tOpacity;
-local tHealthBar;
-local tIncBar;
-function VUHDO_updateShieldBar(aUnit, aHealthPlusIncQuota)
-	if not VUHDO_CONFIG["SHOW_SHIELD_BAR"] then return; end
+local tAbsorbAmount, tOverallShieldRemain;
+local tShieldOpacity, tOvershieldOpacity;
+local tHealthBar, tHealthBarWidth, tHealthBarHeight, tHealthDeficit;
+local tOvershieldBar, tOvershieldBarSize, tOvershieldBarSizePercent, tOvershieldBarOffset, tOvershieldBarOffsetPercent;
+local tVisibleAmountInc;
+local tOrientation;
+function VUHDO_updateShieldBar(aUnit, aHealthPlusIncQuota, aAmountInc)
+	if not VUHDO_CONFIG["SHOW_SHIELD_BAR"] then 
+		return; 
+	end
 
 	tInfo = VUHDO_RAID[aUnit];
 	tAllButtons = VUHDO_getUnitButtons(VUHDO_resolveVehicleUnit(aUnit));
@@ -179,26 +201,107 @@ function VUHDO_updateShieldBar(aUnit, aHealthPlusIncQuota)
 	if not tInfo or not tAllButtons or not tInfo["connected"] or tInfo["dead"] or tInfo["healthmax"] <= 0 then
 		return;
 	end
-	aHealthPlusIncQuota = aHealthPlusIncQuota and aHealthPlusIncQuota or VUHDO_getHealthPlusIncQuota(aUnit);
 
-	tAbsorbAmount = VUHDO_getUnitOverallShieldRemain(aUnit) / tInfo["healthmax"];
-  for _, tButton in pairs(tAllButtons) do
-    tShieldBar = VUHDO_getHealthBar(tButton, 19);
+	tOrientation = VUHDO_getStatusbarOrientationString("HEALTH_BAR");
 
-    if tAbsorbAmount > 0 then
+	if not aHealthPlusIncQuota or not aAmountInc then
+		aHealthPlusIncQuota, aAmountInc = VUHDO_getHealthPlusIncQuota(aUnit);
+	end
+
+	tOverallShieldRemain = VUHDO_getUnitOverallShieldRemain(aUnit);
+	tAbsorbAmount = tOverallShieldRemain / tInfo["healthmax"];
+	
+	tHealthDeficit = tInfo["healthmax"] - tInfo["health"];
+	tVisibleAmountInc = min(aAmountInc, tHealthDeficit);
+	tOverallShieldRemain = min(tOverallShieldRemain, tInfo["healthmax"]);
+
+	tOvershieldBarSizePercent = (tOverallShieldRemain - tHealthDeficit + tVisibleAmountInc) / tInfo["healthmax"]; 
+	tOvershieldBarOffsetPercent = (tHealthDeficit - tVisibleAmountInc) / tInfo["healthmax"]; 
+
+	for _, tButton in pairs(tAllButtons) do 
+		tHealthBar = VUHDO_getHealthBar(tButton, 1);
+		tShieldBar = VUHDO_getHealthBar(tButton, 19);
+
+		if tAbsorbAmount > 0 then 
 			tShieldBar:SetValueRange(aHealthPlusIncQuota, aHealthPlusIncQuota + tAbsorbAmount);
-			tHealthBar = VUHDO_getHealthBar(tButton, 1);
- 			tShieldColor["R"], tShieldColor["G"], tShieldColor["B"], tOpacity = tHealthBar:GetStatusBarColor();
+			
+ 			tShieldColor["R"], tShieldColor["G"], tShieldColor["B"], tShieldOpacity = tHealthBar:GetStatusBarColor();
  			tShieldColor = VUHDO_getDiffColor(tShieldColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["SHIELD"]);
- 			if tShieldColor["O"] and tOpacity then
- 				tShieldColor["O"] = tShieldColor["O"] * tOpacity * (tHealthBar:GetAlpha() or 1);
- 			end
+ 			
+			if tShieldColor["O"] and tShieldOpacity then
+ 				tShieldColor["O"] = tShieldColor["O"] * tShieldOpacity * (tHealthBar:GetAlpha() or 1);
+			end
 
-    	VUHDO_setStatusBarColor(tShieldBar, tShieldColor);
-    else
-    	tShieldBar:SetValueRange(0,0);
-    end
-  end
+			VUHDO_setStatusBarColor(tShieldBar, tShieldColor);
+		else 
+			tShieldBar:SetValueRange(0,0);
+		end
+
+		tOvershieldBar = VUHDO_getOvershieldBarTexture(tHealthBar);
+
+		if VUHDO_CONFIG["SHOW_OVERSHIELD_BAR"] and (tOverallShieldRemain > tHealthDeficit) then
+			tOvershieldBar.tileSize = 32;
+			tOvershieldBar:SetParent(tHealthBar);
+			tOvershieldBar:ClearAllPoints();
+			
+			tOvershieldColor["R"], tOvershieldColor["G"], tOvershieldColor["B"], tOvershieldOpacity = tHealthBar:GetStatusBarColor();
+ 			tOvershieldColor = VUHDO_getDiffColor(tOvershieldColor, VUHDO_PANEL_SETUP["BAR_COLORS"]["OVERSHIELD"]);
+ 			
+			if tOvershieldColor["O"] and tOvershieldOpacity then
+ 				tOvershieldColor["O"] = tOvershieldColor["O"] * tOvershieldOpacity * (tHealthBar:GetAlpha() or 1);
+			end
+
+			VUHDO_setTextureColor(tOvershieldBar, tOvershieldColor);
+
+			tHealthBarWidth, tHealthBarHeight = tHealthBar:GetSize();
+
+			if (not sIsInvertGrowth and tOrientation == "HORIZONTAL") or (sIsInvertGrowth and tOrientation == "HORIZONTAL_INV") then 
+				-- VUHDO_STATUSBAR_LEFT_TO_RIGHT
+				tOvershieldBarSize = tOvershieldBarSizePercent * tHealthBarWidth;
+				tOvershieldBarOffset = tOvershieldBarOffsetPercent * tHealthBarWidth;
+	
+				tOvershieldBar:SetPoint("TOPRIGHT", tHealthBar, "TOPRIGHT", tOvershieldBarOffset * -1, 0);
+				tOvershieldBar:SetPoint("BOTTOMRIGHT", tHealthBar, "BOTTOMRIGHT", tOvershieldBarOffset * -1, 0);
+
+				tOvershieldBar:SetWidth(tOvershieldBarSize);
+				tOvershieldBar:SetTexCoord(0, tOvershieldBarSize / tOvershieldBar.tileSize, 0, tHealthBarHeight / tOvershieldBar.tileSize);
+			elseif (not sIsInvertGrowth and tOrientation == "HORIZONTAL_INV") or (sIsInvertGrowth and tOrientation == "HORIZONTAL") then
+				-- VUHDO_STATUSBAR_RIGHT_TO_LEFT
+				tOvershieldBarSize = tOvershieldBarSizePercent * tHealthBarWidth;
+				tOvershieldBarOffset = tOvershieldBarOffsetPercent * tHealthBarWidth;
+	
+				tOvershieldBar:SetPoint("TOPLEFT", tHealthBar, "TOPLEFT", tOvershieldBarOffset, 0);
+				tOvershieldBar:SetPoint("BOTTOMLEFT", tHealthBar, "BOTTOMLEFT", tOvershieldBarOffset, 0);
+
+				tOvershieldBar:SetWidth(tOvershieldBarSize);
+				tOvershieldBar:SetTexCoord(0, tOvershieldBarSize / tOvershieldBar.tileSize, 0, tHealthBarHeight / tOvershieldBar.tileSize);
+			elseif (not sIsInvertGrowth and tOrientation == "VERTICAL") or (sIsInvertGrowth and tOrientation == "VERTICAL_INV") then
+				-- VUHDO_STATUSBAR_BOTTOM_TO_TOP
+				tOvershieldBarSize = tOvershieldBarSizePercent * tHealthBarHeight;
+				tOvershieldBarOffset = tOvershieldBarOffsetPercent * tHealthBarHeight;
+	
+				tOvershieldBar:SetPoint("TOPLEFT", tHealthBar, "TOPLEFT", 0, tOvershieldBarOffset * -1);
+				tOvershieldBar:SetPoint("TOPRIGHT", tHealthBar, "TOPRIGHT", 0, tOvershieldBarOffset * -1);
+
+				tOvershieldBar:SetHeight(tOvershieldBarSize);
+				tOvershieldBar:SetTexCoord(0, tHealthBarWidth / tOvershieldBar.tileSize, 0, tOvershieldBarSize / tOvershieldBar.tileSize);
+			else -- (not sIsInvertGrowth and tOrientation == "VERTICAL_INV") or (sIsInvertGrowth and tOrientation == "VERTICAL")
+				-- VUHDO_STATUSBAR_TOP_TO_BOTTOM
+				tOvershieldBarSize = tOvershieldBarSizePercent * tHealthBarHeight;
+				tOvershieldBarOffset = tOvershieldBarOffsetPercent * tHealthBarHeight;
+	
+				tOvershieldBar:SetPoint("BOTTOMLEFT", tHealthBar, "BOTTOMLEFT", 0, tOvershieldBarOffset);
+				tOvershieldBar:SetPoint("BOTTOMRIGHT", tHealthBar, "BOTTOMRIGHT", 0, tOvershieldBarOffset);
+
+				tOvershieldBar:SetHeight(tOvershieldBarSize);
+				tOvershieldBar:SetTexCoord(0, tHealthBarWidth / tOvershieldBar.tileSize, 0, tOvershieldBarSize / tOvershieldBar.tileSize);
+			end
+  	
+			tOvershieldBar:Show();
+		else
+			tOvershieldBar:Hide();
+		end
+	end
 end
 local VUHDO_updateShieldBar = VUHDO_updateShieldBar;
 
@@ -239,7 +342,7 @@ local function VUHDO_updateIncHeal(aUnit)
 		end
 	end
 
-	VUHDO_updateShieldBar(aUnit, tHealthPlusInc);
+	VUHDO_updateShieldBar(aUnit, tHealthPlusInc, tAmountInc);
 end
 
 
@@ -393,7 +496,7 @@ function VUHDO_customizeText(aButton, aMode, anIsTarget)
 			end
 
 			if tSetup["ID_TEXT"]["showName"] then
-				tTextString = (tSetup["ID_TEXT"]["showClass"] and not tInfo["isPet"]) 
+				tTextString = (tSetup["ID_TEXT"]["showClass"] and not tInfo["isPet"] and tInfo["className"]) 
 					and tInfo["className"] .. ": " or "";
 
 				tTextString = tTextString .. ((not tOwnerInfo or not tSetup["ID_TEXT"]["showPetOwners"])
@@ -690,7 +793,7 @@ function VUHDO_updateHealthBarsFor(aUnit, anUpdateMode)
 	tAllButtons = VUHDO_getUnitButtons(aUnit);
 	if not tAllButtons then	return; end
 
-	if 2 == anUpdateMode or 12 == anUpdateMode then -- VUHDO_UPDATE_HEALTH --VUHDO_UPDATE_HEALTH_COMBAT_LOG
+	if 2 == anUpdateMode then -- VUHDO_UPDATE_HEALTH
 		VUHDO_determineIncHeal(aUnit);
 
 		tInfo = VUHDO_RAID[aUnit];

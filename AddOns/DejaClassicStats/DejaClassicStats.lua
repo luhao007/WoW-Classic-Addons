@@ -457,7 +457,7 @@ local t=DCSMeleeEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
 -------------------------------
 local DCSSpellEnhancementsStatsHeader = CreateFrame("Frame", "DCSSpellEnhancementsStatsHeader", DejaClassicStatsFrame)
 	DCSSpellEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
 	-- DCSSpellEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSSpellEnhancementsStatsHeader:Hide()
 
@@ -500,49 +500,96 @@ local t=DCSDefenseStatsHeader:CreateTexture(nil,"ARTWORK")
 -- Primary/General --
 ---------------------
 local function DCS_SetBlizzPrimaryStats(statindex)
-	local text = _G["CharacterStatFrame"..statindex.."StatText"];
-	local frame = _G["CharacterStatFrame"..statindex];
-	local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statindex);	
+	local DCSstatindex = statindex
+	local DCStext = _G["PlayerStatFrameLeft"..DCSstatindex];
+	local DCSstatFrame = _G["PlayerStatFrameLeft"..DCSstatindex];
+	local DCSstat;
+	local DCSeffectiveStat;
+	local DCSposBuff;
+	local DCSnegBuff;
+	local DCSstatName = getglobal("SPELL_STAT"..DCSstatindex.."_NAME");
+	local DCSstat, DCSeffectiveStat, DCSposBuff, DCSnegBuff = UnitStat("player", DCSstatindex);
+	local t = DCStext:CreateFontString(DCStext, "OVERLAY", "GameTooltipText")
 	-- Set the tooltip text
-	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE.._G["SPELL_STAT"..statindex.."_NAME"].." ";
-	-- Get class specific tooltip for that stat
-	local temp, classFileName = UnitClass("player");
-	local classStatText = _G[strupper(classFileName).."_"..frame.stat.."_".."TOOLTIP"];
-	-- If can't find one use the default
-	if ( not classStatText ) then
-		classStatText = _G["DEFAULT".."_"..frame.stat.."_".."TOOLTIP"];
-	end
+	local tooltipText = HIGHLIGHT_FONT_COLOR_CODE..DCSstatName.." ";
 
-	if ( ( posBuff == 0 ) and ( negBuff == 0 ) ) then
-		text:SetText(effectiveStat);
-		frame.tooltip = tooltipText..effectiveStat..FONT_COLOR_CODE_CLOSE;
-		frame.tooltip2 = classStatText;
+	if ( ( DCSposBuff == 0 ) and ( DCSnegBuff == 0 ) ) then
+		t:SetText(DCSeffectiveStat);
+		DCSstatFrame.tooltip = tooltipText..DCSeffectiveStat..FONT_COLOR_CODE_CLOSE;
 	else 
-		tooltipText = tooltipText..effectiveStat;
-		if ( posBuff > 0 or negBuff < 0 ) then
-			tooltipText = tooltipText.." ("..(stat - posBuff - negBuff)..FONT_COLOR_CODE_CLOSE;
+		tooltipText = tooltipText..DCSeffectiveStat;
+		if ( DCSposBuff > 0 or DCSnegBuff < 0 ) then
+			tooltipText = tooltipText.." ("..(DCSstat - DCSposBuff - DCSnegBuff)..FONT_COLOR_CODE_CLOSE;
 		end
-		if ( posBuff > 0 ) then
-			tooltipText = tooltipText..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..posBuff..FONT_COLOR_CODE_CLOSE;
+		if ( DCSposBuff > 0 ) then
+			tooltipText = tooltipText..FONT_COLOR_CODE_CLOSE..GREEN_FONT_COLOR_CODE.."+"..DCSposBuff..FONT_COLOR_CODE_CLOSE;
 		end
-		if ( negBuff < 0 ) then
-			tooltipText = tooltipText..RED_FONT_COLOR_CODE.." "..negBuff..FONT_COLOR_CODE_CLOSE;
+		if ( DCSnegBuff < 0 ) then
+			tooltipText = tooltipText..RED_FONT_COLOR_CODE.." "..DCSnegBuff..FONT_COLOR_CODE_CLOSE;
 		end
-		if ( posBuff > 0 or negBuff < 0 ) then
+		if ( DCSposBuff > 0 or DCSnegBuff < 0 ) then
 			tooltipText = tooltipText..HIGHLIGHT_FONT_COLOR_CODE..")"..FONT_COLOR_CODE_CLOSE;
 		end
-		frame.tooltip = tooltipText;
-		frame.tooltip2= classStatText;
+		DCSstatFrame.tooltip = tooltipText;
 
-		-- If there are any negative buffs then show the main number in red even if there are
-		-- positive buffs. Otherwise show in green.
-		if ( negBuff < 0 ) then
-			text:SetText(RED_FONT_COLOR_CODE..effectiveStat..FONT_COLOR_CODE_CLOSE);
+		--If there are any negative buffs then show the main number in red even if there are
+		--positive buffs. Otherwise show in green.
+		if ( DCSnegBuff < 0 ) then
+			t:SetText(RED_FONT_COLOR_CODE..DCSeffectiveStat..FONT_COLOR_CODE_CLOSE);
 		else
-			text:SetText(GREEN_FONT_COLOR_CODE..effectiveStat..FONT_COLOR_CODE_CLOSE);
+			t:SetText(GREEN_FONT_COLOR_CODE..DCSeffectiveStat..FONT_COLOR_CODE_CLOSE);
 		end
 	end
-	return tooltipText, effectiveStat, classStatText, "", "", ""
+	DCSstatFrame.tooltip2 = getglobal("DEFAULT_STAT"..DCSstatindex.."_TOOLTIP");
+	local _, unitClass = UnitClass("player");
+	unitClass = strupper(unitClass);
+	
+	if ( DCSstatindex == 1 ) then
+		local attackPower = GetAttackPowerForStat(DCSstatindex,DCSeffectiveStat);
+		DCSstatFrame.tooltip2 = format(DCSstatFrame.tooltip2, attackPower);
+		if ( unitClass == "WARRIOR" or unitClass == "SHAMAN" or unitClass == "PALADIN" ) then
+			DCSstatFrame.tooltip2 = DCSstatFrame.tooltip2 .. "\n" .. format( STAT_BLOCK_TOOLTIP, DCSeffectiveStat*BLOCK_PER_STRENGTH );
+		end
+	elseif ( DCSstatindex == 3 ) then
+		local baseStam = min(20, DCSeffectiveStat);
+		local moreStam = DCSeffectiveStat - baseStam;
+		DCSstatFrame.tooltip2 = format(DCSstatFrame.tooltip2, (baseStam + (moreStam*HEALTH_PER_STAMINA))*GetUnitMaxHealthModifier("player"));
+		local petStam = ComputePetBonus("PET_BONUS_STAM", DCSeffectiveStat );
+		if( petStam > 0 ) then
+			DCSstatFrame.tooltip2 = DCSstatFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_STAMINA,petStam);
+		end
+	elseif ( DCSstatindex == 2 ) then
+		local attackPower = GetAttackPowerForStat(DCSstatindex,DCSeffectiveStat);
+		if ( attackPower > 0 ) then
+			DCSstatFrame.tooltip2 = format(STAT_ATTACK_POWER, attackPower) .. format(DCSstatFrame.tooltip2, GetCritChanceFromAgility("player"), DCSeffectiveStat*ARMOR_PER_AGILITY);
+		else
+			DCSstatFrame.tooltip2 = format(DCSstatFrame.tooltip2, GetCritChanceFromAgility("player"), DCSeffectiveStat*ARMOR_PER_AGILITY);
+		end
+	elseif ( DCSstatindex == 4 ) then
+		local baseInt = min(20, DCSeffectiveStat);
+		local moreInt = DCSeffectiveStat - baseInt
+		if ( UnitHasMana("player") ) then
+			DCSstatFrame.tooltip2 = format(DCSstatFrame.tooltip2, baseInt + moreInt*MANA_PER_INTELLECT, GetSpellCritChanceFromIntellect("player"));
+		else
+			DCSstatFrame.tooltip2 = nil;
+		end
+		local petInt = ComputePetBonus("PET_BONUS_INT", DCSeffectiveStat );
+		if( petInt > 0 ) then
+			if ( not DCSstatFrame.tooltip2 ) then
+				DCSstatFrame.tooltip2 = "";
+			end
+			DCSstatFrame.tooltip2 = DCSstatFrame.tooltip2 .. "\n" .. format(PET_BONUS_TOOLTIP_INTELLECT,petInt);
+		end
+	elseif ( DCSstatindex == 5 ) then
+		-- All mana regen stats are displayed as mana/5 sec.
+		DCSstatFrame.tooltip2 = format(DCSstatFrame.tooltip2, GetUnitHealthRegenRateFromSpirit("player"));
+		if ( UnitHasMana("player") ) then
+			local regen = GetUnitManaRegenRateFromSpirit("player");
+			regen = floor( regen * 5.0 );
+			DCSstatFrame.tooltip2 = DCSstatFrame.tooltip2.."\n"..format(MANA_REGEN_FROM_SPIRIT, regen);
+		end
+	end
+	return "", DCSeffectiveStat, DCSstatFrame.tooltip, DCSstatFrame.tooltip2, "", ""
 end
 -- Strength
 local function DCS_Strength()
@@ -624,8 +671,8 @@ end
 local function MHWeaponSkill()
 	local mainBase, mainMod, offBase, offMod = UnitAttackBothHands("player");
 	local effective = mainBase + mainMod;
-	-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your main hand."]
-	return "", format("%.0f", effective), ATTACK_TOOLTIP_SUBTEXT, "", "", ""
+	-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your main hand. (Weapon Skill)"]
+	return "", format("%.0f", effective), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 end
 -- Main Hand Attack Power
 local function MeleeAP()
@@ -656,7 +703,7 @@ local function OHWeaponSkill()
 		local mainBase, mainMod, offBase, offMod = UnitAttackBothHands("player");
 		local effective = offBase + offMod;
 		-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your off hand."]
-		return "", format("%.0f", effective), ATTACK_TOOLTIP_SUBTEXT, "", "", ""
+		return "", format("%.0f", effective), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 	else
 		return L["Off Hand: "].."N/A", "N/A", "", "", "", ""
 	end
@@ -699,14 +746,21 @@ end
 -- Ranged Damage
 local function RangedDamage()
 	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage("player");
-	local damageSpread = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
-	local baseDamage = (minDamage + maxDamage) * 0.5;
-	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-	local totalBonus = (fullDamage - baseDamage);
-	local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
-	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
-	local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
-	return L["Ranged Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	if rangedAttackSpeed == 0 then
+		local damageSpread = "0 - 0";
+		local TooltipLine1 = L["Attack Speed (seconds): "].."0"
+		local TooltipLine2 = L["Damage per Second: "].."0"
+		return L["Ranged Damage: "].."0", damageSpread, TooltipLine1, TooltipLine2, "", ""
+	else
+		local damageSpread = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
+		local baseDamage = (minDamage + maxDamage) * 0.5;
+		local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+		local totalBonus = (fullDamage - baseDamage);
+		local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
+		local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+		return L["Ranged Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	end
 end
 -- Ranged Critical Strike Chance
 local function RangedCrit()
@@ -727,6 +781,33 @@ local function RangedHitModifier()
 		hit = hit + 3
 	end
 	return "", format("%.2f%%", hit), "", "", "", ""
+end
+local function Expertise()
+	if ( not unit ) then
+		unit = "player";
+	end
+	local expertise, offhandExpertise = GetExpertise();
+	local speed, offhandSpeed = UnitAttackSpeed(unit);
+	local text;
+	if( offhandSpeed ) then
+		text = expertise.." / "..offhandExpertise;
+	else
+		text = expertise;
+	end
+	
+	DCSstatFrametooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." "..text..FONT_COLOR_CODE_CLOSE;
+	
+	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
+	expertisePercent = format("%.2f", expertisePercent);
+	if( offhandSpeed ) then
+		offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
+		text = expertisePercent.."% / "..offhandExpertisePercent.."%";
+	else
+		text = expertisePercent.."%";
+	end
+	DCSstatFrametooltip2 = format(CR_EXPERTISE_TOOLTIP, text, GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE));
+
+	return "", text, DCSstatFrametooltip, DCSstatFrametooltip2, "", ""
 end
 -------------
 -- Defense --
@@ -781,6 +862,16 @@ local function Defense()
 	local total = "("..baseDefense.." |cff00c0ff+ "..bonusDefense.."|r)"
 	return "", format("%.0f", (baseDefense + bonusDefense)), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
+-- Defense
+local function Resilience()
+	local resilience = GetCombatRating(CR_RESILIENCE_CRIT_TAKEN);
+	local bonus = GetCombatRatingBonus(CR_RESILIENCE_CRIT_TAKEN);
+
+	local DCSstatFrametooltip = HIGHLIGHT_FONT_COLOR_CODE..STAT_RESILIENCE.." "..resilience..FONT_COLOR_CODE_CLOSE;
+	local DCSstatFrametooltip2 = format(RESILIENCE_TOOLTIP, bonus, min(bonus * 2, 25.00), bonus);
+	return "", resilience, DCSstatFrametooltip, DCSstatFrametooltip2, "", ""
+end
+-- Set the tooltip text
 ------------------
 -- Spellcasting --
 ------------------
@@ -788,46 +879,100 @@ end
 -- local function ManaRegenCurrent() --This appears to be power regen like rage, energy, runes, focus, etc.
 -- return "", format("%.0f", GetPowerRegen()), TooltipLine1, "", "", ""
 -- end
-local MP5Modifier = 0
+-- local MP5Modifier = 0 --Only needed if NOT using TBC API
 -- MP5
 local function MP5()
-	local mp5 = 0
-	for i=1,18 do
-		local itemLink = GetInventoryItemLink("player", i)
-		if itemLink then
-			local stats = GetItemStats(itemLink)
-			if stats then
-				local statMP5 = stats["ITEM_MOD_POWER_REGEN0_SHORT"]
-				if (statMP5) then
-					mp5 = mp5 + statMP5 + 1
-				end
-			end
-		end
-	end
-	MP5Modifier = mp5
-	local TooltipLine1 = mp5.." "..L["Mana points regenerated every five seconds while casting and inside the five second rule."]
-	local TooltipLine2 = format("%.2f", (mp5 * 0.4)).." "..L["Mana points regenerated every tick while casting and inside the five second rule."]
-	return "", format("%.0f", mp5), TooltipLine1, TooltipLine2, "", ""
+	-- local mp5 = 0 --Only needed if NOT using TBC API
+	-- MP5 from items, doesn't include gems, using API for TBC
+	-- for i=1,18 do
+	-- 	local itemLink = GetInventoryItemLink("player", i)
+	-- 	if itemLink then
+	-- 		local stats = GetItemStats(itemLink)
+	-- 		if stats then
+	-- 			local statMP5 = stats["ITEM_MOD_POWER_REGEN0_SHORT"]
+	-- 			if (statMP5) then
+	-- 				mp5 = mp5 + statMP5 + 1
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
+	local _, casting = GetManaRegen();
+	-- All mana regen stats are displayed as mana/5 sec.
+	casting = ( casting * 5.0 );
+	-- Default Tooltips:
+	-- TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE .. MANA_REGEN .. FONT_COLOR_CODE_CLOSE;
+	-- TooltipLine2 = format(MANA_REGEN_TOOLTIP, base, casting);
+
+	-- Ticks are every 2 seconds, or 2/5 (0.4) of MP5 stat per tick.
+	local MPT = (casting * 0.4)
+	local TooltipLine1 = format("%.1f", casting).." "..L["Mana points regenerated every five seconds (MP5) while CASTING and inside the five second rule."]
+	local TooltipLine2 = format("%.1f", (casting * 0.4)).." "..L["Mana points regenerated every TICK (2 sec) while CASTING and inside the five second rule."]
+	return "", format("%.1f", casting).."/"..format("%.1f", MPT), TooltipLine1, TooltipLine2, "", ""
 end
 -- Mana Regen while not casting
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsManaRegenNotCasting = {
+	DCSnotcasting = 0,
+}
 local function ManaRegenNotCasting()
-	MP5()
-	local base, casting = GetManaRegen()
-	local effectiveManaRegen = MP5Modifier * 0.4 -- Ticks are every 2 seconds, or 2/5 of MP5 stat per tick.
-	local TooltipLine1 = L["Total Mana points regenerated per tick while not casting and outside the five second rule."]
-	return "", format("%.2f", (base * 2) + effectiveManaRegen), TooltipLine1, "", "", ""
+	DCSnotcasting = gdbprivate.gdb.gdbdefaults.DejaClassicStatsManaRegenNotCasting.DCSnotcasting 
+	local base, casting = GetManaRegen();
+	if base == casting then
+		if DCSnotcasting then
+			base = DCSnotcasting
+		end
+	else
+		gdbprivate.gdb.gdbdefaults.DejaClassicStatsManaRegenNotCasting.DCSnotcasting = base
+	end
+
+	-- All mana regen stats are displayed as mana/5 sec.
+	base = format("%.1f", base * 5);
+	-- Default Tooltips:
+	-- TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE .. MANA_REGEN .. FONT_COLOR_CODE_CLOSE;
+	-- TooltipLine2 = format(MANA_REGEN_TOOLTIP, base, casting);
+
+	-- Ticks are every 2 seconds, or 2/5 (0.4) of MP5 stat per tick.
+	local MPT = (base * 0.4)
+	local TooltipLine1 = base.." "..L["Mana points regenerated every five seconds (MP5) while NOT casting and outside the five second rule."]
+	local TooltipLine2 = format("%.1f", MPT).." "..L["Mana points regenerated every TICK (2 sec) while NOT casting and outside the five second rule."]
+	return "", format("%.1f", base).."/"..format("%.1f", MPT), TooltipLine1, TooltipLine2, "", ""
 end
 -- Spell Critical Strike Chance
 local function SpellCrit()
-	local TooltipLine1 = L["Gives a chance to critically strike with spells, increasing the damage dealt by 50%."]
-	return "", format("%.2f%%", GetSpellCritChance()), TooltipLine1, "", "", ""
+	local rating = GetCombatRating(CR_CRIT_SPELL);
+
+	local holySchool = 2;
+	local minCrit = GetSpellCritChance(holySchool);
+	DCSstatFrame_spellCrit = {};
+	DCSstatFrame_spellCrit[holySchool] = minCrit;
+	local spellCrit;
+	for i=(holySchool+1), MAX_SPELL_SCHOOLS do
+		spellCrit = GetSpellCritChance(i);
+		minCrit = min(minCrit, spellCrit);
+		DCSstatFrame_spellCrit[i] = spellCrit;
+	end
+	minCrit = format("%.2f%%", minCrit);
+	DCSstatFrame_minCrit = minCrit;
+
+	local TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_CRIT_SPELL)..": "..rating;	
+	local TooltipLine2 = L["Gives a chance to critically strike with spells, increasing the damage dealt by 50%."]
+	return "", DCSstatFrame_minCrit, TooltipLine1, TooltipLine2, "", ""
 end
 -- Bonus Spell Hit Chance Modifier
 local function SpellHitModifier()
-	local spellhit = GetSpellHitModifier()
-	if spellhit == nil then spellhit = 0 end
-	return "", format("%.2f%%", spellhit), "", "", "", ""
+	local ratingBonus = GetCombatRatingBonus(CR_HIT_SPELL);
+
+	TooltipLine2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, GetSpellPenetration(), GetSpellPenetration());
+
+	return "", format("%.2f%%", ratingBonus), "", TooltipLine2, "", ""
 end
+-- SpellPenetration Modifier
+-- local function SpellPenetration()
+-- 	local ratingBonus = GetCombatRatingBonus(CR_HIT_SPELL);
+
+-- 	TooltipLine2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, GetSpellPenetration(), GetSpellPenetration());
+
+-- 	return "", format("%.2f%%", GetSpellPenetration()), "", TooltipLine2, "", ""
+-- end
 -- Bonus Healing
 local function PlusHealing()
 	return "", format("%.0f", GetSpellBonusHealing()), "", "", "", ""
@@ -1032,6 +1177,14 @@ DCS_STAT_DATA = {
 		statFunction = RangedHitModifier,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
+	Expertise ={
+		statName = "Expertise",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Expertise: "],
+		statFunction = Expertise,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
 	DodgeChance = {
 		isShown = true,
 		Label = L["Dodge: "],	
@@ -1061,6 +1214,14 @@ DCS_STAT_DATA = {
 		isShown = true,
 		Label = L["Block Value: "],	
 		statFunction = BlockValue,
+		relativeTo = DCSDefenseStatsHeader,
+	},
+	Resilience ={
+		statName = "Resilience",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Resilience: "],
+		statFunction = Resilience,
 		relativeTo = DCSDefenseStatsHeader,
 	},
 	-- ManaRegenCurrent = { --This appears to be power regen like rage, energy, runes, focus, etc.
@@ -1093,6 +1254,12 @@ DCS_STAT_DATA = {
 		statFunction = SpellHitModifier,
 		relativeTo = DCSSpellEnhancementsStatsHeader,
 	},
+	-- SpellPenetration = {
+	-- 	isShown = true,
+	-- 	Label = L["Spell Pen: "],	
+	-- 	statFunction = SpellPenetration,
+	-- 	relativeTo = DCSSpellEnhancementsStatsHeader,
+	-- },	
 	PlusHealing = {
 		isShown = true,
 		Label = L["+ Healing: "],	
@@ -1162,6 +1329,7 @@ DCS_OFFENSE_STAT_LIST = {
 	"RangedDamage",
 	"RangedCrit",
 	"RangedHitChance",
+	"Expertise",
 }
 
 DCS_MELEE_STAT_LIST = {
@@ -1173,21 +1341,23 @@ DCS_DEFENSE_STAT_LIST = {
 	"BlockChance",
 	"BlockValue",
 	"Defense",
+	"Resilience",
 }
 
 DCS_SPELL_STAT_LIST = {
 	-- "ManaRegenCurrent", --This appears to be power regen like rage, energy, runes, focus, etc.
 	"SpellHitChance",
 	"SpellCritChance",
-	"ManaRegenNotCasting",
-	"MP5",
-	"PlusHealing",
-	"HolyPlusDamage",
+	-- "SpellPenetration",
 	"ArcanePlusDamage",
 	"FirePlusDamage",
-	"NaturePlusDamage",
 	"FrostPlusDamage",
+	"PlusHealing",
+	"HolyPlusDamage",
+	"NaturePlusDamage",
 	"ShadowPlusDamage",
+	"MP5",
+	"ManaRegenNotCasting",
 }
 
 local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHideStats)
@@ -1292,7 +1462,11 @@ local function DCS_SET_STATS_TEXT()
 	for k, v in ipairs(DCS_PRIMARY_STAT_LIST) do
 		if ShowHidePrimary then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			if (v=="DCS_Strength") or (v=="DCS_Agility") or (v=="DCS_Stamina") or (v=="DCS_Intellect") or (v=="DCS_Spirit") then 
+				DCS_SetStatText(v, StatValue2, StatValue1, StatValue3, StatValue4, StatValue5, "", 0, 0)
+			else
+				DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			end
 		else
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
@@ -1300,7 +1474,11 @@ local function DCS_SET_STATS_TEXT()
 	for k, v in ipairs(DCS_OFFENSE_STAT_LIST) do
 		if ShowHideMelee then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			if (v=="Expertise") then 
+				DCS_SetStatText(v, StatValue2, StatValue1, StatValue3, StatValue4, StatValue5, "", 0, 0)
+			else
+				DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			end
 		else
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
@@ -1324,7 +1502,11 @@ local function DCS_SET_STATS_TEXT()
 	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
 		if ShowHideDefense then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
-			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			if (v=="Resilience") then 
+				DCS_SetStatText(v, StatValue2, StatValue1, StatValue3, StatValue4, StatValue5, "", 0, 0)
+			else
+				DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+			end
 		else
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
@@ -1872,7 +2054,7 @@ DCS_ShowHideMeleeCheck:SetScript("OnEvent", function(self, event, ...)
 	self:SetChecked(ShowHideMelee)
 	if ShowHideMelee then
 		DCSMeleeEnhancementsStatsHeader:Show()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
 	else
 		DCSMeleeEnhancementsStatsHeader:Hide()
 		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
@@ -1885,7 +2067,7 @@ DCS_ShowHideMeleeCheck:SetScript("OnClick", function(self)
 	ShowHideMelee = not ShowHideMelee
 	if ShowHideMelee then
 		DCSMeleeEnhancementsStatsHeader:Show()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
 	else
 		DCSMeleeEnhancementsStatsHeader:Hide()
 		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")

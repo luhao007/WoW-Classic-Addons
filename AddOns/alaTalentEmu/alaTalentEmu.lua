@@ -2390,7 +2390,7 @@ end
 		function NS.Emu_ApplyTalents(mainFrame)
 			if NS.playerClassUpper == mainFrame.class then
 				if TalentFrame_Update then
-					TalentFrame_Update();
+					pcall(TalentFrame_Update);
 				end
 				if NS.GetPiontsReqLevel(mainFrame.totalUsedPoints) > UnitLevel('player') then
 					_error_("CANNOT APPLY : NEED MORE TALENT POINTS.")
@@ -6796,7 +6796,7 @@ end
 		local Orig_TalentFrameTalent_OnClick = nil;
 		local function _TalentFrameTalent_OnClick(self, mouseButton)
 			if IsShiftKeyDown() then
-				local specIndex, id = PanelTemplates_GetSelectedTab(TalentFrame), self:GetID();
+				local specIndex, id = PanelTemplates_GetSelectedTab(TalentFrame or PlayerTalentFrame), self:GetID();
 				local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfo(specIndex, id);
 				local sId = ALATEMU.QueryIdFromDB(NS.playerClassUpper, specIndex, id, rank);
 				local link = _GetSpellLink(sId, name);
@@ -6813,18 +6813,18 @@ end
 		local TalentFrameTalents = {  };
 		local function onEvent(self, event, addon)
 			if addon == "Blizzard_TalentUI" then
-				Orig_TalentFrameTalent_OnClick = TalentFrameTalent_OnClick;
-				for i = 1, 999 do
-					local b = _G["TalentFrameTalent" .. i];
-					if b then
-						b:SetScript("OnClick", _TalentFrameTalent_OnClick);
-						TalentFrameTalents[i] = b;
-					else
-						break;
-					end
-				end
-
+				Orig_TalentFrameTalent_OnClick = TalentFrameTalent_OnClick or PlayerTalentFrameTalent_OnClick;
 				if TalentFrame then
+					for i = 1, 999 do
+						local b = _G["TalentFrameTalent" .. i];
+						if b then
+							b:SetScript("OnClick", _TalentFrameTalent_OnClick);
+							TalentFrameTalents[i] = b;
+						else
+							break;
+						end
+					end
+
 					local button = CreateFrame("BUTTON", nil, TalentFrame, "UIPanelButtonTemplate");
 					button:SetSize(80, 20);
 					button:SetPoint("RIGHT", TalentFrameCloseButton, "LEFT", -2, 0);
@@ -6834,6 +6834,26 @@ end
 					button:SetScript("OnLeave", Info_OnLeave);
 					button.information = L.TalentFrameCallButton;
 					TalentFrame.__alaTalentEmuCall = button;
+				elseif PlayerTalentFrame then
+					for i = 1, 999 do
+						local b = _G["PlayerTalentFrameTalent" .. i];
+						if b then
+							b:SetScript("OnClick", _TalentFrameTalent_OnClick);
+							TalentFrameTalents[i] = b;
+						else
+							break;
+						end
+					end
+
+					local button = CreateFrame("BUTTON", nil, PlayerTalentFrame, "UIPanelButtonTemplate");
+					button:SetSize(80, 20);
+					button:SetPoint("RIGHT", PlayerTalentFrameCloseButton, "LEFT", -2, 0);
+					button:SetText(L.TalentFrameCallButtonFontString);
+					button:SetScript("OnClick", function() NS.Emu_Create(); end);
+					button:SetScript("OnEnter", Info_OnEnter);
+					button:SetScript("OnLeave", Info_OnLeave);
+					button.information = L.TalentFrameCallButton;
+					PlayerTalentFrame.__alaTalentEmuCall = button;
 				end
 
 				if self then
@@ -7031,7 +7051,7 @@ do	-- dev
 		-- print("CONFIRM_TALENT_WIPE", ...);
 	end
 	function NS.CHARACTER_POINTS_CHANGED(...)
-		print("CHARACTER_POINTS_CHANGED", ...);
+		-- print("CHARACTER_POINTS_CHANGED", ...);
 	end
 	_EventHandler:RegEvent("CONFIRM_TALENT_WIPE");
 	--	Fires when the user selects the "Yes, I do." confirmation prompt after speaking to a class trainer and choosing to unlearn their talents.

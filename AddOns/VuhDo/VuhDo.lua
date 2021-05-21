@@ -47,6 +47,16 @@ VUHDO_PLAYER_NAME = nil;
 VUHDO_PLAYER_RAID_ID = nil;
 VUHDO_PLAYER_GROUP = nil;
 
+-- Backdrops
+BACKDROP_VUHDO_TOOLTIP = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", 
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = {  left = 3, right = 3, top = 3, bottom = 3 },
+};
+
 -- BURST CACHE ---------------------------------------------------
 local VUHDO_CONFIG;
 local VUHDO_PET_2_OWNER;
@@ -91,7 +101,7 @@ local UnitIsAFK = UnitIsAFK;
 local UnitIsConnected = UnitIsConnected;
 local UnitIsCharmed = UnitIsCharmed;
 local UnitInRaid = UnitInRaid;
-local VUHDO_unitHasVehicleUI = VUHDO_unitHasVehicleUI;
+local UnitHasVehicleUI = VUHDO_unitHasVehicleUI;
 local UnitTargetsVehicleInRaidUI = UnitTargetsVehicleInRaidUI;
 local UnitCanAttack = UnitCanAttack;
 local GetNumGroupMembers = GetNumGroupMembers;
@@ -101,8 +111,7 @@ local UnitPowerMax = UnitPowerMax;
 local UnitThreatSituation = UnitThreatSituation;
 local UnitClass = UnitClass;
 local UnitPowerType = UnitPowerType;
-local VUHDO_unitHasVehicleUI = VUHDO_unitHasVehicleUI;
-local VUHDO_unitGroupRolesAssigned = VUHDO_unitGroupRolesAssigned;
+local UnitGroupRolesAssigned = VUHDO_unitGroupRolesAssigned;
 local GetRaidRosterInfo = GetRaidRosterInfo;
 local InCombatLockdown = InCombatLockdown;
 local IsInRaid = IsInRaid;
@@ -333,8 +342,6 @@ function VUHDO_setHealth(aUnit, aMode)
 			tName, tRealm = UnitName(aUnit);
 			tInfo["healthmax"] = UnitHealthMax(aUnit);
 			tInfo["health"] = UnitHealth(aUnit);
-			tInfo["loghealth"] = UnitHealth(aUnit);
-			tInfo["updateTime"] = GetTime();
 			tInfo["name"] = tName;
 			tInfo["number"] = VUHDO_getUnitNo(aUnit);
 			tInfo["unit"] = aUnit;
@@ -353,8 +360,7 @@ function VUHDO_setHealth(aUnit, aMode)
 			tInfo["connected"] = tIsConnected;
 			tInfo["threat"] = UnitThreatSituation(aUnit) or 0;
 			tInfo["threatPerc"] = 0;
-			tInfo["isVehicle"] = VUHDO_unitHasVehicleUI(aUnit);
-			tInfo["className"] = tLocalClass or "";
+			tInfo["isVehicle"] = UnitHasVehicleUI(aUnit);
 			tInfo["petUnit"] = VUHDO_OWNER_2_PET[aUnit];
 			tInfo["targetUnit"] = VUHDO_getTargetUnit(aUnit);
 			tInfo["classId"] = tClassId;
@@ -369,6 +375,12 @@ function VUHDO_setHealth(aUnit, aMode)
 			--[[tInfo["missbuff"] = nil;
 			tInfo["mibucateg"] = nil;
 			tInfo["mibuvariants"] = nil;]]
+
+			if tLocalClass == tName then
+				tInfo["className"] = UnitCreatureType(aUnit) or "";
+			else
+				tInfo["className"] = tLocalClass or "";
+			end
 
 			if not VUHDO_isSpecialUnit(aUnit) then
 				if not tIsPet and tInfo["fullName"] == tName and VUHDO_RAID_NAMES[tName] then
@@ -388,30 +400,15 @@ function VUHDO_setHealth(aUnit, aMode)
 				VUHDO_updateBouquetsForEvent(aUnit, 19); -- VUHDO_UPDATE_DC
 			end
 
-			if 2 == aMode or 12 == aMode then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
-				if 12 == aMode then -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
-					tNewHealth = tInfo["loghealth"];
-				end
-				if 2 == aMode then
-                    -- Filter exception UNIT_HEALTH_FREQUENT event in classic
-                    -- Sometimes there is a UNIT_HEALTH_FREQUENT event in the interim period  
-					if tInfo["updateTime"] and abs(tonumber(tInfo["updateTime"]) - tonumber(GetTime())) < 0.4 then
-						return;
-                    -- Filter exception health data from UnitHealth API
-                    -- UnitHealth will return 0 if the hunter cast FeignDeath 
-                    -- Sometimes UnitIsDeadOrGhost return false and UnitHealth return 0 before UnitIsFeignDeath return true
-					elseif (UnitIsFeignDeath(aUnit)  or not UnitIsDeadOrGhost(aUnit)) and UnitHealth(aUnit) == 0 then
-						return;
-					else 
-						tNewHealth = UnitHealth(aUnit);
-					end
-				end
+			if 2 == aMode then -- VUHDO_UPDATE_HEALTH
+				tNewHealth = UnitHealth(aUnit);
+				
 				if not tIsDead and tInfo["health"] > 0 then
 					tInfo["lifeLossPerc"] = tNewHealth / tInfo["health"];
 				end
 
 				tInfo["health"] = tNewHealth;
-				
+
 				if tInfo["dead"] ~= tIsDead then
 					if not tIsDead then
 						tInfo["healthmax"] = UnitHealthMax(aUnit);
@@ -425,11 +422,6 @@ function VUHDO_setHealth(aUnit, aMode)
 				tInfo["dead"] = tIsDead;
 				tInfo["healthmax"] = UnitHealthMax(aUnit);
 				tInfo["sortMaxHp"] = VUHDO_getUnitSortMaxHp(aUnit);
-				tInfo["loghealth"] = UnitHealth(aUnit);
-				if  UnitHealth(aUnit) ~= 0 then
-					tInfo["health"] = UnitHealth(aUnit);
-				end
-				tInfo["updateTime"] = GetTime();
 
 			elseif 6 == aMode then -- VUHDO_UPDATE_AFK
 				tInfo["afk"] = tIsAfk;
@@ -461,7 +453,7 @@ function VUHDO_updateHealth(aUnit, aMode)
 
 	tIsPet = VUHDO_RAID[aUnit] and VUHDO_RAID[aUnit]["isPet"];
 
-	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enth\84lt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
+	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enth„lt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
 		VUHDO_setHealth(aUnit, aMode);
 		VUHDO_updateHealthBarsFor(aUnit, aMode);
 	end
@@ -476,7 +468,7 @@ function VUHDO_updateHealth(aUnit, aMode)
 	end
 
 	if 1 ~= sCurrentMode -- VUHDO_MODE_NEUTRAL
-		and (2 == aMode or 3 == aMode or 12 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX --  VUHDO_UPDATE_HEALTH_COMBAT_LOG
+		and (2 == aMode or 3 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX
 		-- Remove old emergencies
 		VUHDO_FORCE_RESET = true;
 		for tUnit, _ in pairs(VUHDO_EMERGENCIES) do
@@ -562,7 +554,7 @@ end
 --
 local tRole;
 local function VUHDO_addUnitToSpecial(aUnit)
-	if VUHDO_CONFIG["OMIT_DFT_MTS"] and "TANK" == (VUHDO_unitGroupRolesAssigned(aUnit)) then
+	if VUHDO_CONFIG["OMIT_DFT_MTS"] and "TANK" == (UnitGroupRolesAssigned(aUnit)) then
 		tinsert(VUHDO_GROUPS[41], aUnit); -- VUHDO_ID_MAINTANKS
 		return;
 	end
@@ -887,7 +879,7 @@ function VUHDO_refreshRaidMembers()
 			else
 				tInfo["group"] = VUHDO_getUnitGroup(tPlayer, false);
 
-				tInfo["isVehicle"] = VUHDO_unitHasVehicleUI(tPlayer);
+				tInfo["isVehicle"] = UnitHasVehicleUI(tPlayer);
 				if ( tInfo["isVehicle"] ) then
 					local tRaidId = UnitInRaid(tPlayer);
 					
@@ -928,7 +920,7 @@ function VUHDO_refreshRaidMembers()
 				VUHDO_setHealth(bossUnitId, 1); -- VUHDO_UPDATE_ALL
 			else
 				tInfo["group"] = VUHDO_getUnitGroup(bossUnitId, false);
-				tInfo["isVehicle"] = VUHDO_unitHasVehicleUI(bossUnitId);
+				tInfo["isVehicle"] = UnitHasVehicleUI(bossUnitId);
 
 				tInfo["afk"] = false;
 				tInfo["connected"] = true;

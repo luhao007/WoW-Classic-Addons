@@ -19,6 +19,7 @@ L["Adjust the Y position of the name text"] = "Justiere die Position des Zaubern
 L["Adjust the Y position of the time text"] = "Justiere die Position des Zeittextes in Y-Richtung"
 L["Alpha"] = "Transparenz"
 L["Anchor Frame"] = "Fixpunktfenster"
+L["Anchor point"] = "Ankerpunkt"
 L["AOE Rez"] = "AOE-Rez"
 L["Background"] = "Hintergrund"
 L["Background Alpha"] = "Hintergrundtransparenz"

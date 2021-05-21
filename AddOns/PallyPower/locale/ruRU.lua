@@ -1,9 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PallyPower", "ruRU", false, false)
 if not L then return end 
---[[Translation missing --]]
-L["ALTMENU_LINE1"] = "can be assigned"
---[[Translation missing --]]
-L["ALTMENU_LINE2"] = "a Normal Blessing from:"
+L["ALTMENU_LINE1"] = "может быть назначен"
+L["ALTMENU_LINE2"] = "Обычное благословение от:"
 L["AURA"] = "Кнопка Ауры"
 L["AURA_DESC"] = "[|cffffd200Вкл|r/|cffffd200Выкл|r] Кнопка Ауры или выбор Ауры для отслеживания."
 L["AURABTN"] = "Кнопка Ауры"
@@ -36,8 +34,7 @@ L["BUFFDURATION"] = "Учит. длительность"
 L["BUFFDURATION_DESC"] = "Если эта опция отключена, тогда кнопки «Класс» и «Игрок» будут игнорировать длительность эффекта, позволяя повторно использовать Благословение. Это особенно полезно для танков паладинов, когда они обновляют Великие благословения, чтобы генерировать больше угрозы."
 L["BUTTONS"] = "Кнопки"
 L["BUTTONS_DESC"] = "Изменение настроек кнопок"
---[[Translation missing --]]
-L["CANCEL"] = "Cancel"
+L["CANCEL"] = "Отмена"
 L["CLASSBTN"] = "Кнопки Классов"
 L["CLASSBTN_DESC"] = "Если эта опция отключена, то кнопки игрока будут так же отключены, и вы сможете использовать только кнопку Автобаффа."
 L["CPBTNS"] = "Кнопки Класса и Игрока"

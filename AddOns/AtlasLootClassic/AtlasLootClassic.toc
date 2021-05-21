@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Lag
 ## Version: v2.1.0
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDBIcon-1.0, LibDataBroker-1.1

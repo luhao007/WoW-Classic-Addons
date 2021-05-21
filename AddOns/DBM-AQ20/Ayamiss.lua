@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Ayamiss", "DBM-AQ20", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20200630205417")
+mod:SetRevision("20210402014659")
 mod:SetCreatureID(15369)
 mod:SetEncounterID(722)
 mod:SetModelID(15431)
@@ -25,23 +25,18 @@ function mod:OnCombatStart(delay)
 	self.vb.phase = 1
 end
 
-do
-	local Paralyze, Enrage = DBM:GetSpellInfo(25725), DBM:GetSpellInfo(8269)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 25725 then
-		if args.spellName == Paralyze then
-			warnParalyze:Show(args.destName)
-			timerParalyze:Start(args.destName)
-		elseif args.spellName == Enrage and args:IsDestTypeHostile() then
-			warnEnrage:Show(args.destName)
-		end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 25725 then
+		warnParalyze:Show(args.destName)
+		timerParalyze:Start(args.destName)
+	elseif args.spellId == 8269 and args:IsDestTypeHostile() then
+		warnEnrage:Show(args.destName)
 	end
+end
 
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args.spellId == 25725 then
-		if args.spellName == Paralyze then
-			timerParalyze:Stop(args.destName)
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 25725 then
+		timerParalyze:Stop(args.destName)
 	end
 end
 

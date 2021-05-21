@@ -542,6 +542,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	["SHOW_OWN_INCOMING"] = true,
 	["SHOW_TEXT_OVERHEAL"] = true,
 	["SHOW_SHIELD_BAR"] = true,
+	["SHOW_OVERSHIELD_BAR"] = false,
 
 	["RANGE_CHECK_DELAY"] = 260,
 
@@ -598,6 +599,7 @@ local VUHDO_DEFAULT_CONFIG = {
 		["isColor"] = false,
 		["isStacks"] = false,
 		["isName"] = false,
+		["isShowOnlyForFriendly"] = false,
 		["blacklistModi"] = "ALT-CTRL-SHIFT",
 		["selected"] = "",
 		["point"] = "TOPRIGHT",
@@ -848,124 +850,20 @@ function VUHDO_loadDefaultConfig()
 		VUHDO_CONFIG["VERSION"] = 4;
 	end
 
+	-- add relevant custom debuffs for raid bosses
 	-- 1.13.2 - Classic
 	VUHDO_addCustomSpellIds(45,
 		-- [[ MolTon Core ]]
 		-- Baron Geddon
 		20475   -- Living Bomb
 	);
-	-- 1.13.5 - Classic - part 5
-	VUHDO_addCustomSpellIds(46,
-		-- [[ TAQ ]]
-		26143,  -- Mind Flay
-		26476,  -- Digestive Acid
-		26079,  -- Cause Insanity
-		25991,  -- Poison Bolt Volley
-		26077,  -- Itch
-		26044,  -- Mind Flay
-		25989,  -- Toxin
-		26078,  -- Vekniss Catalyst
-		9907,   -- Faerie Fire
-		27648,  -- Thunderfury
-		21992,  -- Thunderfury
-		18327,  -- Silence
-		25812,  -- Toxic Volley
-		12721,  -- Deep Wound
-		25174,  -- Sundering Cleave
-		26613,  -- Unbalancing Strike
-		26053,  -- Noxious Poison
-		26050,  -- Acid Spit
-		26025,  -- Impale
-		25646,  -- Mortal Wound
-		19134,  -- Intimidating Shout
-		26072,  -- Dust Cloud
-		25051,  -- Sunder Armor
-		-- 26049,  -- Mana Burn
-		26180,  -- Wyvern Sting
-		-- 26211,  -- Hamstring
-		26070,  -- Fear
-		26102,  -- Sand Blast
-		24573,  -- Mortal Strike
-		26552,  -- Nullify
-		26580,  -- Fear
-		25810,  -- Mind-numbing Poison
-		26601,  -- Poison Bolt
-		22412,  -- Virulent Poison
-		25809,  -- Crippling Poison
-		19128,  -- Knockdown
-		785,    -- True Fulfillment
-		1906   -- Debilitating Charge
-	);
 
-		-- 1.13.5 - Classic - part 6
-		VUHDO_addCustomSpellIds(47,
-		-- [[ Naxxramas ]]
-		-- Anub'Rekhan
-		28969,  -- Acid Spit
-		-- 28783,  -- Impale
-		28786,  -- Locust Swarm
-		-- 28991,  -- Web
-		-- Anub'Rekhan
-		22886,  -- Berserker Charge
-		28796,  -- Poison Bolt Volley
-		28794,  -- Rain of Fire
-		30225,  -- Silence
-		-- Maexxna
-		28741,  -- Poison Shock
-		29484,  -- Web Spray
-		28622,  -- Web Wrap
-		-- Noth the Plaguebringer
-		29212,  -- Cripple
-		13737,  -- Mortal Strike
-		30138,  -- Shadow Shock
-		29214,  -- Wrath of the Plaguebringer
-		-- Heigan the Unclean
-		29998,  -- Decrepit Fever
-		-- 29371,  -- Eruption
-		30113,  -- Putrid Bite
-		30109,  -- Slime Burst
-		-- Loatheb
-		29204,  -- Inevitable Doom
-		29184,  -- Corrupted Mind
-		11196,  -- Recently Bandaged
-		-- Instructor Razuvious
-		26613,  -- Unbalancing Strike
-		-- Gothik the Harvester
-		27994,  -- Drain Life
-		-- The Four Horsemen
-		28884,  -- Meteor
-		28882,  -- Righteous Fire
-		-- Patchwerk
-		-- 28308,  -- Hateful Strike
-		-- Grobbulus
-		28153,  -- Disease Cloud
-		28206,  -- Mutagen Explosion
-		28169,  -- Mutating Injection
-		-- Gluth
-		29685,  -- Terrifying Roar
-		25646,	-- Mortal Wound
-		29306,  -- Infected Wound
-		-- Thaddius
-		28125,  -- War Stomp
-		28167,  -- Chain Lightning
-		-- 28059,  -- Positive Charge
-		-- 28084,	-- Negative Charge
-		-- Sapphiron
-		28542,  -- Life Drain
-		15847,  -- Tail Sweep
-		28547,  -- Chill
-		28522,  -- Icebolt
-		-- Kel'Thuzad
-		-- 29879,  -- Frost Blast
-		-- 10187,  -- Blizzard
-		-- 28479,  -- Frostbolt
-		-- 28478,  -- Frostbolt
-		27819,  -- Detonate Mana
-		27808,  -- Frost Blast
-		28408,  -- Chains of Kel'Thuzad
-		28409,  -- Chains of Kel'Thuzad
-		28410   -- Chains of Kel'Thuzad
-	);
+	-- TODO: Naxxramas left off at 47, start TBCC at 48
+--	VUHDO_addCustomSpellIds(48,
+--		-- [[ Gruul's Lair ]]
+--		-- Gruul
+--		33813  -- Hurtful Strike (Tank)
+--	);
 
 	local debuffRemovalList = {};
 
@@ -1121,6 +1019,11 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 			["useText"] = false, ["useBackground"] = false,	["useOpacity"] = true,
 		},
 		["SHIELD"] = {
+			["R"] = 0.35, ["G"] = 0.52, ["B"] = 1, ["O"] = 1,
+			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
+			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
+		},
+		["OVERSHIELD"] = {
 			["R"] = 0.35, ["G"] = 0.52, ["B"] = 1, ["O"] = 1,
 			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,

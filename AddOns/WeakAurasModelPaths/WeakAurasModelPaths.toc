@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: The WeakAuras Team
 ## Version: 3.4.1
 ## Dependencies: WeakAuras, WeakAurasOptions
@@ -12,4 +12,4 @@
 ## X-Category: Interface Enhancements
 ## X-Part-Of: WeakAuras
 
-ModelPathsClassic.lua
+ModelPathsBCC.lua

@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 43 2019-09-02 14:14:50Z arith $
+-- $Id: LibUIDropDownMenu.lua 40 2018-12-23 16:14:03Z arith $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -13,7 +13,7 @@ local CreateFrame, GetCursorPosition, GetCVar, GetScreenHeight, GetScreenWidth, 
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-2.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 43 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 40 $"):match("%d+"))
 
 local LibStub = _G.LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -218,7 +218,7 @@ local function creatre_UIDropDownList(name, parent)
 	f:SetFrameStrata("DIALOG")
 	f:EnableMouse(true)
 	
-	f.Backdrop = _G[name.."Backdrop"] or CreateFrame("Frame", name.."Backdrop", f)
+	f.Backdrop = _G[name.."Backdrop"] or CreateFrame("Frame", name.."Backdrop", f, BackdropTemplateMixin and "BackdropTemplate")
 	f.Backdrop:SetAllPoints()
 	f.Backdrop:SetBackdrop({
 		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
@@ -229,7 +229,7 @@ local function creatre_UIDropDownList(name, parent)
 		insets = { left = 11, right = 12, top = 12, bottom = 9, },
 	})
 	
-	f.MenuBackdrop= _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f)
+	f.MenuBackdrop= _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "BackdropTemplate")
 	f.MenuBackdrop:SetAllPoints()
 	f.MenuBackdrop:SetBackdrop({
 		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -975,7 +975,13 @@ function L_UIDropDownMenu_AddButton(info, level)
 		button.b = info.b;
 		colorSwatch:Show();
 	else
-		colorSwatch:Hide();
+		--[[ Titan:
+		Not sure why we need to check this... but not checking causes an error in the re-released BC
+		--]]
+		if colorSwatch then
+			colorSwatch:Hide();
+		else
+		end
 	end
 
 	L_UIDropDownMenu_CheckAddCustomFrame(listFrame, button, info);
@@ -1287,8 +1293,8 @@ function L_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, 
 	L_UIDropDownMenuDelegate:SetAttribute("createframes", true);
 	L_UIDROPDOWNMENU_MENU_LEVEL = level;
 	L_UIDROPDOWNMENU_MENU_VALUE = value;
+	local listFrame = _G["L_DropDownList"..level];
 	local listFrameName = "L_DropDownList"..level;
-	local listFrame = _G[listFrameName];
 	local tempFrame;
 	local point, relativePoint, relativeTo;
 	if ( not dropDownFrame ) then

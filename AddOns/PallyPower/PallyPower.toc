@@ -1,12 +1,12 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Aznamir,Dyaxler
-## Version: v1.2.27-classic
+## Version: v1.3.6-tbc-classic
 ## Dependencies: 
 ## OptionalDeps: Ace3
 ## SavedVariables: PallyPowerDB, PallyPower_Assignments, PallyPower_NormalAssignments, PallyPower_AuraAssignments, PallyPower_SavedPresets, PallyPower_ChanNames, LCD_Data, LCD_GUIDAccess
 ## DefaultState: enabled
 
-## Title: PallyPower Classic
+## Title: PallyPower BC Classic
 ## Notes: Raid/Party Paladin buffs.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF祝福助手|r |cFFFFE00APallyPower|r
 ## Notes-zhCN: 帮助管理圣骑士的祝福等BUFF

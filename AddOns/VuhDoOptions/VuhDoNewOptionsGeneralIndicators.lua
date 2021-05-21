@@ -71,12 +71,12 @@ local sIndicatorMetaModel = {
 				["model"] = "VUHDO_INDICATOR_CONFIG.CUSTOM.SWIFTMEND_INDICATOR.SCALE",
 				["tooltip"] = nil,
 			},
-			{
+--[[			{
 				["name"] = VUHDO_I18N_ICON_GLOW_COLOR,
 				["type"] = VUHDO_BOOLEAN_CONSTRAINTS,
 				["model"] = "VUHDO_INDICATOR_CONFIG.CUSTOM.SWIFTMEND_INDICATOR.isIconGlow",
 				["tooltip"] = VUHDO_I18N_TT.K576,
-			},
+			},]]
 			{
 				["name"] = VUHDO_I18N_BAR_GLOW_COLOR,
 				["type"] = VUHDO_BOOLEAN_CONSTRAINTS,

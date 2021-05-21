@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Razuvious", "DBM-Naxx", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210214203725")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(16061)
 mod:SetEncounterID(1113)
 mod:SetModelID(16582)
@@ -29,29 +29,22 @@ function mod:OnCombatStart(delay)
 	warnShoutSoon:Schedule(19 - delay)
 end
 
-do
-	local DisruptingShout, Taunt, ShieldWall = DBM:GetSpellInfo(29107), DBM:GetSpellInfo(29060), DBM:GetSpellInfo(29061)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args:IsSpellID(29107, 55543) then  -- Disrupting Shout
-		if args.spellName == DisruptingShout then--What does an MCed unit return?
-			timerShout:Start()
-			warnShoutNow:Show()
-			warnShoutSoon:Schedule(20)
-		--elseif args.spellId == 29060 then -- Taunt
-		elseif args.spellName == Taunt and args:IsPetSource() then
-			timerTaunt:Start(60, args.sourceGUID)
-		--elseif args.spellId == 29061 then -- ShieldWall
-		elseif args.spellName == ShieldWall and args:IsPetSource() then
-			timerShieldWall:Start(20, args.sourceGUID)
-			warnShieldWall:Schedule(15)
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	--if args:IsSpellID(29107, 55543) then  -- Disrupting Shout
+	if args.spellId == 29107 then--What does an MCed unit return?
+		timerShout:Start()
+		warnShoutNow:Show()
+		warnShoutSoon:Schedule(20)
+	elseif args.spellId == 29060 and args:IsPetSource() then -- Taunt
+		timerTaunt:Start(60, args.sourceGUID)
+	elseif args.spellId == 29061 and args:IsPetSource() then -- ShieldWall
+		timerShieldWall:Start(20, args.sourceGUID)
+		warnShieldWall:Schedule(15)
 	end
 end
 
 function mod:UNIT_DIED(args)
-	local guid = args.destGUID
-	local cid = self:GetCIDFromGUID(guid)
-	if cid == 16803 then--Deathknight Understudy
+	if self:GetCIDFromGUID(args.destGUID) == 16803 then--Deathknight Understudy
 		timerTaunt:Stop(args.destGUID)
 		timerShieldWall:Stop(args.destGUID)
 	end

@@ -8,7 +8,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-250" />
+							<AbsDimension x="20" y="-288" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -66,7 +66,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="230" y="-230" />
+							<AbsDimension x="230" y="-268" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -155,7 +155,7 @@
 
 			<Frame name="$parentNormalModePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="321" y="207" />
+					<AbsDimension x="321" y="245" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -227,7 +227,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="247" y="-162" />
+									<AbsDimension x="247" y="-200" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -242,7 +242,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="192" y="-162" />
+									<AbsDimension x="192" y="-200" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -257,7 +257,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="136" y="-162" />
+									<AbsDimension x="136" y="-200" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -267,6 +267,52 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+
+					<CheckButton name="$parentOvershieldOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="247" y="-162" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD.useOpacity");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentOvershieldTextCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="192" y="-162" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD.useText");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentOvershieldBackCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="136" y="-162" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD.useBackground");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
 
 					<CheckButton name="$parentShieldOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
@@ -445,7 +491,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Frame name="$parentShielTexture" inherits="VuhDoContextColorSwatchTexture">
+					<Frame name="$parentShieldTexture" inherits="VuhDoContextColorSwatchTexture">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -462,11 +508,28 @@
 						</Scripts>
 					</Frame>
 
-					<Frame name="$parentRangeTexture" inherits="VuhDoContextColorSwatchTexture">
+					<Frame name="$parentOvershieldTexture" inherits="VuhDoContextColorSwatchTexture">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
 									<AbsDimension x="13" y="-162" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD");
+								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_OVERSHIELD_BAR, VUHDO_I18N_OVERSHIELD_BAR);
+								VUHDO_lnfSetTooltip(self, nil);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<Frame name="$parentRangeTexture" inherits="VuhDoContextColorSwatchTexture">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-200" />
 								</Offset>
 							</Anchor>
 						</Anchors>

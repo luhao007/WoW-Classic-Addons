@@ -101,7 +101,10 @@
 		</Scripts>
 	</Frame>
 
-	 <Frame name="VuhDoTooltip" frameStrata="TOOLTIP" movable="true" parent="UIParent" hidden="true">
+	<Frame name="VuhDoTooltip" frameStrata="TOOLTIP" movable="true" parent="UIParent" hidden="true" inherits="BackdropTemplate" mixin="BackdropTemplateMixin">
+			<KeyValues>
+				<KeyValue key="backdropInfo" value="BACKDROP_VUHDO_TOOLTIP" type="global" />
+			</KeyValues>
 			<Layers>
 				 <Layer level="ARTWORK">
 				 <FontString name="$parentTextL1" inherits="GameFontNormalSmall" hidden="true">
@@ -322,19 +325,6 @@
 				</FontString>
 			</Layer>
 			</Layers>
-		<Backdrop tile="true"
-			bgFile="Interface\Tooltips\UI-Tooltip-Background"
-			edgeFile="Interface\Tooltips\UI-Tooltip-Border">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="3" right="3" top="3" bottom="3"/>
-			</BackgroundInsets>
-		</Backdrop>
 		<Scripts>
 			<OnMouseDown>VuhDoTooltipOnMouseDown(self,arg1)</OnMouseDown>
 			<OnMouseUp>VuhDoTooltipOnMouseUp(self,arg1)</OnMouseUp>

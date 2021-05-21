@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod(455, "DBM-Party-Classic", 16, 236)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210322203214")
+mod:SetRevision("20210403094344")
 mod:SetCreatureID(10439)
 mod:SetEncounterID(483)
 
@@ -31,17 +31,12 @@ function mod:OnCombatEnd(wipe, isSecondRun)
 	end
 end
 
-do
-	local Knockout, Trample = DBM:GetSpellInfo(17307), DBM:GetSpellInfo(5568)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 17307 then
-		if args.spellName == Knockout and args:IsSrcTypeHostile() then
-			warningKnockout:Show()
-			timerKnockoutCD:Start()
-		--elseif args.spellId == 5568 then
-		elseif args.spellName == Trample and args:IsSrcTypeHostile() then
-			warningTrample:Show()
-			timerTrampleCD:Start()
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 17307 and args:IsSrcTypeHostile() then
+		warningKnockout:Show()
+		timerKnockoutCD:Start()
+	elseif args.spellId == 5568 and args:IsSrcTypeHostile() then
+		warningTrample:Show()
+		timerTrampleCD:Start()
 	end
 end

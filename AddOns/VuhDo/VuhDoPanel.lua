@@ -14,6 +14,26 @@ local tsort = table.sort;
 local _;
 
 
+-- Backdrops
+BACKDROP_VUHDO_PLAYER_TARGET_FRAME = {
+	edgeFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	tile = false,
+	tileSize = 16,
+	edgeSize = 1,
+	insets = {  left = 10, right = 10, top = 10, bottom = 10 },
+};
+
+BACKDROP_BORDER_COLOR_VUHDO_PLAYER_TARGET_FRAME = CreateColor(0.6, 0.6, 0.6);
+
+BACKDROP_VUHDO_HEAL_PANEL = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
+	tile = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+};
+
 
 -- BURST CACHE ---------------------------------------------------
 

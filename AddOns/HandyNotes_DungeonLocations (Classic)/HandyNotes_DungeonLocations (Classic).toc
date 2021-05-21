@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Caliaha of Cairne
 ## Version: 1.04c
 ## RequiredDeps: HandyNotes

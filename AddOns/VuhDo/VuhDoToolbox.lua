@@ -21,7 +21,8 @@ local GetTime = GetTime;
 local GetRealZoneText = GetRealZoneText;
 local GetSpellInfo = GetSpellInfo;
 local SetMapToCurrentZone = SetMapToCurrentZone;
-local VUHDO_unitAlternatePowerInfo = VUHDO_unitAlternatePowerInfo;
+local UnitPowerBarID = UnitPowerBarID;
+local GetUnitPowerBarInfoByID = GetUnitPowerBarInfoByID;
 local WorldMapFrame = WorldMapFrame;
 local GetMouseFocus = GetMouseFocus;
 local GetPlayerFacing = GetPlayerFacing;
@@ -283,13 +284,36 @@ local VUHDO_isTargetInRange = VUHDO_isTargetInRange;
 
 
 
+-- FIXME: workaround for Blizzard API bug: https://github.com/Stanzilla/WoWUIBugs/issues/49
+function VUHDO_unitPhaseReason(aUnit) 
+
+	if not aUnit then
+		return nil;
+	end
+
+	if not UnitPhaseReason then
+		return nil;
+	end
+
+	local tPhaseReason = UnitPhaseReason(aUnit);
+
+	if (tPhaseReason == Enum.PhaseReason.WarMode or tPhaseReason == Enum.PhaseReason.ChromieTime) and UnitIsVisible(aUnit) then
+		return nil;
+	else
+		return tPhaseReason;
+	end
+
+end
+
+
+
 -- returns whether or not a unit is in range
 function VUHDO_isInRange(aUnit)
 	if "player" == aUnit then 
 		return true;
 	elseif VUHDO_isSpecialUnit(aUnit) then 
 		return VUHDO_isTargetInRange(aUnit);
-	elseif VUHDO_unitIsWarModePhased(aUnit) or not UnitInPhase(aUnit) then
+	elseif VUHDO_unitPhaseReason(aUnit) then
 		return false;
 	elseif (sIsGuessRange) then 
 		return UnitInRange(aUnit);
@@ -314,7 +338,7 @@ function VUHDO_textParse(aString)
 		aString = gsub(aString, "  ", " ");
 	end
 
-	return VUHDO_splitString(aString, " ");
+	return VUHDO_splitStringQuoted(aString);
 end
 
 
@@ -339,6 +363,43 @@ function VUHDO_splitString(aText, aChar)
 end
 
 
+
+function VUHDO_splitStringQuoted(aText) 
+
+	if VUHDO_strempty(aText) then
+		return { "" };
+	end
+
+	local tSplit = {};
+	local tPrevToken, tQuoteToken; 
+
+	for tToken in string.gmatch(aText, "%S+") do 
+		local tStartQuote = string.match(tToken, [[^(['"])]]); 
+		local tEndQuote = string.match(tToken, [[(['"])$]]);
+
+		if tStartQuote and not tEndQuote and not tQuoteToken then 
+			tPrevToken = tToken; 
+			tQuoteToken = tStartQuote; 
+		elseif tPrevToken and tQuoteToken == tEndQuote then 
+			tToken = tPrevToken .. ' ' .. tToken;
+
+			tPrevToken = nil;
+			tQuoteToken = nil;
+		elseif tPrevToken then 
+			tPrevToken = tPrevToken .. ' ' .. tToken; 
+		end 
+
+		if not tPrevToken then
+			tToken = string.gsub(tToken, [[^(['"])]], "");
+			tToken = string.gsub(tToken, [[(['"])$]], "");
+
+			table.insert(tSplit, tToken); 
+		end
+	end
+
+	return tSplit;
+
+end
 
 -- returns true if player currently is in a battleground
 local tType;
@@ -478,8 +539,8 @@ end
 
 --
 function VUHDO_isSpellKnown(aSpellName)
-	if not aSpellName then 
-		return false; 
+	if not aSpellName then
+		return false;
 	end
 
 	return (type(aSpellName) == "number" and IsSpellKnown(aSpellName))
@@ -763,8 +824,20 @@ end
 
 --
 function VUHDO_isAltPowerActive(aUnit)
-	local tBarType, _, _, _, _, tIsHideFromOthers = VUHDO_unitAlternatePowerInfo(aUnit);
-	return tBarType and (not tIsHideFromOthers or "player" == aUnit);
+
+	if not UnitPowerBarID or not GetUnitPowerBarInfoByID then
+		return false;
+	end
+
+	local tBarId = UnitPowerBarID(aUnit);
+	local tBarInfo = GetUnitPowerBarInfoByID(tBarId);
+
+	if tBarInfo then 
+		return tBarInfo.barType and (not tBarInfo.hideFromOthers or "player" == aUnit);
+	else
+		return false;
+	end
+
 end
 
 
@@ -980,15 +1053,6 @@ function VUHDO_unitAura(aUnit, aSpell, aFilter)
 		local tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tValue1, tValue2, tValue3 = UnitAura(aUnit, tCnt, aFilter);
 
 		if (aSpell == tSpellName or tonumber(aSpell) == tSpellId) then
-			if VUHDO_LibClassicDurations and tSpellId then
-		                local tNewDuration, tNewExpirationTime = VUHDO_LibClassicDurations:GetAuraDurationByUnit(aUnit, tSpellId, tSource, tSpellName);
-		
-				if tDuration == 0 and tNewDuration then 
-					tDuration = tNewDuration;
-					tExpirationTime = tNewExpirationTime;
-				end
-			end
-
 			return tSpellName, tIcon, tCount, tDebuffType, tDuration, tExpirationTime, tSource, tIsStealable, tNameplateShowPersonal, tSpellId, tCanApplyAura, tIsBossDebuff, tNameplateShowAll, tTimeMod, tValue1, tValue2, tValue3;
 		end
 	end

@@ -1,7 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## RequiredDeps: Details
 ## OptionalDeps: Ace3
-## SavedVariables: Details_TinyThreatDB
 
 ## Title: Details!: Tiny Threat (plugin)
 ## Notes: Threat meter plugin, show threat for group members in the window. Select it from the Plugin menu in the Orange Cogwheel.
@@ -9,6 +8,9 @@
 ## Notes-zhCN: 显示你的队员的仇恨
 
 ## X-Part-Of: Details
+
+#@no-lib-strip@
+#@end-no-lib-strip@
 
 enUS.lua
 ptBR.lua

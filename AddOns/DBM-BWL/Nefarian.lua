@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Nefarian-Classic", "DBM-BWL", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210322203214")
+mod:SetRevision("20210403075439")
 mod:SetCreatureID(11583)
 mod:SetEncounterID(617)
 mod:SetModelID(11380)
@@ -75,34 +75,24 @@ function mod:OnCombatEnd(wipe)
 	end
 end
 
-do
-	local ShadowFlame, BellowingRoar = DBM:GetSpellInfo(22539), DBM:GetSpellInfo(22686)
-	function mod:SPELL_CAST_START(args)
-		--if args.spellId == 22539 then
-		if args.spellName == ShadowFlame then
-			warnShadowFlame:Show()
-		--elseif args.spellId == 22686 then
-		elseif args.spellName == BellowingRoar then
-			warnFear:Show()
-			timerFearNext:Start()
-		end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 22539 then
+		warnShadowFlame:Show()
+	elseif args.spellId == 22686 then
+		warnFear:Show()
+		timerFearNext:Start()
 	end
 end
 
-do
-	local VielShadow, ShadowCommand = DBM:GetSpellInfo(22687), DBM:GetSpellInfo(22667)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 22687 then
-		if args.spellName == VielShadow then
-			if self:CheckDispelFilter() then
-				specwarnVeilShadow:Show(args.destName)
-				specwarnVeilShadow:Play("dispelnow")
-			end
-		--elseif args.spellId == 22667 then
-		elseif args.spellName == ShadowCommand then
-			specwarnShadowCommand:Show(args.destName)
-			specwarnShadowCommand:Play("findmc")
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 22687 then
+		if self:CheckDispelFilter() then
+			specwarnVeilShadow:Show(args.destName)
+			specwarnVeilShadow:Play("dispelnow")
 		end
+	elseif args.spellId == 22667 then
+		specwarnShadowCommand:Show(args.destName)
+		specwarnShadowCommand:Play("findmc")
 	end
 end
 
@@ -158,37 +148,41 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 	end
 end
 
-function mod:OnSync(msg, arg)
-	if self:AntiSpam(5, msg) then
-		--Do nothing, this is just an antispam threshold for syncing
-	end
-	if msg == "Phase" and arg then
-		local phase = tonumber(arg) or 0
-		if phase == 2 then
-			self.vb.phase = 2
-			timerPhase:Start(15)--15 til encounter start fires, not til actual land?
-			--timerFearNext:Start(46.6)
-		elseif phase == 3 then
-			self.vb.phase = 3
+do
+	local playerClass = UnitClass("player")
+
+	function mod:OnSync(msg, arg)
+		if self:AntiSpam(5, msg) then
+			--Do nothing, this is just an antispam threshold for syncing
 		end
-		warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(arg))
-	end
-	if not self:IsInCombat() then return end
-	if msg == "ClassCall" and arg then
-		local className = LOCALIZED_CLASS_NAMES_MALE[arg]
-		if UnitClass("player") == className then
-			specwarnClassCall:Show()
-			specwarnClassCall:Play("targetyou")
-		else
-			warnClassCall:Show(className)
+		if msg == "Phase" and arg then
+			local phase = tonumber(arg) or 0
+			if phase == 2 then
+				self.vb.phase = 2
+				timerPhase:Start(15)--15 til encounter start fires, not til actual land?
+				--timerFearNext:Start(46.6)
+			elseif phase == 3 then
+				self.vb.phase = 3
+			end
+			warnPhase:Show(DBM_CORE_L.AUTO_ANNOUNCE_TEXTS.stage:format(arg))
 		end
-		timerClassCall:Start(30, className)
-	--[[elseif msg == "AddDied" and arg and not addsGuidCheck[arg] then
-		--A unit died we didn't detect ourselves, so we correct our adds counter from sync
-		addsGuidCheck[arg] = true
-		self.vb.addLeft = self.vb.addLeft - 1
-		if self.vb.addLeft >= 1 and (self.vb.addLeft % 3 == 0) then
-			WarnAddsLeft:Show(self.vb.addLeft)
-		end--]]
+		if not self:IsInCombat() then return end
+		if msg == "ClassCall" and arg then
+			local className = LOCALIZED_CLASS_NAMES_MALE[arg]
+			if playerClass == className then
+				specwarnClassCall:Show()
+				specwarnClassCall:Play("targetyou")
+			else
+				warnClassCall:Show(className)
+			end
+			timerClassCall:Start(30, className)
+		--[[elseif msg == "AddDied" and arg and not addsGuidCheck[arg] then
+			--A unit died we didn't detect ourselves, so we correct our adds counter from sync
+			addsGuidCheck[arg] = true
+			self.vb.addLeft = self.vb.addLeft - 1
+			if self.vb.addLeft >= 1 and (self.vb.addLeft % 3 == 0) then
+				WarnAddsLeft:Show(self.vb.addLeft)
+			end--]]
+		end
 	end
 end

@@ -30,9 +30,6 @@ L["OPTIONS_GENERALSETTINGS_HEALTHBAR_TEXTURE"] = "Lebensbalken-Textur"
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_ANCHOR_TITLE"] = "Transparenz-Einstellungen"
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK"] = "Entfernungsprüfung"
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ALPHA"] = "Entfernungs-Transparenz"
-L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ENABLED"] = "Verwende Entfernungsprüfung"
-L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ENABLED_DESC"] = [=[Einheiten, die ausserhalb der Reichweite sind, werden transparenter dargestellt.
-|cFFFFFF00Wichtig|r: Wähle den richtigen Zauber, den du für die Reichweitenprüfung verwendet willst, aus.]=]
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_SPEC_DESC"] = "Für diese Spezialisierung verwendeter Zauber zur Entfernungsprüfung"
 L["OPTIONS_HOSTILE"] = "Feindlich"
 L["OPTIONS_NEUTRAL"] = "Neutral"
@@ -51,15 +48,14 @@ L["OPTIONS_PROFILE_ERROR_PROFILENAME"] = "Ungültiger Profilname"
 L["OPTIONS_PROFILE_ERROR_STRINGINVALID"] = "Ungültige Profildatei."
 L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Ungültige Profildatei.
 Importiere Skripte oder Mods im Skript-Tab.]=]
---[[Translation missing --]]
---[[ L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = ""--]] 
+L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = "Das Profil '%s' existiert bereits. Soll es überschrieben werden?"
 L["OPTIONS_SETTINGS_COPIED"] = "Einstellungen kopiert."
 L["OPTIONS_SETTINGS_FAIL_COPIED"] = "Fehler beim kopieren der Einstllungen für den aktuell ausgewählten Reiter."
 L["OPTIONS_SHADOWCOLOR"] = "Schatten-Farbe"
 L["OPTIONS_SIZE"] = "Größe"
 L["OPTIONS_STATUSBAR_TEXT"] = "Profile, Mods, Skripte, Animationen und Farbtabellen können jetzt von |cFFFFAA00http://wago.io|r importiert werden."
 L["OPTIONS_TABNAME_ADVANCED"] = "Erweitert"
-L["OPTIONS_TABNAME_ANIMATIONS"] = "Animationen"
+L["OPTIONS_TABNAME_ANIMATIONS"] = "Zauberfeedback"
 L["OPTIONS_TABNAME_AUTO"] = "Automatisierung"
 L["OPTIONS_TABNAME_BUFF_LIST"] = "Buff-Liste"
 L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "Buff Einstellungen"
@@ -112,4 +108,3 @@ L["OPTIONS_THREAT_MODIFIERS_HEALTHBARCOLOR"] = "Lebensbalkenfarbe"
 L["OPTIONS_THREAT_MODIFIERS_NAMECOLOR"] = "Farbe des Namens"
 L["OPTIONS_XOFFSET"] = "X-Offset"
 L["OPTIONS_YOFFSET"] = "Y-Offset"
-

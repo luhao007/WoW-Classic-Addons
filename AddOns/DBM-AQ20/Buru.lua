@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Buru", "DBM-AQ20", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201101205146")
+mod:SetRevision("20210402014659")
 mod:SetCreatureID(15370)
 mod:SetEncounterID(721)
 mod:SetModelID(15654)
@@ -35,35 +35,30 @@ function mod:OnCombatEnd()
 	self:UnregisterShortTermEvents()
 end
 
-do
-	local Dismember = DBM:GetSpellInfo(96)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 96 then
-		if args.spellName == Dismember then
-			local amount = args.amount or 1
-			timerDismember:Start(args.destName)
-			if amount >= 5 then
-				if args:IsPlayer() then
-					specWarnDismember:Show(amount)
-					specWarnDismember:Play("stackhigh")
-				elseif not DBM:UnitDebuff("player", args.spellName) and not UnitIsDeadOrGhost("player") then
-					specWarnDismemberTaunt:Show(args.destName)
-					specWarnDismemberTaunt:Play("tauntboss")
-				else
-					WarnDismember:Show(args.destName, amount)
-				end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 96 then
+		local amount = args.amount or 1
+		timerDismember:Start(args.destName)
+		if amount >= 5 then
+			if args:IsPlayer() then
+				specWarnDismember:Show(amount)
+				specWarnDismember:Play("stackhigh")
+			elseif not DBM:UnitDebuff("player", args.spellName) and not UnitIsDeadOrGhost("player") then
+				specWarnDismemberTaunt:Show(args.destName)
+				specWarnDismemberTaunt:Play("tauntboss")
 			else
 				WarnDismember:Show(args.destName, amount)
 			end
+		else
+			WarnDismember:Show(args.destName, amount)
 		end
 	end
-	mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
+end
+mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args.spellId == 96 then
-		if args.spellName == Dismember then
-			timerDismember:Stop(args.destName)
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 96 then
+		timerDismember:Stop(args.destName)
 	end
 end
 

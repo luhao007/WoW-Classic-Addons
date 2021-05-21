@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Nevcairiel
-## Version: 1.9.2
+## Version: 1.9.3
 ## OptionalDeps: Ace3, LibWindow-1.1
 ## SavedVariables: MapsterDB
 
@@ -14,6 +14,9 @@
 ## X-Curse-Project-ID: 14376
 ## X-WoWI-ID: 8306
 
+#@no-lib-strip@
+#@end-no-lib-strip@
+
 Locale\locale.xml
 
 Mapster.lua
@@ -22,6 +25,6 @@ Config.lua
 Coords.lua
 # GroupIcons.lua
 # BattleMap.lua
-FogClearDataClassic.lua
+FogClearDataBCC.lua
 FogClear.lua
 Scaling.lua

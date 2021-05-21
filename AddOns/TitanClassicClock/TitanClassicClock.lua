@@ -260,6 +260,7 @@ function TitanPanelClockControlSlider_OnShow(self)
 	_G[self:GetName().."Low"]:SetText(L["TITAN_CLOCK_CONTROL_HIGH"]);
 	self:SetMinMaxValues(-12, 12);
 	self:SetValueStep(0.5);
+	self:SetObeyStepOnDrag(true)
 	self:SetValue(0 - TitanGetVar(TITAN_CLOCK_ID, "OffsetHour"));
 
 	local position = TitanUtils_GetRealPosition(TITAN_CLOCK_ID);
@@ -330,8 +331,9 @@ end
 
 
 function TitanPanelClockControlSlider_OnValueChanged(self, a1)
-	_G[self:GetName().."Text"]:SetText(TitanPanelClock_GetOffsetText(0 - self:GetValue()));
-	TitanSetVar(TITAN_CLOCK_ID, "OffsetHour", 0 - self:GetValue());
+	local step = self:GetValue()
+    _G[self:GetName().."Text"]:SetText(TitanPanelClock_GetOffsetText(0 - step));
+    TitanSetVar(TITAN_CLOCK_ID, "OffsetHour", 0 - step);
 	if ( ServerTimeOffsets[realmName] ) then
 		ServerTimeOffsets[realmName] = TitanGetVar(TITAN_CLOCK_ID, "OffsetHour");
 	end
@@ -417,6 +419,14 @@ end
 -- **************************************************************************
 function TitanPanelClockControlFrame_OnLoad(self)
 	_G[self:GetName().."Title"]:SetText(L["TITAN_CLOCK_CONTROL_TITLE"]);
+	self:SetBackdrop({
+		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+		tile = true,
+		tileSize = 32,
+		edgeSize = 32,
+		insets = { left = 11, right = 12, top = 12, bottom = 9, },
+	})
 	self:SetBackdropBorderColor(1, 1, 1);
 	self:SetBackdropColor(0, 0, 0, 1);
 end

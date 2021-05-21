@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Razorgore", "DBM-BWL", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210322203214")
+mod:SetRevision("20210403075439")
 mod:SetCreatureID(12435, 99999)--Bogus detection to prevent invalid kill detection if razorgore happens to die in phase 1
 mod:SetEncounterID(610)--BOSS_KILL is valid, but ENCOUNTER_END is not
 mod:DisableEEKillDetection()--So disable only EE
@@ -50,44 +50,31 @@ function mod:OnCombatStart(delay)
 	end
 end
 
-do
-	local fireballVolley = DBM:GetSpellInfo(22425)
-	function mod:SPELL_CAST_START(args)
-		--if args.spellId == 23023 and args:IsDestTypePlayer() then
-		if args.spellName == fireballVolley  then
-			if self.Options.SpecWarn22425moveto then
-				specWarnFireballVolley:Show(DBM_CORE_L.BREAK_LOS)
-				specWarnFireballVolley:Play("findshelter")
-			else
-				warnFireballVolley:Show()
-			end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 23023 and args:IsDestTypePlayer() then
+		if self.Options.SpecWarn22425moveto then
+			specWarnFireballVolley:Show(DBM_CORE_L.BREAK_LOS)
+			specWarnFireballVolley:Play("findshelter")
+		else
+			warnFireballVolley:Show()
 		end
 	end
 end
 
-do
-	local warmingFlames, destroyEgg = DBM:GetSpellInfo(23040), DBM:GetSpellInfo(19873)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 23023 and args:IsDestTypePlayer() then
-		if args.spellName == warmingFlames and self.vb.phase < 2 then
-			warnPhase2:Show()
-			self.vb.phase = 2
-		--This may not be accurate, it depends on how large expanded combat log range is
-		--elseif args.spellId == 19873 then
-		elseif args.spellName == destroyEgg then
-			self.vb.eggsLeft = self.vb.eggsLeft - 1
-			warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 23040 and self.vb.phase < 2 then
+		warnPhase2:Show()
+		self.vb.phase = 2
+	--This may not be accurate, it depends on how large expanded combat log range is
+	elseif args.spellId == 19873 then
+		self.vb.eggsLeft = self.vb.eggsLeft - 1
+		warnEggsLeft:Show(string.format("%d/%d",30-self.vb.eggsLeft,30))
 	end
 end
 
-do
-	local Conflagration = DBM:GetSpellInfo(23023)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 23023 and args:IsDestTypePlayer() then
-		if args.spellName == Conflagration and args:IsDestTypePlayer() then
-			warnConflagration:CombinedShow(0.3, args.destName)
-		end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 23023 and args:IsDestTypePlayer() then
+		warnConflagration:CombinedShow(0.3, args.destName)
 	end
 end
 

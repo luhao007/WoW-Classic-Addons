@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: MysticalOS
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
@@ -8,7 +8,7 @@
 ## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Dungeons (Classic)|r
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0小队|r |cFF22B14C经典旧世|r
 
-## X-Min-Interface: 11302
+## X-Min-Interface: 20501
 ## X-DBM-Mod: 1
 ## X-DBM-Mod-Type: PARTY
 ## X-DBM-Mod-Category: Classic

@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Isler
 ## Version: 2.5.4
 ## SavedVariablesPerCharacter: CritSoundSwitch, CritSoundMode, CritSoundAgingTime, CritSoundBlackList

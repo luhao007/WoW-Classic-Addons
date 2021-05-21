@@ -1,0 +1,9 @@
+------------------------------------------------------------------------
+r362 | EsWoW | 2021-04-20 18:39:39 +0000 (Tue, 20 Apr 2021) | 2 lines
+Changed paths:
+   M /trunk/PallyPower.lua
+
+* Fix an issue where Shamans were sometimes being confused as pets
+* Fix an issue where Hunters were sometimes unable to be easily buffed with Blessing of Might
+------------------------------------------------------------------------
+

@@ -17,6 +17,7 @@ L.OTabPlugins	= "Plugins del núcleo"
 L.OTabOptions	= GAMEOPTIONS_MENU
 L.OTabAbout		= "Sobre"
 
+
 L.TabCategory_Options	 	= "Opciones generales"
 L.TabCategory_OTHER    		= "Otros módulos"
 

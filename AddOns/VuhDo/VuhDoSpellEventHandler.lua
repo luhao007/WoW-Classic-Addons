@@ -3,6 +3,7 @@ local _;
 local smatch = string.match;
 
 local InCombatLockdown = InCombatLockdown;
+local HasLFGRestrictions = VUHDO_hasLFGRestrictions;
 
 local VUHDO_updateAllHoTs;
 local VUHDO_updateAllCyclicBouquets;
@@ -118,7 +119,7 @@ function VUHDO_spellcastSent(aUnit, aTargetName, aSpellId)
 		end
 
 		if VUHDO_CONFIG["RES_IS_SHOW_TEXT"] then
-			local tChannel = (UnitInBattleground("player") or VUHDO_hasLFGRestrictions()) and "INSTANCE_CHAT"
+			local tChannel = (UnitInBattleground("player") or HasLFGRestrictions()) and "INSTANCE_CHAT"
 				or IsInRaid() and "RAID" or IsInGroup() and "PARTY" or nil;
 
 			if tChannel then

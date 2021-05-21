@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Trentin, Jim-Bim
 ## Dependencies: MonkeyLibrary
 ## OptionalDeps: aftt_extreme

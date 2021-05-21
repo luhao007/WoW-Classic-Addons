@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Tuller & Jaliborc (JoÃ£o Cardoso)
 ## Version: 9.0.6
 ## OptionalDeps: BagBrother, WoWUnit, TestPoncho

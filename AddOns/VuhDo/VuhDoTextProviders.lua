@@ -170,16 +170,8 @@ end
 
 --
 local function VUHDO_kiloValidator(anInfo, aValue)
-
-	if aValue >= 1000000 then
-		return format("%.1f", aValue * 0.000001) or "";
-	elseif aValue >= 1000 then
-		return format("%.1f", aValue * 0.001) or "";
-	elseif aValue > 0 then
-		return aValue;
-	else
-		return "";
-	end
+	
+	return aValue >= 500 and VUHDO_round(aValue * 0.001) or "";
 
 end
 
@@ -188,12 +180,8 @@ local function VUHDO_plusKiloValidator(anInfo, aValue)
 
 	if aValue >= 1000000 then
 		return format("+%.1fM", aValue * 0.000001) or "";
-	elseif aValue >= 1000 then
-		return format("+%.1fk", aValue * 0.001) or "";
-	elseif aValue > 0 then
-		return format("+%d", aValue) or "";
-	else
-		return "";
+	elseif aValue >= 500 then
+		return format("+%dk", VUHDO_round(aValue * 0.001)) or "";
 	end
 
 end
@@ -247,25 +235,25 @@ end
 
 VUHDO_TEXT_PROVIDERS = {
 	["OVERHEAL_KILO_N_K"] = {
-		["displayName"] = "Overheal: <#n>",
+		["displayName"] = "Overheal: <#nk>",
 		["calculator"] = VUHDO_overhealCalculator,
 		["validator"] = VUHDO_kiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
 	},
 	["OVERHEAL_KILO_PLUS_N_K"] = {
-		["displayName"] = "Overheal: +<#n>",
+		["displayName"] = "Overheal: +<#n>k",
 		["calculator"] = VUHDO_overhealCalculator,
 		["validator"] = VUHDO_plusKiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
 	},
 	["INCOMING_HEAL_NK"] = {
-		["displayName"] = "Incoming Heal: <#n>",
+		["displayName"] = "Incoming Heal: <#nk>",
 		["calculator"] = VUHDO_incomingHealCalculator,
 		["validator"] = VUHDO_kiloValidator,
-		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE, VUHDO_UPDATE_HEALTH_COMBAT_LOG },
+		["interests"] = { VUHDO_UPDATE_INC, VUHDO_UPDATE_HEALTH, VUHDO_UPDATE_RANGE, VUHDO_UPDATE_HEALTH_MAX, VUHDO_UPDATE_ALIVE },
 	},
 	["SHIELD_ABSORB_OVERALL_N_K"] = {
-		["displayName"] = "Shield absorb total: <#n>",
+		["displayName"] = "Shield absorb total: <#nk>",
 		["calculator"] = VUHDO_shieldAbsorbCalculator,
 		["validator"] = VUHDO_kiloValidator,
 		["interests"] = { VUHDO_UPDATE_SHIELD },

@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Revel of Pagle
 ## Version: 1.23
 ## RequiredDeps: HandyNotes

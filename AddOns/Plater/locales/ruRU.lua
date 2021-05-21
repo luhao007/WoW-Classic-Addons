@@ -30,10 +30,6 @@ L["OPTIONS_GENERALSETTINGS_HEALTHBAR_TEXTURE"] = "Текстура полосы 
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_ANCHOR_TITLE"] = "Контроль прозрачности"
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK"] = "Проверка дальности"
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ALPHA"] = "Величина прозрачности"
-L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ENABLED"] = "Включить проверку дальности"
-L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_ENABLED_DESC"] = [=[Мобы, находящиеся вне радиуса, имеют свои прозрачные индикаторы здоровья.
-
-|cFFFFFF00Важно|r: проверьте, какое заклинание вы хотите использовать, чтобы видеть дальность.]=]
 L["OPTIONS_GENERALSETTINGS_TRANSPARENCY_RANGECHECK_SPEC_DESC"] = "Заклинание для проверки дальности на эту специализацию."
 L["OPTIONS_HOSTILE"] = "Враждебные"
 L["OPTIONS_NEUTRAL"] = "Нейтральные"
@@ -54,8 +50,7 @@ L["OPTIONS_PROFILE_ERROR_STRINGINVALID"] = "Неверный файл профи
 L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Неверный файл профиля.
 
 Импорт 'Своего кода' или 'Улучшение Platera' можно найти в меню.]=]
---[[Translation missing --]]
---[[ L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = ""--]] 
+L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = "Профиль '%s' уже существует, перезаписать его?"
 L["OPTIONS_SETTINGS_COPIED"] = "настройки скопированы."
 L["OPTIONS_SETTINGS_FAIL_COPIED"] = "не удалось получить настройки для текущей выбранной вкладки."
 L["OPTIONS_SHADOWCOLOR"] = "Цвет тени"

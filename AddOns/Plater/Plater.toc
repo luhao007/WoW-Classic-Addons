@@ -1,5 +1,5 @@
-## Interface: 11307
-## Version: Plater-1.13.6.97-Classic
+## Interface: 20501
+## Version: Plater-v329-51-gb408bf7-BCC
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 
@@ -8,6 +8,11 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF血条增强|r |cFFFFE00APlater|r
 ## Notes-zhCN: 自定义血条显示
 
+## X-Curse-Project-ID: 100547
+## X-Wago-ID: kRNLep6o
+
+#@version-bc@
+#@end-version-bc@
 
 #@no-lib-strip@
 libs\libs.xml
@@ -30,7 +35,10 @@ Plater.xml
 Plater_DefaultSettings.lua
 
 Plater.lua
+Plater_Auras.lua
+Plater_Resources.lua
 Plater_OptionsPanel.lua
+Plater_ScriptingOptions.lua
 Plater_ScriptingPanels.lua
 Plater_ScriptLibrary.lua
 Plater_AnimationEditor.lua
@@ -39,3 +47,5 @@ Plater_ChangeLog.lua
 Plater_Docs.lua
 Plater_BossModsSupport.lua
 Plater_Animations.lua
+Plater_Profiling.lua
+#Plater_SpellPrediction.lua

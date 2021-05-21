@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Grobbulus", "DBM-Naxx", 2)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201225041541")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15931)
 mod:SetEncounterID(1111)
 mod:SetUsedIcons(1, 2, 3, 4)
@@ -30,14 +30,14 @@ mod:AddSetIconOption("SetIconOnInjectionTarget", 28169, false, false, {1, 2, 3, 
 local mutateIcons = {}
 
 local function addIcon(self)
-	for i,j in ipairs(mutateIcons) do
+	for i, j in ipairs(mutateIcons) do
 		local icon = 0 + i
 		self:SetIcon(j, icon)
 	end
 end
 
 local function removeIcon(self, target)
-	for i,j in ipairs(mutateIcons) do
+	for i, j in ipairs(mutateIcons) do
 		if j == target then
 			table.remove(mutateIcons, i)
 			self:SetIcon(target, 0)
@@ -57,44 +57,35 @@ function mod:OnCombatEnd()
     end
 end
 
-do
-	local Injection = DBM:GetSpellInfo(28169)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 28169 then
-		if args.spellName == Injection then
-			timerInjection:Start(args.destName)
-			if self.Options.SetIconOnInjectionTarget then
-				table.insert(mutateIcons, args.destName)
-				addIcon()
-			end
-			if args:IsPlayer() then
-				specWarnInjection:Show()
-				specWarnInjection:Play("runout")
-				yellInjection:Yell()
-			else
-				warnInjection:Show(args.destName)
-			end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 28169 then
+		timerInjection:Start(args.destName)
+		if self.Options.SetIconOnInjectionTarget then
+			table.insert(mutateIcons, args.destName)
+			addIcon()
 		end
-	end
-
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args.spellId == 28169 then
-		if args.spellName == Injection then
-			timerInjection:Stop(args.destName)--Cancel timer if someone is dumb and dispels it.
-			if self.Options.SetIconOnInjectionTarget then
-				removeIcon(self, args.destName)
-			end
+		if args:IsPlayer() then
+			specWarnInjection:Show()
+			specWarnInjection:Play("runout")
+			yellInjection:Yell()
+		else
+			warnInjection:Show(args.destName)
 		end
 	end
 end
 
-do
-	local PoisonCloud = DBM:GetSpellInfo(28240)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 28240 then
-		if args.spellName == PoisonCloud then
-			warnCloud:Show()
-			timerCloud:Start()
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 28169 then
+		timerInjection:Stop(args.destName)--Cancel timer if someone is dumb and dispels it.
+		if self.Options.SetIconOnInjectionTarget then
+			removeIcon(self, args.destName)
 		end
+	end
+end
+
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 28240 then
+		warnCloud:Show()
+		timerCloud:Start()
 	end
 end

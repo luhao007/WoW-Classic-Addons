@@ -1,10 +1,9 @@
-Version 3.118-classic  
+Version 3.123-tbcc  
   
   
 Known issues:  
 -- Spells by rank can be specified using a rank suffix:  
 --  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
 -- Debuff tooltips are currently bugged when using ElvUI  
 --   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
 -- Shield bar is not working due to unavailable Blizzard APIs  
@@ -15,7 +14,142 @@ Bugfixes:
   
   
 Improvements:  
--- Bump TOC interface for 1.13.7  
+-- Bump TOC interface for 2.5.1  
+  
+  
+--------------------------------------------------------------  
+Version 3.123  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Fixed HoT icon clock sweep for auras with zero duration  
+-- Fixed entry selection of comboboxes with over 100 options  
+  
+  
+Improvements:  
+  
+  
+--------------------------------------------------------------  
+Version 3.122  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Fixed inverted health display when shield bar is disabled  
+  
+  
+Improvements:  
+-- Added bouquet validator 'Statusbar: Power % (Tank Only)'  
+-- Added default bouquet 'Manabars: Power (Tank Only)'  
+  
+  
+--------------------------------------------------------------  
+Version 3.121  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Added workaround for bug in Blizzard API UnitPhaseReason  
+-- Fixed shield bar display when health bar is inverted  
+-- Fixed Priest 'Spirit Shell' maximum absorption amount  
+  
+  
+Improvements:  
+-- Added overshield bar to display excess absorption amount  
+-- Added Shaman 'Mana Tide Totem' to Buff Watch  
+-- Bump TOC interface for 9.0.5  
+  
+  
+--------------------------------------------------------------  
+Version 3.120  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Fixed error when slash command had zero arguments  
+-- Fixed class name text for classless units (defaults to creature type)  
+-- Fixed error on target switch in combat with show class name enabled  
+-- Fixed redundant profile reloading on talent change  
+  
+  
+Improvements:  
+-- Added Hunter 'Primal Fury' debuff 'Fatigued' to default ignore list  
+-- Added additional default custom debuffs for Castle Nathria encounters  
+-- Upgraded NickTag-1.0 library dependency to minor 14  
+  
+  
+--------------------------------------------------------------  
+Version 3.119  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Slash command arguments can now be properly quoted  
+  
+  
+Improvements:  
+-- Added Necrotic Wake 'Necrotic Bolt' debuff absorb tracking  
+-- Added Theater of Pain 'Necrotic Bolt' debuff absorb tracking  
+-- Added Theater of Pain 'Necrotic Bolt Volley' debuff absorb tracking  
+-- Added Death Knight ability 'Necrotic Wound' debuff absorb tracking  
+  
+  
+--------------------------------------------------------------  
+Version 3.118  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+  
+  
+Improvements:  
+-- Added default custom debuffs for Castle Nathria raid encounters  
+-- Added Sun King's Salvation 'Cloak of Flames' debuff absorb tracking  
+-- Added new bouquet validator 'Flag: Friend'  
+-- Added new bouquet validator 'Flag: Foe'  
   
   
 --------------------------------------------------------------  
@@ -41,6 +175,31 @@ Improvements:
   
   
 --------------------------------------------------------------  
+Version 3.117  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Priest spell 'Holy Fire' will now be properly recognized  
+-- Removed deprecated Priest spell 'Clarity of Will'  
+-- Removed deprecated Priest spell 'Luminous Barrier'  
+  
+  
+Improvements:  
+-- Added Priest 'Spirit Shell' absorb tracking  
+-- Added Priest 'Spirit Shell' as a default HoT icon option  
+-- Added option to only show debuff icons for friendly units  
+-- Bump TOC interface for 9.0.2  
+  
+  
+--------------------------------------------------------------  
 Version 3.116-classic  
   
   
@@ -58,6 +217,36 @@ Bugfixes:
   
   
 Improvements:  
+  
+  
+--------------------------------------------------------------  
+Version 3.116  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Fixed backdrop border colors for panel borders, etc.  
+-- Fixed Druid 'Swiftmend' to trigger on 'Wild Growth' HoT presence  
+-- Fixed Druid 'Swiftmend' to not trigger on other players HoTs  
+-- Fixed mouse/key binding of Hunter ability 'Concussive Shot'  
+  
+  
+Improvements:  
+-- Added Shaman spell 'Water Shield' to Buff Watch  
+-- Added Shaman spell 'Windfury Weapon' to Buff Watch  
+-- Added Shaman spell 'Flametongue Weapon' to Buff Watch  
+-- Added Rogue ability 'Instant Poison' to Buff Watch  
+-- Added Rogue ability 'Numbing Poison' to Buff Watch  
+-- Added new default bouquet 'Monk Stagger'  
+-- Updated default bouquet 'Raid Cooldowns'  
+-- Updated default bouquet 'Tank Cooldowns Extd'  
   
   
 --------------------------------------------------------------  
@@ -86,6 +275,31 @@ Improvements:
 -- Bump TOC interface for 1.13.6  
 -- Added Troll Priest spell 'Shadowguard' to Buff Watch  
 -- Added default custom debuffs for AQ40 / Naxx encounters  
+  
+  
+--------------------------------------------------------------  
+Version 3.115  
+  
+  
+Known issues:  
+-- Shadowlands stat squish cleanup still a work in progress  
+--   AOE Advice spell equations need complete overhaul  
+--   Some text providers need changes to better display small numbers  
+-- Debuff tooltips are currently bugged when using ElvUI  
+--   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'  
+  
+  
+Bugfixes:  
+-- Removed deprecated debuff 'Bloodbath'  
+-- Removed deprecated event UNIT_HEALTH_FREQUENT  
+-- Removed deprecated Blizzard APIs GetNumFriends/GetFriendInfo  
+-- Removed deprecated Blizzard API UnitAlternatePowerInfo  
+-- Removed deprecated Blizzard APIs UnitIsWarModePhased/UnitInPhase  
+-- Migrated backdrops to BackdropTemplate and BackdropTemplateMixin  
+  
+  
+Improvements:  
+-- Bump TOC interface for 9.0.1   
   
   
 --------------------------------------------------------------  
@@ -137,26 +351,6 @@ Improvements:
   
   
 --------------------------------------------------------------  
-Version 3.113-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
-  
-  
-Improvements:  
-  
-  
---------------------------------------------------------------  
 Version 3.113  
   
   
@@ -173,26 +367,6 @@ Known issues:
   
 Bugfixes:  
 -- Debuff icon button frames now properly refresh unit IDs  
-  
-  
-Improvements:  
-  
-  
---------------------------------------------------------------  
-Version 3.112-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
   
   
 Improvements:  
@@ -223,29 +397,6 @@ Improvements:
   
   
 --------------------------------------------------------------  
-Version 3.111-classic   
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
--- Fixed usage of deprecated Blizzard API HasLFGRestriction  
--- Fixed threat situation update for neutral mobs  
-  
-  
-Improvements:  
--- Incoming heal amount now includes only the next tick of HoTs  
-  
-  
---------------------------------------------------------------  
 Version 3.111  
   
   
@@ -268,29 +419,6 @@ Improvements:
 --   See 'VuhDo Options > Panels > Text > Show Text > Show Nickname'  
 -- Added Ra-den Unleashed Void debuff absorb tracking  
 -- Added default custom debuffs for Ny'alotha raid encounters  
-  
-  
---------------------------------------------------------------  
-Version 3.110-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
--- Use LibTotemInfo to replace removed Blizzard API GetTotemInfo  
-  
-  
-Improvements:  
--- Bump TOC interface for 1.13.3  
--- Migrate threat detection to LibThreatClassic2  
   
   
 --------------------------------------------------------------  
@@ -319,26 +447,6 @@ Improvements:
   
   
 --------------------------------------------------------------  
-Version 3.109-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
-  
-  
-Improvements:  
-  
-  
---------------------------------------------------------------  
 Version 3.109  
   
   
@@ -362,27 +470,6 @@ Improvements:
   
   
 --------------------------------------------------------------  
-Version 3.108-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently fully working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook  
-  
-  
-Bugfixes:  
--- Migrate to the blessed version of LibHealComm-4.0  
-  
-  
-Improvements:  
-  
-  
---------------------------------------------------------------    
 Version 3.108  
   
   
@@ -402,40 +489,6 @@ Bugfixes:
   
   
 Improvements:  
-  
-  
---------------------------------------------------------------    
-Version 3.107-classic  
-  
-  
-Known issues:  
--- Spells by rank can be specified using a rank suffix:  
---  Example: Lesser Heal(Rank 1)  
--- Buff Watch is not currently working (missing many spells)  
--- Debuff tooltips are currently bugged when using ElvUI  
---   Deselect 'VuhDo Options > Panels > Tooltips > Tooltips > Debuffs'    
--- Shield bar is not working due to unavailable Blizzard APIs  
--- Threat is not working due to unavailable Blizzard APIs  
--- Spell trace only works for known spells in the player's spellbook
-  
-  
-Bugfixes:  
--- Better display of small numbers in text providers  
--- Fixed timer display for other players buffs/debuffs  
--- Fixed incoming heal display  
---   Note: Only works with others players using LibHealComm  
--- Fixed compatability layer to not modify global functions  
--- Fixed text providers using kilo/+kilo displaying zero values  
--- Fixed classic dispel/cure debuff spells  
--- Fixed misc classic spell IDs  
--- Fixed spell trace for known player spells  
--- Fixed unit threat indicators  
-  
-  
-Improvements:  
--- Added support for LibClassicHealComm-1.0  
--- Added support for LibClassicDurations  
--- Added support for LibThreatClassic  
   
   
 --------------------------------------------------------------  

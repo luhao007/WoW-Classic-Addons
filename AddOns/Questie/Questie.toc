@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Aero/Logon/Muehe/TheCrux(BreakBB)/Dyaxler/Schaka/Zoey/Everyone else
 ## Version: 6.3.11
 ## RequiredDeps: 
@@ -36,6 +36,10 @@ Database\Classic\classicItemDB.lua
 Database\Classic\classicNpcDB.lua
 Database\Classic\classicObjectDB.lua
 Database\Classic\classicQuestDB.lua
+Database\TBC\tbcItemDB.lua
+Database\TBC\tbcNpcDB.lua
+Database\TBC\tbcObjectDB.lua
+Database\TBC\tbcQuestDB.lua
 Database\QuestieDB.lua
 Database\questDB.lua
 Database\objectDB.lua
@@ -50,6 +54,7 @@ Database\Corrections\QuestieItemBlacklist.lua
 Database\Corrections\QuestieNPCBlacklist.lua
 Database\Corrections\QuestieQuestBlacklist.lua
 Database\Corrections\QuestieEvent.lua
+Database\Corrections\QuestieDatabaseUnification.lua
 
 Database\Corrections\Classic\classicQuestFixes.lua
 Database\Corrections\Classic\classicNPCFixes.lua
@@ -70,10 +75,10 @@ Localization\Translations\Translations.xml
 
 Localization\lookups\lookupQuestCategories\lookupQuestCategories.xml
 Localization\lookups\lookupZones\lookupZones.xml
-Localization\lookups\Classic\lookupItems\lookupItems.xml
-Localization\lookups\Classic\lookupNpcs\lookupNpcs.xml
-Localization\lookups\Classic\lookupObjects\lookupObjects.xml
-Localization\lookups\Classic\lookupQuests\lookupQuests.xml
+Localization\lookups\TBC\lookupItems\lookupItems.xml
+Localization\lookups\TBC\lookupNpcs\lookupNpcs.xml
+Localization\lookups\TBC\lookupObjects\lookupObjects.xml
+Localization\lookups\TBC\lookupQuests\lookupQuests.xml
 
 ##Libs
 Modules\Libs\QuestieLib.lua

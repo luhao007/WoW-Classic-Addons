@@ -217,6 +217,7 @@ PawnRegexes =
 	{L.Crit2, "CritRating"},
 	{L.CritPercent, "CritRating"}, -- Classic, /pawn compare 15062
 	{L.CritRating, "CritRating"}, -- Burning Crusade, /pawn compare 15062
+	{L.CritRating2, "CritRating"}, -- Burning Crusade, /pawn compare 30710
 	{L.CritRatingShort, "CritRating"}, -- Burning Crusade, /pawn compare item:789::::::78
 	{L.ScopeCrit, "CritRating"},
 	{L.ScopeRangedCrit, "CritRating"}, -- Heartseeker Scope
@@ -227,6 +228,7 @@ PawnRegexes =
 	{L.Hit2, "HitRating"}, -- unused in English
 	{L.HitRating, "HitRating"}, -- Burning Crusade, /pawn compare 28182
 	{L.HitRating2, "HitRating"}, -- Burning Crusade, /pawn compare 18500
+	{L.HitRating3, "HitRating"}, -- Burning Crusade in Spanish, /pawn compare 32570
 	{L.HitRatingShort, "HitRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24051/rigid-dawnstone
 	{L.SpellHit, "SpellHitRating"}, -- /pawn compare 16795
 	{L.SpellHitRating, "SpellHitRating"}, -- Burning Crusade, /pawn compare 16795
@@ -244,6 +246,7 @@ PawnRegexes =
 	{L.Haste, "HasteRating"}, -- Leggings of the Betrayed
 	{L.Haste2, "HasteRating"}, -- unused in English
 	{L.HasteRating, "HasteRating"}, -- Burning Crusade, /pawn compare 32570
+	{L.HasteRating2, "HasteRating"}, -- Burning Crusade esES, /pawn compare 32570
 	{L.HasteRatingShort, "HasteRating"}, -- Wrath, Quick Sun Crystal / Burning Crusade, random-stat items only
 	{L.SpellHasteRating, "SpellHasteRating"}, -- /pawn compare 34360
 	{L.SpellHasteRatingShort, "SpellHasteRating"}, -- https://tbc.wowhead.com/item=35315/quick-dawnstone

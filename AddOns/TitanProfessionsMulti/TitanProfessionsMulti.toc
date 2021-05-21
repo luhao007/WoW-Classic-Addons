@@ -1,0 +1,37 @@
+## Interface: 20501
+## Title: Titan Panel [|cff336699Professions|r] Multi! |cff00aa00v1.0.1 TBC Classic|r
+## Notes: Track all professions! Right-click on Titan Panel, go to "Profession" tab and enjoy.
+## Notes-ptBR: Rastreie todas profissões! Clique com o botão direito no Painel Titan, vá na aba "Profissão" e aproveite.
+## Notes-koKR: 타이탄 패널의 전문기술을 표시합니다. 전문기술 탭에서 확인하세요.
+## Notes-deDE: Verfolge alle Berufe! Rechtsklicke auf Titan Panel und gehe zum "Berufe" reiter, fertig.
+## Notes-frFR: Suivez toutes les professions! Faites un clic droit sur le panneau de Titan, passez à l'onglet «Profession» et profitez-en.
+## Notes-esES: ¡Seguir todas las profesiones! Haga clic derecho en Titan Panel, vaya a la pestaña "Profesión" y disfrute.
+## Author: Canettieri
+## Version: 1.0.1
+## Dependencies: TitanClassic
+Core\languages\enUS-default.lua
+Core\languages\deDE.lua
+Core\languages\esES.lua
+Core\languages\esMX.lua
+Core\languages\frFR.lua
+Core\languages\itIT.lua
+Core\languages\koKR.lua
+Core\languages\ptBR.lua
+Core\languages\ruRU.lua
+Core\LibAddonCompat-1.0.lua
+Core\Elib-3.0.lua
+Core\ProfessionsCore.lua
+Professions\TitanAlchemyMulti.lua
+Professions\TitanBlacksmithingMulti.lua
+Professions\TitanCookingMulti.lua
+Professions\TitanEnchantingMulti.lua
+Professions\TitanEngineeringMulti.lua
+Professions\TitanFirstAidMulti.lua
+Professions\TitanFishingMulti.lua
+Professions\TitanHerbalismMulti.lua
+Professions\TitanJewelcraftingMulti.lua
+Professions\TitanLeatherworkingMulti.lua
+Professions\TitanMiningMulti.lua
+Professions\TitanSkinningMulti.lua
+Professions\TitanTailoringMulti.lua
+TitanMasterMulti.lua

@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: The WeakAuras Team
 ## Version: 3.4.1
 ## Dependencies: WeakAuras

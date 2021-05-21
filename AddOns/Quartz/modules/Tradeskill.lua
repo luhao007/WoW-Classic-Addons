@@ -27,19 +27,14 @@ local TimeFmt = Quartz3.Util.TimeFormat
 
 ----------------------------
 -- Upvalues
-local GetTime = GetTime
+local GetTime, UnitCastingInfo = GetTime, UnitCastingInfo
 local unpack, tonumber, format = unpack, tonumber, format
-
-local UnitCastingInfo = function(unit)
-	if unit ~= "player" then return end
-	return CastingInfo()
-end
 
 local getOptions
 
 local castBar, castBarText, castBarTimeText, castBarIcon, castBarSpark, castBarParent
 
-local repeattimes, castSpellID, duration, totaltime, starttime, casting, bail, tradeskillicon
+local repeattimes, castSpellID, duration, totaltime, starttime, casting, bail
 local completedcasts = 0
 local restartdelay = 1
 
@@ -94,7 +89,11 @@ function Tradeskill:OnEnable()
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	self:SecureHook("DoTradeSkill")
+	if C_TradeSkillUI then
+		self:SecureHook(C_TradeSkillUI, "CraftRecipe", "DoTradeSkill")
+	else
+		self:SecureHook("DoTradeSkill")
+	end
 end
 
 function Tradeskill:UNIT_SPELLCAST_START(object, bar, unit, guid, spellID)
@@ -130,7 +129,7 @@ function Tradeskill:UNIT_SPELLCAST_START(object, bar, unit, guid, spellID)
 		castBarSpark:Show()
 
 		if (icon == "Interface\\Icons\\Temp" or icon == 136235) and Quartz3.db.profile.hidesamwise then
-			icon = tradeskillicon or 136243
+			icon = 136243
 		end
 		castBarIcon:SetTexture(icon)
 	else
@@ -165,7 +164,6 @@ end
 function Tradeskill:DoTradeSkill(index, num)
 	completedcasts = 0
 	repeattimes = tonumber(num) or 1
-	tradeskillicon = GetTradeSkillIcon(index)
 end
 
 function Tradeskill:ApplySettings()

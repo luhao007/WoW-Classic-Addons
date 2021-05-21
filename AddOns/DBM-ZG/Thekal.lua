@@ -1,8 +1,7 @@
 local mod = DBM:NewMod("Thekal", "DBM-ZG", 1)
 local L = mod:GetLocalizedStrings()
 
-mod:SetRevision(("$Revision$"):sub(12, -3))
-
+mod:SetRevision("20210422205657")
 mod:SetCreatureID(14509, 11348, 11347)
 mod:SetEncounterID(789)
 mod:SetBossHPInfoToHighest()
@@ -36,67 +35,53 @@ function mod:OnCombatStart(delay)
 	self.vb.phase = 1
 end
 
-do
-	local GreatHeal = DBM:GetSpellInfo(24208)
-	function mod:SPELL_CAST_START(args)
-		--if args:IsSpellID(24208) then
-		if args.spellName == GreatHeal and args:IsSrcTypeHostile() then
-			if self:CheckInterruptFilter(args.sourceGUID, false, true) then
-				specWarnHeal:Show(args.sourceName)
-				specWarnHeal:Play("kickcast")
-			end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 24208 and args:IsSrcTypeHostile() then
+		if self:CheckInterruptFilter(args.sourceGUID, false, true) then
+			specWarnHeal:Show(args.sourceName)
+			specWarnHeal:Play("kickcast")
 		end
 	end
 end
 
-do
-	local Blind, Gouge = DBM:GetSpellInfo(21060), DBM:GetSpellInfo(12540)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args:IsSpellID(21060) then     --Blind Daze
-		if args.spellName == Blind and args:IsDestTypePlayer() then
-			warnBlind:Show(args.destName)
-			timerBlind:Start(args.destName)
-		--elseif args:IsSpellID(12540) and args:IsDestTypePlayer() then --Gouge Stun
-		elseif args.spellName == Gouge and args:IsDestTypePlayer() then
-			warnGouge:Show(args.destName)
-			timerGouge:Start(args.destName)
-		end
-	end
-
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args:IsSpellID(21060) then
-		if args.spellName == Blind and args:IsDestTypePlayer() then
-			timerBlind:Stop(args.destName)
-		--elseif args:IsSpellID(12540) then
-		elseif args.spellName == Gouge and args:IsDestTypePlayer() then
-			timerGouge:Stop(args.destName)
-		end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 21060 and args:IsDestTypePlayer() then
+		warnBlind:Show(args.destName)
+		timerBlind:Start(args.destName)
+	elseif args.spellId == 12540 and args:IsDestTypePlayer() then
+		warnGouge:Show(args.destName)
+		timerGouge:Start(args.destName)
 	end
 end
 
-do
-	local SummonZulGardians = DBM:GetSpellInfo(24183)
-	function mod:SPELL_SUMMON(args)
-		--if args:IsSpellID(24183) then
-		if args.spellName == SummonZulGardians then
-			warnAdds:Show()
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 21060 and args:IsDestTypePlayer() then
+		timerBlind:Stop(args.destName)
+	elseif args.spellId == 12540 and args:IsDestTypePlayer() then
+		timerGouge:Stop(args.destName)
+	end
+end
+
+function mod:SPELL_SUMMON(args)
+	if args.spellId == 24183 then
+		warnAdds:Show()
 	end
 end
 
 function mod:CHAT_MSG_MONSTER_EMOTE(msg)
-	if msg == L.PriestDied then		-- Starts timer before ressurection of adds.
+	if msg == L.PriestDied then -- Starts timer before ressurection of adds.
 		self:SendSync("PriestDied")
 	end
 end
 
 function mod:CHAT_MSG_MONSTER_YELL(msg)
-	if msg == L.YellPhase2 and self.vb.phase < 2 then		-- Bossfight (tank and spank)
+	if msg == L.YellPhase2 and self.vb.phase < 2 then -- Bossfight (tank and spank)
 		self:SendSync("YellPhase2")
 	end
 end
 
 function mod:OnSync(msg, arg)
+	if not self:IsInCombat() then return end
 	if msg == "PriestDied" then
 		if self:AntiSpam(20, 1) then
 			warnSimulKill:Show()

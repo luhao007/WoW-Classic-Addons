@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: arith, dubcat
 ## Version: v1.49.00
 ## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3, LibBabble-Boss-3.0, LibBabble-SubZone-3.0, LibBabble-Faction-3.0, LibDBIcon-1.0, LibDialog-1.0, LibUIDropDownMenu

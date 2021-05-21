@@ -23,12 +23,12 @@ end
 local intendedWoWProject = WOW_PROJECT_MAINLINE
 
 --@non-version-retail@
---@version-classic@
+--[====[@version-classic@
 intendedWoWProject = WOW_PROJECT_CLASSIC
---@end-version-classic@
---[====[@version-bcc@
+--@end-version-classic@]====]
+--@version-bcc@
 intendedWoWProject = WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5 -- TODO: Remove when every flavor build has the constant
---@end-version-bcc@]====]
+--@end-version-bcc@
 --@end-non-version-retail@
 
 WeakAuras.versionString = versionStringFromToc

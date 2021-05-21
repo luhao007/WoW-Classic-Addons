@@ -26,18 +26,8 @@ local Player = Quartz3:GetModule("Player")
 ----------------------------
 -- Upvalues
 local CreateFrame, UIParent = CreateFrame, UIParent
-local UnitName, IsSpellInRange = UnitName, IsSpellInRange
+local UnitCastingInfo, UnitChannelInfo, UnitName, IsSpellInRange = UnitCastingInfo, UnitChannelInfo, UnitName, IsSpellInRange
 local unpack = unpack
-
-local UnitCastingInfo = function(unit)
-	if unit ~= "player" then return end
-	return CastingInfo()
-end
-
-local UnitChannelInfo = function(unit)
-	if unit ~= "player" then return end
-	return ChannelInfo()
-end
 
 local f, OnUpdate, db, getOptions, spell, target, modified, r, g, b, castBar
 

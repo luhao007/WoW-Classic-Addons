@@ -34,6 +34,86 @@ local VUHDO_NORMAL_LABEL_COLOR_DISA = {
 
 
 
+-- Backdrops
+BACKDROP_VUHDO_H_SLIDER_8_8_1111 = {
+	bgFile = "Interface\\AddOns\\VuhDoOptions\\Images\\blue_lt_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_3",
+	tile = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+};
+
+BACKDROP_VUHDO_FRAME_16_16_1111 = {
+	bgFile = "Interface\\AddOns\\VuhDoOptions\\Images\\blue_lt_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_2",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+};
+
+BACKDROP_VUHDO_PANEL_16_16_3333 = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_1",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = {  left = 3, right = 3, top = 3, bottom = 3 },
+};
+
+BACKDROP_VUHDO_WHITE_PANEL_16_16_3333 = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_2",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = {  left = 3, right = 3, top = 3, bottom = 3 },
+};
+
+BACKDROP_VUHDO_WHITE_SQUARE_16_16_0000 = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	tile = true, 
+	tileSize = 16, 
+	edgeSize = 16,
+};
+
+BACKDROP_VUHDO_PANEL_SCROLL_BAR_8_8_1111 = {
+	bgFile = "Interface\\AddOns\\VuhDoOptions\\Images\\blue_dk_square_16_16",
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_3",
+	tile = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = { left = 1, right = 1, top = 1, bottom = 1 },
+};
+
+BACKDROP_VUHDO_SCROLL_PANEL_16_16_0000 = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_4",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+};
+
+BACKDROP_VUHDO_SCROLL_PANEL_2_16_16_0000 = {
+	bgFile = "Interface\\AddOns\\VuhDo\\Images\\white_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_1",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+};
+
+BACKDROP_VUHDO_PANEL_APPEND_BOTTOM_16_16_1111 = {
+	bgFile = "Interface\\AddOns\\VuhDoOptions\\Images\\blue_lt_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_2_append_bottom",
+	tile = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+};
+
+
+
 --
 function VUHDO_lnfCheckButtonOnLoad(aCheckButton)
 	if aCheckButton:GetText() then
@@ -946,7 +1026,7 @@ function VUHDO_lnfComboSetSelectedValue(aComboBox, aValue, anIsEditBox)
 	for tIndex, tInfo in ipairs(tTable) do
 		if (aComboBox.isScrollable) then
 			tTexture = _G[aComboBox:GetName() .. "ScrollPanelSelectPanelItem" .. tIndex .. "CheckTexture"];
-		elseif (tIndex > 100) then
+		elseif (tIndex > 500) then
 			break;
 		else
 			tTexture = _G[aComboBox:GetName() .. "SelectPanelItem" .. tIndex .. "CheckTexture"];

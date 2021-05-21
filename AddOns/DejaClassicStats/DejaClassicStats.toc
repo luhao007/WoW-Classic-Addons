@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Dejablue, Kakjens, loudsoul
-## Version: 1307r003
+## Version: 205r003
 ## SavedVariables: DCS_ClassSpecDB
 ## SavedVariablesPerCharacter: DejaClassicStatsDBPC
 
@@ -11,7 +11,7 @@
 ## X-License: All Rights Reserved unless otherwise explicitly stated.
 ## X-Website: https://dejoblue.com
 ## X-Curse-Project-ID: 334987
-## X-WoWI-ID: 25118
+## X-WoWI-ID: 25977
 
 Localization\localization.core.lua
 Localization\localization.deDE.lua

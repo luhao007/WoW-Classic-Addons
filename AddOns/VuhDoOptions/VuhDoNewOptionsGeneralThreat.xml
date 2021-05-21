@@ -158,7 +158,7 @@
 
 			<Frame name="$parentShieldPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="126" y="74" />
+					<AbsDimension x="126" y="113" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -169,7 +169,7 @@
 				</Anchors>
 				<Frames>
 
-					<CheckButton name="$parentShielBarCheckButton" text="VUHDO_I18N_ENABLE" inherits="VuhDoCheckButtonTemplate">
+					<CheckButton name="$parentShieldBarCheckButton" text="VUHDO_I18N_ENABLE" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -181,6 +181,23 @@
 							<OnLoad>
 								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SHOW_SHIELD_BAR");
 								VUHDO_lnfSetTooltip(self, nil);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentOvershieldBarCheckButton" text="VUHDO_I18N_SHOW_OVERSHIELD" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-70" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SHOW_OVERSHIELD_BAR");
+								VUHDO_lnfSetTooltip(self, nil);
+								VUHDO_lnfAddConstraint(self, VUHDO_LF_CONSTRAINT_DISABLE, "VUHDO_CONFIG.SHOW_SHIELD_BAR", false);
 							</OnLoad>
 						</Scripts>
 					</CheckButton>

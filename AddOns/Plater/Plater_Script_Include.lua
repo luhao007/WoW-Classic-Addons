@@ -1,5 +1,7 @@
 PlaterNamePlateBorderTemplateMixin = {};
 
+local PixelUtil = PixelUtil or DFPixelUtil
+
 function PlaterNamePlateBorderTemplateMixin:SetVertexColor(r, g, b, a)
 	for i, texture in ipairs(self.Textures) do
 		texture:SetVertexColor(r, g, b, a);
@@ -20,21 +22,21 @@ function PlaterNamePlateBorderTemplateMixin:UpdateSizes()
 	local upwardExtendHeightPixels = self.upwardExtendHeightPixels or borderSize;
 	local upwardExtendHeightMinPixels = self.upwardExtendHeightMinPixels or minPixels;
 
-	DFPixelUtil.SetWidth(self.Left, borderSize, minPixels);
-	DFPixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	DFPixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
+	PixelUtil.SetWidth(self.Left, borderSize, minPixels);
+	PixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	PixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
 
-	DFPixelUtil.SetWidth(self.Right, borderSize, minPixels);
-	DFPixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	DFPixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
+	PixelUtil.SetWidth(self.Right, borderSize, minPixels);
+	PixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	PixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
 
-	DFPixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
-	DFPixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
-	DFPixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	PixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
+	PixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+	PixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
 
 	if self.Top then
-		DFPixelUtil.SetHeight(self.Top, borderSize, minPixels);
-		DFPixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
-		DFPixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
+		PixelUtil.SetHeight(self.Top, borderSize, minPixels);
+		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
+		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end
 end

@@ -491,3 +491,6 @@ VUHDO_I18N_PLAY_SOUND_FILE_ERR = "无法播放音效 \"%s\": %s";
 VUHDO_I18N_PLAY_SOUND_FILE_DEBUFF_ERR = "无法为标准的DEBUFF \"%s\" 播放音效. 调整设置 'VuhDo Options > Debuffs > Standard > Debuff Sound'.";
 VUHDO_I18N_PLAY_SOUND_FILE_CUSTOM_DEBUFF_ERR = "无法为自定义的DEBUFF \"%s\" 播放音效 \"%s\". 调整设置 'VuhDo Options > Debuffs > Custom'.";
 
+-- 3.122
+VUHDO_I18N_BOUQUET_STATUS_POWER_TANK_ONLY = "Statusbar: Power % (Tank Only)";
+VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY = "Manabars: Power (Tank Only)";

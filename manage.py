@@ -13,8 +13,16 @@ from utils import process_file, rm_tree
 
 logger = logging.getLogger('manager')
 
-CLASSIC_VER = '11307'
+CLASSIC_ERA_VER = '11307'
+CLASSIC_VER = '20501'
 RETAIL_VER = '90002'
+
+
+def classic_era_only(func):
+    def wrapper(*args):
+        if '_classic_era_' in os.getcwd():
+            func(*args)
+    return wrapper
 
 
 def classic_only(func):
@@ -35,7 +43,9 @@ class Manager:
 
     def __init__(self):
         """Addon manager."""
+        self.is_classic_era = '_classic_era_' in os.getcwd()
         self.is_classic = '_classic_' in os.getcwd()
+        self.is_retail = '_retail_' in os.getcwd()
         self.config = ElementTree.parse('config.xml')
 
     def process(self):
@@ -98,7 +108,7 @@ class Manager:
         process_file(
             xml_path,
             lambda lines: [line for line in lines
-                           if not any(lib+'\\' in line for lib in libs)]
+                           if not any(lib.lower()+'\\' in line.lower() for lib in libs)]
         )
 
     def change_defaults(self, path, defaults):
@@ -190,7 +200,9 @@ class Manager:
             def process(config, addon, lines):
                 toc = TOC(lines)
 
-                if self.is_classic:
+                if self.is_classic_era:
+                    toc.tags['Interface'] = CLASSIC_ERA_VER
+                elif self.is_classic:
                     toc.tags['Interface'] = CLASSIC_VER
                 else:
                     toc.tags['Interface'] = RETAIL_VER
@@ -293,12 +305,7 @@ class Manager:
                   'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
                   'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
-        if self.is_classic:
-            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
-                       'ATT-Classic', 'ClassicCastbars_Options',
-                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'PallyPower', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
-        else:
+        if self.is_retail:
             addons += ['AllTheThings', 'Details_ChartViewer',
                        'Details_DeathGraphs', 'Details_EncounterDetails',
                        'Details_RaidCheck', 'Details_TimeLine',
@@ -316,6 +323,12 @@ class Manager:
                        'HandyNotes_VisionsOfNZoth',
                        'NPCScan', 'Omen',
                        'RelicInspector', 'Simulationcraft', 'Titan']
+        else:
+            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
+                       'ATT-Classic', 'ClassicCastbars_Options',
+                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'PallyPower', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
+
 
         for addon in addons:
             self.remove_libraries_all(addon)
@@ -339,14 +352,19 @@ class Manager:
 
         process_file('Addons/ACP/ACP.xml', handle)
 
+    @classic_only
     def handle_ate(self):
-        pass
-        # self.remove_libraries_all()
+        self.remove_libraries(
+                ['CallbackHandler-1.0', 'LibDataBroker-1.1',
+                 'LibDbIcon-1.0', 'LibStub'],
+                'AddOns/alaTalentEmu/Lib',
+                'AddOns/alaTalentEmu/alaTalentEmu.xml'
+            )
 
     def handle_att(self):
         self.change_defaults(
             'Addons/{}/Settings.lua'.format(
-                'ATT-Classic' if self.is_classic else 'AllTheThings'),
+                'AllTheThings' if self.is_retail else 'ATT-Classic'),
             ['		["MinimapButton"] = false,',
              '		["Auto:MiniList"] = false,']
         )
@@ -364,7 +382,7 @@ class Manager:
 
     @classic_only
     def handle_atlasloot(self):
-        if not self.is_classic:
+        if self.is_retail:
             self.remove_libraries(
                 ['CallbackHandler-1.0', 'LibBabble-Boss-3.0',
                  'LibBabble-Faction-3.0', 'LibBabble-ItemSet-3.0',
@@ -432,7 +450,7 @@ class Manager:
     def handle_dcs(self):
         self.change_defaults(
             'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
-                'Classic' if self.is_classic else 'Character'),
+                'Character' if self.is_retail else 'Classic'),
             ['	ShowDuraSetChecked = false,',
              '	ShowItemRepairSetChecked = false,',
              '	ShowItemLevelSetChecked = false,',
@@ -460,7 +478,7 @@ class Manager:
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
                 'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1']
-        if not self.is_classic:
+        if self.is_retail:
             libs += ['DF', 'LibTranslit-1.0', 'NickTag-1.0']
 
         self.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
@@ -533,8 +551,8 @@ class Manager:
                ('enUS' not in folder and 'zhCN' not in folder)):
                 rm_tree(Path('AddOns') / folder)
 
-            if ((not self.is_classic and 'classic' in folder) or
-                (self.is_classic and
+            if ((self.is_retail and 'classic' in folder) or
+                (not self.is_retail and
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
@@ -545,7 +563,7 @@ class Manager:
              'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
              'AceGUI-3.0-SharedMediaWidgets', 'AceLocale-3.0',
              'AceSerializer-3.0', 'CallbackHandler-1.0', 'HereBeDragons',
-             'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibCandyBar-3.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
              'LibSharedMedia-3.0', 'LibStub'],
             'Addons/NovaWorldBuffs/Lib',
             'Addons/NovaWorldBuffs/embeds.xml',
@@ -663,7 +681,7 @@ class Manager:
                 'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
                 'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit-1.0']
-        if not self.is_classic:
+        if self.is_retail:
             libs += ['DF', 'LibTranslit-1.0']
 
         self.remove_libraries(libs, 'Addons/Plater/libs', 'Addons/Plater/libs/libs.xml')
@@ -774,7 +792,7 @@ class Manager:
 
     def handle_titan(self):
         path = 'Addons/Titan{0}Location/Titan{0}Location.lua'.format(
-            'Classic' if self.is_classic else '')
+            '' if self.is_retail else 'Classic')
         self.change_defaults(
             path,
             ['			ShowCoordsOnMap = false,',
@@ -798,7 +816,7 @@ class Manager:
         )
 
     def handle_ufp(self):
-        if self.is_classic:
+        if self.is_classic_era:
             rm_tree('AddOns/UnitFramesPlus_MobHealth')
 
             self.remove_libraries_all('UnitFramesPlus_Cooldown')
@@ -832,7 +850,7 @@ class Manager:
             'Addons/VuhDo/Libs/Libs.xml'
         )
 
-        if self.is_classic:
+        if not self.is_retail:
             rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
             self.remove_libs_in_file(
                 'Addons/Vuhdo/Libs/!LibTotemInfo/embeds.xml',

@@ -1,22 +1,10 @@
-lightweight tag 0348a1a23f170bc2e617625c0f4aae45e3df37aa v1.1.2
+lightweight tag e4f48101105c8fa0dea021b93bb7cc7c3f877877 v1.2.0
 Author:	VallanTV <vallantv@protonmail.com>
-Date:	Thu Mar 4 07:13:56 2021 -0800
+Date:	Thu May 20 20:21:33 2021 -0700
 
-commit 0348a1a23f170bc2e617625c0f4aae45e3df37aa
+commit e4f48101105c8fa0dea021b93bb7cc7c3f877877
 Author: VallanTV <vallantv@protonmail.com>
-Date:   Thu Mar 4 07:13:56 2021 -0800
+Date:   Thu May 20 20:21:33 2021 -0700
 
-    bump version
-
-commit 9796ad426c2f73c50120e06a9119d809cee3cd52
-Author: VallanTV <vallantv@protonmail.com>
-Date:   Thu Mar 4 07:06:55 2021 -0800
-
-    Add tom tom map overlay to exclude list
-
-commit 7c8262ce071fbdf91dbcb48474d2ea355c7af471
-Author: sipertruk <sipertruk@users.noreply.github.com>
-Date:   Wed Feb 24 21:11:02 2021 +0100
-
-    Fix performance with Minimap children iteration
+    update for TBC Classic
 

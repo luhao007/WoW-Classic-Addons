@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.118-classic
+## Version: 3.123-tbcc
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## SavedVariables: VUHDO_OPTIONS_SETTINGS
@@ -12,7 +12,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF团队面板|r |cFF0055FF设置|r
 
 ## X-Curse-Project-ID: 7950
-## X-WoWI-ID: 24919
+## X-WoWI-ID: 25940
 ## X-Wago-ID: yQKynG71
 ## X-Part-Of: VuhDo
 

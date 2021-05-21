@@ -1,6 +1,7 @@
 # Quartz
 
-## [3.5-classic-5](https://github.com/Nevcairiel/Quartz/tree/3.5-classic-5) (2019-10-29)
-[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.5-classic-4...3.5-classic-5)
+## [3.6.5](https://github.com/Nevcairiel/Quartz/tree/3.6.5) (2021-05-15)
+[Full Changelog](https://github.com/Nevcairiel/Quartz/compare/3.6.4...3.6.5) [Previous Releases](https://github.com/Nevcairiel/Quartz/releases)
 
-- Fix loading LibClassicDurations  
+- Rename BC -> BCC to follow community standards  
+- Support BC  

@@ -14,10 +14,13 @@ local twipe = table.wipe;
 local CheckInteractDistance = CheckInteractDistance;
 local UnitIsUnit = UnitIsUnit;
 local NotifyInspect = NotifyInspect;
-local VUHDO_getSpecializationInfo = VUHDO_getSpecializationInfo;
+local GetInspectSpecialization = VUHDO_getInspectSpecialization;
+local GetSpecialization = VUHDO_getSpecialization;
+local GetSpecializationRoleByID = VUHDO_getSpecializationRoleByID;
+local GetSpecializationInfo = VUHDO_getSpecializationInfo;
 local ClearInspectPlayer = ClearInspectPlayer;
 local UnitStat = UnitStat;
-local VUHDO_unitGroupRolesAssigned = VUHDO_unitGroupRolesAssigned;
+local UnitGroupRolesAssigned = VUHDO_unitGroupRolesAssigned;
 local UnitLevel = UnitLevel;
 local UnitPowerType = UnitPowerType;
 local VUHDO_isUnitInModel;
@@ -139,16 +142,16 @@ function VUHDO_inspectRole(aUnit)
 	end
 
 	if "player" == aUnit then
-		tActiveTree = VUHDO_getSpecialization();
+		tActiveTree = GetSpecialization();
 
 		if not tActiveTree then
 			return VUHDO_ID_UNDEFINED;
 		end
 		
-		tTreeId, _, _, _, _, tRole = VUHDO_getSpecializationInfo(tActiveTree, false, false);
+		tTreeId, _, _, _, _, tRole = GetSpecializationInfo(tActiveTree, false, false);
 	else
-		tTreeId = VUHDO_getInspectSpecialization(aUnit);
-		tRole = VUHDO_getSpecializationRoleByID(tTreeId);
+		tTreeId = GetInspectSpecialization(aUnit);
+		tRole = GetSpecializationRoleByID(tTreeId);
 	end
 
 	if (tTreeId or 0) == 0 then
@@ -213,7 +216,7 @@ function VUHDO_inspectLockRole()
 	end
 
 	if "player" == VUHDO_NEXT_INSPECT_UNIT then
-		tActiveTree = VUHDO_getSpecialization();
+		tActiveTree = GetSpecialization();
 
 		if not tActiveTree then
 			VUHDO_INSPECTED_ROLES[tInfo["name"]] = VUHDO_ID_UNDEFINED;
@@ -221,10 +224,10 @@ function VUHDO_inspectLockRole()
 			return;
 		end
 
-		tTreeId, _, _, _, _, tRole = VUHDO_getSpecializationInfo(tActiveTree, false, false);
+		tTreeId, _, _, _, _, tRole = GetSpecializationInfo(tActiveTree, false, false);
 	else
-		tTreeId = VUHDO_getInspectSpecialization(VUHDO_NEXT_INSPECT_UNIT);
-		tRole = VUHDO_getSpecializationRoleByID(tTreeId);
+		tTreeId = GetInspectSpecialization(VUHDO_NEXT_INSPECT_UNIT);
+		tRole = GetSpecializationRoleByID(tTreeId);
 	end
 
 	if (tTreeId or 0) == 0 then
@@ -252,7 +255,7 @@ local tDfRole, tOldRole, tReturnRole, tName;
 local function VUHDO_determineDfToolRole(anInfo)
 	tName = anInfo["name"];
 	tOldRole = VUHDO_DF_TOOL_ROLES[tName];
-	tDfRole = VUHDO_unitGroupRolesAssigned(anInfo["unit"]);
+	tDfRole = UnitGroupRolesAssigned(anInfo["unit"]);
 
 	if "NONE" == tDfRole then
 		VUHDO_DF_TOOL_ROLES[tName] = nil;

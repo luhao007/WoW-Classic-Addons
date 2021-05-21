@@ -2,6 +2,9 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TitanPanelClassicTemplate.lua" />
 	<Button name="TitanPanelButtonTemplate" hidden="true" movable="true" virtual="true">
+		<!--
+		 inherits="BackdropTemplate" mixin="BackdropTemplateMixin"
+		-->
 		<!-- Removed on 20181229 to deal with the new LibUIDropDownMenu
 		<Frames>
 			<Frame name="$parentRightClickMenu" inherits="L_UIDropDownMenuTemplate" id="1" hidden="true">
@@ -9,7 +12,7 @@
 		</Frames>
 		-->
 		<Scripts>
-			<OnLoad>
+			<OnLoad>  <!--  inherit="prepend" -->
 				TitanPanelButton_OnLoad(self);
 			</OnLoad>
 			<OnShow>
@@ -103,13 +106,14 @@
 			<AbsDimension x="0" y="0"/>
 		</PushedTextOffset>
 	</Button>
-	<Slider name="TitanOptionsSliderTemplate" orientation="VERTICAL" virtual="true" enableMouse="true" EnableMouseWheel="true">
+	<Slider name="TitanOptionsSliderTemplate" orientation="VERTICAL" inherits="BackdropTemplate" virtual="true" enableMouse="true" EnableMouseWheel="true">
 		<Size>
 			<AbsDimension x="10" y="100"/>
 		</Size>
 		<HitRectInsets>
 			<AbsInset left="-10" right="-10" top="0" bottom="0"/>
 		</HitRectInsets>
+<!-- Removed on 20200817 to deal with the new Backdrop API for 9.0 (Shadowlands)
 		<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="8"/>
@@ -121,6 +125,7 @@
 				<AbsInset left="6" right="6" top="3" bottom="3"/>
 			</BackgroundInsets>
 		</Backdrop>
+-->
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentText" inherits="GameFontGreenSmall">
@@ -157,5 +162,9 @@
 				<AbsDimension x="32" y="32"/>
 			</Size>
 		</ThumbTexture>
-	</Slider>
+		<Scripts>
+			<OnLoad>
+				TitanOptionsSliderTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>	</Slider>
 </Ui>

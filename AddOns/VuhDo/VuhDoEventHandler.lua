@@ -425,7 +425,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			-- SWING_DAMAGE - the amount of damage is the 12th arg
 			-- ENVIRONMENTAL_DAMAGE - the amount of damage is the 13th arg
 			-- for all other events with the _DAMAGE suffix the amount of damage is the 15th arg
-			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15, anArg4);
+			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15);
 
 			if VUHDO_INTERNAL_TOGGLES[36] then -- VUHDO_UPDATE_SHIELD
 				-- for SPELL events with _AURA suffixes the amount healed is the 16th arg
@@ -452,15 +452,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			VUHDO_updateBouquetsForEvent(anArg1, 4); -- VUHDO_UPDATE_DEBUFF
 		end
 
---	elseif "UNIT_HEALTH" == anEvent then
-		-- as of patch 7.1 we are seeing empty units on health related events
---		if anArg1 and (VUHDO_RAID or tEmptyRaid)[anArg1] then 
---			VUHDO_updateHealth(anArg1, 2); -- VUHDO_UPDATE_HEALTH
---		end
-
-	-- TODO: is it ok to listen to both UNIT_HEALTH and UNIT_HEALTH_FREQUENT?
-	-- TODO: add options based on desired responsiveness and performance
-	elseif "UNIT_HEALTH_FREQUENT" == anEvent then
+	elseif "UNIT_HEALTH" == anEvent then
 		-- as of patch 7.1 we are seeing empty units on health related events
 		if anArg1 and ((VUHDO_RAID or tEmptyRaid)[anArg1] or VUHDO_isBossUnit(anArg1)) then
  			VUHDO_updateHealth(anArg1, 2);
@@ -471,7 +463,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			VUHDO_updateHealth(anArg1, 9); -- VUHDO_UPDATE_INC
 			VUHDO_updateBouquetsForEvent(anArg1, 9); -- VUHDO_UPDATE_ALT_POWER
 		end
-]]
+]];
 	elseif "UNIT_POWER_UPDATE" == anEvent or "UNIT_POWER_FREQUENT" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then
 			if "CHI" == anArg2 then
@@ -497,17 +489,24 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then -- auch target, focus
 			VUHDO_updateBouquetsForEvent(anArg1, 36); -- VUHDO_UPDATE_SHIELD
 			VUHDO_updateShieldBar(anArg1);
+
+			-- 9.0.1 added Priest 'Spirit Shell' which does not fire SPELL_AURA__REFRESH events as normal
+			-- instead use this event handler to track the 'Spirit Shell' absorb amount
+			if VUHDO_getShieldPerc(anArg1, VUHDO_SPELL_ID.SPIRIT_SHELL) > 0 then
+				-- 114908 is the spell ID of the 'Spirit Shell' absorb aura
+				VUHDO_updateShield(anArg1, 114908);
+			end
 		end
-]]
+]];
 	elseif "UNIT_SPELLCAST_SUCCEEDED" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then VUHDO_spellcastSucceeded(anArg1, anArg3); end
 
 	elseif "UNIT_SPELLCAST_SENT" == anEvent then
 		if VUHDO_VARIABLES_LOADED then VUHDO_spellcastSent(anArg1, anArg2, anArg4); end
 
---[[	elseif "UNIT_THREAT_SITUATION_UPDATE" == anEvent then
+	elseif "UNIT_THREAT_SITUATION_UPDATE" == anEvent then
 		if VUHDO_VARIABLES_LOADED then VUHDO_updateThreat(anArg1); end
-]]
+
 	elseif "PLAYER_REGEN_ENABLED" == anEvent then
 		if VUHDO_VARIABLES_LOADED then
 			for tUnit, _ in pairs(VUHDO_RAID) do
@@ -551,10 +550,10 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			else VUHDO_normalRaidReload(); end
 		end
 
---[[	elseif "UNIT_ENTERED_VEHICLE" == anEvent or "UNIT_EXITED_VEHICLE" == anEvent or "UNIT_EXITING_VEHICLE" == anEvent then
+	elseif "UNIT_ENTERED_VEHICLE" == anEvent or "UNIT_EXITED_VEHICLE" == anEvent or "UNIT_EXITING_VEHICLE" == anEvent then
 		VUHDO_REMOVE_HOTS = false;
 		VUHDO_normalRaidReload();
-]]
+
 	elseif "RAID_TARGET_UPDATE" == anEvent then
 		VUHDO_TIMERS["CUSTOMIZE"] = 0.1;
 
@@ -569,7 +568,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			if VUHDO_TIMERS["RELOAD_ROSTER"] < 0.4 then VUHDO_TIMERS["RELOAD_ROSTER"] = 0.6; end
 		end
 
---[[	elseif "PLAYER_FOCUS_CHANGED" == anEvent then
+	elseif "PLAYER_FOCUS_CHANGED" == anEvent then
 		VUHDO_removeAllDebuffIcons("focus");
 		VUHDO_quickRaidReload();
 		VUHDO_clParserSetCurrentFocus();
@@ -578,7 +577,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			VUHDO_determineIncHeal("focus");
 			VUHDO_updateHealth("focus", 9); -- VUHDO_UPDATE_INC
 		end
-]]
+
 	elseif "PARTY_MEMBER_ENABLE" == anEvent or "PARTY_MEMBER_DISABLE" == anEvent then
 		VUHDO_TIMERS["CUSTOMIZE"] = 0.2;
 
@@ -665,7 +664,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 	elseif "PLAYER_EQUIPMENT_CHANGED" == anEvent then
 		VUHDO_aoeUpdateSpellAverages();
 
---[[	elseif "LFG_PROPOSAL_SHOW" == anEvent then
+	elseif "LFG_PROPOSAL_SHOW" == anEvent then
 		VUHDO_buildSafeParty();
 
 	elseif "LFG_PROPOSAL_FAILED" == anEvent then
@@ -673,7 +672,6 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 
 	elseif "LFG_PROPOSAL_SUCCEEDED" == anEvent then
 		VUHDO_lateRaidReload();
-]]
 	--elseif("UPDATE_MACROS" == anEvent) then
 		--VUHDO_timeReloadUI(0.1); -- @WARNING Lädt wg. shield macro alle 8 sec.
 
@@ -683,17 +681,17 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 	elseif "INCOMING_RESURRECT_CHANGED" == anEvent then
 		if ((VUHDO_RAID or tEmptyRaid)[anArg1] ~= nil) then VUHDO_updateBouquetsForEvent(anArg1, VUHDO_UPDATE_RESURRECTION); end
 
---[[	elseif "PET_BATTLE_OPENING_START" == anEvent then
+	elseif "PET_BATTLE_OPENING_START" == anEvent then
 		VUHDO_setPetBattle(true);
 
 	elseif "PET_BATTLE_CLOSE" == anEvent then
 		VUHDO_setPetBattle(false);
-]]
+
 --[[	elseif "INCOMING_SUMMON_CHANGED" == anEvent then
 		if ((VUHDO_RAID or tEmptyRaid)[anArg1] ~= nil) then 
 			VUHDO_updateBouquetsForEvent(anArg1, VUHDO_UPDATE_SUMMON); 
 		end
-]]		
+]]	
 	elseif "UNIT_PHASE" == anEvent then
 		if ((VUHDO_RAID or tEmptyRaid)[anArg1] ~= nil) then 
 			VUHDO_updateBouquetsForEvent(anArg1, VUHDO_UPDATE_PHASE); 
@@ -701,16 +699,16 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 		
 --[[	elseif "RUNE_POWER_UPDATE" == anEvent then
 		VUHDO_updateBouquetsForEvent("player", 42); -- VUHDO_UPDATE_RUNES
-
+	
 	elseif "PLAYER_SPECIALIZATION_CHANGED" == anEvent then
 		if VUHDO_VARIABLES_LOADED and not InCombatLockdown() then
 			if "player" == anArg1 then
-				local tSpecNum = tostring(VUHDO_getSpecialization()) or "1";
+				local tSpecNum = tostring(GetSpecialization()) or "1";
 				local tBestProfile = VUHDO_getBestProfileAfterSpecChange();
 
 				-- event sometimes fires multiple times so we must de-dupe
-				if (VUHDO_SPEC_LAYOUTS["selected"] ~= VUHDO_SPEC_LAYOUTS[tSpecNum]) or 
-					(VUHDO_CONFIG["CURRENT_PROFILE"] ~= tBestProfile) then
+				if (not VUHDO_strempty(VUHDO_SPEC_LAYOUTS[tSpecNum]) and (VUHDO_SPEC_LAYOUTS["selected"] ~= VUHDO_SPEC_LAYOUTS[tSpecNum])) or 
+					(not VUHDO_strempty(tBestProfile) and (VUHDO_CONFIG["CURRENT_PROFILE"] ~= tBestProfile)) then
 					VUHDO_activateSpecc(tSpecNum);
 				end
 			end
@@ -721,7 +719,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 				VUHDO_timeReloadUI(1);
 			end
 		end
-]]
+]];
 	else
 		VUHDO_Msg("Error: Unexpected event: " .. anEvent);
 	end
@@ -746,7 +744,7 @@ end
 --
 local function VUHDO_printAbout()
 
-	VUHDO_Msg("VuhDo |cffffe566['vu:du:]|r v" .. VUHDO_VERSION .. " (use /vd). Currently maintained by Ivaria@US-Hyjal in honor of Marshy.");
+	VUHDO_Msg("VuhDo |cffffe566['vu:du:]|r v" .. VUHDO_VERSION .. " (use /vd). Currently maintained by Ivaria@US-Hyjal in honor of Marshy and our newborn daughter Kiana.");
 
 end
 
@@ -924,11 +922,11 @@ function VUHDO_updateGlobalToggles()
 
 	VUHDO_INTERNAL_TOGGLES[VUHDO_UPDATE_THREAT_LEVEL] = VUHDO_isAnyoneInterstedIn(VUHDO_UPDATE_THREAT_LEVEL);
 
---[[	VUHDO_UnRegisterEvent(VUHDO_INTERNAL_TOGGLES[VUHDO_UPDATE_THREAT_LEVEL]
+	VUHDO_UnRegisterEvent(VUHDO_INTERNAL_TOGGLES[VUHDO_UPDATE_THREAT_LEVEL]
 		or VUHDO_isAnyoneInterstedIn(VUHDO_UPDATE_AGGRO),
 		"UNIT_THREAT_SITUATION_UPDATE"
 	);
-]]
+
 	VUHDO_INTERNAL_TOGGLES[VUHDO_UPDATE_THREAT_PERC] = VUHDO_isAnyoneInterstedIn(VUHDO_UPDATE_THREAT_PERC);
 	VUHDO_INTERNAL_TOGGLES[VUHDO_UPDATE_AGGRO] = VUHDO_isAnyoneInterstedIn(VUHDO_UPDATE_AGGRO);
 
@@ -990,9 +988,9 @@ function VUHDO_updateGlobalToggles()
 		= (VUHDO_isModelConfigured(VUHDO_ID_PRIVATE_TANKS) and not VUHDO_CONFIG["OMIT_TARGET"])
 		or VUHDO_isModelConfigured(VUHDO_ID_TARGET);
 
---[[	VUHDO_UnRegisterEvent(VUHDO_CONFIG["SHOW_INCOMING"] or VUHDO_CONFIG["SHOW_OWN_INCOMING"],
-		"UNIT_HEAL_PREDICTION");
-]]
+--	VUHDO_UnRegisterEvent(VUHDO_CONFIG["SHOW_INCOMING"] or VUHDO_CONFIG["SHOW_OWN_INCOMING"],
+--		"UNIT_HEAL_PREDICTION");
+
 	VUHDO_UnRegisterEvent(not VUHDO_CONFIG["IS_READY_CHECK_DISABLED"],
 		"READY_CHECK", "READY_CHECK_CONFIRM", "READY_CHECK_FINISHED");
 
@@ -1050,7 +1048,7 @@ local function VUHDO_updateAllAggro()
 				tInfo["aggro"] = true;
 			end
 			tTarget = tInfo["targetUnit"];
-			if tTarget and UnitExists(tTarget) and not UnitIsFriend(tUnit, tTarget) then
+			if UnitIsEnemy(tUnit, tTarget) then
 				if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
 					_, _, tThreatPerc = UnitDetailedThreatSituation(tUnit, tTarget);
 					tInfo["threatPerc"] = tThreatPerc or 0;
@@ -1058,7 +1056,7 @@ local function VUHDO_updateAllAggro()
 
 				tAggroUnit = VUHDO_RAID_NAMES[UnitName(tTarget .. "target")];
 
-				if tAggroUnit and UnitExists(tAggroUnit) then
+				if tAggroUnit then
 					if VUHDO_INTERNAL_TOGGLES[14] then -- VUHDO_UPDATE_AGGRO
 						_, _, tThreatPerc = UnitDetailedThreatSituation(tAggroUnit, tTarget);
 						VUHDO_RAID[tAggroUnit]["threatPerc"] = tThreatPerc or 0;
@@ -1102,7 +1100,7 @@ local function VUHDO_updateAllRange()
 		end
 
 		-- Check if unit is phased
-		if VUHDO_unitIsWarModePhased(tUnit) or not UnitInPhase(tUnit) then
+		if VUHDO_unitPhaseReason(tUnit) then
 			tIsInRange = false;
 		else
 			-- Check if unit is in range
@@ -1509,24 +1507,24 @@ end
 
 local VUHDO_ALL_EVENTS = {
 	"VARIABLES_LOADED", "PLAYER_ENTERING_WORLD",
-	"UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH", -- "UNIT_HEALTH",
+	"UNIT_MAXHEALTH", "UNIT_HEALTH",  
 	"UNIT_AURA",
 	"UNIT_TARGET",
 	"GROUP_ROSTER_UPDATE", "INSTANCE_ENCOUNTER_ENGAGE_UNIT", "UPDATE_ACTIVE_BATTLEFIELD",  
 	"UNIT_PET",
---	"UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "UNIT_EXITING_VEHICLE",
+	"UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "UNIT_EXITING_VEHICLE",
 	"CHAT_MSG_ADDON",
 	"RAID_TARGET_UPDATE",
 	"LEARNED_SPELL_IN_TAB",
 	"PLAYER_FLAGS_CHANGED",
 	"PLAYER_LOGOUT",
-	"UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", -- "RUNE_POWER_UPDATE", 
+	"UNIT_DISPLAYPOWER", "UNIT_MAXPOWER", "UNIT_POWER_UPDATE", --"RUNE_POWER_UPDATE", 
 	"UNIT_SPELLCAST_SENT", "UNIT_SPELLCAST_SUCCEEDED",
 	"PARTY_MEMBER_ENABLE", "PARTY_MEMBER_DISABLE",
 	"COMBAT_LOG_EVENT_UNFILTERED",
---	"UNIT_THREAT_SITUATION_UPDATE",
+	"UNIT_THREAT_SITUATION_UPDATE",
 	"UPDATE_BINDINGS",
-	"PLAYER_TARGET_CHANGED", -- "PLAYER_FOCUS_CHANGED",
+	"PLAYER_TARGET_CHANGED", "PLAYER_FOCUS_CHANGED",
 	"PLAYER_EQUIPMENT_CHANGED",
 	"READY_CHECK", "READY_CHECK_CONFIRM", "READY_CHECK_FINISHED",
 	"ROLE_CHANGED_INFORM",
@@ -1537,11 +1535,11 @@ local VUHDO_ALL_EVENTS = {
 --	"UNIT_HEAL_PREDICTION",
 	"UNIT_POWER_BAR_SHOW","UNIT_POWER_BAR_HIDE",
 	"UNIT_NAME_UPDATE",
---	"LFG_PROPOSAL_SHOW", "LFG_PROPOSAL_FAILED", "LFG_PROPOSAL_SUCCEEDED",
+	"LFG_PROPOSAL_SHOW", "LFG_PROPOSAL_FAILED", "LFG_PROPOSAL_SUCCEEDED",
 	--"UPDATE_MACROS",
 	"UNIT_FACTION",
 	"INCOMING_RESURRECT_CHANGED",
---	"PET_BATTLE_CLOSE", "PET_BATTLE_OPENING_START",
+	"PET_BATTLE_CLOSE", "PET_BATTLE_OPENING_START",
 	"PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED",
 --	"UNIT_ABSORB_AMOUNT_CHANGED",
 --	"INCOMING_SUMMON_CHANGED",

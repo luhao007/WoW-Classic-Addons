@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Boshi Lian(farmer1992@gmail.com)
-## Version: v5.5.1-classic
+## Version: v5.5.1-tbc
 ## SavedVariables: MyslotExports
 ## SavedVariablesPerCharacter: MyslotSettings
 

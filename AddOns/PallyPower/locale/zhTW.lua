@@ -111,7 +111,7 @@ L["SALVCOMBAT_DESC"] = [=[If you enable this option you will be able to buff War
 L["SEAL"] = "聖印"
 L["SEAL_DESC"] = "監控聖印"
 L["SEALBTN"] = "Seal Button"
-L["SEALBTN_DESC"] = "[Enable/Disable] The Aura Button"
+L["SEALBTN_DESC"] = "[啟用/禁用] 聖印按鈕"
 L["SEALTRACKER"] = "Seal Tracker"
 L["SEALTRACKER_DESC"] = "Select the Seal you want to track"
 L["SETTINGS"] = "Settings"

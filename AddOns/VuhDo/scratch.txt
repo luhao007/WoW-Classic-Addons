@@ -4,7 +4,7 @@
 - Sehbehindertenmodus Optionen
 - Bug: Optionen=>Filter=>Target sofort anzeigen
 
-- Trinkets pro zauber zünden
+- Trinkets pro zauber zÃ¼nden
 - Boss frames
 - Makros aus Keys=>Local and Mausbuttons in spells=>mouse binden
 - BuffWatch: Buff-Wechsel mit Wheel
@@ -33,3 +33,8 @@
 		12. Shield
 5. Target
 7. Threat
+
+
+Unicode / UTF-8 chartables
+https://www.utf8-chartable.de/unicode-utf8-table.pl?utf8=dec
+https://www.utf8-chartable.de/unicode-utf8-table.pl?start=256&names=-&utf8=dec

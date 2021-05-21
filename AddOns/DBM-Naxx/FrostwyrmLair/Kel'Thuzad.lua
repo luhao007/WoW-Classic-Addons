@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Kel'Thuzad", "DBM-Naxx", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210216215535")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15990)
 mod:SetEncounterID(1114)
 --mod:SetModelID(15945)--Doesn't work at all, doesn't even render.
@@ -93,81 +93,71 @@ function mod:OnCombatEnd()
 	end
 end
 
-do
-	local ShadowFissure, ManaBomb, FrostBlast, ChainsofKT = DBM:GetSpellInfo(27810), DBM:GetSpellInfo(27819), DBM:GetSpellInfo(27808), DBM:GetSpellInfo(28410)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 27810 then
-		if args.spellName == ShadowFissure then
-			if args:IsPlayer() then
-				specWarnFissureYou:Show()
-				specWarnFissureYou:Play("targetyou")
-				yellFissure:Yell()
-			elseif self:CheckNearby(8, args.destName) then
-				specWarnFissureClose:Show(args.destName)
-				specWarnFissureClose:Play("watchfeet")
-			else
-				warnFissure:Show(args.destName)
-			end
-		--elseif args.spellId == 27819 then
-		elseif args.spellName == ManaBomb then
-			timerManaBomb:Start()
-		--elseif args.spellId == 27808 then
-		elseif args.spellName == FrostBlast then
-			timerFrostBlastCD:Start()
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 27810 then
+		if args:IsPlayer() then
+			specWarnFissureYou:Show()
+			specWarnFissureYou:Play("targetyou")
+			yellFissure:Yell()
+		elseif self:CheckNearby(8, args.destName) then
+			specWarnFissureClose:Show(args.destName)
+			specWarnFissureClose:Play("watchfeet")
+		else
+			warnFissure:Show(args.destName)
 		end
+	elseif args.spellId == 27819 then
+		timerManaBomb:Start()
+	elseif args.spellId == 27808 then
+		timerFrostBlastCD:Start()
 	end
+end
 
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 27808 then -- Frost Blast
-		if args.spellName == FrostBlast then
-			table.insert(frostBlastTargets, args.destName)
-			self:Unschedule(AnnounceBlastTargets)
-			self:Schedule(0.5, AnnounceBlastTargets, self)
-			if self.Options.SpecWarn27808target then
-				specWarnBlast:CombinedShow(0.5, args.destName)
-				specWarnBlast:ScheduleVoice(0.5, "healall")
-			else
-				warnBlastTargets:CombinedShow(0.5, args.destName)
-			end
-		--elseif args.spellId == 27819 then -- Mana Bomb
-		elseif args.spellName == ManaBomb then
-			if self.Options.SetIconOnManaBomb then
-				self:SetIcon(args.destName, 8, 5.5)
-			end
-			if args:IsPlayer() then
-				specWarnManaBomb:Show()
-				specWarnManaBomb:Play("scatter")
-				yellManaBomb:Yell()
-			else
-				warnMana:Show(args.destName)
-			end
-		--elseif args.spellId == 28410 then -- Chains of Kel'Thuzad
-		elseif args.spellName == ChainsofKT then
-			if self:AntiSpam() then
-				self.vb.MCIcon1 = 1
-				self.vb.MCIcon2 = 5
-				--timerMCCD:Start(60)--60 seconds?
-			end
-			if self.Options.SetIconOnMC2 then
-				local _, _, group = GetRaidRosterInfo(UnitInRaid(args.destName))
-				if group % 2 == 1 then
-					self:SetIcon(args.destName, self.vb.MCIcon1)
-					self.vb.MCIcon1 = self.vb.MCIcon1 + 1
-				else
-					self:SetIcon(args.destName, self.vb.MCIcon2)
-					self.vb.MCIcon2 = self.vb.MCIcon2 - 1
-				end
-			end
-			warnChainsTargets:CombinedShow(1, args.destName)
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 27808 then -- Frost Blast
+		table.insert(frostBlastTargets, args.destName)
+		self:Unschedule(AnnounceBlastTargets)
+		self:Schedule(0.5, AnnounceBlastTargets, self)
+		if self.Options.SpecWarn27808target then
+			specWarnBlast:CombinedShow(0.5, args.destName)
+			specWarnBlast:ScheduleVoice(0.5, "healall")
+		else
+			warnBlastTargets:CombinedShow(0.5, args.destName)
 		end
-	end
-
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args.spellId == 28410 then
-		if args.spellName == ChainsofKT then
-			if self.Options.SetIconOnMC2 then
-				self:SetIcon(args.destName, 0)
+	elseif args.spellId == 27819 then -- Mana Bomb
+		if self.Options.SetIconOnManaBomb then
+			self:SetIcon(args.destName, 8, 5.5)
+		end
+		if args:IsPlayer() then
+			specWarnManaBomb:Show()
+			specWarnManaBomb:Play("scatter")
+			yellManaBomb:Yell()
+		else
+			warnMana:Show(args.destName)
+		end
+	elseif args.spellId == 28410 then -- Chains of Kel'Thuzad
+		if self:AntiSpam() then
+			self.vb.MCIcon1 = 1
+			self.vb.MCIcon2 = 5
+			--timerMCCD:Start(60)--60 seconds?
+		end
+		if self.Options.SetIconOnMC2 then
+			local _, _, group = GetRaidRosterInfo(UnitInRaid(args.destName))
+			if group % 2 == 1 then
+				self:SetIcon(args.destName, self.vb.MCIcon1)
+				self.vb.MCIcon1 = self.vb.MCIcon1 + 1
+			else
+				self:SetIcon(args.destName, self.vb.MCIcon2)
+				self.vb.MCIcon2 = self.vb.MCIcon2 - 1
 			end
+		end
+		warnChainsTargets:CombinedShow(1, args.destName)
+	end
+end
+
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 28410 then
+		if self.Options.SetIconOnMC2 then
+			self:SetIcon(args.destName, 0)
 		end
 	end
 end

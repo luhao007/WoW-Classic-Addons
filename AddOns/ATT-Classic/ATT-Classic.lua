@@ -654,7 +654,7 @@ end
 local function BuildSourceText(group, l)
 	local parent = group.parent;
 	if parent then
-		if not group.itemID and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and group.categoryID))
+		if not group.itemID and (parent.key == "filterID" or parent.key == "spellID" or ((parent.headerID or (parent.spellID and (group.categoryID or group.tierID)))
 			and ((parent.headerID == -2 or parent.headerID == -17 or parent.headerID == -7) or (parent.parent and parent.parent.parent)))) then
 			return BuildSourceText(parent.parent, 5) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA) .. " (" .. (parent.text or RETRIEVING_DATA) .. ")";
 		end
@@ -669,7 +669,7 @@ local function BuildSourceText(group, l)
 				return BuildSourceText(parent, l + 1) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
 			end
 		end
-		if parent.key == "categoryID" or group.key == "filterID" or group.key == "spellID" or group.key == "encounterID" or (parent.key == "mapID" and group.key == "npcID") then
+		if parent.key == "categoryID" or parent.key == "tierID" or group.key == "filterID" or group.key == "spellID" or group.key == "encounterID" or (parent.key == "mapID" and group.key == "npcID") then
 			return BuildSourceText(parent, 5) .. DESCRIPTION_SEPARATOR .. (group.text or RETRIEVING_DATA);
 		end
 		if l < 1 then
@@ -834,15 +834,60 @@ local IgnoreErrorQuests = {
 	[3629]=1,	-- Goblin Engineering [A]
 	[3633]=1,	-- Goblin Engineering [H]
 	[4181]=1,	-- Goblin Engineering [A]
+	[5517]=1,	-- Chromatic Mantle of the Dawn
+	[5521]=1,	-- Chromatic Mantle of the Dawn
+	[5524]=1,	-- Chromatic Mantle of the Dawn
 	[5504]=1,	-- Mantles of the Dawn
 	[5507]=1,	-- Mantles of the Dawn
 	[5513]=1,	-- Mantles of the Dawn
+	[7170]=1,	-- Earned Reverence (Alliance)
+	[7165]=1,	-- Earned Reverence (Horde)
+	[7171]=1,	-- Legendary Heroes (Alliance)
+	[7166]=1,	-- Legendary Heroes (Horde)
+	[7168]=1,	-- Rise and Be Recognized (Alliance)
+	[7163]=1,	-- Rise and Be Recognized (Horde)
+	[7172]=1,	-- The Eye of Command (Alliance)
+	[7167]=1,	-- The Eye of Command (Horde)
+	[7164]=1,	-- Honored Amongst the Clan
+	[7169]=1,	-- Honored Amongst the Guard
 	[8870]=1,	-- The Lunar Festival
 	[8871]=1,	-- The Lunar Festival
 	[8872]=1,	-- The Lunar Festival
 	[8873]=1,	-- The Lunar Festival
 	[8874]=1,	-- The Lunar Festival
 	[8875]=1,	-- The Lunar Festival
+	[8700]=1,	-- Band of Unending Life
+	[8692]=1,	-- Cloak of Unending Life
+	[8708]=1,	-- Mace of Unending Life
+	[8704]=1,	-- Signet of the Unseen Path
+	[8696]=1,	-- Cloak of the Unseen Path
+	[8712]=1,	-- Scythe of the Unseen Path
+	[8699]=1,	-- Band of Vaulted Secrets
+	[8691]=1,	-- Drape of Vaulted Secrets
+	[8707]=1,	-- Blade of Vaulted Secrets
+	[8703]=1,	-- Ring of Eternal Justice
+	[8695]=1,	-- Cape of Eternal Justice
+	[8711]=1,	-- Blade of Eternal Justice
+	[8697]=1,	-- Ring of Infinite Wisdom
+	[8689]=1,	-- Shroud of Infinite Wisdom
+	[8705]=1,	-- Gavel of Infinite Wisdom
+	[8701]=1,	-- Band of Veiled Shadows
+	[8693]=1,	-- Cloak of Veiled Shadows
+	[8709]=1,	-- Dagger of Veiled Shadows
+	[8698]=1,	-- Ring of the Gathering Storm
+	[8690]=1,	-- Cloak of the Gathering Storm
+	[8706]=1,	-- Hammer of the Gathering Storm
+	[8702]=1,	-- Ring of Unspoken Names
+	[8694]=1,	-- Shroud of Unspoken Names
+	[8710]=1,	-- Kris of Unspoken Names
+	[8556]=1,	-- Signet of Unyielding Strength
+	[8557]=1,	-- Drape of Unyielding Strength
+	[8558]=1,	-- Sickle of Unyielding Strength
+	[9520]=1,	-- Diabolical Plans [Alliance]
+	[9535]=1,	-- Diabolical Plans [Horde]
+	[9522]=1,	-- Never Again! [Alliance]
+	[9536]=1,	-- Never Again! [Horde]
+	[10371]=1,	-- Yorus Barleybrew (Draenei)
 };
 local CompletedQuests = setmetatable({}, {__newindex = function (t, key, value)
 	if value then
@@ -855,7 +900,7 @@ local CompletedQuests = setmetatable({}, {__newindex = function (t, key, value)
 			if searchResults and #searchResults > 0 then
 				local questID, nmr, nmc = key, false, false;
 				for i,searchResult in ipairs(searchResults) do
-					if searchResult.questID == questID and not IgnoreErrorQuests[questID] then
+					if searchResult.questID == questID and not IgnoreErrorQuests[questID] and not GetRelativeField(searchResult, "headerID", -420) then
 						if searchResult.nmr then
 							if not nmr then
 								nmr = true;
@@ -4157,7 +4202,7 @@ app.events.GOSSIP_SHOW = function()
 end
 app.events.TAXIMAP_OPENED = function()
 	local knownNodeIDs = {};
-	if app.CacheFlightPathDataForTarget(knownNodeIDs) == 0 then
+	if app.CacheFlightPathDataForTarget(knownNodeIDs) == 0 and select(4, GetBuildInfo()) < 20000 then
 		if app.CacheFlightPathDataForMap(app.CurrentMapID, knownNodeIDs) == 0 then
 			print("Failed to find nearest Flight Path. Please report this to the ATT Discord!");
 			local pos = C_Map.GetPlayerMapPosition(app.CurrentMapID, "player");
@@ -5444,6 +5489,23 @@ local fields = {
 app.BaseQuestObjective = app.BaseObjectFields(fields);
 app.CreateQuestObjective = function(id, t)
 	return setmetatable(constructor(id, t, "objectiveID"), app.BaseQuestObjective);
+end
+app.CompareQuestieDB = function()
+	if QuestieLoader then
+		local QuestieDB,missingQuestIDs = QuestieLoader:ImportModule("QuestieDB"), {};
+		for id,_ in pairs(QuestieDB.QuestPointers) do
+			local s = app.SearchForField("questID", id);
+			if not s or #s == 0 then
+				table.insert(missingQuestIDs, id);
+			end
+		end
+		table.sort(missingQuestIDs);
+		for _,id in ipairs(missingQuestIDs) do
+			print("Missing Quest ", id);
+		end
+	else
+		print("Error: Questie not available. Please enable it!");
+	end
 end
 end)();
 

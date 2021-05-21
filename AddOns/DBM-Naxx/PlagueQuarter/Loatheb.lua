@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Loatheb", "DBM-Naxx", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210331044028")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(16011)
 mod:SetEncounterID(1115)
 mod:SetModelID(16110)
@@ -99,52 +99,44 @@ function mod:OnCombatEnd()
 	end
 end
 
-do
-	local Spore, InevitableDoom, RemoveCurse = DBM:GetSpellInfo(29234), DBM:GetSpellInfo(29204), DBM:GetSpellInfo(30281)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 29234 then
-		if args.spellName == Spore then
-			self.vb.sporeCounter = self.vb.sporeCounter + 1
-			timerSpore:Start(self.vb.sporeTimer, self.vb.sporeCounter+1)
-			warnSporeNow:Show(self.vb.sporeCounter)
-			warnSporeSoon:Schedule(self.vb.sporeTimer - 5)
-		elseif args.spellName == InevitableDoom then
-			self.vb.doomCounter = self.vb.doomCounter + 1
-			local timer = self.vb.doomCounter % 2 == 0 and 32.4 or 29.1
-			if self.vb.doomCounter >= 7 then
-				timer = self.vb.doomCounter == 7 and 9.7 or self.vb.doomCounter % 2 == 0 and 19.4 or 11.3
-			end
-			warnDoomNow:Show(self.vb.doomCounter)
-			timerDoom:Start(timer, self.vb.doomCounter + 1)
-		--if args.spellId == 30281 then
-		elseif args.spellName == RemoveCurse then
-			warnRemoveCurse:Show()
-			timerRemoveCurseCD:Start()
-		--elseif args.spellId == 55593 then
-			--timerAura:Start()
-			--warnHealSoon:Schedule(14)
-			--warnHealNow:Schedule(17)
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 29234 then
+		self.vb.sporeCounter = self.vb.sporeCounter + 1
+		timerSpore:Start(self.vb.sporeTimer, self.vb.sporeCounter+1)
+		warnSporeNow:Show(self.vb.sporeCounter)
+		warnSporeSoon:Schedule(self.vb.sporeTimer - 5)
+	elseif args.spellId == 29204 then
+		self.vb.doomCounter = self.vb.doomCounter + 1
+		local timer = self.vb.doomCounter % 2 == 0 and 32.4 or 29.1
+		if self.vb.doomCounter >= 7 then
+			timer = self.vb.doomCounter == 7 and 9.7 or self.vb.doomCounter % 2 == 0 and 19.4 or 11.3
+		end
+		warnDoomNow:Show(self.vb.doomCounter)
+		timerDoom:Start(timer, self.vb.doomCounter + 1)
+	elseif args.spellId == 30281 then
+		warnRemoveCurse:Show()
+		timerRemoveCurseCD:Start()
+	--elseif args.spellId == 55593 then
+		--timerAura:Start()
+		--warnHealSoon:Schedule(14)
+		--warnHealNow:Schedule(17)
+	end
+end
+
+function mod:SPELL_AURA_APPLIED(args)
+	-- Got to double check spell ids as there is a buff with the same name that triggers the actual 60 sec debuff
+	if args.spellId == 29184 and DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
+		hadCorrupted[args.destName] = GetTime() + 60
+		if args:IsPlayer() then
+			warnHealSoon:Schedule(55)
 		end
 	end
 end
 
-do
-	local CorruptedMind = DBM:GetSpellInfo(29184)
-	function mod:SPELL_AURA_APPLIED(args)
-		-- gotta double check spell ids as there is a buff with the same name that triggers the actual 60 sec debuff
-		if args.spellName == CorruptedMind and DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
-			hadCorrupted[args.destName] = GetTime() + 60
-			if args:IsPlayer() then
-				warnHealSoon:Schedule(55)
-			end
-		end
-	end
-
-	function mod:SPELL_AURA_REMOVED(args)
-		if args.spellName == CorruptedMind and not DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
-			if args:IsPlayer() then
-				warnHealNow:Show()
-			end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 29184 and not DBM:UnitDebuff(args.destName, 29184, 29195, 29197, 29199) then
+		if args:IsPlayer() then
+			warnHealNow:Show()
 		end
 	end
 end
@@ -152,8 +144,7 @@ end
 --because in all likelyhood, pull detection failed (cause 90s like to chargein there trash and all and pull it
 --We unschedule the pre warnings on death as a failsafe
 function mod:UNIT_DIED(args)
-	local cid = self:GetCIDFromGUID(args.destGUID)
-	if cid == 16011 then
+	if self:GetCIDFromGUID(args.destGUID) == 16011 then
 		warnSporeSoon:Cancel()
 		--warnHealSoon:Cancel()
 		--warnHealNow:Cancel()

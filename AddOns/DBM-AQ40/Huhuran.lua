@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Huhuran", "DBM-AQ40", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201011193247")
+mod:SetRevision("20210402014659")
 mod:SetCreatureID(15509)
 mod:SetEncounterID(714)
 mod:SetModelID(15739)
@@ -61,75 +61,64 @@ local function warnStingTargets()
 	table.wipe(StingTargets)
 end
 
-do
-	local NoxiousPoison, WyvernSting, Frenzy, Berserk, AcidSpit = DBM:GetSpellInfo(26053), DBM:GetSpellInfo(26180), DBM:GetSpellInfo(26051), DBM:GetSpellInfo(26068), DBM:GetSpellInfo(26050)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args.spellId == 26053 then
-		if args.spellName == NoxiousPoison then
-			warnPoison:Show()
-			timerPoisonCD:Start()
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 26053 then
+		warnPoison:Show()
+		timerPoisonCD:Start()
 	end
+end
 
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 26180 then
-		if args.spellName == WyvernSting and args:IsDestTypePlayer() then
-			StingTargets[#StingTargets + 1] = args.destName
-			self:Unschedule(warnStingTargets)
-			self:Schedule(1, warnStingTargets)
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 26180 and args:IsDestTypePlayer() then
+		StingTargets[#StingTargets + 1] = args.destName
+		self:Unschedule(warnStingTargets)
+		self:Schedule(1, warnStingTargets)
+		if args:IsPlayer() then
+			timerSting:Start()
+		end
+	elseif args.spellId == 26053 and args:IsPlayer() then
+		timerPoison:Start()
+	elseif args.spellId == 26051 and args:IsDestTypeHostile() then
+		if self.Options.SpecWarn26051dispel then
+			specWarnFrenzy:Show(args.destName)
+			specWarnFrenzy:Play("enrage")
+		else
+			warnFrenzy:Show(args.destName)
+		end
+		timerFrenzyCD:Start()
+	elseif args.spellId == 26068 and args:IsDestTypeHostile() then
+		warnBerserk:Show()
+		timerStingCD:Stop()
+		timerFrenzyCD:Stop()
+		timerPoisonCD:Stop()
+	--elseif args.spellId == 26050 and not self:IsTrivial(80) then
+	elseif args.spellId == 26050 and args:IsPlayer() then
+		local amount = args.amount or 1
+		timerAcid:Start(args.destName)
+		if amount >= 10 then
 			if args:IsPlayer() then
-				timerSting:Start()
-			end
-		--elseif args.spellId == 26053 and args:IsPlayer() then
-		elseif args.spellName == NoxiousPoison and args:IsPlayer() then
-			timerPoison:Start()
-		--elseif args.spellId == 26051 then
-		elseif args.spellName == Frenzy and args:IsDestTypeHostile() then
-			if self.Options.SpecWarn26051dispel then
-				specWarnFrenzy:Show(args.destName)
-				specWarnFrenzy:Play("enrage")
-			else
-				warnFrenzy:Show(args.destName)
-			end
-			timerFrenzyCD:Start()
-		--elseif args.spellId == 26068 then
-		elseif args.spellName == Berserk and args:IsDestTypeHostile() then
-			warnBerserk:Show()
-			timerStingCD:Stop()
-			timerFrenzyCD:Stop()
-			timerPoisonCD:Stop()
-		--elseif args.spellId == 26050 and not self:IsTrivial(80) then
-		elseif args.spellName == AcidSpit and args:IsPlayer() then
-			local amount = args.amount or 1
-			timerAcid:Start(args.destName)
-			if amount >= 10 then
-				if args:IsPlayer() then
-					specWarnAcid:Show(amount)
-					specWarnAcid:Play("stackhigh")
-				elseif not DBM:UnitDebuff("player", args.spellName) and not UnitIsDeadOrGhost("player") then
-					specWarnAcidTaunt:Show(args.destName)
-					specWarnAcidTaunt:Play("tauntboss")
-				else
-					warnAcid:Show(args.destName, amount)
-				end
+				specWarnAcid:Show(amount)
+				specWarnAcid:Play("stackhigh")
+			elseif not DBM:UnitDebuff("player", args.spellName) and not UnitIsDeadOrGhost("player") then
+				specWarnAcidTaunt:Show(args.destName)
+				specWarnAcidTaunt:Play("tauntboss")
 			else
 				warnAcid:Show(args.destName, amount)
 			end
+		else
+			warnAcid:Show(args.destName, amount)
 		end
 	end
-	mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
+end
+mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args.spellId == 26180 and args:IsPlayer() then
-		if args.spellName == WyvernSting and args:IsDestTypePlayer() then
-			timerSting:Stop()
-		--elseif args.spellId == 26053 and args:IsPlayer() then
-		elseif args.spellName == NoxiousPoison and args:IsPlayer() then
-			timerPoison:Stop()
-		--elseif args.spellId == 26050 then
-		elseif args.spellName == AcidSpit and args:IsPlayer() then
-			timerAcid:Stop(args.destName)
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 26180 and args:IsDestTypePlayer() then
+		timerSting:Stop()
+	elseif args.spellId == 26053 and args:IsPlayer() then
+		timerPoison:Stop()
+	elseif args.spellId == 26050 and args:IsPlayer() then
+		timerAcid:Stop(args.destName)
 	end
 end
 

@@ -131,20 +131,11 @@
 		</Scripts>
 	</StatusBar>
 
-
-	<Frame name="VuhDoPlayerTargetFrameTemplate" virtual="true">
-		<Backdrop bgFile="" edgeFile="Interface\AddOns\VuhDo\Images\white_square_16_16" tile="false">
-			<BackgroundInsets>
-				<AbsInset left="10" right="10" top="10" bottom="10" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="16" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="1" />
-			</EdgeSize>
-			<BorderColor r="0.6" g="0.6" b="0.6" />
-		</Backdrop>
+	<Frame name="VuhDoPlayerTargetFrameTemplate" virtual="true" inherits="BackdropTemplate" mixin="BackdropTemplateMixin">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_VUHDO_PLAYER_TARGET_FRAME" type="global" />
+			<KeyValue key="backdropBorderColor" value="BACKDROP_BORDER_COLOR_VUHDO_PLAYER_TARGET_FRAME" type="global" />
+		</KeyValues>
 	</Frame>
 
 	<Button name="VuhDoButtonSecureTargetTemplate" virtual="true" inherits="SecureUnitButtonTemplate,SecureHandlerEnterLeaveTemplate,SecureHandlerShowHideTemplate,SecureHandlerMouseUpDownTemplate">
@@ -156,8 +147,7 @@
 			</OnLoad>
 		</Scripts>
 		<Frames>
-			<Frame name="$parentPlTg" setAllPoints="true" hidden="true" inherits="VuhDoPlayerTargetFrameTemplate">
-			</Frame>
+			<Frame name="$parentPlTg" setAllPoints="true" hidden="true" inherits="VuhDoPlayerTargetFrameTemplate" />
 
 			<StatusBar name="$parentBgBar" setAllPoints="true" hidden="true" inherits="VuhDoStatusBar">
 				<Frames>
@@ -338,7 +328,7 @@
 
 									<Frame name="$parentPlTg" setAllPoints="true" hidden="true" inherits="VuhDoPlayerTargetFrameTemplate">
 										<Scripts>
-											<OnLoad>
+											<OnLoad inherit="prepend">
 												self.addLevel = 2;
 											</OnLoad>
 										</Scripts>
@@ -346,7 +336,7 @@
 
 									<Frame name="$parentClu" setAllPoints="true" hidden="true" inherits="VuhDoPlayerTargetFrameTemplate">
 										<Scripts>
-											<OnLoad>
+											<OnLoad inherit="prepend">
 												self.addLevel = 2;
 											</OnLoad>
 										</Scripts>
@@ -460,7 +450,10 @@
 
 								</Frames>
 								<Layers>
-									<Layer level="OVERLAY">
+									<Layer level="OVERLAY" textureSubLevel="5">
+										<Texture name="$parentOvsBar" hidden="true" file="Interface\AddOns\VuhDo\Images\overshield_bar" hWrapMode="REPEAT" vWrapMode="REPEAT"> </Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="6">
 										<Texture name="$parentAggro" hidden="true" file="Interface\AddOns\VuhDo\Images\aggro">
 											<Size>
 												<AbsDimension x="10" y="20" />
@@ -532,59 +525,47 @@
 
 
 	<Frame name="VuhDoHealPanelTemplate" toplevel="true" parent="UIParent" movable="true"
-			enableKeyboard="true" virtual="true" hidden="true" inherits="SecureFrameTemplate">
-		<Backdrop tile="true"
-			bgFile="Interface\AddOns\VuhDo\Images\white_square_16_16"
-			edgeFile="Interface\Tooltips\UI-Tooltip-Border">
-			<EdgeSize>
-				<AbsValue val="8"/>
-			</EdgeSize>
-			<TileSize>
-				<AbsValue val="8"/>
-			</TileSize>
-			<BackgroundInsets>
-				<AbsInset left="1" right="1" top="1" bottom="1"/>
-			</BackgroundInsets>
-		</Backdrop>
+		enableKeyboard="true" virtual="true" hidden="true" inherits="SecureFrameTemplate,BackdropTemplate" mixin="BackdropTemplateMixin">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_VUHDO_HEAL_PANEL" type="global" />
+		</KeyValues>
 		<Frames>
-
-		<Frame name="$parentGrpLbl">
-			<Size>
-				<AbsDimension x="66" y="20" />
-			</Size>
-			<Anchors>
-				<Anchor point="TOPLEFT">
-					<Offset>
-						<AbsDimension x="10" y="20" />
-					</Offset>
-				</Anchor>
-			</Anchors>
-			<Layers>
-				<Layer>
-					<FontString name="$parentLbl" inherits="SystemFont_Tiny" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT" />
-							<Anchor point="BOTTOMRIGHT" />
-						</Anchors>
-						<FontHeight>
-							<AbsValue val="12" />
-						</FontHeight>
-						<Color r="0" g="1" b="0" />
-						<Shadow>
-							<Color r="0" g="0" b="0" />
-							<Offset>
-								<AbsDimension x="1" y="-1" />
-							</Offset>
-						</Shadow>
-					</FontString>
-				</Layer>
-			</Layers>
-			<Scripts>
-				<OnMouseDown>VUHDO_startMoving(self:GetParent())</OnMouseDown>
-				<OnMouseUp>VUHDO_stopMoving(self:GetParent())</OnMouseUp>
-			</Scripts>
-		</Frame>
-
+			<Frame name="$parentGrpLbl">
+				<Size>
+					<AbsDimension x="66" y="20" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="10" y="20" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<FontString name="$parentLbl" inherits="SystemFont_Tiny" text="">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="12" />
+							</FontHeight>
+							<Color r="0" g="1" b="0" />
+							<Shadow>
+								<Color r="0" g="0" b="0" />
+								<Offset>
+									<AbsDimension x="1" y="-1" />
+								</Offset>
+							</Shadow>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnMouseDown>VUHDO_startMoving(self:GetParent())</OnMouseDown>
+					<OnMouseUp>VUHDO_stopMoving(self:GetParent())</OnMouseUp>
+				</Scripts>
+			</Frame>
 
 			<Frame name="$parentNewTxu" hidden="true">
 				<Size>
@@ -643,7 +624,7 @@
 			<OnMouseUp>
 				VUHDO_stopMoving(self);
 			</OnMouseUp>
-	 </Scripts>
+		 </Scripts>
 	</Frame>
 </Ui>
 

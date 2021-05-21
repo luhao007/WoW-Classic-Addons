@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Anub'Rekhan", "DBM-Naxx", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201225211049")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15956)
 mod:SetEncounterID(1107)
 mod:SetModelID(15931)
@@ -33,33 +33,31 @@ function mod:OnCombatStart(delay)
 	warningLocustSoon:Schedule(75 - delay)
 end
 
-do
-	local LocustSwarm, Impale = DBM:GetSpellInfo(28785), DBM:GetSpellInfo(28783)
-	function mod:ImpaleTarget(targetname, uId)
-		if not targetname then return end
-		warnImpale:Show(targetname)
-		if targetname == UnitName("player") then
-			yellImpale:Yell()
-		end
+function mod:ImpaleTarget(targetname, uId)
+	if not targetname then return end
+	warnImpale:Show(targetname)
+	if targetname == UnitName("player") then
+		yellImpale:Yell()
 	end
-	function mod:SPELL_CAST_START(args)
-		--if args:IsSpellID(28785, 54021) then  -- Locust Swarm
-		if args.spellName == LocustSwarm then  -- Locust Swarm
-			specialWarningLocust:Show()
-			specialWarningLocust:Play("aesoon")
-			timerLocustIn:Stop()
-			timerLocustFade:Start(23)
-		elseif args.spellName == Impale then  -- Impale
-			self:BossTargetScanner(args.sourceGUID, "ImpaleTarget", 0.1, 6)
-		end
-	end
+end
 
-	function mod:SPELL_AURA_REMOVED(args)
-		--if args:IsSpellID(28785, 54021) and args.auraType == "BUFF" then
-		if args.spellName == LocustSwarm and args:IsDestTypeHostile() then--Want it removing from boss, not players, without ID we check hostility of affected unit
-			warningLocustFaded:Show()
-			timerLocustIn:Start(69.2)--More consistent
-			warningLocustSoon:Schedule(54.2)
-		end
+function mod:SPELL_CAST_START(args)
+	--if args:IsSpellID(28785, 54021) then -- Locust Swarm
+	if args.spellId == 28785 then -- Locust Swarm
+		specialWarningLocust:Show()
+		specialWarningLocust:Play("aesoon")
+		timerLocustIn:Stop()
+		timerLocustFade:Start(23)
+	elseif args.spellId == 28783 then -- Impale
+		self:BossTargetScanner(args.sourceGUID, "ImpaleTarget", 0.1, 6)
+	end
+end
+
+function mod:SPELL_AURA_REMOVED(args)
+	--if args:IsSpellID(28785, 54021) and args.auraType == "BUFF" then
+	if args.spellId == 28785 and args:IsDestTypeHostile() then--Want it removing from boss, not players, without ID we check hostility of affected unit
+		warningLocustFaded:Show()
+		timerLocustIn:Start(69.2)--More consistent
+		warningLocustSoon:Schedule(54.2)
 	end
 end

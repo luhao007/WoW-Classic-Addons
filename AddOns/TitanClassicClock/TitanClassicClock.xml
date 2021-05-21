@@ -1,10 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TitanClassicClock.lua"/>
-	<Frame name="TitanPanelClockControlFrameTemplate" virtual="true" hidden="true">
+	<Frame name="TitanPanelClockControlFrameTemplate" inherits="BackdropTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="90" y="200" />
 		</Size>
+<!--
+Blizzard decided to remove direct Backdrop API in 9.0 (Shadowlands) so inherit the template
+and set the values in the code.
+-->
+<!--
 		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -16,6 +21,7 @@
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
 		</Backdrop>
+-->
 		<Layers>
 			<Layer>
 				<FontString name="$parentTitle" inherits="GameFontNormalSmall">
@@ -98,7 +104,7 @@
 			</OnUpdate>
 		</Scripts>
 	</Frame>
-	<Frame parent="UIParent">
+	<Frame parent="UIParent" inherits="BackdropTemplate">
 		<Frames>
 			<Button name="TitanPanelClockButton" inherits="TitanPanelTextTemplate" frameStrata="FULLSCREEN" toplevel="true">
 				<Scripts>

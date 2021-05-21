@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## RequiredDeps: Details
 ## SavedVariables: Details_StreamerDB
 

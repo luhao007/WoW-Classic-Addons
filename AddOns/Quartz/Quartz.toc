@@ -1,7 +1,7 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Nevcairiel, Nymbia
-## Version: 3.5-classic-5
-## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, SharedMedia, LibClassicCasterino, LibClassicDurations
+## Version: 3.6.5
+## OptionalDeps: Ace3, LibDualSpec-1.0, LibWindow-1.1, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, SharedMedia
 ## SavedVariables: Quartz3DB
 
 ## Title: Quartz
@@ -14,6 +14,9 @@
 ## X-Curse-Project-ID: 4558
 ## X-WoWI-ID: 7158
 
+#@no-lib-strip@
+#@end-no-lib-strip@
+
 locale\locale.xml
 
 Quartz.lua
@@ -25,6 +28,7 @@ CastBarTemplate.lua
 
 modules\Player.lua
 modules\Target.lua
+modules\Focus.lua
 modules\Pet.lua
 modules\Latency.lua
 modules\Tradeskill.lua

@@ -1,9 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PallyPower", "deDE", false, false)
 if not L then return end
---[[Translation missing --]]
-L["ALTMENU_LINE1"] = "can be assigned"
---[[Translation missing --]]
-L["ALTMENU_LINE2"] = "a Normal Blessing from:"
+L["ALTMENU_LINE1"] = "kann zugewiesen werden"
+L["ALTMENU_LINE2"] = "ein normaler Segen von:"
 L["AURA"] = "Aura-Schaltfläche"
 L["AURA_DESC"] = "[|cffffd200Aktiviere|r / |cffffd200Deaktiviere|r] die Aura-Schaltfläche oder wähle die Aura aus, die du überwachen möchtest."
 L["AURABTN"] = "Aura-Schaltfläche"
@@ -34,8 +32,7 @@ L["BUFFDURATION"] = "Buff-Dauer beachten"
 L["BUFFDURATION_DESC"] = "Wenn diese Option deaktiviert ist, wird die restliche Buff-Dauer der Klassen- und Spieler-Schaltflächen ignoriert, sodass ein Buff nach Belieben erneut angewendet werden kann. Dies ist besonders nützlich für Schutz-Paladine, wenn sie große Segen spammen mlchten, um mehr Bedrohung zu erzeugen."
 L["BUTTONS"] = "Schaltflächen"
 L["BUTTONS_DESC"] = "Schaltflächen-Einstellungen ändern"
---[[Translation missing --]]
-L["CANCEL"] = "Cancel"
+L["CANCEL"] = "Stornieren"
 L["CLASSBTN"] = "Klassen-Schaltflächen"
 L["CLASSBTN_DESC"] = [=[Achtung: Wenn diese Option deaktiviert ist, werden auch die 
 Spieler-Schaltflächen deaktiviert, und es kann nurnoch via 

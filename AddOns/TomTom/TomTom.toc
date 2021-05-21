@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Cladhaire, Ludovicus
 ## Version: v3.0.1
 ## OptionalDeps: HereBeDragons-2.0

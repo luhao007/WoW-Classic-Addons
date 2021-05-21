@@ -94,6 +94,7 @@ VUHDO_DEFAULT_BOUQUETS = {
 			},
 		},
 
+
 		[VUHDO_I18N_DEF_BOUQUET_BORDER_MULTI] = {
 			{
 				["name"] = "PLAYER_TARGET", -- "Player Target",
@@ -853,6 +854,31 @@ VUHDO_DEFAULT_ICON_IS_PHASED = {
 
 
 --
+VUHDO_DEFAULT_BAR_MANA_TANK_ONLY = {
+	[VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY] = {
+		{
+			["name"] = "NO_RANGE",
+			["mine"] = true, ["icon"] = 2,
+			["color"] = {
+				["R"] = 0, ["G"] = 0, ["B"] = 0, ["O"] = 0.25,
+				["TR"] = 0, ["TG"] = 0, ["TB"] = 0, ["TO"] = 0.25,
+				["useText"] = false, ["useBackground"] = false, ["useOpacity"] = true,
+				["isManuallySet"] = true,
+			},
+			["custom"] = { [1] = 1, ["radio"] = 2, ["bright"] = 1.0 },
+		},
+		{
+			["name"] = "STATUS_POWER_TANK_ONLY",
+			["mine"] = true, ["icon"] = 2,
+			["color"] = VUHDO_makeFullColorForBouquet(0, 0, 1, 1,   0, 0, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
+		},
+	},
+}
+
+
+
+--
 VUHDO_DEFAULT_INDICATOR_CONFIG = {
 	["BOUQUETS"] = {
 		["AGGRO_BAR"] = "",
@@ -1033,6 +1059,32 @@ VUHDO_SANE_BOUQUET_ITEM = {
 		["function"] = "return true;",
 	},
 };
+
+
+--
+VUHDO_DEFAULT_MONK_STAGGER_BOUQUET = {
+	[VUHDO_I18N_DEF_BOUQUET_MONK_STAGGER] = {
+		{
+			["name"] = GetSpellInfo(124273), -- "Heavy Stagger",
+			["mine"] = true, ["others"] = true, ["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0 },
+		},
+		{
+			["name"] = GetSpellInfo(124274), -- "Moderate Stagger",
+			["mine"] = true, ["others"] = true,	["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
+		},
+		{
+			["name"] = GetSpellInfo(124275), -- "Light Stagger",
+			["mine"] = true, ["others"] = true,	["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
+		}
+	}
+}
+
 
 
 local pairs = pairs;
@@ -1364,119 +1416,144 @@ end
 
 
 local tTankCdsExtended = {
-	49222, --Bone Shield
+	116888, --Shroud of Purgatory
 	48792, --Icebound Fortitude
+	49028, --Dancing Rune Weapon
 	55233, --Vampiric Blood
+	194679, --Rune Tap
 	48707, --Anti-Magic Shell
 	50461, --Anti-Magic Zone
+	49222, --Bone Shield
+	49039, --Lichborne
+	81164, --Will of the Necropolis
 
 	642, --Divine Shield
 	498, --Divine Protection
 	31850, --Ardent Defender
-	1022, --Hand of Protection
-	6940, --Hand of Sacrifice
-	70940, --Divine Guardian
-	64205, --Divine Sacrifine
-	86659, --Ancient Guardian
+	86659, --Guardian of Ancient Kings
+	53600, --Shield of the Righteous
 
 	871, --Shield Wall
-	2565, --Shield Block
 	12975, --Last Stand
-	3411, --Intervene
-	55694, --Enraged Regeneration
+	23920, --Spell Reflection
+	190456, --Ignore Pain
+	2565, --Shield Block
 
-	22812, --Barkskin
+	102558, --Incarnation: Guardian of Ursoc
 	61336, --Survival Instincts
-	22842 --Frenzied Regeneration
+	22842, --Frenzied Regeneration
+	22812, --Barkskin
+	102342, --Ironbark
+	192081, --Ironfur
+
+	187827, --Metamorphosis
+	203720, --Demon Spikes
+
+	115203, --Fortifying Brew
+	122278, --Dampen Harm
+	115176  --Zen meditation
 };
 
 
 
 local tRaidCds = {
 	-- Pally
-	642, -- Divine Shield
-	498, -- Divine Protection
-	1022, -- Hand of Protection
-	6940, -- Hand of Sacrifice
-	31850, -- Ardent Defender
-	86659, -- Guardian of Ancient Kings
-	31821, -- Devotion Aura
-	114039, -- Hand of Purity
+	642, --Divine Shield
+	498, --Divine Protection
+	31850, --Ardent Defender
+	1022, --Blessing of Protection
+	204018, --Blessing of Spellwarding
+	86659, --Guardian of Ancient Kings
+	6940, --Blessing of Sacrifice
+	31821, --Aura Mastery
+	53600, --Shield of the Righteous
 
-	--  Warrior
-	871, -- Shield Wall
+	-- Warrior
 	97462, -- Rallying Cry
-	118038, -- Die by the Sword
-	12975, -- Last Stand
-	114028, -- Mass Spell Reflect
-	114030, -- Vigilance
-	55694, -- Enraged Regeneration
-	105914, -- Shield Fortress
+	871, --Shield Wall
+	12975, --Last Stand
+	23920, --Spell Reflection
+	190456, --Ignore Pain
+	2565, --Shield Block
+	3411, --Intervene
+	114028, --Mass Spell Reflect
+	118038, --Die by the Sword
+	55694, --Enraged Regeneration
 
 	-- Druid
-	22812, -- Barkskin
-	106922, -- Might of Ursoc
-	740, -- Tranquility
-	102342, -- Ironbark
-	61336, -- Survival Instincts
-	105739, -- Mass Regeneration
+	102558, --Incarnation: Guardian of Ursoc
+	61336, --Survival Instincts
+	22842, --Frenzied Regeneration
+	22812, --Barkskin
+	102342, --Ironbark
+	192081, --Ironfur
+	740, --Tranquility
 
-	-- DK
-	48792, -- Icebound Fortitude
-	48707, -- Anti-Magic Shell
-	49222, -- Bone Shield
-	49028, -- Dancing Rune Weapon
-	55233, -- Vampiric Blood
-	81164, -- Will of the Necropolis
-	51052, -- Anti-Magic Zone
-	116888, -- Shroud of Purgatory
+	-- Death Knight
+	116888, --Shroud of Purgatory
+	48792, --Icebound Fortitude
+	49028, --Dancing Rune Weapon
+	55233, --Vampiric Blood
+	194679, --Rune Tap
+	48707, --Anti-Magic Shell
+	50461, --Anti-Magic Zone
+	49222, --Bone Shield
+	49039, --Lichborne
+	81164, --Will of the Necropolis
 
-	-- WL
-	104773, -- Unending Resolve
-	119899, -- Cauterize Master
-	755, -- Health Funnel
-	110913, -- Dark Bargain
-	108359, -- Dark Regeneration
-	108503, -- Grimmoire of Sacrifice
+	-- Warlock
+	104773, --Unending Resolve
+	108359, --Dark Regeneration
+	108416, --Dark Pact
 
 	-- Priest
-	47585, -- Dispersion
-	64843, -- Divine Hymn
-	47788, -- Guardian Spirit
-	33206, -- Pain Suppression
-	62618, -- Power Word: Barrier
-	108945, -- Angelic Bulwark
+	47585, --Dispersion
+	64843, --Divine Hymn
+	47788, --Guardian Spirit
+	33206, --Pain Suppression
+	62618, --Power Word: Barrier
+	19236, --Desperate Prayer
 
 	-- Shaman
-	30823, -- Shamanistic Rage
-	98008, -- Spirit Link Totem
-	16190, -- Mana Tide Totem
-	108280, -- Healing Tide Totem
-	108271, -- Astral Shift
+	98008, --Spirit Link Totem
+	16190, --Mana Tide Totem
+	108280, --Healing Tide Totem
+	118337, --Harden Skin
+	108271, --Astral Shift
 
 	-- Rogue
-	5277, -- Evasion
-	73651, -- Recuperate
-	1966, -- Feint
-	31224, -- Cloak of Shadows
-	114018, -- Shroud of Concealment
-	76577, -- Smoke Bomb
+	5277, --Evasion
+	185311, --Crimson Vial
+	1966, --Feint
+	31224, --Cloak of Shadows
+	114018, --Shroud of Concealment
+	76577, --Smoke Bomb
+	31230, --Cheat death
 
 	-- Mage,
-	45438, -- Ice Block
-	86949, -- Cauterize
-	110959, -- Greater Invisibility
-	159916, -- Amplify Magic
+	45438, --Ice Block
+	86949, --Cauterize
+	110959, --Greater Invisibility
 
 	-- Hunter
-	19263, -- Deterrence
-	90361, -- Spirit Mend
+	186265, --Aspect of the Turtle
+	264735, --Survival of the Fittest
+	90361, --Spirit Mend
 
 	-- Monk
-	115203, -- Fortifying Brew
-	116849, -- Life Cocoon
-	122278, -- Dampen Harm
-	122783  -- Diffuse Magic
+	115203, --Fortifying Brew
+	115176, --Zen meditation
+	122278, --Dampen Harm
+	116849, --Life Cocoon
+	122783, --Diffuse Magic
+	122470, --Touch of Karma
+
+	-- Demon Hunter
+	187827, --Metamorphosis
+	203720, --Demon Spikes
+	198589, --Blur
+	196555, --Netherwalk
+	196718 --Darkness
 };
 
 
@@ -1637,6 +1714,18 @@ function VUHDO_loadDefaultBouquets()
 	end
 	VUHDO_DEFAULT_RUNES_BOUQUET = nil;
 	VUHDO_DEFAULT_ARCANE_CHARGES_BOUQUET = nil;
+
+	if VUHDO_BOUQUETS["VERSION"] < 24 then
+		VUHDO_BOUQUETS["VERSION"] = 24;
+		VUHDO_addDefaultBouquet(VUHDO_DEFAULT_MONK_STAGGER_BOUQUET);
+	end
+	VUHDO_DEFAULT_MONK_STAGGER_BOUQUET = nil;
+
+	if VUHDO_BOUQUETS["VERSION"] < 25 then
+		VUHDO_BOUQUETS["VERSION"] = 25;
+		VUHDO_addDefaultBouquet(VUHDO_DEFAULT_BAR_MANA_TANK_ONLY);
+	end
+	VUHDO_DEFAULT_BAR_MANA_TANK_ONLY = nil;
 
 	VUHDO_buildGenericHealthBarBouquet();
 	VUHDO_buildGenericTargetHealthBouquet();

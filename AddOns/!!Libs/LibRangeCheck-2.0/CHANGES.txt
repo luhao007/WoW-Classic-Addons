@@ -1,9 +1,8 @@
 ------------------------------------------------------------------------
-r208 | mitch | 2021-03-23 17:55:33 +0000 (Tue, 23 Mar 2021) | 2 lines
+r210 | mitch | 2021-05-21 06:59:23 +0000 (Fri, 21 May 2021) | 1 line
 Changed paths:
-   M /trunk/LibRangeCheck-2.0.toc
+   M /trunk/LibRangeCheck-2.0/LibRangeCheck-2.0.lua
 
-toc bump for 9.0.5
-
+TBC classic fix
 ------------------------------------------------------------------------
 

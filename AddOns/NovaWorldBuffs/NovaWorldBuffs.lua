@@ -66,6 +66,7 @@ function NWB:OnInitialize()
 	self:registerSounds();
 	self.loadTime = GetServerTime();
 	self.db.global.lt = GetServerTime();
+	self:setDmfDates();
 	self:registerOtherAddons();
 	self:buildRealmFactionData();
 	self:setRegionFont();
@@ -6413,27 +6414,46 @@ end
 --It seems like Blizzard just start entering random dates instead of following the above rule now.
 --Or there's a new formula I can't work out yet.
 --These are friday dates when construction starts, taken from the retail calendar.
-local staticDmfDates = {
-	[1] = { --April 30th setup, May 2nd start 2021.
-		day = 30,
-		month = 4,
-		year = 2021,
-		zone = "Elwynn Forest",
-	},
-	[2] = { --July 30th setup, August 1st start 2021.
-		day = 30,
-		month = 7,
-		year = 2021,
-		zone = "Mulgore",
-	},
-	[3] = { --October 29th setup, October 31st start 2021.
-		day = 29,
-		month = 10,
-		year = 2021,
-		zone = "Elwynn Forest",
-	},
-}
-
+local staticDmfDates = {};
+function NWB:setDmfDates()
+	if (NWB.isTBC or NWB.realmsTBC) then
+		staticDmfDates = {
+			[1] = { --Manually started DMF by Blizzard for prepatch.
+				day = 21,
+				month = 5,
+				year = 2021,
+				zone = "Mulgore",
+			},
+			[2] = { --July 30th setup, August 1st start 2021.
+				day = 30,
+				month = 7,
+				year = 2021,
+				zone = "Mulgore",
+			},
+			[3] = { --October 29th setup, October 31st start 2021.
+				day = 29,
+				month = 10,
+				year = 2021,
+				zone = "Elwynn Forest",
+			},
+		}
+	else
+		staticDmfDates = {
+			[1] = { --July 30th setup, August 1st start 2021.
+				day = 30,
+				month = 7,
+				year = 2021,
+				zone = "Mulgore",
+			},
+			[2] = { --October 29th setup, October 31st start 2021.
+				day = 29,
+				month = 10,
+				year = 2021,
+				zone = "Elwynn Forest",
+			},
+		}
+	end
+end
 --This needs to check for the next spawn.
 --But also the last spawn within the last 7 days.
 local dmfZoneStatic = "";
@@ -6596,7 +6616,8 @@ function NWB:getDmfStartEnd(month, nextYear, recalc)
 		--So we don't get next static date within 31 days while the forumla dmf is still up.
 		--This will probably create wrong next dmf date for the first day or 2 after dmf ends but it's good enough for now.
 		--This while thing needs a rewrite.
-	elseif (dataNextStatic and dataNextStatic > 0) then
+	--elseif (dataNextStatic and dataNextStatic > 0) then
+	elseif (dmfStartStatic and dmfStartStatic > 0) then
 		dmfStart = dmfStartStatic;
 	end
 	--This is basically just adjusting for my shitty local offset code since all regions spawn on monday.
@@ -9166,6 +9187,7 @@ f:SetScript('OnEvent', function(self, event, ...)
 		--Seems to fire even when you are in the same phase, guess it will still do for now to reset the phase frame and make user retarget a npc.
 		if (UnitIsGroupLeader(unit)) then
 			NWB.currentLayer = 0;
+			NWB_CurrentLayer =  0;
 			NWB.currentZoneID = 0;
 			NWB:recalcMinimapLayerFrame();
 		end
@@ -9192,6 +9214,8 @@ NWB.currentZoneID = 0;
 NWB.lastCurrentZoneID = 0;
 NWB.validZoneIDTimer = nil;
 NWB.AllowCurrentZoneID = true;
+--Enable some globals that other addons/weakauras can use.
+NWB_CurrentLayer = 0;
 function NWB:setCurrentLayerText(unit)
 	if (not NWB.isLayered or not unit) then
 		return;
@@ -9229,6 +9253,7 @@ function NWB:setCurrentLayerText(unit)
 		if (k == tonumber(zoneID)) then
 			NWBlayerFrame.fs2:SetText("|cFF9CD6DE" .. L["You are currently on"] .. " |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
 			NWB.currentLayer = count;
+			NWB_CurrentLayer = count;
 			NWB.lastKnownLayer = count;
 			NWB.lastKnownLayerID = k;
 			if ((GetServerTime() - NWB.lastJoinedGroup) > NWB.lastJoinedGroupCooldown) then
@@ -9691,7 +9716,7 @@ end
 function NWB:recalcLayerMapFrame()
 	NWBLayerMapFrame.EditBox:SetText("\n");
 	if (not NWB.data.layers or type(NWB.data.layers) ~= "table" or not next(NWB.data.layers)) then
-		NWBLayerMapFrame.EditBox:Insert("|cffFFFF00No zones have been mapped yet since server restart.\n");
+		NWBLayerMapFrame.EditBox:Insert("|cffFFFF00No zones have been mapped yet since server restart.|r\n");
 	else
 		local count = 0;
 		for k, v in NWB:pairsByKeys(NWB.data.layers) do
@@ -9712,11 +9737,11 @@ function NWB:recalcLayerMapFrame()
 						zoneInfo = mapInfo.name;
 					end
 					---NWBLayerMapFrame.EditBox:Insert("  -|cffFFFF00" .. zoneInfo .. " ".. kk .. " |cff9CD6DE" .. vv .. "\n");
-					text = text .. "  -|cffFFFF00" .. zoneInfo .. " |cFF989898(" .. kk .. ")|r\n";
+					text = text .. "  -|cffFFFF00" .. zoneInfo .. "|r |cFF989898(" .. kk .. ")|r\n";
 				end
 			else --C_Map.GetAreaInfo(
 			--C_Map.GetMapInfoAtPosition(1434, 1, 1)
-				text = text .. "  -|cffFFFF00No zones mapped for this layer yet.\n";
+				text = text .. "  -|cffFFFF00No zones mapped for this layer yet.|r\n";
 			end
 			if (NWB.faction == "Horde") then
 				NWBLayerMapFrame.EditBox:Insert("\n|cff00ff00[Layer " .. count .. "]|r  |cff9CD6DE(Orgrimmar " .. k .. ")|r  "
@@ -9998,6 +10023,7 @@ function NWB:recalcMinimapLayerFrame(zoneID)
 			if (k == NWB.lastKnownLayerMapID) then
 				NWBlayerFrame.fs2:SetText("|cFF9CD6DE" .. L["You are currently on"] .. " |cff00ff00[Layer " .. count .. "]|cFF9CD6DE.|r");
 				NWB.currentLayer = count;
+				NWB_CurrentLayer = count;
 				NWB.lastKnownLayer = count;
 				NWB.lastKnownLayerID = k;
 				NWB.lastKnownLayerTime = GetServerTime();
@@ -10043,6 +10069,7 @@ function NWB:recalcMinimapLayerFrame(zoneID)
 			end
 		end
 		NWB.currentLayer = 0;
+		NWB_CurrentLayer = 0;
 		if (foundBackup) then
 			NWB:toggleMinimapLayerFrame("show");
 		else

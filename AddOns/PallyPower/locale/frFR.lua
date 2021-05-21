@@ -1,9 +1,7 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("PallyPower", "frFR", false, false)
 if not L then return end 
---[[Translation missing --]]
-L["ALTMENU_LINE1"] = "can be assigned"
---[[Translation missing --]]
-L["ALTMENU_LINE2"] = "a Normal Blessing from:"
+L["ALTMENU_LINE1"] = "peut être attribué"
+L["ALTMENU_LINE2"] = "une bénédiction normale de:"
 L["AURA"] = "Bouton Aura"
 L["AURA_DESC"] = "[|cffffd200Enable|r / |cffffd200Disable|r] Le bouton Aura ou sélectionnez l'aura que vous souhaitez utiliser."
 L["AURABTN"] = "Bouton Aura"
@@ -13,9 +11,7 @@ L["AURATRACKER_DESC"] = "Sélectionnez l'aura que vous souhaitez utiliser"
 L["AUTO"] = "Bouton de buff automatique"
 L["AUTO_DESC"] = "[|cffffd200Enable|r / |cffffd200Disable|r] Le bouton de buff automatique ou [|cffffd200Enable|r / |cffffd200Disable|r] Attendre les joueurs."
 L["AUTOASSIGN"] = "Auto-Assign"
-L["AUTOASSIGN_DESC"] = [=[Attribuer automatiquement toutes les bénédictions en fonction du nombre de paladins disponibles et leurs bénédictions disponibles.
-
-|cffffffff [Maj-clic gauche]|r Utiliser la logique pour les champs de bataille au lieu de la logique de raid]=]
+L["AUTOASSIGN_DESC"] = [=[Attribuer automatiquement toutes les bénédictions en fonction du nombre de paladins disponibles et leurs bénédictions disponibles.|cffffffff [Maj-clic gauche]|r Utiliser la logique pour les champs de bataille au lieu de la logique de raid]=]
 L["AUTOBTN"] = "Bouton de buff automatique"
 L["AUTOBTN_DESC"] = "[Activer / désactiver] le bouton de buff automatique"
 L["AUTOKEY1"] = "Raccourci de bénédiction normale automatique"
@@ -66,7 +62,12 @@ L["MAINASSISTANTNBUFFDP_DESC"] = "Sélectionnez la bénédiction normale que vou
 L["MAINASSISTANTNBUFFW"] = "... avec Normal ..."
 L["MAINASSISTANTNBUFFW_DESC"] = "Sélectionnez la bénédiction normale que vous souhaitez utiliser pour remplacer celles des guerriers tank."
 L["MAINROLES"] = "Roles Tank et Main Assist"
-L["MAINROLES_DESC"] = [=[Ces options peuvent être utilisées pour attribuer automatiquement des bénédictions normales alternatives à toute bénédiction supérieure attribuée aux guerriers, aux druides ou aux paladins |cffff0000only|r.Normalement, les rôles de réservoir principal et d'assistance principale ont été utilisés pour identifier les réservoirs principaux et les réservoirs auxiliaires (aide principale), cependant, certaines guildes attribuent le rôle de réservoir principal aux réservoirs principaux et hors réservoir et attribuent le rôle d'assistance principale aux guérisseurs.En ayant un paramètre séparé pour les deux rôles, cela permettra aux chefs de classe Paladin ou aux chefs de raid de supprimer, par exemple, une plus grande bénédiction de salut des classes de tanking ou si les druides ou les guérisseurs Paladin sont marqués avec le rôle d'assistance principale qu'ils pourraient être configurés pour obtenir Bénédiction de sagesse normale vs Bénédiction de puissance supérieure qui permettrait d'attribuer une bénédiction de puissance supérieure aux druides et paladins spécifiés par DPS et une bénédiction de sagesse normale à la guérison des druides et paladins spécifiés.]=]
+L["MAINROLES_DESC"] = [=[Ces options peuvent être utilisées pour attribuer automatiquement des bénédictions normales alternatives à toute bénédiction supérieure attribuée aux guerriers, aux druides ou aux paladins |cffff0000only|r.
+
+Normalement, les rôles de réservoir principal et d'assistance principale ont été utilisés pour identifier les réservoirs principaux et les réservoirs auxiliaires (aide principale), cependant, certaines guildes attribuent le rôle de réservoir principal aux réservoirs principaux et hors réservoir et attribuent le rôle d'assistance principale aux guérisseurs.
+
+En ayant un paramètre séparé pour les deux rôles, cela permettra aux chefs de classe Paladin ou aux chefs de raid de supprimer, par exemple, une plus grande bénédiction de salut des classes de tanking ou si les druides ou les guérisseurs Paladin sont marqués avec le rôle d'assistance principale qu'ils pourraient être configurés pour obtenir Bénédiction de sagesse normale vs Bénédiction de puissance supérieure qui permettrait d'attribuer une bénédiction de puissance supérieure aux druides et paladins spécifiés par DPS et une bénédiction de sagesse normale à la guérison des druides et paladins spécifiés.
+]=]
 L["MAINTANKGBUFFDP"] = "Surcharger pour les druides / paladins ..."
 L["MAINTANKGBUFFDP_DESC"] = "Sélectionnez la bénédiction supérieure que vous souhaitez remplacer sur les tanks druides / paladins."
 L["MAINTANKGBUFFW"] = "Surcharger les guerriers..."
@@ -101,13 +102,7 @@ L["PPMAINTANK_DESC"] = "Si vous activez cette option, PallyPower écrasera autom
 L["RAID"] = "Raid"
 L["RAID_DESC"] = "Options de raid uniquement"
 L["REPORTCHANNEL"] = "Canal de rapports des bénédictions"
-L["REPORTCHANNEL_DESC"] = [=[Définissez le canal souhaité pour diffuser le rapport Bliessings sur:
-
-|cffffd200 [Aucun]|r Sélectionne le canal en fonction de la composition du groupe. (Groupe / Raid)
-
-|cffffd200 [Liste des chaînes]|r Une liste de canaux remplie automatiquement en fonction des canaux auxquelles le joueur appartient. Les canaux par défaut tels que Trade, General, etc. sont automatiquement filtrés de la liste.
-
-|cffffff00Remarque: si vous modifiez l'ordre des canaux, vous devrez recharger votre interface utilisateur et vérifier qu'elle diffuse sur le canal appropriée.|r]=]
+L["REPORTCHANNEL_DESC"] = [=[Définissez le canal souhaité pour diffuser le rapport Bliessings sur:|cffffd200 [Aucun]|r Sélectionne le canal en fonction de la composition du groupe. (Groupe / Raid)|cffffd200 [Liste des chaînes]|r Une liste de canaux remplie automatiquement en fonction des canaux auxquelles le joueur appartient. Les canaux par défaut tels que Trade, General, etc. sont automatiquement filtrés de la liste.|cffffff00Remarque: si vous modifiez l'ordre des canaux, vous devrez recharger votre interface utilisateur et vérifier qu'elle diffuse sur le canal appropriée.|r]=]
 L["RESET"] = "Reset Frames"
 L["RESET_DESC"] = "Réinitialiser la position de toutes les fenêtre pallypower au centre de l’écran"
 L["RESIZEGRIP"] = [=[Clic gauche pour redimensionnerLe clic droit réinitialise la taille par défaut]=]
@@ -118,7 +113,7 @@ L["SALVCOMBAT_DESC"] = [=[Si vous activez cette option, vous pourrez buff les gu
 
 |cffffff00Remarque: ce paramètre s'applique UNIQUEMENT aux groupes de raid car dans notre culture actuelle, de nombreux tanks utilisent des scripts / addons pour annuler les buffs qui ne peuvent être effectués qu'en dehors du combat. Cette option est fondamentalement une sécurité pour éviter de buff accidentellement un tank avec salut pendant le combat.|r]=]
 L["SEAL"] = "Bouton de sceau"
-L["SEAL_DESC"] = "[|cffffd200Enable|r / |cffffd200Disable|r] Le bouton sceau, Activer / Désactiver Righteous Fury ou sélectionnez le sceau que vous souhaitez suivre."
+L["SEAL_DESC"] = "[|cffffd200Enable|r / |cffffd200Disable|r] Le bouton sceau, Activer / Désactiver Fureur vertueuse ou sélectionnez le sceau que vous souhaitez suivre."
 L["SEALBTN"] = "Bouton sceau"
 L["SEALBTN_DESC"] = "[Activer / désactiver] le bouton sceau"
 L["SEALTRACKER"] = "Suivi du sceau"
@@ -129,9 +124,7 @@ L["SETTINGSBUFF"] = "Que buff avec PallyPower"
 L["SHOWMINIMAPICON"] = "Afficher l'icône de la mini-carte"
 L["SHOWMINIMAPICON_DESC"] = "[Afficher / Masquer] Icône de minicarte"
 L["SHOWPETS"] = "Montrer les familiers"
-L["SHOWPETS_DESC"] = [=[Si vous activez cette option, les animaux de compagnie apparaîtront dans leur propre classe.
-
-|cffffff00Remarque: en raison de la manière dont les Bénédictions supérieures fonctionnent et de la façon dont les animaux domestiques sont classés, les animaux domestiques doivent être buff séparément. De plus, les diablotins démo seront masqué automatiquement à moins que le déphasage ne soit désactivé.|r]=]
+L["SHOWPETS_DESC"] = [=[Si vous activez cette option, les animaux de compagnie apparaîtront dans leur propre classe.|cffffff00Remarque: en raison de la manière dont les Bénédictions supérieures fonctionnent et de la façon dont les animaux domestiques sont classés, les animaux domestiques doivent être buff séparément. De plus, les diablotins démo seront masqué automatiquement à moins que le déphasage ne soit désactivé.|r]=]
 L["SHOWTIPS"] = "Afficher les info-bulles"
 L["SHOWTIPS_DESC"] = "[Afficher / Masquer] Les info-bulles PallyPower"
 L["SKIN"] = "Textures d'arrière-plan"

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Maexxna", "DBM-Naxx", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210214203725")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15952)
 mod:SetEncounterID(1116)
 mod:SetModelID(15928)
@@ -34,36 +34,29 @@ function mod:OnCombatStart(delay)
 	timerSpider:Start(30 - delay)
 end
 
-do
-	local WebWrap = DBM:GetSpellInfo(28622)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 28622 then -- Web Wrap
-		if args.spellName == WebWrap then -- Web Wrap
-			warnWebWrap:CombinedShow(0.5, args.destName)
-			if args.destName == UnitName("player") then
-				specWarnWebWrap:Cancel()
-				specWarnWebWrap:CancelVoice()
-				yellWebWrap:Yell()
-			elseif self:AntiSpam(3, 1) then
-				specWarnWebWrap:Schedule(0.5)
-				specWarnWebWrap:ScheduleVoice(0.5, "targetchange")
-				timerWebWrap:Start()
-			end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 28622 then
+		warnWebWrap:CombinedShow(0.5, args.destName)
+		if args.destName == UnitName("player") then
+			specWarnWebWrap:Cancel()
+			specWarnWebWrap:CancelVoice()
+			yellWebWrap:Yell()
+		elseif self:AntiSpam(3, 1) then
+			specWarnWebWrap:Schedule(0.5)
+			specWarnWebWrap:ScheduleVoice(0.5, "targetchange")
+			timerWebWrap:Start()
 		end
 	end
 end
 
-do
-	local WebSpray = DBM:GetSpellInfo(29484)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args:IsSpellID(29484, 54125) then -- Web Spray
-		if args.spellName == WebSpray then -- Web Spray
-			warnWebSprayNow:Show()
-			warnWebSpraySoon:Schedule(35.5)
-			timerWebSpray:Start()
-			warnSpidersSoon:Schedule(25)
-			warnSpidersNow:Schedule(30)
-			timerSpider:Start()
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	--if args:IsSpellID(29484, 54125) then -- Web Spray
+	if args.spellId == 29484 then -- Web Spray
+		warnWebSprayNow:Show()
+		warnWebSpraySoon:Schedule(35.5)
+		timerWebSpray:Start()
+		warnSpidersSoon:Schedule(25)
+		warnSpidersNow:Schedule(30)
+		timerSpider:Start()
 	end
 end

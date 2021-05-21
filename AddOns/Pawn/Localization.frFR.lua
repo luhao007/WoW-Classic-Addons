@@ -271,6 +271,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["Crit2"] = "^%+?# au score de critique$",
 		["CritPercent"] = "^Equipé : Augmente vos chances d'infliger un coup critique de #%%%.$",
 		["CritRating"] = "^Équipé : Augmente votre score de coup critique de #%.$",
+		["CritRating2"] = "^UNUSED$",
 		["CritRatingShort"] = "^%+?# au score de coup critique$",
 		["Crossbow"] = "^Arbalète$",
 		["Dagger"] = "^Dague$",
@@ -312,6 +313,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["Haste"] = "^%+?# Hâte$",
 		["Haste2"] = "^%+?# à la Hâte",
 		["HasteRating"] = "^Équipé : Augmente de # le score de hâte%.$",
+		["HasteRating2"] = "^UNUSED$",
 		["HasteRatingShort"] = "^%+?# au score de hâte$",
 		["HaventCollectedAppearance"] = "^Vous n'avez pas récupéré cette apparence$",
 		["Healing"] = "^%+# aux sorts de soins$",
@@ -327,6 +329,7 @@ Pour plus d'information sur la Personnalisation de Pawn, regarder le fichier d'a
 		["Hit2"] = "^UNUSED$",
 		["HitRating"] = "^Équipé : Augmente de # le score de toucher%.$",
 		["HitRating2"] = "^Équipé : Augmente votre score de toucher de #%.$",
+		["HitRating3"] = "^UNUSED$",
 		["HitRatingShort"] = "^%+?# au score de toucher$",
 		["HolySpellDamage"] = "^%+# aux dégâts des sorts du Sacré$",
 		["HolySpellDamage2"] = "^Equipé : Augmente les dégâts infligés par les sorts et effets du Sacré de # au maximum%.$",
@@ -644,11 +647,13 @@ Cette commande ne peut etre défaite!]=],
 
 -- Special case: wands actually use different text on live versus classic.
 -- So, patch things up here.
-if VgerCore.IsClassic then
 
+if VgerCore.IsClassic then
 	PawnLocal.ThousandsSeparator = "NBSP"
 	PawnLocal.DecimalSeparator = "."
+end
 
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
 	local TooltipParsing_Classic =
 	{
 		["WeaponDamageArcane"] = "^Dégâts %(Arcanes%) : # %- #$",

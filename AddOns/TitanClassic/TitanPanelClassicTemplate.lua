@@ -1051,3 +1051,23 @@ function TitanPanelButton_GetType(id)
 	return type;
 end
 
+--[[ Titan
+NAME: TitanOptionsSliderTemplate_OnLoad
+DESC: Loads the Backdrop for TitanOptionsSliderTemplate with new 9.0 API
+VAR: self - The frame
+--]]
+function TitanOptionsSliderTemplate_OnLoad(self)
+		self:SetBackdrop({
+			bgFile="Interface\\Buttons\\UI-SliderBar-Background",
+			edgeFile="Interface\\Buttons\\UI-SliderBar-Border",
+			tile = true,
+			insets = {
+				left = 6,
+				right = 6,
+				top = 3,
+				bottom = 3,
+			},
+			tileSize = 8,
+			edgeSize = 8,
+		})
+end

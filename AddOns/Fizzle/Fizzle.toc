@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: phyber
 ## Version: 90002-2
 ## OptionalDeps: Ace3, Voyeur

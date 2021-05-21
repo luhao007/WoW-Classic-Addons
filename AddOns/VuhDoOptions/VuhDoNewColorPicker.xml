@@ -229,18 +229,10 @@
 					</Anchor>
 				</Anchors>
 				<Frames>
-					<Slider name="$parentSlider" setallpoints="true" enableMouse="true" minValue="0" maxValue="100" defaultValue="0" valueStep="1" orientation="VERTICAL">
-						<Backdrop bgFile="Interface\AddOns\VuhDoOptions\Images\blue_lt_square_16_16" edgeFile="Interface\AddOns\VuhDoOptions\Images\panel_edges_1" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="1" right="1" top="1" bottom="1" />
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="8" />
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="8" />
-							</EdgeSize>
-						</Backdrop>
+					<Slider name="$parentSlider" setallpoints="true" enableMouse="true" minValue="0" maxValue="100" defaultValue="0" valueStep="1" orientation="VERTICAL" inherits="BackdropTemplate" mixin="BackdropTemplateMixin">
+						<KeyValues>
+							<KeyValue key="backdropInfo" value="BACKDROP_VUHDO_COLOR_PICKER_SLIDER_8_8_1111" type="global" />
+						</KeyValues>
 						<Layers>
 							<Layer>
 								<FontString name="$parentTitle" inherits="VuDoDefaultFontTemplate" text="VUHDO_I18N_OPACITY">
@@ -287,7 +279,7 @@
 
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				VUHDO_lnfPatchFont(self, "OldColorLabel");
 				VUHDO_lnfPatchFont(self, "NewColorLabel");
 				self:SetScript("OnColorSelect", VUHDO_colorPickerColorSelectCallback);

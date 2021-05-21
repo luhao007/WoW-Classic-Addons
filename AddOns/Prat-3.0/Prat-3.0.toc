@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Sylvanaar (Sylvaann - Proudmoore/US-Alliance)
 ## Version: 3.9.1
 ## OptionalDeps: Prat-3.0_Libraries, LibSink-2.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibDataBroker-1.1, LibDBIcon-1.0, LibAlts-1.0, LibChatAnims

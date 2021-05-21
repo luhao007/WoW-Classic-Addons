@@ -1,8 +1,103 @@
 PallyPower = LibStub("AceAddon-3.0"):NewAddon("PallyPower", "AceConsole-3.0", "AceEvent-3.0", "AceBucket-3.0", "AceTimer-3.0")
+PallyPower.isBCC = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 local L = LibStub("AceLocale-3.0"):GetLocale("PallyPower")
-local LCD = LibStub("LibClassicDurations", true)
+local LCD = not PallyPower.isBCC  and LibStub("LibClassicDurations", true)
 local LSM3 = LibStub("LibSharedMedia-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+
+PALLYPOWER_BACKDROP_COLOR_DARK = CreateColor(0.05, 0.05, 0.05)
+
+--[[
+	BackdropTemplatePolyfillMixin
+	Polyfill mixin that mirrors the API exposed by the BackdropTemplateMixin
+	in 9.x clients.
+	This implements all the methods provided by the Blizzard mixin, using
+	no-op stubs for areas of functionality that can't be handed in pre-9.x
+	client code.
+	Generally, this mixin shouldn't be used directly - use the globally
+	accessible PallyPower_BackdropTemplateMixin instead which will default
+	to preferring the Blizzard mixin on supported clients.
+--]]
+
+local BackdropTemplatePolyfillMixin = {};
+
+function BackdropTemplatePolyfillMixin:OnBackdropLoaded()
+	if not self.backdropInfo then
+		return;
+	end
+
+	if not self.backdropInfo.edgeFile and not self.backdropInfo.bgFile then
+		self.backdropInfo = nil
+		return;
+	end
+
+	self:ApplyBackdrop()
+
+	if self.backdropColor then
+		local r, g, b = self.backdropColor:GetRGB()
+		self:SetBackdropColor(r, g, b, self.backdropColorAlpha or 1)
+	end
+
+	if self.backdropBorderColor then
+		local r, g, b = self.backdropBorderColor:GetRGB();
+		self:SetBackdropBorderColor(r, g, b, self.backdropBorderColorAlpha or 1)
+	end
+
+	if self.backdropBorderBlendMode then
+		self:SetBackdropBorderBlendMode(self.backdropBorderBlendMode)
+	end
+end
+
+function BackdropTemplatePolyfillMixin:OnBackdropSizeChanged()
+	if self.backdropInfo then
+		self:SetupTextureCoordinates()
+	end
+end
+
+function BackdropTemplatePolyfillMixin:ApplyBackdrop()
+	-- The SetBackdrop call will implicitly reset the background and border
+	-- texture vertex colors to white, consistent across all client versions.
+
+	self:SetBackdrop(self.backdropInfo)
+end
+
+function BackdropTemplatePolyfillMixin:ClearBackdrop()
+	self:SetBackdrop(nil)
+	self.backdropInfo = nil
+end
+
+function BackdropTemplatePolyfillMixin:GetEdgeSize()
+	-- The below will indeed error if there's no backdrop assigned; this is
+	-- consistent with how it works on 9.x clients.
+
+	return self.backdropInfo.edgeSize or 39
+end
+
+function BackdropTemplatePolyfillMixin:HasBackdropInfo(backdropInfo)
+	return self.backdropInfo == backdropInfo
+end
+
+function BackdropTemplatePolyfillMixin:SetBorderBlendMode()
+	-- The pre-9.x API doesn't support setting blend modes for backdrop
+	-- borders, so this is a no-op that just exists in case we ever assume
+	-- it exists.
+end
+
+function BackdropTemplatePolyfillMixin:SetupPieceVisuals()
+	-- Deliberate no-op as backdrop internals are handled C-side pre-9.x.
+end
+
+function BackdropTemplatePolyfillMixin:SetupTextureCoordinates()
+	-- Deliberate no-op as texture coordinates are handled C-side pre-9.x.
+end
+
+--[[
+	PallyPower_BackdropTemplateMixin
+	Dummy mixin that either inherits the Blizzard BackdropTemplateMixin
+	for 9.x clients, or our polyfill one if otherwise unavailable.
+--]]
+
+PallyPower_BackdropTemplateMixin = CreateFromMixins(BackdropTemplateMixin or BackdropTemplatePolyfillMixin)
 
 local tinsert = table.insert
 local tremove = table.remove
@@ -127,7 +222,9 @@ function PallyPower:OnInitialize()
         }
     )
     self.MinimapIcon:Register("PallyPower", self.LDB, self.opt.minimap)
-    LCD:Register("PallyPower")
+    if not PallyPower.isBCC then
+        LCD:Register("PallyPower")
+    end
     C_Timer.After(
         2.0,
         function()
@@ -894,7 +991,7 @@ function PallyPower:PerformCycle(name, class, skipzero)
                     cur = 1
                 end
             elseif self:CanBuff(name, 2) then
-                if self.opt.SmartBuffs and (class == 3 or class == 6 or class == 7 or class == 8) then
+                if self.opt.SmartBuffs and (class == 3 or (not PallyPower.isBCC and class == 6) or class == 7 or class == 8) then
                     cur = 1
                 else
                     cur = 2
@@ -956,7 +1053,7 @@ function PallyPower:PerformCycleBackwards(name, class, skipzero)
                 testB = 1
             end
         elseif self:CanBuff(name, 2) then
-            if self.opt.SmartBuffs and (class == 3 or class == 6 or class == 7 or class == 8) then
+            if self.opt.SmartBuffs and (class == 3 or (not PallyPower.isBCC and class == 6) or class == 7 or class == 8) then
                 testB = 1
             else
                 testB = 2
@@ -1019,9 +1116,9 @@ function PallyPower:PerformPlayerCycle(self, delta, pname, class)
     local count
     -- Can't give Blessing of Sacrifice to yourself
     if pname == PallyPower.player then
-        count = 7
-    else
         count = 8
+    else
+        count = 9
     end
     local test = (blessing - delta) % count
     while not (PallyPower:CanBuff(PallyPower.player, test) and PallyPower:NeedsBuff(class, test, pname) or control) and test > 0 do
@@ -1089,7 +1186,7 @@ function PallyPower:AssignPlayerAsClass(pname, pclass, tclass)
 end
 
 function PallyPower:CanBuff(name, test)
-    if test == 8 then
+    if test == 9 then
         return true
     end
     if (not AllPallys[name][test]) or (AllPallys[name][test].rank == 0) then
@@ -1101,7 +1198,7 @@ end
 function PallyPower:CanBuffBlessing(spellId, gspellId, unitId)
     if unitId and spellId ~= nil or gspellId ~= nil then
         local normSpell, greatSpell
-        if UnitLevel(unitId) == 60 then
+        if UnitLevel(unitId) >= 60 then
             if spellId > 0 then
                 if spellId == 7 and GetUnitName(unitId, false) == self.player then
                     normSpell = nil
@@ -1170,7 +1267,7 @@ function PallyPower:CanBuffBlessing(spellId, gspellId, unitId)
 end
 
 function PallyPower:NeedsBuff(class, test, playerName)
-    if test == 8 or test == 0 then
+    if test == 9 or test == 0 then
         return true
     end
     if self.opt.SmartBuffs then
@@ -1178,8 +1275,8 @@ function PallyPower:NeedsBuff(class, test, playerName)
         if (class == 1 or class == 2) and test == 1 then
             return false
         end
-        -- no might for casters and hunters
-        if (class == 3 or class == 6 or class == 7 or class == 8) and test == 2 then
+        -- no might for casters (and hunters in Classic)
+        if (class == 3 or (not PallyPower.isBCC and class == 6) or class == 7 or class == 8) and test == 2 then
             return false
         end
     end
@@ -1225,7 +1322,11 @@ function PallyPower:ScanSpells()
                 elseif i == 3 then
                     talent = talent + select(5, GetTalentInfo(2, 6)) -- Blessing of Kings
                 elseif i == 6 then
-                    talent = talent + select(5, GetTalentInfo(2, 12)) -- Blessing of Sanctuary
+                    if PallyPower.isBCC then
+                        talent = talent + select(5, GetTalentInfo(2, 14)) -- Blessing of Sanctuary
+                    else
+                        talent = talent + select(5, GetTalentInfo(2, 12)) -- Blessing of Sanctuary
+                    end
                 end
                 RankInfo[i].talent = talent
                 RankInfo[i].rank = tonumber(select(3, sfind(spellRank, "(%d+)")))
@@ -1248,9 +1349,17 @@ function PallyPower:ScanSpells()
                 elseif i == 2 then
                     talent = talent + select(5, GetTalentInfo(3, 11)) -- Improved Retribution Aura
                 elseif i == 3 then
-                    talent = talent + select(5, GetTalentInfo(2, 11)) -- Improved Concentration Aura
+                    if PallyPower.isBCC then
+                        talent = talent + select(5, GetTalentInfo(2, 12)) -- Improved Concentration Aura
+                    else
+                        talent = talent + select(5, GetTalentInfo(2, 11)) -- Improved Concentration Aura
+                    end
                 elseif i == 7 then
-                    talent = talent + select(5, GetTalentInfo(3, 13)) -- Sanctity Aura
+                    if PallyPower.isBCC then
+                        talent = talent + select(5, GetTalentInfo(3, 14)) -- Sanctity Aura
+                    else
+                        talent = talent + select(5, GetTalentInfo(3, 13)) -- Sanctity Aura
+                    end
                 end
                 AllPallys[self.player].AuraInfo[i].talent = talent
                 AllPallys[self.player].AuraInfo[i].rank = tonumber(select(3, sfind(spellRank, "(%d+)")))
@@ -1489,7 +1598,9 @@ function PallyPower:PLAYER_ENTERING_WORLD()
     self:ReportChannels()
     if UnitName("player") == "Dyaxler" or UnitName("player") == "Minidyax" then
         --PP_DebugEnabled = true
-        --LCD:ToggleDebug()
+        --if not PallyPower.isBCC then
+            --LCD:ToggleDebug()
+        --end
     end
 end
 
@@ -2559,9 +2670,9 @@ function PallyPower:UpdateButton(button, baseName, classID)
     buffIcon:SetTexture(self.BlessingIcons[gspellID])
     local classExpire, classDuration, specialExpire, specialDuration = self:GetBuffExpiration(classID)
     time:SetText(self:FormatTime(classExpire))
-    time:SetTextColor(self:GetSeverityColor(classExpire and classDuration and (classExpire / classDuration) or 0))
+    time:SetTextColor(self:GetSeverityColor(classExpire and classDuration and classDuration > 0 and (classExpire / classDuration) or 0))
     time2:SetText(self:FormatTime(specialExpire))
-    time2:SetTextColor(self:GetSeverityColor(specialExpire and specialDuration and (specialExpire / specialDuration) or 0))
+    time2:SetTextColor(self:GetSeverityColor(specialExpire and specialDuration and specialDuration > 0 and (specialExpire / specialDuration) or 0))
     if (nneed + nspecial > 0) then
         text:SetText(nneed + nspecial)
     else
@@ -2606,7 +2717,12 @@ function PallyPower:GetBuffExpiration(classID)
             local buffName = UnitBuff(unit.unitid, j)
             while buffName do
                 if (buffName == gspell) then
-                    local _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unit.unitid, j, "HELPFUL")
+                    local _, buffDuration, buffExpire
+                    if PallyPower.isBCC then
+                        _, _, _, _, buffDuration, buffExpire = UnitAura(unit.unitid, j, "HELPFUL")
+                    else
+                        _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unit.unitid, j, "HELPFUL")
+                    end
                     if buffExpire then
                         if buffExpire == 0 then
                             buffExpire = 0
@@ -2619,7 +2735,12 @@ function PallyPower:GetBuffExpiration(classID)
                         break
                     end
                 elseif (buffName == spell) then
-                    local _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unit.unitid, j, "HELPFUL")
+                    local _, buffDuration, buffExpire
+                    if PallyPower.isBCC then
+                        _, _, _, _, buffDuration, buffExpire = UnitAura(unit.unitid, j, "HELPFUL")
+                    else
+                        _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unit.unitid, j, "HELPFUL")
+                    end
                     if buffExpire then
                         if buffExpire == 0 then
                             buffExpire = 0
@@ -2922,9 +3043,9 @@ function PallyPower:ButtonsUpdate()
         self:ApplyBackdrop(autobutton, self.opt.cBuffGood)
     end
     time:SetText(self:FormatTime(minClassExpire))
-    time:SetTextColor(self:GetSeverityColor(minClassExpire and minClassDuration and (minClassExpire / minClassDuration) or 0))
+    time:SetTextColor(self:GetSeverityColor(minClassExpire and minClassDuration and minClassDuration > 0 and (minClassExpire / minClassDuration) or 0))
     time2:SetText(self:FormatTime(minSpecialExpire))
-    time2:SetTextColor(self:GetSeverityColor(minSpecialExpire and minSpecialDuration and (minSpecialExpire / minSpecialDuration) or 0))
+    time2:SetTextColor(self:GetSeverityColor(minSpecialExpire and minSpecialDuration and minSpecialDuration > 0 and (minSpecialExpire / minSpecialDuration) or 0))
     if (sumnneed + sumnspecial > 0) then
         text:SetText(sumnneed + sumnspecial)
     else
@@ -3204,7 +3325,12 @@ function PallyPower:IsBuffActive(spellName, gspellName, unitID)
     local buffName = UnitBuff(unitID, j)
     while buffName do
         if (buffName == spellName) or (buffName == gspellName) then
-            local _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unitID, j, "HELPFUL")
+            local _, buffDuration, buffExpire
+            if PallyPower.isBCC then
+                _, _, _, _, buffDuration, buffExpire = UnitAura(unitID, j, "HELPFUL")
+            else
+                _, _, _, _, buffDuration, buffExpire = LCD.UnitAuraWrapper(unit.unitid, j, "HELPFUL")
+            end
             if buffExpire then
                 if buffExpire == 0 then
                     buffExpire = 0
@@ -3235,7 +3361,7 @@ function PallyPower:ButtonPreClick(button, mousebutton)
     local classid = button:GetAttribute("classID")
     local spell, gspell, unitName, unitid
     if classid then
-        if IsInRaid() and (mousebutton == "LeftButton") and (classid ~= 9) then
+        if IsInRaid() and (mousebutton == "LeftButton") and (classid ~= 10) then
             unitid, spell, gspell = self:GetUnitAndSpellSmart(classid, mousebutton)
             if unitid and classid then
                 unitName = GetUnitName(unitid, true)
@@ -3244,7 +3370,7 @@ function PallyPower:ButtonPreClick(button, mousebutton)
         elseif not IsInRaid() or ((IsInRaid() and mousebutton == "RightButton")) then
             unitid, spell, gspell = self:GetUnitAndSpellSmart(classid, mousebutton)
             if unitid then
-                if classid == 9 then
+                if classid == 10 then
                     local unitPrefix = "party"
                     local offSet = 9
                     if (unitid:find("raid")) then
@@ -3315,9 +3441,9 @@ function PallyPower:ButtonPostClick(button, mousebutton)
         local gSpell = false
         local numPlayers = 0
         local classid = button:GetAttribute("classID")
-        if (mousebutton == "LeftButton") and (classid ~= 9) then
+        if (mousebutton == "LeftButton") and (classid ~= 10) then
             for i = 1, PALLYPOWER_MAXPERCLASS do
-                if numPlayers < 8 and classid and classes[classid] and classes[classid][i] then
+                if numPlayers < 9 and classid and classes[classid] and classes[classid][i] then
                     local unit = classes[classid][i]
                     local spellID, gspellID = self:GetSpellID(classid, unit.name)
                     local _, gspell = self:CanBuffBlessing(spellID, gspellID, unit.unitid)
@@ -3626,15 +3752,28 @@ function PallyPower:ApplySkin()
     local border = LSM3:Fetch("border", self.opt.border)
     local background = LSM3:Fetch("background", self.opt.skin)
     local tmp = {bgFile = background, edgeFile = border, tile = false, tileSize = 8, edgeSize = 8, insets = {left = 0, right = 0, top = 0, bottom = 0}}
+    if PallyPower.isBCC then
+        if BackdropTemplateMixin then
+            Mixin(PallyPowerAura, BackdropTemplateMixin)
+            Mixin(PallyPowerRF, BackdropTemplateMixin)
+            Mixin(PallyPowerAuto, BackdropTemplateMixin)
+        end
+    end
     PallyPowerAura:SetBackdrop(tmp)
     PallyPowerRF:SetBackdrop(tmp)
     PallyPowerAuto:SetBackdrop(tmp)
     for cbNum = 1, PALLYPOWER_MAXCLASSES do
         local cButton = self.classButtons[cbNum]
+        if BackdropTemplateMixin then
+            Mixin(cButton, BackdropTemplateMixin)
+        end
         cButton:SetBackdrop(tmp)
         local pButtons = self.playerButtons[cbNum]
         for pbNum = 1, PALLYPOWER_MAXPERCLASS do
             local pButton = pButtons[pbNum]
+            if BackdropTemplateMixin then
+                Mixin(pButton, BackdropTemplateMixin)
+            end
             pButton:SetBackdrop(tmp)
         end
     end
@@ -3642,6 +3781,9 @@ end
 
 function PallyPower:ApplyBackdrop(button, preset)
     -- button coloring: preset
+    if BackdropTemplateMixin then
+        Mixin(button, BackdropTemplateMixin)
+    end
     button:SetBackdropColor(preset["r"], preset["g"], preset["b"], preset["t"])
 end
 
@@ -3732,9 +3874,9 @@ function PallyPower:AutoAssign()
     end
     local precedence
     if IsInRaid() and not (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and IsInInstance() or shift) then
-        precedence = {6, 1, 3, 2, 4, 5, 7} -- fire, devotion, concentration, retribution, shadow, frost, sanctity
+        precedence = {6, 1, 3, 2, 4, 5, 7, 8} -- fire, devotion, concentration, retribution, shadow, frost, sanctity, crusader
     else
-        precedence = {1, 3, 2, 4, 5, 6, 7} -- devotion, concentration, retribution, shadow, frost, fire, sanctity
+        precedence = {1, 3, 2, 4, 5, 6, 7, 8} -- devotion, concentration, retribution, shadow, frost, fire, sanctity, crusader
     end
     if self:CheckLeader(self.player) or PP_Leader == false then
         WisdomPallys, MightPallys, KingsPallys, SalvPallys, LightPallys, SancPallys = {}, {}, {}, {}, {}, {}
@@ -3864,7 +4006,8 @@ function PallyPower:AutoAssignBlessings(shift)
     self:SelectBuffsByClass(pallycount, 6, pallytemplate[6]) -- hunter
     self:SelectBuffsByClass(pallycount, 7, pallytemplate[7]) -- mage
     self:SelectBuffsByClass(pallycount, 8, pallytemplate[8]) -- lock
-    self:SelectBuffsByClass(pallycount, 9, pallytemplate[9]) -- pets
+    self:SelectBuffsByClass(pallycount, 9, pallytemplate[9]) -- shaman
+    self:SelectBuffsByClass(pallycount, 10, pallytemplate[10]) -- pets
 end
 
 function PallyPower:AssignNewBuffRatings(BuffPallys)

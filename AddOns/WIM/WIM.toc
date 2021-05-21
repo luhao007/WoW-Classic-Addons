@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Pazza (Bronzebeard), (Updated by Sylvanaar/MysticalOS/Humfras)
 ## Version: 3.9.1
 ## OptionalDeps: LibStub, CallbackHandler-1.0, ChatThrottleLib, LibSharedMedia-3.0, LibChatHandler-1.0, LibChatAnims

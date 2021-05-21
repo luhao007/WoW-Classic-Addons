@@ -492,3 +492,6 @@ VUHDO_I18N_PLAY_SOUND_FILE_ERR = "\"%s\"소리를 재생할 수 없음: %s";
 VUHDO_I18N_PLAY_SOUND_FILE_DEBUFF_ERR = "기본 디버프에 대하여 소리 \"%s\" |1을;를; 재생할 수 없습니다. 'VuhDo 옵션> 디버프> 기본> 디버프 사운드'에서 설정을 조정하십시오.";
 VUHDO_I18N_PLAY_SOUND_FILE_CUSTOM_DEBUFF_ERR = "사용자 정의 디버프 \"%s\"에 대해 \"%s\"소리를 재생할 수 없습니다. 'VuhDo 옵션> 디버프> 사용자 정의'에서 설정을 조정하십시오.";
 
+-- 3.122
+VUHDO_I18N_BOUQUET_STATUS_POWER_TANK_ONLY = "Statusbar: Power % (Tank Only)";
+VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY = "Manabars: Power (Tank Only)";

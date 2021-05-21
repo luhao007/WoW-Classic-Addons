@@ -68,7 +68,7 @@ local function DCS_ExpandCheck_OnLeave(self)
 	PaperDollFrame:HookScript("OnShow", function(self)
 		local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
 		if checked == true then
-			if TradeSkillFrame:IsVisible() or CraftFrame:IsVisible() or TalentFrame:IsVisible() then
+			if TradeSkillFrame:IsVisible() or CraftFrame:IsVisible() or PlayerTalentFrame:IsVisible() then
 				DCS_CharacterFrame_Collapse()	
 			else
 				DCS_CharacterFrame_Expand()
@@ -157,7 +157,7 @@ local DCS_ExpandButtonAltPlacementCheck = CreateFrame("CheckButton", "DCS_Expand
 DCS_BLIZZ_SKILL_PANELS = {
 	"TradeSkill",
 	"Craft",
-	"Talent",
+	"PlayerTalent"
 }
 
 local DejaClassicStatsExpandEventFrame = CreateFrame("Frame", "DejaClassicStatsExpandEventFrame", UIParent)
@@ -171,7 +171,9 @@ local DejaClassicStatsExpandEventFrame = CreateFrame("Frame", "DejaClassicStatsE
 				if _G[v.."Frame"] == nil then
 					if _G[v.."Frame"] == "DetailsFrame" then return
 					else
+						if v == "PlayerTalent" then v = "Talent" end
 						LoadAddOn("Blizzard_"..v.."UI")
+						if v == "Talent" then v = "PlayerTalent" end
 						_G[v.."Frame"]:HookScript("OnShow", function(self)
 							if PaperDollFrame:IsVisible() then
 								local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
@@ -181,7 +183,7 @@ local DejaClassicStatsExpandEventFrame = CreateFrame("Frame", "DejaClassicStatsE
 							end
 						end)
 						_G[v.."Frame"]:HookScript("OnHide", function(self)
-							if TradeSkillFrame:IsVisible() or CraftFrame:IsVisible() or TalentFrame:IsVisible() then return
+							if PlayerTalentFrame:IsVisible() then return
 							else
 								local checked = gdbprivate.gdb.gdbdefaults.dejacharacterstatsExpandChecked.ExpandSetChecked
 								if checked == true then

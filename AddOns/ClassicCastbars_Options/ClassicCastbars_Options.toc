@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Version: v1.3.23
 ## Dependencies: ClassicCastbars
 

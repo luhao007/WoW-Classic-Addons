@@ -273,6 +273,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["CritPercent"] = "^Equip: Improves your chance to get a critical strike by #%%%.$",
 		--[[Translation missing --]]
 		["CritRating"] = "^Equip: Increases your critical strike rating by #%.$",
+		["CritRating2"] = "^UNUSED$",
 		--[[Translation missing --]]
 		["CritRatingShort"] = "^%+?# Critical Strike Rating$",
 		["Crossbow"] = "^Balestra$",
@@ -321,6 +322,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["Haste2"] = "UNUSED",
 		--[[Translation missing --]]
 		["HasteRating"] = "^Equip: Improves haste rating by #%.$",
+		["HasteRating2"] = "^UNUSED$",
 		--[[Translation missing --]]
 		["HasteRatingShort"] = "^%+?# Haste Rating$",
 		["HaventCollectedAppearance"] = "^Non hai ottenuto questo aspetto$",
@@ -340,6 +342,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		--[[Translation missing --]]
 		["HitRatingShort"] = "^%+?# Hit Rating$",
 		["HitRating2"] = "^UNUSED$",
+		["HitRating3"] = "^UNUSED$",
 		["HolySpellDamage"] = "^%+# Holy Spell Damage$",
 		["HolySpellDamage2"] = "^Equip: Increases damage done by Holy spells and effects by up to #%.$",
 		["Hp5"] = "^%+?# Salute ogni 5 s.$",

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("CThun", "DBM-AQ40", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210419014244")
+mod:SetRevision("20210402014837")
 mod:SetCreatureID(15589, 15727)
 mod:SetEncounterID(717)
 mod:SetHotfixNoticeRev(20200823000000)--2020, 8, 23
@@ -40,7 +40,7 @@ local timerGiantClawTentacle	= mod:NewTimer(60, "TimerGiantClawTentacle", 26391,
 local timerWeakened				= mod:NewTimer(45, "TimerWeakened", 28598)
 
 mod:AddRangeFrameOption("10")
-mod:AddSetIconOption("SetIconOnEyeBeam2", 26134, false, false, {1})
+mod:AddSetIconOption("SetIconOnEyeBeam", 26134, true, false, {1})
 mod:AddInfoFrameOption(nil, true)
 
 mod.vb.phase = 1
@@ -131,78 +131,67 @@ function mod:DarkGlare()
 	self:ScheduleMethod(86, "DarkGlare")
 end
 
-do
-	local EyeBeam = DBM:GetSpellInfo(26134)
-	function mod:EyeBeamTarget(targetname, uId)
-		if not targetname then return end
-		if self.Options.SetIconOnEyeBeam2 then
-			self:SetIcon(targetname, 1, 3)
-		end
-		if targetname == UnitName("player") then
-			specWarnEyeBeam:Show()
-			specWarnEyeBeam:Play("targetyou")
-			yellEyeBeam:Yell()
-		end
+function mod:EyeBeamTarget(targetname, uId)
+	if not targetname then return end
+	if self.Options.SetIconOnEyeBeam then
+		self:SetIcon(targetname, 1, 3)
 	end
-
-	function mod:SPELL_CAST_START(args)
-		local spellName = args.spellName
-		if spellName == EyeBeam and args:IsSrcTypeHostile() then
-			-- the eye target can change to the correct target a tiny bit after the cast starts
-			self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "EyeBeamTarget", 0.1, 3)
-		end
+	if targetname == UnitName("player") then
+		specWarnEyeBeam:Show()
+		specWarnEyeBeam:Play("targetyou")
+		yellEyeBeam:Yell()
 	end
 end
 
-do
-	local Birth = DBM:GetSpellInfo(26586)
-	function mod:SPELL_CAST_SUCCESS(args)
-		local spellName = args.spellName
-		if spellName == Birth then
-			 local cid = self:GetCIDFromGUID(args.sourceGUID)
-			 if self:AntiSpam(5, cid) then--Throttle multiple spawn within 5 seconds
-				if cid == 15726 then--Eye Tentacle
-					timerEyeTentacle:Stop()
-					warnEyeTentacle:Show()
-					timerEyeTentacle:Start(self.vb.phase == 2 and 30 or 45)
-				elseif cid == 15725 then -- Claw Tentacle
-					timerClawTentacle:Stop()
-					warnClawTentacle:Show()
-					timerClawTentacle:Start()
-				elseif cid == 15334 then -- Giant Eye Tentacle
-					timerGiantEyeTentacle:Stop()
-					warnGiantEyeTentacle:Show()
-					timerGiantEyeTentacle:Start()
-				elseif cid == 15728 then -- Giant Claw Tentacle
-					timerGiantClawTentacle:Stop()
-					warnGiantClawTentacle:Show()
-					timerGiantClawTentacle:Start()
-				end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 26134 and args:IsSrcTypeHostile() then
+		-- the eye target can change to the correct target a tiny bit after the cast starts
+		self:ScheduleMethod(0.1, "BossTargetScanner", args.sourceGUID, "EyeBeamTarget", 0.1, 3)
+	end
+end
+
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 26586 then
+		 local cid = self:GetCIDFromGUID(args.sourceGUID)
+		 if self:AntiSpam(5, cid) then--Throttle multiple spawn within 5 seconds
+			if cid == 15726 then--Eye Tentacle
+				timerEyeTentacle:Stop()
+				warnEyeTentacle:Show()
+				timerEyeTentacle:Start(self.vb.phase == 2 and 30 or 45)
+			elseif cid == 15725 then -- Claw Tentacle
+				timerClawTentacle:Stop()
+				warnClawTentacle:Show()
+				timerClawTentacle:Start()
+			elseif cid == 15334 then -- Giant Eye Tentacle
+				timerGiantEyeTentacle:Stop()
+				warnGiantEyeTentacle:Show()
+				timerGiantEyeTentacle:Start()
+			elseif cid == 15728 then -- Giant Claw Tentacle
+				timerGiantClawTentacle:Stop()
+				warnGiantClawTentacle:Show()
+				timerGiantClawTentacle:Start()
 			end
 		end
 	end
 end
 
-do
-	local DigestiveAcid = DBM:GetSpellInfo(26476)
-	function mod:SPELL_AURA_APPLIED(args)
-		if args.spellName == DigestiveAcid then
-			--I'm aware debuff stacks, but it's a context that doesn't matter to this mod
-			if not tContains(playersInStomach, args.destName) then
-				table.insert(playersInStomach, args.destName)
-			end
-			if self.Options.InfoFrame and not DBM.InfoFrame:IsShown() then
-				DBM.InfoFrame:SetHeader(L.Stomach)
-				DBM.InfoFrame:Show(42, "function", updateInfoFrame, false, false)
-				DBM.InfoFrame:SetColumns(1)
-			end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 26476 then
+		--I'm aware debuff stacks, but it's a context that doesn't matter to this mod
+		if not tContains(playersInStomach, args.destName) then
+			table.insert(playersInStomach, args.destName)
+		end
+		if self.Options.InfoFrame and not DBM.InfoFrame:IsShown() then
+			DBM.InfoFrame:SetHeader(L.Stomach)
+			DBM.InfoFrame:Show(42, "function", updateInfoFrame, false, false)
+			DBM.InfoFrame:SetColumns(1)
 		end
 	end
+end
 
-	function mod:SPELL_AURA_REMOVED(args)
-		if args.spellName == DigestiveAcid then
-			tDeleteItem(playersInStomach, args.destName)
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 26476 then
+		tDeleteItem(playersInStomach, args.destName)
 	end
 end
 

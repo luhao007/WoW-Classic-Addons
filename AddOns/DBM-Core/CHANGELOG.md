@@ -1,31 +1,20 @@
 # Deadly Boss Mods Core
 
-## [1.13.72](https://github.com/DeadlyBossMods/DBM-Classic/tree/1.13.72) (2021-04-21)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-Classic/compare/1.13.71...1.13.72) [Previous Releases](https://github.com/DeadlyBossMods/DBM-Classic/releases)
+## [2.5.3](https://github.com/DeadlyBossMods/DBM-TBC-Classic/tree/2.5.3) (2021-04-27)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-TBC-Classic/compare/2.5.2...2.5.3) [Previous Releases](https://github.com/DeadlyBossMods/DBM-TBC-Classic/releases)
 
-- Bump Classic TOC  
-- AQ40: Turn off default for C'Thun beam raid icon (#725)  
-    Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
-- wording change  
-- sync sort order updates  
-- redundancy  
-- Debom files (#724)  
-- Smarter IsSpellID (#723)  
-- de-BOM  
-- Update koKR (Classic) (#722)  
-- Remove redundant event. (#721)  
-- Backport fix (#720)  
-- Smarter expansion naming (#718)  
-    Also remove LDB\_CAT_ locales, as they're completely unused (even by pseudo LDB code)  
-- Fix Luacheck (#719)  
-- Change approach to client check so it doesn't flag two clients as valid  
-- apparently did a bad job syncing common locals  
-- Fix backport for backdrop on DBM\_GUI\_OptionsFrame (#717)  
-- more TBC beta fixes  
-- Also fix range frame  
-- Make DBM-Classic run on TBC beta  
-- Fix bar sorting (Force updates on cases we missed) (Retail sync) (#716)  
-- Luacheck cleanup (#715)  
-- More Accurate Loatheb doom timer (Fixes #713) (#714)  
-    * Loatheb doom timer  
-- Bump alpha  
+- Prep a new release for new kara testing  
+- Sync fix  
+- Boring sync  
+- Remove usage of "boss" unit Ids in tbc raids and dungeons and rely on scanning all units for matching GUID instead or all valid UNITs that tbc does support.  
+    Also added sync blockers to avoid issues with some bosses if you are sitting out.  
+    Also improved prince mod a little  
+- Word change  
+- Fixed several invalid spellids on gruul  
+- Clarify timers on netherspite  
+    Fixed nova warning on prince to only go off if affected by enfeeble, as intended  
+- Fix bugs  
+- Added missing Classic TBC encounter Ids. This will improve combat and wipe detection considerably  
+    Minor updates to karazhan bottom half  
+- Re-enable evocate bar for TBC Classic, the old bar should be correct-ish, even if it isn't on retail anymore.  
+- bump alpha  

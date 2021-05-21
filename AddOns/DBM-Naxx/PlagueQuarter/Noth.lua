@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Noth", "DBM-Naxx", 3)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201025150202")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15954)
 mod:SetEncounterID(1117)
 mod:SetModelID(16590)
@@ -98,25 +98,21 @@ function mod:OnCombatStart(delay)
 	self:ScheduleMethod(90.8-delay, "Balcony")
 end
 
-do
-	local CurseofthePlaguebringer, Cripple, Blink = DBM:GetSpellInfo(29213), DBM:GetSpellInfo(29212), DBM:GetSpellInfo(29208)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args:IsSpellID(29213, 54835) then -- Curse of the Plaguebringer
-		if args.spellName == CurseofthePlaguebringer then -- Curse of the Plaguebringer
-			self.vb.curseCount = self.vb.curseCount + 1
-			warnCurse:Show()
-			if self.vb.teleCount == 2 and self.vb.curseCount == 2 or self.vb.teleCount == 3 and self.vb.curseCount == 1 then
-				timerCurseCD:Start(67)--Niche cases it's 67 and not 53-55
-			elseif self.vb.curseCount < 2 then
-				timerCurseCD:Start()
-			end
-		--elseif args.spellId == 29212 then--Cripple that's always cast when he teleports away
---		elseif args.spellName == Cripple then--Cripple that's always cast when he teleports away
---			self:UnscheduleMethod("Balcony")
---			self:Balcony()
-		elseif args.spellName == Blink and args:IsSrcTypeHostile() then
-			warnBlink:Show()
+function mod:SPELL_CAST_SUCCESS(args)
+	--if args:IsSpellID(29213, 54835) then -- Curse of the Plaguebringer
+	if args.spellId == 29213 then -- Curse of the Plaguebringer
+		self.vb.curseCount = self.vb.curseCount + 1
+		warnCurse:Show()
+		if self.vb.teleCount == 2 and self.vb.curseCount == 2 or self.vb.teleCount == 3 and self.vb.curseCount == 1 then
+			timerCurseCD:Start(67)--Niche cases it's 67 and not 53-55
+		elseif self.vb.curseCount < 2 then
+			timerCurseCD:Start()
 		end
+	--elseif args.spellId == 29212 then--Cripple that's always cast when he teleports away
+		--self:UnscheduleMethod("Balcony")
+		--self:Balcony()
+	elseif args.spellId == 29208 and args:IsSrcTypeHostile() then
+		warnBlink:Show()
 	end
 end
 

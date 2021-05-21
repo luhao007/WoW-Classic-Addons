@@ -1,4 +1,4 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: foxlit
 ## Version: Ancient Xe 2a
 ## SavedVariables: OneRing_Config, OPie_SavedData

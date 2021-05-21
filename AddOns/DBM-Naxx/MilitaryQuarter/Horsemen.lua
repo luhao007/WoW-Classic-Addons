@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Horsemen", "DBM-Naxx", 4)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210302030013")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(16062, 16063, 16064, 16065)--30549
 mod:SetEncounterID(1121)
 mod:SetModelID(10729)
@@ -45,57 +45,48 @@ function mod:OnCombatStart(delay)
 	warnMarkSoon:Schedule(16 - delay)
 end
 
-do
-	local MarkofKorthazz, MarkofBlaumeux, MarkofMorgraine, MarkofZeliek = DBM:GetSpellInfo(28832), DBM:GetSpellInfo(28833), DBM:GetSpellInfo(28834), DBM:GetSpellInfo(28835)
-	local Meteor, voidZone, HolyWrath = DBM:GetSpellInfo(28884), DBM:GetSpellInfo(28863), DBM:GetSpellInfo(28883)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args:IsSpellID(28832, 28833, 28834, 28835) and self:AntiSpam(5) then
-		if (args.spellName == MarkofKorthazz or args.spellName == MarkofBlaumeux or args.spellName == MarkofMorgraine or args.spellName == MarkofZeliek) and (args:GetSrcCreatureID() == 16062 or args:GetSrcCreatureID() == 16063 or args:GetSrcCreatureID() == 16064 or args:GetSrcCreatureID() == 16065) and self:AntiSpam(10) then
-			self.vb.markCount = self.vb.markCount + 1
-			timerMarkCD:Start(nil, self.vb.markCount+1)
-			warnMarkSoon:Schedule(9.9, self.vb.markCount+1)
-		elseif args.spellName == voidZone then
-			timerVoidZoneCD:Start()
-			if args:IsPlayer() then
-				specWarnVoidZone:Show()
-				specWarnVoidZone:Play("targetyou")
-				yellVoidZone:Yell()
-			elseif self:CheckNearby(12, args.destName) then
-				warnVoidZone:Show(args.destName)
-			end
-		elseif args.spellName == HolyWrath then
-			warnHolyWrath:Show(args.destName)
-			timerHolyWrathCD:Start()
-		elseif args.spellName == Meteor then
-			warnMeteor:Show()
-			timerMeteorCD:Start()
+function mod:SPELL_CAST_SUCCESS(args)
+	if args:IsSpellID(28832, 28833, 28834, 28835) and self:AntiSpam(10) then
+		self.vb.markCount = self.vb.markCount + 1
+		timerMarkCD:Start(nil, self.vb.markCount+1)
+		warnMarkSoon:Schedule(9.9, self.vb.markCount+1)
+	elseif args.spellId == 28863 then
+		timerVoidZoneCD:Start()
+		if args:IsPlayer() then
+			specWarnVoidZone:Show()
+			specWarnVoidZone:Play("targetyou")
+			yellVoidZone:Yell()
+		elseif self:CheckNearby(12, args.destName) then
+			warnVoidZone:Show(args.destName)
 		end
+	elseif args.spellId == 28883 then
+		warnHolyWrath:Show(args.destName)
+		timerHolyWrathCD:Start()
+	elseif args.spellId == 28884 then
+		warnMeteor:Show()
+		timerMeteorCD:Start()
 	end
+end
 
 
-	function mod:SPELL_AURA_APPLIED_DOSE(args)
-		--if args:IsSpellID(28832, 28833, 28834, 28835) and args:IsPlayer() then
-		if (args.spellName == MarkofKorthazz or args.spellName == MarkofBlaumeux or args.spellName == MarkofMorgraine or args.spellName == MarkofZeliek) and args:IsPlayer() then
-			if args.amount >= 4 then
-				specWarnMarkOnPlayer:Show(args.spellName, args.amount)
-				specWarnMarkOnPlayer:Play("stackhigh")
-			end
+function mod:SPELL_AURA_APPLIED_DOSE(args)
+	if args:IsSpellID(28832, 28833, 28834, 28835) and args:IsPlayer() then
+		if args.amount >= 4 then
+			specWarnMarkOnPlayer:Show(args.spellName, args.amount)
+			specWarnMarkOnPlayer:Play("stackhigh")
 		end
 	end
 end
 
-do
-	local BoneBarrier = DBM:GetSpellInfo(29061)
-	function mod:SPELL_AURA_APPLIED(args)
-		if args.spellName == BoneBarrier and args:IsSrcTypeHostile() then
-			warnBoneBarrier:Show(args.destName)
-			timerBoneBarrier:Start(20, args.destName)
-		end
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 29061 and args:IsSrcTypeHostile() then
+		warnBoneBarrier:Show(args.destName)
+		timerBoneBarrier:Start(20, args.destName)
 	end
+end
 
-	function mod:SPELL_AURA_REMOVED(args)
-		if args.spellName == BoneBarrier then
-			timerBoneBarrier:Stop(args.destName)
-		end
+function mod:SPELL_AURA_REMOVED(args)
+	if args.spellId == 29061 then
+		timerBoneBarrier:Stop(args.destName)
 	end
 end

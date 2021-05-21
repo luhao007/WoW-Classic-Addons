@@ -272,6 +272,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Crit2"] = "^UNUSED$",
 		["CritPercent"] = "^착용 효과: 치명타를 적중시킬 확률이 #%%만큼 증가합니다%.$",
 		["CritRating"] = "^착용 효과: 치명타 적중도가 #만큼 증가합니다%.$",
+		["CritRating2"] = "^UNUSED$",
 		["CritRatingShort"] = "^치명타 적중도 %+#$",
 		["Crossbow"] = "^석궁$",
 		["Dagger"] = "^단검$",
@@ -313,6 +314,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Haste"] = "^가속 %+?#$",
 		["Haste2"] = "^UNUSED$",
 		["HasteRating"] = "^착용 효과: 가속도가 #만큼 증가합니다%.$",
+		["HasteRating2"] = "^UNUSED$",
 		--[[Translation missing --]]
 		["HasteRatingShort"] = "^%+?# Haste Rating$",
 		["HaventCollectedAppearance"] = "^아직 수집하지 않은 형상입니다%.$",
@@ -329,6 +331,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Hit2"] = "^UNUSED$",
 		["HitRating"] = "^착용 효과: 적중도가 #만큼 증가합니다%.$",
 		["HitRating2"] = "^UNUSED$",
+		["HitRating3"] = "^UNUSED$",
 		["HitRatingShort"] = "^적중도 %+#$",
 		["HolySpellDamage"] = "^%+# Holy Spell Damage$",
 		["HolySpellDamage2"] = "^착용 효과: 신성 계열의 주문과 효과의 공격력이 최대 #만큼 증가합니다%.$",

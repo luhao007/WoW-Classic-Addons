@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: karlsnyder, vallantv
-## Version: 1.1.2
+## Version: 1.2.0
 ## SavedVariablesPerCharacter: MBB_Exclude, MBB_Options
 
 ## Title: MinimapButtonBag

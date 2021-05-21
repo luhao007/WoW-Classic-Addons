@@ -260,7 +260,7 @@ local function VUHDO_customizeHotIcons(aButton, aHotName, aRest, aTimes, anIcon,
 
 		tTimer:SetText(tDuration);
 		tStarted = floor(10 * (GetTime() - aDuration + aRest) + 0.5) * 0.1;
-		if tClock:GetAlpha() == 0 or (tClock:GetAttribute("started") or tStarted) ~= tStarted then
+		if aDuration > 0 and (tClock:GetAlpha() == 0 or (tClock:GetAttribute("started") or tStarted) ~= tStarted) then
 			tClock:SetAlpha(1);
 			tClock:SetCooldown(tStarted, aDuration);
 			tClock:SetAttribute("started", tStarted);
@@ -476,6 +476,7 @@ end
 local VUHDO_IGNORE_HOT_IDS = {
 	[67358] = true, -- "Rejuvenating" proc has same name in russian and spanish as rejuvenation
 	[126921] = true, -- "Weakened Soul" by Shao-Tien Soul-Render
+	[109964] = true, -- "Spirit Shell" ability aura has the same name as the absorb aura itself
 }
 
 
@@ -541,31 +542,14 @@ local function VUHDO_updateHots(aUnit, anInfo)
 
 				if not tBuffIcon then
 					tDebuffOffset = tCnt - 1;
-				else
-					if VUHDO_LibClassicDurations then
-						local tNewDuration, tNewExpiry = VUHDO_LibClassicDurations:GetAuraDurationByUnit(aUnit, tSpellId, tCaster, tBuffName);
-		
-						if tDuration == 0 and tNewDuration then 
-							tDuration = tNewDuration;
-							tExpiry = tNewExpiry;
-						end
-					end
 				end
 			end
 
 			if tDebuffOffset then -- Achtung kein elseif
 				tBuffName, tBuffIcon, tStacks, _, tDuration, tExpiry, tCaster, _, _, tSpellId = UnitDebuff(aUnit, tCnt - tDebuffOffset);
+
 				if not tBuffIcon then
 					break;
-				end
-
-				if VUHDO_LibClassicDurations then
-			                local tNewDuration, tNewExpiry = VUHDO_LibClassicDurations:GetAuraDurationByUnit(aUnit, tSpellId, tCaster, tBuffName);
-
-					if tDuration == 0 and tNewDuration then 
-						tDuration = tNewDuration;
-						tExpiry = tNewExpiry;
-					end
 				end
 			end
 			

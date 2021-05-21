@@ -1,9 +1,9 @@
-[![Build Status](https://github.com/DeadlyBossMods/DBM-Classic/workflows/CI/badge.svg)](https://github.com/DeadlyBossMods/DBM-Classic/actions?workflow=CI)
+[![Build Status](https://github.com/DeadlyBossMods/DBM-TBC/workflows/CI/badge.svg)](https://github.com/DeadlyBossMods/DBM-TBC/actions?workflow=CI)
 [![DeadlyBossMods on Discord](https://img.shields.io/badge/discord-DeadlyBossMods-738bd7.svg?style=flat)](https://discord.gg/DeadlyBossMods) 
 
 [![Patreon](https://media.forgecdn.net/attachments/76/25/patreon-medium-button.png)](https://www.patreon.com/deadlybossmods)
 
-# Deadly Boss Mods (Classic)
+# Deadly Boss Mods (TBC)
 ### [Supporter Benefits](https://www.deadlybossmods.com/forum/viewtopic.php?f=7&t=428#p1180)
 ### [Some basic DBM setup/advanced features guides](https://github.com/DeadlyBossMods/DeadlyBossMods/wiki)
 

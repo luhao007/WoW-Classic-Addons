@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Sapphiron", "DBM-Naxx", 5)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210323231410")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15989)
 mod:SetEncounterID(1119)
 --mod:SetModelID(16033)--Scales incorrectly
@@ -101,45 +101,34 @@ function mod:OnCombatEnd()
 	end
 end
 
-do
-	local IceBolt, Blizzard = DBM:GetSpellInfo(28522), DBM:GetSpellInfo(28547)
-	function mod:SPELL_AURA_APPLIED(args)
-		--if args.spellId == 28522 then
-		if args.spellName == IceBolt and args:IsDestTypePlayer() then
-			warnIceBlock:CombinedShow(0.5, args.destName)
-			if args:IsPlayer() then
-				yellIceBlock:Yell()
-			end
-		--elseif args.spellId == 28547 and args:IsPlayer() then
-		elseif args.spellName == Blizzard and args:IsPlayer() then
-			warnBlizzard:Show(args.spellName)
-			warnBlizzard:Play("watchfeet")
+function mod:SPELL_AURA_APPLIED(args)
+	if args.spellId == 28522 and args:IsDestTypePlayer() then
+		warnIceBlock:CombinedShow(0.5, args.destName)
+		if args:IsPlayer() then
+			yellIceBlock:Yell()
 		end
+	elseif args.spellId == 28547 and args:IsPlayer() then
+		warnBlizzard:Show(args.spellName)
+		warnBlizzard:Play("watchfeet")
 	end
 end
 
-do
-	local frostBreath = DBM:GetSpellInfo(28524)
-	function mod:SPELL_CAST_START(args)
-		--if args:IsSpellID(28542, 55665) then -- Life Drain
-			if args.spellName == frostBreath and args:IsSrcTypeHostile() then -- Frost Breath
-			timerIceBlast:Start()
-			timerLanding:Update(16.3, 28.5)--Probably not even needed, if base timer is more accurate
-			self:Schedule(12.2, Landing, self)
-			warnDeepBreath:Show()
-			warnDeepBreath:Play("findshelter")
-		end
+function mod:SPELL_CAST_START(args)
+	--if args:IsSpellID(28542, 55665) then -- Life Drain
+	if args.spellId == 28542 and args:IsSrcTypeHostile() then -- Frost Breath
+		timerIceBlast:Start()
+		timerLanding:Update(16.3, 28.5)--Probably not even needed, if base timer is more accurate
+		self:Schedule(12.2, Landing, self)
+		warnDeepBreath:Show()
+		warnDeepBreath:Play("findshelter")
 	end
 end
 
-do
-	local LifeDrain = DBM:GetSpellInfo(28542)
-	function mod:SPELL_CAST_SUCCESS(args)
-		--if args:IsSpellID(28542, 55665) then -- Life Drain
-		if args.spellName == LifeDrain and args:IsSrcTypeHostile() then -- Life Drain
-			warnDrainLifeNow:Show()
-			warnDrainLifeSoon:Schedule(18.5)
-			timerDrainLife:Start()
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	--if args:IsSpellID(28542, 55665) then -- Life Drain
+	if args.spellId == 28542 and args:IsSrcTypeHostile() then -- Life Drain
+		warnDrainLifeNow:Show()
+		warnDrainLifeSoon:Schedule(18.5)
+		timerDrainLife:Start()
 	end
 end

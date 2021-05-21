@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Onyxia", "DBM-Onyxia")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20201225041541")
+mod:SetRevision("20210403080613")
 mod:SetCreatureID(10184)
 mod:SetEncounterID(1084)
 mod:SetModelID(8570)
@@ -90,61 +90,50 @@ function mod:Whelps()--Not right, need to fix
 end
 --]]
 
-do
-	function mod:FireballTarget(targetname, uId)
-		if not targetname then return end
-		if self.Options.SetIconOnFireball then
-			self:SetIcon(targetname, 8, 3)
-		end
-		warnFireball:Show(targetname)
-		if targetname == UnitName("player") then
-			yellFireball:Yell()
-		end
+function mod:FireballTarget(targetname, uId)
+	if not targetname then return end
+	if self.Options.SetIconOnFireball then
+		self:SetIcon(targetname, 8, 3)
 	end
+	warnFireball:Show(targetname)
+	if targetname == UnitName("player") then
+		yellFireball:Yell()
+	end
+end
 
-	local deepBreathCast, flameBreathCast, bellowingRoar, wingBuffet, fireball = DBM:GetSpellInfo(17086), DBM:GetSpellInfo(18435), DBM:GetSpellInfo(18431), DBM:GetSpellInfo(18500), DBM:GetSpellInfo(18392)
-	function mod:SPELL_CAST_START(args)
-		local spellName = args.spellName
-		if spellName == deepBreathCast and args:IsSrcTypeHostile() and self:AntiSpam(8, 1) then
-			specWarnBreath:Show()
-			specWarnBreath:Play("breathsoon")
-			timerBreath:Start()
-			--timerNextDeepBreath:Start()
-		elseif spellName == flameBreathCast and args:IsSrcTypeHostile() then        -- Flame Breath (Ground phases)
-			timerNextFlameBreath:Start()
-		elseif spellName == bellowingRoar and args:IsSrcTypeHostile() then
-			self:SendSync("Fear")
-			if self:AntiSpam(3, 3) then
-				specWarnBellowingRoar:Show()
-				specWarnBellowingRoar:Play("fearsoon")
-			end
-		elseif spellName == wingBuffet and args:IsSrcTypeHostile() then
-			warnWingBuffet:Show()
-		elseif spellName == fireball and args:IsSrcTypeHostile() then
-			self:SendSync("Fireball", args.sourceGUID)
-			if self:AntiSpam(3, 2) then
-				self:BossTargetScanner(args.sourceGUID, "FireballTarget", 0.3, 6)
-			end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 17086 and args:IsSrcTypeHostile() and self:AntiSpam(8, 1) then
+		specWarnBreath:Show()
+		specWarnBreath:Play("breathsoon")
+		timerBreath:Start()
+		--timerNextDeepBreath:Start()
+	elseif args.spellId == 18435 and args:IsSrcTypeHostile() then -- Flame Breath (Ground phases)
+		timerNextFlameBreath:Start()
+	elseif args.spellId == 18431 and args:IsSrcTypeHostile() then
+		self:SendSync("Fear")
+		if self:AntiSpam(3, 3) then
+			specWarnBellowingRoar:Show()
+			specWarnBellowingRoar:Play("fearsoon")
+		end
+	elseif args.spellId == 18500 and args:IsSrcTypeHostile() then
+		warnWingBuffet:Show()
+	elseif args.spellId == 18392 and args:IsSrcTypeHostile() then
+		self:SendSync("Fireball", args.sourceGUID)
+		if self:AntiSpam(3, 2) then
+			self:BossTargetScanner(args.sourceGUID, "FireballTarget", 0.3, 6)
 		end
 	end
 end
 
-do
-	local KnockAway = DBM:GetSpellInfo(19633)
-	function mod:SPELL_CAST_SUCCESS(args)
-		local spellName = args.spellName
-		if spellName == KnockAway and args:IsSrcTypeHostile() then
-			warnKnockAway:Show(args.destName)
-		end
+function mod:SPELL_CAST_SUCCESS(args)
+	if args.spellId == 19633 and args:IsSrcTypeHostile() then
+		warnKnockAway:Show(args.destName)
 	end
 end
 
-do
-	local tailSweep = DBM:GetSpellInfo(15847)
-	function mod:SPELL_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId, spellName)
-		if spellName == tailSweep and destGUID == UnitGUID("player") and self.Options.SoundWTF3 then		-- Tail Sweep
-			DBM:PlaySoundFile("Interface\\AddOns\\DBM-Onyxia\\sounds\\watch-the-tail.ogg")
-		end
+function mod:SPELL_DAMAGE(_, _, _, _, destGUID, _, _, _, spellId)
+	if spellId == 15847 and destGUID == UnitGUID("player") and self.Options.SoundWTF3 then -- Tail Sweep
+		DBM:PlaySoundFile("Interface\\AddOns\\DBM-Onyxia\\sounds\\watch-the-tail.ogg")
 	end
 end
 

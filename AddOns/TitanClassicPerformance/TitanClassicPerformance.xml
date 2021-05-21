@@ -1,10 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Script file="TitanClassicPerformance.lua"/>
-	<Frame name="TitanPanelPerfControlFrameTemplate" virtual="true" hidden="true">
+	<Frame name="TitanPanelPerfControlFrameTemplate" inherits="BackdropTemplate" virtual="true" hidden="true">
 		<Size>
 			<AbsDimension x="120" y="170" />
 		</Size>
+<!--
+Blizzard decided to remove direct Backdrop API in 9.0 (Shadowlands) so inherit the template
+and set the values in the code.
 		<Backdrop bgFile="Interface\FullScreenTextures\OutOfControl" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
@@ -16,6 +19,7 @@
 				<AbsInset left="2" right="2" top="2" bottom="2"/>
 			</BackgroundInsets>
 		</Backdrop>
+-->
 		<Layers>
 			<Layer>
 				<FontString name="$parentTitle" inherits="GameFontNormalSmall">

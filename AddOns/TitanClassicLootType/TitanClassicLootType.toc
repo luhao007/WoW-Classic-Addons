@@ -1,11 +1,11 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.2.8.11306
+## Version: 1.3.1.20501
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: TitanClassicLootTypeSaved
 
-## Title: Titan Panel Classic [|cffeda55fLootType|r] |cff00aa001.2.8.11306|r
+## Title: Titan Panel Classic [|cffeda55fLootType|r] |cff00aa001.3.1.20501|r
 ## Notes: Adds group loot and instance difficulty information to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0分配方式|r
 ## Notes-zhCN: 泰坦面板的分配方式模块

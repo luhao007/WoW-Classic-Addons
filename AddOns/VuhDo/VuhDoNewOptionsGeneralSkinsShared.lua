@@ -1,3 +1,4 @@
+local GetSpecialization = VUHDO_getSpecialization;
 local GetNumGroupMembers = GetNumGroupMembers;
 local twipe = table.wipe;
 local tonumber = tonumber;
@@ -84,7 +85,8 @@ local VUHDO_DEFAULT_PROFILES = {
 				},
 				["point"] = "TOPRIGHT",
 				["timer"] = true,
-				["isName"] = false,
+				["isName"] = false, 
+				["isShowOnlyForFriendly"] = false, 
 				["xAdjust"] = -2,
 				["max_num"] = 3,
 				["blacklistModi"] = "ALT-CTRL-SHIFT",
@@ -2004,7 +2006,7 @@ end
 --
 local tSpec;
 function VUHDO_getBestProfileAfterSpecChange()
-	tSpec = VUHDO_getSpecialization();
+	tSpec = GetSpecialization();
 	return VUHDO_getBestProfileForSpecAndSize(tSpec, VUHDO_GROUP_SIZE)
 		or VUHDO_getBestProfileForSpec(tSpec)
 		or VUHDO_getBestProfileForSize(VUHDO_GROUP_SIZE);
@@ -2014,7 +2016,7 @@ end
 
 --
 function VUHDO_getBestProfileAfterSizeChange()
-	tSpec = VUHDO_getSpecialization();
+	tSpec = GetSpecialization();
 	return VUHDO_getBestProfileForSpecAndSize(tSpec, VUHDO_GROUP_SIZE)
 		or VUHDO_getBestProfileForSize(VUHDO_GROUP_SIZE)
 		or VUHDO_getBestProfileForSpec(tSpec);

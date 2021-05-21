@@ -5,6 +5,16 @@ local sIsTextEdit;
 local VUHDO_origColor;
 local VUHDO_copyPasteColor = { };
 
+-- Backdrops
+BACKDROP_VUHDO_COLOR_PICKER_SLIDER_8_8_1111 = {
+	bgFile = "Interface\\AddOns\\VuhDoOptions\\Images\\blue_lt_square_16_16", 
+	edgeFile = "Interface\\AddOns\\VuhDoOptions\\Images\\panel_edges_1",
+	tile = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
+};
+
 --
 local function VUHDO_mayEditText()
 	return VUHDO_COLOR.TR ~= nil and not strfind(VUHDO_PROHIBIT, "T", 1, true);

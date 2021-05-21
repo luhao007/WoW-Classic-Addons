@@ -164,6 +164,22 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentShowOnlyForFriendlyCheckButton" text="VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TEXT" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-69" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.CUSTOM_DEBUFF.isShowOnlyForFriendly");
+								VUHDO_lnfSetTooltip(self, VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
 					<CheckButton name="$parentRemovableCheckButton" text="VUHDO_I18N_REMOVABLE_ONLY" inherits="VuhDoCheckButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT">

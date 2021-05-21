@@ -54,6 +54,10 @@ function NWB:setRealmData()
 			["Transcendence"] = true,
 			["Nethergarde Keep"] = true,
 			["Everlook"] = true,
+			["Heartstriker"] = true,
+			["Mandokir"] = true,
+			["Amnennar"] = true,
+			["Blaumeux"] = true,
 		}
 		
 		NWB.krRealms = {

@@ -2,7 +2,7 @@
 local mod	= DBM:NewMod("Thaddius", "DBM-Naxx", 2)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210106174523")
+mod:SetRevision("20210403083254")
 mod:SetCreatureID(15928)
 mod:SetEncounterID(1120)
 mod:SetModelID(16137)
@@ -32,6 +32,7 @@ mod:AddDropdownOption("ArrowsEnabled", {"Never", "TwoCamp", "ArrowsRightLeft", "
 local currentCharge
 mod.vb.phase = 1
 local down = 0
+local lastShift = 0
 
 function mod:OnCombatStart(delay)
 	self.vb.phase = 1
@@ -48,19 +49,14 @@ function mod:OnCombatEnd(wipe, isSecondRun)
 	end
 end
 
-local lastShift = 0
-do
-	local PolarityShift = DBM:GetSpellInfo(28089)
-	function mod:SPELL_CAST_START(args)
-		--if args.spellId == 28089 then
-		if args.spellName == PolarityShift then
-			self.vb.phase = 2
-			timerNextShift:Start()
-			timerShiftCast:Start()
-			warnShiftCasting:Show()
-			warnShiftSoon:Schedule(20)
-			lastShift = GetTime()
-		end
+function mod:SPELL_CAST_START(args)
+	if args.spellId == 28089 then
+		self.vb.phase = 2
+		timerNextShift:Start()
+		timerShiftCast:Start()
+		warnShiftCasting:Show()
+		warnShiftSoon:Schedule(20)
+		lastShift = GetTime()
 	end
 end
 
