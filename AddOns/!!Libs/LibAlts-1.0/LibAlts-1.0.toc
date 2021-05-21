@@ -3,7 +3,7 @@
 
 ## Title: Lib: LibAlts-1.0
 ## Notes: Shared handling of alternate identity data between addons.
-## Version: r49 
+## Version: r49
 ## Author: Sylvanaar
 ## X-Category: Library
 

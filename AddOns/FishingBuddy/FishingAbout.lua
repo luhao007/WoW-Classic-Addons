@@ -170,7 +170,8 @@ credits[FBConstants.ROLE_HELP_SUGGESTIONS] = {
 	["Ross"] = { "Improved action button" },
 	["p3lim"] = { "For the ExtraQuestButton addon!" },
     ["Zeglar"] = { "Raid Boss and server reset time" },
-    ["bsmorgan"] = { "Group size specific locations for watcher." }
+    ["bsmorgan"] = { "Group size specific locations for watcher." },
+    ["peterwooley"] = { "Mana turn-in gossip API fix." },
 };
 
 credits[FBConstants.ROLE_ADDON_AUTHORS] = {

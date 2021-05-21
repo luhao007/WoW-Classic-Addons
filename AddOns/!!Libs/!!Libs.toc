@@ -55,7 +55,7 @@ DRData-1.0\DRData-1.0.xml
 DRList-1.0\DRList-1.0.xml
 
 # Dropdown menus
-# !LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
+!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
 # For backward compability
 !LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
 
@@ -74,7 +74,6 @@ LibDDI-1.0\lib.xml
 LibDeflate\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
-LibDogTag-Unit-3.0\lib.xml
 LibDropdown-1.0\LibDropdown-1.0\lib.xml
 LibDurability\LibDurability\LibDurability.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml

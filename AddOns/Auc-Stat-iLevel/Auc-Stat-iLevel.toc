@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 11307
 ## Author: Norganna's AddOns
 ## Version: 8.2.6370 (SwimmingSeadragon)
 ## Dependencies: Auc-Advanced

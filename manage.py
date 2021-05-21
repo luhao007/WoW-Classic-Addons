@@ -18,6 +18,14 @@ CLASSIC_VER = '20501'
 RETAIL_VER = '90002'
 
 
+NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
+                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH', 'BeanCounter', 'BlizzMove_Debug', 'ClassicCastbars',
+                'ClassicCastbars_Options', 'Enchantrix', 'Enchantrix-Barker', 'GatherMate2', 'GatherMate2_Data', 'Grail',
+                'Grail-NPCs-_classic_', 'Grail-NPCs-_classic_-enUS', 'Grail-NPCs-_classic_-zhCN', 'Grail-Quests-_classic_', 'Grail-Quests-_classic_-enUS',
+                'Grail-Quests-_classic_-zhCN', 'Grail-Reputations-_classic_', 'Grail-Rewards', 'Grail-When', 'GTFO',
+                'Informant', 'MerInspect', 'RaidLedger', 'PallyPower', 'SlideBar', 'Stubby']
+
+
 def classic_era_only(func):
     def wrapper(*args):
         if '_classic_era_' in os.getcwd():
@@ -201,7 +209,10 @@ class Manager:
                 if self.is_classic_era:
                     toc.tags['Interface'] = CLASSIC_ERA_VER
                 elif self.is_classic:
-                    toc.tags['Interface'] = CLASSIC_VER
+                    if not addon in NOT_WORKING:
+                        toc.tags['Interface'] = CLASSIC_VER
+                    else:
+                        toc.tags['Interface'] = 11307
                 else:
                     toc.tags['Interface'] = RETAIL_VER
                 toc.tags['Title-zhCN'] = self.get_title(addon)

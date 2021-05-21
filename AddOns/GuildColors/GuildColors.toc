@@ -1,0 +1,10 @@
+## Interface: 20501
+## Author: Forest (Adapted code from addon FriendColors)
+
+## Title: GuildColors
+## Notes: Colors your friends list, guild list, and who list with on class colors.
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF职业颜色|r |cFFFFE00AGuildColors|r
+## Notes-zhCN: 在好友列表、公会以及查询窗口中显示玩家的职业颜色
+
+
+GuildColors.lua

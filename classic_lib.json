@@ -9,14 +9,14 @@
     "download_url": "https://edge.forgecdn.net/files/3312/435/Ace3-Release-r1252.zip",
     "date_published": "2021-05-17T09:33:15.987000+00:00",
     "version": "Release-r1252",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/13376/file/3312435/changelog",
     "folders": [
       {
         "name": "Ace3"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -40,14 +40,14 @@
     "download_url": "https://edge.forgecdn.net/files/3086/941/AceGUI-3.0-SharedMediaWidgets-r65-release.zip",
     "date_published": "2020-10-19T22:07:02.467000+00:00",
     "version": "r65-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/13380/file/3086941/changelog",
     "folders": [
       {
         "name": "AceGUI-3.0-SharedMediaWidgets"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -67,14 +67,14 @@
     "download_url": "https://edge.forgecdn.net/files/2749/115/DRData-1.0-v2.8.6-61-g6faff7a-alpha.zip",
     "date_published": "2019-07-27T01:23:31.827000+00:00",
     "version": "v2.8.6-61-g6faff7a-alpha",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/20187/file/2749115/changelog",
     "folders": [
       {
         "name": "DRData-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -165,14 +165,14 @@
     "download_url": "https://edge.forgecdn.net/files/3312/444/HereBeDragons-2.06-release.zip",
     "date_published": "2021-05-17T09:46:52.940000+00:00",
     "version": "2.06-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/94348/file/3312444/changelog",
     "folders": [
       {
         "name": "HereBeDragons"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -200,14 +200,14 @@
     "download_url": "https://edge.forgecdn.net/files/2349/705/LibAlts-1.0-2.0.1.zip",
     "date_published": "2016-11-27T08:35:21.333000+00:00",
     "version": "2.0.1",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/15745/file/2349705/changelog",
     "folders": [
       {
         "name": "LibAlts-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -227,14 +227,14 @@
     "download_url": "https://edge.forgecdn.net/files/3120/160/LibBabble-Boss-3.0-9.0-release6.zip",
     "date_published": "2020-11-22T22:43:35.253000+00:00",
     "version": "9.0-release6",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14262/file/3120160/changelog",
     "folders": [
       {
         "name": "LibBabble-Boss-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -254,14 +254,14 @@
     "download_url": "https://edge.forgecdn.net/files/3120/161/LibBabble-CreatureType-3.0-9.0-release6.zip",
     "date_published": "2020-11-22T22:43:37.947000+00:00",
     "version": "9.0-release6",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14264/file/3120161/changelog",
     "folders": [
       {
         "name": "LibBabble-CreatureType-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -281,14 +281,14 @@
     "download_url": "https://edge.forgecdn.net/files/3120/209/LibBabble-Faction-3.0-9.0-release7.zip",
     "date_published": "2020-11-22T23:33:22.310000+00:00",
     "version": "9.0-release7",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14265/file/3120209/changelog",
     "folders": [
       {
         "name": "LibBabble-Faction-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -308,14 +308,14 @@
     "download_url": "https://edge.forgecdn.net/files/3120/163/LibBabble-Race-3.0-9.0-release6.zip",
     "date_published": "2020-11-22T22:43:45.207000+00:00",
     "version": "9.0-release6",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/16748/file/3120163/changelog",
     "folders": [
       {
         "name": "LibBabble-Race-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -335,14 +335,14 @@
     "download_url": "https://edge.forgecdn.net/files/3093/364/LibBabble-SubZone-3.0-9.0-release1.zip",
     "date_published": "2020-10-26T15:12:25.337000+00:00",
     "version": "9.0-release1",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/24454/file/3093364/changelog",
     "folders": [
       {
         "name": "LibBabble-SubZone-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -362,14 +362,14 @@
     "download_url": "https://edge.forgecdn.net/files/884/246/LibBossIDs-1.0-r97-release.zip",
     "date_published": "2015-06-24T09:43:30.077000+00:00",
     "version": "r97-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/18245/file/884246/changelog",
     "folders": [
       {
         "name": "LibBossIDs-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -389,14 +389,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/731/LibCandyBar-3.0-r148-release.zip",
     "date_published": "2021-03-27T12:44:12.617000+00:00",
     "version": "r148-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/18909/file/3252731/changelog",
     "folders": [
       {
         "name": "LibCandyBar-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -424,14 +424,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/688/LibChatAnims-r41-release.zip",
     "date_published": "2021-03-27T11:42:32.900000+00:00",
     "version": "r41-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/51580/file/3252688/changelog",
     "folders": [
       {
         "name": "LibChatAnims"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -540,14 +540,14 @@
     "download_url": "https://edge.forgecdn.net/files/3221/442/LibCompress-r86-release.zip",
     "date_published": "2021-02-28T09:15:06.520000+00:00",
     "version": "r86-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14273/file/3221442/changelog",
     "folders": [
       {
         "name": "LibCompress"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -571,14 +571,14 @@
     "download_url": "https://edge.forgecdn.net/files/2759/172/LibCustomGlow-1.0-1.0.3.zip",
     "date_published": "2019-08-10T21:00:39.950000+00:00",
     "version": "1.0.3",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/302151/file/2759172/changelog",
     "folders": [
       {
         "name": "LibCustomGlow-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -598,14 +598,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/693/LibDBIcon-1.0-v9.0.2.zip",
     "date_published": "2021-03-27T11:57:32.020000+00:00",
     "version": "v9.0.2",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/15552/file/3252693/changelog",
     "folders": [
       {
         "name": "LibDBIcon-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -637,14 +637,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/698/LibDDI-1.0-r50-release.zip",
     "date_published": "2021-03-27T12:05:20.250000+00:00",
     "version": "r50-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/27889/file/3252698/changelog",
     "folders": [
       {
         "name": "LibDDI-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -672,14 +672,14 @@
     "download_url": "https://edge.forgecdn.net/files/2989/500/LibDeflate-1.0.2-release.zip",
     "date_published": "2020-06-26T16:03:38.417000+00:00",
     "version": "1.0.2-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/293814/file/2989500/changelog",
     "folders": [
       {
         "name": "LibDeflate"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -699,14 +699,14 @@
     "download_url": "https://edge.forgecdn.net/files/3093/48/LibDialog-1.0-9.0.1.1.zip",
     "date_published": "2020-10-26T03:46:42.773000+00:00",
     "version": "9.0.1.1",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32560/file/3093048/changelog",
     "folders": [
       {
         "name": "LibDialog-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -723,52 +723,13 @@
     "name": "LibDogTag-3.0",
     "description": "A library to provide a markup syntax",
     "url": "https://www.curseforge.com/wow/addons/libdogtag-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3288/850/LibDogTag-3.0-v90000.6.zip",
-    "date_published": "2021-04-25T18:01:16.450000+00:00",
-    "version": "v90000.6",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3288/851/LibDogTag-3.0-v90000.6-classic.zip",
+    "date_published": "2021-04-25T18:01:20.457000+00:00",
+    "version": "v90000.6-classic",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14280/file/3288851/changelog",
     "folders": [
       {
         "name": "LibDogTag-3.0"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v90000.6",
-        "install_time": "2021-05-21T01:44:42+00:00"
-      },
-      {
-        "version": "v90000.5",
-        "install_time": "2021-03-24T11:22:48+00:00"
-      },
-      {
-        "version": "v90000.2",
-        "install_time": "2020-12-03T12:07:56+00:00"
-      },
-      {
-        "version": "v90000.1",
-        "install_time": "2020-11-03T05:33:05+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "14282",
-    "slug": "libdogtag-unit-3-0",
-    "name": "LibDogTag-Unit-3.0",
-    "description": "A library to provide unit-oriented tags to LibDogTag-3.0",
-    "url": "https://www.curseforge.com/wow/addons/libdogtag-unit-3-0",
-    "download_url": "https://edge.forgecdn.net/files/3248/494/LibDogTag-Unit-3.0-v90000.5-classic.zip",
-    "date_published": "2021-03-23T02:41:16.473000+00:00",
-    "version": "v90000.5-classic",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14282/file/3248494/changelog",
-    "folders": [
-      {
-        "name": "LibDogTag-Unit-3.0"
       }
     ],
     "options": {
@@ -777,16 +738,16 @@
     "deps": [],
     "logged_versions": [
       {
-        "version": "v90000.5-classic",
-        "install_time": "2021-05-21T09:14:53+00:00"
+        "version": "v90000.6-classic",
+        "install_time": "2021-05-21T16:05:17+00:00"
+      },
+      {
+        "version": "v90000.6",
+        "install_time": "2021-05-21T01:44:42+00:00"
       },
       {
         "version": "v90000.5",
         "install_time": "2021-03-24T11:22:48+00:00"
-      },
-      {
-        "version": "v90000.3",
-        "install_time": "2021-03-02T11:02:48+00:00"
       },
       {
         "version": "v90000.2",
@@ -808,14 +769,14 @@
     "download_url": "https://edge.forgecdn.net/files/3121/33/LibDropdown-1.0-9.0.2.zip",
     "date_published": "2020-11-23T19:07:45.287000+00:00",
     "version": "9.0.2",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17280/file/3121033/changelog",
     "folders": [
       {
         "name": "LibDropdown-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -839,14 +800,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/702/LibDurability-r23-release.zip",
     "date_published": "2021-03-27T12:10:45.267000+00:00",
     "version": "r23-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/95078/file/3252702/changelog",
     "folders": [
       {
         "name": "LibDurability"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -874,14 +835,14 @@
     "download_url": "https://edge.forgecdn.net/files/3163/386/LibGetFrame-1.0-1.5.6.zip",
     "date_published": "2021-01-09T16:58:24.793000+00:00",
     "version": "1.5.6",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/310275/file/3163386/changelog",
     "folders": [
       {
         "name": "LibGetFrame-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -905,14 +866,14 @@
     "download_url": "https://edge.forgecdn.net/files/2647/97/LibGraph-2.0-v2.0.4.zip",
     "date_published": "2018-12-12T18:46:20.083000+00:00",
     "version": "v2.0.4",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14287/file/2647097/changelog",
     "folders": [
       {
         "name": "LibGraph-2.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -932,14 +893,14 @@
     "download_url": "https://edge.forgecdn.net/files/3084/344/LibItemUpgradeInfo-1.0-Release-90001-31.zip",
     "date_published": "2020-10-17T17:27:19.830000+00:00",
     "version": "Release-90001-31",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/52100/file/3084344/changelog",
     "folders": [
       {
         "name": "LibItemUpgradeInfo-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -959,14 +920,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/706/LibLatency-r27-release.zip",
     "date_published": "2021-03-27T12:15:13.670000+00:00",
     "version": "r27-release",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/94595/file/3252706/changelog",
     "folders": [
       {
         "name": "LibLatency"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -994,14 +955,14 @@
     "download_url": "https://edge.forgecdn.net/files/2589/318/LibOO-1.0-1.0.23.zip",
     "date_published": "2018-07-22T21:24:21.220000+00:00",
     "version": "1.0.23",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/70930/file/2589318/changelog",
     "folders": [
       {
         "name": "LibOO-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1021,14 +982,14 @@
     "download_url": "https://edge.forgecdn.net/files/3092/811/LibQTip-1.0-9.0.1.2.zip",
     "date_published": "2020-10-25T22:33:33.563000+00:00",
     "version": "9.0.1.2",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/15487/file/3092811/changelog",
     "folders": [
       {
         "name": "LibQTip-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1055,7 +1016,7 @@
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1083,14 +1044,14 @@
     "download_url": "https://edge.forgecdn.net/files/3175/669/LibRealmInfo.zip",
     "date_published": "2021-01-21T02:48:37.100000+00:00",
     "version": "17",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/83224/file/3175669/changelog",
     "folders": [
       {
         "name": "LibRealmInfo"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1114,14 +1075,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/720/LibSharedMedia-3.0-v9.0.1.zip",
     "date_published": "2021-03-27T12:27:13.440000+00:00",
     "version": "v9.0.1",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14320/file/3252720/changelog",
     "folders": [
       {
         "name": "LibSharedMedia-3.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1149,14 +1110,14 @@
     "download_url": "https://edge.forgecdn.net/files/3252/712/LibSink-2.0-v9.0.1.zip",
     "date_published": "2021-03-27T12:19:47.010000+00:00",
     "version": "v9.0.1",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14324/file/3252712/changelog",
     "folders": [
       {
         "name": "LibSink-2.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1184,14 +1145,14 @@
     "download_url": "https://edge.forgecdn.net/files/3085/852/LibSpellRange-1.0-1.0.15.zip",
     "date_published": "2020-10-18T20:56:09.140000+00:00",
     "version": "1.0.15",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/44605/file/3085852/changelog",
     "folders": [
       {
         "name": "LibSpellRange-1.0"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [
@@ -1211,14 +1172,14 @@
     "download_url": "https://edge.forgecdn.net/files/3313/910/!LibUIDropDownMenu-v4.03.9000538556.zip",
     "date_published": "2021-05-18T17:04:52.360000+00:00",
     "version": "v4.03.9000538556",
-    "changelog_url": "data:,",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/268264/file/3313910/changelog",
     "folders": [
       {
         "name": "!LibUIDropDownMenu"
       }
     ],
     "options": {
-      "strategy": "default"
+      "strategy": "any_flavour"
     },
     "deps": [],
     "logged_versions": [

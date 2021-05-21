@@ -58,10 +58,13 @@ def manage():
 
 @main.command()
 @click.argument('addons', required=True, nargs=-1)
+@click.option('--strategy', '-s', help='Specify a strategy')
 @click.pass_obj
-def install(obj, addons):
+def install(obj, addons, strategy=None):
     """Install addons."""
-    obj.manager.install(addons)
+    if strategy:
+        strategy = strategy.replace('=', '').strip()
+    obj.manager.install(addons, strategy)
     obj.manager.export()
     _manage()
 

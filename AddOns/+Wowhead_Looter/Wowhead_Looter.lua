@@ -3,15 +3,15 @@
 --     W o w h e a d   L o o t e r     --
 --                                     --
 --                                     --
---    Patch: 1.13.7                    --
---    Updated: April 21, 2021          --
+--    Patch: 2.5.1                     --
+--    Updated: April 6, 2021           --
 --    E-mail: feedback@wowhead.com     --
 --                                     --
 -----------------------------------------
 
 
 local WL_NAME = "|cffffff7fWowhead Looter|r";
-local WL_VERSION = 11307;
+local WL_VERSION = 20501;
 local WL_VERSION_PATCH = 0;
 local WL_ADDONNAME, WL_ADDONTABLE = ...
 
@@ -39,7 +39,7 @@ wlTime = GetServerTime();
 wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList = 0, 0, "", "", {};
 wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlUnit = {}, {}, {}, {}, {}, {};
 wlItemDurability, wlItemBonuses = {}, {};
-wlProfileData, wlTradeSkillDifficulty = {}, {};
+wlBaseStats2, wlProfileData, wlTradeSkillDifficulty = {}, {}, {};
 
 -- SavedVariablesPerCharacter
 wlSetting = {minimap=false};
@@ -564,6 +564,18 @@ function wlGetNextEventId()
         wlEventId = wlEventId + 1;
         return wlEventId;
     end
+end
+
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
+
+--- Event handler for PLAYER_LEVEL_UP
+-- @param self The frame that received the event
+-- @param ... Event info, includes the new level and primary stat delta values
+-- @see wlGetBaseStats
+function wlEvent_PLAYER_LEVEL_UP(self, ...)
+    local level, healthDelta, manaDelta, _, _, strDelta, agiDelta, staDelta, intDelta, spiDelta = ...;
+
+    wlGetBaseStats(level, {strDelta, agiDelta, staDelta, intDelta, spiDelta, healthDelta, manaDelta});
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -2745,6 +2757,7 @@ function wlCollect(userInitiated)
     wlQueryTimePlayed();
 
     wlScanTitles()
+    wlGetBaseStats();
     wlGetTime();
     WL_ADDONTABLE.profileData.scan();
 
@@ -3328,6 +3341,7 @@ end
 
 local wlEvents = {
     -- player
+    PLAYER_LEVEL_UP = wlEvent_PLAYER_LEVEL_UP,
     PLAYER_LOGIN = wlEvent_PLAYER_LOGIN,
     PLAYER_LOGOUT = wlEvent_PLAYER_LOGOUT,
     ADDON_LOADED = wlEvent_ADDON_LOADED,
@@ -3765,7 +3779,26 @@ function wlCreateFrames()
         StaticPopup_Show("WL_RESET_CONFIRM");
     end);
 
-    InterfaceOptions_AddCategory(panel);
+    InterfaceOptions_AddCategory(panel, true);
+
+    local stuboptions = { Show = function() end, Hide = function() end };
+
+    -- Temporary workaround for TBC Classic Beta
+    if (not InterfaceOptionsFrameCategoriesTop) then
+        InterfaceOptionsFrameCategoriesTop = stuboptions;
+    end
+    if (not InterfaceOptionsFrameAddOnsTop) then
+        InterfaceOptionsFrameAddOnsTop = stuboptions;
+    end
+    if (not InterfaceOptionsFrameTab1TabSpacer) then
+        InterfaceOptionsFrameTab1TabSpacer = stuboptions;
+    end
+    if (not InterfaceOptionsFrameTab2TabSpacer1) then
+        InterfaceOptionsFrameTab2TabSpacer1 = stuboptions;
+    end
+    if (not InterfaceOptionsFrameTab2TabSpacer2) then
+        InterfaceOptionsFrameTab2TabSpacer2 = stuboptions;
+    end
 end
 
 function wl_OnLoad(self)
@@ -4454,9 +4487,12 @@ function wlGetDate()
     if (C_Calendar) then
         local date = C_Calendar.GetDate();
         return date.month, date.monthDay, date.year;
-    elseif (C_DateAndTime) then
+    elseif (C_DateAndTime and C_DateAndTime.GetTodaysDate) then
         local date = C_DateAndTime.GetTodaysDate();
         return date.month, date.day, date.year;
+    elseif (C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime) then
+        local date = C_DateAndTime.GetCurrentCalendarTime();
+        return date.month, date.monthDay, date.year;
     end
     return nil;
 end
@@ -4793,7 +4829,7 @@ function wlReset()
     wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList = WL_VERSION, 0, "", "", {};
     wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlUnit = {}, {}, {}, {}, {}, {};
     wlItemDurability, wlItemBonuses = {}, {};
-    wlProfileData, wlTradeSkillDifficulty = {}, {};
+    wlBaseStats2, wlProfileData, wlTradeSkillDifficulty = {}, {}, {};
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
@@ -4863,6 +4899,93 @@ function wlArrayLength(array, depth)
     end
 
     return count;
+end
+
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--
+
+--- Records the character's primary stats (without buffs) into a SavedVariable for datamining use.
+-- @param newLevel Optional; When this is called upon level up, this holds the correct level.
+-- @param statDeltas Optional; When this is called upon level up, will have additional corrections for the stats.
+function wlGetBaseStats(newLevel, statDeltas)
+    local level = UnitLevel("player");
+    local class = select(3, UnitClass("player"));
+    local race = select(3, UnitRace("player"));
+
+    if newLevel and newLevel ~= level then
+        level = newLevel
+    else
+        statDeltas = {}
+    end
+
+    wlBaseStats2[class] = wlBaseStats2[class] or {};
+    wlBaseStats2[class][race] = wlBaseStats2[class][race] or {};
+    wlBaseStats2[class][race][level] = {};
+
+    -- Loop through 5 primary stats
+    for statId=1, 5 do
+        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
+        wlBaseStats2[class][race][level][statId] = {
+            class = class,
+            race = race,
+            level = level,
+            stat = statId,
+            amount = effectiveStat - posBuff - negBuff + (statDeltas[statId] or 0),
+        }
+    end
+
+    -- Get base health
+    do
+        local health = UnitHealthMax("player");
+
+        -- Add health from the levelup
+        health = health + (statDeltas[6] or 0);
+
+        -- Are we a tauren?
+        if race == 6 then
+            -- Remove HP mult buff
+            health = floor((health / 1.05) + 0.5);
+        end
+
+        -- Get stamina, including buffs
+        local statId = 3;
+        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
+        local stamina = effectiveStat + (statDeltas[statId] or 0);
+
+        -- Subtract health gained from stamina
+        health = health - min(20, stamina) - max(0, stamina - 20) * 10;
+
+        wlBaseStats2[class][race][level][6] = {
+            class = class,
+            race = race,
+            level = level,
+            stat = 6,
+            amount = health,
+        }
+    end
+
+    -- Get base mana
+    do
+        local mana = UnitPowerMax("player", 0);
+
+        -- Add mana from the levelup
+        mana = mana + (statDeltas[7] or 0);
+
+        -- Get intellect, including buffs
+        local statId = 4;
+        local stat, effectiveStat, posBuff, negBuff = UnitStat("player", statId);
+        local intellect = effectiveStat + (statDeltas[statId] or 0);
+
+        -- Subtract mana gained from intellect
+        mana = mana - min(20, intellect) - max(0, intellect - 20) * 15;
+
+        wlBaseStats2[class][race][level][7] = {
+            class = class,
+            race = race,
+            level = level,
+            stat = 7,
+            amount = mana,
+        }
+    end
 end
 
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--

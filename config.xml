@@ -877,6 +877,11 @@
 		<Notes>当你站在错误的位置时发出警报</Notes>
 		<Category>战斗</Category>
 	</Addon>
+	<Addon name="GuildColors">
+		<Title>职业颜色</Title>
+		<Notes>在好友列表、公会以及查询窗口中显示玩家的职业颜色</Notes>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="HandyNotes">
 		<Title>地图标记</Title>
 		<Notes>可以在地图上添加标记</Notes>

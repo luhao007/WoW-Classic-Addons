@@ -42,12 +42,14 @@ class InstawowManager:
         else:
             print('All {} addons are up-to-date!'.format(self.profile))
 
-    def install(self, addons):
+    def install(self, addons, strategy=None):
         addons = instawow.cli.parse_into_defn(self.manager, addons)
         if isinstance(addons, Defn):
             addons = [addons]
         if '_lib' in self.profile:
             addons = [Defn.with_strategy(d, 'any_flavour') for d in addons]
+        elif strategy:
+            addons = [Defn.with_strategy(d, strategy) for d in addons]
         results = self.manager.run(self.manager.install(addons, replace=False))
         print(instawow.cli.Report(results.items()))
 

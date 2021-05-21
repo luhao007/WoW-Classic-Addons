@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 11307
 ## Author: kagaro, Xinhuan, Spinx, Marrtin
 ## Version: v2021-05-19
 ## Dependencies: GatherMate2

@@ -17,7 +17,7 @@ local minor = 90000 + tonumber(("$Revision: 55 $"):match("(%d+)"))
 --Search for just Addon\\ at the front since the interface part often gets trimmed
 --Do this before anything else, so if it errors, any existing loaded copy of LibGraph-2.0
 --doesn't get modified with a newer revision (this one)
-local TextureDirectory = "Interface\\Addons\\!!Libs\\LibGraph-2.0\\LibGraph-2.0\\"
+local TextureDirectory = "Interface\\AddOns\\!!Libs\\LibGraph-2.0\\LibGraph-2.0\\"
 --do
 --	local path = string.match(debugstack(1, 1, 0), "AddOns\\(.+)LibGraph%-2%.0%.lua")
 --	if path then
