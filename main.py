@@ -1,5 +1,4 @@
 import logging
-import os
 import click
 
 from instawow_manager import InstawowManager

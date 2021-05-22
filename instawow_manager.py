@@ -71,8 +71,8 @@ class InstawowManager:
 
     def reinstall(self, file):
         with open(file, 'rb') as f:
-            l = json.loads(f.read())
-        addons = [(a['options']['strategy'], f"{a['source']}:{a['slug']}") for a in l]
+            addons = json.loads(f.read())
+        addons = [(a['options']['strategy'], f"{a['source']}:{a['slug']}") for a in addons]
         addons = list(instawow.cli.parse_into_defn_with_strategy(self.manager, addons))
         results = self.manager.run(self.manager.install(addons, replace=True))
         print(instawow.cli.Report(results.items()))
