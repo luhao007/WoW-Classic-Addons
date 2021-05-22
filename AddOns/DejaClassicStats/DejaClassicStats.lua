@@ -727,8 +727,17 @@ local function OHDamage()
 end
 -- Melee Critical Strike Chance
 local function MeleeCrit()
-	local TooltipLine1 = L["Gives a chance to critically strike with melee attacks, increasing the damage dealt by 100%."]
-	return "", format("%.2f%%", GetCritChance()), TooltipLine1, "", "", ""
+	local chance = GetCritChance();
+	local critRating = GetCombatRatingBonus(CR_CRIT_MELEE)
+	local crit = GetCombatRating(CR_CRIT_MELEE)
+
+	local TooltipLine1 = L["Crit Chance: "]..(format( "%.2f%%", chance)).."\n ("..crit.." Rating adds "..(format( "%.2f%%", critRating) ).." Crit)"
+	-- local TooltipLine2 = L["Crit Rating: "]..crit.."\n ("..crit.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Crit)"
+
+	-- local TooltipLine3 = L["Total Crit: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..crit..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Ranged Attack(Weapon Skill)
 local function RangedWeaponSkill()
@@ -764,68 +773,136 @@ local function RangedDamage()
 end
 -- Ranged Critical Strike Chance
 local function RangedCrit()
-	return "", format("%.2f%%", GetRangedCritChance()), "", "", "", ""
+	local chance = GetRangedCritChance();
+	local critRating = GetCombatRatingBonus(CR_CRIT_RANGED)
+	local crit = GetCombatRating(CR_CRIT_RANGED)
+
+	local TooltipLine1 = L["Crit Chance: "]..(format( "%.2f%%", chance)).."\n ("..crit.." Rating adds "..(format( "%.2f%%", critRating) ).." Crit)"
+	-- local TooltipLine2 = L["Crit Rating: "]..crit.."\n ("..crit.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Crit)"
+
+	-- local TooltipLine3 = L["Total Crit: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..crit..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Bonus Melee Hit Chance Modifier
 local function HitModifier()
-	local hit = GetHitModifier()
-	if hit == nil then hit = 0 end
-	return "", format("%.2f%%", hit), "", "", "", ""
+	local hitRating = GetCombatRatingBonus(CR_HIT_MELEE)
+	local hit = GetCombatRating(CR_HIT_MELEE)
+
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
+	local TooltipLine2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration());
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local total = ""
+
+	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Bonus Ranged Hit Chance Modifier
 local function RangedHitModifier()
 	hasBiznicks = addon.hasBiznicks
-	local hit = GetHitModifier()
+	local hitRating = GetCombatRatingBonus(CR_HIT_RANGED)
+	local hit = GetCombatRating(CR_HIT_RANGED)
 	if hit == nil then hit = 0 end
 	if hasBiznicks then 
 		hit = hit + 3
 	end
-	return "", format("%.2f%%", hit), "", "", "", ""
+
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
+	local TooltipLine2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration());
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local total = ""
+
+	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 local function Expertise()
 	if ( not unit ) then
 		unit = "player";
 	end
+	local expertiseRatingBonus = GetCombatRatingBonus(CR_EXPERTISE)
+	local expertiseRating = GetCombatRating(CR_EXPERTISE)
 	local expertise, offhandExpertise = GetExpertise();
-	local speed, offhandSpeed = UnitAttackSpeed(unit);
-	local text;
-	if( offhandSpeed ) then
-		text = expertise.." / "..offhandExpertise;
-	else
-		text = expertise;
-	end
-	
-	DCSstatFrametooltip = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." "..text..FONT_COLOR_CODE_CLOSE;
+
+	-- Is each weapon independent?
+	-- local speed, offhandSpeed = UnitAttackSpeed(unit);
+	-- local text;
+	-- if( offhandSpeed ) then
+	-- 	text = expertise.." / "..offhandExpertise;
+	-- else
+	-- 	text = expertise;
+	-- end
 	
 	local expertisePercent, offhandExpertisePercent = GetExpertisePercent();
-	expertisePercent = format("%.2f", expertisePercent);
-	if( offhandSpeed ) then
-		offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
-		text = expertisePercent.."% / "..offhandExpertisePercent.."%";
-	else
-		text = expertisePercent.."%";
-	end
-	DCSstatFrametooltip2 = format(CR_EXPERTISE_TOOLTIP, text, GetCombatRating(CR_EXPERTISE), GetCombatRatingBonus(CR_EXPERTISE));
+	expertisePercent = format("%.2f%%", expertisePercent);
+	-- if( offhandSpeed ) then
+	-- 	offhandExpertisePercent = format("%.2f", offhandExpertisePercent);
+	-- 	text = expertisePercent.."% / "..offhandExpertisePercent.."%";
+	-- else
+	-- 	text = expertisePercent.."%";
+	-- end
+	local TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." ("..expertise..") "..expertisePercent..FONT_COLOR_CODE_CLOSE;
+	local TooltipLine2 = L["Expertise: "]..(format( "%.2f%%", expertiseRatingBonus)).."\n ("..expertiseRating.." Rating adds "..(format( "%.2f%%", expertiseRatingBonus) ).." Expertise)"
+	local TooltipLine3 = format(CR_EXPERTISE_TOOLTIP, expertisePercent, expertiseRating, expertiseRatingBonus);
 
-	return "", text, DCSstatFrametooltip, DCSstatFrametooltip2, "", ""
+	return "", "("..expertise..") "..expertisePercent, TooltipLine1, TooltipLine2, TooltipLine3, ""
 end
 -------------
 -- Defense --
 -------------
+local baseDefense
+local bonusDefense
+local defensePercent
+local defenseRating
+local defense
+local function getDefenseStats()
+	baseDefense, bonusDefense = UnitDefense(unit);
+	defensePercent = GetDodgeBlockParryChanceFromDefense() 
+	defenseRating = GetCombatRatingBonus(CR_DEFENSE_SKILL) -- Defense Rating converted to Defense Stat
+	defense = GetCombatRating(CR_DEFENSE_SKILL) -- Actual Defense Rating
+end
 -- Dodge Chance
 local function Dodge()
-	local TooltipLine1 = L["Gives a chance to dodge enemy melee attacks."]
-	return "", format("%.2f%%", GetDodgeChance()), TooltipLine1, "", "", ""
+	getDefenseStats()
+	local chance = GetDodgeChance();
+	local dodgeRating = GetCombatRatingBonus(CR_DODGE)
+	local dodge = GetCombatRating(CR_DODGE)
+
+	local TooltipLine1 = L["Dodge Rating: "]..dodge.."\n ("..dodge.." Rating adds "..(format( "%.2f%%", dodgeRating) ).." Dodge)"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Dodge)"
+
+	local TooltipLine3 = L["Total Dodge: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..dodge..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Parry Chance
 local function Parry()
-	local TooltipLine1 = L["Gives a chance to parry enemy melee attacks."]
-	return "", format("%.2f%%", GetParryChance()), TooltipLine1, "", "", ""
+	getDefenseStats()
+	local chance = GetParryChance();
+	local parryRating = GetCombatRatingBonus(CR_PARRY)
+	local parry = GetCombatRating(CR_PARRY)
+
+	local TooltipLine1 = L["Parry Rating: "]..parry.."\n ("..parry.." Rating adds "..(format( "%.2f%%", parryRating) ).." Parry)"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Parry)"
+
+	local TooltipLine3 = L["Total Parry: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..parry..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Block Chance
 local function BlockChance()
-	local TooltipLine1 = L["Gives a chance to block enemy melee and ranged attacks."]
-	return "", format("%.2f%%", GetBlockChance()), TooltipLine1, "", "", ""
+	getDefenseStats()
+	local chance = GetBlockChance();
+	local blockRating = GetCombatRatingBonus(CR_BLOCK)
+	local block = GetCombatRating(CR_BLOCK)
+
+	local TooltipLine1 = L["Block Rating: "]..block.."\n ("..block.." Rating adds "..(format( "%.2f%%", blockRating) ).." Block)"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Block)"
+
+	local TooltipLine3 = L["Total Block: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..block..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Block Value
 local function BlockValue()
@@ -835,34 +912,16 @@ local function BlockValue()
 end
 -- Defense
 local function Defense()
-	local baseDefense, bonusDefense, posBuff, negBuff = 0,0,0,0
-	local numSkills = GetNumSkillLines()
-	local skillIndex = 0
-	for i = 1, numSkills do
-		local skillName = select(1, GetSkillLineInfo(i))
-		if (skillName == DEFENSE) then
-			skillIndex = i
-			break
-		end
-	end
-	if (skillIndex > 0) then
-		baseDefense = select(4, GetSkillLineInfo(skillIndex))
-		bonusDefense = select(6, GetSkillLineInfo(skillIndex))
-	else
-		baseDefense, bonusDefense = UnitDefense("player")
-	end
-	if ( bonusDefense > 0 ) then
-		posBuff = bonusDefense
-	elseif ( bonusDefense < 0 ) then
-		negBuff = bonusDefense
-	end
-	local TooltipLine1 = L["Base Defense including talents such as Warrior's Anticipation is "]..baseDefense.."."
-	local TooltipLine2 = L["Bonus Defense from items and enhancements is "]..bonusDefense.."."
-	local TooltipLine3 = L["Total Defense is "]..(baseDefense + bonusDefense)..L[". Critical Hit immunity for a level 60 player against a raid boss occurs at 440 Defense and requires a defense skill of 140 from items and enhancements to achieve."]
-	local total = "("..baseDefense.." |cff00c0ff+ "..bonusDefense.."|r)"
-	return "", format("%.0f", (baseDefense + bonusDefense)), TooltipLine1, TooltipLine2, TooltipLine3, total
+	getDefenseStats()
+	local TooltipLine1 = L["Base Defense: "]..baseDefense..""
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense)"
+	local TooltipLine3 = L["Total Defense: "]..(format( "%.2f", baseDefense + defenseRating) ).."\n\nIncreases your chance to Dodge, Parry, and Block & Decreases your chance to be Hit or Crit by "..(format( "%.2f%%", defensePercent) )
+	-- local total = "("..baseDefense.." |cff00c0ff+ "..(format( "%.1f", defenseRating) ).."|r)"
+	local total = ""
+
+	return "", format( "%.0f", (baseDefense + defenseRating) ).." ("..defense..") "..(format( "%.2f%%", defensePercent) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
--- Defense
+-- Resilience
 local function Resilience()
 	local resilience = GetCombatRating(CR_RESILIENCE_CRIT_TAKEN);
 	local bonus = GetCombatRatingBonus(CR_RESILIENCE_CRIT_TAKEN);

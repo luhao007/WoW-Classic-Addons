@@ -15,6 +15,10 @@
 		<Title>插件管理</Title>
 		<Category>基础库</Category>
 	</Addon>
+	<Addon name="alaCalendar">
+		<Title>副本日历</Title>
+		<Category>界面</Category>
+	</Addon>
 	<Addon name="alaTalentEmu">
 		<Title>天赋模拟器</Title>
 		<Category>战斗</Category>
@@ -36,7 +40,7 @@
 	<Addon name="AdvancedInterfaceOptions">
 		<Title>高级界面设置</Title>
 		<Notes>可以修改各种隐藏参数，包括隐藏的内部CVar参数</Notes>
-		<Category>界面</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="AllTheThings">
 		<Title>收集控助手</Title>
@@ -313,6 +317,12 @@
 		<Title>窗口移动</Title>
 		<Notes>移动内置的各种窗口</Notes>
 		<Category>界面</Category>
+		<SubAddons>
+			<SubAddon name="BlizzMove_Debug">
+				<Title>错误调试</Title>
+				<Notes>获取报错信息以用于调试</Notes>
+			</SubAddon>
+		</SubAddons>
 	</Addon>
 	<Addon name="BtWQuests">
 		<Title>任务流程图</Title>
@@ -722,7 +732,7 @@
 	<Addon name="Dismounter">
 		<Title>自动下马</Title>
 		<Notes>施法时自动下马</Notes>
-		<Category>物品</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="ExRT">
 		<Title>团队助手</Title>
@@ -782,7 +792,7 @@
 	<Addon name="GoodLeader">
 		<Title>好团长</Title>
 		<Notes>显示团长经历</Notes>
-		<Category>副本</Category>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="Grail">
 		<Title>本地数据库</Title>
@@ -866,11 +876,6 @@
 				<Notes>帮助Grail记录各项任务，声望和成就的完成时间</Notes>
 			</SubAddon>
 		</SubAddons>
-	</Addon>
-	<Addon name="GroupCalendar">
-		<Title>团队行事历</Title>
-		<Notes>在团队或朋友间同步显示事件</Notes>
-		<Category>界面</Category>
 	</Addon>
 	<Addon name="GTFO">
 		<Title>伤害警报</Title>
@@ -1008,11 +1013,11 @@
 	</Addon>
 	<Addon name="MeetingStone">
 		<Title>集合石</Title>
-		<Category>副本</Category>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="MeetingHorn">
 		<Title>集结号</Title>
-		<Category>副本</Category>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="MerInspect">
 		<Title>观察助手</Title>
@@ -1064,7 +1069,7 @@
 	<Addon name="MonkeyQuest">
 		<Title>任务追踪</Title>
 		<Notes>独立任务追踪窗口</Notes>
-		<Category>界面</Category>
+		<Category>任务</Category>
 		<SubAddons>
 			<SubAddon name="MonkeyLibrary">
 				<Title>运行库</Title>
@@ -1092,7 +1097,7 @@
 	</Addon>
 	<Addon name="Myslot">
 		<Title>键位设置</Title>
-		<Category>界面</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="NovaWorldBuffs">
 		<Title>世界增益</Title>
@@ -1122,7 +1127,7 @@
 	</Addon>
 	<Addon name="OPie">
 		<Title>环形动作条</Title>
-		<Category>界面</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="oRA3">
 		<Title>团队助手</Title>
@@ -1177,7 +1182,7 @@
 	<Addon name="Prat-3.0">
 		<Title>聊天增强</Title>
 		<Title-en>Prat</Title-en>
-		<Category>界面</Category>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="Quartz">
 		<Title>施法条</Title>
@@ -1290,6 +1295,10 @@
 				<Notes>提供一个可视化列表来查看灰色物品</Notes>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="SimpleChatClassic">
+		<Title>简单聊天增强</Title>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="Simulationcraft">
 		<Title>输出模拟器</Title>
@@ -1517,7 +1526,7 @@
 	<Addon name="tullaRange">
 		<Title>技能距离检测</Title>
 		<Notes>目标距离过远时，将技能图标显示为红色</Notes>
-		<Category>界面</Category>
+		<Category>战斗</Category>
 		<SubAddons>
 			<SubAddon name="tullaRange_Config">
 				<Title>设置</Title>
@@ -1554,9 +1563,9 @@
 		</SubAddons>
 	</Addon>
 	<Addon name="WeakAuras">
-		<Title>图形提示</Title>
-		<Notes>自定义显示基于增益、减益以及其他触发的图形以及信息</Notes>
-		<Category>战斗</Category>
+		<Title>辅助增强</Title>
+		<Notes>自定义界面显示、辅助信息，支持一定程度上的LUA脚本（迷你插件）</Notes>
+		<Category>功能</Category>
 		<SubAddons>
 			<SubAddon name="WeakAurasArchive">
 				<Title>存档</Title>
@@ -1578,11 +1587,11 @@
 	</Addon>
 	<Addon name="WclPlayerScore">
 		<Title>WCL评分</Title>
-		<Category>副本</Category>
+		<Category>辅助</Category>
 	</Addon>
 	<Addon name="WIM">
 		<Title>即时通信</Title>
-		<Category>界面</Category>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="Wholly">
 		<Title>任务完成辅助</Title>

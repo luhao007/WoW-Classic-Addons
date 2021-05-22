@@ -1,0 +1,26 @@
+## Interface: 20501
+## Version: 1.7.4-Classic-TBC
+## SavedVariablesPerCharacter: SimpleChatClassicDB
+
+## Title: [Chat]SimpleChat Classic
+## Notes: SimpleChat.
+## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF简单聊天增强|r |cFFFFE00ASimpleChatClassic|r
+
+
+#@no-lib-strip@
+#@end-no-lib-strip@
+
+# 配置和设定-必要
+Core.lua
+# 聊天选择条
+Chatbar.lua
+# 聊天频道缩写
+channel.lua
+# Tab键切频道
+EasyChannel.lua
+# 聊天表情
+ChatEmote.lua
+# 聊天链接
+ChatLink.lua
+# 聊天复制
+ChatCopy.lua

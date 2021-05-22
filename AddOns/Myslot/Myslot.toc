@@ -6,7 +6,7 @@
 
 ## Title: Myslot
 ## Notes: Myslot is for transferring settings between accounts. Feedback farmer1992@gmail.com
-## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF键位设置|r |cFFFFE00AMyslot|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF键位设置|r |cFFFFE00AMyslot|r
 ## Notes-zhCN: Myslot可以帮助你在账号之间共享配置。反馈：farmer1992@gmail.com
 
 

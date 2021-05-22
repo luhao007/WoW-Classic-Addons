@@ -1,0 +1,17 @@
+## Interface: 20501
+## Author: |cff00ff00ALA|r @ |cffff0000163UI|r
+## Version: 113r.201202
+## Dependencies: 
+## LoadOnDemand: 0
+## SavedVariables: alaCalendarSV
+## SavedVariablesPerCharacter: 
+## DefaultState: enabled
+
+## Title: ala's Calendar
+## Notes: ala's Calendar
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF副本日历|r |cFFFFE00AalaCalendar|r
+
+## X-Vendor: NetEase
+## X-163UI-Version: 20200521143713
+
+alaCalendar.xml

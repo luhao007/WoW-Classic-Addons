@@ -4,7 +4,7 @@
 ## DefaultState: enabled
 
 ## Title: WclPlayerScore
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFFWCL评分|r |cFFFFE00AWclPlayerScore|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWCL评分|r |cFFFFE00AWclPlayerScore|r
 
 
 Data\srvdata.xml

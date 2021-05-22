@@ -4,7 +4,7 @@
 ## SavedVariablesPerCharacter: MEETINGHORN_DB_CHARACTER_MEMBERS
 
 ## Title: MeetingHorn
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF集结号|r |cFFFFE00AMeetingHorn|r
+## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF集结号|r |cFFFFE00AMeetingHorn|r
 
 
 Load.xml

@@ -7,7 +7,7 @@
 
 ## Title: Prat |cff8080ff3.0|r
 ## Notes: A framework for chat ehancement modules.
-## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF聊天增强|r |cFFFFE00APrat|r
+## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF聊天增强|r |cFFFFE00APrat|r
 ## Notes-zhCN: 整合的聊天增强助手
 
 ## X-Curse-Project-ID: 7473

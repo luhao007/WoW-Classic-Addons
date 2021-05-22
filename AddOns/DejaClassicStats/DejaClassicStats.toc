@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Dejablue, Kakjens, loudsoul
-## Version: 205r003
+## Version: 205r004
 ## SavedVariables: DCS_ClassSpecDB
 ## SavedVariablesPerCharacter: DejaClassicStatsDBPC
 

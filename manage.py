@@ -26,25 +26,14 @@ NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', '
                 'Informant', 'MerInspect', 'RaidLedger', 'PallyPower', 'SlideBar', 'Stubby']
 
 
-def classic_era_only(func):
-    def wrapper(*args):
-        if '_classic_era_' in os.getcwd():
-            func(*args)
-    return wrapper
-
-
-def classic_only(func):
-    def wrapper(*args):
-        if '_classic_' in os.getcwd():
-            func(*args)
-    return wrapper
-
-
-def retail_only(func):
-    def wrapper(*args):
-        if '_retail_' in os.getcwd():
-            func(*args)
-    return wrapper
+def available_on(platforms):
+    def decorator(func):
+        def wrapper(*args):
+            for p in platforms:
+                if f'_{p}_' in os.getcwd():
+                    func(*args)
+        return wrapper
+    return decorator
 
 
 class Manager:
@@ -71,9 +60,9 @@ class Manager:
     def remove_libs_in_file(self, path, libs):
         def f(lines):
             if str(path).endswith('.toc'):
-                pattern = r'(?i)\s*{}.*'
+                pattern = r'\s*(?i){}.*'
             else:
-                pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"{}.*'
+                pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}.*'
 
             return [line for line in lines
                     if not any(re.match(pattern.format(lib), line)
@@ -167,6 +156,8 @@ class Manager:
             'PVP': '8787ED',        # Purple - Warlock
             '探索': '40C7EB',       # Light Blue - Mage
             '收藏': 'A9D271',       # Green - Hunter
+            '社交': 'F48CBA',       # Pink - Paladin
+            '功能': 'FFF468',       # Yellow - Rogue
             '辅助': 'FFFFFF',       # White - Priest
         }
         color = colors.get(cat, 'FFF569')   # Unknown defaults to Rogue Yellow
@@ -336,10 +327,10 @@ class Manager:
                        'NPCScan', 'Omen',
                        'RelicInspector', 'Simulationcraft', 'Titan']
         else:
-            addons += ['AtlasLootClassic', 'AtlasLootClassic_Options',
+            addons += ['alaTalentEmu', 'alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                        'ATT-Classic', 'ClassicCastbars_Options',
                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                       'PallyPower', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
+                       'PallyPower', 'SimpleChatClassic', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
 
 
         for addon in addons:
@@ -364,7 +355,7 @@ class Manager:
 
         process_file('Addons/ACP/ACP.xml', handle)
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_ate(self):
         self.remove_libraries(
                 ['CallbackHandler-1.0', 'LibDataBroker-1.1',
@@ -392,7 +383,7 @@ class Manager:
             '			hide = true,'
         )
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_atlasloot(self):
         if self.is_retail:
             self.remove_libraries(
@@ -408,7 +399,7 @@ class Manager:
             '		shown = true,'
         )
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_auctioneer(self):
         addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
 
@@ -441,7 +432,7 @@ class Manager:
             'AddOns/Bagnon/common/Wildpants/libs/libs.xml'
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_btwquest(self):
         def f(lines):
             ret = []
@@ -521,7 +512,7 @@ class Manager:
             '		FishingBuddy_Player["MinimapData"] = { hide=true };'
         )
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_fizzle(self):
         def f(lines):
             ret = []
@@ -538,7 +529,7 @@ class Manager:
             return ret
         process_file('AddOns/Fizzle/Core.lua', f)
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_goodleader(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceDB-3.0',
@@ -568,7 +559,7 @@ class Manager:
                  ('retail' in folder or 'Achievements' in folder))):
                 rm_tree(Path('AddOns') / folder)
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_nwb(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0',
@@ -581,7 +572,7 @@ class Manager:
             'Addons/NovaWorldBuffs/embeds.xml',
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_meetingstone(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
@@ -598,7 +589,7 @@ class Manager:
             '            minimap = { hide = true,'
         )
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_meetinghorn(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0',
@@ -614,7 +605,7 @@ class Manager:
         self.remove_libs_in_file('Addons/MeetingHorn/Libs/tdGUI/Load.xml',
                                  ['Libs'])
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_merinspect(self):
         self.change_defaults(
             'Addons/MerInspect/Options.lua',
@@ -622,7 +613,7 @@ class Manager:
              '    ShowCharacterItemStats = false,          --玩家自己屬性統計']
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_mogit(self):
         self.remove_libraries(
             ['AceConfig-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
@@ -661,14 +652,14 @@ class Manager:
             lambda lines: [line for line in lines if 'libs' not in line]
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_omen(self):
         self.change_defaults(
             'Addons/Omen/Omen.lua',
             '			hide = true,'
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_oa(self):
         self.remove_libraries(
             ['CallbackHandler-1.0', 'LibBabble-Inventory-3.0',
@@ -698,7 +689,7 @@ class Manager:
 
         self.remove_libraries(libs, 'Addons/Plater/libs', 'Addons/Plater/libs/libs.xml')
 
-    @retail_only
+    @available_on(['retail'])
     def handle_pt(self):
         self.remove_libraries(
             ['AceEvent-3.0', 'AceLocale-3.0', 'CallbackHandler-1.0',
@@ -710,7 +701,7 @@ class Manager:
     def handle_prat(self):
         rm_tree('AddOns/Prat-3.0_Libraries')
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_questie(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
@@ -755,7 +746,7 @@ class Manager:
 
         process_file(root / 'Modules/Libs/QuestieLib.lua', handle)
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_rl(self):
         self.remove_libraries(
             ['CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
@@ -764,7 +755,7 @@ class Manager:
             'Addons/RaidLedger/RaidLedger.toc'
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_rarity(self):
         self.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceConfig-3.0',
@@ -787,14 +778,14 @@ class Manager:
             'AddOns/Scrap/libs/main.xml'
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_sc(self):
         self.change_defaults(
             'Addons/Simulationcraft/core.lua',
             '        hide = true,'
         )
 
-    @retail_only
+    @available_on(['retail'])
     def handle_talentsm(self):
         self.remove_libraries(
             ['CallBackHandler', 'LibDataBroker', 'LibStub'],
@@ -896,7 +887,7 @@ class Manager:
             '      db.minimap = db.minimap or { hide = true };'
         )
 
-    @classic_only
+    @available_on(['classic', 'classic_era'])
     def handle_wim(self):
         self.remove_libraries(
             ['CallbackHandler-1.0', 'ChatThrottleLib', 'LibChatAnims',

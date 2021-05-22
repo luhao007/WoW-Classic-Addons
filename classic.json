@@ -1545,33 +1545,6 @@
   },
   {
     "source": "curse",
-    "id": "351800",
-    "slug": "group-calendar-for-classic",
-    "name": "Group / Guild Calendar for Classic",
-    "description": "Group Calendar for 1.12 upgraded for WoW Classic",
-    "url": "https://www.curseforge.com/wow/addons/group-calendar-for-classic",
-    "download_url": "https://edge.forgecdn.net/files/2984/898/GroupCalendar-v2.0.8-release.zip",
-    "date_published": "2020-06-21T05:02:23.813000+00:00",
-    "version": "v2.0.8-release",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "GroupCalendar"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v2.0.8-release",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "368410",
     "slug": "guildcolors",
     "name": "GuildColors",
@@ -3230,6 +3203,33 @@
       {
         "version": "3.0.5-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "379125",
+    "slug": "alacalendar",
+    "name": "alaCalendar",
+    "description": "Calendar for classic, lists instance and festival. It also displays instance lockdown account-wide.",
+    "url": "https://www.curseforge.com/wow/addons/alacalendar",
+    "download_url": "https://edge.forgecdn.net/files/3139/86/alaCalendar-113r.200902-2-2-gbe82589-alpha.zip",
+    "date_published": "2020-12-15T02:53:33.117000+00:00",
+    "version": "113r.201202",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/379125/file/3139086/changelog",
+    "folders": [
+      {
+        "name": "alaCalendar"
+      }
+    ],
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "113r.201202",
+        "install_time": "2021-05-21T17:45:11+00:00"
       }
     ]
   },

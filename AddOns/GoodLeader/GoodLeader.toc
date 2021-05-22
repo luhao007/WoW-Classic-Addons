@@ -4,7 +4,7 @@
 ## SavedVariables: GOODLEADER_DB
 
 ## Title: GoodLeader
-## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF好团长|r |cFFFFE00AGoodLeader|r
+## Title-zhCN: |cFFFFE00A<|r|cFFF48CBA社交|r|cFFFFE00A>|r |cFFFFFFFF好团长|r |cFFFFE00AGoodLeader|r
 ## Notes-zhCN: 显示团长经历
 
 
