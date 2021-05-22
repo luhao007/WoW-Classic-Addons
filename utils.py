@@ -41,3 +41,11 @@ def rm_tree(path):
     if os.path.exists(path):
         logger.info('Removing %s...', path)
         shutil.rmtree(path)
+
+
+def get_platform():
+    path = os.getcwd()
+    while path:
+        path, last = os.path.split(path)
+        if last.startswith('_'):
+            return last[1:-1]

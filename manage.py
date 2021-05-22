@@ -30,7 +30,7 @@ def available_on(platforms):
     def decorator(func):
         def wrapper(*args):
             for p in platforms:
-                if f'_{p}_' in os.getcwd():
+                if f'\\_{p}_\\' in os.getcwd():
                     func(*args)
         return wrapper
     return decorator
@@ -62,7 +62,7 @@ class Manager:
             if str(path).endswith('.toc'):
                 pattern = r'\s*(?i){}.*'
             else:
-                pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}.*'
+                pattern = r'\s*<((Script)|(Include))+ file\s*=\s*"(?i){}[\\\"\.].*'
 
             return [line for line in lines
                     if not any(re.match(pattern.format(lib), line)
@@ -231,6 +231,118 @@ class Manager:
     ###########################
     # Handle embedded libraries
     ###########################
+
+    def handle_lib_tocs(self):
+        toc = TOC([])
+
+        if self.is_classic_era:
+            toc.tags['Interface'] = CLASSIC_ERA_VER
+        elif self.is_classic:
+            toc.tags['Interface'] = CLASSIC_VER
+        else:
+            toc.tags['Interface'] = RETAIL_VER
+        toc.tags['Author'] = 'luhao007'
+
+        toc.tags['Title'] = 'Libraries'
+        toc.tags['Notes'] = 'Libraries'
+        toc.tags['Title-zhCN'] = '|cFFFFE00A<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r|r'
+        toc.tags['Notes-zhCN'] = '插件基础函数库|N|CFFFF0000必须加载|R'
+
+        toc.contents = ['# Common Handler Libs\n',
+                        'Ace3\\LibStub\\LibStub.lua\n',
+                        'Ace3\\CallbackHandler-1.0\\CallbackHandler-1.0.xml\n',
+                        'LibDataBroker-1.1\\LibDataBroker-1.1.lua\n',
+                        '\n',
+                        '# Ace3 Libs\n',
+                        'Ace3\\AceAddon-3.0\\AceAddon-3.0.xml\n',
+                        'Ace3\\AceEvent-3.0\\AceEvent-3.0.xml\n',
+                        'Ace3\\AceTimer-3.0\\AceTimer-3.0.xml\n',
+                        'Ace3\\AceBucket-3.0\\AceBucket-3.0.xml\n',
+                        'Ace3\\AceHook-3.0\\AceHook-3.0.xml\n',
+                        'Ace3\\AceDB-3.0\\AceDB-3.0.xml\n',
+                        'Ace3\\AceDBOptions-3.0\\AceDBOptions-3.0.xml\n',
+                        'Ace3\\AceLocale-3.0\\AceLocale-3.0.xml\n',
+                        'Ace3\\AceGUI-3.0\\AceGUI-3.0.xml\n',
+                        'Ace3\\AceConsole-3.0\\AceConsole-3.0.xml\n',
+                        'Ace3\\AceConfig-3.0\\AceConfig-3.0.xml\n',
+                        'Ace3\\AceComm-3.0\\AceComm-3.0.xml\n',
+                        'Ace3\\AceTab-3.0\\AceTab-3.0.xml\n',
+                        'Ace3\\AceSerializer-3.0\\AceSerializer-3.0.xml\n',
+                        '\n',
+                        '# Ace3 Additional Libs\n',
+                        'LibSharedMedia-3.0\\lib.xml\n',
+                        'AceGUI-3.0-SharedMediaWidgets\\AceGUI-3.0-SharedMediaWidgets\\widget.xml\n',
+                        '\n',
+                        '# Libs Needs to be Imported before Other Libs\n',
+                        'LibCompress\\lib.xml\n',
+                        'UTF8\\utf8data.lua\n',
+                        'UTF8\\utf8.lua\n',
+                        '\n',
+                        '# HereBeDragons\n',
+                        'HereBeDragons\\HereBeDragons-2.0.lua\n',
+                        'HereBeDragons\\HereBeDragons-Pins-2.0.lua\n',
+                        'HereBeDragons\\HereBeDragons-Migrate.lua\n',
+                        '\n'
+                        '# Dropdown menus\n',
+                        '!LibUIDropDownMenu\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
+                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu.xml\n',
+                        '\n']
+
+        root = Path('Addons/!!Libs')
+        libs = set(os.listdir(root))
+        libs -= {'!!Libs.toc', 'Ace3', 'AceGUI-3.0-SharedMediaWidgets', 'HereBeDragons', 'UTF8', 'FrameXML',
+                 '!LibUIDropDownMenu', '!LibUIDropDownMenu-2.0', 'LibCompress', 'LibDataBroker-1.1', 'LibSharedMedia-3.0'}
+
+        if 'LibBabble' in libs:
+            toc.contents.append('# LibBabbles\n')
+            for l in os.listdir(root / 'LibBabble'):
+                if l.endswith('.lua'):
+                    toc.contents.append(f'LibBabble\\{l}\n')
+                else:
+                    d = os.listdir(root / 'LibBabble' / l)
+                    if 'lib.xml' in d:
+                        toc.contents.append(f'LibBabble\\{l}\\lib.xml\n')
+                    elif f'{l}.lua' in d:
+                        toc.contents.append(f'LibBabble\\{l}\\{l}.lua\n')
+            toc.contents.append('\n')
+            libs.discard('LibBabble')
+
+        drs = {lib for lib in libs if lib.startswith('DR')}
+        libs -= drs
+        if drs:
+            toc.contents.append('# DR Libs\n')
+            for dr in drs:
+                toc.contents.append(f'{dr}\\{dr}.xml\n')
+            toc.contents.append('\n')
+
+        luas = {lib for lib in libs if lib.endswith('lua')}
+        libs -= luas
+        toc.contents.append('# Other Libs\n')
+        for lib in sorted(libs):
+            d = os.listdir(root / lib)
+            if 'lib.xml' in d:
+                toc.contents.append(f'{lib}\\lib.xml\n')
+            elif f'{lib}.xml' in d:
+                toc.contents.append(f'{lib}\\{lib}.xml\n')
+            elif f'{lib}.lua' in d:
+                toc.contents.append(f'{lib}\\{lib}.lua\n')
+            elif lib in d:
+                sd = os.listdir(root / lib / lib)
+                if f'{lib}.xml' in sd:
+                    toc.contents.append(f'{lib}\\{lib}\\{lib}.xml\n')
+                elif f'{lib}.lua' in sd:
+                    toc.contents.append(f'{lib}\\{lib}\\{lib}.lua\n')
+            else:
+                raise RuntimeError(f'{lib} not handled!')
+
+        if luas:
+            toc.contents.append('\n')
+            toc.contents.append('# Custom Luas\n')
+            for lua in sorted(luas):
+                toc.contents.append(f'{lua}\n')
+
+        with open('Addons/!!Libs/!!Libs.toc', 'w', encoding='utf-8') as f:
+            f.writelines(toc.to_lines())
 
     def handle_lib_graph(self):
         def handle_graph(lines):
@@ -872,13 +984,17 @@ class Manager:
             ['AceComm-3.0', 'AceConfig-3.0', 'AceConsole-3.0', 'AceEvent-3.0',
              'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets',
              'AceSerializer-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',
-             'LibClassicCasterino', 'LibClassicDurations',
-             'LibClassicSpellActionCount-1.0', 'LibCustomGlow-1.0',
-             'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
+             'LibCustomGlow-1.0', 'LibCompress', 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
              'LibGetFrame-1.0', 'LibRangeCheck-2.0', 'LibSharedMedia-3.0',
              'LibSerialize', 'LibSpellRange-1.0', 'LibStub'],
             'Addons/WeakAuras/Libs',
             'Addons/WeakAuras/embeds.xml'
+        )
+
+        self.remove_libraries(
+            ['LibClassicCasterino', 'LibClassicDurations', 'LibClassicSpellActionCount-1.0', ],
+            'Addons/WeakAuras/Libs',
+            'Addons/WeakAuras/WeakAuras.toc'
         )
 
         self.remove_libraries_all('WeakAuras/Libs/Archivist')

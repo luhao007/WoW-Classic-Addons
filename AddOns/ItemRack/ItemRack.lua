@@ -2,7 +2,7 @@ ItemRack = {}
 
 local _
 
-ItemRack.Version = "3.64"
+ItemRack.Version = "3.65"
 
 function ItemRack.IsClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
@@ -518,6 +518,7 @@ function ItemRack.UpdateCurrentSet()
 		ItemRackButton20Name:SetText(setname)
 	end
 	ItemRack.Broker.icon = texture
+	ItemRack.Broker.label = setname
 end
 
 --[[ Item info gathering ]]

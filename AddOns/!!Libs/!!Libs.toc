@@ -1,8 +1,8 @@
 ## Interface: 20501
 ## Author: luhao007
 
-## Title: Ace Libs
-## Notes: Ace libs.
+## Title: Libraries
+## Notes: Libraries
 ## Title-zhCN: |cFFFFE00A<|r|cFFC41F3B基础库|r|cFFFFE00A>|r |cFFFFFFFF|cFF7FFF7FAce核心库|r |cFFFF0000必须加载|r|r
 ## Notes-zhCN: 插件基础函数库|N|CFFFF0000必须加载|R
 
@@ -42,22 +42,21 @@ HereBeDragons\HereBeDragons-2.0.lua
 HereBeDragons\HereBeDragons-Pins-2.0.lua
 HereBeDragons\HereBeDragons-Migrate.lua
 
+# Dropdown menus
+!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
+!LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
+
 # LibBabbles
 LibBabble\LibBabble-3.0.lua
-LibBabble\LibBabble-Boss-3.0\LibBabble-Boss-3.0.lua
-LibBabble\LibBabble-CreatureType-3.0\LibBabble-CreatureType-3.0.lua
-LibBabble\LibBabble-Faction-3.0\LibBabble-Faction-3.0.lua
-LibBabble\LibBabble-Race-3.0\LibBabble-Race-3.0.lua
+LibBabble\LibBabble-Boss-3.0\lib.xml
+LibBabble\LibBabble-CreatureType-3.0\lib.xml
+LibBabble\LibBabble-Faction-3.0\lib.xml
+LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # DR Libs
 DRData-1.0\DRData-1.0.xml
 DRList-1.0\DRList-1.0.xml
-
-# Dropdown menus
-!LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
-# For backward compability
-!LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
 
 # Other Libs
 LibAlts-1.0\lib.xml
@@ -69,12 +68,12 @@ LibClassicDurations\LibClassicDurations.xml
 LibClassicItemSets-1.0\LibClassicItemSets-1.0.xml
 LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
-LibDBIcon-1.0\LibDBIcon-1.0\lib.xml
+LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 LibDDI-1.0\lib.xml
 LibDeflate\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
-LibDropdown-1.0\LibDropdown-1.0\lib.xml
+LibDropdown-1.0\LibDropdown-1.0\LibDropdown-1.0.lua
 LibDurability\LibDurability\LibDurability.xml
 LibGetFrame-1.0\LibGetFrame-1.0.xml
 LibGraph-2.0\LibGraph-2.0\LibGraph-2.0.lua
@@ -84,11 +83,10 @@ LibOO-1.0\lib.xml
 LibQTip-1.0\lib.xml
 LibRangeCheck-2.0\LibRangeCheck-2.0\LibRangeCheck-2.0.lua
 LibRealmInfo\LibRealmInfo.lua
-LibSink-2.0\LibSink-2.0\lib.xml
+LibSink-2.0\LibSink-2.0\LibSink-2.0.lua
 LibSpellRange-1.0\lib.xml
-# LibWho-2.0\LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
-NickTag-1.0\NickTag-1.0.lua
+NickTag-1.0\NickTag-1.0.xml
 
-# 自定义lua
+# Custom Luas
 custom.lua

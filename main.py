@@ -4,6 +4,7 @@ import click
 
 from instawow_manager import InstawowManager
 from manage import Manager
+import utils
 
 
 class Context:
@@ -11,26 +12,10 @@ class Context:
     def __init__(self, ctx, verbose: bool):
         """Basic content for CLI."""
         ctx.params['log_level'] = verbose
-        if self.is_retail:
-            self.game_flavour = 'retail'
-        elif self.is_classic:
-            self.game_flavour = 'classic'
-        elif self.is_classic_era:
-            self.game_flavour = 'vanilla_classic'
+        platform = utils.get_platform()
+        self.game_flavour = 'vanilla_classic' if platform == 'classic_era' else platform
         self.manager = InstawowManager(ctx, self.game_flavour, False)
         self.manager_lib = InstawowManager(ctx, self.game_flavour, True)
-
-    @property
-    def is_classic(self):
-        return '_classic_' in os.getcwd()
-
-    @property
-    def is_classic_era(self):
-        return '_classic_era_' in os.getcwd()
-
-    @property
-    def is_retail(self):
-        return '_retail_' in os.getcwd()
 
 
 def _manage():
@@ -70,6 +55,15 @@ def install(obj, addons, strategy=None):
 
 
 @main.command()
+@click.argument('file', required=True)
+@click.pass_obj
+def reinstall(obj, file):
+    """Reinstall addons."""
+    obj.manager.reinstall(file)
+    _manage()
+
+
+@main.command()
 @click.argument('libs', required=True, nargs=-1)
 @click.pass_obj
 def install_lib(obj, libs):
@@ -77,6 +71,15 @@ def install_lib(obj, libs):
     obj.manager_lib.install(libs)
     obj.manager_lib.export()
     Manager().process_libs()
+
+
+@main.command()
+@click.argument('file', required=True)
+@click.pass_obj
+def reinstall_libs(obj, file):
+    """Reinstall libs."""
+    obj.manager_lib.reinstall(file)
+    _manage()
 
 
 @main.command()

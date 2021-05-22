@@ -1,11 +1,12 @@
+import json
 import os
 from pathlib import Path
 
 import instawow.cli
 from instawow.config import Config
 from instawow.models import Pkg
-from instawow.results import PkgUpToDate
 from instawow.resolvers import Defn, MultiPkgModel
+from instawow.results import PkgUpToDate
 
 
 class InstawowManager:
@@ -13,7 +14,7 @@ class InstawowManager:
     def __init__(self, ctx, game_flavour, lib=False):
         """Interface between instawow and main program.
 
-        :param game_flavor str: 'classic' or 'retail' or 'vanilla_classic
+        :param game_flavor str: 'classic' or 'retail' or 'vanilla_classic'
         :param lib bool: Whether hanlding libraries.
         :param lib classic_only_lib: Whether hanlding classic-only libs
         """
@@ -67,3 +68,11 @@ class InstawowManager:
     def export(self):
         with open(f'{self.profile}.json', 'w') as f:
             f.write(MultiPkgModel.parse_obj(self.get_addons()).json(indent=2))
+
+    def reinstall(self, file):
+        with open(file, 'rb') as f:
+            l = json.loads(f.read())
+        addons = [(a['options']['strategy'], f"{a['source']}:{a['slug']}") for a in l]
+        addons = list(instawow.cli.parse_into_defn_with_strategy(self.manager, addons))
+        results = self.manager.run(self.manager.install(addons, replace=True))
+        print(instawow.cli.Report(results.items()))
