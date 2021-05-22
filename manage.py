@@ -19,7 +19,8 @@ RETAIL_VER = '90002'
 
 
 NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
-                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH', 'Atlas_Transportation', 'BeanCounter', 'BlizzMove_Debug', 'ClassicCastbars',
+                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH', 'Atlas_Transportation',
+                'BeanCounter', 'BlizzMove_Debug', 'ClassicCastbars',
                 'ClassicCastbars_Options', 'Enchantrix', 'Enchantrix-Barker', 'GatherMate2', 'GatherMate2_Data', 'Grail',
                 'Grail-NPCs-_classic_', 'Grail-NPCs-_classic_-enUS', 'Grail-NPCs-_classic_-zhCN', 'Grail-Quests-_classic_', 'Grail-Quests-_classic_-enUS',
                 'Grail-Quests-_classic_-zhCN', 'Grail-Reputations-_classic_', 'Grail-Rewards', 'Grail-When', 'GTFO',
