@@ -536,10 +536,10 @@
     "name": "Bagnon",
     "description": "All in one displays for your inventory, bank, and keyring",
     "url": "https://www.curseforge.com/wow/addons/bagnon",
-    "download_url": "https://edge.forgecdn.net/files/3239/684/Bagnon-9.0.6-1.13.6.zip",
-    "date_published": "2021-03-14T22:58:44.410000+00:00",
-    "version": "9.0.6",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3318/209/Bagnon-9.0.7-2.5.1.zip",
+    "date_published": "2021-05-21T17:01:24+00:00",
+    "version": "9.0.7",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/1592/file/3318209/changelog",
     "folders": [
       {
         "name": "BagBrother"
@@ -562,6 +562,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.0.7",
+        "install_time": "2021-05-22T04:51:33+00:00"
+      },
       {
         "version": "9.0.6",
         "install_time": "2021-03-24T11:22:41+00:00"
@@ -1028,10 +1032,10 @@
     "name": "DejaClassicStats",
     "description": "Dejablue's improved Classic character stats panel view.",
     "url": "https://www.curseforge.com/wow/addons/dejaclassicstats",
-    "download_url": "https://edge.forgecdn.net/files/3283/895/DejaClassicStats205r003.zip",
-    "date_published": "2021-04-21T09:22:17.850000+00:00",
-    "version": "205r003",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3283895/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3318/776/DejaClassicStats205r004.zip",
+    "date_published": "2021-05-22T01:35:05.273000+00:00",
+    "version": "205r004",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3318776/changelog",
     "folders": [
       {
         "name": "DejaClassicStats"
@@ -1042,6 +1046,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "205r004",
+        "install_time": "2021-05-22T04:51:33+00:00"
+      },
       {
         "version": "205r003",
         "install_time": "2021-05-21T08:24:23+00:00"
@@ -1181,10 +1189,10 @@
     "name": "Fishing Buddy (Classic)",
     "description": "Fishing support for WoW Classic",
     "url": "https://www.curseforge.com/wow/addons/fishing-buddy-classic",
-    "download_url": "https://edge.forgecdn.net/files/3318/55/FishingBuddy-0.7.4b1.zip",
-    "date_published": "2021-05-21T15:03:41.600000+00:00",
-    "version": "0.7.4 Beta 1",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340577/file/3318055/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3318/724/FishingBuddy-0.7.4b2.zip",
+    "date_published": "2021-05-22T00:35:27.693000+00:00",
+    "version": "0.7.4 Beta 2",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340577/file/3318724/changelog",
     "folders": [
       {
         "name": "FishingBuddy"
@@ -1195,6 +1203,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "0.7.4 Beta 2",
+        "install_time": "2021-05-22T04:51:34+00:00"
+      },
       {
         "version": "0.7.4 Beta 1",
         "install_time": "2021-05-21T15:07:51+00:00"
@@ -1355,196 +1367,6 @@
   },
   {
     "source": "curse",
-    "id": "28774",
-    "slug": "grail",
-    "name": "Grail",
-    "description": "Library of quest information",
-    "url": "https://www.curseforge.com/wow/addons/grail",
-    "download_url": "https://edge.forgecdn.net/files/3122/569/GrailClassic-113.zip",
-    "date_published": "2020-11-25T03:55:57.503000+00:00",
-    "version": "113 Classic",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "Grail"
-      },
-      {
-        "name": "Grail-Achievements"
-      },
-      {
-        "name": "Grail-NPCs-_classic_"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-deDE"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-enUS"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-esES"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-esMX"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-frFR"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-itIT"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-koKR"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-ptBR"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-ruRU"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-zhCN"
-      },
-      {
-        "name": "Grail-NPCs-_classic_-zhTW"
-      },
-      {
-        "name": "Grail-NPCs-_retail_"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-deDE"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-enUS"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-esES"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-esMX"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-frFR"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-itIT"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-koKR"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-ptBR"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-ruRU"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-zhCN"
-      },
-      {
-        "name": "Grail-NPCs-_retail_-zhTW"
-      },
-      {
-        "name": "Grail-Quests-_classic_"
-      },
-      {
-        "name": "Grail-Quests-_classic_-deDE"
-      },
-      {
-        "name": "Grail-Quests-_classic_-enUS"
-      },
-      {
-        "name": "Grail-Quests-_classic_-esES"
-      },
-      {
-        "name": "Grail-Quests-_classic_-esMX"
-      },
-      {
-        "name": "Grail-Quests-_classic_-frFR"
-      },
-      {
-        "name": "Grail-Quests-_classic_-itIT"
-      },
-      {
-        "name": "Grail-Quests-_classic_-koKR"
-      },
-      {
-        "name": "Grail-Quests-_classic_-ptBR"
-      },
-      {
-        "name": "Grail-Quests-_classic_-ruRU"
-      },
-      {
-        "name": "Grail-Quests-_classic_-zhCN"
-      },
-      {
-        "name": "Grail-Quests-_classic_-zhTW"
-      },
-      {
-        "name": "Grail-Quests-_retail_"
-      },
-      {
-        "name": "Grail-Quests-_retail_-deDE"
-      },
-      {
-        "name": "Grail-Quests-_retail_-enUS"
-      },
-      {
-        "name": "Grail-Quests-_retail_-esES"
-      },
-      {
-        "name": "Grail-Quests-_retail_-esMX"
-      },
-      {
-        "name": "Grail-Quests-_retail_-frFR"
-      },
-      {
-        "name": "Grail-Quests-_retail_-itIT"
-      },
-      {
-        "name": "Grail-Quests-_retail_-koKR"
-      },
-      {
-        "name": "Grail-Quests-_retail_-ptBR"
-      },
-      {
-        "name": "Grail-Quests-_retail_-ruRU"
-      },
-      {
-        "name": "Grail-Quests-_retail_-zhCN"
-      },
-      {
-        "name": "Grail-Quests-_retail_-zhTW"
-      },
-      {
-        "name": "Grail-Reputations-_classic_"
-      },
-      {
-        "name": "Grail-Reputations-_retail_"
-      },
-      {
-        "name": "Grail-Rewards"
-      },
-      {
-        "name": "Grail-When"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "113 Classic",
-        "install_time": "2020-11-26T11:27:06+00:00"
-      },
-      {
-        "version": "112 Classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "368410",
     "slug": "guildcolors",
     "name": "GuildColors",
@@ -1651,10 +1473,10 @@
     "name": "HandyNotes_DungeonLocations (Classic)",
     "description": "Shows locations of old world dungeon and raid entrances",
     "url": "https://www.curseforge.com/wow/addons/handynotes_dungeonlocations-classic",
-    "download_url": "https://edge.forgecdn.net/files/3223/287/HandyNotes_DungeonLocations (Classic)-1.04c.zip",
-    "date_published": "2021-03-01T21:03:01.393000+00:00",
-    "version": "1.04c",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3318/630/HandyNotes_DungeonLocations (Classic)-1.05.zip",
+    "date_published": "2021-05-21T22:30:15.580000+00:00",
+    "version": "1.05",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/323067/file/3318630/changelog",
     "folders": [
       {
         "name": "HandyNotes_DungeonLocations (Classic)"
@@ -1663,8 +1485,16 @@
     "options": {
       "strategy": "default"
     },
-    "deps": [],
+    "deps": [
+      {
+        "id": "14154"
+      }
+    ],
     "logged_versions": [
+      {
+        "version": "1.05",
+        "install_time": "2021-05-22T04:51:34+00:00"
+      },
       {
         "version": "1.04c",
         "install_time": "2021-03-02T11:02:44+00:00"
@@ -1749,6 +1579,33 @@
       {
         "version": "3.49",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "390962",
+    "slug": "lootmonitor",
+    "name": "LootMonitor",
+    "description": "Announce Loots",
+    "url": "https://www.curseforge.com/wow/addons/lootmonitor",
+    "download_url": "https://edge.forgecdn.net/files/3285/431/LootMonitor-3.24(TBC).zip",
+    "date_published": "2021-04-22T13:03:15.980000+00:00",
+    "version": "v3.24(TBC)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/390962/file/3285431/changelog",
+    "folders": [
+      {
+        "name": "LootMonitor"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v3.24(TBC)",
+        "install_time": "2021-05-22T07:44:20+00:00"
       }
     ]
   },
@@ -2180,10 +2037,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3317/481/Pawn-2.5.2-BurningCrusade.zip",
-    "date_published": "2021-05-21T03:47:35.843000+00:00",
-    "version": "2.5.2 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3317481/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3318/643/Pawn-2.5.3-BurningCrusade.zip",
+    "date_published": "2021-05-21T22:41:46.600000+00:00",
+    "version": "2.5.3 (Burning Crusade)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3318643/changelog",
     "folders": [
       {
         "name": "Pawn"
@@ -2194,6 +2051,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.5.3 (Burning Crusade)",
+        "install_time": "2021-05-22T04:51:34+00:00"
+      },
       {
         "version": "2.5.2 (Burning Crusade)",
         "install_time": "2021-05-21T08:24:25+00:00"
@@ -2461,10 +2322,10 @@
     "name": "Scrap (Junk Seller)",
     "description": "Sells all your junk when you visit a merchant. Intuitive & Easy to use.",
     "url": "https://www.curseforge.com/wow/addons/scrap",
-    "download_url": "https://edge.forgecdn.net/files/3239/687/Scrap-9.0.5-1.13.6.zip",
-    "date_published": "2021-03-14T23:02:28.607000+00:00",
-    "version": "9.0.5",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3318/217/Scrap-9.0.6-2.5.1.zip",
+    "date_published": "2021-05-21T17:04:04.503000+00:00",
+    "version": "9.0.6",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/5422/file/3318217/changelog",
     "folders": [
       {
         "name": "Scrap"
@@ -2481,6 +2342,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "9.0.6",
+        "install_time": "2021-05-22T04:51:34+00:00"
+      },
       {
         "version": "9.0.5",
         "install_time": "2021-03-24T11:22:43+00:00"
@@ -3203,33 +3068,6 @@
       {
         "version": "3.0.5-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "379125",
-    "slug": "alacalendar",
-    "name": "alaCalendar",
-    "description": "Calendar for classic, lists instance and festival. It also displays instance lockdown account-wide.",
-    "url": "https://www.curseforge.com/wow/addons/alacalendar",
-    "download_url": "https://edge.forgecdn.net/files/3139/86/alaCalendar-113r.200902-2-2-gbe82589-alpha.zip",
-    "date_published": "2020-12-15T02:53:33.117000+00:00",
-    "version": "113r.201202",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/379125/file/3139086/changelog",
-    "folders": [
-      {
-        "name": "alaCalendar"
-      }
-    ],
-    "options": {
-      "strategy": "any_flavour"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "113r.201202",
-        "install_time": "2021-05-21T17:45:11+00:00"
       }
     ]
   },

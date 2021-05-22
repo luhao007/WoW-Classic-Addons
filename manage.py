@@ -19,7 +19,7 @@ RETAIL_VER = '90002'
 
 
 NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
-                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH', 'BeanCounter', 'BlizzMove_Debug', 'ClassicCastbars',
+                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH', 'Atlas_Transportation', 'BeanCounter', 'BlizzMove_Debug', 'ClassicCastbars',
                 'ClassicCastbars_Options', 'Enchantrix', 'Enchantrix-Barker', 'GatherMate2', 'GatherMate2_Data', 'Grail',
                 'Grail-NPCs-_classic_', 'Grail-NPCs-_classic_-enUS', 'Grail-NPCs-_classic_-zhCN', 'Grail-Quests-_classic_', 'Grail-Quests-_classic_-enUS',
                 'Grail-Quests-_classic_-zhCN', 'Grail-Reputations-_classic_', 'Grail-Rewards', 'Grail-When', 'GTFO',
@@ -480,9 +480,9 @@ class Manager:
                 'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-                'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1']
+                'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0']
         if self.is_retail:
-            libs += ['DF', 'LibTranslit-1.0', 'NickTag-1.0']
+            libs += ['DF', 'LibTranslit-1.0']
 
         self.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
 
@@ -544,6 +544,7 @@ class Manager:
         self.remove_libs_in_file('Addons/GoodLeader/Libs/tdGUI/Load.xml',
                                  ['Libs'])
 
+    @available_on(['retail'])
     def handle_grail(self):
         for folder in os.listdir('AddOns'):
             if 'Grail' not in folder:
@@ -683,7 +684,7 @@ class Manager:
                 'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
                 'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub', 'LibTranslit-1.0']
+                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub']
         if self.is_retail:
             libs += ['DF', 'LibTranslit-1.0']
 

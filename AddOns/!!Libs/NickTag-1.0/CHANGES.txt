@@ -1,0 +1,10 @@
+lightweight tag c0c06e417e19c848bc31ebb18cc9596c8d349fc7 v9.0.2.14
+Author:	Tercio Jose <terciob19@hotmail.com>
+Date:	Tue Jan 19 12:00:33 2021 -0300
+
+commit c0c06e417e19c848bc31ebb18cc9596c8d349fc7
+Author: Tercio Jose <terciob19@hotmail.com>
+Date:   Tue Jan 19 12:00:33 2021 -0300
+
+    Added support to cyrillic and chinese alphabets
+

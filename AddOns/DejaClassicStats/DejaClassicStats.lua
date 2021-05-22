@@ -854,6 +854,9 @@ local defensePercent
 local defenseRating
 local defense
 local function getDefenseStats()
+	if ( not unit ) then
+		unit = "player";
+	end
 	baseDefense, bonusDefense = UnitDefense(unit);
 	defensePercent = GetDodgeBlockParryChanceFromDefense() 
 	defenseRating = GetCombatRatingBonus(CR_DEFENSE_SKILL) -- Defense Rating converted to Defense Stat

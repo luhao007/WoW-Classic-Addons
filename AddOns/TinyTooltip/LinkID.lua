@@ -1,7 +1,7 @@
 
 local addon = TinyTooltip
 
-local isClassicWow = GetMaxPlayerLevel() < 70
+local isClassicWow = GetMaxPlayerLevel() <= 70
 
 local function ParseHyperLink(link)
     local name, value = string.match(link or "", "|?H?(%a+):(%d+):")

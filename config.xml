@@ -993,6 +993,10 @@
 			</SubAddon>
 		</SubAddons>
 	</Addon>
+	<Addon name="LootMonitor">
+		<Title>黑手检测</Title>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="Mapster">
 		<Title>地图增强</Title>
 		<Category>探索</Category>

@@ -59,7 +59,7 @@ DRList-1.0\DRList-1.0.xml
 # For backward compability
 !LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
 
-# Other Ace Libs
+# Other Libs
 LibAlts-1.0\lib.xml
 LibBossIDs-1.0\lib.xml
 LibCandyBar-3.0\lib.xml
@@ -88,6 +88,7 @@ LibSink-2.0\LibSink-2.0\lib.xml
 LibSpellRange-1.0\lib.xml
 # LibWho-2.0\LibWho-2.0\LibWho-2.0.lua
 LibWindow-1.1\LibWindow-1.1\LibWindow-1.1.lua
+NickTag-1.0\NickTag-1.0.lua
 
 # 自定义lua
 custom.lua

@@ -1196,5 +1196,40 @@
         "install_time": "2020-11-03T05:33:05+00:00"
       }
     ]
+  },
+  {
+    "source": "curse",
+    "id": "64293",
+    "slug": "nicktag",
+    "name": "NickTag-1.0",
+    "description": "Tool used by others addons for share nicknames with your guild mates.",
+    "url": "https://www.curseforge.com/wow/addons/nicktag",
+    "download_url": "https://edge.forgecdn.net/files/3173/727/NickTag-1.0-v9.0.2.14.zip",
+    "date_published": "2021-01-19T15:01:36.760000+00:00",
+    "version": "v9.0.2.14",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/64293/file/3173727/changelog",
+    "folders": [
+      {
+        "name": "NickTag-1.0"
+      }
+    ],
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v9.0.2.14",
+        "install_time": "2021-01-22T11:53:37+00:00"
+      },
+      {
+        "version": "v9.0.2.13",
+        "install_time": "2021-01-19T09:03:02+00:00"
+      },
+      {
+        "version": "v9.0.1",
+        "install_time": "2020-11-03T05:33:05+00:00"
+      }
+    ]
   }
 ]
