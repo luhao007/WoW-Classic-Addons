@@ -1,33 +1,27 @@
-0.5.4 Release Notes
+0.5.5 Release Notes
 Contributions made by Crieve:
-* Fixed a build error.
-* Added the function ATTC.CompareQuestieDB() for checking against known the reputable quest database provided in Questie.
-* Added missing Warlock Grimoires to the vendor listing.
-* Added new Beast Training spells available via the Pet Trainer. (not sure if the level 70 ones work or not, let me know!)
-* Added new Beast Training spells that can be found in the world, but did not attach any creatures to it. Someone with more time/skill than me needs to help!
-* Added Mining Profession Skills.
-* Find Minerals isn't a thing in Retail that we can track.
-* Reworked First Aid and its associated classic quests.
-* Added Cooking Profession Skills and new formulas in classic zones.
-* Added new Poison Profession Skills for Rogues. Moved Rare Fish - Pale Ghoulfish to never implemented.
-* Frostsaber Provisions is now marked Alliance Only.
-* Warrior Training now gets partially collected by "A Warrior's Training".
-* Nevermind, wrong quest on that last commit.
-* Warrior Training quests are apparently mutually exclusive, if you complete one, it locks you out from completing any others.
-* The Flight Path at Azure Watch, Azuremyst Isle wasn't added to the game until Cataclysm.
-* Classic originally needed to check flight masters by using trig, that calculation is no longer required in TBC.
-* The various "Training" quests in Ammen Vale are Draenei Only.
-* Exploration in AV might have been removed with TBC. This needs confirmation, but the map might be automatically revealed.
-* Made a note for "Goblin Rocket Boots", it is learnable from any type of Engineer regardless of specialization.
-* Bear Form / Dire Bear Form fix applied for Horde Druids.
-* Fixed Concerted Efforts and added For Great Honor, for the Horde.
-* Missed one of them, oops.
-* Added a bunch of quests to Dustwallow Marsh.
-* Added 2 Jewelcrafting recipes and a few more Dustwallow quests.
-* Fixed Dawnstar Spire's Exploration Texture data in the Ghostlands.
-* Added the Isle of Tribulations to the Ghostlands Exploration header.
-* Added Shalandis Isle to the Ghostlands Exploration header.
-* Added a whole bunch of quests to the ignored quests list in terms of reporting errors.
-* Beast Training now has creature references for all the new trainable spells! (Thanks to WoW-Petopia and Jaz for letting me know where to look!)
-* Fists of the Unrelenting confirmed obtainable after Prepatch!
+* Added Skillet-Classic support.
+* The window now hides and shows itself with Skillet.
+* Added "Dire Brew" to BRD.
+* Moved the Warlock quest chain for the The Completed Orb of Noh'Orahil/Dar'Orahil to the Barrens.
+* Finished polishing Dustwallow Marsh and added all of the missing quests. (as far as I know!)
+* Added the cloth donation quests to the Exodar.
+* Added a couple new breadcrumb quests that came out with the prepatch. Also fixed a number of quests that spam reports for being completed by Blizzard when they really shouldn't be completed, but they are anyways.
+* Removed unnecessary class assignments from the Tier 0.5 sets. (they aren't class bound, technically)
+* Help Ranger Valanna! is now marked as a breadcrumb quest.
+* Added additional quests to the Swamp of Sorrows.
+* The calculation for coordinates for exploration object is now more accurate.
+* Being at the Crash Site on Ammen Vale now keeps the mini list on Ammen Vale.
+* Inoculation's only source quest is a breadcrumb.
+* All of the subzones of Ammen Vale now show the mini list for Ammen Vale.
+* Fixed "Strength of One" and "Behomat", the first is mutually exclusive with other warrior quests.
+* Added the Blood Elf Bandit Mask and a number of source quest fixes for Azuremyst Isle.
+* Journal could not be looted until after the Blood Watch.
+* Added a note on "Tzerak's Armor Plate" and "Sign of the Legion" that they are currently bugged. (leaving visible so that Blizzard Devs can see their mistake more easily and the issue can be resolved sooner)
+* Added the Exodar faction.
+* Added "Onward to Ashenvale" in Darkshore.
+* Added the Horde Shaman "Call to Water" quest chain.
+* Removed the questIDs from the Shaman Totems.
+* Added the Draenei "Call of Earth" quest chain.
+* Added the Draenei Shaman "Call of Fire" quest chain.
 

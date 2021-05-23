@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-koKR.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-koKR.lua 125 2021-05-22 14:07:10Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -36,8 +36,7 @@ L["Blue"] = "청색"
 --[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Boat to Stormwind City"] = ""--]] 
---[[Translation missing --]]
---[[ L["Camp Taurajo"] = ""--]] 
+L["Camp Taurajo"] = "타우라조 야영지"
 L["Class Order Halls"] = "직업 연맹 전당"
 L["Class Specific Only"] = "특정 직업만"
 L["Climbing Rope"] = "등반용 밧줄"
@@ -52,6 +51,8 @@ L["Great Eagle"] = "거대 독수리"
 L["Green"] = "녹색"
 L["Gryphon"] = "그리핀"
 L["Gryphon Master"] = "그리핀 조련사"
+--[[Translation missing --]]
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
 L["Hunter Only"] = "사냥꾼만"
 L["Illidari Gateway"] = "일리다리 관문"
 L["Jump to Skyhold"] = "하늘보루로 도약"
@@ -81,19 +82,16 @@ L["South of the path along Lake Elune'ara"] = "엘룬아라 호수를 따라 난
 L["Special transportation"] = "특별한 탈것"
 L["Talua <Eagle Keeper>"] = "탈루아 <독수리 조련사>"
 L["Taxi Nodes"] = "비행 경로"
---[[Translation missing --]]
---[[ L["Teleport Beacon"] = ""--]] 
+L["Teleport Beacon"] = "순간이동 신호기"
 L["Teleportation Nexus"] = "순간이동 거점"
---[[Translation missing --]]
---[[ L["The Barrens"] = ""--]] 
+L["The Barrens"] = "불모의 땅"
 L["The Bogpaddle Bullet"] = "수렁진흙탕 총알로켓"
 L["Transportation Maps"] = "탈것 지도"
 --[[Translation missing --]]
 --[[ L["Transporter"] = ""--]] 
 L["Transporters by the sea and on the cliff"] = "바닷가 절벽 위에 있는 순간이동기"
 L["Two ways portal"] = "양방향 차원문"
---[[Translation missing --]]
---[[ L["Vindicaar"] = ""--]] 
+L["Vindicaar"] = "구원호"
 L["Warning: Drop"] = "경고: 낙하"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "전사의 착륙 / 도약 지점 (하늘보루에서 또는 하늘보루로)"
 L["West of the path to Timbermaw Hold"] = "나무구렁 요새로 가는 길 서쪽"

@@ -888,6 +888,14 @@ local IgnoreErrorQuests = {
 	[9522]=1,	-- Never Again! [Alliance]
 	[9536]=1,	-- Never Again! [Horde]
 	[10371]=1,	-- Yorus Barleybrew (Draenei)
+	[11185]=1,	-- The Apothecary's Letter
+	[11186]=1,	-- Signs of Treachery?
+	[11201]=1,	-- The Grimtotem Plot
+	[11123]=1,	-- Inspecting the Ruins [Alliance]
+	[11124]=1,	-- Inspecting the Ruins [Horde]
+	[11150]=1,	-- Raze Direhorn Post! [Alliance]
+	[11205]=1,	-- Raze Direhorn Post! [Horde]
+	[11215]=1,	-- Help Mudsprocket
 };
 local CompletedQuests = setmetatable({}, {__newindex = function (t, key, value)
 	if value then
@@ -4850,13 +4858,10 @@ local fields = {
 	["coords"] = function(t)
 		local maphash = t.maphash;
 		if maphash then
-			local layers = C_Map.GetMapArtLayers(t.mapID);
-			if layers and layers[1] then
-				local coords = {};
-				local width, height, offsetX, offsetY = strsplit(":", maphash);
-				tinsert(coords, {((offsetX + (width * 0.5)) * 100) / layers[1].layerWidth, ((offsetY + (height * 0.5)) * 100) / layers[1].layerHeight, t.mapID});
-				return coords;
-			end
+			local coords = {};
+			local width, height, offsetX, offsetY = strsplit(":", maphash);
+			tinsert(coords, {((offsetX + (width * 0.5)) * 100) / WorldMapFrame:GetWidth(), ((offsetY + (height * 0.5)) * 100) / WorldMapFrame:GetHeight(), t.mapID});
+			return coords;
 		end
 	end,
 };
@@ -5446,7 +5451,7 @@ local fields = {
 		return t.parent.repeatable;
 	end,
 	["collectible"] = function(t)
-		return false;
+		return C_QuestLog.IsOnQuest(t.questID);
 	end,
 	["trackable"] = function(t)
 		return true;
@@ -5506,6 +5511,15 @@ app.CompareQuestieDB = function()
 	else
 		print("Error: Questie not available. Please enable it!");
 	end
+end
+
+app:RegisterEvent("QUEST_WATCH_UPDATE");
+app:RegisterEvent("BAG_NEW_ITEMS_UPDATED");
+app.events.QUEST_WATCH_UPDATE = function(questID)
+	wipe(searchCache);
+end
+app.events.BAG_NEW_ITEMS_UPDATED = function(questID)
+	wipe(searchCache);
 end
 end)();
 
@@ -10653,54 +10667,6 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 					else
 						craftSkillID = 0;
 					end
-					
-					if craftSkillID ~= 0 then
-						local numberOfCrafts, spellID = GetNumCrafts();
-						for craftIndex = 1,numberOfCrafts do
-							spellID = 0;
-							local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
-							if craftType ~= "header" then
-								spellID = craftSubSpellName and (select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName .. " (" .. craftSubSpellName .. ")"]) or app.SpellNameToSpellID[craftName];
-								if spellID then
-									app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil;
-									app.CurrentCharacter.Spells[spellID] = 1;
-									if not ATTAccountWideData.Spells[spellID] then
-										ATTAccountWideData.Spells[spellID] = 1;
-										learned = learned + 1;
-									end
-									if not skillCache[spellID] then
-										app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
-										skillCache[spellID] = { {} };
-									end
-								else
-									app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
-								end
-								
-								if craftType ~= "none" then
-									-- Attempt to harvest the item associated with this craft.
-									NPCHarvester:SetCraftSpell(craftIndex);
-									local link, craftedItemID = select(2, NPCHarvester:GetItem());
-									if link then craftedItemID = GetItemInfoInstant(link); end
-									
-									-- Cache the Reagents used to make this item.
-									for i=1,GetCraftNumReagents(craftIndex) do
-										local itemID = GetItemInfoInstant(GetCraftReagentItemLink(craftIndex, i));
-										if itemID then
-											-- Make sure a cache table exists for this item.
-											local _, _, reagentCount = GetCraftReagentInfo(craftIndex, i);
-											if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
-											
-											-- Index 1: The Recipe Skill IDs
-											if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
-											
-											-- Index 2: The Crafted Item IDs
-											if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
-										end
-									end
-								end
-							end
-						end
-					end
 				end
 				
 				if TradeSkillFrame and TradeSkillFrame:IsVisible() then
@@ -10714,44 +10680,102 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						elseif tradeSkillID == 0 then
 							app.print("Could not find spellID for", tradeSkillName, GetLocale(), "! Please report this to the ATT Discord!");
 						end
-						
-						local numTradeSkills = GetNumTradeSkills();
-						for skillIndex = 1,numTradeSkills do
-							local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
-							if skillType ~= "header" then
-								local spellID = app.SpellNameToSpellID[skillName];
-								if spellID then
-									app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil;
-									app.CurrentCharacter.Spells[spellID] = 1;
-									if not ATTAccountWideData.Spells[spellID] then
-										ATTAccountWideData.Spells[spellID] = 1;
-										learned = learned + 1;
-									end
-									if not skillCache[spellID] then
-										app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
-										skillCache[spellID] = { {} };
-									end
-								else
-									app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
+					else
+						tradeSkillID = 0;
+					end
+				end
+				
+				if Skillet and Skillet.currentTrade and tradeSkillID == 0 and craftSkillID == 0 then
+					if Skillet.isCraft then
+						craftSkillID = Skillet.currentTrade;
+					else
+						tradeSkillID = Skillet.currentTrade;
+					end
+				end
+				
+				if craftSkillID ~= 0 then
+					local numberOfCrafts, spellID = GetNumCrafts();
+					for craftIndex = 1,numberOfCrafts do
+						spellID = 0;
+						local craftName, craftSubSpellName, craftType, numAvailable, isExpanded, trainingPointCost, requiredLevel = GetCraftInfo(craftIndex);
+						if craftType ~= "header" then
+							spellID = craftSubSpellName and (select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName .. " (" .. craftSubSpellName .. ")"]) or app.SpellNameToSpellID[craftName];
+							if spellID then
+								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil;
+								app.CurrentCharacter.Spells[spellID] = 1;
+								if not ATTAccountWideData.Spells[spellID] then
+									ATTAccountWideData.Spells[spellID] = 1;
+									learned = learned + 1;
 								end
+								if not skillCache[spellID] then
+									app.print("Missing " .. craftName .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									skillCache[spellID] = { {} };
+								end
+							else
+								app.print("Missing " .. craftName .. " spellID in ATT Database. Please report it!");
+							end
+							
+							if craftType ~= "none" then
+								-- Attempt to harvest the item associated with this craft.
+								NPCHarvester:SetCraftSpell(craftIndex);
+								local link, craftedItemID = select(2, NPCHarvester:GetItem());
+								if link then craftedItemID = GetItemInfoInstant(link); end
 								
 								-- Cache the Reagents used to make this item.
-								local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
-								for i=1,GetTradeSkillNumReagents(skillIndex) do
-									local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
-									local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
-									
-									-- Make sure a cache table exists for this item.
-									-- Index 1: The Recipe Skill IDs
-									-- Index 2: The Crafted Item IDs
-									if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
-									if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
-									if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+								for i=1,GetCraftNumReagents(craftIndex) do
+									local itemID = GetItemInfoInstant(GetCraftReagentItemLink(craftIndex, i));
+									if itemID then
+										-- Make sure a cache table exists for this item.
+										local _, _, reagentCount = GetCraftReagentInfo(craftIndex, i);
+										if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+										
+										-- Index 1: The Recipe Skill IDs
+										if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+										
+										-- Index 2: The Crafted Item IDs
+										if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+									end
 								end
 							end
 						end
-					else
-						tradeSkillID = 0;
+					end
+				end
+				
+				if tradeSkillID ~= 0 then
+					local numTradeSkills = GetNumTradeSkills();
+					for skillIndex = 1,numTradeSkills do
+						local skillName, skillType, numAvailable, isExpanded = GetTradeSkillInfo(skillIndex);
+						if skillType ~= "header" then
+							local spellID = app.SpellNameToSpellID[skillName];
+							if spellID then
+								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil;
+								app.CurrentCharacter.Spells[spellID] = 1;
+								if not ATTAccountWideData.Spells[spellID] then
+									ATTAccountWideData.Spells[spellID] = 1;
+									learned = learned + 1;
+								end
+								if not skillCache[spellID] then
+									app.print("Missing " .. (skillName or "[??]") .. " (Spell ID #" .. spellID .. ") in ATT Database. Please report it!");
+									skillCache[spellID] = { {} };
+								end
+							else
+								app.print("Missing " .. (skillName or "[??]") .. " spellID in ATT Database. Please report it!");
+							end
+							
+							-- Cache the Reagents used to make this item.
+							local craftedItemID = GetItemInfoInstant(GetTradeSkillItemLink(skillIndex));
+							for i=1,GetTradeSkillNumReagents(skillIndex) do
+								local reagentCount = select(3, GetTradeSkillReagentInfo(skillIndex, i));
+								local itemID = GetItemInfoInstant(GetTradeSkillReagentItemLink(skillIndex, i));
+								
+								-- Make sure a cache table exists for this item.
+								-- Index 1: The Recipe Skill IDs
+								-- Index 2: The Crafted Item IDs
+								if not reagentCache[itemID] then reagentCache[itemID] = { {}, {} }; end
+								if spellID then reagentCache[itemID][1][spellID] = reagentCount; end
+								if craftedItemID then reagentCache[itemID][2][craftedItemID] = reagentCount; end
+							end
+						end
 					end
 				end
 				
@@ -10827,6 +10851,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			end
 		end
 		
+		-- Skillet support.
+		self.SkilletSupported = nil;
+		
 		-- TSM Shenanigans
 		self.TSMCraftingVisible = nil;
 		self.SetTSMCraftingVisible = function(self, visible)
@@ -10843,7 +10870,19 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 			end);
 		end
 		self.UpdateDefaultFrameVisibility = function(self)
-			if CraftFrame and CraftFrame:IsVisible() then
+			-- Skillet compatibility
+			if SkilletFrame then
+				if not self.SkilletSupported then
+					Skillet["ATTC"] = { ["Update"] = function() self:Update(); end };
+					Skillet:RegisterUpdatePlugin("ATTC");
+					self.SkilletSupported = true;
+				end
+				self:SetParent(SkilletFrame);
+				self:SetPoint("TOPLEFT", SkilletFrame, "TOPRIGHT", 0, 0);
+				self:SetPoint("BOTTOMLEFT", SkilletFrame, "BOTTOMRIGHT", 0, 0);
+				self:SetMovable(false);
+				return true;
+			elseif CraftFrame and CraftFrame:IsVisible() then
 				-- Default Alignment on the Craft UI.
 				self:ClearAllPoints();
 				self:SetPoint("TOPLEFT", CraftFrame, "TOPRIGHT", -37, -11);

@@ -13,8 +13,8 @@ class Context:
         ctx.params['log_level'] = verbose
         platform = utils.get_platform()
         self.game_flavour = 'vanilla_classic' if platform == 'classic_era' else platform
-        self.manager = InstawowManager(ctx, self.game_flavour, False)
-        self.manager_lib = InstawowManager(ctx, self.game_flavour, True)
+        self.manager = InstawowManager(self.game_flavour, False)
+        self.manager_lib = InstawowManager(self.game_flavour, True)
 
 
 def _manage():
@@ -125,4 +125,4 @@ def show_libs(obj):
 
 
 if __name__ == "__main__":
-    main()  # pylint: disable=no-value-for-parameter
+    main()  # pylint:disable=no-value-for-parameter

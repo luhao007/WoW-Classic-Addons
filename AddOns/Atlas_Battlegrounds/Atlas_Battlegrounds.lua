@@ -1,10 +1,10 @@
--- $Id: Atlas_Battlegrounds.lua 1565 2020-01-15 15:56:04Z arith $
+-- $Id: Atlas_Battlegrounds.lua 1571 2021-05-22 14:25:06Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -41,7 +41,16 @@ local BF = Atlas_GetLocaleLibBabble("LibBabble-Faction-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 local ALC = LibStub("AceLocale-3.0"):GetLocale("Atlas")
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
+
 local db = {}
 private.db = db
 
@@ -59,7 +68,7 @@ local BULLET = " - "
 
 db.category = L[private.category]
 
-if (WoWClassic) then
+if (WoWClassicEra or WoWClassicTBC) then
 	db.maps = {
 		AlteracValleyNorth = {
 			ZoneName = { BZ["Alterac Valley"]..ALC["L-Parenthesis"]..ALC["North"]..ALC["Comma"]..FACTION_ALLIANCE..ALC["R-Parenthesis"] },
@@ -184,6 +193,7 @@ if (WoWClassic) then
 			{ BLUE.."B) "..BZ["Warsong Lumber Mill"]..ALC["L-Parenthesis"]..FACTION_HORDE..ALC["R-Parenthesis"], 10002 },
 		},
 	}
+
 	db.coords = {
 		AlteracValleyNorth = {
 			{  "A", 10001, 368, 25 }, -- Entrance
@@ -243,6 +253,37 @@ if (WoWClassic) then
 			{ "B", 10002, 256, 365 }, -- Warsong Lumber Mill
 		},
 	}
+	if (WoWClassicTBC) then
+		db.maps["EyeOfTheStorm"] = {
+			ZoneName = { BZ["Eye of the Storm"] },
+			Location = { BZ["Netherstorm"] },
+			LevelRange = "15-120"..ALC["L-Parenthesis"]..L["Span of 5"]..ALC["R-Parenthesis"]..ALC["Slash"].."120",
+			PlayerLimit = {15},
+			Acronym = L["EotS"],
+			WorldMapID = 112,
+			{ BLUE.."A) "..ALC["Entrance"]..ALC["L-Parenthesis"]..FACTION_ALLIANCE..ALC["R-Parenthesis"], 10001 },
+			{ BLUE.."B) "..ALC["Entrance"]..ALC["L-Parenthesis"]..FACTION_HORDE..ALC["R-Parenthesis"], 10002 },
+			{ _RED.."1) "..L["Flag"], 10003 },
+			{ GREN.."1) "..BZ["Mage Tower"], 10004 },
+			{ GREN.."2) "..BZ["Draenei Ruins"], 10005 },
+			{ GREN.."3) "..BZ["Fel Reaver Ruins"], 10006 },
+			{ GREN.."4) "..BZ["Blood Elf Tower"], 10007 },
+			{ ORNG.."1) "..ALC["Graveyard"], 10008 },
+		}
+		db.coords["EyeOfTheStorm"] = {
+			{ "A", 10001, 238, 82 }, -- Entrance
+			{ "B", 10002, 266, 408 }, -- Entrance
+			{ "1", 10003, 251, 247 }, -- Flag
+			{ "1", 10004, 163, 196 }, -- Mage Tower
+			{ "2", 10005, 347, 204 }, -- Draenei Ruins
+			{ "3", 10006, 165, 304 }, -- Fel Reaver Ruins
+			{ "4", 10007, 341, 301 }, -- Blood Elf Tower
+			{ "1", 10008, 200, 162 }, -- Graveyard
+			{ "1", 10008, 304, 161 }, -- Graveyard
+			{ "1", 10008, 201, 319 }, -- Graveyard
+			{ "1", 10008, 299, 316 }, -- Graveyard
+		}
+	end
 else
 	db.maps = {
 		AlteracValleyNorth = {

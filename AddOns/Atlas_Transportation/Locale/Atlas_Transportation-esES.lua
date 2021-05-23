@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-esES.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-esES.lua 125 2021-05-22 14:07:10Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -37,11 +37,9 @@ local L = AceLocale:NewLocale("Atlas_Transportation", "esES", false);
 
 if L then
 L["Abandoned Kite"] = "Cometa abandonada"
---[[Translation missing --]]
---[[ L["Airship"] = ""--]] 
+L["Airship"] = "Dirigible"
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Nubeblanca <Maestro de vuelo>"
---[[Translation missing --]]
---[[ L["Blue"] = ""--]] 
+L["Blue"] = "Azul"
 --[[Translation missing --]]
 --[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
 --[[Translation missing --]]
@@ -57,8 +55,7 @@ L["Climbing Rope"] = "Cuerda de escalar"
 --[[ L["Connection to the Hall of Shadows"] = ""--]] 
 L["Death Knight Only"] = "Solo caballeros de la muerte"
 L["Druid Only"] = "Solo druidas"
---[[Translation missing --]]
---[[ L["Exploration"] = ""--]] 
+L["Exploration"] = "Exploración"
 --[[Translation missing --]]
 --[[ L["Flight to Trueshot Lodge"] = ""--]] 
 L["From sea level to ground level"] = "Del nivel del mar al nivel de tierra"
@@ -66,27 +63,24 @@ L["From sea level to ground level"] = "Del nivel del mar al nivel de tierra"
 --[[ L["Gleep Chatterswitch"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Great Eagle"] = ""--]] 
---[[Translation missing --]]
---[[ L["Green"] = ""--]] 
+L["Green"] = "Verde"
 L["Gryphon"] = "Grifo"
 --[[Translation missing --]]
 --[[ L["Gryphon Master"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Hunter Only"] = ""--]] 
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
+L["Hunter Only"] = "Solo cazadores"
 --[[Translation missing --]]
 --[[ L["Illidari Gateway"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Jump to Skyhold"] = ""--]] 
 L["Legend"] = "Leyenda"
---[[Translation missing --]]
---[[ L["Nutral"] = ""--]] 
+L["Nutral"] = "Neutral"
 L["Only available after winning the PvP battle"] = "Disponible únicamente despues de haber ganado la batalla JcJ"
---[[Translation missing --]]
---[[ L["Orange"] = ""--]] 
+L["Orange"] = "Naranja"
 L["Orb of Translocation"] = "Orbe de traslado"
 L["Portal / Waygate Path to the destination"] = "Portal / Puerta con destino"
---[[Translation missing --]]
---[[ L["Portal to Dalaran"] = ""--]] 
+L["Portal to Dalaran"] = "Portal a Dalaran"
 --[[Translation missing --]]
 --[[ L["Portal to Dreadscar Rift"] = ""--]] 
 --[[Translation missing --]]
@@ -96,11 +90,9 @@ L["Portal / Waygate Path to the destination"] = "Portal / Puerta con destino"
 --[[Translation missing --]]
 --[[ L["Portal to the Maelstrom"] = ""--]] 
 L["Portals"] = "Portales"
---[[Translation missing --]]
---[[ L["Purple"] = ""--]] 
+L["Purple"] = "Morado"
 L["Rappelling Rope"] = "Soga de rápel"
---[[Translation missing --]]
---[[ L["Red"] = ""--]] 
+L["Red"] = "Rojo"
 --[[Translation missing --]]
 --[[ L["Require to complete \"Meet the Scout\" quest line first."] = ""--]] 
 --[[Translation missing --]]
@@ -135,15 +127,13 @@ L["Transporters by the sea and on the cliff"] = "Transportes por mar y por acant
 --[[ L["Warrior's landing / jumping point (from or back to Skyhold)"] = ""--]] 
 L["West of the path to Timbermaw Hold"] = "Oeste del camino al Puesto Vigóa del Cubil"
 L["Whispercloud's Balloon"] = "Globo de la Nube Susurrante"
---[[Translation missing --]]
---[[ L["White"] = ""--]] 
+L["White"] = "Blanco"
 L["Wind Rider"] = "Jinete del viento"
 --[[Translation missing --]]
 --[[ L["Wind Rider Master"] = ""--]] 
 --[[Translation missing --]]
 --[[ L["Won't be available once the Battle for Andorhal chain is finished."] = ""--]] 
---[[Translation missing --]]
---[[ L["Yellow"] = ""--]] 
+L["Yellow"] = "Amarillo"
 L["Zeppelin Towers"] = "Aeropuertos Zepelín"
 
 end

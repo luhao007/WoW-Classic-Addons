@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3317/198/ATT-Classic-v0.5.4-bcc.zip",
-    "date_published": "2021-05-20T21:59:44.153000+00:00",
-    "version": "TBC Classic 0.5.4",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/267285/file/3317198/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3319/793/ATT-Classic-v0.5.5-bcc.zip",
+    "date_published": "2021-05-22T20:46:06.040000+00:00",
+    "version": "TBC Classic 0.5.5",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/267285/file/3319793/changelog",
     "folders": [
       {
         "name": "ATT-Classic"
@@ -20,6 +20,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "TBC Classic 0.5.5",
+        "install_time": "2021-05-23T07:51:34+00:00"
+      },
       {
         "version": "TBC Classic 0.5.4",
         "install_time": "2021-05-21T08:24:22+00:00"
@@ -206,10 +210,10 @@
     "name": "Atlas Battlegrounds",
     "description": "Battleground Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-battlegrounds",
-    "download_url": "https://edge.forgecdn.net/files/3014/981/Atlas_Battlegrounds_v1.47.00.11305.zip",
-    "date_published": "2020-07-26T09:08:10.877000+00:00",
-    "version": "v1.47.00.11305",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/330/Atlas_Battlegrounds_v1.49.00-tbc.zip",
+    "date_published": "2021-05-22T14:32:31.290000+00:00",
+    "version": "v1.49.00-tbc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32829/file/3319330/changelog",
     "folders": [
       {
         "name": "Atlas_Battlegrounds"
@@ -224,6 +228,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.49.00-tbc",
+        "install_time": "2021-05-23T07:51:35+00:00"
+      },
+      {
+        "version": "v1.49.00-classic",
+        "install_time": "2021-05-23T07:48:32+00:00"
+      },
       {
         "version": "v1.47.00.11305",
         "install_time": "2020-11-03T05:33:04+00:00"
@@ -276,10 +288,10 @@
     "name": "Atlas Dungeon Locations",
     "description": "Maps for instances' location",
     "url": "https://www.curseforge.com/wow/addons/atlas-dungeon-locations",
-    "download_url": "https://edge.forgecdn.net/files/2863/929/Atlas_DungeonLocs-v1.47.00.11303.00.zip",
-    "date_published": "2020-01-19T16:46:32.883000+00:00",
-    "version": "v1.47.00.11303.00",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/304/Atlas_DungeonLocs_v1.49.00-tbc.zip",
+    "date_published": "2021-05-22T14:11:29.350000+00:00",
+    "version": "v1.49.00-tbc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32830/file/3319304/changelog",
     "folders": [
       {
         "name": "Atlas_DungeonLocs"
@@ -295,6 +307,14 @@
     ],
     "logged_versions": [
       {
+        "version": "v1.49.00-tbc",
+        "install_time": "2021-05-23T07:51:35+00:00"
+      },
+      {
+        "version": "v1.49.00-classic",
+        "install_time": "2021-05-23T07:48:33+00:00"
+      },
+      {
         "version": "v1.47.00.11303.00",
         "install_time": "2020-11-03T05:33:04+00:00"
       }
@@ -307,10 +327,10 @@
     "name": "Atlas Transportation",
     "description": "Transportation Maps",
     "url": "https://www.curseforge.com/wow/addons/atlas-transportation",
-    "download_url": "https://edge.forgecdn.net/files/3014/982/Atlas_Transportation-v1.47.03.11305.00.zip",
-    "date_published": "2020-07-26T09:08:53.143000+00:00",
-    "version": "v1.47.03.11305",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/309/Atlas_Transportation_v1.49.00-tbc.zip",
+    "date_published": "2021-05-22T14:17:06.210000+00:00",
+    "version": "v1.49.00-tbc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/32832/file/3319309/changelog",
     "folders": [
       {
         "name": "Atlas_Transportation"
@@ -325,6 +345,14 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "v1.49.00-tbc",
+        "install_time": "2021-05-23T07:51:35+00:00"
+      },
+      {
+        "version": "v1.49.00-classic",
+        "install_time": "2021-05-23T07:48:33+00:00"
+      },
       {
         "version": "v1.47.03.11305",
         "install_time": "2020-11-03T05:33:04+00:00"
@@ -780,19 +808,10 @@
         "name": "DBM-BWL"
       },
       {
-        "name": "DBM-BlackTemple"
-      },
-      {
         "name": "DBM-Core"
       },
       {
         "name": "DBM-GUI"
-      },
-      {
-        "name": "DBM-Hyjal"
-      },
-      {
-        "name": "DBM-Karazhan"
       },
       {
         "name": "DBM-MC"
@@ -804,28 +823,37 @@
         "name": "DBM-Onyxia"
       },
       {
+        "name": "DBM-Party-Classic"
+      },
+      {
+        "name": "DBM-StatusBarTimers"
+      },
+      {
+        "name": "DBM-ZG"
+      },
+      {
+        "name": "DBM-BlackTemple"
+      },
+      {
+        "name": "DBM-Hyjal"
+      },
+      {
+        "name": "DBM-Karazhan"
+      },
+      {
         "name": "DBM-Outlands"
       },
       {
         "name": "DBM-Party-BC"
       },
       {
-        "name": "DBM-Party-Classic"
-      },
-      {
         "name": "DBM-Serpentshrine"
-      },
-      {
-        "name": "DBM-StatusBarTimers"
       },
       {
         "name": "DBM-Sunwell"
       },
       {
         "name": "DBM-TheEye"
-      },
-      {
-        "name": "DBM-ZG"
       }
     ],
     "options": {
@@ -904,6 +932,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "r124-classic",
+        "install_time": "2021-05-23T07:48:34+00:00"
+      },
       {
         "version": "r124-bcc",
         "install_time": "2021-05-21T15:52:05+00:00"
@@ -1032,10 +1064,10 @@
     "name": "DejaClassicStats",
     "description": "Dejablue's improved Classic character stats panel view.",
     "url": "https://www.curseforge.com/wow/addons/dejaclassicstats",
-    "download_url": "https://edge.forgecdn.net/files/3318/776/DejaClassicStats205r004.zip",
-    "date_published": "2021-05-22T01:35:05.273000+00:00",
-    "version": "205r004",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3318776/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3318/939/DejaClassicStats205r005.zip",
+    "date_published": "2021-05-22T06:00:52.610000+00:00",
+    "version": "205r005",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3318939/changelog",
     "folders": [
       {
         "name": "DejaClassicStats"
@@ -1046,6 +1078,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "205r005",
+        "install_time": "2021-05-22T08:02:06+00:00"
+      },
       {
         "version": "205r004",
         "install_time": "2021-05-22T04:51:33+00:00"
@@ -1259,10 +1295,10 @@
     "name": "GTFO",
     "description": "GTFO warns you when you're standing in fire or other bad stuff.",
     "url": "https://www.curseforge.com/wow/addons/gtfo",
-    "download_url": "https://edge.forgecdn.net/files/3207/623/GTFO-4.60-Classic.zip",
-    "date_published": "2021-02-17T19:07:58.473000+00:00",
-    "version": "4.60-classic",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/547/GTFO-4.63-BC.zip",
+    "date_published": "2021-05-22T17:37:32.287000+00:00",
+    "version": "4.63-BC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/20697/file/3319547/changelog",
     "folders": [
       {
         "name": "GTFO"
@@ -1273,6 +1309,14 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "4.63-BC",
+        "install_time": "2021-05-23T07:51:36+00:00"
+      },
+      {
+        "version": "4.63-Classic",
+        "install_time": "2021-05-23T07:48:34+00:00"
+      },
       {
         "version": "4.60-classic",
         "install_time": "2021-02-18T12:14:40+00:00"
@@ -1313,6 +1357,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "1.46.0-classic",
+        "install_time": "2021-05-23T07:48:34+00:00"
+      },
+      {
         "version": "1.46.0-classic-bcc",
         "install_time": "2021-05-21T09:15:54+00:00"
       },
@@ -1329,10 +1377,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3314/830/gathermate2_data_wowhead_classic_v2021-05-19.zip",
-    "date_published": "2021-05-19T08:18:57.687000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2021-05-19.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3314830/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3320/452/gathermate2_data_wowhead_classic_v2021-05-23.zip",
+    "date_published": "2021-05-23T10:04:55.220000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2021-05-23.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3320452/changelog",
     "folders": [
       {
         "name": "GatherMate2_Data"
@@ -1343,6 +1391,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2021-05-23.zip",
+        "install_time": "2021-05-23T10:40:37+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-19.zip",
         "install_time": "2021-05-21T08:24:23+00:00"
@@ -1361,6 +1413,200 @@
       },
       {
         "version": "gathermate2_data_wowhead_classic_v2020-09-28.zip",
+        "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "28774",
+    "slug": "grail",
+    "name": "Grail",
+    "description": "Library of quest information",
+    "url": "https://www.curseforge.com/wow/addons/grail",
+    "download_url": "https://edge.forgecdn.net/files/3175/424/Grail-114.zip",
+    "date_published": "2021-01-20T22:24:36.507000+00:00",
+    "version": "114",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/28774/file/3175424/changelog",
+    "folders": [
+      {
+        "name": "Grail"
+      },
+      {
+        "name": "Grail-Achievements"
+      },
+      {
+        "name": "Grail-NPCs-_classic_"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-deDE"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-enUS"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-esES"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-esMX"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-frFR"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-itIT"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-koKR"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-ptBR"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-ruRU"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-zhCN"
+      },
+      {
+        "name": "Grail-NPCs-_classic_-zhTW"
+      },
+      {
+        "name": "Grail-NPCs-_retail_"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-deDE"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-enUS"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-esES"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-esMX"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-frFR"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-itIT"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-koKR"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-ptBR"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-ruRU"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-zhCN"
+      },
+      {
+        "name": "Grail-NPCs-_retail_-zhTW"
+      },
+      {
+        "name": "Grail-Quests-_classic_"
+      },
+      {
+        "name": "Grail-Quests-_classic_-deDE"
+      },
+      {
+        "name": "Grail-Quests-_classic_-enUS"
+      },
+      {
+        "name": "Grail-Quests-_classic_-esES"
+      },
+      {
+        "name": "Grail-Quests-_classic_-esMX"
+      },
+      {
+        "name": "Grail-Quests-_classic_-frFR"
+      },
+      {
+        "name": "Grail-Quests-_classic_-itIT"
+      },
+      {
+        "name": "Grail-Quests-_classic_-koKR"
+      },
+      {
+        "name": "Grail-Quests-_classic_-ptBR"
+      },
+      {
+        "name": "Grail-Quests-_classic_-ruRU"
+      },
+      {
+        "name": "Grail-Quests-_classic_-zhCN"
+      },
+      {
+        "name": "Grail-Quests-_classic_-zhTW"
+      },
+      {
+        "name": "Grail-Quests-_retail_"
+      },
+      {
+        "name": "Grail-Quests-_retail_-deDE"
+      },
+      {
+        "name": "Grail-Quests-_retail_-enUS"
+      },
+      {
+        "name": "Grail-Quests-_retail_-esES"
+      },
+      {
+        "name": "Grail-Quests-_retail_-esMX"
+      },
+      {
+        "name": "Grail-Quests-_retail_-frFR"
+      },
+      {
+        "name": "Grail-Quests-_retail_-itIT"
+      },
+      {
+        "name": "Grail-Quests-_retail_-koKR"
+      },
+      {
+        "name": "Grail-Quests-_retail_-ptBR"
+      },
+      {
+        "name": "Grail-Quests-_retail_-ruRU"
+      },
+      {
+        "name": "Grail-Quests-_retail_-zhCN"
+      },
+      {
+        "name": "Grail-Quests-_retail_-zhTW"
+      },
+      {
+        "name": "Grail-Reputations-_classic_"
+      },
+      {
+        "name": "Grail-Reputations-_retail_"
+      },
+      {
+        "name": "Grail-Rewards"
+      },
+      {
+        "name": "Grail-When"
+      }
+    ],
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "114",
+        "install_time": "2021-05-23T10:09:19+00:00"
+      },
+      {
+        "version": "113 Classic",
+        "install_time": "2020-11-26T11:27:06+00:00"
+      },
+      {
+        "version": "112 Classic",
         "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
@@ -1539,10 +1785,10 @@
     "name": "ItemRack Classic",
     "description": "Inventory Management Addon! Change your items quick and easy!",
     "url": "https://www.curseforge.com/wow/addons/itemrack-classic",
-    "download_url": "https://edge.forgecdn.net/files/3316/771/ItemRack-classic-3.64.zip",
-    "date_published": "2021-05-20T16:18:29.147000+00:00",
-    "version": "3.64",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3320/474/ItemRack-bcc-3.66.zip",
+    "date_published": "2021-05-23T10:23:52.440000+00:00",
+    "version": "3.66",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3320474/changelog",
     "folders": [
       {
         "name": "ItemRack"
@@ -1556,6 +1802,14 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.66",
+        "install_time": "2021-05-23T10:40:37+00:00"
+      },
+      {
+        "version": "3.65",
+        "install_time": "2021-05-22T13:44:29+00:00"
+      },
       {
         "version": "3.64",
         "install_time": "2021-05-21T01:44:34+00:00"
@@ -1589,10 +1843,10 @@
     "name": "LootMonitor",
     "description": "Announce Loots",
     "url": "https://www.curseforge.com/wow/addons/lootmonitor",
-    "download_url": "https://edge.forgecdn.net/files/3285/431/LootMonitor-3.24(TBC).zip",
-    "date_published": "2021-04-22T13:03:15.980000+00:00",
-    "version": "v3.24(TBC)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/390962/file/3285431/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3319/120/LootMonitor-3.25(BCC).zip",
+    "date_published": "2021-05-22T10:50:49.670000+00:00",
+    "version": "v3.25(BCC)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/390962/file/3319120/changelog",
     "folders": [
       {
         "name": "LootMonitor"
@@ -1603,6 +1857,14 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.24(Classic)",
+        "install_time": "2021-05-23T07:48:34+00:00"
+      },
+      {
+        "version": "v3.25(BCC)",
+        "install_time": "2021-05-22T11:31:22+00:00"
+      },
       {
         "version": "v3.24(TBC)",
         "install_time": "2021-05-22T07:44:20+00:00"
@@ -1666,6 +1928,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "1.9.3-classic",
+        "install_time": "2021-05-23T07:48:35+00:00"
+      },
+      {
         "version": "1.9.3-bcc",
         "install_time": "2021-05-21T09:15:54+00:00"
       },
@@ -1710,70 +1976,6 @@
       {
         "version": "v5.7.152-Classic",
         "install_time": "2021-02-25T12:02:31+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "2861",
-    "slug": "monkey-buddy",
-    "name": "MonkeyBuddy",
-    "description": "Allows you to easily configure your MonkeyQuest with a nice config window.",
-    "url": "https://www.curseforge.com/wow/addons/monkey-buddy",
-    "download_url": "https://edge.forgecdn.net/files/3088/29/MonkeyBuddy_v2.11.0c.zip",
-    "date_published": "2020-10-20T21:26:42.640000+00:00",
-    "version": "v2.11.0c",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "MonkeyBuddy"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v2.11.0c",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "2863",
-    "slug": "monkey-quest",
-    "name": "MonkeyQuest",
-    "description": "Displays quests and their objectives in a nice drag able frame in a customizable way.",
-    "url": "https://www.curseforge.com/wow/addons/monkey-quest",
-    "download_url": "https://edge.forgecdn.net/files/3116/30/MonkeyQuest_v2.11.0c.zip",
-    "date_published": "2020-11-18T20:56:51.530000+00:00",
-    "version": "v2.11.0c",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "MonkeyLibrary"
-      },
-      {
-        "name": "MonkeyQuest"
-      },
-      {
-        "name": "MonkeyQuestLog"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v2.11.0c",
-        "install_time": "2020-11-24T11:19:25+00:00"
-      },
-      {
-        "version": "v2.10.3c",
-        "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
   },
@@ -1860,6 +2062,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.03.zip",
+        "install_time": "2021-05-23T07:48:35+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.03-TBC.zip",
         "install_time": "2021-05-21T08:24:24+00:00"
@@ -2052,6 +2258,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "2.5.3 (Classic)",
+        "install_time": "2021-05-23T07:48:35+00:00"
+      },
+      {
         "version": "2.5.3 (Burning Crusade)",
         "install_time": "2021-05-22T04:51:34+00:00"
       },
@@ -2236,10 +2446,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3315/911/Questie-v6.3.11-TBC.zip",
-    "date_published": "2021-05-19T23:48:10.400000+00:00",
-    "version": "v6.3.11 - Universal (TBC)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334372/file/3315911/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3320/182/Questie-v6.3.12.zip",
+    "date_published": "2021-05-23T03:46:59.637000+00:00",
+    "version": "v6.3.12 - Universal (TBC)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334372/file/3320182/changelog",
     "folders": [
       {
         "name": "Questie"
@@ -2250,6 +2460,14 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v6.3.12 - Universal (TBC)",
+        "install_time": "2021-05-23T07:51:39+00:00"
+      },
+      {
+        "version": "v6.3.12 - Universal (Era)",
+        "install_time": "2021-05-23T07:48:36+00:00"
+      },
       {
         "version": "v6.3.11 - Universal (TBC)",
         "install_time": "2021-05-21T08:24:26+00:00"
@@ -2295,10 +2513,10 @@
     "name": "RaidLedger",
     "description": "GDKP gold run ledger",
     "url": "https://www.curseforge.com/wow/addons/raidledger",
-    "download_url": "https://edge.forgecdn.net/files/2960/715/RaidLedger-v1.8.4.zip",
-    "date_published": "2020-05-19T13:34:05.720000+00:00",
-    "version": "v1.8.4",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/544/RaidLedger-v1.8.4-tbc.zip",
+    "date_published": "2021-05-22T17:36:55.483000+00:00",
+    "version": "v1.8.4-tbc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/349048/file/3319544/changelog",
     "folders": [
       {
         "name": "RaidLedger"
@@ -2309,6 +2527,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v1.8.4-tbc",
+        "install_time": "2021-05-23T07:51:39+00:00"
+      },
       {
         "version": "v1.8.4",
         "install_time": "2020-11-03T05:33:04+00:00"
@@ -2487,6 +2709,37 @@
       {
         "version": "1.2.4.11305",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "339548",
+    "slug": "titan-panel-reagent-tracker",
+    "name": "Titan Panel [Reagent Tracker]",
+    "description": "Tracks reagents for class-specific spells. Titan Panel plugin.",
+    "url": "https://www.curseforge.com/wow/addons/titan-panel-reagent-tracker",
+    "download_url": "https://edge.forgecdn.net/files/3314/155/TitanClassicReagentTracker-2.0.1.zip",
+    "date_published": "2021-05-18T20:00:56.163000+00:00",
+    "version": "2.0.1",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/339548/file/3314155/changelog",
+    "folders": [
+      {
+        "name": "TitanClassicReagentTracker"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [
+      {
+        "id": "334602"
+      }
+    ],
+    "logged_versions": [
+      {
+        "version": "2.0.1",
+        "install_time": "2021-05-23T10:13:00+00:00"
       }
     ]
   },
@@ -2748,10 +3001,10 @@
     "name": "WclPlayerScore",
     "description": "Wcl Player Score, only support CN region now.",
     "url": "https://www.curseforge.com/wow/addons/wclplayerscore",
-    "download_url": "https://edge.forgecdn.net/files/3317/50/WclPlayerScore-1.8.245.zip",
-    "date_published": "2021-05-20T19:43:35.007000+00:00",
-    "version": "1.8.245",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3319/701/WclPlayerScore-1.8.247.zip",
+    "date_published": "2021-05-22T19:17:28.340000+00:00",
+    "version": "1.8.247",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/406686/file/3319701/changelog",
     "folders": [
       {
         "name": "WclPlayerScore"
@@ -2762,6 +3015,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.8.247",
+        "install_time": "2021-05-23T07:48:38+00:00"
+      },
       {
         "version": "1.8.245",
         "install_time": "2021-05-21T01:44:37+00:00"
@@ -3068,6 +3325,37 @@
       {
         "version": "3.0.5-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "30118",
+    "slug": "wholly",
+    "name": "Wholly",
+    "description": "Shows quests in zones and puts pins on maps where quest givers are.",
+    "url": "https://www.curseforge.com/wow/addons/wholly",
+    "download_url": "https://edge.forgecdn.net/files/3175/426/Wholly-082.zip",
+    "date_published": "2021-01-20T22:26:24.667000+00:00",
+    "version": "082",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/30118/file/3175426/changelog",
+    "folders": [
+      {
+        "name": "Wholly"
+      }
+    ],
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "079 Classic",
+        "install_time": "2021-05-23T10:34:48+00:00"
+      },
+      {
+        "version": "082",
+        "install_time": "2021-05-23T10:11:10+00:00"
       }
     ]
   },

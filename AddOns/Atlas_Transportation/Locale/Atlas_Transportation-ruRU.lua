@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-ruRU.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-ruRU.lua 125 2021-05-22 14:07:10Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -57,6 +57,8 @@ L["Great Eagle"] = "Большой орел"
 L["Green"] = "Зелёный"
 L["Gryphon"] = "Грифон"
 L["Gryphon Master"] = "Укротитель грифонов"
+--[[Translation missing --]]
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
 L["Hunter Only"] = "только охотнику"
 L["Illidari Gateway"] = "Врата иллидари"
 L["Jump to Skyhold"] = "Прыжок в Небесную Цитадель"

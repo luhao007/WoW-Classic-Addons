@@ -5,7 +5,7 @@
 GTFO Fail List - Shadowlands
 ]]--
 
-if (not GTFO.ClassicMode) then
+if (not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) then
 
 --- ***********************
 --- * Shadowlands (World) *
@@ -229,6 +229,16 @@ GTFO.SpellID["342494"] = {
   sound = 3;
 };
 
+GTFO.SpellID["353404"] = {
+  --desc = "Residual Blast";
+  sound = 3;
+};
+
+GTFO.SpellID["340770"] = {
+  --desc = "Glacial Ray (Glimmerdust, As Jaina)";
+  applicationOnly = true;
+  sound = 3;
+};
 
 --- **********************
 --- * Halls of Atonement *
@@ -296,7 +306,6 @@ GTFO.SpellID["336945"] = {
   --desc = "Hurl Boulders (Unbreakable Urtz)";
   sound = 3;
 };
-
 
 --- **************
 --- * Plaguefall *
@@ -383,6 +392,7 @@ GTFO.SpellID["320991"] = {
 GTFO.SpellID["334921"] = {
   --desc = "Umbral Crash (Insatiable Brute)";
   sound = 3;
+  damageMinimum = 20000;
   test = true;
 };
 
@@ -581,6 +591,7 @@ GTFO.SpellID["317605"] = {
 GTFO.SpellID["332708"] = {
   --desc = "Ground Smash (Heavin the Breaker)";
   sound = 3;
+  damageMinimum = 20000;
   test = true;
 };
 
@@ -664,12 +675,6 @@ GTFO.SpellID["324323"] = {
 GTFO.SpellID["324391"] = {
   --desc = "Grave Spikes (Skeletal Monstrosity)";
   sound = 3;
-};
-
-GTFO.SpellID["321253"] = {
-  --desc = "Final Harvest (Amarth)";
-  sound = 3;
-  test = true;
 };
 
 GTFO.SpellID["320365"] = {
@@ -938,6 +943,12 @@ GTFO.SpellID["345425"] = {
   sound = 3;
 };
 
+GTFO.SpellID["343024"] = {
+  --desc = "Horrified (Shriekwing)";
+  applicationOnly = true;
+  sound = 3;
+};
+
 GTFO.SpellID["341441"] = {
   --desc = "Ground Smash (Hulking Gargon)";
   sound = 3;
@@ -980,6 +991,11 @@ GTFO.SpellID["329518"] = {
   sound = 3;
 };
 
+GTFO.SpellID["345775"] = {
+  --desc = "Scorching Entrance (Shade of Kael'thas)";
+  sound = 3;
+};
+
 GTFO.SpellID["327619"] = {
   --desc = "Waltz of Blood (Lord Stavros - Waltzing Venthyr)";
   applicationOnly = true;
@@ -996,6 +1012,7 @@ GTFO.SpellID["335298"] = {
   --desc = "Giant Fists (Sludgefist)";
   sound = 3;
   tankSound = 0;
+  test = true;
 };
 
 GTFO.SpellID["332572"] = {
@@ -1055,6 +1072,25 @@ GTFO.SpellID["327464"] = {
 
 GTFO.SpellID["336162"] = {
   --desc = "Crescendo (Crimson Cabalist)";
+  sound = 3;
+};
+
+GTFO.SpellID["330137"] = {
+  --desc = "Massacre (Sire Denathrius)";
+  sound = 3;
+};
+
+--- *************************
+--- * Sanctum of Domination *
+--- *************************
+
+GTFO.SpellID["347671"] = {
+  --desc = "Hungering Mist (The Tarragrue)";
+  sound = 3;
+};
+
+GTFO.SpellID["347737"] = {
+  --desc = "Hungering Mist (The Tarragrue)";
   sound = 3;
 };
 

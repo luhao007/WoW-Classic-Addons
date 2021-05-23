@@ -1,2 +1,6 @@
+test-warnings: true
+doc-warnings: false
+member-warnings: false
+
 pep257:
   d213: false

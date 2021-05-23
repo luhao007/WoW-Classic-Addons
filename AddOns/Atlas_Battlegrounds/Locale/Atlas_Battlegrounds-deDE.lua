@@ -1,10 +1,10 @@
--- $Id: Atlas_Battlegrounds-deDE.lua 1564 2020-01-15 15:53:51Z arith $
+-- $Id: Atlas_Battlegrounds-deDE.lua 1571 2021-05-22 14:25:06Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert at gmail dot com>
 	Copyright 2010 - Lothaer <lothayer at gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -44,8 +44,7 @@ L["Attacking Team"] = "Angreifende Fraktion"
 L["AV"] = "AV"
 L["Battleground Demolisher"] = "Schlachtfeldverwüster"
 L["Battleground Maps"] = "Schlachtfeldkarten"
---[[Translation missing --]]
---[[ L["Bonfire"] = ""--]] 
+L["Bonfire"] = "Feuer"
 L["Brogus Thunderbrew <Food & Drink>"] = "Brogus Donnerbräu <Essen & Getränke>"
 L["Broken Temple Graveyard"] = "Friedhof des zerbrochenen Tempels"
 L["Broken Temple Vihecal Workshop"] = "Fahrzeugwerkstatt des zerbrochenen Tempels"
@@ -60,8 +59,7 @@ L["Commander Stevens <Baradin's Wardens>"] = "Kommandant Stevens <Wächter von B
 L["Commander Zanoth <Hellscream's Reach>"] = "Kommandant Zanoth <Höllschreis Hand>"
 L["Contested Graveyards"] = "Umkämpfte Friedhöfe"
 L["Coreiel <Blade Merchant>"] = "Coreiel <Klingenhändlerin>"
---[[Translation missing --]]
---[[ L["Crash Site"] = ""--]] 
+L["Crash Site"] = "Absturzstelle"
 L["Defending Team"] = "Verteidigende Fraktion"
 L["Dragonmaw Clan Compound"] = "Truppenlager des Drachenmalklans"
 L["Drek'Thar <Frostwolf General>"] = "Drek'Thar <General der Frostwölfe>"
@@ -109,11 +107,9 @@ L["Mine Cart Spawn Point"] = "Minenloren-Startpunkt"
 L["Mulverick's Beacon"] = "Mulvericks Signal"
 L["Murgot Deepforge"] = "Murgot Tiefenschmied"
 L["Orb of Power"] = "Kugel der Macht"
---[[Translation missing --]]
---[[ L["Overlook"] = ""--]] 
+L["Overlook"] = "Warte"
 L["Overlord Agmar"] = "Oberanführer Agmar"
---[[Translation missing --]]
---[[ L["Plunge"] = ""--]] 
+L["Plunge"] = "Sturz"
 L["Primalist Thurloga"] = "Primalist Thurloga"
 L["Private Garnoth <Hellscream's Reach>"] = "Gefreiter Garnoth <Höllschreis Hand>"
 L["Prospector Stonehewer"] = "Ausgrabungsleiter Steinhauer"
@@ -121,13 +117,10 @@ L["Quartermaster Davian Vaclav"] = "Rüstmeister Davian Watzlav"
 L["Quartermaster Jaffrey Noreliqe"] = "Rüstmeister Jaffrey Keinespuhr"
 L["Rescued"] = "Gerettet"
 L["Resurrection Point"] = "Wiederbelebungspunkt"
---[[Translation missing --]]
---[[ L["Ridge"] = ""--]] 
---[[Translation missing --]]
---[[ L["Ruins"] = ""--]] 
+L["Ridge"] = "Kamm"
+L["Ruins"] = "Ruinen"
 L["Sergeant Parker <Baradin's Wardens>"] = "Unteroffizier Parker <Wächter von Baradin>"
---[[Translation missing --]]
---[[ L["Shipwreck"] = ""--]] 
+L["Shipwreck"] = "Schiffswrack"
 L["Slidore's Beacon"] = "Erzrutschs Signal"
 L["Smith Regzar"] = "Schmied Regzar"
 L["SotA"] = "SdU"
@@ -146,27 +139,22 @@ L["Stormpike Stable Master <Stable Master>"] = "Stallmeister der Sturmlanzen <St
 L["Sunken Ring Graveyard"] = "Friedhof des versunkenen Rings"
 L["Sunken Ring Vihecal Workshop"] = "Fahrzeugwerkstatt des versunkenen Rings"
 L["Svalbrad Farmountain <Trade Goods>"] = "Svalbrad Bergweh <Handwerkswaren>"
---[[Translation missing --]]
---[[ L["Tar Pits"] = ""--]] 
---[[Translation missing --]]
---[[ L["Temple"] = ""--]] 
+L["Tar Pits"] = "Teergruben"
+L["Temple"] = "Tempel"
 L["The Docks"] = "Die Docks"
 L["The Hangar"] = "Der Hangar"
 L["The Quarry"] = "Der Steinbruch"
 L["The Refinery"] = "Die Raffinerie"
 L["The Silithyst Must Flow"] = "Silithyst sammeln"
 L["The Workshop"] = "Die Belagerungswerkstatt"
---[[Translation missing --]]
---[[ L["Tide Pools"] = ""--]] 
+L["Tide Pools"] = "Gezeitenbecken"
 L["Titan Relic"] = "Relikt der Titanen"
---[[Translation missing --]]
---[[ L["Tower"] = ""--]] 
+L["Tower"] = "Turm"
 L["Tower Point"] = "Turmstellung"
 L["Twinspire Graveyard"] = "Friedhof der Zwillingsspitze"
 L["Vanndar Stormpike <Stormpike General>"] = "Vanndar Sturmlanze <General der Sturmlanzen>"
 L["Vipore's Beacon"] = "Vipores Signal"
---[[Translation missing --]]
---[[ L["Waterfall"] = ""--]] 
+L["Waterfall"] = "Wasserfall"
 L["West Beacon"] = "Westliches Leuchtsignal"
 L["West Frostwolf Tower"] = "Westlicher Frostwolfturm"
 L["Western Crater"] = "Westlicher Krater"

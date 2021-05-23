@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-frFR.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-frFR.lua 125 2021-05-22 14:07:10Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -29,14 +29,12 @@ local L = AceLocale:NewLocale("Atlas_Transportation", "frFR", false);
 
 if L then
 L["Abandoned Kite"] = "Cerf-volant abandonné"
---[[Translation missing --]]
---[[ L["Airship"] = ""--]] 
+L["Airship"] = "Dirigeable"
 L["Aludane Whitecloud <Flight Master>"] = "Aludane Nuageblanc <Maître de vol>"
 L["Blue"] = "Bleu"
 --[[Translation missing --]]
 --[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
---[[Translation missing --]]
---[[ L["Boat to Stormwind City"] = ""--]] 
+L["Boat to Stormwind City"] = "Bateau vers Hurlevent"
 --[[Translation missing --]]
 --[[ L["Camp Taurajo"] = ""--]] 
 --[[Translation missing --]]
@@ -48,8 +46,7 @@ L["Climbing Rope"] = "Corde d’escalade"
 --[[ L["Connection to the Hall of Shadows"] = ""--]] 
 L["Death Knight Only"] = "Chevalier de la mort seulement"
 L["Druid Only"] = "Druide seulement"
---[[Translation missing --]]
---[[ L["Exploration"] = ""--]] 
+L["Exploration"] = "Exploration"
 --[[Translation missing --]]
 --[[ L["Flight to Trueshot Lodge"] = ""--]] 
 L["From sea level to ground level"] = "De la mer vers la terre ferme"
@@ -62,7 +59,8 @@ L["Gryphon"] = "Griffon"
 --[[Translation missing --]]
 --[[ L["Gryphon Master"] = ""--]] 
 --[[Translation missing --]]
---[[ L["Hunter Only"] = ""--]] 
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
+L["Hunter Only"] = "Chasseur uniquement"
 --[[Translation missing --]]
 --[[ L["Illidari Gateway"] = ""--]] 
 --[[Translation missing --]]
@@ -73,8 +71,7 @@ L["Only available after winning the PvP battle"] = "Disponible uniquement après
 L["Orange"] = "Orange"
 L["Orb of Translocation"] = "Orbe de transposition"
 L["Portal / Waygate Path to the destination"] = "Destination de Portail / Porte de transport"
---[[Translation missing --]]
---[[ L["Portal to Dalaran"] = ""--]] 
+L["Portal to Dalaran"] = "Portail vers Dalaran"
 --[[Translation missing --]]
 --[[ L["Portal to Dreadscar Rift"] = ""--]] 
 --[[Translation missing --]]

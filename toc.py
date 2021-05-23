@@ -8,12 +8,12 @@ class TOC:
         self.tags = {}
         for line in lines:
             if line.startswith('## ') and ':' in line:
-                k, v = line[3:].split(':', 1)
-                self.tags[k.strip()] = v.strip()
+                k, value = line[3:].split(':', 1)
+                self.tags[k.strip()] = value.strip()
 
         self.contents = [line for line in lines if not line.startswith('## ')]
-        for i, e in enumerate(self.contents):
-            if e != '\n':
+        for i, line in enumerate(self.contents):
+            if line != '\n':
                 self.contents = self.contents[i:]
                 break
         else:

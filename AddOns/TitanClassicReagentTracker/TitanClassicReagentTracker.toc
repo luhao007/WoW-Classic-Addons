@@ -1,0 +1,10 @@
+## Interface: 20501
+## Title: Titan Panel [|cffeda55fReagent Tracker|r] |cff00aa002.5.1.38707|r
+## Version: 2.5.1.38707
+## Notes: Monitors spell reagents. Fork of Titan Reagent by L'ombra.
+## Author: Farwalker & cliaz
+## Dependencies: TitanClassic
+## X-Child-Of: TitanClassic
+
+spellData.lua
+TitanClassicReagentTracker.lua

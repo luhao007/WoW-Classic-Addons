@@ -12,6 +12,7 @@ GTFO = {
 		Active = true;
 		Sounds = { true, true, true, true };
 		ScanMode = nil;
+		AlertMode = nil;
 		DebugMode = nil; -- Turn on debug alerts
 		TestMode = nil; -- Activate alerts for events marked as "test only"
 		UnmuteMode = nil;
@@ -23,10 +24,11 @@ GTFO = {
 		TrivialDamagePercent = 2; -- Minimum % of HP lost required for an alert to be trivial
 		SoundOverrides = { }; -- Override table for GTFO sounds
 	};
-	Version = "4.60.0"; -- Version number (text format)
+	Version = "4.63"; -- Version number (text format)
 	VersionNumber = 0; -- Numeric version number for checking out-of-date clients (placeholder until client is detected)
-	RetailVersionNumber = 46000; -- Numeric version number for checking out-of-date clients (retail)
-	ClassicVersionNumber = 46000; -- Numeric version number for checking out-of-date clients (classic)
+	RetailVersionNumber = 46300; -- Numeric version number for checking out-of-date clients (retail)
+	ClassicVersionNumber = 46300; -- Numeric version number for checking out-of-date clients (classic)
+	BurningCrusadeVersionNumber = 46300; -- Numeric version number for checking out-of-date clients (TBC classic)
 	DataLogging = nil; -- Indicate whether or not the addon needs to run the datalogging function (for hooking)
 	DataCode = "4"; -- Saved Variable versioning, change this value to force a reset to default
 	CanTank = nil; -- The active character is capable of tanking
@@ -58,7 +60,6 @@ GTFO = {
 	WeakAuras = nil; -- WeakAuras Integration enabled
 	Recount = nil; -- Recount Integration enabled
 	Skada = nil; -- Skada Integration enabled
-	ShowAlert = nil;
 	Settings = { };
 	UIRendered = nil;
 	VariableStore = { -- Variable storage for special circumstances
@@ -67,6 +68,7 @@ GTFO = {
 	};
 	BetaMode = nil; -- WoW Beta/PTR client detection
 	ClassicMode = nil; -- WoW Classic client detection
+	BurningCrusadeMode = nil; -- WoW TBC client detection
 	SoundChannels = { 
 		{ Code = "Master", Name = _G.MASTER },
 		{ Code = "SFX", Name = _G.SOUND_VOLUME, CVar = "Sound_EnableSFX" },
@@ -79,12 +81,17 @@ GTFO = {
 
 GTFOData = {};
 
-if (select(4, GetBuildInfo()) >= 90100) then
+local buildNumber = select(4, GetBuildInfo());
+
+if (buildNumber >= 90100) then
 	GTFO.BetaMode = true;
 end
-if (select(4, GetBuildInfo()) <= 20000) then
+if (buildNumber <= 20000) then
 	GTFO.ClassicMode = true;
 	GTFO.VersionNumber = GTFO.ClassicVersionNumber;
+elseif (buildNumber <= 30000) then
+	GTFO.BurningCrusadeMode = true;
+	GTFO.VersionNumber = GTFO.BurningCrusadeVersionNumber;
 else
 	GTFO.VersionNumber = GTFO.RetailVersionNumber;
 end
@@ -125,6 +132,12 @@ function GTFO_ScanPrint(str)
 	end
 end
 
+function GTFO_AlertPrint(str)
+	if (GTFO.Settings.AlertMode) then
+		DEFAULT_CHAT_FRAME:AddMessage("[GTFO] "..tostring(str), 0.5, 0.5, 0.85);
+	end
+end
+
 function GTFO_GetMobId(sGUID)
 	local mobType, _, _, _, _, mobId = strsplit("-", sGUID or "")
 	if mobType and (mobType == "Creature" or mobType == "Vehicle" or mobType == "Pet") then
@@ -145,6 +158,7 @@ function GTFO_OnEvent(self, event, ...)
 			Active = GTFOData.Active;
 			Sounds = { GTFOData.Sounds[1], GTFOData.Sounds[2], GTFOData.Sounds[3], GTFOData.Sounds[4] };
 			ScanMode = GTFOData.ScanMode;
+			AlertMode = GTFOData.AlertMode;
 			DebugMode = GTFOData.DebugMode;
 			TestMode = GTFOData.TestMode;
 			UnmuteMode = GTFOData.UnmuteMode;
@@ -256,6 +270,20 @@ function GTFO_OnEvent(self, event, ...)
 			GTFO_ScanSpells();
 		end
 		
+		-- Display state errors meant for debuggers:
+		if (GTFO.Settings.ScanMode) then
+			GTFO_ErrorPrint("Scan (debugging) mode is currently on.");
+			GTFO_ErrorPrint(" To turn this off, type: |cFFEEEE00/gtfo scan|r");
+		end
+		if (GTFO.Settings.AlertMode) then
+			GTFO_ErrorPrint("Alert (debugging) mode is currently on.");
+			GTFO_ErrorPrint(" To turn this off, type: |cFFEEEE00/gtfo alert|r");
+		end
+		if (GTFO.Settings.DebugMode) then
+			GTFO_ErrorPrint("Debug mode is currently on.");
+			GTFO_ErrorPrint(" To turn this off, type: |cFFEEEE00/gtfo debug|r");
+		end
+		
 		return;
 	end
 	if (event == "COMBAT_LOG_EVENT_UNFILTERED") then
@@ -337,7 +365,7 @@ function GTFO_OnEvent(self, event, ...)
 							end
 							alertID = GTFO_GetAlertID(GTFO.FFSpellID[SpellID], "player");
 							GTFO_PlaySound(alertID);
-							GTFO_RecordStats(alertID, SpellID, SpellName, tonumber(damage), nil);
+							GTFO_RecordStats(alertID, SpellID, SpellName, tonumber(damage), nil, SpellType);
 						end
 					end
 				end
@@ -383,7 +411,7 @@ function GTFO_OnEvent(self, event, ...)
 				return;
 			end
 			GTFO_PlaySound(alertID);
-			GTFO_RecordStats(alertID, 0, GTFOLocal.Recount_Environmental, tonumber(damage), nil);
+			GTFO_RecordStats(alertID, 0, GTFOLocal.Recount_Environmental, tonumber(damage), nil, SpellType);
 			return;
 		elseif (SpellType=="SPELL_PERIODIC_DAMAGE" or SpellType=="SPELL_DAMAGE" or SpellType=="SPELL_MISSED" or SpellType=="SPELL_PERIODIC_MISSED" or SpellType=="SPELL_ENERGIZE" or SpellType=="SPELL_INSTAKILL" or ((SpellType=="SPELL_AURA_APPLIED" or SpellType=="SPELL_AURA_APPLIED_DOSE" or SpellType=="SPELL_AURA_REFRESH") and misc4=="DEBUFF")) then
 			-- Spell detection
@@ -558,9 +586,9 @@ function GTFO_OnEvent(self, event, ...)
 				end
 				GTFO_PlaySound(alertID);
 				if (SpellType == "SPELL_PERIODIC_DAMAGE" or SpellType == "SPELL_DAMAGE" or SpellType == "SPELL_ENERGIZE") then
-					GTFO_RecordStats(alertID, SpellID, SpellName, damage, SpellSourceName);
+					GTFO_RecordStats(alertID, SpellID, SpellName, damage, SpellSourceName, SpellType);
 				else
-					GTFO_RecordStats(alertID, SpellID, "+"..SpellName, 0, SpellSourceName);
+					GTFO_RecordStats(alertID, SpellID, "+"..SpellName, 0, SpellSourceName, SpellType);
 				end
 				return;
 			end
@@ -580,13 +608,13 @@ function GTFO_OnEvent(self, event, ...)
 					if (damage > 0 or not GTFO.MobID[SourceMobID].damageOnly) then
 						alertID = GTFO_GetAlertID(GTFO.MobID[SourceMobID], "player");
 						GTFO_PlaySound(alertID);
-						GTFO_RecordStats(alertID, 6603, sourceName, tonumber(damage), nil);
+						GTFO_RecordStats(alertID, 6603, sourceName, tonumber(damage), nil, SpellType);
 						return;						
 					end
 				elseif (not GTFO.MobID[SourceMobID].damageOnly and SpellType=="SWING_MISSED") then
 					alertID = GTFO_GetAlertID(GTFO.MobID[SourceMobID], "player");
 					GTFO_PlaySound(alertID);
-					GTFO_RecordStats(alertID, 6603, sourceName, 0, nil);
+					GTFO_RecordStats(alertID, 6603, sourceName, 0, nil, SpellType);
 					return;						
 				end
 			end
@@ -740,7 +768,9 @@ function GTFO_Command(arg1)
 	elseif (Command == "DEBUG") then
 		GTFO_Command_Debug();
 	elseif (Command == "SCAN" or Command == "SCANNER") then
-		GTFO_Command_Scan();
+		GTFO_Command_ScanMode();
+	elseif (Command == "ALERT") then
+		GTFO_Command_AlertMode();
 	elseif (Command == "TESTMODE") then
 		GTFO_Command_TestMode();
 	elseif (Command == "VERSION") then
@@ -815,13 +845,24 @@ function GTFO_Command_Debug()
 	GTFO_SaveSettings();
 end
 
-function GTFO_Command_Scan()
+function GTFO_Command_ScanMode()
 	if (GTFO.Settings.ScanMode) then
 		GTFO.Settings.ScanMode = nil;
 		GTFO_ChatPrint("Scan mode off.");
 	else
 		GTFO.Settings.ScanMode = true;
 		GTFO_ChatPrint("Scan mode on.");
+	end
+	GTFO_SaveSettings();
+end
+
+function GTFO_Command_AlertMode()
+	if (GTFO.Settings.AlertMode) then
+		GTFO.Settings.AlertMode = nil;
+		GTFO_ChatPrint("Alert display mode off.");
+	else
+		GTFO.Settings.AlertMode = true;
+		GTFO_ChatPrint("Alert display mode mode on.");
 	end
 	GTFO_SaveSettings();
 end
@@ -1431,13 +1472,13 @@ function GTFO_CheckTankMode()
 				--GTFO_DebugPrint("Bear Form found - tank mode activated");
 				return true;
 			end
-		elseif ((not GTFO.ClassicMode) and (class == "MONK" or class == "DEMONHUNTER" or class == "WARRIOR" or class == "DEATHKNIGHT" or class == "PALADIN")) then
+		elseif ((not (GTFO.ClassicMode or GTFO.BurningCrusadeMode)) and (class == "MONK" or class == "DEMONHUNTER" or class == "WARRIOR" or class == "DEATHKNIGHT" or class == "PALADIN")) then
 			local spec = GetSpecialization();
 			if (spec and GetSpecializationRole(spec) == "TANK") then
 				--GTFO_DebugPrint("Tank spec found - tank mode activated");
 				return true;
 			end
-		elseif ((GTFO.ClassicMode) and (class == "WARRIOR" or class == "PALADIN")) then
+		elseif ((GTFO.ClassicMode or GTFO.BurningCrusadeMode) and (class == "WARRIOR" or class == "PALADIN")) then
 			GTFO.CanTank = true;
 		else
 			--GTFO_DebugPrint("Failed Tank Mode - This code shouldn't have ran");
@@ -1456,7 +1497,7 @@ function GTFO_CheckCasterMode()
 			return true;
 		end
 
-		if not (GTFO.ClassicMode) then
+		if not (GTFO.ClassicMode or GTFO.BurningCrusadeMode) then
 			local spec = GetSpecialization();
 			if (spec) then
 				local role = GetSpecializationRole(spec);
@@ -1543,7 +1584,7 @@ function GTFO_RegisterTankEvents()
 end
 
 function GTFO_RegisterCasterEvents()
-	if not (GTFO.ClassicMode) then
+	if not (GTFO.ClassicMode or GTFO.BurningCrusadeMode) then
 		GTFOFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
 		GTFOFrame:RegisterEvent("PLAYER_TALENT_UPDATE");	
 	end
@@ -1589,6 +1630,7 @@ function GTFO_SaveSettings()
 	GTFOData.Sounds[4] = GTFO.Settings.Sounds[4];
 	GTFOData.Volume = GTFO.Settings.Volume;
 	GTFOData.ScanMode = GTFO.Settings.ScanMode;
+	GTFOData.AlertMode = GTFO.Settings.AlertMode;
 	GTFOData.DebugMode = GTFO.Settings.DebugMode;
 	GTFOData.TestMode = GTFO.Settings.TestMode;
 	GTFOData.UnmuteMode = GTFO.Settings.UnmuteMode;
@@ -1641,6 +1683,7 @@ function GTFO_SetDefaults()
 	GTFO.Settings.Sounds[4] = GTFO.DefaultSettings.Sounds[4];
 	GTFO.Settings.Volume = GTFO.DefaultSettings.Volume;
 	GTFO.Settings.ScanMode = GTFO.DefaultSettings.ScanMode;
+	GTFO.Settings.AlertMode = GTFO.DefaultSettings.AlertMode;
 	GTFO.Settings.DebugMode = GTFO.DefaultSettings.DebugMode;
 	GTFO.Settings.TestMode = GTFO.DefaultSettings.TestMode;
 	GTFO.Settings.UnmuteMode = GTFO.DefaultSettings.UnmuteMode;
@@ -1867,7 +1910,7 @@ function GTFO_FindEvent(eventName)
 	return nil;
 end
 
-function GTFO_RecordStats(alertID, SpellID, SpellName, damage, sourceName)
+function GTFO_RecordStats(alertID, spellID, SpellName, damage, sourceName, spellType)
 	if (alertID and alertID > 0 and (GTFO.Recount or GTFO.Skada)) then
 		local spellName = SpellName;
 		-- Append the name of the person that did damage for Friendly Fire alerts
@@ -1876,13 +1919,21 @@ function GTFO_RecordStats(alertID, SpellID, SpellName, damage, sourceName)
 				spellName = spellName.." ("..sourceName..")";
 			end
 		end
+
+		if (GTFO.Settings.AlertMode) then	
+			if (GTFO.ClassicMode or (tonumber(spellID) or 0) <= 0) then
+				GTFO_AlertPrint(GTFO_GetAlertType(alertID).." Alert: "..tostring(spellType).." - "..tostring(spellID).." - "..tostring(spellName).." ("..tostring(sourceName or "")..") for "..tostring(damage));
+			else
+				GTFO_AlertPrint(GTFO_GetAlertType(alertID).." Alert: "..tostring(spellType).." - "..tostring(spellID).." - "..GetSpellLink(spellID).." ("..tostring(sourceName or "")..") for "..tostring(damage));
+			end
+		end
 		
 		-- Integration
 		if (GTFO.Recount) then
 			GTFO_RecordRecount(UnitName("player"), alertID, spellName, damage);
 		end
 		if (GTFO.Skada) then
-			GTFO_RecordSkada(UnitName("player"), UnitGUID("player"), alertID, tonumber(SpellID), spellName, tonumber(damage));
+			GTFO_RecordSkada(UnitName("player"), UnitGUID("player"), alertID, tonumber(spellID), spellName, tonumber(damage));
 		end
 	end
 end

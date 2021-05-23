@@ -1,10 +1,10 @@
--- $Id: Atlas_DungeonLocs.lua 63 2020-01-19 16:30:36Z arith $
+-- $Id: Atlas_DungeonLocs.lua 67 2021-05-22 13:40:02Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbertat gmail dot com>
 	Copyright 2010 - Lothaer <lothayerat gmail dot com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
 
 	This file is part of Atlas.
 
@@ -40,7 +40,15 @@ local BZ = Atlas_GetLocaleLibBabble("LibBabble-SubZone-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name)
 local ALC = LibStub("AceLocale-3.0"):GetLocale("Atlas")
 
-local WoWClassic = select(4, GetBuildInfo()) < 20000
+local WoWClassicEra, WoWClassicTBC, WoWRetail
+local wowtocversion  = select(4, GetBuildInfo())
+if wowtocversion < 20000 then
+	WoWClassicEra = true
+elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+	WoWClassicTBC = true
+else
+	WoWRetail = true
+end
 
 local db = {}
 private.db = db
@@ -61,7 +69,7 @@ local INDENT = "      "
 
 db.category = L[private.category]
 
-if (WoWClassic) then
+if (WoWClassicEra or WoWClassicTBC) then
 	db.maps = {
 		DLEast_Classic = {
 			ZoneName = { BZ["Eastern Kingdoms"] },
@@ -107,6 +115,33 @@ if (WoWClassic) then
 			{ WHIT..L["White"]..ALC["Colon"]..ORNG..L["Instances"] },
 		},
 	}
+	if (WoWClassicTBC) then
+		db.maps["DLOutland_Classic"] = {
+			ZoneName = { BZ["Outland"] },
+			{ WHIT.." 1) "..BZ["Gruul's Lair"]..ALC["Comma"].._RED..BZ["Blade's Edge Mountains"], 10001 },
+			{ WHIT.." 2) "..BZ["Tempest Keep"]..ALC["Comma"].._RED..BZ["Netherstorm"], 10002 },
+			{ WHIT..INDENT..BZ["The Mechanar"] },
+			{ WHIT..INDENT..BZ["The Botanica"] },
+			{ WHIT..INDENT..BZ["The Arcatraz"] },
+			{ WHIT..INDENT..BZ["Tempest Keep"] },
+			{ WHIT.." 3) "..BZ["Coilfang Reservoir"]..ALC["Comma"].._RED..BZ["Zangarmarsh"], 10003 },
+			{ WHIT..INDENT..BZ["The Slave Pens"] },
+			{ WHIT..INDENT..BZ["The Underbog"] },
+			{ WHIT..INDENT..BZ["The Steamvault"] },
+			{ WHIT..INDENT..BZ["Serpentshrine Cavern"] },
+			{ WHIT.." 4) "..BZ["Hellfire Citadel"]..ALC["Comma"].._RED..BZ["Hellfire Peninsula"], 10004 },
+			{ WHIT..INDENT..BZ["Hellfire Ramparts"] },
+			{ WHIT..INDENT..BZ["The Blood Furnace"] },
+			{ WHIT..INDENT..BZ["The Shattered Halls"] },
+			{ WHIT..INDENT..BZ["Magtheridon's Lair"] },
+			{ WHIT.." 5) "..BZ["Auchindoun"]..ALC["Comma"].._RED..BZ["Terokkar Forest"], 10005 },
+			{ WHIT..INDENT..BZ["Mana-Tombs"] },
+			{ WHIT..INDENT..BZ["Auchenai Crypts"] },
+			{ WHIT..INDENT..BZ["Sethekk Halls"] },
+			{ WHIT..INDENT..BZ["Shadow Labyrinth"] },
+			{ WHIT.." 6) "..BZ["Black Temple"]..ALC["Comma"].._RED..BZ["Shadowmoon Valley"], 10006 },
+		}
+	end
 	db.coords = {
 	}
 else

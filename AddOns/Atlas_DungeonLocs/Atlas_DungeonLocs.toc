@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: arith, Dynaletik, dubcat
-## Version: v1.47.00.11303.00
+## Version: v1.49.00
 ## RequiredDeps: Atlas
 
 ## Title: Atlas |r|cFF0099FF[Dungeon Locs]|r
@@ -8,7 +8,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0副本位置|r
 ## Notes-zhCN: 副本位置地图
 
-## X-Date: 2020-01-19T16:30:36Z
+## X-Date: 2021-05-22T13:40:02Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail.com
 ## X-Website: http://www.atlasmod.com

@@ -614,6 +614,7 @@ app.L = {
 		[112948] = "Intrepid's Locked Strongbox",
 		[113757] = "Shadowforge Cache",
 		[113768] = GetSpellInfo(61820),
+		[113791] = "Brazier of Everfount",
 		[123329] = "Baelog's Chest",
 		[124388] = "Garrett Family Chest",
 		[124389] = "Krom Stoutarm's Chest",
@@ -1076,7 +1077,6 @@ app.L = {
 		["Temple of Ahn'Qiraj"] = 320,
 		["The Deadmines"] = 291,
 		["The Temple of Atal'hakkar"] = 220,
-		["The Temple of Atal'Hakkar"] = 220,
 		["The Stockade"] = 225,
 		["Uldaman"] = 230,
 		["Wailing Caverns"] = 279,
@@ -1114,12 +1114,18 @@ app.L = {
 	-- These are alternative map names that we don't want to display, but used for mapID calculations.
 	-- If there is a name provided in the table above, it will prefer that name association.
 	["ALT_ZONE_TEXT_TO_MAP_ID"] = {
-		-- Classic
 		["Ahn'Qiraj"] = 320,
 		["Deadmines"] = 291,
 		["Gates of Ahn'Qiraj"] = 1451,
+		["The Temple of Atal'Hakkar"] = 220,
 		["The Battle for Mount Hyjal"] = 329,
 		["The Eye"] = 334,
+		[C_Map.GetAreaInfo(3527)] = 468,	-- Ammen Vale (Crash Site)
+		[C_Map.GetAreaInfo(3560)] = 468,	-- Ammen Vale (Ammen Fields)
+		[C_Map.GetAreaInfo(3528)] = 468,	-- Ammen Vale (Silverline Lake)
+		[C_Map.GetAreaInfo(3559)] = 468,	-- Ammen Vale (Nestlewood Hills)
+		[C_Map.GetAreaInfo(3529)] = 468,	-- Ammen Vale (Nestlewood Thicket)
+		[C_Map.GetAreaInfo(3561)] = 468,	-- Ammen Vale (The Sacred Grove)
 	};
 	
 	-- This is necessary because sometimes the names of spells do not match for different languages.

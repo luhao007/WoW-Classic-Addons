@@ -1,4 +1,4 @@
-$Id: ChangeLog.txt 121 2020-04-21 16:05:17Z arith $
+$Id: ChangeLog.txt 125 2021-05-22 14:07:10Z arithmandar $
 Atlas, a World of Warcraft instance map browser
 Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
@@ -8,14 +8,38 @@ Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 = Change Log =
 ==============
 
-v1.47.03 (Jun. 20, 2020)
+v1.49.00 (May 22, 2021)
 ------------------------
-- ToC update to support WoW 1.13.04
-v1.46.03.11303.00 (Jan. 13, 2020)
+- ToC update to support WoW 9.0.5
+- Support WoW Classic Era and TBC
+
+v1.48.00 (Oct. 18, 2020)
+------------------------
+- ToC update to support WoW 9.0.1
+
+v1.47.03 (Apr. 21, 2020)
+------------------------
+- Eastern Kingdom map revamped
+
+v1.47.02 (Jan. 30, 2020)
+------------------------
+- Updated Daralan map's transportation destinations
+- Updated Orgimar map's transportation destinations
+- Updated Stormwind City map's transportation destinations
+
+v1.47.01 (Jan. 23, 2020)
+------------------------
+- Added BfA transportation maps
+
+v1.47.00 (Jan. 20, 2020)
+------------------------
+- ToC update to support WoW 8.3.0
+
+v1.46.03 (Jan. 13, 2020)
 ------------------------
 - Removed Emerald Sanctuary from classic Kalimdor maps
 
-v1.46.02.11303.00 (Jan. 11, 2020)
+v1.46.02 (Jan. 11, 2020)
 ------------------------
 - Merge WoW classic's map data and re-create WoW classic's maps
 
@@ -27,10 +51,6 @@ v1.46.00 (Jan. 07, 2020)
 ------------------------
 - ToC update to support WoW 8.2.5
 - Added Argus
-
-v1.45.00.11302.00 (Sep. 06, 2019)
-------------------------
-- Classic WoW support
 
 v1.45.00 (Sep. 04, 2019)
 ------------------------

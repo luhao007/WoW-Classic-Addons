@@ -1,10 +1,10 @@
--- $Id: Atlas_Transportation-zhCN.lua 105 2020-01-07 15:45:25Z arith $
+-- $Id: Atlas_Transportation-zhCN.lua 125 2021-05-22 14:07:10Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
 	Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
 	Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
-	Copyright 2011 ~ 2020 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
+	Copyright 2011 ~ 2021 - Arith Hsu, Atlas Team <atlas.addon at gmail.com>
 
 	This file is part of Atlas.
 
@@ -54,6 +54,8 @@ L["Great Eagle"] = "巨鹰"
 L["Green"] = "绿"
 L["Gryphon"] = "狮鹫"
 L["Gryphon Master"] = "狮鹫管理员"
+--[[Translation missing --]]
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
 L["Hunter Only"] = "猎人专用"
 L["Illidari Gateway"] = "伊利达雷传送门"
 L["Jump to Skyhold"] = "跃向苍穹要塞"

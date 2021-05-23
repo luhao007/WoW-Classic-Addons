@@ -106,6 +106,10 @@
     "deps": [],
     "logged_versions": [
       {
+        "version": "v1.2.4-classic",
+        "install_time": "2021-05-23T07:48:42+00:00"
+      },
+      {
         "version": "v1.2.4-bc",
         "install_time": "2021-05-21T09:15:56+00:00"
       },
@@ -766,10 +770,10 @@
     "name": "LibDropdown-1.0",
     "description": "Dropdown library for Ace3 options, extensible to other options formats. Works ok.",
     "url": "https://www.curseforge.com/wow/addons/libdropdown-1-0",
-    "download_url": "https://edge.forgecdn.net/files/3121/33/LibDropdown-1.0-9.0.2.zip",
-    "date_published": "2020-11-23T19:07:45.287000+00:00",
-    "version": "9.0.2",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17280/file/3121033/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3319/593/LibDropdown-1.0-2021-05-22_2-bcc.zip",
+    "date_published": "2021-05-22T18:17:55.793000+00:00",
+    "version": "2021-05-22_2-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17280/file/3319593/changelog",
     "folders": [
       {
         "name": "LibDropdown-1.0"
@@ -780,6 +784,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2021-05-22_2-bcc",
+        "install_time": "2021-05-23T07:48:42+00:00"
+      },
       {
         "version": "9.0.2",
         "install_time": "2020-11-24T11:19:37+00:00"
@@ -1229,6 +1237,33 @@
       {
         "version": "v9.0.1",
         "install_time": "2020-11-03T05:33:05+00:00"
+      }
+    ]
+  },
+  {
+    "source": "github",
+    "id": "rgd87/LibClassicCasterino",
+    "slug": "rgd87/libclassiccasterino",
+    "name": "LibClassicCasterino",
+    "description": "Enemy Casts library for Classic",
+    "url": "https://github.com/rgd87/LibClassicCasterino",
+    "download_url": "https://github.com/rgd87/LibClassicCasterino/releases/download/1.20/LibClassicCasterino-1.20-classic.zip",
+    "date_published": "2019-10-08T20:32:44+00:00",
+    "version": "1.20",
+    "changelog_url": "data:,%23%20LibClassicCasterino%0D%0A%0D%0A%23%23%20%5B1.20%5D%28https%3A//github.com/rgd87/LibClassicCasterino/tree/1.20%29%20%282019-10-03%29%0D%0A%5BFull%20Changelog%5D%28https%3A//github.com/rgd87/LibClassicCasterino/compare/1.16...1.20%29%0D%0A%0D%0A-%20Added%20Mage%27s%20Teleports%20and%20Portals%20%20%0D%0A-%20Aimed%20Shot%20for%20player%20%20%0D%0A-%20Bump%20Minor%20%20%0D%0A-%20Merge%20pull%20request%20%2315%20from%20siweia/patch-1%20%20%0D%0A%20%20%20%20Fix%20castbar%20visibility%20when%20unit%20is%20player%20itself%20%20%0D%0A-%20Fix%20castbar%20visibility%20when%20unit%20is%20player%20itself%20%20%0D%0A-%20Changed%20fallback%20icon%20%20%0D%0A-%20UNIT%5C_SPELLCAST%5C_SUCCEEDED%20passthrough%20%20%0D%0A",
+    "folders": [
+      {
+        "name": "LibClassicCasterino"
+      }
+    ],
+    "options": {
+      "strategy": "latest"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.20",
+        "install_time": "2021-05-23T08:05:01+00:00"
       }
     ]
   }

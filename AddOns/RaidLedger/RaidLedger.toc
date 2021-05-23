@@ -1,6 +1,6 @@
-## Interface: 11307
+## Interface: 20501
 ## Author: Boshi Lian(farmer1992@gmail.com)
-## Version: v1.8.4
+## Version: v1.8.4-tbc
 ## SavedVariablesPerCharacter: RaidLedgerDatabase
 
 ## Title: Raid Ledger

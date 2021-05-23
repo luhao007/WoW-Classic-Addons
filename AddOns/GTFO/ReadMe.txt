@@ -1604,3 +1604,20 @@ Change Log:
 4.60
 * Removed LibStub and LibUIDropDownMenu and replaced the sound channel selector with a slider
 * Added SL spells for Castle Nathria
+
+4.61
+* Added an additional debugging mode to try to track down difficult issues
+* Fixed SL spells for Castle Nathria
+
+4.62
+* Updated for patch 9.0.5
+* Improved additional debugging mode
+
+4.62.1
+* Added Shadowlands spells (world)
+* Added SL spells for Castle Nathria
+
+4.63
+* Updated ToC for WoW Classic 1.13.7
+* Added support and updated ToC for WoW TBC 2.5.1
+* Added SL spells for Sanctum of Domination
