@@ -3,6 +3,7 @@
 ## Version: 1.1.0
 ## OptionalDeps: WeakAuras,Plater,
 ## LoadOnDemand: 0
+## SavedVariables: timestamp
 ## DefaultState: Enabled
 
 ## Title: WeakAuras Companion
