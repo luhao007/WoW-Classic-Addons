@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 10000
 ## Author: Wardz
 ## Version: v1.3.23
 ## SavedVariables: ClassicCastbarsDB

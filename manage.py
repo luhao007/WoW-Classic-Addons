@@ -18,8 +18,8 @@ RETAIL_VER = '90002'
 
 NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
                 'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH',
-                'BeanCounter', 'ClassicCastBars', 'ClassicCastBars_Options', 'Enchantrix', 'Enchantrix-Barker', 'GTFO',
-                'Informant', 'MerInspect', 'PallyPower', 'SlideBar', 'Stubby']
+                'BeanCounter', 'ClassicCastbars', 'ClassicCastbars_Options', 'Enchantrix', 'Enchantrix-Barker', 'GTFO',
+                'Informant', 'MerInspect', 'SlideBar', 'Stubby']
 
 
 def available_on(platforms):

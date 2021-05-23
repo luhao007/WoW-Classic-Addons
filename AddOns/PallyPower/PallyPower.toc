@@ -1,4 +1,4 @@
-## Interface: 10000
+## Interface: 20501
 ## Author: Aznamir,Dyaxler
 ## Version: v1.3.6-tbc-classic
 ## Dependencies: 
