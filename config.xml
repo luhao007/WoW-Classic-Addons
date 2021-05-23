@@ -1435,6 +1435,10 @@
 				<Title>性能</Title>
 				<Notes>泰坦面板的性能模块</Notes>
 			</SubAddon>
+			<SubAddon name="TitanClassicReagentTracker">
+				<Title>施法材料</Title>
+				<Notes>泰坦面板的施法材料模块</Notes>
+			</SubAddon>
 			<SubAddon name="TitanClassicRegen">
 				<Title>恢复</Title>
 				<Notes>泰坦面板的恢复模块</Notes>

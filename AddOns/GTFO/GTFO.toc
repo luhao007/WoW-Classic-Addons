@@ -1,4 +1,4 @@
-## Interface: 10000
+## Interface: 20501
 ## Author: Zensunim of Dragonblight/Myzrael
 ## Version: 4.63
 ## SavedVariables: GTFOData
