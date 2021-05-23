@@ -1,5 +1,4 @@
 <Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
-    <Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
     <Include file="Libs\LibQuestXP\LibQuestXP.xml"/>
     <Include file="Libs\ZoneHelper\ZoneHelper.xml"/>
 

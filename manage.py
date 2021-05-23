@@ -772,11 +772,12 @@ class Manager:
                 'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets', 'AceHook-3.0',
                 'AceLocale-3.0', 'AceSerializer-3.0', 'AceTab-3.0',
                 'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
-                'LibDataBroker-1.1', 'LibDBIcon-1.0', 'LibSharedMedia',
-                'LibStub'],
+                'LibDataBroker-1.1', 'LibDBIcon-1.0', 'LibSharedMedia', 'LibSharedMedia-3.0', 'LibStub'],
             'AddOns/Questie/Libs',
             'AddOns/Questie/embeds.xml'
         )
+
+        utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', 'AddOns/Questie/Questie.toc')
 
         root = Path('AddOns/Questie')
         with open(root / 'Questie.toc', 'r', encoding='utf-8') as file:
