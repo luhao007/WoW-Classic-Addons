@@ -13,7 +13,7 @@ logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11307'
 CLASSIC_VER = '20501'
-RETAIL_VER = '90002'
+RETAIL_VER = '90005'
 
 
 NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
