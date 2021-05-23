@@ -18,8 +18,8 @@ class CheckManagedAddOns(unittest.TestCase):
     def test_check_libs(self):
         """Test for !!Libs.toc"""
         root = Path('AddOns/!!Libs')
-        with open(root / '!!Libs.toc', 'r', encoding='utf-8') as f:
-            lines = f.readlines()
+        with open(root / '!!Libs.toc', 'r', encoding='utf-8') as file:
+            lines = file.readlines()
 
         toc = TOC(lines)
 
