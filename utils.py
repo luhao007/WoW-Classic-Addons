@@ -84,7 +84,7 @@ def remove_libraries_all(addon, lib_path: Optional[str] = None):
     rm_tree(Path('AddOns') / addon / lib_path)
 
     # Extra library that need to be removed
-    libs = ['embeds.xml', 'Embeds.xml', 'libs.xml',
+    libs = ['embeds.xml', 'Embeds.xml', 'libs.xml', 'include.xml', 'Include.xml',
             'Libs.xml', 'LibDataBroker-1.1.lua']
     for lib in libs:
         path = Path('AddOns') / addon / lib

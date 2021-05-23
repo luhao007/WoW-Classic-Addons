@@ -2,5 +2,4 @@
 
 	<Include file="LibRaidStatus\lib.xml"/>
 	<Include file="DF\load.xml"/>
-	<Include file="LibTranslit\LibTranslit-1.0.xml"/>
 </Ui>

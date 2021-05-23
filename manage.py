@@ -529,9 +529,7 @@ class Manager:
                 'AceTab-3.0', 'AceTimer-3.0', 'CallbackHandler-1.0',  'LibBossIDs-1.0',
                 'LibCompress', 'LibClassicCasterino', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
                 'LibDeflate', 'LibGraph-2.0', 'LibGroupInSpecT-1.1', 'LibItemUpgradeInfo-1.0',
-                'LibSharedMedia-3.0', 'LibStub', 'LibWindow-1.1', 'NickTag-1.0']
-        if utils.get_platform() == 'retail':
-            libs += ['DF', 'LibTranslit-1.0']
+                'LibSharedMedia-3.0', 'LibStub', 'LibTranslit', 'LibWindow-1.1', 'NickTag-1.0']
 
         utils.remove_libraries(libs, 'Addons/Details/Libs', 'Addons/Details/Libs/libs.xml')
 
@@ -747,9 +745,7 @@ class Manager:
                 'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
                 'LibClassicCasterino', 'LibClassicDurations', 'LibCustomGlow-1.0',
                 'LibDBIcon-1.0', 'LibDataBroker-1.1', 'LibDeflate',
-                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibStub']
-        if utils.get_platform() == 'retail':
-            libs += ['DF', 'LibTranslit-1.0']
+                'LibRangeCheck-2.0', 'LibSharedMedia-3.0', 'LibTranslit-1.0', 'LibStub']
 
         utils.remove_libraries(libs, 'Addons/Plater/libs', 'Addons/Plater/libs/libs.xml')
 
