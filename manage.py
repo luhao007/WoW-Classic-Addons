@@ -777,7 +777,8 @@ class Manager:
             'AddOns/Questie/embeds.xml'
         )
 
-        utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', 'AddOns/Questie/Questie.toc')
+        for postfix in ['', '-BCC', '-Classic']:
+            utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', f'AddOns/Questie/Questie{postfix}.toc')
 
         root = Path('AddOns/Questie')
         with open(root / 'Questie.toc', 'r', encoding='utf-8') as file:
