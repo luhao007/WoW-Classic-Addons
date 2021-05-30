@@ -151,6 +151,7 @@ function ResultRowWrapper.PopulateBrowseData(self)
 
 	-- check if we have info for all the items and try to fetch it if not
 	local missingInfo = false
+	ItemInfo.SetQueryUpdatesPaused(true)
 	for _, item in ipairs(self._items) do
 		if TSM.IsWowClassic() then
 			if not Util.HasItemInfo(ItemString.Get(item)) then
@@ -165,6 +166,7 @@ function ResultRowWrapper.PopulateBrowseData(self)
 			end
 		end
 	end
+	ItemInfo.SetQueryUpdatesPaused(false)
 	if missingInfo then
 		return false
 	end

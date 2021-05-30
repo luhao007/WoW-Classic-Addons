@@ -1,0 +1,22 @@
+## Interface: 20501
+## Author: Cali
+## Version: 1.24
+## RequiredDeps: HandyNotes
+## OptionalDeps: LibStub, !LibUIDropDownMenu
+## SavedVariables: HandyNotes_NPCsClassicDB
+
+## Title: HandyNotes_NPCs (Classic)
+## Notes: Shows locations of various npcs
+## Title-zhCN: |cFFFFE00A<|r|cFF40C7EB探索|r|cFFFFE00A>|r |cFFFFFFFF地图标记|r |cFF69CCF0NPC|r
+
+## X-Part-Of: HandyNotes
+
+locales\bcc\Locales.xml
+bcc\data.lua
+bcc\vendorData.lua
+bcc\itemData.lua
+bcc\weaponskills.lua
+bcc\HandyNotes_NPCs (Classic).lua
+bcc\options.lua
+bcc\search.lua
+bcc\altrecipes.lua

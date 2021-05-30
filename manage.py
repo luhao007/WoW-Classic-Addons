@@ -16,12 +16,6 @@ CLASSIC_VER = '20501'
 RETAIL_VER = '90005'
 
 
-NOT_WORKING = ['!Swatter', 'Auc-Advanced', 'Auc-Filter-Basic', 'Auc-ScanData', 'Auc-Stat-Histogram', 'Auc-Stat-iLevel',
-                'Auc-Stat-Purchased', 'Auc-Stat-Simple', 'Auc-Stat-StdDev', 'Auc-Util-FixAH',
-                'BeanCounter', 'ClassicCastbars', 'ClassicCastbars_Options', 'Enchantrix', 'Enchantrix-Barker',
-                'Informant', 'MerInspect', 'SlideBar', 'Stubby']
-
-
 def available_on(platforms):
     def decorator(func):
         def wrapper(*args):
@@ -151,9 +145,6 @@ class Manager:
                 toc = TOC(lines)
 
                 toc.tags['Interface'] = self.interface
-
-                if utils.get_platform() == 'classic' and addon in NOT_WORKING:
-                    toc.tags['Interface'] = '10000'
                 toc.tags['Title-zhCN'] = self.get_title(addon)
 
                 namespace = {'x': 'https://www.github.com/luhao007'}
@@ -214,6 +205,7 @@ class Manager:
                         '\n',
                         '# Libs Needs to be Imported before Other Libs\n',
                         'LibCompress\\lib.xml\n',
+                        'LibDeflate\\lib.xml\n',
                         'UTF8\\utf8data.lua\n',
                         'UTF8\\utf8.lua\n',
                         '\n',
@@ -230,7 +222,8 @@ class Manager:
         root = Path('Addons/!!Libs')
         libs = set(os.listdir(root))
         libs -= {'!!Libs.toc', 'Ace3', 'AceGUI-3.0-SharedMediaWidgets', 'HereBeDragons', 'UTF8', 'FrameXML',
-                    '!LibUIDropDownMenu', '!LibUIDropDownMenu-2.0', 'LibCompress', 'LibDataBroker-1.1', 'LibSharedMedia-3.0'}
+                 '!LibUIDropDownMenu', '!LibUIDropDownMenu-2.0', 'LibCompress', 'LibDeflate',
+                 'LibDataBroker-1.1', 'LibSharedMedia-3.0'}
 
         if 'LibBabble' in libs:
             toc.contents += lib_babble_to_toc()
@@ -440,25 +433,6 @@ class Manager:
         utils.change_defaults(
             'Addons/AtlasLootClassic/db.lua',
             '		shown = true,'
-        )
-
-    @staticmethod
-    @available_on(['classic', 'classic_era'])
-    def handle_auctioneer():
-        addons = ['Auc-Advanced', 'BeanCounter', 'Enchantrix', 'Informant']
-
-        for addon in addons:
-            utils.rm_tree(Path('AddOns') / addon / 'Libs' / 'LibDataBroker')
-            utils.process_file(
-                Path('AddOns') / addon / 'Libs' / 'Load.xml',
-                lambda lines: [line for line in lines
-                                if 'LibDataBroker' not in line]
-            )
-
-        utils.rm_tree('AddOns/SlideBar/Libs')
-        utils.process_file(
-            'AddOns/SlideBar/Load.xml',
-            lambda lines: [line for line in lines if 'Libs' not in line]
         )
 
     @staticmethod

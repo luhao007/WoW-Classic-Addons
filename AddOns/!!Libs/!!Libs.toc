@@ -34,6 +34,7 @@ AceGUI-3.0-SharedMediaWidgets\AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 # Libs Needs to be Imported before Other Libs
 LibCompress\lib.xml
+LibDeflate\lib.xml
 UTF8\utf8data.lua
 UTF8\utf8.lua
 
@@ -70,7 +71,6 @@ LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua
 LibCustomGlow-1.0\LibCustomGlow-1.0.xml
 LibDBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua
 LibDDI-1.0\lib.xml
-LibDeflate\lib.xml
 LibDialog-1.0\lib.xml
 LibDogTag-3.0\lib.xml
 LibDropdown-1.0\LibDropdown-1.0\LibDropdown-1.0.lua

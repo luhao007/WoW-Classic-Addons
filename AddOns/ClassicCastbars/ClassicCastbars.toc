@@ -1,20 +1,19 @@
-## Interface: 10000
+## Interface: 20501
 ## Author: Wardz
-## Version: v1.3.23
+## Version: v1.4.0
 ## SavedVariables: ClassicCastbarsDB
 ## SavedVariablesPerCharacter: ClassicCastbarsCharDB
 
 ## Title: ClassicCastbars
-## Notes: Adds castbars to various unitframes.
+## Notes: Adds modifiable castbars to various unitframes.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF敌对施法条|r |cFFFFE00AClassicCastbars|r
 ## Notes-zhCN: 显示一个预估的敌对施法条
 
 ## X-Curse-Project-ID: 322865
-## X-WoWI-ID: 24925
 ## X-Wago-ID: vEGPdkG1
 
 core/PoolManager.lua
 core/AnchorManager.lua
 core/Data.lua
-ClassicCastbars.lua
+ClassicCastbars_TBC.lua
 core/Frames.lua

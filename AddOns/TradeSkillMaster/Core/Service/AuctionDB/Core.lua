@@ -94,7 +94,9 @@ function AuctionDB.OnEnable()
 						itemString = gsub(value, ":0:", "::")
 					end
 					itemString = ItemString.Get(itemString)
-					private.realmAppData.itemOffset[itemString] = nextItmeOffset
+					if itemString then
+						private.realmAppData.itemOffset[itemString] = nextItmeOffset
+					end
 					nextItmeOffset = nextItmeOffset + 1
 				else
 					private.realmAppData.data[nextDataOffset] = value

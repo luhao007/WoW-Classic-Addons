@@ -1,5 +1,5 @@
-## Interface: 10000
-## Version: v1.3.23
+## Interface: 20501
+## Version: v1.4.0
 ## Dependencies: ClassicCastbars
 
 ## Title: ClassicCastbars_Options

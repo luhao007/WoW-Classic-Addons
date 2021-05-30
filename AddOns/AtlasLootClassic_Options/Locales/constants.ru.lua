@@ -12,6 +12,7 @@ AL["Always marks items as favourite for every profile if enabled."] = "Всег�
 AL["Always marks items as favourite for profile |cff00ff00%s|r if enabled."] = "Всегда помечает предметы как избранные для профиля |cff00ff00%s|r , если настройка включена"
 AL["Background"] = "Фоновое изображение."
 AL["Background color/alpha"] = "Цвет/прозрачность фонового изображения."
+AL["Class Filter"] = "Фильтр по классу"
 AL["Clear list"] = "Очистить список"
 AL["Content"] = "Содержание"
 AL["Content bottom bar"] = "Нижняя панель содержимого"

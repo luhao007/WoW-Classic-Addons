@@ -55,7 +55,7 @@ function SetWindow:Initialize()
         end
     end)
     f:Hide()
-    Addon.SetWindow = f
+    self.background = f
     do -- 创建框体标题栏纹理
         local t = f:CreateTexture(nil, "ARTWORK")
         t:SetTexture("Interface/DialogFrame/UI-DialogBox-Header")

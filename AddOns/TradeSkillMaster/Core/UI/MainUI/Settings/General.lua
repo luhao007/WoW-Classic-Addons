@@ -465,7 +465,13 @@ end
 function private.RenameProfileInputOnEnterPressed(input)
 	local profileName = input:GetValue()
 	local prevProfileName = input:GetContext()
-	if not TSM.db:IsValidProfileName(profileName) then
+	if profileName == prevProfileName then
+		-- just hide the dialog
+		local baseElement = input:GetBaseElement()
+		baseElement:HideDialog()
+		baseElement:GetElement("content.settings.contentFrame.content"):ReloadContent()
+		return
+	elseif not TSM.db:IsValidProfileName(profileName) then
 		Log.PrintUser(L["This is not a valid profile name. Profile names must be at least one character long and may not contain '@' characters."])
 		return
 	elseif TSM.db:ProfileExists(profileName) then

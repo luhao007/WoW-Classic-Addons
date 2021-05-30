@@ -1,27 +1,28 @@
-0.5.5 Release Notes
+0.5.7 Release Notes
 Contributions made by Crieve:
-* Added Skillet-Classic support.
-* The window now hides and shows itself with Skillet.
-* Added "Dire Brew" to BRD.
-* Moved the Warlock quest chain for the The Completed Orb of Noh'Orahil/Dar'Orahil to the Barrens.
-* Finished polishing Dustwallow Marsh and added all of the missing quests. (as far as I know!)
-* Added the cloth donation quests to the Exodar.
-* Added a couple new breadcrumb quests that came out with the prepatch. Also fixed a number of quests that spam reports for being completed by Blizzard when they really shouldn't be completed, but they are anyways.
-* Removed unnecessary class assignments from the Tier 0.5 sets. (they aren't class bound, technically)
-* Help Ranger Valanna! is now marked as a breadcrumb quest.
-* Added additional quests to the Swamp of Sorrows.
-* The calculation for coordinates for exploration object is now more accurate.
-* Being at the Crash Site on Ammen Vale now keeps the mini list on Ammen Vale.
-* Inoculation's only source quest is a breadcrumb.
-* All of the subzones of Ammen Vale now show the mini list for Ammen Vale.
-* Fixed "Strength of One" and "Behomat", the first is mutually exclusive with other warrior quests.
-* Added the Blood Elf Bandit Mask and a number of source quest fixes for Azuremyst Isle.
-* Journal could not be looted until after the Blood Watch.
-* Added a note on "Tzerak's Armor Plate" and "Sign of the Legion" that they are currently bugged. (leaving visible so that Blizzard Devs can see their mistake more easily and the issue can be resolved sooner)
-* Added the Exodar faction.
-* Added "Onward to Ashenvale" in Darkshore.
-* Added the Horde Shaman "Call to Water" quest chain.
-* Removed the questIDs from the Shaman Totems.
-* Added the Draenei "Call of Earth" quest chain.
-* Added the Draenei Shaman "Call of Fire" quest chain.
+* Added Hellfire Ramparts and its associated quests.
+* Added Auchenai Crypts and its associated quests.
+* Added Magister's Terrace and its associated quests.
+* Added Mana Tombs and its associated quests.
+* Added key requirements to the Heroic modes of all Burning Crusade dungeons. Added Old Hillsbrad Foothills and its associated quests.
+* Added Sethekk Halls and its associated quests. Added the last two quests of the Druid Flight form quest.
+* Added Shadow Labs and its associated quests.
+* Added The Arcatraz and its associated quests.
+* Fixed a couple of loot table bugs thanks to double checking with AtlasLoot Classic.
+* Added some missing Totems/Librams/Relics to Burning Crusade raids. Discovered some crazy shit went down when they were doing Trash Drops in BT/Hyjal.
+* Added the Black Morass and its associated quests.
+* Added the Blood Furnace and its associated quests.
+* Added the Botanica and its associated quests.
+* Added the Mechanar and its associated quests.
+* Revert "Blacksmithing prep work TBC"
+* Added the Shattered Halls and its associated quests.
+* Added the Slave Pens and its associated quests.
+* Added the Steamvault and its associated quests.
+* Added Spirit Shard currencies to the dungeons.
+* Wrong way!
+
+Contributions made by Chanizu:
+* Blacksmithing prep work TBC
+* Merge branch 'DFortun81:master' into master
+* Merge pull request #1 from Chanizu/master
 

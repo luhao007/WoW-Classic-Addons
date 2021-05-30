@@ -6,6 +6,77 @@ local Output = Addon.Output
 
 local IsButtonDown = false
 
+if LibStub and LibStub:GetLibrary("LibDataBroker-1.1", true) and LibStub:GetLibrary("LibDBIcon-1.0", true) then
+	Addon.LDB = LibStub("LibDataBroker-1.1")
+	Addon.LDBIcon = LibStub("LibDBIcon-1.0")
+else
+	Addon.LDB = nil
+	Addon.LDBIcon = nil
+end
+
+local LDB = Addon.LDB
+local LDBIcon = Addon.LDBIcon
+
+if LDB and LDBIcon then
+	-- LDB Minimap button 
+	function MinimapIcon:InitBroker()
+		local texture = 135859
+		MinimapIcon.Broker = LDB:NewDataObject("LootMonitor", {
+			type = "launcher",
+			text = "LootMonitor",
+			icon = texture,
+			OnClick = MinimapIcon.MinimapOnClick,
+			OnTooltipShow = MinimapIcon.MinimapOnEnter,
+		})
+		MinimapIcon.minimap = MinimapIcon.minimap or {hide = false}
+		LDBIcon:Register("LootMonitor", MinimapIcon.Broker, MinimapIcon.minimap)
+		MinimapIcon:ShowMinimap()
+	end
+
+	function MinimapIcon:ShowMinimap()
+		if Addon.Config.ShowMinimapIcon then
+			LDBIcon:Show("LootMonitor")
+		else
+			LDBIcon:Hide("LootMonitor")
+		end
+	end
+
+	function MinimapIcon:MinimapOnClick(button)
+		if IsShiftKeyDown() then
+			if button == "LeftButton" then
+				Output.background:ClearAllPoints()
+				Output.background:SetPoint("RIGHT", nil, "RIGHT", -20, 0)
+				Addon.SetWindow.background:ClearAllPoints()
+				Addon.SetWindow.background:SetPoint("CENTER", 210, 0)
+			end
+		else
+			if button == "LeftButton" then
+				if Output.background:IsShown() and Output.export:GetParent():IsShown() then
+					Output.export:GetParent():Hide()
+					Output.background:Hide()
+				else
+					Addon:PrintLootLog()
+				end
+			elseif button == "RightButton" then
+				if Addon.SetWindow.background:IsShown() then
+					Addon.SetWindow.background:Hide()
+				else
+					Addon.SetWindow.background:Show()
+				end
+			end
+		end
+	end
+	function MinimapIcon:MinimapOnEnter()
+		GameTooltip:AddLine("LootMonitor:")
+		GameTooltip:AddLine(L["|cFF00FF00Left Click|r to Open Log Frame"])
+		GameTooltip:AddLine(L["|cFF00FF00Right Click|r to Open Config Frame"])
+		GameTooltip:AddLine(L["|cFF00FF00Shift+Left|r to Restore Log Frame Position"])
+		GameTooltip:AddLine(L["|cFF00FF00Shift+Right|r to Restore Minimap Icon Position"])
+		GameTooltip:Show()
+	end
+	-- LDB END ]]--
+end
+
 -- 環形移動小地圖按鈕
 function Addon:UpdatePosition(pos)
 	local angle = math.rad(pos or 310)
@@ -21,7 +92,7 @@ function Addon:UpdatePosition(pos)
 		x = math.max(-w, math.min(x * diagRadiusW, w))
 		y = math.max(-h, math.min(y * diagRadiusH, h))
 	end
-    MinimapIcon.Minimap:ClearAllPoints()
+	MinimapIcon.Minimap:ClearAllPoints()
 	MinimapIcon.Minimap:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
@@ -111,8 +182,8 @@ function MinimapIcon:Initialize()
 			if button == "LeftButton" then
 				Output.background:ClearAllPoints()
 				Output.background:SetPoint("RIGHT", nil, "RIGHT", -20, 0)
-				Addon.SetWindow:ClearAllPoints()
-				Addon.SetWindow:SetPoint("CENTER", 210, 0)
+				Addon.SetWindow.background:ClearAllPoints()
+				Addon.SetWindow.background:SetPoint("CENTER", 210, 0)
 			elseif button == "RightButton" then
 				Addon.Config.MinimapIconAngle = 310
 				Addon:UpdatePosition(Addon.Config.MinimapIconAngle)
@@ -126,10 +197,10 @@ function MinimapIcon:Initialize()
 					Addon:PrintLootLog()
 				end
 			elseif button == "RightButton" then
-				if Addon.SetWindow:IsShown() then
-					Addon.SetWindow:Hide()
+				if Addon.SetWindow.background:IsShown() then
+					Addon.SetWindow.background:Hide()
 				else
-					Addon.SetWindow:Show()
+					Addon.SetWindow.background:Show()
 				end
 			end
 		end

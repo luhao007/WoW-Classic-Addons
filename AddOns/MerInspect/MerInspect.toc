@@ -1,6 +1,6 @@
-## Interface: 10000
+## Interface: 20501
 ## Author: M(Mermaid)
-## Version: 1.0.2
+## Version: 1.0.2a
 ## SavedVariables: MerInspectDB
 
 ## Title: MerInspect

@@ -34,7 +34,7 @@ local slots = {
 local function GetInspectItemListFrame(parent)
     if (not parent.inspectFrame) then
         local itemfont = "ChatFontNormal"
-        local frame = CreateFrame("Frame", nil, parent)
+        local frame = CreateFrame("Frame", nil, parent, BackdropTemplateMixin and "BackdropTemplate")
         frame.backdrop = {
             bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -79,7 +79,7 @@ local function GetInspectItemListFrame(parent)
             else
                 itemframe:SetPoint("TOPLEFT", frame["item"..(i-1)], "BOTTOMLEFT")
             end
-            itemframe.label = CreateFrame("Frame", nil, itemframe)
+            itemframe.label = CreateFrame("Frame", nil, itemframe, BackdropTemplateMixin and "BackdropTemplate")
             itemframe.label:SetSize(38, 16)
             itemframe.label:SetPoint("LEFT")
             itemframe.label:SetBackdrop(backdrop)
@@ -137,7 +137,7 @@ local function GetInspectItemListFrame(parent)
         LibEvent:trigger("INSPECT_FRAME_CREATED", frame, parent)
     end
 
-    return parent.inspectFrame
+	return parent.inspectFrame
 end
 
 --等級字符
@@ -201,6 +201,12 @@ function ShowInspectItemListFrame(unit, parent, ilevel, maxLevel)
     frame:SetBackdrop(frame.backdrop)
     frame:SetBackdropColor(0, 0, 0, 0.9)
     frame:SetBackdropBorderColor(color.r, color.g, color.b)
+	
+	-- 修正與 Details 的相容性
+    local DetailsTalentFrame = _G["DetailsTalentFrame"]
+	if DetailsTalentFrame then
+		DetailsTalentFrame:SetPoint("TOPLEFT", frame, "TOPRIGHT", 362, 0)
+	end
 
     return frame
 end

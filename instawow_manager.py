@@ -52,7 +52,7 @@ class InstawowManager:
             addons = [addons]
 
         if '_lib' in self.profile:
-            addons = [Defn.with_strategy(d, 'any_flavour' if d.source == 'curse' else 'latest') for d in addons]
+            addons = [Defn.with_strategy(d, 'any_flavour' if d.source == 'curse' else 'default') for d in addons]
         elif strategy:
             addons = [Defn.with_strategy(d, strategy) for d in addons]
         results = self.manager.run(self.manager.install(addons, replace=False))

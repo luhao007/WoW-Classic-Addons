@@ -277,6 +277,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["Crossbow"] = "^Besta$",
 		["Dagger"] = "^Adaga$",
 		["DefenseRating"] = "^Equipado: Aumenta em # a taxa de defesa%.$",
+		["DefenseRating2"] = "^UNUSED$",
 		["DefenseRatingSimple"] = "^%+?# Taxa de Defesa$",
 		["DefenseSkill"] = "^Equipado: Defesa aumentada em #%.$",
 		["DefenseSkillSimple"] = "^%+?# Defesa$",
@@ -302,6 +303,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["Equip"] = "Equipado:",
 		["ExpertiseRating"] = "^Equipado: Aumenta em # a taxa de aptidão%.$",
 		["FeralAp"] = "^Equipado: %+# de Poder de Ataque sob forma de Felino, Urso e Urso Hediondo%.$",
+		["FeralApMoonkin"] = "^Equipado: Aumenta em # o poder de ataque quando em forma de Felino, Urso, Urso Hediondo e Luniscante%.$",
 		["FireResist"] = "^%+?# de resistência a Fogo$",
 		["FireSpellDamage"] = "^%+# Dano Mágico de Fogo$",
 		["FireSpellDamage2"] = "^Equipado: Aumenta em até # o dano causado por feitiços e efeitos de Fogo%.$",
@@ -392,10 +394,12 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["SpellDamage3"] = "^UNUSED$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^Equipado: Aumenta em # a cura realizada e em até # o dano causado por todos os feitiços e efeitos mágicos%.$",
+		["SpellDamageAndHealingShort"] = "^UNUSED$",
 		["SpellHasteRating"] = "^Equipado: Aumenta em # a taxa de aceleração de feitiço%.$",
 		["SpellHasteRatingShort"] = "^%+?# Taxa de Aceleração de Feitiço$",
 		["SpellHit"] = "^Equipado: Aumenta em #%% sua chance de acertar com feitiços%.$",
 		["SpellHitRating"] = "^Equipado: Aumenta em # sua taxa de acerto de feitiços%.$",
+		["SpellHitRating2"] = "^Equipado: Aumenta em # a taxa de acerto de feitiços%.$",
 		["SpellHitRatingShort"] = "^%+?# Taxa de Acerto de Feitiço$",
 		["SpellPenetration"] = "^Equipado: Aumenta em # sua penetração de feitiços%.$",
 		["SpellPenetrationShort"] = "^%+?# Penetração de Feitiço$",
@@ -734,7 +738,7 @@ PawnLocal.Specs =
 
 -- Special case: wands actually use different text on live versus classic.
 -- So, patch things up here.
-if VgerCore.IsClassic then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
 
 	local TooltipParsing_Classic =
 	{

@@ -277,6 +277,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Crossbow"] = "^석궁$",
 		["Dagger"] = "^단검$",
 		["DefenseRating"] = "^착용 효과: 방어 숙련도가 #만큼 증가합니다%.$",
+		["DefenseRating2"] = "^UNUSED$",
 		["DefenseRatingSimple"] = "^UNUSED$",
 		["DefenseSkill"] = "^착용 효과: 방어 숙련도 %+#$",
 		["DefenseSkillSimple"] = "^방어 숙련도 %+#$",
@@ -302,6 +303,7 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["Equip"] = "착용 효과:",
 		["ExpertiseRating"] = "^착용 효과: 숙련도가 #만큼 증가합니다%.$",
 		["FeralAp"] = "^착용 효과: 표범, 광포한 곰, 곰 변신 상태일 때 전투력이 #만큼 증가합니다%.$",
+		["FeralApMoonkin"] = "^착용 효과: 표범, 광포한 곰, 곰, 달빛야수 변신 상태일 때 전투력이 #만큼 증가합니다%.$",
 		["FireResist"] = "^화염 저항력 %+#$",
 		["FireSpellDamage"] = "^화염 주문 공격력 %+#$",
 		["FireSpellDamage2"] = "^착용 효과: 화염 계열의 주문과 효과의 공격력이 최대 #만큼 증가합니다%.$",
@@ -393,10 +395,12 @@ Pawn 사용자 설정의 더 자세한 정보는, 애드온에 포함된 help �
 		["SpellDamage3"] = "^착용 효과: 모든 주문 및 효과의 공격력과 치유량이 최대 #만큼 증가합니다%.$",
 		["SpellDamage4"] = "^UNUSED$",
 		["SpellDamageAndHealing"] = "^착용 효과: 모든 주문 및 효과에 의한 치유량이 최대 #만큼, 공격력이 최대 #만큼 증가합니다%.$",
+		["SpellDamageAndHealingShort"] = "^UNUSED$",
 		["SpellHasteRating"] = "^착용 효과: 주문 시전 가속도가 #만큼 증가합니다%.$",
 		["SpellHasteRatingShort"] = "^주문 시전 가속도 %+#$",
 		["SpellHit"] = "^착용 효과: 주문의 적중률이 #%%만큼 증가합니다%.$",
 		["SpellHitRating"] = "^착용 효과: 주문 적중도가 #만큼 증가합니다%.$",
+		["SpellHitRating2"] = "^UNUSED$",
 		["SpellHitRatingShort"] = "^주문 적중도 %+#$",
 		["SpellPenetration"] = "^착용 효과: 주문 관통력이 #만큼 증가합니다%.$",
 		["SpellPenetrationShort"] = "^주문 관통력 %+#$",
@@ -668,7 +672,7 @@ Pawn이 상점에 판매했거나, 파괴했거나, 다른 방법으로 더이�
 
 -- Special case: wands actually use different text on live versus classic.
 -- So, patch things up here.
-if VgerCore.IsClassic then
+if VgerCore.IsClassic or VgerCore.IsBurningCrusade then
 
 	local TooltipParsing_Classic =
 	{

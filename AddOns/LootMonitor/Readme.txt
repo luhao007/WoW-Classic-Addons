@@ -11,6 +11,7 @@
 10. 添加小地图按钮。
 11. ESC关闭窗口。
 12. 保存窗口位置。
+13. 支持LDB。
 
 Readme:
 1. Slash Command /lm or /lootmonitor to open/close LootMonitor Window.
@@ -25,3 +26,4 @@ Readme:
 10. Add Minimap Button.
 11. Press Escape to close Set/Output Window.
 12. Save Set/Output Window position.
+13. Support LDB.

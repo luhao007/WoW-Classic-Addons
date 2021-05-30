@@ -243,6 +243,7 @@ Plater.HookScripts = { --private
 	"Name Updated",
 	"Load Screen",
 	"Player Logon",
+--	"Comm Message",
 }
 
 Plater.HookScriptsDesc = { --private
@@ -271,6 +272,7 @@ Plater.HookScriptsDesc = { --private
 	["Name Updated"] = "Executed when the name of the unit shown in the nameplate receives an update.",
 	["Load Screen"] = "Run when a load screen finishes.\n\nUse to change settings for a specific area or map.\n\n|cFF44FF44Do not run on nameplates|r.",
 	["Player Logon"] = "Run when the player login into the game.\n\nUse to register textures, indicators, etc.\n\n|cFF44FF44Do not run on nameplates,\nrun only once after login\nor /reload|r.",
+	["Comm Message"] = "Executed when a comm is received, a comm can be sent using Plater.SendComm(payload)."
 }
 
 -- ~hook (hook scripts are cached in the indexed part of these tales, for performance the member ScriptAmount caches the amount of scripts inside the indexed table)
@@ -294,6 +296,7 @@ local HOOK_UNITNAME_UPDATE = {ScriptAmount = 0}
 local HOOK_LOAD_SCREEN = {ScriptAmount = 0}
 local HOOK_PLAYER_LOGON = {ScriptAmount = 0}
 local HOOK_MOD_INITIALIZATION = {ScriptAmount = 0}
+local HOOK_COMM_MESSAGE = {ScriptAmount = 0}
 
 local PLATER_GLOBAL_MOD_ENV = {}  -- contains modEnv for each mod, identified by "<mod name>"
 local PLATER_GLOBAL_SCRIPT_ENV = {} -- contains modEnv for each script, identified by "<script name>"
@@ -301,6 +304,7 @@ local PLATER_GLOBAL_SCRIPT_ENV = {} -- contains modEnv for each script, identifi
 --> addon comm
 local COMM_PLATER_PREFIX = "PLT"
 local COMM_SCRIPT_GROUP_EXPORTED = "GE"
+Plater.COMM_SCRIPT_MSG = "PLTM"
 
 
  --> cvars just to make them easier to read
@@ -878,6 +882,7 @@ local class_specs_coords = {
 	local DB_USE_ALPHA_FRIENDLIES
 	local DB_USE_ALPHA_ENEMIES
 	local DB_USE_QUICK_HIDE
+	local DB_SHOW_HEALTHBARS_FOR_NOT_ATTACKABLE
 
 	local DB_TEXTURE_CASTBAR
 	local DB_TEXTURE_CASTBAR_BG
@@ -1588,6 +1593,23 @@ local class_specs_coords = {
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> general unit functions
 
+	--return the script object that correspond to the uID passed
+	function Plater.GetScriptFromUID(uID)
+		local hookData = Plater.db.profile.hook_data
+		for i = 1, #hookData do
+			if (hookData[i].UID == uID) then
+				return hookData[i]
+			end
+		end
+
+		local scriptData = Plater.db.profile.script_data
+		for i = 1, #scriptData do
+			if (scriptData[i].UID == uID) then
+				return scriptData[i]
+			end
+		end
+	end
+
 	--> return a table with points on where the unitFrame is attached
 	--these points are hardcoded in the UpdatePlateSize() function
 	function Plater.GetPoints (unitFrame)
@@ -1781,8 +1803,11 @@ local class_specs_coords = {
 		["nameplateShowOnlyNames"] = true,
 		["nameplateShowSelf"] = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE),
 		["nameplateTargetBehindMaxDistance"] = true,
+		["clampTargetNameplateToScreen"] = true,
 		["nameplateTargetRadialPosition"] = true,
 		--["showQuestTrackingTooltips"] = true, -- this seems to be gone as of 18.12.2020
+		["nameplateSelectedAlpha"] = true,
+		["nameplateNotSelectedAlpha"] = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE),
 	}
 	--on logout or on profile change, save some important cvars inside the profile
 	function Plater.SaveConsoleVariables(cvar, value) --private
@@ -1860,6 +1885,7 @@ local class_specs_coords = {
 		DB_USE_ALPHA_FRIENDLIES = profile.transparency_behavior_on_friendlies
 		DB_USE_ALPHA_ENEMIES = profile.transparency_behavior_on_enemies
 		DB_USE_QUICK_HIDE = profile.quick_hide
+		DB_SHOW_HEALTHBARS_FOR_NOT_ATTACKABLE = profile.show_healthbars_on_not_attackable
 		
 		DB_NPCIDS_CACHE = Plater.db.profile.npc_cache
 		
@@ -3591,7 +3617,7 @@ local class_specs_coords = {
 			Plater.NameplateTick (plateFrame.OnTickFrame, 10)
 
 			--highlight check
-			if (DB_HOVER_HIGHLIGHT and not plateFrame.PlayerCannotAttack and (actorType ~= ACTORTYPE_FRIENDLY_PLAYER and actorType ~= ACTORTYPE_FRIENDLY_NPC and actorType ~= ACTORTYPE_PLAYER)) then
+			if (DB_HOVER_HIGHLIGHT and (not plateFrame.PlayerCannotAttack or (plateFrame.PlayerCannotAttack and DB_SHOW_HEALTHBARS_FOR_NOT_ATTACKABLE)) and (actorType == ACTORTYPE_ENEMY_PLAYER or actorType == ACTORTYPE_ENEMY_NPC)) then
 				Plater.EnableHighlight (unitFrame)
 			else
 				Plater.DisableHighlight (unitFrame)
@@ -3883,6 +3909,10 @@ function Plater.OnInit() --private --~oninit ~init
 			end
 			SetCVar ("nameplateMinAlpha", 0.90135484)
 			SetCVar ("nameplateMinAlphaDistance", -10^5.2)
+			if (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) then
+				SetCVar ("nameplateSelectedAlpha", 1)
+				SetCVar ("nameplateNotSelectedAlpha", 1)
+			end
 		end
 	
 	--schedule data update
@@ -4104,27 +4134,6 @@ function Plater.OnInit() --private --~oninit ~init
 				end
 			end
 		end)
-
-	--addon comm handler
-		Plater.CommHandler = { --private
-			[COMM_SCRIPT_GROUP_EXPORTED] = Plater.ScriptReceivedFromGroup,
-		}
-		
-		function Plater:CommReceived (_, dataReceived)
-			local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
-			if (LibAceSerializer) then
-				local prefix =  select (2, LibAceSerializer:Deserialize (dataReceived))
-				local func = Plater.CommHandler [prefix]
-				if (func) then
-					local values = {LibAceSerializer:Deserialize (dataReceived)}
-					if (values [1]) then
-						tremove (values, 1) --remove the Deserialize state
-						func (unpack (values))
-					end
-				end
-			end
-		end
-		Plater:RegisterComm (COMM_PLATER_PREFIX, "CommReceived")
 	
 		--this should pull the resources bar up and down based on if the target has debuffs shown on it or not
 		function Plater.UpdateResourceFrameAnchor (buffFrame)
@@ -6933,10 +6942,37 @@ end
 				end
 			end
 			
+		elseif (actorType == ACTORTYPE_ENEMY_PLAYER) then
+			if (plateFrame.PlayerCannotAttack and not DB_SHOW_HEALTHBARS_FOR_NOT_ATTACKABLE) then
+				healthBar:Hide()
+				buffFrame:Hide()
+				buffFrame2:Hide()
+				nameFrame:Hide()
+				plateFrame.IsFriendlyPlayerWithoutHealthBar = true
+				
+			else
+				healthBar:Show()
+				buffFrame:Show()
+				buffFrame2:Show()
+				nameFrame:Show()
+				
+				if (DB_PLATE_CONFIG [actorType].use_playerclass_color) then
+					local _, class = UnitClass (unitFrame [MEMBER_UNITID])
+					if (class) then		
+						local color = RAID_CLASS_COLORS [class]
+						Plater.ChangeHealthBarColor_Internal (healthBar, color.r, color.g, color.b, color.a)
+					else
+						Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].fixed_class_color))
+					end
+				else
+					Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].fixed_class_color))
+				end
+			end
+			
 		else
 			--> enemy npc or enemy player pass throught here
 			--check if this is an enemy npc but the player cannot attack it
-			if (plateFrame.PlayerCannotAttack) then
+			if (plateFrame.PlayerCannotAttack and not DB_SHOW_HEALTHBARS_FOR_NOT_ATTACKABLE) then
 				healthBar:Hide()
 				buffFrame:Hide()
 				buffFrame2:Hide()
@@ -6947,24 +6983,8 @@ end
 				healthBar:Show()
 				buffFrame:Show()
 				buffFrame2:Show()
-				if not unitFrame.IsSelf then
-					nameFrame:Show()
-				end
 				
-				--> check for enemy player class color
-				if (actorType == ACTORTYPE_ENEMY_PLAYER) then
-					if (DB_PLATE_CONFIG [actorType].use_playerclass_color) then
-						local _, class = UnitClass (unitFrame [MEMBER_UNITID])
-						if (class) then		
-							local color = RAID_CLASS_COLORS [class]
-							Plater.ChangeHealthBarColor_Internal (healthBar, color.r, color.g, color.b, color.a)
-						else
-							Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].fixed_class_color))
-						end
-					else
-						Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].fixed_class_color))
-					end
-				elseif unitFrame.IsSelf then
+				if unitFrame.IsSelf then
 					--refresh color
 					if (plateFrame.PlateConfig.healthbar_color_by_hp) then
 						local currentHealth = healthBar.currentHealth
@@ -6976,6 +6996,7 @@ end
 						Plater.ChangeHealthBarColor_Internal (healthBar, unpack (DB_PLATE_CONFIG [actorType].healthbar_color))
 					end
 				else
+					nameFrame:Show()
 					-- could be a pet
 					Plater.ForceFindPetOwner (plateFrame [MEMBER_GUID])
 				end
@@ -8328,6 +8349,7 @@ function Plater.SetCVarsOnFirstRun()
 	--> lock nameplates to screen
 	SetCVar ("nameplateOtherTopInset", "0.085")
 	SetCVar ("nameplateLargeTopInset", "0.085")
+	SetCVar ("clampTargetNameplateToScreen", "1")
 	SetCVar ("nameplateTargetRadialPosition", "1")
 	SetCVar ("nameplateTargetBehindMaxDistance", "30")
 
@@ -8429,21 +8451,40 @@ end
 		plateFrame.unitFrame.QuestAmountCurrent = nil
 		plateFrame.unitFrame.QuestAmountTotal = nil
 		
-		GameTooltipScanQuest:SetOwner (WorldFrame, "ANCHOR_NONE")
-		GameTooltipScanQuest:SetHyperlink ("unit:" .. plateFrame [MEMBER_GUID])
+		local useQuestie = false
+		local QuestieTooltips = QuestieLoader and QuestieLoader._modules["QuestieTooltips"]
+		if QuestieTooltips then
+			ScanQuestTextCache = QuestieTooltips:GetTooltip("m_"..plateFrame [MEMBER_NPCID])
+			if not ScanQuestTextCache then
+				ScanQuestTextCache = {}
+			end
+			useQuestie = true
+		else
+			GameTooltipScanQuest:SetOwner (WorldFrame, "ANCHOR_NONE")
+			GameTooltipScanQuest:SetHyperlink ("unit:" .. plateFrame [MEMBER_GUID])
+			
+			--8.2 tooltip changes fix by GentMerc#9560 on Discord
+			for i = 1, GameTooltipScanQuest:NumLines() do
+				ScanQuestTextCache [i] = _G ["PlaterScanQuestTooltipTextLeft" .. i]
+			end
+		end
 		
 		local playerName = UnitName("player")
 		local unitQuestData = {}
-
-		--8.2 tooltip changes fix by GentMerc#9560 on Discord
-		for i = 1, GameTooltipScanQuest:NumLines() do
-			ScanQuestTextCache [i] = _G ["PlaterScanQuestTooltipTextLeft" .. i]
-		end
 		
 		local isQuestUnit = false
 		local atLeastOneQuestUnfinished = false
 		for i = 1, #ScanQuestTextCache do
-			local text = ScanQuestTextCache [i]:GetText()
+			local text = nil
+			if useQuestie then
+				text = ScanQuestTextCache [i]
+				text = gsub(text,"|c........","") -- remove coloring begin
+				text = gsub(text,"|r","") -- remove color end
+				text = gsub(text,"%[.*%] ","") -- remove level text
+			else
+				text = ScanQuestTextCache [i]:GetText()
+			end
+			
 			if (Plater.QuestCache [text]) then
 				--unit belongs to a quest
 				isQuestUnit = true
@@ -8462,7 +8503,17 @@ end
 				local j = i
 				while (ScanQuestTextCache [j+1]) do
 					--check if the unit objective isn't already done
-					local nextLineText = ScanQuestTextCache [j+1]:GetText()
+					local nextLineText = nil
+					if useQuestie then
+						nextLineText = ScanQuestTextCache [j+1]
+						if nextLineText then
+							nextLineText = gsub(nextLineText,"|c........","") -- remove coloring begin
+							nextLineText = gsub(nextLineText,"|r","") -- remove color end
+						end
+					else
+						nextLineText = ScanQuestTextCache [j+1]:GetText()
+					end
+					
 					if (nextLineText) then
 						if nextLineText == playerName then
 							yourQuest = true
@@ -9405,10 +9456,10 @@ end
 		unitFrame.PlateFrame.IsNpcWithoutHealthBar = showNameNpc
 		
 		if (showPlayerName) then
-			Plater.UpdatePlateText (unitFrame.PlateFrame, DB_PLATE_CONFIG [ACTORTYPE_FRIENDLY_PLAYER], true)
+			Plater.UpdatePlateText (unitFrame.PlateFrame, DB_PLATE_CONFIG [unitFrame.ActorType], true)
 			
 		elseif (showNameNpc) then
-			Plater.UpdatePlateText (unitFrame.PlateFrame, DB_PLATE_CONFIG [ACTORTYPE_ENEMY_NPC], true)
+			Plater.UpdatePlateText (unitFrame.PlateFrame, DB_PLATE_CONFIG [unitFrame.ActorType], true)
 		end
 	end
 	
@@ -9438,68 +9489,7 @@ end
 	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --> scripting ~scripting
-	
-	-- ~compress ~zip ~export ~import ~deflate ~serialize
-	function Plater.CompressData (data, dataType)
-		local LibDeflate = LibStub:GetLibrary ("LibDeflate")
-		local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
-		
-		if (LibDeflate and LibAceSerializer) then
-			local dataSerialized = LibAceSerializer:Serialize (data)
-			if (dataSerialized) then
-				local dataCompressed = LibDeflate:CompressDeflate (dataSerialized, {level = 9})
-				if (dataCompressed) then
-					if (dataType == "print") then
-						local dataEncoded = LibDeflate:EncodeForPrint (dataCompressed)
-						return dataEncoded
-						
-					elseif (dataType == "comm") then
-						local dataEncoded = LibDeflate:EncodeForWoWAddonChannel (dataCompressed)
-						return dataEncoded
-					end
-				end
-			end
-		end
-	end
 
-	function Plater.DecompressData (data, dataType)
-		local LibDeflate = LibStub:GetLibrary ("LibDeflate")
-		local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
-		
-		if (LibDeflate and LibAceSerializer) then
-			
-			local dataCompressed
-			
-			if (dataType == "print") then
-				dataCompressed = LibDeflate:DecodeForPrint (data)
-				if (not dataCompressed) then
-					Plater:Msg ("couldn't decode the data.")
-					return false
-				end
-
-			elseif (dataType == "comm") then
-				dataCompressed = LibDeflate:DecodeForWoWAddonChannel (data)
-				if (not dataCompressed) then
-					Plater:Msg ("couldn't decode the data.")
-					return false
-				end
-			end
-			
-			local dataSerialized = LibDeflate:DecompressDeflate (dataCompressed)
-			if (not dataSerialized) then
-				Plater:Msg ("couldn't uncompress the data.")
-				return false
-			end
-			
-			local okay, data = LibAceSerializer:Deserialize (dataSerialized)
-			if (not okay) then
-				Plater:Msg ("couldn't unserialize the data.")
-				return false
-			end
-			
-			return data
-		end
-	end
 
 	function Plater.ExportProfileToString()
 		local profile = Plater.db.profile
@@ -9673,6 +9663,15 @@ end
 			Plater.EndLogPerformance("Scripts", scriptName, "Initialization")
 			if (not okay) then
 				Plater:Msg ("Script |cFFAAAA22" .. scriptName .. "|r Initialization error: " .. errortext)
+			end
+		end,
+		
+		ScriptRunCommMessage = function(self, scriptInfo, modName, source, ...)
+			Plater.StartLogPerformance("Mod-RunHooks", modName, "Comm Message")
+			local okay, errortext = pcall (scriptInfo.GlobalScriptObject ["Comm Message"], self, self.displayedUnit, self, scriptInfo.Env, PLATER_GLOBAL_MOD_ENV [scriptInfo.GlobalScriptObject.DBScriptObject.scriptId], source, ...)
+			Plater.EndLogPerformance("Mod-RunHooks", modName, "Comm Message")
+			if (not okay) then
+				Plater:Msg ("Mod |cFFAAAA22" .. modName .. "|r code for |cFFBB8800" .. "Comm Message" .. "|r error: " .. errortext)
 			end
 		end,
 		
@@ -10046,6 +10045,13 @@ end
 			["GetVersionInfo"] = false,
 			["versionString"] = false,
 			["fullVersionInfo"] = false,
+			["DispatchCommMessageHookEvent"] = true,
+			["MessageReceivedFromScript"] = true,
+			["CreateUniqueIdentifier"] = false,
+			["GetScriptFromUID"] = true,
+			["SendCommMessage"] = true,
+			["CreateCommHeader"] = true,
+			["ScriptReceivedMessage"] = true,
 		},
 		
 		["DetailsFramework"] = {
@@ -10210,7 +10216,8 @@ end
 		HOOK_UNITNAME_UPDATE,
 		HOOK_LOAD_SCREEN,
 		HOOK_PLAYER_LOGON,
-		HOOK_MOD_INITIALIZATION
+		HOOK_MOD_INITIALIZATION,
+		HOOK_COMM_MESSAGE,
 	}
 
 	function Plater.WipeHookContainers (noHotReload)
@@ -10268,6 +10275,8 @@ end
 			return HOOK_LOAD_SCREEN	
 		elseif (hookName == "Player Logon") then
 			return HOOK_PLAYER_LOGON
+		elseif (hookName == "Comm Message") then
+			return HOOK_COMM_MESSAGE
 		else
 			Plater:Msg ("Unknown hook: " .. (hookName or "Invalid Hook Name"))
 		end
@@ -10467,6 +10476,9 @@ end
 			if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
 				code = string.gsub(code, "\"NamePlateFullBorderTemplate\"", "\"PlaterNamePlateFullBorderTemplate\"")
 			end
+
+			--find occurences of Plater.SendComm(arg1, arg2, arg3, ...) and replace with Plater.SendComm_Internal(uniqueIdentifier, arg1, arg2, arg3, ...)
+			code = code:gsub("Plater.SendComm%(", "Plater.SendComm(" .. (scriptObject.UID or 0) .. ", ")
 			
 			local compiledScript, errortext = loadstring (code, "" .. hookName .. " for " .. scriptObject.Name)
 			if (not compiledScript) then
@@ -11260,6 +11272,11 @@ end
 		end
 	end
 
+	function Plater.ScriptReceivedMessage(prefix, playerName, playerRealm, playerGUID, message)
+		--implemented on Plater_Comms
+		return Plater.MessageReceivedFromScript(prefix, playerName, playerRealm, playerGUID, message)
+	end
+
 	function Plater.ScriptReceivedFromGroup (prefix, playerName, playerRealm, playerGUID, importedString)
 		if (not Plater.db.profile.script_banned_user [playerGUID]) then
 			
@@ -11406,6 +11423,29 @@ end
 		end
 		
 	end	
+
+	function Plater.DispatchCommMessageHookEvent(scriptObject, source, ...)
+		if (HOOK_COMM_MESSAGE.ScriptAmount > 0) then
+			for _, plateFrame in ipairs (Plater.GetAllShownPlates()) do
+				if (plateFrame and plateFrame.unitFrame.PlaterOnScreen) then
+					for i = 1, HOOK_COMM_MESSAGE.ScriptAmount do
+						local globalScriptObject = HOOK_COMM_MESSAGE[i]
+						local unitFrame = plateFrame.unitFrame
+
+						if (not plateFrame.unitFrame.PlaterOnScreen) then
+							return
+						end
+
+						local scriptContainer = unitFrame:ScriptGetContainer()
+						local scriptInfo = unitFrame:ScriptGetInfo(globalScriptObject, scriptContainer, "Comm Message")
+
+						--run
+						unitFrame:ScriptRunCommMessage(scriptInfo, scriptObject.Name, source, ...)
+					end
+				end
+			end
+		end
+	end
 
 	function Plater.DispatchTalentUpdateHookEvent()
 		if (HOOK_PLAYER_TALENT_UPDATE.ScriptAmount > 0) then

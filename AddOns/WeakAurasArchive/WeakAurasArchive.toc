@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: The WeakAuras Team
-## Version: 3.4.1
+## Version: 3.4.2
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasArchive

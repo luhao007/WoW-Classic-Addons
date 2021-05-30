@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Version: 2.5.3
+## Version: 2.5.8
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
@@ -25,6 +25,8 @@ Localization.zhTW.lua
 UIStrings.lua
 TooltipParsing.lua
 Gems.lua
+GemsClassic.lua
+GemsBurningCrusade.lua
 ScaleTemplates.lua
 Pawn.lua
 PawnUI.lua

@@ -228,8 +228,8 @@ Addon.Config = {
     ["ExpireDay"] = 14, -- 日志保存天数
 	["ShowMinimapIcon"] = true,
 	["MinimapIconAngle"] = 310,
-    ["SetWindowPos"] = {"CENTER", true, "CENTER", 210, 0},
-    ["OutputPos"] = {"RIGHT", true, "RIGHT", -20, 0},
+    ["SetWindowPos"] = {"CENTER", nil, "CENTER", 210, 0},
+    ["OutputPos"] = {"RIGHT", nil, "RIGHT", -20, 0},
 }
 local Config = Addon.Config
 local LootLog = {}
@@ -641,6 +641,7 @@ end
 
 -- 注册事件
 Frame:RegisterEvent("ADDON_LOADED")
+Frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 Frame:RegisterEvent("PLAYER_LOGOUT")
 Frame:RegisterEvent("LOOT_OPENED")
 Frame:RegisterEvent("CHAT_MSG_ADDON")
@@ -756,24 +757,16 @@ function Frame:ADDON_LOADED(Name)
     SetWindow:Initialize()
    	-- 初始化Output窗口
 	Output:Initialize()
-    -- 初始化小地图按钮
-    MinimapIcon:Initialize()
     -- 初始化团队成员版本信息表
     Addon:InitGroupInfo()
     -- 初始化团队成员状态表
     Addon:InitGroupFlags()
+    -- 进入检测
     if Config.EnteringCheck then
         Frame:Show()
     else
         Frame:Hide()
     end
-    -- 小地图按钮
-	if Config.ShowMinimapIcon then
-		Addon:UpdatePosition(Config.MinimapIconAngle)
-		MinimapIcon.Minimap:Show()
-	else
-		MinimapIcon.Minimap:Hide()
-	end
 	-- 清理过期TradeLog
 	local Today = {}
 	Today.year, Today.month, Today.day = strsplit("-", date("%Y-%m-%d"))
@@ -791,27 +784,48 @@ function Frame:ADDON_LOADED(Name)
 		end
 	end
 end
+-- 进入世界
+function Frame:PLAYER_ENTERING_WORLD()
+	if Addon.LDB and Addon.LDBIcon and ((IsAddOnLoaded("TitanClassic")) or (IsAddOnLoaded("Titan"))) then
+		MinimapIcon:InitBroker()
+	else
+        -- 初始化小地图按钮
+        MinimapIcon:Initialize()
+        -- 小地图按钮
+        if Config.ShowMinimapIcon then
+            Addon:UpdatePosition(Config.MinimapIconAngle)
+            MinimapIcon.Minimap:Show()
+        else
+            MinimapIcon.Minimap:Hide()
+        end
+	end
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
 -- 退出处理（包括/reload）
 function Frame:PLAYER_LOGOUT()
-    -- 清空LootMonitorDB
+   	-- 清理不合法LootLog
+    if #LootLog > 0 then
+        for i = #LootLog, 1, -1 do
+            if not LootLog[i].Date or not LootLog[i].InstanceName or not LootLog[i].Player then
+                t_remove(LootLog, i)
+            end
+            if #LootLog[i].LootTable == 0 then
+                t_remove(LootLog, i)
+            end
+            for j = #LootLog[i].LootTable, 1, -1 do
+                if #LootLog[i].LootTable[j].Loots == 0 then
+                    t_remove(LootLog[i].LootTable, j)
+                end
+            end
+        end
+    end
+   	-- 存儲窗口位置
+    Config.SetWindowPos[1], _, Config.SetWindowPos[3], Config.SetWindowPos[4], Config.SetWindowPos[5] = SetWindow.background:GetPoint()
+    Config.OutputPos[1], _, Config.OutputPos[3], Config.OutputPos[4], Config.OutputPos[5] = Output.background:GetPoint()
     LootMonitorDB = {
         ["Config"] = {},
         ["LootLog"] = {},
     }
-   	-- 清理不合法LootLog
-	for i = #LootLog, 1, -1 do
-		if not LootLog[i].Date or not LootLog[i].InstanceName or not LootLog[i].Player then
-			t_remove(LootLog, i)
-        end
-        if #LootLog[i].LootTable == 0 then
-            t_remove(LootLog, i)
-        end
-        for j = #LootLog[i].LootTable, 1, -1 do
-            if #LootLog[i].LootTable[j].Loots == 0 then
-                t_remove(LootLog[i].LootTable, j)
-            end
-        end
-    end
     -- 用当前Config覆盖LootMonitorDB
     Addon:UpdateTable(LootMonitorDB.Config, Config)
     Addon:UpdateTable(LootMonitorDB.LootLog, LootLog)
@@ -1308,10 +1322,10 @@ SLASH_LMC2 = "/lm"
 -- 处理slash命令
 SlashCmdList["LMC"] = function(Command)
     if Command == "" then
-        if Addon.SetWindow:IsShown() then
-            Addon.SetWindow:Hide()
+        if Addon.SetWindow.background:IsShown() then
+            Addon.SetWindow.background:Hide()
         else
-            Addon.SetWindow:Show()
+            Addon.SetWindow.background:Show()
         end
     elseif Command:lower() == "lootlog" or Command:lower() == "ll" then
         Addon:PrintLootLog()

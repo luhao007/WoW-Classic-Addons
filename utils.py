@@ -130,16 +130,14 @@ def change_defaults(path, defaults):
 def lib_to_toc(lib):
     root = Path('Addons/!!Libs')
     subdir = os.listdir(root / lib)
-    if 'lib.xml' in subdir:
-        return f'{lib}\\lib.xml\n'
-    if f'{lib}.xml' in subdir:
-        return f'{lib}\\{lib}.xml\n'
-    if f'{lib}.lua' in subdir:
-        return f'{lib}\\{lib}.lua\n'
+    for script in ['lib.xml', 'load.xml', f'{lib}.xml', f'{lib}.lua']:
+        if script in subdir:
+            return f'{lib}\\{script}\n'
+
     if lib in subdir:
-        subsubdir = os.listdir(root / lib / lib)
-        if f'{lib}.xml' in subsubdir:
-            return f'{lib}\\{lib}\\{lib}.xml\n'
-        if f'{lib}.lua' in subsubdir:
-            return f'{lib}\\{lib}\\{lib}.lua\n'
+        subdir = os.listdir(root / lib / lib)
+        for script in [f'{lib}.xml', f'{lib}.lua']:
+            if script in subdir:
+                return f'{lib}\\{lib}\\{script}\n'
+
     raise RuntimeError(f'{lib} not handled!')

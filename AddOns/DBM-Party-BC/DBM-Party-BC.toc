@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Arta/MysticalOS
-## Version: 2.5.3
+## Version: 2.5.4
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyBC_AllSavedVars

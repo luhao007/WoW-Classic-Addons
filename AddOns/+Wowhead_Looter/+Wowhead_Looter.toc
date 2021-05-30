@@ -1,15 +1,13 @@
 ## Interface: 20501
-## Author: mystadio
-## Version: 20501
-## LoadOnDemand: 0
-## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlBaseStats2, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
-## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded
-## DefaultState: enabled
-
 ## Title: Wowhead Looter
 ## Notes: Gathers data for Wowhead while you play. Version 11304.
-## Title-zhCN: |cFFFFE00A<|r|cFFFFFFFF辅助|r|cFFFFE00A>|r |cFFFFFFFFWowhead数据采集|r |cFFFFE00A+Wowhead_Looter|r
-## Notes-zhCN: 收集各种游戏内数据并上传Wowhead
-
+## Author: mystadio
+## eMail: feedback@wowhead.com
+## URL: https://www.wowhead.com/
+## Version: 20501
+## LoadOnDemand: 0
+## DefaultState: enabled
+## SavedVariables: wlTime, wlVersion, wlUploaded, wlStats, wlExportData, wlRealmList, wlAuction, wlEvent, wlItemSuffix, wlObject, wlProfile, wlProfileData, wlUnit, wlBaseStats2, wlItemDurability, wlItemBonuses, wlTradeSkillDifficulty
+## SavedVariablesPerCharacter: wlScans, wlSetting, wlPetBlacklist, wlUIReloaded
 
 Wowhead_Looter.xml

@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Version: 2.5.3
+## Version: 2.5.4
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMOutlands_AllSavedVars
@@ -15,8 +15,8 @@
 ## X-DBM-Mod-World-Boss: 1
 ## X-DBM-StatTypes: normal
 ## X-DBM-Mod-Sort: 1006
-## X-DBM-Mod-MapID: 530,565,544
-## X-DBM-Mod-LoadCID: 17711,18728
+## X-DBM-Mod-MapID: 530,565,544,1
+## X-DBM-Mod-LoadCID: 17711,18728,18166,20130
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 1
 ## X-Curse-Project-ID: 16442
@@ -36,3 +36,4 @@ Gruul.lua
 Magtheridon.lua
 Kazzak.lua
 Doomwalker.lua
+Quest.lua

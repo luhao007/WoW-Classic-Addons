@@ -309,6 +309,31 @@ local openURL = function(url)
 end
 Plater.OpenCopyUrlDialog = openURL
 
+--return a unique string ID to identify each script
+--return a string containing time() and GetTime() merged into a string which is converted to hexadecimal
+--examples: 0x60abce782cb0df 0x60abce7847845 0x60abce782cb3cd 0x60abce782cb485 0x60abce792cb51b 0x60abce792cb58f 0x60abce792cb625
+local createUniqueIdentifier = function()
+	--transform time() into a hex
+    local hexTime =  format("%8x", time())
+
+	--take the GetTime() and remove the dot
+    local getTime = tostring(GetTime()) --convert to string
+    getTime = getTime:gsub("%.", "") --remove the dot
+    local getTimeInt = tonumber(getTime) --conver to to number
+
+	--tranform GetTime into a hex
+    local hexGetTime = format("%8x", getTimeInt)
+	--remove spaces added due to the string not having 8 digits
+    hexGetTime = hexGetTime:gsub("%s", "")
+
+    local finalHex = "0x" .. hexTime .. hexGetTime
+	return finalHex
+end
+
+function Plater.CreateUniqueIdentifier()
+	return createUniqueIdentifier()
+end
+
 --initialize the options panel for a script object
 function Plater.CreateOptionTableForScriptObject(scriptObject)
 	scriptObject.Options = scriptObject.Options or {}
@@ -1874,7 +1899,10 @@ function Plater.CreateHookingPanel()
 	function hookFrame.DuplicateScript (scriptId)
 		local scriptToBeCopied = hookFrame.GetScriptObject (scriptId)
 		local newScript = DF.table.copy ({}, scriptToBeCopied)
-		
+
+		--generate a new unique id
+		newScript.UID = createUniqueIdentifier()
+
 		--cleanup:
 		newScript.HooksTemp  = {}
 		newScript.url = nil
@@ -2077,8 +2105,15 @@ function Plater.CreateHookingPanel()
 			--insert code here
 			
 		end
-	]=]	
-	
+	]=]
+
+	hookFrame.DefaultCommScript = [=[
+		function (self, unitId, unitFrame, envTable, modTable, source, ...)
+			--source is the player who sent the comm, vararg is the payload
+			
+		end
+	]=]
+
 	--a new script has been created
 	function hookFrame.CreateNewScript()
 
@@ -2101,6 +2136,7 @@ function Plater.CreateHookingPanel()
 			--ModEnvStart = "", --run once when the mod starts
 			--ModEnvTable = {}, --store data that is shared among all nameplates running this script
 			Options = {}, --store options where the end user can change aspects of the hook without messing with the code
+			UID = createUniqueIdentifier(), --create an ID that identifies this script, the ID cannot be changed, if the script is duplicated, a new id is generated
 		}
 
 		Plater.CreateOptionTableForScriptObject(newScriptObject)
@@ -2150,20 +2186,25 @@ function Plater.CreateHookingPanel()
 		if (not scriptObject) then
 			return
 		end
-		
+
 		--add the hook to the script object
 		if (not scriptObject.Hooks [hookName]) then
 			local defaultScript
 			if (hookName == "Load Screen" or hookName == "Player Logon" or hookName == "Initialization") then
 				defaultScript = hookFrame.DefaultScriptNoNameplate
+
+			elseif (hookName == "Comm Message") then
+				defaultScript = hookFrame.DefaultCommScript
+
 			else
 				defaultScript = hookFrame.DefaultScript
 			end
+
 			--try to restore code from the temp table
 			scriptObject.Hooks [hookName] = scriptObject.HooksTemp [hookName] or defaultScript
 			scriptObject.HooksTemp [hookName] = defaultScript
 		end
-		
+
 		--when adding, it start to edit the code for the hook added, check if there's a code being edited and save it
 		local lastEditedHook = scriptObject.LastHookEdited
 		if (lastEditedHook ~= "") then
@@ -2171,7 +2212,7 @@ function Plater.CreateHookingPanel()
 		end
 		hookFrame.CodeEditorLuaEntry:SetText (scriptObject.Hooks [hookName])
 		scriptObject.LastHookEdited = hookName
-		
+
 		--update the hook scroll list
 		hookFrame.HookScrollBox:Refresh()
 		
@@ -2831,6 +2872,7 @@ function Plater.CreateScriptingPanel()
 			Revision = 1, --increase everytime the save button is pressed
 			PlaterCore = Plater.CoreVersion, --store the version of plater required to run this script
 			Options = {}, --store options where the end user can change aspects of the script without messing with the code
+			UID = createUniqueIdentifier(), --create an ID that identifies this script, the ID cannot be changed, if the script is duplicated, a new id is generated
 		}
 
 		Plater.CreateOptionTableForScriptObject(newScriptObject)
@@ -3093,6 +3135,9 @@ function Plater.CreateScriptingPanel()
 		local scriptToBeCopied = scriptingFrame.GetScriptObject (scriptId)
 		local newScript = DF.table.copy ({}, scriptToBeCopied)
 		
+		--generate a new unique id
+		newScript.UID = createUniqueIdentifier()
+
 		--cleanup:
 		newScript.url = nil
 		newScript.semver = nil
