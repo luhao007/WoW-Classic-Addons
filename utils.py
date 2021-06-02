@@ -130,7 +130,7 @@ def change_defaults(path, defaults):
 def lib_to_toc(lib):
     root = Path('Addons/!!Libs')
     subdir = os.listdir(root / lib)
-    for script in ['lib.xml', 'load.xml', f'{lib}.xml', f'{lib}.lua']:
+    for script in ['lib.xml', 'load.xml', f'{lib}.xml', f'{lib}.lua', 'Core.lua']:
         if script in subdir:
             return f'{lib}\\{script}\n'
 

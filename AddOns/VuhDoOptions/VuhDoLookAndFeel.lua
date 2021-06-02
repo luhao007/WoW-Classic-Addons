@@ -112,7 +112,7 @@ BACKDROP_VUHDO_PANEL_APPEND_BOTTOM_16_16_1111 = {
 	insets = {  left = 1, right = 1, top = 1, bottom = 1 },
 };
 
-
+local tIsInCustomFunction = false;
 
 --
 function VUHDO_lnfCheckButtonOnLoad(aCheckButton)
@@ -279,19 +279,20 @@ end
 
 
 --
-local tText;
-local tUnit;
-function VUHDO_lnfSliderOnValueChanged(aSlider)
-	if _G[aSlider:GetName() .. "SliderValue"] then
-		tText = "" .. floor((_G[aSlider:GetName() .. "Slider"]:GetValue() + 0.005) * 100) * 0.01;
-		tUnit = aSlider:GetAttribute("unit");
+do
+	local tText;
+	local tUnit;
+	function VUHDO_lnfSliderOnValueChanged(aSlider)
+		if _G[aSlider:GetName() .. "SliderValue"] then
+			tText = "" .. floor((_G[aSlider:GetName() .. "Slider"]:GetValue() + 0.005) * 100) * 0.01;
+			tUnit = aSlider:GetAttribute("unit");
 
-		if not VUHDO_strempty(tUnit) then tText = tText .. tUnit; end
+			if not VUHDO_strempty(tUnit) then tText = tText .. tUnit; end
 
-		_G[aSlider:GetName() .. "SliderValue"]:SetText(tText);
+			_G[aSlider:GetName() .. "SliderValue"]:SetText(tText);
+		end
 	end
 end
-
 
 
 --
@@ -306,12 +307,13 @@ end
 
 
 --
-local sLastComboItem = nil;
+do
+	local sLastComboItem = nil;
 
-function VUHDO_lnfSetLastComboItem(anItem)
-	sLastComboItem = anItem:GetName();
+	function VUHDO_lnfSetLastComboItem(anItem)
+		sLastComboItem = anItem:GetName();
+	end
 end
-
 
 
 --
@@ -352,7 +354,7 @@ function VUHDO_lnfComboItemOnLeave(aComboItem)
 	if aComboItem.parentCombo["isScrollable"] then aComboItem:SetBackdropColor(0, 0, 0, 0);
 	else aComboItem:SetBackdropColor(1, 1, 1, 1); end
 
-	tComboBox = aComboItem.parentCombo;
+	local tComboBox = aComboItem.parentCombo;
 	if not tComboBox["isMulti"] then
 		_G[aComboItem:GetName() .. "Icon"]:SetScale(1);
 		_G[aComboItem:GetName() .. "Icon"]:SetPoint("RIGHT", aComboItem:GetName(), "RIGHT", -6, 0);
@@ -364,7 +366,7 @@ end
 --
 local function VUHDO_hideAllComponentExtensions(aComponent)
 	local tRootPane = aComponent:GetParent():GetParent();
-	local tSubPanel, tComponent;
+	local tSubPanel, tComponent, tSelectPanel;
 
 	for tCnt = 1, select("#", tRootPane:GetChildren()) do
 		tSubPanel = select(tCnt, tRootPane:GetChildren());
@@ -451,112 +453,83 @@ end
 
 
 --
-local VUHDO_lnfOnUpdate = false;
-local function VUHDO_lnfUpdateAllModelControls(aComponent, aValue)
-	local tModel;
-	local tComp;
-	local tCurrModel = aComponent:GetAttribute("model");
+do
+	local tPanelNum;
+	local tTableIndices;
+	local tGlobal;
+	local tLastField;
+	local tIndex;
+	local tLastIndex;
+	local tEnd;
+	function VUHDO_lnfUpdateVar(aModel, aValue, aPanelNum)
+		tPanelNum = nil;
 
-	if VUHDO_lnfOnUpdate or not tCurrModel then return; end
+		if not aPanelNum then aPanelNum = DESIGN_MISC_PANEL_NUM; end
 
-	local tPanel = aComponent:GetParent();
-	if not tPanel then return; end
+		if VUHDO_isVariablesLoaded() and aModel then
 
-	VUHDO_lnfOnUpdate = true;
+			tTableIndices = VUHDO_splitString(aModel, ".");
+			tGlobal = _G[tTableIndices[1]];
+			tLastField = tGlobal;
+			tEnd = #tTableIndices - 1;
 
-	for tCnt = 1, select("#", tPanel:GetChildren()) do
-		tComp = select(tCnt, tPanel:GetChildren());
+			for tCnt = 2, tEnd do
+				tIndex = tTableIndices[tCnt];
+				if VUHDO_NUM_TEMPLATE == tIndex then
+					tIndex = aPanelNum;
+					tPanelNum = aPanelNum;
+				elseif strfind(tIndex, VUHDO_VAL_TEMPLATE, 1, true) then
+					tIndex = VUHDO_getNumbersFromString(tIndex, 1)[1];
+				end
 
-		tModel = tComp:GetAttribute("model");
-		if tModel and strfind(tCurrModel, tModel , 1, true) and aComponent ~= tComp then
-			if tComp:IsShown() then
-				tComp:Hide();
-				tComp:Show();
+				tLastField = tLastField[tIndex];
 			end
-		end
-	end
-
-	VUHDO_lnfOnUpdate = false;
-end
-
-
-
---
-local tPanelNum;
-local tTableIndices;
-local tGlobal;
-local tLastField;
-local tIndex;
-local tLastIndex;
-local tEnd;
-function VUHDO_lnfUpdateVar(aModel, aValue, aPanelNum)
-	tPanelNum = nil;
-
-	if not aPanelNum then aPanelNum = DESIGN_MISC_PANEL_NUM; end
-
-	if VUHDO_isVariablesLoaded() and aModel then
-
-		tTableIndices = VUHDO_splitString(aModel, ".");
-		tGlobal = _G[tTableIndices[1]];
-		tLastField = tGlobal;
-		tEnd = #tTableIndices - 1;
-
-		for tCnt = 2, tEnd do
-			tIndex = tTableIndices[tCnt];
-			if VUHDO_NUM_TEMPLATE == tIndex then
-				tIndex = aPanelNum;
+			tLastIndex = tTableIndices[#tTableIndices];
+			if VUHDO_NUM_TEMPLATE == tLastIndex then
+				tLastIndex = aPanelNum;
 				tPanelNum = aPanelNum;
-			elseif strfind(tIndex, VUHDO_VAL_TEMPLATE, 1, true) then
-				tIndex = VUHDO_getNumbersFromString(tIndex, 1)[1];
+			elseif strfind(tLastIndex, VUHDO_VAL_TEMPLATE, 1, true) then
+				tLastIndex = VUHDO_getNumbersFromString(tLastIndex, 1)[1];
 			end
 
-			tLastField = tLastField[tIndex];
-		end
-		tLastIndex = tTableIndices[#tTableIndices];
-		if VUHDO_NUM_TEMPLATE == tLastIndex then
-			tLastIndex = aPanelNum;
-			tPanelNum = aPanelNum;
-		elseif strfind(tLastIndex, VUHDO_VAL_TEMPLATE, 1, true) then
-			tLastIndex = VUHDO_getNumbersFromString(tLastIndex, 1)[1];
-		end
-
-		if "table" == type(tLastField) then
-			tLastField[tLastIndex] = aValue;
-		else
-			_G[tTableIndices[1]] = aValue;
-		end
-
-		if not InCombatLockdown() then
-			if VUHDO_RESET_SIZES then resetSizeCalcCaches(); end
-
-			if strfind(aModel, "VUHDO_OPTIONS_SETTINGS.", 1, true)
-				or strfind(aModel, "INTERNAL_MODEL_", 1, true) then
-
-			elseif tPanelNum then
-				if (strfind(aModel, "TOOLTIP", 1, true) ~= nil) then
-					VUHDO_demoTooltip(tPanelNum);
-				else
-					VUHDO_initDynamicPanelModels();
-					VUHDO_timeRedrawPanel(tPanelNum, 0.3);
-				end
-
-			elseif strfind(aModel, "_BUFF_", 1, true) then
-				VUHDO_reloadBuffPanel();
-
-			elseif strfind(aModel, "BLIZZ_UI", 1, true) then
-				VUHDO_initBlizzFrames();
-
+			if "table" == type(tLastField) then
+				tLastField[tLastIndex] = aValue;
 			else
-				if strfind(aModel, "VUHDO_CONFIG.", 1, true) then
-					VUHDO_demoSetupResetUsers();
-				end
-
-				VUHDO_initDebuffs();
-				VUHDO_customHealthInitLocalOverrides(); -- For life left colors
-				VUHDO_timeReloadUI(0.3, true);
+				_G[tTableIndices[1]] = aValue;
 			end
+
+			if not InCombatLockdown() then
+				if VUHDO_RESET_SIZES then resetSizeCalcCaches(); end
+
+				if strfind(aModel, "VUHDO_OPTIONS_SETTINGS.", 1, true)
+					or strfind(aModel, "INTERNAL_MODEL_", 1, true) then
+
+				elseif tPanelNum then
+					if (strfind(aModel, "TOOLTIP", 1, true) ~= nil) then
+						VUHDO_demoTooltip(tPanelNum);
+					else
+						VUHDO_initDynamicPanelModels();
+						VUHDO_timeRedrawPanel(tPanelNum, 0.3);
+					end
+
+				elseif strfind(aModel, "_BUFF_", 1, true) then
+					VUHDO_reloadBuffPanel();
+
+				elseif strfind(aModel, "BLIZZ_UI", 1, true) then
+					VUHDO_initBlizzFrames();
+
+				else
+					if strfind(aModel, "VUHDO_CONFIG.", 1, true) then
+						VUHDO_demoSetupResetUsers();
+					end
+
+					VUHDO_initDebuffs();
+					VUHDO_customHealthInitLocalOverrides(); -- For life left colors
+					VUHDO_timeReloadUI(0.3, true);
+				end
+			end
+			VUHDO_toolboxInitLocalOverrides();
 		end
-		VUHDO_toolboxInitLocalOverrides();
 	end
 end
 local VUHDO_lnfUpdateVar = VUHDO_lnfUpdateVar;
@@ -564,20 +537,50 @@ local VUHDO_lnfUpdateVar = VUHDO_lnfUpdateVar;
 
 
 --
-local tModel, tFunction;
-function VUHDO_lnfUpdateVarFromModel(aComponent, aValue, aPanelNum)
-	tModel = aComponent:GetAttribute("model");
-	if not tModel then return; end
+do
+	local VUHDO_lnfOnUpdate = false;
+	local function VUHDO_lnfUpdateAllModelControls(aComponent, aValue)
+		local tModel;
+		local tComp;
+		local tCurrModel = aComponent:GetAttribute("model");
 
-	VUHDO_lnfUpdateVar(tModel, aValue, aPanelNum);
-	VUHDO_lnfUpdateAllModelControls(aComponent, aValue);
-	VUHDO_lnfUpdateComponentsByConstraints(aComponent);
+		if VUHDO_lnfOnUpdate or not tCurrModel then return; end
 
-	tFunction = aComponent:GetAttribute("custom_function_post");
-	if tFunction then
-		tIsInCustomFunction = true;
-		tFunction(aComponent:GetParent(), aValue);
-		tIsInCustomFunction = false;
+		local tPanel = aComponent:GetParent();
+		if not tPanel then return; end
+
+		VUHDO_lnfOnUpdate = true;
+
+		for tCnt = 1, select("#", tPanel:GetChildren()) do
+			tComp = select(tCnt, tPanel:GetChildren());
+
+			tModel = tComp:GetAttribute("model");
+			if tModel and strfind(tCurrModel, tModel , 1, true) and aComponent ~= tComp then
+				if tComp:IsShown() then
+					tComp:Hide();
+					tComp:Show();
+				end
+			end
+		end
+
+		VUHDO_lnfOnUpdate = false;
+	end
+
+	local tModel, tFunction;
+	function VUHDO_lnfUpdateVarFromModel(aComponent, aValue, aPanelNum)
+		tModel = aComponent:GetAttribute("model");
+		if not tModel then return; end
+
+		VUHDO_lnfUpdateVar(tModel, aValue, aPanelNum);
+		VUHDO_lnfUpdateAllModelControls(aComponent, aValue);
+		VUHDO_lnfUpdateComponentsByConstraints(aComponent);
+
+		tFunction = aComponent:GetAttribute("custom_function_post");
+		if tFunction then
+			tIsInCustomFunction = true;
+			tFunction(aComponent:GetParent(), aValue);
+			tIsInCustomFunction = false;
+		end
 	end
 end
 local VUHDO_lnfUpdateVarFromModel = VUHDO_lnfUpdateVarFromModel;
@@ -585,45 +588,47 @@ local VUHDO_lnfUpdateVarFromModel = VUHDO_lnfUpdateVarFromModel;
 
 
 --
-local tTableIndices;
-local tGlobal;
-local tLastField;
-local tIndex;
-local tLastIndex;
-function VUHDO_lnfGetValueFrom(aModel)
-	if VUHDO_isVariablesLoaded() and aModel then
-		tTableIndices = VUHDO_splitString(aModel, ".");
-		tGlobal = _G[tTableIndices[1]];
-		tLastField = tGlobal;
+do
+	local tTableIndices;
+	local tGlobal;
+	local tLastField;
+	local tIndex;
+	local tLastIndex;
+	function VUHDO_lnfGetValueFrom(aModel)
+		if VUHDO_isVariablesLoaded() and aModel then
+			tTableIndices = VUHDO_splitString(aModel, ".");
+			tGlobal = _G[tTableIndices[1]];
+			tLastField = tGlobal;
 
-		for tCnt = 2, #tTableIndices - 1 do
-			tIndex = tTableIndices[tCnt];
+			for tCnt = 2, #tTableIndices - 1 do
+				tIndex = tTableIndices[tCnt];
 
-			if VUHDO_NUM_TEMPLATE == tIndex then
-				tIndex = DESIGN_MISC_PANEL_NUM;
+				if VUHDO_NUM_TEMPLATE == tIndex then
+					tIndex = DESIGN_MISC_PANEL_NUM;
 
-			elseif strfind(tIndex, VUHDO_VAL_TEMPLATE, 1, true) then
-				tIndex = VUHDO_getNumbersFromString(tIndex, 1)[1];
+				elseif strfind(tIndex, VUHDO_VAL_TEMPLATE, 1, true) then
+					tIndex = VUHDO_getNumbersFromString(tIndex, 1)[1];
+				end
+
+				tLastField = tLastField[tIndex];
 			end
 
-			tLastField = tLastField[tIndex];
-		end
+			tLastIndex = tTableIndices[#tTableIndices];
+			if VUHDO_NUM_TEMPLATE == tLastIndex then
+				tLastIndex = DESIGN_MISC_PANEL_NUM;
 
-		tLastIndex = tTableIndices[#tTableIndices];
-		if VUHDO_NUM_TEMPLATE == tLastIndex then
-			tLastIndex = DESIGN_MISC_PANEL_NUM;
+			elseif strfind(tLastIndex, VUHDO_VAL_TEMPLATE, 1, true) then
+				tLastIndex = VUHDO_getNumbersFromString(tLastIndex, 1)[1];
+			end
 
-		elseif strfind(tLastIndex, VUHDO_VAL_TEMPLATE, 1, true) then
-			tLastIndex = VUHDO_getNumbersFromString(tLastIndex, 1)[1];
-		end
-
-		if type(tLastField) == "table" then
-			return tLastField[tLastIndex];
+			if type(tLastField) == "table" then
+				return tLastField[tLastIndex];
+			else
+				return tLastField;
+			end
 		else
-			return tLastField;
+			return nil;
 		end
-	else
-		return nil;
 	end
 end
 local VUHDO_lnfGetValueFrom = VUHDO_lnfGetValueFrom;
@@ -641,59 +646,60 @@ local VUHDO_lnfGetValueFromModel = VUHDO_lnfGetValueFromModel;
 
 -- Slider
 --
-local tValue;
-local tModel;
-function VUHDO_lnfSliderUpdateModel(aSlider)
-	tValue = tonumber(aSlider:GetValue());
-	tModel = aSlider:GetParent():GetAttribute("model");
-	if tModel and strfind(tModel, "barTexture", 1, true) then
-		if VUHDO_STATUS_BARS[tValue] then
-			tValue = VUHDO_STATUS_BARS[tValue][1];
+do
+	local tValue;
+	local tModel;
+	function VUHDO_lnfSliderUpdateModel(aSlider)
+		tValue = tonumber(aSlider:GetValue());
+		tModel = aSlider:GetParent():GetAttribute("model");
+		if tModel and strfind(tModel, "barTexture", 1, true) then
+			if VUHDO_STATUS_BARS[tValue] then
+				tValue = VUHDO_STATUS_BARS[tValue][1];
+			end
 		end
+
+
+		--[[if tModel and strfind(tModel, "SOUND", 1, true) and VUHDO_SOUNDS[tValue] then
+			tValue = VUHDO_SOUNDS[tValue][1];
+			if tValue then VUHDO_playSoundFile(tValue); end
+		end]]
+
+		VUHDO_lnfUpdateVarFromModel(aSlider:GetParent(), tValue);
 	end
-
-
-	--[[if tModel and strfind(tModel, "SOUND", 1, true) and VUHDO_SOUNDS[tValue] then
-		tValue = VUHDO_SOUNDS[tValue][1];
-		if tValue then VUHDO_playSoundFile(tValue); end
-	end]]
-
-	VUHDO_lnfUpdateVarFromModel(aSlider:GetParent(), tValue);
 end
-
-
 
 --
-local tValue;
-local tModel;
-function VUHDO_lnfSliderInitFromModel(aSlider)
-	tValue = VUHDO_lnfGetValueFromModel(aSlider:GetParent());
-	tModel = aSlider:GetParent():GetAttribute("model");
+do
+	local tValue;
+	local tModel;
+	function VUHDO_lnfSliderInitFromModel(aSlider)
+		tValue = VUHDO_lnfGetValueFromModel(aSlider:GetParent());
+		tModel = aSlider:GetParent():GetAttribute("model");
 
-	if tModel and strfind(tModel, "barTexture", 1, true) then
-		local tIndex, tInfo;
-		for tIndex, tInfo in pairs(VUHDO_STATUS_BARS) do
-			if tInfo[1] == tValue then
-				tValue = tIndex;
-				break;
+		if tModel and strfind(tModel, "barTexture", 1, true) then
+			local tIndex, tInfo;
+			for tIndex, tInfo in pairs(VUHDO_STATUS_BARS) do
+				if tInfo[1] == tValue then
+					tValue = tIndex;
+					break;
+				end
 			end
 		end
-	end
 
-	if tModel and strfind(tModel, "SOUND", 1, true) then
-		for tIndex, tInfo in pairs(VUHDO_SOUNDS) do
-			if tInfo[1] == tValue then
-				tValue = tIndex;
-				break;
+		if tModel and strfind(tModel, "SOUND", 1, true) then
+			for tIndex, tInfo in pairs(VUHDO_SOUNDS) do
+				if tInfo[1] == tValue then
+					tValue = tIndex;
+					break;
+				end
 			end
 		end
-	end
 
-	if tValue and tonumber(tValue) then
-		aSlider:SetValue(tonumber(tValue));
+		if tValue and tonumber(tValue) then
+			aSlider:SetValue(tonumber(tValue));
+		end
 	end
 end
-
 
 
 -- Check Button
@@ -995,98 +1001,101 @@ end
 
 
 --
-local tTexture;
-local tTable;
-local tFunction;
-local tArrayModel;
-local tIsInCustomFunction = false;
-function VUHDO_lnfComboSetSelectedValue(aComboBox, aValue, anIsEditBox)
-	tTable = aComboBox:GetAttribute("combo_table");
-	if not tTable then return; end
+do
+	local tTexture;
+	local tTable;
+	local tFunction;
+	local tArrayModel;
+	function VUHDO_lnfComboSetSelectedValue(aComboBox, aValue, anIsEditBox)
+		tTable = aComboBox:GetAttribute("combo_table");
+		if not tTable then return; end
 
-	if aComboBox["isMulti"] then
-		tArrayModel = VUHDO_lnfGetValueFromModel(aComboBox);
+		if aComboBox["isMulti"] then
+			tArrayModel = VUHDO_lnfGetValueFromModel(aComboBox);
 
-		if aValue then
-			if tArrayModel[aValue] then tArrayModel[aValue] = nil;
-			else tArrayModel[aValue] = true; end
-		end
-	else
-		tArrayModel = nil;
-	end
-
-	if not tArrayModel and _G[aComboBox:GetName() .. "EditBox"] ~= nil and aValue ~= nil and not anIsEditBox then
-		_G[aComboBox:GetName() .. "EditBox"]:SetText(aValue);
-	end
-
-	if not _G[aComboBox:GetName() .. "EditBox"] then
-		_G[aComboBox:GetName() .. "Text"]:SetText(VUHDO_I18N_SELECT);
-	end
-
-	for tIndex, tInfo in ipairs(tTable) do
-		if (aComboBox.isScrollable) then
-			tTexture = _G[aComboBox:GetName() .. "ScrollPanelSelectPanelItem" .. tIndex .. "CheckTexture"];
-		elseif (tIndex > 500) then
-			break;
+			if aValue then
+				if tArrayModel[aValue] then tArrayModel[aValue] = nil;
+				else tArrayModel[aValue] = true; end
+			end
 		else
-			tTexture = _G[aComboBox:GetName() .. "SelectPanelItem" .. tIndex .. "CheckTexture"];
+			tArrayModel = nil;
+		end
+
+		if not tArrayModel and _G[aComboBox:GetName() .. "EditBox"] ~= nil and aValue ~= nil and not anIsEditBox then
+			_G[aComboBox:GetName() .. "EditBox"]:SetText(aValue);
+		end
+
+		if not _G[aComboBox:GetName() .. "EditBox"] then
+			_G[aComboBox:GetName() .. "Text"]:SetText(VUHDO_I18N_SELECT);
+		end
+
+		for tIndex, tInfo in ipairs(tTable) do
+			if (aComboBox.isScrollable) then
+				tTexture = _G[aComboBox:GetName() .. "ScrollPanelSelectPanelItem" .. tIndex .. "CheckTexture"];
+			elseif (tIndex > 500) then
+				break;
+			else
+				tTexture = _G[aComboBox:GetName() .. "SelectPanelItem" .. tIndex .. "CheckTexture"];
+			end
+
+			if tArrayModel then
+				if tArrayModel[tInfo[1]] then tTexture:Show();
+				else tTexture:Hide(); end
+			else
+				if aValue == tInfo[1] then
+					if _G[aComboBox:GetName() .. "EditBox"] then
+						_G[aComboBox:GetName() .. "EditBox"]:SetText(tInfo[2]);
+					else
+						_G[aComboBox:GetName() .. "Text"]:SetText(tInfo[2]);
+					end
+					tTexture:Show();
+				else
+					tTexture:Hide();
+				end
+			end
+		end
+
+		if tIsInCustomFunction then return; end
+
+		tFunction = aComboBox:GetAttribute("custom_function");
+		if tFunction then
+			tIsInCustomFunction = true;
+			tFunction(aComboBox, aValue, tArrayModel);
+			tIsInCustomFunction = false;
 		end
 
 		if tArrayModel then
-			if tArrayModel[tInfo[1]] then tTexture:Show();
-			else tTexture:Hide(); end
+			VUHDO_lnfUpdateVarFromModel(aComboBox, tArrayModel, nil);
 		else
-			if aValue == tInfo[1] then
-				if _G[aComboBox:GetName() .. "EditBox"] then
-					_G[aComboBox:GetName() .. "EditBox"]:SetText(tInfo[2]);
-				else
-					_G[aComboBox:GetName() .. "Text"]:SetText(tInfo[2]);
-				end
-				tTexture:Show();
-			else
-				tTexture:Hide();
-			end
+			VUHDO_lnfUpdateVarFromModel(aComboBox, aValue, nil);
 		end
-	end
-
-	if tIsInCustomFunction then return; end
-
-	tFunction = aComboBox:GetAttribute("custom_function");
-	if tFunction then
-		tIsInCustomFunction = true;
-		tFunction(aComboBox, aValue, tArrayModel);
-		tIsInCustomFunction = false;
-	end
-
-	if tArrayModel then
-		VUHDO_lnfUpdateVarFromModel(aComboBox, tArrayModel, nil);
-	else
-		VUHDO_lnfUpdateVarFromModel(aComboBox, aValue, nil);
 	end
 end
 
 
 
 --
-local tValue;
-local tTitle;
-function VUHDO_lnfComboBoxInitFromModel(aComboBox)
-	aComboBox.isScrollable = _G[aComboBox:GetName() .. "ScrollPanel"] ~= nil;
+do
+	local tValue;
+	local tTitle;
+	function VUHDO_lnfComboBoxInitFromModel(aComboBox)
+		aComboBox.isScrollable = _G[aComboBox:GetName() .. "ScrollPanel"] ~= nil;
 
-	if not aComboBox:GetAttribute("model") then return; end
+		if not aComboBox:GetAttribute("model") then return; end
 
-	tValue = VUHDO_lnfGetValueFromModel(aComboBox);
-	aComboBox["isMulti"] = "table" == type(tValue);
-	VUHDO_lnfComboInitItems(aComboBox);
+		tValue = VUHDO_lnfGetValueFromModel(aComboBox);
+		aComboBox["isMulti"] = "table" == type(tValue);
+		VUHDO_lnfComboInitItems(aComboBox);
 
-	tTitle = aComboBox:GetAttribute("title");
-	if tTitle then _G[aComboBox:GetName() .. "Text"]:SetText(tTitle); end
+		tTitle = aComboBox:GetAttribute("title");
+		if tTitle then _G[aComboBox:GetName() .. "Text"]:SetText(tTitle); end
 
 
-	if aComboBox["isMulti"] then
-		VUHDO_lnfComboSetSelectedValue(aComboBox, nil);
-	else
-		VUHDO_lnfComboSetSelectedValue(aComboBox, tValue);
+		if aComboBox["isMulti"] then
+			VUHDO_lnfComboSetSelectedValue(aComboBox, nil);
+		else
+			VUHDO_lnfComboSetSelectedValue(aComboBox, tValue);
+		end
 	end
 end
 
@@ -1094,55 +1103,58 @@ end
 
 -- Color Swatch
 --
-local tValue;
-local tFont;
-function VUHDO_lnfColorSwatchInitFromModel(aColorSwatch)
-	tValue = VUHDO_lnfGetValueFromModel(aColorSwatch);
+do
+	local tValue;
+	function VUHDO_lnfColorSwatchInitFromModel(aColorSwatch)
+		tValue = VUHDO_lnfGetValueFromModel(aColorSwatch);
 
-	if not tValue then return; end
+		if not tValue then return; end
 
-	if tValue.R and tValue.useBackground then
-		_G[aColorSwatch:GetName() .. "Texture"]:SetVertexColor(tValue["R"], tValue["G"], tValue["B"]);
-	else
-		_G[aColorSwatch:GetName() .. "Texture"]:SetVertexColor(1, 1, 1);
-	end
+		if tValue.R and tValue.useBackground then
+			_G[aColorSwatch:GetName() .. "Texture"]:SetVertexColor(tValue["R"], tValue["G"], tValue["B"]);
+		else
+			_G[aColorSwatch:GetName() .. "Texture"]:SetVertexColor(1, 1, 1);
+		end
 
-	if tValue.O and tValue.useOpacity then
-		_G[aColorSwatch:GetName() .. "Texture"]:SetAlpha(tValue["O"]);
-	else
-		_G[aColorSwatch:GetName() .. "Texture"]:SetAlpha(1);
-	end
+		if tValue.O and tValue.useOpacity then
+			_G[aColorSwatch:GetName() .. "Texture"]:SetAlpha(tValue["O"]);
+		else
+			_G[aColorSwatch:GetName() .. "Texture"]:SetAlpha(1);
+		end
 
-	if tValue.TR and tValue.useText then
-		_G[aColorSwatch:GetName() .. "TitleString"]:SetTextColor(tValue["TR"], tValue["TG"], tValue["TB"]);
-	else
-		_G[aColorSwatch:GetName() .. "TitleString"]:SetTextColor(1, 1, 1);
-	end
+		if tValue.TR and tValue.useText then
+			_G[aColorSwatch:GetName() .. "TitleString"]:SetTextColor(tValue["TR"], tValue["TG"], tValue["TB"]);
+		else
+			_G[aColorSwatch:GetName() .. "TitleString"]:SetTextColor(1, 1, 1);
+		end
 
-	if tValue.TO and tValue.useOpacity then
-		_G[aColorSwatch:GetName() .. "TitleString"]:SetAlpha(tValue["TO"]);
-	else
-		_G[aColorSwatch:GetName() .. "TitleString"]:SetAlpha(1);
-	end
+		if tValue.TO and tValue.useOpacity then
+			_G[aColorSwatch:GetName() .. "TitleString"]:SetAlpha(tValue["TO"]);
+		else
+			_G[aColorSwatch:GetName() .. "TitleString"]:SetAlpha(1);
+		end
 
-	if tValue.textSize and tValue.font then
-		local tFont = VUHDO_getFont(tValue["font"]);
-		_G[aColorSwatch:GetName() .. "TitleString"]:SetFont(tFont, tValue["textSize"]);
+		if tValue.textSize and tValue.font then
+			local tFont = VUHDO_getFont(tValue["font"]);
+			_G[aColorSwatch:GetName() .. "TitleString"]:SetFont(tFont, tValue["textSize"]);
+		end
 	end
 end
 
 
 
 --
-local tValue;
-local tStatusFile;
-function VUHDO_lnfTextureSwatchInitFromModel(aTexture)
-	tValue = VUHDO_lnfGetValueFromModel(aTexture);
+do
+	local tValue;
+	local tStatusFile;
+	function VUHDO_lnfTextureSwatchInitFromModel(aTexture)
+		tValue = VUHDO_lnfGetValueFromModel(aTexture);
 
-	if tValue then
-		tStatusFile = VUHDO_LibSharedMedia:Fetch('statusbar', tValue);
-		if tStatusFile then
-			_G[aTexture:GetName() .. "Texture"]:SetTexture(tStatusFile);
+		if tValue then
+			tStatusFile = VUHDO_LibSharedMedia:Fetch('statusbar', tValue);
+			if tStatusFile then
+				_G[aTexture:GetName() .. "Texture"]:SetTexture(tStatusFile);
+			end
 		end
 	end
 end
@@ -1176,15 +1188,17 @@ end
 
 
 --
-local tTooltip;
-function VUHDO_lnfShowTooltip(aComponent)
-	tTooltip = aComponent:GetAttribute("tooltip");
-	if (tTooltip ~= nil) then
-		VuhDoOptionsTooltipTextText:SetText(tTooltip);
-		VuhDoOptionsTooltip:SetHeight(VuhDoOptionsTooltipTextText:GetHeight() + 10);
-		VuhDoOptionsTooltip:ClearAllPoints();
-		VuhDoOptionsTooltip:SetPoint("LEFT", aComponent:GetName(), "RIGHT", 3, 0);
-		VuhDoOptionsTooltip:Show();
+do
+	local tTooltip;
+	function VUHDO_lnfShowTooltip(aComponent)
+		tTooltip = aComponent:GetAttribute("tooltip");
+		if (tTooltip ~= nil) then
+			VuhDoOptionsTooltipTextText:SetText(tTooltip);
+			VuhDoOptionsTooltip:SetHeight(VuhDoOptionsTooltipTextText:GetHeight() + 10);
+			VuhDoOptionsTooltip:ClearAllPoints();
+			VuhDoOptionsTooltip:SetPoint("LEFT", aComponent:GetName(), "RIGHT", 3, 0);
+			VuhDoOptionsTooltip:Show();
+		end
 	end
 end
 
@@ -1258,50 +1272,49 @@ end
 
 
 --
-local tConstraints;
-local tIsDisabled;
-local tValue;
-local function VUHDO_lnfIsDisabledByConstraint(aComponent)
-	tConstraints = VUHDO_COMPONENT_CONSTRAINTS[aComponent] or {};
+do
+	local tConstraints;
+	local tIsDisabled;
+	local tValue;
+	local function VUHDO_lnfIsDisabledByConstraint(aComponent)
+		tConstraints = VUHDO_COMPONENT_CONSTRAINTS[aComponent] or {};
 
-	tIsDisabled = false;
-	for _, tConstraint in pairs(tConstraints) do
+		tIsDisabled = false;
+		for _, tConstraint in pairs(tConstraints) do
 
-		if VUHDO_LF_CONSTRAINT_DISABLE == tConstraint["TYPE"] then
-			tValue = VUHDO_lnfGetValueFrom(tConstraint["MODEL"]);
-			if tValue == tConstraint["TRIGGER"] then
-				tIsDisabled = true;
-				break;
+			if VUHDO_LF_CONSTRAINT_DISABLE == tConstraint["TYPE"] then
+				tValue = VUHDO_lnfGetValueFrom(tConstraint["MODEL"]);
+				if tValue == tConstraint["TRIGGER"] then
+					tIsDisabled = true;
+					break;
+				end
+			end
+		end
+
+		return tIsDisabled;
+	end
+
+	local tModel;
+	local tConstraintsModel;
+	function VUHDO_lnfUpdateComponentsByConstraints(aChangedComponent)
+		tModel = aChangedComponent:GetAttribute("model");
+		VUHDO_lnfGetValueFrom(tModel);
+
+		tConstraintsModel = VUHDO_MODEL_CONSTRAINTS[tModel] or {};
+
+		for _, tConstraint in pairs(tConstraintsModel) do
+			if VUHDO_LF_CONSTRAINT_DISABLE == tConstraint["TYPE"] then
+
+				if VUHDO_lnfIsDisabledByConstraint(tConstraint["COMPONENT"]) then
+					tConstraint["COMPONENT"]:SetAlpha(0.5);
+				else
+					tConstraint["COMPONENT"]:SetAlpha(1);
+				end
 			end
 		end
 	end
-
-	return tIsDisabled;
 end
 
-
-
---
-local tModel;
-local tTriggerValue;
-local tConstraints;
-function VUHDO_lnfUpdateComponentsByConstraints(aChangedComponent)
-	tModel = aChangedComponent:GetAttribute("model");
-	tTriggerValue = VUHDO_lnfGetValueFrom(tModel);
-
-	tConstraints = VUHDO_MODEL_CONSTRAINTS[tModel] or {};
-
-	for _, tConstraint in pairs(tConstraints) do
-		if VUHDO_LF_CONSTRAINT_DISABLE == tConstraint["TYPE"] then
-
-			if VUHDO_lnfIsDisabledByConstraint(tConstraint["COMPONENT"]) then
-				tConstraint["COMPONENT"]:SetAlpha(0.5);
-			else
-				tConstraint["COMPONENT"]:SetAlpha(1);
-			end
-		end
-	end
-end
 
 
 

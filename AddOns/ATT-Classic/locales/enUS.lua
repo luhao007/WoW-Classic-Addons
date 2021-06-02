@@ -164,6 +164,8 @@ app.L = {
 		[32] = GetItemSubClassInfo(2,2),						-- Bows
 		[33] = GetItemSubClassInfo(2,18),						-- Crossbows
 		[34] = GetItemSubClassInfo(2,13),						-- Fist Weapons
+		[35] = INVTYPE_AMMO,									-- Ammo
+		[36] = INVTYPE_THROWN,									-- Thrown
 
 		-- Accessories
 		[50] = AUCTION_CATEGORY_MISCELLANEOUS,					-- Miscellaneous
@@ -205,6 +207,8 @@ app.L = {
 		[32] = "Interface\\Icons\\inv_weapon_bow_05",						-- Bows
 		[33] = "Interface\\Icons\\inv_weapon_crossbow_01",					-- Crossbows
 		[34] = "Interface\\Icons\\inv_misc_monsterclaw_02",					-- Fist Weapons
+		[35] = "Interface\\Icons\\inv_ammo_bullet_01",						-- Ammo
+		[36] = "Interface\\Icons\\inv_throwingknife_02",					-- Thrown
 		[50] = "Interface\\Icons\\Spell_Misc_Drink",						-- Miscellaneous
 		[51] = "Interface\\Icons\\INV_Jewelry_Necklace_02",					-- Neck
 		[52] = "Interface\\Icons\\INV_Jewelry_Ring_04",						-- Finger
@@ -319,6 +323,7 @@ app.L = {
 		[-30] = FACTION_ALLIANCE,												-- Alliance
 		[-31] = FACTION_HORDE, 													-- Horde
 		[-32] = "Honor Titles",													-- Honor Titles
+		[-37] = BATTLE_PET_SOURCE_11,											-- Discovery
 -- World Events
 		[-47] = "Lunar Festival",												-- Lunar Festival
 		[-50] = "Love is in the Air",											-- Love is in the Air

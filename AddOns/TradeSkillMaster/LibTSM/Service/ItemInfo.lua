@@ -1174,6 +1174,10 @@ function private.StoreGetItemInfoInstant(itemString)
 		-- some items (such as i:37445) give a classId of -1 for some reason in which case we can look up the classId
 		if classId < 0 then
 			classId = ItemClass.GetClassIdFromClassString(classStr)
+			if not classId and TSM.IsWowClassic() then
+				-- this can happen for items which don't yet exist in classic (i.e. WoW Tokens)
+				return
+			end
 			assert(subClassStr == "")
 			subClassId = 0
 		end

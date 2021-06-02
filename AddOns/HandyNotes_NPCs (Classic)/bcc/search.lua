@@ -4,6 +4,7 @@ local Main = LibStub("AceAddon-3.0"):GetAddon("HandyNotes_NPCs (Classic)")
 local Search = Main:NewModule("Search", "AceConsole-3.0")
 local HBD = LibStub("HereBeDragons-2.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("HandyNotes_NPCs (Classic)")
+local LSM = LibStub("LibSharedMedia-3.0")
 
 local NUM_LINES = 10
 local LINE_HEIGHT = 20
@@ -111,8 +112,60 @@ local function update(self)
 	end
 end
 
+function Search:UpdateSettings()
+	local LINE_HEIGHT = LINE_HEIGHT * Main.db.profile.search.scaleFactor
+	local window = self.window
+	local anchorFrame = self.anchorFrame
+	window:SetFrameStrata(Main.db.profile.search.strata)
+	window:SetWidth(400 * Main.db.profile.search.scaleFactor)
+	window:SetHeight((NUM_LINES + 1) * LINE_HEIGHT + 8)
+	window.header:SetHeight(LINE_HEIGHT)
+	window.header:SetWidth(window:GetWidth()-10)
+	window.header.ltext:SetFont(LSM:Fetch("font", Main.db.profile.search.header.font), Main.db.profile.search.header.fontsize)
+	window.header.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.header.font), Main.db.profile.search.header.fontsize)
+	window.footer:SetHeight(LINE_HEIGHT)
+	window.footer:SetWidth(window:GetWidth()-10)
+	window.footer.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.footer.font), Main.db.profile.search.footer.fontsize)
+	window.f:SetScript("OnVerticalScroll", function(self, offset) FauxScrollFrame_OnVerticalScroll(self, offset, LINE_HEIGHT, update) end)
+	
+	window.editbox:SetFont(LSM:Fetch("font", Main.db.profile.search.search.font), Main.db.profile.search.search.fontsize)
+	window.editbox:SetWidth(window:GetWidth()-20)
+	window.editbox:SetHeight((select(2, window.editbox:GetFont()))+8)
+	
+	window.closeButton:SetSize(26 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
+	window.mtButton:SetSize(36* Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
+	window.recipeButton:SetSize(36 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
+	window.wmButton:SetSize(36 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
+	window.zoneButton:SetSize(26 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
+	anchorFrame:SetHeight(30 * Main.db.profile.search.scaleFactor)
+	anchorFrame:SetWidth(30 * Main.db.profile.search.scaleFactor)
+
+	for i = 1, NUM_LINES do
+		local frame = frames[i]
+		frame.ltext:SetFont(LSM:Fetch("font", Main.db.profile.search.list.font), Main.db.profile.search.list.fontsize)
+		frame.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.list.font), Main.db.profile.search.list.fontsize)
+		frame:SetHeight(LINE_HEIGHT)
+		frame:SetWidth(window:GetWidth()-10)
+	end
+end
+
 function Search:OnInitialize()
-	local window = CreateFrame("Frame", "HandyNotes_NPCs_SearchWindow", UIParent, "BackdropTemplate")
+	LSM.RegisterCallback(self, "LibSharedMedia_Registered","UpdateSettings")
+
+	local LINE_HEIGHT = LINE_HEIGHT * Main.db.profile.search.scaleFactor
+	local anchorFrame = CreateFrame("Frame", "HandyNotes_NPCs_SearchWindowANCHOR", window, "BackdropTemplate")
+	anchorFrame:SetBackdrop({bgFile = "Interface\\MINIMAP\\TRACKING\\None"})
+	anchorFrame:SetPoint("CENTER", UIParent, "CENTER", Main.db.profile.search.x, Main.db.profile.search.y)
+	anchorFrame:SetFrameStrata(Main.db.profile.search.strata)
+	anchorFrame:SetHeight(30 * Main.db.profile.search.scaleFactor)
+	anchorFrame:SetWidth(30 * Main.db.profile.search.scaleFactor)
+	anchorFrame:SetMovable(true)
+	anchorFrame:EnableMouse(true)
+	anchorFrame:SetClampedToScreen(true)
+	anchorFrame:RegisterForDrag("LeftButton")
+	anchorFrame:SetScript("OnDragStart", function(self, button) Search:DragStart(self, button) end)
+	anchorFrame:SetScript("OnDragStop", function(self, button) Search:DragStop(self, button) end)
+	local window = CreateFrame("Frame", "HandyNotes_NPCs_SearchWindow", anchorFrame, "BackdropTemplate")
 
 	window:SetBackdrop({
 		bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -121,8 +174,9 @@ function Search:OnInitialize()
 	})
 	window:SetBackdropColor(0.435, 0.403, 0.403, 0.8)
 	window:SetBackdropBorderColor(1,1,1,1)
-	window:SetPoint("CENTER")
-	window:SetWidth(400)
+	window:SetPoint("TOPLEFT", anchorFrame, "BOTTOMRIGHT", 0, 0)
+	window:SetFrameStrata(Main.db.profile.search.strata)
+	window:SetWidth(400 * Main.db.profile.search.scaleFactor)
 	window:SetHeight((NUM_LINES + 1) * LINE_HEIGHT + 8)
 	window:EnableMouse(true)
 	window:SetScript("OnMouseDown", function(self, button) if (button == "RightButton" and lastSearchedItem) then Search:SearchNPCs(lastSearchedItem) end end)
@@ -141,10 +195,10 @@ function Search:OnInitialize()
 	window.header:SetHeight(LINE_HEIGHT)
 	window.header:SetWidth(window:GetWidth()-10)
 	window.header.ltext = window.header:CreateFontString(nil, 'OVERLAY')
-	window.header.ltext:SetFont("Fonts\\FRIZQT__.TTF", 11)
+	window.header.ltext:SetFont(LSM:Fetch("font", Main.db.profile.search.header.font), Main.db.profile.search.header.fontsize)
 	window.header.ltext:SetPoint("LEFT")
 	window.header.rtext = window.header:CreateFontString(nil, 'OVERLAY')
-	window.header.rtext:SetFont("Fonts\\FRIZQT__.TTF", 11)
+	window.header.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.header.font), Main.db.profile.search.header.fontsize)
 	window.header.rtext:SetPoint("RIGHT")
 	window.header:SetBackdropColor(0.498, 0.443, 0.443, 1)
 	window.header.ltext:SetText(L["Item"])
@@ -157,7 +211,7 @@ function Search:OnInitialize()
 	window.footer:SetHeight(LINE_HEIGHT)
 	window.footer:SetWidth(window:GetWidth()-10)
 	window.footer.rtext = window.footer:CreateFontString(nil, 'OVERLAY')
-	window.footer.rtext:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	window.footer.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.footer.font), Main.db.profile.search.footer.fontsize)
 	window.footer.rtext:SetPoint("RIGHT")
 	window.footer.rtext:SetText("HandyNotes_NPCs (TBC Classic) by Cali")
 	window.footer:SetWidth(window.footer.rtext:GetStringWidth())
@@ -165,18 +219,15 @@ function Search:OnInitialize()
 	local f = CreateFrame("ScrollFrame", nil, window, "FauxScrollFrameTemplate")
 	window.f = f
 	f:SetScript("OnVerticalScroll", function(self, offset) FauxScrollFrame_OnVerticalScroll(self, offset, LINE_HEIGHT, update) end)
-	--f:SetPoint("CENTER")
-	--f:SetWidth(400)
-	--f:SetHeight(400)
 	f:SetAllPoints(true)
 
 	for i = 1, NUM_LINES do
 		local frame = CreateFrame("Frame", nil, window, "BackdropTemplate")
 		frame.ltext = frame:CreateFontString(nil, 'OVERLAY')
-		frame.ltext:SetFont("Fonts\\FRIZQT__.TTF", 11)
+		frame.ltext:SetFont(LSM:Fetch("font", Main.db.profile.search.list.font), Main.db.profile.search.list.fontsize)
 		frame.ltext:SetPoint("LEFT")
 		frame.rtext = frame:CreateFontString(nil, 'OVERLAY')
-		frame.rtext:SetFont("Fonts\\FRIZQT__.TTF", 11)
+		frame.rtext:SetFont(LSM:Fetch("font", Main.db.profile.search.list.font), Main.db.profile.search.list.fontsize)
 		frame.rtext:SetPoint("RIGHT")
 		if i == 1 then
 			frame:SetPoint("TOP", window.header, "BOTTOM", 0, 0)
@@ -207,9 +258,10 @@ function Search:OnInitialize()
 	})
 	window.editbox:SetBackdropColor(0,0,0,0.5)
 	window.editbox:SetBackdropBorderColor(1,1,1,1)
-	window.editbox:SetFontObject(ChatFontNormal)
+	--window.editbox:SetFontObject(ChatFontNormal)
+	window.editbox:SetFont(LSM:Fetch("font", Main.db.profile.search.search.font), Main.db.profile.search.search.fontsize)
 	window.editbox:SetWidth(window:GetWidth()-20)
-	window.editbox:SetHeight((select(2, ChatFontNormal:GetFont()))+8)
+	window.editbox:SetHeight((select(2, window.editbox:GetFont()))+8)
 	window.editbox:SetMultiLine(false)
 	window.editbox:SetAutoFocus(false)
 	window.editbox:SetScript("OnEditFocusGained", function(self) if self:GetText() == L["Search for an item"] then self:SetText("") end end)
@@ -220,40 +272,41 @@ function Search:OnInitialize()
 	window.editbox:SetTextInsets(10, 0, 0, 0)
 	
 	window.closeButton = CreateFrame("Button", nil, window.editbox, "UIPanelButtonTemplate")
-	window.closeButton:SetSize(26, 26)
+	window.closeButton:SetSize(26 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
 	window.closeButton:SetText('X')
 	window.closeButton:SetPoint("LEFT", window.editbox, "RIGHT", 10, 0)
-	window.closeButton:SetScript("OnClick", function(self) window:Hide() end)
+	window.closeButton:SetScript("OnClick", function(self) anchorFrame:Hide() end)
 	
 	window.zoneButton = CreateFrame("Button", nil, window, "UIPanelButtonTemplate") -- TODO Make a generator for all these buttons
-	window.zoneButton:SetSize(26, 26)
+	window.zoneButton:SetSize(26 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
 	window.zoneButton:SetText('Z')
 	window.zoneButton:SetPoint("TOPLEFT", window, "BOTTOMLEFT", 0, -2)
 	window.zoneButton:SetScript("OnClick", function() self:FindNeareastNPCs(nil, "zone") end)
 	
 	window.wmButton = CreateFrame("Button", nil, window, "UIPanelButtonTemplate")
-	window.wmButton:SetSize(36, 26)
+	window.wmButton:SetSize(36 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
 	window.wmButton:SetText('WM')
 	window.wmButton:SetPoint("LEFT", window.zoneButton, "RIGHT", 6, 0)
 	window.wmButton:SetScript("OnClick", function() self:DumpWeaponMasters() end)
 	
 	window.recipeButton = CreateFrame("Button", nil, window, "UIPanelButtonTemplate")
-	window.recipeButton:SetSize(36, 26)
+	window.recipeButton:SetSize(36 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
 	window.recipeButton:SetText('R')
 	window.recipeButton:SetPoint("LEFT", window.wmButton, "RIGHT", 6, 0)
 	window.recipeButton:SetScript("OnClick", function() self:DumpRecipesForZone() end)
 	
 	window.mtButton = CreateFrame("Button", nil, window, "UIPanelButtonTemplate")
-	window.mtButton:SetSize(36, 26)
+	window.mtButton:SetSize(36 * Main.db.profile.search.scaleFactor, 26 * Main.db.profile.search.scaleFactor)
 	window.mtButton:SetText('MT')
 	window.mtButton:SetPoint("LEFT", window.recipeButton, "RIGHT", 6, 0)
 	window.mtButton:SetScript("OnClick", function() self:DumpMountTrainers() end)
 
 	self:RegisterChatCommand("npcs", "SlashCommand") -- Maybe move this into the main file
 	self.window = window
-	window:Hide()
-	tinsert(UISpecialFrames, window:GetName()) -- Makes Search Window closable with the escape key
-	data["searchWindow"] = window
+	self.anchorFrame = anchorFrame
+	anchorFrame:Hide()
+	tinsert(UISpecialFrames, anchorFrame:GetName()) -- Makes Search Window closable with the escape key
+	data["searchWindow"] = anchorFrame
 end
 
 function Search:SlashCommand(input)
@@ -279,14 +332,21 @@ function Search:SlashCommand(input)
 		Main:GetModule("Options"):ShowOptions()
 		return
 	end
+	if command == "reset" then
+		Main.db.profile.search.x = 0
+		Main.db.profile.search.y = 0
+		self.anchorFrame:ClearAllPoints()
+		self.anchorFrame:SetPoint("CENTER", UIParent, "CENTER", Main.db.profile.search.x, Main.db.profile.search.y)
+		return
+	end
 	self:ShowWindow()
 end
 
 function Search:ShowWindow(force)
-	if self.window:IsVisible() and not force then
-		self.window:Hide()
+	if self.anchorFrame:IsVisible() and not force then
+		self.anchorFrame:Hide()
 	else
-		self.window:Show()
+		self.anchorFrame:Show()
 	end
 end
 
@@ -495,4 +555,34 @@ function Search:UpdateListNPCDistances()
 		table.sort(list, function(a,b) return a.distance < b.distance or a.distance == b.distance and a.name < b.name end)
 	end
 	update(self.window.f)
+end
+
+local xB = 0
+local yB = 0
+function Search:DragStart(frame, button) -- Copied from BartrubySummonPet, button seems to jump a little when done moving; FIX ME
+ if (button == "LeftButton" and IsShiftKeyDown() and not frame.isMoving) then
+  frame.isMoving = true
+  frame:StartMoving()
+  local _, _, _, x, y = frame:GetPoint()
+  --print('Start', point, x, y)
+  xB = x
+  yB = y
+ end
+end
+
+function Search:DragStop(frame, button)
+ if (frame.isMoving == true) then
+  frame.isMoving = false
+
+  local _, _, _, x, y = frame:GetPoint()
+  frame:StopMovingOrSizing()
+
+  local xDelta = x - xB
+  local yDelta = y - yB
+
+  Main.db.profile.search.x = xDelta + Main.db.profile.search.x
+  Main.db.profile.search.y = yDelta + Main.db.profile.search.y
+  frame:ClearAllPoints()
+  frame:SetPoint("CENTER", UIParent, "CENTER", Main.db.profile.search.x, Main.db.profile.search.y)
+ end
 end

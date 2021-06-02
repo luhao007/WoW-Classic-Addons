@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Version: 2.5.8
+## Version: 2.5.10
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 

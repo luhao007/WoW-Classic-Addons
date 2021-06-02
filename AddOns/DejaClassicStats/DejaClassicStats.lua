@@ -239,13 +239,14 @@ local dcsresetcheck = CreateFrame("Button", "DCSResetButton", DejaClassicStatsPa
 	dcsItemsPanelHeadersFS:SetFontObject("GameFontNormalLarge") --Use instead of SetFont("Fonts\\FRIZQT__.TTF", 15) or Russian, Korean and Chinese characters won't work.
 	
 ----------------
--- Loval Vars --
+-- Local Vars --
 ----------------
 local ShowDefaultStats 
-local MoveResistances
+local DefaultResistances
 local ShowModelRotation
 local ShowHidePrimary
 local ShowHideMelee
+local ShowHideRanged
 local ShowHideSpell
 local ShowHideDefense
 
@@ -440,7 +441,7 @@ local DCSMeleeEnhancementsStatsHeader = CreateFrame("Frame", "DCSMeleeEnhancemen
 	-- DCSMeleeEnhancementsStatsHeader:Hide()
 
 local DCSMeleeEnhancementsStatsFS = DCSMeleeEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	DCSMeleeEnhancementsStatsFS:SetText(L["Melee Enhancements"])
+	DCSMeleeEnhancementsStatsFS:SetText(L["Melee"])
 	DCSMeleeEnhancementsStatsFS:SetTextColor(1, 1, 1)
 	DCSMeleeEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
 	-- DCSMeleeEnhancementsStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
@@ -453,16 +454,38 @@ local t=DCSMeleeEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
 		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
 
 -------------------------------
+-- Ranged Header --
+-------------------------------
+local DCSRangedStatsHeader = CreateFrame("Frame", "DCSRangedStatsHeader", DejaClassicStatsFrame)
+	DCSRangedStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
+	DCSRangedStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
+	-- DCSRangedStatsHeader:SetFrameStrata("BACKGROUND")
+	-- DCSRangedStatsHeader:Hide()
+
+local DCSRangedStatsFS = DCSRangedStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	DCSRangedStatsFS:SetText(L["Ranged"])
+	DCSRangedStatsFS:SetTextColor(1, 1, 1)
+	DCSRangedStatsFS:SetPoint("CENTER", 0, 0)
+	-- DCSRangedStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
+	DCSRangedStatsFS:SetJustifyH("CENTER")
+
+local t=DCSRangedStatsHeader:CreateTexture(nil,"ARTWORK")
+		t:SetAllPoints(DCSRangedStatsHeader)
+		-- t:SetColorTexture(1, 1, 1, 0)
+		t:SetTexture("Interface\\PaperDollInfoFrame\\PaperDollInfoPart1")
+		t:SetTexCoord(0, 0.193359375, 0.69921875, 0.736328125)
+
+-------------------------------
 -- Spell Enhancements Header --
 -------------------------------
 local DCSSpellEnhancementsStatsHeader = CreateFrame("Frame", "DCSSpellEnhancementsStatsHeader", DejaClassicStatsFrame)
 	DCSSpellEnhancementsStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
+	DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -144)
 	-- DCSSpellEnhancementsStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSSpellEnhancementsStatsHeader:Hide()
 
 local DCSSpellEnhancementsStatsFS = DCSSpellEnhancementsStatsHeader:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	DCSSpellEnhancementsStatsFS:SetText(L["Spell Enhancements"])
+	DCSSpellEnhancementsStatsFS:SetText(L["Spell"])
 	DCSSpellEnhancementsStatsFS:SetTextColor(1, 1, 1)
 	DCSSpellEnhancementsStatsFS:SetPoint("CENTER", 0, 0)
 	-- DCSSpellEnhancementsStatsFS:SetFont("Fonts\\FRIZQT__.TTF", 12, "THINOUTLINE")
@@ -479,7 +502,7 @@ local t=DCSSpellEnhancementsStatsHeader:CreateTexture(nil,"ARTWORK")
 -----------
 local DCSDefenseStatsHeader = CreateFrame("Frame", "DCSDefenseStatsHeader", DejaClassicStatsFrame)
 	DCSDefenseStatsHeader:SetSize( DCS_HeaderWidth, DCS_HeaderHeight )
-	DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
+	DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
 	-- DCSDefenseStatsHeader:SetFrameStrata("BACKGROUND")
 	-- DCSDefenseStatsHeader:Hide()
 
@@ -672,29 +695,57 @@ local function MHWeaponSkill()
 	local mainBase, mainMod, offBase, offMod = UnitAttackBothHands("player");
 	local effective = mainBase + mainMod;
 	-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your main hand. (Weapon Skill)"]
-	return "", format("%.0f", effective), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
+	return "", format("%.0f/", effective)..(UnitLevel("player")*5), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 end
 -- Main Hand Attack Power
 local function MeleeAP()
 	local base, posBuff, negBuff = UnitAttackPower("player");
 	local effective = base + posBuff + negBuff;
-	return L["Power: "]..format("%.0f", effective), format("%.0f", effective), format(MELEE_ATTACK_POWER_TOOLTIP, max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
+	return L["Power: "]..format("%.0f", effective).." ("..base.." |cff00ff00+ "..(posBuff + negBuff).."|r)", format("%.0f", effective), format(MELEE_ATTACK_POWER_TOOLTIP, max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
 end
 -- Main Hand Damage
 local function MHDamage()
-	local speed, offhandSpeed = UnitAttackSpeed("player");
-	local minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");
-	local damageSpread = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
-
+	local speed = UnitAttackSpeed("player");
+	local minDamage, maxDamage, _, _, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");
+	local damageSpread = format("%.0f", minDamage).." - "..format("%.0f", maxDamage);
+	local damageSpread2f = format("%.2f", minDamage).." - "..format("%.2f", maxDamage)
+	
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-	local totalBonus = (fullDamage - baseDamage);
 	local damagePerSecond = (max(fullDamage,1) / speed);
+	local avgdamage = format("%.2f", damagePerSecond*speed)
 
 	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", speed)
-	local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+	local TooltipLine2 = L["Average Damage: "]..avgdamage
+	local TooltipLine3 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
 
-	return L["Main Hand Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	return L["MH Damage: "]..damageSpread2f, damageSpread, TooltipLine1, TooltipLine2, TooltipLine3, ""
+end
+-- Main Hand Speed
+local function MHSpeed()
+	local speed, offhandSpeed = UnitAttackSpeed("player");
+
+	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", speed)
+
+	return L["Main Hand Attack Speed: "]..format("%.2f", speed), format("%.2f", speed), TooltipLine1, "", "", ""
+end
+-- Main Hand DPS
+local function MHDPS()
+	local speed = UnitAttackSpeed("player");
+	local minDamage, maxDamage, _, _, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");
+	local damageSpread = format("%.1f", minDamage).." - "..format("%.1f", maxDamage);
+	local damageSpread2f = format("%.2f", minDamage).." - "..format("%.2f", maxDamage)
+	
+	local baseDamage = (minDamage + maxDamage) * 0.5;
+	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+	local damagePerSecond = format("%.2f", (max(fullDamage,1) / speed) );
+	local avgdamage = format("%.2f", damagePerSecond*speed)
+
+	local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", speed)
+	local TooltipLine2 = L["Average Damage: "]..avgdamage
+	local TooltipLine3 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+
+	return L["Main Hand DPS: "]..damagePerSecond, damagePerSecond, TooltipLine1, TooltipLine2, TooltipLine3, ""
 end
 -- Off Hand Attack(Weapon Skill)
 local function OHWeaponSkill()
@@ -703,7 +754,7 @@ local function OHWeaponSkill()
 		local mainBase, mainMod, offBase, offMod = UnitAttackBothHands("player");
 		local effective = offBase + offMod;
 		-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your off hand."]
-		return "", format("%.0f", effective), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
+		return "", format("%.0f/", effective)..(UnitLevel("player")*5), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 	else
 		return L["Off Hand: "].."N/A", "N/A", "", "", "", ""
 	end
@@ -712,17 +763,49 @@ end
 local function OHDamage()
 	local _, offhandSpeed = UnitAttackSpeed("player");
 	if ( offhandSpeed) then
-		local minDamage, maxDamage, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");
-		local damageSpread = max(floor(minOffHandDamage),1).." - "..max(ceil(maxOffHandDamage),1);
-		local offhandBaseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
-		local offhandFullDamage = (offhandBaseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-		local totalBonus = (offhandFullDamage - offhandBaseDamage);
-		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
+		local _, _, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");
+		local damageSpread = format("%.0f", minOffHandDamage).." - "..format("%.0f", maxOffHandDamage);
+		local damageSpread2f = format("%.2f", minOffHandDamage).." - "..format("%.2f", maxOffHandDamage)
+		
+		local baseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
+		local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+		local damagePerSecond = format("%.2f", (max(fullDamage,1) / offhandSpeed) );
+		local avgdamage = format("%.2f", damagePerSecond*offhandSpeed)
 		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", offhandSpeed)
-		local TooltipLine2 = L["Damage per Second: "]..format("%.2f", offhandDamagePerSecond)
-		return L["Off Hand Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+		local TooltipLine2 = L["Average Damage: "]..avgdamage
+		local TooltipLine3 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+	
+		return L["OH Damage: "]..damageSpread2f, damageSpread, TooltipLine1, TooltipLine2, TooltipLine3, ""
 	else
-		return L["Off Hand Damage: "].."N/A", "N/A", "", "", "", ""
+		return L["OH Damage: "].."N/A", "N/A", "", "", "", ""
+	end
+end
+-- Off Hand Speed
+local function OHSpeed()
+	local speed, offhandSpeed = UnitAttackSpeed("player");
+	local _, offhandSpeed = UnitAttackSpeed("player");
+	if ( offhandSpeed) then
+		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", offhandSpeed)
+		return L["Off Hand Attack Speed: "]..format("%.2f", offhandSpeed), format("%.2f", offhandSpeed), TooltipLine1, "", "", ""
+	else
+		return L["Off Hand Attack Speed: "].."N/A", "N/A", "", "", "", ""
+	end
+end
+-- Off Hand DPS
+local function OHDPS()
+	local _, offhandSpeed = UnitAttackSpeed("player");
+	if ( offhandSpeed) then
+		local _, _, minOffHandDamage, maxOffHandDamage, physicalBonusPos, physicalBonusNeg, percent = UnitDamage("player");		
+		local baseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
+		local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+		local damagePerSecond = format("%.2f", (max(fullDamage,1) / offhandSpeed) );
+		local avgdamage = format("%.2f", damagePerSecond*offhandSpeed)
+		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", offhandSpeed)
+		local TooltipLine2 = L["Average Damage: "]..avgdamage
+		local TooltipLine3 = L["Damage per Second: "]..format("%.2f", damagePerSecond)	
+		return L["Off Hand DPS: "]..damagePerSecond, damagePerSecond, TooltipLine1, TooltipLine2, TooltipLine3, ""
+	else
+		return L["Off Hand DPS: "].."N/A", "N/A", "", "", "", ""
 	end
 end
 -- Melee Critical Strike Chance
@@ -737,20 +820,34 @@ local function MeleeCrit()
 	-- local TooltipLine3 = L["Total Crit: "]..(format( "%.2f%%", chance) )
 	local total = ""
 
-	return "", "("..crit..") "..(format( "%.2f%%", chance) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+	return "", "("..crit..") "..(format( "%.2f%%", chance) ), TooltipLine1, "", "", total
 end
 -- Ranged Attack(Weapon Skill)
 local function RangedWeaponSkill()
 	local rangedAttackBase, rangedAttackMod = UnitRangedAttack("player");
 	local effective = rangedAttackBase + rangedAttackMod;
 	-- local TooltipLine1 = L["Your attack rating affects your chance to hit a target, and is based on the weapon skill of the weapon you are currently wielding in your main hand."]
-	return "", format("%.0f", effective), ATTACK_TOOLTIP_SUBTEXT, "", "", ""
+	return "", format("%.0f/", effective)..(UnitLevel("player")*5), "(Weapon Skill): "..ATTACK_TOOLTIP_SUBTEXT, "", "", ""
 end
 -- Ranged Attack Power
 local function RangedAP()
 	local base, posBuff, negBuff = UnitRangedAttackPower("player");
 	local effective = base + posBuff + negBuff;
-	return L["Power: "]..format("%.0f", effective), format("%.0f", effective), format(RANGED_ATTACK_POWER_TOOLTIP, base/ATTACK_POWER_MAGIC_NUMBER), "", "", ""
+	local name = UnitName("pet")
+	if name then name = name else name = "your pet's"	end
+	local totalAP = base+posBuff+negBuff;
+	local TooltipLine1 = format(RANGED_ATTACK_POWER_TOOLTIP, max((totalAP), 0)/ATTACK_POWER_MAGIC_NUMBER);
+	local petAPBonus = ComputePetBonus( "PET_BONUS_RAP_TO_AP", totalAP );
+	if( petAPBonus > 0 ) then
+		TooltipLine1 = TooltipLine1 .. "\n\n" .. "Increases "..name.." AP by "..math.floor(petAPBonus)
+	end
+	
+	local petSpellDmgBonus = ComputePetBonus( "PET_BONUS_RAP_TO_SPELLDMG", totalAP );
+	if( petSpellDmgBonus > 0 ) then
+		TooltipLine1 = TooltipLine1 .. "\n\n" .. "Increases "..name.." Spell Damage by "..math.floor(petSpellDmgBonus);
+	end
+	-- .." |cff00c0ff+ "..(format( "%.1f", defenseRating) ).."|r)
+	return L["Ranged AP: "]..format("%.0f", effective).." ("..base.." |cff00ff00+ "..(posBuff + negBuff).."|r)", format("%.0f", effective), TooltipLine1, "", "", ""
 end
 -- Ranged Damage
 local function RangedDamage()
@@ -759,7 +856,7 @@ local function RangedDamage()
 		local damageSpread = "0 - 0";
 		local TooltipLine1 = L["Attack Speed (seconds): "].."0"
 		local TooltipLine2 = L["Damage per Second: "].."0"
-		return L["Ranged Damage: "].."0", damageSpread, TooltipLine1, TooltipLine2, "", ""
+		return L["Ranged Damage: "].."N/A", "N/A", "", "", "", ""
 	else
 		local damageSpread = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 		local baseDamage = (minDamage + maxDamage) * 0.5;
@@ -769,6 +866,50 @@ local function RangedDamage()
 		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
 		local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
 		return L["Ranged Damage: "]..damageSpread, damageSpread, TooltipLine1, TooltipLine2, "", ""
+	end
+end
+-- Ranged Speed
+local function RangedSpeed()
+	local rangedAttackSpeed, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage("player");
+	if rangedAttackSpeed == 0 then
+		local damageSpread = "0 - 0";
+		local TooltipLine1 = L["Attack Speed (seconds): "].."0"
+		local TooltipLine2 = L["Damage per Second: "].."0"
+		return L["Ranged Attack Speed: "].."N/A", "N/A", "", "", "", ""
+	else
+		local damageSpread = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
+		local baseDamage = (minDamage + maxDamage) * 0.5;
+		local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+		local totalBonus = (fullDamage - baseDamage);
+		local damagePerSecond = (max(fullDamage,1) / rangedAttackSpeed);
+		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
+		local TooltipLine2 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+		return L["Ranged Attack Speed: "]..format("%.2f", rangedAttackSpeed), format("%.2f", rangedAttackSpeed), TooltipLine1, "", "", ""
+	end
+end
+-- Ranged DPS
+local function RangedDPS()
+	local rangedAttackSpeed = UnitRangedDamage("player");
+	if rangedAttackSpeed == 0 then
+		local damageSpread = "0 - 0";
+		local TooltipLine1 = L["Attack Speed (seconds): "].."0"
+		local TooltipLine2 = L["Damage per Second: "].."0"
+		return L["Ranged DPS: "].."N/A", "N/A", "", "", "", ""
+	else
+		local _, minDamage, maxDamage, physicalBonusPos, physicalBonusNeg, percent = UnitRangedDamage("player");
+		local damageSpread = format("%.1f", minDamage).." - "..format("%.1f", maxDamage);
+		local damageSpread2f = format("%.2f", minDamage).." - "..format("%.2f", maxDamage)
+		
+		local baseDamage = (minDamage + maxDamage) * 0.5;
+		local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
+		local damagePerSecond = format("%.2f", (max(fullDamage,1) / rangedAttackSpeed) );
+		local avgdamage = format("%.2f", damagePerSecond*rangedAttackSpeed)
+
+		local TooltipLine1 = L["Attack Speed (seconds): "]..format("%.2f", rangedAttackSpeed)
+		local TooltipLine2 = L["Average Damage: "]..avgdamage
+		local TooltipLine3 = L["Damage per Second: "]..format("%.2f", damagePerSecond)
+
+		return L["Ranged DPS: "]..damagePerSecond, damagePerSecond, TooltipLine1, TooltipLine2, TooltipLine3, ""
 	end
 end
 -- Ranged Critical Strike Chance
@@ -791,11 +932,24 @@ local function HitModifier()
 	local hit = GetCombatRating(CR_HIT_MELEE)
 
 	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration());
+	local TooltipLine2 = "\n"..( format(CR_HIT_MELEE_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
 	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
 	local total = ""
 
 	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+end
+local function MeleeHaste()
+	local hasteRating = GetCombatRatingBonus(CR_HASTE_MELEE)
+	local haste = GetCombatRating(CR_HASTE_MELEE)
+
+	local TooltipLine1 = L["Melee Haste: "]..(format( "%.2f%%", hasteRating)).."\n ("..haste.." Rating adds "..(format( "%.2f%%", hasteRating) ).." Haste)\n\n"
+	-- local TooltipLine2 = "\n"..( format(CR_HASTE_RATING_TOOLTIP, haste, hasteRating) );
+	local TooltipLine2 = "Increases your melee attack speed by "..format( "%.2f%%", hasteRating);
+
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hasteRating) )
+	local total = ""
+
+	return "", "("..haste..") "..(format( "%.2f%%", hasteRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- Bonus Ranged Hit Chance Modifier
 local function RangedHitModifier()
@@ -808,11 +962,24 @@ local function RangedHitModifier()
 	end
 
 	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
-	local TooltipLine2 = format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration());
+	local TooltipLine2 = "\n"..( format(CR_HIT_RANGED_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
 	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
 	local total = ""
 
 	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+end
+local function RangedHaste()
+	local hasteRating = GetCombatRatingBonus(CR_HASTE_RANGED)
+	local haste = GetCombatRating(CR_HASTE_RANGED)
+
+	local TooltipLine1 = L["Ranged Haste: "]..(format( "%.2f%%", hasteRating)).."\n ("..haste.." Rating adds "..(format( "%.2f%%", hasteRating) ).." Haste)\n\n"
+	-- local TooltipLine2 = "\n"..( format(CR_HASTE_RATING_TOOLTIP, haste, hasteRating) );
+	local TooltipLine2 = "Increases your ranged attack speed by "..format( "%.2f%%", hasteRating)
+
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hasteRating) )
+	local total = ""
+
+	return "", "("..haste..") "..(format( "%.2f%%", hasteRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 local function Expertise()
 	if ( not unit ) then
@@ -841,7 +1008,7 @@ local function Expertise()
 	-- end
 	local TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_EXPERTISE).." ("..expertise..") "..expertisePercent..FONT_COLOR_CODE_CLOSE;
 	local TooltipLine2 = L["Expertise: "]..(format( "%.2f%%", expertiseRatingBonus)).."\n ("..expertiseRating.." Rating adds "..(format( "%.2f%%", expertiseRatingBonus) ).." Expertise)"
-	local TooltipLine3 = format(CR_EXPERTISE_TOOLTIP, expertisePercent, expertiseRating, expertiseRatingBonus);
+	local TooltipLine3 = "\n"..( format(CR_EXPERTISE_TOOLTIP, expertisePercent.."\n", expertiseRating, expertiseRatingBonus) );
 
 	return "", "("..expertise..") "..expertisePercent, TooltipLine1, TooltipLine2, TooltipLine3, ""
 end
@@ -869,8 +1036,8 @@ local function Dodge()
 	local dodgeRating = GetCombatRatingBonus(CR_DODGE)
 	local dodge = GetCombatRating(CR_DODGE)
 
-	local TooltipLine1 = L["Dodge Rating: "]..dodge.."\n ("..dodge.." Rating adds "..(format( "%.2f%%", dodgeRating) ).." Dodge)"
-	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Dodge)"
+	local TooltipLine1 = L["Dodge Rating: "]..dodge.."\n ("..dodge.." Rating adds "..(format( "%.2f%%", dodgeRating) ).." Dodge)\n\n"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Dodge)\n\n"
 
 	local TooltipLine3 = L["Total Dodge: "]..(format( "%.2f%%", chance) )
 	local total = ""
@@ -884,8 +1051,8 @@ local function Parry()
 	local parryRating = GetCombatRatingBonus(CR_PARRY)
 	local parry = GetCombatRating(CR_PARRY)
 
-	local TooltipLine1 = L["Parry Rating: "]..parry.."\n ("..parry.." Rating adds "..(format( "%.2f%%", parryRating) ).." Parry)"
-	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Parry)"
+	local TooltipLine1 = L["Parry Rating: "]..parry.."\n ("..parry.." Rating adds "..(format( "%.2f%%", parryRating) ).." Parry)\n\n"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Parry)\n\n"
 
 	local TooltipLine3 = L["Total Parry: "]..(format( "%.2f%%", chance) )
 	local total = ""
@@ -899,8 +1066,8 @@ local function BlockChance()
 	local blockRating = GetCombatRatingBonus(CR_BLOCK)
 	local block = GetCombatRating(CR_BLOCK)
 
-	local TooltipLine1 = L["Block Rating: "]..block.."\n ("..block.." Rating adds "..(format( "%.2f%%", blockRating) ).." Block)"
-	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Block)"
+	local TooltipLine1 = L["Block Rating: "]..block.."\n ("..block.." Rating adds "..(format( "%.2f%%", blockRating) ).." Block)\n\n"
+	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Block)\n\n"
 
 	local TooltipLine3 = L["Total Block: "]..(format( "%.2f%%", chance) )
 	local total = ""
@@ -916,8 +1083,8 @@ end
 -- Defense
 local function Defense()
 	getDefenseStats()
-	local TooltipLine1 = L["Base Defense: "]..baseDefense..""
-	local TooltipLine2 = L["Defense Rating: "]..defense.."\n ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense)"
+	local TooltipLine1 = L["Base Defense: "]..baseDefense.."\n\n"
+	local TooltipLine2 = L["Defense Rating: "]..defense.." ("..defense.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense)\n\n"
 	local TooltipLine3 = L["Total Defense: "]..(format( "%.2f", baseDefense + defenseRating) ).."\n\nIncreases your chance to Dodge, Parry, and Block & Decreases your chance to be Hit or Crit by "..(format( "%.2f%%", defensePercent) )
 	-- local total = "("..baseDefense.." |cff00c0ff+ "..(format( "%.1f", defenseRating) ).."|r)"
 	local total = ""
@@ -967,7 +1134,7 @@ local function MP5()
 
 	-- Ticks are every 2 seconds, or 2/5 (0.4) of MP5 stat per tick.
 	local MPT = (casting * 0.4)
-	local TooltipLine1 = format("%.1f", casting).." "..L["Mana points regenerated every five seconds (MP5) while CASTING and inside the five second rule."]
+	local TooltipLine1 = format("%.1f", casting).." "..L["Mana points regenerated every five seconds (MP5) while CASTING and inside the five second rule.\n\n"]
 	local TooltipLine2 = format("%.1f", (casting * 0.4)).." "..L["Mana points regenerated every TICK (2 sec) while CASTING and inside the five second rule."]
 	return "", format("%.1f", casting).."/"..format("%.1f", MPT), TooltipLine1, TooltipLine2, "", ""
 end
@@ -994,38 +1161,46 @@ local function ManaRegenNotCasting()
 
 	-- Ticks are every 2 seconds, or 2/5 (0.4) of MP5 stat per tick.
 	local MPT = (base * 0.4)
-	local TooltipLine1 = base.." "..L["Mana points regenerated every five seconds (MP5) while NOT casting and outside the five second rule."]
+	local TooltipLine1 = base.." "..L["Mana points regenerated every five seconds (MP5) while NOT casting and outside the five second rule.\n\n"]
 	local TooltipLine2 = format("%.1f", MPT).." "..L["Mana points regenerated every TICK (2 sec) while NOT casting and outside the five second rule."]
 	return "", format("%.1f", base).."/"..format("%.1f", MPT), TooltipLine1, TooltipLine2, "", ""
 end
 -- Spell Critical Strike Chance
 local function SpellCrit()
-	local rating = GetCombatRating(CR_CRIT_SPELL);
-
 	local holySchool = 2;
 	local minCrit = GetSpellCritChance(holySchool);
-	DCSstatFrame_spellCrit = {};
-	DCSstatFrame_spellCrit[holySchool] = minCrit;
+	local spellCritTab = {}
+
+	spellCritTab[holySchool] = minCrit;
 	local spellCrit;
 	for i=(holySchool+1), MAX_SPELL_SCHOOLS do
 		spellCrit = GetSpellCritChance(i);
 		minCrit = min(minCrit, spellCrit);
-		DCSstatFrame_spellCrit[i] = spellCrit;
+		spellCritTab[i] = spellCrit;
 	end
 	minCrit = format("%.2f%%", minCrit);
-	DCSstatFrame_minCrit = minCrit;
+	DCSstatFrameminCrit = minCrit;
+	local critRating = GetCombatRatingBonus(CR_CRIT_SPELL)
+	local crit = GetCombatRating(CR_CRIT_SPELL)
 
-	local TooltipLine1 = HIGHLIGHT_FONT_COLOR_CODE..getglobal("COMBAT_RATING_NAME"..CR_CRIT_SPELL)..": "..rating;	
-	local TooltipLine2 = L["Gives a chance to critically strike with spells, increasing the damage dealt by 50%."]
-	return "", DCSstatFrame_minCrit, TooltipLine1, TooltipLine2, "", ""
+	local TooltipLine1 = L["Crit Chance: "]..(DCSstatFrameminCrit).."\n ("..crit.." Rating adds "..(format( "%.2f%%", critRating) ).." Crit)"
+	-- local TooltipLine2 = L["Crit Rating: "]..crit.."\n ("..crit.." Rating adds "..(format( "%.2f", defenseRating) ).." Defense\n   which adds "..defensePercent.."% Crit)"
+	-- local TooltipLine3 = L["Total Crit: "]..(format( "%.2f%%", chance) )
+	local total = ""
+
+	return "", "("..crit..") "..(DCSstatFrameminCrit), TooltipLine1, "", "", total
 end
 -- Bonus Spell Hit Chance Modifier
 local function SpellHitModifier()
-	local ratingBonus = GetCombatRatingBonus(CR_HIT_SPELL);
+	local hitRating = GetCombatRatingBonus(CR_HIT_SPELL)
+	local hit = GetCombatRating(CR_HIT_SPELL)
 
-	TooltipLine2 = format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), ratingBonus, GetSpellPenetration(), GetSpellPenetration());
+	local TooltipLine1 = L["Hit Chance: "]..(format( "%.2f%%", hitRating)).."\n ("..hit.." Rating adds "..(format( "%.2f%%", hitRating) ).." Hit)"
+	local TooltipLine2 = "\n"..( format(CR_HIT_SPELL_TOOLTIP, UnitLevel("player"), hitRating, GetArmorPenetration()) );
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hitRating) )
+	local total = ""
 
-	return "", format("%.2f%%", ratingBonus), "", TooltipLine2, "", ""
+	return "", "("..hit..") "..(format( "%.2f%%", hitRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
 end
 -- SpellPenetration Modifier
 -- local function SpellPenetration()
@@ -1035,6 +1210,19 @@ end
 
 -- 	return "", format("%.2f%%", GetSpellPenetration()), "", TooltipLine2, "", ""
 -- end
+local function SpellHaste()
+	local hasteRating = GetCombatRatingBonus(CR_HASTE_SPELL)
+	local haste = GetCombatRating(CR_HASTE_SPELL)
+
+	local TooltipLine1 = L["Spell Haste: "]..(format( "%.2f%%", hasteRating)).."\n ("..haste.." Rating adds "..(format( "%.2f%%", hasteRating) ).." Haste)\n\n"
+	-- local TooltipLine2 = "\n"..( format(CR_HASTE_RATING_TOOLTIP, haste, hasteRating) );
+	local TooltipLine2 = "Increases your spellcasting speed by "..format( "%.2f%%", hasteRating)
+
+	-- local TooltipLine3 = L["Total Hit: "]..(format( "%.2f%%", hasteRating) )
+	local total = ""
+
+	return "", "("..haste..") "..(format( "%.2f%%", hasteRating) ), TooltipLine1, TooltipLine2, TooltipLine3, total
+end
 -- Bonus Healing
 local function PlusHealing()
 	return "", format("%.0f", GetSpellBonusHealing()), "", "", "", ""
@@ -1136,7 +1324,7 @@ DCS_STAT_DATA = {
 		statName = "DCS_RepairTotal",
 		StatValue = 0,
 		isShown = true,
-		Label = L["Repair Total: "],
+		Label = L["Repairs: "],
 		statFunction = DCS_RepairTotal,
 		relativeTo = DCSPrimaryStatsHeader,
 	},
@@ -1155,15 +1343,31 @@ DCS_STAT_DATA = {
 		statName = "MHDamage",
 		StatValue = 0,
 		isShown = true,
-		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Main Hand
+		Label = "   "..L["Damage: "], --Indented to show as a sublisting under Main Hand
 		statFunction = MHDamage,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	MHSpeed ={
+		statName = "MHSpeed",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["Speed: "], --Indented to show as a sublisting under Main Hand
+		statFunction = MHSpeed,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	MHDPS ={
+		statName = "MHDPS",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["DPS: "], --Indented to show as a sublisting under Main Hand
+		statFunction = MHDPS,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
 	MeleeAP ={
 		statName = "MeleeAP",
 		StatValue = 0,
 		isShown = true,
-		Label = "    "..L["Power: "], --Indented to show as a sublisting under Main Hand
+		Label = L["Power: "], --Indented to show as a sublisting under Main Hand
 		statFunction = MeleeAP,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -1179,15 +1383,31 @@ DCS_STAT_DATA = {
 		statName = "OHDamage",
 		StatValue = 0,
 		isShown = true,
-		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Off Hand
+		Label = "   "..L["Damage: "], --Indented to show as a sublisting under Off Hand
 		statFunction = OHDamage,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	OHSpeed ={
+		statName = "OHSpeed",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["Speed: "], --Indented to show as a sublisting under Main Hand
+		statFunction = OHSpeed,
+		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	OHDPS ={
+		statName = "OHDPS",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["DPS: "], --Indented to show as a sublisting under Main Hand
+		statFunction = OHDPS,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
 	MeleeCrit ={
 		statName = "MeleeCrit",
 		StatValue = 0,
 		isShown = true,
-		Label = L["Melee Crit: "],
+		Label = L["Crit: "],
 		statFunction = MeleeCrit,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
@@ -1195,48 +1415,16 @@ DCS_STAT_DATA = {
 		statName = "MeleeHitChance",
 		StatValue = 0,
 		isShown = true,
-		Label = L["Melee Hit: "],
+		Label = L["Hit: "],
 		statFunction = HitModifier,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
-	RangedWeaponSkill ={
-		statName = "RangedWeaponSkill",
+	MeleeHaste ={
+		statName = "MeleeHaste",
 		StatValue = 0,
 		isShown = true,
-		Label = L["Ranged: "],
-		statFunction = RangedWeaponSkill,
-		relativeTo = DCSMeleeEnhancementsStatsHeader,
-	},
-	RangedAP ={
-		statName = "RangedAP",
-		StatValue = 0,
-		isShown = true,
-		Label = "    "..L["Power: "], --Indented to show as a sublisting under Ranged
-		statFunction = RangedAP,
-		relativeTo = DCSMeleeEnhancementsStatsHeader,
-	},
-	RangedDamage ={
-		statName = "RangedDamage",
-		StatValue = 0,
-		isShown = true,
-		Label = "    "..L["Damage: "], --Indented to show as a sublisting under Ranged
-		statFunction = RangedDamage,
-		relativeTo = DCSMeleeEnhancementsStatsHeader,
-	},
-	RangedCrit = {
-		statName = "RangedCrit",
-		StatValue = 0,
-		isShown = true,
-		Label = L["Ranged Crit: "],	
-		statFunction = RangedCrit,
-		relativeTo = DCSMeleeEnhancementsStatsHeader,
-	},
-	RangedHitChance ={
-		statName = "RangedHitChance",
-		StatValue = 0,
-		isShown = true,
-		Label = L["Ranged Hit: "],
-		statFunction = RangedHitModifier,
+		Label = L["Haste: "],
+		statFunction = MeleeHaste,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
 	},
 	Expertise ={
@@ -1246,6 +1434,70 @@ DCS_STAT_DATA = {
 		Label = L["Expertise: "],
 		statFunction = Expertise,
 		relativeTo = DCSMeleeEnhancementsStatsHeader,
+	},
+	RangedWeaponSkill ={
+		statName = "RangedWeaponSkill",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Ranged: "],
+		statFunction = RangedWeaponSkill,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedAP ={
+		statName = "RangedAP",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Power: "], --Indented to show as a sublisting under Ranged
+		statFunction = RangedAP,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedDamage ={
+		statName = "RangedDamage",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["Damage: "], --Indented to show as a sublisting under Ranged
+		statFunction = RangedDamage,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedSpeed ={
+		statName = "RangedSpeed",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["Speed: "], --Indented to show as a sublisting under Main Hand
+		statFunction = RangedSpeed,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedDPS ={
+		statName = "RangedDPS",
+		StatValue = 0,
+		isShown = true,
+		Label = "   "..L["DPS: "], --Indented to show as a sublisting under Main Hand
+		statFunction = RangedDPS,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedCrit = {
+		statName = "RangedCrit",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Crit: "],	
+		statFunction = RangedCrit,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedHitChance ={
+		statName = "RangedHitChance",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Hit: "],
+		statFunction = RangedHitModifier,
+		relativeTo = DCSRangedStatsHeader,
+	},
+	RangedHaste ={
+		statName = "RangedHaste",
+		StatValue = 0,
+		isShown = true,
+		Label = L["Haste: "],
+		statFunction = RangedHaste,
+		relativeTo = DCSRangedStatsHeader,
 	},
 	DodgeChance = {
 		isShown = true,
@@ -1306,13 +1558,13 @@ DCS_STAT_DATA = {
 	},
 	SpellCritChance = {
 		isShown = true,
-		Label = L["Spell Crit: "],	
+		Label = L["Crit: "],	
 		statFunction = SpellCrit,
 		relativeTo = DCSSpellEnhancementsStatsHeader,
 	},
 	SpellHitChance = {
 		isShown = true,
-		Label = L["Spell Hit: "],	
+		Label = L["Hit: "],	
 		statFunction = SpellHitModifier,
 		relativeTo = DCSSpellEnhancementsStatsHeader,
 	},
@@ -1321,7 +1573,13 @@ DCS_STAT_DATA = {
 	-- 	Label = L["Spell Pen: "],	
 	-- 	statFunction = SpellPenetration,
 	-- 	relativeTo = DCSSpellEnhancementsStatsHeader,
-	-- },	
+	-- },
+		SpellHaste = {
+		isShown = true,
+		Label = L["Haste: "],	
+		statFunction = SpellHaste,
+		relativeTo = DCSSpellEnhancementsStatsHeader,
+	},
 	PlusHealing = {
 		isShown = true,
 		Label = L["+ Healing: "],	
@@ -1366,63 +1624,72 @@ DCS_STAT_DATA = {
 	},
 }
 
-DCS_PRIMARY_STAT_LIST = {
-	"DCS_Strength",
-	"DCS_Agility",
-	"DCS_Stamina",
-	"DCS_Intellect",
-	"DCS_Spirit",
-	"DCS_Armor",
-	"MovementSpeed",
-	"DCS_Durability",
-	"DCS_RepairTotal",
-}
+gdbprivate.gdbdefaults.gdbdefaults.DCS_MASTER_STAT_LIST = {
+	DCS_PRIMARY_STAT_LIST = {
+		"DCS_Strength",
+		"DCS_Agility",
+		"DCS_Stamina",
+		"DCS_Intellect",
+		"DCS_Spirit",
+		"DCS_Armor",
+		"MovementSpeed",
+		"DCS_Durability",
+		"DCS_RepairTotal",
+	},	
+	DCS_OFFENSE_STAT_LIST = {
+	},	
+	DCS_MELEE_STAT_LIST = {
+		"MHWeaponSkill",
+		"MHDamage",
+		"MHSpeed",
+		"MHDPS",
+		"OHWeaponSkill",
+		"OHDamage",
+		"OHSpeed",
+		"OHDPS",
+		"MeleeAP",
+		"MeleeHitChance",
+		"MeleeCrit",
+		"MeleeHaste",
+		"Expertise",
+	},
+	DCS_RANGED_STAT_LIST = {
+		"RangedWeaponSkill",
+		"RangedDamage",
+		"RangedSpeed",
+		"RangedDPS",
+		"RangedAP",
+		"RangedHitChance",
+		"RangedCrit",
+		"RangedHaste",
+	},	
+	DCS_SPELL_STAT_LIST = {
+		-- "ManaRegenCurrent", --This appears to be power regen like rage, energy, runes, focus, etc.
+		"ArcanePlusDamage",
+		"FirePlusDamage",
+		"FrostPlusDamage",
+		"PlusHealing",
+		"HolyPlusDamage",
+		"NaturePlusDamage",
+		"ShadowPlusDamage",
+		"SpellHitChance",
+		"SpellCritChance",
+		-- "SpellPenetration",
+		"SpellHaste",
+		"MP5",
+		"ManaRegenNotCasting",
+	},	
+	DCS_DEFENSE_STAT_LIST = {
+		"Defense",
+		"DodgeChance",
+		"ParryChance",
+		"BlockChance",
+		"BlockValue",
+		"Resilience",
+	},
+  }
 
-DCS_OFFENSE_STAT_LIST = {
-	"MHWeaponSkill",
-	"MeleeAP",
-	"MHDamage",
-	"OHWeaponSkill",
-	"OHDamage",
-	"MeleeCrit",
-	"MeleeHitChance",
-	"RangedWeaponSkill",
-	"RangedAP",
-	"RangedDamage",
-	"RangedCrit",
-	"RangedHitChance",
-	"Expertise",
-}
-
-DCS_MELEE_STAT_LIST = {
-}
-
-DCS_DEFENSE_STAT_LIST = {
-	"DodgeChance",
-	"ParryChance",
-	"BlockChance",
-	"BlockValue",
-	"Defense",
-	"Resilience",
-}
-
-DCS_SPELL_STAT_LIST = {
-	-- "ManaRegenCurrent", --This appears to be power regen like rage, energy, runes, focus, etc.
-	"SpellHitChance",
-	"SpellCritChance",
-	-- "SpellPenetration",
-	"ArcanePlusDamage",
-	"FirePlusDamage",
-	"FrostPlusDamage",
-	"PlusHealing",
-	"HolyPlusDamage",
-	"NaturePlusDamage",
-	"ShadowPlusDamage",
-	"MP5",
-	"ManaRegenNotCasting",
-}
-
-local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHideStats)
+  local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHideStats)
 	local isDCSFrameCreated = _G["DCS"..StatKey.."StatFrame"]
 	if (isDCSFrameCreated == nil) then
 		DejaClassicStatsFrame.statFrame = CreateFrame("Frame", "DCS"..StatKey.."StatFrame", DejaClassicStatsFrame)
@@ -1454,6 +1721,9 @@ local function DCS_CreateStatText(StatKey, StatValue, XoffSet, YoffSet, ShowHide
 		DejaClassicStatsFrame.value:SetShadowColor(0, 0, 0)
 		DejaClassicStatsFrame.value:SetTextColor(1,1,1,1)
 		DejaClassicStatsFrame.value:SetText("")
+	else
+		isDCSFrameCreated:ClearAllPoints()
+		isDCSFrameCreated:SetPoint("TOPLEFT", DCS_STAT_DATA[StatKey].relativeTo, "BOTTOMLEFT", (15 + XoffSet), ( (-14 * (YoffSet - 1)) -2) )
 	end
 
 	if ShowHideStats then
@@ -1495,33 +1765,36 @@ local function DCS_SetStatText(StatKey, StatLabel, StatValue1, StatValue2, StatV
 end
 
 local function DCS_CREATE_STATS()
-	-- ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
-	-- ShowHideMelee = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked
-	-- ShowHideSpell = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideSpellChecked.ShowHideSpellSetChecked
-	-- ShowHideDefense = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideDefenseChecked.ShowHideDefenseSetChecked
-	-- print(ShowHidePrimary, ShowHideMelee, ShowHideSpell, ShowHideDefense)
-	for k, v in ipairs(DCS_PRIMARY_STAT_LIST) do
+	local table = gdbprivate.gdb.gdbdefaults.DCS_MASTER_STAT_LIST
+	for k, v in ipairs(table.DCS_PRIMARY_STAT_LIST) do
 		local XoffSet = (0) 
 		local YoffSet = (0 + k)
 		DCS_CreateStatText(v, 0, XoffSet, YoffSet, ShowHidePrimary)
 	end
-	for k, v in ipairs(DCS_OFFENSE_STAT_LIST) do
+	for k, v in ipairs(table.DCS_OFFENSE_STAT_LIST) do
 		DCS_CreateStatText(v, 0, 0, k, ShowHideMelee)
 	end
-	for k, v in ipairs(DCS_MELEE_STAT_LIST) do
+	for k, v in ipairs(table.DCS_MELEE_STAT_LIST) do
 		DCS_CreateStatText(v, 0, 0, k, ShowHideMelee)
 	end
-	for k, v in ipairs(DCS_SPELL_STAT_LIST) do
+	for k, v in ipairs(table.DCS_RANGED_STAT_LIST) do
+		DCS_CreateStatText(v, 0, 0, k, ShowHideRanged)
+	end
+	for k, v in ipairs(table.DCS_SPELL_STAT_LIST) do
 		DCS_CreateStatText(v, 0, 0, k, ShowHideSpell)
 	end
-	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
-		local YoffSet = (2.2 + k) 
+	for k, v in ipairs(table.DCS_DEFENSE_STAT_LIST) do
+		local YoffSet = (2.2 + k)
+		if DefaultResistances then
+			YoffSet = k
+		end
 		DCS_CreateStatText(v, 0, 0, YoffSet, ShowHideDefense)	
 	end
 end
 
 local function DCS_SET_STATS_TEXT()
-	for k, v in ipairs(DCS_PRIMARY_STAT_LIST) do
+	local table = gdbprivate.gdb.gdbdefaults.DCS_MASTER_STAT_LIST
+	for k, v in ipairs(table.DCS_PRIMARY_STAT_LIST) do
 		if ShowHidePrimary then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
 			if (v=="DCS_Strength") or (v=="DCS_Agility") or (v=="DCS_Stamina") or (v=="DCS_Intellect") or (v=="DCS_Spirit") then 
@@ -1533,7 +1806,7 @@ local function DCS_SET_STATS_TEXT()
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
 	end
-	for k, v in ipairs(DCS_OFFENSE_STAT_LIST) do
+	for k, v in ipairs(table.DCS_OFFENSE_STAT_LIST) do
 		if ShowHideMelee then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
 			if (v=="Expertise") then 
@@ -1545,7 +1818,7 @@ local function DCS_SET_STATS_TEXT()
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
 	end
-	for k, v in ipairs(DCS_MELEE_STAT_LIST) do
+	for k, v in ipairs(table.DCS_MELEE_STAT_LIST) do
 		if ShowHideMelee then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
 			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
@@ -1553,7 +1826,15 @@ local function DCS_SET_STATS_TEXT()
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
 	end
-	for k, v in ipairs(DCS_SPELL_STAT_LIST) do
+	for k, v in ipairs(table.DCS_RANGED_STAT_LIST) do
+		if ShowHideMelee then
+			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
+			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
+		else
+			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
+		end
+	end
+	for k, v in ipairs(table.DCS_SPELL_STAT_LIST) do
 		if ShowHideSpell then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
 			DCS_SetStatText(v, StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5, 0, 0)
@@ -1561,7 +1842,7 @@ local function DCS_SET_STATS_TEXT()
 			DCS_SetStatText(v, "", "", "", "", "", "", 0, 0)
 		end
 	end
-	for k, v in ipairs(DCS_DEFENSE_STAT_LIST) do
+	for k, v in ipairs(table.DCS_DEFENSE_STAT_LIST) do
 		if ShowHideDefense then
 			local StatLabel, StatValue1, StatValue2, StatValue3, StatValue4, StatValue5 = DCS_STAT_DATA[v].statFunction()
 			if (v=="Resilience") then 
@@ -1641,7 +1922,7 @@ DCS_CLASSIC_SPECS = { -- These are not default UI/API positions organized to att
 	},
 }
 
-DCS_CATEGORIES = {
+DCS_CATEGORIES = { --Talent art categories
 	"Primary",
 	"Offense",
 	"Defense",
@@ -1926,7 +2207,8 @@ local function Default_SetResistances()
 end
 
 local function DCS_SetResistances()
-	if MoveResistances then
+	DefaultResistances = gdbprivate.gdb.gdbdefaults.DejaClassicStatsDefaultResistances.DefaultResistancesChecked
+	if DefaultResistances then
 		Default_SetResistances()
 	else
 		for i=1, 5, 1 do 
@@ -1983,29 +2265,30 @@ DCS_ShowDefaultStatsCheckedCheck:SetScript("OnClick", function(self)
 	hideDCSRB()
 end)
 
-gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsMoveResistances = {
-	MoveResistancesChecked = false,
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsDefaultResistances = {
+	DefaultResistancesChecked = false,
 }
 
-local DCS_MoveResistancesCheck = CreateFrame("CheckButton", "DCS_MoveResistancesCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
-	DCS_MoveResistancesCheck:RegisterEvent("PLAYER_LOGIN")
-	DCS_MoveResistancesCheck:ClearAllPoints()
-	--DCS_MoveResistancesCheck:SetPoint("TOPLEFT", 30, -255)
-	DCS_MoveResistancesCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -255)
-	DCS_MoveResistancesCheck:SetScale(1)
-	_G[DCS_MoveResistancesCheck:GetName() .. "Text"]:SetText(L["Default Resistances"])
-	DCS_MoveResistancesCheck.tooltipText = L["Displays the default resistance frames."] --Creates a tooltip on mouseover.
+local DCS_DefaultResistancesCheck = CreateFrame("CheckButton", "DCS_DefaultResistancesCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+	DCS_DefaultResistancesCheck:RegisterEvent("PLAYER_LOGIN")
+	DCS_DefaultResistancesCheck:ClearAllPoints()
+	--DCS_DefaultResistancesCheck:SetPoint("TOPLEFT", 30, -255)
+	DCS_DefaultResistancesCheck:SetPoint("TOPLEFT", "dcsItemsPanelCategoryFS", 7, -255)
+	DCS_DefaultResistancesCheck:SetScale(1)
+	_G[DCS_DefaultResistancesCheck:GetName() .. "Text"]:SetText(L["Default Resistances"])
+	DCS_DefaultResistancesCheck.tooltipText = L["Displays the default resistance frames."] --Creates a tooltip on mouseover.
 
-DCS_MoveResistancesCheck:SetScript("OnEvent", function(self, event, ...)
-	MoveResistances = gdbprivate.gdb.gdbdefaults.DejaClassicStatsMoveResistances.MoveResistancesChecked
-	self:SetChecked(MoveResistances)
+DCS_DefaultResistancesCheck:SetScript("OnEvent", function(self, event, ...)
+	DefaultResistances = gdbprivate.gdb.gdbdefaults.DejaClassicStatsDefaultResistances.DefaultResistancesChecked
+	self:SetChecked(DefaultResistances)
 	DCS_SetResistances()
 end)
 
-DCS_MoveResistancesCheck:SetScript("OnClick", function(self)
-	MoveResistances = not MoveResistances
-	gdbprivate.gdb.gdbdefaults.DejaClassicStatsMoveResistances.MoveResistancesChecked = MoveResistances
+DCS_DefaultResistancesCheck:SetScript("OnClick", function(self)
+	DefaultResistances = not DefaultResistances
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsDefaultResistances.DefaultResistancesChecked = DefaultResistances
 	DCS_SetResistances()
+	DCS_CREATE_STATS()
 end)
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowModelRotation = {
@@ -2093,7 +2376,7 @@ DCS_ShowHidePrimaryCheck:SetScript("OnClick", function(self)
 		DCSMeleeEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSPrimaryStatsHeader", "TOPLEFT")
 	end
 	DCS_CREATE_STATS()
-	DCS_SET_STATS_TEXT()
+	-- DCS_SET_STATS_TEXT()
 	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked = ShowHidePrimary
 end)
 
@@ -2111,15 +2394,14 @@ DCS_ShowHideMeleeCheck:ClearAllPoints()
 	_G[DCS_ShowHideMeleeCheck:GetName() .. "Text"]:SetText(L["Melee Stats"])
 	
 DCS_ShowHideMeleeCheck:SetScript("OnEvent", function(self, event, ...)
-	-- ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
 	ShowHideMelee = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked
 	self:SetChecked(ShowHideMelee)
 	if ShowHideMelee then
 		DCSMeleeEnhancementsStatsHeader:Show()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
+		DCSRangedStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
 	else
 		DCSMeleeEnhancementsStatsHeader:Hide()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
+		DCSRangedStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
 	end
 	DCS_CREATE_STATS()
 	DCS_SET_STATS_TEXT()
@@ -2129,14 +2411,56 @@ DCS_ShowHideMeleeCheck:SetScript("OnClick", function(self)
 	ShowHideMelee = not ShowHideMelee
 	if ShowHideMelee then
 		DCSMeleeEnhancementsStatsHeader:Show()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
+		DCSRangedStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -216)
 	else
 		DCSMeleeEnhancementsStatsHeader:Hide()
-		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
+		DCSRangedStatsHeader:SetPoint("TOPLEFT", "DCSMeleeEnhancementsStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	-- DCS_SET_STATS_TEXT()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked = ShowHideMelee
+end)
+
+gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHideRangedChecked = {
+	ShowHideRangedSetChecked = true,
+}
+
+local DCS_ShowHideRangedCheck = CreateFrame("CheckButton", "DCS_ShowHideRangedCheck", DejaClassicStatsPanel, "InterfaceOptionsCheckButtonTemplate")
+DCS_ShowHideRangedCheck:RegisterEvent("PLAYER_LOGIN")
+
+DCS_ShowHideRangedCheck:ClearAllPoints()
+	DCS_ShowHideRangedCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -55)
+	DCS_ShowHideRangedCheck:SetScale(1)
+	DCS_ShowHideRangedCheck.tooltipText = L["Show ranged stats."] --Creates a tooltip on mouseover.
+	_G[DCS_ShowHideRangedCheck:GetName() .. "Text"]:SetText(L["Ranged Stats"])
+	
+DCS_ShowHideRangedCheck:SetScript("OnEvent", function(self, event, ...)
+	-- ShowHidePrimary = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHidePrimaryChecked.ShowHidePrimarySetChecked
+	ShowHideRanged = gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideRangedChecked.ShowHideRangedSetChecked
+	self:SetChecked(ShowHideRanged)
+	if ShowHideRanged then
+		DCSRangedStatsHeader:Show()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -144)
+	else
+		DCSMeleeEnhancementsStatsHeader:Hide()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT")
 	end
 	DCS_CREATE_STATS()
 	DCS_SET_STATS_TEXT()
-	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideMeleeChecked.ShowHideMeleeSetChecked = ShowHideMelee
+end)
+
+DCS_ShowHideRangedCheck:SetScript("OnClick", function(self)
+	ShowHideRanged = not ShowHideRanged
+	if ShowHideRanged then
+		DCSRangedStatsHeader:Show()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -144)
+	else
+		DCSRangedStatsHeader:Hide()
+		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT")
+	end
+	DCS_CREATE_STATS()
+	-- DCS_SET_STATS_TEXT()
+	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideRangedChecked.ShowHideRangedSetChecked = ShowHideRanged
 end)
 
 gdbprivate.gdbdefaults.gdbdefaults.DejaClassicStatsShowHideSpellChecked = {
@@ -2147,7 +2471,7 @@ local DCS_ShowHideSpellCheck = CreateFrame("CheckButton", "DCS_ShowHideSpellChec
 DCS_ShowHideSpellCheck:RegisterEvent("PLAYER_LOGIN")
 
 DCS_ShowHideSpellCheck:ClearAllPoints()
-	DCS_ShowHideSpellCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -55)
+	DCS_ShowHideSpellCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -75)
 	DCS_ShowHideSpellCheck:SetScale(1)
 	DCS_ShowHideSpellCheck.tooltipText = L["Show spell stats."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowHideSpellCheck:GetName() .. "Text"]:SetText(L["Spell Stats"])
@@ -2157,7 +2481,7 @@ DCS_ShowHideSpellCheck:SetScript("OnEvent", function(self, event, ...)
 	self:SetChecked(ShowHideSpell)
 	if ShowHideSpell then
 		DCSSpellEnhancementsStatsHeader:Show()
-		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
 	else
 		DCSSpellEnhancementsStatsHeader:Hide()
 		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT")
@@ -2170,13 +2494,13 @@ DCS_ShowHideSpellCheck:SetScript("OnClick", function(self)
 	ShowHideSpell = not ShowHideSpell
 	if ShowHideSpell then
 		DCSSpellEnhancementsStatsHeader:Show()
-		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -187)
+		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -200)
 	else
 		DCSSpellEnhancementsStatsHeader:Hide()
 		DCSDefenseStatsHeader:SetPoint("TOPLEFT", "DCSSpellEnhancementsStatsHeader", "TOPLEFT")
 	end
 	DCS_CREATE_STATS()
-	DCS_SET_STATS_TEXT()
+	-- DCS_SET_STATS_TEXT()
 	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideSpellChecked.ShowHideSpellSetChecked = ShowHideSpell
 end)
 
@@ -2188,7 +2512,7 @@ local DCS_ShowHideDefenseCheck = CreateFrame("CheckButton", "DCS_ShowHideDefense
 DCS_ShowHideDefenseCheck:RegisterEvent("PLAYER_LOGIN")
 
 DCS_ShowHideDefenseCheck:ClearAllPoints()
-	DCS_ShowHideDefenseCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -75)
+	DCS_ShowHideDefenseCheck:SetPoint("TOPLEFT", "dcsItemsPanelHeadersFS", 7, -95)
 	DCS_ShowHideDefenseCheck:SetScale(1)
 	DCS_ShowHideDefenseCheck.tooltipText = L["Show defense stats."] --Creates a tooltip on mouseover.
 	_G[DCS_ShowHideDefenseCheck:GetName() .. "Text"]:SetText(L["Defense Stats"])
@@ -2214,7 +2538,7 @@ DCS_ShowHideDefenseCheck:SetScript("OnClick", function(self)
 		DCSDefenseStatsHeader:Hide()
 	end
 	DCS_CREATE_STATS()
-	DCS_SET_STATS_TEXT()
+	-- DCS_SET_STATS_TEXT()
 	DCS_SetResistances()
 	gdbprivate.gdb.gdbdefaults.DejaClassicStatsShowHideDefenseChecked.ShowHideDefenseSetChecked = ShowHideDefense
 end)
@@ -2247,3 +2571,11 @@ DCSShowCharacterFrameButton:SetScript("OnClick", function(self, button, down)
 		CharacterFrame:Show()
 	end
 end)
+
+function tablelength(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
+  end
+
+--   print(tablelength(gdbprivate.gdbdefaults.gdbdefaults.DCS_MASTER_STAT_LIST.DCS_PRIMARY_STAT_LIST))

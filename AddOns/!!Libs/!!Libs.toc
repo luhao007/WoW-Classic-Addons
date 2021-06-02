@@ -56,8 +56,8 @@ LibBabble\LibBabble-Race-3.0\lib.xml
 LibBabble\LibBabble-SubZone-3.0\lib.xml
 
 # DR Libs
-DRList-1.0\DRList-1.0.xml
 DRData-1.0\DRData-1.0.xml
+DRList-1.0\DRList-1.0.xml
 
 # Other Libs
 LibAlts-1.0\lib.xml

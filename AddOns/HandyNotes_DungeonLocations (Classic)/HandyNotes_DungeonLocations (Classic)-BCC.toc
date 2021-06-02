@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Cali
-## Version: 1.05
+## Version: 1.05-bcc
 ## RequiredDeps: HandyNotes
 ## SavedVariables: HandyNotes_DungeonLocationsClassicDB
 

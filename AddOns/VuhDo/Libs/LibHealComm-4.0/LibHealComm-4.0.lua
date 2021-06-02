@@ -85,8 +85,8 @@ local spellRankTableData = {
 	[8] = { 9839, 9857, 9758, 10329, 10928, 10395, 10839, 23568, 24413, 25233, 27259, 27220 },
 	[9] = { 9840, 9858, 9888, 25292, 10929, 10396, 18608, 25235 },
 	[10] = { 9841, 9889, 25315, 25357, 18610, 23567, 24414, 26980, 27135 },
-	[11] = { 25299, 25297, 30020, 27136, 25221, 25391 },
-	[12] = { 26981, 26978, 25222, 25396 },
+	[11] = { 25299, 25297, 30020, 27136, 25221, 25391, 27030 },
+	[12] = { 26981, 26978, 25222, 25396, 27031 },
 	[13] = { 26982, 26979 },
 }
 
@@ -698,6 +698,10 @@ end
 
 local function calculateGeneralAmount(level, amount, spellPower, spModifier, healModifier)
 	local penalty = level > 20 and 1 or (1 - ((20 - level) * 0.0375))
+	if isTBC then
+		-- TBC added another downrank penalty
+		penalty = penalty * min(1, (level + 11) / playerLevel)
+	end
 
 	spellPower = spellPower * penalty
 
@@ -1517,7 +1521,7 @@ end
 -- Keep track of where all the data should be going
 local instanceType
 local function updateDistributionChannel()
-	if( instanceType == "pvp" ) then
+	if( instanceType == "pvp" or instanceType == "arena" ) then
 		distribution = "INSTANCE_CHAT"
 	elseif( IsInRaid() ) then
 		distribution = "RAID"
@@ -2605,8 +2609,11 @@ function HealComm:OnInitialize()
 	do
 		local FirstAid = GetSpellInfo(746)
 
-		spellData[FirstAid] = { ticks = {6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 10}, interval = 1, averages = {
-			66, 114, 161, 301, 400, 640, 800, 1104, 1360, 2000} }
+		spellData[FirstAid] = {
+			ticks = {6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8},
+			interval = 1,
+			averages = {66, 114, 161, 301, 400, 640, 800, 1104, 1360, 2000, 2800, 3400}
+		}
 
 		local _GetHealTargets = GetHealTargets
 

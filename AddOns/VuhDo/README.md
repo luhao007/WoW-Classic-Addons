@@ -1,4 +1,4 @@
-Get [VuhDo release v3.122](https://www.curseforge.com/wow/addons/vuhdo/download/3271838) now with support for patch 9.0.5 Shadowlands Season 1 and Castle Nathria!
+Get [VuhDo release v3.123](https://www.curseforge.com/wow/addons/vuhdo/download/3305530) now with support for patch 9.0.5 Shadowlands Season 1 and Castle Nathria!
 
 To get started read the updated [guide over at Icy-Veins](https://www.icy-veins.com/forums/topic/11805-vuhdo-a-comprehensive-guide/).
 

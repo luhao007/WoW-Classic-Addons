@@ -966,6 +966,9 @@
 			<SubAddon name="HandyNotes_TravelGuide (Classic)">
 				<Title>旅行指南</Title>
 			</SubAddon>
+			<SubAddon name="HandyNotes_TravelGuide (BCC)">
+				<Title>旅行指南</Title>
+			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
 				<Title>稀有</Title>
 				<TitleExtra>战争前线</TitleExtra>

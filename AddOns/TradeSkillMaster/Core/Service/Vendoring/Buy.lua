@@ -92,11 +92,16 @@ function Buy.GetMaxCanAfford(index)
 			if costItemString then
 				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
 			elseif currencyName then
-				for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
-					local info = C_CurrencyInfo.GetCurrencyListInfo(j)
-					if not info.isHeader and info.name == currencyName then
-						costNumHave = info.quantity
-						break
+				if TSM.IsWowBCClassic() and currencyName == HONOR_POINTS then
+					local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID)
+					costNumHave = honorCurrencyInfo.quantity
+				else
+					for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
+						local info = C_CurrencyInfo.GetCurrencyListInfo(j)
+						if not info.isHeader and info.name == currencyName then
+							costNumHave = info.quantity
+							break
+						end
 					end
 				end
 			end
@@ -166,10 +171,13 @@ function private.UpdateMerchantDB()
 				assert(numAltCurrencies > 0)
 				local costItems = TempTable.Acquire()
 				for j = 1, numAltCurrencies do
-					local _, costNum, costItemLink = GetMerchantItemCostItem(i, j)
+					local costTexture, costNum, costItemLink, currencyName = GetMerchantItemCostItem(i, j)
 					local costItemString = ItemString.Get(costItemLink)
 					local texture = nil
-					if not costItemLink then
+					if TSM.IsWowBCClassic() and currencyName == HONOR_POINTS then
+						texture = costTexture
+						firstCostItemString = "honor"
+					elseif not costItemLink then
 						needsRetry = true
 					elseif costItemString then
 						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
@@ -183,7 +191,8 @@ function private.UpdateMerchantDB()
 					if TSM.Vendoring.Buy.GetMaxCanAfford(i) < stackSize then
 						costNum = Theme.GetFeedbackColor("RED"):ColorText(costNum)
 					end
-					tinsert(costItems, costNum.." |T"..(texture or "")..":12|t")
+					local suffix = (TSM.IsWowBCClassic() and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
+					tinsert(costItems, costNum.." |T"..(texture or "")..suffix)
 				end
 				costItemsText = table.concat(costItems, " ")
 				TempTable.Release(costItems)

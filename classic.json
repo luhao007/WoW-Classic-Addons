@@ -6,10 +6,10 @@
     "name": "ALL THE THINGS",
     "description": "Addon for Tracking Collections & Account Completion",
     "url": "https://www.curseforge.com/wow/addons/all-the-things",
-    "download_url": "https://edge.forgecdn.net/files/3326/412/ATT-Classic-v0.5.7-bcc.zip",
-    "date_published": "2021-05-27T03:00:35.677000+00:00",
-    "version": "TBC Classic 0.5.7",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/267285/file/3326412/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3332/456/ATT-Classic-v0.5.8-bcc.zip",
+    "date_published": "2021-06-01T11:18:17.237000+00:00",
+    "version": "TBC Classic 0.5.8",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/267285/file/3332456/changelog",
     "folders": [
       {
         "name": "ATT-Classic"
@@ -20,6 +20,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "TBC Classic 0.5.8",
+        "install_time": "2021-06-02T04:21:36+00:00"
+      },
       {
         "version": "TBC Classic 0.5.7",
         "install_time": "2021-05-30T05:16:02+00:00"
@@ -1020,10 +1024,10 @@
     "name": "DejaClassicStats",
     "description": "Dejablue's improved Classic character stats panel view.",
     "url": "https://www.curseforge.com/wow/addons/dejaclassicstats",
-    "download_url": "https://edge.forgecdn.net/files/3318/939/DejaClassicStats205r005.zip",
-    "date_published": "2021-05-22T06:00:52.610000+00:00",
-    "version": "205r005",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3318939/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3330/334/DejaClassicStats205r008.zip",
+    "date_published": "2021-05-30T10:02:03.920000+00:00",
+    "version": "205r008",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3330334/changelog",
     "folders": [
       {
         "name": "DejaClassicStats"
@@ -1034,6 +1038,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "205r008",
+        "install_time": "2021-05-31T08:28:38+00:00"
+      },
       {
         "version": "205r005",
         "install_time": "2021-05-22T08:02:06+00:00"
@@ -1333,10 +1341,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3325/657/gathermate2_data_wowhead_classic_v2021-05-26.zip",
-    "date_published": "2021-05-26T14:56:29.500000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2021-05-26.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3325657/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3331/472/gathermate2_data_wowhead_classic_v2021-05-31.zip",
+    "date_published": "2021-05-31T19:27:18.927000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3331472/changelog",
     "folders": [
       {
         "name": "GatherMate2_Data"
@@ -1347,6 +1355,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
+        "install_time": "2021-06-02T04:21:36+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-26.zip",
         "install_time": "2021-05-26T23:22:30+00:00"
@@ -1384,10 +1396,10 @@
     "name": "Grail",
     "description": "Library of quest information",
     "url": "https://www.curseforge.com/wow/addons/grail",
-    "download_url": "https://edge.forgecdn.net/files/3175/424/Grail-114.zip",
-    "date_published": "2021-01-20T22:24:36.507000+00:00",
-    "version": "114",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/28774/file/3175424/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/216/GrailClassic-115.zip",
+    "date_published": "2021-06-01T21:12:48.617000+00:00",
+    "version": "115 Classic",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/28774/file/3334216/changelog",
     "folders": [
       {
         "name": "Grail"
@@ -1553,10 +1565,14 @@
       }
     ],
     "options": {
-      "strategy": "any_flavour"
+      "strategy": "default"
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "115 Classic",
+        "install_time": "2021-06-02T04:21:36+00:00"
+      },
       {
         "version": "114",
         "install_time": "2021-05-23T10:09:19+00:00"
@@ -1648,10 +1664,10 @@
     "name": "HandyNotes: TravelGuide (Classic & BCC)",
     "description": "Shows the boat and zepplin locations on the World Map and the MiniMap.",
     "url": "https://www.curseforge.com/wow/addons/handynotes-travelguide-classic",
-    "download_url": "https://edge.forgecdn.net/files/3322/294/HandyNotes_TravelGuide (BCC)-v3.0.zip",
-    "date_published": "2021-05-24T17:58:42.337000+00:00",
-    "version": "BCC-V3.0",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/339397/file/3322294/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/473/HandyNotes_TravelGuide (BCC)-v3.1.zip",
+    "date_published": "2021-06-02T00:24:02.160000+00:00",
+    "version": "BCC - v3.1",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/339397/file/3334473/changelog",
     "folders": [
       {
         "name": "HandyNotes_TravelGuide (BCC)"
@@ -1666,6 +1682,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "BCC - v3.1",
+        "install_time": "2021-06-02T04:21:36+00:00"
+      },
       {
         "version": "BCC-V3.0",
         "install_time": "2021-05-26T23:22:30+00:00"
@@ -1683,10 +1703,10 @@
     "name": "HandyNotes_DungeonLocations (Classic)",
     "description": "Shows locations of old world dungeon and raid entrances",
     "url": "https://www.curseforge.com/wow/addons/handynotes_dungeonlocations-classic",
-    "download_url": "https://edge.forgecdn.net/files/3318/630/HandyNotes_DungeonLocations (Classic)-1.05.zip",
-    "date_published": "2021-05-21T22:30:15.580000+00:00",
-    "version": "1.05",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/323067/file/3318630/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3331/760/HandyNotes_DungeonLocations (Classic)-1.05-bcc.zip",
+    "date_published": "2021-05-31T22:14:36.640000+00:00",
+    "version": "1.05-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/323067/file/3331760/changelog",
     "folders": [
       {
         "name": "HandyNotes_DungeonLocations (Classic)"
@@ -1701,6 +1721,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "1.05-bcc",
+        "install_time": "2021-06-02T04:21:36+00:00"
+      },
       {
         "version": "1.05",
         "install_time": "2021-05-22T04:51:34+00:00"
@@ -1722,10 +1746,10 @@
     "name": "HandyNotes_NPCs (Classic)",
     "description": "Shows all sorts of NPCs on the map and minimap",
     "url": "https://www.curseforge.com/wow/addons/handynotes_npcs-classic",
-    "download_url": "https://edge.forgecdn.net/files/3321/250/HandyNotes_NPCs (Classic)-1.24.zip",
-    "date_published": "2021-05-23T22:08:31.380000+00:00",
-    "version": "1.24",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340222/file/3321250/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/316/HandyNotes_NPCs (Classic)-1.26-bcc.zip",
+    "date_published": "2021-06-01T22:19:00.360000+00:00",
+    "version": "1.26-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340222/file/3334316/changelog",
     "folders": [
       {
         "name": "HandyNotes_NPCs (Classic)"
@@ -1740,6 +1764,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "1.26-bcc",
+        "install_time": "2021-06-02T04:21:37+00:00"
+      },
       {
         "version": "1.24",
         "install_time": "2021-05-26T23:22:30+00:00"
@@ -2028,10 +2056,10 @@
     "name": "Nova World Buffs",
     "description": "Classic WoW world buff timers and pre buff drop warnings so you never miss a buff.",
     "url": "https://www.curseforge.com/wow/addons/nova-world-buffs",
-    "download_url": "https://edge.forgecdn.net/files/3327/942/NovaWorldBuffs-v2.07-TBC.zip",
-    "date_published": "2021-05-28T08:30:41.277000+00:00",
-    "version": "NovaWorldBuffs-v2.07-TBC.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/366310/file/3327942/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3330/573/NovaWorldBuffs-v2.08-TBC.zip",
+    "date_published": "2021-05-31T11:21:15.323000+00:00",
+    "version": "NovaWorldBuffs-v2.08-TBC.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/366310/file/3330573/changelog",
     "folders": [
       {
         "name": "NovaWorldBuffs"
@@ -2042,6 +2070,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "NovaWorldBuffs-v2.08-TBC.zip",
+        "install_time": "2021-06-02T04:21:37+00:00"
+      },
       {
         "version": "NovaWorldBuffs-v2.07-TBC.zip",
         "install_time": "2021-05-30T05:16:04+00:00"
@@ -2231,10 +2263,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3329/107/Pawn-2.5.8-BurningCrusade.zip",
-    "date_published": "2021-05-29T06:38:08.777000+00:00",
-    "version": "2.5.8 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3329107/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3332/271/Pawn-2.5.10-BurningCrusade.zip",
+    "date_published": "2021-06-01T07:05:09.620000+00:00",
+    "version": "2.5.10 (Burning Crusade)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3332271/changelog",
     "folders": [
       {
         "name": "Pawn"
@@ -2245,6 +2277,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.5.10 (Burning Crusade)",
+        "install_time": "2021-06-02T04:21:37+00:00"
+      },
       {
         "version": "2.5.8 (Burning Crusade)",
         "install_time": "2021-05-30T05:16:04+00:00"
@@ -2446,10 +2482,10 @@
     "name": "Questie",
     "description": "The Classic Quest Helper",
     "url": "https://www.curseforge.com/wow/addons/questie",
-    "download_url": "https://edge.forgecdn.net/files/3327/740/Questie-v6.3.13-TBC.zip",
-    "date_published": "2021-05-28T02:32:04.030000+00:00",
-    "version": "v6.3.13 - Universal (TBC)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334372/file/3327740/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3330/521/Questie-v6.3.14-TBC.zip",
+    "date_published": "2021-05-31T10:26:10.597000+00:00",
+    "version": "v6.3.14 - Universal (TBC)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334372/file/3330521/changelog",
     "folders": [
       {
         "name": "Questie"
@@ -2460,6 +2496,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v6.3.14 - Universal (TBC)",
+        "install_time": "2021-06-02T04:21:38+00:00"
+      },
       {
         "version": "v6.3.13 - Universal (TBC)",
         "install_time": "2021-05-30T05:16:04+00:00"
@@ -2793,10 +2833,10 @@
     "name": "TradeSkillMaster",
     "description": "Powerful addon to help you make gold from crafting to selling on the auction house to buying vendor items and much more!",
     "url": "https://www.curseforge.com/wow/addons/tradeskill-master",
-    "download_url": "https://edge.forgecdn.net/files/3328/849/TradeSkillMaster_v4.10.40-BCC.zip",
-    "date_published": "2021-05-28T23:58:44.883000+00:00",
-    "version": "v4.10.40-BCC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3328849/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/440/TradeSkillMaster_v4.10.41-BCC.zip",
+    "date_published": "2021-06-01T23:52:08.460000+00:00",
+    "version": "v4.10.41-BCC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3334440/changelog",
     "folders": [
       {
         "name": "TradeSkillMaster"
@@ -2807,6 +2847,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v4.10.41-BCC",
+        "install_time": "2021-06-02T04:21:38+00:00"
+      },
       {
         "version": "v4.10.40-BCC",
         "install_time": "2021-05-30T05:16:05+00:00"
@@ -2912,10 +2956,10 @@
     "name": "VuhDo",
     "description": "Raid Frames providing click-heal functionality, buff and debuff control, main tank management and much more.",
     "url": "https://www.curseforge.com/wow/addons/vuhdo",
-    "download_url": "https://edge.forgecdn.net/files/3305/529/VuhDo-v3.123-tbcc-bc.zip",
-    "date_published": "2021-05-11T05:38:38.410000+00:00",
-    "version": "v3.123-tbcc-bc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/7950/file/3305529/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/411/VuhDo-v3.124-tbcc-bc.zip",
+    "date_published": "2021-06-01T23:23:20.737000+00:00",
+    "version": "v3.124-tbcc-bc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/7950/file/3334411/changelog",
     "folders": [
       {
         "name": "VuhDo"
@@ -2929,6 +2973,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.124-tbcc-bc",
+        "install_time": "2021-06-02T04:21:38+00:00"
+      },
       {
         "version": "v3.123-tbcc-bc",
         "install_time": "2021-05-21T08:24:27+00:00"
@@ -3347,20 +3395,24 @@
     "name": "Wholly",
     "description": "Shows quests in zones and puts pins on maps where quest givers are.",
     "url": "https://www.curseforge.com/wow/addons/wholly",
-    "download_url": "https://edge.forgecdn.net/files/3175/426/Wholly-082.zip",
-    "date_published": "2021-01-20T22:26:24.667000+00:00",
-    "version": "082",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/30118/file/3175426/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3334/221/WhollyClassic-083.zip",
+    "date_published": "2021-06-01T21:15:00.337000+00:00",
+    "version": "083 Classic",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/30118/file/3334221/changelog",
     "folders": [
       {
         "name": "Wholly"
       }
     ],
     "options": {
-      "strategy": "any_flavour"
+      "strategy": "default"
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "083 Classic",
+        "install_time": "2021-06-02T04:21:38+00:00"
+      },
       {
         "version": "079 Classic",
         "install_time": "2021-05-23T10:34:48+00:00"

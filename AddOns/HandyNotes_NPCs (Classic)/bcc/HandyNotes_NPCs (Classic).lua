@@ -6,8 +6,9 @@ if not HandyNotes then return end
 local Addon = LibStub("AceAddon-3.0"):NewAddon("HandyNotes_NPCs (Classic)", "AceConsole-3.0", "AceEvent-3.0")
 local Search, AltRecipes -- Modules
 local L = LibStub("AceLocale-3.0"):GetLocale("HandyNotes_NPCs (Classic)")
+local LSM = LibStub("LibSharedMedia-3.0")
 local LibQTip = LibStub('LibQTip-1.0')
---local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+local LibDD = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
 
 local iconDefault = "Interface\\MINIMAP\\TRACKING\\FlightMaster" -- Remove this later or something
 
@@ -18,6 +19,7 @@ local icons = {
 	flightmastersUndiscovered = "Interface\\Addons\\HandyNotes_NPCs (Classic)\\flightmaster_undiscovered.tga",
 	auctioneers = "Interface\\MINIMAP\\TRACKING\\Auctioneer",
 	bankers = "Interface\\MINIMAP\\TRACKING\\Banker",
+	battlemasters = "Interface\\MINIMAP\\TRACKING\\BattleMaster",
 	guildmasters = "Interface\\MINIMAP\\TRACKING\\POIArrow", -- TODO: Find a better icon
 	innkeepers = "Interface\\MINIMAP\\TRACKING\\Innkeeper",
 	mailboxes = "Interface\\MINIMAP\\TRACKING\\Mailbox",
@@ -150,6 +152,7 @@ do
 				-- "Do you think God stays in heaven because he, too, lives in fear of what he's created here on earth?"
 				if db.show then
 				if (value.faction == faction or value.faction == "Neutral") then
+				if not (value.category == "battlemasters") or db.showBattlemasters then
 				if not (value.category == "flightmasters") or db.showFlightMasters and (not value.classes or value.classes[class]) then
 				if not (value.category == "guildmasters") or db.showGuildMasters then
 				if not (value.category == "rares") or db.showRares then
@@ -198,6 +201,7 @@ do
 					end
 
 					return state, nil, icon, db.zoneScale, db.zoneAlpha
+				end
 				end
 				end
 				end
@@ -383,6 +387,7 @@ local defaults = {
 		showInnkeepers = true,
 		showMailboxes = true,
 		showBankers = true,
+		showBattlemasters = true,
 		showAuctioneers = true,
 		showGuildMasters = true,
 		showRepair = true,
@@ -401,6 +406,28 @@ local defaults = {
 		undiscoveredFlightmasters = true,
 		show = true, -- Controls visibility of all nodes
 		mapButton = true,
+		search = {
+			x = 0,
+			y = 0,
+			strata = "DIALOG",
+			scaleFactor = 1,
+			search = {
+				font = "Friz Quadrata TT",
+				fontsize = 12,
+			},
+			header = {
+				font = "Friz Quadrata TT",
+				fontsize = 11,
+			},
+			list = {
+				font = "Friz Quadrata TT",
+				fontsize = 11,
+			},
+			footer = {
+				font = "Friz Quadrata TT",
+				fontsize = 10,
+			},
+		},
 		minimapButton = { -- for LibDBIcon
 			hide = false,
 		},
@@ -591,14 +618,14 @@ function Addon:PLAYER_LOGIN()
 	type = "select",
 	values = { ALL = L["All"], MINE = L["Learned"], NONE = L["None"] },
 	style = "radio",
-	order = 5,
+	order = 3.95,
   },
   showClassTrainers = {
 	name = L["Show Class Trainers"],
 	type = "select",
 	values = { ALL = L["All"], MINE = L["Mine"], NONE = L["None"] },
 	style = "radio",
-	order = 6,
+	order = 3.94,
   },
   showFlightMastersHeader = {
 	name = L["Flight Masters"],
@@ -655,6 +682,88 @@ function Addon:PLAYER_LOGIN()
 	order = 10,
 	func = function() db.button.x = -40 db.button.y = -30 self.button:ClearAllPoints() self.button:SetPoint("TOPRIGHT", WorldMapFrame, "TOPRIGHT", db.button.x, db.button.y)end,
   },
+  searchHeader = {
+	name = L["Search Options"], -- ADD TO LOCALIZATION
+	type = "header",
+	order = 5,
+  },
+  searchScale = {
+   type = "range",
+   name = L["Search Scale"],
+   desc = L["The scale of the search window"],
+   min = 0.5, max = 3, step = 0.1,
+   order = 5.5,
+   get = function() return db.search.scaleFactor end,
+   set = function(info, value) db.search.scaleFactor = value Search:UpdateSettings() end,
+  },
+  searchSearchFont = {
+   name = L["Searchbar Font"],
+   order = 5.1,
+   type = "select",
+   values = LSM:HashTable("font"),
+   dialogControl = "LSM30_Font",
+   get = function(info) return db.search.search.font end,
+   set = function(info, value) db.search.search.font = value Search:UpdateSettings() end,
+  },
+  searchSearchFontsize = {
+   name = L["Searchbar Fontsize"],
+   order = 5.11,
+   type = "range",
+   min = 1, max = 72, step = 1,
+   get = function(info) return db.search.search.fontsize end,
+   set = function(info, value) db.search.search.fontsize = value Search:UpdateSettings() end,
+  },
+  searchHeaderFont = {
+    name = L["Header Font"],
+    order = 5.2,
+    type = "select",
+    values = LSM:HashTable("font"),
+    dialogControl = "LSM30_Font",
+    get = function(info) return db.search.header.font end,
+    set = function(info, value) db.search.header.font = value Search:UpdateSettings() end,
+  },
+  searchHeaderFontsize = {
+    name = L["Header Fontsize"],
+    order = 5.21,
+    type = "range",
+    min = 1, max = 72, step = 1,
+    get = function(info) return db.search.header.fontsize end,
+    set = function(info, value) db.search.header.fontsize = value; Search:UpdateSettings() end,
+  },
+  searchListFont = {
+    name = L["List Font"],
+    order = 5.3,
+    type = "select",
+    values = LSM:HashTable("font"),
+    dialogControl = "LSM30_Font",
+    get = function(info) return db.search.list.font end,
+    set = function(info, value) db.search.list.font = value Search:UpdateSettings() end,
+  },
+  searchListFontsize = {
+    name = L["List Fontsize"],
+    order = 5.31,
+    type = "range",
+    min = 1, max = 72, step = 1,
+    get = function(info) return db.search.list.fontsize end,
+    set = function(info, value) db.search.list.fontsize = value; Search:UpdateSettings() end,
+  },
+  searchFooterFont = {
+    name = L["Footer Font"],
+    order = 5.4,
+    type = "select",
+    values = LSM:HashTable("font"),
+    dialogControl = "LSM30_Font",
+    get = function(info) return db.search.footer.font end,
+    set = function(info, value) db.search.footer.font = value Search:UpdateSettings() end,
+  },
+  searchFooterFontsize = {
+    name = L["Footer Fontsize"],
+    order = 5.41,
+    type = "range",
+    min = 1, max = 72, step = 1,
+    get = function(info) return db.search.footer.fontsize end,
+    set = function(info, value) db.search.footer.fontsize = value; Search:UpdateSettings() end,
+  },
  },
 }
 
@@ -678,15 +787,11 @@ function Addon:PLAYER_LOGIN()
 else
 	button:Hide()
 end
-    -- COULDN'T GET THE NEW LibDropDownMenu-4.0 to work right
-	--local dropDownMenu = LibDD:Create_UIDropDownMenu("HandyNotes_NPCsDropDownMenu", button)
-	--LibDD:UIDropDownMenu_Initialize(dropDownMenu, HandyNotes_NPCsDropDownMenu, "MENU")
-	--button:SetScript("OnClick", function() LibDD:ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3) end)
-	--button:SetScript("OnHide", function() LibDD:CloseDropDownMenus() end)
-	local dropDownMenu = L_Create_UIDropDownMenu("HandyNotes_NPCsDropDownMenu", button)
-	L_UIDropDownMenu_Initialize(dropDownMenu, HandyNotes_NPCsDropDownMenu, "MENU")
-	button:SetScript("OnClick", function() L_ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3) end)
-	button:SetScript("OnHide", function() L_CloseDropDownMenus() end)
+
+	local dropDownMenu = LibDD:Create_UIDropDownMenu("HandyNotes_NPCsDropDownMenu", button)
+	LibDD:UIDropDownMenu_Initialize(dropDownMenu, HandyNotes_NPCsDropDownMenu, "MENU")
+	button:SetScript("OnClick", function() LibDD:ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3) end)
+	button:SetScript("OnHide", function() LibDD:CloseDropDownMenus() end)
  
 	self.LDB = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("HandyNotes_NPCs", {
 		type = "launcher",
@@ -694,8 +799,7 @@ end
 		icon = "Interface\\MINIMAP\\TRACKING\\None",
 		OnClick = function(clickedFrame, button)
 		if (button == "LeftButton") then
-			--LibDD:ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3)
-			L_ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3)
+			LibDD:ToggleDropDownMenu(1, nil, dropDownMenu, "cursor", 3, -3)
 		elseif (button == "RightButton") then
 			if data["searchWindow"] then
 				local w = data["searchWindow"]
@@ -748,8 +852,7 @@ function HandyNotes_NPCsDropDownMenu_OnClick(self, arg1, arg2, checked)
 end
 
 function HandyNotes_NPCsDropDownMenu(frame, level, menuList)
-	--local info = LibDD:UIDropDownMenu_CreateInfo()
-	local info = L_UIDropDownMenu_CreateInfo()
+	local info = LibDD:UIDropDownMenu_CreateInfo()
 
 	if level == 1 then
 		local options = {
@@ -762,41 +865,42 @@ function HandyNotes_NPCsDropDownMenu(frame, level, menuList)
 			showInnkeepers = L["Show Innkeepers"],
 			showGuildMasters = L["Show Guildmasters"],
 			showMountTrainers = L["Show Mount Trainers"],
+			showBattlemasters = L["Show Battlemasters"],
 			showRares = L["Show Rares"],
 		}
 
 		info.text, info.keepShownOnClick, info.checked = L["Show/Hide Toggle"], true, db["show"]
 		info.arg1 = "show"
 		info.func = HandyNotes_NPCsDropDownMenu_OnClick
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.checked = nil
 		info.keepShownOnClick = nil
 		info.arg1 = nil
 		info.func = nil
 		info.text, info.hasArrow, info.menuList = L["Class Trainers"], true, "showClassTrainers"
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.text, info.hasArrow, info.menuList = L["Profession Trainers"], true, "showProfessions"
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.text, info.hasArrow, info.menuList = L["Vendors"], true, "vendors"
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.text, info.hasArrow, info.menuList = L["Flight Masters"], true, "flightmasters"
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.menuList = nil
 		for k, v in pairs(options) do
 			info.text, info.checked, info.hasArrow = v, db[k], false
 			info.keepShownOnClick = true
 			info.arg1 = k
 			info.func = HandyNotes_NPCsDropDownMenu_OnClick
-			L_UIDropDownMenu_AddButton(info)
+			LibDD:UIDropDownMenu_AddButton(info)
 		end
 		info.text, info.keepShownOnClick, info.checked = L["Show on Continent"], true, db["continent"]
 		info.arg1 = "continent"
 		info.func = HandyNotes_NPCsDropDownMenu_OnClick
-		L_UIDropDownMenu_AddButton(info)
+		LibDD:UIDropDownMenu_AddButton(info)
 		info.arg1 = nil
 		info.text, info.checked, info.hasArrow = L["Close"], false, false
-		info.func = function() L_CloseDropDownMenus() end
-		L_UIDropDownMenu_AddButton(info)
+		info.func = function() LibDD:CloseDropDownMenus() end
+		LibDD:UIDropDownMenu_AddButton(info)
 	elseif menuList == "showClassTrainers" or menuList == "showProfessions" then
 		local options = {
 		showClassTrainers = {
@@ -817,7 +921,7 @@ function HandyNotes_NPCsDropDownMenu(frame, level, menuList)
 			info.arg1 = menuList
 			info.arg2 = k
 			info.func = HandyNotes_NPCsDropDownMenu_OnClick
-			L_UIDropDownMenu_AddButton(info, level)
+			LibDD:UIDropDownMenu_AddButton(info, level)
 		end
 	elseif menuList == "vendors" or menuList == "flightmasters" then
 		local options = {
@@ -838,7 +942,7 @@ function HandyNotes_NPCsDropDownMenu(frame, level, menuList)
 			info.keepShownOnClick = true
 			info.arg1 = k
 			info.func = HandyNotes_NPCsDropDownMenu_OnClick
-			L_UIDropDownMenu_AddButton(info, level)
+			LibDD:UIDropDownMenu_AddButton(info, level)
 		end
 	end
 end

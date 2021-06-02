@@ -23,6 +23,7 @@ local CLASSIC_SUB_NAMES = {
 	[JOURNEYMAN] = true,
 	[EXPERT] = true,
 	[ARTISAN] = true,
+	[MASTER] = true,
 	["大师级"] = true, -- zhCN ARTISAN
 	["Мастеровой"] = true, -- ruRU ARTISAN
 }

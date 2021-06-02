@@ -51,6 +51,9 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 		GameTooltip:SetCraftSpell(tonumber(data))
 	elseif type(data) == "string" and strfind(data, "^enchant:") then
 		GameTooltip:SetHyperlink(data)
+	elseif type(data) == "string" and data == "honor" then
+		GameTooltip:SetText(HONOR_POINTS, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+		GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1)
 	elseif type(data) == "string" and strfind(data, "^currency:") then
 		GameTooltip:SetCurrencyByID(strmatch(data, "currency:(%d+)"))
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then

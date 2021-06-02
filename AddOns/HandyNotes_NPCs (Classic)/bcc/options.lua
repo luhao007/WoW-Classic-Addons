@@ -1,10 +1,12 @@
 local name, data = ...
 local Main = LibStub("AceAddon-3.0"):GetAddon("HandyNotes_NPCs (Classic)")
 local Addon = Main:NewModule("Options", "AceConsole-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("HandyNotes_NPCs (Classic)")
 
 
 function Addon:OnInitialize()
+	local Search = Main:GetModule("Search")
 	self.db = Main.db
 	local options = {
 		type = "group",
@@ -244,19 +246,96 @@ function Addon:OnInitialize()
 					},
 				},
 			},
+			searchHeader = {
+				name = L["Search"],
+				type = "group",
+				order = 6,
+				args = {
+					searchScale = {
+						type = "range",
+						name = L["Search Scale"],
+						desc = L["The scale of the search window"],
+						min = 0.5, max = 3, step = 0.1,
+						order = 5.6,
+						get = function() return self.db.profile.search.scaleFactor end,
+						set = function(info, value) self.db.profile.search.scaleFactor = value Search:UpdateSettings() end,
+					},
+					searchSearchFont = {
+						name = L["Searchbar Font"],
+						order = 5.1,
+						type = "select",
+						values = LSM:HashTable("font"),
+						dialogControl = "LSM30_Font",
+						get = function(info) return self.db.profile.search.search.font end,
+						set = function(info, value) self.db.profile.search.search.font = value Search:UpdateSettings() end,
+					},
+					searchSearchFontsize = {
+						name = L["Searchbar Fontsize"],
+						order = 5.11,
+						type = "range",
+						min = 1, max = 72, step = 1,
+						get = function(info) return self.db.profile.search.search.fontsize end,
+						set = function(info, value) self.db.profile.search.search.fontsize = value; Search:UpdateSettings() end,
+					},
+					searchHeaderFont = {
+						name = L["Header Font"],
+						order = 5.2,
+						type = "select",
+						values = LSM:HashTable("font"),
+						dialogControl = "LSM30_Font",
+						get = function(info) return self.db.profile.search.header.font end,
+						set = function(info, value) self.db.profile.search.header.font = value Search:UpdateSettings() end,
+					},
+					searchHeaderFontsize = {
+						name = L["Header Fontsize"],
+						order = 5.21,
+						type = "range",
+						min = 1, max = 72, step = 1,
+						get = function(info) return self.db.profile.search.header.fontsize end,
+						set = function(info, value) self.db.profile.search.header.fontsize = value; Search:UpdateSettings() end,
+					},
+					searchListFont = {
+						name = L["List Font"],
+						order = 5.3,
+						type = "select",
+						values = LSM:HashTable("font"),
+						dialogControl = "LSM30_Font",
+						get = function(info) return self.db.profile.search.list.font end,
+						set = function(info, value) self.db.profile.search.list.font = value Search:UpdateSettings() end,
+					},
+					searchListFontsize = {
+						name = L["List Fontsize"],
+						order = 5.31,
+						type = "range",
+						min = 1, max = 72, step = 1,
+						get = function(info) return self.db.profile.search.list.fontsize end,
+						set = function(info, value) self.db.profile.search.list.fontsize = value; Search:UpdateSettings() end,
+					},
+					searchFooterFont = {
+						name = L["Footer Font"],
+						order = 5.4,
+						type = "select",
+						values = LSM:HashTable("font"),
+						dialogControl = "LSM30_Font",
+						get = function(info) return self.db.profile.search.footer.font end,
+						set = function(info, value) self.db.profile.search.footer.font = value Search:UpdateSettings() end,
+					},
+					searchFooterFontsize = {
+						name = L["Footer Fontsize"],
+						order = 5.41,
+						type = "range",
+						min = 1, max = 72, step = 1,
+						get = function(info) return self.db.profile.search.footer.fontsize end,
+						set = function(info, value) self.db.profile.search.footer.fontsize = value; Search:UpdateSettings() end,
+					},
+				},
+			},
 		},
 	}
-	--self.self.db = Main.self.db:RegisterNamespace("AltRecipes", defaults)
- LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("HandyNotes_NPCs (Burning Crusade Classic)", options)
- --self.self.db.RegisterCallback(self, "OnProfileChanged", "Updateself.db")
- --self.self.db.RegisterCallback(self, "OnProfileCopied", "Updateself.db")
- --self.self.db.RegisterCallback(self, "OnProfileReset", "Updateself.db")
- --self:RegisterChatCommand("revel","HandleIt")
- --self:RegisterEvent("PLAYER_ENTERING_WORLD","WorldEnter")
-	--self:RegisterEvent("SKILL_LINES_CHANGED")
- --self:HookScript(TradeSkillFrame, "OnShow", function() self:ScanTradeSkill() end)
+
+ LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("HandyNotes_NPCs (Classic)", options)
 end
 
 function Addon:ShowOptions()
-	LibStub("AceConfigDialog-3.0"):Open("HandyNotes_NPCs (Burning Crusade Classic)")
+	LibStub("AceConfigDialog-3.0"):Open("HandyNotes_NPCs (Classic)")
 end

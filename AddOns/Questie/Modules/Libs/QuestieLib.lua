@@ -116,14 +116,16 @@ function QuestieLib:IsResponseCorrect(questId)
             good = false
         else
             for _, objective in pairs(objectiveList) do
-                local distance = QuestieLib:Levenshtein(": 0/1", objective.text)
-                if (objective.text == nil or objective.text == "" or distance < 5) then
-                    Questie:Debug(DEBUG_SPAM, count,
-                            " : Objective text is strange!", "'",
-                            objective.text, "'", " distance",
-                            distance)
-                    good = false
-                    break
+                if objective.type and string.len(objective.type) > 0 then
+                    local distance = QuestieLib:Levenshtein(": 0/1", objective.text)
+                    if (objective.text == nil or objective.text == "" or distance < 5) then
+                        Questie:Debug(DEBUG_SPAM, count,
+                                " : Objective text is strange!", "'",
+                                objective.text, "'", " distance",
+                                distance)
+                        good = false
+                        break
+                    end
                 end
             end
         end
@@ -434,7 +436,7 @@ local cachedTitle
 local cachedVersion
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo()
-    return 6, 3, 13
+    return 6, 3, 14
 end
 --    if (not cachedTitle) or (not cachedVersion) then
 --        local name, title, _, _, reason = GetAddOnInfo("QuestieDev-master")

@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Scott M Harrison
-## Version: 114
+## Version: 115
 ## SavedVariables: GrailDatabase
 ## SavedVariablesPerCharacter: GrailDatabasePlayer
 

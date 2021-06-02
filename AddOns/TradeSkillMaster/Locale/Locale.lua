@@ -17263,8 +17263,7 @@ L["%d |4Group:Groups; Selected (%d |4Item:Items;)"] = "%d |4Group：群組; 已�
 L["%d auctions"] = "%d 拍賣"
 --[[Translation missing --]]
 L["%d Characters"] = "%d Characters"
---[[Translation missing --]]
-L["%d Custom Sources"] = "%d Custom Sources"
+L["%d Custom Sources"] = "%d 客製來源"
 --[[Translation missing --]]
 L["%d Faction-Realms"] = "%d Faction-Realms"
 L["%d groups"] = "%d 群組"
@@ -17291,10 +17290,8 @@ L["%d Selected"] = "%d Selected"
 L["%d Sold Auctions"] = "%d 個拍賣已售出"
 --[[Translation missing --]]
 L["%d Sources"] = "%d Sources"
---[[Translation missing --]]
-L["%d Sub-Groups"] = "%d Sub-Groups"
---[[Translation missing --]]
-L["%d subgroups included"] = "%d subgroups included"
+L["%d Sub-Groups"] = "%d 子群組"
+L["%d subgroups included"] = "包括 %d 子群組"
 --[[Translation missing --]]
 L["%d Types"] = "%d Types"
 --[[Translation missing --]]
@@ -17478,8 +17475,7 @@ L["Alts"] = "替代項"
 L["Alts AH"] = "Alts AH"
 L["Amount"] = "數量"
 L["Amount kept in bags"] = "背包裡的持有數量"
---[[Translation missing --]]
-L["Amount of bag space to keep free"] = "Amount of bag space to keep free"
+L["Amount of bag space to keep free"] = "保留背包空間裡的空格數"
 --[[Translation missing --]]
 L["An old TSM addon was found installed. Please remove %s and any other old TSM addons to avoid issues."] = "An old TSM addon was found installed. Please remove %s and any other old TSM addons to avoid issues."
 --[[Translation missing --]]
@@ -17488,7 +17484,7 @@ L["App Not Synced"] = "App Not Synced"
 L["App Synced %s Ago"] = "App Synced %s Ago"
 L["Appearance"] = "外觀"
 L["Apply operation to group"] = "套用作業到群組"
-L["Are you sure you want to clear old accounting data?"] = "您確定要清除舊的會計數據嗎？"
+L["Are you sure you want to clear old accounting data?"] = "你確定要清除舊的會計資料嗎?"
 --[[Translation missing --]]
 L["Are you sure you want to delete the selected operations?"] = "Are you sure you want to delete the selected operations?"
 L["Are you sure you want to delete this operation?"] = "你確定要刪除這個作業嗎?"
@@ -17499,10 +17495,8 @@ L["Auction"] = "拍賣"
 L["Auction duration"] = "拍賣時限"
 L["Auction has been bid on."] = "拍賣已結標"
 L["Auction House Cut"] = "拍賣費"
---[[Translation missing --]]
-L["Auction House Sounds"] = "Auction House Sounds"
---[[Translation missing --]]
-L["Auction sale sound"] = "Auction sale sound"
+L["Auction House Sounds"] = "拍賣場音效"
+L["Auction sale sound"] = "拍賣賣出音效"
 L["Auction Window Close"] = "關閉拍賣視窗"
 L["Auction Window Open"] = "開啟拍賣視窗"
 L["Auctionator - Auction Value"] = "Auctionator - 拍賣價格"
@@ -17547,7 +17541,7 @@ L["Auto-focus browse search input"] = "Auto-focus browse search input"
 L["Average Earned per Day"] = "日均收益"
 L["Average Prices:"] = "平均價格："
 L["Average Profit per Day"] = "日均利潤"
-L["Average Spent per Day"] = "日均花費"
+L["Average Spent per Day"] = "日均支出"
 L["Avg Buy Price"] = "平均買價"
 L["Avg Profit"] = "平均利潤"
 L["Avg Sell Price"] = "平均售價"
@@ -17600,8 +17594,7 @@ L["Bought %sx%d for %s from %s"] = "Bought %sx%d for %s from %s"
 --[[Translation missing --]]
 L["Bound Actions"] = "Bound Actions"
 L["Browse"] = "瀏覽"
---[[Translation missing --]]
-L["Browse / Sniper"] = "Browse / Sniper"
+L["Browse / Sniper"] = "瀏覽 / 狙擊"
 --[[Translation missing --]]
 L["BUSY"] = "BUSY"
 L["BUY"] = "購買"
@@ -17697,13 +17690,10 @@ L["Character"] = "角色"
 L["Chat Tab"] = "聊天標籤"
 L["Cheapest auction below min price."] = "低於最低價的最便宜拍賣價"
 L["Clear All"] = "清除全部"
---[[Translation missing --]]
-L["Clear Data"] = "Clear Data"
+L["Clear Data"] = "清除資料"
 L["Clear Filters"] = "清除篩選"
---[[Translation missing --]]
-L["Clear Old Data"] = "Clear Old Data"
---[[Translation missing --]]
-L["Clear Old Data?"] = "Clear Old Data?"
+L["Clear Old Data"] = "清除舊資料"
+L["Clear Old Data?"] = "清除舊資料?"
 --[[Translation missing --]]
 L["Click and drag to resize this window."] = "Click and drag to resize this window."
 --[[Translation missing --]]
@@ -17719,8 +17709,7 @@ L["Combining..."] = "Combining..."
 --[[Translation missing --]]
 L["Completed full AH scan (%d auctions)!"] = "Completed full AH scan (%d auctions)!"
 L["Confirm"] = "確認"
---[[Translation missing --]]
-L["Confirm complete sound"] = "Confirm complete sound"
+L["Confirm complete sound"] = "確認完成音效"
 --[[Translation missing --]]
 L["Confirmation %s button"] = "Confirmation %s button"
 --[[Translation missing --]]
@@ -17780,8 +17769,7 @@ L["Crafts %d"] = "製造品 %d"
 --[[Translation missing --]]
 L["Create Groups from Table"] = "Create Groups from Table"
 L["Create macro"] = "建立巨集"
---[[Translation missing --]]
-L["Create New"] = "Create New"
+L["Create New"] = "建立新檔"
 L["Create New Group"] = "建立新群組"
 L["Create New Operation"] = "建立新作業"
 --[[Translation missing --]]
@@ -17817,8 +17805,7 @@ L["Default craft value method"] = "Default craft value method"
 L["Default material cost method"] = "Default material cost method"
 --[[Translation missing --]]
 L["Default Price"] = "Default Price"
---[[Translation missing --]]
-L["Default price configuration"] = "Default price configuration"
+L["Default price configuration"] = "預設價格配置"
 --[[Translation missing --]]
 L["Define what priority Gathering gives certain sources."] = "Define what priority Gathering gives certain sources."
 L["Delete %d Operations"] = "刪除 %d 作業"
@@ -17924,8 +17911,7 @@ L["Don't post after this many expires"] = "Don't post after this many expires"
 L["Don't Post Items"] = "不要發佈物品"
 --[[Translation missing --]]
 L["Don't prompt to record trades"] = "Don't prompt to record trades"
---[[Translation missing --]]
-L["Down"] = "Down"
+L["Down"] = "下"
 --[[Translation missing --]]
 L["Duplicate the profile"] = "Duplicate the profile"
 L["Duration"] = "有效時限"
@@ -17998,8 +17984,7 @@ L["Example"] = "Example"
 L["Example Item"] = "Example Item"
 --[[Translation missing --]]
 L["Example Tooltip"] = "Example Tooltip"
---[[Translation missing --]]
-L["Exclude custom sources?"] = "Exclude custom sources?"
+L["Exclude custom sources?"] = "排除客製來源?"
 L["Exclude operations?"] = "排除作業?"
 L["Exit"] = "離開"
 L["Expand / Collapse All Groups"] = "展開 / 摺疊所有群組"
@@ -18117,17 +18102,14 @@ L["Guild Bank"] = "公會銀行"
 L["GVault"] = "GVault"
 --[[Translation missing --]]
 L["Have"] = "Have"
---[[Translation missing --]]
-L["Have Mats"] = "Have Mats"
---[[Translation missing --]]
-L["Have Skill Ups"] = "Have Skill Ups"
+L["Have Mats"] = "有材料"
+L["Have Skill Ups"] = "技能可提升"
 --[[Translation missing --]]
 L["Here you can add/remove what groups this operation is attached to."] = "Here you can add/remove what groups this operation is attached to."
 --[[Translation missing --]]
 L["Hide auctions with bids"] = "Hide auctions with bids"
 L["Hide Columns"] = "隱藏直欄"
---[[Translation missing --]]
-L["Hide minimap icon"] = "Hide minimap icon"
+L["Hide minimap icon"] = "隱藏小地圖圖示"
 --[[Translation missing --]]
 L["Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."] = "Hiding the TSM Banking UI. Type '/tsm bankui' to reopen it."
 --[[Translation missing --]]
@@ -18164,10 +18146,8 @@ L["If you have multiple profiles set up with operations, enabling this will caus
 L["Ignore Auctions Below Min"] = "Ignore Auctions Below Min"
 --[[Translation missing --]]
 L["Ignore auctions by duration"] = "Ignore auctions by duration"
---[[Translation missing --]]
-L["Ignore Characters"] = "Ignore Characters"
---[[Translation missing --]]
-L["Ignore Guilds"] = "Ignore Guilds"
+L["Ignore Characters"] = "忽略角色"
+L["Ignore Guilds"] = "忽略公會"
 L["Ignore operation on characters"] = "在角色上忽略作業"
 L["Ignore operation on faction-realms"] = "在陣營伺服器上忽略作業"
 --[[Translation missing --]]
@@ -18188,8 +18168,7 @@ L["Imported Group"] = "Imported Group"
 L["Imported group (%s) with %d items, %d operations, and %d custom sources."] = "Imported group (%s) with %d items, %d operations, and %d custom sources."
 --[[Translation missing --]]
 L["Improved Import / Export."] = "Improved Import / Export."
---[[Translation missing --]]
-L["Inbox Settings"] = "Inbox Settings"
+L["Inbox Settings"] = "收件設定"
 L["Include operations?"] = "包刮作業?"
 --[[Translation missing --]]
 L["Include soulbound items"] = "Include soulbound items"
@@ -18229,8 +18208,7 @@ L["Invalid word: '%s'"] = "無效詞：“%s”"
 L["Inventory"] = "存貨"
 --[[Translation missing --]]
 L["Inventory / Gold Graph"] = "Inventory / Gold Graph"
---[[Translation missing --]]
-L["Inventory Options"] = "Inventory Options"
+L["Inventory Options"] = "存貨選項"
 --[[Translation missing --]]
 L["It appears that you've manually copied your saved variables between accounts which will cause TSM's automatic sync'ing to not work. You'll need to undo this, and/or delete the TradeSkillMaster saved variables files on both accounts (with WoW closed) in order to fix this."] = "It appears that you've manually copied your saved variables between accounts which will cause TSM's automatic sync'ing to not work. You'll need to undo this, and/or delete the TradeSkillMaster saved variables files on both accounts (with WoW closed) in order to fix this."
 --[[Translation missing --]]
@@ -18344,8 +18322,7 @@ L["Mat cost"] = "Mat cost"
 L["Mat Price"] = "Mat Price"
 --[[Translation missing --]]
 L["Match stack size"] = "Match stack size"
---[[Translation missing --]]
-L["Match whitelisted players"] = "Match whitelisted players"
+L["Match whitelisted players"] = "符合白名單玩家"
 --[[Translation missing --]]
 L["Material Cost"] = "Material Cost"
 --[[Translation missing --]]
@@ -18399,8 +18376,7 @@ L["Mill value"] = "Mill value"
 L["Mill Value"] = "Mill Value"
 --[[Translation missing --]]
 L["Min"] = "Min"
---[[Translation missing --]]
-L["Min 0 - Max 20"] = "Min 0 - Max 20"
+L["Min 0 - Max 20"] = "最少 0 - 最多 20"
 --[[Translation missing --]]
 L["Min 0.5 - Max 10"] = "Min 0.5 - Max 10"
 --[[Translation missing --]]
@@ -18484,8 +18460,7 @@ L["No Crafts"] = "No Crafts"
 L["No Faction-Realms"] = "無陣營-伺服器"
 --[[Translation missing --]]
 L["No group selected"] = "No group selected"
---[[Translation missing --]]
-L["No Guilds"] = "No Guilds"
+L["No Guilds"] = "無公會"
 --[[Translation missing --]]
 L["No item specified. Usage: /tsm restock_help [ITEM_LINK]"] = "No item specified. Usage: /tsm restock_help [ITEM_LINK]"
 --[[Translation missing --]]
@@ -18511,8 +18486,7 @@ L["No Rarities"] = "No Rarities"
 L["No receipe selected"] = "No receipe selected"
 --[[Translation missing --]]
 L["No recent AuctionDB scan data found."] = "No recent AuctionDB scan data found."
---[[Translation missing --]]
-L["No Sound"] = "No Sound"
+L["No Sound"] = "無音效"
 --[[Translation missing --]]
 L["No Sources"] = "No Sources"
 --[[Translation missing --]]
@@ -18523,8 +18497,7 @@ L["No value was returned by the custom price for the specified item."] = "No val
 L["None"] = "None"
 --[[Translation missing --]]
 L["None (Always Show)"] = "None (Always Show)"
---[[Translation missing --]]
-L["None Selected"] = "None Selected"
+L["None Selected"] = "未選"
 --[[Translation missing --]]
 L["Nongroup to bank"] = "Nongroup to bank"
 --[[Translation missing --]]
@@ -18574,8 +18547,7 @@ L["Open All Mail"] = "開啟全部郵件"
 --[[Translation missing --]]
 L["Open All Mail Without Money"] = "Open All Mail Without Money"
 L["Open Mail"] = "開啟郵件"
---[[Translation missing --]]
-L["Open mail complete sound"] = "Open mail complete sound"
+L["Open mail complete sound"] = "開啟郵件完成音效"
 --[[Translation missing --]]
 L["Open Mail Without Money"] = "Open Mail Without Money"
 --[[Translation missing --]]
@@ -18771,8 +18743,7 @@ L["Reload UI (%d)"] = "Reload UI (%d)"
 L["Remove"] = "移除"
 --[[Translation missing --]]
 L["Remove %d |4Item:Items"] = "Remove %d |4Item:Items"
---[[Translation missing --]]
-L["Remove Data Older Than (Days)"] = "Remove Data Older Than (Days)"
+L["Remove Data Older Than (Days)"] = "清除超過(天)的舊資料"
 --[[Translation missing --]]
 L["Remove this account sync and all synced data from this account"] = "Remove this account sync and all synced data from this account"
 --[[Translation missing --]]
@@ -18808,8 +18779,7 @@ L["Rescan"] = "重新掃描"
 L["Reset"] = "重置"
 --[[Translation missing --]]
 L["Reset All Filters"] = "Reset All Filters"
---[[Translation missing --]]
-L["Reset Filters"] = "Reset Filters"
+L["Reset Filters"] = "重置篩選"
 L["Reset Operation?"] = "重置作業?"
 --[[Translation missing --]]
 L["Reset Profile?"] = "Reset Profile?"
@@ -18886,8 +18856,7 @@ L["Save"] = "Save"
 L["Scan"] = "掃描"
 --[[Translation missing --]]
 L["SCAN ALL"] = "SCAN ALL"
---[[Translation missing --]]
-L["Scan complete sound"] = "Scan complete sound"
+L["Scan complete sound"] = "掃描完成音效"
 --[[Translation missing --]]
 L["Scan Paused"] = "Scan Paused"
 --[[Translation missing --]]
@@ -18897,10 +18866,8 @@ L["Scanning"] = "掃描中"
 L["SCANNING"] = "SCANNING"
 --[[Translation missing --]]
 L["Scanning (%d Items)"] = "Scanning (%d Items)"
---[[Translation missing --]]
-L["Scroll wheel direction"] = "Scroll wheel direction"
---[[Translation missing --]]
-L["Scroll Wheel Options"] = "Scroll Wheel Options"
+L["Scroll wheel direction"] = "滾輪方向"
+L["Scroll Wheel Options"] = "滾輪選項"
 L["Search"] = "搜尋"
 L["Search %s operations"] = "搜尋 %s 作業"
 --[[Translation missing --]]
@@ -18975,8 +18942,7 @@ L["SENDING"] = "SENDING"
 L["Sending %s to %s"] = "Sending %s to %s"
 --[[Translation missing --]]
 L["Sending %s to %s with a COD of %s"] = "Sending %s to %s with a COD of %s"
---[[Translation missing --]]
-L["Sending Settings"] = "Sending Settings"
+L["Sending Settings"] = "送件設定"
 --[[Translation missing --]]
 L["Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"] = "Sending your '%s' profile to %s. Please keep both characters online until this completes. This will take approximately: %s"
 L["Sending..."] = "發送中..."
@@ -19010,8 +18976,7 @@ L["Set what items are shown during a Sniper scan."] = "Set what items are shown 
 --[[Translation missing --]]
 L["Set your active profile or create a new one."] = "Set your active profile or create a new one."
 L["Settings"] = "設定"
---[[Translation missing --]]
-L["Setup various sounds that play when doing Auctioning scans."] = "Setup various sounds that play when doing Auctioning scans."
+L["Setup various sounds that play when doing Auctioning scans."] = "設定在拍賣掃描時播放的各種音效."
 --[[Translation missing --]]
 L["SHIFT"] = "SHIFT"
 L["Shopping"] = "購買"
@@ -19081,14 +19046,10 @@ L["Sold (Total Price)"] = "Sold (Total Price)"
 L["Sold [%s]x%d for %s to %s"] = "販售 [%s] x %d 共 %s 給 %s"
 --[[Translation missing --]]
 L["Sold for:"] = "Sold for:"
---[[Translation missing --]]
-L["Some general Accounting options are below."] = "Some general Accounting options are below."
---[[Translation missing --]]
-L["Some general appearance options are below."] = "Some general appearance options are below."
---[[Translation missing --]]
-L["Some general Auctioning options are below."] = "Some general Auctioning options are below."
---[[Translation missing --]]
-L["Some general Browse/Sniper options are below."] = "Some general Browse/Sniper options are below."
+L["Some general Accounting options are below."] = "下列是一些一般會計選項."
+L["Some general appearance options are below."] = "下列是一些一般外觀選項."
+L["Some general Auctioning options are below."] = "下列是一些一般拍賣選項."
+L["Some general Browse/Sniper options are below."] = "下列是一些一般瀏覽/狙擊選項."
 --[[Translation missing --]]
 L["Some general options for the TSM tooltip information are below."] = "Some general options for the TSM tooltip information are below."
 L["Some general TSM options are below."] = "下面是一些一般TSM選項."
@@ -19249,10 +19210,10 @@ L["TOP SALE"] = "最高銷售額"
 --[[Translation missing --]]
 L["Top Sellers"] = "Top Sellers"
 L["Total"] = "總數"
-L["Total Gold"] = "全部金額"
+L["Total Gold"] = "總金額"
 L["Total Gold Collected: %s"] = "總共獲得金額: %s"
-L["Total Gold Earned"] = "總收益金額"
-L["Total Gold Spent"] = "總花費金額"
+L["Total Gold Earned"] = "收益總額"
+L["Total Gold Spent"] = "支出總額"
 --[[Translation missing --]]
 L["Total Inventory Quantity"] = "Total Inventory Quantity"
 --[[Translation missing --]]
@@ -19303,8 +19264,7 @@ L["TSM Shopping"] = "TSM Shopping"
 L["TSM Sniper"] = "TSM Sniper"
 L["TSM TASK LIST"] = "TSM 任務清單"
 L["TSM Version Info:"] = "TSM 版本資訊:"
---[[Translation missing --]]
-L["TSM will not undercut any players you add to your whitelist."] = "TSM will not undercut any players you add to your whitelist."
+L["TSM will not undercut any players you add to your whitelist."] = "TSM將不會對你加入白名單的任何玩家削價競爭."
 --[[Translation missing --]]
 L["TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"] = "TSM_Accounting detected that you just traded %s %s in return for %s. Would you like Accounting to store a record of this trade?"
 --[[Translation missing --]]
@@ -19339,8 +19299,7 @@ L["Unknown word (%s)."] = "Unknown word (%s)."
 L["Unlock Column Width"] = "Unlock Column Width"
 --[[Translation missing --]]
 L["Unwrap Gift"] = "Unwrap Gift"
---[[Translation missing --]]
-L["Up"] = "Up"
+L["Up"] = "上"
 --[[Translation missing --]]
 L["Up to date"] = "Up to date"
 --[[Translation missing --]]
@@ -19426,10 +19385,8 @@ L["We've added new price sources to give you even more flexibility in how you us
 --[[Translation missing --]]
 L["When above maximum:"] = "When above maximum:"
 L["When below minimum:"] = "當低於最低價格時:"
---[[Translation missing --]]
-L["Whitelist"] = "Whitelist"
---[[Translation missing --]]
-L["Whitelisted characters"] = "Whitelisted characters"
+L["Whitelist"] = "白名單"
+L["Whitelisted characters"] = "白名單角色"
 --[[Translation missing --]]
 L["Winamp"] = "Winamp"
 --[[Translation missing --]]
@@ -19440,12 +19397,10 @@ L["Would send %s to %s with a COD of %s"] = "Would send %s to %s with a COD of %
 L["WOW UI"] = "WOW UI"
 --[[Translation missing --]]
 L["You are not on one of the listed characters."] = "You are not on one of the listed characters."
---[[Translation missing --]]
-L["You can clear old Accounting data below to keep things running smoothly."] = "You can clear old Accounting data below to keep things running smoothly."
+L["You can clear old Accounting data below to keep things running smoothly."] = "你可以清除下面的舊會計資料以確保事務運作順暢."
 --[[Translation missing --]]
 L["You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"] = "You can import groups by pasting an import string into the box below. Group import strings can be found at: https://tradeskillmaster.com/group-maker/all"
---[[Translation missing --]]
-L["You can use the export string below to share this group with others."] = "You can use the export string below to share this group with others."
+L["You can use the export string below to share this group with others."] = "你可以使用下列的匯出字串來分享這個群組給其他群組."
 L["You cannot use %s as part of this custom price."] = "你不能使用%s作為自定義價格的一部份。"
 --[[Translation missing --]]
 L["You cannot use %s within convert() as part of this custom price."] = "You cannot use %s within convert() as part of this custom price."
