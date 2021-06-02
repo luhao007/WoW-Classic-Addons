@@ -7,32 +7,31 @@ local GoodLeader = ns.Addon:NewClass('UI.GoodLeaderFrame', 'Frame.GoodLeaderTemp
 function GoodLeader:Constructor(p)
     ns.UI.CountdownButton:Bind(self.First.Header.Search)
 
-    self.instances = {}
+    self.instances = self.Result.Raids.instances
 
-    local raids = {
-        {mapId = 2717, bossId = 672, image = [[interface\encounterjournal\ui-ej-dungeonbutton-moltencore]]},
-        {mapId = 2159, bossId = 1084, image = [[interface\encounterjournal\ui-ej-dungeonbutton-onyxia]]},
-        {mapId = 2677, bossId = 617, image = [[interface\encounterjournal\ui-ej-dungeonbutton-blackwinglair]]},
-        {mapId = 3428, bossId = 717, image = [[interface\encounterjournal\ui-ej-dungeonbutton-templeofahnqiraj]]},
-        {mapId = 3456, bossId = 1114, image = [[interface\encounterjournal\ui-ej-dungeonbutton-naxxramas]]},
-        {mapId = 1977, bossId = 793, image = [[interface\encounterjournal\ui-ej-dungeonbutton-zulgurub]]},
-        {mapId = 3429, bossId = 723, image = [[interface\encounterjournal\ui-ej-dungeonbutton-ruinsofahnqiraj]]},
-    }
-
-    for i, v in ipairs(raids) do
-        local button = self.Result.Raids['Raid' .. i]
-        tinsert(self.instances, button)
-
-        button.Name:SetText(C_Map.GetAreaInfo(v.mapId))
-        button.Image:SetTexture(v.image)
-        button.bossId = v.bossId
+    local function CreateInstance(i)
+        local frame = CreateFrame('Frame', nil, self.Result.Raids, 'GoodLeaderRaidTemplate')
+        self.instances[i] = frame
+        return frame
     end
 
-    self.First.Header.Search:Disable()
-    self.First.Header.Search:SetText(L['正在初始化'])
+    local index = 1
+    for i, v in ipairs(ns.GOODLEADER_INSTANCES) do
+        if v.projectId == WOW_PROJECT_ID then
+            local button = self.instances[index] or CreateInstance(index)
+
+            button.Name:SetText(C_Map.GetAreaInfo(v.mapId) .. (v.name and '-' .. v.name or ''))
+            button.Image:SetTexture([[interface\encounterjournal\ui-ej-dungeonbutton-]] .. v.image)
+            button.bossId = v.bossId
+            index = index + 1
+        end
+    end
+
+    self.First.Header.Disconnect:SetText(L['好团长查询正在维护中'])
+    self:UpdateButton()
 
     self.First.Header.Search:SetScript('OnClick', function(button)
-        ns.Addon:LookupLeader()
+        ns.GoodLeader:LookupLeader()
         button:SetCountdown(5)
     end)
 
@@ -41,6 +40,8 @@ function GoodLeader:Constructor(p)
 
     self.Result.Score.NoResult:SetText(L['团长被评价数量较少，暂时无法查看。'])
     self.Result.Raids.Title:SetText(L['作为团长的次数：|cff808080（暴雪通行证下所有角色）|r'])
+
+    ns.UI.QRCodeWidget:Bind(self.First.Inset.QRCode)
 
     self.scores = {}
 
@@ -55,11 +56,8 @@ function GoodLeader:Constructor(p)
     SetupScore(self.Result.Score.Score2, L['公正：'])
     SetupScore(self.Result.Score.Score3, L['运势：'])
 
-    self.Result:SetScript('OnShow', function()
-        ns.Addon.MainPanel:SetTitleShown(false)
-    end)
     self.First:SetScript('OnShow', function()
-        ns.Addon.MainPanel:SetTitleShown(true)
+        self.First.Inset.QRCode:SetValue(ns.MakeQRCode(ns.GetGroupLeader()))
     end)
 
     self.Result.Raids:SetScript('OnSizeChanged', function()
@@ -98,6 +96,7 @@ function GoodLeader:Constructor(p)
     self:RegisterEvent('GROUP_ROSTER_UPDATE')
     self:RegisterMessage('GOODLEADER_LOGIN')
     self:RegisterMessage('GOODLEADER_LEADERINFO_UPDATE')
+    self:RegisterMessage('GOODLEADER_CONNECT_TIMEOUT')
 end
 
 function GoodLeader:OnShow()
@@ -125,27 +124,39 @@ function GoodLeader:GROUP_ROSTER_UPDATE()
 end
 
 function GoodLeader:GOODLEADER_LOGIN()
-    self.logon = true
+    self:UpdateButton()
+end
+
+function GoodLeader:GOODLEADER_CONNECT_TIMEOUT()
     self:UpdateButton()
 end
 
 function GoodLeader:UpdateButton()
-    if not self.logon then
-        return
-    end
-
-    if IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_HOME) then
-        self.First.Header.Search:Enable()
-        self.First.Header.Search:SetText(L['查询团长信息'])
+    if ns.GoodLeader:IsServerLogon() then
+        if IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_HOME) then
+            self.First.Header.Search:Enable()
+            self.First.Header.Search:SetText(L['查询团长信息'])
+        else
+            self.First.Header.Search:Disable()
+            self.First.Header.Search:SetText(L['进入团队后查询'])
+        end
     else
         self.First.Header.Search:Disable()
-        self.First.Header.Search:SetText(L['进入团队后查询'])
+        self.First.Header.Search:SetText(L['正在初始化'])
+    end
+
+    if ns.GoodLeader:IsServerTimeout() then
+        self.First.Header.Search:Hide()
+        self.First.Header.Disconnect:Show()
+    else
+        self.First.Header.Search:Show()
+        self.First.Header.Disconnect:Hide()
     end
 end
 
 function GoodLeader:GOODLEADER_LEADERINFO_UPDATE()
     local name, guid = ns.GetGroupLeader()
-    local user = ns.Addon:GetUserCache(name)
+    local user = ns.GoodLeader:GetUserCache(name)
 
     self.name = name
 

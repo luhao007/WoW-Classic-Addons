@@ -555,7 +555,7 @@ class Manager:
         utils.process_file('AddOns/Fizzle/Core.lua', process)
 
     @staticmethod
-    @available_on(['classic', 'classic_era'])
+    @available_on(['classic_era'])
     def handle_goodleader():
         utils.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceDB-3.0',
@@ -622,7 +622,7 @@ class Manager:
     @available_on(['classic', 'classic_era'])
     def handle_meetinghorn():
         utils.remove_libraries(
-            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
                 'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
                 'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',

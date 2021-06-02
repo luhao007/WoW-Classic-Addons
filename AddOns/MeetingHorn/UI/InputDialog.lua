@@ -4,11 +4,15 @@ local ns = select(2, ...)
 
 ---@class InputDialog: Frame
 local InputDialog = ns.Addon:NewClass('UI.InputDialog', 'Frame')
+ns.GUI:Embed(InputDialog, 'Backdrop')
 
 function InputDialog:Constructor()
     self:Hide()
     self:SetFrameStrata('DIALOG')
     self:SetSize(320, 116)
+    if not self.SetBackdrop then
+        Mixin(self, _G.	TemplateMixin)
+    end
     self:SetBackdrop({
         bgFile = [[Interface\DialogFrame\UI-DialogBox-Background]],
         edgeFile = [[Interface\DialogFrame\UI-DialogBox-Border]],

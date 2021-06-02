@@ -1,4 +1,3 @@
-
 ---@type ns
 local ns = select(2, ...)
 
@@ -14,7 +13,7 @@ local ns = select(2, ...)
 local Grade = ns.Addon:NewModule('Grade', 'AceEvent-3.0')
 
 function Grade:OnInitialize()
-    self.db = ns.Addon.db.profile.cache
+    self.db = ns.Addon.db.profile.goodleader.cache
     self:RegisterEvent('GROUP_ROSTER_UPDATE')
     self:RegisterEvent('ENCOUNTER_END')
 end
@@ -90,5 +89,20 @@ end
 
 ---@param raid GoodLeaderRaidData
 function Grade:Grade(raid, scores, tags)
-    ns.Addon:SendServer('SRS', raid.leader, raid.leaderGuid, raid.raidName, scores, tags)
+    ns.GoodLeader:SendServer('SRS', raid.leader, raid.leaderGuid, raid.raidName, scores, tags)
+    ns.Message(ns.L['感谢您的评价。'])
 end
+
+--[[@debug@
+function GG()
+    for n in pairs(ns.RAID_LOGO) do
+        Grade.db[n] = {
+            raidName = n,
+            leader = UnitName('player') .. '1',
+            leaderGuid = UnitGUID('player'),
+            timestamp = time(),
+        }
+    end
+    Grade:GROUP_ROSTER_UPDATE()
+end
+--@end-debug@]]
