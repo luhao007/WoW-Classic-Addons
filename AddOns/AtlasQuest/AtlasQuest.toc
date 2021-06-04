@@ -1,7 +1,7 @@
 ## Interface: 20501
 ## Author: Thandrenn
 ## Version: 4.12.80
-## RequiredDeps: Atlas
+## RequiredDeps: Atlas, Atlas_ClassicWoW, Atlas_BurningCrusade
 ## Dependencies: 
 ## OptionalDeps: 
 ## LoadOnDemand: 0
@@ -21,7 +21,7 @@
 ## X-License: GPLv2
 ## X-Credits: AtlasQuest Team
 ## X-Localizations: enUS, deDE, koKR, zhCN, zhTW, ruRU, esES, esMX
-## X-Date: May 25, 2021
+## X-Date: June 3, 2021
 ## X-Help: AtlasQuestHelp
 
 AtlasQuest_InsideFrame.xml

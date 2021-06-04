@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Version: Plater-v330-BCC
+## Version: Plater-v331-BCC
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 
@@ -10,9 +10,6 @@
 
 ## X-Curse-Project-ID: 100547
 ## X-Wago-ID: kRNLep6o
-
-#@version-bc@
-#@end-version-bc@
 
 #@no-lib-strip@
 libs\libs.xml

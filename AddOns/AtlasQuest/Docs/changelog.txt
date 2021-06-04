@@ -12,6 +12,13 @@ KNOWN ISSUES:
 
 
 
+Version 4.12.81  (for TBC Classic)  June 3, 2021
+
+- Atlas_ClassicWoW & Atlas_BurningCrusade are now required dependencies. 
+
+
+
+
 Version 4.12.80 (for TBC Classic)  May 25, 2021
 
 - Initial release for TBC Classic.  This is a work in progress.  

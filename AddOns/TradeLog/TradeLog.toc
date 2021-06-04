@@ -6,7 +6,7 @@
 
 ## Title: The Burning Trade
 ## Notes: |cffbc8f8ftrade log, mage warlock trade assistant.|r
-## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF交易助手|r |cFFFFE00ATradeLog|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF交易助手|r |cFFFFE00ATradeLog|r
 ## Notes-zhCN: |cff00ff00TheBurningTrade|r|n|cffbc8f8f交易记录及交易界面增强。|r
 
 

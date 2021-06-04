@@ -54,11 +54,18 @@ function public.scan()
     savedData[key].class = private.selectOne(3, UnitClass("player"));
     savedData[key].race = private.selectOne(3, UnitRace("player"));
     savedData[key].sex = UnitSex("player");
+    savedData[key].locale = GetLocale();
 
     savedData[key].level = max(savedData[key].level or 0, UnitLevel("player"));
 
-    savedData[key].equipment = savedData[key].equipment or {}
+    savedData[key].equipment = savedData[key].equipment or {};
     private.getEquipment(savedData[key].equipment);
+
+    savedData[key].factions = savedData[key].factions or {};
+    private.getFactions(savedData[key].factions);
+
+    savedData[key].skills = savedData[key].skills or {};
+    private.getSkills(savedData[key].skills);
 
     --- Technically we could do this once with the initial scan, then listen for the QUEST_TURNED_IN event to keep it
     --- updated, but some quests can trigger multiple quest IDs as complete (like breadcrumbs).
@@ -138,10 +145,71 @@ function private.getEquipment(equipTable)
     end
 end
 
+--- Fills a table with the faction IDs and earned reputation level for all factions this character encountered.
+-- @param factionsTable The table to fill.
+function private.getFactions(factionsTable)
+    wipe(factionsTable)
+
+    local toCollapse
+    local collapseIndex = 1
+
+    local numFactions = GetNumFactions()
+    local factionIndex = 1
+    while (factionIndex <= numFactions) do
+        local _, _, _, _, _, earnedValue, _, _,
+            isHeader, isCollapsed, hasRep, _, _, factionID, _, _ = GetFactionInfo(factionIndex)
+        if isHeader and isCollapsed then
+            toCollapse = toCollapse or {}
+            toCollapse[collapseIndex] = factionIndex
+            collapseIndex = collapseIndex + 1
+            ExpandFactionHeader(factionIndex)
+            numFactions = GetNumFactions()
+        end
+        if hasRep or not isHeader then
+            factionsTable[factionID] = earnedValue
+        end
+        factionIndex = factionIndex + 1
+    end
+    while (collapseIndex > 1) do
+        collapseIndex = collapseIndex - 1
+        CollapseFactionHeader(toCollapse[collapseIndex])
+    end
+end
+
 --- Returns a "unique" key for the character for the SavedVariables data.
 -- @return The character name and realm, formatted the same as wlId
 function private.getKey()
     return private.selectOne(1, UnitName("player")) .. '^' .. GetRealmName();
+end
+
+--- Fills a table with the skill names and earned skill level for all skills this character has.
+-- @param skillsTable The table to fill.
+function private.getSkills(skillsTable)
+    wipe(skillsTable)
+
+    local toCollapse
+    local collapseIndex = 1
+
+    local numSkills = GetNumSkillLines()
+    local skillIndex = 1
+    while (skillIndex <= numSkills) do
+        local name, isHeader, isExpanded, skillRank, _, _, maxRank = GetSkillLineInfo(skillIndex)
+        if isHeader and not isExpanded then
+            toCollapse = toCollapse or {}
+            toCollapse[collapseIndex] = skillIndex
+            collapseIndex = collapseIndex + 1
+            ExpandSkillHeader(skillIndex)
+            numSkills = GetNumSkillLines()
+        end
+        if not isHeader and maxRank > 1 then
+            skillsTable[name] = skillRank
+        end
+        skillIndex = skillIndex + 1
+    end
+    while (collapseIndex > 1) do
+        collapseIndex = collapseIndex - 1
+        CollapseSkillHeader(toCollapse[collapseIndex])
+    end
 end
 
 --- Returns the Wowhead-style talent hash for the current talent build.

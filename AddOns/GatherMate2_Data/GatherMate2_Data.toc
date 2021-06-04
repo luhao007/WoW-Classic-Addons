@@ -1,12 +1,12 @@
 ## Interface: 20501
 ## Author: kagaro, Xinhuan, Spinx, Marrtin
-## Version: v2021-05-31
+## Version: v2021-06-03
 ## Dependencies: GatherMate2
 ## LoadOnDemand: 1
 
 ## Title: GatherMate2Data
 ## Notes: GatherMate2 data fetched from Wowhead
-## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFF69CCF0数据|r
+## Title-zhCN: |cFFFFE00A<|r|cFF0070DE专业|r|cFFFFE00A>|r |cFFFFFFFF采集助手|r |cFF69CCF0数据|r
 
 ## X-Part-Of: GatherMate2
 

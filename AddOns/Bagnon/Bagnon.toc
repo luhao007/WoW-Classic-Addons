@@ -6,7 +6,7 @@
 
 ## Title: Bagnon
 ## Notes: Single window displays for your inventory and bank
-## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFFFFE00ABagnon|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFFFFE00ABagnon|r
 ## Notes-zhCN: 将背包整合成一个窗口
 
 

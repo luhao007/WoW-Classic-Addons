@@ -477,10 +477,10 @@
     "name": "AtlasQuest - Fan Update",
     "description": "AtlasQuest - Fan Update",
     "url": "https://www.curseforge.com/wow/addons/atlas-quest-fan-update",
-    "download_url": "https://edge.forgecdn.net/files/3323/998/AtlasQuestTBC_4.12.80.zip",
-    "date_published": "2021-05-25T05:18:28.977000+00:00",
-    "version": "4.12.80 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4918/file/3323998/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3337/201/AtlasQuestTBC_4.12.81.zip",
+    "date_published": "2021-06-04T02:57:42.910000+00:00",
+    "version": "4.12.81 (Burning Crusade)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4918/file/3337201/changelog",
     "folders": [
       {
         "name": "AtlasQuest"
@@ -495,6 +495,10 @@
       }
     ],
     "logged_versions": [
+      {
+        "version": "4.12.81 (Burning Crusade)",
+        "install_time": "2021-06-04T07:51:28+00:00"
+      },
       {
         "version": "4.12.80 (Burning Crusade)",
         "install_time": "2021-05-26T23:22:30+00:00"
@@ -571,10 +575,10 @@
     "name": "BlizzMove",
     "description": "Makes the default frames moveable via simple drag and drop",
     "url": "https://www.curseforge.com/wow/addons/blizzmove",
-    "download_url": "https://edge.forgecdn.net/files/3316/506/BlizzMove-v3.0.18-bcc.zip",
-    "date_published": "2021-05-20T13:06:07.013000+00:00",
-    "version": "v3.0.18-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17809/file/3316506/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3337/64/BlizzMove-v3.0.19-bcc.zip",
+    "date_published": "2021-06-03T23:54:09.167000+00:00",
+    "version": "v3.0.19-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/17809/file/3337064/changelog",
     "folders": [
       {
         "name": "BlizzMove"
@@ -588,6 +592,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v3.0.19-bcc",
+        "install_time": "2021-06-04T07:51:29+00:00"
+      },
       {
         "version": "v3.0.18-bcc",
         "install_time": "2021-05-21T08:24:23+00:00"
@@ -1341,10 +1349,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3331/472/gathermate2_data_wowhead_classic_v2021-05-31.zip",
-    "date_published": "2021-05-31T19:27:18.927000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3331472/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3336/604/gathermate2_data_wowhead_classic_v2021-06-03.zip",
+    "date_published": "2021-06-03T18:04:11.300000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2021-06-03.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3336604/changelog",
     "folders": [
       {
         "name": "GatherMate2_Data"
@@ -1355,6 +1363,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2021-06-03.zip",
+        "install_time": "2021-06-04T07:51:29+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2021-05-31.zip",
         "install_time": "2021-06-02T04:21:36+00:00"
@@ -1785,10 +1797,10 @@
     "name": "ItemRack Classic",
     "description": "Inventory Management Addon! Change your items quick and easy!",
     "url": "https://www.curseforge.com/wow/addons/itemrack-classic",
-    "download_url": "https://edge.forgecdn.net/files/3320/474/ItemRack-bcc-3.66.zip",
-    "date_published": "2021-05-23T10:23:52.440000+00:00",
-    "version": "3.66",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3320474/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3335/227/ItemRack-bcc-3.67.zip",
+    "date_published": "2021-06-02T16:38:49.013000+00:00",
+    "version": "3.67",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3335227/changelog",
     "folders": [
       {
         "name": "ItemRack"
@@ -1802,6 +1814,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.67",
+        "install_time": "2021-06-03T09:20:25+00:00"
+      },
       {
         "version": "3.66",
         "install_time": "2021-05-23T10:40:37+00:00"
@@ -2263,10 +2279,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3332/271/Pawn-2.5.10-BurningCrusade.zip",
-    "date_published": "2021-06-01T07:05:09.620000+00:00",
-    "version": "2.5.10 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3332271/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3335/920/Pawn-2.5.11-BurningCrusade.zip",
+    "date_published": "2021-06-03T05:37:55.170000+00:00",
+    "version": "2.5.11 (Burning Crusade)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3335920/changelog",
     "folders": [
       {
         "name": "Pawn"
@@ -2277,6 +2293,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.5.11 (Burning Crusade)",
+        "install_time": "2021-06-03T09:20:25+00:00"
+      },
       {
         "version": "2.5.10 (Burning Crusade)",
         "install_time": "2021-06-02T04:21:37+00:00"
@@ -2374,10 +2394,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/3323/363/Plater-v330-bcc.zip",
-    "date_published": "2021-05-24T18:58:09.447000+00:00",
-    "version": "Plater-v330-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/100547/file/3323363/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3336/827/Plater-v331-bcc.zip",
+    "date_published": "2021-06-03T20:42:21.617000+00:00",
+    "version": "Plater-v331-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/100547/file/3336827/changelog",
     "folders": [
       {
         "name": "Plater"
@@ -2388,6 +2408,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v331-bcc",
+        "install_time": "2021-06-04T07:51:29+00:00"
+      },
       {
         "version": "Plater-v330-bcc",
         "install_time": "2021-05-26T23:22:31+00:00"

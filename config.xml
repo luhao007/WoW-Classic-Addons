@@ -214,7 +214,7 @@
 	<Addon name="Auc-Advanced">
 		<Title>拍卖助手</Title>
 		<Notes>拍卖助手可以帮助玩家扫描并追踪各个物品的拍卖价格，并且提供各种进阶扫描，如拍卖叫小于买店价的商品</Notes>
-		<Category>物品</Category>
+		<Category>界面</Category>
 		<SubAddons>
 			<SubAddon name="!Swatter">
 				<Title>错误提示</Title>
@@ -288,7 +288,7 @@
 	<Addon name="Bagnon">
 		<Title>背包整合</Title>
 		<Notes>将背包整合成一个窗口</Notes>
-		<Category>物品</Category>
+		<Category>界面</Category>
 		<SubAddons>
 			<SubAddon name="BagBrother">
 				<Title>助手</Title>
@@ -595,6 +595,9 @@
 			<SubAddon name="DBM-PvP">
 				<Title>PvP</Title>
 			</SubAddon>
+			<SubAddon name="SanctumOfDomination">
+				<Title>统御圣所</Title>
+			</SubAddon>
 			<SubAddon name="DBM-Scenario-MoP">
 				<Title>场景战役</Title>
 			</SubAddon>
@@ -746,7 +749,7 @@
 	</Addon>
 	<Addon name="FishingBuddy">
 		<Title>钓鱼助手</Title>
-		<Category>物品</Category>
+		<Category>专业</Category>
 		<SubAddons>
 			<SubAddon name="FB_TrackingFrame">
 				<Title>追踪框</Title>
@@ -755,7 +758,7 @@
 	</Addon>
 	<Addon name="Fizzle">
 		<Title>装备着色</Title>
-		<Category>物品</Category>
+		<Category>界面</Category>
 	</Addon>
 	<Addon name="GarrisonMissionManager">
 		<Title>要塞任务管理</Title>
@@ -764,7 +767,7 @@
 	</Addon>
 	<Addon name="GatherMate2">
 		<Title>采集助手</Title>
-		<Category>物品</Category>
+		<Category>专业</Category>
 		<SubAddons>
 			<SubAddon name="GatherMate2_Data">
 				<Title>数据</Title>
@@ -773,7 +776,7 @@
 	</Addon>
 	<Addon name="GearManagerEx">
 		<Title>一键换装</Title>
-		<Category>物品</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="GladiatorlosSA2">
 		<Title>角斗士助手</Title>
@@ -966,9 +969,6 @@
 			<SubAddon name="HandyNotes_TravelGuide (Classic)">
 				<Title>旅行指南</Title>
 			</SubAddon>
-			<SubAddon name="HandyNotes_TravelGuide (BCC)">
-				<Title>旅行指南</Title>
-			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
 				<Title>稀有</Title>
 				<TitleExtra>战争前线</TitleExtra>
@@ -989,7 +989,7 @@
 	</Addon>
 	<Addon name="ItemRack">
 		<Title>一键换装</Title>
-		<Category>物品</Category>
+		<Category>功能</Category>
 		<SubAddons>
 			<SubAddon name="ItemRackOptions">
 				<Title>设置</Title>
@@ -1072,6 +1072,11 @@
 				<Title>双手武器</Title>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="MinimalArchaeology">
+		<Title>考古助手</Title>
+		<Notes>独立考古窗口</Notes>
+		<Category>专业</Category>
 	</Addon>
 	<Addon name="MonkeyQuest">
 		<Title>任务追踪</Title>
@@ -1279,7 +1284,7 @@
 	<Addon name="Scrap">
 		<Title>垃圾管理</Title>
 		<Notes>自动出售灰色物品</Notes>
-		<Category>物品</Category>
+		<Category>功能</Category>
 		<SubAddons>
 			<SubAddon name="Scrap_Config">
 				<Title>设置</Title>
@@ -1302,6 +1307,10 @@
 				<Notes>提供一个可视化列表来查看灰色物品</Notes>
 			</SubAddon>
 		</SubAddons>
+	</Addon>
+	<Addon name="SimpleChat">
+		<Title>简单聊天增强</Title>
+		<Category>社交</Category>
 	</Addon>
 	<Addon name="SimpleChatClassic">
 		<Title>简单聊天增强</Title>
@@ -1518,11 +1527,11 @@
 	</Addon>
 	<Addon name="TradeLog">
 		<Title>交易助手</Title>
-		<Category>物品</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="TradeSkillMaster">
 		<Title>专业助手</Title>
-		<Category>物品</Category>
+		<Category>专业</Category>
 		<SubAddons>
 			<SubAddon name="TradeSkillMaster_AppHelper">
 				<Title>数据助手</Title>
@@ -1532,7 +1541,7 @@
 	<Addon name="TrinketMenu">
 		<Title>饰品助手</Title>
 		<Notes>小巧独立的饰品管理器</Notes>
-		<Category>物品</Category>
+		<Category>功能</Category>
 	</Addon>
 	<Addon name="tullaRange">
 		<Title>技能距离检测</Title>

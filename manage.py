@@ -96,7 +96,7 @@ class Manager:
         colors = {
             '基础库': 'C41F3B',     # Red - DK
             '任务': '00FF96',       # Spring green - Monk
-            '物品': '0070DE',       # Doget blue - Shaman
+            '专业': '0070DE',       # Doget blue - Shaman
             '界面': 'A330C9',       # Dark Magenta - DH
             '副本': 'FF7D0A',       # Orange - Druid
             '战斗': 'C79C6E',       # Tan - Warrior
@@ -341,22 +341,22 @@ class Manager:
 
         if utils.get_platform() == 'retail':
             addons += ['AllTheThings', 'Details_ChartViewer',
-                        'Details_DeathGraphs', 'Details_EncounterDetails',
-                        'Details_RaidCheck', 'Details_TimeLine',
-                        'Details_Vanguard', 'FasterCamera',
-                        'GladiatorlosSA2', 'Gladius',
-                        'HandyNotes_Argus', 'HandyNotes_BrokenShore',
-                        'HandyNotes_BattleForAzeroth',
-                        'HandyNotes_Draenor',
-                        'HandyNotes_DraenorTreasures',
-                        'HandyNotes_LegionClassOrderHalls',
-                        'HandyNotes_LegionRaresTreasures',
-                        'HandyNotes_Shadowlands',
-                        'HandyNotes_SuramarShalAranTelemancy',
-                        'HandyNotes_TimelessIsleChests',
-                        'HandyNotes_VisionsOfNZoth',
-                        'NPCScan', 'Omen',
-                        'RelicInspector', 'SimpleChat', 'Simulationcraft', 'Titan']
+                       'Details_DeathGraphs', 'Details_EncounterDetails',
+                       'Details_RaidCheck', 'Details_TimeLine',
+                       'Details_Vanguard', 'FasterCamera',
+                       'GladiatorlosSA2', 'Gladius',
+                       'HandyNotes_Argus', 'HandyNotes_BrokenShore',
+                       'HandyNotes_BattleForAzeroth',
+                       'HandyNotes_Draenor',
+                       'HandyNotes_DraenorTreasures',
+                       'HandyNotes_LegionClassOrderHalls',
+                       'HandyNotes_LegionRaresTreasures',
+                       'HandyNotes_Shadowlands',
+                       'HandyNotes_SuramarShalAranTelemancy',
+                       'HandyNotes_TimelessIsleChests',
+                       'HandyNotes_VisionsOfNZoth',
+                       'MinimalArchaeology', 'NPCScan', 'Omen',
+                       'RelicInspector', 'Simulationcraft', 'Titan']
         else:
             addons += ['alaTalentEmu', 'alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
                         'ATT-Classic', 'ClassicCastbars_Options',
@@ -622,7 +622,7 @@ class Manager:
     @available_on(['classic', 'classic_era'])
     def handle_meetinghorn():
         utils.remove_libraries(
-            ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
+            ['AceAddon-3.0', 'AceComm-3.0', 'AceConfig-3.0',
                 'AceDB-3.0', 'AceEvent-3.0', 'AceGUI-3.0', 'AceHook-3.0',
                 'AceLocale-3.0', 'AceSerializer-3.0', 'AceTimer-3.0',
                 'CallbackHandler-1.0', 'LibDBIcon-1.0', 'LibDataBroker-1.1',
@@ -744,18 +744,18 @@ class Manager:
     def handle_questie():
         utils.remove_libraries(
             ['AceAddon-3.0', 'AceBucket-3.0', 'AceComm-3.0', 'AceConfig-3.0',
-             'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
-             'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets', 'AceHook-3.0',
-             'AceLocale-3.0', 'AceSerializer-3.0', 'AceTab-3.0',
-             'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
-             'LibDataBroker-1.1', 'LibDBIcon-1.0', 'LibSharedMedia', 'LibSharedMedia-3.0', 'LibStub'],
+                'AceConsole-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceEvent-3.0',
+                'AceGUI-3.0', 'AceGUI-3.0-SharedMediaWidgets', 'AceHook-3.0',
+                'AceLocale-3.0', 'AceSerializer-3.0', 'AceTab-3.0',
+                'AceTimer-3.0', 'CallbackHandler-1.0', 'LibCompress',
+                'LibDataBroker-1.1', 'LibDBIcon-1.0', 'LibSharedMedia', 'LibSharedMedia-3.0', 'LibStub'],
             'AddOns/Questie/Libs',
             'AddOns/Questie/embeds.xml'
         )
 
         if utils.get_platform() == 'classic_era':
-            for postfix in ['', '-Classic']:
-                utils.remove_libraries(['LibUIDropDownMenu'], 'AddOns/Questie/Libs', f'AddOns/Questie/Questie{postfix}.toc')
+            for postfix in ['', '-BCC', '-Classic']:
+                utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', f'AddOns/Questie/Questie{postfix}.toc')
 
         root = Path('AddOns/Questie')
         with open(root / 'Questie.toc', 'r', encoding='utf-8') as file:

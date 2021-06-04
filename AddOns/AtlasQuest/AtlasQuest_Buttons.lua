@@ -23,26 +23,15 @@
 
 
 -- Colours
-local PURPLE = "|cff999999"; -- grey atm -- removed
 local RED = "|cffff0000";
 local REDA = "|cffcc6666";
 local WHITE = "|cffFFFFFF";
 local GREEN = "|cff1eff00";
-local GREY = "|cff9F3FFF"; --purple now ^^
+local GREY = "|cff9F3FFF";
 local BLUE = "|cff0070dd";
-local ORANGE = "|cffff6090"; -- it is pink now
-local YELLOW = "|cffffff00";
+local ORANGE = "|cffFF8000"; 
+local YELLOW = "|cffFFd200";
 local BLACK = "|c0000000f";
-local DARKGREEN = "|cff008000";
-local BLUB = "|cffd45e19";
-
--- Quest Color
-local Grau = "|cff9d9d9d"
-local Gruen = "|cff1eff00"
-local Orange = "|cffFF8000"
-local Rot = "|cffFF0000"
-local Gelb = "|cffFFd200"
-local Blau = "|cff0070dd"
 
 local AQQuestfarbe
 
@@ -164,7 +153,7 @@ end
 function Quest_OnClick(arg1)
 local AQactiveWindow = ChatEdit_GetActiveWindow();
    if (AQactiveWindow and IsShiftKeyDown()) then
---     AQInsertQuestInformation();
+     AQInsertQuestInformation();
    else
      AQHideAL();
 --     StoryTEXT:SetText("");
@@ -288,7 +277,7 @@ local itemName, itemQuality
          QuestName:SetText(AQQuestfarbe..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST));
          QuestLeveltext:SetText(BLUE..AQDiscription_LEVEL..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Level"));
          QuestAttainLeveltext:SetText(BLUE..AQDiscription_ATTAIN..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Attain")); 
-         Prequesttext:SetText(BLUE..AQDiscription_PREQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Prequest").."\n \n"..BLUE..AQDiscription_FOLGEQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Folgequest").."\n \n"..BLUE..AQDiscription_START..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Location").."\n \n"..BLUE..AQDiscription_AIM..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Aim").."\n \n"..BLUE..AQDiscription_NOTE..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Note"));
+         Prequesttext:SetText(BLUE..AQDiscription_PREQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Prequest").."\n \n"..BLUE..AQDiscription_FOLGEQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Folgequest").."\n \n"..BLUE..AQDiscription_START..WHITE.."\n"..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Location").."\n \n"..BLUE..AQDiscription_AIM.."\n"..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Aim").."\n \n"..BLUE..AQDiscription_NOTE.."\n"..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Note"));
 
          for b=1, 6 do
            REWARDstext:SetText(getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."Rewardtext"))
@@ -316,7 +305,7 @@ local itemName, itemQuality
        QuestName:SetText(AQQuestfarbe..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE"));
        QuestLeveltext:SetText(BLUE..AQDiscription_LEVEL..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Level"));
        QuestAttainLeveltext:SetText(BLUE..AQDiscription_ATTAIN..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Attain"));       
-       Prequesttext:SetText(BLUE..AQDiscription_PREQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Prequest").."\n \n"..BLUE..AQDiscription_FOLGEQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Folgequest").."\n \n"..BLUE..AQDiscription_START..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Location").."\n \n"..BLUE..AQDiscription_AIM..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Aim").."\n \n"..BLUE..AQDiscription_NOTE..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Note"));
+       Prequesttext:SetText(BLUE..AQDiscription_PREQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Prequest").."\n \n"..BLUE..AQDiscription_FOLGEQUEST..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Folgequest").."\n \n"..BLUE..AQDiscription_START.."\n"..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Location").."\n \n"..BLUE..AQDiscription_AIM..WHITE.."\n"..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Aim").."\n \n"..BLUE..AQDiscription_NOTE.."\n"..WHITE..getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Note"));
 
        for b=1, 6 do
            REWARDstext:SetText(getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."Rewardtext_HORDE"))
@@ -402,21 +391,21 @@ function AQColourCheck(arg1)
        end
        if ( AQQuestlevelf ~= nil or AQQuestlevelf ~= 0 or AQQuestlevelf ~= "") then
           if ( AQQuestlevelf == UnitLevel("player") or AQQuestlevelf == UnitLevel("player") + 2 or AQQuestlevelf  == UnitLevel("player") - 2 or AQQuestlevelf == UnitLevel("player") + 1 or AQQuestlevelf  == UnitLevel("player") - 1) then
-             AQQuestfarbe = Gelb;
+             AQQuestfarbe = YELLOW;
           elseif ( AQQuestlevelf > UnitLevel("player") + 2 and AQQuestlevelf <= UnitLevel("player") + 4) then
              AQQuestfarbe = Orange;
           elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 200) then
-             AQQuestfarbe = Rot;
+             AQQuestfarbe = RED;
           elseif ( AQQuestlevelf < UnitLevel("player") - 7) then
-             AQQuestfarbe = Grau;
+             AQQuestfarbe = GREY;
           elseif ( AQQuestlevelf >= UnitLevel("player") - 7 and AQQuestlevelf < UnitLevel("player") - 2) then
-             AQQuestfarbe = Gruen;
+             AQQuestfarbe = GREEN;
           end
           if (AQNOColourCheck) then
-             AQQuestfarbe = Gelb;
+             AQQuestfarbe = YELLOW;
           end
           if ( AQQuestlevelf == 200 or AQCompareQLtoAQ()) then
-             AQQuestfarbe = Blau;
+             AQQuestfarbe = BLUE;
           end
           if (arg1 == 1) then
             if ( AQ[ "AQFinishedQuest_Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST ] == 1) then

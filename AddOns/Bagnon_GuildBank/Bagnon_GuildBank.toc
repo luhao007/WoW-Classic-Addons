@@ -5,7 +5,7 @@
 
 ## Title: Bagnon Guild Bank
 ## Notes: Single window display for your guild bank
-## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0公会银行|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0公会银行|r
 ## Notes-zhCN: Bagnon公会银行模块
 
 ## X-Part-Of: Bagnon

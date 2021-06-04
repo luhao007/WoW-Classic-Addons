@@ -5,7 +5,7 @@
 
 ## Title: BagBrother
 ## Notes: Stores data about your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
-## Title-zhCN: |cFFFFE00A<|r|cFF0070DE物品|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0助手|r
+## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF背包整合|r |cFF69CCF0助手|r
 ## Notes-zhCN: 记录背包和银行中的物品
 
 ## X-Part-Of: Bagnon
