@@ -507,33 +507,6 @@
   },
   {
     "source": "curse",
-    "id": "340018",
-    "slug": "atlaslootclassic_maps",
-    "name": "AtlasLootClassic_Maps",
-    "description": "Maps from Atlas for AtlasLootClassic",
-    "url": "https://www.curseforge.com/wow/addons/atlaslootclassic_maps",
-    "download_url": "https://edge.forgecdn.net/files/2777/770/AtlasLootClassic_Maps-v1.0.0-classic.zip",
-    "date_published": "2019-09-03T20:15:41.370000+00:00",
-    "version": "v1.0.0-classic",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "AtlasLootClassic_Maps"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v1.0.0-classic",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "4918",
     "slug": "atlas-quest-fan-update",
     "name": "AtlasQuest - Fan Update",
@@ -1733,49 +1706,6 @@
   },
   {
     "source": "curse",
-    "id": "340222",
-    "slug": "handynotes_npcs-classic",
-    "name": "HandyNotes: NPCs (Classic)",
-    "description": "Shows all sorts of NPCs on the map and minimap",
-    "url": "https://www.curseforge.com/wow/addons/handynotes_npcs-classic",
-    "download_url": "https://edge.forgecdn.net/files/3341/496/HandyNotes_NPCs (Classic)-1.27-bcc.zip",
-    "date_published": "2021-06-06T22:47:49.017000+00:00",
-    "version": "1.27-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340222/file/3341496/changelog",
-    "folders": [
-      {
-        "name": "HandyNotes_NPCs (Classic)"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [
-      {
-        "id": "14154"
-      }
-    ],
-    "logged_versions": [
-      {
-        "version": "1.27-bcc",
-        "install_time": "2021-06-08T12:12:23+00:00"
-      },
-      {
-        "version": "1.26-bcc",
-        "install_time": "2021-06-02T04:21:37+00:00"
-      },
-      {
-        "version": "1.24",
-        "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "1.23",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "339397",
     "slug": "handynotes-travelguide-classic",
     "name": "HandyNotes: TravelGuide (Classic & BCC)",
@@ -1853,6 +1783,33 @@
       {
         "version": "1.03",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "476586",
+    "slug": "handynotes_npcs-burning-crusade-classic",
+    "name": "HandyNotes_NPCs (Burning Crusade Classic)",
+    "description": "Shows various npcs on the map and minimap.  Bankers, auctioneers, vendors, flightmasters, mailboxes, profession and class trainers and others.",
+    "url": "https://www.curseforge.com/wow/addons/handynotes_npcs-burning-crusade-classic",
+    "download_url": "https://edge.forgecdn.net/files/3341/488/HandyNotes_NPCs (Burning Crusade Classic)-1.06.zip",
+    "date_published": "2021-06-06T22:39:44.957000+00:00",
+    "version": "1.06",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/476586/file/3341488/changelog",
+    "folders": [
+      {
+        "name": "HandyNotes_NPCs (Burning Crusade Classic)"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "1.06",
+        "install_time": "2021-06-08T14:39:49+00:00"
       }
     ]
   },

@@ -957,6 +957,9 @@
 			<SubAddon name="HandyNotes_NPCs (Classic)">
 				<Title>NPC</Title>
 			</SubAddon>
+			<SubAddon name="HandyNotes_NPCs (Burning Crusade Classic)">
+				<Title>NPC</Title>
+			</SubAddon>
 			<SubAddon name="Handynotes_Pandaria">
 				<Title>宝藏/稀有</Title>
 				<TitleExtra>潘达利亚</TitleExtra>
@@ -977,6 +980,9 @@
 				<TitleExtra>永恒岛</TitleExtra>
 			</SubAddon>
 			<SubAddon name="HandyNotes_TravelGuide (Classic)">
+				<Title>旅行指南</Title>
+			</SubAddon>
+			<SubAddon name="HandyNotes_TravelGuide (BCC)">
 				<Title>旅行指南</Title>
 			</SubAddon>
 			<SubAddon name="HandyNotes_WarfrontRares">
