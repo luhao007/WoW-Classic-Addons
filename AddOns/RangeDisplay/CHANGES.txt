@@ -1,9 +1,8 @@
 ------------------------------------------------------------------------
-r389 | mitch0 | 2018-12-31 11:25:31 +0000 (Mon, 31 Dec 2018) | 1 line
+r403 | mitch | 2021-05-21 07:09:00 +0000 (Fri, 21 May 2021) | 1 line
 Changed paths:
-   M /trunk/RangeDisplay.toc
-   M /trunk/RangeDisplay_Options/RangeDisplay_Options.toc
+   M /trunk/RangeDisplay.lua
 
-toc bump
+TBC classic fix
 ------------------------------------------------------------------------
 

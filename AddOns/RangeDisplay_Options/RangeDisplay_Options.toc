@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: mitch0
-## Version: v4.9.3
+## Version: v4.9.7
 ## Dependencies: RangeDisplay
 ## OptionalDeps: AceGUI-3.0-SharedMediaWidgets
 ## LoadOnDemand: 1

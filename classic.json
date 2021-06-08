@@ -1170,21 +1170,18 @@
   },
   {
     "source": "curse",
-    "id": "338524",
-    "slug": "details-damage-meter-classic-wow",
-    "name": "Details! Damage Meter (classic)",
-    "description": "The best damage meter in a exclusive version for Classic WoW",
-    "url": "https://www.curseforge.com/wow/addons/details-damage-meter-classic-wow",
-    "download_url": "https://edge.forgecdn.net/files/3316/932/DetailsClassic.1.13.7.218.142.zip",
-    "date_published": "2021-05-20T18:07:57.777000+00:00",
-    "version": "DetailsClassic.1.13.7.218.142",
-    "changelog_url": "data:,",
+    "id": "61284",
+    "slug": "details",
+    "name": "Details! Damage Meter",
+    "description": "Complete combat analysis, gathering damage, healing, and other importante stuff.",
+    "url": "https://www.curseforge.com/wow/addons/details",
+    "download_url": "https://edge.forgecdn.net/files/3332/614/DetailsTBC.2.5.1.0018.144.zip",
+    "date_published": "2021-06-01T13:45:00.010000+00:00",
+    "version": "DetailsTBC.2.5.1.0018.144",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/61284/file/3332614/changelog",
     "folders": [
       {
         "name": "Details"
-      },
-      {
-        "name": "Details_DataStorage"
       },
       {
         "name": "Details_Streamer"
@@ -1199,20 +1196,8 @@
     "deps": [],
     "logged_versions": [
       {
-        "version": "DetailsClassic.1.13.7.218.142",
-        "install_time": "2021-05-21T01:44:34+00:00"
-      },
-      {
-        "version": "DetailsClassic.1.13.6.216.142",
-        "install_time": "2021-01-11T05:46:55+00:00"
-      },
-      {
-        "version": "DetailsClassic.1.13.5.215.142",
-        "install_time": "2020-11-03T05:35:34+00:00"
-      },
-      {
-        "version": "DetailsClassic.1.13.5.214.142",
-        "install_time": "2020-11-03T05:33:04+00:00"
+        "version": "DetailsTBC.2.5.1.0018.144",
+        "install_time": "2021-06-08T14:32:55+00:00"
       }
     ]
   },
@@ -2695,6 +2680,36 @@
       {
         "version": "v1.8.4",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "14570",
+    "slug": "range-display",
+    "name": "RangeDisplay",
+    "description": "Estimated range display. Type /rangedisplay for config",
+    "url": "https://www.curseforge.com/wow/addons/range-display",
+    "download_url": "https://edge.forgecdn.net/files/3317/565/RangeDisplay-v4.9.7.zip",
+    "date_published": "2021-05-21T07:11:02.130000+00:00",
+    "version": "v4.9.7",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/14570/file/3317565/changelog",
+    "folders": [
+      {
+        "name": "RangeDisplay"
+      },
+      {
+        "name": "RangeDisplay_Options"
+      }
+    ],
+    "options": {
+      "strategy": "any_flavour"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v4.9.7",
+        "install_time": "2021-06-08T14:07:20+00:00"
       }
     ]
   },
