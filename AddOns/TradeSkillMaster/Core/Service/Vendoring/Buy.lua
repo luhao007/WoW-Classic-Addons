@@ -92,9 +92,14 @@ function Buy.GetMaxCanAfford(index)
 			if costItemString then
 				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
 			elseif currencyName then
-				if TSM.IsWowBCClassic() and currencyName == HONOR_POINTS then
-					local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID)
-					costNumHave = honorCurrencyInfo.quantity
+				if TSM.IsWowBCClassic() then
+					if currencyName == ARENA_POINTS then
+						local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID)
+						costNumHave = arenaCurrencyInfo.quantity
+					elseif currencyName == HONOR_POINTS then
+						local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID)
+						costNumHave = honorCurrencyInfo.quantity
+					end
 				else
 					for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
 						local info = C_CurrencyInfo.GetCurrencyListInfo(j)
@@ -174,9 +179,14 @@ function private.UpdateMerchantDB()
 					local costTexture, costNum, costItemLink, currencyName = GetMerchantItemCostItem(i, j)
 					local costItemString = ItemString.Get(costItemLink)
 					local texture = nil
-					if TSM.IsWowBCClassic() and currencyName == HONOR_POINTS then
-						texture = costTexture
-						firstCostItemString = "honor"
+					if TSM.IsWowBCClassic() then
+						if currencyName == ARENA_POINTS then
+							texture = costTexture
+							firstCostItemString = "arena"
+						elseif currencyName == HONOR_POINTS then
+							texture = costTexture
+							firstCostItemString = "honor"
+						end
 					elseif not costItemLink then
 						needsRetry = true
 					elseif costItemString then

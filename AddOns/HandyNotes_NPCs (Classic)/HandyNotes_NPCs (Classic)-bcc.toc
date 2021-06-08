@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Cali
-## Version: 1.26-bcc
+## Version: 1.27-bcc
 ## RequiredDeps: HandyNotes
 ## OptionalDeps: LibStub, !LibUIDropDownMenu
 ## SavedVariables: HandyNotes_NPCsClassicDB

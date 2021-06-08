@@ -7,7 +7,7 @@
 -- Main non-UI code
 ------------------------------------------------------------
 
-PawnVersion = 2.0511
+PawnVersion = 2.0515
 
 -- Pawn requires this version of VgerCore:
 local PawnVgerCoreVersionRequired = 1.13
@@ -752,7 +752,7 @@ end
 function PawnGetEmptyScale()
 	return
 	{
-		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel > 0),
+		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel ~= nil),
 		["PerCharacterOptions"] = { },
 		["Values"] = { },
 	}
@@ -775,7 +775,7 @@ function PawnGetDefaultScale(ClassID, SpecID, NoStats)
 	{
 		["ClassID"] = ClassID,
 		["SpecID"] = SpecID,
-		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel > 0),
+		["UpgradesFollowSpecialization"] = (PawnArmorSpecializationLevel ~= nil),
 		["PerCharacterOptions"] = { },
 		["Values"] = ScaleValues,
 	}
@@ -2010,12 +2010,13 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 	local Stats, SocketBonusStats, UnknownLines = {}, {}, {}
 	local HadUnknown = false
 	local SocketBonusIsValid = false
+	local UnderstoodAnyLinesYet = false
 
 	for i = ItemNameLineNumber + 1, Tooltip:NumLines() do
 		local LeftLine = _G[TooltipName .. "TextLeft" .. i]
 		local LeftLineText = LeftLine:GetText()
 		if not LeftLineText then break end
-		
+
 		-- Look for this line in the "kill lines" list.  If it's there, we're done.
 		local IsKillLine = false
 		-- Dirty, dirty hack for artifacts: check the color of the text; if it's artifact gold and it's not at the beginning of the tooltip, then treat it as a kill line.
@@ -2033,7 +2034,7 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 			end
 		end
 		if IsKillLine then break end
-		
+
 		for Side = 1, 2 do
 			local CurrentParseText, RegexTable, CurrentDebugMessages, IgnoreErrors
 			if Side == 1 then
@@ -2049,7 +2050,7 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 				CurrentDebugMessages = false
 				IgnoreErrors = true
 			end
-			
+
 			local ThisLineIsSocketBonus = false
 			if Side == 1 and strfind(CurrentParseText, PawnLocal.TooltipParsing.SocketBonusPrefix, 1, true) then
 				-- This line is the socket bonus.
@@ -2062,14 +2063,22 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 				end
 				CurrentParseText = strsub(CurrentParseText, strlen(PawnLocal.TooltipParsing.SocketBonusPrefix) + 1)
 			end
-			
+
 			local Understood
 			if ThisLineIsSocketBonus then
 				Understood = PawnLookForSingleStat(RegexTable, SocketBonusStats, CurrentParseText, CurrentDebugMessages)
 			else
 				Understood = PawnLookForSingleStat(RegexTable, Stats, CurrentParseText, CurrentDebugMessages)
 			end
-			
+
+            if Understood and not UnderstoodAnyLinesYet then
+                -- If this is the first full line on the tooltip we've understood, and there were lines before this that we didn't understand, they don't count.
+                -- They were probably things like "Mythic".
+                UnderstoodAnyLinesYet = true
+                HadUnknown = false
+                UnknownLines = {}
+            end
+
 			if not Understood then
 				-- We don't understand this line.  Let's see if it's a complex stat.
 				
@@ -2085,7 +2094,7 @@ function PawnGetStatsFromTooltip(TooltipName, DebugMessages)
 						break
 					end
 				end
-				
+
 				-- If this line wasn't ignorable, try to break it up.
 				if not IgnoreLine then
 					-- We'll assume the entire line was understood for now, but if we find any PART that
@@ -2814,11 +2823,14 @@ function PawnGetItemIDsForDisplay(ItemLink, Formatted)
 	end
 
 	if MoreInfo then
-		-- Strip off stray colons.
+		-- Strip off stray colons and :0.
 		Pos = strlen(MoreInfo)
-		while Pos > 1 and strsub(MoreInfo, Pos, Pos) == ":" do Pos = Pos - 1 end
+		while Pos >= 1 and strsub(MoreInfo, Pos, Pos) == ":" do Pos = Pos - 1 end
 		MoreInfo = strsub(MoreInfo, 1, Pos)
-		-- Strip off the character level if that's the only thing after the ID.
+		Pos = strlen(MoreInfo)
+		while Pos >= 2 and strsub(MoreInfo, Pos - 1, Pos) == ":0" do Pos = Pos - 2 end
+		MoreInfo = strsub(MoreInfo, 1, Pos)
+		-- Strip off the character level too if that's the only thing after the ID.
 		local ColonsAndLevel = "::::::::" .. UnitLevel("player")
 		Pos = strlen(MoreInfo) - strlen(ColonsAndLevel)
 		if strsub(MoreInfo, Pos) == ColonsAndLevel then MoreInfo = strsub(MoreInfo, 1, Pos) end
@@ -2974,7 +2986,7 @@ function PawnCorrectScaleErrors(ScaleName)
 	end
 	
 	-- Pawn 1.5.5 adds an option to follow armor specialization when upgrading.
-	if ThisScaleOptions.UpgradesFollowSpecialization == nil then ThisScaleOptions.UpgradesFollowSpecialization = (PawnArmorSpecializationLevel > 0) end
+	if ThisScaleOptions.UpgradesFollowSpecialization == nil then ThisScaleOptions.UpgradesFollowSpecialization = (PawnArmorSpecializationLevel ~= nil) end
 	
 	-- Pawn 1.3 adds per-character options to each scale.
 	if ThisScaleOptions.PerCharacterOptions == nil then ThisScaleOptions.PerCharacterOptions = {} end
@@ -3006,7 +3018,6 @@ function PawnCorrectScaleErrors(ScaleName)
 	ThisScale.MetaSocket = nil
 
 	-- These stats aren't used in the live OR classic realms.
-	ThisScale.ArmorPenetration = nil
 	ThisScale.Mana = nil
 	ThisScale.Health = nil
 	ThisScale.BaseArmor = nil
@@ -3015,11 +3026,13 @@ function PawnCorrectScaleErrors(ScaleName)
 	ThisScale.Multistrike = nil
 	ThisScale.SpellPower = nil
 
-	-- These were introduced in Burning Crusade Classic.
+	-- These were introduced in Classic versions.
+	if not (VgerCore.IsClassic or VgerCore.IsBurningCrusade) then
+		ThisScale.SpellPenetration = nil
+	end
 	if not VgerCore.IsBurningCrusade then
 		ThisScale.ExpertiseRating = nil
 		ThisScale.ResilienceRating = nil
-		ThisScale.SpellPenetration = nil
 	end
 
 	-- Pawn 1.9.7 makes it impossible to ignore primary stats, since they're on all armor now.
@@ -3335,7 +3348,7 @@ function PawnIsItemAnUpgrade(Item, DoNotRescan)
 			if PawnIsScaleVisible(ScaleName) and not
 				(Scale.DoNotShow1HUpgrades and (InvType == "INVTYPE_WEAPON" or InvType == "INVTYPE_WEAPONMAINHAND" or InvType == "INVTYPE_WEAPONOFFHAND" or InvType == "INVTYPE_SHIELD" or InvType == "INVTYPE_HOLDABLE")) and not
 				(Scale.DoNotShow2HUpgrades and InvType == "INVTYPE_2HWEAPON") and
-				((PawnArmorSpecializationLevel == 0) or (not Scale.UpgradesFollowSpecialization) or PawnIsArmorBestTypeForPlayer(Item))
+				((PawnArmorSpecializationLevel == nil) or (not Scale.UpgradesFollowSpecialization) or PawnIsArmorBestTypeForPlayer(Item))
 			then
 				-- Find the best item for that slot.  Or, if a second-best item is available, compare versus that.
 				local CharacterOptions = Scale.PerCharacterOptions[PawnPlayerFullName]
@@ -3980,9 +3993,10 @@ function PawnIsArmorBestTypeForPlayer(Item)
 	if not Stats then return false end
 	-- If the item isn't armor then we don't need to check anything.	
 	if (not Stats.IsCloth) and (not Stats.IsLeather) and (not Stats.IsMail) and (not Stats.IsPlate) then return true end
-	-- Before level 27 it's fine if the player is wearing the wrong type of armor.
+	-- Different versions of the game have different levels at which classes learn armor types and grow out of older ones.
 	local Level = UnitLevel("player")
-	local IsLevelForSpecialization = Level >= PawnArmorSpecializationLevel
+	local IsLevelForBestArmorType = Level >= PawnBestArmorMinimumLevel
+	local IsLevelForSpecialization = PawnArmorSpecializationLevel ~= nil and Level >= PawnArmorSpecializationLevel
 	-- Now, the rest depends on the user's class.
 	local _, Class = UnitClass("player")
 	if Class == "MAGE" or Class == "PRIEST" or Class == "WARLOCK" then
@@ -3998,7 +4012,9 @@ function PawnIsArmorBestTypeForPlayer(Item)
 	elseif Class == "HUNTER" or Class == "SHAMAN" then
 		if IsLevelForSpecialization then
 			if Stats.IsMail then return true else return false end
-		elseif Stats.IsMail or Stats.IsLeather or Stats.IsCloth then
+		elseif Stats.IsLeather or Stats.IsCloth then
+			return true
+		elseif IsLevelForBestArmorType and Stats.IsMail then
 			return true
 		else
 			return false
@@ -4006,6 +4022,8 @@ function PawnIsArmorBestTypeForPlayer(Item)
 	elseif Class == "DEATHKNIGHT" or Class == "PALADIN" or Class == "WARRIOR" then
 		if IsLevelForSpecialization then
 			if Stats.IsPlate then return true else return false end
+		elseif Stats.IsPlate then
+			return IsLevelForBestArmorType
 		else
 			return true
 		end

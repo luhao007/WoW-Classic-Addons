@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Version: Plater-v331-BCC
+## Version: Plater-v331.1-BCC
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 

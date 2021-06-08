@@ -140,9 +140,9 @@ DejaClassicStats.panel = CreateFrame( "Frame", "DejaClassicStatsPanel", UIParent
 DejaClassicStats.panel.name = "DejaClassicStats"
 InterfaceOptions_AddCategory(DejaClassicStats.panel)
 
-	DejaClassicStatsPanel:HookScript("OnShow", function(self)
-		CharacterFrame:Show() 
-	end)
+	-- DejaClassicStatsPanel:HookScript("OnShow", function(self) --Removed as he Blizzard IOP is still bugged, 15 years later... 
+	-- 	CharacterFrame:Show() 
+	-- end)
 
 -- DCS, DejaView Child Panel
 -- DejaViewPanel.DejaClassicStatsPanel = CreateFrame( "Frame", "DejaClassicStatsPanel", DejaViewPanel)
@@ -2442,7 +2442,7 @@ DCS_ShowHideRangedCheck:SetScript("OnEvent", function(self, event, ...)
 		DCSRangedStatsHeader:Show()
 		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT", DCS_HeaderInsetX, -144)
 	else
-		DCSMeleeEnhancementsStatsHeader:Hide()
+		DCSRangedStatsHeader:Hide()
 		DCSSpellEnhancementsStatsHeader:SetPoint("TOPLEFT", "DCSRangedStatsHeader", "TOPLEFT")
 	end
 	DCS_CREATE_STATS()

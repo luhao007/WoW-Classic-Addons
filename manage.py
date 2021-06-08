@@ -216,7 +216,7 @@ class Manager:
                         '\n'
                         '# Dropdown menus\n',
                         '!LibUIDropDownMenu\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
-                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu.xml\n',
+                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
                         '\n']
 
         root = Path('Addons/!!Libs')
@@ -452,7 +452,7 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['retail'])
+    @available_on(['classic', 'retail'])
     def handle_btwquest():
         def process(lines):
             ret = []

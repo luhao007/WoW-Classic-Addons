@@ -45,7 +45,7 @@ HereBeDragons\HereBeDragons-Migrate.lua
 
 # Dropdown menus
 !LibUIDropDownMenu\LibUIDropDownMenu\LibUIDropDownMenu.xml
-!LibUIDropDownMenu-2.0\LibUIDropDownMenu.xml
+!LibUIDropDownMenu-2.0\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 # LibBabbles
 LibBabble\LibBabble-3.0.lua

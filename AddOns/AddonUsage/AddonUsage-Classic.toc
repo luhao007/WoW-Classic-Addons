@@ -1,0 +1,11 @@
+## Interface: 20501
+## Author: Gello
+## SavedVariables: AddonUsageSettings
+
+## Title: Addon Usage
+## Notes: Displays the memory and cpu usage of your addons
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF插件性能|r |cFFFFE00AAddonUsage|r
+## Notes-zhCN: 显示各个插件使用的CPU和内存的情况
+
+
+AddonUsage.xml

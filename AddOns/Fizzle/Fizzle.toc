@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: phyber
-## Version: 90002-2
+## Version: 90005-1
 ## OptionalDeps: Ace3, Voyeur
 ## SavedVariablesPerCharacter: FizzleDB
 
@@ -13,6 +13,9 @@
 ## X-Embeds: Ace3
 ## X-Curse-Project-ID: 6079
 ## X-WoWI-ID: 5018
+
+#@no-lib-strip@
+#@end-no-lib-strip@
 
 Locales\locales.xml
 

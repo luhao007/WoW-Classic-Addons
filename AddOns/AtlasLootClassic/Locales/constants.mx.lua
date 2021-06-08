@@ -70,7 +70,8 @@ AL["Misc"] = "Varios"
 AL["Model"] = "Modelo"
 AL["Module %s is deactivated."] = "Módulo %s es desactivado."
 AL["Module %s is not installed."] = "Módulo %s no es instalado."
-AL["New version aviable!"] = "¡Nueva versión disponible!"
+--[[Translation missing --]]
+--[[ AL["New version available!"] = "New version available!"--]] 
 AL["No module found."] = "No se encuentra módulo."
 AL["Normal"] = "Normal"
 AL["One-Hand, Axe"] = "Una mano, Hacha"
@@ -89,6 +90,8 @@ AL["Quest objective."] = "Objetivo de misión."
 AL["Reagent for..."] = "Componente para..."
 AL["Regen"] = "Regeneración"
 AL["Remove item from list"] = "Quitar objeto de la lista"
+--[[Translation missing --]]
+--[[ AL["Reputation"] = "Reputation"--]] 
 AL["Required module %s is currently disabled."] = "Módulo requerido %s es desactivado."
 AL["Required module %s is not installed."] = "Módulo requerido %s no es instalado."
 AL["Right Click"] = "Clic Derecho"

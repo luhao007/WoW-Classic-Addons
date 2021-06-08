@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="ADDONUSAGE_TOGGLE" header="ADDONUSAGE" category="ADDONS">
+		AddonUsage:Toggle()
+	</Binding>
+</Bindings>

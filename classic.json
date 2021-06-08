@@ -135,6 +135,33 @@
   },
   {
     "source": "curse",
+    "id": "67954",
+    "slug": "addon-usage",
+    "name": "Addon Usage",
+    "description": "Compares the relative memory and cpu usage of running addons",
+    "url": "https://www.curseforge.com/wow/addons/addon-usage",
+    "download_url": "https://edge.forgecdn.net/files/3314/568/AddonUsage_3_0_8.zip",
+    "date_published": "2021-05-19T01:00:03.467000+00:00",
+    "version": "AddonUsage_3_0_8.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/67954/file/3314568/changelog",
+    "folders": [
+      {
+        "name": "AddonUsage"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "AddonUsage_3_0_8.zip",
+        "install_time": "2021-06-08T13:48:59+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "99982",
     "slug": "advancedinterfaceoptions",
     "name": "AdvancedInterfaceOptions",
@@ -251,6 +278,37 @@
       {
         "version": "v1.47.00.11305",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "33666",
+    "slug": "atlas-burningcrusade",
+    "name": "Atlas Burning Crusade",
+    "description": "Burning Crusade Instances' Maps",
+    "url": "https://www.curseforge.com/wow/addons/atlas-burningcrusade",
+    "download_url": "https://edge.forgecdn.net/files/3320/349/Atlas_BurningCrusade_v1.49.00-tbc.zip",
+    "date_published": "2021-05-23T07:43:51.397000+00:00",
+    "version": "v1.49.00-tbc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/33666/file/3320349/changelog",
+    "folders": [
+      {
+        "name": "Atlas_BurningCrusade"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [
+      {
+        "id": "301"
+      }
+    ],
+    "logged_versions": [
+      {
+        "version": "v1.49.00-tbc",
+        "install_time": "2021-06-08T12:21:58+00:00"
       }
     ]
   },
@@ -378,10 +436,10 @@
     "name": "AtlasLootClassic",
     "description": "Shows the possible loot from the bosses",
     "url": "https://www.curseforge.com/wow/addons/atlaslootclassic",
-    "download_url": "https://edge.forgecdn.net/files/3329/220/AtlasLootClassic-v2.2.1-bcc.zip",
-    "date_published": "2021-05-29T09:47:15.610000+00:00",
-    "version": "v2.2.1-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/326516/file/3329220/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3341/213/AtlasLootClassic-v2.3.1-bcc.zip",
+    "date_published": "2021-06-06T18:49:22.957000+00:00",
+    "version": "v2.3.1-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/326516/file/3341213/changelog",
     "folders": [
       {
         "name": "AtlasLootClassic"
@@ -413,6 +471,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v2.3.1-bcc",
+        "install_time": "2021-06-08T12:12:22+00:00"
+      },
       {
         "version": "v2.2.1-bcc",
         "install_time": "2021-05-30T05:16:03+00:00"
@@ -647,6 +709,36 @@
       {
         "version": "v3.0.1-classic",
         "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
+    "id": "280369",
+    "slug": "btw-quests",
+    "name": "BtWQuests",
+    "description": "A quest journal that shows your progress within quest chains",
+    "url": "https://www.curseforge.com/wow/addons/btw-quests",
+    "download_url": "https://edge.forgecdn.net/files/3317/18/BtWQuests-v2.7.0.bcc.zip",
+    "date_published": "2021-05-20T19:16:48.853000+00:00",
+    "version": "v2.7.0.bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/280369/file/3317018/changelog",
+    "folders": [
+      {
+        "name": "BtWQuests"
+      },
+      {
+        "name": "BtWQuestsTheBurningCrusade"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "v2.7.0.bcc",
+        "install_time": "2021-06-08T12:34:03+00:00"
       }
     ]
   },
@@ -1032,10 +1124,10 @@
     "name": "DejaClassicStats",
     "description": "Dejablue's improved Classic character stats panel view.",
     "url": "https://www.curseforge.com/wow/addons/dejaclassicstats",
-    "download_url": "https://edge.forgecdn.net/files/3330/334/DejaClassicStats205r008.zip",
-    "date_published": "2021-05-30T10:02:03.920000+00:00",
-    "version": "205r008",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3330334/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3338/379/DejaClassicStats205r011.zip",
+    "date_published": "2021-06-04T23:29:00.237000+00:00",
+    "version": "205r011",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334987/file/3338379/changelog",
     "folders": [
       {
         "name": "DejaClassicStats"
@@ -1046,6 +1138,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "205r011",
+        "install_time": "2021-06-08T12:12:22+00:00"
+      },
       {
         "version": "205r008",
         "install_time": "2021-05-31T08:28:38+00:00"
@@ -1116,33 +1212,6 @@
       },
       {
         "version": "DetailsClassic.1.13.5.214.142",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
-    "id": "341111",
-    "slug": "dismounter",
-    "name": "Dismounter",
-    "description": "Automatically dismounts you when performing an action",
-    "url": "https://www.curseforge.com/wow/addons/dismounter",
-    "download_url": "https://edge.forgecdn.net/files/2815/181/Dismounter-v1.3.0.zip",
-    "date_published": "2019-10-23T21:00:08.613000+00:00",
-    "version": "v1.3.0",
-    "changelog_url": "data:,",
-    "folders": [
-      {
-        "name": "Dismounter"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "v1.3.0",
         "install_time": "2020-11-03T05:33:04+00:00"
       }
     ]
@@ -1236,10 +1305,10 @@
     "name": "Fizzle",
     "description": "Show item durability and quality in the character frame.",
     "url": "https://www.curseforge.com/wow/addons/fizzle",
-    "download_url": "https://edge.forgecdn.net/files/3124/631/Fizzle-90002-2-classic.zip",
-    "date_published": "2020-11-27T17:30:13.620000+00:00",
-    "version": "90002-2-classic",
-    "changelog_url": "data:,",
+    "download_url": "https://edge.forgecdn.net/files/3338/895/Fizzle-90005-1-bcc.zip",
+    "date_published": "2021-06-05T12:15:21.963000+00:00",
+    "version": "90005-1-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/6079/file/3338895/changelog",
     "folders": [
       {
         "name": "Fizzle"
@@ -1250,6 +1319,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "90005-1-bcc",
+        "install_time": "2021-06-08T12:12:22+00:00"
+      },
       {
         "version": "90002-2-classic",
         "install_time": "2020-11-29T11:51:31+00:00"
@@ -1349,10 +1422,10 @@
     "name": "GatherMate2 Data Wowhead classic",
     "description": "GatherMate2 data from Wowhead",
     "url": "https://www.curseforge.com/wow/addons/gathermate2-data-wowhead-classic",
-    "download_url": "https://edge.forgecdn.net/files/3336/604/gathermate2_data_wowhead_classic_v2021-06-03.zip",
-    "date_published": "2021-06-03T18:04:11.300000+00:00",
-    "version": "gathermate2_data_wowhead_classic_v2021-06-03.zip",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3336604/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3340/603/gathermate2_data_wowhead_classic_v2021-06-06.zip",
+    "date_published": "2021-06-06T09:41:45.383000+00:00",
+    "version": "gathermate2_data_wowhead_classic_v2021-06-06.zip",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/350035/file/3340603/changelog",
     "folders": [
       {
         "name": "GatherMate2_Data"
@@ -1363,6 +1436,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "gathermate2_data_wowhead_classic_v2021-06-06.zip",
+        "install_time": "2021-06-08T12:12:22+00:00"
+      },
       {
         "version": "gathermate2_data_wowhead_classic_v2021-06-03.zip",
         "install_time": "2021-06-04T07:51:29+00:00"
@@ -1671,6 +1748,49 @@
   },
   {
     "source": "curse",
+    "id": "340222",
+    "slug": "handynotes_npcs-classic",
+    "name": "HandyNotes: NPCs (Classic)",
+    "description": "Shows all sorts of NPCs on the map and minimap",
+    "url": "https://www.curseforge.com/wow/addons/handynotes_npcs-classic",
+    "download_url": "https://edge.forgecdn.net/files/3341/496/HandyNotes_NPCs (Classic)-1.27-bcc.zip",
+    "date_published": "2021-06-06T22:47:49.017000+00:00",
+    "version": "1.27-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340222/file/3341496/changelog",
+    "folders": [
+      {
+        "name": "HandyNotes_NPCs (Classic)"
+      }
+    ],
+    "options": {
+      "strategy": "default"
+    },
+    "deps": [
+      {
+        "id": "14154"
+      }
+    ],
+    "logged_versions": [
+      {
+        "version": "1.27-bcc",
+        "install_time": "2021-06-08T12:12:23+00:00"
+      },
+      {
+        "version": "1.26-bcc",
+        "install_time": "2021-06-02T04:21:37+00:00"
+      },
+      {
+        "version": "1.24",
+        "install_time": "2021-05-26T23:22:30+00:00"
+      },
+      {
+        "version": "1.23",
+        "install_time": "2020-11-03T05:33:04+00:00"
+      }
+    ]
+  },
+  {
+    "source": "curse",
     "id": "339397",
     "slug": "handynotes-travelguide-classic",
     "name": "HandyNotes: TravelGuide (Classic & BCC)",
@@ -1753,54 +1873,15 @@
   },
   {
     "source": "curse",
-    "id": "340222",
-    "slug": "handynotes_npcs-classic",
-    "name": "HandyNotes_NPCs (Classic)",
-    "description": "Shows all sorts of NPCs on the map and minimap",
-    "url": "https://www.curseforge.com/wow/addons/handynotes_npcs-classic",
-    "download_url": "https://edge.forgecdn.net/files/3334/316/HandyNotes_NPCs (Classic)-1.26-bcc.zip",
-    "date_published": "2021-06-01T22:19:00.360000+00:00",
-    "version": "1.26-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340222/file/3334316/changelog",
-    "folders": [
-      {
-        "name": "HandyNotes_NPCs (Classic)"
-      }
-    ],
-    "options": {
-      "strategy": "default"
-    },
-    "deps": [
-      {
-        "id": "14154"
-      }
-    ],
-    "logged_versions": [
-      {
-        "version": "1.26-bcc",
-        "install_time": "2021-06-02T04:21:37+00:00"
-      },
-      {
-        "version": "1.24",
-        "install_time": "2021-05-26T23:22:30+00:00"
-      },
-      {
-        "version": "1.23",
-        "install_time": "2020-11-03T05:33:04+00:00"
-      }
-    ]
-  },
-  {
-    "source": "curse",
     "id": "340903",
     "slug": "itemrack-classic",
     "name": "ItemRack Classic",
     "description": "Inventory Management Addon! Change your items quick and easy!",
     "url": "https://www.curseforge.com/wow/addons/itemrack-classic",
-    "download_url": "https://edge.forgecdn.net/files/3335/227/ItemRack-bcc-3.67.zip",
-    "date_published": "2021-06-02T16:38:49.013000+00:00",
-    "version": "3.67",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3335227/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3342/388/ItemRack-bcc-3.68.zip",
+    "date_published": "2021-06-07T17:31:29.447000+00:00",
+    "version": "3.68",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/340903/file/3342388/changelog",
     "folders": [
       {
         "name": "ItemRack"
@@ -1814,6 +1895,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "3.68",
+        "install_time": "2021-06-08T12:12:23+00:00"
+      },
       {
         "version": "3.67",
         "install_time": "2021-06-03T09:20:25+00:00"
@@ -2279,10 +2364,10 @@
     "name": "Pawn",
     "description": "Pawn helps you compare items and find upgrades.",
     "url": "https://www.curseforge.com/wow/addons/pawn",
-    "download_url": "https://edge.forgecdn.net/files/3335/920/Pawn-2.5.11-BurningCrusade.zip",
-    "date_published": "2021-06-03T05:37:55.170000+00:00",
-    "version": "2.5.11 (Burning Crusade)",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3335920/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3343/46/Pawn-2.5.15-BurningCrusade.zip",
+    "date_published": "2021-06-08T05:23:28.193000+00:00",
+    "version": "2.5.15 (Burning Crusade)",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/4646/file/3343046/changelog",
     "folders": [
       {
         "name": "Pawn"
@@ -2293,6 +2378,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "2.5.15 (Burning Crusade)",
+        "install_time": "2021-06-08T12:12:23+00:00"
+      },
       {
         "version": "2.5.11 (Burning Crusade)",
         "install_time": "2021-06-03T09:20:25+00:00"
@@ -2394,10 +2483,10 @@
     "name": "Plater Nameplates",
     "description": "Highly customizable nameplate with support to scripts and animations.",
     "url": "https://www.curseforge.com/wow/addons/plater-nameplates",
-    "download_url": "https://edge.forgecdn.net/files/3336/827/Plater-v331-bcc.zip",
-    "date_published": "2021-06-03T20:42:21.617000+00:00",
-    "version": "Plater-v331-bcc",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/100547/file/3336827/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3338/95/Plater-v331.1-bcc.zip",
+    "date_published": "2021-06-04T20:14:15.117000+00:00",
+    "version": "Plater-v331.1-bcc",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/100547/file/3338095/changelog",
     "folders": [
       {
         "name": "Plater"
@@ -2408,6 +2497,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "Plater-v331.1-bcc",
+        "install_time": "2021-06-08T12:12:23+00:00"
+      },
       {
         "version": "Plater-v331-bcc",
         "install_time": "2021-06-04T07:51:29+00:00"
@@ -2707,10 +2800,10 @@
     "name": "Titan Panel Classic",
     "description": "Titan Panel Classic",
     "url": "https://www.curseforge.com/wow/addons/titan-panel-classic",
-    "download_url": "https://edge.forgecdn.net/files/3296/371/TitanPanelClassic-1.3.1.20501.zip",
-    "date_published": "2021-05-02T22:01:12.440000+00:00",
-    "version": "1.3.1.20501",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334602/file/3296371/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3341/700/TitanPanelClassic-1.3.2.20501.zip",
+    "date_published": "2021-06-07T02:34:21.007000+00:00",
+    "version": "1.3.2.20501",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/334602/file/3341700/changelog",
     "folders": [
       {
         "name": "TitanClassic"
@@ -2754,6 +2847,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "1.3.2.20501",
+        "install_time": "2021-06-08T12:12:23+00:00"
+      },
       {
         "version": "1.3.1.20501",
         "install_time": "2021-05-21T08:24:26+00:00"
@@ -2857,10 +2954,10 @@
     "name": "TradeSkillMaster",
     "description": "Powerful addon to help you make gold from crafting to selling on the auction house to buying vendor items and much more!",
     "url": "https://www.curseforge.com/wow/addons/tradeskill-master",
-    "download_url": "https://edge.forgecdn.net/files/3334/440/TradeSkillMaster_v4.10.41-BCC.zip",
-    "date_published": "2021-06-01T23:52:08.460000+00:00",
-    "version": "v4.10.41-BCC",
-    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3334440/changelog",
+    "download_url": "https://edge.forgecdn.net/files/3341/30/TradeSkillMaster_v4.10.42-BCC.zip",
+    "date_published": "2021-06-06T16:07:57.460000+00:00",
+    "version": "v4.10.42-BCC",
+    "changelog_url": "https://addons-ecs.forgesvc.net/api/v2/addon/26886/file/3341030/changelog",
     "folders": [
       {
         "name": "TradeSkillMaster"
@@ -2871,6 +2968,10 @@
     },
     "deps": [],
     "logged_versions": [
+      {
+        "version": "v4.10.42-BCC",
+        "install_time": "2021-06-08T12:12:24+00:00"
+      },
       {
         "version": "v4.10.41-BCC",
         "install_time": "2021-06-02T04:21:38+00:00"

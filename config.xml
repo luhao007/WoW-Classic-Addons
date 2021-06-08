@@ -15,6 +15,11 @@
 		<Title>插件管理</Title>
 		<Category>基础库</Category>
 	</Addon>
+	<Addon name="AddonUsage">
+		<Title>插件性能</Title>
+		<Notes>显示各个插件使用的CPU和内存的情况</Notes>
+		<Category>功能</Category>
+	</Addon>
 	<Addon name="alaCalendar">
 		<Title>副本日历</Title>
 		<Category>界面</Category>
@@ -595,7 +600,7 @@
 			<SubAddon name="DBM-PvP">
 				<Title>PvP</Title>
 			</SubAddon>
-			<SubAddon name="SanctumOfDomination">
+			<SubAddon name="DBM-SanctumOfDomination">
 				<Title>统御圣所</Title>
 			</SubAddon>
 			<SubAddon name="DBM-Scenario-MoP">
@@ -758,6 +763,11 @@
 	</Addon>
 	<Addon name="Fizzle">
 		<Title>装备着色</Title>
+		<Category>界面</Category>
+	</Addon>
+	<Addon name="FriendListColors">
+		<Title>职业颜色</Title>
+		<Notes>在好友列表中显示玩家的职业颜色</Notes>
 		<Category>界面</Category>
 	</Addon>
 	<Addon name="GarrisonMissionManager">

@@ -1,0 +1,83 @@
+## Interface: 20501
+## Author: Breen
+## Version: 4.1
+## Dependencies: BtWQuests
+## LoadOnDemand: 1
+
+## Title: BtWQuests: The Burning Crusade
+## Notes: The Burning Crusade quest data for BtWQuests
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务流程图|r |cFF69CCF0燃烧的远征|r
+## Notes-zhCN: BtWQuests 燃烧的远征模块
+
+## X-BtWQuests: The Burning Crusade
+## X-BtWQuests-Expansion: 1
+## X-BtWQuests-Expansion-Image: UI-Expansion 0 0.90625 0 0.8125
+## X-BtWQuests-Expansion-Movie-ID: 27
+## X-BtWQuests-AutoLoad: 1
+## X-Part-Of: BtWQuests
+
+Defines.lua
+
+Localization.lua
+Localization.deDE.lua
+Localization.esES.lua
+Localization.esMX.lua
+Localization.frFR.lua
+Localization.koKR.lua
+Localization.ptBR.lua
+Localization.ruRU.lua
+Localization.zhCN.lua
+Localization.zhTW.lua
+
+Database/Quests.lua
+Database/Quests.deDE.lua
+Database/Quests.esES.lua
+Database/Quests.esMX.lua
+Database/Quests.frFR.lua
+Database/Quests.koKR.lua
+Database/Quests.ptBR.lua
+Database/Quests.ruRU.lua
+Database/Quests.zhCN.lua
+Database/Quests.zhTW.lua
+
+Database/NPCs.lua
+Database/NPCs.deDE.lua
+Database/NPCs.esES.lua
+Database/NPCs.esMX.lua
+Database/NPCs.frFR.lua
+Database/NPCs.koKR.lua
+Database/NPCs.ptBR.lua
+Database/NPCs.ruRU.lua
+Database/NPCs.zhCN.lua
+Database/NPCs.zhTW.lua
+
+Database/Objects.lua
+Database/Objects.deDE.lua
+Database/Objects.esES.lua
+Database/Objects.esMX.lua
+Database/Objects.frFR.lua
+Database/Objects.koKR.lua
+Database/Objects.ptBR.lua
+Database/Objects.ruRU.lua
+Database/Objects.zhCN.lua
+Database/Objects.zhTW.lua
+
+Database/Index.enUS.lua
+Database/Index.deDE.lua
+Database/Index.esES.lua
+Database/Index.esMX.lua
+Database/Index.frFR.lua
+Database/Index.koKR.lua
+Database/Index.ptBR.lua
+Database/Index.ruRU.lua
+Database/Index.zhCN.lua
+Database/Index.zhTW.lua
+
+Attunements.lua
+HellfirePeninsula.lua
+Zangarmarsh.lua
+TerokkarForest.lua
+Nagrand.lua
+BladesEdgeMountains.lua
+Netherstorm.lua
+ShadowmoonValley.lua
