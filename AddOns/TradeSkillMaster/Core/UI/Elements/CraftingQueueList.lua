@@ -10,8 +10,10 @@
 
 local _, TSM = ...
 local L = TSM.Include("Locale").GetTable()
+local CraftString = TSM.Include("Util.CraftString")
 local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
+local RecipeString = TSM.Include("Util.RecipeString")
 local Theme = TSM.Include("Util.Theme")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -163,9 +165,9 @@ function CraftingQueueList._UpdateData(self)
 		end
 		categories[category] = rawCategory
 		if not self._collapsed[rawCategory] then
-			local spellId = row:GetField("spellId")
-			self._numCraftableCache[row] = TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(spellId)
-			private.sortProfitCache[spellId] = TSM.Crafting.Cost.GetProfitBySpellId(spellId)
+			local recipeString = row:GetField("recipeString")
+			self._numCraftableCache[row] = TSM.Crafting.ProfessionUtil.GetNumCraftableFromDBRecipeString(recipeString)
+			private.sortProfitCache[recipeString] = TSM.Crafting.Cost.GetProfitByRecipeString(recipeString)
 			tinsert(self._data, row)
 		end
 	end
@@ -197,7 +199,7 @@ function CraftingQueueList._HandleRowClick(self, data, mouseButton)
 				break
 			end
 		end
-		if currentRow._texts.qty:IsMouseOver(0, 0, 0, 12) then
+		if currentRow._texts.qty:IsMouseOver(8, -8, -8, 8) then
 			private.OnEditIconClick(self, data, 1)
 		else
 			self.__super:_HandleRowClick(data, mouseButton)
@@ -239,21 +241,7 @@ function private.GetItemIcon(self, data)
 	if type(data) == "string" then
 		return
 	end
-	local spellId = data:GetField("spellId")
-	local itemString = TSM.Crafting.GetItemString(spellId)
-	local texture, tooltip = nil, nil
-	if itemString then
-		texture = ItemInfo.GetTexture(itemString)
-		tooltip = itemString
-	else
-		texture = select(3, TSM.Crafting.ProfessionUtil.GetResultInfo(spellId))
-		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-			tooltip = "craft:"..(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(spellId) or spellId)
-		else
-			tooltip = "enchant:"..spellId
-		end
-		return
-	end
+	local tooltip, texture = TSM.Crafting.ProfessionUtil.GetCraftResultTooltipFromRecipeString(data:GetField("recipeString"))
 	return texture, tooltip
 end
 
@@ -272,8 +260,10 @@ function private.GetItemText(self, data)
 			return text.."  "..TSM.UI.TexturePacks.GetTextureLink("iconPack.12x12/Attention")
 		end
 	else
-		local spellId = data:GetField("spellId")
-		local itemString = TSM.Crafting.GetItemString(spellId)
+		local recipeString = data:GetField("recipeString")
+		local craftString = CraftString.FromRecipeString(recipeString)
+		local itemString = TSM.Crafting.GetItemString(craftString)
+		local spellId = CraftString.GetSpellId(craftString)
 		return itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
 	end
 end
@@ -289,18 +279,20 @@ function private.GetItemTooltip(self, data)
 		return
 	end
 
-	local spellId = data:GetField("spellId")
+	local recipeString = data:GetField("recipeString")
+	local craftString = CraftString.FromRecipeString(recipeString)
 	local numQueued = data:GetField("num")
-	local itemString = TSM.Crafting.GetItemString(spellId)
+	local itemString = TSM.Crafting.GetItemString(craftString)
+	local spellId = CraftString.GetSpellId(craftString)
 	local name = itemString and TSM.UI.GetColoredItemName(itemString) or GetSpellInfo(spellId) or "?"
 	local tooltipLines = TempTable.Acquire()
 	tinsert(tooltipLines, name.." (x"..numQueued..")")
-	local numResult = TSM.Crafting.GetNumResult(spellId)
-	local profit = TSM.Crafting.Cost.GetProfitBySpellId(spellId)
+	local numResult = TSM.Crafting.GetNumResult(craftString)
+	local profit = TSM.Crafting.Cost.GetProfitByRecipeString(recipeString)
 	local profitStr = profit and Money.ToString(profit * numResult, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
 	local totalProfitStr = profit and Money.ToString(profit * numResult * numQueued, Theme.GetFeedbackColor(profit >= 0 and "GREEN" or "RED"):GetTextColorPrefix()) or "---"
 	tinsert(tooltipLines, L["Profit (Total)"]..": "..profitStr.." ("..totalProfitStr..")")
-	for _, matItemString, quantity in TSM.Crafting.MatIterator(spellId) do
+	for _, matItemString, quantity in TSM.Crafting.MatIterator(craftString) do
 		local numHave = Inventory.GetBagQuantity(matItemString)
 		if not TSM.IsWowClassic() then
 			numHave = numHave + Inventory.GetReagentBankQuantity(matItemString) + Inventory.GetBankQuantity(matItemString)
@@ -309,7 +301,17 @@ function private.GetItemTooltip(self, data)
 		local color = Theme.GetFeedbackColor(numHave >= numNeed and "GREEN" or "RED")
 		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
 	end
-	if TSM.Crafting.ProfessionUtil.GetRemainingCooldown(spellId) then
+	for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
+		local matItemString = "i:"..itemId
+		local numHave = Inventory.GetBagQuantity(matItemString)
+		if not TSM.IsWowClassic() then
+			numHave = numHave + Inventory.GetReagentBankQuantity(matItemString) + Inventory.GetBankQuantity(matItemString)
+		end
+		local numNeed = 1 * numQueued
+		local color = Theme.GetFeedbackColor(numHave >= numNeed and "GREEN" or "RED")
+		tinsert(tooltipLines, color:ColorText(numHave.."/"..numNeed).." - "..(ItemInfo.GetName(matItemString) or "?"))
+	end
+	if TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
 		tinsert(tooltipLines, Theme.GetFeedbackColor("RED"):ColorText(L["On Cooldown"]))
 	end
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines)), true, true
@@ -325,7 +327,7 @@ end
 
 function private.OnDeleteIconClick(self, data, iconIndex)
 	assert(iconIndex == 1 and type(data) ~= "string")
-	TSM.Crafting.Queue.SetNum(data:GetField("spellId"), 0)
+	TSM.Crafting.Queue.SetNum(data:GetField("recipeString"), 0)
 end
 
 function private.GetEditIcon(self, data, iconIndex)
@@ -371,7 +373,7 @@ function private.OnEditIconClick(self, data, iconIndex)
 			:SetWidth(75)
 			:SetBackgroundColor("ACTIVE_BG")
 			:SetJustifyH("CENTER")
-			:SetContext(currentRow:GetData():GetField("spellId"))
+			:SetContext(currentRow:GetData():GetField("recipeString"))
 			:SetSubAddEnabled(true)
 			:SetValidateFunc("NUMBER", "1:9999")
 			:SetValue(currentRow:GetData():GetField("num"))
@@ -398,7 +400,9 @@ function private.GetQty(self, data)
 	end
 	local numQueued = data:GetFields("num")
 	local numCraftable = min(self._numCraftableCache[data], numQueued)
-	local onCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(data:GetField("spellId"))
+	local recipeString = data:GetField("recipeString")
+	local craftString = CraftString.FromRecipeString(recipeString)
+	local onCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString)
 	local color = Theme.GetFeedbackColor(((numCraftable == 0 or onCooldown) and "RED") or (numCraftable < numQueued and "YELLOW") or "GREEN")
 	return color:ColorText(format("%s / %s", numCraftable, numQueued))
 end
@@ -460,8 +464,8 @@ function private.DataSortComparator(a, b)
 		return private.categoryOrder[aCategory] < private.categoryOrder[bCategory]
 	end
 	-- sort spells within a category
-	local aSpellId = a:GetField("spellId")
-	local bSpellId = b:GetField("spellId")
+	local aRecipeString = a:GetField("recipeString")
+	local bRecipeString = b:GetField("recipeString")
 	local aNumCraftable = private.sortSelf._numCraftableCache[a]
 	local bNumCraftable = private.sortSelf._numCraftableCache[b]
 	local aNumQueued = a:GetField("num")
@@ -480,8 +484,8 @@ function private.DataSortComparator(a, b)
 	elseif not aCanCraftSome and bCanCraftSome then
 		return false
 	end
-	local aProfit = private.sortProfitCache[aSpellId]
-	local bProfit = private.sortProfitCache[bSpellId]
+	local aProfit = private.sortProfitCache[aRecipeString]
+	local bProfit = private.sortProfitCache[bRecipeString]
 	if aProfit and not bProfit then
 		return true
 	elseif not aProfit and bProfit then
@@ -490,7 +494,7 @@ function private.DataSortComparator(a, b)
 	if aProfit ~= bProfit then
 		return aProfit > bProfit
 	end
-	return aSpellId < bSpellId
+	return aRecipeString < bRecipeString
 end
 
 function private.QueryUpdateCallback(_, _, self)

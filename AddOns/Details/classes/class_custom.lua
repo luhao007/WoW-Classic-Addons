@@ -723,7 +723,7 @@
 				esta_barra.icone_classe:SetTexture (self.icon)
 			else
 				if (instancia.row_info.use_spec_icons) then
-					if (self.spec or self.my_actor.spec) then
+					if ((self.spec and self.spec ~= 0) or (self.my_actor.spec and self.my_actor.spec ~= 0)) then
 						esta_barra.icone_classe:SetTexture (instancia.row_info.spec_file)
 						esta_barra.icone_classe:SetTexCoord (_unpack (_detalhes.class_specs_coords [self.spec or self.my_actor.spec]))
 					else
@@ -2283,7 +2283,7 @@
 			desc = "Show overall damage done on the fly.",
 			source = false,
 			target = false,
-			script_version = 6,
+			script_version = 7,
 			script = [[
 				--init:
 				local combat, instance_container, instance = ...
@@ -2353,12 +2353,14 @@
 				end
 
 				--current
-				local player = CurrentCombat [1]:GetActor (actor.nome)
-				if (player) then
-					playerTotal = playerTotal + player.total
-					local playerSpells = player:GetSpellList()
-					for spellID, spellTable in pairs (playerSpells) do
-						AllSpells [spellID] = (AllSpells [spellID] or 0) + (spellTable.total or 0)
+				if (Details.in_combat) then
+					local player = CurrentCombat [1]:GetActor (actor.nome)
+					if (player) then
+						playerTotal = playerTotal + player.total
+						local playerSpells = player:GetSpellList()
+						for spellID, spellTable in pairs (playerSpells) do
+							AllSpells [spellID] = (AllSpells [spellID] or 0) + (spellTable.total or 0)
+						end
 					end
 				end
 

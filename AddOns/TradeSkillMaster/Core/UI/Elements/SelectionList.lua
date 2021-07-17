@@ -26,6 +26,7 @@ local private = {}
 function SelectionList.__init(self)
 	self.__super:__init()
 	self._selectedEntry = nil
+	self._tooltipEnabled = false
 	self._onEntrySelectedHandler = nil
 end
 
@@ -38,6 +39,7 @@ function SelectionList.Acquire(self)
 			:SetFont("BODY_BODY2")
 			:SetJustifyH("LEFT")
 			:SetTextFunction(private.GetText)
+			:SetTooltipFunction(private.GetTooltip)
 			:DisableHiding()
 			:Commit()
 		:Commit()
@@ -45,6 +47,7 @@ end
 
 function SelectionList.Release(self)
 	self._selectedEntry = nil
+	self._tooltipEnabled = false
 	self._onEntrySelectedHandler = nil
 	self.__super:Release()
 end
@@ -60,6 +63,15 @@ function SelectionList.SetEntries(self, entries, selectedEntry)
 		tinsert(self._data, entry)
 	end
 	self._selectedEntry = selectedEntry
+	return self
+end
+
+--- Enables or disables tooltips
+-- @tparam SelectionList self The selection list object
+-- @tparam boolean enabled Whether or not tooltips are enabled
+-- @treturn SelectionList The selection list object
+function SelectionList.SetTooltipEnabled(self, enabled)
+	self._tooltipEnabled = enabled
 	return self
 end
 
@@ -98,4 +110,11 @@ end
 
 function private.GetText(self, data)
 	return Theme.GetColor(data == self._selectedEntry and "INDICATOR" or "TEXT"):ColorText(data)
+end
+
+function private.GetTooltip(self, data)
+	if not self._tooltipEnabled then
+		return
+	end
+	return data
 end

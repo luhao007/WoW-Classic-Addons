@@ -11,11 +11,18 @@ KNOWN ISSUES:
 
 
 
+Version 4.12.82  (for TBC Classic)  June 10, 2021
+
+- Fixed: Underbog: Bring Me A Shrubbery! requires Friendly reputation.  (thanks Zilom)
+- Some code cleanup work done.  Had to renumber instance numbers for Burning Crusade stuff to prevent overlap with some Vanilla stuff.  Shouldn't be visible to most people, but will prevent a problem later.  Might have fixed a bug.  Might have made a bug.  Trying to fix bugs I can't replicate is interesting.
+- Added an error message if you have the wrong version of AtlasQuest installed for the current WoW version (Retail, Classic, TBC).
+
+
+
 
 Version 4.12.81  (for TBC Classic)  June 3, 2021
 
 - Atlas_ClassicWoW & Atlas_BurningCrusade are now required dependencies. 
-
 
 
 

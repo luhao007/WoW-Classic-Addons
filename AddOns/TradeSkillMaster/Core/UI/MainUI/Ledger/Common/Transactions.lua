@@ -93,8 +93,8 @@ function private.DrawTransactionPage()
 		:VirtualField("auctions", "number", private.GetAuctions)
 		:OrderBy("time", false)
 	private.UpdateQuery()
-	local numItems = private.query:Sum("quantity") or 0
-	local total = private.query:Sum("total") or 0
+	local numItems = private.query:Sum("quantity")
+	local total = private.query:Sum("total")
 
 	return UIElements.New("Frame", "content")
 		:SetLayout("VERTICAL")
@@ -264,8 +264,8 @@ end
 
 function private.DropdownCommonOnSelectionChanged(dropdown)
 	private.UpdateQuery()
-	local numItems = private.query:Sum("quantity") or 0
-	local total = private.query:Sum("total") or 0
+	local numItems = private.query:Sum("quantity")
+	local total = private.query:Sum("total")
 	dropdown:GetElement("__parent.__parent.scrollingTable")
 		:UpdateData(true)
 	local footer = dropdown:GetElement("__parent.__parent.footer")

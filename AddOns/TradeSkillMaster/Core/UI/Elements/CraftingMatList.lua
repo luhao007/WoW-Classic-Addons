@@ -13,6 +13,7 @@ local CraftingMatList = TSM.Include("LibTSMClass").DefineClass("CraftingMatList"
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
 local Inventory = TSM.Include("Service.Inventory")
+local ItemInfo = TSM.Include("Service.ItemInfo")
 local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(CraftingMatList)
 TSM.UI.CraftingMatList = CraftingMatList
@@ -26,11 +27,16 @@ local private = {}
 
 function CraftingMatList.__init(self)
 	self.__super:__init()
+	self._optionalMats = {}
+	self._optionalIndexMap = {}
 	self._spellId = nil
+	self._level = nil
 	self._rowHoverEnabled = false
 end
 
 function CraftingMatList.Acquire(self)
+	wipe(self._optionalMats)
+	wipe(self._optionalIndexMap)
 	self._headerHidden = true
 	self.__super:Acquire()
 	self:SetSelectionDisabled(true)
@@ -58,12 +64,42 @@ function CraftingMatList.Acquire(self)
 end
 
 function CraftingMatList.Release(self)
+	wipe(self._optionalMats)
+	wipe(self._optionalIndexMap)
 	self._spellId = nil
+	self._level = nil
 	self.__super:Release()
 end
 
 function CraftingMatList.SetScript(self, script, handler)
 	error("Unknown CraftingMatList script: "..tostring(script))
+	return self
+end
+
+--- Sets the crafting recipe to display additional optional materials.
+-- @tparam CraftingMatList self The crafting mat list object
+-- @tparam table optionalMats The optional material table
+-- @treturn CraftingMatList The crafting mat list object
+function CraftingMatList.SetOptionalMats(self, optionalMats)
+	wipe(self._optionalMats)
+	wipe(self._optionalIndexMap)
+	if not optionalMats then
+		self:_UpdateData()
+		return self
+	end
+	for k, v in pairs(optionalMats) do
+		self._optionalMats[k] = v
+	end
+	self:_UpdateData()
+	return self
+end
+
+--- Sets the crafting recipe to display additional optional materials.
+-- @tparam CraftingMatList self The crafting mat list object
+-- @tparam number level The selected level of the recipe
+-- @treturn CraftingMatList The crafting mat list object
+function CraftingMatList.SetLevel(self, level)
+	self._level = level
 	return self
 end
 
@@ -88,11 +124,24 @@ function CraftingMatList._UpdateData(self)
 	if not self._spellId then
 		return
 	end
-	for i = 1, TSM.Crafting.ProfessionUtil.GetNumMats(self._spellId) do
+	for i = 1, TSM.Crafting.ProfessionUtil.GetNumMats(self._spellId, self._level) do
 		tinsert(self._data, i)
+	end
+	for k, v in pairs(self._optionalMats) do
+		if v then
+			self._optionalIndexMap[#self._data + 1] = k
+			tinsert(self._data, #self._data + 1)
+		end
 	end
 end
 
+function CraftingMatList._IsOptionalMaterial(self, index)
+	return self._optionalIndexMap[index]
+end
+
+function CraftingMatList._GetOptionalMatString(self, index)
+	return "i:"..self._optionalMats[self._optionalIndexMap[index]]
+end
 
 
 -- ============================================================================
@@ -100,9 +149,17 @@ end
 -- ============================================================================
 
 function private.GetCheck(self, index)
-	local itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
-	local itemString = ItemString.Get(itemLink)
-	local bagQuantity = Inventory.GetBagQuantity(itemString)
+	local quantity, itemString, bagQuantity = nil, nil, nil
+	if self:_IsOptionalMaterial(index) then
+		itemString = self:_GetOptionalMatString(index)
+		quantity = 1
+		bagQuantity = Inventory.GetBagQuantity(itemString)
+	else
+		local itemLink, _ = nil, nil
+		itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index, self._level)
+		itemString = ItemString.Get(itemLink)
+		bagQuantity = Inventory.GetBagQuantity(itemString)
+	end
 	if not TSM.IsWowClassic() then
 		bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
 	end
@@ -114,25 +171,49 @@ function private.GetCheck(self, index)
 end
 
 function private.GetItemIcon(self, index)
-	local _, _, texture = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	local texture = nil
+	if self:_IsOptionalMaterial(index) then
+		texture = ItemInfo.GetTexture(self:_GetOptionalMatString(index))
+	else
+		local _
+		_, _, texture = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index, self._level)
+	end
 	return texture
 end
 
 function private.GetItemText(self, index)
-	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
-	local itemString = ItemString.Get(itemLink)
+	local itemString = nil
+	if self:_IsOptionalMaterial(index) then
+		itemString = self:_GetOptionalMatString(index)
+	else
+		local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index, self._level)
+		itemString = ItemString.Get(itemLink)
+	end
 	return TSM.UI.GetColoredItemName(itemString) or Theme.GetFeedbackColor("RED"):ColorText("?")
 end
 
 function private.GetItemTooltip(self, index)
-	local itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
+	local itemLink = nil
+	if self:_IsOptionalMaterial(index) then
+		itemLink = self:_GetOptionalMatString(index)
+	else
+		itemLink = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index, self._level)
+	end
 	return ItemString.Get(itemLink)
 end
 
 function private.GetQty(self, index)
-	local itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index)
-	local itemString = ItemString.Get(itemLink)
-	local bagQuantity = Inventory.GetBagQuantity(itemString)
+	local quantity, itemString, bagQuantity = nil, nil, nil
+	if self:_IsOptionalMaterial(index) then
+		itemString = self:_GetOptionalMatString(index)
+		quantity = 1
+		bagQuantity = Inventory.GetBagQuantity(itemString)
+	else
+		local itemLink, _ = nil, nil
+		itemLink, _, _, quantity = TSM.Crafting.ProfessionUtil.GetMatInfo(self._spellId, index, self._level)
+		itemString = ItemString.Get(itemLink)
+		bagQuantity = Inventory.GetBagQuantity(itemString)
+	end
 	if not TSM.IsWowClassic() then
 		bagQuantity = bagQuantity + Inventory.GetReagentBankQuantity(itemString) + Inventory.GetBankQuantity(itemString)
 	end

@@ -338,6 +338,20 @@ function Plater.CreateUniqueIdentifier(seed)
 	return createUniqueIdentifier(seed)
 end
 
+--get numbers from a string of number separated by a comma
+--example: "10, 45, 30, 5, 16"  returns 10, 45, 30, 5, 16
+function Plater.GetNumbersFromString(str)
+	local result = {}
+	for value in str:gmatch("([^,%s]+)") do
+		local number = tonumber(value)
+		if (number) then
+			result[#result+1] = number
+		end
+	end
+
+	return unpack(result)
+end
+
 --initialize the options panel for a script object
 function Plater.CreateOptionTableForScriptObject(scriptObject)
 	scriptObject.Options = scriptObject.Options or {}
@@ -402,19 +416,15 @@ end
 			
 			if (indexScriptTable and type (indexScriptTable) == "table") then
 				
+				local scriptType = Plater.GetDecodedScriptType (indexScriptTable)
+				indexScriptTable.type = scriptType
 				indexScriptTable = Plater.MigrateScriptModImport (indexScriptTable)
-				--print(DF.table.dump(indexScriptTable))
-				
-				--check if the user in importing a profile in the scripting tab
-				if (indexScriptTable.plate_config) then
-					DF:ShowErrorMessage ("Invalid Script or Mod.\n\nImport profiles at the Profiles tab.")
-					return
-				elseif (indexScriptTable.NpcColor) then
-					DF:ShowErrorMessage ("Invalid Script or Mod.\n\nImport NpcColors at the Npc Colors tab.")
+
+				--check if this is a mod or a script, if none show a msg for the import data
+				if (indexScriptTable.type ~= "script" and indexScriptTable.type ~= "hook") then
+					Plater.SendScriptTypeErrorMsg(indexScriptTable)
 					return
 				end
-			
-				local scriptType = Plater.GetDecodedScriptType (indexScriptTable)
 				
 				local promptToOverwrite = false
 				local scriptDB = Plater.GetScriptDB (scriptType) or {}

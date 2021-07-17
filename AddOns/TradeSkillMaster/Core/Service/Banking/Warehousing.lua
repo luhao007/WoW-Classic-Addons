@@ -80,7 +80,7 @@ function private.GetNumToMoveRestock(itemString, numToMove)
 	local numInBags = BagTracking.CreateQueryBagsItem(itemString)
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
-		:SumAndRelease("quantity") or 0
+		:SumAndRelease("quantity")
 	if operationSettings.restockQuantity == 0 or numInBags >= operationSettings.restockQuantity then
 		return 0
 	end

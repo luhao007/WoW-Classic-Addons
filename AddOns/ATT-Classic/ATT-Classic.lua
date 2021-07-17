@@ -1881,13 +1881,33 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 			local costResults = app.SearchForField("itemIDAsCost", paramB);
 			if costResults and #costResults > 0 then
 				if not group.g then group.g = {} end
+				local attunement = app.CreateNPC(-17);
+				if not attunement.g then attunement.g = {}; end
 				local usedToBuy = app.CreateNPC(-2);
-				usedToBuy.text = "Currency For";
 				if not usedToBuy.g then usedToBuy.g = {}; end
 				for i,o in ipairs(costResults) do
-					MergeObject(usedToBuy.g, CreateObject(o));
+					if o.key == "difficultyID" or o.key == "instanceID" or o.key == "mapID" or o.key == "headerID" then
+						if app.CollectibleQuests then
+							local d = CreateObject(o);
+							d.collectible = true;
+							d.collected = GetItemCount(paramB, true) > 0;
+							d.progress = nil;
+							d.total = nil;
+							d.g = {};
+							MergeObject(attunement.g, d);
+						end
+					else
+						MergeObject(usedToBuy.g, CreateObject(o));
+					end
 				end
-				MergeObject(group.g, usedToBuy);
+				if #attunement.g > 0 then
+					attunement.text = "Attunement For";
+					MergeObject(group.g, attunement);
+				end
+				if #usedToBuy.g > 0 then
+					usedToBuy.text = "Currency For";
+					MergeObject(group.g, usedToBuy);
+				end
 			end
 		end
 		
@@ -3943,6 +3963,9 @@ local fields = {
 			return L["WE_JUST_HATE_TIMEWALKING"];
 		end
 	end,
+	["hash"] = function(t)
+		if t.parent then return t.key .. t[t.key] .. "~" .. t.parent.key .. t.parent[t.parent.key]; end
+	end,
 };
 app.BaseDifficulty = app.BaseObjectFields(fields);
 app.CreateDifficulty = function(id, t)
@@ -4060,11 +4083,18 @@ local fields = {
 		return app.CollectibleReputations;
 	end,
 	["saved"] = function(t)
-		if app.CurrentCharacter.Factions[t.factionID] then return 1; end
 		if t.standing >= t.maxstanding then
 			app.CurrentCharacter.Factions[t.factionID] = 1;
 			ATTAccountWideData.Factions[t.factionID] = 1;
 			return 1;
+		elseif app.CurrentCharacter.Factions[t.factionID] then
+			app.CurrentCharacter.Factions[t.factionID] = nil;
+			ATTAccountWideData.Factions[t.factionID] = nil;
+			for guid,character in pairs(ATTCharacterData) do
+				if character.Factions and character.Factions[t.factionID] then
+					ATTAccountWideData.Factions[t.factionID] = 1;
+				end
+			end
 		end
 		if app.AccountWideReputations and ATTAccountWideData.Factions[t.factionID] then return 2; end
 		
@@ -4255,7 +4285,7 @@ app.CacheFlightPathDataForTarget = function(nodes)
 			local searchResults = SearchForField("creatureID", npcID);
 			if searchResults and #searchResults > 0 then
 				for i,group in ipairs(searchResults) do
-					if group.flightPathID and not group.nmr and not group.nmc and not group.u then
+					if group.flightPathID and not group.nmr and not group.nmc and (not group.u or group.u > 1) then
 						nodes[group.flightPathID] = true;
 						count = count + 1;
 					end
@@ -4338,18 +4368,8 @@ app.events.GOSSIP_SHOW = function()
 end
 app.events.TAXIMAP_OPENED = function()
 	local knownNodeIDs = {};
-	if app.CacheFlightPathDataForTarget(knownNodeIDs) == 0 and select(4, GetBuildInfo()) < 20000 then
-		if app.CacheFlightPathDataForMap(app.CurrentMapID, knownNodeIDs) == 0 then
-			print("Failed to find nearest Flight Path. Please report this to the ATT Discord!");
-			local pos = C_Map.GetPlayerMapPosition(app.CurrentMapID, "player");
-			if pos then
-				local px, py = pos:GetXY();
-				print(" Location: " .. (math.floor(px * 10000) * 0.01) .. ", " ..(math.floor(py * 10000) * 0.01) .. ", " .. app.CurrentMapID);
-				local target = UnitGUID("target");
-				if target then print(" Master: ", target); end
-			end
-		end
-	end
+	app.CacheFlightPathDataForTarget(knownNodeIDs);
+	app.CacheFlightPathDataForMap(app.CurrentMapID, knownNodeIDs);
 	
 	local allNodeData = C_TaxiMap.GetAllTaxiNodes(app.CurrentMapID);
 	if allNodeData then
@@ -4567,7 +4587,9 @@ local itemFields = {
 		if results and #results > 0 then
 			for _,ref in pairs(results) do
 				if ref.itemID ~= id and app.RecursiveGroupRequirementsFilter(ref) then
-					if ref.collectible or (ref.total and ref.total > 0) then
+					if ref.key == "difficultyID" or ref.key == "instanceID" or ref.key == "mapID" or ref.key == "headerID" then
+						return app.CollectibleQuests;
+					elseif ref.collectible or (ref.total and ref.total > 0) then
 						return true;
 					end
 				end
@@ -4600,17 +4622,33 @@ local itemFields = {
 		return t.collectedAsCost;
 	end,
 	["collectedAsCost"] = function(t)
-		local id = t.itemID;
+		local id, partial = t.itemID;
 		local results = app.SearchForField("itemIDAsCost", id, true);
 		if results and #results > 0 then
 			for _,ref in pairs(results) do
 				if ref.itemID ~= id and app.RecursiveGroupRequirementsFilter(ref) then
-					if (ref.collectible and not ref.collected) or (ref.total and ref.total > 0 and not GetRelativeField(t, "parent", ref) and ref.progress < ref.total) then
-						return false;
+					if ref.key == "difficultyID" or ref.key == "instanceID" or ref.key == "mapID" or ref.key == "headerID" then
+						if app.CollectibleQuests and GetItemCount(id, true) == 0 then
+							return false;
+						end
+					elseif (ref.collectible and not ref.collected) or (ref.total and ref.total > 0 and not GetRelativeField(t, "parent", ref) and ref.progress < ref.total) then
+						if ref.cost then
+							for k,v in ipairs(ref.cost) do
+								if v[2] == id and v[1] == "i" then
+									if GetItemCount(id, true) >= (v[3] or 1) then
+										partial = true;
+									else
+										return false;
+									end
+								end
+							end
+						else
+							return false;
+						end
 					end
 				end
 			end
-			return true;
+			return partial and 2 or 1;
 		end
 	end,
 	["collectedAsCostAfterFailure"] = function(t)
@@ -5668,10 +5706,10 @@ local questFields = {
 	end,
 	
 	["collectibleAsReputation"] = function(t)
-		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID) or (app.CollectibleReputations and t.maxReputation));
+		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID) or (t.maxReputation and (app.CollectibleReputations or not t.repeatable)));
 	end,
 	["collectedAsReputation"] = function(t)
-		if app.CollectibleReputations and t.maxReputation and (select(6, GetFactionInfoByID(t.maxReputation[1])) or 0) >= t.maxReputation[2] then
+		if t.maxReputation and (select(6, GetFactionInfoByID(t.maxReputation[1])) or 0) >= t.maxReputation[2] then
 			return true;
 		end
 		return app.CollectibleQuests and IsQuestFlaggedCompletedForObject(t);
@@ -6342,7 +6380,7 @@ function app.FilterItemClass_RequiredSkill(item)
 end
 function app.FilterItemClass_RequireFaction(item)
 	if item.minReputation and app.IsFactionExclusive(item.minReputation[1]) then
-		if item.minReputation[2] >= (select(6, GetFactionInfoByID(item.minReputation[1])) or 0) then
+		if item.minReputation[2] > (select(6, GetFactionInfoByID(item.minReputation[1])) or 0) then
 			--print("Filtering Out", item.key, item[item.key], item.text, item.minReputation[1], app.CreateFaction(item.minReputation[1]).text);
 			return false;
 		else
@@ -11221,7 +11259,7 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 		-- Setup Event Handlers and register for events
 		self:SetScript("OnEvent", function(self, e, ...)
 			if e == "TRADE_SKILL_LIST_UPDATE" or e == "SKILL_LINES_CHANGED" then
-				self:RefreshRecipes();
+				self:Update();
 			elseif e == "TRADE_SKILL_SHOW" or e == "CRAFT_SHOW" then
 				if self.TSMCraftingVisible == nil then
 					self:SetTSMCraftingVisible(false);
@@ -11783,7 +11821,6 @@ app.events.VARIABLES_LOADED = function()
 	app:RegisterEvent("QUEST_LOG_UPDATE");
 	app:RegisterEvent("QUEST_ACCEPTED");
 	app:RegisterEvent("QUEST_TURNED_IN");
-	app:RegisterEvent("SKILL_LINES_CHANGED");
 	StartCoroutine("RefreshSaves", RefreshSaves);
 	app:RefreshData(false);
 	app:RefreshLocation();
@@ -12415,9 +12452,6 @@ app.events.PLAYER_LEVEL_UP = function(newLevel)
 	app.Level = newLevel;
 	app:UpdateWindows();
 	app.Settings:Refresh();
-end
-app.events.SKILL_LINES_CHANGED = function()
-	RefreshSkills();
 end
 app.events.BOSS_KILL = function(id, name, ...)
 	-- This is so that when you kill a boss, you can trigger 

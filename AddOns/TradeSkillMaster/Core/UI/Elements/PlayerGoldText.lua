@@ -17,6 +17,7 @@ local Event = TSM.Include("Util.Event")
 local Money = TSM.Include("Util.Money")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
+local Tooltip = TSM.Include("UI.Tooltip")
 UIElements.Register(PlayerGoldText)
 TSM.UI.PlayerGoldText = PlayerGoldText
 local private = {
@@ -74,20 +75,20 @@ function private.MoneyTooltipFunc()
 	local tooltipLines = TempTable.Acquire()
 	local playerMoney = TSM.db.sync.internalData.money
 	local total = playerMoney
-	tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, UnitName("player")..":", Money.ToString(playerMoney)))
+	tinsert(tooltipLines, strjoin(Tooltip.GetSepChar(), UnitName("player")..":", Money.ToString(playerMoney)))
 	local numPosted, numSold, postedGold, soldGold = TSM.MyAuctions.GetAuctionInfo()
 	if numPosted then
-		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%s Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
-		tinsert(tooltipLines, "  "..strjoin(TSM.CONST.TOOLTIP_SEP, format(L["%s Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
+		tinsert(tooltipLines, "  "..strjoin(Tooltip.GetSepChar(), format(L["%s Sold Auctions"], numSold)..":", Money.ToString(soldGold)))
+		tinsert(tooltipLines, "  "..strjoin(Tooltip.GetSepChar(), format(L["%s Posted Auctions"], numPosted)..":", Money.ToString(postedGold)))
 	end
 	for _, _, character, syncScopeKey in Settings.ConnectedFactionrealmAltCharacterIterator() do
 		local money = Settings.Get("sync", syncScopeKey, "internalData", "money")
 		if money > 0 then
-			tinsert(tooltipLines, strjoin(TSM.CONST.TOOLTIP_SEP, character..":", Money.ToString(money)))
+			tinsert(tooltipLines, strjoin(Tooltip.GetSepChar(), character..":", Money.ToString(money)))
 			total = total + money
 		end
 	end
-	tinsert(tooltipLines, 1, strjoin(TSM.CONST.TOOLTIP_SEP, L["Total Gold"]..":", Money.ToString(total)))
+	tinsert(tooltipLines, 1, strjoin(Tooltip.GetSepChar(), L["Total Gold"]..":", Money.ToString(total)))
 	return strjoin("\n", TempTable.UnpackAndRelease(tooltipLines))
 end
 

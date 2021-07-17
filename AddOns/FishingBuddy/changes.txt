@@ -1,3 +1,17 @@
+Version 0.7.4 Beta 5
+- Fix max lure issue (thanks again bolerro619!)
+- See if we can avoid hat buff stomping
+
+Version 0.7.4 Beta 4
+- Add Burning Crusade TOC entry
+- Fix Outland fishing level for Classic
+
+Version 0.7.4 Beta 3
+- Update to latest LibTouristClassic
+
+Version 0.7.4 Beta 2
+- Actually working Burning Crusdae version
+
 Version 0.7.4 Beta 1
 - Minimal working Burning Crusdae version
 

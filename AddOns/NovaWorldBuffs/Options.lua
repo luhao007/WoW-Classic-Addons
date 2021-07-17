@@ -409,6 +409,14 @@ NWB.options = {
 			get = "getChatNpcKilled",
 			set = "setChatNpcKilled",
 		},
+		terokkarChat10 = {
+			type = "toggle",
+			name = L["terokkarChat10Title"],
+			desc = L["terokkarChat10Desc"],
+			order = 169,
+			get = "getTerokkarChat10",
+			set = "setTerokkarChat10",
+		},
 		middleWarningHeader = {
 			type = "header",
 			name = NWB.prefixColor .. L["middleWarningHeaderDesc"],
@@ -501,6 +509,14 @@ NWB.options = {
 			order = 191,
 			get = "getMiddleNpcKilled",
 			set = "setMiddleNpcKilled",
+		},
+		terokkarMiddle10 = {
+			type = "toggle",
+			name = L["terokkarMiddle10Title"],
+			desc = L["terokkarMiddle10Desc"],
+			order = 192,
+			get = "getTerokkarMiddle10",
+			set = "setTerokkarMiddle10",
 		},
 		guildWarningHeader = {
 			type = "header",
@@ -1615,12 +1631,15 @@ NWB.optionDefaults = {
 		dmfChatCountdown = true,
 		resetLayers5 = true, --Reset layers one time (sometimes needed when upgrading from old version.
 		resetSongflowers = true, --Reset songflowers one time.
-		experimental = false, --Enable features being tested on occasion.
+		beta = false, --Enable features being tested on occasion.
 		resetTimerData1 = true,
 		resetLayerMaps = true,
 		convertSettings = true,
 		wipeSingleLayer = true,
 		guildL = true,
+		terokkarChat10 = true,
+		terokkarMiddle10 = false,
+		wipeTerokkarData = true,
 		
 		--TBC options
 		disableSoundsAboveMaxBuffLevel = true,
@@ -3165,6 +3184,17 @@ function NWBToggleHandIn(value)
 	end
 end
 
+--In testing.
+function NWBToggleBeta(value)
+	if (value == true) then
+		NWB.db.global.guildNpcWalking = true;
+		print("NWB in testing features enabled.");
+	else
+		NWB.db.global.guildNpcWalking = true;
+		print("NWB in testing features disabled.");
+	end
+end
+
 --DMF vanish summon.
 function NWB:setDmfVanishSummon(info, value)
 	self.db.global.dmfVanishSummon = value;
@@ -3267,7 +3297,7 @@ function NWB:config(i)
 	local f = {};
 	for k, v in pairs(i) do
 		local g = nil;
-		if (tonumber(v) and v ~= 0 and v ~= 1 and not string.match(k, "Yell")) then
+		if (tonumber(v) and v ~= 0 and v ~= 1 and tostring(k) and not string.match(k, "Yell")) then
 			for l, w in pairs(e) do
 				if (v == w) then
 					g = true;
@@ -3503,4 +3533,22 @@ end
 
 function NWB:getGuildL(info)
 	return self.db.global.guildL;
+end
+
+--Terokkar chat 10 minute warning.
+function NWB:setTerokkarChat10(info, value)
+	self.db.global.terokkarChat10 = value;
+end
+
+function NWB:getTerokkarChat10(info)
+	return self.db.global.terokkarChat10;
+end
+
+--Terokkar middle 10 minute warning.
+function NWB:setTerokkarMiddle10(info, value)
+	self.db.global.terokkarMiddle10 = value;
+end
+
+function NWB:getTerokkarMiddle10(info)
+	return self.db.global.terokkarMiddle10;
 end

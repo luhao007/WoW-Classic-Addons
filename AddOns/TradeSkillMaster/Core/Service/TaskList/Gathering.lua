@@ -84,7 +84,7 @@ function private.PopulateTasks()
 		task:WipeItems()
 	end
 	for _, task in pairs(private.professionTasks) do
-		task:WipeSpellIds()
+		task:WipeCraftStrings()
 	end
 
 	local alts = TempTable.Acquire()
@@ -100,14 +100,14 @@ function private.PopulateTasks()
 			end
 		end
 		if sourceInfo.craftProfit or sourceInfo.craftNoProfit then
-			local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, TSM.db.factionrealm.gatheringContext.crafter)
-			assert(spellId)
-			local profession = TSM.Crafting.GetProfession(spellId)
+			local craftString = TSM.Crafting.GetMostProfitableCraftStringByItem(itemString, TSM.db.factionrealm.gatheringContext.crafter)
+			assert(craftString)
+			local profession = TSM.Crafting.GetProfession(craftString)
 			if not private.professionTasks[profession] then
 				private.professionTasks[profession] = TSM.TaskList.CraftingTask()
 				private.professionTasks[profession]:Acquire(private.SourceProfessionTaskDone, L["Gathering"], profession)
 			end
-			private.professionTasks[profession]:AddSpellId(spellId, sourceInfo.craftProfit or sourceInfo.craftNoProfit)
+			private.professionTasks[profession]:AddCraftString(craftString, sourceInfo.craftProfit or sourceInfo.craftNoProfit)
 			sourceInfo.craftProfit = nil
 			sourceInfo.craftNoProfit = nil
 		end
@@ -134,7 +134,7 @@ function private.PopulateTasks()
 		end
 	end
 	for _, task in pairs(private.professionTasks) do
-		if task:HasSpellIds() then
+		if task:HasCraftStrings() then
 			private.activeTasks[task] = task
 			task:Update()
 		end

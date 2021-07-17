@@ -35,12 +35,14 @@
 	</Button>
 
 	<!-- For the Track feature -->
-	<Frame name="TitanPanelLootTypeMainWindow" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" frameStrata="HIGH" resizable="true">
+	<Frame name="TitanPanelLootTypeMainWindow" parent="UIParent" hidden="true" toplevel="true" inherits="BackdropTemplate" 
+		movable="true" enableMouse="true" frameStrata="HIGH" resizable="true">
 		<Size><AbsDimension x="194" y="170"/></Size>
 		<Anchors>
 			<Anchor point="CENTER"/>
 			<Offset><AbsDimension x="300" y="0"/></Offset>
 		</Anchors>
+<!--
 		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
 		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			<EdgeSize>
@@ -53,6 +55,10 @@
 				<AbsInset left="5" right="5" top="5" bottom="5"/>
 			</BackgroundInsets>
 		</Backdrop>	
+-->
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_TUTORIAL_16_16" type="global"/>
+		</KeyValues>
 		
 		<Layers>
 			<Layer level="BACKGROUND">

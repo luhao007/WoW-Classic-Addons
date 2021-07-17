@@ -1,0 +1,14 @@
+## Interface: 20501
+## Author: Scott M Harrison
+## Version: 007
+## Dependencies: Grail
+## LoadOnDemand: 1
+
+## Title: Grail |cff69ccf0Reputations |r|cff0000ffRetail|r
+## Notes: Provides reputation award information to Grail for Retail
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0声望|r
+## Notes-zhCN: 声望数据库
+
+## X-Part-Of: Grail
+
+Grail-Reputations-_retail_.lua

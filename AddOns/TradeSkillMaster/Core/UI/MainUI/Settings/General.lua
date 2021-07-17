@@ -615,9 +615,9 @@ function private.AccountSyncTextOnEnter(text)
 		else
 			mirrorStatus = Theme.GetFeedbackColor("GREEN"):ColorText(L["Up to date"])
 		end
-		tinsert(tooltipLines, L["Inventory / Gold Graph"]..TSM.CONST.TOOLTIP_SEP..mirrorStatus)
-		tinsert(tooltipLines, L["Profession Info"]..TSM.CONST.TOOLTIP_SEP..TSM.Crafting.Sync.GetStatus(account))
-		tinsert(tooltipLines, L["Purchase / Sale Info"]..TSM.CONST.TOOLTIP_SEP..TSM.Accounting.Sync.GetStatus(account))
+		tinsert(tooltipLines, L["Inventory / Gold Graph"]..Tooltip.GetSepChar()..mirrorStatus)
+		tinsert(tooltipLines, L["Profession Info"]..Tooltip.GetSepChar()..TSM.Crafting.Sync.GetStatus(account))
+		tinsert(tooltipLines, L["Purchase / Sale Info"]..Tooltip.GetSepChar()..TSM.Accounting.Sync.GetStatus(account))
 	else
 		tinsert(tooltipLines, L["Establishing connection..."])
 	end

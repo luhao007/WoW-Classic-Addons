@@ -73,6 +73,20 @@ function GroupTree.Release(self)
 	self:SetRowHeight(24)
 end
 
+--- Returns the group path's name which is currently under the cursor
+-- @tparam GroupTree self The group tree object
+-- @return string destPath The group path
+function GroupTree.GetMouseOverPath(self)
+	local destPath = nil
+	for _, row in ipairs(self._rows) do
+		if row:IsMouseOver() then
+			destPath = row:GetData()
+			break
+		end
+	end
+	return destPath
+end
+
 --- Sets the context table.
 -- This table can be used to preserve collapsed state across lifecycles of the group tree and even WoW sessions if it's
 -- within the settings DB.

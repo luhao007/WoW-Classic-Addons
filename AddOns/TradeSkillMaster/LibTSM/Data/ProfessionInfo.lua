@@ -40,6 +40,9 @@ local ENGINEERING_TINKERS = {
 	[84427] = true, -- Engineering: Grounded Plasma Shield
 	[109099] = true, -- Engineering: Watergliding Jets
 	[126392] = true, -- Engineering: Goblin Glider
+	[310495] = true, -- Engineering: Dimensional Shifter
+	[310496] = true, -- Engineering: Electro-Jump
+	[310497] = true, -- Engineering: Damage Retaliator
 }
 local MASS_MILLING_RECIPES = {
 	[190381] = "i:114931", -- Frostweed
@@ -603,6 +606,31 @@ local ENCHANTING_RECIPIES = {
 	[324773] = "i:177962", -- Enchant Chest - Eternal Stats
 	[342316] = "i:183738", -- Enchant Chest - Eternal Insight
 }
+local OPTIONAL_MAT_INFO = {
+	["i:173161"] = { statModifier = 32 }, -- Missive of Critical Strike
+	["i:173160"] = { statModifier = 36 }, -- Missive of Haste
+	["i:173163"] = { statModifier = 40 }, -- Missive of Versatility
+	["i:173162"] = { statModifier = 49 }, -- Missive of Mastery
+	["i:180055"] = { absItemLevel = 19 }, -- Relic of the Past I
+	["i:180057"] = { absItemLevel = 28 }, -- Relic of the Past II
+	["i:180058"] = { absItemLevel = 39 }, -- Relic of the Past III
+	["i:180059"] = { absItemLevel = 48 }, -- Relic of the Past IV
+	["i:180060"] = { absItemLevel = 54 }, -- Relic of the Past V
+	["i:183942"] = { absItemLevel = 87 }, -- Novice Crafter's Mark
+	["i:173381"] = { absItemLevel = 117 }, -- Crafter's Mark I
+	["i:173382"] = { absItemLevel = 168 }, -- Crafter's Mark II
+	["i:173383"] = { absItemLevel = 200 }, -- Crafter's Mark III
+	["i:173384"] = { absItemLevel = 230 }, -- Crafter's Mark of the Chained Isle
+	["i:185960"] = { relItemLevels = { [74] = true, [87] = true }, relCraftLevel = 2 }, -- Vestige of Origins
+}
+local REL_ITEM_LEVEL_BY_RANK = {
+	[1] = 15,
+	[2] = 35,
+	[3] = 50,
+	[4] = 60,
+	[5] = 74,
+	[6] = 87,
+}
 
 
 
@@ -635,4 +663,49 @@ end
 
 function ProfessionInfo.GetIndirectCraftResult(spellId)
 	return ENCHANTING_RECIPIES[spellId] or MASS_MILLING_RECIPES[spellId] or nil
+end
+
+function ProfessionInfo.GetOptionalMatByItemLevel(itemLevel)
+	for itemString, info in pairs(OPTIONAL_MAT_INFO) do
+		if info.absItemLevel == itemLevel then
+			return itemString
+		end
+	end
+	return nil
+end
+
+function ProfessionInfo.GetOptionalMatByRelItemLevel(relItemLevel)
+	for itemString, info in pairs(OPTIONAL_MAT_INFO) do
+		if info.relItemLevels and info.relItemLevels[relItemLevel] then
+			return itemString
+		end
+	end
+	return nil
+end
+
+function ProfessionInfo.GetItemLevelByOptionalMat(itemString)
+	local info = OPTIONAL_MAT_INFO[itemString]
+	return info and info.absItemLevel or nil
+end
+
+function ProfessionInfo.GetCraftLevelIncreaseByOptionalMat(itemString)
+	local info = OPTIONAL_MAT_INFO[itemString]
+	return info and info.relCraftLevel or nil
+end
+
+function ProfessionInfo.GetOptionalMatByStatModifier(statModifier)
+	for itemString, info in pairs(OPTIONAL_MAT_INFO) do
+		if info.statModifier == statModifier then
+			return itemString
+		end
+	end
+	return nil
+end
+
+function ProfessionInfo.GetRelativeItemLevelByRank(rank)
+	return REL_ITEM_LEVEL_BY_RANK[rank]
+end
+
+function ProfessionInfo.IsOptionalMat(itemString)
+	return OPTIONAL_MAT_INFO[itemString] and true or false
 end

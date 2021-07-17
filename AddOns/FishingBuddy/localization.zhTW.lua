@@ -57,6 +57,10 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_BOBBINGBERG_INFO"] = "啟用時，將施放漂浮冰山。",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "顯示釣魚比賽計時器",
 	["CONFIG_CONTESTS_ONOFF"] = "支援釣魚大賽",
 	["CONFIG_CREATEMACRO_INFO"] = "為#NAME#新增巨集.",
@@ -215,6 +219,10 @@ FishingTranslations["zhTW"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "在提示裡顯示漁獲訊息",
 	["CONFIG_TOONMACRO_INFO"] = "為角色建立釣魚巨集",
 	["CONFIG_TOONMACRO_ONOFF"] = "每個角色",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRADESKILL_INFO"] = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",--]] 
 	--[[Translation missing --]]

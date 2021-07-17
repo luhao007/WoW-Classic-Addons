@@ -134,9 +134,9 @@ end
 -- ============================================================================
 
 function private.CooldownGetText(row)
-	return row:GetField("characterKey").." - "..TSM.Crafting.GetName(row:GetField("spellId"))
+	return row:GetField("characterKey").." - "..TSM.Crafting.GetName(row:GetField("craftString"))
 end
 
 function private.IgnoredCooldownOnRowClick(_, row)
-	TSM.Crafting.RemoveIgnoredCooldown(row:GetFields("characterKey", "spellId"))
+	TSM.Crafting.RemoveIgnoredCooldown(row:GetFields("characterKey", "craftString"))
 end

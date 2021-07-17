@@ -326,7 +326,7 @@ NOTE:
 --]]
 function TitanPanel_PlayerEnteringWorld()
 	if Titan__InitializedPEW then
-		-- Also sync the LDB object with the Tian plugin
+		-- Also sync the LDB object with the Titan plugin
 		TitanLDBRefreshButton()
 	else
 		-- Get Profile and Saved Vars

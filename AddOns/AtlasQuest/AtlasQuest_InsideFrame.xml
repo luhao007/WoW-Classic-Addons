@@ -566,18 +566,6 @@
                    </Anchor>
                 </Anchors>
                </FontString>
-               <FontString name="StoryTEXT" inherits="GameFontNormalLarge" justifyH = "LEFT" justifyV = "TOP">
-                <Size>
-                  <AbsDimension x="410" y="450"/>
-                </Size>
-                <Anchors>
-                   <Anchor point="TOPLEFT">
-                     <Offset>
-                       <AbsDimension x="50" y="-50"/>
-                     </Offset>
-                   </Anchor>
-                </Anchors>
-               </FontString>
                <FontString name="REWARDstext" inherits="GameFontNormalLarge" justifyH = "LEFT" justifyV="TOP" >
                 <Size>
                   <AbsDimension x="400" y="12"/>

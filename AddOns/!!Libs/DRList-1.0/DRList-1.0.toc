@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Title: Lib: Diminishing Returns Database
-## Version: v1.2.4
+## Version: v1.2.5
 ## X-Category: Library
 ## X-Curse-Project-ID: 315757
 ## X-Wago-ID: 9rN4BxKD

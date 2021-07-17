@@ -1,9 +1,9 @@
 local mod	= DBM:NewMod("Magtheridon", "DBM-Outlands")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210417153241")
+mod:SetRevision("20210623160950")
 mod:SetCreatureID(17257)
-mod:SetEncounterID(651, 2457)
+mod:SetEncounterID(WOW_PROJECT_ID ~= (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5) and 651 or 2457)
 mod:SetModelID(18527)
 mod:RegisterCombat("combat_emote", L.DBM_MAG_EMOTE_PULL)
 
@@ -24,13 +24,14 @@ local specWarnHeal			= mod:NewSpecialWarningInterrupt(30528, "HasInterrupt", nil
 
 local timerHeal				= mod:NewCastTimer(2, 30528, nil, nil, nil, 4, nil, DBM_CORE_L.INTERRUPT_ICON)
 local timerPhase2			= mod:NewTimer(120, "timerP2", "135566", nil, nil, 6)
-local timerBlastNovaCD		= mod:NewCDTimer(54, 30616, nil, nil, nil, 2, nil, DBM_CORE_L.DEADLY_ICON)
+local timerBlastNovaCD		= mod:NewCDCountTimer(54, 30616, nil, nil, nil, 2, nil, DBM_CORE_L.DEADLY_ICON)
 local timerDebris			= mod:NewNextTimer(15, 36449, nil, nil, nil, 2, nil, DBM_CORE_L.HEALER_ICON..DBM_CORE_L.TANK_ICON)--Only happens once per fight, after the phase 3 yell.
 
-mod.vb.phase = 1
+mod.vb.blastNovaCounter = 1
 
 function mod:OnCombatStart(delay)
-	self.vb.phase = 1
+	self:SetStage(1)
+	self.vb.blastNovaCounter = 1
 	timerPhase2:Start(-delay)
 end
 
@@ -44,9 +45,10 @@ function mod:SPELL_CAST_START(args)
 			warningHeal:Show()
 		end
 	elseif args.spellId == 30616 then
+		self.vb.blastNovaCounter = self.vb.blastNovaCounter + 1
 		specWarnBlastNova:Show(L.name)
 		specWarnBlastNova:Play("kickcast")
-		timerBlastNovaCD:Start()
+		timerBlastNovaCD:Start(nil, self.vb.blastNovaCounter)
 	end
 end
 
@@ -58,13 +60,21 @@ end
 
 function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg == L.DBM_MAG_YELL_PHASE2 or msg:find(L.DBM_MAG_YELL_PHASE2) then
-		self.vb.phase = 2
+		self:SetStage(2)
 		warnPhase2:Show()
-		timerBlastNovaCD:Start()
+		timerBlastNovaCD:Start(nil, self.vb.blastNovaCounter)
 		timerPhase2:Cancel()
 	elseif msg == L.DBM_MAG_YELL_PHASE3 or msg:find(L.DBM_MAG_YELL_PHASE3) then
-		self.vb.phase = 3
+		self:SetStage(3)
 		warnPhase3:Show()
+		--If time less than 20, extend existing timer to 20, else do nothing
+		if timerBlastNovaCD:GetRemaining(self.vb.blastNovaCounter) < 20 then
+			local elapsed, total = timerBlastNovaCD:GetTime(self.vb.blastNovaCounter)
+			local extend = 20 - (total-elapsed)
+			DBM:Debug("timerBlastNovaCD extended by: "..extend, 2)
+			timerBlastNovaCD:Stop()
+			timerBlastNovaCD:Update(elapsed, total+extend, self.vb.blastNovaCounter)
+		end
 		timerDebris:Start()
 	end
 end

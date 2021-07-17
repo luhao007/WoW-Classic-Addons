@@ -53,6 +53,10 @@ FishingTranslations["itIT"] = {
 	--[[ ["CONFIG_BOBBINGBERG_INFO"] = "If enabled, use the bobbing berg.",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "Mostra timer per le gare di pesca",
 	["CONFIG_CONTESTS_ONOFF"] = "Supporto per gara di pesca",
 	["CONFIG_CREATEMACRO_INFO"] = "Crea una macro che esegue le funzioni#NAME#.",
@@ -223,6 +227,10 @@ FishingTranslations["itIT"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "Mostra informazioni di pesca nei tooltip",
 	["CONFIG_TOONMACRO_INFO"] = "Crea la macro di Pesca per il giocatore.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Per il giocatore",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRADESKILL_INFO"] = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",--]] 
 	--[[Translation missing --]]

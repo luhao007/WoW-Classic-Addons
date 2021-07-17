@@ -436,7 +436,7 @@ local cachedTitle
 local cachedVersion
 -- Move to Questie.lua after QuestieOptions move.
 function QuestieLib:GetAddonVersionInfo()
-    return 6, 3, 14
+    return 6, 4, 1
 end
 --    if (not cachedTitle) or (not cachedVersion) then
 --        local name, title, _, _, reason = GetAddOnInfo("QuestieDev-master")

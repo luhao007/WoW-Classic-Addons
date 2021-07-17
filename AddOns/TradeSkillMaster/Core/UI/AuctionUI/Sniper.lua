@@ -733,7 +733,7 @@ function private.FSMCreate()
 				end
 				local result = context.auctionScan:PlaceBidOrBuyout(index, bidBuyout, context.findAuction, quantity)
 				if result then
-					MailTracking.RecordAuctionBuyout(ItemString.GetBaseFast(context.findAuction:GetItemString()), quantity)
+					MailTracking.RecordAuctionBuyout(ItemString.ToLevel(context.findAuction:GetItemString()), quantity)
 					context.numActioned = context.numActioned + (TSM.IsWowClassic() and 1 or quantity)
 					context.lastBuyQuantity = quantity
 				else

@@ -77,13 +77,11 @@
 
 local GREY = "|cff999999";
 local RED = "|cffff0000";
-local ATLAS_RED = "|cffcc3333";
 local WHITE = "|cffFFFFFF";
 local GREEN = "|cff66cc33";
 local PURPLE = "|cff9F3FFF";
 local BLUE = "|cff0070dd";
 local ORANGE = "|cffFF8400";
-local DARKYELLOW = "|cffcc9933";  -- Atlas uses this color for some things.
 local YELLOW = "|cffFFd200";   -- Ingame Yellow
 
 

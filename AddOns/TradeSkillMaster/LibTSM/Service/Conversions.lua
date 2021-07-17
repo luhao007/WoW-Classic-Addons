@@ -50,8 +50,8 @@ Conversions:OnModuleLoad(function()
 	end
 	for targetItemString in Prospect.TargetItemIterator() do
 		for sourceItemString in Prospect.SourceItemIterator(targetItemString) do
-			local rate, amount, minAmount, maxAmount = Prospect.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, Conversions.METHOD.PROSPECT, rate, amount, minAmount, maxAmount)
+			local rate, amount, minAmount, maxAmount, skillRequired = Prospect.GetRate(targetItemString, sourceItemString)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.PROSPECT, rate, amount, minAmount, maxAmount, skillRequired)
 		end
 	end
 	for targetItemString in Transform.TargetItemIterator() do
@@ -125,7 +125,7 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.Add(targetItemString, sourceItemString, method, rate, amount, minAmount, maxAmount)
+function private.Add(targetItemString, sourceItemString, method, rate, amount, minAmount, maxAmount, skillRequired)
 	targetItemString = ItemString.GetBase(targetItemString)
 	sourceItemString = ItemString.GetBase(sourceItemString)
 	assert(targetItemString and sourceItemString)
@@ -146,6 +146,7 @@ function private.Add(targetItemString, sourceItemString, method, rate, amount, m
 		amount = amount,
 		minAmount = minAmount,
 		maxAmount = maxAmount,
+		skillRequired = skillRequired
 	}
 	ItemInfo.FetchInfo(targetItemString)
 	ItemInfo.FetchInfo(sourceItemString)
@@ -176,7 +177,7 @@ function private.TargetItemsByMethodIteratorHelper(context, index)
 		end
 		local info = items[context.sourceItemString]
 		if info and ((not context.method and info.method ~= Conversions.METHOD.CRAFT) or info.method == context.method) then
-			return index, info.rate, info.amount, info.minAmount, info.maxAmount
+			return index, info.rate, info.amount, info.minAmount, info.maxAmount, info.skillRequired
 		end
 	end
 end

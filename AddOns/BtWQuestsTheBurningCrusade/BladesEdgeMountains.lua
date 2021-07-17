@@ -1824,53 +1824,6 @@ Database:AddChain(Chain.Chain03, {
         type = "quest",
         id = 11009,
     },
-    rewards = {
-        {
-            type = "experience",
-            variations = {
-                {
-                    amounts = {
-                        22850, 23925, 25000, 26150, 27225, 28350, 29450, 30525, 31650, 32750, 34100, 35150, 36250, 37400, 38450, 39600, 40700, 41750, 42900, 44000, 45100, 46200, 47300, 48400, 49500, 50650, 51700, 52800, 53950, 55000, 6910, 6910, 5520, 4230, 2760, 1380, 710, 
-                    },
-                    minLevel = 20,
-                    maxLevel = 56,
-                    restrictions = -1,
-                },
-                {
-                    amounts = {
-                        22850, 23925, 25000, 26150, 27225, 28350, 29450, 30525, 31650, 32750, 34100, 34100, 27225, 20375, 13510, 6860, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 3425, 380, 
-                    },
-                    minLevel = 20,
-                    maxLevel = 50,
-                },
-            },
-        },
-        {
-            type = "money",
-            variations = {
-                {
-                    amounts = {
-                        588500, 645150, 701800, 758450, 815100, 871750, 928400, 985050, 1041700, 1098350, 1155000, 1226280, 1297560, 1368840, 1440120, 1511400, 1582680, 1653960, 1725240, 1796520, 1867800, 1939080, 2010360, 2081640, 2152920, 2224200, 2294160, 2364120, 2434080, 2504040, 2574000, 
-                    },
-                    minLevel = 20,
-                    maxLevel = 50,
-                    restrictions = -1,
-                },
-                {
-                    amounts = {
-                        588500, 645150, 701800, 758450, 815100, 871750, 928400, 985050, 1041700, 1098350, 1155000, 
-                    },
-                    minLevel = 20,
-                    maxLevel = 30,
-                },
-            },
-        },
-        {
-            type = "reputation",
-            id = 1038,
-            amount = 25,
-        },
-    },
     items = {
         {
             variations = {
@@ -2016,6 +1969,7 @@ Database:AddChain(Chain.EmbedChain16, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2046,6 +2000,7 @@ Database:AddChain(Chain.EmbedChain17, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2084,6 +2039,7 @@ Database:AddChain(Chain.EmbedChain18, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2122,6 +2078,7 @@ Database:AddChain(Chain.EmbedChain19, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2152,6 +2109,7 @@ Database:AddChain(Chain.EmbedChain20, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2182,6 +2140,7 @@ Database:AddChain(Chain.EmbedChain21, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = HORDE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",
@@ -2242,6 +2201,7 @@ Database:AddChain(Chain.EmbedChain23, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",

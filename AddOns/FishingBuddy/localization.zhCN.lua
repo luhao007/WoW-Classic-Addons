@@ -47,6 +47,10 @@ FishingTranslations["zhCN"] = {
 	["CONFIG_BIGDRAENOR_ONOFF"] = "最大钓鱼技能",
 	["CONFIG_BOBBINGBERG_INFO"] = "如果开启，使用贝西的浮游冰层.",
 	["CONFIG_BOBBINGBERG_ONOFF"] = "使用贝西的浮游冰层",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "显示钓鱼大赛计时器",
 	["CONFIG_CONTESTS_ONOFF"] = "钓鱼大赛支持",
 	["CONFIG_CREATEMACRO_INFO"] = "创建 #NAME# 的宏。",
@@ -169,6 +173,10 @@ FishingTranslations["zhCN"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "在提示信息中显示钓鱼信息",
 	["CONFIG_TOONMACRO_INFO"] = "创建钓鱼宏于通用宏。",
 	["CONFIG_TOONMACRO_ONOFF"] = "通用宏",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	["CONFIG_TRADESKILL_INFO"] = "如果启用，请打开“交易技能”窗口以了解技能级别.否则你将不得不手动打开钓鱼专业.",
 	["CONFIG_TRADESKILL_ONOFF"] = "设置技能",
 	["CONFIG_TRAWLERTOTEM_INFO"] = "如果启用，使用玩具.",

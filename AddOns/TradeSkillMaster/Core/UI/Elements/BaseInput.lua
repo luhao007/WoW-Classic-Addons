@@ -408,6 +408,9 @@ function BaseInput._SetValueHelper(self, value, noCallback)
 		end
 		return true
 	else
+		if self._value == "" then
+			self._value = value
+		end
 		if self._isValid then
 			self._isValid = false
 			self:_DrawBackgroundAndBorder()

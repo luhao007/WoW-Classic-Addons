@@ -296,7 +296,7 @@ function private.ErrorHandler(msg, thread)
 	private.errorFrame.isManual = isManual
 	private.errorFrame:Show()
 	print(PRINT_PREFIX..L["Looks like TradeSkillMaster has encountered an error. Please help the author fix this error by following the instructions shown."])
-	if TSM.__IS_TEST_ENV then
+	if TSM.IsTestEnvironment() then
 		print(private.errorFrame.errorStr)
 	end
 
@@ -722,6 +722,9 @@ do
 		elseif strmatch(tsmErrMsg, "auc%-stat%-wowuction") or strmatch(tsmErrMsg, "TheUndermineJournal%.lua") or strmatch(tsmErrMsg, "\\SavedVariables\\TradeSkillMaster") or strmatch(tsmErrMsg, "AddOn TradeSkillMaster[_a-zA-Z]* attempted") or (strmatch(tsmErrMsg, "ItemTooltipClasses\\Wrapper%.lua:98") and strmatch(tsmErrMsg, "SetQuest")) then
 			-- explicitly ignore these errors
 			tsmErrMsg = nil
+		elseif strmatch(tsmErrMsg, "Blizzard_AuctionUI%.lua:751") then
+			-- suppress this Blizzard error
+			return
 		end
 		if tsmErrMsg then
 			-- look at the stack trace to see if this is a TSM error

@@ -1,7 +1,7 @@
 ## Interface: 20501
 ## Author: TradeSkillMaster Team
-## Version: v4.10.42
-## OptionalDeps: Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
+## Version: v4.11.8
+## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 
 ## Title: |cff00fe00TradeSkillMaster|r
@@ -33,9 +33,6 @@ LibTSM\Data\Prospect.lua
 LibTSM\Data\Transform.lua
 LibTSM\Data\VendorSell.lua
 LibTSM\Data\VendorTrade.lua
-
-# Constant data files (no dependencies)
-Core\Const\__init.lua
 
 # LibTSM utility files
 LibTSM\Util\String.lua
@@ -72,6 +69,8 @@ LibTSM\Util\DatabaseClasses\DBTable.lua
 LibTSM\Util\DatabaseClasses\Schema.lua
 LibTSM\Util\Database.lua
 LibTSM\Util\ItemString.lua
+LibTSM\Util\CraftString.lua
+LibTSM\Util\RecipeString.lua
 LibTSM\Util\Future.lua
 LibTSM\Util\Wow.lua
 LibTSM\Util\ScriptWrapper.lua
@@ -116,17 +115,18 @@ LibTSM\Service\AltTracking.lua
 LibTSM\Service\Inventory.lua
 
 # LibTSM UI files
+LibTSM\UI\DragContext.lua
 LibTSM\UI\Tooltip.lua
 LibTSM\UI\UIElements.lua
+
+# Constant data files (no dependencies)
+Core\Const\__init.lua
 
 # Lib files which only depend on Util files
 Core\Lib\Addon.lua
 
 # Main addon file
 TradeSkillMaster.lua
-
-# Lib files which depend on the main addon file being loaded
-Core\Lib\Exporter.lua
 
 # UI files (depend on main addon file being loaded)
 Core\UI\UI.lua

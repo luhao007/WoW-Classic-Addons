@@ -25,26 +25,14 @@
 -- Colours
 -----------------------------------------------------------------------------
 
-local PURPLE = "|cff999999"; -- grey atm -- removed/useless atm
-local RED = "|cffff0000";
-local REDA = "|cffcc6666";
+local RED = "|cffFF0000";
 local WHITE = "|cffFFFFFF";
-local GREEN = "|cff1eff00";
-local GREY = "|cff9F3FFF"; -- purple now ^^
-local BLUE = "|cff0070dd";
-local ORANGE = "|cffff6090"; -- it is pink now
-local YELLOW = "|cffffff00";
-local BLACK = "|c0000000f";
-local DARKGREEN = "|cff008000";
-local BLUB = "|cffd45e19";
-
--- Quest Color
-local Grau = "|cff9d9d9d"
-local Gruen = "|cff1eff00"
-local Orange = "|cffFF8000"
-local Rot = "|cffFF0000"
-local Gelb = "|cffFFd200"
-local Blau = "|cff0070dd"
+local GREEN = "|cff1EFF00";
+local GREY = "|cff9D9D9D";
+local BLUE = "|cff0070DD";
+local ORANGE = "|cffFF8000"; 
+local YELLOW = "|cffFFD200";
+local BLACK = "|c0000000F";
 
 
 
@@ -66,11 +54,25 @@ AQINSTATM = ""; -- variable to check whether AQINSTANZ has changed (see function
 local AQMAXINSTANCES = "68"
 local AQMAXQUESTS = "23"
 
--- Set title for AtlasQuest side panel
-ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest 4.12.80";
+
+
+-- Now I only have to update the version number in the TOC.  
+local AQVERSION = GetAddOnMetadata("AtlasQuest","Version");
+
+-- Checks WoW version and sets warning message in AtlasQuest title if wrong version.  Experimental.  Inspired by code from Atlas.
+local WoWVersion  = select(4, GetBuildInfo())
+if WoWVersion < 20000 then
+	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;
+elseif WoWVersion > 19999 and WoWVersion < 90000 then 
+	ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest TBC "..AQVERSION;
+else
+	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;
+end
+
+
 
 local AtlasQuest_Defaults = {
-  ["Version"] =  "4.12.80",
+  ["Version"] =  AQVERSION,
   [UnitName("player")] = {
     ["ShownSide"] = "Left",
     ["AtlasAutoShow"] = 1,
@@ -124,10 +126,6 @@ function AtlasQuest_Initialize()
     AtlasQuest_LoadData();
   end
 
-  -- Register AQ Tooltip with EquipCompare if enabled.
-  if((AQCompareTooltip ~= nil) and EquipCompare_RegisterTooltip) then
-    EquipCompare_RegisterTooltip(AtlasQuestTooltip);
-  end
   Initialized = 1;
 end
 
@@ -204,7 +202,6 @@ function AQ_OnLoad()
 	  AQATLASMAP = 36;
     end
     --this:RegisterForDrag("LeftButton");
-    AQSlashCommandfunction();
 	-- not showed yet
     HideUIPanel(AtlasQuestFrame);
     HideUIPanel(AtlasQuestInsideFrame);
@@ -213,14 +210,6 @@ function AQ_OnLoad()
 end
 
 
------------------------------------------------------------------------------
--- Slash command added
------------------------------------------------------------------------------
-function AQSlashCommandfunction()
-    SlashCmdList["ATLASQ"]=atlasquest_command;
-	SLASH_ATLASQ1="/aq";
-	SLASH_ATLASQ2="/atlasquest";
-end
 
 -----------------------------------------------------------------------------
 -- Set the button text
@@ -368,21 +357,21 @@ local AQQuestfarbe2
              if (getglobal("Inst"..AQINSTANZ.."Quest"..b) ~= nil) then
                 if ( AQQuestlevelf ~= nil or AQQuestlevelf ~= 0 or AQQuestlevelf ~= "") then
                    if ( AQQuestlevelf == UnitLevel("player") or AQQuestlevelf == UnitLevel("player") + 2 or AQQuestlevelf  == UnitLevel("player") - 2 or AQQuestlevelf == UnitLevel("player") + 1 or AQQuestlevelf  == UnitLevel("player") - 1) then
-                     AQQuestfarbe = Gelb;
+                     AQQuestfarbe = YELLOW;
                    elseif ( AQQuestlevelf > UnitLevel("player") + 2 and AQQuestlevelf <= UnitLevel("player") + 4) then
-                     AQQuestfarbe = Orange;
-                   elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 200) then
-                     AQQuestfarbe = Rot;
+                     AQQuestfarbe = ORANGE;
+                   elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 100) then
+                     AQQuestfarbe = RED;
                    elseif ( AQQuestlevelf < UnitLevel("player") - 7) then
-                     AQQuestfarbe = Grau;
+                     AQQuestfarbe = GREY;
                    elseif ( AQQuestlevelf >= UnitLevel("player") - 7 and AQQuestlevelf < UnitLevel("player") - 2) then
-                     AQQuestfarbe = Gruen;
+                     AQQuestfarbe = GREEN;
                    end
                    if (AQNOColourCheck) then
-                      AQQuestfarbe = Gelb;
+                      AQQuestfarbe = YELLOW;
                    end
-                   if ( AQQuestlevelf == 200 or AQCompareQLtoAQ(b)) then
-                      AQQuestfarbe = Blau;
+                   if ( AQQuestlevelf == 100 or AQCompareQLtoAQ(b)) then
+                      AQQuestfarbe = BLUE;
                    end
                    if ( AQ[ "AQFinishedQuest_Inst"..AQINSTANZ.."Quest"..b ] == 1) then
                      AQQuestfarbe = WHITE;
@@ -421,21 +410,21 @@ local AQQuestfarbe2
                 AQQuestlevelf = tonumber(getglobal("Inst"..AQINSTANZ.."Quest"..b.."_HORDE_Level"));
                 if ( AQQuestlevelf ~= nil or AQQuestlevelf ~= 0 or AQQuestlevelf ~= "") then
                    if ( AQQuestlevelf == UnitLevel("player") or AQQuestlevelf == UnitLevel("player") + 2 or AQQuestlevelf  == UnitLevel("player") - 2 or AQQuestlevelf == UnitLevel("player") + 1 or AQQuestlevelf  == UnitLevel("player") - 1) then
-                     AQQuestfarbe = Gelb;
+                     AQQuestfarbe = YELLOW;
                    elseif ( AQQuestlevelf > UnitLevel("player") + 2 and AQQuestlevelf <= UnitLevel("player") + 4) then
-                     AQQuestfarbe = Orange;
-                   elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 200) then
-                     AQQuestfarbe = Rot;
+                     AQQuestfarbe = ORANGE;
+                   elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 100) then
+                     AQQuestfarbe = RED;
                    elseif ( AQQuestlevelf < UnitLevel("player") - 7) then
-                     AQQuestfarbe = Grau;
+                     AQQuestfarbe = GREY;
                    elseif ( AQQuestlevelf >= UnitLevel("player") - 7 and AQQuestlevelf < UnitLevel("player") - 2) then
-                     AQQuestfarbe = Gruen;
+                     AQQuestfarbe = GREEN;
                    end
                    if (AQNOColourCheck) then
-                      AQQuestfarbe = Gelb;
+                      AQQuestfarbe = YELLOW;
                    end
-                   if ( AQQuestlevelf == 200 or AQCompareQLtoAQ(b)) then
-                      AQQuestfarbe = Blau;
+                   if ( AQQuestlevelf == 100 or AQCompareQLtoAQ(b)) then
+                      AQQuestfarbe = BLUE;
                    end
                    if ( AQ[ "AQFinishedQuest_Inst"..AQINSTANZ.."Quest"..b.."_HORDE" ] == 1) then
                      AQQuestfarbe = WHITE;
@@ -456,6 +445,7 @@ end
 -- Colours quest blue if they are in your questlog
 -----------------------------------------------------------------------------
 function AQCompareQLtoAQ(Quest)
+
 return false;
 --[[
 local TotalQuestEntries
@@ -485,9 +475,9 @@ local count
       end
     end
     --this checks should be done everytime when the questupdate event gets executed
-    TotalQuestEntries = GetNumQuestLogEntries();
+    TotalQuestEntries = C_QuestLog.GetNumQuestLogEntries();
     for CurrentQuestnum=1, TotalQuestEntries do
-      x, y, z = GetQuestLogTitle(CurrentQuestnum)
+      x, y, z = C_QuestLog.GetTitleForLogIndex(CurrentQuestnum)
       TotalQuestsTable = {
         [CurrentQuestnum] = x,
       };
@@ -526,10 +516,10 @@ local count
   else
     return false;
   end
+
 --]]
 
 end
-
 
 
 

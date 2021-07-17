@@ -16,7 +16,7 @@ local private = {
 	writeIndex = 1,
 	len = 0,
 	temp = {},
-	logToChat = TSM.__IS_TEST_ENV or false,
+	logToChat = TSM.IsTestEnvironment() or false,
 	currentThreadNameFunc = nil,
 	stackLevel = 3,
 	chatFrame = nil,
@@ -41,8 +41,12 @@ function Log.SetChatFrame(chatFrame)
 end
 
 function Log.SetLoggingToChatEnabled(enabled)
-	if TSM.__IS_TEST_ENV then
+	if TSM.IsTestEnvironment() then
+		-- always enable in test environments
 		enabled = true
+	elseif not TSM.IsDevVersion() then
+		-- always disable in non-dev environments
+		enabled = false
 	end
 	if private.logToChat == enabled then
 		return

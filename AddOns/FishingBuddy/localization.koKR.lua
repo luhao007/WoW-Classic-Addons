@@ -52,6 +52,10 @@ FishingTranslations["koKR"] = {
 	["CONFIG_BOBBINGBERG_INFO"] = "선택하면, 빕시의 움직이는 얼음 덩어리를 사용합니다.",
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "낚시왕 선발대회에 대한 타이머 표시",
 	["CONFIG_CONTESTS_ONOFF"] = "낚시왕 선발대회 지원",
 	["CONFIG_CREATEMACRO_INFO"] = "#NAME# 함수를 실행하는 매크로를 만듭니다.",
@@ -216,6 +220,10 @@ FishingTranslations["koKR"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "툴팁에 낚시정보 표시",
 	["CONFIG_TOONMACRO_INFO"] = "플레이어 마다 낚시 매크로 생성",
 	["CONFIG_TOONMACRO_ONOFF"] = "플레이어 별",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRADESKILL_INFO"] = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",--]] 
 	--[[Translation missing --]]

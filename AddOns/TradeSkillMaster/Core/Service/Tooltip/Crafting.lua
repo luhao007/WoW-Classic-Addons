@@ -9,6 +9,7 @@ local Crafting = TSM.Tooltip:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
+local TempTable = TSM.Include("Util.TempTable")
 local private = {}
 
 
@@ -34,14 +35,14 @@ end
 -- ============================================================================
 
 function private.PopulateCostLine(tooltip, itemString)
-	itemString = itemString and ItemString.GetBaseFast(itemString)
-	assert(itemString)
+	local baseItemString = itemString and ItemString.GetBaseFast(itemString)
+	assert(baseItemString)
 	local cost, profit = nil, nil
 	if itemString == ItemString.GetPlaceholder() then
 		-- example tooltip
 		cost = 55
 		profit = 20
-	elseif not TSM.Crafting.CanCraftItem(itemString) then
+	elseif not TSM.Crafting.CanCraftItem(baseItemString) then
 		return
 	else
 		cost = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
@@ -55,21 +56,34 @@ function private.PopulateCostLine(tooltip, itemString)
 end
 
 function private.PopulateDetailedMatsLines(tooltip, itemString)
-	itemString = itemString and ItemString.GetBaseFast(itemString)
-	assert(itemString)
-	if itemString == ItemString.GetPlaceholder() then
+	local baseItemString = itemString and ItemString.GetBaseFast(itemString)
+	assert(baseItemString)
+	if baseItemString == ItemString.GetPlaceholder() then
 		-- example tooltip
 		tooltip:StartSection()
 		tooltip:AddSubItemValueLine(ItemString.GetPlaceholder(), 11, 5)
 		tooltip:EndSection()
 		return
-	elseif not TSM.Crafting.CanCraftItem(itemString) then
+	elseif not TSM.Crafting.CanCraftItem(baseItemString) then
 		return
 	end
 
-	local _, spellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
+	local optionalMats = TempTable.Acquire()
+	local _, spellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString, optionalMats)
 	if not spellId then
+		TempTable.Release(optionalMats)
 		return
+	end
+
+	-- only include optional mats which actually belong to the spell
+	local hasOptionalMat = TempTable.Acquire()
+	for _, optionalMatString in TSM.Crafting.OptionalMatIterator(spellId) do
+		for _, optionalMatItemString in ipairs(optionalMats) do
+			local itemId = ItemString.ToId(optionalMatItemString)
+			if strmatch(optionalMatString, "[:,]"..itemId.."$") or strmatch(optionalMatString, "[:,]"..itemId..",") then
+				hasOptionalMat[optionalMatItemString] = true
+			end
+		end
 	end
 
 	tooltip:StartSection()
@@ -77,6 +91,13 @@ function private.PopulateDetailedMatsLines(tooltip, itemString)
 	for _, matItemString, matQuantity in TSM.Crafting.MatIterator(spellId) do
 		tooltip:AddSubItemValueLine(matItemString, TSM.Crafting.Cost.GetMatCost(matItemString), matQuantity / numResult)
 	end
+	for _, matItemString in ipairs(optionalMats) do
+		if hasOptionalMat[matItemString] then
+			tooltip:AddSubItemValueLine(matItemString, TSM.Crafting.Cost.GetMatCost(matItemString), 1 / numResult)
+		end
+	end
+	TempTable.Release(hasOptionalMat)
+	TempTable.Release(optionalMats)
 	tooltip:EndSection()
 end
 

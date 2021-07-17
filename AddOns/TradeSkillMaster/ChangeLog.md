@@ -1,7 +1,6 @@
-## v4.10.42 Changes
+## v4.11.8 Changes
 
-* [BCC] Added missing gem/quest item AH categories
-* [BCC] Arena points support for vendoring
-* [BCC] Disenchanting material data fixes
+* [Retail] Fixes some crafting issues with some optional materials
+* Fixed errors related to scrolling tables
 
 [Known Issues](http://support.tradeskillmaster.com/display/KB/TSM4+Currently+Known+Issues)

@@ -7,7 +7,36 @@ local _
 function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
-		
+
+			{1625966028,  "Backend Change", "July 10th, 2021", "Changed the way caches are stored.", "Terciob"},
+
+			{1625732512,  "Bug Fix", "July 8th, 2021", "Fixing an issue with older mods/scripts imports not working properly.", "cont1nuity"},
+			{1625732512,  "Bug Fix", "July 8th, 2021", "Fixing an issue with color alpha changes not being carried out properly.", "cont1nuity"},
+
+			{1625732511,  "New Feature", "July 8th, 2021", "New scripts: 'Cast - Alert + Timer [P]', 'Cast - Castbar is Timer [P]' and 'Cast - Important Target [P]' + spell trigger updates for existing ones.", "Terciob"},
+			{1625732511,  "Bug Fix", "July 7th, 2021", "Mod Load-Conditions for Encounter IDs should now work consistently after importing from wago.io again.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "Manual and automatic aura tracking lists should now work consistently after importing from wago.io again.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "'Buff Tracking' lists should now work properly after importing a profile.", "cont1nuity"},
+			{1625732511,  "New Feature", "July 4th, 2021", "Adding 'Cast Colors' tab to easily automate cast bar colors.", "Terciob"},
+			{1625732511,  "Bug Fix", "July 4th, 2021", "Better handling of faults during script/mod imports.", "cont1nuity"},
+			{1625732511,  "Bug Fix", "July 2nd, 2021", "Enabling enemy player class color setting.", "cont1nuity"},
+			
+			{1625133487,  "Bug Fix", "July 1st, 2021", "Adding consistency checks for broken mod / script imports.", "cont1nuity"},
+			
+			{1624829303,  "Bug Fix", "June 30th, 2021", "Draw indicators above healthbar borders.", "cont1nuity"},
+			{1624829303,  "Backend Change", "June 29th, 2021", "Failsafe checks for 'Plater.HideHealthBar' when selecting to show name-only mode.", "cont1nuity"},
+			{1624829303,  "Backend Change", "June 29th, 2021", "ToC update for 9.1.0 retail client.", "cont1nuity"},
+			{1624829303,  "Bug Fix", "June 27th, 2021", "Fixing an issue with the NPC Color Picker and '/plater addnpc' not working properly.", "cont1nuity"},
+			
+			{1624299952,  "Backend Change", "June 21st, 2021", "Profiling now logs FPS.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 21st, 2021", "Switching back to official LibRangeCheck.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 16th, 2021", "Enabling execute range indicator for paladins in TBC.", "cont1nuity"},
+			{1624299952,  "Bug Fix", "June 14th, 2021", "Correctly reset namepalte scale.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Removing redundant calls.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Nameplate update ticks are now spread across multiple frames for smother update cycles.", "cont1nuity"},
+			{1624299952,  "Backend Change", "June 8th, 2021", "Performance logging now captures unit aura updates and quest checks.", "cont1nuity"},
+			{1624299952,  "Bug Fix", "June 8th, 2021", "Fixing an issue with unit name updates.", "cont1nuity"},
+			
 			{1621935367,  "New Feature", "June 3rd, 2021", "New function 'Plater.SetNameplateScale(unitFrame, scale)' to a custom nameplate scale factor.", "cont1nuity"},
 			{1621935367,  "New Feature", "May 30th, 2021", "Mod 'Send Comm Message' hook to periodically send comms via 'Plater.SendComm(...)' calls to the exact same mod of another user in party or raid.", "cont1nuity"},
 			{1621935367,  "New Feature", "May 25th, 2021", "Mod 'Receive Comm Message' hook to react to 'Plater.SendComm(...)' calls from the exact same mod of another user in party or raid.", "Terciob"},

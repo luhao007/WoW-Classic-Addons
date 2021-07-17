@@ -43,12 +43,13 @@ GuildTracking:OnSettingsLoad(function()
 		:AddNumberField("slot")
 		:AddStringField("itemString")
 		:AddSmartMapField("baseItemString", ItemString.GetBaseMap(), "itemString")
+		:AddSmartMapField("levelItemString", ItemString.GetLevelMap(), "itemString")
 		:AddNumberField("quantity")
 		:AddIndex("slotId")
 		:AddIndex("itemString")
 		:Commit()
 	private.quantityDB = Database.NewSchema("GUILD_TRACKING_QUANTITY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:AddNumberField("quantity")
 		:Commit()
 	if not TSM.IsWowClassic() then
@@ -66,9 +67,9 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function GuildTracking.BaseItemIterator()
+function GuildTracking.ItemIterator()
 	return private.quantityDB:NewQuery()
-		:Select("itemString")
+		:Select("levelItemString")
 		:IteratorAndRelease()
 end
 
@@ -80,14 +81,12 @@ function GuildTracking.CreateQueryItem(itemString)
 	local query = GuildTracking.CreateQuery()
 	if itemString == ItemString.GetBaseFast(itemString) then
 		query:Equal("baseItemString", itemString)
+	elseif ItemString.IsLevel(itemString) then
+		query:Equal("levelItemString", itemString)
 	else
 		query:Equal("itemString", itemString)
 	end
 	return query
-end
-
-function GuildTracking.GetQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "quantity") or 0
 end
 
 
@@ -131,9 +130,9 @@ function private.GetGuildName()
 	TempTable.Release(validGuilds)
 
 	private.settings.guildVaults[PLAYER_GUILD] = private.settings.guildVaults[PLAYER_GUILD] or {}
-	for itemString, quantity in pairs(private.settings.guildVaults[PLAYER_GUILD]) do
-		if quantity <= 0 or itemString ~= ItemString.GetBase(itemString) then
-			private.settings.guildVaults[PLAYER_GUILD][itemString] = nil
+	for levelItemString, quantity in pairs(private.settings.guildVaults[PLAYER_GUILD]) do
+		if quantity <= 0 or levelItemString ~= ItemString.ToLevel(levelItemString) then
+			private.settings.guildVaults[PLAYER_GUILD][levelItemString] = nil
 		end
 	end
 	private.RebuildQuantityDB()
@@ -141,11 +140,11 @@ end
 
 function private.RebuildQuantityDB()
 	private.quantityDB:TruncateAndBulkInsertStart()
-	for itemString, quantity in pairs(private.settings.guildVaults[PLAYER_GUILD]) do
+	for levelItemString, quantity in pairs(private.settings.guildVaults[PLAYER_GUILD]) do
 		if quantity > 0 then
-			private.quantityDB:BulkInsertNewRow(itemString, quantity)
+			private.quantityDB:BulkInsertNewRow(levelItemString, quantity)
 		else
-			private.settings.guildVaults[PLAYER_GUILD][itemString] = nil
+			private.settings.guildVaults[PLAYER_GUILD][levelItemString] = nil
 		end
 	end
 	private.quantityDB:BulkInsertEnd()
@@ -193,12 +192,13 @@ function private.ScanGuildBank()
 				local itemLink = GetGuildBankItemLink(tab, slot)
 				if itemLink then
 					local slotId = SlotId.Join(tab, slot)
-					local baseItemString = ItemString.GetBase(itemLink)
-					if baseItemString == ItemString.GetPetCage() then
+					local itemString = ItemString.Get(itemLink)
+					local levelItemString = ItemString.ToLevel(itemString)
+					if levelItemString == ItemString.GetPetCage() then
 						private.pendingPetSlotIds[slotId] = true
-						baseItemString = nil
+						levelItemString = nil
 					end
-					if baseItemString then
+					if levelItemString then
 						local _, quantity = GetGuildBankItemInfo(tab, slot)
 						if quantity == 0 then
 							-- the info for this slot isn't fully loaded yet
@@ -206,8 +206,7 @@ function private.ScanGuildBank()
 							didFail = true
 							break
 						end
-						private.settings.guildVaults[PLAYER_GUILD][baseItemString] = (private.settings.guildVaults[PLAYER_GUILD][baseItemString] or 0) + quantity
-						local itemString = ItemString.Get(itemLink)
+						private.settings.guildVaults[PLAYER_GUILD][levelItemString] = (private.settings.guildVaults[PLAYER_GUILD][levelItemString] or 0) + quantity
 						private.slotDB:BulkInsertNewRow(slotId, tab, slot, itemString, quantity)
 					end
 				end
@@ -246,8 +245,8 @@ function private.ScanPetsDeferred()
 			if itemString then
 				tinsert(toRemove, slotId)
 				local _, quantity = GetGuildBankItemInfo(tab, slot)
-				local baseItemString = ItemString.GetBase(itemString)
-				private.settings.guildVaults[PLAYER_GUILD][baseItemString] = (private.settings.guildVaults[PLAYER_GUILD][baseItemString] or 0) + quantity
+				local levelItemString = ItemString.ToLevel(itemString)
+				private.settings.guildVaults[PLAYER_GUILD][levelItemString] = (private.settings.guildVaults[PLAYER_GUILD][levelItemString] or 0) + quantity
 				private.slotDB:BulkInsertNewRow(slotId, tab, slot, itemString, quantity)
 			end
 		end

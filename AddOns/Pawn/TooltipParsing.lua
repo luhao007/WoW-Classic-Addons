@@ -221,6 +221,7 @@ PawnRegexes =
 	{L.CritPercent, "CritRating"}, -- Classic, /pawn compare 15062
 	{L.CritRating, "CritRating"}, -- Burning Crusade, /pawn compare 15062
 	{L.CritRating2, "CritRating"}, -- Burning Crusade, /pawn compare 30710
+	{L.CritRating3, "CritRating"}, -- Burning Crusade, /pawn compare 28796
 	{L.CritRatingShort, "CritRating"}, -- Burning Crusade, /pawn compare item:789::::::78
 	{L.ScopeCrit, "CritRating"},
 	{L.ScopeRangedCrit, "CritRating"}, -- Heartseeker Scope
@@ -228,6 +229,7 @@ PawnRegexes =
 	{L.SpellCritRating, "SpellCritRating"}, -- Burning Crusade, /pawn compare 16947
 	{L.SpellCritRating2, "SpellCritRating"}, -- Burning Crusade, /pawn compare 24256
 	{L.SpellCritRatingShort, "SpellCritRating"}, -- Burning Crusade, https://tbc.wowhead.com/item=24050/gleaming-dawnstone
+	{L.SpellCritRatingShort2, "SpellCritRating"}, -- Burning Crusade, /pawn compare 29317 (socket bonus)
 	{L.Hit, "HitRating"}, -- Classic, /pawn compare 16947
 	{L.Hit2, "HitRating"}, -- unused in English
 	{L.HitRating, "HitRating"}, -- Burning Crusade, /pawn compare 28182
@@ -270,11 +272,12 @@ PawnRegexes =
 	{L.Ap3, "Ap"}, -- /pawn compare 18821
 	{L.Rap, "Rap"}, -- /pawn compare 18473
 	{L.FeralAp, "FeralAp"}, -- Classic, /pawn compare 22988
-	{L.FeralApMoonkin, "FeralAp"}, -- Burning Crusade Classic, /pawn compare 22988
+	{L.FeralApMoonkin, "FeralAp"}, -- Burning Crusade, /pawn compare 22988
 	{L.Mp5, "Mp5"}, -- /pawn compare 22988
 	{L.Mp52, "Mp5"}, -- /pawn compare item:789::::::2074
-	{L.Mp53, "Mp5"}, -- Burning Crusade Classic, socket bonus on /pawn compare 34360
-	{L.Mp54, "Mp5"}, -- Burning Crusade Classic, /script PawnUIGetAllTextForItem("item:24057")
+	{L.Mp53, "Mp5"}, -- Burning Crusade, socket bonus on /pawn compare 34360
+	{L.Mp54, "Mp5"}, -- Burning Crusade, /script PawnUIGetAllTextForItem("item:24057") and /pawn compare 28522
+	{L.Mp55, "Mp5"}, -- Burning Crusade, /pawn compare 28304
 	{L.Hp5, "Hp5"}, -- (on live, we used to count 1 HP5 = 3 Stamina)
 	{L.Hp52, "Hp5"}, -- Demon's Blood
 	{L.Hp53, "Hp5"}, -- Aquamarine Signet of Regeneration or /pawn compare item:789::::::2110
@@ -294,7 +297,9 @@ PawnRegexes =
 	{L.SpellDamage2, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- /pawn compare 16947
 	{L.SpellDamage3, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- French on Classic uses two different wordings:  /pawn compare 20641 vs. /pawn compare 10041
 	{L.SpellDamage4, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Simplified Chinese on Classic uses many different wordings:  /pawn compare 16923 vs. /pawn compare 18608
+	{L.SpellDamage5, "SpellDamage", 1, PawnMultipleStatsExtract, "Healing", 1, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare item:789::::::-36
 	{L.SpellDamageAndHealing, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 34360
+	{L.SpellDamageAndHealing2, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare 28304
 	{L.SpellDamageAndHealingEnchant, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /script PawnUIGetAllTextForItem("item:16943:2566") (matches Short in some locales; don't double-dip)
 	{L.SpellDamageAndHealingShort, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /pawn compare item:789::::::2041
 	{L.SpellDamageAndHealingShort2, "Healing", 1, PawnMultipleStatsExtract, "SpellDamage", 2, PawnMultipleStatsExtract}, -- Burning Crusade, /script PawnUIGetAllTextForItem("item:24060")
@@ -368,3 +373,22 @@ PawnRightHandRegexes =
 	{L.Plate, "IsPlate", 1, PawnMultipleStatsFixed},
 	{L.Shield, "IsShield", 1, PawnMultipleStatsFixed},
 }
+
+-- Each language has some regexes that aren't necessary for that particular language. For performance, let's remove those from the table right now.
+-- TODO: For even more of a performance boost, filter out every regex that produces a stat that doesn't exist on the current version of the game.
+local FilteredRegexes = {}
+local _, Regex, LastRegex
+local KeptCount, RemovedCount = 0, 0
+for _, Regex in pairs(PawnRegexes) do
+	if Regex[1] == "" or Regex[1] == "^UNUSED$" then
+		RemovedCount = RemovedCount + 1
+	elseif Regex[1] == nil then
+		VgerCore.Fail("Localization error in regex table for " .. tostring(Regex[2]) .. " AFTER \"" .. VgerCore.Color.Blue .. PawnEscapeString(tostring(LastRegex)) .. "|r\".")
+	else
+		tinsert(FilteredRegexes, Regex)
+		KeptCount = KeptCount + 1
+		LastRegex = Regex[1]
+	end
+end
+PawnRegexes = FilteredRegexes
+--VgerCore.Message("Performance boost: removed " .. RemovedCount .. " regexes (" .. floor(100 * RemovedCount / (RemovedCount + KeptCount)) .. "%)")

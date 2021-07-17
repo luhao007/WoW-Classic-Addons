@@ -22,27 +22,27 @@ local private = {
 
 AltTracking:OnSettingsLoad(function()
 	private.quantityDB = Database.NewSchema("INVENTORY_ALT_QUANTITY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:AddNumberField("quantity")
 		:Commit()
 
 	local altItemQuantity = TempTable.Acquire()
 	for _, factionrealm, character, syncScopeKey in Settings.ConnectedFactionrealmAltCharacterIterator() do
 		for _, key in Vararg.Iterator("bagQuantity", "bankQuantity", "reagentBankQuantity", "auctionQuantity", "mailQuantity") do
-			for itemString, quantity in pairs(Settings.Get("sync", syncScopeKey, "internalData", key)) do
-				altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
+			for levelItemString, quantity in pairs(Settings.Get("sync", syncScopeKey, "internalData", key)) do
+				altItemQuantity[levelItemString] = (altItemQuantity[levelItemString] or 0) + quantity
 			end
 		end
 		local pendingMailLookup = Settings.Get("factionrealm", factionrealm, "internalData", "pendingMail")
 		local pendingMail = pendingMailLookup[character]
 		local isValid = true
 		if pendingMail then
-			for itemString, quantity in pairs(pendingMail) do
+			for levelItemString, quantity in pairs(pendingMail) do
 				if type(quantity) ~= "number" then
 					isValid = false
 					break
 				end
-				altItemQuantity[itemString] = (altItemQuantity[itemString] or 0) + quantity
+				altItemQuantity[levelItemString] = (altItemQuantity[levelItemString] or 0) + quantity
 			end
 		end
 		if not isValid then
@@ -50,8 +50,8 @@ AltTracking:OnSettingsLoad(function()
 		end
 	end
 	private.quantityDB:BulkInsertStart()
-	for itemString, quantity in pairs(altItemQuantity) do
-		private.quantityDB:BulkInsertNewRow(itemString, quantity)
+	for levelItemString, quantity in pairs(altItemQuantity) do
+		private.quantityDB:BulkInsertNewRow(levelItemString, quantity)
 	end
 	private.quantityDB:BulkInsertEnd()
 	TempTable.Release(altItemQuantity)
@@ -63,12 +63,12 @@ end)
 -- Module Functions
 -- ============================================================================
 
-function AltTracking.BaseItemIterator()
+function AltTracking.ItemIterator()
 	return private.quantityDB:NewQuery()
-		:Select("itemString")
+		:Select("levelItemString")
 		:IteratorAndRelease()
 end
 
-function AltTracking.GetQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "quantity") or 0
+function AltTracking.GetQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "quantity") or 0
 end

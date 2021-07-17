@@ -85,8 +85,7 @@ local L = WeakAuras.L
 	L["Anchor"] = "고정시키기"
 	L["Anchor Point"] = "고정 지점"
 	L["Anchored To"] = "다음에 고정:"
-	--[[Translation missing --]]
-	L["And "] = "And "
+	L["And "] = "와"
 	L["and aligned left"] = ", 왼쪽 정렬"
 	L["and aligned right"] = ", 오른쪽 정렬"
 	L["and rotated left"] = ", 왼쪽으로 회전"
@@ -353,6 +352,8 @@ UNIT_POWER_UPDATE, UNIT_AURA PLAYER_TARGET_CHANGED]=]
 	L["False"] = "거짓"
 	--[[Translation missing --]]
 	L["Fetch Affected/Unaffected Names"] = "Fetch Affected/Unaffected Names"
+	--[[Translation missing --]]
+	L["Filter by Arena Spec"] = "Filter by Arena Spec"
 	L["Filter by Class"] = "직업별 필터"
 	L["Filter by Group Role"] = "그룹 역할별 필터"
 	L["Filter by Nameplate Type"] = "이름표 유형별 필터"
@@ -745,6 +746,8 @@ Supports multiple entries, separated by commas
 	L["Spark"] = "섬광"
 	L["Spark Settings"] = "섬광 설정"
 	L["Spark Texture"] = "섬광 텍스쳐"
+	--[[Translation missing --]]
+	L["Specialization"] = "Specialization"
 	L["Specific Unit"] = "특정 유닛"
 	L["Spell ID"] = "주문 ID"
 	L["Stack Count"] = "중첩 횟수"

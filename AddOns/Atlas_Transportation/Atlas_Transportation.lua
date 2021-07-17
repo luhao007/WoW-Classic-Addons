@@ -45,7 +45,7 @@ local WoWClassicEra, WoWClassicTBC, WoWRetail
 local wowtocversion  = select(4, GetBuildInfo())
 if wowtocversion < 20000 then
 	WoWClassicEra = true
-elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+elseif wowtocversion > 19999 and wowtocversion < 90000 then
 	WoWClassicTBC = true
 else
 	WoWRetail = true
@@ -145,7 +145,7 @@ if (WoWClassicEra or WoWClassicTBC) then
 			{ WHIT.."14) "..BZ["Thalanaar"]..ALC["Comma"].._RED..BZ["Feralas"] },
 			{ NUTL.."15) "..BZ["Marshal's Refuge"]..ALC["Comma"].._RED..BZ["Un'Goro Crater"] },
 			{ WHIT.."16) "..BZ["Cenarion Hold"]..ALC["Comma"].._RED..BZ["Silithus"] },
-			{ WHIT.."17) "..BZ["Gadgetzan"]..ALC["Comma"].._RED..BZ["Tanaris Desert"] },
+			{ WHIT.."17) "..BZ["Gadgetzan"]..ALC["Comma"].._RED..BZ["Tanaris"] },
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ NUTL..L["Yellow"]..ALC["Colon"]..L["Taxi Nodes"]..ALC["Hyphen"]..L["Nutral"] },
@@ -172,7 +172,7 @@ if (WoWClassicEra or WoWClassicTBC) then
 			{ WHIT.."16) "..BZ["Freewind Post"]..ALC["Comma"].._RED..BZ["Thousand Needles"] },
 			{ NUTL.."17) "..BZ["Marshal's Refuge"]..ALC["Comma"].._RED..BZ["Un'Goro Crater"] },
 			{ WHIT.."18) "..BZ["Cenarion Hold"]..ALC["Comma"].._RED..BZ["Silithus"] },
-			{ WHIT.."19) "..BZ["Gadgetzan"]..ALC["Comma"].._RED..BZ["Tanaris Desert"] },
+			{ WHIT.."19) "..BZ["Gadgetzan"]..ALC["Comma"].._RED..BZ["Tanaris"] },
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ NUTL..L["Yellow"]..ALC["Colon"]..L["Taxi Nodes"]..ALC["Hyphen"]..L["Nutral"] },
@@ -882,7 +882,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1088,7 +1088,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1183,7 +1183,7 @@ else
 			{ INDENT..GREY.."  -> "..BZ["Paw'Don Village"]..ALC["Comma"]..BZ["The Jade Forest"]..ALC["Comma"]..BZ["Pandaria"] },
 			{ INDENT..GREY.."  -> "..BZ["Shattrath City"]..ALC["Comma"]..BZ["Terokkar Forest"]..ALC["Comma"]..BZ["Outland"] },
 			{ INDENT..GREY.."  -> "..BZ["Caverns of Time"]..ALC["Comma"]..BZ["Tanaris"]..ALC["Comma"]..BZ["Kalimdor"] },
-			
+
 --			{ PURP.." A) "..BZ["The Stair of Destiny"]..ALC["Comma"]..BZ["Hellfire Peninsula"]..ALC["Comma"]..BZ["Outland"], 10003 },
 --			{ PURP.." B) "..BZ["Fuselight-by-the-Sea"]..ALC["Comma"]..BZ["Badlands"], 10004 },
 --			{ PURP.." C) "..BZ["Paw'Don Village"]..ALC["Comma"]..BZ["The Jade Forest"]..ALC["Comma"]..BZ["Pandaria"], 10005 },
@@ -1489,7 +1489,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1618,7 +1618,7 @@ else
 			{ "" },
 			{ _RED..L["Legend"] },
 			{ PURP.."-- : "..L["Portal / Waygate Path to the destination"] },
-			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },	
+			{ CYAN.."-- : "..L["Ship / Zeppelin sailing path to destination"] },
 			{ "" },
 			{ LBLU..ACHIEVEMENTS..ALC["Colon"] },
 			{ LBLU..L["Exploration"] },
@@ -1975,7 +1975,7 @@ else
 			{ WHIT.."37) "..BZ["Soggy's Gamble"] },
 			{ "" },
 			{ BLUE..BZ["Vale of Eternal Blossoms"] },
-			{ WHIT.."38) "..BZ["Serpent's Spine"] },    
+			{ WHIT.."38) "..BZ["Serpent's Spine"] },
 			{ WHIT.."39) "..BZ["Shrine of Two Moons"] },
 			{ "" },
 			{ BLUE..BZ["Isle of Giants"] },

@@ -539,6 +539,9 @@
 --			Changes interface to 90005.
 --			Changes check for renown level to ensure covenant matches as Blizzard renown API ignores covenant.
 --			Starts to add support for Classic Burning Crusade (using interface 20501).
+--		116	Switches to a unified addon for all of Blizzard's releases.
+--			Augments _CovenantRenownMeetsOrExceeds to accept covenant 0 to represent the currrently active covenant, used to indicate that the renown level is at a specific level independent of covenant.
+--			Changed retail interface to 90100.
 --
 --	Known Issues
 --
@@ -1063,6 +1066,9 @@ experimental = false,	-- currently this implementation does not reduce memory si
 					self.capabilities.usesFollowers = not self.existsClassic
 					self.capabilities.usesWorldEvents = not self.existsClassic
 					self.capabilities.usesWorldQuests = not self.existsClassic
+					self.capabilities.usesCallingQuests = not self.existsClassic
+					self.capabilities.usesCampaignQuests = not self.existsClassic
+					self.capabilities.usesFlightPoints = not self.existsClassic
 
                     -- These values are no longer used, but kept for posterity.
 					self.existsPandaria = (self.blizzardRelease >= 15640)
@@ -1475,13 +1481,12 @@ experimental = false,	-- currently this implementation does not reduce memory si
 
 					self:_LoadContinentData()
 
-					local environmentToUse = self:_EnvironmentForLoad()
-					self:LoadAddOn("Grail-Quests-" .. environmentToUse)
+					self:LoadAddOn("Grail-Quests")
 					local originalMem = gcinfo()
-					if self:LoadAddOn("Grail-NPCs-" .. environmentToUse) then
+					if self:LoadAddOn("Grail-NPCs") then
 						self:_ProcessNPCs(originalMem)
 					end
-					self:LoadAddOn("Grail-NPCs-" .. environmentToUse .. "-" .. self.playerLocale)
+					self:LoadAddOn("Grail-NPCs-" .. self.playerLocale)
 					self.npc.name[1] = ADVENTURE_JOURNAL
 
 					-- Now we need to update some information based on the server to which we are connected
@@ -2666,7 +2671,7 @@ end,
 			[6] = { 1445, 1515, 1520, 1679, 1681, 1682, 1708, 1710, 1711, 1731, 1732, 1733, 1735, 1736, 1737, 1738, 1739, 1740, 1741, 1847, 1848, 1849, 1850, },
 			[7] = { 1815, 1828, 1833, 1859, 1860, 1862, 1883, 1888, 1894, 1899, 1900, 1919, 1947, 1948, 1975, 1984, 1989, 2018, 2045, 2097, 2098, 2099, 2100, 2101, 2102, 2135, 2165, 2170, },
 			[8] = { 2103, 2111, 2120, 2156, 2157, 2158, 2159, 2160, 2161, 2162, 2163, 2164, 2233, 2264, 2265, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379, 2380, 2381, 2382, 2383, 2384, 2385, 2386, 2387, 2388, 2389, 2390, 2391, 2392, 2395, 2396, 2397, 2398, 2400, 2401, 2415, 2417, 2427, },
-			[9] = { 2407, 2410, 2413, 2432, 2439, 2445, 2446, 2447, 2448, 2449, 2450, 2451, 2452, 2453, 2454, 2455, 2456, 2457, 2458, 2459, 2460, 2461, 2462, 2463, 2464, 2465, },
+			[9] = { 2407, 2410, 2413, 2432, 2439, 2445, 2446, 2447, 2448, 2449, 2450, 2451, 2452, 2453, 2454, 2455, 2456, 2457, 2458, 2459, 2460, 2461, 2462, 2463, 2464, 2465, 2470, 2472, },
 			},
 
 		-- These reputations use the friendship names instead of normal reputation names
@@ -2960,7 +2965,7 @@ end,
 			["96D"] = "Court of Harvesters", -- 2413
 			["96F"] = "Rajani", -- 2415
 			["971"] = "Uldum Accord", -- 2417
---			["976"] = "The Wild Hunt", -- 2422
+			["976"] = "Night Fae", -- 2422
 			["97B"] = "Aqir Hatchling", -- 2427
 			["980"] = "Ve'nari", -- 2432
 			["987"] = "The Avowed", -- 2439
@@ -2985,6 +2990,8 @@ end,
 			["99F"] = "Marasmius", -- 2463
 			["9A0"] = "Court of Night", -- 2464
 			["9A1"] = "The Wild Hunt",	-- 2465
+			["9A6"] = "Death's Advance", -- 2470
+			["9A8"] = "The Archivists' Codex", -- 2472
 			},
 
 		reputationMappingFaction = {
@@ -3246,7 +3253,9 @@ end,
 			["99E"] = "Neutral", -- 2462	-- TODO: Determine faction
 			["99F"] = "Neutral", -- 2463	-- TODO: Determine faction
 			["9A0"] = "Neutral", -- 2464	-- TODO: Determine faction
-			["9A1"] = "Neutral", -- 2422	-- TODO: Determine faction
+			["9A1"] = "Neutral", -- 2465	-- TODO: Determine faction
+			["9A6"] = "Neutral", -- 2470	-- TODO: Determine faction
+			["9A8"] = "Neutral", -- 2472	-- TODO: Determine faction
 			},
 
 		slashCommandOptions = {},
@@ -3507,6 +3516,8 @@ end,
 				zoneName = zoneName .. ' ('..mapId..')'
 			end
 			zoneTable[#zoneTable + 1] = { name = zoneName, mapID = mapId }
+--self.GDE.zoneNames = self.GDE.zoneNames or {}
+--tinsert(self.GDE.zoneNames, { name = zoneName, mapID = mapId, continent = continentMapId })
 			self.zoneNameMapping[zoneName] = mapId
 			self.mapToContinentMapping[mapId] = continentMapId
 		end,
@@ -8220,28 +8231,18 @@ end
 		end,
 
 		---
-		--  Returns the environment string accounting for the special situation for PTR
-		--  by returning the retail string since our files do not differentiate between
-		--  retail and PTR.
-		--  @return The string used for the environment aspect of loading files.
-		--  @requires Grail.environment
-		_EnvironmentForLoad = function(self)
-			return self.environment == "_ptr_" and "_retail_" or self.environment
-		end,
-
-		---
 		--  Attempts to load the quest names for both the environment and the locale.
-		--  @calls Grail:_EnvironmentForLoad(), Grail:LoadAddOn()
+		--  @calls Grail:LoadAddOn()
 		--  @requires Grail.playerLocale
 		LoadLocalizedQuestNames = function(self)
-			self:LoadAddOn("Grail-Quests-" .. self:_EnvironmentForLoad() .. "-" .. self.playerLocale)
+			self:LoadAddOn("Grail-Quests-" .. self.playerLocale)
 		end,
 
 		---
 		--  Attempts to load the reputation information for the environment.
-		--  @calls Grail:_EnvironmentForLoad(), Grail:LoadAddOn()
+		--  @calls Grail:LoadAddOn()
 		LoadReputations = function(self)
-			self:LoadAddOn("Grail-Reputations-" .. self:_EnvironmentForLoad())
+			self:LoadAddOn("Grail-Reputations")
 		end,
 
 		--	Check the internal npc.locations structure for a location close to
@@ -8852,8 +8853,8 @@ end
 			desiredLevel = tonumber(desiredLevel)
 			if nil == covenant or nil == desiredLevel then return false end
 			local activeCovenant = C_Covenants and C_Covenants.GetActiveCovenantID() or nil
-			if covenant ~= activeCovenant then return false end
-			local levels = C_CovenantSanctumUI and C_CovenantSanctumUI.GetRenownLevels(covenant) or nil
+			if 0 ~= covenant and covenant ~= activeCovenant then return false end
+			local levels = C_CovenantSanctumUI and C_CovenantSanctumUI.GetRenownLevels(activeCovenant) or nil
 			if nil ~= levels then
 				for _, levelInfo in pairs(levels) do
 					if desiredLevel == levelInfo.level then

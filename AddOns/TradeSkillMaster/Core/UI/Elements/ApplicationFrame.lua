@@ -271,7 +271,7 @@ end
 -- @tparam Element frame The element to show in a dialog
 -- @param context The context to set on the dialog frame
 function ApplicationFrame.ShowDialogFrame(self, frame, context)
-	local dialogFrame = UIElements.New("Frame", "_dialog_"..random())
+	local dialogFrame = UIElements.New("Frame", "_dialog_"..random(1, 1000000))
 		:SetRelativeLevel(DIALOG_RELATIVE_LEVEL * (#self._dialogStack + 1))
 		:SetBackgroundColor(Color.GetFullBlack():GetOpacity(DIALOG_OPACITY_PCT))
 		:AddAnchor("TOPLEFT")
@@ -651,7 +651,11 @@ end
 
 function private.GetAppStatusTooltip()
 	local tooltipLines = TempTable.Acquire()
-	tinsert(tooltipLines, format(L["TSM Desktop App Status (%s)"], TSM.GetRegion().."-"..GetRealmName()))
+	local regionRealmName = TSM.GetRegion().."-"..GetRealmName()
+	if TSM.IsWowClassic() then
+		regionRealmName = regionRealmName.."-"..UnitFactionGroup("player")
+	end
+	tinsert(tooltipLines, format(L["TSM Desktop App Status (%s)"], regionRealmName))
 
 	local appUpdateAge = time() - TSM.GetAppUpdateTime()
 	if appUpdateAge < SECONDS_PER_HOUR then

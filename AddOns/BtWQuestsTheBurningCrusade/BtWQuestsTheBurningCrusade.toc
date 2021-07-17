@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Breen
-## Version: 4.1
+## Version: 4.3
 ## Dependencies: BtWQuests
 ## LoadOnDemand: 1
 

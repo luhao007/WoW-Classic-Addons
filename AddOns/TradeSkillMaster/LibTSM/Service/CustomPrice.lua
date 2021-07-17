@@ -837,6 +837,8 @@ function private.ParsePriceString(str, badPriceSources)
 	str = gsub(str, "%([ ]*(baseitem)[ ]*%)", " ~baseitem~ ")
 	-- ensure a space on either side of parentheses and commas
 	str = gsub(str, "[%(%),]", " %1 ")
+	-- convert all whitespace characters to spaces
+	str = gsub(str, "%s", " ")
 	-- remove any occurances of more than one consecutive space
 	str = gsub(str, " [ ]+", " ")
 

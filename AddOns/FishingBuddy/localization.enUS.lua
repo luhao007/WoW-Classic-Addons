@@ -196,6 +196,8 @@ FishingTranslations["enUS"] = {
     CONFIG_BIGDRAENOR_INFO    = "If enabled, attempt to maximize skill while in Draenor and Broken Islands.",
     CONFIG_DALARANLURES_ONOFF = "Dalaran Lures",
     CONFIG_DALARANLURES_INFO  = "If enabled, apply special Dalaran coin lures when available.",
+    CONFIG_CONSERVATORY_ONOFF = "Queen's Pools",
+    CONFIG_CONSERVATORY_INFO  = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",
     CONFIG_SPECIALBOBBERS_ONOFF = "Bobbers",
     CONFIG_SPECIALBOBBERS_INFO  = "If enabled, apply a randomly selected custom bobber.",
 

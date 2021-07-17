@@ -1,8 +1,17 @@
 ------------------------------------------------------------------------
-r233 | arithmandar | 2020-10-26 15:11:35 +0000 (Mon, 26 Oct 2020) | 1 line
+r238 | arithmandar | 2021-06-28 15:51:08 +0000 (Mon, 28 Jun 2021) | 1 line
 Changed paths:
    M /trunk/LibBabble-SubZone-3.0.lua
-   M /trunk/LibBabble-SubZone-3.0.toc
+   M /trunk/LibBabble-SubZone-3.0_deDE.lua
+   M /trunk/LibBabble-SubZone-3.0_esES.lua
+   M /trunk/LibBabble-SubZone-3.0_frFR.lua
+   M /trunk/LibBabble-SubZone-3.0_zhTW.lua
+
+and more
+------------------------------------------------------------------------
+r237 | arithmandar | 2021-06-28 14:50:02 +0000 (Mon, 28 Jun 2021) | 1 line
+Changed paths:
+   M /trunk/LibBabble-SubZone-3.0.lua
    M /trunk/LibBabble-SubZone-3.0_deDE.lua
    M /trunk/LibBabble-SubZone-3.0_esES.lua
    M /trunk/LibBabble-SubZone-3.0_esMX.lua
@@ -14,6 +23,6 @@ Changed paths:
    M /trunk/LibBabble-SubZone-3.0_zhCN.lua
    M /trunk/LibBabble-SubZone-3.0_zhTW.lua
 
-Added zones and translation for 9.0.1.36372
+added JournalInstance and Scenaiors zones
 ------------------------------------------------------------------------
 

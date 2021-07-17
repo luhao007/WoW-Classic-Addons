@@ -26,7 +26,7 @@ end
 
 function Inbox.CreateQuery()
 	return MailTracking.CreateMailInboxQuery()
-		:VirtualField("itemList", "string", private.GetVirtualItemList)
+		:VirtualField("itemList", "string", private.GetItemLinkVirtualField)
 end
 
 
@@ -35,7 +35,7 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.GetVirtualItemList(row)
+function private.GetItemLinkVirtualField(row)
 	private.itemsQuery:BindParams(row:GetField("index"))
 
 	local items = TempTable.Acquire()

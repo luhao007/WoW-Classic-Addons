@@ -10,19 +10,30 @@
 local _, TSM = ...
 local Tooltip = TSM.Init("UI.Tooltip")
 local ItemString = TSM.Include("Util.ItemString")
+local RecipeString = TSM.Include("Util.RecipeString")
+local CraftString = TSM.Include("Util.CraftString")
 local Vararg = TSM.Include("Util.Vararg")
 local Event = TSM.Include("Util.Event")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local private = {
 	currentParent = nil,
 	registeredEvent = false,
+	optionalMatTable = {},
+	unusedOptionalMatTempTables = {},
 }
+local SEP_CHAR = "\001"
 
 
 
 -- ============================================================================
 -- Module Functions
 -- ============================================================================
+
+--- Gets the character used as a separator between left and right text in a tooltip line
+-- @treturn string The separator character
+function Tooltip.GetSepChar()
+	return SEP_CHAR
+end
 
 --- Shows a tooltip which is anchored to the frame.
 -- @tparam Frame parent The parent and anchor frame for the tooltip
@@ -59,6 +70,30 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 		GameTooltip:AddLine(TOOLTIP_HONOR_POINTS, nil, nil, nil, 1)
 	elseif type(data) == "string" and strfind(data, "^currency:") then
 		GameTooltip:SetCurrencyByID(strmatch(data, "currency:(%d+)"))
+	elseif type(data) == "string" and strfind(data, "^r:") then
+		local spellId = RecipeString.GetSpellId(data)
+		if TSM.IsWowClassic() then
+			local index = TSM.Crafting.ProfessionScanner.GetIndexByCraftString(CraftString.Get(spellId))
+			if index then
+				GameTooltip:SetTradeSkillItem(index)
+			end
+		else
+			-- Release the previous tables
+			for _, tbl in ipairs(private.optionalMatTable) do
+				wipe(tbl)
+				tinsert(private.unusedOptionalMatTempTables, tbl)
+			end
+			wipe(private.optionalMatTable)
+			local level = RecipeString.GetLevel(data)
+			for _, slotId, itemId in RecipeString.OptionalMatIterator(data) do
+				local info = tremove(private.unusedOptionalMatTempTables) or {}
+				info.itemID = itemId
+				info.slot = slotId
+				info.count = 1
+				tinsert(private.optionalMatTable, info)
+			end
+			GameTooltip:SetRecipeResultItem(spellId, private.optionalMatTable, level)
+		end
 	elseif type(data) == "string" and (strfind(data, "^\124c.+\124Hitem:") or ItemString.IsItem(data)) then
 		GameTooltip:SetHyperlink(ItemInfo.GetLink(data))
 		showCompare = true
@@ -70,7 +105,7 @@ function Tooltip.Show(parent, data, noWrapping, xOffset)
 		BattlePetToolTip_Show(tonumber(speciesID), tonumber(level) or 0, tonumber(breedQuality) or 0, tonumber(maxHealth) or 0, tonumber(power) or 0, tonumber(speed) or 0, gsub(gsub(data, "^(.*)%[", ""), "%](.*)$", ""))
 	else
 		for _, line in Vararg.Iterator(strsplit("\n", data)) do
-			local textLeft, textRight = strsplit(TSM.CONST.TOOLTIP_SEP, line)
+			local textLeft, textRight = strsplit(SEP_CHAR, line)
 			if textRight then
 				GameTooltip:AddDoubleLine(textLeft, textRight, 1, 1, 1, 1, 1, 1)
 			else

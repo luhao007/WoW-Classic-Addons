@@ -10,6 +10,7 @@ local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
 local Delay = TSM.Include("Util.Delay")
+local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
 local Vararg = TSM.Include("Util.Vararg")
 local Threading = TSM.Include("Service.Threading")
@@ -53,6 +54,14 @@ function PlayerProfessions.OnInitialize()
 	private.StartPlayerProfessionsThread()
 	Event.Register("SKILL_LINES_CHANGED", private.PlayerProfessionsSkillUpdate)
 	Event.Register("LEARNED_SPELL_IN_TAB", private.StartPlayerProfessionsThread)
+end
+
+function PlayerProfessions.GetProfessionSkill(player, profession)
+	return private.db:NewQuery()
+		:Select("level")
+		:Equal("player", player)
+		:Equal("profession", profession)
+		:GetFirstResultAndRelease()
 end
 
 function PlayerProfessions.CreateQuery()
@@ -246,32 +255,38 @@ function private.PlayerProfessionsThread()
 
 	-- clean up crafts which are no longer known
 	local matUsed = Threading.AcquireSafeTempTable()
-	local spellIds = Threading.AcquireSafeTempTable()
-	for _, spellId in TSM.Crafting.SpellIterator() do
-		tinsert(spellIds, spellId)
+	local craftStrings = Threading.AcquireSafeTempTable()
+	for _, craftString in TSM.Crafting.CraftStringIterator() do
+		tinsert(craftStrings, craftString)
 	end
-	for _, spellId in ipairs(spellIds) do
+	for _, craftString in ipairs(craftStrings) do
 		local playersToRemove = TempTable.Acquire()
-		for _, player in Vararg.Iterator(TSM.Crafting.GetPlayers(spellId)) do
+		for _, player in Vararg.Iterator(TSM.Crafting.GetPlayers(craftString)) do
 			-- check if the player still exists and still has this profession
 			local playerProfessions = TSM.db:Get("sync", TSM.db:GetSyncScopeKeyByCharacter(player), "internalData", "playerProfessions")
-			if not playerProfessions or not playerProfessions[TSM.Crafting.GetProfession(spellId)] then
+			if not playerProfessions or not playerProfessions[TSM.Crafting.GetProfession(craftString)] then
 				tinsert(playersToRemove, player)
 			end
 		end
 		local stillExists = true
 		if #playersToRemove > 0 then
-			stillExists = TSM.Crafting.RemovePlayers(spellId, playersToRemove)
+			stillExists = TSM.Crafting.RemovePlayers(craftString, playersToRemove)
 		end
 		TempTable.Release(playersToRemove)
 		if stillExists then
-			for _, itemString in TSM.Crafting.MatIterator(spellId) do
+			for _, itemString in TSM.Crafting.MatIterator(craftString) do
 				matUsed[itemString] = true
+			end
+			for _, itemString in TSM.Crafting.OptionalMatIterator(craftString) do
+				local _, _, matList = strsplit(":", itemString)
+				for itemId in String.SplitIterator(matList, ",") do
+					matUsed["i:"..itemId] = true
+				end
 			end
 		end
 		Threading.Yield()
 	end
-	Threading.ReleaseSafeTempTable(spellIds)
+	Threading.ReleaseSafeTempTable(craftStrings)
 
 	-- clean up mats which aren't used anymore
 	local toRemove = TempTable.Acquire()

@@ -1,8 +1,12 @@
 # Lib: DogTag-3.0
 
-## [v90000.6](https://github.com/parnic/LibDogTag-3.0/tree/v90000.6) (2021-04-10)
-[Full Changelog](https://github.com/parnic/LibDogTag-3.0/compare/v90000.5...v90000.6) [Previous Releases](https://github.com/parnic/LibDogTag-3.0/releases)
+## [v90100.1](https://github.com/parnic/LibDogTag-3.0/tree/v90100.1) (2021-06-28)
+[Full Changelog](https://github.com/parnic/LibDogTag-3.0/compare/v90000.6...v90100.1) [Previous Releases](https://github.com/parnic/LibDogTag-3.0/releases)
 
-- Add support for ClassColors mods (#4)  
-    Fixes #3  
-- Update to use project-date-integer  
+- Prep for WoW 9.1  
+- Update with latest community packager changes for BC-Classic  
+- Update for latest community packager features  
+- Check method exists before calling it  
+    This can happen when a post-CustomClassColors version replaces a  
+    pre-CustomClassColors version.  
+    Fixes #5  

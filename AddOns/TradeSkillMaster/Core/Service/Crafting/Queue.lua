@@ -6,13 +6,18 @@
 
 local _, TSM = ...
 local Queue = TSM.Crafting:NewPackage("Queue")
+local ProfessionInfo = TSM.Include("Data.ProfessionInfo")
+local CraftString = TSM.Include("Util.CraftString")
 local Database = TSM.Include("Util.Database")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
+local RecipeString = TSM.Include("Util.RecipeString")
+local ItemString = TSM.Include("Util.ItemString")
 local Inventory = TSM.Include("Service.Inventory")
 local CustomPrice = TSM.Include("Service.CustomPrice")
 local private = {
 	db = nil,
+	optionalMatTemp = {},
 }
 local MAX_NUM_QUEUED = 9999
 
@@ -24,12 +29,13 @@ local MAX_NUM_QUEUED = 9999
 
 function Queue.OnEnable()
 	private.db = Database.NewSchema("CRAFTING_QUEUE")
-		:AddUniqueNumberField("spellId")
+		:AddUniqueStringField("recipeString")
+		:AddStringField("craftString")
 		:AddNumberField("num")
 		:Commit()
 	private.db:SetQueryUpdatesPaused(true)
-	for spellId, data in pairs(TSM.db.factionrealm.internalData.crafts) do
-		Queue.SetNum(spellId, data.queued) -- sanitize / cache the number queued
+	for recipeString, numQueued in pairs(TSM.db.factionrealm.internalData.craftingQueue) do
+		Queue.SetNum(recipeString, numQueued) -- sanitize / cache the number queued
 	end
 	private.db:SetQueryUpdatesPaused(false)
 end
@@ -42,53 +48,56 @@ function Queue.CreateQuery()
 	return private.db:NewQuery()
 end
 
-function Queue.SetNum(spellId, num)
-	local craftInfo = TSM.db.factionrealm.internalData.crafts[spellId]
-	if not craftInfo then
-		Log.Err("Could not find craft: "..spellId)
-		return
-	end
-	craftInfo.queued = min(max(Math.Round(num or 0), 0), MAX_NUM_QUEUED)
+function Queue.SetNum(recipeString, num)
+	assert(type(recipeString) == "string")
+	assert(strfind(recipeString, "^r:%d+"))
+	local numQueued = min(max(Math.Round(num or 0), 0), MAX_NUM_QUEUED)
+	TSM.db.factionrealm.internalData.craftingQueue[recipeString] = numQueued
 	local query = private.db:NewQuery()
-		:Equal("spellId", spellId)
+		:Equal("recipeString", recipeString)
 	local row = query:GetFirstResult()
-	if row and craftInfo.queued == 0 then
+	if row and numQueued == 0 then
 		-- delete this row
 		private.db:DeleteRow(row)
 	elseif row then
 		-- update this row
-		row:SetField("num", craftInfo.queued)
+		row:SetField("num", numQueued)
 			:Update()
-	elseif craftInfo.queued > 0 then
+	elseif numQueued > 0 then
+		local craftString = CraftString.FromRecipeString(recipeString)
 		-- insert a new row
 		private.db:NewRow()
-			:SetField("spellId", spellId)
-			:SetField("num", craftInfo.queued)
+			:SetField("recipeString", recipeString)
+			:SetField("craftString", craftString)
+			:SetField("num", numQueued)
 			:Create()
 	end
 	query:Release()
 end
 
-function Queue.GetNum(spellId)
-	return private.db:GetUniqueRowField("spellId", spellId, "num") or 0
+function Queue.GetNum(recipeString)
+	return private.db:GetUniqueRowField("recipeString", recipeString, "num") or 0
 end
 
-function Queue.Add(spellId, quantity)
-	Queue.SetNum(spellId, Queue.GetNum(spellId) + quantity)
+function Queue.GetNumByCraftString(craftString)
+	return private.db:NewQuery()
+		:Equal("craftString", craftString)
+		:SumAndRelease("num")
 end
 
-function Queue.Remove(spellId, quantity)
-	Queue.SetNum(spellId, Queue.GetNum(spellId) - quantity)
+function Queue.Add(recipeString, quantity)
+	Queue.SetNum(recipeString, Queue.GetNum(recipeString) + quantity)
+end
+
+function Queue.Remove(recipeString, quantity)
+	Queue.SetNum(recipeString, Queue.GetNum(recipeString) - quantity)
 end
 
 function Queue.Clear()
 	local query = private.db:NewQuery()
-		:Select("spellId")
-	for _, spellId in query:Iterator() do
-		local craftInfo = TSM.db.factionrealm.internalData.crafts[spellId]
-		if craftInfo then
-			craftInfo.queued = 0
-		end
+		:Select("recipeString")
+	for _, recipeString in query:Iterator() do
+		TSM.db.factionrealm.internalData.craftingQueue[recipeString] = nil
 	end
 	query:Release()
 	private.db:Truncate()
@@ -101,16 +110,17 @@ end
 function Queue.GetTotals()
 	local totalCost, totalProfit, totalCastTimeMs, totalNumQueued = nil, nil, nil, 0
 	local query = private.db:NewQuery()
-		:Select("spellId", "num")
-	for _, spellId, numQueued in query:Iterator() do
-		local numResult = TSM.db.factionrealm.internalData.crafts[spellId] and TSM.db.factionrealm.internalData.crafts[spellId].numResult or 0
-		local cost, _, profit = TSM.Crafting.Cost.GetCostsBySpellId(spellId)
+		:Select("recipeString", "craftString", "num")
+	for _, recipeString, craftString, numQueued in query:Iterator() do
+		local numResult = TSM.db.factionrealm.internalData.crafts[craftString] and TSM.db.factionrealm.internalData.crafts[craftString].numResult or 0
+		local cost, _, profit = TSM.Crafting.Cost.GetCostsByRecipeString(recipeString)
 		if cost then
 			totalCost = (totalCost or 0) + cost * numQueued * numResult
 		end
 		if profit then
 			totalProfit = (totalProfit or 0) + profit * numQueued * numResult
 		end
+		local spellId = CraftString.GetSpellId(craftString)
 		local castTime = select(4, GetSpellInfo(spellId))
 		if castTime then
 			totalCastTimeMs = (totalCastTimeMs or 0) + castTime * numQueued
@@ -127,7 +137,8 @@ function Queue.RestockGroups(groups)
 	for _, groupPath in ipairs(groups) do
 		if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
 			for _, itemString in TSM.Groups.ItemIterator(groupPath) do
-				if TSM.Crafting.CanCraftItem(itemString) then
+				local baseItemString = ItemString.GetBaseFast(itemString)
+				if TSM.Crafting.CanCraftItem(baseItemString) then
 					local isValid, err = TSM.Operations.Crafting.IsValid(itemString)
 					if isValid then
 						private.RestockItem(itemString)
@@ -148,8 +159,8 @@ end
 -- ============================================================================
 
 function private.RestockItem(itemString)
-	local cheapestCost, cheapestSpellId = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
-	if not cheapestSpellId then
+	local cheapestCost, cheapestCraftString = TSM.Crafting.Cost.GetLowestCostByItem(itemString)
+	if not cheapestCraftString then
 		-- can't craft this item
 		return
 	end
@@ -181,6 +192,30 @@ function private.RestockItem(itemString)
 	if neededQuantity == 0 then
 		return
 	end
-	-- queue only if it satisfies all operation criteria
-	Queue.SetNum(cheapestSpellId, floor(neededQuantity / TSM.Crafting.GetNumResult(cheapestSpellId)))
+	local itemLevel = ItemString.GetItemLevel(itemString)
+	local levelOptionalMat = itemLevel and ProfessionInfo.GetOptionalMatByItemLevel(itemLevel) or nil
+	assert(not next(private.optionalMatTemp))
+	if levelOptionalMat then
+		local levelOptionalMatItemId = ItemString.ToId(levelOptionalMat)
+		local found = false
+		for _, optionalMatString, slotId in TSM.Crafting.OptionalMatIterator(cheapestCraftString) do
+			if not found and (strmatch(optionalMatString, "[:,]"..levelOptionalMatItemId.."$") or strmatch(optionalMatString, "[:,]"..levelOptionalMatItemId..",")) then
+				private.optionalMatTemp[slotId] = levelOptionalMatItemId
+				found = true
+			end
+		end
+	end
+	local level = CraftString.GetLevel(cheapestCraftString)
+	if level then
+		local relItemLevel, isAbs = ItemString.ParseLevel(ItemString.ToLevel(itemString))
+		if not isAbs then
+			local optionalMatItemString = ProfessionInfo.GetOptionalMatByRelItemLevel(relItemLevel)
+			if relItemLevel and optionalMatItemString then
+				private.optionalMatTemp[#private.optionalMatTemp + 1] = ItemString.ToId(optionalMatItemString)
+			end
+		end
+	end
+	local cheapestRecipeString = RecipeString.FromCraftString(cheapestCraftString, private.optionalMatTemp)
+	wipe(private.optionalMatTemp)
+	Queue.SetNum(cheapestRecipeString, floor(neededQuantity / TSM.Crafting.GetNumResult(cheapestCraftString)))
 end

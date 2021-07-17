@@ -4,9 +4,10 @@
 --    All Rights Reserved - Detailed license information included with addon.     --
 -- ------------------------------------------------------------------------------ --
 
-if not TSMDEV then return end
-
 local _, TSM = ...
+if not TSMDEV then
+	return
+end
 TSMDEV.Profiling = {}
 local Profiling = TSMDEV.Profiling
 local Math = TSM.Include("Util.Math")

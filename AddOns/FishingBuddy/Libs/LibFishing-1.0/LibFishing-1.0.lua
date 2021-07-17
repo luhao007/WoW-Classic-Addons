@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101079
+local MINOR_VERSION = 101082
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -116,7 +116,7 @@ local DEFAULT_SKILL = { ["max"] = 300, ["skillid"] = 356, ["cat"] = 1100, ["rank
 FishLib.continent_fishing = {
     { ["max"] = 300, ["skillid"] = 356, ["cat"] = 1100, ["rank"] = 0 },	-- 2592?
     { ["max"] = 300, ["skillid"] = 356, ["cat"] = 1100, ["rank"] = 0 },
-    { ["max"] = 75, ["skillid"] = 2591, ["cat"] = 1102, ["rank"] = 0 },	-- Outland Fishing
+    { ["max"] = 375, ["skillid"] = 2591, ["cat"] = 1102, ["rank"] = 0 },	-- Outland Fishing
     { ["max"] = 75, ["skillid"] = 2590, ["cat"] = 1104, ["rank"] = 0 },	-- Northrend Fishing
     { ["max"] = 75, ["skillid"] = 2589, ["cat"] = 1106, ["rank"] = 0 },	-- Cataclysm Fishing (Darkmoon Island?)
     { ["max"] = 75, ["skillid"] = 2588, ["cat"] = 1108, ["rank"] = 0 },	-- Pandaria Fishing
@@ -129,7 +129,7 @@ FishLib.continent_fishing = {
 
 local FISHING_LEVELS = {
     300,        -- Classic
-    75,         -- Outland
+    375,        -- Outland
     75,         -- Northrend
     75,         -- Cataclsym
     75,         -- Pandaria
@@ -543,6 +543,15 @@ end
 function FishLib:HasLureBuff()
     for _,lure in ipairs(FISHINGLURES) do
         if self:HasBuff(lure.spell) then
+            return true
+        end
+    end
+    -- return nil
+end
+
+function FishLib:HasHatBuff()
+    for _,hat in ipairs(FISHINGHATS) do
+        if self:HasBuff(hat.spell) then
             return true
         end
     end
@@ -1586,7 +1595,7 @@ function FishLib:GetCurrentFishingLevel()
     local mapID = self:GetCurrentMapId()
     local current_max = 0
     if LT.GetFishinglevel then
-        current_max = LT:GetFishingLevel(mapID)
+        _, current_max = LT:GetFishingLevel(mapID)
     end
     local continent, _ = self:GetCurrentMapContinent()
     if current_max == 0 then

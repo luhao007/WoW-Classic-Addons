@@ -59,6 +59,10 @@ FishingTranslations["deDE"] = {
 	["CONFIG_BOBBINGBERG_INFO"] = "Wenn aktiviert, benutze Bipsis schlingernde Scholle",
 	["CONFIG_BOBBINGBERG_ONOFF"] = [=[Benutze Bipsis schlingernde Scholle
 ]=],
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "Zeigt einen Timer für Angelwettbewerbe an.",
 	["CONFIG_CONTESTS_ONOFF"] = "Unterstützung für Angelwettbewerb",
 	["CONFIG_CREATEMACRO_INFO"] = "Erstellt ein Makro das #NAME# ausführt.",
@@ -222,6 +226,10 @@ Draznar's Style-Wertung: %d]=],
 	["CONFIG_TOOLTIPS_ONOFF"] = "Angel-Informationen in Tooltips anzeigen",
 	["CONFIG_TOONMACRO_INFO"] = "Erstelle ein Angel Makro pro Spieler.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Pro Spieler",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	--[[Translation missing --]]
 	--[[ ["CONFIG_TRADESKILL_INFO"] = "If enabled, open the TradeSkill window to learn skill levels. Otherwise you will have to manually open the Fishing profession.",--]] 
 	--[[Translation missing --]]

@@ -349,7 +349,10 @@ end
 
 function ScrollingTableColumnInfo._GetValueHelper(self, dataType, context, ...)
 	if dataType == "text" then
-		return self._textFunc and self._textFunc(self._element, context) or ""
+		if not self._textFunc then
+			return ""
+		end
+		return self._textFunc(self._element, context)
 	elseif dataType == "icon" then
 		local isMouseOver = ...
 		return self._iconFunc(self._element, context, isMouseOver)

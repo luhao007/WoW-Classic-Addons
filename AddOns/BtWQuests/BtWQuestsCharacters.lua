@@ -1013,6 +1013,9 @@ function BtWQuestsCharacters:OnEvent(event, ...)
     if event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_ENTERING_WORLD" then
         character.xpModifier = PlayerXPModifier();
     end
+    if event == "COVENANT_CHOSEN" or event == "PLAYER_LOGIN" then
+        character.covenantID = C_Covenants and C_Covenants.GetActiveCovenantID() or nil
+    end
     if event == "PLAYER_LOGOUT" then
         character.faction = UnitFactionGroup("player");
         character.sex = UnitSex("player");
@@ -1031,7 +1034,6 @@ function BtWQuestsCharacters:OnEvent(event, ...)
         end
 
         character.renownLevel = C_CovenantSanctumUI and C_CovenantSanctumUI.GetRenownLevel() or 0
-        character.covenantID = C_Covenants and C_Covenants.GetActiveCovenantID() or nil
         character.chromieTimeID = UnitChromieTimeID and UnitChromieTimeID("player") or 0
 
         character.ignoredChains = character.ignoredChains or (BtWQuests_Settings and BtWQuests_Settings.ignoredChains or {});
@@ -1081,6 +1083,9 @@ if GetAchievementInfo then
 end
 if C_PvP and C_PvP.IsWarModeDesired then
     eventHandler:RegisterEvent("WAR_MODE_STATUS_UPDATE");
+end
+if C_Covenants and C_PvP.IsWarModeDesired then
+    eventHandler:RegisterEvent("COVENANT_CHOSEN");
 end
 
 eventHandler:SetScript("OnEvent", function (self, event, ...)

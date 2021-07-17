@@ -730,20 +730,23 @@ LibEvent:attachTrigger("tooltip.style.init", function(self, tip)
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
         edgeSize = 14,
     }
+	if not tip.SetBackdrop then
+		Mixin(tip,BackdropTemplateMixin)
+	end
     tip:SetBackdrop(nil)
-    tip.style = CreateFrame("Frame", nil, tip)
+    tip.style = CreateFrame("Frame", nil, tip, (BackdropTemplateMixin and "BackdropTemplate" or nil))
     tip.style:SetFrameLevel(tip:GetFrameLevel())
     tip.style:SetAllPoints()
     tip.style:SetBackdrop(backdrop)
     tip.style:SetBackdropColor(0, 0, 0, 0.9)
     tip.style:SetBackdropBorderColor(0.6, 0.6, 0.6, 0.8)
-    tip.style.inside = CreateFrame("Frame", nil, tip.style)
+    tip.style.inside = CreateFrame("Frame", nil, tip.style, (BackdropTemplateMixin and "BackdropTemplate" or nil))
     tip.style.inside:SetBackdrop({edgeSize=1,edgeFile="Interface\\Buttons\\WHITE8X8"})
     tip.style.inside:SetPoint("TOPLEFT", tip.style, "TOPLEFT", 1, -1)
     tip.style.inside:SetPoint("BOTTOMRIGHT", tip.style, "BOTTOMRIGHT", -1, 1)
     tip.style.inside:SetBackdropBorderColor(0.1, 0.1, 0.1, 0.8)
     tip.style.inside:Hide()
-    tip.style.outside = CreateFrame("Frame", nil, tip.style)
+    tip.style.outside = CreateFrame("Frame", nil, tip.style, (BackdropTemplateMixin and "BackdropTemplate" or nil))
     tip.style.outside:SetBackdrop({edgeSize=1,edgeFile="Interface\\Buttons\\WHITE8X8"})
     tip.style.outside:SetPoint("TOPLEFT", tip.style, "TOPLEFT", -1, 1)
     tip.style.outside:SetPoint("BOTTOMRIGHT", tip.style, "BOTTOMRIGHT", 1, -1)

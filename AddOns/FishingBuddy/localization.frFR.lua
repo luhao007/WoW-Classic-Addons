@@ -46,6 +46,10 @@ FishingTranslations["frFR"] = {
 	["CONFIG_BIGDRAENOR_ONOFF"] = "Améliore la Pêche au maximum",
 	["CONFIG_BOBBINGBERG_INFO"] = "Si activé, utilise le Bloc de glace branlant de Bipsi.",
 	["CONFIG_BOBBINGBERG_ONOFF"] = "Utiliser Bloc de glace branlant de Bipsi",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "Afficher le compte à rebours pour les concours de pêche.",
 	["CONFIG_CONTESTS_ONOFF"] = "Prise en compte du concours de pêche",
 	["CONFIG_CREATEMACRO_INFO"] = "Crée une macro qui fait les fonctions #NAME#",
@@ -172,6 +176,10 @@ FishingTranslations["frFR"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "Affiche les infos de pêche en infobulle.",
 	["CONFIG_TOONMACRO_INFO"] = "Créer une macro de pêche par joueur.",
 	["CONFIG_TOONMACRO_ONOFF"] = "Par joueur",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	["CONFIG_TRADESKILL_INFO"] = "Si elle est activée, ouvrez la fenêtre TradeSkill pour connaître les niveaux de compétence. Sinon, vous devrez ouvrir manuellement la profession de pêcheur.",
 	["CONFIG_TRADESKILL_ONOFF"] = "Compétences de configuration",
 	["CONFIG_TRAWLERTOTEM_INFO"] = "S'il est activé, utilisez le jouet.",

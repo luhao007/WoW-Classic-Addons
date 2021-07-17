@@ -67,6 +67,7 @@ function PostScan.OnInitialize()
 		:AddStringField("operationName")
 		:AddNumberField("bid")
 		:AddNumberField("buyout")
+		:AddNumberField("itemBid")
 		:AddNumberField("itemBuyout")
 		:AddNumberField("stackSize")
 		:AddNumberField("numStacks")
@@ -98,9 +99,9 @@ end
 function PostScan.CreateBagsQuery()
 	return BagTracking.CreateQueryBagsAuctionable()
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "autoBaseItemString", "")
 		:Distinct("autoBaseItemString")
 		:LeftJoin(private.operationDB, "autoBaseItemString")
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
 		:OrderBy("name", true)
 end
 
@@ -240,17 +241,30 @@ end
 function PostScan.ChangePostDetail(field, value)
 	local postRow = PostScan.GetCurrentRow()
 	local isCommodity = ItemInfo.IsCommodity(postRow:GetField("itemString"))
-	if field == "bid" then
+	if field == "bid" or field == "itemBid" then
 		assert(not isCommodity)
-		value = min(max(value, 1), postRow:GetField("buyout"))
-	elseif field == "buyout" then
-		if not isCommodity and value < postRow:GetField("bid") then
-			postRow:SetField("bid", value)
+		value = max(value, 1)
+		local stackSize = postRow:GetField("stackSize")
+		local itemBid = field == "itemBid" and value or floor(value / stackSize)
+		itemBid = min(itemBid, postRow:GetField("itemBuyout"))
+		postRow:SetField("bid", itemBid * stackSize)
+		postRow:SetField("itemBid", itemBid)
+	elseif field == "buyout" or field == "itemBuyout" then
+		local stackSize = postRow:GetField("stackSize")
+		local itemBuyout = field == "itemBuyout" and value or floor(value / stackSize)
+		if isCommodity or itemBuyout < postRow:GetField("itemBid") then
+			postRow:SetField("bid", itemBuyout * stackSize)
+			postRow:SetField("itemBid", itemBuyout)
 		end
-		TSM.Auctioning.Log.UpdateRowByIndex(postRow:GetField("auctionId"), field, value)
+		TSM.Auctioning.Log.UpdateRowByIndex(postRow:GetField("auctionId"), "buyout", itemBuyout)
+		postRow:SetField("buyout", itemBuyout * stackSize)
+		postRow:SetField("itemBuyout", itemBuyout)
+	elseif field == "postTime" then
+		postRow:SetField("postTime", value)
+	else
+		error("Invalid field: "..tostring(field))
 	end
-	postRow:SetField((field == "buyout" and isCommodity) and "itemBuyout" or field, value)
-		:Update()
+	postRow:Update()
 	postRow:Release()
 end
 
@@ -379,18 +393,22 @@ function private.CanPostItem(itemString, groupPath, numHave)
 	return hasValidOperation and not hasInvalidOperation
 end
 
-function private.IsOperationValid(itemString, num, operationName, operationSettings)
+function private.IsOperationValid(itemString, num, operationName, operationSettings, noLog)
 	local postCap = TSM.Auctioning.Util.GetPrice("postCap", operationSettings, itemString)
 	if not postCap then
 		-- invalid postCap setting
 		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 			Log.PrintfUser(L["Did not post %s because your post cap (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.postCap)
 		end
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		end
 		return nil
 	elseif postCap == 0 then
 		-- posting is disabled, so ignore this operation
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "postDisabled", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "postDisabled", "", 0, math.huge)
+		end
 		return nil
 	end
 
@@ -406,7 +424,9 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 			if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 				Log.PrintfUser(L["Did not post %s because your stack size (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.stackSize)
 			end
-			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+			if not noLog then
+				TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+			end
 			return nil
 		end
 		local maxStackSize = ItemInfo.GetMaxStack(itemString)
@@ -416,7 +436,9 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 			if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 				Log.PrintfUser(L["Did not post %s because Blizzard didn't provide all necessary information for it. Try again later."], ItemInfo.GetLink(itemString))
 			end
-			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+			if not noLog then
+				TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+			end
 			return false
 		elseif maxStackSize < minPostQuantity then
 			-- invalid stack size
@@ -431,13 +453,17 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 			Log.PrintfUser(L["Did not post %s because your keep quantity (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.keepQuantity)
 		end
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		end
 		return nil
 	end
 	num = num - keepQuantity
 	if num < minPostQuantity then
 		-- not enough items to post for this operation
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "postNotEnough", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "postNotEnough", "", 0, math.huge)
+		end
 		return nil
 	end
 
@@ -448,14 +474,18 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 			Log.PrintfUser(L["Did not post %s because your max expires (%s) is invalid. Check your settings."], ItemInfo.GetLink(itemString), operationSettings.maxExpires)
 		end
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		end
 		return nil
 	end
 	if maxExpires > 0 then
 		local numExpires = TSM.Accounting.Auctions.GetNumExpiresSinceSale(itemString)
 		if numExpires and numExpires > maxExpires then
 			-- too many expires, so ignore this operation
-			TSM.Auctioning.Log.AddEntry(itemString, operationName, "postMaxExpires", "", 0, math.huge)
+			if not noLog then
+				TSM.Auctioning.Log.AddEntry(itemString, operationName, "postMaxExpires", "", 0, math.huge)
+			end
 			return nil
 		end
 	end
@@ -483,7 +513,9 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 		if not TSM.db.global.auctioningOptions.disableInvalidMsg then
 			Log.PrintUser(errMsg)
 		end
-		TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		if not noLog then
+			TSM.Auctioning.Log.AddEntry(itemString, operationName, "invalidItemGroup", "", 0, math.huge)
+		end
 		return false
 	else
 		local vendorSellPrice = ItemInfo.GetVendorSell(itemString) or 0
@@ -491,7 +523,15 @@ function private.IsOperationValid(itemString, num, operationName, operationSetti
 			-- just a warning, not an error
 			Log.PrintfUser(L["WARNING: Your minimum price for %s is below its vendorsell price (with AH cut taken into account). Consider raising your minimum price, or vendoring the item."], ItemInfo.GetLink(itemString))
 		end
-		return true, (TSM.IsWowClassic() and stackSize or 1) * postCap
+		if TSM.IsWowClassic() then
+			if not operationSettings.stackSizeIsCap then
+				num = Math.Floor(num, stackSize)
+			end
+			num = min(stackSize * postCap, num)
+		else
+			num = min(num, postCap)
+		end
+		return true, num
 	end
 end
 
@@ -523,7 +563,8 @@ function private.QueryIsBrowseDoneForItem(query, itemString)
 			for _, subRow in query:ItemSubRowIterator(itemString) do
 				local _, itemBuyout = subRow:GetBuyouts()
 				local timeLeft = subRow:GetListingInfo()
-				if itemBuyout > 0 and timeLeft > operationSettings.ignoreLowDuration then
+				local quantity = subRow:GetQuantities()
+				if not TSM.Auctioning.Util.IsFiltered(itemString, operationSettings, itemBuyout, quantity, timeLeft) then
 					numBuyouts = numBuyouts + 1
 					minItemBuyout = min(minItemBuyout or math.huge, itemBuyout)
 					maxItemBuyout = max(maxItemBuyout or 0, itemBuyout)
@@ -566,7 +607,7 @@ function private.AuctionScanOnQueryDone(_, query)
 			bagQuery:Release()
 
 			for _, operationName, operationSettings in TSM.Operations.GroupOperationIterator("Auctioning", groupPath) do
-				if private.IsOperationValid(itemString, numHave, operationName, operationSettings) then
+				if private.IsOperationValid(itemString, numHave, operationName, operationSettings, true) then
 					local keepQuantity = TSM.Auctioning.Util.GetPrice("keepQuantity", operationSettings, itemString)
 					assert(keepQuantity)
 					local operationNumHave = numHave - keepQuantity
@@ -758,6 +799,7 @@ function private.GeneratePosts(itemString, operationName, operationSettings, num
 			-- check if we can post an extra partial stack
 			extraStack = perAuction % maxPerAuction
 			perAuction = min(perAuction, maxPerAuction)
+			bid = buyout
 		else
 			-- post non-commodities as single stacks
 			maxCanPost = perAuction
@@ -782,6 +824,7 @@ function private.AddToQueue(itemString, operationName, itemBid, itemBuyout, stac
 		:SetField("operationName", operationName)
 		:SetField("bid", itemBid * stackSize)
 		:SetField("buyout", itemBuyout * stackSize)
+		:SetField("itemBid", itemBid)
 		:SetField("itemBuyout", itemBuyout)
 		:SetField("stackSize", stackSize)
 		:SetField("numStacks", numStacks)

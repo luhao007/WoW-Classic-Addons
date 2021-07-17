@@ -187,6 +187,7 @@ function private.LoadCharacterGoldLog(characterKey, data, validCharacterGuilds, 
 		end
 	end
 
+	entries.lastUpdate = lastUpdate
 	private.characterGoldLog[characterKey] = entries
 	local lastEntryTime = #entries > 0 and entries[#entries].minute * SECONDS_PER_MIN or math.huge
 	if not validCharacterGuilds[characterKey] and max(lastEntryTime, lastUpdate) < time() - 30 * SECONDS_PER_DAY then

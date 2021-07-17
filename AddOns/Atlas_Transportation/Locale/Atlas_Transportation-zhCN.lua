@@ -36,9 +36,9 @@ L["Airship"] = "飞船"
 L["Aludane Whitecloud <Flight Master>"] = "奥鲁丹·白云 <飞行管理员>"
 L["Blue"] = "蓝"
 --[[Translation missing --]]
---[[ L["Boat to Echo Isles, Durotar"] = ""--]] 
+--[[ L["Boat to Echo Isles, Durotar"] = ""--]]
 --[[Translation missing --]]
---[[ L["Boat to Stormwind City"] = ""--]] 
+--[[ L["Boat to Stormwind City"] = ""--]]
 L["Camp Taurajo"] = "陶拉祖营地"
 L["Class Order Halls"] = "职业大厅"
 L["Class Specific Only"] = "职业特定专用"
@@ -55,7 +55,7 @@ L["Green"] = "绿"
 L["Gryphon"] = "狮鹫"
 L["Gryphon Master"] = "狮鹫管理员"
 --[[Translation missing --]]
---[[ L["Honored with Sha'tari Skyguard"] = ""--]] 
+--[[ L["Honored with Sha'tari Skyguard"] = ""--]]
 L["Hunter Only"] = "猎人专用"
 L["Illidari Gateway"] = "伊利达雷传送门"
 L["Jump to Skyhold"] = "跃向苍穹要塞"
@@ -86,7 +86,7 @@ L["Special transportation"] = "特殊交通"
 L["Talua <Eagle Keeper>"] = "塔鲁瓦 <雄鹰管理员>"
 L["Taxi Nodes"] = "飞行点"
 --[[Translation missing --]]
---[[ L["Teleport Beacon"] = ""--]] 
+--[[ L["Teleport Beacon"] = ""--]]
 L["Teleportation Nexus"] = "传送中枢"
 L["The Barrens"] = "贫瘠之地"
 L["The Bogpaddle Bullet"] = "沼桨弹头"
@@ -95,7 +95,7 @@ L["Transporter"] = "传送者"
 L["Transporters by the sea and on the cliff"] = "在海上或悬崖上的传送者"
 L["Two ways portal"] = "双向传送门"
 --[[Translation missing --]]
---[[ L["Vindicaar"] = ""--]] 
+--[[ L["Vindicaar"] = ""--]]
 L["Warning: Drop"] = "警告：跌落"
 L["Warrior's landing / jumping point (from or back to Skyhold)"] = "战士着陆/飞跃点（往返苍穹要塞）"
 L["West of the path to Timbermaw Hold"] = "通往木喉要塞道路的西方"

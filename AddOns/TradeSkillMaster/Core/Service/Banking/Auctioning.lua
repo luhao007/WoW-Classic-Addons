@@ -62,7 +62,7 @@ function private.GetNumToMoveToBags(itemString, numHave, includeAH)
 	local numInBags = BagTracking.CreateQueryBagsItem(itemString)
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
-		:SumAndRelease("quantity") or 0
+		:SumAndRelease("quantity")
 	if includeAH then
 		numInBags = numInBags + select(3, Inventory.GetPlayerTotals(itemString)) + Inventory.GetMailQuantity(itemString)
 	end

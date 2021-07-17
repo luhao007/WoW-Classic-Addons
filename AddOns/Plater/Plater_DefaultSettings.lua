@@ -44,6 +44,26 @@ DF:InstallTemplate ("font", "PLATER_BUTTON_DISABLED", {color = {1/3, .8/3, .2/3}
 DF:InstallTemplate ("button", "PLATER_BUTTON_DISABLED", {backdropcolor = {.4, .4, .4, .3}, backdropbordercolor = {0, 0, 0, .5}}, "OPTIONS_BUTTON_TEMPLATE")
 DF:InstallTemplate ("button", "PLATER_BUTTON_SELECTED", {backdropbordercolor = {1, .7, .1, 1},}, "OPTIONS_BUTTON_TEMPLATE")
 
+DF:InstallTemplate ("dropdown", "PLATER_DROPDOWN_OPTIONS", {
+	backdrop = {
+		edgeFile = [[Interface\Buttons\WHITE8X8]],
+		edgeSize = 1,
+		bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
+		tileSize = 64,
+		tile = true
+	},
+
+	backdropcolor = {.3, .3, .3, .8},
+	backdropbordercolor = {0, 0, 0, 1},
+	onentercolor = {.3, .3, .3, .9},
+	onenterbordercolor = {1, 1, 1, 1},
+
+	dropicon = "Interface\\BUTTONS\\arrow-Down-Down",
+	dropiconsize = {16, 16},
+	dropiconpoints = {-2, -3},
+})
+
+
 -- those two may be removed, as they are covered by settings now
 DF:NewColor ("PLATER_FRIEND", .71, 1, 1, 1)
 DF:NewColor ("PLATER_GUILD", 0.498039, 1, .2, 1)
@@ -71,7 +91,18 @@ PLATER_DEFAULT_SETTINGS = {
 		--store as [NpcID] = {enabled1, enabled2, colorID}
 		--enabled1 is if the color is enabled overall, enabled2 is if the color is only for scripts
 		npc_colors = {},
-	
+
+		--store the cast colors customized by the user
+		cast_colors = {},
+		cast_color_settings = {
+			enabled = true,
+			width = 12,
+			height_offset = 0,
+			alpha = 0.8,
+			anchor = {side = 11, x = 0, y = 0},
+			layer = "Artwork",
+		},
+
 		click_space = {140, 28},
 		click_space_friendly = {140, 28},
 		click_space_always_show = false,
@@ -637,6 +668,7 @@ PLATER_DEFAULT_SETTINGS = {
 		
 		--> store spells from the latest event the player has been into
 		captured_spells = {},
+		captured_casts = {},
 
 		--script tab
 		script_data = {},

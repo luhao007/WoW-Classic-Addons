@@ -96,14 +96,19 @@ function private.HandleCall(dataType, _, sourcePlayer, data)
 	end
 	local responseData = TempTable.Acquire()
 
-	local startTime = debugprofilestop()
+	local funcStartTime = debugprofilestop()
 	responseData.result = TempTable.Acquire(private.rpcFunctions[data.name](unpack(data.args)))
-	local timeTaken = debugprofilestop() - startTime
-	if timeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
-		Log.Warn("RPC (%s) took %0.2fms", tostring(data.name), timeTaken)
+	local funcTimeTaken = debugprofilestop() - funcStartTime
+	if funcTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
+		Log.Warn("RPC (%s) took %0.2fms", tostring(data.name), funcTimeTaken)
 	end
 	responseData.seq = data.seq
+	local sendStartTime = debugprofilestop()
 	local numBytes = Comm.SendData(Constants.DATA_TYPES.RPC_RETURN, sourcePlayer, responseData)
+	local sendTimeTaken = debugprofilestop() - sendStartTime
+	if sendTimeTaken > CALLBACK_TIME_WARNING_THRESHOLD_MS then
+		Log.Warn("Sending RPC result (%s) took %0.2fms (%d bytes)", tostring(data.name), sendTimeTaken, numBytes)
+	end
 	TempTable.Release(responseData.result)
 	TempTable.Release(responseData)
 

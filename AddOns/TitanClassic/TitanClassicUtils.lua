@@ -16,6 +16,183 @@ TITAN_NOT_REGISTERED = _G["RED_FONT_COLOR_CODE"].."Not_Registered_Yet".._G["FONT
 TITAN_REGISTERED = _G["GREEN_FONT_COLOR_CODE"].."Registered".._G["FONT_COLOR_CODE_CLOSE"]
 TITAN_REGISTER_FAILED = _G["RED_FONT_COLOR_CODE"].."Failed_to_Register".._G["FONT_COLOR_CODE_CLOSE"]
 
+local DDM = LibStub:GetLibrary("LibUIDropDownMenu-4.0")
+
+--
+-- Wrap the drop down lib 4.0 to look like 2.0 to keep current plugins the same
+-- These need to be global to act like the older version
+--
+-- L_UIDropDownMenuDelegate_OnAttributeChanged -- Different in 4.0
+function L_UIDropDownMenu_InitializeHelper (frame)
+	DDM:UIDropDownMenu_InitializeHelper (frame)
+end
+function L_Create_UIDropDownMenu(name, parent)
+	local str = ""
+	if type(name) == "table" then
+		str = name:GetName()
+	else
+		str = name
+	end
+	return DDM:Create_UIDropDownMenu(name, parent)
+end
+function L_UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
+	DDM:UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, menuList)
+end
+function L_UIDropDownMenu_SetInitializeFunction(frame, initFunction)
+	DDM:UIDropDownMenu_SetInitializeFunction(frame, initFunction)
+end
+function L_UIDropDownMenu_SetDisplayMode(frame, displayMode)
+	DDM:UIDropDownMenu_SetDisplayMode(frame, displayMode)
+end
+function L_UIDropDownMenu_RefreshDropDownSize(self)
+	DDM:UIDropDownMenu_RefreshDropDownSize(self)
+end
+--function L_UIDropDownMenu_OnUpdate(self, elapsed) -- Different in 4.0
+function L_UIDropDownMenu_StartCounting(frame)
+	DDM:UIDropDownMenu_StartCounting(frame)
+end
+function L_UIDropDownMenu_StopCounting(frame)
+	DDM:UIDropDownMenu_StopCounting(frame)
+end
+--function L_UIDropDownMenuButtonInvisibleButton_OnEnter(self)) -- Different in 4.0
+--function L_UIDropDownMenuButtonInvisibleButton_OnLeave(self)) -- Different in 4.0
+--function L_UIDropDownMenuButton_OnEnter(self) -- Different in 4.0
+--function L_UIDropDownMenuButton_OnLeave(self) -- Different in 4.0
+function L_UIDropDownMenu_CreateInfo()
+	return DDM:UIDropDownMenu_CreateInfo()
+end
+function L_UIDropDownMenu_CreateFrames(level, index)
+	DDM:UIDropDownMenu_CreateFrames(level, index)
+end
+function L_UIDropDownMenu_AddSeparator(level)
+	DDM:UIDropDownMenu_AddSeparator(level)
+end
+function L_UIDropDownMenu_AddSpace(level) -- new in 4.0
+	DDM:UIDropDownMenu_AddSpace(level)
+end
+function L_UIDropDownMenu_AddButton(info, level)
+	DDM:UIDropDownMenu_AddButton(info, level)
+end
+function L_UIDropDownMenu_CheckAddCustomFrame(self, button, info)
+	DDM:UIDropDownMenu_CheckAddCustomFrame(self, button, info)
+end
+function L_UIDropDownMenu_RegisterCustomFrame(self, customFrame)
+	DDM:UIDropDownMenu_RegisterCustomFrame(self, customFrame)
+end
+function L_UIDropDownMenu_GetMaxButtonWidth(self)
+	return DDM:UIDropDownMenu_GetMaxButtonWidth(self)
+end
+function L_UIDropDownMenu_GetButtonWidth(button)
+	return DDM:UIDropDownMenu_GetButtonWidth(button)
+end
+function L_UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
+	DDM:UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
+end
+function L_UIDropDownMenu_RefreshAll(frame, useValue)
+	DDM:UIDropDownMenu_RefreshAll(frame, useValue)
+end
+function L_UIDropDownMenu_SetIconImage(icon, texture, info)
+	DDM:UIDropDownMenu_SetIconImage(icon, texture, info)
+end
+function L_UIDropDownMenu_SetSelectedName(frame, name, useValue)
+	DDM:UIDropDownMenu_SetSelectedName(frame, name, useValue)
+end
+function L_UIDropDownMenu_SetSelectedValue(frame, value, useValue)
+	DDM:UIDropDownMenu_SetSelectedValue(frame, value, useValue)
+end
+function L_UIDropDownMenu_SetSelectedID(frame, id, useValue)
+	DDM:UIDropDownMenu_SetSelectedID(frame, id, useValue)
+end
+function L_UIDropDownMenu_GetSelectedName(frame)
+	return DDM:UIDropDownMenu_GetSelectedName(frame)
+end
+function L_UIDropDownMenu_GetSelectedID(frame)
+	return DDM:UIDropDownMenu_GetSelectedID(frame)
+end
+function L_UIDropDownMenu_GetSelectedValue(frame)
+	return DDM:UIDropDownMenu_GetSelectedValue(frame)
+end
+--function L_UIDropDownMenuButton_OnClick(self) -- Different in 4.0
+function L_HideDropDownMenu(level)
+	DDM:HideDropDownMenu(level)
+end
+function L_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay)
+	DDM:ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset, yOffset, menuList, button, autoHideDelay)
+end
+function L_CloseDropDownMenus(level)
+	DDM:CloseDropDownMenus(level)
+end
+--function L_UIDropDownMenu_OnHide(self) -- Different in 4.0
+-- 4.0 has 'contains mouse' routines for retail only
+function L_UIDropDownMenu_SetWidth(frame, width, padding)
+	DDM:UIDropDownMenu_SetWidth(frame, width, padding)
+end
+function L_UIDropDownMenu_SetButtonWidth(frame, width)
+	DDMUIDropDownMenu_SetButtonWidth(frame, width)
+end
+function L_UIDropDownMenu_SetText(frame, text)
+	DDM:UIDropDownMenu_SetText(frame, text)
+end
+function L_UIDropDownMenu_GetText(frame)
+	return DDM:UIDropDownMenu_GetText(frame)
+end
+function L_UIDropDownMenu_ClearAll(frame)
+	DDM:UIDropDownMenu_ClearAll(frame)
+end
+function L_UIDropDownMenu_JustifyText(frame, justification)
+	DDM:UIDropDownMenu_JustifyText(frame, justification)
+end
+function L_UIDropDownMenu_SetAnchor(dropdown, xOffset, yOffset, point, relativeTo, relativePoint)
+	DDM:UIDropDownMenu_SetAnchor(dropdown, xOffset, yOffset, point, relativeTo, relativePoint)
+end
+function L_UIDropDownMenu_GetCurrentDropDown()
+	return DDM:UIDropDownMenu_GetCurrentDropDown()
+end
+function L_UIDropDownMenuButton_GetChecked(self)
+	return DDM:UIDropDownMenuButton_GetChecked(self)
+end
+function L_UIDropDownMenuButton_GetName(self)
+	return DDM:UIDropDownMenuButton_GetName(self)
+end
+function L_UIDropDownMenuButton_OpenColorPicker(self, button)
+	DDM:UIDropDownMenuButton_OpenColorPicker(self, button)
+end
+function L_UIDropDownMenu_DisableButton(level, id)
+	DDM:UIDropDownMenu_DisableButton(level, id)
+end
+function L_UIDropDownMenu_EnableButton(level, id)
+	DDM:UIDropDownMenu_EnableButton(level, id)
+end
+function L_UIDropDownMenu_SetButtonText(level, id, text, colorCode)
+	DDM:UIDropDownMenu_SetButtonText(level, id, text, colorCode)
+end
+function L_UIDropDownMenu_SetButtonNotClickable(level, id)
+	DDM:UIDropDownMenu_SetButtonNotClickable(level, id)
+end
+function L_UIDropDownMenu_SetButtonClickable(level, id)
+	DDM:UIDropDownMenu_SetButtonClickable(level, id)
+end
+function L_UIDropDownMenu_DisableDropDown(dropDown)
+	DDM:UIDropDownMenu_DisableDropDown(dropDown)
+end
+function L_UIDropDownMenu_EnableDropDown(dropDown)
+	DDM:UIDropDownMenu_EnableDropDown(dropDown)
+end
+function L_UIDropDownMenu_IsEnabled(dropDown)
+	return DDM:UIDropDownMenu_IsEnabled(dropDown)
+end
+function L_UIDropDownMenu_GetValue(id)
+	return DDM:UIDropDownMenu_GetValue(id)
+end
+function L_OpenColorPicker(info)
+	DDM:OpenColorPicker(info)
+end
+function L_ColorPicker_GetPreviousValues()
+	return DDM:ColorPicker_GetPreviousValues()
+end
+
+--=============
+
 --
 -- The routines labeled API are useable by addon developers
 --

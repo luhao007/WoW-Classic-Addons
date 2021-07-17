@@ -585,7 +585,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 	{
 		["CraftFrame"] =
 		{
-			MaxVersion = 11306,
+			MaxVersion = 70300, -- When was this fully replaced with TradeSkillFrame? Most frames where changed in 11306, but seems this is still used in TBC.
 		},
 	},
 	["Blizzard_DeathRecap"] =
@@ -944,6 +944,24 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["ClassTrainerFrame"] =
 		{
 			MinVersion = 0,
+		},
+	},
+	["Blizzard_UIWidgets"] =
+	{
+		["UIWidgetBelowMinimapContainerFrame"] =
+		{
+			MinVersion = 11306, -- Added when?
+			DefaultDisabled = true,
+		},
+		["UIWidgetPowerBarContainerFrame"] =
+		{
+			MinVersion = 80300, -- Added when?
+			DefaultDisabled = true,
+		},
+		["UIWidgetTopCenterContainerFrame"] =
+		{
+			MinVersion = 11306, -- Added when?
+			DefaultDisabled = true,
 		},
 	},
 	["Blizzard_VoidStorageUI"] =

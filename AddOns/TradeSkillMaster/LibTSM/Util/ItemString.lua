@@ -16,6 +16,7 @@ local private = {
 	itemStringCache = {},
 	baseItemStringMap = nil,
 	baseItemStringReader = nil,
+	levelItemStringMap = nil,
 	hasNonBaseItemStrings = {},
 	bonusIdsTemp = {},
 	modifiersTemp = {},
@@ -44,6 +45,7 @@ local EXTRA_STAT_MODIFIER_TYPES = {
 ItemString:OnModuleLoad(function()
 	private.baseItemStringMap = SmartMap.New("string", "string", private.ToBaseItemString)
 	private.baseItemStringReader = private.baseItemStringMap:CreateReader()
+	private.levelItemStringMap = SmartMap.New("string", "string", ItemString.ToLevel)
 end)
 
 
@@ -74,6 +76,12 @@ end
 -- @treturn SmartMap The smart map
 function ItemString.GetBaseMap()
 	return private.baseItemStringMap
+end
+
+--- Gets the level itemString smart map.
+-- @treturn SmartMap The smart map
+function ItemString.GetLevelMap()
+	return private.levelItemStringMap
 end
 
 --- Converts the parameter into an itemString.
@@ -141,26 +149,128 @@ function ItemString.GetBaseFromItemKey(itemKey)
 	end
 end
 
+--- Returns whether or not a non-base version of an item has been seen.
+-- @tparam string baseItemString A base itemString to check
+-- @treturn boolean Whether or not a non-base version of the itemString has been seen
 function ItemString.HasNonBase(baseItemString)
 	return private.hasNonBaseItemStrings[baseItemString] or false
+end
+
+--- Converts an itemString to a level itemString
+-- @tparam string itemString An itemString to get the level itemString of
+-- @treturn string The level itemString
+function ItemString.ToLevel(itemString)
+	if not ItemString.IsItem(itemString) then
+		return ItemString.GetBaseFast(itemString)
+	elseif ItemString.IsLevel(itemString) then
+		-- Already a level itemString
+		return itemString
+	end
+	local baseItemString = ItemString.GetBaseFast(itemString)
+	if itemString == baseItemString then
+		-- Already a base itemString
+		return itemString
+	end
+	local level, isAbs = BonusIds.GetItemLevel(itemString)
+	if not level then
+		return baseItemString
+	end
+	if isAbs then
+		return baseItemString.."::".."i"..level
+	else
+		if level >= 0 then
+			level = "+"..level
+		end
+		return baseItemString.."::"..level
+	end
+end
+
+--- Parse the level modifier from a (potential) level itemString
+-- @tparam string itemString An itemString to parse
+-- @treturn number The level modifier
+-- @treturn boolean Whether or not it's an absolute level
+function ItemString.ParseLevel(itemString)
+	local prefix, level = strmatch(itemString, "^i:[0-9]+:[0-9%-]*:([i%+%-])([0-9]+)")
+	level = level and tonumber(level) or nil
+	if not prefix or not level then
+		return nil, nil
+	elseif prefix == "i" then
+		return level, true
+	elseif prefix == "+" then
+		return level, false
+	elseif prefix == "-" then
+		return level * -1, false
+	else
+		error("Invalid prefix: "..tostring(prefix))
+	end
+end
+
+--- Attempts to determine the itemLevel by parsing the itemString
+-- @tparam string itemString An itemString to get the itemLevel of
+-- @treturn ?number The item level or nil if it couldn't be determined
+function ItemString.GetItemLevel(itemString)
+	-- check if this is a level itemString first
+	local itemLevel, isAbs = ItemString.ParseLevel(itemString)
+	if itemLevel then
+		return isAbs and itemLevel or nil
+	end
+	-- try to get the level from the bonusIds
+	itemLevel, isAbs = BonusIds.GetItemLevel(itemString)
+	return isAbs and itemLevel or nil
+end
+
+--- Gets a list of stat modifier values which are present in an itemString
+-- @tparam string itemString An itemString to get the stat modifiers of
+-- @tparam boolean fromBonusIdsOnly Only get equivalent modifiers from bonusIds
+-- @tparam table resultTbl The table to store the results in
+function ItemString.GetStatModifiers(itemString, fromBonusIdsOnly, resultTbl)
+	if not ItemString.IsItem(itemString) then
+		return
+	end
+	return private.GetStatModifiersHelper(resultTbl, fromBonusIdsOnly, select(4, strsplit(":", itemString)))
 end
 
 --- Converts the parameter into a WoW itemString.
 -- @tparam string itemString An itemString to get the WoW itemString of
 -- @treturn number The WoW itemString
 function ItemString.ToWow(itemString)
-	local _, itemId, rand, extra = strsplit(":", itemString)
+	local itemStringLevel, isAbsItemStringLevel = ItemString.ParseLevel(itemString)
+	local itemId, rand, extraPart = nil, nil, nil
+	if itemStringLevel then
+		itemId, rand = select(2, strsplit(":", itemString))
+		local bonusId, levelModifier = BonusIds.GetIdForLevel(itemStringLevel, isAbsItemStringLevel)
+		extraPart = "1:"..bonusId
+		if levelModifier then
+			extraPart = extraPart.."1:9:"..levelModifier
+		end
+	else
+		local _, extra = nil, nil
+		itemId, rand, extra = select(2, strsplit(":", itemString))
+		extraPart = extra and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.+)") or ""
+	end
 	local level = UnitLevel("player")
 	local spec = not TSM.IsWowClassic() and GetSpecialization() or nil
 	spec = spec and GetSpecializationInfo(spec) or ""
-	local extraPart = extra and strmatch(itemString, "i:[0-9]+:[0-9%-]*:(.+)") or ""
 	return "item:"..itemId.."::::::"..(rand or "").."::"..level..":"..spec..":::"..extraPart..":::"
 end
 
+--- Returns whether or not the itemString is for an item
+-- @tparam string itemString The itemString to check
+-- @treturn boolean Whether or not the itemString represents an item
 function ItemString.IsItem(itemString)
-	return strmatch(itemString, "^i:[%-:0-9]+$") and true or false
+	return strmatch(itemString, "^i:[%-:0-9%+i]+$") and true or false
 end
 
+--- Returns whether or not the itemString is a level itemString
+-- @tparam string itemString The itemString to check
+-- @treturn boolean Whether or not the itemString is a level itemString
+function ItemString.IsLevel(itemString)
+	return strmatch(itemString, "^i:[0-9]+:[0-9%-]*:[i%+%-][0-9]+$") and true or false
+end
+
+--- Returns whether or not the itemString is for a pet
+-- @tparam string itemString The itemString to check
+-- @treturn boolean Whether or not the itemString represents a pet
 function ItemString.IsPet(itemString)
 	return strmatch(itemString, "^p:[%-:0-9]+$") and true or false
 end
@@ -199,7 +309,7 @@ function private.ToItemString(item)
 	end
 
 	-- test if it's already (likely) an item string or battle pet string
-	if strmatch(item, "^i:([0-9%-:]+)$") then
+	if strmatch(item, "^i:([0-9%-:i%+]+)$") then
 		return private.FixItemString(item)
 	elseif strmatch(item, "^p:([0-9:]+)$") then
 		return private.FixPet(item)
@@ -353,4 +463,51 @@ function private.ToBaseItemString(itemString)
 		private.hasNonBaseItemStrings[baseItemString] = true
 	end
 	return baseItemString
+end
+
+function private.GetStatModifiersHelper(resultTbl, fromBonusIds, numBonusIds, ...)
+	numBonusIds = tonumber(numBonusIds) or 0
+	local numParts = select("#", ...)
+	if numParts == 0 then
+		return
+	end
+
+	-- check the bonusIds
+	for i = 1, numBonusIds do
+		local bonusId = select(i, ...)
+		bonusId = tonumber(bonusId)
+		assert(bonusId)
+		local modifier = BonusIds.GetCraftingStatModifier(bonusId)
+		if modifier then
+			tinsert(resultTbl, modifier)
+		end
+	end
+	if fromBonusIds then
+		sort(resultTbl)
+		return
+	end
+
+	-- grab the modifiers and filter them
+	local numModifiers = numParts - numBonusIds
+	local modifiersStr = (numModifiers > 0 and numModifiers > 1 and numModifiers % 2 == 1) and strjoin(":", select(numBonusIds + 1, ...)) or ""
+	if modifiersStr == "" then
+		return
+	end
+	local num, modifierType = nil, nil
+	for modifier in gmatch(modifiersStr, "[0-9]+") do
+		modifier = tonumber(modifier)
+		if not num then
+			num = modifier
+		elseif not modifierType then
+			modifierType = modifier
+		else
+			if EXTRA_STAT_MODIFIER_TYPES[modifierType] then
+				if not tContains(resultTbl, modifier) then
+					tinsert(resultTbl, modifier)
+				end
+			end
+			modifierType = nil
+		end
+	end
+	sort(resultTbl)
 end

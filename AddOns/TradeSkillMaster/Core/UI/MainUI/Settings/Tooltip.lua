@@ -71,7 +71,6 @@ local AUCTIONDB_SETTINGS_INFO = {
 	{ label = L["Min buyout"], settingModule = "AuctionDB", settingKey = "minBuyout" },
 	{ label = L["Market value"], settingModule = "AuctionDB", settingKey = "marketValue" },
 	{ label = L["Historical price"], settingModule = "AuctionDB", settingKey = "historical" },
-	{ label = L["Region min buyout avg"], settingModule = "AuctionDB", settingKey = "regionMinBuyout" },
 	{ label = L["Region market value"], settingModule = "AuctionDB", settingKey = "regionMarketValue" },
 	{ label = L["Region historical price"], settingModule = "AuctionDB", settingKey = "regionHistorical" },
 	{ label = L["Region sale avg"], settingModule = "AuctionDB", settingKey = "regionSale" },

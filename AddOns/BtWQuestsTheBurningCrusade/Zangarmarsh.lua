@@ -929,9 +929,9 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
         {
             type = "experience",
             amounts = {
-                77850, 78050, 78250, 78500, 78650, 78800, 79100, 79250, 79450, 77500, 77800, 
+                79800, 79850, 79900, 79900, 79900, 80000, 80000, 80000, 77900, 78000, 
             },
-            minLevel = 60,
+            minLevel = 61,
             maxLevel = 70,
         },
         {
@@ -964,7 +964,7 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
             aside = true,
             x = -1,
             connections = {
-                2, 3
+                2,
             },
         },
         {
@@ -972,14 +972,14 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
             id = 9743,
             aside = true,
             connections = {
-                2, 3,
+                2,
             },
         },
         {
             type = "quest",
             id = 9742,
             aside = true,
-            x = -2,
+            x = -1,
             active = {
                 type = "quest",
                 id = 9739,
@@ -988,21 +988,6 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
                 type = "reputation",
                 id = 970,
                 standing = 5,
-            },
-        },
-        {
-            type = "quest",
-            id = 50131,
-            aside = true,
-            completed = {
-                type = "reputation",
-                id = 970,
-                standing = 4,
-                restrictions = {
-                    type = "quest",
-                    id = 50131,
-                    status = {'pending'}
-                }
             },
         },
         {
@@ -1057,16 +1042,15 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
             type = "quest",
             id = 9919,
             x = -2,
-            connections = {
-                3, 
-            },
         },
-        {
+        { -- This quest becomes unavailable after hitting friendly,
+          -- marking it as a breadcrumb will show it as completed at that time
             type = "quest",
             id = 9808,
+            breadcrumb = true,
             aside = true,
             connections = {
-                3, 
+                2, 
             },
         },
         {
@@ -1074,29 +1058,14 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
             id = 9806,
             aside = true,
             connections = {
-                3, 
-            },
-        },
-        {
-            type = "quest",
-            id = 50130,
-            aside = true,
-            x = -2,
-            completed = {
-                type = "reputation",
-                id = 970,
-                standing = 5,
-                restrictions = {
-                    type = "quest",
-                    id = 50130,
-                    status = {'pending'}
-                }
+                2, 
             },
         },
         {
             type = "quest",
             id = 9809,
             aside = true,
+            x = 0,
             active = {
                 type = "quest",
                 id = 9808,
@@ -1128,42 +1097,55 @@ Database:AddChain(Chain.ATripWithTheSporelings, {
             id = 970,
             x = 0,
             connections = {
-                1, 2
+                1,
             },
             standing = 5,
         },
         {
             type = "npc",
             id = 17856,
-            x = -1,
+            x = 0,
             connections = {
-                2, 
-            },
-        },
-        {
-            type = "npc",
-            id = 17877,
-            connections = {
-                2, 
+                1, 
             },
         },
         {
             type = "quest",
             id = 9726,
-            x = -1,
+            x = 0,
             connections = {
-                2, 
+                1, 
+            },
+        },
+        {
+            type = "quest",
+            id = 9727,
+            x = 0,
+            aside = true,
+        },
+
+
+        {
+            type = "reputation",
+            id = 970,
+            x = 0,
+            connections = {
+                1,
+            },
+            standing = 8,
+        },
+        {
+            type = "npc",
+            id = 17877,
+            x = 0,
+            connections = {
+                1, 
             },
         },
         {
             type = "quest",
             id = 9729,
-        },
-        {
-            type = "quest",
-            id = 9727,
-            x = -1,
-            aside = true,
+            x = 0,
         },
     },
 })
@@ -1900,6 +1882,7 @@ Database:AddChain(Chain.EmbedChain16, {
     category = CATEGORY_ID,
     expansion = EXPANSION_ID,
     range = LEVEL_RANGE,
+    restrictions = ALLIANCE_RESTRICTIONS,
     prerequisites = LEVEL_PREREQUISITES,
     active = {
         type = "quest",

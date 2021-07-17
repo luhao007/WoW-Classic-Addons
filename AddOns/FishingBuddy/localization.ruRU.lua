@@ -41,6 +41,10 @@ FishingTranslations["ruRU"] = {
 	["CONFIG_BIGDRAENOR_ONOFF"] = "Максимальная Рыбная ловля",
 	["CONFIG_BOBBINGBERG_INFO"] = "Если включено, использовать Плавучую льдину.",
 	["CONFIG_BOBBINGBERG_ONOFF"] = "Используйте Плавучая льдина Бипси",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "Отображать таймеры для состязаний рыболовов",
 	["CONFIG_CONTESTS_ONOFF"] = "Поддержка состязания рыболовов",
 	["CONFIG_CREATEMACRO_INFO"] = "Создайте макрос, который выполняет #NAME# функции.",
@@ -163,6 +167,10 @@ FishingTranslations["ruRU"] = {
 	["CONFIG_TOOLTIPS_ONOFF"] = "Информация о рыбе в подсказках",
 	["CONFIG_TOONMACRO_INFO"] = "Создайте рыболовный макрос для каждого персонажа.",
 	["CONFIG_TOONMACRO_ONOFF"] = "На игрока",
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_INFO"] = "Fix the TownsfolkTracker error on startup.",--]] 
+	--[[Translation missing --]]
+	--[[ ["CONFIG_TOWNSFOLK_ONOFF"] = "Fix TownsfolkTracker",--]] 
 	["CONFIG_TRADESKILL_INFO"] = "Если включено, откройте окно Книги Заклинаний, чтобы узнать уровни навыков. В противном случае вам придется вручную открыть профессию Рыбной ловли.",
 	["CONFIG_TRADESKILL_ONOFF"] = "Настройки Навыков",
 	["CONFIG_TRAWLERTOTEM_INFO"] = "Если включено, используйте игрушку.",

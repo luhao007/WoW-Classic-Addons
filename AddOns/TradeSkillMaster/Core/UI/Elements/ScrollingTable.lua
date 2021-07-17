@@ -420,7 +420,7 @@ function ScrollingTable.Draw(self)
 
 	local scrollDiff = dataOffset - (self._prevDataOffset or dataOffset)
 	self._prevDataOffset = dataOffset
-	if scrollDiff ~= 0 then
+	if numVisibleRows > 0 and scrollDiff ~= 0 then
 		-- Shuffle the rows around to accomplish the scrolling so that the data only changes
 		-- for the minimal number of rows, which allows for better optimization
 		for _ = 1, abs(scrollDiff) do

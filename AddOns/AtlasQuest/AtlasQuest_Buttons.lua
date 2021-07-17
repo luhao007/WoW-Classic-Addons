@@ -23,15 +23,15 @@
 
 
 -- Colours
-local RED = "|cffff0000";
-local REDA = "|cffcc6666";
+--
+local RED = "|cffFF0000";
 local WHITE = "|cffFFFFFF";
-local GREEN = "|cff1eff00";
-local GREY = "|cff9F3FFF";
-local BLUE = "|cff0070dd";
+local GREEN = "|cff1EFF00";
+local GREY = "|cff9D9D9D";
+local BLUE = "|cff0070DD";
 local ORANGE = "|cffFF8000"; 
-local YELLOW = "|cffFFd200";
-local BLACK = "|c0000000f";
+local YELLOW = "|cffFFD200";
+local BLACK = "|c0000000F";
 
 local AQQuestfarbe
 
@@ -49,7 +49,6 @@ function AQClearALL()
        Prequesttext:SetText("");
        QuestAttainLeveltext:SetText("");
        REWARDstext:SetText();
---       StoryTEXT:SetText();
        AQFQ_TEXT:SetText();
        HideUIPanel(AQFinishedQuest);
        for b=1, 6 do
@@ -130,24 +129,6 @@ end
 
 
 -----------------------------------------------------------------------------
--- Story Button
------------------------------------------------------------------------------
---[[
-function AQSTORY1_OnClick()
-       AQHideAL();
-       if (AtlasQuestInsideFrame:IsVisible() == nil) then
-           ShowUIPanel(AtlasQuestInsideFrame);
-           WHICHBUTTON = STORY;
-           AQButtonSTORY_SetText();
-       elseif ( WHICHBUTTON == STORY) then
-          HideUIPanel(AtlasQuestInsideFrame);
-       else
-        WHICHBUTTON = STORY;
-        AQButtonSTORY_SetText();
-       end
-end
---]]
------------------------------------------------------------------------------
 -- Button
 -----------------------------------------------------------------------------
 function Quest_OnClick(arg1)
@@ -156,7 +137,6 @@ local AQactiveWindow = ChatEdit_GetActiveWindow();
      AQInsertQuestInformation();
    else
      AQHideAL();
---     StoryTEXT:SetText("");
      if (AtlasQuestInsideFrame:IsVisible() == false) then
          ShowUIPanel(AtlasQuestInsideFrame);
          WHICHBUTTON = AQSHOWNQUEST;
@@ -329,7 +309,6 @@ local itemName, itemQuality
          end
      end
      AQQuestFinishedSetChecked();
-     AQExtendedPages();
 end
 
 
@@ -393,8 +372,8 @@ function AQColourCheck(arg1)
           if ( AQQuestlevelf == UnitLevel("player") or AQQuestlevelf == UnitLevel("player") + 2 or AQQuestlevelf  == UnitLevel("player") - 2 or AQQuestlevelf == UnitLevel("player") + 1 or AQQuestlevelf  == UnitLevel("player") - 1) then
              AQQuestfarbe = YELLOW;
           elseif ( AQQuestlevelf > UnitLevel("player") + 2 and AQQuestlevelf <= UnitLevel("player") + 4) then
-             AQQuestfarbe = Orange;
-          elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 200) then
+             AQQuestfarbe = ORANGE;
+          elseif ( AQQuestlevelf >= UnitLevel("player") + 5 and AQQuestlevelf ~= 100) then
              AQQuestfarbe = RED;
           elseif ( AQQuestlevelf < UnitLevel("player") - 7) then
              AQQuestfarbe = GREY;
@@ -404,7 +383,7 @@ function AQColourCheck(arg1)
           if (AQNOColourCheck) then
              AQQuestfarbe = YELLOW;
           end
-          if ( AQQuestlevelf == 200 or AQCompareQLtoAQ()) then
+          if ( AQQuestlevelf == 100 or AQCompareQLtoAQ()) then
              AQQuestfarbe = BLUE;
           end
           if (arg1 == 1) then
@@ -440,181 +419,6 @@ function AQQuestFinishedSetChecked()
   end
 end
 
-
------------------------------------------------------------------------------
--- Allow pages
--- InstXXQuestXX_Page = number of pages
--- HideUIPanel(AQNextPageButton_Left); AQPageCount:SetText();
------------------------------------------------------------------------------
-function AQExtendedPages()
-local SHIT
--- SHIT is added to make the code smaller it give back the right link for horde or alliance
-if ( Allianceorhorde == 1) then --Alliance
-  SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Page")
-else
-  SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Page")
-end
-
-  if (type(SHIT) == "table") then
-      if (type(SHIT[1]) == "number") then
-        ShowUIPanel(AQNextPageButton_Right);
-        AQ_NextPageCount = "Quest";
-        AQ_CurrentSide = 1;
-        AQPageCount:SetText(AQ_CurrentSide.."/"..SHIT[1]);
-      end
-  end
-end
-
-
------------------------------------------------------------------------------
--- Set Story Text
------------------------------------------------------------------------------
---[[
-function AQButtonSTORY_SetText()
-       -- first clear display
-       AQClearALL();
-
-       -- show right story text
-       if (getglobal("Inst"..AQINSTANZ.."Story") ~= nil) then
-         QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."Caption"));
-         if (type(getglobal("Inst"..AQINSTANZ.."Story")) == "table") then
-           StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."Story")["Page1"]);
-           -- Show Next side button if next site is avaiable
-           if (getglobal("Inst"..AQINSTANZ.."Story")["Page2"] ~= nil) then
-             ShowUIPanel(AQNextPageButton_Right);
-             AQ_CurrentSide = 1;
-             -- shows total amount of pages
-             AQPageCount:SetText(AQ_CurrentSide.."/"..getglobal("Inst"..AQINSTANZ.."Story")["MaxPages"])
-             -- count to make a diffrent between story and normal text
-             AQ_NextPageCount = "Story";
-           end
-         elseif (type(getglobal("Inst"..AQINSTANZ.."Story")) == "string") then
-           StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."Story"));
-         end
-       -- added to work with future versions of atlas (before i update e.g. before you dl the update)
-       elseif (getglobal("Inst"..AQINSTANZ.."Story") == nil) then
-         QuestName:SetText("not available");
-         StoryTEXT:SetText("not available");
-       end
-end
---]]
-
------------------------------------------------------------------------------
--- shows the next side
------------------------------------------------------------------------------
-function AQNextPageR_OnClick()
-local SideAfterThis = 0;
-local SHIT
-  SideAfterThis = AQ_CurrentSide + 2;
-  AQ_CurrentSide = AQ_CurrentSide + 1;
-
-  -- first clear display
-  AQClearALL();
-
-  -- it is a story text
-  if (AQ_NextPageCount == "Story" ) then
-    StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."Story")["Page"..AQ_CurrentSide]);
-    AQPageCount:SetText(AQ_CurrentSide.."/"..getglobal("Inst"..AQINSTANZ.."Story")["MaxPages"])
-    if (getglobal("Inst"..AQINSTANZ.."Caption"..AQ_CurrentSide) ~= nil) then
-      QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."Caption"..AQ_CurrentSide));
-    else
-      QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."Caption"));
-    end
-    -- hide button if no next side
-    if (getglobal("Inst"..AQINSTANZ.."Story")["Page"..SideAfterThis] == nil) then
-      HideUIPanel(AQNextPageButton_Right);
-    else
-      ShowUIPanel(AQNextPageButton_Right);
-    end
-  end
-
-  -- it is a quest text
-  if (AQ_NextPageCount == "Quest" ) then
-    -- SHIT is added to make the code smaller it give back the right link for horde or alliance
-    if ( Allianceorhorde == 1) then --Alliance
-      SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Page")
-    else
-      SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Page")
-    end
-    StoryTEXT:SetText(WHITE..SHIT[AQ_CurrentSide])
-    AQPageCount:SetText(AQ_CurrentSide.."/"..SHIT[1])
-    -- hide button if no next side
-    if (SHIT[SideAfterThis] == nil) then
-      HideUIPanel(AQNextPageButton_Right);
-    else
-      ShowUIPanel(AQNextPageButton_Right);
-    end
-  end
-
-  -- it is a boss text
-  if (AQ_NextPageCount == "Boss" ) then
-    QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][1]);
-    StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][2].."\n \n"..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][3]);
-    -- Show Next side button if next site is avaiable
-    if (getglobal("Inst"..AQINSTANZ.."General")[SideAfterThis] ~= nil) then
-      ShowUIPanel(AQNextPageButton_Right);
-    end
-    -- shows total amount of pages
-    AQPageCount:SetText(AQ_CurrentSide.."/"..getn(getglobal("Inst"..AQINSTANZ.."General")))
-  end
-
-  -- Show backwards button
-  ShowUIPanel(AQNextPageButton_Left);
-end
-
-
------------------------------------------------------------------------------
--- shows the side before this side
------------------------------------------------------------------------------
-function AQNextPageL_OnClick()
-local SHIT
-  AQ_CurrentSide = AQ_CurrentSide - 1;
-
-  -- it is a story text
-  if (AQ_NextPageCount == "Story" ) then
-    StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."Story")["Page"..AQ_CurrentSide]);
-    AQPageCount:SetText(AQ_CurrentSide.."/"..getglobal("Inst"..AQINSTANZ.."Story")["MaxPages"])
-    if (getglobal("Inst"..AQINSTANZ.."Caption"..AQ_CurrentSide) ~= nil) then
-      QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."Caption"..AQ_CurrentSide));
-    else
-      QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."Caption"));
-    end
-    -- hide button if first side
-    if (AQ_CurrentSide == 1) then
-      HideUIPanel(AQNextPageButton_Left);
-    end
-  end
-
-  -- it is a quest text 
-  if (AQ_NextPageCount == "Quest" ) then
-    -- SHIT is added to make the code smaller it give back the right link for horde or alliance
-    if ( Allianceorhorde == 1) then --Alliance
-      SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_Page")
-    else
-      SHIT = getglobal("Inst"..AQINSTANZ.."Quest"..AQSHOWNQUEST.."_HORDE_Page")
-    end
-    if (AQ_CurrentSide == 1) then
-      AQButton_SetText()
-    else
-      StoryTEXT:SetText(WHITE..SHIT[AQ_CurrentSide])
-    end
-    AQPageCount:SetText(AQ_CurrentSide.."/"..SHIT[1])
-  end
-  
-  -- it is a boss text
-  if (AQ_NextPageCount == "Boss" ) then
-    QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][1]);
-    StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][2].."\n \n"..getglobal("Inst"..AQINSTANZ.."General")[AQ_CurrentSide][3]);
-    -- Show Next side button if next site is avaiable
-    if (AQ_CurrentSide == 1) then
-      HideUIPanel(AQNextPageButton_Left);
-    end
-    -- shows total amount of pages
-    AQPageCount:SetText(AQ_CurrentSide.."/"..getn(getglobal("Inst"..AQINSTANZ.."General")))
-  end
-
-  ShowUIPanel(AQNextPageButton_Right);
-end
 
 
 -----------------------------------------------------------------------------
@@ -659,15 +463,6 @@ function AQGeneral_OnClick(arg1)
   --
   if (getglobal("Inst"..AQINSTANZ.."General") ~= nil) then
     QuestName:SetText(BLUE..getglobal("Inst"..AQINSTANZ.."General")[1][1]);
-    StoryTEXT:SetText(WHITE..getglobal("Inst"..AQINSTANZ.."General")[1][2].."\n \n"..getglobal("Inst"..AQINSTANZ.."General")[1][3]);
-    -- Show Next side button if next site is avaiable
-    AQ_NextPageCount = "Boss";
-    if (getglobal("Inst"..AQINSTANZ.."General")[2] ~= nil) then
-      ShowUIPanel(AQNextPageButton_Right);
-      AQ_CurrentSide = 1;
-      -- shows total amount of pages
-      AQPageCount:SetText(AQ_CurrentSide.."/"..getn(getglobal("Inst"..AQINSTANZ.."General")))
-    end
   end
 end
 

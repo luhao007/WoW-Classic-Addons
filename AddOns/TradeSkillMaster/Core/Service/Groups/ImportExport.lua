@@ -691,9 +691,8 @@ function private.ValidateGroupOperationsTable(groupOperations, groups, operation
 				groups[groupPath] = true
 			end
 		end
-		if not strict then
-			groupsOperationsTable.ignoreItemVariations = nil
-		end
+		-- remove legacy fields
+		groupsOperationsTable.ignoreItemVariations = nil
 		for moduleName, moduleOperations in pairs(groupsOperationsTable) do
 			local isInvalidModuleName, isNotExportOperationModule = private.IsValidOperationModule(moduleName)
 			if not isInvalidModuleName then

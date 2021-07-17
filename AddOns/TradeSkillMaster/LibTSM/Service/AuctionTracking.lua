@@ -79,6 +79,7 @@ AuctionTracking:OnSettingsLoad(function()
 		:AddUniqueNumberField("index")
 		:AddStringField("itemString")
 		:AddSmartMapField("baseItemString", ItemString.GetBaseMap(), "itemString")
+		:AddSmartMapField("levelItemString", ItemString.GetLevelMap(), "itemString")
 		:AddStringField("itemLink")
 		:AddNumberField("itemTexture")
 		:AddStringField("itemName")
@@ -95,7 +96,7 @@ AuctionTracking:OnSettingsLoad(function()
 		:AddIndex("auctionId")
 		:Commit()
 	private.quantityDB = Database.NewSchema("AUCTION_TRACKING_QUANTITY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:AddNumberField("quantity")
 		:Commit()
 	private.updateQuery = private.indexDB:NewQuery()
@@ -226,9 +227,9 @@ function AuctionTracking.DatabaseFieldIterator()
 	return private.indexDB:FieldIterator()
 end
 
-function AuctionTracking.BaseItemIterator()
+function AuctionTracking.ItemIterator()
 	return private.quantityDB:NewQuery()
-		:Select("itemString")
+		:Select("levelItemString")
 		:IteratorAndRelease()
 end
 
@@ -242,8 +243,15 @@ function AuctionTracking.CreateQueryUnsold()
 end
 
 function AuctionTracking.CreateQueryUnsoldItem(itemString)
-	return AuctionTracking.CreateQueryUnsold()
-		:Equal(itemString == ItemString.GetBaseFast(itemString) and "baseItemString" or "itemString", itemString)
+	local query = AuctionTracking.CreateQueryUnsold()
+	if itemString == ItemString.GetBaseFast(itemString) then
+		query:Equal("baseItemString", itemString)
+	elseif ItemString.IsLevel(itemString) then
+		query:Equal("levelItemString", itemString)
+	else
+		query:Equal("itemString", itemString)
+	end
+	return query
 end
 
 function AuctionTracking.GetSaleHintItemString(name, stackSize, buyout)
@@ -255,8 +263,8 @@ function AuctionTracking.GetSaleHintItemString(name, stackSize, buyout)
 	end
 end
 
-function AuctionTracking.GetQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "quantity") or 0
+function AuctionTracking.GetQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "quantity") or 0
 end
 
 function AuctionTracking.QueryOwnedAuctions()
@@ -342,10 +350,10 @@ function private.AuctionCanceledHandler(_, auctionId)
 		return
 	end
 
-	local baseItemString = row:GetField("baseItemString")
+	local levelItemString = row:GetField("levelItemString")
 	local stackSize = row:GetField("stackSize")
-	assert(stackSize <= private.settings.auctionQuantity[baseItemString])
-	private.settings.auctionQuantity[baseItemString] = private.settings.auctionQuantity[baseItemString] - stackSize
+	assert(stackSize <= private.settings.auctionQuantity[levelItemString])
+	private.settings.auctionQuantity[levelItemString] = private.settings.auctionQuantity[levelItemString] - stackSize
 	private.RebuildQuantityDB()
 	private.indexDB:DeleteRow(row)
 	row:Release()
@@ -426,8 +434,8 @@ function private.AuctionOwnedListUpdateDelayed()
 						duration = time() + duration
 						expire = min(expire, duration)
 					end
-					local baseItemString = ItemString.GetBaseFast(itemString)
-					private.settings.auctionQuantity[baseItemString] = (private.settings.auctionQuantity[baseItemString] or 0) + stackSize
+					local levelItemString = ItemString.ToLevel(itemString)
+					private.settings.auctionQuantity[levelItemString] = (private.settings.auctionQuantity[levelItemString] or 0) + stackSize
 					local hintInfo = strjoin(SALE_HINT_SEP, ItemInfo.GetName(link), itemString, stackSize, buyout)
 					private.settings.auctionSaleHints[hintInfo] = time()
 				else
@@ -474,11 +482,11 @@ end
 
 function private.RebuildQuantityDB()
 	private.quantityDB:TruncateAndBulkInsertStart()
-	for itemString, quantity in pairs(private.settings.auctionQuantity) do
+	for levelItemString, quantity in pairs(private.settings.auctionQuantity) do
 		if quantity > 0 then
-			private.quantityDB:BulkInsertNewRow(itemString, quantity)
+			private.quantityDB:BulkInsertNewRow(levelItemString, quantity)
 		else
-			private.settings.auctionQuantity[itemString] = nil
+			private.settings.auctionQuantity[levelItemString] = nil
 		end
 	end
 	private.quantityDB:BulkInsertEnd()

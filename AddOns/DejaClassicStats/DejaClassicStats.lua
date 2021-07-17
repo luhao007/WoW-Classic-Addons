@@ -653,6 +653,10 @@ local function MovementSpeed()
 	local playerSpeed
 	if IsSwimming() then
 		playerSpeed = (swimSpeed)
+	elseif IsFlying() then
+		playerSpeed = flightSpeed
+	elseif UnitOnTaxi("player") then
+		playerSpeed = currentSpeed
 	else
 		playerSpeed = runSpeed
 	end

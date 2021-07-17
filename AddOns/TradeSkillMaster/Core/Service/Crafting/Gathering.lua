@@ -10,6 +10,8 @@ local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local Database = TSM.Include("Util.Database")
 local Table = TSM.Include("Util.Table")
 local Delay = TSM.Include("Util.Delay")
+local CraftString = TSM.Include("Util.CraftString")
+local RecipeString = TSM.Include("Util.RecipeString")
 local String = TSM.Include("Util.String")
 local TempTable = TSM.Include("Util.TempTable")
 local ItemInfo = TSM.Include("Service.ItemInfo")
@@ -206,16 +208,21 @@ function private.UpdateDB()
 
 	local matsNumNeed = TempTable.Acquire()
 	local query = TSM.Crafting.CreateQueuedCraftsQuery()
-		:Select("spellId", "num")
+		:Select("recipeString", "num")
 		:Custom(private.QueryPlayerFilter, crafter)
 		:Or()
 	for profession in pairs(TSM.db.factionrealm.gatheringContext.professions) do
 		query:Equal("profession", profession)
 	end
 	query:End()
-	for _, spellId, numQueued in query:Iterator() do
-		for _, itemString, quantity in TSM.Crafting.MatIterator(spellId) do
+	for _, recipeString, numQueued in query:Iterator() do
+		local craftString = CraftString.FromRecipeString(recipeString)
+		for _, itemString, quantity in TSM.Crafting.MatIterator(craftString) do
 			matsNumNeed[itemString] = (matsNumNeed[itemString] or 0) + quantity * numQueued
+		end
+		for _, _, itemId in RecipeString.OptionalMatIterator(recipeString) do
+			local matItemString = "i:"..itemId
+			matsNumNeed[matItemString] = (matsNumNeed[matItemString] or 0) + 1 * numQueued
 		end
 	end
 	query:Release()
@@ -252,9 +259,9 @@ function private.UpdateDB()
 			local ignoreSource = false
 			if isCraftSource then
 				-- check if we are already crafting some materials of this craft so shouldn't craft this item
-				local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
-				if spellId then
-					for _, matItemString in TSM.Crafting.MatIterator(spellId) do
+				local craftString = TSM.Crafting.GetMostProfitableCraftStringByItem(itemString, crafter, true)
+				if craftString then
+					for _, matItemString in TSM.Crafting.MatIterator(craftString) do
 						if not ignoreSource and matSourceList[matItemString] and strmatch(matSourceList[matItemString], "craft[a-zA-Z]+/[^,]+/") then
 							ignoreSource = true
 						end
@@ -271,10 +278,10 @@ function private.UpdateDB()
 				if numNeed == 0 then
 					if isCraftSource then
 						-- we are crafting these, so add the necessary mats
-						local spellId = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
-						assert(spellId)
-						local numToCraft = ceil(prevNumNeed / TSM.Crafting.GetNumResult(spellId))
-						for _, intMatItemString, intMatQuantity in TSM.Crafting.MatIterator(spellId) do
+						local craftString = TSM.Crafting.GetMostProfitableCraftStringByItem(itemString, crafter, true)
+						assert(craftString)
+						local numToCraft = ceil(prevNumNeed / TSM.Crafting.GetNumResult(craftString))
+						for _, intMatItemString, intMatQuantity in TSM.Crafting.MatIterator(craftString) do
 							local intMatNumNeed, numUsed = private.HandleNumHave(intMatItemString, numToCraft * intMatQuantity, matsNumHaveExtra[intMatItemString] or 0)
 							if numUsed > 0 then
 								matsNumHaveExtra[intMatItemString] = matsNumHaveExtra[intMatItemString] - numUsed
@@ -459,11 +466,10 @@ function private.ProcessSource(itemString, numNeed, source, sourceList)
 			return numNeed - totalGuildBankQuantity
 		end
 	elseif source == "craftProfit" or source == "craftNoProfit" then
-		local spellId, maxProfit = TSM.Crafting.GetMostProfitableSpellIdByItem(itemString, crafter, true)
-		if spellId and (source == "craftNoProfit" or (maxProfit and maxProfit > 0)) then
+		local craftString, maxProfit, lowestCraftingCost = TSM.Crafting.GetMostProfitableCraftStringByItem(itemString, crafter, true)
+		if craftString and (source == "craftNoProfit" or (maxProfit and maxProfit > 0) or (not maxProfit and ItemInfo.IsSoulbound(itemString) and lowestCraftingCost)) then
 			-- assume we can craft all we need
-			local numToCraft = ceil(numNeed / TSM.Crafting.GetNumResult(spellId))
-			tinsert(sourceList, source.."/"..numToCraft.."/")
+			tinsert(sourceList, source.."/"..numNeed.."/")
 			return 0
 		end
 	elseif source == "auction" then

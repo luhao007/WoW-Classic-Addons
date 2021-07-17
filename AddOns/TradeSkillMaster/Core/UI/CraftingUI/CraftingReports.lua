@@ -7,6 +7,8 @@
 local _, TSM = ...
 local CraftingReports = TSM.UI.CraftingUI:NewPackage("CraftingReports")
 local L = TSM.Include("Locale").GetTable()
+local CraftString = TSM.Include("Util.CraftString")
+local RecipeString = TSM.Include("Util.RecipeString")
 local Math = TSM.Include("Util.Math")
 local Log = TSM.Include("Util.Log")
 local Money = TSM.Include("Util.Money")
@@ -420,12 +422,17 @@ function private.CheckboxOnValueChanged(checkbox)
 end
 
 function private.CraftsOnRowClick(scrollingTable, record, mouseButton)
-	if mouseButton == "LeftButton" then
-		TSM.Crafting.Queue.Add(record:GetField("spellId"), 1)
-	elseif mouseButton == "RightButton" then
-		TSM.Crafting.Queue.Remove(record:GetField("spellId"), 1)
+	local craftString = record:GetField("craftString")
+	local recipeString = RecipeString.FromCraftString(craftString)
+	local level = CraftString.GetLevel(craftString)
+	if level then
+		return
 	end
-	scrollingTable:Draw()
+	if mouseButton == "LeftButton" then
+		TSM.Crafting.Queue.Add(recipeString, 1)
+	elseif mouseButton == "RightButton" then
+		TSM.Crafting.Queue.Remove(recipeString, 1)
+	end
 end
 
 function private.MatsInputOnValueChanged(input)
@@ -581,7 +588,7 @@ function private.UpdateCraftsQueryWithFilters(frame)
 end
 
 function private.IsCraftableQueryFilter(record)
-	return TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(record:GetField("spellId")) > 0
+	return TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(record:GetField("craftString")) > 0
 end
 
 function private.UpdateMatsQueryWithFilters(frame)

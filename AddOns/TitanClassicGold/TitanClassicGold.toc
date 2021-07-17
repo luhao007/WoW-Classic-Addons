@@ -1,11 +1,11 @@
 ## Interface: 20501
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.3.2.20501
+## Version: 1.3.4.20501
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: GoldSave
 
-## Title: Titan Panel Classic [|cffeda55fGold|r] |cff00aa001.3.2.20501|r
+## Title: Titan Panel Classic [|cffeda55fGold|r] |cff00aa001.3.4.20501|r
 ## Notes: Keeps track of all gold held by a player's toons on a per server/faction basis.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0金币|r
 ## Notes-zhCN: 泰坦面板的金币模块

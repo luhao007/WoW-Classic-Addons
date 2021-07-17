@@ -18,13 +18,13 @@ local private = {
 	settings = nil,
 	showTime = nil,
 }
-local WHATS_NEW_VERSION = 1
+local WHATS_NEW_VERSION = 2
 local CONTENT_LINES = {
-	Theme.GetColor("INDICATOR"):ColorText(L["A brand new and improved user interface."]).." "..L["The entirety of the addon has been redesigned from the ground up. Highlights include: a more modern UI that maximizes on available space, new appearances that allow you to change the theme, updated Dashboard, more powerful tables and much, much more."],
-	Theme.GetColor("INDICATOR"):ColorText(L["New price sources."]).." "..L["We've added new price sources to give you even more flexibility in how you use TSM to manage your gold making. You can now reference NumInventory, SaleRate, and much more throughout the addon. SmartAvgBuy has also been moved from an option to its own separate price source."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Improved Import / Export."]).." "..L["Now embedded within the Groups tab of the main TSM window with dedicated buttons to help with both importing and exporting."],
-	Theme.GetColor("INDICATOR"):ColorText(L["New Base Group search."]).." "..L["Trouble making groups? You can now search any item in the game from within the base group and easily add them to existing groups or simply create a new group for them."],
-	Theme.GetColor("INDICATOR"):ColorText(L["Per-Character group selections."]).." "..L["To make it easier to use TSM across different characters, the groups you have selected in various UIs will now be persistent on a per-character basis and selected by default."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Full Shadowlands Profession Support"]).." "..L["This includes support for optional reagents for your recipes as well as legendary craft ranks."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Improved Group & Item Management."]).." "..L["Now you can drag and drop selected items between Groups, without needing to remove them or have them on hand."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Custom Themes."]).." "..L["We've added the option to customise the colour palette to your own preferences, including the ability to export a string to share with your friends to import."],
+	Theme.GetColor("INDICATOR"):ColorText(L["Addon Optimisations."]).." "..L["Various under-the-hood tweaks and tuning have been implemented, with an aim to improve stability and reduce lag throughout the addon."],
+	Theme.GetColor("INDICATOR"):ColorText(L["DBRegionMinBuyoutAvg Retired."]).." "..L["The DBRegionMinBuyoutAvg price source has been retired, it can be removed from any operation or custom string you are using."],
 }
 
 
@@ -43,7 +43,7 @@ function WhatsNew.GetDialog()
 		return
 	end
 	private.showTime = GetTime()
-	return UIElements.New("Frame")
+	return UIElements.New("Frame", "whatsnew")
 		:SetLayout("VERTICAL")
 		:SetSize(650, 390)
 		:SetPadding(12, 12, 0, 12)
@@ -59,7 +59,7 @@ function WhatsNew.GetDialog()
 			:AddChild(UIElements.New("Text", "title")
 				:SetJustifyH("CENTER")
 				:SetFont("BODY_BODY1_BOLD")
-				:SetText(L["TSM 4.10: What's new"])
+				:SetFormattedText(L["TSM %s: What's new"], "4.11")
 			)
 			:AddChild(UIElements.New("Button", "closeBtn")
 				:SetMargin(0, -4, 0, 0)
@@ -69,7 +69,7 @@ function WhatsNew.GetDialog()
 		)
 		:AddChild(UIElements.New("ScrollFrame", "body")
 			:AddChild(UIElements.New("Text", "content1")
-				:SetHeight(400)
+				:SetHeight(290)
 				:SetFont("BODY_BODY2")
 				:SetText(table.concat(CONTENT_LINES, "\n\n"))
 			)
@@ -78,7 +78,7 @@ function WhatsNew.GetDialog()
 			:SetHeight(20)
 			:SetMargin(0, 0, 12, 0)
 			:SetFont("BODY_BODY3")
-			:SetText(format(L["For more info, visit %s. For help, join us in Discord: %s."], Theme.GetColor("INDICATOR_ALT"):ColorText("blog.tradeskillmaster.com"), Theme.GetColor("INDICATOR_ALT"):ColorText("discord.gg/woweconomy")))
+			:SetFormattedText(L["For more info, visit %s. For help, join us in Discord: %s."], Theme.GetColor("INDICATOR_ALT"):ColorText("blog.tradeskillmaster.com"), Theme.GetColor("INDICATOR_ALT"):ColorText("discord.gg/woweconomy"))
 		)
 end
 

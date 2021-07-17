@@ -81,6 +81,9 @@ function private.CanLootMailIndex(index, copper)
 		end
 		local link = GetInboxItemLink(index, j)
 		local itemString = ItemString.Get(link)
+		if not itemString then
+			return
+		end
 		local _, _, _, count = GetInboxItem(index, j)
 		local quantity = count or 0
 		local maxUnique = private.GetInboxMaxUnique(index, j)
@@ -89,20 +92,18 @@ function private.CanLootMailIndex(index, copper)
 		if maxUnique > 0 and maxUnique < playerQty + quantity then
 			return
 		end
-		if itemString then
-			for bag = 0, NUM_BAG_SLOTS do
-				if InventoryInfo.ItemWillGoInBag(link, bag) then
-					for slot = 1, GetContainerNumSlots(bag) do
-						local iString = ItemString.Get(GetContainerItemLink(bag, slot))
-						if iString == itemString then
-							local _, stackSize = GetContainerItemInfo(bag, slot)
-							local maxStackSize = ItemInfo.GetMaxStack(itemString) or 1
-							if (maxStackSize - stackSize) >= quantity then
-								return true
-							end
-						elseif not iString then
+		for bag = 0, NUM_BAG_SLOTS do
+			if InventoryInfo.ItemWillGoInBag(link, bag) then
+				for slot = 1, GetContainerNumSlots(bag) do
+					local iString = ItemString.Get(GetContainerItemLink(bag, slot))
+					if iString == itemString then
+						local _, stackSize = GetContainerItemInfo(bag, slot)
+						local maxStackSize = ItemInfo.GetMaxStack(itemString) or 1
+						if (maxStackSize - stackSize) >= quantity then
 							return true
 						end
+					elseif not iString then
+						return true
 					end
 				end
 			end

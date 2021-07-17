@@ -7,13 +7,18 @@
 local _, TSM = ...
 local CraftingTask = TSM.Include("LibTSMClass").DefineClass("CraftingTask", TSM.TaskList.Task)
 local L = TSM.Include("Locale").GetTable()
+local CraftString = TSM.Include("Util.CraftString")
 local Table = TSM.Include("Util.Table")
+local Event = TSM.Include("Util.Event")
 local Log = TSM.Include("Util.Log")
+local ItemString = TSM.Include("Util.ItemString")
 local BagTracking = TSM.Include("Service.BagTracking")
 TSM.TaskList.CraftingTask = CraftingTask
 local private = {
 	currentlyCrafting = nil,
 	registeredCallbacks = false,
+	pendingSpellId = nil,
+	pendingItemString = nil,
 	activeTasks = {},
 }
 
@@ -27,14 +32,19 @@ function CraftingTask.__init(self)
 	self.__super:__init()
 	self._profession = nil
 	self._skillId = nil
-	self._spellIds = {}
-	self._spellQuantity = {}
+	self._craftStrings = {}
+	self._craftQuantity = {}
 
 	if not private.registeredCallbacks then
 		TSM.Crafting.ProfessionState.RegisterUpdateCallback(private.UpdateTasks)
 		TSM.Crafting.ProfessionScanner.RegisterHasScannedCallback(private.UpdateTasks)
 		BagTracking.RegisterCallback(private.UpdateTasks)
 		private.registeredCallbacks = true
+
+		Event.Register("CHAT_MSG_LOOT", private.ChatMsgLootEventHandler)
+		Event.Register("UNIT_SPELLCAST_INTERRUPTED", private.SpellCastEventHandler)
+		Event.Register("UNIT_SPELLCAST_FAILED", private.SpellCastEventHandler)
+		Event.Register("UNIT_SPELLCAST_FAILED_QUIET", private.SpellCastEventHandler)
 	end
 end
 
@@ -53,8 +63,8 @@ function CraftingTask.Release(self)
 	self.__super:Release()
 	self._profession = nil
 	self._skillId = nil
-	wipe(self._spellIds)
-	wipe(self._spellQuantity)
+	wipe(self._craftStrings)
+	wipe(self._craftQuantity)
 	private.activeTasks[self] = nil
 end
 
@@ -64,44 +74,65 @@ end
 -- Public Class Methods
 -- ============================================================================
 
-function CraftingTask.WipeSpellIds(self)
-	wipe(self._spellIds)
-	wipe(self._spellQuantity)
+function CraftingTask.WipeCraftStrings(self)
+	wipe(self._craftStrings)
+	wipe(self._craftQuantity)
 end
 
-function CraftingTask.HasSpellIds(self)
-	return #self._spellIds > 0
+function CraftingTask.HasCraftStrings(self)
+	return #self._craftStrings > 0
 end
 
 function CraftingTask.GetProfession(self)
 	return self._profession
 end
 
-function CraftingTask.HasSpellId(self, spellId)
-	return self._spellQuantity[spellId] and true or false
+function CraftingTask.HasCraftString(self, craftString)
+	return self._craftQuantity[craftString] and true or false
 end
 
-function CraftingTask.AddSpellId(self, spellId, quantity)
-	tinsert(self._spellIds, spellId)
-	self._spellQuantity[spellId] = quantity
+function CraftingTask.AddCraftString(self, craftString, quantity)
+	tinsert(self._craftStrings, craftString)
+	self._craftQuantity[craftString] = quantity
 end
 
 function CraftingTask.OnMouseDown(self)
 	if self._buttonText == L["CRAFT"] then
-		local spellId = self._spellIds[1]
-		local quantity = self._spellQuantity[spellId]
-		Log.Info("Preparing %d (%d)", spellId, quantity)
-		TSM.Crafting.ProfessionUtil.PrepareToCraft(spellId, quantity)
+		local craftString = self._craftStrings[1]
+		local quantity = self._craftQuantity[craftString]
+		Log.Info("Preparing %s (%d)", craftString, quantity)
+		TSM.Crafting.ProfessionUtil.PrepareToCraft(craftString, nil, quantity)
 	end
 end
 
 function CraftingTask.OnButtonClick(self)
 	if self._buttonText == L["CRAFT"] then
-		local spellId = self._spellIds[1]
-		local quantity = self._spellQuantity[spellId]
-		Log.Info("Crafting %d (%d)", spellId, quantity)
+		local craftString = self._craftStrings[1]
+		local spellId = CraftString.GetSpellId(craftString)
+		local quantity = self._craftQuantity[craftString]
+		local _, numMax = nil, nil
+		if TSM.IsWowClassic() then
+			if TSM.Crafting.ProfessionState.IsClassicCrafting() then
+				if TSM.IsWowBCClassic() then
+					_, numMax = GetCraftNumMade(spellId)
+				else
+					_, numMax = 1, 1
+				end
+			else
+				_, numMax = GetTradeSkillNumMade(spellId)
+			end
+		else
+			_, numMax = C_TradeSkillUI.GetRecipeNumItemsProduced(spellId)
+		end
+		if numMax and numMax > 1 then
+			-- need minimum this many repeats
+			quantity = ceil(quantity / numMax)
+		end
+		Log.Info("Crafting %s (%d)", craftString, quantity)
 		private.currentlyCrafting = self
-		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(spellId, quantity, true, private.CraftCompleteCallback)
+		private.pendingSpellId = spellId
+		private.pendingItemString = TSM.Crafting.GetItemString(craftString)
+		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(craftString, spellId, quantity, true, private.CraftCompleteCallback)
 		if numCrafted == 0 then
 			-- we're probably crafting something else already - so just bail
 			Log.Err("Failed to craft")
@@ -116,13 +147,13 @@ function CraftingTask.OnButtonClick(self)
 end
 
 function CraftingTask.HasSubTasks(self)
-	assert(self:HasSpellIds())
+	assert(self:HasCraftStrings())
 	return true
 end
 
 function CraftingTask.SubTaskIterator(self)
-	assert(self:HasSpellIds())
-	sort(self._spellIds, private.SpellIdSort)
+	assert(self:HasCraftStrings())
+	sort(self._craftStrings, private.SpellIdSort)
 	return private.SubTaskIterator, self, 0
 end
 
@@ -133,8 +164,8 @@ end
 -- ============================================================================
 
 function CraftingTask._UpdateState(self)
-	sort(self._spellIds, private.SpellIdSort)
-	if TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(self._spellIds[1]) == 0 then
+	sort(self._craftStrings, private.SpellIdSort)
+	if TSM.Crafting.ProfessionUtil.GetNumCraftableFromDB(self._craftStrings[1]) == 0 then
 		-- don't have the mats to craft this
 		return self:_SetButtonState(false, L["NEED MATS"])
 	elseif self._profession ~= TSM.Crafting.ProfessionState.GetCurrentProfession() then
@@ -153,9 +184,9 @@ function CraftingTask._UpdateState(self)
 	end
 end
 
-function CraftingTask._RemoveSpellId(self, spellId)
-	assert(Table.RemoveByValue(self._spellIds, spellId) == 1)
-	self._spellQuantity[spellId] = nil
+function CraftingTask._RemoveCraftString(self, craftString)
+	assert(Table.RemoveByValue(self._craftStrings, craftString) == 1)
+	self._craftQuantity[craftString] = nil
 end
 
 
@@ -164,39 +195,103 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.SubTaskIterator(self, index)
-	index = index + 1
-	local spellId = self._spellIds[index]
-	if not spellId then
+function private.ChatMsgLootEventHandler(_, msg)
+	if not private.pendingSpellId or not private.pendingItemString then
 		return
 	end
-	return index, TSM.Crafting.GetName(spellId).." ("..self._spellQuantity[spellId]..")"
+	local msgItemLink, quantity = nil, nil
+	local numMin, numMax = nil, nil
+	if TSM.IsWowClassic() then
+		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
+			if TSM.IsWowBCClassic() then
+				numMin, numMax = GetCraftNumMade(private.pendingSpellId)
+			else
+				numMin, numMax = 1, 1
+			end
+		else
+			numMin, numMax = GetTradeSkillNumMade(private.pendingSpellId)
+		end
+	else
+		numMin, numMax = C_TradeSkillUI.GetRecipeNumItemsProduced(private.pendingSpellId)
+	end
+	if numMin == 1 then
+		numMin = numMin + 1
+	end
+	for i = numMin, numMax do
+		local itemLink = private.ExtractFormatValue(msg, format(LOOT_ITEM_CREATED_SELF_MULTIPLE, "%s", i))
+		if itemLink then
+			msgItemLink = itemLink
+			quantity = i
+			break
+		end
+	end
+	if not msgItemLink then
+		msgItemLink = private.ExtractFormatValue(msg, LOOT_ITEM_CREATED_SELF)
+		quantity = 1
+	end
+	if not msgItemLink or ItemString.GetBase(msgItemLink) ~= ItemString.GetBase(private.pendingItemString) then
+		Log.Info("Unknown item link (%s, %s, %s)", msg, tostring(msgItemLink), private.pendingItemString)
+		return
+	end
+	local self = private.currentlyCrafting
+	assert(self)
+	local craftString = self._craftStrings[1]
+	self._craftQuantity[craftString] = self._craftQuantity[craftString] - quantity
+	Log.Info("Crafted %s (%d), remaining: %d", private.pendingItemString, quantity, self._craftQuantity[craftString])
+	if self._craftQuantity[craftString] <= 0 then
+		private.ClearPendingContext()
+	end
+end
+
+function private.SpellCastEventHandler(event, unit, _, spellId)
+	if unit ~= "player" or spellId ~= private.pendingSpellId then
+		return
+	end
+	private.ClearPendingContext()
+end
+
+function private.ExtractFormatValue(str, fmtStr)
+	assert(not strmatch(fmtStr, "\001"))
+	local part1, part2 = strsplit("\001", format(fmtStr, "\001"))
+	return strmatch(str, "^"..part1.."(.+)"..part2.."$")
+end
+
+function private.ClearPendingContext()
+	private.pendingSpellId = nil
+	private.pendingItemString = nil
+end
+
+function private.SubTaskIterator(self, index)
+	index = index + 1
+	local craftString = self._craftStrings[index]
+	if not craftString then
+		return
+	end
+	return index, TSM.Crafting.GetName(craftString).." ("..self._craftQuantity[craftString]..")"
 end
 
 function private.CraftCompleteCallback(success, isDone)
 	local self = private.currentlyCrafting
 	assert(self)
-	local spellId = self._spellIds[1]
+	local craftString = self._craftStrings[1]
 	if isDone then
 		private.currentlyCrafting = nil
+		private.ClearPendingContext()
 		if success then
-			self:_RemoveSpellId(spellId)
-			if not self:HasSpellIds() then
+			self:_RemoveCraftString(craftString)
+			if not self:HasCraftStrings() then
 				self:_doneHandler()
 			end
 		end
-	elseif success then
-		self._spellQuantity[spellId] = self._spellQuantity[spellId] - 1
-		assert(self._spellQuantity[spellId] > 0)
 	end
-	if self:HasSpellIds() then
+	if self:HasCraftStrings() then
 		self:Update()
 	end
 end
 
 function private.UpdateTasks()
 	for task in pairs(private.activeTasks) do
-		if task:HasSpellIds() then
+		if task:HasCraftStrings() then
 			task:Update()
 		end
 	end

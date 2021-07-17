@@ -81,6 +81,7 @@ BagTracking:OnSettingsLoad(function()
 		:AddStringField("itemLink")
 		:AddStringField("itemString")
 		:AddSmartMapField("baseItemString", ItemString.GetBaseMap(), "itemString")
+		:AddSmartMapField("levelItemString", ItemString.GetLevelMap(), "itemString")
 		:AddNumberField("itemTexture")
 		:AddNumberField("quantity")
 		:AddBooleanField("isBoP")
@@ -89,9 +90,10 @@ BagTracking:OnSettingsLoad(function()
 		:AddIndex("bag")
 		:AddIndex("itemString")
 		:AddIndex("baseItemString")
+		:AddIndex("levelItemString")
 		:Commit()
 	private.quantityDB = Database.NewSchema("BAG_TRACKING_QUANTITY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:AddNumberField("bagQuantity")
 		:AddNumberField("bankQuantity")
 		:AddNumberField("reagentBankQuantity")
@@ -107,35 +109,35 @@ BagTracking:OnSettingsLoad(function()
 	local bagQuantity = TempTable.Acquire()
 	local bankQuantity = TempTable.Acquire()
 	local reagentBankQuantity = TempTable.Acquire()
-	for itemString, quantity in pairs(private.settings.bagQuantity) do
-		if itemString == ItemString.GetBase(itemString) then
-			items[itemString] = true
-			bagQuantity[itemString] = quantity
+	for levelItemString, quantity in pairs(private.settings.bagQuantity) do
+		if levelItemString == ItemString.ToLevel(levelItemString) then
+			items[levelItemString] = true
+			bagQuantity[levelItemString] = quantity
 		else
-			private.settings.bagQuantity[itemString] = nil
+			private.settings.bagQuantity[levelItemString] = nil
 		end
 	end
-	for itemString, quantity in pairs(private.settings.bankQuantity) do
-		if itemString == ItemString.GetBase(itemString) then
-			items[itemString] = true
-			bankQuantity[itemString] = quantity
+	for levelItemString, quantity in pairs(private.settings.bankQuantity) do
+		if levelItemString == ItemString.ToLevel(levelItemString) then
+			items[levelItemString] = true
+			bankQuantity[levelItemString] = quantity
 		else
-			private.settings.bankQuantity[itemString] = nil
+			private.settings.bankQuantity[levelItemString] = nil
 		end
 	end
-	for itemString, quantity in pairs(private.settings.reagentBankQuantity) do
-		if itemString == ItemString.GetBase(itemString) then
-			items[itemString] = true
-			reagentBankQuantity[itemString] = quantity
+	for levelItemString, quantity in pairs(private.settings.reagentBankQuantity) do
+		if levelItemString == ItemString.ToLevel(levelItemString) then
+			items[levelItemString] = true
+			reagentBankQuantity[levelItemString] = quantity
 		else
-			private.settings.reagentBankQuantity[itemString] = nil
+			private.settings.reagentBankQuantity[levelItemString] = nil
 		end
 	end
 	private.quantityDB:BulkInsertStart()
-	for itemString in pairs(items) do
-		local total = (bagQuantity[itemString] or 0) + (bankQuantity[itemString] or 0) + (reagentBankQuantity[itemString] or 0)
+	for levelItemString in pairs(items) do
+		local total = (bagQuantity[levelItemString] or 0) + (bankQuantity[levelItemString] or 0) + (reagentBankQuantity[levelItemString] or 0)
 		if total > 0 then
-			private.quantityDB:BulkInsertNewRow(itemString, bagQuantity[itemString] or 0, bankQuantity[itemString] or 0, reagentBankQuantity[itemString] or 0)
+			private.quantityDB:BulkInsertNewRow(levelItemString, bagQuantity[levelItemString] or 0, bankQuantity[levelItemString] or 0, reagentBankQuantity[levelItemString] or 0)
 		end
 	end
 	private.quantityDB:BulkInsertEnd()
@@ -192,9 +194,9 @@ function BagTracking.RegisterCallback(callback)
 	tinsert(private.callbacks, callback)
 end
 
-function BagTracking.BaseItemIterator()
+function BagTracking.ItemIterator()
 	return private.quantityDB:NewQuery()
-		:Select("itemString")
+		:Select("levelItemString")
 		:IteratorAndRelease()
 end
 
@@ -219,6 +221,8 @@ function BagTracking.CreateQueryBagsItem(itemString)
 	local query = BagTracking.CreateQueryBags()
 	if itemString == ItemString.GetBaseFast(itemString) then
 		query:Equal("baseItemString", itemString)
+	elseif ItemString.IsLevel(itemString) then
+		query:Equal("levelItemString", itemString)
 	else
 		query:Equal("itemString", itemString)
 	end
@@ -235,7 +239,7 @@ end
 function BagTracking.GetNumMailable(itemString)
 	return BagTracking.CreateQueryBagsItem(itemString)
 		:Equal("isBoP", false)
-		:SumAndRelease("quantity") or 0
+		:SumAndRelease("quantity")
 end
 
 function BagTracking.CreateQueryBank()
@@ -247,6 +251,8 @@ function BagTracking.CreateQueryBankItem(itemString)
 	local query = BagTracking.CreateQueryBank()
 	if itemString == ItemString.GetBaseFast(itemString) then
 		query:Equal("baseItemString", itemString)
+	elseif ItemString.IsLevel(itemString) then
+		query:Equal("levelItemString", itemString)
 	else
 		query:Equal("itemString", itemString)
 	end
@@ -261,18 +267,18 @@ function BagTracking.ForceBankQuantityDeduction(itemString, quantity)
 	local query = private.slotDB:NewQuery()
 		:Equal("itemString", itemString)
 		:InTable("bag", BANK_NON_REAGENT_BAG_SLOTS)
-	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	for _, row in query:Iterator() do
 		if quantity > 0 then
 			local rowQuantity, rowBag = row:GetFields("quantity", "bag")
 			if rowQuantity <= quantity then
-				private.ChangeBagItemTotal(rowBag, baseItemString, -rowQuantity)
+				private.ChangeBagItemTotal(rowBag, levelItemString, -rowQuantity)
 				private.slotDB:DeleteRow(row)
 				quantity = quantity - rowQuantity
 			else
 				row:SetField("quantity", rowQuantity - quantity)
 					:Update()
-				private.ChangeBagItemTotal(rowBag, baseItemString, -quantity)
+				private.ChangeBagItemTotal(rowBag, levelItemString, -quantity)
 				quantity = 0
 			end
 		end
@@ -285,16 +291,16 @@ function BagTracking.GetQuantityBySlotId(slotId)
 	return private.slotDB:GetUniqueRowField("slotId", slotId, "quantity")
 end
 
-function BagTracking.GetBagsQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "bagQuantity") or 0
+function BagTracking.GetBagsQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "bagQuantity") or 0
 end
 
-function BagTracking.GetBankQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "bankQuantity") or 0
+function BagTracking.GetBankQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "bankQuantity") or 0
 end
 
-function BagTracking.GetReagentBankQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "reagentBankQuantity") or 0
+function BagTracking.GetReagentBankQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "reagentBankQuantity") or 0
 end
 
 
@@ -489,8 +495,8 @@ function private.RemoveExtraSlots(bag, numSlots)
 		:Equal("bag", bag)
 		:GreaterThan("slot", numSlots)
 	for _, row in query:Iterator() do
-		local baseItemString, quantity = row:GetFields("baseItemString", "quantity")
-		private.ChangeBagItemTotal(bag, baseItemString, -quantity)
+		local levelItemString, quantity = row:GetFields("levelItemString", "quantity")
+		private.ChangeBagItemTotal(bag, levelItemString, -quantity)
 		private.slotDB:DeleteRow(row)
 	end
 	query:Release()
@@ -505,10 +511,11 @@ function private.ScanBagSlot(bag, slot)
 		-- this item is going away, so try again later to scan it
 		return false
 	end
-	local baseItemString = link and ItemString.GetBase(link)
+	local itemString = ItemString.Get(link)
+	local levelItemString = itemString and ItemString.ToLevel(itemString)
 	local slotId = SlotId.Join(bag, slot)
 	local row = private.slotDB:GetUniqueRow("slotId", slotId)
-	if baseItemString then
+	if levelItemString then
 		local isBoP, isBoA = nil, nil
 		if row then
 			if row:GetField("itemLink") == link then
@@ -522,8 +529,8 @@ function private.ScanBagSlot(bag, slot)
 				end
 			end
 			-- remove the old row from the item totals
-			local oldBaseItemString, oldQuantity = row:GetFields("baseItemString", "quantity")
-			private.ChangeBagItemTotal(bag, oldBaseItemString, -oldQuantity)
+			local oldLevelItemString, oldQuantity = row:GetFields("levelItemString", "quantity")
+			private.ChangeBagItemTotal(bag, oldLevelItemString, -oldQuantity)
 		else
 			isBoP, isBoA = InventoryInfo.IsSoulbound(bag, slot)
 			if isBoP == nil then
@@ -545,11 +552,11 @@ function private.ScanBagSlot(bag, slot)
 			:SetField("isBoA", isBoA)
 			:CreateOrUpdateAndRelease()
 		-- add to the item totals
-		private.ChangeBagItemTotal(bag, baseItemString, quantity)
+		private.ChangeBagItemTotal(bag, levelItemString, quantity)
 	elseif row then
 		-- nothing here now so delete the row and remove from the item totals
-		local oldBaseItemString, oldQuantity = row:GetFields("baseItemString", "quantity")
-		private.ChangeBagItemTotal(bag, oldBaseItemString, -oldQuantity)
+		local oldLevelItemString, oldQuantity = row:GetFields("levelItemString", "quantity")
+		private.ChangeBagItemTotal(bag, oldLevelItemString, -oldQuantity)
 		private.slotDB:DeleteRow(row)
 		row:Release()
 	end
@@ -562,7 +569,7 @@ function private.OnCallbackQueryUpdated()
 	end
 end
 
-function private.ChangeBagItemTotal(bag, itemString, changeQuantity)
+function private.ChangeBagItemTotal(bag, levelItemString, changeQuantity)
 	local totalsTable = nil
 	local field = nil
 	if bag >= BACKPACK_CONTAINER and bag <= NUM_BAG_SLOTS then
@@ -577,28 +584,28 @@ function private.ChangeBagItemTotal(bag, itemString, changeQuantity)
 	else
 		error("Unexpected bag: "..tostring(bag))
 	end
-	totalsTable[itemString] = (totalsTable[itemString] or 0) + changeQuantity
-	private.UpdateQuantity(itemString, field, changeQuantity)
-	assert(totalsTable[itemString] >= 0)
-	if totalsTable[itemString] == 0 then
-		totalsTable[itemString] = nil
+	totalsTable[levelItemString] = (totalsTable[levelItemString] or 0) + changeQuantity
+	private.UpdateQuantity(levelItemString, field, changeQuantity)
+	assert(totalsTable[levelItemString] >= 0)
+	if totalsTable[levelItemString] == 0 then
+		totalsTable[levelItemString] = nil
 	end
 end
 
-function private.UpdateQuantity(itemString, field, quantity)
-	assert(itemString and field and quantity)
+function private.UpdateQuantity(levelItemString, field, quantity)
+	assert(levelItemString and field and quantity)
 	assert(quantity ~= 0)
-	if not private.quantityDB:HasUniqueRow("itemString", itemString) then
+	if not private.quantityDB:HasUniqueRow("levelItemString", levelItemString) then
 		-- create a new row
 		private.quantityDB:NewRow()
-			:SetField("itemString", itemString)
+			:SetField("levelItemString", levelItemString)
 			:SetField("bagQuantity", 0)
 			:SetField("bankQuantity", 0)
 			:SetField("reagentBankQuantity", 0)
 			:Create()
 	end
 
-	local row = private.quantityDB:GetUniqueRow("itemString", itemString)
+	local row = private.quantityDB:GetUniqueRow("levelItemString", levelItemString)
 	local totalQuantity = row:GetField("bagQuantity") + row:GetField("bankQuantity") + row:GetField("reagentBankQuantity")
 	local oldValue = row:GetField(field)
 	local newValue = oldValue + quantity

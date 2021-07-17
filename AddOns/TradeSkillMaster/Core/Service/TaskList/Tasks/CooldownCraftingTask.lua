@@ -43,7 +43,7 @@ function CooldownCraftingTask.CanHideSubTasks(self)
 end
 
 function CooldownCraftingTask.HideSubTask(self, index)
-	TSM.Crafting.IgnoreCooldown(self._spellIds[index])
+	TSM.Crafting.IgnoreCooldown(self._craftStrings[index])
 end
 
 
@@ -54,26 +54,26 @@ end
 
 function CooldownCraftingTask._UpdateState(self)
 	local result = self.__super:_UpdateState()
-	if not self:HasSpellIds() then
+	if not self:HasCraftStrings() then
 		return result
 	end
-	for i = #self._spellIds, 1, -1 do
-		if self:_IsOnCooldown(self._spellIds[i]) or TSM.Crafting.IsCooldownIgnored(self._spellIds[i]) then
-			self:_RemoveSpellId(self._spellIds[i])
+	for i = #self._craftStrings, 1, -1 do
+		if self:_IsOnCooldown(self._craftStrings[i]) or TSM.Crafting.IsCooldownIgnored(self._craftStrings[i]) then
+			self:_RemoveCraftString(self._craftStrings[i])
 		end
 	end
-	if not self:HasSpellIds() then
+	if not self:HasCraftStrings() then
 		self:_doneHandler()
 		return true
 	end
 	return result
 end
 
-function CooldownCraftingTask._IsOnCooldown(self, spellId)
-	assert(not TSM.db.char.internalData.craftingCooldowns[spellId])
-	local remainingCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(spellId)
+function CooldownCraftingTask._IsOnCooldown(self, craftString)
+	assert(not TSM.db.char.internalData.craftingCooldowns[craftString])
+	local remainingCooldown = TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString)
 	if remainingCooldown then
-		TSM.db.char.internalData.craftingCooldowns[spellId] = time() + Math.Round(remainingCooldown)
+		TSM.db.char.internalData.craftingCooldowns[craftString] = time() + Math.Round(remainingCooldown)
 		return true
 	end
 	return false
@@ -87,7 +87,7 @@ end
 
 function private.UpdateTasks()
 	for task in pairs(private.activeTasks) do
-		if task:HasSpellIds() then
+		if task:HasCraftStrings() then
 			task:Update()
 		end
 	end

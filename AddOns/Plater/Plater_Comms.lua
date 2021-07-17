@@ -1,9 +1,12 @@
 local Plater = _G.Plater
-local C_Timer = C_Timer
+local C_Timer = _G.C_Timer
 local COMM_PLATER_PREFIX = "PLT"
 local COMM_SCRIPT_GROUP_EXPORTED = "GE"
 
+local pcall = pcall
+
 local LibAceSerializer = LibStub:GetLibrary ("AceSerializer-3.0")
+local LibDeflate = LibStub:GetLibrary ("LibDeflate")
 
 local CONST_THROTTLE_HOOK_COMMS = 0.500 --2 comms per second per mod
 
@@ -101,7 +104,6 @@ end
 
 -- ~compress ~zip ~export ~import ~deflate ~serialize
 function Plater.CompressData (data, dataType)
-    local LibDeflate = LibStub:GetLibrary ("LibDeflate")
     
     if (LibDeflate and LibAceSerializer) then
         local dataSerialized = LibAceSerializer:Serialize (data)
@@ -123,7 +125,6 @@ end
 
 
 function Plater.DecompressData (data, dataType)
-    local LibDeflate = LibStub:GetLibrary ("LibDeflate")
     
     if (LibDeflate and LibAceSerializer) then
         
@@ -160,3 +161,26 @@ function Plater.DecompressData (data, dataType)
     end
 end
 
+--when an imported line is pasted in the wrong tab
+--send a message telling which tab is responsible for the data
+function Plater.SendScriptTypeErrorMsg(data)
+    if (data and type(data) == "table") then
+        if (data.type == "script") then
+            Plater:Msg ("this import look like Script, try importing in the Scripting tab.")
+
+        elseif (data.type == "hook") then
+            Plater:Msg ("this import look like a Mod, try importing in the Modding tab.")
+
+        elseif (data[Plater.Export_CastColors]) then
+            Plater:Msg ("this import look like a Cast Colors, try importing in the Cast Colors tab.")
+
+        elseif (data.NpcColor) then
+            Plater:Msg ("this import looks to be a Npc Colors import, try importing in the Npc Colors tab.")
+
+        elseif (data.plate_config) then
+            Plater:Msg ("this import looks like a profile, import profiles at the Profiles tab.")
+        end
+    end
+
+    Plater:Msg ("failed to import the data provided.")
+end

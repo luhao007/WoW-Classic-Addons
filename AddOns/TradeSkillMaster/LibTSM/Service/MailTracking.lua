@@ -72,6 +72,7 @@ MailTracking:OnSettingsLoad(function()
 		:AddStringField("sender")
 		:AddStringField("subject")
 		:AddStringField("itemString")
+		:AddSmartMapField("levelItemString", ItemString.GetLevelMap(), "itemString")
 		:AddNumberField("itemCount")
 		:AddNumberField("money")
 		:AddNumberField("cod")
@@ -85,7 +86,7 @@ MailTracking:OnSettingsLoad(function()
 		:AddNumberField("quantity")
 		:Commit()
 	private.quantityDB = Database.NewSchema("MAIL_TRACKING_QUANTITY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:AddNumberField("quantity")
 		:Commit()
 
@@ -97,34 +98,34 @@ MailTracking:OnSettingsLoad(function()
 	if TSM.IsWowClassic() then
 		-- handle auction buying
 		hooksecurefunc("PlaceAuctionBid", function(listType, index, bidPlaced)
-			local itemString = ItemString.GetBase(GetAuctionItemLink(listType, index))
+			local itemString = ItemString.Get(GetAuctionItemLink(listType, index))
 			local _, _, stackSize, _, _, _, _, _, _, buyout = GetAuctionItemInfo(listType, index)
 			if not itemString or bidPlaced ~= buyout then
 				return
 			end
-			private.ChangePendingMailQuantity(itemString, stackSize)
+			private.ChangePendingMailQuantity(ItemString.ToLevel(itemString), stackSize)
 		end)
 
 		-- handle auction canceling
 		hooksecurefunc("CancelAuction", function(index)
-			local itemString = ItemString.GetBase(GetAuctionItemLink("owner", index))
+			local itemString = ItemString.Get(GetAuctionItemLink("owner", index))
 			local _, _, stackSize = GetAuctionItemInfo("owner", index)
 			-- for some reason, these APIs don't always work properly, so check the return values
 			if not itemString or not stackSize or stackSize == 0 then
 				return
 			end
-			private.ChangePendingMailQuantity(itemString, stackSize)
+			private.ChangePendingMailQuantity(ItemString.ToLevel(itemString), stackSize)
 		end)
 	else
 		private.cancelAuctionQuery = AuctionTracking.CreateQuery()
 			:Equal("auctionId", Database.BoundQueryParam())
-			:Select("itemString", "stackSize")
+			:Select("levelItemString", "stackSize")
 
 		-- handle auction canceling
 		hooksecurefunc(C_AuctionHouse, "CancelAuction", function(auctionId)
 			private.cancelAuctionQuery:BindParams(auctionId)
-			for _, itemString, stackSize in private.cancelAuctionQuery:Iterator() do
-				private.ChangePendingMailQuantity(itemString, stackSize)
+			for _, levelItemString, stackSize in private.cancelAuctionQuery:Iterator() do
+				private.ChangePendingMailQuantity(levelItemString, stackSize)
 			end
 		end)
 	end
@@ -138,10 +139,11 @@ MailTracking:OnSettingsLoad(function()
 		private.settings.pendingMail[character] = private.settings.pendingMail[character] or {}
 		local altPendingMail = private.settings.pendingMail[character]
 		for i = 1, ATTACHMENTS_MAX_SEND do
-			local itemString = ItemString.GetBase(GetSendMailItemLink(i))
+			local itemString = ItemString.Get(GetSendMailItemLink(i))
 			local _, _, _, quantity = GetSendMailItem(i)
 			if itemString and quantity then
-				altPendingMail[itemString] = (altPendingMail[itemString] or 0) + quantity
+				local levelItemString = ItemString.ToLevel(itemString)
+				altPendingMail[levelItemString] = (altPendingMail[levelItemString] or 0) + quantity
 			end
 		end
 	end)
@@ -157,19 +159,20 @@ MailTracking:OnSettingsLoad(function()
 		for i = 1, ATTACHMENTS_MAX_SEND do
 			local _, _, _, quantity = GetInboxItem(index, i)
 			local itemLink = quantity and quantity > 0 and private.GetInboxItemLink(index, i) or nil
-			local itemString = itemLink and ItemString.GetBase(itemLink) or nil
+			local itemString = itemLink and ItemString.Get(itemLink) or nil
 			if itemString then
-				altPendingMail[itemString] = (altPendingMail[itemString] or 0) + quantity
+				local levelItemString = ItemString.ToLevel(itemString)
+				altPendingMail[levelItemString] = (altPendingMail[levelItemString] or 0) + quantity
 			end
 		end
 	end)
 
 	private.quantityDB:BulkInsertStart()
-	for itemString, quantity in pairs(private.settings.pendingMail[PLAYER_NAME]) do
+	for levelItemString, quantity in pairs(private.settings.pendingMail[PLAYER_NAME]) do
 		if quantity > 0 then
-			private.quantityDB:BulkInsertNewRow(itemString, quantity)
+			private.quantityDB:BulkInsertNewRow(levelItemString, quantity)
 		else
-			private.settings.pendingMail[PLAYER_NAME][itemString] = nil
+			private.settings.pendingMail[PLAYER_NAME][levelItemString] = nil
 		end
 	end
 	private.quantityDB:BulkInsertEnd()
@@ -189,9 +192,9 @@ function MailTracking.RegisterExpiresCallback(callback)
 	tinsert(private.expiresCallbacks, callback)
 end
 
-function MailTracking.BaseItemIterator()
+function MailTracking.ItemIterator()
 	return private.quantityDB:NewQuery()
-		:Select("itemString")
+		:Select("levelItemString")
 		:IteratorAndRelease()
 end
 
@@ -211,16 +214,16 @@ function MailTracking.GetMailType(index)
 	return private.GetMailType(index)
 end
 
-function MailTracking.GetQuantityByBaseItemString(baseItemString)
-	return private.quantityDB:GetUniqueRowField("itemString", baseItemString, "quantity") or 0
+function MailTracking.GetQuantityByLevelItemString(levelItemString)
+	return private.quantityDB:GetUniqueRowField("levelItemString", levelItemString, "quantity") or 0
 end
 
-function MailTracking.RecordAuctionBuyout(baseItemString, stackSize)
+function MailTracking.RecordAuctionBuyout(levelItemString, stackSize)
 	if TSM.IsWowClassic() then
 		-- on classic, we'll handle auction buys via a direct hook
 		return
 	end
-	private.ChangePendingMailQuantity(baseItemString, stackSize)
+	private.ChangePendingMailQuantity(levelItemString, stackSize)
 end
 
 
@@ -272,8 +275,8 @@ function private.MailInboxUpdateDelayed()
 			local itemString = itemLink and ItemString.Get(itemLink) or nil
 			if itemString then
 				firstItemString = firstItemString or itemString
-				local baseItemString = ItemString.GetBaseFast(itemString)
-				private.settings.mailQuantity[baseItemString] = (private.settings.mailQuantity[baseItemString] or 0) + quantity
+				local levelItemString = ItemString.ToLevel(itemString)
+				private.settings.mailQuantity[levelItemString] = (private.settings.mailQuantity[levelItemString] or 0) + quantity
 				private.itemDB:BulkInsertNewRow(i, j, itemLink, quantity)
 			end
 		end
@@ -287,8 +290,8 @@ function private.MailInboxUpdateDelayed()
 		private.mailDB:BulkInsertNewRow(i, mailType, sender or UNKNOWN, subject or "--", firstItemString or "", itemCount or 0, money or 0, cod or 0, daysLeft)
 	end
 	private.quantityDB:TruncateAndBulkInsertStart()
-	for itemString, quantity in pairs(private.settings.mailQuantity) do
-		private.quantityDB:BulkInsertNewRow(itemString, quantity)
+	for levelItemString, quantity in pairs(private.settings.mailQuantity) do
+		private.quantityDB:BulkInsertNewRow(levelItemString, quantity)
 	end
 	private.quantityDB:BulkInsertEnd()
 	private.itemDB:BulkInsertEnd()
@@ -309,17 +312,17 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.ChangePendingMailQuantity(itemString, quantity)
+function private.ChangePendingMailQuantity(levelItemString, quantity)
 	assert(quantity ~= 0)
-	private.settings.pendingMail[PLAYER_NAME][itemString] = (private.settings.pendingMail[PLAYER_NAME][itemString] or 0) + quantity
-	if not private.quantityDB:HasUniqueRow("itemString", itemString) then
+	private.settings.pendingMail[PLAYER_NAME][levelItemString] = (private.settings.pendingMail[PLAYER_NAME][levelItemString] or 0) + quantity
+	if not private.quantityDB:HasUniqueRow("levelItemString", levelItemString) then
 		-- create a new row
 		private.quantityDB:NewRow()
-			:SetField("itemString", itemString)
+			:SetField("levelItemString", levelItemString)
 			:SetField("quantity", quantity)
 			:Create()
 	else
-		local row = private.quantityDB:GetUniqueRow("itemString", itemString)
+		local row = private.quantityDB:GetUniqueRow("levelItemString", levelItemString)
 		local newValue = row:GetField("quantity") + quantity
 		assert(newValue >= 0)
 		if newValue == 0 then

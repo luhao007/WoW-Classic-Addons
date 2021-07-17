@@ -29,7 +29,7 @@ local private = {
 	accountStatus = {},
 }
 local RETRY_DELAY = 5
-local PROFESSION_HASH_FIELDS = { "spellId", "itemString" }
+local PROFESSION_HASH_FIELDS = { "craftString", "itemString" }
 
 
 
@@ -106,13 +106,13 @@ function private.RPCGetSpells(professions)
 	wipe(private.spellsTemp)
 	local player = UnitName("player")
 	local query = TSM.Crafting.CreateRawCraftsQuery()
-		:Select("spellId", "profession")
+		:Select("craftString", "profession")
 		:Custom(private.QueryProfessionFilter, professions)
 		:Custom(private.QueryPlayerFilter, player)
-		:OrderBy("spellId", true)
-	for _, spellId, profession in query:Iterator() do
-		private.spellsProfessionLookupTemp[spellId] = profession
-		tinsert(private.spellsTemp, spellId)
+		:OrderBy("craftString", true)
+	for _, craftString, profession in query:Iterator() do
+		private.spellsProfessionLookupTemp[craftString] = profession
+		tinsert(private.spellsTemp, craftString)
 	end
 	query:Release()
 	return player, private.spellsProfessionLookupTemp, private.spellsTemp
@@ -129,11 +129,35 @@ function private.RPCGetSpellsResultHandler(player, professionLookup, spells)
 		return
 	end
 
+	-- remove any spells which the player no longer knows
+	local professions = TempTable.Acquire()
+	for _, profession in pairs(professionLookup) do
+		professions[profession] = true
+	end
+	local query = TSM.Crafting.CreateRawCraftsQuery()
+		:Select("craftString", "profession")
+		:Custom(private.QueryProfessionFilter, professions)
+		:Custom(private.QueryPlayerFilter, player)
+		:OrderBy("craftString", true)
+	local toRemove = TempTable.Acquire()
+	for _, craftString, profession in query:Iterator() do
+		if not professionLookup[craftString] then
+			Log.Info("Removing craft (%s, %s, %s)", craftString, profession, player)
+			toRemove[craftString] = true
+		end
+	end
+	query:Release()
+	TempTable.Release(professions)
+	for craftString in pairs(toRemove) do
+		TSM.Crafting.RemovePlayers(craftString, player)
+	end
+	TempTable.Release(toRemove)
+
 	for i = #spells, 1, -1 do
-		local spellId = spells[i]
-		if TSM.Crafting.HasSpellId(spellId) then
+		local craftString = spells[i]
+		if TSM.Crafting.HasCraftString(craftString) then
 			-- already have this spell so just make sure this player is added
-			TSM.Crafting.AddPlayer(spellId, player)
+			TSM.Crafting.AddPlayer(craftString, player)
 			tremove(spells, i)
 		end
 	end
@@ -150,13 +174,13 @@ function private.RPCGetSpellInfo(professionLookup, spells)
 	for _, tbl in pairs(private.spellInfoTemp) do
 		wipe(tbl)
 	end
-	for i, spellId in ipairs(spells) do
-		private.spellInfoTemp.spellIds[i] = spellId
-		private.spellInfoTemp.mats[i] = TSM.db.factionrealm.internalData.crafts[spellId].mats
-		private.spellInfoTemp.itemStrings[i] = TSM.db.factionrealm.internalData.crafts[spellId].itemString
-		private.spellInfoTemp.names[i] = TSM.db.factionrealm.internalData.crafts[spellId].name
-		private.spellInfoTemp.numResults[i] = TSM.db.factionrealm.internalData.crafts[spellId].numResult
-		private.spellInfoTemp.hasCDs[i] = TSM.db.factionrealm.internalData.crafts[spellId].hasCD
+	for i, craftString in ipairs(spells) do
+		private.spellInfoTemp.spellIds[i] = craftString
+		private.spellInfoTemp.mats[i] = TSM.db.factionrealm.internalData.crafts[craftString].mats
+		private.spellInfoTemp.itemStrings[i] = TSM.db.factionrealm.internalData.crafts[craftString].itemString
+		private.spellInfoTemp.names[i] = TSM.db.factionrealm.internalData.crafts[craftString].name
+		private.spellInfoTemp.numResults[i] = TSM.db.factionrealm.internalData.crafts[craftString].numResult
+		private.spellInfoTemp.hasCDs[i] = TSM.db.factionrealm.internalData.crafts[craftString].hasCD
 	end
 	Log.Info("Sent %d spells", #private.spellInfoTemp.spellIds)
 	return UnitName("player"), professionLookup, private.spellInfoTemp
@@ -173,12 +197,18 @@ function private.RPCGetSpellInfoResultHandler(player, professionLookup, spellInf
 		return
 	end
 
-	for i, spellId in ipairs(spellInfo.spellIds) do
-		TSM.Crafting.CreateOrUpdate(spellId, spellInfo.itemStrings[i], professionLookup[spellId], spellInfo.names[i], spellInfo.numResults[i], player, spellInfo.hasCDs[i] and true or false)
-		for itemString in pairs(spellInfo.mats[i]) do
+	for i, craftString in ipairs(spellInfo.spellIds) do
+		TSM.Crafting.CreateOrUpdate(craftString, spellInfo.itemStrings[i], professionLookup[craftString], spellInfo.names[i], spellInfo.numResults[i], player, spellInfo.hasCDs[i] and true or false)
+		for itemString, quantity in pairs(spellInfo.mats[i]) do
 			TSM.db.factionrealm.internalData.mats[itemString] = TSM.db.factionrealm.internalData.mats[itemString] or {}
+			if quantity < 0 then
+				local _, _, matList = strsplit(":", itemString)
+				for matItemId in String.SplitIterator(matList, ",") do
+					TSM.db.factionrealm.internalData.mats["i:"..matItemId] = TSM.db.factionrealm.internalData.mats["i:"..matItemId] or {}
+				end
+			end
 		end
-		TSM.Crafting.SetMats(spellId, spellInfo.mats[i])
+		TSM.Crafting.SetMats(craftString, spellInfo.mats[i])
 	end
 	Log.Info("Added %d spells from %s", #spellInfo.spellIds, player)
 	private.accountStatus[private.accountLookup[player]] = "SYNCED"
@@ -221,7 +251,7 @@ end
 function private.GetPlayerProfessionHashes(player, resultTbl)
 	local query = TSM.Crafting.CreateRawCraftsQuery()
 		:Custom(private.QueryPlayerFilter, player)
-		:OrderBy("spellId", true)
+		:OrderBy("craftString", true)
 	query:GroupedHash(PROFESSION_HASH_FIELDS, "profession", resultTbl)
 	query:Release()
 end

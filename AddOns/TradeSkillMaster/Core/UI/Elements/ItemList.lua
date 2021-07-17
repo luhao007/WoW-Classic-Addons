@@ -9,6 +9,9 @@
 -- @classmod ItemList
 
 local _, TSM = ...
+local L = TSM.Include("Locale").GetTable()
+local Delay = TSM.Include("Util.Delay")
+local DragContext = TSM.Include("Util.DragContext")
 local ItemString = TSM.Include("Util.ItemString")
 local Theme = TSM.Include("Util.Theme")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
@@ -18,6 +21,7 @@ local UIElements = TSM.Include("UI.UIElements")
 UIElements.Register(ItemList)
 TSM.UI.ItemList = ItemList
 local private = {}
+local MOVE_FRAME_PADDING = 8
 
 
 
@@ -28,9 +32,11 @@ local private = {}
 function ItemList.__init(self)
 	self.__super:__init()
 
+	self._moveFrame = nil
 	self._rightClickToggle = true
 	self._allData = {}
 	self._selectedItems = {}
+	self._dragItems = {}
 	self._category = {}
 	self._categoryCollapsed = {}
 	self._filterFunc = nil
@@ -39,6 +45,22 @@ end
 
 function ItemList.Acquire(self)
 	self._headerHidden = true
+
+	self._moveFrame = UIElements.New("Frame", self._id.."_MoveFrame")
+		:SetLayout("VERTICAL")
+		:SetHeight(20)
+		:SetStrata("TOOLTIP")
+		:SetBackgroundColor("PRIMARY_BG_ALT", true)
+		:SetBorderColor("INDICATOR")
+		:SetContext(self)
+		:AddChild(UIElements.New("Text", "text")
+			:SetFont("BODY_BODY3")
+			:SetJustifyH("CENTER")
+		)
+	self._moveFrame:SetParent(self:_GetBaseFrame())
+	self._moveFrame:Hide()
+	self._moveFrame:SetScript("OnUpdate", private.MoveFrameOnUpdate)
+
 	self.__super:Acquire()
 	self:SetSelectionDisabled(true)
 	self:GetScrollingTableInfo()
@@ -58,11 +80,22 @@ end
 function ItemList.Release(self)
 	wipe(self._allData)
 	wipe(self._selectedItems)
+	wipe(self._dragItems)
 	wipe(self._category)
 	wipe(self._categoryCollapsed)
 	self._filterFunc = nil
 	self._onSelectionChangedHandler = nil
+	self._moveFrame:Release()
+	self._moveFrame = nil
 	for _, row in ipairs(self._rows) do
+		row._frame:RegisterForDrag()
+		ScriptWrapper.Clear(row._frame, "OnDragStart")
+		ScriptWrapper.Clear(row._frame, "OnDragStop")
+		for _, button in pairs(row._buttons) do
+			button:RegisterForDrag()
+			ScriptWrapper.Clear(button, "OnDragStart")
+			ScriptWrapper.Clear(button, "OnDragStop")
+		end
 		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
 	end
 	self.__super:Release()
@@ -220,6 +253,14 @@ end
 function ItemList._GetTableRow(self, isHeader)
 	local row = self.__super:_GetTableRow(isHeader)
 	if not isHeader then
+		row._frame:RegisterForDrag("LeftButton")
+		ScriptWrapper.Set(row._frame, "OnDragStart", private.RowOnDragStart, row)
+		ScriptWrapper.Set(row._frame, "OnDragStop", private.RowOnDragStop, row)
+		for _, button in pairs(row._buttons) do
+			button:RegisterForDrag("LeftButton")
+			ScriptWrapper.Set(button, "OnDragStart", private.RowOnDragStart, row)
+			ScriptWrapper.Set(button, "OnDragStop", private.RowOnDragStop, row)
+		end
 		ScriptWrapper.Set(row._frame, "OnDoubleClick", private.RowOnDoubleClick, row)
 	end
 	return row
@@ -278,7 +319,44 @@ function private.GetItemTooltip(self, data)
 	if not self._category[data] then
 		return nil
 	end
-	return ItemString.Get(data)
+	return data
+end
+
+function private.MoveFrameOnUpdate(frame)
+	local uiScale = UIParent:GetEffectiveScale()
+	local x, y = GetCursorPosition()
+	x = x / uiScale
+	y = y / uiScale
+	frame:_GetBaseFrame():SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
+end
+
+function private.RowOnDragStart(row)
+	local self = row._scrollingTable
+	self._moveFrame:Show()
+	self._moveFrame:SetHeight(self._rowHeight)
+	local moveFrameText = self._moveFrame:GetElement("text")
+	moveFrameText:SetText(self:GetNumSelected() == 0 and TSM.UI.GetColoredItemName(row:GetData()) or format(L["Multiple Items (%d)"], self:GetNumSelected()))
+	moveFrameText:SetWidth(1000)
+	moveFrameText:Draw()
+	self._moveFrame:SetWidth(moveFrameText:GetStringWidth() + MOVE_FRAME_PADDING * 2)
+	self._moveFrame:Draw()
+	wipe(self._dragItems)
+	if self:GetNumSelected() == 0 then
+		tinsert(self._dragItems, ItemString.Get(row:GetData()))
+	else
+		for item in pairs(self._selectedItems) do
+			if self._selectedItems[item] then
+				tinsert(self._dragItems, ItemString.Get(item))
+			end
+		end
+	end
+	DragContext.Set(self._dragItems)
+end
+
+function private.RowOnDragStop(row)
+	local self = row._scrollingTable
+	self._moveFrame:Hide()
+	Delay.AfterFrame("DRAG_CONTEXT_CLEAR", 1, DragContext.Clear)
 end
 
 function private.RowOnDoubleClick(row, mouseButton)

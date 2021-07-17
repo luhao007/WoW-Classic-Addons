@@ -58,12 +58,10 @@ end
 function Groups.RebuildDatabase()
 	wipe(private.groupListCache)
 
-	-- convert ignoreRandomEnchants to ignoreItemVariations
+	-- clear ignoreRandomEnchants and ignoreItemVariations
 	for _, info in pairs(TSM.db.profile.userData.groups) do
-		if info.ignoreRandomEnchants ~= nil then
-			info.ignoreItemVariations = info.ignoreRandomEnchants
-			info.ignoreRandomEnchants = nil
-		end
+		info.ignoreItemVariations = nil
+		info.ignoreRandomEnchants = nil
 	end
 
 	for groupPath, groupInfo in pairs(TSM.db.profile.userData.groups) do
@@ -104,7 +102,7 @@ function Groups.RebuildDatabase()
 							tremove(operations, i)
 						end
 					end
-				elseif key ~= "ignoreItemVariations" then
+				else
 					-- invalid key
 					Log.Err("Removing invalid groupInfo key (%s): %s", groupPath, tostring(key))
 					groupInfo[key] = nil
@@ -296,8 +294,8 @@ function Groups.Delete(groupPath)
 	query:Release()
 	private.itemStringMap:SetCallbacksPaused(true)
 	for itemString in private.itemStringMap:Iterator() do
-		if updateMapItems[itemString] or updateMapItems[ItemString.GetBaseFast(itemString)] then
-			-- either this item itself was removed from a group, or the base item was - in either case trigger an update
+		if updateMapItems[itemString] or updateMapItems[ItemString.GetBaseFast(itemString)] or updateMapItems[ItemString.ToLevel(itemString)] then
+			-- either this item itself was removed from a group, or the base/level item was - in either case trigger an update
 			private.itemStringMap:ValueChanged(itemString)
 		end
 	end
@@ -347,6 +345,13 @@ function Groups.SetItemGroup(itemString, groupPath)
 					private.itemStringMap:ValueChanged(mapItemString)
 				end
 			end
+		elseif itemString == ItemString.ToLevel(itemString) then
+			-- this is a level item string, so need to also update all other items whose level item is equal to this item
+			for mapItemString in private.itemStringMap:Iterator() do
+				if ItemString.ToLevel(mapItemString) == itemString then
+					private.itemStringMap:ValueChanged(mapItemString)
+				end
+			end
 		end
 		private.itemStringMap:SetCallbacksPaused(false)
 	end
@@ -383,7 +388,7 @@ function Groups.BulkCreateFromImport(groupName, items, groups, groupOperations, 
 end
 
 function Groups.GetPathByItem(itemString)
-	itemString = TSM.Groups.TranslateItemString(itemString)
+	itemString = Groups.TranslateItemString(itemString)
 	assert(itemString)
 	local groupPath = private.itemDB:GetUniqueRowField("itemString", itemString, "groupPath") or TSM.CONST.ROOT_GROUP_PATH
 	assert(TSM.db.profile.userData.groups[groupPath])
@@ -612,12 +617,24 @@ end
 
 do
 	private.itemStringMap = SmartMap.New("string", "string", function(itemString)
+		-- check if the specific itemString is in a group
 		if Groups.IsItemInGroup(itemString) then
-			-- this item is in a group, so just return it
 			return itemString
 		end
+
+		-- check if the level itemString is in a group
+		local levelItemString = ItemString.ToLevel(itemString)
+		if Groups.IsItemInGroup(levelItemString) then
+			return levelItemString
+		end
+
+		-- check if the base itemString is in a group
 		local baseItemString = ItemString.GetBaseFast(itemString)
-		-- return the base item if it's in a group; otherwise return the original item
-		return Groups.IsItemInGroup(baseItemString) and baseItemString or itemString
+		if Groups.IsItemInGroup(baseItemString) then
+			return baseItemString
+		end
+
+		-- return the original itemString
+		return itemString
 	end)
 end

@@ -55,7 +55,7 @@ function MyAuctions.CreateQuery()
 	local query = AuctionTracking.CreateQuery()
 		:LeftJoin(private.pendingDB, "index")
 		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
-		:VirtualField("group", "string", private.AuctionsGetGroupText, "itemString")
+		:VirtualField("group", "string", TSM.Groups.GetPathByItem, "itemString", "")
 	if TSM.IsWowClassic() then
 		query:OrderBy("index", false)
 	else
@@ -186,14 +186,6 @@ function private.GetNumRowsByHash(hash)
 	return private.pendingDB:NewQuery()
 		:Equal("hash", hash)
 		:CountAndRelease()
-end
-
-function private.AuctionsGetGroupText(itemString)
-	local groupPath = TSM.Groups.GetPathByItem(itemString)
-	if not groupPath then
-		return ""
-	end
-	return groupPath
 end
 
 function private.OnAuctionsUpdated()

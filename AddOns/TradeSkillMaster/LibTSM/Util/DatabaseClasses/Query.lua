@@ -76,9 +76,12 @@ function DatabaseQuery.__init(self)
 	self._joinTypes = {}
 	self._joinDBs = {}
 	self._joinFields = {}
+	self._aggregateJoinFields = {}
+	self._aggregateJoinQueries = {}
 	self._virtualFieldFunc = {}
 	self._virtualFieldArgField = {}
 	self._virtualFieldType = {}
+	self._virtualFieldDefault = {}
 	self._genericSortWrapper = function(a, b)
 		return private.DatabaseQuerySortGeneric(self, a, b)
 	end
@@ -157,8 +160,9 @@ end
 -- @tparam string fieldType The type of the virtual field
 -- @tparam function func A function which takes a row and returns the value of the virtual field
 -- @tparam[opt=nil] string argField The field to pass into the function (otherwise passes the entire row)
+-- @param[opt=nil] defaultValue The default value to use if the function returns nil
 -- @treturn DatabaseQuery The database query object
-function DatabaseQuery.VirtualField(self, field, fieldType, func, argField)
+function DatabaseQuery.VirtualField(self, field, fieldType, func, argField, defaultValue)
 	if self:_GetFieldType(field) or self._virtualFieldFunc[field] then
 		error("Field already exists: "..tostring(field))
 	elseif type(func) ~= "function" then
@@ -167,10 +171,13 @@ function DatabaseQuery.VirtualField(self, field, fieldType, func, argField)
 		error("Field type must be string, number, or boolean")
 	elseif argField and not self:_GetFieldType(argField) then
 		error("Arg field doesn't exist: "..tostring(argField))
+	elseif defaultValue ~= nil and type(defaultValue) ~= fieldType then
+		error("Invalid defaultValue type: "..tostring(defaultValue))
 	end
 	self._virtualFieldFunc[field] = func
 	self._virtualFieldArgField[field] = argField
 	self._virtualFieldType[field] = fieldType
+	self._virtualFieldDefault[field] = defaultValue
 	self._resultIsStale = true
 	return self
 end
@@ -435,13 +442,36 @@ function DatabaseQuery.End(self)
 	return self
 end
 
+--- Performs a left join with another table.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam DatabaseTable db The database table to join with
+-- @tparam string field The field to join on
+-- @treturn DatabaseQuery The database query object
 function DatabaseQuery.LeftJoin(self, db, field)
 	self:_JoinHelper(db, field, "LEFT")
 	return self
 end
 
+--- Performs an inner join with another table.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam DatabaseTable db The database table to join with
+-- @tparam string field The field to join on
+-- @treturn DatabaseQuery The database query object
 function DatabaseQuery.InnerJoin(self, db, field)
 	self:_JoinHelper(db, field, "INNER")
+	return self
+end
+
+--- Performs an aggregate join with another table with a summed field.
+-- @tparam DatabaseQuery self The database query object
+-- @tparam string db The database to join with
+-- @tparam string field The name of the field in the other table to join on
+-- @tparam string sumField The name of the field in the other table to sum
+-- @treturn DatabaseQuery The database query object
+function DatabaseQuery.AggregateJoinSummed(self, db, field, sumField)
+	local query = db:NewQuery()
+		:Equal(field, Constants.BOUND_QUERY_PARAM)
+	self:_JoinHelper(db, field, "AGGREGATE_SUM", sumField, query)
 	return self
 end
 
@@ -736,10 +766,9 @@ end
 -- @treturn ?number The summed value or nil if there are no results
 function DatabaseQuery.Sum(self, field)
 	self:_Execute()
-	local result = nil
+	local result = 0
 	for _, uuid in ipairs(self._result) do
-		local value = self:_GetResultRowData(uuid, field)
-		result = (result or 0) + value
+		result = result + self:_GetResultRowData(uuid, field)
 	end
 	return result
 end
@@ -761,13 +790,12 @@ end
 --- Gets the summed value of a specific field within the query results and releases the query.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field The field within the results
--- @treturn ?number The summed value or nil if there are no results
+-- @treturn number The summed value
 function DatabaseQuery.SumAndRelease(self, field)
 	self:_Execute()
-	local result = nil
+	local result = 0
 	for _, uuid in ipairs(self._result) do
-		local value = self:_GetResultRowData(uuid, field)
-		result = (result or 0) + value
+		result = result + self:_GetResultRowData(uuid, field)
 	end
 	self:Release()
 	return result
@@ -780,21 +808,21 @@ end
 function DatabaseQuery.Avg(self, field)
 	local sum = self:Sum(field)
 	local num = self:Count()
-	return sum and (sum / num) or nil
+	return num > 0 and (sum / num) or nil
 end
 
 --- Gets the sum of the products of two fields within the query results.
 -- @tparam DatabaseQuery self The database query object
 -- @tparam string field1 The first field within the results
 -- @tparam string field2 The second field within the results
--- @treturn ?number The summed value or nil if there are no results
+-- @treturn number The summed value
 function DatabaseQuery.SumOfProduct(self, field1, field2)
 	self:_Execute()
-	local result = nil
+	local result = 0
 	for _, uuid in ipairs(self._result) do
 		local value1 = self:_GetResultRowData(uuid, field1)
 		local value2 = self:_GetResultRowData(uuid, field2)
-		result = (result or 0) + value1 * value2
+		result = result + value1 * value2
 	end
 	return result
 end
@@ -909,6 +937,7 @@ function DatabaseQuery.ResetVirtualFields(self)
 	wipe(self._virtualFieldFunc)
 	wipe(self._virtualFieldArgField)
 	wipe(self._virtualFieldType)
+	wipe(self._virtualFieldDefault)
 	self._resultIsStale = true
 	return self
 end
@@ -945,6 +974,13 @@ function DatabaseQuery.ResetJoins(self)
 	wipe(self._joinTypes)
 	wipe(self._joinDBs)
 	wipe(self._joinFields)
+	wipe(self._aggregateJoinFields)
+	for _, query in ipairs(self._aggregateJoinQueries) do
+		if query then
+			query:Release()
+		end
+	end
+	wipe(self._aggregateJoinQueries)
 	self._resultIsStale = true
 	return self
 end
@@ -1028,8 +1064,16 @@ function DatabaseQuery._GetFieldType(self, field)
 	if fieldType then
 		return fieldType
 	end
-	for _, db in ipairs(self._joinDBs) do
-		fieldType = db:_GetFieldType(field)
+	for i, db in ipairs(self._joinDBs) do
+		if field == self._aggregateJoinFields[i] then
+			if self._joinTypes[i] == "AGGREGATE_SUM" then
+				fieldType = "number"
+			else
+				error("Unknown aggregate join type: "..tostring(self._joinTypes[i]))
+			end
+		else
+			fieldType = db:_GetFieldType(field)
+		end
 		if fieldType then
 			return fieldType
 		end
@@ -1096,7 +1140,7 @@ function DatabaseQuery._DoUpdateCallback(self, uuid)
 			local localUUID = nil
 			for i = 1, #self._joinDBs do
 				local joinDB = self._joinDBs[i]
-				if joinDB:_ContainsUUID(uuid) then
+				if not self._aggregateJoinFields[i] and joinDB:_ContainsUUID(uuid) then
 					if localUUID then
 						-- found more than once, so bail
 						localUUID = nil
@@ -1179,7 +1223,7 @@ function DatabaseQuery._Execute(self, force)
 			isAscending = self._orderByAscending[1]
 		end
 		local indexList = self._db:_GetAllRowsByIndex(indexField)
-		self:_AddResultRowsFromIndex(indexList, isStrict, firstIndex, lastIndex, isAscending)
+		self:_AddResultRowsFromIndex(indexList, isStrict, firstIndex, lastIndex, isAscending, indexField)
 	elseif indexType == "NONE" then
 		if firstOrderBy and self._db:_IsIndex(firstOrderBy) then
 			-- we're ordering on an index, so use that index to iterate through all the rows in order to skip the first OrderBy field
@@ -1338,7 +1382,7 @@ function DatabaseQuery._GetQueryIndexInfo(self)
 	return "NONE"
 end
 
-function DatabaseQuery._AddResultRowsFromIndex(self, indexList, skipQuery, firstIndex, lastIndex, isAscending)
+function DatabaseQuery._AddResultRowsFromIndex(self, indexList, skipQuery, firstIndex, lastIndex, isAscending, indexField)
 	local numJoinDBs = #self._joinDBs
 	local distinct = self._distinct
 	local result = self._result
@@ -1351,7 +1395,7 @@ function DatabaseQuery._AddResultRowsFromIndex(self, indexList, skipQuery, first
 			result[resultIndex] = uuid
 			resultIndex = resultIndex + 1
 			resultRowLookup[uuid] = false
-		elseif self:_ResultShouldIncludeRow(uuid, skipQuery, numJoinDBs, distinct) then
+		elseif self:_ResultShouldIncludeRow(uuid, skipQuery, numJoinDBs, distinct, indexField) then
 			result[resultIndex] = uuid
 			resultIndex = resultIndex + 1
 			resultRowLookup[uuid] = false
@@ -1374,18 +1418,18 @@ function DatabaseQuery._AddResultRowsCheckAll(self)
 	end
 end
 
-function DatabaseQuery._ResultShouldIncludeRow(self, uuid, skipQuery, numJoinDBs, distinct)
+function DatabaseQuery._ResultShouldIncludeRow(self, uuid, skipQuery, numJoinDBs, distinct, ignoreField)
 	for i = 1, numJoinDBs do
-		local joinType = self._joinTypes[i]
-		local joinDB = self._joinDBs[i]
-		local joinField = self._joinFields[i]
-		if joinType == "INNER" and not joinDB:_GetUniqueRow(joinField, self._db:GetRowFieldByUUID(uuid, joinField)) then
-			return false
+		if self._joinTypes[i] == "INNER" then
+			local joinField = self._joinFields[i]
+			if not self._joinDBs[i]:_GetUniqueRow(joinField, self._db:GetRowFieldByUUID(uuid, joinField)) then
+				return false
+			end
 		end
 	end
 	if not skipQuery then
 		self._tempResultRow:_SetUUID(uuid)
-		if not self._rootClause:_IsTrue(self._tempResultRow) then
+		if not self._rootClause:_IsTrue(self._tempResultRow, ignoreField) then
 			return false
 		end
 	end
@@ -1452,8 +1496,11 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 			argValue = self._tempVirtualResultRow
 		end
 		local value = self._virtualFieldFunc[field](argValue)
+		if value == nil then
+			value = self._virtualFieldDefault[field]
+		end
 		if type(value) ~= self._virtualFieldType[field] then
-			error(format("Virtual field value not the correct type (%s, %s)", tostring(argValue), tostring(value)))
+			error(format("Virtual field value not the correct type (%s, %s, %s)", tostring(argValue), tostring(value), field))
 		end
 		return value
 	elseif #self._joinDBs == 0 or self._db:_GetFieldType(field) then
@@ -1461,51 +1508,79 @@ function DatabaseQuery._GetResultRowData(self, uuid, field)
 		return self._db:GetRowFieldByUUID(uuid, field)
 	else
 		-- this is a foreign field
-		local joinDB = nil
-		local joinField = nil
+		local joinDB, joinField, joinType, aggregateJoinField, aggregateJoinQuery = nil, nil, nil, nil, nil
 		for i = 1, #self._joinDBs do
 			local testDB = self._joinDBs[i]
-			if testDB:_GetFieldType(field) then
+			local testAggregateJoinField = self._aggregateJoinFields[i]
+			if field == testAggregateJoinField or (not testAggregateJoinField and testDB:_GetFieldType(field)) then
 				if joinDB then
 					error("Multiple joined DBs have this field", 2)
 				end
 				joinDB = testDB
 				joinField = self._joinFields[i]
+				joinType = self._joinTypes[i]
+				aggregateJoinField = testAggregateJoinField
+				aggregateJoinQuery = self._aggregateJoinQueries[i]
 			end
 		end
 		if not joinDB then
 			error("Invalid field: "..tostring(field), 2)
 		end
-		local foreignUUID = joinDB:_GetUniqueRow(joinField, self:_GetResultRowData(uuid, joinField))
-		if foreignUUID then
-			return joinDB:GetRowFieldByUUID(foreignUUID, field)
+		if joinType == "AGGREGATE_SUM" then
+			if not aggregateJoinField or not aggregateJoinQuery then
+				error("Missing aggregate join context: " + tostring(aggregateJoinField) + ", " + tostring(aggregateJoinQuery))
+			end
+			aggregateJoinQuery:BindParams(self:_GetResultRowData(uuid, joinField))
+			return aggregateJoinQuery:Sum(aggregateJoinField)
+		elseif joinType == "INNER" or joinType == "LEFT" then
+			if aggregateJoinField or aggregateJoinQuery then
+				error("Unexpected aggregate join context: " + tostring(aggregateJoinField) + ", " + tostring(aggregateJoinQuery))
+			end
+			local foreignUUID = joinDB:_GetUniqueRow(joinField, self:_GetResultRowData(uuid, joinField))
+			if foreignUUID then
+				return joinDB:GetRowFieldByUUID(foreignUUID, field)
+			end
+		else
+			error("Unknown join type: "..tostring(joinType))
 		end
 	end
 end
 
-function DatabaseQuery._JoinHelper(self, db, field, joinType)
+function DatabaseQuery._JoinHelper(self, db, field, joinType, aggregateField, aggregateQuery)
 	assert(type(field) == "string")
 	local localFieldType = self._virtualFieldType[field] or self._db:_GetFieldType(field)
 	local foreignFieldType = db:_GetFieldType(field)
 	assert(localFieldType, "Local field doesn't exist: "..tostring(field))
 	assert(foreignFieldType, "Foreign field doesn't exist: "..tostring(field))
 	assert(localFieldType == foreignFieldType, format("Field types don't match (%s, %s)", tostring(localFieldType), tostring(foreignFieldType)))
-	assert(db:_IsUnique(field), "Field must be unique in foreign DB")
 	assert(not Table.KeyByValue(self._joinDBs, db), "Already joining with this DB")
-	for foreignField in db:FieldIterator() do
-		if foreignField ~= field then
-			assert(not self._db:_GetFieldType(foreignField), "Foreign field conflicts with local DB: "..tostring(foreignField))
+	if aggregateField then
+		assert(type(aggregateField) == "string")
+		assert(aggregateQuery.__class == DatabaseQuery)
+		assert(strmatch(joinType, "^AGGREGATE_"))
+		assert(not self._db:_GetFieldType(aggregateField), "Local DB contains aggregate field: "..tostring(aggregateField))
+		assert(db:_GetFieldType(aggregateField), "Foreign DB does not contains aggregate field: "..tostring(aggregateField))
+	else
+		assert(db:_IsUnique(field), "Field must be unique in foreign DB")
+		assert(not strmatch(joinType, "^AGGREGATE_"))
+		assert(not aggregateQuery)
+		for foreignField in db:FieldIterator() do
+			if foreignField ~= field then
+				assert(not self._db:_GetFieldType(foreignField), "Foreign field conflicts with local DB: "..tostring(foreignField))
+			end
 		end
-	end
-	for virtualField in pairs(self._virtualFieldFunc) do
-		if virtualField ~= field then
-			assert(not db:_GetFieldType(virtualField), "Virtual field conflicts with foreign DB: "..tostring(virtualField))
+		for virtualField in pairs(self._virtualFieldFunc) do
+			if virtualField ~= field then
+				assert(not db:_GetFieldType(virtualField), "Virtual field conflicts with foreign DB: "..tostring(virtualField))
+			end
 		end
 	end
 	db:_RegisterQuery(self)
 	tinsert(self._joinTypes, joinType)
 	tinsert(self._joinDBs, db)
 	tinsert(self._joinFields, field)
+	tinsert(self._aggregateJoinFields, aggregateField or false)
+	tinsert(self._aggregateJoinQueries, aggregateQuery or false)
 	self._resultIsStale = true
 end
 

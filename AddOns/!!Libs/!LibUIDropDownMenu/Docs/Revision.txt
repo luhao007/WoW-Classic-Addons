@@ -1,7 +1,21 @@
-$Id: Revision.txt 73 2021-05-18 17:04:17Z arithmandar $
+$Id: Revision.txt 82 2021-06-30 13:28:50Z arithmandar $
 
 Revision History:
 =================
+
+v4.06.9010039185 (2021/06/30)
+-----------------------------
+- Toc update to suppport WoW 9.1.0
+- function sync with build 39185
+
+v4.05.9000538556 (2021/06/14)
+-----------------------------
+- Rework on dropdown menu's audo-hide
+
+v4.04.9000538556 (2021/06/14)
+-----------------------------
+- Allowing dropdown frame to be wihout a name (nil) given (for an anonymous frame)
+- Added timeout for classic (both classic era and TBC) so that dropdown menu will auto-hide when mouse is away (thanks to DahkCeles)
 
 v4.03.9000538556 (2021/05/19)
 -----------------------------

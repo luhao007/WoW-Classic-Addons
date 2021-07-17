@@ -63,14 +63,14 @@ function Inventory.GetAuctionQuantity(itemString, character, factionrealm)
 end
 
 function Inventory.GetMailQuantity(itemString, character, factionrealm)
-	itemString = ItemString.GetBaseFast(itemString)
+	itemString = ItemString.ToLevel(itemString)
 	character = character or PLAYER_NAME
 	local pendingQuantity = itemString and private.settings.pendingMail[character] and private.settings.pendingMail[character][itemString] or 0
 	return private.InventoryQuantityHelper(itemString, "mailQuantity", character, factionrealm) + pendingQuantity
 end
 
 function Inventory.GetGuildQuantity(itemString, guild)
-	itemString = ItemString.GetBase(itemString)
+	itemString = ItemString.ToLevel(itemString)
 	if not itemString then
 		return 0
 	end
@@ -82,7 +82,7 @@ function Inventory.GetGuildQuantity(itemString, guild)
 end
 
 function Inventory.GetPlayerTotals(itemString)
-	itemString = ItemString.GetBaseFast(itemString)
+	itemString = ItemString.ToLevel(itemString)
 	local numPlayer, numAlts, numAuctions, numAltAuctions = 0, 0, 0, 0
 	numPlayer = numPlayer + Inventory.GetBagQuantity(itemString)
 	numPlayer = numPlayer + Inventory.GetBankQuantity(itemString)
@@ -102,7 +102,7 @@ function Inventory.GetPlayerTotals(itemString)
 end
 
 function Inventory.GetGuildTotal(itemString)
-	itemString = ItemString.GetBaseFast(itemString)
+	itemString = ItemString.ToLevel(itemString)
 	if not itemString then
 		return 0
 	end
@@ -133,7 +133,7 @@ function private.GetCharacterInventoryData(settingKey, character, factionrealm)
 end
 
 function private.InventoryQuantityHelper(itemString, settingKey, character, factionrealm)
-	itemString = ItemString.GetBase(itemString)
+	itemString = ItemString.ToLevel(itemString)
 	if not itemString then
 		return 0
 	end

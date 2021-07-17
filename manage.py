@@ -334,7 +334,7 @@ class Manager:
     @staticmethod
     def handle_dup_libraries():
         addons = ['Atlas', 'BlizzMove', 'DBM-Core', 'Details_Streamer',
-                    'Details_TinyThreat', 'ExRT', 'GatherMate2', 'GTFO',
+                    'Details_TinyThreat', 'MRT', 'GatherMate2', 'GTFO',
                     'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
                     'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
                     'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
@@ -358,10 +358,10 @@ class Manager:
                        'MinimalArchaeology', 'NPCScan', 'Omen',
                        'RelicInspector', 'Simulationcraft', 'Titan']
         else:
-            addons += ['alaTalentEmu', 'alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
-                        'ATT-Classic', 'ClassicCastbars_Options',
-                        'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
-                        'PallyPower', 'SimpleChatClassic', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
+            addons += ['alaCalendar', 'AtlasLootClassic', 'AtlasLootClassic_Options',
+                       'ATT-Classic', 'ClassicCastbars_Options',
+                       'Fizzle', 'GroupCalendar', 'HandyNotes_NPCs (Classic)',
+                       'PallyPower', 'SimpleChatClassic', 'TradeLog', 'TitanClassic', 'WclPlayerScore']
 
 
         for addon in addons:
@@ -392,8 +392,8 @@ class Manager:
     def handle_ate():
         utils.remove_libraries(
                 ['CallbackHandler-1.0', 'LibDataBroker-1.1',
-                    'LibDbIcon-1.0', 'LibStub'],
-                'AddOns/alaTalentEmu/Lib',
+                 'LibDbIcon-1.0', 'LibStub'],
+                'AddOns/alaTalentEmu/Libs',
                 'AddOns/alaTalentEmu/alaTalentEmu.xml'
             )
 
@@ -576,15 +576,10 @@ class Manager:
             if 'Grail' not in folder:
                 continue
 
-            if (('NPCs' in folder or 'Quests' in folder) and
-               not folder.endswith('_') and
-               ('enUS' not in folder and 'zhCN' not in folder)):
-                utils.rm_tree(Path('AddOns') / folder)
+            local = folder[-4:]
+            if local in ['deDE', 'esES', 'esMX', 'frFR', 'itIT', 'koKR', 'ptBR', 'ruRU', 'zhTW']:
+                utils.rm_tree(Path('Addons') / folder)
 
-            if ((utils.get_platform() == 'retail' and 'classic' in folder) or
-                (not utils.get_platform() == 'retail' and
-                 ('retail' in folder or 'Achievements' in folder))):
-                utils.rm_tree(Path('AddOns') / folder)
 
     @staticmethod
     @available_on(['classic', 'classic_era'])

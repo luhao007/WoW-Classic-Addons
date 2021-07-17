@@ -28,7 +28,7 @@ local private = {
 	pendingItems = {},
 	numRequests = {},
 	availableItems = {},
-	isRebuilding = false,
+	rebuildStage = nil,
 	settings = nil,
 	infoChangeCallbacks = {},
 	hasChanged = false,
@@ -99,20 +99,20 @@ end
 -- 	http://www.wowhead.com/items=2?filter=qu=2%3A3%3A4%3Bcr=8%3A2%3Bcrs=2%3A2%3Bcrv=0%3A0
 -- 	http://www.wowhead.com/items=4?filter=qu=2%3A3%3A4%3Bcr=8%3A2%3Bcrs=2%3A2%3Bcrv=0%3A0
 local NON_DISENCHANTABLE_ITEMS = {
-	["i:11290"] = true,
-	["i:11289"] = true,
-	["i:11288"] = true,
 	["i:11287"] = true,
-	["i:60223"] = true,
-	["i:52252"] = true,
+	["i:11288"] = true,
+	["i:11289"] = true,
+	["i:11290"] = true,
 	["i:20406"] = true,
 	["i:20407"] = true,
 	["i:20408"] = true,
 	["i:21766"] = true,
+	["i:52252"] = true,
 	["i:52485"] = true,
 	["i:52486"] = true,
 	["i:52487"] = true,
 	["i:52488"] = true,
+	["i:60223"] = true,
 	["i:75274"] = true,
 	["i:84661"] = true,
 	["i:97826"] = true,
@@ -123,6 +123,15 @@ local NON_DISENCHANTABLE_ITEMS = {
 	["i:97831"] = true,
 	["i:97832"] = true,
 	["i:109262"] = true,
+	["i:186056"] = true,
+	["i:186058"] = true,
+	["i:186163"] = true,
+}
+local REBUILD_MSG_THRESHOLD = 5000
+local REBUILD_STAGE = {
+	IDLE = 1,
+	TRIGGERED = 2,
+	NOTIFIED = 3,
 }
 
 
@@ -130,6 +139,10 @@ local NON_DISENCHANTABLE_ITEMS = {
 -- ============================================================================
 -- Module Loading
 -- ============================================================================
+
+ItemInfo:OnModuleLoad(function()
+	private.rebuildStage = REBUILD_STAGE.IDLE
+end)
 
 ItemInfo:OnSettingsLoad(function()
 	private.settings = Settings.NewView()
@@ -163,7 +176,6 @@ ItemInfo:OnSettingsLoad(function()
 		end
 	end
 	if not isValid then
-		private.isRebuilding = true
 		TSMItemInfoDB = {
 			names = nil,
 			itemStrings = nil,
@@ -171,10 +183,6 @@ ItemInfo:OnSettingsLoad(function()
 		}
 		private.hasChanged = true
 		wipe(private.settings.vendorItems)
-		-- delay this message to make it more likely to be seen
-		Delay.AfterTime(3, function()
-			Log.PrintUser(L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."])
-		end)
 	end
 
 	-- load hard-coded vendor costs
@@ -443,6 +451,7 @@ end
 -- @tparam string itemString The itemString
 -- @tparam string name The item name
 function ItemInfo.StoreItemName(itemString, name)
+	assert(not ItemString.ParseLevel(itemString))
 	private.SetSingleField(itemString, "name", name)
 end
 
@@ -458,8 +467,9 @@ function ItemInfo.StoreItemInfoByLink(itemLink)
 	local quality = ITEM_QUALITY_BY_HEX_LOOKUP[colorHex]
 	local itemString = ItemString.Get(itemLink)
 	if not itemString then
-		return
+		return nil
 	end
+	assert(not ItemString.ParseLevel(itemString))
 	if name then
 		private.SetSingleField(itemString, "name", name)
 	end
@@ -503,11 +513,15 @@ end
 -- @treturn ?string The name
 function ItemInfo.GetName(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
-	if itemString == ItemString.GetUnknown() then
+	if not itemString then
+		return nil
+	elseif itemString == ItemString.GetUnknown() then
 		return UNKNOWN_ITEM_NAME
 	elseif itemString == ItemString.GetPlaceholder() then
 		return PLACEHOLDER_ITEM_NAME
+	end
+	if ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
 	end
 	local name = private.GetField(itemString, "name")
 	if not name then
@@ -533,7 +547,9 @@ end
 -- @treturn string The link or an "Unknown Item" link
 function ItemInfo.GetLink(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	end
 	local link = nil
 	local itemStringType, speciesId, level, quality, health, power, speed, petId = strsplit(":", itemString)
 	if itemStringType == "p" then
@@ -542,6 +558,11 @@ function ItemInfo.GetLink(item)
 		quality = tonumber(quality) or 0
 		local qualityColor = ITEM_QUALITY_COLORS[quality] and ITEM_QUALITY_COLORS[quality].hex or "|cffff0000"
 		link = qualityColor.."|Hbattlepet:"..fullItemString.."|h["..name.."]|h|r"
+	elseif ItemString.ParseLevel(itemString) then
+		local name = ItemInfo.GetName(item) or UNKNOWN_ITEM_NAME
+		quality = ItemInfo.GetQuality(item)
+		local qualityColor = ITEM_QUALITY_COLORS[quality] and ITEM_QUALITY_COLORS[quality].hex or "|cffff0000"
+		return qualityColor.."|H"..ItemString.ToWow(itemString).."|h["..name.."]|h|r"
 	else
 		local name = ItemInfo.GetName(item) or UNKNOWN_ITEM_NAME
 		quality = ItemInfo.GetQuality(item)
@@ -557,7 +578,9 @@ end
 function ItemInfo.GetQuality(item)
 	local itemString = ItemString.Get(item)
 	if not itemString then
-		return
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
 	end
 	local itemType, _, randOrLevel, bonusOrQuality = strsplit(":", itemString)
 	randOrLevel = tonumber(randOrLevel)
@@ -605,7 +628,22 @@ end
 -- @treturn ?number The item level
 function ItemInfo.GetItemLevel(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	end
+	local itemStringLevel, itemStringLevelIsAbs = ItemString.ParseLevel(itemString)
+	if itemStringLevel then
+		if itemStringLevelIsAbs then
+			return itemStringLevel
+		else
+			-- level is relative to the base item
+			local baseItemLevel = ItemInfo.GetItemLevel(ItemString.GetBaseFast(itemString))
+			if not baseItemLevel then
+				return nil
+			end
+			return baseItemLevel + itemStringLevel
+		end
+	end
 	local itemLevel = private.GetField(itemString, "itemLevel")
 	if itemLevel then
 		return itemLevel
@@ -625,7 +663,7 @@ function ItemInfo.GetItemLevel(item)
 	elseif itemType == "i" then
 		if randOrLevel and not bonusOrQuality then
 			-- there is a random enchant, but no bonusIds, so the itemLevel is the same as the base item
-			itemLevel = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+			itemLevel = ItemInfo.GetItemLevel(ItemString.GetBaseFast(itemString))
 		end
 		if itemLevel then
 			private.SetSingleField(itemString, "itemLevel", itemLevel)
@@ -642,7 +680,13 @@ end
 -- @treturn ?number The min level
 function ItemInfo.GetMinLevel(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		-- Create a fake itemString with the same itemLevel and look up that.
+		itemString = ItemString.Get(ItemString.ToWow(itemString))
+		assert(itemString)
+	end
 	-- if there is a random enchant, but no bonusIds, so the itemLevel is the same as the base item
 	local baseIsSame = strmatch(itemString, "^i:[0-9]+:[%-0-9]+$") and true or false
 	local minLevel = private.GetFieldValueHelper(itemString, "minLevel", baseIsSame, true, 0)
@@ -665,7 +709,11 @@ end
 -- @treturn ?number The max stack size
 function ItemInfo.GetMaxStack(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local maxStack = private.GetFieldValueHelper(itemString, "maxStack", true, true, 1)
 	if not maxStack and ItemString.IsItem(itemString) then
 		-- we might be able to deduce the maxStack based on the classId and subClassId
@@ -704,7 +752,11 @@ end
 -- @treturn ?number The inventory slot id
 function ItemInfo.GetInvSlotId(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local invSlotId = private.GetFieldValueHelper(itemString, "invSlotId", true, true, 0)
 	return invSlotId
 end
@@ -714,7 +766,11 @@ end
 -- @treturn ?number The texture
 function ItemInfo.GetTexture(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local texture = private.GetFieldValueHelper(itemString, "texture", true, false, nil)
 	if texture then
 		return texture
@@ -728,7 +784,15 @@ end
 -- @treturn ?number The vendor sell price
 function ItemInfo.GetVendorSell(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		-- The vendorSell price does seem to scale linearly with item level, but at a different
+		-- rate for different items, so there's no easy way to figure this out directly. Instead,
+		-- we create a fake itemString with the same itemLevel and look up that.
+		itemString = ItemString.Get(ItemString.ToWow(itemString))
+		assert(itemString)
+	end
 	local vendorSell = private.GetFieldValueHelper(itemString, "vendorSell", false, false, 0)
 	return (vendorSell or 0) > 0 and vendorSell or nil
 end
@@ -738,7 +802,11 @@ end
 -- @treturn ?number The class id
 function ItemInfo.GetClassId(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local classId = private.GetFieldValueHelper(itemString, "classId", true, true, LE_ITEM_CLASS_BATTLEPET)
 	if classId then
 		return classId
@@ -752,7 +820,11 @@ end
 -- @treturn ?number The sub-class id
 function ItemInfo.GetSubClassId(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local subClassId = private.GetFieldValueHelper(itemString, "subClassId", true, true, nil)
 	if subClassId then
 		return subClassId
@@ -767,7 +839,11 @@ end
 -- @treturn boolean Whether or not the item is bind on pickup
 function ItemInfo.IsSoulbound(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local isBOP = private.GetFieldValueHelper(itemString, "isBOP", true, true, false)
 	if type(isBOP) == "number" then
 		isBOP = isBOP == 1
@@ -780,7 +856,11 @@ end
 -- @treturn boolean Whether or not the item is a crafting reagent
 function ItemInfo.IsCraftingReagent(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
 	local isCraftingReagent = private.GetFieldValueHelper(itemString, "isCraftingReagent", true, true, false)
 	if type(isCraftingReagent) == "number" then
 		isCraftingReagent = isCraftingReagent == 1
@@ -793,7 +873,9 @@ end
 -- @treturn ?number The vendor buy price
 function ItemInfo.GetVendorBuy(item)
 	local itemString = ItemString.Get(item)
-	if not itemString then return end
+	if not itemString or ItemString.ParseLevel(itemString) then
+		return nil
+	end
 	return private.settings.vendorItems[itemString]
 end
 
@@ -802,7 +884,12 @@ end
 -- @treturn ?boolean Whether or not the item is disenchantable (nil means we don't know)
 function ItemInfo.IsDisenchantable(item)
 	local itemString = ItemString.Get(item)
-	if not itemString or ItemInfo.GetInvSlotId(item) == (TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexTabardType) or NON_DISENCHANTABLE_ITEMS[itemString] then
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
+	if ItemInfo.GetInvSlotId(itemString) == (TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexTabardType) or NON_DISENCHANTABLE_ITEMS[itemString] then
 		return nil
 	end
 	local quality = ItemInfo.GetQuality(itemString)
@@ -852,7 +939,7 @@ end
 -- This function can be called ahead of time for items which we know we need to have info cached for.
 -- @tparam ?string item The item
 function ItemInfo.FetchInfo(item)
-	if item == ItemString.GetUnknown() or item == ItemString.GetPlaceholder() then
+	if item == ItemString.GetUnknown() or item == ItemString.GetPlaceholder() or ItemString.ParseLevel(item) then
 		return
 	end
 	local itemString = ItemString.Get(item)
@@ -978,6 +1065,7 @@ function private.ProcessItemInfo()
 	if InCombatLockdown() then
 		return
 	end
+	local startTime = debugprofilestop()
 	private.db:SetQueryUpdatesPaused(true)
 
 	-- create rows for items which don't exist at all in the DB in bulk
@@ -1040,21 +1128,40 @@ function private.ProcessItemInfo()
 				end
 			end
 		end
+		if (debugprofilestop() - startTime) / 1000 > ITEM_INFO_INTERVAL / 5 then
+			-- bail early since we've already used a good number of CPU cycles this frame
+			break
+		end
 	end
 	for _, itemString in ipairs(toRemove) do
 		private.pendingItems[itemString] = nil
 	end
 	TempTable.Release(toRemove)
 
+	if private.rebuildStage == REBUILD_STAGE.IDLE and numRequested >= maxRequests / 2 and Table.Count(private.pendingItems) >= REBUILD_MSG_THRESHOLD then
+		private.rebuildStage = REBUILD_STAGE.TRIGGERED
+		-- delay this message to make it more likely to be seen and make sure we're actually rebuilding
+		Delay.AfterTime(3, private.ShowRebuildMessage)
+	end
 	if not next(private.pendingItems) then
-		if private.isRebuilding then
+		if private.rebuildStage == REBUILD_STAGE.NOTIFIED then
 			Log.PrintUser(L["Done rebuilding item cache."])
-			private.isRebuilding = nil
+			private.rebuildStage = REBUILD_STAGE.IDLE
 		end
 		Delay.Cancel("PROCESS_ITEM_INFO")
 	end
 
 	private.db:SetQueryUpdatesPaused(false)
+end
+
+function private.ShowRebuildMessage()
+	if Table.Count(private.pendingItems) < REBUILD_MSG_THRESHOLD then
+		-- no longer rebuilding
+		private.rebuildStage = REBUILD_STAGE.IDLE
+		return
+	end
+	Log.PrintUser(L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."])
+	private.rebuildStage = REBUILD_STAGE.NOTIFIED
 end
 
 function private.ScanMerchant()

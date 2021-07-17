@@ -28,7 +28,7 @@ local private = {
 function Cooldowns.OnEnable()
 	TSM.TaskList.RegisterTaskPool(private.ActiveTaskIterator)
 	private.query = TSM.Crafting.CreateCooldownSpellsQuery()
-		:Select("profession", "spellId")
+		:Select("profession", "craftString")
 		:Custom(private.QueryPlayerFilter, UnitName("player"))
 		:SetUpdateCallback(private.PopulateTasks)
 	private.ignoredQuery = TSM.Crafting.CreateIgnoredCooldownQuery()
@@ -52,24 +52,24 @@ end
 
 function private.PopulateTasks()
 	-- clean DB entries with expired times
-	for spellId, expireTime in pairs(TSM.db.char.internalData.craftingCooldowns) do
+	for craftString, expireTime in pairs(TSM.db.char.internalData.craftingCooldowns) do
 		if expireTime <= time() then
-			TSM.db.char.internalData.craftingCooldowns[spellId] = nil
+			TSM.db.char.internalData.craftingCooldowns[craftString] = nil
 		end
 	end
 
 	-- clear out the existing tasks
 	for _, task in pairs(private.activeTaskByProfession) do
-		task:WipeSpellIds()
+		task:WipeCraftStrings()
 	end
 
 	local minPendingCooldown = math.huge
-	for _, profession, spellId in private.query:Iterator() do
-		if TSM.Crafting.IsCooldownIgnored(spellId) then
+	for _, profession, craftString in private.query:Iterator() do
+		if TSM.Crafting.IsCooldownIgnored(craftString) then
 			-- this is ignored
-		elseif TSM.db.char.internalData.craftingCooldowns[spellId] then
+		elseif TSM.db.char.internalData.craftingCooldowns[craftString] then
 			-- this is on CD
-			minPendingCooldown = min(minPendingCooldown, TSM.db.char.internalData.craftingCooldowns[spellId] - time())
+			minPendingCooldown = min(minPendingCooldown, TSM.db.char.internalData.craftingCooldowns[craftString] - time())
 		else
 			-- this is a new CD task
 			local task = private.activeTaskByProfession[profession]
@@ -78,8 +78,8 @@ function private.PopulateTasks()
 				task:Acquire(private.RemoveTask, L["Cooldowns"], profession)
 				private.activeTaskByProfession[profession] = task
 			end
-			if not task:HasSpellId(spellId) then
-				task:AddSpellId(spellId, 1)
+			if not task:HasCraftString(craftString) then
+				task:AddCraftString(craftString, 1)
 			end
 		end
 	end
@@ -87,7 +87,7 @@ function private.PopulateTasks()
 	-- update our tasks
 	wipe(private.activeTasks)
 	for profession, task in pairs(private.activeTaskByProfession) do
-		if task:HasSpellIds() then
+		if task:HasCraftStrings() then
 			tinsert(private.activeTasks, task)
 			task:Update()
 		else

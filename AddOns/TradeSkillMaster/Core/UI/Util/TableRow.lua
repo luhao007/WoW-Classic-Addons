@@ -180,7 +180,11 @@ end
 function TableRow.SetData(self, data)
 	for _, col in self._tableInfo:_ColIterator() do
 		local id = col:_GetId()
-		self._texts[id]:SetText(col:_GetText(data))
+		local text, r, g, b, a = col:_GetText(data)
+		self._texts[id]:SetText(text)
+		if r then
+			self._texts[id]:SetTextColor(r, g, b, a)
+		end
 		if col:_GetIconSize() then
 			local button = self._buttons["_icon_"..id]
 			local texture = col:_GetIcon(data, button and button:IsMouseOver())

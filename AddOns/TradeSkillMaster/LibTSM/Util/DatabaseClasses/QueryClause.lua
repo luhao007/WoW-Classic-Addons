@@ -160,7 +160,10 @@ function DatabaseQueryClause._GetParent(self)
 	return self._parent
 end
 
-function DatabaseQueryClause._IsTrue(self, row)
+function DatabaseQueryClause._IsTrue(self, row, ignoreField)
+	if ignoreField and self._field == ignoreField then
+		return true
+	end
 	local value = self._value
 	if value == Constants.BOUND_QUERY_PARAM then
 		value = self._boundValue
@@ -200,14 +203,14 @@ function DatabaseQueryClause._IsTrue(self, row)
 		return value[row[self._field]] == nil
 	elseif operation == "OR" then
 		for i = 1, #self._subClauses do
-			if self._subClauses[i]:_IsTrue(row) then
+			if self._subClauses[i]:_IsTrue(row, ignoreField) then
 				return true
 			end
 		end
 		return false
 	elseif operation == "AND" then
 		for i = 1, #self._subClauses do
-			if not self._subClauses[i]:_IsTrue(row) then
+			if not self._subClauses[i]:_IsTrue(row, ignoreField) then
 				return false
 			end
 		end

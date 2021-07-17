@@ -45,20 +45,21 @@ end
 
 function Inventory.OnEnable()
 	private.db = Database.NewSchema("LEDGER_INVENTORY")
-		:AddUniqueStringField("itemString")
+		:AddUniqueStringField("levelItemString")
 		:Commit()
 	private.query = private.db:NewQuery()
-		:VirtualField("bagQuantity", "number", BagTracking.GetBagsQuantityByBaseItemString, "itemString")
-		:VirtualField("guildQuantity", "number", private.GuildQuantityVirtualField, "itemString")
-		:VirtualField("auctionQuantity", "number", AuctionTracking.GetQuantityByBaseItemString, "itemString")
-		:VirtualField("mailQuantity", "number", MailTracking.GetQuantityByBaseItemString, "itemString")
-		:VirtualField("altQuantity", "number", AltTracking.GetQuantityByBaseItemString, "itemString")
+		:VirtualField("bagQuantity", "number", BagTracking.GetBagsQuantityByLevelItemString, "levelItemString")
+		:VirtualField("guildQuantity", "number", private.GuildQuantityVirtualField, "levelItemString")
+		:VirtualField("auctionQuantity", "number", AuctionTracking.GetQuantityByLevelItemString, "levelItemString")
+		:VirtualField("mailQuantity", "number", MailTracking.GetQuantityByLevelItemString, "levelItemString")
+		:VirtualField("altQuantity", "number", AltTracking.GetQuantityByLevelItemString, "levelItemString")
 		:VirtualField("totalQuantity", "number", private.TotalQuantityVirtualField)
 		:VirtualField("totalValue", "number", private.TotalValueVirtualField)
 		:VirtualField("totalBankQuantity", "number", private.GetTotalBankQuantity)
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
-		:LeftJoin(TSM.Groups.GetItemDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "levelItemString", "")
+		:VirtualField("groupPath", "string", TSM.Groups.GetPathByItem, "levelItemString")
 		:OrderBy("name", true)
+		:NotEqual("name", "")
 end
 
 
@@ -70,24 +71,24 @@ end
 function private.DrawInventoryPage()
 	TSM.UI.AnalyticsRecordPathChange("main", "ledger", "inventory")
 	local items = TempTable.Acquire()
-	for _, itemString in BagTracking.BaseItemIterator() do
-		items[itemString] = true
+	for _, levelItemString in BagTracking.ItemIterator() do
+		items[levelItemString] = true
 	end
-	for _, itemString in GuildTracking.BaseItemIterator() do
-		items[itemString] = true
+	for _, levelItemString in GuildTracking.ItemIterator() do
+		items[levelItemString] = true
 	end
-	for _, itemString in AuctionTracking.BaseItemIterator() do
-		items[itemString] = true
+	for _, levelItemString in AuctionTracking.ItemIterator() do
+		items[levelItemString] = true
 	end
-	for _, itemString in MailTracking.BaseItemIterator() do
-		items[itemString] = true
+	for _, levelItemString in MailTracking.ItemIterator() do
+		items[levelItemString] = true
 	end
-	for _, itemString in AltTracking.BaseItemIterator() do
-		items[itemString] = true
+	for _, levelItemString in AltTracking.ItemIterator() do
+		items[levelItemString] = true
 	end
 	private.db:TruncateAndBulkInsertStart()
-	for itemString in pairs(items) do
-		private.db:BulkInsertNewRow(itemString)
+	for levelItemString in pairs(items) do
+		private.db:BulkInsertNewRow(levelItemString)
 	end
 	private.db:BulkInsertEnd()
 	TempTable.Release(items)
@@ -158,8 +159,8 @@ function private.DrawInventoryPage()
 						:SetTitle(L["Item"])
 						:SetFont("ITEM_BODY3")
 						:SetJustifyH("LEFT")
-						:SetTextInfo("itemString", TSM.UI.GetColoredItemName)
-						:SetTooltipInfo("itemString")
+						:SetTextInfo("levelItemString", TSM.UI.GetColoredItemName)
+						:SetTooltipInfo("levelItemString")
 						:SetSortInfo("name")
 						:DisableHiding()
 						:Commit()
@@ -270,10 +271,10 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
-function private.GuildQuantityVirtualField(itemString)
+function private.GuildQuantityVirtualField(levelItemString)
 	local totalNum = 0
 	for guildName in pairs(TSM.db.factionrealm.internalData.guildVaults) do
-		local guildQuantity = InventoryService.GetGuildQuantity(itemString, guildName)
+		local guildQuantity = InventoryService.GetGuildQuantity(levelItemString, guildName)
 		totalNum = totalNum + guildQuantity
 	end
 	return totalNum
@@ -285,8 +286,8 @@ function private.TotalQuantityVirtualField(row)
 end
 
 function private.TotalValueVirtualField(row)
-	local itemString, totalQuantity = row:GetFields("itemString", "totalQuantity")
-	local price = CustomPrice.GetValue(private.valuePriceSource, itemString)
+	local levelItemString, totalQuantity = row:GetFields("levelItemString", "totalQuantity")
+	local price = CustomPrice.GetValue(private.valuePriceSource, levelItemString)
 	if not price then
 		return Math.GetNan()
 	end
@@ -294,9 +295,9 @@ function private.TotalValueVirtualField(row)
 end
 
 function private.GetTotalBankQuantity(row)
-	local itemString = row:GetField("itemString")
-	local bankQuantity = BagTracking.GetBankQuantityByBaseItemString(itemString)
-	local reagentBankQuantity = BagTracking.GetReagentBankQuantityByBaseItemString(itemString)
+	local levelItemString = row:GetField("levelItemString")
+	local bankQuantity = BagTracking.GetBankQuantityByLevelItemString(levelItemString)
+	local reagentBankQuantity = BagTracking.GetReagentBankQuantityByLevelItemString(levelItemString)
 	return bankQuantity + reagentBankQuantity
 end
 
@@ -304,12 +305,12 @@ function private.GetTotalValue()
 	-- can't lookup the value of items while the query is iteratoring, so grab the list of items first
 	local itemQuantities = TempTable.Acquire()
 	for _, row in private.query:Iterator() do
-		local itemString, total = row:GetFields("itemString", "totalQuantity")
-		itemQuantities[itemString] = total
+		local levelItemString, total = row:GetFields("levelItemString", "totalQuantity")
+		itemQuantities[levelItemString] = total
 	end
 	local totalValue = 0
-	for itemString, total in pairs(itemQuantities) do
-		local price = CustomPrice.GetValue(private.valuePriceSource, itemString)
+	for levelItemString, total in pairs(itemQuantities) do
+		local price = CustomPrice.GetValue(private.valuePriceSource, levelItemString)
 		if price then
 			totalValue = totalValue + price * total
 		end
@@ -320,6 +321,7 @@ end
 
 function private.UpdateQuery()
 	private.query:ResetFilters()
+	private.query:NotEqual("name", "")
 	if private.searchFilter ~= "" then
 		private.query:Matches("name", String.Escape(private.searchFilter))
 	end

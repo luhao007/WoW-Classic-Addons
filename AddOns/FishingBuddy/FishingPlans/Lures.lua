@@ -97,7 +97,7 @@ local function PickLure()
             local NextLure;
             local pole, tempenchant = FL:GetPoleBonus();
             local continent = FL:GetCurrentMapContinent()
-            local bigdraenor = (GSB("BigDraenor") and (continent == FBConstants.DRAENOR));
+            local forcemax = (GSB("BigDraenor") and (continent == FBConstants.DRAENOR)) or GSB("AlwaysLure");
             local _, bestlure = FL:FindBestLure(tempenchant, 0, false, bigdraenor);
             -- If we could use a lure based on skill, or we lost a fish.
             if ( not FL:HasLureBuff() ) then
@@ -106,19 +106,12 @@ local function PickLure()
                 else
                     NextLure = nil;
                 end
-            elseif ( GSB("AlwaysLure") or bigdraenor) then
-                -- don't put on a lure if we've already got one
-                if ( tempenchant == 0 ) then
-                    NextLure = bestlure;
-                else
-                    NextLure = nil -- oscarucb
-                end
             elseif ( bestlure and tempenchant == 0 and GSB("LastResort") ) then
                 NextLure = bestlure;
             else
                 NextLure = nil;
             end
-            if ( not NextLure and GSB("AlwaysHat")) then
+            if ( not NextLure and GSB("AlwaysHat") and not FL:HasHatBuff()) then
                 local _, hat = FL:FindBestHat()
                 if (hat) then
                     return true, hat['id'], hat['n']

@@ -12,8 +12,10 @@
 local _, TSM = ...
 local L = TSM.Include("Locale").GetTable()
 local Analytics = TSM.Include("Util.Analytics")
+local DragContext = TSM.Include("Util.DragContext")
 local String = TSM.Include("Util.String")
 local Theme = TSM.Include("Util.Theme")
+local Log = TSM.Include("Util.Log")
 local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local ManagementGroupTree = TSM.Include("LibTSMClass").DefineClass("ManagementGroupTree", TSM.UI.GroupTree)
 local UIElements = TSM.Include("UI.UIElements")
@@ -36,6 +38,7 @@ function ManagementGroupTree.__init(self)
 	self._selectedGroup = nil
 	self._onGroupSelectedHandler = nil
 	self._onNewGroupHandler = nil
+	self._onDragRecievedHandler = nil
 	self._scrollAmount = 0
 end
 
@@ -70,16 +73,19 @@ function ManagementGroupTree.Release(self)
 	self._selectedGroup = nil
 	self._onGroupSelectedHandler = nil
 	self._onNewGroupHandler = nil
+	self._onDragRecievedHandler = nil
 	self._moveFrame:Release()
 	self._moveFrame = nil
 	for _, row in ipairs(self._rows) do
 		row._frame:RegisterForDrag()
 		ScriptWrapper.Clear(row._frame, "OnDragStart")
 		ScriptWrapper.Clear(row._frame, "OnDragStop")
+		ScriptWrapper.Clear(row._frame, "OnReceiveDrag")
 		for _, button in pairs(row._buttons) do
 			button:RegisterForDrag()
 			ScriptWrapper.Clear(button, "OnDragStart")
 			ScriptWrapper.Clear(button, "OnDragStop")
+			ScriptWrapper.Clear(button, "OnReceiveDrag")
 		end
 	end
 	self.__super:Release()
@@ -120,6 +126,8 @@ function ManagementGroupTree.SetScript(self, script, handler)
 		self._onGroupSelectedHandler = handler
 	elseif script == "OnNewGroup" then
 		self._onNewGroupHandler = handler
+	elseif script == "OnDragRecieved" then
+		self._onDragRecievedHandler = handler
 	else
 		error("Unknown ManagementGroupTree script: "..tostring(script))
 	end
@@ -138,10 +146,12 @@ function ManagementGroupTree._GetTableRow(self, isHeader)
 		row._frame:RegisterForDrag("LeftButton")
 		ScriptWrapper.Set(row._frame, "OnDragStart", private.RowOnDragStart, row)
 		ScriptWrapper.Set(row._frame, "OnDragStop", private.RowOnDragStop, row)
+		ScriptWrapper.Set(row._frame, "OnReceiveDrag", private.RowOnRecieveDrag, self, row)
 		for _, button in pairs(row._buttons) do
 			button:RegisterForDrag("LeftButton")
 			ScriptWrapper.Set(button, "OnDragStart", private.RowOnDragStart, row)
 			ScriptWrapper.Set(button, "OnDragStop", private.RowOnDragStop, row)
+			ScriptWrapper.Set(button, "OnReceiveDrag", private.RowOnRecieveDrag, self, row)
 		end
 	end
 	return row
@@ -276,13 +286,7 @@ function private.RowOnDragStop(row)
 	end
 	self._moveFrame:Hide()
 
-	local destPath = nil
-	for _, targetRow in ipairs(self._rows) do
-		if targetRow:IsMouseOver() then
-			destPath = targetRow:GetData()
-			break
-		end
-	end
+	local destPath = self:GetMouseOverPath()
 	local oldPath = self._dragGroupPath
 	self._dragGroupPath = nil
 	if not destPath or destPath == oldPath or TSM.Groups.Path.IsChild(destPath, oldPath) then
@@ -292,10 +296,18 @@ function private.RowOnDragStop(row)
 	if oldPath == newPath then
 		return
 	elseif TSM.Groups.Exists(newPath) then
+		Log.PrintfUser(L["Failed to move group, as a group with the same name already exists in the target location."])
 		return
 	end
 
 	TSM.Groups.Move(oldPath, newPath)
 	Analytics.Action("MOVED_GROUP", oldPath, newPath)
 	self:SetSelectedGroup(newPath, true)
+end
+
+function private.RowOnRecieveDrag(self)
+	local context = DragContext.Get()
+	if self._onDragRecievedHandler and context then
+		self:_onDragRecievedHandler(context, self:GetMouseOverPath())
+	end
 end

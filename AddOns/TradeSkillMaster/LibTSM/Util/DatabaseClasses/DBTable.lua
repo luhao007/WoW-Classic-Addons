@@ -17,6 +17,7 @@ local QueryResultRow = TSM.Include("Util.DatabaseClasses.QueryResultRow")
 local Query = TSM.Include("Util.DatabaseClasses.Query")
 local TempTable = TSM.Include("Util.TempTable")
 local Table = TSM.Include("Util.Table")
+local String = TSM.Include("Util.String")
 local LibTSMClass = TSM.Include("LibTSMClass")
 local DatabaseTable = LibTSMClass.DefineClass("DatabaseTable")
 local private = {
@@ -234,7 +235,9 @@ end
 function DatabaseTable.BulkDelete(self, uuids)
 	assert(not self._trigramIndexField, "Cannot bulk delete on tables with trigram indexes")
 	assert(not self._bulkInsertContext)
+	local didRemove = TempTable.Acquire()
 	for _, uuid in ipairs(uuids) do
+		didRemove[uuid] = true
 		for field, uniqueValues in pairs(self._uniques) do
 			uniqueValues[self:GetRowFieldByUUID(uuid, field)] = nil
 		end
@@ -274,18 +277,24 @@ function DatabaseTable.BulkDelete(self, uuids)
 	end
 
 	-- re-build the indexes
-	for indexField, indexList in pairs(self._indexLists) do
-		wipe(indexList)
-		local indexValues = TempTable.Acquire()
-		for i = 1, #self._uuids do
-			local uuid = self._uuids[i]
-			indexList[i] = uuid
-			indexValues[uuid] = self:_GetRowIndexValue(uuid, indexField)
+	for _, indexList in pairs(self._indexLists) do
+		local prevIndexList = TempTable.Acquire()
+		for i = 1, #indexList do
+			prevIndexList[i] = indexList[i]
 		end
-		Table.SortWithValueLookup(indexList, indexValues)
-		TempTable.Release(indexValues)
+		wipe(indexList)
+		local insertIndex = 1
+		for i = 1, #prevIndexList do
+			local uuid = prevIndexList[i]
+			if not didRemove[uuid] then
+				indexList[insertIndex] = uuid
+				insertIndex = insertIndex + 1
+			end
+		end
+		TempTable.Release(prevIndexList)
 	end
 
+	TempTable.Release(didRemove)
 	self:_UpdateQueries()
 end
 
@@ -554,7 +563,7 @@ function DatabaseTable.BulkInsertNewRow(self, ...)
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
 			if uniqueValues[value] ~= nil then
-				error("A row with this unique value already exists", 2)
+				error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
 			end
 			uniqueValues[value] = uuid
 		end
@@ -591,7 +600,7 @@ function DatabaseTable.BulkInsertNewRowFast6(self, v1, v2, v3, v4, v5, v6, extra
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
-			error("A row with this unique value already exists", 2)
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
 		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
@@ -631,7 +640,7 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
-			error("A row with this unique value already exists", 2)
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
 		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
@@ -640,13 +649,13 @@ function DatabaseTable.BulkInsertNewRowFast8(self, v1, v2, v3, v4, v5, v6, v7, v
 	return uuid
 end
 
-function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, extraValue)
+function DatabaseTable.BulkInsertNewRowFast12(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 11 then
+	elseif self._bulkInsertContext.fastNum ~= 12 then
 		error("Invalid usage of fast insert")
 	elseif v11 == nil or extraValue ~= nil then
 		error("Wrong number of values")
@@ -669,12 +678,13 @@ function DatabaseTable.BulkInsertNewRowFast11(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._data[rowIndex + 8] = v9
 	self._data[rowIndex + 9] = v10
 	self._data[rowIndex + 10] = v11
+	self._data[rowIndex + 11] = v12
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
-			error("A row with this unique value already exists", 2)
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
 		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
@@ -719,7 +729,7 @@ function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, 
 		-- the first field is always a unique (and the only unique)
 		local uniqueValues = self._uniques[self._storedFieldList[1]]
 		if uniqueValues[v1] ~= nil then
-			error("A row with this unique value already exists", 2)
+			error(format("A row with this unique value (%s) already exists", tostring(v1)), 2)
 		end
 		uniqueValues[v1] = uuid
 	elseif self._bulkInsertContext.fastUnique then
@@ -789,8 +799,10 @@ function DatabaseTable.BulkInsertEnd(self)
 					Table.MergeSortedWithValueLookup(part1, part2, indexList, indexValues)
 					TempTable.Release(part1)
 					TempTable.Release(part2)
+					assert(Table.IsSortedWithValueLookup(indexList, indexValues))
+				elseif not Table.IsSortedWithValueLookup(indexList, indexValues) then
+					Table.SortWithValueLookup(indexList, indexValues)
 				end
-				Table.SortWithValueLookup(indexList, indexValues)
 				TempTable.Release(indexValues)
 			end
 		end
@@ -810,22 +822,24 @@ function DatabaseTable.BulkInsertEnd(self)
 					local uuid = self._uuids[i]
 					local value = private.TrigramValueFunc(uuid, self, self._trigramIndexField)
 					trigramValues[uuid] = value
-					for j = 1, #value - 2 do
-						local subStr = strsub(value, j, j + 2)
-						if usedSubStrTemp[subStr] ~= uuid then
-							usedSubStrTemp[subStr] = uuid
-							local list = trigramIndexLists[subStr]
-							if not list then
-								trigramIndexLists[subStr] = { uuid }
-							else
-								list[#list + 1] = uuid
+					for word in String.SplitIterator(value, " ") do
+						for j = 1, #word - 2 do
+							local subStr = strsub(word, j, j + 2)
+							if usedSubStrTemp[subStr] ~= uuid then
+								usedSubStrTemp[subStr] = uuid
+								local list = trigramIndexLists[subStr]
+								if not list then
+									trigramIndexLists[subStr] = { uuid }
+								else
+									list[#list + 1] = uuid
+								end
 							end
 						end
 					end
 				end
 				-- sort all the trigram index lists
 				for _, list in pairs(trigramIndexLists) do
-					Table.SortWithValueLookup(list, trigramValues)
+					Table.Sort(list)
 				end
 				TempTable.Release(trigramValues)
 			end
@@ -1026,14 +1040,16 @@ function DatabaseTable._TrigramIndexInsert(self, uuid)
 	local field = self._trigramIndexField
 	local indexValue = private.TrigramValueFunc(uuid, self, field)
 	wipe(private.usedTrigramSubStrTemp)
-	for i = 1, #indexValue - 2 do
-		local subStr = strsub(indexValue, i, i + 2)
-		if not private.usedTrigramSubStrTemp[subStr] then
-			private.usedTrigramSubStrTemp[subStr] = true
-			if not self._trigramIndexLists[subStr] then
-				self._trigramIndexLists[subStr] = { uuid }
-			else
-				Table.InsertSorted(self._trigramIndexLists[subStr], uuid, private.TrigramValueFunc, self, field)
+	for word in String.SplitIterator(indexValue, " ") do
+		for i = 1, #word - 2 do
+			local subStr = strsub(word, i, i + 2)
+			if not private.usedTrigramSubStrTemp[subStr] then
+				private.usedTrigramSubStrTemp[subStr] = true
+				if not self._trigramIndexLists[subStr] then
+					self._trigramIndexLists[subStr] = { uuid }
+				else
+					Table.InsertSorted(self._trigramIndexLists[subStr], uuid)
+				end
 			end
 		end
 	end
@@ -1061,7 +1077,7 @@ function DatabaseTable._InsertRow(self, row)
 		local uniqueValues = self._uniques[field]
 		if uniqueValues then
 			if uniqueValues[value] ~= nil then
-				error("A row with this unique value already exists", 2)
+				error(format("A row with this unique value (%s) already exists", tostring(value)), 2)
 			end
 			uniqueValues[value] = uuid
 		end
@@ -1165,19 +1181,21 @@ function DatabaseTable._GetTrigramIndexMatchingRows(self, value, result)
 	value = strlower(value)
 	local matchingLists = TempTable.Acquire()
 	wipe(private.usedTrigramSubStrTemp)
-	for i = 1, #value - 2 do
-		local subStr = strsub(value, i, i + 2)
-		if not self._trigramIndexLists[subStr] then
-			-- this value doesn't match anything
-			TempTable.Release(matchingLists)
-			return
-		end
-		if not private.usedTrigramSubStrTemp[subStr] then
-			private.usedTrigramSubStrTemp[subStr] = true
-			tinsert(matchingLists, self._trigramIndexLists[subStr])
+	for word in String.SplitIterator(value, " ") do
+		for i = 1, #word - 2 do
+			local subStr = strsub(word, i, i + 2)
+			if not self._trigramIndexLists[subStr] then
+				-- this value doesn't match anything
+				TempTable.Release(matchingLists)
+				return
+			end
+			if not private.usedTrigramSubStrTemp[subStr] then
+				private.usedTrigramSubStrTemp[subStr] = true
+				tinsert(matchingLists, self._trigramIndexLists[subStr])
+			end
 		end
 	end
-	Table.GetCommonValuesSorted(matchingLists, result, private.TrigramValueFunc, self, self._trigramIndexField)
+	Table.GetCommonValuesSorted(matchingLists, result)
 	TempTable.Release(matchingLists)
 end
 

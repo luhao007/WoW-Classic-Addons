@@ -1,0 +1,14 @@
+## Interface: 20501
+## Author: Scott M Harrison
+## Version: 37176
+## Dependencies: Grail
+## LoadOnDemand: 1
+
+## Title: Grail |cff69ccf0Quests |r|cff0000ffRetail|r|cff69ccf0 zhCN|r
+## Notes: Provides localized zhCN quest names to Grail for Retail
+## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF本地数据库|r |cFF69CCF0任务|r |cFF22B14C中文|r
+## Notes-zhCN: 任务数据库的中文本地化模块
+
+## X-Part-Of: Grail
+
+Grail-Quests-_retail_-zhCN.lua

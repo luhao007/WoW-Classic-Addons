@@ -19,6 +19,7 @@ function QuestieQuestFixes:Load()
     local questKeys = QuestieDB.questKeys
     local zoneIDs = ZoneDB.zoneIDs
     local raceIDs = QuestieDB.raceKeys
+    local classIDs = QuestieDB.classKeys
 
     return {
         [2] = {
@@ -1453,6 +1454,7 @@ function QuestieQuestFixes:Load()
             [questKeys.requiredSkill] = {164,275},
         },
         [5126] = {
+            [questKeys.requiredClasses] = classIDs.WARRIOR + classIDs.PALADIN + classIDs.SHAMAN,
             [questKeys.triggerEnd] = {"Listen to Lorax's Tale", {[zoneIDs.WINTERSPRING]={{63.82,73.79},},},},
         },
         [5156] = {
@@ -3239,7 +3241,7 @@ function QuestieQuestFixes:LoadFactionFixes()
             [questKeys.startedBy] = {{8403,},nil,nil}
         },
         [6681] = {
-            [questKeys.startedBy] = {{3328,4583},nil,{17126}}
+            [questKeys.startedBy] = {{332,918,3327,3328,3401,4214,4215,4163,4582,4583,4584,5165,5166,5167,6467,13283},nil,{17126}}
         },
         [7562] = {
             [questKeys.startedBy] = {{5753,5815,},nil,nil},

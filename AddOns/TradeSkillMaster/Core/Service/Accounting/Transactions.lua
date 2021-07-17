@@ -26,8 +26,10 @@ local private = {
 	dbSummary = nil,
 	dataChanged = false,
 	baseStatsQuery = nil,
+	levelStatsQuery = nil,
 	statsQuery = nil,
 	baseStatsMinTimeQuery = nil,
+	levelStatsMinTimeQuery = nil,
 	statsMinTimeQuery = nil,
 	syncHashesThread = nil,
 	isSyncHashesThreadRunning = false,
@@ -66,6 +68,7 @@ function Transactions.OnInitialize()
 		:AddStringField("baseItemString")
 		:AddStringField("type")
 		:AddStringField("itemString")
+		:AddStringField("levelItemString")
 		:AddNumberField("stackSize")
 		:AddNumberField("quantity")
 		:AddNumberField("price")
@@ -75,6 +78,7 @@ function Transactions.OnInitialize()
 		:AddStringField("source")
 		:AddNumberField("saveTime")
 		:AddIndex("baseItemString")
+		:AddIndex("levelItemString")
 		:AddIndex("time")
 		:Commit()
 	private.db:BulkInsertStart()
@@ -96,6 +100,12 @@ function Transactions.OnInitialize()
 		:Equal("type", Database.BoundQueryParam())
 		:Equal("baseItemString", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
+	private.levelStatsQuery = private.db:NewQuery()
+		:Select("quantity", "price")
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:Equal("levelItemString", Database.BoundQueryParam())
+		:NotEqual("source", "Vendor")
 	private.statsQuery = private.db:NewQuery()
 		:Select("quantity", "price")
 		:Equal("type", Database.BoundQueryParam())
@@ -106,6 +116,13 @@ function Transactions.OnInitialize()
 		:Select("quantity", "price")
 		:Equal("type", Database.BoundQueryParam())
 		:Equal("baseItemString", Database.BoundQueryParam())
+		:GreaterThanOrEqual("time", Database.BoundQueryParam())
+		:NotEqual("source", "Vendor")
+	private.levelStatsMinTimeQuery = private.db:NewQuery()
+		:Select("quantity", "price")
+		:Equal("type", Database.BoundQueryParam())
+		:Equal("baseItemString", Database.BoundQueryParam())
+		:Equal("levelItemString", Database.BoundQueryParam())
 		:GreaterThanOrEqual("time", Database.BoundQueryParam())
 		:NotEqual("source", "Vendor")
 	private.statsMinTimeQuery = private.db:NewQuery()
@@ -179,38 +196,46 @@ function Transactions.RemoveOldData(days)
 end
 
 function Transactions.GetSaleStats(itemString, minTime)
-	local baseItemString = ItemString.GetBase(itemString)
+	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	local isBaseItemString = itemString == baseItemString
+	local isLevelItemString = itemString == levelItemString
 	local query = nil
 	if minTime then
 		if isBaseItemString then
 			query = private.baseStatsMinTimeQuery:BindParams("sale", baseItemString, minTime)
+		elseif isLevelItemString then
+			query = private.levelStatsMinTimeQuery:BindParams("sale", baseItemString, levelItemString, minTime)
 		else
 			query = private.statsMinTimeQuery:BindParams("sale", baseItemString, itemString, minTime)
 		end
 	else
 		if isBaseItemString then
 			query = private.baseStatsQuery:BindParams("sale", baseItemString)
+		elseif isLevelItemString then
+			query = private.levelStatsQuery:BindParams("sale", baseItemString, levelItemString)
 		else
 			query = private.statsQuery:BindParams("sale", baseItemString, itemString)
 		end
 	end
 	query:ResetOrderBy()
-	local totalPrice = query:SumOfProduct("quantity", "price")
 	local totalNum = query:Sum("quantity")
-	if not totalNum or totalNum == 0 then
+	if totalNum == 0 then
 		return
 	end
-	return totalPrice, totalNum
+	return query:SumOfProduct("quantity", "price"), totalNum
 end
 
 function Transactions.GetBuyStats(itemString, isSmart)
 	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	local isBaseItemString = itemString == baseItemString
-
+	local isLevelItemString = itemString == levelItemString
 	local query = nil
 	if isBaseItemString then
 		query = private.baseStatsQuery:BindParams("buy", baseItemString)
+	elseif isLevelItemString then
+		query = private.levelStatsQuery:BindParams("buy", baseItemString, levelItemString)
 	else
 		query = private.statsQuery:BindParams("buy", baseItemString, itemString)
 	end
@@ -239,7 +264,7 @@ function Transactions.GetBuyStats(itemString, isSmart)
 		return priceSum, quantitySum
 	else
 		local quantitySum = query:Sum("quantity")
-		if not quantitySum then
+		if quantitySum == 0 then
 			return nil, nil
 		end
 		local priceSum = query:SumOfProduct("quantity", "price")
@@ -251,70 +276,38 @@ function Transactions.GetBuyStats(itemString, isSmart)
 end
 
 function Transactions.GetMaxSalePrice(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", false)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
 function Transactions.GetMaxBuyPrice(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price")
 		:Equal("type", "buy")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", false)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
 function Transactions.GetMinSalePrice(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", true)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
 function Transactions.GetMinBuyPrice(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price")
 		:Equal("type", "buy")
 		:NotEqual("source", "Vendor")
 		:OrderBy("price", true)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
@@ -332,69 +325,36 @@ function Transactions.GetAverageBuyPrice(itemString, isSmart)
 end
 
 function Transactions.GetLastSaleTime(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("time")
 		:Equal("type", "sale")
 		:NotEqual("source", "Vendor")
 		:OrderBy("time", false)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
 function Transactions.GetLastBuyTime(itemString)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery():Select("time")
+	local query = private.GetItemQuery(itemString)
+		:Select("time")
 		:Equal("type", "buy")
 		:NotEqual("source", "Vendor")
 		:OrderBy("time", false)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	return query:GetFirstResultAndRelease()
 end
 
 function Transactions.GetQuantity(itemString, timeFilter, typeFilter)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Equal("type", typeFilter)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	if timeFilter then
 		query:GreaterThan("time", time() - timeFilter)
 	end
-	local sum = query:Sum("quantity") or 0
-	query:Release()
-	return sum
+	return query:SumAndRelease("quantity")
 end
 
 function Transactions.GetAveragePrice(itemString, timeFilter, typeFilter)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price", "quantity")
 		:Equal("type", typeFilter)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	if timeFilter then
 		query:GreaterThan("time", time() - timeFilter)
 	end
@@ -408,21 +368,13 @@ function Transactions.GetAveragePrice(itemString, timeFilter, typeFilter)
 end
 
 function Transactions.GetTotalPrice(itemString, timeFilter, typeFilter)
-	local baseItemString = ItemString.GetBase(itemString)
-	local isBaseItemString = itemString == baseItemString
-	local query = private.db:NewQuery()
+	local query = private.GetItemQuery(itemString)
 		:Select("price", "quantity")
 		:Equal("type", typeFilter)
-	if isBaseItemString then
-		query:Equal("baseItemString", itemString)
-	else
-		query:Equal("baseItemString", baseItemString)
-			:Equal("itemString", itemString)
-	end
 	if timeFilter then
 		query:GreaterThan("time", time() - timeFilter)
 	end
-	local sumPrice = query:SumOfProduct("price", "quantity") or 0
+	local sumPrice = query:SumOfProduct("price", "quantity")
 	query:Release()
 	return sumPrice
 end
@@ -581,20 +533,18 @@ function Transactions.HandleSyncedData(player, day, data)
 	private.db:SetQueryUpdatesPaused(true)
 
 	-- remove any prior data for the day
-	local query = private.db:NewQuery()
+	private.db:NewQuery()
 		:Equal("player", player)
 		:GreaterThanOrEqual("time", day * SECONDS_PER_DAY)
 		:LessThan("time", (day + 1) * SECONDS_PER_DAY)
-	for _, uuid in query:UUIDIterator() do
-		private.db:DeleteRowByUUID(uuid)
-	end
-	query:Release()
+		:DeleteAndRelease()
 	if private.syncHashDayCache[player] then
 		private.syncHashDayCacheIsInvalid[player] = true
 	end
 
 	-- insert the new data
 	private.db:BulkInsertStart()
+	private.db:BulkInsertPartition()
 	for i = 1, #data, 9 do
 		private.BulkInsertNewRowHelper(player, unpack(data, i, i + 8))
 	end
@@ -642,6 +592,7 @@ end
 function private.BulkInsertNewRowHelper(player, recordType, itemString, stackSize, quantity, price, otherPlayer, timestamp, source, saveTime)
 	itemString = ItemString.Get(itemString)
 	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	stackSize = tonumber(stackSize)
 	quantity = tonumber(quantity)
 	price = tonumber(price)
@@ -659,7 +610,7 @@ function private.BulkInsertNewRowHelper(player, recordType, itemString, stackSiz
 			private.dataChanged = true
 			price = newPrice
 		end
-		private.db:BulkInsertNewRowFast11(baseItemString, recordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime)
+		private.db:BulkInsertNewRowFast12(baseItemString, recordType, itemString, levelItemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime)
 	else
 		private.dataChanged = true
 	end
@@ -700,7 +651,7 @@ function private.SaveData(recordType)
 	else
 		local saveTimes = {}
 		local encodeContext = CSV.EncodeStart(CSV_KEYS)
-		for _, _, rowRecordType, itemString, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime in private.db:RawIterator() do
+		for _, _, rowRecordType, itemString, _, stackSize, quantity, price, otherPlayer, player, timestamp, source, saveTime in private.db:RawIterator() do
 			if rowRecordType == recordType then
 				-- add the save time
 				if source == "Auction" then
@@ -719,11 +670,13 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 	assert(itemString and source and stackSize and price and otherPlayer and timestamp)
 	timestamp = floor(timestamp)
 	local baseItemString = ItemString.GetBase(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	local player = UnitName("player")
 	local matchingRow = private.db:NewQuery()
 		:Equal("type", recordType)
 		:Equal("itemString", itemString)
 		:Equal("baseItemString", baseItemString)
+		:Equal("levelItemString", levelItemString)
 		:Equal("stackSize", stackSize)
 		:Equal("source", source)
 		:Equal("price", price)
@@ -742,6 +695,7 @@ function private.InsertRecord(recordType, itemString, source, stackSize, price, 
 			:SetField("type", recordType)
 			:SetField("itemString", itemString)
 			:SetField("baseItemString", baseItemString)
+			:SetField("levelItemString", levelItemString)
 			:SetField("stackSize", stackSize)
 			:SetField("quantity", stackSize)
 			:SetField("price", price)
@@ -822,4 +776,22 @@ end
 
 function private.InventoryCallback()
 	CustomPrice.OnSourceChange("SmartAvgBuy")
+end
+
+function private.GetItemQuery(itemString)
+	local query = private.db:NewQuery()
+	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
+	local isBaseItemString = itemString == baseItemString
+	local isLevelItemString = itemString == levelItemString
+	if isBaseItemString then
+		query:Equal("baseItemString", baseItemString)
+	elseif isLevelItemString then
+		query:Equal("baseItemString", baseItemString)
+			:Equal("levelItemString", levelItemString)
+	else
+		query:Equal("baseItemString", baseItemString)
+			:Equal("itemString", itemString)
+	end
+	return query
 end

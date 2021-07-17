@@ -12,6 +12,7 @@
 11. ESC关闭窗口。
 12. 保存窗口位置。
 13. 支持LDB。
+14. 支持TBC副本。
 
 Readme:
 1. Slash Command /lm or /lootmonitor to open/close LootMonitor Window.
@@ -27,3 +28,4 @@ Readme:
 11. Press Escape to close Set/Output Window.
 12. Save Set/Output Window position.
 13. Support LDB.
+14. Support BCC Raid Instance.

@@ -52,6 +52,15 @@ Wrapper:OnSettingsLoad(function()
 	end
 end)
 
+Wrapper:OnGameDataLoad(function()
+	if ArkInventory and ArkInventory.API and ArkInventory.API.CustomBattlePetTooltipReady then
+		hooksecurefunc(ArkInventory.API, "CustomBattlePetTooltipReady", function(tooltip, link)
+			link = ItemInfo.GetLink(ItemString.Get(link))
+			private.SetTooltipItem(tooltip, link)
+		end)
+	end
+end)
+
 
 
 -- ============================================================================

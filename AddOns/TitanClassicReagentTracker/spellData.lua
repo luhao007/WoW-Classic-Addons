@@ -79,18 +79,14 @@ addon.spells = {
 			spells = {130},
 			reagent = 17056,
 		},
-		{	-- Arcane Brilliance
-			spells = {23028},
-			reagent = 17020,
-		},
-		{	-- Arcane Brilliance (Rank 2)
-			spells = {23028},
-			reagent = 17020,
-		},
-		{	-- Ritual of Refreshment
-			spells = {43987},
-			reagent = 17020,
-		},
+        {	-- Arcane Powder spells
+            spells = {
+                23028,  -- Arcane Brilliance (Rank 1)
+                27127,  -- Arcane Brilliance (Rank 2)
+                43987,  -- Ritual of Refreshment
+            },
+            reagent = 17020,
+        },
 	},
 	PALADIN = {
 		{	-- Divine Intervention

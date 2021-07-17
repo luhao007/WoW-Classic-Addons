@@ -456,18 +456,9 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-      <!-- small tooltip to describe use of the above three buttons -->
-			<Frame parentKey="MiniTooltip" frameStrata="TOOLTIP" hidden="true">
+            <!-- small tooltip to describe use of the above three buttons -->
+			<Frame parentKey="MiniTooltip" frameStrata="TOOLTIP" inherits="TooltipBackdropTemplate" hidden="true">
 				<Size x="0" y="26"/>
-				<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<TileSize val="16"/>
-					<EdgeSize val="16"/>
-					<BackgroundInsets>
-						<AbsInset left="2" right="2" top="2" bottom="2"/>
-					</BackgroundInsets>
-					<Color r="0.05" g="0.05" b="0.05"/>
-					<BorderColor r="0.5" g="0.5" b="0.5"/>
-				</Backdrop>
 				<Layers>
 					<Layer level="ARTWORK">
 						<FontString parentKey="Text" inherits="GameFontNormalSmall"/>
@@ -478,6 +469,7 @@
 		<Scripts>
 			<OnLoad>
 				self:RegisterEvent("PLAYER_LOGIN")
+                self.MiniTooltip:SetBackdropBorderColor(0.5,0.5,0.5)
 			</OnLoad>
 			<OnEvent>
 				self:OnEvent(event,...)

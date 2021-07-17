@@ -1706,9 +1706,9 @@ function BtWQuestsTooltipMixin:SetActiveQuest(id, character)
     self:SetText(quest:GetName())
 
     if character:IsQuestActive(id) then
-        if character:IsPlayer() and C_QuestLog.IsQuestReplayable(id) then
+        if character:IsPlayer() and C_QuestLog.IsQuestReplayable and C_QuestLog.IsQuestReplayable(id) then
             GameTooltip_AddInstructionLine(self, QuestUtils_GetReplayQuestDecoration(id)..QUEST_SESSION_QUEST_TOOLTIP_IS_REPLAY, false);
-        elseif character:IsPlayer() and C_QuestLog.IsQuestDisabledForSession(id) then
+        elseif character:IsPlayer() and C_QuestLog.IsQuestDisabledForSession and C_QuestLog.IsQuestDisabledForSession(id) then
             GameTooltip_AddColoredLine(self, QuestUtils_GetDisabledQuestDecoration(id)..QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE, DISABLED_FONT_COLOR, false);
         else
             self:AddLine(GREEN_FONT_COLOR_CODE..QUEST_TOOLTIP_ACTIVE..FONT_COLOR_CODE_CLOSE)
@@ -1767,6 +1767,56 @@ function BtWQuestsTooltipMixin:SetActiveQuest(id, character)
     self:OnSetQuest()
     self:Show()
 end
+-- Custom function for displaying quests not in the log, used for bcc and before SetHyperlink
+function BtWQuestsTooltipMixin:SetQuest(id, character)
+    local id = tonumber(id)
+
+    self.character = character
+    self.questID = id
+
+    local quest = BtWQuestsDatabase:GetQuestByID(id)
+
+    self:ClearLines()
+    self:SetText(quest:GetName())
+
+    -- if objectiveText then
+    --     self:AddLine(" ")
+    --     self:AddLine(objectiveText, 1, 1, 1, true)
+    -- end
+
+    local objectives = C_QuestLog.GetQuestObjectives(id);
+    if objectives then
+        local addedTitle
+        for _,objective in ipairs(objectives) do
+            if objective then
+                if not addedTitle then
+                    self:AddLine(" ")
+                    self:AddLine(QUEST_TOOLTIP_REQUIREMENTS)
+                    addedTitle = true
+                end
+
+                self:AddLine(" - " .. objective.text, 1, 1, 1)
+            end
+        end
+    end
+
+    for i=1, GetNumSubgroupMembers() do
+        if IsUnitOnQuest("party"..i, i) then
+			-- Found at least one party member who is also on the quest, set it up!
+			self:AddLine(" ");
+			self:AddLine(PARTY_QUEST_STATUS_ON);
+
+			local omitTitle = true;
+			local ignoreActivePlayer = true;
+			self:SetQuestPartyProgress(id, omitTitle, ignoreActivePlayer);
+
+			break;
+		end
+	end
+
+    self:OnSetQuest()
+    self:Show()
+end
 
 -- Doing this because TSM and Auctioneer tainted GameTooltip.SetHyperlink without checking if their variables exist
 local dummpGameTooltip = CreateFrame("GameTooltip", "BtWQuestsDummyTooltip", UIParent, "GameTooltipTemplate")
@@ -1786,7 +1836,14 @@ function BtWQuestsTooltipMixin:SetHyperlink(link, character)
             self.character = character
             self.questID = id
 
-            dummpGameTooltip.SetHyperlink(self, link)
+            self:SetQuest(id, character)
+            if QuestEventListener then
+                QuestEventListener:AddCallback(id, function()
+                    if self.questID == id then
+                        dummpGameTooltip.SetHyperlink(self, link)
+                    end
+                end)
+            end
         end
     elseif type == "btwquests" then
         local _, _, subtype, id = string.find(text, "^([^:]*):(%d+)")

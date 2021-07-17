@@ -120,6 +120,8 @@ end
 function TitanPanelClockButton_GetButtonText()
 	local clocktime = "";
 	local labeltext = "";
+	local clocktime2 = nil;
+	local labeltext2 = nil;
 	local _ = nil
 	if TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "Server" then
 		_,clocktime = TitanPanelClockButton_GetTime("Server", 0)
@@ -130,8 +132,29 @@ function TitanPanelClockButton_GetButtonText()
 	elseif TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "Local" then
 		_,clocktime = TitanPanelClockButton_GetTime ("Local", 0)
 		labeltext = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(L) ") or ""
+	elseif TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "ServerLocal" then
+		local _, s = TitanPanelClockButton_GetTime ("Server", 0)
+		local _, l = TitanPanelClockButton_GetTime ("Local", 0)
+		sl = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(S) ") or ""
+		ll = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(L) ") or ""
+		clocktime = s
+		labeltext = sl
+		clocktime2 = l
+		labeltext2 = ll
+	elseif TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "ServerAdjustedLocal" then
+		local _, s = TitanPanelClockButton_GetTime ("Server", TitanGetVar(TITAN_CLOCK_ID, "OffsetHour"))
+		local _, l = TitanPanelClockButton_GetTime ("Local", 0)
+		sl = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(A) ") or ""
+		ll = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(L) ") or ""
+		clocktime = s
+		labeltext = sl
+		clocktime2 = l
+		labeltext2 = ll
+	elseif TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "Local" then
+		_,clocktime = TitanPanelClockButton_GetTime ("Local", 0)
+		labeltext = TitanGetVar(TITAN_CLOCK_ID, "ShowLabelText") and TitanPanelClockButton_GetColored("(L) ") or ""
 	end
-	return labeltext, clocktime
+	return labeltext, clocktime, labeltext2, clocktime2
 end
 
 
@@ -463,6 +486,18 @@ function TitanPanelRightClickMenu_PrepareClockMenu()
 	info.text = L["TITAN_CLOCK_MENU_SERVER_ADJUSTED_TIME"];
 	info.func = function() TitanSetVar(TITAN_CLOCK_ID, "TimeMode", "ServerAdjusted") TitanPanelButton_UpdateButton(TITAN_CLOCK_ID) end
 	info.checked = function() return TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "ServerAdjusted" end
+	L_UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = L["TITAN_CLOCK_MENU_SERVER_TIME"].." & "..L["TITAN_CLOCK_MENU_LOCAL_TIME"]
+	info.func = function() TitanSetVar(TITAN_CLOCK_ID, "TimeMode", "ServerLocal") TitanPanelButton_UpdateButton(TITAN_CLOCK_ID) end
+	info.checked = function() return TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "ServerLocal" end
+	L_UIDropDownMenu_AddButton(info);
+
+	info = {};
+	info.text = L["TITAN_CLOCK_MENU_SERVER_ADJUSTED_TIME"].." & "..L["TITAN_CLOCK_MENU_LOCAL_TIME"]
+	info.func = function() TitanSetVar(TITAN_CLOCK_ID, "TimeMode", "ServerAdjustedLocal") TitanPanelButton_UpdateButton(TITAN_CLOCK_ID) end
+	info.checked = function() return TitanGetVar(TITAN_CLOCK_ID, "TimeMode") == "ServerAdjustedLocal" end
 	L_UIDropDownMenu_AddButton(info);
 
 	TitanPanelRightClickMenu_AddSpacer();

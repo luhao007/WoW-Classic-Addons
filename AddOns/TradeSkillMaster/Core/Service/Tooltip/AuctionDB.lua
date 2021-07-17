@@ -14,7 +14,6 @@ local INFO = {
 	{ key = "minBuyout", default = true, label = L["Min Buyout"] },
 	{ key = "marketValue", default = true, label = L["Market Value"] },
 	{ key = "historical", default = false, label = L["Historical Price"] },
-	{ key = "regionMinBuyout", default = false, label = L["Region Min Buyout Avg"] },
 	{ key = "regionMarketValue", default = true, label = L["Region Market Value Avg"] },
 	{ key = "regionHistorical", default = false, label = L["Region Historical Price"] },
 	{ key = "regionSale", default = true, label = L["Region Sale Avg"] },

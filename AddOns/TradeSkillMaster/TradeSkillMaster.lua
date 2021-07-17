@@ -37,7 +37,7 @@ local APP_INFO_REQUIRED_KEYS = { "version", "lastSync", "message", "news" }
 local LOGOUT_TIME_WARNING_THRESHOLD_MS = 20
 do
 	-- show a message if we were updated
-	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.10.42" then
+	if GetAddOnMetadata("TradeSkillMaster", "Version") ~= "v4.11.8" then
 		Wow.ShowBasicMessage("TSM was just updated and may not work properly until you restart WoW.")
 	end
 end
@@ -58,8 +58,9 @@ function TSM.OnInitialize()
 		:AddKey("global", "debug", "chatLoggingEnabled")
 		:AddKey("global", "internalData", "appMessageId")
 		:AddKey("global", "internalData", "lastCharacter")
+		:AddKey("global", "internalData", "whatsNewVersion")
 		:AddKey("sync", "internalData", "classKey")
-		:RegisterCallback("destroyValueSource", private.DestroyValueUpdated)
+		:RegisterCallback("destroyValueSource", function() CustomPrice.OnSourceChange("Destroy") end)
 
 	-- set the last character we logged into for display in the app
 	private.settings.lastCharacter = UnitName("player").." - "..GetRealmName()
@@ -186,7 +187,6 @@ function TSM.OnInitialize()
 	CustomPrice.RegisterSource("AuctionDB", "DBMarket", L["AuctionDB - Market Value"], TSM.AuctionDB.GetRealmItemData, false, "marketValue")
 	CustomPrice.RegisterSource("AuctionDB", "DBMinBuyout", L["AuctionDB - Minimum Buyout"], TSM.AuctionDB.GetRealmItemData, false, "minBuyout")
 	CustomPrice.RegisterSource("AuctionDB", "DBHistorical", L["AuctionDB - Historical Price (via TSM App)"], TSM.AuctionDB.GetRealmItemData, false, "historical")
-	CustomPrice.RegisterSource("AuctionDB", "DBRegionMinBuyoutAvg", L["AuctionDB - Region Minimum Buyout Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMinBuyout")
 	CustomPrice.RegisterSource("AuctionDB", "DBRegionMarketAvg", L["AuctionDB - Region Market Value Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionMarketValue")
 	CustomPrice.RegisterSource("AuctionDB", "DBRegionHistorical", L["AuctionDB - Region Historical Price (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionHistorical")
 	CustomPrice.RegisterSource("AuctionDB", "DBRegionSaleAvg", L["AuctionDB - Region Sale Average (via TSM App)"], TSM.AuctionDB.GetRegionItemData, false, "regionSale")
@@ -429,6 +429,8 @@ function private.DebugSlashCommandHandler(arg)
 	elseif arg == "leaks" then
 		TempTable.EnableLeakDebug()
 		ObjectPool.EnableLeakDebug()
+	elseif arg == "whatsnew" then
+		private.settings.whatsNewVersion = 0
 	end
 end
 
@@ -503,10 +505,6 @@ function private.SaveAppData()
 
 	-- save analytics
 	Analytics.Save(appDB)
-end
-
-function private.DestroyValueUpdated()
-	CustomPrice.OnSourceChange("Destroy")
 end
 
 

@@ -65,7 +65,7 @@ local Output = Addon.Output
 local MinimapIcon = Addon.MinimapIcon
 Frame:Hide() -- 隐藏Frame，避免Update开销
 -- 版本号（不再读取toc文件，/reload后版本号立刻生效）
-Addon.Version = "3.24"
+Addon.Version = "3.30"
 local Version = tonumber(Addon.Version)
 -- Addon MSG Prefix
 local PrefixLM = "LMPX"
@@ -123,94 +123,10 @@ local ItemQuality = {
     [3] = L[" Rare+ Item(s)"],
     [4] = L[" Epic+ Item(s)"],
 }
-local RaidInstanceID = {
-	[249] = L["Onyxia's Lair"],
-	[409] = L["Molten Core"],
-	[469] = L["Blackwing Lair"],
-    [531] = L["Temple of Ahn'Qiraj"],
-    [533] = L["Naxxramas"],
-    [309] = L["Zul'Gurub"],
-    [509] = L["Ruins of Ahn'Qiraj"],
-}
-local IsRaidBoss = {
-    -- Zul'Gurub
-    ["14517"] = true, -- Jeklik
-    ["14510"] = true, -- Mar'li
-    ["11382"] = true, -- Bloodlord
-    ["14509"] = true, -- Thekal
-    ["14515"] = true, -- Arlok
-    ["14507"] = true, -- Venoxis
-    ["11380"] = true, -- Jin'do
-    ["14834"] = true, -- Hakkar
-    ["15114"] = true, -- Gahz'ranka
-    ["15082"] = true, -- Gri'lek
-    ["15083"] = true, -- Hazza'rah
-    ["15084"] = true, -- Renataki
-    ["15085"] = true, -- Wushoolay
-    -- Ruins of Ahn'Qiraj
-    ["15348"] = true, -- Kurinnaxx
-    ["15341"] = true, -- General Rajaxx
-    ["15340"] = true, -- Moam
-    ["15369"] = true, -- Ayamiss the Hunter
-    ["15370"] = true, -- Buru the Gorger
-    ["15339"] = true, -- Ossirian the Unscarred
-    -- Onyxia's Lair
-    ["10184"] = true, -- Onyxia
-    -- Molten Core
-    ["12118"] = true, -- Lucifron
-    ["11982"] = true, -- Magmadar
-    ["12259"] = true, -- Gehennas
-    ["12057"] = true, -- Garr
-    ["12056"] = true, -- Baron Geddon
-    ["12264"] = true, -- Shazzrah
-    ["12098"] = true, -- Sulfuron Harbinger
-    ["11988"] = true, -- Golemagg the Incinerator
-    ["12018"] = true, -- Majordomo Executus
-    ["11502"] = true, -- Ragnaros
-    -- Blackwing Lair
-    ["12435"] = true, -- Razorgore the Untamed
-    ["13020"] = true, -- Vaelastrasz the Corrupt
-    ["12017"] = true, -- Broodlord Lashlayer
-    ["11983"] = true, -- Firemaw
-    ["14601"] = true, -- Ebonroc
-    ["11981"] = true, -- Flamegor
-    ["14020"] = true, -- Chromaggus
-    ["11583"] = true, -- Nefarian
-    -- Temple of Ahn'Qiraj
-    ["15263"] = true, -- The Prophet Skeram
-    ["15511"] = true, -- Lord Kri
-    ["15543"] = true, -- Princess Yauj
-    ["15544"] = true, -- Vem
-    ["15516"] = true, -- Battleguard Sartura
-    ["15510"] = true, -- Fankriss the Unyielding
-    ["15299"] = true, -- Viscidus
-    ["15509"] = true, -- Princess Huhuran
-    ["15275"] = true, -- Emperor Vek'nilash
-    ["15276"] = true, -- Emperor Vek'lor
-    ["15517"] = true, -- Ouro
-    ["15727"] = true, -- C'Thun
-    -- Naxxramas
-    ["15936"] = true, -- Heigan the Unclean
-    ["16060"] = true, -- Gothik the Harvester
-    ["15954"] = true, -- Noth the Plaguebringer
-    ["15930"] = true, -- Feugen
-    ["15932"] = true, -- Gluth
-    ["15953"] = true, -- Grand Widow Faerlina
-    ["16062"] = true, -- Highlord Mograine
-    ["16064"] = true, -- Thane Korth'azz
-    ["16065"] = true, -- Lady Blaumeux
-    ["16028"] = true, -- Patchwerk
-    ["15929"] = true, -- Stalagg
-    ["16063"] = true, -- Sir Zeliek
-    ["15952"] = true, -- Maexxna
-    ["15928"] = true, -- Thaddius
-    ["16011"] = true, -- Loatheb
-    ["15990"] = true, -- Kel'Thuzad
-    ["15989"] = true, -- Sapphiron
-    ["15931"] = true, -- Grobbulus
-    ["16061"] = true, -- Instructor Razuvious
-    ["15956"] = true, -- Anub'Rekhan
-}
+
+local RaidInstanceID = Addon.RaidInstanceID
+local IsRaidBoss = Addon.IsRaidBoss
+
 -- 控制变量
 local Announce = {
     ["Rank"] = "NONE",
@@ -466,7 +382,7 @@ function Addon:InitGroupInfo()
             ["Version"] = Config.Enabled == true and Version or 0.01,
         }
         t_insert(GroupMemberStates, yourself)
-        for i = 1, 4 do
+        for i = 1, GetNumGroupMembers() do
             local u = "party"..i
             local n = (UnitName(u))
             if n then
@@ -524,6 +440,9 @@ function Addon:UpdateGroupInfo(Sender, REST)
         end
     elseif IsInGroup() then
         local SenderRank = "NONE"
+        if GroupMemberStates[1].LootMonitor == "ON" then
+            Announce.Index = 1
+        end
         if UnitIsGroupLeader(Sender) then
             SenderRank = "LEADER"
         end
@@ -540,6 +459,10 @@ function Addon:UpdateGroupInfo(Sender, REST)
                 if GroupMemberStates[i].Rank == "LEADER" and GroupMemberStates[i].LootMonitor == "ON" then
                     Announce.Rank = "LEADER"
                     Announce.Index = i
+                elseif Announce.Rank == "NONE" and GroupMemberStates[i].LootMonitor == "ON" and GroupMemberStates[i].Name ~= (UnitName("player")) then
+                    if GroupMemberStates[i].Name < GroupMemberStates[Announce.Index].Name then
+                        Announce.Index = i
+                    end
                 end
                 break
             end
@@ -555,7 +478,6 @@ function Addon:DoShowState()
     local NoAddonColorPrefix = "|cFF606060"
     local MutedColorPrefix = "|cFF00BFFF"
     local ColorSuffix = "|r"
-    print(Announce.Index)
     for i = 1, #GroupMemberStates do
         if GroupMemberStates[i] then
             local msg = GroupMemberStates[i].Name

@@ -100,7 +100,14 @@ function private.PopulateGroupLine(tooltip, itemString)
 		end
 	end
 	if groupPath then
-		local leftText = itemInGroup and GROUP or (GROUP.." ("..L["Base Item"]..")")
+		local leftText = nil
+		if itemInGroup then
+			leftText = GROUP
+		elseif ItemString.ParseLevel(TSM.Groups.TranslateItemString(itemString)) then
+			leftText = GROUP.." ("..L["Item Level"]..")"
+		else
+			leftText = GROUP.." ("..L["Base Item"]..")"
+		end
 		tooltip:AddTextLine(leftText, TSM.Groups.Path.Format(groupPath))
 	end
 end

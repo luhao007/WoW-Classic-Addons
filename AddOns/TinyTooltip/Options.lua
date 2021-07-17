@@ -359,7 +359,7 @@ CreateAnchorButton(saframe, "BOTTOM")
 saframe:SetScript("OnShow", function() grid:Show() end)
 saframe:SetScript("OnHide", function() grid:Hide() end)
 
-local caframe = CreateFrame("Frame", nil, UIParent, "ThinBorderTemplate")
+local caframe = CreateFrame("Frame", nil, UIParent, "ThinBorderTemplate" and (BackdropTemplateMixin and "BackdropTemplate" or nil))
 caframe:Hide()
 caframe:SetFrameStrata("DIALOG")
 caframe:SetBackdrop(GameTooltip:GetBackdrop())
@@ -429,7 +429,7 @@ function widgets:anchorbutton(parent, config)
 end
 
 function widgets:element(parent, config)
-    local frame = CreateFrame("Frame", nil, parent)
+    local frame = CreateFrame("Frame", nil, parent, (BackdropTemplateMixin and "BackdropTemplate" or nil))
     frame:SetSize(560, 30)
     frame:SetBackdrop({
         bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
@@ -865,7 +865,7 @@ local function CreateLine(parent, lineNumber)
         local line = CreateFrame("Frame", nil, parent)
         line:SetSize(300, 24)
         line.line = lineNumber
-        line.border = CreateFrame("Frame", nil, line)
+        line.border = CreateFrame("Frame", nil, line, (BackdropTemplateMixin and "BackdropTemplate" or nil))
         line.border:SetAllPoints()
         line.border:SetBackdrop({edgeFile = "Interface\\Buttons\\WHITE8X8", edgeSize = 1})
         line.border:SetBackdropBorderColor(1, 0.9, 0.1)

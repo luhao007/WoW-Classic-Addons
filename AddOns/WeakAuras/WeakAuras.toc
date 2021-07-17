@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: The WeakAuras Team
-## Version: 3.4.2
+## Version: 3.5.0
 ## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-2.0, LibDBIcon-1.0, LibClassicDurations, LibClassicCasterino, LibGetFrame-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: WeakAurasSaved

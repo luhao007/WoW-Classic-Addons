@@ -11,7 +11,7 @@ local _, TSM = ...
 local TempTable = TSM.Init("Util.TempTable")
 local Debug = TSM.Include("Util.Debug")
 local private = {
-	debugLeaks = TSM.__IS_TEST_ENV or false,
+	debugLeaks = TSM.IsTestEnvironment() or false,
 	freeTempTables = {},
 	tempTableState = {},
 }

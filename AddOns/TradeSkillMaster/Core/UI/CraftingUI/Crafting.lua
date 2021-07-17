@@ -7,15 +7,18 @@
 local _, TSM = ...
 local Crafting = TSM.UI.CraftingUI:NewPackage("Crafting")
 local L = TSM.Include("Locale").GetTable()
+local CraftString = TSM.Include("Util.CraftString")
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
 local TempTable = TSM.Include("Util.TempTable")
 local Money = TSM.Include("Util.Money")
 local String = TSM.Include("Util.String")
+local Table = TSM.Include("Util.Table")
 local Log = TSM.Include("Util.Log")
 local Wow = TSM.Include("Util.Wow")
 local Theme = TSM.Include("Util.Theme")
 local ItemString = TSM.Include("Util.ItemString")
+local RecipeString = TSM.Include("Util.RecipeString")
 local BagTracking = TSM.Include("Service.BagTracking")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
@@ -32,7 +35,11 @@ local private = {
 	haveSkillUp = false,
 	haveMaterials = false,
 	professionFrame = nil,
+	optionalMats = {},
+	recipeLevels = {},
+	recipeLevelsKeys = {},
 }
+local MAX_CRAFT_LEVEL = 4
 local SHOW_DELAY_FRAMES = 2
 local KEY_SEP = "\001"
 
@@ -51,10 +58,6 @@ function Crafting.OnInitialize()
 	ItemLinked.RegisterCallback(private.ItemLinkedCallback)
 	TSM.UI.CraftingUI.RegisterTopLevelPage(L["Crafting"], private.GetCraftingFrame)
 	private.FSMCreate()
-end
-
-function Crafting.GatherCraftNext(spellId, quantity)
-	private.fsm:ProcessEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", spellId, quantity)
 end
 
 
@@ -92,10 +95,7 @@ function private.GetCraftingFrame()
 				:SetTexture("ACTIVE_BG")
 			)
 			:AddChild(UIElements.New("CraftingQueueList", "queueList")
-				:SetQuery(TSM.Crafting.CreateCraftsQuery()
-					:IsNotNil("num")
-					:GreaterThan("num", 0)
-				)
+				:SetQuery(TSM.Crafting.CreateQueueQuery())
 				:SetScript("OnRowMouseDown", private.QueueOnRowMouseDown)
 				:SetScript("OnRowClick", private.QueueOnRowClick)
 			)
@@ -224,6 +224,7 @@ function private.GetCraftingElements(self, button)
 					:SetFavoritesContext(private.settings.isCraftFavorite)
 					:SetSettingsContext(private.settings, "professionScrollingTable")
 					:SetScript("OnSelectionChanged", private.RecipeListOnSelectionChanged)
+					:SetScript("OnRowClick", private.RecipeListOnRowClick)
 				)
 				:AddChild(UIElements.New("Texture", "line")
 					:SetHeight(2)
@@ -232,11 +233,11 @@ function private.GetCraftingElements(self, button)
 				:AddChild(UIElements.New("Frame", "details")
 					:SetLayout("HORIZONTAL")
 					:SetHeight(120)
-					:SetPadding(8, 0, 8, 8)
+					:SetPadding(8, 0, 8, 0)
 					:SetBackgroundColor("PRIMARY_BG_ALT")
 					:AddChild(UIElements.New("Frame", "left")
 						:SetLayout("VERTICAL")
-						:SetWidth(234)
+						:SetWidth(238)
 						:SetMargin(0, 8, 0, 0)
 						:AddChild(UIElements.New("Frame", "content")
 							:SetLayout("HORIZONTAL")
@@ -252,20 +253,6 @@ function private.GetCraftingElements(self, button)
 								:SetScript("OnClick", private.ItemOnClick)
 							)
 						)
-						:AddChild(UIElements.New("Frame", "cost")
-							:SetLayout("HORIZONTAL")
-							:SetHeight(20)
-							:SetMargin(0, 0, 8, 0)
-							:AddChild(UIElements.New("Text", "label")
-								:SetWidth("AUTO")
-								:SetMargin(0, 4, 0, 0)
-								:SetFont("BODY_BODY3")
-								:SetText(L["Crafting Cost"]..":")
-							)
-							:AddChild(UIElements.New("Text", "text")
-								:SetFont("TABLE_TABLE1")
-							)
-						)
 						:AddChild(UIElements.New("Frame", "craft")
 							:SetLayout("HORIZONTAL")
 							:SetHeight(20)
@@ -279,13 +266,52 @@ function private.GetCraftingElements(self, button)
 							)
 						)
 						:AddChild(UIElements.New("Spacer", "spacer"))
+						:AddChild(UIElements.New("SelectionDropdown", "rankDropdown")
+							:SetHeight(24)
+							:SetScript("OnSelectionChanged", private.RankDropdownOnSelectionChanged)
+						)
+						:AddChild(UIElements.New("Frame", "optional")
+							:SetLayout("HORIZONTAL")
+							:SetHeight(20)
+							:SetMargin(2, 0, 4, 0)
+							:AddChild(UIElements.New("Button", "button")
+								:SetWidth("AUTO")
+								:SetIcon("iconPack.12x12/Add/Circle", "LEFT")
+								:SetText(L["Add Optional Reagents"])
+								:SetFont("BODY_BODY3_MEDIUM")
+								:SetTextColor("INDICATOR")
+								:SetScript("OnClick", private.OptionalMatsOnClick)
+							)
+							:AddChild(UIElements.New("Spacer", "spacer"))
+						)
 					)
 					:AddChild(UIElements.New("Texture", "line")
 						:SetWidth(2)
 						:SetTexture("ACTIVE_BG")
 					)
-					:AddChild(UIElements.New("CraftingMatList", "matList")
-						:SetBackgroundColor("PRIMARY_BG_ALT")
+					:AddChild(UIElements.New("Frame", "content")
+						:SetLayout("VERTICAL")
+						:SetMargin(4, 8, 0, 0)
+						:AddChild(UIElements.New("CraftingMatList", "matList")
+							:SetBackgroundColor("PRIMARY_BG_ALT")
+						)
+						:AddChild(UIElements.New("Texture", "line")
+							:SetHeight(2)
+							:SetTexture("ACTIVE_BG")
+						)
+						:AddChild(UIElements.New("Frame", "cost")
+							:SetLayout("HORIZONTAL")
+							:SetHeight(20)
+							:AddChild(UIElements.New("Text", "label")
+								:SetWidth("AUTO")
+								:SetMargin(0, 4, 0, 0)
+								:SetFont("BODY_BODY3")
+								:SetText(L["Crafting Cost"]..":")
+							)
+							:AddChild(UIElements.New("Text", "text")
+								:SetFont("TABLE_TABLE1")
+							)
+						)
 					)
 				)
 			)
@@ -488,10 +514,10 @@ function private.CreateProfessionBtnOnClick(button)
 	end
 
 	query = TSM.Crafting.ProfessionScanner.CreateQuery()
-		:Select("spellId")
+		:Select("craftString")
 
-	for _, spellId in query:IteratorAndRelease() do
-		local itemString = TSM.Crafting.GetItemString(spellId)
+	for _, craftString in query:IteratorAndRelease() do
+		local itemString = TSM.Crafting.GetItemString(craftString)
 		if itemString and not TSM.Groups.IsItemInGroup(itemString) and not ItemInfo.IsSoulbound(itemString) then
 			TSM.Groups.SetItemGroup(itemString, items)
 			numItems = numItems + 1
@@ -543,13 +569,18 @@ end
 function private.RecipeListOnSelectionChanged(list)
 	local selection = list:GetSelection()
 	if selection and CraftFrame_SetSelection and TSM.Crafting.ProfessionState.IsClassicCrafting() then
-		CraftFrame_SetSelection(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(selection))
+		CraftFrame_SetSelection(TSM.Crafting.ProfessionScanner.GetIndexByCraftString(selection))
 	end
 
 	private.fsm:ProcessEvent("EV_RECIPE_SELECTION_CHANGED")
-	if selection and IsShiftKeyDown() then
-		local item = TSM.Crafting.ProfessionUtil.GetRecipeInfo(selection)
-		ChatEdit_InsertLink(item)
+end
+
+function private.RecipeListOnRowClick(list, data, mouseButton)
+	if mouseButton ~= "LeftButton" then
+		return
+	end
+	if IsShiftKeyDown() then
+		ChatEdit_InsertLink(TSM.Crafting.ProfessionUtil.GetRecipeLink(data))
 	end
 end
 
@@ -559,18 +590,18 @@ function private.QueueBtnOnClick(button)
 end
 
 function private.ItemOnClick(text)
-	local spellId = tonumber(text:GetElement("__parent.name"):GetContext())
-	if spellId then
+	local craftString = tonumber(text:GetElement("__parent.name"):GetContext())
+	if craftString then
 		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
 			if IsShiftKeyDown() and ChatEdit_GetActiveWindow() then
-				ChatEdit_InsertLink(GetCraftItemLink(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(spellId)))
+				ChatEdit_InsertLink(GetCraftItemLink(TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString)))
 			end
 		else
 			if IsShiftKeyDown() and ChatEdit_GetActiveWindow() then
 				if TSM.IsWowClassic() then
-					ChatEdit_InsertLink(GetTradeSkillItemLink(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(spellId)))
+					ChatEdit_InsertLink(GetTradeSkillItemLink(TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString)))
 				else
-					ChatEdit_InsertLink(C_TradeSkillUI.GetRecipeItemLink(spellId))
+					ChatEdit_InsertLink(C_TradeSkillUI.GetRecipeItemLink(craftString))
 				end
 			end
 		end
@@ -579,35 +610,295 @@ function private.ItemOnClick(text)
 	end
 end
 
+function private.OptionalMatsOnClick(button)
+	button:GetBaseElement():ShowDialogFrame(UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:SetSize(478, 268)
+		:SetPadding(12)
+		:AddAnchor("CENTER")
+		:SetMouseEnabled(true)
+		:SetBackgroundColor("FRAME_BG", true)
+		:AddChild(UIElements.New("ViewContainer", "view")
+			:SetNavCallback(private.GetViewContentFrame)
+			:SetContext(button)
+			:AddPath("list", true)
+			:AddPath("selection")
+		)
+	)
+end
+
+function private.RankDropdownOnSelectionChanged(dropdown)
+	private.fsm:ProcessEvent("EV_RECIPE_LEVEL_SELECTION_UPDATED", dropdown:GetSelectedItemKey())
+end
+
+function private.GetViewContentFrame(viewContainer, path)
+	if path == "list" then
+		return private.GetOptionalReagentList(viewContainer)
+	elseif path == "selection" then
+		return private.GetOptionalReagentSelection(viewContainer)
+	else
+		error("Unexpected path: "..tostring(path))
+	end
+end
+
+function private.GetOptionalReagentList(viewContainer)
+	local selectedCraftString = viewContainer:GetContext():GetContext()
+	local level = viewContainer:GetContext():GetElement("__parent.__parent.rankDropdown"):GetSelectedItemKey()
+	local _, resultItemString = TSM.Crafting.ProfessionUtil.GetResultInfo(selectedCraftString)
+	local resultTooltip = TSM.Crafting.ProfessionUtil.GetCraftResultTooltipFromRecipeString(RecipeString.FromCraftString(selectedCraftString, private.optionalMats, nil, level))
+	return UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(0, 0, -4, 10)
+			:AddChild(UIElements.New("Spacer", "spacer")
+				:SetWidth(20)
+			)
+			:AddChild(UIElements.New("Text", "title")
+				:SetJustifyH("CENTER")
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(L["Add Optional Reagents"])
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetMargin(0, -4, 0, 0)
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.CloseDialog)
+			)
+		)
+		:AddChild(UIElements.New("Frame", "item")
+			:SetLayout("HORIZONTAL")
+			:SetPadding(6)
+			:SetMargin(0, 0, 0, 10)
+			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:AddChild(UIElements.New("Button", "icon")
+				:SetSize(36, 36)
+				:SetMargin(0, 8, 0, 0)
+				:SetBackground(ItemInfo.GetTexture(resultItemString))
+				:SetTooltip(resultTooltip)
+			)
+			:AddChild(UIElements.New("Text", "name")
+				:SetHeight(36)
+				:SetFont("ITEM_BODY1")
+				:SetText(TSM.UI.GetColoredItemName(resultItemString))
+			)
+		)
+		:AddChild(UIElements.New("Text", "label")
+			:SetHeight(20)
+			:SetJustifyH("LEFT")
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetText(L["Optional Reagents"])
+		)
+		:AddChildrenWithFunction(private.AddOptionalRows, selectedCraftString)
+		:AddChild(UIElements.New("Frame", "spacer"))
+		:AddChild(UIElements.New("ActionButton", "addReagents")
+			:SetHeight(24)
+			:SetText(L["Add Reagent(s)"])
+			:SetScript("OnClick", private.CloseDialog)
+		)
+end
+
+function private.AddOptionalRows(frame, selectedCraftString)
+	for _, matList, slotId, text in TSM.Crafting.OptionalMatIterator(selectedCraftString) do
+		local row = UIElements.New("Frame", "optional"..slotId)
+			:SetLayout("HORIZONTAL")
+			:SetHeight(28)
+			:SetMargin(8, 0, 4, 0)
+			:SetContext(slotId)
+			:AddChild(UIElements.New("Text", "slotId")
+				:SetWidth(20)
+				:SetMargin(2, 8, 0, 0)
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(slotId)
+			)
+			:AddChild(UIElements.New("Frame", "title")
+				:SetLayout("HORIZONTAL")
+				:SetPadding(0, 8, 0, 0)
+				:SetBackgroundColor("ACTIVE_BG", true)
+				:SetContext(matList)
+				:SetMouseEnabled(true)
+				:AddChild(UIElements.New("Button", "icon")
+					:SetSize(20, 20)
+					:SetMargin(8, 0, 0, 0)
+					:SetBackground(private.optionalMats[slotId] and ItemInfo.GetTexture("i:"..private.optionalMats[slotId]) or nil)
+					:SetTooltip(private.optionalMats[slotId] and "i:"..private.optionalMats[slotId] or nil)
+				)
+				:AddChild(UIElements.New("Button", "name")
+					:SetWidth(300)
+					:SetMargin(8, 0, 0, 0)
+					:SetFont("BODY_BODY2")
+					:SetJustifyH("LEFT")
+					:SetContext(text)
+					:PropagateScript("OnMouseUp")
+					:SetText(private.optionalMats[slotId] and TSM.UI.GetColoredItemName("i:"..private.optionalMats[slotId]) or text)
+				)
+				:AddChild(UIElements.New("Frame", "spacer"))
+				:AddChild(UIElements.New("Button", "removeBtn")
+					:SetMargin(4, 4, 0, 0)
+					:SetContext(slotId)
+					:SetBackgroundAndSize("iconPack.18x18/Delete")
+					:SetScript("OnClick", private.OptionalReagentRemoveOnClick)
+				)
+				:AddChild(UIElements.New("Texture", "addBtn")
+					:SetMargin(4, 0, 0, 0)
+					:SetTextureAndSize("iconPack.18x18/Chevron/Right")
+				)
+				:SetScript("OnMouseUp", private.OptionalReagentAddOnMouseUp)
+			)
+		if not private.optionalMats[slotId] then
+			row:GetElement("title.icon")
+				:Hide()
+			row:GetElement("title.removeBtn")
+				:Hide()
+		else
+			row:GetElement("title.icon")
+				:Show()
+			row:GetElement("title.removeBtn")
+				:Show()
+		end
+		row:GetElement("title")
+			:Draw()
+		frame:AddChild(row)
+	end
+end
+
+function private.OptionalReagentRemoveOnClick(button)
+	local slotId = button:GetContext()
+	private.optionalMats[slotId] = nil
+	button:GetElement("__parent.icon")
+		:SetBackground(nil)
+		:SetTooltip(nil)
+		:Hide()
+	button:GetElement("__parent.name")
+		:SetText(button:GetElement("__parent.name"):GetContext())
+	button:GetElement("__parent.removeBtn")
+		:Hide()
+	button:GetElement("__parent")
+		:Draw()
+	local selectedCraftString = button:GetElement("__parent.__parent.__parent.__parent"):GetContext():GetContext()
+	local level = button:GetBaseElement():GetElement("content.crafting.left.viewContainer.main.content.profession.recipeContent.details.left.rankDropdown"):GetSelectedItemKey()
+	local resultTooltip = TSM.Crafting.ProfessionUtil.GetCraftResultTooltipFromRecipeString(RecipeString.FromCraftString(selectedCraftString, private.optionalMats, nil, level))
+	button:GetElement("__parent.__parent.__parent.item.icon")
+		:SetTooltip(resultTooltip)
+		:Draw()
+
+	private.fsm:ProcessEvent("EV_RECIPE_OPTIONAL_MATS_UPDATED")
+end
+
+function private.OptionalReagentAddOnMouseUp(button)
+	button:GetElement("__parent.__parent.__parent.__parent")
+		:SetContext(button:GetContext())
+	button:GetElement("__parent.__parent.__parent")
+		:SetPath("selection", true)
+end
+
+function private.GetOptionalReagentSelection(viewContainer)
+	local matTable = TempTable.Acquire()
+	local slotId, matList = strmatch(viewContainer:GetParentElement():GetContext(), "o:(%d):(.+)")
+	slotId = tonumber(slotId)
+	for itemId in String.SplitIterator(matList, ",") do
+		tinsert(matTable, ItemInfo.GetLink("i:"..itemId))
+	end
+	local frame = UIElements.New("Frame", "frame")
+		:SetLayout("VERTICAL")
+		:AddChild(UIElements.New("Frame", "header")
+			:SetLayout("HORIZONTAL")
+			:SetHeight(24)
+			:SetMargin(0, 0, -4, 10)
+			:AddChild(UIElements.New("Button", "backBtn")
+				:SetMargin(2, 0, 0, 0)
+				:SetBackgroundAndSize("iconPack.18x18/Chevron/Right@180")
+				:SetScript("OnClick", private.BackOnClick)
+			)
+			:AddChild(UIElements.New("Text", "title")
+				:SetJustifyH("CENTER")
+				:SetFont("BODY_BODY1_BOLD")
+				:SetText(TSM.Crafting.ProfessionUtil.GetOptionalMatText(matList))
+			)
+			:AddChild(UIElements.New("Button", "closeBtn")
+				:SetMargin(0, -4, 0, 0)
+				:SetBackgroundAndSize("iconPack.24x24/Close/Default")
+				:SetScript("OnClick", private.CloseDialog)
+			)
+		)
+		:AddChild(UIElements.New("Frame", "container")
+			:SetLayout("VERTICAL")
+			:SetHeight(214)
+			:SetBackgroundColor("PRIMARY_BG_ALT", true)
+			:AddChild(UIElements.New("SelectionList", "list")
+				:SetMargin(0, 0, 10, 10)
+				:SetBackgroundColor("PRIMARY_BG_ALT")
+				:SetContext(slotId)
+				:SetEntries(matTable)
+				:SetTooltipEnabled(true)
+				:SetScript("OnEntrySelected", private.OptionalReagentOnEntrySelected)
+			)
+		)
+	TempTable.Release(matTable)
+	return frame
+end
+
+function private.OptionalReagentOnEntrySelected(list, selection)
+	local slotId = list:GetContext()
+	local itemId = ItemString.ToId(ItemString.Get(selection))
+	for k, v in pairs(private.optionalMats) do
+		if k ~= slotId and v == itemId then
+			private.optionalMats[k] = nil
+		end
+	end
+	private.optionalMats[slotId] = itemId
+	list:GetBaseElement():HideDialog()
+
+	private.fsm:ProcessEvent("EV_RECIPE_OPTIONAL_MATS_UPDATED")
+end
+
+function private.BackOnClick(button)
+	button:GetElement("__parent.__parent.__parent.__parent")
+		:SetContext(nil)
+	button:GetElement("__parent.__parent.__parent")
+		:SetPath("list", true)
+end
+
+function private.CloseDialog(button)
+	button:GetBaseElement():HideDialog()
+	private.fsm:ProcessEvent("EV_RECIPE_OPTIONAL_MATS_UPDATED")
+end
+
 function private.CraftBtnOnMouseDown(button)
 	local quantity = max(tonumber(button:GetElement("__parent.craftInput"):GetValue()), 1)
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", quantity)
+	local level = button:GetElement("__parent.__parent.recipeContent.details.left.rankDropdown"):GetSelectedItemKey()
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", quantity, level)
 end
 
 function private.CraftBtnOnClick(button)
 	button:SetPressed(true)
 	button:Draw()
 	local quantity = max(tonumber(button:GetElement("__parent.craftInput"):GetValue()), 1)
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", quantity)
+	local level = button:GetElement("__parent.__parent.recipeContent.details.left.rankDropdown"):GetSelectedItemKey()
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", quantity, level)
 end
 
 function private.CraftAllBtnOnMouseDown(button)
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", math.huge)
+	local level = button:GetElement("__parent.__parent.recipeContent.details.left.rankDropdown"):GetSelectedItemKey()
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", math.huge, level)
 end
 
 function private.CraftAllBtnOnClick(button)
 	button:SetPressed(true)
 	button:Draw()
-	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", math.huge)
+	local level = button:GetElement("__parent.__parent.recipeContent.details.left.rankDropdown"):GetSelectedItemKey()
+	private.fsm:ProcessEvent("EV_CRAFT_BUTTON_CLICKED", math.huge, level)
 end
 
 function private.QueueOnRowMouseDown(button, data, mouseButton)
 	if not private.IsPlayerProfession() or mouseButton ~= "LeftButton" then
 		return
 	end
-	local spellId = data:GetField("spellId")
-	if TSM.Crafting.ProfessionScanner.HasSpellId(spellId) then
-		TSM.Crafting.ProfessionUtil.PrepareToCraft(spellId, TSM.Crafting.Queue.GetNum(spellId))
+	local recipeString = data:GetField("recipeString")
+	local craftString = CraftString.FromRecipeString(recipeString)
+	local level = CraftString.GetLevel(craftString)
+	if TSM.Crafting.ProfessionScanner.HasCraftString(craftString) then
+		TSM.Crafting.ProfessionUtil.PrepareToCraft(craftString, recipeString, TSM.Crafting.Queue.GetNum(recipeString), level)
 	end
 end
 
@@ -615,19 +906,21 @@ function private.QueueOnRowClick(button, data, mouseButton)
 	if not private.IsPlayerProfession() then
 		return
 	end
-	local spellId = data:GetField("spellId")
+	local recipeString = data:GetField("recipeString")
+	local craftString = CraftString.FromRecipeString(recipeString)
 	if mouseButton == "RightButton" then
-		private.fsm:ProcessEvent("EV_QUEUE_RIGHT_CLICKED", spellId)
-	elseif TSM.Crafting.ProfessionScanner.HasSpellId(spellId) then
-		private.fsm:ProcessEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", spellId, TSM.Crafting.Queue.GetNum(spellId))
+		private.fsm:ProcessEvent("EV_QUEUE_RIGHT_CLICKED", craftString)
+	elseif TSM.Crafting.ProfessionScanner.HasCraftString(craftString) then
+		private.fsm:ProcessEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", craftString, recipeString, TSM.Crafting.Queue.GetNum(recipeString))
 	end
 end
 
 function private.CraftNextOnClick(button)
 	button:SetPressed(true)
 	button:Draw()
-	local spellId = button:GetElement("__parent.__parent.__parent.queueList"):GetFirstData():GetField("spellId")
-	private.fsm:ProcessEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", spellId, TSM.Crafting.Queue.GetNum(spellId))
+	local recipeString = button:GetElement("__parent.__parent.__parent.queueList"):GetFirstData():GetField("recipeString")
+	local craftString = CraftString.FromRecipeString(recipeString)
+	private.fsm:ProcessEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", craftString, recipeString, TSM.Crafting.Queue.GetNum(recipeString))
 end
 
 function private.ClearOnClick(button)
@@ -706,9 +999,10 @@ function private.FSMCreate()
 		recipeQuery = nil,
 		professionQuery = nil,
 		page = "profession",
-		selectedRecipeSpellId = nil,
+		selectedCraftString = nil,
+		selectedCraftLevel = nil,
 		queueQuery = nil,
-		craftingSpellId = nil,
+		recipeString = nil,
 		craftingType = nil,
 		craftingQuantity = nil,
 	}
@@ -746,8 +1040,19 @@ function private.FSMCreate()
 	end
 	function fsmPrivate.UpdateMaterials(context)
 		if context.page == "profession" then
-			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList"):UpdateData(true)
-			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.matList"):UpdateData(true)
+			local spellId = CraftString.GetSpellId(context.selectedCraftString)
+			local rank = CraftString.GetRank(context.selectedCraftString)
+			local craftingCost = TSM.Crafting.Cost.GetCostsByRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, context.selectedCraftLevel))
+			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.cost.label")
+				:Show()
+			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.cost.text")
+				:SetText(Money.ToString(craftingCost) or "")
+				:Draw()
+			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
+				:UpdateData(true)
+			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.matList")
+				:SetLevel(context.selectedCraftLevel)
+				:UpdateData(true)
 		end
 		fsmPrivate.UpdateCraftButtons(context)
 	end
@@ -807,6 +1112,44 @@ function private.FSMCreate()
 		context.frame:GetElement("left.viewContainer.main.content.profession.header.filterBtn"):SetHighlightLocked(private.haveSkillUp or private.haveMaterials, "INDICATOR")
 			:Draw()
 	end
+	function fsmPrivate.UpdateRecipeTooltip(context)
+		if not context.selectedCraftString then
+			-- clicked on a category row
+			return
+		end
+		local resultTooltip = TSM.Crafting.ProfessionUtil.GetCraftResultTooltipFromRecipeString(RecipeString.FromCraftString(context.selectedCraftString, private.optionalMats, nil, context.selectedCraftLevel))
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.left.content.icon")
+			:SetTooltip(resultTooltip)
+			:Draw()
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.left.content.name")
+			:SetTooltip(resultTooltip)
+			:Draw()
+	end
+	function fsmPrivate.UpdateOptionalMaterials(context)
+		if not context.selectedCraftString then
+			-- clicked on a category row
+			return
+		end
+		fsmPrivate.UpdateRecipeTooltip(context)
+		local spellId = CraftString.GetSpellId(context.selectedCraftString)
+		local rank = CraftString.GetRank(context.selectedCraftString)
+		local craftingCost = TSM.Crafting.Cost.GetCostsByRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, context.selectedCraftLevel))
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.cost.label")
+			:Show()
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.cost.text")
+			:SetText(Money.ToString(craftingCost) or "")
+			:Draw()
+		local count = Table.Count(private.optionalMats)
+		local suffix = count > 0 and " ("..count..")" or ""
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.left.optional.button")
+			:SetText(L["Add Optional Reagents"]..suffix)
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.left.optional")
+			:Draw()
+		context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.matList")
+			:SetOptionalMats(private.optionalMats)
+			:SetLevel(context.selectedCraftLevel)
+			:UpdateData(true)
+	end
 	function fsmPrivate.UpdateContentPage(context)
 		if context.page ~= "profession" and context.page ~= "filters" then
 			-- nothing to update
@@ -841,10 +1184,10 @@ function private.FSMCreate()
 		craftingContentFrame:GetElement("recipeListLoadingText"):Hide()
 
 		recipeList:SetQuery(fsmContext.recipeQuery)
-		context.selectedRecipeSpellId = recipeList:GetSelection()
+		context.selectedCraftString = recipeList:GetSelection()
 		local buttonFrame = recipeContent:GetElement("__parent.buttons")
 		local detailsFrame = recipeContent:GetElement("details")
-		if not context.selectedRecipeSpellId then
+		if not context.selectedCraftString then
 			buttonFrame:GetElement("craftBtn")
 				:SetDisabled(true)
 			buttonFrame:GetElement("queueBtn")
@@ -858,9 +1201,9 @@ function private.FSMCreate()
 				:SetText("")
 				:SetContext(nil)
 				:SetTooltip(nil)
-			detailsFrame:GetElement("left.cost.text")
+			detailsFrame:GetElement("content.cost.text")
 				:SetText("")
-			detailsFrame:GetElement("left.cost.label")
+			detailsFrame:GetElement("content.cost.label")
 				:Hide()
 			detailsFrame:GetElement("left.craft.num")
 				:SetText("")
@@ -868,13 +1211,14 @@ function private.FSMCreate()
 				:SetText(L["No receipe selected"])
 			buttonFrame:GetElement("craftAllBtn")
 				:SetDisabled(true)
-			detailsFrame:GetElement("matList")
+			detailsFrame:GetElement("content.matList")
 				:SetRecipe(nil)
-				:SetContext(nil)
+				:SetOptionalMats(nil)
+				:SetLevel(nil)
 			craftingContentFrame:Draw()
 			return
 		end
-		local resultName, resultItemString, resultTexture = TSM.Crafting.ProfessionUtil.GetResultInfo(context.selectedRecipeSpellId)
+		local resultName, resultItemString, resultTexture = TSM.Crafting.ProfessionUtil.GetResultInfo(context.selectedCraftString)
 		-- engineer tinkers can't be crafted, multi-crafted or queued
 		local currentProfession = TSM.Crafting.ProfessionState.GetCurrentProfession()
 		if not resultItemString then
@@ -885,6 +1229,8 @@ function private.FSMCreate()
 			buttonFrame:GetElement("craftInput")
 				:Hide()
 		else
+			detailsFrame:GetElement("left.optional.button")
+				:SetContext(context.selectedCraftString)
 			buttonFrame:GetElement("craftBtn")
 				:SetText(L["Craft"])
 			buttonFrame:GetElement("queueBtn")
@@ -892,53 +1238,86 @@ function private.FSMCreate()
 			buttonFrame:GetElement("craftInput")
 				:Show()
 		end
-		local nameTooltip = resultItemString
-		if not nameTooltip then
-			if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-				nameTooltip = "craft:"..(TSM.Crafting.ProfessionScanner.GetIndexBySpellId(context.selectedRecipeSpellId) or context.selectedRecipeSpellId)
-			else
-				nameTooltip = "enchant:"..context.selectedRecipeSpellId
-			end
+		if TSM.Crafting.HasOptionalMats(context.selectedCraftString) then
+			detailsFrame:GetElement("left.optional")
+				:Show()
+		else
+			detailsFrame:GetElement("left.optional")
+				:Hide()
 		end
+		local spellId = CraftString.GetSpellId(context.selectedCraftString)
+		local hasLevel = CraftString.GetLevel(context.selectedCraftString)
+		if hasLevel and hasLevel > 0 then
+			wipe(private.recipeLevels)
+			wipe(private.recipeLevelsKeys)
+			for i = 1, MAX_CRAFT_LEVEL do
+				if TSM.Crafting.ProfessionScanner.GetIndexByCraftString(CraftString.Get(spellId, nil, i)) then
+					tinsert(private.recipeLevels, format(L["Rank %d"], i))
+					tinsert(private.recipeLevelsKeys, i)
+					context.selectedCraftLevel = i
+				else
+					break
+				end
+			end
+			detailsFrame:GetElement("left.rankDropdown")
+				:SetItems(private.recipeLevels, private.recipeLevelsKeys)
+				:SetSelectedItemByKey(context.selectedCraftLevel)
+				:Show()
+				:Draw()
+		else
+			context.selectedCraftLevel = nil
+			detailsFrame:GetElement("left.rankDropdown")
+				:SetSelectedItemByKey(nil)
+				:Hide()
+				:Draw()
+		end
+		local resultTooltip = TSM.Crafting.ProfessionUtil.GetCraftResultTooltipFromRecipeString(RecipeString.FromCraftString(context.selectedCraftString, private.optionalMats, nil, context.selectedCraftLevel))
 		detailsFrame:GetElement("left.content.icon")
 			:SetBackground(resultTexture)
-			:SetTooltip(nameTooltip)
+			:SetTooltip(resultTooltip)
 			:Show()
 		detailsFrame:GetElement("left.content.name")
 			:SetText(resultName or "?")
-			:SetContext(resultItemString or tostring(context.selectedRecipeSpellId))
-			:SetTooltip(nameTooltip)
-		local craftingCost = TSM.Crafting.Cost.GetCostsBySpellId(context.selectedRecipeSpellId)
-		detailsFrame:GetElement("left.cost.label")
+			:SetContext(resultItemString or tostring(context.selectedCraftString))
+			:SetTooltip(resultTooltip)
+		local rank = CraftString.GetRank(context.selectedCraftString)
+		local craftingCost = TSM.Crafting.Cost.GetCostsByRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, context.selectedCraftLevel))
+		detailsFrame:GetElement("content.cost.label")
 			:Show()
-		detailsFrame:GetElement("left.cost.text")
+		detailsFrame:GetElement("content.cost.text")
 			:SetText(Money.ToString(craftingCost) or "")
-		detailsFrame:GetElement("left.craft.num")
-			:SetFormattedText(L["Crafts %d"], TSM.Crafting.GetNumResult(context.selectedRecipeSpellId))
-		local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedRecipeSpellId)
+		local _, lNum, hNum, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
+		if lNum == hNum then
+			detailsFrame:GetElement("left.craft.num")
+				:SetFormattedText(L["Crafts %d"], lNum)
+		else
+			detailsFrame:GetElement("left.craft.num")
+				:SetFormattedText(L["Crafts %d - %d"], lNum, hNum)
+		end
 		local errorText = detailsFrame:GetElement("left.craft.error")
 		local canCraft, errStr = false, nil
 		if toolsStr and not hasTools then
 			errStr = REQUIRES_LABEL.." "..toolsStr
-		elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedRecipeSpellId) then
+		elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedCraftString) then
 			errStr = L["On Cooldown"]
-		elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedRecipeSpellId) == 0 then
+		elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString) == 0 then
 			errStr = L["Missing Materials"]
 		else
 			canCraft = true
 		end
 		errorText:SetText(errStr and "("..errStr..")" or "")
-		local isEnchant = TSM.Crafting.ProfessionUtil.IsEnchant(context.selectedRecipeSpellId)
+		local isEnchant = TSM.Crafting.ProfessionUtil.IsEnchant(context.selectedCraftString)
 		buttonFrame:GetElement("craftBtn")
-			:SetDisabled(not canCraft or context.craftingSpellId)
-			:SetPressed(context.craftingSpellId and context.craftingType == "craft")
+			:SetDisabled(not canCraft or context.recipeString)
+			:SetPressed(context.recipeString and context.craftingType == "craft")
 		buttonFrame:GetElement("craftAllBtn")
 			:SetText(isEnchant and L["Enchant Vellum"] or L["Craft All"])
-			:SetDisabled(not resultItemString or not canCraft or context.craftingSpellId)
-			:SetPressed(context.craftingSpellId and context.craftingType == "all")
-		detailsFrame:GetElement("matList")
-			:SetRecipe(context.selectedRecipeSpellId)
-			:SetContext(context.selectedRecipeSpellId)
+			:SetDisabled(not resultItemString or not canCraft or context.recipeString)
+			:SetPressed(context.recipeString and context.craftingType == "all")
+		detailsFrame:GetElement("content.matList")
+			:SetRecipe(CraftString.GetSpellId(context.selectedCraftString))
+			:SetOptionalMats(nil)
+			:SetLevel(nil)
 		craftingContentFrame:Draw()
 		if TSM.Crafting.ProfessionState.IsClassicCrafting() and CraftCreateButton then
 			CraftCreateButton:SetParent(buttonFrame:GetElement("craftBtn"):_GetBaseFrame())
@@ -970,48 +1349,52 @@ function private.FSMCreate()
 
 		local professionLoaded = private.IsProfessionLoaded()
 		local nextCraftRecord = queueFrame:GetElement("queueList"):GetFirstData()
-		local nextCraftSpellId = nextCraftRecord and nextCraftRecord:GetField("spellId")
-		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasSpellId(nextCraftSpellId) or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftSpellId) == 0) then
+		local nextRecipeString = nextCraftRecord and nextCraftRecord:GetField("recipeString")
+		local nextCraftString = nextCraftRecord and CraftString.FromRecipeString(nextRecipeString)
+		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftString) == 0) then
 			nextCraftRecord = nil
 		end
 		local canCraftFromQueue = professionLoaded and private.IsPlayerProfession()
 		queueFrame:GetElement("footer.craft.craftNextBtn")
-			:SetDisabled(not canCraftFromQueue or not nextCraftRecord or context.craftingSpellId)
-			:SetPressed(context.craftingSpellId and context.craftingType == "queue")
+			:SetDisabled(not canCraftFromQueue or not nextCraftRecord or context.recipeString)
+			:SetPressed(context.recipeString and context.craftingType == "queue")
 		if nextCraftRecord and canCraftFromQueue then
-			TSM.Crafting.ProfessionUtil.PrepareToCraft(nextCraftSpellId, nextCraftRecord:GetField("num"))
+			local level = CraftString.GetLevel(nextCraftString)
+			TSM.Crafting.ProfessionUtil.PrepareToCraft(nextCraftString, nextRecipeString, nextCraftRecord:GetField("num"), level)
 		end
 		queueFrame:Draw()
 	end
 	function fsmPrivate.UpdateCraftButtons(context)
-		if context.page == "profession" and private.IsProfessionLoaded() and context.selectedRecipeSpellId then
-			local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedRecipeSpellId)
+		if context.page == "profession" and private.IsProfessionLoaded() and context.selectedCraftString then
+			local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(context.selectedCraftString)
 			local detailsFrame = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details")
 			local errorText = detailsFrame:GetElement("left.craft.error")
 			local canCraft, errStr = false, nil
 			if toolsStr and not hasTools then
 				errStr = REQUIRES_LABEL.." "..toolsStr
-			elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedRecipeSpellId) then
+			elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedCraftString) then
 				errStr = L["On Cooldown"]
-			elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedRecipeSpellId) == 0 then
+			-- TODO: handle missing optional mats to disable craft buttons
+			elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString, context.selectedCraftLevel) == 0 then
 				errStr = L["Missing Materials"]
 			else
 				canCraft = true
 			end
 			errorText:SetText(errStr and "("..errStr..")" or "")
 				:Draw()
-			local isEnchant = TSM.Crafting.ProfessionUtil.IsEnchant(context.selectedRecipeSpellId)
-			local _, resultItemString = TSM.Crafting.ProfessionUtil.GetResultInfo(context.selectedRecipeSpellId)
+			local isEnchant = TSM.Crafting.ProfessionUtil.IsEnchant(context.selectedCraftString)
+			local _, resultItemString = TSM.Crafting.ProfessionUtil.GetResultInfo(context.selectedCraftString)
 			detailsFrame:GetElement("__parent.__parent.buttons.craftBtn")
-				:SetPressed(context.craftingSpellId and context.craftingType == "craft")
-				:SetDisabled(not canCraft or context.craftingSpellId)
+				:SetPressed(context.recipeString and context.craftingType == "craft")
+				:SetDisabled(not canCraft or context.recipeString)
 				:Draw()
 			detailsFrame:GetElement("__parent.__parent.buttons.craftAllBtn")
 				:SetText(isEnchant and L["Enchant Vellum"] or L["Craft All"])
-				:SetPressed(context.craftingSpellId and context.craftingType == "all")
-				:SetDisabled(not resultItemString or not canCraft or context.craftingSpellId)
+				:SetPressed(context.recipeString and context.craftingType == "all")
+				:SetDisabled(not resultItemString or not canCraft or context.recipeString)
 				:Draw()
-			if context.craftingQuantity and context.craftingSpellId == context.selectedRecipeSpellId then
+			local craftString = context.recipeString and CraftString.FromRecipeString(context.recipeString)
+			if craftString and context.craftingQuantity and craftString == context.selectedCraftString then
 				detailsFrame:GetElement("__parent.__parent.buttons.craftInput")
 					:SetValue(context.craftingQuantity)
 					:Draw()
@@ -1025,23 +1408,27 @@ function private.FSMCreate()
 			end
 		end
 
+		local professionLoaded = private.IsProfessionLoaded()
 		local nextCraftRecord = context.frame:GetElement("queue.queueList"):GetFirstData()
-		if nextCraftRecord and (TSM.Crafting.GetProfession(nextCraftRecord:GetField("spellId")) ~= TSM.Crafting.ProfessionState.GetCurrentProfession() or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftRecord:GetField("spellId")) == 0) then
+		local nextRecipeString = nextCraftRecord and nextCraftRecord:GetField("recipeString")
+		local nextCraftString = nextCraftRecord and CraftString.FromRecipeString(nextRecipeString)
+		if nextCraftRecord and (not professionLoaded or not TSM.Crafting.ProfessionScanner.HasCraftString(nextCraftString) or TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftString) == 0) then
 			nextCraftRecord = nil
 		end
-		local canCraftFromQueue = private.IsProfessionLoaded() and private.IsPlayerProfession()
+		local canCraftFromQueue = professionLoaded and private.IsPlayerProfession()
 		context.frame:GetElement("queue.footer.craft.craftNextBtn")
-			:SetPressed(context.craftingSpellId and context.craftingType == "queue")
-			:SetDisabled(not canCraftFromQueue or not nextCraftRecord or context.craftingSpellId)
+			:SetDisabled(not canCraftFromQueue or not nextCraftRecord or context.recipeString)
+			:SetPressed(context.recipeString and context.craftingType == "queue")
 			:Draw()
 	end
-	function fsmPrivate.StartCraft(context, spellId, quantity)
-		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(spellId, quantity, context.craftingType ~= "craft", fsmPrivate.CraftCallback)
-		Log.Info("Crafting %d (requested %s) of %d", numCrafted, quantity == math.huge and "all" or quantity, spellId)
+	function fsmPrivate.StartCraft(context, recipeString, quantity)
+		local craftString = CraftString.FromRecipeString(recipeString)
+		local numCrafted = TSM.Crafting.ProfessionUtil.Craft(craftString, recipeString, quantity, context.craftingType ~= "craft", fsmPrivate.CraftCallback)
+		Log.Info("Crafting %d (requested %s) of %d", numCrafted, quantity == math.huge and "all" or quantity, recipeString)
 		if numCrafted == 0 then
 			return
 		end
-		context.craftingSpellId = spellId
+		context.recipeString = recipeString
 		context.craftingQuantity = numCrafted
 		fsmPrivate.UpdateCraftButtons(context)
 	end
@@ -1049,9 +1436,10 @@ function private.FSMCreate()
 	private.fsm = FSM.New("CRAFTING_UI_CRAFTING")
 		:AddState(FSM.NewState("ST_FRAME_CLOSED")
 			:SetOnEnter(function(context)
+				wipe(private.optionalMats)
 				context.page = "profession"
 				context.frame = nil
-				context.craftingSpellId = nil
+				context.recipeString = nil
 				context.craftingQuantity = nil
 				context.craftingType = nil
 			end)
@@ -1069,7 +1457,7 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_FRAME_OPEN_NO_PROFESSION")
 			:SetOnEnter(function(context)
-				context.craftingSpellId = nil
+				context.recipeString = nil
 				context.craftingQuantity = nil
 				context.craftingType = nil
 				if not context.queueQuery then
@@ -1099,9 +1487,10 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_FRAME_OPEN_WITH_PROFESSION")
 			:SetOnEnter(function(context)
 				context.recipeQuery = TSM.Crafting.ProfessionScanner.CreateQuery()
-					:Select("spellId", "categoryId")
+					:Select("craftString", "categoryId")
 					:OrderBy("index", true)
-					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "spellId")
+					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "craftString")
+					:Equal("level", 1)
 				context.professionQuery = TSM.Crafting.PlayerProfessions.CreateQuery()
 				context.professionQuery:SetUpdateCallback(fsmPrivate.SkillUpdateCallback)
 				if context.page == "profession" then
@@ -1110,11 +1499,12 @@ function private.FSMCreate()
 						:Draw()
 					private.filterText = ""
 				end
-				if context.selectedRecipeSpellId and context.page == "profession" then
+				if context.page == "profession" then
 					local recipeList = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
 					recipeList:SetQuery(context.recipeQuery)
-					if TSM.Crafting.ProfessionScanner.GetIndexBySpellId(context.selectedRecipeSpellId) then
-						recipeList:SetSelection(context.selectedRecipeSpellId)
+						:UpdateData(true)
+					if context.selectedCraftString and TSM.Crafting.ProfessionScanner.GetIndexByCraftString(context.selectedCraftString) then
+						recipeList:SetSelection(context.selectedCraftString)
 					end
 				end
 				fsmPrivate.UpdateContentPage(context)
@@ -1145,9 +1535,10 @@ function private.FSMCreate()
 				local recipeList = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
 				local prevSelection = recipeList:GetSelection()
 				context.recipeQuery:Reset()
-					:Select("spellId", "categoryId")
+					:Select("craftString", "categoryId")
 					:OrderBy("index", true)
-					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "spellId")
+					:VirtualField("matNames", "string", TSM.Crafting.GetMatNames, "craftString")
+					:Equal("level", 1)
 				if filter ~= "" then
 					filter = String.Escape(filter)
 					context.recipeQuery
@@ -1170,37 +1561,44 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_PAGE_CHANGED", function(context, page)
 				context.recipeQuery:ResetFilters()
+					:Equal("level", 1)
 				context.page = page
 				fsmPrivate.UpdateContentPage(context)
 			end)
 			:AddEvent("EV_QUEUE_BUTTON_CLICKED", function(context, quantity)
-				assert(context.selectedRecipeSpellId)
-				TSM.Crafting.Queue.Add(context.selectedRecipeSpellId, quantity)
+				assert(context.selectedCraftString)
+				local spellId = CraftString.GetSpellId(context.selectedCraftString)
+				local rank = CraftString.GetRank(context.selectedCraftString)
+				TSM.Crafting.Queue.Add(RecipeString.Get(spellId, private.optionalMats, rank, context.selectedCraftLevel), quantity)
 				fsmPrivate.UpdateQueueFrame(context, true)
 			end)
-			:AddEvent("EV_QUEUE_RIGHT_CLICKED", function(context, spellId)
-				if context.page ~= "profession" or TSM.Crafting.GetProfession(spellId) ~= TSM.Crafting.ProfessionState.GetCurrentProfession() then
+			:AddEvent("EV_QUEUE_RIGHT_CLICKED", function(context, craftString)
+				if context.page ~= "profession" or TSM.Crafting.GetProfession(craftString) ~= TSM.Crafting.ProfessionState.GetCurrentProfession() then
 					return
 				end
 				local recipeList = context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
-				if not recipeList:IsSpellIdVisible(spellId) then
+				if not recipeList:IsCraftStringVisible(craftString) then
 					return
 				end
-				recipeList:SetSelection(spellId)
+				recipeList:SetSelection(craftString)
 				fsmPrivate.UpdateContentPage(context)
 			end)
 			:AddEvent("EV_RECIPE_SELECTION_CHANGED", function(context)
+				wipe(private.optionalMats)
+				fsmPrivate.UpdateOptionalMaterials(context)
 				fsmPrivate.UpdateContentPage(context)
+			end)
+			:AddEvent("EV_RECIPE_OPTIONAL_MATS_UPDATED", function(context)
+				fsmPrivate.UpdateOptionalMaterials(context)
+			end)
+			:AddEvent("EV_RECIPE_LEVEL_SELECTION_UPDATED", function(context, level)
+				context.selectedCraftLevel = level
+				fsmPrivate.UpdateRecipeTooltip(context)
+				fsmPrivate.UpdateMaterials(context)
 			end)
 			:AddEvent("EV_BAG_UPDATE_DELAYED", function(context)
 				fsmPrivate.UpdateMaterials(context)
 				fsmPrivate.UpdateQueueFrame(context)
-				local professionLoaded = private.IsProfessionLoaded()
-				local nextCraftRecord = context.frame:GetElement("queue.queueList"):GetFirstData()
-				local nextCraftSpellId = nextCraftRecord and nextCraftRecord:GetField("spellId")
-				if nextCraftRecord and professionLoaded and TSM.Crafting.ProfessionScanner.HasSpellId(nextCraftSpellId) and TSM.Crafting.ProfessionUtil.GetNumCraftable(nextCraftSpellId) > 0 and private.IsPlayerProfession() then
-					TSM.Crafting.ProfessionUtil.PrepareToCraft(nextCraftSpellId, nextCraftRecord:GetField("num"))
-				end
 			end)
 			:AddEvent("EV_QUEUE_UPDATE", function(context)
 				fsmPrivate.UpdateQueueFrame(context, true)
@@ -1208,41 +1606,47 @@ function private.FSMCreate()
 			:AddEvent("EV_SKILL_UPDATE", function(context)
 				fsmPrivate.UpdateSkills(context)
 			end)
-			:AddEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", function(context, quantity)
+			:AddEvent("EV_CRAFT_BUTTON_MOUSE_DOWN", function(context, quantity, level)
 				context.craftingType = quantity == math.huge and "all" or "craft"
-				TSM.Crafting.ProfessionUtil.PrepareToCraft(context.selectedRecipeSpellId, quantity)
+				local spellId = CraftString.GetSpellId(context.selectedCraftString)
+				local rank = CraftString.GetRank(context.selectedCraftString)
+				local recipeString = RecipeString.Get(spellId, private.optionalMats, rank, level)
+				TSM.Crafting.ProfessionUtil.PrepareToCraft(context.selectedCraftString, recipeString, quantity, level)
 			end)
-			:AddEvent("EV_CRAFT_BUTTON_CLICKED", function(context, quantity)
+			:AddEvent("EV_CRAFT_BUTTON_CLICKED", function(context, quantity, level)
 				context.craftingType = quantity == math.huge and "all" or "craft"
-				fsmPrivate.StartCraft(context, context.selectedRecipeSpellId, quantity)
+				local spellId = CraftString.GetSpellId(context.selectedCraftString)
+				local rank = CraftString.GetRank(context.selectedCraftString)
+				local recipeString = RecipeString.Get(spellId, private.optionalMats, rank, level)
+				fsmPrivate.StartCraft(context, recipeString, quantity)
 			end)
-			:AddEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", function(context, spellId, quantity)
-				if context.craftingSpellId then
+			:AddEvent("EV_CRAFT_NEXT_BUTTON_CLICKED", function(context, craftString, recipeString, quantity)
+				if context.recipeString then
 					-- already crafting something
 					return
 				end
-				local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(spellId)
-				if (toolsStr and not hasTools) or TSM.Crafting.ProfessionUtil.GetNumCraftable(spellId) == 0 or TSM.Crafting.ProfessionUtil.GetRemainingCooldown(spellId) then
+				local _, _, _, toolsStr, hasTools = TSM.Crafting.ProfessionUtil.GetRecipeInfo(craftString)
+				if (toolsStr and not hasTools) or TSM.Crafting.ProfessionUtil.GetNumCraftable(craftString) == 0 or TSM.Crafting.ProfessionUtil.GetRemainingCooldown(craftString) then
 					-- can't craft this
 					return
 				end
 				context.craftingType = "queue"
-				fsmPrivate.StartCraft(context, spellId, quantity)
+				fsmPrivate.StartCraft(context, recipeString, quantity)
 			end)
 			:AddEvent("EV_SPELLCAST_COMPLETE", function(context, success, isDone)
-				if success and context.craftingSpellId then
-					Log.Info("Crafted %d", context.craftingSpellId)
-					TSM.Crafting.Queue.Remove(context.craftingSpellId, 1)
+				if success and context.recipeString then
+					Log.Info("Crafted %s", context.recipeString)
+					TSM.Crafting.Queue.Remove(context.recipeString, 1)
 					context.craftingQuantity = context.craftingQuantity - 1
 					assert(context.craftingQuantity >= 0)
 					if context.craftingQuantity == 0 then
 						assert(isDone)
-						context.craftingSpellId = nil
+						context.recipeString = nil
 						context.craftingQuantity = nil
 						context.craftingType = nil
 					end
 				else
-					context.craftingSpellId = nil
+					context.recipeString = nil
 					context.craftingQuantity = nil
 					context.craftingType = nil
 				end
@@ -1277,7 +1681,7 @@ function private.IsPlayerProfession()
 end
 
 function private.HaveMaterialsFilterHelper(row)
-	return TSM.Crafting.ProfessionUtil.IsCraftable(row:GetField("spellId"))
+	return TSM.Crafting.ProfessionUtil.IsCraftable(row:GetField("craftString"))
 end
 
 function private.ItemLinkedCallback(name, itemLink)

@@ -49,6 +49,7 @@ function AuctionScrollingTable.__init(self)
 	self._expanded = {}
 	self._firstSubRowByItem = {}
 	self._rowByItem = {}
+	self._isPlayerCache = {}
 	self._browseResultsVisible = false
 	self._firstUnscannedItem = nil
 	self._selectionBaseItemString = nil
@@ -56,6 +57,7 @@ function AuctionScrollingTable.__init(self)
 	self._selectionSubRowIndex = nil
 	self._currentSearchItem = nil
 	self._onResultsUpdated = function()
+		self:_ForceLastDataUpdate()
 		self:UpdateData(true)
 	end
 	self._getNextSearchItem = function()
@@ -198,6 +200,7 @@ function AuctionScrollingTable.Release(self)
 	wipe(self._expanded)
 	wipe(self._firstSubRowByItem)
 	wipe(self._rowByItem)
+	wipe(self._isPlayerCache)
 	for _, row in ipairs(self._rows) do
 		ScriptWrapper.Clear(row._frame, "OnDoubleClick")
 		for _, tooltipFrame in pairs(row._buttons) do
@@ -241,6 +244,7 @@ end
 -- @treturn AuctionScrollingTable The auction scrolling table object
 function AuctionScrollingTable.SetBrowseResultsVisible(self, visible)
 	self._browseResultsVisible = visible
+	self:_ForceLastDataUpdate()
 	return self
 end
 
@@ -334,6 +338,9 @@ function AuctionScrollingTable.SetPctTooltip(self, tooltip)
 end
 
 function AuctionScrollingTable.Draw(self)
+	if self._lastDataUpdate == nil then
+		self:_IgnoreLastDataUpdate()
+	end
 	self.__super:Draw()
 	self._header:SetSort(self._sortCol, self._sortAscending)
 end
@@ -598,25 +605,6 @@ function AuctionScrollingTable._ToggleSort(self, id)
 	self:UpdateData(true)
 end
 
-function AuctionScrollingTable._SetRowData(self, row, data)
-	local ownerStr = private.GetSellerCellText(self, data)
-	local isPlayer = false
-	if ownerStr ~= "" then
-		for owner in String.SplitIterator(ownerStr, ",") do
-			if PlayerInfo.IsPlayer(owner, true, true, true) then
-				isPlayer = true
-				break
-			end
-		end
-	end
-	if isPlayer then
-		row._texts.seller:SetTextColor(0.3, 0.6, 1, 1)
-	else
-		row._texts.seller:SetTextColor(1, 1, 1, 1)
-	end
-	self.__super:_SetRowData(row, data)
-end
-
 
 
 -- ============================================================================
@@ -821,11 +809,24 @@ function private.GetSellerCellText(self, subRow)
 		local baseItemString = subRow:GetBaseItemString()
 		subRow = self._firstSubRowByItem[baseItemString]
 		if not subRow then
-			return ""
+			return "", 1, 1, 1, 1
 		end
 	end
 	local ownerStr = subRow:GetOwnerInfo()
-	return ownerStr
+	if self._isPlayerCache[ownerStr] == nil then
+		self._isPlayerCache[ownerStr] = false
+		for owner in String.SplitIterator(ownerStr, ",") do
+			if PlayerInfo.IsPlayer(owner, true, true, true) then
+				self._isPlayerCache[ownerStr] = true
+				break
+			end
+		end
+	end
+	if self._isPlayerCache[ownerStr] then
+		return ownerStr, 0.3, 0.6, 1, 1
+	else
+		return ownerStr, 1, 1, 1, 1
+	end
 end
 
 function private.GetItemBidCellText(self, subRow)

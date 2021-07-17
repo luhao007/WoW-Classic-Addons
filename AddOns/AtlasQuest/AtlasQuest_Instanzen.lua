@@ -30,7 +30,7 @@ function AtlasQuest_Instanzenchecken()
 	AQATLASMAP = AtlasMap:GetTexture()
 
 
-	-- Classic Dungeons
+	-- Classic
 
 	if (AQATLASMAP == "Interface\\AddOns\\Atlas_ClassicWoW\\Images\\CL_BlackrockDepths") then
 		AQINSTANZ = 1;
@@ -113,10 +113,6 @@ function AtlasQuest_Instanzenchecken()
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_ClassicWoW\\Images\\CL_MoltenCore") then
 		AQINSTANZ = 27;
 
-
-
-	-- Classic Raids
-
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_ClassicWoW\\Images\\CL_OnyxiasLair") then
 		AQINSTANZ = 28;
 
@@ -132,10 +128,6 @@ function AtlasQuest_Instanzenchecken()
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_ClassicWoW\\Images\\CL_Naxxramas") then
 		AQINSTANZ = 32;
 
-		
-	
-	-- Battlegrounds
-
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\AlteracValleyNorth") then
 		AQINSTANZ = 33;
 
@@ -148,72 +140,81 @@ function AtlasQuest_Instanzenchecken()
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\WarsongGulch") then
 		AQINSTANZ = 35;
 
-	elseif (AQATLASMAP ==  "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\EyeOfTheStorm") then
-		AQINSTANZ = 60;
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_OutdoorRaids\\Images\\OR_FourDragons")  then
+		AQINSTANZ = 36;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_OutdoorRaids\\Images\\OR_Azuregos")  then
+		AQINSTANZ = 37;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_OutdoorRaids\\Images\\OR_HighlordKruul")  then
+		AQINSTANZ = 38;
 
 
 		
-	-- Burning Crusade Dungeons & Raids
+	-- Burning Crusade
 	
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCHellfireRamparts") then
-		AQINSTANZ = 37;
-
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCBloodFurnace") then
-		AQINSTANZ = 38;
-
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCTheShatteredHalls") then
-		AQINSTANZ = 39;
-
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCMagtheridonsLair") then
 		AQINSTANZ = 40;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheSlavePens") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCBloodFurnace") then
 		AQINSTANZ = 41;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheSteamvault") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCTheShatteredHalls") then
 		AQINSTANZ = 42;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheUnderbog") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_HCMagtheridonsLair") then
 		AQINSTANZ = 43;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchAuchenaiCrypts") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheSlavePens") then
 		AQINSTANZ = 44;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchManaTombs") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheSteamvault") then
 		AQINSTANZ = 45;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchSethekkHalls") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRTheUnderbog") then
 		AQINSTANZ = 46;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchShadowLabyrinth") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchAuchenaiCrypts") then
 		AQINSTANZ = 47;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRSerpentshrineCavern") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchManaTombs") then
 		AQINSTANZ = 48;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTBlackMorass") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchSethekkHalls") then
 		AQINSTANZ = 49;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTHyjal") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_AuchShadowLabyrinth") then
 		AQINSTANZ = 50;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTOldHillsbrad") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CFRSerpentshrineCavern") then
 		AQINSTANZ = 51;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_GruulsLair") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTBlackMorass") then
 		AQINSTANZ = 52;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanStart") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanEnd") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanEnt") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTHyjal") then
 		AQINSTANZ = 53;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepArcatraz") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_CoTOldHillsbrad") then
 		AQINSTANZ = 54;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepBotanica") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_GruulsLair") then
 		AQINSTANZ = 55;
 
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepMechanar") then
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanStart") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanEnd") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_KarazhanEnt") then
 		AQINSTANZ = 56;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepArcatraz") then
+		AQINSTANZ = 57;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepBotanica") then
+		AQINSTANZ = 58;
+
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepMechanar") then
+		AQINSTANZ = 59;
+
+	elseif (AQATLASMAP ==  "Interface\\AddOns\\Atlas_Battlegrounds\\Images\\EyeOfTheStorm") then
+		AQINSTANZ = 60;
 
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_TempestKeepTheEye") then
 		AQINSTANZ = 61;
@@ -221,18 +222,14 @@ function AtlasQuest_Instanzenchecken()
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_BlackTempleStart") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_BlackTempleBasement") or (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_BlackTempleTop") then
 		AQINSTANZ = 62;
 
+	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_OutdoorRaids\\Images\\OR_Skettis")  then
+		AQINSTANZ = 65;
+
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_MagistersTerrace") then
 		AQINSTANZ = 67;
 
 	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_BurningCrusade\\Images\\CL_SunwellPlateau") then
 		AQINSTANZ = 68;
-
-
-
-	-- Outdoor Raids
-
-	elseif (AQATLASMAP == "Interface\\AddOns\\Atlas_OutdoorRaids\\Images\\OR_Skettis")  then
-		AQINSTANZ = 65;
 
 
 
@@ -297,36 +294,34 @@ end
 -- 38 = Highlord Kruul
 
 
--- Unlike before I'm not re-numbering the instances.  Ain't got time for dat.  Well except Skettis.  
+-- Burning Crusade Dungeons & Raids  
 
--- 37 = DUNGEON: HFC: Ramparts (Ramp)
--- 38 = DUNGEON: HFC: Blood Furnace (BF)
--- 39 = DUNGEON: HFC: Shattered Halls (SH)
--- 41 = DUNGEON: CR: The Slave Pens (SP)
--- 42 = DUNGEON: CR: The Steamvault (SV)
--- 43 = DUNGEON: CR: The Underbog (UB)
--- 44 = DUNGEON: Auchindoun: Auchenai Crypts (AC)
--- 45 = DUNGEON: Auchindoun: Mana Tombs (MT)
--- 46 = DUNGEON: Auchindoun: Sethekk Halls (Seth)
--- 47 = DUNGEON: Auchindoun: Shadow Labyrinth (SLabs)
--- 48 = DUNGEON: CR: Serpentshrine Cavern (SSC)
--- 49 = DUNGEON: CoT: Black Morass (BM)
--- 50 = DUNGEON: CoT: Battle of Mount Hyjal
--- 51 = DUNGEON: CoT: Old Hillsbrad
--- 54 = DUNGEON: TK: Arcatraz (Arc)
--- 55 = DUNGEON: TK: Botanica (Bot)
--- 56 = DUNGEON: TK: Mechanar (Mech)
--- 63 = DUNGEON: Zul'Aman (ZA)
+-- 40 = DUNGEON: Hellfire Ramparts
+-- 41 = DUNGEON: Blood Furnace
+-- 42 = DUNGEON: Shattered Halls
+-- 43 = RAID: Magtheridon's Lair
+-- 44 = DUNGEON: The Slave Pens
+-- 45 = DUNGEON: The Steamvault
+-- 46 = DUNGEON: The Underbog
+-- 47 = DUNGEON: Auchenai Crypts
+-- 48 = DUNGEON: Mana Tombs
+-- 49 = DUNGEON: Sethekk Halls
+-- 50 = DUNGEON: Shadow Labyrinth
+-- 51 = RAID: Serpentshrine Cavern
+-- 52 = DUNGEON: Black Morass
+-- 53 = RAID: Battle of Mount Hyjal
+-- 54 = DUNGEON: Old Hillsbrad
+-- 55 = RAID: Gruul's Lair
+-- 56 = RAID: Karazhan
+-- 57 = DUNGEON: The Arcatraz
+-- 58 = DUNGEON: Botanica
+-- 59 = DUNGEON: The Mechanar
+-- 60 = BATTLEGROUND: Eye of the Storm
+-- 61 = RAID: The Eye
+-- 62 = RAID: Black Temple
+-- 63 = RAID: Zul'Aman
+-- 65 = OUTDOOR: Skettis
 -- 67 = DUNGEON: Magisters' Terrace
-
--- 40 = RAID: HFC: Magtheridon's Lair
--- 52 = RAID: Gruul's Lair (GL)
--- 53 = RAID: Karazhan (Kara)
--- 61 = RAID: TK: The Eye
--- 62 = RAID: Black Temple (BT)
 -- 68 = RAID: Sunwell Plateau
 
--- 60 = BATTLEGROUND: Eye of the Storm
-
--- 65 = OUTDOOR: Skettis
 

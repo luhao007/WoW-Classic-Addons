@@ -80,7 +80,7 @@ end
 
 function Log.CreateQuery()
 	return private.db:NewQuery()
-		:InnerJoin(ItemInfo.GetDBForJoin(), "itemString")
+		:VirtualField("name", "string", ItemInfo.GetName, "itemString", "")
 		:OrderBy("index", true)
 end
 

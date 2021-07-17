@@ -359,7 +359,9 @@ function Table.GetCommonValuesSorted(tbls, result, valueFunc, ...)
 		for i = 1, numTbls do
 			local t = tbls[i]
 			local value = t[t._index]
-			value = value and valueFunc and valueFunc(value, ...)
+			if valueFunc then
+				value = value and valueFunc(value, ...)
+			end
 			if not value then
 				isDone = true
 				break
@@ -390,11 +392,15 @@ function Table.GetCommonValuesSorted(tbls, result, valueFunc, ...)
 			for i = 1, numTbls do
 				local t = tbls[i]
 				local value = t[t._index]
-				value = value and valueFunc and valueFunc(value, ...)
+				if valueFunc then
+					value = value and valueFunc(value, ...)
+				end
 				while value and value < maxValue do
 					t._index = t._index + 1
 					value = t[t._index]
-					value = value and valueFunc and valueFunc(value, ...)
+					if valueFunc then
+						value = value and valueFunc(value, ...)
+					end
 				end
 			end
 			if isDone then

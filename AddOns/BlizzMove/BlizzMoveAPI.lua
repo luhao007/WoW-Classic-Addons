@@ -14,7 +14,7 @@ local BlizzMoveAPI = _G.BlizzMoveAPI;
 function BlizzMoveAPI:GetVersion()
 	local rawVersion = BlizzMove.Config.version;
 
-	if(rawVersion == 'v3.0.19') then
+	if(rawVersion == '@project' .. '-version@') then
 		return rawVersion, nil, nil, nil, nil;
 	end
 
@@ -101,6 +101,13 @@ end
 function BlizzMoveAPI:GetRegisteredFrames(addOnName)
 
 	return BlizzMove:GetRegisteredFrames(addOnName);
+
+end
+
+
+function BlizzMoveAPI:IsFrameDefaultDisabled(addOnName, frameName)
+
+	return BlizzMove:IsFrameDefaultDisabled(addOnName, frameName);
 
 end
 

@@ -35,6 +35,30 @@ local OPACITY_VALUES = {
 
 local COLOR_MT = {
 	__index = {
+		SetRGBA = function(self, r, g, b, a)
+			local context = private.context[self]
+			wipe(context.tints)
+			context.r = r
+			context.g = g
+			context.b = b
+			context.a = a
+			context.h, context.s, context.l = HSLuv.FromRGB(r, g, b)
+			context.hex = private.RGBAToHex(r, g, b, a)
+			context.hexNoAlpha = private.RGBToHex(r, g, b)
+			for tintPct, color in pairs(context.tints) do
+				local l = context.l + tintPct
+				l = min(l, 100)
+				assert(private.IsValidValue(l, 100))
+				local tintR, tintG, tintB = HSLuv.ToRGB(context.h, context.s, l)
+				color:SetRGBA(tintR, tintG, tintB, context.a)
+			end
+			for opacityPct, color in pairs(context.opacities) do
+				assert(context.a == 255)
+				local opacityA = Math.Round(255 * opacityPct / 100)
+				assert(private.IsValidValue(opacityA, 255))
+				color:SetRGBA(context.r, context.g, context.b, opacityA)
+			end
+		end,
 		GetTint = function(self, tintPct)
 			local context = private.context[self]
 			assert(context.hex)
@@ -94,6 +118,11 @@ local COLOR_MT = {
 			local context = private.context[self]
 			assert(context.hex)
 			return context.hex
+		end,
+		GetHexNoAlpha = function(self, noAlpha)
+			local context = private.context[self]
+			assert(context.hexNoAlpha)
+			return context.hexNoAlpha
 		end,
 		ColorText = function(self, text)
 			return self:GetTextColorPrefix()..text.."|r"
@@ -179,19 +208,10 @@ function private.NewColorHelper(r, g, b, a)
 	local context = {
 		tints = {},
 		opacities = {},
-		r = r,
-		g = g,
-		b = b,
-		a = a,
-		h = nil,
-		s = nil,
-		l = nil,
-		hex = private.RGBAToHex(r, g, b, a),
 	}
-	context.h, context.s, context.l = HSLuv.FromRGB(r, g, b)
-	context.hex = private.RGBAToHex(r, g, b, a)
 	local color = setmetatable({}, COLOR_MT)
 	private.context[color] = context
+	color:SetRGBA(r, g, b, a)
 	return color
 end
 
@@ -202,6 +222,10 @@ end
 function private.HexToRGBA(hex)
 	local a, r, g, b = strmatch(strlower(hex), "^#([0-9a-f]?[0-9a-f]?)([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])$")
 	return tonumber(r, 16), tonumber(g, 16), tonumber(b, 16), tonumber(a ~= "" and a or "ff", 16)
+end
+
+function private.RGBToHex(r, g, b)
+	return format("#%02x%02x%02x", Math.Round(r), Math.Round(g), Math.Round(b))
 end
 
 function private.RGBAToHex(r, g, b, a)

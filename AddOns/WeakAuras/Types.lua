@@ -1722,6 +1722,29 @@ if WeakAuras.IsClassic() then -- Classic
       runes[tostring(v)] = nil
     end
   end
+elseif WeakAuras.IsBCC() then
+  Private.texture_types["Blizzard Alerts"] = nil
+  do
+    local beams = Private.texture_types["Beams"]
+    local beams_ids = {186193, 186194, 241098, 241099, 369749, 369750}
+    for _, v in ipairs(beams_ids) do
+      beams[tostring(v)] = nil
+    end
+  end
+  do
+    local icons = Private.texture_types["Icons"]
+    local icons_ids = {165605, 240925, 240961, 240972, 241049}
+    for _, v in ipairs(icons_ids) do
+      icons[tostring(v)] = nil
+    end
+  end
+  do
+    local runes = Private.texture_types["Runes"]
+    local runes_ids = {165922, 241003, 241004, 241005}
+    for _, v in ipairs(runes_ids) do
+      runes[tostring(v)] = nil
+    end
+  end
 end
 
 local PowerAurasPath = "Interface\\Addons\\WeakAuras\\PowerAurasMedia\\Auras\\"
@@ -2180,15 +2203,24 @@ Private.group_types = {
   raid = L["In Raid"]
 }
 
-Private.difficulty_types = {
-  none = L["None"],
-  normal = PLAYER_DIFFICULTY1,
-  heroic = PLAYER_DIFFICULTY2,
-  mythic = PLAYER_DIFFICULTY6,
-  timewalking = PLAYER_DIFFICULTY_TIMEWALKER,
-  lfr = PLAYER_DIFFICULTY3,
-  challenge = PLAYER_DIFFICULTY5
-}
+if WeakAuras.IsRetail() then
+  Private.difficulty_types = {
+    none = L["None"],
+    normal = PLAYER_DIFFICULTY1,
+    heroic = PLAYER_DIFFICULTY2,
+    mythic = PLAYER_DIFFICULTY6,
+    timewalking = PLAYER_DIFFICULTY_TIMEWALKER,
+    lfr = PLAYER_DIFFICULTY3,
+    challenge = PLAYER_DIFFICULTY5
+  }
+elseif WeakAuras.IsBCC() then
+  Private.difficulty_types = {
+    none = L["None"],
+    normal = PLAYER_DIFFICULTY1,
+    heroic = PLAYER_DIFFICULTY2,
+  }
+end
+
 
 if WeakAuras.IsClassic() or WeakAuras.IsBCC() then
   Private.raid_role_types = {
@@ -2966,6 +2998,22 @@ Private.difficulty_info = {
     size = "twenty",
     difficulty = "normal",
   },
+  [173] = {
+    size = "party",
+    difficulty = "normal",
+  },
+  [174] = {
+    size = "party",
+    difficulty = "heroic",
+  },
+  [175] = {
+    size = "ten",
+    difficulty = "heroic",
+  },
+  [176] = {
+    size = "twentyfive",
+    difficulty = "heroic",
+  }
 }
 
 Private.glow_types = {
@@ -3149,7 +3197,7 @@ WeakAuras.StopMotion.texture_data["Interface\\AddOns\\WeakAuras\\Media\\Textures
      ["columns"] = 8
   }
 
-  WeakAuras.StopMotion.texture_data["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Basic\\circle"] = {
+WeakAuras.StopMotion.texture_data["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Basic\\circle"] = {
      ["count"] = 256,
      ["rows"] = 16,
      ["columns"] = 16
@@ -3215,15 +3263,6 @@ WeakAuras.StopMotion.texture_data["Interface\\AddOns\\WeakAurasStopMotion\\Textu
      ["rows"] = 8,
      ["columns"] = 8
   }
-
-WeakAuras.StopMotion.texture_types.Kaitan = {
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\CellRing"] = "CellRing",
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\Gadget"] = "Gadget",
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\Radar"] = "Radar",
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\RadarComplex"] = "RadarComplex",
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\Saber"] = "Saber",
-    ["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\Waveform"] = "Waveform",
-}
 
 WeakAuras.StopMotion.texture_data["Interface\\AddOns\\WeakAurasStopMotion\\Textures\\Kaitan\\CellRing"] = {
       ["count"] = 32,

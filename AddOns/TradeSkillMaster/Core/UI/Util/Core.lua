@@ -9,7 +9,11 @@ local Util = TSM.UI:NewPackage("Util")
 local L = TSM.Include("Locale").GetTable()
 local Color = TSM.Include("Util.Color")
 local Theme = TSM.Include("Util.Theme")
-local private = {}
+local Settings = TSM.Include("Service.Settings")
+local private = {
+	settings = nil,
+}
+local CUSTOM_COLOR_SET_KEY = "custom"
 local THEME_COLOR_SETS = {
 	{
 		key = "midnight",
@@ -97,20 +101,54 @@ local THEME_COLOR_SETS = {
 -- ============================================================================
 
 function Util.OnInitialize()
-	-- register themes
+	private.settings = Settings.NewView()
+		:AddKey("global", "appearanceOptions", "colorSet")
+		:AddKey("global", "appearanceOptions", "customColorSet")
+
+	-- register built-in themes
 	local foundCurrentColorSet = false
 	for _, info in ipairs(THEME_COLOR_SETS) do
 		Theme.RegisterColorSet(info.key, info.name, info.colors)
-		foundCurrentColorSet = foundCurrentColorSet or info.key == TSM.db.global.appearanceOptions.colorSet
+		foundCurrentColorSet = foundCurrentColorSet or info.key == private.settings.colorSet
 	end
+
+	-- register the custom theme
+	local isCustomActive = private.settings.colorSet == CUSTOM_COLOR_SET_KEY
+	local customColors = {}
+	for _, key in Theme.ThemeColorKeyIterator() do
+		customColors[key] = Color.NewFromHex(isCustomActive and private.settings.customColorSet[key] or "#000000")
+	end
+	Theme.RegisterColorSet(CUSTOM_COLOR_SET_KEY, L["Custom"], customColors)
+	foundCurrentColorSet = foundCurrentColorSet or isCustomActive
+
 	if not foundCurrentColorSet then
-		TSM.db.global.appearanceOptions.colorSet = TSM.db:GetDefaultReadOnly("global", "appearanceOptions", "colorSet")
+		private.settings.colorSet = private.settings:GetDefaultReadOnly("colorSet")
 	end
-	Theme.SetActiveColorSet(TSM.db.global.appearanceOptions.colorSet)
+	private.SetActiveColorSetHelper(private.settings.colorSet)
 end
 
 function Util.ColorSetIterator()
 	return private.ColorSetIterator, THEME_COLOR_SETS, 0
+end
+
+function Util.SetActiveColorSet(key)
+	if private.settings.colorSet == key then
+		return
+	end
+	private.SetActiveColorSetHelper(key)
+end
+
+function Util.SetCustomColor(key, r, g, b)
+	Util.SetActiveColorSet(CUSTOM_COLOR_SET_KEY)
+	private.SetCustomColorHelper(key, r, g, b)
+end
+
+function Util.GetCustomColor(key)
+	return Theme.GetColor(key, CUSTOM_COLOR_SET_KEY)
+end
+
+function Util.GetCustomColorSetKey()
+	return CUSTOM_COLOR_SET_KEY
 end
 
 
@@ -119,10 +157,41 @@ end
 -- Private Helper Functions
 -- ============================================================================
 
+function private.SetActiveColorSetHelper(colorSetKey)
+	if colorSetKey ~= CUSTOM_COLOR_SET_KEY then
+		-- overwrite the custom color set with the one we're selecting
+		local colors = nil
+		for _, info in ipairs(THEME_COLOR_SETS) do
+			if info.key == colorSetKey then
+				colors = info.colors
+				break
+			end
+		end
+		assert(colors)
+		for colorKey, color in pairs(colors) do
+			private.SetCustomColorHelper(colorKey, color:GetRGBA())
+		end
+	end
+	private.settings.colorSet = colorSetKey
+	Theme.SetActiveColorSet(colorSetKey)
+end
+
+function private.SetCustomColorHelper(key, r, g, b)
+	Theme.UpdateColor(CUSTOM_COLOR_SET_KEY, key, r, g, b)
+	private.settings.customColorSet[key] = Theme.GetColor(key, CUSTOM_COLOR_SET_KEY):GetHexNoAlpha()
+end
+
 function private.ColorSetIterator(tbl, index)
 	index = index + 1
-	if not tbl[index] then
+	local key, name = nil, nil
+	if index == #tbl + 1 and private.settings.colorSet == CUSTOM_COLOR_SET_KEY then
+		key = CUSTOM_COLOR_SET_KEY
+		name = L["Custom"]
+	elseif not tbl[index] then
 		return
+	else
+		key = tbl[index].key
+		name = tbl[index].name
 	end
-	return index, tbl[index].key, tbl[index].name
+	return index, key, name, private.settings.colorSet == key
 end

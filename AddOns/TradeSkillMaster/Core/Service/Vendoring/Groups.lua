@@ -112,7 +112,7 @@ function private.GetNumToBuy(itemString, operationSettings)
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
 		:Equal("isBoA", false)
-		:SumAndRelease("quantity") or 0
+		:SumAndRelease("quantity")
 	if operationSettings.restockSources.bank then
 		numHave = numHave + Inventory.GetBankQuantity(itemString) + Inventory.GetReagentBankQuantity(itemString)
 	end
@@ -170,7 +170,7 @@ function private.SellItemThreaded(itemString, operationSettings)
 		:VirtualField("autoBaseItemString", "string", TSM.Groups.TranslateItemString, "itemString")
 		:Equal("autoBaseItemString", itemString)
 		:Equal("isBoA", false)
-		:SumAndRelease("quantity") or 0
+		:SumAndRelease("quantity")
 	local numToSell = numHave - operationSettings.keepQty
 	if numToSell <= 0 then
 		return 0

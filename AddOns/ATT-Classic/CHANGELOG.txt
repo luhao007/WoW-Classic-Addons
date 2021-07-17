@@ -1,72 +1,32 @@
-0.5.8 Release Notes
+0.6.3 Release Notes
 Contributions made by Crieve:
-* Fixed tooltips and popout groups for things used to acquire other things as a cost.
-* Adding this to classic just in case.
-* Tzerak's Armor Plate is no longer busted.
-* Blood Elf Bandit is now classified as a Rare on Azuremyst Isle for coordinate sharing purposes.
-* Fixed TBC Blacksmithing
-* Initial work on Hellfire Peninsula and its associated NYI quests.
-* More progress made on Hellfire Peninsula.
-* Finished Hellfire Peninsula. Parser no longer hard crashes on non-line specific errors.
-* Missed a couple objectives for Hellfire quests.
-* Classic Era parser adjustment.
-* Added level requirements to Zangarmarsh quests. (will polish the zone when I can)
-* Using timeline on some of the more obvious items in Zangarmarsh for now.
-* Cleaned up vendors in Shattrath City. Added a hidden filter for filtering out the Aldor/Scryer content if you've chosen a faction and are no longer Neutral with them.
-* Some Shadowmoon Valley vendors are also faction locked.
-* Tokens and currency that has been 100% now stays as "collected" in the list.
-* Now behaves more like Retail's Cost Tooltip.
-* Added the Burning Crusade ItemDB. (harvested from the TBC Beta!)
-* Added Tailoring specialization spellIDs.
-* Updated the Item Harvester to acquire specialization skillIDs and removed pieces of data that aren't critical.
-* Parser will no longer crash when building for Classic Era dur to the BC ItemDB.
-* Updated Parser to account for Tailoring Specializations.
-* Updated categories with tailoring specializations.
-* Fixed a bug when compiling for Classic Era.
-* Updated Classic Item DB.
-* Binding is only need for BoP items. Quality isn't needed for Poor Items. (it is the default value)
-* Fixing some coord goofs.
-* Updated parser to utilize the new streamlined parsing techniques.
-* Added the compressed ItemDB, which was built from the Raw Item DB hosted on the Retail ATT repo.
-* Slight change to the harvester.
-* Fixed a bug with the tooltip harvester that allowed the required skill specialization to get reverted back to the base.
-* ...
-* Added the Amani Charms to ZA's loot table.
-* Added the Azure Whelpling pet to Azshara and its future drop location for Cataclysm.
-* Added Xan'tish <Snake Vendor> to Orgrimmar. Sneaky snakes.
-* Added Shylenai <Owl Trainer> to Darnassus.
-* Added Halpa <Prairie Dog Vendor> to Thunder Bluff.
-* Added some crates to fishing crafted items.
-* Added all of the NYI World Drops for Burning Crusade. Expanded the Crafted Items section to account for future changes.
-* Added some craftables added with TBC.
-* Updated First Aid.
-* Updated Mining.
-* Added Burning Crusade Skinning Craftables.
-* Initial Cooking modifications for Burning Crusade.
-* Updated Fishing Recipes.
-* Alchemists' Stone was added with TBC. (no longer NYI)
-* Added the Burning Crusade Tailoring Specializations.
-* Fixed Blacksmithing.
-* Finished Burning Crusade Blacksmithing.... hopefully.
-* Finished Burning Crusade Engineering.... doubtfully.
-* ... told ya.
-* Finished Burning Crusade Cooking.
-* Finished Burning Crusade Alchemy.
-* Steam Pump Part is now an objective so it's less intrusive in the zone.
-* Finished Burning Crusade Tailoring.
-* Finished Burning Crusade Enchanting.
-* Added the Caverns of Time vendor.
-* First pass of leatherworking.
-* Leatherworking pass 2.
-* Commented out Jewelcrafting recipes that still need to be sorted. (Sorry fellas, I'm working by myself on this and need sleep!)
-
-Contributions made by Chanizu:
-* Update 01 - Armorsmith.lua
-* Update 02 - Weaponsmith.lua
-* Update Blacksmithing.lua
-* Update Quests.lua
-* Revert "Update Quests.lua"
-* Blacksmithing Quests
-* Merge branch 'Blacksmithing'
-* TBC Blacksmithing
+* Fixed quest objectives for Unyielding Souls.
+* Fixed the mapID for Sporeggar.
+* The Consortium reputation now also appears in the Netherstorm mini list.
+* The Eye of Haramad does not cost a Mark of the Nexus King.
+* Marked "Ogre Heaven" with a note as being available with Ogri'la. You can accept, but not turn in this quest. My OCD can't take it anymore!
+* Marked The Vials of Eternity quests as being available with Phase 2. You can accept them, but obviously not obtain any of the vials under the raids are released.
+* Refactored Frostsaber Provisions to use the objectives tech instead.
+* Quests that can no longer be completed due to arbitrary maximum reputation gating will no longer be displayed once you reach the maximum reputation. (Ivory, Glowcaps, and Oshu'gun fragment quests)
+* Added a blank map for Eye of the Storm.
+* Added Blood of Amber, Arcane Khorium Band, and Kailee's Rose spellIDs.
+* The quest "Archmage Alturus" is now marked as a Breadcrumb quest.
+* High Sorcerer Andromath is now marked as a breadcrumb quest.
+* Removed the explicit removed from game tags from various things.
+* The Nesingwary Safari is now marked as a breadcrumb quest.
+* Help for Mudsprocket is now marked as a breadcrumb quest.
+* Ribbly Screwspigot quest is now properly listed under Burning Steppes.
+* Help Mama Wheeler is now marked as a breadcrumb quest.
+* Vial of Underworld Loam does not drop on Heroic.
+* Updated description for the Carrot on a Stick.
+* Enchant Ring - Striking is not available yet.
+* The Karazhan arrows and bullets are not available yet.
+* Enchant Weapon - Greater Agility is not available yet.
+* Shadowprowler's and the Cloak of Darkness are not available yet.
+* Flask of Chromatic Wonder is not available yet.
+* Missed some parts.
+* Design: Gleaming Dawnstone has been confirmed.
+* Whoops, fixed the last commit.
+* Formula: Enchant Ring - Striking is actually available at the moment.
+* Formula: Enchant Ring - Stats was the one that wasn't available. Formula: Enchant Weapon - Major Striking is also Phase 2.... maybe?
 

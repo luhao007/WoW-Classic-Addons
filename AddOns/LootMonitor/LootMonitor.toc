@@ -1,6 +1,6 @@
 ## Interface: 20501
 ## Author: Aoikaze
-## Version: 3.27
+## Version: 3.30
 ## SavedVariables: LootMonitorDB
 
 ## Title: LootMonitor
@@ -11,6 +11,7 @@
 
 ChatThrottleLib.lua
 Locale.lua
+Data.lua
 LootMonitor.lua
 GUI.lua
 Output.lua

@@ -6,6 +6,7 @@
 
 local _, TSM = ...
 local Destroying = TSM:NewPackage("Destroying")
+local DisenchantInfo = TSM.Include("Data.DisenchantInfo")
 local Database = TSM.Include("Util.Database")
 local Event = TSM.Include("Util.Event")
 local SlotId = TSM.Include("Util.SlotId")
@@ -31,6 +32,8 @@ local private = {
 	pendingSpellId = nil,
 	ignoreDB = nil,
 	destroyInfoDB = nil,
+	disenchantSkillLevel = nil,
+	jewelcraftSkillLevel = nil,
 	combineFuture = Future.New("DESTROYING_COMBINE_FUTURE"),
 	destroyFuture = Future.New("DESTROYING_DESTROY_FUTURE"),
 }
@@ -349,6 +352,10 @@ function private.UpdateBagDB()
 		query:Equal("isBoP", false)
 			:Equal("isBoA", false)
 	end
+	if TSM.IsWowBCClassic() then
+		private.disenchantSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(7411))
+		private.jewelcraftSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(28897))
+	end
 	for _, slotId, itemString, quantity in query:Iterator() do
 		local minQuantity = nil
 		if checkedItem[itemString] then
@@ -408,8 +415,23 @@ function private.IsDestroyable(itemString)
 	-- disenchanting
 	local quality = ItemInfo.GetQuality(itemString)
 	if ItemInfo.IsDisenchantable(itemString) and quality <= private.settings.deMaxQuality then
-		private.canDestroyCache[itemString] = IsSpellKnown(SPELL_IDS.disenchant) and SPELL_IDS.disenchant
-		private.destroyQuantityCache[itemString] = 1
+		local hasSourceItem = true
+		if TSM.IsWowBCClassic() then
+			local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+			local classId = ItemInfo.GetClassId(itemString)
+			hasSourceItem = false
+			for targetItemString in DisenchantInfo.TargetItemIterator() do
+				local _, _, _, _, skillRequired = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+				if private.disenchantSkillLevel and skillRequired and private.disenchantSkillLevel >= skillRequired then
+					hasSourceItem = true
+				end
+			end
+		end
+		if hasSourceItem then
+			private.canDestroyCache[itemString] = IsSpellKnown(SPELL_IDS.disenchant) and SPELL_IDS.disenchant
+			private.destroyQuantityCache[itemString] = 1
+			return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
+		end
 		return private.canDestroyCache[itemString], private.destroyQuantityCache[itemString]
 	end
 
@@ -429,8 +451,10 @@ function private.IsDestroyable(itemString)
 	end
 
 	local hasSourceItem = false
-	for _ in Conversions.TargetItemsByMethodIterator(itemString, conversionMethod) do
-		hasSourceItem = true
+	for _, _, _, _, _, skillRequired in Conversions.TargetItemsByMethodIterator(itemString, conversionMethod) do
+		if not skillRequired or (private.jewelcraftSkillLevel and skillRequired and private.jewelcraftSkillLevel >= skillRequired) then
+			hasSourceItem = true
+		end
 	end
 	if hasSourceItem then
 		private.canDestroyCache[itemString] = IsSpellKnown(destroySpellId) and destroySpellId

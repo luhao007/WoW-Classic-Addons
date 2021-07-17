@@ -37,14 +37,14 @@ local DEFAULT_SORTS = TSM.IsWowClassic() and
 	}
 local EMPTY_SORTS = {}
 local INV_TYPES = {
-	CHEST = TSM.IsShadowlands() and Enum.InventoryType.IndexChestType or LE_INVENTORY_TYPE_CHEST_TYPE,
-	ROBE = TSM.IsShadowlands() and Enum.InventoryType.IndexRobeType or LE_INVENTORY_TYPE_ROBE_TYPE,
-	NECK = TSM.IsShadowlands() and Enum.InventoryType.IndexNeckType or LE_INVENTORY_TYPE_NECK_TYPE,
-	FINGER = TSM.IsShadowlands() and Enum.InventoryType.IndexFingerType or LE_INVENTORY_TYPE_FINGER_TYPE,
-	TRINKET = TSM.IsShadowlands() and Enum.InventoryType.IndexTrinketType or LE_INVENTORY_TYPE_TRINKET_TYPE,
-	HOLDABLE = TSM.IsShadowlands() and Enum.InventoryType.IndexHoldableType or LE_INVENTORY_TYPE_HOLDABLE_TYPE,
-	BODY = TSM.IsShadowlands() and Enum.InventoryType.IndexBodyType or LE_INVENTORY_TYPE_BODY_TYPE,
-	CLOAK = TSM.IsShadowlands() and Enum.InventoryType.IndexCloakType or LE_INVENTORY_TYPE_CLOAK_TYPE,
+	CHEST = TSM.IsWowClassic() and LE_INVENTORY_TYPE_CHEST_TYPE or Enum.InventoryType.IndexChestType,
+	ROBE = TSM.IsWowClassic() and LE_INVENTORY_TYPE_ROBE_TYPE or Enum.InventoryType.IndexRobeType,
+	NECK = TSM.IsWowClassic() and LE_INVENTORY_TYPE_NECK_TYPE or Enum.InventoryType.IndexNeckType,
+	FINGER = TSM.IsWowClassic() and LE_INVENTORY_TYPE_FINGER_TYPE or Enum.InventoryType.IndexFingerType,
+	TRINKET = TSM.IsWowClassic() and LE_INVENTORY_TYPE_TRINKET_TYPE or Enum.InventoryType.IndexTrinketType,
+	HOLDABLE = TSM.IsWowClassic() and LE_INVENTORY_TYPE_HOLDABLE_TYPE or Enum.InventoryType.IndexHoldableType,
+	BODY = TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexBodyType,
+	CLOAK = TSM.IsWowClassic() and LE_INVENTORY_TYPE_CLOAK_TYPE or Enum.InventoryType.IndexCloakType,
 }
 assert(Table.Count(INV_TYPES) == 8)
 
@@ -341,13 +341,15 @@ end
 function AuctionQuery.ItemSubRowIterator(self, itemString)
 	local result = TempTable.Acquire()
 	local baseItemString = ItemString.GetBaseFast(itemString)
+	local levelItemString = ItemString.ToLevel(itemString)
 	local isBaseItemString = itemString == baseItemString
+	local isLevelItemString = itemString == levelItemString and not isBaseItemString
 	local row = self._browseResults[baseItemString]
 	if row then
 		for _, subRow in row:SubRowIterator() do
 			local subRowBaseItemString = subRow:GetBaseItemString()
 			local subRowItemString = subRow:GetItemString()
-			if (isBaseItemString and subRowBaseItemString == itemString) or (not isBaseItemString and subRowItemString == itemString) then
+			if (isBaseItemString and subRowBaseItemString == itemString) or (isLevelItemString and ItemString.ToLevel(subRowItemString) == itemString) or (not isBaseItemString and not isLevelItemString and subRowItemString == itemString) then
 				tinsert(result, subRow)
 			end
 		end
@@ -533,9 +535,12 @@ function AuctionQuery._IsFiltered(self, row, isSubRow, itemKey)
 		if not self._items[baseItemString] then
 			return true
 		end
-		if isSubRow and itemString and self._items[itemString] ~= ITEM_SPECIFIC and self._items[baseItemString] ~= ITEM_SPECIFIC then
+		local levelItemString = itemString and ItemString.ToLevel(itemString)
+		if isSubRow and itemString and self._items[itemString] ~= ITEM_SPECIFIC and self._items[levelItemString] ~= ITEM_SPECIFIC and self._items[baseItemString] ~= ITEM_SPECIFIC then
+			-- this is a sub row and we're not looking for this item
 			return true
 		elseif not isSubRow and itemString and not self._items[itemString] then
+			-- this is a base row but the base item doesn't match any item we're interested in
 			return true
 		end
 	end
@@ -546,7 +551,7 @@ function AuctionQuery._IsFiltered(self, row, isSubRow, itemKey)
 		end
 	end
 	if self._minLevel ~= -math.huge or self._maxLevel ~= math.huge then
-		local minLevel = TSM.IsShadowlands() and ItemString.IsPet(baseItemString) and (itemLevel or maxItemLevel) or ItemInfo.GetMinLevel(baseItemString)
+		local minLevel = ItemString.IsPet(baseItemString) and (itemLevel or maxItemLevel) or ItemInfo.GetMinLevel(baseItemString)
 		if minLevel < self._minLevel or minLevel > self._maxLevel then
 			return true
 		end

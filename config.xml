@@ -743,7 +743,7 @@
 		<Category>功能</Category>
 	</Addon>
 	<Addon name="ExRT">
-		<Title>团队助手</Title>
+		<Title>Exorus团队助手</Title>
 		<Notes>提供团队和小队的一些辅助功能</Notes>
 		<Category>副本</Category>
 	</Addon>
@@ -816,69 +816,37 @@
 				<Title>声望</Title>
 				<Notes>声望数据库</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-NPCs-_classic_">
+			<SubAddon name="Grail-NPCs">
 				<Title>NPC</Title>
-				<Notes>怀旧服NPC数据库</Notes>
+				<Notes>NPC数据库</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-NPCs-_classic_-enUS">
-				<Title>NPC</Title>
-				<TitleExtra>英文</TitleExtra>
-				<Notes>怀旧服NPC数据库的英文本地化模块</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-NPCs-_classic_-zhCN">
-				<Title>NPC</Title>
-				<TitleExtra>中文</TitleExtra>
-				<Notes>怀旧服NPC数据库的中文本地化模块</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-NPCs-_retail_">
-				<Title>NPC</Title>
-				<Notes>正式服NPC数据库</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-NPCs-_retail_-enUS">
+			<SubAddon name="Grail-NPCs-enUS">
 				<Title>NPC</Title>
 				<TitleExtra>英文</TitleExtra>
-				<Notes>正式服NPC数据库的英文本地化模块</Notes>
+				<Notes>NPC数据库的英文本地化模块</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-NPCs-_retail_-zhCN">
+			<SubAddon name="Grail-NPCs-zhCN">
 				<Title>NPC</Title>
 				<TitleExtra>中文</TitleExtra>
-				<Notes>正式服NPC数据库的中文本地化模块</Notes>
+				<Notes>NPC数据库的中文本地化模块</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-Quests-_classic_">
+			<SubAddon name="Grail-Quests">
 				<Title>任务</Title>
-				<Notes>怀旧服本地数据库</Notes>
+				<Notes>任务数据库</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-Quests-_classic_-enUS">
-				<Title>任务</Title>
-				<TitleExtra>英文</TitleExtra>
-				<Notes>怀旧服本地数据库的英文本地化模块</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-Quests-_classic_-zhCN">
-				<Title>任务</Title>
-				<TitleExtra>中文</TitleExtra>
-				<Notes>怀旧服本地数据库的中文本地化模块</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-Quests-_retail_">
-				<Title>任务</Title>
-				<Notes>正式服本地数据库</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-Quests-_retail_-enUS">
+			<SubAddon name="Grail-Quests-enUS">
 				<Title>任务</Title>
 				<TitleExtra>英文</TitleExtra>
-				<Notes>正式服本地数据库的英文本地化模块</Notes>
+				<Notes>任务数据库的英文本地化模块</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-Quests-_retail_-zhCN">
+			<SubAddon name="Grail-Quests-zhCN">
 				<Title>任务</Title>
 				<TitleExtra>中文</TitleExtra>
-				<Notes>正式服本地数据库的中文本地化模块</Notes>
+				<Notes>任务数据库的中文本地化模块</Notes>
 			</SubAddon>
-			<SubAddon name="Grail-Reputations-_classic_">
+			<SubAddon name="Grail-Reputations">
 				<Title>声望</Title>
-				<Notes>怀旧服声望数据库</Notes>
-			</SubAddon>
-			<SubAddon name="Grail-Reputations-_retail_">
-				<Title>声望</Title>
-				<Notes>正式服声望数据库</Notes>
+				<Notes>声望数据库</Notes>
 			</SubAddon>
 			<SubAddon name="Grail-Rewards">
 				<Title>奖励</Title>
@@ -1117,6 +1085,11 @@
 		<Title>移动速度</Title>
 		<Notes>显示当前移动速度</Notes>
 		<Category>界面</Category>
+	</Addon>
+	<Addon name="MRT">
+		<Title>Method团队助手</Title>
+		<Notes>提供团队和小队的一些辅助功能</Notes>
+		<Category>副本</Category>
 	</Addon>
 	<Addon name="MythicPlusTimer">
 		<Title>大秘境计时</Title>

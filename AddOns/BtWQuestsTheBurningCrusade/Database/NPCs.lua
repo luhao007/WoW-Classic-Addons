@@ -13,6 +13,7 @@ BtWQuestsDatabase:AddNPCsTable({
         },
     },
     [11022] = {
+        name = "Alexi Barov",
     },
     [15991] = {
         name = "Lady Dena Kennedy",
