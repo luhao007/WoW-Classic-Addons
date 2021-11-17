@@ -171,7 +171,8 @@ function Crafting.OnInitialize()
 		:Select("craftString", "itemString", "numResult")
 		:Equal("hasCD", false)
 	for _, craftString, itemString, numResult in query:Iterator() do
-		if not ProfessionInfo.IsMassMill(craftString) and matSpellCount[craftString] == 1 then
+		local spellId = CraftString.GetSpellId(craftString)
+		if not ProfessionInfo.IsMassMill(spellId) and matSpellCount[craftString] == 1 then
 			Conversions.AddCraft(itemString, matFirstItemString[craftString], numResult / matFirstQuantity[craftString])
 			addedConversion = true
 		end

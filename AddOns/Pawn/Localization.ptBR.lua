@@ -95,6 +95,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["CritInfo"] = "Ataque crítico. Aumenta a chance de seus ataques e magias de cura acertem com maior potência.",
 		["DefenseInfo"] = "Defense skill.  Decreases the chance that you'll be hit by boss attacks.",
 		["DodgeInfo"] = "Dodge.  Increases the chance that you'll dodge attacks entirely.",
+		["DominationSocketInfo"] = "O valor de um soquete para um Fragmento de Dominação médio.",
 		["DpsInfo"] = "Dano por segundo da arma. (Se você quiser valorizar DPS diferentes para diferentes tipos de armas, veja a seção \"Atributos especiais de armas\".)",
 		--[[Translation missing --]]
 		["ExpertiseInfo"] = "Expertise. Negates your enemy's chances to dodge and parry.",
@@ -348,6 +349,7 @@ Para mais informações sobre personalizar o Pawn, favor veja o arquivo de ajuda
 		["HitRatingShort"] = "^%+?# Taxa de Acerto$",
 		["HolySpellDamage"] = "^%+# Dano Mágico Sagrados$",
 		["HolySpellDamage2"] = "^Equipado: Aumenta em até # o dano causado por feitiços e efeitos Sagrados%.$",
+		["HolySpellDamage3"] = "^UNUSED$",
 		["Hp5"] = "^Equipado: Restaura # pontos de vida a cada 5 s%.$",
 		["Hp52"] = "^Equipado: Recupera # pontos de vida a cada 5 s%.$",
 		["Hp53"] = "^Recupera %+?# [pP]ontos [dD]e [vV]ida [aA] [cC]ada 5 [sS]%.?$",

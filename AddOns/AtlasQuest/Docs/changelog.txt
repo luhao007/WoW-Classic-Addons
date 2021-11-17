@@ -5,9 +5,18 @@ Changelog
 KNOWN ISSUES:
 - Certain UI elements aren't displaying.  Like the bars around the quest list and the background for the Options window.
 - Blue colored text is "leaking" in the quest info window.
-- "Color quest titles in blue" option is not working.
 - Item Comparisons are not working.
 - Some coordinates and boss numbers may be off.  I'll have to go through each quest by hand and check them to see. 
+
+
+
+Version 4.12.83  (for TBC Classic)  September 19, 2021
+
+- "Color quest titles in blue if in questlog" option should be working.
+- Updated some quest & item names that referred to Alex Afrasiabi and have been changed. 
+- TOC updated for Patch 2.5.2.
+- FIX: Corrected bug where quests weren't showing for anything.  Huge thanks to Flubik on CurseForge for helping.
+
 
 
 

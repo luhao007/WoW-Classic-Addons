@@ -14,37 +14,32 @@ Supports multiple entries, separated by commas
 ]=] ] = [=[Формат записи: Имя, Имя-Игровой мир, -Игровой мир.
 
 Можно указать несколько значений, разделенных запятыми.]=]
-L["%s - %i. Trigger"] = "%s - %i. Триггер"
-L["%s - Alpha Animation"] = "%s - Анимация прозрачности"
-L["%s - Color Animation"] = "%s - Анимация цвета"
-L["%s - Condition Custom Chat"] = "%s - Пользовательский код / сообщение в условии"
---[[Translation missing --]]
-L["%s - Custom Anchor"] = "%s - Custom Anchor"
---[[Translation missing --]]
-L["%s - Custom Grow"] = "%s - Custom Grow"
---[[Translation missing --]]
-L["%s - Custom Sort"] = "%s - Custom Sort"
-L["%s - Custom Text"] = "%s - Пользовательский текст"
+L["%s - %i. Trigger"] = "%s - Триггер %i"
+L["%s - Alpha Animation"] = "%s анимация прозрачности"
+L["%s - Color Animation"] = "%s анимация цвета"
+L["%s - Condition Custom Chat"] = "%s - Сообщение или код в условии"
+L["%s - Custom Anchor"] = "%s - Крепление"
+L["%s - Custom Grow"] = "%s - Способ заполнения группы"
+L["%s - Custom Sort"] = "%s - Критерий сортировки группы"
+L["%s - Custom Text"] = "%s - Отображаемый текст"
 L["%s - Finish"] = "%s - Конечная"
 L["%s - Finish Action"] = "%s - Действие при скрытии"
-L["%s - Finish Custom Text"] = "%s - Пользовательское сообщение при скрытии"
+L["%s - Finish Custom Text"] = "%s - Сообщение при скрытии"
 L["%s - Init Action"] = "%s - Действие при инициализации"
 L["%s - Main"] = "%s - Основная"
-L["%s - Rotate Animation"] = "%s - Анимация вращения"
-L["%s - Scale Animation"] = "%s - Анимация масштабирования"
+L["%s - Rotate Animation"] = "%s анимация вращения"
+L["%s - Scale Animation"] = "%s анимация масштабирования"
 L["%s - Start"] = "%s - Начальная"
 L["%s - Start Action"] = "%s - Действие при появлении"
-L["%s - Start Custom Text"] = "%s - Пользовательское сообщение при появлении"
-L["%s - Translate Animation"] = "%s - Анимация перемещения"
+L["%s - Start Custom Text"] = "%s - Сообщение при появлении"
+L["%s - Translate Animation"] = "%s анимация перемещения"
 L["%s - Trigger Logic"] = "%s - Комбинация триггеров"
---[[Translation missing --]]
-L["%s Custom Variables"] = "%s Custom Variables"
+L["%s Custom Variables"] = "%s - Переменные TSU"
 L["%s Duration Function"] = "%s - Функция длительности"
 L["%s Icon Function"] = "%s - Функция иконки"
 L["%s Name Function"] = "%s - Функция названия"
 L["%s Overlay Color"] = "%s (цвет наложения)"
---[[Translation missing --]]
-L["%s Overlay Function"] = "%s Overlay Function"
+L["%s Overlay Function"] = "%s - Функция наложения"
 L["%s Stacks Function"] = "%s - Функция стаков"
 L["%s Texture Function"] = "%s - Функция текстуры"
 L["%s total auras"] = "Всего %s |4индикация:индикации:индикаций;"
@@ -54,7 +49,10 @@ L["* Suffix"] = "Символ * вместо названия"
 L["/wa help - Show this message"] = "/wa help - показать данное сообщение"
 L["/wa minimap - Toggle the minimap icon"] = "/wa minimap - отобразить или скрыть иконку на миникарте"
 L["/wa pprint - Show the results from the most recent profiling"] = "/wa pprint - показать результаты последнего профилирования"
-L["/wa pstart - Start profiling. Optionally include a duration in seconds after which profiling automatically stops. To profile the next combat/encounter, pass a \"combat\" or \"encounter\" argument."] = "/wa pstart - Начать профилирование. Дополнительно включает таймер в секундах, после которого профилирование останавливается. Чтобы профилировать следующий бой или сражение с боссом, добавьте аргумент \"combat\" или \"encounter\" соответственно."
+L["/wa pstart - Start profiling. Optionally include a duration in seconds after which profiling automatically stops. To profile the next combat/encounter, pass a \"combat\" or \"encounter\" argument."] = [=[/wa pstart - запустить профилирование. Необязательные аргументы:
+[число] - время в секундах, по истечении которого процесс будет завершён;
+[combat] - запуск процесса при следующем вхождении в бой;
+[encounter] - запуск процесса при следующем сражении с боссом.]=]
 L["/wa pstop - Finish profiling"] = "/wa pstop - завершить профилирование"
 L["/wa repair - Repair tool"] = "/wa repair - средство восстановления данных"
 L["|cffeda55fLeft-Click|r to toggle showing the main window."] = "|cFFEDA55FЛевый клик|r - показать или скрыть окно параметров."
@@ -126,6 +124,8 @@ L["Armor Rating"] = "Количество брони"
 L["Array"] = "Массив"
 L["Ascending"] = "По возрастанию"
 L["Assigned Role"] = "Выбранная роль"
+--[[Translation missing --]]
+L["Assigned Role Icon"] = "Assigned Role Icon"
 L["At Least One Enemy"] = "Хотя бы один противник"
 L["At missing Value"] = "От недостающего значения"
 L["At Percent"] = "В процентах"
@@ -192,6 +192,8 @@ L["Blizzard Combat Text"] = "Текст боя Blizzard"
 L["Block"] = "Блок"
 L["Block (%)"] = "Блок"
 L["Block against Target (%)"] = "Блок против текущей цели"
+--[[Translation missing --]]
+L["Block Value"] = "Block Value"
 L["Blocked"] = "Заблокировано"
 L["Bloodlord Mandokir"] = "Мандокир Повелитель Крови"
 L["Border"] = "Граница"
@@ -215,9 +217,9 @@ L["Cancel"] = "Отмена"
 L["Can't schedule timer with %i, due to a World of Warcraft bug with high computer uptime. (Uptime: %i). Please restart your computer."] = "Невозможно запустить таймер на %i c. из-за ошибки WoW (переполнение), связанной с большим временем непрерывной работы вашего компьютера - %i с. Пожалуйста, перезагрузите компьютер."
 L["Cast"] = "Применение заклинания"
 L["Cast Bar"] = "Полоса применения заклинания"
-L["Cast Failed"] = "Каст провален"
-L["Cast Start"] = "Каст начат"
-L["Cast Success"] = "Каст успешно завершен"
+L["Cast Failed"] = "Применение не удалось"
+L["Cast Start"] = "Применение начато"
+L["Cast Success"] = "Применение успешно завершено"
 L["Cast Type"] = "Тип каста"
 L["Caster"] = "Заклинатель"
 L["Caster Name"] = "Имя заклинателя"
@@ -234,7 +236,22 @@ L["Channel (Spell)"] = "Потоковое"
 L["Character Stats"] = "Характеристики персонажа"
 L["Character Type"] = "Тип персонажа"
 L["Charge gained/lost"] = "Событие заряда"
-L["Charged Combo Point"] = "Заряженные анимой приемы"
+--[[Translation missing --]]
+L["Charged Combo Point (1)"] = "Charged Combo Point (1)"
+--[[Translation missing --]]
+L["Charged Combo Point (2)"] = "Charged Combo Point (2)"
+--[[Translation missing --]]
+L["Charged Combo Point (3)"] = "Charged Combo Point (3)"
+--[[Translation missing --]]
+L["Charged Combo Point (4)"] = "Charged Combo Point (4)"
+--[[Translation missing --]]
+L["Charged Combo Point 1"] = "Charged Combo Point 1"
+--[[Translation missing --]]
+L["Charged Combo Point 2"] = "Charged Combo Point 2"
+--[[Translation missing --]]
+L["Charged Combo Point 3"] = "Charged Combo Point 3"
+--[[Translation missing --]]
+L["Charged Combo Point 4"] = "Charged Combo Point 4"
 L["Charges"] = "Заряды"
 L["Charges Changed Event"] = "Изменение зарядов"
 L["Chat Frame"] = "Окно чата"
@@ -294,12 +311,14 @@ L["Damage Shield"] = "Урон от щита"
 L["Damage Shield Missed"] = "Урон от щита (промах)"
 L["Damage Split"] = "Разделение урона"
 L["DBM Announce"] = "Объявление DBM"
+L["DBM Stage"] = "Фаза сражения с боссом DBM"
 L["DBM Timer"] = "Таймер DBM"
 L["Death Knight Rune"] = "Руна Рыцаря смерти"
 L["Debuff"] = "Дебафф"
 L["Debuff Class"] = "Тип дебаффа"
 L["Debuff Class Icon"] = "Иконка дебаффа"
 L["Debuff Type"] = "Тип дебаффа"
+L["Defense"] = "Защита"
 L["Deflect"] = "Отклонение"
 L["Desaturate"] = "Обесцветить"
 L["Desaturate Background"] = "Обесцветить задний план"
@@ -318,13 +337,12 @@ L["Disable Spell Known Check"] = "Отключить проверку, изве�
 L["Disabled Spell Known Check"] = "Проверка, известно ли заклинание, отключена"
 L["Disease"] = "Болезнь"
 L["Dispel"] = "Рассеивание"
-L["Dispel Failed"] = "Рассеивание (неудача)"
+L["Dispel Failed"] = "Рассеивание не удалось"
 L["Display"] = "Отображение"
 L["Distance"] = "Расстояние"
 L["Dodge"] = "Уклонение"
 L["Dodge (%)"] = "Уклонение"
 L["Dodge Rating"] = "Показатель уклонения"
-L["Done"] = "Выполнено"
 L["Down"] = "Вниз"
 L["Down, then Left"] = "Вниз, затем влево"
 L["Down, then Right"] = "Вниз, затем вправо"
@@ -362,7 +380,7 @@ L["Entering"] = "Вход"
 L["Entering/Leaving Combat"] = "Вход / Выход из боя"
 L["Entry Order"] = "Порядок записей"
 L["Environment Type"] = "Тип окружения"
-L["Environmental"] = "Окружающая среда"
+L["Environmental"] = "Окружающий мир"
 L["Equipment Set"] = "Комплект экипировки"
 L["Equipment Set Equipped"] = "Комплект экипировки надет"
 L["Equipment Slot"] = "Ячейка экипировки"
@@ -370,6 +388,7 @@ L["Equipped"] = "Надето"
 L["Eredar Twins"] = "Эредарские близнецы"
 L["Error"] = "Ошибка"
 L["Error Frame"] = "Область вывода ошибок"
+L["Error in aura '%s' in %s. trigger. All States table contains a non table at key: '%s'."] = "Ошибка в триггере %2$s индикации '%1$s'. В таблице всех состояний (allstates) значение с ключом '%3$s' не является таблицей."
 L["Error not receiving display information from %s"] = [=[Ошибка при получении информации об индикации 
 от %s]=]
 L[ [=['ERROR: Anchoring %s': 
@@ -470,6 +489,8 @@ L["Heal Absorb"] = "Поглощение исцеления"
 L["Heal Absorbed"] = "Исцеление поглощено"
 L["Health"] = "Здоровье"
 L["Health (%)"] = "Здоровье (%)"
+--[[Translation missing --]]
+L["Health Deficit"] = "Health Deficit"
 L["Heigan the Unclean"] = "Хейган Нечестивый"
 L["Height"] = "Высота"
 L["Hex Lord Malacrass"] = "Повелитель проклятий Малакрасс"
@@ -485,6 +506,8 @@ L["High Priestess Jeklik"] = "Верховная жрица Джеклик"
 L["High Priestess Mar'li"] = "Верховная жрица Мар'ли"
 L["High Warlord Naj'entus"] = "Верховный полководец Надж'ентус"
 L["Higher Than Tank"] = "Больше чем у основной цели"
+L["Hit (%)"] = "Меткость"
+L["Hit Rating"] = "Показатель меткости"
 L["Holy Resistance"] = "Сопротивление светлой магии"
 L["Horde"] = "Орда"
 L["Hostile"] = "Враждебный"
@@ -516,6 +539,8 @@ L["In Raid"] = "В рейде"
 L["In Vehicle"] = "На транспорте"
 L["Include Bank"] = "Включая банк"
 L["Include Charges"] = "Включая заряды"
+--[[Translation missing --]]
+L["Include Pets"] = "Include Pets"
 L["Incoming Heal"] = "Поступающее исцеление"
 L["Increase Precision Below"] = "Увеличить точность, если меньше"
 L["Information"] = "Сообщение"
@@ -682,7 +707,6 @@ L["Nefarian"] = "Нефариан"
 L["Netherspite"] = "Гнев Пустоты"
 L["Neutral"] = "Нейтральный"
 L["Never"] = "Никогда"
-L["Next"] = "Далее"
 L["Next Combat"] = "Режим боя"
 L["Next Encounter"] = "Сражение с боссом"
 L["Nightbane"] = "Ночная Погибель"
@@ -698,6 +722,8 @@ L["Not on Cooldown"] = "Не перезаряжается"
 L["Not On Threat Table"] = "Не в списке угроз"
 L["Note, that cross realm transmission is possible if you are on the same group"] = [=[Передача данных между игровыми мирами возможна,
 если вы находитесь в одной группе!]=]
+--[[Translation missing --]]
+L["Note: Due to how complicated the swing timer behaviour is and the lack of APIs from Blizzard, results are inaccurate in edge cases."] = "Note: Due to how complicated the swing timer behaviour is and the lack of APIs from Blizzard, results are inaccurate in edge cases."
 L["Note: 'Hide Alone' is not available in the new aura tracking system. A load option can be used instead."] = "|cFFFFCC00Предупреждение.|r Параметр \"Скрыть когда не в группе\" недоступен в новой версии триггера. Вместо него может быть использовано соответствующее условие на вкладке Загрузка."
 L["Note: The available text replacements for multi triggers match the normal triggers now."] = "|cFFFFCC00Примечение.|r Теперь для данного варианта триггера (несколько целей) доступны такие же специальные коды отображения динамической информации в тексте, как и для остальных."
 L["Note: This trigger type estimates the range to the hitbox of a unit. The actual range of friendly players is usually 3 yards more than the estimate. Range checking capabilities depend on your current class and known abilities as well as the type of unit being checked. Some of the ranges may also not work with certain NPCs.|n|n|cFFAAFFAAFriendly Units:|r %s|n|cFFFFAAAAHarmful Units:|r %s|n|cFFAAAAFFMiscellanous Units:|r %s"] = "|cFFFFCC00Примечание.|r Триггер оценивает (определяет приближённо) расстояние до хитбокса единицы. Фактическое расстояние до дружественных игроков обычно на 3 метра больше оценки. Возможности проверки дистанции зависят от вашего текущего класса, имеющихся способностей и от типа проверяемой единицы. Некоторые диапазоны могут не работать с отдельными NPC. |n|n|cFFAAFFAACоюзники:|r %s|n|cFFFFAAAAПротивники:|r %s|n|cFFAAAAFFПрочие цели:|r %s"
@@ -756,6 +782,8 @@ L["Pet"] = "Питомец"
 L["Pet Behavior"] = "Поведение питомца"
 L["Pet Specialization"] = "Специализация питомца"
 L["Pet Spell"] = "Заклинание питомца"
+--[[Translation missing --]]
+L["Pets only"] = "Pets only"
 L["Phase"] = "Фаза"
 L["Pixel Glow"] = "Пиксельное свечение"
 L["Placement"] = "Размещение"
@@ -774,9 +802,13 @@ L["Player Race"] = "Раса игрока"
 L["Player(s) Affected"] = "Задействованные игроки"
 L["Player(s) Not Affected"] = "Незадействованные игроки"
 L["Player/Unit Info"] = "Информация об игроке / единице"
+--[[Translation missing --]]
+L["Players and Pets"] = "Players and Pets"
 L["Poison"] = "Яд"
 L["Power"] = "Энергия"
 L["Power (%)"] = "Энергия (%)"
+--[[Translation missing --]]
+L["Power Deficit"] = "Power Deficit"
 L["Power Type"] = "Тип энергии"
 L["Precision"] = "Точность"
 L["Preset"] = "Набор эффектов"
@@ -807,6 +839,8 @@ L["Raid (Heroic)"] = "Рейд (героический)"
 L["Raid (Mythic)"] = "Рейд (эпохальный)"
 L["Raid (Normal)"] = "Рейд (обычный)"
 L["Raid (Timewalking)"] = "Рейд (путешествие во времени)"
+--[[Translation missing --]]
+L["Raid Mark"] = "Raid Mark"
 L["Raid Role"] = "Роль в рейде"
 L["Raid Warning"] = "Объявление рейду"
 L["Raids"] = "Рейды"
@@ -841,27 +875,6 @@ L["Requesting display information from %s ..."] = "Запрос информац
 L["Require Valid Target"] = "Требуется допустимая цель"
 L["Resist"] = "Сопротивление"
 L["Resisted"] = "Сопротивление"
-L["Resolve collisions dialog"] = [=[Вы включили аддон в котором определены индикации |cFF8800FFWeakAuras|r которые имеют те же имена, что и существующие.
-
-Вы должны переименовать ваши индикации, чтобы не было конфликта.
-
-Resolved: |cFFFF0000]=]
-L["Resolve collisions dialog singular"] = [=[Вы включили аддон в котором определена индикация |cFF8800FFWeakAuras|r которая имеет то же имя, что и существующая.
-
-Вы должны переименовать вашу индикацию, чтобы не было конфликта.
-
-Resolved: |cFFFF0000]=]
-L["Resolve collisions dialog startup"] = [=[Вы включили аддон в котором определены индикации |cFF8800FFWeakAuras|r которые имеют те же имена, что и существующие.
-
-
-Вы должны переименовать ваши индикации, чтобы не было конфликта.
-
-Resolved: |cFFFF0000]=]
-L["Resolve collisions dialog startup singular"] = [=[Вы включили аддон в котором определена индикация |cFF8800FFWeakAuras|r которая имеет то же имя, что и существующая.
-
-Вы должны переименовать вашу индикацию, чтобы не было конфликта.
-
-Resolved: |cFFFF0000]=]
 L["Rested"] = "Доп. опыт после отдыха"
 L["Rested Experience"] = "Доп. опыт после отдыха"
 L["Rested Experience (%)"] = "Доп. опыт после отдыха (%)"
@@ -977,6 +990,8 @@ L["Spell Usable"] = "Заклинание доступно"
 L["Spin"] = "Вращение"
 L["Spiral"] = "Спираль"
 L["Spiral In And Out"] = "Спираль (вперед-назад)"
+--[[Translation missing --]]
+L["Spirit"] = "Spirit"
 L["Stack Count"] = "Количество стаков"
 L["Stacks"] = "Стаки"
 L["Stage"] = "Фаза"
@@ -1026,6 +1041,7 @@ L["Tempest Keep"] = "Крепость Бурь"
 L["Terestian Illhoof"] = "Терестиан Больное Копыто"
 L["Teron Gorefiend"] = "Терон Кровожад"
 L["Text"] = "Текст"
+L["Text-to-speech"] = "Текст в речь"
 L["Thaddius"] = "Таддиус"
 L["The aura has overwritten the global '%s', this might affect other auras."] = "Индикация перезаписала значение глобальной переменной %s. Это может повлиять как на другие индикации, так и на ваш интерфейс!"
 L["The Battle for Mount Hyjal"] = "Битва за гору Хиджал"
@@ -1047,6 +1063,8 @@ L["This aura has legacy aura trigger(s), which are no longer supported."] = "И�
 L["This aura was created with a newer version of WeakAuras."] = "Индикация была создана в новой версии WeakAuras."
 L["This aura was created with the Classic version of World of Warcraft."] = "Индикация была создана в Classic версии WoW."
 L["This aura was created with the retail version of World of Warcraft."] = "Индикация была создана в Retail версии WoW."
+--[[Translation missing --]]
+L["This import requires a newer WeakAuras version."] = "This import requires a newer WeakAuras version."
 L["This is a modified version of your aura, |cff9900FF%s.|r"] = [=[Это модифицированная версия вашей индикации:
 |cff9900FF%s|r.
 ]=]

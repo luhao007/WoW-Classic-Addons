@@ -1,9 +1,9 @@
 local mod	= DBM:NewMod("Aran", "DBM-Karazhan")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210623160950")
+mod:SetRevision("20211011151041")
 mod:SetCreatureID(16524)
-mod:SetEncounterID(WOW_PROJECT_ID ~= (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5) and 658 or 2450)
+mod:SetEncounterID(658, 2450)
 mod:SetModelID(16621)
 mod:RegisterCombat("combat")
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -118,7 +118,7 @@ function mod:SPELL_SUMMON(args)
 			timerElementals:Show()
 		end
 		if self.Options.ElementalIcons then
-			self:ScanForMobs(args.destGUID, 2, self.vb.mobIcon, 1, 0.1, 10, "ElementalIcons")--creatureID, iconSetMethod, mobIcon, maxIcon, scanInterval, scanningTime, optionName, isFriendly, secondCreatureID, skipMarked
+			self:ScanForMobs(args.destGUID, 2, self.vb.mobIcon, 1, nil, 10, "ElementalIcons")--creatureID, iconSetMethod, mobIcon, maxIcon, scanInterval, scanningTime, optionName, isFriendly, secondCreatureID, skipMarked
 		end
 		self.vb.mobIcon = self.vb.mobIcon + 1
 		if self.vb.mobIcon == 5 then self.vb.mobIcon = 1 end

@@ -11,6 +11,8 @@ local QuestieJourney = QuestieLoader:ImportModule("QuestieJourney")
 local QuestieMap = QuestieLoader:ImportModule("QuestieMap")
 ---@type QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
+---@type MeetingStones
+local MeetingStones = QuestieLoader:ImportModule("MeetingStones")
 ---@type QuestieProfessions
 local QuestieProfessions = QuestieLoader:ImportModule("QuestieProfessions")
 ---@type QuestieQuest
@@ -70,7 +72,7 @@ local function toggle(key, forceRemove) -- /run QuestieLoader:ImportModule("Ques
             Questie.db.char.vendorList[key]
 
     if (not ids) then
-        Questie:Debug(DEBUG_INFO, "Invalid townsfolk key " .. tostring(key))
+        Questie:Debug(Questie.DEBUG_INFO, "Invalid townsfolk key " .. tostring(key))
         return
     end
 
@@ -78,7 +80,14 @@ local function toggle(key, forceRemove) -- /run QuestieLoader:ImportModule("Ques
     if key == "Mailbox" or key == "Meeting Stones" then -- object type townsfolk
         if Questie.db.char.townsfolkConfig[key] and (not forceRemove) then
             for _, id in pairs(ids) do
-                QuestieMap:ShowObject(id, icon, 1.2, Questie:Colorize(l10n(key), "white"), {}, true, key)
+                if key == "Meeting Stones" then
+                    local dungeonName, levelRange = MeetingStones:GetLocalizedDungeonNameAndLevelRangeByObjectId(id)
+                    if dungeonName and levelRange then
+                        QuestieMap:ShowObject(id, icon, 1.2, Questie:Colorize(l10n("Meeting Stone"), "white") .. "|n" .. dungeonName .. " " .. levelRange, {}, true, key)
+                    end
+                else
+                    QuestieMap:ShowObject(id, icon, 1.2, Questie:Colorize(l10n(key), "white"), {}, true, key)
+                end
             end
         else
             for _, id in pairs(ids) do
@@ -285,7 +294,7 @@ function QuestieMenu:Show()
     end
 
     tinsert(menuTable, {text= l10n('Cancel'), func=function() end})
-    EasyMenu(menuTable, QuestieMenu.menu, "cursor", -80, 0, "MENU")
+    LibDropDown:EasyMenu(menuTable, QuestieMenu.menu, "cursor", -80, 0, "MENU")
 end
 
 local function _reformatVendors(lst, existingTable)
@@ -416,9 +425,8 @@ function QuestieMenu:PopulateTownsfolk()
 
     if Questie.IsTBC then
         local meetingStones = {
-            178824,178825,178826,178827,178828,178829,178831,178832,178833,178834,178844,178845,178884,179554,179555,179584,179585,
-            179586,179587,179595,179596,179597,182558,182559,182560,184455,184456,184458,184462,184463,185321,185322,185433,185550,
-            186251,188171,188172,
+            178824,178825,178826,178827,178828,178829,178831,178832,178833,178834,178844,178845,178884,179554,179555,179585,179595,
+            179596,182558,182559,182560,184455,184456,184458,184462,184463,185321,185322,185433,185550,186251,188171,188172,
         }
 
         Questie.db.global.townsfolk["Meeting Stones"] = {}
@@ -493,7 +501,7 @@ function QuestieMenu:PopulateTownsfolk()
                 tinsert(Questie.db.global.factionSpecificTownsfolk["Alliance"]["Mailbox"], id)
             end
         else
-            Questie:Debug(DEBUG_DEVELOP, "Missing mailbox: " .. tostring(id))
+            Questie:Debug(Questie.DEBUG_DEVELOP, "Missing mailbox: " .. tostring(id))
         end
     end
 

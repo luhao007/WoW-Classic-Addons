@@ -1302,10 +1302,13 @@ function private.FSMCreate()
 		assert(context.scanType == "POST")
 		local currentRow = TSM.Auctioning.PostScan.GetCurrentRow()
 
-		local buyout = TSM.UI.AuctionUI.ParseBidBuyout(button:GetElement("__parent.buyout.input"):GetValue())
-		local bid = TSM.UI.AuctionUI.ParseBidBuyout(button:GetElement("__parent.bid.input"):GetValue())
-		bid = min(bid, buyout)
-		if not TSM.IsWowClassic() and ItemInfo.IsCommodity(context.itemString) and bid ~= buyout then
+		local isCommodity = ItemInfo.IsCommodity(context.itemString)
+		local bid = TSM.UI.AuctionUI.ParseBid(button:GetElement("__parent.bid.input"):GetValue())
+		local buyout = TSM.UI.AuctionUI.ParseBuyout(button:GetElement("__parent.buyout.input"):GetValue(), isCommodity)
+		if buyout > 0 then
+			bid = min(bid, buyout)
+		end
+		if not TSM.IsWowClassic() and isCommodity and bid ~= buyout then
 			Log.PrintUser(L["Did not change prices due to an invalid bid or buyout value."])
 		else
 			local duration = Table.KeyByValue(TSM.CONST.AUCTION_DURATIONS, button:GetElement("__parent.duration.toggle"):GetValue())
@@ -1658,8 +1661,8 @@ function private.PerItemOnClick(button)
 	local row = TSM.Auctioning.PostScan.GetCurrentRow()
 	local bidInput = button:GetElement("__parent.__parent.bid.input")
 	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBidBuyout(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue())
+	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
+	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), ItemInfo.IsCommodity(row:GetField("itemString")))
 	local stackSize = row:GetField("stackSize")
 	buyoutInput:SetFocused(false)
 		:SetValue(Money.ToString(buyout / stackSize))
@@ -1684,8 +1687,8 @@ function private.PerStackOnClick(button)
 	local row = TSM.Auctioning.PostScan.GetCurrentRow()
 	local bidInput = button:GetElement("__parent.__parent.bid.input")
 	local buyoutInput = button:GetElement("__parent.__parent.buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBidBuyout(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue())
+	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
+	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), ItemInfo.IsCommodity(row:GetField("itemString")))
 	local stackSize = row:GetField("stackSize")
 	buyoutInput:SetFocused(false)
 		:SetValue(Money.ToString(buyout * stackSize))
@@ -1696,12 +1699,14 @@ function private.PerStackOnClick(button)
 end
 
 function private.UpdateSaveButtonState(frame)
+	local context = frame:GetElement("saveBtn"):GetContext()
+	local isCommodity = ItemInfo.IsCommodity(context.itemString)
 	local bidInput = frame:GetElement("bid.input")
 	local buyoutInput = frame:GetElement("buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBidBuyout(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue())
+	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
+	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
 	frame:GetElement("saveBtn")
-		:SetDisabled(bid > buyout or not bidInput:IsValid() or not buyoutInput:IsValid())
+		:SetDisabled((buyout > 0 and bid > buyout) or not bidInput:IsValid() or not buyoutInput:IsValid())
 		:Draw()
 end
 
@@ -1712,15 +1717,16 @@ end
 function private.BidBuyoutInputOnValueChanged(input)
 	local frame = input:GetElement("__parent.__parent")
 	local context = frame:GetElement("saveBtn"):GetContext()
+	local isCommodity = ItemInfo.IsCommodity(context.itemString)
 	local bidInput = frame:GetElement("bid.input")
 	local buyoutInput = frame:GetElement("buyout.input")
-	local bid = TSM.UI.AuctionUI.ParseBidBuyout(bidInput:GetValue())
-	local buyout = TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue())
-	if input == buyoutInput and not TSM.IsWowClassic() and ItemInfo.IsCommodity(context.itemString) then
+	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
+	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
+	if input == buyoutInput and not TSM.IsWowClassic() and isCommodity then
 		-- update the bid to match
 		bidInput:SetValue(Money.ToString(buyout, nil, "OPT_83_NO_COPPER", "OPT_DISABLE"))
 			:Draw()
-	elseif input == bidInput and TSM.UI.AuctionUI.ParseBidBuyout(input:GetValue()) > TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue()) then
+	elseif input == bidInput and buyout > 0 and bid > buyout then
 		-- update the buyout to match
 		buyoutInput:SetValue(Money.ToString(bid, nil, "OPT_83_NO_COPPER"))
 			:Draw()
@@ -1730,12 +1736,16 @@ end
 
 function private.BidBuyoutInputOnEnterPressed(input)
 	local frame = input:GetElement("__parent.__parent")
+	local context = frame:GetElement("saveBtn"):GetContext()
+	local isCommodity = ItemInfo.IsCommodity(context.itemString)
 	local bidInput = frame:GetElement("bid.input")
 	local buyoutInput = frame:GetElement("buyout.input")
-	local value = TSM.UI.AuctionUI.ParseBidBuyout(input:GetValue())
+	local bid = TSM.UI.AuctionUI.ParseBid(bidInput:GetValue())
+	local buyout = TSM.UI.AuctionUI.ParseBuyout(buyoutInput:GetValue(), isCommodity)
+	local value = input:GetContext() == "bid" and bid or buyout
 	input:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
 	input:Draw()
-	if input == buyoutInput and TSM.UI.AuctionUI.ParseBidBuyout(buyoutInput:GetValue()) < TSM.UI.AuctionUI.ParseBidBuyout(bidInput:GetValue()) then
+	if input == buyoutInput and buyout > 0 and buyout < bid then
 		-- update the bid to match
 		bidInput:SetValue(Money.ToString(value, nil, "OPT_83_NO_COPPER"))
 			:Draw()
@@ -1745,7 +1755,13 @@ end
 
 function private.BidBuyoutValidateFunc(input, value)
 	local errMsg = nil
-	value, errMsg = TSM.UI.AuctionUI.ParseBidBuyout(value)
+	local context = input:GetContext()
+	if context == "bid" then
+		value, errMsg = TSM.UI.AuctionUI.ParseBid(value)
+	else
+		local isCommodity = context == "itemBuyout"
+		value, errMsg = TSM.UI.AuctionUI.ParseBuyout(value, isCommodity)
+	end
 	if not value then
 		return false, L["Invalid price."].." "..errMsg
 	end

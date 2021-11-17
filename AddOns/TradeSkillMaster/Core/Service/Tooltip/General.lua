@@ -17,6 +17,7 @@ local Conversions = TSM.Include("Service.Conversions")
 local Inventory = TSM.Include("Service.Inventory")
 local private = {
 	tooltipInfo = nil,
+	guildQuantityCache = {},
 }
 local DESTROY_INFO = {
 	{ key = "deTooltip", method = Conversions.METHOD.DISENCHANT },
@@ -298,9 +299,13 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 			totalNum = totalNum + bag + bank + reagentBank + auction + mail
 		end
 	end
+	wipe(private.guildQuantityCache)
 	for guildName in pairs(TSM.db.factionrealm.internalData.guildVaults) do
 		local guildQuantity = Inventory.GetGuildQuantity(itemString, guildName)
-		totalNum = totalNum + guildQuantity
+		if guildQuantity > 0 then
+			private.guildQuantityCache[guildName] = guildQuantity
+			totalNum = totalNum + guildQuantity
+		end
 	end
 	tooltip:StartSection(L["Inventory"], format(L["%s total"], tooltip:ApplyValueColor(totalNum)))
 
@@ -330,11 +335,8 @@ function private.PopulateFullInventoryLines(tooltip, itemString)
 			end
 		end
 	end
-	for guildName in pairs(TSM.db.factionrealm.internalData.guildVaults) do
-		local guildQuantity = Inventory.GetGuildQuantity(itemString, guildName)
-		if guildQuantity > 0 then
-			tooltip:AddLine(guildName, format(L["%s in guild vault"], tooltip:ApplyValueColor(guildQuantity)))
-		end
+	for guildName, guildQuantity in pairs(private.guildQuantityCache) do
+		tooltip:AddLine(guildName, format(L["%s in guild vault"], tooltip:ApplyValueColor(guildQuantity)))
 	end
 	tooltip:EndSection()
 end
@@ -345,7 +347,7 @@ function private.PopulateSimpleInventoryLine(tooltip, itemString)
 		local totalPlayer, totalAlt, totalGuild, totalAuction = 18, 0, 1, 4
 		local totalNum2 = totalPlayer + totalAlt + totalGuild + totalAuction
 		local rightText2 = nil
-		if not TSM.IsWowClassic() then
+		if not TSM.IsWowVanillaClassic() then
 			rightText2 = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s AH)"], totalNum2, totalPlayer, totalAlt, totalGuild, totalAuction)
 		else
 			rightText2 = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s AH)"], totalNum2, totalPlayer, totalAlt, totalAuction)
@@ -376,7 +378,7 @@ function private.PopulateSimpleInventoryLine(tooltip, itemString)
 	local totalNum = totalPlayer + totalAlt + totalGuild + totalAuction
 	if totalNum > 0 then
 		local rightText = nil
-		if not TSM.IsWowClassic() then
+		if not TSM.IsWowVanillaClassic() then
 			rightText = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s guild, %s AH)"], totalNum, totalPlayer, totalAlt, totalGuild, totalAuction)
 		else
 			rightText = private.RightTextFormatHelper(tooltip, L["%s (%s player, %s alts, %s AH)"], totalNum, totalPlayer, totalAlt, totalAuction)

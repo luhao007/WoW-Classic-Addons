@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Isler
 ## Version: 1.36.5
 ## RequiredDeps: UnitFramesPlus

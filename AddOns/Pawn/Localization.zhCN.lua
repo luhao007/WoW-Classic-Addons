@@ -93,6 +93,7 @@ PawnLocal =
 		["CritInfo"] = "爆击等级，影响近战、远程和法术的爆击几率。(在经典旧世中, 仅对物理攻击生效。)",
 		["DefenseInfo"] = "防御技能: 减少被首领攻击命中的几率。",
 		["DodgeInfo"] = "闪避: 增加完全闪避攻击的几率。",
+		["DominationSocketInfo"] = "平均统治碎片的套接字值。",
 		["DpsInfo"] = "武器的每秒伤害。(如果你想要给不同类型的武器估分，前往 \"特殊武器属性\" 部分。)",
 		--[[Translation missing --]]
 		["ExpertiseInfo"] = "Expertise. Negates your enemy's chances to dodge and parry.",
@@ -346,6 +347,7 @@ PawnLocal =
 		["HitRatingShort"] = "^%+?# 命中等级$",
 		["HolySpellDamage"] = "^%+# 神圣法术伤害$",
 		["HolySpellDamage2"] = "^装备： ?提高神圣法术和效果所造成的伤害，最多#点。$",
+		["HolySpellDamage3"] = "^装备： ?使你的神圣法术和效果所造成的伤害提高最多#点。$",
 		["Hp5"] = "^装备: 每5秒恢复#生命力。$",
 		["Hp52"] = "^装备: 每5秒恢复#生命力。$",
 		["Hp53"] = "^每5秒恢复#生命力$",

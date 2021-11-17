@@ -1,11 +1,11 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.3.4.20501
+## Version: 1.4.1.20502
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel Classic [|cffeda55fAmmo|r] |cff00aa001.3.4.20501|r
+## Title: Titan Panel Classic [|cffeda55fAmmo|r] |cff00aa001.4.1.20502|r
 ## Notes: Adds an ammo monitor to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0弹药|r
 ## Notes-zhCN: 泰坦面板的弹药模块

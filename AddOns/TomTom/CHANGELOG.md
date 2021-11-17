@@ -1,10 +1,8 @@
 # TomTom
 
-## [v3.0.2](https://github.com/jnwhiteh/TomTom/tree/v3.0.2) (2021-06-29)
-[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.0.1...v3.0.2) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
+## [v3.0.3](https://github.com/jnwhiteh/TomTom/tree/v3.0.3) (2021-11-04)
+[Full Changelog](https://github.com/jnwhiteh/TomTom/compare/v3.0.2...v3.0.3) [Previous Releases](https://github.com/jnwhiteh/TomTom/releases)
 
-- Merge branch 'main' of github.com:jnwhiteh/TomTom into main  
-- Update Interface for Retail to 90100  
-- Merge pull request #3 from jnwhiteh/issue-2  
-    Clean up WOW version detection  
-- Clean up WOW client version detection  
+- Merge pull request #5 from jnwhiteh/jnwhiteh-9.1.5-toc-update  
+    Update TOC for 9.1.5  
+- Update TOC for 9.1.5  

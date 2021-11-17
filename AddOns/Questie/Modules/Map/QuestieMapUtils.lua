@@ -7,6 +7,8 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib");
 
 local HBD = LibStub("HereBeDragonsQuestie-2.0")
 
+local ZOOM_MODIFIER = 1;
+
 -- All the speed we can get is worth it.
 local tinsert = table.insert
 local pairs = pairs
@@ -44,82 +46,75 @@ function QuestieMap.utils:SetDrawOrder(frame)
     end
 end
 
----@param points table<number, Point> @Pointlist {x=0, y=0}
----@return Point @{x=?, y=?}
-function QuestieMap.utils:CenterPoint(points)
-    local center = {}
-    local count = 0
-    center.x = 0
-    center.y = 0
-    for _, point in pairs(points) do
-        center.x = center.x + point.x
-        center.y = center.y + point.y
-        count = count + 1
+---@param points table<number, Point> @{{x=0, y=0}, ...}
+---@return number x, number y @Center coordinates
+function QuestieMap.utils.CenterPoint(points)
+    local x, y = 0, 0
+    local count = #points
+    for i=1, count do
+        local point = points[i]
+        x = x + point.x
+        y = y + point.y
     end
-    center.x = center.x / count
-    center.y = center.y / count
-    return center
+    x = x / count
+    y = y / count
+    return x, y
 end
 
----@param points table<number, Point> @A simple pointlist with {x=0, y=0, zone=0}
+---@param points table<number, Point> @A pointlist with {worldX=0, worldY=0, UiMapID=0, distance=0}
 ---@param rangeR number @Range of the hotzones.
 ---@param count number @Optional, used to allow more notes if far away from the quest giver.
 ---@return table<number, table<number, Point>> @A table of hotzones
 function QuestieMap.utils:CalcHotzones(points, rangeR, count)
-    if(points == nil) then return nil; end
+--    if(points == nil) then return nil; end
+
+    local hotzones = {}
+    local pointsCount = #points
+
+    if pointsCount == 1 then
+        -- This is execution shortcut to skip loop in case table size == 1
+
+        hotzones = { { points[1] } }
+        return hotzones
+    end
 
     --If count isn't set we want to distance clustering to still work,
     --to simplify the logic we just use a big number.
     if not count then
-      count = 99999;
+        count = 99999;
     end
 
+    local useMovingRange = (count > 100)
+
     local range = rangeR or 100;
-    local hotzones = {};
-    local itt = 0;
-    while(true) do
-        local FoundUntouched
-        for _, point in pairs(points) do
-            if(point.touched == nil) then
-                local notes = {};
-                FoundUntouched = true;
-                point.touched = true;
-                tinsert(notes, point);
-                for _, point2 in pairs(points) do
-                    --We only want to cluster icons that are on the same map.
-                    if(point.UiMapID == point2.UiMapID) then
-                        local times = 1;
 
-                        --We want things further away to be clustered more
-                        local movingRange = range;
-                        if(point.distance and point.distance > 1000 and count > 100) then
-                            movingRange = movingRange * (point.distance/1000);
-                        end
+    for j=1, pointsCount do
+        local point = points[j]
+        if(point.touched == nil) then
+            point.touched = true
+            local notes = { point }
 
-                        if (point.x > 1 and point.y > 1) then
-                            times = 100
-                        end
-                        local aX, aY = HBD:GetWorldCoordinatesFromZone(
-                                            point.x / times, point.y / times,
-                                            point.UiMapID)
-                        local bX, bY = HBD:GetWorldCoordinatesFromZone(
-                                            point2.x / times, point2.y / times,
-                                            point2.UiMapID)
-                        -- local dX = (point.x*times) - (point2.x*times)
-                        -- local dY = (point.y*times) - (point2.y*times);
-                        local distance =
-                            QuestieLib:Euclid(aX or 0, aY or 0, bX or 0, bY or 0)
-                        if (distance < movingRange and point2.touched == nil) then
-                            point2.touched = true
-                            tinsert(notes, point2)
-                        end
+            --We want things further away to be clustered more
+            local movingRange = range
+            if useMovingRange and (point.distance > 1000) then
+                movingRange = movingRange * (point.distance/1000);
+            end
+
+            local aX, aY = point.worldX, point.worldY
+
+            for i=j+1, pointsCount do
+                local point2 = points[i]
+                --We only want to cluster icons that are on the same map.
+                if (point2.touched == nil) and (point.UiMapID == point2.UiMapID) then
+                    local distance = QuestieLib:Euclid(aX, aY, point2.worldX, point2.worldY)
+                    if (distance < movingRange) then
+                        point2.touched = true
+                        notes[#notes+1] = point2
                     end
                 end
-                tinsert(hotzones, notes)
             end
+            hotzones[#hotzones+1] = notes
         end
-        if (FoundUntouched == nil) then break end
-        itt = itt + 1
     end
     return hotzones
 end
@@ -157,7 +152,7 @@ function QuestieMap.utils:MapExplorationUpdate()
             local frame = _G[frameName]
             if (frame and frame.x and frame.y and frame.UiMapID and frame.hidden) then
                 if (QuestieMap.utils:IsExplored(frame.UiMapID, frame.x, frame.y)) then
-                    frame:FakeUnhide()
+                    frame:FakeShow()
                 end
             end
         end
@@ -166,29 +161,23 @@ end
 
 --- Rescale a single icon
 ---@param frameRef string|IconFrame @The global name/iconRef of the icon frame, e.g. "QuestieFrame1"
-function QuestieMap.utils:RecaleIcon(frameRef, modifier)
-    local zoomModifier = modifier or 1;
+function QuestieMap.utils:RescaleIcon(frameRef)
     local frame = frameRef;
-    if(type(frameRef) == "string") then
+    if type(frameRef) == "string" then
         frame = _G[frameRef];
     end
     if frame and frame.data then
-        if(frame.data.GetIconScale) then
+        if frame.data.GetIconScale then
             frame.data.IconScale = frame.data:GetIconScale();
             local scale
-            if(frame.miniMapIcon) then
+            if frame.miniMapIcon then
                 scale = 16 * (frame.data.IconScale or 1) * (Questie.db.global.globalMiniMapScale or 0.7);
             else
                 scale = 16 * (frame.data.IconScale or 1) * (Questie.db.global.globalScale or 0.7);
             end
 
-            if(frame.miniMapIcon) then
-                zoomModifier = 1;
-            end
-
             if scale > 1 then
-                --frame:SetScale(zoomModifier)
-                frame:SetSize(scale*zoomModifier, scale*zoomModifier);
+                frame:SetSize(scale * ZOOM_MODIFIER, scale * ZOOM_MODIFIER);
             end
         else
             Questie:Error("A frame is lacking the GetIconScale function for resizing!", frame.data.Id);

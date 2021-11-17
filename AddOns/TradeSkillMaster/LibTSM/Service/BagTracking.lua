@@ -563,10 +563,14 @@ function private.ScanBagSlot(bag, slot)
 	return true
 end
 
-function private.OnCallbackQueryUpdated()
+function private.DelayedBagTrackingCallback()
 	for _, callback in ipairs(private.callbacks) do
 		callback()
 	end
+end
+
+function private.OnCallbackQueryUpdated()
+	Delay.AfterFrame("BAGTRACKING_DELAYED_CALLBACK", 2, private.DelayedBagTrackingCallback)
 end
 
 function private.ChangeBagItemTotal(bag, levelItemString, changeQuantity)

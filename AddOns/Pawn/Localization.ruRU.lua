@@ -95,6 +95,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["CritInfo"] = "Критический удар. Увеличивает шанс что ваши атакующие и исцеляющие заклинания ударят с увеличенной силой.",
 		["DefenseInfo"] = "Навык защиты.  Уменьшение вероятности того, что по вам попадёт атака боссов.",
 		["DodgeInfo"] = "Уклонение.  Увеличивает шанс что вы полностью уклонитесь от атаки.",
+		["DominationSocketInfo"] = "Значение сокета для среднего Осколка господства.",
 		["DpsInfo"] = "Урон от оружия в секунду",
 		--[[Translation missing --]]
 		["ExpertiseInfo"] = "Expertise. Negates your enemy's chances to dodge and parry.",
@@ -348,6 +349,7 @@ For more information on customizing Pawn, please see the help file (Readme.htm) 
 		["HitRatingShort"] = "^%+?# к рейтингу меткости$",
 		["HolySpellDamage"] = "^%+# к урону от заклинаний светлой магии$",
 		["HolySpellDamage2"] = "^Если на персонаже: Увеличение урона, наносимого заклинаниями и эффектами светлой магии, на # ед%.$",
+		["HolySpellDamage3"] = "^Если на персонаже: Увеличение урона от светлой магии, действие до # ед%.$",
 		["Hp5"] = "^Восстанавливает # здоровья каждые 5 сек%.$",
 		["Hp52"] = "^Восстанавливает # здоровья за 5 сек%.$",
 		["Hp53"] = "^%+?# [зЗ]доровья [кК]аждые 5 [сС]ек%.?$",

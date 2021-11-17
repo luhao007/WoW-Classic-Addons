@@ -757,7 +757,7 @@
 			</Frame>
 			<Frame parentKey="MenuBackdrop" setAllPoints="true">
 				<KeyValues>
-					<KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+					<KeyValue key="backdropInfo" value="BACKDROP_TUTORIAL_16_16" type="global"/>
 				</KeyValues>
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<EdgeSize>

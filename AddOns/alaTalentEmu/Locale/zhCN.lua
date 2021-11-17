@@ -36,14 +36,16 @@ L.resetToSetButton = "重置到初始状态";
 L.readOnlyButton = "\124cff00ff00点击\124r设置";
 L.closeButton = "关闭窗口";
 
-L.classTabButton = "\n\124cff00ff00左键\124r切换职业\n\124cff00ff00右键\124r加载已保存的天赋\n\124cff00ff00Shift+左键\124r删除天赋";
+L.classTabButton = "\n\124cff00ff00左键\124r切换职业\n\124cff00ff00右键\124r加载已保存的天赋\n\124cff00ff00Shift+左键\124r删除保存的天赋";
 L.inspectTargetButton = "观察目标天赋";
 L.spellTabButton = "技能列表窗口";
 L.spellAvailable = "\124cff00ff00技能可用\124r";
 L.spellNotAvailable = "\124cffff0000技能不可用\124r";
+L.TrainCost = "训练费用 ";
 L.showAllSpell = "显示所有等级";
 L.applyTalentsButton = "应用当前天赋模拟";
 L.applyTalentsButton_Notify = "确定应用当前天赋？";
+L.applyTalentsFinished = "天赋已应用";
 L.importButton = "导入字符串或wowhead/nfu/yxrank链接";
 L.exportButton = "\124cff00ff00左键\124r导出字符串\n\124cff00ff00右键\124r导出到\124cffff0000wowhead/nfu/yxrank\124r网页链接";
 L.saveButton = "\124cff00ff00左键\124r保存天赋设置\n\124cff00ff00右键\124r加载已保存的天赋\n\124cff00ff00Shift+左键\124r删除天赋";
@@ -135,12 +137,16 @@ L.DATA = {
 };
 
 L.RACE = "种族";
-L.HUMAN = "人类";
-L.DWARF = "矮人";
-L["HUMAN|DWARF"] = "人类|矮人";
-L.NIGHTELF = "暗夜精灵";
-L.SCOURGE = "亡灵";
-L.TROLL = "巨魔";
+L["HUMAN"] = "人类";
+L["DWARF"] = "矮人";
+L["NIGHTELF"] = "暗夜精灵";
+L["GNOME"] = "侏儒";
+L["DRAENEI"] = "德莱尼";
+L["ORC"] = "兽族";
+L["SCOURGE"] = "亡灵";
+L["TAUREN"] = "牛头人";
+L["TROLL"] = "巨魔";
+L["BLOODELF"] = "血精灵";
 
 
 L.label_itemLevel = "装等";
@@ -196,3 +202,6 @@ L.CASTINGTIME = "%d秒施法时间";
 L.CASTINGTIMEINSTANT = "瞬发技能";
 L.CDSECOND = "%d秒冷却时间";
 L.CDMINUTE = "%d分钟冷却时间";
+
+L["CANNOT APPLY : NEED MORE TALENT POINTS."] = "无法应用天赋: 需要更多天赋点数";
+L["CANNOT APPLY : TALENTS IN CONFLICT."] = "无法应用天赋: 跟当前天赋存在冲突";

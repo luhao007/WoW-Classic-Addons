@@ -30,6 +30,7 @@ LibMapPinHandlerMixin.GetCanvasScale = MapCanvasMixin.GetCanvasScale
 LibMapPinHandlerMixin.GetCanvasZoomPercent = MapCanvasMixin.GetCanvasZoomPercent
 LibMapPinHandlerMixin.ApplyPinPosition = MapCanvasMixin.ApplyPinPosition
 LibMapPinHandlerMixin.GetGlobalPinScale = MapCanvasMixin.GetGlobalPinScale
+LibMapPinHandlerMixin.ExecuteOnAllPins = MapCanvasMixin.ExecuteOnAllPins
 
 function LibMapPinHandlerMixin:OnLoad(ownerMap)
     self.ownerMap = ownerMap

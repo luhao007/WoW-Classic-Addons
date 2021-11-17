@@ -16,6 +16,16 @@ local loadstring = loadstring --> lua local
 
 local IS_WOW_PROJECT_MAINLINE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+local IS_WOW_PROJECT_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+local IS_WOW_PROJECT_CLASSIC_TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+
+local UnitCastingInfo = UnitCastingInfo
+local UnitChannelInfo = UnitChannelInfo
+
+if IS_WOW_PROJECT_CLASSIC_ERA then
+    UnitCastingInfo = CastingInfo
+    UnitChannelInfo = ChannelInfo
+end
 
 local PixelUtil = PixelUtil or DFPixelUtil
 
@@ -742,8 +752,8 @@ local add_row = function (self, t, need_update)
 	local index = #self.rows+1
 	
 	local thisrow = DF:NewPanel (self, self, "$parentHeader_" .. self._name .. index, nil, 1, 20)
-	thisrow.backdrop = {bgFile = [[Interface\DialogFrame\UI-DialogBox-Gold-Background]]}
-	thisrow.color = "silver"
+	thisrow.backdrop = {bgFile = [[Interface\Tooltips\UI-Tooltip-Background]]}
+	thisrow.color = {.3, .3, .3, .9}
 	thisrow.type = t.type
 	thisrow.func = t.func
 	thisrow.name = t.name
@@ -777,7 +787,7 @@ local align_rows = function (self)
 		end
 	end
 
-	local cur_width = 0
+	local cur_width = 1
 	local row_width = self._width / max (rows_shown, 0.0001)
 	
 
@@ -793,11 +803,11 @@ local align_rows = function (self)
 				else
 					row.width = row_width
 				end
-				row:SetPoint ("topleft", self, "topleft", cur_width, 0)
+				row:SetPoint ("topleft", self, "topleft", cur_width, -1)
 				tinsert (self._anchors, cur_width)
 				cur_width = cur_width + row_width + 1
 			else
-				row:SetPoint ("topleft", self, "topleft", cur_width, 0)
+				row:SetPoint ("topleft", self, "topleft", cur_width, -1)
 				row.width = self._raw_rows [index].width
 				tinsert (self._anchors, cur_width)
 				cur_width = cur_width + self._raw_rows [index].width + 1
@@ -991,7 +1001,6 @@ local update_rows = function (self, updated_rows)
 			widget.text:SetText (t.name)
 			DF:SetFontSize (widget.text, raw.textsize or 10)
 			widget.text:SetJustifyH (raw.textalign or "left")
-			
 		end
 	end
 	
@@ -1575,7 +1584,7 @@ function DF:IconPick (callback, close_when_select, param1, param2)
 		DF.IconPickFrame.preview:Hide()
 		
 		--serach
-		DF.IconPickFrame.searchLabel =  DF:NewLabel (DF.IconPickFrame, nil, "$parentSearchBoxLabel", nil, "search:", font, size, color)
+		DF.IconPickFrame.searchLabel =  DF:NewLabel (DF.IconPickFrame, nil, "$parentSearchBoxLabel", nil, "search:")
 		DF.IconPickFrame.searchLabel:SetPoint ("topleft", DF.IconPickFrame, "topleft", 12, -36)
 		DF.IconPickFrame.searchLabel:SetTemplate (DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE"))
 		
@@ -1975,20 +1984,29 @@ local SimplePanel_frame_backdrop_border_color = {0, 0, 0, 1}
 --the slider was anchoring to with_label and here here were anchoring the slider again
 function DF:CreateScaleBar (frame, config)
 	local scaleBar, text = DF:CreateSlider (frame, 120, 14, 0.6, 1.6, 0.1, config.scale, true, "ScaleBar", nil, "Scale:", DF:GetTemplate ("slider", "OPTIONS_SLIDER_TEMPLATE"), DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE"))
-	--scaleBar:SetPoint ("right", frame.Close, "left", -26, 0)
+	scaleBar.thumb:SetWidth(24)
+	scaleBar:SetValueStep(0.1)
+	scaleBar:SetObeyStepOnDrag()
+	scaleBar.mouseDown = false
+
 	text:SetPoint ("topleft", frame, "topleft", 12, -7)
 	scaleBar:SetFrameLevel (DF.FRAMELEVEL_OVERLAY)
 	scaleBar.OnValueChanged = function (_, _, value)
-		config.scale = value
-		if (not scaleBar.IsValueChanging) then
-			frame:SetScale (config.scale)
+		if (scaleBar.mouseDown) then
+			config.scale = value
 		end
 	end
+
+	scaleBar:SetHook ("OnMouseDown", function()
+		scaleBar.mouseDown = true
+	end)
+
 	scaleBar:SetHook ("OnMouseUp", function()
-		frame:SetScale (config.scale)
+		frame:SetScale(config.scale)
+		scaleBar.mouseDown = false
 	end)
 	
-	scaleBar:SetAlpha (0.2)
+	scaleBar:SetAlpha (0.70)
 	
 	return scaleBar
 end
@@ -4021,8 +4039,21 @@ function DF:CreateTabContainer (parent, title, frame_name, frame_list, options_t
 	return mainFrame
 end
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- ~right ~click to ~close
 
+function DF:CreateRightClickToClose(parent, xOffset, yOffset, color, fontSize)
+	--default values
+	xOffset = xOffset or 0
+	yOffset = yOffset or 0
+	color = color or "white"
+	fontSize = fontSize or 10
 
+	local label = DF:CreateLabel(parent, "right click to close", fontSize, color)
+	label:SetPoint("bottomright", parent, "bottomright", -4 + xOffset, 5 + yOffset)
+
+	return label
+end
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -4316,6 +4347,10 @@ DF.ScrollBoxFunctions.GetData = function (self)
 end
 
 DF.ScrollBoxFunctions.GetFrames = function (self)
+	return self.Frames
+end
+
+DF.ScrollBoxFunctions.GetLines = function (self) --alias of GetFrames
 	return self.Frames
 end
 
@@ -6197,7 +6232,7 @@ function DF:PassLoadFilters (loadTable, encounterID)
 			return
 		end
 		local hasEncounter
-		for _, ID in ipairs (loadTable.encounter_ids) do
+		for _, ID in pairs (loadTable.encounter_ids) do
 			if (ID == encounterID) then
 				hasEncounter = true
 				break
@@ -6214,7 +6249,7 @@ function DF:PassLoadFilters (loadTable, encounterID)
 		local uiMapID = C_Map.GetBestMapForUnit ("player")
 		
 		local hasMapID
-		for _, ID in ipairs (loadTable.map_ids) do
+		for _, ID in pairs (loadTable.map_ids) do
 			if (ID == zoneMapID or ID == uiMapID) then
 				hasMapID = true
 				break
@@ -6609,8 +6644,10 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			local textEntryRefresh = function (self)
 				local idList = f.OptionsTable [self.DBKey]
 				self:SetText ("")
-				for i = 1, #idList do 
-					self:SetText (self:GetText() .. " " .. idList [i])
+				for _, id in pairs(idList) do
+					if tonumber(id) then
+						self:SetText (self:GetText() .. " " .. id)
+					end
 				end
 				self:SetText (self:GetText():gsub ("^ ", ""))
 			end
@@ -6619,7 +6656,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 				wipe (f.OptionsTable [self.DBKey])
 				local text = self:GetText()
 				
-				for _, ID in ipairs ({strsplit ("", text)}) do
+				for _, ID in ipairs ({strsplit (" ", text)}) do
 					ID = DF:trim (ID)
 					ID = tonumber (ID)
 					if (ID) then
@@ -6636,7 +6673,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			encounterIDEditbox:SetPoint ("topleft", encounterIDLabel, "bottomleft", 0, -2)
 			encounterIDEditbox.DBKey = "encounter_ids"
 			encounterIDEditbox.Refresh = textEntryRefresh
-			encounterIDEditbox.tooltip = "Enter multiple IDs separating with a semicolon ()\nExample: 35 45 95\n\nUldir:\n"
+			encounterIDEditbox.tooltip = "Enter multiple IDs separating with a whitespace.\nExample: 35 45 95\n\nSanctum of Domination:\n"
 			for _, encounterTable in ipairs (DF:GetCLEncounterIDs()) do
 				encounterIDEditbox.tooltip = encounterIDEditbox.tooltip .. encounterTable.ID .. " - " .. encounterTable.Name .. "\n"
 			end
@@ -6650,7 +6687,7 @@ function DF:OpenLoadConditionsPanel (optionsTable, callback, frameOptions)
 			mapIDEditbox:SetPoint ("topleft", mapIDLabel, "bottomleft", 0, -2)
 			mapIDEditbox.DBKey = "map_ids"
 			mapIDEditbox.Refresh = textEntryRefresh
-			mapIDEditbox.tooltip = "Enter multiple IDs separating with a semicolon ()\nExample: 35 45 95"
+			mapIDEditbox.tooltip = "Enter multiple IDs separating with a whitespace\nExample: 35 45 95"
 			mapIDEditbox:SetHook ("OnEnterPressed", textEntryOnEnterPressed)
 			tinsert (f.AllTextEntries, mapIDEditbox)
 
@@ -6989,7 +7026,7 @@ end
 ]]
 
 function DF:BuildStatusbarAuthorInfo (f, addonBy, authorsNameString)
-	local authorName = DF:CreateLabel (f, "" .. (addonBy or "An addon by") .. "|cFFFFFFFF" .. (authorsNameString or "Terciob") .. "|r")
+	local authorName = DF:CreateLabel (f, "" .. (addonBy or "An addon by ") .. "|cFFFFFFFF" .. (authorsNameString or "Terciob") .. "|r")
 	authorName.textcolor = "silver"
 	local discordLabel = DF:CreateLabel (f, "Discord: ")
 	discordLabel.textcolor = "silver"
@@ -7214,7 +7251,7 @@ DF.StatusBarFunctions = {
 		{"UNIT_HEALTH", true},
 		{"UNIT_MAXHEALTH", true},
 		{(IS_WOW_PROJECT_NOT_MAINLINE) and "UNIT_HEALTH_FREQUENT", true}, -- this one is classic-only...
-		{(IS_WOW_PROJECT_MAINLINE) and "UNIT_HEAL_PREDICTION", true},
+		{"UNIT_HEAL_PREDICTION", true},
 		{(IS_WOW_PROJECT_MAINLINE) and "UNIT_ABSORB_AMOUNT_CHANGED", true},
 		{(IS_WOW_PROJECT_MAINLINE) and "UNIT_HEAL_ABSORB_AMOUNT_CHANGED", true},
 	}
@@ -7245,8 +7282,8 @@ DF.StatusBarFunctions = {
 				
 				--> check for settings and update some events
 				if (not self.Settings.ShowHealingPrediction) then
+					self:UnregisterEvent ("UNIT_HEAL_PREDICTION")
 					if IS_WOW_PROJECT_MAINLINE then
-						self:UnregisterEvent ("UNIT_HEAL_PREDICTION")
 						self:UnregisterEvent ("UNIT_HEAL_ABSORB_AMOUNT_CHANGED")
 					end
 					self.incomingHealIndicator:Hide()
@@ -7346,7 +7383,6 @@ DF.StatusBarFunctions = {
 	
 	--health and absorbs prediction
 	healthBarMetaFunctions.UpdateHealPrediction = function (self)
-		if IS_WOW_PROJECT_NOT_MAINLINE then return end
 		local currentHealth = self.currentHealth
 		local currentHealthMax = self.currentHealthMax
 		local healthPercent = currentHealth / currentHealthMax
@@ -7362,7 +7398,7 @@ DF.StatusBarFunctions = {
 			--incoming heal on the unit from all sources
 			local unitHealIncoming = self.displayedUnit and UnitGetIncomingHeals (self.displayedUnit) or 0
 			--heal absorbs
-			local unitHealAbsorb = self.displayedUnit and UnitGetTotalHealAbsorbs (self.displayedUnit) or 0
+			local unitHealAbsorb = IS_WOW_PROJECT_MAINLINE and self.displayedUnit and UnitGetTotalHealAbsorbs (self.displayedUnit) or 0
 		
 			if (unitHealIncoming > 0) then
 				--calculate what is the percent of health incoming based on the max health the player has
@@ -7386,7 +7422,7 @@ DF.StatusBarFunctions = {
 			end
 		end
 		
-		if (self.Settings.ShowShields) then
+		if (self.Settings.ShowShields and IS_WOW_PROJECT_MAINLINE) then
 			--damage absorbs
 			local unitDamageAbsorb = self.displayedUnit and UnitGetTotalAbsorbs (self.displayedUnit) or 0
 		
@@ -8113,6 +8149,9 @@ DF.CastFrameFunctions = {
 			if (self.casting) then
 				local name, text, texture, startTime = UnitCastingInfo (self.unit)
 				if (name) then
+					--[[if not self.spellStartTime then
+						self:UpdateCastingInfo(self.unit)
+					end]]--
 					self.value = GetTime() - self.spellStartTime
 				end
 
@@ -8121,6 +8160,9 @@ DF.CastFrameFunctions = {
 			elseif (self.channeling) then
 				local name, text, texture, endTime = UnitChannelInfo (self.unit)
 				if (name) then
+					--[[if not self.spellEndTime then
+						self:UpdateChannelInfo(self.unit)
+					end]]--
 					self.value = self.spellEndTime - GetTime()
 				end
 
@@ -8314,10 +8356,12 @@ DF.CastFrameFunctions = {
 		
 		if (isChannel) then
 			self.channeling = true
+			self:UpdateChannelInfo(unit)
 			return self.unit == arg1 and "UNIT_SPELLCAST_CHANNEL_START"
 			
 		elseif (isRegularCast) then
 			self.casting = true
+			self:UpdateCastingInfo(unit)
 			return self.unit == arg1 and "UNIT_SPELLCAST_START"
 			
 		else
@@ -8331,10 +8375,9 @@ DF.CastFrameFunctions = {
 		end
 	end,
 	
-	UNIT_SPELLCAST_START = function (self, unit)
-
+	UpdateCastingInfo = function (self, unit)
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID
-		if IS_WOW_PROJECT_MAINLINE then
+		if not IS_WOW_PROJECT_CLASSIC_TBC then
 			name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo (unit)
 		else
 			name, text, texture, startTime, endTime, isTradeSkill, castID, spellID = UnitCastingInfo (unit)
@@ -8391,12 +8434,18 @@ DF.CastFrameFunctions = {
 		--> update the interrupt cast border
 		self:UpdateInterruptState()
 		
+	end,
+	
+	UNIT_SPELLCAST_START = function (self, unit)
+
+		self:UpdateCastingInfo(unit)
+		
 		self:RunHooksForWidget ("OnCastStart", self, self.unit, "UNIT_SPELLCAST_START")
 	end,
 	
-	UNIT_SPELLCAST_CHANNEL_START = function (self, unit, ...)
+	UpdateChannelInfo = function (self, unit, ...)
 		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID
-		if IS_WOW_PROJECT_MAINLINE then
+		if not IS_WOW_PROJECT_CLASSIC_TBC then
 			name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo (unit)
 		else
 			name, text, texture, startTime, endTime, isTradeSkill, spellID = UnitChannelInfo (unit)
@@ -8452,6 +8501,12 @@ DF.CastFrameFunctions = {
 			
 		--> update the interrupt cast border
 		self:UpdateInterruptState()
+		
+	end,
+	
+	UNIT_SPELLCAST_CHANNEL_START = function (self, unit, ...)
+		
+		self:UpdateChannelInfo(unit, ...)
 
 		self:RunHooksForWidget ("OnCastStart", self, self.unit, "UNIT_SPELLCAST_CHANNEL_START")
 	end,
@@ -8522,7 +8577,7 @@ DF.CastFrameFunctions = {
 	UNIT_SPELLCAST_FAILED = function (self, unit, ...)
 		local unitID, castID, spellID = ...
 	
-		if (self.casting and castID == self.castID and not self.fadeOut) then
+		if ((self.casting or self.channeling) and castID == self.castID and not self.fadeOut) then
 			self.casting = nil
 			self.channeling = nil
 			self.failed = true
@@ -8543,7 +8598,7 @@ DF.CastFrameFunctions = {
 	UNIT_SPELLCAST_INTERRUPTED = function (self, unit, ...)
 		local unitID, castID, spellID = ...
 
-		if (self.casting and castID == self.castID and not self.fadeOut) then
+		if ((self.casting or self.channeling) and castID == self.castID and not self.fadeOut) then
 			self.casting = nil
 			self.channeling = nil
 			self.interrupted = true
@@ -8612,6 +8667,90 @@ DF.CastFrameFunctions = {
 	end,
 
 }
+
+-- for classic era use LibClassicCasterino:
+local LibCC = LibStub ("LibClassicCasterino", true)
+if IS_WOW_PROJECT_CLASSIC_ERA and LibCC then
+	local fCast = CreateFrame("frame")
+
+	local getCastBar = function (unitId)
+		local plateFrame = C_NamePlate.GetNamePlateForUnit (unitId)
+		if (not plateFrame) then
+			return
+		end
+
+		local castBar = plateFrame.unitFrame and plateFrame.unitFrame.castBar
+		if (not castBar) then
+			return
+		end
+
+		return castBar
+	end
+
+	local triggerCastEvent = function (castBar, event, unitId, ...)
+		if (castBar and castBar.OnEvent) then
+			castBar.OnEvent (castBar, event, unitId)
+		end
+	end
+
+	local funcCast = function (event, unitId, ...)
+		local castBar = getCastBar (unitId)
+		if (castBar) then
+			triggerCastEvent (castBar, event, unitId)
+		end
+	end
+
+	fCast.UNIT_SPELLCAST_START = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_STOP = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_DELAYED = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_FAILED = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_INTERRUPTED = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_CHANNEL_START = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_CHANNEL_UPDATE = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	fCast.UNIT_SPELLCAST_CHANNEL_STOP = function (self, event, unitId, ...)
+		triggerCastEvent (getCastBar (unitId), event, unitId)
+	end
+
+	if LibCC then
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_START", funcCast)
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_DELAYED", funcCast) -- only for player
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_STOP", funcCast)
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_FAILED", funcCast)
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_INTERRUPTED", funcCast)
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_START", funcCast)
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_UPDATE", funcCast) -- only for player
+		LibCC.RegisterCallback(fCast,"UNIT_SPELLCAST_CHANNEL_STOP", funcCast)
+
+		UnitCastingInfo = function(unit)
+			return LibCC:UnitCastingInfo (unit)
+		end	
+
+		UnitChannelInfo = function(unit)
+			return LibCC:UnitChannelInfo (unit)
+		end	
+	end
+end -- end classic era
 
 -- ~castbar
 

@@ -1,5 +1,4 @@
-## Interface: 20501
-## Version: 2.5.8
+## Interface: 20502
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMKarazhan_AllSavedVars
@@ -17,8 +16,6 @@
 ## X-DBM-Mod-Sort: 1007
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 1
-## X-Curse-Project-ID: 16442
-## X-WoWI-ID: 11700
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

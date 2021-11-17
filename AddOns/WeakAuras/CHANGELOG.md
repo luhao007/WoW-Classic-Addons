@@ -1,36 +1,56 @@
-# [3.5.0](https://github.com/WeakAuras/WeakAuras2/tree/3.5.0) (2021-06-29)
+# [3.7.3](https://github.com/WeakAuras/WeakAuras2/tree/3.7.3) (2021-11-02)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.4.3...3.5.0)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.2...3.7.3)
 
 ## Highlights
 
- - Added a few new Patch 9.1 features
-- Performance Optimizations
-- Added BCC Encounter IDs 
+ TOC Update for Retail and a few new features/additions
+
+Remove ExternalAddons API as it was broken and unused
+
+More preparation for Nested Groups 
 
 ## Commits
 
-InfusOnWoW (8):
+Casey Raethke (1):
 
-- Make translations a bit easier
-- Add new soul bind traits and new conduits
-- Add most new legendary effects
-- Add Shards of Domination buffs
-- Move some StopMotion texture definitions to the plugin
-- Fix New from Templates adding two glows
-- Only update ViewTexture if it changed
-- Be less brain dead for updating the "eye" texture in the Options
+- Add UNIT_RESISTANCES to Character Stats trigger
 
-Stanzilla (2):
+InfusOnWoW (22):
 
-- Update TOC for Patch 9.1.0
-- Update WeakAurasModelPaths from wow.tools
+- Remove accidental debug print
+- Ensure that on drag start we select the dragged aura
+- Document that DuplicateAura does not copy children
+- Remove unused parameter from internal function
+- Simplify filterAnimPresets
+- Simplify code around deletion of dynamic groups
+- Remove reference to dead regionType "timer"
+- PickDisplay: Adjust for nested groups
+- Recursively add parents, grandparents, etc
+- Prepare group for nested
+- Skip sub groups in shift multi selection
+- Add Spirit to Character Stats
+- Use .data.id instead of GetTitle()
+- ExternalAddons: Remove it
+- BCC: Fix combo points not updating on target change
+- AuraBar: Fix SetInverse not inversing overlays
+- Fix reseting of x/y offset on auras being moved into a dynamic group
+- Swing Timer: Note that the trigger is not correct in BCC
+- Fix conditions not being unapplied correctly in collapse
+- Add support for Charged Combo Points with Kyrian Legendary
+- Text Replacements: Add Custom Variables with descriptions
+- Try to preserve names on importing
 
-mrbuds (1):
+Lynn (1):
 
-- add bcc encounter ids and show list in correct order
+- TTS: Save value.message_voice as number instead of string
 
-nullKomplex (1):
+Stanzilla (1):
 
-- Update map of legendary ids and bonus ids. (#3170)
+- Update TOC for Retail Patch 9.1.5
+
+mrbuds (2):
+
+- enable TTS on classic_era and fix error for tbc
+- swing timer: fix spell that reset swing not starting swing timer by waiting a frame after the spell so "isAttacking" has correct state
 

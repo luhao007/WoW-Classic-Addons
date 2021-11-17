@@ -92,9 +92,9 @@ L["OPTIONS_PROFILE_ERROR_PROFILENAME"] = "Invalid profile name"
 --[[Translation missing --]]
 L["OPTIONS_PROFILE_ERROR_STRINGINVALID"] = "Invalid profile file."
 --[[Translation missing --]]
-L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Invalid profile file.
+L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Invalid profile data.
 
-Import scripts or mods at the scripting tab.]=]
+Import scripts or mods at the scripting or modding tab.]=]
 --[[Translation missing --]]
 L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = "Profile '%s' already exists, overwrite it?"
 --[[Translation missing --]]
@@ -124,8 +124,6 @@ L["OPTIONS_TABNAME_BUFF_TRACKING"] = "Buff Tracking"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_COLORSNPC"] = "Npc Colors"
 --[[Translation missing --]]
-L["OPTIONS_TABNAME_CREDITS"] = "Credits"
---[[Translation missing --]]
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "General Settings"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_MODDING"] = "Modding"
@@ -148,7 +146,7 @@ L["OPTIONS_TABNAME_STRATA"] = "Level & Strata"
 --[[Translation missing --]]
 L["OPTIONS_TABNAME_TARGET"] = "Target"
 --[[Translation missing --]]
-L["OPTIONS_TABNAME_THREAT"] = "Threat / Aggro"
+L["OPTIONS_TABNAME_THREAT"] = "Colors / Threat"
 --[[Translation missing --]]
 L["OPTIONS_TEXTURE"] = "Texture"
 --[[Translation missing --]]

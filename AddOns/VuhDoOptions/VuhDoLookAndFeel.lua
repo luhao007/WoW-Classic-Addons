@@ -307,13 +307,12 @@ end
 
 
 --
-do
-	local sLastComboItem = nil;
+local sLastComboItem = nil;
 
-	function VUHDO_lnfSetLastComboItem(anItem)
-		sLastComboItem = anItem:GetName();
-	end
+function VUHDO_lnfSetLastComboItem(anItem)
+	sLastComboItem = anItem:GetName();
 end
+
 
 
 --

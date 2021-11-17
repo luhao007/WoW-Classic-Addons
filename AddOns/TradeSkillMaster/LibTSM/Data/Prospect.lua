@@ -358,28 +358,28 @@ else
 			["i:152513"] = {matRate = 0.2100, minAmount = 1, maxAmount = 4, amountOfMats = 0.0660}, -- Platinum Ore
 		},
 		["i:173108"] = { -- Oriblase
-			["i:171828"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Laestrite Ore
-			["i:171829"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Solenium Ore
-			["i:171830"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Oxxein Ore
-			["i:171831"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Phaedrum Ore
-			["i:171832"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Sinvyr Ore
-			["i:171833"] = {matRate = 0.3500, minAmount = 2, maxAmount = 4, amountOfMats = 0.2100}, -- Elethium Ore
+			["i:171828"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Laestrite Ore
+			["i:171829"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Solenium Ore
+			["i:171830"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Oxxein Ore
+			["i:171831"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Phaedrum Ore
+			["i:171832"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Sinvyr Ore
+			["i:171833"] = {matRate = 0.3350, minAmount = 2, maxAmount = 4, amountOfMats = 0.2001}, -- Elethium Ore
 		},
 		["i:173109"] = { -- Angerseye
-			["i:171828"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Laestrite Ore
-			["i:171829"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Solenium Ore
-			["i:171830"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Oxxein Ore
-			["i:171831"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Phaedrum Ore
-			["i:171832"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Sinvyr Ore
-			["i:171833"] = {matRate = 0.3500, minAmount = 2, maxAmount = 4, amountOfMats = 0.2100}, -- Elethium Ore
+			["i:171828"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Laestrite Ore
+			["i:171829"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Solenium Ore
+			["i:171830"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Oxxein Ore
+			["i:171831"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Phaedrum Ore
+			["i:171832"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Sinvyr Ore
+			["i:171833"] = {matRate = 0.3350, minAmount = 2, maxAmount = 4, amountOfMats = 0.2001}, -- Elethium Ore
 		},
 		["i:173110"] = { -- Umbryl
-			["i:171828"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Laestrite Ore
-			["i:171829"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Solenium Ore
-			["i:171830"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Oxxein Ore
-			["i:171831"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Phaedrum Ore
-			["i:171832"] = {matRate = 0.3500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0105}, -- Sinvyr Ore
-			["i:171833"] = {matRate = 0.3500, minAmount = 2, maxAmount = 4, amountOfMats = 0.2100}, -- Elethium Ore
+			["i:171828"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Laestrite Ore
+			["i:171829"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Solenium Ore
+			["i:171830"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Oxxein Ore
+			["i:171831"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Phaedrum Ore
+			["i:171832"] = {matRate = 0.3350, minAmount = 1, maxAmount = 2, amountOfMats = 0.1005}, -- Sinvyr Ore
+			["i:171833"] = {matRate = 0.3350, minAmount = 2, maxAmount = 4, amountOfMats = 0.2001}, -- Elethium Ore
 		},
 		-- ========================================== Rare Gems ========================================
 		["i:23440"] = { -- Dawnstone
@@ -623,22 +623,22 @@ else
 		["i:173170"] = { -- Essence of Rebirth
 			["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
 			["i:171831"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Phaedrum Ore
-			["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
+			["i:171833"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0750}, -- Elethium Ore
 		},
 		["i:173171"] = { -- Essence of Torment
 			["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
 			["i:171832"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Sinvyr Ore
-			["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
+			["i:171833"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0750}, -- Elethium Ore
 		},
 		["i:173172"] = { -- Essence of Servitude
 			["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
 			["i:171830"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Oxxein Ore
-			["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
+			["i:171833"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0750}, -- Elethium Ore
 		},
 		["i:173173"] = { -- Essence of Valor
 			["i:171828"] = {matRate = 0.0300, minAmount = 1, maxAmount = 2, amountOfMats = 0.0090}, -- Laestrite Ore
 			["i:171829"] = {matRate = 0.2000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0600}, -- Solenium Ore
-			["i:171833"] = {matRate = 0.3000, minAmount = 1, maxAmount = 2, amountOfMats = 0.0900}, -- Elethium Ore
+			["i:171833"] = {matRate = 0.2500, minAmount = 1, maxAmount = 2, amountOfMats = 0.0750}, -- Elethium Ore
 		},
 	}
 end

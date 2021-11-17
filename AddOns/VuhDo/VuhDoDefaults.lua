@@ -111,7 +111,7 @@ end
 
 local VUHDO_DEFAULT_MODELS = {
 	{ VUHDO_ID_GROUP_1, VUHDO_ID_GROUP_2, VUHDO_ID_GROUP_3, VUHDO_ID_GROUP_4, VUHDO_ID_GROUP_5, VUHDO_ID_GROUP_6, VUHDO_ID_GROUP_7, VUHDO_ID_GROUP_8, VUHDO_ID_PETS },
-	{ VUHDO_ID_PRIVATE_TANKS, VUHDO_ID_BOSSES },
+	{ VUHDO_ID_PRIVATE_TANKS, VUHDO_ID_BOSSES }, 
 };
 
 
@@ -434,7 +434,7 @@ local function VUHDO_customDebuffsAddDefaultSettings(aBuffName)
 		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["color"]
 			= VUHDO_makeFullColor(0.6, 0.3, 0, 1,   0.8, 0.5, 0, 1);
 	end
-
+	
 	if (not VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["isBarGlow"]) then
 		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["barGlowColor"] = nil;
 	elseif (VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][aBuffName]["barGlowColor"] == nil) then
@@ -529,7 +529,6 @@ local VUHDO_DEFAULT_CONFIG = {
 	["LOCK_PANELS"] = false,
 	["LOCK_CLICKS_THROUGH"] = false,
 	["LOCK_IN_FIGHT"] = true,
-	["SHOW_MINIMAP"] = false,
 	["PARSE_COMBAT_LOG"] = true,
 	["HIDE_EMPTY_BUTTONS"] = false,
 
@@ -541,6 +540,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	["SHOW_OVERHEAL"] = true,
 	["SHOW_OWN_INCOMING"] = true,
 	["SHOW_TEXT_OVERHEAL"] = true,
+	["SHOW_LIBHEALCOMM_INCOMING"] = false,
 	["SHOW_SHIELD_BAR"] = true,
 	["SHOW_OVERSHIELD_BAR"] = false,
 
@@ -598,10 +598,10 @@ local VUHDO_DEFAULT_CONFIG = {
 		["isIcon"] = true,
 		["isColor"] = false,
 		["isStacks"] = false,
-		["isName"] = false,
-		["isShowOnlyForFriendly"] = false,
+		["isName"] = false, 
+		["isShowOnlyForFriendly"] = false, 
 		["blacklistModi"] = "ALT-CTRL-SHIFT",
-		["selected"] = "",
+		["SELECTED"] = "",
 		["point"] = "TOPRIGHT",
 		["xAdjust"] = -2,
 		["yAdjust"] = -34,
@@ -852,24 +852,235 @@ function VUHDO_loadDefaultConfig()
 
 	-- add relevant custom debuffs for raid bosses
 	-- 1.13.2 - Classic
-	VUHDO_addCustomSpellIds(45,
+	VUHDO_addCustomSpellIds(45, 
 		-- [[ MolTon Core ]]
 		-- Baron Geddon
 		20475   -- Living Bomb
 	);
+	
+	-- TBCC phase 1
+	VUHDO_addCustomSpellIds(49, 
+		39171, -- Mortal Strike
+		29572, -- Mortal Strike
+		8379,  -- Disarm
+		30901, -- Sunder Armor
+		29321, -- Fear
+		30530, -- Fear
+		6016,  -- Pierce Armor
+		29574, -- Rend
+		29928, -- Immolate
+		12024, -- Net
+		-- [[ Gruul's Lair ]]
+		-- High King Maulgar
+		16508, -- Intimidating Roar
+		33130, -- Death Coil
+		33129, -- Dark Decay
+		33173, -- Greater Polymorph
+		-- Gruul
+		36240, -- Cave In
+		36297, -- Reverberation
+		-- 33813  -- Hurtful Strike (Tank)
+		-- [[Magtheridon's Lair]]
+		-- Magtheridon
+		30757,  -- Conflagration
+		44032,  -- Mind Exhaustion
+		-- [[Karazhan]]
+		29323, -- Absorb Vitality
+		29540, -- Curse of Past Burdens
+		29618, -- Burning Brand
+		29684, -- Shield Slam
+		29546, -- Oath of Fealty
+		29690, -- Drunken Skull Crack
+		29497, -- Jealousy
+		29491, -- Impending Betrayal
+		29490, -- Seduction
+		29505, -- Banshee Shriek
+		29670, -- Ice Tomb
+		29679, -- Bad Poetry
+		29768, -- Overload
+		29882, -- Loose Mana
+		29900, -- Unstable Magic
+		29942, -- Infected Blood
+		18812, -- Knockdown
+		-- Attumen the Huntsman
+		29711, -- Knockdown
+		-- 29833, -- Intangible Presence
+		-- Moroes
+		37066, -- Garrote
+		29425, -- Gouge
+		34694, -- Blind
+		13005, -- Hammer of Justice
+		-- Maiden of Virtue
+		29512, -- Holy Ground
+		29511, -- Repentance
+		29522, -- Holy Fire
+		-- Opera Hall
+		30822, -- Poisoned Thrust
+		30889, -- Powerful Attraction
+		30890, -- Blinding Passion
+		30761, -- Wide Swipe
+		30752, -- Terrifying Howl
+		31042, -- Shred Armor
+		31046, -- Brain Bash
+		31013, -- Frightened Scream
+		31069, -- Brain Wipe
+		-- Prince Malchezaar
+		39095, -- Amplify Damage
+		30843, -- Enfeeble
+		30898, -- Shadow Word: Pain
+		30854, -- Shadow Word: Pain
+		-- Shade of Aran 
+		29951, -- Blizzard
+		29946, -- Flame Wreath
+		30035, -- Mass Slow
+		29991, -- Chains of Ice
+		29964, -- Dragon's Breath
+		29990, -- Slow
+		-- Terestian Illhoof
+		30115, -- Sacrifice
+		30053, -- Amplify Flames
+		-- Netherspite
+		38637, -- Nether Exhaustion
+		38638, -- Nether Exhaustion
+		38639, -- Nether Exhaustion
+		30421, -- Nether Portal - Perseverence
+		30422, -- Nether Portal - Serenity
+		30423, -- Nether Portal - Dominance
+		-- Nightbane
+		38927, -- Fel Ache
+		30210, -- Smoldering Breath
+		30129, -- Charred Earth
+		25653, -- Tail Sweep
+		30130, -- Distracting Ash
+		36922, -- Bellowing Roar
+		22686, -- Bellowing Roar
+		-- [[World boss]]
+		-- Doom Lord Kazzak
+		21063, -- Twisted Reflection
+		32960, -- Mark of Kazzak
+		-- Doomwalker
+		33661, -- Crush Armor
+		32686  -- Earthquake
+	);
 
-	-- TODO: Naxxramas left off at 47, start TBCC at 48
---	VUHDO_addCustomSpellIds(48,
---		-- [[ Gruul's Lair ]]
---		-- Gruul
---		33813  -- Hurtful Strike (Tank)
---	);
+	--  TBCC phase 2
+	VUHDO_addCustomSpellIds(50, 
+		-- [[ Serpentshrine Cavern ]]
+		-- Trash
+		38924,   -- Spore Burst
+		39044,   -- Serpentshrine Parasite
+		38971,   -- Acid Geyser
+		38491,   -- Silence
+		38591,   -- Shatter Armor
+		38585,   -- Holy Fire
+		38572,   -- Mortal Cleave
+		-- 38603,   -- Corrupt Devotion Aura
+		38635,   -- Rain of Fire
+		38634,   -- Arcane Lightning
+		39029,   -- Virulent Poison
+		38655,   -- Poison Bolt Volley
+		39032,   -- Initial Infection
+		39015,   -- Atrophic Blow
+		38626,   -- Domination
+		39042,   -- Rampant Infection
+		38652,   -- Spore Cloud
+		38653,   -- Spore Cloud
+		37641,   -- Whirlwind
+		-- Hydross the Unstable
+		38246,   -- Vile Sludge
+		-- 38215,   -- Mark of Hydross - 10%
+		-- 38216,   -- Mark of Hydross - 25%
+		-- 38217,   -- Mark of Hydross - 50%
+		-- 38218,   -- Mark of Hydross - 100%
+		-- 38231,   -- Mark of Hydross - 250%
+		-- 40584,   -- Mark of Hydross - 500%
+		38235,   -- Water Tomb
+		-- 38219,   -- Mark of Corruption - 10%
+		-- 38220,   -- Mark of Corruption - 25%
+		-- 38221,   -- Mark of Corruption - 50%
+		-- 38222,   -- Mark of Corruption - 100%
+		-- 38230,   -- Mark of Corruption - 250%
+		-- 40583,   -- Mark of Corruption - 500%
+		-- The Lurker Below 
+		37284,   -- Scalding Water
+		-- Leotheras the Blind
+		37675,   -- Chaos Blast
+		37676,   -- Insidious Whisper
+		37749,   -- Consuming Madness
+		37527,   -- Banish
+		-- Fathom-Lord Karathress
+		-- 39261,   -- Gusting Winds
+		38441,   -- Cataclysmic Bolt
+		29436,   -- Leeching Throw
+		-- Morogrim Tidewalker
+		38187,   -- Pierce Armor
+		41932,   -- Carnivorous Bite
+		-- 37730,   -- Tidal Wave
+		38023,   -- Watery Grave
+		38024,   -- Watery Grave
+		38025,   -- Watery Grave
+		37850,   -- Watery Grave
+		-- Lady Vashj 
+		38258,   -- Panic
+		38132,   -- Paralyze
+		38253,   -- Poison Bolt
+		38280,   -- Static Charge
+		38316,   -- Entangle
+		38575,   -- Toxic Spores
+		38511,   -- Persuasion
+		38509,   -- Shock Blast
+		-- [[ Tempest Keep  ]]
+		-- Trash
+		37124,  -- Starfall
+		37122,  -- Domination
+		39077,  -- Hammer of Justice
+		37160,  -- Silence
+		37155,  -- Immolation
+		37118,  -- Shell Shock
+		37120,  -- Fragmentation Bomb
+		37123,  -- Saw Blade
+		37132,  -- Arcane Shock
+		37279,  -- Rain of Fire
+		-- 37133,  -- Arcane Buffet
+		37275,  -- Shadow Word: Pain
+		37276,  -- Mind Flay
+		37263,  -- Blizzard
+		-- Al'ar
+		35383,  -- Flame Patch
+		35410,  -- Melt Armor
+		34121,  -- Flame Buffet
+		35412,  -- Charge
+		-- Void Reaver
+		34190,  -- Arcane Orb
+		-- High Astromancer Solarian
+		33044,  -- Wrath of the Astromancer
+		33045,  -- Wrath of the Astromancer
+		33040,  -- Wrath of the Astromancer
+		33048,  -- Wrath of the Astromancer
+		33049,  -- Wrath of the Astromancer
+		-- 33023,  -- Mark of Solarian
+		-- 33390,  -- Arcane Torrent
+		-- Kael'thas Sunstrider
+		37027,  -- Remote Toy
+		30225,  -- Silence
+		37018,  -- Conflagration
+		36991,  -- Rend
+		36965,  -- Rend
+		--36970,  -- Arcane Burst
+		44863,  -- Bellowing Roar
+		36797,  -- Mind Control
+		36834,  -- Arcane Disruption
+		36482,  -- Armor Disruption
+		36731,  -- Flame Strike
+		36478,  -- Magic Disruption
+		35859   -- Nether Vapor
+	);
 
 	local debuffRemovalList = {};
 
 	for tIndex, tName in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"]) do
 		-- I introduced a bug which added some default custom debuffs by spell ID
-		-- where spell ID was a number and not a string, this causes all sorts of odd
+		-- where spell ID was a number and not a string, this causes all sorts of odd 
 		-- bugs in the custom debuff code particularly any getKeyFromValue table lookups
 		if (type(tName) == "number") then
 			-- if we encounter a custom debuff stored by an actual number flag this key for removal
@@ -891,7 +1102,7 @@ function VUHDO_loadDefaultConfig()
 	end
 
 	-- add default spells to track with spell trace
-	VUHDO_addSpellTraceSpellIds(1,
+	VUHDO_addSpellTraceSpellIds(1, 
 		-- Shaman
 		1064,   -- Chain Heal
 		-- Priest
@@ -1244,7 +1455,7 @@ local VUHDO_DEFAULT_PER_PANEL_SETUP = {
 	},
 
 	["ID_TEXT"] = {
-		["showName"] = true,
+		["showName"] = true, 
 		["showNickname"] = false,
 		["showClass"] = false,
 		["showTags"] = true,

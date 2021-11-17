@@ -208,9 +208,7 @@ function DatabaseTable.DeleteRowByUUID(self, uuid)
 
 	if rowIndex == lastRowIndex then
 		-- this is the last row so just remove it
-		for _ = 1, self._numStoredFields do
-			tremove(self._data)
-		end
+		table.removemulti(self._data, #self._data - self._numStoredFields + 1, self._numStoredFields)
 		assert(uuidIndex == #self._uuids)
 		self._uuids[#self._uuids] = nil
 	else
@@ -257,9 +255,7 @@ function DatabaseTable.BulkDelete(self, uuids)
 
 		if rowIndex == lastRowIndex then
 			-- this is the last row so just remove it
-			for _ = 1, self._numStoredFields do
-				tremove(self._data)
-			end
+			table.removemulti(self._data, #self._data - self._numStoredFields + 1, self._numStoredFields)
 			assert(uuidIndex == #self._uuids)
 			self._uuids[#self._uuids] = nil
 		else
@@ -876,9 +872,7 @@ function DatabaseTable.BulkInsertAbort(self)
 		end
 
 		-- remove all the data we inserted
-		for i = #self._data, self._bulkInsertContext.firstDataIndex, -1 do
-			self._data[i] = nil
-		end
+		table.removemulti(self._data, self._bulkInsertContext.firstDataIndex, #self._data - self._bulkInsertContext.firstDataIndex + 1)
 	end
 	TempTable.Release(self._bulkInsertContext)
 	self._bulkInsertContext = nil

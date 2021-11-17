@@ -96,7 +96,17 @@ local migrationFunctions = {
         if Questie.db.char.townsfolkConfig then
             Questie.db.char.townsfolkConfig["Meeting Stones"] = true
         end
-    end
+    end,
+    [6] = function()
+        if (not Questie.db.char.questAnnounce) or Questie.db.char.questAnnounce == "disabled" then
+            Questie.db.char.questAnnounce = false
+        else
+            Questie.db.char.questAnnounce = true
+        end
+    end,
+    [7] =  function()
+        Questie.db.global.hasSeenBetaMessage = nil
+    end,
 }
 
 function Migration:Migrate()
@@ -113,7 +123,7 @@ function Migration:Migrate()
     local currentVersion = Questie.db.global.migrationVersion[player] or 0
     local targetVersion = table.getn(migrationFunctions)
 
-    Questie:Debug(DEBUG_DEVELOP, "[Migration] Starting Questie migration for targetVersion", targetVersion)
+    Questie:Debug(Questie.DEBUG_DEVELOP, "[Migration] Starting Questie migration for targetVersion", targetVersion)
 
     while currentVersion < targetVersion do
         currentVersion = currentVersion + 1

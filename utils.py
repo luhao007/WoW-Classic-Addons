@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 from typing import Optional
 
@@ -12,7 +13,7 @@ from chardet.universaldetector import UniversalDetector
 logger = logging.getLogger('process')
 
 
-def process_file(path, func):
+def process_file(path: str | Path, func: Callable):
     """Helper function to process the files.
 
     :param str path: Path of the file.
@@ -41,7 +42,7 @@ def process_file(path, func):
     logger.info('Done.')
 
 
-def rm_tree(path):
+def rm_tree(path: str | Path):
     if os.path.exists(path):
         logger.info('Removing %s...', path)
         shutil.rmtree(path)
@@ -55,8 +56,11 @@ def get_platform():
         if last.startswith('_') and last.endswith('_'):
             return last[1:-1]
 
+    #default
+    return 'retail'
 
-def remove_libs_in_file(path, libs):
+
+def remove_libs_in_file(path: str | Path, libs: list[str]):
     def process(lines):
         if str(path).endswith('.toc'):
             pattern = r'\s*(?i){}.*'
@@ -70,7 +74,7 @@ def remove_libs_in_file(path, libs):
     process_file(path, process)
 
 
-def remove_libraries_all(addon, lib_path: Optional[str] = None):
+def remove_libraries_all(addon: str, lib_path: Optional[str] = None):
     """Remove all embedded libraries."""
     if not lib_path:
         for lib in ['libs', 'lib']:
@@ -91,14 +95,14 @@ def remove_libraries_all(addon, lib_path: Optional[str] = None):
         if os.path.exists(path):
             os.remove(path)
 
-    for lib in ['.xml', '.toc', '-Classic.toc', '-BCC.toc', '-Mainline.toc']:
+    for lib in ['.xml', '.toc', '-Classic.toc', '-BCC.toc', '-Mainline.toc', '_TBC.toc', '_Vanilla.toc']:
         path = Path('AddOns') / addon
-        path /= '{}{}'.format(addon.split('/')[-1], lib)
+        path /= f"{addon.split('/')[-1]}{lib}"
         if os.path.exists(str(path)):
             remove_libs_in_file(path, libs + [lib_path])
 
 
-def remove_libraries(libs, root, xml_path):
+def remove_libraries(libs, root: str, xml_path: str):
     """Remove selected embedded libraries from root and xml."""
     for lib in libs:
         rm_tree(Path(root) / lib)
@@ -110,7 +114,7 @@ def remove_libraries(libs, root, xml_path):
     )
 
 
-def change_defaults(path, defaults):
+def change_defaults(path: str, defaults: str | list[str]):
     defaults = [defaults] if isinstance(defaults, str) else defaults
 
     def handle(lines):
@@ -127,7 +131,7 @@ def change_defaults(path, defaults):
     process_file(path, handle)
 
 
-def lib_to_toc(lib):
+def lib_to_toc(lib: str):
     root = Path('Addons/!!Libs')
     subdir = os.listdir(root / lib)
     for script in ['lib.xml', 'load.xml', f'{lib}.xml', f'{lib}.lua', 'Core.lua']:

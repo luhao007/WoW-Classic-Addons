@@ -425,7 +425,7 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			-- SWING_DAMAGE - the amount of damage is the 12th arg
 			-- ENVIRONMENTAL_DAMAGE - the amount of damage is the 13th arg
 			-- for all other events with the _DAMAGE suffix the amount of damage is the 15th arg
-			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15);
+			VUHDO_parseCombatLogEvent(anArg2, anArg8, anArg12, anArg13, anArg15, anArg6);
 
 			if VUHDO_INTERNAL_TOGGLES[36] then -- VUHDO_UPDATE_SHIELD
 				-- for SPELL events with _AURA suffixes the amount healed is the 16th arg
@@ -452,18 +452,18 @@ function VUHDO_OnEvent(_, anEvent, anArg1, anArg2, anArg3, anArg4, anArg5, anArg
 			VUHDO_updateBouquetsForEvent(anArg1, 4); -- VUHDO_UPDATE_DEBUFF
 		end
 
-	elseif "UNIT_HEALTH" == anEvent then
+	elseif "UNIT_HEALTH" == anEvent or "UNIT_HEALTH_FREQUENT" == anEvent then
 		-- as of patch 7.1 we are seeing empty units on health related events
 		if anArg1 and ((VUHDO_RAID or tEmptyRaid)[anArg1] or VUHDO_isBossUnit(anArg1)) then
  			VUHDO_updateHealth(anArg1, 2);
  		end
 
---[[	elseif "UNIT_HEAL_PREDICTION" == anEvent then
+	elseif "UNIT_HEAL_PREDICTION" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then -- auch target, focus
 			VUHDO_updateHealth(anArg1, 9); -- VUHDO_UPDATE_INC
 			VUHDO_updateBouquetsForEvent(anArg1, 9); -- VUHDO_UPDATE_ALT_POWER
 		end
-]];
+
 	elseif "UNIT_POWER_UPDATE" == anEvent or "UNIT_POWER_FREQUENT" == anEvent then
 		if (VUHDO_RAID or tEmptyRaid)[anArg1] then
 			if "CHI" == anArg2 then
@@ -853,10 +853,12 @@ function VUHDO_slashCmd(aCommand)
 		end
 	elseif strfind(tCommandWord, "mm")
 		or strfind(tCommandWord, "map") then
-		VUHDO_CONFIG["SHOW_MINIMAP"] = VUHDO_forceBooleanValue(VUHDO_CONFIG["SHOW_MINIMAP"]);
-		VUHDO_CONFIG["SHOW_MINIMAP"] = not VUHDO_CONFIG["SHOW_MINIMAP"];
+		VUHDO_MM_SETTINGS["hide"] = VUHDO_forceBooleanValue(VUHDO_MM_SETTINGS["hide"]);
+		VUHDO_MM_SETTINGS["hide"] = not VUHDO_MM_SETTINGS["hide"];
+
 		VUHDO_initShowMinimap();
-		VUHDO_Msg(VUHDO_I18N_MM_ICON .. (VUHDO_CONFIG["SHOW_MINIMAP"] and VUHDO_I18N_CHAT_SHOWN or VUHDO_I18N_CHAT_HIDDEN));
+
+		VUHDO_Msg(VUHDO_I18N_MM_ICON .. (VUHDO_MM_SETTINGS["hide"] and VUHDO_I18N_CHAT_HIDDEN or VUHDO_I18N_CHAT_SHOWN));
 	elseif tCommandWord == "ui" then
 		VUHDO_reloadUI(false);
 	elseif strfind(tCommandWord, "role") then
@@ -988,8 +990,8 @@ function VUHDO_updateGlobalToggles()
 		= (VUHDO_isModelConfigured(VUHDO_ID_PRIVATE_TANKS) and not VUHDO_CONFIG["OMIT_TARGET"])
 		or VUHDO_isModelConfigured(VUHDO_ID_TARGET);
 
---	VUHDO_UnRegisterEvent(VUHDO_CONFIG["SHOW_INCOMING"] or VUHDO_CONFIG["SHOW_OWN_INCOMING"],
---		"UNIT_HEAL_PREDICTION");
+	VUHDO_UnRegisterEvent(VUHDO_CONFIG["SHOW_INCOMING"] or VUHDO_CONFIG["SHOW_OWN_INCOMING"],
+		"UNIT_HEAL_PREDICTION");
 
 	VUHDO_UnRegisterEvent(not VUHDO_CONFIG["IS_READY_CHECK_DISABLED"],
 		"READY_CHECK", "READY_CHECK_CONFIRM", "READY_CHECK_FINISHED");
@@ -1507,7 +1509,7 @@ end
 
 local VUHDO_ALL_EVENTS = {
 	"VARIABLES_LOADED", "PLAYER_ENTERING_WORLD",
-	"UNIT_MAXHEALTH", "UNIT_HEALTH",  
+	"UNIT_MAXHEALTH", "UNIT_HEALTH", "UNIT_HEALTH_FREQUENT", 
 	"UNIT_AURA",
 	"UNIT_TARGET",
 	"GROUP_ROSTER_UPDATE", "INSTANCE_ENCOUNTER_ENGAGE_UNIT", "UPDATE_ACTIVE_BATTLEFIELD",  
@@ -1532,7 +1534,7 @@ local VUHDO_ALL_EVENTS = {
 	"INSPECT_READY",
 	"MODIFIER_STATE_CHANGED",
 	"UNIT_CONNECTION",
---	"UNIT_HEAL_PREDICTION",
+	"UNIT_HEAL_PREDICTION",
 	"UNIT_POWER_BAR_SHOW","UNIT_POWER_BAR_HIDE",
 	"UNIT_NAME_UPDATE",
 	"LFG_PROPOSAL_SHOW", "LFG_PROPOSAL_FAILED", "LFG_PROPOSAL_SUCCEEDED",
@@ -1600,7 +1602,7 @@ function VUHDO_OnLoad(anInstance)
 		VUHDO_LibHealComm.RegisterCallback(anInstance, "HealComm_ModifierChanged", HealComm_HealModified);
 		VUHDO_LibHealComm.RegisterCallback(anInstance, "HealComm_GUIDDisappeared", HealComm_HealModified);
 	end
-
+	
 	SLASH_VUHDO1 = "/vuhdo";
 	SLASH_VUHDO2 = "/vd";
 	SlashCmdList["VUHDO"] = function(aMessage)

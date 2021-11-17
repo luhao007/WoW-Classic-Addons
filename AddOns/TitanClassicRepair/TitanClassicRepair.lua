@@ -1266,6 +1266,25 @@ local info;
 			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
 		end
 
+		if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == "GuildBank" then
+			totalGBCP = GetGuildBankMoney();
+			withdrawGBCP = GetGuildBankWithdrawMoney();
+			if IsGuildLeader() ~= true then
+				withdrawGB = TitanPanelRepair_GetTextGSC(withdrawGBCP);
+			end
+			totalGB = TitanPanelRepair_GetTextGSC(GetGuildBankMoney());
+			if (totalGBCP < withdrawGBCP) or IsGuildLeader() == true then
+				withdrawGB = totalGB;
+			end
+			TitanPanelRightClickMenu_AddTitle(L["TITAN_REPAIR_GBANK_TOTAL"].." "..totalGB, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			TitanPanelRightClickMenu_AddTitle(L["TITAN_REPAIR_GBANK_WITHDRAW"].." "..withdrawGB, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+			info = {}
+			info.text = L["TITAN_REPAIR_GBANK_USEFUNDS"]
+			info.func = function() TitanToggleVar(TITAN_REPAIR_ID, "UseGuildBank"); end
+			info.checked = TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank");
+			L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+		end
+
 		if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == "TooltipOptions" then
 			TitanPanelRightClickMenu_AddTitle(L["REPAIR_LOCALE"]["TooltipOptions"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
 
@@ -1309,6 +1328,18 @@ local info;
 	info.text = L["REPAIR_LOCALE"]["AutoReplabel"];
 	info.value = "AutoRepair"
 	info.hasArrow = 1;
+	L_UIDropDownMenu_AddButton(info);
+
+	local guildName, _, _ = GetGuildInfo("player")
+	info = {};
+	info.notCheckable = true
+	info.text = _G["GUILD_BANK"];
+	info.value = "GuildBank"
+	if guildName then
+		info.hasArrow = 1
+	else
+		info.disabled = true
+	end
 	L_UIDropDownMenu_AddButton(info);
 
 	info = {};
@@ -1442,20 +1473,49 @@ function TitanRepair_RepairItems()
 	-- New RepairAll function
 	local cost = GetRepairAllCost();
 	local money = GetMoney();
-	if money > cost then
-		RepairAllItems()
-		-- disable repair all icon in merchant
-		SetDesaturation(MerchantRepairAllIcon, 1);
-		MerchantRepairAllButton:Disable();
-		-- disable guild bank repair all icon in merchant
-		SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
-		MerchantGuildBankRepairButton:Disable();
-		-- report repair cost to chat (optional)
-		if TitanGetVar(TITAN_REPAIR_ID,"AutoRepairReport") then
-			DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_REPORT_COST_CHAT"]..TitanPanelRepair_GetTextGSC(cost).."|r.")
+	local withdrawLimit = GetGuildBankWithdrawMoney();
+	local guildBankMoney = GetGuildBankMoney();
+
+	-- Use Guild Bank funds
+	if TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank") then
+		if IsInGuild() and CanGuildBankRepair() then
+			if withdrawLimit > cost then
+				RepairAllItems(true)
+				-- disable repair all icon in merchant
+				SetDesaturation(MerchantRepairAllIcon, 1);
+				MerchantRepairAllButton:Disable();
+				-- disable guild bank repair all icon in merchant
+				SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+				MerchantGuildBankRepairButton:Disable();
+				-- report repair cost to chat (optional)
+				if TitanGetVar(TITAN_REPAIR_ID,"AutoRepairReport") then
+					DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_REPORT_COST_CHAT"]..TitanPanelRepair_GetTextGSC(cost).."|r.")
+				end
+			else
+				DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_GBANK_NOMONEY"])
+			end
+		else
+			DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_GBANK_NORIGHTS"])
 		end
-	else
-		DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_CANNOT_AFFORD"])
+	end
+
+	-- Use own funds
+	if not TitanGetVar(TITAN_REPAIR_ID,"UseGuildBank") then
+		if money > cost then
+			RepairAllItems()
+			-- disable repair all icon in merchant
+			SetDesaturation(MerchantRepairAllIcon, 1);
+			MerchantRepairAllButton:Disable();
+			-- disable guild bank repair all icon in merchant
+			SetDesaturation(MerchantGuildBankRepairButtonIcon, 1);
+			MerchantGuildBankRepairButton:Disable();
+			-- report repair cost to chat (optional)
+			if TitanGetVar(TITAN_REPAIR_ID,"AutoRepairReport") then
+				DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_REPORT_COST_CHAT"]..TitanPanelRepair_GetTextGSC(cost))
+			end
+		else
+			DEFAULT_CHAT_FRAME:AddMessage(_G["GREEN_FONT_COLOR_CODE"]..L["TITAN_REPAIR"]..": ".."|r"..L["TITAN_REPAIR_CANNOT_AFFORD"])
+		end
 	end
 end
 

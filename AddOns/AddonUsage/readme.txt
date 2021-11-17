@@ -38,9 +38,12 @@ That said, some things to consider when looking at the numbers:
 * CPU usage per addon is taken from the in-game API and does not represent the whole story. It's possible for an addon to get some of its work blamed on another if libraries are involved, or it may get a lot of work to go unnoticed. Use these numbers as a guide only.
 * Remember to turn off CPU monitoring when you're done testing!
 
+11/02/2021 version 3.0.10
+- toc update for 9.1.5 patch
+
 06/29/2021 version 3.0.9
 - Fix for backdrop of control button tooltips
-- toc update for 9.1.0
+- toc update for 9.1.0 patch
 
 05/18/2021 version 3.0.8
 - Update for The Burning Crusade Classic

@@ -10,7 +10,6 @@ local L = TSM.Include("Locale").GetTable()
 local Delay = TSM.Include("Util.Delay")
 local FSM = TSM.Include("Util.FSM")
 local Event = TSM.Include("Util.Event")
-local ScriptWrapper = TSM.Include("Util.ScriptWrapper")
 local Settings = TSM.Include("Service.Settings")
 local UIElements = TSM.Include("UI.UIElements")
 local private = {
@@ -115,15 +114,11 @@ function private.FSMCreate()
 	Event.Register("MERCHANT_CLOSED", function()
 		private.fsm:ProcessEvent("EV_MERCHANT_CLOSED")
 	end)
-	MerchantFrame:UnregisterEvent("MERCHANT_SHOW")
 
 	local fsmContext = {
 		frame = nil,
 		defaultPoint = nil,
 	}
-	local function DefaultFrameOnHide()
-		private.fsm:ProcessEvent("EV_FRAME_HIDE")
-	end
 	private.fsm = FSM.New("MERCHANT_UI")
 		:AddState(FSM.NewState("ST_CLOSED")
 			:AddTransition("ST_DEFAULT_OPEN")
@@ -142,7 +137,6 @@ function private.FSMCreate()
 		)
 		:AddState(FSM.NewState("ST_DEFAULT_OPEN")
 			:SetOnEnter(function(context, isIgnored)
-				MerchantFrame_OnEvent(MerchantFrame, "MERCHANT_SHOW")
 				if not private.defaultUISwitchBtn then
 					private.defaultUISwitchBtn = UIElements.New("ActionButton", "switchBtn")
 						:SetSize(60, TSM.IsWowClassic() and 16 or 15)
@@ -161,11 +155,6 @@ function private.FSMCreate()
 					private.defaultUISwitchBtn:Show()
 					private.defaultUISwitchBtn:Draw()
 				end
-				ScriptWrapper.Set(MerchantFrame, "OnHide", DefaultFrameOnHide)
-			end)
-			:SetOnExit(function(context)
-				ScriptWrapper.Clear(MerchantFrame, "OnHide")
-				HideUIPanel(MerchantFrame)
 			end)
 			:AddTransition("ST_CLOSED")
 			:AddTransition("ST_FRAME_OPEN")
@@ -182,11 +171,9 @@ function private.FSMCreate()
 		:AddState(FSM.NewState("ST_FRAME_OPEN")
 			:SetOnEnter(function(context)
 				assert(not context.frame)
-				MerchantFrame_OnEvent(MerchantFrame, "MERCHANT_SHOW")
 				if not context.defaultPoint then
 					context.defaultPoint = { MerchantFrame:GetPoint(1) }
 				end
-				MerchantFrame:SetClampedToScreen(false)
 				MerchantFrame:ClearAllPoints()
 				MerchantFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 100000, 100000)
 				OpenAllBags()

@@ -112,7 +112,7 @@ function AuctionUI.IsVisible()
 	return private.frame and true or false
 end
 
-function AuctionUI.ParseBidBuyout(value)
+function AuctionUI.ParseBid(value)
 	local wasRawNumber = tonumber(value) and true or false
 	value = Money.FromString(value) or tonumber(value)
 	if not value then
@@ -127,6 +127,34 @@ function AuctionUI.ParseBidBuyout(value)
 	end
 	if value <= 0 then
 		return nil, L["The value must be greater than 0."]
+	end
+	if value > MAXIMUM_BID_PRICE then
+		return nil, L["The value was greater than the maximum allowed auction house price."]
+	end
+	return value
+end
+
+function AuctionUI.ParseBuyout(value, isCommodity)
+	local wasRawNumber = tonumber(value) and true or false
+	value = Money.FromString(value) or tonumber(value)
+	if not value then
+		return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
+	end
+	if not TSM.IsWowClassic() and value % COPPER_PER_SILVER ~= 0 then
+		if wasRawNumber then
+			return nil, L["The price must contain g/s/c labels. For example '1g 2s' means 1 gold and 2 silver."]
+		else
+			return nil, L["The AH does not support specifying a copper value (only gold and silver)."]
+		end
+	end
+	if isCommodity then
+		if value <= 0 then
+			return nil, L["The value must be greater than 0."]
+		end
+	else
+		if value < 0 then
+			return nil, L["The value must be greater than or equal of 0."]
+		end
 	end
 	if value > MAXIMUM_BID_PRICE then
 		return nil, L["The value was greater than the maximum allowed auction house price."]

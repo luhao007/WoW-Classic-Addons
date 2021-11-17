@@ -70,7 +70,7 @@ AQCCON = "AtlasQuest will now recolour quests depending on their levels.";
 AQCCOFF = "AtlasQuest will not recolour quests."
 
 -- QuestLog Colour Check
-AQQLColourChange = ""..WHITE.."DISABLED Colours all quests, you have in your Questlog "..BLUE.."blue.";
+AQQLColourChange = ""..WHITE.."Quests you currently have show up with blue text";
 
 -- Use Comparison Tooltips
 AQOptionsCompareTooltipTEXT = ""..WHITE.."DISABLED Compare rewards to currently equipped items.";
@@ -84,6 +84,7 @@ AQQuestQueryStart = "AtlasQuest is now querying server for completed quests. Thi
 AQQuestQueryDone = "AtlasQuest has finished querying the server. Completed quests should now be marked.";
 
 
+-- Short quick error message to let someone know they have the wrong version installed.
 AQ_MSG_WRONGVERSION = ""..RED.."WRONG AQ VERSION"
 
 
@@ -95,8 +96,8 @@ AQERRORASKSERVER = "Right-click to query the server for \nthis item. You may be 
 AQOptionB = "Options";
 AQNoReward = ""..BLUE.." No Rewards";
 AQDiscription_REWARD = ""..BLUE.." Reward: ";
-AQDiscription_OR = ""..GREY.." or "..WHITE.."";
-AQDiscription_AND = ""..GREY.." and "..WHITE.."";
+AQDiscription_OR = ""..GREY.." or ";
+AQDiscription_AND = ""..GREY.." and ";
 AQDiscription_ATTAIN = "Attain: ";
 AQDiscription_LEVEL = "Level: ";
 AQDiscription_START = "Starts at: ";

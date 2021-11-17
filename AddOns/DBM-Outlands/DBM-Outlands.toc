@@ -1,5 +1,5 @@
-## Interface: 20501
-## Version: 2.5.8
+## Interface: 20502
+## Version: 2.5.19
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMOutlands_AllSavedVars
@@ -19,9 +19,9 @@
 ## X-DBM-Mod-LoadCID: 17711,18728,18166,20130
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 1
-## X-Curse-Project-ID: 16442
-## X-WoWI-ID: 11700
-## X-Wago-ID: 7x61xpN1
+## X-Curse-Project-ID: 3358
+## X-WoWI-ID: 8814
+## X-Wago-ID: qv633o6b
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

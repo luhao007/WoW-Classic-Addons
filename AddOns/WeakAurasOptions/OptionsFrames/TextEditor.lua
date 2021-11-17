@@ -4,6 +4,7 @@ local AddonName, OptionsPrivate = ...
 -- Lua APIs
 local pairs, type, ipairs = pairs, type, ipairs
 local loadstring = loadstring
+local gsub = gsub
 
 -- WoW APIs
 local CreateFrame = CreateFrame
@@ -349,8 +350,9 @@ local function ConstructTextEditor(frame)
     -- iterate saved snippets and make buttons
     for order, snippet in ipairs(savedSnippets) do
       local button = AceGUI:Create("WeakAurasSnippetButton")
+      local snippetInsert = gsub(snippet.snippet, "|", "||")
       button:SetTitle(snippet.name)
-      button:SetDescription(snippet.snippet)
+      button:SetDescription(snippetInsert)
       button:SetEditable(true)
       button:SetRelativeWidth(1)
       button:SetNew(snippet.new)
@@ -358,7 +360,7 @@ local function ConstructTextEditor(frame)
       button:SetCallback(
         "OnClick",
         function()
-          editor.editBox:Insert(snippet.snippet)
+          editor.editBox:Insert(snippetInsert)
           editor:SetFocus()
         end
       )
@@ -711,7 +713,7 @@ local function ConstructTextEditor(frame)
     frame:UpdateFrameVisible()
   end
 
-  local function extractTexts(input, ids)
+  local function extractTexts(input)
     local texts = {}
 
     local currentPos, id, startIdLine, startId, endId, endIdLine
@@ -753,7 +755,7 @@ local function ConstructTextEditor(frame)
       OptionsPrivate.Private.ValueToPath(self.data, self.path, editor:GetText())
       WeakAuras.Add(self.data)
     else
-      local textById = editor.combinedText and extractTexts(editor:GetText(), self.data.controlledChildren)
+      local textById = editor.combinedText and extractTexts(editor:GetText())
       for child in OptionsPrivate.Private.TraverseLeafsOrAura(self.data) do
         local text = editor.combinedText and (textById[child.id] or "") or editor:GetText()
         OptionsPrivate.Private.ValueToPath(child, self.multipath and self.path[child.id] or self.path, text)

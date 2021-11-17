@@ -1,5 +1,5 @@
-## Interface: 20501
-## Version: 2.5.21
+## Interface: 20502
+## Version: 2.5.30
 ## SavedVariables: PawnCommon
 ## SavedVariablesPerCharacter: PawnOptions, PawnMrRobotScaleProviderOptions, PawnClassicScaleProviderOptions
 
@@ -7,6 +7,7 @@
 ## Notes: Pawn helps you compare items and find upgrades.
 ## Title-zhCN: |cFFFFE00A<|r|cFFC79C6E战斗|r|cFFFFE00A>|r |cFFFFFFFF装备评分|r |cFFFFE00APawn|r
 
+## X-Wago-ID: R4N2k46L
 
 VgerCore\VgerCore.lua
 

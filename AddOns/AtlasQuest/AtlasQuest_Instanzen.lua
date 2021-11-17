@@ -27,7 +27,7 @@
 -- that tells which instance is shown atm for Atlas or AlphaMap
 -----------------------------------------------------------------------------
 function AtlasQuest_Instanzenchecken()
-	AQATLASMAP = AtlasMap:GetTexture()
+	AQATLASMAP = AtlasMapSmall:GetTexture()
 
 
 	-- Classic

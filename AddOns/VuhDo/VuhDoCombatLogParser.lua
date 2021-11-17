@@ -4,6 +4,7 @@ local VUHDO_INTERNAL_TOGGLES = { };
 
 local strsplit = strsplit;
 local pairs = pairs;
+local select = select;
 
 local VUHDO_updateHealth;
 local sCurrentTarget = nil;
@@ -29,14 +30,25 @@ local function VUHDO_addUnitHealth(aUnit, aDelta)
 	tInfo = VUHDO_RAID[aUnit] or tDeadInfo;
 
 	if not tInfo["dead"] then
-		tNewHealth = tInfo["health"] + aDelta;
 
-		if tNewHealth < 0 then tNewHealth = 0;
-		elseif tNewHealth > tInfo["healthmax"]  then tNewHealth = tInfo["healthmax"]; end
+		-- avoid the calculation to be disturbed by the exception data
+		if UnitHealth(aUnit) ~= 0 or tInfo["health"] ~= 0 then
+			tNewHealth = tInfo["health"] + aDelta;
+		else 
+			tNewHealth = tInfo["loghealth"] + aDelta;
+		end
 
+		if tNewHealth < 0 then 
+			tNewHealth = 0;
+		elseif tNewHealth > tInfo["healthmax"] then 
+			tNewHealth = tInfo["healthmax"]; 
+		end
+		
+		tInfo["loghealth"] = tNewHealth;
+		tInfo["updateTime"] = GetTime();
+		
 		if tInfo["health"] ~= tNewHealth then
-			tInfo["health"] = tNewHealth;
-			VUHDO_updateHealth(aUnit, 2); -- VUHDO_UPDATE_HEALTH
+			VUHDO_updateHealth(aUnit, 12); -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
 		end
 	end
 end
@@ -45,10 +57,16 @@ end
 
 --
 local tPre, tSuf, tSpec;
-local function VUHDO_getTargetHealthImpact(aMsg, aMsg1, aMsg2, aMsg4)
+local function VUHDO_getTargetHealthImpact(aMsg, aMsg1, aMsg2, aMsg4, aSourceFlags)
 	tPre, tSuf, tSpec = strsplit("_", aMsg);
 
 	if "SPELL" == tPre then
+		-- Filter subEvent SPELL_DURABILITY_DAMAGE and sourceFlag COMBATLOG_OBJECT_TYPE_PLAYER COMBATLOG_OBJECT_REACTION_FRIENDLY 0x00000510 (1296)
+		-- Avoid that some items such as 'Force Reactive Disk' break the parser
+		if tSuf == "DURABILITY" and tSpec == "DAMAGE" and bit.band(aSourceFlags, 1296) == 1296 then
+			return 0;
+		end
+
 		if ("HEAL" == tSuf or "HEAL" == tSpec) and "MISSED" ~= tSpec then 
 			return aMsg4;
 		elseif "DAMAGE" == tSuf or "DAMAGE" == tSpec then 
@@ -100,12 +118,12 @@ end
 --
 local tUnit;
 local tImpact;
-function VUHDO_parseCombatLogEvent(aMsg, aDstGUID, aMsg1, aMsg2, aMsg4)
+function VUHDO_parseCombatLogEvent(aMsg, aDstGUID, aMsg1, aMsg2, aMsg4, aSourceFlags)
 	tUnit = VUHDO_RAID_GUIDS[aDstGUID];
 	if not tUnit then return; end
 
 	-- as of patch 7.1 we are seeing empty values on health related events
-	tImpact = tonumber(VUHDO_getTargetHealthImpact(aMsg, aMsg1, aMsg2, aMsg4)) or 0;
+	tImpact = tonumber(VUHDO_getTargetHealthImpact(aMsg, aMsg1, aMsg2, aMsg4, aSourceFlags)) or 0;
 
 	if tImpact ~= 0 then
 		VUHDO_addUnitHealth(tUnit, tImpact);

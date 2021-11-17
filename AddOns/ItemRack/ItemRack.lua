@@ -2,7 +2,7 @@ ItemRack = {}
 
 local _
 
-ItemRack.Version = "3.68"
+ItemRack.Version = "3.69"
 
 function ItemRack.IsClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
@@ -1940,11 +1940,7 @@ function ItemRack.SetSetBindings()
 				SetBindingClick(ItemRackUser.Sets[i].key,buttonName)
 			end
 		end
-		if ItemRack.IsClassic() then
-			AttemptToSaveBindings(GetCurrentBindingSet())
-		elseif ItemRack.IsBCC() then
-			SaveBindings(GetCurrentBindingSet())
-		end
+		SaveBindings(GetCurrentBindingSet())
 	else
 		ItemRack.Print("Cannot save hotkeys in combat, please try again out of combat!")
 	end

@@ -52,7 +52,7 @@ GuildTracking:OnSettingsLoad(function()
 		:AddUniqueStringField("levelItemString")
 		:AddNumberField("quantity")
 		:Commit()
-	if not TSM.IsWowClassic() then
+	if not TSM.IsWowVanillaClassic() then
 		Event.Register("GUILDBANKFRAME_OPENED", private.GuildBankFrameOpenedHandler)
 		Event.Register("GUILDBANKFRAME_CLOSED", private.GuildBankFrameClosedHandler)
 		Event.Register("GUILDBANKBAGSLOTS_CHANGED", private.GuildBankBagSlotsChangedHandler)

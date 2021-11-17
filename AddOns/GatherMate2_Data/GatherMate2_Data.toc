@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: kagaro, Xinhuan, Spinx, Marrtin
-## Version: v2021-07-16
+## Version: v2021-11-08
 ## Dependencies: GatherMate2
 ## LoadOnDemand: 1
 
@@ -14,4 +14,5 @@ MiningData.lua
 HerbalismData.lua
 FishData.lua
 TreasureData.lua
+GasData.lua
 GatherMateData.lua

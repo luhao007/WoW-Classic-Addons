@@ -145,7 +145,7 @@ function PostScan.DoProcess()
 			private.itemLocation:SetBagAndSlot(bag, slot)
 			local commodityStatus = C_AuctionHouse.GetItemCommodityStatus(private.itemLocation)
 			if commodityStatus == Enum.ItemCommodityStatus.Item then
-				result = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, bid < buyout and bid or nil, buyout)
+				result = AuctionHouseWrapper.PostItem(private.itemLocation, postTime, stackSize, (buyout == 0 or bid < buyout) and bid or nil, buyout > 0 and buyout or nil)
 			elseif commodityStatus == Enum.ItemCommodityStatus.Commodity then
 				result = AuctionHouseWrapper.PostCommodity(private.itemLocation, postTime, stackSize, itemBuyout)
 			else
@@ -246,13 +246,16 @@ function PostScan.ChangePostDetail(field, value)
 		value = max(value, 1)
 		local stackSize = postRow:GetField("stackSize")
 		local itemBid = field == "itemBid" and value or floor(value / stackSize)
-		itemBid = min(itemBid, postRow:GetField("itemBuyout"))
+		local itemBuyout = postRow:GetField("itemBuyout")
+		if itemBuyout > 0 then
+			itemBid = min(itemBid, itemBuyout)
+		end
 		postRow:SetField("bid", itemBid * stackSize)
 		postRow:SetField("itemBid", itemBid)
 	elseif field == "buyout" or field == "itemBuyout" then
 		local stackSize = postRow:GetField("stackSize")
 		local itemBuyout = field == "itemBuyout" and value or floor(value / stackSize)
-		if isCommodity or itemBuyout < postRow:GetField("itemBid") then
+		if isCommodity or (itemBuyout > 0 and itemBuyout < postRow:GetField("itemBid")) then
 			postRow:SetField("bid", itemBuyout * stackSize)
 			postRow:SetField("itemBid", itemBuyout)
 		end

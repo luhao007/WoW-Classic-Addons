@@ -636,6 +636,7 @@ VUHDO_I18N_TT.K578 = "Select a color for the icon glow.";
 VUHDO_I18N_TT.K579 = "Select a color for the bar glow.";
 VUHDO_I18N_TT.K580 = "Select a modifier key to use with the right mouse button to blacklist debuff icons."
 VUHDO_I18N_TT.K581 = "Check to show player nickname on bars.";
+VUHDO_I18N_TT.K582 = "Check to show incoming heal using LibHealComm-4.0.";
 
 VUHDO_I18N_DEFAULT_PROFILE = "Default Profile";
 VUHDO_I18N_DEFAULT_LAYOUT = "Default Layout";
@@ -1146,3 +1147,5 @@ VUHDO_I18N_DEBUFF_SHOW_ONLY_FOR_FRIENDLY_TOOLTIP = "Shows debuffs only for frien
 
 VUHDO_I18N_SHOW_OVERSHIELD = "Show\nOvershield";
 VUHDO_I18N_OVERSHIELD_BAR = "Overshield Bar";
+
+VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";

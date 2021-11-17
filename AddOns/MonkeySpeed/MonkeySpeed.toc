@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Trentin, Jim-Bim
 ## Version: v3.5.0c
 ## OptionalDeps: LibDataBroker-1.1

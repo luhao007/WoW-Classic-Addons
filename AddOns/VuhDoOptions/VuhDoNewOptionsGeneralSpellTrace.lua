@@ -176,18 +176,20 @@ function VUHDO_deleteSpellTraceOnClick(aButton)
 	if (tIndex ~= nil and #tValue > 0) then
 		tremove(VUHDO_CONFIG["SPELL_TRACE"]["STORED"], tIndex);
 		VUHDO_CONFIG["SPELL_TRACE"]["STORED_SETTINGS"][tValue] = nil;
+		VUHDO_CONFIG["SPELL_TRACE"]["SELECTED"] = "";
+
 		VUHDO_Msg(VUHDO_I18N_SPELL_TRACE .. " on spell \"" .. tValue .. "\" removed.", 1, 0.4, 0.4);
 	else
 		VUHDO_Msg(VUHDO_I18N_SPELL_TRACE .. " on spell \"" .. tValue .. "\" doesn't exist.", 1, 0.4, 0.4);
 	end
 
 	VUHDO_initSpellTraceComboModel();
+
+	VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox:SetText("");
 	VUHDO_spellTraceUpdateEditBox(VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox);
 	
 	VuhDoNewOptionsGeneralSpellTrace:Hide();
 	VuhDoNewOptionsGeneralSpellTrace:Show();
-
-	VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox:SetText("");
 
 end
 

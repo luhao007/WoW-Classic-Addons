@@ -1,25 +1,20 @@
-tag b453427e1af88a1a730f31b292635bd9ab5db70e 2.1.2
+tag cfbd7b591b498126cc23fdb496ece0f0383dc74e 2.2.0
 Author:	cliaz <3636531+cliaz@users.noreply.github.com>
-Date:	Tue Jun 15 15:31:09 2021 +1000
+Date:	Mon Aug 23 15:08:11 2021 +1000
 
-Due to blizzard not (no longer?) allowing multi-stack purchase operations,
-split the buying functionalty into multiple <= single-stack operations
------BEGIN PGP SIGNATURE-----
+Supports 4 and 5-stack purchasing
 
-iQIzBAABCAAdFiEEVRGRjowwCnZkS8LqEhHYpomKagMFAmDIO0UACgkQEhHYpomK
-agNSYA//b3rlmamLMvjMwuCLNDyraBKyp89NaAzjuxLbKO8xAy8LlsHnpARi4VLP
-wDpe6XIvJJGD83aAD3xseJ14aMzzKPEKXnbSxTjR4br0U8YCPpHvht12vo2TPVM7
-q3mfgt/N8v0BPYs4glhH0zIOtuUKim/c4U7JlHWvRON1dAZ+HHRRHk6iSPNVpktF
-/5hZl47VXTsHMIDu7iOt+mIIfelC5Jk+RxOKpMAM7TGKClUuHRmOl6HHv9e+n81n
-OIiIdtcMLkYi/S8ZEan6h0f6m3FcCs81ZUz/uOgQ9tKvW/t/iYMjv0hGbjdlu/Cb
-zmnCwOnV6pgOq1RpmgUEkl3gqxFwm4jtpKy61DWpclrxTcUosPR9NvTOlR8E2ir9
-O/iqQaPHWE6lLYWk4vgt4r5qmu7B8NlW7L9SV/I25hAuSC8actufARN4KI+E2DJc
-8HWvrZaYC0END8rlYnx1RiTnqCoq90+tRCgxGv9ZL3sX+3NkkYHfHaUCp+kXtkR3
-8t3IMfUbubdhTf6JKch3VoT7auOi5fLt1ETHpXD7yxET+USv02I5WuK3P0mZpqWK
-m67jBI0eo7Cm2POGLvNjLkD9WcMAXL54ZBJW9489xsyksEuuwUlpxLqZ8HdAr4CV
-xDjNuEGTB5i8hsmT4EZcv8f5jySNEnenGCM5GgYNA02wnFzS+Wk=
-=iT5P
------END PGP SIGNATURE-----
+commit 62b7c993a8c61fd361543aaf583ede13f155d157
+Author: ch00ka <59885965+ch00ka@users.noreply.github.com>
+Date:   Wed Aug 18 17:40:59 2021 +1000
+
+    Added options for 4 and 5 stacks.
+
+commit 62b7c993a8c61fd361543aaf583ede13f155d157
+Author: ch00ka <59885965+ch00ka@users.noreply.github.com>
+Date:   Wed Aug 18 17:40:59 2021 +1000
+
+    Added options for 4 and 5 stacks.
 
 commit 06d3e723122f89f5ef74a006cef436195925f253
 Author: cliaz <3636531+cliaz@users.noreply.github.com>

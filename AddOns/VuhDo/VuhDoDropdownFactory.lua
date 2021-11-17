@@ -390,7 +390,7 @@ function VUHDO_miniMapDropDown_Initialize(aFrame, aLevel)
 	VUHDO_createMinimapToggle(VUHDO_I18N_LOCK_PANELS, "LOCK", VUHDO_CONFIG["LOCK_PANELS"]);
 	VUHDO_createMinimapToggle(VUHDO_I18N_SHOW_PANELS, "SHOW", VUHDO_CONFIG["SHOW_PANELS"]);
 	VUHDO_createMinimapToggle(VUHDO_I18N_SHOW_BUFF_WATCH, "BUFF", VUHDO_BUFF_SETTINGS["CONFIG"]["SHOW"]);
-	VUHDO_createMinimapToggle(VUHDO_I18N_MM_BUTTON, "MINIMAP", VUHDO_CONFIG["SHOW_MINIMAP"]);
+	VUHDO_createMinimapToggle(VUHDO_I18N_MM_BUTTON, "MINIMAP", not VUHDO_MM_SETTINGS["hide"]);
 
 	VUHDO_createEmptyLine();
 

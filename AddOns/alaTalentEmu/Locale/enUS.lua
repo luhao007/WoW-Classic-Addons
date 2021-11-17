@@ -36,14 +36,16 @@ L.resetToSetButton = "Reset to initial state";
 L.readOnlyButton = "\124cff00ff00RClick\124r to set";
 L.closeButton = "Close this win";
 
-L.classTabButton = "\n\124cff00ff00Left click\124r to toggle class.\n\124cff00ff00Right click\124r to load saved talents.\n\124cff00ff00Shift and Left-click\124r to del";
+L.classTabButton = "\n\124cff00ff00Left click\124r to toggle class.\n\124cff00ff00Right click\124r to load saved talents.\n\124cff00ff00Shift and Left-click\124r to del saved talent";
 L.inspectTargetButton = "Inspect target's talents.";
 L.spellTabButton = "Spell List Window";
 L.spellAvailable = "\124cff00ff00Available\124r";
 L.spellNotAvailable = "\124cffff0000Not Available\124r";
+L.TrainCost = "Train Cost ";
 L.showAllSpell = "All ranks";
 L.applyTalentsButton = "Apply talents.";
 L.applyTalentsButton_Notify = "Apply these talents?";
+L.applyTalentsFinished = "Talents applied";
 L.importButton = "Import from string or wowhead/nfu/yxrank url.";
 L.exportButton = "\124cff00ff00Left click\124r to export string.\n\124cff00ff00Right click\124r to export to \124cffff0000wowhead/nfu/yxrank\124r url";
 L.saveButton = "\124cff00ff00Left click\124r to save talents.\n\124cff00ff00Right click\124r to load saved talents.\n\124cff00ff00Shift and Left-click\124r to del";
@@ -135,12 +137,18 @@ L.DATA = {
 };
 
 L.RACE = "RACE";
-L.HUMAN = "HUMAN";
-L.DWARF = "DWARF";
-L["HUMAN|DWARF"] = "HUMAN|DWARF";
-L.NIGHTELF = "NIGHTELF";
-L.SCOURGE = "SCOURGE";
-L.TROLL = "TROLL";
+L["HUMAN|DWARF|NIGHTELF|GNOME|DRAENEI"] = "Alliance";
+L["ORC|SCOURGE|TAUREN|TROLL|BLOODELF"] = "Horde";
+L["HUMAN"] = "Human";
+L["DWARF"] = "Dwarf";
+L["NIGHTELF"] = "NightElf";
+L["GNOME"] = "Gnome";
+L["DRAENEI"] = "Draenei";
+L["ORC"] = "Orc";
+L["SCOURGE"] = "Scourge";
+L["TAUREN"] = "Tauren";
+L["TROLL"] = "Troll";
+L["BLOODELF"] = "BloodElf";
 
 
 L.label_itemLevel = "ItemLv";
@@ -196,3 +204,6 @@ L.CASTINGTIME = "%d sec cast";
 L.CASTINGTIMEINSTANT = "instant";
 L.CDSECOND = "%d sec cd";
 L.CDMINUTE = "%d min cd";
+
+L["CANNOT APPLY : NEED MORE TALENT POINTS."] = "CANNOT APPLY : NEED MORE TALENT POINTS.";
+L["CANNOT APPLY : TALENTS IN CONFLICT."] = "CANNOT APPLY : TALENTS IN CONFLICT.";

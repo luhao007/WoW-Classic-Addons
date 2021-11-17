@@ -8,6 +8,42 @@ function Plater.GetChangelogTable()
 	if (not Plater.ChangeLogTable) then
 		Plater.ChangeLogTable = {
 
+			{1634909553,  "Backend Change", "October 31st, 2021", "TOC update for 9.1.5.", "cont1nuity"},
+			{1634909553,  "Backend Change", "October 31st, 2021", "Improvements to profile import and wrong data recognition.", "cont1nuity"},
+			{1634909553,  "Backend Change", "October 22nd, 2021", "Adjustments for tooltip backdrop changes in 9.1.5.", "cont1nuity"},
+			
+			{1633679186,  "Backend Change", "October 2nd, 2021", "Small adjustments for profile names and additional information during imports.", "cont1nuity"},
+			{1633679186,  "Backend Change", "October 2nd, 2021", "Fixing an issue with profile updates not working.", "cont1nuity"},
+			{1633679186,  "Backend Change", "September 30th, 2021", "Adding support for Classic Era.", "cont1nuity"},
+			
+			{1632595917,  "Backend Change", "September 25th, 2021", "Adjustments of view distance values for TBC.", "cont1nuity"},
+			{1632595917,  "Backend Change", "September 23rd, 2021", "Switching Aura Tooltip implementation from 'NameplateTooltip' to 'PlaterNamePlateAuraTooltip'.", "cont1nuity"},
+			{1632595917,  "Bug Fix", "September 14th, 2021", "Adding fonts 'Oswald' and 'NuevaStd' as ttf fonts again.", "cont1nuity"},
+			{1632595917,  "Backend Change", "September 10th, 2021", "Exporting profile name for importing purposes.", "cont1nuity"},
+			{1632595917,  "Backend Change", "September 10th, 2021", "Increase profile import performance and show profile information instead of import string.", "cont1nuity"},
+			{1632595917,  "Bug Fix", "September 9th, 2021", "Fixing a few global variable leaks.", "cont1nuity"},
+			{1632595917,  "Bug Fix", "September 5th, 2021", "Disabling OTF fonts 'Oswald' and 'NuevaStd' as those are not working in 9.1.5, 2.5.2 and 1.14.0 (possibly not temporarily).", "cont1nuity"},
+			
+			{1630347577,  "Bug Fix", "August 30th, 2021", "Fixing an issue with player pet nameplates.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 30th, 2021", "Added 'Plater.IsUnitPet (unitFrame)' which returns 'isPet, isPlayerPet, {ownerGUID, ownerName, petName}' if available.", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 27th, 2021", "Added 'unitFrame.IsInRange' when plater range check is enabled.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 25th, 2021", "Fixing an issue with proper cast bar initialization on login/reload when the unit was already casting.", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 19th, 2021", "Enhancements to profiling (data and formatting).", "cont1nuity"},
+			{1630313665,  "Backend Change", "August 13th, 2021", "Interrupt class coloring works for players outside your group now.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 10th, 2021", "Fixing an issue with cast bars not being re-enabled correctly when units become attackable and friendly cast bars are disabled.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 10th, 2021", "Adding option to show 'magic' type buffs.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 10th, 2021", "Adding option to show auras cast by other players.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 9th, 2021", "Fixing an issue with target indicators not scaling correctly in some cases.", "cont1nuity"},
+			{1630313665,  "New Feature", "August 6th, 2021", "Adding tab names and headers to the search tab results.", "cont1nuity"},
+			{1630313665,  "Bug Fix", "August 5th, 2021", "Fixing rare div by zero issue.", "cont1nuity"},
+			
+			{1625966028,  "Backend Change", "July 30th, 2021", "Improvements on showing/hiding friendly player healthbars depending on health state.", "cont1nuity"},
+			{1625966028,  "Backend Change", "July 24th, 2021", "Storing 'InterruptSourceName' and 'InterruptSourceGUID' on the castBar.", "cont1nuity"},
+			{1625966028,  "New Feature", "July 24th, 2021", "Adding 'Deinitialization' hook for mods to run when the mod is unloaded.", "cont1nuity"},
+			{1625966028,  "Bug Fix", "July 24th, 2021", "Fixed 'modTable' being 'nil' in the Destructor code.", "cont1nuity"},
+			{1625966028,  "New Feature", "July 21st, 2021", "Introducing 'Plater.ForceInCombatUnits' as a list of unit-IDs for units which should be treated as 'in combat' when the player is in combat.", "cont1nuity"},
+			{1625966028,  "Bug Fix", "July 16th, 2021", "Fixed the Fated Conjunction timer which was off about 200ms.", "Terciob"},
+			{1625966028,  "Backend Change", "July 10th, 2021", "Fixing nameplate color in 'Aura - Blink Time Left' script.", "cont1nuity"},
 			{1625966028,  "Backend Change", "July 10th, 2021", "Changed the way caches are stored.", "Terciob"},
 
 			{1625732512,  "Bug Fix", "July 8th, 2021", "Fixing an issue with older mods/scripts imports not working properly.", "cont1nuity"},

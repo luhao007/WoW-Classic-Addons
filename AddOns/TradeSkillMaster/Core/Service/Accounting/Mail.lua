@@ -69,9 +69,10 @@ end
 
 function private.CanLootMailIndex(index, copper)
 	local currentMoney = GetMoney()
-	assert(currentMoney <= MAXIMUM_BID_PRICE)
+	local moneyCap = TSM.IsWowClassic() and 2147483647 or MAXIMUM_BID_PRICE
+	assert(currentMoney <= moneyCap)
 	-- check if this would put them over the gold cap
-	if currentMoney + copper > MAXIMUM_BID_PRICE then return end
+	if currentMoney + copper > moneyCap then return end
 	local _, _, _, _, _, _, _, itemCount = GetInboxHeaderInfo(index)
 	if not itemCount or itemCount == 0 then return true end
 	for j = 1, ATTACHMENTS_MAX_RECEIVE do

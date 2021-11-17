@@ -1,9 +1,11 @@
 ------------------------------------------------------------------------
-r362 | EsWoW | 2021-04-20 18:39:39 +0000 (Tue, 20 Apr 2021) | 2 lines
+r392 | EsWoW | 2021-11-17 01:47:21 +0000 (Wed, 17 Nov 2021) | 2 lines
 Changed paths:
    M /trunk/PallyPower.lua
+   M /trunk/PallyPower.xml
+   M /trunk/PallyPower_Vanilla.xml
 
-* Fix an issue where Shamans were sometimes being confused as pets
-* Fix an issue where Hunters were sometimes unable to be easily buffed with Blessing of Might
+* Fixed a bug introduced in 1.4.0 which prevented cycling of lesser blessings by the player with mousewheel
+* Fix prevention of the ability to assign sacrifice onto the same paladin as that which is buffing
 ------------------------------------------------------------------------
 

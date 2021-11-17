@@ -138,7 +138,7 @@ do
 	local popupFrame
 
 	local function createPopupFrame()
-		popupFrame = CreateFrame("Frame", nil, UIParent, DBM:IsShadowlands() and "BackdropTemplate")
+		popupFrame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 		popupFrame:SetFrameStrata("DIALOG")
 		popupFrame:SetFrameLevel(popupFrame:GetFrameLevel() + 10)
 		popupFrame:SetSize(512, 512)
@@ -151,11 +151,7 @@ do
 			edgeSize	= 32,
 			insets		= { left = 8, right = 8, top = 8, bottom = 8 }
 		}
-		if DBM:IsShadowlands() then
-			popupFrame:ApplyBackdrop()
-		else
-			popupFrame:SetBackdrop(popupFrame.backdropInfo)
-		end
+		popupFrame:ApplyBackdrop()
 		popupFrame:SetMovable(true)
 		popupFrame:EnableMouse(true)
 		popupFrame:RegisterForDrag("LeftButton")
@@ -164,7 +160,7 @@ do
 		popupFrame:Hide()
 		popupFrame.text = ""
 
-		local backdrop = CreateFrame("Frame", nil, popupFrame, DBM:IsShadowlands() and "BackdropTemplate")
+		local backdrop = CreateFrame("Frame", nil, popupFrame, "BackdropTemplate")
 		backdrop.backdropInfo = {
 			bgFile		= "Interface\\ChatFrame\\ChatFrameBackground",
 			edgeFile	= "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -173,11 +169,7 @@ do
 			edgeSize	= 16,
 			insets		= { left = 3, right = 3, top = 5, bottom = 3 }
 		}
-		if DBM:IsShadowlands() then
-			backdrop:ApplyBackdrop()
-		else
-			backdrop:SetBackdrop(backdrop.backdropInfo)
-		end
+		backdrop:ApplyBackdrop()
 		backdrop:SetBackdropColor(0.1, 0.1, 0.1, 0.6)
 		backdrop:SetBackdropBorderColor(0.4, 0.4, 0.4)
 		backdrop:SetPoint("TOPLEFT", 15, -15)
@@ -741,13 +733,14 @@ do
 
 	function DBM_GUI:UpdateModList()
 		for _, addon in ipairs(DBM.AddOns) do
-			if not category[addon.category] then
-				category[addon.category] = DBM_GUI:CreateNewPanel(_G["EXPANSION_NAME" .. (tIndexOf(expansions, addon.category:upper()) or 99) - 1] or L.TabCategory_OTHER, nil, addon.category:upper() == expansions[GetExpansionLevel() + 1])
+			local cat = addon.category:upper()
+			if not category[cat] then
+				category[cat] = DBM_GUI:CreateNewPanel(_G["EXPANSION_NAME" .. (tIndexOf(expansions, cat) or 99) - 1] or L.TabCategory_OTHER, nil, cat == expansions[GetExpansionLevel() + 1])
 			end
 
 			if not addon.panel then
 				-- Create a Panel for "Naxxramas" "Eye of Eternity" ...
-				addon.panel = category[addon.category]:CreateNewPanel(addon.name or "Error: No-modId")
+				addon.panel = category[cat]:CreateNewPanel(addon.name or "Error: No-modId")
 
 				if not IsAddOnLoaded(addon.modId) then
 					local button = addon.panel:CreateButton(L.Button_LoadMod, 200, 30)

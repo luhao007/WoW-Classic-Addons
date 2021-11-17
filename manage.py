@@ -11,9 +11,9 @@ from toc import TOC
 
 logger = logging.getLogger('manager')
 
-CLASSIC_ERA_VER = '11307'
-CLASSIC_VER = '20501'
-RETAIL_VER = '90005'
+CLASSIC_ERA_VER = '11401'
+CLASSIC_VER = '20502'
+RETAIL_VER = '90100'
 
 
 def available_on(platforms):
@@ -74,11 +74,11 @@ class Manager:
 
     @functools.lru_cache
     def get_addon_config(self, addon):
-        return self.config.find('.//*[@name="{}"]'.format(addon))
+        return self.config.find(f'.//*[@name="{addon}"]')
 
     @functools.lru_cache
     def get_addon_parent_config(self, addon):
-        return self.config.find('.//*[@name="{}"]../..'.format(addon))
+        return self.config.find(f'.//*[@name="{addon}"]../..')
 
     def get_title(self, addon):
         parts = []
@@ -108,9 +108,9 @@ class Manager:
             '辅助': 'FFFFFF',       # White - Priest
         }
         color = colors.get(cat, 'FFF569')   # Unknown defaults to Rogue Yellow
-        parts.append('|cFFFFE00A<|r|cFF{}{}|r|cFFFFE00A>|r'.format(color, cat))
+        parts.append(f'|cFFFFE00A<|r|cFF{color}{cat}|r|cFFFFE00A>|r')
 
-        parts.append('|cFFFFFFFF{}|r'.format(title))
+        parts.append(f'|cFFFFFFFF{title}|r')
 
         if config.tag.endswith('SubAddon'):
             sub = config.find('x:Title', namespace).text
@@ -118,7 +118,7 @@ class Manager:
                 color = 'FF0055FF'
             else:
                 color = 'FF69CCF0'
-            parts.append('|c{}{}|r'.format(color, sub))
+            parts.append(f'|c{color}{sub}|r')
         elif not (('DBM' in addon and addon != 'DBM-Core') or
                   'Grail-' in addon or
                   addon == '!!Libs'):
@@ -126,11 +126,11 @@ class Manager:
                 title_en = config.find('x:Title-en', namespace).text
             else:
                 title_en = addon
-            parts.append('|cFFFFE00A{}|r'.format(title_en))
+            parts.append(f'|cFFFFE00A{title_en}|r')
 
         ext = config.find('x:TitleExtra', namespace)
         if ext is not None:
-            parts.append('|cFF22B14C{}|r'.format(ext.text))
+            parts.append(f'|cFF22B14C{ext.text}|r')
 
         return ' '.join(parts)
 
@@ -162,7 +162,7 @@ class Manager:
 
                 return toc.to_lines()
 
-            for postfix in ['', '-Classic', '-BCC', '-Mainline']:
+            for postfix in ['', '-Classic', '-BCC', '-Mainline', '_TBC', '_Vanilla']:
                 path = os.path.join('AddOns', addon, f'{addon}{postfix}.toc')
                 if os.path.exists(path):
                     utils.process_file(path, functools.partial(process, config, addon))
@@ -216,7 +216,7 @@ class Manager:
                         '\n'
                         '# Dropdown menus\n',
                         '!LibUIDropDownMenu\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
-                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu\\LibUIDropDownMenu.xml\n',
+                        '!LibUIDropDownMenu-2.0\\LibUIDropDownMenu.xml\n',
                         '\n']
 
         root = Path('Addons/!!Libs')
@@ -275,7 +275,7 @@ class Manager:
             end = lines[start:].index('end\n')
 
             for line in lines[start+1:start+end+1]:
-                ret.append('--{}'.format(line))
+                ret.append(f'--{line}')
             ret += lines[start+end+1:]
 
             return ret
@@ -394,14 +394,14 @@ class Manager:
                 ['CallbackHandler-1.0', 'LibDataBroker-1.1',
                  'LibDbIcon-1.0', 'LibStub'],
                 'AddOns/alaTalentEmu/Libs',
-                'AddOns/alaTalentEmu/alaTalentEmu.xml'
+                'AddOns/alaTalentEmu/Libs/libs.xml'
             )
 
     @staticmethod
     def handle_att():
+        addon = 'AllTheThings' if utils.get_platform() == 'retail' else 'ATT-Classic'
         utils.change_defaults(
-            'Addons/{}/Settings.lua'.format(
-                'AllTheThings' if utils.get_platform() == 'retail' else 'ATT-Classic'),
+            f'Addons/{addon}/Settings.lua',
             ['		["MinimapButton"] = false,',
                 '		["Auto:MiniList"] = false,']
         )
@@ -472,9 +472,9 @@ class Manager:
 
     @staticmethod
     def handle_dcs():
+        addon = 'Character' if utils.get_platform() == 'retail' else 'Classic'
         utils.change_defaults(
-            'AddOns/Deja{}Stats/DCSDuraRepair.lua'.format(
-                'Character' if utils.get_platform() == 'retail' else 'Classic'),
+            f'AddOns/Deja{addon}Stats/DCSDuraRepair.lua',
             ['	ShowDuraSetChecked = false,',
                 '	ShowItemRepairSetChecked = false,',
                 '	ShowItemLevelSetChecked = false,',
@@ -640,23 +640,6 @@ class Manager:
         )
 
     @staticmethod
-    @available_on(['retail'])
-    def handle_mogit():
-        utils.remove_libraries(
-            ['AceConfig-3.0', 'AceDB-3.0', 'AceDBOptions-3.0', 'AceGUI-3.0',
-                'CallbackHandler-1.0', 'LibBabble-Boss-3.0',
-                'LibBabble-Inventory-3.0', 'LibBabble-Race-3.0', 'LibDBIcon-1.0',
-                'LibDataBroker-1.1', 'LibStub'],
-            'Addons/MogIt/Libs',
-            'Addons/MogIt/Libs/Embeds.xml'
-        )
-
-        utils.change_defaults(
-            'Addons/Mogit/Core/Core.lua',
-            '		minimap = { hide = true },'
-        )
-
-    @staticmethod
     def handle_monkeyspeed():
         utils.process_file(
             'AddOns/MonkeySpeed/MonkeySpeedInit.lua',
@@ -749,7 +732,7 @@ class Manager:
         )
 
         if utils.get_platform() == 'classic_era':
-            for postfix in ['', '-BCC', '-Classic']:
+            for postfix in ['', '-BCC']:
                 utils.remove_libraries([ 'LibUIDropDownMenu'], 'AddOns/Questie/Libs', f'AddOns/Questie/Questie{postfix}.toc')
 
         root = Path('AddOns/Questie')
@@ -770,13 +753,13 @@ class Manager:
                     break
 
             ret = lines[:start+1]
-            ret.append('    return {}, {}, {}\n'.format(major, minor, patch))
+            ret.append(f'    return {major}, {minor}, {patch}\n')
             ret.append('end\n')
             end = lines[start:].index('end\n')
 
             if not lines[start+1].strip().startswith('return'):
                 for line in lines[start+1:start+end+1]:
-                    ret.append('--{}'.format(line))
+                    ret.append(f'--{line}')
 
             ret += lines[start+end+1:]
             return ret
@@ -837,10 +820,9 @@ class Manager:
 
     @staticmethod
     def handle_titan():
-        path = 'Addons/Titan{0}Location/Titan{0}Location.lua'.format(
-            '' if utils.get_platform() == 'retail' else 'Classic')
+        addon = 'TitanLocation' if utils.get_platform() == 'retail' else 'TitanClassicLocation'
         utils.change_defaults(
-            path,
+            f'Addons/{addon}/{addon}.lua',
             ['			ShowCoordsOnMap = false,',
                 '			ShowCursorOnMap = false,']
         )
@@ -899,7 +881,7 @@ class Manager:
             'Addons/VuhDo/Libs/Libs.xml'
         )
 
-        if not utils.get_platform() == 'retail':
+        if utils.get_platform() != 'retail':
             utils.rm_tree('Addons/Vuhdo/Libs/!LibTotemInfo/LibStub')
             utils.remove_libs_in_file(
                 'Addons/Vuhdo/Libs/!LibTotemInfo/embeds.xml',

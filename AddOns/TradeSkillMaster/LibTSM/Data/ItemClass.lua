@@ -100,19 +100,10 @@ do
 	end
 	sort(STATIC_DATA.classes, function(a, b) return STATIC_DATA.classIdLookup[strlower(a)] < STATIC_DATA.classIdLookup[strlower(b)] end)
 
-	if not TSM.IsWowClassic() then
-		for _, id in pairs(Enum.InventoryType) do
-			local invType = GetItemInventorySlotInfo(id)
-			if invType then
-				STATIC_DATA.inventorySlotIdLookup[strlower(invType)] = id
-			end
-		end
-	else
-		for i = 0, NUM_LE_INVENTORY_TYPES do
-			local invType = GetItemInventorySlotInfo(i)
-			if invType then
-				STATIC_DATA.inventorySlotIdLookup[strlower(invType)] = i
-			end
+	for _, id in pairs(Enum.InventoryType) do
+		local invType = GetItemInventorySlotInfo(id)
+		if invType then
+			STATIC_DATA.inventorySlotIdLookup[strlower(invType)] = id
 		end
 	end
 end

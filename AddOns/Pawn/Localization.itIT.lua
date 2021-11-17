@@ -94,6 +94,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["CritInfo"] = "Critico. Aumenta la possibilità che i tuoi attacchi e le tue cure colpiscano con potenza maggiore.",
 		["DefenseInfo"] = "Defense skill.  Decreases the chance that you'll be hit by boss attacks.",
 		["DodgeInfo"] = "Dodge.  Increases the chance that you'll dodge attacks entirely.",
+		["DominationSocketInfo"] = "Il valore di un socket per un frammento di dominio medio.",
 		["DpsInfo"] = "Danno dell'arma al secondo. (Se vuoi dare un valore diverso per i differenti tipi di arma, vedi la sezione \"Attributi speciali delle armi\").",
 		--[[Translation missing --]]
 		["ExpertiseInfo"] = "Expertise. Negates your enemy's chances to dodge and parry.",
@@ -347,6 +348,7 @@ Per maggiori informazioni su come personalizzare Pawn, per favore leggere il fil
 		["HitRating3"] = "^UNUSED$",
 		["HolySpellDamage"] = "^UNUSED$",
 		["HolySpellDamage2"] = "^UNUSED$",
+		["HolySpellDamage3"] = "^UNUSED$",
 		["Hp5"] = "^%+?# Salute ogni 5 s.$",
 		["Hp52"] = "UNUSED",
 		["Hp53"] = "UNUSED",

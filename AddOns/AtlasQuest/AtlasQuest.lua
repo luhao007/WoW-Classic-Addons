@@ -62,10 +62,13 @@ local AQVERSION = GetAddOnMetadata("AtlasQuest","Version");
 -- Checks WoW version and sets warning message in AtlasQuest title if wrong version.  Experimental.  Inspired by code from Atlas.
 local WoWVersion  = select(4, GetBuildInfo())
 if WoWVersion < 20000 then
+	-- CLASSIC
 	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;
 elseif WoWVersion > 19999 and WoWVersion < 90000 then 
+	-- TBC CLASSIC
 	ATLASQUEST_VERSION = ""..BLUE.."AtlasQuest TBC "..AQVERSION;
 else
+	-- RETAIL / SHADOWLANDS
 	ATLASQUEST_VERSION = AQ_MSG_WRONGVERSION;
 end
 
@@ -197,7 +200,7 @@ function AQ_OnLoad()
     AtlasQuestFrame:RegisterEvent("ADDON_LOADED");
     AQSetButtontext(); -- translation for all buttons
     if ( AtlasFrame ) then
-    	AQATLASMAP = AtlasMap:GetTexture()
+    	AQATLASMAP = AtlasMapSmall:GetTexture()
     else
 	  AQATLASMAP = 36;
     end
@@ -208,7 +211,6 @@ function AQ_OnLoad()
     HideUIPanel(AtlasQuestOptionFrame);
     AQUpdateNOW = true;
 end
-
 
 
 -----------------------------------------------------------------------------
@@ -445,9 +447,6 @@ end
 -- Colours quest blue if they are in your questlog
 -----------------------------------------------------------------------------
 function AQCompareQLtoAQ(Quest)
-
-return false;
---[[
 local TotalQuestEntries
 local CurrentQuestnum
 local OnlyQuestNameRemovedNumber
@@ -475,9 +474,9 @@ local count
       end
     end
     --this checks should be done everytime when the questupdate event gets executed
-    TotalQuestEntries = C_QuestLog.GetNumQuestLogEntries();
+    TotalQuestEntries = GetNumQuestLogEntries();
     for CurrentQuestnum=1, TotalQuestEntries do
-      x, y, z = C_QuestLog.GetTitleForLogIndex(CurrentQuestnum)
+      x, y, z = GetQuestLogTitle(CurrentQuestnum)
       TotalQuestsTable = {
         [CurrentQuestnum] = x,
       };
@@ -516,10 +515,8 @@ local count
   else
     return false;
   end
-
---]]
-
 end
+
 
 
 

@@ -342,6 +342,8 @@ function VUHDO_setHealth(aUnit, aMode)
 			tName, tRealm = UnitName(aUnit);
 			tInfo["healthmax"] = UnitHealthMax(aUnit);
 			tInfo["health"] = UnitHealth(aUnit);
+			tInfo["loghealth"] = UnitHealth(aUnit);
+			tInfo["updateTime"] = GetTime();
 			tInfo["name"] = tName;
 			tInfo["number"] = VUHDO_getUnitNo(aUnit);
 			tInfo["unit"] = aUnit;
@@ -400,9 +402,27 @@ function VUHDO_setHealth(aUnit, aMode)
 				VUHDO_updateBouquetsForEvent(aUnit, 19); -- VUHDO_UPDATE_DC
 			end
 
-			if 2 == aMode then -- VUHDO_UPDATE_HEALTH
-				tNewHealth = UnitHealth(aUnit);
-				
+			if 2 == aMode or 12 == aMode then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
+				if 12 == aMode then -- VUHDO_UPDATE_HEALTH_COMBAT_LOG
+					tNewHealth = tInfo["loghealth"];
+				end
+				if 2 == aMode then
+                    -- Filter exception UNIT_HEALTH_FREQUENT event in classic
+                    -- Sometimes there is a UNIT_HEALTH_FREQUENT event in the interim period  
+					if tInfo["updateTime"] and abs(tonumber(tInfo["updateTime"]) - tonumber(GetTime())) < 0.4 then
+						tInfo["healthmax"] = UnitHealthMax(aUnit);
+						return;
+                    -- Filter exception health data from UnitHealth API
+                    -- UnitHealth will return 0 if the hunter cast FeignDeath 
+                    -- Sometimes UnitIsDeadOrGhost return false and UnitHealth return 0 before UnitIsFeignDeath return true
+					elseif (UnitIsFeignDeath(aUnit)  or not UnitIsDeadOrGhost(aUnit)) and UnitHealth(aUnit) == 0 then
+						tInfo["healthmax"] = UnitHealthMax(aUnit);
+						return;
+					else 
+						tNewHealth = UnitHealth(aUnit);
+					end
+				end
+
 				if not tIsDead and tInfo["health"] > 0 then
 					tInfo["lifeLossPerc"] = tNewHealth / tInfo["health"];
 				end
@@ -422,6 +442,11 @@ function VUHDO_setHealth(aUnit, aMode)
 				tInfo["dead"] = tIsDead;
 				tInfo["healthmax"] = UnitHealthMax(aUnit);
 				tInfo["sortMaxHp"] = VUHDO_getUnitSortMaxHp(aUnit);
+				tInfo["loghealth"] = UnitHealth(aUnit);
+				if  UnitHealth(aUnit) ~= 0 then
+					tInfo["health"] = UnitHealth(aUnit);
+				end
+				tInfo["updateTime"] = GetTime();
 
 			elseif 6 == aMode then -- VUHDO_UPDATE_AFK
 				tInfo["afk"] = tIsAfk;
@@ -453,7 +478,7 @@ function VUHDO_updateHealth(aUnit, aMode)
 
 	tIsPet = VUHDO_RAID[aUnit] and VUHDO_RAID[aUnit]["isPet"];
 
-	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enth„lt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
+	if not tIsPet or VUHDO_INTERNAL_TOGGLES[26] then -- VUHDO_UPDATE_PETS  -- Enthlt nur Pets als eigene Balken, vehicles werden ?ber owner dargestellt s.unten
 		VUHDO_setHealth(aUnit, aMode);
 		VUHDO_updateHealthBarsFor(aUnit, aMode);
 	end
@@ -468,7 +493,7 @@ function VUHDO_updateHealth(aUnit, aMode)
 	end
 
 	if 1 ~= sCurrentMode -- VUHDO_MODE_NEUTRAL
-		and (2 == aMode or 3 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX
+		and (2 == aMode or 3 == aMode or 12 == aMode) then -- VUHDO_UPDATE_HEALTH -- VUHDO_UPDATE_HEALTH_MAX --  VUHDO_UPDATE_HEALTH_COMBAT_LOG
 		-- Remove old emergencies
 		VUHDO_FORCE_RESET = true;
 		for tUnit, _ in pairs(VUHDO_EMERGENCIES) do

@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: zwj@oldgun
 ## Version: 1.8.247
 ## DefaultState: enabled

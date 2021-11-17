@@ -20,7 +20,7 @@ class TOC:
             self.contents = []
 
     def tags_to_line(self, tags):
-        return ['## {}: {}\n'.format(tag, self.tags[tag])
+        return [f'## {tag}: {self.tags[tag]}\n'
                 for tag in tags if tag in self.tags]
 
     def trim_contents(self):

@@ -37,7 +37,7 @@ local ERRONEOUS_ZERO_THRESHOLD = 5 * 1000 * COPPER_PER_GOLD
 -- ============================================================================
 
 function GoldTracker.OnInitialize()
-	if not TSM.IsWowClassic() then
+	if not TSM.IsWowVanillaClassic() then
 		Event.Register("GUILDBANKFRAME_OPENED", private.GuildLogGold)
 		Event.Register("GUILDBANK_UPDATE_MONEY", private.GuildLogGold)
 	end

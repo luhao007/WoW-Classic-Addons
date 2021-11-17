@@ -1,32 +1,100 @@
-0.6.3 Release Notes
+0.7.6 Release Notes
 Contributions made by Crieve:
-* Fixed quest objectives for Unyielding Souls.
-* Fixed the mapID for Sporeggar.
-* The Consortium reputation now also appears in the Netherstorm mini list.
-* The Eye of Haramad does not cost a Mark of the Nexus King.
-* Marked "Ogre Heaven" with a note as being available with Ogri'la. You can accept, but not turn in this quest. My OCD can't take it anymore!
-* Marked The Vials of Eternity quests as being available with Phase 2. You can accept them, but obviously not obtain any of the vials under the raids are released.
-* Refactored Frostsaber Provisions to use the objectives tech instead.
-* Quests that can no longer be completed due to arbitrary maximum reputation gating will no longer be displayed once you reach the maximum reputation. (Ivory, Glowcaps, and Oshu'gun fragment quests)
-* Added a blank map for Eye of the Storm.
-* Added Blood of Amber, Arcane Khorium Band, and Kailee's Rose spellIDs.
-* The quest "Archmage Alturus" is now marked as a Breadcrumb quest.
-* High Sorcerer Andromath is now marked as a breadcrumb quest.
-* Removed the explicit removed from game tags from various things.
-* The Nesingwary Safari is now marked as a breadcrumb quest.
-* Help for Mudsprocket is now marked as a breadcrumb quest.
-* Ribbly Screwspigot quest is now properly listed under Burning Steppes.
-* Help Mama Wheeler is now marked as a breadcrumb quest.
-* Vial of Underworld Loam does not drop on Heroic.
-* Updated description for the Carrot on a Stick.
-* Enchant Ring - Striking is not available yet.
-* The Karazhan arrows and bullets are not available yet.
-* Enchant Weapon - Greater Agility is not available yet.
-* Shadowprowler's and the Cloak of Darkness are not available yet.
-* Flask of Chromatic Wonder is not available yet.
-* Missed some parts.
-* Design: Gleaming Dawnstone has been confirmed.
-* Whoops, fixed the last commit.
-* Formula: Enchant Ring - Striking is actually available at the moment.
-* Formula: Enchant Ring - Stats was the one that wasn't available. Formula: Enchant Weapon - Major Striking is also Phase 2.... maybe?
+* Known By now sorted by the name rather than the colorized text.
+* Viran is now an Exterminator!
+* The amount of spillover Goblin rep a non-human gets is actually 2.5, not 2.0.
+* Gnubs is now an Exterminator!
+* Added a fancy tooltip for Winterspring Trainers.
+* Included the Classic reputation values for Wintersaber Trainers.
+* Added objectives for the repeatable Wintersaber quests.
+* Fixed the Stranglethorn Vale Candy Bucket.
+* Fixed more Candy Bucket coordinates for Alliance and Neutral locations.
+* Added the inner door key to Dire Maul.
+* Added the ogre suit cost as well.
+* BoP Engineering craftables now require the profession.
+* Added timeline values for crafted gathering items.
+* Added timeline values for classic enchanting items.
+* Updated Classic Engineering. Added the Battle Pets filter constant.
+* Added all Classic Jewelcrafting crafted items.
+* Added TBC crafted Jewelcrafting (non-gem) items.
+* Added TBC Alchemy crafted items.
+* Added a bunch of unsorted Jewelcrafting recipes.
+* Fixed a number of Jewelcrafting recipes in Hellfire Peninsula.
+* ...
+* ...
+* Added Inscription. (for Wrath Classic)
+* Added timeline data for Classic Tailoring crafted items. Burning Crusade crafted items now point directly to the retail ATT DB now that the data has been synced.
+* Added timeline data for Classic Leatherworking crafted items.
+* Updated the Darkmoon Faire cards in preparation for Inscription.
+* Updated classic Blacksmithing crafted items.
+* Classic crafted items now point directly to the retail ATT DB now that the data has been synced.
+* Reverted the section change for the engineering toys for the dynamic Toys section's autosort algorithm.
+* Updated the format of the Tier 0.5 Sets to use proper objectives. This should directly impact your Outdoor Zones completion by hiding quest items until you're on the quests.
+* Tier 0.5 Sets now references the Retail DB and has been sync'd.
+* Updated the format of the Classic World Bosses and added timelines. Classic World Bosses now reference the Retail DB and have been sync'd.
+* Updated Molten Core to use proper objectives.
+* Updated Onyxia's Lair and Molten Core with timelines and objectives. They also now reference the Retail DB and have been sync'd.
+* BWL now resides on the Retail DB.
+* Updated ZG to reference the Retail DB.
+* Updated Ruins of Ahn'Qiraj to use a different icon that's available in Classic and use the Retail DB.
+* Updated Temple of Ahn'Qiraj to use the Retail DB.
+* Cleaned up empty categories in the dynamic lists.
+* Fixed an issue with objectives with coordinates.
+* Fixed Rusted Iron Key.
+* Fixed Kormok in the Tier 0.5 quest chain. Sprite Darter Egg and Power Converter are now Alliance Only!
+* The regular Flying Broom never made it into Classic.
+* Added a template for the Achievement object type. Added Old Crafty and Old Ironjaw and their associated Achievements. Non-Reputation Achievements now support the account wide setting.
+* Updated the Stranglethorn Fishing Extravaganza.
+* Added Achievement Category Object types. Removed an unnecessary coordinate from the header.
+* Added achievement category templates.
+* Added two achievements to Zul'Gurub. Added most of the Fishing achievements.
+* Provider tooltip data now looks better and obeys filtering requirements.
+* ...
+* Achievements now appear in the Profession Mini List if they are properly tagged.
+* Enabled some of the holiday achievements for TBC Classic now that it supports them.
+* Added the Avast Ye, Admiral! achievement.
+* The World Event files are now sync'd with the Retail database.
+* The Promotion files are now sync'd with the Retail database.
+* Added map data to Steelscale Crushfish. Items linked to a profession linked to a map now appear in the profession for that map.
+* Added Achievement Category Constants.
+* The achievement section is now sorted.
+* Added Anesthetic Poison.
+* Greatly reduced the chance of the achievement sorting to bug out.
+* The Stockade no longer appears in the Stormwind City mini list.
+* Fixed a coordinate in Nagrand.
+* Added the "Removed With Patch" field. (This is not 100% yet!)
+* Cenarion Expedition now shows up in Steamvaults and SP.
+* Concerted Efforts do not give rep in TBC. :(
+* Added some missing librams.
+* Outland Factions now appear inside their respective instances. Added a tooltip to Nagrand Factions.
+* Consortium Warbeads are actually less.
+* Fixed references to Terokkar Forest.
+* Zul'Farrak has been sync'd with the Retail database.
+* Wailing Caverns has been sync'd with the Retail database.
+* The Stockade has been sync'd with the Retail database.
+* Ragefire Chasm has been sync'd with the Retail database.
+* Razorfen Downs has been sync'd with the Retail database.
+* Razorfen Kraul has been sync'd with the Retail database.
+* Uldaman has been sync'd with the Retail database.
+* Added the achievement for killing Zul'jin.
+* Added the achievement for killing Illidan.
+* Added the achievement for killing Kael'Thas.
+* Added the achievement for killing Lady Vashj.
+* Added the achievements for killing Mag and Gruul.
+* Added a few missing dungeon quests and achievement collection logic for all outland dungeon achievements involving bosses that have kill quests associated with them.
+* Added achievement collection logic for all classic dungeon achievements involving bosses that have kill quests associated with them.
+* Added placeholder achievements for all of the Profession Achievements.
+* Fixed some missing racial assignments for Children's Week. Added Mounts as a collectible Thing.
+* The mount dynamic category now filters mounts according to racial and class hierarchy.
+* Mounts that are common between factions, but use items that are faction specific should no longer be hidden in the dynamic mount section.
+* The Flying Machine no longer incorrectly marks itself collected when you have the Flying Machine spell to craft it learned.
+* Magic Broom no longer appears as a collectible mount.
+* Mounts as a Thing is no longer activated by default and does not count against Insane Mode.
+
+Contributions made by gbrage:
+* - World Bosses Constant
+* - Legendary Questline Constant
+
+Contributions made by Sluimerstand:
+* Update enUS.lua
 

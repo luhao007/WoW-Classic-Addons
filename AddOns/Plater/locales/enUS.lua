@@ -47,9 +47,9 @@ L["OPTIONS_PROFILE_CONFIG_PROFILENAME_DESC"] = [=[A new profile is created with 
 Inserting the name of a profile that already exists will overwrite it.]=]
 L["OPTIONS_PROFILE_ERROR_PROFILENAME"] = "Invalid profile name"
 L["OPTIONS_PROFILE_ERROR_STRINGINVALID"] = "Invalid profile file."
-L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Invalid profile file.
+L["OPTIONS_PROFILE_ERROR_WRONGTAB"] = [=[Invalid profile data.
 
-Import scripts or mods at the scripting tab.]=]
+Import scripts or mods at the scripting or modding tab.]=]
 L["OPTIONS_PROFILE_IMPORT_OVERWRITE"] = "Profile '%s' already exists, overwrite it?"
 L["OPTIONS_SETTINGS_COPIED"] = "settings copied."
 L["OPTIONS_SETTINGS_FAIL_COPIED"] = "failed to get the settings for the current selected tab."
@@ -64,7 +64,6 @@ L["OPTIONS_TABNAME_BUFF_SETTINGS"] = "Buff Settings"
 L["OPTIONS_TABNAME_BUFF_SPECIAL"] = "Buff Special"
 L["OPTIONS_TABNAME_BUFF_TRACKING"] = "Buff Tracking"
 L["OPTIONS_TABNAME_COLORSNPC"] = "Npc Colors"
-L["OPTIONS_TABNAME_CREDITS"] = "Credits"
 L["OPTIONS_TABNAME_GENERALSETTINGS"] = "General Settings"
 L["OPTIONS_TABNAME_MODDING"] = "Modding"
 L["OPTIONS_TABNAME_NPCENEMY"] = "Enemy Npc"
@@ -76,7 +75,7 @@ L["OPTIONS_TABNAME_PROFILES"] = "Profiles"
 L["OPTIONS_TABNAME_SCRIPTING"] = "Scripting"
 L["OPTIONS_TABNAME_STRATA"] = "Level & Strata"
 L["OPTIONS_TABNAME_TARGET"] = "Target"
-L["OPTIONS_TABNAME_THREAT"] = "Threat / Aggro"
+L["OPTIONS_TABNAME_THREAT"] = "Colors / Threat"
 L["OPTIONS_TEXTURE"] = "Texture"
 L["OPTIONS_THREAT_AGGROSTATE_ANOTHERTANK"] = "Aggro on Another Tank"
 L["OPTIONS_THREAT_AGGROSTATE_HIGHTHREAT"] = "High Threat"

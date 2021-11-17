@@ -412,16 +412,20 @@ function VUHDO_deleteCustomDebuffOnClick(aButton)
 	if (tIndex ~= nil and #tValue > 0) then
 		tremove(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"], tIndex);
 		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED_SETTINGS"][tValue] = nil;
+		VUHDO_CONFIG["CUSTOM_DEBUFF"]["SELECTED"] = "";
+
 		VUHDO_Msg("(de)buff " .. tValue .. " removed.", 1, 0.4, 0.4);
 	else
 		VUHDO_Msg("(de)buff " .. tValue .. " doesn't exist.", 1, 0.4, 0.4);
 	end
 
 	VUHDO_initCustomDebuffComboModel();
+
+	VuhDoNewOptionsDebuffsCustomStorePanelEditBox:SetText("");
 	VUHDO_customDebuffUpdateEditBox(VuhDoNewOptionsDebuffsCustomStorePanelEditBox);
+
 	VuhDoNewOptionsDebuffsCustom:Hide();
 	VuhDoNewOptionsDebuffsCustom:Show();
-	VuhDoNewOptionsDebuffsCustomStorePanelEditBox:SetText("");
 end
 
 

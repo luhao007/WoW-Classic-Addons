@@ -1,6 +1,6 @@
-## Interface: 20501
-## Author: Tandanu and Nitram and MysticalOS
-## Version: 2.5.8
+## Interface: 20502
+## Author: MysticalOS, QartemisT
+## Version: edca2ba
 ## Dependencies: DBM-StatusBarTimers
 ## LoadOnDemand: 0
 ## SavedVariables: DBM_AllSavedOptions, DBM_MinimapIcon
@@ -12,15 +12,11 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFFFFE00ADBM|r
 ## Notes-zhCN: 功能强大的副本助手，支持所有Boss。
 
-## X-Min-Interface: 20501
-## X-Website: http://www.deadlybossmods.com
-## X-Curse-Project-ID: 3358
-## X-Wago-ID: qv633o6b
-## X-WoWI-ID: 25929
+## X-Min-Interface: 90105
+## X-Min-Interface-Classic: 11400
+## X-Min-Interface-BCC: 20502
+## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
-
-#@no-lib-strip@
-#@end-no-lib-strip@
 
 localization.en.lua
 localization.de.lua
@@ -32,6 +28,16 @@ localization.tw.lua
 localization.kr.lua
 localization.es.lua
 localization.br.lua
+
+# Pre-core modules
+modules\Modules.lua
+
+modules\Scheduler.lua
+modules\DevTools.lua
+modules\Icons.lua
+modules\TargetScanning.lua
+
+# Core
 DBM-Core.lua
 DBM-Arrow.lua
 DBM-Flash.lua
@@ -39,3 +45,10 @@ DBM-RangeCheck.lua
 DBM-InfoFrame.lua
 DBM-HudMap.lua
 DBM-Nameplate.lua
+
+# Modules
+modules\MinimapButton.lua
+modules\Sounds.lua
+modules\SpecRole.lua
+
+modules\objects\Localization.lua

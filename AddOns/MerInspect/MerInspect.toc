@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: M(Mermaid)
 ## Version: 1.0.2a
 ## SavedVariables: MerInspectDB

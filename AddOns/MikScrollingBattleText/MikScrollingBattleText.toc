@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Mikord
-## Version: 5.7.152
+## Version: 5.7.153
 ## OptionalDeps: LibSharedMedia-3.0
 ## SavedVariables: MSBTProfiles_SavedVars, MSBT_SavedMedia
 ## SavedVariablesPerCharacter: MSBTProfiles_SavedVarsPerChar

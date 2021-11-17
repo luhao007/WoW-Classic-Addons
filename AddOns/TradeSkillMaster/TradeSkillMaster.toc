@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: TradeSkillMaster Team
-## Version: v4.11.8
+## Version: v4.11.16
 ## OptionalDeps: ArkInventory, Auc-Advanced, Auctionator, TheUndermineJournal, BootyBayGazette, AuctionDB
 ## SavedVariables: TradeSkillMasterDB, TSMItemInfoDB
 

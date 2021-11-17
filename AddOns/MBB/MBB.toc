@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: karlsnyder, vallantv
 ## Version: 1.2.0
 ## SavedVariablesPerCharacter: MBB_Exclude, MBB_Options

@@ -519,6 +519,8 @@ function VUHDO_initDebuffs()
 
 	if not VUHDO_CONFIG then VUHDO_CONFIG = _G["VUHDO_CONFIG"]; end
 
+	twipe(VUHDO_CUSTOM_DEBUFF_CONFIG);
+
 	for _, tDebuffName in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"]) do
 		if not VUHDO_CUSTOM_DEBUFF_CONFIG[tDebuffName] then
 			VUHDO_CUSTOM_DEBUFF_CONFIG[tDebuffName] = { };

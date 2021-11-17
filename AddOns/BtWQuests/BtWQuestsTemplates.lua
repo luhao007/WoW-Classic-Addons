@@ -806,7 +806,6 @@ function BtWQuestsExpansionMixin:Set(item, character)
         self.Load:Show()
         self.ViewAll:Hide()
     end
-
 end
 
 -- [[ Navbar ]]
@@ -1501,6 +1500,31 @@ function BtWQuestsDropDownMenuMixin:Open(anchorName, xOffset, yOffset)
     end
 
     list:Show()
+
+    local offLeft = list:GetLeft()/uiScale;
+    local offRight = (GetScreenWidth() - list:GetRight())/uiScale;
+    local offTop = (GetScreenHeight() - list:GetTop())/uiScale;
+    local offBottom = list:GetBottom()/uiScale;
+
+    local xAddOffset, yAddOffset = 0, 0;
+    if ( offLeft < 0 ) then
+        xAddOffset = -offLeft;
+    elseif ( offRight < 0 ) then
+        xAddOffset = offRight;
+    end
+
+    if ( offTop < 0 ) then
+        yAddOffset = offTop;
+    elseif ( offBottom < 0 ) then
+        yAddOffset = -offBottom;
+    end
+
+    list:ClearAllPoints();
+    if ( anchorName == "cursor" ) then
+        list:SetPoint(point, relativeTo, relativePoint, xOffset + xAddOffset, yOffset + yAddOffset);
+    else
+        list:SetPoint(point, relativeTo, relativePoint, xOffset + xAddOffset, yOffset + yAddOffset);
+    end
 end
 function BtWQuestsDropDownMenuMixin:Close()
     self:GetListFrame():Hide()

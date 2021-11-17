@@ -71,7 +71,7 @@ end
 -- **************************************************************************
 function TitanPanelLocationButton_OnShow()
 	local mapID = C_Map.GetBestMapForUnit("player");
-	if mapID ~= nil then
+	if mapID ~= nil and C_Map.MapHasArt(mapID) then
     	WorldMapFrame:SetMapID(mapID);
 	end
 	TitanPanelLocation_HandleUpdater();
@@ -198,7 +198,7 @@ function TitanPanelLocationButton_OnEvent(self, event, ...)
 	end
 	if TitanGetVar(TITAN_LOCATION_ID, "UpdateWorldmap") then
 		local mapID = C_Map.GetBestMapForUnit("player")
-		if mapID ~= nil then
+		if mapID ~= nil and C_Map.MapHasArt(mapID) then
     		WorldMapFrame:SetMapID(mapID);
 		end
 	end

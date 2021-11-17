@@ -2,7 +2,7 @@
 
 local Details = _G.Details
 local DF = _G.DetailsFramework
-local raidStatusLib = LibStub:GetLibrary("LibRaidStatus-1.0")
+local openRaidLib = LibStub:GetLibrary("LibOpenRaid-1.0")
 
 local width = 170
 local height = 300
@@ -42,9 +42,13 @@ function Details.CooldownTracking.EnableTracker()
     Details.ocd_tracker.enabled = true
 
     --register callbacks
-    raidStatusLib.RegisterCallback(Details.CooldownTracking, "CooldownListUpdate", "CooldownListUpdateFunc")
-    raidStatusLib.RegisterCallback(Details.CooldownTracking, "CooldownListWiped", "CooldownListWipedFunc")
-    raidStatusLib.RegisterCallback(Details.CooldownTracking, "CooldownUpdate", "CooldownUpdateFunc")
+    --openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownListUpdate", "CooldownListUpdateFunc") --nao tem
+    --openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownListWiped", "CooldownListWipedFunc") --nao tem
+
+    --openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownListUpdate", "CooldownUpdateFunc")
+    --openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownListWiped", "CooldownUpdateFunc")
+
+    openRaidLib.RegisterCallback(Details.CooldownTracking, "CooldownUpdate", "CooldownUpdateFunc")
 
     Details.CooldownTracking.RefreshCooldownFrames()
 end
@@ -58,23 +62,11 @@ function Details.CooldownTracking.DisableTracker()
     end
 
     --unregister callbacks
-    raidStatusLib.UnregisterCallback(Details.CooldownTracking, "CooldownListUpdate", "CooldownListUpdateFunc")
-    raidStatusLib.UnregisterCallback(Details.CooldownTracking, "CooldownListWiped", "CooldownListWipedFunc")
-    raidStatusLib.UnregisterCallback(Details.CooldownTracking, "CooldownUpdate", "CooldownUpdateFunc")
+    openRaidLib.UnregisterCallback(Details.CooldownTracking, "CooldownListUpdate", "CooldownUpdateFunc")
+    openRaidLib.UnregisterCallback(Details.CooldownTracking, "CooldownListWiped", "CooldownUpdateFunc")
+    openRaidLib.UnregisterCallback(Details.CooldownTracking, "CooldownUpdate", "CooldownUpdateFunc")
 end
-
-function Details.CooldownTracking.CooldownListUpdateFunc()
-    --print("CooldownListUpdate")
-    Details.CooldownTracking.RefreshCooldowns()
-end
-
-function Details.CooldownTracking.CooldownListWipedFunc()
-    --print("CooldownListWiped")
-    Details.CooldownTracking.RefreshCooldowns()
-end
-
 function Details.CooldownTracking.CooldownUpdateFunc()
-    print("CooldownUpdate")
     Details.CooldownTracking.RefreshCooldowns()
 end
 
@@ -128,7 +120,7 @@ function Details.CooldownTracking.ProcessUnitCooldowns(unitId, statusBarFrameId,
         return
     end
 
-    local allPlayersInfo = raidStatusLib.playerInfoManager.GetAllPlayersInfo()
+    local allPlayersInfo = openRaidLib.playerInfoManager.GetAllPlayersInfo()
     local allCooldownsFromLib = LIB_RAID_STATUS_COOLDOWNS_BY_SPEC
     local cooldownsEnabled = Details.ocd_tracker.cooldowns
 
@@ -261,7 +253,7 @@ function Details.CooldownTracking.RefreshCooldowns()
 
     --local cache saved with the character savedVariables
     local cooldownCache = screenPanel.cooldownCache
-    local cooldownStatus = raidStatusLib.cooldownManager.GetAllPlayersCooldown()
+    local cooldownStatus = openRaidLib.cooldownManager.GetAllPlayersCooldown()
     local cooldownIndex = 1
 
     for unitName, allPlayerCooldowns in pairs(cooldownStatus) do
@@ -326,45 +318,7 @@ function Details.CooldownTracking.RefreshCooldowns()
         end
     end
 
-    --[=[]]
-
-    local cooldownIndex = 1
-
-    for classId = 1, 12 do --12 classes
-        local t = cooldownsOrganized[classId]
-        for i = 1, #t do
-            local bar = screenPanel.bars[cooldownIndex]
-            cooldownIndex = cooldownIndex + 1
-            bar:Show()
-            local cooldownTable = t[i]
-
-            local classColor = C_ClassColor.GetClassColor(cooldownTable[6])
-            bar:SetStatusBarColor(classColor.r, classColor.g, classColor.b)
-
-            local spellNameDebug, _, spellIcon = GetSpellInfo(cooldownTable[5])
-            bar:SetIcon(spellIcon, .1, .9, .1, .9)
-            bar:SetLeftText(DF:RemoveRealmName(cooldownTable[1]))
-
-            local timeLeft = cooldownTable[2]
-            if (timeLeft > 0) then
-                bar.spellId = cooldownTable[5]
-                bar:SetTimer(timeLeft)
-                --print("timeLeft:", timeLeft, spellNameDebug)
-            else
-                bar:SetMinMaxValues(0, 100)
-                bar:SetTimer(0)
-                --print(spellNameDebug)
-                C_Timer.After(1, function()
-                   -- bar:SetMinMaxValues(0, 100)
-                   -- bar:SetTimer(0)
-                end)
-            end
-        end
-    end
-    --]=]
-
     cooldownIndex = cooldownIndex - 1
-    print("total frames:", cooldownIndex)
 
     local xAnchor = 1
     local defaultY = 0

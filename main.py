@@ -8,7 +8,7 @@ import utils
 
 class Context:
 
-    def __init__(self, ctx, verbose: bool):
+    def __init__(self, ctx: click.Context, verbose: bool):
         """Basic content for CLI."""
         ctx.params['log_level'] = verbose
         platform = utils.get_platform()
@@ -43,13 +43,14 @@ def manage():
 
 @main.command()
 @click.argument('addons', required=True, nargs=-1)
+@click.option('--reinstall', '-r', is_flag=True)
 @click.option('--strategy', '-s', help='Specify a strategy')
 @click.pass_obj
-def install(obj, addons, strategy=None):
+def install(obj, addons, reinstall=False, strategy=None):
     """Install addons."""
     if strategy:
         strategy = strategy.replace('=', '').strip()
-    obj.manager.install(addons, strategy)
+    obj.manager.install(addons, reinstall, strategy)
     obj.manager.export()
     _manage()
 

@@ -1,8 +1,9 @@
 ------------------------------------------------------------------------
-r210 | mitch | 2021-05-21 06:59:23 +0000 (Fri, 21 May 2021) | 1 line
+r212 | mitch | 2021-09-11 14:15:09 +0000 (Sat, 11 Sep 2021) | 2 lines
 Changed paths:
    M /trunk/LibRangeCheck-2.0/LibRangeCheck-2.0.lua
 
-TBC classic fix
+Added 164766, -- Iwen's Enchanting Rod as 6yd range check
+
 ------------------------------------------------------------------------
 

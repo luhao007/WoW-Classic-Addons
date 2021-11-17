@@ -25,6 +25,7 @@ QuestieDBCompiler.supportedTypes = {
         ["s24pair"] = true,
         ["u8u16array"] = true,
         ["u16u16array"] = true,
+        ["u8s16pairs"] = true,
         ["spawnlist"] = true,
         ["trigger"] = true,
         ["questgivers"] = true,
@@ -123,16 +124,24 @@ QuestieDBCompiler.readers = {
 
         local list = {}
 
-        for _ = 1, count do
-            tinsert(list, stream:ReadShort())
+        for i = 1, count do
+            list[i] = stream:ReadShort()
+        end
+        return list
+    end,
+    ["u8s16pairs"] = function(stream)
+        local list = {}
+        local count = stream:ReadByte()
+        for i = 1, count do
+            list[i] = {stream:ReadShort() - 32767, stream:ReadShort() - 32767}
         end
         return list
     end,
     ["u16u16array"] = function(stream)
         local list = {}
         local count = stream:ReadShort()
-        for _ = 1, count do
-            tinsert(list, stream:ReadShort())
+        for i = 1, count do
+            list[i] = stream:ReadShort()
         end
         return list
     end,
@@ -142,16 +151,16 @@ QuestieDBCompiler.readers = {
         if count == 0 then return nil end
 
         local list = {}
-        for _ = 1, count do
-            tinsert(list, stream:ReadInt24())
+        for i = 1, count do
+            list[i] = stream:ReadInt24()
         end
         return list
     end,
     ["u8u16stringarray"] = function(stream)
         local list = {}
         local count = stream:ReadByte()
-        for _ = 1, count do
-            tinsert(list, stream:ReadShortString())
+        for i = 1, count do
+            list[i] = stream:ReadShortString()
         end
         return list
     end,
@@ -174,12 +183,12 @@ QuestieDBCompiler.readers = {
             local zone = stream:ReadShort()
             local spawnCount = stream:ReadShort()
             local list = {}
-            for _ = 1, spawnCount do
+            for i = 1, spawnCount do
                 local x, y = stream:ReadInt12Pair()
                 if x == 0 and y == 0 then
-                    tinsert(list, {-1, -1})
+                    list[i] = {-1, -1}
                 else
-                    tinsert(list, {x / 40.90, y / 40.90}) 
+                    list[i] = {x / 40.90, y / 40.90}
                 end
             end
             spawnlist[zone] = list
@@ -192,18 +201,16 @@ QuestieDBCompiler.readers = {
         else
             stream._pointer = stream._pointer - 2
         end
-        local ret = {}
-        tinsert(ret, stream:ReadTinyStringNil())
-        tinsert(ret, QuestieDBCompiler.readers["spawnlist"](stream))
-        return ret
+        return {stream:ReadTinyStringNil(), QuestieDBCompiler.readers["spawnlist"](stream)}
     end,
     ["questgivers"] = function(stream)
         --local count = stream:ReadByte()
         --if count == 0 then return nil end
-        local ret = {}
-        ret[1] = QuestieDBCompiler.readers["u8u24array"](stream)
-        ret[2] = QuestieDBCompiler.readers["u8u24array"](stream)
-        ret[3] = QuestieDBCompiler.readers["u8u24array"](stream)
+        local ret = {
+            QuestieDBCompiler.readers["u8u24array"](stream),
+            QuestieDBCompiler.readers["u8u24array"](stream),
+            QuestieDBCompiler.readers["u8u24array"](stream)
+        }
 
         --for i = 1, count do
         --    tinsert(ret, QuestieDBCompiler.readers["u8u16array"](stream))
@@ -219,24 +226,24 @@ QuestieDBCompiler.readers = {
 
         local ret = {}
 
-        for _ = 1, count do
-            tinsert(ret, {stream:ReadInt24(), stream:ReadTinyStringNil()})
+        for i = 1, count do
+            ret[i] = {stream:ReadInt24(), stream:ReadTinyStringNil()}
         end
         return ret
     end,
     ["objectives"] = function(stream)
-        local ret = {}
-
-        ret[1] = QuestieDBCompiler.readers["objective"](stream)
-        ret[2] = QuestieDBCompiler.readers["objective"](stream)
-        ret[3] = QuestieDBCompiler.readers["objective"](stream)
-        ret[4] = QuestieDBCompiler.readers["u24pair"](stream)
+        local ret = {
+            QuestieDBCompiler.readers["objective"](stream),
+            QuestieDBCompiler.readers["objective"](stream),
+            QuestieDBCompiler.readers["objective"](stream),
+            QuestieDBCompiler.readers["u24pair"](stream),
+        }
 
         local creditCount = stream:ReadByte()
         if creditCount > 0 then
             local creditList = {}
-            for _=1,creditCount do
-                tinsert(creditList, stream:ReadInt24())
+            for i=1,creditCount do
+                creditList[i] = stream:ReadInt24()
             end
             local rootNPCId = stream:ReadInt24()
             local rootNPCName = stream:ReadTinyStringNil()
@@ -249,10 +256,10 @@ QuestieDBCompiler.readers = {
         local count = stream:ReadByte()
         if count > 0 then
             local ret = {}
-            for _=1,count do
+            for i=1,count do
                 local type = QuestieDBCompiler.refTypes[stream:ReadByte()]
                 local id = stream:ReadInt24()
-                tinsert(ret, {type, id})
+                ret[i] = {type, id}
             end
             return ret
         end
@@ -261,14 +268,14 @@ QuestieDBCompiler.readers = {
         local count = stream:ReadByte()
         if count > 0 then
             local ret = {}
-            for _=1,count do
-                tinsert(ret, {
+            for i=1,count do
+                ret[i] = {
                     QuestieDBCompiler.readers["spawnlist"](stream),
                     stream:ReadTinyString(),
                     stream:ReadShortString(),
                     stream:ReadInt24(),
                     QuestieDBCompiler.readers["reflist"](stream)
-                })
+                }
             end
             return ret
         end
@@ -281,18 +288,18 @@ QuestieDBCompiler.readers = {
             local lists = {}
             local zone = stream:ReadShort()
             local listCount = stream:ReadByte()
-            for _ = 1, listCount do
+            for j = 1, listCount do
                 local spawnCount = stream:ReadShort()
                 local list = {}
-                for _ = 1, spawnCount do
+                for i = 1, spawnCount do
                     local x, y = stream:ReadInt12Pair()
                     if x == 0 and y == 0 then
-                        tinsert(list, {-1, -1})
+                        list[i] = {-1, -1}
                     else
-                        tinsert(list, {x / 40.90, y / 40.90}) 
+                        list[i] = {x / 40.90, y / 40.90}
                     end
                 end
-                tinsert(lists, list)
+                lists[j] = list
             end
             waypointlist[zone] = lists
         end
@@ -368,6 +375,18 @@ QuestieDBCompiler.writers = {
             stream:WriteByte(count)
             for _,v in pairs(value) do
                 stream:WriteShort(v)
+            end
+        else
+            stream:WriteByte(0)
+        end
+    end,
+    ["u8s16pairs"] = function(stream, value)
+        if value then
+            local count = 0 for _ in pairs(value) do count = count + 1 end
+            stream:WriteByte(count)
+            for _,v in pairs(value) do
+                stream:WriteShort((v[1] or 0) + 32767)
+                stream:WriteShort((v[2] or 0) + 32767)
             end
         else
             stream:WriteByte(0)
@@ -559,6 +578,7 @@ QuestieDBCompiler.skippers = {
     ["u8string"] = function(stream) stream._pointer = stream:ReadByte() + stream._pointer end,
     ["u16string"] = function(stream) stream._pointer = stream:ReadShort() + stream._pointer end,
     ["u8u16array"] = function(stream) stream._pointer = stream:ReadByte() * 2 + stream._pointer end,
+    ["u8s16pairs"] = function(stream) stream._pointer = stream:ReadByte() * 4 + stream._pointer end,
     ["u16u16array"] = function(stream) stream._pointer = stream:ReadShort() * 2 + stream._pointer end,
     ["u8u24array"] = function(stream) stream._pointer = stream:ReadByte() * 3 + stream._pointer end,
     ["waypointlist"]  = function(stream)
@@ -635,6 +655,7 @@ QuestieDBCompiler.dynamics = {
     ["u8string"] = true,
     ["u16string"] = true,
     ["u8u16array"] = true,
+    ["u8s16pairs"] = true,
     ["u16u16array"] = true,
     ["u8u24array"] = true,
     ["u8u16stringarray"] = true,
@@ -857,13 +878,13 @@ function QuestieDBCompiler:Compile()
     Questie.db.global.dbCompiledCount = (Questie.db.global.dbCompiledCount or 0) + 1
 
     if Questie.db.global.debugEnabled then
-        Questie:Debug(DEBUG_DEVELOP, "Validating objects...")
+        Questie:Debug(Questie.DEBUG_DEVELOP, "Validating objects...")
         coroutine.yield()
         QuestieDBCompiler:ValidateObjects()
-        Questie:Debug(DEBUG_DEVELOP, "Validating items...")
+        Questie:Debug(Questie.DEBUG_DEVELOP, "Validating items...")
         coroutine.yield()
         QuestieDBCompiler:ValidateItems()
-        Questie:Debug(DEBUG_DEVELOP, "Validating quests...")
+        Questie:Debug(Questie.DEBUG_DEVELOP, "Validating quests...")
         coroutine.yield()
         QuestieDBCompiler:ValidateQuests()
     end
@@ -902,7 +923,7 @@ function QuestieDBCompiler:ValidateNPCs()
         end
     end
 
-    Questie:Debug(DEBUG_DEVELOP, "Finished NPC validation without issues!")
+    Questie:Debug(Questie.DEBUG_DEVELOP, "Finished NPC validation without issues!")
 end
 
 function QuestieDBCompiler:ValidateObjects()
@@ -938,7 +959,7 @@ function QuestieDBCompiler:ValidateObjects()
         end
     end
 
-    Questie:Debug(DEBUG_DEVELOP, "Finished validation without issues!")
+    Questie:Debug(Questie.DEBUG_DEVELOP, "Finished validation without issues!")
 end
 
 
@@ -997,7 +1018,7 @@ function QuestieDBCompiler:ValidateItems()
         --end
     end
 
-    Questie:Debug(DEBUG_DEVELOP, "Finished Item validation without issues!")
+    Questie:Debug(Questie.DEBUG_DEVELOP, "Finished Item validation without issues!")
 end
 
 function QuestieDBCompiler:ValidateQuests()
@@ -1033,7 +1054,7 @@ function QuestieDBCompiler:ValidateQuests()
         end
     end
 
-    Questie:Debug(DEBUG_DEVELOP, "Finished Quest validation without issues!")
+    Questie:Debug(Questie.DEBUG_DEVELOP, "Finished Quest validation without issues!")
 end
 
 function QuestieDBCompiler:Initialize()
@@ -1148,7 +1169,7 @@ function QuestieDBCompiler:GetDBHandle(data, pointers, skipMap, keyToRootIndex, 
                     local ret = {}
                     for index,key in pairs({...}) do
                         local rootIndex = keyToRootIndex[key]
-                        if override and rootIndex and override[rootIndex] ~= nil then
+                        if rootIndex and override[rootIndex] ~= nil then
                             ret[index] = override[rootIndex]
                         end
                     end

@@ -8,12 +8,14 @@ local QuestieCombatQueue = QuestieLoader:ImportModule("QuestieCombatQueue")
 local startDragAnchor = {}
 local startDragPos = {}
 local endDragPos = {}
-local preSetPoint = nil
+local preSetPoint
 
 local mouselookTicker = {}
+local updateTimer
+local tempTrackerLocation
 
 function _QuestieTracker:OnDragStart(button)
-    Questie:Debug(DEBUG_DEVELOP, "[_QuestieTracker:OnDragStart]", button)
+    Questie:Debug(Questie.DEBUG_DEVELOP, "[_QuestieTracker:OnDragStart]", button)
     local baseFrame = QuestieTracker:GetBaseFrame()
     if IsMouseButtonDown(button) then
         if (IsControlKeyDown() and Questie.db.global.trackerLocked and not ChatEdit_GetActiveWindow()) or not Questie.db.global.trackerLocked then
@@ -43,7 +45,7 @@ function _QuestieTracker:OnDragStart(button)
 end
 
 function _QuestieTracker:OnDragStop(button)
-    Questie:Debug(DEBUG_DEVELOP, "[_QuestieTracker:OnDragStop]", button)
+    Questie:Debug(Questie.DEBUG_DEVELOP, "[_QuestieTracker:OnDragStop]", button)
 
     if IsMouseButtonDown(button) or not startDragPos or not startDragPos[4] or not startDragPos[5] or not endDragPos or not startDragAnchor then
         return
@@ -82,7 +84,7 @@ function _QuestieTracker:OnDragStop(button)
 end
 
 function _QuestieTracker:OnResizeStart(button)
-    Questie:Debug(DEBUG_DEVELOP, "[_QuestieTracker:OnResizeStart]", button)
+    Questie:Debug(Questie.DEBUG_DEVELOP, "[_QuestieTracker:OnResizeStart]", button)
     if InCombatLockdown() then
         return
     end
@@ -94,8 +96,7 @@ function _QuestieTracker:OnResizeStart(button)
                 _QuestieTracker.isSizing = true
                 tempTrackerLocation = {baseFrame:GetPoint()}
                 baseFrame:StartSizing("RIGHT")
-                _QuestieUpdateTimer = C_Timer.NewTicker(0.1, function()
-                    local baseFrame = QuestieTracker:GetBaseFrame()
+                updateTimer = C_Timer.NewTicker(0.1, function()
                     Questie.db[Questie.db.global.questieTLoc].TrackerWidth = baseFrame:GetWidth()
                     QuestieTracker:ResetLinesForChange()
                     QuestieTracker:Update()
@@ -111,14 +112,14 @@ function _QuestieTracker:OnResizeStart(button)
 end
 
 function _QuestieTracker:OnResizeStop(button)
-    Questie:Debug(DEBUG_DEVELOP, "[_QuestieTracker:OnResizeStop]", button)
+    Questie:Debug(Questie.DEBUG_DEVELOP, "[_QuestieTracker:OnResizeStop]", button)
     local baseFrame = QuestieTracker:GetBaseFrame()
     if button == "RightButton" or _QuestieTracker.isSizing ~= true then
         return
     end
     _QuestieTracker.isSizing = false
     baseFrame:StopMovingOrSizing()
-    _QuestieUpdateTimer:Cancel()
+    updateTimer:Cancel()
     baseFrame:ClearAllPoints()
     baseFrame:SetPoint(unpack(tempTrackerLocation))
 end
@@ -189,6 +190,8 @@ function _QuestieTracker:AutoConvertSetPoint(frame)
         elseif frame:GetHeight()/GetScreenHeight() > 0.75 then
             yAdj = frame:GetHeight()
         end
+
+        local xOff, yOff
 
         -- setPoint Topleft = Down and Right
         if Questie.db[Questie.db.global.questieTLoc].TrackerLocation[4] < 0 and Questie.db[Questie.db.global.questieTLoc].TrackerLocation[5] > yAdj and Questie.db[Questie.db.global.questieTLoc].TrackerLocation[1] ~= "TOPLEFT" then
@@ -287,9 +290,10 @@ function _QuestieTracker:ConvertSetPointCords(frame, setpoint)
         local setPoint = setpoint
         local xOn = ({frame:GetPoint()})[4]
         local yOn = ({frame:GetPoint()})[5]
-        if not (height or width or preSetPoint or xOn or yOn or setPoint or preSetPoint)then return end
+        if not (height or width or preSetPoint or xOn or yOn or setPoint or preSetPoint) then return end
         if (setPoint ~= preSetPoint) then
 
+            local xOff, yOff
             -- To "TOPLEFT" from...
             if setPoint == "TOPLEFT" then
                 if preSetPoint == "TOPRIGHT" then

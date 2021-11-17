@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Jaliborc (JoÃ£o Cardoso)
 ## OptionalDeps: LibStub, WoWUnit
 ## SavedVariables: BrotherBags

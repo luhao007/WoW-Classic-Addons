@@ -26,8 +26,8 @@ LibSharedMedia:Register ("statusbar", "testbar", [[Interface\AddOns\Plater\image
 LibSharedMedia:Register ("statusbar", "You Are Beautiful!", [[Interface\AddOns\Plater\images\regular_white]])
 LibSharedMedia:Register ("statusbar", "PlaterBackground 2", [[Interface\AddOns\Plater\images\noise_background]])
 
-LibSharedMedia:Register ("font", "Oswald", [[Interface\Addons\Plater\fonts\Oswald-Regular.otf]])
-LibSharedMedia:Register ("font", "Nueva Std Cond", [[Interface\Addons\Plater\fonts\NuevaStd-Cond.otf]])
+LibSharedMedia:Register ("font", "Oswald", [[Interface\Addons\Plater\fonts\Oswald-Regular.ttf]])
+LibSharedMedia:Register ("font", "Nueva Std Cond", [[Interface\Addons\Plater\fonts\NuevaStd-Cond.ttf]])
 LibSharedMedia:Register ("font", "Accidental Presidency", [[Interface\Addons\Plater\fonts\Accidental Presidency.ttf]])
 LibSharedMedia:Register ("font", "TrashHand", [[Interface\Addons\Plater\fonts\TrashHand.TTF]])
 LibSharedMedia:Register ("font", "Harry P", [[Interface\Addons\Plater\fonts\HARRYP__.TTF]])
@@ -540,12 +540,12 @@ PLATER_DEFAULT_SETTINGS = {
 
 		login_counter = 0,
 
-		--plater resources bar
+		--plater resources bar ~resources
 		plater_resources_show = false, --if the resource bar from plater is enabled
 		plater_resources_personal_bar = false, --if the resource bar shows in the personal bar intead of the current target
 		plater_resources_align = "horizontal", --combo points are horizontal alignment
 		plater_resources_grow_direction = "center",
-		plater_resources_show_depleted = false,
+		plater_resources_show_depleted = true,
 		plater_resources_show_number = false,
 		plater_resources_anchor = {side = 8, x = 0, y = 40},
 		plater_resources_scale = 0.8,
@@ -785,6 +785,7 @@ PLATER_DEFAULT_SETTINGS = {
 		extra_icon_show_purge = false, --extra frame show purge
 		extra_icon_show_purge_border = {0, .925, 1, 1},
 		extra_icon_show_enrage = false, --extra frame show purge
+		extra_icon_show_magic = false,
 		extra_icon_show_enrage_border = {0.85, 0.2, 0.1, 1},
 		extra_icon_show_offensive = false,
 		extra_icon_show_offensive_border = {0, .65, .1, 1},
@@ -803,7 +804,9 @@ PLATER_DEFAULT_SETTINGS = {
 		aura_show_important = true,
 		aura_show_dispellable = true,
 		aura_show_enrage = false,
+		aura_show_magic = false,
 		aura_show_aura_by_the_player = true,
+		aura_show_aura_by_other_players = false,
 		aura_show_buff_by_the_unit = true,
 		aura_border_colors_by_type = false,
 		aura_show_crowdcontrol = false,

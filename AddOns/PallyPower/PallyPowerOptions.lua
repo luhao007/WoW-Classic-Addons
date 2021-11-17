@@ -1,11 +1,10 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("PallyPower")
 
-local _, class = UnitClass("player")
-local PP_IsPally = false
-if (class == "PALADIN") then
-	PP_IsPally = true
-end
+local isPally = select(2, UnitClass("player")) == "PALADIN"
 
+-------------------------------------------------------------------
+-- AceConfig
+-------------------------------------------------------------------
 PallyPower.options = {
 	name = "  " .. L["PP_NAME"],
 	type = "group",
@@ -134,7 +133,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						smart_buff = {
@@ -197,7 +196,7 @@ PallyPower.options = {
 							max = 1.5,
 							step = 0.05,
 							disabled = function(info)
-								return PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.buffscale
@@ -221,7 +220,7 @@ PallyPower.options = {
 							name = L["LAYOUT"],
 							desc = L["LAYOUT_DESC"],
 							disabled = function(info)
-								return PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.layout
@@ -251,7 +250,7 @@ PallyPower.options = {
 							dialogControl = "LSM30_Background",
 							values = AceGUIWidgetLSMlists.background,
 							disabled = function(info)
-								return PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.skin
@@ -277,7 +276,7 @@ PallyPower.options = {
 							dialogControl = "LSM30_Border",
 							values = AceGUIWidgetLSMlists.border,
 							disabled = function(info)
-								return PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.border
@@ -298,7 +297,7 @@ PallyPower.options = {
 							max = 1.5,
 							step = 0.05,
 							disabled = function(info)
-								return PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.configscale
@@ -336,7 +335,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						color_good = {
@@ -405,7 +404,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						aura_desc = {
@@ -459,7 +458,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						seal_desc = {
@@ -491,7 +490,7 @@ PallyPower.options = {
 							desc = L["RFM_DESC"],
 							width = 1.1,
 							disabled = function(info)
-								return PallyPower.opt.rfbuff == false or PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.rfbuff == false or PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.rf
@@ -525,7 +524,7 @@ PallyPower.options = {
 								[7] = PallyPower.Seals[7], -- Seal of Vengeance (Alliance)
 								[8] = PallyPower.Seals[8], -- Seal of Blood (Horde)
 								[9] = PallyPower.Seals[9], -- Seal of the Martyr (Alliance)
-								[10] = PallyPower.Seals[10] -- Seal of Vengeance (Horde)
+								[10] = PallyPower.Seals[10] -- Seal of Corruption (Horde)
 							}
 						}
 					}
@@ -536,7 +535,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						auto_desc = {
@@ -579,7 +578,7 @@ PallyPower.options = {
 					type = "group",
 					inline = true,
 					disabled = function(info)
-						return PallyPower.opt.enabled == false or not PP_IsPally
+						return PallyPower.opt.enabled == false or not isPally
 					end,
 					args = {
 						cp_desc = {
@@ -611,7 +610,7 @@ PallyPower.options = {
 							name = L["PLAYERBTNS"],
 							desc = L["PLAYERBTNS_DESC"],
 							disabled = function(info)
-								return PallyPower.opt.display.showClassButtons == false or PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.display.showClassButtons == false or PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.display.showPlayerButtons
@@ -630,7 +629,7 @@ PallyPower.options = {
 							name = L["BUFFDURATION"],
 							desc = L["BUFFDURATION_DESC"],
 							disabled = function(info)
-								return PallyPower.opt.display.showClassButtons == false or PallyPower.opt.enabled == false or not PP_IsPally
+								return PallyPower.opt.display.showClassButtons == false or PallyPower.opt.enabled == false or not isPally
 							end,
 							get = function(info)
 								return PallyPower.opt.display.buffDuration
@@ -681,7 +680,7 @@ PallyPower.options = {
 			type = "group",
 			cmdHidden = true,
 			disabled = function(info)
-				return PallyPower.opt.enabled == false or not PP_IsPally
+				return PallyPower.opt.enabled == false or not isPally
 			end,
 			args = {
 				mainroles = {

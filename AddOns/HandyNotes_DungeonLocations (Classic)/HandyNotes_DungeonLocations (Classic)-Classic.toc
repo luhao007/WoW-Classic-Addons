@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Caliaha of Cairne
 ## Version: 1.05-bcc
 ## RequiredDeps: HandyNotes

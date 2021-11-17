@@ -1,7 +1,10 @@
 # <DBM> PvP
 
-## [r125](https://github.com/DeadlyBossMods/DBM-PvP/tree/r125) (2021-06-29)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r124...r125) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
+## [r128](https://github.com/DeadlyBossMods/DBM-PvP/tree/r128) (2021-11-02)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-PvP/compare/r127...r128) [Previous Releases](https://github.com/DeadlyBossMods/DBM-PvP/releases)
 
-- toc bump  
-- All Rights Reserved license  
+- bump retail toc  
+- er, revert ptr one, that wasn't supposed to go in there  
+- Update neglected tocs  
+- Update SeethingShore.lua  
+- Update SeethingShore.lua  

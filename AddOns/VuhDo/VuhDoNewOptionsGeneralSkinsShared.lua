@@ -33,7 +33,7 @@ local VUHDO_DEFAULT_PROFILES = {
 				["animate"] = true,
 				["scale"] = 0.8,
 				["isIcon"] = true,
-				["selected"] = "",
+				["SELECTED"] = "",
 				["TIMER_TEXT"] = {
 					["X_ADJUST"] = 20,
 					["USE_MONO"] = false,
@@ -96,7 +96,7 @@ local VUHDO_DEFAULT_PROFILES = {
 				["isOthers"] = false,
 				["duration"] = 2,
 				["showTrailOfLight"] = false,
-				["selected"] = "",
+				["SELECTED"] = "",
 			},
 			["SHOW_TEXT_OVERHEAL"] = true,
 		},
@@ -748,7 +748,7 @@ local VUHDO_DEFAULT_PROFILES = {
 				["isOthers"] = false,
 				["duration"] = 2,
 				["showTrailOfLight"] = false,
-				["selected"] = "",
+				["SELECTED"] = "",
 			},
 		},
 		["LOCKED"] = false,
@@ -2537,8 +2537,8 @@ function VUHDO_loadProfileNoInit(aName)
 	end
 
 	-- @TODO: Warum werden die nicht direkt geladen (ipairs-Problem?)
-	if tProfile["CONFIG"]["CUSTOM_DEBUFF"] and tProfile["CONFIG"]["CUSTOM_DEBUFF"]["STORED"] and VUHDO_CONFIG["CUSTOM_DEBUFF"] then
-		VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"] = VUHDO_deepCopyTable(tProfile["CONFIG"]["CUSTOM_DEBUFF"]["STORED"]);
+	if tProfile["CONFIG"]["CUSTOM_DEBUFF"] and VUHDO_CONFIG["CUSTOM_DEBUFF"] then
+		VUHDO_CONFIG["CUSTOM_DEBUFF"] = VUHDO_deepCopyTable(tProfile["CONFIG"]["CUSTOM_DEBUFF"]);
 	end
 
 	if tProfile["CONFIG"]["SPELL_TRACE"] and VUHDO_CONFIG["SPELL_TRACE"] then
@@ -2569,10 +2569,16 @@ function VUHDO_loadProfile(aName)
 
 	if (VUHDO_initCustomDebuffComboModel ~= nil) then
 		VUHDO_initCustomDebuffComboModel();
+
+		VuhDoNewOptionsDebuffsCustomStorePanelEditBox:SetText("");
+		VUHDO_customDebuffUpdateEditBox(VuhDoNewOptionsDebuffsCustomStorePanelEditBox);
 	end
 
 	if (VUHDO_initSpellTraceComboModel ~= nil) then
 		VUHDO_initSpellTraceComboModel();
+
+		VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox:SetText("");
+		VUHDO_spellTraceUpdateEditBox(VuhDoNewOptionsGeneralSpellTraceStorePanelEditBox);
 	end
 
 	collectgarbage('collect');

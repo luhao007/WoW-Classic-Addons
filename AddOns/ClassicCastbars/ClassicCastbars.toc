@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Wardz
-## Version: v1.4.0
+## Version: v1.4.2
 ## SavedVariables: ClassicCastbarsDB
 ## SavedVariablesPerCharacter: ClassicCastbarsCharDB
 

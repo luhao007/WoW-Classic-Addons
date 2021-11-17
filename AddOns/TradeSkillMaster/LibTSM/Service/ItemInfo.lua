@@ -26,12 +26,15 @@ local Settings = TSM.Include("Service.Settings")
 local private = {
 	db = nil,
 	pendingItems = {},
+	priorityPendingItems = {},
+	priorityPendingTime = 0,
 	numRequests = {},
 	availableItems = {},
 	rebuildStage = nil,
 	settings = nil,
 	infoChangeCallbacks = {},
 	hasChanged = false,
+	lastDebugLog = 0,
 }
 local ITEM_MAX_ID = 999999
 local SEP_CHAR = "\002"
@@ -89,8 +92,8 @@ do
 	end
 	assert(totalLengthChars == RECORD_DATA_LENGTH_CHARS)
 end
-local PENDING_STATE_NEW = 1
-local PENDING_STATE_CREATED = 2
+local PENDING_STATE_NEW = newproxy()
+local PENDING_STATE_CREATED = newproxy()
 local ITEM_QUALITY_BY_HEX_LOOKUP = {}
 for quality, info in pairs(ITEM_QUALITY_COLORS) do
 	ITEM_QUALITY_BY_HEX_LOOKUP[info.hex] = quality
@@ -950,7 +953,12 @@ function ItemInfo.FetchInfo(item)
 		end
 		return
 	end
-	private.pendingItems[itemString] = PENDING_STATE_NEW
+	private.pendingItems[itemString] = private.pendingItems[itemString] or PENDING_STATE_NEW
+	if private.priorityPendingTime ~= time() then
+		wipe(private.priorityPendingItems)
+		private.priorityPendingTime = time()
+	end
+	private.priorityPendingItems[itemString] = true
 
 	Delay.AfterTime("PROCESS_ITEM_INFO", 0, private.ProcessItemInfo, ITEM_INFO_INTERVAL)
 end
@@ -1061,6 +1069,39 @@ function private.GetFieldValueHelper(itemString, field, baseIsSame, storeBaseVal
 	return value
 end
 
+function private.ProcessPendingItemInfo(itemString)
+	local name = private.GetField(itemString, "name")
+	local quality = private.GetField(itemString, "quality")
+	local itemLevel = private.GetField(itemString, "itemLevel")
+	if (private.numRequests[itemString] or 0) > MAX_REQUESTS_PER_ITEM then
+		-- give up on this item
+		if private.numRequests[itemString] ~= math.huge then
+			private.numRequests[itemString] = math.huge
+			local itemId = ItemString.IsItem(itemString) and ItemString.ToId(itemString) or nil
+			if not TSM.IsWowClassic() then
+				Log.Err("Giving up on item info for %s", itemString)
+			end
+			if itemId and itemString == ItemString.GetBaseFast(itemString) then
+				private.numRequests[itemId] = math.huge
+			end
+		end
+		private.pendingItems[itemString] = nil
+		private.priorityPendingItems[itemString] = nil
+	elseif name and name ~= "" and quality and quality >= 0 and itemLevel and itemLevel >= 0 then
+		-- we have info for this item
+		private.pendingItems[itemString] = nil
+		private.priorityPendingItems[itemString] = nil
+		private.numRequests[itemString] = nil
+	else
+		-- request info for this item
+		if not private.StoreGetItemInfo(itemString) then
+			private.numRequests[itemString] = (private.numRequests[itemString] or 0) + 1
+			return true
+		end
+	end
+	return false
+end
+
 function private.ProcessItemInfo()
 	if InCombatLockdown() then
 		return
@@ -1070,6 +1111,8 @@ function private.ProcessItemInfo()
 
 	-- create rows for items which don't exist at all in the DB in bulk
 	private.db:BulkInsertStart()
+	local priorityPendingItems = TempTable.Acquire()
+	local pendingItems = TempTable.Acquire()
 	for itemString, state in pairs(private.pendingItems) do
 		if state == PENDING_STATE_NEW then
 			local baseItemString = ItemString.GetBase(itemString)
@@ -1078,6 +1121,11 @@ function private.ProcessItemInfo()
 				private.CreateDBRowIfNotExists(baseItemString, true)
 			end
 			private.pendingItems[itemString] = PENDING_STATE_CREATED
+		end
+		if private.priorityPendingItems[itemString] then
+			tinsert(priorityPendingItems, itemString)
+		else
+			tinsert(pendingItems, itemString)
 		end
 	end
 	private.db:BulkInsertEnd()
@@ -1095,48 +1143,45 @@ function private.ProcessItemInfo()
 		maxRequests = MAX_REQUESTED_ITEM_INFO
 	end
 
-	local toRemove = TempTable.Acquire()
+	local shouldStop = false
 	local numRequested = 0
-	for itemString in pairs(private.pendingItems) do
-		local name = private.GetField(itemString, "name")
-		local quality = private.GetField(itemString, "quality")
-		local itemLevel = private.GetField(itemString, "itemLevel")
-		if (private.numRequests[itemString] or 0) > MAX_REQUESTS_PER_ITEM then
-			-- give up on this item
-			if private.numRequests[itemString] ~= math.huge then
-				private.numRequests[itemString] = math.huge
-				local itemId = ItemString.IsItem(itemString) and ItemString.ToId(itemString) or nil
-				if not TSM.IsWowClassic() then
-					Log.Err("Giving up on item info for %s", itemString)
-				end
-				if itemId and itemString == ItemString.GetBaseFast(itemString) then
-					private.numRequests[itemId] = math.huge
-				end
-			end
-			tinsert(toRemove, itemString)
-		elseif name and name ~= "" and quality and quality >= 0 and itemLevel and itemLevel >= 0 then
-			-- we have info for this item
-			tinsert(toRemove, itemString)
-			private.numRequests[itemString] = nil
-		else
-			-- request info for this item
-			if not private.StoreGetItemInfo(itemString) then
-				private.numRequests[itemString] = (private.numRequests[itemString] or 0) + 1
-				numRequested = numRequested + 1
-				if numRequested >= maxRequests then
-					break
-				end
+	-- do the priority items first
+	for i = 1, #priorityPendingItems do
+		if private.ProcessPendingItemInfo(priorityPendingItems[i]) then
+			numRequested = numRequested + 1
+			if numRequested >= maxRequests then
+				shouldStop = true
+				break
 			end
 		end
-		if (debugprofilestop() - startTime) / 1000 > ITEM_INFO_INTERVAL / 5 then
+		if (debugprofilestop() - startTime) / 1000 > ITEM_INFO_INTERVAL / 5 and numRequested >= maxRequests / 2 then
 			-- bail early since we've already used a good number of CPU cycles this frame
+			shouldStop = true
 			break
 		end
 	end
-	for _, itemString in ipairs(toRemove) do
-		private.pendingItems[itemString] = nil
+	if not shouldStop then
+		for i = 1, #pendingItems do
+			if private.ProcessPendingItemInfo(pendingItems[i]) then
+				numRequested = numRequested + 1
+				if numRequested >= maxRequests then
+					shouldStop = true
+					break
+				end
+			end
+			if (debugprofilestop() - startTime) / 1000 > ITEM_INFO_INTERVAL / 5 and numRequested >= maxRequests / 2 then
+				-- bail early since we've already used a good number of CPU cycles this frame
+				shouldStop = true
+				break
+			end
+		end
 	end
-	TempTable.Release(toRemove)
+	if #pendingItems > 0 and GetTime() - private.lastDebugLog > 5 then
+		private.lastDebugLog = GetTime()
+		Log.Info("%d/%d pending items (just requested %d)", #pendingItems, #priorityPendingItems, numRequested)
+	end
+	TempTable.Release(pendingItems)
+	TempTable.Release(priorityPendingItems)
 
 	if private.rebuildStage == REBUILD_STAGE.IDLE and numRequested >= maxRequests / 2 and Table.Count(private.pendingItems) >= REBUILD_MSG_THRESHOLD then
 		private.rebuildStage = REBUILD_STAGE.TRIGGERED
@@ -1160,7 +1205,7 @@ function private.ShowRebuildMessage()
 		private.rebuildStage = REBUILD_STAGE.IDLE
 		return
 	end
-	Log.PrintUser(L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes less than a minute."])
+	Log.PrintUser(L["TSM is currently rebuilding its item cache which may cause FPS drops and result in TSM not being fully functional until this process is complete. This is normal and typically takes a few minutes."])
 	private.rebuildStage = REBUILD_STAGE.NOTIFIED
 end
 
@@ -1368,6 +1413,10 @@ function private.StoreGetItemInfo(itemString)
 	if name and quality then
 		private.SetGetItemInfoFields(baseItemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
 	end
+	local gotInfo = true
+	if not name or name == "" or not quality or quality < 0 or not itemLevel or itemLevel < 0 then
+		gotInfo = false
+	end
 
 	-- store info for the specific item if it's different
 	if itemString ~= baseItemString then
@@ -1411,9 +1460,12 @@ function private.StoreGetItemInfo(itemString)
 			end
 			private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
 		end
+		if not name or name == "" or not quality or quality < 0 or not itemLevel or itemLevel < 0 then
+			gotInfo = false
+		end
 	end
 
-	return name ~= nil
+	return gotInfo
 end
 
 function private.ProcessAvailableItems()
@@ -1434,6 +1486,7 @@ function private.ProcessAvailableItems()
 		local itemString = "i:"..itemId
 		if private.StoreGetItemInfo(itemString) then
 			private.pendingItems[itemString] = nil
+			private.priorityPendingItems[itemString] = nil
 		end
 	end
 	for itemId in pairs(processedItems) do

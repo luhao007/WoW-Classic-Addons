@@ -54,6 +54,23 @@ L:SetGeneralLocalization{
 	name = "아카마의 망령"
 }
 
+L:SetWarningLocalization({
+	warnAshtongueDefender	= "잿빛혓바닥 수호병",
+	warnAshtongueSorcerer	= "잿빛혓바닥 사술사"
+})
+
+L:SetTimerLocalization({
+	timerAshtongueDefender	= "잿빛혓바닥 수호병: %s",
+	timerAshtongueSorcerer	= "잿빛혓바닥 사술사: %s"
+})
+
+L:SetOptionLocalization({
+	warnAshtongueDefender	= "잿빛혓바닥 수호병 경고 보기",
+	warnAshtongueSorcerer	= "잿빛혓바닥 사술사 경고 보기",
+	timerAshtongueDefender	= "잿빛혓바닥 수호병 타이머 바 보기",
+	timerAshtongueSorcerer	= "잿빛혓바닥 사술사 타이머 바 보기"
+})
+
 -------------------------
 --  Teron Gorefiend  --
 -------------------------

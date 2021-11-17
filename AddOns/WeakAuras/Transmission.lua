@@ -329,7 +329,7 @@ local function Update(data, diff)
   return data
 end
 
-local function install(data, oldData, patch, mode, isParent)
+local function install(data, oldData, patch, mode, isParent, originalNames)
   -- munch the provided data and add, update, or delete as appropriate
   -- return the data which the SV knows about afterwards (if there is any)
   local installedUID, imported
@@ -392,10 +392,30 @@ local function install(data, oldData, patch, mode, isParent)
     oldData.preferToUpdate = true
     installedUID = oldData.uid
     imported = data
+    originalNames[installedUID] = originalNames[data.uid]
+    originalNames[data.uid] = nil
   end
   -- if at this point, then some change has been made in the db. Update History to reflect the change
   Private.SetHistory(installedUID, imported, "import")
   return Private.GetDataByUID(installedUID)
+end
+
+local function RenameToOriginalNames(originalNames)
+  local changed = false
+  for uid, originalName in pairs(originalNames) do
+    local aura = WeakAuras.GetData(originalName)
+    if not aura then
+      -- Rename
+      local data = Private.GetDataByUID(uid)
+      WeakAuras.Rename(data, originalName)
+      originalNames[uid] = nil
+      changed = true
+    elseif  aura.uid == uid then
+      -- Already the correct name
+      originalNames[uid] = nil
+    end
+  end
+  return changed
 end
 
 local function importPendingData()
@@ -425,6 +445,16 @@ local function importPendingData()
   -- import parent/single aura
   local data, oldData, patch = imports[0], old[0], diffs[0]
   data.parent = nil
+
+  -- Setup for preserving names.
+  -- Importing can rename auras, and due to deletion or cross-renaming, importing also frees names.
+  -- So after importing we try to rename again
+  local originalNames = {}
+  for i = 0, #imports do
+    if imports[i].uid then
+      originalNames[imports[i].uid] = imports[i].id
+    end
+  end
   -- handle sortHybridTable
   local hybridTables
   if (data and data.sortHybridTable) or (mode ~= 1 and oldData and oldData.sortHybridTable) then
@@ -440,7 +470,7 @@ local function importPendingData()
   if oldData then
     oldData.authorMode = nil
   end
-  local installedData = {[0] = install(data, oldData, patch, mode, true)}
+  local installedData = {[0] = install(data, oldData, patch, mode, true, originalNames)}
   WeakAuras.NewDisplayButton(installedData[0])
   coroutine.yield()
 
@@ -483,7 +513,7 @@ local function importPendingData()
       if oldData then
         oldData.authorMode = nil
       end
-      local childData = install(data, oldData, patch, mode)
+      local childData = install(data, oldData, patch, mode, false, originalNames)
       if childData then
         tinsert(installedData, childData)
         if hybridTables then
@@ -595,6 +625,10 @@ local function importPendingData()
     WeakAuras.ClearAndUpdateOptions(parentData.id)
     Private.callbacks:Fire("Import")
   end
+
+  -- Now try to rename auras to their originalNames
+  while(RenameToOriginalNames(originalNames)) do end
+
   WeakAuras.SetImporting(false)
   return WeakAuras.PickDisplay(installedData[0].id)
 end
@@ -758,8 +792,7 @@ function Private.DisplayToString(id, forChat)
   if(data) then
     data.uid = data.uid or GenerateUniqueID()
     local transmitData = CompressDisplay(data);
-    local children = data.controlledChildren;
-       local transmit = {
+    local transmit = {
       m = "d",
       d = transmitData,
       v = 1421, -- Version of Transmisson, won't change anymore.
@@ -772,22 +805,24 @@ function Private.DisplayToString(id, forChat)
         transmit.a[v] = WeakAuras.spellCache.GetIcon(v);
       end
     end
-    if(children) then
+    if(data.controlledChildren) then
       transmit.c = {};
       local uids = {}
-      for index,childID in pairs(children) do
-        local childData = WeakAuras.GetData(childID);
-        if(childData) then
-          if childData.uid then
-            if uids[childData.uid] then
-              childData.uid = GenerateUniqueID()
-            else
-              uids[childData.uid] = true
-            end
+      local index = 1
+      for child in Private.TraverseAllChildren(data) do
+        if child.uid then
+          if uids[child.uid] then
+            child.uid = GenerateUniqueID()
           else
-            childData.uid = GenerateUniqueID()
+            uids[child.uid] = true
           end
-          transmit.c[index] = CompressDisplay(childData);
+        else
+          child.uid = GenerateUniqueID()
+        end
+        transmit.c[index] = CompressDisplay(child);
+        index = index + 1
+        if child.controlledChildren then
+          transmit.v = 2000
         end
       end
     end
@@ -1585,7 +1620,7 @@ local function ShowDisplayTooltip(data, children, matchInfo, icon, icons, import
 end
 
 function WeakAuras.Import(inData, target)
-  local data, children, icon, icons
+  local data, children, icon, icons, version
   if type(inData) == 'string' then
     -- encoded data
     local received = StringToTable(inData, true)
@@ -1601,16 +1636,26 @@ function WeakAuras.Import(inData, target)
       children = received.c
       icon = received.i
       icons = received.a
+      version = received.v
     end
   elseif type(inData.d) == 'table' then
     data = inData.d
     children = inData.c
     icon = inData.i
     icons = inData.a
+    version = inData.v
   end
   if type(data) ~= "table" then
     return nil, "Invalid import data."
   end
+  if version > 1999 then
+    ShowTooltip{
+      {1, "WeakAuras", 0.5333, 0, 1},
+      {1, L["This import requires a newer WeakAuras version."], 1, 0, 0, 1}
+    }
+    return nil, "Invalid import data. This import requires a newer WeakAuras version."
+  end
+
   local status, msg = true, ""
   if type(target) ~= 'nil' then
     local targetData

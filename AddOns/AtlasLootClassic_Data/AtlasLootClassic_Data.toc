@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Lag
-## Version: v2.3.1-bcc
+## Version: v2.4.0
 ## Dependencies: AtlasLootClassic
 ## LoadOnDemand: 1
 
@@ -18,6 +18,4 @@ core.lua
 locales.lua
 items.lua
 source.lua
-#@version-bc@
 source-tbc.lua
-#@end-version-bc@

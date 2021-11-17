@@ -1038,8 +1038,8 @@ function private.FSMCreate()
 	function fsmPrivate.SkillUpdateCallback()
 		private.fsm:ProcessEvent("EV_SKILL_UPDATE")
 	end
-	function fsmPrivate.UpdateMaterials(context)
-		if context.page == "profession" then
+	function fsmPrivate.UpdateCraftCost(context)
+		if context.page == "profession" and context.selectedCraftString then
 			local spellId = CraftString.GetSpellId(context.selectedCraftString)
 			local rank = CraftString.GetRank(context.selectedCraftString)
 			local craftingCost = TSM.Crafting.Cost.GetCostsByRecipeString(RecipeString.Get(spellId, private.optionalMats, rank, context.selectedCraftLevel))
@@ -1048,6 +1048,10 @@ function private.FSMCreate()
 			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.cost.text")
 				:SetText(Money.ToString(craftingCost) or "")
 				:Draw()
+		end
+	end
+	function fsmPrivate.UpdateMaterials(context)
+		if context.page == "profession" then
 			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.recipeList")
 				:UpdateData(true)
 			context.frame:GetElement("left.viewContainer.main.content.profession.recipeContent.details.content.matList")
@@ -1300,7 +1304,7 @@ function private.FSMCreate()
 			errStr = REQUIRES_LABEL.." "..toolsStr
 		elseif TSM.Crafting.ProfessionUtil.GetRemainingCooldown(context.selectedCraftString) then
 			errStr = L["On Cooldown"]
-		elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString) == 0 then
+		elseif TSM.Crafting.ProfessionUtil.GetNumCraftable(context.selectedCraftString, context.selectedCraftLevel) == 0 then
 			errStr = L["Missing Materials"]
 		else
 			canCraft = true
@@ -1594,6 +1598,7 @@ function private.FSMCreate()
 			:AddEvent("EV_RECIPE_LEVEL_SELECTION_UPDATED", function(context, level)
 				context.selectedCraftLevel = level
 				fsmPrivate.UpdateRecipeTooltip(context)
+				fsmPrivate.UpdateCraftCost(context)
 				fsmPrivate.UpdateMaterials(context)
 			end)
 			:AddEvent("EV_BAG_UPDATE_DELAYED", function(context)

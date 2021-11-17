@@ -18,6 +18,7 @@ local private = {
 	query = nil,
 }
 local SOURCE_LIST = {
+	"bank",
 	"vendor",
 	"guildBank",
 	"alt",
@@ -29,6 +30,7 @@ local SOURCE_LIST = {
 	"auctionCrafting"
 }
 local SOURCE_TEXT_LIST = {
+	L["Bank"],
 	L["Vendor"],
 	L["Guild Bank"],
 	L["Alts"],
@@ -39,11 +41,15 @@ local SOURCE_TEXT_LIST = {
 	L["AH (Disenchanting)"],
 	L["AH (Crafting)"],
 }
-if TSM.IsWowClassic() then
+if TSM.IsWowVanillaClassic() then
 	Table.RemoveByValue(SOURCE_LIST, "guildBank")
 	Table.RemoveByValue(SOURCE_LIST, "altGuildBank")
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Guild Bank"])
 	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Alt Guild Bank"])
+end
+if not TSM.IsWowClassic() then
+	Table.RemoveByValue(SOURCE_LIST, "bank")
+	Table.RemoveByValue(SOURCE_TEXT_LIST, L["Bank"])
 end
 assert(#SOURCE_LIST == #SOURCE_TEXT_LIST)
 
@@ -230,9 +236,12 @@ function private.CreateSourceRows(frame)
 end
 
 function private.UpdateSourceRows(setupFrame)
-	if TSM.IsWowClassic() then
+	if TSM.IsWowVanillaClassic() then
 		Table.RemoveByValue(private.settings.sources, "guildBank")
 		Table.RemoveByValue(private.settings.sources, "altGuildBank")
+	end
+	if not TSM.IsWowClassic() then
+		Table.RemoveByValue(TSM.db.profile.gatheringOptions.sources, "bank")
 	end
 	local texts = TempTable.Acquire()
 	local sources = TempTable.Acquire()

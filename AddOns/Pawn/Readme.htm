@@ -307,6 +307,97 @@ indeterminate or an upgrade. This can be used for auto-sell rules, such as <code
 </ul>
 
 <h2>Updates</h2>
+<h3>Version 2.5.30</h3>
+<ul>
+	<li>Fixed a problem where domination sockets were undervalued in the default 
+	Ask Mr. Robot scales for tanks and healers.</li>
+</ul>
+<h3>Version 2.5.29</h3>
+<ul>
+	<li>Fixed the look of the socketing advisor tooltip on WoW 9.1.5, which also 
+	fixes an error that started with 9.1.5.</li>
+</ul>
+<h3>Version 2.5.28</h3>
+<ul>
+	<li>Fixed a problem where domination sockets could get counted twice.</li>
+	<li>Fixed a minor bug where Pawn's socketing advisor would stay visible when 
+	shift-right-clicking an item with a prismatic socket and then 
+	shift-right-clicking an item with a domination socket, without first closing 
+	the socketing window.</li>
+	<li>If you have scale values visible on tooltips (they're hidden by 
+	default), you can now hover over the Pawn button when inspecting another 
+	player to see their total scores (using <em>your</em> character's scales) on 
+	Classic, like you can in Shadowlands. </li>
+</ul>
+<h3>Version 2.5.27</h3>
+<ul>
+	<li>Items with only a domination socket will no longer show a blank 
+	socketing advisor when you shift-right-click them, since Pawn doesn't 
+	suggest domination shards.</li>
+	<li>You can now assign a value to domination sockets on an item. For Pawn's 
+	default scales, I've chosen a very conservative value for the stat that 
+	assumes that you <em>aren't</em> raiding Sanctum of Domination. The initial 
+	value I've chosen is 45× the value of Leech, which is provided by the 
+	Desolate Shard of Rev which anyone can easily attain without raiding. For 
+	someone who does raid Sanctum of Domination and has access to better shards 
+	and their class's domination set bonus, this default value will be far too 
+	low, so you'll want to increase it to something more appropriate.</li>
+</ul>
+<h3>Version 2.5.26</h3>
+<ul>
+	<li>The "color tooltip border of upgrades" feature now works again without 
+	errors on the 9.1.5 PTR.</li>
+	<li>Incorporated a couple of changes from players on CurseForge that will 
+	hopefully improve compatibility between Pawn and ArkInventory.</li>
+	<li>Burning Crusade Classic: Added support for new types of items with holy 
+	spell damage in English, French, Russian, Latin American Spanish, European 
+	Spanish, Simplified Chinese, and Traditional Chinese versions of Burning 
+	Crusade Classic.</li>
+</ul>
+<h3>Version 2.5.25</h3>
+<ul>
+	<li>Additional Pawn updates to accomodate changes made in French Burning 
+	Crusade Classic, and to fix a bug I introduced in the previous version that 
+	only affected French versions of the game.</li>
+</ul>
+<h3>Version 2.5.24</h3>
+<ul>
+	<li>Pawn will now once again recognize specific schools of spell damage on 
+	items in French Burning Crusade Classic. (Other languages, Classic Era, and 
+	Shadowlands were not affected.)</li>
+	<li>Made a couple of small changes to help make French compatibility 
+	problems easier to fix in the future.<ul>
+		<li>For the curious, in French it's normal to put a space before AND 
+		after a colon, as in "Équipé&nbsp;: Augmente...". Sometimes, Blizzard uses a 
+		"non-breaking space" instead of a regular space before the colon, and a 
+		regular space after, which is also common. Unfortunately, they're not 
+		consistent; sometimes they just use two regular spaces. And you 
+		can't <em>see</em> the difference, but to code, 
+		those two spaces are as different as A and Z. With this change, Pawn will now always treat 
+		non-breaking spaces and regular spaces the same.</li>
+	</ul>
+	</li>
+</ul>
+<h3>Version 2.5.23</h3>
+<ul>
+	<li>Fixes a harmless but annoying error that could occur when interacting 
+	with socketed items in Shadowlands.</li>
+</ul>
+<h3>Version 2.5.22</h3>
+<ul>
+	<li>Fixed a few bugs relating to meta sockets in Burning Crusade Classic. 
+	The base values of helms with meta sockets will be (correctly) somewhat 
+	higher after this change, and the current values of a fully-socketed helm 
+	(if you have those turned on) may be significantly higher.</li>
+	<li>Fixed a problem where Pawn couldn't read the damage stats on the few 
+	rare crossbows that deal an exact, non-random damage with every attack 
+	(Crossbow of the Albatross, Fine Light Crossbow) on French versions of 
+	Classic Era and Burning Crusade Classic. Other languages and other crossbows 
+	were not affected.</li>
+	<li>Added some additional debugging information to help me understand some 
+	tricky aspects of gem calculations in the future. (That means even more chat 
+	spam when debug mode is on!)</li>
+</ul>
 <h3>Version 2.5.21</h3>
 <ul>
 	<li>When using the option to ignore gems while leveling (which is <em>

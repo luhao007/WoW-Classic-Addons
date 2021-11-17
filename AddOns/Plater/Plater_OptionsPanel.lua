@@ -31,6 +31,9 @@ local startX, startY, heightSize = 10, -130, 710
 local optionsWidth, optionsHeight = 1100, 650
 local mainHeightSize = 800
 
+local IMPORT_EXPORT_EDIT_MAX_BYTES = 0 --1024000*4 -- 0 appears to be "no limit"
+local IMPORT_EXPORT_EDIT_MAX_LETTERS = 0 --128000*4 -- 0 appears to be "no limit"
+
  --cvars
 local CVAR_ENABLED = "1"
 local CVAR_DISABLED = "0"
@@ -148,7 +151,7 @@ function Plater.CheckOptionsTab()
 end
 
 local TAB_INDEX_UIPARENTING = 4
-local TAB_INDEX_PROFILES = 20
+local TAB_INDEX_PROFILES = 21
 
 -- ~options �ptions
 function Plater.OpenOptionsPanel()
@@ -391,6 +394,11 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.ExportCurrentProfile()
 				profilesFrame.IsExporting = true
 				profilesFrame.IsImporting = nil
+				profilesFrame.ImportStringField.importDataText = nil
+				
+				local editbox = profilesFrame.ImportStringField.editbox
+				editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+				editbox:SetScript("OnChar", nil);
 				
 				if (not profilesFrame.ImportingProfileAlert) then
 					profilesFrame.ImportingProfileAlert = CreateFrame ("frame", "PlaterExportingProfileAlert", UIParent, BackdropTemplateMixin and "BackdropTemplate")
@@ -463,9 +471,90 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.ImportProfile()
 				profilesFrame.IsExporting = nil
 				profilesFrame.IsImporting = true
+				
+				profilesFrame.ImportStringField.importDataText = nil
+				local editbox = profilesFrame.ImportStringField.editbox
+				local pasteBuffer, pasteCharCount, isPasting = {}, 0, false
+				--editbox:SetMaxBytes (1) -- for performance
+				
+				local function clearBuffer(self)
+					self:SetScript('OnUpdate', nil)
+					editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+					isPasting = false
+					if pasteCharCount > 10 then
+						local paste = strtrim(table.concat(pasteBuffer))
+						
+						local wagoProfile = Plater.DecompressData (paste, "print")
+						if (wagoProfile and type (wagoProfile == "table")) then
+							if  (wagoProfile.plate_config) then
+								local existingProfileName = nil
+								local wagoInfoText = "Import data verified.\n\n"
+								if wagoProfile.url then
+									local impProfUrl = wagoProfile.url or ""
+									local impProfID = impProfUrl:match("wago.io/([^/]+)/([0-9]+)") or impProfUrl:match("wago.io/([^/]+)$")
+									local profiles = Plater.db.profiles
+									if impProfID then
+										for pName, pData in pairs(profiles) do
+											local pUrl = pData.url or ""
+											local id = pUrl:match("wago.io/([^/]+)/([0-9]+)") or pUrl:match("wago.io/([^/]+)$")
+											if id and impProfID == id then
+												existingProfileName = pName
+												break
+											end									
+										end
+									end
+								
+									wagoInfoText = wagoInfoText .. "Extracted the following wago information from the profile data:\n"
+									wagoInfoText = wagoInfoText .. "  Local Profile Name: " .. (wagoProfile.profile_name or "N/A") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-Revision: " .. (wagoProfile.version or "-") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-Version: " .. (wagoProfile.semver or "-") .. "\n"
+									wagoInfoText = wagoInfoText .. "  Wago-URL: " .. (wagoProfile.url and (wagoProfile.url .. "\n") or "")
+									wagoInfoText = wagoInfoText .. (existingProfileName and ("\nThis profile already exists as: '" .. existingProfileName .. "' in your profiles.\n") or "")
+								else
+									wagoInfoText = "This profile does not contain any wago.io information.\n"
+								end
+								
+								wagoInfoText = wagoInfoText .. "\nYou may change the name below and click on '".. L["OPTIONS_OKAY"] .. "' to import the profile."
+								
+								editbox:SetText (wagoInfoText)
+								profilesFrame.ImportStringField.importDataText = paste
+								local curNewProfName = profilesFrame.NewProfileTextEntry:GetText()
+								if existingProfileName and curNewProfName and curNewProfName == "MyNewProfile" then
+									profilesFrame.NewProfileTextEntry:SetText(existingProfileName)
+								elseif wagoProfile.profile_name and wagoProfile.profile_name ~= "Default" and curNewProfName and curNewProfName == "MyNewProfile" then
+									profilesFrame.NewProfileTextEntry:SetText(wagoProfile.profile_name)
+								end
+							else
+								local scriptType = Plater.GetDecodedScriptType (wagoProfile)
+								if (scriptType == "hook" or scriptType == "script") then
+									editbox:SetText (L["OPTIONS_PROFILE_ERROR_WRONGTAB"])
+								else
+									editbox:SetText (L["OPTIONS_PROFILE_ERROR_STRINGINVALID"])
+								end
+							end
+						else
+							editbox:SetText("Could not decompress the data. The text pasted does not appear to be a serialized Plater profile.\nTry copying the import string again.")
+						end
+						
+						editbox:ClearFocus()
+					end
+				end
+				editbox:SetScript('OnChar', function(self, c)
+					if not isPasting then
+						if editbox:GetMaxBytes() ~= 1 then -- ensure this for performance!
+							editbox:SetMaxBytes (1)
+						end
+						pasteBuffer, pasteCharCount, isPasting = {}, 0, true
+						self:SetScript('OnUpdate', clearBuffer)
+					end
+					pasteCharCount = pasteCharCount + 1
+					pasteBuffer[pasteCharCount] = c
+				end)
+				
 				profilesFrame.ImportStringField:Show()
+				
 				C_Timer.After (.2, function()
-					profilesFrame.ImportStringField:SetText ("")
+					profilesFrame.ImportStringField:SetText ("<Paste import string here>")
 					profilesFrame.ImportStringField:SetFocus (true)
 				end)
 				
@@ -476,9 +565,15 @@ function Plater.OpenOptionsPanel()
 			function profilesFrame.HideStringField()
 				profilesFrame.IsExporting = nil
 				profilesFrame.IsImporting = nil
+				profilesFrame.ImportStringField.importDataText = nil
+				
+				local editbox = profilesFrame.ImportStringField.editbox
+				editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+				editbox:SetScript("OnChar", nil);
 				
 				profilesFrame.ImportStringField:Hide()
 				profilesFrame.ImportStringField:SetText ("")
+				
 				profilesFrame.NewProfileLabel:Hide()
 				profilesFrame.NewProfileTextEntry:Hide()
 			end
@@ -491,7 +586,7 @@ function Plater.OpenOptionsPanel()
 					return
 				end
 
-				local text = profilesFrame.ImportStringField:GetText()
+				local text = profilesFrame.ImportStringField.importDataText
 				local profile = Plater.DecompressData (text, "print")
 				
 				if (profile and type (profile == "table")) then
@@ -543,6 +638,8 @@ function Plater.OpenOptionsPanel()
 			
 			function profilesFrame.DoProfileImport(profileName, profile, isUpdate, keepModsNotInUpdate)
 				profilesFrame.HideStringField()
+				
+				profile.profile_name = nil --no need to import
 				
 				local wasUsingUIParent = Plater.db.profile.use_ui_parent
 				
@@ -656,7 +753,7 @@ function Plater.OpenOptionsPanel()
 					profilesFrame.IsImporting = true
 					
 					profilesFrame.NewProfileTextEntry:SetText(Plater.db:GetCurrentProfile())
-					profilesFrame.ImportStringField:SetText(update.encoded)
+					profilesFrame.ImportStringField.importDataText = update.encoded
 					
 					profilesFrame.ConfirmImportProfile(true)
 				end
@@ -860,10 +957,18 @@ function Plater.OpenOptionsPanel()
 			local block_mouse_frame = CreateFrame ("frame", nil, importStringField, BackdropTemplateMixin and "BackdropTemplate")
 			--block_mouse_frame:SetFrameLevel (block_mouse_frame:GetFrameLevel()-5)
 			block_mouse_frame:SetAllPoints()
-			block_mouse_frame:SetScript ("OnMouseDown", function()
+			
+			local function importStringFieldTextHighlight()
 				importStringField:SetFocus (true)
-				importStringField.editbox:HighlightText()
-			end)
+				if profilesFrame.IsImporting then
+					--importStringField.editbox:SetText("")
+					importStringField.editbox:HighlightText()
+				else
+					importStringField.editbox:HighlightText()
+				end
+			end
+			block_mouse_frame:SetScript ("OnMouseDown", importStringFieldTextHighlight)
+			importStringField.editbox:SetScript ("OnCursorChanged", importStringFieldTextHighlight)
 			
 			--import button
 			local okayButton = DF:CreateButton (importStringField, function() profilesFrame.ConfirmImportProfile(false) end, buttons_size[1], buttons_size[2], L["OPTIONS_OKAY"], -1, nil, nil, nil, nil, nil, DF:GetTemplate ("button", "OPTIONS_BUTTON_TEMPLATE"), DF:GetTemplate ("font", "PLATER_BUTTON"))
@@ -890,11 +995,9 @@ function Plater.OpenOptionsPanel()
 			profilesFrame.NewProfileLabel:Hide()
 			profilesFrame.NewProfileTextEntry:Hide()
 			
-			profilesFrame.ImportStringField.editbox:SetMaxBytes (1024000*4)
-			profilesFrame.ImportStringField.editbox:SetMaxLetters (128000*4)
-			
-			--print (profilesFrame.ImportStringField.editbox:GetMaxBytes())
-			--print (profilesFrame.ImportStringField.editbox:GetMaxLetters())
+			-- don't do this anymore, this causes huge lag when pasting large strings... buffer instead on importing. Setting values for good measure, though
+			profilesFrame.ImportStringField.editbox:SetMaxBytes (IMPORT_EXPORT_EDIT_MAX_BYTES)
+			profilesFrame.ImportStringField.editbox:SetMaxLetters (IMPORT_EXPORT_EDIT_MAX_LETTERS)
 			
 	end
 -------------------------
@@ -1898,6 +2001,18 @@ local debuff_options = {
 		name = "Show Auras Casted by You",
 		desc = "Show Auras Casted by You.",
 	},
+	
+	{
+		type = "toggle",
+		get = function() return Plater.db.profile.aura_show_aura_by_other_players end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.aura_show_aura_by_other_players = value
+			Plater.RefreshDBUpvalues()
+			Plater.UpdateAllPlates()
+		end,
+		name = "Show Auras Casted by other Players",
+		desc = "Show Auras Casted by other Players.\n\n|cFFFFFF00Important|r: This may cause a lot of auras to show!",
+	},
 
 	{type = "blank"},
 	
@@ -1935,6 +2050,18 @@ local debuff_options = {
 		end,
 		name = "Show Enrage Buffs",
 		desc = "Show auras which are in the enrage category.",
+	},
+	
+	{
+		type = "toggle",
+		get = function() return Plater.db.profile.aura_show_magic end,
+		set = function (self, fixedparam, value) 
+			Plater.db.profile.aura_show_magic = value
+			Plater.RefreshDBUpvalues()
+			Plater.UpdateAllPlates()
+		end,
+		name = "Show Magic Buffs",
+		desc = "Show auras which are in the magic type category.",
 	},
 	
 	{
@@ -2091,8 +2218,6 @@ local debuff_options = {
 		name = "Defensive CD Border Color",
 		desc = "Defensive CD Border Color",
 	},
-	
-	{type = "blank"},
 	
 	{
 		type = "toggle",
@@ -4196,7 +4321,6 @@ Plater.CreateAuraTesting()
 				desc = "Outline",
 			},
 
-			{type = "blank"},
 			--show caster name
 			{
 				type = "toggle",
@@ -4237,7 +4361,6 @@ Plater.CreateAuraTesting()
 				desc = "Outline",
 			},
 			
-			{type = "blank"},
 			--show stacks
 			{
 				type = "toggle",
@@ -4317,6 +4440,18 @@ Plater.CreateAuraTesting()
 				end,
 				name = "Enrage",
 				desc = "When the unit has an enrage effect on it, show it.",
+			},
+			--show enrages
+			{
+				type = "toggle",
+				get = function() return Plater.db.profile.extra_icon_show_magic end,
+				set = function (self, fixedparam, value) 
+					Plater.db.profile.extra_icon_show_magic = value
+					Plater.RefreshDBUpvalues()
+					Plater.UpdateAllPlates()
+				end,
+				name = "Magic",
+				desc = "When the unit has a magic buff on it, show it.",
 			},
 			--show offensive CDs
 			{
@@ -6329,7 +6464,7 @@ local relevance_options = {
 				end
 			end,
 			min = 0.2,
-			max = 1.6,
+			max = 2.5,
 			step = 0.05,
 			thumbscale = 1.7,
 			usedecimals = true,
@@ -6348,11 +6483,11 @@ local relevance_options = {
 					Plater:Msg (L["OPTIONS_ERROR_CVARMODIFY"])
 				end
 			end,
-			min = 1,
-			max = 100,
+			min = IS_WOW_PROJECT_MAINLINE and 1 or 20, --20y for tbc and classic
+			max = IS_WOW_PROJECT_MAINLINE and 100 or 41, --41y for tbc
 			step = 1,
 			name = "View Distance" .. CVarIcon,
-			desc = "How far you can see nameplates (in yards).\n\n|cFFFFFFFFDefault: 40|r" .. CVarDesc,
+			desc = "How far you can see nameplates (in yards).\n\n|cFFFFFFFFCurrent limitations: Retail = 60y, TBC = 20-41y, Classic = 20y|r" .. CVarDesc,
 			nocombat = true,
 		},
 	
@@ -12666,7 +12801,7 @@ end
 				end
 			end,
 			min = 0.2,
-			max = 1.6,
+			max = 2.5,
 			step = 0.05,
 			thumbscale = 1.7,
 			usedecimals = true,
@@ -12685,7 +12820,7 @@ end
 				end
 			end,
 			min = 0.2,
-			max = 1.6,
+			max = 2.5,
 			step = 0.05,
 			thumbscale = 1.7,
 			usedecimals = true,
@@ -13461,20 +13596,39 @@ end
 	
 	--all settings tables
 	local allTabSettings = {
-		interface_options,
-		debuff_options,
-		especial_aura_settings,
-		options_personal,
-		targetOptions,
-		options_table1,
-		options_table3,
-		options_table4,
-		friendly_npc_options_table,
-		options_table2,
-		experimental_options,
-		auto_options,
-		thread_options,
-		advanced_options
+		interface_options, -- general
+		options_table1, -- general
+		thread_options, -- threat & aggro
+		targetOptions, -- target
+		castBar_options, -- cast bar
+		experimental_options, --  level & strata
+		options_personal, -- personal bar
+		debuff_options, -- buff settings
+		especial_aura_settings, -- buff special
+		options_table2, -- enemy npc
+		options_table4, -- enemy player
+		options_table3, -- friendly player
+		friendly_npc_options_table, -- friendly npc
+		auto_options, -- auto
+		advanced_options, -- advanced
+	}
+	
+	local allTabHeaders = {
+		mainFrame.AllButtons [1].button.text:GetText(), -- general
+		mainFrame.AllButtons [1].button.text:GetText(), -- general
+		mainFrame.AllButtons [2].button.text:GetText(), -- threat & aggro
+		mainFrame.AllButtons [3].button.text:GetText(), -- target
+		mainFrame.AllButtons [4].button.text:GetText(), -- cast bar
+		mainFrame.AllButtons [5].button.text:GetText(), -- level & strata
+		mainFrame.AllButtons [8].button.text:GetText(), -- personal bar
+		mainFrame.AllButtons [9].button.text:GetText(), -- buff settings
+		mainFrame.AllButtons [11].button.text:GetText(), -- buff special
+		mainFrame.AllButtons [13].button.text:GetText(), -- enemy npc
+		mainFrame.AllButtons [14].button.text:GetText(), -- enemy player
+		mainFrame.AllButtons [15].button.text:GetText(), -- friendly npc
+		mainFrame.AllButtons [16].button.text:GetText(), -- friendly player
+		mainFrame.AllButtons [20].button.text:GetText(), -- auto
+		mainFrame.AllButtons [22].button.text:GetText(), -- advanced
 	}
 
 	--this table will hold all options
@@ -13482,9 +13636,13 @@ end
 	--start the fill process filling 'allOptions' with each individual option from each tab
 	for i = 1, #allTabSettings do
 		local tabSettings = allTabSettings[i]
-		for k, setting in pairs(tabSettings) do 
+		local lastLabel = nil
+		for k, setting in pairs(tabSettings) do
+			if (setting.type == "label") then
+				lastLabel = setting
+			end
 			if (setting.name) then
-				allOptions[#allOptions+1] = setting
+				allOptions[#allOptions+1] = {setting = setting, label = lastLabel, header = allTabHeaders[i] }
 			end
 		end
 	end
@@ -13495,10 +13653,25 @@ end
 		local searchingText = string.lower(searchBox.text)
 		searchBox:SetFocus(false)
 
+		local lastTab = nil
+		local lastLabel = nil
 		for i = 1, #allOptions do
-			local optionName = string.lower(allOptions[i].name)
+			local optionData = allOptions[i]
+			local optionName = string.lower(optionData.setting.name)
 			if (optionName:find(searchingText)) then
-				options[#options+1] = allOptions[i]
+				if optionData.header ~= lastTab then
+					if lastTab ~= nil then
+						options[#options+1] = {type = "label", get = function() return "" end, text_template = DF:GetTemplate ("font", "OPTIONS_FONT_TEMPLATE")} -- blank
+					end
+					options[#options+1] = {type = "label", get = function() return optionData.header end, text_template = {color = "gold", size = 14, font = DF:GetBestFontForLanguage()}}
+					lastTab = optionData.header
+					lastLabel = nil
+				end
+				if optionData.label ~= lastLabel then
+					options[#options+1] = optionData.label
+					lastLabel = optionData.label
+				end
+				options[#options+1] = optionData.setting
 			end
 		end
 

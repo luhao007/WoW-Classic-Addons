@@ -94,6 +94,7 @@ PawnLocal =
 		["CritInfo"] = "致命一擊: 影響近戰攻擊，遠程攻擊，法術。",
 		["DefenseInfo"] = "Defense skill.  Decreases the chance that you'll be hit by boss attacks.",
 		["DodgeInfo"] = "Dodge.  Increases the chance that you'll dodge attacks entirely.",
+		["DominationSocketInfo"] = "平均統治碎片的套接字值。",
 		["DpsInfo"] = [=[每秒武器傷害。
 若你想為不同武器的DPS估值, 請看 "特定武器屬性" 部份]=],
 		--[[Translation missing --]]
@@ -350,6 +351,7 @@ PawnLocal =
 		["HitRatingShort"] = "^%+?#命中等級$",
 		["HolySpellDamage"] = "^%+# Holy Spell Damage$",
 		["HolySpellDamage2"] = "^裝備： 提高神聖法術和效果所造成的傷害，最多#點。$",
+		["HolySpellDamage3"] = "^裝備: 使神聖法術和效果所造成的傷害提高最多#點。$",
 		["Hp5"] = "^裝備: 每5秒恢復#生命力。$",
 		["Hp52"] = "^每5秒恢復#點?生命力。?$",
 		["Hp53"] = "^UNUSED$",

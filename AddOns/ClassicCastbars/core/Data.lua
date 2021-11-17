@@ -1810,7 +1810,22 @@ namespace.playerInterrupts = {
     [GetSpellInfo(19244)] = 1, -- Spell Lock
     [GetSpellInfo(6552)] = 1,  -- Pummel
     [GetSpellInfo(16979)] = 1, -- Feral Charge
+    [GetSpellInfo(72)] = 1, -- Shield Bash
 }
+
+namespace.playerSilences = {
+    --@version-bcc@
+    [GetSpellInfo(18469)] = 1,  -- Counterspell - Silenced
+    [GetSpellInfo(18425)] = 1,  -- Kick - Silenced
+    [GetSpellInfo(24259)] = 1, -- Spell Lock
+    [GetSpellInfo(15487)] = 1, -- Silence
+    [GetSpellInfo(34490)] = 1, -- Silencing Shot
+    --@end-version-bcc@
+}
+
+--@version-bcc@
+namespace.playerInterrupts[GetSpellInfo(32747)] = 1 -- Deadly Throw Interrupt Effect
+--@end-version-bcc@
 
 -- Player spells that can't be interrupted
 namespace.uninterruptibleList = {
@@ -1831,6 +1846,9 @@ namespace.uninterruptibleList = {
     [GetSpellInfo(20549)] = 1,      -- War Stomp
     [GetSpellInfo(1510)] = 1,       -- Volley
     [GetSpellInfo(20904)] = 1,      -- Aimed Shot
+    --@version-bcc@
+    [GetSpellInfo(34120)] = 1,      -- Steady Shot
+    --@end-version-bcc@
     [GetSpellInfo(11605)] = 1,      -- Slam
     [GetSpellInfo(1804)] = 1,       -- Pick Lock
     [GetSpellInfo(1842)] = 1,       -- Disarm Trap
@@ -1869,7 +1887,7 @@ namespace.uninterruptibleList = {
 
 -- Addon Savedvariables
 namespace.defaultConfig = {
-    version = "28", -- settings version
+    version = "29", -- settings version
     locale = GetLocale(),
     npcCastUninterruptibleCache = {},
     usePerCharacterSettings = false,
@@ -1896,6 +1914,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 0.796078431372549, 0, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 0, 1, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },
@@ -1929,6 +1948,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 0, 1, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },
@@ -1968,6 +1988,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 0, 1, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },
@@ -2001,6 +2022,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 0, 1, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },
@@ -2035,6 +2057,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 0, 1, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },
@@ -2069,6 +2092,7 @@ namespace.defaultConfig = {
         iconPositionY = 0,
         borderColor = { 1, 1, 1, 1 },
         statusColor = { 1, 0.7, 0, 1 },
+        statusColorSuccess = { 1, 0.7, 0, 1 },
         statusColorFailed = { 1, 0, 0 },
         statusColorChannel = { 0, 1, 0, 1 },
         statusColorUninterruptible = { 0.7, 0.7, 0.7, 1 },

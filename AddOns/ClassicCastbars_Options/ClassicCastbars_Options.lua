@@ -87,7 +87,9 @@ local function CreateUnitTabGroup(unitID, localizedUnit, order)
                         set = function(_, value)
                             ClassicCastbars.db[unitID].enabled = value
                             ClassicCastbars:ToggleUnitEvents(true)
-                            ClassicCastbars:DisableBlizzardCastbar(unitID, value)
+                            if ClassicCastbars.DisableBlizzardCastbar then -- is TBC
+                                ClassicCastbars:DisableBlizzardCastbar(unitID, value)
+                            end
                             if unitID == "player" then
                                 if value == false then
                                     return ReloadUI()
@@ -153,6 +155,48 @@ local function CreateUnitTabGroup(unitID, localizedUnit, order)
                         type = "toggle",
                         disabled = ModuleIsDisabled,
                         hidden = unitID == "player",
+                    },
+                    posX = {
+                        order = 9,
+                        name = "Position X",
+                        desc = "Position X",
+                        width = 2,
+                        type = "range",
+                        min = -999,
+                        max = 999,
+                        step = 1,
+                        bigStep = 10,
+                        hidden = unitID ~= "nameplate",
+                        get = function() return ClassicCastbars.db[unitID].position[2] end,
+                        set = function(_, value)
+                            ClassicCastbars.db[unitID].position[2] = value
+                            local bar = ClassicCastbars:GetCastbarFrame("nameplate-testmode")
+                            if bar then
+                                bar:SetPoint("CENTER", bar.parent, value, ClassicCastbars.db[unitID].position[3])
+                            end
+                        end,
+                    },
+                    posY = {
+                        order = 10,
+                        name = "Position Y",
+                        desc = "Position Y",
+                        width = 2,
+                        type = "range",
+                        min = -999,
+                        max = 999,
+                        step = 1,
+                        bigStep = 10,
+                        hidden = unitID ~= "nameplate",
+                        get = function()
+                            return ClassicCastbars.db[unitID].position[3]
+                        end,
+                        set = function(_, value)
+                            ClassicCastbars.db[unitID].position[3] = value
+                            local bar = ClassicCastbars:GetCastbarFrame("nameplate-testmode")
+                            if bar then
+                                bar:SetPoint("CENTER", bar.parent, ClassicCastbars.db[unitID].position[2], value)
+                            end
+                        end,
                     },
                 },
             },
@@ -312,23 +356,30 @@ local function CreateUnitTabGroup(unitID, localizedUnit, order)
                         hasAlpha = true,
                         type = "color",
                     },
+                    statusColorSuccess = {
+                        name = L.STATUS_SUCCESS_COLOR,
+                        order = 8,
+                        width = 1.2,
+                        hasAlpha = true,
+                        type = "color",
+                    },
                     statusColorFailed = {
                         name = L.STATUS_FAILED_COLOR,
-                        order = 8,
+                        order = 9,
                         width = 1.2,
                         hasAlpha = true,
                         type = "color",
                     },
                     statusColorChannel = {
                         name = L.STATUS_CHANNEL_COLOR,
-                        order = 9,
+                        order = 10,
                         width = 1.2,
                         hasAlpha = true,
                         type = "color",
                     },
                     statusColorUninterruptible ={
                         name = L.STATUS_UNINTERRUPTIBLE_COLOR,
-                        order = 10,
+                        order = 11,
                         width = 1.2,
                         hasAlpha = true,
                         type = "color",

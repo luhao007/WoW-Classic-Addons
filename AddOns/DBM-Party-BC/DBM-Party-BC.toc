@@ -1,6 +1,5 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Arta/MysticalOS
-## Version: 2.5.8
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPartyBC_AllSavedVars
@@ -32,9 +31,6 @@
 ## X-DBM-Mod-MapID: 540,558,556,555,542,546,545,547,553,554,552,557,269,560,543,585
 ## X-DBM-Mod-MinCoreRevision: 20200524142133
 ## X-DBM-Mod-MinExpansion: 1
-## X-Curse-Project-ID: 314994
-## X-WoWI-ID: 24904
-## X-Wago-ID: xZKxZENk
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

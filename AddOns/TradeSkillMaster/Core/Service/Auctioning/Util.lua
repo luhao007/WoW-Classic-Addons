@@ -7,7 +7,6 @@
 local _, TSM = ...
 local Util = TSM.Auctioning:NewPackage("Util")
 local TempTable = TSM.Include("Util.TempTable")
-local Vararg = TSM.Include("Util.Vararg")
 local String = TSM.Include("Util.String")
 local Math = TSM.Include("Util.Math")
 local CustomPrice = TSM.Include("Service.CustomPrice")
@@ -93,6 +92,7 @@ function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl
 				resultTbl.seller = firstSeller
 				resultTbl.auctionId = auctionId
 				resultTbl.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(firstSeller)] and true or false
+				resultTbl.isBlacklist = String.SeparatedContains(strlower(operationSettings.blacklist), ",", strlower(firstSeller))
 				resultTbl.isPlayer = PlayerInfo.IsPlayer(firstSeller, true, true, true)
 				if not subRow:HasOwners() then
 					resultTbl.hasInvalidSeller = true
@@ -123,6 +123,7 @@ function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl
 					temp.seller = ownerStr
 					temp.auctionId = auctionId
 					temp.isWhitelist = TSM.db.factionrealm.auctioningOptions.whitelist[strlower(ownerStr)] and true or false
+					temp.isBlacklist = String.SeparatedContains(strlower(operationSettings.blacklist), ",", strlower(ownerStr))
 					temp.isPlayer = PlayerInfo.IsPlayer(ownerStr, true, true, true)
 					if not temp.isWhitelist and not temp.isPlayer then
 						-- there is a non-whitelisted competitor, so we don't care if a whitelisted competitor also posts at this price
@@ -130,13 +131,6 @@ function Util.GetLowestAuction(subRows, itemString, operationSettings, resultTbl
 					end
 					if not subRow:HasOwners() and next(TSM.db.factionrealm.auctioningOptions.whitelist) then
 						hasInvalidSeller = true
-					end
-					if operationSettings.blacklist then
-						for _, player in Vararg.Iterator(strsplit(",", operationSettings.blacklist)) do
-							if String.SeparatedContains(strlower(ownerStr), ",", strlower(strtrim(player))) then
-								temp.isBlacklist = true
-							end
-						end
 					end
 					if not lowestAuction then
 						lowestAuction = temp

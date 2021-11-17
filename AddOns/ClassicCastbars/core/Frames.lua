@@ -16,21 +16,15 @@ local nonLSMBorders = {
     ["Interface\\CastingBar\\UI-CastingBar-Border"] = true,
 }
 
+local isClassic = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC
+
 local function GetStatusBarBackgroundTexture(statusbar)
     if statusbar.Background then return statusbar.Background end
 
     for _, v in pairs({ statusbar:GetRegions() }) do
-        --[====[@version-classic@
-        if v.GetTexture and strfind(v:GetTexture() or "", "Color-") then
+        if v.GetTexture and strfind("UI-StatusBar", v:GetTexture() or "") then
             return v
         end
-        --@end-version-classic@]====]
-
-        --@version-bcc@
-        if v.GetTexture and strfind("UI-StatusBar", v:GetTexture() or "") then -- TODO: test on classic
-            return v
-        end
-        --@end-version-bcc@
     end
 end
 
@@ -48,15 +42,37 @@ function addon:GetCastbarFrame(unitID)
 end
 
 function addon:SetTargetCastbarPosition(castbar, parentFrame)
-    local auraRows = parentFrame.auraRows or 0
-
-    if parentFrame.buffsOnTop or auraRows <= 1 then
-        castbar:SetPoint("CENTER", parentFrame, -18, -75)
-    else
-        if castbar.BorderShield:IsShown() then
-            castbar:SetPoint("CENTER", parentFrame, -18, max(min(-75, -43 * auraRows), -150))
+    if not isClassic and parentFrame:GetName() == "TargetFrame" then
+        if ( parentFrame.haveToT ) then
+            if ( parentFrame.buffsOnTop or parentFrame.auraRows <= 1 ) then
+                castbar:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -21 )
+            else
+                castbar:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15)
+            end
+        elseif ( parentFrame.haveElite ) then
+            if ( parentFrame.buffsOnTop or parentFrame.auraRows <= 1 ) then
+                castbar:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, -5 )
+            else
+                castbar:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15)
+            end
         else
-            castbar:SetPoint("CENTER", parentFrame, -18, max(min(-75, -39 * auraRows), -150))
+            if ( (not parentFrame.buffsOnTop) and parentFrame.auraRows > 0 ) then
+                castbar:SetPoint("TOPLEFT", parentFrame.spellbarAnchor, "BOTTOMLEFT", 20, -15)
+            else
+                castbar:SetPoint("TOPLEFT", parentFrame, "BOTTOMLEFT", 25, 7 )
+            end
+        end
+    else -- for classic era or unknown parent frame
+        local auraRows = parentFrame.auraRows or 0
+
+        if parentFrame.buffsOnTop or auraRows <= 1 then
+            castbar:SetPoint("CENTER", parentFrame, -18, -75)
+        else
+            if castbar.BorderShield:IsShown() then
+                castbar:SetPoint("CENTER", parentFrame, -18, max(min(-75, -43 * auraRows), -150))
+            else
+                castbar:SetPoint("CENTER", parentFrame, -18, max(min(-75, -39 * auraRows), -150))
+            end
         end
     end
 end
@@ -323,13 +339,13 @@ function addon:HideCastbar(castbar, unitID, skipFadeOut)
 
         if cast.isCastComplete then -- SPELL_CAST_SUCCESS
             if castbar.Border:GetAlpha() == 1 or cast.isUninterruptible then
-                if castbar.BorderShield:IsShown() or nonLSMBorders[castbar.Border:GetTexture() or ""] then
+                if castbar.BorderShield:IsShown() or nonLSMBorders[castbar.Border:GetTextureFilePath() or ""] then
                     if cast.isUninterruptible then
                         castbar.Flash:SetVertexColor(0.7, 0.7, 0.7, 1)
                     elseif cast.isChanneled then
-                        castbar.Flash:SetVertexColor(0, 1, 0)
+                        castbar.Flash:SetVertexColor(0, 1, 0, 1)
                     else
-                        castbar.Flash:SetVertexColor(1, 1, 1)
+                        castbar.Flash:SetVertexColor(1, 1, 1, 1)
                     end
                     castbar.Flash:Show()
                 end
@@ -341,7 +357,7 @@ function addon:HideCastbar(castbar, unitID, skipFadeOut)
                 if cast.isUninterruptible then
                     castbar:SetStatusBarColor(0.7, 0.7, 0.7, 1)
                 else
-                    castbar:SetStatusBarColor(0, 1, 0)
+                    castbar:SetStatusBarColor(unpack(self.db[self:GetUnitType(unitID)].statusColorSuccess))
                 end
                 castbar:SetValue(1)
             else
@@ -385,6 +401,10 @@ local function ColorPlayerCastbar(db)
     --if CastingBarFrame.isTesting then
         CastingBarFrame:SetStatusBarColor(unpack(db.statusColor))
     --end
+
+    CastingBarFrame_SetFinishedCastColor(CastingBarFrame, unpack(db.statusColorSuccess))
+    CastingBarFrame_SetUseStartColorForFinished(CastingBarFrame, false)
+	CastingBarFrame_SetUseStartColorForFlash(CastingBarFrame, false)
 
     CastingBarFrame.Background = CastingBarFrame.Background or GetStatusBarBackgroundTexture(CastingBarFrame)
     CastingBarFrame.Background:SetColorTexture(unpack(db.statusBackgroundColor))

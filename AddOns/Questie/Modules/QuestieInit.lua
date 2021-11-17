@@ -42,6 +42,8 @@ local QuestieJourney = QuestieLoader:ImportModule("QuestieJourney")
 local HBDHooks = QuestieLoader:ImportModule("HBDHooks")
 ---@type ChatFilter
 local ChatFilter = QuestieLoader:ImportModule("ChatFilter")
+---@type Hooks
+local Hooks = QuestieLoader:ImportModule("Hooks")
 
 -- initialize all questie modules
 -- this function runs inside a coroutine
@@ -58,7 +60,7 @@ function QuestieInit:InitAllModules()
         l10n:SetUILocale(GetLocale());
     end
 
-    Questie:Debug(DEBUG_CRITICAL, "[Questie:OnInitialize] Questie addon loaded")
+    Questie:Debug(Questie.DEBUG_CRITICAL, "[Questie:OnInitialize] Questie addon loaded")
 
     coroutine.yield()
     ZoneDB:Initialize()
@@ -93,11 +95,6 @@ function QuestieInit:InitAllModules()
         coroutine.yield()
         QuestieCorrections:PreCompile()
         QuestieDBCompiler:Compile()
-        
-        if not Questie.db.global.hasSeenBetaMessage then
-            Questie.db.global.hasSeenBetaMessage = true
-            print("\124cFFFFFF00" ..l10n("[Questie] With the move to Burning Crusade, Questie is undergoing rapid development, as such you may encounter bugs. Please keep Questie up to date for the best experience! We will also be releasing a large update some time after TBC launch, with many improvements and new features."))
-        end
     else
         _QuestieInit:OverrideDBWithTBCData()
 
@@ -149,7 +146,7 @@ function QuestieInit:InitAllModules()
     QuestieNameplate:Initialize()
     coroutine.yield()
     QuestieMenu:PopulateTownsfolkPostBoot()
-    Questie:Debug(DEBUG_ELEVATED, "PLAYER_ENTERED_WORLD")
+    Questie:Debug(Questie.DEBUG_ELEVATED, "PLAYER_ENTERED_WORLD")
 
     coroutine.yield()
     QuestieQuest:GetAllQuestIds()
@@ -157,6 +154,7 @@ function QuestieInit:InitAllModules()
     -- Initialize the tracker
     coroutine.yield()
     QuestieTracker:Initialize()
+    Hooks:HookQuestLogTitle()
 
     local dateToday = date("%y-%m-%d")
 
@@ -176,6 +174,19 @@ function QuestieInit:InitAllModules()
     end
 
     Questie.started = true
+
+    if Questie.IsTBC and QuestiePlayer:GetPlayerLevel() == 70 then
+        local lastRequestWasYesterday = Questie.db.char.lastDailyRequestDate ~= date("%d-%m-%y"); -- Yesterday or some day before
+        local isPastDailyReset = Questie.db.char.lastDailyRequestResetTime < GetQuestResetTime();
+
+        if lastRequestWasYesterday or isPastDailyReset then
+            -- We send empty Reputable events to ask for the current daily quests. Other users of the addon will answer if they have better data.
+            C_ChatInfo.SendAddonMessage("REPUTABLE", "send:1.21-bcc::::::::::", "GUILD");
+            C_ChatInfo.SendAddonMessage("REPUTABLE", "send:1.21-bcc::::::::::", "YELL");
+            Questie.db.char.lastDailyRequestDate = date("%d-%m-%y");
+            Questie.db.char.lastDailyRequestResetTime = GetQuestResetTime();
+        end
+    end
 end
 
 function QuestieInit:LoadDatabase(key)
@@ -185,7 +196,7 @@ function QuestieInit:LoadDatabase(key)
         coroutine.yield()
         QuestieDB[key] = QuestieDB[key]() -- execute the function (returns the table)
     else
-        Questie:Debug(DEBUG_DEVELOP, "Database is missing, this is likely do to era vs tbc: ", key)
+        Questie:Debug(Questie.DEBUG_DEVELOP, "Database is missing, this is likely do to era vs tbc: ", key)
     end
 end
 

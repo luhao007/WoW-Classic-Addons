@@ -24,11 +24,6 @@ BlizzMoveAPI:RegisterFrames(
 			{
 				MinVersion = 0,
 			},
-			["PetPaperDollFrame"] =
-			{
-				MinVersion = 20000, -- Added pre 20400
-				MaxVersion = 70300, -- Removed when?
-			},
 			["CompanionFrame"] =
 			{
 				MinVersion = 40000, -- Added when?
@@ -118,6 +113,14 @@ BlizzMoveAPI:RegisterFrames(
 	["DressUpFrame"] =
 	{
 		MinVersion = 0,
+		SubFrames =
+		{
+			["DressUpFrame.OutfitDetailsPanel"] =
+			{
+				MinVersion = 90105,
+				Detachable = true,
+			}
+		},
 	},
 	["FriendsFrame"] =
 	{
@@ -132,6 +135,13 @@ BlizzMoveAPI:RegisterFrames(
 			{
 				MinVersion = 0,
 				Detachable = true,
+				SubFrames =
+				{
+					["RaidInfoScrollFrame"] =
+					{
+						MinVersion = 0,
+					}
+				}
 			},
 			["RecruitAFriendFrame.RecruitList.ScrollFrame"] =
 			{
@@ -139,7 +149,6 @@ BlizzMoveAPI:RegisterFrames(
 			},
 			["FriendsFrameBattlenetFrame.BroadcastFrame"] =
 			{
-				MinVersion = 70000, -- Added when?
 				Detachable = true,
 			},
 			["FriendsListFrameScrollFrame"] =
@@ -152,7 +161,11 @@ BlizzMoveAPI:RegisterFrames(
 			},
 			["WhoListScrollFrame"] =
 			{
-				MinVersion = 0,
+				SilenceCompatabilityWarnings = true,
+				MinVersion = 30000,
+				-- Somehow breaks things in TBC, but also isn't needed there
+				-- For classic it's not needed, but oddly also doesn't break things
+				-- For retail it is needed
 			},
 		},
 	},
@@ -183,6 +196,11 @@ BlizzMoveAPI:RegisterFrames(
 	["ItemTextFrame"] =
 	{
 		MinVersion = 0,
+	},
+	["LFGParentFrame"] =
+	{
+		MinVersion = 20502,
+		MaxVersion = 70000, -- Removed when?
 	},
 	["LootFrame"] =
 	{
@@ -305,6 +323,7 @@ BlizzMoveAPI:RegisterFrames(
 	["WorldMapFrame"] =
 	{
 		MinVersion = 40000, -- No longer fullscreen when?
+		SilenceCompatabilityWarnings = true,
 		SubFrames =
 		{
 			["QuestMapFrame"] =
@@ -430,6 +449,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		{
 			MinVersion = 30000, -- Added pre 30300
 			MaxVersion = 90000, -- still exists, but shouldn't be movable (fullscreen)
+			SilenceCompatabilityWarnings = true
 		},
 	},
 	["Blizzard_BindingUI"] =
@@ -508,10 +528,14 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["CollectionsJournal"] =
 		{
 			MinVersion = 40000, -- Added when?
+			MaxVersion = 90105, -- Bug introduced in 9.1.5 breaks movement of this frame
+			SilenceCompatabilityWarnings = true,
 		},
 		["WardrobeFrame"] =
 		{
 			MinVersion = 40000, -- Added when?
+			MaxVersion = 90105, -- Bug introduced in 9.1.5 breaks CollectionsJournal if you move this frame
+			SilenceCompatabilityWarnings = true,
 		},
 	},
 	["Blizzard_Communities"] =
@@ -746,7 +770,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 	{
 		["GuildBankFrame"] =
 		{
-			MinVersion = 30000, -- Added pre 30300
+			MinVersion = 20502,
 		},
 	},
 	["Blizzard_GuildControlUI"] =
@@ -895,6 +919,7 @@ BlizzMoveAPI:RegisterAddOnFrames(
 				["SoulbindViewer.ConduitList.Charges"] =
 				{
 					MinVersion = 90000,
+					MaxVersion = 90105,
 				},
 			},
 		},

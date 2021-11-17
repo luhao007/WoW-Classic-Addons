@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: The WeakAuras Team
 ## Version: 1.1.0
 ## OptionalDeps: WeakAuras,Plater,

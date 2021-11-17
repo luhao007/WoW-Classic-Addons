@@ -7,6 +7,7 @@
 local _, TSM = ...
 local TaskListUI = TSM.UI:NewPackage("TaskListUI")
 local L = TSM.Include("Locale").GetTable()
+local Event = TSM.Include("Util.Event")
 local TempTable = TSM.Include("Util.TempTable")
 local Log = TSM.Include("Util.Log")
 local Settings = TSM.Include("Service.Settings")
@@ -17,6 +18,7 @@ local private = {
 	categoryCollapsed = {},
 	taskCollapsed = {},
 	didAutoShow = false,
+	wasVisible = false,
 	updateCallbacks = {},
 }
 
@@ -34,6 +36,8 @@ function TaskListUI.OnInitialize()
 	if not private.settings.isOpen then
 		private.didAutoShow = true
 	end
+	Event.Register("PLAYER_REGEN_ENABLED", private.OnRegenEnabled)
+	Event.Register("PLAYER_REGEN_DISABLED", private.OnRegenDisabled)
 end
 
 function TaskListUI.OnDisable()
@@ -47,7 +51,6 @@ end
 function TaskListUI.Toggle()
 	if private.frame then
 		private.frame:Hide()
-		assert(not private.frame)
 	else
 		if TSM.TaskList.GetNumTasks() == 0 then
 			Log.PrintUser(L["Your task list is currently empty."])
@@ -83,6 +86,22 @@ end
 -- ============================================================================
 -- Task List UI
 -- ============================================================================
+
+function private.OnRegenEnabled()
+	if not private.wasVisible then
+		return
+	end
+	TaskListUI.Toggle()
+end
+
+function private.OnRegenDisabled()
+	private.wasVisible = TaskListUI.IsVisible()
+	if private.frame then
+		-- hide the frame
+		private.frame:Hide()
+		assert(not private.frame)
+	end
+end
 
 function private.CreateMainFrame()
 	TSM.UI.AnalyticsRecordPathChange("task_list")

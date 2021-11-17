@@ -27,29 +27,29 @@ if not spells then return end   -- don't continue addon load if there are no rea
 --[[
 -- **************************************************************************
 -- NAME : newReagent(parent, i)
--- DESC : Creates a Button Frame to display a reagent in Titan Panel 
+-- DESC : Creates a Button Frame to display a reagent in Titan Panel
 -- VARS : parent = the addon,
         : i = button ID
 -- **************************************************************************
 --]]
 local function newReagent(parent, i)
-	
+
 	local btn = CreateFrame("Button", "TitanPanelReagentTrackerReagent"..i, parent, "TitanPanelChildButtonTemplate")
 	btn:SetSize(16, 16)
 	btn:SetPoint("LEFT")
 	btn:SetPushedTextOffset(0, 0)
-	
+
 	local icon = btn:CreateTexture()
 	icon:SetSize(16, 16)
 	icon:SetPoint("LEFT")
 	btn:SetNormalTexture(icon)
 	btn.icon = icon
-	
+
 	local text = btn:CreateFontString(nil, nil, "GameFontHighlightSmall")
 	text:SetPoint("LEFT", icon, "RIGHT", 2, 1)
 	text:SetJustifyH("LEFT")
 	btn:SetFontString(text)
-	
+
 	return btn
 end
 
@@ -107,7 +107,7 @@ addon.registry = {
     id = TITAN_REAGENTTRACKER_ID,
 	version = GetAddOnMetadata("TitanReagentTracker", "Version"),   -- the the value of Version variable from the .toc
 	menuText = "Reagent Tracker",
-	tooltipTitle = "Reagent Tracker Info", 
+	tooltipTitle = "Reagent Tracker Info",
 	tooltipTextFunction = "TitanPanelReagentTracker_GetTooltipText",
 	savedVariables = {
         ShowSpellIcons = false, -- variable used throughout the addon to determine whether to show spell or reagent icons
@@ -131,11 +131,13 @@ for i = 1, #spells do
     addon.registry.savedVariables["TrackReagent"..i] = (i == 1)
     addon.registry.savedVariables["BuyReagent"..i] = (i == 1)   -- Without first creating the variables in the addon.registry
                                                                 -- for later use, the variables won't be saved across game reload
-    addon.registry.savedVariables["Reagent"..i.."OneStack"] = (i == 1)         
-    addon.registry.savedVariables["Reagent"..i.."TwoStack"] = (i == 1)         
-    addon.registry.savedVariables["Reagent"..i.."ThreeStack"] = (i == 1) 
-    addon.registry.savedVariables["Reagent"..i.."NoStacks"] = (i == 1)                                                            
-	possessed[i] = {}
+    addon.registry.savedVariables["Reagent"..i.."OneStack"] = (i == 1)
+    addon.registry.savedVariables["Reagent"..i.."TwoStack"] = (i == 1)
+    addon.registry.savedVariables["Reagent"..i.."ThreeStack"] = (i == 1)
+    addon.registry.savedVariables["Reagent"..i.."FourStack"] = (i == 1)
+    addon.registry.savedVariables["Reagent"..i.."FiveStack"] = (i == 1)
+    addon.registry.savedVariables["Reagent"..i.."NoStacks"] = (i == 1)
+possessed[i] = {}
 end
 
 
@@ -160,7 +162,7 @@ function addon:RefreshReagents()
 	for i, buff in ipairs(spells) do
 		local possessed = possessed[i]
         wipe(possessed) -- TODO: wtf is this doing? Potentially remove, but haven't fully tested.
-        
+
         -- for every spell, get the reagent info
 		for index, spell in ipairs(buff.spells) do
 			local reagentID = buff.reagent
@@ -169,9 +171,9 @@ function addon:RefreshReagents()
 				queryTooltip:SetHyperlink("item:"..reagentID)
 			return
 			end
-			
-            -- if we know the spell, track the reagent. The way this works is that it only loads reagents for 
-            -- spells that you know into the tracking table, and as you learn more it shows more. The old implementation 
+
+            -- if we know the spell, track the reagent. The way this works is that it only loads reagents for
+            -- spells that you know into the tracking table, and as you learn more it shows more. The old implementation
             -- would load all possible ones, and grey out ones that you didn't know yet.
 			if IsSpellKnown(spell) then
                 possessed.reagentName = reagentName
@@ -210,34 +212,34 @@ function addon:UpdateButton()
 			else
 				icon:SetTexture(buff.reagentIcon)
 			end
-			
+
 			-- current number of reagents
 			button:SetText(GetItemCount(buff.reagentName))
-            
-            -- if there is another spell / button left in the array, change the anchor position for it and set 
+
+            -- if there is another spell / button left in the array, change the anchor position for it and set
             -- an appropriate offset
 			if nextButton then
 				nextAnchor = "RIGHT"
 				nextOffset = 6
 			end
-			
+
             button:SetWidth(icon:GetWidth() + button:GetTextWidth())    -- set the button width based off of
-                                                                        -- icon size and text size. 
+                                                                        -- icon size and text size.
 			totalWidth = totalWidth + button:GetWidth() -- add up all widths of buttons
-			
-            offset = offset + 1 -- without this, the titan panel segment for this addon becomes too small, and the next 
+
+            offset = offset + 1 -- without this, the titan panel segment for this addon becomes too small, and the next
                                 -- titan panel segment encroaches onto this addon
 			tracking = true
 		else
 			button:Hide()
 		end
-		
+
 		-- fix offset to next reagent tracker
 		if nextButton then
 			nextButton:SetPoint("LEFT", button, nextAnchor, nextOffset, 0)
 		end
 	end
-	
+
     -- show addon label (Reagent Tracker) if no tracking is enabled
 	local none = self.label
 	if tracking then
@@ -246,7 +248,7 @@ function addon:UpdateButton()
 		none:Show()
 		totalWidth = none:GetWidth() + 8
 	end
-	
+
 	-- adjust width so other plugins are properly offset
 	self:SetWidth(totalWidth + ((offset - 1) * 8))
 end
@@ -259,14 +261,16 @@ end
 --]]
 function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
     local info
-    
-    -- level 3  
+
+    -- level 3
     if _G["L_UIDROPDOWNMENU_MENU_LEVEL"] == 3 then
         for index, buff in ipairs(possessed) do
             local info1 = {};
             local info2 = {};
             local info3 = {};
             local info4 = {};
+            local info5 = {};
+            local info6 = {};
             local reagent = buff.reagentName
             if reagent then
                 if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == reagent.." Options" then    -- make sure it only builds buttons for the right reagent
@@ -277,8 +281,10 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
                     info1.func = function()
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", true);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", false);
-                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);    
-                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);              
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);
                     end
 
                     -- Button for Two Stacks
@@ -289,7 +295,9 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", false);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", true);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);
-                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);              
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);
                     end
 
                     -- Button for Three Stacks
@@ -300,25 +308,57 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", false);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", false);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", true);
-                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);              
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);
                     end
 
-                    -- Button to not autobuy any stacks
-                    info4.text = "Do not autobuy "..reagent
-                    info4.value = "Do not autobuy "..reagent
-                    info4.checked = TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks")
+                    -- Button for Four Stacks
+                    info4.text = "Buy 4 stacks of "..reagent
+                    info4.value = "Buy 4 stacks of "..reagent
+                    info4.checked = TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack")
                     info4.func = function()
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", false);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", false);
                         TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);
-                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", true);              
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", true);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);
                     end
-                    
+
+                    -- Button for Five Stacks
+                    info5.text = "Buy 5 stacks of "..reagent
+                    info5.value = "Buy 5 stacks of "..reagent
+                    info5.checked = TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack")
+                    info5.func = function()
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", true);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", false);
+                    end
+
+                    -- Button to not autobuy any stacks
+                    info6.text = "Do not autobuy "..reagent
+                    info6.value = "Do not autobuy "..reagent
+                    info6.checked = TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks")
+                    info6.func = function()
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack", false);
+                        TitanSetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."NoStacks", true);
+                    end
+
                     -- add all buttons
                     L_UIDropDownMenu_AddButton(info1, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
                     L_UIDropDownMenu_AddButton(info2, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
                     L_UIDropDownMenu_AddButton(info3, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
                     L_UIDropDownMenu_AddButton(info4, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+                    L_UIDropDownMenu_AddButton(info5, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+                    L_UIDropDownMenu_AddButton(info6, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
                 end
             end
         end
@@ -331,7 +371,7 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
 	if _G["L_UIDROPDOWNMENU_MENU_LEVEL"] == 2 then
 		if _G["L_UIDROPDOWNMENU_MENU_VALUE"] == "Autobuy Options" then
 			TitanPanelRightClickMenu_AddTitle(L["TITAN_PANEL_OPTIONS"], _G["L_UIDROPDOWNMENU_MENU_LEVEL"])
-            
+
             for index, buff in ipairs(possessed) do
                 info = {};
                 local reagent = buff.reagentName
@@ -350,10 +390,10 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
 		return
 	end
     -- /level 2
-	
+
 	-- level 1
     TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_REAGENTTRACKER_ID].menuText)
-	
+
     info = {};
 	info.notCheckable = true
 	info.text = "Autobuy Options";
@@ -361,7 +401,7 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
 	info.hasArrow = 1;
     L_UIDropDownMenu_AddButton(info);
     TitanPanelRightClickMenu_AddSpacer();
-    
+
 	-- add menu entry for each possessed spell
     for index, buff in ipairs(possessed) do
         info = {};
@@ -390,7 +430,7 @@ function TitanPanelRightClickMenu_PrepareReagentTrackerMenu()
 	end
 
 	TitanPanelRightClickMenu_AddSpacer()
-	
+
 	TitanPanelRightClickMenu_AddCommand("Hide", TITAN_REAGENTTRACKER_ID, TITAN_PANEL_MENU_FUNC_HIDE);
     -- /level 1
 
@@ -417,7 +457,7 @@ end
 --]]
 function TitanPanelReagentTracker_GetTooltipText()
 	local tooltipText = " "
-	
+
 	-- generate the reagent name and count for info in tooltip
 	for index, buff in ipairs(possessed) do
         local reagent = buff.reagentName
@@ -425,7 +465,7 @@ function TitanPanelReagentTracker_GetTooltipText()
 			tooltipText = format("%s\n%s\t%s", tooltipText, reagent, GetItemCount(reagent))
 		end
 	end
-	
+
 	if #tooltipText > 1 then
 		return tooltipText
 	else
@@ -444,7 +484,7 @@ function addon:BuyReagents()
    local shoppingCart = {};    -- list of items to buy
    local tableIndex = 1 -- because LUA handles tables poorly, deciding that a table/list which has 2 sequential nil values in it
                         -- has no values after those nils, we have to use a manual counter to correctly store items in a list
-    
+
     -- print list of all reagents that the addon has determined that the player needs, based on spells he/she knows
     if debug == true then
         DEFAULT_CHAT_FRAME:AddMessage("Player knows spells requiring the following reagents:");
@@ -461,7 +501,7 @@ function addon:BuyReagents()
     --for i = 1, table.getn(possessed) do   -- TODO: remove and test
     for index, buff in ipairs(possessed) do
         -- if the option is set to autobuy the reagent for this spell
-        if TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack") then
+        if TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack") or TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack") then
             if debug == true then DEFAULT_CHAT_FRAME:AddMessage("|cffeda55fReagent = "..buff.reagentName) end
             local totalCountOfReagent = 0
             local desiredCountOfReagent = 0
@@ -471,25 +511,29 @@ function addon:BuyReagents()
                 -- it should never be nil
                 _, _, _, _, _, _, _, maxStackOfReagent = GetItemInfo(buff.reagentName)    -- get the max a stack of this reagent can be
                                                                                                 -- just so that we buy one stack only
-                
 
-                -- bugfix for Issue #7 from Nihlolino, where GetItemInfo() returns a nil value for max item stack size, and subsequent 
-                -- arithmetic on a nil value fails. This shouldn't need to exist. A reagent can't stack to nil. 
+
+                -- bugfix for Issue #7 from Nihlolino, where GetItemInfo() returns a nil value for max item stack size, and subsequent
+                -- arithmetic on a nil value fails. This shouldn't need to exist. A reagent can't stack to nil.
                 if totalCountOfReagent ~= nil and maxStackOfReagent ~= nil then
                     if debug == true then DEFAULT_CHAT_FRAME:AddMessage("totalCountOfReagent = "..totalCountOfReagent.." and desiredCountOfReagent = "..desiredCountOfReagent) end
                     -- cater for buying multiple stacks of reagents
                     if TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."OneStack") then
-                        desiredCountOfReagent = maxStackOfReagent * 1 
+                        desiredCountOfReagent = maxStackOfReagent * 1
                     elseif TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."TwoStack") then
                         desiredCountOfReagent = maxStackOfReagent * 2
                     elseif TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."ThreeStack") then
                         desiredCountOfReagent = maxStackOfReagent * 3
-                    end   
+                    elseif TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FourStack") then
+                        desiredCountOfReagent = maxStackOfReagent * 4
+                    elseif TitanGetVar(TITAN_REAGENTTRACKER_ID, "Reagent"..index.."FiveStack") then
+                        desiredCountOfReagent = maxStackOfReagent * 5
+                    end
                 end
-                            
-            end                                                                                        
 
-            if debug == true then 
+            end
+
+            if debug == true then
                 if buff.reagentName ~= nil then
                     DEFAULT_CHAT_FRAME:AddMessage("Aiming to buy "..desiredCountOfReagent.." of "..buff.reagentName);
                     DEFAULT_CHAT_FRAME:AddMessage("Searching for "..buff.reagentName.." in bags");
@@ -504,7 +548,7 @@ function addon:BuyReagents()
                     for slot = 1, GetContainerNumSlots(bagID) do
                         -- get the item name and quantity of each item in that slot
                         local bagItemName, bagItemCount = getItemNameItemCountFromBag(bagID, slot);
-                                        
+
                         if bagItemName ~= nil and bagItemCount ~= nil then
                             -- if the ItemName returned from the bag slot matches a reagent we're tracking
                             if bagItemName == buff.reagentName then
@@ -513,9 +557,9 @@ function addon:BuyReagents()
                         end
                     end
                 end
-                if debug == true then DEFAULT_CHAT_FRAME:AddMessage("Found "..totalCountOfReagent.." "..buff.reagentName.." in bags") end 
+                if debug == true then DEFAULT_CHAT_FRAME:AddMessage("Found "..totalCountOfReagent.." "..buff.reagentName.." in bags") end
                 -- enclosing the entire reagent count vs desired reagent comparison in a not-nil if statement for Nihlolino's reported bug
-                -- this shouldn't need to exist. A reagent can't stack to nil. 
+                -- this shouldn't need to exist. A reagent can't stack to nil.
                 if totalCountOfReagent ~= nil and desiredCountOfReagent ~= nil and maxStackOfReagent ~= nil then
                     if totalCountOfReagent >= desiredCountOfReagent then
                         -- we got enough not gonna buy any more
@@ -530,13 +574,13 @@ function addon:BuyReagents()
             end
         end
     end
- 
+
     -- this is where we do the actual shopping
     -- at this point, shoppingCart looks like this:
     -- shoppingCart[x][1] = the reagent name
     -- shoppingCart[x][2] = how many reagents to buy
     -- shoppingCart[x][3] = max the reagent will stack to. Required for github issue #9
-    
+
     -- for each item in shoppingCart
     for i = 1, table.getn(shoppingCart) do
         -- pass the Reagent name and the required count to the buying function
@@ -544,14 +588,14 @@ function addon:BuyReagents()
             if debug == true then DEFAULT_CHAT_FRAME:AddMessage("Trying to buy "..shoppingCart[i][1]) end
             buyItemFromVendor(shoppingCart[i][1], shoppingCart[i][2], shoppingCart[i][3])
         end
-	end	
+	end
 end
 
 --[[
 -- **************************************************************************
 -- NAME : buyItemFromVendor(itemName, purchaseCount)
 -- DESC : Buy a quantity of an item from a vendor
---      : the logic is a inelegant: iterate through every item the vendor has, compare it to what we want, 
+--      : the logic is a inelegant: iterate through every item the vendor has, compare it to what we want,
 --      : and if it matches buy the desired amount
 -- VAR  : itemName = name of the item (reagent)
 --      : purchaseCount = amount of item to buy
@@ -565,7 +609,7 @@ function buyItemFromVendor(itemName, purchaseCount, maxStackSize)
         if name == itemName then
             -- buy the item that we're currently looking at, and the amount
             if debug == true then DEFAULT_CHAT_FRAME:AddMessage("Vendor has "..itemName..", calling Blizzard API to buy "..purchaseCount) end
-            
+
             -- Github issue #9: Blizzard does not support buying of multiple stacks in one API call.
             -- break down the purchasing into <= single stack purchases
             while (purchaseCount / maxStackSize) > 1 do
@@ -592,16 +636,16 @@ end
 --      : slotNumber = which slot (within a bag) is being checked
 -- **************************************************************************
 --]]
-function getItemNameItemCountFromBag(bagNumber, slotNumber)    
+function getItemNameItemCountFromBag(bagNumber, slotNumber)
     -- get the count and link of the item in this bag slot
     local _, itemCount, _, _, _, _, itemLink = GetContainerItemInfo(bagNumber, slotNumber);
     local itemName
-    
+
     -- if an item is actually there, get the name of the item, instead of the link
-    if itemCount ~= nil and itemLink ~= nil then 
+    if itemCount ~= nil and itemLink ~= nil then
         itemName = GetItemInfo(itemLink)
     end
-    
+
 	if itemName ~= nil then
 		return itemName, itemCount;
 	else

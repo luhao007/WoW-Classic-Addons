@@ -1,10 +1,10 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Titan Panel Development Team
-## Version: 1.3.4.20501
+## Version: 1.4.1.20502
 ## OptionalDeps: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu
 ## SavedVariables: TitanAll, TitanSettings, TitanSkins, ServerTimeOffsets, ServerHourFormat
 
-## Title: Titan Panel Classic |cff00aa001.3.4.20501|r
+## Title: Titan Panel Classic |cff00aa001.4.1.20502|r
 ## Notes: Adds a display bar on the top and/or bottom of the screen. Allows users to show and control information/launcher plugins.
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFFFFE00ATitanClassic|r
 ## Notes-zhCN: 在屏幕顶端/底端增加一个可视化侧边栏

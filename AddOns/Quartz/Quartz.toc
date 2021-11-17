@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Nevcairiel, Nymbia
-## Version: 3.6.6
+## Version: 3.6.7
 ## OptionalDeps: Ace3, LibDualSpec-1.0, LibWindow-1.1, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, SharedMedia
 ## SavedVariables: Quartz3DB
 

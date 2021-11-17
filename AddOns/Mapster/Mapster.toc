@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Nevcairiel
 ## Version: 1.9.5
 ## OptionalDeps: Ace3, LibWindow-1.1

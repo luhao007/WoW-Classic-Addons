@@ -1,13 +1,23 @@
-Decursive 2.7.8.3
+Decursive 2.7.8.4
 =================
+
+Decursive 2.7.8.4 (2021-11-12)
+------------------------------
+
+- TOC + library update
+
+- Add more information when the version of BugGrabber is wrong (very old
+  version) to help people to fix the issue by themselves.
+
+**New Way to support Decursive:** If you are an [ADA/Cardano](https://cardano.org) holder you can
+delegate your stake to my pool: [anfra.io](https://anfra.io)
+
+
 
 Decursive 2.7.8.3 (2021-07-04)
 ------------------------------
 
 - Retail TOC Update
-
-**New Way to support Decursive:** If you are an [ADA/Cardano](https://cardano.org) holder you can
-delegate your stake to my pool: [anfra.io](https://anfra.io)
 
 
 Decursive 2.7.8.2 (2021-05-20)

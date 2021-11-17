@@ -108,7 +108,7 @@ L.DisableStatusWhisper 		= "Deaktiviere 'status'-Flüsteranfragen für die gesam
 L.DisableGuildStatus 		= "Deaktiviere das Senden von Fortschrittsmeldungen an die Gilde für die gesamte Gruppe (nur als Gruppenleiter)"
 
 -- Tab: Barsetup
-L.BarSetup					= "Balkeneinstellungen"
+L.TabCategory_Timers		= "Balkeneinstellungen"
 L.BarTexture				= "Balkentextur"
 L.BarStyle					= "Balkenstil"
 L.BarDBM					= "DBM (mit Animationen)"
@@ -139,7 +139,6 @@ L.BarEndColorUI				= "Endfarbe (Nutzer)"
 L.Bar7Header				= "Einstellungen für Nutzerbalken"
 L.Bar7ForceLarge			= "Nutze immer großen Balken"
 L.Bar7CustomInline			= "Zeichen '!' einbetten"
-L.Bar7Footer				= "(keine Live-Aktual. der Dummy-Balken)"
 
 -- Tab: Timers
 L.AreaTitle_BarColors		= "Balkenfarben nach Timertyp"
@@ -214,17 +213,22 @@ L.EventFilterMythicMusic	= "Spiele keine Kampfmusik auf Schwierigkeitsgrad Mythi
 
 -- Tab: Global Filter
 L.Panel_SpamFilter			= "Deaktivierung von DBM-Funktionen"
+L.Area_SpamFilter_Anounces	= "Announce Global Disable & Filter Options"
 L.SpamBlockNoShowAnnounce	= "Zeige keinen Text und spiele keine Sounds für JEGLICHE allgemeine Meldungen"
 L.SpamBlockNoShowTgtAnnounce= "Zeige keinen Text und spiele keine Sounds für allgemeine ZIEL-Meldungen (wird durch obigen Filter überschrieben)"
 L.SpamBlockNoSpecWarnText	= "Zeige keinen Spezialwarnungstext, aber erlaube dennoch Sprachpacks (wird durch obigen Filter überschrieben)"
+
+L.Area_SpamFilter_Timers	= "Timer Global Disable & Filter Options"
 L.SpamBlockNoShowTimers		= "Zeige keine Mod-Timer (Boss Mod/Herausforderungsmodus/Gruppensuche/Wiedererscheinen)"
 L.SpamBlockNoShowUTimers	= "Zeige keine von anderen gesendeten Timer (benutzerdefiniert/Pull/Pause)"
+L.SpamBlockNoCountdowns		= "Spiele keine Countdown-Sounds"
+
+L.Area_SpamFilter_Misc		= "Misc Global Disable & Filter Options"
 L.SpamBlockNoSetIcon		= "Setze keine Zeichen auf Ziele"
 L.SpamBlockNoRangeFrame		= "Zeige kein Abstandsfenster/-radar an"
 L.SpamBlockNoInfoFrame		= "Zeige kein Infofenster an"
 L.SpamBlockNoHudMap			= "Zeige keine HudMap"
 L.SpamBlockNoNameplate		= "Zeige keine Namensplakettenauras"
-L.SpamBlockNoCountdowns		= "Spiele keine Countdown-Sounds"
 L.SpamBlockNoYells			= "Sende keine automatischen Schreie"
 L.SpamBlockNoNoteSync		= "Akzeptiere keine geteilten Notizen"
 
@@ -240,9 +244,9 @@ L.StripServerName			= "Entferne den Realmnamen der Spieler in Warnungen und Time
 L.Area_SpecFilter			= "Filtereinstellungen für Rollen"
 L.FilterTankSpec			= "Unterdrücke Warnungen für Tanks, falls deine aktuelle Spezialisierung keine \"Schutz\"-Spezialisierung ist (Hinweis: Diese Filterung sollte normalerweise nicht deaktiviert werden, da alle individuellen \"Spott\"-Warnungen nun standardmäßig aktiviert sind.)"
 L.FilterInterruptsHeader	= "Unterdrücke Warnungen für unterbrechbare Zauber basierend auf Verhaltenseinstellung"
-L.FilterInterrupts			= "Nicht von akt. Ziel/Fokusziel gewirkt (immer)"
-L.FilterInterrupts2			= "Nicht von akt. Ziel/Fokusziel gewirkt (immer) oder Unterbrechungen auf CD (nur Boss)"
-L.FilterInterrupts3			= "Nicht von akt. Ziel/Fokusziel gewirkt (immer) oder Unterbrech. auf CD (Boss & Trash)"
+L.FilterInterrupts			= "nicht von akt. Ziel/Fokusziel gewirkt (immer)"
+L.FilterInterrupts2			= "nicht von akt. Ziel/Fokusziel gewirkt (immer) oder Unterbrechungen auf CD (nur Boss)"
+L.FilterInterrupts3			= "nicht von akt. Ziel/Fokusziel gewirkt (immer) oder Unterbrech. auf CD (Boss & Trash)"
 L.FilterInterruptNoteName	= "Unterdrücke Warnungen für unterbrechbare Zauber (mit Zählung), falls die Warnung nicht deinen Namen in der nutzerdefinierten Notiz enthält"
 L.FilterDispels				= "Unterdrücke Warnungen für reinigbare Zauber, falls deine Reinigungen noch abklingen"
 L.FilterTrashWarnings		= "Unterdrücke alle \"Trash\"-Gegner Warnungen in normalen und heroischen Dungeons"
@@ -252,6 +256,7 @@ L.DontShowPTNoID			= "Blockiere Pull-Timer, die nicht aus deiner derzeitigen Zon
 L.DontShowPT				= "Zeige keinen Timerbalken für Pull-/Pausen-Timer"
 L.DontShowPTText			= "Zeige keine Mitteilungen für Pull-/Pausen-Timer im Chatfenster"
 L.DontPlayPTCountdown		= "Spiele keinen akustischen Countdown für Pull-, Pausen-, Kampf- und benutzerdefinierte Timer"
+L.DontShowPTCountdownText	= "Zeige keinen optischen Countdown für Pull-Timer"
 L.PT_Threshold				= "Zeige keinen opt. Countd. für Pausen-/Kampf-/Nutzer-Timer über: %d"
 
 L.Panel_HideBlizzard		= "Deaktivierung von Spielelementen"
@@ -265,17 +270,13 @@ L.HideTooltips				= "Verberge Tooltips vollständig während Bosskämpfen"
 L.DisableSFX				= "Deaktiviere Soundeffekte während Bosskämpfen"
 L.DisableCinematics			= "Verberge Videosequenzen"
 L.AfterFirst				= "Nach jeweils einmaligem Abspielen"
-L.Always					= ALWAYS
 L.CombatOnly				= "im Kampf deaktivieren (alle)"
 L.RaidCombat				= "im Kampf deaktivieren (nur Bosse)"
-L.TrivialContent			= "NICHT-mythischen Dungeons (<340)"--Basically anything below 340
-L.NormalRaider				= "Dungeons unter Mythisch+5 und in Schlachtzügen auf Schwierigkeitsgrad LFR (<355)"--Basically, anything below 355
-L.HeroicRaider				= "Dungeons unter Mythisch+10, SZ unter Heroisch, Nicht-Kriegsfront Weltbosse (<370)"--Basically anything below 370
-L.MythicRaider				= "allem unterhalb Schlachtzügen auf Schwierigkeitsgrad Mythisch (<385)"--Basically anything below 385
 
 L.Panel_ExtraFeatures		= "Sonstige Funktionen"
 --
 L.Area_ChatAlerts			= "Alarmmeldungen im Chatfenster"
+L.RoleSpecAlert				= "Zeige Alarmmeldung, wenn deine Beutespezialisierung nicht deiner aktuellen Spezialisierung beim Betreten eines Schlachtzugs entspricht"
 L.CheckGear					= "Zeige Alarmmeldung beim Pull, wenn deine angelegte Gegenstandsstufe viel niedriger als die in deinen Taschen (40+) oder deine Hauptwaffe nicht ausgerüstet ist"
 L.WorldBossAlert			= "Zeige Alarmmeldung, wenn auf deinem Realm Gildenmitglieder oder Freunde möglicherweise beginnen gegen Weltbosse zu kämpfen (ungenau falls Sender \"CRZed\" ist)"
 --
@@ -284,6 +285,7 @@ L.LFDEnhance				= "Spiele \"Bereitschaftscheck\"-Sound und lasse Anwendungsymbol
 L.WorldBossNearAlert		= "Spiele \"Bereitschaftscheck\"-Sound und lasse Anwendungsymbol aufblicken, wenn Weltbosse in deiner Nähe gepullt werden, die du brauchst"
 L.RLReadyCheckSound			= "Wenn ein Bereitschaftscheck durchgeführt wird, den Sound im Master- oder Dialog-Audiokanal abspielen und Anwendungsymbol aufblicken lassen"
 L.AFKHealthWarning			= "Spiele Alarmsound und lasse Anwendungsymbol aufblicken, wenn du Gesundheit verlierst, während du als nicht an der Tastatur (\"AFK\") markiert bist"
+--L.AutoReplySound			--translate? (misleading option..)
 --
 L.TimerGeneral 				= "Allgemeine Einstellungen für Timer"
 L.SKT_Enabled				= "Zeige Timer für Rekordzeit für aktuellen Kampf (falls verfügbar)"
@@ -296,8 +298,7 @@ L.AdvancedAutologBosses		= "Automatische Aufzeichnung von Bosskämpfen mit Addon
 L.LogOnlyNonTrivial			= "Nur Schlachtzugbosskämpfe der aktuellen Erweiterung aufzeichnen\n(ohne Schlachtzugsbrowser-/Dungeon-/Szenarienbosskämpfe/alte Spielinhalte)"
 --
 L.Area_3rdParty				= "Einstellungen für Addons von Drittanbietern"
-L.ShowBBOnCombatStart		= "Führe bei Kampfbeginn eine \"BigBrother\"-Buffprüfung durch"
-L.BigBrotherAnnounceToRaid	= "Verkünde Ergebnis der \"BigBrother\"-Buffprüfung zum Schlachtzug"
+--L.oRA3AnnounceConsumables	= "Announce oRA3 consumables check on combat start"
 L.Area_Invite				= "Einstellungen für Einladungen"
 L.AutoAcceptFriendInvite	= "Automatisch Gruppeneinladungen von Freunden akzeptieren"
 L.AutoAcceptGuildInvite		= "Automatisch Gruppeneinladungen von Gildenmitgliedern akzeptieren"

@@ -1,7 +1,7 @@
 local _;
 
 -- For initializing the minimap
-VUHDO_MM_SETTINGS = { };
+VUHDO_MM_SETTINGS = VUHDO_MM_SETTINGS or { };
 
 VUHDO_LibSharedMedia = LibStub("LibSharedMedia-3.0");
 VUHDO_LibDataBroker = LibStub("LibDataBroker-1.1", true);
@@ -105,6 +105,12 @@ function VUHDO_initFuBar()
 
 		-- Minimap icon provided by LibDBIcon
 		if VUHDO_LibDBIcon then
+			-- if the old configuration still exists, migrate to the LibDBIcon database
+			if VUHDO_CONFIG["SHOW_MINIMAP"] ~= nil then
+				VUHDO_MM_SETTINGS["hide"] = not VUHDO_forceBooleanValue(VUHDO_CONFIG["SHOW_MINIMAP"]);
+				VUHDO_CONFIG["SHOW_MINIMAP"] = nil;
+			end
+
 			VUHDO_LibDBIcon:Register("VuhDo", minimapObject, VUHDO_MM_SETTINGS);
 
 			VUHDO_initMinimap();
@@ -233,7 +239,7 @@ end
 function VUHDO_initShowMinimap()
 
 	if VUHDO_LibDataBroker and VUHDO_LibDBIcon then
-		if VUHDO_CONFIG["SHOW_MINIMAP"] then
+		if not VUHDO_MM_SETTINGS["hide"] then
 			VUHDO_LibDBIcon:Show("VuhDo");
 		else
 			VUHDO_LibDBIcon:Hide("VuhDo");

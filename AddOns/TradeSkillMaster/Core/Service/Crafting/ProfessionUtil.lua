@@ -151,6 +151,7 @@ end
 function ProfessionUtil.GetNumCraftable(craftString, level)
 	local num, numAll = math.huge, math.huge
 	local spellId = CraftString.GetSpellId(craftString)
+	level = level or CraftString.GetLevel(craftString)
 	for i = 1, ProfessionUtil.GetNumMats(spellId, level) do
 		local matItemLink, _, _, quantity = ProfessionUtil.GetMatInfo(spellId, i, level)
 		local itemString = ItemString.Get(matItemLink)
@@ -371,6 +372,7 @@ end
 function ProfessionUtil.HasCooldown(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
 	if TSM.IsWowClassic() then
+		spellId = TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString) or spellId
 		return GetTradeSkillCooldown(spellId) and true or false
 	else
 		return select(2, C_TradeSkillUI.GetRecipeCooldown(spellId)) and true or false
@@ -380,6 +382,7 @@ end
 function ProfessionUtil.GetRemainingCooldown(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
 	if TSM.IsWowClassic() then
+		spellId = TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString) or spellId
 		return GetTradeSkillCooldown(spellId)
 	else
 		return C_TradeSkillUI.GetRecipeCooldown(spellId)

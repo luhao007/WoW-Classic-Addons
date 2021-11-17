@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: Aoikaze
 ## Version: 3.30
 ## SavedVariables: LootMonitorDB

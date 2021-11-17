@@ -1,6 +1,7 @@
-## Interface: 20501
-## Author: Nitram, Tandanu and QartemisT
-## RequiredDeps: DBM-Core
+## Interface: 20502
+## Author: MysticalOS, QartemisT
+## Version: edca2ba
+## Dependencies: DBM-Core
 ## LoadOnDemand: 1
 ## DefaultState: enabled
 
@@ -9,7 +10,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF0055FF设置|r
 ## Notes-zhCN: Deadly Boss Mods的设置界面
 
-## X-Min-Interface: 20501
+## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 
 localization.en.lua

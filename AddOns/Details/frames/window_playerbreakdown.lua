@@ -58,9 +58,26 @@ local spellInfoSettings = {
 	amount = 6,
 }
 
+_detalhes.player_details_tabs = {}
+info.currentTabsInUse =  {}
+
 ------------------------------------------------------------------------------------------------------------------------------
 --self = instancia
 --jogador = classe_damage ou classe_heal
+
+function Details:GetBreakdownTabsInUse()
+	return info.currentTabsInUse
+end
+
+function Details:GetBreakdownTabByName(tabName, tablePool)
+	tablePool = tablePool or _detalhes.player_details_tabs
+	for index = 1, #tablePool do
+		local tab = tablePool[index]
+		if (tab.tabname == tabName) then
+			return tab, index
+		end
+	end
+end
 
 --return the combat being used to show the data in the opened breakdown window
 function Details:GetCombatFromBreakdownWindow()
@@ -214,13 +231,13 @@ function _detalhes:AbreJanelaInfo (jogador, from_att_change, refresh, ShiftKeyDo
 	gump:HidaAllDetalheInfo()
 	
 	gump:JI_AtualizaContainerBarras (-1)
-	
+
 	local classe = jogador.classe
-	
+
 	if (not classe) then
 		classe = "monster"
 	end
-	
+
 	--info.classe_icone:SetTexture ("Interface\\AddOns\\Details\\images\\"..classe:lower()) --> top left
 	info.classe_icone:SetTexture ("Interface\\AddOns\\Details\\images\\classes") --> top left
 	info.SetClassIcon (jogador, classe)
@@ -240,27 +257,88 @@ function _detalhes:AbreJanelaInfo (jogador, from_att_change, refresh, ShiftKeyDo
 			end
 		end
 	end
-	
-	info:ShowTabs()
-	Details.FadeHandler.Fader (info, 0)
+
+	--info:ShowTabs()
+
+	Details.FadeHandler.Fader(info, 0)
 	Details:UpdateBreakdownPlayerList()
-	
+
 	--check which tab was selected and reopen that tab
-	if (info.selectedTab == "Summary") then
-		return jogador:MontaInfo()
-	else
-		--open tab
-		for index = 1, #_detalhes.player_details_tabs do
-			local tab = _detalhes.player_details_tabs [index]
-			if (tab:condition (info.jogador, info.atributo, info.sub_atributo)) then
-				if (tab.tabname == info.selectedTab) then
-					--_detalhes.player_details_tabs [index]:Click()
-					--_detalhes.player_details_tabs [index].onclick()
-					_detalhes.player_details_tabs [index]:OnShowFunc()
+--	if (info.selectedTab == "Summary") then
+--		return jogador:MontaInfo()
+--	else
+
+	--open tab
+	local tabsShown = {}
+	local tabsReplaced = {}
+	local tabReplacedAmount = 0
+
+	table.wipe(info.currentTabsInUse)
+
+	for index = 1, #_detalhes.player_details_tabs do
+		local tab = _detalhes.player_details_tabs[index]
+		tab.replaced = nil
+		tabsShown[#tabsShown+1] = tab
+	end
+
+	for index = 1, #tabsShown do
+		--get the tab
+		local tab = tabsShown[index]
+
+		if (tab.replaces) then
+			local attributeList = tab.replaces.attributes
+			if (attributeList[info.atributo]) then
+				if (attributeList[info.atributo][info.sub_atributo]) then
+					local tabReplaced, tabIndex = Details:GetBreakdownTabByName(tab.replaces.tabNameToReplace, tabsShown)
+					if (tabReplaced and tabIndex < index) then
+
+						tabReplaced:Hide()
+						tabReplaced.frame:Hide()
+						tinsert(tabsReplaced, tabReplaced)
+
+						tremove(tabsShown, tabIndex)
+						tinsert(tabsShown, tabIndex, tab)
+
+						if (tabReplaced.tabname == info.selectedTab) then
+							info.selectedTab = tab.tabname
+						end
+
+						tabReplaced.replaced = true
+						tabReplacedAmount = tabReplacedAmount  + 1
+					end
 				end
 			end
 		end
 	end
+
+	local newTabsShown = {}
+	local tabAlreadyInUse = {}
+
+	for index = 1, #tabsShown do
+		if (not tabAlreadyInUse[tabsShown[index].tabname]) then
+			tabAlreadyInUse[tabsShown[index].tabname] = true
+			tinsert(newTabsShown, tabsShown[index])
+		end
+	end
+
+	tabsShown = newTabsShown
+	info.currentTabsInUse = newTabsShown
+
+	info:ShowTabs()
+
+	local shownTab
+	for index = 1, #tabsShown do
+		local tab = tabsShown[index]
+		if (tab:condition(info.jogador, info.atributo, info.sub_atributo)) then
+			if (info.selectedTab == tab.tabname) then
+				tabsShown[index]:Click()
+				tabsShown[index]:OnShowFunc()
+				shownTab = tabsShown[index]
+			end
+		end
+	end
+
+	shownTab:Click()
 end
 
 -- for beta todo: info background need a major rewrite
@@ -1197,8 +1275,8 @@ local elvui_skin = function()
 	window.bg1:SetHorizTile (true)
 	window.bg1:SetSize (PLAYER_DETAILS_WINDOW_WIDTH, PLAYER_DETAILS_WINDOW_HEIGHT)
 	
-	window:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
-	window:SetBackdropColor (1, 1, 1, 1)
+	window:SetBackdrop ({edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1, bgFile = [[Interface\AddOns\Details\images\background]]})
+	window:SetBackdropColor (1, 1, 1, 0.3)
 	window:SetBackdropBorderColor (0, 0, 0, 1)
 	window.bg_icone_bg:Hide()
 	window.bg_icone:Hide()
@@ -1493,8 +1571,11 @@ local elvui_skin = function()
 	
 	--class icon
 	window.SetClassIcon = function (player, class)
+		if (player.spellicon) then
+			window.classe_icone:SetTexture(player.spellicon)
+			window.classe_icone:SetTexCoord(.1, .9, .1, .9)
 	
-		if (player.spec) then
+		elseif (player.spec) then
 			window.classe_icone:SetTexture ([[Interface\AddOns\Details\images\spec_icons_normal_alpha]])
 			window.classe_icone:SetTexCoord (_unpack (_detalhes.class_specs_coords [player.spec]))
 			--esta_barra.icone_classe:SetVertexColor (1, 1, 1)
@@ -1858,7 +1939,7 @@ function gump:CriaJanelaInfo()
 			end, 
 			nil, --[4] fill function
 			function() --[5] onclick
-				for _, tab in _ipairs (_detalhes.player_details_tabs) do
+				for _, tab in _ipairs (Details:GetBreakdownTabsInUse()) do
 					tab.frame:Hide()
 				end
 			end,
@@ -4871,12 +4952,12 @@ function gump:CriaJanelaInfo()
 			local secondRowIndex = 1
 			local breakLine = 6 --th tab it'll start the second line
 
-			for index = 1, #_detalhes.player_details_tabs do
+			local tablePool = Details:GetBreakdownTabsInUse()
+
+			for index = 1, #tablePool do
+				local tab = tablePool[index]
 				
-				local tab = _detalhes.player_details_tabs [index]
-				
-				if (tab:condition (info.jogador, info.atributo, info.sub_atributo)) then
-				
+				if (tab:condition(info.jogador, info.atributo, info.sub_atributo) and not tab.replaced) then
 					--test if can show the tutorial for the comparison tab
 					if (tab.tabname == "Compare") then
 						--_detalhes:SetTutorialCVar ("DETAILS_INFO_TUTORIAL1", false)
@@ -4928,14 +5009,14 @@ function gump:CriaJanelaInfo()
 			end
 			
 			if (tabsShown < 2) then
-				_detalhes.player_details_tabs[1]:SetPoint ("BOTTOMLEFT", info.container_barras, "TOPLEFT",  490 - (94 * (1-0)), 1)
+				tablePool[1]:SetPoint ("BOTTOMLEFT", info.container_barras, "TOPLEFT",  490 - (94 * (1-0)), 1)
 			end
 			
 			--selected by default
-			_detalhes.player_details_tabs[1]:Click()
+			tablePool[1]:Click()
 		end
 
-		este_gump:SetScript ("OnHide", function (self)
+		este_gump:SetScript ("OnHide", function(self)
 			_detalhes:FechaJanelaInfo()
 			for _, tab in _ipairs (_detalhes.player_details_tabs) do
 				tab:Hide()
@@ -4952,15 +5033,13 @@ end
 
 info.selectedTab = "Summary"
 
-_detalhes.player_details_tabs = {}
-
-function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, fillfunction, onclick, oncreate, iconSettings)
+function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, fillfunction, onclick, oncreate, iconSettings, replace)
 	if (not tabname) then
 		tabname = "unnamed"
 	end
-
+	
 	--create a button for the tab
-	local newTabButton = gump:CreateButton (info, onclick, 20, 20)
+	local newTabButton = gump:CreateButton (info, onclick, 20, 20, nil, nil, nil, nil, nil, "DetailsPlayerBreakdownWindowTab" .. tabname)
 	newTabButton:SetTemplate ("DETAILS_TAB_BUTTON_TEMPLATE")
 	if (tabname == "Summary") then
 		newTabButton:SetTemplate ("DETAILS_TAB_BUTTONSELECTED_TEMPLATE")
@@ -4982,7 +5061,7 @@ function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, f
 	newTabButton.frame:SetFrameStrata ("HIGH")
 	newTabButton.frame:SetFrameLevel (info:GetFrameLevel()+5)
 	newTabButton.frame:EnableMouse (true)
-	
+
 	if (iconSettings) then
 		local texture = iconSettings.texture
 		local coords = iconSettings.coords
@@ -5029,6 +5108,7 @@ function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, f
 	
 	newTabButton.frame:Hide()
 	
+	newTabButton.replaces = replace
 	_detalhes.player_details_tabs [#_detalhes.player_details_tabs+1] = newTabButton
 	
 	if (not onclick) then
@@ -5036,7 +5116,7 @@ function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, f
 		newTabButton.OnShowFunc = function (self) 
 			self = self.MyObject or self
 			
-			for _, tab in _ipairs (_detalhes.player_details_tabs) do
+			for _, tab in _ipairs (Details:GetBreakdownTabsInUse()) do
 				tab.frame:Hide()
 				tab:SetTemplate ("DETAILS_TAB_BUTTON_TEMPLATE")
 			end
@@ -5052,7 +5132,7 @@ function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, f
 		newTabButton.OnShowFunc = function (self) 
 			self = self.MyObject or self
 			
-			for _, tab in _ipairs (_detalhes.player_details_tabs) do
+			for _, tab in _ipairs (Details:GetBreakdownTabsInUse()) do
 				tab.frame:Hide()
 				tab:SetTemplate ("DETAILS_TAB_BUTTON_TEMPLATE")
 			end
@@ -5085,6 +5165,7 @@ function _detalhes:CreatePlayerDetailsTab (tabname, localized_name, condition, f
 		end
 	end)
 	
+	return newTabButton, newTabButton.frame
 end
 
 function _detalhes.playerDetailWindow:monta_relatorio (botao)
@@ -5743,7 +5824,7 @@ function gump:CriaNovaBarraInfo1 (instancia, index)
 	esta_barra.targets.texture:SetAllPoints()
 	esta_barra.targets.texture:SetDesaturated (true)
 	esta_barra.targets:SetAlpha (.7)
-	esta_barra.targets.texture:SetAlpha (.7)
+	esta_barra.targets.texture:SetAlpha (1)
 	esta_barra.targets:SetScript ("OnEnter", target_on_enter)
 	esta_barra.targets:SetScript ("OnLeave", target_on_leave)
 	
@@ -5762,7 +5843,7 @@ function gump:CriaNovaBarraInfo1 (instancia, index)
 	esta_barra.icone:SetHeight (CONST_BAR_HEIGHT)
 	esta_barra.icone:SetPoint ("RIGHT", esta_barra.textura, "LEFT", CONST_BAR_HEIGHT + 2, 0)
 	
-	esta_barra:SetAlpha(0.9)
+	esta_barra:SetAlpha(1)
 	esta_barra.icone:SetAlpha (1)
 	
 	esta_barra.isMain = true

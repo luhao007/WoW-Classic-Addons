@@ -3,16 +3,19 @@ import os
 from pathlib import Path
 
 import instawow.cli
-from instawow.config import Config
-from instawow.models import Pkg
-from instawow.resolvers import Defn, MultiPkgModel
+import instawow.db
+from instawow.config import Config, setup_logging
+from instawow.models import Pkg, PkgList
+from instawow.resolvers import Defn
 from instawow.results import PkgUpToDate
-from instawow.manager import CliManager
+from instawow.manager import Manager
+
+import sqlalchemy
 
 
 class InstawowManager:
 
-    def __init__(self, game_flavour, lib=False):
+    def __init__(self, game_flavour: str, lib: bool = False):
         """Interface between instawow and main program.
 
         :param game_flavor str: 'classic' or 'retail' or 'vanilla_classic'
@@ -27,56 +30,76 @@ class InstawowManager:
         config = Config(addon_dir=addon_dir, game_flavour=game_flavour, profile=self.profile)
         config.write()
 
-        instawow.cli.setup_logging(config)
-        instawow.cli._override_asyncio_loop_policy()
+        setup_logging(config)
+        instawow.cli._apply_patches()
 
-        self.manager = CliManager.from_config(config)
+        self.manager = Manager.from_config(config)
 
     def get_addons(self):
-        query = self.manager.database.query(Pkg)
-        return query.order_by(Pkg.source, Pkg.name).all()
+        query = self.manager.database.execute(
+            sqlalchemy.select(instawow.db.pkg)
+            .order_by(instawow.db.pkg.c.source, instawow.db.pkg.c.name)
+        )
+        if not query:
+            return []
+
+        return [Pkg.from_row_mapping(self.manager.database, p) for p in query.mappings().all()]
+
+    def to_defn(self, addon: str, strategy: str = None) -> Defn:
+        pair = self.manager.pair_uri(addon) or ('*', addon)
+        ret = Defn(*pair)
+        if strategy:
+            ret = ret.with_(strategy=strategy)
+        return ret
+
+    def to_defns(self, addons: str | list[str] | list[tuple]) -> list[Defn]:
+        if isinstance(addons, str):
+            return [self.to_defn(addons)]
+
+        return [self.to_defn(addon) if isinstance(addon, str) else self.to_defn(*addon) for addon in addons]
 
     def update(self):
         addons = [Defn.from_pkg(p) for p in self.get_addons()]
-        results = self.manager.run(self.manager.update(addons, False))
+        results = instawow.cli.run_with_progress(self.manager.update(addons, False))
         report = instawow.cli.Report(results.items(),
                                      lambda r: not isinstance(r, PkgUpToDate))
         if str(report):
             print(report)
         else:
-            print('All {} addons are up-to-date!'.format(self.profile))
+            print(f'All {self.profile} addons are up-to-date!')
 
-    def install(self, addons, strategy=None):
-        addons = instawow.cli.parse_into_defn(self.manager, addons)
-        if isinstance(addons, Defn):
-            addons = [addons]
+    def install(self, addons: str | list[str], reinstall=False, strategy=None):
+        defns = self.to_defns(addons)
 
         if '_lib' in self.profile:
-            addons = [Defn.with_strategy(d, 'any_flavour' if d.source == 'curse' else 'default') for d in addons]
+            defns = [d.with_(strategy='any_flavour' if d.source == 'curse' else 'default') for d in defns]
         elif strategy:
-            addons = [Defn.with_strategy(d, strategy) for d in addons]
-        results = self.manager.run(self.manager.install(addons, replace=False))
+            defns = [d.with_(strategy=strategy) for d in defns]
+
+        if reinstall:
+            results = instawow.cli.run_with_progress(self.manager.remove(defns, False))
+            print(instawow.cli.Report(results.items()))
+        results = instawow.cli.run_with_progress(self.manager.install(defns, replace=False))
         print(instawow.cli.Report(results.items()))
 
-    def remove(self, addons):
-        addons = instawow.cli.parse_into_defn(self.manager, addons)
-        if isinstance(addons, Defn):
-            addons = [addons]
-        results = self.manager.run(self.manager.remove(addons, False))
+    def remove(self, addons: str | list[str]):
+        defns = self.to_defns(addons)
+
+        results = instawow.cli.run_with_progress(self.manager.remove(defns, False))
         print(instawow.cli.Report(results.items()))
 
     def show(self):
         for addon in self.get_addons():
-            print('{}: {}'.format(addon.name, addon.version))
+            print(f'{addon.name}: {addon.version}')
 
     def export(self):
-        with open(f'{self.profile}.json', 'w') as file:
-            file.write(MultiPkgModel.parse_obj(self.get_addons()).json(indent=2))
+        with open(f'{self.profile}.json', 'w', encoding='utf-8') as file:
+            file.write(PkgList.parse_obj(self.get_addons()).json(indent=2))
 
-    def reinstall(self, filename):
+    def reinstall(self, filename: str):
         with open(filename, 'rb') as file:
             addons = json.loads(file.read())
-        addons = [(a['options']['strategy'], f"{a['source']}:{a['slug']}") for a in addons]
-        addons = list(instawow.cli.parse_into_defn_with_strategy(self.manager, addons))
-        results = self.manager.run(self.manager.install(addons, replace=True))
+        addons = [(f"{a['source']}:{a['slug']}", a['options']['strategy']) for a in addons]
+        addons = [self.to_defn(addon, strategy) for addon, strategy in addons]
+        results = instawow.cli.run_with_progress(self.manager.install(addons, replace=True))
         print(instawow.cli.Report(results.items()))

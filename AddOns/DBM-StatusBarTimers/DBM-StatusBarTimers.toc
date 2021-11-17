@@ -1,4 +1,6 @@
-## Interface: 20501
+## Interface: 20502
+## Author: MysticalOS, QartemisT
+## Version: edca2ba
 ## LoadOnDemand: 0
 ## SavedVariables: DBT_AllPersistentOptions
 ## DefaultState: enabled
@@ -8,8 +10,7 @@
 ## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0状态条计时器|r
 ## Notes-zhCN: DBM 状态条计时器函数库
 
-## X-Min-Interface: 20501
-## X-Website: http://www.deadlybossmods.com
+## X-Website: https://deadlybossmods.com
 ## X-Part-Of: DBM-Core
 
 DBT.lua

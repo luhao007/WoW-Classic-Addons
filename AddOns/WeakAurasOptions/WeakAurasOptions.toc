@@ -1,6 +1,6 @@
-## Interface: 20501
+## Interface: 20502
 ## Author: The WeakAuras Team
-## Version: 3.5.0
+## Version: 3.7.3
 ## Dependencies: WeakAuras
 ## LoadOnDemand: 1
 ## SavedVariables: WeakAurasOptionsSaved
@@ -50,7 +50,6 @@ BuffTrigger2.lua
 GenericTrigger.lua
 
 WeakAurasOptions.lua
-ExternalAddons.lua
 ConditionOptions.lua
 AuthorOptions.lua
 
