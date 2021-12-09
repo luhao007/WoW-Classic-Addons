@@ -254,11 +254,7 @@ function private.CreateButtonOnClick(button)
 		SetBinding(modifierStr.."MOUSEWHEELDOWN", BINDING_NAME, bindingMode)
 	end
 
-	if TSM.IsWowVanillaClassic() then
-		AttemptToSaveBindings(CHARACTER_BINDING_SET)
-	else
-		SaveBindings(CHARACTER_BINDING_SET)
-	end
+	SaveBindings(CHARACTER_BINDING_SET)
 
 	button:SetText(GetMacroInfo(MACRO_NAME) and L["Update existing macro"] or L["Create macro"])
 		:Draw()

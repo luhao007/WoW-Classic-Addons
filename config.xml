@@ -1315,6 +1315,10 @@
 		<Notes>伤害统计窗口</Notes>
 		<Category>战斗</Category>
 	</Addon>
+	<Addon name="TalentEmu">
+		<Title>天赋模拟器</Title>
+		<Category>战斗</Category>
+	</Addon>
 	<Addon name="TalentSetManager">
 		<Title>天赋设置</Title>
 		<Notes>存储和载入天赋设置</Notes>

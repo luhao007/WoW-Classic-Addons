@@ -88,13 +88,21 @@ new, del = lib.new, lib.del
 
 -- Make the frame match the tooltip
 local function InitializeFrame(frame)
-	local backdrop = GameTooltip:GetBackdrop()
+	if TooltipBackdropTemplateMixin then
+		frame.layoutType = GameTooltip.layoutType
+		if GameTooltip.layoutType then
+			frame.NineSlice:SetCenterColor(GameTooltip.NineSlice:GetCenterColor())
+			frame.NineSlice:SetBorderColor(GameTooltip.NineSlice:GetBorderColor())
+		end
+	else
+		local backdrop = GameTooltip:GetBackdrop()
 
-	frame:SetBackdrop(backdrop)
+		frame:SetBackdrop(backdrop)
 
-	if backdrop then
-		frame:SetBackdropColor(GameTooltip:GetBackdropColor())
-		frame:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+		if backdrop then
+			frame:SetBackdropColor(GameTooltip:GetBackdropColor())
+			frame:SetBackdropBorderColor(GameTooltip:GetBackdropBorderColor())
+		end
 	end
 	frame:SetScale(GameTooltip:GetScale())
 end
@@ -311,7 +319,9 @@ end
 -- Pool methods
 local frameCount = 0
 function NewDropdownFrame()
-	local frame = CreateFrame("Frame", "LibDropdownFrame" .. frameCount, UIParent, BackdropTemplateMixin and "BackdropTemplate")
+	local template = (TooltipBackdropTemplateMixin and "TooltipBackdropTemplate") or (BackdropTemplateMixin and "BackdropTemplate")
+
+	local frame = CreateFrame("Frame", "LibDropdownFrame" .. frameCount, UIParent, template)
 	frameCount = frameCount + 1
 	frame:SetPoint("CENTER", UIParent, "CENTER")
 	frame:SetWidth(10)

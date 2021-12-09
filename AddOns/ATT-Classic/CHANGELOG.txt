@@ -1,100 +1,51 @@
-0.7.6 Release Notes
+0.7.7 Release Notes
 Contributions made by Crieve:
-* Known By now sorted by the name rather than the colorized text.
-* Viran is now an Exterminator!
-* The amount of spillover Goblin rep a non-human gets is actually 2.5, not 2.0.
-* Gnubs is now an Exterminator!
-* Added a fancy tooltip for Winterspring Trainers.
-* Included the Classic reputation values for Wintersaber Trainers.
-* Added objectives for the repeatable Wintersaber quests.
-* Fixed the Stranglethorn Vale Candy Bucket.
-* Fixed more Candy Bucket coordinates for Alliance and Neutral locations.
-* Added the inner door key to Dire Maul.
-* Added the ogre suit cost as well.
-* BoP Engineering craftables now require the profession.
-* Added timeline values for crafted gathering items.
-* Added timeline values for classic enchanting items.
-* Updated Classic Engineering. Added the Battle Pets filter constant.
-* Added all Classic Jewelcrafting crafted items.
-* Added TBC crafted Jewelcrafting (non-gem) items.
-* Added TBC Alchemy crafted items.
-* Added a bunch of unsorted Jewelcrafting recipes.
-* Fixed a number of Jewelcrafting recipes in Hellfire Peninsula.
-* ...
-* ...
-* Added Inscription. (for Wrath Classic)
-* Added timeline data for Classic Tailoring crafted items. Burning Crusade crafted items now point directly to the retail ATT DB now that the data has been synced.
-* Added timeline data for Classic Leatherworking crafted items.
-* Updated the Darkmoon Faire cards in preparation for Inscription.
-* Updated classic Blacksmithing crafted items.
-* Classic crafted items now point directly to the retail ATT DB now that the data has been synced.
-* Reverted the section change for the engineering toys for the dynamic Toys section's autosort algorithm.
-* Updated the format of the Tier 0.5 Sets to use proper objectives. This should directly impact your Outdoor Zones completion by hiding quest items until you're on the quests.
-* Tier 0.5 Sets now references the Retail DB and has been sync'd.
-* Updated the format of the Classic World Bosses and added timelines. Classic World Bosses now reference the Retail DB and have been sync'd.
-* Updated Molten Core to use proper objectives.
-* Updated Onyxia's Lair and Molten Core with timelines and objectives. They also now reference the Retail DB and have been sync'd.
-* BWL now resides on the Retail DB.
-* Updated ZG to reference the Retail DB.
-* Updated Ruins of Ahn'Qiraj to use a different icon that's available in Classic and use the Retail DB.
-* Updated Temple of Ahn'Qiraj to use the Retail DB.
-* Cleaned up empty categories in the dynamic lists.
-* Fixed an issue with objectives with coordinates.
-* Fixed Rusted Iron Key.
-* Fixed Kormok in the Tier 0.5 quest chain. Sprite Darter Egg and Power Converter are now Alliance Only!
-* The regular Flying Broom never made it into Classic.
-* Added a template for the Achievement object type. Added Old Crafty and Old Ironjaw and their associated Achievements. Non-Reputation Achievements now support the account wide setting.
-* Updated the Stranglethorn Fishing Extravaganza.
-* Added Achievement Category Object types. Removed an unnecessary coordinate from the header.
-* Added achievement category templates.
-* Added two achievements to Zul'Gurub. Added most of the Fishing achievements.
-* Provider tooltip data now looks better and obeys filtering requirements.
-* ...
-* Achievements now appear in the Profession Mini List if they are properly tagged.
-* Enabled some of the holiday achievements for TBC Classic now that it supports them.
-* Added the Avast Ye, Admiral! achievement.
-* The World Event files are now sync'd with the Retail database.
-* The Promotion files are now sync'd with the Retail database.
-* Added map data to Steelscale Crushfish. Items linked to a profession linked to a map now appear in the profession for that map.
-* Added Achievement Category Constants.
-* The achievement section is now sorted.
-* Added Anesthetic Poison.
-* Greatly reduced the chance of the achievement sorting to bug out.
-* The Stockade no longer appears in the Stormwind City mini list.
-* Fixed a coordinate in Nagrand.
-* Added the "Removed With Patch" field. (This is not 100% yet!)
-* Cenarion Expedition now shows up in Steamvaults and SP.
-* Concerted Efforts do not give rep in TBC. :(
-* Added some missing librams.
-* Outland Factions now appear inside their respective instances. Added a tooltip to Nagrand Factions.
-* Consortium Warbeads are actually less.
-* Fixed references to Terokkar Forest.
-* Zul'Farrak has been sync'd with the Retail database.
-* Wailing Caverns has been sync'd with the Retail database.
-* The Stockade has been sync'd with the Retail database.
-* Ragefire Chasm has been sync'd with the Retail database.
-* Razorfen Downs has been sync'd with the Retail database.
-* Razorfen Kraul has been sync'd with the Retail database.
-* Uldaman has been sync'd with the Retail database.
-* Added the achievement for killing Zul'jin.
-* Added the achievement for killing Illidan.
-* Added the achievement for killing Kael'Thas.
-* Added the achievement for killing Lady Vashj.
-* Added the achievements for killing Mag and Gruul.
-* Added a few missing dungeon quests and achievement collection logic for all outland dungeon achievements involving bosses that have kill quests associated with them.
-* Added achievement collection logic for all classic dungeon achievements involving bosses that have kill quests associated with them.
-* Added placeholder achievements for all of the Profession Achievements.
-* Fixed some missing racial assignments for Children's Week. Added Mounts as a collectible Thing.
-* The mount dynamic category now filters mounts according to racial and class hierarchy.
-* Mounts that are common between factions, but use items that are faction specific should no longer be hidden in the dynamic mount section.
-* The Flying Machine no longer incorrectly marks itself collected when you have the Flying Machine spell to craft it learned.
-* Magic Broom no longer appears as a collectible mount.
-* Mounts as a Thing is no longer activated by default and does not count against Insane Mode.
+* The Temple of Atal'hakkar has been sync'd with the Retail database.
+* Slightly adjusted the format of Dire Maul North. (rework coming soon)
+* Added the Gurubashi Arena Master achievements.
+* Deadmines has been sync'd with the Retail database.
+* Fixed the "removed with patch" data for legacy onyxia for classic ATT.
+* Fixed the Paladin and Warlock mounts in Classic to show up in the dynamic section. Also cleaned up some of the parts of Scholo and Dire Maul.
+* Maps can have their name overridden by using a header value (maybe change to something better)
+* Fixed a bug caused by contributors adding constants to retail and not adding them to classic too.
+* The dynamic sections will now find the most accessible version of the thing for the current character from its sources and use that for its tooltip.
+* Added the hidden Steamweedle Cartel reputation to Dire Maul.
+* Free Knot and the Zapper Fuel quests now remain in the mini list until Exalted with Steamweedle.
+* Updated the Steamweedle tooltip. The Gordok Ogre Suit now remains in the mini list until Exalted Steamweedle.
+* Steamweedle Cartel no longer counts toward your 35 Exalted Reputations achievement.
+* Fixed a bug with Scryers/Aldor not properly showing when Account Wide Reputation is selected.
+* Slightly updated the format of quests in Dire Maul. (rework incoming)
+* Factions now properly use trackable.
+* Enchant Weapon - Major Striking... Phase 3? Please? Blizzard?
+* Journey to Honor Hold / Journey to Thrallmar now marked as breadcrumbs.
+* Dire Maul has been sync'd with the Retail database. Added the Dreadsteed of Xoroth and Agent of the Shen'dralar achievements.
+* Fixed the Turbo Flying Machine spellID.
+* Shadowfang Keep has been sync'd with the Retail database.
+* Finalized SFK.
+* Maraudon has been sync'd with the Retail database.
+* Gnomeregan has been sync'd with the Retail database.
+* Alliance Only / Horde Only was missing for 'Return of the Ring'.
+* Naxxramas has been sync'd with the Retail database.
+* Blackfathom Deeps has been sync'd with the Retail database.
+* Scholomance has been sync'd with the Retail database.
+* Fixed Hunter's Beast Training "Nature Resistance (Rank 1)" for Night Elves.
+* Fixed Zeth'Gor Must Burn!
+* Pattern: Cloak of Fire has been moved to Overmaster Pyron in the Blackrock Mountain mini list from the BRD mini list.
+* Added legacy Blackrock Depths data and quests. Moved associated legacy quests to the instance itself in order to match the Classic implementation style. (still need to do the new quests)
+* Moved Nat Pagle, Angler Extreme to Dustwallow Marsh.
+* Fixed the Feralas mini list.
+* Fixed a bug introduced by the last commit.
+* Added a tooltip for the Desolace Centaur reputations for getting to Honored.
+* Bailor's Ore Shipment is repeatable.
+* Fixed linking spells.
+* Merge branch 'master' of https://github.com/DFortun81/ATT-TBC-Classic into master
+* Added more missing constants that were breaking everything. Fixed the Warp spellID for Beast Training.
+* Fixed Claw (Rank 9) and Scorpid Poison (Rank 5) in Beast Training.
+* Fixed Greater Stamina and Natural Armor for Beast Training.
+* Wrong one!
+* Fixed Bite [Rank 9], Cower [Rank 7], Fire Breath [Rank 1], Fire Breath [Rank 2] and Screech [Rank 5] for Beast Training.
 
 Contributions made by gbrage:
-* - World Bosses Constant
-* - Legendary Questline Constant
-
-Contributions made by Sluimerstand:
-* Update enUS.lua
+* - Constants from Retail Added
+* - Constants from Retail
 

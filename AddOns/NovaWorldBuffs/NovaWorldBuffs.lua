@@ -2659,7 +2659,7 @@ local spellTypes = {
 	[28520] = "flaskRelent",
 	[28521] = "flaskBlinding",
 	[28519] = "flaskMighty",
-	[0] = "flaskChromatic", --This is not recorded by wowhead yet.
+	[42735] = "flaskChromatic",
 	--Shat flasks have 2 or 3 spells the same, have to test after launch which is correct for each.
 	[41607] = "shattrathFlaskFort",
 	[41609] = "shattrathFlaskFort",
@@ -3248,6 +3248,10 @@ end
 function NWB:setLayered()
 	if (NWB.usRealms[NWB.realm] or NWB.euRealms[NWB.realm] or NWB.krRealms[NWB.realm] or NWB.twRealms[NWB.realm]
 			or NWB.cnRealms[NWB.realm]) then
+		NWB.isLayered = true;
+	end
+	--Blanket enable season of mastery realms for now.
+	if (C_Seasons and C_Seasons.HasActiveSeason()) then
 		NWB.isLayered = true;
 	end
 end

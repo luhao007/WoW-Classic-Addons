@@ -1,13 +1,18 @@
-## Interface: 20501
-## Title: WeakAuras Companion
+## Interface: 20502
 ## Author: The WeakAuras Team
 ## Version: 1.1.0
-## Notes: Keep your WeakAuras updated!
-## X-Category: Interface Enhancements
-## DefaultState: Enabled
-## LoadOnDemand: 0
 ## OptionalDeps: WeakAuras,Plater,
+## LoadOnDemand: 0
 ## SavedVariables: timestamp
+## DefaultState: Enabled
+
+## Title: WeakAuras Companion
+## Notes: Keep your WeakAuras updated!
+## Title-zhCN: |cFFFFE00A<|r|cFFFFF468功能|r|cFFFFE00A>|r |cFFFFFFFF辅助增强|r |cFF69CCF0伴侣|r
+## Notes-zhCN: 同步更新WAGO上下载的WA
+
+## X-Category: Interface Enhancements
+## X-Part-Of: WeakAuras
 
 data.lua
 init.lua

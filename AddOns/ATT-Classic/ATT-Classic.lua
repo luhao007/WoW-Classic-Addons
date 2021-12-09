@@ -646,6 +646,8 @@ local NPCNameFromID = setmetatable({}, { __index = function(t, id)
 			rawset(t, id, title);
 			return title;
 		end
+	else
+		return L["HEADER_NAMES"][id];
 	end
 end});
 
@@ -2447,10 +2449,11 @@ fieldConverters = {
 		end
 	end,
 	["coord"] = function(group, coord)
-		if coord[3] and not group.instanceID and not group.objectiveID then cacheMapID(group, coord[3]); end
+		if coord[3] and not (group.instanceID or group.mapID or group.objectiveID) then 
+		cacheMapID(group, coord[3]); end
 	end,
 	["coords"] = function(group, value)
-		if not group.instanceID then
+		if not (group.instanceID or group.mapID or group.objectiveID) then
 			for i,coord in ipairs(value) do
 				if coord[3] then cacheMapID(group, coord[3]); end
 			end
@@ -2496,10 +2499,10 @@ local mapKeyConverters = {
 		end
 	end,
 	["coord"] = function(group, coord)
-		if coord[3] and not group.instanceID then uncacheMap(group, coord[3]); end
+		if coord[3] and not (group.instanceID or group.mapID or group.objectiveID) then uncacheMap(group, coord[3]); end
 	end,
 	["coords"] = function(group, coords)
-		if not group.instanceID then
+		if not (group.instanceID or group.mapID or group.objectiveID) then
 			for i,coord in ipairs(coords) do
 				if coord[3] then uncacheMap(group, coord[3]); end
 			end
@@ -3280,7 +3283,7 @@ local categoryFields = {
 	["text"] = function(t)
 		local data = L.ACHIEVEMENT_CRITERIA_DATA[t.achievementCategoryID];
 		if data then return data[2]; end
-		return RETRIEVING_DATA;
+		return RETRIEVING_DATA .. " achcat:" .. t.achievementCategoryID;
 	end,
 	["icon"] = function(t)
 		return app.asset("Category_Achievements");
@@ -4463,7 +4466,17 @@ local fields = {
 		return 112;
 	end,
 	["trackable"] = function(t)
-		return app.CollectibleReputations;
+		return true;
+	end,
+	["collectible"] = function(t)
+		if app.CollectibleReputations then
+			-- If your reputation is higher than the maximum for a different faction, return partial completion.
+			if not app.AccountWideReputations and t.maxReputation and t.maxReputation[1] ~= t.factionID and (select(3, GetFactionInfoByID(t.maxReputation[1])) or 4) >= app.GetFactionStanding(t.maxReputation[2]) then
+				return false;
+			end
+			return true;
+		end
+		return false;
 	end,
 	["saved"] = function(t)
 		if t.minReputation and t.minReputation[1] == t.factionID and (select(6, GetFactionInfoByID(t.minReputation[1])) or 0) >= t.minReputation[2] then
@@ -4484,11 +4497,6 @@ local fields = {
 			end
 		end
 		if app.AccountWideReputations and ATTAccountWideData.Factions[t.factionID] then return 2; end
-		
-		-- If your reputation is higher than the maximum for a different faction, return partial completion.
-		if t.maxReputation and t.maxReputation[1] ~= t.factionID and (select(3, GetFactionInfoByID(t.maxReputation[1])) or 4) >= app.GetFactionStanding(t.maxReputation[2]) then
-			return 2;
-		end
 	end,
 	["title"] = function(t)
 		local reputation = t.reputation;
@@ -4522,7 +4530,6 @@ local fields = {
 		return select(2, GetFactionInfoByID(t.factionID)) or "Not all reputations can be viewed on a single character. IE: Warsong Outriders cannot be viewed by an Alliance Player and Silverwing Sentinels cannot be viewed by a Horde Player.";
 	end,
 };
-fields.collectible = fields.trackable;
 fields.collected = fields.saved;
 app.BaseFaction = app.BaseObjectFields(fields);
 app.CreateFaction = function(id, t)
@@ -5624,10 +5631,10 @@ local fields = {
 		return rawget(t, "isRaid") and ("|cffff8000" .. t.name .. "|r") or t.name;
 	end,
 	["name"] = function(t)
-		return app.GetMapName(t.mapID);
+		return t.headerID and NPCNameFromID[t.headerID] or app.GetMapName(t.mapID);
 	end,
 	["icon"] = function(t)
-		return app.asset("Category_Zones");
+		return t.headerID and L["HEADER_ICONS"][t.headerID] or app.asset("Category_Zones");
 	end,
 	["back"] = function(t)
 		if app.CurrentMapID == t.mapID or (t.maps and contains(t.maps, app.CurrentMapID)) then
@@ -5701,6 +5708,10 @@ app.CreateMap = function(id, t)
 			insertionSort(explorationHeader.g, sortByTextSafely);
 		end
 	end
+	if t.creatureID and t.creatureID < 0 then
+		rawset(t, "headerID", t.creatureID);
+		rawset(t, "creatureID", nil);
+	end
 	return map;
 end
 
@@ -5712,10 +5723,10 @@ local instanceFields = {
 		return rawget(t, "isRaid") and ("|cffff8000" .. t.name .. "|r") or t.name;
 	end,
 	["name"] = function(t)
-		return app.GetMapName(t.mapID);
+		return t.headerID and NPCNameFromID[t.headerID] or app.GetMapName(t.mapID);
 	end,
 	["icon"] = function(t)
-		return app.asset("Category_Zones");
+		return t.headerID and L["HEADER_ICONS"][t.headerID] or app.asset("Category_Zones");
 	end,
 	["back"] = function(t)
 		if app.CurrentMapID == t.mapID or (t.maps and contains(t.maps, app.CurrentMapID)) then
@@ -5741,6 +5752,10 @@ local instanceFields = {
 };
 app.BaseInstance = app.BaseObjectFields(instanceFields);
 app.CreateInstance = function(id, t)
+	if t.creatureID and t.creatureID < 0 then
+		rawset(t, "headerID", t.creatureID);
+		rawset(t, "creatureID", nil);
+	end
 	return setmetatable(constructor(id, t, "instanceID"), app.BaseInstance);
 end
 
@@ -5963,9 +5978,31 @@ local objectFields = {
 		return rawget(t, "isRaid") and ("|cffff8000" .. t.name .. "|r") or t.name;
 	end,
 	["name"] = function(t)
+		if t.providers then
+			for k,v in ipairs(t.providers) do
+				if v[2] > 0 then
+					if v[1] == "o" then
+						return app.ObjectNames[v[2]] or RETRIEVING_DATA;
+					elseif v[1] == "i" then
+						return select(1, GetItemInfo(v[2])) or RETRIEVING_DATA;
+					end
+				end
+			end
+		end
 		return app.ObjectNames[t.objectID] or ("Object ID #" .. t.objectID);
 	end,
 	["icon"] = function(t)
+		if t.providers then
+			for k,v in ipairs(t.providers) do
+				if v[2] > 0 then
+					if v[1] == "o" then
+						return app.ObjectIcons[v[2]] or "Interface\\Icons\\INV_Misc_Bag_10";
+					elseif v[1] == "i" then
+						return select(5, GetItemInfoInstant(v[2])) or "Interface\\Icons\\INV_Misc_Bag_10";
+					end
+				end
+			end
+		end
 		return app.ObjectIcons[t.objectID] or "Interface\\Icons\\INV_Misc_Bag_10";
 	end,
 	["model"] = function(t)
@@ -6481,8 +6518,7 @@ app.GetSpellName = function(spellID, rank)
 	end
 end
 app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
-	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
-		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
+	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID) then
 		return true;
 	end
 	if rank then
@@ -6493,8 +6529,7 @@ app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
 				spellName = spellName .. " (" .. RANK .. " ";
 				for i=maxRank,rank,-1 do
 					spellID = app.SpellNameToSpellID[spellName .. i .. ")"];
-					if spellID and (IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
-						or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true)) then
+					if spellID and (IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID)) then
 						return true;
 					end
 				end
@@ -6601,11 +6636,15 @@ local spellFields = {
 		return select(2, GetItemInfo(t.itemID)) or t.linkAsSpell;
 	end,
 	["linkAsSpell"] = function(t)
-		if GetRelativeValue(t, "requireSkill") == 333 then
-			return "|cffffffff|Henchant:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
-		else
-			return "|cffffffff|Hspell:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+		local link = select(1, GetSpellLink(t.spellID));
+		if not link then
+			if GetRelativeValue(t, "requireSkill") == 333 then
+				return "|cffffffff|Henchant:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			else
+				return "|cffffffff|Hspell:" .. t.spellID .. "|h[" .. t.name .. "]|h|r";
+			end
 		end
+		return link;
 	end,
 	["nameAsItem"] = function(t)
 		return select(2, GetItemInfo(t.itemID)) or t.nameAsSpell;
@@ -9092,6 +9131,29 @@ function app:GetDataCache()
 		app:GetWindow("Unsorted").data = allData;
 		CacheFields(allData);
 		
+		local calculateAccessibility = function(source)
+			local score = 0;
+			if source.nmr then
+				score = score + 10;
+			end
+			if source.nmc then
+				score = score + 10;
+			end
+			if source.u then
+				score = score + 1;
+				if source.u < 3 then
+					score = score + 100;
+				elseif source.u < 4 then
+					score = score + 10;
+				else
+					score = score + 1;
+				end
+			end
+			return score;
+		end
+		local sortByAccessibility = function(a, b)
+			return calculateAccessibility(a) <= calculateAccessibility(b);
+		end
 		local buildCategoryEntry = function(self, headers, searchResults, inst)
 			local header = self;
 			for j,o in ipairs(searchResults) do
@@ -9230,47 +9292,63 @@ function app:GetDataCache()
 					end
 				end
 			end
-			local sourceItems, sourceItemsByID = {}, {};
+			local sources, sourcesByItemID, sourcesBySpellID = {}, {}, {};
 			for j,o in ipairs(searchResults) do
+				local source;
 				if o.itemID then
-					local sourceItem = sourceItemsByID[o.itemID];
-					if not sourceItem then
-						sourceItem = {};
-						tinsert(sourceItems, sourceItem);
-						sourceItemsByID[o.itemID] = sourceItem;
+					source = sourcesByItemID[o.itemID];
+					if not source then
+						source = {};
+						source.itemID = o.itemID;
+						tinsert(sources, source);
+						sourcesByItemID[o.itemID] = source;
 					end
-					
+				elseif o.spellID then
+					source = sourcesBySpellID[o.spellID];
+					if not source then
+						source = {};
+						tinsert(sources, source);
+						sourcesBySpellID[o.spellID] = source;
+					end
+				end
+				if source then
+					if o.requireSkill then source.requireSkill = o.requireSkill; end
+					local u = GetRelativeValue(o, "u");
+					if u then source.u = u; end
 					local r = GetRelativeValue(o, "r");
-					if r then sourceItem.r = r; end
+					if r then
+						source.r = r;
+						if r ~= app.FactionID then
+							rawset(source, "nmr", true);	-- "Not My Race"
+						end
+					end
 					local races = GetRelativeValue(o, "races");
-					if races then sourceItem.races = races; end
+					if races then
+						source.races = races;
+						if not containsValue(races, app.RaceIndex) then
+							rawset(source, "nmr", true);	-- "Not My Race"
+						end
+					end
 					local c = GetRelativeValue(o, "c");
-					if c then sourceItem.c = c; end
+					if c then
+						source.c = c;
+						if not containsValue(c, app.ClassIndex) then
+							rawset(source, "nmc", true); -- "Not My Class"
+						end
+					end
 				end
 			end
-			local count = #sourceItems;
+			local count = #sources;
 			if count == 1 then
-				for key,value in pairs(sourceItems[1]) do
+				for key,value in pairs(sources[1]) do
 					inst[key] = value;
 				end
-			elseif count == 2 then
-				local a, b = sourceItems[1].r, sourceItems[2].r;
-				if a == b then inst.r = a; end
-				a, b = sourceItems[1].races, sourceItems[2].races;
-				if a and b and #a == #b and containsAny(a, b) then inst.races = a; end
-				a, b = sourceItems[1].c, sourceItems[2].c;
-				if a and b and #a == #b and containsAny(a, b) then inst.c = a; end
-			elseif count > 2 then
-				print("Mount has more than 2 source items WTF", inst.spellID);
-			end
-			if inst.c and not containsValue(inst.c, app.ClassIndex) then
-				rawset(inst, "nmc", true); -- "Not My Class"
-			end
-			if inst.r and inst.r ~= app.FactionID then
-				rawset(inst, "nmr", true);	-- "Not My Race"
-			end
-			if inst.races and not containsValue(inst.races, app.RaceIndex) then
-				rawset(inst, "nmr", true);	-- "Not My Race"
+			elseif count > 1 then
+				-- Find the most accessible version of the thing.
+				insertionSort(sources, sortByAccessibility);
+				for key,value in pairs(sources[1]) do
+					inst[key] = value;
+				end
 			end
 			inst.parent = header;
 			inst.progress = nil;
@@ -12347,7 +12425,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						if craftType == "optimal" or craftType == "medium" or craftType == "easy" or craftType == "trivial" or craftType == "used" or craftType == "none" then
 							spellID = craftSubSpellName and (select(7, GetSpellInfo(craftName, craftSubSpellName)) or app.SpellNameToSpellID[craftName .. " (" .. craftSubSpellName .. ")"]) or app.SpellNameToSpellID[craftName];
 							if spellID then
-								if spellID == 44153 then spellID = 44155; end	-- Fix the Flying Machine spellID.
+								if spellID == 44153 then spellID = 44155;	-- Fix the Flying Machine spellID.
+								elseif spellID == 44151 then spellID = 44157;	-- Fix the Turbo Flying Machine spellID.
+								elseif spellID == 20583 then spellID = 24492; end 	-- Fix rank 1 Nature Resistance.
 								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(craftType) or nil;
 								app.CurrentCharacter.Spells[spellID] = 1;
 								if not ATTAccountWideData.Spells[spellID] then
@@ -12402,7 +12482,9 @@ app:GetWindow("Tradeskills", UIParent, function(self, ...)
 						if skillType == "optimal" or skillType == "medium" or skillType == "easy" or skillType == "trivial" or skillType == "used" or skillType == "none" then
 							local spellID = app.SpellNameToSpellID[skillName];
 							if spellID then
-								if spellID == 44153 then spellID = 44155; end	-- Fix the Flying Machine spellID.
+								if spellID == 44153 then spellID = 44155;	-- Fix the Flying Machine spellID.
+								elseif spellID == 44151 then spellID = 44157;	-- Fix the Turbo Flying Machine spellID.
+								elseif spellID == 20583 then spellID = 24492; end 	-- Fix rank 1 Nature Resistance.
 								app.CurrentCharacter.SpellRanks[spellID] = shouldShowSpellRanks and app.CraftTypeToCraftTypeID(skillType) or nil;
 								app.CurrentCharacter.Spells[spellID] = 1;
 								if not ATTAccountWideData.Spells[spellID] then

@@ -1358,11 +1358,21 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 														NWB:receivedNpcDied(k, v, distribution, layer, sender);
 													end
 													if (NWB:validateCloseTimestamps(layer, k, v)) then
-														NWB.data.layers[layer][k] = v;
-														--Only insert facton if we have a tower timer update.
-														--Faction is ignored everywhere else in this func.
-														if (k == "terokTowers" and vv.terokFaction) then
-															NWB.data.layers[layer].terokFaction = vv.terokFaction;
+														if (k == "terokTowers") then
+															--Testing some timer drift issues.
+															--Only update towers timer if it's more than 30mins later than current timestamp.
+															--This should stop timers drifting a few mins between people.
+															--if (not NWB.data.layers[layer].terokTowers or
+															--		v - NWB.data.layers[layer].terokTowers > 1800) then
+																--Only insert facton if we have a tower timer update.
+																--Faction is ignored everywhere else in this func.
+																if (vv.terokFaction) then
+																	NWB.data.layers[layer].terokFaction = vv.terokFaction;
+																end
+																NWB.data.layers[layer][k] = v;
+															--end
+														else
+															NWB.data.layers[layer][k] = v;
 														end
 														if (not string.match(k, "lastSeenNPC") and not string.match(k, "terokTowers")
 																and not string.match(k, "hellfireRep")) then

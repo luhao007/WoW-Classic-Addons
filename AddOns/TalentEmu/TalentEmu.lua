@@ -104,7 +104,7 @@ local curPhase = 1;
 	local _GetSpellLink = _G.ALA_GetSpellLink;
 	--------------------------------------------------
 	local _ = nil;
-	local ARTWORK_PATH = "Interface\\Addons\\alaTalentEmu\\ARTWORK\\";
+	local ARTWORK_PATH = "Interface\\Addons\\" .. ADDON .. "\\ARTWORK\\";
 	NS.ARTWORK_PATH = ARTWORK_PATH;
 	local LOCALE = GetLocale();
 	--------------------------------------------------
@@ -3817,7 +3817,7 @@ end
 				end
 			end
 		end
-		StaticPopupDialogs["alaTalentEmu_apply"] = {
+		StaticPopupDialogs["TalentEmu_apply"] = {
 			text = L.applyTalentsButton_Notify,
 			button1 = L.OK,
 			button2 = L.Cancel,
@@ -3834,10 +3834,10 @@ end
 		};
 		local function applyTalentsButton_OnClick(self)
 			if UnitLevel('player') >= 10 then
-				StaticPopupDialogs["alaTalentEmu_apply"].OnAccept = function()
+				StaticPopupDialogs["TalentEmu_apply"].OnAccept = function()
 					NS.Emu_ApplyTalents(self.mainFrame);
 				end;
-				StaticPopup_Show("alaTalentEmu_apply");
+				StaticPopup_Show("TalentEmu_apply");
 			end
 		end
 		local function importButton_OnClick(self)
@@ -6177,7 +6177,7 @@ do	-- initialize
 			--	DBICON
 				local LDI = LibStub("LibDBIcon-1.0", true);
 				if LDI then
-					LDI:Register("alaTalentEmu",
+					LDI:Register("TalentEmu",
 					{
 						icon = TEXTURE_SET.LIBDBICON,
 						OnClick = DBIcon_OnClick,
@@ -6193,7 +6193,7 @@ do	-- initialize
 						minimapPos = SET.minimapPos,
 					}
 					);
-					local mb = LDI:GetMinimapButton("alaTalentEmu");
+					local mb = LDI:GetMinimapButton("TalentEmu");
 					mb:RegisterEvent("PLAYER_LOGOUT");
 					mb:HookScript("OnEvent", function(self)
 						SET.minimapPos = self.minimapPos or self.db.minimapPos;
@@ -6202,22 +6202,22 @@ do	-- initialize
 						SET.minimapPos = self.minimapPos or self.db.minimapPos;
 					end);
 					if SET.minimap then
-						LDI:Show("alaTalentEmu");
+						LDI:Show("TalentEmu");
 					else
-						LDI:Hide("alaTalentEmu");
+						LDI:Hide("TalentEmu");
 					end
 					NS.callback["minimap"] = function(on)
 						if on then
-							LDI:Show("alaTalentEmu");
+							LDI:Show("TalentEmu");
 						else
-							LDI:Hide("alaTalentEmu");
+							LDI:Hide("TalentEmu");
 						end
 					end
 				end
 			--	LDB
 				local LDB = LibStub:GetLibrary("LibDataBroker-1.1");
 				if LDB then
-					local obj = LDB:NewDataObject("alaTalentEmu", {
+					local obj = LDB:NewDataObject("TalentEmu", {
 						type = "launcher",
 						icon = TEXTURE_SET.LIBDBICON,
 						OnClick = DBIcon_OnClick,
@@ -6239,9 +6239,9 @@ do	-- initialize
 		C_Timer.After(8.0, function() NS.DB_PreLoad(_talentDB); end);
 		-- C_Timer.After(2.0, function()
 		-- 	if GetLocale() == 'zhCN' or GetLocale() == 'zhTW' then
-		-- 		print([[|cff00ff00alaTalentEmu|r增加70级天赋预览，点击左上角|TInterface\AddOns\alaTalentEmu\ARTWORK\Config:24|t切换70级预览版本【将自动重载界面】]]);
+		-- 		print([[|cff00ff00TalentEmu|r增加70级天赋预览，点击左上角|TInterface\AddOns\TalentEmu\ARTWORK\Config:24|t切换70级预览版本【将自动重载界面】]]);
 		-- 	else
-		-- 		print([[Preview talents of tbc in |cff00ff00alaTalentEmu|r! Click the |TInterface\AddOns\alaTalentEmu\ARTWORK\Config:24|t icon on the topleft]]);
+		-- 		print([[Preview talents of tbc in |cff00ff00TalentEmu|r! Click the |TInterface\AddOns\TalentEmu\ARTWORK\Config:24|t icon on the topleft]]);
 		-- 	end
 		-- end);
 
@@ -6285,30 +6285,54 @@ do	-- initialize
 		minimapPos = 185,
 	};
 	local function modify_saved_var()
-		if alaTalentEmuSV then
-			if alaTalentEmuSV._version == nil then
-				alaTalentEmuSV._version = 0.0;
+		if select(2, GetAddOnInfo("alaTalentEmu")) ~= nil and (TalentEmuSV == nil or TalentEmuSV.__upgraded == nil) then
+			EnableAddOn("alaTalentEmu");
+			LoadAddOn("alaTalentEmu");
+			if alaTalentEmuSV ~= nil then
+				if TalentEmuSV == nil then
+					TalentEmuSV = alaTalentEmuSV;
+				elseif alaTalentEmuSV.var ~= nil and TalentEmuSV.var ~= nil then
+					local src = alaTalentEmuSV.var;
+					local dst = TalentEmuSV.var;
+					for k, v in next, src do
+						if k ~= "savedTalent" then
+							dst[k] = dst[k] or v;
+						end
+					end
+					dst.savedTalent = dst.savedTalent or {  };
+					for k, v in next, src.savedTalent do
+						dst.savedTalent[k] = dst.savedTalent[k] or v;
+					end
+				end
 			end
-			if alaTalentEmuSV._version < 200512.0 then
-				alaTalentEmuSV.show_equipment = true;
-				alaTalentEmuSV._version = 200512.0;
+			DisableAddOn("alaTalentEmu");
+			SaveAddOns();
+			alaTalentEmuSV = nil;
+		end
+		if TalentEmuSV then
+			if TalentEmuSV._version == nil then
+				TalentEmuSV._version = 0.0;
 			end
-			if alaTalentEmuSV._version < 200614.0 then
-				local set = alaTalentEmuSV;
-				_G.alaTalentEmuSV = { set = set, var = {  }, };
-				alaTalentEmuSV._version = 200614.0;
+			if TalentEmuSV._version < 200512.0 then
+				TalentEmuSV.show_equipment = true;
+				TalentEmuSV._version = 200512.0;
+			end
+			if TalentEmuSV._version < 200614.0 then
+				local set = TalentEmuSV;
+				_G.TalentEmuSV = { set = set, var = {  }, };
+				TalentEmuSV._version = 200614.0;
 				set._version = nil;
 			end
-			if alaTalentEmuSV._version < 200615.0 then
-				alaTalentEmuSV.var.savedTalent = alaTalentEmuSV.set.savedTalent;
-				alaTalentEmuSV.set.savedTalent = nil;
-				alaTalentEmuSV._version = 200615.0;
+			if TalentEmuSV._version < 200615.0 then
+				TalentEmuSV.var.savedTalent = TalentEmuSV.set.savedTalent;
+				TalentEmuSV.set.savedTalent = nil;
+				TalentEmuSV._version = 200615.0;
 			end
-			if alaTalentEmuSV._version < 210524.0 then
-				alaTalentEmuSV._version = 210524.0;
+			if TalentEmuSV._version < 210524.0 then
+				TalentEmuSV._version = 210524.0;
 			end
 		else
-			_G.alaTalentEmuSV = {
+			_G.TalentEmuSV = {
 				set = {
 				},
 				var = {
@@ -6316,9 +6340,10 @@ do	-- initialize
 				},
 			};
 		end
-		alaTalentEmuSV._version = 210524.0;
-		SET = setmetatable(alaTalentEmuSV.set, { __index = default_set, });
-		VAR = alaTalentEmuSV.var;
+		TalentEmuSV.__upgraded = true;
+		TalentEmuSV._version = 210524.0;
+		SET = setmetatable(TalentEmuSV.set, { __index = default_set, });
+		VAR = TalentEmuSV.var;
 	end
 
 	__ala_meta__.supreme = Mixin(__ala_meta__.supreme or {  }, {
@@ -6350,10 +6375,8 @@ do	-- initialize
 end
 
 do	-- SLASH and _G
-	_G.SLASH_ALATALENTEMU1 = "/alaTalentEmu";
-	_G.SLASH_ALATALENTEMU2 = "/alate";
-	_G.SLASH_ALATALENTEMU3 = "/ate";
-	_G.SLASH_ALATALENTEMU4 = "/emu";
+	_G.SLASH_ALATALENTEMU1 = "/TalentEmu";
+	_G.SLASH_ALATALENTEMU2 = "/emu";
 	local acceptedCommandSeq = { "\ ", "\,", "\;", "\:", "\-", "\+", "\_", "\=", "\/", "\\", "\"", "\'", "\|", "\，", "\。", "\；", "\：", "\、", "\’", "\“", };
 	SlashCmdList["ALATALENTEMU"] = function(msg)
 		if strlower(strsub(msg, 1, 3)) == "set" then
@@ -6730,7 +6753,7 @@ end
 					button:SetScript("OnEnter", Info_OnEnter);
 					button:SetScript("OnLeave", Info_OnLeave);
 					button.information = L.TalentFrameCallButton;
-					TalentFrame.__alaTalentEmuCall = button;
+					TalentFrame.__TalentEmuCall = button;
 				elseif PlayerTalentFrame then
 					for i = 1, 999 do
 						local b = _G["PlayerTalentFrameTalent" .. i];
@@ -6750,7 +6773,7 @@ end
 					button:SetScript("OnEnter", Info_OnEnter);
 					button:SetScript("OnLeave", Info_OnLeave);
 					button.information = L.TalentFrameCallButton;
-					PlayerTalentFrame.__alaTalentEmuCall = button;
+					PlayerTalentFrame.__TalentEmuCall = button;
 				end
 
 				if self then

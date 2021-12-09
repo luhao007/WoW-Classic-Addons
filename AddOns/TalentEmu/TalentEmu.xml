@@ -12,7 +12,7 @@
     <script file = "Locale\enUS.lua" />
     <script file = "data-classic.lua" />
     <script file = "data-bcc.lua" />
-    <script file = "alaTalentEmu.lua" />
+    <script file = "TalentEmu.lua" />
 
     <include file = "Bindings.xml" />
     

@@ -1,7 +1,7 @@
 # WIM
 
-## [3.9.3](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.3) (2021-11-09)
-[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.2...3.9.3) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
+## [3.9.4](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/tree/3.9.4) (2021-12-03)
+[Full Changelog](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/compare/3.9.3...3.9.4) [Previous Releases](https://github.com/Legacy-of-Sylvanaar/wow-instant-messenger/releases)
 
-- Bump classic era/som toc  
-- bump retail toc  
+- Fix hyperlinks within WIM windows.  
+- Have default UI handle OnHyperlinkClick events.  

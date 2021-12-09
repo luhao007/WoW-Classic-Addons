@@ -150,7 +150,7 @@ L:SetWarningLocalization{
 	WarnElemental		= "Нечистый элементаль скоро (%s)",
 	WarnStrider			= "Странник скоро (%s)",
 	WarnNaga			= "Гвардеец скоро (%s)",
-	WarnShield			= "Деактивировано %d/4 щита",
+	WarnShield			= "Осталось %d/4 щитов",
 	WarnLoot			= "Ядро порчи на >%s<",
 	SpecWarnElemental	= "Нечистый элементаль - Смени цель!",
 	SpecWarnCore		= "Ядро порчи на тебе!"

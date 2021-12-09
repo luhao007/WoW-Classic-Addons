@@ -18218,8 +18218,7 @@ L["Click and drag to resize this window."] = "Click and drag to resize this wind
 L["Click to hide this item for the current session. Hold shift to hide this item permanently."] = "Click to hide this item for the current session. Hold shift to hide this item permanently."
 --[[Translation missing --]]
 L["COD"] = "COD"
---[[Translation missing --]]
-L["Coins (%s)"] = "Coins (%s)"
+L["Coins (%s)"] = "貨幣 (%s)"
 --[[Translation missing --]]
 L["Combine Partial Stacks"] = "Combine Partial Stacks"
 --[[Translation missing --]]
@@ -18612,8 +18611,7 @@ L["Great Deals Search"] = "Great Deals Search"
 --[[Translation missing --]]
 L["Group already exists."] = "Group already exists."
 L["Group Management"] = "群組管理"
---[[Translation missing --]]
-L["Group name"] = "Group name"
+L["Group name"] = "群組名稱"
 --[[Translation missing --]]
 L["Group Search"] = "Group Search"
 L["Grouped Items"] = "已被群組的物品"
@@ -19637,8 +19635,7 @@ L["Target shortfall to bags"] = "Target shortfall to bags"
 L["Tasks Added to Task List"] = "Tasks Added to Task List"
 --[[Translation missing --]]
 L["Tells you why a specific item is not being restocked and added to the queue."] = "Tells you why a specific item is not being restocked and added to the queue."
---[[Translation missing --]]
-L["Text (%s)"] = "Text (%s)"
+L["Text (%s)"] = "文字 (%s)"
 --[[Translation missing --]]
 L["The '%s' custom price source is invalid."] = "The '%s' custom price source is invalid."
 --[[Translation missing --]]

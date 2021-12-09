@@ -1,7 +1,8 @@
-## Interface: 20501
-## Title: Lib: Diminishing Returns Database
-## Version: v1.2.6
+## Interface: 20502
+## Title: Lib: DRList-1.0
+## Version: v1.2.7
 ## X-Category: Library
+## X-License: MIT
 ## X-Curse-Project-ID: 315757
 ## X-Wago-ID: 9rN4BxKD
 

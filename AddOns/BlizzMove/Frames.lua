@@ -263,6 +263,7 @@ BlizzMoveAPI:RegisterFrames(
 			["LFGListSearchPanelScrollFrame"] =
 			{
 				MinVersion = 40000,
+				IgnoreMouseWheel = true,
 			},
 			["ScenarioQueueFrameSpecific"] =
 			{
@@ -528,14 +529,10 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["CollectionsJournal"] =
 		{
 			MinVersion = 40000, -- Added when?
-			MaxVersion = 90105, -- Bug introduced in 9.1.5 breaks movement of this frame
-			SilenceCompatabilityWarnings = true,
 		},
 		["WardrobeFrame"] =
 		{
 			MinVersion = 40000, -- Added when?
-			MaxVersion = 90105, -- Bug introduced in 9.1.5 breaks CollectionsJournal if you move this frame
-			SilenceCompatabilityWarnings = true,
 		},
 	},
 	["Blizzard_Communities"] =
@@ -626,27 +623,27 @@ BlizzMoveAPI:RegisterAddOnFrames(
 			MinVersion = 40000, -- Added when?
 			SubFrames =
 			{
-				["EncounterJournalInstanceSelectScrollFrameScrollChild"] =
+				["EncounterJournal.instanceSelect.scroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInstanceFrameLoreScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.instance.loreScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.overviewScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoLootScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.lootScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoDetailsScrollFrameScrollChild"] =
+				["EncounterJournal.encounter.info.detailsScroll"] =
 				{
 					MinVersion = 40000,
 				},
-				["EncounterJournalEncounterFrameInfoModelFrame"] =
+				["EncounterJournal.encounter.info.model"] =
 				{
 					MinVersion = 40000,
 					NonDraggable = true,
@@ -735,15 +732,15 @@ BlizzMoveAPI:RegisterAddOnFrames(
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameMissions.MaterialFrame"] =
+				["CovenantMissionFrame.MissionTab.MissionList.MaterialFrame"] =
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameFollowersListScrollFrameScrollChild"] =
+				["CovenantMissionFrame.FollowerList.listScroll"] =
 				{
 					MinVersion = 90000,
 				},
-				["CovenantMissionFrameFollowers.MaterialFrame"] =
+				["CovenantMissionFrame.FollowerList.MaterialFrame"] =
 				{
 					MinVersion = 90000,
 				},
@@ -929,11 +926,11 @@ BlizzMoveAPI:RegisterAddOnFrames(
 		["TalentFrame"] =
 		{
 			MinVersion = 0,
-			MaxVersion = 20000,
+			MaxVersion = 11401,
 		},
 		["PlayerTalentFrame"] =
 		{
-			MinVersion = 20000,
+			MinVersion = 11401,
 		},
 	},
 	["Blizzard_TalkingHeadUI"] =
