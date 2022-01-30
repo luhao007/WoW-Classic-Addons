@@ -41,8 +41,6 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 ---@type QuestieCorrections
 local QuestieCorrections = QuestieLoader:ImportModule("QuestieCorrections")
----@type QuestieQuestBlacklist
-local QuestieQuestBlacklist = QuestieLoader:ImportModule("QuestieQuestBlacklist")
 ---@type QuestieProfessions
 local QuestieProfessions = QuestieLoader:ImportModule("QuestieProfessions")
 ---@type DailyQuests
@@ -416,6 +414,11 @@ end
 ---@return boolean
 function QuestieDB:IsLevelRequirementsFulfilled(questId, minLevel, maxLevel)
     local level, requiredLevel = QuestieLib:GetTbcLevel(questId)
+
+    local parentQuestId = QuestieDB.QueryQuestSingle(questId, "parentQuest")
+    if QuestieDB:IsParentQuestActive(parentQuestId) then
+        return true
+    end
 
     if QuestieDB:IsActiveEventQuest(questId) and minLevel > requiredLevel and (not Questie.db.char.absoluteLevelOffset) then
         return true
@@ -1018,12 +1021,8 @@ function QuestieDB:GetCreatureLevels(quest)
     end
     local creatureLevels = {}
 
-    local function _CollectCreatureLevels(npcList)
-        for index, npcId in pairs(npcList) do
-            -- Some objectives are {id, name} others are just {id}
-            if npcId == nil or type(npcId) == "string" then
-                npcId = index
-            end
+    local function _CollectCreatureLevels(npcIds)
+        for _, npcId in pairs(npcIds) do
             local npc = QuestieDB:GetNPC(npcId)
             if npc and not creatureLevels[npc.name] then
                 creatureLevels[npc.name] = {npc.minLevel, npc.maxLevel, npc.rank}
@@ -1033,15 +1032,17 @@ function QuestieDB:GetCreatureLevels(quest)
 
     if quest.objectives then
         if quest.objectives[1] then -- Killing creatures
-            for _, mobObjective in pairs(quest.objectives[1]) do
-                _CollectCreatureLevels(mobObjective)
+            for _, creatureObjective in pairs(quest.objectives[1]) do
+                local npcId = creatureObjective[1]
+                _CollectCreatureLevels({npcId})
             end
         end
         if quest.objectives[3] then -- Looting items from creatures
             for _, itemObjective in pairs(quest.objectives[3]) do
-                local drops = QuestieDB.QueryItemSingle(itemObjective[1], "npcDrops")
-                if drops then
-                    _CollectCreatureLevels(drops)
+                local itemId = itemObjective[1]
+                local npcIds = QuestieDB.QueryItemSingle(itemId, "npcDrops")
+                if npcIds then
+                    _CollectCreatureLevels(npcIds)
                 end
             end
         end

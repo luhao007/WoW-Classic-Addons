@@ -175,7 +175,7 @@ function TitanPanelGoldButton_OnLoad(self)
 			ShowLabelText =true,
 			ShowRegularText = false,
 			ShowColoredText = false,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true
 		},
 		savedVariables = {
 			Initialized = true,
@@ -194,6 +194,7 @@ function TitanPanelGoldButton_OnLoad(self)
 			MergeServers = false, 
 			SeparateServers = true, 
 			gold = { total = "112233", neg = false },
+			DisplayOnRightSide = false,
 		}
 	};
 
@@ -723,6 +724,7 @@ function TitanPanelRightClickMenu_PrepareGoldMenu()
 		TitanPanelRightClickMenu_AddToggleIcon(TITAN_GOLD_ID);
 		TitanPanelRightClickMenu_AddToggleLabelText(TITAN_GOLD_ID);
 		TitanPanelRightClickMenu_AddToggleColoredText(TITAN_GOLD_ID);
+		TitanPanelRightClickMenu_AddToggleRightSide(TITAN_GOLD_ID);
 		TitanPanelRightClickMenu_AddSpacer();
 
 		-- Generic function to toggle and hide

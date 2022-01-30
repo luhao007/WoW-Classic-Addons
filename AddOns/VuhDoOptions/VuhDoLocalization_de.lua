@@ -1,4 +1,4 @@
-﻿if (GetLocale() ~= "deDE") then
+if (GetLocale() ~= "deDE") then
 	return;
 end
 -- New Options
@@ -1149,3 +1149,6 @@ VUHDO_I18N_SHOW_OVERSHIELD = "Show\nOvershield";
 VUHDO_I18N_OVERSHIELD_BAR = "Overshield Bar";
 
 VUHDO_I18N_LIBHEALCOMM = "Use Lib\nHealComm";
+
+VUHDO_I18N_SHOW_HEAL_ABSORB = "Show\nHeal Absorb";
+VUHDO_I18N_HEAL_ABSORB_BAR = "Heal Absorb Bar";

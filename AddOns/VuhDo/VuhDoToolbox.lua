@@ -1211,6 +1211,18 @@ end
 
 
 
+function VUHDO_unitGetTotalHealAbsorbs(...)
+
+	if not UnitGetTotalHealAbsorbs then
+		return 0;
+	else
+		return UnitGetTotalHealAbsorbs(...);
+	end
+
+end
+
+
+
 function VUHDO_unitIsWarModePhased(...)
 
 	if not UnitIsWarModePhased then

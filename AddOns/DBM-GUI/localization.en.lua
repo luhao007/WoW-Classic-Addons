@@ -16,7 +16,7 @@ L.OTabPlugins	= "Core Plugins"
 L.OTabOptions	= GAMEOPTIONS_MENU
 L.OTabAbout		= "About"
 
-L.TabCategory_OTHER    		= "Other Mods"
+L.TabCategory_OTHER			= "Other Mods"
 
 L.BossModLoaded 			= "%s statistics"
 L.BossModLoad_now 			= [[This boss mod is not loaded.
@@ -35,7 +35,7 @@ L.Mod_Reset					= "Load default options"
 L.Reset 					= "Reset"
 L.Import					= "Import"
 
-L.Enable  					= ENABLE
+L.Enable					= ENABLE
 L.Disable					= DISABLE
 
 L.NoSound					= "No sound"
@@ -112,6 +112,7 @@ L.AutoAcceptGuildInvite		= "Automatically accept group invites from guild member
 L.Area_Advanced				= "Advanced Options"
 L.FakeBW					= "Pretend to be BigWigs in version checks instead of DBM (Useful for guilds that force using BigWigs)"
 L.AITimer					= "Automatically generate timers for never before seen fights using DBM's built in timer AI (Useful for pulling a test boss for the very first time such as beta or PTR). Recommended to always leave this turned ON"
+L.ExtendIcons				= "Extend the raid target icons API to use up to 16 icons (instead of 8). IMPORTANT: These icons will NOT be visible to anyone who hasn't installed custom 'UI-RaidTargetingIcons.blp' texture file that supports 16 icons. Must reload UI after enabling or disabling this feature"
 
 -- Panel: Profiles
 L.Panel_Profile				= "Profiles"
@@ -141,6 +142,7 @@ L.ButtonImportProfile		= "Import profile"
 L.ButtonExportProfile		= "Export profile"
 
 L.ImportErrorOn				= "Custom sounds missing for setting: %s"
+L.ImportVoiceMissing		= "Missing voice pack: %s"
 
 -- Tab: Alerts
 L.TabCategory_Alerts	 	= "Alerts"
@@ -226,6 +228,7 @@ L.CountdownVoice			= "Set primary voice for count sounds"
 L.CountdownVoice2			= "Set secondary voice for count sounds"
 L.CountdownVoice3			= "Set tertiary voice for count sounds"
 L.VoicePackChoice			= "Set voice pack for spoken alerts"
+L.MissingVoicePack			= "Missing Voice Pack (%s)"
 L.Area_CountdownOptions		= "Countdown Options"
 L.Area_VoicePackOptions		= "Voice Pack Options (3rd party voice packs)"
 L.SpecWarn_NoSoundsWVoice	= "Filter special announce sounds for announcements that also have spoken alerts..."
@@ -246,6 +249,7 @@ L.Panel_EventSounds			= "Event Sounds"
 L.Area_SoundSelection		= "Sound Selections (scroll selection menus with mouse wheel)"
 L.EventVictorySound			= "Set sound played for encounter victory"
 L.EventWipeSound			= "Set sound played for encounter wipe"
+L.EventEngagePT				= "Set sound played for pull timer start"
 L.EventEngageSound			= "Set sound played for encounter engage"
 L.EventDungeonMusic			= "Set music played inside dungeons/raids"
 L.EventEngageMusic			= "Set music played during encounters"
@@ -272,6 +276,8 @@ L.Slider_BarOffSetX 		= "Offset X: %d"
 L.Slider_BarOffSetY 		= "Offset Y: %d"
 L.Slider_BarWidth 			= "Bar width: %d"
 L.Slider_BarScale 			= "Bar scale: %0.2f"
+L.BarSaturation				= "Bar saturation for small timers (When huge bars are disabled): %0.2f"
+
 --Types
 L.BarStartColorAdd			= "Start color (Add)"
 L.BarEndColorAdd			= "End color (Add)"
@@ -327,7 +333,6 @@ L.BarColorByType			= "Color by type"
 L.NoBarFade					= "Use Start/End colors as Small/Large colors instead of gradual color change"
 L.BarInlineIcons			= "Show inline icons"
 L.ShortTimerText			= "Use short timer text (when available)"
-L.StripTimerText			= "Strip CD/Next out of timers"
 L.KeepBar					= "Keep timer active until ability cast"
 L.KeepBar2					= "(when supported by mod)"
 L.FadeBar					= "Fade timers for out of range abilities"
@@ -341,12 +346,25 @@ L.Area_BlizzFiltersSetup	= "Blizzard Filters guide"
 L.Panel_SpamFilter					= "DBM Features"
 L.Area_SpamFilter_Anounces			= "Announce Global Disable & Filter Options"
 L.SpamBlockNoShowAnnounce			= "Do not show text or play sound for ANY general announcements"
-L.SpamBlockNoShowTgtAnnounce		= "Do not show text or play sound for TARGET general announcements that do not affect other players (above filter overrides this one)"
+L.SpamBlockNoShowTgtAnnounce		= "Do not show text or play sound for TARGET general announcements that do not affect yourself, expect where noted that specific warning ignores this filter (above filter overrides this one)"
+L.SpamBlockNoTrivialSpecWarnSound	= "Do not play special announce sounds or show screen flash for content that is trivial for your level (plays user selected regular announce sound instead)"
+
+L.Area_SpamFilter_SpecRoleFilters	= "Special Announce Type Filters (control how much handholding DBM does)"
+L.SpamSpecRoleDispel				= "Filter 'dispel' alerts"
+L.SpamSpecRoleInterrupt				= "Filter 'interrupt' alerts"
+L.SpamSpecRoleDefensive				= "Filter 'defensive' alerts"
+L.SpamSpecRoleTaunt					= "Filter 'taunt' alerts"
+L.SpamSpecRoleSoak					= "Filter 'soak' alerts"
+L.SpamSpecRoleStack					= "Filter 'high stack' alerts"
+L.SpamSpecRoleSwitch				= "Filter 'target swap' &amp; 'adds' alerts"
+L.SpamSpecRoleGTFO					= "Filter 'gtfo' alerts"
+
+L.Area_SpamFilter_SpecFeatures		= "Toggle specific Special Announce Features"
 L.SpamBlockNoSpecWarnText			= "Do not show special announce text"
 L.SpamBlockNoSpecWarnFlash			= "Do not show special announce screen flash"
 L.SpamBlockNoSpecWarnVibrate		= "Do not vibrate controller on special announce"
 L.SpamBlockNoSpecWarnSound			= "Do not play special announce sounds (still permits voice packs, if one is enabled in Spoken Alerts panel)"
-L.SpamBlockNoTrivialSpecWarnSound	= "Do not play special announce sounds or show screen flash for content that is trivial for your level (plays user selected regular announce sound instead)"
+
 
 L.Area_SpamFilter_Timers	= "Timer Global Disable & Filter Options"
 L.SpamBlockNoShowTimers		= "Do not show mod timers (Boss Mod/CM/LFG/Respawn)"

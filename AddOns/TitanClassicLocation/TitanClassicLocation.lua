@@ -38,7 +38,7 @@ function TitanPanelLocationButton_OnLoad(self)
 			ShowLabelText = true,
 			ShowRegularText = false,
 			ShowColoredText = true,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true,
 		},
 		savedVariables = {
 			ShowZoneText = 1,
@@ -54,6 +54,7 @@ function TitanPanelLocationButton_OnLoad(self)
 			CoordsFormat3 = false,
 			UpdateWorldmap = false,
 			MapLocation = false,
+			DisplayOnRightSide = false,
 		}
 	};
 
@@ -432,6 +433,7 @@ function TitanPanelRightClickMenu_PrepareLocationMenu()
 	TitanPanelRightClickMenu_AddToggleIcon(TITAN_LOCATION_ID);
 	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_LOCATION_ID);
 	TitanPanelRightClickMenu_AddToggleColoredText(TITAN_LOCATION_ID);
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_LOCATION_ID);
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_LOCATION_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end

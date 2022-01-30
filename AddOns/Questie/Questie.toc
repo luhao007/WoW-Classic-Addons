@@ -1,8 +1,12 @@
 ## Interface: 20502
 
+## Title: |cFFFFFFFFQuestie|r|cFFFF0000 game client not supported|r
+## Notes: Questie only supports Classic TBC and Classic Era/SoM.
 ## Title-zhCN: |cFFFFE00A<|r|cFF00FF96任务|r|cFFFFE00A>|r |cFFFFFFFF任务助手|r |cFFFFE00AQuestie|r
 ## Notes-zhCN: 在地图和小地图上提供任务指引，在怪物身上提示任务进度
 
 
-# This file is intentionally empty to overwrite the deprecated TOC file left on installations.
+# This file is used to show unsupported game client message.
+# Supported client flavors load their own TOC file and unsupported ones fall back to this one.
 # Check expansion specific TOC files for the correct data.
+Modules\GameVersionError.lua

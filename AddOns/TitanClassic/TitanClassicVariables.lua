@@ -277,6 +277,7 @@ TITAN_PANEL_SAVED_VARIABLES = {
 	AuxBar2_Transparency = 0.7,
 	AuxBar2_Align = TITAN_PANEL_BUTTONS_ALIGN_LEFT,
 	MainMenuBarXAdj = 0,
+	BuffIconVerticalAdj = -13,
 };
 
 --[[ Titan
@@ -296,6 +297,7 @@ TITAN_ALL_SAVED_VARIABLES = {
 	Silenced = false,
 	-- OrderHallCommandBar Status
 	--OrderHall = true,
+	ShowRegistered = true,
 };
 
 -- The skins released with Titan

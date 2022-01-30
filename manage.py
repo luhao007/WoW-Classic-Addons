@@ -80,7 +80,7 @@ class Manager:
     def get_addon_parent_config(self, addon):
         return self.config.find(f'.//*[@name="{addon}"]../..')
 
-    def get_title(self, addon):
+    def get_title(self, addon: str):
         parts = []
         namespace = {'x': 'https://www.github.com/luhao007'}
 

@@ -310,11 +310,12 @@ function DBM_GUI:CreateBossModPanel(mod)
 	iconstat:SetPoint("TOP", panel.frame, 0, -10)
 	iconstat:SetFontObject(GameFontNormal)
 	iconstat:SetText(L.IconsInUse)
-	for i = 1, 8 do
+	local totalIcons = DBM.Options.ExtendIcons and 16 or 8
+	for i = 1, totalIcons do
 		local icon = panel.frame:CreateTexture()
 		icon:SetTexture(137009) -- "Interface\\TargetingFrame\\UI-RaidTargetingIcons.blp"
-        icon:SetPoint("TOP", panel.frame, 81 - (i * 18), -26)
-        icon:SetSize(16, 16)
+		icon:SetPoint("TOP", panel.frame, 81 - (i * 18), -26)
+		icon:SetSize(16, 16)
 		if not mod.usedIcons or not mod.usedIcons[i] then
 			icon:SetAlpha(0.25)
 		end
@@ -326,6 +327,14 @@ function DBM_GUI:CreateBossModPanel(mod)
 		elseif	i == 6 then		icon:SetTexCoord(0.25,	0.5,	0.25,	0.5)
 		elseif	i == 7 then		icon:SetTexCoord(0.5,	0.75,	0.25,	0.5)
 		elseif	i == 8 then		icon:SetTexCoord(0.75,	1,		0.25,	0.5)
+		elseif	i == 9 then		icon:SetTexCoord(0,		0.25,	0.5,	0.75)
+		elseif	i == 10 then	icon:SetTexCoord(0.25,	0.5,	0.5,	0.75)
+		elseif	i == 11 then	icon:SetTexCoord(0.5,	0.75,	0.5,	0.75)
+		elseif	i == 12 then	icon:SetTexCoord(0.75,	1,		0.5,	0.75)
+		elseif	i == 13 then	icon:SetTexCoord(0,		0.25,	0.75,	1)
+		elseif	i == 14 then	icon:SetTexCoord(0.25,	0.5,	0.75,	1)
+		elseif	i == 15 then	icon:SetTexCoord(0.5,	0.75,	0.75,	1)
+		elseif	i == 16 then	icon:SetTexCoord(0.75,	1,		0.75,	1)
 		end
 	end
 
@@ -373,38 +382,13 @@ function DBM_GUI:CreateBossModPanel(mod)
 								mod.optionFuncs[v]()
 							end
 						end)
-					elseif mod.buttons and mod.buttons[v] then
-						local but = mod.buttons[v]
-						catbutton = catpanel:CreateButton(v, but.width, but.height, but.onClick, but.fontObject)
-					elseif mod.editboxes and mod.editboxes[v] then
-						local editBox = mod.editboxes[v]
-						catbutton = catpanel:CreateEditBox(mod.localization.options[v], "", editBox.width, editBox.height)
-						catbutton:SetScript("OnShow", function(self)
-							catbutton:SetText(mod.Options[v])
-						end)
-						catbutton:SetScript("OnEnterPressed", function(self)
-							if mod.optionFuncs and mod.optionFuncs[v] then
-								mod.optionFuncs[v]()
-							end
-						end)
-					elseif mod.sliders and mod.sliders[v] then
-						local slider = mod.sliders[v]
-						catbutton = catpanel:CreateSlider(mod.localization.options[v], slider.minValue, slider.maxValue, slider.valueStep)
-						catbutton:SetScript("OnShow", function(self)
-							self:SetValue(mod.Options[v])
-						end)
-						catbutton:HookScript("OnValueChanged", function(self)
-							if mod.optionFuncs and mod.optionFuncs[v] then
-								mod.optionFuncs[v]()
-							end
-						end)
 					elseif mod.dropdowns and mod.dropdowns[v] then
 						local dropdownOptions = {}
 						for _, val in ipairs(mod.dropdowns[v]) do
-							dropdownOptions[#dropdownOptions + 1] = {
+							tinsert(dropdownOptions, {
 								text	= mod.localization.options[val],
 								value	= val
-							}
+							})
 						end
 						catbutton = catpanel:CreateDropdown(mod.localization.options[v], dropdownOptions, mod, v, function(value)
 							mod.Options[v] = value

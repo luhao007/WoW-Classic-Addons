@@ -9,7 +9,7 @@ local _
 local FL = LibStub("LibFishing-1.0");
 
 local GSB = FishingBuddy.GetSettingBool;
-local PLANS = FishingBuddy.FishingPlans
+local PLANS = FishingBuddy.FishingPlans;
 
 local CurLoc = GetLocale();
 
@@ -98,7 +98,7 @@ local function PickLure()
             local pole, tempenchant = FL:GetPoleBonus();
             local continent = FL:GetCurrentMapContinent()
             local forcemax = (GSB("BigDraenor") and (continent == FBConstants.DRAENOR)) or GSB("AlwaysLure");
-            local _, bestlure = FL:FindBestLure(tempenchant, 0, false, bigdraenor);
+            local _, bestlure = FL:FindBestLure(tempenchant, 0, false, forcemax);
             -- If we could use a lure based on skill, or we lost a fish.
             if ( not FL:HasLureBuff() ) then
                 if ( bestlure ) then

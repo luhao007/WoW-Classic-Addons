@@ -515,8 +515,9 @@ function TitanLDBRefreshButton()
 --	TitanDebug("LDB: RefreshButton")
 	for name, obj in ldb:DataObjectIterator() do
 		if obj then
-			LDBToTitan:TitanLDBTextUpdate(_, name, "text", (obj.text or ""), obj)
-			LDBToTitan:TitanLDBIconUpdate(_, name, "icon", (obj.icon or iconTitanDefault), obj)
+			local unused = nil
+			LDBToTitan:TitanLDBTextUpdate(unused, name, "text", (obj.text or ""), obj)
+			LDBToTitan:TitanLDBIconUpdate(unused, name, "icon", (obj.icon or iconTitanDefault), obj)
 		else
 --	TitanDebug("LDB: '"..name.."' no refresh")
 		end

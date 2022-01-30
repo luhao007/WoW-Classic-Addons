@@ -2707,7 +2707,7 @@ local class_specs_coords = {
 			--end
 
 			--create the frame to hold the plater resoruce bar
-			Plater.Resources.CreatePlaterResourceFrame() --~resource
+			Plater.Resources.CreateMainResourceFrame() --~resource
 			
 			--run hooks on load screen
 			if (HOOK_LOAD_SCREEN.ScriptAmount > 0) then
@@ -3639,7 +3639,7 @@ local class_specs_coords = {
 							--includes neutral npcs
 							
 							--add the npc in the npcid cache
-							if (not DB_NPCIDS_CACHE [plateFrame [MEMBER_NPCID]] and not IS_IN_OPEN_WORLD and not Plater.ZonePvpType and plateFrame [MEMBER_NPCID]) then
+							if (not DB_NPCIDS_CACHE [plateFrame [MEMBER_NPCID]] and (Plater.ZoneInstanceType == "raid" or Plater.ZoneInstanceType == "party") and plateFrame [MEMBER_NPCID]) then
 								if (UNKNOWN ~= plateFrame [MEMBER_NAME]) then --UNKNOWN is the global string from blizzard
 									DB_NPCIDS_CACHE [plateFrame [MEMBER_NPCID]] = {plateFrame [MEMBER_NAME], Plater.ZoneName}
 								end
@@ -3713,7 +3713,7 @@ local class_specs_coords = {
 			--Plater.CheckRange (plateFrame, true)
 			
 			--resources - TODO:
-			Plater.Resources.UpdatePlaterResourceFramePosition() --~resource
+			Plater.Resources.UpdateResourceFramePosition() --~resource
 			
 			--hooks
 			if (HOOK_NAMEPLATE_ADDED.ScriptAmount > 0) then
@@ -4709,7 +4709,7 @@ function Plater.OnInit() --private --~oninit ~init
 						local castColors = Plater.db.profile.cast_colors
 
 						--check if this cast has a custom color
-						if (castColors[self.spellID]) then
+						if (castColors[self.spellID] and castColors[self.spellID][1]) then
 							self.castColorTexture:Show()
 							local r, g, b = Plater:ParseColors(castColors[self.spellID][2])
 							self.castColorTexture:SetColorTexture(r, g, b)
@@ -6268,7 +6268,7 @@ end
 			end
 		end
 
-		Plater.Resources.UpdatePlaterResourceFramePosition() --~resource
+		Plater.Resources.UpdateResourceFramePosition() --~resource
 	end
 
 	function Plater.UpdateTargetHighlight (plateFrame)

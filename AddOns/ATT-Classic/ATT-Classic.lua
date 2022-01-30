@@ -6,6 +6,22 @@
 local app = select(2, ...);
 local L = app.L;
 
+-- Cache information about the player.
+local _, class, classIndex = UnitClass("player");
+app.Class = class;
+app.ClassIndex = classIndex;
+app.Level = UnitLevel("player");
+app.Race = select(2, UnitRace("player"));
+app.Faction = UnitFactionGroup("player");
+if app.Faction == "Horde" then
+	app.FactionID = Enum.FlightPathFaction.Horde;
+elseif app.Faction == "Alliance" then
+	app.FactionID = Enum.FlightPathFaction.Alliance;
+else
+	-- Neutral Pandaren or... something else. Scourge? Neat.
+	app.FactionID = 0;
+end
+
 -- Performance Cache
 -- While this may seem silly, caching references to commonly used APIs is actually a performance gain...
 local SetPortraitTexture = _G["SetPortraitTexture"];
@@ -2235,7 +2251,7 @@ local function GetCachedSearchResults(search, method, paramA, paramB, ...)
 				end
 			end
 			if #knownBy > 0 then
-				insertionSort(knownBy, function(a, b) return a.name < b.name; end);
+				insertionSort(knownBy, sortByNameSafely);
 				local desc = "Known by ";
 				for i,character in ipairs(knownBy) do
 					if i > 1 then desc = desc .. ", "; end
@@ -2342,6 +2358,7 @@ fieldCache["mapID"] = {};
 fieldCache["objectID"] = {};
 fieldCache["questID"] = {};
 fieldCache["requireSkill"] = {};
+fieldCache["sourceQuestID"] = {};
 fieldCache["speciesID"] = {};
 fieldCache["spellID"] = {};
 fieldCache["tierID"] = {};
@@ -2485,6 +2502,11 @@ fieldConverters = {
 	["races"] = function(group, value)
 		if not containsValue(value, app.RaceIndex) then
 			rawset(group, "nmr", true);	-- "Not My Race"
+		end
+	end,
+	["sourceQuests"] = function(group, value)
+		for i,questID in ipairs(value) do
+			CacheField(group, "sourceQuestID", questID);
 		end
 	end,
 };
@@ -6122,7 +6144,7 @@ app.OnUpdateForOmarionsHandbook = function(t)
 		return false;
 	else
 		for spellID,skills in pairs(app.CurrentCharacter.ActiveSkills) do
-			if (spellID == BLACKSMITHING or spellID == LEATHERWORKING or spellID == TAILORING) and skills[1] > 290 then
+			if (spellID == BLACKSMITHING or spellID == LEATHERWORKING or spellID == TAILORING) and skills[1] > 270 then
 				rawset(t, "collectible", false);
 				t.visible = false;
 				return true;
@@ -6281,6 +6303,28 @@ local questFields = {
 		return IsQuestFlaggedCompletedForObject(t) == 1;
 	end,
 	
+	["collectibleAsBreadcrumb"] = function(t)
+		if app.CollectibleQuests then
+			if C_QuestLog.IsOnQuest(t.questID) or IsQuestFlaggedCompletedForObject(t) then
+				return true;
+			end
+			local results = SearchForField("sourceQuestID", t.questID);
+			if results and #results > 0 then
+				for i,o in ipairs(results) do
+					if o.collectible and not o.collected then
+						return true;
+					end
+				end
+			end
+		end
+		return false;
+	end,
+	["collectedAsBreadcrumb"] = function(t)
+		return IsQuestFlaggedCompletedForObject(t);
+	end,
+	["textAsBreadcrumb"] = function(t)
+		return "|cffcbc3e3" .. t.name .. "|r";
+	end,
 	["collectibleAsReputation"] = function(t)
 		return app.CollectibleQuests and ((not t.repeatable and not t.isBreadcrumb) or C_QuestLog.IsOnQuest(t.questID) or (t.maxReputation and (app.CollectibleReputations or not t.repeatable)));
 	end,
@@ -6294,14 +6338,29 @@ local questFields = {
 app.BaseQuest = app.BaseObjectFields(questFields);
 
 local fields = RawCloneData(questFields);
+fields.collectible = questFields.collectibleAsBreadcrumb;
+fields.collected = questFields.collectedAsBreadcrumb;
+fields.text = questFields.textAsBreadcrumb;
+app.BaseQuestAsBreadcrumb = app.BaseObjectFields(fields);
+
+local fields = RawCloneData(questFields);
 fields.collectible = questFields.collectibleAsReputation;
 fields.collected = questFields.collectedAsReputation;
 app.BaseQuestWithReputation = app.BaseObjectFields(fields);
 app.CreateQuest = function(id, t)
-	if t and rawget(t, "maxReputation") then
-		return setmetatable(constructor(id, t, "questID"), app.BaseQuestWithReputation);
+	if t then
+		if rawget(t, "maxReputation") then
+			return setmetatable(constructor(id, t, "questID"), app.BaseQuestWithReputation);
+		elseif rawget(t, "isBreadcrumb") then
+			return setmetatable(constructor(id, t, "questID"), app.BaseQuestAsBreadcrumb);
+		end
 	end
 	return setmetatable(constructor(id, t, "questID"), app.BaseQuest);
+end
+app.CreateQuestWithFactionData = function(t)
+	local questData = app.FactionID == Enum.FlightPathFaction.Horde and t.hqd or t.aqd;
+	for key,value in pairs(questData) do t[key] = value; end
+	return setmetatable(t, app.BaseQuest);
 end
 
 local fields = {
@@ -6518,7 +6577,8 @@ app.GetSpellName = function(spellID, rank)
 	end
 end
 app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
-	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID) then
+	if IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
+		or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true) then
 		return true;
 	end
 	if rank then
@@ -6529,7 +6589,8 @@ app.IsSpellKnown = function(spellID, rank, ignoreHigherRanks)
 				spellName = spellName .. " (" .. RANK .. " ";
 				for i=maxRank,rank,-1 do
 					spellID = app.SpellNameToSpellID[spellName .. i .. ")"];
-					if spellID and (IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID)) then
+					if spellID and (IsPlayerSpell(spellID) or IsSpellKnown(spellID) or IsSpellKnown(spellID, true)
+						or IsSpellKnownOrOverridesKnown(spellID) or IsSpellKnownOrOverridesKnown(spellID, true)) then
 						return true;
 					end
 				end
@@ -7461,7 +7522,7 @@ local function CreateMiniListForGroup(group)
 									if sq.parent and sq.parent.questID == questID then
 										sq = sq.parent;
 									end
-									if app.GroupFilter(sq) and not sq.isBreadcrumb then
+									if app.GroupFilter(sq) then
 										if app.RecursiveClassAndRaceFilter(sq) and questID == sourceQuestID then
 											if not found or (not found.sourceQuests and sq.sourceQuests) then
 												found = sq;
@@ -8465,6 +8526,11 @@ local function RowOnEnter(self)
 				GameTooltipTextRight1:SetText(right);
 				GameTooltipTextRight1:Show();
 			end
+		end
+		
+		-- Show Breadcrumb information
+		if reference.isBreadcrumb then
+			GameTooltip:AddLine("This is a breadcrumb quest.");
 		end
 		
 		-- Show lockout information about an Instance (Raid or Dungeon)
@@ -12955,32 +13021,13 @@ app.events.VARIABLES_LOADED = function()
 	app.FlightPathDB = nil;
 	
 	-- Cache information about the player.
-	local _, class, classIndex = UnitClass("player");
-	local classInfo = C_CreatureInfo.GetClassInfo(classIndex);
-	local raceName, race = UnitRace("player");
-	app.Class = class;
-	app.ClassIndex = classIndex;
-	app.Level = UnitLevel("player");
-	local raceIndex = app.RaceDB[race];
-	if type(raceIndex) == "table" then
-		local factionGroup = UnitFactionGroup("player");
-		raceIndex = raceIndex[factionGroup];
-	end
-	app.Race = race;
-	app.RaceIndex = raceIndex;
+	local raceIndex = app.RaceDB[app.Race];
+	app.RaceIndex = type(raceIndex) == "table" and raceIndex[UnitFactionGroup("player")] or raceIndex;
 	local name, realm = UnitName("player");
 	if not realm then realm = GetRealmName(); end
 	app.GUID = UnitGUID("player");
+	local classInfo = C_CreatureInfo.GetClassInfo(classIndex);
 	app.Me = "|c" .. (RAID_CLASS_COLORS[classInfo.classFile].colorStr or "ff1eff00") .. name .. "-" .. realm .. "|r";
-	app.Faction = UnitFactionGroup("player");
-	if app.Faction == "Horde" then
-		app.FactionID = Enum.FlightPathFaction.Horde;
-	elseif app.Faction == "Alliance" then
-		app.FactionID = Enum.FlightPathFaction.Alliance;
-	else
-		-- Neutral Pandaren or... something else. Scourge? Neat.
-		app.FactionID = 0;
-	end
 	
 	-- Character Data Storage
 	local characterData = ATTCharacterData;
@@ -12993,16 +13040,16 @@ app.events.VARIABLES_LOADED = function()
 		currentCharacter = {};
 		characterData[app.GUID] = currentCharacter;
 	end
-	if not currentCharacter.text then currentCharacter.text = app.Me; end
-	if not currentCharacter.name and name then currentCharacter.name = name; end
-	if not currentCharacter.realm and realm then currentCharacter.realm = realm; end
-	if not currentCharacter.guid and app.GUID then currentCharacter.guid = app.GUID; end
-	if not currentCharacter.lvl and app.Level then currentCharacter.lvl = app.Level; end
-	if not currentCharacter.factionID and app.FactionID then currentCharacter.factionID = app.FactionID; end
-	if not currentCharacter.classID and app.ClassIndex then currentCharacter.classID = app.ClassIndex; end
-	if not currentCharacter.raceID and app.RaceIndex then currentCharacter.raceID = app.RaceIndex; end
-	if not currentCharacter.class and class then currentCharacter.class = class; end
-	if not currentCharacter.race and race then currentCharacter.race = race; end
+	if name then currentCharacter.name = name; end
+	if realm then currentCharacter.realm = realm; end
+	if app.Me then currentCharacter.text = app.Me; end
+	if app.GUID then currentCharacter.guid = app.GUID; end
+	if app.Level then currentCharacter.lvl = app.Level; end
+	if app.FactionID then currentCharacter.factionID = app.FactionID; end
+	if app.ClassIndex then currentCharacter.classID = app.ClassIndex; end
+	if app.RaceIndex then currentCharacter.raceID = app.RaceIndex; end
+	if class then currentCharacter.class = class; end
+	if race then currentCharacter.race = race; end
 	if not currentCharacter.Achievements then currentCharacter.Achievements = {}; end
 	if not currentCharacter.ActiveSkills then currentCharacter.ActiveSkills = {}; end
 	if not currentCharacter.BattlePets then currentCharacter.BattlePets = {}; end

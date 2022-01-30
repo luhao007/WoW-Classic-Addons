@@ -737,6 +737,7 @@ end
 -- Player Movement Speed
 local function MovementSpeed()
 	local currentSpeed, runSpeed, flightSpeed, swimSpeed = GetUnitSpeed("player")
+	-- print(currentSpeed, runSpeed, flightSpeed, swimSpeed)
 	local playerSpeed
 	if IsSwimming() then
 		playerSpeed = (swimSpeed)

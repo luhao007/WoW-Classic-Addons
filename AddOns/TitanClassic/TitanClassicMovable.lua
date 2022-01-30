@@ -491,7 +491,7 @@ local MData = {
 			then
 				yOffset = (-TicketStatusFrame:GetHeight())
 			else
-				yOffset = -13
+				yOffset = TitanPanelGetVar("BuffIconVerticalAdj")  --  -13
 			end
 			MoveFrame("BuffFrame", yOffset, TITAN_PANEL_PLACE_TOP, force) end, 
 		addonAdj = false, },

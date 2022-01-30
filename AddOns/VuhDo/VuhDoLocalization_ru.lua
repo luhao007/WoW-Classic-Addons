@@ -1,4 +1,4 @@
-﻿if (GetLocale() ~= "ruRU") then
+if (GetLocale() ~= "ruRU") then
 	return;
 end
 -- Class Names
@@ -429,6 +429,7 @@ VUHDO_I18N_DISABLE_BY_VERSION = "!!! VUHDO ОТКЛЮЧЕН !!! Эта верс�
 VUHDO_I18N_BOUQUET_STATUS_ALTERNATE_POWERS = "Полоса состояния: Альтернативная энергия %"
 VUHDO_I18N_BOUQUET_ALTERNATE_POWERS_ABOVE = "Флаг: Альтернативная энергия > %";
 VUHDO_I18N_DEF_ALTERNATE_POWERS = "Альтернативная энергия";
+VUHDO_I18N_DEF_TANK_CDS_EXTENDED = "Tank Cooldowns extd";
 VUHDO_I18N_BOUQUET_HOLY_POWER_EQUALS = "Флаг: Энергия Света ==";
 VUHDO_I18N_DEF_PLAYER_HOLY_POWER = "Энергия Света";
 VUHDO_I18N_CUSTOM_ICON_ONE_THIRD = "Трети: Одна";
@@ -465,7 +466,9 @@ VUHDO_I18N_DEF_ROLE_COLOR = "Цвет роли";
 VUHDO_I18N_BOUQUET_ROLE_TANK = "Флаг: Роль - танк";
 VUHDO_I18N_BOUQUET_ROLE_DAMAGE = "Флаг: Роль - ДД";
 VUHDO_I18N_BOUQUET_ROLE_HEALER = "Флаг: Роль - Целитель";
+
 VUHDO_I18N_BOUQUET_STACKS = "Флаг: Стаки >";
+VUHDO_I18N_DEF_PLAYER_CHI = "Player Chi";
 
 VUHDO_I18N_BOUQUET_TARGET_RAID_ICON = "Icon: Target's Raid Symbol";
 VUHDO_I18N_BOUQUET_OWN_CHI_EQUALS = "Flag: Own Chi ==";
@@ -474,8 +477,14 @@ VUHDO_I18N_CUSTOM_ICON_FIVE_THIRDS = "Thirds: Five";
 VUHDO_I18N_DEF_RAID_CDS = "Raid Cooldowns";
 VUHDO_I18N_BOUQUET_STATUS_CLASS_COLOR_IF_ACTIVE = "Flag: Class Color if active";
 
+VUHDO_I18N_LETHAL_POISONS = "Lethal Poisons";
+VUHDO_I18N_NON_LETHAL_POISONS = "Non-lethal Poisons";
+VUHDO_I18N_DEF_COUNTER_SHIELD_ABSORB = "Counter: All Shield Absorb #k";
+VUHDO_I18N_BUFFC_WEAPON_ENCHANT_OFF = "Weapon Enchant (offhand)";
+
 VUHDO_I18N_DEF_PVP_FLAGS="PvP Flag Carriers";
 VUHDO_I18N_DEF_STATUS_SHIELD = "Statusbar: Shield";
+
 VUHDO_I18N_TARGET = "Target";
 VUHDO_I18N_FOCUS = "Focus";
 VUHDO_I18N_DEF_STATUS_OVERSHIELDED = "Statusbar: Overshielded";
@@ -557,3 +566,8 @@ VUHDO_I18N_PLAY_SOUND_FILE_CUSTOM_DEBUFF_ERR = "Could not play sound \"%s\" for 
 -- 3.122
 VUHDO_I18N_BOUQUET_STATUS_POWER_TANK_ONLY = "Statusbar: Power % (Tank Only)";
 VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY = "Manabars: Power (Tank Only)";
+
+-- 3.131
+VUHDO_I18N_DEF_COUNTER_HEAL_ABSORB = "Counter: All Heal Absorb #k";
+VUHDO_I18N_DEF_STATUS_HEAL_ABSORB = "Statusbar: Heal Absorb";
+

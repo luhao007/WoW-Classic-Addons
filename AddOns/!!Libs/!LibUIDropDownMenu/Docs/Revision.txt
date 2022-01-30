@@ -1,11 +1,17 @@
-$Id: Revision.txt 82 2021-06-30 13:28:50Z arithmandar $
+$Id: Revision.txt 84 2022-01-26 14:56:53Z arithmandar $
 
 Revision History:
 =================
 
+v4.07.9020042069 (2022/01/26)
+-----------------------------
+- Toc update to support WoW 9.1.5
+- function sync with build 42069
+- fixed the issue that backdrop was not properly set
+
 v4.06.9010039185 (2021/06/30)
 -----------------------------
-- Toc update to suppport WoW 9.1.0
+- Toc update to support WoW 9.1.0
 - function sync with build 39185
 
 v4.05.9000538556 (2021/06/14)
@@ -31,7 +37,7 @@ v4.01.9000236639 (2020/12/14)
 
 v4.00.9000236639 (2020/11/22)
 -----------------------------
-- Toc update to suppport WoW 9.0.2
+- Toc update to support WoW 9.0.2
 - LibUIDropDownMenu
   - Set major version to 4.0
   - Migrate all global functions to be under library tables

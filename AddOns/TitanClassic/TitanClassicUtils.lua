@@ -1063,6 +1063,57 @@ function TitanPanelRightClickMenu_ToggleColoredText(value)
 	TitanPanelButton_UpdateButton(value, 1);
 end
 
+--[[ API
+NAME: TitanPanelRightClickMenu_AddToggleRightSide
+DESC: Menu - add a toggle Right Side (localized) command at the given level in the form of a button. Titan will properly control the "DisplayOnRightSide"
+VAR: id - id of the plugin
+VAR: level - level to put the line
+OUT:  None
+--]]
+function TitanPanelRightClickMenu_AddToggleRightSide(id, level)
+    -- copy of TitanPanelRightClickMenu_AddToggleVar adding a remove button
+    local info = {};
+    info.text = L["TITAN_CLOCK_MENU_DISPLAY_ON_RIGHT_SIDE"];
+    info.value = {id, "DisplayOnRightSide"};
+    info.func = function()
+        local bar = TitanUtils_GetWhichBar(id)
+        TitanPanelRightClickMenu_ToggleVar({id, "DisplayOnRightSide"})
+        TitanPanel_RemoveButton(id);
+        TitanUtils_AddButtonOnBar(bar, id)
+    end
+    info.checked = TitanGetVar(id, "DisplayOnRightSide");
+    info.keepShownOnClick = 1;
+    L_UIDropDownMenu_AddButton(info, level);
+end
+
+--[[ API
+NAME: TitanPanelRightClickMenu_SetCustomBackdrop
+DESC: This will set the backdrop of the given button. This is used for custom created controls such as Clock offset or Volume sliders to give a consistent look.
+VAR: frame - the control frame of the plugin
+OUT:  None
+--]]
+function TitanPanelRightClickMenu_SetCustomBackdrop(frame)
+	frame:SetBackdrop({
+		bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = true,
+		tileEdge = true,
+		insets = { left = 1, right = 1, top = 1, bottom = 1 },
+		tileSize = 8,
+		edgeSize = 8,
+	})
+
+	frame:SetBackdropBorderColor(
+		TOOLTIP_DEFAULT_COLOR.r, 
+		TOOLTIP_DEFAULT_COLOR.g, 
+		TOOLTIP_DEFAULT_COLOR.b);
+	frame:SetBackdropColor(
+		TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, 
+		TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, 
+		TOOLTIP_DEFAULT_BACKGROUND_COLOR.b
+		, 1);
+end
+
 --------------------------------------------------------------
 --
 -- Plugin manipulation routines
@@ -1611,17 +1662,21 @@ function TitanUtils_RegisterPluginList()
 	local id
 	local cnt = 0
 	if TitanPluginToBeRegisteredNum > 0 then
-		if not Titan__InitializedPEW and not TitanAllGetVar("Silenced") then
-			TitanDebug(L["TITAN_PANEL_REGISTER_START"], "normal")
+		if not Titan__InitializedPEW then
+			if TitanAllGetVar("ShowRegistered") then
+				TitanPrint(L["TITAN_PANEL_REGISTER_START"], "normal")
+			end
 		end
 		for index, value in ipairs(TitanPluginToBeRegistered) do
 			if TitanPluginToBeRegistered[index] then
-				TitanUtils_RegisterPlugin(TitanPluginToBeRegistered[index])
+					TitanUtils_RegisterPlugin(TitanPluginToBeRegistered[index])
 			end
 			cnt = cnt + 1
 		end
-		if not Titan__InitializedPEW and not TitanAllGetVar("Silenced") then
-			TitanDebug((L["TITAN_PANEL_REGISTER_END"].." "..cnt), "normal")
+		if not Titan__InitializedPEW then
+			if TitanAllGetVar("ShowRegistered") then
+				TitanPrint((L["TITAN_PANEL_REGISTER_END"].." "..cnt), "normal")
+			end
 		end
 	end
 end

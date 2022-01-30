@@ -465,6 +465,15 @@ end
 
 
 --
+function VUHDO_getHealAbsorbBarTexture(aHealthBar)
+
+	return _G[aHealthBar:GetName() .. "HeAbBar"];
+
+end
+
+
+
+--
 local VUHDO_STATUSBAR_LEFT_TO_RIGHT = 1;
 local VUHDO_STATUSBAR_RIGHT_TO_LEFT = 2;
 local VUHDO_STATUSBAR_BOTTOM_TO_TOP = 3;

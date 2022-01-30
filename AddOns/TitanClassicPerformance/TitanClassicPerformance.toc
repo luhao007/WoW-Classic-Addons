@@ -1,11 +1,11 @@
 ## Interface: 20502
 ## Author: Titan Panel Development Team (http://www.titanpanel.org)
-## Version: 1.4.1.20502
+## Version: 1.5.0.20503
 ## Dependencies: TitanClassic
 ## OptionalDeps: 
 ## SavedVariables: 
 
-## Title: Titan Panel Classic [|cffeda55fPerformance|r] |cff00aa001.4.1.20502|r
+## Title: Titan Panel Classic [|cffeda55fPerformance|r] |cff00aa001.5.0.20503|r
 ## Notes: Adds FPS and Garbage collection information to Titan Panel
 ## Title-zhCN: |cFFFFE00A<|r|cFFA330C9界面|r|cFFFFE00A>|r |cFFFFFFFF泰坦面板|r |cFF69CCF0性能|r
 ## Notes-zhCN: 泰坦面板的性能模块

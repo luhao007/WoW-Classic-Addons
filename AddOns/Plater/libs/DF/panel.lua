@@ -1985,17 +1985,25 @@ local SimplePanel_frame_backdrop_border_color = {0, 0, 0, 1}
 function DF:CreateScaleBar (frame, config)
 	local scaleBar, text = DF:CreateSlider (frame, 120, 14, 0.6, 1.6, 0.1, config.scale, true, "ScaleBar", nil, "Scale:", DF:GetTemplate ("slider", "OPTIONS_SLIDER_TEMPLATE"), DF:GetTemplate ("font", "ORANGE_FONT_TEMPLATE"))
 	scaleBar.thumb:SetWidth(24)
+	scaleBar:SetValueStep(0.1)
+	scaleBar:SetObeyStepOnDrag()
+	scaleBar.mouseDown = false
 
 	text:SetPoint ("topleft", frame, "topleft", 12, -7)
 	scaleBar:SetFrameLevel (DF.FRAMELEVEL_OVERLAY)
 	scaleBar.OnValueChanged = function (_, _, value)
-		config.scale = value
-		if (not scaleBar.IsValueChanging) then
-			frame:SetScale (config.scale)
+		if (scaleBar.mouseDown) then
+			config.scale = value
 		end
 	end
+
+	scaleBar:SetHook ("OnMouseDown", function()
+		scaleBar.mouseDown = true
+	end)
+
 	scaleBar:SetHook ("OnMouseUp", function()
-		frame:SetScale (config.scale)
+		frame:SetScale(config.scale)
+		scaleBar.mouseDown = false
 	end)
 	
 	scaleBar:SetAlpha (0.70)
@@ -7360,15 +7368,16 @@ DF.StatusBarFunctions = {
 		self:RunHooksForWidget ("OnHealthMaxChange", self, self.displayedUnit)
 	end
 
-	healthBarMetaFunctions.UpdateHealth = function (self)
+	healthBarMetaFunctions.UpdateHealth = function(self)
 		-- update max health regardless to avoid weird wrong values on UpdateMaxHealth sometimes
 		-- local maxHealth = UnitHealthMax (self.displayedUnit)
 		-- self:SetMinMaxValues (0, maxHealth)
 		-- self.currentHealthMax = maxHealth
 		
-		local health = UnitHealth (self.displayedUnit)
+		self.oldHealth = self.currentHealth
+		local health = UnitHealth(self.displayedUnit)
 		self.currentHealth = health
-		PixelUtil.SetStatusBarValue (self, health)
+		PixelUtil.SetStatusBarValue(self, health)
 
 		self:RunHooksForWidget ("OnHealthChange", self, self.displayedUnit)
 	end
@@ -8402,7 +8411,7 @@ DF.CastFrameFunctions = {
 			self:SetAlpha (1)
 			self.Icon:SetTexture (texture)
 			self.Icon:Show()
-			self.Text:SetText (text)
+			self.Text:SetText (text or name)
 			
 			if (self.Settings.ShowCastTime and self.Settings.CanLazyTick) then
 				self.percentText:Show()

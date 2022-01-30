@@ -1,6 +1,6 @@
 ## Interface: 20502
 ## Author: Iza@Gilneas, humfras, Ivaria@Hyjal
-## Version: 3.129-tbcc
+## Version: 3.131-tbcc
 ## Dependencies: VuhDo
 ## LoadOnDemand: 0
 ## SavedVariables: VUHDO_OPTIONS_SETTINGS

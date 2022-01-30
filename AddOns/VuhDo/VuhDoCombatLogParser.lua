@@ -45,7 +45,6 @@ local function VUHDO_addUnitHealth(aUnit, aDelta)
 		end
 		
 		tInfo["loghealth"] = tNewHealth;
-		tInfo["updateTime"] = GetTime();
 		
 		if tInfo["health"] ~= tNewHealth then
 			VUHDO_updateHealth(aUnit, 12); -- VUHDO_UPDATE_HEALTH_COMBAT_LOG

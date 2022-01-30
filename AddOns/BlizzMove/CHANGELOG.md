@@ -1,6 +1,9 @@
-# BlizzMove
+# [v3.2.9](https://github.com/Kiatra/BlizzMove/tree/v3.2.9) (2021-12-31)
 
-## [v3.2.7](https://github.com/Kiatra/BlizzMove/tree/v3.2.7) (2021-12-03)
-[Full Changelog](https://github.com/Kiatra/BlizzMove/commits/v3.2.7) [Previous Releases](https://github.com/Kiatra/BlizzMove/releases)
+[Full Changelog](https://github.com/Kiatra/BlizzMove/compare/v3.2.8...v3.2.9)
 
-- Implement a workaround for a blizzard bug in the LFG frame  
+Mark W (2):
+
+- Fixed an issue with Adventure Journal tooltips
+- Added Archeology digsite frame and Achievement search result frame
+

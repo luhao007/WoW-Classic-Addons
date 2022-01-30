@@ -543,6 +543,7 @@ local VUHDO_DEFAULT_CONFIG = {
 	["SHOW_LIBHEALCOMM_INCOMING"] = false,
 	["SHOW_SHIELD_BAR"] = true,
 	["SHOW_OVERSHIELD_BAR"] = false,
+	["SHOW_HEAL_ABSORB_BAR"] = true,
 
 	["RANGE_CHECK_DELAY"] = 260,
 
@@ -1076,6 +1077,130 @@ function VUHDO_loadDefaultConfig()
 		35859   -- Nether Vapor
 	);
 
+	--  TBCC phase 3
+	VUHDO_addCustomSpellIds(51, 
+		-- [[ Black Temple ]]
+		-- Trash
+		41170,  -- Curse of the Bleakheart
+		41334,  -- Polymorph
+		39580,  -- Lightning Cloud
+		39647,  -- Curse of Mending
+		-- 40099,  -- Vile Slime
+		40103,  -- Sludge Nova
+		-- 41382,  -- Blizzard
+		41346,  -- Poisonous Throw
+		41406,  -- Dementia
+		13444,  -- Sunder Armor
+		39672,  -- Curse of Agony
+		41351,  -- Curse of Vitality
+		39665,  -- Wound Poison
+		41345,  -- Infatuation
+		41409,  -- Dementia
+		24698,  -- Gouge
+		41193,  -- Cloud of Disease
+		40078,  -- Poison Spit
+		40090,  -- Hurricane
+		25646,  -- Mortal Wound
+		41190,  -- Mind-numbing Poison
+		41355,  -- Shadow Word: Pain
+		32588,  -- Concussion Blow
+		41186,  -- Wyvern Sting
+		24336,  -- Wyvern Sting
+		13005,  -- Hammer of Justice
+		41171,  -- Skeleton Shot
+		6945,   -- Chest Pains
+		41392,  -- Riposte
+		41338,  -- Love Tap
+		40892,  -- Fixate
+		-- 40946,  -- Rain of Chaos
+		-- 39671,  -- Rain of Chaos
+		40864,  -- Throbbing Stun
+		39674,  -- Banish
+		3609,   -- Paralyzing Poison
+		41213,  -- Throw Shield
+		34654,  -- Blind
+		40936,  -- War Stomp
+		41238,  -- Blood Drain
+		41978,  -- Debilitating Poison
+		41150,  -- Fear
+		41274,  -- Fel Stomp
+		41396,  -- Sleep
+		41468,  -- Hammer of Justice
+		-- High Warlod Naj'entus
+		39837,  -- Impaling Spine
+		-- Supremus
+		40953,  -- Immolation
+		40253,  -- Molten Flame
+		-- 40875,  -- Freeze
+		-- Shade of Akama
+		-- 41092,  -- Carnivorous Bite
+		-- 42023,  -- Rain of Fire
+		41047,  -- Shadow Resonance
+		-- Teron Gorefiend
+		40251,  -- Shadow of Death
+		40243,  -- Crushing Shadows
+		40239,  -- Incinerate
+		-- Reliquary of Souls
+		41294,  -- Fixate
+		41426,  -- Spirit Shock
+		41303,  -- Soul Drain
+		41376,  -- Spite
+		41377,  -- Spite
+		41410,  -- Deaden
+		-- Gurtogg Bloodboil
+		40481,  -- Acidic Wound
+		42005,  -- Bloodboil
+		40604,  -- Fel Rage
+		40508,  -- Fel-Acid Breath
+		40491,  -- Bewildering Strike
+		40597,  -- Eject
+		40599,  -- Arcing Smash
+		-- Mother Shahraz
+		41001,  -- Fatal Attraction
+		40860,  -- Vile Beam
+		-- The Illidari Council
+		-- 41541,  -- Consecration
+		-- 41482,  -- Blizzard
+		-- 41481,  -- Flamestrike
+		41461,  -- Judgement of Blood
+		41485,  -- Deadly Poison
+		41472,  -- Divine Wrath
+		-- Illidan Stormrage
+		41917,  -- Parasitic Shadowfiend
+		41914,  -- Parasitic Shadowfiend
+		40932,  -- Agonizing Flames
+		40585,  -- Dark Barrage
+		-- [[ Hyjal Summit ]]
+		-- Trash
+		31651,  -- Banshee Curse
+		31724,  -- Flame Buffet
+		31610,  -- Knockdown
+		42205,  -- Residue of Eternity
+		42201,  -- Eternal Silence
+		-- Rage Winterchill
+		31258,  -- Death & Decay
+		31249,  -- Icebolt
+		31250,  -- Frost Nova
+		-- Anetheron
+		31306,  -- Carrion Swarm
+		31298,  -- Sleep
+		-- Kaz'rogal
+		31477,  -- Cripple
+		31480,  -- War Stomp
+		-- 31447,  -- Mark of Kaz'rogal
+		-- Azgalor
+		31341,  -- Unquenchable Flames
+		31406,  -- Cripple
+		-- 31340,  -- Rain of Fire
+		31408,  -- War Stomp
+		31347,  -- Doom
+		-- Archimonde
+		31944,  -- Doomfire
+		31972,  -- Grip of the Legion
+		32014,  -- Air Burst
+		31970   -- Fear
+	);
+
 	local debuffRemovalList = {};
 
 	for tIndex, tName in pairs(VUHDO_CONFIG["CUSTOM_DEBUFF"]["STORED"]) do
@@ -1236,6 +1361,11 @@ local VUHDO_DEFAULT_PANEL_SETUP = {
 		},
 		["OVERSHIELD"] = {
 			["R"] = 0.35, ["G"] = 0.52, ["B"] = 1, ["O"] = 1,
+			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
+			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
+		},
+		["HEAL_ABSORB"] = {
+			["R"] = 1, ["G"] = 0.4, ["B"] = 0.4, ["O"] = 1,
 			["TR"] = 0.35, ["TG"] = 0.52, ["TB"] = 1, ["TO"] = 1,
 			["useText"] = false, ["useBackground"] = true,	["useOpacity"] = true,
 		},

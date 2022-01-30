@@ -1,10 +1,10 @@
-lightweight tag 24bc80defc4ac4a37f57e14279ee367e23d31588 v1.9.3-v2.5.2
+lightweight tag 76eba39a378eca6cf222936f141454fe901b0f88 v1.9.5-v2.5.2
 Author:	Boshi Lian <farmer1992@gmail.com>
-Date:	Mon Nov 22 10:50:49 2021 -0800
+Date:	Tue Jan 4 12:22:38 2022 -0800
 
-commit 24bc80defc4ac4a37f57e14279ee367e23d31588
+commit 76eba39a378eca6cf222936f141454fe901b0f88
 Author: Boshi Lian <farmer1992@gmail.com>
-Date:   Mon Nov 22 10:50:28 2021 -0800
+Date:   Tue Jan 4 12:22:38 2022 -0800
 
-    fix bad height
+    unlock bid frame totally
 

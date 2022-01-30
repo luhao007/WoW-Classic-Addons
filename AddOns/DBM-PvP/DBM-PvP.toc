@@ -1,6 +1,6 @@
 ## Interface: 20502
 ## Author: Nitram/Tandanu/Arta
-## Version: r129
+## Version: r130
 ## RequiredDeps: DBM-Core
 ## LoadOnDemand: 1
 ## SavedVariables: DBMPvP_AllSavedVars

@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101082
+local MINOR_VERSION = 101083
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 

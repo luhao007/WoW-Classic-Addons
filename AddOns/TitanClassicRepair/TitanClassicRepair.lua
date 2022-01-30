@@ -94,7 +94,7 @@ function TitanPanelRepairButton_OnLoad(self)
 			ShowLabelText = true,
 			ShowRegularText = false,
 			ShowColoredText = true,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true,
 		},
 		savedVariables = {
 			ShowIcon = 1,
@@ -119,6 +119,7 @@ function TitanPanelRepairButton_OnLoad(self)
 			ShowItems = true,
 			ShowDiscounts = true,
 			ShowCosts = true,
+			DisplayOnRightSide = false,
 		}
 	};
 
@@ -1360,6 +1361,7 @@ local info;
 	TitanPanelRightClickMenu_AddToggleIcon(TITAN_REPAIR_ID);
 	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_REPAIR_ID);
 	TitanPanelRightClickMenu_AddToggleColoredText(TITAN_REPAIR_ID);
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_REPAIR_ID);
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_REPAIR_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end

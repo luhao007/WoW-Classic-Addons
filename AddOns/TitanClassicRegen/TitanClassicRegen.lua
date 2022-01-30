@@ -59,14 +59,15 @@ function TitanPanelRegenButton_OnLoad(self)
 			  ShowLabelText = true,
 			  ShowRegularText = false,
 			  ShowColoredText = false,
-			  DisplayOnRightSide = false
+			  DisplayOnRightSide = true,
 		  },
           savedVariables = {
               ShowLabelText = 1,
               ShowHPRegen = 1,
               ShowPercentage = false,
-              ShowColoredText = false
-          }
+              ShowColoredText = false,
+ 			  DisplayOnRightSide = false,
+         }
      };
 
      self:RegisterEvent("UNIT_HEALTH");
@@ -271,6 +272,7 @@ function TitanPanelRightClickMenu_PrepareRegenMenu()
 	L_UIDropDownMenu_AddButton(info);          
 
 	TitanPanelRightClickMenu_AddToggleLabelText("TitanRegen");
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_REGEN_ID);
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], id, TITAN_PANEL_MENU_FUNC_HIDE);     
 end
 

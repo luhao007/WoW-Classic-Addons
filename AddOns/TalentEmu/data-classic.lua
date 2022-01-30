@@ -22,11 +22,9 @@ local _patch_version, _build_number, _build_date, _toc_version = GetBuildInfo();
 ]]
 
 NS.BUILD = "CLASSIC";
-NS.MAXLEVEL = 60;
 NS.MAX_NUM_TIER = 7;
 NS.MAX_NUM_COL = 4;
 NS.MAX_NUM_TALENTS = 28;
-NS.MAX_LEVEL = 60;
 --
 NS._classTab = {
 	DRUID =

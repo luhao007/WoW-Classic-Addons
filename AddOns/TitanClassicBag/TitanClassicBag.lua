@@ -266,7 +266,7 @@ function TitanPanelBagButton_OnLoad(self)
 			ShowLabelText = true,
 			ShowRegularText = false,
 			ShowColoredText = true,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true,
 		},
 		savedVariables = {
 			ShowUsedSlots = 1,
@@ -277,6 +277,7 @@ function TitanPanelBagButton_OnLoad(self)
 			ShowIcon = 1,
 			ShowLabelText = 1,
 			ShowColoredText = 1,
+			DisplayOnRightSide = false,
 		}
 	};
 
@@ -521,6 +522,7 @@ function TitanPanelRightClickMenu_PrepareBagMenu()
 	TitanPanelRightClickMenu_AddToggleIcon(TITAN_BAG_ID);
 	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_BAG_ID);
 	TitanPanelRightClickMenu_AddToggleColoredText(TITAN_BAG_ID);
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_BAG_ID);
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_BAG_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end

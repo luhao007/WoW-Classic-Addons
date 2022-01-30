@@ -4,11 +4,13 @@ from pathlib import Path
 
 import instawow.cli
 import instawow.db
-from instawow.config import Config, setup_logging
+from instawow.common import Flavour
+from instawow.config import GlobalConfig, Config, setup_logging
 from instawow.models import Pkg, PkgList
 from instawow.resolvers import Defn
 from instawow.results import PkgUpToDate
-from instawow.manager import Manager
+from instawow.manager import Manager, prepare_database
+from instawow.utils import evolve_model_obj
 
 import sqlalchemy
 
@@ -27,13 +29,16 @@ class InstawowManager:
         addon_dir = Path(os.getcwd()) / 'Addons/'
         if lib:
             addon_dir /= '!!Libs'
-        config = Config(addon_dir=addon_dir, game_flavour=game_flavour, profile=self.profile)
+        global_config = GlobalConfig()
+        global_config.write()
+        config = Config(global_config = global_config, addon_dir=addon_dir, game_flavour=Flavour(game_flavour), profile=self.profile)
         config.write()
 
-        setup_logging(config)
+        setup_logging(config.logging_dir)
         instawow.cli._apply_patches()
 
-        self.manager = Manager.from_config(config)
+        self.conn = prepare_database(config).connect()
+        self.manager = Manager(config=config, database=self.conn)
 
     def get_addons(self):
         query = self.manager.database.execute(
@@ -47,10 +52,10 @@ class InstawowManager:
 
     def to_defn(self, addon: str, strategy: str = None) -> Defn:
         pair = self.manager.pair_uri(addon) or ('*', addon)
-        ret = Defn(*pair)
+        defn = Defn(*pair)
         if strategy:
-            ret = ret.with_(strategy=strategy)
-        return ret
+            return evolve_model_obj(defn, strategy=strategy)
+        return defn
 
     def to_defns(self, addons: str | list[str] | list[tuple]) -> list[Defn]:
         if isinstance(addons, str):
@@ -72,9 +77,9 @@ class InstawowManager:
         defns = self.to_defns(addons)
 
         if '_lib' in self.profile:
-            defns = [d.with_(strategy='any_flavour' if d.source == 'curse' else 'default') for d in defns]
+            defns = [evolve_model_obj(d, strategy='any_flavour' if d.source == 'curse' else 'default') for d in defns]
         elif strategy:
-            defns = [d.with_(strategy=strategy) for d in defns]
+            defns = [evolve_model_obj(d, strategy=strategy) for d in defns]
 
         if reinstall:
             results = instawow.cli.run_with_progress(self.manager.remove(defns, False))

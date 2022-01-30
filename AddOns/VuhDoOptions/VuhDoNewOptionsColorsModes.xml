@@ -8,7 +8,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="20" y="-288" />
+							<AbsDimension x="352" y="-13" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -61,12 +61,12 @@
 
 			<Frame name="$parentLifeLeftPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="278" y="169" />
+					<AbsDimension x="248" y="142" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="230" y="-268" />
+							<AbsDimension x="13" y="-302" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -85,7 +85,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="34" y="-43" />
+									<AbsDimension x="20" y="-26" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -102,7 +102,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="34" y="-81" />
+									<AbsDimension x="20" y="-64" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -119,7 +119,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="34" y="-119" />
+									<AbsDimension x="20" y="-102" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -136,7 +136,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="144" y="-43" />
+									<AbsDimension x="130" y="-26" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -155,12 +155,12 @@
 
 			<Frame name="$parentNormalModePanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="321" y="245" />
+					<AbsDimension x="321" y="283" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="113" y="-13" />
+							<AbsDimension x="13" y="-13" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -227,7 +227,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="247" y="-200" />
+									<AbsDimension x="247" y="-238" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -242,7 +242,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="192" y="-200" />
+									<AbsDimension x="192" y="-238" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -257,7 +257,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="136" y="-200" />
+									<AbsDimension x="136" y="-238" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -313,6 +313,50 @@
 						</Scripts>
 					</CheckButton>
 
+					<CheckButton name="$parentHealAbsorbOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="247" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB.useOpacity");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentHealAbsorbTextCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="192" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB.useText");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
+					<CheckButton name="$parentHealAbsorbBackCheckBox" inherits="VuhDoCheckBoxTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="136" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB.useBackground");
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
 
 					<CheckButton name="$parentShieldOpacCheckBox" inherits="VuhDoCheckBoxTemplate">
 						<Anchors>
@@ -521,6 +565,29 @@
 								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.OVERSHIELD");
 								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_OVERSHIELD_BAR, VUHDO_I18N_OVERSHIELD_BAR);
 								VUHDO_lnfSetTooltip(self, nil);
+
+								_G[self:GetName() .. "Texture"]:SetTexture("Interface\\AddOns\\VuhDo\\Images\\overshield_bar", "REPEAT");
+								_G[self:GetName() .. "Texture"]:SetTexCoord(0, self:GetWidth() / 32, 0, self:GetHeight() / 32);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+
+					<Frame name="$parentHealAbsorbTexture" inherits="VuhDoContextColorSwatchTexture">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-200" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_PANEL_SETUP.BAR_COLORS.HEAL_ABSORB");
+								VUHDO_lnfInitColorSwatch(self, VUHDO_I18N_HEAL_ABSORB_BAR, VUHDO_I18N_HEAL_ABSORB_BAR);
+								VUHDO_lnfSetTooltip(self, nil);
+
+								_G[self:GetName() .. "Texture"]:SetTexture("Interface\\AddOns\\VuhDo\\Images\\healabsorb_bar", "REPEAT");
+								_G[self:GetName() .. "Texture"]:SetTexCoord(0, self:GetWidth() / 32, 0, self:GetHeight() / 32);
 							</OnLoad>
 						</Scripts>
 					</Frame>
@@ -529,7 +596,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="13" y="-200" />
+									<AbsDimension x="13" y="-238" />
 								</Offset>
 							</Anchor>
 						</Anchors>

@@ -1,6 +1,6 @@
 ## Interface: 20502
 ## Author: The WeakAuras Team
-## Version: 3.7.3
+## Version: 3.7.8
 ## OptionalDeps: Ace3, LibCompress, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, Masque, GTFO, LibButtonGlow-1.0, LibSpellRange-1.0, LibRangeCheck-2.0, LibDBIcon-1.0, LibClassicDurations, LibClassicCasterino, LibGetFrame-1.0
 ## LoadOnDemand: 0
 ## SavedVariables: WeakAurasSaved
@@ -57,11 +57,12 @@ RegionTypes\StopMotion.lua
 RegionTypes\Model.lua
 
 # Sub-region support
+SubRegionTypes\Background.lua
 SubRegionTypes\SubText.lua
 SubRegionTypes\Border.lua
 SubRegionTypes\Glow.lua
 SubRegionTypes\Tick.lua
-SubRegionTypes\BarModel.lua
+SubRegionTypes\Model.lua
 
 # Misc
 Legendaries.lua

@@ -61,6 +61,8 @@ L.reqPoints = "%d/%d点%s";
 
 L.level_60 = "切换到60级天赋 |cffff0000自动重载插件|r";
 L.level_70 = "切换到70级天赋 |cffff0000自动重载插件|r";
+L.minimap_TRUE = "显示小地图图标";
+L.minimap_FALSE = "隐藏小地图图标";
 L.resizable_border_TRUE = "拖动窗口边缘可改变大小";
 L.resizable_border_FALSE = "禁止拖动窗口边缘来改变大小";
 L.SetWinStyle_BLZ = "设置窗口为暴雪风格";
@@ -83,7 +85,7 @@ L.insepctALTKEY = "按住ALT键显示观察按钮";
 L.insepctCTRLKEY = "按住CTRL键显示观察按钮";
 L.insepctSHIFTKEY = "按住SHIFT键显示观察按钮";
 
-L.DBIcon_Text = "\124cff00ff00左键\124r新建模拟器\n\124cff00ff00右键\124r设置窗口风格";
+L.DBIcon_Text = "\124cff00ff00左键\124r新建模拟器\n\124cff00ff00右键\124r打开成员检查";
 L.spellTabGTTSpellLevel = "技能等级: ";
 L.spellTabGTTReqLevel = "需要等级: ";
 

@@ -1,5 +1,5 @@
 ## Interface: 20502
-## Version: Plater-v342-BCC
+## Version: Plater-v343-BCC
 ## SavedVariables: PlaterDB
 ## SavedVariablesPerCharacter: PlaterDBChr
 
@@ -36,6 +36,7 @@ Plater_Comms.lua
 Plater_Auras.lua
 Plater_Resources.lua
 Plater_Resources_Frames.lua
+Plater_Resources_Options.lua
 Plater_OptionsPanel.lua
 Plater_ScriptingOptions.lua
 Plater_ScriptingPanels.lua

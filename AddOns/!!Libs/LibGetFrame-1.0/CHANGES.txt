@@ -1,16 +1,91 @@
-lightweight tag 92782ffb5be341bd296b7fe4fed9364c48ea2c05 1.5.6
+lightweight tag 3f4dc33c36fe4d8120bff4434b4410d11a72e031 1.5.7
 Author:	Buds <mrbouyou@gmail.com>
-Date:	Sat Jan 9 17:53:32 2021 +0100
+Date:	Mon Jan 24 23:13:42 2022 +0100
 
-commit 92782ffb5be341bd296b7fe4fed9364c48ea2c05
+commit 3f4dc33c36fe4d8120bff4434b4410d11a72e031
 Author: Buds <mrbouyou@gmail.com>
-Date:   Sat Jan 9 17:53:32 2021 +0100
+Date:   Mon Jan 24 23:13:42 2022 +0100
 
-    listen INSTANCE_ENCOUNTER_ENGAGE_UNIT event for new boss units
+    workaround Plexus delayed layout
 
-commit 3182bb377160c00b417affaaf2a02216f5e33979
+commit 6c1063a0302c3a98b38db3f8ebfa29e8e310e3be
 Author: Buds <mrbouyou@gmail.com>
-Date:   Mon Jan 4 23:17:35 2021 +0100
+Date:   Mon Jan 24 22:15:57 2022 +0100
 
-    make GetUnitFrames more resilient to bad input
+    improve elvui raidframes detection
+
+commit d7e989268ffb5dc4941b547e96bc695e4471c4aa
+Author: GreenhairTurtle <912967642@qq.com>
+Date:   Thu Dec 2 09:30:09 2021 +0800
+
+    Fix ATA bug again. (#20)
+    
+    * Fix ATA bug
+    
+    Fix bug when multiple panels display the sam unit and returnAll set true in option table, will return ShadowGroupHeaderUnitButton which useless
+
+commit b42f3219d0cfbde714ce7be01362720abf739de4
+Author: GreenhairTurtle <912967642@qq.com>
+Date:   Sat Nov 13 08:31:27 2021 +0800
+
+    Fix AshToAsh (#19)
+    
+    * Fix ATA bug
+    
+    * Fix ATA bug
+
+commit c491e985290baf4a3214dd14400dd95d884ee904
+Author: GreenhairTurtle <912967642@qq.com>
+Date:   Thu Sep 16 23:47:12 2021 +0800
+
+    Add AshToAsh support
+
+commit 037d136e727aecaa650f4d01fa152e003cbcb5e2
+Author: blastehh <blastuk@gmail.com>
+Date:   Thu Aug 12 14:53:45 2021 +0100
+
+    Add support for Luna Unit Frames
+
+commit feea6a3cbf3a9e0e3d458b10ef4e0db48cec5cec
+Author: Buds <mrbouyou@gmail.com>
+Date:   Sat Jul 10 22:18:26 2021 +0200
+
+    add ignoreFocusFrame & focusFrames property
+
+commit b21517cd16f35755a5d0276a8a3f7f76a5a35059
+Author: Buds <mrbouyou@gmail.com>
+Date:   Wed May 19 00:26:53 2021 +0200
+
+    Create LICENCE.txt
+
+commit 35da53585d82ccd13f7402f0b8b578ab8e826489
+Author: Buds <mrbouyou@gmail.com>
+Date:   Wed Jan 27 06:14:31 2021 +0100
+
+    add ignoreRaidFrame (default false) & raidFrames options
+
+commit 88001ad77fe3ad929b70e01e8ffb6370bd9b56e9
+Author: Buds <mrbouyou@gmail.com>
+Date:   Tue Jan 26 18:22:25 2021 +0100
+
+    update README.md
+
+commit d8aa6e1217a7295b59b5cb7a92979c39567ec0be
+Author: Buds <mrbouyou@gmail.com>
+Date:   Tue Jan 26 18:11:02 2021 +0100
+
+    bump minor
+
+commit 119d90033d6343e69a296a92f2ee7b34e6bcecb6
+Author: Buds <mrbouyou@gmail.com>
+Date:   Tue Jan 26 17:48:05 2021 +0100
+
+    simplify defaultFramePriorities
+
+commit 55bdf9e691646c1579d6990ca5588f46fba0310b
+Author: Buds <mrbouyou@gmail.com>
+Date:   Tue Jan 26 17:45:43 2021 +0100
+
+    add ignorePartyFrame & partyFrames options
+    fixes #13
 

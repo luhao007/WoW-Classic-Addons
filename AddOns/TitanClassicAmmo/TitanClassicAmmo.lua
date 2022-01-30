@@ -153,13 +153,14 @@ function TitanPanelAmmoButton_OnLoad(self)
 			ShowLabelText = true,
 			ShowRegularText = false,
 			ShowColoredText = true,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true
 		},
 		savedVariables = {
 			ShowIcon = 1,
 			ShowLabelText = 1,
 			ShowColoredText = 1,
 			ShowAmmoName = false,
+			DisplayOnRightSide = false,
 		}
 	};     
 
@@ -302,11 +303,7 @@ end
 -- DESC : Display rightclick menu options
 -- **************************************************************************
 function TitanPanelRightClickMenu_PrepareAmmoMenu()
-	local info = {};
 	TitanPanelRightClickMenu_AddTitle(TitanPlugins[TITAN_AMMO_ID].menuText);
-	TitanPanelRightClickMenu_AddToggleIcon(TITAN_AMMO_ID);
-	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_AMMO_ID);
-	TitanPanelRightClickMenu_AddToggleColoredText(TITAN_AMMO_ID);
 
 	info.text = L["TITAN_AMMO_BULLET_NAME"];
 	info.func = function() TitanPanelRightClickMenu_ToggleVar({TITAN_AMMO_ID, "ShowAmmoName"})
@@ -314,7 +311,14 @@ function TitanPanelRightClickMenu_PrepareAmmoMenu()
 	end
 	info.checked = TitanUtils_Ternary(TitanGetVar(TITAN_AMMO_ID, "ShowAmmoName"), 1, nil);
 	L_UIDropDownMenu_AddButton(info);
+	TitanPanelRightClickMenu_AddSpacer();
 
+	local info = {};
+	TitanPanelRightClickMenu_AddToggleIcon(TITAN_AMMO_ID);
+	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_AMMO_ID);
+	TitanPanelRightClickMenu_AddToggleColoredText(TITAN_AMMO_ID);
+
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_AMMO_ID);
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_AMMO_ID, TITAN_PANEL_MENU_FUNC_HIDE);
 end

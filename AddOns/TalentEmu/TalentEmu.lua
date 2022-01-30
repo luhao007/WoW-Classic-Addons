@@ -2,44 +2,83 @@
 	by ALA @ 163UI
 --]]--
 ----------------------------------------------------------------------------------------------------
-local ADDON, NS = ...;
-_G.__ala_meta__ = _G.__ala_meta__ or {  };
-__ala_meta__.emu = NS;
-
 local _G = _G;
-do
-	if NS.__fenv == nil then
-		NS.__fenv = setmetatable({  },
-				{
-					__index = _G,
-					__newindex = function(t, key, value)
-						rawset(t, key, value);
-						print("ate assign global", key, value);
-						return value;
-					end,
-				}
-			);
-	end
-	setfenv(1, NS.__fenv);
-end
+local __ala_meta__ = _G.__ala_meta__;
+local uireimp = __ala_meta__.uireimp;
 local __emulib = __ala_meta__.__emulib;
 
+local ADDON, NS = ...;
+__ala_meta__.emu = NS;
 local L = NS.L;
 if not L then return; end
+
+local setfenv = setfenv;
+local _GlobalRef = {  };
+local _GlobalAssign = {  };
+function NS:BuildEnv(category)
+	local _G = _G;
+	_GlobalRef[category] = _GlobalRef[category] or {  };
+	_GlobalAssign[category] = _GlobalAssign[category] or {  };
+	local Ref = _GlobalRef[category];
+	local Assign = _GlobalAssign[category];
+	setfenv(2, setmetatable(
+		{  },
+		{
+			__index = function(tbl, key, val)
+				Ref[key] = (Ref[key] or 0) + 1;
+				return _G[key];
+			end,
+			__newindex = function(tbl, key, value)
+				rawset(tbl, key, value);
+				Assign[key] = (Assign[key] or 0) + 1;
+				return value;
+			end,
+		}
+	));
+end
+function NS:MergeGlobal(DB)
+	local _Ref = DB._GlobalRef;
+	if _Ref ~= nil then
+		for category, db in next, _Ref do
+			local to = _GlobalRef[category];
+			if to == nil then
+				_GlobalRef[category] = db;
+			else
+				for key, val in next, db do
+					to[key] = (to[key] or 0) + val;
+				end
+			end
+		end
+	end
+	DB._GlobalRef = _GlobalRef;
+	local _Assign = DB._GlobalAssign;
+	if _Assign ~= nil then
+		for category, db in next, _Assign do
+			local to = _GlobalAssign[category];
+			if to == nil then
+				_GlobalAssign[category] = db;
+			else
+				for key, val in next, db do
+					to[key] = (to[key] or 0) + val;
+				end
+			end
+		end
+	end
+	DB._GlobalAssign = _GlobalAssign;
+end
+
 local curPhase = 1;
 ----------------------------------------------------------------------------------------------------upvalue
 	----------------------------------------------------------------------------------------------------LUA
-	local math, table, string, bit = math, table, string, bit;
+	local hooksecurefunc = hooksecurefunc;
+	local date, time = date, time;
+	local select, next, inext = select, next, ipairs({  });
 	local type, tonumber, tostring = type, tonumber, tostring;
 	local getfenv, setfenv, pcall, xpcall, assert, error, loadstring = getfenv, setfenv, pcall, xpcall, assert, error, loadstring;
-	local abs, ceil, floor, max, min, random, sqrt = abs, ceil, floor, max, min, random, sqrt;
-	local format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, strtrim, strsplit, strjoin, strconcat =
-			format, gmatch, gsub, strbyte, strchar, strfind, strlen, strlower, strmatch, strrep, strrev, strsub, strupper, strtrim, strsplit, strjoin, strconcat;
+	local abs, ceil, floor, max, min, random = abs, ceil, floor, max, min, random;
+	local format, gsub, strlower, strmatch, strrep, strsub, strupper, strsplit = format, gsub, string.lower, string.match, string.rep, string.sub, string.upper, string.split;
 	local getmetatable, setmetatable, rawget, rawset = getmetatable, setmetatable, rawget, rawset;
-	local next, ipairs, pairs, sort, tContains, tinsert, tremove, wipe, unpack = next, ipairs, pairs, sort, tContains, tinsert, tremove, wipe, unpack;
-	local tConcat = table.concat;
-	local select = select;
-	local date, time = date, time;
+	local tinsert, tremove, wipe, unpack = table.insert, table.remove, wipe, unpack;
 	----------------------------------------------------------------------------------------------------GAME
 	local print = print;
 	local GetTime = GetTime;
@@ -51,13 +90,38 @@ local curPhase = 1;
 
 	local UnitName = UnitName;
 	local UnitLevel = UnitLevel;
+	local UnitClassBase = UnitClassBase;
+	local UnitGUID = UnitGUID;
+	local UnitExists = UnitExists;
+	local UnitIsPlayer = UnitIsPlayer;
+	local UnitIsConnected = UnitIsConnected;
+	local UnitFactionGroup = UnitFactionGroup;
+	local UnitInBattleground = UnitInBattleground;
+	local IsInGroup = IsInGroup;
+	local IsInRaid = IsInRaid;
 	local GetRealmName = GetRealmName;
 	local GetNumTalents = GetNumTalents;	--local numTalents = GetNumTalents([1 - 5])
 	local GetTalentInfo = GetTalentInfo;	--local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfo([1 - 5], GetNumTalents([1 - 5]));
 	local LearnTalent = LearnTalent;
 	local GetSpellInfo = GetSpellInfo;
+	local GetItemInfo = GetItemInfo;
 	local FindSpellBookSlotBySpellID = FindSpellBookSlotBySpellID;
+	local CheckInteractDistance = CheckInteractDistance;
+	local CanInspect = CanInspect;
+	local NotifyInspect = NotifyInspect;
+	local C_Timer = C_Timer;
+	local GetInventoryItemLink = GetInventoryItemLink;
+	local RequestLoadSpellData = C_Spell.RequestLoadSpellData;
+	local GetGuildRosterInfo = GetGuildRosterInfo;
+	local GetMouseFocus = GetMouseFocus;
+	local GetActionInfo = GetActionInfo;
+	local GetMacroSpell = GetMacroSpell;
+	local Ambiguate = Ambiguate;
+	local GetItemQualityColor = GetItemQualityColor;
+	local Mixin = Mixin;
+	local UIParent = UIParent;
 	local GameTooltip = GameTooltip;
+	local ItemRefTooltip = ItemRefTooltip;
 	--------------------------------------------------
 	local RegisterAddonMessagePrefix = RegisterAddonMessagePrefix or C_ChatInfo.RegisterAddonMessagePrefix;
 	local IsAddonMessagePrefixRegistered = IsAddonMessagePrefixRegistered or C_ChatInfo.IsAddonMessagePrefixRegistered;
@@ -112,105 +176,7 @@ local curPhase = 1;
 	local DATA_VALIDITY = 30;
 	--------------------------------------------------
 	local ui_style = {
-		mainFrameBackdrop = {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			tileSize = 2,
-			edgeSize = 2,
-			insets = { left = 0, right = 0, top = 0, bottom = 0, }
-		},
-		mainFrameBackdropColor = { 0.25, 0.25, 0.25, 1.0, },
-		mainFrameBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, },
-		mainFrameBackdrop_blz = {
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "interface/dialogframe/ui-dialogbox-border",
-			tile = true,
-			tileSize = 16,
-			edgeSize = 24,
-			insets = { left = 4, right = 4, top = 4, bottom = 4, }
-		},
-		mainFrameBackdropColor_blz = { 0.0, 0.0, 0.0, 1.0, },
-		mainFrameBackdropBorderColor_blz = { 1.0, 1.0, 1.0, 1.0, },
 		mainFrameBorderSize = 8,
-		-- iconBackdrop = {
-		-- 	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-		-- 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		-- 	tile = true,
-		-- 	tileSize = 2,
-		-- 	edgeSize = 2,
-		-- 	insets = { left = 0, right = 0, top = 0, bottom = 0, }
-		-- },
-		-- iconBackdropColor = { 0.25, 0.25, 0.25, 0.75, },
-		-- iconBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, },
-		tooltipFrameBackdrop = {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			tileSize = 2,
-			edgeSize = 2,
-			insets = { left = 2, right = 2, top = 2, bottom = 2, }
-		},
-		tooltipFrameBackdropColor = { 0.15, 0.15, 0.15, 1.0, },
-		tooltipFrameBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, },
-		tooltipBackdrop = {
-			bgFile = nil,	--"Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = nil,	--"Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = false,
-			tileSize = 0,
-			edgeSize = 0,
-			insets = { left = 0, right = 0, top = 0, bottom = 0, }
-		},
-		spellTabFrameBackdrop = {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			tileSize = 2,
-			edgeSize = 2,
-			insets = { left = 0, right = 0, top = 0, bottom = 0, }
-		},
-		spellTabFrameBackdropColor = { 0.25, 0.25, 0.25, 0.75, },
-		spellTabFrameBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, },
-		spellTabFrameBackdrop_blz = {
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "interface/dialogframe/ui-dialogbox-border",
-			tile = true,
-			tileSize = 16,
-			edgeSize = 24,
-			insets = { left = 4, right = 4, top = 4, bottom = 4, }
-		},
-		spellTabFrameBackdropColor_blz = { 0.0, 0.0, 0.0, 0.5, },
-		spellTabFrameBackdropBorderColor_blz = { 1.0, 1.0, 1.0, 1.0, },
-		spellTabFrameButtonBackdrop = {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			tileSize = 2,
-			edgeSize = 2,
-			insets = { left = 0, right = 0, top = 0, bottom = 0 }
-		};
-		spellTabFrameButtonBackdropColor = { 0.25, 0.25, 0.25, 0.75, };
-		spellTabFrameButtonBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, };
-		equipmentFrameBackdrop = {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			tile = true,
-			tileSize = 2,
-			edgeSize = 2,
-			insets = { left = 0, right = 0, top = 0, bottom = 0, }
-		},
-		equipmentFrameBackdropColor = { 0.25, 0.25, 0.25, 1.0, },
-		equipmentFrameBackdropBorderColor = { 0.0, 0.0, 0.0, 1.0, },
-		equipmentFrameBackdrop_blz = {
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "interface/dialogframe/ui-dialogbox-border",
-			tile = true,
-			tileSize = 16,
-			edgeSize = 24,
-			insets = { left = 4, right = 4, top = 4, bottom = 4, }
-		},
-		equipmentFrameBackdropColor_blz = { 0.25, 0.25, 0.25, 1.0, },
-		equipmentFrameBackdropBorderColor_blz = { 1.0, 1.0, 1.0, 1.0, },
 
 		mainFrameXSizeMin_Style1 = 250,
 		mainFrameYSizeMin_Style1 = 165,
@@ -407,7 +373,6 @@ local curPhase = 1;
 	local MAX_NUM_TIER = NS.MAX_NUM_TIER;
 	local MAX_NUM_COL = NS.MAX_NUM_COL;
 	local MAX_NUM_TALENTS = NS.MAX_NUM_TALENTS;
-	local MAX_LEVEL = NS.MAX_LEVEL;
 	local MAX_NUM_ICONS_PER_SPEC = MAX_NUM_TIER * MAX_NUM_COL;
 	local _talentDB = NS._talentDB;
 	local _spellDB = NS._spellDB_P;
@@ -461,30 +426,20 @@ local curPhase = 1;
 	]]
 ----------------------------------------------------------------------------------------------------
 
-Mixin(NS, {
-	initialized = false,
-	mainFrames = { num = 0, used = 0, },
-	inspectButtonKeyFunc = IsAltKeyDown,
-	applyingMainFrame = false,
-	CPlayerFactionGroup = UnitFactionGroup('player'),
-	CPlayerClassUpper = UnitClassBase('player'),
-	CPlayerClassLower = strlower(UnitClassBase('player')),
-	CPlayerGUID = UnitGUID('player'),
-	CPlayerName = UnitName('player'),
-	CRealmName = GetRealmName(),
-	CPlayerFullName = UnitName('player') .. "-" .. GetRealmName(),
-	POPUP_ON_RECV = {  },
-	PREV_QUERY_SENT_TIME = {  },
-	specializedMainFrameInspect = {  },
-	queryCache = {  },	-- [GUID] = { [addon] = { data, time, }, }
-	recv_msg = {  },
-	custom_event_meta = {  },
-	callback = {  },
-	chatfilter = {  },
-	INSPECT_WAIT_TIME = 10,
-	TOOLTIP_UPDATE_DELAY = 0.02,
-});
-NS.CPlayerFullName_Len = #(NS.CPlayerFullName);
+NS.initialized = false;
+NS.mainFrames = { num = 0, used = 0, };
+NS.inspectButtonKeyFunc = IsAltKeyDown;
+NS.applyingMainFrame = false;
+NS.POPUP_ON_RECV = {  };
+NS.PREV_QUERY_SENT_TIME = {  };
+NS.specializedMainFrameInspect = {  };
+NS.queryCache = {  };	-- [GUID] = { [addon] = { data, time, }, }
+NS.recv_msg = {  };
+NS.custom_event_meta = {  };
+NS.callback = {  };
+NS.chatfilter = {  };
+NS.INSPECT_WAIT_TIME = 10;
+NS.TOOLTIP_UPDATE_DELAY = 0.02;
 
 local SET, VAR = nil, nil;
 
@@ -541,105 +496,20 @@ do	--	EventHandler
 		end
 	end
 end
-do	--	run_on_next_tick	--	execute two ticks later
-	local min_ticker_duration = 0.1;
-	if false then	--	a universal method, unnecessary here
-		local DELAY = 5;
-		local delay_run_funcs = {  };
-		for index = 1, DELAY do
-			delay_run_funcs[index] = {  };
-		end
-		local timer = 0.0;
-		local function delay_run_handler(self, elasped)
-			timer = timer + elasped;
-			if timer >= min_ticker_duration * DELAY then
-				timer = 0.0;
-				local funcs = delay_run_funcs[1];
-				while true do
-					local func = tremove(funcs, 1);
-					if func then
-						func();
-					else
-						break;
-					end
-				end
-				for index = 2, DELAY do
-					if #delay_run_funcs[index] > 0 then
-						tinsert(delay_run_funcs, tremove(delay_run_funcs));
-						return;
-					end
-				end
-				_EventHandler:SetScript("OnUpdate", nil);
-			end
-		end
-		function _EventHandler:delay_run(func, delay)
-			delay = delay and max(min(delay, DELAY), 1) or 1;
-			local dIndex = DELAY - delay + 1;
-			for index = 1, DELAY do
-				if index ~= dIndex then
-					local funcs = delay_run_funcs[index];
-					for i = 1, #funcs do
-						if func == funcs[i] then
-							tremove(funcs, i);
-							break;
-						end
-					end
-				end
-			end
-			local funcs = delay_run_funcs[dIndex];
-			for index = 1, #funcs do
-				if func == funcs[index] then
-					return;
-				end
-			end
-			tinsert(funcs, func);
-			_EventHandler:SetScript("OnUpdate", delay_run_handler);
-		end
-		function _EventHandler:frame_delay_update(frame, delay)
-			_EventHandler:delay_run(frame.update_func, delay);
-		end
+local T_Scheduler = setmetatable({  }, { __mode = 'k', })
+function NS.F_ScheduleDelayCall(func, delay)
+	local sch = T_Scheduler[func];
+	if sch == nil then
+		sch = {  };
+		sch[1] = function()
+			func();
+			sch[2] = false;
+		end;
+	elseif sch[2] then
+		return;
 	end
-	--
-	local run_on_next_tick_func_1 = {  };
-	local run_on_next_tick_func_2 = {  };
-	local timer = 0.0;
-	local function run_on_next_tick_handler(self, elasped)
-		timer = timer + elasped;
-		if timer >= min_ticker_duration * 2 then
-			timer = 0.0;
-			while true do
-				local func = tremove(run_on_next_tick_func_1, 1);
-				if func then
-					func();
-				else
-					break;
-				end
-			end
-			if #run_on_next_tick_func_1 + #run_on_next_tick_func_2 == 0 then
-				_EventHandler:SetScript("OnUpdate", nil);
-			else
-				run_on_next_tick_func_1, run_on_next_tick_func_2 = run_on_next_tick_func_2, run_on_next_tick_func_1;
-			end
-		end
-	end
-	function _EventHandler:run_on_next_tick(func)
-		for index = 1, #run_on_next_tick_func_1 do
-			if func == run_on_next_tick_func_1[index] then
-				tremove(run_on_next_tick_func_1, index);
-				break;
-			end
-		end
-		for index = 1, #run_on_next_tick_func_2 do
-			if func == run_on_next_tick_func_2[index] then
-				return;
-			end
-		end
-		tinsert(run_on_next_tick_func_2, func);
-		_EventHandler:SetScript("OnUpdate", run_on_next_tick_handler);
-	end
-	function _EventHandler:frame_update_on_next_tick(frame)
-		_EventHandler:run_on_next_tick(frame.update_func);
-	end
+	sch[2] = true;
+	C_Timer.After(delay or 0.2, sch[1]);
 end
 
 local function Info_OnEnter(self, motion)
@@ -654,6 +524,8 @@ local function Info_OnLeave(self, motion)
 	end
 end
 
+NS:BuildEnv("emu");
+
 -->		<method
 	local extern = { export = {  }, import = {  }, addon = {  }, addon_list = {  }, };
 	NS.extern = extern;
@@ -664,14 +536,14 @@ end
 				https://classic.wowhead.com/talent-calc/warrior/05004-055001-55250110500001051
 					"^.*classic%.wowhead%.com/talent%-calc.*/([^/]+)/(%d.+)$"
 			]]
-			local _, _, class, data = strfind(url, "classic%.wowhead%.com/talent%-calc.*/([^/]+)/([0-9%-]+)");
+			local class, data = strmatch(url, "classic%.wowhead%.com/talent%-calc.*/([^/]+)/([0-9%-]+)");
 			if class and data then
 				class = strupper(class);
 				local DB = _talentDB[class];
 				local classTalent = _classTab[class];
 				if DB and classTalent then
 					--(%d*)[%-]*(%d*)[%-]*(%d*)
-					local _, _, d1, d2, d3 = strfind(data, "(%d*)[%-]?(%d*)[%-]?(%d*)");
+					local d1, d2, d3 = strmatch(data, "(%d*)[%-]?(%d*)[%-]?(%d*)");
 					if d1 and d2 and d3 then
 						if d1 == "" and d2 == "" and d3 == "" then
 							return class, "", 60;
@@ -700,7 +572,7 @@ end
 		function extern.import.nfu(url)
 			--http://www.nfuwow.com/talents/60/warrior/tal/1331511131241111111100000000000000040000000000000000
 			--		   nfuwow%.com/talents/60/([^/]+)/tal/(%d+)
-			local _, _, class, data = strfind(url, "nfuwow%.com/talents/60/([^/]+)/tal/(%d+)");
+			local class, data = strmatch(url, "nfuwow%.com/talents/60/([^/]+)/tal/(%d+)");
 			if class and data then
 				class = strupper(class);
 				if _talentDB[class] then
@@ -712,7 +584,7 @@ end
 		--[==[
 		function extern.import.yxrank(url)
 			--https://www.yxrank.com/classic/talent/warrior?count=333015011130012011111010010000000000000000000000000000000000000000000000000000000000
-			local _, _, class, temp = strfind(url, "yxrank%.com/classic/talent/([a-zA-Z]+)%?count=(%d+)");
+			local class, temp = strmatch(url, "yxrank%.com/classic/talent/([a-zA-Z]+)%?count=(%d+)");
 			if class and temp then
 				class = strupper(class);
 				local DB = _talentDB[class];
@@ -721,7 +593,7 @@ end
 					local data = "";
 					for i = 1, 3 do
 						local db = DB[classTalent[i]];
-						for j, val in ipairs(db) do
+						for j, val in inext, db, 0 do
 							local pos = (i - 1) * MAX_NUM_TALENTS + val[1] * 4 + val[2] + 1;
 							local v = strsub(temp, pos, pos);
 							if v == "" then
@@ -813,7 +685,7 @@ end
 			local temp = {  };
 			for i = 1, 3 do
 				local talentSet = talentFrames[i].talentSet;
-				for j, val in ipairs(DB[classTalent[i]]) do
+				for j, val in inext, DB[classTalent[i]], 0 do
 					temp[ofs + val[1] * 4 + val[2] + 1] = talentSet[j];
 				end
 				for j = 1, MAX_NUM_TALENTS do
@@ -825,6 +697,21 @@ end
 		end
 		--]==]
 		extern.addon["D4C"] = {
+			addon = "DBM",
+			list = {  },
+			handler = function(meta, sender, msg)
+				local temp = { strsplit("\t", msg) };
+				if temp[1] == "V" or temp[1] == "GV" then
+					-- tremove(temp, 1);
+					temp[1] = tostring(temp[4]);
+					meta.list[Ambiguate(sender, 'none')] = temp;
+					-- print(sender, "dbm ver", temp[4], unpack(temp));
+					-- print(sender, "dbm ver", temp[3]);	--	temp[3]
+					return true;
+				end
+			end,
+		};
+		extern.addon["D4BC"] = {
 			addon = "DBM",
 			list = {  },
 			handler = function(meta, sender, msg)
@@ -870,8 +757,8 @@ end
 				local _detalhes = { realversion = 140, };
 				extern.addon[CONST_DETAILS_PREFIX] = {
 					addon = "Details",
-					msg = "^S" .. CONST_ASK_TALENTS .. NS.CPlayerName .. "^S" .. NS.CRealmName .. "^N" ..  _detalhes.realversion .. "^S" .. NS.CPlayerGUID .. "^^",
-					fmt = "^S" .. CONST_ANSWER_TALENTS .. "^S" .. NS.CPlayerName .. "^S" .. NS.CRealmName .. "^N" .. _detalhes.realversion .. "^S" .. NS.CPlayerGUID .. "^N0^S(.+)^N(%d)+";
+					msg = "^S" .. CONST_ASK_TALENTS .. __ala_meta__.CPlayerName .. "^S" .. __ala_meta__.CRealmName .. "^N" ..  _detalhes.realversion .. "^S" .. __ala_meta__.CPlayerGUID .. "^^",
+					fmt = "^S" .. CONST_ANSWER_TALENTS .. "^S" .. __ala_meta__.CPlayerName .. "^S" .. __ala_meta__.CRealmName .. "^N" .. _detalhes.realversion .. "^S" .. __ala_meta__.CPlayerGUID .. "^N0^S(.+)^N(%d)+";
 					handler = function(meta, code)
 						-- "^N"
 					end
@@ -925,8 +812,8 @@ end
 			return false;
 		end
 		function NS.tickerApplyTalents()
-			local TalentDB = _talentDB[NS.CPlayerClassUpper];
-			local ClassTab = _classTab[NS.CPlayerClassUpper];
+			local TalentDB = _talentDB[__ala_meta__.CPlayerClassUpper];
+			local ClassTab = _classTab[__ala_meta__.CPlayerClassUpper];
 			local talentFrames = NS.applyingMainFrame.talentFrames;
 			do
 				local specIndex = NS.applyingSpecIndex;
@@ -1041,7 +928,7 @@ end
 					return class, data, level;
 				end
 			end
-			return __emulib.DecodeTalentData(code, not useCodeLevel and MAX_LEVEL)
+			return __emulib.DecodeTalentData(code, not useCodeLevel and __ala_meta__.MAX_LEVEL)
 		end
 		-- arg			[mainFrame] or [class, data, level]
 		-- return		code
@@ -1055,7 +942,7 @@ end
 							type(talentFrames[3]) == 'table' and type(talentFrames[3].talentSet) == 'table'
 					then
 					--
-					return __emulib.EncodeTalentData(_classToIndex[mainFrame.class], mainFrame.level,
+					return __emulib.EncodeFrameData(_classToIndex[mainFrame.class], mainFrame.level,
 								talentFrames[1].talentSet, talentFrames[2].talentSet, talentFrames[3].talentSet,
 								#talentFrames[1].db, #talentFrames[2].db, #talentFrames[3].db
 							);
@@ -1077,12 +964,12 @@ end
 				end
 				if type(data) == 'string' then
 					local DB = _talentDB[class];
-					return __emulib.EncodeTalentData(classIndex, (level and tonumber(level)) or MAX_LEVEL,
+					return __emulib.EncodeFrameData(classIndex, (level and tonumber(level)) or __ala_meta__.MAX_LEVEL,
 								data,
 								#DB[classTalent[1]], #DB[classTalent[2]], #DB[classTalent[3]]);
 				elseif type(data) == 'table' and type(data[1]) == 'table' and type(data[2]) == 'table' and type(data[3]) == 'table' then
 					local DB = _talentDB[class];
-					return __emulib.EncodeTalentData(classIndex, (level and tonumber(level)) or MAX_LEVEL,
+					return __emulib.EncodeFrameData(classIndex, (level and tonumber(level)) or __ala_meta__.MAX_LEVEL,
 								data[1], data[2], data[3],
 								#DB[classTalent[1]], #DB[classTalent[2]], #DB[classTalent[3]]);
 				else
@@ -1140,9 +1027,9 @@ end
 		end
 		function NS.EmuCore_SetLevel(mainFrame, level)			-- LEVEL CHANGED HERE ONLY
 			if level == nil then
-				mainFrame.level = MAX_LEVEL;
+				mainFrame.level = __ala_meta__.MAX_LEVEL;
 				mainFrame.totalUsedPoints = 0;
-				mainFrame.totalAvailablePoints = NS.GetLevelAvailablePoints(MAX_LEVEL);
+				mainFrame.totalAvailablePoints = NS.GetLevelAvailablePoints(__ala_meta__.MAX_LEVEL);
 			else
 				if type(level) == 'string' then
 					level = tonumber(level);
@@ -1273,7 +1160,7 @@ end
 				mainFrame.DB = DB;
 				mainFrame.initialized = true;
 
-				if NS.CPlayerClassUpper == class then
+				if __ala_meta__.CPlayerClassUpper == class then
 					mainFrame.applyTalentsButton:Show();
 				else
 					mainFrame.applyTalentsButton:Hide();
@@ -1745,7 +1632,6 @@ end
 					end
 				end
 
-				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
 				tooltip1:SetSpellByID(spellTable[1]);
@@ -1784,7 +1670,6 @@ end
 				fontString1h1:SetTextColor(ui_style.color_iconToolTipMaxRank[1], ui_style.color_iconToolTipMaxRank[2], ui_style.color_iconToolTipMaxRank[3], ui_style.color_iconToolTipMaxRank[4]);
 				fontString1h2:Hide();
 
-				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
 				tooltip1:SetSpellByID(spellTable[maxRank]);
@@ -1822,7 +1707,6 @@ end
 				fontString1h1:SetText(L.curRank);
 				fontString1h1:SetTextColor(ui_style.color_iconToolTipCurRank[1], ui_style.color_iconToolTipCurRank[2], ui_style.color_iconToolTipCurRank[3], ui_style.color_iconToolTipCurRank[4]);
 
-				tooltip1:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip1:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
 				tooltip1:SetSpellByID(spellTable[curRank]);
@@ -1837,7 +1721,6 @@ end
 					fontString2h1:SetTextColor(ui_style.color_iconToolTipNextRankDisabled[1], ui_style.color_iconToolTipNextRankDisabled[2], ui_style.color_iconToolTipNextRankDisabled[3], ui_style.color_iconToolTipNextRankDisabled[4]);
 				end
 
-				tooltip2:SetBackdrop(ui_style.tooltipBackdrop);
 				tooltip2:SetOwner(tooltipFrame, "ANCHOR_NONE");
 				tooltip2:SetPoint("TOPLEFT", fontString2h1, "BOTTOMLEFT", 0, 6);
 				tooltip2:SetSpellByID(spellTable[curRank + 1]);
@@ -1882,7 +1765,7 @@ end
 					if not s.talent or talentFrames[s.requireSpecIndex].talentSet[s.requireIndex] > 0 then
 						for i = 1, #s do
 							local v = s[i];
-							if not search or strfind(GetSpellInfo(v[2]), search) or strfind(tostring(v[2]), search) then
+							if not search or strmatch(GetSpellInfo(v[2]), search) or strmatch(tostring(v[2]), search) then
 								if v[1] <= level then
 									if showAll then
 										tinsert(list, v);
@@ -1910,19 +1793,19 @@ end
 			local cache = NS.queryCache[name];
 			if cache ~= nil then
 				local readOnly = false;
-				if name ~= NS.CPlayerName then
+				if name ~= __ala_meta__.CPlayerName then
 					readOnly = true;
 				end
 				if NS.POPUP_ON_RECV[name] then
 					local specializedMainFrame = NS.specializedMainFrameInspect[name];
 					if specializedMainFrame then
 						if specializedMainFrame[2]:IsShown() and specializedMainFrame[1] - GetTime() <= NS.INSPECT_WAIT_TIME then
-							NS.Emu_Set(specializedMainFrame[2], cache.class, cache.data, MAX_LEVEL, readOnly, name);
+							NS.Emu_Set(specializedMainFrame[2], cache.class, cache.data, __ala_meta__.MAX_LEVEL, readOnly, name);
 						else
-							NS.Emu_Create(nil, cache.class, cache.data, MAX_LEVEL, false, readOnly, name);
+							NS.Emu_Create(nil, cache.class, cache.data, __ala_meta__.MAX_LEVEL, false, readOnly, name);
 						end
 					else
-						NS.Emu_Create(nil, cache.class, cache.data, MAX_LEVEL, false, readOnly, name);
+						NS.Emu_Create(nil, cache.class, cache.data, __ala_meta__.MAX_LEVEL, false, readOnly, name);
 					end
 				end
 				NS.POPUP_ON_RECV[name] = nil;
@@ -1962,7 +1845,7 @@ end
 		function NS.push_recv_msg(code, sender, GUID, title, colored_title)
 			for i = 1, #NS.recv_msg do
 				local meta = NS.recv_msg[i];
-				if meta[1] == code and (meta[2] == sender or strfind(meta[2], "\124cff%x%x%x%x%x%x" .. sender .. "\124r")) then
+				if meta[1] == code and (meta[2] == sender or strmatch(meta[2], "\124cff%x%x%x%x%x%x" .. sender .. "\124r")) then
 					return;
 				end
 			end
@@ -1986,7 +1869,7 @@ end
 		end
 		local _SetHyperlink = ItemRefTooltip.SetHyperlink;
 		ItemRefTooltip.SetHyperlink = function(frame, ref, ...)
-			local _, _, code, GUID = strfind(ref, "^emu:(.+)#(.+)");
+			local code, GUID = strmatch(ref, "^emu:(.+)#(.+)");
 			if code then
 				local class, data, level = NS.EmuCore_Decoder(code);
 				if class and data and level then
@@ -2011,7 +1894,7 @@ end
 				bak_ERR_CHAT_PLAYER_NOT_FOUND_S = ERR_CHAT_PLAYER_NOT_FOUND_S;
 				pattern_ERR_CHAT_PLAYER_NOT_FOUND_S = gsub(bak_ERR_CHAT_PLAYER_NOT_FOUND_S, "%%s", "(.+)");
 			end
-			local _, _, name = strfind(msg, pattern_ERR_CHAT_PLAYER_NOT_FOUND_S);
+			local name = strmatch(msg, pattern_ERR_CHAT_PLAYER_NOT_FOUND_S);
 			if name ~= nil then
 				name = Ambiguate(name, 'none');
 				if NS.PREV_QUERY_SENT_TIME[name] ~= nil then
@@ -2051,7 +1934,7 @@ end
 		function NS.EmuSub_SendMessage(channel, target, _1, _2, _3)
 			local code = NS.EmuCore_Encoder(_1, _2, _3);
 			if code then
-				local GUID = NS.CPlayerGUID;
+				local GUID = __ala_meta__.CPlayerGUID;
 				SendAddonMessage(ADDON_PREFIX, ADDON_MSG_PUSH .. code .. "#" .. GUID, channel, target);
 			end
 		end
@@ -2063,7 +1946,7 @@ end
 					local code = strsub(msg, ADDON_MSG_CONTROL_CODE_LEN + 1, - 1);
 					if code and code ~= "" then
 						local _1, _2 = strsplit("#", code);
-						if not _2 or _2 == NS.CPlayerName or _2 == NS.CPlayerFullName or strsub(_2, 1, NS.CPlayerFullName_Len) == NS.CPlayerFullName then	-- OLDVERSION
+						if not _2 or _2 == __ala_meta__.CPlayerName or _2 == __ala_meta__.CPlayerFullName or strsub(_2, 1, __ala_meta__.CPlayerFullName_Len) == __ala_meta__.CPlayerFullName then	-- OLDVERSION
 							code = _1;
 						else
 							return;
@@ -2076,7 +1959,7 @@ end
 								NS.queryCache[name] = cache;
 							end
 							cache.time_tal = time();
-							cache.talent = _1;
+							cache.talent = code;
 							cache.class = class;
 							cache.data = data;
 							cache.level = level;
@@ -2090,7 +1973,7 @@ end
 					-- NS.specializedMainFrameInspect
 					if code and code ~= "" then
 						local _1, _2 = strsplit("#", code);
-						if not _2 or _2 == NS.CPlayerName or _2 == NS.CPlayerFullName or strsub(_2, 1, NS.CPlayerFullName_Len) == NS.CPlayerFullName then	-- OLDVERSION
+						if not _2 or _2 == __ala_meta__.CPlayerName or _2 == __ala_meta__.CPlayerFullName or strsub(_2, 1, __ala_meta__.CPlayerFullName_Len) == __ala_meta__.CPlayerFullName then	-- OLDVERSION
 							code = _1;
 						else
 							return;
@@ -2137,11 +2020,11 @@ end
 									MSG(channel, name, NS.EmuSub_GenerateLink(GUID, title, class, code), zoneChannelID, GUID);
 									NS.push_recv_msg(code, name, GUID, title, NS.EmuSub_GenerateTitleFromRawData(data, class));
 									if channel == "WHISPER" then
-										SendAddonMessage(ADDON_PREFIX, ADDON_MSG_PUSH_RECV .. code .. "#" .. NS.CPlayerGUID, "WHISPER", sender);
+										SendAddonMessage(ADDON_PREFIX, ADDON_MSG_PUSH_RECV .. code .. "#" .. __ala_meta__.CPlayerGUID, "WHISPER", sender);
 									end
 									GetPlayerInfoByGUID(GUID);
 								elseif control_code == ADDON_MSG_PUSH_RECV then
-									MSG("WHISPER_INFORM", name, NS.EmuSub_GenerateLink(NS.CPlayerGUID, title, class, code), zoneChannelID, GUID);
+									MSG("WHISPER_INFORM", name, NS.EmuSub_GenerateLink(__ala_meta__.CPlayerGUID, title, class, code), zoneChannelID, GUID);
 								end
 							end
 						end
@@ -2155,8 +2038,8 @@ end
 						_EventHandler:FireEvent("USER_EVENT_DATA_RECV", name);
 					end
 				end
-				-- local msg = _detalhes:Serialize (CONST_ANSWER_TALENTS, NS.CPlayerName, NS.CRealmName, _detalhes.realversion, UnitGUID ("player"), 0, compressedTalents, Details.CPlayerClassUppericSpec.specs)
-				-- local msg = CONST_ANSWER_TALENTS .. NS.CPlayerName .. NS.CRealmName .. _detalhes.realversion .. UnitGUID ("player") .. 0 .. compressedTalents .. Details.CPlayerClassUppericSpec.specs
+				-- local msg = _detalhes:Serialize (CONST_ANSWER_TALENTS, __ala_meta__.CPlayerName, __ala_meta__.CRealmName, _detalhes.realversion, UnitGUID ("player"), 0, compressedTalents, Details.CPlayerClassUppericSpec.specs)
+				-- local msg = CONST_ANSWER_TALENTS .. __ala_meta__.CPlayerName .. __ala_meta__.CRealmName .. _detalhes.realversion .. UnitGUID ("player") .. 0 .. compressedTalents .. Details.CPlayerClassUppericSpec.specs
 				-- (CONST_DETAILS_PREFIX, msg, "WHISPER", targetPlayer)
 			end
 		end
@@ -2168,10 +2051,10 @@ end
 					name = n;
 					realm = r;
 				elseif realm == nil or realm == "" then
-					realm = NS.CRealmName;
+					realm = __ala_meta__.CRealmName;
 				end
 				local target = name .. "-" .. realm;
-				if realm ~= NS.CRealmName then
+				if realm ~= __ala_meta__.CRealmName then
 					name = name .. "-" .. realm;
 				end
 				NS.POPUP_ON_RECV[name] = not mute;
@@ -2181,7 +2064,7 @@ end
 				local update_inv = equitment ~= false and counter_expired and (force_update or (NS.queryCache[name] == nil or NS.queryCache[name].time_inv == nil or (t - (NS.queryCache[name].time_inv or (-DATA_VALIDITY))) > DATA_VALIDITY));
 				if update_tal or update_inv then
 					NS.PREV_QUERY_SENT_TIME[name] = t;
-					if UnitInBattleground('player') and realm ~= NS.CRealmName then
+					if UnitInBattleground('player') and realm ~= __ala_meta__.CRealmName then
 						if update_tal then
 							SendAddonMessage(ADDON_PREFIX, ADDON_MSG_QUERY_TALENTS .. "#" .. target, "INSTANCE_CHAT");
 						end
@@ -2199,7 +2082,7 @@ end
 						end
 					end
 					for _, val in next, extern.addon do
-						if UnitInBattleground('player') and realm ~= NS.CRealmName then
+						if UnitInBattleground('player') and realm ~= __ala_meta__.CRealmName then
 						else
 							if val.msg then
 								SendAddonMessage(val.prefix, val.msg, "WHISPER", target);
@@ -2221,6 +2104,52 @@ end
 				end
 			end
 			return name;
+		end
+	end
+
+	do
+		local _InspectedUnit = {  };
+		function NS.INSPECT_READY(GUID)
+			local who = _InspectedUnit[GUID];
+			if who ~= nil then
+				local unit = who[1];
+				if UnitGUID(unit) == GUID then
+					local name = who[2];
+					local class = who[3];
+					local level = who[4];
+					local code, data = __emulib.EncodeInspect(class, level);
+					if code ~= nil then
+						local cache = NS.queryCache[name];
+						if cache == nil then
+							cache = {  };
+							NS.queryCache[name] = cache;
+						end
+						cache.time_tal = time();
+						cache.talent = code;
+						cache.class = class;
+						cache.data = data;
+						cache.level = level;
+						__emulib.GetEquipmentData(cache);
+						_EventHandler:FireEvent("USER_EVENT_DATA_RECV", name);
+						_EventHandler:FireEvent("USER_EVENT_TALENT_DATA_RECV", name);
+						_EventHandler:FireEvent("USER_EVENT_INVENTORY_DATA_RECV", name);
+					end
+				end
+			end
+		end
+		function NS.EmuCore_MonitorInspect()
+			_EventHandler:RegEvent("INSPECT_READY");
+			hooksecurefunc("NotifyInspect", function(unit)
+				local GUID = UnitGUID(unit);
+				if GUID ~= nil then
+					local name, realm = UnitName(unit);
+					if realm ~= nil and realm ~= "" and realm ~= __ala_meta__.CRealmName then
+						name = name .. "-" .. realm;
+					end
+					_InspectedUnit[GUID] = { unit, name, UnitClassBase(unit), UnitLevel(unit), };
+				end
+			end);
+			NotifyInspect = _G.NotifyInspect;
 		end
 	end
 
@@ -2254,7 +2183,7 @@ end
 		function NS.Emu_ResetToEmu(mainFrame)
 			NS.EmuCore_SetName(mainFrame, nil);
 			NS.EmuCore_SetData(mainFrame, nil);
-			NS.EmuCore_SetLevel(mainFrame, MAX_LEVEL);
+			NS.EmuCore_SetLevel(mainFrame, __ala_meta__.MAX_LEVEL);
 			-- NS.EmuCore_SetReadOnly(mainFrame, false);
 		end
 		function NS.Emu_ResetToSet(mainFrame)
@@ -2269,7 +2198,7 @@ end
 			NS.EmuSub_InventoryDataRecv(name);
 		end
 		function NS.Emu_ApplyTalents(mainFrame)
-			if NS.CPlayerClassUpper == mainFrame.class then
+			if __ala_meta__.CPlayerClassUpper == mainFrame.class then
 				if TalentFrame_Update then
 					pcall(TalentFrame_Update);
 				end
@@ -2322,23 +2251,23 @@ end
 			mainFrame:Show();
 			if SET.singleFrame then
 				if class and class ~= "" then
-					if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or MAX_LEVEL, readOnly, name, free_edit) then
+					if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or __ala_meta__.MAX_LEVEL, readOnly, name, free_edit) then
 						mainFrame:Hide();
 						return nil;
 					end
 				end
 				if not mainFrame.initialized then
-					class = NS.CPlayerClassUpper;
-					if not NS.Emu_Set(mainFrame, class, nil, MAX_LEVEL, nil, nil) then
+					class = __ala_meta__.CPlayerClassUpper;
+					if not NS.Emu_Set(mainFrame, class, nil, __ala_meta__.MAX_LEVEL, nil, nil) then
 						mainFrame:Hide();
 						return nil;
 					end
 				end
 			else
 				if not class or class == "" then
-					class = NS.CPlayerClassUpper;
+					class = __ala_meta__.CPlayerClassUpper;
 				end
-				if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or MAX_LEVEL, readOnly, name, free_edit) then
+				if not NS.Emu_Set(mainFrame, class, data, tonumber(level) or __ala_meta__.MAX_LEVEL, readOnly, name, free_edit) then
 					mainFrame:Hide();
 					return nil;
 				end
@@ -2464,6 +2393,27 @@ end
 		function NS.Emu_Menu(parent, mainFrame)
 			if ALADROP then
 				local drop_menu_table = { handler = _noop_, elements = {  }, };
+				if SET.minimap then
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								SET.minimap = false;
+								NS.callback["minimap"](false);
+							end,
+							para = {  },
+							text = L.minimap_FALSE,
+						}
+					);
+				else
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								SET.minimap = true;
+								NS.callback["minimap"](true);
+							end,
+							para = {  },
+							text = L.minimap_TRUE,
+						}
+					);
+				end
 				if SET.resizable_border then
 					tinsert(drop_menu_table.elements, {
 							handler = function(button)
@@ -2480,27 +2430,6 @@ end
 							end,
 							para = {  },
 							text = L.resizable_border_TRUE,
-						}
-					);
-				end
-				if SET.win_style ~= 'blz' then
-					tinsert(drop_menu_table.elements, {
-							handler = function(button, win_style)
-								SET.win_style = win_style;
-								NS.winMan_SetStyle(win_style);
-							end,
-							para = { 'blz', },
-							text = L.SetWinStyle_BLZ,
-						}
-					);
-				elseif SET.win_style ~= 'ala' then
-					tinsert(drop_menu_table.elements, {
-							handler = function(button, win_style)
-								SET.win_style = win_style;
-								NS.winMan_SetStyle(win_style);
-							end,
-							para = { 'ala', },
-							text = L.SetWinStyle_ALA,
 						}
 					);
 				end
@@ -2578,45 +2507,43 @@ end
 						}
 					);
 				end
-				if SET.credible then
-					if SET.talents_in_tip then
+				if SET.talents_in_tip then
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								SET.talents_in_tip = false;
+							end,
+							para = {  },
+							text = L.TalentsInTip_FALSE,
+						}
+					);
+					if SET.talents_in_tip_icon then
 						tinsert(drop_menu_table.elements, {
 								handler = function(button)
-									SET.talents_in_tip = false;
+									SET.talents_in_tip_icon = false;
 								end,
 								para = {  },
-								text = L.TalentsInTip_FALSE,
+								text = L.TalentsInTipIcon_FALSE,
 							}
 						);
-						if SET.talents_in_tip_icon then
-							tinsert(drop_menu_table.elements, {
-									handler = function(button)
-										SET.talents_in_tip_icon = false;
-									end,
-									para = {  },
-									text = L.TalentsInTipIcon_FALSE,
-								}
-							);
-						else
-							tinsert(drop_menu_table.elements, {
-									handler = function(button)
-										SET.talents_in_tip_icon = true;
-									end,
-									para = {  },
-									text = L.TalentsInTipIcon_TRUE,
-								}
-							);
-						end
 					else
 						tinsert(drop_menu_table.elements, {
 								handler = function(button)
-									SET.talents_in_tip = true;
+									SET.talents_in_tip_icon = true;
 								end,
 								para = {  },
-								text = L.TalentsInTip_TRUE,
+								text = L.TalentsInTipIcon_TRUE,
 							}
 						);
 					end
+				else
+					tinsert(drop_menu_table.elements, {
+							handler = function(button)
+								SET.talents_in_tip = true;
+							end,
+							para = {  },
+							text = L.TalentsInTip_TRUE,
+						}
+					);
 				end
 				if SET.inspectButtonOnUnitFrame then
 					tinsert(drop_menu_table.elements, {
@@ -3028,15 +2955,7 @@ end
 			wrap:SetPoint("TOPRIGHT", mainFrame, "TOPLEFT", 0, 0);
 			wrap:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMLEFT", 0, 0);
 			wrap:SetWidth(ui_style.equipmentFrameXSize);
-			if SET.win_style == 'ala' then
-				wrap:SetBackdrop(ui_style.equipmentFrameBackdrop);
-				wrap:SetBackdropColor(unpack(ui_style.equipmentFrameBackdropColor));
-				wrap:SetBackdropBorderColor(unpack(ui_style.equipmentFrameBackdropBorderColor));
-			elseif SET.win_style == 'blz' then
-				wrap:SetBackdrop(ui_style.equipmentFrameBackdrop_blz);
-				wrap:SetBackdropColor(unpack(ui_style.equipmentFrameBackdropColor_blz));
-				wrap:SetBackdropBorderColor(unpack(ui_style.equipmentFrameBackdropBorderColor_blz));
-			end
+			uireimp._SetSimpleBackdrop(wrap, 0, 1, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0);
 			wrap:Hide();
 			local frame = CreateFrame("FRAME", nil, wrap);
 			frame:SetWidth(ui_style.equipmentFrameXSize);
@@ -3129,7 +3048,7 @@ end
 				elseif data[1] > 0 then
 					GameTooltip:AddLine(L.spellTabGTTReqLevel .. data[1], 1.0, 0.75, 0.5);
 				end
-				if NS.CPlayerClassUpper == self.list.class then
+				if __ala_meta__.CPlayerClassUpper == self.list.class then
 					if not data[6] then
 						if FindSpellBookSlotBySpellID(data[2]) then
 							GameTooltip:AddLine(L.spellAvailable);
@@ -3217,9 +3136,7 @@ end
 		local function funcToCreateButton(parent, index, buttonHeight)
 			local button = CreateFrame("BUTTON", nil, parent);
 			button:SetHeight(buttonHeight);
-			button:SetBackdrop(ui_style.spellTabFrameButtonBackdrop);
-			button:SetBackdropColor(unpack(ui_style.spellTabFrameButtonBackdropColor));
-			button:SetBackdropBorderColor(unpack(ui_style.spellTabFrameButtonBackdropBorderColor));
+			uireimp._SetSimpleBackdrop(button, 0, 1, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 1.0);
 			button:SetHighlightTexture("Interface\\FriendsFrame\\UI-FriendsFrame-HighlightBar");
 			button:EnableMouse(true);
 			button:Show();
@@ -3264,15 +3181,7 @@ end
 			wrap:SetPoint("TOPLEFT", mainFrame, "TOPRIGHT", 0, 0);
 			wrap:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMRIGHT", 0, 0);
 			wrap:SetWidth(ui_style.spellTabFrameXSize);
-			if SET.win_style == 'ala' then
-				wrap:SetBackdrop(ui_style.spellTabFrameBackdrop);
-				wrap:SetBackdropColor(unpack(ui_style.spellTabFrameBackdropColor));
-				wrap:SetBackdropBorderColor(unpack(ui_style.spellTabFrameBackdropBorderColor));
-			elseif SET.win_style == 'blz' then
-				wrap:SetBackdrop(ui_style.spellTabFrameBackdrop_blz);
-				wrap:SetBackdropColor(unpack(ui_style.spellTabFrameBackdropColor_blz));
-				wrap:SetBackdropBorderColor(unpack(ui_style.spellTabFrameBackdropBorderColor_blz));
-			end
+			uireimp._SetSimpleBackdrop(wrap, 0, 1, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0);
 			wrap:Hide();
 			local frame = CreateFrame("FRAME", nil, wrap);	-- mainFrame:GetName() .. "SpellTab"
 			frame:SetPoint("CENTER", wrap);
@@ -3418,8 +3327,7 @@ end
 			tooltipFrame:SetFrameStrata("FULLSCREEN");
 			tooltipFrame:SetClampedToScreen(true);
 			tooltipFrame:EnableMouse(false);
-			tooltipFrame:SetBackdrop(ui_style.tooltipFrameBackdrop);
-			tooltipFrame:SetBackdropColor(ui_style.tooltipFrameBackdropColor[1], ui_style.tooltipFrameBackdropColor[2], ui_style.tooltipFrameBackdropColor[3], ui_style.tooltipFrameBackdropColor[4]);
+			uireimp._SetSimpleBackdrop(tooltipFrame, 0, 1, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 1.0);
 			tooltipFrame:Hide();
 			tooltipFrame:Show();
 
@@ -3430,6 +3338,8 @@ end
 			local name1 = "emu_tooltip1" .. (time() + 1) .. random(1000000, 10000000);
 			local tooltip1 = CreateFrame("GAMETOOLTIP", name1, UIParent, "GameTooltipTemplate");
 			tooltip1:SetPoint("TOPLEFT", fontString1h1, "BOTTOMLEFT", 0, 6);
+			local NineSlice1 = tooltip1.NineSlice; if NineSlice1 ~= nil then NineSlice1:SetAlpha(0.0); NineSlice1:Hide(); end
+			for _, r in next, { tooltip1:GetRegions() } do if r:GetObjectType() == 'Texture' then r:Hide(); end end
 			tooltip1.TextLeft1 = tooltip1.TextLeft1 or _G[name1 .. "TextLeft1"];
 			tooltip1.TextRight1 = tooltip1.TextRight1 or _G[name1 .. "TextRight1"];
 			tooltip1.TextLeft2 = tooltip1.TextLeft2 or _G[name1 .. "TextLeft2"];
@@ -3445,6 +3355,8 @@ end
 			local name2 = "emu_tooltip2" .. (time() + 100) .. random(1000000, 10000000);
 			local tooltip2 = CreateFrame("GAMETOOLTIP", name2, UIParent, "GameTooltipTemplate");
 			tooltip2:SetPoint("TOPLEFT", fontString2h1, "BOTTOMLEFT", 0, 6);
+			local NineSlice2 = tooltip2.NineSlice; if NineSlice2 ~= nil then NineSlice2:SetAlpha(0.0); NineSlice2:Hide(); end
+			for _, r in next, { tooltip2:GetRegions() } do if r:GetObjectType() == 'Texture' then r:Hide(); end end
 			tooltip2.TextLeft1 = tooltip2.TextLeft1 or _G[name2 .. "TextLeft1"];
 			tooltip2.TextRight1 = tooltip2.TextRight1 or _G[name2 .. "TextRight1"];
 			tooltip2.TextLeft2 = tooltip2.TextLeft2 or _G[name2 .. "TextLeft2"];
@@ -3529,9 +3441,6 @@ end
 			icon:SetScript("OnEnter", talentIcon_OnEnter);
 			icon:SetScript("OnLeave", talentIcon_OnLeave);
 
-			--icon:SetBackdrop(ui_style.iconBackdrop);
-			--icon:SetBackdropColor(ui_style.iconBackdropColor[1], ui_style.iconBackdropColor[2], ui_style.iconBackdropColor[3], ui_style.iconBackdropColor[4]);
-			--icon:SetBackdropBorderColor(ui_style.iconBackdropBorderColor[1], ui_style.iconBackdropBorderColor[2], ui_style.iconBackdropBorderColor[3], ui_style.iconBackdropBorderColor[4]);
 			icon:SetNormalTexture(TEXTURE_SET.UNK);
 			icon:SetPushedTexture(TEXTURE_SET.UNK);
 			icon:SetHighlightTexture(TEXTURE_SET.SQUARE_HIGHLIGHT);
@@ -3619,8 +3528,8 @@ end
 				talentFrame:EnableMouse(true);
 				talentFrame:SetMovable(true);
 				talentFrame:RegisterForDrag("LeftButton");
-				talentFrame:SetScript("OnShow", talentFrame_OnShow);
-				talentFrame:SetScript("OnHide", talentFrame_OnHide);
+				-- talentFrame:SetScript("OnShow", talentFrame_OnShow);
+				-- talentFrame:SetScript("OnHide", talentFrame_OnHide);
 				talentFrame:SetScript("OnDragStart", function(self, button)
 						if not mainFrame.isMoving and not mainFrame.isResizing and mainFrame:IsMovable() then
 							mainFrame:StartMoving();
@@ -3805,10 +3714,10 @@ end
 			NS.Emu_ToggleSpellTab(self.mainFrame);
 		end
 		local function inspectTargetButton_OnClick(self)
-			if UnitExists('target') and UnitIsPlayer('target') and UnitIsConnected('target') and UnitFactionGroup('target') == NS.CPlayerFactionGroup then
+			if UnitExists('target') and UnitIsPlayer('target') and UnitIsConnected('target') and UnitFactionGroup('target') == __ala_meta__.CPlayerFactionGroup then
 				local name, realm = UnitName('target');
 				if name then
-					if realm ~= nil and realm ~= "" and realm ~= NS.CRealmName then
+					if realm ~= nil and realm ~= "" and realm ~= __ala_meta__.CRealmName then
 						NS.specializedMainFrameInspect[name .. "-" .. realm] = { GetTime(), self.mainFrame, };
 					else
 						NS.specializedMainFrameInspect[name] = { GetTime(), self.mainFrame, };
@@ -4507,15 +4416,7 @@ end
 			mainFrame:SetPoint("CENTER");
 			mainFrame:SetMinResize(ui_style.mainFrameXSizeMin_Style1, ui_style.mainFrameYSizeMin_Style1);
 			mainFrame:SetFrameStrata("HIGH");
-			if SET.win_style == 'ala' then
-				mainFrame:SetBackdrop(ui_style.mainFrameBackdrop);
-				mainFrame:SetBackdropColor(ui_style.mainFrameBackdropColor[1], ui_style.mainFrameBackdropColor[2], ui_style.mainFrameBackdropColor[3], ui_style.mainFrameBackdropColor[4]);
-				mainFrame:SetBackdropBorderColor(ui_style.mainFrameBackdropBorderColor[1], ui_style.mainFrameBackdropBorderColor[2], ui_style.mainFrameBackdropBorderColor[3], ui_style.mainFrameBackdropBorderColor[4]);
-			elseif SET.win_style == 'blz' then
-				mainFrame:SetBackdrop(ui_style.mainFrameBackdrop_blz);
-				mainFrame:SetBackdropColor(ui_style.mainFrameBackdropColor_blz[1], ui_style.mainFrameBackdropColor_blz[2], ui_style.mainFrameBackdropColor_blz[3], ui_style.mainFrameBackdropColor_blz[4]);
-				mainFrame:SetBackdropBorderColor(ui_style.mainFrameBackdropBorderColor_blz[1], ui_style.mainFrameBackdropBorderColor_blz[2], ui_style.mainFrameBackdropBorderColor_blz[3], ui_style.mainFrameBackdropBorderColor_blz[4]);
-			end
+			uireimp._SetSimpleBackdrop(mainFrame, 0, 1, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0);
 
 			if SET.style == 1 then
 				mainFrame:SetSize(ui_style.mainFrameXSizeDefault_Style1, ui_style.mainFrameYSizeDefault_Style1);
@@ -4525,13 +4426,8 @@ end
 
 			local BG = mainFrame:CreateTexture(nil, "BORDER");
 			BG:SetAlpha(0.6);
-			if SET.win_style == 'ala' then
-				BG:SetPoint("BOTTOMLEFT");
-				BG:SetPoint("TOPRIGHT");
-			elseif SET.win_style == 'blz' then
-				BG:SetPoint("BOTTOMLEFT", 4, 4);
-				BG:SetPoint("TOPRIGHT", - 4, - 4);
-			end
+			BG:SetPoint("BOTTOMLEFT");
+			BG:SetPoint("TOPRIGHT");
 			mainFrame.BG = BG;
 
 			mainFrame.talentFrames = NS.CreateTalentFrames(mainFrame);
@@ -4629,7 +4525,7 @@ end
 			mainFrame.curTab = 1;
 			NS.EmuCore_SetName(mainFrame, nil);
 			NS.EmuCore_SetLevel(mainFrame, nil);
-			NS.EmuCore_SetClass(mainFrame, NS.CPlayerClassUpper);
+			NS.EmuCore_SetClass(mainFrame, __ala_meta__.CPlayerClassUpper);
 			NS.EmuCore_SetData(mainFrame, nil);
 			-- NS.EmuCore_SetReadOnly(mainFrame, false);
 			mainFrame.initialized = false;
@@ -4765,7 +4661,7 @@ end
 				mainFrames[index].id = rawId;
 			end
 		end
-		function NS.hideMainFrame(winId)
+		function NS.winMan_HideWin(winId)
 			if type(winId) == 'table' then
 				winId:Hide();
 			elseif type(winId) == 'number' then
@@ -4847,41 +4743,6 @@ end
 		end
 		function NS.winMan_GetSpecializedMeta(name)
 			return NS.specializedMainFrameInspect[name];
-		end
-		function NS.winMan_SetStyle(win_style)
-			if win_style == 'ala' then
-				for i = 1, NS.mainFrames.num do
-					local mainFrame = NS.mainFrames[i];
-					mainFrame:SetBackdrop(ui_style.mainFrameBackdrop);
-					mainFrame:SetBackdropColor(ui_style.mainFrameBackdropColor[1], ui_style.mainFrameBackdropColor[2], ui_style.mainFrameBackdropColor[3], ui_style.mainFrameBackdropColor[4]);
-					mainFrame:SetBackdropBorderColor(ui_style.mainFrameBackdropBorderColor[1], ui_style.mainFrameBackdropBorderColor[2], ui_style.mainFrameBackdropBorderColor[3], ui_style.mainFrameBackdropBorderColor[4]);
-					mainFrame.BG:ClearAllPoints();
-					mainFrame.BG:SetPoint("BOTTOMLEFT");
-					mainFrame.BG:SetPoint("TOPRIGHT");
-					mainFrame.equipmentFrameContainer:SetBackdrop(ui_style.equipmentFrameBackdrop);
-					mainFrame.equipmentFrameContainer:SetBackdropColor(unpack(ui_style.equipmentFrameBackdropColor));
-					mainFrame.equipmentFrameContainer:SetBackdropBorderColor(unpack(ui_style.equipmentFrameBackdropBorderColor));
-					mainFrame.spellTabFrameContainer:SetBackdrop(ui_style.spellTabFrameBackdrop);
-					mainFrame.spellTabFrameContainer:SetBackdropColor(unpack(ui_style.spellTabFrameBackdropColor));
-					mainFrame.spellTabFrameContainer:SetBackdropBorderColor(unpack(ui_style.spellTabFrameBackdropBorderColor));
-				end
-			elseif win_style == 'blz' then
-				for i = 1, NS.mainFrames.num do
-					local mainFrame = NS.mainFrames[i];
-					mainFrame:SetBackdrop(ui_style.mainFrameBackdrop_blz);
-					mainFrame:SetBackdropColor(ui_style.mainFrameBackdropColor_blz[1], ui_style.mainFrameBackdropColor_blz[2], ui_style.mainFrameBackdropColor_blz[3], ui_style.mainFrameBackdropColor_blz[4]);
-					mainFrame:SetBackdropBorderColor(ui_style.mainFrameBackdropBorderColor_blz[1], ui_style.mainFrameBackdropBorderColor_blz[2], ui_style.mainFrameBackdropBorderColor_blz[3], ui_style.mainFrameBackdropBorderColor_blz[4]);
-					mainFrame.BG:ClearAllPoints();
-					mainFrame.BG:SetPoint("BOTTOMLEFT", 4, 4);
-					mainFrame.BG:SetPoint("TOPRIGHT", - 4, - 4);
-					mainFrame.equipmentFrameContainer:SetBackdrop(ui_style.equipmentFrameBackdrop_blz);
-					mainFrame.equipmentFrameContainer:SetBackdropColor(unpack(ui_style.equipmentFrameBackdropColor_blz));
-					mainFrame.equipmentFrameContainer:SetBackdropBorderColor(unpack(ui_style.equipmentFrameBackdropBorderColor_blz));
-					mainFrame.spellTabFrameContainer:SetBackdrop(ui_style.spellTabFrameBackdrop_blz);
-					mainFrame.spellTabFrameContainer:SetBackdropColor(unpack(ui_style.spellTabFrameBackdropColor_blz));
-					mainFrame.spellTabFrameContainer:SetBackdropBorderColor(unpack(ui_style.spellTabFrameBackdropBorderColor_blz));
-				end
-			end
 		end
 		function NS.winMan_Iterator(func)
 			local mainFrames = NS.mainFrames;
@@ -5327,7 +5188,7 @@ do	-- raid_tool
 			[2523] = 22779,
 		},
 	};
-		for eid, sid in pairs(enchant_hash.INVTYPE_WEAPON) do
+		for eid, sid in next, enchant_hash.INVTYPE_WEAPON do
 			if enchant_hash.INVTYPE_2HWEAPON[eid] == nil then
 				enchant_hash.INVTYPE_2HWEAPON[eid] = sid;
 			end
@@ -5341,6 +5202,26 @@ do	-- raid_tool
 		PALADIN = 1,
 		SHAMAN = 1,
 	};
+	local function _get_enchant_info(class, slot, item)
+		local _, link, _, level, _, _, _, _, loc = GetItemInfo(item);
+		local hash = enchant_hash[loc];
+		if hash and (hash.class == class or hash.class == nil) then
+			local id, enchantId = strmatch(item, "item:(%d+):(%d+):")
+			enchantId = tonumber(enchantId);
+			if enchantId then
+				local enchant = hash[enchantId];
+				if enchant then
+					return true, true, link or ("item:" .. id), GetSpellInfo(enchant) or ("spell: " .. enchant);
+				else
+					return true, true, link or ("item:" .. id), "enchant: " .. enchantId;
+				end
+			else
+				return true, false, link or item;
+			end
+		else
+			return false, false, link or item;
+		end
+	end
 	--
 	local function calcItemLevel(class, cache)
 		local slots = { 1, 2, 3, 5, 6, 7, 8,9, 10, 11, 12, 13, 14, 15, };
@@ -5375,16 +5256,811 @@ do	-- raid_tool
 		end
 		return total / num1, total / num2, refresh_again;
 	end
+	--	LibItemEnchant
+	local EnchantItemDB = {
+		[5423] = 128537,
+		[5424] = 128538,
+		[5425] = 128539,
+		[5426] = 128540,
+		[5427] = 128541,
+		[5428] = 128542,
+		[5429] = 128543,
+		[5430] = 128544,
+		[5431] = 128545,
+		[5432] = 128546,
+		[5433] = 128547,
+		[5434] = 128548,
+		[5435] = 128549,
+		[5436] = 128550,
+		[5437] = 128551,
+		[5438] = 128552,
+		[5439] = 128553,
+		[5444] = 128558,
+		[5445] = 128559,
+		[5446] = 128560,
+		[5447] = 128561,
+		[5440] = 128554,
+		[5441] = 140213,
+		[5442] = 140214,
+		[5443] = 140215,
+		[5881] = 140217,
+		[5882] = 140218,
+		[5883] = 140219,
+		[5888] = 141861,
+		[5889] = 141908,
+		[5890] = 141909,
+		[5891] = 141910,
+		[5896] = 144305,
+		[5899] = 144328,
+		[5900] = 144346,
+		[5931] = 153247,
+		[5929] = 153197,
+		[5939] = 153439,
+		[5943] = 153443,
+		[5955] = 158212,
+		--那萊矯捷瞄準鏡 158327
+		--5957 炙燃火藥
+		--6087 韧性法术丝线
+		--6088 谨慎法术丝线
+		--6089 轻羽法术丝线
+
+		[6108] = 168446,
+		[6109] = 168447,
+		[6110] = 168448,
+		[6111] = 168449,
+		[6112] = 168593,
+		[6148] = 168596,
+		[6149] = 168592,
+		[6150] = 168598,
+		--戒指 致命 153442
+		--戒指 应变 153445
+
+	};
+	local EnchantSpellDB = {
+		[15] = 2831,
+		[16] = 2832,
+		[17] = 2833,
+		[18] = 10344,
+		[24] = 7443,
+		[30] = 3974,
+		[32] = 3975,
+		[33] = 3976,
+		[34] = 7218,
+		[36] = 6296,
+		[37] = 7220,
+		[41] = 7420,
+		[43] = 7216,
+		[44] = 7426,
+		[63] = 13538,
+		[66] = 7863,
+		[241] = 13503,
+		[242] = 7748,
+		[243] = 7766,
+		[246] = 7776,
+		[247] = 7867,
+		[248] = 7782,
+		[249] = 7786,
+		[250] = 7788,
+		[254] = 7857,
+		[255] = 13380,
+		[369] = 34001,
+		[463] = 9781,
+		[464] = 9783,
+		[663] = 12459,
+		[664] = 12460,
+		[723] = 7793,
+		[724] = 13644,
+		[744] = 13421,
+		[783] = 7771,
+		[803] = 13898,
+		[805] = 13943,
+		[823] = 13536,
+		[843] = 13607,
+		[844] = 13612,
+		[845] = 13617,
+		[846] = 24302,
+		[847] = 13626,
+		[848] = 13635,
+		[849] = 13637,
+		[850] = 13640,
+		[851] = 20024,
+		[852] = 13836,
+		[853] = 13653,
+		[854] = 13655,
+		[856] = 13661,
+		[857] = 13663,
+		[863] = 13689,
+		[865] = 13698,
+		[866] = 13700,
+		[884] = 13746,
+		[904] = 13935,
+		[905] = 13822,
+		[906] = 13841,
+		[907] = 13846,
+		[908] = 13858,
+		[909] = 13868,
+		[910] = 25083,
+		[911] = 13890,
+		[912] = 13915,
+		[913] = 13917,
+		[923] = 13931,
+		[924] = 7428,
+		[925] = 13646,
+		[927] = 13939,
+		[928] = 13941,
+		[929] = 20020,
+		[930] = 13947,
+		[931] = 13948,
+		[943] = 13529,
+		[963] = 13937,
+		[1071] = 34009,
+		[1075] = 44528,
+		[1099] = 60663,
+		[1103] = 44633,
+		[1119] = 44555,
+		[1128] = 60653,
+		[1147] = 44508,
+		[1483] = 15340,
+		[1503] = 15389,
+		[1504] = 15391,
+		[1505] = 15394,
+		[1506] = 15397,
+		[1507] = 15400,
+		[1508] = 15402,
+		[1509] = 15404,
+		[1510] = 15406,
+		[1523] = 15427,
+		[1524] = 15429,
+		[1525] = 15439,
+		[1526] = 15441,
+		[1527] = 15444,
+		[1528] = 15446,
+		[1529] = 15449,
+		[1530] = 15458,
+		[1532] = 15463,
+		[1543] = 15490,
+		[1597] = 60763,
+		[1600] = 60616,
+		[1603] = 60668,
+		[1606] = 60621,
+		[1704] = 16623,
+		[1843] = 19057,
+		[1883] = 20008,
+		[1884] = 20009,
+		[1885] = 20010,
+		[1886] = 20011,
+		[1887] = 20012,
+		[1889] = 20015,
+		[1890] = 20016,
+		[1891] = 20025,
+		[1892] = 20026,
+		[1893] = 20028,
+		[1894] = 20029,
+		[1896] = 20030,
+		[1897] = 13695,
+		[1898] = 20032,
+		[1899] = 20033,
+		[1900] = 20034,
+		[1903] = 20035,
+		[1904] = 20036,
+		[1951] = 44591,
+		[1952] = 44489,
+		[1953] = 47766,
+		[2322] = 33999,
+		[2326] = 44635,
+		[2332] = 60767,
+		[2343] = 34010,
+		[2381] = 44509,
+		[2443] = 21931,
+		[2483] = 22593,
+		[2484] = 22594,
+		[2485] = 22598,
+		[2486] = 22597,
+		[2487] = 22596,
+		[2488] = 22599,
+		[2503] = 22725,
+		[2504] = 22749,
+		[2505] = 22750,
+		[2523] = 22779,
+		[2543] = 22840,
+		[2544] = 22844,
+		[2545] = 22846,
+		[2563] = 23799,
+		[2564] = 23800,
+		[2565] = 23801,
+		[2567] = 23803,
+		[2568] = 23804,
+		[2583] = 24149,
+		[2584] = 24160,
+		[2587] = 24163,
+		[2588] = 24164,
+		[2589] = 24165,
+		[2590] = 24167,
+		[2591] = 24168,
+		[2603] = 13620,
+		[2604] = 24420,
+		[2605] = 24421,
+		[2606] = 24422,
+		[2613] = 25072,
+		[2614] = 25073,
+		[2615] = 25074,
+		[2616] = 25078,
+		[2617] = 25079,
+		[2621] = 25084,
+		[2622] = 25086,
+		[2646] = 27837,
+		[2647] = 27899,
+		[2648] = 27906,
+		[2649] = 27914,
+		[2650] = 23802,
+		[2653] = 27944,
+		[2654] = 27945,
+		[2655] = 27946,
+		[2656] = 27948,
+		[2657] = 27951,
+		[2658] = 27954,
+		[2659] = 27957,
+		[2661] = 27960,
+		[2662] = 27961,
+		[2666] = 27968,
+		[2667] = 27971,
+		[2668] = 27972,
+		[2669] = 27975,
+		[2670] = 27977,
+		[2671] = 27981,
+		[2672] = 27982,
+		[2673] = 27984,
+		[2674] = 28003,
+		[2675] = 28004,
+		[2679] = 27913,
+		[2681] = 28161,
+		[2682] = 28163,
+		[2683] = 28165,
+		[2714] = 29454,
+		[2715] = 29475,
+		[2716] = 29480,
+		[2717] = 29483,
+		[2721] = 29467,
+		[2722] = 30250,
+		[2723] = 30252,
+		[2724] = 30260,
+		[2745] = 31369,
+		[2746] = 31370,
+		[2747] = 31371,
+		[2748] = 31372,
+		[2792] = 32397,
+		[2793] = 32398,
+		[2794] = 32399,
+		[2841] = 44968,
+		[2933] = 33992,
+		[2934] = 33993,
+		[2935] = 33994,
+		[2937] = 33997,
+		[2938] = 34003,
+		[2939] = 34007,
+		[2940] = 34008,
+		[2977] = 35355,
+		[2978] = 35402,
+		[2979] = 35403,
+		[2980] = 35404,
+		[2981] = 35405,
+		[2982] = 35406,
+		[2983] = 35407,
+		[2984] = 35415,
+		[2985] = 35416,
+		[2986] = 35417,
+		[2987] = 35418,
+		[2988] = 35419,
+		[2989] = 35420,
+		[2990] = 35432,
+		[2991] = 35433,
+		[2992] = 35434,
+		[2993] = 35435,
+		[2994] = 35436,
+		[2995] = 35437,
+		[2996] = 35438,
+		[2997] = 35439,
+		[2998] = 35441,
+		[2999] = 35443,
+		[3001] = 35445,
+		[3002] = 35447,
+		[3003] = 35452,
+		[3004] = 35453,
+		[3005] = 35454,
+		[3006] = 35455,
+		[3007] = 35456,
+		[3008] = 35457,
+		[3009] = 35458,
+		[3010] = 35488,
+		[3011] = 35489,
+		[3012] = 35490,
+		[3013] = 35495,
+		[3095] = 37889,
+		[3096] = 37891,
+		[3150] = 33991,
+		[3222] = 42620,
+		[3223] = 42687,
+		[3225] = 42974,
+		[3228] = 44119,
+		[3229] = 44383,
+		[3231] = 44484,
+		[3232] = 47901,
+		[3233] = 27958,
+		[3234] = 44488,
+		[3236] = 44492,
+		[3238] = 44506,
+		[3239] = 44524,
+		[3241] = 44576,
+		[3243] = 44582,
+		[3244] = 44584,
+		[3245] = 44588,
+		[3246] = 44592,
+		[3247] = 44595,
+		[3249] = 44612,
+		[3251] = 44621,
+		[3252] = 44623,
+		[3253] = 44625,
+		[3256] = 44631,
+		[3260] = 44769,
+		[3269] = 45697,
+		[3273] = 46578,
+		[3289] = 47103,
+		[3294] = 47672,
+		[3296] = 47899,
+		[3297] = 47900,
+		[3315] = 48401,
+		[3325] = 50901,
+		[3326] = 50902,
+		[3329] = 50906,
+		[3330] = 50909,
+		[3332] = 50913,
+		[3366] = 53331,
+		[3367] = 53342,
+		[3368] = 53344,
+		[3370] = 53343,
+		[3595] = 54447,
+		[3599] = 54736,
+		[3601] = 54793,
+		[3605] = 55002,
+		[3607] = 55076,
+		[3608] = 55135,
+		[3718] = 55630,
+		[3719] = 55631,
+		[3720] = 55632,
+		[3721] = 55634,
+		[3731] = 55836,
+		[3748] = 56353,
+		[3754] = 24162,
+		[3755] = 24161,
+		[3775] = 58126,
+		[3776] = 58128,
+		[3777] = 58129,
+		[3788] = 59619,
+		[3789] = 59621,
+		[3790] = 59625,
+		[3793] = 59771,
+		[3794] = 59773,
+		[3795] = 59777,
+		[3796] = 59778,
+		[3797] = 59784,
+		[3806] = 59927,
+		[3807] = 59928,
+		[3808] = 59934,
+		[3809] = 59936,
+		[3810] = 59937,
+		[3811] = 59941,
+		[3812] = 59944,
+		[3813] = 59945,
+		[3814] = 59946,
+		[3815] = 59947,
+		[3816] = 59948,
+		[3817] = 59954,
+		[3818] = 59955,
+		[3819] = 59960,
+		[3820] = 59970,
+		[3822] = 60581,
+		[3823] = 60582,
+		[3824] = 60606,
+		[3825] = 60609,
+		[3826] = 60623,
+		[3827] = 60691,
+		[3828] = 44630,
+		[3829] = 44513,
+		[3830] = 44629,
+		[3831] = 47898,
+		[3832] = 60692,
+		[3833] = 60707,
+		[3834] = 60714,
+		[3835] = 61117,
+		[3836] = 61118,
+		[3837] = 61119,
+		[3838] = 61120,
+		[3842] = 61271,
+		[3843] = 61468,
+		[3844] = 44510,
+		[3845] = 44575,
+		[3846] = 34010,
+		[3847] = 62158,
+		[3849] = 62201,
+		[3850] = 62256,
+		[3851] = 62257,
+		[3852] = 62384,
+		[3853] = 62447,
+		[3854] = 62948,
+		[3855] = 62959,
+		[3858] = 63746,
+		[3869] = 64441,
+		[3870] = 64579,
+		[3872] = 56039,
+		[3873] = 56034,
+		[3875] = 59929,
+		[3876] = 59932,
+		[4061] = 74132,
+		[4062] = 74189,
+		[4063] = 74191,
+		[4064] = 74192,
+		[4065] = 74193,
+		[4066] = 74195,
+		[4067] = 74197,
+		[4068] = 74198,
+		[4069] = 74199,
+		[4070] = 74200,
+		[4071] = 74201,
+		[4072] = 74202,
+		[4073] = 74207,
+		[4074] = 74211,
+		[4075] = 74212,
+		[4076] = 74213,
+		[4077] = 74214,
+		[4082] = 74220,
+		[4083] = 74223,
+		[4084] = 74225,
+		[4085] = 74226,
+		[4086] = 74229,
+		[4087] = 74230,
+		[4088] = 74231,
+		[4089] = 74232,
+		[4090] = 74234,
+		[4091] = 74235,
+		[4092] = 74236,
+		[4093] = 74237,
+		[4094] = 74238,
+		[4095] = 74239,
+		[4096] = 74240,
+		[4097] = 74242,
+		[4098] = 74244,
+		[4099] = 74246,
+		[4100] = 74247,
+		[4101] = 74248,
+		[4102] = 74250,
+		[4103] = 74251,
+		[4104] = 74253,
+		[4105] = 74252,
+		[4106] = 74254,
+		[4107] = 74255,
+		[4108] = 74256,
+		[4109] = 75149,
+		[4110] = 75150,
+		[4111] = 75151,
+		[4112] = 75152,
+		[4113] = 75154,
+		[4114] = 75155,
+		[4120] = 78165,
+		[4121] = 78166,
+		[4122] = 78169,
+		[4124] = 78170,
+		[4126] = 78171,
+		[4127] = 78172,
+		[4175] = 81932,
+		[4176] = 81933,
+		[4177] = 81934,
+		[4187] = 84424,
+		[4188] = 84427,
+		[4193] = 86375,
+		[4194] = 86401,
+		[4195] = 86402,
+		[4196] = 86403,
+		[4197] = 86847,
+		[4198] = 86854,
+		[4199] = 86898,
+		[4200] = 86899,
+		[4201] = 86900,
+		[4202] = 86901,
+		[4203] = 86906,
+		[4204] = 86907,
+		[4205] = 86909,
+		[4206] = 86931,
+		[4207] = 86932,
+		[4208] = 86933,
+		[4209] = 86934,
+		[4214] = 84425,
+		[4215] = 92433,
+		[4216] = 92437,
+		[4217] = 93448,
+		[4222] = 67839,
+		[4223] = 55016,
+		[4227] = 95471,
+		[4245] = 96245,
+		[4246] = 96246,
+		[4247] = 96247,
+		[4248] = 96249,
+		[4249] = 96250,
+		[4250] = 96251,
+		[4256] = 96261,
+		[4257] = 96262,
+		[4258] = 96264,
+		[4259] = 96286,
+		[4267] = 99623,
+		[4270] = 101598,
+		[4411] = 104338,
+		[4412] = 104385,
+		[4414] = 104389,
+		[4415] = 104390,
+		[4416] = 104391,
+		[4417] = 104392,
+		[4418] = 104393,
+		[4419] = 104395,
+		[4420] = 104397,
+		[4421] = 104398,
+		[4422] = 104401,
+		[4423] = 104403,
+		[4424] = 104404,
+		[4426] = 104407,
+		[4427] = 104408,
+		[4428] = 104409,
+		[4429] = 104414,
+		[4430] = 104416,
+		[4431] = 104417,
+		[4432] = 104419,
+		[4433] = 104420,
+		[4434] = 104445,
+		[4441] = 104425,
+		[4442] = 104427,
+		[4443] = 104430,
+		[4444] = 104434,
+		[4445] = 104440,
+		[4446] = 104442,
+		[4687] = 108115,
+		[4699] = 109086,
+		[4700] = 109093,
+		[4717] = 110764,
+		[4719] = 113011,
+		[4720] = 7418,
+		[4721] = 7457,
+		[4722] = 13378,
+		[4723] = 7745,
+		[4724] = 13419,
+		[4725] = 7779,
+		[4726] = 13687,
+		[4727] = 7859,
+		[4728] = 13485,
+		[4729] = 13622,
+		[4730] = 13501,
+		[4731] = 13631,
+		[4732] = 71692,
+		[4733] = 13464,
+		[4734] = 13882,
+		[4735] = 13642,
+		[4736] = 13659,
+		[4737] = 13648,
+		[4738] = 13817,
+		[4739] = 13887,
+		[4740] = 13815,
+		[4741] = 13905,
+		[4742] = 20013,
+		[4743] = 13945,
+		[4744] = 20017,
+		[4745] = 13693,
+		[4746] = 27967,
+		[4747] = 44500,
+		[4748] = 44589,
+		[4750] = 82200,
+		[4803] = 121192,
+		[4804] = 121193,
+		[4805] = 121194,
+		[4806] = 121195,
+		[4808] = 121988,
+		[4822] = 122387,
+		[4823] = 122388,
+		[4824] = 122386,
+		[4825] = 122392,
+		[4826] = 122393,
+		[4869] = 124091,
+		[4870] = 124116,
+		[4871] = 124118,
+		[4872] = 124119,
+		[4880] = 124559,
+		[4881] = 124561,
+		[4882] = 124563,
+		[4883] = 124564,
+		[4884] = 124565,
+		[4885] = 124566,
+		[4886] = 124567,
+		[4887] = 124568,
+		[4888] = 124569,
+		[4895] = 125496,
+		[4896] = 125497,
+		[4897] = 126392,
+		[4907] = 127015,
+		[4908] = 127014,
+		[4909] = 127013,
+		[4910] = 127012,
+		[4912] = 113048,
+		[4913] = 113047,
+		[4914] = 113046,
+		[4915] = 113045,
+		[4916] = 113044,
+		[4918] = 128286,
+		[4992] = 130749,
+		[4993] = 130758,
+		[5000] = 109099,
+		[5001] = 131464,
+		[5003] = 131862,
+		[5004] = 131863,
+		[5035] = 139631,
+		[5055] = 141167,
+		[5056] = 141168,
+		[5057] = 141170,
+		[5058] = 141173,
+		[5059] = 141174,
+		[5060] = 141175,
+		[5061] = 141176,
+		[5062] = 141177,
+		[5063] = 141330,
+		[5076] = 141445,
+		[5080] = 141862,
+		[5081] = 141868,
+		[5091] = 141971,
+		[5092] = 141973,
+		[5093] = 141974,
+		[5094] = 141975,
+		[5095] = 141976,
+		[5096] = 141977,
+		[5097] = 141978,
+		[5098] = 141981,
+		[5099] = 141982,
+		[5100] = 141983,
+		[5101] = 141984,
+		[5110] = 142173,
+		[5111] = 142175,
+		[5112] = 142177,
+		[5113] = 142178,
+		[5124] = 142469,
+		[5125] = 142468,
+		[5183] = 27911,
+		[5184] = 27917,
+		[5237] = 33990,
+		[5250] = 33995,
+		[5255] = 33996,
+		[5257] = 34002,
+		[5258] = 34004,
+		[5259] = 44529,
+		[5260] = 46594,
+		[5274] = 155692,
+		[5275] = 156050,
+		[5276] = 156061,
+		[5281] = 158877,
+		[5284] = 158907,
+		[5285] = 158892,
+		[5292] = 158893,
+		[5293] = 158894,
+		[5294] = 158895,
+		[5295] = 158896,
+		[5297] = 158908,
+		[5298] = 158878,
+		[5299] = 158909,
+		[5300] = 158879,
+		[5301] = 158910,
+		[5302] = 158880,
+		[5303] = 158911,
+		[5304] = 158881,
+		[5310] = 158884,
+		[5311] = 158885,
+		[5312] = 158886,
+		[5313] = 158887,
+		[5314] = 158889,
+		[5317] = 158899,
+		[5318] = 158900,
+		[5319] = 158901,
+		[5320] = 158902,
+		[5321] = 158903,
+		[5324] = 158914,
+		[5325] = 158915,
+		[5326] = 158916,
+		[5327] = 158917,
+		[5328] = 158918,
+		[5330] = 159235,
+		[5331] = 159236,
+		[5334] = 159672,
+		[5335] = 159673,
+		[5336] = 159674,
+		[5337] = 159671,
+		[5352] = 170627,
+		[5353] = 170628,
+		[5354] = 170629,
+		[5355] = 170630,
+		[5356] = 170631,
+		[5357] = 170886,
+		[5383] = 173287,
+		[5384] = 173323,
+		[5423] = 190866,
+		[5424] = 190867,
+		[5425] = 190868,
+		[5426] = 190869,
+		[5427] = 190870,
+		[5428] = 190871,
+		[5429] = 190872,
+		[5430] = 190873,
+		[5431] = 190874,
+		[5432] = 190875,
+		[5433] = 190876,
+		[5434] = 190877,
+		[5435] = 190878,
+		[5436] = 190879,
+		[5437] = 190892,
+		[5438] = 190893,
+		[5439] = 190894,
+		[5889] = 228402,
+		[5890] = 228405,
+		[5891] = 228408,
+		[5444] = 190988,
+		[5445] = 190989,
+		[5446] = 190990,
+		[5447] = 190991,
+		[5440] = 190954,
+		[5441] = 190955,
+		[5442] = 190956,
+		[5443] = 190957,
+		[5881] = 222851,
+		[5882] = 222852,
+		[5883] = 222853,
+		[5888] = 228139,
+		--[5898] = , +9致命
+		[5899] = 235731,
+		[5900] = 235795,
+		[5932] = 255035,
+		[5933] = 255040,
+		[5934] = 255065,
+		[5935] = 255066,
+		[5936] = 255068,
+		[5937] = 255070,
+		[5938] = 255071,
+		[5939] = 255072,
+		[5940] = 255073,
+		[5941] = 255074,
+		[5942] = 255086,
+		[5943] = 255087,
+		[5944] = 255088,
+		[5945] = 255089,
+		[5946] = 255103,
+		[5948] = 255110,
+		[5949] = 255129,
+		[5950] = 255141,
+		[5962] = 268852,
+		[5963] = 268894,
+		[5964] = 268901,
+		[5965] = 268907,
+		[5966] = 268913,
+		[5970] = 271366,
+		[5971] = 271433,
+
+	};
+
 	local function get_enchant_info(class, slot, item)
 		local _, link, _, level, _, _, _, _, loc = GetItemInfo(item);
 		local hash = enchant_hash[loc];
 		if hash and (hash.class == class or hash.class == nil) then
-			local _, _, id, enchantId = strfind(item, "item:(%d+):(%d+):")
+			local id, enchantId = strmatch(item, "item:(%d+):(%d+):");
 			enchantId = tonumber(enchantId);
 			if enchantId then
-				local enchant = hash[enchantId];
+				local enchant = EnchantSpellDB[enchantId];
 				if enchant then
-					return true, true, link or ("item:" .. id), GetSpellInfo(enchant) or ("spell: " .. enchant);
+					local eitem = EnchantItemDB[enchant];
+					if eitem then
+						return true, true, link or ("item:" .. id), GetItemInfo(eitem) or GetSpellInfo(enchant) or ("item: " .. eitem);
+					else
+						return true, true, link or ("item:" .. id), GetSpellInfo(enchant) or ("spell: " .. enchant);
+					end
 				else
 					return true, true, link or ("item:" .. id), "enchant: " .. enchantId;
 				end
@@ -5492,9 +6168,7 @@ do	-- raid_tool
 	local function funcToCreateButton(parent, index, buttonHeight)
 		local button = CreateFrame("BUTTON", nil, parent);
 		button:SetHeight(buttonHeight);
-		button:SetBackdrop(ui_style.spellTabFrameButtonBackdrop);
-		button:SetBackdropColor(unpack(ui_style.spellTabFrameButtonBackdropColor));
-		button:SetBackdropBorderColor(unpack(ui_style.spellTabFrameButtonBackdropBorderColor));
+		uireimp._SetSimpleBackdrop(button, 0, 1, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 1.0);
 		button:SetHighlightTexture("Interface\\FriendsFrame\\UI-FriendsFrame-HighlightBar");
 		button:EnableMouse(true);
 		button:Show();
@@ -5617,7 +6291,7 @@ do	-- raid_tool
 					button.itemLevel:SetText(nil);
 				end
 				if refresh_again then
-					_EventHandler:run_on_next_tick(frame.update_scroll);
+					NS.F_ScheduleDelayCall(button.frame.update_scroll);
 				end
 				local missItems, missEnchants, items, enchants = summary_items(class, cache);
 				if missItems then
@@ -5646,7 +6320,7 @@ do	-- raid_tool
 				button.missItem:SetText(nil);
 				button.missEnchant:SetText(nil);
 			end
-			local dbm = NS.extern.addon["D4C"].list[name] or NS.extern.addon["BigWigs"].list[name];
+			local dbm = NS.extern.addon["D4C"].list[name] or NS.extern.addon["D4BC"].list[name] or NS.extern.addon["BigWigs"].list[name];
 			if dbm then
 				button.dbm:SetText(dbm[1]);
 			else
@@ -5664,9 +6338,7 @@ do	-- raid_tool
 		--	frame
 			local frame = CreateFrame("FRAME", "ALA_RAID_TOOL_UI", UIParent);
 			tinsert(UISpecialFrames, "ALA_RAID_TOOL_UI");
-			frame:SetBackdrop(ui_style.mainFrameBackdrop);
-			frame:SetBackdropColor(ui_style.mainFrameBackdropColor);
-			frame:SetBackdropBorderColor(ui_style.mainFrameBackdropBorderColor);
+			uireimp._SetSimpleBackdrop(frame, 0, 1, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 1.0);
 			frame:SetSize(ui_style.raidToolUIFrameXSize, ui_style.raidToolUIFrameYSize);
 			frame:SetFrameStrata("HIGH");
 			frame:SetPoint("CENTER", 0, 0);
@@ -5772,7 +6444,7 @@ do	-- raid_tool
 		--
 		_EventHandler:AddCustomEventHandler("USER_EVENT_DATA_RECV", function()
 			if frame:IsShown() then
-				_EventHandler:run_on_next_tick(frame.update_scroll);
+				NS.F_ScheduleDelayCall(frame.update_scroll);
 			end
 		end);
 		function frame.update_func(force_update)
@@ -5801,89 +6473,75 @@ do	-- raid_tool
 					info[1] = class;
 					info[2] = level;
 					info[3] = online;
-					info[4] = rankId;
+					info[4] = nil;
 					if online then
 						NS.Emu_Query(name, nil, true, force_update);
 					end
 				end
 			end
 		end
+		local TRaidUnit = {  };
+		local TPartyUnit = {  };
+		for index = 1, 40 do
+			TRaidUnit[index] = 'raid' .. index;
+		end
+		for index = 1, 4 do
+			TPartyUnit[index] = 'party' .. index;
+		end
 		function frame.update_raid_roster_list(force_update)
 			if not frame.guild then
 				wipe(rosterList);
-				local num = GetNumGroupMembers();
-				for index = 1, num do
-					local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isMasterLoot, combatRole = GetRaidRosterInfo(index);
-					--	rank:	2-GroupLeader, 1-Assist, 0-None
-					--	role:	MAINTANK, MAINASSIST
-					name = Ambiguate(name, 'none');
-					if level <= 0 then
-						if UnitInBattleground('player') or IsInRaid() then
-							local unit = 'party' .. index;
-							if UnitExists(unit) then
-								local _name, _realm = UnitName(unit);
-								if _realm ~= nil and _realm ~= "" then
-									_name = Ambiguate(_name .. "-" .. _realm);
-								end
-								if _name == name then
-									level = UnitLevel(unit);
-								end
+				if IsInRaid() then
+					for i = 1, 40 do
+						local unit = TRaidUnit[i];
+						if UnitExists(unit) then
+							local name, realm = UnitName(unit);
+							if realm ~= nil and realm ~= "" and realm ~= __ala_meta__.CRealmName then
+								name = name .. "-" .. realm;
 							end
-							if level <= 0 then
-								for i = 1, 40 do
-									local unit = 'raid' .. i;
-									if UnitExists(unit) then
-										local _name, _realm = UnitName(unit);
-										if _realm ~= nil and _realm ~= "" then
-											_name = Ambiguate(_name .. "-" .. _realm);
-										end
-										if _name == name then
-											level = UnitLevel(unit);
-											break;
-										end
-									end
-								end
+							local level = UnitLevel(unit);
+							local class = UnitClassBase(unit);
+							local online = not not UnitIsConnected(unit);
+							tinsert(rosterList, name);
+							local info = rosterInfo[name];
+							if info == nil then
+								info = {  };
+								rosterInfo[name] = info;
 							end
-						elseif IsInGroup() then
-							local unit = 'party' .. index;
-							if UnitExists(unit) then
-								local _name, _realm = UnitName(unit);
-								if _realm ~= nil and _realm ~= "" then
-									_name = Ambiguate(_name .. "-" .. _realm);
-								end
-								if _name == name then
-									level = UnitLevel(unit);
-								end
-							end
-							if level <= 0 then
-								for i = 1, 4 do
-									local unit = 'party' .. i;
-									if UnitExists(unit) then
-										local _name, _realm = UnitName(unit);
-										if _realm ~= nil and _realm ~= "" then
-											_name = Ambiguate(_name .. "-" .. _realm);
-										end
-										if _name == name then
-											level = UnitLevel(unit);
-											break;
-										end
-									end
-								end
+							info[1] = class;
+							info[2] = level;
+							info[3] = online;
+							info[4] = unit;
+							if online then
+								NS.Emu_Query(name, nil, true, force_update);
 							end
 						end
 					end
-					tinsert(rosterList, name);
-					local info = rosterInfo[name];
-					if info == nil then
-						info = {  };
-						rosterInfo[name] = info;
-					end
-					info[1] = fileName;
-					info[2] = level;
-					info[3] = online;
-					info[4] = rank;
-					if online then
-						NS.Emu_Query(name, nil, true, force_update);
+				elseif IsInGroup() then
+					for i = 1, 5 do
+						local unit = TPartyUnit[i];
+						if UnitExists(unit) then
+							local name, realm = UnitName(unit);
+							if realm ~= nil and realm ~= "" and realm ~= __ala_meta__.CRealmName then
+								name = name .. "-" .. realm;
+							end
+							local level = UnitLevel(unit);
+							local class = UnitClassBase(unit);
+							local online = not not UnitIsConnected(unit);
+							tinsert(rosterList, name);
+							local info = rosterInfo[name];
+							if info == nil then
+								info = {  };
+								rosterInfo[name] = info;
+							end
+							info[1] = class;
+							info[2] = level;
+							info[3] = online;
+							info[4] = unit;
+							if online then
+								NS.Emu_Query(name, nil, true, force_update);
+							end
+						end
 					end
 				end
 			end
@@ -5898,12 +6556,12 @@ do	-- raid_tool
 			end
 		end
 		function NS.GROUP_ROSTER_UPDATE()
-			_EventHandler:run_on_next_tick(frame.update_list);
+			NS.F_ScheduleDelayCall(frame.update_list);
 		end
 		-- function NS.RAID_ROSTER_UPDATE()
 		-- end
 		function NS.GUILD_ROSTER_UPDATE()
-			_EventHandler:run_on_next_tick(frame.update_list);
+			NS.F_ScheduleDelayCall(frame.update_list);
 		end
 		_EventHandler:RegEvent("GROUP_ROSTER_UPDATE");
 		-- _EventHandler:RegEvent("RAID_ROSTER_UPDATE");	--	not triggered in classic
@@ -5911,8 +6569,12 @@ do	-- raid_tool
 		C_Timer.NewTicker(1.0, function()
 			for index = 1, #rosterList do
 				local name = rosterList[index];
-				if NS.queryCache[name] == nil and rosterInfo[name].online then
+				if NS.queryCache[name] == nil and rosterInfo[name][3] then
 					NS.Emu_Query(name, nil, true);
+					local unit = rosterInfo[name][4];
+					if unit and CheckInteractDistance(unit, 4) and CanInspect(unit) then
+						NotifyInspect(unit);
+					end
 				end
 			end
 		end);
@@ -5995,7 +6657,7 @@ do	--	tooltip unit talents
 		if SET.talents_in_tip then
 			prev_name[tip] = nil;
 			local _, unit = tip:GetUnit();
-			if UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == NS.CPlayerFactionGroup then
+			if UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == __ala_meta__.CPlayerFactionGroup then
 				local name, realm = UnitName(unit);
 				NS.Emu_Query(name, realm, true, nil, nil, false);
 			end
@@ -6016,7 +6678,7 @@ do	-- initialize
 			for _, db in next, DB do
 				for dbIndex, def in next, db do
 					for i = 1, #def[8] do
-						C_Spell.RequestLoadSpellData(def[8][i]);
+						RequestLoadSpellData(def[8][i]);
 					end
 				end
 			end
@@ -6025,7 +6687,7 @@ do	-- initialize
 		for class, S in next, _spellDB do
 			for _, v in next, S do
 				for i = 1, #v do
-					C_Spell.RequestLoadSpellData(v[i][2]);
+					RequestLoadSpellData(v[i][2]);
 				end
 			end
 		end
@@ -6125,11 +6787,7 @@ do	-- initialize
 		if button == "LeftButton" then
 			NS.Emu_Create();
 		elseif button == "RightButton" then
-			if SET.supreme then
-				NS.ToggleRaidToolUI();
-			else
-				NS.Emu_Menu(self);
-			end
+			NS.ToggleRaidToolUI();
 		end
 	end
 
@@ -6147,6 +6805,7 @@ do	-- initialize
 		NS.DB_PreProc(_talentDB);
 
 		NS.EmuCore_InitAddonMessage();
+		NS.EmuCore_MonitorInspect();
 		NS.tooltipFrame = NS.CreateTooltipFrame();
 
 		NS.extern.addon_init();
@@ -6163,9 +6822,7 @@ do	-- initialize
 
 		NS.initialized = true;
 
-		if SET.supreme then
-			NS.raidToolUI = NS.CreateRaidToolUI();
-		end
+		NS.raidToolUI = NS.CreateRaidToolUI();
 
 		if IsInGroup() then
 			_EventHandler:FireEvent("GROUP_ROSTER_UPDATE");
@@ -6245,7 +6902,7 @@ do	-- initialize
 		-- 	end
 		-- end);
 
-		VAR[NS.CPlayerGUID] = __emulib.GetEncodedPlayerTalentData();
+		VAR[__ala_meta__.CPlayerGUID] = __emulib.GetEncodedPlayerTalentData();
 		_EventHandler:RegEvent("CONFIRM_TALENT_WIPE");
 		--	Fires when the user selects the "Yes, I do." confirmation prompt after speaking to a class trainer and choosing to unlearn their talents.
 		--	Payload	number:cost	number:respecType
@@ -6265,14 +6922,13 @@ do	-- initialize
 		-- print("CONFIRM_TALENT_WIPE", ...);
 	end
 	function NS.CHARACTER_POINTS_CHANGED(...)
-		VAR[NS.CPlayerGUID] = __emulib.GetEncodedPlayerTalentData();
+		VAR[__ala_meta__.CPlayerGUID] = __emulib.GetEncodedPlayerTalentData();
 		-- print("CHARACTER_POINTS_CHANGED", ...);
 	end
 
 	local default_set = {
 		resizable_border = false,
 		singleFrame = true,
-		win_style = 'ala',
 		style = 1,
 		talents_in_tip = false,
 		talents_in_tip_icon = true,
@@ -6281,10 +6937,11 @@ do	-- initialize
 		show_equipment = true,
 		inspect_pack = false,
 		max_recv_msg = 16,
-		minimap = false,
+		minimap = true,
 		minimapPos = 185,
 	};
 	local function modify_saved_var()
+		local TalentEmuSV = _G.TalentEmuSV;
 		if select(2, GetAddOnInfo("alaTalentEmu")) ~= nil and (TalentEmuSV == nil or TalentEmuSV.__upgraded == nil) then
 			EnableAddOn("alaTalentEmu");
 			LoadAddOn("alaTalentEmu");
@@ -6331,19 +6988,25 @@ do	-- initialize
 			if TalentEmuSV._version < 210524.0 then
 				TalentEmuSV._version = 210524.0;
 			end
+			if TalentEmuSV._version < 220117.0 then
+				TalentEmuSV.set.minimap = true;
+				TalentEmuSV._version = 220117.0;
+			end
 		else
-			_G.TalentEmuSV = {
+			TalentEmuSV = {
 				set = {
 				},
 				var = {
 					savedTalent = {  },
 				},
 			};
+			_G.TalentEmuSV = TalentEmuSV;
 		end
 		TalentEmuSV.__upgraded = true;
-		TalentEmuSV._version = 210524.0;
+		TalentEmuSV._version = 220117.0;
 		SET = setmetatable(TalentEmuSV.set, { __index = default_set, });
 		VAR = TalentEmuSV.var;
+		NS:MergeGlobal(TalentEmuSV);
 	end
 
 	__ala_meta__.supreme = Mixin(__ala_meta__.supreme or {  }, {
@@ -6354,20 +7017,13 @@ do	-- initialize
 	function NS.PLAYER_ENTERING_WORLD()
 		_EventHandler:UnregEvent("PLAYER_ENTERING_WORLD");
 		if not NS.initialized then
-			NS.MAXLEVEL = GetMaxLevelForExpansionLevel(GetExpansionLevel()) or 60;
 			modify_saved_var();
-			local _, tag = BNGetInfo();
-			SET.supreme = not not __ala_meta__.supreme[tag];
+			SET.supreme = not not __ala_meta__.supreme[__ala_meta__.CPlayerTAG];
 			SET.credible = not not select(2, GetAddOnInfo('\33\33\33\49\54\51\85\73\33\33\33'));
 			if SET.supreme then
 				NS.emu_set_config("inspect_pack", true);
-				_G.EMU_EX_QUERY_GUILD = NS.EX_QUERY_GUILD;
-				_G.EMU_EX_QUERY_GROUP = NS.EX_QUERY_GROUP;
 			end
 			default_set.talents_in_tip = SET.credible;
-			if not SET.credible then
-				SET.talents_in_tip = false;
-			end
 			C_Timer.After(0.1, init);
 		end
 	end
@@ -6381,7 +7037,7 @@ do	-- SLASH and _G
 	SlashCmdList["ALATALENTEMU"] = function(msg)
 		if strlower(strsub(msg, 1, 3)) == "set" then
 			for _, seq in next, acceptedCommandSeq do
-				if strfind(msg, seq) then
+				if strmatch(msg, seq) then
 					NS.emu_set_config(select(2, strsplit(seq, msg)));
 					return;
 				end
@@ -6389,7 +7045,7 @@ do	-- SLASH and _G
 			return;
 		end
 		for _, seq in next, acceptedCommandSeq do
-			if strfind(msg, seq) then
+			if strmatch(msg, seq) then
 				NS.Emu_Create(nil, strsplit(seq, msg));
 				return;
 			end
@@ -6409,11 +7065,11 @@ do	-- SLASH and _G
 		return NS.Emu_Create(nil, class, data, level, false, readOnly, name, style, ...);
 	end
 	ALATEMU.Destroy = function(winId)
-		NS.hideMainFrame(winId);
+		NS.winMan_HideWin(winId);
 	end
 	ALATEMU.Query = function(unit)
 		unit = unit or 'target';
-		if UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == NS.CPlayerFactionGroup then
+		if UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitFactionGroup(unit) == __ala_meta__.CPlayerFactionGroup then
 			local name, realm = UnitName(unit);
 			if name then
 				NS.Emu_Query(name, realm);
@@ -6675,19 +7331,6 @@ end
 			unitFrameButton:GetNormalTexture():SetVertexColor(TEXTURE_SET.INSPECT_BUTTON_COLOR[1], TEXTURE_SET.INSPECT_BUTTON_COLOR[2], TEXTURE_SET.INSPECT_BUTTON_COLOR[3], TEXTURE_SET.INSPECT_BUTTON_COLOR[4]);
 			unitFrameButton:SetPushedTexture(TEXTURE_SET.INSPECT_BUTTON);
 			unitFrameButton:GetPushedTexture():SetVertexColor(TEXTURE_SET.INSPECT_BUTTON_COLOR[1], TEXTURE_SET.INSPECT_BUTTON_COLOR[2], TEXTURE_SET.INSPECT_BUTTON_COLOR[3], TEXTURE_SET.INSPECT_BUTTON_COLOR[4]);
-			-- unitFrameButton:SetHighlightTexture(TEXTURE_SET.NORMAL_HIGHLIGHT);
-			-- unitFrameButton:GetHighlightTexture():SetTexCoord(0.125, 0.875, 0.125, 0.875);
-			-- unitFrameButton:LockHighlight();
-			-- unitFrameButton:SetBackdrop({
-			-- 	bgFile = "Interface\\raidframe\\shield-fill",	--"Interface\\TargetingFrame\\UI-TargetingFrame-LevelBackground",	--"Interface\\Tooltips\\UI-Tooltip-Background",
-			-- 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-			-- 	tile = true,
-			-- 	tileSize = 2,
-			-- 	edgeSize = 2,
-			-- 	insets = { left = 2, right = 2, top = 2, bottom = 2 }
-			-- });
-			-- unitFrameButton:SetBackdropColor(0.0, 1.0, 0.25, 1.0);
-			-- unitFrameButton:SetBackdropBorderColor(0.0, 1.0, 0.25, 1.0);
 			local portrait = _G[unitFrameName .. "Portrait"];
 			if portrait then
 				unitFrameButton:SetPoint("CENTER", portrait, "CENTER");
@@ -6718,7 +7361,7 @@ end
 			if IsShiftKeyDown() then
 				local specIndex, id = PanelTemplates_GetSelectedTab(TalentFrame or PlayerTalentFrame), self:GetID();
 				local name, iconTexture, tier, column, rank, maxRank, isExceptional, available = GetTalentInfo(specIndex, id);
-				local sId = ALATEMU.QueryIdFromDB(NS.CPlayerClassUpper, specIndex, id, rank);
+				local sId = ALATEMU.QueryIdFromDB(__ala_meta__.CPlayerClassUpper, specIndex, id, rank);
 				local link = _GetSpellLink(sId, name);
 				if link then
 					local editBox = ChatEdit_ChooseBoxForSend();
@@ -6807,7 +7450,7 @@ end
 			end
 		end
 		local function func_SetHyperlink(self, link)
-			local _, _, spellId = strfind(link, "spell:(%d+)");
+			local spellId = strmatch(link, "spell:(%d+)");
 			spellId = tonumber(spellId);
 			if spellId then
 				func_HookGTT(self, spellId);
@@ -6884,7 +7527,7 @@ do	-- dev
 		local function do_check(cache, result, timer, call)
 			if #cache > 0 then
 				if time() - timer < 4 then
-					for _, name in ipairs(cache) do
+					for _, name in inext, cache, 0 do
 						if not NS.queryCache[name] then
 							C_Timer.After(1.0, call);
 							print("Querying", timer + 4 - time());
@@ -6895,7 +7538,7 @@ do	-- dev
 				for i = 0, #__emulib.CKnownAddOnPacks do
 					result[i] = 0;
 				end
-				for _, name in ipairs(cache) do
+				for _, name in inext, cache, 0 do
 					local meta = NS.queryCache[name];
 					if meta then
 						local pack = tonumber(meta.pack);
@@ -6909,6 +7552,22 @@ do	-- dev
 								end
 								magic = magic / 2;
 								index = index - 1;
+							end
+						elseif strsub(meta.pack, 1, 2) == "a`" then
+							local hasone = false;
+							local list = { strsplit("`", strsub(meta.pack, 2)) };
+							for _, v in next, list do
+								local addon, enabled, loaded = strsplit("~", v);
+								addon = tonumber(addon);
+								if addon ~= nil then
+									hasone = true;
+									if loaded == "1" then
+										result[addon] = result[addon] + 1;
+									end
+								end
+							end
+							if not hasone then
+								result[0] = result[0] + 1;
 							end
 						else
 							result[0] = result[0] + 1;
@@ -6941,7 +7600,7 @@ do	-- dev
 				end
 			end
 		end
-		--------
+		--------	/run __ala_meta__.emu.EX_QUERY_GUILD()
 		do
 			local cache = {  };
 			local result = {  };
@@ -6964,7 +7623,7 @@ do	-- dev
 				end
 			end
 		end
-		--
+		--------	/run __ala_meta__.emu.EX_QUERY_GROUP()
 	end
 	--
 end

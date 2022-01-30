@@ -52,7 +52,7 @@ function TitanPanelXPButton_OnLoad(self)
 			ShowLabelText = true,
 			ShowRegularText = false,
 			ShowColoredText = false,
-			DisplayOnRightSide = false
+			DisplayOnRightSide = true,
 		},
 		savedVariables = {
 			DisplayType = "ShowXPPerHourSession",
@@ -64,6 +64,7 @@ function TitanPanelXPButton_OnLoad(self)
 			ShowSimpleNumOfGains = false,
 			UseSeperatorComma = true, 
 			UseSeperatorPeriod = false, 
+			DisplayOnRightSide = false,
 		}
 	};
 
@@ -402,10 +403,6 @@ function TitanPanelRightClickMenu_PrepareXPMenu()
 		TitanPanelRightClickMenu_AddCommand(L["TITAN_XP_MENU_REFRESH_PLAYED"], TITAN_XP_ID, "TitanPanelXPButton_RefreshPlayed");
 
 		TitanPanelRightClickMenu_AddSpacer();
-		TitanPanelRightClickMenu_AddToggleIcon(TITAN_XP_ID);
-		TitanPanelRightClickMenu_AddToggleLabelText(TITAN_XP_ID);
-
-		TitanPanelRightClickMenu_AddSpacer();
 
 		local info = {};
 		info.text = L["TITAN_USE_COMMA"];
@@ -421,6 +418,11 @@ function TitanPanelRightClickMenu_PrepareXPMenu()
 		Seperator("UseSeperatorPeriod")
 	end
 	L_UIDropDownMenu_AddButton(info, _G["L_UIDROPDOWNMENU_MENU_LEVEL"]);
+
+	TitanPanelRightClickMenu_AddSpacer();
+	TitanPanelRightClickMenu_AddToggleIcon(TITAN_XP_ID);
+	TitanPanelRightClickMenu_AddToggleLabelText(TITAN_XP_ID);
+	TitanPanelRightClickMenu_AddToggleRightSide(TITAN_XP_ID);
 
 	TitanPanelRightClickMenu_AddSpacer();
 	TitanPanelRightClickMenu_AddCommand(L["TITAN_PANEL_MENU_HIDE"], TITAN_XP_ID, TITAN_PANEL_MENU_FUNC_HIDE);

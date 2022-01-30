@@ -879,6 +879,48 @@ VUHDO_DEFAULT_BAR_MANA_TANK_ONLY = {
 
 
 --
+VUHDO_DEFAULT_MONK_STAGGER_BOUQUET = {
+	[VUHDO_I18N_DEF_BOUQUET_MONK_STAGGER] = {
+		{
+			["name"] = GetSpellInfo(124273), -- "Heavy Stagger",
+			["mine"] = true, ["others"] = true, ["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0 },
+		},
+		{
+			["name"] = GetSpellInfo(124274), -- "Moderate Stagger",
+			["mine"] = true, ["others"] = true,	["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
+		},
+		{
+			["name"] = GetSpellInfo(124275), -- "Light Stagger",
+			["mine"] = true, ["others"] = true,	["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
+		}
+	}
+}
+
+
+
+--
+VUHDO_DEFAULT_HEAL_ABSORB_COUNTER_BOUQUET = {
+	[VUHDO_I18N_DEF_COUNTER_HEAL_ABSORB] = {
+		{
+			["name"] = "HEAL_ABSORB_COUNTER",
+			["mine"] = true, 
+			["others"] = true,
+			["icon"] = 1,
+			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1, 1, 1, 1, 1),
+			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1 },
+		},
+	},
+};
+
+
+
+--
 VUHDO_DEFAULT_INDICATOR_CONFIG = {
 	["BOUQUETS"] = {
 		["AGGRO_BAR"] = "",
@@ -1059,31 +1101,6 @@ VUHDO_SANE_BOUQUET_ITEM = {
 		["function"] = "return true;",
 	},
 };
-
-
---
-VUHDO_DEFAULT_MONK_STAGGER_BOUQUET = {
-	[VUHDO_I18N_DEF_BOUQUET_MONK_STAGGER] = {
-		{
-			["name"] = GetSpellInfo(124273), -- "Heavy Stagger",
-			["mine"] = true, ["others"] = true, ["icon"] = 1,
-			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
-			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0 },
-		},
-		{
-			["name"] = GetSpellInfo(124274), -- "Moderate Stagger",
-			["mine"] = true, ["others"] = true,	["icon"] = 1,
-			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
-			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
-		},
-		{
-			["name"] = GetSpellInfo(124275), -- "Light Stagger",
-			["mine"] = true, ["others"] = true,	["icon"] = 1,
-			["color"] = VUHDO_makeFullColorForBouquet(1, 1, 1, 1,   1, 1, 1, 1),
-			["custom"] = { [1] = 1, ["radio"] = 1, ["bright"] = 1.0	},
-		}
-	}
-}
 
 
 
@@ -1726,6 +1743,12 @@ function VUHDO_loadDefaultBouquets()
 		VUHDO_addDefaultBouquet(VUHDO_DEFAULT_BAR_MANA_TANK_ONLY);
 	end
 	VUHDO_DEFAULT_BAR_MANA_TANK_ONLY = nil;
+
+	if VUHDO_BOUQUETS["VERSION"] < 26 then
+		VUHDO_BOUQUETS["VERSION"] = 26;
+		VUHDO_addDefaultBouquet(VUHDO_DEFAULT_HEAL_ABSORB_COUNTER_BOUQUET);
+	end
+	VUHDO_DEFAULT_HEAL_ABSORB_COUNTER_BOUQUET = nil;
 
 	VUHDO_buildGenericHealthBarBouquet();
 	VUHDO_buildGenericTargetHealthBouquet();

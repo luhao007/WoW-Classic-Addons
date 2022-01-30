@@ -17,12 +17,14 @@ end)
 addon.AnchorManager = namespace.AnchorManager
 addon.defaultConfig = namespace.defaultConfig
 addon.activeFrames = activeFrames
-namespace.addon = addon
 
+local GetSchoolString = _G.GetSchoolString
+local strformat = _G.string.format
 local GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local UnitIsFriend = _G.UnitIsFriend
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
+local UnitIsUnit = _G.UnitIsUnit
 local gsub = _G.string.gsub
 local strsplit = _G.string.split
 local UnitAura = _G.UnitAura
@@ -33,7 +35,7 @@ local castImmunityBuffs = {
     --[GetSpellInfo(1022)] = true, -- Blessing of Protection
     [GetSpellInfo(642)] = true, -- Divine Shield
     [GetSpellInfo(498)] = true, -- Divine Protection
-    [GetSpellInfo(24021)] = true, -- Anti Magic Shield
+    --[GetSpellInfo(24021)] = true, -- Anti Magic Shield
 }
 
 local castEvents = {
@@ -145,6 +147,7 @@ function addon:BindCurrentCastData(castbar, unitID, isChanneled)
 
     local GetCastingInfo = isChanneled and UnitChannelInfo or UnitCastingInfo
     local spellName, _, iconTexturePath, startTimeMS, endTimeMS, _, _, _, spellID = GetCastingInfo(unitID)
+    if not spellName then return end
     cast.maxValue = (endTimeMS - startTimeMS) / 1000
     cast.endTime = endTimeMS / 1000
     cast.spellName = spellName
@@ -177,6 +180,7 @@ function addon:BindCurrentCastData(castbar, unitID, isChanneled)
             end
         end
     end
+
     if not cast.isUninterruptible then
         -- Check for temp buff immunities
         for i = 1, 40 do
@@ -230,9 +234,11 @@ function addon:UNIT_AURA(unitID)
                 local debuffName = UnitAura(unitID, i, "HARMFUL")
                 if not debuffName then break end
                 if playerSilences[debuffName] then
+                    local npcID = select(6, strsplit("-", UnitGUID(unitID)))
                     castbar._data.origIsUninterruptible = castbar._data.origIsUninterruptible or castbar._data.isUninterruptible
                     castbar._data.isUninterruptible = true
-                    self.db.npcCastUninterruptibleCache[select(6, strsplit("-", UnitGUID(unitID))) .. castbar._data.spellName] = true
+                    self.db.npcCastUninterruptibleCache[npcID .. castbar._data.spellName] = true
+
                     if castbar._data.isChanneled then
                         self:UNIT_SPELLCAST_CHANNEL_START(unitID) -- Hack: Restart cast to update border shield
                     else
@@ -254,7 +260,7 @@ function addon:PLAYER_TARGET_CHANGED()
         self:UNIT_SPELLCAST_CHANNEL_START("target")
     else
         local castbar = activeFrames["target"]
-        if castbar then -- this seems to be needed for race conditions
+        if castbar then
             self:HideCastbar(castbar, "target", true)
         end
     end
@@ -329,6 +335,7 @@ function addon:UNIT_SPELLCAST_STOP(unitID)
     if not castbar then return end
 
     if not castbar.isTesting then
+        if UnitIsUnit("player", unitID) and UnitCastingInfo("player") or UnitChannelInfo("player") then return end
         if castbar._data then
             if not castbar._data.isInterrupted then
                 castbar._data.isFailed = true
@@ -345,6 +352,7 @@ function addon:UNIT_SPELLCAST_INTERRUPTED(unitID)
     if not castbar then return end
 
     if not castbar.isTesting then
+        if UnitIsUnit("player", unitID) and UnitCastingInfo("player") or UnitChannelInfo("player") then return end
         if castbar._data then
             castbar._data.isInterrupted = true
             castbar._data.isFailed = false
@@ -389,6 +397,7 @@ function addon:UNIT_SPELLCAST_FAILED(unitID)
     if not castbar then return end
 
     if not castbar.isTesting then
+        if UnitIsUnit("player", unitID) and UnitCastingInfo("player") or UnitChannelInfo("player") then return end
         if castbar._data then
             if not castbar._data.isInterrupted then
                 castbar._data.isFailed = true
@@ -419,10 +428,8 @@ function addon:ToggleUnitEvents(shouldReset)
 
     if self.db.party.enabled then
         self:RegisterEvent("GROUP_ROSTER_UPDATE")
-        self:RegisterEvent("GROUP_JOINED")
     else
         self:UnregisterEvent("GROUP_ROSTER_UPDATE")
-        self:UnregisterEvent("GROUP_JOINED")
     end
 
     --if self.db.nameplate.enabled then
@@ -450,7 +457,7 @@ function addon:PLAYER_ENTERING_WORLD(isInitialLogin)
     wipe(activeGUIDs)
     PoolManager:GetFramePool():ReleaseAll() -- also removes castbar._data references
 
-    if self.db.party.enabled and IsInGroup() then
+    if self.db.party.enabled then
         self:GROUP_ROSTER_UPDATE()
     end
 end
@@ -510,22 +517,30 @@ end
 
 function addon:GROUP_ROSTER_UPDATE()
     for i = 1, 5 do
-        if UnitExists("party"..i) then
-            if activeFrames["party"..i] then
-                activeFrames["party"..i]:Hide()
-                activeFrames["party"..i]._data = nil
-            end
-        else
-            -- party member no longer exists, release castbar
-            local castbar = activeFrames["party"..i]
-            if castbar then
+        local unitID = "party"..i
+        local castbar = activeFrames[unitID]
+        activeGUIDs[unitID] = UnitGUID(unitID) or nil
+
+        if castbar then
+            if UnitExists(unitID) then
+                castbar:Hide()
+                castbar:ClearAllPoints()
+                castbar._data = nil
+            else
+                -- party member no longer exists, release castbar completely
                 PoolManager:ReleaseFrame(castbar)
                 activeFrames["party"..i] = nil
             end
         end
+
+        -- Restart any active casts
+        if UnitCastingInfo(unitID) then
+            self:UNIT_SPELLCAST_START(unitID)
+        elseif UnitChannelInfo(unitID) then
+            self:UNIT_SPELLCAST_CHANNEL_START(unitID)
+        end
     end
 end
-addon.GROUP_JOINED = addon.GROUP_ROSTER_UPDATE
 
 local COMBATLOG_OBJECT_CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
@@ -533,7 +548,7 @@ local bit_band = _G.bit.band
 local playerInterrupts = namespace.playerInterrupts
 
 function addon:COMBAT_LOG_EVENT_UNFILTERED()
-    local _, eventType, _, _, _, srcFlags, _, dstGUID, _, dstFlags, _, _, spellName, _, missType = CombatLogGetCurrentEventInfo()
+    local _, eventType, _, _, _, srcFlags, _, dstGUID, _, dstFlags, _, _, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
     if eventType == "SPELL_MISSED" then
         if missType == "IMMUNE" and playerInterrupts[spellName] then
             if bit_band(dstFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) <= 0 then -- dest unit is not a player
@@ -573,6 +588,14 @@ function addon:COMBAT_LOG_EVENT_UNFILTERED()
                     self:UNIT_SPELLCAST_CHANNEL_START(unitID) -- Hack: Restart cast to update border shield
                 else
                     self:UNIT_SPELLCAST_START(unitID) -- Hack: Restart cast to update border shield
+                end
+            end
+        end
+    elseif eventType == "SPELL_INTERRUPT" then
+        for unitID, castbar in pairs(activeFrames) do -- have to scan for it due to race conditions with UNIT_SPELLCAST_*
+            if castbar:GetAlpha() > 0 then
+                if UnitGUID(unitID) == dstGUID then
+                    castbar.Text:SetText(strformat(_G.LOSS_OF_CONTROL_DISPLAY_INTERRUPT_SCHOOL, GetSchoolString(spellSchool)))
                 end
             end
         end

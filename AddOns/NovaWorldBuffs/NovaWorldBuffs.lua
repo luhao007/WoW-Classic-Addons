@@ -5704,6 +5704,7 @@ function NWB:updateFelwoodWorldmapMarker(type)
 			_G[type .. "NWB"].tooltip.fs:SetText("|CffDEDE42" .. _G[type .. "NWB"].name .. "|r\n" .. _G[type .. "NWB"].subZone .. "\n" .. tooltipText);
 		else
 			_G[type .. "NWB"].tooltip.fs:SetText("|CffDEDE42" .. _G[type .. "NWB"].name .. "|r\n" .. _G[type .. "NWB"].subZone);
+			_G[type .. "NWB"].timerFrame:Hide(); --Bug fix for when no layers are recorded yet.
 			_G[type .. "NWBMini"].timerFrame:Hide();
 		end
 		_G[type .. "NWB"].tooltip:SetWidth(_G[type .. "NWB"].tooltip.fs:GetStringWidth() + 9);

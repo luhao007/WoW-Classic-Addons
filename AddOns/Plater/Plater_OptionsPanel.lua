@@ -8,6 +8,8 @@ local _
 
 local IS_WOW_PROJECT_MAINLINE = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local IS_WOW_PROJECT_NOT_MAINLINE = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE
+local IS_WOW_PROJECT_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+local IS_WOW_PROJECT_CLASSIC_TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 
 local PixelUtil = PixelUtil or DFPixelUtil
 
@@ -112,6 +114,7 @@ local update_wago_update_icons = function()
 	local modButton = mainFrame.AllButtons [7]
 	local profileButton = mainFrame.AllButtons [21]
 	local importButton = mainFrame.AllButtons [24]
+	--local importButton = mainFrame.AllButtons [25] -- with resource fame
 	
 	if countMods > 0 then
 		modButton.updateIcon:Show()
@@ -223,6 +226,7 @@ function Plater.OpenOptionsPanel()
 		{name = "Automation", title = L["OPTIONS_TABNAME_AUTO"]},
 		{name = "ProfileManagement", title = L["OPTIONS_TABNAME_PROFILES"]},
 		{name = "AdvancedConfig", title = L["OPTIONS_TABNAME_ADVANCED"]},
+		--{name = "resourceFrame", title = "Combo Points"}, --localize-me
 		{name = "SearchFrame", title = "Search"}, --localize-me
 		--{name = "WagoIo", title = "Wago Imports"}, --wago_imports --localize-me
 		
@@ -263,16 +267,19 @@ function Plater.OpenOptionsPanel()
 	local autoFrame = mainFrame.AllFrames [20]
 	local profilesFrame = mainFrame.AllFrames [21]
 	local advancedFrame = mainFrame.AllFrames [22]
+	--local resourceFrame = mainFrame.AllFrames [23]
+	--local searchFrame = mainFrame.AllFrames [24]
 	local searchFrame = mainFrame.AllFrames [23]
-	--local wagoIoFrame = mainFrame.AllFrames [24] --wago_imports
+	--local wagoIoFrame = mainFrame.AllFrames [26] --wago_imports
 	
 	--
 	local colorNpcsButton = mainFrame.AllButtons [17]
 	local scriptButton = mainFrame.AllButtons [6]
 	local modButton = mainFrame.AllButtons [7]
 	local profileButton = mainFrame.AllButtons [21]
-	local importButton = mainFrame.AllButtons [24]
+	local importButton = mainFrame.AllButtons [25]
 
+	--Plater.Resources.BuildResourceOptionsTab(resourceFrame)
 	Plater.CreateCastColorOptionsFrame(castColorsFrame)
 	
 	local generalOptionsAnchor = CreateFrame ("frame", "$parentOptionsAnchor", frontPageFrame, BackdropTemplateMixin and "BackdropTemplate")
@@ -429,13 +436,18 @@ function Plater.OpenOptionsPanel()
 					--do not export cache data, these data can be rebuild at run time
 					local captured_spells = Plater.db.profile.captured_spells
 					local aura_cache_by_name = Plater.db.profile.aura_cache_by_name
-					local captured_casts = Plater.db.profile.captured_casts
+					local captured_casts = Plater.db.profile.captured_casts -- ? local DB ?
 					local npc_cache = Plater.db.profile.npc_cache
 
 					Plater.db.profile.captured_spells = {}
 					Plater.db.profile.aura_cache_by_name = {}
 					Plater.db.profile.captured_casts = {}
 					Plater.db.profile.npc_cache = {}
+					
+					--retain npc_cache for set npc_colors
+					for npcID, _ in pairs (Plater.db.profile.npc_colors) do
+						Plater.db.profile.npc_cache [npcID] = npc_cache [npcID]
+					end
 					
 					--save mod/script editing
 					local hookFrame = mainFrame.AllFrames [7]
@@ -6483,8 +6495,8 @@ local relevance_options = {
 					Plater:Msg (L["OPTIONS_ERROR_CVARMODIFY"])
 				end
 			end,
-			min = IS_WOW_PROJECT_MAINLINE and 1 or 20, --20y for tbc and classic
-			max = IS_WOW_PROJECT_MAINLINE and 100 or 41, --41y for tbc
+			min = IS_WOW_PROJECT_MAINLINE and 60 or 20, --20y for tbc and classic
+			max = (IS_WOW_PROJECT_MAINLINE and 60) or (IS_WOW_PROJECT_CLASSIC_TBC and 41) or 20, --41y for tbc, 20y for classic era
 			step = 1,
 			name = "View Distance" .. CVarIcon,
 			desc = "How far you can see nameplates (in yards).\n\n|cFFFFFFFFCurrent limitations: Retail = 60y, TBC = 20-41y, Classic = 20y|r" .. CVarDesc,

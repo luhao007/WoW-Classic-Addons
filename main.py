@@ -15,6 +15,8 @@ class Context:
         self.game_flavour = 'vanilla_classic' if platform == 'classic_era' else platform
         self.manager = InstawowManager(self.game_flavour, False)
         self.manager_lib = InstawowManager(self.game_flavour, True)
+        ctx.call_on_close(self.manager.conn.close)
+        ctx.call_on_close(self.manager_lib.conn.close)
 
 
 def _manage():
@@ -58,8 +60,8 @@ def install(obj, addons, reinstall=False, strategy=None):
 @main.command()
 @click.argument('file', required=True)
 @click.pass_obj
-def reinstall(obj, file):
-    """Reinstall addons."""
+def rebuild(obj, file):
+    """Reinstall and rebuild all addons from config file."""
     obj.manager.reinstall(file)
     _manage()
 

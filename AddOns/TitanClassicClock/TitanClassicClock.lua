@@ -442,16 +442,7 @@ end
 -- **************************************************************************
 function TitanPanelClockControlFrame_OnLoad(self)
 	_G[self:GetName().."Title"]:SetText(L["TITAN_CLOCK_CONTROL_TITLE"]);
-	self:SetBackdrop({
-		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-		tile = true,
-		tileSize = 32,
-		edgeSize = 32,
-		insets = { left = 11, right = 12, top = 12, bottom = 9, },
-	})
-	self:SetBackdropBorderColor(1, 1, 1);
-	self:SetBackdropColor(0, 0, 0, 1);
+	TitanPanelRightClickMenu_SetCustomBackdrop(self)
 end
 
 -- **************************************************************************

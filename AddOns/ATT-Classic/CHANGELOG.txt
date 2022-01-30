@@ -1,51 +1,8 @@
-0.7.7 Release Notes
+0.8.0 Release Notes
 Contributions made by Crieve:
-* The Temple of Atal'hakkar has been sync'd with the Retail database.
-* Slightly adjusted the format of Dire Maul North. (rework coming soon)
-* Added the Gurubashi Arena Master achievements.
-* Deadmines has been sync'd with the Retail database.
-* Fixed the "removed with patch" data for legacy onyxia for classic ATT.
-* Fixed the Paladin and Warlock mounts in Classic to show up in the dynamic section. Also cleaned up some of the parts of Scholo and Dire Maul.
-* Maps can have their name overridden by using a header value (maybe change to something better)
-* Fixed a bug caused by contributors adding constants to retail and not adding them to classic too.
-* The dynamic sections will now find the most accessible version of the thing for the current character from its sources and use that for its tooltip.
-* Added the hidden Steamweedle Cartel reputation to Dire Maul.
-* Free Knot and the Zapper Fuel quests now remain in the mini list until Exalted with Steamweedle.
-* Updated the Steamweedle tooltip. The Gordok Ogre Suit now remains in the mini list until Exalted Steamweedle.
-* Steamweedle Cartel no longer counts toward your 35 Exalted Reputations achievement.
-* Fixed a bug with Scryers/Aldor not properly showing when Account Wide Reputation is selected.
-* Slightly updated the format of quests in Dire Maul. (rework incoming)
-* Factions now properly use trackable.
-* Enchant Weapon - Major Striking... Phase 3? Please? Blizzard?
-* Journey to Honor Hold / Journey to Thrallmar now marked as breadcrumbs.
-* Dire Maul has been sync'd with the Retail database. Added the Dreadsteed of Xoroth and Agent of the Shen'dralar achievements.
-* Fixed the Turbo Flying Machine spellID.
-* Shadowfang Keep has been sync'd with the Retail database.
-* Finalized SFK.
-* Maraudon has been sync'd with the Retail database.
-* Gnomeregan has been sync'd with the Retail database.
-* Alliance Only / Horde Only was missing for 'Return of the Ring'.
-* Naxxramas has been sync'd with the Retail database.
-* Blackfathom Deeps has been sync'd with the Retail database.
-* Scholomance has been sync'd with the Retail database.
-* Fixed Hunter's Beast Training "Nature Resistance (Rank 1)" for Night Elves.
-* Fixed Zeth'Gor Must Burn!
-* Pattern: Cloak of Fire has been moved to Overmaster Pyron in the Blackrock Mountain mini list from the BRD mini list.
-* Added legacy Blackrock Depths data and quests. Moved associated legacy quests to the instance itself in order to match the Classic implementation style. (still need to do the new quests)
-* Moved Nat Pagle, Angler Extreme to Dustwallow Marsh.
-* Fixed the Feralas mini list.
-* Fixed a bug introduced by the last commit.
-* Added a tooltip for the Desolace Centaur reputations for getting to Honored.
-* Bailor's Ore Shipment is repeatable.
-* Fixed linking spells.
-* Merge branch 'master' of https://github.com/DFortun81/ATT-TBC-Classic into master
-* Added more missing constants that were breaking everything. Fixed the Warp spellID for Beast Training.
-* Fixed Claw (Rank 9) and Scorpid Poison (Rank 5) in Beast Training.
-* Fixed Greater Stamina and Natural Armor for Beast Training.
-* Wrong one!
-* Fixed Bite [Rank 9], Cower [Rank 7], Fire Breath [Rank 1], Fire Breath [Rank 2] and Screech [Rank 5] for Beast Training.
-
-Contributions made by gbrage:
-* - Constants from Retail Added
-* - Constants from Retail
+* Added information about the Halaa Battle Token.
+* Added the bit about Res Sickness.
+* Fixed the npc ID for Isalien for the Warrior/Rogue Right Piece for the Tier 0.5 quest chain.
+* Fixed a bug with parser where an objective of the same id can't cooexist in the same hierarchy level.
+* Updated supported interface to 20503.
 

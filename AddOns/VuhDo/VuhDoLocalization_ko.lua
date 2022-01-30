@@ -1,4 +1,4 @@
-﻿if (GetLocale() ~= "koKR") then
+if (GetLocale() ~= "koKR") then
 	return;
 end
 -- 지옥천사(윈드러너) 한글화
@@ -495,3 +495,8 @@ VUHDO_I18N_PLAY_SOUND_FILE_CUSTOM_DEBUFF_ERR = "사용자 정의 디버프 \"%s\
 -- 3.122
 VUHDO_I18N_BOUQUET_STATUS_POWER_TANK_ONLY = "Statusbar: Power % (Tank Only)";
 VUHDO_I18N_DEF_BOUQUET_BAR_MANA_TANK_ONLY = "Manabars: Power (Tank Only)";
+
+-- 3.131
+VUHDO_I18N_DEF_COUNTER_HEAL_ABSORB = "Counter: All Heal Absorb #k";
+VUHDO_I18N_DEF_STATUS_HEAL_ABSORB = "Statusbar: Heal Absorb";
+

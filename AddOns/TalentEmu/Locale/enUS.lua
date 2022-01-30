@@ -61,6 +61,8 @@ L.reqPoints = "%d/%d in %s";
 
 L.level_60 = "Lv60 Talents. |cffff0000And ReloadUI.|r";
 L.level_70 = "Lv70 Talents. |cffff0000And ReloadUI.|r";
+L.minimap_TRUE = "Show DBIcon";
+L.minimap_FALSE = "Hide DBIcon";
 L.resizable_border_TRUE = "Enable Draging border to resize";
 L.resizable_border_FALSE = "Disable dragging border to resize";
 L.SetWinStyle_BLZ = "Make it blz style";
@@ -83,7 +85,7 @@ L.insepctALTKEY = "Holding alt to show the inspect button";
 L.insepctCTRLKEY = "Holding ctrl to show the inspect button";
 L.insepctSHIFTKEY = "Holding shift to show the inspect button";
 
-L.DBIcon_Text = "\124cff00ff00Left click\124r to create a emulator\n\124cff00ff00Right click\124r to set win style";
+L.DBIcon_Text = "\124cff00ff00Left click\124r to create a emulator\n\124cff00ff00Right click\124r to see group gear";
 L.spellTabGTTSpellLevel = "Spell level: ";
 L.spellTabGTTReqLevel = "Level: ";
 

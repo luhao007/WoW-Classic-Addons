@@ -9,7 +9,7 @@
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
-							<AbsDimension x="125" y="-180" />
+							<AbsDimension x="43" y="-200" />
 						</Offset>
 					</Anchor>
 				</Anchors>
@@ -158,7 +158,7 @@
 
 			<Frame name="$parentShieldPanel" inherits="VuhDoPanelTemplate">
 				<Size>
-					<AbsDimension x="126" y="113" />
+					<AbsDimension x="126" y="152" />
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -201,6 +201,23 @@
 							</OnLoad>
 						</Scripts>
 					</CheckButton>
+
+					<CheckButton name="$parentHealAbsorbBarCheckButton" text="VUHDO_I18N_SHOW_HEAL_ABSORB" inherits="VuhDoCheckButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="13" y="-109" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								VUHDO_lnfSetModel(self, "VUHDO_CONFIG.SHOW_HEAL_ABSORB_BAR");
+								VUHDO_lnfSetTooltip(self, nil);
+							</OnLoad>
+						</Scripts>
+					</CheckButton>
+
 
 					<Frame name="$parentTitleLabel" inherits="VuhDoLabelFrameTemplate">
 						<Layers>

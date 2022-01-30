@@ -1,7 +1,7 @@
 local _, namespace = ...
+local addon = ClassicCastbars
 local AnchorManager = namespace.AnchorManager
 local PoolManager = namespace.PoolManager
-local addon = namespace.addon
 local activeFrames = addon.activeFrames
 
 local strfind = _G.string.find
@@ -285,14 +285,18 @@ function addon:SetCastbarStatusColorsOnDisplay(castbar, cast, db)
 end
 
 function addon:DisplayCastbar(castbar, unitID)
+    local cast = castbar._data
+    if not cast then return end
+
     local parentFrame = AnchorManager:GetAnchor(unitID)
     if not parentFrame then return end
 
     local db = self.db[self:GetUnitType(unitID)]
-    local cast = castbar._data
 
     castbar.animationGroup = castbar.animationGroup or self:CreateFadeAnimationGroup(castbar)
-    castbar.animationGroup:Stop()
+    if castbar.animationGroup:IsPlaying() then
+        castbar.animationGroup:Stop()
+    end
 
     -- Note: since frames are recycled and we also allow having different styles
     -- between castbars for all the unitframes, we need to always update the style here
@@ -322,10 +326,15 @@ end
 
 function addon:HideCastbar(castbar, unitID, skipFadeOut)
     if skipFadeOut then
+        if castbar.animationGroup then
+            castbar.animationGroup:Stop()
+        end
         castbar:SetAlpha(0)
         castbar:Hide()
         return
     end
+
+    if castbar:GetAlpha() <= 0 then return end
 
     local cast = castbar._data
     if cast then
@@ -366,7 +375,7 @@ function addon:HideCastbar(castbar, unitID, skipFadeOut)
         end
     end
 
-    if castbar:GetAlpha() > 0 and castbar.fade then
+    if castbar.fade then
         if not castbar.fade:IsPlaying() then
             castbar.fade:SetStartDelay(0) -- reset
             if cast then
@@ -390,8 +399,8 @@ end
 -- Player & Focus Castbar Stuff
 --------------------------------------------------------------
 
-local function ColorPlayerCastbar(db)
-    db = db or addon.db.player
+local function ColorPlayerCastbar()
+    local db = addon.db.player
     if not db.enabled then return end
 
     CastingBarFrame_SetStartCastColor(CastingBarFrame, unpack(db.statusColor))
@@ -414,8 +423,8 @@ function addon:SkinPlayerCastbar()
     local db = self.db.player
     if not db.enabled then return end
 
-    if not CastingBarFrame:IsEventRegistered("UNIT_SPELLCAST_START") then
-        print("|cFFFF0000[ClassicCastbars] Incompatibility detected for player castbar. You most likely have another addon disabling the Blizzard castbar.|r") -- luacheck: ignore
+    if not CastingBarFrame.showCastbar or not CastingBarFrame:IsEventRegistered("UNIT_SPELLCAST_START") then
+        print("|cFFFF0000[ClassicCastbars] Incompatibility detected for player castbar. You most likely have another addon disabling the default Blizzard castbar.|r") -- luacheck: ignore
     end
 
     if not CastingBarFrame.Timer then
@@ -438,7 +447,7 @@ function addon:SkinPlayerCastbar()
         end)
 
         hooksecurefunc(CastingBarFrame.Text, "SetText", function(_, text)
-            if text then
+            if text and text.len then
                 CastingBarFrame.Timer:SetPoint("RIGHT", CastingBarFrame, (text:len() >= 19) and 30 or -6, 0)
             end
         end)
@@ -449,13 +458,6 @@ function addon:SkinPlayerCastbar()
         CastingBarFrame:HookScript("OnShow", function(frame)
             if frame.Icon:GetTexture() == 136235 then
                 frame.Icon:SetTexture(136243)
-            end
-
-            if not addon.playerColorChangesRan then
-                -- Color castbar on first OnShow triggered aswell with a small delay. Hopefully fixes an issue where other addons or scripts
-                -- can cause conflicts by overwriting our color values
-                addon.playerColorChangesRan = true
-                C_Timer.After(0.3, ColorPlayerCastbar)
             end
         end)
 
@@ -484,8 +486,6 @@ function addon:SkinPlayerCastbar()
         CastingBarFrame.Flash:SetTexture(nil) -- Hide it by removing texture. SetAlpha() or Hide() wont work without messing with blizz code
     end
 
-    ColorPlayerCastbar(db)
-
     CastingBarFrame.Text:ClearAllPoints()
     CastingBarFrame.Text:SetPoint(db.textPoint)
     CastingBarFrame.Text:SetJustifyH(db.textPoint)
@@ -510,6 +510,8 @@ function addon:SkinPlayerCastbar()
 
     self:SetCastbarStyle(CastingBarFrame, nil, db, "player")
     self:SetCastbarFonts(CastingBarFrame, nil, db)
+    hooksecurefunc("CastingBarFrame_OnLoad", ColorPlayerCastbar)
+    C_Timer.After(GetTickTime(), ColorPlayerCastbar)
 end
 
 --[====[@version-classic@

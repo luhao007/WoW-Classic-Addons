@@ -35,7 +35,7 @@ end
 
 function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 	--if (NWB.isDebug) then
-	--	return;
+		--return;
 	--end
 	if (distribution == "GUILD" and commPrefix == NWB.commPrefix) then
 		--Temp bug fix test.
@@ -869,6 +869,20 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type)
 				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
 			end]]
 		end
+		if (foundTimer and NWB.data.layers[layer].lastSeenNPC and NWB.data.layers[layer].lastSeenNPC > GetServerTime() - 86400) then
+			--=Attemtping to fix a bug that sometimes makes last weeks layer stick around if a zone in layermaps have the same zoneid.
+			if (not data.layers) then
+				data.layers = {};
+			end
+			if (not data.layers[layer]) then
+				data.layers[layer] = {};
+			end
+			data.layers[layer]['lastSeenNPC'] = NWB.data.layers[layer].lastSeenNPC;
+			--[[if (NWB.data.layers[layer].GUID and not NWB.cnRealms[NWB.realm] and not NWB.twRealms[NWB.realm]
+					and not NWB.krRealms[NWB.realm]) then
+				data.layers[layer]['GUID'] = NWB.data.layers[layer].GUID;
+			end]]
+		end
 	end
 	if (not NWB.layeredSongflowers) then
 		for k, v in pairs(NWB.songFlowers) do
@@ -922,6 +936,7 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type)
 			data.timerLog = timerLog;
 		end
 	end
+	--NWB:debug(data);
 	--data['faction'] = NWB.faction;
 	data = NWB:convertKeys(data, true, distribution);
 	--NWB:debug(data);
@@ -1174,6 +1189,7 @@ end
 
 --Add received data to our database.
 --This is super ugly for layered stuff, but it's meant to work with all diff versions at once, will be cleaned up later.
+local maxLayerTime = 43200;
 function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 	local deserializeResult, data = NWB.serializer:Deserialize(dataReceived);
 	if (not deserializeResult) then
@@ -1196,6 +1212,7 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 	if (not NWB:isValidPlayer(sender)) then
 		return;
 	end
+	--NWB:debug(data);
 	if (data.rendTimer and tonumber(data.rendTimer) and (not data.rendYell or data.rendTimer < NWB.data.rendTimer or
 			data.rendYell < (data.rendTimer - 120) or data.rendYell > (data.rendTimer + 120))) then
 		--NWB:debug("invalid rend timer from", sender, "npcyell:", data.rendYell, "buffdropped:", data.rendTimer);
@@ -1235,12 +1252,13 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 			end
 		end
 		for layer, vv in NWB:pairsByKeys(data.layers) do
-			--Temp fix, this can be removed soon.
-			if (type(vv) ~= "table" or (((not vv.rendTimer or vv.rendTimer == 0) and (not vv.onyTimer or vv.onyTimer == 0)
-					 and (not vv.nefTimer or vv.nefTimer == 0) and (not vv.onyNpcDied or vv.onyNpcDied == 0)
-					  and (not vv.nefNpcDied or vv.nefNpcDied == 0) and (not vv.lastSeenNPC or vv.lastSeenNPC == 0)
-					  and (not vv.terokTowers or vv.terokTowers == 0) and (not vv.hellfireRep or vv.hellfireRep == 0))
-					  or NWB.data.layersDisabled[layer])) then
+			--Temp fix, some of this can be removed soon.
+			if (type(vv) ~= "table" or not vv.lastSeenNPC or GetServerTime() - vv.lastSeenNPC > maxLayerTime or
+					(((not vv.rendTimer or vv.rendTimer == 0) and (not vv.onyTimer or vv.onyTimer == 0)
+					and (not vv.nefTimer or vv.nefTimer == 0) and (not vv.onyNpcDied or vv.onyNpcDied == 0)
+					and (not vv.nefNpcDied or vv.nefNpcDied == 0) and (not vv.lastSeenNPC or vv.lastSeenNPC == 0)
+					and (not vv.terokTowers or vv.terokTowers == 0) and (not vv.hellfireRep or vv.hellfireRep == 0))
+					or NWB.data.layersDisabled[layer])) then
 				--Do nothing if all timers are 0, this is to fix a bug in last version with layerMaps causing old layer data
 				--to bounce back and forth between users, making it so layers with no timers keep being created after server
 				--restart and won't disappear.
@@ -3235,11 +3253,11 @@ function NWB:getTerokkarData()
 	local captureAlliance = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3111);
 	local captureHorde = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3112);
 	if (not neutral or not alliance or not horde) then
-		NWB:debug("missing widget");
+		--NWB:debug("missing widget");
 		return;
 	end
 	if (not UIWidgetTopCenterContainerFrame:IsShown()) then
-		NWB:debug("missing widget2");
+		--NWB:debug("missing widget2");
 		return;
 	end
 	--Make sure the child being shown is a matching widget, incase the state is ever set wrong.
@@ -3251,7 +3269,7 @@ function NWB:getTerokkarData()
 		end
 	end
 	if (not child) then
-		NWB:debug("missing child frame");
+		--NWB:debug("missing child frame");
 		return;
 	end
 	local controlType, timestamp = 0, 0;

@@ -29,6 +29,8 @@ L.me = "我";
 
 L.level_60 = "切换到60级天赋 |cffff0000自动重载插件|r";
 L.level_70 = "切换到70级天赋 |cffff0000自动重载插件|r";
+L.minimap_TRUE = "顯示小地圖圖標";
+L.minimap_FALSE = "隱藏小地圖圖標";
 L.resizable_border_TRUE = "拖動窗口邊緣改變大小";
 L.resizable_border_FALSE = "禁止拖動窗口邊緣改變大小";
 L.readOnly = "\124cffff0000只讀\124r";
@@ -83,7 +85,7 @@ L.insepctALTKEY = "按住ALT键显示观察按钮";
 L.insepctCTRLKEY = "按住CTRL键显示观察按钮";
 L.insepctSHIFTKEY = "按住SHIFT键显示观察按钮";
 
-L.DBIcon_Text = "\124cff00ff00左鍵\124r新建仿真器\n\124cff00ff00右鍵\124r設置窗體風格";
+L.DBIcon_Text = "\124cff00ff00左鍵\124r新建仿真器\n\124cff00ff00右鍵\124r打開成員檢查";
 L.spellTabGTTSpellLevel = "技能等级: ";
 L.spellTabGTTReqLevel = "需要等级: ";
 

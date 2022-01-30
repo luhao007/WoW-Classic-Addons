@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 80 2021-06-30 13:26:48Z arithmandar $
+-- $Id: LibUIDropDownMenu.lua 84 2022-01-26 14:56:53Z arithmandar $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -18,7 +18,7 @@ local GameTooltip_SetTitle, GameTooltip_AddInstructionLine, GameTooltip_AddNorma
 
 -- ----------------------------------------------------------------------------
 local MAJOR_VERSION = "LibUIDropDownMenu-4.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 80 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 84 $"):match("%d+"))
 
 
 local LibStub = _G.LibStub
@@ -364,6 +364,17 @@ local BACKDROP_DIALOG_DARK = {
 		edgeSize = 32,
 		insets = { left = 11, right = 12, top = 12, bottom = 9, },
 }
+-- This has been removed from Backdrop.lua, so we added the definition here.
+local BACKDROP_TOOLTIP_16_16_5555 = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = { left = 5, right = 5, top = 5, bottom = 5 },
+}
+
 local function creatre_DropDownList(name, parent)
 	local f = _G[name] or CreateFrame("Button", name)
 	f:SetParent(parent or nil)
@@ -371,13 +382,11 @@ local function creatre_DropDownList(name, parent)
 	f:SetFrameStrata("DIALOG")
 	f:EnableMouse(true)
 	
-	--local fbd = _G[name.."Border"] or CreateFrame("Frame", name.."Border", f, BackdropTemplateMixin and "DialogBorderDarkTemplate" or nil)
 	local fbd = _G[name.."Backdrop"] or CreateFrame("Frame", name.."Backdrop", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	fbd:SetAllPoints()
 	fbd:SetBackdrop(BACKDROP_DIALOG_DARK)
 	f.Backdrop = fbd
 	
-	--local fmb = _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "TooltipBackdropTemplate" or nil)
 	local fmb = _G[name.."MenuBackdrop"] or CreateFrame("Frame", name.."MenuBackdrop", f, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	fmb:SetAllPoints()
 	fmb:SetBackdrop(BACKDROP_TOOLTIP_16_16_5555)
@@ -1816,34 +1825,39 @@ function lib:UIDropDownMenu_SetButtonClickable(level, id)
 end
 
 function lib:UIDropDownMenu_DisableDropDown(dropDown)
-	local dropDownName = dropDown:GetName();
-	local label = GetChild(dropDown, dropDownName, "Label");
-	if label then
-		label:SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	end
-	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(GRAY_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Button"):Disable();
-	dropDown.isDisabled = 1;
+	lib:UIDropDownMenu_SetDropDownEnabled(dropDown, false);
 end
 
 function lib:UIDropDownMenu_EnableDropDown(dropDown)
-	local dropDownName = dropDown:GetName();
-	local label = GetChild(dropDown, dropDownName, "Label");
-	if label then
-		label:SetVertexColor(NORMAL_FONT_COLOR:GetRGB());
-	end
-	GetChild(dropDown, dropDownName, "Icon"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Text"):SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-	GetChild(dropDown, dropDownName, "Button"):Enable();
-	dropDown.isDisabled = nil;
+	lib:UIDropDownMenu_SetDropDownEnabled(dropDown, true);
 end
 
 function lib:UIDropDownMenu_SetDropDownEnabled(dropDown, enabled)
+	local dropDownName = dropDown:GetName();
+	local label = GetChild(dropDown, dropDownName, "Label");
+	if label then
+		label:SetVertexColor((enabled and NORMAL_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local icon = GetChild(dropDown, dropDownName, "Icon");
+	if icon then
+		icon:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local text = GetChild(dropDown, dropDownName, "Text");
+	if text then
+		text:SetVertexColor((enabled and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR):GetRGB());
+	end
+
+	local button = GetChild(dropDown, dropDownName, "Button");
+	if button then
+		button:SetEnabled(enabled);
+	end
+
 	if enabled then
-		return UIDropDownMenu_EnableDropDown(dropDown);
+		dropDown.isDisabled = nil;
 	else
-		return UIDropDownMenu_DisableDropDown(dropDown);
+		dropDown.isDisabled = 1;
 	end
 end
 

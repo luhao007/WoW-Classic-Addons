@@ -5,7 +5,7 @@ Titan uses Ace libraries to place the Titan options within the Blizzard option s
 
 Most routines in this file are local because they create the Titan options. 
 These routines are called first when Titan processes the 'player entering world' event.
-If an options list (skins, extra, etc) is changed by the user then the Ace table needs to be updated and Blizz informed to 'redraw'.
+If an options list (skins, extra, etc) is changed by the user then the Ace table needs to be updated and WoW server informed to 'redraw'.
 :DESC
 --]]
 
@@ -1707,33 +1707,96 @@ local optionsAdvanced = {
 	name = L["TITAN_PANEL_MENU_ADV"],
 	type = "group",
 	args = {
-		confdesc = {
+		conftimerdesc = {
+			name = "Timers",
+			type = "group", inline = true,
 			order = 1,
-			type = "description",
-			name = L["TITAN_PANEL_MENU_ADV_DESC"],
-			cmdHidden = true
+			args = {
+				confdesc = {
+					order = 10,
+					type = "description",
+					name = L["TITAN_PANEL_MENU_ADV_DESC"],
+					cmdHidden = true
+					},
+				advtimerpew = {
+					name = L["TITAN_PANEL_MENU_ADV_PEW"],
+					desc = L["TITAN_PANEL_MENU_ADV_PEW_DESC"],
+					order = 20, type = "range", width = "full",
+					min = 1, max = 10, step = 0.5,
+					get = function() return TitanAllGetVar("TimerPEW") end,
+					set = function(_, a)
+						TitanAllSetVar("TimerPEW", a);
+						TitanTimers["EnterWorld"].delay = a
+					end,
+				},
+				advtimervehicle = {
+					name = L["TITAN_PANEL_MENU_ADV_VEHICLE"],
+					desc = L["TITAN_PANEL_MENU_ADV_VEHICLE_DESC"],
+					order = 50, type = "range", width = "full",
+					min = 1, max = 10, step = 0.5,
+					get = function() return TitanAllGetVar("TimerVehicle") end,
+					set = function(_, a)
+						TitanAllSetVar("TimerVehicle", a);
+						TitanTimers["Vehicle"].delay = a
+					end,
+				},
 			},
-		advtimerpew = {
-			name = L["TITAN_PANEL_MENU_ADV_PEW"],
-			desc = L["TITAN_PANEL_MENU_ADV_PEW_DESC"],
-			order = 10, type = "range", width = "full",
-			min = 1, max = 10, step = 0.5,
-			get = function() return TitanAllGetVar("TimerPEW") end,
-			set = function(_, a)
-				TitanAllSetVar("TimerPEW", a);
-				TitanTimers["EnterWorld"].delay = a
-			end,
 		},
-		advtimervehicle = {
-			name = L["TITAN_PANEL_MENU_ADV_VEHICLE"],
-			desc = L["TITAN_PANEL_MENU_ADV_VEHICLE_DESC"],
-			order = 50, type = "range", width = "full",
-			min = 1, max = 10, step = 0.5,
-			get = function() return TitanAllGetVar("TimerVehicle") end,
-			set = function(_, a)
-				TitanAllSetVar("TimerVehicle", a);
-				TitanTimers["Vehicle"].delay = a
-			end,
+		confbuffdesc = {
+			name = "Buff Icon Vertical Adjustment",
+			type = "group", inline = true,
+			order = 2,
+			args = {
+				confbuffdesc = {
+					order = 110,
+					type = "description",
+					name = "Adjust Buff icons only as needed. This will override the Titan default adjustment.", --L["TITAN_PANEL_MENU_ADV_DESC"],
+					cmdHidden = true
+					},
+				advbuffadj = {
+					name = "Buff", --L["TITAN_PANEL_MENU_ADV_PEW"],
+					desc = "", -- L["TITAN_PANEL_MENU_ADV_PEW_DESC"],
+					order = 120, type = "range", width = "full",
+					min = -100, max = 100, step = 1,
+					get = function() return TitanPanelGetVar("BuffIconVerticalAdj") end,
+					set = function(_, a)
+						TitanPanelSetVar("BuffIconVerticalAdj", a);
+						-- Adjust frame positions
+						TitanPanel_AdjustFrames(true, "BuffIconVerticalAdj")
+					end,
+				},
+			},
+		},
+		confoutputdesc = {
+			name = "Output",
+			type = "group", inline = true,
+			order = 3,
+			args = {
+				confdesc = {
+					order = 110,
+					type = "description",
+					name = "Output Various Titan Info At Startup or Reload.", --L["TITAN_PANEL_MENU_ADV_DESC"],
+					cmdHidden = true
+					},
+				advname = {
+					name = "Name and Version", --L["TITAN_PANEL_MENU_ADV_PEW"],
+					desc = "Show name and version in Chat", -- L["TITAN_PANEL_MENU_ADV_PEW_DESC"],
+					order = 120, type = "toggle", width = "full",
+					get = function() return not TitanAllGetVar("Silenced") end, -- yes, we did it to ourselves...
+					set = function(_, a)
+						TitanAllSetVar("Silenced", not a);
+					end,
+				},
+				advplugins = {
+					name = "Registration process", --L["TITAN_PANEL_MENU_ADV_PEW"],
+					desc = "Show Registration start and number of registered plugins", -- L["TITAN_PANEL_MENU_ADV_PEW_DESC"],
+					order = 130, type = "toggle", width = "full",
+					get = function() return TitanAllGetVar("ShowRegistered") end,
+					set = function(_, a)
+						TitanAllSetVar("ShowRegistered", a);
+					end,
+				},
+			},
 		},
 	},
 }
