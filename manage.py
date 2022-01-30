@@ -12,7 +12,7 @@ from toc import TOC
 logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
-CLASSIC_VER = '20502'
+CLASSIC_VER = '20503'
 RETAIL_VER = '90100'
 
 

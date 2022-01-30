@@ -1,4 +1,4 @@
-## Interface: 20502
+## Interface: 20503
 ## Author: Breen
 ## Version: 2.12.0
 ## SavedVariables: BtWQuests_Characters

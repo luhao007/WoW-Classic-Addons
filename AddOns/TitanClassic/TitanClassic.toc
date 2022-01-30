@@ -1,4 +1,4 @@
-## Interface: 20502
+## Interface: 20503
 ## Author: Titan Panel Development Team
 ## Version: 1.5.0.20503
 ## OptionalDeps: Ace3, AceGUI-3.0-SharedMediaWidgets, LibSharedMedia-3.0, LibQTip-1.0, !LibUIDropDownMenu

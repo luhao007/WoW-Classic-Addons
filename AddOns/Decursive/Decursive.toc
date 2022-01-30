@@ -1,4 +1,4 @@
-## Interface: 20502
+## Interface: 20503
 ## Author: John Wellesz
 ## Version: 2.7.8.4
 ## OptionalDeps: Ace3, LibQTip-1.0, LibDataBroker-1.1, LibDBIcon-1.0, !BugGrabber

@@ -1,4 +1,4 @@
-## Interface: 20502
+## Interface: 20503
 ## Author: Kiatra - github.com/Kiatra/BlizzMove/
 ## Version: v3.2.9
 ## OptionalDeps: Ace3
