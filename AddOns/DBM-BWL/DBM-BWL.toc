@@ -1,0 +1,40 @@
+## Interface: 30400
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMBWL_AllSavedVars
+## SavedVariablesPerCharacter: DBMBWL_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Blackwing Lair|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0黑翼之巢|r
+
+## X-Min-Interface: 20501
+## X-Min-Interface-WOTLKC: 30400
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: Classic
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-MapID: 469
+## X-DBM-Mod-Sort: 1105
+## X-DBM-Mod-MinCoreRevision: 12473
+## X-DBM-Mod-MinExpansion: 0
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.de.lua
+localization.es.lua
+localization.mx.lua
+localization.br.lua
+localization.ru.lua
+localization.kr.lua
+localization.tw.lua
+localization.cn.lua
+localization.fr.lua
+Razorgore.lua
+Vaelastrasz.lua
+Broodlord.lua
+Firemaw.lua
+Ebonroc.lua
+Flamegor.lua
+Chromaggus.lua
+Nefarian.lua
+TalonGuards.lua

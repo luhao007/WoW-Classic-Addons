@@ -199,10 +199,11 @@ function private.PopulateDetailLines(tooltip, itemString, method)
 	tooltip:StartSection()
 	if method == Conversions.METHOD.DISENCHANT then
 		local quality = ItemInfo.GetQuality(itemString)
-		local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
 		local classId = ItemInfo.GetClassId(itemString)
+		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
 		for targetItemString in DisenchantInfo.TargetItemIterator() do
-			local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+			local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 			if amountOfMats then
 				local matValue = CustomPrice.GetValue(TSM.db.global.coreOptions.destroyValueSource, targetItemString) or 0
 				if matValue > 0 then

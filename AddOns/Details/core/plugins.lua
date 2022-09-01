@@ -419,17 +419,21 @@
 			return options_frame
 		end
 	end
-	
-	
+
 	function _detalhes:CreatePluginWindowContainer()
-	
+
 		local f = CreateFrame ("frame", "DetailsPluginContainerWindow", UIParent,"BackdropTemplate")
 		f:EnableMouse (true)
 		f:SetMovable (true)
 		f:SetPoint ("center", UIParent, "center")
 		f:SetBackdrop (_detalhes.PluginDefaults and _detalhes.PluginDefaults.Backdrop or {bgFile = "Interface\\Tooltips\\UI-Tooltip-Background", tile = true, tileSize = 16, edgeFile = [[Interface\Buttons\WHITE8X8]], edgeSize = 1})
 		f:SetBackdropColor (0, 0, 0, 0.3)
-	
+		f:SetBackdropBorderColor(0, 0, 0, 1)
+
+		local scaleBar = DetailsFramework:CreateScaleBar(f, Details.options_window)
+		scaleBar:SetFrameStrata("fullscreen")
+		f:SetScale(Details.options_window.scale)
+
 		f:Hide()
 
 		--> members
@@ -457,15 +461,22 @@
 		--> menu background
 			local menuBackground = CreateFrame ("frame", "$parentMenuFrame", f,"BackdropTemplate")
 			_detalhes:FormatBackground (menuBackground)
+			local menuBackgroundTexture = menuBackground:CreateTexture("$parentBackgroundTexture", "background", nil, -2)
+			menuBackgroundTexture:SetAllPoints()
+			menuBackgroundTexture:SetColorTexture(0.2, 0.2, 0.2, .5)
 			
 		--> statusbar
 			local statusBar = CreateFrame ("frame", nil, menuBackground,"BackdropTemplate")
 			statusBar:SetPoint ("topleft", menuBackground, "bottomleft", 0, 1)
 			statusBar:SetPoint ("topright", f, "bottomright", 0, 1)
 			statusBar:SetHeight (20)
-			_detalhes.gump:ApplyStandardBackdrop (statusBar)
 			statusBar:SetAlpha (1)
-			_detalhes.gump:BuildStatusbarAuthorInfo (statusBar)
+			DetailsFramework:BuildStatusbarAuthorInfo (statusBar)
+			DetailsFramework:ApplyStandardBackdrop (statusBar)
+			local extraDarkTexture = statusBar:CreateTexture(nil, "background")
+			extraDarkTexture:SetAllPoints()
+			extraDarkTexture:SetColorTexture(.2, .2, .2, .8)
+
 			--
 			local right_click_to_back = _detalhes.gump:CreateLabel (statusBar, "right click to close", 10, "gray")
 			right_click_to_back:SetPoint ("bottomright", statusBar, "bottomright", -1, 5)
@@ -550,7 +561,7 @@
 			--> get the plugin
 			local pluginObject = _detalhes:GetPlugin (pluginAbsName)
 			if (not pluginObject) then
-				for index, plugin in ipairs (f.EmbedPlugins) do 
+				for index, plugin in ipairs (f.EmbedPlugins) do
 					if (plugin.real_name == pluginAbsName) then
 						pluginObject = plugin
 					end
@@ -638,27 +649,27 @@
 			PixelUtil.SetPoint (frame, "topleft", f, "topleft", 0, 0)
 			frame:Show()
 		end
-		
-		--> a plugin request to be embed into the main plugin window		
-		function f.EmbedPlugin (pluginObject, frame, isUtility)
-		
+
+		--> a plugin request to be embed into the main plugin window
+		function f.EmbedPlugin(pluginObject, frame, isUtility)
+
 			--> check if the plugin has a frame
 			if (not pluginObject.Frame) then
 				f.DebugMsg ("plugin doesn't have a frame.")
 				return
 			end
-			
+
 			--> create a button for this plugin
-			local newMenuButtom = f.CreatePluginMenuButton (pluginObject, isUtility)
-			
+			local newMenuButtom = f.CreatePluginMenuButton(pluginObject, isUtility)
+
 			--> utility is true when the object isn't a real plugin, but instead a tool frame from the main addon being embed on this panel
 			if (isUtility) then
 				pluginObject.__var_Utility = true
 			end
 			pluginObject.__var_Frame = frame
-			
+
 			--> sort buttons alphabetically, put utilities at the end
-			table.sort (f.MenuButtons, function (t1, t2)
+			table.sort (f.MenuButtons, function(t1, t2)
 				if (t1.IsUtility and t2.IsUtility) then
 					return t1.PluginName < t2.PluginName
 				elseif (t1.IsUtility) then
@@ -668,35 +679,36 @@
 				else
 					return t1.PluginName < t2.PluginName
 				end
-			end) 
-			
+			end)
+
 			--> reset the buttons points
 			local addingTools = false
-			for index, button in ipairs (f.MenuButtons) do
+			for index, button in ipairs(f.MenuButtons) do
 				button:ClearAllPoints()
-				PixelUtil.SetPoint (button, "center", menuBackground, "center", 0, 0)
+				PixelUtil.SetPoint(button, "center", menuBackground, "center", 0, 0)
 
 				if (button.IsUtility) then
 					--> add -20 to add a gap between plugins and utilities
-					
+
 					if (not addingTools) then
 						--> add the header
 						addingTools = true
 						PixelUtil.SetPoint (titlebar_tools, "topleft", menuBackground, "topleft", 2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
 						PixelUtil.SetPoint (titlebar_tools, "topright", menuBackground, "topright", -2, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 20)
 					end
-					
+
 					PixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index - 40)
 				else
 					PixelUtil.SetPoint (button, "top", menuBackground, "top", 0, f.MenuY + ( (index-1) * -f.MenuButtonHeight ) - index)
 				end
 			end
-			
+
 			--> format the plugin main frame
 			f.RefreshFrame (frame)
 			--> add the plugin to embed table
-			tinsert (f.EmbedPlugins, pluginObject)
-			
+			tinsert(f.EmbedPlugins, pluginObject)
+			frame:SetParent(f)
+
 			f.DebugMsg ("plugin added", pluginObject.__name)
 		end
 		

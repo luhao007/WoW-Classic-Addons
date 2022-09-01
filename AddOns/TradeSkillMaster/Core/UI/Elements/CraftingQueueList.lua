@@ -252,7 +252,8 @@ end
 function private.GetItemText(self, data)
 	if type(data) == "string" then
 		local profession, players = strsplit(CATEGORY_SEP, data)
-		local isValid = private.PlayersContains(players, UnitName("player")) and strlower(profession) == strlower(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName() or "")
+		local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
+		local isValid = private.PlayersContains(players, UnitName("player")) and strlower(profession) == strlower(name or "")
 		local text = Theme.GetColor("INDICATOR"):ColorText(profession.." ("..players..")")
 		if isValid then
 			return text
@@ -271,9 +272,10 @@ end
 function private.GetItemTooltip(self, data)
 	if type(data) == "string" then
 		local profession, players = strsplit(CATEGORY_SEP, data)
+		local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
 		if not private.PlayersContains(players, UnitName("player")) then
 			return L["You are not on one of the listed characters."]
-		elseif strlower(profession) ~= strlower(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName() or "") then
+		elseif strlower(profession) ~= strlower(name or "") then
 			return L["This profession is not open."]
 		end
 		return
@@ -417,7 +419,7 @@ function private.CategorySortComparator(a, b)
 	local aProfession, aPlayers = strsplit(CATEGORY_SEP, a)
 	local bProfession, bPlayers = strsplit(CATEGORY_SEP, b)
 	if aProfession ~= bProfession then
-		local currentProfession = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
+		local currentProfession = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
 		currentProfession = strlower(currentProfession or "")
 		if aProfession == currentProfession then
 			return true

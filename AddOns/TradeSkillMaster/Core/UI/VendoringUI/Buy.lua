@@ -464,7 +464,7 @@ function private.GetItemAltCostText(row, quantity)
 			local texture = nil
 			if costItemString then
 				texture = ItemInfo.GetTexture(costItemString)
-			elseif not TSM.IsWowClassic() and strmatch(costItemLink, "currency:") then
+			elseif not TSM.IsWowVanillaClassic() and strmatch(costItemLink, "currency:") then
 				texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
 			else
 				error(format("Unknown item cost (%d, %d, %s)", index, costNum, tostring(costItemLink)))

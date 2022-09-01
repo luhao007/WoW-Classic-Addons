@@ -99,6 +99,10 @@ function Details:GetPlayerObjectFromBreakdownWindow()
 	return info.jogador
 end
 
+function Details:GetBreakdownWindow()
+	return Details.playerDetailWindow
+end
+
 --english alias
 --window object from Details:GetWindow(n) and playerObject from Details:GetPlayer(playerName, attribute)
 function Details:OpenPlayerBreakdown (windowObject, playerObject)
@@ -338,7 +342,9 @@ function _detalhes:AbreJanelaInfo (jogador, from_att_change, refresh, ShiftKeyDo
 		end
 	end
 
-	shownTab:Click()
+	if (shownTab) then
+		shownTab:Click()
+	end
 end
 
 -- for beta todo: info background need a major rewrite
@@ -2713,10 +2719,10 @@ function gump:CriaJanelaInfo()
 		--icon - name - applications - refreshes - uptime
 		--
 		
-		local wa_button = function (self, mouseButton, spellID, auraType)
-			local spellName, _, spellIcon = GetSpellInfo (spellID)
-			_detalhes:OpenAuraPanel (spellID, spellName, spellIcon, nil, auraType == "BUFF" and 4 or 2, 1)
-		end
+		--local wa_button = function (self, mouseButton, spellID, auraType)
+		--	local spellName, _, spellIcon = GetSpellInfo (spellID)
+		--	_detalhes:OpenAuraPanel (spellID, spellName, spellIcon, nil, auraType == "BUFF" and 4 or 2, 1)
+		--end
 		
 		local scroll_createline = function (self, index)
 			local line = CreateFrame ("button", "$parentLine" .. index, self,"BackdropTemplate")
@@ -2736,8 +2742,8 @@ function gump:CriaJanelaInfo()
 			local apply = line:CreateFontString ("$parentName", "overlay", "GameFontNormal")
 			local refresh = line:CreateFontString ("$parentName", "overlay", "GameFontNormal")
 			
-			local waButton = DF:CreateButton (line, wa_button, 18, 18)
-			waButton:SetIcon ([[Interface\AddOns\WeakAuras\Media\Textures\icon]])
+			--local waButton = DF:CreateButton (line, wa_button, 18, 18)
+			--waButton:SetIcon ([[Interface\AddOns\WeakAuras\Media\Textures\icon]])
 			
 			DF:SetFontSize (name, text_size)
 			DF:SetFontSize (uptime, text_size)
@@ -2749,14 +2755,14 @@ function gump:CriaJanelaInfo()
 			uptime:SetPoint ("left", line, "left", 186, 0)
 			apply:SetPoint ("left", line, "left", 276, 0)
 			refresh:SetPoint ("left", line, "left", 322, 0)
-			waButton:SetPoint ("left", line, "left", 372, 0)
+			--waButton:SetPoint ("left", line, "left", 372, 0)
 			
 			line.Icon = icon
 			line.Name = name
 			line.Uptime = uptime
 			line.Apply = apply
 			line.Refresh = refresh
-			line.WaButton = waButton
+			--line.WaButton = waButton
 
 			name:SetJustifyH ("left")
 			uptime:SetJustifyH ("left")
@@ -2773,7 +2779,7 @@ function gump:CriaJanelaInfo()
 		
 		local scroll_buff_refresh = function (self, data, offset, total_lines)
 		
-			local haveWA = _G.WeakAuras
+			local haveWA = false --_G.WeakAuras
 		
 			for i = 1, total_lines do
 				local index = i + offset
@@ -2791,11 +2797,11 @@ function gump:CriaJanelaInfo()
 					line.Apply:SetText (aura [4])
 					line.Refresh:SetText (aura [5])
 					
-					if (haveWA) then
-						line.WaButton:SetClickFunction (wa_button, aura.spellID, line.AuraType)
-					else
-						line.WaButton:Disable()
-					end
+					--if (haveWA) then
+					--	line.WaButton:SetClickFunction (wa_button, aura.spellID, line.AuraType)
+					--else
+					--	line.WaButton:Disable()
+					--end
 					
 					if (i%2 == 0) then
 						line:SetBackdropColor (unpack (line_bg_color [1]))
@@ -2838,9 +2844,9 @@ function gump:CriaJanelaInfo()
 		refreshedLabel:SetPoint (headerOffsetsBuffs[4], -10)
 		create_titledesc_frame (refreshedLabel.widget, "refreshes")
 		
-		local waLabel = DF:CreateLabel (frame, "WA")
-		waLabel:SetPoint (headerOffsetsBuffs[5], -10)
-		create_titledesc_frame (waLabel.widget, "create weak aura")
+		--local waLabel = DF:CreateLabel (frame, "WA")
+		--waLabel:SetPoint (headerOffsetsBuffs[5], -10)
+		--create_titledesc_frame (waLabel.widget, "create weak aura")
 		
 		local buffScroll = DF:CreateScrollBox (frame, "$parentBuffUptimeScroll", scroll_buff_refresh, {}, scroll_width, scrollHeight, scroll_line_amount, scroll_line_height)
 		buffScroll:SetPoint ("topleft", frame, "topleft", 5, -30)
@@ -2868,12 +2874,10 @@ function gump:CriaJanelaInfo()
 		refreshedLabel2:SetPoint (headerOffsetsDebuffs[4], -10)
 		create_titledesc_frame (refreshedLabel2.widget, "refreshes")
 		
-		local waLabel2 = DF:CreateLabel (frame, "WA")
-		waLabel2:SetPoint (headerOffsetsDebuffs[5], -10)
-		create_titledesc_frame (waLabel2.widget, "create weak aura")
+		--local waLabel2 = DF:CreateLabel (frame, "WA")
+		--waLabel2:SetPoint (headerOffsetsDebuffs[5], -10)
+		--create_titledesc_frame (waLabel2.widget, "create weak aura")
 
-		
-		
 		local debuffScroll = DF:CreateScrollBox (frame, "$parentDebuffUptimeScroll", scroll_buff_refresh, {}, scroll_width, scrollHeight, scroll_line_amount, scroll_line_height)
 		debuffScroll:SetPoint ("topleft", frame, "topleft", debuffScrollStartX, -30)
 		for i = 1, scroll_line_amount do 

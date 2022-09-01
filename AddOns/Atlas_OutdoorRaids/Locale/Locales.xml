@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Atlas_OutdoorRaids-enUS.lua"/>
+	<Script file="Atlas_OutdoorRaids-deDE.lua"/>
+	<Script file="Atlas_OutdoorRaids-esES.lua"/>
+	<Script file="Atlas_OutdoorRaids-esMX.lua"/>
+	<Script file="Atlas_OutdoorRaids-frFR.lua"/>
+	<Script file="Atlas_OutdoorRaids-itIT.lua"/>
+	<Script file="Atlas_OutdoorRaids-koKR.lua"/>
+	<Script file="Atlas_OutdoorRaids-ptBR.lua"/>
+	<Script file="Atlas_OutdoorRaids-ruRU.lua"/>
+	<Script file="Atlas_OutdoorRaids-zhCN.lua"/>
+	<Script file="Atlas_OutdoorRaids-zhTW.lua"/>
+</Ui>

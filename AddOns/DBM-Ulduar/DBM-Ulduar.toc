@@ -1,0 +1,47 @@
+## Interface: 30400
+## Author: Nitram
+## Version: 275816d
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMUlduar_AllSavedVars
+## SavedVariablesPerCharacter: DBMUlduar_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Ulduar|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0奥杜尔|r
+
+## X-Min-Interface: 80000
+## X-Min-Interface-WOTLKC: 30400
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: WOTLK
+## X-DBM-StatTypes: normal,timewalker
+## X-DBM-Mod-MapID: 603
+## X-DBM-Mod-Sort: 903
+## X-DBM-Mod-MinCoreRevision: 20200524142133
+## X-DBM-Mod-MinExpansion: 2
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.de.lua
+localization.fr.lua
+localization.ru.lua
+localization.tw.lua
+localization.kr.lua
+localization.tw.lua
+localization.es.lua
+localization.cn.lua
+FlameLeviathan.lua
+Ignis.lua
+Razorscale.lua
+XT002.lua
+IronCouncil.lua
+Kologarn.lua
+Auriaya.lua
+Mimiron.lua
+Freya.lua
+Freya_Elders.lua
+Thorim.lua
+Hodir.lua
+GeneralVezax.lua
+YoggSaron.lua
+Algalon.lua

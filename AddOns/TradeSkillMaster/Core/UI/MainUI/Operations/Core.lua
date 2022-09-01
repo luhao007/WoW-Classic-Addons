@@ -67,6 +67,7 @@ function Operations.GetOperationManagementElements(moduleName, operationName)
 					:SetItems(TSM.db:GetScopeKeys("factionrealm"), TSM.db:GetScopeKeys("factionrealm"))
 					:SetSelectionText(L["No Faction-Realms"], L["%d Faction-Realms"], L["All Faction-Realms"])
 					:SetSettingInfo(operation, "ignoreFactionrealm")
+					:SetScript("OnSelectionChanged", TSM.Groups.RebuildDB)
 				)
 			)
 			:AddChild(Operations.CreateSettingLine("ignoreCharacters", L["Ignore operation on characters"])
@@ -77,6 +78,7 @@ function Operations.GetOperationManagementElements(moduleName, operationName)
 					:SetItems(private.playerList, private.playerList)
 					:SetSelectionText(L["No Characters"], L["%d Characters"], L["All Characters"])
 					:SetSettingInfo(operation, "ignorePlayer")
+					:SetScript("OnSelectionChanged", TSM.Groups.RebuildDB)
 				)
 			)
 		)
@@ -677,7 +679,7 @@ function private.GroupSelectionChanged(groupSelector)
 		if not TSM.Operations.GroupHasOperation(private.currentModule, groupPath, private.currentOperationName) then
 			local parentElement = groupSelector:GetParentElement():GetParentElement()
 			if groupPath ~= TSM.CONST.ROOT_GROUP_PATH then
-				TSM.Groups.SetOperationOverride(groupPath, private.currentModule, true)
+				TSM.Groups.SetOperationOverride(groupPath, private.currentModule, true, true)
 			end
 			local numOperations = 0
 			local lastOperationName = nil
@@ -687,14 +689,15 @@ function private.GroupSelectionChanged(groupSelector)
 			end
 			if numOperations == TSM.Operations.GetMaxNumber(private.currentModule) then
 				-- replace the last operation since we're already at the max number of operations
-				TSM.Groups.RemoveOperation(groupPath, private.currentModule, numOperations)
+				TSM.Groups.RemoveOperation(groupPath, private.currentModule, numOperations, true)
 				Log.PrintfUser(L["%s previously had the max number of operations, so removed %s."], Log.ColorUserAccentText(TSM.Groups.Path.Format(groupPath)), Log.ColorUserAccentText(lastOperationName))
 			end
-			TSM.Groups.AppendOperation(groupPath, private.currentModule, private.currentOperationName)
+			TSM.Groups.AppendOperation(groupPath, private.currentModule, private.currentOperationName, true)
 			Log.PrintfUser(L["Added %s to %s."], Log.ColorUserAccentText(private.currentOperationName), Log.ColorUserAccentText(groupPath == TSM.CONST.ROOT_GROUP_PATH and L["Base Group"] or TSM.Groups.Path.Format(groupPath)))
 			parentElement:AddChild(private.CreateGroupOperationLine(groupPath))
 		end
 	end
+	TSM.Groups.RebuildDB()
 	groupSelector:ClearSelectedGroups(true)
 	groupSelector:GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():GetParentElement():Draw()
 end

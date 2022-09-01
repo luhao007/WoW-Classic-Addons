@@ -51,6 +51,16 @@ local GENERIC_EVENTS = {
 	UI_ERROR_MESSAGE = 2,
 }
 local GENERIC_EVENT_SEP = "/"
+local DUMMY_BROWSE_QUERY = {
+	-- If you work for Blizzard and are trying to figure out why we are doing this, Sapu would love to talk to you
+	-- in Discord to get this bug fixed so we can remove this ugly workaround. <3
+	searchString = "WORKAROUND_FOR_9_2_7_BUG",
+	minLevel = 1000,
+	maxLevel = 1000,
+	sorts = {},
+	filters = {},
+	itemClassFilters = {},
+}
 local API_EVENT_INFO = TSM.IsWowClassic() and
 	{ -- Classic
 		QueryAuctionItems = {
@@ -263,6 +273,10 @@ function AuctionHouseWrapper.SendSearchQuery(itemKey, isSell)
 	else
 		return private.wrappers.SendSearchQuery:Start(itemKey, EMPTY_SORTS_TABLE, true)
 	end
+end
+
+function AuctionHouseWrapper.ResetSellerCache()
+	return AuctionHouseWrapper.SendBrowseQuery(DUMMY_BROWSE_QUERY)
 end
 
 function AuctionHouseWrapper.RequestMoreCommoditySearchResults(itemId)

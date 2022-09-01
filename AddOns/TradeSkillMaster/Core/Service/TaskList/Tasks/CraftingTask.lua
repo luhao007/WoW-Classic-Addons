@@ -113,11 +113,7 @@ function CraftingTask.OnButtonClick(self)
 		local _, numMax = nil, nil
 		if TSM.IsWowClassic() then
 			if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-				if TSM.IsWowBCClassic() then
-					_, numMax = GetCraftNumMade(spellId)
-				else
-					_, numMax = 1, 1
-				end
+				_, numMax = 1, 1
 			else
 				_, numMax = GetTradeSkillNumMade(spellId)
 			end
@@ -203,11 +199,7 @@ function private.ChatMsgLootEventHandler(_, msg)
 	local numMin, numMax = nil, nil
 	if TSM.IsWowClassic() then
 		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-			if TSM.IsWowBCClassic() then
-				numMin, numMax = GetCraftNumMade(private.pendingSpellId)
-			else
-				numMin, numMax = 1, 1
-			end
+			numMin, numMax = 1, 1
 		else
 			numMin, numMax = GetTradeSkillNumMade(private.pendingSpellId)
 		end

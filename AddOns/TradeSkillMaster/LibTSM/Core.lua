@@ -121,7 +121,8 @@ function TSM.IsWowVanillaClassic()
 	return WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 end
 
-function TSM.IsWowBCClassic()
+function TSM.IsWowWrathClassic()
+	assert(LE_EXPANSION_LEVEL_CURRENT == LE_EXPANSION_WRATH_OF_THE_LICH_KING)
 	return WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 end
 

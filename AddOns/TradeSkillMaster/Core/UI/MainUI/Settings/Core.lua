@@ -111,6 +111,53 @@ function Settings.CreateInputWithReset(id, label, context, validate)
 		)
 end
 
+function Settings.CreateMultiInputWithReset(id, label, context, validate)
+	local scope, namespace, key = strsplit(".", context)
+	local validateFunc, validateContext = nil, nil
+	if type(validate) == "table" then
+		validateFunc = "CUSTOM_PRICE"
+		validateContext = validate
+	elseif type(validate) == "function" then
+		validateFunc = validate
+	elseif validate == nil then
+		validateFunc = "CUSTOM_PRICE"
+	else
+		error("Invalid validate: "..tostring(validate))
+	end
+	return UIElements.New("Frame", id)
+		:SetLayout("VERTICAL")
+		:AddChild(UIElements.New("Text", "label")
+			:SetHeight(18)
+			:SetMargin(0, 0, 0, 4)
+			:SetFont("BODY_BODY2_MEDIUM")
+			:SetTextColor("TEXT_ALT")
+			:SetText(label)
+		)
+		:AddChild(UIElements.New("Frame", "content")
+			:SetLayout("VERTICAL")
+			:AddChild(UIElements.New("MultiLineInput", "input")
+				:SetHeight(70)
+				:SetMargin(0, 0, 0, 8)
+				:SetValidateFunc(validateFunc, validateContext)
+				:SetSettingInfo(TSM.db[scope][namespace], key)
+				:SetScript("OnValueChanged", private.MultiInputOnValueChanged)
+			)
+			:AddChild(UIElements.New("Frame", "reset")
+				:SetLayout("HORIZONTAL")
+				:SetHeight(24)
+				:AddChild(UIElements.New("Spacer", "spacer"))
+				:AddChild(UIElements.New("ActionButton", "button")
+					:SetWidth(108)
+					:SetText(L["Reset"])
+					:SetDisabled(TSM.db[scope][namespace][key] == TSM.db:GetDefault(scope, namespace, key))
+					:SetContext("global.craftingOptions.defaultCraftPriceMethod")
+					:SetScript("OnClick", private.MultiResetBtnOnClick)
+					:SetContext(context)
+				)
+			)
+		)
+end
+
 function Settings.CreateExpandableSection(pageName, id, text, description, descriptionHeight)
 	return UIElements.New("CollapsibleContainer", id)
 		:SetLayout("VERTICAL")
@@ -252,6 +299,24 @@ function private.ResetBtnOnClick(button)
 	local defaultValue = TSM.db:GetDefault(scope, namespace, key)
 	TSM.db:Set(scope, nil, namespace, key, defaultValue)
 	button:GetElement("__parent.input")
+		:SetValue(defaultValue)
+		:Draw()
+	button:SetDisabled(true)
+		:Draw()
+end
+
+function private.MultiInputOnValueChanged(input)
+	local button = input:GetElement("__parent.reset.button")
+	local scope, namespace, key = strsplit(".", button:GetContext())
+	button:SetDisabled(TSM.db[scope][namespace][key] == TSM.db:GetDefault(scope, namespace, key))
+		:Draw()
+end
+
+function private.MultiResetBtnOnClick(button)
+	local scope, namespace, key = strsplit(".", button:GetContext())
+	local defaultValue = TSM.db:GetDefault(scope, namespace, key)
+	TSM.db:Set(scope, nil, namespace, key, defaultValue)
+	button:GetElement("__parent.__parent.input")
 		:SetValue(defaultValue)
 		:Draw()
 	button:SetDisabled(true)

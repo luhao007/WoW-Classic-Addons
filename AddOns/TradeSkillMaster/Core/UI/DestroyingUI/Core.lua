@@ -194,13 +194,14 @@ function private.OnHideIconClick(self, data, iconIndex, mouseButton)
 end
 
 function private.GetDestroyInfo(itemString)
-	local quality = ItemInfo.GetQuality(itemString)
-	local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
 	local classId = ItemInfo.GetClassId(itemString)
+	local quality = ItemInfo.GetQuality(itemString)
+	local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+	local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
 	local info = TempTable.Acquire()
 	local targetItems = TempTable.Acquire()
 	for targetItemString in DisenchantInfo.TargetItemIterator() do
-		local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+		local amountOfMats, matRate, minAmount, maxAmount = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 		if amountOfMats then
 			local name = ItemInfo.GetName(targetItemString)
 			local color = ItemInfo.GetQualityColor(targetItemString)
@@ -224,11 +225,14 @@ function private.GetDestroyInfo(itemString)
 			tinsert(targetItems, targetItemString)
 		end
 	end
-	for targetItemString, rate in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.MILL) do
+	for targetItemString, amountOfMats, matRate, minAmount, maxAmount in Conversions.TargetItemsByMethodIterator(itemString, Conversions.METHOD.MILL) do
 		local name = ItemInfo.GetName(targetItemString)
 		local color = ItemInfo.GetQualityColor(targetItemString)
 		if name and color then
-			tinsert(info, color..ItemInfo.GetName(targetItemString).." x"..rate.."|r")
+			matRate = matRate and matRate * 100
+			matRate = matRate and matRate.."% " or ""
+			local range = (minAmount and maxAmount) and Theme.GetFeedbackColor("YELLOW"):ColorText(minAmount ~= maxAmount and (" ["..minAmount.."-"..maxAmount.."]") or (" ["..minAmount.."]")) or ""
+			tinsert(info, color..matRate..name.." x"..amountOfMats.."|r"..range)
 			tinsert(targetItems, targetItemString)
 		end
 	end

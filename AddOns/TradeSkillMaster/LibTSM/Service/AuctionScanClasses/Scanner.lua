@@ -224,16 +224,16 @@ Scanner:OnModuleLoad(function()
 					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.1, private.RetryHandler)
 					return
 				end
-				return "ST_SEARCH_SEND"
+				return "ST_RESET_SELLER_CACHE"
 			end)
 			:AddTransition("ST_SEARCH_GET_KEY")
-			:AddTransition("ST_SEARCH_SEND")
+			:AddTransition("ST_RESET_SELLER_CACHE")
 			:AddTransition("ST_CANCELING")
-			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_SEARCH_SEND")
+			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_RESET_SELLER_CACHE")
 			:AddEventTransition("EV_RETRY", "ST_SEARCH_GET_KEY")
 			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
 		)
-		:AddState(FSM.NewState("ST_SEARCH_SEND")
+		:AddState(FSM.NewState("ST_RESET_SELLER_CACHE")
 			:SetOnEnter(function()
 				assert(not TSM.IsWowClassic())
 				if not AuctionHouseWrapper.IsOpen() then
@@ -241,6 +241,31 @@ Scanner:OnModuleLoad(function()
 				end
 				if private.useCachedData and private.searchRow:HasCachedSearchData() then
 					return "ST_SEARCH_REQUEST_MORE"
+				end
+				local future, delayTime = AuctionHouseWrapper.ResetSellerCache()
+				if future then
+					private.HandleAuctionHouseWrapperResult(future)
+				else
+					if not delayTime then
+						Log.Err("Failed to send dummy search query - retrying")
+						delayTime = 0.5
+					end
+					-- try again after a delay
+					Delay.AfterTime("AUCTION_SCANNER_RETRY", delayTime, private.RetryHandler)
+				end
+			end)
+			:AddTransition("ST_RESET_SELLER_CACHE")
+			:AddTransition("ST_SEARCH_SEND")
+			:AddTransition("ST_CANCELING")
+			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_SEARCH_SEND")
+			:AddEventTransition("EV_RETRY", "ST_RESET_SELLER_CACHE")
+			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
+		)
+		:AddState(FSM.NewState("ST_SEARCH_SEND")
+			:SetOnEnter(function()
+				assert(not TSM.IsWowClassic())
+				if not AuctionHouseWrapper.IsOpen() then
+					return "ST_CANCELING"
 				end
 				local future, delayTime = private.searchRow:SearchSend()
 				if future then
@@ -281,11 +306,11 @@ Scanner:OnModuleLoad(function()
 					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.5, private.RetryHandler)
 				end
 			end)
-			:AddTransition("ST_SEARCH_SEND")
+			:AddTransition("ST_RESET_SELLER_CACHE")
 			:AddTransition("ST_SEARCH_CHECKING")
 			:AddTransition("ST_CANCELING")
 			:AddEventTransition("EV_FUTURE_SUCCESS", "ST_SEARCH_CHECKING")
-			:AddEventTransition("EV_RETRY", "ST_SEARCH_SEND")
+			:AddEventTransition("EV_RETRY", "ST_RESET_SELLER_CACHE")
 			:AddEventTransition("EV_CANCEL", "ST_CANCELING")
 		)
 		:AddState(FSM.NewState("ST_SEARCH_CHECKING")
@@ -295,27 +320,30 @@ Scanner:OnModuleLoad(function()
 				private.searchRow:PopulateSubRows(private.browseId)
 
 				-- check if all the sub rows have their data
-				local isDone = true
+				local missingInfo = false
 				for _, subRow in private.searchRow:SubRowIterator(true) do
 					if not subRow:HasRawData() or not subRow:HasItemString() then
-						isDone = false
+						missingInfo = true
 					elseif private.resolveSellers and not subRow:HasOwners() and not private.query:_IsFiltered(subRow, true) then
-						-- waiting for owner info
-						isDone = false
+						-- Waiting for owner info
+						-- Currently can't rely on owner info in 9.2.7, so limit the retries for it
+						if TSM.IsWowClassic() or private.retryCount <= 10 then
+							missingInfo = true
+						end
 					end
 				end
 
-				if not isDone and private.retryCount >= 100 then
-					-- out of retries, so give up
+				if missingInfo and private.retryCount >= 100 then
+					-- Out of retries, so give up
 					return "ST_SEARCH_DONE", false
-				elseif not isDone then
-					-- we'll try again
+				elseif missingInfo then
+					-- We'll try again
 					private.retryCount = private.retryCount + 1
 					Delay.AfterTime("AUCTION_SCANNER_RETRY", 0.5, private.RetryHandler)
 					return
 				end
 
-				-- filter the sub rows we don't care about
+				-- Filter the sub rows we don't care about
 				private.searchRow:FilterSubRows(private.query)
 
 				if private.callback then

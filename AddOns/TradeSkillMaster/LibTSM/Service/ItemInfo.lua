@@ -43,7 +43,7 @@ local MAX_REQUESTED_ITEM_INFO = 50
 local MAX_REQUESTS_PER_ITEM = 5
 local UNKNOWN_ITEM_NAME = L["Unknown Item"]
 local PLACEHOLDER_ITEM_NAME = L["Example Item"]
-local DB_VERSION = 7
+local DB_VERSION = 8
 local ENCODING_NUM_BITS = 6
 local ENCODING_NUM_VALUES = 2 ^ ENCODING_NUM_BITS
 local ENCODING_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
@@ -67,7 +67,7 @@ for i = 0, ENCODING_NUM_VALUES ^ 2 - 1 do
 end
 local ENCODED_NIL_CHAR = ENCODING_TABLE[#ENCODING_ALPHABET - 1]
 local DECODED_NIL_VALUE = ENCODING_NUM_VALUES - 1
-local RECORD_DATA_LENGTH_CHARS = 22
+local RECORD_DATA_LENGTH_CHARS = 23
 local FIELD_INFO = {
 	itemLevel = { numBits = 12 },
 	minLevel = { numBits = 12 },
@@ -80,6 +80,7 @@ local FIELD_INFO = {
 	quality = { numBits = 6 },
 	isBOP = { numBits = 6 },
 	isCraftingReagent = { numBits = 6 },
+	expansionId = { numBits = 6 },
 }
 do
 	local totalLengthChars = 0
@@ -118,6 +119,7 @@ local NON_DISENCHANTABLE_ITEMS = {
 	["i:60223"] = true,
 	["i:75274"] = true,
 	["i:84661"] = true,
+	["i:89586"] = true,
 	["i:97826"] = true,
 	["i:97827"] = true,
 	["i:97828"] = true,
@@ -218,6 +220,7 @@ ItemInfo:OnSettingsLoad(function()
 		:AddNumberField("quality")
 		:AddNumberField("isBOP")
 		:AddNumberField("isCraftingReagent")
+		:AddNumberField("expansionId")
 		:AddTrigramIndex("name")
 		:Commit()
 	private.db:BulkInsertStart()
@@ -227,7 +230,7 @@ ItemInfo:OnSettingsLoad(function()
 		if ItemString.Get(itemString) == itemString then
 			-- load all the fields from the string
 			local dataOffset = (i - 1) * RECORD_DATA_LENGTH_CHARS + 1
-			local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, bExtra = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH_CHARS - 1)
+			local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22, bExtra = strbyte(TSMItemInfoDB.data, dataOffset, dataOffset + RECORD_DATA_LENGTH_CHARS - 1)
 			assert(b21 and not bExtra)
 
 			-- load the fields
@@ -270,10 +273,14 @@ ItemInfo:OnSettingsLoad(function()
 			if isCraftingReagent == DECODED_NIL_VALUE then
 				isCraftingReagent = -1
 			end
+			local expansionId = DECODING_TABLE[b22]
+			if expansionId == DECODED_NIL_VALUE then
+				expansionId = -1
+			end
 
 			-- store in the DB
 			local name = names[i]
-			private.db:BulkInsertNewRowFast13(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent)
+			private.db:BulkInsertNewRowFast14(itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent, expansionId)
 		end
 	end
 	private.db:BulkInsertEnd()
@@ -299,10 +306,10 @@ ItemInfo:OnModuleUnload(function()
 	local numFields = private.db:GetNumStoredFields()
 	for i = 1, private.db:GetNumRows() do
 		local startOffset = (i - 1) * numFields + 1
-		local itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent = unpack(rawData, startOffset, startOffset + numFields - 1)
+		local itemString, name, itemLevel, minLevel, maxStack, vendorSell, invSlotId, texture, classId, subClassId, quality, isBOP, isCraftingReagent, expansionId = unpack(rawData, startOffset, startOffset + numFields - 1)
 		local b0, b1, b2, b3, b4, b5, b6, b7, b8, b9 = ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR
 		local b10, b11, b12, b13, b14, b15, b16, b17, b18, b19 = ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR
-		local b20, b21 = ENCODED_NIL_CHAR, ENCODED_NIL_CHAR
+		local b20, b21, b22 = ENCODED_NIL_CHAR, ENCODED_NIL_CHAR, ENCODED_NIL_CHAR
 		if itemLevel ~= -1 then
 			local chars = ENCODING_TABLE_2[itemLevel]
 			b0 = chars[1]
@@ -376,10 +383,13 @@ ItemInfo:OnModuleUnload(function()
 		if isCraftingReagent ~= -1 then
 			b21 = ENCODING_TABLE[isCraftingReagent]
 		end
+		if expansionId ~= -1 then
+			b22 = ENCODING_TABLE[expansionId]
+		end
 
 		names[i] = name
 		itemStrings[i] = itemString
-		dataParts[i] = strchar(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21)
+		dataParts[i] = strchar(b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, b18, b19, b20, b21, b22)
 
 		if #dataParts[i] ~= RECORD_DATA_LENGTH_CHARS then
 			names[i] = nil
@@ -573,6 +583,20 @@ function ItemInfo.GetLink(item)
 		link = qualityColor.."|H"..ItemString.ToWow(itemString).."|h["..name.."]|h|r"
 	end
 	return link
+end
+
+--- Get the expansion id.
+-- @tparam string item The item
+-- @treturn ?number The expansion id
+function ItemInfo.GetExpansion(item)
+	local itemString = ItemString.Get(item)
+	if not itemString then
+		return nil
+	elseif ItemString.ParseLevel(itemString) then
+		itemString = ItemString.GetBaseFast(itemString)
+	end
+	local expansionId = private.GetFieldValueHelper(itemString, "expansionId", true, true, 0)
+	return expansionId
 end
 
 --- Get the quality.
@@ -892,7 +916,8 @@ function ItemInfo.IsDisenchantable(item)
 	elseif ItemString.ParseLevel(itemString) then
 		itemString = ItemString.GetBaseFast(itemString)
 	end
-	if ItemInfo.GetInvSlotId(itemString) == (TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexTabardType) or NON_DISENCHANTABLE_ITEMS[itemString] then
+	local invSlotId = ItemInfo.GetInvSlotId(itemString)
+	if invSlotId == Enum.InventoryType.IndexBodyType or invSlotId == Enum.InventoryType.IndexTabardType or NON_DISENCHANTABLE_ITEMS[itemString] then
 		return nil
 	end
 	local quality = ItemInfo.GetQuality(itemString)
@@ -900,7 +925,7 @@ function ItemInfo.IsDisenchantable(item)
 	if not quality or not classId then
 		return nil
 	end
-	return quality >= (TSM.IsWowClassic() and LE_ITEM_QUALITY_UNCOMMON or Enum.ItemQuality.Uncommon) and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
+	return quality >= (Enum.ItemQuality.Good or Enum.ItemQuality.Uncommon) and quality < Enum.ItemQuality.Legendary and (classId == LE_ITEM_CLASS_ARMOR or classId == LE_ITEM_CLASS_WEAPON)
 end
 
 --- Get whether or not the item is a commodity in WoW 8.3 (and above).
@@ -1255,7 +1280,7 @@ function private.CreateDBRowIfNotExists(itemString, isBulkInsert)
 		return
 	end
 	if isBulkInsert then
-		private.db:BulkInsertNewRow(itemString, "", -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
+		private.db:BulkInsertNewRow(itemString, "", -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
 	else
 		private.db:NewRow()
 			:SetField("itemString", itemString)
@@ -1271,6 +1296,7 @@ function private.CreateDBRowIfNotExists(itemString, isBulkInsert)
 			:SetField("classId", -1)
 			:SetField("subClassId", -1)
 			:SetField("invSlotId", -1)
+			:SetField("expansionId", -1)
 			:Create()
 	end
 	private.hasChanged = true
@@ -1358,22 +1384,23 @@ function private.StoreGetItemInfoInstant(itemString)
 		local vendorSell = 0
 		local isBOP = 0
 		local isCraftingReagent = 0
+		local expansionId = -1
 		private.SetItemInfoInstantFields(itemString, texture, classId, subClassId, invSlotId)
-		private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
+		private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent, expansionId)
 		local baseItemString = ItemString.GetBase(itemString)
 		if baseItemString ~= itemString then
 			minLevel = 0
 			itemLevel = 0
 			quality = 0
 			private.SetItemInfoInstantFields(baseItemString, texture, classId, subClassId, invSlotId)
-			private.SetGetItemInfoFields(baseItemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
+			private.SetGetItemInfoFields(baseItemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent, expansionId)
 		end
 	else
 		assert("Invalid itemString: "..itemString)
 	end
 end
 
-function private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
+function private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent, expansionId)
 	private.CheckFieldValue("minLevel", minLevel)
 	private.CheckFieldValue("itemLevel", itemLevel)
 	private.CheckFieldValue("maxStack", maxStack)
@@ -1381,6 +1408,7 @@ function private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, max
 	private.CheckFieldValue("quality", quality)
 	private.CheckFieldValue("isBOP", isBOP)
 	private.CheckFieldValue("isCraftingReagent", isCraftingReagent)
+	private.CheckFieldValue("expansionId", expansionId)
 	private.CreateDBRowIfNotExists(itemString)
 	private.db:SetUniqueRowField("itemString", itemString, "name", name)
 	private.db:SetUniqueRowField("itemString", itemString, "minLevel", minLevel)
@@ -1390,6 +1418,7 @@ function private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, max
 	private.db:SetUniqueRowField("itemString", itemString, "quality", quality)
 	private.db:SetUniqueRowField("itemString", itemString, "isBOP", isBOP)
 	private.db:SetUniqueRowField("itemString", itemString, "isCraftingReagent", isCraftingReagent)
+	private.db:SetUniqueRowField("itemString", itemString, "expansionId", expansionId)
 	private.hasChanged = true
 	private.DoInfoChangedCallbacks(itemString)
 end
@@ -1401,7 +1430,10 @@ function private.StoreGetItemInfo(itemString)
 	local baseItemString = ItemString.GetBase(itemString)
 	local baseWowItemString = ItemString.ToWow(baseItemString)
 
-	local name, _, quality, itemLevel, minLevel, _, _, maxStack, _, _, vendorSell, _, _, bindType, _, _, isCraftingReagent = GetItemInfo(baseWowItemString)
+	local name, _, quality, itemLevel, minLevel, _, _, maxStack, _, _, vendorSell, _, _, bindType, expansionId, _, isCraftingReagent = GetItemInfo(baseWowItemString)
+	if TSM.IsWowClassic() then
+		expansionId = -1
+	end
 	local isBOP = (bindType == LE_ITEM_BIND_ON_ACQUIRE or bindType == LE_ITEM_BIND_QUEST) and 1 or 0
 	isCraftingReagent = isCraftingReagent and 1 or 0
 	-- some items (i.e. "i:40752" produce a very high max stack, so cap it)
@@ -1411,7 +1443,7 @@ function private.StoreGetItemInfo(itemString)
 
 	-- store info for the base item
 	if name and quality then
-		private.SetGetItemInfoFields(baseItemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
+		private.SetGetItemInfoFields(baseItemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent, expansionId)
 	end
 	local gotInfo = true
 	if not name or name == "" or not quality or quality < 0 or not itemLevel or itemLevel < 0 then
@@ -1447,6 +1479,11 @@ function private.StoreGetItemInfo(itemString)
 			else
 				itemLevel = -1
 			end
+			if expansionId then
+				private.CheckFieldValue("expansionId", expansionId)
+			else
+				expansionId = -1
+			end
 			if maxStack then
 				private.CheckFieldValue("maxStack", maxStack)
 				private.CheckFieldValue("vendorSell", vendorSell)
@@ -1458,7 +1495,7 @@ function private.StoreGetItemInfo(itemString)
 				isBOP = -1
 				isCraftingReagent = -1
 			end
-			private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent)
+			private.SetGetItemInfoFields(itemString, name, minLevel, itemLevel, maxStack, vendorSell, quality, isBOP, isCraftingReagent, expansionId)
 		end
 		if not name or name == "" or not quality or quality < 0 or not itemLevel or itemLevel < 0 then
 			gotInfo = false

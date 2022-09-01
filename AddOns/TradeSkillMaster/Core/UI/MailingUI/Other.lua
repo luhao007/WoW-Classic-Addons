@@ -185,7 +185,7 @@ function private.EnchantSendBtnOnClick(button)
 		:Equal("isBoP", false)
 		:Equal("isBoA", false)
 	for _, itemString, quantity in query:Iterator() do
-		if ItemInfo.IsDisenchantable(itemString) and not ItemInfo.IsSoulbound(itemString) then
+		if ItemInfo.IsDisenchantable(itemString) then
 			local quality = ItemInfo.GetQuality(itemString)
 			if quality <= TSM.db.global.mailingOptions.deMaxQuality then
 				items[itemString] = (items[itemString] or 0) + quantity

@@ -203,8 +203,8 @@ function _detalhes:CreatePanicWarning()
 	_detalhes.instance_load_failed:SetPoint ("topright", UIParent, "topright", 0, -250)
 end
 
-local safe_load = function (func, param1, param2)
-	local okey, errortext = pcall (func, param1, param2)
+local safe_load = function (func, param1, ...)
+	local okey, errortext = pcall (func, param1, ...)
 	if (not okey) then
 		if (not _detalhes.instance_load_failed) then
 			_detalhes:CreatePanicWarning()
@@ -359,7 +359,7 @@ function _detalhes:ApplyProfile (profile_name, nosave, is_copy)
 				--> load data saved for this character only
 				instance:LoadLocalInstanceConfig()
 				if (skin.__was_opened) then
-					if (not safe_load (_detalhes.AtivarInstancia, instance)) then
+					if (not safe_load (_detalhes.AtivarInstancia, instance, nil, true)) then
 						return
 					end
 				else
@@ -528,7 +528,6 @@ function _detalhes:SaveProfile (saveas)
 		local profile = _detalhes:GetProfile (profile_name, true)
 
 	--> save default keys
-
 		for key, _ in pairs (_detalhes.default_profile) do
 
 			local current_value = _detalhes [key]
@@ -821,9 +820,9 @@ local default_profile = {
 				0.23, -- [3]
 			},
 			["ARENA_GREEN"] = {
-				0.4, -- [1]
-				1, -- [2]
-				0.4, -- [3]
+				0.686, -- [1]
+				0.372, -- [2]
+				0.905, -- [3]
 			},
 			["ARENA_YELLOW"] = {
 				1, -- [1]
@@ -834,6 +833,11 @@ local default_profile = {
 				1, -- [1]
 				1, -- [2]
 				0, -- [3]
+			},
+			["SELF"] = {
+				0.89019, -- [1]
+				0.32156, -- [2]
+				0.89019, -- [3]
 			},
 		},
 
@@ -846,18 +850,19 @@ local default_profile = {
 		},
 
 	fade_speed = 0.15,
+	use_self_color = false,
 
 	--> minimap
 		minimap = {hide = true, radius = 160, minimapPos = 220, onclick_what_todo = 1, text_type = 1, text_format = 3},
 		data_broker_text = "",
 
-	--> horcorner
+	--> hotcorner
 		hotcorner_topleft = {hide = false},
 
 	--> PvP
 		only_pvp_frags = false,
 		color_by_arena_team = true,
-		show_arena_role_icon = false,
+		show_arena_role_icon = false, --deprecated: this has been moved to instance settings 05.06.22 (tercio)
 
 	--> window settings
 		max_window_size = {width = 480, height = 450},
@@ -982,6 +987,7 @@ local default_profile = {
 		overall_clear_newchallenge = true,
 		overall_clear_newtorghast = true,
 		overall_clear_logout = false,
+		overall_clear_pvp = true,
 		data_cleanup_logout = false,
 		close_shields = false,
 		pvp_as_group = true,
@@ -1030,25 +1036,32 @@ local default_profile = {
 		},
 
 	--> current damage
-		current_dps_meter = {
-			frame = {
-				locked = false,
-				width = 220,
-				height = 65,
+		realtime_dps_meter = {
+			frame_settings = {
+				locked = true,
+				width = 300,
+				height = 23,
 				backdrop_color = {0, 0, 0, 0.2},
-				show_title = false,
+				show_title = true,
 				strata = "LOW",
+
+				--libwindow
+				point = "TOP",
+				scale = 1,
+				y = -110,
+				x = 0,
 			},
 			options_frame = {},
 			enabled = false,
 			arena_enabled = true,
-			mythic_dungeon_enabled = true,
+			mythic_dungeon_enabled = false,
 			font_size = 18,
 			font_color = {1, 1, 1, 1},
 			font_shadow = "NONE",
 			font_face = "Friz Quadrata TT",
+			text_offset = 2,
 			update_interval = 0.30,
-			sample_size = 5, --in seconds
+			sample_size = 3, --in seconds
 		},
 
 	--> streamer
@@ -1128,6 +1141,17 @@ local default_player_data = {
 			},
 			show_options = false,
 			current_cooldowns = {},
+			framme_locked = false,
+			filters = {
+				["defensive-raid"] = false,
+				["defensive-target"] = false,
+				["defensive-personal"] = false,
+				["ofensive"] = true,
+				["utility"] = false,
+			},
+			width = 120,
+			height = 18,
+			lines_per_column = 12,
 		},
 
 	--> force all fonts to have this outline
@@ -1220,7 +1244,7 @@ local default_player_data = {
 		},
 
 	--> death panel buttons
-		on_death_menu = true,
+		on_death_menu = false,
 }
 
 _detalhes.default_player_data = default_player_data
@@ -1259,11 +1283,22 @@ local default_global_data = {
 			["14"] = false,
 		},
 		current_exp_raid_encounters = {},
+		installed_skins_cache = {},
+		titletext_showtimer_always = false,
+
+	--> keystone cache
+		keystone_cache = {},
 
 	--> all switch settings (panel shown when right click the title bar)
 		all_switch_config = {
 			scale = 1,
 			font_size = 10,
+		},
+
+	--> keystone window
+		keystone_frame = {
+			scale = 1,
+			position = {},
 		},
 
 	--> profile by spec
@@ -1361,7 +1396,7 @@ local default_global_data = {
 		run_code = {
 			["on_specchanged"] = "\n-- run when the player changes its spec",
 			["on_zonechanged"] = "\n-- when the player changes zone, this code will run",
-			["on_init"] = "\n-- code to run when Details! initializes, put here code which only will run once\n-- this also will run then the profile is changed\n\n--size of the death log tooltip in the Deaths display (default 350)\nDetails.death_tooltip_width = 350;\n\n--when in arena or battleground, details! silently switch to activity time (goes back to the old setting on leaving, default true)\nDetails.force_activity_time_pvp = true;\n\n--speed of the bar animations (default 33)\nDetails.animation_speed = 33;\n\n--threshold to trigger slow or fast speed (default 0.45)\nDetails.animation_speed_mintravel = 0.45;\n\n--call to update animations\nDetails:RefreshAnimationFunctions();\n\n--max window size, does require a /reload to work (default 480 x 450)\nDetails.max_window_size.width = 480;\nDetails.max_window_size.height = 450;\n\n--use the arena team color as the class color (default true)\nDetails.color_by_arena_team = true;\n\n--use the role icon in the player bar when inside an arena (default false)\nDetails.show_arena_role_icon = false;\n\n--how much time the update warning is shown (default 10)\nDetails.update_warning_timeout = 10;",
+			["on_init"] = "\n-- code to run when Details! initializes, put here code which only will run once\n-- this also will run then the profile is changed\n\n--size of the death log tooltip in the Deaths display (default 350)\nDetails.death_tooltip_width = 350;\n\n--when in arena or battleground, details! silently switch to activity time (goes back to the old setting on leaving, default true)\nDetails.force_activity_time_pvp = true;\n\n--speed of the bar animations (default 33)\nDetails.animation_speed = 33;\n\n--threshold to trigger slow or fast speed (default 0.45)\nDetails.animation_speed_mintravel = 0.45;\n\n--call to update animations\nDetails:RefreshAnimationFunctions();\n\n--max window size, does require a /reload to work (default 480 x 450)\nDetails.max_window_size.width = 480;\nDetails.max_window_size.height = 450;\n\n--use the arena team color as the class color (default true)\nDetails.color_by_arena_team = true;\n\n--how much time the update warning is shown (default 10)\nDetails.update_warning_timeout = 10;",
 			["on_leavecombat"] = "\n-- this code runs when the player leave combat",
 			["on_entercombat"] = "\n-- this code runs when the player enters in combat",
 			["on_groupchange"] = "\n-- this code runs when the player enter or leave a group",

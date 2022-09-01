@@ -1,0 +1,38 @@
+## Interface: 30400
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMAQ20_AllSavedVars
+## SavedVariablesPerCharacter: DBMAQ20_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Ruins of Ahn'Qiraj|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0安其拉废墟|r
+
+## X-Min-Interface: 20501
+## X-Min-Interface-WOTLKC: 30400
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: Classic
+## X-DBM-StatTypes: normal
+## X-DBM-Mod-MapID: 509
+## X-DBM-Mod-Sort: 1103
+## X-DBM-Mod-MinCoreRevision: 12473
+## X-DBM-Mod-MinExpansion: 0
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.de.lua
+localization.br.lua
+localization.fr.lua
+localization.es.lua
+localization.mx.lua
+localization.ru.lua
+localization.kr.lua
+localization.tw.lua
+localization.cn.lua
+AQ20Trash.lua
+Kurinnaxx.lua
+Rajaxx.lua
+Moam.lua
+Buru.lua
+Ayamiss.lua
+Ossirian.lua

@@ -1,0 +1,32 @@
+## Interface: 30400
+## Author: Tandanu/Nitram
+## Version: 275816d
+## RequiredDeps: DBM-Core
+## LoadOnDemand: 1
+## SavedVariables: DBMEyeOfEternity_AllSavedVars
+## SavedVariablesPerCharacter: DBMEyeOfEternity_SavedStats
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Eye of Eternity|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0永恒之眼|r
+
+## X-Min-Interface: 80000
+## X-Min-Interface-WOTLKC: 30400
+## X-DBM-Mod: 1
+## X-DBM-Mod-Type: RAID
+## X-DBM-Mod-Category: WOTLK
+## X-DBM-StatTypes: normal,normal25
+## X-DBM-Mod-MapID: 616
+## X-DBM-Mod-Sort: 905
+## X-DBM-Mod-MinCoreRevision: 20200524142133
+## X-DBM-Mod-MinExpansion: 2
+## X-Part-Of: DBM-Core
+
+localization.en.lua
+localization.fr.lua
+localization.de.lua
+localization.ru.lua
+localization.tw.lua
+localization.kr.lua
+localization.es.lua
+localization.cn.lua
+Malygos.lua

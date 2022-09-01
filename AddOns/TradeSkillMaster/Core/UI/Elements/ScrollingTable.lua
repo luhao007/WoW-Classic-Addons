@@ -284,7 +284,6 @@ function ScrollingTable.SetSelection(self, selection, noDraw)
 	elseif selection and self._selectionValidator and not self:_selectionValidator(selection) then
 		return self
 	end
-	self:_IgnoreLastDataUpdate()
 	self._selection = selection
 	self:_JumpToData(selection)
 	if not noDraw then

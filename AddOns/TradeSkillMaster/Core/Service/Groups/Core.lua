@@ -211,6 +211,10 @@ function Groups.Create(groupPath)
 	private.RebuildDB()
 end
 
+function Groups.RebuildDB()
+	private.RebuildDB()
+end
+
 function Groups.Move(groupPath, newGroupPath)
 	assert(not TSM.db.profile.userData.groups[newGroupPath], "Target group already exists")
 	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH, "Can't move root group")
@@ -446,7 +450,7 @@ function Groups.SortGroupList(list)
 	Table.Sort(list, private.GroupSortFunction)
 end
 
-function Groups.SetOperationOverride(groupPath, moduleName, override)
+function Groups.SetOperationOverride(groupPath, moduleName, override, skipRebuild)
 	assert(TSM.db.profile.userData.groups[groupPath])
 	assert(groupPath ~= TSM.CONST.ROOT_GROUP_PATH)
 	if override == (TSM.db.profile.userData.groups[groupPath][moduleName].override and true or false) then
@@ -462,7 +466,9 @@ function Groups.SetOperationOverride(groupPath, moduleName, override)
 		TSM.db.profile.userData.groups[groupPath][moduleName].override = true
 		private.UpdateChildGroupOperations(groupPath, moduleName)
 	end
-	private.RebuildDB()
+	if not skipRebuild then
+		private.RebuildDB()
+	end
 end
 
 function Groups.HasOperationOverride(groupPath, moduleName)
@@ -473,21 +479,25 @@ function Groups.OperationIterator(groupPath, moduleName)
 	return ipairs(TSM.db.profile.userData.groups[groupPath][moduleName])
 end
 
-function Groups.AppendOperation(groupPath, moduleName, operationName)
+function Groups.AppendOperation(groupPath, moduleName, operationName, skipRebuild)
 	assert(TSM.Operations.Exists(moduleName, operationName))
 	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
 	assert(groupOperations.override and #groupOperations < TSM.Operations.GetMaxNumber(moduleName))
 	tinsert(groupOperations, operationName)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
-	private.RebuildDB()
+	if not skipRebuild then
+		private.RebuildDB()
+	end
 end
 
-function Groups.RemoveOperation(groupPath, moduleName, operationIndex)
+function Groups.RemoveOperation(groupPath, moduleName, operationIndex, skipRebuild)
 	local groupOperations = TSM.db.profile.userData.groups[groupPath][moduleName]
 	assert(groupOperations.override and groupOperations[operationIndex])
 	tremove(groupOperations, operationIndex)
 	private.UpdateChildGroupOperations(groupPath, moduleName)
-	private.RebuildDB()
+	if not skipRebuild then
+		private.RebuildDB()
+	end
 end
 
 function Groups.RemoveOperationByName(groupPath, moduleName, operationName)
@@ -504,7 +514,6 @@ function Groups.RemoveOperationFromAllGroups(moduleName, operationName)
 	for _, groupPath in Groups.GroupIterator() do
 		Table.RemoveByValue(TSM.db.profile.userData.groups[groupPath][moduleName], operationName)
 	end
-	private.RebuildDB()
 end
 
 function Groups.SwapOperation(groupPath, moduleName, fromIndex, toIndex)
@@ -535,34 +544,13 @@ function private.RebuildDB()
 	for groupPath in pairs(TSM.db.profile.userData.groups) do
 		local orderStr = gsub(groupPath, TSM.CONST.GROUP_SEP, "\001")
 		orderStr = strlower(orderStr)
-		local hasAuctioningOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Auctioning", groupPath) do
-			hasAuctioningOperation = true
-		end
-		local hasCraftingOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Crafting", groupPath) do
-			hasCraftingOperation = true
-		end
-		local hasMailingOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Mailing", groupPath) do
-			hasMailingOperation = true
-		end
-		local hasShoppingOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Shopping", groupPath) do
-			hasShoppingOperation = true
-		end
-		local hasSniperOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Sniper", groupPath) do
-			hasSniperOperation = true
-		end
-		local hasVendoringOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Vendoring", groupPath) do
-			hasVendoringOperation = true
-		end
-		local hasWarehousingOperation = false
-		for _ in TSM.Operations.GroupOperationIterator("Warehousing", groupPath) do
-			hasWarehousingOperation = true
-		end
+		local hasAuctioningOperation = TSM.Operations.GroupHasAnyOperation("Auctioning", groupPath)
+		local hasCraftingOperation = TSM.Operations.GroupHasAnyOperation("Crafting", groupPath)
+		local hasMailingOperation = TSM.Operations.GroupHasAnyOperation("Mailing", groupPath)
+		local hasShoppingOperation = TSM.Operations.GroupHasAnyOperation("Shopping", groupPath)
+		local hasSniperOperation = TSM.Operations.GroupHasAnyOperation("Sniper", groupPath)
+		local hasVendoringOperation = TSM.Operations.GroupHasAnyOperation("Vendoring", groupPath)
+		local hasWarehousingOperation = TSM.Operations.GroupHasAnyOperation("Warehousing", groupPath)
 		private.db:BulkInsertNewRow(groupPath, orderStr, hasAuctioningOperation, hasCraftingOperation, hasMailingOperation, hasShoppingOperation, hasSniperOperation, hasVendoringOperation, hasWarehousingOperation)
 	end
 	private.db:BulkInsertEnd()

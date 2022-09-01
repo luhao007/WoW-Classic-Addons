@@ -50,6 +50,9 @@ local FEEDBACK_COLORS = {
 	BLUE = Color.NewFromHex("#2076f7"),
 	ORANGE = Color.NewFromHex("#f77a20"),
 }
+local STANDARD_COLORS = {
+	YELLOW = Color.NewFromHex("#ffff00"),
+}
 local BLIZZARD_COLOR = Color.NewFromHex("#00b4ff")
 local GROUP_COLORS = {
 	Color.NewFromHex("#fcf141"),
@@ -240,6 +243,13 @@ end
 -- @treturn Color The color object
 function Theme.GetFeedbackColor(key)
 	return FEEDBACK_COLORS[key]
+end
+
+--- Gets the color object for a given color key.
+-- @tparam string key The key of the color to get
+-- @treturn Color The color object
+function Theme.GetStandardColor(key)
+	return STANDARD_COLORS[key]
 end
 
 --- Gets the color object for Blizzard GMs.

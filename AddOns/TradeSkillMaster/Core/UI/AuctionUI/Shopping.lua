@@ -63,24 +63,24 @@ local ARMOR_TYPES = {
 	[GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH)] = true,
 }
 local INVENTORY_TYPES = {
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_HEAD_TYPE or Enum.InventoryType.IndexHeadType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_SHOULDER_TYPE or Enum.InventoryType.IndexShoulderType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_CHEST_TYPE or Enum.InventoryType.IndexChestType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_WAIST_TYPE or Enum.InventoryType.IndexWaistType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_LEGS_TYPE or Enum.InventoryType.IndexLegsType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_FEET_TYPE or Enum.InventoryType.IndexFeetType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_WRIST_TYPE or Enum.InventoryType.IndexWristType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_HAND_TYPE or Enum.InventoryType.IndexHandType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexHeadType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexShoulderType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexChestType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexWaistType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexLegsType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexFeetType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexWristType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexHandType),
 }
 local GENERIC_TYPES = {
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_NECK_TYPE or Enum.InventoryType.IndexNeckType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_CLOAK_TYPE or Enum.InventoryType.IndexCloakType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_FINGER_TYPE or Enum.InventoryType.IndexFingerType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_TRINKET_TYPE or Enum.InventoryType.IndexTrinketType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_HOLDABLE_TYPE or Enum.InventoryType.IndexHoldableType),
-	GetItemInventorySlotInfo(TSM.IsWowClassic() and LE_INVENTORY_TYPE_BODY_TYPE or Enum.InventoryType.IndexBodyType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexNeckType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexCloakType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexFingerType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexTrinketType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexHoldableType),
+	GetItemInventorySlotInfo(Enum.InventoryType.IndexBodyType),
 }
-local MAX_LEVEL = TSM.IsWowBCClassic() and 70 or 60
+local MAX_LEVEL = TSM.IsWowWrathClassic() and 80 or 60
 
 
 
@@ -435,7 +435,7 @@ function private.GetAdvancedFrame()
 							:AddChild(UIElements.New("Input", "input")
 								:SetWidth(178)
 								:SetMargin(0, 4, 0, 0)
-								:SetBackgroundColor("PRIMARY_BG_ALT")
+								:SetBackgroundColor("ACTIVE_BG")
 								:SetValidateFunc("NUMBER", "0:2000")
 								:SetValue(0)
 							)
@@ -1225,7 +1225,7 @@ end
 
 function private.ResetButtonOnClick(button)
 	local headerFrame = button:GetElement("__parent.__parent.search.header")
-	headerFrame:GetElement("keyword"):SetText("")
+	headerFrame:GetElement("keyword"):SetValue("")
 	headerFrame:Draw()
 	local searchFrame = button:GetElement("__parent.__parent.search.body")
 	searchFrame:GetElement("level.slider"):SetValue(0, MAX_LEVEL)
@@ -1849,9 +1849,13 @@ function private.FSMCreate()
 		cancelFuture = nil,
 	}
 
-	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
-	Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
-	if not TSM.IsWowClassic() then
+	if TSM.IsWowClassic() then
+		Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
+		Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
+	else
+		Event.Register("AUCTION_HOUSE_SHOW_NOTIFICATION", private.FSMMessageEventHandler)
+		Event.Register("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION", private.FSMMessageEventHandler)
+		Event.Register("AUCTION_HOUSE_SHOW_ERROR", private.FSMMessageErrorEventHandler)
 		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
 	end
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
@@ -2270,11 +2274,8 @@ function private.FSMCreate()
 				local itemString = context.findAuction:GetItemString()
 				local maxQuantity = context.searchContext:GetMaxCanBuy(itemString)
 				if TSM.IsWowClassic() then
-					if maxQuantity then
-						maxQuantity = maxQuantity / context.findAuction:GetQuantities()
-					end
 					context.findResult = result
-					context.numFound = min(#result, maxQuantity or math.huge)
+					context.numFound = min(#result, maxQuantity and Math.Ceil(maxQuantity / context.findAuction:GetQuantities()) or math.huge)
 					context.maxQuantity = maxQuantity or 1
 					context.defaultBuyQuantity = context.numFound
 				else
@@ -2370,7 +2371,7 @@ function private.FSMCreate()
 				if isPaused then
 					progressText = L["Scan Paused"].." | "..progressText
 				end
-				context.progress = context.numConfirmed / context.numFound
+				context.progress = context.numConfirmed / (context.numFound > 0 and context.numFound or 1)
 				context.progressText = progressText
 				context.progressPaused = false
 				context.postDisabled = not canPost
@@ -2395,7 +2396,7 @@ function private.FSMCreate()
 			:AddTransition("ST_CANCELING")
 			:AddTransition("ST_PLACING_BUY")
 			:AddTransition("ST_PLACING_BID")
-			:AddTransition("ST_CONFIRMING_BUY")
+			:AddTransition("ST_CONFIRMING_BID_BUY")
 			:AddTransition("ST_RESULTS")
 			:AddTransition("ST_INIT")
 			:AddEventTransition("EV_AUCTION_SELECTION_CHANGED", "ST_BUYING")
@@ -2409,20 +2410,33 @@ function private.FSMCreate()
 				if not context.findAuction then
 					return
 				end
-				local _, rawLink = context.findAuction:GetLinks()
-				if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
-					-- failed to buy an auction
-					return "ST_CONFIRMING_BUY", false
-				elseif msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) or (context.numBid > 0 and msg == ERR_AUCTION_BID_PLACED) then
-					-- bought an auction
-					return "ST_CONFIRMING_BUY", true
+				if TSM.IsWowClassic() then
+					local _, rawLink = context.findAuction:GetLinks()
+					if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
+						-- failed to buy an auction
+						return "ST_CONFIRMING_BID_BUY", false
+					elseif msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) or (context.numBid > 0 and msg == ERR_AUCTION_BID_PLACED) then
+						-- bought an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					end
+				else
+					if msg == Enum.AuctionHouseNotification.AuctionWon or (context.numBid > 0 and msg == Enum.AuctionHouseNotification.BidPlaced) then
+						-- bought an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					end
 				end
+			end)
+			:AddEvent("EV_ERROR_MSG", function(context, msg)
+				if not context.findAuction then
+					return
+				end
+				return "ST_CONFIRMING_BID_BUY", false
 			end)
 			:AddEvent("EV_BUYOUT_SUCCESS", function(context)
 				if not context.findAuction then
 					return
 				end
-				return "ST_CONFIRMING_BUY", true
+				return "ST_CONFIRMING_BID_BUY", true
 			end)
 			:AddEvent("EV_POST_BUTTON_CLICK", function(context)
 				wipe(context.postContextTemp)
@@ -2531,7 +2545,7 @@ function private.FSMCreate()
 			end)
 			:AddTransition("ST_BUYING")
 		)
-		:AddState(FSM.NewState("ST_CONFIRMING_BUY")
+		:AddState(FSM.NewState("ST_CONFIRMING_BID_BUY")
 			:SetOnEnter(function(context, success)
 				if not success then
 					local _, rawLink = context.findAuction:GetLinks()
@@ -2614,6 +2628,12 @@ end
 function private.FSMMessageEventHandler(_, msg)
 	private.fsm:SetLoggingEnabled(false)
 	private.fsm:ProcessEvent("EV_MSG", msg)
+	private.fsm:SetLoggingEnabled(true)
+end
+
+function private.FSMMessageErrorEventHandler(_, msg)
+	private.fsm:SetLoggingEnabled(false)
+	private.fsm:ProcessEvent("EV_ERROR_MSG", msg)
 	private.fsm:SetLoggingEnabled(true)
 end
 

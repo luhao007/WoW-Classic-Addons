@@ -214,7 +214,7 @@ local SETTINGS_INFO = {
 			myAuctionsScrollingTable = { type = "table", default = { colWidth = { item = 248, stackSize = 30, timeLeft = 40, highbidder = TSM.IsWowClassic() and 110 or nil, group = TSM.IsWowClassic() and 110 or 228, currentBid = 100, buyout = 100 }, colHidden = {} }, lastModifiedVersion = 103 },
 			shoppingSelectionDividedContainer = { type = "table", default = { leftWidth = 272 }, lastModifiedVersion = 55 },
 			shoppingAuctionScrollingTable = { type = "table", default = { colWidth = { item = 226, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, timeLeft = 26, seller = TSM.IsWowClassic() and 88 or 136, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
-			sniperScrollingTable = { type = "table", default = { colWidth = { icon = 24, item = 230, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, seller = TSM.IsWowClassic() and 86 or 134, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115,  bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
+			sniperScrollingTable = { type = "table", default = { colWidth = { icon = 24, item = 230, ilvl = 32, qty = not TSM.IsWowClassic() and 40 or nil, posts = TSM.IsWowClassic() and 40 or nil, stack = TSM.IsWowClassic() and 40 or nil, seller = TSM.IsWowClassic() and 86 or 134, itemBid = 115, bid = 115, itemBuyout = 115, buyout = 115, bidPct = 40, pct = 40 }, colHidden = { bid = true, buyout = true, bidPct = true } }, lastModifiedVersion = 103 },
 			shoppingSearchesTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 55 },
 			auctioningTabGroup = { type = "table", default = { pathIndex = 1 }, lastModifiedVersion = 93 },
 		},
@@ -226,7 +226,7 @@ local SETTINGS_INFO = {
 		craftingUIContext = {
 			frame = { type = "table", default = { width = 820, height = 587, centerX = -200, centerY = 0, scale = 1, page = 1 }, lastModifiedVersion = 55 },
 			showDefault = { type = "boolean", default = false, lastModifiedVersion = 55 },
-			craftsScrollingTable = { type = "table", default = { colWidth = { queued = 30, craftName = 218, operation = 80, bags = 28, ah = 24, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50,  saleRate = 32 }, colHidden = { profitPct = true } }, lastModifiedVersion = 86 },
+			craftsScrollingTable = { type = "table", default = { colWidth = { queued = 30, craftName = 218, operation = 80, bags = 28, ah = 24, craftingCost = 100, itemValue = 100, profit = 100, profitPct = 50, saleRate = 32 }, colHidden = { profitPct = true } }, lastModifiedVersion = 86 },
 			matsScrollingTable = { type = "table", default = { colWidth = { name = 242, price = 100, professions = 310, num = 100 }, colHidden = {} }, lastModifiedVersion = 55 },
 			gatheringDividedContainer = { type = "table", default = { leftWidth = 284 }, lastModifiedVersion = 55 },
 			gatheringScrollingTable = { type = "table", default = { colWidth = { name = 206, sources = 160, have = 50, need = 50 }, colHidden = {} }, lastModifiedVersion = 55 },
@@ -317,8 +317,8 @@ local SETTINGS_INFO = {
 			maxDeSearchLvl = { type = "number", default = 500, lastModifiedVersion = 79 },
 			maxDeSearchPercent = { type = "number", default = 100, lastModifiedVersion = 23 },
 			pctSource = { type = "string", default = "dbmarket", lastModifiedVersion = 12 },
-			buyoutConfirm  = { type = "boolean", default = false, lastModifiedVersion = 46 },
-			buyoutAlertSource  = { type = "string", default = "min(100000g, 200% dbmarket)", lastModifiedVersion = 46 },
+			buyoutConfirm = { type = "boolean", default = false, lastModifiedVersion = 46 },
+			buyoutAlertSource = { type = "string", default = "min(100000g, 200% dbmarket)", lastModifiedVersion = 46 },
 			searchAutoFocus = { type = "boolean", default = true, lastModifiedVersion = 88 },
 		},
 		sniperOptions = {

@@ -10,7 +10,7 @@
 local _, TSM = ...
 local Money = TSM.Init("Util.Money")
 local String = TSM.Include("Util.String")
-local private =  {
+local private = {
 	textMoneyParts = {},
 }
 local GOLD_ICON = "|TInterface\\MoneyFrame\\UI-GoldIcon:0|t"

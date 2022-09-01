@@ -1,5 +1,5 @@
 ## Interface: 10000
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibWindow-1.1, LibDBIcon-1.0, NickTag-1.0, LibDataBroker-1.1, LibItemUpgradeInfo-1.0, LibGroupInSpecT-1.1, LibCompress, LibGraph-2.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibWindow-1.1, LibDBIcon-1.0, NickTag-1.0, LibDataBroker-1.1, LibGraph-2.0
 ## SavedVariables: _detalhes_global
 ## SavedVariablesPerCharacter: _detalhes_database
 
@@ -29,6 +29,7 @@ boot.lua
 indent.lua
 core\util.lua
 API.lua
+functions\events.lua
 
 functions\profiles.lua
 functions\hooks.lua
@@ -37,7 +38,6 @@ functions\coach.lua
 functions\skins.lua
 functions\boss.lua
 functions\spells.lua
-functions\events.lua
 functions\classes.lua
 functions\buff.lua
 functions\spellcache.lua
@@ -46,6 +46,7 @@ functions\savedata.lua
 functions\slash.lua
 functions\playerclass.lua
 functions\timedata.lua
+functions\currentdps.lua
 functions\report.lua
 functions\rowanimation.lua
 functions\raidinfo.lua
@@ -82,6 +83,7 @@ frames\window_welcome.lua
 frames\window_news.lua
 frames\window_wa.lua
 frames\window_forge.lua
+frames\window_spellcategory.lua
 frames\window_switch.lua
 frames\window_scrolldamage.lua
 frames\window_dump.lua

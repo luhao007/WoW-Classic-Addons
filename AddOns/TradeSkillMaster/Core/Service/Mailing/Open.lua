@@ -172,7 +172,7 @@ function private.PrintOpenMailMessage(index)
 		local invoiceType, itemName, playerName, bid, _, _, ahcut, _, _, _, quantity = GetInboxInvoiceInfo(index)
 		playerName = playerName or (invoiceType == "buyer" and AUCTION_HOUSE_MAIL_MULTIPLE_SELLERS or AUCTION_HOUSE_MAIL_MULTIPLE_BUYERS)
 		if invoiceType == "buyer" then
-			local itemLink =  MailTracking.GetInboxItemLink(index) or "["..itemName.."]"
+			local itemLink = MailTracking.GetInboxItemLink(index) or "["..itemName.."]"
 			Log.PrintfUser(L["Bought %sx%d for %s from %s"], itemLink, quantity, Money.ToString(bid, Theme.GetFeedbackColor("RED"):GetTextColorPrefix()), playerName)
 		elseif invoiceType == "seller" then
 			Log.PrintfUser(L["Sold [%s]x%d for %s to %s"], itemName, quantity, Money.ToString(bid - ahcut, Theme.GetFeedbackColor("GREEN"):GetTextColorPrefix()), playerName)

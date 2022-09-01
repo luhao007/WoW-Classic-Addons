@@ -28,10 +28,11 @@ local BEAST_TRAINING_DE = "Bestienausbildung"
 local BEAST_TRAINING_ES = "Entrenamiento de bestias"
 local BEAST_TRAINING_RUS = "Воспитание питомца"
 local IGNORED_PROFESSIONS = {
-	[53428] = true,  -- Runeforging
-	[158756] = true, -- Skinning Skills
-	[193290] = true,  -- Herbalism Skills
+	[2787] = true, -- Abominable Stitching
 	[7620] = true, -- Fishing Skills (shows up as Fishing)
+	[53428] = true, -- Runeforging
+	[158756] = true, -- Skinning Skills
+	[193290] = true, -- Herbalism Skills
 	[278910] = true, -- Archaeology
 }
 
@@ -67,7 +68,7 @@ function CraftingUI.Toggle()
 	private.fsm:ProcessEvent("EV_FRAME_TOGGLE")
 end
 
-function CraftingUI.IsProfessionIgnored(name)
+function CraftingUI.IsProfessionIgnored(name, skillId)
 	if TSM.IsWowClassic() then
 		if name == GetSpellInfo(5149) or name == BEAST_TRAINING_DE or name == BEAST_TRAINING_ES or name == BEAST_TRAINING_RUS then -- Beast Training
 			return true
@@ -81,7 +82,7 @@ function CraftingUI.IsProfessionIgnored(name)
 	end
 	for i in pairs(IGNORED_PROFESSIONS) do
 		local ignoredName = GetSpellInfo(i)
-		if ignoredName == name then
+		if ignoredName == name or IGNORED_PROFESSIONS[skillId] then
 			return true
 		end
 	end
@@ -220,8 +221,8 @@ function private.FSMCreate()
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
 				TSM.Crafting.ProfessionScanner.SetDisabled(private.settings.showDefault)
-				local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
-				if CraftingUI.IsProfessionIgnored(name) then
+				local name, skillId = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
+				if CraftingUI.IsProfessionIgnored(name, skillId) then
 					return "ST_DEFAULT_OPEN", true
 				elseif private.settings.showDefault then
 					return "ST_DEFAULT_OPEN"
@@ -293,7 +294,7 @@ function private.FSMCreate()
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
-				if CraftingUI.IsProfessionIgnored(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()) then
+				if CraftingUI.IsProfessionIgnored(TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()) then
 					return "ST_DEFAULT_OPEN", true
 				else
 					if private.settings.showDefault then
@@ -312,7 +313,7 @@ function private.FSMCreate()
 				assert(not context.frame)
 				context.frame = private.CreateMainFrame()
 				context.frame:Show()
-				if TSM.Crafting.ProfessionUtil.GetCurrentProfessionName() then
+				if TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo() then
 					context.frame:GetElement("titleFrame.switchBtn"):Show()
 				else
 					context.frame:GetElement("titleFrame.switchBtn"):Hide()
@@ -346,7 +347,7 @@ function private.FSMCreate()
 				return "ST_CLOSED"
 			end)
 			:AddEvent("EV_TRADE_SKILL_SHOW", function(context)
-				if CraftingUI.IsProfessionIgnored(TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()) then
+				if CraftingUI.IsProfessionIgnored(TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()) then
 					return "ST_DEFAULT_OPEN", true
 				end
 				context.frame:GetElement("titleFrame.switchBtn"):Show()

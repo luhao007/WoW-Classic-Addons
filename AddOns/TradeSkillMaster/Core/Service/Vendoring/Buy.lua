@@ -92,23 +92,8 @@ function Buy.GetMaxCanAfford(index)
 			if costItemString then
 				costNumHave = Inventory.GetBagQuantity(costItemString) + Inventory.GetBankQuantity(costItemString) + Inventory.GetReagentBankQuantity(costItemString)
 			elseif currencyName then
-				if TSM.IsWowBCClassic() then
-					if currencyName == ARENA_POINTS then
-						local arenaCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_ARENA_POINTS_CURRENCY_ID)
-						costNumHave = arenaCurrencyInfo.quantity
-					elseif currencyName == HONOR_POINTS then
-						local honorCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID)
-						costNumHave = honorCurrencyInfo.quantity
-					end
-				else
-					for j = 1, C_CurrencyInfo.GetCurrencyListSize() do
-						local info = C_CurrencyInfo.GetCurrencyListInfo(j)
-						if not info.isHeader and info.name == currencyName then
-							costNumHave = info.quantity
-							break
-						end
-					end
-				end
+				local info = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink)
+				costNumHave = info.quantity
 			end
 			if costNumHave then
 				maxCanAfford = min(floor(costNumHave / costNum), maxCanAfford)
@@ -176,23 +161,15 @@ function private.UpdateMerchantDB()
 				assert(numAltCurrencies > 0)
 				local costItems = TempTable.Acquire()
 				for j = 1, numAltCurrencies do
-					local costTexture, costNum, costItemLink, currencyName = GetMerchantItemCostItem(i, j)
+					local _, costNum, costItemLink, currencyName = GetMerchantItemCostItem(i, j)
 					local costItemString = ItemString.Get(costItemLink)
 					local texture = nil
-					if TSM.IsWowBCClassic() then
-						if currencyName == ARENA_POINTS then
-							texture = costTexture
-							firstCostItemString = "arena"
-						elseif currencyName == HONOR_POINTS then
-							texture = costTexture
-							firstCostItemString = "honor"
-						end
-					elseif not costItemLink then
+					if not costItemLink then
 						needsRetry = true
 					elseif costItemString then
 						firstCostItemString = firstCostItemString ~= "" and firstCostItemString or costItemString
 						texture = ItemInfo.GetTexture(costItemString)
-					elseif strmatch(costItemLink, "currency:") then
+					elseif not TSM.IsWowVanillaClassic() and strmatch(costItemLink, "currency:") then
 						texture = C_CurrencyInfo.GetCurrencyInfoFromLink(costItemLink).iconFileID
 						firstCostItemString = strmatch(costItemLink, "(currency:%d+)")
 					else
@@ -201,7 +178,7 @@ function private.UpdateMerchantDB()
 					if TSM.Vendoring.Buy.GetMaxCanAfford(i) < stackSize then
 						costNum = Theme.GetFeedbackColor("RED"):ColorText(costNum)
 					end
-					local suffix = (TSM.IsWowBCClassic() and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
+					local suffix = (TSM.IsWowWrathClassic() and currencyName == HONOR_POINTS) and ":14:14:00:0:64:64:0:40:0:40|t" or ":12|t"
 					tinsert(costItems, costNum.." |T"..(texture or "")..suffix)
 				end
 				costItemsText = table.concat(costItems, " ")

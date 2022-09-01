@@ -171,6 +171,7 @@ function Operations.Delete(moduleName, operationName)
 	private.operations[moduleName][operationName] = nil
 	private.RemoveDeadRelationships(moduleName)
 	TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
+	TSM.Groups.RebuildDB()
 	private.RebuildDB()
 end
 
@@ -181,6 +182,7 @@ function Operations.DeleteList(moduleName, operationNames)
 		private.RemoveDeadRelationships(moduleName)
 		TSM.Groups.RemoveOperationFromAllGroups(moduleName, operationName)
 	end
+	TSM.Groups.RebuildDB()
 	private.RebuildDB()
 end
 
@@ -243,6 +245,15 @@ end
 function Operations.GroupHasOperation(moduleName, groupPath, targetOperationName)
 	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
 		if operationName == targetOperationName then
+			return true
+		end
+	end
+	return false
+end
+
+function Operations.GroupHasAnyOperation(moduleName, groupPath)
+	for _, operationName in TSM.Groups.OperationIterator(groupPath, moduleName) do
+		if not private.IsIgnored(moduleName, operationName) then
 			return true
 		end
 	end

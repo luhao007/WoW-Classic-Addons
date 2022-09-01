@@ -327,40 +327,39 @@
 				return table1 [4] < table2 [4]
 			end
 
---[[exported]]	function Details:GetBarColor (actor)
+--[[exported]]	function Details:GetBarColor(actor)
 				actor = actor or self
+
 				if (actor.monster) then
-					return _unpack (Details.class_colors.ENEMY)
+					return _unpack(Details.class_colors.ENEMY)
 
 				elseif (actor.customColor) then
-					return unpack(actor.customColor)
+					return _unpack(actor.customColor)
 
 				elseif (actor.spellicon) then
 					return 0.729, 0.917, 1
 
 				elseif (actor.owner) then
-					return _unpack (Details.class_colors [actor.owner.classe or "UNKNOW"])
+					return _unpack(Details.class_colors[actor.owner.classe or "UNKNOW"])
 
 				elseif (actor.arena_team and Details.color_by_arena_team) then
 					if (actor.arena_team == 0) then
-						return _unpack (Details.class_colors.ARENA_GREEN)
+						return _unpack(Details.class_colors.ARENA_GREEN)
 					else
-						return _unpack (Details.class_colors.ARENA_YELLOW)
+						return _unpack(Details.class_colors.ARENA_YELLOW)
 					end
-				--elseif (actor.enemy and not actor.arena_enemy) then
-				--	return 0.94117, 0.1, 0.1, 1
+
 				else
 					if (not is_player_class [actor.classe] and actor.flag_original and _bit_band (actor.flag_original, 0x00000020) ~= 0) then --> neutral
-						return _unpack (Details.class_colors.NEUTRAL)
+						return _unpack(Details.class_colors.NEUTRAL)
 					elseif (actor.color) then
 						return _unpack(actor.color)
 					else
-						return _unpack (Details.class_colors [actor.classe or "UNKNOW"])
+						return _unpack(Details.class_colors [actor.classe or "UNKNOW"])
 					end
-					
 				end
 			end
-			
+
 --[[exported]]	function Details:GetSpellLink (spellid)
 				if (_type (spellid) ~= "number") then
 					return spellid
@@ -921,41 +920,41 @@
 		return Details:Reportar (report_table, {_no_current = true, _no_inverse = true, _custom = true})
 	end
 	
-	function atributo_damage:AtualizarBySpell (tabela, whichRowLine, colocacao, instancia)
+	function atributo_damage:AtualizarBySpell (tabela, whichRowLine, colocacao, instance)
 		tabela ["byspell"] = true --> marca que esta tabela � uma tabela de frags, usado no controla na hora de montar o tooltip
-		local thisLine = instancia.barras [whichRowLine] --> pega a refer�ncia da barra na janela
-		
+		local thisLine = instance.barras [whichRowLine] --> pega a refer�ncia da barra na janela
+
 		if (not thisLine) then
-			print ("DEBUG: problema com <instancia.thisLine> "..whichRowLine .. " " .. colocacao)
+			print ("DEBUG: problema com <instance.thisLine> "..whichRowLine .. " " .. colocacao)
 			return
 		end
-		
+
 		thisLine.minha_tabela = tabela
-		
+
 		local spellname, _, spellicon = _GetSpellInfo (tabela [1])
-		
+
 		tabela.nome = spellname --> evita dar erro ao redimencionar a janela
 		tabela.minha_barra = whichRowLine
 		thisLine.colocacao = colocacao
-		
+
 		if (not _getmetatable (tabela)) then 
 			_setmetatable (tabela, {__call = RefreshBarraBySpell}) 
 			tabela._custom = true
 		end
 
-		local total = instancia.showing.totals.by_spell
+		local total = instance.showing.totals.by_spell
 		local porcentagem
-		
-		if (instancia.row_info.percent_type == 1) then
-			porcentagem = _cstr ("%.1f", tabela [2] / total * 100)
-		elseif (instancia.row_info.percent_type == 2) then
-			porcentagem = _cstr ("%.1f", tabela [2] / instancia.top * 100)
-		end
-		
-		thisLine.lineText1:SetText (colocacao .. ". " .. spellname)
 
-		local bars_show_data = instancia.row_info.textR_show_data
-		
+		if (instance.row_info.percent_type == 1) then
+			porcentagem = _cstr ("%.1f", tabela [2] / total * 100)
+		elseif (instance.row_info.percent_type == 2) then
+			porcentagem = _cstr ("%.1f", tabela [2] / instance.top * 100)
+		end
+
+		thisLine.lineText1:SetText(colocacao .. ". " .. spellname)
+
+		local bars_show_data = instance.row_info.textR_show_data
+
 		local spell_damage = tabela [2] -- spell_damage passar por uma ToK function, precisa ser number
 		if (not bars_show_data [1]) then
 			spell_damage = tabela [2] --damage taken by spell n�o tem PS, ent�o � obrigado a passar o dano total
@@ -966,10 +965,10 @@
 			porcentagem = porcentagem .. "%"
 		end
 
-		local bars_brackets = instancia:GetBarBracket()
+		local bars_brackets = instance:GetBarBracket()
 		--
-		if (instancia.use_multi_fontstrings) then
-			Details:SetTextsOnLine(thisLine, "", (spell_damage and SelectedToKFunction (_, spell_damage) or ""), porcentagem)
+		if (instance.use_multi_fontstrings) then
+			instance:SetInLineTexts(thisLine, "", (spell_damage and SelectedToKFunction (_, spell_damage) or ""), porcentagem)
 		else
 			thisLine.lineText4:SetText ((spell_damage and SelectedToKFunction (_, spell_damage) or "") .. bars_brackets[1] .. porcentagem .. bars_brackets[2])
 		end
@@ -984,14 +983,14 @@
 		if (colocacao == 1) then
 			thisLine:SetValue (100)
 		else
-			thisLine:SetValue (tabela [2] / instancia.top * 100)
+			thisLine:SetValue (tabela [2] / instance.top * 100)
 		end
 		
 		if (thisLine.hidden or thisLine.fading_in or thisLine.faded) then
 			Details.FadeHandler.Fader (thisLine, "out")
 		end
 		
-		if (instancia.row_info.texture_class_colors) then
+		if (instance.row_info.texture_class_colors) then
 			if (tabela [3] > 1) then
 				local r, g, b = Details:GetSpellSchoolColor (tabela [3])
 				thisLine.textura:SetVertexColor (r, g, b)
@@ -1158,7 +1157,7 @@
 		
 		--
 		if (instancia.use_multi_fontstrings) then
-			Details:SetTextsOnLine(thisLine, "", total_frags, porcentagem)
+			instancia:SetInLineTexts(thisLine, "", total_frags, porcentagem)
 		else
 			thisLine.lineText4:SetText (total_frags .. bars_brackets[1] .. porcentagem .. bars_brackets[2])
 		end
@@ -1577,7 +1576,7 @@
 			thisLine.lineText4:SetText (_string_replace (instancia.row_info.textR_custom_text, formated_damage, formated_dps, porcentagem, self, instancia.showing, instancia, rightText))
 		else
 			if (instancia.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, formated_damage, formated_dps, porcentagem)
+				instancia:SetInLineTexts(thisLine, formated_damage, formated_dps, porcentagem)
 			else
 				thisLine.lineText4:SetText (rightText)
 			end
@@ -2398,17 +2397,149 @@ function atributo_damage:RefreshWindow (instancia, tabela_do_combate, forcar, ex
 	
 	Details.LastFullDamageUpdate = Details._tempo
 	
+	instancia:AutoAlignInLineFontStrings()
+
 	return Details:EndRefresh(instancia, total, tabela_do_combate, showing) --> retorna a tabela que precisa ganhar o refresh
 end
+
+--[[exported]] function Details:AutoAlignInLineFontStrings()
+	
+	--if this instance is using in line texts, check the min distance and the length of strings to make them more spread appart
+	if (self.use_multi_fontstrings and self.use_auto_align_multi_fontstrings) then
+		local maxStringLength_StringFour = 0
+		local maxStringLength_StringThree = 0
+		local profileOffsetString3 = self.fontstrings_text3_anchor
+		local profileOffsetString2 = self.fontstrings_text2_anchor
+
+		Details.CacheInLineMaxDistance = Details.CacheInLineMaxDistance or {}
+		Details.CacheInLineMaxDistance[self:GetId()] = Details.CacheInLineMaxDistance[self:GetId()] or {[2] = profileOffsetString2, [3] = profileOffsetString3}
+
+		--space between string4 and string3 (usually dps is 4 and total value is 3)
+		for lineId = 1, self:GetNumLinesShown() do
+			local thisLine = self:GetLine(lineId)
+
+			--check strings 3 and 4
+			if (thisLine.lineText4:GetText() ~= "" and thisLine.lineText3:GetText() ~= "") then
+				--the length of the far right string determines the space between it and the next string in the left
+				local stringLength = thisLine.lineText4:GetStringWidth()
+				maxStringLength_StringFour = stringLength > maxStringLength_StringFour and stringLength or maxStringLength_StringFour
+			end
+			
+			--check strings 2 and 3
+			if (thisLine.lineText2:GetText() ~= "" and thisLine.lineText3:GetText() ~= "") then
+				--the length of the middle string determines the space between it and the next string in the left
+				local stringLength = thisLine.lineText3:GetStringWidth()
+				maxStringLength_StringThree = stringLength > maxStringLength_StringThree and stringLength or maxStringLength_StringThree
+			end
+		end
+
+		--if the length bigger than the min distance? calculate for string4 to string3 distance
+		if ((maxStringLength_StringFour > 0) and (maxStringLength_StringFour + 5 > profileOffsetString3)) then
+			local newOffset = maxStringLength_StringFour + 5
+
+			--check if the current needed min distance is bigger than the distance stored in the cache
+			local currentCacheMaxValue = Details.CacheInLineMaxDistance[self:GetId()][3]
+			if (currentCacheMaxValue < newOffset) then
+				currentCacheMaxValue = newOffset
+				Details.CacheInLineMaxDistance[self:GetId()][3] = currentCacheMaxValue
+			else
+				--if not, use the distance value cached to avoid jittering in the string
+				newOffset = currentCacheMaxValue
+			end
+
+			--update the lines
+			for lineId = 1, self:GetNumLinesShown() do
+				local thisLine = self:GetLine(lineId)
+				thisLine.lineText3:SetPoint("right", thisLine.statusbar, "right", -newOffset, 0)
+			end
+		end
+
+		--check if there's length in the third string, also the third string cannot have a length if the second string is empty
+		if (maxStringLength_StringThree > 0) then
+			local newOffset = maxStringLength_StringThree + maxStringLength_StringFour + 14
+			if (newOffset >= profileOffsetString2) then
+				--check if the current needed min distance is bigger than the distance stored in the cache
+				local currentCacheMaxValue = Details.CacheInLineMaxDistance[self:GetId()][2]
+				if (currentCacheMaxValue < newOffset) then
+					currentCacheMaxValue = newOffset
+					Details.CacheInLineMaxDistance[self:GetId()][2] = currentCacheMaxValue
+				else
+					--if not, use the distance value cached to avoid jittering in the string
+					newOffset = currentCacheMaxValue
+				end
+
+				--update the lines
+				for lineId = 1, self:GetNumLinesShown() do
+					local thisLine = self:GetLine(lineId)
+					thisLine.lineText2:SetPoint("right", thisLine.statusbar, "right", -newOffset, 0)
+				end
+			end
+		end
+
+		--reduce the size of the actor name string based on the total size of all strings in the right side
+		for lineId = 1, self:GetNumLinesShown() do
+			local thisLine = self:GetLine(lineId)
+
+			--check if there's something showing in this line
+			--check if the line is shown and if the text exists for sanitization
+			if (thisLine.minha_tabela and thisLine:IsShown() and thisLine.lineText1:GetText()) then
+				local playerNameFontString = thisLine.lineText1
+				local text2 = thisLine.lineText2
+				local text3 = thisLine.lineText3
+				local text4 = thisLine.lineText4
+
+				local totalWidth = text2:GetStringWidth() + text3:GetStringWidth() + text4:GetStringWidth()
+				totalWidth = totalWidth + 40 - self.fontstrings_text_limit_offset
+
+				DetailsFramework:TruncateTextSafe(playerNameFontString, self.cached_bar_width - totalWidth) --this avoid truncated strings with ...
+
+				--these commented lines are for to create a cache and store the name already truncated there to safe performance
+					--local truncatedName = playerNameFontString:GetText()
+					--local actorObject = thisLine.minha_tabela
+					--actorObject.name_cached = truncatedName
+					--actorObject.name_cached_time = GetTime()
+			end
+		end
+	end
+end
+
+--handle internal details! events
+local eventListener = Details:CreateEventListener()
+eventListener:RegisterEvent("COMBAT_PLAYER_ENTER", function()
+	if (Details.CacheInLineMaxDistance) then
+		wipe(Details.CacheInLineMaxDistance)
+
+		for i = 1, 10 do
+			C_Timer.After(i, function()
+				wipe(Details.CacheInLineMaxDistance)
+			end)
+		end
+	end
+end)
 
 local actor_class_color_r, actor_class_color_g, actor_class_color_b
 
 -- ~texts
-function Details:SetTextsOnLine(thisLine, valueText, perSecondText, percentText)
+--[[exported]] function Details:SetInLineTexts(thisLine, valueText, perSecondText, percentText)
 	--set defaults
+	local instance = self
 	valueText = valueText or ""
 	perSecondText = perSecondText or ""
 	percentText = percentText or ""
+
+--		local actorSerial = thisLine:GetActor().serial
+--		local currentDps = Details.CurrentDps.GetCurrentDps(actorSerial) or perSecondText
+--		perSecondText = currentDps
+--	end
+
+	--check if the instance is showing total, dps and percent
+	local instanceSettings = instance.row_info
+	if (not instanceSettings.textR_show_data[3]) then --percent text disabled on options panel
+		local attributeId = instance:GetDisplay()
+		if (attributeId ~= 5) then --not custom
+			percentText = ""
+		end
+	end
 
 	--parse information
 	if (percentText ~= "") then --has percent text
@@ -2520,7 +2651,7 @@ function atributo_damage:RefreshLine (instance, lineContainer, whichRowLine, ran
 			thisLine.lineText4:SetText(_string_replace (instance.row_info.textR_custom_text, formated_damage, formated_dps, porcentagem, self, instance.showing, instance, rightText))
 		else
 			if (instance.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, formated_damage, formated_dps, porcentagem)
+				instance:SetInLineTexts(thisLine, formated_damage, formated_dps, porcentagem)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
@@ -2584,7 +2715,8 @@ function atributo_damage:RefreshLine (instance, lineContainer, whichRowLine, ran
 			thisLine.lineText4:SetText (_string_replace (instance.row_info.textR_custom_text, formated_dps, formated_damage, porcentagem, self, instance.showing, instance, rightText))
 		else
 			if (instance.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, formated_damage, formated_dps, porcentagem)
+				--instance:SetInLineTexts(thisLine, formated_damage, formated_dps, porcentagem)
+				instance:SetInLineTexts(thisLine, rightText)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
@@ -2617,7 +2749,7 @@ function atributo_damage:RefreshLine (instance, lineContainer, whichRowLine, ran
 			thisLine.lineText4:SetText (_string_replace (instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, porcentagem, self, instance.showing, instance, rightText))
 		else
 			if (instance.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, formated_damage_taken, formated_dtps, porcentagem)
+				instance:SetInLineTexts(thisLine, formated_damage_taken, formated_dtps, porcentagem)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
@@ -2643,7 +2775,7 @@ function atributo_damage:RefreshLine (instance, lineContainer, whichRowLine, ran
 			thisLine.lineText4:SetText (_string_replace (instance.row_info.textR_custom_text, formated_friendly_fire, "", porcentagem, self, instance.showing, instance, rightText))
 		else
 			if (instance.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, "", formated_friendly_fire, porcentagem)
+				instance:SetInLineTexts(thisLine, "", formated_friendly_fire, porcentagem)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
@@ -2675,7 +2807,7 @@ function atributo_damage:RefreshLine (instance, lineContainer, whichRowLine, ran
 			thisLine.lineText4:SetText (_string_replace (instance.row_info.textR_custom_text, formated_damage_taken, formated_dtps, porcentagem, self, instance.showing, instance, rightText))
 		else
 			if (instance.use_multi_fontstrings) then
-				Details:SetTextsOnLine(thisLine, formated_damage_taken, formated_dtps, porcentagem)
+				instance:SetInLineTexts(thisLine, formated_damage_taken, formated_dtps, porcentagem)
 			else
 				thisLine.lineText4:SetText(rightText)
 			end
@@ -2787,11 +2919,12 @@ local InBarIconPadding = 6
 
 	if (enemy) then
 		if (arena_enemy) then
-			if (Details.show_arena_role_icon) then
+			if (instance.row_info.show_arena_role_icon) then
 				--> show arena role icon
-				local leftText = bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t " .. self.displayName
+				local sizeOffset = instance.row_info.arena_role_icon_size_offset
+				local leftText = bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t " .. self.displayName
 				if (UsingCustomLeftText) then
-					bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t ", self, instance.showing, instance, leftText))
+					bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t ", self, instance.showing, instance, leftText))
 				else
 					bar.lineText1:SetText (leftText)
 				end
@@ -2805,27 +2938,39 @@ local InBarIconPadding = 6
 				end
 			end
 		else
-			if (Details.faction_against == "Horde") then
-				local leftText = bar_number .. "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:32:0:32:0:32|t"..self.displayName
-				if (UsingCustomLeftText) then
-					bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:32:0:32:0:32|t", self, instance.showing, instance, leftText))
-				else
-					bar.lineText1:SetText (leftText) --seta o texto da esqueda -- HORDA
+			if (instance.row_info.show_faction_icon) then
+				local sizeOffset = instance.row_info.faction_icon_size_offset
+				if (Details.faction_against == "Horde") then
+					local leftText = bar_number .. "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:32:0:32:0:32|t"..self.displayName
+					if (UsingCustomLeftText) then
+						bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:32:0:32:0:32|t", self, instance.showing, instance, leftText))
+					else
+						bar.lineText1:SetText (leftText) --seta o texto da esqueda -- HORDA
+					end
+				else --alliance
+					local leftText = bar_number .. "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:32:32:64:0:32|t"..self.displayName
+					if (UsingCustomLeftText) then
+						bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:32:32:64:0:32|t", self, instance.showing, instance, leftText))
+					else
+						bar.lineText1:SetText (leftText) --seta o texto da esqueda -- ALLY
+					end
 				end
-			else --alliance
-				local leftText = bar_number .. "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:32:32:64:0:32|t"..self.displayName
+			else
+				--don't show faction icon
+				local leftText = bar_number .. self.displayName
 				if (UsingCustomLeftText) then
-					bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\AddOns\\Details\\images\\icones_barra:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:32:32:64:0:32|t", self, instance.showing, instance, leftText))
+					bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, " ", self, instance.showing, instance, leftText))
 				else
-					bar.lineText1:SetText (leftText) --seta o texto da esqueda -- ALLY
+					bar.lineText1:SetText (leftText)
 				end
 			end
 		end
 	else
-		if (arena_ally and Details.show_arena_role_icon) then
-			local leftText = bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t " .. self.displayName
+		if (arena_ally and instance.row_info.show_arena_role_icon) then
+			local sizeOffset = instance.row_info.arena_role_icon_size_offset
+			local leftText = bar_number .. "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t " .. self.displayName
 			if (UsingCustomLeftText) then
-				bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height - InBarIconPadding)..":"..(instance.row_info.height - InBarIconPadding) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t ", self, instance.showing, instance, leftText))
+				bar.lineText1:SetText (_string_replace (instance.row_info.textL_custom_text, bar.colocacao, self.displayName, "|TInterface\\LFGFRAME\\UI-LFG-ICON-ROLES:" .. (instance.row_info.height + sizeOffset)..":"..(instance.row_info.height + sizeOffset) .. ":0:0:256:256:" .. Details.role_texcoord [self.role or "NONE"] .. "|t ", self, instance.showing, instance, leftText))
 			else
 				bar.lineText1:SetText (leftText)
 			end
@@ -2842,33 +2987,42 @@ local InBarIconPadding = 6
 	set_text_size (bar, instance)
 end
 
---[[ exported]] function Details:SetBarColors (bar, instance, r, g, b, a)
+--[[ exported]] function Details:SetBarColors(bar, instance, r, g, b, a)
 
 	a = a or 1
 	
 	if (instance.row_info.texture_class_colors) then
+		--[[ Deprecation of right_to_left_texture in favor of StatusBar:SetReverseFill 5/2/2022 - Flamanis
 		if (instance.bars_inverted) then
-			bar.right_to_left_texture:SetVertexColor (r, g, b, a)
+			bar.right_to_left_texture:SetVertexColor(r, g, b, a)
 		else
-			bar.textura:SetVertexColor (r, g, b, a)
-		end
+			bar.textura:SetVertexColor(r, g, b, a)
+		end]]
+		bar.textura:SetVertexColor(r, g, b, a)
 	end
 	
 	if (instance.row_info.texture_background_class_color) then
-		bar.background:SetVertexColor (r, g, b, a)
+		bar.background:SetVertexColor(r, g, b, a)
 	end
 	
 	if (instance.row_info.textL_class_colors) then
-		bar.lineText1:SetTextColor (r, g, b, a)
+		bar.lineText1:SetTextColor(r, g, b, a)
 	end
+
 	if (instance.row_info.textR_class_colors) then
-		bar.lineText2:SetTextColor (r, g, b, a)
-		bar.lineText3:SetTextColor (r, g, b, a)
-		bar.lineText4:SetTextColor (r, g, b, a)
+		bar.lineText2:SetTextColor(r, g, b, a)
+		bar.lineText3:SetTextColor(r, g, b, a)
+		bar.lineText4:SetTextColor(r, g, b, a)
 	end
-	
+
+	if (instance.row_info.backdrop.use_class_colors) then
+		--get the alpha from the border color
+		local alpha = instance.row_info.backdrop.color[4]
+		bar.lineBorder:SetVertexColor(r, g, b, alpha)
+	end
 end 
 
+--@self: actor object
 --[[ exported]] function Details:SetClassIcon (texture, instance, classe) --self is the actorObject
 
 
@@ -2876,6 +3030,12 @@ end
 	if (Details.immersion_unit_special_icons) then
 		customIcon = Details.Immersion.GetIcon(self.aID)
 	end
+
+	--set the size offset of the icon
+	local iconSizeOffset = instance.row_info.icon_size_offset
+	local iconSize = instance.row_info.height
+	local newIconSize = iconSize + iconSizeOffset
+	texture:SetSize(newIconSize, newIconSize)
 
 	if (customIcon) then
 		texture:SetTexture(customIcon[1])
@@ -2954,11 +3114,11 @@ end
 	end
 
 	--> icon
-	self:SetClassIcon (thisLine.icone_classe, instance, class)
+	self:SetClassIcon(thisLine.icone_classe, instance, class)
 	--> texture color
-	self:SetBarColors (thisLine, instance, actor_class_color_r, actor_class_color_g, actor_class_color_b)
+	self:SetBarColors(thisLine, instance, actor_class_color_r, actor_class_color_g, actor_class_color_b)
 	--> left text
-	self:SetBarLeftText (thisLine, instance, enemy, arena_enemy, arena_ally, UsingCustomLeftText)
+	self:SetBarLeftText(thisLine, instance, enemy, arena_enemy, arena_ally, UsingCustomLeftText)
 	
 end
 

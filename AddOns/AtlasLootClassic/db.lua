@@ -10,6 +10,7 @@ AtlasLoot.AtlasLootDBDefaults = {
 		enableAutoSelectBoss = true,
 		showDropRate = true,
 		enableAtlasMapIntegration = true,
+		enableColorsInNames = true,
 		ContentPhase = {
 			enableOnLootTable = true,
 			enableOnItems = true,
@@ -84,5 +85,6 @@ AtlasLoot.AtlasLootDBDefaults = {
 	},
 	global = {
 		Addons = {},
+		VendorPrice = {}
 	}
 }

@@ -44,8 +44,8 @@ Conversions:OnModuleLoad(function()
 	end
 	for targetItemString in Mill.TargetItemIterator() do
 		for sourceItemString in Mill.SourceItemIterator(targetItemString) do
-			local rate, amount, minAmount, maxAmount = Mill.GetRate(targetItemString, sourceItemString)
-			private.Add(targetItemString, sourceItemString, Conversions.METHOD.MILL, rate, amount, minAmount, maxAmount)
+			local rate, amount, minAmount, maxAmount, skillRequired = Mill.GetRate(targetItemString, sourceItemString)
+			private.Add(targetItemString, sourceItemString, Conversions.METHOD.MILL, rate, amount, minAmount, maxAmount, skillRequired)
 		end
 	end
 	for targetItemString in Prospect.TargetItemIterator() do

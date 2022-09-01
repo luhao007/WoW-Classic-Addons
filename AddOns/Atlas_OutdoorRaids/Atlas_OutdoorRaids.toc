@@ -1,0 +1,30 @@
+## Interface: 30400
+## Author: arith, dubcat
+## Version: v1.51.02
+## RequiredDeps: Atlas
+
+## Title: Atlas |r|cFF0099FF[Outdoor Raids]|r
+## Notes: Maps for Outdoor Raid Encounters
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本地图|r |cFF69CCF0户外首领|r
+## Notes-zhCN: 户外团队战斗地图
+
+## X-Date: 2022-08-30T14:09:26Z
+## X-Credits: Dan Gilbert, Lothaer
+## X-Email: atlas.addon at gmail dot com
+## X-Website: http://www.atlasmod.com
+## X-Category: Map
+## X-Part-Of: Atlas
+
+#@non-debug@
+#@end-non-debug@
+
+#@debug@
+# ## Title: Atlas |r|cFF0099FF[Outdoor Raids]|r
+# ## Title-zhTW: |r|cFF0099FF[地圖]|rAtlas 戶外首領地圖
+# ## Notes: Outdoor Raid Encounters
+# ## Notes-zhTW: Atlas 戶外首領地圖插件
+#@end-debug@
+
+Locale\Locales.xml
+Core\Constants.lua
+Core\Data.lua

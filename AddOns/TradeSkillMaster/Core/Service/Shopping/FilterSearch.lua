@@ -332,9 +332,10 @@ function private.GetTargetItemRate(targetItemString, itemString)
 	end
 	if DisenchantInfo.IsTargetItem(targetItemString) then
 		local classId = ItemInfo.GetClassId(itemString)
-		local ilvl = ItemInfo.GetItemLevel(ItemString.GetBaseFast(itemString))
 		local quality = ItemInfo.GetQuality(itemString)
-		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
+		local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 		if amountOfMats then
 			return amountOfMats, 1
 		end

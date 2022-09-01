@@ -384,20 +384,21 @@ function CustomPrice.GetItemPrice(itemString, key)
 	return value
 end
 
-function CustomPrice.GetConversionsValue(sourceItemString, customPrice, method)
+function CustomPrice.GetConversionsValue(itemString, customPrice, method)
 	if not customPrice then
 		return
 	end
 
 	-- calculate disenchant value first
-	if (not method or method == Conversions.METHOD.DISENCHANT) and ItemInfo.IsDisenchantable(sourceItemString) then
-		local quality = ItemInfo.GetQuality(sourceItemString)
-		local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(sourceItemString)) or 0
-		local classId = ItemInfo.GetClassId(sourceItemString)
+	if (not method or method == Conversions.METHOD.DISENCHANT) and ItemInfo.IsDisenchantable(itemString) then
+		local classId = ItemInfo.GetClassId(itemString)
+		local quality = ItemInfo.GetQuality(itemString)
+		local itemLevel = not TSM.IsWowClassic() and ItemInfo.GetItemLevel(itemString) or ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		local expansion = not TSM.IsWowClassic() and ItemInfo.GetExpansion(itemString) or nil
 		local value = 0
-		if quality and ilvl and classId then
+		if quality and itemLevel and classId then
 			for targetItemString in DisenchantInfo.TargetItemIterator() do
-				local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+				local amountOfMats = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel, expansion)
 				if amountOfMats then
 					local matValue = CustomPrice.GetValue(customPrice, targetItemString)
 					if not matValue or matValue == 0 then
@@ -416,7 +417,7 @@ function CustomPrice.GetConversionsValue(sourceItemString, customPrice, method)
 
 	-- calculate other conversion values
 	local value = 0
-	for targetItemString, rate in Conversions.TargetItemsByMethodIterator(sourceItemString, method) do
+	for targetItemString, rate in Conversions.TargetItemsByMethodIterator(itemString, method) do
 		local matValue = CustomPrice.GetValue(customPrice, targetItemString)
 		value = value + (matValue or 0) * rate
 	end
@@ -787,7 +788,7 @@ function private.ParsePriceString(str, badPriceSources)
 		if convertItemLink then -- check for itemLink in convert params
 			convertItem = ItemString.Get(convertItemLink)
 			if not convertItem then
-				return nil, L["Invalid item link."]  -- there's an invalid item link in the convertParams
+				return nil, L["Invalid item link."] -- there's an invalid item link in the convertParams
 			end
 			convertPriceSource = strmatch(convertParams, "^ *(.-) *,")
 		elseif convertItemString then -- check for itemString in convert params

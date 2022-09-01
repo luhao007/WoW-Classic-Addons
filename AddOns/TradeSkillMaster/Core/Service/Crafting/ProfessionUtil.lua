@@ -111,13 +111,13 @@ function ProfessionUtil.OnInitialize()
 	end
 end
 
-function ProfessionUtil.GetCurrentProfessionName()
+function ProfessionUtil.GetCurrentProfessionInfo()
 	if TSM.IsWowClassic() then
 		local name = TSM.Crafting.ProfessionState.IsClassicCrafting() and GetCraftSkillLine(1) or GetTradeSkillLine()
 		return name
 	else
-		local _, name, _, _, _, _, parentName = C_TradeSkillUI.GetTradeSkillLine()
-		return parentName or name
+		local skillId, name, _, _, _, _, parentName = C_TradeSkillUI.GetTradeSkillLine()
+		return parentName or name, skillId
 	end
 end
 
@@ -130,17 +130,32 @@ function ProfessionUtil.GetResultInfo(craftString, level)
 	end
 	if strfind(itemLink, "enchant:") then
 		-- result of craft is not an item
-		local itemString = ProfessionInfo.GetIndirectCraftResult(spellId)
-		if itemString and not TSM.IsWowClassic() then
+		local indirectSpellId = nil
+		if TSM.IsWowWrathClassic() then
+			indirectSpellId = strmatch(itemLink, "enchant:(%d+)")
+			indirectSpellId = indirectSpellId and tonumber(indirectSpellId)
+			if not indirectSpellId then
+				return true
+			end
+		else
+			indirectSpellId = spellId
+		end
+		local itemString = ProfessionInfo.GetIndirectCraftResult(indirectSpellId)
+		if itemString and (not TSM.IsWowClassic() or TSM.IsWowWrathClassic()) then
 			return TSM.UI.GetColoredItemName(itemString), itemString, ItemInfo.GetTexture(itemString)
 		elseif ProfessionInfo.IsEngineeringTinker(spellId) then
 			local name, _, icon = GetSpellInfo(spellId)
 			return name, nil, icon
 		else
-			local name, _, icon = GetSpellInfo(TSM.Crafting.ProfessionState.IsClassicCrafting() and GetCraftInfo(TSM.IsWowClassic() and TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString) or spellId) or spellId)
-			return name, nil, icon
+			if TSM.IsWowWrathClassic() then
+				local name, _, icon = GetSpellInfo(indirectSpellId)
+				return name, nil, icon
+			else
+				local name, _, icon = GetSpellInfo(TSM.Crafting.ProfessionState.IsClassicCrafting() and GetCraftInfo(TSM.IsWowClassic() and TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString) or spellId) or spellId)
+				return name, nil, icon
+			end
 		end
-	elseif strfind(itemLink, "item:") then
+	elseif strfind(itemLink, "item:%d+") then
 		-- result of craft is an item
 		return TSM.UI.GetColoredItemName(itemLink), ItemString.Get(itemLink), ItemInfo.GetTexture(itemLink)
 	else
@@ -242,7 +257,7 @@ end
 
 function ProfessionUtil.IsEnchant(craftString)
 	local spellId = CraftString.GetSpellId(craftString)
-	local name = ProfessionUtil.GetCurrentProfessionName()
+	local name = ProfessionUtil.GetCurrentProfessionInfo()
 	if name ~= GetSpellInfo(7411) or TSM.IsWowClassic() then
 		return false
 	end
@@ -395,12 +410,11 @@ function ProfessionUtil.GetRecipeInfo(craftString)
 	if TSM.IsWowClassic() then
 		local index = TSM.Crafting.ProfessionScanner.GetIndexByCraftString(craftString) or spellId
 		itemLink = TSM.Crafting.ProfessionState.IsClassicCrafting() and GetCraftItemLink(index) or GetTradeSkillItemLink(index)
+		local emptyLink = strfind(itemLink or "", "item::") and true or false
+		itemLink = not emptyLink and itemLink or nil
+		itemLink = itemLink or (TSM.IsWowWrathClassic() and GetTradeSkillRecipeLink(index)) or nil
 		if TSM.Crafting.ProfessionState.IsClassicCrafting() then
-			if TSM.IsWowBCClassic() then
-				lNum, hNum = GetCraftNumMade(index)
-			else
-				lNum, hNum = 1, 1
-			end
+			lNum, hNum = 1, 1
 			toolsStr, hasTools = GetCraftSpellFocus(index)
 		else
 			lNum, hNum = GetTradeSkillNumMade(index)
@@ -479,8 +493,10 @@ function ProfessionUtil.IsNPCProfession()
 end
 
 function ProfessionUtil.IsLinkedProfession()
-	if TSM.IsWowClassic() then
+	if TSM.IsWowVanillaClassic() then
 		return nil, nil
+	elseif TSM.IsWowWrathClassic() then
+		return IsTradeSkillLinked()
 	else
 		return C_TradeSkillUI.IsTradeSkillLinked()
 	end

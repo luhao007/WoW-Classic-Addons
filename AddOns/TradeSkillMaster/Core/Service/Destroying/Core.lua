@@ -34,6 +34,7 @@ local private = {
 	destroyInfoDB = nil,
 	disenchantSkillLevel = nil,
 	jewelcraftSkillLevel = nil,
+	inscriptionSkillLevel = nil,
 	combineFuture = Future.New("DESTROYING_COMBINE_FUTURE"),
 	destroyFuture = Future.New("DESTROYING_DESTROY_FUTURE"),
 }
@@ -352,9 +353,10 @@ function private.UpdateBagDB()
 		query:Equal("isBoP", false)
 			:Equal("isBoA", false)
 	end
-	if TSM.IsWowBCClassic() then
+	if TSM.IsWowWrathClassic() then
 		private.disenchantSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(7411))
 		private.jewelcraftSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(28897))
+		private.inscriptionSkillLevel = TSM.Crafting.PlayerProfessions.GetProfessionSkill(UnitName("player"), GetSpellInfo(45357))
 	end
 	for _, slotId, itemString, quantity in query:Iterator() do
 		local minQuantity = nil
@@ -416,12 +418,12 @@ function private.IsDestroyable(itemString)
 	local quality = ItemInfo.GetQuality(itemString)
 	if ItemInfo.IsDisenchantable(itemString) and quality <= private.settings.deMaxQuality then
 		local hasSourceItem = true
-		if TSM.IsWowBCClassic() then
-			local ilvl = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
+		if TSM.IsWowWrathClassic() then
 			local classId = ItemInfo.GetClassId(itemString)
+			local itemLevel = ItemInfo.GetItemLevel(ItemString.GetBase(itemString))
 			hasSourceItem = false
 			for targetItemString in DisenchantInfo.TargetItemIterator() do
-				local _, _, _, _, skillRequired = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, ilvl)
+				local _, _, _, _, skillRequired = DisenchantInfo.GetTargetItemSourceInfo(targetItemString, classId, quality, itemLevel)
 				if private.disenchantSkillLevel and skillRequired and private.disenchantSkillLevel >= skillRequired then
 					hasSourceItem = true
 				end
@@ -452,7 +454,7 @@ function private.IsDestroyable(itemString)
 
 	local hasSourceItem = false
 	for _, _, _, _, _, skillRequired in Conversions.TargetItemsByMethodIterator(itemString, conversionMethod) do
-		if not skillRequired or (private.jewelcraftSkillLevel and skillRequired and private.jewelcraftSkillLevel >= skillRequired) then
+		if not skillRequired or (conversionMethod == Conversions.METHOD.PROSPECT and private.jewelcraftSkillLevel and skillRequired and private.jewelcraftSkillLevel >= skillRequired) or (conversionMethod == Conversions.METHOD.MILL and private.inscriptionSkillLevel and skillRequired and private.inscriptionSkillLevel >= skillRequired) then
 			hasSourceItem = true
 		end
 	end

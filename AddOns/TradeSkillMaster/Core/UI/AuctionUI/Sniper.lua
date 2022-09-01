@@ -284,9 +284,13 @@ function private.FSMCreate()
 		scanPaused = false,
 		scanDone = false,
 	}
-	Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
-	Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
-	if not TSM.IsWowClassic() then
+	if TSM.IsWowClassic() then
+		Event.Register("CHAT_MSG_SYSTEM", private.FSMMessageEventHandler)
+		Event.Register("UI_ERROR_MESSAGE", private.FSMMessageEventHandler)
+	else
+		Event.Register("AUCTION_HOUSE_SHOW_NOTIFICATION", private.FSMMessageEventHandler)
+		Event.Register("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION", private.FSMMessageEventHandler)
+		Event.Register("AUCTION_HOUSE_SHOW_ERROR", private.FSMMessageErrorEventHandler)
 		Event.Register("COMMODITY_PURCHASE_SUCCEEDED", private.FSMBuyoutSuccess)
 	end
 	Event.Register("AUCTION_HOUSE_CLOSED", function()
@@ -623,7 +627,7 @@ function private.FSMCreate()
 				local actionFormatStr = nil
 				if context.searchContext:IsBuyoutScan() then
 					actionFormatStr = L["Buy %d / %d"]
-				elseif context.searchContext:IsBidScan()  then
+				elseif context.searchContext:IsBidScan() then
 					actionFormatStr = L["Bid %d / %d"]
 				else
 					error("Invalid scan type")
@@ -682,17 +686,33 @@ function private.FSMCreate()
 				return "ST_PLACING_BID_BUY", quantity
 			end)
 			:AddEvent("EV_MSG", function(context, msg)
-				local _, rawLink = context.findAuction:GetLinks()
-				if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
-					-- failed to bid/buy an auction
-					return "ST_CONFIRMING_BID_BUY", false
-				elseif context.searchContext:IsBidScan() and msg == ERR_AUCTION_BID_PLACED then
-					-- bid on an auction
-					return "ST_CONFIRMING_BID_BUY", true
-				elseif context.searchContext:IsBuyoutScan() and msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) then
-					-- bought an auction
-					return "ST_CONFIRMING_BID_BUY", true
+				if not context.findAuction then
+					return
 				end
+				if TSM.IsWowClassic() then
+					local _, rawLink = context.findAuction:GetLinks()
+					if msg == LE_GAME_ERR_AUCTION_HIGHER_BID or msg == LE_GAME_ERR_ITEM_NOT_FOUND or msg == LE_GAME_ERR_AUCTION_BID_OWN or msg == LE_GAME_ERR_NOT_ENOUGH_MONEY or msg == LE_GAME_ERR_ITEM_MAX_COUNT then
+						-- failed to bid/buy an auction
+						return "ST_CONFIRMING_BID_BUY", false
+					elseif context.searchContext:IsBidScan() and msg == ERR_AUCTION_BID_PLACED then
+						-- bid on an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					elseif context.searchContext:IsBuyoutScan() and msg == format(ERR_AUCTION_WON_S, ItemInfo.GetName(rawLink)) then
+						-- bought an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					end
+				else
+					if (context.searchContext:IsBuyoutScan() and msg == Enum.AuctionHouseNotification.AuctionWon) or (context.searchContext:IsBidScan() and msg == Enum.AuctionHouseNotification.BidPlaced) then
+						-- bought an auction
+						return "ST_CONFIRMING_BID_BUY", true
+					end
+				end
+			end)
+			:AddEvent("EV_ERROR_MSG", function(context, msg)
+				if not context.findAuction then
+					return
+				end
+				return "ST_CONFIRMING_BID_BUY", false
 			end)
 			:AddEvent("EV_BUYOUT_SUCCESS", function(context)
 				return "ST_CONFIRMING_BID_BUY", true
@@ -805,6 +825,12 @@ end
 function private.FSMMessageEventHandler(_, msg)
 	private.fsm:SetLoggingEnabled(false)
 	private.fsm:ProcessEvent("EV_MSG", msg)
+	private.fsm:SetLoggingEnabled(true)
+end
+
+function private.FSMMessageErrorEventHandler(_, msg)
+	private.fsm:SetLoggingEnabled(false)
+	private.fsm:ProcessEvent("EV_ERROR_MSG", msg)
 	private.fsm:SetLoggingEnabled(true)
 end
 

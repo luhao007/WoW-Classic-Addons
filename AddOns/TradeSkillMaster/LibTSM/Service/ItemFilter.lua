@@ -90,7 +90,7 @@ end
 
 function Filter._ItemQualityToIndex(self, str)
 	for i = 0, 7 do
-		local text =  _G["ITEM_QUALITY"..i.."_DESC"]
+		local text = _G["ITEM_QUALITY"..i.."_DESC"]
 		if strlower(str) == strlower(text) then
 			return i
 		end

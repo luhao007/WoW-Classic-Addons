@@ -39,7 +39,7 @@ function ProfessionState.GetIsClosed()
 end
 
 function ProfessionState.IsClassicCrafting()
-	return TSM.IsWowClassic() and private.craftOpen
+	return TSM.IsWowVanillaClassic() and private.craftOpen
 end
 
 function ProfessionState.SetCraftOpen(open)
@@ -151,7 +151,7 @@ function private.CreateFSM()
 		)
 		:AddState(FSM.NewState("ST_SHOWN")
 			:SetOnEnter(function()
-				local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionName()
+				local name = TSM.Crafting.ProfessionUtil.GetCurrentProfessionInfo()
 				assert(name)
 				Log.Info("Showing profession: %s", name)
 				private.professionName = name

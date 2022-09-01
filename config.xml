@@ -426,6 +426,9 @@
 		<Notes>功能强大的副本助手，支持所有Boss。</Notes>
 		<Category>副本</Category>
 		<SubAddons>
+			<SubAddon name="DBM-Affixes">
+				<Title>副本词缀</Title>
+			</SubAddon>
 			<SubAddon name="DBM-AntorusBurningThrone">
 				<Title>安托鲁斯，燃烧王座</Title>
 			</SubAddon>
@@ -499,6 +502,10 @@
 			<SubAddon name="DBM-Draenor">
 				<Title>户外</Title>
 				<TitleExtra>德拉诺</TitleExtra>
+			</SubAddon>
+			<SubAddon name="DBM-DragonIsles">
+				<Title>户外</Title>
+				<TitleExtra>巨龙时代</TitleExtra>
 			</SubAddon>
 			<SubAddon name="DBM-DragonSoul">
 				<Title>巨龙之魂</Title>
@@ -678,6 +685,9 @@
 			</SubAddon>
 			<SubAddon name="DBM-ZG">
 				<Title>祖尔格拉布</Title>
+			</SubAddon>
+			<SubAddon name="DBM-ZulAman">
+				<Title>祖阿曼</Title>
 			</SubAddon>
 		</SubAddons>
 	</Addon>

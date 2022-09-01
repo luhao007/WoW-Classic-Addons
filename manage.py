@@ -337,16 +337,15 @@ class Manager:
     @staticmethod
     def handle_dup_libraries():
         addons = ['Atlas', 'BlizzMove', 'DBM-Core', 'Details_Streamer',
-                    'Details_TinyThreat', 'MRT', 'GatherMate2', 'GTFO',
+                    'Details_TinyThreat',  'Details_EncounterDetails',
+                    'Details_RaidCheck', 'Details_Vanguard', 'MRT', 'GatherMate2', 'GTFO',
                     'HandyNotes', 'ItemRack', 'ItemRackOptions', 'MapSter',
                     'MikScrollingBattleText', 'OmniCC', 'OmniCC_Config',
                     'Quartz', 'RangeDisplay', 'RangeDisplay_Options', 'TellMeWhen', 'TomTom']
 
         if utils.get_platform() == 'retail':
             addons += ['AllTheThings', 'Details_ChartViewer',
-                       'Details_DeathGraphs', 'Details_EncounterDetails',
-                       'Details_RaidCheck', 'Details_TimeLine',
-                       'Details_Vanguard', 'FasterCamera',
+                       'Details_DeathGraphs', 'Details_TimeLine', 'FasterCamera',
                        'GladiatorlosSA2', 'Gladius',
                        'HandyNotes_Argus', 'HandyNotes_BrokenShore',
                        'HandyNotes_BattleForAzeroth',

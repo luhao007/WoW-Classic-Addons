@@ -689,13 +689,13 @@ function DatabaseTable.BulkInsertNewRowFast12(self, v1, v2, v3, v4, v5, v6, v7, 
 	return uuid
 end
 
-function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, extraValue)
+function DatabaseTable.BulkInsertNewRowFast14(self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, extraValue)
 	local uuid = private.GetNextUUID()
 	local rowIndex = #self._data + 1
 	local uuidIndex = #self._uuids + 1
 	if not self._bulkInsertContext then
 		error("Bulk insert hasn't been started")
-	elseif self._bulkInsertContext.fastNum ~= 13 then
+	elseif self._bulkInsertContext.fastNum ~= 14 then
 		error("Invalid usage of fast insert")
 	elseif v11 == nil or extraValue ~= nil then
 		error("Wrong number of values")
@@ -720,6 +720,7 @@ function DatabaseTable.BulkInsertNewRowFast13(self, v1, v2, v3, v4, v5, v6, v7, 
 	self._data[rowIndex + 10] = v11
 	self._data[rowIndex + 11] = v12
 	self._data[rowIndex + 12] = v13
+	self._data[rowIndex + 13] = v14
 
 	if self._bulkInsertContext.fastUnique == 1 then
 		-- the first field is always a unique (and the only unique)

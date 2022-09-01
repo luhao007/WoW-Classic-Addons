@@ -1,0 +1,21 @@
+## Interface: 30400
+## Author: MysticalOS, Pardua, Cigawoot
+## Version: 1.6.18
+## RequiredDeps: DBM-Core
+## DefaultState: enabled
+
+## Title: |cffffe00a<|r|cffff7d0aDBM|r|cffffe00a>|r |cff69ccf0Sound Events Pack|r
+## Title-zhCN: |cFFFFE00A<|r|cFFFF7D0A副本|r|cFFFFE00A>|r |cFFFFFFFF副本助手|r |cFF69CCF0声音特效|r
+## Notes-zhCN: 为DBM添加声音特效（如战斗胜利等）
+
+## X-DBM-VictoryPack: 1
+## X-DBM-VictoryPack-GlobalName: DBMVPSoundEventsPack
+## X-DBM-DefeatPack: 1
+## X-DBM-DefeatPack-GlobalName: DBMDPSoundEventsPack
+## X-DBM-MusicPack: 1
+## X-DBM-MusicPack-GlobalName: DBMMPSoundEventsPack
+## X-Curse-Project-ID: 289311
+## X-Wago-ID: qv63WD6b
+## X-Part-Of: DBM-Core
+
+LoadList.lua

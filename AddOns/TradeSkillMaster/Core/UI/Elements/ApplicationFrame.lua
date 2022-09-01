@@ -443,7 +443,7 @@ function ApplicationFrame._SavePositionAndSize(self, wasScaling)
 	if wasScaling then
 		-- the anchor is in our old frame's scale, so convert the parent measurements to our old scale and then the resuslt to our new scale
 		local scaleAdjustment = width / self._contextTable.width
-		local frameLeftOffset = frame:GetLeft()  - parentFrame:GetLeft() / self._contextTable.scale
+		local frameLeftOffset = frame:GetLeft() - parentFrame:GetLeft() / self._contextTable.scale
 		self._contextTable.centerX = (frameLeftOffset - (parentFrame:GetWidth() / self._contextTable.scale - width) / 2) / scaleAdjustment
 		local frameBottomOffset = frame:GetBottom() - parentFrame:GetBottom() / self._contextTable.scale
 		self._contextTable.centerY = (frameBottomOffset - (parentFrame:GetHeight() / self._contextTable.scale - height) / 2) / scaleAdjustment

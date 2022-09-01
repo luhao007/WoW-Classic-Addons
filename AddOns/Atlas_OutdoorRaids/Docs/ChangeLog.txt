@@ -1,0 +1,307 @@
+$Id: ChangeLog.txt 80 2022-08-30 14:09:26Z arithmandar $
+Atlas, a World of Warcraft instance map browser
+Copyright 2005 ~ 2010 - Dan Gilbert <dan.b.gilbert@gmail.com>
+Copyright 2010 - Lothaer <lothayer@gmail.com>, Atlas Team
+Copyright 2011 ~ 2022 - Arith Hsu, Atlas Team <atlas.addon at gmail dot com>
+
+==============
+= Change Log =
+==============
+
+v1.51.02 (Aug. 30, 2022)
+------------------------
+- Added support for Classic WoW 1.14.3
+- Added support for Classic Wrath of the Lich King WoW 3.4.0
+- Added support for BCC WoW 2.5.4
+
+v1.51.01 (Aug. 17, 2022)
+------------------------
+- Toc update to support WoW 9.2.7
+
+v1.51.00 (Jul. 23, 2022)
+------------------------
+- Toc update to support WoW 9.2.5
+
+v1.50.00 (Feb. 23, 2022)
+------------------------
+- Toc update to support WoW 9.2.0
+
+v1.49.02 (Feb. 3, 2022)
+------------------------
+- ToC update to support WoW 9.1.5
+
+v1.49.01 (Jun. 30, 2021)
+------------------------
+- ToC update to support WoW 9.1.0
+
+v1.49.00 (May 20, 2021)
+------------------------
+- ToC update to support WoW 9.0.5
+
+v1.48.01 (Oct. 20, 2020)
+------------------------
+- Fixed issue of boss name function call
+
+v1.48.00 (Oct. 18, 2020)
+------------------------
+- ToC update to support WoW 9.0.1
+- Update Atlas_GetBossName to load boss name from local locale files
+
+v1.47.01 (Jan. 20, 2020)
+------------------------
+- Fixed typo
+
+v1.47.00 (Jan. 20, 2020)
+------------------------
+- ToC update to support WoW 8.3.0
+- Corrected Zuldazar to Zandalar
+
+v1.46.01 (Jan. 06, 2020)
+------------------------
+- Integration with AtlasLoot
+
+v1.46.00 (Jan. 05, 2020)
+------------------------
+- ToC update to support WoW 8.2.5
+- Added BfA world bosses
+
+v1.45.00 (Sep. 04, 2019)
+------------------------
+- ToC update to support WoW 8.2.0
+
+v1.44.01 (Dec. 18, 2018)
+------------------------
+- ToC update to support WoW 8.1.0
+
+v1.44.00 (Aug. 09, 2018)
+------------------------
+- ToC update to support WoW 8.0.1
+- MapID convert to uiMapID
+
+v1.43.00 (Aug. 30, 2017)
+------------------------
+- ToC update to support WoW 7.3.0
+
+v1.42.00 (Jun. 29, 2017)
+------------------------
+- Updated to support Atlas 1.42.00
+- Translation update:
+  - Simplified Chinese (ananhaid)
+
+v1.41.05 (Jun. 08, 2017)
+------------------------
+- Updated Calamir's location
+
+v1.41.04 (May 14, 2017)
+------------------------
+- Enhanced AtlasLoot integration feature
+
+v1.41.03 (May 04, 2017)
+------------------------
+- Added location of Brutallus
+- Added map of Broken Shore
+- Translation update:
+  - Russian (BLizzatron)
+
+v1.41.02 (Apr. 26, 2017)
+------------------------
+- Added location of Si'vash
+
+v1.41.01 (Apr. 20, 2017)
+------------------------
+- Added achievement for world bosses in Broken Shore - Terrors of the Shore
+
+v1.41.00 (Apr. 20, 2017)
+------------------------
+- Added location of Apocron
+
+v1.39.01 (Mar. 29, 2017)
+------------------------
+- Fixed the issue that by right-clicking on world boss' name in 
+  legend panel won't bring up AtlasLoot window
+- Added location of Malificus
+
+v1.39.00 (Mar. 27, 2017)
+------------------------
+- Toc update to support WoW 7.2
+- Broken Isles map revamped
+- Added the following new world bosses (location is not yer available):
+  - Brutallus
+  - Malificus
+  - Si'vash
+  - Apocron
+
+v1.37.00 (Jan. 24, 2017)
+------------------------
+- Added instance's achievements
+- Translation update:
+  - Spanish (Lawghter)
+
+v1.36.00 (Jan. 19, 2017)
+------------------------
+- Added Ana-Mouz's location in Broken Isles
+
+v1.35.00 (Oct. 27, 2016)
+------------------------
+- Toc update to support WoW 7.1.0
+
+v1.34.00 (Aug. 31, 2016)
+------------------------
+- Large size of map added:
+  - Broken Isles
+  - Draenor
+  - Pandaria
+- Translation update:
+  - Simplified Chinese (ananhaid)
+
+v1.33.01 (Jul. 26, 2016)
+------------------------
+- Added world bosses in Broken Isles 
+  (Ana-Mouz's location is unknown for now)
+- Update to support Atlas v1.33.02's new features:
+  - Now mouse hover over the boss entry in the right info panel will show the boss' description when it is available.
+    If you click on the boss line, it will open the boss' detail page in Adventure Journal
+  - On the instance maps, now mouse hover over the encounter's ID and click on it will open the boss' detail page in Adventure Journal.
+- Translation update:
+  - German (pas06)
+
+ 
+v1.33.00 (Jul. 19, 2016)
+------------------------
+- Toc updated to support WoW Legion pre-patch (7.0.3)
+- Added LibBabble-Faction lib to replace the faction looking-up with AtlasIngameLocales's GetFactionInfoByID
+- Replace punctuations by using Atlas' localization
+
+
+v1.32.02 (May 13, 2016)
+-----------------------
+- Added boss info as tooptips
+
+
+v1.32.01 (May 11, 2016)
+-----------------------
+- Moved map db info from core Atlas to this module for better maintenance
+- Map file name changed
+
+
+v1.32.00 (Jul. 13, 2015)
+------------------------
+- TOC update to support WoW 6.2
+
+
+v1.31.01 (Jul. 13, 2015)
+------------------------
+- TOC update to support WoW 6.2
+- Draenor map updated to add location of Supreme Lord Kazzak
+
+
+v1.31.01 (Mar. 01, 2015)
+------------------------
+- TOC update to support WoW 6.1
+- Translation updates:
+    - frFR (dokcharlie)
+    - ruRU (StingerSoft)
+
+
+v1.31.00 (Nov. 10, 2014)
+-----------------------
+- Added Draenor world bosses
+
+
+v1.30.00 (Oct. 15, 2014)
+-----------------------
+- TOC update to support WoW 6.0
+
+
+v1.26.00 (Sep. 09, 2013)
+-----------------------
+- TOC update to support WoW 5.4
+- Map update
+    - Pandaria
+        - added new Pandaria world bosses Ordos, Fire-God of the Yaungol, The August Celestials
+
+	
+v1.25.00 (May 21, 2013)
+-----------------------
+- TOC update to support WoW 5.3
+
+
+v1.24.00 (Mar. 05, 2013)
+-----------------------
+- TOC update to support WoW 5.2
+- Map update:
+    - Pandaria
+        - replace with new world map images
+        - added new Pandaria world bosses Nalak, The Storm Lord & Oondasta
+
+	
+v1.23.0 (Dec. 07, 2012)
+-----------------------
+- TOC update to support WoW 5.1
+
+
+v1.22.1 (Oct. 10, 2012)
+- Update Pandaria outdoor map
+
+
+v1.22.0 (Sep. 25, 2012)
+-----------------------
+- Update TOC to support WoW 5.0
+- Added Pandaria world bosses
+
+
+v1.21.0 (Nov. 29, 2011)
+-----------------------
+- Update TOC to support WoW 4.3
+- Splitted from core Atlas addon to be a separated plugin addon
+
+
+v1.20.1 (Sep. 09, 2011)
+-----------------------
+
+
+v1.20.0 (Jun. 28, 2011)
+-----------------------
+- TOC update to support WoW 4.2
+
+
+v1.19.2 (May 30, 2011)
+-----------------------
+
+
+v1.19.1 (May 06, 2011)
+-----------------------
+
+
+v1.19.0 (Apr. 28, 2011)
+-----------------------
+- Support WoW 4.1
+
+
+v1.18.3 (Apr. 13, 2011)
+-----------------------
+
+
+v1.18.2 (Jan. 28, 2011)
+-----------------------
+
+
+v1.18.1 (Jan. 06, 2011)
+-----------------------
+  
+  
+v1.18.0 (Dec. 07, 2010)
+-----------------------
+
+
+v1.17.2 (Oct. 18, 2010)
+-----------------------
+
+
+v1.17.1 (Oct. 13, 2010)
+-----------------------
+- support WoW 4.0
+
+
+v1.17.0 (Aug. 15, 2010)
+-----------------------

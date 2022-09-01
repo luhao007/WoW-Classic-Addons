@@ -46,8 +46,10 @@ function MyAuctions.OnInitialize()
 
 	Event.Register("AUCTION_HOUSE_SHOW", private.AuctionHouseShowEventHandler)
 	Event.Register("AUCTION_HOUSE_CLOSED", private.AuctionHouseHideEventHandler)
-	Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
-	Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
+	if TSM.IsWowClassic() then
+		Event.Register("CHAT_MSG_SYSTEM", private.ChatMsgSystemEventHandler)
+		Event.Register("UI_ERROR_MESSAGE", private.UIErrorMessageEventHandler)
+	end
 	AuctionTracking.RegisterCallback(private.OnAuctionsUpdated)
 end
 
@@ -147,7 +149,7 @@ function private.AuctionHouseHideEventHandler()
 end
 
 function private.ChatMsgSystemEventHandler(_, msg)
-	if msg == ERR_AUCTION_REMOVED and #private.pendingHashes > 0 and TSM.IsWowClassic() then
+	if msg == ERR_AUCTION_REMOVED and #private.pendingHashes > 0 then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
 		Log.Info("Confirmed (hash=%d)", hash)
@@ -155,7 +157,7 @@ function private.ChatMsgSystemEventHandler(_, msg)
 end
 
 function private.UIErrorMessageEventHandler(_, _, msg)
-	if (msg == ERR_ITEM_NOT_FOUND or msg == ERR_NOT_ENOUGH_MONEY) and #private.pendingHashes > 0 and TSM.IsWowClassic() then
+	if (msg == ERR_ITEM_NOT_FOUND or msg == ERR_NOT_ENOUGH_MONEY) and #private.pendingHashes > 0 then
 		local hash = tremove(private.pendingHashes, 1)
 		assert(hash)
 		Log.Info("Failed to cancel (hash=%d)", hash)

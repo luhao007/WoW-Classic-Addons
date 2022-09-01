@@ -11,46 +11,57 @@ AL["/al mmb - Toggle MiniMapButton"] = "/al mmb -  Alternar MiniMapaBotón"
 AL["/al options - Open AtlasLoot Options window."] = "/al options - Abre ventana de Opciones de AtlasLoot"
 AL["/al slash - Prints a list of all slash commands."] = "/al slash - Publica una lista de todos los comandos slash."
 AL["/al togglebg - Toggle the background image on loottables."] = "/al togglebg - Alterna el imagen de fondo en las tabla de botines"
-AL["|cff00ff00L-Click:|r %s"] = "|cff00ff00Clic-Izquierdo:|r %s"
 AL["|cff00ff00Left-Click:|r %s"] = "|cff00ff00Clic Izquierdo:|r %s"
 AL["|cff00ff00Left-Click:|r Show reagents."] = "|cff00ff00Clic Izquierdo:|r Zeige Reagenzien."
 AL["|cff00ff00Right-Click:|r Change Class"] = "|cff00ff00Right-Click:|r Cambiar Clase"
 AL["|cff00ff00Set item:|r "] = "|cff00ff00Equipo de conjunto:|r"
+--[[Translation missing --]]
+--[[ AL["10 Raid"] = "10 Raid"--]] 
+--[[Translation missing --]]
+--[[ AL["10 Raid Heroic"] = "10 Raid Heroic"--]] 
+--[[Translation missing --]]
+--[[ AL["10H"] = "10H"--]] 
+--[[Translation missing --]]
+--[[ AL["10H / 25 / 25H"] = "10H / 25 / 25H"--]] 
+--[[Translation missing --]]
+--[[ AL["20 Raid"] = "20 Raid"--]] 
+--[[Translation missing --]]
+--[[ AL["25 Raid"] = "25 Raid"--]] 
+--[[Translation missing --]]
+--[[ AL["25 Raid Heroic"] = "25 Raid Heroic"--]] 
+--[[Translation missing --]]
+--[[ AL["25H"] = "25H"--]] 
+--[[Translation missing --]]
+--[[ AL["40 Raid"] = "40 Raid"--]] 
 AL["Active list"] = "Lista Activa"
 AL["Add item into chat"] = "Añade objeto al chat"
 AL["Add ItemID"] = "Añade ObjetoID"
 AL["Add profession link into chat"] = "Añade enlace de profesión al chat"
 AL["Add sound into chat"] = "Añade sonido al chat"
+--[[Translation missing --]]
+--[[ AL["Alliance Vanguard"] = "Alliance Vanguard"--]] 
 AL["Alt + Left Click"] = "Alt + Clic Izquierdo"
+--[[Translation missing --]]
+--[[ AL["Anub'Rekhan"] = "Anub'Rekhan"--]] 
 AL["AQ opening"] = "Apertura de AQ"
+--[[Translation missing --]]
+--[[ AL["Arena"] = "Arena"--]] 
 AL["Armor"] = "Armadura"
 AL["Atlas map"] = "Mapa de Atlas"
 AL["AtlasLoot"] = "AtlasLoot"
 AL["AtlasLoot Modules"] = "Módulos de AtlasLoot"
 AL["Balzaphon"] = "Balzaphon"
 AL["Bonus"] = "Bonus"
+AL["Bought with..."] = "Comprado con..."
 AL["Bow"] = "Arco"
-AL["Brutal Gladiator's Aegis"] = "Égida de Gladiador brutal"
-AL["Brutal Gladiator's Battlegear"] = "Equipo de batalla de Gladiador brutal"
-AL["Brutal Gladiator's Dreadgear"] = "Equipo de terror de Gladiador brutal"
-AL["Brutal Gladiator's Earthshaker"] = "Sacudetierra de Gladiador brutal"
-AL["Brutal Gladiator's Felshroud"] = "Sayo vil de Gladiador brutal"
-AL["Brutal Gladiator's Investiture"] = "Investidura de Gladiador brutal"
-AL["Brutal Gladiator's Pursuit"] = "Persecución de Gladiador brutal"
-AL["Brutal Gladiator's Raiment"] = "Vestiduras de Gladiador brutal"
-AL["Brutal Gladiator's Redemption"] = "Redención de Gladiador brutal"
-AL["Brutal Gladiator's Refuge"] = "Refugio de Gladiador brutal"
-AL["Brutal Gladiator's Regalia"] = "Atavío de Gladiador brutal"
-AL["Brutal Gladiator's Sanctuary"] = "Santuario de Gladiador brutal"
-AL["Brutal Gladiator's Thunderfist"] = "Puño de trueno de Gladiador brutal"
-AL["Brutal Gladiator's Vestments"] = "Vestimentas de Gladiador brutal"
-AL["Brutal Gladiator's Vindication"] = "Vindicación de Gladiador brutal"
-AL["Brutal Gladiator's Wartide"] = "Marea de guerra de Gladiador brutal"
-AL["Brutal Gladiator's Wildhide"] = "Envoltura salvaje de Gladiador brutal"
+--[[Translation missing --]]
+--[[ AL["Brutal %s"] = "Brutal %s"--]] 
 AL["Chat Link"] = "Enlace de Chat"
 AL["Click to open Atlas instance map."] = "Haz clic para abrir el mapa de instancias de Atlas."
 AL["Collections"] = "Colecciones"
 AL["Command %s not found. Use '/al slash' for a full list of commands"] = "Comando %s no se encuentra. Escribe '/al slash' para una lista de todos los comandos."
+--[[Translation missing --]]
+--[[ AL["Conqueror's %s"] = "Conqueror's %s"--]] 
 AL["Content phase:"] = "Fase de contenido:"
 AL["Copy Box"] = "Caja de copiar"
 AL["Coren Direbrew"] = "Coren Cerveza Temible"
@@ -69,11 +80,33 @@ AL["Fishing Pole"] = "Caña de pescar"
 AL["Fist Weapon"] = "Arma de puño"
 AL["Global base list"] = "Lista basado en Mundial"
 AL["Global lists"] = "Listas Mundiales"
+--[[Translation missing --]]
+--[[ AL["Gluth"] = "Gluth"--]] 
 AL["gold"] = "Oro"
+--[[Translation missing --]]
+--[[ AL["Gothik the Harvester"] = "Gothik the Harvester"--]] 
+--[[Translation missing --]]
+--[[ AL["Grand Widow Faerlina"] = "Grand Widow Faerlina"--]] 
+--[[Translation missing --]]
+--[[ AL["Grobbulus"] = "Grobbulus"--]] 
 AL["Gun"] = "Arma de fuego"
+--[[Translation missing --]]
+--[[ AL["H"] = "H"--]] 
+--[[Translation missing --]]
+--[[ AL["Heigan the Unclean"] = "Heigan the Unclean"--]] 
+--[[Translation missing --]]
+--[[ AL["Heroes' %s"] = "Heroes' %s"--]] 
 AL["Heroic"] = "Heroico"
+--[[Translation missing --]]
+--[[ AL["Heroic Sanctified %s"] = "Heroic Sanctified %s"--]] 
 AL["Honor Hold"] = "Bastión del Honor"
+--[[Translation missing --]]
+--[[ AL["Horde Expedition"] = "Horde Expedition"--]] 
+--[[Translation missing --]]
+--[[ AL["Instructor Razuvious"] = "Instructor Razuvious"--]] 
 AL["Items"] = "Objetos"
+--[[Translation missing --]]
+--[[ AL["Kel'Thuzad"] = "Kel'Thuzad"--]] 
 AL["Key"] = "Llave"
 AL["Keys"] = "Llaves"
 AL["Kurenai"] = "Kurenai"
@@ -81,23 +114,35 @@ AL["Lady Falther'ess"] = "Lady Falther'ess"
 AL["L-Click"] = "Clic-Izquierdo"
 AL["Left Click"] = "Clic Izquierdo"
 AL["Lists"] = "Listas"
+--[[Translation missing --]]
+--[[ AL["Loatheb"] = "Loatheb"--]] 
 AL["Loot"] = "Botín"
+--[[Translation missing --]]
+--[[ AL["Maexxna"] = "Maexxna"--]] 
 AL["Main"] = "Principal"
 AL["Middle Click"] = "Clic Central"
 AL["Misc"] = "Varios"
 AL["Model"] = "Modelo"
 AL["Module %s is deactivated."] = "Módulo %s es desactivado."
 AL["Module %s is not installed."] = "Módulo %s no es instalado."
+--[[Translation missing --]]
+--[[ AL["N"] = "N"--]] 
 AL["New version available!"] = "¡Nueva versión disponible!"
 AL["No module found."] = "No se encuentra módulo."
 AL["Normal"] = "Normal"
+--[[Translation missing --]]
+--[[ AL["Noth the Plaguebringer"] = "Noth the Plaguebringer"--]] 
 AL["One-Hand, Axe"] = "Una mano, Hacha"
 AL["One-Hand, Mace"] = "Una mano, Maza"
 AL["One-Hand, Sword"] = "Una mano, Espada"
+--[[Translation missing --]]
+--[[ AL["Onyxia"] = "Onyxia"--]] 
 AL["Open AtlasLoot"] = "Abre AtlasLoot"
 AL["Open AtlasLoot without auto select"] = "Abre AtlasLoot sin selección automática."
 AL["Open Favourites"] = "Abre favoritos"
 AL["Open Options"] = "Opciones de Abrir"
+--[[Translation missing --]]
+--[[ AL["Patchwerk"] = "Patchwerk"--]] 
 AL["Plans"] = "Diseños"
 AL["Polearm"] = "Arma de asta"
 AL["Profile base list"] = "Lista basado en perfil"
@@ -112,6 +157,10 @@ AL["Required module %s is currently disabled."] = "Módulo requerido %s es desac
 AL["Required module %s is not installed."] = "Módulo requerido %s no es instalado."
 AL["Right Click"] = "Clic Derecho"
 AL["Right-click to close Atlas window."] = "Clic Derecho para cerrar la ventana de Atlas."
+--[[Translation missing --]]
+--[[ AL["Sanctified %s"] = "Sanctified %s"--]] 
+--[[Translation missing --]]
+--[[ AL["Sapphiron"] = "Sapphiron"--]] 
 AL["Select Module"] = "Seleccionar módulo"
 AL["Select Subcategory"] = "Seleccionar subcategoría"
 AL["Set Favourite"] = "Seleccionar favorito"
@@ -123,11 +172,15 @@ AL["Sever"] = "Cercenador"
 AL["Shield"] = "Escudo"
 AL["Shift + Left Click"] = "Shift + Clic Izquierdo"
 AL["Shift + Right Click"] = "Shift + Clic Derecho"
+--[[Translation missing --]]
+--[[ AL["Show Achievements."] = "Show Achievements."--]] 
 AL["Show additional items."] = "Mostrar más objetos."
 AL["Show all items"] = "Mostrar todos los objetos"
 AL["Show dungeon map"] = "Mostrar mapa de calabozo"
 AL["Show entrance map"] = "Mostrar mapa de entrada"
 AL["Show extra items"] = "Mostrar otros objetos"
+--[[Translation missing --]]
+--[[ AL["Show loot."] = "Show loot."--]] 
 AL["Show possible items."] = "Mostrar objetos posibles."
 AL["Show quest rewards."] = "Mostrar recompensas de misiones."
 AL["Show WowHead link"] = "Mostrar enlace de WoWHead"
@@ -139,16 +192,30 @@ AL["Slash commands:"] = "Comandos Slash:"
 AL["Sounds"] = "Sonidos"
 AL["Special"] = "Especial"
 AL["Staff"] = "Bastón"
+--[[Translation missing --]]
+--[[ AL["Thaddius"] = "Thaddius"--]] 
+--[[Translation missing --]]
+--[[ AL["The Four Horsemen"] = "The Four Horsemen"--]] 
 AL["The Mag'har"] = "Los Mag'har"
+--[[Translation missing --]]
+--[[ AL["The Silver Covenant"] = "The Silver Covenant"--]] 
+--[[Translation missing --]]
+--[[ AL["The Sunreavers"] = "The Sunreavers"--]] 
 AL["Thrallmar"] = "Thrallmar"
 AL["Tier %s Sets"] = "Conjuntos de Tier %s"
 AL["Toggle AtlasLoot"] = "Alternar AtlasLoot"
 AL["Token for..."] = "Token para..."
 AL["Tranquillien"] = "Tranquillien"
+--[[Translation missing --]]
+--[[ AL["Trash Mobs"] = "Trash Mobs"--]] 
+--[[Translation missing --]]
+--[[ AL["Triumphant %s"] = "Triumphant %s"--]] 
 AL["Two-Hand, Axe"] = "Dos manos, Hacha"
 AL["Two-Hand, Mace"] = "Dos manos, Maza"
 AL["Two-Hand, Sword"] = "Dos Manos, Espada"
 AL["Undress item"] = "Desvestir objeto"
+--[[Translation missing --]]
+--[[ AL["Valorous %s"] = "Valorous %s"--]] 
 AL["Vendor"] = "Vendedor"
 AL["Wand"] = "Varita"
 AL["Weapons"] = "Armas"

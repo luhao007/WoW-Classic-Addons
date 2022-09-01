@@ -3,9 +3,6 @@ if not L then return end
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 
-L["STRING_OPTIONSMENU_TITLEBAR"] = "Title Bar"
-L["STRING_OPTIONSMENU_WINDOWBODY"] = "Window Body"
-
 L["ABILITY_ID"] = "ability id"
 L["STRING_"] = ""
 L["STRING_ABSORBED"] = "Absorbed"
@@ -145,7 +142,6 @@ L["STRING_CUSTOM_MYSPELLS_DESC"] = "Show your spells in the window."
 L["STRING_CUSTOM_NAME"] = "Name:"
 L["STRING_CUSTOM_NAME_DESC"] = "Insert the name of your new custom display."
 L["STRING_CUSTOM_NEW"] = "Manage Custom Displays"
-L["STRING_SCRIPTS_TITLE"] = "Scripts"
 L["STRING_CUSTOM_PASTE"] = "Paste Here:"
 L["STRING_CUSTOM_POT_DEFAULT"] = "Potion Used"
 L["STRING_CUSTOM_POT_DEFAULT_DESC"] = "Show who in your raid used a potion during the encounter."
@@ -175,6 +171,9 @@ L["STRING_CUSTOM_TARGET_DESC"] = [=[This is the target of the source.
 
 The button in the right shows a list of npcs from raid encounters.]=]
 L["STRING_CUSTOM_TEMPORARILY"] = " (|cFFFFC000temporarily|r)"
+L["STRING_CUSTOM_TEXTURE_GUIDE"] = [=[To load a texture file in the World of Warcraft client you need a file in .TGA format and its width and height must be multiples of 8.
+
+Place the texture inside /WoW Install Folder/retail/Interface/]=]
 L["STRING_DAMAGE"] = "Damage"
 L["STRING_DAMAGE_DPS_IN"] = "DPS received from"
 L["STRING_DAMAGE_FROM"] = "Took damage from"
@@ -411,6 +410,13 @@ L["STRING_OPTIONS_3D_UANCHOR"] = "Upper 3D Model:"
 L["STRING_OPTIONS_3D_UENABLED_DESC"] = "Enabled or Disable the usage of a 3d model frame above the bars."
 L["STRING_OPTIONS_3D_USELECT_DESC"] = "Choose which model will be used on the upper model bar."
 L["STRING_OPTIONS_ADVANCED"] = "Advanced"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS"] = "Aligned Text Columns"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_AUTOALIGN"] = "Auto Alignment"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_AUTOALIGN_DESC"] = "The alignment is done automatically based on the length of each text"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_DESC"] = "Disable brackets and separators and align bars texts in vertical columns"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_OFFSET"] = "Text %d Offset"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_OFFSET_DESC"] = "Offset from right border"
+L["STRING_OPTIONS_ALIGNED_TEXT_COLUMNS_WARNING"] = "is enabled, separators and brackets aren't used"
 L["STRING_OPTIONS_ALPHAMOD_ANCHOR"] = "Auto Hide:"
 L["STRING_OPTIONS_ALWAYS_USE"] = "Use On All Characters"
 L["STRING_OPTIONS_ALWAYS_USE_DESC"] = "The same profile is used on all characters. You may override this on any character by just selecting another existing profile."
@@ -471,7 +477,7 @@ L["STRING_OPTIONS_BAR_SPACING"] = "Spacing"
 L["STRING_OPTIONS_BAR_SPACING_DESC"] = "Gap size between each bar."
 L["STRING_OPTIONS_BAR_TEXTURE_DESC"] = "Texture used on the top of the bar."
 L["STRING_OPTIONS_BARLEFTTEXTCUSTOM"] = "Custom Text Enabled"
-L["STRING_OPTIONS_BARLEFTTEXTCUSTOM_DESC"] = "When enabled, left text is formated following the rules in the box."
+L["STRING_OPTIONS_BARLEFTTEXTCUSTOM_DESC"] = "Use a custom  text, edit the text by clicking the the button below."
 L["STRING_OPTIONS_BARLEFTTEXTCUSTOM2"] = ""
 L["STRING_OPTIONS_BARLEFTTEXTCUSTOM2_DESC"] = [=[|cFFFFFF00{data1}|r: generally represents the player position number.
 
@@ -502,9 +508,6 @@ Example:
 |cFFFFFF00Escape Sequences|r: use to change color or add textures. Search 'UI escape sequences' for more information.]=]
 L["STRING_OPTIONS_BARS"] = "General Bar Settings"
 L["STRING_OPTIONS_BARS_CUSTOM_TEXTURE"] = "Custom Texture File"
-L["STRING_OPTIONS_BARS_CUSTOM_TEXTURE_DESC"] = [=[
-
-|cFFFFFF00Important|r: the image must be 256x32 pixels.]=]
 L["STRING_OPTIONS_BARS_DESC"] = "These options control the bar appearance."
 L["STRING_OPTIONS_BARSORT"] = "Bar Rank Sort Order"
 L["STRING_OPTIONS_BARSORT_DESC"] = "Sort bars on descending or ascending order."
@@ -696,10 +699,12 @@ L["STRING_OPTIONS_ED_DESC"] = [=[|cFFFFFF00Manually|r: the user needs to click o
 L["STRING_OPTIONS_ED1"] = "Manually"
 L["STRING_OPTIONS_ED2"] = "Prompt"
 L["STRING_OPTIONS_ED3"] = "Auto"
+L["STRING_OPTIONS_EDIT_CUSTOM_TEXT"] = "Edit Custom Text"
 L["STRING_OPTIONS_EDITIMAGE"] = "Edit Image"
 L["STRING_OPTIONS_EDITINSTANCE"] = "Editing Window:"
 L["STRING_OPTIONS_ERASECHARTDATA"] = "Erase Charts"
 L["STRING_OPTIONS_ERASECHARTDATA_DESC"] = "During logout, all combat data gathered to create charts is erased."
+L["STRING_OPTIONS_EXPORT_PROFILE"] = "Export Profile"
 L["STRING_OPTIONS_EXTERNALS_TITLE"] = "Externals Widgets"
 L["STRING_OPTIONS_EXTERNALS_TITLE2"] = "These options control the behavior of many foreign widgets."
 L["STRING_OPTIONS_GENERAL"] = "General Settings"
@@ -731,18 +736,13 @@ L["STRING_OPTIONS_ILVL_TRACKER_DESC"] = [=[When enabled and out of combat, the a
 
 If disabled, it still reads item level from queries of other addons or when you manually inspect another player.]=]
 L["STRING_OPTIONS_ILVL_TRACKER_TEXT"] = "Enabled"
-L["STRING_OPTIONS_INSTANCE_ALPHA2"] = "Background Color"
-L["STRING_OPTIONS_INSTANCE_ALPHA2_DESC"] = "This option lets you change the color of the window background."
+L["STRING_OPTIONS_IMPORT_PROFILE"] = "Import Profile"
+L["STRING_OPTIONS_IMPORT_PROFILE_NAME"] = "Insert a Name for the New Profile"
+L["STRING_OPTIONS_IMPORT_PROFILE_PASTE"] = "Details! Import Profile (paste string)"
 L["STRING_OPTIONS_INSTANCE_BACKDROP"] = "Background Texture"
 L["STRING_OPTIONS_INSTANCE_BACKDROP_DESC"] = [=[Select the background texture used by this window.
 
 |cFFFFFF00Default|r: Details Background.]=]
-L["STRING_OPTIONS_INSTANCE_COLOR"] = "Window Color"
-L["STRING_OPTIONS_INSTANCE_COLOR_DESC"] = [=[Change the color and alpha of this window.
-
-|cFFFFFF00Important|r: the alpha chosen here is overwritten with |cFFFFFF00Auto Transparency|r values when enabled.
-
-|cFFFFFF00Important|r: selecting the window color overwrites any color customization over the statusbar.]=]
 L["STRING_OPTIONS_INSTANCE_CURRENT"] = "Auto Switch To Current"
 L["STRING_OPTIONS_INSTANCE_CURRENT_DESC"] = "Whenever a combat starts, this window automatically switches to current segment."
 L["STRING_OPTIONS_INSTANCE_DELETE"] = "Delete"
@@ -765,7 +765,6 @@ Using high layer the window might stay in front of the other major panels.
 When changing the layer height you may find some conflicts with other panels overlapping each other.]=]
 L["STRING_OPTIONS_INSTANCES"] = "Windows:"
 L["STRING_OPTIONS_INTERFACEDIT"] = "Interface Edit Mode"
-L["STRING_OPTIONS_LEFT_MENU_ANCHOR"] = "Menu Settings:"
 L["STRING_OPTIONS_LOCKSEGMENTS"] = "Segments Locked"
 L["STRING_OPTIONS_LOCKSEGMENTS_DESC"] = "When enabled, changing the segment makes all other windows also switch to the selected section."
 L["STRING_OPTIONS_MANAGE_BOOKMARKS"] = "Manage Bookmarks"
@@ -844,13 +843,15 @@ L["STRING_OPTIONS_MINIMAP_ACTION2"] = "Reset Segments"
 L["STRING_OPTIONS_MINIMAP_ACTION3"] = "Show/Hide Windows"
 L["STRING_OPTIONS_MINIMAP_ANCHOR"] = "Minimap:"
 L["STRING_OPTIONS_MINIMAP_DESC"] = "Show or Hide minimap icon."
-
+L["STRING_OPTIONS_MISCTITLE"] = "Miscellaneous Settings"
+L["STRING_OPTIONS_MISCTITLE2"] = "These control several options."
 L["STRING_OPTIONS_NICKNAME"] = "Nickname"
 L["STRING_OPTIONS_NICKNAME_DESC"] = [=[Set a nickname for you.
 
 Nicknames are sent to guild members and Details! uses it instead of your character name.]=]
 L["STRING_OPTIONS_OPEN_ROWTEXT_EDITOR"] = "Row Text Editor"
 L["STRING_OPTIONS_OPEN_TEXT_EDITOR"] = "Open Text Editor"
+L["STRING_OPTIONS_OPENBROKER"] = "Open Broker Text Editor"
 L["STRING_OPTIONS_OVERALL_ALL"] = "All Segments"
 L["STRING_OPTIONS_OVERALL_ALL_DESC"] = "All segments are added to overall data."
 L["STRING_OPTIONS_OVERALL_ANCHOR"] = "Overall Data:"
@@ -908,7 +909,7 @@ L["STRING_OPTIONS_PLUGINS_NAME"] = "Name"
 L["STRING_OPTIONS_PLUGINS_OPTIONS"] = "Options"
 L["STRING_OPTIONS_PLUGINS_RAID_ANCHOR"] = "Raid Plugins"
 L["STRING_OPTIONS_PLUGINS_SOLO_ANCHOR"] = "Solo Plugins"
-L["STRING_OPTIONS_PLUGINS_TOOLBAR_ANCHOR"] = "Toolbar Plugins"
+L["STRING_OPTIONS_PLUGINS_TOOLBAR_ANCHOR"] = "Titlebar Plugins"
 L["STRING_OPTIONS_PLUGINS_VERSION"] = "Version"
 L["STRING_OPTIONS_PRESETNONAME"] = "Give a name to your preset."
 L["STRING_OPTIONS_PRESETTOOLD"] = "This preset is too old and cannot be loaded with this version of Details!."
@@ -974,7 +975,7 @@ L["STRING_OPTIONS_REALMNAME_DESC"] = [=[When enabled, the character realm name i
 |cFFFFFF00Disabled|r: Charles-Netherwing
 |cFFFFFF00Enabled|r: Charles]=]
 L["STRING_OPTIONS_REPORT_ANCHOR"] = "Report:"
-L["STRING_OPTIONS_REPORT_HEALLINKS"] = "Helpful Spell Links"
+L["STRING_OPTIONS_REPORT_HEALLINKS"] = "Healing Spell Links"
 L["STRING_OPTIONS_REPORT_HEALLINKS_DESC"] = [=[When sending a report and this option is enabled, |cFF55FF55helpful|r spells are reported with the spell link instead of its name.
 
 |cFFFF5555Harmful|r spells are reported with links by default.]=]
@@ -984,7 +985,6 @@ L["STRING_OPTIONS_REPORT_SCHEMA1"] = "Total / Per Second / Percent"
 L["STRING_OPTIONS_REPORT_SCHEMA2"] = "Percent / Per Second / Total"
 L["STRING_OPTIONS_REPORT_SCHEMA3"] = "Percent / Total / Per Second"
 L["STRING_OPTIONS_RESET_TO_DEFAULT"] = "Reset to Default"
-L["STRING_OPTIONS_ROW_SETTING_ANCHOR"] = "Layout:"
 L["STRING_OPTIONS_ROWADV_TITLE"] = "Row Advanced Settings"
 L["STRING_OPTIONS_ROWADV_TITLE_DESC"] = "These options allow you modify the rows more deeply."
 L["STRING_OPTIONS_RT_COOLDOWN1"] = "%s used on %s!"
@@ -1042,6 +1042,7 @@ L["STRING_OPTIONS_RT_INTERRUPTS_NEXT"] = "Next Player"
 L["STRING_OPTIONS_RT_INTERRUPTS_NEXT_DESC"] = "When exists, an interrupt sequence, place the player name responsible for the next interrupt."
 L["STRING_OPTIONS_RT_INTERRUPTS_ONOFF_DESC"] = "When you successfully interrupt a spell cast, a message is sent."
 L["STRING_OPTIONS_RT_INTERRUPTS_WHISPER"] = "Whisper To"
+L["STRING_OPTIONS_RT_OTHER_ANCHOR"] = "General:"
 L["STRING_OPTIONS_RT_TITLE"] = "Tools for Raiders"
 L["STRING_OPTIONS_RT_TITLE_DESC"] = "In this panel you can activate several mechanisms to help you during raids."
 L["STRING_OPTIONS_SAVELOAD"] = "Save and Load"
@@ -1064,7 +1065,7 @@ L["STRING_OPTIONS_SAVELOAD_PNAME"] = "Name"
 L["STRING_OPTIONS_SAVELOAD_REMOVE"] = "Erase"
 L["STRING_OPTIONS_SAVELOAD_RESET"] = "Load Default Skin"
 L["STRING_OPTIONS_SAVELOAD_SAVE"] = "save"
-L["STRING_OPTIONS_SAVELOAD_SKINCREATED"] = "Skin created."
+L["STRING_OPTIONS_SAVELOAD_SKINCREATED"] = "skin saved."
 L["STRING_OPTIONS_SAVELOAD_STD_DESC"] = [=[Set the current appearance as Standard Skin.
 
 This skin is applied on all new windows created.]=]
@@ -1080,8 +1081,8 @@ L["STRING_OPTIONS_SEGMENTSSAVE_DESC"] = [=[How many segments you want to save be
 
 High values may increase the time your character takes to logoff.]=]
 L["STRING_OPTIONS_SENDFEEDBACK"] = "Feedback"
-L["STRING_OPTIONS_SHOW_SIDEBARS"] = "Show Borders"
-L["STRING_OPTIONS_SHOW_SIDEBARS_DESC"] = "Show or hide window borders."
+L["STRING_OPTIONS_SHOW_SIDEBARS"] = "Show Skin Border"
+L["STRING_OPTIONS_SHOW_SIDEBARS_DESC"] = "Show the border of the window from the skin file, use the same color as the 'Window Color'."
 L["STRING_OPTIONS_SHOW_STATUSBAR"] = "Show Statusbar"
 L["STRING_OPTIONS_SHOW_STATUSBAR_DESC"] = "Show or hide the bottom statusbar."
 L["STRING_OPTIONS_SHOW_TOTALBAR_COLOR_DESC"] = "Select the color. The transparency value follows the row alpha value."
@@ -1107,8 +1108,8 @@ L["STRING_OPTIONS_SKIN_ELVUI_BUTTON3_DESC"] = [=[Modify tooltip's:
 Border Color to: |cFFFFFF00Transparent|r.]=]
 L["STRING_OPTIONS_SKIN_EXTRA_OPTIONS_ANCHOR"] = "Skin Options:"
 L["STRING_OPTIONS_SKIN_LOADED"] = "skin successfully loaded."
-L["STRING_OPTIONS_SKIN_PRESETS_ANCHOR"] = "Save Current Settings as Custom Skin:"
-L["STRING_OPTIONS_SKIN_PRESETSCONFIG_ANCHOR"] = "Manage Saved Custom Skins:"
+L["STRING_OPTIONS_SKIN_PRESETS_ANCHOR"] = "Save Skin:"
+L["STRING_OPTIONS_SKIN_PRESETSCONFIG_ANCHOR"] = "Saved Skins:"
 L["STRING_OPTIONS_SKIN_REMOVED"] = "skin removed."
 L["STRING_OPTIONS_SKIN_RESET_TOOLTIP"] = "Reset Tooltip Border"
 L["STRING_OPTIONS_SKIN_RESET_TOOLTIP_DESC"] = "Set the tooltip's border color and texture to default."
@@ -1211,6 +1212,7 @@ L["STRING_OPTIONS_TIMEMEASURE"] = "Time Measure"
 L["STRING_OPTIONS_TIMEMEASURE_DESC"] = [=[|cFFFFFF00Activity|r: the timer of each raid member is put on hold if their activity is ceased and back again to count when resumed, common way of measuring DPS and HPS.
 
 |cFFFFFF00Effective|r: used on rankings, this method uses the elapsed combat time to measure the DPS and HPS of all raid members.]=]
+L["STRING_OPTIONS_TITLEBAR_MENUBUTTONS_HEADER"] = "Buttons and Menu Settings"
 L["STRING_OPTIONS_TOOLBAR_SETTINGS"] = "Title Bar Button Settings"
 L["STRING_OPTIONS_TOOLBAR_SETTINGS_DESC"] = "These options change the main menu on the top of the window."
 L["STRING_OPTIONS_TOOLBARSIDE"] = "Title Bar on Top Side"
@@ -1315,11 +1317,11 @@ L["STRING_OPTIONS_WC_ANCHOR"] = "Quick Window Control (#%s):"
 L["STRING_OPTIONS_WC_BOOKMARK"] = "Manage Bookmarks"
 L["STRING_OPTIONS_WC_BOOKMARK_DESC"] = "Open config panel for bookmarks."
 L["STRING_OPTIONS_WC_CLOSE"] = "Close"
-L["STRING_OPTIONS_WC_CLOSE_DESC"] = [=[Close the current editing window.
+L["STRING_OPTIONS_WC_CLOSE_DESC"] = [=[Close the window.
 
 When closed, the window is considered inactive and can be reopened at any time using the Window Control menu.
 
-|cFFFFFF00Important:|r to completely remove a window, go to 'Window: General' section.]=]
+|cFFFFFF00Important:|r to completely remove a window, go to 'Window Body' section.]=]
 L["STRING_OPTIONS_WC_CREATE"] = "Create Window"
 L["STRING_OPTIONS_WC_CREATE_DESC"] = "Create a new window."
 L["STRING_OPTIONS_WC_LOCK"] = "Lock"
@@ -1336,12 +1338,20 @@ L["STRING_OPTIONS_WINDOW"] = "Options Panel"
 L["STRING_OPTIONS_WINDOW_ANCHOR_ANCHORS"] = "Anchors:"
 L["STRING_OPTIONS_WINDOW_IGNOREMASSTOGGLE"] = "Ignore Mass Toggle"
 L["STRING_OPTIONS_WINDOW_IGNOREMASSTOGGLE_DESC"] = "When enabled, this window is not affected when hiding, showing, or toggling all windows."
+L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR"] = "\"Row's Area Color\""
+L["STRING_OPTIONS_WINDOW_ROWAREA_COLOR_DESC"] = "Set the background color of the area when the rows are shown."
 L["STRING_OPTIONS_WINDOW_SCALE"] = "Scale"
 L["STRING_OPTIONS_WINDOW_SCALE_DESC"] = [=[Adjust the scale of the window.
 
 |cFFFFFF00Tip|r: right click to type the value.
 
 |cFFFFFF00Current|r: %s]=]
+L["STRING_OPTIONS_WINDOW_SKIN_COLOR"] = "Skin Color"
+L["STRING_OPTIONS_WINDOW_SKIN_COLOR_DESC"] = [=[Modifies the color of the skin applied into this window.
+
+|cFFFFFF00Important|r: the alpha chosen here is overwritten with |cFFFFFF00Auto Transparency|r values when enabled.
+
+|cFFFFFF00Important|r: selecting the skin color overwrites any color customization applied to statusbar.]=]
 L["STRING_OPTIONS_WINDOW_TITLE"] = "General Window Settings"
 L["STRING_OPTIONS_WINDOW_TITLE_DESC"] = "These options control the window appearance of selected window."
 L["STRING_OPTIONS_WINDOWSPEED"] = "Update Interval"
@@ -1380,7 +1390,7 @@ L["STRING_OPTIONSMENU_DATACOLLECT"] = "Data Collector"
 L["STRING_OPTIONSMENU_DATAFEED"] = "Data Feed"
 L["STRING_OPTIONSMENU_DISPLAY"] = "Display"
 L["STRING_OPTIONSMENU_DISPLAY_DESC"] = "Overall basic adjustments and quick window control."
-L["STRING_OPTIONSMENU_LEFTMENU"] = "Title Bar: General"
+L["STRING_OPTIONSMENU_LEFTMENU"] = "Title Bar"
 L["STRING_OPTIONSMENU_MISC"] = "Miscellaneous"
 L["STRING_OPTIONSMENU_PERFORMANCE"] = "Performance Tweaks"
 L["STRING_OPTIONSMENU_PLUGINS"] = "Plugins"
@@ -1393,9 +1403,12 @@ L["STRING_OPTIONSMENU_ROWTEXTS"] = "Bars: Texts"
 L["STRING_OPTIONSMENU_SKIN"] = "Skins"
 L["STRING_OPTIONSMENU_SPELLS"] = "Rename Spells"
 L["STRING_OPTIONSMENU_SPELLS_CONSOLIDATE"] = "Merge Spells With the Same Name"
+L["STRING_OPTIONSMENU_TITLEBAR"] = "Title Bar"
 L["STRING_OPTIONSMENU_TITLETEXT"] = "Title Bar: Text"
 L["STRING_OPTIONSMENU_TOOLTIP"] = "Tooltips"
 L["STRING_OPTIONSMENU_WALLPAPER"] = "Wallpaper"
+L["STRING_OPTIONSMENU_WINDOW"] = "Window: General"
+L["STRING_OPTIONSMENU_WINDOWBODY"] = "Window Body"
 L["STRING_OVERALL"] = "Overall"
 L["STRING_OVERHEAL"] = "Overheal"
 L["STRING_OVERHEALED"] = "Overhealed"
@@ -1492,6 +1505,7 @@ L["STRING_RIGHTCLICK_CLOSE_SHORT"] = "Right click to close."
 L["STRING_RIGHTCLICK_TYPEVALUE"] = "right click to type the value"
 L["STRING_SCORE_BEST"] = "you scored |cFFFFFF00%s|r, this is your best score, congratulations!"
 L["STRING_SCORE_NOTBEST"] = "you scored |cFFFFFF00%s|r, your best score is |cFFFFFF00%s|r on %s with %d item level."
+L["STRING_SCRIPTS_TITLE"] = "Scripts"
 L["STRING_SEE_BELOW"] = "see below"
 L["STRING_SEGMENT"] = "Segment"
 L["STRING_SEGMENT_EMPTY"] = "this segment is empty"
@@ -1585,7 +1599,9 @@ L["STRING_WAITPLUGIN"] = [=[  Plugin not Available, Please Check:
 - Esc > Addons > if is enabled there.
 - Plugins page in Details! options.
 - Plugin opened in another window.
-- Plugin in use in a closed window.]=]
+- Plugin in use in a closed window.
+
+]=]
 L["STRING_WAVE"] = "wave"
 L["STRING_WELCOME_1"] = [=[|cFFFFFFFFWelcome to Details! Quick Setup Wizard|r
 

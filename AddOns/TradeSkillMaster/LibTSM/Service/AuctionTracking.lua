@@ -15,6 +15,7 @@ local ItemString = TSM.Include("Util.ItemString")
 local TempTable = TSM.Include("Util.TempTable")
 local Sound = TSM.Include("Util.Sound")
 local Money = TSM.Include("Util.Money")
+local Theme = TSM.Include("Util.Theme")
 local Analytics = TSM.Include("Util.Analytics")
 local ItemInfo = TSM.Include("Service.ItemInfo")
 local Settings = TSM.Include("Service.Settings")
@@ -126,7 +127,13 @@ AuctionTracking:OnSettingsLoad(function()
 	end
 
 	-- setup enhanced sale / buy messages
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", private.FilterSystemMsg)
+	if TSM.IsWowClassic() then
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", private.FilterSystemMsg)
+	else
+		Event.Register("AUCTION_HOUSE_SHOW_NOTIFICATION", private.FilterAuctionMsg)
+		Event.Register("AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION", private.FilterAuctionMsg)
+		Event.Register("AUCTION_HOUSE_SHOW_COMMODITY_WON_NOTIFICATION", private.FilterCommodityAuctionMsg)
+	end
 	if TSM.IsWowClassic() then
 		hooksecurefunc("PlaceAuctionBid", function(_, index, amountPaid)
 			local link = GetAuctionItemLink("list", index)
@@ -200,12 +207,14 @@ AuctionTracking:OnGameDataLoad(function()
 			ElvUIChatIsEnabled = true
 		end
 	end
-	if ElvUIChatIsEnabled then
-		private.origChatFrameOnEvent = ElvUIChat.ChatFrame_OnEvent
-		ElvUIChat.ChatFrame_OnEvent = private.ChatFrameOnEvent
-	else
-		private.origChatFrameOnEvent = ChatFrame_OnEvent
-		ChatFrame_OnEvent = private.ChatFrameOnEvent
+	if TSM.IsWowClassic() then
+		if ElvUIChatIsEnabled then
+			private.origChatFrameOnEvent = ElvUIChat.ChatFrame_OnEvent
+			ElvUIChat.ChatFrame_OnEvent = private.ChatFrameOnEvent
+		else
+			private.origChatFrameOnEvent = ChatFrame_OnEvent
+			ChatFrame_OnEvent = private.ChatFrameOnEvent
+		end
 	end
 end)
 
@@ -517,7 +526,12 @@ function private.GetOwnedAuctionInfo(index)
 		end
 		local link = info and info.itemLink
 		if not link then
-			return
+			if ItemInfo.IsCommodity(info.itemKey.itemID) then
+				link = ItemInfo.GetLink(info.itemKey.itemID)
+			end
+			if not link then
+				return
+			end
 		end
 		local bid = info.bidAmount or info.buyoutAmount
 		local minBid = bid
@@ -581,7 +595,11 @@ function private.UpdateAuctionPricesMessages()
 		if auctionStackSizes[link] ~= INVALID_STACK_SIZE then
 			sort(prices)
 			private.settings.auctionPrices[link] = prices
-			private.settings.auctionMessages[format(ERR_AUCTION_SOLD_S, name)] = link
+			if TSM.IsWowClassic() then
+				private.settings.auctionMessages[format(ERR_AUCTION_SOLD_S, name)] = link
+			else
+				private.settings.auctionMessages[name] = link
+			end
 		end
 	end
 	TempTable.Release(freeTables)
@@ -624,6 +642,44 @@ function private.FilterSystemMsg(_, _, msg, ...)
 			Sound.PlaySound(private.settings.auctionSaleSound)
 			return nil, private.prevLineResult, ...
 		end
+	end
+end
+
+function private.FilterAuctionMsg(_, msg, item)
+	if msg == Enum.AuctionHouseNotification.AuctionWon and private.lastPurchase.name then
+		Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(L["You won an auction for %sx%d for %s"], private.lastPurchase.link, private.lastPurchase.stackSize, Money.ToString(private.lastPurchase.buyout, "|cffffffff"))))
+	elseif msg == Enum.AuctionHouseNotification.AuctionSold and item then
+		local link = private.settings.auctionMessages and private.settings.auctionMessages[item]
+		if link then
+			-- we may have just sold an auction
+			local price = tremove(private.settings.auctionPrices[link], 1)
+			local numAuctions = #private.settings.auctionPrices[link]
+			if not price then
+				-- couldn't determine the price, so just replace the link
+				Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(L["Your auction of %s has sold!"], link)))
+				Sound.PlaySound(private.settings.auctionSaleSound)
+			end
+			if numAuctions == 0 then -- this was the last auction
+				private.settings.auctionMessages[item] = nil
+			end
+			Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(L["Your auction of %s has sold for %s!"], link, Money.ToString(price, "|cffffffff"))))
+			Sound.PlaySound(private.settings.auctionSaleSound)
+		else
+			Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(L["Your auction of %s has sold!"], item)))
+			Sound.PlaySound(private.settings.auctionSaleSound)
+		end
+	elseif msg == Enum.AuctionHouseNotification.AuctionOutbid and item then
+		Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(ERR_AUCTION_OUTBID_S, item)))
+	elseif msg == Enum.AuctionHouseNotification.AuctionExpired and item then
+		Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(ERR_AUCTION_EXPIRED_S, item)))
+	elseif msg == Enum.AuctionHouseNotification.BidPlaced then
+		Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(ERR_AUCTION_BID_PLACED))
+	end
+end
+
+function private.FilterCommodityAuctionMsg(_, msg, qty)
+	if private.lastPurchase.name then
+		Log.PrintUserRaw(Theme.GetStandardColor("YELLOW"):ColorText(format(L["You won an auction for %sx%d for %s"], private.lastPurchase.link, qty, Money.ToString(private.lastPurchase.buyout, "|cffffffff"))))
 	end
 end
 
