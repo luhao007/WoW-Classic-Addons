@@ -2856,33 +2856,6 @@
     ]
   },
   {
-    "source": "github",
-    "id": "Nevcairiel/Quartz",
-    "slug": "nevcairiel/quartz",
-    "name": "Quartz",
-    "description": "Quartz is a modular approach to a casting bar addon for World of Warcraft",
-    "url": "https://github.com/Nevcairiel/Quartz",
-    "download_url": "https://github.com/Nevcairiel/Quartz/releases/download/3.6.12/Quartz-3.6.12.zip",
-    "date_published": "2022-08-30T08:40:08+00:00",
-    "version": "3.6.12",
-    "changelog_url": "data:,%23%20Quartz%0D%0A%0D%0A%23%23%20%5B3.6.12%5D%28https%3A//github.com/Nevcairiel/Quartz/tree/3.6.12%29%20%282022-08-30%29%0D%0A%5BFull%20Changelog%5D%28https%3A//github.com/Nevcairiel/Quartz/compare/3.6.11...3.6.12%29%20%5BPrevious%20Releases%5D%28https%3A//github.com/Nevcairiel/Quartz/releases%29%0D%0A%0D%0A-%20Add%20channeling%20spells%20from%20BCC%20to%20Wrath%20%20%0D%0A-%20Add%20Wrath%20TOC%20entry%20%20%0D%0A-%20Re-design%20WoW%20version%20checks%20for%20upcoming%20Wrath%20Classic%20support%20%20%0D%0A-%20Protect%20more%20occurances%20of%20spell%20interrupt%20events%20on%20Classic%20%20%0D%0A%20%20%20%20Fixes%20%2349%20%20%0D%0A",
-    "options": {
-      "strategy": "default"
-    },
-    "folders": [
-      {
-        "name": "Quartz"
-      }
-    ],
-    "deps": [],
-    "logged_versions": [
-      {
-        "version": "3.6.12",
-        "install_time": "2022-09-01T13:46:18+00:00"
-      }
-    ]
-  },
-  {
     "source": "wowi",
     "id": "17869",
     "slug": "17869-addon-control-panel",
@@ -3194,6 +3167,33 @@
       {
         "version": "3.9.2c",
         "install_time": "2022-09-01T13:40:36+00:00"
+      }
+    ]
+  },
+  {
+    "source": "wowi",
+    "id": "7158",
+    "slug": "7158-quartz-modular-casting-bar",
+    "name": "Quartz - Modular Casting Bar",
+    "description": "Quartz is a modular approach to a casting bar addon.  An overview of (hopefully most of) the modules:\r\n\r\n[b]*Player[/b]\r\nThe core of Quartz is lightweight implementation of a standard casting bar, with configurable size, text and icon positioning, and colors.\r\n[b]*Target/Focus[/b]\r\nImplementation of target and focus casting bars in similar fashion to the player cast bar.\r\n[b]*Buffs[/b]\r\nDisplay of target and focus buffs and debuffs as duration bars using the new API introduced in patch 2.1.\r\n[b]*Flight[/b]\r\nHooks into FlightMap or InFlight to display the current flight progress on your casting bar.\r\n[b]*Global Cooldown[/b]\r\nDisplays a tiny spark-bar to show your Global Cooldown near the cast bar.  Helpful for those who'd rather not squint at their action bars to see when they can cast again.\r\n[b]*Interrupt[/b]\r\nChanges the color and text of your casting bar to help show that your cast has been interrupted (and show who interrupted it).\r\n[b]*Latency[/b]\r\nDisplays the amount of time spent between cast send and start events, in the form of a bar at the end of your casting bar, with optional text that displays the actual duration of the lag.  This helps in canceling casts when they will not actually be interrupted, especially for users with consistently high pings.\r\n[b]*Mirror[/b]\r\nShows the 'basic' timers such as breath and feign death, as well as some 'odd' ones such as party invite time, resurrect timeout, and arena game start, and a framework for injecting custom timers into the bars.\r\n[b]*Range[/b]\r\nRecolors the casting bar when your cast target moves out of range mid-cast.\r\n[b]*Swing[/b]\r\nDisplays a swing timer for your melee weapon as well as hunter autoshot.\r\n[b]*Timer[/b]\r\nAllows for creating custom timers displayed on the mirror bars.\r\n[b]*Tradeskill Merge[/b]\r\nMerges multiple casts of the same tradeskill item into one big cast bar.\r\n\r\n\r\nUse /quartz to bring up the configuration menu.",
+    "url": "https://www.wowinterface.com/downloads/info7158-Quartz-ModularCastingBar.html",
+    "download_url": "https://cdn.wowinterface.com/downloads/getfile.php?id=7158&d=1661848808&minion",
+    "date_published": "2022-08-30T08:40:08+00:00",
+    "version": "3.6.12",
+    "changelog_url": "data:,%5Bsize%3D5%5DQuartz%5B/size%5D%0D%0A%5Bsize%3D4%5D%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/tree/3.6.12%5D3.6.12%5B/url%5D%20%282022-08-30%29%5B/size%5D%0D%0A%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/compare/3.6.11...3.6.12%5DFull%20Changelog%5B/url%5D%20%5Burl%3Dhttps%3A//github.com/Nevcairiel/Quartz/releases%5DPrevious%20Releases%5B/url%5D%0D%0A%5Blist%5D%0D%0A%5B%2A%5DAdd%20channeling%20spells%20from%20BCC%20to%20Wrath%0D%0A%5B%2A%5DAdd%20Wrath%20TOC%20entry%0D%0A%5B%2A%5DRe-design%20WoW%20version%20checks%20for%20upcoming%20Wrath%20Classic%20support%0D%0A%5B%2A%5DProtect%20more%20occurances%20of%20spell%20interrupt%20events%20on%20Classic%0D%0A%20%20%20%20Fixes%20%2349%0D%0A%5B/list%5D",
+    "options": {
+      "strategy": "default"
+    },
+    "folders": [
+      {
+        "name": "Quartz"
+      }
+    ],
+    "deps": [],
+    "logged_versions": [
+      {
+        "version": "3.6.12",
+        "install_time": "2022-09-01T16:04:31+00:00"
       }
     ]
   },

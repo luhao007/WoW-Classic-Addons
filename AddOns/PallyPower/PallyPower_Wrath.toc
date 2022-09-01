@@ -16,7 +16,6 @@
 ## X-Curse-Project-ID: 2703
 
 #@no-lib-strip@
-embeds.xml
 #@end-no-lib-strip@
 
 locale\enUS.lua

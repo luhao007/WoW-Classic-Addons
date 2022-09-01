@@ -15,17 +15,6 @@
 ## X-WoWI-ID: 7032
 ## X-Wago-ID: Rn6VaONd
 
-libs\LibStub\LibStub.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-libs\AceGUI-3.0\AceGUI-3.0.xml
-libs\AceConfig-3.0\AceConfig-3.0.xml
-libs\AceEvent-3.0\AceEvent-3.0.xml
-libs\AceDB-3.0\AceDB-3.0.xml
-libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
-libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-libs\HereBeDragons\HereBeDragons-2.0.lua
-libs\HereBeDragons\HereBeDragons-Pins-2.0.lua
-
 AddonCore.lua
 
 Localization.enUS.lua

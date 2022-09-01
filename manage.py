@@ -13,7 +13,7 @@ logger = logging.getLogger('manager')
 
 CLASSIC_ERA_VER = '11401'
 CLASSIC_VER = '30400'
-RETAIL_VER = '90105'
+RETAIL_VER = '90207'
 
 IGNORED = ['FishingBuddy', 'GTFO', 'Details', 'ATT-Classic', 'TrinketMenu', 'TalentEmu']
 

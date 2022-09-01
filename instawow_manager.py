@@ -9,9 +9,10 @@ import instawow.db
 import sqlalchemy
 from attrs import asdict, evolve
 from instawow.common import Flavour
+from instawow.db import prepare_database
 from instawow.config import (Config, GlobalConfig, config_converter,
                              setup_logging)
-from instawow.manager import Manager, contextualise
+from instawow.manager import Manager, contextualise, DB_REVISION
 from instawow.models import Pkg, pkg_converter
 from instawow.resolvers import Defn
 from instawow.results import PkgUpToDate
@@ -44,7 +45,8 @@ class InstawowManager:
         setup_logging(config.logging_dir, debug=False)
         instawow.cli._apply_patches()
 
-        self.manager, self.close = Manager.from_config(config=config)
+        self.conn = prepare_database(config.db_uri, DB_REVISION).connect()
+        self.manager = Manager(config, self.conn)
 
     def run(self, awaitable):
         from instawow.prompts import make_progress_bar
@@ -67,7 +69,7 @@ class InstawowManager:
 
         return [Pkg.from_row_mapping(self.manager.database, p) for p in query.mappings().all()]
 
-    def to_defn(self, addon: str, strategy: str = None) -> Defn:
+    def to_defn(self, addon: str, strategy: typing.Optional[str] = None) -> Defn:
         pair = self.manager.pair_uri(addon) or ('*', addon)
         defn = Defn(*pair)
         if strategy:

@@ -10,7 +10,6 @@
 
 ## X-Part-Of: OmniCC
 
-embeds.xml
 localization\localization.xml
 preview.lua
 themes.lua
